@@ -1,3 +1,9 @@
+Wed Nov  2 14:17:50 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* AUTHORS NEWS README autogen.sh configure.in: allow autogen.sh and
+	  configure to start working
+	* src/Makefile.am src/internal.h src/libxen.c: make the first compile
+
 Wed Nov  2 13:44:47 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* src/libxen.c src/Makefile.am include/libxen.h configure.in

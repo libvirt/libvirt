@@ -1,0 +1,7 @@
+
+         LibXen : simple library to use the Xen hypervisor
+
+  As of Wed Nov 2 2005, this is a completely new project, it is not
+usable in any way yet.
+
+Daniel Veillard <veillard@redhat.com>

@@ -11,7 +11,8 @@
 
 #include "libxen.h"
 
-#include "memory.h"
+#include <stdio.h>
+
 #include "internal.h"
 
 /*
@@ -29,7 +30,7 @@
 struct _xenConnect {
     unsigned int magic;		/* specific value to check */
     int	         handle;	/* internal handle used for hypercall */
-}
+};
 
 /**
  * xenGetConnect:
@@ -41,7 +42,7 @@ struct _xenConnect {
  * Returns a pointer to the hypervisor connection or NULL in case of error
  */
 xenConnectPtr
-xenOpenConnect(const char *name ATTRIBUTE_UNUSED) {
+xenOpenConnect(const char *name) {
     return(NULL);
 }
 
@@ -74,3 +75,4 @@ xenCloseConnect(xenConnectPtr conn) {
  * @conn: pointer to the hypervisor connection
  *
  * Get the version level of the Hypervisor running
+ */
