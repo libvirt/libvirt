@@ -1,3 +1,10 @@
+Wed Nov  2 16:35:54 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* TODO libxen.pc.in libxen.spec.in include/Makefile.am Makefile.am
+	  config.h.in configure.in: fix make dist, add rpm packaging
+	* src/libxen_sym.version src/Makefile.am: set a policy of no
+	  export by default of library symbols
+
 Wed Nov  2 14:17:50 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* AUTHORS NEWS README autogen.sh configure.in: allow autogen.sh and

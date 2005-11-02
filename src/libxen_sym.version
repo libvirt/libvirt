@@ -1,0 +1,8 @@
+{
+    global:
+        xenOpenConnect;
+	xenCloseConnect;
+	xenGetVersion;
+	xenCreateLinuxDomain;
+    local: *;
+};

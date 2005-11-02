@@ -1,0 +1,62 @@
+Summary: Library providing an API to use the Xen virtualization
+Name: libxen
+Version: @VERSION@
+Release: 1
+License: LGPL
+Group: Development/Libraries
+Source: libxen-%{version}.tar.gz
+BuildRoot: %{_tmppath}/%{name}-%{version}-root
+URL: http://www.gnome.org/~veillard/gamin/
+BuildRequires: xen
+Requires: xen
+
+%description
+This C library provides an API to use the Xen virtualization framework
+
+%package devel
+Summary: Libraries, includes, etc. to compile with the libxen library
+Group: Development/Libraries
+Requires: libxen = %{version}
+
+%description devel
+This C library provides an API to use the Xen virtualization framework
+
+%prep
+%setup -q
+
+%build
+%configure
+make
+
+%install
+rm -fr %{buildroot}
+
+%makeinstall
+rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
+
+%clean
+rm -fr %{buildroot}
+
+%post
+/sbin/ldconfig
+
+%postun
+/sbin/ldconfig
+
+%files
+%defattr(-, root, root)
+
+%doc AUTHORS ChangeLog NEWS README COPYING.LIB TODO
+%{_libdir}/lib*.so.*
+
+%files devel
+%defattr(-, root, root)
+
+%{_libdir}/lib*.so
+%{_libdir}/*a
+%{_includedir}/libxen/*.h
+%{_libdir}/pkgconfig/libxen.pc
+
+%changelog
+* Wed Nov  2 2005 Daniel Veillard <veillard@redhat.com> 0.0.1-1
+- created

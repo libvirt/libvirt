@@ -50,4 +50,4 @@ AM_PROG_LIBTOOL
 dnl search for the low level Xen library
 AC_SEARCH_LIBS(xc_domain_create, [xenctrl])
 
-AC_OUTPUT(Makefile src/Makefile)
+AC_OUTPUT(Makefile src/Makefile include/Makefile libxen.pc libxen.spec)
