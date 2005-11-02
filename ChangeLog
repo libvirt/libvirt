@@ -1,0 +1,4 @@
+Wed Nov  2 13:44:47 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* src/libxen.c src/Makefile.am include/libxen.h configure.in
+	  Makefile.am COPYING.LIB: creation
