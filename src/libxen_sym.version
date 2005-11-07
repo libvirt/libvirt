@@ -4,5 +4,9 @@
 	xenCloseConnect;
 	xenGetVersion;
 	xenCreateLinuxDomain;
+	xenDestroyDomain;
+	xenSuspendDomain;
+	xenResumeDomain;
+	xenSetMaxMemory;
     local: *;
 };

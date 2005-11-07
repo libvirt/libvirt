@@ -1,1 +1,5 @@
-- everything at this point
+- nearly everything at this point
+
+Done:
+- make dist and make rpm targets
+- set a no public by default policy for libxen symbols

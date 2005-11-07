@@ -47,7 +47,6 @@ typedef struct _xenDomain xenDomain;
  */
 typedef xenDomain *xenDomainPtr;
 
-
 /**
  * xenDomainFlags:
  *
@@ -72,7 +71,23 @@ xenDomainPtr		xenCreateLinuxDomain	(xenConnectPtr conn,
 						 const char *kernel_path,
 						 const char *initrd_path,
 						 const char *cmdline,
+						 unsigned long memory,
 						 unsigned int flags);
+
+int			xenDestroyDomain	(xenDomainPtr domain);
+
+/*
+ * Domain suspend/resume
+ */
+int			xenSuspendDomain	(xenDomainPtr domain);
+int			xenResumeDomain		(xenDomainPtr domain);
+
+/*
+ * Dynamic control of domains
+ */
+int			xenSetMaxMemory		(xenDomainPtr domain,
+						 unsigned long memory);
+
 #ifdef __cplusplus
 }
 #endif

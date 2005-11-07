@@ -1,3 +1,10 @@
+Mon Nov  7 18:14:50 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* TODO: updated
+	* include/libxen.h src/libxen.c src/libxen_sym.version: extended
+	  entry points to a first minimal set.
+	* src/internal.h: TODO macro
+
 Wed Nov  2 16:35:54 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* TODO libxen.pc.in libxen.spec.in include/Makefile.am Makefile.am

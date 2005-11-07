@@ -9,6 +9,11 @@
 extern "C" {
 #endif
 
+/**
+ * ATTRIBUTE_UNUSED:
+ *
+ * Macro to flag conciously unused parameters to functions
+ */
 #ifdef __GNUC__
 #ifdef HAVE_ANSIDECL_H
 #include <ansidecl.h>
@@ -19,6 +24,15 @@ extern "C" {
 #else
 #define ATTRIBUTE_UNUSED
 #endif
+
+/**
+ * TODO:
+ *
+ * macro to flag unimplemented blocks
+ */
+#define TODO 								\
+    fprintf(stderr, "Unimplemented block at %s:%d\n",			\
+            __FILE__, __LINE__);
 
 #ifdef __cplusplus
 }
