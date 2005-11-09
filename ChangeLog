@@ -1,3 +1,7 @@
+Wed Nov  9 10:57:12 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* docs/Goals: added a Goals document for the library
+
 Mon Nov  7 18:14:50 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* TODO: updated
