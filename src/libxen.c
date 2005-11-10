@@ -18,6 +18,8 @@
  * TODO:
  * - use lock to protect against concurrent accesses ?
  * - use reference counting to garantee coherent pointer state ?
+ * - error reporting layer
+ * - memory wrappers for malloc/free ?
  */
 
 #define XEN_CONNECT_MAGIC 0x4F23DEAD
@@ -42,7 +44,22 @@ struct _xenConnect {
  */
 xenConnectPtr
 xenOpenConnect(const char *name) {
-    return(NULL);
+    xenConnectPtr ret;
+    int handle;
+
+    handle = xc_interface_open();
+    if (handle == -1) {
+        return(NULL);
+    }
+    ret = (xenConnectPtr) malloc(sizeof(xenConnect));
+    if (ret == NULL) {
+        xc_interface_close(handle);
+        return(NULL);
+    }
+    ret->magic = XEN_CONNECT_MAGIC;
+    ret->handle = handle;
+
+    return(ret);
 }
 
 /**
@@ -60,11 +77,10 @@ int
 xenCloseConnect(xenConnectPtr conn) {
     if ((conn == NULL) || (conn->magic != XEN_CONNECT_MAGIC))
         return(-1);
-    /*
-     * TODO:
-     * Free the domain pointers associated to this connection
-     */
+
     conn->magic = -1;
+    xc_interface_close(conn->handle);
+    conn->handle = -1;
     free(conn);
     return(0);
 }

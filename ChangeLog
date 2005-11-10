@@ -1,3 +1,8 @@
+Thu Nov 10 17:11:03 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* src/makefile.am src/libxen.c src/xensh.c: add a small tool sensh,
+	  implement xenopenconnect and xencloseconnect.
+
 Wed Nov  9 10:57:12 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* docs/Goals: added a Goals document for the library
