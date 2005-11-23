@@ -73,7 +73,8 @@ xenDomainPtr		xenCreateLinuxDomain	(xenConnectPtr conn,
 						 const char *cmdline,
 						 unsigned long memory,
 						 unsigned int flags);
-
+xenDomainPtr		xenLookupDomain		(xenConnectPtr conn,
+						 const char *name);
 int			xenDestroyDomain	(xenDomainPtr domain);
 
 /*
@@ -85,6 +86,8 @@ int			xenResumeDomain		(xenDomainPtr domain);
 /*
  * Dynamic control of domains
  */
+const char *		xenGetName		(xenDomainPtr domain);
+unsigned long		xenGetMaxMemory		(xenDomainPtr domain);
 int			xenSetMaxMemory		(xenDomainPtr domain,
 						 unsigned long memory);
 

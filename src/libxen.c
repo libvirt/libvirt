@@ -31,6 +31,7 @@
 struct _xenConnect {
     unsigned int magic;		/* specific value to check */
     int	         handle;	/* internal handle used for hypercall */
+    int	         xshandle;	/* handle to talk to the xenstore */
 };
 
 /**
@@ -38,28 +39,37 @@ struct _xenConnect {
  * @name: optional argument currently unused, pass NULL
  *
  * This function should be called first to get a connection to the 
- * Hypervisor
+ * Hypervisor and xen store
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
  */
 xenConnectPtr
 xenOpenConnect(const char *name) {
     xenConnectPtr ret;
-    int handle;
+    int handle = -1;
+    int xshandle = -1;
 
     handle = xc_interface_open();
-    if (handle == -1) {
-        return(NULL);
-    }
+    if (handle == -1)
+        goto failed;
+    xshandle = xs_daemon_open();
+    if (xshandle < 0)
+        goto failed;
+
     ret = (xenConnectPtr) malloc(sizeof(xenConnect));
-    if (ret == NULL) {
-        xc_interface_close(handle);
-        return(NULL);
-    }
+    if (ret == NULL)
+        goto failed;
     ret->magic = XEN_CONNECT_MAGIC;
     ret->handle = handle;
+    ret->xshandle = xshandle;
 
     return(ret);
+failed:
+    if (handle >= 0)
+        xc_interface_close(handle);
+    if (xshandle >= 0)
+        xs_daemon_close(xshandle);
+    return(NULL);
 }
 
 /**
@@ -79,6 +89,8 @@ xenCloseConnect(xenConnectPtr conn) {
         return(-1);
 
     conn->magic = -1;
+    xs_daemon_close(conn->xshandle);
+    conn->xshandle = -1;
     xc_interface_close(conn->handle);
     conn->handle = -1;
     free(conn);
@@ -117,6 +129,23 @@ xenCreateLinuxDomain(xenConnectPtr conn, const char *kernel_path,
 		     const char *initrd_path, const char *cmdline,
 		     unsigned long memory, unsigned int flags) {
     if ((conn == NULL) || (kernel_path == NULL) || (memory < 4096))
+        return(NULL);
+    TODO
+    return(NULL);
+}
+
+/**
+ * xenLookupDomain:
+ * @conn: pointer to the hypervisor connection
+ * @name: name for the domain
+ *
+ * Try to lookup a domain on the given hypervisor
+ *
+ * Returns a new domain object or NULL in case of failure
+ */
+xenDomainPtr
+xenLookupDomain(xenConnectPtr conn, const char *name) {
+    if ((conn == NULL) || (name == NULL))
         return(NULL);
     TODO
     return(NULL);
@@ -173,6 +202,41 @@ xenResumeDomain(xenDomainPtr domain) {
         return(-1);
     TODO
     return(-1);
+}
+
+/**
+ * xenGetName:
+ * @domain: a domain object
+ *
+ * Get the public name for that domain
+ *
+ * Returns a pointer to the name or NULL, the string need not be deallocated
+ * its lifetime will be the same as the domain object.
+ */
+const char *
+xenGetName(xenDomainPtr domain) {
+    if (domain == NULL)
+        return(NULL);
+    TODO
+    return(NULL);
+}
+
+/**
+ * xenGetMaxMemory:
+ * @domain: a domain object or NULL
+ * 
+ * Retrieve the maximum amount of physical memory allocated to a
+ * domain. If domain is NULL, then this get the amount of memory reserved
+ * to Domain0 i.e. the domain where the application runs.
+ *
+ * Returns the memory size in kilobytes or 0 in case of error.
+ */
+unsigned long
+xenGetMaxMemory(xenDomainPtr domain) {
+    if (domain == NULL)
+        return(0);
+    TODO
+    return(0);
 }
 
 /**

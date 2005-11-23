@@ -1,3 +1,9 @@
+Tue Nov 22 17:09:11 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in: checking xenstore library, error out on missing libs
+	* include/libxen.h src/libxen.c src/libxen_sym.version: adding new
+	  entry points
+
 Thu Nov 10 17:11:03 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* src/makefile.am src/libxen.c src/xensh.c: add a small tool sensh,
