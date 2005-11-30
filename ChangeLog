@@ -1,3 +1,11 @@
+Wed Nov 30 14:18:19 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* src/Makefile.am src/hash.[ch]: added hash module based on libxml2
+	  one.
+	* include/libxen.h src/libxen.c src/libxen_sym.version: extend API
+	  start to access libxenctrl directly (need xen update to get includes)
+	* src/xensh.c: access to both xenstore and hypervisor
+
 Tue Nov 22 17:09:11 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in: checking xenstore library, error out on missing libs

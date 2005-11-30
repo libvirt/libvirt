@@ -13,6 +13,7 @@
 
 int errcode = 0;
 xenConnectPtr conn;
+xenDomainPtr dom0;
 
 int main(int argc, char **argv) {
     int ret;
@@ -23,6 +24,13 @@ int main(int argc, char **argv) {
         errcode = 1;
 	goto done;
     }
+    dom0 = xenDomainByID(conn, 0);
+    if (dom0 == NULL) {
+        fprintf(stderr, "Failed to get domain 0 informations\n");
+	errcode = 2;
+	goto done;
+    }
+    printf("Dom0: name %s, id %d\n", xenGetName(dom0), xenGetID(dom0));
 
 done:
     if (conn != NULL) {
@@ -33,5 +41,5 @@ done:
 		errcode = 1;
 	}
     }
-    exit(errcode);
+    return(errcode);
 }

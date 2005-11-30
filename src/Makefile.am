@@ -10,7 +10,7 @@ lib_LTLIBRARIES = libxen.la
 libxen_la_LIBADD = 
 libxen_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libxen_sym.version \
                     -version-info @LIBXEN_VERSION_INFO@
-libxen_la_SOURCES = libxen.c internal.h
+libxen_la_SOURCES = libxen.c internal.h hash.c hash.h
 
 noinst_PROGRAMS=xensh
 

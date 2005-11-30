@@ -4,11 +4,13 @@
 	xenCloseConnect;
 	xenGetVersion;
 	xenCreateLinuxDomain;
-	xenLookupDomain;
+	xenDomainByName;
+	xenDomainByID;
 	xenDestroyDomain;
 	xenSuspendDomain;
 	xenResumeDomain;
 	xenGetName;
+	xenGetID;
 	xenGetMaxMemory;
 	xenSetMaxMemory;
     local: *;

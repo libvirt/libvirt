@@ -12,7 +12,12 @@
 #include "libxen.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <xenctrl.h>
+#include <xs.h>
 #include "internal.h"
+#include "hash.h"
+
 
 /*
  * TODO:
@@ -23,6 +28,7 @@
  */
 
 #define XEN_CONNECT_MAGIC 0x4F23DEAD
+
 /**
  * _xenConnect:
  *
@@ -31,7 +37,22 @@
 struct _xenConnect {
     unsigned int magic;		/* specific value to check */
     int	         handle;	/* internal handle used for hypercall */
-    int	         xshandle;	/* handle to talk to the xenstore */
+    struct xs_handle *xshandle;	/* handle to talk to the xenstore */
+    xenHashTablePtr   domains;	/* hash table for known domains */
+};
+
+#define XEN_DOMAIN_MAGIC 0xDEAD4321
+
+/**
+ * _xenDomain:
+ *
+ * Internal structure associated to a domain
+ */
+struct _xenDomain {
+    unsigned int magic;		/* specific value to check */
+    xenConnectPtr conn;		/* pointer back to the connection */
+    char        *name;		/* the domain external name */
+    int	         handle;	/* internal handle for the dmonain ID */
 };
 
 /**
@@ -47,13 +68,17 @@ xenConnectPtr
 xenOpenConnect(const char *name) {
     xenConnectPtr ret;
     int handle = -1;
-    int xshandle = -1;
+    struct xs_handle *xshandle = NULL;
+
+    /* we can only talk to the local Xen supervisor ATM */
+    if (name != NULL) 
+        return(NULL);
 
     handle = xc_interface_open();
     if (handle == -1)
         goto failed;
     xshandle = xs_daemon_open();
-    if (xshandle < 0)
+    if (xshandle == NULL)
         goto failed;
 
     ret = (xenConnectPtr) malloc(sizeof(xenConnect));
@@ -62,14 +87,30 @@ xenOpenConnect(const char *name) {
     ret->magic = XEN_CONNECT_MAGIC;
     ret->handle = handle;
     ret->xshandle = xshandle;
+    ret->domains = xenHashCreate(20);
+    if (ret->domains == NULL)
+        goto failed;
 
     return(ret);
 failed:
     if (handle >= 0)
         xc_interface_close(handle);
-    if (xshandle >= 0)
+    if (xshandle != NULL)
         xs_daemon_close(xshandle);
     return(NULL);
+}
+
+/**
+ * xenDestroyDomainName:
+ * @domain: a domain object
+ *
+ * Destroy the domain object, this is just used by the domain hash callback.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+static int
+xenDestroyDomainName(xenDomainPtr domain, const char *name ATTRIBUTE_UNUSED) {
+    return(xenDestroyDomain(domain));
 }
 
 /**
@@ -88,9 +129,10 @@ xenCloseConnect(xenConnectPtr conn) {
     if ((conn == NULL) || (conn->magic != XEN_CONNECT_MAGIC))
         return(-1);
 
+    xenHashFree(conn->domains, (xenHashDeallocator) xenDestroyDomainName);
     conn->magic = -1;
     xs_daemon_close(conn->xshandle);
-    conn->xshandle = -1;
+    conn->xshandle = NULL;
     xc_interface_close(conn->handle);
     conn->handle = -1;
     free(conn);
@@ -128,14 +170,15 @@ xenDomainPtr
 xenCreateLinuxDomain(xenConnectPtr conn, const char *kernel_path,
 		     const char *initrd_path, const char *cmdline,
 		     unsigned long memory, unsigned int flags) {
-    if ((conn == NULL) || (kernel_path == NULL) || (memory < 4096))
+    if ((conn == NULL) || (conn->magic != XEN_CONNECT_MAGIC) ||
+        (kernel_path == NULL) || (memory < 4096))
         return(NULL);
     TODO
     return(NULL);
 }
 
 /**
- * xenLookupDomain:
+ * xenDomainByName:
  * @conn: pointer to the hypervisor connection
  * @name: name for the domain
  *
@@ -144,11 +187,52 @@ xenCreateLinuxDomain(xenConnectPtr conn, const char *kernel_path,
  * Returns a new domain object or NULL in case of failure
  */
 xenDomainPtr
-xenLookupDomain(xenConnectPtr conn, const char *name) {
-    if ((conn == NULL) || (name == NULL))
+xenDomainByName(xenConnectPtr conn, const char *name) {
+    if ((conn == NULL) || (conn->magic != XEN_CONNECT_MAGIC) || (name == NULL))
         return(NULL);
     TODO
     return(NULL);
+}
+
+/**
+ * xenDomainByID:
+ * @conn: pointer to the hypervisor connection
+ * @id: the domain ID number
+ *
+ * Try to find a domain based on the hypervisor ID number
+ *
+ * Returns a new domain object or NULL in case of failure
+ */
+xenDomainPtr
+xenDomainByID(xenConnectPtr conn, int id) {
+    char *path;
+    xenDomainPtr ret;
+    xc_dominfo_t info;
+    int res;
+
+    if ((conn == NULL) || (conn->magic != XEN_CONNECT_MAGIC) || (id < 0))
+        return(NULL);
+
+    res = xc_domain_getinfo(conn->handle, (uint32_t) id, 1, &info);
+    if (res != 1) {
+        return(NULL);
+    }
+    
+    path = xs_get_domain_path(conn->xshandle, (unsigned int) id);
+    if (path == NULL) {
+        return(NULL);
+    }
+    ret = (xenDomainPtr) malloc(sizeof(xenDomain));
+    if (ret == NULL) {
+        free(path);
+	return(NULL);
+    }
+    ret->magic = XEN_DOMAIN_MAGIC;
+    ret->conn = conn;
+    ret->handle = id;
+    ret->name = path;
+
+    return(ret);
 }
 
 /**
@@ -162,7 +246,7 @@ xenLookupDomain(xenConnectPtr conn, const char *name) {
  */
 int
 xenDestroyDomain(xenDomainPtr domain) {
-    if (domain == NULL)
+    if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC))
         return(-1);
     TODO
     return(-1);
@@ -181,7 +265,7 @@ xenDestroyDomain(xenDomainPtr domain) {
  */
 int
 xenSuspendDomain(xenDomainPtr domain) {
-    if (domain == NULL)
+    if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC))
         return(-1);
     TODO
     return(-1);
@@ -198,7 +282,7 @@ xenSuspendDomain(xenDomainPtr domain) {
  */
 int
 xenResumeDomain(xenDomainPtr domain) {
-    if (domain == NULL)
+    if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC))
         return(-1);
     TODO
     return(-1);
@@ -215,10 +299,24 @@ xenResumeDomain(xenDomainPtr domain) {
  */
 const char *
 xenGetName(xenDomainPtr domain) {
-    if (domain == NULL)
+    if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC))
         return(NULL);
-    TODO
-    return(NULL);
+    return(domain->name);
+}
+
+/**
+ * xenGetID:
+ * @domain: a domain object
+ *
+ * Get the hypervisor ID number for the domain
+ *
+ * Returns the domain ID number or (unsigned int) -1 in case of error
+ */
+unsigned int
+xenGetID(xenDomainPtr domain) {
+    if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC))
+        return((unsigned int) -1);
+    return(domain->handle);
 }
 
 /**
@@ -233,7 +331,7 @@ xenGetName(xenDomainPtr domain) {
  */
 unsigned long
 xenGetMaxMemory(xenDomainPtr domain) {
-    if (domain == NULL)
+    if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC))
         return(0);
     TODO
     return(0);
@@ -252,7 +350,8 @@ xenGetMaxMemory(xenDomainPtr domain) {
  */
 int
 xenSetMaxMemory(xenDomainPtr domain, unsigned long memory) {
-    if ((domain == NULL) || (memory < 4096))
+    if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC) ||
+        (memory < 4096))
         return(-1);
     TODO
     return(-1);
