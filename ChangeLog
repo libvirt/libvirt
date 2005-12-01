@@ -1,3 +1,10 @@
+Thu Dec  1 17:34:23 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* include/libxen.h src/libxen.c src/libxen_sym.version: add read-only
+	  connections for normal users (but need /var/run/xenstored/socket_ro
+	  to be chmoded to 666)
+	* src/xensh.c: if not root use the RO access
+
 Thu Dec  1 11:50:16 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* include/libxen.h src/libxen.c src/libxen_sym.version src/xensh.c:

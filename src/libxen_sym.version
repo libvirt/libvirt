@@ -1,6 +1,7 @@
 {
     global:
         xenConnectOpen;
+        xenConnectOpenReadOnly;
 	xenConnectClose;
 	xenConnectGetVersion;
 	xenDomainCreateLinux;

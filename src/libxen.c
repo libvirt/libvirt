@@ -29,6 +29,11 @@
 
 #define XEN_CONNECT_MAGIC 0x4F23DEAD
 
+/*
+ * Flags for Xen connections
+ */
+#define XEN_CONNECT_RO 1
+
 /**
  * _xenConnect:
  *
@@ -39,6 +44,7 @@ struct _xenConnect {
     int	         handle;	/* internal handle used for hypercall */
     struct xs_handle *xshandle;	/* handle to talk to the xenstore */
     xenHashTablePtr   domains;	/* hash table for known domains */
+    int          flags;		/* a set of connection flags */
 };
 
 #define XEN_DOMAIN_MAGIC 0xDEAD4321
@@ -52,6 +58,7 @@ struct _xenDomain {
     unsigned int magic;		/* specific value to check */
     xenConnectPtr conn;		/* pointer back to the connection */
     char        *name;		/* the domain external name */
+    char        *path;		/* the domain internal path */
     int	         handle;	/* internal handle for the dmonain ID */
 };
 
@@ -66,7 +73,7 @@ struct _xenDomain {
  */
 xenConnectPtr
 xenConnectOpen(const char *name) {
-    xenConnectPtr ret;
+    xenConnectPtr ret = NULL;
     int handle = -1;
     struct xs_handle *xshandle = NULL;
 
@@ -88,6 +95,7 @@ xenConnectOpen(const char *name) {
     ret->handle = handle;
     ret->xshandle = xshandle;
     ret->domains = xenHashCreate(20);
+    ret->flags = 0;
     if (ret->domains == NULL)
         goto failed;
 
@@ -97,6 +105,51 @@ failed:
         xc_interface_close(handle);
     if (xshandle != NULL)
         xs_daemon_close(xshandle);
+    if (ret != NULL)
+        free(ret);
+    return(NULL);
+}
+
+/**
+ * xenConnectOpenReadOnly:
+ * @name: optional argument currently unused, pass NULL
+ *
+ * This function should be called first to get a read-only connection to the 
+ * xen store. The set of APIs usable are then restricted.
+ *
+ * Returns a pointer to the hypervisor connection or NULL in case of error
+ */
+xenConnectPtr
+xenConnectOpenReadOnly(const char *name) {
+    xenConnectPtr ret = NULL;
+    int handle = -1;
+    struct xs_handle *xshandle = NULL;
+
+    /* we can only talk to the local Xen supervisor ATM */
+    if (name != NULL) 
+        return(NULL);
+
+    xshandle = xs_daemon_open_readonly();
+    if (xshandle == NULL)
+        goto failed;
+
+    ret = (xenConnectPtr) malloc(sizeof(xenConnect));
+    if (ret == NULL)
+        goto failed;
+    ret->magic = XEN_CONNECT_MAGIC;
+    ret->handle = -1;
+    ret->xshandle = xshandle;
+    ret->domains = xenHashCreate(20);
+    ret->flags = XEN_CONNECT_RO;
+    if (ret->domains == NULL)
+        goto failed;
+
+    return(ret);
+failed:
+    if (xshandle != NULL)
+        xs_daemon_close(xshandle);
+    if (ret != NULL)
+        free(ret);
     return(NULL);
 }
 
@@ -133,7 +186,8 @@ xenConnectClose(xenConnectPtr conn) {
     conn->magic = -1;
     xs_daemon_close(conn->xshandle);
     conn->xshandle = NULL;
-    xc_interface_close(conn->handle);
+    if (conn->handle != -1)
+	xc_interface_close(conn->handle);
     conn->handle = -1;
     free(conn);
     return(0);
@@ -195,6 +249,65 @@ xenDomainLookupByName(xenConnectPtr conn, const char *name) {
 }
 
 /**
+ * xenConnectDoStoreQuery:
+ * @conn: pointer to the hypervisor connection
+ * @path: the absolute path of the data in the store to retrieve
+ *
+ * Internal API querying the Xenstore for a string value.
+ *
+ * Returns a string which must be freed by the caller or NULL in case of error
+ */
+static char *
+xenConnectDoStoreQuery(xenConnectPtr conn, const char *path) {
+    struct xs_transaction_handle* t;
+    char s[256];
+    char *ret = NULL;
+    unsigned int len = 0;
+
+    t = xs_transaction_start(conn->xshandle);
+    if (t == NULL)
+        goto done;
+
+    ret = xs_read(conn->xshandle, t, path, &len);
+
+done:
+    if (t != NULL)
+	xs_transaction_end(conn->xshandle, t, 0);
+    return(ret);
+}
+
+/**
+ * xenDomainDoStoreQuery:
+ * @domain: a domain object
+ * @path: the relative path of the data in the store to retrieve
+ *
+ * Internal API querying the Xenstore for a string value.
+ *
+ * Returns a string which must be freed by the caller or NULL in case of error
+ */
+static char *
+xenDomainDoStoreQuery(xenDomainPtr domain, const char *path) {
+    struct xs_transaction_handle* t;
+    char s[256];
+    char *ret = NULL;
+    unsigned int len = 0;
+
+    snprintf(s, 255, "/local/domain/%d/%s", domain->handle, path);
+    s[255] = 0;
+
+    t = xs_transaction_start(domain->conn->xshandle);
+    if (t == NULL)
+        goto done;
+
+    ret = xs_read(domain->conn->xshandle, t, &s[0], &len);
+
+done:
+    if (t != NULL)
+	xs_transaction_end(domain->conn->xshandle, t, 0);
+    return(ret);
+}
+
+/**
  * xenDomainLookupByID:
  * @conn: pointer to the hypervisor connection
  * @id: the domain ID number
@@ -213,9 +326,11 @@ xenDomainLookupByID(xenConnectPtr conn, int id) {
     if ((conn == NULL) || (conn->magic != XEN_CONNECT_MAGIC) || (id < 0))
         return(NULL);
 
-    res = xc_domain_getinfo(conn->handle, (uint32_t) id, 1, &info);
-    if (res != 1) {
-        return(NULL);
+    if ((conn->flags & XEN_CONNECT_RO) == 0) {
+	res = xc_domain_getinfo(conn->handle, (uint32_t) id, 1, &info);
+	if (res != 1) {
+	    return(NULL);
+	}
     }
     
     path = xs_get_domain_path(conn->xshandle, (unsigned int) id);
@@ -230,7 +345,8 @@ xenDomainLookupByID(xenConnectPtr conn, int id) {
     ret->magic = XEN_DOMAIN_MAGIC;
     ret->conn = conn;
     ret->handle = id;
-    ret->name = path;
+    ret->path = path;
+    ret->name = xenDomainDoStoreQuery(ret, "name");
 
     return(ret);
 }

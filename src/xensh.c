@@ -10,6 +10,8 @@
 
 #include "libxen.h"
 #include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
 
 int errcode = 0;
 xenConnectPtr conn;
@@ -18,7 +20,11 @@ xenDomainPtr dom0;
 int main(int argc, char **argv) {
     int ret;
     
-    conn = xenConnectOpen(NULL);
+    if (getuid() == 0) {
+	conn = xenConnectOpen(NULL);
+    } else {
+	conn = xenConnectOpenReadOnly(NULL);
+    }
     if (conn == NULL) {
         fprintf(stderr, "Failed to connect to the hypervisor\n");
         errcode = 1;

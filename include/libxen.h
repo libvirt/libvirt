@@ -61,6 +61,7 @@ typedef enum {
  * Connection and disconnections to the Hypervisor
  */
 xenConnectPtr		xenConnectOpen		(const char *name);
+xenConnectPtr		xenConnectOpenReadOnly	(const char *name);
 int			xenConnectClose		(xenConnectPtr conn);
 unsigned long		xenConnectGetVersion	(xenConnectPtr conn);
 
