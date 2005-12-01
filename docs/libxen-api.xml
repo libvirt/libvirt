@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<api name='libxen'>
+  <files>
+    <file name='libxen'>
+     <exports symbol='XEN_DOMAIN_NONE' type='enum'/>
+     <exports symbol='xenDomain' type='typedef'/>
+     <exports symbol='xenDomainFlags' type='typedef'/>
+     <exports symbol='xenConnectPtr' type='typedef'/>
+     <exports symbol='xenDomainPtr' type='typedef'/>
+     <exports symbol='xenConnect' type='typedef'/>
+     <exports symbol='xenDomainResume' type='function'/>
+     <exports symbol='xenDomainLookupByID' type='function'/>
+     <exports symbol='xenConnectOpenReadOnly' type='function'/>
+     <exports symbol='xenDomainGetName' type='function'/>
+     <exports symbol='xenDomainGetMaxMemory' type='function'/>
+     <exports symbol='xenDomainGetID' type='function'/>
+     <exports symbol='xenConnectOpen' type='function'/>
+     <exports symbol='xenDomainSetMaxMemory' type='function'/>
+     <exports symbol='xenDomainDestroy' type='function'/>
+     <exports symbol='xenDomainSuspend' type='function'/>
+     <exports symbol='xenConnectClose' type='function'/>
+     <exports symbol='xenDomainCreateLinux' type='function'/>
+     <exports symbol='xenDomainLookupByName' type='function'/>
+     <exports symbol='xenConnectGetVersion' type='function'/>
+    </file>
+    <file name='internal'>
+     <exports symbol='ATTRIBUTE_UNUSED' type='macro'/>
+     <exports symbol='TODO' type='macro'/>
+    </file>
+  </files>
+  <symbols>
+    <macro name='ATTRIBUTE_UNUSED' file='internal'>
+      <info>Macro to flag conciously unused parameters to functions</info>
+    </macro>
+    <macro name='TODO' file='internal'>
+      <info>macro to flag unimplemented blocks</info>
+    </macro>
+    <enum name='XEN_DOMAIN_NONE' file='libxen' value='0' type='xenDomainFlags'/>
+    <struct name='xenConnect' file='libxen' type='struct _xenConnect'/>
+    <typedef name='xenConnectPtr' file='libxen' type='xenConnect *'>
+      <info>a xenConnectPtr is pointer to a xenConnect private structure, this is the type used to reference a connection to the Xen Hypervisor in the API.</info>
+    </typedef>
+    <struct name='xenDomain' file='libxen' type='struct _xenDomain'/>
+    <typedef name='xenDomainFlags' file='libxen' type='enum'/>
+    <typedef name='xenDomainPtr' file='libxen' type='xenDomain *'>
+      <info>a xenDomainPtr is pointer to a xenDomain private structure, this is the type used to reference a Xen domain in the API.</info>
+    </typedef>
+    <function name='xenConnectClose' file='libxen' module='libxen'>
+      <info>This function closes the connection to the Hypervisor. This should not be called if further interaction with the Hypervisor are needed especially if there is running domain which need further monitoring by the application.</info>
+      <return type='int' info='0 in case of success or -1 in case of error.'/>
+      <arg name='conn' type='xenConnectPtr' info='pointer to the hypervisor connection'/>
+    </function>
+    <function name='xenConnectGetVersion' file='libxen' module='libxen'>
+      <info>Get the version level of the Hypervisor running.</info>
+      <return type='unsigned long' info='-1 in case of error or major * 10,000 + minor * 100 + rev otherwise'/>
+      <arg name='conn' type='xenConnectPtr' info='pointer to the hypervisor connection'/>
+    </function>
+    <function name='xenConnectOpen' file='libxen' module='libxen'>
+      <info>This function should be called first to get a connection to the Hypervisor and xen store</info>
+      <return type='xenConnectPtr' info='a pointer to the hypervisor connection or NULL in case of error'/>
+      <arg name='name' type='const char *' info='optional argument currently unused, pass NULL'/>
+    </function>
+    <function name='xenConnectOpenReadOnly' file='libxen' module='libxen'>
+      <info>This function should be called first to get a read-only connection to the xen store. The set of APIs usable are then restricted.</info>
+      <return type='xenConnectPtr' info='a pointer to the hypervisor connection or NULL in case of error'/>
+      <arg name='name' type='const char *' info='optional argument currently unused, pass NULL'/>
+    </function>
+    <function name='xenDomainCreateLinux' file='libxen' module='libxen'>
+      <info>Launch a new Linux guest domain</info>
+      <return type='xenDomainPtr' info='a new domain object or NULL in case of failure'/>
+      <arg name='conn' type='xenConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='kernel_path' type='const char *' info='the file path to the kernel image'/>
+      <arg name='initrd_path' type='const char *' info='an optional file path to an initrd'/>
+      <arg name='cmdline' type='const char *' info='optional command line parameters for the kernel'/>
+      <arg name='memory' type='unsigned long' info='the memory size in kilobytes'/>
+      <arg name='flags' type='unsigned int' info='an optional set of xenDomainFlags'/>
+    </function>
+    <function name='xenDomainDestroy' file='libxen' module='libxen'>
+      <info>Destroy the domain object. The running instance is shutdown if not down already and all resources used by it are given back to the hypervisor.</info>
+      <return type='int' info='0 in case of success and -1 in case of failure.'/>
+      <arg name='domain' type='xenDomainPtr' info='a domain object'/>
+    </function>
+    <function name='xenDomainGetID' file='libxen' module='libxen'>
+      <info>Get the hypervisor ID number for the domain</info>
+      <return type='unsigned int' info='the domain ID number or (unsigned int) -1 in case of error'/>
+      <arg name='domain' type='xenDomainPtr' info='a domain object'/>
+    </function>
+    <function name='xenDomainGetMaxMemory' file='libxen' module='libxen'>
+      <info>Retrieve the maximum amount of physical memory allocated to a domain. If domain is NULL, then this get the amount of memory reserved to Domain0 i.e. the domain where the application runs.</info>
+      <return type='unsigned long' info='the memory size in kilobytes or 0 in case of error.'/>
+      <arg name='domain' type='xenDomainPtr' info='a domain object or NULL'/>
+    </function>
+    <function name='xenDomainGetName' file='libxen' module='libxen'>
+      <info>Get the public name for that domain</info>
+      <return type='const char *' info='a pointer to the name or NULL, the string need not be deallocated its lifetime will be the same as the domain object.'/>
+      <arg name='domain' type='xenDomainPtr' info='a domain object'/>
+    </function>
+    <function name='xenDomainLookupByID' file='libxen' module='libxen'>
+      <info>Try to find a domain based on the hypervisor ID number</info>
+      <return type='xenDomainPtr' info='a new domain object or NULL in case of failure'/>
+      <arg name='conn' type='xenConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='id' type='int' info='the domain ID number'/>
+    </function>
+    <function name='xenDomainLookupByName' file='libxen' module='libxen'>
+      <info>Try to lookup a domain on the given hypervisor</info>
+      <return type='xenDomainPtr' info='a new domain object or NULL in case of failure'/>
+      <arg name='conn' type='xenConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='name' type='const char *' info='name for the domain'/>
+    </function>
+    <function name='xenDomainResume' file='libxen' module='libxen'>
+      <info>Resume an suspended domain, the process is restarted from the state where it was frozen by calling xenSuspendDomain().</info>
+      <return type='int' info='0 in case of success and -1 in case of failure.'/>
+      <arg name='domain' type='xenDomainPtr' info='a domain object'/>
+    </function>
+    <function name='xenDomainSetMaxMemory' file='libxen' module='libxen'>
+      <info>Dynamically change the maximum amount of physical memory allocated to a domain. If domain is NULL, then this change the amount of memory reserved to Domain0 i.e. the domain where the application runs.</info>
+      <return type='int' info='0 in case of success and -1 in case of failure.'/>
+      <arg name='domain' type='xenDomainPtr' info='a domain object or NULL'/>
+      <arg name='memory' type='unsigned long' info='the memory size in kilobytes'/>
+    </function>
+    <function name='xenDomainSuspend' file='libxen' module='libxen'>
+      <info>Suspends an active domain, the process is frozen without further access to CPU resources and I/O but the memory used by the domain at the hypervisor level will stay allocated. Use xenDomainResume() to reactivate the domain.</info>
+      <return type='int' info='0 in case of success and -1 in case of failure.'/>
+      <arg name='domain' type='xenDomainPtr' info='a domain object'/>
+    </function>
+  </symbols>
+</api>

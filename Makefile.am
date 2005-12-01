@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = src include #docs
+SUBDIRS = src include docs
 EXTRA_DIST = libxen.spec.in libxen.spec COPYING.LIB \
              libxen.pc.in libxen.pc TODO AUTHORS ChangeLog \
 	     NEWS README 

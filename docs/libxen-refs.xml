@@ -1,0 +1,741 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<apirefs name='libxen'>
+  <references>
+    <reference name='ATTRIBUTE_UNUSED' href='html/libxen-internal.html#ATTRIBUTE_UNUSED'/>
+    <reference name='TODO' href='html/libxen-internal.html#TODO'/>
+    <reference name='XEN_DOMAIN_NONE' href='html/libxen-libxen.html#XEN_DOMAIN_NONE'/>
+    <reference name='xenConnect' href='html/libxen-libxen.html#xenConnect'/>
+    <reference name='xenConnectClose' href='html/libxen-libxen.html#xenConnectClose'/>
+    <reference name='xenConnectGetVersion' href='html/libxen-libxen.html#xenConnectGetVersion'/>
+    <reference name='xenConnectOpen' href='html/libxen-libxen.html#xenConnectOpen'/>
+    <reference name='xenConnectOpenReadOnly' href='html/libxen-libxen.html#xenConnectOpenReadOnly'/>
+    <reference name='xenConnectPtr' href='html/libxen-libxen.html#xenConnectPtr'/>
+    <reference name='xenDomain' href='html/libxen-libxen.html#xenDomain'/>
+    <reference name='xenDomainCreateLinux' href='html/libxen-libxen.html#xenDomainCreateLinux'/>
+    <reference name='xenDomainDestroy' href='html/libxen-libxen.html#xenDomainDestroy'/>
+    <reference name='xenDomainFlags' href='html/libxen-libxen.html#xenDomainFlags'/>
+    <reference name='xenDomainGetID' href='html/libxen-libxen.html#xenDomainGetID'/>
+    <reference name='xenDomainGetMaxMemory' href='html/libxen-libxen.html#xenDomainGetMaxMemory'/>
+    <reference name='xenDomainGetName' href='html/libxen-libxen.html#xenDomainGetName'/>
+    <reference name='xenDomainLookupByID' href='html/libxen-libxen.html#xenDomainLookupByID'/>
+    <reference name='xenDomainLookupByName' href='html/libxen-libxen.html#xenDomainLookupByName'/>
+    <reference name='xenDomainPtr' href='html/libxen-libxen.html#xenDomainPtr'/>
+    <reference name='xenDomainResume' href='html/libxen-libxen.html#xenDomainResume'/>
+    <reference name='xenDomainSetMaxMemory' href='html/libxen-libxen.html#xenDomainSetMaxMemory'/>
+    <reference name='xenDomainSuspend' href='html/libxen-libxen.html#xenDomainSuspend'/>
+  </references>
+  <alpha>
+    <letter name='A'>
+      <ref name='ATTRIBUTE_UNUSED'/>
+    </letter>
+    <letter name='T'>
+      <ref name='TODO'/>
+    </letter>
+    <letter name='X'>
+      <ref name='XEN_DOMAIN_NONE'/>
+    </letter>
+    <letter name='x'>
+      <ref name='xenConnect'/>
+      <ref name='xenConnectClose'/>
+      <ref name='xenConnectGetVersion'/>
+      <ref name='xenConnectOpen'/>
+      <ref name='xenConnectOpenReadOnly'/>
+      <ref name='xenConnectPtr'/>
+      <ref name='xenDomain'/>
+      <ref name='xenDomainCreateLinux'/>
+      <ref name='xenDomainDestroy'/>
+      <ref name='xenDomainFlags'/>
+      <ref name='xenDomainGetID'/>
+      <ref name='xenDomainGetMaxMemory'/>
+      <ref name='xenDomainGetName'/>
+      <ref name='xenDomainLookupByID'/>
+      <ref name='xenDomainLookupByName'/>
+      <ref name='xenDomainPtr'/>
+      <ref name='xenDomainResume'/>
+      <ref name='xenDomainSetMaxMemory'/>
+      <ref name='xenDomainSuspend'/>
+    </letter>
+  </alpha>
+  <constructors>
+    <type name='unsigned int'>
+      <ref name='xenDomainGetID'/>
+    </type>
+    <type name='unsigned long'>
+      <ref name='xenConnectGetVersion'/>
+      <ref name='xenDomainGetMaxMemory'/>
+    </type>
+    <type name='xenConnectPtr'>
+      <ref name='xenConnectOpen'/>
+      <ref name='xenConnectOpenReadOnly'/>
+    </type>
+    <type name='xenDomainPtr'>
+      <ref name='xenDomainCreateLinux'/>
+      <ref name='xenDomainLookupByID'/>
+      <ref name='xenDomainLookupByName'/>
+    </type>
+  </constructors>
+  <functions>
+    <type name='unsigned int'>
+      <ref name='xenDomainCreateLinux'/>
+    </type>
+    <type name='unsigned long'>
+      <ref name='xenDomainCreateLinux'/>
+      <ref name='xenDomainSetMaxMemory'/>
+    </type>
+    <type name='xenConnectPtr'>
+      <ref name='xenConnectClose'/>
+      <ref name='xenConnectGetVersion'/>
+      <ref name='xenDomainCreateLinux'/>
+      <ref name='xenDomainLookupByID'/>
+      <ref name='xenDomainLookupByName'/>
+    </type>
+    <type name='xenDomainPtr'>
+      <ref name='xenDomainDestroy'/>
+      <ref name='xenDomainGetID'/>
+      <ref name='xenDomainGetMaxMemory'/>
+      <ref name='xenDomainGetName'/>
+      <ref name='xenDomainResume'/>
+      <ref name='xenDomainSetMaxMemory'/>
+      <ref name='xenDomainSuspend'/>
+    </type>
+  </functions>
+  <files>
+    <file name='libxen'>
+      <ref name='XEN_DOMAIN_NONE'/>
+      <ref name='xenConnect'/>
+      <ref name='xenConnectClose'/>
+      <ref name='xenConnectGetVersion'/>
+      <ref name='xenConnectOpen'/>
+      <ref name='xenConnectOpenReadOnly'/>
+      <ref name='xenConnectPtr'/>
+      <ref name='xenDomain'/>
+      <ref name='xenDomainCreateLinux'/>
+      <ref name='xenDomainDestroy'/>
+      <ref name='xenDomainFlags'/>
+      <ref name='xenDomainGetID'/>
+      <ref name='xenDomainGetMaxMemory'/>
+      <ref name='xenDomainGetName'/>
+      <ref name='xenDomainLookupByID'/>
+      <ref name='xenDomainLookupByName'/>
+      <ref name='xenDomainPtr'/>
+      <ref name='xenDomainResume'/>
+      <ref name='xenDomainSetMaxMemory'/>
+      <ref name='xenDomainSuspend'/>
+    </file>
+    <file name='internal'>
+      <ref name='ATTRIBUTE_UNUSED'/>
+      <ref name='TODO'/>
+    </file>
+  </files>
+  <index>
+    <chunk name='chunk0'>
+      <letter name='A'>
+        <word name='APIs'>
+          <ref name='xenConnectOpenReadOnly'/>
+        </word>
+      </letter>
+      <letter name='C'>
+        <word name='CPU'>
+          <ref name='xenDomainSuspend'/>
+        </word>
+      </letter>
+      <letter name='D'>
+        <word name='Destroy'>
+          <ref name='xenDomainDestroy'/>
+        </word>
+        <word name='Domain0'>
+          <ref name='xenDomainGetMaxMemory'/>
+          <ref name='xenDomainSetMaxMemory'/>
+        </word>
+        <word name='Dynamically'>
+          <ref name='xenDomainSetMaxMemory'/>
+        </word>
+      </letter>
+      <letter name='G'>
+        <word name='Get'>
+          <ref name='xenConnectGetVersion'/>
+          <ref name='xenDomainGetID'/>
+          <ref name='xenDomainGetName'/>
+        </word>
+      </letter>
+      <letter name='H'>
+        <word name='Hypervisor'>
+          <ref name='xenConnectClose'/>
+          <ref name='xenConnectGetVersion'/>
+          <ref name='xenConnectOpen'/>
+        </word>
+      </letter>
+      <letter name='L'>
+        <word name='Launch'>
+          <ref name='xenDomainCreateLinux'/>
+        </word>
+        <word name='Linux'>
+          <ref name='xenDomainCreateLinux'/>
+        </word>
+      </letter>
+      <letter name='M'>
+        <word name='Macro'>
+          <ref name='ATTRIBUTE_UNUSED'/>
+        </word>
+      </letter>
+      <letter name='N'>
+        <word name='NULL'>
+          <ref name='xenConnectOpen'/>
+          <ref name='xenConnectOpenReadOnly'/>
+          <ref name='xenDomainCreateLinux'/>
+          <ref name='xenDomainGetMaxMemory'/>
+          <ref name='xenDomainGetName'/>
+          <ref name='xenDomainLookupByID'/>
+          <ref name='xenDomainLookupByName'/>
+          <ref name='xenDomainSetMaxMemory'/>
+        </word>
+      </letter>
+      <letter name='R'>
+        <word name='Resume'>
+          <ref name='xenDomainResume'/>
+        </word>
+        <word name='Retrieve'>
+          <ref name='xenDomainGetMaxMemory'/>
+        </word>
+      </letter>
+      <letter name='S'>
+        <word name='Suspends'>
+          <ref name='xenDomainSuspend'/>
+        </word>
+      </letter>
+      <letter name='T'>
+        <word name='This'>
+          <ref name='xenConnectClose'/>
+          <ref name='xenConnectOpen'/>
+          <ref name='xenConnectOpenReadOnly'/>
+        </word>
+        <word name='Try'>
+          <ref name='xenDomainLookupByID'/>
+          <ref name='xenDomainLookupByName'/>
+        </word>
+      </letter>
+      <letter name='U'>
+        <word name='Use'>
+          <ref name='xenDomainSuspend'/>
+        </word>
+      </letter>
+      <letter name='a'>
+        <word name='access'>
+          <ref name='xenDomainSuspend'/>
+        </word>
+        <word name='active'>
+          <ref name='xenDomainSuspend'/>
+        </word>
+        <word name='all'>
+          <ref name='xenDomainDestroy'/>
+        </word>
+        <word name='allocated'>
+          <ref name='xenDomainGetMaxMemory'/>
+          <ref name='xenDomainSetMaxMemory'/>
+          <ref name='xenDomainSuspend'/>
+        </word>
+        <word name='already'>
+          <ref name='xenDomainDestroy'/>
+        </word>
+        <word name='amount'>
+          <ref name='xenDomainGetMaxMemory'/>
+          <ref name='xenDomainSetMaxMemory'/>
+        </word>
+        <word name='application'>
+          <ref name='xenConnectClose'/>
+          <ref name='xenDomainGetMaxMemory'/>
+          <ref name='xenDomainSetMaxMemory'/>
+        </word>
+        <word name='are'>
+          <ref name='xenConnectClose'/>
+          <ref name='xenConnectOpenReadOnly'/>
+          <ref name='xenDomainDestroy'/>
+        </word>
+        <word name='argument'>
+          <ref name='xenConnectOpen'/>
+          <ref name='xenConnectOpenReadOnly'/>
+        </word>
+      </letter>
+      <letter name='b'>
+        <word name='back'>
+          <ref name='xenDomainDestroy'/>
+        </word>
+        <word name='based'>
+          <ref name='xenDomainLookupByID'/>
+        </word>
+        <word name='blocks'>
+          <ref name='TODO'/>
+        </word>
+        <word name='but'>
+          <ref name='xenDomainSuspend'/>
+        </word>
+      </letter>
+      <letter name='c'>
+        <word name='called'>
+          <ref name='xenConnectClose'/>
+          <ref name='xenConnectOpen'/>
+          <ref name='xenConnectOpenReadOnly'/>
+        </word>
+        <word name='calling'>
+          <ref name='xenDomainResume'/>
+        </word>
+        <word name='case'>
+          <ref name='xenConnectClose'/>
+          <ref name='xenConnectGetVersion'/>
+          <ref name='xenConnectOpen'/>
+          <ref name='xenConnectOpenReadOnly'/>
+          <ref name='xenDomainCreateLinux'/>
+          <ref name='xenDomainDestroy'/>
+          <ref name='xenDomainGetID'/>
+          <ref name='xenDomainGetMaxMemory'/>
+          <ref name='xenDomainLookupByID'/>
+          <ref name='xenDomainLookupByName'/>
+          <ref name='xenDomainResume'/>
+          <ref name='xenDomainSetMaxMemory'/>
+          <ref name='xenDomainSuspend'/>
+        </word>
+        <word name='change'>
+          <ref name='xenDomainSetMaxMemory'/>
+        </word>
+        <word name='closes'>
+          <ref name='xenConnectClose'/>
+        </word>
+        <word name='command'>
+          <ref name='xenDomainCreateLinux'/>
+        </word>
+        <word name='conciously'>
+          <ref name='ATTRIBUTE_UNUSED'/>
+        </word>
+        <word name='connection'>
+          <ref name='xenConnectClose'/>
+          <ref name='xenConnectGetVersion'/>
+          <ref name='xenConnectOpen'/>
+          <ref name='xenConnectOpenReadOnly'/>
+          <ref name='xenDomainCreateLinux'/>
+          <ref name='xenDomainLookupByID'/>
+          <ref name='xenDomainLookupByName'/>
+        </word>
+        <word name='currently'>
+          <ref name='xenConnectOpen'/>
+          <ref name='xenConnectOpenReadOnly'/>
+        </word>
+      </letter>
+      <letter name='d'>
+        <word name='deallocated'>
+          <ref name='xenDomainGetName'/>
+        </word>
+        <word name='down'>
+          <ref name='xenDomainDestroy'/>
+        </word>
+      </letter>
+      <letter name='e'>
+        <word name='error'>
+          <ref name='xenConnectClose'/>
+          <ref name='xenConnectGetVersion'/>
+          <ref name='xenConnectOpen'/>
+          <ref name='xenConnectOpenReadOnly'/>
+          <ref name='xenDomainGetID'/>
+          <ref name='xenDomainGetMaxMemory'/>
+        </word>
+        <word name='especially'>
+          <ref name='xenConnectClose'/>
+        </word>
+      </letter>
+      <letter name='f'>
+        <word name='failure'>
+          <ref name='xenDomainCreateLinux'/>
+          <ref name='xenDomainDestroy'/>
+          <ref name='xenDomainLookupByID'/>
+          <ref name='xenDomainLookupByName'/>
+          <ref name='xenDomainResume'/>
+          <ref name='xenDomainSetMaxMemory'/>
+          <ref name='xenDomainSuspend'/>
+        </word>
+        <word name='file'>
+          <ref name='xenDomainCreateLinux'/>
+        </word>
+        <word name='find'>
+          <ref name='xenDomainLookupByID'/>
+        </word>
+        <word name='first'>
+          <ref name='xenConnectOpen'/>
+          <ref name='xenConnectOpenReadOnly'/>
+        </word>
+        <word name='flag'>
+          <ref name='ATTRIBUTE_UNUSED'/>
+          <ref name='TODO'/>
+        </word>
+        <word name='for'>
+          <ref name='xenDomainCreateLinux'/>
+          <ref name='xenDomainGetID'/>
+          <ref name='xenDomainGetName'/>
+          <ref name='xenDomainLookupByName'/>
+        </word>
+        <word name='from'>
+          <ref name='xenDomainResume'/>
+        </word>
+        <word name='frozen'>
+          <ref name='xenDomainResume'/>
+          <ref name='xenDomainSuspend'/>
+        </word>
+        <word name='function'>
+          <ref name='xenConnectClose'/>
+          <ref name='xenConnectOpen'/>
+          <ref name='xenConnectOpenReadOnly'/>
+        </word>
+        <word name='functions'>
+          <ref name='ATTRIBUTE_UNUSED'/>
+        </word>
+        <word name='further'>
+          <ref name='xenConnectClose'/>
+          <ref name='xenDomainSuspend'/>
+        </word>
+      </letter>
+      <letter name='g'>
+        <word name='get'>
+          <ref name='xenConnectOpen'/>
+          <ref name='xenConnectOpenReadOnly'/>
+          <ref name='xenDomainGetMaxMemory'/>
+        </word>
+        <word name='given'>
+          <ref name='xenDomainDestroy'/>
+          <ref name='xenDomainLookupByName'/>
+        </word>
+        <word name='guest'>
+          <ref name='xenDomainCreateLinux'/>
+        </word>
+      </letter>
+      <letter name='h'>
+        <word name='hypervisor'>
+          <ref name='xenConnectClose'/>
+          <ref name='xenConnectGetVersion'/>
+          <ref name='xenConnectOpen'/>
+          <ref name='xenConnectOpenReadOnly'/>
+          <ref name='xenDomainCreateLinux'/>
+          <ref name='xenDomainDestroy'/>
+          <ref name='xenDomainGetID'/>
+          <ref name='xenDomainLookupByID'/>
+          <ref name='xenDomainLookupByName'/>
+          <ref name='xenDomainSuspend'/>
+        </word>
+      </letter>
+      <letter name='i'>
+        <word name='image'>
+          <ref name='xenDomainCreateLinux'/>
+        </word>
+        <word name='initrd'>
+          <ref name='xenDomainCreateLinux'/>
+        </word>
+        <word name='instance'>
+          <ref name='xenDomainDestroy'/>
+        </word>
+        <word name='int'>
+          <ref name='xenDomainGetID'/>
+        </word>
+        <word name='interaction'>
+          <ref name='xenConnectClose'/>
+        </word>
+        <word name='its'>
+          <ref name='xenDomainGetName'/>
+        </word>
+      </letter>
+      <letter name='k'>
+        <word name='kernel'>
+          <ref name='xenDomainCreateLinux'/>
+        </word>
+        <word name='kilobytes'>
+          <ref name='xenDomainCreateLinux'/>
+          <ref name='xenDomainGetMaxMemory'/>
+          <ref name='xenDomainSetMaxMemory'/>
+        </word>
+      </letter>
+      <letter name='l'>
+        <word name='level'>
+          <ref name='xenConnectGetVersion'/>
+          <ref name='xenDomainSuspend'/>
+        </word>
+        <word name='lifetime'>
+          <ref name='xenDomainGetName'/>
+        </word>
+        <word name='line'>
+          <ref name='xenDomainCreateLinux'/>
+        </word>
+        <word name='lookup'>
+          <ref name='xenDomainLookupByName'/>
+        </word>
+      </letter>
+      <letter name='m'>
+        <word name='macro'>
+          <ref name='TODO'/>
+        </word>
+        <word name='major'>
+          <ref name='xenConnectGetVersion'/>
+        </word>
+        <word name='maximum'>
+          <ref name='xenDomainGetMaxMemory'/>
+          <ref name='xenDomainSetMaxMemory'/>
+        </word>
+        <word name='memory'>
+          <ref name='xenDomainCreateLinux'/>
+          <ref name='xenDomainGetMaxMemory'/>
+          <ref name='xenDomainSetMaxMemory'/>
+          <ref name='xenDomainSuspend'/>
+        </word>
+        <word name='minor'>
+          <ref name='xenConnectGetVersion'/>
+        </word>
+        <word name='monitoring'>
+          <ref name='xenConnectClose'/>
+        </word>
+      </letter>
+      <letter name='n'>
+        <word name='name'>
+          <ref name='xenDomainGetName'/>
+          <ref name='xenDomainLookupByName'/>
+        </word>
+        <word name='need'>
+          <ref name='xenConnectClose'/>
+          <ref name='xenDomainGetName'/>
+        </word>
+        <word name='needed'>
+          <ref name='xenConnectClose'/>
+        </word>
+        <word name='new'>
+          <ref name='xenDomainCreateLinux'/>
+          <ref name='xenDomainLookupByID'/>
+          <ref name='xenDomainLookupByName'/>
+        </word>
+        <word name='not'>
+          <ref name='xenConnectClose'/>
+          <ref name='xenDomainDestroy'/>
+          <ref name='xenDomainGetName'/>
+        </word>
+        <word name='number'>
+          <ref name='xenDomainGetID'/>
+          <ref name='xenDomainLookupByID'/>
+        </word>
+      </letter>
+      <letter name='o'>
+        <word name='object'>
+          <ref name='xenDomainCreateLinux'/>
+          <ref name='xenDomainDestroy'/>
+          <ref name='xenDomainGetID'/>
+          <ref name='xenDomainGetMaxMemory'/>
+          <ref name='xenDomainGetName'/>
+          <ref name='xenDomainLookupByID'/>
+          <ref name='xenDomainLookupByName'/>
+          <ref name='xenDomainResume'/>
+          <ref name='xenDomainSetMaxMemory'/>
+          <ref name='xenDomainSuspend'/>
+        </word>
+        <word name='optional'>
+          <ref name='xenConnectOpen'/>
+          <ref name='xenConnectOpenReadOnly'/>
+          <ref name='xenDomainCreateLinux'/>
+        </word>
+        <word name='otherwise'>
+          <ref name='xenConnectGetVersion'/>
+        </word>
+      </letter>
+      <letter name='p'>
+        <word name='parameters'>
+          <ref name='ATTRIBUTE_UNUSED'/>
+          <ref name='xenDomainCreateLinux'/>
+        </word>
+        <word name='pass'>
+          <ref name='xenConnectOpen'/>
+          <ref name='xenConnectOpenReadOnly'/>
+        </word>
+        <word name='path'>
+          <ref name='xenDomainCreateLinux'/>
+        </word>
+        <word name='physical'>
+          <ref name='xenDomainGetMaxMemory'/>
+          <ref name='xenDomainSetMaxMemory'/>
+        </word>
+        <word name='pointer'>
+          <ref name='xenConnectClose'/>
+          <ref name='xenConnectGetVersion'/>
+          <ref name='xenConnectOpen'/>
+          <ref name='xenConnectOpenReadOnly'/>
+          <ref name='xenDomainCreateLinux'/>
+          <ref name='xenDomainGetName'/>
+          <ref name='xenDomainLookupByID'/>
+          <ref name='xenDomainLookupByName'/>
+        </word>
+        <word name='process'>
+          <ref name='xenDomainResume'/>
+          <ref name='xenDomainSuspend'/>
+        </word>
+        <word name='public'>
+          <ref name='xenDomainGetName'/>
+        </word>
+      </letter>
+    </chunk>
+    <chunk name='chunk1'>
+      <letter name='r'>
+        <word name='reactivate'>
+          <ref name='xenDomainSuspend'/>
+        </word>
+        <word name='read-only'>
+          <ref name='xenConnectOpenReadOnly'/>
+        </word>
+        <word name='reserved'>
+          <ref name='xenDomainGetMaxMemory'/>
+          <ref name='xenDomainSetMaxMemory'/>
+        </word>
+        <word name='resources'>
+          <ref name='xenDomainDestroy'/>
+          <ref name='xenDomainSuspend'/>
+        </word>
+        <word name='restarted'>
+          <ref name='xenDomainResume'/>
+        </word>
+        <word name='restricted'>
+          <ref name='xenConnectOpenReadOnly'/>
+        </word>
+        <word name='rev'>
+          <ref name='xenConnectGetVersion'/>
+        </word>
+        <word name='running'>
+          <ref name='xenConnectClose'/>
+          <ref name='xenConnectGetVersion'/>
+          <ref name='xenDomainDestroy'/>
+        </word>
+        <word name='runs'>
+          <ref name='xenDomainGetMaxMemory'/>
+          <ref name='xenDomainSetMaxMemory'/>
+        </word>
+      </letter>
+      <letter name='s'>
+        <word name='same'>
+          <ref name='xenDomainGetName'/>
+        </word>
+        <word name='set'>
+          <ref name='xenConnectOpenReadOnly'/>
+          <ref name='xenDomainCreateLinux'/>
+        </word>
+        <word name='should'>
+          <ref name='xenConnectClose'/>
+          <ref name='xenConnectOpen'/>
+          <ref name='xenConnectOpenReadOnly'/>
+        </word>
+        <word name='shutdown'>
+          <ref name='xenDomainDestroy'/>
+        </word>
+        <word name='size'>
+          <ref name='xenDomainCreateLinux'/>
+          <ref name='xenDomainGetMaxMemory'/>
+          <ref name='xenDomainSetMaxMemory'/>
+        </word>
+        <word name='state'>
+          <ref name='xenDomainResume'/>
+        </word>
+        <word name='stay'>
+          <ref name='xenDomainSuspend'/>
+        </word>
+        <word name='store'>
+          <ref name='xenConnectOpen'/>
+          <ref name='xenConnectOpenReadOnly'/>
+        </word>
+        <word name='string'>
+          <ref name='xenDomainGetName'/>
+        </word>
+        <word name='success'>
+          <ref name='xenConnectClose'/>
+          <ref name='xenDomainDestroy'/>
+          <ref name='xenDomainResume'/>
+          <ref name='xenDomainSetMaxMemory'/>
+          <ref name='xenDomainSuspend'/>
+        </word>
+        <word name='suspended'>
+          <ref name='xenDomainResume'/>
+        </word>
+      </letter>
+      <letter name='t'>
+        <word name='that'>
+          <ref name='xenDomainGetName'/>
+        </word>
+        <word name='then'>
+          <ref name='xenConnectOpenReadOnly'/>
+          <ref name='xenDomainGetMaxMemory'/>
+          <ref name='xenDomainSetMaxMemory'/>
+        </word>
+        <word name='there'>
+          <ref name='xenConnectClose'/>
+        </word>
+        <word name='this'>
+          <ref name='xenDomainGetMaxMemory'/>
+          <ref name='xenDomainSetMaxMemory'/>
+        </word>
+      </letter>
+      <letter name='u'>
+        <word name='unimplemented'>
+          <ref name='TODO'/>
+        </word>
+        <word name='unsigned'>
+          <ref name='xenDomainGetID'/>
+        </word>
+        <word name='unused'>
+          <ref name='ATTRIBUTE_UNUSED'/>
+          <ref name='xenConnectOpen'/>
+          <ref name='xenConnectOpenReadOnly'/>
+        </word>
+        <word name='usable'>
+          <ref name='xenConnectOpenReadOnly'/>
+        </word>
+        <word name='used'>
+          <ref name='xenDomainDestroy'/>
+          <ref name='xenDomainSuspend'/>
+        </word>
+      </letter>
+      <letter name='v'>
+        <word name='version'>
+          <ref name='xenConnectGetVersion'/>
+        </word>
+      </letter>
+      <letter name='w'>
+        <word name='was'>
+          <ref name='xenDomainResume'/>
+        </word>
+        <word name='where'>
+          <ref name='xenDomainGetMaxMemory'/>
+          <ref name='xenDomainResume'/>
+          <ref name='xenDomainSetMaxMemory'/>
+        </word>
+        <word name='which'>
+          <ref name='xenConnectClose'/>
+        </word>
+        <word name='will'>
+          <ref name='xenDomainGetName'/>
+          <ref name='xenDomainSuspend'/>
+        </word>
+        <word name='with'>
+          <ref name='xenConnectClose'/>
+        </word>
+        <word name='without'>
+          <ref name='xenDomainSuspend'/>
+        </word>
+      </letter>
+      <letter name='x'>
+        <word name='xen'>
+          <ref name='xenConnectOpen'/>
+          <ref name='xenConnectOpenReadOnly'/>
+        </word>
+        <word name='xenDomainFlags'>
+          <ref name='xenDomainCreateLinux'/>
+        </word>
+        <word name='xenDomainResume'>
+          <ref name='xenDomainSuspend'/>
+        </word>
+        <word name='xenSuspendDomain'>
+          <ref name='xenDomainResume'/>
+        </word>
+      </letter>
+    </chunk>
+    <chunks>
+      <chunk name='chunk0' start='A' end='p'/>
+      <chunk name='chunk1' start='r' end='x'/>
+    </chunks>
+  </index>
+</apirefs>

@@ -374,7 +374,7 @@ xenDomainDestroy(xenDomainPtr domain) {
  *
  * Suspends an active domain, the process is frozen without further access
  * to CPU resources and I/O but the memory used by the domain at the 
- * hypervisor level will stay allocated. Use xenResumeDomain() to reactivate
+ * hypervisor level will stay allocated. Use xenDomainResume() to reactivate
  * the domain.
  *
  * Returns 0 in case of success and -1 in case of failure.
@@ -388,7 +388,7 @@ xenDomainSuspend(xenDomainPtr domain) {
 }
 
 /**
- * xenResumeDomain:
+ * xenDomainResume:
  * @domain: a domain object
  *
  * Resume an suspended domain, the process is restarted from the state where

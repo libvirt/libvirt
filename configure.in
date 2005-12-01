@@ -51,4 +51,4 @@ dnl search for the low level Xen library
 AC_SEARCH_LIBS(xc_domain_create, [xenctrl], [], [AC_MSG_ERROR([Xen control library not found])])
 AC_SEARCH_LIBS(xs_read, [xenstore], [], [AC_MSG_ERROR([Xen store library not found])])
 
-AC_OUTPUT(Makefile src/Makefile include/Makefile libxen.pc libxen.spec)
+AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile libxen.pc libxen.spec)

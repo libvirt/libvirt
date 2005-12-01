@@ -1,3 +1,10 @@
+Thu Dec  1 18:32:43 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* Makefile.am configure.in docs/apibuild.py docs/libxen-api.xml
+	  docs/libxen-refs.xml docs/structures.fig: starting to add docs
+	  and the extraction tool
+	* src/libxen.c: fixed comments error raised by apibuild
+
 Thu Dec  1 17:34:23 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* include/libxen.h src/libxen.c src/libxen_sym.version: add read-only
