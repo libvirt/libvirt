@@ -18,23 +18,24 @@ xenDomainPtr dom0;
 int main(int argc, char **argv) {
     int ret;
     
-    conn = xenOpenConnect(NULL);
+    conn = xenConnectOpen(NULL);
     if (conn == NULL) {
         fprintf(stderr, "Failed to connect to the hypervisor\n");
         errcode = 1;
 	goto done;
     }
-    dom0 = xenDomainByID(conn, 0);
+    dom0 = xenDomainLookupByID(conn, 0);
     if (dom0 == NULL) {
         fprintf(stderr, "Failed to get domain 0 informations\n");
 	errcode = 2;
 	goto done;
     }
-    printf("Dom0: name %s, id %d\n", xenGetName(dom0), xenGetID(dom0));
+    printf("Dom0: name %s, id %d\n", xenDomainGetName(dom0),
+           xenDomainGetID(dom0));
 
 done:
     if (conn != NULL) {
-        ret = xenCloseConnect(conn);
+        ret = xenConnectClose(conn);
 	if (ret != 0) {
 	    fprintf(stderr, "Failed to connect to the hypervisor\n");
 	    if (errcode == 0)

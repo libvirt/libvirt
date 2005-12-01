@@ -56,7 +56,7 @@ struct _xenDomain {
 };
 
 /**
- * xenGetConnect:
+ * xenConnectOpen:
  * @name: optional argument currently unused, pass NULL
  *
  * This function should be called first to get a connection to the 
@@ -65,7 +65,7 @@ struct _xenDomain {
  * Returns a pointer to the hypervisor connection or NULL in case of error
  */
 xenConnectPtr
-xenOpenConnect(const char *name) {
+xenConnectOpen(const char *name) {
     xenConnectPtr ret;
     int handle = -1;
     struct xs_handle *xshandle = NULL;
@@ -101,7 +101,7 @@ failed:
 }
 
 /**
- * xenDestroyDomainName:
+ * xenDomainDestroyName:
  * @domain: a domain object
  *
  * Destroy the domain object, this is just used by the domain hash callback.
@@ -109,12 +109,12 @@ failed:
  * Returns 0 in case of success and -1 in case of failure.
  */
 static int
-xenDestroyDomainName(xenDomainPtr domain, const char *name ATTRIBUTE_UNUSED) {
-    return(xenDestroyDomain(domain));
+xenDomainDestroyName(xenDomainPtr domain, const char *name ATTRIBUTE_UNUSED) {
+    return(xenDomainDestroy(domain));
 }
 
 /**
- * xenCloseConnect:
+ * xenConnectClose:
  * @conn: pointer to the hypervisor connection
  *
  * This function closes the connection to the Hypervisor. This should
@@ -125,11 +125,11 @@ xenDestroyDomainName(xenDomainPtr domain, const char *name ATTRIBUTE_UNUSED) {
  * Returns 0 in case of success or -1 in case of error.
  */
 int
-xenCloseConnect(xenConnectPtr conn) {
+xenConnectClose(xenConnectPtr conn) {
     if ((conn == NULL) || (conn->magic != XEN_CONNECT_MAGIC))
         return(-1);
 
-    xenHashFree(conn->domains, (xenHashDeallocator) xenDestroyDomainName);
+    xenHashFree(conn->domains, (xenHashDeallocator) xenDomainDestroyName);
     conn->magic = -1;
     xs_daemon_close(conn->xshandle);
     conn->xshandle = NULL;
@@ -140,7 +140,7 @@ xenCloseConnect(xenConnectPtr conn) {
 }
 
 /**
- * xenGetVersion:
+ * xenConnectGetVersion:
  * @conn: pointer to the hypervisor connection
  *
  * Get the version level of the Hypervisor running.
@@ -148,13 +148,13 @@ xenCloseConnect(xenConnectPtr conn) {
  * Returns -1 in case of error or major * 10,000 + minor * 100 + rev otherwise
  */
 unsigned long
-xenGetVersion(xenConnectPtr conn) {
+xenConnectGetVersion(xenConnectPtr conn) {
     if (conn == NULL)
         return(-1);
 }
 
 /**
- * xenCreateLinuxDomain:
+ * xenDomainCreateLinux:
  * @conn: pointer to the hypervisor connection
  * @kernel_path: the file path to the kernel image
  * @initrd_path: an optional file path to an initrd
@@ -167,7 +167,7 @@ xenGetVersion(xenConnectPtr conn) {
  * Returns a new domain object or NULL in case of failure
  */
 xenDomainPtr
-xenCreateLinuxDomain(xenConnectPtr conn, const char *kernel_path,
+xenDomainCreateLinux(xenConnectPtr conn, const char *kernel_path,
 		     const char *initrd_path, const char *cmdline,
 		     unsigned long memory, unsigned int flags) {
     if ((conn == NULL) || (conn->magic != XEN_CONNECT_MAGIC) ||
@@ -178,7 +178,7 @@ xenCreateLinuxDomain(xenConnectPtr conn, const char *kernel_path,
 }
 
 /**
- * xenDomainByName:
+ * xenDomainLookupByName:
  * @conn: pointer to the hypervisor connection
  * @name: name for the domain
  *
@@ -187,7 +187,7 @@ xenCreateLinuxDomain(xenConnectPtr conn, const char *kernel_path,
  * Returns a new domain object or NULL in case of failure
  */
 xenDomainPtr
-xenDomainByName(xenConnectPtr conn, const char *name) {
+xenDomainLookupByName(xenConnectPtr conn, const char *name) {
     if ((conn == NULL) || (conn->magic != XEN_CONNECT_MAGIC) || (name == NULL))
         return(NULL);
     TODO
@@ -195,7 +195,7 @@ xenDomainByName(xenConnectPtr conn, const char *name) {
 }
 
 /**
- * xenDomainByID:
+ * xenDomainLookupByID:
  * @conn: pointer to the hypervisor connection
  * @id: the domain ID number
  *
@@ -204,7 +204,7 @@ xenDomainByName(xenConnectPtr conn, const char *name) {
  * Returns a new domain object or NULL in case of failure
  */
 xenDomainPtr
-xenDomainByID(xenConnectPtr conn, int id) {
+xenDomainLookupByID(xenConnectPtr conn, int id) {
     char *path;
     xenDomainPtr ret;
     xc_dominfo_t info;
@@ -236,7 +236,7 @@ xenDomainByID(xenConnectPtr conn, int id) {
 }
 
 /**
- * xenDestroyDomain:
+ * xenDomainDestroy:
  * @domain: a domain object
  *
  * Destroy the domain object. The running instance is shutdown if not down
@@ -245,7 +245,7 @@ xenDomainByID(xenConnectPtr conn, int id) {
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
-xenDestroyDomain(xenDomainPtr domain) {
+xenDomainDestroy(xenDomainPtr domain) {
     if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC))
         return(-1);
     TODO
@@ -253,7 +253,7 @@ xenDestroyDomain(xenDomainPtr domain) {
 }
 
 /**
- * xenSuspendDomain:
+ * xenDomainSuspend:
  * @domain: a domain object
  *
  * Suspends an active domain, the process is frozen without further access
@@ -264,7 +264,7 @@ xenDestroyDomain(xenDomainPtr domain) {
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
-xenSuspendDomain(xenDomainPtr domain) {
+xenDomainSuspend(xenDomainPtr domain) {
     if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC))
         return(-1);
     TODO
@@ -281,7 +281,7 @@ xenSuspendDomain(xenDomainPtr domain) {
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
-xenResumeDomain(xenDomainPtr domain) {
+xenDomainResume(xenDomainPtr domain) {
     if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC))
         return(-1);
     TODO
@@ -289,7 +289,7 @@ xenResumeDomain(xenDomainPtr domain) {
 }
 
 /**
- * xenGetName:
+ * xenDomainGetName:
  * @domain: a domain object
  *
  * Get the public name for that domain
@@ -298,14 +298,14 @@ xenResumeDomain(xenDomainPtr domain) {
  * its lifetime will be the same as the domain object.
  */
 const char *
-xenGetName(xenDomainPtr domain) {
+xenDomainGetName(xenDomainPtr domain) {
     if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC))
         return(NULL);
     return(domain->name);
 }
 
 /**
- * xenGetID:
+ * xenDomainGetID:
  * @domain: a domain object
  *
  * Get the hypervisor ID number for the domain
@@ -313,14 +313,14 @@ xenGetName(xenDomainPtr domain) {
  * Returns the domain ID number or (unsigned int) -1 in case of error
  */
 unsigned int
-xenGetID(xenDomainPtr domain) {
+xenDomainGetID(xenDomainPtr domain) {
     if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC))
         return((unsigned int) -1);
     return(domain->handle);
 }
 
 /**
- * xenGetMaxMemory:
+ * xenDomainGetMaxMemory:
  * @domain: a domain object or NULL
  * 
  * Retrieve the maximum amount of physical memory allocated to a
@@ -330,7 +330,7 @@ xenGetID(xenDomainPtr domain) {
  * Returns the memory size in kilobytes or 0 in case of error.
  */
 unsigned long
-xenGetMaxMemory(xenDomainPtr domain) {
+xenDomainGetMaxMemory(xenDomainPtr domain) {
     if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC))
         return(0);
     TODO
@@ -338,7 +338,7 @@ xenGetMaxMemory(xenDomainPtr domain) {
 }
 
 /**
- * xenSetMaxMemory:
+ * xenDomainSetMaxMemory:
  * @domain: a domain object or NULL
  * @memory: the memory size in kilobytes
  * 
@@ -349,7 +349,7 @@ xenGetMaxMemory(xenDomainPtr domain) {
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
-xenSetMaxMemory(xenDomainPtr domain, unsigned long memory) {
+xenDomainSetMaxMemory(xenDomainPtr domain, unsigned long memory) {
     if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC) ||
         (memory < 4096))
         return(-1);

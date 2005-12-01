@@ -1,17 +1,17 @@
 {
     global:
-        xenOpenConnect;
-	xenCloseConnect;
-	xenGetVersion;
-	xenCreateLinuxDomain;
-	xenDomainByName;
-	xenDomainByID;
-	xenDestroyDomain;
-	xenSuspendDomain;
-	xenResumeDomain;
-	xenGetName;
-	xenGetID;
-	xenGetMaxMemory;
-	xenSetMaxMemory;
+        xenConnectOpen;
+	xenConnectClose;
+	xenConnectGetVersion;
+	xenDomainCreateLinux;
+	xenDomainLookupByName;
+	xenDomainLookupByID;
+	xenDomainDestroy;
+	xenDomainSuspend;
+	xenDomainResume;
+	xenDomainGetName;
+	xenDomainGetID;
+	xenDomainGetMaxMemory;
+	xenDomainSetMaxMemory;
     local: *;
 };

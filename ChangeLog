@@ -1,3 +1,9 @@
+Thu Dec  1 11:50:16 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* include/libxen.h src/libxen.c src/libxen_sym.version src/xensh.c:
+	  changed entry points naming conventions based on feedback with
+	  Karel Zak
+
 Wed Nov 30 14:18:19 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* src/Makefile.am src/hash.[ch]: added hash module based on libxml2

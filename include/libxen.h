@@ -60,38 +60,38 @@ typedef enum {
 /*
  * Connection and disconnections to the Hypervisor
  */
-xenConnectPtr		xenOpenConnect		(const char *name);
-int			xenCloseConnect		(xenConnectPtr conn);
-unsigned long		xenGetVersion		(xenConnectPtr conn);
+xenConnectPtr		xenConnectOpen		(const char *name);
+int			xenConnectClose		(xenConnectPtr conn);
+unsigned long		xenConnectGetVersion	(xenConnectPtr conn);
 
 /*
  * Domain creation and destruction
  */
-xenDomainPtr		xenCreateLinuxDomain	(xenConnectPtr conn,
+xenDomainPtr		xenDomainCreateLinux	(xenConnectPtr conn,
 						 const char *kernel_path,
 						 const char *initrd_path,
 						 const char *cmdline,
 						 unsigned long memory,
 						 unsigned int flags);
-xenDomainPtr		xenDomainByName		(xenConnectPtr conn,
+xenDomainPtr		xenDomainLookupByName	(xenConnectPtr conn,
 						 const char *name);
-xenDomainPtr		xenDomainByID		(xenConnectPtr conn,
+xenDomainPtr		xenDomainLookupByID	(xenConnectPtr conn,
 						 int id);
-int			xenDestroyDomain	(xenDomainPtr domain);
+int			xenDomainDestroy	(xenDomainPtr domain);
 
 /*
  * Domain suspend/resume
  */
-int			xenSuspendDomain	(xenDomainPtr domain);
-int			xenResumeDomain		(xenDomainPtr domain);
+int			xenDomainSuspend	(xenDomainPtr domain);
+int			xenDomainResume		(xenDomainPtr domain);
 
 /*
  * Dynamic control of domains
  */
-const char *		xenGetName		(xenDomainPtr domain);
-unsigned int		xenGetID		(xenDomainPtr domain);
-unsigned long		xenGetMaxMemory		(xenDomainPtr domain);
-int			xenSetMaxMemory		(xenDomainPtr domain,
+const char *		xenDomainGetName	(xenDomainPtr domain);
+unsigned int		xenDomainGetID		(xenDomainPtr domain);
+unsigned long		xenDomainGetMaxMemory	(xenDomainPtr domain);
+int			xenDomainSetMaxMemory	(xenDomainPtr domain,
 						 unsigned long memory);
 
 #ifdef __cplusplus
