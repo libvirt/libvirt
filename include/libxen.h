@@ -66,6 +66,13 @@ int			xenConnectClose		(xenConnectPtr conn);
 unsigned long		xenConnectGetVersion	(xenConnectPtr conn);
 
 /*
+ * Gather list of running domains
+ */
+int			xenConnectListDomains	(xenConnectPtr conn,
+						 int *ids,
+						 int maxids);
+
+/*
  * Domain creation and destruction
  */
 xenDomainPtr		xenDomainCreateLinux	(xenConnectPtr conn,

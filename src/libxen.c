@@ -122,7 +122,6 @@ failed:
 xenConnectPtr
 xenConnectOpenReadOnly(const char *name) {
     xenConnectPtr ret = NULL;
-    int handle = -1;
     struct xs_handle *xshandle = NULL;
 
     /* we can only talk to the local Xen supervisor ATM */
@@ -205,6 +204,56 @@ unsigned long
 xenConnectGetVersion(xenConnectPtr conn) {
     if (conn == NULL)
         return(-1);
+    TODO
+    return(-1);
+}
+
+/**
+ * xenConnectListDomains:
+ * @conn: pointer to the hypervisor connection
+ * @ids: array to collect the list of IDs of active domains
+ * @maxids: size of @ids
+ *
+ * Collect the list of active domains, and store their ID in @maxids
+ *
+ * Returns the number of domain found or -1 in case of error
+ */
+int
+xenConnectListDomains(xenConnectPtr conn, int *ids, int maxids) {
+    struct xs_transaction_handle* t;
+    int ret = -1;
+    unsigned int num, i;
+    long id;
+    char **idlist = NULL, *endptr;
+
+    if ((conn == NULL) || (conn->magic != XEN_CONNECT_MAGIC) ||
+        (ids == NULL) || (maxids <= 0))
+        return(-1);
+    
+    t = xs_transaction_start(conn->xshandle);
+    if (t == NULL)
+        goto done;
+
+    idlist = xs_directory(conn->xshandle, t, "/local/domain", &num);
+    if (idlist == NULL)
+        goto done;
+
+    for (ret = 0,i = 0;(i < num) && (ret < maxids);i++) {
+        id = strtol(idlist[i], &endptr, 10);
+	if ((endptr == idlist[i]) || (*endptr != 0)) {
+	    ret = -1;
+	    goto done;
+	}
+	ids[ret++] = (int) id;
+    }
+
+done:
+    if (t != NULL)
+	xs_transaction_end(conn->xshandle, t, 0);
+    if (idlist != NULL)
+        free(idlist);
+
+    return(ret);
 }
 
 /**
@@ -260,7 +309,6 @@ xenDomainLookupByName(xenConnectPtr conn, const char *name) {
 static char *
 xenConnectDoStoreQuery(xenConnectPtr conn, const char *path) {
     struct xs_transaction_handle* t;
-    char s[256];
     char *ret = NULL;
     unsigned int len = 0;
 

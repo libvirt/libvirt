@@ -1,3 +1,9 @@
+Fri Dec  2 15:15:26 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* include/libxen.h src/libxen.c src/libxen_sym.version: adding
+	  xenConnectListDomains() to list active domains
+	* src/xensh.c: integrated a basic test for xenConnectListDomains()
+
 Fri Dec  2 13:10:04 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in src/Makefile.am: more warnings from compiler and

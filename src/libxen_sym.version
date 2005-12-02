@@ -5,6 +5,7 @@
 	xenConnectClose;
 	xenConnectGetVersion;
 	xenDomainCreateLinux;
+	xenConnectListDomains;
 	xenDomainLookupByName;
 	xenDomainLookupByID;
 	xenDomainDestroy;
