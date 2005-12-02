@@ -47,6 +47,19 @@ test "x$U" != "x" && AC_MSG_ERROR(Compiler not ANSI compliant)
 
 AM_PROG_LIBTOOL
 
+dnl
+dnl specific tests to setup DV devel environments with debug etc ...
+dnl
+if [[ "${LOGNAME}" = "veillard" -a "`pwd`" = "/u/veillard/libxen" ]] ; then
+    if test "${GCC}" = "yes" ; then
+	CFLAGS="-g -O -pedantic -W -Wformat -Wunused -Wimplicit -Wreturn-type -Wswitch -Wcomment -Wtrigraphs -Wformat -Wchar-subscripts -Wuninitialized -Wparentheses -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wredundant-decls -Wall"
+    fi
+    STATIC_BINARIES="-static"
+else
+    STATIC_BINARIES=
+fi
+AC_SUBST(STATIC_BINARIES)
+
 dnl search for the low level Xen library
 AC_SEARCH_LIBS(xc_domain_create, [xenctrl], [], [AC_MSG_ERROR([Xen control library not found])])
 AC_SEARCH_LIBS(xs_read, [xenstore], [], [AC_MSG_ERROR([Xen store library not found])])

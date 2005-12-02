@@ -1,3 +1,8 @@
+Fri Dec  2 13:10:04 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in src/Makefile.am: more warnings from compiler and
+	  link static in work environement
+
 Thu Dec  1 18:32:43 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* Makefile.am configure.in docs/apibuild.py docs/libxen-api.xml

@@ -2,7 +2,7 @@
 
 INCLUDES = -I$(top_builddir)/include -I@srcdir@/include
 DEPS = libxen.la
-LDADDS = libxen.la
+LDADDS = @STATIC_BINARIES@ libxen.la
 
 EXTRA_DIST = libxen_sym.version
 
