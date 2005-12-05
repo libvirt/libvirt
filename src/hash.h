@@ -8,8 +8,8 @@
  * Author: Bjorn Reese <bjorn.reese@systematic.dk>
  */
 
-#ifndef __XEN_HASH_H__
-#define __XEN_HASH_H__
+#ifndef __VIR_HASH_H__
+#define __VIR_HASH_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,54 +18,54 @@ extern "C" {
 /*
  * The hash table.
  */
-typedef struct _xenHashTable xenHashTable;
-typedef xenHashTable *xenHashTablePtr;
+typedef struct _virHashTable virHashTable;
+typedef virHashTable *virHashTablePtr;
 
 /*
  * function types:
  */
 /**
- * xenHashDeallocator:
+ * virHashDeallocator:
  * @payload:  the data in the hash
  * @name:  the name associated
  *
  * Callback to free data from a hash.
  */
-typedef void (*xenHashDeallocator)(void *payload, char *name);
+typedef void (*virHashDeallocator)(void *payload, char *name);
 
 /*
  * Constructor and destructor.
  */
-xenHashTablePtr		xenHashCreate	(int size);
+virHashTablePtr		virHashCreate	(int size);
 void			
-			xenHashFree	(xenHashTablePtr table,
-					 xenHashDeallocator f);
-int			xenHashSize	(xenHashTablePtr table);
+			virHashFree	(virHashTablePtr table,
+					 virHashDeallocator f);
+int			virHashSize	(virHashTablePtr table);
 
 /*
  * Add a new entry to the hash table.
  */
-int			xenHashAddEntry	(xenHashTablePtr table,
+int			virHashAddEntry	(virHashTablePtr table,
 		                         const char *name,
 		                         void *userdata);
-int			xenHashUpdateEntry(xenHashTablePtr table,
+int			virHashUpdateEntry(virHashTablePtr table,
 		                         const char *name,
 		                         void *userdata,
-					 xenHashDeallocator f);
+					 virHashDeallocator f);
 
 /*
  * Remove an entry from the hash table.
  */
-int    			xenHashRemoveEntry(xenHashTablePtr table,
+int    			virHashRemoveEntry(virHashTablePtr table,
 					 const char *name,
-					 xenHashDeallocator f);
+					 virHashDeallocator f);
 /*
  * Retrieve the userdata.
  */
-void *			xenHashLookup	(xenHashTablePtr table,
+void *			virHashLookup	(virHashTablePtr table,
 					 const char *name);
 
 #ifdef __cplusplus
 }
 #endif
-#endif /* ! __XEN_HASH_H__ */
+#endif /* ! __VIR_HASH_H__ */

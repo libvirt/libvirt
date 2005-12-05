@@ -1,3 +1,11 @@
+Mon Dec  5 12:15:16 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* Makefile.am README TODO autogen.sh configure.in libvir.pc.in
+	  libvir.spec.in docs/Makefile.am docs/apibuild.py docs/structures.fig
+	  include/Makefile.am include/libvir.h src/Makefile.am src/hash.c
+	  src/hash.h src/internal.h src/libvir.c src/libvir_sym.version
+	  src/virsh.c: renamed to libvir
+
 Fri Dec  2 15:15:26 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* include/libxen.h src/libxen.c src/libxen_sym.version: adding

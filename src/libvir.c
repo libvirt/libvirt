@@ -1,5 +1,5 @@
 /*
- * libxen.h: Main interfaces for the libxen library to handle virtualization
+ * libvir.h: Main interfaces for the libvir library to handle virtualization
  *           domains from a process running in domain 0
  *
  * Copyright (C) 2005 Red Hat, Inc.
@@ -9,7 +9,7 @@
  * Daniel Veillard <veillard@redhat.com>
  */
 
-#include "libxen.h"
+#include "libvir.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,43 +27,43 @@
  * - memory wrappers for malloc/free ?
  */
 
-#define XEN_CONNECT_MAGIC 0x4F23DEAD
+#define VIR_CONNECT_MAGIC 0x4F23DEAD
 
 /*
  * Flags for Xen connections
  */
-#define XEN_CONNECT_RO 1
+#define VIR_CONNECT_RO 1
 
 /**
- * _xenConnect:
+ * _virConnect:
  *
  * Internal structure associated to a connection
  */
-struct _xenConnect {
+struct _virConnect {
     unsigned int magic;		/* specific value to check */
     int	         handle;	/* internal handle used for hypercall */
     struct xs_handle *xshandle;	/* handle to talk to the xenstore */
-    xenHashTablePtr   domains;	/* hash table for known domains */
+    virHashTablePtr   domains;	/* hash table for known domains */
     int          flags;		/* a set of connection flags */
 };
 
-#define XEN_DOMAIN_MAGIC 0xDEAD4321
+#define VIR_DOMAIN_MAGIC 0xDEAD4321
 
 /**
- * _xenDomain:
+ * _virDomain:
  *
  * Internal structure associated to a domain
  */
-struct _xenDomain {
+struct _virDomain {
     unsigned int magic;		/* specific value to check */
-    xenConnectPtr conn;		/* pointer back to the connection */
+    virConnectPtr conn;		/* pointer back to the connection */
     char        *name;		/* the domain external name */
     char        *path;		/* the domain internal path */
     int	         handle;	/* internal handle for the dmonain ID */
 };
 
 /**
- * xenConnectOpen:
+ * virConnectOpen:
  * @name: optional argument currently unused, pass NULL
  *
  * This function should be called first to get a connection to the 
@@ -71,9 +71,9 @@ struct _xenDomain {
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
  */
-xenConnectPtr
-xenConnectOpen(const char *name) {
-    xenConnectPtr ret = NULL;
+virConnectPtr
+virConnectOpen(const char *name) {
+    virConnectPtr ret = NULL;
     int handle = -1;
     struct xs_handle *xshandle = NULL;
 
@@ -88,13 +88,13 @@ xenConnectOpen(const char *name) {
     if (xshandle == NULL)
         goto failed;
 
-    ret = (xenConnectPtr) malloc(sizeof(xenConnect));
+    ret = (virConnectPtr) malloc(sizeof(virConnect));
     if (ret == NULL)
         goto failed;
-    ret->magic = XEN_CONNECT_MAGIC;
+    ret->magic = VIR_CONNECT_MAGIC;
     ret->handle = handle;
     ret->xshandle = xshandle;
-    ret->domains = xenHashCreate(20);
+    ret->domains = virHashCreate(20);
     ret->flags = 0;
     if (ret->domains == NULL)
         goto failed;
@@ -111,7 +111,7 @@ failed:
 }
 
 /**
- * xenConnectOpenReadOnly:
+ * virConnectOpenReadOnly:
  * @name: optional argument currently unused, pass NULL
  *
  * This function should be called first to get a read-only connection to the 
@@ -119,9 +119,9 @@ failed:
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
  */
-xenConnectPtr
-xenConnectOpenReadOnly(const char *name) {
-    xenConnectPtr ret = NULL;
+virConnectPtr
+virConnectOpenReadOnly(const char *name) {
+    virConnectPtr ret = NULL;
     struct xs_handle *xshandle = NULL;
 
     /* we can only talk to the local Xen supervisor ATM */
@@ -132,14 +132,14 @@ xenConnectOpenReadOnly(const char *name) {
     if (xshandle == NULL)
         goto failed;
 
-    ret = (xenConnectPtr) malloc(sizeof(xenConnect));
+    ret = (virConnectPtr) malloc(sizeof(virConnect));
     if (ret == NULL)
         goto failed;
-    ret->magic = XEN_CONNECT_MAGIC;
+    ret->magic = VIR_CONNECT_MAGIC;
     ret->handle = -1;
     ret->xshandle = xshandle;
-    ret->domains = xenHashCreate(20);
-    ret->flags = XEN_CONNECT_RO;
+    ret->domains = virHashCreate(20);
+    ret->flags = VIR_CONNECT_RO;
     if (ret->domains == NULL)
         goto failed;
 
@@ -153,7 +153,7 @@ failed:
 }
 
 /**
- * xenDomainDestroyName:
+ * virDomainDestroyName:
  * @domain: a domain object
  *
  * Destroy the domain object, this is just used by the domain hash callback.
@@ -161,12 +161,12 @@ failed:
  * Returns 0 in case of success and -1 in case of failure.
  */
 static int
-xenDomainDestroyName(xenDomainPtr domain, const char *name ATTRIBUTE_UNUSED) {
-    return(xenDomainDestroy(domain));
+virDomainDestroyName(virDomainPtr domain, const char *name ATTRIBUTE_UNUSED) {
+    return(virDomainDestroy(domain));
 }
 
 /**
- * xenConnectClose:
+ * virConnectClose:
  * @conn: pointer to the hypervisor connection
  *
  * This function closes the connection to the Hypervisor. This should
@@ -177,11 +177,11 @@ xenDomainDestroyName(xenDomainPtr domain, const char *name ATTRIBUTE_UNUSED) {
  * Returns 0 in case of success or -1 in case of error.
  */
 int
-xenConnectClose(xenConnectPtr conn) {
-    if ((conn == NULL) || (conn->magic != XEN_CONNECT_MAGIC))
+virConnectClose(virConnectPtr conn) {
+    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC))
         return(-1);
 
-    xenHashFree(conn->domains, (xenHashDeallocator) xenDomainDestroyName);
+    virHashFree(conn->domains, (virHashDeallocator) virDomainDestroyName);
     conn->magic = -1;
     xs_daemon_close(conn->xshandle);
     conn->xshandle = NULL;
@@ -193,7 +193,7 @@ xenConnectClose(xenConnectPtr conn) {
 }
 
 /**
- * xenConnectGetVersion:
+ * virConnectGetVersion:
  * @conn: pointer to the hypervisor connection
  *
  * Get the version level of the Hypervisor running.
@@ -201,7 +201,7 @@ xenConnectClose(xenConnectPtr conn) {
  * Returns -1 in case of error or major * 10,000 + minor * 100 + rev otherwise
  */
 unsigned long
-xenConnectGetVersion(xenConnectPtr conn) {
+virConnectGetVersion(virConnectPtr conn) {
     if (conn == NULL)
         return(-1);
     TODO
@@ -209,7 +209,7 @@ xenConnectGetVersion(xenConnectPtr conn) {
 }
 
 /**
- * xenConnectListDomains:
+ * virConnectListDomains:
  * @conn: pointer to the hypervisor connection
  * @ids: array to collect the list of IDs of active domains
  * @maxids: size of @ids
@@ -219,14 +219,14 @@ xenConnectGetVersion(xenConnectPtr conn) {
  * Returns the number of domain found or -1 in case of error
  */
 int
-xenConnectListDomains(xenConnectPtr conn, int *ids, int maxids) {
+virConnectListDomains(virConnectPtr conn, int *ids, int maxids) {
     struct xs_transaction_handle* t;
     int ret = -1;
     unsigned int num, i;
     long id;
     char **idlist = NULL, *endptr;
 
-    if ((conn == NULL) || (conn->magic != XEN_CONNECT_MAGIC) ||
+    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC) ||
         (ids == NULL) || (maxids <= 0))
         return(-1);
     
@@ -257,23 +257,23 @@ done:
 }
 
 /**
- * xenDomainCreateLinux:
+ * virDomainCreateLinux:
  * @conn: pointer to the hypervisor connection
  * @kernel_path: the file path to the kernel image
  * @initrd_path: an optional file path to an initrd
  * @cmdline: optional command line parameters for the kernel
  * @memory: the memory size in kilobytes
- * @flags: an optional set of xenDomainFlags
+ * @flags: an optional set of virDomainFlags
  *
  * Launch a new Linux guest domain 
  * 
  * Returns a new domain object or NULL in case of failure
  */
-xenDomainPtr
-xenDomainCreateLinux(xenConnectPtr conn, const char *kernel_path,
+virDomainPtr
+virDomainCreateLinux(virConnectPtr conn, const char *kernel_path,
 		     const char *initrd_path, const char *cmdline,
 		     unsigned long memory, unsigned int flags) {
-    if ((conn == NULL) || (conn->magic != XEN_CONNECT_MAGIC) ||
+    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC) ||
         (kernel_path == NULL) || (memory < 4096))
         return(NULL);
     TODO
@@ -281,7 +281,7 @@ xenDomainCreateLinux(xenConnectPtr conn, const char *kernel_path,
 }
 
 /**
- * xenDomainLookupByName:
+ * virDomainLookupByName:
  * @conn: pointer to the hypervisor connection
  * @name: name for the domain
  *
@@ -289,16 +289,16 @@ xenDomainCreateLinux(xenConnectPtr conn, const char *kernel_path,
  *
  * Returns a new domain object or NULL in case of failure
  */
-xenDomainPtr
-xenDomainLookupByName(xenConnectPtr conn, const char *name) {
-    if ((conn == NULL) || (conn->magic != XEN_CONNECT_MAGIC) || (name == NULL))
+virDomainPtr
+virDomainLookupByName(virConnectPtr conn, const char *name) {
+    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC) || (name == NULL))
         return(NULL);
     TODO
     return(NULL);
 }
 
 /**
- * xenConnectDoStoreQuery:
+ * virConnectDoStoreQuery:
  * @conn: pointer to the hypervisor connection
  * @path: the absolute path of the data in the store to retrieve
  *
@@ -307,7 +307,7 @@ xenDomainLookupByName(xenConnectPtr conn, const char *name) {
  * Returns a string which must be freed by the caller or NULL in case of error
  */
 static char *
-xenConnectDoStoreQuery(xenConnectPtr conn, const char *path) {
+virConnectDoStoreQuery(virConnectPtr conn, const char *path) {
     struct xs_transaction_handle* t;
     char *ret = NULL;
     unsigned int len = 0;
@@ -325,7 +325,7 @@ done:
 }
 
 /**
- * xenDomainDoStoreQuery:
+ * virDomainDoStoreQuery:
  * @domain: a domain object
  * @path: the relative path of the data in the store to retrieve
  *
@@ -334,7 +334,7 @@ done:
  * Returns a string which must be freed by the caller or NULL in case of error
  */
 static char *
-xenDomainDoStoreQuery(xenDomainPtr domain, const char *path) {
+virDomainDoStoreQuery(virDomainPtr domain, const char *path) {
     struct xs_transaction_handle* t;
     char s[256];
     char *ret = NULL;
@@ -356,7 +356,7 @@ done:
 }
 
 /**
- * xenDomainLookupByID:
+ * virDomainLookupByID:
  * @conn: pointer to the hypervisor connection
  * @id: the domain ID number
  *
@@ -364,17 +364,17 @@ done:
  *
  * Returns a new domain object or NULL in case of failure
  */
-xenDomainPtr
-xenDomainLookupByID(xenConnectPtr conn, int id) {
+virDomainPtr
+virDomainLookupByID(virConnectPtr conn, int id) {
     char *path;
-    xenDomainPtr ret;
+    virDomainPtr ret;
     xc_dominfo_t info;
     int res;
 
-    if ((conn == NULL) || (conn->magic != XEN_CONNECT_MAGIC) || (id < 0))
+    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC) || (id < 0))
         return(NULL);
 
-    if ((conn->flags & XEN_CONNECT_RO) == 0) {
+    if ((conn->flags & VIR_CONNECT_RO) == 0) {
 	res = xc_domain_getinfo(conn->handle, (uint32_t) id, 1, &info);
 	if (res != 1) {
 	    return(NULL);
@@ -385,22 +385,22 @@ xenDomainLookupByID(xenConnectPtr conn, int id) {
     if (path == NULL) {
         return(NULL);
     }
-    ret = (xenDomainPtr) malloc(sizeof(xenDomain));
+    ret = (virDomainPtr) malloc(sizeof(virDomain));
     if (ret == NULL) {
         free(path);
 	return(NULL);
     }
-    ret->magic = XEN_DOMAIN_MAGIC;
+    ret->magic = VIR_DOMAIN_MAGIC;
     ret->conn = conn;
     ret->handle = id;
     ret->path = path;
-    ret->name = xenDomainDoStoreQuery(ret, "name");
+    ret->name = virDomainDoStoreQuery(ret, "name");
 
     return(ret);
 }
 
 /**
- * xenDomainDestroy:
+ * virDomainDestroy:
  * @domain: a domain object
  *
  * Destroy the domain object. The running instance is shutdown if not down
@@ -409,51 +409,51 @@ xenDomainLookupByID(xenConnectPtr conn, int id) {
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
-xenDomainDestroy(xenDomainPtr domain) {
-    if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC))
+virDomainDestroy(virDomainPtr domain) {
+    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
         return(-1);
     TODO
     return(-1);
 }
 
 /**
- * xenDomainSuspend:
+ * virDomainSuspend:
  * @domain: a domain object
  *
  * Suspends an active domain, the process is frozen without further access
  * to CPU resources and I/O but the memory used by the domain at the 
- * hypervisor level will stay allocated. Use xenDomainResume() to reactivate
+ * hypervisor level will stay allocated. Use virDomainResume() to reactivate
  * the domain.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
-xenDomainSuspend(xenDomainPtr domain) {
-    if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC))
+virDomainSuspend(virDomainPtr domain) {
+    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
         return(-1);
     TODO
     return(-1);
 }
 
 /**
- * xenDomainResume:
+ * virDomainResume:
  * @domain: a domain object
  *
  * Resume an suspended domain, the process is restarted from the state where
- * it was frozen by calling xenSuspendDomain().
+ * it was frozen by calling virSuspendDomain().
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
-xenDomainResume(xenDomainPtr domain) {
-    if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC))
+virDomainResume(virDomainPtr domain) {
+    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
         return(-1);
     TODO
     return(-1);
 }
 
 /**
- * xenDomainGetName:
+ * virDomainGetName:
  * @domain: a domain object
  *
  * Get the public name for that domain
@@ -462,14 +462,14 @@ xenDomainResume(xenDomainPtr domain) {
  * its lifetime will be the same as the domain object.
  */
 const char *
-xenDomainGetName(xenDomainPtr domain) {
-    if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC))
+virDomainGetName(virDomainPtr domain) {
+    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
         return(NULL);
     return(domain->name);
 }
 
 /**
- * xenDomainGetID:
+ * virDomainGetID:
  * @domain: a domain object
  *
  * Get the hypervisor ID number for the domain
@@ -477,14 +477,14 @@ xenDomainGetName(xenDomainPtr domain) {
  * Returns the domain ID number or (unsigned int) -1 in case of error
  */
 unsigned int
-xenDomainGetID(xenDomainPtr domain) {
-    if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC))
+virDomainGetID(virDomainPtr domain) {
+    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
         return((unsigned int) -1);
     return(domain->handle);
 }
 
 /**
- * xenDomainGetMaxMemory:
+ * virDomainGetMaxMemory:
  * @domain: a domain object or NULL
  * 
  * Retrieve the maximum amount of physical memory allocated to a
@@ -494,15 +494,15 @@ xenDomainGetID(xenDomainPtr domain) {
  * Returns the memory size in kilobytes or 0 in case of error.
  */
 unsigned long
-xenDomainGetMaxMemory(xenDomainPtr domain) {
-    if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC))
+virDomainGetMaxMemory(virDomainPtr domain) {
+    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
         return(0);
     TODO
     return(0);
 }
 
 /**
- * xenDomainSetMaxMemory:
+ * virDomainSetMaxMemory:
  * @domain: a domain object or NULL
  * @memory: the memory size in kilobytes
  * 
@@ -513,8 +513,8 @@ xenDomainGetMaxMemory(xenDomainPtr domain) {
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
-xenDomainSetMaxMemory(xenDomainPtr domain, unsigned long memory) {
-    if ((domain == NULL) || (domain->magic != XEN_DOMAIN_MAGIC) ||
+virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory) {
+    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC) ||
         (memory < 4096))
         return(-1);
     TODO

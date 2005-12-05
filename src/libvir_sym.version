@@ -1,0 +1,19 @@
+{
+    global:
+        virConnectOpen;
+        virConnectOpenReadOnly;
+	virConnectClose;
+	virConnectGetVersion;
+	virDomainCreateLinux;
+	virConnectListDomains;
+	virDomainLookupByName;
+	virDomainLookupByID;
+	virDomainDestroy;
+	virDomainSuspend;
+	virDomainResume;
+	virDomainGetName;
+	virDomainGetID;
+	virDomainGetMaxMemory;
+	virDomainSetMaxMemory;
+    local: *;
+};

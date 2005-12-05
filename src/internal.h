@@ -2,8 +2,8 @@
  * internal.h: internal definitions just used by code from the library
  */
 
-#ifndef __XEN_INTERNAL_H__
-#define __XEN_INTERNAL_H__
+#ifndef __VIR_INTERNAL_H__
+#define __VIR_INTERNAL_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,4 +38,4 @@ extern "C" {
 }
 #endif /* __cplusplus */
 
-#endif /* __XEN_INTERNAL_H__ */
+#endif /* __VIR_INTERNAL_H__ */

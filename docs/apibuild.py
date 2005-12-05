@@ -18,7 +18,7 @@ debugsym=None
 # C parser analysis code
 #
 ignored_files = {
-  "xensh.c": "testing tool",
+  "virsh.c": "testing tool",
   "hash.c": "internal hash table stuff",
   "hash.h": "internal hash table stuff",
 }
@@ -1068,7 +1068,7 @@ class CParser:
 	        if self.collect_ref == 1:
 		    oldtok = token
 		    token = self.token()
-		    if oldtok[0] == "name" and oldtok[1][0:3] == "xen":
+		    if oldtok[0] == "name" and oldtok[1][0:3] == "vir":
 		        if token[0] == "sep" and token[1] == "(":
 			    self.index_add_ref(oldtok[1], self.filename,
 			                        0, "function")
@@ -2044,13 +2044,13 @@ class docBuilder:
 
 def rebuild():
     builder = None
-    if glob.glob("../src/libxen.c") != [] :
-        print "Rebuilding API description for libxen"
-	builder = docBuilder("libxen", ["../src", "../include"],
+    if glob.glob("../src/libvir.c") != [] :
+        print "Rebuilding API description for libvir"
+	builder = docBuilder("libvir", ["../src", "../include"],
 	                     [])
     elif glob.glob("src/parser.c") != [] :
-        print "Rebuilding API description for libxml2"
-	builder = docBuilder("libxen", ["src", "include"],
+        print "Rebuilding API description for libvir"
+	builder = docBuilder("libvir", ["src", "include"],
 	                     [])
     else:
         print "rebuild() failed, unable to guess the module"

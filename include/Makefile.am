@@ -1,9 +1,9 @@
 ## Process this file with automake to produce Makefile.in
 
-xenincdir = $(includedir)/libxen
+virincdir = $(includedir)/libvir
 
-xeninc_HEADERS = libxen.h
+virinc_HEADERS = libvir.h
 
 install-exec-hook:
-	$(mkinstalldirs) $(DESTDIR)$(xenincdir)
+	$(mkinstalldirs) $(DESTDIR)$(virincdir)
 

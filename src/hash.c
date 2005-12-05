@@ -29,10 +29,10 @@
 /*
  * A single entry in the hash table
  */
-typedef struct _xenHashEntry xenHashEntry;
-typedef xenHashEntry *xenHashEntryPtr;
-struct _xenHashEntry {
-    struct _xenHashEntry *next;
+typedef struct _virHashEntry virHashEntry;
+typedef virHashEntry *virHashEntryPtr;
+struct _virHashEntry {
+    struct _virHashEntry *next;
     char *name;
     void *payload;
     int valid;
@@ -41,18 +41,18 @@ struct _xenHashEntry {
 /*
  * The entire hash table
  */
-struct _xenHashTable {
-    struct _xenHashEntry *table;
+struct _virHashTable {
+    struct _virHashEntry *table;
     int size;
     int nbElems;
 };
 
 /*
- * xenHashComputeKey:
+ * virHashComputeKey:
  * Calculate the hash key
  */
 static unsigned long
-xenHashComputeKey(xenHashTablePtr table, const char *name) {
+virHashComputeKey(virHashTablePtr table, const char *name) {
     unsigned long value = 0L;
     char ch;
     
@@ -66,27 +66,27 @@ xenHashComputeKey(xenHashTablePtr table, const char *name) {
 }
 
 /**
- * xenHashCreate:
+ * virHashCreate:
  * @size: the size of the hash table
  *
- * Create a new xenHashTablePtr.
+ * Create a new virHashTablePtr.
  *
  * Returns the newly created object, or NULL if an error occured.
  */
-xenHashTablePtr
-xenHashCreate(int size) {
-    xenHashTablePtr table;
+virHashTablePtr
+virHashCreate(int size) {
+    virHashTablePtr table;
   
     if (size <= 0)
         size = 256;
   
-    table = malloc(sizeof(xenHashTable));
+    table = malloc(sizeof(virHashTable));
     if (table) {
         table->size = size;
 	table->nbElems = 0;
-        table->table = malloc(size * sizeof(xenHashEntry));
+        table->table = malloc(size * sizeof(virHashEntry));
         if (table->table) {
-  	    memset(table->table, 0, size * sizeof(xenHashEntry));
+  	    memset(table->table, 0, size * sizeof(virHashEntry));
   	    return(table);
         }
         free(table);
@@ -95,7 +95,7 @@ xenHashCreate(int size) {
 }
 
 /**
- * xenHashGrow:
+ * virHashGrow:
  * @table: the hash table
  * @size: the new size of the hash table
  *
@@ -104,11 +104,11 @@ xenHashCreate(int size) {
  * Returns 0 in case of success, -1 in case of failure
  */
 static int
-xenHashGrow(xenHashTablePtr table, int size) {
+virHashGrow(virHashTablePtr table, int size) {
     unsigned long key;
     int oldsize, i;
-    xenHashEntryPtr iter, next;
-    struct _xenHashEntry *oldtable;
+    virHashEntryPtr iter, next;
+    struct _virHashEntry *oldtable;
 #ifdef DEBUG_GROW
     unsigned long nbElem = 0;
 #endif
@@ -125,12 +125,12 @@ xenHashGrow(xenHashTablePtr table, int size) {
     if (oldtable == NULL)
         return(-1);
   
-    table->table = malloc(size * sizeof(xenHashEntry));
+    table->table = malloc(size * sizeof(virHashEntry));
     if (table->table == NULL) {
 	table->table = oldtable;
 	return(-1);
     }
-    memset(table->table, 0, size * sizeof(xenHashEntry));
+    memset(table->table, 0, size * sizeof(virHashEntry));
     table->size = size;
 
     /*	If the two loops are merged, there would be situations where
@@ -142,8 +142,8 @@ xenHashGrow(xenHashTablePtr table, int size) {
     for (i = 0; i < oldsize; i++) {
 	if (oldtable[i].valid == 0) 
 	    continue;
-	key = xenHashComputeKey(table, oldtable[i].name);
-	memcpy(&(table->table[key]), &(oldtable[i]), sizeof(xenHashEntry));
+	key = virHashComputeKey(table, oldtable[i].name);
+	memcpy(&(table->table[key]), &(oldtable[i]), sizeof(virHashEntry));
 	table->table[key].next = NULL;
     }
 
@@ -156,9 +156,9 @@ xenHashGrow(xenHashTablePtr table, int size) {
 	     * put back the entry in the new table
 	     */
 
-	    key = xenHashComputeKey(table, iter->name);
+	    key = virHashComputeKey(table, iter->name);
 	    if (table->table[key].valid == 0) {
-		memcpy(&(table->table[key]), iter, sizeof(xenHashEntry));
+		memcpy(&(table->table[key]), iter, sizeof(virHashEntry));
 		table->table[key].next = NULL;
 		free(iter);
 	    } else {
@@ -178,14 +178,14 @@ xenHashGrow(xenHashTablePtr table, int size) {
 
 #ifdef DEBUG_GROW
     xmlGenericError(xmlGenericErrorContext,
-	    "xenHashGrow : from %d to %d, %d elems\n", oldsize, size, nbElem);
+	    "virHashGrow : from %d to %d, %d elems\n", oldsize, size, nbElem);
 #endif
 
     return(0);
 }
 
 /**
- * xenHashFree:
+ * virHashFree:
  * @table: the hash table
  * @f:  the deallocator function for items in the hash
  *
@@ -193,10 +193,10 @@ xenHashGrow(xenHashTablePtr table, int size) {
  * deallocated with @f if provided.
  */
 void
-xenHashFree(xenHashTablePtr table, xenHashDeallocator f) {
+virHashFree(virHashTablePtr table, virHashDeallocator f) {
     int i;
-    xenHashEntryPtr iter;
-    xenHashEntryPtr next;
+    virHashEntryPtr iter;
+    virHashEntryPtr next;
     int inside_table = 0;
     int nbElems;
 
@@ -230,7 +230,7 @@ xenHashFree(xenHashTablePtr table, xenHashDeallocator f) {
 }
 
 /**
- * xenHashAddEntry3:
+ * virHashAddEntry3:
  * @table: the hash table
  * @name: the name of the userdata
  * @userdata: a pointer to the userdata
@@ -241,11 +241,11 @@ xenHashFree(xenHashTablePtr table, xenHashDeallocator f) {
  * Returns 0 the addition succeeded and -1 in case of error.
  */
 int
-xenHashAddEntry(xenHashTablePtr table, const char *name,
+virHashAddEntry(virHashTablePtr table, const char *name,
 		 void *userdata) {
     unsigned long key, len = 0;
-    xenHashEntryPtr entry;
-    xenHashEntryPtr insert;
+    virHashEntryPtr entry;
+    virHashEntryPtr insert;
 
     if ((table == NULL) || (name == NULL))
 	return(-1);
@@ -253,7 +253,7 @@ xenHashAddEntry(xenHashTablePtr table, const char *name,
     /*
      * Check for duplicate and insertion location.
      */
-    key = xenHashComputeKey(table, name);
+    key = virHashComputeKey(table, name);
     if (table->table[key].valid == 0) {
 	insert = NULL;
     } else {
@@ -270,7 +270,7 @@ xenHashAddEntry(xenHashTablePtr table, const char *name,
     if (insert == NULL) {
 	entry = &(table->table[key]);
     } else {
-	entry = malloc(sizeof(xenHashEntry));
+	entry = malloc(sizeof(virHashEntry));
 	if (entry == NULL)
 	     return(-1);
     }
@@ -287,13 +287,13 @@ xenHashAddEntry(xenHashTablePtr table, const char *name,
     table->nbElems++;
 
     if (len > MAX_HASH_LEN)
-	xenHashGrow(table, MAX_HASH_LEN * table->size);
+	virHashGrow(table, MAX_HASH_LEN * table->size);
 
     return(0);
 }
 
 /**
- * xenHashUpdateEntry:
+ * virHashUpdateEntry:
  * @table: the hash table
  * @name: the name of the userdata
  * @userdata: a pointer to the userdata
@@ -306,11 +306,11 @@ xenHashAddEntry(xenHashTablePtr table, const char *name,
  * Returns 0 the addition succeeded and -1 in case of error.
  */
 int
-xenHashUpdateEntry(xenHashTablePtr table, const char *name,
-		   void *userdata, xenHashDeallocator f) {
+virHashUpdateEntry(virHashTablePtr table, const char *name,
+		   void *userdata, virHashDeallocator f) {
     unsigned long key;
-    xenHashEntryPtr entry;
-    xenHashEntryPtr insert;
+    virHashEntryPtr entry;
+    virHashEntryPtr insert;
 
     if ((table == NULL) || name == NULL)
 	return(-1);
@@ -318,7 +318,7 @@ xenHashUpdateEntry(xenHashTablePtr table, const char *name,
     /*
      * Check for duplicate and insertion location.
      */
-    key = xenHashComputeKey(table, name);
+    key = virHashComputeKey(table, name);
     if (table->table[key].valid == 0) {
 	insert = NULL;
     } else {
@@ -342,7 +342,7 @@ xenHashUpdateEntry(xenHashTablePtr table, const char *name,
     if (insert == NULL) {
 	entry =  &(table->table[key]);
     } else {
-	entry = malloc(sizeof(xenHashEntry));
+	entry = malloc(sizeof(virHashEntry));
 	if (entry == NULL)
 	     return(-1);
     }
@@ -361,7 +361,7 @@ xenHashUpdateEntry(xenHashTablePtr table, const char *name,
 }
 
 /**
- * xenHashLookup:
+ * virHashLookup:
  * @table: the hash table
  * @name: the name of the userdata
  *
@@ -370,15 +370,15 @@ xenHashUpdateEntry(xenHashTablePtr table, const char *name,
  * Returns the a pointer to the userdata
  */
 void *
-xenHashLookup(xenHashTablePtr table, const char *name) {
+virHashLookup(virHashTablePtr table, const char *name) {
     unsigned long key;
-    xenHashEntryPtr entry;
+    virHashEntryPtr entry;
 
     if (table == NULL)
 	return(NULL);
     if (name == NULL)
 	return(NULL);
-    key = xenHashComputeKey(table, name);
+    key = virHashComputeKey(table, name);
     if (table->table[key].valid == 0)
 	return(NULL);
     for (entry = &(table->table[key]); entry != NULL; entry = entry->next) {
@@ -389,7 +389,7 @@ xenHashLookup(xenHashTablePtr table, const char *name) {
 }
 
 /**
- * xenHashSize:
+ * virHashSize:
  * @table: the hash table
  *
  * Query the number of elements installed in the hash @table.
@@ -398,14 +398,14 @@ xenHashLookup(xenHashTablePtr table, const char *name) {
  * -1 in case of error
  */
 int
-xenHashSize(xenHashTablePtr table) {
+virHashSize(virHashTablePtr table) {
     if (table == NULL)
 	return(-1);
     return(table->nbElems);
 }
 
 /**
- * xenHashRemoveEntry:
+ * virHashRemoveEntry:
  * @table: the hash table
  * @name: the name of the userdata
  * @f: the deallocator function for removed item (if any)
@@ -417,16 +417,16 @@ xenHashSize(xenHashTablePtr table) {
  * Returns 0 if the removal succeeded and -1 in case of error or not found.
  */
 int
-xenHashRemoveEntry(xenHashTablePtr table, const char *name,
-                   xenHashDeallocator f) {
+virHashRemoveEntry(virHashTablePtr table, const char *name,
+                   virHashDeallocator f) {
     unsigned long key;
-    xenHashEntryPtr entry;
-    xenHashEntryPtr prev = NULL;
+    virHashEntryPtr entry;
+    virHashEntryPtr prev = NULL;
 
     if (table == NULL || name == NULL)
         return(-1);
 
-    key = xenHashComputeKey(table, name);
+    key = virHashComputeKey(table, name);
     if (table->table[key].valid == 0) {
         return(-1);
     } else {
@@ -445,7 +445,7 @@ xenHashRemoveEntry(xenHashTablePtr table, const char *name,
 			entry->valid = 0;
 		    } else {
 			entry = entry->next;
-			memcpy(&(table->table[key]), entry, sizeof(xenHashEntry));
+			memcpy(&(table->table[key]), entry, sizeof(virHashEntry));
 			free(entry);
 		    }
 		}

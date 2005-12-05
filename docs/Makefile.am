@@ -8,14 +8,14 @@ PAGES= # index.html
 APIPAGES=APIconstructors.html APIfiles.html APIfunctions.html \
     APIsymbols.html APIchunk0.html
 EXTRA_DIST=							\
-	   libxen-api.xml apibuild.py
+	   libvir-api.xml apibuild.py
 
 
 man_MANS=
 
 all: web $(man_MANS)
 
-api: libxen-api.xml libxen-refs.xml
+api: libvir-api.xml libvir-refs.xml
 
 web: $(PAGES)
 
@@ -45,14 +45,14 @@ web: $(PAGES)
 #	  echo "Validating the resulting XHTML pages" ; \
 #	  $(XMLLINT) --nonet --valid --noout html/*.html ; fi );
 
-libxen-api.xml libxen-refs.xml: apibuild.py ../include/*.h ../src/*.h ../src/*.c
+libvir-api.xml libvir-refs.xml: apibuild.py ../include/*.h ../src/*.h ../src/*.c
 	-(./apibuild.py)
 
 clean-local:
 	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt
 
 maintainer-clean-local: clean-local
-	rm -rf libxen-api.xml libxen-refs.xml
+	rm -rf libvir-api.xml libvir-refs.xml
 
 rebuild: api all
 

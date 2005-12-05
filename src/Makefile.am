@@ -1,21 +1,21 @@
 ## Process this file with automake to produce Makefile.in
 
 INCLUDES = -I$(top_builddir)/include -I@srcdir@/include
-DEPS = libxen.la
-LDADDS = @STATIC_BINARIES@ libxen.la
+DEPS = libvir.la
+LDADDS = @STATIC_BINARIES@ libvir.la
 
-EXTRA_DIST = libxen_sym.version
+EXTRA_DIST = libvir_sym.version
 
-lib_LTLIBRARIES = libxen.la
-libxen_la_LIBADD = 
-libxen_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libxen_sym.version \
+lib_LTLIBRARIES = libvir.la
+libvir_la_LIBADD = 
+libvir_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvir_sym.version \
                     -version-info @LIBXEN_VERSION_INFO@
-libxen_la_SOURCES = libxen.c internal.h hash.c hash.h
+libvir_la_SOURCES = libvir.c internal.h hash.c hash.h
 
-noinst_PROGRAMS=xensh
+noinst_PROGRAMS=virsh
 
-xensh_SOURCES=xensh.c
-xensh_LDFLAGS =
-xensh_DEPENDENCIES = $(DEPS)
-xensh_LDADD= $(LDADDS)
+virsh_SOURCES=virsh.c
+virsh_LDFLAGS =
+virsh_DEPENDENCIES = $(DEPS)
+virsh_LDADD= $(LDADDS)
 

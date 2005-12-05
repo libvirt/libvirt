@@ -2,4 +2,4 @@
 
 Done:
 - make dist and make rpm targets
-- set a no public by default policy for libxen symbols
+- set a no public by default policy for libvir symbols
