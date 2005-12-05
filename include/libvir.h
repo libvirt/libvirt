@@ -48,6 +48,55 @@ typedef struct _virDomain virDomain;
 typedef virDomain *virDomainPtr;
 
 /**
+ * virDomainState:
+ *
+ * A domain may be in different states at a given point in time
+ */
+typedef enum {
+     VIR_DOMAIN_NOSTATE	= 0, /* no state */
+     VIR_DOMAIN_RUNNING	= 1, /* the domain is running */
+     VIR_DOMAIN_BLOCKED	= 2, /* the domain is blocked on resource */
+     VIR_DOMAIN_PAUSED	= 3, /* the domain is paused by user */
+     VIR_DOMAIN_SHUTDOWN= 4, /* the domain is being shut down */
+     VIR_DOMAIN_SHUTOFF	= 5  /* the domain is shut off */
+} virDomainState;
+
+/**
+ * virDomainInfoPtr:
+ *
+ * a virDomainInfo is a structure filled by virDomainGetInfo()
+ */
+
+typedef struct _virDomainInfo virDomainInfo;
+
+struct _virDomainInfo {
+    unsigned char state;	/* the running state, a virDomainFlags */
+
+    /*
+     * Informations below are only available to clients with a connection
+     * with full access to the hypervisor
+     */
+    unsigned long long cpuTime;	/* the CPU time used */
+    unsigned long pages;	/* the number of pages used by the domain */
+    unsigned long maxPages;	/* the maximum number of pages allowed */
+    
+    /*
+     * TODO:
+     * - check what can be extracted publicly from xenstore
+     *   and what's private limited to the hypervisor call.
+     * - add padding to this structure for ABI long term protection
+     */
+};
+
+/**
+ * virDomainInfoPtr:
+ *
+ * a virDomainInfoPtr is a pointer to a virDomainInfo structure.
+ */
+
+typedef virDomainInfo *virDomainInfoPtr;
+
+/**
  * virDomainFlags:
  *
  * Flags OR'ed together to provide specific behaviour when creating a
@@ -93,6 +142,12 @@ int			virDomainDestroy	(virDomainPtr domain);
 int			virDomainSuspend	(virDomainPtr domain);
 int			virDomainResume		(virDomainPtr domain);
 
+/*
+ * Domain runtime informations
+ */
+int			virDomainGetInfo	(virDomainPtr domain,
+						 virDomainInfoPtr info);
+						 
 /*
  * Dynamic control of domains
  */

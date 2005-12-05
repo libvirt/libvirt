@@ -521,3 +521,73 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory) {
     return(-1);
 }
 
+/**
+ * virDomainGetInfo:
+ * @domain: a domain object or NULL
+ * @info: pointer to a virDomainInfo structure allocated by the user
+ * 
+ * Extract information about a domain. Note that if the connection
+ * used to get the domain is limited only a partial set of the informations
+ * can be extracted.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
+    int ret;
+
+    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC) ||
+        (info == NULL))
+	return(-1);
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        char *tmp;
+
+	tmp = virDomainDoStoreQuery(domain, "running");
+	if (tmp != NULL) {
+	    if (tmp[0] == '1')
+		info->state = VIR_DOMAIN_RUNNING;
+	    free(tmp);
+	} else {
+	    info->state = VIR_DOMAIN_NONE;
+	}
+	tmp = virDomainDoStoreQuery(domain, "memory/target");
+	if (tmp != NULL) {
+	    info->pages = atol(tmp) / 4096;
+	    free(tmp);
+	} else {
+	    info->pages = 0;
+	    info->maxPages = 0;
+	}
+    } else {
+        xc_domaininfo_t dominfo;
+
+	dominfo.domain = domain->handle;
+        ret = xc_domain_getinfolist(domain->conn->handle, domain->handle,
+	                            1, &dominfo);
+        if (ret <= 0)
+	    return(-1);
+	switch (dominfo.flags & 0xFF) {
+	    case DOMFLAGS_DYING:
+	        info->state = VIR_DOMAIN_SHUTDOWN;
+		break;
+	    case DOMFLAGS_SHUTDOWN:
+	        info->state = VIR_DOMAIN_SHUTOFF;
+		break;
+	    case DOMFLAGS_PAUSED:
+	        info->state = VIR_DOMAIN_PAUSED;
+		break;
+	    case DOMFLAGS_BLOCKED:
+	        info->state = VIR_DOMAIN_BLOCKED;
+		break;
+	    case DOMFLAGS_RUNNING:
+	        info->state = VIR_DOMAIN_RUNNING;
+		break;
+	    default:
+	        info->state = VIR_DOMAIN_NONE;
+	}
+	info->cpuTime = dominfo.cpu_time;
+	info->pages = dominfo.tot_pages;
+	info->maxPages = dominfo.max_pages;
+    }
+    return(0);
+}

@@ -20,7 +20,36 @@ virDomainPtr dom0;
 int ids[MAX_DOM];
 
 static void printDomain(virDomainPtr dom) {
-    printf("id %d: name %s\n", virDomainGetID(dom), virDomainGetName(dom));
+    virDomainInfo info;
+
+    printf("id %d: name %s ", virDomainGetID(dom), virDomainGetName(dom));
+    virDomainGetInfo(dom, &info);
+    if (virDomainGetInfo(dom, &info) < 0) {
+        printf("failed to get informations\n");
+    } else {
+        switch (info.state) {
+	    case VIR_DOMAIN_RUNNING:
+	        printf("running ");
+		break;
+            case VIR_DOMAIN_BLOCKED:
+	        printf("blocked ");
+		break;
+            case VIR_DOMAIN_PAUSED:
+	        printf("paused ");
+		break;
+            case VIR_DOMAIN_SHUTDOWN:
+	        printf("in shutdown ");
+		break;
+            case VIR_DOMAIN_SHUTOFF:
+	        printf("shut off ");
+		break;
+	    default:
+	        break;
+	}
+        printf("%lu CPU time, %lu mem used, %lu max_mem\n",
+	       info.cpuTime, info.pages * 4096, info.maxPages * 4096);
+    }
+
 }
 
 int main(int argc, char **argv) {
