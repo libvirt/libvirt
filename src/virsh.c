@@ -22,11 +22,13 @@ int ids[MAX_DOM];
 static void printDomain(virDomainPtr dom) {
     virDomainInfo info;
 
-    printf("id %d: name %s ", virDomainGetID(dom), virDomainGetName(dom));
+    printf("id %d: name %s, ", virDomainGetID(dom), virDomainGetName(dom));
     virDomainGetInfo(dom, &info);
     if (virDomainGetInfo(dom, &info) < 0) {
         printf("failed to get informations\n");
     } else {
+        float mem, maxMem;
+
         switch (info.state) {
 	    case VIR_DOMAIN_RUNNING:
 	        printf("running ");
@@ -46,8 +48,17 @@ static void printDomain(virDomainPtr dom) {
 	    default:
 	        break;
 	}
-        printf("%lu CPU time, %lu mem used, %lu max_mem\n",
-	       info.cpuTime, info.pages * 4096, info.maxPages * 4096);
+	if (info.cpuTime != 0) {
+	    float cpuUsed = info.cpuTime;
+
+	    cpuUsed /= 1000000000;
+	    printf("%.1f s CPU time, ", cpuUsed);
+	}
+	mem = info.memory;
+	mem /= 1024 * 1024;
+	maxMem = info.maxMem;
+	maxMem /= 1024 * 1024;
+        printf("%.0f MB mem used, %.0f MB max_mem\n", mem, maxMem);
     }
 
 }

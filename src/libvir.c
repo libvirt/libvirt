@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <xenctrl.h>
 #include <xs.h>
 #include "internal.h"
@@ -539,6 +540,7 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
     if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC) ||
         (info == NULL))
 	return(-1);
+    memset(info, 0, sizeof(virDomainInfo));
     if (domain->conn->flags & VIR_CONNECT_RO) {
         char *tmp;
 
@@ -552,11 +554,19 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
 	}
 	tmp = virDomainDoStoreQuery(domain, "memory/target");
 	if (tmp != NULL) {
-	    info->pages = atol(tmp) / 4096;
+	    info->memory = atol(tmp) * 1024;
+	    info->maxMem = atol(tmp) * 1024;
 	    free(tmp);
 	} else {
-	    info->pages = 0;
-	    info->maxPages = 0;
+	    info->memory = 0;
+	    info->maxMem = 0;
+	}
+	tmp = virDomainDoStoreQuery(domain, "cpu_time");
+	if (tmp != NULL) {
+	    info->cpuTime = atol(tmp);
+	    free(tmp);
+	} else {
+	    info->cpuTime = 0;
 	}
     } else {
         xc_domaininfo_t dominfo;
@@ -585,9 +595,15 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
 	    default:
 	        info->state = VIR_DOMAIN_NONE;
 	}
+
+	/*
+	 * the API brings back the cpu time in nanoseconds,
+	 * convert to microseconds, same thing convert to
+
+	 */
 	info->cpuTime = dominfo.cpu_time;
-	info->pages = dominfo.tot_pages;
-	info->maxPages = dominfo.max_pages;
+	info->memory = dominfo.tot_pages * 4096;
+	info->maxMem = dominfo.max_pages * 4096;
     }
     return(0);
 }

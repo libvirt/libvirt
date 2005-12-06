@@ -71,14 +71,14 @@ typedef struct _virDomainInfo virDomainInfo;
 
 struct _virDomainInfo {
     unsigned char state;	/* the running state, a virDomainFlags */
+    unsigned long maxMem;	/* the maximum number of bytes allowed */
+    unsigned long memory;	/* the number of bytes used by the domain */
 
     /*
      * Informations below are only available to clients with a connection
      * with full access to the hypervisor
      */
-    unsigned long long cpuTime;	/* the CPU time used */
-    unsigned long pages;	/* the number of pages used by the domain */
-    unsigned long maxPages;	/* the maximum number of pages allowed */
+    unsigned long long cpuTime;	/* the CPU time used in nanoseconds */
     
     /*
      * TODO:

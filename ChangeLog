@@ -1,3 +1,9 @@
+Tue Dec  6 14:46:50 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvir.h src/libvir.c src/virsh.c: tweaking of the 
+	  GetInfo() API, returns bytes and nanoseconds, try to fix
+	  the scales, but time on unpriviledged interfaces doesn't work.
+
 Mon Dec  5 19:14:05 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvir.h src/libvir.c src/libvir_sym.version src/virsh.c:
