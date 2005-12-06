@@ -8,7 +8,7 @@ PAGES= # index.html
 APIPAGES=APIconstructors.html APIfiles.html APIfunctions.html \
     APIsymbols.html APIchunk0.html
 EXTRA_DIST=							\
-	   libvir-api.xml apibuild.py
+	   libvir-api.xml libxen-refs.xml apibuild.py
 
 
 man_MANS=

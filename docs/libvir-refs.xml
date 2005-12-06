@@ -1,0 +1,959 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<apirefs name='libvir'>
+  <references>
+    <reference name='ATTRIBUTE_UNUSED' href='html/libvir-internal.html#ATTRIBUTE_UNUSED'/>
+    <reference name='TODO' href='html/libvir-internal.html#TODO'/>
+    <reference name='VIR_DOMAIN_BLOCKED' href='html/libvir-libvir.html#VIR_DOMAIN_BLOCKED'/>
+    <reference name='VIR_DOMAIN_NONE' href='html/libvir-libvir.html#VIR_DOMAIN_NONE'/>
+    <reference name='VIR_DOMAIN_NOSTATE' href='html/libvir-libvir.html#VIR_DOMAIN_NOSTATE'/>
+    <reference name='VIR_DOMAIN_PAUSED' href='html/libvir-libvir.html#VIR_DOMAIN_PAUSED'/>
+    <reference name='VIR_DOMAIN_RUNNING' href='html/libvir-libvir.html#VIR_DOMAIN_RUNNING'/>
+    <reference name='VIR_DOMAIN_SHUTDOWN' href='html/libvir-libvir.html#VIR_DOMAIN_SHUTDOWN'/>
+    <reference name='VIR_DOMAIN_SHUTOFF' href='html/libvir-libvir.html#VIR_DOMAIN_SHUTOFF'/>
+    <reference name='_virDomainInfo' href='html/libvir-libvir.html#_virDomainInfo'/>
+    <reference name='virConnect' href='html/libvir-libvir.html#virConnect'/>
+    <reference name='virConnectClose' href='html/libvir-libvir.html#virConnectClose'/>
+    <reference name='virConnectGetVersion' href='html/libvir-libvir.html#virConnectGetVersion'/>
+    <reference name='virConnectListDomains' href='html/libvir-libvir.html#virConnectListDomains'/>
+    <reference name='virConnectOpen' href='html/libvir-libvir.html#virConnectOpen'/>
+    <reference name='virConnectOpenReadOnly' href='html/libvir-libvir.html#virConnectOpenReadOnly'/>
+    <reference name='virConnectPtr' href='html/libvir-libvir.html#virConnectPtr'/>
+    <reference name='virDomain' href='html/libvir-libvir.html#virDomain'/>
+    <reference name='virDomainCreateLinux' href='html/libvir-libvir.html#virDomainCreateLinux'/>
+    <reference name='virDomainDestroy' href='html/libvir-libvir.html#virDomainDestroy'/>
+    <reference name='virDomainFlags' href='html/libvir-libvir.html#virDomainFlags'/>
+    <reference name='virDomainGetID' href='html/libvir-libvir.html#virDomainGetID'/>
+    <reference name='virDomainGetInfo' href='html/libvir-libvir.html#virDomainGetInfo'/>
+    <reference name='virDomainGetMaxMemory' href='html/libvir-libvir.html#virDomainGetMaxMemory'/>
+    <reference name='virDomainGetName' href='html/libvir-libvir.html#virDomainGetName'/>
+    <reference name='virDomainInfo' href='html/libvir-libvir.html#virDomainInfo'/>
+    <reference name='virDomainInfoPtr' href='html/libvir-libvir.html#virDomainInfoPtr'/>
+    <reference name='virDomainLookupByID' href='html/libvir-libvir.html#virDomainLookupByID'/>
+    <reference name='virDomainLookupByName' href='html/libvir-libvir.html#virDomainLookupByName'/>
+    <reference name='virDomainPtr' href='html/libvir-libvir.html#virDomainPtr'/>
+    <reference name='virDomainResume' href='html/libvir-libvir.html#virDomainResume'/>
+    <reference name='virDomainSetMaxMemory' href='html/libvir-libvir.html#virDomainSetMaxMemory'/>
+    <reference name='virDomainState' href='html/libvir-libvir.html#virDomainState'/>
+    <reference name='virDomainSuspend' href='html/libvir-libvir.html#virDomainSuspend'/>
+  </references>
+  <alpha>
+    <letter name='A'>
+      <ref name='ATTRIBUTE_UNUSED'/>
+    </letter>
+    <letter name='T'>
+      <ref name='TODO'/>
+    </letter>
+    <letter name='V'>
+      <ref name='VIR_DOMAIN_BLOCKED'/>
+      <ref name='VIR_DOMAIN_NONE'/>
+      <ref name='VIR_DOMAIN_NOSTATE'/>
+      <ref name='VIR_DOMAIN_PAUSED'/>
+      <ref name='VIR_DOMAIN_RUNNING'/>
+      <ref name='VIR_DOMAIN_SHUTDOWN'/>
+      <ref name='VIR_DOMAIN_SHUTOFF'/>
+    </letter>
+    <letter name='_'>
+      <ref name='_virDomainInfo'/>
+    </letter>
+    <letter name='v'>
+      <ref name='virConnect'/>
+      <ref name='virConnectClose'/>
+      <ref name='virConnectGetVersion'/>
+      <ref name='virConnectListDomains'/>
+      <ref name='virConnectOpen'/>
+      <ref name='virConnectOpenReadOnly'/>
+      <ref name='virConnectPtr'/>
+      <ref name='virDomain'/>
+      <ref name='virDomainCreateLinux'/>
+      <ref name='virDomainDestroy'/>
+      <ref name='virDomainFlags'/>
+      <ref name='virDomainGetID'/>
+      <ref name='virDomainGetInfo'/>
+      <ref name='virDomainGetMaxMemory'/>
+      <ref name='virDomainGetName'/>
+      <ref name='virDomainInfo'/>
+      <ref name='virDomainInfoPtr'/>
+      <ref name='virDomainLookupByID'/>
+      <ref name='virDomainLookupByName'/>
+      <ref name='virDomainPtr'/>
+      <ref name='virDomainResume'/>
+      <ref name='virDomainSetMaxMemory'/>
+      <ref name='virDomainState'/>
+      <ref name='virDomainSuspend'/>
+    </letter>
+  </alpha>
+  <constructors>
+    <type name='unsigned int'>
+      <ref name='virDomainGetID'/>
+    </type>
+    <type name='unsigned long'>
+      <ref name='virConnectGetVersion'/>
+      <ref name='virDomainGetMaxMemory'/>
+    </type>
+    <type name='virConnectPtr'>
+      <ref name='virConnectOpen'/>
+      <ref name='virConnectOpenReadOnly'/>
+    </type>
+    <type name='virDomainPtr'>
+      <ref name='virDomainCreateLinux'/>
+      <ref name='virDomainLookupByID'/>
+      <ref name='virDomainLookupByName'/>
+    </type>
+  </constructors>
+  <functions>
+    <type name='int *'>
+      <ref name='virConnectListDomains'/>
+    </type>
+    <type name='unsigned int'>
+      <ref name='virDomainCreateLinux'/>
+    </type>
+    <type name='unsigned long'>
+      <ref name='virDomainCreateLinux'/>
+      <ref name='virDomainSetMaxMemory'/>
+    </type>
+    <type name='virConnectPtr'>
+      <ref name='virConnectClose'/>
+      <ref name='virConnectGetVersion'/>
+      <ref name='virConnectListDomains'/>
+      <ref name='virDomainCreateLinux'/>
+      <ref name='virDomainLookupByID'/>
+      <ref name='virDomainLookupByName'/>
+    </type>
+    <type name='virDomainInfoPtr'>
+      <ref name='virDomainGetInfo'/>
+    </type>
+    <type name='virDomainPtr'>
+      <ref name='virDomainDestroy'/>
+      <ref name='virDomainGetID'/>
+      <ref name='virDomainGetInfo'/>
+      <ref name='virDomainGetMaxMemory'/>
+      <ref name='virDomainGetName'/>
+      <ref name='virDomainResume'/>
+      <ref name='virDomainSetMaxMemory'/>
+      <ref name='virDomainSuspend'/>
+    </type>
+  </functions>
+  <files>
+    <file name='libvir'>
+      <ref name='VIR_DOMAIN_BLOCKED'/>
+      <ref name='VIR_DOMAIN_NONE'/>
+      <ref name='VIR_DOMAIN_NOSTATE'/>
+      <ref name='VIR_DOMAIN_PAUSED'/>
+      <ref name='VIR_DOMAIN_RUNNING'/>
+      <ref name='VIR_DOMAIN_SHUTDOWN'/>
+      <ref name='VIR_DOMAIN_SHUTOFF'/>
+      <ref name='_virDomainInfo'/>
+      <ref name='virConnect'/>
+      <ref name='virConnectClose'/>
+      <ref name='virConnectGetVersion'/>
+      <ref name='virConnectListDomains'/>
+      <ref name='virConnectOpen'/>
+      <ref name='virConnectOpenReadOnly'/>
+      <ref name='virConnectPtr'/>
+      <ref name='virDomain'/>
+      <ref name='virDomainCreateLinux'/>
+      <ref name='virDomainDestroy'/>
+      <ref name='virDomainFlags'/>
+      <ref name='virDomainGetID'/>
+      <ref name='virDomainGetInfo'/>
+      <ref name='virDomainGetMaxMemory'/>
+      <ref name='virDomainGetName'/>
+      <ref name='virDomainInfo'/>
+      <ref name='virDomainInfoPtr'/>
+      <ref name='virDomainLookupByID'/>
+      <ref name='virDomainLookupByName'/>
+      <ref name='virDomainPtr'/>
+      <ref name='virDomainResume'/>
+      <ref name='virDomainSetMaxMemory'/>
+      <ref name='virDomainState'/>
+      <ref name='virDomainSuspend'/>
+    </file>
+    <file name='internal'>
+      <ref name='ATTRIBUTE_UNUSED'/>
+      <ref name='TODO'/>
+    </file>
+  </files>
+  <index>
+    <chunk name='chunk0'>
+      <letter name='A'>
+        <word name='ABI'>
+          <ref name='_virDomainInfo'/>
+        </word>
+        <word name='APIs'>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
+      </letter>
+      <letter name='C'>
+        <word name='CPU'>
+          <ref name='virDomainSuspend'/>
+        </word>
+        <word name='Collect'>
+          <ref name='virConnectListDomains'/>
+        </word>
+      </letter>
+      <letter name='D'>
+        <word name='Destroy'>
+          <ref name='virDomainDestroy'/>
+        </word>
+        <word name='Domain0'>
+          <ref name='virDomainGetMaxMemory'/>
+          <ref name='virDomainSetMaxMemory'/>
+        </word>
+        <word name='Dynamically'>
+          <ref name='virDomainSetMaxMemory'/>
+        </word>
+      </letter>
+      <letter name='E'>
+        <word name='Extract'>
+          <ref name='virDomainGetInfo'/>
+        </word>
+      </letter>
+      <letter name='G'>
+        <word name='Get'>
+          <ref name='virConnectGetVersion'/>
+          <ref name='virDomainGetID'/>
+          <ref name='virDomainGetName'/>
+        </word>
+      </letter>
+      <letter name='H'>
+        <word name='Hypervisor'>
+          <ref name='virConnectClose'/>
+          <ref name='virConnectGetVersion'/>
+          <ref name='virConnectOpen'/>
+        </word>
+      </letter>
+      <letter name='I'>
+        <word name='IDs'>
+          <ref name='virConnectListDomains'/>
+        </word>
+        <word name='Informations'>
+          <ref name='_virDomainInfo'/>
+        </word>
+      </letter>
+      <letter name='K'>
+        <word name='KBytes'>
+          <ref name='_virDomainInfo'/>
+        </word>
+      </letter>
+      <letter name='L'>
+        <word name='Launch'>
+          <ref name='virDomainCreateLinux'/>
+        </word>
+        <word name='Linux'>
+          <ref name='virDomainCreateLinux'/>
+        </word>
+      </letter>
+      <letter name='M'>
+        <word name='Macro'>
+          <ref name='ATTRIBUTE_UNUSED'/>
+        </word>
+      </letter>
+      <letter name='N'>
+        <word name='NULL'>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+          <ref name='virDomainCreateLinux'/>
+          <ref name='virDomainGetInfo'/>
+          <ref name='virDomainGetMaxMemory'/>
+          <ref name='virDomainGetName'/>
+          <ref name='virDomainLookupByID'/>
+          <ref name='virDomainLookupByName'/>
+          <ref name='virDomainSetMaxMemory'/>
+        </word>
+        <word name='Note'>
+          <ref name='virDomainGetInfo'/>
+        </word>
+      </letter>
+      <letter name='R'>
+        <word name='Resume'>
+          <ref name='virDomainResume'/>
+        </word>
+        <word name='Retrieve'>
+          <ref name='virDomainGetMaxMemory'/>
+        </word>
+      </letter>
+      <letter name='S'>
+        <word name='Suspends'>
+          <ref name='virDomainSuspend'/>
+        </word>
+      </letter>
+      <letter name='T'>
+        <word name='TODO:'>
+          <ref name='_virDomainInfo'/>
+        </word>
+        <word name='This'>
+          <ref name='virConnectClose'/>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
+        <word name='Try'>
+          <ref name='virDomainLookupByID'/>
+          <ref name='virDomainLookupByName'/>
+        </word>
+      </letter>
+      <letter name='U'>
+        <word name='Use'>
+          <ref name='virDomainSuspend'/>
+        </word>
+      </letter>
+      <letter name='a'>
+        <word name='about'>
+          <ref name='virDomainGetInfo'/>
+        </word>
+        <word name='access'>
+          <ref name='_virDomainInfo'/>
+          <ref name='virDomainSuspend'/>
+        </word>
+        <word name='active'>
+          <ref name='virConnectListDomains'/>
+          <ref name='virDomainSuspend'/>
+        </word>
+        <word name='add'>
+          <ref name='_virDomainInfo'/>
+        </word>
+        <word name='all'>
+          <ref name='virDomainDestroy'/>
+        </word>
+        <word name='allocated'>
+          <ref name='virDomainGetInfo'/>
+          <ref name='virDomainGetMaxMemory'/>
+          <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSuspend'/>
+        </word>
+        <word name='allowed'>
+          <ref name='_virDomainInfo'/>
+        </word>
+        <word name='already'>
+          <ref name='virDomainDestroy'/>
+        </word>
+        <word name='amount'>
+          <ref name='virDomainGetMaxMemory'/>
+          <ref name='virDomainSetMaxMemory'/>
+        </word>
+        <word name='application'>
+          <ref name='virConnectClose'/>
+          <ref name='virDomainGetMaxMemory'/>
+          <ref name='virDomainSetMaxMemory'/>
+        </word>
+        <word name='are'>
+          <ref name='_virDomainInfo'/>
+          <ref name='virConnectClose'/>
+          <ref name='virConnectOpenReadOnly'/>
+          <ref name='virDomainDestroy'/>
+        </word>
+        <word name='argument'>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
+        <word name='array'>
+          <ref name='virConnectListDomains'/>
+        </word>
+        <word name='available'>
+          <ref name='_virDomainInfo'/>
+        </word>
+      </letter>
+      <letter name='b'>
+        <word name='back'>
+          <ref name='virDomainDestroy'/>
+        </word>
+        <word name='based'>
+          <ref name='virDomainLookupByID'/>
+        </word>
+        <word name='below'>
+          <ref name='_virDomainInfo'/>
+        </word>
+        <word name='blocks'>
+          <ref name='TODO'/>
+        </word>
+        <word name='but'>
+          <ref name='virDomainSuspend'/>
+        </word>
+      </letter>
+      <letter name='c'>
+        <word name='call'>
+          <ref name='_virDomainInfo'/>
+        </word>
+        <word name='called'>
+          <ref name='virConnectClose'/>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
+        <word name='calling'>
+          <ref name='virDomainResume'/>
+        </word>
+        <word name='can'>
+          <ref name='_virDomainInfo'/>
+          <ref name='virDomainGetInfo'/>
+        </word>
+        <word name='case'>
+          <ref name='virConnectClose'/>
+          <ref name='virConnectGetVersion'/>
+          <ref name='virConnectListDomains'/>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+          <ref name='virDomainCreateLinux'/>
+          <ref name='virDomainDestroy'/>
+          <ref name='virDomainGetID'/>
+          <ref name='virDomainGetInfo'/>
+          <ref name='virDomainGetMaxMemory'/>
+          <ref name='virDomainLookupByID'/>
+          <ref name='virDomainLookupByName'/>
+          <ref name='virDomainResume'/>
+          <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSuspend'/>
+        </word>
+        <word name='change'>
+          <ref name='virDomainSetMaxMemory'/>
+        </word>
+        <word name='check'>
+          <ref name='_virDomainInfo'/>
+        </word>
+        <word name='clients'>
+          <ref name='_virDomainInfo'/>
+        </word>
+        <word name='closes'>
+          <ref name='virConnectClose'/>
+        </word>
+        <word name='collect'>
+          <ref name='virConnectListDomains'/>
+        </word>
+        <word name='command'>
+          <ref name='virDomainCreateLinux'/>
+        </word>
+        <word name='conciously'>
+          <ref name='ATTRIBUTE_UNUSED'/>
+        </word>
+        <word name='connection'>
+          <ref name='_virDomainInfo'/>
+          <ref name='virConnectClose'/>
+          <ref name='virConnectGetVersion'/>
+          <ref name='virConnectListDomains'/>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+          <ref name='virDomainCreateLinux'/>
+          <ref name='virDomainGetInfo'/>
+          <ref name='virDomainLookupByID'/>
+          <ref name='virDomainLookupByName'/>
+        </word>
+        <word name='currently'>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
+      </letter>
+      <letter name='d'>
+        <word name='deallocated'>
+          <ref name='virDomainGetName'/>
+        </word>
+        <word name='domains'>
+          <ref name='virConnectListDomains'/>
+        </word>
+        <word name='down'>
+          <ref name='virDomainDestroy'/>
+        </word>
+      </letter>
+      <letter name='e'>
+        <word name='error'>
+          <ref name='virConnectClose'/>
+          <ref name='virConnectGetVersion'/>
+          <ref name='virConnectListDomains'/>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+          <ref name='virDomainGetID'/>
+          <ref name='virDomainGetMaxMemory'/>
+        </word>
+        <word name='especially'>
+          <ref name='virConnectClose'/>
+        </word>
+        <word name='extracted'>
+          <ref name='_virDomainInfo'/>
+          <ref name='virDomainGetInfo'/>
+        </word>
+      </letter>
+      <letter name='f'>
+        <word name='failure'>
+          <ref name='virDomainCreateLinux'/>
+          <ref name='virDomainDestroy'/>
+          <ref name='virDomainGetInfo'/>
+          <ref name='virDomainLookupByID'/>
+          <ref name='virDomainLookupByName'/>
+          <ref name='virDomainResume'/>
+          <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSuspend'/>
+        </word>
+        <word name='file'>
+          <ref name='virDomainCreateLinux'/>
+        </word>
+        <word name='find'>
+          <ref name='virDomainLookupByID'/>
+        </word>
+        <word name='first'>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
+        <word name='flag'>
+          <ref name='ATTRIBUTE_UNUSED'/>
+          <ref name='TODO'/>
+        </word>
+        <word name='for'>
+          <ref name='_virDomainInfo'/>
+          <ref name='virDomainCreateLinux'/>
+          <ref name='virDomainGetID'/>
+          <ref name='virDomainGetName'/>
+          <ref name='virDomainLookupByName'/>
+        </word>
+        <word name='found'>
+          <ref name='virConnectListDomains'/>
+        </word>
+        <word name='from'>
+          <ref name='_virDomainInfo'/>
+          <ref name='virDomainResume'/>
+        </word>
+        <word name='frozen'>
+          <ref name='virDomainResume'/>
+          <ref name='virDomainSuspend'/>
+        </word>
+        <word name='full'>
+          <ref name='_virDomainInfo'/>
+        </word>
+        <word name='function'>
+          <ref name='virConnectClose'/>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
+        <word name='functions'>
+          <ref name='ATTRIBUTE_UNUSED'/>
+        </word>
+        <word name='further'>
+          <ref name='virConnectClose'/>
+          <ref name='virDomainSuspend'/>
+        </word>
+      </letter>
+      <letter name='g'>
+        <word name='get'>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+          <ref name='virDomainGetInfo'/>
+          <ref name='virDomainGetMaxMemory'/>
+        </word>
+        <word name='given'>
+          <ref name='virDomainDestroy'/>
+          <ref name='virDomainLookupByName'/>
+        </word>
+        <word name='guest'>
+          <ref name='virDomainCreateLinux'/>
+        </word>
+      </letter>
+      <letter name='h'>
+        <word name='hypervisor'>
+          <ref name='_virDomainInfo'/>
+          <ref name='virConnectClose'/>
+          <ref name='virConnectGetVersion'/>
+          <ref name='virConnectListDomains'/>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+          <ref name='virDomainCreateLinux'/>
+          <ref name='virDomainDestroy'/>
+          <ref name='virDomainGetID'/>
+          <ref name='virDomainLookupByID'/>
+          <ref name='virDomainLookupByName'/>
+          <ref name='virDomainSuspend'/>
+        </word>
+      </letter>
+      <letter name='i'>
+        <word name='image'>
+          <ref name='virDomainCreateLinux'/>
+        </word>
+        <word name='information'>
+          <ref name='virDomainGetInfo'/>
+        </word>
+        <word name='informations'>
+          <ref name='virDomainGetInfo'/>
+        </word>
+        <word name='initrd'>
+          <ref name='virDomainCreateLinux'/>
+        </word>
+        <word name='instance'>
+          <ref name='virDomainDestroy'/>
+        </word>
+        <word name='int'>
+          <ref name='virDomainGetID'/>
+        </word>
+        <word name='interaction'>
+          <ref name='virConnectClose'/>
+        </word>
+        <word name='its'>
+          <ref name='virDomainGetName'/>
+        </word>
+      </letter>
+      <letter name='k'>
+        <word name='kernel'>
+          <ref name='virDomainCreateLinux'/>
+        </word>
+        <word name='kilobytes'>
+          <ref name='virDomainCreateLinux'/>
+          <ref name='virDomainGetMaxMemory'/>
+          <ref name='virDomainSetMaxMemory'/>
+        </word>
+      </letter>
+      <letter name='l'>
+        <word name='level'>
+          <ref name='virConnectGetVersion'/>
+          <ref name='virDomainSuspend'/>
+        </word>
+        <word name='lifetime'>
+          <ref name='virDomainGetName'/>
+        </word>
+        <word name='limited'>
+          <ref name='_virDomainInfo'/>
+          <ref name='virDomainGetInfo'/>
+        </word>
+        <word name='line'>
+          <ref name='virDomainCreateLinux'/>
+        </word>
+        <word name='list'>
+          <ref name='virConnectListDomains'/>
+        </word>
+        <word name='long'>
+          <ref name='_virDomainInfo'/>
+        </word>
+        <word name='lookup'>
+          <ref name='virDomainLookupByName'/>
+        </word>
+      </letter>
+      <letter name='m'>
+        <word name='macro'>
+          <ref name='TODO'/>
+        </word>
+        <word name='major'>
+          <ref name='virConnectGetVersion'/>
+        </word>
+        <word name='maximum'>
+          <ref name='_virDomainInfo'/>
+          <ref name='virDomainGetMaxMemory'/>
+          <ref name='virDomainSetMaxMemory'/>
+        </word>
+        <word name='memory'>
+          <ref name='_virDomainInfo'/>
+          <ref name='virDomainCreateLinux'/>
+          <ref name='virDomainGetMaxMemory'/>
+          <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSuspend'/>
+        </word>
+        <word name='minor'>
+          <ref name='virConnectGetVersion'/>
+        </word>
+        <word name='monitoring'>
+          <ref name='virConnectClose'/>
+        </word>
+      </letter>
+    </chunk>
+    <chunk name='chunk1'>
+      <letter name='n'>
+        <word name='name'>
+          <ref name='virDomainGetName'/>
+          <ref name='virDomainLookupByName'/>
+        </word>
+        <word name='need'>
+          <ref name='virConnectClose'/>
+          <ref name='virDomainGetName'/>
+        </word>
+        <word name='needed'>
+          <ref name='virConnectClose'/>
+        </word>
+        <word name='new'>
+          <ref name='virDomainCreateLinux'/>
+          <ref name='virDomainLookupByID'/>
+          <ref name='virDomainLookupByName'/>
+        </word>
+        <word name='not'>
+          <ref name='virConnectClose'/>
+          <ref name='virDomainDestroy'/>
+          <ref name='virDomainGetName'/>
+        </word>
+        <word name='number'>
+          <ref name='virConnectListDomains'/>
+          <ref name='virDomainGetID'/>
+          <ref name='virDomainLookupByID'/>
+        </word>
+      </letter>
+      <letter name='o'>
+        <word name='object'>
+          <ref name='virDomainCreateLinux'/>
+          <ref name='virDomainDestroy'/>
+          <ref name='virDomainGetID'/>
+          <ref name='virDomainGetInfo'/>
+          <ref name='virDomainGetMaxMemory'/>
+          <ref name='virDomainGetName'/>
+          <ref name='virDomainLookupByID'/>
+          <ref name='virDomainLookupByName'/>
+          <ref name='virDomainResume'/>
+          <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSuspend'/>
+        </word>
+        <word name='one'>
+          <ref name='_virDomainInfo'/>
+        </word>
+        <word name='only'>
+          <ref name='_virDomainInfo'/>
+          <ref name='virDomainGetInfo'/>
+        </word>
+        <word name='optional'>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+          <ref name='virDomainCreateLinux'/>
+        </word>
+        <word name='otherwise'>
+          <ref name='virConnectGetVersion'/>
+        </word>
+      </letter>
+      <letter name='p'>
+        <word name='padding'>
+          <ref name='_virDomainInfo'/>
+        </word>
+        <word name='parameters'>
+          <ref name='ATTRIBUTE_UNUSED'/>
+          <ref name='virDomainCreateLinux'/>
+        </word>
+        <word name='partial'>
+          <ref name='virDomainGetInfo'/>
+        </word>
+        <word name='pass'>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
+        <word name='path'>
+          <ref name='virDomainCreateLinux'/>
+        </word>
+        <word name='physical'>
+          <ref name='virDomainGetMaxMemory'/>
+          <ref name='virDomainSetMaxMemory'/>
+        </word>
+        <word name='pointer'>
+          <ref name='virConnectClose'/>
+          <ref name='virConnectGetVersion'/>
+          <ref name='virConnectListDomains'/>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+          <ref name='virDomainCreateLinux'/>
+          <ref name='virDomainGetInfo'/>
+          <ref name='virDomainGetName'/>
+          <ref name='virDomainLookupByID'/>
+          <ref name='virDomainLookupByName'/>
+        </word>
+        <word name='private'>
+          <ref name='_virDomainInfo'/>
+        </word>
+        <word name='process'>
+          <ref name='virDomainResume'/>
+          <ref name='virDomainSuspend'/>
+        </word>
+        <word name='protection'>
+          <ref name='_virDomainInfo'/>
+        </word>
+        <word name='public'>
+          <ref name='virDomainGetName'/>
+        </word>
+        <word name='publicly'>
+          <ref name='_virDomainInfo'/>
+        </word>
+      </letter>
+      <letter name='r'>
+        <word name='reactivate'>
+          <ref name='virDomainSuspend'/>
+        </word>
+        <word name='read-only'>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
+        <word name='reserved'>
+          <ref name='virDomainGetMaxMemory'/>
+          <ref name='virDomainSetMaxMemory'/>
+        </word>
+        <word name='resources'>
+          <ref name='virDomainDestroy'/>
+          <ref name='virDomainSuspend'/>
+        </word>
+        <word name='restarted'>
+          <ref name='virDomainResume'/>
+        </word>
+        <word name='restricted'>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
+        <word name='rev'>
+          <ref name='virConnectGetVersion'/>
+        </word>
+        <word name='running'>
+          <ref name='_virDomainInfo'/>
+          <ref name='virConnectClose'/>
+          <ref name='virConnectGetVersion'/>
+          <ref name='virDomainDestroy'/>
+        </word>
+        <word name='runs'>
+          <ref name='virDomainGetMaxMemory'/>
+          <ref name='virDomainSetMaxMemory'/>
+        </word>
+      </letter>
+      <letter name='s'>
+        <word name='same'>
+          <ref name='virDomainGetName'/>
+        </word>
+        <word name='set'>
+          <ref name='virConnectOpenReadOnly'/>
+          <ref name='virDomainCreateLinux'/>
+          <ref name='virDomainGetInfo'/>
+        </word>
+        <word name='should'>
+          <ref name='virConnectClose'/>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
+        <word name='shutdown'>
+          <ref name='virDomainDestroy'/>
+        </word>
+        <word name='size'>
+          <ref name='virConnectListDomains'/>
+          <ref name='virDomainCreateLinux'/>
+          <ref name='virDomainGetMaxMemory'/>
+          <ref name='virDomainSetMaxMemory'/>
+        </word>
+        <word name='state'>
+          <ref name='_virDomainInfo'/>
+          <ref name='virDomainResume'/>
+        </word>
+        <word name='stay'>
+          <ref name='virDomainSuspend'/>
+        </word>
+        <word name='store'>
+          <ref name='virConnectListDomains'/>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
+        <word name='string'>
+          <ref name='virDomainGetName'/>
+        </word>
+        <word name='structure'>
+          <ref name='_virDomainInfo'/>
+          <ref name='virDomainGetInfo'/>
+        </word>
+        <word name='success'>
+          <ref name='virConnectClose'/>
+          <ref name='virDomainDestroy'/>
+          <ref name='virDomainGetInfo'/>
+          <ref name='virDomainResume'/>
+          <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSuspend'/>
+        </word>
+        <word name='suspended'>
+          <ref name='virDomainResume'/>
+        </word>
+      </letter>
+      <letter name='t'>
+        <word name='term'>
+          <ref name='_virDomainInfo'/>
+        </word>
+        <word name='that'>
+          <ref name='virDomainGetInfo'/>
+          <ref name='virDomainGetName'/>
+        </word>
+        <word name='their'>
+          <ref name='virConnectListDomains'/>
+        </word>
+        <word name='then'>
+          <ref name='virConnectOpenReadOnly'/>
+          <ref name='virDomainGetMaxMemory'/>
+          <ref name='virDomainSetMaxMemory'/>
+        </word>
+        <word name='there'>
+          <ref name='virConnectClose'/>
+        </word>
+        <word name='this'>
+          <ref name='_virDomainInfo'/>
+          <ref name='virDomainGetMaxMemory'/>
+          <ref name='virDomainSetMaxMemory'/>
+        </word>
+      </letter>
+      <letter name='u'>
+        <word name='unimplemented'>
+          <ref name='TODO'/>
+        </word>
+        <word name='unsigned'>
+          <ref name='virDomainGetID'/>
+        </word>
+        <word name='unused'>
+          <ref name='ATTRIBUTE_UNUSED'/>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
+        <word name='usable'>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
+        <word name='used'>
+          <ref name='_virDomainInfo'/>
+          <ref name='virDomainDestroy'/>
+          <ref name='virDomainGetInfo'/>
+          <ref name='virDomainSuspend'/>
+        </word>
+        <word name='user'>
+          <ref name='virDomainGetInfo'/>
+        </word>
+      </letter>
+      <letter name='v'>
+        <word name='version'>
+          <ref name='virConnectGetVersion'/>
+        </word>
+        <word name='virDomainFlags'>
+          <ref name='_virDomainInfo'/>
+          <ref name='virDomainCreateLinux'/>
+        </word>
+        <word name='virDomainInfo'>
+          <ref name='virDomainGetInfo'/>
+        </word>
+        <word name='virDomainResume'>
+          <ref name='virDomainSuspend'/>
+        </word>
+        <word name='virSuspendDomain'>
+          <ref name='virDomainResume'/>
+        </word>
+      </letter>
+      <letter name='w'>
+        <word name='was'>
+          <ref name='virDomainResume'/>
+        </word>
+        <word name='what'>
+          <ref name='_virDomainInfo'/>
+        </word>
+        <word name='where'>
+          <ref name='virDomainGetMaxMemory'/>
+          <ref name='virDomainResume'/>
+          <ref name='virDomainSetMaxMemory'/>
+        </word>
+        <word name='which'>
+          <ref name='virConnectClose'/>
+        </word>
+        <word name='will'>
+          <ref name='virDomainGetName'/>
+          <ref name='virDomainSuspend'/>
+        </word>
+        <word name='with'>
+          <ref name='_virDomainInfo'/>
+          <ref name='virConnectClose'/>
+        </word>
+        <word name='without'>
+          <ref name='virDomainSuspend'/>
+        </word>
+      </letter>
+      <letter name='x'>
+        <word name='xen'>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
+        <word name='xenstore'>
+          <ref name='_virDomainInfo'/>
+        </word>
+      </letter>
+    </chunk>
+    <chunks>
+      <chunk name='chunk0' start='A' end='m'/>
+      <chunk name='chunk1' start='n' end='x'/>
+    </chunks>
+  </index>
+</apirefs>

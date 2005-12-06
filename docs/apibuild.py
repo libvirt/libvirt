@@ -963,6 +963,9 @@ class CParser:
      # preprocessor and comments since they are logically not part of
      # the program structure.
      #
+    def push(self, tok):
+        self.lexer.push(tok)
+
     def token(self):
         global ignored_words
 
@@ -1228,7 +1231,28 @@ class CParser:
 	        self.type = self.type + " " + token[1]
 	    token = self.token()
 
-        if token[0] == "name" and (token[1] == "long" or token[1] == "short"):
+        if token[0] == "name" and token[1] == "long":
+	    if self.type == "":
+	        self.type = token[1]
+	    else:
+	        self.type = self.type + " " + token[1]
+
+	    # some read ahead for long long 
+	    oldtmp = token
+	    token = self.token()
+	    if token[0] == "name" and token[1] == "long":
+	        self.type = self.type + " " + token[1]
+	    else:
+	        self.push(token)
+		token = oldtmp
+
+	    if token[0] == "name" and token[1] == "int":
+		if self.type == "":
+		    self.type = tmp[1]
+		else:
+		    self.type = self.type + " " + tmp[1]
+
+        elif token[0] == "name" and token[1] == "short":
 	    if self.type == "":
 	        self.type = token[1]
 	    else:

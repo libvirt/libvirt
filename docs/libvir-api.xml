@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<api name='libvir'>
+  <files>
+    <file name='libvir'>
+     <exports symbol='VIR_DOMAIN_SHUTOFF' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SHUTDOWN' type='enum'/>
+     <exports symbol='VIR_DOMAIN_NONE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_BLOCKED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_PAUSED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_RUNNING' type='enum'/>
+     <exports symbol='VIR_DOMAIN_NOSTATE' type='enum'/>
+     <exports symbol='virDomainInfoPtr' type='typedef'/>
+     <exports symbol='virConnectPtr' type='typedef'/>
+     <exports symbol='virDomainFlags' type='typedef'/>
+     <exports symbol='virDomainState' type='typedef'/>
+     <exports symbol='virDomain' type='typedef'/>
+     <exports symbol='virDomainPtr' type='typedef'/>
+     <exports symbol='virConnect' type='typedef'/>
+     <exports symbol='virDomainInfo' type='typedef'/>
+     <exports symbol='_virDomainInfo' type='struct'/>
+     <exports symbol='virDomainGetID' type='function'/>
+     <exports symbol='virDomainGetInfo' type='function'/>
+     <exports symbol='virDomainCreateLinux' type='function'/>
+     <exports symbol='virConnectOpen' type='function'/>
+     <exports symbol='virDomainDestroy' type='function'/>
+     <exports symbol='virDomainLookupByID' type='function'/>
+     <exports symbol='virDomainLookupByName' type='function'/>
+     <exports symbol='virConnectListDomains' type='function'/>
+     <exports symbol='virConnectClose' type='function'/>
+     <exports symbol='virDomainResume' type='function'/>
+     <exports symbol='virDomainSetMaxMemory' type='function'/>
+     <exports symbol='virDomainSuspend' type='function'/>
+     <exports symbol='virConnectGetVersion' type='function'/>
+     <exports symbol='virDomainGetName' type='function'/>
+     <exports symbol='virDomainGetMaxMemory' type='function'/>
+     <exports symbol='virConnectOpenReadOnly' type='function'/>
+    </file>
+    <file name='internal'>
+     <exports symbol='ATTRIBUTE_UNUSED' type='macro'/>
+     <exports symbol='TODO' type='macro'/>
+    </file>
+  </files>
+  <symbols>
+    <macro name='ATTRIBUTE_UNUSED' file='internal'>
+      <info>Macro to flag conciously unused parameters to functions</info>
+    </macro>
+    <macro name='TODO' file='internal'>
+      <info>macro to flag unimplemented blocks</info>
+    </macro>
+    <enum name='VIR_DOMAIN_BLOCKED' file='libvir' value='2' type='virDomainState' info='the domain is blocked on resource'/>
+    <enum name='VIR_DOMAIN_NONE' file='libvir' value='0' type='virDomainFlags'/>
+    <enum name='VIR_DOMAIN_NOSTATE' file='libvir' value='0' type='virDomainState' info='no state'/>
+    <enum name='VIR_DOMAIN_PAUSED' file='libvir' value='3' type='virDomainState' info='the domain is paused by user'/>
+    <enum name='VIR_DOMAIN_RUNNING' file='libvir' value='1' type='virDomainState' info='the domain is running'/>
+    <enum name='VIR_DOMAIN_SHUTDOWN' file='libvir' value='4' type='virDomainState' info='the domain is being shut down'/>
+    <enum name='VIR_DOMAIN_SHUTOFF' file='libvir' value='5' type='virDomainState' info=' the domain is shut off'/>
+    <struct name='virConnect' file='libvir' type='struct _virConnect'/>
+    <typedef name='virConnectPtr' file='libvir' type='virConnect *'>
+      <info>a virConnectPtr is pointer to a virConnect private structure, this is the type used to reference a connection to the Xen Hypervisor in the API.</info>
+    </typedef>
+    <struct name='virDomain' file='libvir' type='struct _virDomain'/>
+    <typedef name='virDomainFlags' file='libvir' type='enum'/>
+    <struct name='virDomainInfo' file='libvir' type='struct _virDomainInfo'>
+      <field name='state' type='unsigned char' info=' the running state, one of virDomainFlags'/>
+      <field name='maxMem' type='unsigned long' info=' the maximum memory in KBytes allowed'/>
+      <field name='memory' type='unsigned long' info=' the memory in KBytes used by the domain'/>
+      <field name='nrVirtCpu' type='unsigned short' info='* Informations below are only available to clients with a connection
+* with full access to the hypervisor
+*'/>
+      <field name='cpuTime' type='unsigned long long' info='* TODO:
+* - check what can be extracted publicly from xenstore
+*   and what&apos;s private limited to the hypervisor call.
+* - add padding to this structure for ABI long term protection
+*'/>
+    </struct>
+    <typedef name='virDomainInfoPtr' file='libvir' type='virDomainInfo *'>
+      <info>a virDomainInfoPtr is a pointer to a virDomainInfo structure.</info>
+    </typedef>
+    <typedef name='virDomainPtr' file='libvir' type='virDomain *'>
+      <info>a virDomainPtr is pointer to a virDomain private structure, this is the type used to reference a Xen domain in the API.</info>
+    </typedef>
+    <typedef name='virDomainState' file='libvir' type='enum'/>
+    <function name='virConnectClose' file='libvir' module='libvir'>
+      <info>This function closes the connection to the Hypervisor. This should not be called if further interaction with the Hypervisor are needed especially if there is running domain which need further monitoring by the application.</info>
+      <return type='int' info='0 in case of success or -1 in case of error.'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+    </function>
+    <function name='virConnectGetVersion' file='libvir' module='libvir'>
+      <info>Get the version level of the Hypervisor running.</info>
+      <return type='unsigned long' info='-1 in case of error or major * 10,000 + minor * 100 + rev otherwise'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+    </function>
+    <function name='virConnectListDomains' file='libvir' module='libvir'>
+      <info>Collect the list of active domains, and store their ID in @maxids</info>
+      <return type='int' info='the number of domain found or -1 in case of error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='ids' type='int *' info='array to collect the list of IDs of active domains'/>
+      <arg name='maxids' type='int' info='size of @ids'/>
+    </function>
+    <function name='virConnectOpen' file='libvir' module='libvir'>
+      <info>This function should be called first to get a connection to the Hypervisor and xen store</info>
+      <return type='virConnectPtr' info='a pointer to the hypervisor connection or NULL in case of error'/>
+      <arg name='name' type='const char *' info='optional argument currently unused, pass NULL'/>
+    </function>
+    <function name='virConnectOpenReadOnly' file='libvir' module='libvir'>
+      <info>This function should be called first to get a read-only connection to the xen store. The set of APIs usable are then restricted.</info>
+      <return type='virConnectPtr' info='a pointer to the hypervisor connection or NULL in case of error'/>
+      <arg name='name' type='const char *' info='optional argument currently unused, pass NULL'/>
+    </function>
+    <function name='virDomainCreateLinux' file='libvir' module='libvir'>
+      <info>Launch a new Linux guest domain</info>
+      <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='kernel_path' type='const char *' info='the file path to the kernel image'/>
+      <arg name='initrd_path' type='const char *' info='an optional file path to an initrd'/>
+      <arg name='cmdline' type='const char *' info='optional command line parameters for the kernel'/>
+      <arg name='memory' type='unsigned long' info='the memory size in kilobytes'/>
+      <arg name='flags' type='unsigned int' info='an optional set of virDomainFlags'/>
+    </function>
+    <function name='virDomainDestroy' file='libvir' module='libvir'>
+      <info>Destroy the domain object. The running instance is shutdown if not down already and all resources used by it are given back to the hypervisor.</info>
+      <return type='int' info='0 in case of success and -1 in case of failure.'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+    </function>
+    <function name='virDomainGetID' file='libvir' module='libvir'>
+      <info>Get the hypervisor ID number for the domain</info>
+      <return type='unsigned int' info='the domain ID number or (unsigned int) -1 in case of error'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+    </function>
+    <function name='virDomainGetInfo' file='libvir' module='libvir'>
+      <info>Extract information about a domain. Note that if the connection used to get the domain is limited only a partial set of the informations can be extracted.</info>
+      <return type='int' info='0 in case of success and -1 in case of failure.'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object or NULL'/>
+      <arg name='info' type='virDomainInfoPtr' info='pointer to a virDomainInfo structure allocated by the user'/>
+    </function>
+    <function name='virDomainGetMaxMemory' file='libvir' module='libvir'>
+      <info>Retrieve the maximum amount of physical memory allocated to a domain. If domain is NULL, then this get the amount of memory reserved to Domain0 i.e. the domain where the application runs.</info>
+      <return type='unsigned long' info='the memory size in kilobytes or 0 in case of error.'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object or NULL'/>
+    </function>
+    <function name='virDomainGetName' file='libvir' module='libvir'>
+      <info>Get the public name for that domain</info>
+      <return type='const char *' info='a pointer to the name or NULL, the string need not be deallocated its lifetime will be the same as the domain object.'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+    </function>
+    <function name='virDomainLookupByID' file='libvir' module='libvir'>
+      <info>Try to find a domain based on the hypervisor ID number</info>
+      <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='id' type='int' info='the domain ID number'/>
+    </function>
+    <function name='virDomainLookupByName' file='libvir' module='libvir'>
+      <info>Try to lookup a domain on the given hypervisor</info>
+      <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='name' type='const char *' info='name for the domain'/>
+    </function>
+    <function name='virDomainResume' file='libvir' module='libvir'>
+      <info>Resume an suspended domain, the process is restarted from the state where it was frozen by calling virSuspendDomain().</info>
+      <return type='int' info='0 in case of success and -1 in case of failure.'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+    </function>
+    <function name='virDomainSetMaxMemory' file='libvir' module='libvir'>
+      <info>Dynamically change the maximum amount of physical memory allocated to a domain. If domain is NULL, then this change the amount of memory reserved to Domain0 i.e. the domain where the application runs.</info>
+      <return type='int' info='0 in case of success and -1 in case of failure.'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object or NULL'/>
+      <arg name='memory' type='unsigned long' info='the memory size in kilobytes'/>
+    </function>
+    <function name='virDomainSuspend' file='libvir' module='libvir'>
+      <info>Suspends an active domain, the process is frozen without further access to CPU resources and I/O but the memory used by the domain at the hypervisor level will stay allocated. Use virDomainResume() to reactivate the domain.</info>
+      <return type='int' info='0 in case of success and -1 in case of failure.'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+    </function>
+  </symbols>
+</api>

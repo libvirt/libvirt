@@ -56,9 +56,9 @@ static void printDomain(virDomainPtr dom) {
 	    printf("%.1fs time, ", cpuUsed);
 	}
 	mem = info.memory;
-	mem /= 1024 * 1024;
+	mem /= 1024;
 	maxMem = info.maxMem;
-	maxMem /= 1024 * 1024;
+	maxMem /= 1024;
         printf("%.0f MB mem used, %.0f MB max_mem\n", mem, maxMem);
     }
 

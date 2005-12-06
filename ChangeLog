@@ -1,3 +1,10 @@
+Tue Dec  6 17:47:11 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* docs/Makefile.am docs/apibuild.py docs/libvir-api.xml
+	  docs/libvir-refs.xml: fix XML API generation
+	* include/libvir.h src/libvir.c src/virsh.c: fix the info memory
+	  API again, use KB, not bytes so that an unsigned long is sufficient.
+
 Tue Dec  6 17:12:52 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvir.h src/libvir.c src/virsh.c: adding the extraction

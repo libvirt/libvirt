@@ -586,8 +586,8 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
 	}
 	tmp = virDomainDoStoreQuery(domain, "memory/target");
 	if (tmp != NULL) {
-	    info->memory = atol(tmp) * 1024;
-	    info->maxMem = atol(tmp) * 1024;
+	    info->memory = atol(tmp);
+	    info->maxMem = atol(tmp);
 	    free(tmp);
 	} else {
 	    info->memory = 0;
@@ -645,8 +645,8 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
 
 	 */
 	info->cpuTime = dominfo.cpu_time;
-	info->memory = dominfo.tot_pages * 4096;
-	info->maxMem = dominfo.max_pages * 4096;
+	info->memory = dominfo.tot_pages * 4;
+	info->maxMem = dominfo.max_pages * 4;
 	info->nrVirtCpu = dominfo.nr_online_vcpus;
     }
     return(0);
