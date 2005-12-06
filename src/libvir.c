@@ -298,6 +298,8 @@ virDomainLookupByName(virConnectPtr conn, const char *name) {
     return(NULL);
 }
 
+#if 0
+/* Not used ATM */
 /**
  * virConnectDoStoreQuery:
  * @conn: pointer to the hypervisor connection
@@ -318,6 +320,34 @@ virConnectDoStoreQuery(virConnectPtr conn, const char *path) {
         goto done;
 
     ret = xs_read(conn->xshandle, t, path, &len);
+
+done:
+    if (t != NULL)
+	xs_transaction_end(conn->xshandle, t, 0);
+    return(ret);
+}
+#endif
+
+/**
+ * virConnectDoStoreList:
+ * @conn: pointer to the hypervisor connection
+ * @path: the absolute path of the directory in the store to list
+ * @nb: OUT pointer to the number of items found
+ *
+ * Internal API querying the Xenstore for a list
+ *
+ * Returns a string which must be freed by the caller or NULL in case of error
+ */
+static char **
+virConnectDoStoreList(virConnectPtr conn, const char *path, unsigned int *nb) {
+    struct xs_transaction_handle* t;
+    char **ret = NULL;
+
+    t = xs_transaction_start(conn->xshandle);
+    if (t == NULL)
+        goto done;
+
+    ret = xs_directory(conn->xshandle, t, path, nb);
 
 done:
     if (t != NULL)
@@ -542,7 +572,9 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
 	return(-1);
     memset(info, 0, sizeof(virDomainInfo));
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        char *tmp;
+        char *tmp, **tmp2;
+	unsigned int nb_vcpus;
+	char request[200];
 
 	tmp = virDomainDoStoreQuery(domain, "running");
 	if (tmp != NULL) {
@@ -561,6 +593,8 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
 	    info->memory = 0;
 	    info->maxMem = 0;
 	}
+#if 0
+        /* doesn't seems to work */
 	tmp = virDomainDoStoreQuery(domain, "cpu_time");
 	if (tmp != NULL) {
 	    info->cpuTime = atol(tmp);
@@ -568,6 +602,15 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
 	} else {
 	    info->cpuTime = 0;
 	}
+#endif
+        snprintf(request, 199, "/local/domain/%d/cpu", domain->handle);
+	request[199] = 0;
+	tmp2 = virConnectDoStoreList(domain->conn, request, &nb_vcpus);
+	if (tmp2 != NULL) {
+	    info->nrVirtCpu = nb_vcpus;
+	    free(tmp2);
+	}
+
     } else {
         xc_domaininfo_t dominfo;
 
@@ -604,6 +647,7 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
 	info->cpuTime = dominfo.cpu_time;
 	info->memory = dominfo.tot_pages * 4096;
 	info->maxMem = dominfo.max_pages * 4096;
+	info->nrVirtCpu = dominfo.nr_online_vcpus;
     }
     return(0);
 }

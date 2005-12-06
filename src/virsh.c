@@ -48,11 +48,12 @@ static void printDomain(virDomainPtr dom) {
 	    default:
 	        break;
 	}
+	printf("%d vCPU, ", info.nrVirtCpu);
 	if (info.cpuTime != 0) {
 	    float cpuUsed = info.cpuTime;
 
 	    cpuUsed /= 1000000000;
-	    printf("%.1f s CPU time, ", cpuUsed);
+	    printf("%.1fs time, ", cpuUsed);
 	}
 	mem = info.memory;
 	mem /= 1024 * 1024;

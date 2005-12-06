@@ -1,3 +1,8 @@
+Tue Dec  6 17:12:52 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvir.h src/libvir.c src/virsh.c: adding the extraction
+	  of the number of virtual CPUs for both interfaces.
+
 Tue Dec  6 14:46:50 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvir.h src/libvir.c src/virsh.c: tweaking of the 
