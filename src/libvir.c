@@ -258,6 +258,34 @@ done:
 }
 
 /**
+ * virConnectNumOfDomains:
+ * @conn: pointer to the hypervisor connection
+ *
+ * Returns the number of domain found or -1 in case of error
+ */
+int
+virConnectNumOfDomains(virConnectPtr conn) {
+    struct xs_transaction_handle* t;
+    int ret = -1;
+    unsigned int num;
+    char **idlist = NULL;
+
+    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC))
+        return(-1);
+    
+    t = xs_transaction_start(conn->xshandle);
+    if (t) {
+        idlist = xs_directory(conn->xshandle, t, "/local/domain", &num);
+        if (idlist) {
+            free(idlist);
+	    ret = num;
+        }
+        xs_transaction_end(conn->xshandle, t, 0);
+    }
+    return(ret);
+}
+
+/**
  * virDomainCreateLinux:
  * @conn: pointer to the hypervisor connection
  * @kernel_path: the file path to the kernel image

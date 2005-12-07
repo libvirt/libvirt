@@ -125,6 +125,12 @@ int			virConnectListDomains	(virConnectPtr conn,
 						 int maxids);
 
 /*
+ * Number of domains
+ */
+int			virConnectNumOfDomains	(virConnectPtr conn);
+
+
+/*
  * Domain creation and destruction
  */
 virDomainPtr		virDomainCreateLinux	(virConnectPtr conn,
