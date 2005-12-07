@@ -654,7 +654,7 @@ A:link, A:visited, A:active { text-decoration: underline }
     <xsl:variable name="rest2" select="./h2[position()&gt;1]"/>
     <body bgcolor="#8b7765" text="#000000" link="#a06060" vlink="#000000">
       <xsl:call-template name="titlebox">
-        <xsl:with-param name="title" select="'libxml'"/>
+        <xsl:with-param name="title" select="'libvir'"/>
       </xsl:call-template>
       <table border="0" cellpadding="4" cellspacing="0" width="100%" align="center">
         <tr>

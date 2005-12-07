@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <apirefs name='libvir'>
   <references>
-    <reference name='ATTRIBUTE_UNUSED' href='html/libvir-internal.html#ATTRIBUTE_UNUSED'/>
-    <reference name='TODO' href='html/libvir-internal.html#TODO'/>
     <reference name='VIR_DOMAIN_BLOCKED' href='html/libvir-libvir.html#VIR_DOMAIN_BLOCKED'/>
     <reference name='VIR_DOMAIN_NONE' href='html/libvir-libvir.html#VIR_DOMAIN_NONE'/>
     <reference name='VIR_DOMAIN_NOSTATE' href='html/libvir-libvir.html#VIR_DOMAIN_NOSTATE'/>
@@ -37,12 +35,6 @@
     <reference name='virDomainSuspend' href='html/libvir-libvir.html#virDomainSuspend'/>
   </references>
   <alpha>
-    <letter name='A'>
-      <ref name='ATTRIBUTE_UNUSED'/>
-    </letter>
-    <letter name='T'>
-      <ref name='TODO'/>
-    </letter>
     <letter name='V'>
       <ref name='VIR_DOMAIN_BLOCKED'/>
       <ref name='VIR_DOMAIN_NONE'/>
@@ -168,10 +160,6 @@
       <ref name='virDomainState'/>
       <ref name='virDomainSuspend'/>
     </file>
-    <file name='internal'>
-      <ref name='ATTRIBUTE_UNUSED'/>
-      <ref name='TODO'/>
-    </file>
   </files>
   <index>
     <chunk name='chunk0'>
@@ -241,11 +229,6 @@
         </word>
         <word name='Linux'>
           <ref name='virDomainCreateLinux'/>
-        </word>
-      </letter>
-      <letter name='M'>
-        <word name='Macro'>
-          <ref name='ATTRIBUTE_UNUSED'/>
         </word>
       </letter>
       <letter name='N'>
@@ -362,9 +345,6 @@
         <word name='below'>
           <ref name='_virDomainInfo'/>
         </word>
-        <word name='blocks'>
-          <ref name='TODO'/>
-        </word>
         <word name='but'>
           <ref name='virDomainSuspend'/>
         </word>
@@ -419,9 +399,6 @@
         </word>
         <word name='command'>
           <ref name='virDomainCreateLinux'/>
-        </word>
-        <word name='conciously'>
-          <ref name='ATTRIBUTE_UNUSED'/>
         </word>
         <word name='connection'>
           <ref name='_virDomainInfo'/>
@@ -490,10 +467,6 @@
           <ref name='virConnectOpen'/>
           <ref name='virConnectOpenReadOnly'/>
         </word>
-        <word name='flag'>
-          <ref name='ATTRIBUTE_UNUSED'/>
-          <ref name='TODO'/>
-        </word>
         <word name='for'>
           <ref name='_virDomainInfo'/>
           <ref name='virDomainCreateLinux'/>
@@ -519,9 +492,6 @@
           <ref name='virConnectClose'/>
           <ref name='virConnectOpen'/>
           <ref name='virConnectOpenReadOnly'/>
-        </word>
-        <word name='functions'>
-          <ref name='ATTRIBUTE_UNUSED'/>
         </word>
         <word name='further'>
           <ref name='virConnectClose'/>
@@ -621,9 +591,6 @@
         </word>
       </letter>
       <letter name='m'>
-        <word name='macro'>
-          <ref name='TODO'/>
-        </word>
         <word name='major'>
           <ref name='virConnectGetVersion'/>
         </word>
@@ -711,7 +678,6 @@
           <ref name='_virDomainInfo'/>
         </word>
         <word name='parameters'>
-          <ref name='ATTRIBUTE_UNUSED'/>
           <ref name='virDomainCreateLinux'/>
         </word>
         <word name='partial'>
@@ -872,14 +838,10 @@
         </word>
       </letter>
       <letter name='u'>
-        <word name='unimplemented'>
-          <ref name='TODO'/>
-        </word>
         <word name='unsigned'>
           <ref name='virDomainGetID'/>
         </word>
         <word name='unused'>
-          <ref name='ATTRIBUTE_UNUSED'/>
           <ref name='virConnectOpen'/>
           <ref name='virConnectOpenReadOnly'/>
         </word>

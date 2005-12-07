@@ -2,6 +2,9 @@
 <api name='libvir'>
   <files>
     <file name='libvir'>
+     <summary>core interfaces for the libvir library</summary>
+     <description>Provides the interfaces of the libvir library to handle Xen domains from a process running in domain 0 </description>
+     <author>Daniel Veillard &lt;veillard@redhat.com&gt; </author>
      <exports symbol='VIR_DOMAIN_SHUTOFF' type='enum'/>
      <exports symbol='VIR_DOMAIN_SHUTDOWN' type='enum'/>
      <exports symbol='VIR_DOMAIN_NONE' type='enum'/>
@@ -35,18 +38,8 @@
      <exports symbol='virDomainGetMaxMemory' type='function'/>
      <exports symbol='virConnectOpenReadOnly' type='function'/>
     </file>
-    <file name='internal'>
-     <exports symbol='ATTRIBUTE_UNUSED' type='macro'/>
-     <exports symbol='TODO' type='macro'/>
-    </file>
   </files>
   <symbols>
-    <macro name='ATTRIBUTE_UNUSED' file='internal'>
-      <info>Macro to flag conciously unused parameters to functions</info>
-    </macro>
-    <macro name='TODO' file='internal'>
-      <info>macro to flag unimplemented blocks</info>
-    </macro>
     <enum name='VIR_DOMAIN_BLOCKED' file='libvir' value='2' type='virDomainState' info='the domain is blocked on resource'/>
     <enum name='VIR_DOMAIN_NONE' file='libvir' value='0' type='virDomainFlags'/>
     <enum name='VIR_DOMAIN_NOSTATE' file='libvir' value='0' type='virDomainState' info='no state'/>

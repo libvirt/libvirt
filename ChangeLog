@@ -1,3 +1,8 @@
+Wed Dec  7 11:58:20 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* docs/* docs/html/*: more work on the docs generation
+	* include/libvir.h: adding informations on the header
+
 Wed Dec  7 10:31:29 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in docs/FAQ.html docs/Libxml2-Logo-90x34.gif

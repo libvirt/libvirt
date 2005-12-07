@@ -21,6 +21,7 @@ ignored_files = {
   "virsh.c": "testing tool",
   "hash.c": "internal hash table stuff",
   "hash.h": "internal hash table stuff",
+  "internal.h": "internal includes and defines",
 }
 
 ignored_words = {

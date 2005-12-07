@@ -1,12 +1,14 @@
 /*
- * libvir.h: interface for the libvir library to handle Xen domains
- *           from a process running in domain 0
+ * libvir.h:
+ * Summary: core interfaces for the libvir library
+ * Description: Provides the interfaces of the libvir library to handle
+ *              Xen domains from a process running in domain 0
  *
- * Copyright (C) 2005 Red Hat, Inc.
+ * Copy:  Copyright (C) 2005 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
- * Daniel Veillard <veillard@redhat.com>
+ * Author: Daniel Veillard <veillard@redhat.com>
  */
 
 #ifndef __VIR_VIRLIB_H__
