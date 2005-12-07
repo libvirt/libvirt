@@ -20,6 +20,7 @@
 #define IN_LIBXML
 
 #include <string.h>
+#include <stdlib.h>
 #include "hash.h"
 
 #define MAX_HASH_LEN 8

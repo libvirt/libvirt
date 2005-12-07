@@ -40,6 +40,9 @@ AC_PROG_CPP
 AC_PATH_PROG(RM, rm, /bin/rm)
 AC_PATH_PROG(MV, mv, /bin/mv)
 AC_PATH_PROG(TAR, tar, /bin/tar)
+AC_PATH_PROG(XMLLINT, xmllint, /usr/bin/xmllint)
+AC_PATH_PROG(XSLTPROC, xsltproc, /usr/bin/xsltproc)
+
 
 dnl Make sure we have an ANSI compiler
 AM_C_PROTOTYPES

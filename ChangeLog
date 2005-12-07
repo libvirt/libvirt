@@ -1,3 +1,11 @@
+Wed Dec  7 10:31:29 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in docs/FAQ.html docs/Libxml2-Logo-90x34.gif
+	  docs/Makefile.am docs/bugs.html docs/index.html docs/intro.html
+	  docs/libvir.html docs/redhat.gif docs/site.xsl: starting to add
+	  the web site, based on libxml2 one.
+	* src/hash.c: add a missing include
+
 Tue Dec  6 17:47:11 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* docs/Makefile.am docs/apibuild.py docs/libvir-api.xml

@@ -4,7 +4,7 @@ SUBDIRS=
 # The directory containing the source code (if it contains documentation).
 DOC_SOURCE_DIR=../src
 
-PAGES= # index.html
+PAGES= index.html
 APIPAGES=APIconstructors.html APIfiles.html APIfunctions.html \
     APIsymbols.html APIchunk0.html
 EXTRA_DIST=							\
@@ -19,13 +19,13 @@ api: libvir-api.xml libvir-refs.xml
 
 web: $(PAGES)
 
-#$(PAGES): xml.html site.xsl
-#	-@(if [ -x $(XSLTPROC) ] ; then \
-#	  echo "Rebuilding the HTML Web pages from xml.html" ; \
-#	  $(XSLTPROC) --nonet --html $(top_srcdir)/doc/site.xsl $(top_srcdir)/doc/xml.html > index.html ; fi );
-#	-@(if [ -x $(XMLLINT) ] ; then \
-#	  echo "Validating the HTML Web pages" ; \
-#	  $(XMLLINT) --nonet --valid --noout $(PAGES) ; fi );
+$(PAGES): libvir.html site.xsl
+	-@(if [ -x $(XSLTPROC) ] ; then \
+	  echo "Rebuilding the HTML Web pages from libvir.html" ; \
+	  $(XSLTPROC) --nonet --html $(top_srcdir)/docs/site.xsl $(top_srcdir)/docs/libvir.html > index.html ; fi );
+	-@(if [ -x $(XMLLINT) ] ; then \
+	  echo "Validating the HTML Web pages" ; \
+	  $(XMLLINT) --nonet --valid --noout $(PAGES) ; fi );
 
 
 #$(APIPAGES): libxml2-api.xml libxml2-refs.xml $(top_srcdir)/docs/site.xsl $(top_srcdir)/docs/api.xsl
