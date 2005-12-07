@@ -338,6 +338,8 @@
 	  </li>
 	</xsl:if>
       </xsl:for-each>
+      <li><a style="font-weight:bold"
+             href="html/index.html">API Menu</a></li>
       <li><a href="ChangeLog.html">Recent Changes</a></li>
     </ul>
   </xsl:variable>
@@ -349,6 +351,8 @@
     </form>
     <ul><!-- style="margin-left: -1em" -->
       <li><a href="index.html" style="font-weight:bold">Main Menu</a></li>
+      <li><a style="font-weight:bold"
+             href="html/index.html">API Menu</a></li>
       <li><a href="ChangeLog.html">ChangeLog</a></li>
       <xsl:for-each select="/html/body/h2">
         <xsl:variable name="filename">

@@ -1,3 +1,7 @@
+Wed Dec  7 15:08:54 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* docs/*: adding missing links to API page.
+
 Wed Dec  7 14:43:28 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in libvir.spec.in docs/Makefile.am: make sure the
