@@ -3,6 +3,7 @@
 	virConnectClose;
 	virConnectGetVersion;
 	virConnectListDomains;
+	virConnectNumOfDomains;
         virConnectOpen;
         virConnectOpenReadOnly;
 	virDomainCreateLinux;
