@@ -1,5 +1,5 @@
 /*
- * libvir.h: Main interfaces for the libvir library to handle virtualization
+ * libvir.c: Main interfaces for the libvir library to handle virtualization
  *           domains from a process running in domain 0
  *
  * Copyright (C) 2005 Red Hat, Inc.
@@ -10,11 +10,11 @@
  */
 
 #include "libvir.h"
+#include "xen_internal.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <xenctrl.h>
 #include <xs.h>
 #include "internal.h"
 #include "hash.h"
@@ -82,7 +82,7 @@ virConnectOpen(const char *name) {
     if (name != NULL) 
         return(NULL);
 
-    handle = xc_interface_open();
+    handle = xenHypervisorOpen();
     if (handle == -1)
         goto failed;
     xshandle = xs_daemon_open();
@@ -103,7 +103,7 @@ virConnectOpen(const char *name) {
     return(ret);
 failed:
     if (handle >= 0)
-        xc_interface_close(handle);
+        xenHypervisorClose(handle);
     if (xshandle != NULL)
         xs_daemon_close(xshandle);
     if (ret != NULL)
@@ -187,7 +187,7 @@ virConnectClose(virConnectPtr conn) {
     xs_daemon_close(conn->xshandle);
     conn->xshandle = NULL;
     if (conn->handle != -1)
-	xc_interface_close(conn->handle);
+	xenHypervisorClose(conn->handle);
     conn->handle = -1;
     free(conn);
     return(0);
@@ -427,19 +427,10 @@ virDomainPtr
 virDomainLookupByID(virConnectPtr conn, int id) {
     char *path;
     virDomainPtr ret;
-    xc_dominfo_t info;
-    int res;
 
     if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC) || (id < 0))
         return(NULL);
 
-    if ((conn->flags & VIR_CONNECT_RO) == 0) {
-	res = xc_domain_getinfo(conn->handle, (uint32_t) id, 1, &info);
-	if (res != 1) {
-	    return(NULL);
-	}
-    }
-    
     path = xs_get_domain_path(conn->xshandle, (unsigned int) id);
     if (path == NULL) {
         return(NULL);
@@ -640,11 +631,11 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
 	}
 
     } else {
-        xc_domaininfo_t dominfo;
+        dom0_getdomaininfo_t dominfo;
 
 	dominfo.domain = domain->handle;
-        ret = xc_domain_getinfolist(domain->conn->handle, domain->handle,
-	                            1, &dominfo);
+        ret = xenHypervisorGetDomainInfo(domain->conn->handle, domain->handle,
+	                                 &dominfo);
         if (ret <= 0)
 	    return(-1);
 	switch (dominfo.flags & 0xFF) {

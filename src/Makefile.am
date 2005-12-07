@@ -10,7 +10,10 @@ lib_LTLIBRARIES = libvir.la
 libvir_la_LIBADD = 
 libvir_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvir_sym.version \
                     -version-info @LIBXEN_VERSION_INFO@
-libvir_la_SOURCES = libvir.c internal.h hash.c hash.h
+libvir_la_SOURCES =						\
+		libvir.c internal.hi				\
+		hash.c hash.h					\
+		xen_internal.c xen_internal.h
 
 noinst_PROGRAMS=virsh
 

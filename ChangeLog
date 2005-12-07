@@ -1,3 +1,9 @@
+Wed Dec  7 19:09:48 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in src/Makefile.am src/libvir.c src/xen_internal.c
+	  src/xen_internal.h: removed dependancy on xenctrl library, untested
+	  yet.
+
 Wed Dec  7 15:08:54 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* docs/*: adding missing links to API page.
