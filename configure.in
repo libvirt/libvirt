@@ -50,6 +50,17 @@ test "x$U" != "x" && AC_MSG_ERROR(Compiler not ANSI compliant)
 
 AM_PROG_LIBTOOL
 
+dnl Specific dir for HTML output ?
+AC_ARG_WITH(html-dir, AC_HELP_STRING([--with-html-dir=path],
+            [path to base html directory, default $datadir/doc/html]),
+            [HTML_DIR=$withval], [HTML_DIR='$(datadir)/doc'])
+
+AC_ARG_WITH(html-subdir, AC_HELP_STRING([--with-html-subdir=path],
+            [directory used under html-dir, default $PACKAGE-$VERSION/html]),
+            [test "x$withval" != "x" && HTML_DIR="$HTML_DIR/$withval"],
+            [HTML_DIR="$HTML_DIR/\$(PACKAGE)-\$(VERSION)/html"])
+AC_SUBST(HTML_DIR)
+
 dnl
 dnl specific tests to setup DV devel environments with debug etc ...
 dnl

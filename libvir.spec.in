@@ -6,7 +6,7 @@ License: LGPL
 Group: Development/Libraries
 Source: libvir-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
-URL: http://www.gnome.org/~veillard/gamin/
+URL: http://libvir.org/
 BuildRequires: xen
 Requires: xen
 
@@ -56,6 +56,9 @@ rm -fr %{buildroot}
 %{_libdir}/*a
 %{_includedir}/libvir/*.h
 %{_libdir}/pkgconfig/libvir.pc
+
+%doc docs/*.html docs/html docs/*.gif
+%doc docs/libvir-api.xml
 
 %changelog
 * Wed Nov  2 2005 Daniel Veillard <veillard@redhat.com> 0.0.1-1

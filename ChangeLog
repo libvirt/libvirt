@@ -1,3 +1,9 @@
+Wed Dec  7 14:43:28 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in libvir.spec.in docs/Makefile.am: make sure the
+	  docs are installed and packaged in the -devel RPM
+	* docs/api.xsl docs/newapi.xsl: forgot to commit API HTML stylesheets
+
 Wed Dec  7 14:09:48 CET 2005 Karel Zak <kzak@redhat.com>
 	* include/libvir.h src/libvir.c: adding xenConnectNumOfDomains()
 	  to returns number of active domains.
