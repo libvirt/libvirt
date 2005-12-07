@@ -1,3 +1,9 @@
+Wed Dec  7 13:55:04 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* docs/ChangeLog.awk docs/ChangeLog.xsl: Changelog handling from
+	  libxml2 adapted to libvir
+	* docs/* docs/html/libxml-libvir.html: regenerated
+
 Wed Dec  7 11:58:20 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* docs/* docs/html/*: more work on the docs generation

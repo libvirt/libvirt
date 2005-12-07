@@ -13,6 +13,7 @@
     <reference name='virConnectClose' href='html/libvir-libvir.html#virConnectClose'/>
     <reference name='virConnectGetVersion' href='html/libvir-libvir.html#virConnectGetVersion'/>
     <reference name='virConnectListDomains' href='html/libvir-libvir.html#virConnectListDomains'/>
+    <reference name='virConnectNumOfDomains' href='html/libvir-libvir.html#virConnectNumOfDomains'/>
     <reference name='virConnectOpen' href='html/libvir-libvir.html#virConnectOpen'/>
     <reference name='virConnectOpenReadOnly' href='html/libvir-libvir.html#virConnectOpenReadOnly'/>
     <reference name='virConnectPtr' href='html/libvir-libvir.html#virConnectPtr'/>
@@ -52,6 +53,7 @@
       <ref name='virConnectClose'/>
       <ref name='virConnectGetVersion'/>
       <ref name='virConnectListDomains'/>
+      <ref name='virConnectNumOfDomains'/>
       <ref name='virConnectOpen'/>
       <ref name='virConnectOpenReadOnly'/>
       <ref name='virConnectPtr'/>
@@ -107,6 +109,7 @@
       <ref name='virConnectClose'/>
       <ref name='virConnectGetVersion'/>
       <ref name='virConnectListDomains'/>
+      <ref name='virConnectNumOfDomains'/>
       <ref name='virDomainCreateLinux'/>
       <ref name='virDomainLookupByID'/>
       <ref name='virDomainLookupByName'/>
@@ -139,6 +142,7 @@
       <ref name='virConnectClose'/>
       <ref name='virConnectGetVersion'/>
       <ref name='virConnectListDomains'/>
+      <ref name='virConnectNumOfDomains'/>
       <ref name='virConnectOpen'/>
       <ref name='virConnectOpenReadOnly'/>
       <ref name='virConnectPtr'/>
@@ -369,6 +373,7 @@
           <ref name='virConnectClose'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virConnectListDomains'/>
+          <ref name='virConnectNumOfDomains'/>
           <ref name='virConnectOpen'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainCreateLinux'/>
@@ -405,6 +410,7 @@
           <ref name='virConnectClose'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virConnectListDomains'/>
+          <ref name='virConnectNumOfDomains'/>
           <ref name='virConnectOpen'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainCreateLinux'/>
@@ -433,6 +439,7 @@
           <ref name='virConnectClose'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virConnectListDomains'/>
+          <ref name='virConnectNumOfDomains'/>
           <ref name='virConnectOpen'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainGetID'/>
@@ -476,6 +483,7 @@
         </word>
         <word name='found'>
           <ref name='virConnectListDomains'/>
+          <ref name='virConnectNumOfDomains'/>
         </word>
         <word name='from'>
           <ref name='_virDomainInfo'/>
@@ -519,6 +527,7 @@
           <ref name='virConnectClose'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virConnectListDomains'/>
+          <ref name='virConnectNumOfDomains'/>
           <ref name='virConnectOpen'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainCreateLinux'/>
@@ -639,6 +648,7 @@
         </word>
         <word name='number'>
           <ref name='virConnectListDomains'/>
+          <ref name='virConnectNumOfDomains'/>
           <ref name='virDomainGetID'/>
           <ref name='virDomainLookupByID'/>
         </word>
@@ -698,6 +708,7 @@
           <ref name='virConnectClose'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virConnectListDomains'/>
+          <ref name='virConnectNumOfDomains'/>
           <ref name='virConnectOpen'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainCreateLinux'/>
