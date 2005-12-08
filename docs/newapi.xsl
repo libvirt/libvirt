@@ -113,7 +113,7 @@
         <td><a accesskey="u" href="index.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></img></a></td>
 	<th align="left"><a href="index.html">API documentation</a></th>
         <td><a accesskey="h" href="../index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></img></a></td>
-        <th align="center"><a href="../index.html">The XML C parser and toolkit of Gnome</a></th>
+        <th align="center"><a href="../index.html">The virtualization API</a></th>
         <xsl:if test="$next">
 	  <th align="right"><a href="libxml-{$next/@name}.html"><xsl:value-of select="$next/@name"/></a></th>
           <td><a accesskey="n" href="libxml-{$next/@name}.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></img></a></td>
