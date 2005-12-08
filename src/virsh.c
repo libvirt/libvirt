@@ -303,7 +303,7 @@ cmdList(vshControl *ctl, vshCmd *cmd ATTRIBUTE_UNUSED) {
                 virDomainGetID(dom), 
                 virDomainGetName(dom),
                 ret < 0 ? "no state" : vshDomainStateToString(info.state));
-        /*TODO: virDomainFree(dom); */
+        virDomainFree(dom);
     }
     free(ids);
     return TRUE;
@@ -352,7 +352,160 @@ cmdDstate(vshControl *ctl, vshCmd *cmd) {
     else
         ret = FALSE;
         
-    /*TODO: virDomainFree(dom); */
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
+ * "suspend" command
+ */
+static vshCmdInfo info_suspend[] = {
+    { "syntax",  "suspend [--id <number> | --name <string> ]" },
+    { "help",    "domain state" },
+    { "desc",    "Suspend a running domain." },
+    { NULL, NULL }
+};
+
+static vshCmdOptDef opts_suspend[] = {
+    { "name",    VSH_OT_STRING, 0, "domain name" },
+    { "id",      VSH_OT_INT,    0, "domain id" },
+        { NULL, 0, 0, NULL }
+};
+
+static int
+cmdSuspend(vshControl *ctl, vshCmd *cmd) {
+    virDomainPtr dom;
+    int found, ret = TRUE;
+    char *name = vshCommandOptString(cmd, "name", NULL);
+    int id = vshCommandOptInt(cmd, "id", &found);
+    
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (found) {
+        if (!(dom = virDomainLookupByID(ctl->conn, id)))
+            vshError(ctl, FALSE, "failed to get domain '%d'", id);
+    } else {
+        if (!(dom = virDomainLookupByName(ctl->conn, name)))
+            vshError(ctl, FALSE, "failed to get domain '%s'", name);
+    }
+
+    if (!dom)
+        return FALSE;
+    
+    if (virDomainSuspend(dom)==0) {
+        if (found)
+            vshPrint(ctl, VSH_MESG, "Domain %d suspended\n", found);
+        else
+            vshPrint(ctl, VSH_MESG, "Domain %s suspended\n", name);
+    } else {
+        vshError(ctl, FALSE, "Failed to suspend domain\n");
+        ret = FALSE;
+    }
+        
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
+ * "resume" command
+ */
+static vshCmdInfo info_resume[] = {
+    { "syntax",  "resume [--id <number> | --name <string> ]" },
+    { "help",    "domain state" },
+    { "desc",    "Resume a previously suspended domain." },
+    { NULL, NULL }
+};
+
+static vshCmdOptDef opts_resume[] = {
+    { "name",    VSH_OT_STRING, 0, "domain name" },
+    { "id",      VSH_OT_INT,    0, "domain id" },
+        { NULL, 0, 0, NULL }
+};
+
+static int
+cmdResume(vshControl *ctl, vshCmd *cmd) {
+    virDomainPtr dom;
+    int found, ret = TRUE;
+    char *name = vshCommandOptString(cmd, "name", NULL);
+    int id = vshCommandOptInt(cmd, "id", &found);
+    
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (found) {
+        if (!(dom = virDomainLookupByID(ctl->conn, id)))
+            vshError(ctl, FALSE, "failed to get domain '%d'", id);
+    } else {
+        if (!(dom = virDomainLookupByName(ctl->conn, name)))
+            vshError(ctl, FALSE, "failed to get domain '%s'", name);
+    }
+
+    if (!dom)
+        return FALSE;
+    
+    if (virDomainResume(dom)==0) {
+        if (found)
+            vshPrint(ctl, VSH_MESG, "Domain %d resumed\n", found);
+        else
+            vshPrint(ctl, VSH_MESG, "Domain %s resumed\n", name);
+    } else {
+        vshError(ctl, FALSE, "Failed to resume domain\n");
+        ret = FALSE;
+    }
+        
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
+ * "destroy" command
+ */
+static vshCmdInfo info_destroy[] = {
+    { "syntax",  "destroy [--id <number> | --name <string> ]" },
+    { "help",    "domain state" },
+    { "desc",    "Destroy a given domain." },
+    { NULL, NULL }
+};
+
+static vshCmdOptDef opts_destroy[] = {
+    { "name",    VSH_OT_STRING, 0, "domain name" },
+    { "id",      VSH_OT_INT,    0, "domain id" },
+        { NULL, 0, 0, NULL }
+};
+
+static int
+cmdDestroy(vshControl *ctl, vshCmd *cmd) {
+    virDomainPtr dom;
+    int found, ret = TRUE;
+    char *name = vshCommandOptString(cmd, "name", NULL);
+    int id = vshCommandOptInt(cmd, "id", &found);
+    
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (found) {
+        if (!(dom = virDomainLookupByID(ctl->conn, id)))
+            vshError(ctl, FALSE, "failed to get domain '%d'", id);
+    } else {
+        if (!(dom = virDomainLookupByName(ctl->conn, name)))
+            vshError(ctl, FALSE, "failed to get domain '%s'", name);
+    }
+
+    if (!dom)
+        return FALSE;
+    
+    if (virDomainDestroy(dom)==0) {
+        if (found)
+            vshPrint(ctl, VSH_MESG, "Domain %d destroyed\n", found);
+        else
+            vshPrint(ctl, VSH_MESG, "Domain %s destroyed\n", name);
+    } else {
+        vshError(ctl, FALSE, "Failed to destroy domain\n");
+        ret = FALSE;
+        virDomainFree(dom);
+    }
+        
     return ret;
 }
 
@@ -369,7 +522,7 @@ static vshCmdInfo info_dinfo[] = {
 static vshCmdOptDef opts_dinfo[] = {
     { "name",      VSH_OT_STRING, 0, "domain name" },
     { "id",        VSH_OT_INT,    0, "domain id" },
-        { NULL, 0, 0, NULL }
+    { NULL, 0, 0, NULL }
 };
 
 static int
@@ -421,7 +574,7 @@ cmdDinfo(vshControl *ctl, vshCmd *cmd) {
         ret = FALSE;
     }
         
-    /*TODO: virDomainFree(dom); */
+    virDomainFree(dom);
     return ret;
 }
 
@@ -453,7 +606,7 @@ cmdNameof(vshControl *ctl, vshCmd *cmd) {
     dom = virDomainLookupByID(ctl->conn, id);
     if (dom) {
         vshPrint(ctl, VSH_MESG, "%s\n", virDomainGetName(dom));
-        /*TODO: virDomainFree(dom); */
+        virDomainFree(dom);
     } else {
         vshError(ctl, FALSE, "failed to get domain '%d'", id);
         return FALSE;
@@ -488,7 +641,7 @@ cmdIdof(vshControl *ctl, vshCmd *cmd) {
     dom = virDomainLookupByName(ctl->conn, name);
     if (dom) {
         vshPrint(ctl, VSH_MESG, "%s\n", virDomainGetID(dom));
-        /*TODO: virDomainFree(dom); */
+        virDomainFree(dom);
     } else {
         vshError(ctl, FALSE, "failed to get domain '%s'", name);
         return FALSE;
@@ -598,6 +751,9 @@ static vshCmdDef commands[] = {
     { "connect",    cmdConnect,    opts_connect,   info_connect },
     { "dinfo",      cmdDinfo,      opts_dinfo,     info_dinfo },
     { "dstate",     cmdDstate,     opts_dstate,    info_dstate },
+    { "suspend",    cmdSuspend,    opts_suspend,   info_suspend },
+    { "resume",     cmdResume,     opts_resume,    info_resume },
+    { "destroy",    cmdDestroy,    opts_destroy,   info_destroy },
     { "help",       cmdHelp,       opts_help,      info_help },
     { "idof",       cmdIdof,       opts_idof,      info_idof },
     { "list",       cmdList,       NULL,           info_list },
