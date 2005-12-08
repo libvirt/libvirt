@@ -161,6 +161,7 @@ virDomainPtr		virDomainLookupByName	(virConnectPtr conn,
 virDomainPtr		virDomainLookupByID	(virConnectPtr conn,
 						 int id);
 int			virDomainDestroy	(virDomainPtr domain);
+int			virDomainFree		(virDomainPtr domain);
 
 /*
  * Domain suspend/resume

@@ -195,7 +195,7 @@ failed:
 }
 
 /**
- * virDomainDestroyName:
+ * virDomainFreeName:
  * @domain: a domain object
  *
  * Destroy the domain object, this is just used by the domain hash callback.
@@ -203,8 +203,8 @@ failed:
  * Returns 0 in case of success and -1 in case of failure.
  */
 static int
-virDomainDestroyName(virDomainPtr domain, const char *name ATTRIBUTE_UNUSED) {
-    return(virDomainDestroy(domain));
+virDomainFreeName(virDomainPtr domain, const char *name ATTRIBUTE_UNUSED) {
+    return(virDomainFree(domain));
 }
 
 /**
@@ -223,7 +223,7 @@ virConnectClose(virConnectPtr conn) {
     if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC))
         return(-1);
 
-    virHashFree(conn->domains, (virHashDeallocator) virDomainDestroyName);
+    virHashFree(conn->domains, (virHashDeallocator) virDomainFreeName);
     conn->magic = -1;
     xs_daemon_close(conn->xshandle);
     conn->xshandle = NULL;
@@ -333,6 +333,8 @@ done:
  * virConnectNumOfDomains:
  * @conn: pointer to the hypervisor connection
  *
+ * Provides the number of active domains.
+ *
  * Returns the number of domain found or -1 in case of error
  */
 int
@@ -372,8 +374,10 @@ virConnectNumOfDomains(virConnectPtr conn) {
  */
 virDomainPtr
 virDomainCreateLinux(virConnectPtr conn, const char *kernel_path,
-		     const char *initrd_path, const char *cmdline,
-		     unsigned long memory, unsigned int flags) {
+		     const char *initrd_path ATTRIBUTE_UNUSED,
+		     const char *cmdline ATTRIBUTE_UNUSED,
+		     unsigned long memory,
+		     unsigned int flags ATTRIBUTE_UNUSED) {
     if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC) ||
         (kernel_path == NULL) || (memory < 4096))
         return(NULL);
@@ -527,6 +531,8 @@ virDomainLookupByID(virConnectPtr conn, int id) {
  *
  * Destroy the domain object. The running instance is shutdown if not down
  * already and all resources used by it are given back to the hypervisor.
+ * The data structure is freed and should not be used thereafter if the
+ * call does not return an error.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -535,7 +541,31 @@ virDomainDestroy(virDomainPtr domain) {
     if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
         return(-1);
     TODO
-    return(-1);
+    
+    return(virDomainFree(domain));
+}
+
+/**
+ * virDomainFree:
+ * @domain: a domain object
+ *
+ * Free the domain object. The running instance is kept alive.
+ * The data structure is freed and should not be used thereafter.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainFree(virDomainPtr domain) {
+    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
+        return(-1);
+    domain->magic = -1;
+    domain->handle = -1;
+    if (domain->path != NULL)
+        free(domain->path);
+    if (domain->name)
+        free(domain->name);
+    free(domain);
+    return(0);
 }
 
 /**

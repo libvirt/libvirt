@@ -1,3 +1,9 @@
+Thu Dec  8 17:43:11 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvir.h src/libvir.c src/libvir_sym.version: adding
+	  virDomainFree()
+	* docs/*: regenerated the docs
+
 Thu Dec  8 16:07:07 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in include/libvir.h.in include/libvir.h src/Makefile.am

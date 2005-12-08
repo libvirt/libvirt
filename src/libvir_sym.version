@@ -1,6 +1,7 @@
 {
     global:
 	virConnectClose;
+	virConnectGetType;
 	virConnectGetVersion;
 	virConnectListDomains;
 	virConnectNumOfDomains;
@@ -8,15 +9,16 @@
         virConnectOpenReadOnly;
 	virDomainCreateLinux;
 	virDomainDestroy;
+	virDomainFree;
 	virDomainGetID;
 	virDomainGetInfo;
 	virDomainGetMaxMemory;
 	virDomainGetName;
-	virConnectGetType;
 	virDomainLookupByID;
 	virDomainLookupByName;
 	virDomainResume;
 	virDomainSetMaxMemory;
 	virDomainSuspend;
+	virGetVersion;
     local: *;
 };
