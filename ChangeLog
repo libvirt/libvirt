@@ -1,3 +1,6 @@
+Thu Dec  8 15:20:57 CET 2005 Karel Zak <kzak@redhat.com>
+	* src/virsh.c: code cleanup to prevent gcc warnings
+
 Thu Dec  8 14:25:09 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in: activate pedantic flags

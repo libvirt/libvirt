@@ -6,6 +6,9 @@
  * See COPYING.LIB for the License of this software
  *
  * Daniel Veillard <veillard@redhat.com>
+ * Karel Zak <kzak@redhat.com>
+ *
+ * $Id$
  */
 
 #define _GNU_SOURCE    /* isblank() */
@@ -18,6 +21,7 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <sys/types.h>
+#include <sys/time.h>
 #include <ctype.h>
 
 #include <readline/readline.h>
@@ -99,18 +103,18 @@ typedef struct __vshCmd vshCmd;
  * vshCmdInfo -- information about command
  */
 typedef struct  {
-    char    *name;     /* name of information */
-    char    *data;     /* information */
+    const char    *name;     /* name of information */
+    const char    *data;     /* information */
 } vshCmdInfo;
 
 /*
  * vshCmdOptDef - command option definition
  */
 typedef struct  {
-    char             *name;     /* the name of option */
+    const char       *name;     /* the name of option */
     vshCmdOptType    type;      /* option type */
     int              flag;      /* flags */
-    char             *help;     /* help string */
+    const char       *help;     /* help string */
 } vshCmdOptDef;
 
 /*
@@ -126,7 +130,7 @@ typedef struct vshCmdOpt {
  * vshCmdDef - command definition
  */
 typedef struct  {
-    char             *name;
+    const char       *name;
     int              (*handler)(vshControl *, vshCmd *);    /* command handler */
     vshCmdOptDef     *opts;     /* definition of command options */
     vshCmdInfo       *info;     /* details about command */
@@ -158,25 +162,25 @@ typedef struct __vshControl {
 
 static vshCmdDef commands[];
 
-static void vshError(vshControl *ctl, int doexit, char *format, ...);
+static void vshError(vshControl *ctl, int doexit, const char *format, ...);
 static int vshInit(vshControl *ctl);
 static int vshDeinit(vshControl *ctl);
-static void vshUsage(vshControl *ctl, char *cmdname);
+static void vshUsage(vshControl *ctl, const char *cmdname);
 
 static int vshParseArgv(vshControl *ctl, int argc, char **argv);
 
-static char *vshCmddefGetInfo(vshCmdDef *cmd, char *info);
-static vshCmdDef *vshCmddefSearch(char *cmdname);
-static int vshCmddefHelp(vshControl *ctl, char *name, int withprog);
+static const char *vshCmddefGetInfo(vshCmdDef *cmd, const char *info);
+static vshCmdDef *vshCmddefSearch(const char *cmdname);
+static int vshCmddefHelp(vshControl *ctl, const char *name, int withprog);
 
-static vshCmdOpt *vshCommandOpt(vshCmd *cmd, char *name);
-static int vshCommandOptInt(vshCmd *cmd, char *name, int *found);
-static char *vshCommandOptString(vshCmd *cmd, char *name, int *found);
-static int vshCommandOptBool(vshCmd *cmd, char *name);
+static vshCmdOpt *vshCommandOpt(vshCmd *cmd, const char *name);
+static int vshCommandOptInt(vshCmd *cmd, const char *name, int *found);
+static char *vshCommandOptString(vshCmd *cmd, const char *name, int *found);
+static int vshCommandOptBool(vshCmd *cmd, const char *name);
 
-static void vshPrint(vshControl *ctl, vshOutType out, char *format, ...);
+static void vshPrint(vshControl *ctl, vshOutType out, const char *format, ...);
 
-static char *vshDomainStateToString(int state);
+static const char *vshDomainStateToString(int state);
 static int vshConnectionUsability(vshControl *ctl, virConnectPtr conn, int showerror);
 
 /* ---------------
@@ -202,7 +206,7 @@ static vshCmdOptDef opts_help[] = {
 
 static int
 cmdHelp(vshControl *ctl, vshCmd *cmd) {
-    char *cmdname = vshCommandOptString(cmd, "command", NULL);
+    const char *cmdname = vshCommandOptString(cmd, "command", NULL);
 
     if (!cmdname) {
         vshCmdDef *def;
@@ -269,6 +273,8 @@ static int
 cmdList(vshControl *ctl, vshCmd *cmd) {
     int *ids, maxid, i;
 
+    (void) cmd; /* happy gcc */
+    
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
     
@@ -507,12 +513,14 @@ cmdVersion(vshControl *ctl, vshCmd *cmd) {
     unsigned long hvVersion;
     const char *hvType;
 
+    (void)cmd;
+    
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
     
     hvType = virConnectGetType(ctl->conn);
     if (hvType == NULL) {
-        vshError(ctl, FALSE, "Failed to get hypervisor type\n");
+        vshError(ctl, FALSE, "failed to get hypervisor type\n");
         return FALSE;
     }
 
@@ -523,7 +531,7 @@ cmdVersion(vshControl *ctl, vshCmd *cmd) {
     }
     if (hvVersion == 0) {
         vshPrint(ctl, VSH_MESG,
-                 "Cannot extract running %s hypervisor version\n",
+                 "cannot extract running %s hypervisor version\n",
                  hvType);
     } else {
         unsigned int major = hvVersion / 1000000;
@@ -551,6 +559,7 @@ static vshCmdInfo info_quit[] = {
 
 static int
 cmdQuit(vshControl *ctl, vshCmd *cmd) {
+    (void)cmd;
     ctl->imode = FALSE;
     return TRUE;
 }
@@ -575,8 +584,8 @@ static vshCmdDef commands[] = {
  * Utils for work with command definition
  * ---------------
  */
-static char *
-vshCmddefGetInfo(vshCmdDef *cmd, char *name) {
+static const char *
+vshCmddefGetInfo(vshCmdDef *cmd, const char *name) {
     vshCmdInfo *info;
     
     for (info = cmd->info; info && info->name; info++) {
@@ -587,7 +596,7 @@ vshCmddefGetInfo(vshCmdDef *cmd, char *name) {
 }
 
 static vshCmdOptDef *
-vshCmddefGetOption(vshCmdDef *cmd, char *name) {
+vshCmddefGetOption(vshCmdDef *cmd, const char *name) {
     vshCmdOptDef *opt;
     
     for (opt = cmd->opts; opt && opt->name; opt++)
@@ -607,7 +616,7 @@ vshCmddefGetData(vshCmdDef *cmd) {
 }
 
 static vshCmdDef *
-vshCmddefSearch(char *cmdname) {
+vshCmddefSearch(const char *cmdname) {
     vshCmdDef *c;
     
     for (c = commands; c->name; c++)
@@ -617,7 +626,7 @@ vshCmddefSearch(char *cmdname) {
 }
 
 static int
-vshCmddefHelp(vshControl *ctl, char *cmdname, int withprog) {
+vshCmddefHelp(vshControl *ctl, const char *cmdname, int withprog) {
     vshCmdDef *def = vshCmddefSearch(cmdname);
     
     if (!def) {
@@ -625,9 +634,9 @@ vshCmddefHelp(vshControl *ctl, char *cmdname, int withprog) {
          return FALSE;
     } else {    
         vshCmdOptDef *opt;
-        char *desc = vshCmddefGetInfo(def, "desc");
-        char *help = vshCmddefGetInfo(def, "help");
-        char *syntax = vshCmddefGetInfo(def, "syntax");
+        const char *desc = vshCmddefGetInfo(def, "desc");
+        const char *help = vshCmddefGetInfo(def, "help");
+        const char *syntax = vshCmddefGetInfo(def, "syntax");
 
         fputs("  NAME\n", stdout);
         fprintf(stdout, "    %s - %s\n", def->name,  help);
@@ -701,7 +710,7 @@ vshCommandFree(vshCmd *cmd) {
  * Returns option by name
  */
 static vshCmdOpt *
-vshCommandOpt(vshCmd *cmd, char *name) {
+vshCommandOpt(vshCmd *cmd, const char *name) {
     vshCmdOpt *opt = cmd->opts;
     
     while(opt) {
@@ -716,7 +725,7 @@ vshCommandOpt(vshCmd *cmd, char *name) {
  * Returns option as INT
  */
 static int
-vshCommandOptInt(vshCmd *cmd, char *name, int *found) {
+vshCommandOptInt(vshCmd *cmd, const char *name, int *found) {
     vshCmdOpt *arg = vshCommandOpt(cmd, name);
     int res = 0;
     
@@ -731,7 +740,7 @@ vshCommandOptInt(vshCmd *cmd, char *name, int *found) {
  * Returns option as STRING
  */
 static char *
-vshCommandOptString(vshCmd *cmd, char *name, int *found) {
+vshCommandOptString(vshCmd *cmd, const char *name, int *found) {
     vshCmdOpt *arg = vshCommandOpt(cmd, name);
     if (found)
         *found = arg ? TRUE : FALSE;
@@ -742,7 +751,7 @@ vshCommandOptString(vshCmd *cmd, char *name, int *found) {
  * Returns TRUE/FALSE if the option exists
  */
 static int
-vshCommandOptBool(vshCmd *cmd, char *name) {
+vshCommandOptBool(vshCmd *cmd, const char *name) {
     return vshCommandOpt(cmd, name) ? TRUE : FALSE;
 }
 
@@ -992,7 +1001,7 @@ syntaxError:
  * Misc utils  
  * ---------------
  */
-static char *
+static const char *
 vshDomainStateToString(int state) {
     switch (state) {
         case VIR_DOMAIN_RUNNING:
@@ -1055,7 +1064,7 @@ vshWantedDebug(vshOutType type, int mode) {
 }
 
 static void
-vshPrint(vshControl *ctl, vshOutType type, char *format, ...) {
+vshPrint(vshControl *ctl, vshOutType type, const char *format, ...) {
     va_list ap;
     
     if (ctl->quiet==TRUE && (type==VSH_HEADER || type==VSH_FOOTER))
@@ -1070,7 +1079,7 @@ vshPrint(vshControl *ctl, vshOutType type, char *format, ...) {
 }
 
 static void
-vshError(vshControl *ctl, int doexit, char *format, ...) {
+vshError(vshControl *ctl, int doexit, const char *format, ...) {
     va_list ap;
     
     if (doexit)
@@ -1125,7 +1134,7 @@ vshInit(vshControl *ctl) {
 static char *
 vshReadlineCommandGenerator(const char *text, int state) {
     static int list_index, len;
-    char *name;
+    const char *name;
 
     /* If this is a new word to complete, initialize now.  This
      * includes saving the length of TEXT for efficiency, and
@@ -1139,7 +1148,7 @@ vshReadlineCommandGenerator(const char *text, int state) {
     /* Return the next name which partially matches from the
      * command list. 
      */
-    while (name = commands[list_index].name) {
+    while ((name = commands[list_index].name)) {
         list_index++;
         if (strncmp (name, text, len) == 0)
             return strdup(name);
@@ -1153,7 +1162,7 @@ static char *
 vshReadlineOptionsGenerator(const char *text, int state) {
     static int list_index, len;
     static vshCmdDef *cmd = NULL;
-    char *name;
+    const char *name;
 
     if (!state) {
         /* determine command name */
@@ -1175,12 +1184,12 @@ vshReadlineOptionsGenerator(const char *text, int state) {
     if (!cmd)
         return NULL;
     
-    while (name = cmd->opts[list_index].name) {
+    while ((name = cmd->opts[list_index].name)) {
         vshCmdOptDef *opt = &cmd->opts[list_index];
         char *res;
         list_index++;
        
-        if (cmd->opts[list_index].type == VSH_OT_DATA)
+        if (opt->type == VSH_OT_DATA)
             /* ignore non --option */
             continue;
         
@@ -1201,6 +1210,8 @@ static char **
 vshReadlineCompletion(const char *text, int start, int end) {
     char **matches = (char **) NULL;
 
+    (void) end; /* happy gcc */
+    
     if (start==0)
         /* command name generator */
         matches = rl_completion_matches (text, vshReadlineCommandGenerator);
@@ -1212,7 +1223,7 @@ vshReadlineCompletion(const char *text, int start, int end) {
 
 
 static void
-vshReadlineInit(vshControl *ctl) {
+vshReadlineInit(void) {
     /* Allow conditional parsing of the ~/.inputrc file. */
     rl_readline_name = "virsh";
 
@@ -1238,7 +1249,7 @@ vshDeinit(vshControl *ctl) {
  * Print usage
  */
 static void
-vshUsage(vshControl *ctl, char *cmdname) {
+vshUsage(vshControl *ctl, const char *cmdname) {
     vshCmdDef *cmd;
     
     /* global help */
@@ -1283,7 +1294,7 @@ vshParseArgv(vshControl *ctl, int argc, char **argv) {
 
     
     if (argc < 2)
-        return;
+        return TRUE;
     
     /* look for begin of command, for example:
      *   ./virsh --debug 5 -q command --cmdoption
@@ -1350,7 +1361,7 @@ vshParseArgv(vshControl *ctl, int argc, char **argv) {
     if (argc > end) {
         /* parse command */
         char *cmdstr;
-        int sz=0, i, ret;
+        int sz=0, ret;
         
         ctl->imode = FALSE;
         
@@ -1402,7 +1413,7 @@ main(int argc, char **argv) {
             vshPrint(ctl, VSH_MESG, "Type:  'help' for help with commands\n"
                                     "       'quit' to quit\n\n");
         }
-        vshReadlineInit(ctl);
+        vshReadlineInit();
         do {
             ctl->cmdstr = readline(ctl->uid==0 ? VSH_PROMPT_RW : VSH_PROMPT_RO);
             if (ctl->cmdstr==NULL)
