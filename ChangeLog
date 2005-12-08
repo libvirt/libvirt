@@ -1,3 +1,8 @@
+Fri Dec  9 00:47:12 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* Makefile.am include/libvir.h.in libvir.pc.in: various fixes.
+	* docs/*: regenerated the docs
+
 Fri Dec  9 00:02:06 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: added support for suspend/resume/destroy, validating

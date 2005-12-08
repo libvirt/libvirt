@@ -3,9 +3,9 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: libxen
+Name: libvir
 Version: @VERSION@
-Description: libxen library
+Description: libvir library
 Requires:
-Libs: -L${libdir} -lxen @LIBS@
+Libs: -L${libdir} -lvir @LIBS@
 Cflags:

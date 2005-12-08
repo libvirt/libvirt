@@ -12,7 +12,7 @@ libvir_la_LIBADD =
 libvir_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvir_sym.version \
                     -version-info @LIBVIR_VERSION_INFO@
 libvir_la_SOURCES =						\
-		libvir.c internal.hi				\
+		libvir.c internal.h				\
 		hash.c hash.h					\
 		xen_internal.c xen_internal.h
 
