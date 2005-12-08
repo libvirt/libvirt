@@ -1,3 +1,8 @@
+Thu Dec  8 18:16:20 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvir.c src/xen_internal.c src/xen_internal.h: implement
+	  Pause, Resume, Destroy, but untested yet.
+
 Thu Dec  8 17:43:11 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvir.h src/libvir.c src/libvir_sym.version: adding

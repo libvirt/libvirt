@@ -177,3 +177,75 @@ xenHypervisorGetDomainInfo(int handle, int domain, dom0_getdomaininfo_t *info) {
     return(0);
 }
 
+/**
+ * xenHypervisorPauseDomain:
+ * @handle: the handle to the Xen hypervisor
+ * @domain: the domain ID
+ *
+ * Do an hypervisor call to pause the given domain
+ *
+ * Returns 0 in case of success, -1 in case of error.
+ */
+int
+xenHypervisorPauseDomain(int handle, int domain) {
+    dom0_op_t op;
+    int ret;
+
+    op.cmd = DOM0_PAUSEDOMAIN;
+    op.u.pausedomain.domain = (domid_t) domain;
+
+    ret = xenHypervisorDoOp(handle, &op);
+
+    if (ret < 0)
+        return(-1);
+    return(0);
+}
+
+/**
+ * xenHypervisorResumeDomain:
+ * @handle: the handle to the Xen hypervisor
+ * @domain: the domain ID
+ *
+ * Do an hypervisor call to resume the given domain
+ *
+ * Returns 0 in case of success, -1 in case of error.
+ */
+int
+xenHypervisorResumeDomain(int handle, int domain) {
+    dom0_op_t op;
+    int ret;
+
+    op.cmd = DOM0_UNPAUSEDOMAIN;
+    op.u.unpausedomain.domain = (domid_t) domain;
+
+    ret = xenHypervisorDoOp(handle, &op);
+
+    if (ret < 0)
+        return(-1);
+    return(0);
+}
+
+/**
+ * xenHypervisorDestroyDomain:
+ * @handle: the handle to the Xen hypervisor
+ * @domain: the domain ID
+ *
+ * Do an hypervisor call to destroy the given domain
+ *
+ * Returns 0 in case of success, -1 in case of error.
+ */
+int
+xenHypervisorDestroyDomain(int handle, int domain) {
+    dom0_op_t op;
+    int ret;
+
+    op.cmd = DOM0_DESTROYDOMAIN;
+    op.u.destroydomain.domain = (domid_t) domain;
+
+    ret = xenHypervisorDoOp(handle, &op);
+
+    if (ret < 0)
+        return(-1);
+    return(0);
+}
+

@@ -538,9 +538,15 @@ virDomainLookupByID(virConnectPtr conn, int id) {
  */
 int
 virDomainDestroy(virDomainPtr domain) {
+    int ret;
+
     if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
         return(-1);
-    TODO
+    if ((domain->conn == NULL) || (domain->conn->magic != VIR_CONNECT_MAGIC))
+        return(-1);
+    ret = xenHypervisorDestroyDomain(domain->conn->handle, domain->handle);
+    if (ret < 0)
+        return(-1);
     
     return(virDomainFree(domain));
 }
@@ -583,8 +589,9 @@ int
 virDomainSuspend(virDomainPtr domain) {
     if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
         return(-1);
-    TODO
-    return(-1);
+    if ((domain->conn == NULL) || (domain->conn->magic != VIR_CONNECT_MAGIC))
+        return(-1);
+    return(xenHypervisorPauseDomain(domain->conn->handle, domain->handle));
 }
 
 /**
@@ -600,8 +607,9 @@ int
 virDomainResume(virDomainPtr domain) {
     if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
         return(-1);
-    TODO
-    return(-1);
+    if ((domain->conn == NULL) || (domain->conn->magic != VIR_CONNECT_MAGIC))
+        return(-1);
+    return(xenHypervisorResumeDomain(domain->conn->handle, domain->handle));
 }
 
 /**

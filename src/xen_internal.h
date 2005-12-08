@@ -23,6 +23,12 @@ extern "C" {
 int		xenHypervisorOpen		(void);
 int		xenHypervisorClose		(int handle);
 unsigned long	xenHypervisorGetVersion		(int handle);
+int		xenHypervisorDestroyDomain	(int handle,
+						 int domain);
+int		xenHypervisorResumeDomain	(int handle,
+						 int domain);
+int		xenHypervisorPauseDomain	(int handle,
+						 int domain);
 int		xenHypervisorGetDomainInfo	(int handle,
 						 int domain,
 						 dom0_getdomaininfo_t *info);
