@@ -1,3 +1,7 @@
+Thu Dec  8 11:19:48 CET 2005 Karel Zak <kzak@redhat.com>
+	* src/Makefile.am src/virsh.c configure.in: adding readline support,
+	  and implement basic commands to virsh.
+
 Thu Dec  8 11:12:36 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvir.c src/xen_internal.c: fixed the new Xen hypervisor call

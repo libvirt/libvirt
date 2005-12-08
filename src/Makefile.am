@@ -3,6 +3,7 @@
 INCLUDES = -I$(top_builddir)/include -I@srcdir@/include
 DEPS = libvir.la
 LDADDS = @STATIC_BINARIES@ libvir.la
+VIRSH_LIBS = @VIRSH_LIBS@
 
 EXTRA_DIST = libvir_sym.version
 
@@ -20,5 +21,5 @@ noinst_PROGRAMS=virsh
 virsh_SOURCES=virsh.c
 virsh_LDFLAGS =
 virsh_DEPENDENCIES = $(DEPS)
-virsh_LDADD= $(LDADDS)
+virsh_LDADD= $(LDADDS) $(VIRSH_LIBS)
 

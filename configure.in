@@ -77,4 +77,15 @@ AC_SUBST(STATIC_BINARIES)
 dnl search for the low level Xen library
 AC_SEARCH_LIBS(xs_read, [xenstore], [], [AC_MSG_ERROR([Xen store library not found])])
 
+dnl virsh libraries
+AC_CHECK_LIB(curses, initscr, 
+	[VIRSH_LIBS="$VIRSH_LIBS -lcurses"], 
+	[AC_MSG_ERROR([curses library not found])],
+	[$VIRSH_LIBS])
+AC_CHECK_LIB(readline, main, 
+	[VIRSH_LIBS="$VIRSH_LIBS -lreadline"], 
+	[AC_MSG_ERROR([readline library not found])],
+	[$VIRSH_LIBS])
+AC_SUBST(VIRSH_LIBS)
+
 AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile libvir.pc libvir.spec)
