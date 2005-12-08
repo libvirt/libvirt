@@ -1,3 +1,7 @@
+Thu Dec  8 11:12:36 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvir.c src/xen_internal.c: fixed the new Xen hypervisor call
+
 Wed Dec  7 19:09:48 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in src/Makefile.am src/libvir.c src/xen_internal.c

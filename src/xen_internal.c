@@ -84,6 +84,7 @@ int xenHypervisorClose(int handle) {
 static int
 xenHypervisorDoOp(int handle, dom0_op_t *op) {
     int ret;
+    unsigned int cmd;
     hypercall_t hc;
 
     op->interface_version = DOM0_INTERFACE_VERSION;
@@ -93,8 +94,8 @@ xenHypervisorDoOp(int handle, dom0_op_t *op) {
     if (mlock(op, sizeof(dom0_op_t)) < 0)
         return(-1);
 
-    ret = ioctl(handle, _IOC(_IOC_NONE, 'P', 0, sizeof(hypercall_t)),
-                             (unsigned long) &hc);
+    cmd = _IOC(_IOC_NONE, 'P', 0, sizeof(hc));
+    ret = ioctl(handle, cmd, (unsigned long) &hc);
 
     if (munlock(op, sizeof(dom0_op_t)) < 0)
         ret = -1;
@@ -132,13 +133,15 @@ xenHypervisorGetDomainInfo(int handle, int domain, dom0_getdomaininfo_t *info) {
     op.u.getdomaininfolist.first_domain = (domid_t) domain;
     op.u.getdomaininfolist.max_domains = 1;
     op.u.getdomaininfolist.buffer = info;
+    op.u.getdomaininfolist.num_domains = 1;
+    info->domain = domain;
 
     ret = xenHypervisorDoOp(handle, &op);
 
     if (munlock(info, sizeof(dom0_getdomaininfo_t)) < 0)
         ret = -1;
 
-    if (ret <= 0)
+    if (ret < 0)
         return(-1);
     return(0);
 }

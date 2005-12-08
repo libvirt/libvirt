@@ -636,7 +636,7 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
 	dominfo.domain = domain->handle;
         ret = xenHypervisorGetDomainInfo(domain->conn->handle, domain->handle,
 	                                 &dominfo);
-        if (ret <= 0)
+        if (ret < 0)
 	    return(-1);
 	switch (dominfo.flags & 0xFF) {
 	    case DOMFLAGS_DYING:
