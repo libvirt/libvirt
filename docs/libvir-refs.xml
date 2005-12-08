@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <apirefs name='libvir'>
   <references>
+    <reference name='LIBVIR_VERSION_NUMBER' href='html/libvir-libvir.html#LIBVIR_VERSION_NUMBER'/>
     <reference name='VIR_DOMAIN_BLOCKED' href='html/libvir-libvir.html#VIR_DOMAIN_BLOCKED'/>
     <reference name='VIR_DOMAIN_NONE' href='html/libvir-libvir.html#VIR_DOMAIN_NONE'/>
     <reference name='VIR_DOMAIN_NOSTATE' href='html/libvir-libvir.html#VIR_DOMAIN_NOSTATE'/>
@@ -11,6 +12,7 @@
     <reference name='_virDomainInfo' href='html/libvir-libvir.html#_virDomainInfo'/>
     <reference name='virConnect' href='html/libvir-libvir.html#virConnect'/>
     <reference name='virConnectClose' href='html/libvir-libvir.html#virConnectClose'/>
+    <reference name='virConnectGetType' href='html/libvir-libvir.html#virConnectGetType'/>
     <reference name='virConnectGetVersion' href='html/libvir-libvir.html#virConnectGetVersion'/>
     <reference name='virConnectListDomains' href='html/libvir-libvir.html#virConnectListDomains'/>
     <reference name='virConnectNumOfDomains' href='html/libvir-libvir.html#virConnectNumOfDomains'/>
@@ -34,8 +36,12 @@
     <reference name='virDomainSetMaxMemory' href='html/libvir-libvir.html#virDomainSetMaxMemory'/>
     <reference name='virDomainState' href='html/libvir-libvir.html#virDomainState'/>
     <reference name='virDomainSuspend' href='html/libvir-libvir.html#virDomainSuspend'/>
+    <reference name='virGetVersion' href='html/libvir-libvir.html#virGetVersion'/>
   </references>
   <alpha>
+    <letter name='L'>
+      <ref name='LIBVIR_VERSION_NUMBER'/>
+    </letter>
     <letter name='V'>
       <ref name='VIR_DOMAIN_BLOCKED'/>
       <ref name='VIR_DOMAIN_NONE'/>
@@ -51,6 +57,7 @@
     <letter name='v'>
       <ref name='virConnect'/>
       <ref name='virConnectClose'/>
+      <ref name='virConnectGetType'/>
       <ref name='virConnectGetVersion'/>
       <ref name='virConnectListDomains'/>
       <ref name='virConnectNumOfDomains'/>
@@ -74,6 +81,7 @@
       <ref name='virDomainSetMaxMemory'/>
       <ref name='virDomainState'/>
       <ref name='virDomainSuspend'/>
+      <ref name='virGetVersion'/>
     </letter>
   </alpha>
   <constructors>
@@ -81,7 +89,6 @@
       <ref name='virDomainGetID'/>
     </type>
     <type name='unsigned long'>
-      <ref name='virConnectGetVersion'/>
       <ref name='virDomainGetMaxMemory'/>
     </type>
     <type name='virConnectPtr'>
@@ -105,8 +112,13 @@
       <ref name='virDomainCreateLinux'/>
       <ref name='virDomainSetMaxMemory'/>
     </type>
+    <type name='unsigned long *'>
+      <ref name='virConnectGetVersion'/>
+      <ref name='virGetVersion'/>
+    </type>
     <type name='virConnectPtr'>
       <ref name='virConnectClose'/>
+      <ref name='virConnectGetType'/>
       <ref name='virConnectGetVersion'/>
       <ref name='virConnectListDomains'/>
       <ref name='virConnectNumOfDomains'/>
@@ -130,6 +142,7 @@
   </functions>
   <files>
     <file name='libvir'>
+      <ref name='LIBVIR_VERSION_NUMBER'/>
       <ref name='VIR_DOMAIN_BLOCKED'/>
       <ref name='VIR_DOMAIN_NONE'/>
       <ref name='VIR_DOMAIN_NOSTATE'/>
@@ -140,6 +153,7 @@
       <ref name='_virDomainInfo'/>
       <ref name='virConnect'/>
       <ref name='virConnectClose'/>
+      <ref name='virConnectGetType'/>
       <ref name='virConnectGetVersion'/>
       <ref name='virConnectListDomains'/>
       <ref name='virConnectNumOfDomains'/>
@@ -163,6 +177,7 @@
       <ref name='virDomainSetMaxMemory'/>
       <ref name='virDomainState'/>
       <ref name='virDomainSuspend'/>
+      <ref name='virGetVersion'/>
     </file>
   </files>
   <index>
@@ -202,6 +217,7 @@
       </letter>
       <letter name='G'>
         <word name='Get'>
+          <ref name='virConnectGetType'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainGetID'/>
           <ref name='virDomainGetName'/>
@@ -210,6 +226,7 @@
       <letter name='H'>
         <word name='Hypervisor'>
           <ref name='virConnectClose'/>
+          <ref name='virConnectGetType'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virConnectOpen'/>
         </word>
@@ -235,8 +252,14 @@
           <ref name='virDomainCreateLinux'/>
         </word>
       </letter>
+      <letter name='M'>
+        <word name='Macro'>
+          <ref name='LIBVIR_VERSION_NUMBER'/>
+        </word>
+      </letter>
       <letter name='N'>
         <word name='NULL'>
+          <ref name='virConnectGetType'/>
           <ref name='virConnectOpen'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainCreateLinux'/>
@@ -246,12 +269,28 @@
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virGetVersion'/>
         </word>
         <word name='Note'>
           <ref name='virDomainGetInfo'/>
         </word>
       </letter>
+      <letter name='O'>
+        <word name='OUT'>
+          <ref name='virConnectGetVersion'/>
+          <ref name='virGetVersion'/>
+        </word>
+      </letter>
+      <letter name='P'>
+        <word name='Provides'>
+          <ref name='virConnectNumOfDomains'/>
+          <ref name='virGetVersion'/>
+        </word>
+      </letter>
       <letter name='R'>
+        <word name='Read-Only'>
+          <ref name='virConnectGetVersion'/>
+        </word>
         <word name='Resume'>
           <ref name='virDomainResume'/>
         </word>
@@ -270,6 +309,7 @@
         </word>
         <word name='This'>
           <ref name='virConnectClose'/>
+          <ref name='virConnectGetVersion'/>
           <ref name='virConnectOpen'/>
           <ref name='virConnectOpenReadOnly'/>
         </word>
@@ -283,20 +323,30 @@
           <ref name='virDomainSuspend'/>
         </word>
       </letter>
+      <letter name='X'>
+        <word name='Xen'>
+          <ref name='virGetVersion'/>
+        </word>
+      </letter>
       <letter name='a'>
         <word name='about'>
           <ref name='virDomainGetInfo'/>
         </word>
         <word name='access'>
           <ref name='_virDomainInfo'/>
+          <ref name='virConnectGetVersion'/>
           <ref name='virDomainSuspend'/>
         </word>
         <word name='active'>
           <ref name='virConnectListDomains'/>
+          <ref name='virConnectNumOfDomains'/>
           <ref name='virDomainSuspend'/>
         </word>
         <word name='add'>
           <ref name='_virDomainInfo'/>
+        </word>
+        <word name='against'>
+          <ref name='virGetVersion'/>
         </word>
         <word name='all'>
           <ref name='virDomainDestroy'/>
@@ -335,13 +385,20 @@
         <word name='array'>
           <ref name='virConnectListDomains'/>
         </word>
+        <word name='assumed'>
+          <ref name='virGetVersion'/>
+        </word>
         <word name='available'>
           <ref name='_virDomainInfo'/>
+        </word>
+        <word name='availble'>
+          <ref name='virGetVersion'/>
         </word>
       </letter>
       <letter name='b'>
         <word name='back'>
           <ref name='virDomainDestroy'/>
+          <ref name='virGetVersion'/>
         </word>
         <word name='based'>
           <ref name='virDomainLookupByID'/>
@@ -356,6 +413,7 @@
       <letter name='c'>
         <word name='call'>
           <ref name='_virDomainInfo'/>
+          <ref name='virConnectGetVersion'/>
         </word>
         <word name='called'>
           <ref name='virConnectClose'/>
@@ -367,10 +425,15 @@
         </word>
         <word name='can'>
           <ref name='_virDomainInfo'/>
+          <ref name='virConnectGetVersion'/>
           <ref name='virDomainGetInfo'/>
+        </word>
+        <word name='capacities'>
+          <ref name='virConnectGetVersion'/>
         </word>
         <word name='case'>
           <ref name='virConnectClose'/>
+          <ref name='virConnectGetType'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virConnectListDomains'/>
           <ref name='virConnectNumOfDomains'/>
@@ -386,6 +449,7 @@
           <ref name='virDomainResume'/>
           <ref name='virDomainSetMaxMemory'/>
           <ref name='virDomainSuspend'/>
+          <ref name='virGetVersion'/>
         </word>
         <word name='change'>
           <ref name='virDomainSetMaxMemory'/>
@@ -399,15 +463,22 @@
         <word name='closes'>
           <ref name='virConnectClose'/>
         </word>
+        <word name='code'>
+          <ref name='virGetVersion'/>
+        </word>
         <word name='collect'>
           <ref name='virConnectListDomains'/>
         </word>
         <word name='command'>
           <ref name='virDomainCreateLinux'/>
         </word>
+        <word name='compiled'>
+          <ref name='virGetVersion'/>
+        </word>
         <word name='connection'>
           <ref name='_virDomainInfo'/>
           <ref name='virConnectClose'/>
+          <ref name='virConnectGetType'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virConnectListDomains'/>
           <ref name='virConnectNumOfDomains'/>
@@ -429,6 +500,7 @@
         </word>
         <word name='domains'>
           <ref name='virConnectListDomains'/>
+          <ref name='virConnectNumOfDomains'/>
         </word>
         <word name='down'>
           <ref name='virDomainDestroy'/>
@@ -437,6 +509,7 @@
       <letter name='e'>
         <word name='error'>
           <ref name='virConnectClose'/>
+          <ref name='virConnectGetType'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virConnectListDomains'/>
           <ref name='virConnectNumOfDomains'/>
@@ -444,12 +517,14 @@
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainGetID'/>
           <ref name='virDomainGetMaxMemory'/>
+          <ref name='virGetVersion'/>
         </word>
         <word name='especially'>
           <ref name='virConnectClose'/>
         </word>
         <word name='extracted'>
           <ref name='_virDomainInfo'/>
+          <ref name='virConnectGetVersion'/>
           <ref name='virDomainGetInfo'/>
         </word>
       </letter>
@@ -463,6 +538,7 @@
           <ref name='virDomainResume'/>
           <ref name='virDomainSetMaxMemory'/>
           <ref name='virDomainSuspend'/>
+          <ref name='virGetVersion'/>
         </word>
         <word name='file'>
           <ref name='virDomainCreateLinux'/>
@@ -476,10 +552,15 @@
         </word>
         <word name='for'>
           <ref name='_virDomainInfo'/>
+          <ref name='virConnectGetVersion'/>
           <ref name='virDomainCreateLinux'/>
           <ref name='virDomainGetID'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainLookupByName'/>
+          <ref name='virGetVersion'/>
+        </word>
+        <word name='format'>
+          <ref name='virGetVersion'/>
         </word>
         <word name='found'>
           <ref name='virConnectListDomains'/>
@@ -522,9 +603,13 @@
         </word>
       </letter>
       <letter name='h'>
+        <word name='have'>
+          <ref name='virGetVersion'/>
+        </word>
         <word name='hypervisor'>
           <ref name='_virDomainInfo'/>
           <ref name='virConnectClose'/>
+          <ref name='virConnectGetType'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virConnectListDomains'/>
           <ref name='virConnectNumOfDomains'/>
@@ -536,14 +621,18 @@
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainSuspend'/>
+          <ref name='virGetVersion'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk1'>
       <letter name='i'>
         <word name='image'>
           <ref name='virDomainCreateLinux'/>
         </word>
         <word name='information'>
           <ref name='virDomainGetInfo'/>
+          <ref name='virGetVersion'/>
         </word>
         <word name='informations'>
           <ref name='virDomainGetInfo'/>
@@ -575,9 +664,16 @@
         </word>
       </letter>
       <letter name='l'>
+        <word name='lack'>
+          <ref name='virConnectGetVersion'/>
+        </word>
         <word name='level'>
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainSuspend'/>
+        </word>
+        <word name='library'>
+          <ref name='LIBVIR_VERSION_NUMBER'/>
+          <ref name='virGetVersion'/>
         </word>
         <word name='lifetime'>
           <ref name='virDomainGetName'/>
@@ -602,11 +698,15 @@
       <letter name='m'>
         <word name='major'>
           <ref name='virConnectGetVersion'/>
+          <ref name='virGetVersion'/>
         </word>
         <word name='maximum'>
           <ref name='_virDomainInfo'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
+        </word>
+        <word name='may'>
+          <ref name='virConnectGetVersion'/>
         </word>
         <word name='memory'>
           <ref name='_virDomainInfo'/>
@@ -615,17 +715,21 @@
           <ref name='virDomainSetMaxMemory'/>
           <ref name='virDomainSuspend'/>
         </word>
+        <word name='micro'>
+          <ref name='LIBVIR_VERSION_NUMBER'/>
+        </word>
         <word name='minor'>
+          <ref name='LIBVIR_VERSION_NUMBER'/>
           <ref name='virConnectGetVersion'/>
+          <ref name='virGetVersion'/>
         </word>
         <word name='monitoring'>
           <ref name='virConnectClose'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk1'>
       <letter name='n'>
         <word name='name'>
+          <ref name='virConnectGetType'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainLookupByName'/>
         </word>
@@ -643,8 +747,10 @@
         </word>
         <word name='not'>
           <ref name='virConnectClose'/>
+          <ref name='virConnectGetVersion'/>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainGetName'/>
+          <ref name='virGetVersion'/>
         </word>
         <word name='number'>
           <ref name='virConnectListDomains'/>
@@ -672,6 +778,7 @@
         </word>
         <word name='only'>
           <ref name='_virDomainInfo'/>
+          <ref name='virConnectGetVersion'/>
           <ref name='virDomainGetInfo'/>
         </word>
         <word name='optional'>
@@ -680,7 +787,9 @@
           <ref name='virDomainCreateLinux'/>
         </word>
         <word name='otherwise'>
+          <ref name='virConnectGetType'/>
           <ref name='virConnectGetVersion'/>
+          <ref name='virGetVersion'/>
         </word>
       </letter>
       <letter name='p'>
@@ -706,6 +815,7 @@
         </word>
         <word name='pointer'>
           <ref name='virConnectClose'/>
+          <ref name='virConnectGetType'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virConnectListDomains'/>
           <ref name='virConnectNumOfDomains'/>
@@ -720,12 +830,18 @@
         <word name='private'>
           <ref name='_virDomainInfo'/>
         </word>
+        <word name='priviledged'>
+          <ref name='virConnectGetVersion'/>
+        </word>
         <word name='process'>
           <ref name='virDomainResume'/>
           <ref name='virDomainSuspend'/>
         </word>
         <word name='protection'>
           <ref name='_virDomainInfo'/>
+        </word>
+        <word name='providing'>
+          <ref name='LIBVIR_VERSION_NUMBER'/>
         </word>
         <word name='public'>
           <ref name='virDomainGetName'/>
@@ -741,6 +857,10 @@
         <word name='read-only'>
           <ref name='virConnectOpenReadOnly'/>
         </word>
+        <word name='release'>
+          <ref name='virConnectGetVersion'/>
+          <ref name='virGetVersion'/>
+        </word>
         <word name='reserved'>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
@@ -755,7 +875,14 @@
         <word name='restricted'>
           <ref name='virConnectOpenReadOnly'/>
         </word>
-        <word name='rev'>
+        <word name='return'>
+          <ref name='virConnectGetVersion'/>
+          <ref name='virGetVersion'/>
+        </word>
+        <word name='returned'>
+          <ref name='virGetVersion'/>
+        </word>
+        <word name='returns'>
           <ref name='virConnectGetVersion'/>
         </word>
         <word name='running'>
@@ -792,9 +919,15 @@
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
         </word>
+        <word name='software'>
+          <ref name='virConnectGetType'/>
+        </word>
         <word name='state'>
           <ref name='_virDomainInfo'/>
           <ref name='virDomainResume'/>
+        </word>
+        <word name='static'>
+          <ref name='virConnectGetType'/>
         </word>
         <word name='stay'>
           <ref name='virDomainSuspend'/>
@@ -805,6 +938,7 @@
           <ref name='virConnectOpenReadOnly'/>
         </word>
         <word name='string'>
+          <ref name='virConnectGetType'/>
           <ref name='virDomainGetName'/>
         </word>
         <word name='structure'>
@@ -827,6 +961,9 @@
         <word name='term'>
           <ref name='_virDomainInfo'/>
         </word>
+        <word name='terminated'>
+          <ref name='virConnectGetType'/>
+        </word>
         <word name='that'>
           <ref name='virDomainGetInfo'/>
           <ref name='virDomainGetName'/>
@@ -847,8 +984,17 @@
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
         </word>
+        <word name='two'>
+          <ref name='virGetVersion'/>
+        </word>
+        <word name='type'>
+          <ref name='virGetVersion'/>
+        </word>
       </letter>
       <letter name='u'>
+        <word name='unknown'>
+          <ref name='virGetVersion'/>
+        </word>
         <word name='unsigned'>
           <ref name='virDomainGetID'/>
         </word>
@@ -861,6 +1007,7 @@
         </word>
         <word name='used'>
           <ref name='_virDomainInfo'/>
+          <ref name='virConnectGetType'/>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainGetInfo'/>
           <ref name='virDomainSuspend'/>
@@ -870,8 +1017,17 @@
         </word>
       </letter>
       <letter name='v'>
-        <word name='version'>
+        <word name='value'>
           <ref name='virConnectGetVersion'/>
+          <ref name='virGetVersion'/>
+        </word>
+        <word name='values'>
+          <ref name='virGetVersion'/>
+        </word>
+        <word name='version'>
+          <ref name='LIBVIR_VERSION_NUMBER'/>
+          <ref name='virConnectGetVersion'/>
+          <ref name='virGetVersion'/>
         </word>
         <word name='virDomainFlags'>
           <ref name='_virDomainInfo'/>
@@ -890,6 +1046,7 @@
       <letter name='w'>
         <word name='was'>
           <ref name='virDomainResume'/>
+          <ref name='virGetVersion'/>
         </word>
         <word name='what'>
           <ref name='_virDomainInfo'/>
@@ -901,19 +1058,30 @@
         </word>
         <word name='which'>
           <ref name='virConnectClose'/>
+          <ref name='virGetVersion'/>
+        </word>
+        <word name='while'>
+          <ref name='virGetVersion'/>
         </word>
         <word name='will'>
           <ref name='virDomainGetName'/>
           <ref name='virDomainSuspend'/>
+          <ref name='virGetVersion'/>
         </word>
         <word name='with'>
           <ref name='_virDomainInfo'/>
           <ref name='virConnectClose'/>
+          <ref name='virConnectGetVersion'/>
         </word>
         <word name='without'>
           <ref name='virDomainSuspend'/>
         </word>
+        <word name='work'>
+          <ref name='virConnectGetVersion'/>
+        </word>
       </letter>
+    </chunk>
+    <chunk name='chunk2'>
       <letter name='x'>
         <word name='xen'>
           <ref name='virConnectOpen'/>
@@ -923,10 +1091,16 @@
           <ref name='_virDomainInfo'/>
         </word>
       </letter>
+      <letter name='z'>
+        <word name='zero'>
+          <ref name='virConnectGetType'/>
+        </word>
+      </letter>
     </chunk>
     <chunks>
-      <chunk name='chunk0' start='A' end='m'/>
-      <chunk name='chunk1' start='n' end='x'/>
+      <chunk name='chunk0' start='A' end='h'/>
+      <chunk name='chunk1' start='i' end='w'/>
+      <chunk name='chunk2' start='x' end='z'/>
     </chunks>
   </index>
 </apirefs>

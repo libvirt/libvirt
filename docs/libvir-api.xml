@@ -5,6 +5,7 @@
      <summary>core interfaces for the libvir library</summary>
      <description>Provides the interfaces of the libvir library to handle Xen domains from a process running in domain 0 </description>
      <author>Daniel Veillard &lt;veillard@redhat.com&gt; </author>
+     <exports symbol='LIBVIR_VERSION_NUMBER' type='macro'/>
      <exports symbol='VIR_DOMAIN_SHUTOFF' type='enum'/>
      <exports symbol='VIR_DOMAIN_SHUTDOWN' type='enum'/>
      <exports symbol='VIR_DOMAIN_NONE' type='enum'/>
@@ -23,9 +24,11 @@
      <exports symbol='_virDomainInfo' type='struct'/>
      <exports symbol='virDomainGetID' type='function'/>
      <exports symbol='virDomainGetInfo' type='function'/>
+     <exports symbol='virGetVersion' type='function'/>
      <exports symbol='virConnectListDomains' type='function'/>
      <exports symbol='virConnectOpen' type='function'/>
      <exports symbol='virDomainDestroy' type='function'/>
+     <exports symbol='virDomainGetName' type='function'/>
      <exports symbol='virDomainLookupByID' type='function'/>
      <exports symbol='virDomainLookupByName' type='function'/>
      <exports symbol='virDomainCreateLinux' type='function'/>
@@ -34,13 +37,16 @@
      <exports symbol='virDomainResume' type='function'/>
      <exports symbol='virDomainSetMaxMemory' type='function'/>
      <exports symbol='virDomainSuspend' type='function'/>
-     <exports symbol='virConnectGetVersion' type='function'/>
-     <exports symbol='virDomainGetName' type='function'/>
-     <exports symbol='virDomainGetMaxMemory' type='function'/>
      <exports symbol='virConnectOpenReadOnly' type='function'/>
+     <exports symbol='virConnectGetType' type='function'/>
+     <exports symbol='virDomainGetMaxMemory' type='function'/>
+     <exports symbol='virConnectGetVersion' type='function'/>
     </file>
   </files>
   <symbols>
+    <macro name='LIBVIR_VERSION_NUMBER' file='libvir'>
+      <info>Macro providing the version of the library as version * 1,000,000 + minor * 1000 + micro</info>
+    </macro>
     <enum name='VIR_DOMAIN_BLOCKED' file='libvir' value='2' type='virDomainState' info='the domain is blocked on resource'/>
     <enum name='VIR_DOMAIN_NONE' file='libvir' value='0' type='virDomainFlags'/>
     <enum name='VIR_DOMAIN_NOSTATE' file='libvir' value='0' type='virDomainState' info='no state'/>
@@ -79,10 +85,16 @@
       <return type='int' info='0 in case of success or -1 in case of error.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
-    <function name='virConnectGetVersion' file='libvir' module='libvir'>
-      <info>Get the version level of the Hypervisor running.</info>
-      <return type='unsigned long' info='-1 in case of error or major * 10,000 + minor * 100 + rev otherwise'/>
+    <function name='virConnectGetType' file='libvir' module='libvir'>
+      <info>Get the name of the Hypervisor software used.</info>
+      <return type='const char *' info='NULL in case of error, a static zero terminated string otherwise.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+    </function>
+    <function name='virConnectGetVersion' file='libvir' module='libvir'>
+      <info>Get the version level of the Hypervisor running. This may work only with hypervisor call, i.e. with priviledged access to the hypervisor, not with a Read-Only connection.</info>
+      <return type='int' info='-1 in case of error, 0 otherwise. if the version can&apos;t be extracted by lack of capacities returns 0 and @hvVer is 0, otherwise @hvVer value is major * 1,000,000 + minor * 1,000 + release'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='hvVer' type='unsigned long *' info='return value for the version of the running hypervisor (OUT)'/>
     </function>
     <function name='virConnectListDomains' file='libvir' module='libvir'>
       <info>Collect the list of active domains, and store their ID in @maxids</info>
@@ -92,7 +104,7 @@
       <arg name='maxids' type='int' info='size of @ids'/>
     </function>
     <function name='virConnectNumOfDomains' file='libvir' module='libvir'>
-      <info></info>
+      <info>Provides the number of active domains.</info>
       <return type='int' info='the number of domain found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
@@ -169,6 +181,13 @@
       <info>Suspends an active domain, the process is frozen without further access to CPU resources and I/O but the memory used by the domain at the hypervisor level will stay allocated. Use virDomainResume() to reactivate the domain.</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
+    </function>
+    <function name='virGetVersion' file='libvir' module='libvir'>
+      <info>Provides two information back, @libVer is the version of the library while @typeVer will be the version of the hypervisor type @type against which the library was compiled. If @type is NULL, &quot;Xen&quot; is assumed, if @type is unknown or not availble, an error code will be returned and @typeVer will be 0.</info>
+      <return type='int' info='-1 in case of failure, 0 otherwise, and values for @libVer and @typeVer have the format major * 1,000,000 + minor * 1,000 + release.'/>
+      <arg name='libVer' type='unsigned long *' info='return value for the library version (OUT)'/>
+      <arg name='type' type='const char *' info='hypervisor type'/>
+      <arg name='typeVer' type='unsigned long *' info='return value for the version of the hypervisor (OUT)'/>
     </function>
   </symbols>
 </api>
