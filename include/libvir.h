@@ -115,6 +115,7 @@ typedef enum {
 virConnectPtr		virConnectOpen		(const char *name);
 virConnectPtr		virConnectOpenReadOnly	(const char *name);
 int			virConnectClose		(virConnectPtr conn);
+const char *		virConnectGetType	(virConnectPtr conn);
 unsigned long		virConnectGetVersion	(virConnectPtr conn);
 
 /*

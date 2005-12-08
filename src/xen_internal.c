@@ -19,6 +19,7 @@
 #include <sys/ioctl.h>
 
 #include <xen/dom0_ops.h>
+#include <xen/version.h>
 #include <xen/xen.h>
 
 #ifndef __LINUX_PUBLIC_PRIVCMD_H__
@@ -104,6 +105,36 @@ xenHypervisorDoOp(int handle, dom0_op_t *op) {
         return(-1);
         
     return(0);
+}
+
+/**
+ * xenHypervisorGetVersion:
+ * @handle: the handle to the Xen hypervisor
+ *
+ * Call the hypervisor to extracts his own internal API version
+ *
+ * Returns the hypervisor running version or 0 in case of error.
+ */
+unsigned long
+xenHypervisorGetVersion(int handle) {
+    int ret;
+    unsigned int cmd;
+    hypercall_t hc;
+
+    hc.op = __HYPERVISOR_xen_version;
+    hc.arg[0] = (unsigned long) XENVER_version; 
+    hc.arg[1] = 0;
+
+    cmd = _IOC(_IOC_NONE, 'P', 0, sizeof(hc));
+    ret = ioctl(handle, cmd, (unsigned long) &hc);
+
+    if (ret < 0)
+        return(0);
+    /*
+     * use unsigned long in case the version grows behind expectations
+     * allowed by int
+     */
+    return((unsigned long) ret);
 }
 
 /**

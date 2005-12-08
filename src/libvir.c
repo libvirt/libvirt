@@ -194,19 +194,46 @@ virConnectClose(virConnectPtr conn) {
 }
 
 /**
+ * virConnectGetType:
+ * @conn: pointer to the hypervisor connection
+ *
+ * Get the name of the Hypervisor software used.
+ *
+ * Returns NULL in case of error, a static zero terminated string otherwise.
+ */
+const char *
+virConnectGetType(virConnectPtr conn) {
+    if (conn == NULL)
+        return(NULL);
+    
+    return("Xen");
+}
+
+/**
  * virConnectGetVersion:
  * @conn: pointer to the hypervisor connection
  *
- * Get the version level of the Hypervisor running.
+ * Get the version level of the Hypervisor running. This may work only with 
+ * hypervisor call, i.e. with priviledged access to the hypervisor, not
+ * with a Read-Only connection.
  *
- * Returns -1 in case of error or major * 10,000 + minor * 100 + rev otherwise
+ * Returns -1 in case of error, 0 if the version can't be extracted by lack
+ *    of capacities otherwise major * 1,000,000 + minor * 1,000 + release
  */
 unsigned long
 virConnectGetVersion(virConnectPtr conn) {
+    unsigned long ver, ret;
+
     if (conn == NULL)
         return(-1);
-    TODO
-    return(-1);
+    
+    /* this can't be extracted from the Xenstore */
+    if (conn->handle < 0)
+        return(0);
+
+    ver = xenHypervisorGetVersion(conn->handle);
+    ret = (ver >> 16) * 1000000 + (ver & 0xFFFF) * 1000;
+    return(ret);
 }
 
 /**

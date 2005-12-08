@@ -1,4 +1,12 @@
+Thu Dec  8 14:25:09 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in: activate pedantic flags
+	* src/libvir.c src/libvir_sym.version src/xen_internal.[ch]
+	  include/libvir.h: implementing hypervisor Version and Type interfaces
+	* src/virsh.c: adding a version command, WIP
+
 Thu Dec  8 11:19:48 CET 2005 Karel Zak <kzak@redhat.com>
+
 	* src/Makefile.am src/virsh.c configure.in: adding readline support,
 	  and implement basic commands to virsh.
 

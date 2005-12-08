@@ -12,6 +12,7 @@
 	virDomainGetInfo;
 	virDomainGetMaxMemory;
 	virDomainGetName;
+	virConnectGetType;
 	virDomainLookupByID;
 	virDomainLookupByName;
 	virDomainResume;

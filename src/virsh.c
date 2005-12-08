@@ -191,6 +191,7 @@ static vshCmdInfo info_help[] = {
     { "syntax",   "help [<command>]" },
     { "help",     "print help" },
     { "desc",     "Prints global help or command specific help." },
+    { "version",  "Prints versionning informations." },
     { NULL, NULL }
 };
 
@@ -491,6 +492,55 @@ cmdIdof(vshControl *ctl, vshCmd *cmd) {
 }
 
 /*
+ * "version" command
+ */
+static vshCmdInfo info_version[] = {
+    { "syntax",   "version" },
+    { "help",     "show versions" },
+    { "desc",     "Display the version informations available" },
+    { NULL, NULL }
+};
+
+
+static int
+cmdVersion(vshControl *ctl, vshCmd *cmd) {
+    unsigned long hvVersion;
+    const char *hvType;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+    
+    hvType = virConnectGetType(ctl->conn);
+    if (hvType == NULL) {
+        vshError(ctl, FALSE, "Failed to get hypervisor type\n");
+        return FALSE;
+    }
+
+    hvVersion =  virConnectGetVersion(ctl->conn);
+    if (hvVersion < 0) {
+        vshError(ctl, FALSE, "failed get hypervisor version");
+        return FALSE;
+    }
+    if (hvVersion == 0) {
+        vshPrint(ctl, VSH_MESG,
+                 "Cannot extract running %s hypervisor version\n",
+                 hvType);
+    } else {
+        unsigned int major = hvVersion / 1000000;
+        unsigned int minor;
+        unsigned int rel;
+
+        hvVersion %= 1000000;
+        minor = hvVersion / 1000000;
+        rel = hvVersion % 1000000;
+
+        vshPrint(ctl, VSH_MESG, "Running hypervisor: %s %d.%d.%d\n", hvType,
+                 major, minor, rel);
+    }
+    return TRUE;
+}
+
+/*
  * "quit" command
  */
 static vshCmdInfo info_quit[] = {
@@ -516,6 +566,7 @@ static vshCmdDef commands[] = {
     { "idof",       cmdIdof,       opts_idof,      info_idof },
     { "list",       cmdList,       NULL,           info_list },
     { "nameof",     cmdNameof,     opts_nameof,    info_nameof },
+    { "version",    cmdVersion,    NULL,           info_version },
     { "quit",       cmdQuit,       NULL,           info_quit },
     { NULL, NULL, NULL, NULL }
 };

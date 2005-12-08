@@ -65,14 +65,18 @@ dnl
 dnl specific tests to setup DV devel environments with debug etc ...
 dnl
 if [[ "${LOGNAME}" = "veillard" -a "`pwd`" = "/u/veillard/libvir" ]] ; then
-    if test "${GCC}" = "yes" ; then
-	CFLAGS="-g -O -W -Wformat -Wunused -Wimplicit -Wreturn-type -Wswitch -Wcomment -Wtrigraphs -Wformat -Wchar-subscripts -Wuninitialized -Wparentheses -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wredundant-decls -Wall"
-    fi
     STATIC_BINARIES="-static"
 else
     STATIC_BINARIES=
 fi
 AC_SUBST(STATIC_BINARIES)
+
+dnl
+dnl make CFLAGS very pedantic at least during the devel phase for everybody
+dnl
+    if test "${GCC}" = "yes" ; then
+	CFLAGS="-g -O -W -Wformat -Wunused -Wimplicit -Wreturn-type -Wswitch -Wcomment -Wtrigraphs -Wformat -Wchar-subscripts -Wuninitialized -Wparentheses -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wredundant-decls -Wall"
+    fi
 
 dnl search for the low level Xen library
 AC_SEARCH_LIBS(xs_read, [xenstore], [], [AC_MSG_ERROR([Xen store library not found])])

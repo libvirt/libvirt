@@ -11,7 +11,9 @@
 #ifndef __VIR_XEN_INTERNAL_H__
 #define __VIR_XEN_INTERNAL_H__
 
+/* required for uint8_t, uint32_t, etc ... */
 #include <stdint.h>
+/* required for dom0_getdomaininfo_t */
 #include <xen/dom0_ops.h>
 
 #ifdef __cplusplus
@@ -20,6 +22,7 @@ extern "C" {
 
 int		xenHypervisorOpen		(void);
 int		xenHypervisorClose		(int handle);
+unsigned long	xenHypervisorGetVersion		(int handle);
 int		xenHypervisorGetDomainInfo	(int handle,
 						 int domain,
 						 dom0_getdomaininfo_t *info);
