@@ -10,7 +10,7 @@ EXTRA_DIST = libvir_sym.version
 lib_LTLIBRARIES = libvir.la
 libvir_la_LIBADD = 
 libvir_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvir_sym.version \
-                    -version-info @LIBXEN_VERSION_INFO@
+                    -version-info @LIBVIR_VERSION_INFO@
 libvir_la_SOURCES =						\
 		libvir.c internal.hi				\
 		hash.c hash.h					\

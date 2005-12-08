@@ -3,33 +3,33 @@ AC_INIT(src/libvir.c)
 AM_CONFIG_HEADER(config.h)
 AC_CANONICAL_HOST
 
-LIBXEN_MAJOR_VERSION=0
-LIBXEN_MINOR_VERSION=0
-LIBXEN_MICRO_VERSION=1
-LIBXEN_MICRO_VERSION_SUFFIX=
-LIBXEN_VERSION=$LIBXEN_MAJOR_VERSION.$LIBXEN_MINOR_VERSION.$LIBXEN_MICRO_VERSION$LIBXEN_MICRO_VERSION_SUFFIX
-LIBXEN_VERSION_INFO=`expr $LIBXEN_MAJOR_VERSION + $LIBXEN_MINOR_VERSION`:$LIBXEN_MICRO_VERSION:$LIBXEN_MINOR_VERSION
+LIBVIR_MAJOR_VERSION=0
+LIBVIR_MINOR_VERSION=0
+LIBVIR_MICRO_VERSION=1
+LIBVIR_MICRO_VERSION_SUFFIX=
+LIBVIR_VERSION=$LIBVIR_MAJOR_VERSION.$LIBVIR_MINOR_VERSION.$LIBVIR_MICRO_VERSION$LIBVIR_MICRO_VERSION_SUFFIX
+LIBVIR_VERSION_INFO=`expr $LIBVIR_MAJOR_VERSION + $LIBVIR_MINOR_VERSION`:$LIBVIR_MICRO_VERSION:$LIBVIR_MINOR_VERSION
 
-LIBXEN_VERSION_NUMBER=`expr $LIBXEN_MAJOR_VERSION \* 10000 + $LIBXEN_MINOR_VERSION \* 100 + $LIBXEN_MICRO_VERSION`
+LIBVIR_VERSION_NUMBER=`expr $LIBVIR_MAJOR_VERSION \* 1000000 + $LIBVIR_MINOR_VERSION \* 1000 + $LIBVIR_MICRO_VERSION`
 
 if test -f CVS/Entries; then
-  extra=`grep ChangeLog CVS/Entries | grep -v LIBXEN | sed -e s\%/ChangeLog/1\.%% -e s\%/.*$%%`
+  extra=`grep ChangeLog CVS/Entries | grep -v LIBVIR | sed -e s\%/ChangeLog/1\.%% -e s\%/.*$%%`
   echo extra=$extra
   if test "$extra" != ""
   then
-      LIBXEN_VERSION_EXTRA="-CVS$extra"
+      LIBVIR_VERSION_EXTRA="-CVS$extra"
   fi
 fi
 
-AC_SUBST(LIBXEN_MAJOR_VERSION)
-AC_SUBST(LIBXEN_MINOR_VERSION)
-AC_SUBST(LIBXEN_MICRO_VERSION)
-AC_SUBST(LIBXEN_VERSION)
-AC_SUBST(LIBXEN_VERSION_INFO)
-AC_SUBST(LIBXEN_VERSION_NUMBER)
-AC_SUBST(LIBXEN_VERSION_EXTRA)
+AC_SUBST(LIBVIR_MAJOR_VERSION)
+AC_SUBST(LIBVIR_MINOR_VERSION)
+AC_SUBST(LIBVIR_MICRO_VERSION)
+AC_SUBST(LIBVIR_VERSION)
+AC_SUBST(LIBVIR_VERSION_INFO)
+AC_SUBST(LIBVIR_VERSION_NUMBER)
+AC_SUBST(LIBVIR_VERSION_EXTRA)
 
-VERSION=${LIBXEN_VERSION}
+VERSION=${LIBVIR_VERSION}
 
 AM_INIT_AUTOMAKE(libvir, $VERSION)
 
@@ -78,7 +78,7 @@ dnl
 	CFLAGS="-g -O -W -Wformat -Wunused -Wimplicit -Wreturn-type -Wswitch -Wcomment -Wtrigraphs -Wformat -Wchar-subscripts -Wuninitialized -Wparentheses -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wredundant-decls -Wall"
     fi
 
-dnl search for the low level Xen library
+dnl search for the Xen store library
 AC_SEARCH_LIBS(xs_read, [xenstore], [], [AC_MSG_ERROR([Xen store library not found])])
 
 dnl virsh libraries
@@ -92,4 +92,5 @@ AC_CHECK_LIB(readline, main,
 	[$VIRSH_LIBS])
 AC_SUBST(VIRSH_LIBS)
 
-AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile libvir.pc libvir.spec)
+AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
+          libvir.pc libvir.spec include/libvir.h)

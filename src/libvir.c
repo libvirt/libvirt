@@ -64,6 +64,47 @@ struct _virDomain {
 };
 
 /**
+ * virGetVersion:
+ * @libVer: return value for the library version (OUT)
+ * @type: hypervisor type
+ * @typeVer: return value for the version of the hypervisor (OUT)
+ *
+ * Provides two information back, @libVer is the version of the library
+ * while @typeVer will be the version of the hypervisor type @type against
+ * which the library was compiled. If @type is NULL, "Xen" is assumed, if
+ * @type is unknown or not availble, an error code will be returned and 
+ * @typeVer will be 0.
+ *
+ * Returns -1 in case of failure, 0 otherwise, and values for @libVer and
+ *       @typeVer have the format major * 1,000,000 + minor * 1,000 + release.
+ */
+int
+virGetVersion(unsigned long *libVer, const char *type, unsigned long *typeVer) {
+    if (libVer == NULL)
+        return(-1);
+    *libVer = LIBVIR_VERSION_NUMBER;
+
+    if (typeVer != NULL) {
+	if ((type == NULL) || (!strcasecmp(type, "Xen"))) {
+	    if ((DOM0_INTERFACE_VERSION & 0xFFFF0000) == (0xAAAA0000)) {
+	        /* one time glitch hopefully ! */
+                *typeVer = 2 * 1000000 +
+		           ((DOM0_INTERFACE_VERSION >> 8) & 0xFF) * 1000 +
+			   (DOM0_INTERFACE_VERSION & 0xFF);
+	    } else {
+		*typeVer = (DOM0_INTERFACE_VERSION >> 24) * 1000000 +
+			   ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +
+			   (DOM0_INTERFACE_VERSION & 0xFFFF);
+	    }
+	} else {
+	    *typeVer = 0;
+	    return(-1);
+	}
+    }
+    return(0);
+}
+
+/**
  * virConnectOpen:
  * @name: optional argument currently unused, pass NULL
  *
@@ -212,28 +253,32 @@ virConnectGetType(virConnectPtr conn) {
 /**
  * virConnectGetVersion:
  * @conn: pointer to the hypervisor connection
+ * @hvVer: return value for the version of the running hypervisor (OUT)
  *
  * Get the version level of the Hypervisor running. This may work only with 
  * hypervisor call, i.e. with priviledged access to the hypervisor, not
  * with a Read-Only connection.
  *
- * Returns -1 in case of error, 0 if the version can't be extracted by lack
- *    of capacities otherwise major * 1,000,000 + minor * 1,000 + release
+ * Returns -1 in case of error, 0 otherwise. if the version can't be
+ *    extracted by lack of capacities returns 0 and @hvVer is 0, otherwise
+ *    @hvVer value is major * 1,000,000 + minor * 1,000 + release
  */
-unsigned long
-virConnectGetVersion(virConnectPtr conn) {
-    unsigned long ver, ret;
+int
+virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer) {
+    unsigned long ver;
 
-    if (conn == NULL)
+    if ((conn == NULL) || (hvVer == NULL) || (conn->magic != VIR_CONNECT_MAGIC))
         return(-1);
     
     /* this can't be extracted from the Xenstore */
-    if (conn->handle < 0)
+    if (conn->handle < 0) {
+        *hvVer = 0;
         return(0);
+    }
 
     ver = xenHypervisorGetVersion(conn->handle);
-    ret = (ver >> 16) * 1000000 + (ver & 0xFFFF) * 1000;
-    return(ret);
+    *hvVer = (ver >> 16) * 1000000 + (ver & 0xFFFF) * 1000;
+    return(0);
 }
 
 /**

@@ -1,4 +1,14 @@
+Thu Dec  8 16:07:07 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in include/libvir.h.in include/libvir.h src/Makefile.am
+	  include/Makefile.am: provide/fix library versionning information
+	  include/libvir.h is now generated !
+	* include/libvir.h.in src/libvir.c: revamp APIs and implement 
+	  complete ones.
+	* src/virsh.c: finish the version command and a bit of cleanup.
+
 Thu Dec  8 15:20:57 CET 2005 Karel Zak <kzak@redhat.com>
+
 	* src/virsh.c: code cleanup to prevent gcc warnings
 
 Thu Dec  8 14:25:09 CET 2005 Daniel Veillard <veillard@redhat.com>

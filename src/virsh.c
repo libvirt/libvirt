@@ -28,6 +28,7 @@
 #include <readline/history.h>
 
 #include "config.h"
+#include "internal.h"
 
 static char *progname;
 
@@ -270,11 +271,9 @@ static vshCmdInfo info_list[] = {
 
 
 static int
-cmdList(vshControl *ctl, vshCmd *cmd) {
+cmdList(vshControl *ctl, vshCmd *cmd ATTRIBUTE_UNUSED) {
     int *ids, maxid, i;
 
-    (void) cmd; /* happy gcc */
-    
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
     
@@ -509,12 +508,17 @@ static vshCmdInfo info_version[] = {
 
 
 static int
-cmdVersion(vshControl *ctl, vshCmd *cmd) {
+cmdVersion(vshControl *ctl, vshCmd *cmd ATTRIBUTE_UNUSED) {
     unsigned long hvVersion;
     const char *hvType;
+    unsigned long libVersion;
+    unsigned long includeVersion;
+    unsigned long apiVersion;
+    int ret;
+    unsigned int major;
+    unsigned int minor;
+    unsigned int rel;
 
-    (void)cmd;
-    
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
     
@@ -524,9 +528,36 @@ cmdVersion(vshControl *ctl, vshCmd *cmd) {
         return FALSE;
     }
 
-    hvVersion =  virConnectGetVersion(ctl->conn);
-    if (hvVersion < 0) {
-        vshError(ctl, FALSE, "failed get hypervisor version");
+    includeVersion = LIBVIR_VERSION_NUMBER;
+    major = includeVersion / 1000000;
+    includeVersion %= 1000000;
+    minor = includeVersion / 1000;
+    rel = includeVersion % 1000;
+    vshPrint(ctl, VSH_MESG, "Compiled against library: libvir %d.%d.%d\n",
+             major, minor, rel);
+
+    ret = virGetVersion(&libVersion, hvType, &apiVersion);
+    if (ret < 0) {
+        vshError(ctl, FALSE, "failed to get the library version");
+        return FALSE;
+    }
+    major = libVersion / 1000000;
+    libVersion %= 1000000;
+    minor = libVersion / 1000;
+    rel = libVersion % 1000;
+    vshPrint(ctl, VSH_MESG, "Using library: libvir %d.%d.%d\n",
+             major, minor, rel);
+    
+    major = apiVersion / 1000000;
+    apiVersion %= 1000000;
+    minor = apiVersion / 1000;
+    rel = apiVersion % 1000;
+    vshPrint(ctl, VSH_MESG, "Using API: %s %d.%d.%d\n", hvType,
+             major, minor, rel);
+
+    ret =  virConnectGetVersion(ctl->conn, &hvVersion);
+    if (ret < 0) {
+        vshError(ctl, FALSE, "failed to get the hypervisor version");
         return FALSE;
     }
     if (hvVersion == 0) {
@@ -534,13 +565,10 @@ cmdVersion(vshControl *ctl, vshCmd *cmd) {
                  "cannot extract running %s hypervisor version\n",
                  hvType);
     } else {
-        unsigned int major = hvVersion / 1000000;
-        unsigned int minor;
-        unsigned int rel;
-
+        major = hvVersion / 1000000;
         hvVersion %= 1000000;
-        minor = hvVersion / 1000000;
-        rel = hvVersion % 1000000;
+        minor = hvVersion / 1000;
+        rel = hvVersion % 1000;
 
         vshPrint(ctl, VSH_MESG, "Running hypervisor: %s %d.%d.%d\n", hvType,
                  major, minor, rel);
@@ -558,8 +586,7 @@ static vshCmdInfo info_quit[] = {
 };
 
 static int
-cmdQuit(vshControl *ctl, vshCmd *cmd) {
-    (void)cmd;
+cmdQuit(vshControl *ctl, vshCmd *cmd ATTRIBUTE_UNUSED) {
     ctl->imode = FALSE;
     return TRUE;
 }
@@ -1207,11 +1234,9 @@ vshReadlineOptionsGenerator(const char *text, int state) {
 }
 
 static char **
-vshReadlineCompletion(const char *text, int start, int end) {
+vshReadlineCompletion(const char *text, int start, int end ATTRIBUTE_UNUSED) {
     char **matches = (char **) NULL;
 
-    (void) end; /* happy gcc */
-    
     if (start==0)
         /* command name generator */
         matches = rl_completion_matches (text, vshReadlineCommandGenerator);
