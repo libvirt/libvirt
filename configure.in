@@ -78,6 +78,15 @@ dnl
 	CFLAGS="-g -O -W -Wformat -Wunused -Wimplicit -Wreturn-type -Wswitch -Wcomment -Wtrigraphs -Wformat -Wchar-subscripts -Wuninitialized -Wparentheses -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wredundant-decls -Wall"
     fi
 
+dnl
+dnl To be able to make dist on a non-xenified host
+dnl
+AC_ARG_WITH(depends,
+[  --with-depends          check for dependancies (on)])
+
+if test "$with_depends" != "no"
+then
+
 dnl search for the Xen store library
 AC_SEARCH_LIBS(xs_read, [xenstore], [], [AC_MSG_ERROR([Xen store library not found])])
 
@@ -91,6 +100,9 @@ AC_CHECK_LIB(readline, main,
 	[AC_MSG_ERROR([readline library not found])],
 	[$VIRSH_LIBS])
 AC_SUBST(VIRSH_LIBS)
+
+# end of if with_depends
+fi
 
 AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           libvir.pc libvir.spec include/libvir.h)
