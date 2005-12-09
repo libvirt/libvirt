@@ -1,30 +1,72 @@
 <html>
 <head>
-<title>Libvir the Linux virtualization API</title>
+  <meta http-equiv="Content-Type" content="">
+  <title>Libvir the Linux virtualization API</title>
 </head>
+
 <body bgcolor="#ffffff">
 <h1 align="center">Libvir the Linux virtualization API</h1>
 
-<h1>Note: this is the flat content of the <a href="index.html">web site</a></h1>
+<h1>Note: this is the flat content of the <a href="index.html">web
+site</a></h1>
 
 <h1 style="text-align: center">libvir</h1>
 
-<p>Libvir is a C toolkit to interract with the virtualization capabilities
-of recent versions of Linux (and other OSes). It is free software available
-under the 
-<a href="http://www.opensource.org/licenses/lgpl-license.html">GNU Lesser
-General Public License</a>. Virtualization of the Linux Operating System
-means the ability to run multiple instances of Operating Systems concurently
-on a single hardware system where the basic resources are driven by a Linux
-instance. The library aim at providing long term stable C API primarily for
-the <a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen
+<p>Libvir is a C toolkit to interract with the virtualization capabilities of
+recent versions of Linux (and other OSes). It is free software available
+under the <a href="http://www.opensource.org/licenses/lgpl-license.html">GNU
+Lesser General Public License</a>. Virtualization of the Linux Operating
+System means the ability to run multiple instances of Operating Systems
+concurently on a single hardware system where the basic resources are driven
+by a Linux instance. The library aim at providing long term stable C API
+primarily for the <a
+href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen
 paravirtualization</a> mechanism but should be able to integrate other
 virtualization mechanisms.</p>
 
+<h2><a name="News">Releases</a></h2>
+
+<p>There is no official release yet, just CVS state and snapshot, contact
+the mailing list and check the <a href="ChangeLog.html">ChangeLog</a> to
+gauge progresses.</p>
+<ul>
+  <li>Extending the API</li>
+</ul>
+
 <h2><a name="Introducti">Introduction</a></h2>
+
 <p></p>
 
+<h2><a name="architecture">libvir architecture</a></h2>
+
+<p></p>
+
+<h2><a name="Downloads">Downloads</a></h2>
+
+<p>The latest versions of libvir can be found on the  <a
+href="ftp://libvir.org/libvir/">libvir.org</a> server ( <a
+href="http://libvir.org/sources/">HTTP</a>, <a
+href="ftp://libvir.org/libvir/">FTP</a>). You will find there the released
+versions as well as <a
+href="http://libvir.org/sources/libvir-cvs-snapshot.tar.gz">snapshot
+tarballs</a> updated from CVS head every hour</p>
+
+<p>Anonymous <a href="http://ximbiot.com/cvs/cvshome/docs/">CVS</a> is also
+available, first register onto the server:</p>
+
+<p><code>cvs -d :pserver:anoncvs@libvir.org:2401/data/cvs login</code></p>
+
+<p>it will request a password, enter <strong>anoncvs</strong>. Then you can
+checkout the development tree with:</p>
+
+<p><code>cvs -d :pserver:anoncvs@libvir.org:2401/data/cvs co libvir</code></p>
+
+<p>Use ./autogen.sh to configure the local checkout, then <code>make</code>
+and <code>make install</code>, as usual. All normal cvs commands are now
+available except commiting to the base.</p>
+
 <h2><a name="FAQ">FAQ</a></h2>
+
 <p>Table of Contents:</p>
 <ul>
   <li><a href="FAQ.html#License">License(s)</a></li>
@@ -37,14 +79,16 @@ virtualization mechanisms.</p>
 <ol>
   <li><em>Licensing Terms for libvir</em>
     <p>libvir is released under the <a
-    href="http://www.opensource.org/licenses/lgpl-license.html">GNU Lesser General Public License</a>, see the file COPYING.LIB in the distribution for the precise wording. The only library that libvir depends upon is the Xen store access
-library which is also licenced under the LGPL.</p>
+    href="http://www.opensource.org/licenses/lgpl-license.html">GNU Lesser
+    General Public License</a>, see the file COPYING.LIB in the distribution
+    for the precise wording. The only library that libvir depends upon is the
+    Xen store access library which is also licenced under the LGPL.</p>
   </li>
   <li><em>Can I embed libvir in a proprietary application ?</em>
-    <p>Yes. The LGPL allows you to embed libvir into a proprietary application.
-    It would be graceful to send-back bug fixes and improvements as patches
-    for possible incorporation in the main development tree. It will decrease
-    your maintainance costs anyway if you do so.</p>
+    <p>Yes. The LGPL allows you to embed libvir into a proprietary
+    application. It would be graceful to send-back bug fixes and improvements
+    as patches for possible incorporation in the main development tree. It
+    will decrease your maintainance costs anyway if you do so.</p>
   </li>
 </ol>
 
@@ -52,7 +96,7 @@ library which is also licenced under the LGPL.</p>
 <ol>
   <li><em>Where can I get libvir</em> ?
     <p>The original distribution comes from <a
-    href="ftp://libvir.org/pub/libvir/">ftp://libvir.org/pub/libvir/</a>.</p>
+    href="ftp://libvir.org/libvir/">ftp://libvir.org/libvir/</a>.</p>
   </li>
   <li><em>I can't install the libvir/libvir-devel RPM packages due to failed
     dependencies</em>
@@ -60,9 +104,13 @@ library which is also licenced under the LGPL.</p>
     rebuild it locally with</p>
     <p><code>rpm --rebuild libvir-xxx.src.rpm</code>.</p>
     <p>If everything goes well it will generate two binary rpm packages (one
-    providing the shared libs and xmllint, and the other one, the -devel
+    providing the shared libs and virsh, and the other one, the -devel
     package, providing includes, static libraries and scripts needed to build
     applications with libvir that you can install locally.</p>
+    <p>One can also rebuild the RPMs from a tarball:</p>
+    <p><code>rpmbuild -ta libdir-xxx.tar.gz</code></p>
+    <p>Or from a configured tree with:</p>
+    <p><code>make rpm</code></p>
   </li>
 </ol>
 
@@ -82,7 +130,7 @@ library which is also licenced under the LGPL.</p>
   </li>
   <li><em>What other libraries are needed to compile/install libvir ?</em>
     <p>Libvir requires libxenstore, which is usually provided by the xen
-       packages as well as xen with its public headers.</p>
+    packages as well as the public headers to compile against libxenstore.</p>
   </li>
   <li><em>I use the CVS version and there is no configure script</em>
     <p>The configure script (and other Makefiles) are generated. Use the
@@ -95,23 +143,27 @@ library which is also licenced under the LGPL.</p>
 <h3><a name="Developer">Developer</a> corner</h3>
 <ol>
   <li><em>Troubles compiling or linking programs using libvir</em>
-      <p>To simplify the process of reusing the library, libvir comes with
-         pkgconfig support, which can be used directly from autoconf support
-	 or via the pkg-config command line tool, like:</p>
-      <p><code>pkg-config libvir --libs</code></p>
+    <p>To simplify the process of reusing the library, libvir comes with
+    pkgconfig support, which can be used directly from autoconf support or
+    via the pkg-config command line tool, like:</p>
+    <p><code>pkg-config libvir --libs</code></p>
   </li>
 </ol>
 
 <h2><a name="Reporting">Reporting bugs and getting help</a></h2>
 
 <p>There is a mailing-list <a
-href="mailto:libvir-list@redhat.com">libvir-list@redhat.com</a> for libvir, with an  <a
-href="https://www.redhat.com/archives/libvir-list/">on-line archive</a>. Please subscribe to this list before posting by visiting the <a
-href="https://www.redhat.com/mailman/listinfo/libvir-list">associated Web</a> page and
-follow the instructions. Patches with explanations and provided as attachments
-are really appreciated and will be discussed on the mailing list.</p>
-<p> We expect to use <a href="https://bugzilla.redhat.com/">Red Hat Bugzilla</a>
-to track bugs for libvir, though there isn't yet a libvir software module.</p>
+href="mailto:libvir-list@redhat.com">libvir-list@redhat.com</a> for libvir,
+with an  <a href="https://www.redhat.com/archives/libvir-list/">on-line
+archive</a>. Please subscribe to this list before posting by visiting the <a
+href="https://www.redhat.com/mailman/listinfo/libvir-list">associated Web</a>
+page and follow the instructions. Patches with explanations and provided as
+attachments are really appreciated and will be discussed on the mailing
+list. If possible generate the patches by using cvs diff -u in a CVS
+checkout.</p>
 
+<p>We expect to use <a href="https://bugzilla.redhat.com/">Red Hat
+Bugzilla</a> to track bugs for libvir, though there isn't yet a libvir
+software module.</p>
 </body>
 </html>
