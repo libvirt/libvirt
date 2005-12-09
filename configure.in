@@ -104,5 +104,8 @@ AC_SUBST(VIRSH_LIBS)
 # end of if with_depends
 fi
 
+# very annoying
+rm -f COPYING
+
 AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           libvir.pc libvir.spec include/libvir.h)
