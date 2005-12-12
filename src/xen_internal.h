@@ -32,6 +32,9 @@ int		xenHypervisorPauseDomain	(int handle,
 int		xenHypervisorGetDomainInfo	(int handle,
 						 int domain,
 						 dom0_getdomaininfo_t *info);
+int		xenHypervisorSetMaxMemory	(int handle,
+						 int domain,
+						 unsigned long memory);
 
 #ifdef __cplusplus
 }

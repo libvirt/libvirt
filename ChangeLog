@@ -1,3 +1,8 @@
+Mon Dec 12 14:21:18 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvir.c src/xen_internal.c src/xen_internal.h: completing the
+	  API implementation, only CreateLinux is now missing.
+
 Fri Dec  9 15:39:18 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* docs/search.php docs/index.py docs/*.xsl docs/html/*: fixed the

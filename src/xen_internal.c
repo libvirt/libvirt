@@ -249,3 +249,28 @@ xenHypervisorDestroyDomain(int handle, int domain) {
     return(0);
 }
 
+/**
+ * xenHypervisorSetMaxMemory:
+ * @handle: the handle to the Xen hypervisor
+ * @domain: the domain ID
+ * @memory: the max memory size in kilobytes.
+ *
+ * Do an hypervisor call to change the maximum amount of memory used
+ *
+ * Returns 0 in case of success, -1 in case of error.
+ */
+int
+xenHypervisorSetMaxMemory(int handle, int domain, unsigned long memory) {
+    dom0_op_t op;
+    int ret;
+
+    op.cmd = DOM0_SETDOMAINMAXMEM;
+    op.u.setdomainmaxmem.domain = (domid_t) domain;
+    op.u.setdomainmaxmem.max_memkb = memory;
+
+    ret = xenHypervisorDoOp(handle, &op);
+
+    if (ret < 0)
+        return(-1);
+    return(0);
+}

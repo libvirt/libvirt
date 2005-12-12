@@ -195,6 +195,30 @@ failed:
 }
 
 /**
+ * virConnectCheckStoreID:
+ * @conn: pointer to the hypervisor connection
+ * @id: the id number as returned from Xenstore
+ *
+ * the xenstore sometimes list non-running domains, double check
+ * from the hypervisor if we have direct access
+ *
+ * Returns -1 if the check failed, 0 if successful or not possible to check
+ */
+static int
+virConnectCheckStoreID(virConnectPtr conn, int id) {
+    if (conn->handle >= 0) {
+	dom0_getdomaininfo_t dominfo;
+	int tmp;
+
+	dominfo.domain = id;
+	tmp = xenHypervisorGetDomainInfo(conn->handle, id, &dominfo);
+	if (tmp < 0)
+	    return(-1);
+    }
+    return(0);
+}
+
+/**
  * virDomainFreeName:
  * @domain: a domain object
  *
@@ -317,6 +341,9 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids) {
 	    ret = -1;
 	    goto done;
 	}
+
+	if (virConnectCheckStoreID(conn, (int) id) < 0)
+	    continue;
 	ids[ret++] = (int) id;
     }
 
@@ -380,23 +407,6 @@ virDomainCreateLinux(virConnectPtr conn, const char *kernel_path,
 		     unsigned int flags ATTRIBUTE_UNUSED) {
     if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC) ||
         (kernel_path == NULL) || (memory < 4096))
-        return(NULL);
-    TODO
-    return(NULL);
-}
-
-/**
- * virDomainLookupByName:
- * @conn: pointer to the hypervisor connection
- * @name: name for the domain
- *
- * Try to lookup a domain on the given hypervisor
- *
- * Returns a new domain object or NULL in case of failure
- */
-virDomainPtr
-virDomainLookupByName(virConnectPtr conn, const char *name) {
-    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC) || (name == NULL))
         return(NULL);
     TODO
     return(NULL);
@@ -521,6 +531,74 @@ virDomainLookupByID(virConnectPtr conn, int id) {
     ret->handle = id;
     ret->path = path;
     ret->name = virDomainDoStoreQuery(ret, "name");
+
+    return(ret);
+}
+
+/**
+ * virDomainLookupByName:
+ * @conn: pointer to the hypervisor connection
+ * @name: name for the domain
+ *
+ * Try to lookup a domain on the given hypervisor
+ *
+ * Returns a new domain object or NULL in case of failure
+ */
+virDomainPtr
+virDomainLookupByName(virConnectPtr conn, const char *name) {
+    struct xs_transaction_handle* t;
+    virDomainPtr ret = NULL;
+    unsigned int num, i, len;
+    long id;
+    char **idlist = NULL, *endptr;
+    char prop[200], *tmp;
+    int found = 0;
+
+
+    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC) || (name == NULL))
+        return(NULL);
+
+    t = xs_transaction_start(conn->xshandle);
+    if (t == NULL)
+        goto done;
+
+    idlist = xs_directory(conn->xshandle, t, "/local/domain", &num);
+    if (idlist == NULL)
+        goto done;
+
+    for (i = 0;i < num;i++) {
+        id = strtol(idlist[i], &endptr, 10);
+	if ((endptr == idlist[i]) || (*endptr != 0)) {
+	    goto done;
+	}
+	if (virConnectCheckStoreID(conn, (int) id) < 0)
+	    continue;
+        snprintf(prop, 199, "/local/domain/%s/name", idlist[i]);
+	prop[199] = 0;
+	tmp = xs_read(conn->xshandle, t, prop, &len);
+	if (tmp != NULL) {
+	    found = !strcmp(name, tmp);
+	    free(tmp);
+	    if (found)
+	        break;
+	}
+    }
+    if (found) {
+	ret = (virDomainPtr) malloc(sizeof(virDomain));
+	if (ret == NULL)
+	    goto done;
+	ret->magic = VIR_DOMAIN_MAGIC;
+	ret->conn = conn;
+	ret->handle = id;
+	ret->path = xs_get_domain_path(conn->xshandle, (unsigned int) id);
+	ret->name = strdup(name);
+    }
+
+done:
+    if (t != NULL)
+	xs_transaction_end(conn->xshandle, t, 0);
+    if (idlist != NULL)
+        free(idlist);
 
     return(ret);
 }
@@ -655,10 +733,29 @@ virDomainGetID(virDomainPtr domain) {
  */
 unsigned long
 virDomainGetMaxMemory(virDomainPtr domain) {
+    unsigned long ret = 0;
+
     if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
         return(0);
-    TODO
-    return(0);
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        char *tmp;
+
+	tmp = virDomainDoStoreQuery(domain, "memory/target");
+	if (tmp != NULL) {
+	    ret = (unsigned long) atol(tmp);
+	    free(tmp);
+	}
+    } else {
+        dom0_getdomaininfo_t dominfo;
+	int tmp;
+
+	dominfo.domain = domain->handle;
+        tmp = xenHypervisorGetDomainInfo(domain->conn->handle, domain->handle,
+	                                 &dominfo);
+	if (tmp >= 0)
+	    ret = dominfo.max_pages * 4;
+    }
+    return(ret);
 }
 
 /**
@@ -674,11 +771,38 @@ virDomainGetMaxMemory(virDomainPtr domain) {
  */
 int
 virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory) {
+    int ret;
+    char s[256], v[30];
+    struct xs_transaction_handle* t;
+    
     if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC) ||
         (memory < 4096))
         return(-1);
-    TODO
-    return(-1);
+    if (domain->conn->flags & VIR_CONNECT_RO)
+        return(-1);
+    ret = xenHypervisorSetMaxMemory(domain->conn->handle, domain->handle,
+                                    memory);
+    if (ret < 0)
+        return(-1);
+
+    /*
+     * try to update at the Xenstore level too
+     * Failing to do so should not be considered fatal though as long
+     * as the hypervisor call succeeded
+     */
+    snprintf(s, 255, "/local/domain/%d/memory/target", domain->handle);
+    s[255] = 0;
+    snprintf(v, 29, "%lu", memory);
+    v[30] = 0;
+
+    t = xs_transaction_start(domain->conn->xshandle);
+    if (t == NULL)
+        return(0);
+
+    xs_write(domain->conn->xshandle, t, &s[0], &v[0], strlen(v));
+    xs_transaction_end(domain->conn->xshandle, t, 0);
+
+    return(ret);
 }
 
 /**
