@@ -1,3 +1,11 @@
+Tue Dec 13 17:20:11 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvir.h src/Makefile.am src/internal.h src/libvir.c
+	  src/libvir_sym.version src/virsh.c src/xml.c: started working on
+	  the XML dump, added a dumpxml virsh version and a bit of
+	  infrastructure code. Found a way to detect dead ID from xenstore
+	  data.
+
 Mon Dec 12 14:21:18 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvir.c src/xen_internal.c src/xen_internal.h: completing the

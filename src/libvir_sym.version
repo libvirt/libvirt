@@ -19,6 +19,7 @@
 	virDomainResume;
 	virDomainSetMaxMemory;
 	virDomainSuspend;
+	virDomainGetXMLDesc;
 	virGetVersion;
     local: *;
 };

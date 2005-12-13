@@ -579,6 +579,56 @@ cmdDinfo(vshControl *ctl, vshCmd *cmd) {
 }
 
 /*
+ * "dumpxml" command
+ */
+static vshCmdInfo info_dumpxml[] = {
+    { "syntax",   "dumpxml [--id <number> | --name <string> ]" },
+    { "help",     "domain information in XML" },
+    { "desc",     "Ouput the domain informations as an XML dump to stdout" },
+    { NULL, NULL }
+};
+
+static vshCmdOptDef opts_dumpxml[] = {
+    { "name",      VSH_OT_STRING, 0, "domain name" },
+    { "id",        VSH_OT_INT,    0, "domain id" },
+    { NULL, 0, 0, NULL }
+};
+
+static int
+cmdDumpXML(vshControl *ctl, vshCmd *cmd) {
+    virDomainPtr dom;
+    int found, ret = TRUE;
+    char *name = vshCommandOptString(cmd, "name", NULL);
+    int id = vshCommandOptInt(cmd, "id", &found);
+    char *dump;
+    
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (found) {
+        if (!(dom = virDomainLookupByID(ctl->conn, id)))
+            vshError(ctl, FALSE, "failed to get domain '%d'", id);
+    } else {
+        if (!(dom = virDomainLookupByName(ctl->conn, name)))
+            vshError(ctl, FALSE, "failed to get domain '%s'", name);
+    }
+    
+    if (!dom)
+        return FALSE;
+    
+    dump = virDomainGetXMLDesc(dom, 0);
+    if (dump != NULL) {
+        printf("%s", dump);
+        free(dump);
+    } else {
+        ret = FALSE;
+    }
+        
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "nameof" command
  */
 static vshCmdInfo info_nameof[] = {
@@ -750,6 +800,7 @@ cmdQuit(vshControl *ctl, vshCmd *cmd ATTRIBUTE_UNUSED) {
 static vshCmdDef commands[] = {
     { "connect",    cmdConnect,    opts_connect,   info_connect },
     { "dinfo",      cmdDinfo,      opts_dinfo,     info_dinfo },
+    { "dumpxml",    cmdDumpXML,    opts_dumpxml,   info_dumpxml },
     { "dstate",     cmdDstate,     opts_dstate,    info_dstate },
     { "suspend",    cmdSuspend,    opts_suspend,   info_suspend },
     { "resume",     cmdResume,     opts_resume,    info_resume },

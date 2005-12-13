@@ -28,41 +28,6 @@
  * - memory wrappers for malloc/free ?
  */
 
-#define VIR_CONNECT_MAGIC 0x4F23DEAD
-
-/*
- * Flags for Xen connections
- */
-#define VIR_CONNECT_RO 1
-
-/**
- * _virConnect:
- *
- * Internal structure associated to a connection
- */
-struct _virConnect {
-    unsigned int magic;		/* specific value to check */
-    int	         handle;	/* internal handle used for hypercall */
-    struct xs_handle *xshandle;	/* handle to talk to the xenstore */
-    virHashTablePtr   domains;	/* hash table for known domains */
-    int          flags;		/* a set of connection flags */
-};
-
-#define VIR_DOMAIN_MAGIC 0xDEAD4321
-
-/**
- * _virDomain:
- *
- * Internal structure associated to a domain
- */
-struct _virDomain {
-    unsigned int magic;		/* specific value to check */
-    virConnectPtr conn;		/* pointer back to the connection */
-    char        *name;		/* the domain external name */
-    char        *path;		/* the domain internal path */
-    int	         handle;	/* internal handle for the dmonain ID */
-};
-
 /**
  * virGetVersion:
  * @libVer: return value for the library version (OUT)
@@ -396,6 +361,8 @@ virConnectNumOfDomains(virConnectPtr conn) {
  * @flags: an optional set of virDomainFlags
  *
  * Launch a new Linux guest domain 
+ * Not implemented yet. Very likely to be modified in order to express
+ * hardware informations in a convenient way.
  * 
  * Returns a new domain object or NULL in case of failure
  */
@@ -531,6 +498,11 @@ virDomainLookupByID(virConnectPtr conn, int id) {
     ret->handle = id;
     ret->path = path;
     ret->name = virDomainDoStoreQuery(ret, "name");
+    if (ret->name == NULL) {
+        free(path);
+        free(ret);
+	return(NULL);
+    }
 
     return(ret);
 }
@@ -540,7 +512,7 @@ virDomainLookupByID(virConnectPtr conn, int id) {
  * @conn: pointer to the hypervisor connection
  * @name: name for the domain
  *
- * Try to lookup a domain on the given hypervisor
+ * Try to lookup a domain on the given hypervisor based on its name.
  *
  * Returns a new domain object or NULL in case of failure
  */
@@ -807,7 +779,7 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory) {
 
 /**
  * virDomainGetInfo:
- * @domain: a domain object or NULL
+ * @domain: a domain object
  * @info: pointer to a virDomainInfo structure allocated by the user
  * 
  * Extract information about a domain. Note that if the connection
@@ -904,3 +876,4 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
     }
     return(0);
 }
+

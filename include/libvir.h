@@ -174,6 +174,8 @@ int			virDomainResume		(virDomainPtr domain);
  */
 int			virDomainGetInfo	(virDomainPtr domain,
 						 virDomainInfoPtr info);
+char *			virDomainGetXMLDesc	(virDomainPtr domain,
+						 int flags);
 						 
 /*
  * Dynamic control of domains
