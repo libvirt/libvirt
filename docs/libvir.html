@@ -26,9 +26,9 @@ virtualization mechanisms if needed.</p>
 
 <h2><a name="News">Releases</a></h2>
 
-<p>There is no official release yet, just CVS state and snapshot, contact
-the mailing list and check the <a href="ChangeLog.html">ChangeLog</a> to
-gauge progresses.</p>
+<p>There is no official release yet, just CVS state and snapshot, contact the
+mailing list and check the <a href="ChangeLog.html">ChangeLog</a> to gauge
+progresses.</p>
 <ul>
   <li>Extending the API</li>
 </ul>
@@ -112,6 +112,13 @@ available except commiting to the base.</p>
     <p>Or from a configured tree with:</p>
     <p><code>make rpm</code></p>
   </li>
+  <li><em>Failure to use the API for non-root users</em>
+    <p>Large parts of the API are only accessible as root, however the read
+    only access to the xenstore data doesnot have to be forbidden to user, at
+    least for monitoring purposes. If "virsh info" fails to run as an user,
+    change the mode of the xenstore read-only socket with:</p>
+    <p><code>chmod 666 /var/run/xenstored/socket_ro</code></p>
+  </li>
 </ol>
 
 <h3><a name="Compilatio">Compilation</a></h3>
@@ -158,9 +165,8 @@ with an  <a href="https://www.redhat.com/archives/libvir-list/">on-line
 archive</a>. Please subscribe to this list before posting by visiting the <a
 href="https://www.redhat.com/mailman/listinfo/libvir-list">associated Web</a>
 page and follow the instructions. Patches with explanations and provided as
-attachments are really appreciated and will be discussed on the mailing
-list. If possible generate the patches by using cvs diff -u in a CVS
-checkout.</p>
+attachments are really appreciated and will be discussed on the mailing list.
+If possible generate the patches by using cvs diff -u in a CVS checkout.</p>
 
 <p>We expect to use <a href="https://bugzilla.redhat.com/">Red Hat
 Bugzilla</a> to track bugs for libvir, though there isn't yet a libvir

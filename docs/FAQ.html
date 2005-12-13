@@ -40,6 +40,13 @@ A:link, A:visited, A:active { text-decoration: underline }
     <p>Or from a configured tree with:</p>
     <p><code>make rpm</code></p>
   </li>
+  <li><em>Failure to use the API for non-root users</em>
+    <p>Large parts of the API are only accessible as root, however the read
+    only access to the xenstore data doesnot have to be forbidden to user, at
+    least for monitoring purposes. If "virsh info" fails to run as an user,
+    change the mode of the xenstore read-only socket with:</p>
+    <p><code>chmod 666 /var/run/xenstored/socket_ro</code></p>
+  </li>
 </ol><h3><a name="Compilatio" id="Compilatio">Compilation</a></h3><ol><li><em>What is the process to compile libvir ?</em>
     <p>As most UNIX libraries libvir follows the "standard":</p>
     <p><code>gunzip -c libvir-xxx.tar.gz | tar xvf -</code></p>
