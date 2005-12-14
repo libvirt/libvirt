@@ -133,6 +133,228 @@ virBufferVSprintf(virBufferPtr buf, const char *format, ...) {
 }
 
 /**
+ * virDomainGetXMLDevice:
+ * @domain: a domain object
+ * @sub: the xenstore subsection 'vbd', 'vif', ...
+ * @dev: the xenstrore internal device number
+ * @name: the value's name
+ *
+ * Extract one information the device used by the domain from xensttore
+ *
+ * Returns the new string or NULL in case of error
+ */
+static char *
+virDomainGetXMLDeviceInfo(virDomainPtr domain, const char *sub, 
+                          long dev, const char *name) {
+    struct xs_transaction_handle* t;
+    char s[256];
+    char *ret = NULL;
+    unsigned int len = 0;
+
+    snprintf(s, 255, "/local/domain/0/backend/%s/%d/%ld/%s",
+             sub, domain->handle, dev, name);
+    s[255] = 0;
+
+    t = xs_transaction_start(domain->conn->xshandle);
+    if (t == NULL)
+        goto done;
+
+    ret = xs_read(domain->conn->xshandle, t, &s[0], &len);
+
+done:
+    if (t != NULL)
+	xs_transaction_end(domain->conn->xshandle, t, 0);
+    return(ret);
+}
+
+/**
+ * virDomainGetXMLDevice:
+ * @domain: a domain object
+ * @buf: the output buffer object
+ * @dev: the xenstrore internal device number
+ *
+ * Extract and dump in the buffer informations on the device used by the domain
+ *
+ * Returns 0 in case of success, -1 in case of failure
+ */
+static int
+virDomainGetXMLDevice(virDomainPtr domain, virBufferPtr buf, long dev) {
+    char *type, *val;
+
+    type = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "type");
+    if (type == NULL)
+        return(-1);
+    if (!strcmp(type, "file")) {
+	virBufferVSprintf(buf, "    <disk type='file'>\n");
+	val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "params");
+	if (val != NULL) {
+	    virBufferVSprintf(buf, "      <source file='%s'/>\n", val);
+	    free(val);
+	}
+	val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "dev");
+	if (val != NULL) {
+	    virBufferVSprintf(buf, "      <target dev='%s'/>\n", val);
+	    free(val);
+	}
+	virBufferAdd(buf, "    </disk>\n", 12);
+    } else {
+        TODO
+	fprintf(stderr, "Don't know how to handle device type %s\n", type);
+    }
+    free(type);
+
+    return(0);
+}
+
+/**
+ * virDomainGetXMLDevices:
+ * @domain: a domain object
+ * @buf: the output buffer object
+ *
+ * Extract the devices used by the domain and dumps then in the buffer
+ *
+ * Returns 0 in case of success, -1 in case of failure
+ */
+static int
+virDomainGetXMLDevices(virDomainPtr domain, virBufferPtr buf) {
+    struct xs_transaction_handle* t;
+    int ret = -1;
+    unsigned int num, i;
+    long id;
+    char **list = NULL, *endptr;
+    char backend[200];
+    virConnectPtr conn;
+
+    conn = domain->conn;
+
+    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC))
+        return(-1);
+    
+    t = xs_transaction_start(conn->xshandle);
+    if (t == NULL)
+        goto done;
+
+    snprintf(backend, 199, "/local/domain/0/backend/vbd/%d", 
+             virDomainGetID(domain));
+    backend[199] = 0;
+    list = xs_directory(conn->xshandle, t, backend, &num);
+    ret = 0;
+    if (list == NULL)
+        goto done;
+
+    for (i = 0;i < num;i++) {
+        id = strtol(list[i], &endptr, 10);
+	if ((endptr == list[i]) || (*endptr != 0)) {
+	    ret = -1;
+	    goto done;
+	}
+	virDomainGetXMLDevice(domain, buf, id);
+    }
+
+done:
+    if (t != NULL)
+	xs_transaction_end(conn->xshandle, t, 0);
+    if (list != NULL)
+        free(list);
+
+    return(ret);
+}
+
+/**
+ * virDomainGetXMLInterface:
+ * @domain: a domain object
+ * @buf: the output buffer object
+ * @dev: the xenstrore internal device number
+ *
+ * Extract and dump in the buffer informations on the interface used by
+ * the domain
+ *
+ * Returns 0 in case of success, -1 in case of failure
+ */
+static int
+virDomainGetXMLInterface(virDomainPtr domain, virBufferPtr buf, long dev) {
+    char *type, *val;
+
+    type = virDomainGetXMLDeviceInfo(domain, "vif", dev, "bridge");
+    if (type == NULL) {
+        TODO
+	fprintf(stderr, "Don't know how to handle non bridge interfaces\n");
+        return(-1);
+    } else {
+	virBufferVSprintf(buf, "    <interface type='bridge'>\n");
+	virBufferVSprintf(buf, "      <source bridge='%s'/>\n", type);
+	val = virDomainGetXMLDeviceInfo(domain, "vif", dev, "mac");
+	if (val != NULL) {
+	    virBufferVSprintf(buf, "      <mac address='%s'/>\n", val);
+	    free(val);
+	}
+	val = virDomainGetXMLDeviceInfo(domain, "vif", dev, "script");
+	if (val != NULL) {
+	    virBufferVSprintf(buf, "      <script path='%s'/>\n", val);
+	    free(val);
+	}
+	virBufferAdd(buf, "    </interface>\n", 17);
+    }
+    free(type);
+
+    return(0);
+}
+
+/**
+ * virDomainGetXMLInterfaces:
+ * @domain: a domain object
+ * @buf: the output buffer object
+ *
+ * Extract the interfaces used by the domain and dumps then in the buffer
+ *
+ * Returns 0 in case of success, -1 in case of failure
+ */
+static int
+virDomainGetXMLInterfaces(virDomainPtr domain, virBufferPtr buf) {
+    struct xs_transaction_handle* t;
+    int ret = -1;
+    unsigned int num, i;
+    long id;
+    char **list = NULL, *endptr;
+    char backend[200];
+    virConnectPtr conn;
+
+    conn = domain->conn;
+
+    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC))
+        return(-1);
+    
+    t = xs_transaction_start(conn->xshandle);
+    if (t == NULL)
+        goto done;
+
+    snprintf(backend, 199, "/local/domain/0/backend/vif/%d", 
+             virDomainGetID(domain));
+    backend[199] = 0;
+    list = xs_directory(conn->xshandle, t, backend, &num);
+    ret = 0;
+    if (list == NULL)
+        goto done;
+
+    for (i = 0;i < num;i++) {
+        id = strtol(list[i], &endptr, 10);
+	if ((endptr == list[i]) || (*endptr != 0)) {
+	    ret = -1;
+	    goto done;
+	}
+	virDomainGetXMLInterface(domain, buf, id);
+    }
+
+done:
+    if (t != NULL)
+	xs_transaction_end(conn->xshandle, t, 0);
+    if (list != NULL)
+        free(list);
+
+    return(ret);
+}
+
+/**
  * virDomainGetXMLDesc:
  * @domain: a domain object
  * @flags: and OR'ed set of extraction flags, not used yet
@@ -166,6 +388,12 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags) {
     virBufferVSprintf(&buf, "<domain type='xen' id='%d'>\n",
                       virDomainGetID(domain));
     virBufferVSprintf(&buf, "  <name>%s</name>\n", virDomainGetName(domain));
+    virBufferVSprintf(&buf, "  <memory>%lu</memory>\n", info.maxMem);
+    virBufferVSprintf(&buf, "  <vcpu>%d</vcpu>\n", (int) info.nrVirtCpu);
+    virBufferAdd(&buf, "  <devices>\n", 12);
+    virDomainGetXMLDevices(domain, &buf);
+    virDomainGetXMLInterfaces(domain, &buf);
+    virBufferAdd(&buf, "  </devices>\n", 13);
     virBufferAdd(&buf, "</domain>\n", 10);
     
     buf.content[buf.use] = 0;

@@ -1,3 +1,8 @@
+Wed Dec 14 12:20:06 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* src/xml.c: started to add block devices and interfaces descriptions
+	  in the XML dump.
+
 Tue Dec 13 17:20:11 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvir.h src/Makefile.am src/internal.h src/libvir.c
