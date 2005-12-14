@@ -196,6 +196,29 @@ virDomainGetXMLDevice(virDomainPtr domain, virBufferPtr buf, long dev) {
 	    virBufferVSprintf(buf, "      <target dev='%s'/>\n", val);
 	    free(val);
 	}
+	val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "read-only");
+	if (val != NULL) {
+	    virBufferVSprintf(buf, "      <readonly/>\n", val);
+	    free(val);
+	}
+	virBufferAdd(buf, "    </disk>\n", 12);
+    } else if (!strcmp(type, "phy")) {
+	virBufferVSprintf(buf, "    <disk type='device'>\n");
+	val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "params");
+	if (val != NULL) {
+	    virBufferVSprintf(buf, "      <source device='%s'/>\n", val);
+	    free(val);
+	}
+	val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "dev");
+	if (val != NULL) {
+	    virBufferVSprintf(buf, "      <target dev='%s'/>\n", val);
+	    free(val);
+	}
+	val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "read-only");
+	if (val != NULL) {
+	    virBufferVSprintf(buf, "      <readonly/>\n", val);
+	    free(val);
+	}
 	virBufferAdd(buf, "    </disk>\n", 12);
     } else {
         TODO
