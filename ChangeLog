@@ -1,3 +1,7 @@
+Wed Dec 14 16:28:24 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* src/xml.c: add dump of os/boot informations
+
 Wed Dec 14 13:35:39 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* src/xml.c: added dump of physical vbd and read-only status

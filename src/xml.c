@@ -168,6 +168,39 @@ done:
 }
 
 /**
+ * virDomainGetVMInfo:
+ * @domain: a domain object
+ * @vm: the xenstore vm path
+ * @name: the value's path
+ *
+ * Extract one information the device used by the domain from xensttore
+ *
+ * Returns the new string or NULL in case of error
+ */
+static char *
+virDomainGetVMInfo(virDomainPtr domain, const char *vm, 
+                   const char *name) {
+    struct xs_transaction_handle* t;
+    char s[256];
+    char *ret = NULL;
+    unsigned int len = 0;
+
+    snprintf(s, 255, "%s/%s", vm, name);
+    s[255] = 0;
+
+    t = xs_transaction_start(domain->conn->xshandle);
+    if (t == NULL)
+        goto done;
+
+    ret = xs_read(domain->conn->xshandle, t, &s[0], &len);
+
+done:
+    if (t != NULL)
+	xs_transaction_end(domain->conn->xshandle, t, 0);
+    return(ret);
+}
+
+/**
  * virDomainGetXMLDevice:
  * @domain: a domain object
  * @buf: the output buffer object
@@ -300,9 +333,18 @@ virDomainGetXMLInterface(virDomainPtr domain, virBufferPtr buf, long dev) {
 
     type = virDomainGetXMLDeviceInfo(domain, "vif", dev, "bridge");
     if (type == NULL) {
-        TODO
-	fprintf(stderr, "Don't know how to handle non bridge interfaces\n");
-        return(-1);
+	virBufferVSprintf(buf, "    <interface type='default'>\n");
+	val = virDomainGetXMLDeviceInfo(domain, "vif", dev, "mac");
+	if (val != NULL) {
+	    virBufferVSprintf(buf, "      <mac address='%s'/>\n", val);
+	    free(val);
+	}
+	val = virDomainGetXMLDeviceInfo(domain, "vif", dev, "script");
+	if (val != NULL) {
+	    virBufferVSprintf(buf, "      <script path='%s'/>\n", val);
+	    free(val);
+	}
+	virBufferAdd(buf, "    </interface>\n", 17);
     } else {
 	virBufferVSprintf(buf, "    <interface type='bridge'>\n");
 	virBufferVSprintf(buf, "      <source bridge='%s'/>\n", type);
@@ -378,6 +420,74 @@ done:
 }
 
 /**
+ * virDomainGetXMLBoot:
+ * @domain: a domain object
+ * @buf: the output buffer object
+ *
+ * Extract the boot informations used to start that domain
+ *
+ * Returns 0 in case of success, -1 in case of failure
+ */
+static int
+virDomainGetXMLBoot(virDomainPtr domain, virBufferPtr buf) {
+    struct xs_transaction_handle* t;
+    char *vm, *str;
+    char query[200];
+    virConnectPtr conn;
+    int len;
+
+    conn = domain->conn;
+
+    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC))
+        return(-1);
+    
+    t = xs_transaction_start(conn->xshandle);
+    if (t == NULL)
+        return(-1);
+
+    snprintf(query, 199, "/local/domain/%d/vm", 
+             virDomainGetID(domain));
+    query[199] = 0;
+
+    vm = xs_read(domain->conn->xshandle, t, &query[0], &len);
+
+    if (t != NULL)
+	xs_transaction_end(domain->conn->xshandle, t, 0);
+
+    if (vm == NULL)
+        return(-1);
+
+
+    virBufferAdd(buf, "  <os>\n", 7);
+    str = virDomainGetVMInfo(domain, vm, "image/ostype");
+    if (str != NULL) {
+        virBufferVSprintf(buf, "    <type>%s</type>\n", str);
+        free(str);
+    }
+    str = virDomainGetVMInfo(domain, vm, "image/kernel");
+    if (str != NULL) {
+        virBufferVSprintf(buf, "    <kernel>%s</kernel>\n", str);
+        free(str);
+    }
+    str = virDomainGetVMInfo(domain, vm, "image/ramdisk");
+    if (str != NULL) {
+	if (str[0] != 0)
+	    virBufferVSprintf(buf, "    <initrd>%s</initrd>\n", str);
+        free(str);
+    }
+    str = virDomainGetVMInfo(domain, vm, "image/cmdline");
+    if (str != NULL) {
+	if (str[0] != 0)
+	    virBufferVSprintf(buf, "    <cmdline>%s</cmdline>\n", str);
+        free(str);
+    }
+    virBufferAdd(buf, "  </os>\n", 8);
+
+    free(vm);
+    return(0);
+}
+
+/**
  * virDomainGetXMLDesc:
  * @domain: a domain object
  * @flags: and OR'ed set of extraction flags, not used yet
@@ -411,6 +521,7 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags) {
     virBufferVSprintf(&buf, "<domain type='xen' id='%d'>\n",
                       virDomainGetID(domain));
     virBufferVSprintf(&buf, "  <name>%s</name>\n", virDomainGetName(domain));
+    virDomainGetXMLBoot(domain, &buf);
     virBufferVSprintf(&buf, "  <memory>%lu</memory>\n", info.maxMem);
     virBufferVSprintf(&buf, "  <vcpu>%d</vcpu>\n", (int) info.nrVirtCpu);
     virBufferAdd(&buf, "  <devices>\n", 12);
