@@ -1,4 +1,0 @@
-1/ go for a minimal library first, expand on use cases
-2/ reuse xenctrl.h / libxenctrl in a first implementation, but make
-   sure to clearly isolate the bits calling them
-3/ 
