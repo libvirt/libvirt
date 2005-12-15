@@ -360,9 +360,8 @@ virConnectNumOfDomains(virConnectPtr conn) {
  * @memory: the memory size in kilobytes
  * @flags: an optional set of virDomainFlags
  *
- * Launch a new Linux guest domain 
- * Not implemented yet. Very likely to be modified in order to express
- * hardware informations in a convenient way.
+ * Launch a new Linux guest domain, unimplemented yet, API to be defined.
+ * This would function requires priviledged access to the hypervisor.
  * 
  * Returns a new domain object or NULL in case of failure
  */
@@ -583,6 +582,7 @@ done:
  * already and all resources used by it are given back to the hypervisor.
  * The data structure is freed and should not be used thereafter if the
  * call does not return an error.
+ * This function requires priviledged access to the hypervisor.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -632,6 +632,7 @@ virDomainFree(virDomainPtr domain) {
  * to CPU resources and I/O but the memory used by the domain at the 
  * hypervisor level will stay allocated. Use virDomainResume() to reactivate
  * the domain.
+ * This function requires priviledged access to the hypervisor.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -650,6 +651,7 @@ virDomainSuspend(virDomainPtr domain) {
  *
  * Resume an suspended domain, the process is restarted from the state where
  * it was frozen by calling virSuspendDomain().
+ * This function requires priviledged access to the hypervisor.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -738,6 +740,7 @@ virDomainGetMaxMemory(virDomainPtr domain) {
  * Dynamically change the maximum amount of physical memory allocated to a
  * domain. If domain is NULL, then this change the amount of memory reserved
  * to Domain0 i.e. the domain where the application runs.
+ * This function requires priviledged access to the hypervisor.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */

@@ -33,6 +33,7 @@
      <exports symbol='virDomainLookupByID' type='function'/>
      <exports symbol='virDomainLookupByName' type='function'/>
      <exports symbol='virDomainCreateLinux' type='function'/>
+     <exports symbol='virDomainGetXMLDesc' type='function'/>
      <exports symbol='virConnectClose' type='function'/>
      <exports symbol='virConnectNumOfDomains' type='function'/>
      <exports symbol='virDomainResume' type='function'/>
@@ -120,7 +121,7 @@
       <arg name='name' type='const char *' info='optional argument currently unused, pass NULL'/>
     </function>
     <function name='virDomainCreateLinux' file='libvir' module='libvir'>
-      <info>Launch a new Linux guest domain</info>
+      <info>Launch a new Linux guest domain, unimplemented yet, API to be defined. This would function requires priviledged access to the hypervisor.</info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='kernel_path' type='const char *' info='the file path to the kernel image'/>
@@ -130,7 +131,7 @@
       <arg name='flags' type='unsigned int' info='an optional set of virDomainFlags'/>
     </function>
     <function name='virDomainDestroy' file='libvir' module='libvir'>
-      <info>Destroy the domain object. The running instance is shutdown if not down already and all resources used by it are given back to the hypervisor. The data structure is freed and should not be used thereafter if the call does not return an error.</info>
+      <info>Destroy the domain object. The running instance is shutdown if not down already and all resources used by it are given back to the hypervisor. The data structure is freed and should not be used thereafter if the call does not return an error. This function requires priviledged access to the hypervisor.</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
@@ -147,7 +148,7 @@
     <function name='virDomainGetInfo' file='libvir' module='libvir'>
       <info>Extract information about a domain. Note that if the connection used to get the domain is limited only a partial set of the informations can be extracted.</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
-      <arg name='domain' type='virDomainPtr' info='a domain object or NULL'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='info' type='virDomainInfoPtr' info='pointer to a virDomainInfo structure allocated by the user'/>
     </function>
     <function name='virDomainGetMaxMemory' file='libvir' module='libvir'>
@@ -160,6 +161,12 @@
       <return type='const char *' info='a pointer to the name or NULL, the string need not be deallocated its lifetime will be the same as the domain object.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
+    <function name='virDomainGetXMLDesc' file='libvir' module='xml'>
+      <info>Provide an XML description of the domain. NOTE: this API is subject to changes.</info>
+      <return type='char *' info='a 0 terminated UTF-8 encoded XML instance, or NULL in case of error. the caller must free() the returned value.'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+      <arg name='flags' type='int' info='and OR&apos;ed set of extraction flags, not used yet'/>
+    </function>
     <function name='virDomainLookupByID' file='libvir' module='libvir'>
       <info>Try to find a domain based on the hypervisor ID number</info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
@@ -167,24 +174,24 @@
       <arg name='id' type='int' info='the domain ID number'/>
     </function>
     <function name='virDomainLookupByName' file='libvir' module='libvir'>
-      <info>Try to lookup a domain on the given hypervisor</info>
+      <info>Try to lookup a domain on the given hypervisor based on its name.</info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='name' type='const char *' info='name for the domain'/>
     </function>
     <function name='virDomainResume' file='libvir' module='libvir'>
-      <info>Resume an suspended domain, the process is restarted from the state where it was frozen by calling virSuspendDomain().</info>
+      <info>Resume an suspended domain, the process is restarted from the state where it was frozen by calling virSuspendDomain(). This function requires priviledged access to the hypervisor.</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
     <function name='virDomainSetMaxMemory' file='libvir' module='libvir'>
-      <info>Dynamically change the maximum amount of physical memory allocated to a domain. If domain is NULL, then this change the amount of memory reserved to Domain0 i.e. the domain where the application runs.</info>
+      <info>Dynamically change the maximum amount of physical memory allocated to a domain. If domain is NULL, then this change the amount of memory reserved to Domain0 i.e. the domain where the application runs. This function requires priviledged access to the hypervisor.</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object or NULL'/>
       <arg name='memory' type='unsigned long' info='the memory size in kilobytes'/>
     </function>
     <function name='virDomainSuspend' file='libvir' module='libvir'>
-      <info>Suspends an active domain, the process is frozen without further access to CPU resources and I/O but the memory used by the domain at the hypervisor level will stay allocated. Use virDomainResume() to reactivate the domain.</info>
+      <info>Suspends an active domain, the process is frozen without further access to CPU resources and I/O but the memory used by the domain at the hypervisor level will stay allocated. Use virDomainResume() to reactivate the domain. This function requires priviledged access to the hypervisor.</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
