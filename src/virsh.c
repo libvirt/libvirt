@@ -178,8 +178,11 @@ static vshCmdOpt *vshCommandOpt(vshCmd *cmd, const char *name);
 static int vshCommandOptInt(vshCmd *cmd, const char *name, int *found);
 static char *vshCommandOptString(vshCmd *cmd, const char *name, int *found);
 static int vshCommandOptBool(vshCmd *cmd, const char *name);
+static virDomainPtr vshCommandOptDomain(vshControl *ctl, vshCmd *cmd, const char *optname, char **name);
+
 
 static void vshPrint(vshControl *ctl, vshOutType out, const char *format, ...);
+
 
 static const char *vshDomainStateToString(int state);
 static int vshConnectionUsability(vshControl *ctl, virConnectPtr conn, int showerror);
@@ -313,38 +316,27 @@ cmdList(vshControl *ctl, vshCmd *cmd ATTRIBUTE_UNUSED) {
  * "dstate" command
  */
 static vshCmdInfo info_dstate[] = {
-    { "syntax",  "dstate [--id <number> | --name <string> ]" },
+    { "syntax",  "dstate <domain>" },
     { "help",    "domain state" },
-    { "desc",    "Returns state about the domain." },
+    { "desc",    "Returns state about a running domain." },
     { NULL, NULL }
 };
 
 static vshCmdOptDef opts_dstate[] = {
-    { "name",    VSH_OT_STRING, 0, "domain name" },
-    { "id",      VSH_OT_INT,    0, "domain id" },
-        { NULL, 0, 0, NULL }
+    { "domain",  VSH_OT_DATA, 0, "domain name or id" },
+    { NULL, 0, 0, NULL }
 };
 
 static int
 cmdDstate(vshControl *ctl, vshCmd *cmd) {
     virDomainInfo info;
     virDomainPtr dom;
-    int found, ret = TRUE;
-    char *name = vshCommandOptString(cmd, "name", NULL);
-    int id = vshCommandOptInt(cmd, "id", &found);
-    
+    int ret = TRUE;
+   
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (found) {
-        if (!(dom = virDomainLookupByID(ctl->conn, id)))
-            vshError(ctl, FALSE, "failed to get domain '%d'", id);
-    } else {
-        if (!(dom = virDomainLookupByName(ctl->conn, name)))
-            vshError(ctl, FALSE, "failed to get domain '%s'", name);
-    }
-
-    if (!dom)
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
         return FALSE;
     
     if (virDomainGetInfo(dom, &info)==0)
@@ -360,44 +352,31 @@ cmdDstate(vshControl *ctl, vshCmd *cmd) {
  * "suspend" command
  */
 static vshCmdInfo info_suspend[] = {
-    { "syntax",  "suspend [--id <number> | --name <string> ]" },
-    { "help",    "domain state" },
+    { "syntax",  "suspend <domain>" },
+    { "help",    "suspend a domain" },
     { "desc",    "Suspend a running domain." },
     { NULL, NULL }
 };
 
 static vshCmdOptDef opts_suspend[] = {
-    { "name",    VSH_OT_STRING, 0, "domain name" },
-    { "id",      VSH_OT_INT,    0, "domain id" },
-        { NULL, 0, 0, NULL }
+    { "domain",  VSH_OT_DATA, 0, "domain name or id" },
+    { NULL, 0, 0, NULL }
 };
 
 static int
 cmdSuspend(vshControl *ctl, vshCmd *cmd) {
     virDomainPtr dom;
-    int found, ret = TRUE;
-    char *name = vshCommandOptString(cmd, "name", NULL);
-    int id = vshCommandOptInt(cmd, "id", &found);
+    char *name;
+    int ret = TRUE;
     
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (found) {
-        if (!(dom = virDomainLookupByID(ctl->conn, id)))
-            vshError(ctl, FALSE, "failed to get domain '%d'", id);
-    } else {
-        if (!(dom = virDomainLookupByName(ctl->conn, name)))
-            vshError(ctl, FALSE, "failed to get domain '%s'", name);
-    }
-
-    if (!dom)
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", &name)))
         return FALSE;
     
     if (virDomainSuspend(dom)==0) {
-        if (found)
-            vshPrint(ctl, VSH_MESG, "Domain %d suspended\n", found);
-        else
-            vshPrint(ctl, VSH_MESG, "Domain %s suspended\n", name);
+        vshPrint(ctl, VSH_MESG, "Domain %s suspended\n", name);
     } else {
         vshError(ctl, FALSE, "Failed to suspend domain\n");
         ret = FALSE;
@@ -411,44 +390,31 @@ cmdSuspend(vshControl *ctl, vshCmd *cmd) {
  * "resume" command
  */
 static vshCmdInfo info_resume[] = {
-    { "syntax",  "resume [--id <number> | --name <string> ]" },
-    { "help",    "domain state" },
+    { "syntax",  "resume <domain>" },
+    { "help",    "resume a domain" },
     { "desc",    "Resume a previously suspended domain." },
     { NULL, NULL }
 };
 
 static vshCmdOptDef opts_resume[] = {
-    { "name",    VSH_OT_STRING, 0, "domain name" },
-    { "id",      VSH_OT_INT,    0, "domain id" },
-        { NULL, 0, 0, NULL }
+    { "domain",  VSH_OT_DATA, 0, "domain name or id" },
+    { NULL, 0, 0, NULL }
 };
 
 static int
 cmdResume(vshControl *ctl, vshCmd *cmd) {
     virDomainPtr dom;
-    int found, ret = TRUE;
-    char *name = vshCommandOptString(cmd, "name", NULL);
-    int id = vshCommandOptInt(cmd, "id", &found);
+    int ret = TRUE;
+    char *name;
     
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (found) {
-        if (!(dom = virDomainLookupByID(ctl->conn, id)))
-            vshError(ctl, FALSE, "failed to get domain '%d'", id);
-    } else {
-        if (!(dom = virDomainLookupByName(ctl->conn, name)))
-            vshError(ctl, FALSE, "failed to get domain '%s'", name);
-    }
-
-    if (!dom)
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", &name)))
         return FALSE;
     
     if (virDomainResume(dom)==0) {
-        if (found)
-            vshPrint(ctl, VSH_MESG, "Domain %d resumed\n", found);
-        else
-            vshPrint(ctl, VSH_MESG, "Domain %s resumed\n", name);
+        vshPrint(ctl, VSH_MESG, "Domain %s resumed\n", name);
     } else {
         vshError(ctl, FALSE, "Failed to resume domain\n");
         ret = FALSE;
@@ -462,44 +428,31 @@ cmdResume(vshControl *ctl, vshCmd *cmd) {
  * "destroy" command
  */
 static vshCmdInfo info_destroy[] = {
-    { "syntax",  "destroy [--id <number> | --name <string> ]" },
-    { "help",    "domain state" },
+    { "syntax",  "destroy <domain>" },
+    { "help",    "destroy a domain" },
     { "desc",    "Destroy a given domain." },
     { NULL, NULL }
 };
 
 static vshCmdOptDef opts_destroy[] = {
-    { "name",    VSH_OT_STRING, 0, "domain name" },
-    { "id",      VSH_OT_INT,    0, "domain id" },
-        { NULL, 0, 0, NULL }
+    { "domain",  VSH_OT_DATA, 0, "domain name or id" },
+    { NULL, 0, 0, NULL }
 };
 
 static int
 cmdDestroy(vshControl *ctl, vshCmd *cmd) {
     virDomainPtr dom;
-    int found, ret = TRUE;
-    char *name = vshCommandOptString(cmd, "name", NULL);
-    int id = vshCommandOptInt(cmd, "id", &found);
-    
+    int ret = TRUE;
+    char *name;
+   
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (found) {
-        if (!(dom = virDomainLookupByID(ctl->conn, id)))
-            vshError(ctl, FALSE, "failed to get domain '%d'", id);
-    } else {
-        if (!(dom = virDomainLookupByName(ctl->conn, name)))
-            vshError(ctl, FALSE, "failed to get domain '%s'", name);
-    }
-
-    if (!dom)
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", &name)))
         return FALSE;
     
     if (virDomainDestroy(dom)==0) {
-        if (found)
-            vshPrint(ctl, VSH_MESG, "Domain %d destroyed\n", found);
-        else
-            vshPrint(ctl, VSH_MESG, "Domain %s destroyed\n", name);
+        vshPrint(ctl, VSH_MESG, "Domain %s destroyed\n", name);
     } else {
         vshError(ctl, FALSE, "Failed to destroy domain\n");
         ret = FALSE;
@@ -513,15 +466,14 @@ cmdDestroy(vshControl *ctl, vshCmd *cmd) {
  * "dinfo" command
  */
 static vshCmdInfo info_dinfo[] = {
-    { "syntax",   "dinfo [--id <number> | --name <string> ]" },
+    { "syntax",   "dinfo <domain>" },
     { "help",     "domain information" },
     { "desc",     "Returns basic information about the domain." },
     { NULL, NULL }
 };
 
 static vshCmdOptDef opts_dinfo[] = {
-    { "name",      VSH_OT_STRING, 0, "domain name" },
-    { "id",        VSH_OT_INT,    0, "domain id" },
+    { "domain",  VSH_OT_DATA, 0, "domain name or id" },
     { NULL, 0, 0, NULL }
 };
 
@@ -529,22 +481,12 @@ static int
 cmdDinfo(vshControl *ctl, vshCmd *cmd) {
     virDomainInfo info;
     virDomainPtr dom;
-    int found, ret = TRUE;
-    char *name = vshCommandOptString(cmd, "name", NULL);
-    int id = vshCommandOptInt(cmd, "id", &found);
-    
+    int ret = TRUE;
+   
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (found) {
-        if (!(dom = virDomainLookupByID(ctl->conn, id)))
-            vshError(ctl, FALSE, "failed to get domain '%d'", id);
-    } else {
-        if (!(dom = virDomainLookupByName(ctl->conn, name)))
-            vshError(ctl, FALSE, "failed to get domain '%s'", name);
-    }
-    
-    if (!dom)
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
         return FALSE;
     
     if (virDomainGetInfo(dom, &info)==0) {
@@ -557,12 +499,12 @@ cmdDinfo(vshControl *ctl, vshCmd *cmd) {
         vshPrint(ctl, VSH_MESG, "%-15s %d\n", "CPU(s):",
                 info.nrVirtCpu);
         
-           if (info.cpuTime != 0) 
-           {
-               float cpuUsed = info.cpuTime;
-               cpuUsed /= 1000000000;
+        if (info.cpuTime != 0) 
+        {
+            float cpuUsed = info.cpuTime;
+            cpuUsed /= 1000000000;
             
-                vshPrint(ctl, VSH_MESG, "%-15s %.1fs\n", "CPU time:", cpuUsed);
+            vshPrint(ctl, VSH_MESG, "%-15s %.1fs\n", "CPU time:", cpuUsed);
         }
            
         vshPrint(ctl, VSH_MESG, "%-15s %lu kB\n", "Max memory:",
@@ -582,38 +524,27 @@ cmdDinfo(vshControl *ctl, vshCmd *cmd) {
  * "dumpxml" command
  */
 static vshCmdInfo info_dumpxml[] = {
-    { "syntax",   "dumpxml [--id <number> | --name <string> ]" },
+    { "syntax",   "dumpxml <name>" },
     { "help",     "domain information in XML" },
     { "desc",     "Ouput the domain informations as an XML dump to stdout" },
     { NULL, NULL }
 };
 
 static vshCmdOptDef opts_dumpxml[] = {
-    { "name",      VSH_OT_STRING, 0, "domain name" },
-    { "id",        VSH_OT_INT,    0, "domain id" },
+    { "domain",  VSH_OT_DATA, 0, "domain name or id" },
     { NULL, 0, 0, NULL }
 };
 
 static int
 cmdDumpXML(vshControl *ctl, vshCmd *cmd) {
     virDomainPtr dom;
-    int found, ret = TRUE;
-    char *name = vshCommandOptString(cmd, "name", NULL);
-    int id = vshCommandOptInt(cmd, "id", &found);
+    int ret = TRUE;
     char *dump;
     
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    if (found) {
-        if (!(dom = virDomainLookupByID(ctl->conn, id)))
-            vshError(ctl, FALSE, "failed to get domain '%d'", id);
-    } else {
-        if (!(dom = virDomainLookupByName(ctl->conn, name)))
-            vshError(ctl, FALSE, "failed to get domain '%s'", name);
-    }
-    
-    if (!dom)
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
         return FALSE;
     
     dump = virDomainGetXMLDesc(dom, 0);
@@ -633,7 +564,7 @@ cmdDumpXML(vshControl *ctl, vshCmd *cmd) {
  */
 static vshCmdInfo info_nameof[] = {
     { "syntax",   "nameof <id>" },
-    { "help",     "convert domain Id to domain name" },
+    { "help",     "convert a domain Id to domain name" },
     { NULL, NULL }
 };
 
@@ -669,7 +600,7 @@ cmdNameof(vshControl *ctl, vshCmd *cmd) {
  */
 static vshCmdInfo info_idof[] = {
     { "syntax",   "idof <name>" },
-    { "help",     "convert domain name to domain Id" },
+    { "help",     "convert a domain name to domain Id" },
     { NULL, NULL }
 };
 
@@ -987,6 +918,35 @@ vshCommandOptString(vshCmd *cmd, const char *name, int *found) {
 static int
 vshCommandOptBool(vshCmd *cmd, const char *name) {
     return vshCommandOpt(cmd, name) ? TRUE : FALSE;
+}
+
+static virDomainPtr
+vshCommandOptDomain(vshControl *ctl, vshCmd *cmd, const char *optname, char **name) {
+    virDomainPtr dom = NULL;
+    char *n, *end = NULL;
+    int id;
+    
+    if (!(n = vshCommandOptString(cmd, optname, NULL))) {
+        vshError(ctl, FALSE, "undefined domain name or id");
+        return NULL; 
+    }
+    
+    if (name)
+        *name = n;
+    
+    /* try it by ID */
+    id = (int) strtol(n, &end, 10);
+    if (id >= 0 && end && *end=='\0')
+        dom = virDomainLookupByID(ctl->conn, id);
+    
+    /* try it by NAME */
+    if (!dom)
+        dom = virDomainLookupByName(ctl->conn, n);
+
+    if (!dom) 
+        vshError(ctl, FALSE, "failed to get domain '%s'", n);
+        
+    return dom;
 }
 
 /*
