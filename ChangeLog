@@ -1,3 +1,8 @@
+Fri Dec 16 14:26:05 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* libvir.spec.in src/Makefile.am: cleaned up the spec file, removed
+	  static libraries, adding virsh as an installed program
+
 Fri Dec 16 13:59:35 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvir_sym.version: oops forgot to export the new symbol

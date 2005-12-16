@@ -17,7 +17,7 @@ libvir_la_SOURCES =						\
 		xen_internal.c xen_internal.h			\
 		xml.c
 
-noinst_PROGRAMS=virsh
+bin_PROGRAMS=virsh
 
 virsh_SOURCES=virsh.c
 virsh_LDFLAGS =

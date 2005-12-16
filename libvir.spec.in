@@ -11,7 +11,8 @@ BuildRequires: xen
 Requires: xen
 
 %description
-This C library provides an API to use the Xen virtualization framework
+This C library provides an API to use the Xen virtualization framework,
+and the virsh command line tool to control virtual domains.
 
 %package devel
 Summary: Libraries, includes, etc. to compile with the libvir library
@@ -19,7 +20,8 @@ Group: Development/Libraries
 Requires: libvir = %{version}
 
 %description devel
-This C library provides an API to use the Xen virtualization framework
+Includes and documantations for the C library providing an API to use
+the Xen virtualization framework
 
 %prep
 %setup -q
@@ -33,6 +35,7 @@ rm -fr %{buildroot}
 
 %makeinstall
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
+rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
 
 %clean
 rm -fr %{buildroot}
@@ -47,13 +50,13 @@ rm -fr %{buildroot}
 %defattr(-, root, root)
 
 %doc AUTHORS ChangeLog NEWS README COPYING.LIB TODO
+%{_bindir}/virsh
 %{_libdir}/lib*.so.*
 
 %files devel
 %defattr(-, root, root)
 
 %{_libdir}/lib*.so
-%{_libdir}/*a
 %{_includedir}/libvir/*.h
 %{_libdir}/pkgconfig/libvir.pc
 
