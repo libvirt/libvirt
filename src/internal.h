@@ -43,7 +43,9 @@ extern "C" {
  * magic value used to protect the API when pointers to connection structures
  * are passed down by the uers.
  */
-#define VIR_CONNECT_MAGIC 0x4F23DEAD
+#define VIR_CONNECT_MAGIC 	0x4F23DEAD
+#define VIR_IS_CONNECT(obj)	((obj) && (obj)->magic==VIR_CONNECT_MAGIC)
+
 
 /**
  * VIR_DOMAIN_MAGIC:
@@ -51,7 +53,9 @@ extern "C" {
  * magic value used to protect the API when pointers to domain structures
  * are passed down by the uers.
  */
-#define VIR_DOMAIN_MAGIC 0xDEAD4321
+#define VIR_DOMAIN_MAGIC		0xDEAD4321
+#define VIR_IS_DOMAIN(obj)		((obj) && (obj)->magic==VIR_DOMAIN_MAGIC)
+#define VIR_IS_CONNECTED_DOMAIN(obj)	(VIR_IS_DOMAIN(obj) && VIR_IS_CONNECT((obj)->conn))
 
 /*
  * Flags for Xen connections

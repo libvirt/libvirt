@@ -1,3 +1,8 @@
+Fri Dec 16 19:35:29 CET 2005 Karel Zak <kzak@redhat.com>
+
+	* src/xml.c src/internal.h src/libvir.c: struct checks cleanup, 
+	  add macros VIS_IS_DOMAIN(), VIR_IS_CONNECT() and VIR_IS_CONNECTED_DOMAIN()
+
 Fri Dec 16 14:26:05 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* libvir.spec.in src/Makefile.am: cleaned up the spec file, removed

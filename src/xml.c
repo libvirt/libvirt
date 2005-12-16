@@ -248,11 +248,11 @@ virDomainGetXMLDevices(virDomainPtr domain, virBufferPtr buf) {
     char backend[200];
     virConnectPtr conn;
 
+    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+	return(-1);
+    
     conn = domain->conn;
 
-    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC))
-        return(-1);
-    
     t = xs_transaction_start(conn->xshandle);
     if (t == NULL)
         goto done;
@@ -351,11 +351,11 @@ virDomainGetXMLInterfaces(virDomainPtr domain, virBufferPtr buf) {
     char backend[200];
     virConnectPtr conn;
 
+    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+	return(-1);
+    
     conn = domain->conn;
 
-    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC))
-        return(-1);
-    
     t = xs_transaction_start(conn->xshandle);
     if (t == NULL)
         goto done;
@@ -402,8 +402,8 @@ static int
 virDomainGetXMLBoot(virDomainPtr domain, virBufferPtr buf) {
     char *vm, *str;
 
-    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
-        return(-1);
+    if (!VIR_IS_DOMAIN(domain))
+	return(-1);
     
     vm = virDomainGetVM(domain);
     if (vm == NULL)
@@ -455,10 +455,10 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags) {
     virBuffer buf;
     virDomainInfo info;
 
-    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC) ||
-        (flags != 0))
+    if (!VIR_IS_DOMAIN(domain))
 	return(NULL);
-
+    if (flags != 0)
+	return(NULL);
     if (virDomainGetInfo(domain, &info) < 0)
         return(NULL);
 

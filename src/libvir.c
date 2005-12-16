@@ -209,9 +209,8 @@ virDomainFreeName(virDomainPtr domain, const char *name ATTRIBUTE_UNUSED) {
  */
 int
 virConnectClose(virConnectPtr conn) {
-    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC))
+    if (!VIR_IS_CONNECT(conn))
         return(-1);
-
     virHashFree(conn->domains, (virHashDeallocator) virDomainFreeName);
     conn->magic = -1;
     xs_daemon_close(conn->xshandle);
@@ -233,9 +232,8 @@ virConnectClose(virConnectPtr conn) {
  */
 const char *
 virConnectGetType(virConnectPtr conn) {
-    if (conn == NULL)
+    if (!VIR_IS_CONNECT(conn))
         return(NULL);
-    
     return("Xen");
 }
 
@@ -256,7 +254,10 @@ int
 virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer) {
     unsigned long ver;
 
-    if ((conn == NULL) || (hvVer == NULL) || (conn->magic != VIR_CONNECT_MAGIC))
+    if (!VIR_IS_CONNECT(conn))
+	return(-1);
+    
+    if (hvVer == NULL)
         return(-1);
     
     /* this can't be extracted from the Xenstore */
@@ -288,8 +289,10 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids) {
     long id;
     char **idlist = NULL, *endptr;
 
-    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC) ||
-        (ids == NULL) || (maxids <= 0))
+    if (!VIR_IS_CONNECT(conn))
+	return(-1);
+    
+    if ((ids == NULL) || (maxids <= 0))
         return(-1);
     
     t = xs_transaction_start(conn->xshandle);
@@ -336,9 +339,9 @@ virConnectNumOfDomains(virConnectPtr conn) {
     unsigned int num;
     char **idlist = NULL;
 
-    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC))
-        return(-1);
-    
+    if (!VIR_IS_CONNECT(conn))
+	return(-1);
+
     t = xs_transaction_start(conn->xshandle);
     if (t) {
         idlist = xs_directory(conn->xshandle, t, "/local/domain", &num);
@@ -371,8 +374,10 @@ virDomainCreateLinux(virConnectPtr conn, const char *kernel_path,
 		     const char *cmdline ATTRIBUTE_UNUSED,
 		     unsigned long memory,
 		     unsigned int flags ATTRIBUTE_UNUSED) {
-    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC) ||
-        (kernel_path == NULL) || (memory < 4096))
+
+    if (!VIR_IS_CONNECT(conn))
+	return(NULL);
+    if ((kernel_path == NULL) || (memory < 4096))
         return(NULL);
     TODO
     return(NULL);
@@ -450,6 +455,9 @@ virDomainDoStoreQuery(virDomainPtr domain, const char *path) {
     char s[256];
     char *ret = NULL;
     unsigned int len = 0;
+    
+    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+	return(NULL);
 
     snprintf(s, 255, "/local/domain/%d/%s", domain->handle, path);
     s[255] = 0;
@@ -485,11 +493,10 @@ virDomainDoStoreWrite(virDomainPtr domain, const char *path,
 
     int ret = -1;
 
-    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
+    if (!VIR_IS_CONNECTED_DOMAIN(domain))
 	return(-1);
-    if ((domain->conn == NULL) || (domain->conn->flags & VIR_CONNECT_RO))
+    if (domain->conn->flags & VIR_CONNECT_RO)
         return(-1);
-
 
     snprintf(s, 255, "/local/domain/%d/%s", domain->handle, path);
     s[255] = 0;
@@ -523,11 +530,9 @@ virDomainGetVM(virDomainPtr domain)
     char query[200];
     unsigned int len;
     
-    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
+    if (!VIR_IS_CONNECTED_DOMAIN(domain))
 	return(NULL);
-    if ((domain->conn == NULL) || (domain->conn->magic != VIR_CONNECT_MAGIC))
-        return(NULL);
-
+    
     t = xs_transaction_start(domain->conn->xshandle);
     if (t == NULL)
         return(NULL);
@@ -563,11 +568,9 @@ virDomainGetVMInfo(virDomainPtr domain, const char *vm,
     char *ret = NULL;
     unsigned int len = 0;
     
-    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
+    if (!VIR_IS_CONNECTED_DOMAIN(domain))
 	return(NULL);
-    if ((domain->conn == NULL) || (domain->conn->magic != VIR_CONNECT_MAGIC))
-        return(NULL);
-
+    
     snprintf(s, 255, "%s/%s", vm, name);
     s[255] = 0;
 
@@ -597,7 +600,9 @@ virDomainLookupByID(virConnectPtr conn, int id) {
     char *path;
     virDomainPtr ret;
 
-    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC) || (id < 0))
+    if (!VIR_IS_CONNECT(conn))
+	return(NULL);
+    if (id < 0)
         return(NULL);
 
     path = xs_get_domain_path(conn->xshandle, (unsigned int) id);
@@ -642,8 +647,9 @@ virDomainLookupByName(virConnectPtr conn, const char *name) {
     char prop[200], *tmp;
     int found = 0;
 
-
-    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC) || (name == NULL))
+    if (!VIR_IS_CONNECT(conn))
+	return(NULL);
+    if (name == NULL)
         return(NULL);
 
     t = xs_transaction_start(conn->xshandle);
@@ -707,10 +713,8 @@ int
 virDomainDestroy(virDomainPtr domain) {
     int ret;
 
-    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
-        return(-1);
-    if ((domain->conn == NULL) || (domain->conn->magic != VIR_CONNECT_MAGIC))
-        return(-1);
+    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+	return(-1);
     ret = xenHypervisorDestroyDomain(domain->conn->handle, domain->handle);
     if (ret < 0)
         return(-1);
@@ -729,8 +733,8 @@ virDomainDestroy(virDomainPtr domain) {
  */
 int
 virDomainFree(virDomainPtr domain) {
-    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
-        return(-1);
+    if (!VIR_IS_DOMAIN(domain))
+	return(-1);
     domain->magic = -1;
     domain->handle = -1;
     if (domain->path != NULL)
@@ -755,10 +759,8 @@ virDomainFree(virDomainPtr domain) {
  */
 int
 virDomainSuspend(virDomainPtr domain) {
-    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
-        return(-1);
-    if ((domain->conn == NULL) || (domain->conn->magic != VIR_CONNECT_MAGIC))
-        return(-1);
+    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+	return(-1);
     return(xenHypervisorPauseDomain(domain->conn->handle, domain->handle));
 }
 
@@ -774,10 +776,8 @@ virDomainSuspend(virDomainPtr domain) {
  */
 int
 virDomainResume(virDomainPtr domain) {
-    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
-        return(-1);
-    if ((domain->conn == NULL) || (domain->conn->magic != VIR_CONNECT_MAGIC))
-        return(-1);
+    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+	return(-1);
     return(xenHypervisorResumeDomain(domain->conn->handle, domain->handle));
 }
 
@@ -797,10 +797,9 @@ int
 virDomainShutdown(virDomainPtr domain) {
     int ret;
 
-    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
-        return(-1);
-    if ((domain->conn == NULL) || (domain->conn->magic != VIR_CONNECT_MAGIC))
-        return(-1);
+    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+	return(-1);
+    
     /*
      * this is very hackish, the domU kernel probes for a special 
      * node in the xenstore and launch the shutdown command if found.
@@ -823,8 +822,8 @@ virDomainShutdown(virDomainPtr domain) {
  */
 const char *
 virDomainGetName(virDomainPtr domain) {
-    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
-        return(NULL);
+    if (!VIR_IS_DOMAIN(domain))
+	return(NULL);
     return(domain->name);
 }
 
@@ -838,8 +837,8 @@ virDomainGetName(virDomainPtr domain) {
  */
 unsigned int
 virDomainGetID(virDomainPtr domain) {
-    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
-        return((unsigned int) -1);
+    if (!VIR_IS_DOMAIN(domain))
+	return((unsigned int) -1);
     return(domain->handle);
 }
 
@@ -855,9 +854,9 @@ char *
 virDomainGetOSType(virDomainPtr domain) {
     char *vm, *str = NULL;
     
-    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
-        return(NULL);
-
+    if (!VIR_IS_DOMAIN(domain))
+	return(NULL);
+    
     vm = virDomainGetVM(domain);
     if (vm) {
     	str = virDomainGetVMInfo(domain, vm, "image/ostype");
@@ -880,8 +879,9 @@ unsigned long
 virDomainGetMaxMemory(virDomainPtr domain) {
     unsigned long ret = 0;
 
-    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
-        return(0);
+    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+	return(0);
+    
     if (domain->conn->flags & VIR_CONNECT_RO) {
         char *tmp;
 
@@ -921,8 +921,9 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory) {
     char s[256], v[30];
     struct xs_transaction_handle* t;
     
-    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC) ||
-        (memory < 4096))
+    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+	return(-1);
+    if (memory < 4096)
         return(-1);
     if (domain->conn->flags & VIR_CONNECT_RO)
         return(-1);
@@ -966,10 +967,13 @@ int
 virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
     int ret;
 
-    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC) ||
-        (info == NULL))
+    if (!VIR_IS_CONNECTED_DOMAIN(domain))
 	return(-1);
+    if (info == NULL)
+	return(-1);
+    
     memset(info, 0, sizeof(virDomainInfo));
+    
     if (domain->conn->flags & VIR_CONNECT_RO) {
         char *tmp, **tmp2;
 	unsigned int nb_vcpus;
