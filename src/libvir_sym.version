@@ -20,6 +20,7 @@
 	virDomainLookupByName;
 	virDomainResume;
 	virDomainSetMaxMemory;
+	virDomainShutdown;
 	virDomainSuspend;
 	virGetVersion;
     local: *;
