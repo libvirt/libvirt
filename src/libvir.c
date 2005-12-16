@@ -468,6 +468,46 @@ done:
 
 
 /**
+ * virDomainDoStoreWrite:
+ * @domain: a domain object
+ * @path: the relative path of the data in the store to retrieve
+ *
+ * Internal API setting up a string value in the Xenstore
+ * Requires write access to the XenStore
+ *
+ * Returns 0 in case of success, -1 in case of failure
+ */
+static int
+virDomainDoStoreWrite(virDomainPtr domain, const char *path,
+                      const char *value) {
+    struct xs_transaction_handle* t;
+    char s[256];
+
+    int ret = -1;
+
+    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
+	return(-1);
+    if ((domain->conn == NULL) || (domain->conn->flags & VIR_CONNECT_RO))
+        return(-1);
+
+
+    snprintf(s, 255, "/local/domain/%d/%s", domain->handle, path);
+    s[255] = 0;
+
+    t = xs_transaction_start(domain->conn->xshandle);
+    if (t == NULL)
+        goto done;
+
+    if (xs_write(domain->conn->xshandle, t, &s[0], value, strlen(value)))
+        ret = 0;
+
+done:
+    if (t != NULL)
+	xs_transaction_end(domain->conn->xshandle, t, 0);
+    return(ret);
+}
+
+/**
  * virDomainGetVM:
  * @domain: a domain object
  *
@@ -739,6 +779,37 @@ virDomainResume(virDomainPtr domain) {
     if ((domain->conn == NULL) || (domain->conn->magic != VIR_CONNECT_MAGIC))
         return(-1);
     return(xenHypervisorResumeDomain(domain->conn->handle, domain->handle));
+}
+
+/**
+ * virDomainShutdown:
+ * @domain: a domain object
+ *
+ * Shutdown a domain, the domain object is still usable there after but
+ * the domain OS is being stopped.
+ *
+ * TODO: should we add an option for reboot, knowing it may not be doable
+ *       in the general case ?
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainShutdown(virDomainPtr domain) {
+    int ret;
+
+    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
+        return(-1);
+    if ((domain->conn == NULL) || (domain->conn->magic != VIR_CONNECT_MAGIC))
+        return(-1);
+    /*
+     * this is very hackish, the domU kernel probes for a special 
+     * node in the xenstore and launch the shutdown command if found.
+     */
+    ret = virDomainDoStoreWrite(domain, "control/shutdown", "halt");
+    if (ret == 0) {
+        domain->flags |= DOMAIN_IS_SHUTDOWN;
+    }
+    return(ret);
 }
 
 /**

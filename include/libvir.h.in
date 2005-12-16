@@ -100,14 +100,14 @@ struct _virDomainInfo {
 typedef virDomainInfo *virDomainInfoPtr;
 
 /**
- * virDomainFlags:
+ * virDomainCreateFlags:
  *
  * Flags OR'ed together to provide specific behaviour when creating a
  * Domain.
  */
 typedef enum {
      VIR_DOMAIN_NONE = 0
-} virDomainFlags;
+} virDomainCreateFlags;
 
 /* library versionning */
 
@@ -160,6 +160,7 @@ virDomainPtr		virDomainLookupByName	(virConnectPtr conn,
 						 const char *name);
 virDomainPtr		virDomainLookupByID	(virConnectPtr conn,
 						 int id);
+int			virDomainShutdown	(virDomainPtr domain);
 int			virDomainDestroy	(virDomainPtr domain);
 int			virDomainFree		(virDomainPtr domain);
 

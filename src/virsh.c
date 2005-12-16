@@ -425,6 +425,44 @@ cmdResume(vshControl *ctl, vshCmd *cmd) {
 }
 
 /*
+ * "shutdown" command
+ */
+static vshCmdInfo info_shutdown[] = {
+    { "syntax",  "shutdown <domain>" },
+    { "help",    "gracefully shutdown a domain" },
+    { "desc",    "Run shutdown in the targetted domain" },
+    { NULL, NULL }
+};
+
+static vshCmdOptDef opts_shutdown[] = {
+    { "domain",  VSH_OT_DATA, 0, "domain name or id" },
+    { NULL, 0, 0, NULL }
+};
+
+static int
+cmdShutdown(vshControl *ctl, vshCmd *cmd) {
+    virDomainPtr dom;
+    int ret = TRUE;
+    char *name;
+    
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", &name)))
+        return FALSE;
+    
+    if (virDomainShutdown(dom)==0) {
+        vshPrint(ctl, VSH_MESG, "Domain %s is being shutdown\n", name);
+    } else {
+        vshError(ctl, FALSE, "Failed to shutdown domain\n");
+        ret = FALSE;
+    }
+        
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "destroy" command
  */
 static vshCmdInfo info_destroy[] = {
@@ -743,6 +781,7 @@ static vshCmdDef commands[] = {
     { "dstate",     cmdDstate,     opts_dstate,    info_dstate },
     { "suspend",    cmdSuspend,    opts_suspend,   info_suspend },
     { "resume",     cmdResume,     opts_resume,    info_resume },
+    { "shutdown",   cmdShutdown,   opts_shutdown,  info_shutdown },
     { "destroy",    cmdDestroy,    opts_destroy,   info_destroy },
     { "help",       cmdHelp,       opts_help,      info_help },
     { "idof",       cmdIdof,       opts_idof,      info_idof },

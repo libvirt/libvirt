@@ -72,6 +72,16 @@ struct _virConnect {
 };
 
 /**
+ * virDomainFlags:
+ *
+ * a set of special flag values associated to the domain
+ */
+
+enum {
+    DOMAIN_IS_SHUTDOWN = (1 << 0)	/* the domain is being shutdown */
+} virDomainFlags;
+
+/**
  * _virDomain:
  *
  * Internal structure associated to a domain
@@ -82,6 +92,7 @@ struct _virDomain {
     char        *name;		/* the domain external name */
     char        *path;		/* the domain internal path */
     int	         handle;	/* internal handle for the dmonain ID */
+    int          flags;		/* extra flags */
 };
 
 /*

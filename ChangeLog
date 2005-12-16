@@ -1,3 +1,10 @@
+Fri Dec 16 13:15:04 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvir.h include/libvir.h.in src/internal.h src/libvir.c:
+	  adding the virDomainShutdown() API
+	* src/virsh.c: adding a shutdown command
+	* docs/*: regenerated
+
 Fri Dec 16 01:43:18 CET 2005 Karel Zak <kzak@redhat.com>
 
 	* include/libvir.h.in: add missing declaration of virDomainGetXMLDesc()
