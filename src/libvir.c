@@ -466,6 +466,83 @@ done:
     return(ret);
 }
 
+
+/**
+ * virDomainGetVM:
+ * @domain: a domain object
+ *
+ * Internal API extracting a xenstore vm path.
+ *
+ * Returns the new string or NULL in case of error
+ */
+char *
+virDomainGetVM(virDomainPtr domain)
+{
+    struct xs_transaction_handle* t;
+    char *vm;
+    char query[200];
+    unsigned int len;
+    
+    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
+	return(NULL);
+    if ((domain->conn == NULL) || (domain->conn->magic != VIR_CONNECT_MAGIC))
+        return(NULL);
+
+    t = xs_transaction_start(domain->conn->xshandle);
+    if (t == NULL)
+        return(NULL);
+
+    snprintf(query, 199, "/local/domain/%d/vm", 
+             virDomainGetID(domain));
+    query[199] = 0;
+
+    vm = xs_read(domain->conn->xshandle, t, &query[0], &len);
+
+    if (t != NULL)
+	xs_transaction_end(domain->conn->xshandle, t, 0);
+
+    return(vm);
+}
+
+/**
+ * virDomainGetVMInfo:
+ * @domain: a domain object
+ * @vm: the xenstore vm path
+ * @name: the value's path
+ *
+ * Internal API extracting one information the device used 
+ * by the domain from xensttore
+ *
+ * Returns the new string or NULL in case of error
+ */
+char *
+virDomainGetVMInfo(virDomainPtr domain, const char *vm, 
+                   const char *name) {
+    struct xs_transaction_handle* t;
+    char s[256];
+    char *ret = NULL;
+    unsigned int len = 0;
+    
+    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
+	return(NULL);
+    if ((domain->conn == NULL) || (domain->conn->magic != VIR_CONNECT_MAGIC))
+        return(NULL);
+
+    snprintf(s, 255, "%s/%s", vm, name);
+    s[255] = 0;
+
+    t = xs_transaction_start(domain->conn->xshandle);
+    if (t == NULL)
+        goto done;
+
+    ret = xs_read(domain->conn->xshandle, t, &s[0], &len);
+
+done:
+    if (t != NULL)
+	xs_transaction_end(domain->conn->xshandle, t, 0);
+    return(ret);
+}
+
 /**
  * virDomainLookupByID:
  * @conn: pointer to the hypervisor connection
@@ -693,6 +770,29 @@ virDomainGetID(virDomainPtr domain) {
     if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
         return((unsigned int) -1);
     return(domain->handle);
+}
+
+/**
+ * virDomainGetOSType:
+ * @domain: a domain object
+ *
+ * Get the type of domain operation system.
+ *
+ * Returns the new string or NULL in case of error
+ */
+char *
+virDomainGetOSType(virDomainPtr domain) {
+    char *vm, *str = NULL;
+    
+    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
+        return(NULL);
+
+    vm = virDomainGetVM(domain);
+    if (vm) {
+    	str = virDomainGetVMInfo(domain, vm, "image/ostype");
+	free(vm);
+    }
+    return(str);
 }
 
 /**

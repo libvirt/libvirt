@@ -168,39 +168,6 @@ done:
 }
 
 /**
- * virDomainGetVMInfo:
- * @domain: a domain object
- * @vm: the xenstore vm path
- * @name: the value's path
- *
- * Extract one information the device used by the domain from xensttore
- *
- * Returns the new string or NULL in case of error
- */
-static char *
-virDomainGetVMInfo(virDomainPtr domain, const char *vm, 
-                   const char *name) {
-    struct xs_transaction_handle* t;
-    char s[256];
-    char *ret = NULL;
-    unsigned int len = 0;
-
-    snprintf(s, 255, "%s/%s", vm, name);
-    s[255] = 0;
-
-    t = xs_transaction_start(domain->conn->xshandle);
-    if (t == NULL)
-        goto done;
-
-    ret = xs_read(domain->conn->xshandle, t, &s[0], &len);
-
-done:
-    if (t != NULL)
-	xs_transaction_end(domain->conn->xshandle, t, 0);
-    return(ret);
-}
-
-/**
  * virDomainGetXMLDevice:
  * @domain: a domain object
  * @buf: the output buffer object
@@ -419,6 +386,9 @@ done:
     return(ret);
 }
 
+
+
+
 /**
  * virDomainGetXMLBoot:
  * @domain: a domain object
@@ -430,33 +400,14 @@ done:
  */
 static int
 virDomainGetXMLBoot(virDomainPtr domain, virBufferPtr buf) {
-    struct xs_transaction_handle* t;
     char *vm, *str;
-    char query[200];
-    virConnectPtr conn;
-    int len;
 
-    conn = domain->conn;
-
-    if ((conn == NULL) || (conn->magic != VIR_CONNECT_MAGIC))
+    if ((domain == NULL) || (domain->magic != VIR_DOMAIN_MAGIC))
         return(-1);
     
-    t = xs_transaction_start(conn->xshandle);
-    if (t == NULL)
-        return(-1);
-
-    snprintf(query, 199, "/local/domain/%d/vm", 
-             virDomainGetID(domain));
-    query[199] = 0;
-
-    vm = xs_read(domain->conn->xshandle, t, &query[0], &len);
-
-    if (t != NULL)
-	xs_transaction_end(domain->conn->xshandle, t, 0);
-
+    vm = virDomainGetVM(domain);
     if (vm == NULL)
         return(-1);
-
 
     virBufferAdd(buf, "  <os>\n", 7);
     str = virDomainGetVMInfo(domain, vm, "image/ostype");

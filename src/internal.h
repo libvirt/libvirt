@@ -84,6 +84,14 @@ struct _virDomain {
     int	         handle;	/* internal handle for the dmonain ID */
 };
 
+/*
+ * Internal routines
+ */
+char *		virDomainGetVM		(virDomainPtr domain);
+char *		virDomainGetVMInfo	(virDomainPtr domain,
+					 const char *vm,
+		          	         const char *name);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

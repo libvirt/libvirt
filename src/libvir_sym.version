@@ -14,12 +14,13 @@
 	virDomainGetInfo;
 	virDomainGetMaxMemory;
 	virDomainGetName;
+	virDomainGetOSType;
+	virDomainGetXMLDesc;
 	virDomainLookupByID;
 	virDomainLookupByName;
 	virDomainResume;
 	virDomainSetMaxMemory;
 	virDomainSuspend;
-	virDomainGetXMLDesc;
 	virGetVersion;
     local: *;
 };

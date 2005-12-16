@@ -1,8 +1,14 @@
+Fri Dec 16 01:43:18 CET 2005 Karel Zak <kzak@redhat.com>
+
+	* include/libvir.h.in: add missing declaration of virDomainGetXMLDesc()
+	* include/libvir.h.in src/libvir.c src/virsh src/libvir_sym.version: add 
+	  virDomainGetOSType()
+	* src/internal.h src/libvir.c src/xml.c: add internal function virDomainGetVM(), 
+	  move virDomainGetVMInfo() from src/xml.c
+
 Thu Dec 15 17:56:27 CET 2005 Karel Zak <kzak@redhat.com>
 
 	* src/virsh.c: remove --id / --name options
-	* include/libvir.h: add missing declaration of virDomainGetXMLDesc()
-
 
 Wed Dec 14 16:28:24 CET 2005 Daniel Veillard <veillard@redhat.com>
 

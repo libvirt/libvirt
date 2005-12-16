@@ -482,6 +482,7 @@ cmdDinfo(vshControl *ctl, vshCmd *cmd) {
     virDomainInfo info;
     virDomainPtr dom;
     int ret = TRUE;
+    char *str;
    
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -489,13 +490,20 @@ cmdDinfo(vshControl *ctl, vshCmd *cmd) {
     if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
         return FALSE;
     
+     vshPrint(ctl, VSH_MESG, "%-15s %d\n", "Id:", 
+            virDomainGetID(dom));
+     vshPrint(ctl, VSH_MESG, "%-15s %s\n", "Name:", 
+            virDomainGetName(dom));
+     
+     if ((str=virDomainGetOSType(dom))) {
+         vshPrint(ctl, VSH_MESG, "%-15s %s\n", "OS Type:", str);
+         free(str);
+     }
+
     if (virDomainGetInfo(dom, &info)==0) {
-        vshPrint(ctl, VSH_MESG, "%-15s %d\n", "Id:", 
-                virDomainGetID(dom));
-        vshPrint(ctl, VSH_MESG, "%-15s %s\n", "Name:", 
-                virDomainGetName(dom));
         vshPrint(ctl, VSH_MESG, "%-15s %s\n", "State:",    
                 vshDomainStateToString(info.state));
+        
         vshPrint(ctl, VSH_MESG, "%-15s %d\n", "CPU(s):",
                 info.nrVirtCpu);
         
