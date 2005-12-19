@@ -1,3 +1,7 @@
+Mon Dec 19 19:04:11 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* NEWS docs/libvir.html docs/news.html: preparing 0.0.1 release
+
 Mon Dec 19 17:32:22 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* Makefile.am configure.in libvir.spec.in python/*: added a first
