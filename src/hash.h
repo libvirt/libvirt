@@ -3,7 +3,7 @@
  * Description: This module implements the hash table support used in 
  * 		various places in the library.
  *
- * Copy: See Copyright for the status of this software.
+ * Copy: Copyright (C) 2005 Red Hat, Inc.
  *
  * Author: Bjorn Reese <bjorn.reese@systematic.dk>
  */

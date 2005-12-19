@@ -1,6 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = src include docs
+SUBDIRS = src include docs @PYTHON_SUBDIR@
+
 EXTRA_DIST = libvir.spec.in libvir.spec COPYING.LIB \
              libvir.pc.in libvir.pc TODO AUTHORS ChangeLog \
 	     NEWS README 

@@ -1,3 +1,11 @@
+Mon Dec 19 17:32:22 CET 2005 Daniel Veillard <veillard@redhat.com>
+
+	* Makefile.am configure.in libvir.spec.in python/*: added a first
+	  version for python bindings, heavilly based on libxml2/libxslt
+	  way of doing things, maybe this need to be revisited. Added packaging
+	  too.
+	* src/hash.h: fixed the Copyright notice.
+
 Fri Dec 16 19:35:29 CET 2005 Karel Zak <kzak@redhat.com>
 
 	* src/xml.c src/internal.h src/libvir.c: struct checks cleanup, 

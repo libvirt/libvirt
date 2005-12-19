@@ -7,7 +7,7 @@ Group: Development/Libraries
 Source: libvir-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 URL: http://libvir.org/
-BuildRequires: xen
+BuildRequires: xen python python-devel
 Requires: xen
 
 %description
@@ -23,6 +23,17 @@ Requires: libvir = %{version}
 Includes and documantations for the C library providing an API to use
 the Xen virtualization framework
 
+%package python
+Summary: Python bindings for the libvir library
+Group: Development/Libraries
+Requires: libvir = %{version}
+Requires: %{_libdir}/python%(echo `python -c "import sys; print sys.version[0:3]"`)
+
+%description python
+The libvir-python package contains a module that permits applications
+written in the Python programming language to use the interface
+supplied by the libvir library to use the Xen virtualization framework.
+
 %prep
 %setup -q
 
@@ -36,6 +47,8 @@ rm -fr %{buildroot}
 %makeinstall
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
+rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.la
+rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.a
 
 %clean
 rm -fr %{buildroot}
@@ -62,6 +75,15 @@ rm -fr %{buildroot}
 
 %doc docs/*.html docs/html docs/*.gif
 %doc docs/libvir-api.xml
+
+%files python
+%defattr(-, root, root)
+
+%doc AUTHORS NEWS README COPYING.LIB
+%{_libdir}/python*/site-packages/libvir.py*
+%{_libdir}/python*/site-packages/libvirmod*
+%doc python/TODO
+%doc python/libvirclass.txt
 
 %changelog
 * Wed Nov  2 2005 Daniel Veillard <veillard@redhat.com> 0.0.1-1
