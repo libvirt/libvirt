@@ -9,6 +9,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-root
 URL: http://libvir.org/
 BuildRequires: xen python python-devel
 Requires: xen
+ExclusiveArch: i386 x86_64
 
 %description
 This C library provides an API to use the Xen virtualization framework,
