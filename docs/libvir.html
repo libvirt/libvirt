@@ -46,7 +46,28 @@ progresses.</p>
 
 <h2><a name="architecture">libvir architecture</a></h2>
 
-<p></p>
+<p>In a Xen environment, program using libvir have to execute in "Domain 0",
+which is the primary Linux OS loaded on the machine. That OS kernel provides
+most if not all of the actual drivers used by the set of domains. It also
+runs the Xen Store, a database of informations shared by the hypervisor, the
+kernels, the drivers and the xen daemon. Xend, the xen daemon, also runs in
+Domain0 and supervise the control and execution of the sets of domains. The
+hypervisor, drivers, kernels and daemons communicate though a shared system
+bus implemented in the hypervisor. The figure below tries to provide a view
+of this environment: </p>
+<img src="architecture.gif" alt="The Xen architecture">
+
+<p>The library can be initialized in 2 ways depending on the level of
+priviledge of the embedding program. If it runs with root access,
+virConnectOpen() can be used, it will use a read/write connection to the Xen
+Store and use Xen Hypervisor calls when possible. If it runs without root
+access virConnectOpenReadOnly() should be used, it will try to open the
+read-only socket <code>/var/run/xenstored/socket_ro</code> to connect to the
+Xen Store. In this case use of hypervisor calls and write to the Xen Store
+will not be possible, restraining the amount of APIs available and slowing
+down information gathering about domains. We expect libvir will also conmnect
+to the Xend daemon for some of the domain control operations, though this is
+not the case in the 0.0.1 initial version.</p>
 
 <h2><a name="Downloads">Downloads</a></h2>
 

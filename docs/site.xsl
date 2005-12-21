@@ -67,7 +67,7 @@
         <xsl:text></xsl:text>
       </xsl:when>
       <xsl:when test="$name = '#architecture'">
-        <xsl:text></xsl:text>
+        <xsl:text>architecture.html</xsl:text>
       </xsl:when>
       <xsl:when test="$name = '#Namespaces'">
         <xsl:text>namespaces.html</xsl:text>
