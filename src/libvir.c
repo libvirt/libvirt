@@ -642,7 +642,7 @@ virDomainLookupByName(virConnectPtr conn, const char *name) {
     struct xs_transaction_handle* t;
     virDomainPtr ret = NULL;
     unsigned int num, i, len;
-    long id;
+    long id = -1;
     char **idlist = NULL, *endptr;
     char prop[200], *tmp;
     int found = 0;

@@ -1,3 +1,10 @@
+Wed Jan 11 14:57:01 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* docs/libvir.html: grammatical fix
+	* src/Makefile.am src/sexpr.c src/sexpr.h: starting to integrate
+	  Anthony Liquori libxend code
+	* src/libvir.c: fix an uninitialized value
+
 Wed Dec 21 17:58:45 CET 2005 Daniel Veillard <veillard@redhat.com>
 
 	* docs/architecture.* docs/*: added a section on the architecture

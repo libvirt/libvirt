@@ -15,7 +15,8 @@ libvir_la_SOURCES =						\
 		libvir.c internal.h				\
 		hash.c hash.h					\
 		xen_internal.c xen_internal.h			\
-		xml.c
+		xml.c						\
+		sexpr.c sexpr.h
 
 bin_PROGRAMS=virsh
 
