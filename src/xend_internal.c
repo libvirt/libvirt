@@ -1,0 +1,1965 @@
+/*
+ * xend_internal.c: access to Xen though the Xen Daemon interface
+ *
+ * Copyright (C) 2005
+ *
+ *      Anthony Liguori <aliguori@us.ibm.com>
+ *
+ *  This file is subject to the terms and conditions of the GNU Lesser General
+ *  Public License. See the file COPYING.LIB in the main directory of this
+ *  archive for more details.
+ */
+
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <sys/errno.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
+#include <stdarg.h>
+#include <malloc.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+
+#include "sexpr.h"
+#include "xend_internal.h"
+
+/**
+ * xend_connection_type:
+ *
+ * The connection to the Xen Daemon can be done either though a normal TCP
+ * socket or a local domain direct connection.
+ */
+enum xend_connection_type {
+    XEND_DOMAIN,
+    XEND_TCP,
+};
+
+/**
+ * xend:
+ *
+ * Structure associated to a connection to a Xen daemon
+ */
+struct xend {
+    int len;
+    int type;
+    struct sockaddr *addr;
+    struct sockaddr_un addr_un;
+    struct sockaddr_in addr_in;
+};
+
+#define foreach(iterator, start) \
+       	for (_for_i = (start), *iterator = (start)->car; \
+             _for_i->kind == SEXPR_CONS; \
+             _for_i = _for_i->cdr, iterator = _for_i->car)
+
+#define foreach_node(iterator, start, path) \
+        foreach(iterator, start) \
+            if (sexpr_lookup(iterator, path))
+
+/**
+ * do_connect:
+ * @xend: pointer to the Xen Daemon structure
+ *
+ * Internal routine to (re)connect to the daemon
+ *
+ * Returns the socket file descriptor or -1 in case of error
+ */
+static int
+do_connect(struct xend *xend)
+{
+    int s;
+    int serrno;
+
+    s = socket(xend->type, SOCK_STREAM, 0);
+    if (s == -1)
+        return -1;
+
+    if (connect(s, xend->addr, xend->len) == -1) {
+        serrno = errno;
+        close(s);
+        errno = serrno;
+        s = -1;
+    }
+
+    return s;
+}
+
+/**
+ * wr_sync:
+ * @fd:  the file descriptor
+ * @buffer: the I/O buffer
+ * @size: the size of the I/O
+ * @do_read: write operation if 0, read operation otherwise
+ *
+ * Do a synchronous read or write on the file descriptor
+ *
+ * Returns the number of bytes exchanged, or -1 in case of error
+ */
+static size_t
+wr_sync(int fd, void *buffer, size_t size, int do_read)
+{
+    size_t offset = 0;
+
+    while (offset < size) {
+        ssize_t len;
+
+        if (do_read) {
+            len = read(fd, ((char *)buffer) + offset, size - offset);
+        } else {
+            len = write(fd, ((char *)buffer) + offset, size - offset);
+        }
+
+        /* recoverable error, retry  */
+        if ((len == -1) && ((errno == EAGAIN) || (errno == EINTR))) {
+            continue;
+        }
+
+        /* eof */
+        if (len == 0) {
+            break;
+        }
+
+        /* unrecoverable error */
+        if (len == -1) {
+            return(-1);
+        }
+
+        offset += len;
+    }
+
+    return offset;
+}
+
+/**
+ * sread:
+ * @fd:  the file descriptor
+ * @buffer: the I/O buffer
+ * @size: the size of the I/O
+ *
+ * Internal routine to do a synchronous read
+ *
+ * Returns the number of bytes read, or -1 in case of error
+ */
+static ssize_t
+sread(int fd, void *buffer, size_t size)
+{
+    return wr_sync(fd, buffer, size, 1);
+}
+
+/**
+ * swrite:
+ * @fd:  the file descriptor
+ * @buffer: the I/O buffer
+ * @size: the size of the I/O
+ *
+ * Internal routine to do a synchronous write
+ *
+ * Returns the number of bytes written, or -1 in case of error
+ */
+static ssize_t
+swrite(int fd, const void *buffer, size_t size)
+{
+    return wr_sync(fd, (void *) buffer, size, 0);
+}
+
+/**
+ * swrites:
+ * @fd:  the file descriptor
+ * @string: the string to write
+ *
+ * Internal routine to do a synchronous write of a string
+ *
+ * Returns the number of bytes written, or -1 in case of error
+ */
+static ssize_t
+swrites(int fd, const char *string)
+{
+    return swrite(fd, string, strlen(string));
+}
+
+/**
+ * sreads:
+ * @fd:  the file descriptor
+ * @buffer: the I/O buffer
+ * @n_buffer: the size of the I/O buffer
+ *
+ * Internal routine to do a synchronous read of a line
+ *
+ * Returns the number of bytes read, or -1 in case of error
+ */
+static ssize_t
+sreads(int fd, char *buffer, size_t n_buffer)
+{
+    size_t offset;
+
+    if (n_buffer < 1)
+        return(-1);
+
+    for (offset = 0; offset < (n_buffer - 1); offset++) {
+        ssize_t ret;
+
+        ret = sread(fd, buffer + offset, 1);
+        if (ret == 0)
+            break;
+        else if (ret == -1)
+            return ret;
+
+        if (buffer[offset] == '\n') {
+            offset++;
+            break;
+        }
+    }
+    buffer[offset] = 0;
+
+    return offset;
+}
+
+static int
+istartswith(const char *haystack, const char *needle)
+{
+    return (strncasecmp(haystack, needle, strlen(needle)) == 0);
+}
+
+/**
+ * xend_req:
+ * @fd: the file descriptor
+ * @content: the buffer to store the content
+ * @n_content: the size of the buffer
+ *
+ * Read the HTTP response from a Xen Daemon request.
+ *
+ * Returns the HTTP return code.
+ */
+static int
+xend_req(int fd, char *content, size_t n_content)
+{
+    char buffer[4096];
+    int content_length = -1;
+    int retcode = 0;
+
+
+    while (sreads(fd, buffer, sizeof(buffer)) > 0) {
+        if (strcmp(buffer, "\r\n") == 0)
+            break;
+
+        if (istartswith(buffer, "Content-Length: "))
+            content_length = atoi(buffer + 16);
+        else if (istartswith(buffer, "HTTP/1.1 "))
+            retcode = atoi(buffer + 9);
+    }
+
+    if (content_length > -1) {
+        ssize_t ret;
+
+        if ((unsigned int) content_length > (n_content + 1))
+            content_length = n_content - 1;
+
+        ret = sread(fd, content, content_length);
+        if (ret < 0)
+            return -1;
+
+        content[ret] = 0;
+    } else {
+        content[0] = 0;
+    }
+
+    return retcode;
+}
+
+/**
+ * xend_get:
+ * @xend: pointer to the Xen Daemon structure
+ * @path: the path used for the HTTP request
+ * @content: the buffer to store the content
+ * @n_content: the size of the buffer
+ *
+ * Do an HTTP GET RPC with the Xen Daemon
+ *
+ * Returns the HTTP return code or -1 in case or error.
+ */
+static int
+xend_get(struct xend *xend, const char *path,
+         char *content, size_t n_content)
+{
+    int ret;
+    int s = do_connect(xend);
+
+    if (s == -1)
+        return s;
+
+    swrites(s, "GET ");
+    swrites(s, path);
+    swrites(s, " HTTP/1.1\r\n");
+
+    swrites(s,
+            "Host: localhost:8000\r\n"
+            "Accept-Encoding: identity\r\n"
+            "Content-Type: application/x-www-form-urlencoded\r\n" "\r\n");
+
+    ret = xend_req(s, content, n_content);
+    close(s);
+
+    return ret;
+}
+
+/**
+ * xend_post:
+ * @xend: pointer to the Xen Daemon structure
+ * @path: the path used for the HTTP request
+ * @ops: the informations sent for the POST
+ * @content: the buffer to store the content
+ * @n_content: the size of the buffer
+ *
+ * Do an HTTP POST RPC with the Xen Daemon, this usually makes changes at the
+ * Xen level.
+ *
+ * Returns the HTTP return code or -1 in case or error.
+ */
+static int
+xend_post(struct xend *xend, const char *path, const char *ops,
+          char *content, size_t n_content)
+{
+    char buffer[100];
+    int ret;
+    int s = do_connect(xend);
+
+    if (s == -1)
+        return s;
+
+    swrites(s, "POST ");
+    swrites(s, path);
+    swrites(s, " HTTP/1.1\r\n");
+
+    swrites(s,
+            "Host: localhost:8000\r\n"
+            "Accept-Encoding: identity\r\n"
+            "Content-Type: application/x-www-form-urlencoded\r\n"
+            "Content-Length: ");
+    snprintf(buffer, sizeof(buffer), "%d", strlen(ops));
+    swrites(s, buffer);
+    swrites(s, "\r\n\r\n");
+    swrites(s, ops);
+
+    ret = xend_req(s, content, n_content);
+    close(s);
+
+    return ret;
+}
+
+/**
+ * http2unix:
+ * @ret: the http return code
+ *
+ * Convert the HTTP return code to 0/-1 and set errno if needed
+ *
+ * Return -1 in case of error code 0 otherwise
+ */
+static int
+http2unix(int ret)
+{
+    switch (ret) {
+        case -1:
+            break;
+        case 200:
+        case 201:
+        case 202:
+            return 0;
+        case 404:
+            errno = ESRCH;
+            break;
+        default:
+            printf("unknown error code %d\n", ret);
+            errno = EINVAL;
+            break;
+    }
+    return -1;
+}
+
+/**
+ * xend_op_ext2:
+ * @xend: pointer to the Xen Daemon structure
+ * @path: path for the object
+ * @error: buffer for the error output
+ * @n_error: size of @error
+ * @key: the key for the operation
+ * @ap: input values to pass to the operation
+ *
+ * internal routine to run a POST RPC operation to the Xen Daemon
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+static int
+xend_op_ext2(struct xend *xend, const char *path, char *error,
+             size_t n_error, const char *key, va_list ap)
+{
+    char ops[1024];
+    const char *k = key, *v;
+    int offset = 0;
+
+    while (k) {
+        v = va_arg(ap, const char *);
+
+        offset += snprintf(ops + offset, sizeof(ops) - offset, "%s", k);
+        offset += snprintf(ops + offset, sizeof(ops) - offset, "%s", "=");
+        offset += snprintf(ops + offset, sizeof(ops) - offset, "%s", v);
+        k = va_arg(ap, const char *);
+
+        if (k)
+            offset += snprintf(ops + offset,
+                               sizeof(ops) - offset, "%s", "&");
+    }
+
+    return http2unix(xend_post(xend, path, ops, error, n_error));
+}
+
+/**
+ * xend_node_op:
+ * @xend: pointer to the Xen Daemon structure
+ * @path: path for the object
+ * @key: the key for the operation
+ * @...: input values to pass to the operation
+ *
+ * internal routine to run a POST RPC operation to the Xen Daemon
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+static int
+xend_node_op(struct xend *xend, const char *path, const char *key, ...)
+{
+    va_list ap;
+    int ret;
+    char error[1024];
+
+    va_start(ap, key);
+    ret = xend_op_ext2(xend, path, error, sizeof(error), key, ap);
+    va_end(ap);
+
+    return ret;
+}
+
+/**
+ * xend_node_op:
+ * @xend: pointer to the Xen Daemon structure
+ * @name: the domain name target of this operation
+ * @error: buffer for the error output
+ * @n_error: size of @error
+ * @key: the key for the operation
+ * @ap: input values to pass to the operation
+ * @...: input values to pass to the operation
+ *
+ * internal routine to run a POST RPC operation to the Xen Daemon targetting
+ * a given domain.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+static int
+xend_op_ext(struct xend *xend, const char *name, char *error,
+            size_t n_error, const char *key, ...)
+{
+    char buffer[1024];
+    va_list ap;
+    int ret;
+
+    snprintf(buffer, sizeof(buffer), "/xend/domain/%s", name);
+
+    va_start(ap, key);
+    ret = xend_op_ext2(xend, buffer, error, n_error, key, ap);
+    va_end(ap);
+
+    return ret;
+}
+
+#define xend_op(xend, name, key, ...) ({char error[1024]; xend_op_ext(xend, name, error, sizeof(error), key, __VA_ARGS__);})
+
+/**
+ * sexpr_get:
+ * @xend: pointer to the Xen Daemon structure
+ * @fmt: format string for the path of the operation
+ * @...: extra data to build the path of the operation
+ *
+ * Internal routine to run a simple GET RPC operation to the Xen Daemon
+ *
+ * Returns a parsed S-Expression in case of success, NULL in case of failure
+ */
+static struct sexpr *
+sexpr_get(struct xend *xend, const char *fmt, ...)
+{
+    char buffer[4096];
+    char path[1024];
+    va_list ap;
+    int ret;
+
+    va_start(ap, fmt);
+    vsnprintf(path, sizeof(path), fmt, ap);
+    va_end(ap);
+
+    ret = xend_get(xend, path, buffer, sizeof(buffer));
+    ret = http2unix(ret);
+    if (ret == -1)
+        return NULL;
+
+    return string2sexpr(buffer);
+}
+
+/**
+ * sexpr_append_str:
+ * @sexpr: an S-Expression
+ * @name: the name of the property
+ * @value: the string value
+ *
+ * convenience function appending a (name value) property to the S-Expression
+ *
+ * Returns the augmented S-Expression
+ */
+static struct sexpr *
+sexpr_append_str(struct sexpr *sexpr, const char *name, const char *value)
+{
+    struct sexpr *lst;
+
+    if (!value)
+        return sexpr;
+
+    lst = sexpr_append(sexpr_nil(), sexpr_string(name, -1));
+    lst = sexpr_append(lst, sexpr_string(value, -1));
+    return sexpr_append(sexpr, lst);
+}
+
+/**
+ * sexpr_append_u64:
+ * @sexpr: an S-Expression
+ * @name: the name of the property
+ * @value: a 64 bits unsigned int value
+ *
+ * convenience function appending a (name value) property to the S-Expression
+ *
+ * Returns the augmented S-Expression
+ */
+static struct sexpr *
+sexpr_append_u64(struct sexpr *sexpr, const char *name, uint64_t value)
+{
+    char buffer[1024];
+
+    snprintf(buffer, sizeof(buffer), "%llu", value);
+    return sexpr_append_str(sexpr, name, buffer);
+}
+
+/**
+ * sexpr_append_int:
+ * @sexpr: an S-Expression
+ * @name: the name of the property
+ * @value: an int value
+ *
+ * convenience function appending a (name value) property to the S-Expression
+ *
+ * Returns the augmented S-Expression
+ */
+static struct sexpr *
+sexpr_append_int(struct sexpr *sexpr, const char *name, int value)
+{
+    char buffer[1024];
+
+    snprintf(buffer, sizeof(buffer), "%d", value);
+    return sexpr_append_str(sexpr, name, buffer);
+}
+
+/**
+ * sexpr_append_uuid:
+ * @sexpr: an S-Expression
+ * @name: the name of the property
+ * @uuid: an unique identifier for a domain
+ *
+ * convenience function appending a (name uuid) property to the S-Expression
+ *
+ * Returns the augmented S-Expression
+ */
+static struct sexpr *
+sexpr_append_uuid(struct sexpr *sexpr,
+                  const char *name, unsigned char *uuid)
+{
+    char buffer[1024];
+
+    if (uuid == NULL)
+        return sexpr;
+
+    snprintf(buffer, sizeof(buffer),
+             "%02x%02x%02x%02x-"
+             "%02x%02x%02x%02x-"
+             "%02x%02x%02x%02x-"
+             "%02x%02x%02x%02x",
+             uuid[0], uuid[1], uuid[2], uuid[3],
+             uuid[4], uuid[5], uuid[6], uuid[7],
+             uuid[8], uuid[9], uuid[10], uuid[11],
+             uuid[12], uuid[13], uuid[14], uuid[15]);
+
+    return sexpr_append_str(sexpr, name, buffer);
+}
+
+/**
+ * sexpr_int:
+ * @sexpr: an S-Expression
+ * @name: the name for the value
+ *
+ * convenience function to lookup an int value in the S-Expression
+ *
+ * Returns the value found or 0 if not found (but may not be an error)
+ */
+static int
+sexpr_int(struct sexpr *sexpr, const char *name)
+{
+    const char *value = sexpr_node(sexpr, name);
+
+    if (value) {
+        return strtol(value, NULL, 0);
+    }
+    return 0;
+}
+
+/**
+ * sexpr_float:
+ * @sexpr: an S-Expression
+ * @name: the name for the value
+ *
+ * convenience function to lookup a float value in the S-Expression
+ *
+ * Returns the value found or 0 if not found (but may not be an error)
+ */
+static double
+sexpr_float(struct sexpr *sexpr, const char *name)
+{
+    const char *value = sexpr_node(sexpr, name);
+
+    if (value) {
+        return strtod(value, NULL);
+    }
+    return 0;
+}
+
+/**
+ * sexpr_u64:
+ * @sexpr: an S-Expression
+ * @name: the name for the value
+ *
+ * convenience function to lookup a 64bits unsigned int value in the
+ * S-Expression
+ *
+ * Returns the value found or 0 if not found (but may not be an error)
+ */
+static uint64_t
+sexpr_u64(struct sexpr *sexpr, const char *name)
+{
+    const char *value = sexpr_node(sexpr, name);
+
+    if (value) {
+        return strtoll(value, NULL, 0);
+    }
+    return 0;
+}
+
+/**
+ * sexpr_u64:
+ * @sexpr: an S-Expression
+ * @name: the name for the value
+ *
+ * convenience function to lookup a value describing the default process when
+ * a domain stops
+ *
+ * Returns the value found or 0 if not found (but may not be an error)
+ */
+static enum xend_domain_restart
+sexpr_poweroff(struct sexpr *sexpr, const char *name)
+{
+    const char *value = sexpr_node(sexpr, name);
+
+    if (value) {
+        if (strcmp(value, "poweroff") == 0) {
+            return XEND_DESTROY;
+        } else if (strcmp(value, "restart") == 0) {
+            return XEND_RESTART;
+        } else if (strcmp(value, "preserve") == 0) {
+            return XEND_PRESERVE;
+        } else if (strcmp(value, "rename-restart") == 0) {
+            return XEND_RENAME_RESTART;
+        }
+    }
+    return XEND_DEFAULT;
+}
+
+static int
+sexpr_strlen(struct sexpr *sexpr, const char *path)
+{
+    const char *r = sexpr_node(sexpr, path);
+
+    return r ? (strlen(r) + 1) : 0;
+}
+
+static const char *
+sexpr_strcpy(char **ptr, struct sexpr *node, const char *path)
+{
+    const char *ret = sexpr_node(node, path);
+
+    if (ret) {
+        strcpy(*ptr, ret);
+        ret = *ptr;
+        *ptr += (strlen(ret) + 1);
+    }
+    return ret;
+}
+
+/**
+ * sexpr_mode:
+ * @sexpr: an S-Expression
+ * @name: the name for the value
+ *
+ * convenience function to lookup a value describing a virtual block device
+ * mode from the S-Expression
+ *
+ * Returns the value found or 0 if not found (but may not be an error)
+ */
+static enum xend_device_vbd_mode
+sexpr_mode(struct sexpr *node, const char *path)
+{
+    const char *mode = sexpr_node(node, path);
+    enum xend_device_vbd_mode ret;
+
+    if (!mode) {
+        ret = XEND_DEFAULT;
+    } else if (strcmp(mode, "r") == 0) {
+        ret = XEND_READ_ONLY;
+    } else if (strcmp(mode, "w") == 0) {
+        ret = XEND_READ_WRITE;
+    } else if (strcmp(mode, "w!") == 0) {
+        ret = XEND_READ_WRITE_FORCE;
+    } else {
+        ret = XEND_DEFAULT;
+    }
+
+    return ret;
+}
+
+/**
+ * sexpr_node_system:
+ * @sexpr: an S-Expression
+ * @name: the name for the value
+ *
+ * convenience function to lookup a value describing the kind of system
+ * from the S-Expression
+ *
+ * Returns the value found or 0 if not found (but may not be an error)
+ */
+static enum xend_node_system
+sexpr_node_system(struct sexpr *node, const char *path)
+{
+    const char *syst = sexpr_node(node, path);
+
+    if (syst) {
+        if (strcmp(syst, "Linux") == 0) {
+            return XEND_SYSTEM_LINUX;
+        }
+    }
+
+    return XEND_DEFAULT;
+}
+
+/**
+ * sexpr_node_system:
+ * @mac: return value for the MAC address
+ * @sexpr: an S-Expression
+ * @name: the name for the value
+ *
+ * convenience function to lookup a MAC address (assumed ethernet and hence
+ * six bytes in length) from the S-Expression
+ * The value is returned in @mac
+ */
+static void
+sexpr_mac(uint8_t * mac, struct sexpr *node, const char *path)
+{
+    const char *r = sexpr_node(node, path);
+    int mmac[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+    if (r) {
+        int i;
+
+        sscanf(r, "%02x:%02x:%02x:%02x:%02x:%02x",
+               mmac + 0, mmac + 1, mmac + 2, mmac + 3, mmac + 4, mmac + 5);
+        for (i = 0; i < 6; i++)
+            mac[i] = mmac[i] & 0xFF;
+    }
+}
+
+/**
+ * sexpr_uuid:
+ * @ptr: where to store the UUID, incremented
+ * @sexpr: an S-Expression
+ * @name: the name for the value
+ *
+ * convenience function to lookup an UUID value from the S-Expression
+ *
+ * Returns a pointer to the stored UUID or NULL in case of error.
+ */
+static unsigned char *
+sexpr_uuid(char **ptr, struct sexpr *node, const char *path)
+{
+    const char *r = sexpr_node(node, path);
+    int uuid[16];
+    unsigned char *dst_uuid = NULL;
+    int ret;
+    int i;
+
+    memset(uuid, 0xFF, sizeof(uuid));
+
+    if (r == NULL)
+        goto error;
+
+    ret = sscanf(r,
+                 "%02x%02x%02x%02x-"
+                 "%02x%02x-"
+                 "%02x%02x-"
+                 "%02x%02x-"
+                 "%02x%02x%02x%02x%02x%02x",
+                 uuid + 0, uuid + 1, uuid + 2, uuid + 3,
+                 uuid + 4, uuid + 5, uuid + 6, uuid + 7,
+                 uuid + 8, uuid + 9, uuid + 10, uuid + 11,
+                 uuid + 12, uuid + 13, uuid + 14, uuid + 15);
+    if (ret == 16)
+        goto done;
+
+    ret = sscanf(r,
+                 "%02x%02x%02x%02x-"
+                 "%02x%02x%02x%02x-"
+                 "%02x%02x%02x%02x-"
+                 "%02x%02x%02x%02x",
+                 uuid + 0, uuid + 1, uuid + 2, uuid + 3,
+                 uuid + 4, uuid + 5, uuid + 6, uuid + 7,
+                 uuid + 8, uuid + 9, uuid + 10, uuid + 11,
+                 uuid + 12, uuid + 13, uuid + 14, uuid + 15);
+    if (ret != 16)
+        goto error;
+
+  done:
+    dst_uuid = (unsigned char *) *ptr;
+    *ptr += 16;
+
+    for (i = 0; i < 16; i++)
+        dst_uuid[i] = uuid[i] & 0xFF;
+
+  error:
+    return dst_uuid;
+}
+
+
+/**
+ * urlencode:
+ * @string: the input URL
+ *
+ * Encode an URL see RFC 2396 and following
+ *
+ * Returns the new string or NULL in case of error.
+ */
+static char *
+urlencode(const char *string)
+{
+    size_t len = strlen(string);
+    char *buffer = malloc(len * 3 + 1);
+    char *ptr = buffer;
+    size_t i;
+
+    if (buffer == NULL)
+        return(NULL);
+    for (i = 0; i < len; i++) {
+        switch (string[i]) {
+            case ' ':
+            case '\n':
+                sprintf(ptr, "%%%02x", string[i]);
+                ptr += 3;
+                break;
+            default:
+                *ptr = string[i];
+                ptr++;
+        }
+    }
+
+    *ptr = 0;
+
+    return buffer;
+}
+
+/**
+ * xend_device_vbd_to_sexpr:
+ * @vbd: a virtual block device pointer
+ *
+ * Encode a virtual block device as an S-Expression understood by the
+ * Xen Daemon
+ *
+ * Returns the result S-Expression pointer
+ */
+static struct sexpr *
+xend_device_vbd_to_sexpr(const struct xend_device_vbd *vbd)
+{
+    struct sexpr *device = sexpr_nil();
+    const char *mode[] = { NULL, "r", "w", "w!" };
+
+    sexpr_append(device, sexpr_string("vbd", -1));
+    sexpr_append_str(device, "dev", vbd->dev);
+    sexpr_append_str(device, "uname", vbd->uname);
+    sexpr_append_int(device, "backend", vbd->backend);
+    sexpr_append_str(device, "mode", mode[vbd->mode]);
+
+    return device;
+}
+
+/**
+ * xend_device_vif_to_sexpr:
+ * @vif: a virtual network interface pointer
+ *
+ * Encode a virtual network interface as an S-Expression understood by the
+ * Xen Daemon
+ *
+ * Returns the result S-Expression pointer
+ */
+static struct sexpr *
+xend_device_vif_to_sexpr(const struct xend_device_vif *vif)
+{
+    struct sexpr *device;
+    char buffer[1024];
+
+    device = sexpr_append(sexpr_nil(), sexpr_string("vif", -1));
+
+    snprintf(buffer, sizeof(buffer),
+             "%02x:%02x:%02x:%02x:%02x:%02x",
+             vif->mac[0], vif->mac[1], vif->mac[2],
+             vif->mac[3], vif->mac[4], vif->mac[5]);
+    device = sexpr_append_str(device, "mac", buffer);
+    device = sexpr_append_int(device, "backend", vif->backend);
+    device = sexpr_append_str(device, "bridge", vif->bridge);
+    device = sexpr_append_str(device, "ip", vif->ip);
+    device = sexpr_append_str(device, "script", vif->script);
+    device = sexpr_append_str(device, "vifname", vif->vifname);
+
+    return device;
+}
+
+/* PUBLIC FUNCTIONS */
+
+/**
+ * xend_new_unix:
+ * @path: the path for the Xen Daemon socket
+ *
+ * Creates a localhost Xen Daemon connection
+ * Note: this doesn't try to check if the connection actually works
+ *
+ * Returns the new pointer or NULL in case of error.
+ */
+struct xend *
+xend_new_unix(const char *path)
+{
+    struct xend *xend = malloc(sizeof(*xend));
+    struct sockaddr_un *addr;
+
+    if (!xend)
+        return NULL;
+
+    addr = &xend->addr_un;
+    addr->sun_family = AF_UNIX;
+    memset(addr->sun_path, 0, sizeof(addr->sun_path));
+    strncpy(addr->sun_path, path, sizeof(addr->sun_path));
+
+    xend->len = sizeof(addr->sun_family) + strlen(addr->sun_path);
+    if ((unsigned int) xend->len > sizeof(addr->sun_path))
+        xend->len = sizeof(addr->sun_path);
+
+    xend->addr = (struct sockaddr *) addr;
+    xend->type = PF_UNIX;
+
+    return xend;
+}
+
+/**
+ * xend_new_unix:
+ * @host: the host name for the Xen Daemon
+ * @port: the port 
+ *
+ * Creates a possibly remote Xen Daemon connection
+ * Note: this doesn't try to check if the connection actually works
+ *
+ * Returns the new pointer or NULL in case of error.
+ */
+struct xend *
+xend_new_tcp(const char *host, int port)
+{
+    struct xend *xend = malloc(sizeof(*xend));
+    struct in_addr ip;
+    struct hostent *pent;
+
+    if (!xend)
+        return NULL;
+
+    pent = gethostbyname(host);
+    if (pent == NULL) {
+        if (inet_aton(host, &ip) == 0) {
+            errno = ESRCH;
+            return NULL;
+        }
+    } else {
+        memcpy(&ip, pent->h_addr_list[0], sizeof(ip));
+    }
+
+    xend->len = sizeof(struct sockaddr_in);
+    xend->addr = (struct sockaddr *) &xend->addr_in;
+    xend->type = PF_INET;
+
+    xend->addr_in.sin_family = AF_INET;
+    xend->addr_in.sin_port = htons(port);
+    memcpy(&xend->addr_in.sin_addr, &ip, sizeof(ip));
+
+    return xend;
+}
+
+/**
+ * xend_new:
+ *
+ * Creates a localhost Xen Daemon connection
+ * Note: this doesn't try to check if the connection actually works
+ *
+ * Returns the new pointer or NULL in case of error.
+ */
+struct xend *
+xend_new(void)
+{
+    return xend_new_unix("/var/lib/xend/xend-socket");
+}
+
+/**
+ * xend_delete:
+ *
+ * Free a Xen Daemon connection
+ */
+void
+xend_delete(struct xend *xend)
+{
+    free(xend);
+}
+
+/**
+ * xend_wait_for_devices:
+ * @xend: pointer to the Xem Daemon block
+ * @name: name for the domain
+ *
+ * Block the domain until all the virtual devices are ready. This operation
+ * is needed when creating a domain before resuming it.
+ *
+ * Returns 0 in case of success, -1 (with errno) in case of error.
+ */
+int
+xend_wait_for_devices(struct xend *xend, const char *name)
+{
+    return xend_op(xend, name, "op", "wait_for_devices", NULL);
+}
+
+/**
+ * xend_pause:
+ * @xend: pointer to the Xem Daemon block
+ * @name: name for the domain
+ *
+ * Pause the domain, the domain is not scheduled anymore though its resources
+ * are preserved. Use xend_unpause() to resume execution.
+ *
+ * Returns 0 in case of success, -1 (with errno) in case of error.
+ */
+int
+xend_pause(struct xend *xend, const char *name)
+{
+    return xend_op(xend, name, "op", "pause", NULL);
+}
+
+/**
+ * xend_unpause:
+ * @xend: pointer to the Xem Daemon block
+ * @name: name for the domain
+ *
+ * Resume the domain after xend_pause() has been called
+ *
+ * Returns 0 in case of success, -1 (with errno) in case of error.
+ */
+int
+xend_unpause(struct xend *xend, const char *name)
+{
+    return xend_op(xend, name, "op", "unpause", NULL);
+}
+
+/**
+ * xend_rename:
+ * @xend: pointer to the Xem Daemon block
+ * @old: old name for the domain
+ * @new: new name for the domain
+ *
+ * Rename the domain
+ *
+ * Returns 0 in case of success, -1 (with errno) in case of error.
+ */
+int
+xend_rename(struct xend *xend, const char *old, const char *new)
+{
+    if ((xend == NULL) || (old == NULL) || (new == NULL))
+        return(-1);
+    return xend_op(xend, old, "op", "rename", "name", new, NULL);
+}
+
+/**
+ * xend_reboot:
+ * @xend: pointer to the Xem Daemon block
+ * @name: name for the domain
+ *
+ * Reboot the domain, the OS is properly shutdown and restarted
+ *
+ * Returns 0 in case of success, -1 (with errno) in case of error.
+ */
+int
+xend_reboot(struct xend *xend, const char *name)
+{
+    if ((xend == NULL) || (name == NULL))
+        return(-1);
+    return xend_op(xend, name, "op", "shutdown", "reason", "reboot", NULL);
+}
+
+/**
+ * xend_shutdown:
+ * @xend: pointer to the Xem Daemon block
+ * @name: name for the domain
+ *
+ * Shutdown the domain, the OS is properly shutdown and the resources allocated
+ * for the domain are freed.
+ *
+ * Returns 0 in case of success, -1 (with errno) in case of error.
+ */
+int
+xend_shutdown(struct xend *xend, const char *name)
+{
+    if ((xend == NULL) || (name == NULL))
+        return(-1);
+    return xend_op(xend, name,
+                   "op", "shutdown", "reason", "shutdown", NULL);
+}
+
+/**
+ * xend_sysrq:
+ * @xend: pointer to the Xem Daemon block
+ * @name: name for the domain
+ * @key: the SysReq key
+ *
+ * Send a SysReq key which is used to debug Linux kernels running in the domain
+ *
+ * Returns 0 in case of success, -1 (with errno) in case of error.
+ */
+int
+xend_sysrq(struct xend *xend, const char *name, const char *key)
+{
+    if ((xend == NULL) || (name == NULL) || (key == NULL))
+        return(-1);
+    return xend_op(xend, name, "op", "sysrq", "key", key, NULL);
+}
+
+/**
+ * xend_destroy:
+ * @xend: pointer to the Xem Daemon block
+ * @name: name for the domain
+ *
+ * Abruptly halt the domain, the OS is not properly shutdown and the
+ * resources allocated for the domain are immediately freed, mounted
+ * filesystems will be marked as uncleanly shutdown.
+ *
+ * Returns 0 in case of success, -1 (with errno) in case of error.
+ */
+int
+xend_destroy(struct xend *xend, const char *name)
+{
+    if ((xend == NULL) || (name == NULL))
+        return(-1);
+    return xend_op(xend, name, "op", "destroy", NULL);
+}
+
+/**
+ * xend_save:
+ * @xend: pointer to the Xem Daemon block
+ * @name: name for the domain
+ * @filename: path for the output file
+ *
+ * This method will suspend a domain and save its memory contents to
+ * a file on disk.  Use xend_restore() to restore a domain after
+ * saving.
+ * Note that for remote Xen Daemon the file path will be interpreted in
+ * the remote host.
+ *
+ * Returns 0 in case of success, -1 (with errno) in case of error.
+ */
+int
+xend_save(struct xend *xend, const char *name, const char *filename)
+{
+    if ((xend == NULL) || (filename == NULL))
+        return(-1);
+    return xend_op(xend, name, "op", "save", "file", filename, NULL);
+}
+
+/**
+ * xend_restore:
+ * @xend: pointer to the Xem Daemon block
+ * @filename: path for the output file
+ *
+ * This method will restore a domain saved to disk by xend_save().
+ * Note that for remote Xen Daemon the file path will be interpreted in
+ * the remote host.
+ *
+ * Returns 0 in case of success, -1 (with errno) in case of error.
+ */
+int
+xend_restore(struct xend *xend, const char *filename)
+{
+    if ((xend == NULL) || (filename == NULL))
+        return(-1);
+    return xend_op(xend, "", "op", "restore", "file", filename, NULL);
+}
+
+/**
+ * xend_get_domains:
+ * @xend: pointer to the Xem Daemon block
+ *
+ * This method will return an array of names of currently running
+ * domains.  The memory should be released will a call to free().
+ *
+ * Returns a list of names or NULL in case of error.
+ */
+char **
+xend_get_domains(struct xend *xend)
+{
+    size_t extra = 0;
+    struct sexpr *root = NULL;
+    char **ret = NULL;
+    int count = 0;
+    int i;
+    char *ptr;
+    struct sexpr *_for_i, *node;
+
+    root = sexpr_get(xend, "/xend/domain");
+    if (root == NULL)
+        goto error;
+
+    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
+         _for_i = _for_i->cdr, node = _for_i->car) {
+        if (node->kind != SEXPR_VALUE)
+            continue;
+        extra += strlen(node->value) + 1;
+        count++;
+    }
+
+    ptr = malloc((count + 1) * sizeof(char *) + extra);
+    if (ptr == NULL)
+        goto error;
+
+    ret = (char **) ptr;
+    ptr += sizeof(char *) * (count + 1);
+
+    i = 0;
+    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
+         _for_i = _for_i->cdr, node = _for_i->car) {
+        if (node->kind != SEXPR_VALUE)
+            continue;
+        ret[i] = ptr;
+        strcpy(ptr, node->value);
+        ptr += strlen(node->value) + 1;
+        i++;
+    }
+
+    ret[i] = NULL;
+
+  error:
+    sexpr_free(root);
+    return ret;
+}
+
+/**
+ * xend_domain_to_sexpr:
+ * @domain: a domain pointer 
+ *
+ * Internal function converting the domain informations into an S-Expression
+ * that the Xen Daemon can use to create instances
+ *
+ * Returns the new S-Expression or NULL in case of error.
+ */
+static struct sexpr *
+xend_domain_to_sexpr(const struct xend_domain *domain)
+{
+    struct sexpr *lst = sexpr_nil();
+    struct sexpr *image = sexpr_nil();
+    struct sexpr *builder = sexpr_nil();
+    const char *restart[] = { NULL, "restart",
+        "preserve", "rename-restart"
+    };
+    size_t i;
+
+    if (domain == NULL)
+        return(NULL);
+
+    lst = sexpr_append(lst, sexpr_string("vm", -1));
+    lst = sexpr_append_str(lst, "name", domain->name);
+    lst = sexpr_append_uuid(lst, "uuid", domain->uuid);
+    lst = sexpr_append_u64(lst, "memory", domain->memory);
+    lst = sexpr_append_int(lst, "ssidref", domain->ssidref);
+    lst = sexpr_append_u64(lst, "maxmem", domain->max_memory);
+    lst =
+        sexpr_append_str(lst, "on_poweroff", restart[domain->on_poweroff]);
+    lst = sexpr_append_str(lst, "on_reboot", restart[domain->on_reboot]);
+    lst = sexpr_append_str(lst, "on_crash", restart[domain->on_crash]);
+    lst = sexpr_append_int(lst, "vcpus", domain->vcpus);
+
+    builder = sexpr_append(builder, sexpr_string("linux", -1));
+    builder = sexpr_append_str(builder, "kernel", domain->image.kernel);
+    builder = sexpr_append_str(builder, "ramdisk", domain->image.ramdisk);
+    builder = sexpr_append_str(builder, "root", domain->image.root);
+    builder = sexpr_append_str(builder, "args", domain->image.extra);
+
+    image = sexpr_append(image, sexpr_string("image", -1));
+    image = sexpr_append(image, builder);
+
+    lst = sexpr_append(lst, image);
+
+    for (i = 0; i < domain->n_vbds; i++) {
+        struct sexpr *device = sexpr_nil();
+        struct sexpr *vbd = xend_device_vbd_to_sexpr(&domain->vbds[i]);
+
+        device = sexpr_append(device, sexpr_string("device", -1));
+        device = sexpr_append(device, vbd);
+        lst = sexpr_append(lst, device);
+    }
+
+    for (i = 0; i < domain->n_vifs; i++) {
+        struct sexpr *device = sexpr_nil();
+        struct sexpr *vif = xend_device_vif_to_sexpr(&domain->vifs[i]);
+
+        device = sexpr_append(device, sexpr_string("device", -1));
+        device = sexpr_append(device, vif);
+        lst = sexpr_append(lst, device);
+    }
+
+    for (i = 0; i < domain->n_ioports; i++) {
+        struct sexpr *device = sexpr_nil();
+        struct sexpr *ioport = sexpr_nil();
+
+        ioport = sexpr_append(ioport, sexpr_string("ioports", -1));
+        ioport = sexpr_append_int(ioport, "from", domain->ioports[i].from);
+        ioport = sexpr_append_int(ioport, "to", domain->ioports[i].to);
+
+        device = sexpr_append(device, sexpr_string("device", -1));
+        device = sexpr_append(device, ioport);
+        lst = sexpr_append(lst, device);
+    }
+
+    return lst;
+}
+
+/**
+ * xend_create:
+ * @xend: A xend instance
+ * @info: A struct xen_domain instance describing the domain
+ *
+ * This method will create a domain based the passed in description.  The
+ * domain will be paused after creation and must be unpaused with
+ * xend_unpause() to begin execution.
+ *
+ * Returns 0 for success, -1 (with errno) on error
+ */
+
+int
+xend_create(struct xend *xend, const struct xend_domain *dom)
+{
+    int ret, serrno;
+    struct sexpr *sexpr;
+    char buffer[4096];
+    char *ptr;
+
+    sexpr = xend_domain_to_sexpr(dom);
+    sexpr2string(sexpr, buffer, sizeof(buffer));
+    ptr = urlencode(buffer);
+
+    ret = xend_op(xend, "", "op", "create", "config", ptr, NULL);
+
+    serrno = errno;
+    free(ptr);
+    sexpr_free(sexpr);
+    errno = serrno;
+
+    return ret;
+}
+
+/**
+ * xend_set_max_memory:
+ * @xend: A xend instance
+ * @name: The name of the domain
+ * @value: The maximum memory in bytes
+ *
+ * This method will set the maximum amount of memory that can be allocated to
+ * a domain.  Please note that a domain is able to allocate up to this amount
+ * on its own (although under normal circumstances, memory allocation for a
+ * domain is only done through xend_set_memory()).
+ *
+ * Returns 0 for success; -1 (with errno) on error
+ */
+int
+xend_set_max_memory(struct xend *xend, const char *name, uint64_t value)
+{
+    char buf[1024];
+
+    snprintf(buf, sizeof(buf), "%llu", value >> 20);
+    return xend_op(xend, name, "op", "maxmem_set", "memory", buf, NULL);
+}
+
+/**
+ * xend_set_memory:
+ * @xend: A xend instance
+ * @name: The name of the domain
+ * @value: The desired allocation in bytes
+ *
+ * This method will set a target memory allocation for a given domain and
+ * request that the guest meet this target.  The guest may or may not actually
+ * achieve this target.  When this function returns, it does not signify that
+ * the domain has actually reached that target.
+ *
+ * Memory for a domain can only be allocated up to the maximum memory setting.
+ * There is no safe guard for allocations that are too small so be careful
+ * when using this function to reduce a domain's memory usage.
+ *
+ * Returns 0 for success; -1 (with errno) on error
+ */
+int
+xend_set_memory(struct xend *xend, const char *name, uint64_t value)
+{
+    char buf[1024];
+
+    snprintf(buf, sizeof(buf), "%llu", value >> 20);
+    return xend_op(xend, name, "op", "mem_target_set", "target", buf,
+                   NULL);
+}
+
+/**
+ * xend_vbd_create:
+ * @xend: A xend instance
+ * @name: The name of the domain
+ * @vbd: A virtual block device description
+ *
+ * This method creates and attachs a block device to a domain.  A successful
+ * return value does not indicate that the device successfully attached,
+ * rather, one should use xend_wait_for_devices() to block until the device
+ * has been successfully attached.
+ *
+ * Returns 0 on success; -1 (with errno) on error
+ */
+int
+xend_vbd_create(struct xend *xend,
+                const char *name, const struct xend_device_vbd *vbd)
+{
+    char buffer[4096];
+    char *ptr;
+    int ret;
+    struct sexpr *device;
+
+    device = xend_device_vbd_to_sexpr(vbd);
+
+    sexpr2string(device, buffer, sizeof(buffer));
+    ptr = urlencode(buffer);
+
+    ret = xend_op(xend, name, "op", "device_create", "config", ptr, NULL);
+
+    sexpr_free(device);
+
+    return ret;
+}
+
+/**
+ * xend_vbd_destroy:
+ * @xend: A xend instance
+ * @name: The name of the domain
+ * @vbd: A virtual block device description
+ *
+ * This method detachs a block device from a given domain.  A successful return
+ * value does not indicate that the device successfully detached, rather, one
+ * should use xend_wait_for_devices() to block until the device has been
+ * successfully detached.
+ *
+ * Returns 0 on success; -1 (with errno) on error
+ */
+int
+xend_vbd_destroy(struct xend *xend,
+                 const char *name, const struct xend_device_vbd *vbd)
+{
+    return xend_op(xend, name, "op", "device_destroy", "type", "vbd",
+                   "dev", vbd->dev, NULL);
+}
+
+/**
+ * xend_vif_create:
+ * @xend: A xend instance
+ * @name: The name of the domain
+ * @vif: A virtual network device description
+ *
+ * This method creates and attachs a network device to a domain.  A successful
+ * return value does not indicate that the device successfully attached,
+ * rather, one should use xend_wait_for_devices() to network until the device
+ * has been successfully attached.
+ *
+ * Returns 0 on success; -1 (with errno) on error
+ */
+int
+xend_vif_create(struct xend *xend,
+                const char *name, const struct xend_device_vif *vif)
+{
+    char buffer[4096];
+    char *ptr;
+    int ret;
+    struct sexpr *device;
+
+    device = xend_device_vif_to_sexpr(vif);
+
+    sexpr2string(device, buffer, sizeof(buffer));
+    ptr = urlencode(buffer);
+
+    ret = xend_op(xend, name, "op", "device_create", "config", ptr, NULL);
+
+    sexpr_free(device);
+
+    return ret;
+}
+
+static int
+get_vif_handle(struct xend *xend,
+               const char *name,
+               const struct xend_device_vif *vif,
+               char *buffer, size_t n_buffer)
+{
+    struct sexpr *root;
+    char path[4096];
+    int ret = -1;
+    struct sexpr *_for_i, *node;
+
+    root = sexpr_get(xend, "/xend/domain");
+    if (root == NULL)
+        goto error;
+
+    errno = ESRCH;
+
+    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
+         _for_i = _for_i->cdr, node = _for_i->car) {
+        uint8_t mac[6];
+
+        if (node->car->kind != SEXPR_VALUE)
+            continue;
+
+        snprintf(path, sizeof(path), "%s/mac", node->car->value);
+        sexpr_mac(mac, node, path);
+        if (memcmp(mac, vif->mac, 6) == 0) {
+            snprintf(buffer, n_buffer, "%s", node->car->value);
+            ret = 0;
+            break;
+        }
+    }
+
+  error:
+    sexpr_free(root);
+    return ret;
+
+}
+
+/**
+ * xend_vif_destroy:
+ * @xend: A xend instance
+ * @name: The name of the domain
+ * @vif: A virtual network device description
+ *
+ * This method detachs a network device from a given domain.  A successful
+ * return value does not indicate that the device successfully detached,
+ * rather, one should use xend_wait_for_devices() to network until the device
+ * has been successfully detached.
+ *
+ * Returns 0 on success; -1 (with errno) on error
+ */
+int
+xend_vif_destroy(struct xend *xend,
+                 const char *name, const struct xend_device_vif *vif)
+{
+    char handle[1024];
+
+    if (get_vif_handle(xend, name, vif, handle, sizeof(handle)) == -1)
+        return -1;
+
+    return xend_op(xend, name, "op", "device_destroy", "type", "vif",
+                   "dev", handle, NULL);
+}
+
+/**
+ * sexpr_to_xend_domain_size:
+ * @sexpr: the S-Expression
+ * @n_vbds: the number of virtual block devices used (OUT)
+ * @n_vifs: the number of network interface devices used (OUT)
+ *
+ * Helper function to compute the size in byte needed for the strings
+ * of a domain.
+ *
+ * Returns the number of bytes and the output parameters
+ */
+static size_t
+sexpr_to_xend_domain_size(struct sexpr *root, int *n_vbds, int *n_vifs)
+{
+    size_t size = 0;
+    struct sexpr *_for_i, *node;
+
+    size += sexpr_strlen(root, "domain/name");
+    size += sexpr_strlen(root, "domain/image/linux/kernel");
+    size += sexpr_strlen(root, "domain/image/linux/ramdisk");
+    size += sexpr_strlen(root, "domain/image/linux/root");
+    size += sexpr_strlen(root, "domain/image/linux/args");
+    if (sexpr_node(root, "domain/uuid"))
+        size += 16;
+
+    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
+         _for_i = _for_i->cdr, node = _for_i->car) {
+	if (sexpr_lookup(node, "device/vbd")) {
+	    size += sexpr_strlen(node, "device/vbd/dev");
+	    size += sexpr_strlen(node, "device/vbd/uname");
+	    (*n_vbds)++;
+	}
+    }
+
+    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
+         _for_i = _for_i->cdr, node = _for_i->car) {
+	if (sexpr_lookup(node, "device/vif")) {
+	    size += sexpr_strlen(node, "device/vif/bridge");
+	    size += sexpr_strlen(node, "device/vif/ip");
+	    size += sexpr_strlen(node, "device/vif/script");
+	    size += sexpr_strlen(node, "device/vif/vifname");
+	    (*n_vifs)++;
+        }
+    }
+
+    size += (*n_vbds) * sizeof(struct xend_device_vbd *);
+    size += (*n_vbds) * sizeof(struct xend_device_vbd);
+
+    size += (*n_vifs) * sizeof(struct xend_device_vif *);
+    size += (*n_vifs) * sizeof(struct xend_device_vif);
+
+    size += sizeof(struct xend_domain_live);
+
+    size += sizeof(struct xend_domain);
+
+    return size;
+}
+
+/**
+ * sexpr_to_xend_domain:
+ * @root: an S-Expression describing a domain
+ *
+ * Internal routine creating a domain node based on the S-Expression
+ * provided by the Xen Daemon
+ *
+ * Returns a new structure or NULL in case of error.
+ */
+static struct xend_domain *
+sexpr_to_xend_domain(struct sexpr *root)
+{
+    struct xend_domain *dom = NULL;
+    char *ptr;
+    int i;
+    int n_vbds = 0;
+    int n_vifs = 0;
+    struct sexpr *_for_i, *node;
+
+    ptr = malloc(sexpr_to_xend_domain_size(root, &n_vbds, &n_vifs));
+    if (ptr == NULL)
+        goto error;
+
+    dom = (struct xend_domain *) ptr;
+    ptr += sizeof(struct xend_domain);
+
+    dom->vbds = (struct xend_device_vbd *) ptr;
+    dom->n_vbds = n_vbds;
+    ptr += n_vbds * sizeof(struct xend_device_vbd);
+
+    dom->vifs = (struct xend_device_vif *) ptr;
+    dom->n_vifs = n_vifs;
+    ptr += n_vifs * sizeof(struct xend_device_vif);
+
+    dom->live = (struct xend_domain_live *) ptr;
+    ptr += sizeof(struct xend_domain_live);
+
+    dom->name = sexpr_strcpy(&ptr, root, "domain/name");
+    dom->uuid = sexpr_uuid(&ptr, root, "domain/uuid");
+    dom->image.kernel =
+        sexpr_strcpy(&ptr, root, "domain/image/linux/kernel");
+    dom->image.ramdisk =
+        sexpr_strcpy(&ptr, root, "domain/image/linux/ramdisk");
+    dom->image.root = sexpr_strcpy(&ptr, root, "domain/image/linux/root");
+    dom->image.extra = sexpr_strcpy(&ptr, root, "domain/image/linux/args");
+    dom->memory = sexpr_u64(root, "domain/memory") << 20;
+    dom->max_memory = sexpr_u64(root, "domain/maxmem") << 20;
+    dom->ssidref = sexpr_int(root, "domain/ssidref");
+    dom->on_poweroff = sexpr_poweroff(root, "domain/on_poweroff");
+    dom->on_reboot = sexpr_poweroff(root, "domain/on_reboot");
+    dom->on_crash = sexpr_poweroff(root, "domain/on_crash");
+    dom->vcpus = sexpr_int(root, "domain/vcpus");
+
+    {
+        const char *flags = sexpr_node(root, "domain/state");
+
+        if (flags) {
+            dom->live->running = strchr(flags, 'r');
+            dom->live->crashed = strchr(flags, 'c');
+            dom->live->blocked = strchr(flags, 'b');
+            dom->live->dying = strchr(flags, 'd');
+            dom->live->paused = strchr(flags, 'p');
+            dom->live->poweroff = false;
+            dom->live->reboot = false;
+            dom->live->suspend = false;
+            if (strchr(flags, 's') &&
+                (flags = sexpr_node(root, "domain/shutdown_reason"))) {
+                if (strcmp(flags, "poweroff") == 0) {
+                    dom->live->poweroff = true;
+                } else if (strcmp(flags, "reboot") == 0) {
+                    dom->live->reboot = true;
+                } else if (strcmp(flags, "suspend") == 0) {
+                    dom->live->suspend = true;
+                }
+            }
+        }
+    }
+
+    dom->live->cpu_time = sexpr_float(root, "domain/cpu_time");
+    dom->live->up_time = sexpr_float(root, "domain/up_time");
+    dom->live->start_time = sexpr_float(root, "domain/start_time");
+    dom->live->online_vcpus = sexpr_int(root, "domain/online_vcpus");
+    dom->live->vcpu_avail = sexpr_int(root, "domain/vcpu_avail");
+
+    i = 0;
+    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
+         _for_i = _for_i->cdr, node = _for_i->car) {
+	if (sexpr_lookup(node, "device/vbd")) {
+	    dom->vbds[i].dev = sexpr_strcpy(&ptr, node, "device/vbd/dev");
+	    dom->vbds[i].uname = sexpr_strcpy(&ptr, node, "device/vbd/uname");
+	    dom->vbds[i].backend = sexpr_int(node, "device/vbd/backend");
+	    dom->vbds[i].mode = sexpr_mode(node, "device/vbd/mode");
+	    i++;
+	}
+    }
+
+    i = 0;
+    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
+         _for_i = _for_i->cdr, node = _for_i->car) {
+	if (sexpr_lookup(node, "device/vif")) {
+	    dom->vifs[i].backend = sexpr_int(node, "device/vif/backend");
+	    dom->vifs[i].bridge =
+		sexpr_strcpy(&ptr, node, "device/vif/bridge");
+	    dom->vifs[i].ip = sexpr_strcpy(&ptr, node, "device/vif/ip");
+	    sexpr_mac(dom->vifs[i].mac, node, "device/vif/mac");
+	    dom->vifs[i].script =
+		sexpr_strcpy(&ptr, node, "device/vif/script");
+	    dom->vifs[i].vifname =
+		sexpr_strcpy(&ptr, node, "device/vif/vifname");
+	    i++;
+        }
+    }
+
+error:
+    return dom;
+}
+
+/**
+ * xend_get_domain:
+ * @xend: A xend instance
+ * @name: The name of the domain
+ *
+ * This method looks up information about a domain and returns
+ * it in the form of a struct xend_domain.  This should be
+ * free()'d when no longer needed.
+ *
+ * Returns domain info on success; NULL (with errno) on error
+ */
+struct xend_domain *
+xend_get_domain(struct xend *xend, const char *domname)
+{
+    struct sexpr *root;
+    struct xend_domain *dom = NULL;
+
+    root = sexpr_get(xend, "/xend/domain/%s?detail=1", domname);
+    if (root == NULL)
+        goto error;
+
+    dom = sexpr_to_xend_domain(root);
+
+  error:
+    sexpr_free(root);
+    return dom;
+}
+
+/**
+ * xend_get_node:
+ * @xend: A xend instance
+ *
+ * This method returns information about the physical host
+ * machine running Xen.
+ *
+ * Returns node info on success; NULL (with errno) on error
+ */
+struct xend_node *
+xend_get_node(struct xend *xend)
+{
+    struct sexpr *root;
+    struct xend_node *node = NULL;
+    size_t size;
+    char *ptr;
+
+    root = sexpr_get(xend, "/xend/node/");
+    if (root == NULL)
+        goto error;
+
+    size = sizeof(struct xend_node);
+    size += sexpr_strlen(root, "node/host");
+    size += sexpr_strlen(root, "node/release");
+    size += sexpr_strlen(root, "node/version");
+    size += sexpr_strlen(root, "node/machine");
+    size += sexpr_strlen(root, "node/hw_caps");
+    size += sexpr_strlen(root, "node/xen_caps");
+    size += sexpr_strlen(root, "node/platform_params");
+    size += sexpr_strlen(root, "node/xen_changeset");
+    size += sexpr_strlen(root, "node/cc_compiler");
+    size += sexpr_strlen(root, "node/cc_compile_by");
+    size += sexpr_strlen(root, "node/cc_compile_domain");
+    size += sexpr_strlen(root, "node/cc_compile_date");
+
+    ptr = malloc(size);
+    if (ptr == NULL)
+        goto error;
+
+    node = (struct xend_node *) ptr;
+    ptr += sizeof(struct xend_node);
+
+    node->system = sexpr_node_system(root, "node/system");
+    node->host = sexpr_strcpy(&ptr, root, "node/host");
+    node->release = sexpr_strcpy(&ptr, root, "node/release");
+    node->version = sexpr_strcpy(&ptr, root, "node/version");
+    node->machine = sexpr_strcpy(&ptr, root, "node/machine");
+    node->nr_cpus = sexpr_int(root, "node/nr_cpus");
+    node->nr_nodes = sexpr_int(root, "node/nr_nodes");
+    node->sockets_per_node = sexpr_int(root, "node/sockets_per_node");
+    node->cores_per_socket = sexpr_int(root, "node/cores_per_socket");
+    node->threads_per_core = sexpr_int(root, "node/threads_per_core");
+    node->cpu_mhz = sexpr_int(root, "node/cpu_mhz");
+    node->hw_caps = sexpr_strcpy(&ptr, root, "node/hw_caps");
+    node->total_memory = sexpr_u64(root, "node/total_memory") << 12;
+    node->free_memory = sexpr_u64(root, "node/free_memory") << 12;
+    node->xen_major = sexpr_int(root, "node/xen_major");
+    node->xen_minor = sexpr_int(root, "node/xen_minor");
+    {
+        const char *tmp;
+
+        tmp = sexpr_node(root, "node/xen_extra");
+        if (tmp) {
+            if (*tmp == '.')
+                tmp++;
+            node->xen_extra = atoi(tmp);
+        } else {
+            node->xen_extra = 0;
+        }
+    }
+    node->xen_caps = sexpr_strcpy(&ptr, root, "node/xen_caps");
+    node->platform_params =
+        sexpr_strcpy(&ptr, root, "node/platform_params");
+    node->xen_changeset = sexpr_strcpy(&ptr, root, "node/xen_changeset");
+    node->cc_compiler = sexpr_strcpy(&ptr, root, "node/cc_compiler");
+    node->cc_compile_by = sexpr_strcpy(&ptr, root, "node/cc_compile_by");
+    node->cc_compile_domain =
+        sexpr_strcpy(&ptr, root, "node/cc_compile_domain");
+    node->cc_compile_date =
+        sexpr_strcpy(&ptr, root, "node/cc_compile_date");
+
+  error:
+    sexpr_free(root);
+    return node;
+}
+
+/**
+ * xend_node_shutdown:
+ * @xend: A xend instance
+ *
+ * This method shuts down the physical machine running Xen.
+ *
+ * Returns 0 on success; -1 (with errno) on error
+ */
+int
+xend_node_shutdown(struct xend *xend)
+{
+    return xend_node_op(xend, "/xend/node/", "op", "shutdown", NULL);
+}
+
+/**
+ * xend_node_restart:
+ * @xend: A xend instance
+ *
+ * This method restarts the physical machine running Xen.
+ *
+ * Returns 0 on success; -1 (with errno) on error
+ */
+int
+xend_node_restart(struct xend *xend)
+{
+    return xend_node_op(xend, "/xend/node/", "op", "restart", NULL);
+}
+
+/**
+ * xend_dmesg:
+ * @xend: A xend instance
+ * @buffer: A buffer to hold the messages
+ * @n_buffer: Size of buffer (including null terminator)
+ *
+ * This function will place the debugging messages from the
+ * hypervisor into a buffer with a null terminator.
+ *
+ * Returns 0 on success; -1 (with errno) on error
+ */
+int
+xend_dmesg(struct xend *xend, char *buffer, size_t n_buffer)
+{
+    return http2unix(xend_get(xend, "/xend/node/dmesg", buffer, n_buffer));
+}
+
+/**
+ * xend_dmesg_clear:
+ * @xend: A xend instance
+ *
+ * This function will clear the debugging message ring queue
+ * in the hypervisor.
+ *
+ * Returns 0 on success; -1 (with errno) on error
+ */
+int
+xend_dmesg_clear(struct xend *xend)
+{
+    return xend_node_op(xend, "/xend/node/dmesg", "op", "clear", NULL);
+}
+
+/**
+ * xend_log:
+ * @xend: A xend instance
+ * @buffer: The buffer to hold the messages
+ * @n_buffer: Size of buffer (including null terminator)
+ *
+ * This function will place the Xend debugging messages into
+ * a buffer with a null terminator.
+ *
+ * Returns 0 on success; -1 (with errno) on error
+ */
+int
+xend_log(struct xend *xend, char *buffer, size_t n_buffer)
+{
+    return http2unix(xend_get(xend, "/xend/node/log", buffer, n_buffer));
+}

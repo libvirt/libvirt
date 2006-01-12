@@ -1,3 +1,9 @@
+Thu Jan 12 16:36:21 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/Makefile.am src/xend_internal.c src/xend_internal.h:
+	  added more of Anthony Liquori libxend code, commented and reformatted
+	  this still need to be plugged, it's still dead code ATM.
+
 Wed Jan 11 14:57:01 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* docs/libvir.html: grammatical fix
