@@ -17,6 +17,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "libvir.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -27,99 +29,11 @@ extern "C" {
 #define XEND_DEFAULT 0
 
 /**
-   Flags that determine the permission to expose a device to the guest as.
-*/
-enum xend_device_vbd_mode
-{
-	/**
-	   Expose the device as read only.
-	*/
-	XEND_READ_ONLY = 1,
-
-	/**
-	   Expose the device as read/write with an in-use check.
-
-	   If Xend thinks the device is already in use, it will generate an
-	   error.  It uses heuristics so it will not always catch every
-	   instance of this and will sometimes generate false positives.
-	*/
-	XEND_READ_WRITE,
-
-	/**
-	   Expose the device as read/only without an in-use check.
-	*/
-	XEND_READ_WRITE_FORCE,
-};
-
-/**
-   Flags that determine the action to take on a shutdown or crash.
-*/
-enum xend_domain_restart
-{
-	/**
-	   Destroy the domain.
-	*/
-	XEND_DESTROY = 1,
-
-	/**
-	   Restart the domain.
-	*/
-	XEND_RESTART,
-
-	/**
-	   Take no action.  The domain will have to be manually destroyed by
-	   the user.  Useful for debugging.
-	*/
-	XEND_PRESERVE,
-
-	/**
-	   Rename the domain to something unique and then create a new instance
-	   of the domain.  Useful for debugging crashes while avoiding
-	   down time.
-	*/
-	XEND_RENAME_RESTART,
-};
-
-/**
    Xend context.
 
    Private.
 */
 struct xend;
-
-/**
-   This structure the image information for a guest.
-*/
-struct xend_image
-{
-	/**
-	   A filename pointing to a paravirtual Xen kernel.
-
-	   Required.
-	*/
-	const char *kernel;
-
-	/**
-	   A filename pointing to an initrd.
-
-	   Optional
-	*/
-	const char *ramdisk;
-
-	/**
-	   The root block device.
-
-	   Optional
-	*/
-	const char *root;
-
-	/**
-	   The kernel command line.
-
-	   Optional.
-	*/
-	const char *extra;
-};
 
 /**
    This structure represents a virtual block device.
@@ -153,7 +67,7 @@ struct xend_device_vbd
 
 	   Required.
 	*/
-	enum xend_device_vbd_mode mode;
+	virDeviceMode mode;
 };
 
 /**
@@ -345,21 +259,21 @@ struct xend_domain
 
 	   Optional.
 	*/
-	enum xend_domain_restart on_poweroff;
+	virDomainRestart on_poweroff;
 
 	/**
 	   The action to perform when the domain reboots.
 
 	   Optional.
 	*/
-	enum xend_domain_restart on_reboot;
+	virDomainRestart on_reboot;
 
 	/**
 	   The action to perform when the domain crashes.
 
 	   Optional.
 	*/
-	enum xend_domain_restart on_crash;
+	virDomainRestart on_crash;
 
 	/**
 	   The number of VCPUs to assign to the domain.
@@ -370,7 +284,7 @@ struct xend_domain
 
 	/* FIXME cpus */
 
-	struct xend_image image;
+	virDomainKernel image;
 
 	/**
 	   The number of VBDs pointed to be vbds.
@@ -533,53 +447,55 @@ struct xend_node
 };
 
 /**
- * \brief Allocate a new Xend instance
- * \return A new xend instance
+ * \brief Setup the connection to the local Xend instance
+ * \return 0 in case of success, -1 in case of error
  *
  * This method creates a new Xend instance preferrably trying
  * to connect with the domain socket but if necessary using
  * TCP (only on localhost though).
  *
  * This function may not fail if Xend is not running.
+ *
+ * Make sure to call xend_cleanup().
  */
-struct xend *xend_new(void);
+int xend_setup(virConnectPtr conn);
 
 /**
- * \brief Creates a new xend instance via TCP
+ * \brief Setup the connection to a xend instance via TCP
  * \param host The host name to connect to
  * \param port The port number to connect to
- * \return A new xend instance
+ * \return 0 in case of success, -1 in case of error
  * 
  * This method creates a new Xend instance via TCP.
  *
  * This function may not fail if Xend is not running.
  *
- * Make sure to call xen_delete().
+ * Make sure to call xend_cleanup().
  */
-struct xend *xend_new_tcp(const char *host, int port);
+int xend_setup_tcp(virConnectPtr xend, const char *host, int port);
 
 /**
- * \brief Creates a new xend instance via a Unix domain socket
+ * \brief Setup the connection to xend instance via a Unix domain socket
  * \param path The path to the domain socket
- * \return A new xend instance
+ * \return 0 in case of success, -1 in case of error
  * 
  * This method creates a new xend instance via a Unix domain socket.
  *
  * This function may not fail if Xend is not running.
  *
- * Make sure to call xen_delete().
+ * Make sure to call xend_cleanup().
  */
-struct xend *xend_new_unix(const char *path);
+int xend_setup_unix(virConnectPtr xend, const char *path);
 
 /**
  * \brief Delete a previously allocated Xend instance
  * \param xend The xend instance
  *
- * This method should be called when a xend instance
- * allocated with xend_new[_{tcp, unix}] is no longer needed
+ * This method should be called when a connection to xend instance
+ * initialized with xend_setup[_{tcp, unix}] is no longer needed
  * to free the associated resources.
  */
-void xend_delete(struct xend *xend);
+void xend_cleanup(virConnectPtr xend);
 
 /**
  * \brief Blocks until a domain's devices are initialized
@@ -593,7 +509,7 @@ void xend_delete(struct xend *xend);
  * invalid filename, the error won't occur until after this function
  * returns.
  */
-int xend_wait_for_devices(struct xend *xend, const char *name);
+int xend_wait_for_devices(virConnectPtr xend, const char *name);
 
 /**
  * \brief Pause a domain
@@ -604,7 +520,7 @@ int xend_wait_for_devices(struct xend *xend, const char *name);
  * This method will make sure that Xen does not schedule the domain
  * anymore until after xend_unpause() has been called.
  */
-int xend_pause(struct xend *xend, const char *name);
+int xend_pause(virConnectPtr xend, const char *name);
 
 /**
  * \brief Unpause a domain
@@ -615,7 +531,7 @@ int xend_pause(struct xend *xend, const char *name);
  * This method will allow a paused domain (the result of xen_pause())
  * to be scheduled in the future.
  */
-int xend_unpause(struct xend *xend, const char *name);
+int xend_unpause(virConnectPtr xend, const char *name);
 
 /**
  * \brief Unpause a domain
@@ -626,7 +542,7 @@ int xend_unpause(struct xend *xend, const char *name);
  * 
  * This method allows a domain to have its name changed after creation.
  */
-int xend_rename(struct xend *xend, const char *oldname, const char *name);
+int xend_rename(virConnectPtr xend, const char *oldname, const char *name);
 
 /**
  * \brief Sends a SYSRQ to a domain
@@ -637,7 +553,7 @@ int xend_rename(struct xend *xend, const char *oldname, const char *name);
  * 
  * This method simulates the pressing of a SYSRQ sequence.
  */
-int xend_sysrq(struct xend *xend, const char *name, const char *key);
+int xend_sysrq(virConnectPtr xend, const char *name, const char *key);
 
 /**
  * \brief Request a domain to reboot
@@ -649,7 +565,7 @@ int xend_sysrq(struct xend *xend, const char *name, const char *key);
  * a request and the domain may ignore it.  It will return immediately
  * after queuing the request.
  */
-int xend_reboot(struct xend *xend, const char *name);
+int xend_reboot(virConnectPtr xend, const char *name);
 
 /**
  * \brief Request a domain to shutdown
@@ -661,7 +577,7 @@ int xend_reboot(struct xend *xend, const char *name);
  * a request and the domain may ignore it.  It will return immediately
  * after queuing the request.
  */
-int xend_shutdown(struct xend *xend, const char *name);
+int xend_shutdown(virConnectPtr xend, const char *name);
 
 /**
  * \brief Destroy a domain
@@ -675,7 +591,7 @@ int xend_shutdown(struct xend *xend, const char *name);
  * dying and will go away completely once all of the resources have been
  * unmapped (usually from the backend devices).
  */
-int xend_destroy(struct xend *xend, const char *name);
+int xend_destroy(virConnectPtr xend, const char *name);
 
 /**
  * \brief Save a domain to the disk
@@ -688,7 +604,7 @@ int xend_destroy(struct xend *xend, const char *name);
  * a file on disk.  Use xend_restore() to restore a domain after
  * saving.
  */
-int xend_save(struct xend *xend, const char *name, const char *filename);
+int xend_save(virConnectPtr xend, const char *name, const char *filename);
 
 /**
  * \brief Restore a domain from the disk
@@ -698,7 +614,7 @@ int xend_save(struct xend *xend, const char *name, const char *filename);
  * 
  * This method will restore a domain saved to disk by xend_save().
  */
-int xend_restore(struct xend *xend, const char *filename);
+int xend_restore(virConnectPtr xend, const char *filename);
 
 /**
  * \brief Obtain a list of currently running domains
@@ -708,7 +624,7 @@ int xend_restore(struct xend *xend, const char *filename);
  * This method will return an array of names of currently running
  * domains.  The memory should be released will a call to free().
  */
-char **xend_get_domains(struct xend *xend);
+char **xend_get_domains(virConnectPtr xend);
 
 /**
  * \brief Create a new domain
@@ -720,7 +636,7 @@ char **xend_get_domains(struct xend *xend);
  * domain will be paused after creation and must be unpaused with
  * xend_unpause() to begin execution.
  */
-int xend_create(struct xend *xend, const struct xend_domain *info);
+int xend_create(virConnectPtr xend, const struct xend_domain *info);
 
 /**
  * \brief Set the maximum memory for a domain
@@ -734,7 +650,7 @@ int xend_create(struct xend *xend, const struct xend_domain *info);
  * on its own (although under normal circumstances, memory allocation for a
  * domain is only done through xend_set_memory()).
  */
-int xend_set_max_memory(struct xend *xend, const char *name, uint64_t value);
+int xend_set_max_memory(virConnectPtr xend, const char *name, uint64_t value);
 
 /**
  * \brief Set the memory allocation for a domain
@@ -752,7 +668,7 @@ int xend_set_max_memory(struct xend *xend, const char *name, uint64_t value);
  * There is no safe guard for allocations that are too small so be careful
  * when using this function to reduce a domain's memory usage.
  */
-int xend_set_memory(struct xend *xend, const char *name, uint64_t value);
+int xend_set_memory(virConnectPtr xend, const char *name, uint64_t value);
 
 /**
  * \brief Create a virtual block device
@@ -766,7 +682,7 @@ int xend_set_memory(struct xend *xend, const char *name, uint64_t value);
  * rather, one should use xend_wait_for_devices() to block until the device
  * has been successfully attached.
  */
-int xend_vbd_create(struct xend *xend,
+int xend_vbd_create(virConnectPtr xend,
 		    const char *name,
 		    const struct xend_device_vbd *vbd);
 
@@ -782,7 +698,7 @@ int xend_vbd_create(struct xend *xend,
  * should use xend_wait_for_devices() to block until the device has been
  * successfully detached.
  */
-int xend_vbd_destroy(struct xend *xend,
+int xend_vbd_destroy(virConnectPtr xend,
 		     const char *name,
 		     const struct xend_device_vbd *vbd);
 
@@ -798,7 +714,7 @@ int xend_vbd_destroy(struct xend *xend,
  * rather, one should use xend_wait_for_devices() to network until the device
  * has been successfully attached.
  */
-int xend_vif_create(struct xend *xend,
+int xend_vif_create(virConnectPtr xend,
 		    const char *name,
 		    const struct xend_device_vif *vif);
 
@@ -814,7 +730,7 @@ int xend_vif_create(struct xend *xend,
  * rather, one should use xend_wait_for_devices() to network until the device
  * has been successfully detached.
  */
-int xend_vif_destroy(struct xend *xend,
+int xend_vif_destroy(virConnectPtr xend,
 		     const char *name,
 		     const struct xend_device_vif *vif);
 
@@ -828,7 +744,7 @@ int xend_vif_destroy(struct xend *xend,
  * it in the form of a struct xend_domain.  This should be
  * free()'d when no longer needed.
  */
-struct xend_domain *xend_get_domain(struct xend *xend,
+struct xend_domain *xend_get_domain(virConnectPtr xend,
 				    const char *name);
 
 /**
@@ -839,7 +755,7 @@ struct xend_domain *xend_get_domain(struct xend *xend,
  * This method returns information about the physical host
  * machine running Xen.
  */
-struct xend_node *xend_get_node(struct xend *xend);
+struct xend_node *xend_get_node(virConnectPtr xend);
 
 /**
  * \brief Shutdown physical host machine
@@ -848,7 +764,7 @@ struct xend_node *xend_get_node(struct xend *xend);
  *
  * This method shuts down the physical machine running Xen.
  */
-int xend_node_shutdown(struct xend *xend);
+int xend_node_shutdown(virConnectPtr xend);
 
 /**
  * \brief Restarts physical host machine
@@ -857,7 +773,7 @@ int xend_node_shutdown(struct xend *xend);
  *
  * This method restarts the physical machine running Xen.
  */
-int xend_node_restart(struct xend *xend);
+int xend_node_restart(virConnectPtr xend);
 
 /**
  * \brief Return hypervisor debugging messages
@@ -869,7 +785,7 @@ int xend_node_restart(struct xend *xend);
  * This function will place the debugging messages from the
  * hypervisor into a buffer with a null terminator.
  */
-int xend_dmesg(struct xend *xend,
+int xend_dmesg(virConnectPtr xend,
 	       char *buffer,
 	       size_t n_buffer);
 
@@ -881,7 +797,7 @@ int xend_dmesg(struct xend *xend,
  * This function will clear the debugging message ring queue
  * in the hypervisor.
  */
-int xend_dmesg_clear(struct xend *xend);
+int xend_dmesg_clear(virConnectPtr xend);
 
 /**
  * \brief Obtain the Xend log messages
@@ -893,7 +809,7 @@ int xend_dmesg_clear(struct xend *xend);
  * This function will place the Xend debugging messages into
  * a buffer with a null terminator.
  */
-int xend_log(struct xend *xend,
+int xend_log(virConnectPtr xend,
 	     char *buffer,
 	     size_t n_buffer);
 

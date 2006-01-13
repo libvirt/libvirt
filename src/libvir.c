@@ -11,6 +11,7 @@
 
 #include "libvir.h"
 #include "xen_internal.h"
+#include "xend_internal.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -101,6 +102,8 @@ virConnectOpen(const char *name) {
     ret->magic = VIR_CONNECT_MAGIC;
     ret->handle = handle;
     ret->xshandle = xshandle;
+    if (xend_setup(ret) < 0)
+        goto failed;
     ret->domains = virHashCreate(20);
     ret->flags = 0;
     if (ret->domains == NULL)
@@ -145,6 +148,8 @@ virConnectOpenReadOnly(const char *name) {
     ret->magic = VIR_CONNECT_MAGIC;
     ret->handle = -1;
     ret->xshandle = xshandle;
+    if (xend_setup(ret) < 0)
+        goto failed;
     ret->domains = virHashCreate(20);
     ret->flags = VIR_CONNECT_RO;
     if (ret->domains == NULL)
@@ -209,6 +214,7 @@ virDomainFreeName(virDomainPtr domain, const char *name ATTRIBUTE_UNUSED) {
  */
 int
 virConnectClose(virConnectPtr conn) {
+    xend_cleanup(conn);
     if (!VIR_IS_CONNECT(conn))
         return(-1);
     virHashFree(conn->domains, (virHashDeallocator) virDomainFreeName);

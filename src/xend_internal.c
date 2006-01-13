@@ -27,6 +27,8 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 
+#include "libvir.h"
+#include "internal.h"
 #include "sexpr.h"
 #include "xend_internal.h"
 
@@ -72,7 +74,7 @@ struct xend {
  * Returns the socket file descriptor or -1 in case of error
  */
 static int
-do_connect(struct xend *xend)
+do_connect(virConnectPtr xend)
 {
     int s;
     int serrno;
@@ -285,7 +287,7 @@ xend_req(int fd, char *content, size_t n_content)
  * Returns the HTTP return code or -1 in case or error.
  */
 static int
-xend_get(struct xend *xend, const char *path,
+xend_get(virConnectPtr xend, const char *path,
          char *content, size_t n_content)
 {
     int ret;
@@ -323,7 +325,7 @@ xend_get(struct xend *xend, const char *path,
  * Returns the HTTP return code or -1 in case or error.
  */
 static int
-xend_post(struct xend *xend, const char *path, const char *ops,
+xend_post(virConnectPtr xend, const char *path, const char *ops,
           char *content, size_t n_content)
 {
     char buffer[100];
@@ -396,7 +398,7 @@ http2unix(int ret)
  * Returns 0 in case of success, -1 in case of failure.
  */
 static int
-xend_op_ext2(struct xend *xend, const char *path, char *error,
+xend_op_ext2(virConnectPtr xend, const char *path, char *error,
              size_t n_error, const char *key, va_list ap)
 {
     char ops[1024];
@@ -431,7 +433,7 @@ xend_op_ext2(struct xend *xend, const char *path, char *error,
  * Returns 0 in case of success, -1 in case of failure.
  */
 static int
-xend_node_op(struct xend *xend, const char *path, const char *key, ...)
+xend_node_op(virConnectPtr xend, const char *path, const char *key, ...)
 {
     va_list ap;
     int ret;
@@ -460,7 +462,7 @@ xend_node_op(struct xend *xend, const char *path, const char *key, ...)
  * Returns 0 in case of success, -1 in case of failure.
  */
 static int
-xend_op_ext(struct xend *xend, const char *name, char *error,
+xend_op_ext(virConnectPtr xend, const char *name, char *error,
             size_t n_error, const char *key, ...)
 {
     char buffer[1024];
@@ -489,7 +491,7 @@ xend_op_ext(struct xend *xend, const char *name, char *error,
  * Returns a parsed S-Expression in case of success, NULL in case of failure
  */
 static struct sexpr *
-sexpr_get(struct xend *xend, const char *fmt, ...)
+sexpr_get(virConnectPtr xend, const char *fmt, ...)
 {
     char buffer[4096];
     char path[1024];
@@ -672,20 +674,20 @@ sexpr_u64(struct sexpr *sexpr, const char *name)
  *
  * Returns the value found or 0 if not found (but may not be an error)
  */
-static enum xend_domain_restart
+static virDomainRestart
 sexpr_poweroff(struct sexpr *sexpr, const char *name)
 {
     const char *value = sexpr_node(sexpr, name);
 
     if (value) {
         if (strcmp(value, "poweroff") == 0) {
-            return XEND_DESTROY;
+            return VIR_DOMAIN_DESTROY;
         } else if (strcmp(value, "restart") == 0) {
-            return XEND_RESTART;
+            return VIR_DOMAIN_RESTART;
         } else if (strcmp(value, "preserve") == 0) {
-            return XEND_PRESERVE;
+            return VIR_DOMAIN_PRESERVE;
         } else if (strcmp(value, "rename-restart") == 0) {
-            return XEND_RENAME_RESTART;
+            return VIR_DOMAIN_RENAME_RESTART;
         }
     }
     return XEND_DEFAULT;
@@ -722,22 +724,22 @@ sexpr_strcpy(char **ptr, struct sexpr *node, const char *path)
  *
  * Returns the value found or 0 if not found (but may not be an error)
  */
-static enum xend_device_vbd_mode
+static virDeviceMode
 sexpr_mode(struct sexpr *node, const char *path)
 {
     const char *mode = sexpr_node(node, path);
-    enum xend_device_vbd_mode ret;
+    virDeviceMode ret;
 
     if (!mode) {
-        ret = XEND_DEFAULT;
+        ret = VIR_DEVICE_DEFAULT;
     } else if (strcmp(mode, "r") == 0) {
-        ret = XEND_READ_ONLY;
+        ret = VIR_DEVICE_RO;
     } else if (strcmp(mode, "w") == 0) {
-        ret = XEND_READ_WRITE;
+        ret = VIR_DEVICE_RW;
     } else if (strcmp(mode, "w!") == 0) {
-        ret = XEND_READ_WRITE_FORCE;
+        ret = VIR_DEVICE_RW_FORCE;
     } else {
-        ret = XEND_DEFAULT;
+        ret = VIR_DEVICE_DEFAULT;
     }
 
     return ret;
@@ -947,22 +949,22 @@ xend_device_vif_to_sexpr(const struct xend_device_vif *vif)
 /* PUBLIC FUNCTIONS */
 
 /**
- * xend_new_unix:
+ * xend_setup_unix:
+ * @conn: an existing virtual connection block
  * @path: the path for the Xen Daemon socket
  *
  * Creates a localhost Xen Daemon connection
  * Note: this doesn't try to check if the connection actually works
  *
- * Returns the new pointer or NULL in case of error.
+ * Returns 0 in case of success, -1 in case of error.
  */
-struct xend *
-xend_new_unix(const char *path)
+int
+xend_setup_unix(virConnectPtr xend, const char *path)
 {
-    struct xend *xend = malloc(sizeof(*xend));
     struct sockaddr_un *addr;
 
-    if (!xend)
-        return NULL;
+    if ((xend == NULL) || (path == NULL))
+        return(-1);
 
     addr = &xend->addr_un;
     addr->sun_family = AF_UNIX;
@@ -976,34 +978,34 @@ xend_new_unix(const char *path)
     xend->addr = (struct sockaddr *) addr;
     xend->type = PF_UNIX;
 
-    return xend;
+    return(0);
 }
 
 /**
- * xend_new_unix:
+ * xend_setup_tcp:
+ * @conn: an existing virtual connection block
  * @host: the host name for the Xen Daemon
  * @port: the port 
  *
  * Creates a possibly remote Xen Daemon connection
  * Note: this doesn't try to check if the connection actually works
  *
- * Returns the new pointer or NULL in case of error.
+ * Returns 0 in case of success, -1 in case of error.
  */
-struct xend *
-xend_new_tcp(const char *host, int port)
+int
+xend_setup_tcp(virConnectPtr xend, const char *host, int port)
 {
-    struct xend *xend = malloc(sizeof(*xend));
     struct in_addr ip;
     struct hostent *pent;
 
-    if (!xend)
-        return NULL;
+    if ((xend == NULL) || (host == NULL) || (port <= 0))
+        return(-1);
 
     pent = gethostbyname(host);
     if (pent == NULL) {
         if (inet_aton(host, &ip) == 0) {
             errno = ESRCH;
-            return NULL;
+            return(-1);
         }
     } else {
         memcpy(&ip, pent->h_addr_list[0], sizeof(ip));
@@ -1017,32 +1019,32 @@ xend_new_tcp(const char *host, int port)
     xend->addr_in.sin_port = htons(port);
     memcpy(&xend->addr_in.sin_addr, &ip, sizeof(ip));
 
-    return xend;
+    return(0);
 }
 
 /**
- * xend_new:
+ * xend_setup:
+ * @conn: an existing virtual connection block
  *
  * Creates a localhost Xen Daemon connection
  * Note: this doesn't try to check if the connection actually works
  *
- * Returns the new pointer or NULL in case of error.
+ * Returns 0 in case of success, -1 in case of error.
  */
-struct xend *
-xend_new(void)
+int
+xend_setup(virConnectPtr conn)
 {
-    return xend_new_unix("/var/lib/xend/xend-socket");
+    return(xend_setup_unix(conn, "/var/lib/xend/xend-socket"));
 }
 
 /**
- * xend_delete:
+ * xend_cleanup:
  *
- * Free a Xen Daemon connection
+ * Cleanup a xend connection
  */
 void
-xend_delete(struct xend *xend)
+xend_cleanup(virConnectPtr xend ATTRIBUTE_UNUSED)
 {
-    free(xend);
 }
 
 /**
@@ -1056,7 +1058,7 @@ xend_delete(struct xend *xend)
  * Returns 0 in case of success, -1 (with errno) in case of error.
  */
 int
-xend_wait_for_devices(struct xend *xend, const char *name)
+xend_wait_for_devices(virConnectPtr xend, const char *name)
 {
     return xend_op(xend, name, "op", "wait_for_devices", NULL);
 }
@@ -1072,7 +1074,7 @@ xend_wait_for_devices(struct xend *xend, const char *name)
  * Returns 0 in case of success, -1 (with errno) in case of error.
  */
 int
-xend_pause(struct xend *xend, const char *name)
+xend_pause(virConnectPtr xend, const char *name)
 {
     return xend_op(xend, name, "op", "pause", NULL);
 }
@@ -1087,7 +1089,7 @@ xend_pause(struct xend *xend, const char *name)
  * Returns 0 in case of success, -1 (with errno) in case of error.
  */
 int
-xend_unpause(struct xend *xend, const char *name)
+xend_unpause(virConnectPtr xend, const char *name)
 {
     return xend_op(xend, name, "op", "unpause", NULL);
 }
@@ -1103,7 +1105,7 @@ xend_unpause(struct xend *xend, const char *name)
  * Returns 0 in case of success, -1 (with errno) in case of error.
  */
 int
-xend_rename(struct xend *xend, const char *old, const char *new)
+xend_rename(virConnectPtr xend, const char *old, const char *new)
 {
     if ((xend == NULL) || (old == NULL) || (new == NULL))
         return(-1);
@@ -1120,7 +1122,7 @@ xend_rename(struct xend *xend, const char *old, const char *new)
  * Returns 0 in case of success, -1 (with errno) in case of error.
  */
 int
-xend_reboot(struct xend *xend, const char *name)
+xend_reboot(virConnectPtr xend, const char *name)
 {
     if ((xend == NULL) || (name == NULL))
         return(-1);
@@ -1138,7 +1140,7 @@ xend_reboot(struct xend *xend, const char *name)
  * Returns 0 in case of success, -1 (with errno) in case of error.
  */
 int
-xend_shutdown(struct xend *xend, const char *name)
+xend_shutdown(virConnectPtr xend, const char *name)
 {
     if ((xend == NULL) || (name == NULL))
         return(-1);
@@ -1157,7 +1159,7 @@ xend_shutdown(struct xend *xend, const char *name)
  * Returns 0 in case of success, -1 (with errno) in case of error.
  */
 int
-xend_sysrq(struct xend *xend, const char *name, const char *key)
+xend_sysrq(virConnectPtr xend, const char *name, const char *key)
 {
     if ((xend == NULL) || (name == NULL) || (key == NULL))
         return(-1);
@@ -1176,7 +1178,7 @@ xend_sysrq(struct xend *xend, const char *name, const char *key)
  * Returns 0 in case of success, -1 (with errno) in case of error.
  */
 int
-xend_destroy(struct xend *xend, const char *name)
+xend_destroy(virConnectPtr xend, const char *name)
 {
     if ((xend == NULL) || (name == NULL))
         return(-1);
@@ -1198,7 +1200,7 @@ xend_destroy(struct xend *xend, const char *name)
  * Returns 0 in case of success, -1 (with errno) in case of error.
  */
 int
-xend_save(struct xend *xend, const char *name, const char *filename)
+xend_save(virConnectPtr xend, const char *name, const char *filename)
 {
     if ((xend == NULL) || (filename == NULL))
         return(-1);
@@ -1217,7 +1219,7 @@ xend_save(struct xend *xend, const char *name, const char *filename)
  * Returns 0 in case of success, -1 (with errno) in case of error.
  */
 int
-xend_restore(struct xend *xend, const char *filename)
+xend_restore(virConnectPtr xend, const char *filename)
 {
     if ((xend == NULL) || (filename == NULL))
         return(-1);
@@ -1234,7 +1236,7 @@ xend_restore(struct xend *xend, const char *filename)
  * Returns a list of names or NULL in case of error.
  */
 char **
-xend_get_domains(struct xend *xend)
+xend_get_domains(virConnectPtr xend)
 {
     size_t extra = 0;
     struct sexpr *root = NULL;
@@ -1374,7 +1376,7 @@ xend_domain_to_sexpr(const struct xend_domain *domain)
  */
 
 int
-xend_create(struct xend *xend, const struct xend_domain *dom)
+xend_create(virConnectPtr xend, const struct xend_domain *dom)
 {
     int ret, serrno;
     struct sexpr *sexpr;
@@ -1409,7 +1411,7 @@ xend_create(struct xend *xend, const struct xend_domain *dom)
  * Returns 0 for success; -1 (with errno) on error
  */
 int
-xend_set_max_memory(struct xend *xend, const char *name, uint64_t value)
+xend_set_max_memory(virConnectPtr xend, const char *name, uint64_t value)
 {
     char buf[1024];
 
@@ -1435,7 +1437,7 @@ xend_set_max_memory(struct xend *xend, const char *name, uint64_t value)
  * Returns 0 for success; -1 (with errno) on error
  */
 int
-xend_set_memory(struct xend *xend, const char *name, uint64_t value)
+xend_set_memory(virConnectPtr xend, const char *name, uint64_t value)
 {
     char buf[1024];
 
@@ -1458,7 +1460,7 @@ xend_set_memory(struct xend *xend, const char *name, uint64_t value)
  * Returns 0 on success; -1 (with errno) on error
  */
 int
-xend_vbd_create(struct xend *xend,
+xend_vbd_create(virConnectPtr xend,
                 const char *name, const struct xend_device_vbd *vbd)
 {
     char buffer[4096];
@@ -1492,7 +1494,7 @@ xend_vbd_create(struct xend *xend,
  * Returns 0 on success; -1 (with errno) on error
  */
 int
-xend_vbd_destroy(struct xend *xend,
+xend_vbd_destroy(virConnectPtr xend,
                  const char *name, const struct xend_device_vbd *vbd)
 {
     return xend_op(xend, name, "op", "device_destroy", "type", "vbd",
@@ -1513,7 +1515,7 @@ xend_vbd_destroy(struct xend *xend,
  * Returns 0 on success; -1 (with errno) on error
  */
 int
-xend_vif_create(struct xend *xend,
+xend_vif_create(virConnectPtr xend,
                 const char *name, const struct xend_device_vif *vif)
 {
     char buffer[4096];
@@ -1534,8 +1536,8 @@ xend_vif_create(struct xend *xend,
 }
 
 static int
-get_vif_handle(struct xend *xend,
-               const char *name,
+get_vif_handle(virConnectPtr xend,
+               const char *name ATTRIBUTE_UNUSED,
                const struct xend_device_vif *vif,
                char *buffer, size_t n_buffer)
 {
@@ -1586,7 +1588,7 @@ get_vif_handle(struct xend *xend,
  * Returns 0 on success; -1 (with errno) on error
  */
 int
-xend_vif_destroy(struct xend *xend,
+xend_vif_destroy(virConnectPtr xend,
                  const char *name, const struct xend_device_vif *vif)
 {
     char handle[1024];
@@ -1785,7 +1787,7 @@ error:
  * Returns domain info on success; NULL (with errno) on error
  */
 struct xend_domain *
-xend_get_domain(struct xend *xend, const char *domname)
+xend_get_domain(virConnectPtr xend, const char *domname)
 {
     struct sexpr *root;
     struct xend_domain *dom = NULL;
@@ -1811,7 +1813,7 @@ xend_get_domain(struct xend *xend, const char *domname)
  * Returns node info on success; NULL (with errno) on error
  */
 struct xend_node *
-xend_get_node(struct xend *xend)
+xend_get_node(virConnectPtr xend)
 {
     struct sexpr *root;
     struct xend_node *node = NULL;
@@ -1896,7 +1898,7 @@ xend_get_node(struct xend *xend)
  * Returns 0 on success; -1 (with errno) on error
  */
 int
-xend_node_shutdown(struct xend *xend)
+xend_node_shutdown(virConnectPtr xend)
 {
     return xend_node_op(xend, "/xend/node/", "op", "shutdown", NULL);
 }
@@ -1910,7 +1912,7 @@ xend_node_shutdown(struct xend *xend)
  * Returns 0 on success; -1 (with errno) on error
  */
 int
-xend_node_restart(struct xend *xend)
+xend_node_restart(virConnectPtr xend)
 {
     return xend_node_op(xend, "/xend/node/", "op", "restart", NULL);
 }
@@ -1927,7 +1929,7 @@ xend_node_restart(struct xend *xend)
  * Returns 0 on success; -1 (with errno) on error
  */
 int
-xend_dmesg(struct xend *xend, char *buffer, size_t n_buffer)
+xend_dmesg(virConnectPtr xend, char *buffer, size_t n_buffer)
 {
     return http2unix(xend_get(xend, "/xend/node/dmesg", buffer, n_buffer));
 }
@@ -1942,7 +1944,7 @@ xend_dmesg(struct xend *xend, char *buffer, size_t n_buffer)
  * Returns 0 on success; -1 (with errno) on error
  */
 int
-xend_dmesg_clear(struct xend *xend)
+xend_dmesg_clear(virConnectPtr xend)
 {
     return xend_node_op(xend, "/xend/node/dmesg", "op", "clear", NULL);
 }
@@ -1959,7 +1961,7 @@ xend_dmesg_clear(struct xend *xend)
  * Returns 0 on success; -1 (with errno) on error
  */
 int
-xend_log(struct xend *xend, char *buffer, size_t n_buffer)
+xend_log(virConnectPtr xend, char *buffer, size_t n_buffer)
 {
     return http2unix(xend_get(xend, "/xend/node/log", buffer, n_buffer));
 }

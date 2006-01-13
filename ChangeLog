@@ -1,3 +1,9 @@
+Fri Jan 13 17:39:24 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvir.h.in include/libvir.h src/internal.h src/libvir.c
+	  src/xend_internal.c src/xend_internal.h: starting to plug the
+	  xend code in, replacing structures mostly, but not finished.
+
 Thu Jan 12 16:36:21 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/Makefile.am src/xend_internal.c src/xend_internal.h:

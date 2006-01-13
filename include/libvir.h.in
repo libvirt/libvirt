@@ -64,6 +64,30 @@ typedef enum {
 } virDomainState;
 
 /**
+ * virDomainRestart:
+ *
+ * Flags that determine the action to take on a shutdown or crash of a domain
+ */
+typedef enum {
+     VIR_DOMAIN_DESTROY	= 1, /* destroy the domain */
+     VIR_DOMAIN_RESTART	= 2, /* restart the domain */
+     VIR_DOMAIN_PRESERVE= 3, /* keep as is, need manual destroy, for debug */
+     VIR_DOMAIN_RENAME_RESTART= 4/* restart under an new unique name */
+} virDomainRestart;
+
+/**
+ * virDeviceMode:
+ *
+ * Flags that determine permission to expose a device to the guest
+ */
+typedef enum {
+     VIR_DEVICE_DEFAULT	= 0, /* Default mode */
+     VIR_DEVICE_RO	= 1, /* Access read-only */
+     VIR_DEVICE_RW	= 2, /* Access read-write */
+     VIR_DEVICE_RW_FORCE= 3  /* Forced read-write even if already used */
+} virDeviceMode;
+
+/**
  * virDomainInfoPtr:
  *
  * a virDomainInfo is a structure filled by virDomainGetInfo()
@@ -92,12 +116,28 @@ struct _virDomainInfo {
 };
 
 /**
- * virDomainInfoPtr:
+ * virDomainKernel:
  *
- * a virDomainInfoPtr is a pointer to a virDomainInfo structure.
+ * a virDomainImage is the set of kernel related informations associated
+ * to a domain
  */
 
-typedef virDomainInfo *virDomainInfoPtr;
+typedef struct _virDomainKernel virDomainKernel;
+
+struct _virDomainKernel {
+    const char *kernel;		/* filename pointing to the kernel image */
+    const char *ramdisk;	/* an optional init ramdisk */
+    const char *root;		/* an optional root block device */
+    const char *extra;		/* optional kernel command line parameters */
+};
+
+/**
+ * virDomainKernelPtr:
+ *
+ * a virDomainKernelPtr is a pointer to a virDomainKernel structure.
+ */
+
+typedef virDomainKernel *virDomainKernelPtr;
 
 /**
  * virDomainCreateFlags:

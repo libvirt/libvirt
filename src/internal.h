@@ -5,6 +5,12 @@
 #ifndef __VIR_INTERNAL_H__
 #define __VIR_INTERNAL_H__
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+
 #include "hash.h"
 #include "libvir.h"
 
@@ -71,6 +77,14 @@ struct _virConnect {
     unsigned int magic;		/* specific value to check */
     int	         handle;	/* internal handle used for hypercall */
     struct xs_handle *xshandle;	/* handle to talk to the xenstore */
+
+    /* connection to xend */
+    int type;			/* PF_UNIX or PF_INET */
+    int len;			/* lenght of addr */
+    struct sockaddr *addr;	/* type of address used */
+    struct sockaddr_un addr_un;	/* the unix address */
+    struct sockaddr_in addr_in; /* the inet address */
+
     virHashTablePtr   domains;	/* hash table for known domains */
     int          flags;		/* a set of connection flags */
 };
