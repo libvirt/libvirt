@@ -667,7 +667,7 @@ cmdIdof(vshControl *ctl, vshCmd *cmd) {
     
     dom = virDomainLookupByName(ctl->conn, name);
     if (dom) {
-        vshPrint(ctl, VSH_MESG, "%s\n", virDomainGetID(dom));
+        vshPrint(ctl, VSH_MESG, "%d\n", virDomainGetID(dom));
         virDomainFree(dom);
     } else {
         vshError(ctl, FALSE, "failed to get domain '%s'", name);

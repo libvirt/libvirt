@@ -29,13 +29,6 @@ extern "C" {
 #define XEND_DEFAULT 0
 
 /**
-   Xend context.
-
-   Private.
-*/
-struct xend;
-
-/**
    This structure represents a virtual block device.
 */
 struct xend_device_vbd
@@ -208,6 +201,11 @@ struct xend_domain_live
 	   the total number of available VCPUs
 	*/
 	int vcpu_avail;
+
+	/**
+	   the domain id number
+	*/
+	int id;
 };
 
 /**
@@ -746,6 +744,18 @@ int xend_vif_destroy(virConnectPtr xend,
  */
 struct xend_domain *xend_get_domain(virConnectPtr xend,
 				    const char *name);
+
+/**
+ * \brief Get status informations for a domain
+ * \param domain A xend domain
+ * \param info An information block provided by the user
+ * \return 0 in case of success, -1 in case of error
+ *
+ * This method looks up information about a domain and update the
+ * information block provided.
+ */
+int xend_get_domain_info(virDomainPtr domain,
+			 virDomainInfoPtr info);
 
 /**
  * \brief Lookup information about the host machine

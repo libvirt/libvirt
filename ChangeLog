@@ -1,3 +1,12 @@
+Tue Jan 17 17:53:43 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvir.h[.in]: added VIR_DOMAIN_CRASHED status, small
+	  doc fix
+	* src/virsh.c: fix a integer being formatted as %s in idof
+	* src/internal.h src/libvir.c src/xend_internal.[ch]: started to
+	  integrated the xend back-end, especially for getting informations
+	  about a domain.
+
 Fri Jan 13 17:39:24 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvir.h.in include/libvir.h src/internal.h src/libvir.c

@@ -18,6 +18,7 @@
 #include <string.h>
 #include <xs.h>
 #include "internal.h"
+#include "xend_internal.h"
 #include "hash.h"
 
 
@@ -645,18 +646,32 @@ virDomainLookupByID(virConnectPtr conn, int id) {
  */
 virDomainPtr
 virDomainLookupByName(virConnectPtr conn, const char *name) {
-    struct xs_transaction_handle* t;
+    struct xs_transaction_handle* t = NULL;
     virDomainPtr ret = NULL;
     unsigned int num, i, len;
     long id = -1;
     char **idlist = NULL, *endptr;
-    char prop[200], *tmp;
+    char prop[200], *tmp, *path = NULL;
+    unsigned char *uuid = NULL;
     int found = 0;
+    struct xend_domain *xenddomain = NULL;
 
     if (!VIR_IS_CONNECT(conn))
 	return(NULL);
     if (name == NULL)
         return(NULL);
+
+    /* try first though Xend */
+    xenddomain = xend_get_domain(conn, name);
+    if (xenddomain != NULL) {
+        fprintf(stderr, "Xend: success looking up %s\n", name);
+        id = xenddomain->live->id;
+	uuid = xenddomain->uuid;
+	found = 1;
+	goto do_found;
+    }
+
+    /* then though the XenStore */
 
     t = xs_transaction_start(conn->xshandle);
     if (t == NULL)
@@ -683,6 +698,10 @@ virDomainLookupByName(virConnectPtr conn, const char *name) {
 	        break;
 	}
     }
+    path = xs_get_domain_path(conn->xshandle, (unsigned int) id);
+
+do_found:
+
     if (found) {
 	ret = (virDomainPtr) malloc(sizeof(virDomain));
 	if (ret == NULL)
@@ -690,11 +709,15 @@ virDomainLookupByName(virConnectPtr conn, const char *name) {
 	ret->magic = VIR_DOMAIN_MAGIC;
 	ret->conn = conn;
 	ret->handle = id;
-	ret->path = xs_get_domain_path(conn->xshandle, (unsigned int) id);
+	ret->path = path;
+	if (uuid != NULL)
+	    memcpy(ret->uuid, uuid, 16);
 	ret->name = strdup(name);
     }
 
 done:
+    if (xenddomain != NULL)
+	free(xenddomain);
     if (t != NULL)
 	xs_transaction_end(conn->xshandle, t, 0);
     if (idlist != NULL)
@@ -972,6 +995,10 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory) {
 int
 virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
     int ret;
+    char *tmp, **tmp2;
+    unsigned int nb_vcpus;
+    char request[200];
+
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain))
 	return(-1);
@@ -980,54 +1007,18 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
     
     memset(info, 0, sizeof(virDomainInfo));
     
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        char *tmp, **tmp2;
-	unsigned int nb_vcpus;
-	char request[200];
-
-	tmp = virDomainDoStoreQuery(domain, "running");
-	if (tmp != NULL) {
-	    if (tmp[0] == '1')
-		info->state = VIR_DOMAIN_RUNNING;
-	    free(tmp);
-	} else {
-	    info->state = VIR_DOMAIN_NONE;
-	}
-	tmp = virDomainDoStoreQuery(domain, "memory/target");
-	if (tmp != NULL) {
-	    info->memory = atol(tmp);
-	    info->maxMem = atol(tmp);
-	    free(tmp);
-	} else {
-	    info->memory = 0;
-	    info->maxMem = 0;
-	}
-#if 0
-        /* doesn't seems to work */
-	tmp = virDomainDoStoreQuery(domain, "cpu_time");
-	if (tmp != NULL) {
-	    info->cpuTime = atol(tmp);
-	    free(tmp);
-	} else {
-	    info->cpuTime = 0;
-	}
-#endif
-        snprintf(request, 199, "/local/domain/%d/cpu", domain->handle);
-	request[199] = 0;
-	tmp2 = virConnectDoStoreList(domain->conn, request, &nb_vcpus);
-	if (tmp2 != NULL) {
-	    info->nrVirtCpu = nb_vcpus;
-	    free(tmp2);
-	}
-
-    } else {
+    /*
+     * if we have direct access though the hypervisor do a direct call
+     */
+    if (domain->conn->handle >= 0) {
         dom0_getdomaininfo_t dominfo;
 
 	dominfo.domain = domain->handle;
         ret = xenHypervisorGetDomainInfo(domain->conn->handle, domain->handle,
 	                                 &dominfo);
         if (ret < 0)
-	    return(-1);
+	    goto xend_info;
+
 	switch (dominfo.flags & 0xFF) {
 	    case DOMFLAGS_DYING:
 	        info->state = VIR_DOMAIN_SHUTDOWN;
@@ -1057,6 +1048,53 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
 	info->memory = dominfo.tot_pages * 4;
 	info->maxMem = dominfo.max_pages * 4;
 	info->nrVirtCpu = dominfo.nr_online_vcpus;
+	return(0);
+    }
+
+xend_info:
+    /*
+     * try to extract the informations though access to the Xen Daemon
+     */
+    if (xend_get_domain_info(domain, info) == 0)
+        return(0);
+
+    /*
+     * last fallback, try to get the inforamtions from the Xen store
+     */
+
+    tmp = virDomainDoStoreQuery(domain, "running");
+    if (tmp != NULL) {
+	if (tmp[0] == '1')
+	    info->state = VIR_DOMAIN_RUNNING;
+	free(tmp);
+    } else {
+	info->state = VIR_DOMAIN_NONE;
+    }
+    tmp = virDomainDoStoreQuery(domain, "memory/target");
+    if (tmp != NULL) {
+	info->memory = atol(tmp);
+	info->maxMem = atol(tmp);
+	free(tmp);
+    } else {
+	info->memory = 0;
+	info->maxMem = 0;
+    }
+#if 0
+    /* doesn't seems to work */
+    tmp = virDomainDoStoreQuery(domain, "cpu_time");
+    if (tmp != NULL) {
+	info->cpuTime = atol(tmp);
+	free(tmp);
+    } else {
+	info->cpuTime = 0;
+    }
+#endif
+    snprintf(request, 199, "/local/domain/%d/cpu", domain->handle);
+    request[199] = 0;
+    tmp2 = virConnectDoStoreList(domain->conn, request, &nb_vcpus);
+    if (tmp2 != NULL) {
+	info->nrVirtCpu = nb_vcpus;
+	free(tmp2);
     }
     return(0);
 }

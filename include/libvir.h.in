@@ -116,6 +116,14 @@ struct _virDomainInfo {
 };
 
 /**
+ * virDomainInfoPtr:
+ *
+ * a virDomainInfoPtr is a pointer to a virDomainInfo structure.
+ */
+
+typedef virDomainInfo *virDomainInfoPtr;
+
+/**
  * virDomainKernel:
  *
  * a virDomainImage is the set of kernel related informations associated

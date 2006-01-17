@@ -1034,7 +1034,8 @@ xend_setup_tcp(virConnectPtr xend, const char *host, int port)
 int
 xend_setup(virConnectPtr conn)
 {
-    return(xend_setup_unix(conn, "/var/lib/xend/xend-socket"));
+    return(xend_setup_tcp(conn, "localhost", 8000));
+/*    return(xend_setup_unix(conn, "/var/lib/xend/xend-socket")); */
 }
 
 /**
@@ -1659,6 +1660,50 @@ sexpr_to_xend_domain_size(struct sexpr *root, int *n_vbds, int *n_vifs)
 }
 
 /**
+ * sexpr_to_xend_domain_info:
+ * @root: an S-Expression describing a domain
+ * @info: a info data structure to fill=up
+ *
+ * Internal routine filling up the info structure with the values from
+ * the domain root provided.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+static int
+sexpr_to_xend_domain_info(struct sexpr *root, virDomainInfoPtr info)
+{
+    const char *flags;
+    
+
+    if ((root == NULL) || (info == NULL))
+        return(-1);
+
+    info->memory = sexpr_u64(root, "domain/memory") << 10;
+    info->maxMem = sexpr_u64(root, "domain/maxmem") << 10;
+    flags = sexpr_node(root, "domain/state");
+
+    if (flags) {
+        if (strchr(flags, 'c'))
+	    info->state = VIR_DOMAIN_CRASHED;
+	else if (strchr(flags, 's'))
+	    info->state = VIR_DOMAIN_SHUTDOWN;
+	else if (strchr(flags, 'd'))
+	    info->state = VIR_DOMAIN_SHUTOFF;
+	else if (strchr(flags, 'p'))
+	    info->state = VIR_DOMAIN_PAUSED;
+	else if (strchr(flags, 'b'))
+	    info->state = VIR_DOMAIN_BLOCKED;
+	else if (strchr(flags, 'r'))
+	    info->state = VIR_DOMAIN_RUNNING;
+    } else {
+        info->state = VIR_DOMAIN_NOSTATE;
+    }
+    info->cpuTime = sexpr_float(root, "domain/cpu_time") * 1000000000;
+    info->nrVirtCpu = sexpr_int(root, "domain/vcpus");
+    return(0);
+}
+
+/**
  * sexpr_to_xend_domain:
  * @root: an S-Expression describing a domain
  *
@@ -1736,6 +1781,7 @@ sexpr_to_xend_domain(struct sexpr *root)
         }
     }
 
+    dom->live->id = sexpr_int(root, "domain/domid");
     dom->live->cpu_time = sexpr_float(root, "domain/cpu_time");
     dom->live->up_time = sexpr_float(root, "domain/up_time");
     dom->live->start_time = sexpr_float(root, "domain/start_time");
@@ -1773,6 +1819,34 @@ sexpr_to_xend_domain(struct sexpr *root)
 
 error:
     return dom;
+}
+
+/**
+ * xend_get_domain_info:
+ * @xend: A xend instance
+ * @name: The name of the domain
+ *
+ * This method looks up information about a domain and update the
+ * information block provided.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+int
+xend_get_domain_info(virDomainPtr domain, virDomainInfoPtr info)
+{
+    struct sexpr *root;
+    int ret;
+
+    if ((domain == NULL) || (info == NULL))
+        return(-1);
+
+    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    if (root == NULL)
+        return(-1);
+
+    ret = sexpr_to_xend_domain_info(root, info);
+    sexpr_free(root);
+    return(ret);
 }
 
 /**

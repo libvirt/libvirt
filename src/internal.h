@@ -111,6 +111,7 @@ struct _virDomain {
     char        *path;		/* the domain internal path */
     int	         handle;	/* internal handle for the dmonain ID */
     int          flags;		/* extra flags */
+    unsigned char uuid[16];	/* the domain unique identifier */
 };
 
 /*
