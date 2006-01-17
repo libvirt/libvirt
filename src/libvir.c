@@ -664,7 +664,6 @@ virDomainLookupByName(virConnectPtr conn, const char *name) {
     /* try first though Xend */
     xenddomain = xend_get_domain(conn, name);
     if (xenddomain != NULL) {
-        fprintf(stderr, "Xend: success looking up %s\n", name);
         id = xenddomain->live->id;
 	uuid = xenddomain->uuid;
 	found = 1;
