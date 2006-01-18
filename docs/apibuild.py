@@ -22,6 +22,10 @@ ignored_files = {
   "hash.c": "internal hash table stuff",
   "hash.h": "internal hash table stuff",
   "internal.h": "internal includes and defines",
+  "xend_internal.h": "internal includes and defines",
+  "xend_internal.c": "internal code",
+  "sexpr.h": "internal includes and defines",
+  "sexpr.c": "internal code",
 }
 
 ignored_words = {

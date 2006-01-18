@@ -60,7 +60,8 @@ typedef enum {
      VIR_DOMAIN_BLOCKED	= 2, /* the domain is blocked on resource */
      VIR_DOMAIN_PAUSED	= 3, /* the domain is paused by user */
      VIR_DOMAIN_SHUTDOWN= 4, /* the domain is being shut down */
-     VIR_DOMAIN_SHUTOFF	= 5  /* the domain is shut off */
+     VIR_DOMAIN_SHUTOFF	= 5, /* the domain is shut off */
+     VIR_DOMAIN_CRASHED = 6  /* the domain is crashed */
 } virDomainState;
 
 /**
@@ -217,6 +218,14 @@ int			virDomainFree		(virDomainPtr domain);
  */
 int			virDomainSuspend	(virDomainPtr domain);
 int			virDomainResume		(virDomainPtr domain);
+
+/*
+ * Domain save/restore
+ */
+int			virDomainSave		(virDomainPtr domain,
+						 const char *to);
+int			virDomainRestore	(virDomainPtr domain,
+						 const char *from);
 
 /*
  * Domain runtime informations

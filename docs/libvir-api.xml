@@ -7,26 +7,42 @@
      <author>Daniel Veillard &lt;veillard@redhat.com&gt; </author>
      <exports symbol='LIBVIR_VERSION_NUMBER' type='macro'/>
      <exports symbol='VIR_DOMAIN_SHUTOFF' type='enum'/>
+     <exports symbol='VIR_DOMAIN_DESTROY' type='enum'/>
+     <exports symbol='VIR_DEVICE_DEFAULT' type='enum'/>
+     <exports symbol='VIR_DOMAIN_RENAME_RESTART' type='enum'/>
+     <exports symbol='VIR_DOMAIN_PRESERVE' type='enum'/>
      <exports symbol='VIR_DOMAIN_SHUTDOWN' type='enum'/>
+     <exports symbol='VIR_DEVICE_RO' type='enum'/>
+     <exports symbol='VIR_DEVICE_RW_FORCE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_CRASHED' type='enum'/>
      <exports symbol='VIR_DOMAIN_NONE' type='enum'/>
+     <exports symbol='VIR_DEVICE_RW' type='enum'/>
      <exports symbol='VIR_DOMAIN_BLOCKED' type='enum'/>
      <exports symbol='VIR_DOMAIN_PAUSED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_RESTART' type='enum'/>
      <exports symbol='VIR_DOMAIN_RUNNING' type='enum'/>
      <exports symbol='VIR_DOMAIN_NOSTATE' type='enum'/>
      <exports symbol='virDomainInfoPtr' type='typedef'/>
+     <exports symbol='virDomainKernelPtr' type='typedef'/>
      <exports symbol='virConnectPtr' type='typedef'/>
+     <exports symbol='virDomainKernel' type='typedef'/>
      <exports symbol='virDomainState' type='typedef'/>
+     <exports symbol='virDeviceMode' type='typedef'/>
      <exports symbol='virDomain' type='typedef'/>
      <exports symbol='virDomainPtr' type='typedef'/>
+     <exports symbol='virDomainRestart' type='typedef'/>
      <exports symbol='virConnect' type='typedef'/>
      <exports symbol='virDomainCreateFlags' type='typedef'/>
      <exports symbol='virDomainInfo' type='typedef'/>
      <exports symbol='_virDomainInfo' type='struct'/>
+     <exports symbol='_virDomainKernel' type='struct'/>
      <exports symbol='virDomainGetInfo' type='function'/>
      <exports symbol='virDomainShutdown' type='function'/>
      <exports symbol='virGetVersion' type='function'/>
      <exports symbol='virDomainLookupByName' type='function'/>
+     <exports symbol='virDomainRestore' type='function'/>
      <exports symbol='virConnectGetType' type='function'/>
+     <exports symbol='virDomainSave' type='function'/>
      <exports symbol='virConnectListDomains' type='function'/>
      <exports symbol='virDomainLookupByID' type='function'/>
      <exports symbol='virDomainGetOSType' type='function'/>
@@ -51,17 +67,27 @@
     <macro name='LIBVIR_VERSION_NUMBER' file='libvir'>
       <info>Macro providing the version of the library as version * 1,000,000 + minor * 1000 + micro</info>
     </macro>
+    <enum name='VIR_DEVICE_DEFAULT' file='libvir' value='0' type='virDeviceMode' info='Default mode'/>
+    <enum name='VIR_DEVICE_RO' file='libvir' value='1' type='virDeviceMode' info='Access read-only'/>
+    <enum name='VIR_DEVICE_RW' file='libvir' value='2' type='virDeviceMode' info='Access read-write'/>
+    <enum name='VIR_DEVICE_RW_FORCE' file='libvir' value='3' type='virDeviceMode' info=' Forced read-write even if already used'/>
     <enum name='VIR_DOMAIN_BLOCKED' file='libvir' value='2' type='virDomainState' info='the domain is blocked on resource'/>
+    <enum name='VIR_DOMAIN_CRASHED' file='libvir' value='6' type='virDomainState' info=' the domain is crashed'/>
+    <enum name='VIR_DOMAIN_DESTROY' file='libvir' value='1' type='virDomainRestart' info='destroy the domain'/>
     <enum name='VIR_DOMAIN_NONE' file='libvir' value='0' type='virDomainCreateFlags'/>
     <enum name='VIR_DOMAIN_NOSTATE' file='libvir' value='0' type='virDomainState' info='no state'/>
     <enum name='VIR_DOMAIN_PAUSED' file='libvir' value='3' type='virDomainState' info='the domain is paused by user'/>
+    <enum name='VIR_DOMAIN_PRESERVE' file='libvir' value='3' type='virDomainRestart' info='keep as is, need manual destroy, for debug'/>
+    <enum name='VIR_DOMAIN_RENAME_RESTART' file='libvir' value='4' type='virDomainRestart' info=' restart under an new unique name'/>
+    <enum name='VIR_DOMAIN_RESTART' file='libvir' value='2' type='virDomainRestart' info='restart the domain'/>
     <enum name='VIR_DOMAIN_RUNNING' file='libvir' value='1' type='virDomainState' info='the domain is running'/>
     <enum name='VIR_DOMAIN_SHUTDOWN' file='libvir' value='4' type='virDomainState' info='the domain is being shut down'/>
-    <enum name='VIR_DOMAIN_SHUTOFF' file='libvir' value='5' type='virDomainState' info=' the domain is shut off'/>
+    <enum name='VIR_DOMAIN_SHUTOFF' file='libvir' value='5' type='virDomainState' info='the domain is shut off'/>
     <struct name='virConnect' file='libvir' type='struct _virConnect'/>
     <typedef name='virConnectPtr' file='libvir' type='virConnect *'>
       <info>a virConnectPtr is pointer to a virConnect private structure, this is the type used to reference a connection to the Xen Hypervisor in the API.</info>
     </typedef>
+    <typedef name='virDeviceMode' file='libvir' type='enum'/>
     <struct name='virDomain' file='libvir' type='struct _virDomain'/>
     <typedef name='virDomainCreateFlags' file='libvir' type='enum'/>
     <struct name='virDomainInfo' file='libvir' type='struct _virDomainInfo'>
@@ -80,9 +106,19 @@
     <typedef name='virDomainInfoPtr' file='libvir' type='virDomainInfo *'>
       <info>a virDomainInfoPtr is a pointer to a virDomainInfo structure.</info>
     </typedef>
+    <struct name='virDomainKernel' file='libvir' type='struct _virDomainKernel'>
+      <field name='kernel' type='const char *' info=' filename pointing to the kernel image'/>
+      <field name='ramdisk' type='const char *' info=' an optional init ramdisk'/>
+      <field name='root' type='const char *' info=' an optional root block device'/>
+      <field name='extra' type='const char *' info=' optional kernel command line parameters'/>
+    </struct>
+    <typedef name='virDomainKernelPtr' file='libvir' type='virDomainKernel *'>
+      <info>a virDomainKernelPtr is a pointer to a virDomainKernel structure.</info>
+    </typedef>
     <typedef name='virDomainPtr' file='libvir' type='virDomain *'>
       <info>a virDomainPtr is pointer to a virDomain private structure, this is the type used to reference a Xen domain in the API.</info>
     </typedef>
+    <typedef name='virDomainRestart' file='libvir' type='enum'/>
     <typedef name='virDomainState' file='libvir' type='enum'/>
     <function name='virConnectClose' file='libvir' module='libvir'>
       <info>This function closes the connection to the Hypervisor. This should not be called if further interaction with the Hypervisor are needed especially if there is running domain which need further monitoring by the application.</info>
@@ -133,7 +169,7 @@
       <arg name='flags' type='unsigned int' info='an optional set of virDomainFlags'/>
     </function>
     <function name='virDomainDestroy' file='libvir' module='libvir'>
-      <info>Destroy the domain object. The running instance is shutdown if not down already and all resources used by it are given back to the hypervisor. The data structure is freed and should not be used thereafter if the call does not return an error. This function requires priviledged access to the hypervisor.</info>
+      <info>Destroy the domain object. The running instance is shutdown if not down already and all resources used by it are given back to the hypervisor. The data structure is freed and should not be used thereafter if the call does not return an error. This function may requires priviledged access</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
@@ -186,10 +222,22 @@
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='name' type='const char *' info='name for the domain'/>
     </function>
-    <function name='virDomainResume' file='libvir' module='libvir'>
-      <info>Resume an suspended domain, the process is restarted from the state where it was frozen by calling virSuspendDomain(). This function requires priviledged access to the hypervisor.</info>
+    <function name='virDomainRestore' file='libvir' module='libvir'>
+      <info>This method will restore a domain saved to disk by virDomainSave().</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
+      <arg name='from' type='const char *' info='path to the'/>
+    </function>
+    <function name='virDomainResume' file='libvir' module='libvir'>
+      <info>Resume an suspended domain, the process is restarted from the state where it was frozen by calling virSuspendDomain(). This function may requires priviledged access</info>
+      <return type='int' info='0 in case of success and -1 in case of failure.'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+    </function>
+    <function name='virDomainSave' file='libvir' module='libvir'>
+      <info>This method will suspend a domain and save its memory contents to a file on disk.  Use virDomainRestore() to restore a domain after saving.</info>
+      <return type='int' info='0 in case of success and -1 in case of failure.'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+      <arg name='to' type='const char *' info='path for the output file'/>
     </function>
     <function name='virDomainSetMaxMemory' file='libvir' module='libvir'>
       <info>Dynamically change the maximum amount of physical memory allocated to a domain. If domain is NULL, then this change the amount of memory reserved to Domain0 i.e. the domain where the application runs. This function requires priviledged access to the hypervisor.</info>
@@ -198,12 +246,12 @@
       <arg name='memory' type='unsigned long' info='the memory size in kilobytes'/>
     </function>
     <function name='virDomainShutdown' file='libvir' module='libvir'>
-      <info>Shutdown a domain, the domain object is still usable there after but the domain OS is being stopped.  TODO: should we add an option for reboot, knowing it may not be doable in the general case ?</info>
+      <info>Shutdown a domain, the domain object is still usable there after but the domain OS is being stopped. Note that the guest OS may ignore the request.  TODO: should we add an option for reboot, knowing it may not be doable in the general case ?</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
     <function name='virDomainSuspend' file='libvir' module='libvir'>
-      <info>Suspends an active domain, the process is frozen without further access to CPU resources and I/O but the memory used by the domain at the hypervisor level will stay allocated. Use virDomainResume() to reactivate the domain. This function requires priviledged access to the hypervisor.</info>
+      <info>Suspends an active domain, the process is frozen without further access to CPU resources and I/O but the memory used by the domain at the hypervisor level will stay allocated. Use virDomainResume() to reactivate the domain. This function may requires priviledged access.</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>

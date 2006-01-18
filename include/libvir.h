@@ -61,7 +61,7 @@ typedef enum {
      VIR_DOMAIN_PAUSED	= 3, /* the domain is paused by user */
      VIR_DOMAIN_SHUTDOWN= 4, /* the domain is being shut down */
      VIR_DOMAIN_SHUTOFF	= 5, /* the domain is shut off */
-     VIR_DOMAIN_CRASHED	= 6  /* the domain is crashed */
+     VIR_DOMAIN_CRASHED = 6  /* the domain is crashed */
 } virDomainState;
 
 /**
@@ -97,7 +97,7 @@ typedef enum {
 typedef struct _virDomainInfo virDomainInfo;
 
 struct _virDomainInfo {
-    unsigned char state;	/* the running state, one of virDomainState */
+    unsigned char state;	/* the running state, one of virDomainFlags */
     unsigned long maxMem;	/* the maximum memory in KBytes allowed */
     unsigned long memory;	/* the memory in KBytes used by the domain */
     unsigned short nrVirtCpu;	/* the number of virtual CPUs for the domain */
@@ -218,6 +218,14 @@ int			virDomainFree		(virDomainPtr domain);
  */
 int			virDomainSuspend	(virDomainPtr domain);
 int			virDomainResume		(virDomainPtr domain);
+
+/*
+ * Domain save/restore
+ */
+int			virDomainSave		(virDomainPtr domain,
+						 const char *to);
+int			virDomainRestore	(virDomainPtr domain,
+						 const char *from);
 
 /*
  * Domain runtime informations

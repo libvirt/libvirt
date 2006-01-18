@@ -16,6 +16,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <xs.h>
 #include "internal.h"
 #include "xend_internal.h"
@@ -733,7 +736,7 @@ done:
  * already and all resources used by it are given back to the hypervisor.
  * The data structure is freed and should not be used thereafter if the
  * call does not return an error.
- * This function requires priviledged access to the hypervisor.
+ * This function may requires priviledged access
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -743,11 +746,22 @@ virDomainDestroy(virDomainPtr domain) {
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain))
 	return(-1);
+
+    /*
+     * try first with the xend method
+     */
+    ret = xend_destroy(domain->conn, domain->name);
+    if (ret == 0) {
+        virDomainFree(domain);
+	return(0);
+    }
+
     ret = xenHypervisorDestroyDomain(domain->conn->handle, domain->handle);
     if (ret < 0)
         return(-1);
     
-    return(virDomainFree(domain));
+    virDomainFree(domain);
+    return(0);
 }
 
 /**
@@ -781,14 +795,22 @@ virDomainFree(virDomainPtr domain) {
  * to CPU resources and I/O but the memory used by the domain at the 
  * hypervisor level will stay allocated. Use virDomainResume() to reactivate
  * the domain.
- * This function requires priviledged access to the hypervisor.
+ * This function may requires priviledged access.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
 virDomainSuspend(virDomainPtr domain) {
+    int ret;
+
     if (!VIR_IS_CONNECTED_DOMAIN(domain))
 	return(-1);
+    /* first try though the Xen daemon */
+    ret = xend_pause(domain->conn, domain->name);
+    if (ret == 0)
+        return(0);
+
+    /* then try a direct hypervisor access */
     return(xenHypervisorPauseDomain(domain->conn->handle, domain->handle));
 }
 
@@ -798,15 +820,69 @@ virDomainSuspend(virDomainPtr domain) {
  *
  * Resume an suspended domain, the process is restarted from the state where
  * it was frozen by calling virSuspendDomain().
- * This function requires priviledged access to the hypervisor.
+ * This function may requires priviledged access
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
 virDomainResume(virDomainPtr domain) {
+    int ret;
+
     if (!VIR_IS_CONNECTED_DOMAIN(domain))
 	return(-1);
+    /* first try though the Xen daemon */
+    ret = xend_unpause(domain->conn, domain->name);
+    if (ret == 0)
+        return(0);
+
+    /* then try a direct hypervisor access */
     return(xenHypervisorResumeDomain(domain->conn->handle, domain->handle));
+}
+
+/**
+ * virDomainSave:
+ * @domain: a domain object
+ * @to: path for the output file
+ *
+ * This method will suspend a domain and save its memory contents to
+ * a file on disk.  Use virDomainRestore() to restore a domain after
+ * saving.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainSave(virDomainPtr domain, const char *to) {
+    int ret;
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+	return(-1);
+    if ((to == NULL) || (to[0] != '/'))
+	return(-1);
+
+    ret = xend_save(domain->conn, domain->name, to);
+    return(ret);
+}
+
+/**
+ * virDomainRestore:
+ * @domain: a domain object
+ * @from: path to the 
+ *
+ * This method will restore a domain saved to disk by virDomainSave().
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainRestore(virDomainPtr domain, const char *from) {
+    int ret;
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+	return(-1);
+    if ((from == NULL) || (from[0] != '/'))
+	return(-1);
+    
+    ret = xend_restore(domain->conn, from);
+    return(ret);
 }
 
 /**
@@ -814,7 +890,8 @@ virDomainResume(virDomainPtr domain) {
  * @domain: a domain object
  *
  * Shutdown a domain, the domain object is still usable there after but
- * the domain OS is being stopped.
+ * the domain OS is being stopped. Note that the guest OS may ignore the
+ * request.
  *
  * TODO: should we add an option for reboot, knowing it may not be doable
  *       in the general case ?
@@ -828,6 +905,13 @@ virDomainShutdown(virDomainPtr domain) {
     if (!VIR_IS_CONNECTED_DOMAIN(domain))
 	return(-1);
     
+    /*
+     * try first with the xend daemon
+     */
+    ret = xend_shutdown(domain->conn, domain->name);
+    if (ret == 0)
+        return(0);
+
     /*
      * this is very hackish, the domU kernel probes for a special 
      * node in the xenstore and launch the shutdown command if found.
@@ -1041,7 +1125,7 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
 	/*
 	 * the API brings back the cpu time in nanoseconds,
 	 * convert to microseconds, same thing convert to
-
+         * kilobytes from page counts
 	 */
 	info->cpuTime = dominfo.cpu_time;
 	info->memory = dominfo.tot_pages * 4;

@@ -1,3 +1,10 @@
+Wed Jan 18 11:32:04 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvir.h include/libvir.h.in src/libvir.c: more integration
+	  of libxend capabilities, including checkpointing and restoring 
+	  in a file.
+	* docs//*: regenerated the docs
+
 Tue Jan 17 17:53:43 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvir.h[.in]: added VIR_DOMAIN_CRASHED status, small
