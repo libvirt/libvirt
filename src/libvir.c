@@ -909,10 +909,12 @@ virDomainShutdown(virDomainPtr domain) {
      * try first with the xend daemon
      */
     ret = xend_shutdown(domain->conn, domain->name);
+    /* disabled as this seems to not work ...
     if (ret == 0)
         return(0);
-
+     */
     /*
+
      * this is very hackish, the domU kernel probes for a special 
      * node in the xenstore and launch the shutdown command if found.
      */

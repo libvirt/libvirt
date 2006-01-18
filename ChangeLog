@@ -1,3 +1,7 @@
+Wed Jan 18 19:57:53 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvir.c: small change w.r.t. reboot.
+
 Wed Jan 18 11:32:04 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvir.h include/libvir.h.in src/libvir.c: more integration
