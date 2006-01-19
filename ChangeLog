@@ -1,3 +1,9 @@
+Thu Jan 19 11:21:57 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvir.c src/xend_internal.c src/xend_internal.h: continue
+	  the integration of more xend based accesses, virsh seems to work
+	  without accessing the xen store now.
+
 Wed Jan 18 19:57:53 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvir.c: small change w.r.t. reboot.

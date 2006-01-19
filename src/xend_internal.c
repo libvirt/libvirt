@@ -1878,6 +1878,38 @@ xend_get_domain(virConnectPtr xend, const char *domname)
 }
 
 /**
+ * xend_get_domain_id:
+ * @xend: A xend instance
+ * @name: The name of the domain
+ *
+ * This method looks up the id of a domain
+ *
+ * Returns the id on success; -1 (with errno) on error
+ */
+int
+xend_get_domain_id(virConnectPtr xend, const char *domname)
+{
+    struct sexpr *root;
+    const char *value;
+    int ret = -1;
+
+    root = sexpr_get(xend, "/xend/domain/%s?detail=1", domname);
+    if (root == NULL)
+        goto error;
+
+    value = sexpr_node(root, "domain/domid");
+    if (value == NULL)
+        goto error;
+    ret = strtol(value, NULL, 0);
+    if ((ret == 0) && (value[0] != '0'))
+        ret = -1;
+
+  error:
+    sexpr_free(root);
+    return(ret);
+}
+
+/**
  * xend_get_node:
  * @xend: A xend instance
  *

@@ -128,13 +128,16 @@ failed:
  * virConnectOpenReadOnly:
  * @name: optional argument currently unused, pass NULL
  *
- * This function should be called first to get a read-only connection to the 
- * xen store. The set of APIs usable are then restricted.
+ * This function should be called first to get a restricted connection to the 
+ * libbrary functionalities. The set of APIs usable are then restricted
+ * on the available methods to control the domains.
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
  */
 virConnectPtr
 virConnectOpenReadOnly(const char *name) {
+    int method = 0;
+    int handle;
     virConnectPtr ret = NULL;
     struct xs_handle *xshandle = NULL;
 
@@ -142,9 +145,12 @@ virConnectOpenReadOnly(const char *name) {
     if (name != NULL) 
         return(NULL);
 
+    handle = xenHypervisorOpen();
+    if (handle >= 0)
+        method++;
     xshandle = xs_daemon_open_readonly();
-    if (xshandle == NULL)
-        goto failed;
+    if (xshandle != NULL)
+        method++;
 
     ret = (virConnectPtr) malloc(sizeof(virConnect));
     if (ret == NULL)
@@ -152,19 +158,24 @@ virConnectOpenReadOnly(const char *name) {
     ret->magic = VIR_CONNECT_MAGIC;
     ret->handle = -1;
     ret->xshandle = xshandle;
-    if (xend_setup(ret) < 0)
-        goto failed;
+    if (xend_setup(ret) == 0)
+        method++;
     ret->domains = virHashCreate(20);
     ret->flags = VIR_CONNECT_RO;
-    if (ret->domains == NULL)
+    if ((ret->domains == NULL) || (method == 0))
         goto failed;
 
     return(ret);
 failed:
+    if (handle >= 0)
+        xenHypervisorClose(handle);
     if (xshandle != NULL)
         xs_daemon_close(xshandle);
-    if (ret != NULL)
+    if (ret != NULL) {
+        if (ret->domains != NULL)
+	    virHashFree(ret->domains, NULL);
         free(ret);
+    }
     return(NULL);
 }
 
@@ -223,7 +234,8 @@ virConnectClose(virConnectPtr conn) {
         return(-1);
     virHashFree(conn->domains, (virHashDeallocator) virDomainFreeName);
     conn->magic = -1;
-    xs_daemon_close(conn->xshandle);
+    if (conn->xshandle != NULL)
+	xs_daemon_close(conn->xshandle);
     conn->xshandle = NULL;
     if (conn->handle != -1)
 	xenHypervisorClose(conn->handle);
@@ -293,7 +305,7 @@ virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer) {
  */
 int
 virConnectListDomains(virConnectPtr conn, int *ids, int maxids) {
-    struct xs_transaction_handle* t;
+    struct xs_transaction_handle* t = NULL;
     int ret = -1;
     unsigned int num, i;
     long id;
@@ -305,28 +317,41 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids) {
     if ((ids == NULL) || (maxids <= 0))
         return(-1);
     
-    t = xs_transaction_start(conn->xshandle);
-    if (t == NULL)
-        goto done;
-
-    idlist = xs_directory(conn->xshandle, t, "/local/domain", &num);
-    if (idlist == NULL)
-        goto done;
-
-    for (ret = 0,i = 0;(i < num) && (ret < maxids);i++) {
-        id = strtol(idlist[i], &endptr, 10);
-	if ((endptr == idlist[i]) || (*endptr != 0)) {
-	    ret = -1;
-	    goto done;
+    /* TODO: implement the API with Xend interfaces */
+    idlist = xend_get_domains(conn);
+    if (idlist != NULL) {
+        for (ret = 0,i = 0;(idlist[i] != NULL) && (ret < maxids);i++) {
+	    id = xend_get_domain_id(conn, idlist[i]);
+	    if (id >= 0)
+	        ids[ret++] = (int) id;
 	}
+	goto done;
+    }
+    if (conn->xshandle != NULL) {
+	t = xs_transaction_start(conn->xshandle);
+	if (t == NULL)
+	    goto done;
 
-	if (virConnectCheckStoreID(conn, (int) id) < 0)
-	    continue;
-	ids[ret++] = (int) id;
+	idlist = xs_directory(conn->xshandle, t, "/local/domain", &num);
+	if (idlist == NULL)
+	    goto done;
+
+	for (ret = 0,i = 0;(i < num) && (ret < maxids);i++) {
+	    id = strtol(idlist[i], &endptr, 10);
+	    if ((endptr == idlist[i]) || (*endptr != 0)) {
+		ret = -1;
+		goto done;
+	    }
+
+	    if (virConnectCheckStoreID(conn, (int) id) < 0)
+		continue;
+	    ids[ret++] = (int) id;
+	}
     }
 
+
 done:
-    if (t != NULL)
+    if ((t != NULL) && (conn->xshandle != NULL))
 	xs_transaction_end(conn->xshandle, t, 0);
     if (idlist != NULL)
         free(idlist);
@@ -352,14 +377,29 @@ virConnectNumOfDomains(virConnectPtr conn) {
     if (!VIR_IS_CONNECT(conn))
 	return(-1);
 
-    t = xs_transaction_start(conn->xshandle);
-    if (t) {
-        idlist = xs_directory(conn->xshandle, t, "/local/domain", &num);
-        if (idlist) {
-            free(idlist);
-	    ret = num;
-        }
-        xs_transaction_end(conn->xshandle, t, 0);
+    /* 
+     * try first with Xend interface
+     */
+    idlist = xend_get_domains(conn);
+    if (idlist != NULL) {
+        char **tmp = idlist;
+
+        ret = 0;
+        while (*tmp != NULL) {
+	    tmp++;
+	    ret++;
+	}
+	
+    } else if (conn->xshandle != NULL) {
+	t = xs_transaction_start(conn->xshandle);
+	if (t) {
+	    idlist = xs_directory(conn->xshandle, t, "/local/domain", &num);
+	    if (idlist) {
+		free(idlist);
+		ret = num;
+	    }
+	    xs_transaction_end(conn->xshandle, t, 0);
+	}
     }
     return(ret);
 }
@@ -393,36 +433,6 @@ virDomainCreateLinux(virConnectPtr conn, const char *kernel_path,
     return(NULL);
 }
 
-#if 0
-/* Not used ATM */
-/**
- * virConnectDoStoreQuery:
- * @conn: pointer to the hypervisor connection
- * @path: the absolute path of the data in the store to retrieve
- *
- * Internal API querying the Xenstore for a string value.
- *
- * Returns a string which must be freed by the caller or NULL in case of error
- */
-static char *
-virConnectDoStoreQuery(virConnectPtr conn, const char *path) {
-    struct xs_transaction_handle* t;
-    char *ret = NULL;
-    unsigned int len = 0;
-
-    t = xs_transaction_start(conn->xshandle);
-    if (t == NULL)
-        goto done;
-
-    ret = xs_read(conn->xshandle, t, path, &len);
-
-done:
-    if (t != NULL)
-	xs_transaction_end(conn->xshandle, t, 0);
-    return(ret);
-}
-#endif
-
 /**
  * virConnectDoStoreList:
  * @conn: pointer to the hypervisor connection
@@ -437,6 +447,10 @@ static char **
 virConnectDoStoreList(virConnectPtr conn, const char *path, unsigned int *nb) {
     struct xs_transaction_handle* t;
     char **ret = NULL;
+
+    if ((conn == NULL) || (conn->xshandle == NULL) || (path == NULL) ||
+        (nb == NULL))
+        return(NULL);
 
     t = xs_transaction_start(conn->xshandle);
     if (t == NULL)
@@ -468,6 +482,8 @@ virDomainDoStoreQuery(virDomainPtr domain, const char *path) {
     
     if (!VIR_IS_CONNECTED_DOMAIN(domain))
 	return(NULL);
+    if (domain->conn->xshandle == NULL)
+        return(NULL);
 
     snprintf(s, 255, "/local/domain/%d/%s", domain->handle, path);
     s[255] = 0;
@@ -505,6 +521,8 @@ virDomainDoStoreWrite(virDomainPtr domain, const char *path,
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain))
 	return(-1);
+    if (domain->conn->xshandle == NULL)
+        return(-1);
     if (domain->conn->flags & VIR_CONNECT_RO)
         return(-1);
 
@@ -542,6 +560,8 @@ virDomainGetVM(virDomainPtr domain)
     
     if (!VIR_IS_CONNECTED_DOMAIN(domain))
 	return(NULL);
+    if (domain->conn->xshandle == NULL)
+        return(NULL);
     
     t = xs_transaction_start(domain->conn->xshandle);
     if (t == NULL)
@@ -607,30 +627,55 @@ done:
  */
 virDomainPtr
 virDomainLookupByID(virConnectPtr conn, int id) {
-    char *path;
+    char *path = NULL;
     virDomainPtr ret;
+    char *name = NULL;
 
     if (!VIR_IS_CONNECT(conn))
 	return(NULL);
     if (id < 0)
         return(NULL);
 
-    path = xs_get_domain_path(conn->xshandle, (unsigned int) id);
-    if (path == NULL) {
-        return(NULL);
+    /* lookup is easier with the Xen store so try it first */
+    if (conn->xshandle != NULL) {
+	path = xs_get_domain_path(conn->xshandle, (unsigned int) id);
     }
+    /* fallback to xend API then */
+    if (path == NULL) {
+        char **names = xend_get_domains(conn);
+	char **tmp = names;
+	int ident;
+
+	if (names != NULL) {
+	    while (*tmp != NULL) {
+		ident = xend_get_domain_id(conn, *tmp);
+		if (ident == id) {
+		    name = strdup(*tmp);
+		    break;
+		}
+		tmp++;
+	    }
+	    free(names);
+	}
+    }
+
     ret = (virDomainPtr) malloc(sizeof(virDomain));
     if (ret == NULL) {
-        free(path);
+        if (path != NULL)
+	    free(path);
 	return(NULL);
     }
     ret->magic = VIR_DOMAIN_MAGIC;
     ret->conn = conn;
     ret->handle = id;
     ret->path = path;
-    ret->name = virDomainDoStoreQuery(ret, "name");
+    if (name == NULL)
+	ret->name = virDomainDoStoreQuery(ret, "name");
+    else
+        ret->name = name;
     if (ret->name == NULL) {
-        free(path);
+        if (path != NULL)
+	    free(path);
         free(ret);
 	return(NULL);
     }
@@ -976,6 +1021,9 @@ virDomainGetOSType(virDomainPtr domain) {
     	str = virDomainGetVMInfo(domain, vm, "image/ostype");
 	free(vm);
     }
+    if (str == NULL)
+        str = strdup("linux");
+
     return(str);
 }
 
