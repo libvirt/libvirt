@@ -63,46 +63,18 @@
 	  <xsl:value-of select="$title"/>
 	</xsl:element>
         </head>
-        <body bgcolor="#8b7765" text="#000000" link="#a06060" vlink="#000000">
-          <xsl:call-template name="titlebox">
-	    <xsl:with-param name="title" select="$title"/>
-	  </xsl:call-template>
-          <table border="0" cellpadding="4" cellspacing="0" width="100%" align="center">
-            <tr>
-              <td bgcolor="#8b7765">
-                <table border="0" cellspacing="0" cellpadding="2" width="100%">
-                  <tr>
-                    <td valign="top" width="200" bgcolor="#8b7765">
-                      <xsl:call-template name="develtoc"/>
-                    </td>
-                    <td valign="top" bgcolor="#8b7765">
-                      <table border="0" cellspacing="0" cellpadding="1" width="100%">
-                        <tr>
-                          <td>
-                            <table border="0" cellspacing="0" cellpadding="1" width="100%" bgcolor="#000000">
-                              <tr>
-                                <td>
-                                  <table border="0" cellpadding="3" cellspacing="1" width="100%">
-                                    <tr>
-                                      <td bgcolor="#fffacd">
-				        <xsl:apply-templates select="entry"/>
-					<p><a href="{$href_base}bugs.html">Daniel Veillard</a></p>
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </body>
+	<body>
+	  <div id="main">
+	    <xsl:call-template name="topmain"/>
+	    <div id="left">
+	      <xsl:call-template name="mainmenu"/>
+	    </div>
+	    <div id="right">
+	      <xsl:apply-templates select="entry"/>
+	    </div>
+	    <xsl:call-template name="bottom"/>
+	  </div>
+	</body>
       </html>
   </xsl:template>
 

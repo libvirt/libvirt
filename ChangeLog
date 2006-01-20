@@ -1,3 +1,8 @@
+Fri Jan 20 16:48:05 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* doc/* : total revamp of the web site based on Diana Fong design
+	  but not completely integrated yet
+
 Fri Jan 20 10:57:44 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvir.h include/libvir.h.in src/libvir.c: revamped the

@@ -27,79 +27,6 @@
   <xsl:variable name="htmldir">html</xsl:variable>
   <xsl:variable name="href_base">../</xsl:variable>
 
-  <!-- The table of content for the HTML API pages -->
-  <xsl:variable name="menu_name">API Menu</xsl:variable>
-  <xsl:variable name="apitoc">
-    <form action="../search.php"
-          enctype="application/x-www-form-urlencoded" method="get">
-      <input name="query" type="text" size="20" value=""/>
-      <input name="submit" type="submit" value="Search ..."/>
-    </form>
-    <ul><!-- style="margin-left: -1em" -->
-      <li><a style="font-weight:bold"
-             href="{$href_base}index.html">Main Menu</a></li>
-      <li><a style="font-weight:bold"
-             href="index.html">API Menu</a></li>
-      <li><a href="{$href_base}ChangeLog.html">ChangeLog</a></li>
-    </ul>
-  </xsl:variable>
-  <xsl:template name="apitoc">
-    <table border="0" cellspacing="0" cellpadding="1" width="100%" bgcolor="#000000">
-      <tr>
-        <td>
-          <table width="100%" border="0" cellspacing="1" cellpadding="3">
-            <tr>
-              <td colspan="1" bgcolor="#eecfa1" align="center">
-                <center>
-                  <b><xsl:value-of select="$menu_name"/></b>
-                </center>
-              </td>
-            </tr>
-            <tr>
-              <td bgcolor="#fffacd">
-                <xsl:copy-of select="$apitoc"/>
-              </td>
-            </tr>
-          </table>
-          <table width="100%" border="0" cellspacing="1" cellpadding="3">
-            <tr>
-              <td colspan="1" bgcolor="#eecfa1" align="center">
-                <center>
-                  <b>API Indexes</b>
-                </center>
-              </td>
-            </tr>
-            <tr>
-              <td bgcolor="#fffacd">
-                <xsl:copy-of select="$api"/>
-              </td>
-            </tr>
-          </table>
-          <table width="100%" border="0" cellspacing="1" cellpadding="3">
-            <tr>
-              <td colspan="1" bgcolor="#eecfa1" align="center">
-                <center>
-                  <b>Related links</b>
-                </center>
-              </td>
-            </tr>
-            <tr>
-              <td bgcolor="#fffacd">
-                <xsl:copy-of select="$related"/>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  </xsl:template>
-
-  <xsl:template name="docstyle">
-    <style type="text/css">
-      div.deprecated pre.programlisting {border-style: double;border-color:red}
-      pre.programlisting {border-style: double;background: #EECFA1}
-    </style>
-  </xsl:template>
   <xsl:template name="navbar">
     <xsl:variable name="previous" select="preceding-sibling::file[1]"/>
     <xsl:variable name="next" select="following-sibling::file[1]"/>
@@ -573,34 +500,20 @@
     <xsl:document href="{$htmldir}/libvir-{$name}.html" method="xml" encoding="ISO-8859-1"
       doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
       doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-	<html>
-	  <head>
-	    <xsl:call-template name="style"/>
-	    <xsl:call-template name="docstyle"/>
-	    <title><xsl:value-of select="$title"/></title>
-	  </head>
-	  <body bgcolor="#8b7765" text="#000000" link="#a06060" vlink="#000000">
-	    <xsl:call-template name="titlebox">
-	      <xsl:with-param name="title" select="$title"/>
-	    </xsl:call-template>
-	  <table border="0" cellpadding="4" cellspacing="0" width="100%" align="center">
-	    <tr>
-	      <td bgcolor="#8b7765">
-		<table border="0" cellspacing="0" cellpadding="2" width="100%">
-		  <tr>
-		    <td valign="top" width="200" bgcolor="#8b7765">
-		      <xsl:call-template name="apitoc"/>
-		    </td>
-		    <td valign="top" bgcolor="#8b7765">
-		      <table border="0" cellspacing="0" cellpadding="1" width="100%">
-			<tr>
-			  <td>
-			    <table border="0" cellspacing="0" cellpadding="1" width="100%" bgcolor="#000000">
-			      <tr>
-				<td>
-				  <table border="0" cellpadding="3" cellspacing="1" width="100%">
-				    <tr>
-				      <td bgcolor="#fffacd">
+      <html>
+        <head>
+          <xsl:call-template name="style"/>
+          <xsl:element name="title">
+            <xsl:value-of select="$title"/>
+          </xsl:element>
+        </head>
+        <body>
+	  <div id="main">
+	    <xsl:call-template name="top"/>
+	    <div id="left">
+	      <xsl:call-template name="mainmenu"/>
+	    </div>
+	    <div id="right">
 	    <xsl:call-template name="navbar"/>
 	    <xsl:call-template name="description"/>
 	    <xsl:choose>
@@ -651,24 +564,11 @@
 		</xsl:apply-templates>
 	      </xsl:otherwise>
 	    </xsl:choose>
-					<p><a href="{$href_base}bugs.html">Daniel Veillard</a></p>
-				      </td>
-				    </tr>
-				  </table>
-				</td>
-			      </tr>
-			    </table>
-			  </td>
-			</tr>
-		      </table>
-		    </td>
-		  </tr>
-		</table>
-	      </td>
-	    </tr>
-	  </table>
-	  </body>
-	</html>
+	    </div>
+	    <xsl:call-template name="bottom"/>
+	  </div>
+        </body>
+      </html>
     </xsl:document>
   </xsl:template>
 
@@ -687,56 +587,29 @@
     <xsl:document href="{$file}" method="xml" encoding="ISO-8859-1"
       doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
       doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-	<html>
-	  <head>
-	    <xsl:call-template name="style"/>
-	    <xsl:call-template name="docstyle"/>
-	    <title><xsl:value-of select="$title"/></title>
-	  </head>
-	  <body bgcolor="#8b7765" text="#000000" link="#a06060" vlink="#000000">
-	    <xsl:call-template name="titlebox">
-	      <xsl:with-param name="title" select="$title"/>
-	    </xsl:call-template>
-	  <table border="0" cellpadding="4" cellspacing="0" width="100%" align="center">
-	    <tr>
-	      <td bgcolor="#8b7765">
-		<table border="0" cellspacing="0" cellpadding="2" width="100%">
-		  <tr>
-		    <td valign="top" width="200" bgcolor="#8b7765">
-		      <xsl:call-template name="apitoc"/>
-		    </td>
-		    <td valign="top" bgcolor="#8b7765">
-		      <table border="0" cellspacing="0" cellpadding="1" width="100%">
-			<tr>
-			  <td>
-			    <table border="0" cellspacing="0" cellpadding="1" width="100%" bgcolor="#000000">
-			      <tr>
-				<td>
-				  <table border="0" cellpadding="3" cellspacing="1" width="100%">
-				    <tr>
-				      <td bgcolor="#fffacd">
-	    <h2>Table of Contents</h2>
-	    <ul>
-	    <xsl:apply-templates select="/api/files/file" mode="toc"/>
-	    </ul>
-					<p><a href="{$href_base}bugs.html">Daniel Veillard</a></p>
-				      </td>
-				    </tr>
-				  </table>
-				</td>
-			      </tr>
-			    </table>
-			  </td>
-			</tr>
-		      </table>
-		    </td>
-		  </tr>
-		</table>
-	      </td>
-	    </tr>
-	  </table>
-	  </body>
-	</html>
+      <html>
+        <head>
+          <xsl:call-template name="style"/>
+          <xsl:element name="title">
+            <xsl:value-of select="$title"/>
+          </xsl:element>
+        </head>
+        <body>
+	  <div id="main">
+	    <xsl:call-template name="top"/>
+	    <div id="left">
+	      <xsl:call-template name="mainmenu"/>
+	    </div>
+	    <div id="right">
+		<h2>Table of Contents</h2>
+		<ul>
+		<xsl:apply-templates select="/api/files/file" mode="toc"/>
+		</ul>
+	    </div>
+	    <xsl:call-template name="bottom"/>
+	  </div>
+        </body>
+      </html>
     </xsl:document>
   </xsl:template>
 

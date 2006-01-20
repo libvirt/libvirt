@@ -85,45 +85,20 @@
 	  <xsl:value-of select="$title"/>
 	</xsl:element>
         </head>
-        <body bgcolor="#8b7765" text="#000000" link="#a06060" vlink="#000000">
+        <body>
+	  <div id="main">
+	  <xsl:call-template name="top"/>
+	  <div id="left">
+	    <xsl:call-template name="develtoc"/>
+	  </div>
+	  <div id="right">
           <xsl:call-template name="titlebox">
 	    <xsl:with-param name="title" select="$title"/>
 	  </xsl:call-template>
-          <table border="0" cellpadding="4" cellspacing="0" width="100%" align="center">
-            <tr>
-              <td bgcolor="#8b7765">
-                <table border="0" cellspacing="0" cellpadding="2" width="100%">
-                  <tr>
-                    <td valign="top" width="200" bgcolor="#8b7765">
-                      <xsl:call-template name="develtoc"/>
-                    </td>
-                    <td valign="top" bgcolor="#8b7765">
-                      <table border="0" cellspacing="0" cellpadding="1" width="100%">
-                        <tr>
-                          <td>
-                            <table border="0" cellspacing="0" cellpadding="1" width="100%" bgcolor="#000000">
-                              <tr>
-                                <td>
-                                  <table border="0" cellpadding="3" cellspacing="1" width="100%">
-                                    <tr>
-                                      <td bgcolor="#fffacd">
-				        <xsl:apply-templates mode="reflist" select="type"/>
-					<p><a href="{$href_base}bugs.html">Daniel Veillard</a></p>
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
+	  <xsl:apply-templates mode="reflist" select="type"/>
+	  </div>
+	  <xsl:call-template name="bottom"/>
+	  </div>
         </body>
       </html>
     </xsl:document>
@@ -141,45 +116,20 @@
 	  <xsl:value-of select="$title"/>
 	</xsl:element>
         </head>
-        <body bgcolor="#8b7765" text="#000000" link="#a06060" vlink="#000000">
+        <body>
+	  <div id="main">
+	  <xsl:call-template name="top"/>
+	  <div id="left">
+	    <xsl:call-template name="develtoc"/>
+	  </div>
+	  <div id="right">
           <xsl:call-template name="titlebox">
 	    <xsl:with-param name="title" select="$title"/>
 	  </xsl:call-template>
-          <table border="0" cellpadding="4" cellspacing="0" width="100%" align="center">
-            <tr>
-              <td bgcolor="#8b7765">
-                <table border="0" cellspacing="0" cellpadding="2" width="100%">
-                  <tr>
-                    <td valign="top" width="200" bgcolor="#8b7765">
-                      <xsl:call-template name="develtoc"/>
-                    </td>
-                    <td valign="top" bgcolor="#8b7765">
-                      <table border="0" cellspacing="0" cellpadding="1" width="100%">
-                        <tr>
-                          <td>
-                            <table border="0" cellspacing="0" cellpadding="1" width="100%" bgcolor="#000000">
-                              <tr>
-                                <td>
-                                  <table border="0" cellpadding="3" cellspacing="1" width="100%">
-                                    <tr>
-                                      <td bgcolor="#fffacd">
-				        <xsl:apply-templates mode="reflist" select="file"/>
-					<p><a href="{$href_base}bugs.html">Daniel Veillard</a></p>
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
+	  <xsl:apply-templates mode="reflist" select="file"/>
+	  </div>
+	  <xsl:call-template name="bottom"/>
+	  </div>
         </body>
       </html>
     </xsl:document>
@@ -197,45 +147,20 @@
 	  <xsl:value-of select="$title"/>
 	</xsl:element>
         </head>
-        <body bgcolor="#8b7765" text="#000000" link="#a06060" vlink="#000000">
+        <body>
+	  <div id="main">
+	  <xsl:call-template name="top"/>
+	  <div id="left">
+	    <xsl:call-template name="develtoc"/>
+	  </div>
+	  <div id="right">
           <xsl:call-template name="titlebox">
 	    <xsl:with-param name="title" select="$title"/>
 	  </xsl:call-template>
-          <table border="0" cellpadding="4" cellspacing="0" width="100%" align="center">
-            <tr>
-              <td bgcolor="#8b7765">
-                <table border="0" cellspacing="0" cellpadding="2" width="100%">
-                  <tr>
-                    <td valign="top" width="200" bgcolor="#8b7765">
-                      <xsl:call-template name="develtoc"/>
-                    </td>
-                    <td valign="top" bgcolor="#8b7765">
-                      <table border="0" cellspacing="0" cellpadding="1" width="100%">
-                        <tr>
-                          <td>
-                            <table border="0" cellspacing="0" cellpadding="1" width="100%" bgcolor="#000000">
-                              <tr>
-                                <td>
-                                  <table border="0" cellpadding="3" cellspacing="1" width="100%">
-                                    <tr>
-                                      <td bgcolor="#fffacd">
-				        <xsl:apply-templates mode="reflist" select="type"/>
-					<p><a href="{$href_base}bugs.html">Daniel Veillard</a></p>
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
+	  <xsl:apply-templates mode="reflist" select="type"/>
+	  </div>
+	  <xsl:call-template name="bottom"/>
+	  </div>
         </body>
       </html>
     </xsl:document>
@@ -253,45 +178,20 @@
 	  <xsl:value-of select="$title"/>
 	</xsl:element>
         </head>
-        <body bgcolor="#8b7765" text="#000000" link="#a06060" vlink="#000000">
+        <body>
+	  <div id="main">
+	  <xsl:call-template name="top"/>
+	  <div id="left">
+	    <xsl:call-template name="develtoc"/>
+	  </div>
+	  <div id="right">
           <xsl:call-template name="titlebox">
 	    <xsl:with-param name="title" select="$title"/>
 	  </xsl:call-template>
-          <table border="0" cellpadding="4" cellspacing="0" width="100%" align="center">
-            <tr>
-              <td bgcolor="#8b7765">
-                <table border="0" cellspacing="0" cellpadding="2" width="100%">
-                  <tr>
-                    <td valign="top" width="200" bgcolor="#8b7765">
-                      <xsl:call-template name="develtoc"/>
-                    </td>
-                    <td valign="top" bgcolor="#8b7765">
-                      <table border="0" cellspacing="0" cellpadding="1" width="100%">
-                        <tr>
-                          <td>
-                            <table border="0" cellspacing="0" cellpadding="1" width="100%" bgcolor="#000000">
-                              <tr>
-                                <td>
-                                  <table border="0" cellpadding="3" cellspacing="1" width="100%">
-                                    <tr>
-                                      <td bgcolor="#fffacd">
-				        <xsl:apply-templates mode="reflist" select="letter"/>
-					<p><a href="{$href_base}bugs.html">Daniel Veillard</a></p>
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
+	  <xsl:apply-templates mode="reflist" select="letter"/>
+	  </div>
+	  <xsl:call-template name="bottom"/>
+	  </div>
         </body>
       </html>
     </xsl:document>
@@ -326,48 +226,23 @@
 	  <xsl:value-of select="$title"/>
 	</xsl:element>
         </head>
-        <body bgcolor="#8b7765" text="#000000" link="#a06060" vlink="#000000">
+        <body>
+	  <div id="main">
+	  <xsl:call-template name="top"/>
+	  <div id="left">
+	    <xsl:call-template name="develtoc"/>
+	  </div>
+	  <div id="right">
           <xsl:call-template name="titlebox">
 	    <xsl:with-param name="title" select="$title"/>
 	  </xsl:call-template>
-          <table border="0" cellpadding="4" cellspacing="0" width="100%" align="center">
-            <tr>
-              <td bgcolor="#8b7765">
-                <table border="0" cellspacing="0" cellpadding="2" width="100%">
-                  <tr>
-                    <td valign="top" width="200" bgcolor="#8b7765">
-                      <xsl:call-template name="develtoc"/>
-                    </td>
-                    <td valign="top" bgcolor="#8b7765">
-                      <table border="0" cellspacing="0" cellpadding="1" width="100%">
-                        <tr>
-                          <td>
-                            <table border="0" cellspacing="0" cellpadding="1" width="100%" bgcolor="#000000">
-                              <tr>
-                                <td>
-                                  <table border="0" cellpadding="3" cellspacing="1" width="100%">
-                                    <tr>
-                                      <td bgcolor="#fffacd">
-				        <xsl:call-template name="apichunks"/>
-				        <xsl:apply-templates mode="wordlist"
-					           select="$target/letter"/>
-				        <xsl:call-template name="apichunks"/>
-					<p><a href="{$href_base}bugs.html">Daniel Veillard</a></p>
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
+	  <xsl:call-template name="apichunks"/>
+	  <xsl:apply-templates mode="wordlist"
+		       select="$target/letter"/>
+	  <xsl:call-template name="apichunks"/>
+	  </div>
+	  <xsl:call-template name="bottom"/>
+	  </div>
         </body>
       </html>
     </xsl:document>

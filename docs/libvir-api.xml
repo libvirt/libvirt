@@ -154,7 +154,7 @@
       <arg name='name' type='const char *' info='optional argument currently unused, pass NULL'/>
     </function>
     <function name='virConnectOpenReadOnly' file='libvir' module='libvir'>
-      <info>This function should be called first to get a read-only connection to the xen store. The set of APIs usable are then restricted.</info>
+      <info>This function should be called first to get a restricted connection to the libbrary functionalities. The set of APIs usable are then restricted on the available methods to control the domains.</info>
       <return type='virConnectPtr' info='a pointer to the hypervisor connection or NULL in case of error'/>
       <arg name='name' type='const char *' info='optional argument currently unused, pass NULL'/>
     </function>
@@ -225,7 +225,7 @@
     <function name='virDomainRestore' file='libvir' module='libvir'>
       <info>This method will restore a domain saved to disk by virDomainSave().</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
-      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='from' type='const char *' info='path to the'/>
     </function>
     <function name='virDomainResume' file='libvir' module='libvir'>
@@ -234,7 +234,7 @@
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
     <function name='virDomainSave' file='libvir' module='libvir'>
-      <info>This method will suspend a domain and save its memory contents to a file on disk.  Use virDomainRestore() to restore a domain after saving.</info>
+      <info>This method will suspend a domain and save its memory contents to a file on disk. After the call, if successful, the domain is not listed as running anymore (this may be a problem). Use virDomainRestore() to restore a domain after saving.</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='to' type='const char *' info='path for the output file'/>
