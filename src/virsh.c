@@ -387,6 +387,88 @@ cmdSuspend(vshControl *ctl, vshCmd *cmd) {
 }
 
 /*
+ * "save" command
+ */
+static vshCmdInfo info_save[] = {
+    { "syntax",  "save <domain> to <file>" },
+    { "help",    "save a domain state to a file" },
+    { "desc",    "Save a running domain." },
+    { NULL, NULL }
+};
+
+static vshCmdOptDef opts_save[] = {
+    { "file",  VSH_OT_STRING, VSH_OFLAG_REQ, "where to save the data" },
+    { "domain",  VSH_OT_DATA, 0, "domain name or id" },
+    { NULL, 0, 0, NULL }
+};
+
+static int
+cmdSave(vshControl *ctl, vshCmd *cmd) {
+    virDomainPtr dom;
+    char *name;
+    char *to;
+    int found;
+    int ret = TRUE;
+    
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    to = vshCommandOptString(cmd, "file", &found);
+    if (!found)
+        return FALSE;
+    
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", &name)))
+        return FALSE;
+    
+    if (virDomainSave(dom, to)==0) {
+        vshPrint(ctl, VSH_MESG, "Domain %s saved\n", name);
+    } else {
+        vshError(ctl, FALSE, "Failed to save domain\n");
+        ret = FALSE;
+    }
+        
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
+ * "restore" command
+ */
+static vshCmdInfo info_restore[] = {
+    { "syntax",  "restore a domain from <file>" },
+    { "help",    "restore a domain from a saved state in a file" },
+    { "desc",    "Restore a domain." },
+    { NULL, NULL }
+};
+
+static vshCmdOptDef opts_restore[] = {
+    { "file",  VSH_OT_DATA, 0, "the state to restore" },
+    { NULL, 0, 0, NULL }
+};
+
+static int
+cmdRestore(vshControl *ctl, vshCmd *cmd) {
+    char *from;
+    int found;
+    int ret = TRUE;
+    
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    from = vshCommandOptString(cmd, "file", &found);
+    if (!found)
+        return FALSE;
+    
+    if (virDomainRestore(ctl->conn, from)==0) {
+        vshPrint(ctl, VSH_MESG, "Domain restored from %s\n", from);
+    } else {
+        vshError(ctl, FALSE, "Failed to restore domain\n");
+        ret = FALSE;
+    }
+    return ret;
+}
+
+/*
  * "resume" command
  */
 static vshCmdInfo info_resume[] = {
@@ -616,7 +698,7 @@ static vshCmdInfo info_nameof[] = {
 
 static vshCmdOptDef opts_nameof[] = {
     { "id",        VSH_OT_DATA,  0, "domain Id" },
-        { NULL, 0, 0, NULL }
+    { NULL, 0, 0, NULL }
 };
 
 static int
@@ -781,6 +863,8 @@ static vshCmdDef commands[] = {
     { "dstate",     cmdDstate,     opts_dstate,    info_dstate },
     { "suspend",    cmdSuspend,    opts_suspend,   info_suspend },
     { "resume",     cmdResume,     opts_resume,    info_resume },
+    { "save",       cmdSave,       opts_save,      info_save },
+    { "restore",    cmdRestore,    opts_restore,   info_restore },
     { "shutdown",   cmdShutdown,   opts_shutdown,  info_shutdown },
     { "destroy",    cmdDestroy,    opts_destroy,   info_destroy },
     { "help",       cmdHelp,       opts_help,      info_help },

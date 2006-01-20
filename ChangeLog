@@ -1,3 +1,11 @@
+Fri Jan 20 10:57:44 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvir.h include/libvir.h.in src/libvir.c: revamped the
+	  restore API (though it would be better if it was returning
+	  a domain pointer in case of success)
+	* src/virsh.c: added save and restore to the commands, tested,
+	  the option handling need work though
+
 Thu Jan 19 11:21:57 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvir.c src/xend_internal.c src/xend_internal.h: continue

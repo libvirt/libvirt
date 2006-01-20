@@ -890,19 +890,39 @@ virDomainResume(virDomainPtr domain) {
  * @to: path for the output file
  *
  * This method will suspend a domain and save its memory contents to
- * a file on disk.  Use virDomainRestore() to restore a domain after
- * saving.
+ * a file on disk. After the call, if successful, the domain is not
+ * listed as running anymore (this may be a problem).
+ * Use virDomainRestore() to restore a domain after saving.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
 virDomainSave(virDomainPtr domain, const char *to) {
     int ret;
+    char filepath[4096];
 
-    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+    if ((!VIR_IS_CONNECTED_DOMAIN(domain)) || (to == NULL))
 	return(-1);
-    if ((to == NULL) || (to[0] != '/'))
-	return(-1);
+
+    /*
+     * We must absolutize the file path as the save is done out of process
+     * TODO: check for URI when libxml2 is linked in.
+     */
+    if (to[0] != '/') {
+	unsigned int len, t;
+
+	t = strlen(to);
+	if (getcwd(filepath, sizeof(filepath) - (t + 3)) == NULL)
+	    return(-1);
+	len = strlen(filepath);
+	/* that should be covered by getcwd() semantic, but be 100% sure */
+	if (len > sizeof(filepath) - (t + 3))
+	    return(-1); 
+	filepath[len] = '/';
+	strcpy(&filepath[len + 1], to);
+	to = &filepath[0];
+
+    }
 
     ret = xend_save(domain->conn, domain->name, to);
     return(ret);
@@ -910,7 +930,7 @@ virDomainSave(virDomainPtr domain, const char *to) {
 
 /**
  * virDomainRestore:
- * @domain: a domain object
+ * @conn: pointer to the hypervisor connection
  * @from: path to the 
  *
  * This method will restore a domain saved to disk by virDomainSave().
@@ -918,15 +938,32 @@ virDomainSave(virDomainPtr domain, const char *to) {
  * Returns 0 in case of success and -1 in case of failure.
  */
 int
-virDomainRestore(virDomainPtr domain, const char *from) {
+virDomainRestore(virConnectPtr conn, const char *from) {
     int ret;
+    char filepath[4096];
 
-    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+    if ((!VIR_IS_CONNECT(conn)) || (from == NULL))
 	return(-1);
-    if ((from == NULL) || (from[0] != '/'))
-	return(-1);
+    /*
+     * We must absolutize the file path as the restore is done out of process
+     * TODO: check for URI when libxml2 is linked in.
+     */
+    if (from[0] != '/') {
+	unsigned int len, t;
+
+	t = strlen(from);
+	if (getcwd(filepath, sizeof(filepath) - (t + 3)) == NULL)
+	    return(-1);
+	len = strlen(filepath);
+	/* that should be covered by getcwd() semantic, but be 100% sure */
+	if (len > sizeof(filepath) - (t + 3))
+	    return(-1); 
+	filepath[len] = '/';
+	strcpy(&filepath[len + 1], from);
+	from = &filepath[0];
+    }
     
-    ret = xend_restore(domain->conn, from);
+    ret = xend_restore(conn, from);
     return(ret);
 }
 

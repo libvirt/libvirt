@@ -224,7 +224,7 @@ int			virDomainResume		(virDomainPtr domain);
  */
 int			virDomainSave		(virDomainPtr domain,
 						 const char *to);
-int			virDomainRestore	(virDomainPtr domain,
+int			virDomainRestore	(virConnectPtr conn,
 						 const char *from);
 
 /*
