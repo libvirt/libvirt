@@ -213,17 +213,12 @@
 <!--
   the main menu box
  -->
-  <xsl:template name="mainmenu">
-   <div class="left">
-    <form action="search.php"
-          enctype="application/x-www-form-urlencoded" method="get">
-      <input name="query" type="text" size="20" value=""/>
-      <input name="submit" type="submit" value="Search ..."/>
-    </form>
-    <div class="box">
-      <h2 class="box_title">main menu</h2>
-    </div>
-    <p><a href="{$href_base}index.html">Home</a></p>
+  <xsl:template name="linkList">
+  <div class="linkList">
+    <div class="llinks">
+      <h3 class="links"><span>main menu</span></h3>
+      <ul>
+        <li><a href="{$href_base}index.html">Home</a></li>
     <xsl:for-each select="/html/body/h2">
     <xsl:variable name="filename">
       <xsl:call-template name="tocfilename">
@@ -231,7 +226,7 @@
       </xsl:call-template>
     </xsl:variable>
     <xsl:if test="$filename != ''">
-      <p>
+      <li>
 	<xsl:element name="a">
 	  <xsl:attribute name="href">
 	    <xsl:value-of select="$filename"/>
@@ -241,20 +236,72 @@
 	  </xsl:if>
 	  <xsl:value-of select="."/>
 	</xsl:element>
-      </p>
+      </li>
     </xsl:if>
     </xsl:for-each>
-    <p><a style="font-weight:bold"
-             href="html/index.html">API Menu</a></p>
-      <p><a href="ChangeLog.html">Recent Changes</a></p>
+      <li><a style="font-weight:bold"
+             href="{$href_base}html/index.html">API Menu</a></li>
+      <li><a href="{$href_base}ChangeLog.html">Recent Changes</a></li>
 
-    <div class="box">
-      <h2 class="box_title">related links</h2>
+      </ul>
     </div>
-    <p><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></p>
-    <p><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></p>
-    <a href="http://xmlsoft.org/"><img src="{$href_base}Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo"/></a>
-   </div>
+    <div class="llinks">
+      <h3 class="links"><span>related links</span></h3>
+      <ul>
+        <li> <a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li>
+        <li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li>
+        <li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get">
+         <input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" />
+      </form></li>
+        <li><a href="http://xmlsoft.org/"> <img src="{$href_base}Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li>
+      </ul>
+    </div>
+  </div>
+  </xsl:template>
+  <xsl:template name="linkList2">
+  <div class="linkList2">
+    <div class="llinks2">
+      <h3 class="links2"><span>main menu</span></h3>
+      <ul>
+        <li><a href="{$href_base}index.html">Home</a></li>
+    <xsl:for-each select="/html/body/h2">
+    <xsl:variable name="filename">
+      <xsl:call-template name="tocfilename">
+	<xsl:with-param name="name" select="concat('#', string(a[1]/@name))"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <xsl:if test="$filename != ''">
+      <li>
+	<xsl:element name="a">
+	  <xsl:attribute name="href">
+	    <xsl:value-of select="$filename"/>
+	  </xsl:attribute>
+	  <xsl:if test="$filename = 'docs.html'">
+	      <xsl:attribute name="style">font-weight:bold</xsl:attribute>
+	  </xsl:if>
+	  <xsl:value-of select="."/>
+	</xsl:element>
+      </li>
+    </xsl:if>
+    </xsl:for-each>
+      <li><a style="font-weight:bold"
+             href="{$href_base}html/index.html">API Menu</a></li>
+      <li><a href="{$href_base}ChangeLog.html">Recent Changes</a></li>
+
+      </ul>
+    </div>
+    <div class="llinks2">
+      <h3 class="links2"><span>related links</span></h3>
+      <ul>
+        <li> <a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li>
+        <li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li>
+        <li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get">
+         <input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" />
+      </form></li>
+        <li><a href="http://xmlsoft.org/"> <img src="{$href_base}Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li>
+      </ul>
+    </div>
+  </div>
   </xsl:template>
 
 <!--
@@ -288,6 +335,37 @@
     <p><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></p>
     <a href="http://xmlsoft.org/"><img src="{$href_base}Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo"/></a>
    </div>
+  <div class="linkList2">
+    <div class="llinks2">
+      <h3 class="links2"><span>API menu</span></h3>
+      <ul>
+      <li><a href="{$href_base}index.html">Main menu</a></li>
+      <li><a href="{$href_base}/html/index.html">API menu</a></li>
+      <li><a href="{$href_base}ChangeLog.html">ChangeLog</a></li>
+      </ul>
+    </div>
+    <div class="llinks2">
+      <h3 class="links2"><span>API indexes</span></h3>
+      <ul>
+      <li><a href="{$href_base}APIchunk0.html">Alphabetic</a></li>
+      <li><a href="{$href_base}APIconstructors.html">Constructors</a></li>
+      <li><a href="{$href_base}APIfunctions.html">Functions/Types</a></li>
+      <li><a href="{$href_base}APIfiles.html">Modules</a></li>
+      <li><a href="{$href_base}APIsymbols.html">Symbols</a></li>
+      </ul>
+    </div>
+    <div class="llinks2">
+      <h3 class="links2"><span>related links</span></h3>
+      <ul>
+        <li> <a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li>
+        <li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li>
+        <li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get">
+         <input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" />
+      </form></li>
+        <li><a href="http://xmlsoft.org/"> <img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li>
+      </ul>
+    </div>
+  </div>
   </xsl:template>
 
 <!--
@@ -299,7 +377,7 @@
 
   <xsl:template name="titlebox">
     <xsl:param name="title"/>
-    <h3 class="title"><xsl:value-of select="$title"/></h3>
+    <h1 class="style1"><xsl:value-of select="$title"/></h1>
   </xsl:template>
 
 <!--
@@ -331,7 +409,9 @@
  - The bottom section
  -->
   <xsl:template name="bottom">
-    <div id="copyright"> </div> 
+    <div id="bottom">
+      <p class="p1"></p>
+    </div> 
   </xsl:template>
 
 <!--
@@ -358,21 +438,22 @@
             <xsl:value-of select="$title"/>
           </xsl:element>
         </head>
-        <body>
-	  <div id="main">
-	    <xsl:call-template name="top"/>
-	    <div id="left">
-	      <xsl:call-template name="mainmenu"/>
-	    </div>
-	    <div id="right">
+	<body>
+	<div id="container">
+	  <div id="intro">
+	    <div id="adjustments"/>
+	    <div id="pageHeader"/>
+	    <div id="content2">
 	      <xsl:call-template name="titlebox">
 		<xsl:with-param name="title" select="$title"/>
 	      </xsl:call-template>
 	      <xsl:apply-templates mode="subfile" select="$header/following-sibling::*[preceding-sibling::h2[1] = $header and name() != 'h2' ]"/>
 	    </div>
-	    <xsl:call-template name="bottom"/>
 	  </div>
-        </body>
+	  <xsl:call-template name="linkList2"/>
+	  <xsl:call-template name="bottom"/>
+	</div>
+	</body>
       </html>
     </xsl:document>
   </xsl:template>
@@ -403,21 +484,23 @@
   <xsl:template match="body">
     <xsl:variable name="firsth2" select="./h2[1]"/>
     <body>
-      <div id="main">
-	<xsl:call-template name="topmain"/>
-        <div id="left">
-	  <xsl:call-template name="mainmenu"/>
-        </div>
-        <div id="right">
+    <div id="container">
+      <div id="intro">
+	<div id="adjustments">
+	  <p class="p1"></p>
+	</div>
+	<div id="content">
           <xsl:apply-templates mode="content" select="($firsth2/preceding-sibling::*)"/>
           <xsl:for-each select="./h2">
             <xsl:call-template name="subfile">
 	      <xsl:with-param name="header" select="."/>
             </xsl:call-template>
           </xsl:for-each>
-        </div>
-        <xsl:call-template name="bottom"/>
+	</div>
       </div>
+      <xsl:call-template name="linkList"/>
+      <xsl:call-template name="bottom"/>
+    </div>
     </body>
   </xsl:template>
   <xsl:template match="head">

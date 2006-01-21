@@ -1,118 +1,171 @@
-.dummy_for_bugs {
-	color:			#999999;
-}
+body
+    {
+    margin: 0;
+    padding: 0;
+    color: #333333;
+    font: 13px Verdana, Arial, Helvetica, sans;
+    background: #898989;
+    text-align: justify;
+    }
+a
+    {
+    color: #0D7520;
+    }
+a:hover
+    {
+    color: #a8a8a8;
+    }
 
-body {
-	color:			#141414;
-	margin:			0;
-	padding:		0;
-}
-* {
-	font-family:            Verdana;
-	font-size:              14px;
-}
-a {
-	color:			#0d7520;
-	font-family:		Verdana;
-/*	font-weight:		bold; */
-	
-}
-h3.maintitle {
-	text-align:		right;
-	margin-right:		30px;
-	font-size:              20px;
-}
-h3.title {
-	text-align:		right;
-	margin-right:		30px;
-	font-size:              20px;
-	color:		        #0d7520;
-}
-span.green {
-	color:		#0d7520;
-	font-size:              20px;
-}
-#main {
-	color:			inherit;
-	background-color:	#ffffff;
-	height:			2300px;
-	margin:			0;
-	margin-left:	auto;
-	margin-right:	auto;
-	padding:		0;
-	background-image:	url('background.png');
-	background-position:	left;
-	background-repeat:	repeat-y;
-}
-#top {
-	height:			80px;
-	width:			640px;
-	margin-left:	6px;
-}
-#top img {
-	margin:			0;
-	margin-left:		140px;
-	padding:		0;
-	border:			0;
-}
+img
+    {
+    border: 0;
+    }
 
-#topmain {
-	height:			270px;
-	width:			800px;
-	margin-left:	6px;
-}
-#topmain img {
-	margin:			0;
-	margin-left:		230px;
-	padding:		0;
-	border:			0;
-}
+#container
+    {
+    margin: 0 auto;
+    width: 766px;
+    position: relative;
+    background: #fff;
+    padding: 0 10px 0 10px;
+    text-align: justify;
+    }
+* html #container
+    {
+    width: 766px;
+    }
 
-#left {
-	float:			left;
-	margin-left:	150px;
-	margin-right:	15px;
-	padding:	10px;
-	width:		175px;
-	font-size: 13px;
-}
+#pageHeader
+    {
+    position: absolute;
+	background: url(libvirHeader.png) center no-repeat;
+    top: 30px;
+	height: 76px;
+	width: 766px;
+    }
+#content h3
+    {
+	text-align: right;
+	color: #a8a8a8;
+    }
+#content2 h1
+    {
+	text-align: right;
+	color: #0d7520;
+    }
+#content h3
+    {
+	text-align: right;
+	font-size:  24px;
+    }
+#content h3 .style1
+    {
+	color: #0d7520;
+    }
+#adjustments
+    {
+    padding-top: 15px;
+    }
+#container #adjustments .p1
+    {
+    font-size: 11px;
+    height: 300px;
+    background: url(libvirLogo.png) center no-repeat;
+    margin: 0;
+    width: 766px;
+    }
+#container #bottom .p1
+    {
+    font-size: 11px;
+    height: 600px;
+    margin: 0;
+    width: 766px;
+    }
+#content2
+    {
+    margin: 100px 10px 0 160px;
+    }
+#content2 p
+    {
+    line-height: 150%;
+    margin: 10px 0 10px 0;
+    }
+#content
+    {
+    margin: 0 10px 0 160px;
+    }
+#content p
+    {
+    line-height: 150%;
+    margin: 10px 0 10px 0;
+    }
+.linkList
+    {
+    position: absolute;
+    top: 320px;
+    left: 10px;
+    width: 140px;
+    }
+.llinks ul
+    {
+    list-style-type: none;
+    margin: 0;
+    padding: 0 0 0 10px;
+    }
+.linkList .llinks ul li
+    {
+    font-size: 13px;
+    border-bottom: 1px solid #E6EEF0;
+    display: block;
+    padding: 8px 0;
+    }
+.llinks h3.links
+    {
+    background: #e6e6e6;
+    color: #999999;
+    font-size: 14px;
+    height: 25px;
+	padding: 10px 0 0 5px;
+    margin: 15px 0 5px 5px;
+    }
+.linkList2
+    {
+    position: absolute;
+    top: 100px;
+    left: 10px;
+    width: 140px;
+    }
+.llinks2 ul
+    {
+    list-style-type: none;
+    margin: 0;
+    padding: 0 0 0 10px;
+    }
+.linkList2 .llinks2 ul li
+    {
+    font-size: 13px;
+    border-bottom: 1px solid #E6EEF0;
+    display: block;
+    padding: 8px 0;
+    }
+.llinks2 h3.links2
+    {
+    background: #e6e6e6;
+    color: #999999;
+    font-size: 14px;
+    height: 25px;
+	padding: 10px 0 0 5px;
+    margin: 15px 0 5px 5px;
+    }
 
-#left p {
-	border-bottom: 1px solid #e6eef0;
-	display: block;
-/*	padding: 4px 0; */
-}
+div.deprecated pre.programlisting
+    {
+    border-style:		double;
+    border-color:		red;
+    }
 
-#left img {
-	border:                 0;
-}
-div.box {
-	padding:		0;
-	width:			175px;
-	font-size: 		12px;
-	color:			#000000;
-	background-color:	inherit;
-}
-h2.box_title {
-	color:			#a8a8a8;
-	background-color:	#e6e6e6;
-	font-size:		15px;
-	margin:			0;
-	padding:		10px;
-}
-
-#right {
-	width:          auto;
-	margin-left:    160px;
-	margin-right:   15px;
-}
-
-div.deprecated pre.programlisting {
-	border-style:		double;
-	border-color:		red;
-}
-
-pre.programlisting {
-	border-style:		double;
-	background:		#e6e6e6;
-}
+pre.programlisting
+    {
+    border-style:		double;
+    background:		#F0F0F0;
+    }

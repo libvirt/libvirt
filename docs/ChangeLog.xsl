@@ -58,22 +58,26 @@
     <xsl:variable name="title">ChangeLog last entries of <xsl:value-of select="$module"/></xsl:variable>
       <html>
         <head>
-        <xsl:call-template name="style"/>
-	<xsl:element name="title">
-	  <xsl:value-of select="$title"/>
-	</xsl:element>
+          <xsl:call-template name="style"/>
+          <xsl:element name="title">
+            <xsl:value-of select="$title"/>
+          </xsl:element>
         </head>
 	<body>
-	  <div id="main">
-	    <xsl:call-template name="topmain"/>
-	    <div id="left">
-	      <xsl:call-template name="mainmenu"/>
-	    </div>
-	    <div id="right">
+	<div id="container">
+	  <div id="intro">
+	    <div id="adjustments"/>
+	    <div id="pageHeader"/>
+	    <div id="content2">
+	      <xsl:call-template name="titlebox">
+		<xsl:with-param name="title" select="$title"/>
+	      </xsl:call-template>
 	      <xsl:apply-templates select="entry"/>
 	    </div>
-	    <xsl:call-template name="bottom"/>
 	  </div>
+	  <xsl:call-template name="linkList2"/>
+	  <xsl:call-template name="bottom"/>
+	</div>
 	</body>
       </html>
   </xsl:template>

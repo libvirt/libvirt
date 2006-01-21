@@ -507,13 +507,15 @@
             <xsl:value-of select="$title"/>
           </xsl:element>
         </head>
-        <body>
-	  <div id="main">
-	    <xsl:call-template name="top"/>
-	    <div id="left">
-	      <xsl:call-template name="mainmenu"/>
-	    </div>
-	    <div id="right">
+	<body>
+	<div id="container">
+	  <div id="intro">
+	    <div id="adjustments"/>
+	    <div id="pageHeader"/>
+	    <div id="content2">
+	      <xsl:call-template name="titlebox">
+		<xsl:with-param name="title" select="$title"/>
+	      </xsl:call-template>
 	    <xsl:call-template name="navbar"/>
 	    <xsl:call-template name="description"/>
 	    <xsl:choose>
@@ -565,9 +567,11 @@
 	      </xsl:otherwise>
 	    </xsl:choose>
 	    </div>
-	    <xsl:call-template name="bottom"/>
 	  </div>
-        </body>
+	  <xsl:call-template name="linkList2"/>
+	  <xsl:call-template name="bottom"/>
+	</div>
+	</body>
       </html>
     </xsl:document>
   </xsl:template>
@@ -594,21 +598,25 @@
             <xsl:value-of select="$title"/>
           </xsl:element>
         </head>
-        <body>
-	  <div id="main">
-	    <xsl:call-template name="top"/>
-	    <div id="left">
-	      <xsl:call-template name="mainmenu"/>
-	    </div>
-	    <div id="right">
+	<body>
+	<div id="container">
+	  <div id="intro">
+	    <div id="adjustments"/>
+	    <div id="pageHeader"/>
+	    <div id="content2">
+	      <xsl:call-template name="titlebox">
+		<xsl:with-param name="title" select="$title"/>
+	      </xsl:call-template>
 		<h2>Table of Contents</h2>
 		<ul>
 		<xsl:apply-templates select="/api/files/file" mode="toc"/>
 		</ul>
 	    </div>
-	    <xsl:call-template name="bottom"/>
 	  </div>
-        </body>
+	  <xsl:call-template name="linkList2"/>
+	  <xsl:call-template name="bottom"/>
+	</div>
+	</body>
       </html>
     </xsl:document>
   </xsl:template>

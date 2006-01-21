@@ -7,63 +7,14 @@
     <title>the virtualization API</title>
   </head>
   <body>
-    <div id="main">
-      <div id="topmain">
-        <img src="libvirLogo.png" alt="Libvir the virtualization API" />
-      </div>
-      <div id="left">
-        <div class="left">
-          <form action="search.php" enctype="application/x-www-form-urlencoded" method="get">
-            <input name="query" type="text" size="20" value="" />
-            <input name="submit" type="submit" value="Search ..." />
-          </form>
-          <div class="box">
-            <h2 class="box_title">main menu</h2>
-          </div>
-          <p>
-            <a href="index.html">Home</a>
-          </p>
-          <p>
-            <a href="news.html">Releases</a>
-          </p>
-          <p>
-            <a href="intro.html">Introduction</a>
-          </p>
-          <p>
-            <a href="architecture.html">libvir architecture</a>
-          </p>
-          <p>
-            <a href="downloads.html">Downloads</a>
-          </p>
-          <p>
-            <a href="FAQ.html">FAQ</a>
-          </p>
-          <p>
-            <a href="bugs.html">Reporting bugs and getting help</a>
-          </p>
-          <p>
-            <a style="font-weight:bold" href="html/index.html">API Menu</a>
-          </p>
-          <p>
-            <a href="ChangeLog.html">Recent Changes</a>
-          </p>
-          <div class="box">
-            <h2 class="box_title">related links</h2>
-          </div>
-          <p>
-            <a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a>
-          </p>
-          <p>
-            <a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a>
-          </p>
-          <a href="http://xmlsoft.org/">
-            <img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" />
-          </a>
+    <div id="container">
+      <div id="intro">
+        <div id="adjustments">
+          <p class="p1"></p>
         </div>
-      </div>
-      <div id="right">
-        <h3 class="title">what is <span class="green">libvir?</span></h3>
-        <p>Libvir is a C toolkit to interract with the virtualization capabilities of
+        <div id="content">
+          <h3>what is <span class="style1">libvir?</span></h3>
+          <p>Libvir is a C toolkit to interract with the virtualization capabilities of
 recent versions of Linux (and other OSes). It is free software available
 under the <a href="http://www.opensource.org/licenses/lgpl-license.html">GNU
 Lesser General Public License</a>. Virtualization of the Linux Operating
@@ -73,8 +24,71 @@ by a Linux instance. The library aim at providing long term stable C API
 primarily for the <a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen
 paravirtualization</a> mechanism but should be able to integrate other
 virtualization mechanisms if needed.</p>
+        </div>
       </div>
-      <div id="copyright"></div>
+      <div class="linkList">
+        <div class="llinks">
+          <h3 class="links">
+            <span>main menu</span>
+          </h3>
+          <ul>
+            <li>
+              <a href="index.html">Home</a>
+            </li>
+            <li>
+              <a href="news.html">Releases</a>
+            </li>
+            <li>
+              <a href="intro.html">Introduction</a>
+            </li>
+            <li>
+              <a href="architecture.html">libvir architecture</a>
+            </li>
+            <li>
+              <a href="downloads.html">Downloads</a>
+            </li>
+            <li>
+              <a href="FAQ.html">FAQ</a>
+            </li>
+            <li>
+              <a href="bugs.html">Reporting bugs and getting help</a>
+            </li>
+            <li>
+              <a style="font-weight:bold" href="html/index.html">API Menu</a>
+            </li>
+            <li>
+              <a href="ChangeLog.html">Recent Changes</a>
+            </li>
+          </ul>
+        </div>
+        <div class="llinks">
+          <h3 class="links">
+            <span>related links</span>
+          </h3>
+          <ul>
+            <li>
+              <a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a>
+            </li>
+            <li>
+              <a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a>
+            </li>
+            <li>
+              <form action="search.php" enctype="application/x-www-form-urlencoded" method="get">
+                <input name="query" type="text" size="12" value="Search..." />
+                <input name="submit" type="submit" value="Go" />
+              </form>
+            </li>
+            <li>
+              <a href="http://xmlsoft.org/">
+                <img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" />
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div id="bottom">
+        <p class="p1"></p>
+      </div>
     </div>
   </body>
 </html>

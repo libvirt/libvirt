@@ -80,26 +80,27 @@
       doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
       <html>
         <head>
-        <xsl:call-template name="style"/>
-	<xsl:element name="title">
-	  <xsl:value-of select="$title"/>
-	</xsl:element>
+          <xsl:call-template name="style"/>
+          <xsl:element name="title">
+            <xsl:value-of select="$title"/>
+          </xsl:element>
         </head>
-        <body>
-	  <div id="main">
-	  <xsl:call-template name="top"/>
-	  <div id="left">
-	    <xsl:call-template name="develtoc"/>
+	<body>
+	<div id="container">
+	  <div id="intro">
+	    <div id="adjustments"/>
+	    <div id="pageHeader"/>
+	    <div id="content2">
+	      <xsl:call-template name="titlebox">
+		<xsl:with-param name="title" select="$title"/>
+	      </xsl:call-template>
+	      <xsl:apply-templates mode="reflist" select="type"/>
+	    </div>
 	  </div>
-	  <div id="right">
-          <xsl:call-template name="titlebox">
-	    <xsl:with-param name="title" select="$title"/>
-	  </xsl:call-template>
-	  <xsl:apply-templates mode="reflist" select="type"/>
-	  </div>
+	  <xsl:call-template name="linkList2"/>
 	  <xsl:call-template name="bottom"/>
-	  </div>
-        </body>
+	</div>
+	</body>
       </html>
     </xsl:document>
   </xsl:template>
@@ -111,26 +112,27 @@
       doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
       <html>
         <head>
-        <xsl:call-template name="style"/>
-	<xsl:element name="title">
-	  <xsl:value-of select="$title"/>
-	</xsl:element>
+          <xsl:call-template name="style"/>
+          <xsl:element name="title">
+            <xsl:value-of select="$title"/>
+          </xsl:element>
         </head>
-        <body>
-	  <div id="main">
-	  <xsl:call-template name="top"/>
-	  <div id="left">
-	    <xsl:call-template name="develtoc"/>
+	<body>
+	<div id="container">
+	  <div id="intro">
+	    <div id="adjustments"/>
+	    <div id="pageHeader"/>
+	    <div id="content2">
+	      <xsl:call-template name="titlebox">
+		<xsl:with-param name="title" select="$title"/>
+	      </xsl:call-template>
+	      <xsl:apply-templates mode="reflist" select="file"/>
+	    </div>
 	  </div>
-	  <div id="right">
-          <xsl:call-template name="titlebox">
-	    <xsl:with-param name="title" select="$title"/>
-	  </xsl:call-template>
-	  <xsl:apply-templates mode="reflist" select="file"/>
-	  </div>
+	  <xsl:call-template name="linkList2"/>
 	  <xsl:call-template name="bottom"/>
-	  </div>
-        </body>
+	</div>
+	</body>
       </html>
     </xsl:document>
   </xsl:template>
@@ -142,26 +144,27 @@
       doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
       <html>
         <head>
-        <xsl:call-template name="style"/>
-	<xsl:element name="title">
-	  <xsl:value-of select="$title"/>
-	</xsl:element>
+          <xsl:call-template name="style"/>
+          <xsl:element name="title">
+            <xsl:value-of select="$title"/>
+          </xsl:element>
         </head>
-        <body>
-	  <div id="main">
-	  <xsl:call-template name="top"/>
-	  <div id="left">
-	    <xsl:call-template name="develtoc"/>
+	<body>
+	<div id="container">
+	  <div id="intro">
+	    <div id="adjustments"/>
+	    <div id="pageHeader"/>
+	    <div id="content2">
+	      <xsl:call-template name="titlebox">
+		<xsl:with-param name="title" select="$title"/>
+	      </xsl:call-template>
+	      <xsl:apply-templates mode="reflist" select="type"/>
+	    </div>
 	  </div>
-	  <div id="right">
-          <xsl:call-template name="titlebox">
-	    <xsl:with-param name="title" select="$title"/>
-	  </xsl:call-template>
-	  <xsl:apply-templates mode="reflist" select="type"/>
-	  </div>
+	  <xsl:call-template name="linkList2"/>
 	  <xsl:call-template name="bottom"/>
-	  </div>
-        </body>
+	</div>
+	</body>
       </html>
     </xsl:document>
   </xsl:template>
@@ -173,26 +176,27 @@
       doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
       <html>
         <head>
-        <xsl:call-template name="style"/>
-	<xsl:element name="title">
-	  <xsl:value-of select="$title"/>
-	</xsl:element>
+          <xsl:call-template name="style"/>
+          <xsl:element name="title">
+            <xsl:value-of select="$title"/>
+          </xsl:element>
         </head>
-        <body>
-	  <div id="main">
-	  <xsl:call-template name="top"/>
-	  <div id="left">
-	    <xsl:call-template name="develtoc"/>
+	<body>
+	<div id="container">
+	  <div id="intro">
+	    <div id="adjustments"/>
+	    <div id="pageHeader"/>
+	    <div id="content2">
+	      <xsl:call-template name="titlebox">
+		<xsl:with-param name="title" select="$title"/>
+	      </xsl:call-template>
+	      <xsl:apply-templates mode="reflist" select="letter"/>
+	    </div>
 	  </div>
-	  <div id="right">
-          <xsl:call-template name="titlebox">
-	    <xsl:with-param name="title" select="$title"/>
-	  </xsl:call-template>
-	  <xsl:apply-templates mode="reflist" select="letter"/>
-	  </div>
+	  <xsl:call-template name="linkList2"/>
 	  <xsl:call-template name="bottom"/>
-	  </div>
-        </body>
+	</div>
+	</body>
       </html>
     </xsl:document>
   </xsl:template>
@@ -221,29 +225,30 @@
       doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
       <html>
         <head>
-        <xsl:call-template name="style"/>
-	<xsl:element name="title">
-	  <xsl:value-of select="$title"/>
-	</xsl:element>
+          <xsl:call-template name="style"/>
+          <xsl:element name="title">
+            <xsl:value-of select="$title"/>
+          </xsl:element>
         </head>
-        <body>
-	  <div id="main">
-	  <xsl:call-template name="top"/>
-	  <div id="left">
-	    <xsl:call-template name="develtoc"/>
+	<body>
+	<div id="container">
+	  <div id="intro">
+	    <div id="adjustments"/>
+	    <div id="pageHeader"/>
+	    <div id="content2">
+	      <xsl:call-template name="titlebox">
+		<xsl:with-param name="title" select="$title"/>
+	      </xsl:call-template>
+	      <xsl:call-template name="apichunks"/>
+	      <xsl:apply-templates mode="wordlist"
+			   select="$target/letter"/>
+	      <xsl:call-template name="apichunks"/>
+	    </div>
 	  </div>
-	  <div id="right">
-          <xsl:call-template name="titlebox">
-	    <xsl:with-param name="title" select="$title"/>
-	  </xsl:call-template>
-	  <xsl:call-template name="apichunks"/>
-	  <xsl:apply-templates mode="wordlist"
-		       select="$target/letter"/>
-	  <xsl:call-template name="apichunks"/>
-	  </div>
+	  <xsl:call-template name="linkList2"/>
 	  <xsl:call-template name="bottom"/>
-	  </div>
-        </body>
+	</div>
+	</body>
       </html>
     </xsl:document>
   </xsl:template>
