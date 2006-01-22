@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvir.css" /><title>Introduction</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Introduction</h1><p>Libvir won't try to provide all possible interfaces for interacting with
-the virtualization features of a set of Linux (or other OS) system.</p><p>To avoid ambiguity about the terms used here here are the definitions for
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvir.css" /><title>Introduction</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Introduction</h1><p>Libvir is a C toolkit to interract with the virtualization capabilities of
+recent versions of Linux (and other OSes), but ibvir won't try to provide all
+possible interfaces for interacting with the virtualization features of a set
+of Linux (or other OS) system.</p><p>To avoid ambiguity about the terms used here here are the definitions for
 soem of the specific terms used in libvir documentation:</p><ul><li>a <strong>node</strong> is a single physical machine</li>
   <li>an <strong>hypervisor</strong> is a layer of software allowing to
     virtualize a node in a set of virtual machines with possibly different
@@ -9,7 +11,7 @@ soem of the specific terms used in libvir documentation:</p><ul><li>a <strong>no
   <li>a <strong>domain</strong> is an instance of an operating system running
     on a virtualized machine</li>
 </ul><p>Now we can define the goal of libvir: to provide the lowest possible
-generic layer to manage domains on a node.</p><p>This implies the following:</p><ul><li>the API should not be targetted to a single virtualization environment
+generic and stable layer to manage domains on a node.</p><p>This implies the following:</p><ul><li>the API should not be targetted to a single virtualization environment
     though Xen is the current default, which also means that some very
     specific capabilities which are not generic enough may not be provided as
     libvir APIs</li>
@@ -18,6 +20,9 @@ generic layer to manage domains on a node.</p><p>This implies the following:</p>
   <li>the API will not try to provide hight level multi-nodes management
     features like load balancing, though they could be implemented on top of
     libvir</li>
+  <li>stability of the API is a big concern, libvir should isolate
+    applications from the frequent changes expected at the lower level of the
+    virtualization framework</li>
 </ul><p>So libvir should be a building block for higher level management tools or
 for applications focusing on virtualization on a single node (the only
 exception being domain migration between node capabilities which may need to

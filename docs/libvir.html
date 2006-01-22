@@ -30,7 +30,7 @@ virtualization mechanisms if needed.</p>
 
 <p>Here is the list of official releases, however since it is early on in the
 development of libvir, it is preferable when possible to just use the <a
-href="download.html">CVS version or snapshot</a>, contact the mailing list
+href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p>
 
 <h3>0.0.1: Dec 19 2005</h3>
@@ -42,8 +42,10 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p>
 
 <h2><a name="Introducti">Introduction</a></h2>
 
-<p>Libvir won't try to provide all possible interfaces for interacting with
-the virtualization features of a set of Linux (or other OS) system.</p>
+<p>Libvir is a C toolkit to interract with the virtualization capabilities of
+recent versions of Linux (and other OSes), but ibvir won't try to provide all
+possible interfaces for interacting with the virtualization features of a set
+of Linux (or other OS) system.</p>
 
 <p>To avoid ambiguity about the terms used here here are the definitions for
 soem of the specific terms used in libvir documentation:</p>
@@ -57,7 +59,7 @@ soem of the specific terms used in libvir documentation:</p>
 </ul>
 
 <p>Now we can define the goal of libvir: to provide the lowest possible
-generic layer to manage domains on a node.</p>
+generic and stable layer to manage domains on a node.</p>
 
 <p>This implies the following:</p>
 <ul>
@@ -70,6 +72,9 @@ generic layer to manage domains on a node.</p>
   <li>the API will not try to provide hight level multi-nodes management
     features like load balancing, though they could be implemented on top of
     libvir</li>
+  <li>stability of the API is a big concern, libvir should isolate
+    applications from the frequent changes expected at the lower level of the
+    virtualization framework</li>
 </ul>
 
 <p>So libvir should be a building block for higher level management tools or
