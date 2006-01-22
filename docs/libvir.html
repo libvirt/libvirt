@@ -13,6 +13,7 @@ site</a></h1>
 <h1 style="text-align: center">libvir</h1>
 
 <h3>what is <span class="style1">libvir?</span></h3>
+
 <p>Libvir is a C toolkit to interract with the virtualization capabilities of
 recent versions of Linux (and other OSes). It is free software available
 under the <a href="http://www.opensource.org/licenses/lgpl-license.html">GNU
@@ -27,12 +28,10 @@ virtualization mechanisms if needed.</p>
 
 <h2><a name="News">Releases</a></h2>
 
-<p>There is no official release yet, just CVS state and snapshot, contact the
-mailing list and check the <a href="ChangeLog.html">ChangeLog</a> to gauge
-progresses.</p>
-<ul>
-  <li>Extending the API</li>
-</ul>
+<p>Here is the list of official releases, however since it is early on in the
+development of libvir, it is preferable when possible to just use the <a
+href="download.html">CVS version or snapshot</a>, contact the mailing list
+and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p>
 
 <h3>0.0.1: Dec 19 2005</h3>
 <ul>
@@ -42,6 +41,43 @@ progresses.</p>
 </ul>
 
 <h2><a name="Introducti">Introduction</a></h2>
+
+<p>Libvir won't try to provide all possible interfaces for interacting with
+the virtualization features of a set of Linux (or other OS) system.</p>
+
+<p>To avoid ambiguity about the terms used here here are the definitions for
+soem of the specific terms used in libvir documentation:</p>
+<ul>
+  <li>a <strong>node</strong> is a single physical machine</li>
+  <li>an <strong>hypervisor</strong> is a layer of software allowing to
+    virtualize a node in a set of virtual machines with possibly different
+    configurations than the node itself</li>
+  <li>a <strong>domain</strong> is an instance of an operating system running
+    on a virtualized machine</li>
+</ul>
+
+<p>Now we can define the goal of libvir: to provide the lowest possible
+generic layer to manage domains on a node.</p>
+
+<p>This implies the following:</p>
+<ul>
+  <li>the API should not be targetted to a single virtualization environment
+    though Xen is the current default, which also means that some very
+    specific capabilities which are not generic enough may not be provided as
+    libvir APIs</li>
+  <li>the API should allow to do efficiently and cleanly all the operations
+    needed to manage domains on a node</li>
+  <li>the API will not try to provide hight level multi-nodes management
+    features like load balancing, though they could be implemented on top of
+    libvir</li>
+</ul>
+
+<p>So libvir should be a building block for higher level management tools or
+for applications focusing on virtualization on a single node (the only
+exception being domain migration between node capabilities which may need to
+be added at the libvir level)</p>
+
+<p> </p>
 
 <p></p>
 
@@ -55,20 +91,25 @@ kernels, the drivers and the xen daemon. Xend, the xen daemon, also runs in
 Domain0 and supervise the control and execution of the sets of domains. The
 hypervisor, drivers, kernels and daemons communicate though a shared system
 bus implemented in the hypervisor. The figure below tries to provide a view
-of this environment: </p>
+of this environment:</p>
 <img src="architecture.gif" alt="The Xen architecture">
 
 <p>The library can be initialized in 2 ways depending on the level of
 priviledge of the embedding program. If it runs with root access,
-virConnectOpen() can be used, it will use a read/write connection to the Xen
-Store and use Xen Hypervisor calls when possible. If it runs without root
-access virConnectOpenReadOnly() should be used, it will try to open the
-read-only socket <code>/var/run/xenstored/socket_ro</code> to connect to the
-Xen Store. In this case use of hypervisor calls and write to the Xen Store
-will not be possible, restraining the amount of APIs available and slowing
-down information gathering about domains. We expect libvir will also conmnect
-to the Xend daemon for some of the domain control operations, though this is
-not the case in the 0.0.1 initial version.</p>
+virConnectOpen() can be used, it will use three different ways to connect to
+the Xen infrastructure:</p>
+<ul>
+  <li>a connection to the Xen Daemon though an HTTP RPC layer</li>
+  <li>a read/write connection to the Xen Store</li>
+  <li>use Xen Hypervisor calls</li>
+</ul>
+
+<p> If it runs without root access virConnectOpenReadOnly() should be used,
+it will try to open the read-only socket
+<code>/var/run/xenstored/socket_ro</code> to connect to the Xen Store and
+also try to use the RPC to the Xen daemon. In this case use of hypervisor
+calls and write to the Xen Store will not be possible, restraining the amount
+of APIs available and slowing down information gathering about domains. </p>
 
 <h2><a name="Downloads">Downloads</a></h2>
 

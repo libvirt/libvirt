@@ -1,3 +1,24 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvir.css" /><title>Introduction</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Introduction</h1><p></p></div></div><div class="linkList2"><div class="llinks2"><h3 class="links2"><span>main menu</span></h3><ul><li><a href="index.html">Home</a></li><li><a href="news.html">Releases</a></li><li><a href="intro.html">Introduction</a></li><li><a href="architecture.html">libvir architecture</a></li><li><a href="downloads.html">Downloads</a></li><li><a href="FAQ.html">FAQ</a></li><li><a href="bugs.html">Reporting bugs and getting help</a></li><li><a style="font-weight:bold" href="html/index.html">API Menu</a></li><li><a href="ChangeLog.html">Recent Changes</a></li></ul></div><div class="llinks2"><h3 class="links2"><span>related links</span></h3><ul><li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li><li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li><li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" /></form></li><li><a href="http://xmlsoft.org/"><img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li></ul></div></div><div id="bottom"><p class="p1"></p></div></div></body></html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvir.css" /><title>Introduction</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Introduction</h1><p>Libvir won't try to provide all possible interfaces for interacting with
+the virtualization features of a set of Linux (or other OS) system.</p><p>To avoid ambiguity about the terms used here here are the definitions for
+soem of the specific terms used in libvir documentation:</p><ul><li>a <strong>node</strong> is a single physical machine</li>
+  <li>an <strong>hypervisor</strong> is a layer of software allowing to
+    virtualize a node in a set of virtual machines with possibly different
+    configurations than the node itself</li>
+  <li>a <strong>domain</strong> is an instance of an operating system running
+    on a virtualized machine</li>
+</ul><p>Now we can define the goal of libvir: to provide the lowest possible
+generic layer to manage domains on a node.</p><p>This implies the following:</p><ul><li>the API should not be targetted to a single virtualization environment
+    though Xen is the current default, which also means that some very
+    specific capabilities which are not generic enough may not be provided as
+    libvir APIs</li>
+  <li>the API should allow to do efficiently and cleanly all the operations
+    needed to manage domains on a node</li>
+  <li>the API will not try to provide hight level multi-nodes management
+    features like load balancing, though they could be implemented on top of
+    libvir</li>
+</ul><p>So libvir should be a building block for higher level management tools or
+for applications focusing on virtualization on a single node (the only
+exception being domain migration between node capabilities which may need to
+be added at the libvir level)</p><p> </p><p></p></div></div><div class="linkList2"><div class="llinks2"><h3 class="links2"><span>main menu</span></h3><ul><li><a href="index.html">Home</a></li><li><a href="news.html">Releases</a></li><li><a href="intro.html">Introduction</a></li><li><a href="architecture.html">libvir architecture</a></li><li><a href="downloads.html">Downloads</a></li><li><a href="FAQ.html">FAQ</a></li><li><a href="bugs.html">Reporting bugs and getting help</a></li><li><a style="font-weight:bold" href="html/index.html">API Menu</a></li><li><a href="ChangeLog.html">Recent Changes</a></li></ul></div><div class="llinks2"><h3 class="links2"><span>related links</span></h3><ul><li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li><li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li><li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" /></form></li><li><a href="http://xmlsoft.org/"><img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li></ul></div></div><div id="bottom"><p class="p1"></p></div></div></body></html>

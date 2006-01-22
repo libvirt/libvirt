@@ -8,14 +8,15 @@ kernels, the drivers and the xen daemon. Xend, the xen daemon, also runs in
 Domain0 and supervise the control and execution of the sets of domains. The
 hypervisor, drivers, kernels and daemons communicate though a shared system
 bus implemented in the hypervisor. The figure below tries to provide a view
-of this environment: </p><img src="architecture.gif" alt="The Xen architecture" /><p>The library can be initialized in 2 ways depending on the level of
+of this environment:</p><img src="architecture.gif" alt="The Xen architecture" /><p>The library can be initialized in 2 ways depending on the level of
 priviledge of the embedding program. If it runs with root access,
-virConnectOpen() can be used, it will use a read/write connection to the Xen
-Store and use Xen Hypervisor calls when possible. If it runs without root
-access virConnectOpenReadOnly() should be used, it will try to open the
-read-only socket <code>/var/run/xenstored/socket_ro</code> to connect to the
-Xen Store. In this case use of hypervisor calls and write to the Xen Store
-will not be possible, restraining the amount of APIs available and slowing
-down information gathering about domains. We expect libvir will also conmnect
-to the Xend daemon for some of the domain control operations, though this is
-not the case in the 0.0.1 initial version.</p></div></div><div class="linkList2"><div class="llinks2"><h3 class="links2"><span>main menu</span></h3><ul><li><a href="index.html">Home</a></li><li><a href="news.html">Releases</a></li><li><a href="intro.html">Introduction</a></li><li><a href="architecture.html">libvir architecture</a></li><li><a href="downloads.html">Downloads</a></li><li><a href="FAQ.html">FAQ</a></li><li><a href="bugs.html">Reporting bugs and getting help</a></li><li><a style="font-weight:bold" href="html/index.html">API Menu</a></li><li><a href="ChangeLog.html">Recent Changes</a></li></ul></div><div class="llinks2"><h3 class="links2"><span>related links</span></h3><ul><li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li><li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li><li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" /></form></li><li><a href="http://xmlsoft.org/"><img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li></ul></div></div><div id="bottom"><p class="p1"></p></div></div></body></html>
+virConnectOpen() can be used, it will use three different ways to connect to
+the Xen infrastructure:</p><ul><li>a connection to the Xen Daemon though an HTTP RPC layer</li>
+  <li>a read/write connection to the Xen Store</li>
+  <li>use Xen Hypervisor calls</li>
+</ul><p> If it runs without root access virConnectOpenReadOnly() should be used,
+it will try to open the read-only socket
+<code>/var/run/xenstored/socket_ro</code> to connect to the Xen Store and
+also try to use the RPC to the Xen daemon. In this case use of hypervisor
+calls and write to the Xen Store will not be possible, restraining the amount
+of APIs available and slowing down information gathering about domains. </p></div></div><div class="linkList2"><div class="llinks2"><h3 class="links2"><span>main menu</span></h3><ul><li><a href="index.html">Home</a></li><li><a href="news.html">Releases</a></li><li><a href="intro.html">Introduction</a></li><li><a href="architecture.html">libvir architecture</a></li><li><a href="downloads.html">Downloads</a></li><li><a href="FAQ.html">FAQ</a></li><li><a href="bugs.html">Reporting bugs and getting help</a></li><li><a style="font-weight:bold" href="html/index.html">API Menu</a></li><li><a href="ChangeLog.html">Recent Changes</a></li></ul></div><div class="llinks2"><h3 class="links2"><span>related links</span></h3><ul><li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li><li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li><li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" /></form></li><li><a href="http://xmlsoft.org/"><img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li></ul></div></div><div id="bottom"><p class="p1"></p></div></div></body></html>
