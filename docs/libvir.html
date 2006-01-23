@@ -44,8 +44,7 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p>
 
 <p>Libvir is a C toolkit to interract with the virtualization capabilities of
 recent versions of Linux (and other OSes), but ibvir won't try to provide all
-possible interfaces for interacting with the virtualization features of a set
-of Linux (or other OS) system.</p>
+possible interfaces for interacting with the virtualization features.</p>
 
 <p>To avoid ambiguity about the terms used here here are the definitions for
 soem of the specific terms used in libvir documentation:</p>
@@ -57,6 +56,9 @@ soem of the specific terms used in libvir documentation:</p>
   <li>a <strong>domain</strong> is an instance of an operating system running
     on a virtualized machine</li>
 </ul>
+
+<p style="text-align: center"><img
+alt="Hypervisor and domains running on a node" src="node.gif"></p>
 
 <p>Now we can define the goal of libvir: to provide the lowest possible
 generic and stable layer to manage domains on a node.</p>
@@ -80,23 +82,21 @@ generic and stable layer to manage domains on a node.</p>
 <p>So libvir should be a building block for higher level management tools or
 for applications focusing on virtualization on a single node (the only
 exception being domain migration between node capabilities which may need to
-be added at the libvir level)</p>
-
-<p> </p>
-
-<p></p>
+be added at the libvir level). Where possible libvir should be extendable to
+be able to provide the same API for remote nodes, however this is not the
+case at the moment, the code currently handle only local node access.</p>
 
 <h2><a name="architecture">libvir architecture</a></h2>
 
-<p>In a Xen environment, programs using libvir have to execute in "Domain 0",
-which is the primary Linux OS loaded on the machine. That OS kernel provides
-most if not all of the actual drivers used by the set of domains. It also
-runs the Xen Store, a database of informations shared by the hypervisor, the
-kernels, the drivers and the xen daemon. Xend, the xen daemon, also runs in
-Domain0 and supervise the control and execution of the sets of domains. The
-hypervisor, drivers, kernels and daemons communicate though a shared system
-bus implemented in the hypervisor. The figure below tries to provide a view
-of this environment:</p>
+<p>When running in a Xen environment, programs using libvir have to execute
+in "Domain 0", which is the primary Linux OS loaded on the machine. That OS
+kernel provides most if not all of the actual drivers used by the set of
+domains. It also runs the Xen Store, a database of informations shared by the
+hypervisor, the kernels, the drivers and the xen daemon. Xend. The xen daemon
+supervise the control and execution of the sets of domains. The hypervisor,
+drivers, kernels and daemons communicate though a shared system bus
+implemented in the hypervisor. The figure below tries to provide a view of
+this environment:</p>
 <img src="architecture.gif" alt="The Xen architecture">
 
 <p>The library can be initialized in 2 ways depending on the level of
@@ -109,8 +109,14 @@ the Xen infrastructure:</p>
   <li>use Xen Hypervisor calls</li>
 </ul>
 
-<p> If it runs without root access virConnectOpenReadOnly() should be used,
-it will try to open the read-only socket
+<p>The library will usually interract with the Xen daemon for any operation
+changing the state of the system, but for performance and accuracy reasons
+may talk directly to the hypervisor when gathering state informations at
+least when possible (i.e. when the running program using libvir has root
+priviledge access). </p>
+
+<p> If it runs without root access virConnectOpenReadOnly() should be used to
+connect to initialize the library. It will try to open the read-only socket
 <code>/var/run/xenstored/socket_ro</code> to connect to the Xen Store and
 also try to use the RPC to the Xen daemon. In this case use of hypervisor
 calls and write to the Xen Store will not be possible, restraining the amount
@@ -188,11 +194,13 @@ available except commiting to the base.</p>
     <p><code>make rpm</code></p>
   </li>
   <li><em>Failure to use the API for non-root users</em>
-    <p>Large parts of the API are only accessible as root, however the read
-    only access to the xenstore data doesnot have to be forbidden to user, at
-    least for monitoring purposes. If "virsh info" fails to run as an user,
-    change the mode of the xenstore read-only socket with:</p>
+    <p>Large parts of the API may only be accessible with root priviledges,
+    however the read only access to the xenstore data doesnot have to be
+    forbidden to user, at least for monitoring purposes. If "virsh info"
+    fails to run as an user, change the mode of the xenstore read-only socket
+    with:</p>
     <p><code>chmod 666 /var/run/xenstored/socket_ro</code></p>
+    <p>and also make sure that the Xen Daemon is running correctly</p>
   </li>
 </ol>
 
@@ -244,7 +252,7 @@ attachments are really appreciated and will be discussed on the mailing list.
 If possible generate the patches by using cvs diff -u in a CVS checkout.</p>
 
 <p>We expect to use <a href="https://bugzilla.redhat.com/">Red Hat
-Bugzilla</a> to track bugs for libvir, though there isn't yet a libvir
-software module.</p>
+Bugzilla</a> to track bugs for libvir, though there isn't a libvir software
+module defined yet, in the meantime use the mailing-list, thanks !.</p>
 </body>
 </html>
