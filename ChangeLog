@@ -1,18 +1,24 @@
+Mon Jan 23 23:53:07 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* docs/site.xsl docs/*.png docs/*.html: update the images from Diana,
+	  added favicon to page.
+	* src/libvir.c: reorganized the include imports.
+
 Mon Jan 23 14:23:16 CET 2006 Daniel Veillard <veillard@redhat.com>
 
-	* doc/*: augment and try to complete the doc in its current state
+	* docs/*: augment and try to complete the doc in its current state
 
 Sun Jan 22 17:26:20 CET 2006 Daniel Veillard <veillard@redhat.com>
 
-	* doc/*: started to augment and update the documentation
+	* docs/*: started to augment and update the documentation
 
 Sat Jan 21 23:33:46 GMT 2006 Daniel Veillard <veillard@redhat.com>
 
-	* doc//*: mostly finished the revamp in the plane, starts to look good
+	* docs//*: mostly finished the revamp in the plane, starts to look good
 
 Fri Jan 20 16:48:05 CET 2006 Daniel Veillard <veillard@redhat.com>
 
-	* doc/* : total revamp of the web site based on Diana Fong design
+	* docs/* : total revamp of the web site based on Diana Fong design
 	  but not completely integrated yet
 
 Fri Jan 20 10:57:44 CET 2006 Daniel Veillard <veillard@redhat.com>

@@ -10,8 +10,6 @@
  */
 
 #include "libvir.h"
-#include "xen_internal.h"
-#include "xend_internal.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,6 +19,7 @@
 #include <unistd.h>
 #include <xs.h>
 #include "internal.h"
+#include "xen_internal.h"
 #include "xend_internal.h"
 #include "hash.h"
 

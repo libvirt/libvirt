@@ -385,6 +385,7 @@
  -->
   <xsl:template name="style">
     <link rel="stylesheet" type="text/css" href="{$href_base}libvir.css" />
+    <link rel="SHORTCUT ICON" href="/32favicon.png" />
   </xsl:template>
 
 <!--
