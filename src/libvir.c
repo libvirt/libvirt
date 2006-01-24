@@ -147,6 +147,9 @@ virConnectOpenReadOnly(const char *name) {
     handle = xenHypervisorOpen();
     if (handle >= 0)
         method++;
+    else
+        handle = -1;
+
     xshandle = xs_daemon_open_readonly();
     if (xshandle != NULL)
         method++;
@@ -155,7 +158,7 @@ virConnectOpenReadOnly(const char *name) {
     if (ret == NULL)
         goto failed;
     ret->magic = VIR_CONNECT_MAGIC;
-    ret->handle = -1;
+    ret->handle = handle;
     ret->xshandle = xshandle;
     if (xend_setup(ret) == 0)
         method++;

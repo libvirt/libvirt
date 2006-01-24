@@ -1,3 +1,8 @@
+Tue Jan 24 14:09:37 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvir.c: Karel pointed out handle was lost in
+	  virConnectOpenReadOnly()
+
 Mon Jan 23 23:53:07 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* docs/site.xsl docs/*.png docs/*.html: update the images from Diana,
