@@ -344,13 +344,11 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids) {
 		ret = -1;
 		goto done;
 	    }
-
 	    if (virConnectCheckStoreID(conn, (int) id) < 0)
 		continue;
 	    ids[ret++] = (int) id;
 	}
     }
-
 
 done:
     if ((t != NULL) && (conn->xshandle != NULL))
@@ -602,6 +600,8 @@ virDomainGetVMInfo(virDomainPtr domain, const char *vm,
     
     if (!VIR_IS_CONNECTED_DOMAIN(domain))
 	return(NULL);
+    if (domain->conn->xshandle==NULL)
+	return(NULL);
     
     snprintf(s, 255, "%s/%s", vm, name);
     s[255] = 0;
@@ -721,33 +721,34 @@ virDomainLookupByName(virConnectPtr conn, const char *name) {
     }
 
     /* then though the XenStore */
+    if (conn->xshandle != NULL) {
+        t = xs_transaction_start(conn->xshandle);
+        if (t == NULL)
+            goto done;
 
-    t = xs_transaction_start(conn->xshandle);
-    if (t == NULL)
-        goto done;
+        idlist = xs_directory(conn->xshandle, t, "/local/domain", &num);
+        if (idlist == NULL)
+            goto done;
 
-    idlist = xs_directory(conn->xshandle, t, "/local/domain", &num);
-    if (idlist == NULL)
-        goto done;
-
-    for (i = 0;i < num;i++) {
-        id = strtol(idlist[i], &endptr, 10);
-	if ((endptr == idlist[i]) || (*endptr != 0)) {
-	    goto done;
-	}
-	if (virConnectCheckStoreID(conn, (int) id) < 0)
-	    continue;
-        snprintf(prop, 199, "/local/domain/%s/name", idlist[i]);
-	prop[199] = 0;
-	tmp = xs_read(conn->xshandle, t, prop, &len);
-	if (tmp != NULL) {
-	    found = !strcmp(name, tmp);
-	    free(tmp);
-	    if (found)
-	        break;
-	}
+        for (i = 0;i < num;i++) {
+             id = strtol(idlist[i], &endptr, 10);
+	     if ((endptr == idlist[i]) || (*endptr != 0)) {
+	         goto done;
+	     }
+	     if (virConnectCheckStoreID(conn, (int) id) < 0)
+	         continue;
+             snprintf(prop, 199, "/local/domain/%s/name", idlist[i]);
+	     prop[199] = 0;
+	     tmp = xs_read(conn->xshandle, t, prop, &len);
+	     if (tmp != NULL) {
+	         found = !strcmp(name, tmp);
+	         free(tmp);
+	         if (found)
+	             break;
+	     }
+        }
+        path = xs_get_domain_path(conn->xshandle, (unsigned int) id);
     }
-    path = xs_get_domain_path(conn->xshandle, (unsigned int) id);
 
 do_found:
 
@@ -1128,6 +1129,8 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory) {
         return(-1);
     if (domain->conn->flags & VIR_CONNECT_RO)
         return(-1);
+    if (domain->conn->xshandle==NULL)
+	return(-1);
     ret = xenHypervisorSetMaxMemory(domain->conn->handle, domain->handle,
                                     memory);
     if (ret < 0)

@@ -70,13 +70,10 @@ typedef enum {
  *    int_option      =     --optionname <number>
  *    string_option   =     --optionname <string>
  *        
- *     keyword        =     [a-zA-Z]
- *     number         =     [0-9]+
- *     string         =     [^[:blank:]] | "[[:alnum:]]"$
+ *    keyword         =     [a-zA-Z]
+ *    number          =     [0-9]+
+ *    string          =     [^[:blank:]] | "[[:alnum:]]"$
  *
- *  Note: only one <data> token per command is supported. It means:
- *        "command aaa bbb" is unsupported and you have to use any option, like:
- *        "command --aaa <data> bbb" or whatever.
  */
 
 /*
@@ -323,7 +320,7 @@ static vshCmdInfo info_dstate[] = {
 };
 
 static vshCmdOptDef opts_dstate[] = {
-    { "domain",  VSH_OT_DATA, 0, "domain name or id" },
+    { "domain",  VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id" },
     { NULL, 0, 0, NULL }
 };
 
@@ -359,7 +356,7 @@ static vshCmdInfo info_suspend[] = {
 };
 
 static vshCmdOptDef opts_suspend[] = {
-    { "domain",  VSH_OT_DATA, 0, "domain name or id" },
+    { "domain",  VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id" },
     { NULL, 0, 0, NULL }
 };
 
@@ -390,15 +387,15 @@ cmdSuspend(vshControl *ctl, vshCmd *cmd) {
  * "save" command
  */
 static vshCmdInfo info_save[] = {
-    { "syntax",  "save <domain> to <file>" },
+    { "syntax",  "save <domain> <file>" },
     { "help",    "save a domain state to a file" },
     { "desc",    "Save a running domain." },
     { NULL, NULL }
 };
 
 static vshCmdOptDef opts_save[] = {
-    { "file",  VSH_OT_STRING, VSH_OFLAG_REQ, "where to save the data" },
-    { "domain",  VSH_OT_DATA, 0, "domain name or id" },
+    { "file",    VSH_OT_DATA, VSH_OFLAG_REQ, "where to save the data" },
+    { "domain",  VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id" },
     { NULL, 0, 0, NULL }
 };
 
@@ -407,14 +404,12 @@ cmdSave(vshControl *ctl, vshCmd *cmd) {
     virDomainPtr dom;
     char *name;
     char *to;
-    int found;
     int ret = TRUE;
     
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    to = vshCommandOptString(cmd, "file", &found);
-    if (!found)
+    if (!(to = vshCommandOptString(cmd, "file", NULL)))
         return FALSE;
     
     if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", &name)))
@@ -442,7 +437,7 @@ static vshCmdInfo info_restore[] = {
 };
 
 static vshCmdOptDef opts_restore[] = {
-    { "file",  VSH_OT_DATA, 0, "the state to restore" },
+    { "file",  VSH_OT_DATA, VSH_OFLAG_REQ, "the state to restore" },
     { NULL, 0, 0, NULL }
 };
 
@@ -479,7 +474,7 @@ static vshCmdInfo info_resume[] = {
 };
 
 static vshCmdOptDef opts_resume[] = {
-    { "domain",  VSH_OT_DATA, 0, "domain name or id" },
+    { "domain",  VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id" },
     { NULL, 0, 0, NULL }
 };
 
@@ -517,7 +512,7 @@ static vshCmdInfo info_shutdown[] = {
 };
 
 static vshCmdOptDef opts_shutdown[] = {
-    { "domain",  VSH_OT_DATA, 0, "domain name or id" },
+    { "domain",  VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id" },
     { NULL, 0, 0, NULL }
 };
 
@@ -555,7 +550,7 @@ static vshCmdInfo info_destroy[] = {
 };
 
 static vshCmdOptDef opts_destroy[] = {
-    { "domain",  VSH_OT_DATA, 0, "domain name or id" },
+    { "domain",  VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id" },
     { NULL, 0, 0, NULL }
 };
 
@@ -593,7 +588,7 @@ static vshCmdInfo info_dinfo[] = {
 };
 
 static vshCmdOptDef opts_dinfo[] = {
-    { "domain",  VSH_OT_DATA, 0, "domain name or id" },
+    { "domain",  VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id" },
     { NULL, 0, 0, NULL }
 };
 
@@ -659,7 +654,7 @@ static vshCmdInfo info_dumpxml[] = {
 };
 
 static vshCmdOptDef opts_dumpxml[] = {
-    { "domain",  VSH_OT_DATA, 0, "domain name or id" },
+    { "domain",  VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id" },
     { NULL, 0, 0, NULL }
 };
 
@@ -697,7 +692,7 @@ static vshCmdInfo info_nameof[] = {
 };
 
 static vshCmdOptDef opts_nameof[] = {
-    { "id",        VSH_OT_DATA,  0, "domain Id" },
+    { "id",        VSH_OT_DATA,  VSH_OFLAG_REQ, "domain Id" },
     { NULL, 0, 0, NULL }
 };
 
@@ -733,7 +728,7 @@ static vshCmdInfo info_idof[] = {
 };
 
 static vshCmdOptDef opts_idof[] = {
-    { "name",     VSH_OT_DATA,   0, "domain name" },
+    { "name",     VSH_OT_DATA, VSH_OFLAG_REQ, "domain name" },
         { NULL, 0, 0, NULL }
 };
 
@@ -902,13 +897,52 @@ vshCmddefGetOption(vshCmdDef *cmd, const char *name) {
 }
 
 static vshCmdOptDef *
-vshCmddefGetData(vshCmdDef *cmd) {
+vshCmddefGetData(vshCmdDef *cmd, int data_ct) {
     vshCmdOptDef *opt;
 
-    for (opt = cmd->opts; opt && opt->name; opt++)
-        if (opt->type==VSH_OT_DATA)
-            return opt;
+    for (opt = cmd->opts; opt && opt->name; opt++) {
+        if (opt->type==VSH_OT_DATA) {
+            if (data_ct==0)
+                return opt;
+            else
+                data_ct--;
+        }
+    }
     return NULL;
+}
+
+/*
+ * Checks for required options
+ */
+static int 
+vshCommandCheckOpts(vshControl *ctl, vshCmd *cmd)
+{
+    vshCmdDef *def = cmd->def;
+    vshCmdOptDef *d;
+    int err=0;
+
+    for (d = def->opts; d && d->name; d++) {
+        if (d->flag & VSH_OFLAG_REQ) {
+            vshCmdOpt *o = cmd->opts;
+            int ok=0;
+        
+            while(o && ok==0) {
+                if (o->def == d)
+                    ok=1;
+                o = o->next;
+            }
+            if (!ok) {
+                vshError(ctl, FALSE, 
+                        d->type == VSH_OT_DATA ?
+                            "command '%s' requires <%s> option" :
+                            "command '%s' requires --%s option",
+                              def->name, d->name);
+                err = 1;
+            }
+            
+        }
+    }
+    return !err;
 }
 
 static vshCmdDef *
@@ -1040,7 +1074,8 @@ vshCommandOptString(vshCmd *cmd, const char *name, int *found) {
     vshCmdOpt *arg = vshCommandOpt(cmd, name);
     if (found)
         *found = arg ? TRUE : FALSE;
-    return arg ? arg->data : NULL;
+
+    return arg && arg->data && *arg->data ? arg->data : NULL;
 }
 
 /*
@@ -1050,6 +1085,7 @@ static int
 vshCommandOptBool(vshCmd *cmd, const char *name) {
     return vshCommandOpt(cmd, name) ? TRUE : FALSE;
 }
+
 
 static virDomainPtr
 vshCommandOptDomain(vshControl *ctl, vshCmd *cmd, const char *optname, char **name) {
@@ -1062,18 +1098,23 @@ vshCommandOptDomain(vshControl *ctl, vshCmd *cmd, const char *optname, char **na
         return NULL; 
     }
     
+    vshPrint(ctl, VSH_DEBUG5, "%s: found option <%s>: %s\n", cmd->def->name, optname, n);
+    
     if (name)
         *name = n;
     
     /* try it by ID */
     id = (int) strtol(n, &end, 10);
-    if (id >= 0 && end && *end=='\0')
+    if (id >= 0 && end && *end=='\0') {
+        vshPrint(ctl, VSH_DEBUG5, "%s: <%s> seems like domain ID\n", cmd->def->name, optname);
         dom = virDomainLookupByID(ctl->conn, id);
+    }
     
     /* try it by NAME */
-    if (!dom)
+    if (!dom) {
+        vshPrint(ctl, VSH_DEBUG5, "%s: <%s> tring as domain NAME\n", cmd->def->name, optname);
         dom = virDomainLookupByName(ctl->conn, n);
-
+    }
     if (!dom) 
         vshError(ctl, FALSE, "failed to get domain '%s'", n);
         
@@ -1143,7 +1184,13 @@ vshCommandGetToken(vshControl *ctl, char *str, char **end, char **res) {
         /* end of token is blank space or ';' */
         if ((quote==FALSE && isblank((unsigned char) *p)) || *p==';')
             break;
-
+    
+        /* end of option name could be '=' */
+        if (tk==VSH_TK_OPTION && *p=='=') {
+            p++;    /* skip '=' */
+            break;
+        }
+        
         if (tk==VSH_TK_NONE) {
             if (*p=='-' && *(p+1)=='-' && *(p+2) && isalnum((unsigned char) *(p+2))) {
                 tk = VSH_TK_OPTION;
@@ -1204,6 +1251,7 @@ vshCommandParse(vshControl *ctl, char *cmdstr) {
         vshCmdOpt *last = NULL;
         vshCmdDef *cmd = NULL;
         int tk = VSH_TK_NONE;
+        int data_ct = 0;
         
         first = NULL;
         
@@ -1262,7 +1310,7 @@ vshCommandParse(vshControl *ctl, char *cmdstr) {
                     }
                 }
             } else if (tk==VSH_TK_DATA) {
-                if (!(opt = vshCmddefGetData(cmd))) {
+                if (!(opt = vshCmddefGetData(cmd, data_ct++))) {
                     vshError(ctl, FALSE,
                         "unexpected data '%s'",
                                tkdata);
@@ -1301,6 +1349,9 @@ vshCommandParse(vshControl *ctl, char *cmdstr) {
             c->def = cmd;
             c->next = NULL;
 
+            if (!vshCommandCheckOpts(ctl, c))
+                goto syntaxError;
+            
             if (!ctl->cmd)
                 ctl->cmd = c;
             if (clast)
@@ -1619,7 +1670,7 @@ vshParseArgv(vshControl *ctl, int argc, char **argv) {
     if (argc < 2)
         return TRUE;
     
-    /* look for begin of command, for example:
+    /* look for begin of the command, for example:
      *   ./virsh --debug 5 -q command --cmdoption
      *                  <--- ^ --->
      *        getopt() stuff | command suff

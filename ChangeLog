@@ -1,3 +1,9 @@
+Tue Jan 24 11:44:53 CET 2006 Karel Zak <kzak@redhat.com> 
+
+	* src/libvir_sym.version: add virDeomainRestore and virDomainSave
+	* src/virsh.c: support '=' in options, fix command grammar 
+	* src/libvir.c: add conn->xshandle checks
+
 Tue Jan 24 14:09:37 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvir.c: Karel pointed out handle was lost in

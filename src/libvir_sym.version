@@ -18,7 +18,9 @@
 	virDomainGetXMLDesc;
 	virDomainLookupByID;
 	virDomainLookupByName;
+	virDomainRestore;
 	virDomainResume;
+	virDomainSave;
 	virDomainSetMaxMemory;
 	virDomainShutdown;
 	virDomainSuspend;
