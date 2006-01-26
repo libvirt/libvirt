@@ -134,6 +134,8 @@ class docParser:
                 self.function_arg_info = None
                 if attrs.has_key('name'):
                     self.function_arg_name = attrs['name']
+		    if self.function_arg_name == 'from':
+		        self.function_arg_name = 'frm'
                 if attrs.has_key('type'):
                     self.function_arg_type = attrs['type']
                 if attrs.has_key('info'):

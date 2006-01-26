@@ -1,63 +1,17 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<link rel="SHORTCUT ICON" href="/favicon.ico">
-<style type="text/css"><!--
-TD {font-family: Verdana,Arial,Helvetica}
-BODY {font-family: Verdana,Arial,Helvetica; margin-top: 2em; margin-left: 0em; margin-right: 0em}
-H1 {font-family: Verdana,Arial,Helvetica}
-H2 {font-family: Verdana,Arial,Helvetica}
-H3 {font-family: Verdana,Arial,Helvetica}
-A:link, A:visited, A:active { text-decoration: underline }
---></style>
-<title>Search the documentation on Libvir.org</title>
-</head>
-<body bgcolor="#8b7765" text="#000000" link="#000000" vlink="#000000">
-<table border="0" width="100%" cellpadding="5" cellspacing="0" align="center"><tr>
-<td width="180">
-<a href="http://www.redhat.com/"><img src="redhat.gif" alt="Red Hat Logo"></a>
-</td>
-<td><table border="0" width="90%" cellpadding="2" cellspacing="0" align="center" bgcolor="#000000"><tr><td><table width="100%" border="0" cellspacing="1" cellpadding="3" bgcolor="#fffacd"><tr><td align="center">
-<h1>Libvir the virtualization library</h1>
-<h2>Search engine</h2>
-</td></tr></table></td></tr></table></td>
-</tr></table>
-<table border="0" cellpadding="4" cellspacing="0" width="100%" align="center"><tr><td bgcolor="#8b7765"><table border="0" cellspacing="0" cellpadding="2" width="100%"><tr>
-<td valign="top" width="200" bgcolor="#8b7765"><table border="0" cellspacing="0" cellpadding="1" width="100%" bgcolor="#000000"><tr><td>
-<table width="100%" border="0" cellspacing="1" cellpadding="3">
-<tr><td colspan="1" bgcolor="#eecfa1" align="center"><center><b>Main Menu</b></center></td></tr>
-<tr><td bgcolor="#fffacd"><ul>
-<li><a href="index.html">Home</a></li>
-<li><a href="intro.html">Introduction</a></li>
-<li><a href="FAQ.html">FAQ</a></li>
-<li><a href="bugs.html">Reporting bugs and getting help</a></li>
-<li><a href="downloads.html">Downloads</a></li>
-<li><a href="news.html">News</a></li>
-<li>
-<a href="xml.html">flat page</a>, <a href="site.xsl">stylesheet</a>
-</li>
-</ul></td></tr>
-</table>
-<table width="100%" border="0" cellspacing="1" cellpadding="3">
-<tr><td colspan="1" bgcolor="#eecfa1" align="center"><center><b>API Indexes</b></center></td></tr>
-<tr><td bgcolor="#fffacd"><ul>
-<li><a href="APIchunk0.html">Alphabetic</a></li>
-<li><a href="APIconstructors.html">Constructors</a></li>
-<li><a href="APIfunctions.html">Functions/Types</a></li>
-<li><a href="APIfiles.html">Modules</a></li>
-<li><a href="APIsymbols.html">Symbols</a></li>
-</ul></td></tr>
-</table>
-<table width="100%" border="0" cellspacing="1" cellpadding="3">
-<tr><td colspan="1" bgcolor="#eecfa1" align="center"><center><b>Related links</b></center></td></tr>
-<tr><td bgcolor="#fffacd"><ul>
-<li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li>
-<li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li>
-</ul></td></tr>
-</table>
-</td></tr></table></td>
-<td valign="top" bgcolor="#8b7765"><table border="0" cellspacing="0" cellpadding="1" width="100%"><tr><td><table border="0" cellspacing="0" cellpadding="1" width="100%" bgcolor="#000000"><tr><td><table border="0" cellpadding="3" cellspacing="1" width="100%"><tr><td bgcolor="#fffacd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <link rel="stylesheet" type="text/css" href="libvir.css" />
+    <link rel="SHORTCUT ICON" href="/32favicon.png" />
+    <title>Search the documentation on Libvir.org</title>
+  </head>
+  <body>
+    <div id="container">
+      <div id="intro">
+        <div id="adjustments">
+          <p class="p1"></p>
+        </div>
+        <div id="content">
 <?php
     $query = $HTTP_GET_VARS[ "query" ];
     $scope = $HTTP_GET_VARS[ "scope" ];
@@ -286,9 +240,71 @@ A:link, A:visited, A:active { text-decoration: underline }
 	}
     }
 ?>
-
-</td></tr></table></td></tr></table></td></tr></table></td>
-</tr></table></td></tr></table>
-</body>
+        </div>
+      </div>
+      <div class="linkList">
+        <div class="llinks">
+          <h3 class="links">
+            <span>main menu</span>
+          </h3>
+          <ul>
+            <li>
+              <a href="index.html">Home</a>
+            </li>
+            <li>
+              <a href="news.html">Releases</a>
+            </li>
+            <li>
+              <a href="intro.html">Introduction</a>
+            </li>
+            <li>
+              <a href="architecture.html">libvir architecture</a>
+            </li>
+            <li>
+              <a href="downloads.html">Downloads</a>
+            </li>
+            <li>
+              <a href="FAQ.html">FAQ</a>
+            </li>
+            <li>
+              <a href="bugs.html">Reporting bugs and getting help</a>
+            </li>
+            <li>
+              <a style="font-weight:bold" href="html/index.html">API Menu</a>
+            </li>
+            <li>
+              <a href="ChangeLog.html">Recent Changes</a>
+            </li>
+          </ul>
+        </div>
+        <div class="llinks">
+          <h3 class="links">
+            <span>related links</span>
+          </h3>
+          <ul>
+            <li>
+              <a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a>
+            </li>
+            <li>
+              <a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a>
+            </li>
+            <li>
+              <form action="search.php" enctype="application/x-www-form-urlencoded" method="get">
+                <input name="query" type="text" size="12" value="Search..." />
+                <input name="submit" type="submit" value="Go" />
+              </form>
+            </li>
+            <li>
+              <a href="http://xmlsoft.org/">
+                <img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" />
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div id="bottom">
+        <p class="p1"></p>
+      </div>
+    </div>
+  </body>
 </html>
-

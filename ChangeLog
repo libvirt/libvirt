@@ -1,3 +1,9 @@
+Thu Jan 26 13:10:43 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* TODO: updated
+	* docs/search.php: use the new web site design
+	* python/generator.py: fix a generation bug on python keyword
+
 Tue Jan 24 11:44:53 CET 2006 Karel Zak <kzak@redhat.com> 
 
 	* src/libvir_sym.version: add virDeomainRestore and virDomainSave

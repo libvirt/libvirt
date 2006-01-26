@@ -1,4 +1,22 @@
-- nearly everything at this point
+Absolute TODOs:
+- fix the python bindings
+- Create() API, how do we best keep flexibility and allow various
+  specific environment and space for evolution (VMX)
+- thread protection, reentrancy, refcounting, etc ...
+- documentation and examples on using the toolkit
+- Error API. probably similar to libxml2 structured API
+
+TODO:
+- track change of xend API, XML-RPC, UUID based lookup and naming
+- API for the Node: extracting informations, selecting scheduling policy
+- better resources allocation APIs (%CPU, set memory)
+
+Probable TODOs:
+- event on big domain state change (create, crashed, paused, shutdown, destroy)
+- bindings for more languages
+
+Would-be-nice TODO:
+- support for QEmu and other virtualization engines
 
 Done:
 - make dist and make rpm targets
