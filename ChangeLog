@@ -1,3 +1,9 @@
+Fri Jan 27 09:58:31 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvir.c src/xml.c: applied patch from Anthony Liguori
+	  to remove the XenStore transactions as this is not needed
+	  anymore.
+
 Thu Jan 26 13:10:43 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* TODO: updated

@@ -146,25 +146,14 @@ virBufferVSprintf(virBufferPtr buf, const char *format, ...) {
 static char *
 virDomainGetXMLDeviceInfo(virDomainPtr domain, const char *sub, 
                           long dev, const char *name) {
-    struct xs_transaction_handle* t;
     char s[256];
-    char *ret = NULL;
     unsigned int len = 0;
 
     snprintf(s, 255, "/local/domain/0/backend/%s/%d/%ld/%s",
              sub, domain->handle, dev, name);
     s[255] = 0;
 
-    t = xs_transaction_start(domain->conn->xshandle);
-    if (t == NULL)
-        goto done;
-
-    ret = xs_read(domain->conn->xshandle, t, &s[0], &len);
-
-done:
-    if (t != NULL)
-	xs_transaction_end(domain->conn->xshandle, t, 0);
-    return(ret);
+    return xs_read(domain->conn->xshandle, 0, &s[0], &len);
 }
 
 /**
@@ -240,7 +229,6 @@ virDomainGetXMLDevice(virDomainPtr domain, virBufferPtr buf, long dev) {
  */
 static int
 virDomainGetXMLDevices(virDomainPtr domain, virBufferPtr buf) {
-    struct xs_transaction_handle* t;
     int ret = -1;
     unsigned int num, i;
     long id;
@@ -253,14 +241,10 @@ virDomainGetXMLDevices(virDomainPtr domain, virBufferPtr buf) {
     
     conn = domain->conn;
 
-    t = xs_transaction_start(conn->xshandle);
-    if (t == NULL)
-        goto done;
-
     snprintf(backend, 199, "/local/domain/0/backend/vbd/%d", 
              virDomainGetID(domain));
     backend[199] = 0;
-    list = xs_directory(conn->xshandle, t, backend, &num);
+    list = xs_directory(conn->xshandle, 0, backend, &num);
     ret = 0;
     if (list == NULL)
         goto done;
@@ -275,8 +259,6 @@ virDomainGetXMLDevices(virDomainPtr domain, virBufferPtr buf) {
     }
 
 done:
-    if (t != NULL)
-	xs_transaction_end(conn->xshandle, t, 0);
     if (list != NULL)
         free(list);
 
@@ -343,7 +325,6 @@ virDomainGetXMLInterface(virDomainPtr domain, virBufferPtr buf, long dev) {
  */
 static int
 virDomainGetXMLInterfaces(virDomainPtr domain, virBufferPtr buf) {
-    struct xs_transaction_handle* t;
     int ret = -1;
     unsigned int num, i;
     long id;
@@ -356,14 +337,10 @@ virDomainGetXMLInterfaces(virDomainPtr domain, virBufferPtr buf) {
     
     conn = domain->conn;
 
-    t = xs_transaction_start(conn->xshandle);
-    if (t == NULL)
-        goto done;
-
     snprintf(backend, 199, "/local/domain/0/backend/vif/%d", 
              virDomainGetID(domain));
     backend[199] = 0;
-    list = xs_directory(conn->xshandle, t, backend, &num);
+    list = xs_directory(conn->xshandle, 0, backend, &num);
     ret = 0;
     if (list == NULL)
         goto done;
@@ -378,8 +355,6 @@ virDomainGetXMLInterfaces(virDomainPtr domain, virBufferPtr buf) {
     }
 
 done:
-    if (t != NULL)
-	xs_transaction_end(conn->xshandle, t, 0);
     if (list != NULL)
         free(list);
 

@@ -307,7 +307,6 @@ virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer) {
  */
 int
 virConnectListDomains(virConnectPtr conn, int *ids, int maxids) {
-    struct xs_transaction_handle* t = NULL;
     int ret = -1;
     unsigned int num, i;
     long id;
@@ -330,11 +329,7 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids) {
 	goto done;
     }
     if (conn->xshandle != NULL) {
-	t = xs_transaction_start(conn->xshandle);
-	if (t == NULL)
-	    goto done;
-
-	idlist = xs_directory(conn->xshandle, t, "/local/domain", &num);
+	idlist = xs_directory(conn->xshandle, 0, "/local/domain", &num);
 	if (idlist == NULL)
 	    goto done;
 
@@ -351,8 +346,6 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids) {
     }
 
 done:
-    if ((t != NULL) && (conn->xshandle != NULL))
-	xs_transaction_end(conn->xshandle, t, 0);
     if (idlist != NULL)
         free(idlist);
 
@@ -369,7 +362,6 @@ done:
  */
 int
 virConnectNumOfDomains(virConnectPtr conn) {
-    struct xs_transaction_handle* t;
     int ret = -1;
     unsigned int num;
     char **idlist = NULL;
@@ -391,14 +383,10 @@ virConnectNumOfDomains(virConnectPtr conn) {
 	}
 	
     } else if (conn->xshandle != NULL) {
-	t = xs_transaction_start(conn->xshandle);
-	if (t) {
-	    idlist = xs_directory(conn->xshandle, t, "/local/domain", &num);
-	    if (idlist) {
-		free(idlist);
-		ret = num;
-	    }
-	    xs_transaction_end(conn->xshandle, t, 0);
+        idlist = xs_directory(conn->xshandle, 0, "/local/domain", &num);
+	if (idlist) {
+	    free(idlist);
+	    ret = num;
 	}
     }
     return(ret);
@@ -445,23 +433,11 @@ virDomainCreateLinux(virConnectPtr conn, const char *kernel_path,
  */
 static char **
 virConnectDoStoreList(virConnectPtr conn, const char *path, unsigned int *nb) {
-    struct xs_transaction_handle* t;
-    char **ret = NULL;
-
     if ((conn == NULL) || (conn->xshandle == NULL) || (path == NULL) ||
         (nb == NULL))
         return(NULL);
 
-    t = xs_transaction_start(conn->xshandle);
-    if (t == NULL)
-        goto done;
-
-    ret = xs_directory(conn->xshandle, t, path, nb);
-
-done:
-    if (t != NULL)
-	xs_transaction_end(conn->xshandle, t, 0);
-    return(ret);
+    return xs_directory(conn->xshandle, 0, path, nb);
 }
 
 /**
@@ -475,9 +451,7 @@ done:
  */
 static char *
 virDomainDoStoreQuery(virDomainPtr domain, const char *path) {
-    struct xs_transaction_handle* t;
     char s[256];
-    char *ret = NULL;
     unsigned int len = 0;
     
     if (!VIR_IS_CONNECTED_DOMAIN(domain))
@@ -488,16 +462,7 @@ virDomainDoStoreQuery(virDomainPtr domain, const char *path) {
     snprintf(s, 255, "/local/domain/%d/%s", domain->handle, path);
     s[255] = 0;
 
-    t = xs_transaction_start(domain->conn->xshandle);
-    if (t == NULL)
-        goto done;
-
-    ret = xs_read(domain->conn->xshandle, t, &s[0], &len);
-
-done:
-    if (t != NULL)
-	xs_transaction_end(domain->conn->xshandle, t, 0);
-    return(ret);
+    return xs_read(domain->conn->xshandle, 0, &s[0], &len);
 }
 
 
@@ -514,7 +479,6 @@ done:
 static int
 virDomainDoStoreWrite(virDomainPtr domain, const char *path,
                       const char *value) {
-    struct xs_transaction_handle* t;
     char s[256];
 
     int ret = -1;
@@ -529,16 +493,9 @@ virDomainDoStoreWrite(virDomainPtr domain, const char *path,
     snprintf(s, 255, "/local/domain/%d/%s", domain->handle, path);
     s[255] = 0;
 
-    t = xs_transaction_start(domain->conn->xshandle);
-    if (t == NULL)
-        goto done;
-
-    if (xs_write(domain->conn->xshandle, t, &s[0], value, strlen(value)))
+    if (xs_write(domain->conn->xshandle, 0, &s[0], value, strlen(value)))
         ret = 0;
 
-done:
-    if (t != NULL)
-	xs_transaction_end(domain->conn->xshandle, t, 0);
     return(ret);
 }
 
@@ -553,7 +510,6 @@ done:
 char *
 virDomainGetVM(virDomainPtr domain)
 {
-    struct xs_transaction_handle* t;
     char *vm;
     char query[200];
     unsigned int len;
@@ -563,18 +519,11 @@ virDomainGetVM(virDomainPtr domain)
     if (domain->conn->xshandle == NULL)
         return(NULL);
     
-    t = xs_transaction_start(domain->conn->xshandle);
-    if (t == NULL)
-        return(NULL);
-
     snprintf(query, 199, "/local/domain/%d/vm", 
              virDomainGetID(domain));
     query[199] = 0;
 
-    vm = xs_read(domain->conn->xshandle, t, &query[0], &len);
-
-    if (t != NULL)
-	xs_transaction_end(domain->conn->xshandle, t, 0);
+    vm = xs_read(domain->conn->xshandle, 0, &query[0], &len);
 
     return(vm);
 }
@@ -593,7 +542,6 @@ virDomainGetVM(virDomainPtr domain)
 char *
 virDomainGetVMInfo(virDomainPtr domain, const char *vm, 
                    const char *name) {
-    struct xs_transaction_handle* t;
     char s[256];
     char *ret = NULL;
     unsigned int len = 0;
@@ -606,15 +554,8 @@ virDomainGetVMInfo(virDomainPtr domain, const char *vm,
     snprintf(s, 255, "%s/%s", vm, name);
     s[255] = 0;
 
-    t = xs_transaction_start(domain->conn->xshandle);
-    if (t == NULL)
-        goto done;
+    ret = xs_read(domain->conn->xshandle, 0, &s[0], &len);
 
-    ret = xs_read(domain->conn->xshandle, t, &s[0], &len);
-
-done:
-    if (t != NULL)
-	xs_transaction_end(domain->conn->xshandle, t, 0);
     return(ret);
 }
 
@@ -696,7 +637,6 @@ virDomainLookupByID(virConnectPtr conn, int id) {
  */
 virDomainPtr
 virDomainLookupByName(virConnectPtr conn, const char *name) {
-    struct xs_transaction_handle* t = NULL;
     virDomainPtr ret = NULL;
     unsigned int num, i, len;
     long id = -1;
@@ -722,11 +662,7 @@ virDomainLookupByName(virConnectPtr conn, const char *name) {
 
     /* then though the XenStore */
     if (conn->xshandle != NULL) {
-        t = xs_transaction_start(conn->xshandle);
-        if (t == NULL)
-            goto done;
-
-        idlist = xs_directory(conn->xshandle, t, "/local/domain", &num);
+        idlist = xs_directory(conn->xshandle, 0, "/local/domain", &num);
         if (idlist == NULL)
             goto done;
 
@@ -739,7 +675,7 @@ virDomainLookupByName(virConnectPtr conn, const char *name) {
 	         continue;
              snprintf(prop, 199, "/local/domain/%s/name", idlist[i]);
 	     prop[199] = 0;
-	     tmp = xs_read(conn->xshandle, t, prop, &len);
+	     tmp = xs_read(conn->xshandle, 0, prop, &len);
 	     if (tmp != NULL) {
 	         found = !strcmp(name, tmp);
 	         free(tmp);
@@ -768,8 +704,6 @@ do_found:
 done:
     if (xenddomain != NULL)
 	free(xenddomain);
-    if (t != NULL)
-	xs_transaction_end(conn->xshandle, t, 0);
     if (idlist != NULL)
         free(idlist);
 
@@ -1121,7 +1055,6 @@ int
 virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory) {
     int ret;
     char s[256], v[30];
-    struct xs_transaction_handle* t;
     
     if (!VIR_IS_CONNECTED_DOMAIN(domain))
 	return(-1);
@@ -1146,12 +1079,8 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory) {
     snprintf(v, 29, "%lu", memory);
     v[30] = 0;
 
-    t = xs_transaction_start(domain->conn->xshandle);
-    if (t == NULL)
-        return(0);
-
-    xs_write(domain->conn->xshandle, t, &s[0], &v[0], strlen(v));
-    xs_transaction_end(domain->conn->xshandle, t, 0);
+    if (!xs_write(domain->conn->xshandle, 0, &s[0], &v[0], strlen(v)))
+        ret = -1;
 
     return(ret);
 }
