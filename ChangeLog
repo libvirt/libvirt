@@ -1,3 +1,8 @@
+Sat Jan 28 21:24:05 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* python/libvir.c: fix a stupid bug in python bindings (DomainDestroy
+	  is still mishandled though)
+
 Fri Jan 27 09:58:31 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvir.c src/xml.c: applied patch from Anthony Liguori

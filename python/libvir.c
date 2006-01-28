@@ -16,6 +16,38 @@
 
 void initlibvirmod(void);
 
+static PyObject *
+libvir_virDomainFree(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    PyObject *py_retval;
+    int c_retval;
+    virDomainPtr domain;
+    PyObject *pyobj_domain;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virDomainFree", &pyobj_domain))
+        return(NULL);
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    c_retval = virDomainFree(domain);
+    py_retval = libvir_intWrap((int) c_retval);
+    return(py_retval);
+}
+
+static PyObject *
+libvir_virConnectClose(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    PyObject *py_retval;
+    int c_retval;
+    virConnectPtr conn;
+    PyObject *pyobj_conn;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virConnectClose", &pyobj_conn))
+        return(NULL);
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    c_retval = virConnectClose(conn);
+    py_retval = libvir_intWrap((int) c_retval);
+    return(py_retval);
+}
+
 /************************************************************************
  *									*
  *			The registration stuff				*
@@ -23,6 +55,8 @@ void initlibvirmod(void);
  ************************************************************************/
 static PyMethodDef libvirMethods[] = {
 #include "libvir-export.c"
+    {(char *) "virDomainFree", libvir_virDomainFree, METH_VARARGS, NULL},
+    {(char *) "virConnectClose", libvir_virConnectClose, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 
