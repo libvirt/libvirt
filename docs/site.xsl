@@ -218,7 +218,7 @@
     <div class="llinks">
       <h3 class="links"><span>main menu</span></h3>
       <ul>
-        <li><a href="{$href_base}index.html">Home</a></li>
+        <li>Home</li>
     <xsl:for-each select="/html/body/h2">
     <xsl:variable name="filename">
       <xsl:call-template name="tocfilename">
@@ -255,6 +255,7 @@
       </form></li>
         <li><a href="http://xmlsoft.org/"> <img src="{$href_base}Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li>
       </ul>
+      <p class='credits'>Graphics and design by <a href="mail:dfong@redhat.com">Diana Fong</a></p>
     </div>
   </div>
   </xsl:template>
@@ -300,6 +301,7 @@
       </form></li>
         <li><a href="http://xmlsoft.org/"> <img src="{$href_base}Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li>
       </ul>
+      <p class='credits'>Graphics and design by <a href="mail:dfong@redhat.com">Diana Fong</a></p>
     </div>
   </div>
   </xsl:template>

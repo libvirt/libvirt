@@ -1,3 +1,8 @@
+Sun Jan 29 09:52:03 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* docs/site.xsl docs/*.html: credits to Diana Fong for graphics
+	  and web site design
+
 Sat Jan 28 21:24:05 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* python/libvir.c: fix a stupid bug in python bindings (DomainDestroy
