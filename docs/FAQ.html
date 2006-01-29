@@ -40,7 +40,14 @@
     fails to run as an user, change the mode of the xenstore read-only socket
     with:</p>
     <p><code>chmod 666 /var/run/xenstored/socket_ro</code></p>
-    <p>and also make sure that the Xen Daemon is running correctly</p>
+    <p>and also make sure that the Xen Daemon is running correctly with local
+    HTTP server enabled, this is defined in
+    <code>/etc/xen/xend-config.sxp</code> which need the following line to be
+    enabled:</p>
+    <p><code>(xend-http-server yes)</code></p>
+    <p>If needed restart the xend daemon after making the change with the
+    following command run as root:</p>
+    <p><code>service xend restart</code></p>
   </li>
 </ol><h3><a name="Compilatio" id="Compilatio">Compilation</a></h3><ol><li><em>What is the process to compile libvir ?</em>
     <p>As most UNIX libraries libvir follows the "standard":</p>

@@ -1,3 +1,8 @@
+Sun Jan 29 11:55:13 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* NEWS docs/news.xsl: added stylesheet to generate NEWS file
+	* docs/*: updated docs preparing for the release
+
 Sun Jan 29 09:52:03 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* docs/site.xsl docs/*.html: credits to Diana Fong for graphics

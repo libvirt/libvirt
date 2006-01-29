@@ -14,7 +14,7 @@ EXTRA_DIST=							\
 
 man_MANS=
 
-all: web $(man_MANS)
+all: web $(top_builddir)/NEWS $(man_MANS)
 
 api: libvir-api.xml libvir-refs.xml $(APIPAGES) $(srcdir)/html/index.html
 
@@ -48,6 +48,10 @@ $(srcdir)/html/index.html: libvir-api.xml $(srcdir)/newapi.xsl
 
 libvir-api.xml libvir-refs.xml: apibuild.py ../include/*.h ../src/*.h ../src/*.c
 	-(./apibuild.py)
+
+$(top_builddir)/NEWS: $(top_srcdir)/docs/news.xsl $(top_srcdir)/docs/news.html
+	-@(if [ -x $(XSLTPROC) ] ; then \
+	  $(XSLTPROC) --nonet $(top_srcdir)/docs/news.xsl $(top_srcdir)/docs/news.html > $(top_builddir)/NEWS ; fi );
 
 clean-local:
 	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt

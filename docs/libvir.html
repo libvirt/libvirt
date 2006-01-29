@@ -21,10 +21,10 @@ Lesser General Public License</a>. Virtualization of the Linux Operating
 System means the ability to run multiple instances of Operating Systems
 concurently on a single hardware system where the basic resources are driven
 by a Linux instance. The library aim at providing long term stable C API
-primarily for the <a
+initially for the <a
 href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen
-paravirtualization</a> mechanism but should be able to integrate other
-virtualization mechanisms if needed.</p>
+paravirtualization</a> but should be able to integrate other virtualization
+mechanisms if needed.</p>
 
 <h2><a name="News">Releases</a></h2>
 
@@ -32,6 +32,17 @@ virtualization mechanisms if needed.</p>
 development of libvir, it is preferable when possible to just use the <a
 href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p>
+
+<h3>0.0.2: Jan 29 2006</h3>
+<ul>
+  <li>Update of the documentation, web site redesign (Diana Fong)</li>
+  <li>integration of HTTP xend RPC based on libxend by Anthony Liquori for
+    most operations</li>
+  <li>Adding Save and Restore APIs</li>
+  <li>extended the virsh command line tool (Karel Zak)</li>
+  <li>remove xenstore transactions (Anthony Liguori)</li>
+  <li>fix the Python bindings bug when domain and connections where freed</li>
+</ul>
 
 <h3>0.0.1: Dec 19 2005</h3>
 <ul>
@@ -42,19 +53,19 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p>
 
 <h2><a name="Introducti">Introduction</a></h2>
 
-<p>Libvir is a C toolkit to interract with the virtualization capabilities of
-recent versions of Linux (and other OSes), but ibvir won't try to provide all
-possible interfaces for interacting with the virtualization features.</p>
+<p>Libvir is a C toolkit to interact with the virtualization capabilities of
+recent versions of Linux (and other OSes), but libvir won't try to provide
+all possible interfaces for interacting with the virtualization features.</p>
 
 <p>To avoid ambiguity about the terms used here here are the definitions for
-soem of the specific terms used in libvir documentation:</p>
+some of the specific concepts used in libvir documentation:</p>
 <ul>
   <li>a <strong>node</strong> is a single physical machine</li>
   <li>an <strong>hypervisor</strong> is a layer of software allowing to
     virtualize a node in a set of virtual machines with possibly different
     configurations than the node itself</li>
   <li>a <strong>domain</strong> is an instance of an operating system running
-    on a virtualized machine</li>
+    on a virtualized machine provided by the hypervisor</li>
 </ul>
 
 <p style="text-align: center"><img
@@ -79,14 +90,17 @@ generic and stable layer to manage domains on a node.</p>
     virtualization framework</li>
 </ul>
 
-<p>So libvir should be a building block for higher level management tools or
-for applications focusing on virtualization on a single node (the only
+<p>So libvir should be a building block for higher level management tools and
+for applications focusing on virtualization of a single node (the only
 exception being domain migration between node capabilities which may need to
 be added at the libvir level). Where possible libvir should be extendable to
 be able to provide the same API for remote nodes, however this is not the
-case at the moment, the code currently handle only local node access.</p>
+case at the moment, the code currently handle only local node accesses.</p>
 
 <h2><a name="architecture">libvir architecture</a></h2>
+
+<h3>This is Xen specific since this is the only hypervisor supported at the
+moment</h3>
 
 <p>When running in a Xen environment, programs using libvir have to execute
 in "Domain 0", which is the primary Linux OS loaded on the machine. That OS
@@ -113,14 +127,14 @@ the Xen infrastructure:</p>
 changing the state of the system, but for performance and accuracy reasons
 may talk directly to the hypervisor when gathering state informations at
 least when possible (i.e. when the running program using libvir has root
-priviledge access). </p>
+priviledge access).</p>
 
-<p> If it runs without root access virConnectOpenReadOnly() should be used to
+<p>If it runs without root access virConnectOpenReadOnly() should be used to
 connect to initialize the library. It will try to open the read-only socket
 <code>/var/run/xenstored/socket_ro</code> to connect to the Xen Store and
 also try to use the RPC to the Xen daemon. In this case use of hypervisor
 calls and write to the Xen Store will not be possible, restraining the amount
-of APIs available and slowing down information gathering about domains. </p>
+of APIs available and slowing down information gathering about domains.</p>
 
 <h2><a name="Downloads">Downloads</a></h2>
 
@@ -200,7 +214,14 @@ available except commiting to the base.</p>
     fails to run as an user, change the mode of the xenstore read-only socket
     with:</p>
     <p><code>chmod 666 /var/run/xenstored/socket_ro</code></p>
-    <p>and also make sure that the Xen Daemon is running correctly</p>
+    <p>and also make sure that the Xen Daemon is running correctly with local
+    HTTP server enabled, this is defined in
+    <code>/etc/xen/xend-config.sxp</code> which need the following line to be
+    enabled:</p>
+    <p><code>(xend-http-server yes)</code></p>
+    <p>If needed restart the xend daemon after making the change with the
+    following command run as root:</p>
+    <p><code>service xend restart</code></p>
   </li>
 </ol>
 
