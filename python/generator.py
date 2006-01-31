@@ -202,6 +202,9 @@ def enum(type, name, value):
 #
 #######################################################################
 
+functions_failed = []
+functions_skipped = []
+
 skipped_modules = {
 }
 
@@ -254,8 +257,8 @@ foreign_encoding_args = (
 # Class methods which are written by hand in libvir.c but the Python-level
 # code is still automatically generated (so they are not in skip_function()).
 skip_impl = (
-    'xmlSaveFileTo',
-    'xmlSaveFormatFileTo',
+    'virConnectListDomainsID',
+    'virDomainGetInfo',
 )
 
 def skip_function(name):
@@ -479,9 +482,11 @@ def buildStubs():
 	ret = print_function_wrapper(function, wrapper, export, include)
 	if ret < 0:
 	    failed = failed + 1
+	    functions_failed.append(function)
 	    del functions[function]
 	if ret == 0:
 	    skipped = skipped + 1
+	    functions_skipped.append(function)
 	    del functions[function]
 	if ret == 1:
 	    nb_wrap = nb_wrap + 1
@@ -536,6 +541,10 @@ function_classes = {}
 
 function_classes["None"] = []
 
+function_post = {
+    'virDomainDestroy': "self._o = None",
+}
+
 def nameFixup(name, classe, type, file):
     listname = classe + "List"
     ll = len(listname)
@@ -557,6 +566,12 @@ def nameFixup(name, classe, type, file):
         func = string.lower(func[0:1]) + func[1:]
     else:
         func = name
+    if func == "iD":
+        func = "ID"
+    if func == "oSType":
+        func = "OSType"
+    if func == "xMLDesc":
+        func = "XMLDesc"
     return func
 
 
@@ -836,6 +851,8 @@ def buildWrappers():
 			    classes.write(classes_type[arg[1]][0])
 		    n = n + 1
 		classes.write(")\n");
+		if function_post.has_key(name):
+		    classes.write("        %s\n" % (function_post[name]));
 		if ret[0] != "void":
 		    if classes_type.has_key(ret[0]):
 			#
@@ -893,6 +910,14 @@ def buildWrappers():
             classes.write("%s = %s\n" % (name,value))
         classes.write("\n");
 
+    if len(functions_skipped) != 0:
+	txt.write("\nFunctions skipped:\n")
+	for function in functions_skipped:
+	    txt.write("    %s\n" % function)
+    if len(functions_failed) != 0:
+	txt.write("\nFunctions failed:\n")
+	for function in functions_failed:
+	    txt.write("    %s\n" % function)
     txt.close()
     classes.close()
 

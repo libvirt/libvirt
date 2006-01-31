@@ -1,3 +1,15 @@
 <?xml version="1.0"?>
 <api name='libvir-python'>
+  <symbols>
+    <function name="virConnectListDomainsID" file='python'>
+      <info>Returns the list of the ID of the domains on the hypervisor</info>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <return type='int *' info="the list of ID or None in case of error"/>
+    </function>
+    <function name='virDomainGetInfo' file='libvir' module='libvir'>
+      <info>Extract information about a domain. Note that if the connection used to get the domain is limited only a partial set of the informations can be extracted.</info>
+      <return type='int *' info='the list of informations or None in case of error'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+    </function>
+  </symbols>
 </api>

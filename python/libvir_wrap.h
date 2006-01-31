@@ -40,6 +40,7 @@ typedef struct {
 
 PyObject * libvir_intWrap(int val);
 PyObject * libvir_longWrap(long val);
+PyObject * libvir_longlongWrap(long long val);
 PyObject * libvir_charPtrWrap(char *str);
 PyObject * libvir_constcharPtrWrap(const char *str);
 PyObject * libvir_charPtrConstWrap(const char *str);
