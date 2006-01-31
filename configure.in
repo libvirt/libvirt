@@ -191,4 +191,5 @@ fi
 rm -f COPYING
 
 AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
+          docs/examples/Makefile \
           libvir.pc libvir.spec include/libvir.h python/Makefile)
