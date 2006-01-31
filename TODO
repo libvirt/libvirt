@@ -1,5 +1,4 @@
 Absolute TODOs:
-- fix the python bindings
 - Create() API, how do we best keep flexibility and allow various
   specific environment and space for evolution (VMX)
 - thread protection, reentrancy, refcounting, etc ...
@@ -16,8 +15,10 @@ Probable TODOs:
 - bindings for more languages
 
 Would-be-nice TODO:
+- man page for virsh and the libraries entry points
 - support for QEmu and other virtualization engines
 
 Done:
 - make dist and make rpm targets
 - set a no public by default policy for libvir symbols
+- fix the python bindings

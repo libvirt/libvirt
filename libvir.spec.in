@@ -87,5 +87,9 @@ rm -fr %{buildroot}
 %doc python/libvirclass.txt
 
 %changelog
+* Sun Jan 29 2006 Daniel Veillard <veillard@redhat.com> 0.0.2-1
+- upstream release of 0.0.2, use xend, save and restore added, python bindings
+  fixed
+
 * Wed Nov  2 2005 Daniel Veillard <veillard@redhat.com> 0.0.1-1
 - created
