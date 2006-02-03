@@ -1,3 +1,7 @@
+Fri Feb  3 15:47:32 CET 2006 Karel Zak <kzak@redhat.com>
+
+	* src/virsh.c: fix order of the save command options
+
 Tue Jan 31 19:12:19 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in docs/examples/*: starting to add examples. the XSLT

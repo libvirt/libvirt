@@ -394,8 +394,8 @@ static vshCmdInfo info_save[] = {
 };
 
 static vshCmdOptDef opts_save[] = {
-    { "file",    VSH_OT_DATA, VSH_OFLAG_REQ, "where to save the data" },
     { "domain",  VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id" },
+    { "file",    VSH_OT_DATA, VSH_OFLAG_REQ, "where to save the data" },
     { NULL, 0, 0, NULL }
 };
 
