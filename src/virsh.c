@@ -13,7 +13,7 @@
 
 #define _GNU_SOURCE    /* isblank() */
 
-#include "libvir.h"
+#include "libvirt.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -17,7 +17,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "libvir.h"
+#include "libvirt.h"
 
 #ifdef __cplusplus
 extern "C" {

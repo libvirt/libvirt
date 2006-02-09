@@ -1,3 +1,9 @@
+Wed Feb  8 11:43:43 EST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* //* : renamed the project libvirt , this affects all makefiles,
+	  the specs, the icons, the docs, etc ...
+	* configure.in: prepare for 0.0.3
+
 Fri Feb  3 15:47:32 CET 2006 Karel Zak <kzak@redhat.com>
 
 	* src/virsh.c: fix order of the save command options

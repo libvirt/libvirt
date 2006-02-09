@@ -10,12 +10,12 @@
     <includes>
     </includes>
     <uses>
-      <function line='43' file='libvir' name='virDomainGetInfo'/>
-      <function line='53' file='libvir' name='virDomainFree'/>
-      <function line='36' file='libvir' name='virDomainLookupByID'/>
-      <function line='55' file='libvir' name='virConnectClose'/>
-      <struct line='25' file='libvir' name='virDomainInfo'/>
-      <function line='29' file='libvir' name='virConnectOpenReadOnly'/>
+      <function line='43' file='libvirt' name='virDomainGetInfo'/>
+      <function line='53' file='libvirt' name='virDomainFree'/>
+      <function line='36' file='libvirt' name='virDomainLookupByID'/>
+      <function line='55' file='libvirt' name='virConnectClose'/>
+      <struct line='25' file='libvirt' name='virDomainInfo'/>
+      <function line='29' file='libvirt' name='virConnectOpenReadOnly'/>
     </uses>
   </example>
   <symbols>

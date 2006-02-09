@@ -1,11 +1,11 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(src/libvir.c)
+AC_INIT(src/libvirt.c)
 AM_CONFIG_HEADER(config.h)
 AC_CANONICAL_HOST
 
 LIBVIR_MAJOR_VERSION=0
 LIBVIR_MINOR_VERSION=0
-LIBVIR_MICRO_VERSION=2
+LIBVIR_MICRO_VERSION=3
 LIBVIR_MICRO_VERSION_SUFFIX=
 LIBVIR_VERSION=$LIBVIR_MAJOR_VERSION.$LIBVIR_MINOR_VERSION.$LIBVIR_MICRO_VERSION$LIBVIR_MICRO_VERSION_SUFFIX
 LIBVIR_VERSION_INFO=`expr $LIBVIR_MAJOR_VERSION + $LIBVIR_MINOR_VERSION`:$LIBVIR_MICRO_VERSION:$LIBVIR_MINOR_VERSION
@@ -31,7 +31,7 @@ AC_SUBST(LIBVIR_VERSION_EXTRA)
 
 VERSION=${LIBVIR_VERSION}
 
-AM_INIT_AUTOMAKE(libvir, $VERSION)
+AM_INIT_AUTOMAKE(libvirt, $VERSION)
 
 dnl Checks for programs.
 AC_PROG_CC
@@ -192,4 +192,4 @@ rm -f COPYING
 
 AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           docs/examples/Makefile \
-          libvir.pc libvir.spec include/libvir.h python/Makefile)
+          libvirt.pc libvirt.spec include/libvirt.h python/Makefile)

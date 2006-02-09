@@ -12,7 +12,7 @@
 #include <netinet/tcp.h>
 
 #include "hash.h"
-#include "libvir.h"
+#include "libvirt.h"
 
 #ifdef __cplusplus
 extern "C" {

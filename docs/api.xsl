@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- this stylesheet builds the API*.html , it works based on libvir-refs.xml
+<!-- this stylesheet builds the API*.html , it works based on libvirt-refs.xml
   -->
 <xsl:stylesheet version="1.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -16,13 +16,13 @@
       doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
 
   <xsl:variable name="href_base" select="''"/>
-  <xsl:variable name="apirefs" select="document('libvir-refs.xml')"/>
+  <xsl:variable name="apirefs" select="document('libvirt-refs.xml')"/>
   <xsl:variable name="module" select="$apirefs/apirefs/@name"/>
   <xsl:key name="refhref" match="reference" use="@name"/>
 
   <xsl:template match="ref" mode="anchor">
     <xsl:variable name="name" select="@name"/>
-    <xsl:for-each select="document('libvir-refs.xml')">
+    <xsl:for-each select="document('libvirt-refs.xml')">
 	<a href="{key('refhref', $name)/@href}"><xsl:value-of select="$name"/></a><br/>
     </xsl:for-each>
   </xsl:template>

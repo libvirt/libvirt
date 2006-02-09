@@ -386,7 +386,7 @@
  - Write the styles in the head
  -->
   <xsl:template name="style">
-    <link rel="stylesheet" type="text/css" href="{$href_base}libvir.css" />
+    <link rel="stylesheet" type="text/css" href="{$href_base}libvirt.css" />
     <link rel="SHORTCUT ICON" href="/32favicon.png" />
   </xsl:template>
 
@@ -395,7 +395,7 @@
  -->
   <xsl:template name="top">
     <div id="top">
-      <img src="{$href_base}libvirHeader.png" alt="Libvir the virtualization API" />
+      <img src="{$href_base}libvirtHeader.png" alt="Libvirt the virtualization API" />
     </div>
   </xsl:template>
 
@@ -404,7 +404,7 @@
  -->
   <xsl:template name="topmain">
     <div id="topmain">
-      <img src="{$href_base}libvirLogo.png" alt="Libvir the virtualization API" />
+      <img src="{$href_base}libvirtLogo.png" alt="Libvirt the virtualization API" />
     </div>
   </xsl:template>
 

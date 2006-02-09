@@ -6,10 +6,10 @@
 
   <xsl:template match="/">
     <xsl:text>
-        NEWS file for libvir
+        NEWS file for libvirt
 
   Note that this is automatically generated from the news webpage at:
-       http://libvir.org/news.html
+       http://libvirt.org/news.html
 
 </xsl:text>
     <xsl:apply-templates select="//xhtml:div[@id='content2']//xhtml:h3[1]/.."/>

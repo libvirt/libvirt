@@ -1,14 +1,15 @@
 Summary: Library providing an API to use the Xen virtualization
-Name: libvir
+Name: libvirt
 Version: @VERSION@
 Release: 1
 License: LGPL
 Group: Development/Libraries
-Source: libvir-%{version}.tar.gz
+Source: libvirt-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 URL: http://libvir.org/
 BuildRequires: xen python python-devel
 Requires: xen
+Obsoletes: libvir
 ExclusiveArch: i386 x86_64
 
 %description
@@ -16,24 +17,26 @@ This C library provides an API to use the Xen virtualization framework,
 and the virsh command line tool to control virtual domains.
 
 %package devel
-Summary: Libraries, includes, etc. to compile with the libvir library
+Summary: Libraries, includes, etc. to compile with the libvirt library
 Group: Development/Libraries
-Requires: libvir = %{version}
+Requires: libvirt = %{version}
+Obsoletes: libvir-devel
 
 %description devel
-Includes and documantations for the C library providing an API to use
+Includes and documentations for the C library providing an API to use
 the Xen virtualization framework
 
 %package python
-Summary: Python bindings for the libvir library
+Summary: Python bindings for the libvirt library
 Group: Development/Libraries
-Requires: libvir = %{version}
+Requires: libvirt = %{version}
+Obsoletes: libvir-python
 Requires: %{_libdir}/python%(echo `python -c "import sys; print sys.version[0:3]"`)
 
 %description python
-The libvir-python package contains a module that permits applications
+The libvirt-python package contains a module that permits applications
 written in the Python programming language to use the interface
-supplied by the libvir library to use the Xen virtualization framework.
+supplied by the libvirt library to use the Xen virtualization framework.
 
 %prep
 %setup -q
@@ -71,22 +74,26 @@ rm -fr %{buildroot}
 %defattr(-, root, root)
 
 %{_libdir}/lib*.so
-%{_includedir}/libvir/*.h
-%{_libdir}/pkgconfig/libvir.pc
+%{_includedir}/libvirt/*.h
+%{_libdir}/pkgconfig/libvirt.pc
 
 %doc docs/*.html docs/html docs/*.gif
-%doc docs/libvir-api.xml
+%doc docs/libvirt-api.xml
 
 %files python
 %defattr(-, root, root)
 
 %doc AUTHORS NEWS README COPYING.LIB
-%{_libdir}/python*/site-packages/libvir.py*
-%{_libdir}/python*/site-packages/libvirmod*
+%{_libdir}/python*/site-packages/libvirt.py*
+%{_libdir}/python*/site-packages/libvirtmod*
 %doc python/TODO
-%doc python/libvirclass.txt
+%doc python/libvirtclass.txt
 
 %changelog
+* Wed Feb  8 2006 Daniel Veillard <veillard@redhat.com> 0.0.3-1
+- changed library name to libvirt from libvir, complete and test the python 
+  bindings
+
 * Sun Jan 29 2006 Daniel Veillard <veillard@redhat.com> 0.0.2-1
 - upstream release of 0.0.2, use xend, save and restore added, python bindings
   fixed

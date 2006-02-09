@@ -27,7 +27,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 
-#include "libvir.h"
+#include "libvirt.h"
 #include "internal.h"
 #include "sexpr.h"
 #include "xend_internal.h"

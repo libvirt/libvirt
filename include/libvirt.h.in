@@ -1,10 +1,10 @@
 /*
- * libvir.h:
- * Summary: core interfaces for the libvir library
- * Description: Provides the interfaces of the libvir library to handle
+ * libvirt.h:
+ * Summary: core interfaces for the libvirt library
+ * Description: Provides the interfaces of the libvirt library to handle
  *              Xen domains from a process running in domain 0
  *
- * Copy:  Copyright (C) 2005 Red Hat, Inc.
+ * Copy:  Copyright (C) 2005,2006 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *

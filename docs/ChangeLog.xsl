@@ -11,7 +11,7 @@
       doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
       doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
 
-  <xsl:param name="module">libvir</xsl:param>
+  <xsl:param name="module">libvirt</xsl:param>
 
   <!-- The table of content for the HTML page -->
   <xsl:variable name="menu_name">API Menu</xsl:variable>

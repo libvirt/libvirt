@@ -1,10 +1,10 @@
 ## Process this file with automake to produce Makefile.in
 
-virincdir = $(includedir)/libvir
+virincdir = $(includedir)/libvirt
 
-virinc_HEADERS = libvir.h
+virinc_HEADERS = libvirt.h
 
 install-exec-hook:
 	$(mkinstalldirs) $(DESTDIR)$(virincdir)
 
-EXTRA_DIST = libvir.h.in
+EXTRA_DIST = libvirt.h.in

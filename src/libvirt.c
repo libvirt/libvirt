@@ -1,15 +1,15 @@
 /*
- * libvir.c: Main interfaces for the libvir library to handle virtualization
+ * libvirt.c: Main interfaces for the libvirt library to handle virtualization
  *           domains from a process running in domain 0
  *
- * Copyright (C) 2005 Red Hat, Inc.
+ * Copyright (C) 2005,2006 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
  * Daniel Veillard <veillard@redhat.com>
  */
 
-#include "libvir.h"
+#include "libvirt.h"
 
 #include <stdio.h>
 #include <stdlib.h>

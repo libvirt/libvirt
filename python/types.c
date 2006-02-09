@@ -7,51 +7,51 @@
  * Daniel Veillard <veillard@redhat.com>
  */
 
-#include "libvir_wrap.h"
+#include "libvirt_wrap.h"
 
 PyObject *
-libvir_intWrap(int val)
+libvirt_intWrap(int val)
 {
     PyObject *ret;
 
 #ifdef DEBUG
-    printf("libvir_intWrap: val = %d\n", val);
+    printf("libvirt_intWrap: val = %d\n", val);
 #endif
     ret = PyInt_FromLong((long) val);
     return (ret);
 }
 
 PyObject *
-libvir_longWrap(long val)
+libvirt_longWrap(long val)
 {
     PyObject *ret;
 
 #ifdef DEBUG
-    printf("libvir_longWrap: val = %ld\n", val);
+    printf("libvirt_longWrap: val = %ld\n", val);
 #endif
     ret = PyInt_FromLong(val);
     return (ret);
 }
 
 PyObject *
-libvir_longlongWrap(long long val)
+libvirt_longlongWrap(long long val)
 {
     PyObject *ret;
 
 #ifdef DEBUG
-    printf("libvir_longWrap: val = %ld\n", val);
+    printf("libvirt_longWrap: val = %ld\n", val);
 #endif
     ret = PyLong_FromUnsignedLongLong((unsigned long long) val);
     return (ret);
 }
 
 PyObject *
-libvir_charPtrWrap(char *str)
+libvirt_charPtrWrap(char *str)
 {
     PyObject *ret;
 
 #ifdef DEBUG
-    printf("libvir_xmlcharPtrWrap: str = %s\n", str);
+    printf("libvirt_xmlcharPtrWrap: str = %s\n", str);
 #endif
     if (str == NULL) {
         Py_INCREF(Py_None);
@@ -63,12 +63,12 @@ libvir_charPtrWrap(char *str)
 }
 
 PyObject *
-libvir_constcharPtrWrap(const char *str)
+libvirt_constcharPtrWrap(const char *str)
 {
     PyObject *ret;
 
 #ifdef DEBUG
-    printf("libvir_xmlcharPtrWrap: str = %s\n", str);
+    printf("libvirt_xmlcharPtrWrap: str = %s\n", str);
 #endif
     if (str == NULL) {
         Py_INCREF(Py_None);
@@ -79,12 +79,12 @@ libvir_constcharPtrWrap(const char *str)
 }
 
 PyObject *
-libvir_charPtrConstWrap(const char *str)
+libvirt_charPtrConstWrap(const char *str)
 {
     PyObject *ret;
 
 #ifdef DEBUG
-    printf("libvir_xmlcharPtrWrap: str = %s\n", str);
+    printf("libvirt_xmlcharPtrWrap: str = %s\n", str);
 #endif
     if (str == NULL) {
         Py_INCREF(Py_None);
@@ -95,12 +95,12 @@ libvir_charPtrConstWrap(const char *str)
 }
 
 PyObject *
-libvir_virDomainPtrWrap(virDomainPtr node)
+libvirt_virDomainPtrWrap(virDomainPtr node)
 {
     PyObject *ret;
 
 #ifdef DEBUG
-    printf("libvir_virDomainPtrWrap: node = %p\n", node);
+    printf("libvirt_virDomainPtrWrap: node = %p\n", node);
 #endif
     if (node == NULL) {
         Py_INCREF(Py_None);
@@ -113,12 +113,12 @@ libvir_virDomainPtrWrap(virDomainPtr node)
 }
 
 PyObject *
-libvir_virConnectPtrWrap(virConnectPtr node)
+libvirt_virConnectPtrWrap(virConnectPtr node)
 {
     PyObject *ret;
 
 #ifdef DEBUG
-    printf("libvir_virConnectPtrWrap: node = %p\n", node);
+    printf("libvirt_virConnectPtrWrap: node = %p\n", node);
 #endif
     if (node == NULL) {
         Py_INCREF(Py_None);

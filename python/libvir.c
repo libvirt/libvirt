@@ -10,14 +10,14 @@
  */
 
 #include <Python.h>
-#include <libvir.h>
-#include "libvir_wrap.h"
-#include "libvir-py.h"
+#include <libvirt.h>
+#include "libvirt_wrap.h"
+#include "libvirt-py.h"
 
 void initlibvirmod(void);
 
 static PyObject *
-libvir_virDomainFree(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+libvirt_virDomainFree(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     PyObject *py_retval;
     int c_retval;
     virDomainPtr domain;
@@ -28,12 +28,12 @@ libvir_virDomainFree(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
     c_retval = virDomainFree(domain);
-    py_retval = libvir_intWrap((int) c_retval);
+    py_retval = libvirt_intWrap((int) c_retval);
     return(py_retval);
 }
 
 static PyObject *
-libvir_virConnectClose(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+libvirt_virConnectClose(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     PyObject *py_retval;
     int c_retval;
     virConnectPtr conn;
@@ -44,12 +44,12 @@ libvir_virConnectClose(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
 
     c_retval = virConnectClose(conn);
-    py_retval = libvir_intWrap((int) c_retval);
+    py_retval = libvirt_intWrap((int) c_retval);
     return(py_retval);
 }
 
 static PyObject *
-libvir_virConnectListDomainsID(PyObject *self ATTRIBUTE_UNUSED,
+libvirt_virConnectListDomainsID(PyObject *self ATTRIBUTE_UNUSED,
                                PyObject *args) {
     PyObject *py_retval;
     int ids[500], c_retval, i;
@@ -68,13 +68,13 @@ libvir_virConnectListDomainsID(PyObject *self ATTRIBUTE_UNUSED,
     }
     py_retval = PyList_New(c_retval);
     for (i = 0;i < c_retval;i++) {
-        PyList_SetItem(py_retval, i, libvir_intWrap(ids[i]));
+        PyList_SetItem(py_retval, i, libvirt_intWrap(ids[i]));
     }
     return(py_retval);
 }
 
 static PyObject *
-libvir_virDomainGetInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+libvirt_virDomainGetInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     PyObject *py_retval;
     int c_retval;
     virDomainPtr domain;
@@ -91,12 +91,12 @@ libvir_virDomainGetInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
 	return(Py_None);
     }
     py_retval = PyList_New(5);
-    PyList_SetItem(py_retval, 0, libvir_intWrap((int) info.state));
-    PyList_SetItem(py_retval, 1, libvir_longWrap((long) info.maxMem));
-    PyList_SetItem(py_retval, 2, libvir_longWrap((long) info.memory));
-    PyList_SetItem(py_retval, 3, libvir_intWrap((int) info.nrVirtCpu));
+    PyList_SetItem(py_retval, 0, libvirt_intWrap((int) info.state));
+    PyList_SetItem(py_retval, 1, libvirt_longWrap((long) info.maxMem));
+    PyList_SetItem(py_retval, 2, libvirt_longWrap((long) info.memory));
+    PyList_SetItem(py_retval, 3, libvirt_intWrap((int) info.nrVirtCpu));
     PyList_SetItem(py_retval, 4,
-                   libvir_longlongWrap((unsigned long long) info.cpuTime));
+                   libvirt_longlongWrap((unsigned long long) info.cpuTime));
     return(py_retval);
 }
 
@@ -105,12 +105,12 @@ libvir_virDomainGetInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
  *			The registration stuff				*
  *									*
  ************************************************************************/
-static PyMethodDef libvirMethods[] = {
-#include "libvir-export.c"
-    {(char *) "virDomainFree", libvir_virDomainFree, METH_VARARGS, NULL},
-    {(char *) "virConnectClose", libvir_virConnectClose, METH_VARARGS, NULL},
-    {(char *) "virConnectListDomainsID", libvir_virConnectListDomainsID, METH_VARARGS, NULL},
-    {(char *) "virDomainGetInfo", libvir_virDomainGetInfo, METH_VARARGS, NULL},
+static PyMethodDef libvirtMethods[] = {
+#include "libvirt-export.c"
+    {(char *) "virDomainFree", libvirt_virDomainFree, METH_VARARGS, NULL},
+    {(char *) "virConnectClose", libvirt_virConnectClose, METH_VARARGS, NULL},
+    {(char *) "virConnectListDomainsID", libvirt_virConnectListDomainsID, METH_VARARGS, NULL},
+    {(char *) "virDomainGetInfo", libvirt_virDomainGetInfo, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 
@@ -123,7 +123,7 @@ initlibvirmod(void)
         return;
 
     /* intialize the python extension module */
-    Py_InitModule((char *) "libvirmod", libvirMethods);
+    Py_InitModule((char *) "libvirtmod", libvirtMethods);
 
     initialized = 1;
 }

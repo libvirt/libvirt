@@ -2,12 +2,12 @@
 
 SUBDIRS = src include docs @PYTHON_SUBDIR@
 
-EXTRA_DIST = libvir.spec.in libvir.spec COPYING.LIB \
-             libvir.pc.in libvir.pc TODO AUTHORS ChangeLog \
+EXTRA_DIST = libvirt.spec.in libvirt.spec COPYING.LIB \
+             libvirt.pc.in libvirt.pc TODO AUTHORS ChangeLog \
 	     NEWS README 
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libvir.pc
+pkgconfig_DATA = libvirt.pc
 
 rpm: clean
 	@(unset CDPATH ; $(MAKE) dist && rpmbuild -ta $(distdir).tar.gz)

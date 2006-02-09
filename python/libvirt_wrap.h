@@ -1,5 +1,5 @@
 /*
- * libvir_wrap.h: type wrappers for libvir python bindings
+ * libvirt_wrap.h: type wrappers for libvir python bindings
  *
  * Copyright (C) 2005 Red Hat, Inc.
  *
@@ -7,7 +7,7 @@
  */
 
 #include <Python.h>
-#include <libvir.h>
+#include <libvirt.h>
 
 #ifdef __GNUC__
 #ifdef ATTRIBUTE_UNUSED
@@ -38,12 +38,12 @@ typedef struct {
 } PyvirDomain_Object;
 
 
-PyObject * libvir_intWrap(int val);
-PyObject * libvir_longWrap(long val);
-PyObject * libvir_longlongWrap(long long val);
-PyObject * libvir_charPtrWrap(char *str);
-PyObject * libvir_constcharPtrWrap(const char *str);
-PyObject * libvir_charPtrConstWrap(const char *str);
-PyObject * libvir_virConnectPtrWrap(virConnectPtr node);
-PyObject * libvir_virDomainPtrWrap(virDomainPtr node);
+PyObject * libvirt_intWrap(int val);
+PyObject * libvirt_longWrap(long val);
+PyObject * libvirt_longlongWrap(long long val);
+PyObject * libvirt_charPtrWrap(char *str);
+PyObject * libvirt_constcharPtrWrap(const char *str);
+PyObject * libvirt_charPtrConstWrap(const char *str);
+PyObject * libvirt_virConnectPtrWrap(virConnectPtr node);
+PyObject * libvirt_virDomainPtrWrap(virDomainPtr node);
 
