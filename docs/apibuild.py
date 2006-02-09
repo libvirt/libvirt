@@ -2073,11 +2073,11 @@ class docBuilder:
 
 def rebuild():
     builder = None
-    if glob.glob("../src/libvir.c") != [] :
+    if glob.glob("../src/libvirt.c") != [] :
         print "Rebuilding API description for libvirt"
 	builder = docBuilder("libvirt", ["../src", "../include"],
 	                     [])
-    elif glob.glob("src/libvir.c") != [] :
+    elif glob.glob("src/libvirt.c") != [] :
         print "Rebuilding API description for libvir"
 	builder = docBuilder("libvirt", ["src", "include"],
 	                     [])

@@ -1,62 +1,62 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<apirefs name='libvir'>
+<apirefs name='libvirt'>
   <references>
-    <reference name='LIBVIR_VERSION_NUMBER' href='html/libvir-libvir.html#LIBVIR_VERSION_NUMBER'/>
-    <reference name='VIR_DEVICE_DEFAULT' href='html/libvir-libvir.html#VIR_DEVICE_DEFAULT'/>
-    <reference name='VIR_DEVICE_RO' href='html/libvir-libvir.html#VIR_DEVICE_RO'/>
-    <reference name='VIR_DEVICE_RW' href='html/libvir-libvir.html#VIR_DEVICE_RW'/>
-    <reference name='VIR_DEVICE_RW_FORCE' href='html/libvir-libvir.html#VIR_DEVICE_RW_FORCE'/>
-    <reference name='VIR_DOMAIN_BLOCKED' href='html/libvir-libvir.html#VIR_DOMAIN_BLOCKED'/>
-    <reference name='VIR_DOMAIN_CRASHED' href='html/libvir-libvir.html#VIR_DOMAIN_CRASHED'/>
-    <reference name='VIR_DOMAIN_DESTROY' href='html/libvir-libvir.html#VIR_DOMAIN_DESTROY'/>
-    <reference name='VIR_DOMAIN_NONE' href='html/libvir-libvir.html#VIR_DOMAIN_NONE'/>
-    <reference name='VIR_DOMAIN_NOSTATE' href='html/libvir-libvir.html#VIR_DOMAIN_NOSTATE'/>
-    <reference name='VIR_DOMAIN_PAUSED' href='html/libvir-libvir.html#VIR_DOMAIN_PAUSED'/>
-    <reference name='VIR_DOMAIN_PRESERVE' href='html/libvir-libvir.html#VIR_DOMAIN_PRESERVE'/>
-    <reference name='VIR_DOMAIN_RENAME_RESTART' href='html/libvir-libvir.html#VIR_DOMAIN_RENAME_RESTART'/>
-    <reference name='VIR_DOMAIN_RESTART' href='html/libvir-libvir.html#VIR_DOMAIN_RESTART'/>
-    <reference name='VIR_DOMAIN_RUNNING' href='html/libvir-libvir.html#VIR_DOMAIN_RUNNING'/>
-    <reference name='VIR_DOMAIN_SHUTDOWN' href='html/libvir-libvir.html#VIR_DOMAIN_SHUTDOWN'/>
-    <reference name='VIR_DOMAIN_SHUTOFF' href='html/libvir-libvir.html#VIR_DOMAIN_SHUTOFF'/>
-    <reference name='_virDomainInfo' href='html/libvir-libvir.html#_virDomainInfo'/>
-    <reference name='_virDomainKernel' href='html/libvir-libvir.html#_virDomainKernel'/>
-    <reference name='virConnect' href='html/libvir-libvir.html#virConnect'/>
-    <reference name='virConnectClose' href='html/libvir-libvir.html#virConnectClose'/>
-    <reference name='virConnectGetType' href='html/libvir-libvir.html#virConnectGetType'/>
-    <reference name='virConnectGetVersion' href='html/libvir-libvir.html#virConnectGetVersion'/>
-    <reference name='virConnectListDomains' href='html/libvir-libvir.html#virConnectListDomains'/>
-    <reference name='virConnectNumOfDomains' href='html/libvir-libvir.html#virConnectNumOfDomains'/>
-    <reference name='virConnectOpen' href='html/libvir-libvir.html#virConnectOpen'/>
-    <reference name='virConnectOpenReadOnly' href='html/libvir-libvir.html#virConnectOpenReadOnly'/>
-    <reference name='virConnectPtr' href='html/libvir-libvir.html#virConnectPtr'/>
-    <reference name='virDeviceMode' href='html/libvir-libvir.html#virDeviceMode'/>
-    <reference name='virDomain' href='html/libvir-libvir.html#virDomain'/>
-    <reference name='virDomainCreateFlags' href='html/libvir-libvir.html#virDomainCreateFlags'/>
-    <reference name='virDomainCreateLinux' href='html/libvir-libvir.html#virDomainCreateLinux'/>
-    <reference name='virDomainDestroy' href='html/libvir-libvir.html#virDomainDestroy'/>
-    <reference name='virDomainFree' href='html/libvir-libvir.html#virDomainFree'/>
-    <reference name='virDomainGetID' href='html/libvir-libvir.html#virDomainGetID'/>
-    <reference name='virDomainGetInfo' href='html/libvir-libvir.html#virDomainGetInfo'/>
-    <reference name='virDomainGetMaxMemory' href='html/libvir-libvir.html#virDomainGetMaxMemory'/>
-    <reference name='virDomainGetName' href='html/libvir-libvir.html#virDomainGetName'/>
-    <reference name='virDomainGetOSType' href='html/libvir-libvir.html#virDomainGetOSType'/>
-    <reference name='virDomainGetXMLDesc' href='html/libvir-libvir.html#virDomainGetXMLDesc'/>
-    <reference name='virDomainInfo' href='html/libvir-libvir.html#virDomainInfo'/>
-    <reference name='virDomainInfoPtr' href='html/libvir-libvir.html#virDomainInfoPtr'/>
-    <reference name='virDomainKernel' href='html/libvir-libvir.html#virDomainKernel'/>
-    <reference name='virDomainKernelPtr' href='html/libvir-libvir.html#virDomainKernelPtr'/>
-    <reference name='virDomainLookupByID' href='html/libvir-libvir.html#virDomainLookupByID'/>
-    <reference name='virDomainLookupByName' href='html/libvir-libvir.html#virDomainLookupByName'/>
-    <reference name='virDomainPtr' href='html/libvir-libvir.html#virDomainPtr'/>
-    <reference name='virDomainRestart' href='html/libvir-libvir.html#virDomainRestart'/>
-    <reference name='virDomainRestore' href='html/libvir-libvir.html#virDomainRestore'/>
-    <reference name='virDomainResume' href='html/libvir-libvir.html#virDomainResume'/>
-    <reference name='virDomainSave' href='html/libvir-libvir.html#virDomainSave'/>
-    <reference name='virDomainSetMaxMemory' href='html/libvir-libvir.html#virDomainSetMaxMemory'/>
-    <reference name='virDomainShutdown' href='html/libvir-libvir.html#virDomainShutdown'/>
-    <reference name='virDomainState' href='html/libvir-libvir.html#virDomainState'/>
-    <reference name='virDomainSuspend' href='html/libvir-libvir.html#virDomainSuspend'/>
-    <reference name='virGetVersion' href='html/libvir-libvir.html#virGetVersion'/>
+    <reference name='LIBVIR_VERSION_NUMBER' href='html/libvirt-libvirt.html#LIBVIR_VERSION_NUMBER'/>
+    <reference name='VIR_DEVICE_DEFAULT' href='html/libvirt-libvirt.html#VIR_DEVICE_DEFAULT'/>
+    <reference name='VIR_DEVICE_RO' href='html/libvirt-libvirt.html#VIR_DEVICE_RO'/>
+    <reference name='VIR_DEVICE_RW' href='html/libvirt-libvirt.html#VIR_DEVICE_RW'/>
+    <reference name='VIR_DEVICE_RW_FORCE' href='html/libvirt-libvirt.html#VIR_DEVICE_RW_FORCE'/>
+    <reference name='VIR_DOMAIN_BLOCKED' href='html/libvirt-libvirt.html#VIR_DOMAIN_BLOCKED'/>
+    <reference name='VIR_DOMAIN_CRASHED' href='html/libvirt-libvirt.html#VIR_DOMAIN_CRASHED'/>
+    <reference name='VIR_DOMAIN_DESTROY' href='html/libvirt-libvirt.html#VIR_DOMAIN_DESTROY'/>
+    <reference name='VIR_DOMAIN_NONE' href='html/libvirt-libvirt.html#VIR_DOMAIN_NONE'/>
+    <reference name='VIR_DOMAIN_NOSTATE' href='html/libvirt-libvirt.html#VIR_DOMAIN_NOSTATE'/>
+    <reference name='VIR_DOMAIN_PAUSED' href='html/libvirt-libvirt.html#VIR_DOMAIN_PAUSED'/>
+    <reference name='VIR_DOMAIN_PRESERVE' href='html/libvirt-libvirt.html#VIR_DOMAIN_PRESERVE'/>
+    <reference name='VIR_DOMAIN_RENAME_RESTART' href='html/libvirt-libvirt.html#VIR_DOMAIN_RENAME_RESTART'/>
+    <reference name='VIR_DOMAIN_RESTART' href='html/libvirt-libvirt.html#VIR_DOMAIN_RESTART'/>
+    <reference name='VIR_DOMAIN_RUNNING' href='html/libvirt-libvirt.html#VIR_DOMAIN_RUNNING'/>
+    <reference name='VIR_DOMAIN_SHUTDOWN' href='html/libvirt-libvirt.html#VIR_DOMAIN_SHUTDOWN'/>
+    <reference name='VIR_DOMAIN_SHUTOFF' href='html/libvirt-libvirt.html#VIR_DOMAIN_SHUTOFF'/>
+    <reference name='_virDomainInfo' href='html/libvirt-libvirt.html#_virDomainInfo'/>
+    <reference name='_virDomainKernel' href='html/libvirt-libvirt.html#_virDomainKernel'/>
+    <reference name='virConnect' href='html/libvirt-libvirt.html#virConnect'/>
+    <reference name='virConnectClose' href='html/libvirt-libvirt.html#virConnectClose'/>
+    <reference name='virConnectGetType' href='html/libvirt-libvirt.html#virConnectGetType'/>
+    <reference name='virConnectGetVersion' href='html/libvirt-libvirt.html#virConnectGetVersion'/>
+    <reference name='virConnectListDomains' href='html/libvirt-libvirt.html#virConnectListDomains'/>
+    <reference name='virConnectNumOfDomains' href='html/libvirt-libvirt.html#virConnectNumOfDomains'/>
+    <reference name='virConnectOpen' href='html/libvirt-libvirt.html#virConnectOpen'/>
+    <reference name='virConnectOpenReadOnly' href='html/libvirt-libvirt.html#virConnectOpenReadOnly'/>
+    <reference name='virConnectPtr' href='html/libvirt-libvirt.html#virConnectPtr'/>
+    <reference name='virDeviceMode' href='html/libvirt-libvirt.html#virDeviceMode'/>
+    <reference name='virDomain' href='html/libvirt-libvirt.html#virDomain'/>
+    <reference name='virDomainCreateFlags' href='html/libvirt-libvirt.html#virDomainCreateFlags'/>
+    <reference name='virDomainCreateLinux' href='html/libvirt-libvirt.html#virDomainCreateLinux'/>
+    <reference name='virDomainDestroy' href='html/libvirt-libvirt.html#virDomainDestroy'/>
+    <reference name='virDomainFree' href='html/libvirt-libvirt.html#virDomainFree'/>
+    <reference name='virDomainGetID' href='html/libvirt-libvirt.html#virDomainGetID'/>
+    <reference name='virDomainGetInfo' href='html/libvirt-libvirt.html#virDomainGetInfo'/>
+    <reference name='virDomainGetMaxMemory' href='html/libvirt-libvirt.html#virDomainGetMaxMemory'/>
+    <reference name='virDomainGetName' href='html/libvirt-libvirt.html#virDomainGetName'/>
+    <reference name='virDomainGetOSType' href='html/libvirt-libvirt.html#virDomainGetOSType'/>
+    <reference name='virDomainGetXMLDesc' href='html/libvirt-libvirt.html#virDomainGetXMLDesc'/>
+    <reference name='virDomainInfo' href='html/libvirt-libvirt.html#virDomainInfo'/>
+    <reference name='virDomainInfoPtr' href='html/libvirt-libvirt.html#virDomainInfoPtr'/>
+    <reference name='virDomainKernel' href='html/libvirt-libvirt.html#virDomainKernel'/>
+    <reference name='virDomainKernelPtr' href='html/libvirt-libvirt.html#virDomainKernelPtr'/>
+    <reference name='virDomainLookupByID' href='html/libvirt-libvirt.html#virDomainLookupByID'/>
+    <reference name='virDomainLookupByName' href='html/libvirt-libvirt.html#virDomainLookupByName'/>
+    <reference name='virDomainPtr' href='html/libvirt-libvirt.html#virDomainPtr'/>
+    <reference name='virDomainRestart' href='html/libvirt-libvirt.html#virDomainRestart'/>
+    <reference name='virDomainRestore' href='html/libvirt-libvirt.html#virDomainRestore'/>
+    <reference name='virDomainResume' href='html/libvirt-libvirt.html#virDomainResume'/>
+    <reference name='virDomainSave' href='html/libvirt-libvirt.html#virDomainSave'/>
+    <reference name='virDomainSetMaxMemory' href='html/libvirt-libvirt.html#virDomainSetMaxMemory'/>
+    <reference name='virDomainShutdown' href='html/libvirt-libvirt.html#virDomainShutdown'/>
+    <reference name='virDomainState' href='html/libvirt-libvirt.html#virDomainState'/>
+    <reference name='virDomainSuspend' href='html/libvirt-libvirt.html#virDomainSuspend'/>
+    <reference name='virGetVersion' href='html/libvirt-libvirt.html#virGetVersion'/>
   </references>
   <alpha>
     <letter name='L'>
@@ -187,7 +187,7 @@
     </type>
   </functions>
   <files>
-    <file name='libvir'>
+    <file name='libvirt'>
       <ref name='LIBVIR_VERSION_NUMBER'/>
       <ref name='VIR_DEVICE_DEFAULT'/>
       <ref name='VIR_DEVICE_RO'/>
