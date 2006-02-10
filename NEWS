@@ -5,6 +5,10 @@
        http://libvirt.org/news.html
 
 Releases
+0.0.4: Feb 10 2006:
+   - Fix various bugs introduced in the name change
+
+
 0.0.3: Feb 9 2006:
    - Switch name from from 'libvir' to libvirt
    - Starting infrastructure to add code examples

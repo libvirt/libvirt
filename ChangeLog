@@ -1,3 +1,8 @@
+Fri Feb 10 11:21:53 EST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* NEWS configure.in docs/libvir.html docs/news.html include/libvirt.h
+	  libvirt.spec.in: preparing 0.0.4 release
+
 Fri Feb 10 11:09:11 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* README TODO config.h.in libvirt.pc.in: more cleanups.
