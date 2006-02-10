@@ -5,6 +5,12 @@
        http://libvirt.org/news.html
 
 Releases
+0.0.3: Feb 9 2006:
+   - Switch name from from 'libvir' to libvirt
+   - Starting infrastructure to add code examples
+   - Update of python bindings for completeness
+
+
 0.0.2: Jan 29 2006:
    - Update of the documentation, web site redesign (Diana Fong)
    - integration of HTTP xend RPC based on libxend by Anthony Liquori for

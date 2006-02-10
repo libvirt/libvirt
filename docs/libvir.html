@@ -10,9 +10,9 @@
 <h1>Note: this is the flat content of the <a href="index.html">web
 site</a></h1>
 
-<h1 style="text-align: center">libvir</h1>
+<h1 style="text-align: center">libvirt</h1>
 
-<h3>what is <span class="style1">libvir?</span></h3>
+<h3>what is <span class="style1">libvirt?</span></h3>
 
 <p>Libvir is a C toolkit to interract with the virtualization capabilities of
 recent versions of Linux (and other OSes). It is free software available
@@ -29,9 +29,16 @@ mechanisms if needed.</p>
 <h2><a name="News">Releases</a></h2>
 
 <p>Here is the list of official releases, however since it is early on in the
-development of libvir, it is preferable when possible to just use the <a
+development of libvirt, it is preferable when possible to just use the <a
 href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p>
+
+<h3>0.0.3: Feb 9 2006</h3>
+<ul>
+  <li>Switch name from from 'libvir' to libvirt</li>
+  <li>Starting infrastructure to add code examples</li>
+  <li>Update of python bindings for completeness</li>
+</ul>
 
 <h3>0.0.2: Jan 29 2006</h3>
 <ul>
@@ -54,11 +61,11 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p>
 <h2><a name="Introducti">Introduction</a></h2>
 
 <p>Libvir is a C toolkit to interact with the virtualization capabilities of
-recent versions of Linux (and other OSes), but libvir won't try to provide
+recent versions of Linux (and other OSes), but libvirt won't try to provide
 all possible interfaces for interacting with the virtualization features.</p>
 
 <p>To avoid ambiguity about the terms used here here are the definitions for
-some of the specific concepts used in libvir documentation:</p>
+some of the specific concepts used in libvirt documentation:</p>
 <ul>
   <li>a <strong>node</strong> is a single physical machine</li>
   <li>an <strong>hypervisor</strong> is a layer of software allowing to
@@ -71,7 +78,7 @@ some of the specific concepts used in libvir documentation:</p>
 <p style="text-align: center"><img
 alt="Hypervisor and domains running on a node" src="node.gif"></p>
 
-<p>Now we can define the goal of libvir: to provide the lowest possible
+<p>Now we can define the goal of libvirt: to provide the lowest possible
 generic and stable layer to manage domains on a node.</p>
 
 <p>This implies the following:</p>
@@ -79,30 +86,30 @@ generic and stable layer to manage domains on a node.</p>
   <li>the API should not be targetted to a single virtualization environment
     though Xen is the current default, which also means that some very
     specific capabilities which are not generic enough may not be provided as
-    libvir APIs</li>
+    libvirt APIs</li>
   <li>the API should allow to do efficiently and cleanly all the operations
     needed to manage domains on a node</li>
   <li>the API will not try to provide hight level multi-nodes management
     features like load balancing, though they could be implemented on top of
-    libvir</li>
-  <li>stability of the API is a big concern, libvir should isolate
+    libvirt</li>
+  <li>stability of the API is a big concern, libvirt should isolate
     applications from the frequent changes expected at the lower level of the
     virtualization framework</li>
 </ul>
 
-<p>So libvir should be a building block for higher level management tools and
+<p>So libvirt should be a building block for higher level management tools and
 for applications focusing on virtualization of a single node (the only
 exception being domain migration between node capabilities which may need to
-be added at the libvir level). Where possible libvir should be extendable to
+be added at the libvirt level). Where possible libvirt should be extendable to
 be able to provide the same API for remote nodes, however this is not the
 case at the moment, the code currently handle only local node accesses.</p>
 
-<h2><a name="architecture">libvir architecture</a></h2>
+<h2><a name="architecture">libvirt architecture</a></h2>
 
 <h3>This is Xen specific since this is the only hypervisor supported at the
 moment</h3>
 
-<p>When running in a Xen environment, programs using libvir have to execute
+<p>When running in a Xen environment, programs using libvirt have to execute
 in "Domain 0", which is the primary Linux OS loaded on the machine. That OS
 kernel provides most if not all of the actual drivers used by the set of
 domains. It also runs the Xen Store, a database of informations shared by the
@@ -126,7 +133,7 @@ the Xen infrastructure:</p>
 <p>The library will usually interract with the Xen daemon for any operation
 changing the state of the system, but for performance and accuracy reasons
 may talk directly to the hypervisor when gathering state informations at
-least when possible (i.e. when the running program using libvir has root
+least when possible (i.e. when the running program using libvirt has root
 priviledge access).</p>
 
 <p>If it runs without root access virConnectOpenReadOnly() should be used to
@@ -138,23 +145,23 @@ of APIs available and slowing down information gathering about domains.</p>
 
 <h2><a name="Downloads">Downloads</a></h2>
 
-<p>The latest versions of libvir can be found on the  <a
-href="ftp://libvir.org/libvir/">libvir.org</a> server ( <a
-href="http://libvir.org/sources/">HTTP</a>, <a
-href="ftp://libvir.org/libvir/">FTP</a>). You will find there the released
+<p>The latest versions of libvirt can be found on the  <a
+href="ftp://libvirt.org/libvirt/">libvirt.org</a> server ( <a
+href="http://libvirt.org/sources/">HTTP</a>, <a
+href="ftp://libvirt.org/libvirt/">FTP</a>). You will find there the released
 versions as well as <a
-href="http://libvir.org/sources/libvir-cvs-snapshot.tar.gz">snapshot
+href="http://libvirt.org/sources/libvirt-cvs-snapshot.tar.gz">snapshot
 tarballs</a> updated from CVS head every hour</p>
 
 <p>Anonymous <a href="http://ximbiot.com/cvs/cvshome/docs/">CVS</a> is also
 available, first register onto the server:</p>
 
-<p><code>cvs -d :pserver:anoncvs@libvir.org:2401/data/cvs login</code></p>
+<p><code>cvs -d :pserver:anoncvs@libvirt.org:2401/data/cvs login</code></p>
 
 <p>it will request a password, enter <strong>anoncvs</strong>. Then you can
 checkout the development tree with:</p>
 
-<p><code>cvs -d :pserver:anoncvs@libvir.org:2401/data/cvs co libvir</code></p>
+<p><code>cvs -d :pserver:anoncvs@libvirt.org:2401/data/cvs co libvirt</code></p>
 
 <p>Use ./autogen.sh to configure the local checkout, then <code>make</code>
 and <code>make install</code>, as usual. All normal cvs commands are now
@@ -172,15 +179,15 @@ available except commiting to the base.</p>
 
 <h3><a name="License">License</a>(s)</h3>
 <ol>
-  <li><em>Licensing Terms for libvir</em>
-    <p>libvir is released under the <a
+  <li><em>Licensing Terms for libvirt</em>
+    <p>libvirt is released under the <a
     href="http://www.opensource.org/licenses/lgpl-license.html">GNU Lesser
     General Public License</a>, see the file COPYING.LIB in the distribution
-    for the precise wording. The only library that libvir depends upon is the
+    for the precise wording. The only library that libvirt depends upon is the
     Xen store access library which is also licenced under the LGPL.</p>
   </li>
-  <li><em>Can I embed libvir in a proprietary application ?</em>
-    <p>Yes. The LGPL allows you to embed libvir into a proprietary
+  <li><em>Can I embed libvirt in a proprietary application ?</em>
+    <p>Yes. The LGPL allows you to embed libvirt into a proprietary
     application. It would be graceful to send-back bug fixes and improvements
     as patches for possible incorporation in the main development tree. It
     will decrease your maintainance costs anyway if you do so.</p>
@@ -189,19 +196,19 @@ available except commiting to the base.</p>
 
 <h3><a name="Installati">Installation</a></h3>
 <ol>
-  <li><em>Where can I get libvir</em> ?
+  <li><em>Where can I get libvirt</em> ?
     <p>The original distribution comes from <a
-    href="ftp://libvir.org/libvir/">ftp://libvir.org/libvir/</a>.</p>
+    href="ftp://libvirt.org/libvirt/">ftp://libvirt.org/libvirt/</a>.</p>
   </li>
-  <li><em>I can't install the libvir/libvir-devel RPM packages due to failed
+  <li><em>I can't install the libvirt/libvirt-devel RPM packages due to failed
     dependencies</em>
     <p>The most generic solution is to re-fetch the latest src.rpm , and
     rebuild it locally with</p>
-    <p><code>rpm --rebuild libvir-xxx.src.rpm</code>.</p>
+    <p><code>rpm --rebuild libvirt-xxx.src.rpm</code>.</p>
     <p>If everything goes well it will generate two binary rpm packages (one
     providing the shared libs and virsh, and the other one, the -devel
     package, providing includes, static libraries and scripts needed to build
-    applications with libvir that you can install locally.</p>
+    applications with libvirt that you can install locally.</p>
     <p>One can also rebuild the RPMs from a tarball:</p>
     <p><code>rpmbuild -ta libdir-xxx.tar.gz</code></p>
     <p>Or from a configured tree with:</p>
@@ -227,10 +234,10 @@ available except commiting to the base.</p>
 
 <h3><a name="Compilatio">Compilation</a></h3>
 <ol>
-  <li><em>What is the process to compile libvir ?</em>
-    <p>As most UNIX libraries libvir follows the "standard":</p>
-    <p><code>gunzip -c libvir-xxx.tar.gz | tar xvf -</code></p>
-    <p><code>cd libvir-xxxx</code></p>
+  <li><em>What is the process to compile libvirt ?</em>
+    <p>As most UNIX libraries libvirt follows the "standard":</p>
+    <p><code>gunzip -c libvirt-xxx.tar.gz | tar xvf -</code></p>
+    <p><code>cd libvirt-xxxx</code></p>
     <p><code>./configure --help</code></p>
     <p>to see the options, then the compilation/installation proper</p>
     <p><code>./configure [possible options]</code></p>
@@ -239,7 +246,7 @@ available except commiting to the base.</p>
     <p>At that point you may have to rerun ldconfig or a similar utility to
     update your list of installed shared libs.</p>
   </li>
-  <li><em>What other libraries are needed to compile/install libvir ?</em>
+  <li><em>What other libraries are needed to compile/install libvirt ?</em>
     <p>Libvir requires libxenstore, which is usually provided by the xen
     packages as well as the public headers to compile against libxenstore.</p>
   </li>
@@ -253,18 +260,18 @@ available except commiting to the base.</p>
 
 <h3><a name="Developer">Developer</a> corner</h3>
 <ol>
-  <li><em>Troubles compiling or linking programs using libvir</em>
-    <p>To simplify the process of reusing the library, libvir comes with
+  <li><em>Troubles compiling or linking programs using libvirt</em>
+    <p>To simplify the process of reusing the library, libvirt comes with
     pkgconfig support, which can be used directly from autoconf support or
     via the pkg-config command line tool, like:</p>
-    <p><code>pkg-config libvir --libs</code></p>
+    <p><code>pkg-config libvirt --libs</code></p>
   </li>
 </ol>
 
 <h2><a name="Reporting">Reporting bugs and getting help</a></h2>
 
 <p>There is a mailing-list <a
-href="mailto:libvir-list@redhat.com">libvir-list@redhat.com</a> for libvir,
+href="mailto:libvir-list@redhat.com">libvir-list@redhat.com</a> for libvirt,
 with an  <a href="https://www.redhat.com/archives/libvir-list/">on-line
 archive</a>. Please subscribe to this list before posting by visiting the <a
 href="https://www.redhat.com/mailman/listinfo/libvir-list">associated Web</a>
@@ -273,7 +280,7 @@ attachments are really appreciated and will be discussed on the mailing list.
 If possible generate the patches by using cvs diff -u in a CVS checkout.</p>
 
 <p>We expect to use <a href="https://bugzilla.redhat.com/">Red Hat
-Bugzilla</a> to track bugs for libvir, though there isn't a libvir software
+Bugzilla</a> to track bugs for libvirt, though there isn't a libvirt software
 module defined yet, in the meantime use the mailing-list, thanks !.</p>
 </body>
 </html>

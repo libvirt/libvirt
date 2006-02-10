@@ -38,7 +38,7 @@ img
 #pageHeader
     {
     position: absolute;
-	background: url(libvirHeader.png) center no-repeat;
+	background: url(libvirtHeader.png) center no-repeat;
     top: 30px;
 	height: 76px;
 	width: 766px;
@@ -70,7 +70,7 @@ img
     {
     font-size: 11px;
     height: 300px;
-    background: url(libvirLogo.png) center no-repeat;
+    background: url(libvirtLogo.png) center no-repeat;
     margin: 0;
     width: 766px;
     }

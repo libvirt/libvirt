@@ -1,3 +1,7 @@
+Fri Feb 10 09:42:45 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* NEWS docs/*: regenerated and updated the docs post 0.0.3 release
+
 Fri Feb 10 09:39:23 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* autogen.sh configure.in: fixed snapshot autogeneration, had to
