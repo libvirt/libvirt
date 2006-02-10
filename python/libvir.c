@@ -115,7 +115,7 @@ static PyMethodDef libvirtMethods[] = {
 };
 
 void
-initlibvirmod(void)
+initlibvirtmod(void)
 {
     static int initialized = 0;
 

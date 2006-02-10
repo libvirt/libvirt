@@ -1,3 +1,7 @@
+Fri Feb 10 11:30:41 EST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* python/libvir.c: fixed one more problem prior to 0.0.4
+
 Fri Feb 10 11:21:53 EST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* NEWS configure.in docs/libvir.html docs/news.html include/libvirt.h
