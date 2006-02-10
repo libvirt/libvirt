@@ -3,7 +3,7 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: libvir
+Name: libvirt
 Version: @VERSION@
 Description: libvirt library
 Requires:

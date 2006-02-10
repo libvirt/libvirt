@@ -1,3 +1,7 @@
+Fri Feb 10 16:45:50 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* libvirt.pc.in: Karel pointed out the name hadn't been updated
+
 Fri Feb 10 11:30:41 EST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* python/libvir.c: fixed one more problem prior to 0.0.4
