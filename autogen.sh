@@ -36,7 +36,7 @@ if test "$DIE" -eq 1; then
 	exit 1
 fi
 
-test -f src/libvir.c || {
+test -f src/libvirt.c || {
 	echo "You must run this script in the top-level libxen directory"
 	exit 1
 }
@@ -61,4 +61,4 @@ fi
 $srcdir/configure "$@"
 
 echo 
-echo "Now type 'make' to compile libvir."
+echo "Now type 'make' to compile libvirt."

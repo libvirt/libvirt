@@ -101,6 +101,9 @@ AC_CHECK_LIB(readline, main,
 	[$VIRSH_LIBS])
 AC_SUBST(VIRSH_LIBS)
 
+# end of if with_depends
+fi
+
 dnl
 dnl check for python
 dnl
@@ -184,11 +187,9 @@ AC_SUBST(PYTHON_INCLUDES)
 AC_SUBST(PYTHON_SITE_PACKAGES)
 AC_SUBST(PYTHON_SUBDIR)
 
-# end of if with_depends
-fi
-
 # very annoying
 rm -f COPYING
+cp COPYING.LIB COPYING
 
 AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           docs/examples/Makefile \

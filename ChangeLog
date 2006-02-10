@@ -1,3 +1,8 @@
+Fri Feb 10 09:39:23 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* autogen.sh configure.in: fixed snapshot autogeneration, had to
+	  tweak a few things
+
 Wed Feb  8 11:43:43 EST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* //* : renamed the project libvirt , this affects all makefiles,
