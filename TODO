@@ -22,3 +22,4 @@ Done:
 - make dist and make rpm targets
 - set a no public by default policy for libvir symbols
 - fix the python bindings
+- renamed to libvirt

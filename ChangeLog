@@ -1,3 +1,7 @@
+Fri Feb 10 11:09:11 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* README TODO config.h.in libvirt.pc.in: more cleanups.
+
 Fri Feb 10 09:42:45 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* NEWS docs/*: regenerated and updated the docs post 0.0.3 release

@@ -5,7 +5,7 @@ includedir=@includedir@
 
 Name: libvir
 Version: @VERSION@
-Description: libvir library
+Description: libvirt library
 Requires:
-Libs: -L${libdir} -lvir @LIBS@
+Libs: -L${libdir} -lvirt @LIBS@
 Cflags:

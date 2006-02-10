@@ -37,30 +37,30 @@
      <exports symbol='_virDomainInfo' type='struct'/>
      <exports symbol='_virDomainKernel' type='struct'/>
      <exports symbol='virDomainGetInfo' type='function'/>
-     <exports symbol='virDomainFree' type='function'/>
-     <exports symbol='virConnectOpen' type='function'/>
-     <exports symbol='virDomainSuspend' type='function'/>
      <exports symbol='virDomainShutdown' type='function'/>
      <exports symbol='virGetVersion' type='function'/>
      <exports symbol='virDomainLookupByName' type='function'/>
-     <exports symbol='virDomainCreateLinux' type='function'/>
-     <exports symbol='virConnectClose' type='function'/>
      <exports symbol='virDomainRestore' type='function'/>
      <exports symbol='virConnectGetType' type='function'/>
      <exports symbol='virDomainSave' type='function'/>
-     <exports symbol='virDomainGetID' type='function'/>
-     <exports symbol='virDomainResume' type='function'/>
      <exports symbol='virConnectListDomains' type='function'/>
-     <exports symbol='virDomainDestroy' type='function'/>
      <exports symbol='virDomainLookupByID' type='function'/>
      <exports symbol='virDomainGetOSType' type='function'/>
-     <exports symbol='virDomainGetXMLDesc' type='function'/>
      <exports symbol='virConnectNumOfDomains' type='function'/>
      <exports symbol='virDomainSetMaxMemory' type='function'/>
-     <exports symbol='virConnectOpenReadOnly' type='function'/>
-     <exports symbol='virDomainGetName' type='function'/>
      <exports symbol='virDomainGetMaxMemory' type='function'/>
      <exports symbol='virConnectGetVersion' type='function'/>
+     <exports symbol='virDomainFree' type='function'/>
+     <exports symbol='virConnectOpen' type='function'/>
+     <exports symbol='virDomainSuspend' type='function'/>
+     <exports symbol='virConnectClose' type='function'/>
+     <exports symbol='virDomainGetID' type='function'/>
+     <exports symbol='virDomainResume' type='function'/>
+     <exports symbol='virDomainCreateLinux' type='function'/>
+     <exports symbol='virDomainDestroy' type='function'/>
+     <exports symbol='virDomainGetXMLDesc' type='function'/>
+     <exports symbol='virDomainGetName' type='function'/>
+     <exports symbol='virConnectOpenReadOnly' type='function'/>
     </file>
   </files>
   <symbols>

@@ -1,7 +1,7 @@
 
          LibVirt : simple API for virtualization
 
-  Libvir is a C toolkit to interract with the virtualization capabilities
+  Libvirt is a C toolkit to interract with the virtualization capabilities
 of recent versions of Linux (and other OSes). It is free software
 available under the GNU Lesser General Public License. Virtualization of
 the Linux Operating System means the ability to run multiple instances of
