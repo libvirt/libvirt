@@ -11,3 +11,10 @@ pkgconfig_DATA = libvirt.pc
 
 rpm: clean
 	@(unset CDPATH ; $(MAKE) dist && rpmbuild -ta $(distdir).tar.gz)
+
+check-local: all tests
+
+tests:
+	@(if [ "@PYTHON_SUBDIR@" != "" ] ; then cd python ; \
+	  $(MAKE) MAKEFLAGS+=--silent tests ; fi)
+	

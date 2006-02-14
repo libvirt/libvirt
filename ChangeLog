@@ -1,3 +1,9 @@
+Tue Feb 14 15:29:01 EST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* Makefile.am configure.in python/Makefile.am python/tests/Makefile.am
+	  python/tests/basic.py: added first python test script and 
+	  a 'make tests' target
+
 Fri Feb 10 16:45:50 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* libvirt.pc.in: Karel pointed out the name hadn't been updated

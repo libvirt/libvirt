@@ -1,5 +1,7 @@
 # Makefile for libvirt python library
 
+SUBRIRS= . tests
+
 INCLUDES = \
         -I$(PYTHON_INCLUDES) \
 	-I$(top_srcdir)/include \
@@ -60,3 +62,8 @@ $(libvirtmod_la_OBJECTS): $(GENERATED)
 else
 all: 
 endif
+
+dummy:
+
+tests test: all dummy
+	-@(cd tests && $(MAKE) MAKEFLAGS+=--silent tests)
