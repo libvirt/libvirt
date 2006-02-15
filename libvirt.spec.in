@@ -86,6 +86,7 @@ rm -fr %{buildroot}
 %doc AUTHORS NEWS README COPYING.LIB
 %{_libdir}/python*/site-packages/libvirt.py*
 %{_libdir}/python*/site-packages/libvirtmod*
+%doc python/tests/*.py
 %doc python/TODO
 %doc python/libvirtclass.txt
 

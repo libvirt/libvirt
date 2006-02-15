@@ -1,3 +1,9 @@
+Wed Feb 15 08:20:23 EST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in libvirt.spec.in include/libvirt.h.in python/Makefile.am
+	  src/Makefile.am: fix rpm packaging problems whith head, more 
+	  LIBVIR -> LIBVIRT changes.
+
 Tue Feb 14 15:29:01 EST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* Makefile.am configure.in python/Makefile.am python/tests/Makefile.am

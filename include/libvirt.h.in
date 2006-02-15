@@ -167,7 +167,7 @@ typedef enum {
  * version * 1,000,000 + minor * 1000 + micro
  */
 
-#define LIBVIR_VERSION_NUMBER @LIBVIR_VERSION_NUMBER@
+#define LIBVIR_VERSION_NUMBER @LIBVIRT_VERSION_NUMBER@
 
 int			virGetVersion		(unsigned long *libVer,
 						 const char *type,

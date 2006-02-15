@@ -1,6 +1,6 @@
 # Makefile for libvirt python library
 
-SUBRIRS= . tests
+SUBDIRS= . tests
 
 INCLUDES = \
         -I$(PYTHON_INCLUDES) \
@@ -8,7 +8,7 @@ INCLUDES = \
 	-I$(top_builddir)/include \
 	-I$(top_builddir)/$(subdir)
 
-DOCS_DIR = $(datadir)/doc/libvirt-python-$(LIBVIR_VERSION)
+DOCS_DIR = $(datadir)/doc/libvirt-python-$(LIBVIRT_VERSION)
 
 DOCS = ${srcdir}/TODO
 
