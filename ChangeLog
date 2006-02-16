@@ -1,3 +1,15 @@
+Thu Feb 16 17:47:00 EST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in src/Makefile.am: adding dependency to libxml2
+	* include/libvirt.h* src/libvirt.c src/xend_internal.[ch]
+	  src/xml.[ch]: added XML parsing for Xen domain descriptions
+	  needed for creates, plugged in a converter to s-exp and
+	  xend call. Modified the virDomainCreateLinux() to reflect
+	  that XML based description. Seems to work.
+	* python/tests/create.py: added a test case which seems to work
+	  not tested much yet
+	* docs/*: regenerated
+
 Wed Feb 15 08:20:23 EST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in libvirt.spec.in include/libvirt.h.in python/Makefile.am

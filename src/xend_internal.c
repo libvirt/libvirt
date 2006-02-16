@@ -1399,6 +1399,37 @@ xend_create(virConnectPtr xend, const struct xend_domain *dom)
 }
 
 /**
+ * xend_create_sexpr:
+ * @xend: A xend instance
+ * @sexpr: An S-Expr description of the domain.
+ *
+ * This method will create a domain based the passed in description.  The
+ * domain will be paused after creation and must be unpaused with
+ * xend_unpause() to begin execution.
+ * This method may be deprecated once switching to XML-RPC based communcations
+ * with xend.
+ *
+ * Returns 0 for success, -1 (with errno) on error
+ */
+
+int
+xend_create_sexpr(virConnectPtr xend, const char *sexpr)
+{
+    int ret, serrno;
+    char *ptr;
+
+    ptr = urlencode(sexpr);
+
+    ret = xend_op(xend, "", "op", "create", "config", ptr, NULL);
+
+    serrno = errno;
+    free(ptr);
+    errno = serrno;
+
+    return ret;
+}
+
+/**
  * xend_set_max_memory:
  * @xend: A xend instance
  * @name: The name of the domain

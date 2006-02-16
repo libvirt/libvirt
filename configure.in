@@ -90,6 +90,50 @@ then
 dnl search for the Xen store library
 AC_SEARCH_LIBS(xs_read, [xenstore], [], [AC_MSG_ERROR([Xen store library not found])])
 
+dnl ==========================================================================
+dnl find libxml2 library, borrowed from xmlsec
+dnl ==========================================================================
+LIBXML_MIN_VERSION="2.5.0"
+LIBXML_CONFIG="xml2-config"
+LIBXML_CFLAGS=""
+LIBXML_LIBS=""
+LIBXML_FOUND="no"
+AC_ARG_WITH(libxml, [  --with-libxml=[PFX]       libxml2 location])
+if test "z$with_libxml" = "zno" ; then 
+    AC_MSG_CHECKING(for libxml2 libraries >= $LIBXML_MIN_VERSION) 
+    AC_MSG_ERROR(libxml2 >= $LIBXML_MIN_VERSION is required for $XMLSEC_PACKAGE)
+elif test "z$with_libxml" = "z" -a "z$PKG_CONFIG_ENABLED" = "zyes" ; then
+    PKG_CHECK_MODULES(LIBXML, libxml-2.0 >= $LIBXML_MIN_VERSION,
+	[LIBXML_FOUND=yes],
+	[LIBXML_FOUND=no])
+fi
+AC_MSG_CHECKING(libxml2 $with_libxml  $LIBXML_FOUND  )
+if test "z$LIBXML_FOUND" = "zno" ; then
+    AC_MSG_CHECKING(for libxml2 libraries >= $LIBXML_MIN_VERSION) 
+    if test "z$with_libxml" != "z" ; then 
+	LIBXML_CONFIG=$with_libxml/bin/$LIBXML_CONFIG
+    fi
+    AC_MSG_CHECKING(libxml2 $with_libxml  $LIBXML_CONFIG  )
+    if ! $LIBXML_CONFIG --version > /dev/null 2>&1 ; then
+	AC_MSG_ERROR(Could not find libxml2 anywhere (see config.log for details).)
+    fi
+    vers=`$LIBXML_CONFIG --version | awk -F. '{ printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
+    minvers=`echo $LIBXML_MIN_VERSION | awk -F. '{ printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
+    if test "$vers" -ge "$minvers" ; then
+        LIBXML_LIBS="`$LIBXML_CONFIG --libs`"
+        LIBXML_CFLAGS="`$LIBXML_CONFIG --cflags`"
+	LIBXML_FOUND="yes"
+        AC_MSG_RESULT(yes ('$LIBXML_VERSION'))
+    else
+        AC_MSG_ERROR(You need at least libxml2 $LIBXML_MIN_VERSION for this version of $XMLSEC_PACKAGE)
+    fi
+fi
+
+AC_SUBST(LIBXML_CFLAGS)
+AC_SUBST(LIBXML_LIBS)
+AC_SUBST(LIBXML_CONFIG)
+AC_SUBST(LIBXML_MIN_VERSION)
+
 dnl virsh libraries
 AC_CHECK_LIB(curses, initscr, 
 	[VIRSH_LIBS="$VIRSH_LIBS -lcurses"], 

@@ -22,6 +22,7 @@
 #include "xen_internal.h"
 #include "xend_internal.h"
 #include "hash.h"
+#include "xml.h"
 
 
 /*
@@ -395,29 +396,67 @@ virConnectNumOfDomains(virConnectPtr conn) {
 /**
  * virDomainCreateLinux:
  * @conn: pointer to the hypervisor connection
- * @kernel_path: the file path to the kernel image
- * @initrd_path: an optional file path to an initrd
- * @cmdline: optional command line parameters for the kernel
- * @memory: the memory size in kilobytes
+ * @xmlDesc: an XML description of the domain
  * @flags: an optional set of virDomainFlags
  *
  * Launch a new Linux guest domain, unimplemented yet, API to be defined.
- * This would function requires priviledged access to the hypervisor.
+ * This function requires priviledged access to the hypervisor.
  * 
  * Returns a new domain object or NULL in case of failure
  */
 virDomainPtr
-virDomainCreateLinux(virConnectPtr conn, const char *kernel_path,
-		     const char *initrd_path ATTRIBUTE_UNUSED,
-		     const char *cmdline ATTRIBUTE_UNUSED,
-		     unsigned long memory,
+virDomainCreateLinux(virConnectPtr conn, 
+                     const char *xmlDesc,
 		     unsigned int flags ATTRIBUTE_UNUSED) {
+    int ret;
+    char *sexpr;
+    char *name = NULL;
+    virDomainPtr dom;
 
     if (!VIR_IS_CONNECT(conn))
 	return(NULL);
-    if ((kernel_path == NULL) || (memory < 4096))
+    if (xmlDesc == NULL)
         return(NULL);
-    TODO
+    sexpr = virDomainParseXMLDesc(xmlDesc, &name);
+    if ((sexpr == NULL) || (name == NULL)) {
+        if (sexpr != NULL)
+	    free(sexpr);
+        if (name != NULL)
+	    free(name);
+
+        return(NULL);
+    }
+
+    printf("%s\n", sexpr);
+
+    ret = xend_create_sexpr(conn, sexpr);
+    free(sexpr);
+    if (ret != 0) {
+        fprintf(stderr, "Failed to create domain %s\n", name);
+	goto error;
+    }
+
+    ret = xend_wait_for_devices(conn, name);
+    if (ret != 0) {
+        fprintf(stderr, "Failed to get devices for domain %s\n", name);
+	xend_destroy(conn, name);
+	goto error;
+    }
+
+    ret = xend_unpause(conn, name);
+    if (ret != 0) {
+        fprintf(stderr, "Failed to resume new domain %s\n", name);
+	xend_destroy(conn, name);
+	goto error;
+    }
+
+    dom = virDomainLookupByName(conn, name);
+    free(name);
+
+    return(dom);
+error:
+    if (name != NULL)
+        free(name);
     return(NULL);
 }
 

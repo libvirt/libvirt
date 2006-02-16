@@ -162,10 +162,7 @@
       <info>Launch a new Linux guest domain, unimplemented yet, API to be defined. This would function requires priviledged access to the hypervisor.</info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
-      <arg name='kernel_path' type='const char *' info='the file path to the kernel image'/>
-      <arg name='initrd_path' type='const char *' info='an optional file path to an initrd'/>
-      <arg name='cmdline' type='const char *' info='optional command line parameters for the kernel'/>
-      <arg name='memory' type='unsigned long' info='the memory size in kilobytes'/>
+      <arg name='xmlDesc' type='const char *' info='an XML description of the domain'/>
       <arg name='flags' type='unsigned int' info='an optional set of virDomainFlags'/>
     </function>
     <function name='virDomainDestroy' file='libvirt' module='libvirt'>

@@ -200,10 +200,7 @@ int			virConnectNumOfDomains	(virConnectPtr conn);
  * Domain creation and destruction
  */
 virDomainPtr		virDomainCreateLinux	(virConnectPtr conn,
-						 const char *kernel_path,
-						 const char *initrd_path,
-						 const char *cmdline,
-						 unsigned long memory,
+						 const char *xmlDesc,
 						 unsigned int flags);
 virDomainPtr		virDomainLookupByName	(virConnectPtr conn,
 						 const char *name);

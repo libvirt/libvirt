@@ -149,7 +149,6 @@
       <ref name='virDomainCreateLinux'/>
     </type>
     <type name='unsigned long'>
-      <ref name='virDomainCreateLinux'/>
       <ref name='virDomainSetMaxMemory'/>
     </type>
     <type name='unsigned long *'>
@@ -427,6 +426,7 @@
       </letter>
       <letter name='X'>
         <word name='XML'>
+          <ref name='virDomainCreateLinux'/>
           <ref name='virDomainGetXMLDesc'/>
         </word>
         <word name='Xen'>
@@ -588,7 +588,6 @@
         </word>
         <word name='command'>
           <ref name='_virDomainKernel'/>
-          <ref name='virDomainCreateLinux'/>
         </word>
         <word name='compiled'>
           <ref name='virGetVersion'/>
@@ -631,6 +630,7 @@
           <ref name='virDomainCreateLinux'/>
         </word>
         <word name='description'>
+          <ref name='virDomainCreateLinux'/>
           <ref name='virDomainGetXMLDesc'/>
         </word>
         <word name='device'>
@@ -703,7 +703,6 @@
           <ref name='virGetVersion'/>
         </word>
         <word name='file'>
-          <ref name='virDomainCreateLinux'/>
           <ref name='virDomainSave'/>
         </word>
         <word name='filename'>
@@ -722,7 +721,6 @@
         <word name='for'>
           <ref name='_virDomainInfo'/>
           <ref name='virConnectGetVersion'/>
-          <ref name='virDomainCreateLinux'/>
           <ref name='virDomainGetID'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainLookupByName'/>
@@ -824,7 +822,6 @@
         </word>
         <word name='image'>
           <ref name='_virDomainKernel'/>
-          <ref name='virDomainCreateLinux'/>
         </word>
         <word name='information'>
           <ref name='virDomainGetInfo'/>
@@ -835,9 +832,6 @@
         </word>
         <word name='init'>
           <ref name='_virDomainKernel'/>
-        </word>
-        <word name='initrd'>
-          <ref name='virDomainCreateLinux'/>
         </word>
         <word name='instance'>
           <ref name='virDomainDestroy'/>
@@ -862,10 +856,8 @@
         </word>
         <word name='kernel'>
           <ref name='_virDomainKernel'/>
-          <ref name='virDomainCreateLinux'/>
         </word>
         <word name='kilobytes'>
-          <ref name='virDomainCreateLinux'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
         </word>
@@ -897,7 +889,6 @@
         </word>
         <word name='line'>
           <ref name='_virDomainKernel'/>
-          <ref name='virDomainCreateLinux'/>
         </word>
         <word name='list'>
           <ref name='virConnectListDomains'/>
@@ -932,7 +923,6 @@
         </word>
         <word name='memory'>
           <ref name='_virDomainInfo'/>
-          <ref name='virDomainCreateLinux'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainSetMaxMemory'/>
@@ -1051,7 +1041,6 @@
         </word>
         <word name='parameters'>
           <ref name='_virDomainKernel'/>
-          <ref name='virDomainCreateLinux'/>
         </word>
         <word name='partial'>
           <ref name='virDomainGetInfo'/>
@@ -1061,7 +1050,6 @@
           <ref name='virConnectOpenReadOnly'/>
         </word>
         <word name='path'>
-          <ref name='virDomainCreateLinux'/>
           <ref name='virDomainRestore'/>
           <ref name='virDomainSave'/>
         </word>
@@ -1222,7 +1210,6 @@
         </word>
         <word name='size'>
           <ref name='virConnectListDomains'/>
-          <ref name='virDomainCreateLinux'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
         </word>

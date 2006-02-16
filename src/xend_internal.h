@@ -637,6 +637,18 @@ char **xend_get_domains(virConnectPtr xend);
 int xend_create(virConnectPtr xend, const struct xend_domain *info);
 
 /**
+ * \brief Create a new domain
+ * \param xend A xend instance
+ * \param sexpr An S-Expr defining the domain
+ * \return 0 for success; -1 (with errno) on error
+ *
+ * This method will create a domain based the passed in description.  The
+ * domain will be paused after creation and must be unpaused with
+ * xend_unpause() to begin execution.
+ */
+int xend_create_sexpr(virConnectPtr xend, const char *sexpr);
+
+/**
  * \brief Set the maximum memory for a domain
  * \param xend A xend instance
  * \param name The name of the domain

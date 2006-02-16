@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-INCLUDES = -I$(top_builddir)/include -I@srcdir@/include
+INCLUDES = -I$(top_builddir)/include -I@srcdir@/include @LIBXML_CFLAGS@
 DEPS = libvirt.la
 LDADDS = @STATIC_BINARIES@ libvirt.la
 VIRSH_LIBS = @VIRSH_LIBS@
@@ -8,7 +8,7 @@ VIRSH_LIBS = @VIRSH_LIBS@
 EXTRA_DIST = libvirt_sym.version
 
 lib_LTLIBRARIES = libvirt.la
-libvirt_la_LIBADD = 
+libvirt_la_LIBADD = @LIBXML_LIBS@
 libvirt_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvirt_sym.version \
                     -version-info @LIBVIRT_VERSION_INFO@
 libvirt_la_SOURCES =						\
