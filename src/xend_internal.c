@@ -1146,7 +1146,7 @@ xend_shutdown(virConnectPtr xend, const char *name)
     if ((xend == NULL) || (name == NULL))
         return(-1);
     return xend_op(xend, name,
-                   "op", "shutdown", "reason", "shutdown", NULL);
+                   "op", "shutdown", "reason", "halt", NULL);
 }
 
 /**
@@ -2037,7 +2037,7 @@ xend_get_node(virConnectPtr xend)
 int
 xend_node_shutdown(virConnectPtr xend)
 {
-    return xend_node_op(xend, "/xend/node/", "op", "shutdown", NULL);
+    return xend_node_op(xend, "/xend/node/", "op", "halt", NULL);
 }
 
 /**

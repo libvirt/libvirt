@@ -1,3 +1,10 @@
+Fri Feb 17 08:17:36 EST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* python/tests/create.py: trying to make test more generic, but it's
+	  difficult since it requires a system image
+	* src/libvirt.c src/xend_internal.c: fixed the shutdown API which
+	  was broken due to a bad reason at the xend level.
+
 Thu Feb 16 17:47:00 EST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in src/Makefile.am: adding dependency to libxml2

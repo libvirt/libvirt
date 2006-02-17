@@ -1,6 +1,49 @@
 #!/usr/bin/python -u
 import libvirt
 import sys
+import os
+import time
+
+#
+# Try to provide default OS images paths here, of course non standard
+#
+osroots = [
+  "/u/fc4.img",
+]
+
+okay = 1
+
+osroot = None
+for root in osroots:
+    if os.access(root, os.R_OK):
+        osroot = root
+	break
+
+if osroot == None:
+    print "Could not find a guest OS root, edit to add the path in osroots"
+    sys.exit(1)
+
+if not os.access("/proc/xen", os.R_OK):
+    print 'System is not running a Xen kernel'
+    sys.exit(1)
+
+kernel=open("/proc/version").read().split()
+kernelOv = kernel[2]
+kernelU = "/boot/vmlinuz-" + kernelOv.replace('hypervisor', 'guest')
+initrdU = "/boot/initrd-" + kernelOv.replace('hypervisor', 'guest') + ".img"
+
+if not os.access(kernelU, os.R_OK):
+    print "Did not found the guest kernel %s" % (kernelU)
+    sys.exit(1)
+
+kernelU = "<kernel>" + kernelU + "</kernel>"
+
+if not os.access(initrdU, os.R_OK):
+    print "Did not found the guest initrd %s" % (initrdU)
+    initrdU = ""
+else:
+    initrdU = "<initrd>" + initrdU + "</initrd>"
+
 
 conn = libvirt.openReadOnly(None)
 if conn == None:
@@ -11,15 +54,14 @@ xmldesc="""<domain type='xen'>
   <name>test</name>
   <os>
     <type>linux</type>
-    <kernel>/boot/vmlinuz-2.6.15-1.43_FC5guest</kernel>
-    <initrd>/boot/initrd-2.6.15-1.43_FC5guest.img</initrd>
+""" + kernelU + initrdU + """
     <cmdline> root=/dev/sda1 ro selinux=0 3</cmdline>
   </os>
   <memory>131072</memory>
   <vcpu>1</vcpu>
   <devices>
     <disk type='file'>
-      <source file='/u/fc4.img'/>
+      <source file='%s'/>
       <target dev='sda1'/>
     </disk>
     <interface type='bridge'>
@@ -29,18 +71,62 @@ xmldesc="""<domain type='xen'>
     </interface>
   </devices>
 </domain>
-"""
+""" % (osroot)
+
 dom = conn.createLinux(xmldesc, 0)
 if dom == None:
-    print 'Failed to create a domain'
+    print 'Failed to create a test domain'
     sys.exit(1)
 
 # print dom0
 
 print "Domain: id %d running %s" % (dom.ID(), dom.OSType())
-print dom.info()
+
+print "Suspending test domain for 5 seconds"
+if dom.suspend() != 0:
+    print 'Failed to suspend domain test'
+    dom.destroy()
+    del dom
+    del conn
+    sys.exit(1)
+
+infos = dom.info()
+time.sleep(5)
+infos2 = dom.info()
+if infos[4] != infos2[4]:
+    print 'Suspended domain test got CPU cycles'
+    okay = 0
+
+print "resuming test domain for 10 seconds"
+if dom.resume() != 0:
+    print 'Failed to resume domain test'
+    dom.destroy()
+    del dom
+    del conn
+    sys.exit(1)
+
+time.sleep(10)
+print "shutdown of test domain"
+
+if dom.shutdown() != 0:
+    print 'Failed to shutdown domain test'
+
+i = 0
+while i < 30:
+    time.sleep(1)
+    i = i + 1
+    t = dom.info()[4]
+    if t == 0:
+        break
+
+if t != 0:
+    print 'Shutdown failed destroying domain test'
+    okay = 0
+    dom.destroy()
+
 del dom
 del conn
-print "OK"
+if okay == 1:
+    print "OK"
 
 sys.exit(0)
