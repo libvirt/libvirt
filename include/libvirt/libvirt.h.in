@@ -242,7 +242,8 @@ int			virDomainSetMaxMemory	(virDomainPtr domain,
 /*
  * XML domain description
  */
-char *			virDomainGetXMLDesc	(virDomainPtr domain, int flags);
+char *			virDomainGetXMLDesc	(virDomainPtr domain,
+						 int flags);
 
 #ifdef __cplusplus
 }

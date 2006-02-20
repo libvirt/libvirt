@@ -427,8 +427,6 @@ virDomainCreateLinux(virConnectPtr conn,
         return(NULL);
     }
 
-    printf("%s\n", sexpr);
-
     ret = xend_create_sexpr(conn, sexpr);
     free(sexpr);
     if (ret != 0) {

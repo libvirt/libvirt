@@ -4,6 +4,7 @@ Absolute TODOs:
 - thread protection, reentrancy, refcounting, etc ...
 - documentation and examples on using the toolkit
 - Error API. probably similar to libxml2 structured API
+- extract error messages from the Xend rpc
 
 TODO:
 - track change of xend API, XML-RPC, UUID based lookup and naming
@@ -17,6 +18,10 @@ Probable TODOs:
 Would-be-nice TODO:
 - man page for virsh and the libraries entry points
 - support for QEmu and other virtualization engines
+
+Cleanup:
+- now that libxml2 is linked in, drop hash.[ch] and get back to libxml2 ones ?
+  same for the buffers 
 
 Done:
 - make dist and make rpm targets

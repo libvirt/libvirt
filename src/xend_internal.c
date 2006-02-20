@@ -30,6 +30,7 @@
 #include "libvirt.h"
 #include "internal.h"
 #include "sexpr.h"
+#include "xml.h"
 #include "xend_internal.h"
 
 /**
@@ -2101,4 +2102,182 @@ int
 xend_log(virConnectPtr xend, char *buffer, size_t n_buffer)
 {
     return http2unix(xend_get(xend, "/xend/node/log", buffer, n_buffer));
+}
+
+/**
+ * virDomainParseSExprDesc:
+ * @root: the root of the parsed S-Expression
+ * @name: output name of the domain
+ *
+ * Parse the xend sexp description and turn it into the XML format similar
+ * to the one unsed for creation.
+ *
+ * Returns the 0 terminated XML string or NULL in case of error.
+ *         the caller must free() the returned value.
+ */
+static char *
+virDomainParseSExprDesc(struct sexpr *root) {
+    char *ret;
+    struct sexpr *cur, *node;
+    const char *tmp;
+    virBuffer buf;
+
+    if (root == NULL) {
+        /* ERROR */
+        return(NULL);
+    }
+    ret = malloc(1000);
+    if (ret == NULL)
+        return(NULL);
+    buf.content = ret;
+    buf.size = 1000;
+    buf.use = 0;
+
+    virBufferVSprintf(&buf, "<domain type='xen' id='%d'>\n",
+                      sexpr_int(root, "domain/domid"));
+    tmp = sexpr_node(root, "domain/name");
+    if (tmp == NULL) {
+        /* VIR_ERR_NO_NAME */
+	goto error;
+    }
+    virBufferVSprintf(&buf, "  <name>%s</name>\n", tmp);
+    tmp = sexpr_node(root, "domain/image/linux/kernel");
+    if (tmp == NULL) {
+        /*
+	 * TODO: we will need some fallback here for other guest OSes
+	 */
+        /* VIR_ERR_NO_KERNEL */
+	goto error;
+    }
+    virBufferAdd(&buf, "  <os>\n", 7);
+    virBufferVSprintf(&buf, "    <type>linux</type>\n");
+    virBufferVSprintf(&buf, "    <kernel>%s</kernel>\n", tmp);
+    tmp = sexpr_node(root, "domain/image/linux/ramdisk");
+    if ((tmp != NULL) && (tmp[0] != 0))
+	virBufferVSprintf(&buf, "    <initrd>%s</initrd>\n", tmp);
+    tmp = sexpr_node(root, "domain/image/linux/root");
+    if ((tmp != NULL) && (tmp[0] != 0))
+	virBufferVSprintf(&buf, "    <root>%s</root>\n", tmp);
+    tmp = sexpr_node(root, "domain/image/linux/args");
+    if ((tmp != NULL) && (tmp[0] != 0))
+	virBufferVSprintf(&buf, "    <cmdline>%s</cmdline>\n", tmp);
+    virBufferAdd(&buf, "  </os>\n", 8);
+    virBufferVSprintf(&buf, "  <memory>%d</memory>\n", 
+                      (int) (sexpr_u64(root, "domain/maxmem") << 10));
+    virBufferVSprintf(&buf, "  <vcpu>%d</vcpu>\n", 
+                      sexpr_int(root, "domain/vcpus"));
+    virBufferAdd(&buf, "  <devices>\n", 12);
+    for (cur = root; cur->kind == SEXPR_CONS; cur = cur->cdr) {
+        node = cur->car;
+	if (sexpr_lookup(node, "device/vbd")) {
+	    tmp = sexpr_node(node, "device/vbd/uname");
+	    if (tmp == NULL)
+	        continue;
+	    if (!memcmp(tmp, "file:", 5)) {
+	        tmp += 5;
+		virBufferVSprintf(&buf, "    <disk type='file'>\n");
+		virBufferVSprintf(&buf, "      <source file='%s'/>\n", tmp);
+		tmp = sexpr_node(node, "device/vbd/dev");
+		if (tmp == NULL) {
+		    /* VIR_ERR_NO_DEV */
+		    goto error;
+		}
+		virBufferVSprintf(&buf, "      <target dev='%s'/>\n", tmp);
+		tmp = sexpr_node(node, "device/vbd/mode");
+		if ((tmp != NULL) && (!strcmp(tmp, "r")))
+		    virBufferVSprintf(&buf, "      <readonly/>\n");
+		virBufferAdd(&buf, "    </disk>\n", 12);
+	    } else if (!memcmp(tmp, "phy:", 4)) {
+	        tmp += 4;
+		virBufferVSprintf(&buf, "    <disk type='block'>\n");
+		virBufferVSprintf(&buf, "      <source dev='%s'/>\n", tmp);
+		tmp = sexpr_node(node, "device/vbd/dev");
+		if (tmp == NULL) {
+		    /* VIR_ERR_NO_DEV */
+		    goto error;
+		}
+		virBufferVSprintf(&buf, "      <target dev='%s'/>\n", tmp);
+		tmp = sexpr_node(node, "device/vbd/mode");
+		if ((tmp != NULL) && (!strcmp(tmp, "r")))
+		    virBufferVSprintf(&buf, "      <readonly/>\n");
+		virBufferAdd(&buf, "    </disk>\n", 12);
+	    } else {
+	        char serial[1000];
+
+	        TODO
+		sexpr2string(node, serial, 1000);
+		virBufferVSprintf(&buf, "<!-- Failed to parse %s -->\n",
+		                  serial);
+	        TODO
+	    }
+	} else if (sexpr_lookup(node, "device/vif")) {
+	    tmp = sexpr_node(node, "device/vif/bridge");
+	    if (tmp != NULL) {
+		virBufferVSprintf(&buf, "    <interface type='bridge'>\n");
+		virBufferVSprintf(&buf, "      <source bridge='%s'/>\n", tmp);
+		tmp = sexpr_node(node, "device/vif/vifname");
+		if (tmp != NULL)
+		    virBufferVSprintf(&buf, "      <target dev='%s'/>\n", tmp);
+		tmp = sexpr_node(node, "device/vif/mac");
+		if (tmp != NULL)
+		    virBufferVSprintf(&buf, "      <mac address='%s'/>\n", tmp);
+		tmp = sexpr_node(node, "device/vif/ip");
+		if (tmp != NULL)
+		    virBufferVSprintf(&buf, "      <ip address='%s'/>\n", tmp);
+		tmp = sexpr_node(node, "device/vif/script");
+		if (tmp != NULL)
+		    virBufferVSprintf(&buf, "      <script path='%s'/>\n", tmp);
+		virBufferAdd(&buf, "    </interface>\n", 17);
+	    } else {
+	        char serial[1000];
+
+	        TODO
+		sexpr2string(node->car, serial, 1000);
+		virBufferVSprintf(&buf, "<!-- Failed to parse %s -->\n",
+		                  serial);
+	    }
+	    
+	}
+    }
+    virBufferAdd(&buf, "  </devices>\n", 13);
+    virBufferAdd(&buf, "</domain>\n", 10);
+
+    buf.content[buf.use] = 0;
+    return(ret);
+
+error:
+    if (ret != NULL)
+        free(ret);
+    return(NULL);
+}
+
+/**
+ * virDomainGetXMLDesc:
+ * @domain: a domain object
+ * @flags: and OR'ed set of extraction flags, not used yet
+ *
+ * Provide an XML description of the domain. NOTE: this API is subject
+ * to changes.
+ *
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
+ *         the caller must free() the returned value.
+ */
+char *
+virDomainGetXMLDesc(virDomainPtr domain, int flags) {
+    char *ret = NULL;
+    struct sexpr *root;
+
+    if (!VIR_IS_DOMAIN(domain))
+	return(NULL);
+    if (flags != 0)
+	return(NULL);
+
+    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    if (root == NULL)
+        return(NULL);
+
+    ret = virDomainParseSExprDesc(root);
+    sexpr_free(root);
+
+    return(ret);
 }

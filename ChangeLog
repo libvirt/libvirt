@@ -1,3 +1,11 @@
+Mon Feb 20 12:20:32 EST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* TODO: updated
+	* include/libvirt.h include/libvirt.h.in: cleanup
+	* src/libvirt.c: remove debugging output
+	* src/xend_internal.c src/xml.c src/xml.h: reimplement 
+	  virDomainGetXMLDesc() based on xend interface, now work as user too.
+
 Fri Feb 17 08:17:36 EST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* python/tests/create.py: trying to make test more generic, but it's

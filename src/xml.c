@@ -20,20 +20,8 @@
 #include <libxml/xpath.h>
 #include "internal.h"
 #include "hash.h"
+#include "sexpr.h"
 #include "xml.h"
-
-/**
- * virBuffer:
- *
- * A buffer structure.
- */
-typedef struct _virBuffer virBuffer;
-typedef virBuffer *virBufferPtr;
-struct _virBuffer {
-    char *content;		/* The buffer content UTF8 */
-    unsigned int use;		/* The buffer size used */
-    unsigned int size;		/* The buffer size */
-};
 
 /**
  * virBufferGrow:
@@ -74,7 +62,7 @@ virBufferGrow(virBufferPtr buf, unsigned int len) {
  *
  * Returns 0 successful, -1 in case of internal or API error.
  */
-static int
+int
 virBufferAdd(virBufferPtr buf, const char *str, int len) {
     unsigned int needSize;
 
@@ -109,7 +97,7 @@ virBufferAdd(virBufferPtr buf, const char *str, int len) {
  *
  * Returns 0 successful, -1 in case of internal or API error.
  */
-static int
+int
 virBufferVSprintf(virBufferPtr buf, const char *format, ...) {
     int size, count;
     va_list locarg, argptr;
@@ -136,6 +124,12 @@ virBufferVSprintf(virBufferPtr buf, const char *format, ...) {
     return(0);
 }
 
+#if 0
+/*
+ * This block of function are now implemented by a xend poll in
+ * xend_internal.c instead of querying the Xen store, code is kept
+ * for reference of in case Xend may not be available in the future ...
+ */
 /**
  * virDomainGetXMLDevice:
  * @domain: a domain object
@@ -463,6 +457,8 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags) {
     buf.content[buf.use] = 0;
     return(ret);
 }
+
+#endif
 
 /**
  * virDomainParseXMLOSDesc:
@@ -827,7 +823,6 @@ virDomainParseXMLDesc(const char *xmldesc, char **name) {
     virBufferAdd(&buf, ")", 1);
 
     /* analyze of the devices */
-    virBufferAdd(&buf, "(device ", 8);
     obj = xmlXPathEval(BAD_CAST "/domain/devices/disk", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
         (obj->nodesetval == NULL) ||
@@ -836,27 +831,30 @@ virDomainParseXMLDesc(const char *xmldesc, char **name) {
         goto error;
     }
     for (i = 0;i < obj->nodesetval->nodeNr;i++) {
+	virBufferAdd(&buf, "(device ", 8);
 	res = virDomainParseXMLDiskDesc(obj->nodesetval->nodeTab[i], &buf);
 	if (res != 0) {
 	    goto error;
 	}
+	virBufferAdd(&buf, ")", 1);
     }
     xmlXPathFreeObject(obj);
     obj = xmlXPathEval(BAD_CAST "/domain/devices/interface", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
 	for (i = 0;i < obj->nodesetval->nodeNr;i++) {
+	    virBufferAdd(&buf, "(device ", 8);
 	    res = virDomainParseXMLIfDesc(obj->nodesetval->nodeTab[i], &buf);
 	    if (res != 0) {
 		goto error;
 	    }
+	    virBufferAdd(&buf, ")", 1);
 	}
     }
     xmlXPathFreeObject(obj);
-    virBufferAdd(&buf, ")", 1);
 
 
-    virBufferAdd(&buf, ")", 1);
+    virBufferAdd(&buf, ")", 1); /* closes (vm */
     buf.content[buf.use] = 0;
 
     xmlXPathFreeContext(ctxt);
@@ -880,3 +878,4 @@ error:
         free(ret);
     return(NULL);
 }
+
