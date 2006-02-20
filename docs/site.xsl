@@ -36,8 +36,8 @@
       <xsl:when test="$name = '#Contributi'">
         <xsl:text>contribs.html</xsl:text>
       </xsl:when>
-      <xsl:when test="$name = '#xsltproc'">
-        <xsl:text>xsltproc2.html</xsl:text>
+      <xsl:when test="$name = '#Format'">
+        <xsl:text>format.html</xsl:text>
       </xsl:when>
       <xsl:when test="$name = '#API'">
         <xsl:text></xsl:text>
@@ -134,8 +134,8 @@
       <xsl:when test="$name = '#Contributi'">
         <xsl:text>contribs.html</xsl:text>
       </xsl:when>
-      <xsl:when test="$name = '#xsltproc'">
-        <xsl:text>xsltproc2.html</xsl:text>
+      <xsl:when test="$name = '#Format'">
+        <xsl:text>format.html</xsl:text>
       </xsl:when>
       <xsl:when test="$name = '#API'">
         <xsl:text></xsl:text>

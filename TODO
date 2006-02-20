@@ -10,6 +10,7 @@ TODO:
 - track change of xend API, XML-RPC, UUID based lookup and naming
 - API for the Node: extracting informations, selecting scheduling policy
 - better resources allocation APIs (%CPU, set memory)
+- DTD/RNG/XSD schemas for the XML Domain descriptions
 
 Probable TODOs:
 - event on big domain state change (create, crashed, paused, shutdown, destroy)

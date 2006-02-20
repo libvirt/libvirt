@@ -251,9 +251,6 @@
         <word name='ABI'>
           <ref name='_virDomainInfo'/>
         </word>
-        <word name='API'>
-          <ref name='virDomainCreateLinux'/>
-        </word>
         <word name='APIs'>
           <ref name='virConnectOpenReadOnly'/>
         </word>
@@ -343,6 +340,7 @@
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainGetOSType'/>
+          <ref name='virDomainGetXMLDesc'/>
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainSetMaxMemory'/>
@@ -360,6 +358,9 @@
         </word>
       </letter>
       <letter name='P'>
+        <word name='Provide'>
+          <ref name='virDomainGetXMLDesc'/>
+        </word>
         <word name='Provides'>
           <ref name='virConnectNumOfDomains'/>
           <ref name='virGetVersion'/>
@@ -408,6 +409,9 @@
         </word>
       </letter>
       <letter name='U'>
+        <word name='UTF-8'>
+          <ref name='virDomainGetXMLDesc'/>
+        </word>
         <word name='Use'>
           <ref name='virDomainSave'/>
           <ref name='virDomainSuspend'/>
@@ -416,6 +420,7 @@
       <letter name='X'>
         <word name='XML'>
           <ref name='virDomainCreateLinux'/>
+          <ref name='virDomainGetXMLDesc'/>
         </word>
         <word name='Xen'>
           <ref name='virGetVersion'/>
@@ -510,6 +515,7 @@
           <ref name='virGetVersion'/>
         </word>
         <word name='based'>
+          <ref name='virDomainCreateLinux'/>
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
         </word>
@@ -538,6 +544,9 @@
           <ref name='virConnectClose'/>
           <ref name='virConnectOpen'/>
           <ref name='virConnectOpenReadOnly'/>
+        </word>
+        <word name='caller'>
+          <ref name='virDomainGetXMLDesc'/>
         </word>
         <word name='calling'>
           <ref name='virDomainResume'/>
@@ -608,11 +617,9 @@
         <word name='deallocated'>
           <ref name='virDomainGetName'/>
         </word>
-        <word name='defined'>
-          <ref name='virDomainCreateLinux'/>
-        </word>
         <word name='description'>
           <ref name='virDomainCreateLinux'/>
+          <ref name='virDomainGetXMLDesc'/>
         </word>
         <word name='device'>
           <ref name='_virDomainKernel'/>
@@ -637,6 +644,9 @@
         </word>
       </letter>
       <letter name='e'>
+        <word name='encoded'>
+          <ref name='virDomainGetXMLDesc'/>
+        </word>
         <word name='error'>
           <ref name='virConnectClose'/>
           <ref name='virConnectGetType'/>
@@ -649,6 +659,7 @@
           <ref name='virDomainGetID'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainGetOSType'/>
+          <ref name='virDomainGetXMLDesc'/>
           <ref name='virGetVersion'/>
         </word>
         <word name='especially'>
@@ -658,6 +669,9 @@
           <ref name='_virDomainInfo'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainGetInfo'/>
+        </word>
+        <word name='extraction'>
+          <ref name='virDomainGetXMLDesc'/>
         </word>
       </letter>
       <letter name='f'>
@@ -689,6 +703,9 @@
           <ref name='virConnectOpen'/>
           <ref name='virConnectOpenReadOnly'/>
         </word>
+        <word name='flags'>
+          <ref name='virDomainGetXMLDesc'/>
+        </word>
         <word name='for'>
           <ref name='_virDomainInfo'/>
           <ref name='virConnectGetVersion'/>
@@ -705,6 +722,9 @@
         <word name='found'>
           <ref name='virConnectListDomains'/>
           <ref name='virConnectNumOfDomains'/>
+        </word>
+        <word name='free'>
+          <ref name='virDomainGetXMLDesc'/>
         </word>
         <word name='freed'>
           <ref name='virDomainDestroy'/>
@@ -804,6 +824,7 @@
         <word name='instance'>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainFree'/>
+          <ref name='virDomainGetXMLDesc'/>
         </word>
         <word name='int'>
           <ref name='virDomainGetID'/>
@@ -835,6 +856,9 @@
       <letter name='l'>
         <word name='lack'>
           <ref name='virConnectGetVersion'/>
+        </word>
+        <word name='later'>
+          <ref name='virDomainGetXMLDesc'/>
         </word>
         <word name='level'>
           <ref name='virConnectGetVersion'/>
@@ -882,7 +906,9 @@
         </word>
         <word name='may'>
           <ref name='virConnectGetVersion'/>
+          <ref name='virDomainCreateLinux'/>
           <ref name='virDomainDestroy'/>
+          <ref name='virDomainGetXMLDesc'/>
           <ref name='virDomainResume'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainShutdown'/>
@@ -913,6 +939,9 @@
         <word name='monitoring'>
           <ref name='virConnectClose'/>
         </word>
+        <word name='must'>
+          <ref name='virDomainGetXMLDesc'/>
+        </word>
       </letter>
       <letter name='n'>
         <word name='name'>
@@ -939,6 +968,7 @@
           <ref name='virDomainDestroy'/>
           <ref name='virDomainFree'/>
           <ref name='virDomainGetName'/>
+          <ref name='virDomainGetXMLDesc'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainShutdown'/>
           <ref name='virGetVersion'/>
@@ -960,6 +990,7 @@
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainGetOSType'/>
+          <ref name='virDomainGetXMLDesc'/>
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainResume'/>
@@ -970,6 +1001,7 @@
         </word>
         <word name='one'>
           <ref name='_virDomainInfo'/>
+          <ref name='virDomainCreateLinux'/>
         </word>
         <word name='only'>
           <ref name='_virDomainInfo'/>
@@ -1078,6 +1110,9 @@
         <word name='reboot'>
           <ref name='virDomainShutdown'/>
         </word>
+        <word name='relaunch'>
+          <ref name='virDomainGetXMLDesc'/>
+        </word>
         <word name='release'>
           <ref name='virConnectGetVersion'/>
           <ref name='virGetVersion'/>
@@ -1116,10 +1151,15 @@
           <ref name='virGetVersion'/>
         </word>
         <word name='returned'>
+          <ref name='virDomainCreateLinux'/>
+          <ref name='virDomainGetXMLDesc'/>
           <ref name='virGetVersion'/>
         </word>
         <word name='returns'>
           <ref name='virConnectGetVersion'/>
+        </word>
+        <word name='reused'>
+          <ref name='virDomainGetXMLDesc'/>
         </word>
         <word name='root'>
           <ref name='_virDomainKernel'/>
@@ -1156,6 +1196,7 @@
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainCreateLinux'/>
           <ref name='virDomainGetInfo'/>
+          <ref name='virDomainGetXMLDesc'/>
         </word>
         <word name='should'>
           <ref name='virConnectClose'/>
@@ -1167,6 +1208,9 @@
         </word>
         <word name='shutdown'>
           <ref name='virDomainDestroy'/>
+        </word>
+        <word name='similar'>
+          <ref name='virDomainCreateLinux'/>
         </word>
         <word name='size'>
           <ref name='virConnectListDomains'/>
@@ -1238,6 +1282,7 @@
         </word>
         <word name='terminated'>
           <ref name='virConnectGetType'/>
+          <ref name='virDomainGetXMLDesc'/>
         </word>
         <word name='that'>
           <ref name='virDomainGetInfo'/>
@@ -1275,9 +1320,6 @@
         </word>
       </letter>
       <letter name='u'>
-        <word name='unimplemented'>
-          <ref name='virDomainCreateLinux'/>
-        </word>
         <word name='unknown'>
           <ref name='virGetVersion'/>
         </word>
@@ -1298,6 +1340,7 @@
           <ref name='virDomainDestroy'/>
           <ref name='virDomainFree'/>
           <ref name='virDomainGetInfo'/>
+          <ref name='virDomainGetXMLDesc'/>
           <ref name='virDomainSuspend'/>
         </word>
         <word name='user'>
@@ -1307,6 +1350,7 @@
       <letter name='v'>
         <word name='value'>
           <ref name='virConnectGetVersion'/>
+          <ref name='virDomainGetXMLDesc'/>
           <ref name='virGetVersion'/>
         </word>
         <word name='values'>
@@ -1317,8 +1361,14 @@
           <ref name='virConnectGetVersion'/>
           <ref name='virGetVersion'/>
         </word>
+        <word name='virDomainCreateLinux'>
+          <ref name='virDomainGetXMLDesc'/>
+        </word>
         <word name='virDomainFlags'>
           <ref name='_virDomainInfo'/>
+          <ref name='virDomainCreateLinux'/>
+        </word>
+        <word name='virDomainGetXMLDesc'>
           <ref name='virDomainCreateLinux'/>
         </word>
         <word name='virDomainInfo'>
@@ -1368,6 +1418,7 @@
           <ref name='_virDomainInfo'/>
           <ref name='virConnectClose'/>
           <ref name='virConnectGetVersion'/>
+          <ref name='virDomainGetXMLDesc'/>
         </word>
         <word name='without'>
           <ref name='virDomainSuspend'/>
@@ -1386,7 +1437,7 @@
       </letter>
       <letter name='y'>
         <word name='yet'>
-          <ref name='virDomainCreateLinux'/>
+          <ref name='virDomainGetXMLDesc'/>
         </word>
       </letter>
       <letter name='z'>

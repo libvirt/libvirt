@@ -2105,7 +2105,7 @@ xend_log(virConnectPtr xend, char *buffer, size_t n_buffer)
 }
 
 /**
- * virDomainParseSExprDesc:
+ * xend_parse_sexp_desc:
  * @root: the root of the parsed S-Expression
  * @name: output name of the domain
  *
@@ -2116,7 +2116,7 @@ xend_log(virConnectPtr xend, char *buffer, size_t n_buffer)
  *         the caller must free() the returned value.
  */
 static char *
-virDomainParseSExprDesc(struct sexpr *root) {
+xend_parse_sexp_desc(struct sexpr *root) {
     char *ret;
     struct sexpr *cur, *node;
     const char *tmp;
@@ -2252,31 +2252,27 @@ error:
 }
 
 /**
- * virDomainGetXMLDesc:
+ * xend_get_domain_xml:
  * @domain: a domain object
- * @flags: and OR'ed set of extraction flags, not used yet
  *
- * Provide an XML description of the domain. NOTE: this API is subject
- * to changes.
+ * Provide an XML description of the domain.
  *
  * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
  *         the caller must free() the returned value.
  */
 char *
-virDomainGetXMLDesc(virDomainPtr domain, int flags) {
+xend_get_domain_xml(virDomainPtr domain) {
     char *ret = NULL;
     struct sexpr *root;
 
     if (!VIR_IS_DOMAIN(domain))
-	return(NULL);
-    if (flags != 0)
 	return(NULL);
 
     root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
     if (root == NULL)
         return(NULL);
 
-    ret = virDomainParseSExprDesc(root);
+    ret = xend_parse_sexp_desc(root);
     sexpr_free(root);
 
     return(ret);

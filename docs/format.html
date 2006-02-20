@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>XML Format</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">XML Format</h1><p>The library use an XML format to describe domains, as input to <a href="html/libvirt-libvirt.html#virDomainCreateLinux">virDomainCreateLinux()</a>
+and as the output of <a href="html/libvirt-libvirt.html#virDomainGetXMLDesc">virDomainGetXMLDesc()</a>,
+the following is an example of the format as returned by the shell command
+<code>virsh xmldump fc4</code> , where fc4 was one of the running domains:</p><pre>&lt;domain type='xen' <span style="color: #0071FF; background-color: #FFFFFF">id='18'</span>&gt;
+  &lt;name&gt;fc4&lt;/name&gt;
+  <span style="color: #00B200; background-color: #FFFFFF">&lt;os&gt;
+    &lt;type&gt;linux&lt;/type&gt;
+    &lt;kernel&gt;/boot/vmlinuz-2.6.15-1.43_FC5guest&lt;/kernel&gt;
+    &lt;initrd&gt;/boot/initrd-2.6.15-1.43_FC5guest.img&lt;/initrd&gt;
+    &lt;root&gt;/dev/sda1&lt;/root&gt;
+    &lt;cmdline&gt; ro selinux=0 3&lt;/cmdline&gt;
+  &lt;/os&gt;</span>
+  &lt;memory&gt;131072&lt;/memory&gt;
+  &lt;vcpu&gt;1&lt;/vcpu&gt;
+  &lt;devices&gt;
+    <span style="color: #FF0080; background-color: #FFFFFF">&lt;disk type='file'&gt;
+      &lt;source file='/u/fc4.img'/&gt;
+      &lt;target dev='sda1'/&gt;
+    &lt;/disk&gt;</span>
+    <span style="color: #0000FF; background-color: #FFFFFF">&lt;interface type='bridge'&gt;
+      &lt;source bridge='xenbr0'/&gt;
+      &lt;mac address='</span><span style="color: #0000FF; background-color: #FFFFFF"></span><span style="color: #0000FF; background-color: #FFFFFF">aa:00:00:00:00:11'/&gt;
+      &lt;script path='/etc/xen/scripts/vif-bridge'/&gt;
+    &lt;/interface&gt;</span>
+  &lt;/devices&gt;
+&lt;/domain&gt;</pre><p>The root element must be called <code>domain</code> with no namespace, the
+<code>type</code> attribute indicates the kind of hypervisor used, 'xen' is
+the default value. The <code>id</code> attribute gives the domain id at
+runtime (not however that this may change, for example if the domain is saved
+to disk and restored). The domain has a few children whose order is not
+significant:</p><ul><li>name: the domain name, preferably ASCII based</li>
+  <li>memory: the maximum memory allocated to the domain in kilobytes</li>
+  <li>vcpu: the number of virtual cpu configured for the domain</li>
+  <li>os: a block describing the Operating System, its content will be
+    dependant on the OS type
+    <ul><li>type: indicate the OS type, always linux at this point</li>
+      <li>kernel: path to the kernel on the Domain 0 filesystem</li>
+      <li>initrd: an optional path for the init ramdisk on the Domain 0
+        filesystem</li>
+      <li>cmdline: optional command line to the kernel</li>
+      <li>root: the root filesystem from the guest viewpoint, it may be
+        passed as part of the cmdline content too</li>
+    </ul></li>
+  <li>devices: a list of <code>disk</code> and <code>interface</code>
+    descriptions in no special order</li>
+</ul><p>The format of the devices and their type may grow over time, but the
+following should be sufficient for basic use:</p><p>A disk device indicates a block device, it can have two values for the
+type attribute either 'file' or 'block' corresponding to the 2 options
+availble at the Xen layer. It has two mandatory children, and one optional
+one in no specific order:</p><ul><li>source with a file attribute containing the path in Domain 0 to the
+    file or a dev attribute if using a block device, containing the device
+    name ('hda5' or '/dev/hda5')</li>
+  <li>target indicates in a dev attribute the device where it is mapped in
+    the guest</li>
+  <li>readonly an optional empty element indicating the device is
+  read-only</li>
+</ul><p>An interface element describes a network device mapped on the guest, it
+also has a type whose value is currently 'bridge', it also have a number of
+children in no specific order:</p><ul><li>source: indicating the bridge name</li>
+  <li>mac: the optional mac address provided in the address attribute</li>
+  <li>ip: the optional IP address provided in the address attribute</li>
+  <li>script: the script used to bridge the interfcae in the Domain 0</li>
+  <li>target: and optional target indicating the device name.</li>
+</ul><p>While the format may be extended in various ways as support for more
+hypervisor types and features are added, it is expected that this core subset
+will remain functional in spite of the evolution of the library. </p></div></div><div class="linkList2"><div class="llinks2"><h3 class="links2"><span>main menu</span></h3><ul><li><a href="index.html">Home</a></li><li><a href="news.html">Releases</a></li><li><a href="intro.html">Introduction</a></li><li><a href="architecture.html">libvirt architecture</a></li><li><a href="downloads.html">Downloads</a></li><li><a href="format.html">XML Format</a></li><li><a href="FAQ.html"> FAQ</a></li><li><a href="bugs.html">Reporting bugs and getting help</a></li><li><a href="html/index.html">API Menu</a></li><li><a href="examples/index.html">C code examples</a></li><li><a href="ChangeLog.html">Recent Changes</a></li></ul></div><div class="llinks2"><h3 class="links2"><span>related links</span></h3><ul><li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li><li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li><li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" /></form></li><li><a href="http://xmlsoft.org/"><img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li></ul><p class="credits">Graphics and design by <a href="mail:dfong@redhat.com">Diana Fong</a></p></div></div><div id="bottom"><p class="p1"></p></div></div></body></html>

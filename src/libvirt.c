@@ -399,8 +399,9 @@ virConnectNumOfDomains(virConnectPtr conn) {
  * @xmlDesc: an XML description of the domain
  * @flags: an optional set of virDomainFlags
  *
- * Launch a new Linux guest domain, unimplemented yet, API to be defined.
- * This function requires priviledged access to the hypervisor.
+ * Launch a new Linux guest domain, based on an XML description similar
+ * to the one returned by virDomainGetXMLDesc()
+ * This function may requires priviledged access to the hypervisor.
  * 
  * Returns a new domain object or NULL in case of failure
  */
@@ -1238,3 +1239,23 @@ xend_info:
     return(0);
 }
 
+/**
+ * virDomainGetXMLDesc:
+ * @domain: a domain object
+ * @flags: and OR'ed set of extraction flags, not used yet
+ *
+ * Provide an XML description of the domain. The description may be reused
+ * later to relaunch the domain with virDomainCreateLinux().
+ *
+ * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
+ *         the caller must free() the returned value.
+ */
+char *
+virDomainGetXMLDesc(virDomainPtr domain, int flags) {
+    if (!VIR_IS_DOMAIN(domain))
+	return(NULL);
+    if (flags != 0)
+	return(NULL);
+
+    return(xend_get_domain_xml(domain));
+}

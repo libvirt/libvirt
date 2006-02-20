@@ -8,8 +8,8 @@ rebuild: examples.xml index.html
 examples.xml: index.py *.c
 	-@($(srcdir)/index.py)
 
-index.html: examples.xml examples.xsl
-	-@(xsltproc examples.xsl examples.xml && echo "Rebuilt web page" && xmllint --valid --noout index.html)
+index.html: examples.xml examples.xsl $(top_srcdir)/docs/site.xsl
+	-@(if [ -x $(XSLTPROC) ] ; then 	   $(XSLTPROC) examples.xsl examples.xml && echo "Rebuilt web page" && xmllint --valid --noout index.html ; fi)
 
 install-data-local: 
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)

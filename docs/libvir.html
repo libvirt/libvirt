@@ -102,11 +102,11 @@ generic and stable layer to manage domains on a node.</p>
     virtualization framework</li>
 </ul>
 
-<p>So libvirt should be a building block for higher level management tools and
-for applications focusing on virtualization of a single node (the only
+<p>So libvirt should be a building block for higher level management tools
+and for applications focusing on virtualization of a single node (the only
 exception being domain migration between node capabilities which may need to
-be added at the libvirt level). Where possible libvirt should be extendable to
-be able to provide the same API for remote nodes, however this is not the
+be added at the libvirt level). Where possible libvirt should be extendable
+to be able to provide the same API for remote nodes, however this is not the
 case at the moment, the code currently handle only local node accesses.</p>
 
 <h2><a name="architecture">libvirt architecture</a></h2>
@@ -166,13 +166,104 @@ available, first register onto the server:</p>
 <p>it will request a password, enter <strong>anoncvs</strong>. Then you can
 checkout the development tree with:</p>
 
-<p><code>cvs -d :pserver:anoncvs@libvirt.org:2401/data/cvs co libvirt</code></p>
+<p><code>cvs -d :pserver:anoncvs@libvirt.org:2401/data/cvs co
+libvirt</code></p>
 
 <p>Use ./autogen.sh to configure the local checkout, then <code>make</code>
 and <code>make install</code>, as usual. All normal cvs commands are now
 available except commiting to the base.</p>
 
-<h2><a name="FAQ">FAQ</a></h2>
+<h2><a name="Format">XML Format</a></h2>
+
+<p>The library use an XML format to describe domains, as input to <a
+href="html/libvirt-libvirt.html#virDomainCreateLinux">virDomainCreateLinux()</a>
+and as the output of <a
+href="html/libvirt-libvirt.html#virDomainGetXMLDesc">virDomainGetXMLDesc()</a>,
+the following is an example of the format as returned by the shell command
+<code>virsh xmldump fc4</code> , where fc4 was one of the running domains:</p>
+<pre>&lt;domain type='xen' <span style="color: #0071FF; background-color: #FFFFFF">id='18'</span>&gt;
+  &lt;name&gt;fc4&lt;/name&gt;
+  <span style="color: #00B200; background-color: #FFFFFF">&lt;os&gt;
+    &lt;type&gt;linux&lt;/type&gt;
+    &lt;kernel&gt;/boot/vmlinuz-2.6.15-1.43_FC5guest&lt;/kernel&gt;
+    &lt;initrd&gt;/boot/initrd-2.6.15-1.43_FC5guest.img&lt;/initrd&gt;
+    &lt;root&gt;/dev/sda1&lt;/root&gt;
+    &lt;cmdline&gt; ro selinux=0 3&lt;/cmdline&gt;
+  &lt;/os&gt;</span>
+  &lt;memory&gt;131072&lt;/memory&gt;
+  &lt;vcpu&gt;1&lt;/vcpu&gt;
+  &lt;devices&gt;
+    <span style="color: #FF0080; background-color: #FFFFFF">&lt;disk type='file'&gt;
+      &lt;source file='/u/fc4.img'/&gt;
+      &lt;target dev='sda1'/&gt;
+    &lt;/disk&gt;</span>
+    <span style="color: #0000FF; background-color: #FFFFFF">&lt;interface type='bridge'&gt;
+      &lt;source bridge='xenbr0'/&gt;
+      &lt;mac address='</span><span style="color: #0000FF; background-color: #FFFFFF"></span><span style="color: #0000FF; background-color: #FFFFFF">aa:00:00:00:00:11'/&gt;
+      &lt;script path='/etc/xen/scripts/vif-bridge'/&gt;
+    &lt;/interface&gt;</span>
+  &lt;/devices&gt;
+&lt;/domain&gt;</pre>
+
+<p>The root element must be called <code>domain</code> with no namespace, the
+<code>type</code> attribute indicates the kind of hypervisor used, 'xen' is
+the default value. The <code>id</code> attribute gives the domain id at
+runtime (not however that this may change, for example if the domain is saved
+to disk and restored). The domain has a few children whose order is not
+significant:</p>
+<ul>
+  <li>name: the domain name, preferably ASCII based</li>
+  <li>memory: the maximum memory allocated to the domain in kilobytes</li>
+  <li>vcpu: the number of virtual cpu configured for the domain</li>
+  <li>os: a block describing the Operating System, its content will be
+    dependant on the OS type
+    <ul>
+      <li>type: indicate the OS type, always linux at this point</li>
+      <li>kernel: path to the kernel on the Domain 0 filesystem</li>
+      <li>initrd: an optional path for the init ramdisk on the Domain 0
+        filesystem</li>
+      <li>cmdline: optional command line to the kernel</li>
+      <li>root: the root filesystem from the guest viewpoint, it may be
+        passed as part of the cmdline content too</li>
+    </ul>
+  </li>
+  <li>devices: a list of <code>disk</code> and <code>interface</code>
+    descriptions in no special order</li>
+</ul>
+
+<p>The format of the devices and their type may grow over time, but the
+following should be sufficient for basic use:</p>
+
+<p>A disk device indicates a block device, it can have two values for the
+type attribute either 'file' or 'block' corresponding to the 2 options
+availble at the Xen layer. It has two mandatory children, and one optional
+one in no specific order:</p>
+<ul>
+  <li>source with a file attribute containing the path in Domain 0 to the
+    file or a dev attribute if using a block device, containing the device
+    name ('hda5' or '/dev/hda5')</li>
+  <li>target indicates in a dev attribute the device where it is mapped in
+    the guest</li>
+  <li>readonly an optional empty element indicating the device is
+  read-only</li>
+</ul>
+
+<p>An interface element describes a network device mapped on the guest, it
+also has a type whose value is currently 'bridge', it also have a number of
+children in no specific order:</p>
+<ul>
+  <li>source: indicating the bridge name</li>
+  <li>mac: the optional mac address provided in the address attribute</li>
+  <li>ip: the optional IP address provided in the address attribute</li>
+  <li>script: the script used to bridge the interfcae in the Domain 0</li>
+  <li>target: and optional target indicating the device name.</li>
+</ul>
+
+<p>While the format may be extended in various ways as support for more
+hypervisor types and features are added, it is expected that this core subset
+will remain functional in spite of the evolution of the library. </p>
+
+<h2> <a name="FAQ" id="FAQ">FAQ</a></h2>
 
 <p>Table of Contents:</p>
 <ul>
@@ -188,8 +279,8 @@ available except commiting to the base.</p>
     <p>libvirt is released under the <a
     href="http://www.opensource.org/licenses/lgpl-license.html">GNU Lesser
     General Public License</a>, see the file COPYING.LIB in the distribution
-    for the precise wording. The only library that libvirt depends upon is the
-    Xen store access library which is also licenced under the LGPL.</p>
+    for the precise wording. The only library that libvirt depends upon is
+    the Xen store access library which is also licenced under the LGPL.</p>
   </li>
   <li><em>Can I embed libvirt in a proprietary application ?</em>
     <p>Yes. The LGPL allows you to embed libvirt into a proprietary
@@ -205,8 +296,8 @@ available except commiting to the base.</p>
     <p>The original distribution comes from <a
     href="ftp://libvirt.org/libvirt/">ftp://libvirt.org/libvirt/</a>.</p>
   </li>
-  <li><em>I can't install the libvirt/libvirt-devel RPM packages due to failed
-    dependencies</em>
+  <li><em>I can't install the libvirt/libvirt-devel RPM packages due to
+    failed dependencies</em>
     <p>The most generic solution is to re-fetch the latest src.rpm , and
     rebuild it locally with</p>
     <p><code>rpm --rebuild libvirt-xxx.src.rpm</code>.</p>

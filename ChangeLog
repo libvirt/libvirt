@@ -1,3 +1,15 @@
+Tue Feb 21 00:06:30 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c src/xend_internal.c src/xend_internal.h: move the
+	  XML dump function around to make sure all entry points are centralized
+	  in libvirt.c and also avoid doc generation troubles.
+	* docs/examples/Makefile.am docs/examples/index.py: fix the makefile
+	  a bit.
+	* TODO: updated
+	* docs/format.html: added a description of the XML used for the
+	  domains.
+	* docs//*: rebuilt
+
 Mon Feb 20 21:48:55 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* docs/examples/examples.xsl docs/examples/index.html

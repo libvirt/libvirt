@@ -846,6 +846,15 @@ int xend_log(virConnectPtr xend,
 	     char *buffer,
 	     size_t n_buffer);
 
+/**
+ * \brief Provide an XML description of the domain.
+ * \param domain a xend domain object
+ * \return a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
+ *         the caller must free() the returned value.
+ *
+ * Provide an XML description of the domain.
+ */
+char *xend_get_domain_xml(virDomainPtr domain);
 #ifdef __cplusplus
 }
 #endif

@@ -159,7 +159,7 @@
       <arg name='name' type='const char *' info='optional argument currently unused, pass NULL'/>
     </function>
     <function name='virDomainCreateLinux' file='libvirt' module='libvirt'>
-      <info>Launch a new Linux guest domain, unimplemented yet, API to be defined. This function requires priviledged access to the hypervisor.</info>
+      <info>Launch a new Linux guest domain, based on an XML description similar to the one returned by virDomainGetXMLDesc() This function may requires priviledged access to the hypervisor.</info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='xmlDesc' type='const char *' info='an XML description of the domain'/>
@@ -202,10 +202,10 @@
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
     <function name='virDomainGetXMLDesc' file='libvirt' module='libvirt'>
-      <info></info>
-      <return type='char *' info=''/>
-      <arg name='domain' type='virDomainPtr' info=''/>
-      <arg name='flags' type='int' info=''/>
+      <info>Provide an XML description of the domain. The description may be reused later to relaunch the domain with virDomainCreateLinux().</info>
+      <return type='char *' info='a 0 terminated UTF-8 encoded XML instance, or NULL in case of error. the caller must free() the returned value.'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+      <arg name='flags' type='int' info='and OR&apos;ed set of extraction flags, not used yet'/>
     </function>
     <function name='virDomainLookupByID' file='libvirt' module='libvirt'>
       <info>Try to find a domain based on the hypervisor ID number</info>
