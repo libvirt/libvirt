@@ -1,6 +1,11 @@
 #!/usr/bin/python -u
 import libvirt
 import sys
+import os
+
+if not os.access("/proc/xen", os.R_OK):
+    print 'System is not running a Xen kernel'
+    sys.exit(1)
 
 conn = libvirt.openReadOnly(None)
 if conn == None:

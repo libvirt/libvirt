@@ -239,8 +239,8 @@
       </li>
     </xsl:if>
     </xsl:for-each>
-      <li><a style="font-weight:bold"
-             href="{$href_base}html/index.html">API Menu</a></li>
+      <li><a href="{$href_base}html/index.html">API Menu</a></li>
+      <li><a href="{$href_base}examples/index.html">C code examples</a></li>
       <li><a href="{$href_base}ChangeLog.html">Recent Changes</a></li>
 
       </ul>
@@ -285,8 +285,8 @@
       </li>
     </xsl:if>
     </xsl:for-each>
-      <li><a style="font-weight:bold"
-             href="{$href_base}html/index.html">API Menu</a></li>
+      <li><a href="{$href_base}html/index.html">API Menu</a></li>
+      <li><a href="{$href_base}examples/index.html">C code examples</a></li>
       <li><a href="{$href_base}ChangeLog.html">Recent Changes</a></li>
 
       </ul>

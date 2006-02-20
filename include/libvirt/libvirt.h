@@ -239,7 +239,6 @@ char *			virDomainGetOSType	(virDomainPtr domain);
 unsigned long		virDomainGetMaxMemory	(virDomainPtr domain);
 int			virDomainSetMaxMemory	(virDomainPtr domain,
 						 unsigned long memory);
-
 /*
  * XML domain description
  */

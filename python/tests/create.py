@@ -4,6 +4,10 @@ import sys
 import os
 import time
 
+if not os.access("/proc/xen", os.R_OK):
+    print 'System is not running a Xen kernel'
+    sys.exit(1)
+
 #
 # Try to provide default OS images paths here, of course non standard
 #
@@ -21,10 +25,6 @@ for root in osroots:
 
 if osroot == None:
     print "Could not find a guest OS root, edit to add the path in osroots"
-    sys.exit(1)
-
-if not os.access("/proc/xen", os.R_OK):
-    print 'System is not running a Xen kernel'
     sys.exit(1)
 
 kernel=open("/proc/version").read().split()

@@ -1,3 +1,10 @@
+Mon Feb 20 21:48:55 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* docs/examples/examples.xsl docs/examples/index.html
+	  docs/site.xsl: integates the examples page in the web site
+	* docs//* : fixed generator and rebuilt the docs
+	* python/tests/basic.py python/tests/create.py: couple cleanups
+
 Mon Feb 20 12:20:32 EST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* TODO: updated

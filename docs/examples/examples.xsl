@@ -31,28 +31,28 @@
 
   <xsl:template match="include">
     <xsl:variable name="header" select="substring-before(substring-after(., '/'), '&gt;')"/>
-    <xsl:variable name="doc" select="concat('../html/libxml-', $header, 'tml')"/>
+    <xsl:variable name="doc" select="concat('../html/libvirt-', $header, 'tml')"/>
     <li><a href="{$doc}"><xsl:value-of select="."/></a></li>
   </xsl:template>
 
   <xsl:template match="typedef">
     <xsl:variable name="name" select="@name"/>
     <xsl:variable name="header" select="concat(@file, '.h')"/>
-    <xsl:variable name="doc" select="concat('../html/libxml-', @file, '.html#', $name)"/>
+    <xsl:variable name="doc" select="concat('../html/libvirt-', @file, '.html#', $name)"/>
     <li> line <xsl:value-of select="@line"/>: Type <a href="{$doc}"><xsl:value-of select="$name"/></a> from <xsl:value-of select="$header"/></li>
   </xsl:template>
 
   <xsl:template match="function">
     <xsl:variable name="name" select="@name"/>
     <xsl:variable name="header" select="concat(@file, '.h')"/>
-    <xsl:variable name="doc" select="concat('../html/libxml-', @file, '.html#', $name)"/>
+    <xsl:variable name="doc" select="concat('../html/libvirt-', @file, '.html#', $name)"/>
     <li> line <xsl:value-of select="@line"/>: Function <a href="{$doc}"><xsl:value-of select="$name"/></a> from <xsl:value-of select="$header"/></li>
   </xsl:template>
 
   <xsl:template match="macro">
     <xsl:variable name="name" select="@name"/>
     <xsl:variable name="header" select="concat(@file, '.h')"/>
-    <xsl:variable name="doc" select="concat('../html/libxml-', @file, '.html#', $name)"/>
+    <xsl:variable name="doc" select="concat('../html/libvirt-', @file, '.html#', $name)"/>
     <li> line <xsl:value-of select="@line"/>: Macro <a href="{$doc}"><xsl:value-of select="$name"/></a> from <xsl:value-of select="$header"/></li>
   </xsl:template>
 
@@ -60,12 +60,6 @@
     <xsl:variable name="filename" select="string(@filename)"/>
     <h3><a name="{$filename}" href="{$filename}"><xsl:value-of select="$filename"/></a>: <xsl:value-of select="synopsis"/></h3>
     <p><xsl:value-of select="purpose"/></p>
-    <p>Includes:</p>
-    <ul>
-    <xsl:for-each select="includes/include">
-      <xsl:apply-templates select='.'/>
-    </xsl:for-each>
-    </ul>
     <p>Uses:</p>
     <ul>
     <xsl:for-each select="uses/*">
@@ -101,9 +95,9 @@
     </ul>
     <p> Getting the compilation options and libraries dependancies needed
 to generate binaries from the examples is best done on Linux/Unix by using
-the xml2-config script which should have been installed as part of <i>make
-install</i> step or when installing the libxml2 development package:</p>
-<pre>gcc -o example `xml2-config --cflags` example.c `xml2-config --libs`</pre>
+the pkg-config data which should have been installed as part of <i>make
+install</i> step or when installing the libvirt development package:</p>
+<pre>gcc -o example example.c `pkg-config libvirt --libs`</pre>
   </xsl:template>
 
   <xsl:template name="sections-list">
@@ -115,58 +109,34 @@ install</i> step or when installing the libxml2 development package:</p>
   </xsl:template>
 
   <xsl:template match="examples">
-    <xsl:variable name="title">Libxml2 set of examples</xsl:variable>
+    <xsl:variable name="title">Libvirt set of C code examples</xsl:variable>
      <xsl:document href="index.html" method="xml" encoding="ISO-8859-1"
          doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
       <html>
         <head>
-        <xsl:call-template name="style"/>
-	<xsl:element name="title">
-	  <xsl:value-of select="$title"/>
-	</xsl:element>
+          <xsl:call-template name="style"/>
+          <xsl:element name="title">
+            <xsl:value-of select="$title"/>
+          </xsl:element>
         </head>
-        <body bgcolor="#8b7765" text="#000000" link="#000000" vlink="#000000">
-          <xsl:call-template name="titlebox">
-	    <xsl:with-param name="title" select="$title"/>
-	  </xsl:call-template>
-          <table border="0" cellpadding="4" cellspacing="0" width="100%" align="center">
-            <tr>
-              <td bgcolor="#8b7765">
-                <table border="0" cellspacing="0" cellpadding="2" width="100%">
-                  <tr>
-                    <td valign="top" width="200" bgcolor="#8b7765">
-                      <xsl:call-template name="toc"/>
-                    </td>
-                    <td valign="top" bgcolor="#8b7765">
-                      <table border="0" cellspacing="0" cellpadding="1" width="100%">
-                        <tr>
-                          <td>
-                            <table border="0" cellspacing="0" cellpadding="1" width="100%" bgcolor="#000000">
-                              <tr>
-                                <td>
-                                  <table border="0" cellpadding="3" cellspacing="1" width="100%">
-                                    <tr>
-                                      <td bgcolor="#fffacd">
-				        <xsl:apply-templates select="sections"/>
-					<xsl:call-template name="sections-list"/>
-					<p><a href="../bugs.html">Daniel Veillard</a></p>
-                                      </td>
-                                    </tr>
-                                  </table>
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </body>
+	<body>
+	<div id="container">
+	  <div id="intro">
+	    <div id="adjustments"/>
+	    <div id="pageHeader"/>
+	    <div id="content2">
+	      <xsl:call-template name="titlebox">
+		<xsl:with-param name="title" select="$title"/>
+	      </xsl:call-template>
+	      <xsl:apply-templates select="sections"/>
+	      <xsl:call-template name="sections-list"/>
+	    </div>
+	  </div>
+	  <xsl:call-template name="linkList2"/>
+	  <xsl:call-template name="bottom"/>
+	</div>
+	</body>
       </html>
     </xsl:document>
   </xsl:template>

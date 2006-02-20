@@ -26,6 +26,8 @@ ignored_files = {
   "xend_internal.c": "internal code",
   "sexpr.h": "internal includes and defines",
   "sexpr.c": "internal code",
+  "xml.h": "internal includes and defines",
+  "xml.c": "internal code",
 }
 
 ignored_words = {
