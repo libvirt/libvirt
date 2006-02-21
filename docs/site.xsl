@@ -9,104 +9,6 @@
 <!--
  - returns the filename associated to an ID in the original file
  -->
-  <xsl:template name="tocfilename">
-    <xsl:param name="name" select="string(@href)"/>
-    <xsl:choose>
-      <xsl:when test="$name = '#Introducti'">
-        <xsl:text>intro.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Documentat'">
-        <xsl:text>docs.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Reporting'">
-        <xsl:text>bugs.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#help'">
-        <xsl:text>help.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Help'">
-        <xsl:text>help.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Downloads'">
-        <xsl:text>downloads.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#News'">
-        <xsl:text>news.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Contributi'">
-        <xsl:text>contribs.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Format'">
-        <xsl:text>format.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#API'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#XSLT'">
-        <xsl:text>XSLT.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#XML'">
-        <xsl:text>XMLinfo.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Validation'">
-        <xsl:text>xmldtd.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#tree'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#library'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#interface'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Example'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Entities'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#architecture'">
-        <xsl:text>architecture.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Namespaces'">
-        <xsl:text>namespaces.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#DOM'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Catalog'">
-        <xsl:text>catalog.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Upgrading'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Encodings'">
-        <xsl:text>encoding.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#IO'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Memory'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Thread'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#FAQ'">
-        <xsl:text>FAQ.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Python'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = ''">
-        <xsl:text>unknown.html</xsl:text>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:value-of select="$name"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
   <xsl:template name="filename">
     <xsl:param name="name" select="string(@href)"/>
     <xsl:choose>
@@ -137,65 +39,14 @@
       <xsl:when test="$name = '#Format'">
         <xsl:text>format.html</xsl:text>
       </xsl:when>
-      <xsl:when test="$name = '#API'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#XSLT'">
-        <xsl:text>XSLT.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#XML'">
-        <xsl:text>XMLinfo.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Validation'">
-        <xsl:text>xmldtd.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#tree'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#library'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#interface'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Example'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Entities'">
-        <xsl:text></xsl:text>
-      </xsl:when>
       <xsl:when test="$name = '#architecture'">
         <xsl:text>architecture.html</xsl:text>
       </xsl:when>
-      <xsl:when test="$name = '#Namespaces'">
-        <xsl:text>namespaces.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#DOM'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Catalog'">
-        <xsl:text>catalog.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Upgrading'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Encodings'">
-        <xsl:text>encoding.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#IO'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Memory'">
-        <xsl:text></xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Thread'">
-        <xsl:text></xsl:text>
+      <xsl:when test="$name = '#Python'">
+        <xsl:text>python.html</xsl:text>
       </xsl:when>
       <xsl:when test="$name = '#FAQ'">
         <xsl:text>FAQ.html</xsl:text>
-      </xsl:when>
-      <xsl:when test="$name = '#Python'">
-        <xsl:text></xsl:text>
       </xsl:when>
       <xsl:when test="$name = ''">
         <xsl:text>unknown.html</xsl:text>
@@ -221,7 +72,7 @@
         <li>Home</li>
     <xsl:for-each select="/html/body/h2">
     <xsl:variable name="filename">
-      <xsl:call-template name="tocfilename">
+      <xsl:call-template name="filename">
 	<xsl:with-param name="name" select="concat('#', string(a[1]/@name))"/>
       </xsl:call-template>
     </xsl:variable>
@@ -267,7 +118,7 @@
         <li><a href="{$href_base}index.html">Home</a></li>
     <xsl:for-each select="/html/body/h2">
     <xsl:variable name="filename">
-      <xsl:call-template name="tocfilename">
+      <xsl:call-template name="filename">
 	<xsl:with-param name="name" select="concat('#', string(a[1]/@name))"/>
       </xsl:call-template>
     </xsl:variable>

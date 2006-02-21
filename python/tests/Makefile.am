@@ -8,7 +8,7 @@ EXTRA_DIST = $(PYTESTS)
 if WITH_PYTHON
 tests: $(PYTESTS)
 	@echo "## running Python regression tests"
-	-@(PYTHONPATH="..:../src/.libs:$(srcdir)/../src:$$PYTHONPATH" ; \
+	-@(PYTHONPATH="..:../.libs:../src/.libs:$(srcdir)/../src:$$PYTHONPATH";\
 	   export PYTHONPATH; \
 	   LD_LIBRARY_PATH="$(top_builddir)/src/.libs:$$LD_LIBRARY_PATH" ; \
 	   export LD_LIBRARY_PATH; \

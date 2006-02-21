@@ -1,3 +1,10 @@
+Tue Feb 21 14:21:39 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* TODO: updated
+	* python/tests/Makefile.am: fix a small PYTHONPATH bug 
+	* docs//*: fixed the xsl a bit for toc names, added doc for
+	  the python bindings, regenerated
+
 Tue Feb 21 00:06:30 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt.c src/xend_internal.c src/xend_internal.h: move the
