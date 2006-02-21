@@ -14,6 +14,17 @@ TODO:
 - in python bindings raise an exception if a lookup or connection fails
   to return a non-None object
 
+virsh TODO:
+- decide where will be default directory for domains configurations (/etc/xen/domains/* ?)
+- new cmd: create new domain by config file (like "xm create")
+      create [--conf /path/file.conf | name]
+- new cmd: print info about domain configuration:
+      cinfo [--conf /path/file.conf | name] 
+- new cmd: print list of all domains configurations:
+      clist [--dir /path]
+- new cmd: print info about saved domain image:
+      sinfo /path/domain.img
+
 Probable TODOs:
 - event on big domain state change (create, crashed, paused, shutdown, destroy)
 - bindings for more languages
