@@ -17,12 +17,17 @@ install-data-local:
 
 EXTRA_DIST=examples.xsl index.py examples.xml 
 
-noinst_PROGRAMS=info1 
+noinst_PROGRAMS=info1 suspend 
 
 info1_SOURCES=info1.c
 info1_LDFLAGS=
 info1_DEPENDENCIES= $(DEPS)
 info1_LDADD= $(LDADDS)
+
+suspend_SOURCES=suspend.c
+suspend_LDFLAGS=
+suspend_DEPENDENCIES= $(DEPS)
+suspend_LDADD= $(LDADDS)
 
 valgrind: 
 	$(MAKE) CHECKER='valgrind' tests
@@ -30,5 +35,6 @@ valgrind:
 tests: $(noinst_PROGRAMS)
 	@(echo '## examples regression tests')
 	@($(CHECKER) ./info1)
+	@($(CHECKER) ./suspend)
 
 

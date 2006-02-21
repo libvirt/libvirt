@@ -15,6 +15,7 @@ rpm: clean
 check-local: all tests
 
 tests:
+	@(cd docs/examples ; $(MAKE) MAKEFLAGS+=--silent tests)
 	@(if [ "@PYTHON_SUBDIR@" != "" ] ; then cd python ; \
 	  $(MAKE) MAKEFLAGS+=--silent tests ; fi)
 	
