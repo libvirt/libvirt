@@ -14,7 +14,7 @@ libvirt_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvirt_sym.version \
 libvirt_la_SOURCES =						\
 		libvirt.c internal.h				\
 		hash.c hash.h					\
-		xml.c						\
+		xml.c xml.h						\
 		xen_internal.c xen_internal.h			\
 		xend_internal.c xend_internal.h			\
 		sexpr.c sexpr.h

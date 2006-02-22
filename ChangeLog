@@ -1,3 +1,9 @@
+Wed Feb 22 09:57:11 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* TODO: updated
+	* libvirt.spec.in: package the examples in the doc
+	* src/Makefile.am: forgot to add xml.h
+
 Tue Feb 21 22:00:11 CET 2006 Karel Zak <kzak@redhat.com>
 
 	* TODO: added virsh part

@@ -49,6 +49,7 @@ make
 rm -fr %{buildroot}
 
 %makeinstall
+(cd docs/examples ; make clean ; rm -rf .deps)
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.la
@@ -78,6 +79,7 @@ rm -fr %{buildroot}
 %{_libdir}/pkgconfig/libvirt.pc
 
 %doc docs/*.html docs/html docs/*.gif
+%doc docs/examples
 %doc docs/libvirt-api.xml
 
 %files python

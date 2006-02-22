@@ -1,13 +1,13 @@
 Absolute TODOs:
-- Create() API, how do we best keep flexibility and allow various
-  specific environment and space for evolution (VMX)
 - thread protection, reentrancy, refcounting, etc ...
-- documentation and examples on using the toolkit
 - Error API. probably similar to libxml2 structured API
 - extract error messages from the Xend rpc
+- UUID based lookup and naming
 
 TODO:
-- track change of xend API, XML-RPC, UUID based lookup and naming
+- Create() API, how do we best keep flexibility and allow various
+  specific environment and space for evolution (VMX)
+- track change of xend API & XML-RPC
 - API for the Node: extracting informations, selecting scheduling policy
 - better resources allocation APIs (%CPU, set memory)
 - DTD/RNG/XSD schemas for the XML Domain descriptions
@@ -32,6 +32,7 @@ Probable TODOs:
 Would-be-nice TODO:
 - man page for virsh and the libraries entry points
 - support for QEmu and other virtualization engines
+- more documentation and examples on using the toolkit
 
 Cleanup:
 - now that libxml2 is linked in, drop hash.[ch] and get back to libxml2 ones ?
@@ -42,3 +43,5 @@ Done:
 - set a no public by default policy for libvir symbols
 - fix the python bindings
 - renamed to libvirt
+- the CreateLinux() API is a first step toward a final Create()
+- documentation and examples on using the toolkit
