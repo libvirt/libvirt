@@ -77,6 +77,10 @@ rm -fr %{buildroot}
 %{_libdir}/lib*.so
 %{_includedir}/libvirt/*.h
 %{_libdir}/pkgconfig/libvirt.pc
+%doc %{_datadir}/gtk-doc/html/libvirt/*.devhelp
+%doc %{_datadir}/gtk-doc/html/libvirt/*.html
+%doc %{_datadir}/gtk-doc/html/libvirt/*.png
+%doc %{_datadir}/gtk-doc/html/libvirt/*.css
 
 %doc docs/*.html docs/html docs/*.gif
 %doc docs/examples

@@ -1,3 +1,8 @@
+Wed Feb 22 11:53:45 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in libvirt.spec.in docs/Makefile.am docs/devhelp/*:
+	  added devhelp docs support, based on libxml2 stylesheets
+
 Wed Feb 22 09:57:11 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* TODO: updated
