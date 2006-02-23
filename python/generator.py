@@ -203,7 +203,9 @@ def enum(type, name, value):
 #######################################################################
 
 functions_failed = []
-functions_skipped = []
+functions_skipped = [
+    "virConnectListDomains" , "virDomainGetUUID"
+]
 
 skipped_modules = {
 }
@@ -259,6 +261,7 @@ foreign_encoding_args = (
 skip_impl = (
     'virConnectListDomainsID',
     'virDomainGetInfo',
+    'virDomainGetUUID',
 )
 
 def skip_function(name):
@@ -568,6 +571,8 @@ def nameFixup(name, classe, type, file):
         func = name
     if func == "iD":
         func = "ID"
+    if func == "uUID":
+        func = "UUID"
     if func == "oSType":
         func = "OSType"
     if func == "xMLDesc":

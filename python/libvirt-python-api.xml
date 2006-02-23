@@ -6,9 +6,14 @@
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <return type='int *' info="the list of ID or None in case of error"/>
     </function>
-    <function name='virDomainGetInfo' file='libvir' module='libvir'>
+    <function name='virDomainGetInfo' file='libvir' module='python'>
       <info>Extract information about a domain. Note that if the connection used to get the domain is limited only a partial set of the informations can be extracted.</info>
       <return type='int *' info='the list of informations or None in case of error'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+    </function>
+    <function name='virDomainGetUUID' file='libvir' module='python'>
+      <info>Extract the UUID unique Identifier of a domain.</info>
+      <return type='char *' info='the 16 bytes string or None in case of error'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
   </symbols>

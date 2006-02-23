@@ -100,6 +100,31 @@ libvirt_virDomainGetInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     return(py_retval);
 }
 
+PyObject *
+libvirt_virDomainGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    PyObject *py_retval;
+    unsigned char uuid[16];
+    virDomainPtr domain;
+    PyObject *pyobj_domain;
+    virDomainInfo info;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virDomainGetUUID", &pyobj_domain))
+        return(NULL);
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    if (domain == NULL) {
+        Py_INCREF(Py_None);
+	return(Py_None);
+    }
+    if (virDomainGetUUID(domain, &uuid[0]) < 0) {
+        Py_INCREF(Py_None);
+	return(Py_None);
+    }
+    py_retval = PyString_FromStringAndSize((char *) &uuid[0], 16);
+
+    return(py_retval);
+}
+
 /************************************************************************
  *									*
  *			The registration stuff				*
@@ -111,6 +136,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virConnectClose", libvirt_virConnectClose, METH_VARARGS, NULL},
     {(char *) "virConnectListDomainsID", libvirt_virConnectListDomainsID, METH_VARARGS, NULL},
     {(char *) "virDomainGetInfo", libvirt_virDomainGetInfo, METH_VARARGS, NULL},
+    {(char *) "virDomainGetUUID", libvirt_virDomainGetUUID, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 

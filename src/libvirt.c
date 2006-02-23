@@ -103,6 +103,7 @@ virConnectOpen(const char *name) {
     ret = (virConnectPtr) malloc(sizeof(virConnect));
     if (ret == NULL)
         goto failed;
+    memset(ret, 0, sizeof(virConnect));
     ret->magic = VIR_CONNECT_MAGIC;
     ret->handle = handle;
     ret->xshandle = xshandle;
@@ -158,6 +159,7 @@ virConnectOpenReadOnly(const char *name) {
     ret = (virConnectPtr) malloc(sizeof(virConnect));
     if (ret == NULL)
         goto failed;
+    memset(ret, 0, sizeof(virConnect));
     ret->magic = VIR_CONNECT_MAGIC;
     ret->handle = handle;
     ret->xshandle = xshandle;
@@ -644,6 +646,7 @@ virDomainLookupByID(virConnectPtr conn, int id) {
     if (ret == NULL) {
         goto error;
     }
+    memset(ret, 0, sizeof(virDomain));
     ret->magic = VIR_DOMAIN_MAGIC;
     ret->conn = conn;
     ret->handle = id;
@@ -719,10 +722,12 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid) {
 	    free(name);
 	return(NULL);
     }
+    memset(ret, 0, sizeof(virDomain));
     ret->magic = VIR_DOMAIN_MAGIC;
     ret->conn = conn;
     ret->handle = id;
     ret->name = name;
+    ret->path = 0;
     memcpy(ret->uuid, uuid, 16);
 
     return(ret);
@@ -794,6 +799,7 @@ do_found:
 	ret = (virDomainPtr) malloc(sizeof(virDomain));
 	if (ret == NULL)
 	    goto done;
+	memset(ret, 0, sizeof(virDomain));
 	ret->magic = VIR_DOMAIN_MAGIC;
 	ret->conn = conn;
 	ret->handle = id;

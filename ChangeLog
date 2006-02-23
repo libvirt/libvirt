@@ -1,3 +1,11 @@
+Thu Feb 23 06:24:46 EST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c: fixing a bug before the release of 0.0.5
+	* python/generator.py python/libvir.c python/libvirt-python-api.xml:
+	  also fixing the binding for getting a domain UUID
+	* python/tests/Makefile.am python/tests/uuid.py: added a test
+	  for the new UUID API
+
 Thu Feb 23 11:41:06 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* NEWS configure.in docs/libvir.html docs/news.html: preparing the
