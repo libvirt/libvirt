@@ -5,6 +5,18 @@
        http://libvirt.org/news.html
 
 Releases
+0.0.5: Feb 23 2006:
+   - Added XML description parsing, dependance to libxml2, implemented the
+    creation API virDomainCreateLinux()
+   - new APIs to lookup and name domain by UUID
+   - fixed the XML dump when using the Xend access
+   - Fixed a few more problem related to the name change
+   - Adding regression tests in python and examples in C
+   - web site improvement, extended the documentation to cover the XML
+    format and Python API
+   - Added devhelp help for Gnome/Gtk programmers
+
+
 0.0.4: Feb 10 2006:
    - Fix various bugs introduced in the name change
 
