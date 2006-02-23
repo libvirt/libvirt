@@ -1,7 +1,8 @@
 EXAMPLE_DIR = $(datadir)/doc/libvirt-python-$(LIBVIRT_VERSION)/examples
 
 PYTESTS=		\
-	basic.py
+	basic.py	\
+	create.py
 
 EXTRA_DIST = $(PYTESTS)
 
