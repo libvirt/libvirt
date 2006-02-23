@@ -9,6 +9,8 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-root
 URL: http://libvir.org/
 BuildRequires: xen python python-devel
 Requires: xen
+Requires: libxml2
+BuildRequires: libxml2-devel
 Obsoletes: libvir
 ExclusiveArch: i386 x86_64
 
@@ -97,6 +99,12 @@ rm -fr %{buildroot}
 %doc python/libvirtclass.txt
 
 %changelog
+* Thu Feb 23 2006 Daniel Veillard <veillard@redhat.com> 0.0.5-1
+- new domain creation API
+- new UUID based APIs
+- more tests, documentation, devhelp
+- bug fixes
+
 * Fri Feb 10 2006 Daniel Veillard <veillard@redhat.com> 0.0.4-1
 - fixes some problems in 0.0.3 due to the change of names
 
