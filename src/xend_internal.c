@@ -1910,21 +1910,25 @@ xend_get_domain(virConnectPtr xend, const char *domname)
 }
 
 /**
- * xend_get_domain_id:
+ * xend_get_domain_ids:
  * @xend: A xend instance
- * @name: The name of the domain
+ * @domname: The name of the domain
+ * @uuid: return value for the UUID if not NULL
  *
  * This method looks up the id of a domain
  *
  * Returns the id on success; -1 (with errno) on error
  */
 int
-xend_get_domain_id(virConnectPtr xend, const char *domname)
+xend_get_domain_ids(virConnectPtr xend, const char *domname,
+                    unsigned char *uuid)
 {
     struct sexpr *root;
     const char *value;
     int ret = -1;
 
+    if (uuid != NULL) 
+        memset(uuid, 0, 16);
     root = sexpr_get(xend, "/xend/domain/%s?detail=1", domname);
     if (root == NULL)
         goto error;
@@ -1933,10 +1937,14 @@ xend_get_domain_id(virConnectPtr xend, const char *domname)
     if (value == NULL)
         goto error;
     ret = strtol(value, NULL, 0);
-    if ((ret == 0) && (value[0] != '0'))
+    if ((ret == 0) && (value[0] != '0')) {
         ret = -1;
+    } else if (uuid != NULL) {
+        char **ptr = (char **) &uuid;
+        sexpr_uuid(ptr, root, "domain/uuid");
+    }
 
-  error:
+error:
     sexpr_free(root);
     return(ret);
 }

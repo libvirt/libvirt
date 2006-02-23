@@ -44,8 +44,10 @@
      <exports symbol='virConnectGetType' type='function'/>
      <exports symbol='virDomainSave' type='function'/>
      <exports symbol='virConnectListDomains' type='function'/>
+     <exports symbol='virDomainLookupByUUID' type='function'/>
      <exports symbol='virDomainLookupByID' type='function'/>
      <exports symbol='virDomainGetOSType' type='function'/>
+     <exports symbol='virDomainGetUUID' type='function'/>
      <exports symbol='virConnectNumOfDomains' type='function'/>
      <exports symbol='virDomainSetMaxMemory' type='function'/>
      <exports symbol='virDomainGetMaxMemory' type='function'/>
@@ -201,6 +203,12 @@
       <return type='char *' info='the new string or NULL in case of error'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
+    <function name='virDomainGetUUID' file='libvirt' module='libvirt'>
+      <info>Get the UUID for a domain</info>
+      <return type='int' info='-1 in case of error, 0 in case of success'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+      <arg name='uuid' type='unsigned char *' info='pointer to a 16 bytes array'/>
+    </function>
     <function name='virDomainGetXMLDesc' file='libvirt' module='libvirt'>
       <info>Provide an XML description of the domain. The description may be reused later to relaunch the domain with virDomainCreateLinux().</info>
       <return type='char *' info='a 0 terminated UTF-8 encoded XML instance, or NULL in case of error. the caller must free() the returned value.'/>
@@ -218,6 +226,12 @@
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='name' type='const char *' info='name for the domain'/>
+    </function>
+    <function name='virDomainLookupByUUID' file='libvirt' module='libvirt'>
+      <info>Try to lookup a domain on the given hypervisor based on its UUID.</info>
+      <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='uuid' type='const unsigned char *' info='the UUID string for the domain'/>
     </function>
     <function name='virDomainRestore' file='libvirt' module='libvirt'>
       <info>This method will restore a domain saved to disk by virDomainSave().</info>

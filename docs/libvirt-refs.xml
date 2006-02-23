@@ -40,6 +40,7 @@
     <reference name='virDomainGetMaxMemory' href='html/libvirt-libvirt.html#virDomainGetMaxMemory'/>
     <reference name='virDomainGetName' href='html/libvirt-libvirt.html#virDomainGetName'/>
     <reference name='virDomainGetOSType' href='html/libvirt-libvirt.html#virDomainGetOSType'/>
+    <reference name='virDomainGetUUID' href='html/libvirt-libvirt.html#virDomainGetUUID'/>
     <reference name='virDomainGetXMLDesc' href='html/libvirt-libvirt.html#virDomainGetXMLDesc'/>
     <reference name='virDomainInfo' href='html/libvirt-libvirt.html#virDomainInfo'/>
     <reference name='virDomainInfoPtr' href='html/libvirt-libvirt.html#virDomainInfoPtr'/>
@@ -47,6 +48,7 @@
     <reference name='virDomainKernelPtr' href='html/libvirt-libvirt.html#virDomainKernelPtr'/>
     <reference name='virDomainLookupByID' href='html/libvirt-libvirt.html#virDomainLookupByID'/>
     <reference name='virDomainLookupByName' href='html/libvirt-libvirt.html#virDomainLookupByName'/>
+    <reference name='virDomainLookupByUUID' href='html/libvirt-libvirt.html#virDomainLookupByUUID'/>
     <reference name='virDomainPtr' href='html/libvirt-libvirt.html#virDomainPtr'/>
     <reference name='virDomainRestart' href='html/libvirt-libvirt.html#virDomainRestart'/>
     <reference name='virDomainRestore' href='html/libvirt-libvirt.html#virDomainRestore'/>
@@ -105,6 +107,7 @@
       <ref name='virDomainGetMaxMemory'/>
       <ref name='virDomainGetName'/>
       <ref name='virDomainGetOSType'/>
+      <ref name='virDomainGetUUID'/>
       <ref name='virDomainGetXMLDesc'/>
       <ref name='virDomainInfo'/>
       <ref name='virDomainInfoPtr'/>
@@ -112,6 +115,7 @@
       <ref name='virDomainKernelPtr'/>
       <ref name='virDomainLookupByID'/>
       <ref name='virDomainLookupByName'/>
+      <ref name='virDomainLookupByUUID'/>
       <ref name='virDomainPtr'/>
       <ref name='virDomainRestart'/>
       <ref name='virDomainRestore'/>
@@ -139,11 +143,18 @@
       <ref name='virDomainCreateLinux'/>
       <ref name='virDomainLookupByID'/>
       <ref name='virDomainLookupByName'/>
+      <ref name='virDomainLookupByUUID'/>
     </type>
   </constructors>
   <functions>
+    <type name='const unsigned char *'>
+      <ref name='virDomainLookupByUUID'/>
+    </type>
     <type name='int *'>
       <ref name='virConnectListDomains'/>
+    </type>
+    <type name='unsigned char *'>
+      <ref name='virDomainGetUUID'/>
     </type>
     <type name='unsigned int'>
       <ref name='virDomainCreateLinux'/>
@@ -164,6 +175,7 @@
       <ref name='virDomainCreateLinux'/>
       <ref name='virDomainLookupByID'/>
       <ref name='virDomainLookupByName'/>
+      <ref name='virDomainLookupByUUID'/>
       <ref name='virDomainRestore'/>
     </type>
     <type name='virDomainInfoPtr'>
@@ -177,6 +189,7 @@
       <ref name='virDomainGetMaxMemory'/>
       <ref name='virDomainGetName'/>
       <ref name='virDomainGetOSType'/>
+      <ref name='virDomainGetUUID'/>
       <ref name='virDomainGetXMLDesc'/>
       <ref name='virDomainResume'/>
       <ref name='virDomainSave'/>
@@ -226,6 +239,7 @@
       <ref name='virDomainGetMaxMemory'/>
       <ref name='virDomainGetName'/>
       <ref name='virDomainGetOSType'/>
+      <ref name='virDomainGetUUID'/>
       <ref name='virDomainGetXMLDesc'/>
       <ref name='virDomainInfo'/>
       <ref name='virDomainInfoPtr'/>
@@ -233,6 +247,7 @@
       <ref name='virDomainKernelPtr'/>
       <ref name='virDomainLookupByID'/>
       <ref name='virDomainLookupByName'/>
+      <ref name='virDomainLookupByUUID'/>
       <ref name='virDomainPtr'/>
       <ref name='virDomainRestart'/>
       <ref name='virDomainRestore'/>
@@ -295,6 +310,7 @@
           <ref name='virDomainGetID'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainGetOSType'/>
+          <ref name='virDomainGetUUID'/>
         </word>
       </letter>
       <letter name='H'>
@@ -343,6 +359,7 @@
           <ref name='virDomainGetXMLDesc'/>
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
+          <ref name='virDomainLookupByUUID'/>
           <ref name='virDomainSetMaxMemory'/>
           <ref name='virGetVersion'/>
         </word>
@@ -406,11 +423,16 @@
         <word name='Try'>
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
+          <ref name='virDomainLookupByUUID'/>
         </word>
       </letter>
       <letter name='U'>
         <word name='UTF-8'>
           <ref name='virDomainGetXMLDesc'/>
+        </word>
+        <word name='UUID'>
+          <ref name='virDomainGetUUID'/>
+          <ref name='virDomainLookupByUUID'/>
         </word>
         <word name='Use'>
           <ref name='virDomainSave'/>
@@ -497,6 +519,7 @@
         </word>
         <word name='array'>
           <ref name='virConnectListDomains'/>
+          <ref name='virDomainGetUUID'/>
         </word>
         <word name='assumed'>
           <ref name='virGetVersion'/>
@@ -518,6 +541,7 @@
           <ref name='virDomainCreateLinux'/>
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
+          <ref name='virDomainLookupByUUID'/>
         </word>
         <word name='being'>
           <ref name='virDomainShutdown'/>
@@ -531,6 +555,9 @@
         <word name='but'>
           <ref name='virDomainShutdown'/>
           <ref name='virDomainSuspend'/>
+        </word>
+        <word name='bytes'>
+          <ref name='virDomainGetUUID'/>
         </word>
       </letter>
       <letter name='c'>
@@ -596,6 +623,7 @@
           <ref name='virDomainGetInfo'/>
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
+          <ref name='virDomainLookupByUUID'/>
           <ref name='virDomainRestore'/>
         </word>
         <word name='contents'>
@@ -659,6 +687,7 @@
           <ref name='virDomainGetID'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainGetOSType'/>
+          <ref name='virDomainGetUUID'/>
           <ref name='virDomainGetXMLDesc'/>
           <ref name='virGetVersion'/>
         </word>
@@ -674,6 +703,8 @@
           <ref name='virDomainGetXMLDesc'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk1'>
       <letter name='f'>
         <word name='failure'>
           <ref name='virDomainCreateLinux'/>
@@ -682,6 +713,7 @@
           <ref name='virDomainGetInfo'/>
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
+          <ref name='virDomainLookupByUUID'/>
           <ref name='virDomainRestore'/>
           <ref name='virDomainResume'/>
           <ref name='virDomainSave'/>
@@ -711,7 +743,9 @@
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainGetID'/>
           <ref name='virDomainGetName'/>
+          <ref name='virDomainGetUUID'/>
           <ref name='virDomainLookupByName'/>
+          <ref name='virDomainLookupByUUID'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainShutdown'/>
           <ref name='virGetVersion'/>
@@ -759,8 +793,6 @@
           <ref name='virDomainSuspend'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk1'>
       <letter name='g'>
         <word name='general'>
           <ref name='virDomainShutdown'/>
@@ -774,6 +806,7 @@
         <word name='given'>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainLookupByName'/>
+          <ref name='virDomainLookupByUUID'/>
         </word>
         <word name='guest'>
           <ref name='virDomainCreateLinux'/>
@@ -798,6 +831,7 @@
           <ref name='virDomainGetID'/>
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
+          <ref name='virDomainLookupByUUID'/>
           <ref name='virDomainRestore'/>
           <ref name='virDomainSetMaxMemory'/>
           <ref name='virDomainSuspend'/>
@@ -835,6 +869,7 @@
         <word name='its'>
           <ref name='virDomainGetName'/>
           <ref name='virDomainLookupByName'/>
+          <ref name='virDomainLookupByUUID'/>
           <ref name='virDomainSave'/>
         </word>
       </letter>
@@ -892,6 +927,7 @@
         </word>
         <word name='lookup'>
           <ref name='virDomainLookupByName'/>
+          <ref name='virDomainLookupByUUID'/>
         </word>
       </letter>
       <letter name='m'>
@@ -961,6 +997,7 @@
           <ref name='virDomainGetOSType'/>
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
+          <ref name='virDomainLookupByUUID'/>
         </word>
         <word name='not'>
           <ref name='virConnectClose'/>
@@ -990,9 +1027,11 @@
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainGetOSType'/>
+          <ref name='virDomainGetUUID'/>
           <ref name='virDomainGetXMLDesc'/>
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
+          <ref name='virDomainLookupByUUID'/>
           <ref name='virDomainResume'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainSetMaxMemory'/>
@@ -1029,6 +1068,8 @@
           <ref name='virDomainSave'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk2'>
       <letter name='p'>
         <word name='padding'>
           <ref name='_virDomainInfo'/>
@@ -1062,8 +1103,10 @@
           <ref name='virDomainCreateLinux'/>
           <ref name='virDomainGetInfo'/>
           <ref name='virDomainGetName'/>
+          <ref name='virDomainGetUUID'/>
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
+          <ref name='virDomainLookupByUUID'/>
           <ref name='virDomainRestore'/>
         </word>
         <word name='pointing'>
@@ -1177,8 +1220,6 @@
           <ref name='virDomainSetMaxMemory'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk2'>
       <letter name='s'>
         <word name='same'>
           <ref name='virDomainGetName'/>
@@ -1244,6 +1285,7 @@
           <ref name='virConnectGetType'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainGetOSType'/>
+          <ref name='virDomainLookupByUUID'/>
         </word>
         <word name='structure'>
           <ref name='_virDomainInfo'/>
@@ -1256,6 +1298,7 @@
           <ref name='virDomainDestroy'/>
           <ref name='virDomainFree'/>
           <ref name='virDomainGetInfo'/>
+          <ref name='virDomainGetUUID'/>
           <ref name='virDomainRestore'/>
           <ref name='virDomainResume'/>
           <ref name='virDomainSave'/>
@@ -1440,6 +1483,8 @@
           <ref name='virDomainGetXMLDesc'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk3'>
       <letter name='z'>
         <word name='zero'>
           <ref name='virConnectGetType'/>
@@ -1447,9 +1492,10 @@
       </letter>
     </chunk>
     <chunks>
-      <chunk name='chunk0' start='A' end='f'/>
-      <chunk name='chunk1' start='g' end='r'/>
-      <chunk name='chunk2' start='s' end='z'/>
+      <chunk name='chunk0' start='A' end='e'/>
+      <chunk name='chunk1' start='f' end='o'/>
+      <chunk name='chunk2' start='p' end='y'/>
+      <chunk name='chunk3' start='z' end='z'/>
     </chunks>
   </index>
 </apirefs>

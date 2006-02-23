@@ -1,3 +1,10 @@
+Thu Feb 23 05:13:03 EST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvirt.h[.in] src/libvirt.c src/xend_internal.[ch]
+	  src/libvirt_sym.version: added virDomainLookupByUUID and
+	  virDomainGetUUID to be able to use the persistant UUID names
+	* docs//*: rebuilt the docs following the API extension
+
 Wed Feb 22 11:53:45 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in libvirt.spec.in docs/Makefile.am docs/devhelp/*:

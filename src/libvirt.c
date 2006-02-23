@@ -319,11 +319,10 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids) {
     if ((ids == NULL) || (maxids <= 0))
         return(-1);
     
-    /* TODO: implement the API with Xend interfaces */
     idlist = xend_get_domains(conn);
     if (idlist != NULL) {
         for (ret = 0,i = 0;(idlist[i] != NULL) && (ret < maxids);i++) {
-	    id = xend_get_domain_id(conn, idlist[i]);
+	    id = xend_get_domain_ids(conn, idlist[i], NULL);
 	    if (id >= 0)
 	        ids[ret++] = (int) id;
 	}
@@ -611,6 +610,7 @@ virDomainLookupByID(virConnectPtr conn, int id) {
     char *path = NULL;
     virDomainPtr ret;
     char *name = NULL;
+    unsigned char uuid[16];
 
     if (!VIR_IS_CONNECT(conn))
 	return(NULL);
@@ -629,7 +629,7 @@ virDomainLookupByID(virConnectPtr conn, int id) {
 
 	if (names != NULL) {
 	    while (*tmp != NULL) {
-		ident = xend_get_domain_id(conn, *tmp);
+		ident = xend_get_domain_ids(conn, *tmp, &uuid[0]);
 		if (ident == id) {
 		    name = strdup(*tmp);
 		    break;
@@ -642,24 +642,88 @@ virDomainLookupByID(virConnectPtr conn, int id) {
 
     ret = (virDomainPtr) malloc(sizeof(virDomain));
     if (ret == NULL) {
-        if (path != NULL)
-	    free(path);
-	return(NULL);
+        goto error;
     }
     ret->magic = VIR_DOMAIN_MAGIC;
     ret->conn = conn;
     ret->handle = id;
     ret->path = path;
-    if (name == NULL)
+    if (name == NULL) {
 	ret->name = virDomainDoStoreQuery(ret, "name");
-    else
+    } else {
         ret->name = name;
+        memcpy(&ret->uuid[0], uuid, 16);
+    }
     if (ret->name == NULL) {
-        if (path != NULL)
-	    free(path);
-        free(ret);
+        goto error;
+    }
+
+    return(ret);
+error:
+    if (ret != NULL)
+	free(path);
+    if (path != NULL)
+	free(path);
+    if (path != NULL)
+	free(path);
+    return(NULL);
+}
+
+/**
+ * virDomainLookupByUUID:
+ * @conn: pointer to the hypervisor connection
+ * @uuid: the UUID string for the domain
+ *
+ * Try to lookup a domain on the given hypervisor based on its UUID.
+ *
+ * Returns a new domain object or NULL in case of failure
+ */
+virDomainPtr
+virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid) {
+    virDomainPtr ret;
+    char *name = NULL;
+    char **names;
+    char **tmp;
+    unsigned char ident[16];
+    int id;
+
+    if (!VIR_IS_CONNECT(conn))
+	return(NULL);
+    if (uuid == NULL)
+        return(NULL);
+    names = xend_get_domains(conn);
+    tmp = names;
+
+    if (names == NULL) {
+        TODO /* try to fallback to xenstore lookup */
 	return(NULL);
     }
+    while (*tmp != NULL) {
+	id = xend_get_domain_ids(conn, *tmp, &ident[0]);
+	if (id >= 0) {
+	    if (!memcmp(uuid, ident, 16)) {
+		name = strdup(*tmp);
+		break;
+	    }
+	}
+	tmp++;
+    }
+    free(names);
+
+    if (name == NULL)
+        return(NULL);
+
+    ret = (virDomainPtr) malloc(sizeof(virDomain));
+    if (ret == NULL) {
+        if (name != NULL)
+	    free(name);
+	return(NULL);
+    }
+    ret->magic = VIR_DOMAIN_MAGIC;
+    ret->conn = conn;
+    ret->handle = id;
+    ret->name = name;
+    memcpy(ret->uuid, uuid, 16);
 
     return(ret);
 }
@@ -994,6 +1058,36 @@ virDomainGetName(virDomainPtr domain) {
     if (!VIR_IS_DOMAIN(domain))
 	return(NULL);
     return(domain->name);
+}
+
+/**
+ * virDomainGetUUID:
+ * @domain: a domain object
+ * @uuid: pointer to a 16 bytes array
+ *
+ * Get the UUID for a domain
+ *
+ * Returns -1 in case of error, 0 in case of success
+ */
+int
+virDomainGetUUID(virDomainPtr domain, unsigned char *uuid) {
+    if ((!VIR_IS_DOMAIN(domain)) || (uuid == NULL))
+	return(-1);
+    if (domain->handle == 0)
+        memset(uuid, 0, 16);
+    else {
+	if ((domain->uuid[0] == 0) && (domain->uuid[1] == 0) &&
+	    (domain->uuid[2] == 0) && (domain->uuid[3] == 0) &&
+	    (domain->uuid[4] == 0) && (domain->uuid[5] == 0) &&
+	    (domain->uuid[6] == 0) && (domain->uuid[7] == 0) &&
+	    (domain->uuid[8] == 0) && (domain->uuid[9] == 0) &&
+	    (domain->uuid[10] == 0) && (domain->uuid[11] == 0) &&
+	    (domain->uuid[12] == 0) && (domain->uuid[13] == 0) &&
+	    (domain->uuid[14] == 0) && (domain->uuid[15] == 0))
+	    xend_get_domain_ids(domain->conn, domain->name, &domain->uuid[0]);
+	memcpy(uuid, &domain->uuid[0], 16);
+    }
+    return(0);
 }
 
 /**

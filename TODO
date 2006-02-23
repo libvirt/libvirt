@@ -2,7 +2,6 @@ Absolute TODOs:
 - thread protection, reentrancy, refcounting, etc ...
 - Error API. probably similar to libxml2 structured API
 - extract error messages from the Xend rpc
-- UUID based lookup and naming
 
 TODO:
 - Create() API, how do we best keep flexibility and allow various
@@ -45,3 +44,4 @@ Done:
 - renamed to libvirt
 - the CreateLinux() API is a first step toward a final Create()
 - documentation and examples on using the toolkit
+- UUID based lookup and naming

@@ -206,6 +206,8 @@ virDomainPtr		virDomainLookupByName	(virConnectPtr conn,
 						 const char *name);
 virDomainPtr		virDomainLookupByID	(virConnectPtr conn,
 						 int id);
+virDomainPtr		virDomainLookupByUUID	(virConnectPtr conn,
+						 const unsigned char *uuid);
 int			virDomainShutdown	(virDomainPtr domain);
 int			virDomainDestroy	(virDomainPtr domain);
 int			virDomainFree		(virDomainPtr domain);
@@ -235,6 +237,8 @@ int			virDomainGetInfo	(virDomainPtr domain,
  */
 const char *		virDomainGetName	(virDomainPtr domain);
 unsigned int		virDomainGetID		(virDomainPtr domain);
+int			virDomainGetUUID	(virDomainPtr domain,
+						 unsigned char *uuid);
 char *			virDomainGetOSType	(virDomainPtr domain);
 unsigned long		virDomainGetMaxMemory	(virDomainPtr domain);
 int			virDomainSetMaxMemory	(virDomainPtr domain,

@@ -761,12 +761,14 @@ struct xend_domain *xend_get_domain(virConnectPtr xend,
  * \brief Lookup the id of a domain
  * \param xend A xend instance
  * \param name The name of the domain
+ * \param uuid pointer to store a copy of the uuid
  * \return the id number on success; -1 (with errno) on error
  *
- * This method looks up the id of a domain
+ * This method looks up the ids of a domain
  */
-int xend_get_domain_id(virConnectPtr xend,
-		       const char *name);
+int xend_get_domain_ids(virConnectPtr xend,
+		        const char *name,
+			unsigned char *uuid);
 
 /**
  * \brief Get status informations for a domain
