@@ -101,7 +101,7 @@
       <ul>
         <li> <a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li>
         <li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li>
-        <li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get">
+        <li><form action="{$href_base}search.php" enctype="application/x-www-form-urlencoded" method="get">
          <input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" />
       </form></li>
         <li><a href="http://xmlsoft.org/"> <img src="{$href_base}Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li>
@@ -147,7 +147,7 @@
       <ul>
         <li> <a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li>
         <li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li>
-        <li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get">
+        <li><form action="{$href_base}search.php" enctype="application/x-www-form-urlencoded" method="get">
          <input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" />
       </form></li>
         <li><a href="http://xmlsoft.org/"> <img src="{$href_base}Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li>
@@ -162,7 +162,7 @@
  -->
   <xsl:template name="develtoc">
    <div class="left">
-    <form action="search.php"
+    <form action="{$href_base}search.php"
           enctype="application/x-www-form-urlencoded" method="get">
       <input name="query" type="text" size="20" value=""/>
       <input name="submit" type="submit" value="Search ..."/>
@@ -212,7 +212,7 @@
       <ul>
         <li> <a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li>
         <li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li>
-        <li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get">
+        <li><form action="{$href_base}search.php" enctype="application/x-www-form-urlencoded" method="get">
          <input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" />
       </form></li>
         <li><a href="http://xmlsoft.org/"> <img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li>
