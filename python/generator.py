@@ -204,7 +204,7 @@ def enum(type, name, value):
 
 functions_failed = []
 functions_skipped = [
-    "virConnectListDomains" , "virDomainGetUUID"
+    "virConnectListDomains"
 ]
 
 skipped_modules = {
@@ -262,6 +262,7 @@ skip_impl = (
     'virConnectListDomainsID',
     'virDomainGetInfo',
     'virDomainGetUUID',
+    'virDomainLookupByUUID',
 )
 
 def skip_function(name):
