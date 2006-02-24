@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
-    <link rel="stylesheet" type="text/css" href="libvir.css" />
+    <link rel="stylesheet" type="text/css" href="libvirt.css" />
     <link rel="SHORTCUT ICON" href="/32favicon.png" />
     <title>Search the documentation on Libvir.org</title>
   </head>
@@ -28,7 +28,7 @@
         $scope = "any";
 
 ?>
-<p> The search service indexes the libvir APIs and documentation as well as the libvir-list@redhat.com mailing-list archives. To use it simply provide a set of keywords:
+<p> The search service indexes the libvirt APIs and documentation as well as the libvir-list@redhat.com mailing-list archives. To use it simply provide a set of keywords:
 <p>
 <form action="<?php echo "$PHP_SELF", "?query=", rawurlencode($query) ?>"
       enctype="application/x-www-form-urlencoded" method="GET">
@@ -135,7 +135,7 @@
 			    } else {
 				$id = $name;
 				$m = strtolower($module);
-				$url = "html/libvir-$module.html#$id";
+				$url = "html/libvirt-$module.html#$id";
 				$results[$name] = array($relevance,$type,
 						$module, $desc, $name, $url);
 			    }
@@ -180,7 +180,7 @@
 				$id = $name;
 				$m = strtolower($module);
 				$u = str_replace(
-			"http://mail.gnome.org/archives/xml/", "", $url);
+			"http://www.redhat.com/archives/libvir-list/", "", $url);
 				$results[$url] = array($relevance,$type,
 						$u, $desc, $name, $url);
 			    }
@@ -207,7 +207,7 @@
 			    } else {
 				$id = $name;
 				$m = strtolower($module);
-				$url = "html/libvir-$module.html#$id";
+				$url = "html/libvirt-$module.html#$id";
 				$results[$name] = array($relevance,$type,
 						$module, $desc, $name, $url);
 			    }
@@ -258,7 +258,7 @@
               <a href="intro.html">Introduction</a>
             </li>
             <li>
-              <a href="architecture.html">libvir architecture</a>
+              <a href="architecture.html">libvirt architecture</a>
             </li>
             <li>
               <a href="downloads.html">Downloads</a>

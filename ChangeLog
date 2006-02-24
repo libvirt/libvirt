@@ -1,3 +1,7 @@
+Fri Feb 24 22:17:12 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* docs/index.py docs/search.php: fixing the search engine.
+
 Fri Feb 24 13:25:36 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* python/generator.py python/libvir.c python/libvirt-python-api.xml:

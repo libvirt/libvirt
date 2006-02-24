@@ -35,7 +35,7 @@
 #
 # Then run the script in the doc subdir, it will create the symbols and
 # word tables and populate them with informations extracted from 
-# the libvir-api.xml API description, and make then accessible read-only
+# the libvirt-api.xml API description, and make then accessible read-only
 # by nobody@loaclhost the user expected to be Apache's one
 #
 # On the Apache configuration, make sure you have php support enabled
@@ -116,7 +116,7 @@ TABLES={
 #
 # The XML API description file to parse
 #
-API="libvir-api.xml"
+API="libvirt-api.xml"
 DB=None
 
 #########################################################################
