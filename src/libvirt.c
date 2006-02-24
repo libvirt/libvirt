@@ -688,7 +688,7 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid) {
     char **names;
     char **tmp;
     unsigned char ident[16];
-    int id;
+    int id = -1;
 
     if (!VIR_IS_CONNECT(conn))
 	return(NULL);

@@ -1,3 +1,12 @@
+Fri Feb 24 23:33:55 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/Makefile.am src/internal.h src/libvirt.c src/libvirt_sym.version
+	  src/virterror.c include/Makefile.am include/virterror.h: adding
+	  the public APIs for errors, callbacks and synchronous. The boring
+	  stuff is still left to do, plugging it. Also need to be exposed
+	  at the python level.
+	* doc//*: rebuilt
+
 Fri Feb 24 22:17:12 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* docs/index.py docs/search.php: fixing the search engine.

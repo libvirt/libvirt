@@ -13,6 +13,7 @@
 
 #include "hash.h"
 #include "libvirt.h"
+#include "virterror.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -85,8 +86,14 @@ struct _virConnect {
     struct sockaddr_un addr_un;	/* the unix address */
     struct sockaddr_in addr_in; /* the inet address */
 
+    /* error stuff */
+    virError     err;		/* the last error */
+    virErrorFunc handler;	/* associated handlet */
+    void        *userData;	/* the user data */
+
+    /* misc */
     virHashTablePtr   domains;	/* hash table for known domains */
-    int          flags;		/* a set of connection flags */
+    int               flags;	/* a set of connection flags */
 };
 
 /**

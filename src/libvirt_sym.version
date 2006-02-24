@@ -27,5 +27,15 @@
 	virDomainShutdown;
 	virDomainSuspend;
 	virGetVersion;
+	virCopyLastError;
+	virConnSetErrorFunc;
+	virResetLastError;
+	virErrorFunc;
+	virResetError;
+	virConnGetLastError;
+	virGetLastError;
+	virSetErrorFunc;
+	virConnCopyLastError;
+	virConnResetLastError;
     local: *;
 };

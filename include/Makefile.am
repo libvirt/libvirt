@@ -2,7 +2,8 @@
 
 virincdir = $(includedir)/libvirt
 
-virinc_HEADERS = libvirt.h
+virinc_HEADERS = libvirt.h		\
+		 virterror.h
 
 install-exec-hook:
 	$(mkinstalldirs) $(DESTDIR)$(virincdir)
