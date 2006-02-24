@@ -91,7 +91,7 @@
         $result = NULL;
 	$j = 0;
         if ($word) {
-	    $result = mysql_query ("SELECT wordsArchive.relevance, wordsArchive.name, 'xml-list', archives.resource, archives.title FROM wordsArchive, archives WHERE LCASE(wordsArchive.name) LIKE LCASE('$word') and wordsArchive.ID = archives.ID ORDER BY relevance DESC LIMIT 75");
+	    $result = mysql_query ("SELECT wordsArchive.relevance, wordsArchive.name, 'libvir-list', archives.resource, archives.title FROM wordsArchive, archives WHERE LCASE(wordsArchive.name) LIKE LCASE('$word') and wordsArchive.ID = archives.ID ORDER BY relevance DESC LIMIT 75");
 	    if ($result) {
 		$j = mysql_num_rows($result);
 		if ($j == 0) 
