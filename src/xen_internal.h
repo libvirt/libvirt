@@ -20,7 +20,7 @@
 extern "C" {
 #endif
 
-int		xenHypervisorOpen		(void);
+int		xenHypervisorOpen		(int quiet);
 int		xenHypervisorClose		(int handle);
 unsigned long	xenHypervisorGetVersion		(int handle);
 int		xenHypervisorDestroyDomain	(int handle,

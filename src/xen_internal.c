@@ -59,17 +59,19 @@ virXenError(virErrorNumber error, const char *info, int value) {
 
 /**
  * xenHypervisorOpen:
+ * @quiet: don'r raise an error on failure if set
  *
  * Connects to the Xen hypervisor.
  *
  * Returns the handle or -1 in case of error.
  */
-int xenHypervisorOpen(void) {
+int xenHypervisorOpen(int quiet) {
     int ret;
 
     ret = open(XEN_HYPERVISOR_SOCKET, O_RDWR);
     if (ret < 0) {
-        virXenError(VIR_ERR_NO_XEN, XEN_HYPERVISOR_SOCKET, 0);
+	if (!quiet)
+	    virXenError(VIR_ERR_NO_XEN, XEN_HYPERVISOR_SOCKET, 0);
         return(-1);
     }
 

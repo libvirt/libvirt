@@ -140,7 +140,7 @@ virConnectOpen(const char *name) {
         return(NULL);
     }
 
-    handle = xenHypervisorOpen();
+    handle = xenHypervisorOpen(0);
     if (handle == -1) {
         goto failed;
     }
@@ -200,7 +200,7 @@ virConnectOpenReadOnly(const char *name) {
         return(NULL);
     }
 
-    handle = xenHypervisorOpen();
+    handle = xenHypervisorOpen(1);
     if (handle >= 0)
         method++;
     else

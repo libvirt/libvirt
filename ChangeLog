@@ -1,3 +1,9 @@
+Mon Feb 27 16:42:46 EST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c src/xen_internal.[ch]: virConnectOpenReadOnly()
+	  should not emit error when failing to open the hypervisor proc
+	  entry point.
+
 Mon Feb 27 16:32:55 EST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* include/virterror.h src/libvirt_sym.version: exported
