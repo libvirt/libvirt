@@ -212,13 +212,13 @@ virConnSetErrorFunc(virConnectPtr conn, void *userData, virErrorFunc handler) {
 }
 
 /**
- * virReportError:
+ * virDefaultErrorFunc:
  * @err: pointer to the error.
  *
- * Internal routine reporting an error to stderr.
+ * Default routine reporting an error to stderr.
  */
-static void
-virReportError(virErrorPtr err) {
+void
+virDefaultErrorFunc(virErrorPtr err) {
     const char *lvl = "", *dom = "", *domain = "";
     int len;
 
@@ -337,7 +337,7 @@ __virRaiseError(virConnectPtr conn, virDomainPtr dom,
     if (handler != NULL) {
         handler(userData, to);
     } else {
-        virReportError(to);
+        virDefaultErrorFunc(to);
     }
 }
 
@@ -407,7 +407,22 @@ __virErrorMsg(virErrorNumber error, const char *info) {
 	    errmsg = "got unknown HTTP error code %d";
 	    break;
 	case VIR_ERR_UNKNOWN_HOST:
-	    errmsg = "Unknown host %s";
+	    errmsg = "unknown host %s";
+	    break;
+	case VIR_ERR_SEXPR_SERIAL:
+	    if (info != NULL)
+	        errmsg = "failed to serialize S-Expr: %s";
+	    else
+	        errmsg = "failed to serialize S-Expr";
+	    break;
+	case VIR_ERR_NO_XEN:
+	    if (info == NULL)
+	        errmsg = "could not use Xen hypervisor entry";
+	    else
+	        errmsg = "could not use Xen hypervisor entry %s";
+	    break;
+	case VIR_ERR_XEN_CALL:
+	    errmsg = "failed Xen syscall %s %d";
 	    break;
     }
     return(errmsg);

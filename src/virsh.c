@@ -14,6 +14,7 @@
 #define _GNU_SOURCE    /* isblank() */
 
 #include "libvirt.h"
+#include "virterror.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -55,6 +56,21 @@ typedef enum {
     VSH_DEBUG4,
     VSH_DEBUG5
 } vshOutType;
+
+/*
+ * The error handler for virtsh
+ */
+static void
+virshErrorHandler(void *unused, virErrorPtr error) {
+    if ((unused != NULL) || (error == NULL))
+        return;
+
+    /* Suppress the VIR_ERR_NO_XEN error which fails as non-root */
+    if ((error->code == VIR_ERR_NO_XEN) || (error->code == VIR_ERR_OK))
+        return;
+
+    virDefaultErrorFunc(error);
+}
 
 /*
  * virsh command line grammar:
@@ -1484,6 +1500,9 @@ vshInit(vshControl *ctl) {
         return FALSE;
 
     ctl->uid = getuid();
+    
+    /* set up the library error handler */
+    virSetErrorFunc(NULL, virshErrorHandler);
     
     /* basic connection to hypervisor */
     if (ctl->uid == 0)

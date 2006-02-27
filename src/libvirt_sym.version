@@ -37,5 +37,6 @@
 	virSetErrorFunc;
 	virConnCopyLastError;
 	virConnResetLastError;
+	virDefaultErrorFunc;
     local: *;
 };

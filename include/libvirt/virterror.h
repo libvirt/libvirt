@@ -86,6 +86,9 @@ typedef enum {
     VIR_ERR_GET_FAILED,/* a HTTP GET command to failed */
     VIR_ERR_POST_FAILED,/* a HTTP POST command to failed */
     VIR_ERR_HTTP_ERROR,/* unexpected HTTP error code */
+    VIR_ERR_SEXPR_SERIAL,/* failure to serialize an S-Expr */
+    VIR_ERR_NO_XEN,/* could not open Xen hypervisor control */
+    VIR_ERR_XEN_CALL,/* failure doing an hypervisor call */
 } virErrorNumber;
 
 /**
@@ -111,6 +114,7 @@ virErrorPtr		virConnGetLastError	(virConnectPtr conn);
 void			virConnResetLastError	(virConnectPtr conn);
 int			virCopyLastError	(virErrorPtr to);
 
+void			virDefaultErrorFunc	(virErrorPtr err);
 void			virSetErrorFunc		(void *userData,
 						 virErrorFunc handler);
 void			virConnSetErrorFunc	(virConnectPtr conn,

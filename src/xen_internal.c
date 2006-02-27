@@ -37,6 +37,27 @@ typedef struct hypercall_struct
 #define XEN_HYPERVISOR_SOCKET "/proc/xen/privcmd"
 
 /**
+ * virXenError:
+ * @conn: the connection if available
+ * @error: the error number
+ * @info: extra information string
+ *
+ * Handle an error at the xend daemon interface
+ */
+static void
+virXenError(virErrorNumber error, const char *info, int value) {
+    const char *errmsg;
+    
+    if (error == VIR_ERR_OK)
+        return;
+
+    errmsg = __virErrorMsg(error, info);
+    __virRaiseError(NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
+                    errmsg, info, NULL, value, 0, errmsg, info,
+		    value);
+}
+
+/**
  * xenHypervisorOpen:
  *
  * Connects to the Xen hypervisor.
@@ -47,8 +68,10 @@ int xenHypervisorOpen(void) {
     int ret;
 
     ret = open(XEN_HYPERVISOR_SOCKET, O_RDWR);
-    if (ret < 0)
+    if (ret < 0) {
+        virXenError(VIR_ERR_NO_XEN, XEN_HYPERVISOR_SOCKET, 0);
         return(-1);
+    }
 
     return(ret);
 }
@@ -92,14 +115,21 @@ xenHypervisorDoOp(int handle, dom0_op_t *op) {
     hc.op = __HYPERVISOR_dom0_op;
     hc.arg[0] = (unsigned long)op; 
 
-    if (mlock(op, sizeof(dom0_op_t)) < 0)
+    if (mlock(op, sizeof(dom0_op_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " locking", sizeof(dom0_op_t));
         return(-1);
+    }
 
     cmd = _IOC(_IOC_NONE, 'P', 0, sizeof(hc));
     ret = ioctl(handle, cmd, (unsigned long) &hc);
+    if (ret < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " ioctl ", cmd);
+    }
 
-    if (munlock(op, sizeof(dom0_op_t)) < 0)
+    if (munlock(op, sizeof(dom0_op_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " releasing", sizeof(dom0_op_t));
         ret = -1;
+    }
 
     if (ret < 0)
         return(-1);
@@ -128,8 +158,10 @@ xenHypervisorGetVersion(int handle) {
     cmd = _IOC(_IOC_NONE, 'P', 0, sizeof(hc));
     ret = ioctl(handle, cmd, (unsigned long) &hc);
 
-    if (ret < 0)
+    if (ret < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " getting version ", XENVER_version);
         return(0);
+    }
     /*
      * use unsigned long in case the version grows behind expectations
      * allowed by int
@@ -157,8 +189,10 @@ xenHypervisorGetDomainInfo(int handle, int domain, dom0_getdomaininfo_t *info) {
 
     memset(info, 0, sizeof(dom0_getdomaininfo_t));
 
-    if (mlock(info, sizeof(dom0_getdomaininfo_t)) < 0)
+    if (mlock(info, sizeof(dom0_getdomaininfo_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " locking", sizeof(dom0_getdomaininfo_t));
         return(-1);
+    }
 
     op.cmd = DOM0_GETDOMAININFOLIST;
     op.u.getdomaininfolist.first_domain = (domid_t) domain;
@@ -169,8 +203,10 @@ xenHypervisorGetDomainInfo(int handle, int domain, dom0_getdomaininfo_t *info) {
 
     ret = xenHypervisorDoOp(handle, &op);
 
-    if (munlock(info, sizeof(dom0_getdomaininfo_t)) < 0)
+    if (munlock(info, sizeof(dom0_getdomaininfo_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " release", sizeof(dom0_getdomaininfo_t));
         ret = -1;
+    }
 
     if (ret < 0)
         return(-1);
