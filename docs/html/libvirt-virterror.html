@@ -10,6 +10,7 @@
 <pre class="programlisting">void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)</pre>
 <pre class="programlisting">void	<a href="#virConnSetErrorFunc">virConnSetErrorFunc</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br />					 void * userData, <br />					 <a href="libvirt-virterror.html#virErrorFunc">virErrorFunc</a> handler)</pre>
 <pre class="programlisting">int	<a href="#virCopyLastError">virCopyLastError</a>		(<a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a> to)</pre>
+<pre class="programlisting">void	<a href="#virDefaultErrorFunc">virDefaultErrorFunc</a>		(<a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a> err)</pre>
 <pre class="programlisting">Function type: <a href="#virErrorFunc">virErrorFunc</a>
 void	<a href="#virErrorFunc">virErrorFunc</a>			(void * userData, <br />					 <a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a> error)
 </pre>
@@ -19,7 +20,7 @@ void	<a href="#virErrorFunc">virErrorFunc</a>			(void * userData, <br />					 <a
 <pre class="programlisting">void	<a href="#virSetErrorFunc">virSetErrorFunc</a>			(void * userData, <br />					 <a href="libvirt-virterror.html#virErrorFunc">virErrorFunc</a> handler)</pre>
 <h2>Description</h2>
 <h3><a name="virError" id="virError">Structure virError</a></h3><pre class="programlisting">Structure virError<br />struct _virError {
-    int	code	: The error code, e.g. an virParserError
+    int	code	: The error code, a <a href="libvirt-virterror.html#virErrorNumber">virErrorNumber</a>
     int	domain	: What part of the library raised this er
     char *	message	: human-readable informative error messag
     <a href="libvirt-virterror.html#virErrorLevel">virErrorLevel</a>	level	: how consequent is the error
@@ -34,7 +35,9 @@ void	<a href="#virErrorFunc">virErrorFunc</a>			(void * userData, <br />					 <a
     <a name="VIR_FROM_NONE" id="VIR_FROM_NONE">VIR_FROM_NONE</a> = 0
     <a name="VIR_FROM_XEN" id="VIR_FROM_XEN">VIR_FROM_XEN</a> = 1 : Error at Xen hypervisor layer
     <a name="VIR_FROM_XEND" id="VIR_FROM_XEND">VIR_FROM_XEND</a> = 2 : Error at connection with xend daemon
-    <a name="VIR_FROM_DOM" id="VIR_FROM_DOM">VIR_FROM_DOM</a> = 3 : Error when operating on a domain
+    <a name="VIR_FROM_SEXPR" id="VIR_FROM_SEXPR">VIR_FROM_SEXPR</a> = 3 : Error in the S-Epression code
+    <a name="VIR_FROM_XML" id="VIR_FROM_XML">VIR_FROM_XML</a> = 4 : Error in the XML code
+    <a name="VIR_FROM_DOM" id="VIR_FROM_DOM">VIR_FROM_DOM</a> = 5 : Error when operating on a domain
 }
 </pre><h3>Enum <a name="virErrorLevel" id="virErrorLevel">virErrorLevel</a></h3><pre class="programlisting">Enum virErrorLevel {
     <a name="VIR_ERR_NONE" id="VIR_ERR_NONE">VIR_ERR_NONE</a> = 0
@@ -43,8 +46,29 @@ void	<a href="#virErrorFunc">virErrorFunc</a>			(void * userData, <br />					 <a
 }
 </pre><h3>Enum <a name="virErrorNumber" id="virErrorNumber">virErrorNumber</a></h3><pre class="programlisting">Enum virErrorNumber {
     <a name="VIR_ERR_OK" id="VIR_ERR_OK">VIR_ERR_OK</a> = 0
-    <a name="VIR_ERR_INTERNAL_ERROR" id="VIR_ERR_INTERNAL_ERROR">VIR_ERR_INTERNAL_ERROR</a> = 1 : 1
-    <a name="VIR_ERR_NO_MEMORY" id="VIR_ERR_NO_MEMORY">VIR_ERR_NO_MEMORY</a> = 2 : 2
+    <a name="VIR_ERR_INTERNAL_ERROR" id="VIR_ERR_INTERNAL_ERROR">VIR_ERR_INTERNAL_ERROR</a> = 1 : internal error
+    <a name="VIR_ERR_NO_MEMORY" id="VIR_ERR_NO_MEMORY">VIR_ERR_NO_MEMORY</a> = 2 : memory allocation failure
+    <a name="VIR_ERR_NO_SUPPORT" id="VIR_ERR_NO_SUPPORT">VIR_ERR_NO_SUPPORT</a> = 3 : no support for this connection
+    <a name="VIR_ERR_UNKNOWN_HOST" id="VIR_ERR_UNKNOWN_HOST">VIR_ERR_UNKNOWN_HOST</a> = 4 : could not resolve hostname
+    <a name="VIR_ERR_NO_CONNECT" id="VIR_ERR_NO_CONNECT">VIR_ERR_NO_CONNECT</a> = 5 : can't connect to hypervisor
+    <a name="VIR_ERR_INVALID_CONN" id="VIR_ERR_INVALID_CONN">VIR_ERR_INVALID_CONN</a> = 6 : invalid connection object
+    <a name="VIR_ERR_INVALID_DOMAIN" id="VIR_ERR_INVALID_DOMAIN">VIR_ERR_INVALID_DOMAIN</a> = 7 : invalid domain object
+    <a name="VIR_ERR_INVALID_ARG" id="VIR_ERR_INVALID_ARG">VIR_ERR_INVALID_ARG</a> = 8 : invalid function argument
+    <a name="VIR_ERR_OPERATION_FAILED" id="VIR_ERR_OPERATION_FAILED">VIR_ERR_OPERATION_FAILED</a> = 9 : a command to hypervisor failed
+    <a name="VIR_ERR_GET_FAILED" id="VIR_ERR_GET_FAILED">VIR_ERR_GET_FAILED</a> = 10 : a HTTP GET command to failed
+    <a name="VIR_ERR_POST_FAILED" id="VIR_ERR_POST_FAILED">VIR_ERR_POST_FAILED</a> = 11 : a HTTP POST command to failed
+    <a name="VIR_ERR_HTTP_ERROR" id="VIR_ERR_HTTP_ERROR">VIR_ERR_HTTP_ERROR</a> = 12 : unexpected HTTP error code
+    <a name="VIR_ERR_SEXPR_SERIAL" id="VIR_ERR_SEXPR_SERIAL">VIR_ERR_SEXPR_SERIAL</a> = 13 : failure to serialize an S-Expr
+    <a name="VIR_ERR_NO_XEN" id="VIR_ERR_NO_XEN">VIR_ERR_NO_XEN</a> = 14 : could not open Xen hypervisor control
+    <a name="VIR_ERR_XEN_CALL" id="VIR_ERR_XEN_CALL">VIR_ERR_XEN_CALL</a> = 15 : failure doing an hypervisor call
+    <a name="VIR_ERR_OS_TYPE" id="VIR_ERR_OS_TYPE">VIR_ERR_OS_TYPE</a> = 16 : unknown OS type
+    <a name="VIR_ERR_NO_KERNEL" id="VIR_ERR_NO_KERNEL">VIR_ERR_NO_KERNEL</a> = 17 : missing kernel informations
+    <a name="VIR_ERR_NO_ROOT" id="VIR_ERR_NO_ROOT">VIR_ERR_NO_ROOT</a> = 18 : missing root device informations
+    <a name="VIR_ERR_NO_SOURCE" id="VIR_ERR_NO_SOURCE">VIR_ERR_NO_SOURCE</a> = 19 : missing source device informations
+    <a name="VIR_ERR_NO_TARGET" id="VIR_ERR_NO_TARGET">VIR_ERR_NO_TARGET</a> = 20 : missing target device informations
+    <a name="VIR_ERR_NO_NAME" id="VIR_ERR_NO_NAME">VIR_ERR_NO_NAME</a> = 21 : missing domain name informations
+    <a name="VIR_ERR_NO_OS" id="VIR_ERR_NO_OS">VIR_ERR_NO_OS</a> = 22 : missing domain OS informations
+    <a name="VIR_ERR_NO_DEVICE" id="VIR_ERR_NO_DEVICE">VIR_ERR_NO_DEVICE</a> = 23 : missing domain devices informations
 }
 </pre><h3><a name="virConnCopyLastError" id="virConnCopyLastError"></a>Function: virConnCopyLastError</h3><pre class="programlisting">int	virConnCopyLastError		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br />					 <a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a> to)<br />
 </pre><p>Copy the content of the last error caught on that connection One will need to free the result with virResetError()</p>
@@ -56,7 +80,9 @@ void	<a href="#virErrorFunc">virErrorFunc</a>			(void * userData, <br />					 <a
 </pre><p>Set a connection error handling function, if @handler is NULL it will reset to default which is to pass error back to the global library handler.</p>
 <div class="variablelist"><table border="0"><col align="left" /><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>userData</tt></i>:</span></td><td>pointer to the user data provided in the handler callback</td></tr><tr><td><span class="term"><i><tt>handler</tt></i>:</span></td><td>the function to get called in case of error or NULL</td></tr></tbody></table></div><h3><a name="virCopyLastError" id="virCopyLastError"></a>Function: virCopyLastError</h3><pre class="programlisting">int	virCopyLastError		(<a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a> to)<br />
 </pre><p>Copy the content of the last error caught at the library level One will need to free the result with virResetError()</p>
-<div class="variablelist"><table border="0"><col align="left" /><tbody><tr><td><span class="term"><i><tt>to</tt></i>:</span></td><td>target to receive the copy</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 if no error was found and the error code otherwise and -1 in case of parameter error.</td></tr></tbody></table></div><h3><a name="virErrorFunc" id="virErrorFunc"></a>Function type: virErrorFunc</h3><pre class="programlisting">Function type: virErrorFunc
+<div class="variablelist"><table border="0"><col align="left" /><tbody><tr><td><span class="term"><i><tt>to</tt></i>:</span></td><td>target to receive the copy</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 if no error was found and the error code otherwise and -1 in case of parameter error.</td></tr></tbody></table></div><h3><a name="virDefaultErrorFunc" id="virDefaultErrorFunc"></a>Function: virDefaultErrorFunc</h3><pre class="programlisting">void	virDefaultErrorFunc		(<a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a> err)<br />
+</pre><p>Default routine reporting an error to stderr.</p>
+<div class="variablelist"><table border="0"><col align="left" /><tbody><tr><td><span class="term"><i><tt>err</tt></i>:</span></td><td>pointer to the error.</td></tr></tbody></table></div><h3><a name="virErrorFunc" id="virErrorFunc"></a>Function type: virErrorFunc</h3><pre class="programlisting">Function type: virErrorFunc
 void	virErrorFunc			(void * userData, <br />					 <a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a> error)
 </pre><p>Signature of a function to use when there is an error raised by the library.</p><div class="variablelist"><table border="0"><col align="left" /><tbody><tr><td><span class="term"><i><tt>userData</tt></i>:</span></td><td>user provided data for the error callback</td></tr><tr><td><span class="term"><i><tt>error</tt></i>:</span></td><td>the error being raised.</td></tr></tbody></table></div><br />
 <h3><a name="virGetLastError" id="virGetLastError"></a>Function: virGetLastError</h3><pre class="programlisting"><a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a>	virGetLastError		(void)<br />

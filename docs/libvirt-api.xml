@@ -68,16 +68,39 @@
      <summary>error handling interfaces for the libvirt library</summary>
      <description>Provides the interfaces of the libvirt library to handle errors raised while using the library. </description>
      <author>Daniel Veillard &lt;veillard@redhat.com&gt; </author>
-     <exports symbol='VIR_ERR_INTERNAL_ERROR' type='enum'/>
+     <exports symbol='VIR_ERR_WARNING' type='enum'/>
+     <exports symbol='VIR_ERR_NO_XEN' type='enum'/>
+     <exports symbol='VIR_ERR_INVALID_ARG' type='enum'/>
+     <exports symbol='VIR_ERR_ERROR' type='enum'/>
+     <exports symbol='VIR_ERR_NO_DEVICE' type='enum'/>
+     <exports symbol='VIR_ERR_NO_MEMORY' type='enum'/>
+     <exports symbol='VIR_FROM_SEXPR' type='enum'/>
+     <exports symbol='VIR_FROM_NONE' type='enum'/>
+     <exports symbol='VIR_ERR_HTTP_ERROR' type='enum'/>
+     <exports symbol='VIR_FROM_DOM' type='enum'/>
+     <exports symbol='VIR_ERR_INVALID_DOMAIN' type='enum'/>
+     <exports symbol='VIR_FROM_XML' type='enum'/>
+     <exports symbol='VIR_ERR_NO_KERNEL' type='enum'/>
+     <exports symbol='VIR_ERR_POST_FAILED' type='enum'/>
+     <exports symbol='VIR_ERR_OS_TYPE' type='enum'/>
+     <exports symbol='VIR_ERR_INVALID_CONN' type='enum'/>
      <exports symbol='VIR_ERR_NONE' type='enum'/>
      <exports symbol='VIR_ERR_OK' type='enum'/>
-     <exports symbol='VIR_FROM_DOM' type='enum'/>
-     <exports symbol='VIR_ERR_WARNING' type='enum'/>
+     <exports symbol='VIR_ERR_NO_NAME' type='enum'/>
+     <exports symbol='VIR_ERR_NO_ROOT' type='enum'/>
+     <exports symbol='VIR_ERR_OPERATION_FAILED' type='enum'/>
+     <exports symbol='VIR_ERR_GET_FAILED' type='enum'/>
+     <exports symbol='VIR_ERR_SEXPR_SERIAL' type='enum'/>
+     <exports symbol='VIR_ERR_NO_SOURCE' type='enum'/>
+     <exports symbol='VIR_ERR_NO_TARGET' type='enum'/>
+     <exports symbol='VIR_ERR_INTERNAL_ERROR' type='enum'/>
+     <exports symbol='VIR_ERR_NO_SUPPORT' type='enum'/>
      <exports symbol='VIR_FROM_XEND' type='enum'/>
-     <exports symbol='VIR_FROM_NONE' type='enum'/>
-     <exports symbol='VIR_ERR_ERROR' type='enum'/>
      <exports symbol='VIR_FROM_XEN' type='enum'/>
-     <exports symbol='VIR_ERR_NO_MEMORY' type='enum'/>
+     <exports symbol='VIR_ERR_XEN_CALL' type='enum'/>
+     <exports symbol='VIR_ERR_UNKNOWN_HOST' type='enum'/>
+     <exports symbol='VIR_ERR_NO_CONNECT' type='enum'/>
+     <exports symbol='VIR_ERR_NO_OS' type='enum'/>
      <exports symbol='virErrorPtr' type='typedef'/>
      <exports symbol='virErrorLevel' type='typedef'/>
      <exports symbol='virErrorDomain' type='typedef'/>
@@ -90,6 +113,7 @@
      <exports symbol='virErrorFunc' type='function'/>
      <exports symbol='virResetError' type='function'/>
      <exports symbol='virConnGetLastError' type='function'/>
+     <exports symbol='virDefaultErrorFunc' type='function'/>
      <exports symbol='virGetLastError' type='function'/>
      <exports symbol='virSetErrorFunc' type='function'/>
      <exports symbol='virConnCopyLastError' type='function'/>
@@ -117,15 +141,38 @@
     <enum name='VIR_DOMAIN_SHUTDOWN' file='libvirt' value='4' type='virDomainState' info='the domain is being shut down'/>
     <enum name='VIR_DOMAIN_SHUTOFF' file='libvirt' value='5' type='virDomainState' info='the domain is shut off'/>
     <enum name='VIR_ERR_ERROR' file='virterror' value='2' type='virErrorLevel' info=' An error'/>
-    <enum name='VIR_ERR_INTERNAL_ERROR' file='virterror' value='1' type='virErrorNumber' info='1'/>
+    <enum name='VIR_ERR_GET_FAILED' file='virterror' value='10' type='virErrorNumber' info='a HTTP GET command to failed'/>
+    <enum name='VIR_ERR_HTTP_ERROR' file='virterror' value='12' type='virErrorNumber' info='unexpected HTTP error code'/>
+    <enum name='VIR_ERR_INTERNAL_ERROR' file='virterror' value='1' type='virErrorNumber' info='internal error'/>
+    <enum name='VIR_ERR_INVALID_ARG' file='virterror' value='8' type='virErrorNumber' info='invalid function argument'/>
+    <enum name='VIR_ERR_INVALID_CONN' file='virterror' value='6' type='virErrorNumber' info='invalid connection object'/>
+    <enum name='VIR_ERR_INVALID_DOMAIN' file='virterror' value='7' type='virErrorNumber' info='invalid domain object'/>
     <enum name='VIR_ERR_NONE' file='virterror' value='0' type='virErrorLevel'/>
-    <enum name='VIR_ERR_NO_MEMORY' file='virterror' value='2' type='virErrorNumber' info=' 2'/>
+    <enum name='VIR_ERR_NO_CONNECT' file='virterror' value='5' type='virErrorNumber' info='can&apos;t connect to hypervisor'/>
+    <enum name='VIR_ERR_NO_DEVICE' file='virterror' value='23' type='virErrorNumber' info=' missing domain devices informations'/>
+    <enum name='VIR_ERR_NO_KERNEL' file='virterror' value='17' type='virErrorNumber' info='missing kernel informations'/>
+    <enum name='VIR_ERR_NO_MEMORY' file='virterror' value='2' type='virErrorNumber' info='memory allocation failure'/>
+    <enum name='VIR_ERR_NO_NAME' file='virterror' value='21' type='virErrorNumber' info='missing domain name informations'/>
+    <enum name='VIR_ERR_NO_OS' file='virterror' value='22' type='virErrorNumber' info='missing domain OS informations'/>
+    <enum name='VIR_ERR_NO_ROOT' file='virterror' value='18' type='virErrorNumber' info='missing root device informations'/>
+    <enum name='VIR_ERR_NO_SOURCE' file='virterror' value='19' type='virErrorNumber' info='missing source device informations'/>
+    <enum name='VIR_ERR_NO_SUPPORT' file='virterror' value='3' type='virErrorNumber' info='no support for this connection'/>
+    <enum name='VIR_ERR_NO_TARGET' file='virterror' value='20' type='virErrorNumber' info='missing target device informations'/>
+    <enum name='VIR_ERR_NO_XEN' file='virterror' value='14' type='virErrorNumber' info='could not open Xen hypervisor control'/>
     <enum name='VIR_ERR_OK' file='virterror' value='0' type='virErrorNumber'/>
+    <enum name='VIR_ERR_OPERATION_FAILED' file='virterror' value='9' type='virErrorNumber' info='a command to hypervisor failed'/>
+    <enum name='VIR_ERR_OS_TYPE' file='virterror' value='16' type='virErrorNumber' info='unknown OS type'/>
+    <enum name='VIR_ERR_POST_FAILED' file='virterror' value='11' type='virErrorNumber' info='a HTTP POST command to failed'/>
+    <enum name='VIR_ERR_SEXPR_SERIAL' file='virterror' value='13' type='virErrorNumber' info='failure to serialize an S-Expr'/>
+    <enum name='VIR_ERR_UNKNOWN_HOST' file='virterror' value='4' type='virErrorNumber' info='could not resolve hostname'/>
     <enum name='VIR_ERR_WARNING' file='virterror' value='1' type='virErrorLevel' info='A simple warning'/>
-    <enum name='VIR_FROM_DOM' file='virterror' value='3' type='virErrorDomain' info=' Error when operating on a domain'/>
+    <enum name='VIR_ERR_XEN_CALL' file='virterror' value='15' type='virErrorNumber' info='failure doing an hypervisor call'/>
+    <enum name='VIR_FROM_DOM' file='virterror' value='5' type='virErrorDomain' info=' Error when operating on a domain'/>
     <enum name='VIR_FROM_NONE' file='virterror' value='0' type='virErrorDomain'/>
+    <enum name='VIR_FROM_SEXPR' file='virterror' value='3' type='virErrorDomain' info='Error in the S-Epression code'/>
     <enum name='VIR_FROM_XEN' file='virterror' value='1' type='virErrorDomain' info='Error at Xen hypervisor layer'/>
     <enum name='VIR_FROM_XEND' file='virterror' value='2' type='virErrorDomain' info='Error at connection with xend daemon'/>
+    <enum name='VIR_FROM_XML' file='virterror' value='4' type='virErrorDomain' info='Error in the XML code'/>
     <struct name='virConnect' file='libvirt' type='struct _virConnect'/>
     <typedef name='virConnectPtr' file='libvirt' type='virConnect *'>
       <info>a virConnectPtr is pointer to a virConnect private structure, this is the type used to reference a connection to the Xen Hypervisor in the API.</info>
@@ -164,7 +211,7 @@
     <typedef name='virDomainRestart' file='libvirt' type='enum'/>
     <typedef name='virDomainState' file='libvirt' type='enum'/>
     <struct name='virError' file='virterror' type='struct _virError'>
-      <field name='code' type='int' info=' The error code, e.g. an virParserError'/>
+      <field name='code' type='int' info=' The error code, a virErrorNumber'/>
       <field name='domain' type='int' info=' What part of the library raised this error'/>
       <field name='message' type='char *' info=' human-readable informative error message'/>
       <field name='level' type='virErrorLevel' info=' how consequent is the error'/>
@@ -245,6 +292,11 @@
       <info>Copy the content of the last error caught at the library level One will need to free the result with virResetError()</info>
       <return type='int' info='0 if no error was found and the error code otherwise and -1 in case of parameter error.'/>
       <arg name='to' type='virErrorPtr' info='target to receive the copy'/>
+    </function>
+    <function name='virDefaultErrorFunc' file='virterror' module='virterror'>
+      <info>Default routine reporting an error to stderr.</info>
+      <return type='void'/>
+      <arg name='err' type='virErrorPtr' info='pointer to the error.'/>
     </function>
     <function name='virDomainCreateLinux' file='libvirt' module='libvirt'>
       <info>Launch a new Linux guest domain, based on an XML description similar to the one returned by virDomainGetXMLDesc() This function may requires priviledged access to the hypervisor.</info>

@@ -19,15 +19,38 @@
     <reference name='VIR_DOMAIN_SHUTDOWN' href='html/libvirt-libvirt.html#VIR_DOMAIN_SHUTDOWN'/>
     <reference name='VIR_DOMAIN_SHUTOFF' href='html/libvirt-libvirt.html#VIR_DOMAIN_SHUTOFF'/>
     <reference name='VIR_ERR_ERROR' href='html/libvirt-virterror.html#VIR_ERR_ERROR'/>
+    <reference name='VIR_ERR_GET_FAILED' href='html/libvirt-virterror.html#VIR_ERR_GET_FAILED'/>
+    <reference name='VIR_ERR_HTTP_ERROR' href='html/libvirt-virterror.html#VIR_ERR_HTTP_ERROR'/>
     <reference name='VIR_ERR_INTERNAL_ERROR' href='html/libvirt-virterror.html#VIR_ERR_INTERNAL_ERROR'/>
+    <reference name='VIR_ERR_INVALID_ARG' href='html/libvirt-virterror.html#VIR_ERR_INVALID_ARG'/>
+    <reference name='VIR_ERR_INVALID_CONN' href='html/libvirt-virterror.html#VIR_ERR_INVALID_CONN'/>
+    <reference name='VIR_ERR_INVALID_DOMAIN' href='html/libvirt-virterror.html#VIR_ERR_INVALID_DOMAIN'/>
     <reference name='VIR_ERR_NONE' href='html/libvirt-virterror.html#VIR_ERR_NONE'/>
+    <reference name='VIR_ERR_NO_CONNECT' href='html/libvirt-virterror.html#VIR_ERR_NO_CONNECT'/>
+    <reference name='VIR_ERR_NO_DEVICE' href='html/libvirt-virterror.html#VIR_ERR_NO_DEVICE'/>
+    <reference name='VIR_ERR_NO_KERNEL' href='html/libvirt-virterror.html#VIR_ERR_NO_KERNEL'/>
     <reference name='VIR_ERR_NO_MEMORY' href='html/libvirt-virterror.html#VIR_ERR_NO_MEMORY'/>
+    <reference name='VIR_ERR_NO_NAME' href='html/libvirt-virterror.html#VIR_ERR_NO_NAME'/>
+    <reference name='VIR_ERR_NO_OS' href='html/libvirt-virterror.html#VIR_ERR_NO_OS'/>
+    <reference name='VIR_ERR_NO_ROOT' href='html/libvirt-virterror.html#VIR_ERR_NO_ROOT'/>
+    <reference name='VIR_ERR_NO_SOURCE' href='html/libvirt-virterror.html#VIR_ERR_NO_SOURCE'/>
+    <reference name='VIR_ERR_NO_SUPPORT' href='html/libvirt-virterror.html#VIR_ERR_NO_SUPPORT'/>
+    <reference name='VIR_ERR_NO_TARGET' href='html/libvirt-virterror.html#VIR_ERR_NO_TARGET'/>
+    <reference name='VIR_ERR_NO_XEN' href='html/libvirt-virterror.html#VIR_ERR_NO_XEN'/>
     <reference name='VIR_ERR_OK' href='html/libvirt-virterror.html#VIR_ERR_OK'/>
+    <reference name='VIR_ERR_OPERATION_FAILED' href='html/libvirt-virterror.html#VIR_ERR_OPERATION_FAILED'/>
+    <reference name='VIR_ERR_OS_TYPE' href='html/libvirt-virterror.html#VIR_ERR_OS_TYPE'/>
+    <reference name='VIR_ERR_POST_FAILED' href='html/libvirt-virterror.html#VIR_ERR_POST_FAILED'/>
+    <reference name='VIR_ERR_SEXPR_SERIAL' href='html/libvirt-virterror.html#VIR_ERR_SEXPR_SERIAL'/>
+    <reference name='VIR_ERR_UNKNOWN_HOST' href='html/libvirt-virterror.html#VIR_ERR_UNKNOWN_HOST'/>
     <reference name='VIR_ERR_WARNING' href='html/libvirt-virterror.html#VIR_ERR_WARNING'/>
+    <reference name='VIR_ERR_XEN_CALL' href='html/libvirt-virterror.html#VIR_ERR_XEN_CALL'/>
     <reference name='VIR_FROM_DOM' href='html/libvirt-virterror.html#VIR_FROM_DOM'/>
     <reference name='VIR_FROM_NONE' href='html/libvirt-virterror.html#VIR_FROM_NONE'/>
+    <reference name='VIR_FROM_SEXPR' href='html/libvirt-virterror.html#VIR_FROM_SEXPR'/>
     <reference name='VIR_FROM_XEN' href='html/libvirt-virterror.html#VIR_FROM_XEN'/>
     <reference name='VIR_FROM_XEND' href='html/libvirt-virterror.html#VIR_FROM_XEND'/>
+    <reference name='VIR_FROM_XML' href='html/libvirt-virterror.html#VIR_FROM_XML'/>
     <reference name='_virDomainInfo' href='html/libvirt-libvirt.html#_virDomainInfo'/>
     <reference name='_virDomainKernel' href='html/libvirt-libvirt.html#_virDomainKernel'/>
     <reference name='_virError' href='html/libvirt-virterror.html#_virError'/>
@@ -45,6 +68,7 @@
     <reference name='virConnectOpenReadOnly' href='html/libvirt-libvirt.html#virConnectOpenReadOnly'/>
     <reference name='virConnectPtr' href='html/libvirt-libvirt.html#virConnectPtr'/>
     <reference name='virCopyLastError' href='html/libvirt-virterror.html#virCopyLastError'/>
+    <reference name='virDefaultErrorFunc' href='html/libvirt-virterror.html#virDefaultErrorFunc'/>
     <reference name='virDeviceMode' href='html/libvirt-libvirt.html#virDeviceMode'/>
     <reference name='virDomain' href='html/libvirt-libvirt.html#virDomain'/>
     <reference name='virDomainCreateFlags' href='html/libvirt-libvirt.html#virDomainCreateFlags'/>
@@ -108,15 +132,38 @@
       <ref name='VIR_DOMAIN_SHUTDOWN'/>
       <ref name='VIR_DOMAIN_SHUTOFF'/>
       <ref name='VIR_ERR_ERROR'/>
+      <ref name='VIR_ERR_GET_FAILED'/>
+      <ref name='VIR_ERR_HTTP_ERROR'/>
       <ref name='VIR_ERR_INTERNAL_ERROR'/>
+      <ref name='VIR_ERR_INVALID_ARG'/>
+      <ref name='VIR_ERR_INVALID_CONN'/>
+      <ref name='VIR_ERR_INVALID_DOMAIN'/>
       <ref name='VIR_ERR_NONE'/>
+      <ref name='VIR_ERR_NO_CONNECT'/>
+      <ref name='VIR_ERR_NO_DEVICE'/>
+      <ref name='VIR_ERR_NO_KERNEL'/>
       <ref name='VIR_ERR_NO_MEMORY'/>
+      <ref name='VIR_ERR_NO_NAME'/>
+      <ref name='VIR_ERR_NO_OS'/>
+      <ref name='VIR_ERR_NO_ROOT'/>
+      <ref name='VIR_ERR_NO_SOURCE'/>
+      <ref name='VIR_ERR_NO_SUPPORT'/>
+      <ref name='VIR_ERR_NO_TARGET'/>
+      <ref name='VIR_ERR_NO_XEN'/>
       <ref name='VIR_ERR_OK'/>
+      <ref name='VIR_ERR_OPERATION_FAILED'/>
+      <ref name='VIR_ERR_OS_TYPE'/>
+      <ref name='VIR_ERR_POST_FAILED'/>
+      <ref name='VIR_ERR_SEXPR_SERIAL'/>
+      <ref name='VIR_ERR_UNKNOWN_HOST'/>
       <ref name='VIR_ERR_WARNING'/>
+      <ref name='VIR_ERR_XEN_CALL'/>
       <ref name='VIR_FROM_DOM'/>
       <ref name='VIR_FROM_NONE'/>
+      <ref name='VIR_FROM_SEXPR'/>
       <ref name='VIR_FROM_XEN'/>
       <ref name='VIR_FROM_XEND'/>
+      <ref name='VIR_FROM_XML'/>
     </letter>
     <letter name='_'>
       <ref name='_virDomainInfo'/>
@@ -138,6 +185,7 @@
       <ref name='virConnectOpenReadOnly'/>
       <ref name='virConnectPtr'/>
       <ref name='virCopyLastError'/>
+      <ref name='virDefaultErrorFunc'/>
       <ref name='virDeviceMode'/>
       <ref name='virDomain'/>
       <ref name='virDomainCreateFlags'/>
@@ -264,6 +312,7 @@
     <type name='virErrorPtr'>
       <ref name='virConnCopyLastError'/>
       <ref name='virCopyLastError'/>
+      <ref name='virDefaultErrorFunc'/>
       <ref name='virErrorFunc'/>
       <ref name='virResetError'/>
     </type>
@@ -336,21 +385,45 @@
     </file>
     <file name='virterror'>
       <ref name='VIR_ERR_ERROR'/>
+      <ref name='VIR_ERR_GET_FAILED'/>
+      <ref name='VIR_ERR_HTTP_ERROR'/>
       <ref name='VIR_ERR_INTERNAL_ERROR'/>
+      <ref name='VIR_ERR_INVALID_ARG'/>
+      <ref name='VIR_ERR_INVALID_CONN'/>
+      <ref name='VIR_ERR_INVALID_DOMAIN'/>
       <ref name='VIR_ERR_NONE'/>
+      <ref name='VIR_ERR_NO_CONNECT'/>
+      <ref name='VIR_ERR_NO_DEVICE'/>
+      <ref name='VIR_ERR_NO_KERNEL'/>
       <ref name='VIR_ERR_NO_MEMORY'/>
+      <ref name='VIR_ERR_NO_NAME'/>
+      <ref name='VIR_ERR_NO_OS'/>
+      <ref name='VIR_ERR_NO_ROOT'/>
+      <ref name='VIR_ERR_NO_SOURCE'/>
+      <ref name='VIR_ERR_NO_SUPPORT'/>
+      <ref name='VIR_ERR_NO_TARGET'/>
+      <ref name='VIR_ERR_NO_XEN'/>
       <ref name='VIR_ERR_OK'/>
+      <ref name='VIR_ERR_OPERATION_FAILED'/>
+      <ref name='VIR_ERR_OS_TYPE'/>
+      <ref name='VIR_ERR_POST_FAILED'/>
+      <ref name='VIR_ERR_SEXPR_SERIAL'/>
+      <ref name='VIR_ERR_UNKNOWN_HOST'/>
       <ref name='VIR_ERR_WARNING'/>
+      <ref name='VIR_ERR_XEN_CALL'/>
       <ref name='VIR_FROM_DOM'/>
       <ref name='VIR_FROM_NONE'/>
+      <ref name='VIR_FROM_SEXPR'/>
       <ref name='VIR_FROM_XEN'/>
       <ref name='VIR_FROM_XEND'/>
+      <ref name='VIR_FROM_XML'/>
       <ref name='_virError'/>
       <ref name='virConnCopyLastError'/>
       <ref name='virConnGetLastError'/>
       <ref name='virConnResetLastError'/>
       <ref name='virConnSetErrorFunc'/>
       <ref name='virCopyLastError'/>
+      <ref name='virDefaultErrorFunc'/>
       <ref name='virError'/>
       <ref name='virErrorDomain'/>
       <ref name='virErrorFunc'/>
@@ -389,6 +462,9 @@
         </word>
       </letter>
       <letter name='D'>
+        <word name='Default'>
+          <ref name='virDefaultErrorFunc'/>
+        </word>
         <word name='Destroy'>
           <ref name='virDomainDestroy'/>
         </word>
@@ -1358,6 +1434,7 @@
           <ref name='virConnectNumOfDomains'/>
           <ref name='virConnectOpen'/>
           <ref name='virConnectOpenReadOnly'/>
+          <ref name='virDefaultErrorFunc'/>
           <ref name='virDomainCreateLinux'/>
           <ref name='virDomainGetInfo'/>
           <ref name='virDomainGetName'/>
@@ -1438,6 +1515,9 @@
           <ref name='virConnectGetVersion'/>
           <ref name='virGetVersion'/>
         </word>
+        <word name='reporting'>
+          <ref name='virDefaultErrorFunc'/>
+        </word>
         <word name='request'>
           <ref name='virDomainShutdown'/>
         </word>
@@ -1492,6 +1572,9 @@
         </word>
         <word name='root'>
           <ref name='_virDomainKernel'/>
+        </word>
+        <word name='routine'>
+          <ref name='virDefaultErrorFunc'/>
         </word>
         <word name='running'>
           <ref name='_virDomainInfo'/>
@@ -1558,6 +1641,7 @@
           <ref name='virDomainSuspend'/>
         </word>
         <word name='stderr'>
+          <ref name='virDefaultErrorFunc'/>
           <ref name='virSetErrorFunc'/>
         </word>
         <word name='still'>
@@ -1752,7 +1836,7 @@
         <word name='virError'>
           <ref name='virResetError'/>
         </word>
-        <word name='virParserError'>
+        <word name='virErrorNumber'>
           <ref name='_virError'/>
         </word>
         <word name='virResetError'>
