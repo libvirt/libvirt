@@ -385,6 +385,30 @@ __virErrorMsg(virErrorNumber error, const char *info) {
 	case VIR_ERR_INVALID_ARG:
 	    errmsg = "invalid domain pointer in";
 	    break;
+	case VIR_ERR_OPERATION_FAILED:
+	    if (info != NULL)
+	        errmsg = "operation failed: %s";
+	    else
+	        errmsg = "operation failed";
+	    break;
+	case VIR_ERR_GET_FAILED:
+	    if (info != NULL)
+	        errmsg = "GET operation failed: %s";
+	    else
+	        errmsg = "GET operation failed";
+	    break;
+	case VIR_ERR_POST_FAILED:
+	    if (info != NULL)
+	        errmsg = "POST operation failed: %s";
+	    else
+	        errmsg = "POST operation failed";
+	    break;
+	case VIR_ERR_HTTP_ERROR:
+	    errmsg = "got unknown HTTP error code %d";
+	    break;
+	case VIR_ERR_UNKNOWN_HOST:
+	    errmsg = "Unknown host %s";
+	    break;
     }
     return(errmsg);
 }

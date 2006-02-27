@@ -40,7 +40,8 @@ typedef enum {
     VIR_FROM_NONE = 0,
     VIR_FROM_XEN,	/* Error at Xen hypervisor layer */
     VIR_FROM_XEND,	/* Error at connection with xend daemon */
-    VIR_FROM_DOM	/* Error when operating on a domain */
+    VIR_FROM_SEXPR,	/* Error in the S-Epression code */
+    VIR_FROM_DOM,	/* Error when operating on a domain */
 } virErrorDomain;
 
 
@@ -76,11 +77,15 @@ typedef enum {
     VIR_ERR_INTERNAL_ERROR, /* internal error */
     VIR_ERR_NO_MEMORY,  /* memory allocation failure */
     VIR_ERR_NO_SUPPORT, /* no support for this connection */
+    VIR_ERR_UNKNOWN_HOST,/* could not resolve hostname */
     VIR_ERR_NO_CONNECT, /* can't connect to hypervisor */
     VIR_ERR_INVALID_CONN,/* invalid connection object */
     VIR_ERR_INVALID_DOMAIN,/* invalid domain object */
     VIR_ERR_INVALID_ARG,/* invalid function argument */
     VIR_ERR_OPERATION_FAILED,/* a command to hypervisor failed */
+    VIR_ERR_GET_FAILED,/* a HTTP GET command to failed */
+    VIR_ERR_POST_FAILED,/* a HTTP POST command to failed */
+    VIR_ERR_HTTP_ERROR,/* unexpected HTTP error code */
 } virErrorNumber;
 
 /**

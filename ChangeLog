@@ -1,3 +1,8 @@
+Mon Feb 27 14:56:57 EST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* include/virterror.h src/virterror.c src/xend_internal.c: more work
+	  plugging in the error system in the code.
+
 Mon Feb 27 17:25:48 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* TODO: updated

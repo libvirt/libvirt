@@ -78,6 +78,27 @@ virXendError(virConnectPtr conn, virErrorNumber error, const char *info) {
                     errmsg, info, NULL, 0, 0, errmsg, info);
 }
 
+/**
+ * virXendErrorInt:
+ * @conn: the connection if available
+ * @error: the error noumber
+ * @val: extra integer information
+ *
+ * Handle an error at the xend daemon interface
+ */
+static void
+virXendErrorInt(virConnectPtr conn, virErrorNumber error,
+                int val) {
+    const char *errmsg;
+    
+    if (error == VIR_ERR_OK)
+        return;
+
+    errmsg = __virErrorMsg(error, NULL);
+    __virRaiseError(conn, NULL, VIR_FROM_XEND, error, VIR_ERR_ERROR,
+                    errmsg, NULL, NULL, val, 0, errmsg, val);
+}
+
 
 #define foreach(iterator, start) \
        	for (_for_i = (start), *iterator = (start)->car; \
@@ -343,8 +364,7 @@ xend_get(virConnectPtr xend, const char *path,
     close(s);
 
     if ((ret < 0) || (ret >= 300)) {
-	virXendError(NULL, VIR_ERR_OPERATION_FAILED,
-		     content);
+	virXendError(NULL, VIR_ERR_GET_FAILED, content);
     }
 
     return ret;
@@ -392,8 +412,7 @@ xend_post(virConnectPtr xend, const char *path, const char *ops,
     close(s);
 
     if ((ret < 0) || (ret >= 300)) {
-	virXendError(NULL, VIR_ERR_OPERATION_FAILED,
-		     content);
+	virXendError(NULL, VIR_ERR_POST_FAILED, content);
     }
 
     return ret;
@@ -421,7 +440,7 @@ http2unix(int ret)
             errno = ESRCH;
             break;
         default:
-            printf("unknown error code %d\n", ret);
+            virXendErrorInt(NULL, VIR_ERR_HTTP_ERROR,  ret);
             errno = EINVAL;
             break;
     }
@@ -1048,6 +1067,7 @@ xend_setup_tcp(virConnectPtr xend, const char *host, int port)
     pent = gethostbyname(host);
     if (pent == NULL) {
         if (inet_aton(host, &ip) == 0) {
+	    virXendError(xend, VIR_ERR_UNKNOWN_HOST, host);
             errno = ESRCH;
             return(-1);
         }
@@ -1152,8 +1172,11 @@ xend_unpause(virConnectPtr xend, const char *name)
 int
 xend_rename(virConnectPtr xend, const char *old, const char *new)
 {
-    if ((xend == NULL) || (old == NULL) || (new == NULL))
+    if ((xend == NULL) || (old == NULL) || (new == NULL)) {
+	/* this should be caught at the interface but ... */
+        virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
+    }
     return xend_op(xend, old, "op", "rename", "name", new, NULL);
 }
 
@@ -1169,8 +1192,11 @@ xend_rename(virConnectPtr xend, const char *old, const char *new)
 int
 xend_reboot(virConnectPtr xend, const char *name)
 {
-    if ((xend == NULL) || (name == NULL))
+    if ((xend == NULL) || (name == NULL)) {
+	/* this should be caught at the interface but ... */
+        virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
+    }
     return xend_op(xend, name, "op", "shutdown", "reason", "reboot", NULL);
 }
 
@@ -1187,8 +1213,11 @@ xend_reboot(virConnectPtr xend, const char *name)
 int
 xend_shutdown(virConnectPtr xend, const char *name)
 {
-    if ((xend == NULL) || (name == NULL))
+    if ((xend == NULL) || (name == NULL)) {
+	/* this should be caught at the interface but ... */
+        virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
+    }
     return xend_op(xend, name,
                    "op", "shutdown", "reason", "halt", NULL);
 }
@@ -1206,8 +1235,11 @@ xend_shutdown(virConnectPtr xend, const char *name)
 int
 xend_sysrq(virConnectPtr xend, const char *name, const char *key)
 {
-    if ((xend == NULL) || (name == NULL) || (key == NULL))
+    if ((xend == NULL) || (name == NULL) || (key == NULL)) {
+	/* this should be caught at the interface but ... */
+        virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
+    }
     return xend_op(xend, name, "op", "sysrq", "key", key, NULL);
 }
 
@@ -1225,8 +1257,11 @@ xend_sysrq(virConnectPtr xend, const char *name, const char *key)
 int
 xend_destroy(virConnectPtr xend, const char *name)
 {
-    if ((xend == NULL) || (name == NULL))
+    if ((xend == NULL) || (name == NULL)) {
+	/* this should be caught at the interface but ... */
+        virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
+    }
     return xend_op(xend, name, "op", "destroy", NULL);
 }
 
@@ -1247,8 +1282,11 @@ xend_destroy(virConnectPtr xend, const char *name)
 int
 xend_save(virConnectPtr xend, const char *name, const char *filename)
 {
-    if ((xend == NULL) || (filename == NULL))
+    if ((xend == NULL) || (filename == NULL)) {
+	/* this should be caught at the interface but ... */
+        virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
+    }
     return xend_op(xend, name, "op", "save", "file", filename, NULL);
 }
 
@@ -1266,8 +1304,11 @@ xend_save(virConnectPtr xend, const char *name, const char *filename)
 int
 xend_restore(virConnectPtr xend, const char *filename)
 {
-    if ((xend == NULL) || (filename == NULL))
+    if ((xend == NULL) || (filename == NULL)) {
+	/* this should be caught at the interface but ... */
+        virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
+    }
     return xend_op(xend, "", "op", "restore", "file", filename, NULL);
 }
 
@@ -1463,6 +1504,12 @@ xend_create_sexpr(virConnectPtr xend, const char *sexpr)
     char *ptr;
 
     ptr = urlencode(sexpr);
+    if (ptr == NULL) {
+	/* this should be caught at the interface but ... */
+        virXendError(xend, VIR_ERR_INTERNAL_ERROR,
+	             "Failed to urlencode the create S-Expr");
+	return(-1);
+    }
 
     ret = xend_op(xend, "", "op", "create", "config", ptr, NULL);
 
@@ -1977,14 +2024,22 @@ xend_get_domain_ids(virConnectPtr xend, const char *domname,
         goto error;
 
     value = sexpr_node(root, "domain/domid");
-    if (value == NULL)
+    if (value == NULL) {
+        virXendError(xend, VIR_ERR_INTERNAL_ERROR,
+	             "domain informations incomplete, missing domid");
         goto error;
+    }
     ret = strtol(value, NULL, 0);
     if ((ret == 0) && (value[0] != '0')) {
+        virXendError(xend, VIR_ERR_INTERNAL_ERROR,
+	             "domain informations incorrect domid not numberic");
         ret = -1;
     } else if (uuid != NULL) {
         char **ptr = (char **) &uuid;
-        sexpr_uuid(ptr, root, "domain/uuid");
+        if (sexpr_uuid(ptr, root, "domain/uuid") == NULL) {
+	    virXendError(xend, VIR_ERR_INTERNAL_ERROR,
+			 "domain informations incomplete, missing uuid");
+	}
     }
 
 error:
@@ -2188,7 +2243,8 @@ xend_parse_sexp_desc(struct sexpr *root) {
                       sexpr_int(root, "domain/domid"));
     tmp = sexpr_node(root, "domain/name");
     if (tmp == NULL) {
-        /* VIR_ERR_NO_NAME */
+	virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+		     "domain informations incomplete, missing name");
 	goto error;
     }
     virBufferVSprintf(&buf, "  <name>%s</name>\n", tmp);
@@ -2197,7 +2253,8 @@ xend_parse_sexp_desc(struct sexpr *root) {
         /*
 	 * TODO: we will need some fallback here for other guest OSes
 	 */
-        /* VIR_ERR_NO_KERNEL */
+	virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+		     "domain informations incomplete, missing kernel");
 	goto error;
     }
     virBufferAdd(&buf, "  <os>\n", 7);
@@ -2230,7 +2287,8 @@ xend_parse_sexp_desc(struct sexpr *root) {
 		virBufferVSprintf(&buf, "      <source file='%s'/>\n", tmp);
 		tmp = sexpr_node(node, "device/vbd/dev");
 		if (tmp == NULL) {
-		    /* VIR_ERR_NO_DEV */
+		    virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+		     "domain informations incomplete, vbd has no dev");
 		    goto error;
 		}
 		virBufferVSprintf(&buf, "      <target dev='%s'/>\n", tmp);
@@ -2244,7 +2302,8 @@ xend_parse_sexp_desc(struct sexpr *root) {
 		virBufferVSprintf(&buf, "      <source dev='%s'/>\n", tmp);
 		tmp = sexpr_node(node, "device/vbd/dev");
 		if (tmp == NULL) {
-		    /* VIR_ERR_NO_DEV */
+		    virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+		     "domain informations incomplete, vbd has no dev");
 		    goto error;
 		}
 		virBufferVSprintf(&buf, "      <target dev='%s'/>\n", tmp);
@@ -2316,8 +2375,11 @@ xend_get_domain_xml(virDomainPtr domain) {
     char *ret = NULL;
     struct sexpr *root;
 
-    if (!VIR_IS_DOMAIN(domain))
+    if (!VIR_IS_DOMAIN(domain)) {
+	/* this should be caught at the interface but ... */
+        virXendError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
 	return(NULL);
+    }
 
     root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
     if (root == NULL)
