@@ -1,7 +1,5 @@
 Absolute TODOs:
 - thread protection, reentrancy, refcounting, etc ...
-- Error API. probably similar to libxml2 structured API
-- extract error messages from the Xend rpc
 
 TODO:
 - Create() API, how do we best keep flexibility and allow various
@@ -13,6 +11,7 @@ TODO:
 - in python bindings raise an exception if a lookup or connection fails
   to return a non-None object
 - Add uuid to XML format
+- add error handling hooks at the python level
 
 virsh TODO:
 - decide where will be default directory for domains configurations (/etc/xen/domains/* ?)
@@ -46,3 +45,5 @@ Done:
 - the CreateLinux() API is a first step toward a final Create()
 - documentation and examples on using the toolkit
 - UUID based lookup and naming
+- Error API similar to libxml2 structured API
+- extract error messages from the Xend rpc

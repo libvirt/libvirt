@@ -24,6 +24,27 @@
 #include "xml.h"
 
 /**
+ * virXenError:
+ * @conn: the connection if available
+ * @error: the error number
+ * @info: extra information string
+ *
+ * Handle an error at the xend daemon interface
+ */
+static void
+virXMLError(virErrorNumber error, const char *info, int value) {
+    const char *errmsg;
+    
+    if (error == VIR_ERR_OK)
+        return;
+
+    errmsg = __virErrorMsg(error, info);
+    __virRaiseError(NULL, NULL, VIR_FROM_XML, error, VIR_ERR_ERROR,
+                    errmsg, info, NULL, value, 0, errmsg, info,
+		    value);
+}
+
+/**
  * virBufferGrow:
  * @buf:  the buffer
  * @len:  the minimum free size to allocate
@@ -44,6 +65,7 @@ virBufferGrow(virBufferPtr buf, unsigned int len) {
 
     newbuf = (char *) realloc(buf->content, size);
     if (newbuf == NULL) {
+        virXMLError(VIR_ERR_NO_MEMORY, "growing buffer", size);
         return(-1);
     }
     buf->content = newbuf;
@@ -514,11 +536,12 @@ virDomainParseXMLOSDesc(xmlNodePtr node, virBufferPtr buf) {
     }
     if ((type != NULL) && (!xmlStrEqual(type, BAD_CAST "linux"))) {
         /* VIR_ERR_OS_TYPE */
+	virXMLError(VIR_ERR_OS_TYPE, (const char *) type, 0);
 	return(-1);
     }
     virBufferAdd(buf, "(linux ", 7);
     if (kernel == NULL) {
-        /* VIR_ERR_NO_KERNEL */
+	virXMLError(VIR_ERR_NO_KERNEL, NULL, 0);
 	return(-1);
     }
     virBufferVSprintf(buf, "(kernel '%s')", (const char *) kernel);
@@ -528,7 +551,7 @@ virDomainParseXMLOSDesc(xmlNodePtr node, virBufferPtr buf) {
 	const xmlChar *base, *tmp;
         /* need to extract root info from command line */
 	if (cmdline == NULL) {
-	    /* VIR_ERR_NO_ROOT */
+	    virXMLError(VIR_ERR_NO_ROOT, (const char *) cmdline, 0);
 	    return(-1);
 	}
 	base = cmdline;
@@ -548,7 +571,7 @@ virDomainParseXMLOSDesc(xmlNodePtr node, virBufferPtr buf) {
 	tmp = base;
 	while ((*tmp != 0) && (*tmp != ' ') && (*tmp != '\t')) tmp++;
 	if (tmp == base) {
-	    /* VIR_ERR_NO_ROOT */
+	    virXMLError(VIR_ERR_NO_ROOT, (const char *) cmdline, 0);
 	    return(-1);
 	}
 	root = xmlStrndup(base, tmp - base);
@@ -612,13 +635,14 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf) {
     }
 
     if (source == NULL) {
-        /* VIR_ERR_NO_SOURCE */
+	virXMLError(VIR_ERR_NO_SOURCE, (const char *) target, 0);
+	
 	if (target != NULL)
 	    xmlFree(target);
 	return(-1);
     }
     if (target == NULL) {
-        /* VIR_ERR_NO_TARGET */
+	virXMLError(VIR_ERR_NO_TARGET, (const char *) source, 0);
 	if (source != NULL)
 	    xmlFree(source);
 	return(-1);
@@ -733,7 +757,7 @@ char *
 virDomainParseXMLDesc(const char *xmldesc, char **name) {
     xmlDocPtr xml = NULL;
     xmlNodePtr node;
-    char *ret = NULL;
+    char *ret = NULL, *nam = NULL;
     virBuffer buf;
     xmlChar *prop;
     xmlXPathObjectPtr obj = NULL;
@@ -778,12 +802,15 @@ virDomainParseXMLDesc(const char *xmldesc, char **name) {
     obj = xmlXPathEval(BAD_CAST "string(/domain/name[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) || 
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-	/* VIR_ERR_NO_NAME */
+	virXMLError(VIR_ERR_NO_NAME, xmldesc, 0);
         goto error;
     }
     virBufferVSprintf(&buf, "(name '%s')", obj->stringval);
-    if (name != NULL)
-	*name = strdup((const char *) obj->stringval);
+    nam = strdup((const char *) obj->stringval);
+    if (nam == NULL) {
+	virXMLError(VIR_ERR_NO_MEMORY, "copying name", 0);
+	goto error;
+    }
     xmlXPathFreeObject(obj);
 
     obj = xmlXPathEval(BAD_CAST "number(/domain/memory[1])", ctxt);
@@ -812,7 +839,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name) {
     if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
         (obj->nodesetval == NULL) ||
 	(obj->nodesetval->nodeNr != 1)) {
-	/* VIR_ERR_NO_OS */
+	virXMLError(VIR_ERR_NO_OS, nam, 0);
         goto error;
     }
     res = virDomainParseXMLOSDesc(obj->nodesetval->nodeTab[0], &buf);
@@ -827,7 +854,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name) {
     if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
         (obj->nodesetval == NULL) ||
 	(obj->nodesetval->nodeNr < 1)) {
-	/* VIR_ERR_NO_DEVICE */
+	virXMLError(VIR_ERR_NO_DEVICE, nam, 0);
         goto error;
     }
     for (i = 0;i < obj->nodesetval->nodeNr;i++) {
@@ -859,15 +886,17 @@ virDomainParseXMLDesc(const char *xmldesc, char **name) {
 
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
+
+    if (name != NULL)
+	*name = nam;
     
     return(ret);
 
 error:
-    if (name != NULL) {
-        if (*name != NULL)
-	    free(*name);
+    if (nam != NULL)
+	free(nam);
+    if (name != NULL)
 	*name = NULL;
-    }
     if (obj != NULL)
         xmlXPathFreeObject(obj);
     if (ctxt != NULL)

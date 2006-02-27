@@ -1,3 +1,9 @@
+Mon Feb 27 17:33:16 EST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* TODO: updated, and added python hooks for error handling
+	* include/virterror.h src/virterror.c src/xml.c: error interception
+	  and reporting should be done.
+
 Mon Feb 27 16:42:46 EST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt.c src/xen_internal.[ch]: virConnectOpenReadOnly()

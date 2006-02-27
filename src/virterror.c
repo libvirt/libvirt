@@ -424,6 +424,51 @@ __virErrorMsg(virErrorNumber error, const char *info) {
 	case VIR_ERR_XEN_CALL:
 	    errmsg = "failed Xen syscall %s %d";
 	    break;
+	case VIR_ERR_OS_TYPE:
+	    if (info == NULL)
+	        errmsg = "unknown OS type";
+	    else
+	        errmsg = "unknown OS type %s";
+	    break;
+	case VIR_ERR_NO_KERNEL:
+	    errmsg = "missing kernel informations";
+	    break;
+	case VIR_ERR_NO_ROOT:
+	    if (info == NULL)
+		errmsg = "missing root device informations";
+	    else
+		errmsg = "missing root device informations in %s";
+	    break;
+	case VIR_ERR_NO_SOURCE:
+	    if (info == NULL)
+		errmsg = "missing source informations for device";
+	    else
+		errmsg = "missing source informations for device %s";
+	    break;
+	case VIR_ERR_NO_TARGET:
+	    if (info == NULL)
+		errmsg = "missing target informations for device";
+	    else
+		errmsg = "missing target informations for device %s";
+	    break;
+	case VIR_ERR_NO_NAME:
+	    if (info == NULL)
+		errmsg = "missing domain name informations";
+	    else
+		errmsg = "missing domain name informations in %s";
+	    break;
+	case VIR_ERR_NO_OS:
+	    if (info == NULL)
+		errmsg = "missing operating system informations";
+	    else
+		errmsg = "missing operating system informations for %s";
+	    break;
+	case VIR_ERR_NO_DEVICE:
+	    if (info == NULL)
+		errmsg = "missing devices informations";
+	    else
+		errmsg = "missing devices informations for %s";
+	    break;
     }
     return(errmsg);
 }
