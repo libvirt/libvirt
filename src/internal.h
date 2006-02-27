@@ -129,6 +129,21 @@ char *		virDomainGetVMInfo	(virDomainPtr domain,
 					 const char *vm,
 		          	         const char *name);
 
+void		 __virRaiseError	(virConnectPtr conn,
+					 virDomainPtr dom,
+					 int domain,
+					 int code,
+					 virErrorLevel level,
+					 const char *str1,
+					 const char *str2,
+					 const char *str3,
+					 int int1,
+					 int int2,
+					 const char *msg,
+					 ...);
+const char *	__virErrorMsg		(virErrorNumber error,
+					 const char *info);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

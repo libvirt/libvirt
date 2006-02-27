@@ -53,7 +53,7 @@ typedef enum {
 typedef struct _virError virError;
 typedef virError *virErrorPtr;
 struct _virError {
-    int		code;	/* The error code, e.g. an virParserError */
+    int		code;	/* The error code, a virErrorNumber */
     int		domain;	/* What part of the library raised this error */
     char       *message;/* human-readable informative error message */
     virErrorLevel level;/* how consequent is the error */
@@ -73,8 +73,14 @@ struct _virError {
  */
 typedef enum {
     VIR_ERR_OK = 0,
-    VIR_ERR_INTERNAL_ERROR, /* 1 */
-    VIR_ERR_NO_MEMORY  /* 2 */
+    VIR_ERR_INTERNAL_ERROR, /* internal error */
+    VIR_ERR_NO_MEMORY,  /* memory allocation failure */
+    VIR_ERR_NO_SUPPORT, /* no support for this connection */
+    VIR_ERR_NO_CONNECT, /* can't connect to hypervisor */
+    VIR_ERR_INVALID_CONN,/* invalid connection object */
+    VIR_ERR_INVALID_DOMAIN,/* invalid domain object */
+    VIR_ERR_INVALID_ARG,/* invalid function argument */
+    VIR_ERR_OPERATION_FAILED,/* a command to hypervisor failed */
 } virErrorNumber;
 
 /**

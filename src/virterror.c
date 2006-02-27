@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #include "libvirt.h"
 #include "virterror.h"
 #include "internal.h"
@@ -19,6 +20,43 @@ static virError     lastErr = 		/* the last error */
 { 0, 0, NULL, VIR_ERR_NONE, NULL, NULL, NULL, NULL, NULL, 0, 0};
 static virErrorFunc virErrorHandler = NULL;/* global error handlet */
 static void        *virUserData = NULL;	/* associated data */
+
+/*
+ * Macro used to format the message as a string in __virRaiseError
+ * and borrowed from libxml2.
+ */
+#define VIR_GET_VAR_STR(msg, str) {				\
+    int       size, prev_size = -1;				\
+    int       chars;						\
+    char      *larger;						\
+    va_list   ap;						\
+								\
+    str = (char *) malloc(150);					\
+    if (str != NULL) {						\
+								\
+    size = 150;							\
+								\
+    while (1) {							\
+	va_start(ap, msg);					\
+  	chars = vsnprintf(str, size, msg, ap);			\
+	va_end(ap);						\
+	if ((chars > -1) && (chars < size)) {			\
+	    if (prev_size == chars) {				\
+		break;						\
+	    } else {						\
+		prev_size = chars;				\
+	    }							\
+	}							\
+	if (chars > -1)						\
+	    size += chars + 1;					\
+	else							\
+	    size += 100;					\
+	if ((larger = (char *) realloc(str, size)) == NULL) {	\
+	    break;						\
+	}							\
+	str = larger;						\
+    }}								\
+}
 
 /*
  * virGetLastError:
@@ -171,5 +209,183 @@ virConnSetErrorFunc(virConnectPtr conn, void *userData, virErrorFunc handler) {
         return;
     conn->handler = handler;
     conn->userData = userData;
+}
+
+/**
+ * virReportError:
+ * @err: pointer to the error.
+ *
+ * Internal routine reporting an error to stderr.
+ */
+static void
+virReportError(virErrorPtr err) {
+    const char *lvl = "", *dom = "", *domain = "";
+    int len;
+
+    if ((err == NULL) || (err->code == VIR_ERR_OK))
+        return;
+    switch (err->level) {
+        case VIR_ERR_NONE:
+	    lvl = "";
+	    break;
+        case VIR_ERR_WARNING:
+	    lvl = "warning";
+	    break;
+        case VIR_ERR_ERROR:
+	    lvl = "error";
+	    break;
+    } 
+    switch (err->domain) {
+        case VIR_FROM_NONE:
+	    dom = "";
+	    break;
+        case VIR_FROM_XEN:
+	    dom = "Xen ";
+	    break;
+        case VIR_FROM_XEND:
+	    dom = "Xen Daemon ";
+	    break;
+        case VIR_FROM_DOM:
+	    dom = "Domain ";
+	    break;
+    }
+    if ((err->dom != NULL) && (err->code != VIR_ERR_INVALID_DOMAIN)) {
+        domain = err->dom->name;
+    }
+    len = strlen(err->message);
+    if ((len == 0) || (err->message[len - 1] != '\n'))
+	fprintf(stderr, "libvir: %s%s %s: %s\n",
+	        dom, lvl, domain, err->message);
+    else 
+	fprintf(stderr, "libvir: %s%s %s: %s",
+	        dom, lvl, domain, err->message);
+}
+
+/**
+ * __virRaiseError:
+ * @conn: the connection to the hypervisor if available
+ * @dom: the domain if available
+ * @domain: the virErrorDomain indicating where it's coming from
+ * @code: the virErrorNumber code for the error
+ * @level: the virErrorLevel for the error
+ * @str1: extra string info
+ * @str2: extra string info
+ * @str3: extra string info
+ * @int1: extra int info
+ * @int2: extra int info
+ * @msg:  the message to display/transmit
+ * @...:  extra parameters for the message display
+ *
+ * Internal routine called when an error is detected. It will raise it
+ * immediately if a callback is found and store it for later handling.
+ */
+void
+__virRaiseError(virConnectPtr conn, virDomainPtr dom,
+                int domain, int code, virErrorLevel level,
+                const char *str1, const char *str2, const char *str3,
+		int int1, int int2, const char *msg, ...) {
+    virErrorPtr to = &lastErr;
+    void *userData = virUserData;
+    virErrorFunc handler = virErrorHandler;
+    char *str;
+
+    if (code == VIR_ERR_OK)
+	return;
+
+    /*
+     * try to find the best place to save and report the error
+     */
+    if (conn != NULL) {
+        to = &conn->err;
+	if (conn->handler != NULL) {
+	    handler = conn->handler;
+	    userData = conn->userData;
+	}
+    }
+
+    /*
+     * formats the message
+     */
+    if (msg == NULL) {
+        str = strdup("No error message provided");
+    } else {
+        VIR_GET_VAR_STR(msg, str);
+    }
+
+    /*
+     * Save the information about the error
+     */
+    virResetError(to);
+    to->conn = conn;
+    to->dom = dom;
+    to->domain = domain;
+    to->code = code;
+    to->message = str;
+    to->level = level;
+    if (str1 != NULL)
+        to->str1 = strdup(str1);
+    if (str2 != NULL)
+        to->str2 = strdup(str2);
+    if (str3 != NULL)
+        to->str3 = strdup(str3);
+    to->int1 = int1;
+    to->int2 = int2;
+
+    /*
+     * now, report it
+     */
+    if (handler != NULL) {
+        handler(userData, to);
+    } else {
+        virReportError(to);
+    }
+}
+
+/**
+ * __virErrorMsg:
+ * @error: the virErrorNumber
+ * @info: usually the first paprameter string
+ *
+ * Internal routine to get the message associated to an error raised
+ * from the library
+ *
+ * Returns the constant string associated to @error
+ */
+const char *
+__virErrorMsg(virErrorNumber error, const char *info) {
+    const char *errmsg = NULL;
+
+    switch (error) {
+        case VIR_ERR_OK:
+	    return(NULL);
+	case VIR_ERR_INTERNAL_ERROR:
+	    if (info != NULL)
+		errmsg = "internal error %s";
+	    else
+	        errmsg = "internal error";
+	    break;
+	case VIR_ERR_NO_MEMORY:
+	    errmsg = "out of memory";
+	    break;
+	case VIR_ERR_NO_SUPPORT:
+	    errmsg = "no support for hypervisor %s";
+	    break;
+	case VIR_ERR_NO_CONNECT:
+	    if (info == NULL)
+	        errmsg = "could not connect to hypervisor";
+	    else
+	        errmsg = "could not connect to %s";
+	    break;
+	case VIR_ERR_INVALID_CONN:
+	    errmsg = "invalid connection pointer in";
+	    break;
+	case VIR_ERR_INVALID_DOMAIN:
+	    errmsg = "invalid domain pointer in";
+	    break;
+	case VIR_ERR_INVALID_ARG:
+	    errmsg = "invalid domain pointer in";
+	    break;
+    }
+    return(errmsg);
 }
 

@@ -57,6 +57,28 @@ struct xend {
     struct sockaddr_in addr_in;
 };
 
+
+/**
+ * virXendError:
+ * @conn: the connection if available
+ * @error: the error noumber
+ * @info: extra information string
+ *
+ * Handle an error at the xend daemon interface
+ */
+static void
+virXendError(virConnectPtr conn, virErrorNumber error, const char *info) {
+    const char *errmsg;
+    
+    if (error == VIR_ERR_OK)
+        return;
+
+    errmsg = __virErrorMsg(error, info);
+    __virRaiseError(conn, NULL, VIR_FROM_XEND, error, VIR_ERR_ERROR,
+                    errmsg, info, NULL, 0, 0, errmsg, info);
+}
+
+
 #define foreach(iterator, start) \
        	for (_for_i = (start), *iterator = (start)->car; \
              _for_i->kind == SEXPR_CONS; \
@@ -81,10 +103,14 @@ do_connect(virConnectPtr xend)
     int serrno;
 
     s = socket(xend->type, SOCK_STREAM, 0);
-    if (s == -1)
+    if (s == -1) {
+        virXendError(xend, VIR_ERR_INTERNAL_ERROR,
+	             "failed to create a socket");
         return -1;
+    }
 
     if (connect(s, xend->addr, xend->len) == -1) {
+        virXendError(xend, VIR_ERR_NO_CONNECT, "Xen Daemon");
         serrno = errno;
         close(s);
         errno = serrno;
@@ -131,6 +157,13 @@ wr_sync(int fd, void *buffer, size_t size, int do_read)
 
         /* unrecoverable error */
         if (len == -1) {
+	    if (do_read)
+		virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+			     "faid to read from Xen Daemon");
+	    else
+		virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+			     "faid to read from Xen Daemon");
+	        
             return(-1);
         }
 
@@ -309,6 +342,11 @@ xend_get(virConnectPtr xend, const char *path,
     ret = xend_req(s, content, n_content);
     close(s);
 
+    if ((ret < 0) || (ret >= 300)) {
+	virXendError(NULL, VIR_ERR_OPERATION_FAILED,
+		     content);
+    }
+
     return ret;
 }
 
@@ -352,6 +390,11 @@ xend_post(virConnectPtr xend, const char *path, const char *ops,
 
     ret = xend_req(s, content, n_content);
     close(s);
+
+    if ((ret < 0) || (ret >= 300)) {
+	virXendError(NULL, VIR_ERR_OPERATION_FAILED,
+		     content);
+    }
 
     return ret;
 }

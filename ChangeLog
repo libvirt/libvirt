@@ -1,3 +1,11 @@
+Mon Feb 27 17:25:48 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* TODO: updated
+	* include/virterror.h src/internal.h src/libvirt.c src/virterror.c
+	  src/xend_internal.c: commiting a first pass at adding error handling
+	  in the code, not finished, but it starts to work, need more coverage
+	  and testing.
+
 Fri Feb 24 23:33:55 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/Makefile.am src/internal.h src/libvirt.c src/libvirt_sym.version

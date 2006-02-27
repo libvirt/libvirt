@@ -34,6 +34,50 @@
  */
 
 /**
+ * virLibConnError:
+ * @conn: the connection if available
+ * @error: the error noumber
+ * @info: extra information string
+ *
+ * Handle an error at the connection level
+ */
+static void
+virLibConnError(virConnectPtr conn, virErrorNumber error, const char *info) {
+    const char *errmsg;
+    
+    if (error == VIR_ERR_OK)
+        return;
+
+    errmsg = __virErrorMsg(error, info);
+    __virRaiseError(conn, NULL, VIR_FROM_NONE, error, VIR_ERR_ERROR,
+                    errmsg, info, NULL, 0, 0, errmsg, info);
+}
+
+/**
+ * virLibConnError:
+ * @conn: the connection if available
+ * @error: the error noumber
+ * @info: extra information string
+ *
+ * Handle an error at the connection level
+ */
+static void
+virLibDomainError(virDomainPtr domain, virErrorNumber error, const char *info) {
+    virConnectPtr conn = NULL;
+    const char *errmsg;
+    
+    if (error == VIR_ERR_OK)
+        return;
+
+    errmsg = __virErrorMsg(error, info);
+    if (error != VIR_ERR_INVALID_DOMAIN) {
+        conn = domain->conn;
+    }
+    __virRaiseError(conn, domain, VIR_FROM_DOM, error, VIR_ERR_ERROR,
+                    errmsg, info, NULL, 0, 0, errmsg, info);
+}
+
+/**
  * virGetVersion:
  * @libVer: return value for the library version (OUT)
  * @type: hypervisor type
@@ -68,6 +112,7 @@ virGetVersion(unsigned long *libVer, const char *type, unsigned long *typeVer) {
 	    }
 	} else {
 	    *typeVer = 0;
+	    virLibConnError(NULL, VIR_ERR_NO_SUPPORT, "type");
 	    return(-1);
 	}
     }
@@ -90,19 +135,26 @@ virConnectOpen(const char *name) {
     struct xs_handle *xshandle = NULL;
 
     /* we can only talk to the local Xen supervisor ATM */
-    if (name != NULL) 
+    if (name != NULL) {
+        virLibConnError(NULL, VIR_ERR_NO_SUPPORT, name); 
         return(NULL);
+    }
 
     handle = xenHypervisorOpen();
-    if (handle == -1)
+    if (handle == -1) {
         goto failed;
+    }
     xshandle = xs_daemon_open();
-    if (xshandle == NULL)
+    if (xshandle == NULL) {
+        virLibConnError(NULL, VIR_ERR_NO_CONNECT, "XenStore"); 
         goto failed;
+    }
 
     ret = (virConnectPtr) malloc(sizeof(virConnect));
-    if (ret == NULL)
+    if (ret == NULL) {
+        virLibConnError(NULL, VIR_ERR_NO_MEMORY, "Allocating connection");
         goto failed;
+    }
     memset(ret, 0, sizeof(virConnect));
     ret->magic = VIR_CONNECT_MAGIC;
     ret->handle = handle;
@@ -143,8 +195,10 @@ virConnectOpenReadOnly(const char *name) {
     struct xs_handle *xshandle = NULL;
 
     /* we can only talk to the local Xen supervisor ATM */
-    if (name != NULL) 
+    if (name != NULL) {
+        virLibConnError(NULL, VIR_ERR_NO_SUPPORT, name); 
         return(NULL);
+    }
 
     handle = xenHypervisorOpen();
     if (handle >= 0)
@@ -157,8 +211,10 @@ virConnectOpenReadOnly(const char *name) {
         method++;
 
     ret = (virConnectPtr) malloc(sizeof(virConnect));
-    if (ret == NULL)
+    if (ret == NULL) {
+        virLibConnError(NULL, VIR_ERR_NO_MEMORY, "Allocating connection");
         goto failed;
+    }
     memset(ret, 0, sizeof(virConnect));
     ret->magic = VIR_CONNECT_MAGIC;
     ret->handle = handle;
@@ -166,9 +222,14 @@ virConnectOpenReadOnly(const char *name) {
     if (xend_setup(ret) == 0)
         method++;
     ret->domains = virHashCreate(20);
-    ret->flags = VIR_CONNECT_RO;
-    if ((ret->domains == NULL) || (method == 0))
+    if (ret->domains == NULL)
         goto failed;
+    ret->flags = VIR_CONNECT_RO;
+    if (method == 0) {
+        virLibConnError(NULL, VIR_ERR_NO_CONNECT,
+	                "could not connect to Xen Daemon nor Xen Store");
+        goto failed;
+    }
 
     return(ret);
 failed:
@@ -259,8 +320,10 @@ virConnectClose(virConnectPtr conn) {
  */
 const char *
 virConnectGetType(virConnectPtr conn) {
-    if (!VIR_IS_CONNECT(conn))
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, "in virConnectGetType");
         return(NULL);
+    }
     return("Xen");
 }
 
@@ -281,11 +344,15 @@ int
 virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer) {
     unsigned long ver;
 
-    if (!VIR_IS_CONNECT(conn))
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
 	return(-1);
+    }
     
-    if (hvVer == NULL)
+    if (hvVer == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
+    }
     
     /* this can't be extracted from the Xenstore */
     if (conn->handle < 0) {
@@ -315,11 +382,15 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids) {
     long id;
     char **idlist = NULL, *endptr;
 
-    if (!VIR_IS_CONNECT(conn))
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
 	return(-1);
+    }
     
-    if ((ids == NULL) || (maxids <= 0))
+    if ((ids == NULL) || (maxids <= 0)) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
+    }
     
     idlist = xend_get_domains(conn);
     if (idlist != NULL) {
@@ -368,8 +439,10 @@ virConnectNumOfDomains(virConnectPtr conn) {
     unsigned int num;
     char **idlist = NULL;
 
-    if (!VIR_IS_CONNECT(conn))
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
 	return(-1);
+    }
 
     /* 
      * try first with Xend interface
@@ -415,10 +488,15 @@ virDomainCreateLinux(virConnectPtr conn,
     char *name = NULL;
     virDomainPtr dom;
 
-    if (!VIR_IS_CONNECT(conn))
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
 	return(NULL);
-    if (xmlDesc == NULL)
+    }
+    if (xmlDesc == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
+    }
+
     sexpr = virDomainParseXMLDesc(xmlDesc, &name);
     if ((sexpr == NULL) || (name == NULL)) {
         if (sexpr != NULL)
@@ -614,10 +692,14 @@ virDomainLookupByID(virConnectPtr conn, int id) {
     char *name = NULL;
     unsigned char uuid[16];
 
-    if (!VIR_IS_CONNECT(conn))
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
 	return(NULL);
-    if (id < 0)
+    }
+    if (id < 0) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
+    }
 
     /* lookup is easier with the Xen store so try it first */
     if (conn->xshandle != NULL) {
@@ -690,10 +772,14 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid) {
     unsigned char ident[16];
     int id = -1;
 
-    if (!VIR_IS_CONNECT(conn))
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
 	return(NULL);
-    if (uuid == NULL)
+    }
+    if (uuid == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
+    }
     names = xend_get_domains(conn);
     tmp = names;
 
@@ -753,10 +839,14 @@ virDomainLookupByName(virConnectPtr conn, const char *name) {
     int found = 0;
     struct xend_domain *xenddomain = NULL;
 
-    if (!VIR_IS_CONNECT(conn))
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
 	return(NULL);
-    if (name == NULL)
+    }
+    if (name == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
+    }
 
     /* try first though Xend */
     xenddomain = xend_get_domain(conn, name);
@@ -834,8 +924,10 @@ int
 virDomainDestroy(virDomainPtr domain) {
     int ret;
 
-    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
 	return(-1);
+    }
 
     /*
      * try first with the xend method
@@ -865,8 +957,10 @@ virDomainDestroy(virDomainPtr domain) {
  */
 int
 virDomainFree(virDomainPtr domain) {
-    if (!VIR_IS_DOMAIN(domain))
+    if (!VIR_IS_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
 	return(-1);
+    }
     domain->magic = -1;
     domain->handle = -1;
     if (domain->path != NULL)
@@ -893,8 +987,11 @@ int
 virDomainSuspend(virDomainPtr domain) {
     int ret;
 
-    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
 	return(-1);
+    }
+
     /* first try though the Xen daemon */
     ret = xend_pause(domain->conn, domain->name);
     if (ret == 0)
@@ -918,8 +1015,11 @@ int
 virDomainResume(virDomainPtr domain) {
     int ret;
 
-    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
 	return(-1);
+    }
+
     /* first try though the Xen daemon */
     ret = xend_unpause(domain->conn, domain->name);
     if (ret == 0)
@@ -946,8 +1046,14 @@ virDomainSave(virDomainPtr domain, const char *to) {
     int ret;
     char filepath[4096];
 
-    if ((!VIR_IS_CONNECTED_DOMAIN(domain)) || (to == NULL))
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
 	return(-1);
+    }
+    if (to == NULL) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+	return(-1);
+    }
 
     /*
      * We must absolutize the file path as the save is done out of process
@@ -987,8 +1093,15 @@ virDomainRestore(virConnectPtr conn, const char *from) {
     int ret;
     char filepath[4096];
 
-    if ((!VIR_IS_CONNECT(conn)) || (from == NULL))
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
 	return(-1);
+    }
+    if (from == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+	return(-1);
+    }
+
     /*
      * We must absolutize the file path as the restore is done out of process
      * TODO: check for URI when libxml2 is linked in.
@@ -1029,8 +1142,10 @@ int
 virDomainShutdown(virDomainPtr domain) {
     int ret;
 
-    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
 	return(-1);
+    }
     
     /*
      * try first with the xend daemon
@@ -1061,8 +1176,10 @@ virDomainShutdown(virDomainPtr domain) {
  */
 const char *
 virDomainGetName(virDomainPtr domain) {
-    if (!VIR_IS_DOMAIN(domain))
+    if (!VIR_IS_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
 	return(NULL);
+    }
     return(domain->name);
 }
 
@@ -1077,11 +1194,18 @@ virDomainGetName(virDomainPtr domain) {
  */
 int
 virDomainGetUUID(virDomainPtr domain, unsigned char *uuid) {
-    if ((!VIR_IS_DOMAIN(domain)) || (uuid == NULL))
+    if (!VIR_IS_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
 	return(-1);
-    if (domain->handle == 0)
+    }
+    if (uuid == NULL) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+	return(-1);
+    }
+
+    if (domain->handle == 0) {
         memset(uuid, 0, 16);
-    else {
+    } else {
 	if ((domain->uuid[0] == 0) && (domain->uuid[1] == 0) &&
 	    (domain->uuid[2] == 0) && (domain->uuid[3] == 0) &&
 	    (domain->uuid[4] == 0) && (domain->uuid[5] == 0) &&
@@ -1106,8 +1230,10 @@ virDomainGetUUID(virDomainPtr domain, unsigned char *uuid) {
  */
 unsigned int
 virDomainGetID(virDomainPtr domain) {
-    if (!VIR_IS_DOMAIN(domain))
+    if (!VIR_IS_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
 	return((unsigned int) -1);
+    }
     return(domain->handle);
 }
 
@@ -1123,8 +1249,10 @@ char *
 virDomainGetOSType(virDomainPtr domain) {
     char *vm, *str = NULL;
     
-    if (!VIR_IS_DOMAIN(domain))
+    if (!VIR_IS_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
 	return(NULL);
+    }
     
     vm = virDomainGetVM(domain);
     if (vm) {
@@ -1151,8 +1279,10 @@ unsigned long
 virDomainGetMaxMemory(virDomainPtr domain) {
     unsigned long ret = 0;
 
-    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
 	return(0);
+    }
     
     if (domain->conn->flags & VIR_CONNECT_RO) {
         char *tmp;
@@ -1192,10 +1322,14 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory) {
     int ret;
     char s[256], v[30];
     
-    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
 	return(-1);
-    if (memory < 4096)
+    }
+    if (memory < 4096) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
+    }
     if (domain->conn->flags & VIR_CONNECT_RO)
         return(-1);
     if (domain->conn->xshandle==NULL)
@@ -1240,10 +1374,14 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
     char request[200];
 
 
-    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
 	return(-1);
-    if (info == NULL)
+    }
+    if (info == NULL) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
 	return(-1);
+    }
     
     memset(info, 0, sizeof(virDomainInfo));
     
@@ -1352,10 +1490,14 @@ xend_info:
  */
 char *
 virDomainGetXMLDesc(virDomainPtr domain, int flags) {
-    if (!VIR_IS_DOMAIN(domain))
+    if (!VIR_IS_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
 	return(NULL);
-    if (flags != 0)
+    }
+    if (flags != 0) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
 	return(NULL);
+    }
 
     return(xend_get_domain_xml(domain));
 }

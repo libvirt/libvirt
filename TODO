@@ -12,6 +12,7 @@ TODO:
 - DTD/RNG/XSD schemas for the XML Domain descriptions
 - in python bindings raise an exception if a lookup or connection fails
   to return a non-None object
+- Add uuid to XML format
 
 virsh TODO:
 - decide where will be default directory for domains configurations (/etc/xen/domains/* ?)
