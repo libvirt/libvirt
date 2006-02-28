@@ -33,9 +33,10 @@ del conn
 if errno == None:
     print 'failed to get an error'
 elif errno[0] == libvirt.VIR_ERR_NO_CONNECT or \
-     errno[0] == libvirt.VIR_ERR_INVALID_DOMAIN:
+     errno[0] == libvirt.VIR_ERR_INVALID_DOMAIN or \
+     errno[0] == libvirt.VIR_ERR_GET_FAILED:
     print "OK"
 else:
-    print 'got unexpected error %s' % (errno)
+    print 'got unexpected error:', errno
 
 sys.exit(0)
