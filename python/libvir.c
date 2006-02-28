@@ -11,10 +11,107 @@
 
 #include <Python.h>
 #include <libvirt.h>
+#include <virterror.h>
 #include "libvirt_wrap.h"
 #include "libvirt-py.h"
 
 void initlibvirmod(void);
+
+PyObject *libvirt_virDomainGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
+/************************************************************************
+ *									*
+ *		Global error handler at the Python level		*
+ *									*
+ ************************************************************************/
+
+static PyObject *libvirt_virPythonErrorFuncHandler = NULL;
+static PyObject *libvirt_virPythonErrorFuncCtxt = NULL;
+
+static void
+libvirt_virErrorFuncHandler(ATTRIBUTE_UNUSED void *ctx, virErrorPtr err)
+{
+    PyObject *list, *info;
+    PyObject *result;
+
+#ifdef DEBUG_ERROR
+    printf("libvirt_virErrorFuncHandler(%p, %s, ...) called\n", ctx, msg);
+#endif
+
+    if ((err == NULL) || (err->code == VIR_ERR_OK))
+        return;
+
+    if ((libvirt_virPythonErrorFuncHandler == NULL) ||
+        (libvirt_virPythonErrorFuncHandler == Py_None)) {
+        virDefaultErrorFunc(err);
+    } else {
+        list = PyTuple_New(2);
+        info = PyTuple_New(9);
+        PyTuple_SetItem(list, 0, libvirt_virPythonErrorFuncCtxt);
+        PyTuple_SetItem(list, 1, info);
+        Py_XINCREF(libvirt_virPythonErrorFuncCtxt);
+        PyTuple_SetItem(info, 0, PyInt_FromLong((long) err->code));
+        PyTuple_SetItem(info, 1, PyInt_FromLong((long) err->domain));
+	PyTuple_SetItem(info, 2, libvirt_charPtrWrap(err->message));
+        PyTuple_SetItem(info, 3, PyInt_FromLong((long) err->level));
+	PyTuple_SetItem(info, 4, libvirt_charPtrWrap(err->str1));
+	PyTuple_SetItem(info, 5, libvirt_charPtrWrap(err->str2));
+	PyTuple_SetItem(info, 6, libvirt_charPtrWrap(err->str3));
+        PyTuple_SetItem(info, 7, PyInt_FromLong((long) err->int1));
+        PyTuple_SetItem(info, 8, PyInt_FromLong((long) err->int2));
+	/* TODO pass conn and dom if available */
+        result = PyEval_CallObject(libvirt_virPythonErrorFuncHandler, list);
+        Py_XDECREF(list);
+        Py_XDECREF(result);
+    }
+}
+
+static PyObject *
+libvirt_virRegisterErrorHandler(ATTRIBUTE_UNUSED PyObject * self,
+                               PyObject * args)
+{
+    PyObject *py_retval;
+    PyObject *pyobj_f;
+    PyObject *pyobj_ctx;
+
+    if (!PyArg_ParseTuple
+        (args, (char *) "OO:xmlRegisterErrorHandler", &pyobj_f,
+         &pyobj_ctx))
+        return (NULL);
+
+#ifdef DEBUG_ERROR
+    printf("libvirt_virRegisterErrorHandler(%p, %p) called\n", pyobj_ctx,
+           pyobj_f);
+#endif
+
+    virSetErrorFunc(NULL, libvirt_virErrorFuncHandler);
+    if (libvirt_virPythonErrorFuncHandler != NULL) {
+        Py_XDECREF(libvirt_virPythonErrorFuncHandler);
+    }
+    if (libvirt_virPythonErrorFuncCtxt != NULL) {
+        Py_XDECREF(libvirt_virPythonErrorFuncCtxt);
+    }
+
+    if ((pyobj_f == Py_None) && (pyobj_ctx == Py_None)) {
+        libvirt_virPythonErrorFuncHandler = NULL;
+	libvirt_virPythonErrorFuncCtxt = NULL;
+    } else {
+	Py_XINCREF(pyobj_ctx);
+	Py_XINCREF(pyobj_f);
+
+	/* TODO: check f is a function ! */
+	libvirt_virPythonErrorFuncHandler = pyobj_f;
+	libvirt_virPythonErrorFuncCtxt = pyobj_ctx;
+    }
+
+    py_retval = libvirt_intWrap(1);
+    return (py_retval);
+}
+
+/************************************************************************
+ *									*
+ *		Wrappers for functions where generator fails		*
+ *									*
+ ************************************************************************/
 
 static PyObject *
 libvirt_virDomainFree(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
@@ -106,7 +203,6 @@ libvirt_virDomainGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     unsigned char uuid[16];
     virDomainPtr domain;
     PyObject *pyobj_domain;
-    virDomainInfo info;
 
     if (!PyArg_ParseTuple(args, (char *)"O:virDomainGetUUID", &pyobj_domain))
         return(NULL);
@@ -161,6 +257,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainGetInfo", libvirt_virDomainGetInfo, METH_VARARGS, NULL},
     {(char *) "virDomainGetUUID", libvirt_virDomainGetUUID, METH_VARARGS, NULL},
     {(char *) "virDomainLookupByUUID", libvirt_virDomainLookupByUUID, METH_VARARGS, NULL},
+    {(char *) "virRegisterErrorHandler", libvirt_virRegisterErrorHandler, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 

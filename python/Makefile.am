@@ -18,6 +18,7 @@ EXTRA_DIST =		\
 	generator.py	\
 	libvirt_wrap.h	\
 	libvirt.py	\
+	libvir.py	\
 	libvirt-python-api.xml \
 	$(DOCS)
 
@@ -33,6 +34,8 @@ python_LTLIBRARIES = libvirtmod.la
 libvirtmod_la_SOURCES = libvir.c types.c libvirt-py.c libvirt-py.h
 libvirtmod_la_LIBADD = $(mylibs) 
 
+libvirt.py: $(srcdir)/libvir.py libvirtclass.py
+	cat $(srcdir)/libvir.py libvirtclass.py > libvirt.py
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(pythondir)

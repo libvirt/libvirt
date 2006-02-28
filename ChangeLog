@@ -1,3 +1,13 @@
+Tue Feb 28 13:12:50 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* TODO: updated
+	* python/Makefile.am python/generator.py python/libvir.c 
+	  python/libvir.py: improved python binding, raise exception 
+	  when an instance creation or lookup fails, and add support
+	  for the global error handler, per conn handler still needed
+	* python/tests/error.py python/tests/Makefile.am: adding a
+	  regression test
+
 Mon Feb 27 17:36:29 EST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* doc//*: rebuilt

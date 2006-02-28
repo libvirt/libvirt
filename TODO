@@ -32,6 +32,7 @@ Would-be-nice TODO:
 - man page for virsh and the libraries entry points
 - support for QEmu and other virtualization engines
 - more documentation and examples on using the toolkit
+- examples and docs for the principle in the error handling code
 
 Cleanup:
 - now that libxml2 is linked in, drop hash.[ch] and get back to libxml2 ones ?
