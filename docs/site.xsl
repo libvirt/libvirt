@@ -27,6 +27,9 @@
       <xsl:when test="$name = '#Help'">
         <xsl:text>help.html</xsl:text>
       </xsl:when>
+      <xsl:when test="$name = '#Errors'">
+        <xsl:text>errors.html</xsl:text>
+      </xsl:when>
       <xsl:when test="$name = '#Downloads'">
         <xsl:text>downloads.html</xsl:text>
       </xsl:when>

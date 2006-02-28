@@ -1,3 +1,8 @@
+Tue Feb 28 14:57:25 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* docs/errors.html docs/libvir.html docs/*: added a page about
+	  error handling and regenerated the docs
+
 Tue Feb 28 13:12:50 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* TODO: updated
