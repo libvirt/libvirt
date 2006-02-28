@@ -1,3 +1,8 @@
+Tue Feb 28 15:21:48 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* NEWS configure.in libvirt.spec.in include/libvirt.h docs/*:
+	  preparing release 0.0.6
+
 Tue Feb 28 14:57:25 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* docs/errors.html docs/libvir.html docs/*: added a page about

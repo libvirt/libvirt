@@ -5,6 +5,14 @@
        http://libvirt.org/news.html
 
 Releases
+0.0.6: Feb 28 2006:
+   - add UUID lookup and extract API
+   - add error handling APIs both synchronous and asynchronous
+   - added minimal hook for error handling at the python level, improved the
+    python bindings
+   - augment the documentation and tests to cover error handling
+
+
 0.0.5: Feb 23 2006:
    - Added XML description parsing, dependance to libxml2, implemented the
     creation API virDomainCreateLinux()

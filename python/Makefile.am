@@ -50,7 +50,8 @@ GENERATED= libvirt.py \
            libvirt-export.c \
            libvirtclass.txt \
 	   libvirt-py.c \
-	   libvirt-py.h
+	   libvirt-py.h \
+	   libvirtclass.py
 
 CLEANFILES= $(GENERATED) gen_prog libvirt.py
 

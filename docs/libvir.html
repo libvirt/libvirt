@@ -33,6 +33,15 @@ development of libvirt, it is preferable when possible to just use the <a
 href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p>
 
+<h3>0.0.6: Feb 28 2006</h3>
+<ul>
+  <li>add UUID lookup and extract API</li>
+  <li>add error handling APIs both synchronous and asynchronous</li>
+  <li>added minimal hook for error handling at the python level, improved the
+    python bindings</li>
+  <li>augment the documentation and tests to cover error handling</li>
+</ul>
+
 <h3>0.0.5: Feb 23 2006</h3>
 <ul>
   <li>Added XML description parsing, dependance to libxml2, implemented the
@@ -417,7 +426,7 @@ set specifically to a connection with</p>
 href="html/libvirt-virterror.html#virErrorPtr">virErrorPtr</a> pointer to
 read-only structure <a
 href="html/libvirt-virterror.html#virError">virError</a> containing the
-following fields: </p>
+following fields:</p>
 <ul>
   <li>code: an error number from the <a
     href="html/libvirt-virterror.html#virErrorNumber">virErrorNumber</a>
@@ -427,7 +436,7 @@ following fields: </p>
   href="html/libvirt-virterror.html#virErrorDomain">virErrorDomain</a></li>
   <li>level: the error level, usually VIR_ERR_ERROR, though there is room for
     warnings like VIR_ERR_WARNING</li>
-  <li>message: the full human-readable formatted string of the error </li>
+  <li>message: the full human-readable formatted string of the error</li>
   <li>conn: if available a pointer to the <a
     href="html/libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>
     connection to the hypervisor where this happened</li>

@@ -33,13 +33,13 @@ set specifically to a connection with</p><p>So error handling in the code is the
     </ol></li>
 </ol><p>In all cases the error informations are provided as a <a href="html/libvirt-virterror.html#virErrorPtr">virErrorPtr</a> pointer to
 read-only structure <a href="html/libvirt-virterror.html#virError">virError</a> containing the
-following fields: </p><ul><li>code: an error number from the <a href="html/libvirt-virterror.html#virErrorNumber">virErrorNumber</a>
+following fields:</p><ul><li>code: an error number from the <a href="html/libvirt-virterror.html#virErrorNumber">virErrorNumber</a>
   enum</li>
   <li>domain: an enum indicating which part of libvirt raised the error see
     <a href="html/libvirt-virterror.html#virErrorDomain">virErrorDomain</a></li>
   <li>level: the error level, usually VIR_ERR_ERROR, though there is room for
     warnings like VIR_ERR_WARNING</li>
-  <li>message: the full human-readable formatted string of the error </li>
+  <li>message: the full human-readable formatted string of the error</li>
   <li>conn: if available a pointer to the <a href="html/libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>
     connection to the hypervisor where this happened</li>
   <li>dom: if available a pointer to the <a href="html/libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain
