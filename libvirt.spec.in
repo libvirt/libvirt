@@ -10,7 +10,9 @@ URL: http://libvir.org/
 BuildRequires: xen python python-devel
 Requires: xen
 Requires: libxml2
+Requires: readline
 BuildRequires: libxml2-devel
+BuildRequires: readline-devel
 Obsoletes: libvir
 ExclusiveArch: i386 x86_64
 

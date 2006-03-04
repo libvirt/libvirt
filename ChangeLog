@@ -1,3 +1,8 @@
+Sat Mar  4 09:56:18 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* libvirt.spec.in: applied patch from David Lutterkort adding
+	  missing reqs for readline.
+
 Tue Feb 28 15:21:48 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* NEWS configure.in libvirt.spec.in include/libvirt.h docs/*:
