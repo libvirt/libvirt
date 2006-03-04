@@ -656,9 +656,9 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf) {
         virBufferVSprintf(buf, "(uname 'file:%s')", source);
     else if (typ == 1) {
         if (source[0] == '/')
-	    virBufferVSprintf(buf, "(uname 'phys:%s')", source);
+	    virBufferVSprintf(buf, "(uname 'phy:%s')", source);
 	else
-	    virBufferVSprintf(buf, "(uname 'phys:/dev/%s')", source);
+	    virBufferVSprintf(buf, "(uname 'phy:/dev/%s')", source);
     }
     if (ro == 0)
         virBufferVSprintf(buf, "(mode 'w')");
