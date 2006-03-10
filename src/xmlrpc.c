@@ -1,0 +1,608 @@
+/*
+ * xmlrpc.c: XML-RPC protocol handler for libvir library
+ *
+ * Copyright (C) 2006  IBM, Corp.
+ *
+ * See COPYING.LIB for the License of this software
+ *
+ * Anthony Liguori <aliguori@us.ibm.com>
+ */
+
+#include "xmlrpc.h"
+
+#include <libxml/nanohttp.h>
+
+#include <string.h>
+#include <errno.h>
+
+/* TODO
+   1) Lots of error checking
+   2) xmlRpcValueToSexpr
+*/
+
+#define TODO do { } while (0)
+
+static xmlNodePtr xmlFirstElement(xmlNodePtr node);
+static xmlNodePtr xmlNextElement(xmlNodePtr node);
+
+struct _xmlRpcContext
+{
+    char *uri;
+    int faultCode;
+    char *faultMessage;
+};
+
+static xmlRpcValuePtr xmlRpcValueNew(xmlRpcValueType type)
+{
+    xmlRpcValuePtr ret = malloc(sizeof(*ret));
+    if (ret)
+	ret->kind = type;
+    return ret;
+}
+
+static char *xmlGetText(xmlNodePtr node)
+{
+    for (node = node->children; node; node = node->next)
+	if (node->type == XML_TEXT_NODE)
+	    return strdup((const char *)node->content);
+    return NULL;
+}
+
+static xmlNodePtr xmlFirstElement(xmlNodePtr node)
+{
+    for (node = node->children; node; node = node->next)
+	if (node->type == XML_ELEMENT_NODE)
+	    break;
+    return node;
+}
+
+static xmlNodePtr xmlNextElement(xmlNodePtr node)
+{
+    for (node = node->next; node; node = node->next)
+	if (node->type == XML_ELEMENT_NODE)
+	    break;
+    return node;
+}
+
+static xmlRpcValuePtr xmlRpcValueUnmarshalDateTime(xmlNodePtr node)
+{
+    /* we don't need this */
+    TODO;
+    return NULL;
+}
+
+static xmlRpcValuePtr xmlRpcValueUnmarshalString(xmlNodePtr node)
+{
+    xmlRpcValuePtr ret = xmlRpcValueNew(XML_RPC_STRING);
+    ret->value.string = xmlGetText(node);
+    return ret;
+}
+
+static xmlRpcValuePtr xmlRpcValueUnmarshalBase64(xmlNodePtr node)
+{
+    /* we don't need this */
+    TODO;
+    return NULL;
+}
+
+static xmlRpcValuePtr xmlRpcValueUnmarshalInteger(xmlNodePtr node)
+{
+    xmlRpcValuePtr ret = xmlRpcValueNew(XML_RPC_INTEGER);
+    char *value = xmlGetText(node);
+
+    ret->value.integer = atoi(value);
+
+    free(value);
+
+    return ret;
+}
+
+static xmlRpcValuePtr xmlRpcValueUnmarshalBoolean(xmlNodePtr node)
+{
+    xmlRpcValuePtr ret = xmlRpcValueNew(XML_RPC_BOOLEAN);
+    char *value = xmlGetText(node);
+
+    if (atoi(value))
+	ret->value.boolean = true;
+    else
+	ret->value.boolean = false;
+
+    free(value);
+
+    return ret;
+}
+
+static xmlRpcValuePtr xmlRpcValueUnmarshalDouble(xmlNodePtr node)
+{
+    xmlRpcValuePtr ret = xmlRpcValueNew(XML_RPC_DOUBLE);
+    char *value = xmlGetText(node);
+
+    ret->value.real = atof(value);
+
+    free(value);
+
+    return ret;
+}
+
+static xmlRpcValuePtr xmlRpcValueUnmarshalArray(xmlNodePtr node)
+{
+    xmlRpcValuePtr ret = xmlRpcValueNew(XML_RPC_ARRAY);
+    xmlNodePtr cur;
+    int n_elements = 0;
+
+    for (cur = xmlFirstElement(node); cur; cur = xmlNextElement(cur))
+	n_elements += 1;
+
+    ret->value.array.elements = malloc(n_elements * sizeof(xmlRpcValue));
+
+    n_elements = 0;
+    for (cur = xmlFirstElement(node); cur; cur = xmlNextElement(cur)) {
+	ret->value.array.elements[n_elements] = xmlRpcValueUnmarshal(cur);
+	n_elements += 1;
+    }
+
+    ret->value.array.n_elements = n_elements;
+
+    return ret;
+}
+
+static xmlRpcValueDictElementPtr xmlRpcValueUnmarshalDictElement(xmlNodePtr node)
+{
+    xmlRpcValueDictElementPtr ret = malloc(sizeof(*ret));
+    xmlNodePtr cur;
+
+    memset(ret, 0, sizeof(*ret));
+
+    for (cur = xmlFirstElement(node); cur; cur = xmlNextElement(cur)) {
+	if (xmlStrEqual(cur->name, BAD_CAST "name")) {
+	    ret->name = xmlGetText(cur);
+	} else if (xmlStrEqual(cur->name, BAD_CAST "value")) {
+	    ret->value = xmlRpcValueUnmarshal(cur);
+	} else {
+	    /* What? */
+	}
+    }
+
+    ret->next = NULL;
+
+    return ret;
+}
+
+static xmlRpcValuePtr xmlRpcValueUnmarshalDict(xmlNodePtr node)
+{
+    xmlRpcValueDictElementPtr root = NULL, *elem = &root;
+    xmlRpcValuePtr ret = xmlRpcValueNew(XML_RPC_STRUCT);
+    xmlNodePtr cur;
+
+    for (cur = xmlFirstElement(node); cur; cur = xmlNextElement(cur)) {
+	*elem = xmlRpcValueUnmarshalDictElement(cur);
+	elem = &(*elem)->next;
+    }
+
+    ret->value.dict.root = root;
+
+    return ret;
+}
+
+xmlRpcValuePtr xmlRpcValueUnmarshal(xmlNodePtr node)
+{
+    xmlNodePtr n;
+    xmlRpcValuePtr ret;
+
+    if (xmlStrEqual(node->name, BAD_CAST "value")) {
+	n = xmlFirstElement(node);
+	if (n == NULL) {
+	    ret = xmlRpcValueUnmarshalString(node);
+	} else {
+	    ret = xmlRpcValueUnmarshal(n);
+	}
+    } else if (xmlStrEqual(node->name, BAD_CAST "dateTime.iso8601")) {
+	ret = xmlRpcValueUnmarshalDateTime(node);
+    } else if (xmlStrEqual(node->name, BAD_CAST "string")) {
+	ret = xmlRpcValueUnmarshalString(node);
+    } else if (xmlStrEqual(node->name, BAD_CAST "base64")) {
+	ret = xmlRpcValueUnmarshalBase64(node);
+    } else if (xmlStrEqual(node->name, BAD_CAST "i4") ||
+	       xmlStrEqual(node->name, BAD_CAST "int")) {
+	ret = xmlRpcValueUnmarshalInteger(node);
+    } else if (xmlStrEqual(node->name, BAD_CAST "boolean")) {
+	ret = xmlRpcValueUnmarshalBoolean(node);
+    } else if (xmlStrEqual(node->name, BAD_CAST "double")) {
+	ret = xmlRpcValueUnmarshalDouble(node);
+    } else if (xmlStrEqual(node->name, BAD_CAST "array")) {
+	ret = xmlRpcValueUnmarshal(xmlFirstElement(node));
+    } else if (xmlStrEqual(node->name, BAD_CAST "data")) {
+	ret = xmlRpcValueUnmarshalArray(node);
+    } else if (xmlStrEqual(node->name, BAD_CAST "struct")) {
+	ret = xmlRpcValueUnmarshalDict(node);
+    } else if (xmlStrEqual(node->name, BAD_CAST "nil")) {
+	ret = xmlRpcValueNew(XML_RPC_NIL);
+    } else {
+	/* bug */
+    }
+
+    return ret;
+}
+
+void xmlRpcValueFree(xmlRpcValuePtr value)
+{
+    int i;
+    xmlRpcValueDictElementPtr cur, next;
+
+    if (value == NULL)
+	return;
+
+    switch (value->kind) {
+    case XML_RPC_ARRAY:
+	for (i = 0; i < value->value.array.n_elements; i++)
+	    xmlRpcValueFree(value->value.array.elements[i]);
+	free(value->value.array.elements);
+	break;
+    case XML_RPC_STRUCT:
+	next = value->value.dict.root;
+	while (next) {
+	    cur = next;
+	    next = next->next;
+	    free(cur->name);
+	    xmlRpcValueFree(cur->value);
+	    free(cur);
+	}
+	break;
+    case XML_RPC_STRING:
+	free(value->value.string);
+	break;
+    default:
+	break;
+    }
+
+    free(value);
+}
+
+void xmlRpcValueMarshal(xmlRpcValuePtr value, virBufferPtr buf, int indent)
+{
+    int i;
+    xmlRpcValueDictElement *elem;
+
+    virBufferVSprintf(buf, "%*s<value>", indent, "");
+    switch (value->kind) {
+    case XML_RPC_ARRAY:
+	virBufferVSprintf(buf, "<array><data>\n", indent, "");
+	for (i = 0; i < value->value.array.n_elements; i++)
+	    xmlRpcValueMarshal(value->value.array.elements[i], buf, indent+2);
+	virBufferVSprintf(buf, "%*s</data></array>", indent, "");
+	break;
+    case XML_RPC_STRUCT:
+	virBufferVSprintf(buf, "<struct>\n", indent, "");
+	indent += 2;
+	for (elem = value->value.dict.root; elem; elem = elem->next) {
+	    virBufferVSprintf(buf, "%*s<member>\n", indent, "");
+	    virBufferVSprintf(buf, "%*s<name>%s</name>\n",
+			      indent + 2, "", elem->name);
+	    xmlRpcValueMarshal(elem->value, buf, indent + 2);
+	    virBufferVSprintf(buf, "%*s</member>\n", indent, "");
+	}
+	indent -= 2;
+	virBufferVSprintf(buf, "%*s</struct>", indent, "");
+	break;
+    case XML_RPC_INTEGER:
+	virBufferVSprintf(buf, "<int>%d</int>", value->value.integer);
+	break;
+    case XML_RPC_DOUBLE:
+	virBufferVSprintf(buf, "<double>%f</double>", value->value.real);
+	break;
+    case XML_RPC_BOOLEAN:
+	if (value->value.boolean)
+	    i = 1;
+	else
+	    i = 0;
+	virBufferVSprintf(buf, "<boolean>%d</boolean>", i);
+	break;
+    case XML_RPC_DATE_TIME:
+	/* FIXME */
+	TODO;
+	break;
+    case XML_RPC_BASE64:
+	/* FIXME */
+	TODO;
+	break;
+    case XML_RPC_STRING:
+	virBufferVSprintf(buf, "<string>%s</string>", value->value.string);
+	break;
+    case XML_RPC_NIL:
+	virBufferVSprintf(buf, "<nil> </nil>");
+	break;
+    }
+    virBufferVSprintf(buf, "</value>\n");
+}
+
+virBufferPtr xmlRpcMarshalRequest(const char *request,
+				  int argc, xmlRpcValuePtr *argv)
+{
+    virBufferPtr buf;
+    int i;
+
+    buf = malloc(sizeof(*buf));
+    buf->size = 1024;
+    buf->content = malloc(buf->size);
+    buf->use = 0;
+
+    virBufferVSprintf(buf,
+		      "<?xml version=\"1.0\"?>\n"
+		      "<methodCall>\n"
+		      "  <methodName>%s</methodName>\n"
+		      "  <params>\n",
+		      request);
+    for (i = 0; i < argc; i++) {
+	virBufferVSprintf(buf,
+			  "    <param>\n");
+	xmlRpcValueMarshal(argv[i], buf, 6);
+	virBufferVSprintf(buf,
+			  "    </param>\n");
+    }
+    virBufferVSprintf(buf,
+		      "  </params>\n"
+		      "</methodCall>\n");
+
+    return buf;
+}
+
+xmlRpcValuePtr xmlRpcUnmarshalResponse(xmlNodePtr node, bool *is_fault)
+{
+    if (!xmlStrEqual(node->name, BAD_CAST "methodResponse"))
+	return NULL;
+
+    node = xmlFirstElement(node);
+    if (xmlStrEqual(node->name, BAD_CAST "params")) {
+	node = xmlFirstElement(node);
+
+	if (!xmlStrEqual(node->name, BAD_CAST "param"))
+	    return NULL;
+
+	*is_fault = false;
+	return xmlRpcValueUnmarshal(xmlFirstElement(node));
+    } else if (xmlStrEqual(node->name, BAD_CAST "fault")) {
+	*is_fault = true;
+	return xmlRpcValueUnmarshal(xmlFirstElement(node));
+    } else
+	return NULL;
+
+}
+
+static char *xmlRpcCallRaw(const char *url, const char *request)
+{
+	void *cxt;
+	char *contentType = "text/xml";
+	int len, ret, serrno;
+	char *response = NULL;
+
+	cxt = xmlNanoHTTPMethod(url,
+				"POST",
+				request,
+				&contentType,
+				NULL,
+				strlen(request));
+	
+	if (cxt == NULL)
+		goto error;
+
+	if (contentType && strcmp(contentType, "text/xml") != 0) {
+		errno = EINVAL;
+		goto error;
+	}
+
+	len = xmlNanoHTTPContentLength(cxt);
+	response = malloc(len + 1);
+	if (response == NULL)
+		goto error;
+
+	ret = xmlNanoHTTPRead(cxt, response, len);
+	if (ret != len) {
+		errno = EINVAL;
+		free(response);
+		response = NULL;
+	}
+
+	response[len] = 0;
+
+ error:
+	serrno = errno;
+	if (cxt) {
+		xmlNanoHTTPClose(cxt);
+		free(contentType);
+	}
+	errno = serrno;
+
+	return response;
+}
+
+static char **xmlRpcStringArray(xmlRpcValuePtr value)
+{
+    char **ret, *ptr;
+    int i;
+    size_t size = 0;
+
+    if (value->kind != XML_RPC_ARRAY)
+	return NULL;
+
+    size = sizeof(char *) * (value->value.array.n_elements + 1);
+
+    for (i = 0; i < value->value.array.n_elements; i++)
+	if (value->value.array.elements[i]->kind == XML_RPC_STRING)
+	    size += strlen(value->value.array.elements[i]->value.string) + 1;
+
+    ptr = malloc(size);
+
+    ret = (char **)ptr;
+    ptr += sizeof(char *) * (value->value.array.n_elements + 1);
+
+    for (i = 0; i < value->value.array.n_elements; i++) {
+	if (value->value.array.elements[i]->kind == XML_RPC_STRING) {
+	    char *s = value->value.array.elements[i]->value.string;
+	    strcpy(ptr, s);
+	    ret[i] = ptr;
+	    ptr += strlen(s) + 1;
+	} else
+	    ret[i] = "";
+    }
+
+    ret[i] = NULL;
+
+    return ret;
+}
+
+int xmlRpcCall(xmlRpcContextPtr context, const char *method,
+	       const char *retfmt, const char *fmt, ...)
+{
+    va_list ap;
+    const char *ptr;
+    int argc;
+    xmlRpcValuePtr *argv;
+    virBufferPtr buf;
+    int i;
+    char *ret;
+    xmlDocPtr xml;
+    xmlNodePtr node;
+    bool fault;
+    xmlRpcValuePtr value;
+    void *retval;
+
+    argc = strlen(fmt);
+    argv = malloc(sizeof(*argv) * argc);
+
+    va_start(ap, fmt);
+
+    if (retfmt && *retfmt)
+	retval = va_arg(ap, void *);
+
+    i = 0;
+    for (ptr = fmt; *ptr; ptr++) {
+	switch (*ptr) {
+	case 'i':
+	    argv[i] = xmlRpcValueNew(XML_RPC_INTEGER);
+	    argv[i]->value.integer = va_arg(ap, int32_t);
+	    break;
+	case 'f':
+	    argv[i] = xmlRpcValueNew(XML_RPC_DOUBLE);
+	    argv[i]->value.real = va_arg(ap, double);
+	    break;
+	case 'b':
+	    argv[i] = xmlRpcValueNew(XML_RPC_BOOLEAN);
+	    argv[i]->value.boolean = va_arg(ap, int);
+	    break;
+	case 's':
+	    argv[i] = xmlRpcValueNew(XML_RPC_STRING);
+	    argv[i]->value.string = strdup(va_arg(ap, const char *));
+	    break;
+	default:
+	    return -1;
+	}
+	i++;
+    }
+    va_end(ap);
+
+    buf = xmlRpcMarshalRequest(method, argc, argv);
+
+    for (i = 0; i < argc; i++)
+	xmlRpcValueFree(argv[i]);
+
+    free(argv);
+	
+    ret = xmlRpcCallRaw(context->uri, buf->content);
+
+    free(buf->content);
+    free(buf);
+
+    xml = xmlReadDoc((const xmlChar *)ret, "response.xml", NULL,
+		     XML_PARSE_NOENT | XML_PARSE_NONET |
+		     XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
+    free(ret);
+
+    if (xml == NULL) {
+	errno = EINVAL;
+	return -1;
+    }
+
+    node = xmlDocGetRootElement(xml);
+
+    value = xmlRpcUnmarshalResponse(node, &fault);
+
+    if (!fault) {
+	switch (*retfmt) {
+	case 'i':
+	    if (value->kind == XML_RPC_INTEGER)
+		*(int32_t *)retval = value->value.integer;
+	    break;
+	case 'b':
+	    if (value->kind == XML_RPC_BOOLEAN)
+		*(bool *)retval = value->value.boolean;
+	    break;
+	case 'f':
+	    if (value->kind == XML_RPC_DOUBLE)
+		*(double *)retval = value->value.real;
+	    break;
+	case 's':
+	    if (value->kind == XML_RPC_STRING)
+		*(char **)retval = strdup(value->value.string);
+	    break;
+	case 'S':
+	    *(char ***)retval = xmlRpcStringArray(value);
+	    break;
+	case 'V':
+	    *(xmlRpcValuePtr *)retval = value;
+	    value = NULL;
+	    break;
+	default:
+	    printf("not supported yet\n");
+	    break;
+	}
+    }
+
+    xmlFreeDoc(xml);
+
+    if (fault) { /* FIXME we need generic dict routines */
+	context->faultCode = value->value.dict.root->value->value.integer;
+	context->faultMessage = strdup(value->value.dict.root->next->value->value.string);
+	xmlRpcValueFree(value);
+	errno = EFAULT;
+	return -1;
+    }
+
+    xmlRpcValueFree(value);
+
+    return 0;
+}
+
+xmlRpcContextPtr xmlRpcContextNew(const char *uri)
+{
+    xmlRpcContextPtr ret = malloc(sizeof(*ret));
+
+    if (ret) {
+	ret->uri = strdup(uri);
+	ret->faultMessage = NULL;
+    }
+
+    return ret;
+}
+
+void xmlRpcContextFree(xmlRpcContextPtr context)
+{
+    if (context) {
+	if (context->uri)
+	    free(context->uri);
+
+	if (context->faultMessage)
+	    free(context->faultMessage);
+
+	free(context);
+    }
+}
+
+int xmlRpcContextFaultCode(xmlRpcContextPtr context)
+{
+    return context->faultCode;
+}
+
+const char *xmlRpcContextFaultMessage(xmlRpcContextPtr context)
+{
+    return context->faultMessage;
+}
