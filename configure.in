@@ -79,6 +79,18 @@ dnl
     fi
 
 dnl
+dnl Specify the xen-distribution directory to be able to compile on a
+dnl non-xenified host
+dnl
+AC_ARG_WITH(xen-distdir, AC_HELP_STRING([--with-xen-distdir=path],
+            [distribution directory of Xen, default /usr]))
+if test "x$with_xen_distdir" != "x"
+then
+CPPFLAGS="$CPPFLAGS -I$withval/install/usr/include"
+LDFLAGS="$LDFLAGS -L$withval/install/usr/lib"
+fi
+
+dnl
 dnl To be able to make dist on a non-xenified host
 dnl
 AC_ARG_WITH(depends,

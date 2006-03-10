@@ -1,3 +1,9 @@
+Fri Mar 10 11:07:58 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in: applied patch for --with-xen-distdir option from 
+	  Ronald Aigner
+	* docs/site.xsl docs/*.html: added link to Bugzilla
+
 Sat Mar  4 09:59:13 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xml.c: another patch from David Lutterkort fixing a typo
