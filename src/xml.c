@@ -32,16 +32,16 @@
  * Handle an error at the xend daemon interface
  */
 static void
-virXMLError(virErrorNumber error, const char *info, int value) {
+virXMLError(virErrorNumber error, const char *info, int value)
+{
     const char *errmsg;
-    
+
     if (error == VIR_ERR_OK)
         return;
 
     errmsg = __virErrorMsg(error, info);
     __virRaiseError(NULL, NULL, VIR_FROM_XML, error, VIR_ERR_ERROR,
-                    errmsg, info, NULL, value, 0, errmsg, info,
-		    value);
+                    errmsg, info, NULL, value, 0, errmsg, info, value);
 }
 
 /**
@@ -54,23 +54,26 @@ virXMLError(virErrorNumber error, const char *info, int value) {
  * Returns the new available space or -1 in case of error
  */
 static int
-virBufferGrow(virBufferPtr buf, unsigned int len) {
+virBufferGrow(virBufferPtr buf, unsigned int len)
+{
     int size;
     char *newbuf;
 
-    if (buf == NULL) return(-1);
-    if (len + buf->use < buf->size) return(0);
+    if (buf == NULL)
+        return (-1);
+    if (len + buf->use < buf->size)
+        return (0);
 
     size = buf->use + len + 1000;
 
     newbuf = (char *) realloc(buf->content, size);
     if (newbuf == NULL) {
         virXMLError(VIR_ERR_NO_MEMORY, "growing buffer", size);
-        return(-1);
+        return (-1);
     }
     buf->content = newbuf;
     buf->size = size;
-    return(buf->size - buf->use);
+    return (buf->size - buf->use);
 }
 
 /**
@@ -85,28 +88,30 @@ virBufferGrow(virBufferPtr buf, unsigned int len) {
  * Returns 0 successful, -1 in case of internal or API error.
  */
 int
-virBufferAdd(virBufferPtr buf, const char *str, int len) {
+virBufferAdd(virBufferPtr buf, const char *str, int len)
+{
     unsigned int needSize;
 
     if ((str == NULL) || (buf == NULL)) {
-	return -1;
+        return -1;
     }
-    if (len == 0) return 0;
+    if (len == 0)
+        return 0;
 
     if (len < 0)
         len = strlen(str);
 
     needSize = buf->use + len + 2;
-    if (needSize > buf->size){
-        if (!virBufferGrow(buf, needSize)){
-            return(-1);
+    if (needSize > buf->size) {
+        if (!virBufferGrow(buf, needSize)) {
+            return (-1);
         }
     }
 
     memmove(&buf->content[buf->use], str, len);
     buf->use += len;
     buf->content[buf->use] = 0;
-    return(0);
+    return (0);
 }
 
 /**
@@ -120,38 +125,41 @@ virBufferAdd(virBufferPtr buf, const char *str, int len) {
  * Returns 0 successful, -1 in case of internal or API error.
  */
 int
-virBufferVSprintf(virBufferPtr buf, const char *format, ...) {
+virBufferVSprintf(virBufferPtr buf, const char *format, ...)
+{
     int size, count;
     va_list locarg, argptr;
 
     if ((format == NULL) || (buf == NULL)) {
-	return(-1);
+        return (-1);
     }
     size = buf->size - buf->use - 1;
     va_start(argptr, format);
     va_copy(locarg, argptr);
     while (((count = vsnprintf(&buf->content[buf->use], size, format,
                                locarg)) < 0) || (count >= size - 1)) {
-	buf->content[buf->use] = 0;
-	va_end(locarg);
-	if (virBufferGrow(buf, 1000) < 0) {
-	    return(-1);
-	}
-	size = buf->size - buf->use - 1;
-	va_copy(locarg, argptr);
+        buf->content[buf->use] = 0;
+        va_end(locarg);
+        if (virBufferGrow(buf, 1000) < 0) {
+            return (-1);
+        }
+        size = buf->size - buf->use - 1;
+        va_copy(locarg, argptr);
     }
     va_end(locarg);
     buf->use += count;
     buf->content[buf->use] = 0;
-    return(0);
+    return (0);
 }
 
 #if 0
+
 /*
  * This block of function are now implemented by a xend poll in
  * xend_internal.c instead of querying the Xen store, code is kept
  * for reference of in case Xend may not be available in the future ...
  */
+
 /**
  * virDomainGetXMLDevice:
  * @domain: a domain object
@@ -164,8 +172,9 @@ virBufferVSprintf(virBufferPtr buf, const char *format, ...) {
  * Returns the new string or NULL in case of error
  */
 static char *
-virDomainGetXMLDeviceInfo(virDomainPtr domain, const char *sub, 
-                          long dev, const char *name) {
+virDomainGetXMLDeviceInfo(virDomainPtr domain, const char *sub,
+                          long dev, const char *name)
+{
     char s[256];
     unsigned int len = 0;
 
@@ -187,55 +196,56 @@ virDomainGetXMLDeviceInfo(virDomainPtr domain, const char *sub,
  * Returns 0 in case of success, -1 in case of failure
  */
 static int
-virDomainGetXMLDevice(virDomainPtr domain, virBufferPtr buf, long dev) {
+virDomainGetXMLDevice(virDomainPtr domain, virBufferPtr buf, long dev)
+{
     char *type, *val;
 
     type = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "type");
     if (type == NULL)
-        return(-1);
+        return (-1);
     if (!strcmp(type, "file")) {
-	virBufferVSprintf(buf, "    <disk type='file'>\n");
-	val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "params");
-	if (val != NULL) {
-	    virBufferVSprintf(buf, "      <source file='%s'/>\n", val);
-	    free(val);
-	}
-	val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "dev");
-	if (val != NULL) {
-	    virBufferVSprintf(buf, "      <target dev='%s'/>\n", val);
-	    free(val);
-	}
-	val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "read-only");
-	if (val != NULL) {
-	    virBufferVSprintf(buf, "      <readonly/>\n", val);
-	    free(val);
-	}
-	virBufferAdd(buf, "    </disk>\n", 12);
+        virBufferVSprintf(buf, "    <disk type='file'>\n");
+        val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "params");
+        if (val != NULL) {
+            virBufferVSprintf(buf, "      <source file='%s'/>\n", val);
+            free(val);
+        }
+        val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "dev");
+        if (val != NULL) {
+            virBufferVSprintf(buf, "      <target dev='%s'/>\n", val);
+            free(val);
+        }
+        val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "read-only");
+        if (val != NULL) {
+            virBufferVSprintf(buf, "      <readonly/>\n", val);
+            free(val);
+        }
+        virBufferAdd(buf, "    </disk>\n", 12);
     } else if (!strcmp(type, "phy")) {
-	virBufferVSprintf(buf, "    <disk type='device'>\n");
-	val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "params");
-	if (val != NULL) {
-	    virBufferVSprintf(buf, "      <source device='%s'/>\n", val);
-	    free(val);
-	}
-	val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "dev");
-	if (val != NULL) {
-	    virBufferVSprintf(buf, "      <target dev='%s'/>\n", val);
-	    free(val);
-	}
-	val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "read-only");
-	if (val != NULL) {
-	    virBufferVSprintf(buf, "      <readonly/>\n", val);
-	    free(val);
-	}
-	virBufferAdd(buf, "    </disk>\n", 12);
+        virBufferVSprintf(buf, "    <disk type='device'>\n");
+        val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "params");
+        if (val != NULL) {
+            virBufferVSprintf(buf, "      <source device='%s'/>\n", val);
+            free(val);
+        }
+        val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "dev");
+        if (val != NULL) {
+            virBufferVSprintf(buf, "      <target dev='%s'/>\n", val);
+            free(val);
+        }
+        val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "read-only");
+        if (val != NULL) {
+            virBufferVSprintf(buf, "      <readonly/>\n", val);
+            free(val);
+        }
+        virBufferAdd(buf, "    </disk>\n", 12);
     } else {
-        TODO
-	fprintf(stderr, "Don't know how to handle device type %s\n", type);
+        TODO fprintf(stderr, "Don't know how to handle device type %s\n",
+                     type);
     }
     free(type);
 
-    return(0);
+    return (0);
 }
 
 /**
@@ -248,7 +258,8 @@ virDomainGetXMLDevice(virDomainPtr domain, virBufferPtr buf, long dev) {
  * Returns 0 in case of success, -1 in case of failure
  */
 static int
-virDomainGetXMLDevices(virDomainPtr domain, virBufferPtr buf) {
+virDomainGetXMLDevices(virDomainPtr domain, virBufferPtr buf)
+{
     int ret = -1;
     unsigned int num, i;
     long id;
@@ -257,11 +268,11 @@ virDomainGetXMLDevices(virDomainPtr domain, virBufferPtr buf) {
     virConnectPtr conn;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain))
-	return(-1);
-    
+        return (-1);
+
     conn = domain->conn;
 
-    snprintf(backend, 199, "/local/domain/0/backend/vbd/%d", 
+    snprintf(backend, 199, "/local/domain/0/backend/vbd/%d",
              virDomainGetID(domain));
     backend[199] = 0;
     list = xs_directory(conn->xshandle, 0, backend, &num);
@@ -269,20 +280,20 @@ virDomainGetXMLDevices(virDomainPtr domain, virBufferPtr buf) {
     if (list == NULL)
         goto done;
 
-    for (i = 0;i < num;i++) {
+    for (i = 0; i < num; i++) {
         id = strtol(list[i], &endptr, 10);
-	if ((endptr == list[i]) || (*endptr != 0)) {
-	    ret = -1;
-	    goto done;
-	}
-	virDomainGetXMLDevice(domain, buf, id);
+        if ((endptr == list[i]) || (*endptr != 0)) {
+            ret = -1;
+            goto done;
+        }
+        virDomainGetXMLDevice(domain, buf, id);
     }
 
-done:
+  done:
     if (list != NULL)
         free(list);
 
-    return(ret);
+    return (ret);
 }
 
 /**
@@ -297,41 +308,42 @@ done:
  * Returns 0 in case of success, -1 in case of failure
  */
 static int
-virDomainGetXMLInterface(virDomainPtr domain, virBufferPtr buf, long dev) {
+virDomainGetXMLInterface(virDomainPtr domain, virBufferPtr buf, long dev)
+{
     char *type, *val;
 
     type = virDomainGetXMLDeviceInfo(domain, "vif", dev, "bridge");
     if (type == NULL) {
-	virBufferVSprintf(buf, "    <interface type='default'>\n");
-	val = virDomainGetXMLDeviceInfo(domain, "vif", dev, "mac");
-	if (val != NULL) {
-	    virBufferVSprintf(buf, "      <mac address='%s'/>\n", val);
-	    free(val);
-	}
-	val = virDomainGetXMLDeviceInfo(domain, "vif", dev, "script");
-	if (val != NULL) {
-	    virBufferVSprintf(buf, "      <script path='%s'/>\n", val);
-	    free(val);
-	}
-	virBufferAdd(buf, "    </interface>\n", 17);
+        virBufferVSprintf(buf, "    <interface type='default'>\n");
+        val = virDomainGetXMLDeviceInfo(domain, "vif", dev, "mac");
+        if (val != NULL) {
+            virBufferVSprintf(buf, "      <mac address='%s'/>\n", val);
+            free(val);
+        }
+        val = virDomainGetXMLDeviceInfo(domain, "vif", dev, "script");
+        if (val != NULL) {
+            virBufferVSprintf(buf, "      <script path='%s'/>\n", val);
+            free(val);
+        }
+        virBufferAdd(buf, "    </interface>\n", 17);
     } else {
-	virBufferVSprintf(buf, "    <interface type='bridge'>\n");
-	virBufferVSprintf(buf, "      <source bridge='%s'/>\n", type);
-	val = virDomainGetXMLDeviceInfo(domain, "vif", dev, "mac");
-	if (val != NULL) {
-	    virBufferVSprintf(buf, "      <mac address='%s'/>\n", val);
-	    free(val);
-	}
-	val = virDomainGetXMLDeviceInfo(domain, "vif", dev, "script");
-	if (val != NULL) {
-	    virBufferVSprintf(buf, "      <script path='%s'/>\n", val);
-	    free(val);
-	}
-	virBufferAdd(buf, "    </interface>\n", 17);
+        virBufferVSprintf(buf, "    <interface type='bridge'>\n");
+        virBufferVSprintf(buf, "      <source bridge='%s'/>\n", type);
+        val = virDomainGetXMLDeviceInfo(domain, "vif", dev, "mac");
+        if (val != NULL) {
+            virBufferVSprintf(buf, "      <mac address='%s'/>\n", val);
+            free(val);
+        }
+        val = virDomainGetXMLDeviceInfo(domain, "vif", dev, "script");
+        if (val != NULL) {
+            virBufferVSprintf(buf, "      <script path='%s'/>\n", val);
+            free(val);
+        }
+        virBufferAdd(buf, "    </interface>\n", 17);
     }
     free(type);
 
-    return(0);
+    return (0);
 }
 
 /**
@@ -344,7 +356,8 @@ virDomainGetXMLInterface(virDomainPtr domain, virBufferPtr buf, long dev) {
  * Returns 0 in case of success, -1 in case of failure
  */
 static int
-virDomainGetXMLInterfaces(virDomainPtr domain, virBufferPtr buf) {
+virDomainGetXMLInterfaces(virDomainPtr domain, virBufferPtr buf)
+{
     int ret = -1;
     unsigned int num, i;
     long id;
@@ -353,11 +366,11 @@ virDomainGetXMLInterfaces(virDomainPtr domain, virBufferPtr buf) {
     virConnectPtr conn;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain))
-	return(-1);
-    
+        return (-1);
+
     conn = domain->conn;
 
-    snprintf(backend, 199, "/local/domain/0/backend/vif/%d", 
+    snprintf(backend, 199, "/local/domain/0/backend/vif/%d",
              virDomainGetID(domain));
     backend[199] = 0;
     list = xs_directory(conn->xshandle, 0, backend, &num);
@@ -365,20 +378,20 @@ virDomainGetXMLInterfaces(virDomainPtr domain, virBufferPtr buf) {
     if (list == NULL)
         goto done;
 
-    for (i = 0;i < num;i++) {
+    for (i = 0; i < num; i++) {
         id = strtol(list[i], &endptr, 10);
-	if ((endptr == list[i]) || (*endptr != 0)) {
-	    ret = -1;
-	    goto done;
-	}
-	virDomainGetXMLInterface(domain, buf, id);
+        if ((endptr == list[i]) || (*endptr != 0)) {
+            ret = -1;
+            goto done;
+        }
+        virDomainGetXMLInterface(domain, buf, id);
     }
 
-done:
+  done:
     if (list != NULL)
         free(list);
 
-    return(ret);
+    return (ret);
 }
 
 
@@ -394,15 +407,16 @@ done:
  * Returns 0 in case of success, -1 in case of failure
  */
 static int
-virDomainGetXMLBoot(virDomainPtr domain, virBufferPtr buf) {
+virDomainGetXMLBoot(virDomainPtr domain, virBufferPtr buf)
+{
     char *vm, *str;
 
     if (!VIR_IS_DOMAIN(domain))
-	return(-1);
-    
+        return (-1);
+
     vm = virDomainGetVM(domain);
     if (vm == NULL)
-        return(-1);
+        return (-1);
 
     virBufferAdd(buf, "  <os>\n", 7);
     str = virDomainGetVMInfo(domain, vm, "image/ostype");
@@ -417,20 +431,20 @@ virDomainGetXMLBoot(virDomainPtr domain, virBufferPtr buf) {
     }
     str = virDomainGetVMInfo(domain, vm, "image/ramdisk");
     if (str != NULL) {
-	if (str[0] != 0)
-	    virBufferVSprintf(buf, "    <initrd>%s</initrd>\n", str);
+        if (str[0] != 0)
+            virBufferVSprintf(buf, "    <initrd>%s</initrd>\n", str);
         free(str);
     }
     str = virDomainGetVMInfo(domain, vm, "image/cmdline");
     if (str != NULL) {
-	if (str[0] != 0)
-	    virBufferVSprintf(buf, "    <cmdline>%s</cmdline>\n", str);
+        if (str[0] != 0)
+            virBufferVSprintf(buf, "    <cmdline>%s</cmdline>\n", str);
         free(str);
     }
     virBufferAdd(buf, "  </os>\n", 8);
 
     free(vm);
-    return(0);
+    return (0);
 }
 
 /**
@@ -445,28 +459,30 @@ virDomainGetXMLBoot(virDomainPtr domain, virBufferPtr buf) {
  *         the caller must free() the returned value.
  */
 char *
-virDomainGetXMLDesc(virDomainPtr domain, int flags) {
+virDomainGetXMLDesc(virDomainPtr domain, int flags)
+{
     char *ret = NULL;
     virBuffer buf;
     virDomainInfo info;
 
     if (!VIR_IS_DOMAIN(domain))
-	return(NULL);
+        return (NULL);
     if (flags != 0)
-	return(NULL);
+        return (NULL);
     if (virDomainGetInfo(domain, &info) < 0)
-        return(NULL);
+        return (NULL);
 
     ret = malloc(1000);
     if (ret == NULL)
-        return(NULL);
+        return (NULL);
     buf.content = ret;
     buf.size = 1000;
     buf.use = 0;
 
     virBufferVSprintf(&buf, "<domain type='xen' id='%d'>\n",
                       virDomainGetID(domain));
-    virBufferVSprintf(&buf, "  <name>%s</name>\n", virDomainGetName(domain));
+    virBufferVSprintf(&buf, "  <name>%s</name>\n",
+                      virDomainGetName(domain));
     virDomainGetXMLBoot(domain, &buf);
     virBufferVSprintf(&buf, "  <memory>%lu</memory>\n", info.maxMem);
     virBufferVSprintf(&buf, "  <vcpu>%d</vcpu>\n", (int) info.nrVirtCpu);
@@ -475,9 +491,9 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags) {
     virDomainGetXMLInterfaces(domain, &buf);
     virBufferAdd(&buf, "  </devices>\n", 13);
     virBufferAdd(&buf, "</domain>\n", 10);
-    
+
     buf.content[buf.use] = 0;
-    return(ret);
+    return (ret);
 }
 
 #endif
@@ -495,7 +511,8 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags) {
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
-virDomainParseXMLOSDesc(xmlNodePtr node, virBufferPtr buf) {
+virDomainParseXMLOSDesc(xmlNodePtr node, virBufferPtr buf)
+{
     xmlNodePtr cur, txt;
     const xmlChar *type = NULL;
     const xmlChar *root = NULL;
@@ -506,85 +523,90 @@ virDomainParseXMLOSDesc(xmlNodePtr node, virBufferPtr buf) {
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-	    if ((type == NULL) && (xmlStrEqual(cur->name, BAD_CAST "type"))) {
-	        txt = cur->children;
-		if ((txt->type == XML_TEXT_NODE) && (txt->next == NULL))
-		    type = txt->content;
-	    } else if ((kernel == NULL) &&
-	               (xmlStrEqual(cur->name, BAD_CAST "kernel"))) {
-	        txt = cur->children;
-		if ((txt->type == XML_TEXT_NODE) && (txt->next == NULL))
-		    kernel = txt->content;
-	    } else if ((root == NULL) &&
-	               (xmlStrEqual(cur->name, BAD_CAST "root"))) {
-	        txt = cur->children;
-		if ((txt->type == XML_TEXT_NODE) && (txt->next == NULL))
-		    root = txt->content;
-	    } else if ((initrd == NULL) &&
-	               (xmlStrEqual(cur->name, BAD_CAST "initrd"))) {
-	        txt = cur->children;
-		if ((txt->type == XML_TEXT_NODE) && (txt->next == NULL))
-		    initrd = txt->content;
-	    } else if ((cmdline == NULL) &&
-	               (xmlStrEqual(cur->name, BAD_CAST "cmdline"))) {
-	        txt = cur->children;
-		if ((txt->type == XML_TEXT_NODE) && (txt->next == NULL))
-		    cmdline = txt->content;
-	    }
-	}
+            if ((type == NULL)
+                && (xmlStrEqual(cur->name, BAD_CAST "type"))) {
+                txt = cur->children;
+                if ((txt->type == XML_TEXT_NODE) && (txt->next == NULL))
+                    type = txt->content;
+            } else if ((kernel == NULL) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "kernel"))) {
+                txt = cur->children;
+                if ((txt->type == XML_TEXT_NODE) && (txt->next == NULL))
+                    kernel = txt->content;
+            } else if ((root == NULL) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "root"))) {
+                txt = cur->children;
+                if ((txt->type == XML_TEXT_NODE) && (txt->next == NULL))
+                    root = txt->content;
+            } else if ((initrd == NULL) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "initrd"))) {
+                txt = cur->children;
+                if ((txt->type == XML_TEXT_NODE) && (txt->next == NULL))
+                    initrd = txt->content;
+            } else if ((cmdline == NULL) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "cmdline"))) {
+                txt = cur->children;
+                if ((txt->type == XML_TEXT_NODE) && (txt->next == NULL))
+                    cmdline = txt->content;
+            }
+        }
         cur = cur->next;
     }
     if ((type != NULL) && (!xmlStrEqual(type, BAD_CAST "linux"))) {
         /* VIR_ERR_OS_TYPE */
-	virXMLError(VIR_ERR_OS_TYPE, (const char *) type, 0);
-	return(-1);
+        virXMLError(VIR_ERR_OS_TYPE, (const char *) type, 0);
+        return (-1);
     }
     virBufferAdd(buf, "(linux ", 7);
     if (kernel == NULL) {
-	virXMLError(VIR_ERR_NO_KERNEL, NULL, 0);
-	return(-1);
+        virXMLError(VIR_ERR_NO_KERNEL, NULL, 0);
+        return (-1);
     }
     virBufferVSprintf(buf, "(kernel '%s')", (const char *) kernel);
     if (initrd != NULL)
-	virBufferVSprintf(buf, "(ramdisk '%s')", (const char *) initrd);
+        virBufferVSprintf(buf, "(ramdisk '%s')", (const char *) initrd);
     if (root == NULL) {
-	const xmlChar *base, *tmp;
+        const xmlChar *base, *tmp;
+
         /* need to extract root info from command line */
-	if (cmdline == NULL) {
-	    virXMLError(VIR_ERR_NO_ROOT, (const char *) cmdline, 0);
-	    return(-1);
-	}
-	base = cmdline;
-	while (*base != 0) {
-	    if ((base[0] == 'r') && (base[1] == 'o') && (base[2] == 'o') &&
-	        (base[3] == 't')) {
-		base += 4;
-		break;
-	    }
-	    base++;
-	}
-	while ((*base == ' ') || (*base == '\t')) base++;
-	if (*base == '=') {
-	    base++;
-	    while ((*base == ' ') || (*base == '\t')) base++;
-	}
-	tmp = base;
-	while ((*tmp != 0) && (*tmp != ' ') && (*tmp != '\t')) tmp++;
-	if (tmp == base) {
-	    virXMLError(VIR_ERR_NO_ROOT, (const char *) cmdline, 0);
-	    return(-1);
-	}
-	root = xmlStrndup(base, tmp - base);
+        if (cmdline == NULL) {
+            virXMLError(VIR_ERR_NO_ROOT, (const char *) cmdline, 0);
+            return (-1);
+        }
+        base = cmdline;
+        while (*base != 0) {
+            if ((base[0] == 'r') && (base[1] == 'o') && (base[2] == 'o') &&
+                (base[3] == 't')) {
+                base += 4;
+                break;
+            }
+            base++;
+        }
+        while ((*base == ' ') || (*base == '\t'))
+            base++;
+        if (*base == '=') {
+            base++;
+            while ((*base == ' ') || (*base == '\t'))
+                base++;
+        }
+        tmp = base;
+        while ((*tmp != 0) && (*tmp != ' ') && (*tmp != '\t'))
+            tmp++;
+        if (tmp == base) {
+            virXMLError(VIR_ERR_NO_ROOT, (const char *) cmdline, 0);
+            return (-1);
+        }
+        root = xmlStrndup(base, tmp - base);
         virBufferVSprintf(buf, "(root '%s')", (const char *) root);
-	xmlFree((xmlChar *) root);
-	virBufferVSprintf(buf, "(args '%s')", (const char *) cmdline);
+        xmlFree((xmlChar *) root);
+        virBufferVSprintf(buf, "(args '%s')", (const char *) cmdline);
     } else {
         virBufferVSprintf(buf, "(root '%s')", (const char *) root);
-	if (cmdline != NULL)
-	    virBufferVSprintf(buf, "(args '%s')", (const char *) cmdline);
+        if (cmdline != NULL)
+            virBufferVSprintf(buf, "(args '%s')", (const char *) cmdline);
     }
     virBufferAdd(buf, ")", 1);
-    return(0);
+    return (0);
 }
 
 /**
@@ -600,7 +622,8 @@ virDomainParseXMLOSDesc(xmlNodePtr node, virBufferPtr buf) {
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
-virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf) {
+virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf)
+{
     xmlNodePtr cur;
     xmlChar *type = NULL;
     xmlChar *source = NULL;
@@ -610,55 +633,57 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf) {
 
     type = xmlGetProp(node, BAD_CAST "type");
     if (type != NULL) {
-        if (xmlStrEqual(type, BAD_CAST "file")) typ = 0;
-	else if (xmlStrEqual(type, BAD_CAST "block")) typ = 1;
-	xmlFree(type);
+        if (xmlStrEqual(type, BAD_CAST "file"))
+            typ = 0;
+        else if (xmlStrEqual(type, BAD_CAST "block"))
+            typ = 1;
+        xmlFree(type);
     }
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-	    if ((source == NULL) &&
-	        (xmlStrEqual(cur->name, BAD_CAST "source"))) {
+            if ((source == NULL) &&
+                (xmlStrEqual(cur->name, BAD_CAST "source"))) {
 
-		if (typ == 0)
-		    source = xmlGetProp(cur, BAD_CAST "file");
-		else
-		    source = xmlGetProp(cur, BAD_CAST "dev");
-	    } else if ((target == NULL) &&
-	               (xmlStrEqual(cur->name, BAD_CAST "target"))) {
-	        target = xmlGetProp(cur, BAD_CAST "dev");
-	    } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
-	        ro = 1;
-	    }
-	}
+                if (typ == 0)
+                    source = xmlGetProp(cur, BAD_CAST "file");
+                else
+                    source = xmlGetProp(cur, BAD_CAST "dev");
+            } else if ((target == NULL) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "target"))) {
+                target = xmlGetProp(cur, BAD_CAST "dev");
+            } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
+                ro = 1;
+            }
+        }
         cur = cur->next;
     }
 
     if (source == NULL) {
-	virXMLError(VIR_ERR_NO_SOURCE, (const char *) target, 0);
-	
-	if (target != NULL)
-	    xmlFree(target);
-	return(-1);
+        virXMLError(VIR_ERR_NO_SOURCE, (const char *) target, 0);
+
+        if (target != NULL)
+            xmlFree(target);
+        return (-1);
     }
     if (target == NULL) {
-	virXMLError(VIR_ERR_NO_TARGET, (const char *) source, 0);
-	if (source != NULL)
-	    xmlFree(source);
-	return(-1);
+        virXMLError(VIR_ERR_NO_TARGET, (const char *) source, 0);
+        if (source != NULL)
+            xmlFree(source);
+        return (-1);
     }
     virBufferAdd(buf, "(vbd ", 5);
     if (target[0] == '/')
-	virBufferVSprintf(buf, "(dev '%s')", (const char *) target);
+        virBufferVSprintf(buf, "(dev '%s')", (const char *) target);
     else
-	virBufferVSprintf(buf, "(dev '/dev/%s')", (const char *) target);
+        virBufferVSprintf(buf, "(dev '/dev/%s')", (const char *) target);
     if (typ == 0)
         virBufferVSprintf(buf, "(uname 'file:%s')", source);
     else if (typ == 1) {
         if (source[0] == '/')
-	    virBufferVSprintf(buf, "(uname 'phy:%s')", source);
-	else
-	    virBufferVSprintf(buf, "(uname 'phy:/dev/%s')", source);
+            virBufferVSprintf(buf, "(uname 'phy:%s')", source);
+        else
+            virBufferVSprintf(buf, "(uname 'phy:/dev/%s')", source);
     }
     if (ro == 0)
         virBufferVSprintf(buf, "(mode 'w')");
@@ -668,7 +693,7 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf) {
     virBufferAdd(buf, ")", 1);
     xmlFree(target);
     xmlFree(source);
-    return(0);
+    return (0);
 }
 
 /**
@@ -684,7 +709,8 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf) {
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
-virDomainParseXMLIfDesc(xmlNodePtr node, virBufferPtr buf) {
+virDomainParseXMLIfDesc(xmlNodePtr node, virBufferPtr buf)
+{
     xmlNodePtr cur;
     xmlChar *type = NULL;
     xmlChar *source = NULL;
@@ -694,51 +720,53 @@ virDomainParseXMLIfDesc(xmlNodePtr node, virBufferPtr buf) {
 
     type = xmlGetProp(node, BAD_CAST "type");
     if (type != NULL) {
-        if (xmlStrEqual(type, BAD_CAST "bridge")) typ = 0;
-	else if (xmlStrEqual(type, BAD_CAST "ethernet")) typ = 1;
-	xmlFree(type);
+        if (xmlStrEqual(type, BAD_CAST "bridge"))
+            typ = 0;
+        else if (xmlStrEqual(type, BAD_CAST "ethernet"))
+            typ = 1;
+        xmlFree(type);
     }
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-	    if ((source == NULL) &&
-	        (xmlStrEqual(cur->name, BAD_CAST "source"))) {
+            if ((source == NULL) &&
+                (xmlStrEqual(cur->name, BAD_CAST "source"))) {
 
-		if (typ == 0)
-		    source = xmlGetProp(cur, BAD_CAST "bridge");
-		else
-		    source = xmlGetProp(cur, BAD_CAST "dev");
-	    } else if ((mac == NULL) &&
-	               (xmlStrEqual(cur->name, BAD_CAST "mac"))) {
-	        mac = xmlGetProp(cur, BAD_CAST "address");
-	    } else if ((script == NULL) &&
-	               (xmlStrEqual(cur->name, BAD_CAST "script"))) {
-	        script = xmlGetProp(cur, BAD_CAST "path");
-	    }
-	}
+                if (typ == 0)
+                    source = xmlGetProp(cur, BAD_CAST "bridge");
+                else
+                    source = xmlGetProp(cur, BAD_CAST "dev");
+            } else if ((mac == NULL) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "mac"))) {
+                mac = xmlGetProp(cur, BAD_CAST "address");
+            } else if ((script == NULL) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "script"))) {
+                script = xmlGetProp(cur, BAD_CAST "path");
+            }
+        }
         cur = cur->next;
     }
 
     virBufferAdd(buf, "(vif ", 5);
     if (mac != NULL)
-	virBufferVSprintf(buf, "(mac '%s')", (const char *) mac);
+        virBufferVSprintf(buf, "(mac '%s')", (const char *) mac);
     if (source != NULL) {
-	if (typ == 0)
-	    virBufferVSprintf(buf, "(bridge '%s')", (const char *) source);
-	else /* TODO does that work like that ? */
-	    virBufferVSprintf(buf, "(dev '%s')", (const char *) source);
+        if (typ == 0)
+            virBufferVSprintf(buf, "(bridge '%s')", (const char *) source);
+        else                    /* TODO does that work like that ? */
+            virBufferVSprintf(buf, "(dev '%s')", (const char *) source);
     }
     if (script != NULL)
         virBufferVSprintf(buf, "(script '%s')", script);
 
     virBufferAdd(buf, ")", 1);
     if (mac != NULL)
-	xmlFree(mac);
+        xmlFree(mac);
     if (source != NULL)
-	xmlFree(source);
+        xmlFree(source);
     if (script != NULL)
-	xmlFree(script);
-    return(0);
+        xmlFree(script);
+    return (0);
 }
 
 /**
@@ -754,7 +782,8 @@ virDomainParseXMLIfDesc(xmlNodePtr node, virBufferPtr buf) {
  *         the caller must free() the returned value.
  */
 char *
-virDomainParseXMLDesc(const char *xmldesc, char **name) {
+virDomainParseXMLDesc(const char *xmldesc, char **name)
+{
     xmlDocPtr xml = NULL;
     xmlNodePtr node;
     char *ret = NULL, *nam = NULL;
@@ -765,17 +794,17 @@ virDomainParseXMLDesc(const char *xmldesc, char **name) {
     int i, res;
 
     if (name != NULL)
-	*name = NULL;
+        *name = NULL;
     ret = malloc(1000);
     if (ret == NULL)
-        return(NULL);
+        return (NULL);
     buf.content = ret;
     buf.size = 1000;
     buf.use = 0;
 
     xml = xmlReadDoc((const xmlChar *) xmldesc, "domain.xml", NULL,
-		 XML_PARSE_NOENT | XML_PARSE_NONET | 
-		 XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
+                     XML_PARSE_NOENT | XML_PARSE_NONET |
+                     XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
     if (xml == NULL) {
         goto error;
     }
@@ -786,10 +815,10 @@ virDomainParseXMLDesc(const char *xmldesc, char **name) {
     prop = xmlGetProp(node, BAD_CAST "type");
     if (prop != NULL) {
         if (!xmlStrEqual(prop, BAD_CAST "xen")) {
-	    xmlFree(prop);
-	    goto error;
-	}
-	xmlFree(prop);
+            xmlFree(prop);
+            goto error;
+        }
+        xmlFree(prop);
     }
     virBufferAdd(&buf, "(vm ", 4);
     ctxt = xmlXPathNewContext(xml);
@@ -800,25 +829,26 @@ virDomainParseXMLDesc(const char *xmldesc, char **name) {
      * extract soem of the basics, name, memory, cpus ...
      */
     obj = xmlXPathEval(BAD_CAST "string(/domain/name[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) || 
+    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-	virXMLError(VIR_ERR_NO_NAME, xmldesc, 0);
+        virXMLError(VIR_ERR_NO_NAME, xmldesc, 0);
         goto error;
     }
     virBufferVSprintf(&buf, "(name '%s')", obj->stringval);
     nam = strdup((const char *) obj->stringval);
     if (nam == NULL) {
-	virXMLError(VIR_ERR_NO_MEMORY, "copying name", 0);
-	goto error;
+        virXMLError(VIR_ERR_NO_MEMORY, "copying name", 0);
+        goto error;
     }
     xmlXPathFreeObject(obj);
 
     obj = xmlXPathEval(BAD_CAST "number(/domain/memory[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NUMBER) ||
         (obj->floatval < 64000)) {
-	virBufferVSprintf(&buf, "(memory 128)(maxmem 128)");
+        virBufferVSprintf(&buf, "(memory 128)(maxmem 128)");
     } else {
         unsigned long mem = (obj->floatval / 1024);
+
         virBufferVSprintf(&buf, "(memory %lu)(maxmem %lu)", mem, mem);
     }
     xmlXPathFreeObject(obj);
@@ -826,9 +856,10 @@ virDomainParseXMLDesc(const char *xmldesc, char **name) {
     obj = xmlXPathEval(BAD_CAST "number(/domain/vcpu[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NUMBER) ||
         (obj->floatval <= 0)) {
-	virBufferVSprintf(&buf, "(vcpus 1)");
+        virBufferVSprintf(&buf, "(vcpus 1)");
     } else {
         unsigned int cpu = (unsigned int) obj->floatval;
+
         virBufferVSprintf(&buf, "(vcpus %u)", cpu);
     }
     xmlXPathFreeObject(obj);
@@ -837,9 +868,8 @@ virDomainParseXMLDesc(const char *xmldesc, char **name) {
     virBufferAdd(&buf, "(image ", 7);
     obj = xmlXPathEval(BAD_CAST "/domain/os[1]", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
-        (obj->nodesetval == NULL) ||
-	(obj->nodesetval->nodeNr != 1)) {
-	virXMLError(VIR_ERR_NO_OS, nam, 0);
+        (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr != 1)) {
+        virXMLError(VIR_ERR_NO_OS, nam, 0);
         goto error;
     }
     res = virDomainParseXMLOSDesc(obj->nodesetval->nodeTab[0], &buf);
@@ -852,31 +882,31 @@ virDomainParseXMLDesc(const char *xmldesc, char **name) {
     /* analyze of the devices */
     obj = xmlXPathEval(BAD_CAST "/domain/devices/disk", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
-        (obj->nodesetval == NULL) ||
-	(obj->nodesetval->nodeNr < 1)) {
-	virXMLError(VIR_ERR_NO_DEVICE, nam, 0);
+        (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr < 1)) {
+        virXMLError(VIR_ERR_NO_DEVICE, nam, 0);
         goto error;
     }
-    for (i = 0;i < obj->nodesetval->nodeNr;i++) {
-	virBufferAdd(&buf, "(device ", 8);
-	res = virDomainParseXMLDiskDesc(obj->nodesetval->nodeTab[i], &buf);
-	if (res != 0) {
-	    goto error;
-	}
-	virBufferAdd(&buf, ")", 1);
+    for (i = 0; i < obj->nodesetval->nodeNr; i++) {
+        virBufferAdd(&buf, "(device ", 8);
+        res = virDomainParseXMLDiskDesc(obj->nodesetval->nodeTab[i], &buf);
+        if (res != 0) {
+            goto error;
+        }
+        virBufferAdd(&buf, ")", 1);
     }
     xmlXPathFreeObject(obj);
     obj = xmlXPathEval(BAD_CAST "/domain/devices/interface", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
-	for (i = 0;i < obj->nodesetval->nodeNr;i++) {
-	    virBufferAdd(&buf, "(device ", 8);
-	    res = virDomainParseXMLIfDesc(obj->nodesetval->nodeTab[i], &buf);
-	    if (res != 0) {
-		goto error;
-	    }
-	    virBufferAdd(&buf, ")", 1);
-	}
+        for (i = 0; i < obj->nodesetval->nodeNr; i++) {
+            virBufferAdd(&buf, "(device ", 8);
+            res =
+                virDomainParseXMLIfDesc(obj->nodesetval->nodeTab[i], &buf);
+            if (res != 0) {
+                goto error;
+            }
+            virBufferAdd(&buf, ")", 1);
+        }
     }
     xmlXPathFreeObject(obj);
 
@@ -888,15 +918,15 @@ virDomainParseXMLDesc(const char *xmldesc, char **name) {
     xmlFreeDoc(xml);
 
     if (name != NULL)
-	*name = nam;
-    
-    return(ret);
+        *name = nam;
 
-error:
+    return (ret);
+
+  error:
     if (nam != NULL)
-	free(nam);
+        free(nam);
     if (name != NULL)
-	*name = NULL;
+        *name = NULL;
     if (obj != NULL)
         xmlXPathFreeObject(obj);
     if (ctxt != NULL)
@@ -905,6 +935,5 @@ error:
         xmlFreeDoc(xml);
     if (ret != NULL)
         free(ret);
-    return(NULL);
+    return (NULL);
 }
-

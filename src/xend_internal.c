@@ -67,9 +67,10 @@ struct xend {
  * Handle an error at the xend daemon interface
  */
 static void
-virXendError(virConnectPtr conn, virErrorNumber error, const char *info) {
+virXendError(virConnectPtr conn, virErrorNumber error, const char *info)
+{
     const char *errmsg;
-    
+
     if (error == VIR_ERR_OK)
         return;
 
@@ -87,10 +88,10 @@ virXendError(virConnectPtr conn, virErrorNumber error, const char *info) {
  * Handle an error at the xend daemon interface
  */
 static void
-virXendErrorInt(virConnectPtr conn, virErrorNumber error,
-                int val) {
+virXendErrorInt(virConnectPtr conn, virErrorNumber error, int val)
+{
     const char *errmsg;
-    
+
     if (error == VIR_ERR_OK)
         return;
 
@@ -126,7 +127,7 @@ do_connect(virConnectPtr xend)
     s = socket(xend->type, SOCK_STREAM, 0);
     if (s == -1) {
         virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-	             "failed to create a socket");
+                     "failed to create a socket");
         return -1;
     }
 
@@ -161,9 +162,9 @@ wr_sync(int fd, void *buffer, size_t size, int do_read)
         ssize_t len;
 
         if (do_read) {
-            len = read(fd, ((char *)buffer) + offset, size - offset);
+            len = read(fd, ((char *) buffer) + offset, size - offset);
         } else {
-            len = write(fd, ((char *)buffer) + offset, size - offset);
+            len = write(fd, ((char *) buffer) + offset, size - offset);
         }
 
         /* recoverable error, retry  */
@@ -178,14 +179,14 @@ wr_sync(int fd, void *buffer, size_t size, int do_read)
 
         /* unrecoverable error */
         if (len == -1) {
-	    if (do_read)
-		virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-			     "faid to read from Xen Daemon");
-	    else
-		virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-			     "faid to read from Xen Daemon");
-	        
-            return(-1);
+            if (do_read)
+                virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+                             "faid to read from Xen Daemon");
+            else
+                virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+                             "faid to read from Xen Daemon");
+
+            return (-1);
         }
 
         offset += len;
@@ -257,7 +258,7 @@ sreads(int fd, char *buffer, size_t n_buffer)
     size_t offset;
 
     if (n_buffer < 1)
-        return(-1);
+        return (-1);
 
     for (offset = 0; offset < (n_buffer - 1); offset++) {
         ssize_t ret;
@@ -364,7 +365,7 @@ xend_get(virConnectPtr xend, const char *path,
     close(s);
 
     if ((ret < 0) || (ret >= 300)) {
-	virXendError(NULL, VIR_ERR_GET_FAILED, content);
+        virXendError(NULL, VIR_ERR_GET_FAILED, content);
     }
 
     return ret;
@@ -412,7 +413,7 @@ xend_post(virConnectPtr xend, const char *path, const char *ops,
     close(s);
 
     if ((ret < 0) || (ret >= 300)) {
-	virXendError(NULL, VIR_ERR_POST_FAILED, content);
+        virXendError(NULL, VIR_ERR_POST_FAILED, content);
     }
 
     return ret;
@@ -440,7 +441,7 @@ http2unix(int ret)
             errno = ESRCH;
             break;
         default:
-            virXendErrorInt(NULL, VIR_ERR_HTTP_ERROR,  ret);
+            virXendErrorInt(NULL, VIR_ERR_HTTP_ERROR, ret);
             errno = EINVAL;
             break;
     }
@@ -935,7 +936,7 @@ urlencode(const char *string)
     size_t i;
 
     if (buffer == NULL)
-        return(NULL);
+        return (NULL);
     for (i = 0; i < len; i++) {
         switch (string[i]) {
             case ' ':
@@ -1027,7 +1028,7 @@ xend_setup_unix(virConnectPtr xend, const char *path)
     struct sockaddr_un *addr;
 
     if ((xend == NULL) || (path == NULL))
-        return(-1);
+        return (-1);
 
     addr = &xend->addr_un;
     addr->sun_family = AF_UNIX;
@@ -1041,7 +1042,7 @@ xend_setup_unix(virConnectPtr xend, const char *path)
     xend->addr = (struct sockaddr *) addr;
     xend->type = PF_UNIX;
 
-    return(0);
+    return (0);
 }
 
 /**
@@ -1062,14 +1063,14 @@ xend_setup_tcp(virConnectPtr xend, const char *host, int port)
     struct hostent *pent;
 
     if ((xend == NULL) || (host == NULL) || (port <= 0))
-        return(-1);
+        return (-1);
 
     pent = gethostbyname(host);
     if (pent == NULL) {
         if (inet_aton(host, &ip) == 0) {
-	    virXendError(xend, VIR_ERR_UNKNOWN_HOST, host);
+            virXendError(xend, VIR_ERR_UNKNOWN_HOST, host);
             errno = ESRCH;
-            return(-1);
+            return (-1);
         }
     } else {
         memcpy(&ip, pent->h_addr_list[0], sizeof(ip));
@@ -1083,7 +1084,7 @@ xend_setup_tcp(virConnectPtr xend, const char *host, int port)
     xend->addr_in.sin_port = htons(port);
     memcpy(&xend->addr_in.sin_addr, &ip, sizeof(ip));
 
-    return(0);
+    return (0);
 }
 
 /**
@@ -1098,7 +1099,8 @@ xend_setup_tcp(virConnectPtr xend, const char *host, int port)
 int
 xend_setup(virConnectPtr conn)
 {
-    return(xend_setup_tcp(conn, "localhost", 8000));
+    return (xend_setup_tcp(conn, "localhost", 8000));
+
 /*    return(xend_setup_unix(conn, "/var/lib/xend/xend-socket")); */
 }
 
@@ -1173,9 +1175,9 @@ int
 xend_rename(virConnectPtr xend, const char *old, const char *new)
 {
     if ((xend == NULL) || (old == NULL) || (new == NULL)) {
-	/* this should be caught at the interface but ... */
+        /* this should be caught at the interface but ... */
         virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return(-1);
+        return (-1);
     }
     return xend_op(xend, old, "op", "rename", "name", new, NULL);
 }
@@ -1193,9 +1195,9 @@ int
 xend_reboot(virConnectPtr xend, const char *name)
 {
     if ((xend == NULL) || (name == NULL)) {
-	/* this should be caught at the interface but ... */
+        /* this should be caught at the interface but ... */
         virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return(-1);
+        return (-1);
     }
     return xend_op(xend, name, "op", "shutdown", "reason", "reboot", NULL);
 }
@@ -1214,12 +1216,11 @@ int
 xend_shutdown(virConnectPtr xend, const char *name)
 {
     if ((xend == NULL) || (name == NULL)) {
-	/* this should be caught at the interface but ... */
+        /* this should be caught at the interface but ... */
         virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return(-1);
+        return (-1);
     }
-    return xend_op(xend, name,
-                   "op", "shutdown", "reason", "halt", NULL);
+    return xend_op(xend, name, "op", "shutdown", "reason", "halt", NULL);
 }
 
 /**
@@ -1236,9 +1237,9 @@ int
 xend_sysrq(virConnectPtr xend, const char *name, const char *key)
 {
     if ((xend == NULL) || (name == NULL) || (key == NULL)) {
-	/* this should be caught at the interface but ... */
+        /* this should be caught at the interface but ... */
         virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return(-1);
+        return (-1);
     }
     return xend_op(xend, name, "op", "sysrq", "key", key, NULL);
 }
@@ -1258,9 +1259,9 @@ int
 xend_destroy(virConnectPtr xend, const char *name)
 {
     if ((xend == NULL) || (name == NULL)) {
-	/* this should be caught at the interface but ... */
+        /* this should be caught at the interface but ... */
         virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return(-1);
+        return (-1);
     }
     return xend_op(xend, name, "op", "destroy", NULL);
 }
@@ -1283,9 +1284,9 @@ int
 xend_save(virConnectPtr xend, const char *name, const char *filename)
 {
     if ((xend == NULL) || (filename == NULL)) {
-	/* this should be caught at the interface but ... */
+        /* this should be caught at the interface but ... */
         virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return(-1);
+        return (-1);
     }
     return xend_op(xend, name, "op", "save", "file", filename, NULL);
 }
@@ -1305,9 +1306,9 @@ int
 xend_restore(virConnectPtr xend, const char *filename)
 {
     if ((xend == NULL) || (filename == NULL)) {
-	/* this should be caught at the interface but ... */
+        /* this should be caught at the interface but ... */
         virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return(-1);
+        return (-1);
     }
     return xend_op(xend, "", "op", "restore", "file", filename, NULL);
 }
@@ -1390,7 +1391,7 @@ xend_domain_to_sexpr(const struct xend_domain *domain)
     size_t i;
 
     if (domain == NULL)
-        return(NULL);
+        return (NULL);
 
     lst = sexpr_append(lst, sexpr_string("vm", -1));
     lst = sexpr_append_str(lst, "name", domain->name);
@@ -1505,10 +1506,10 @@ xend_create_sexpr(virConnectPtr xend, const char *sexpr)
 
     ptr = urlencode(sexpr);
     if (ptr == NULL) {
-	/* this should be caught at the interface but ... */
+        /* this should be caught at the interface but ... */
         virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-	             "Failed to urlencode the create S-Expr");
-	return(-1);
+                     "Failed to urlencode the create S-Expr");
+        return (-1);
     }
 
     ret = xend_op(xend, "", "op", "create", "config", ptr, NULL);
@@ -1750,21 +1751,21 @@ sexpr_to_xend_domain_size(struct sexpr *root, int *n_vbds, int *n_vifs)
 
     for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
          _for_i = _for_i->cdr, node = _for_i->car) {
-	if (sexpr_lookup(node, "device/vbd")) {
-	    size += sexpr_strlen(node, "device/vbd/dev");
-	    size += sexpr_strlen(node, "device/vbd/uname");
-	    (*n_vbds)++;
-	}
+        if (sexpr_lookup(node, "device/vbd")) {
+            size += sexpr_strlen(node, "device/vbd/dev");
+            size += sexpr_strlen(node, "device/vbd/uname");
+            (*n_vbds)++;
+        }
     }
 
     for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
          _for_i = _for_i->cdr, node = _for_i->car) {
-	if (sexpr_lookup(node, "device/vif")) {
-	    size += sexpr_strlen(node, "device/vif/bridge");
-	    size += sexpr_strlen(node, "device/vif/ip");
-	    size += sexpr_strlen(node, "device/vif/script");
-	    size += sexpr_strlen(node, "device/vif/vifname");
-	    (*n_vifs)++;
+        if (sexpr_lookup(node, "device/vif")) {
+            size += sexpr_strlen(node, "device/vif/bridge");
+            size += sexpr_strlen(node, "device/vif/ip");
+            size += sexpr_strlen(node, "device/vif/script");
+            size += sexpr_strlen(node, "device/vif/vifname");
+            (*n_vifs)++;
         }
     }
 
@@ -1795,10 +1796,10 @@ static int
 sexpr_to_xend_domain_info(struct sexpr *root, virDomainInfoPtr info)
 {
     const char *flags;
-    
+
 
     if ((root == NULL) || (info == NULL))
-        return(-1);
+        return (-1);
 
     info->memory = sexpr_u64(root, "domain/memory") << 10;
     info->maxMem = sexpr_u64(root, "domain/maxmem") << 10;
@@ -1806,23 +1807,23 @@ sexpr_to_xend_domain_info(struct sexpr *root, virDomainInfoPtr info)
 
     if (flags) {
         if (strchr(flags, 'c'))
-	    info->state = VIR_DOMAIN_CRASHED;
-	else if (strchr(flags, 's'))
-	    info->state = VIR_DOMAIN_SHUTDOWN;
-	else if (strchr(flags, 'd'))
-	    info->state = VIR_DOMAIN_SHUTOFF;
-	else if (strchr(flags, 'p'))
-	    info->state = VIR_DOMAIN_PAUSED;
-	else if (strchr(flags, 'b'))
-	    info->state = VIR_DOMAIN_BLOCKED;
-	else if (strchr(flags, 'r'))
-	    info->state = VIR_DOMAIN_RUNNING;
+            info->state = VIR_DOMAIN_CRASHED;
+        else if (strchr(flags, 's'))
+            info->state = VIR_DOMAIN_SHUTDOWN;
+        else if (strchr(flags, 'd'))
+            info->state = VIR_DOMAIN_SHUTOFF;
+        else if (strchr(flags, 'p'))
+            info->state = VIR_DOMAIN_PAUSED;
+        else if (strchr(flags, 'b'))
+            info->state = VIR_DOMAIN_BLOCKED;
+        else if (strchr(flags, 'r'))
+            info->state = VIR_DOMAIN_RUNNING;
     } else {
         info->state = VIR_DOMAIN_NOSTATE;
     }
     info->cpuTime = sexpr_float(root, "domain/cpu_time") * 1000000000;
     info->nrVirtCpu = sexpr_int(root, "domain/vcpus");
-    return(0);
+    return (0);
 }
 
 /**
@@ -1913,33 +1914,34 @@ sexpr_to_xend_domain(struct sexpr *root)
     i = 0;
     for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
          _for_i = _for_i->cdr, node = _for_i->car) {
-	if (sexpr_lookup(node, "device/vbd")) {
-	    dom->vbds[i].dev = sexpr_strcpy(&ptr, node, "device/vbd/dev");
-	    dom->vbds[i].uname = sexpr_strcpy(&ptr, node, "device/vbd/uname");
-	    dom->vbds[i].backend = sexpr_int(node, "device/vbd/backend");
-	    dom->vbds[i].mode = sexpr_mode(node, "device/vbd/mode");
-	    i++;
-	}
+        if (sexpr_lookup(node, "device/vbd")) {
+            dom->vbds[i].dev = sexpr_strcpy(&ptr, node, "device/vbd/dev");
+            dom->vbds[i].uname =
+                sexpr_strcpy(&ptr, node, "device/vbd/uname");
+            dom->vbds[i].backend = sexpr_int(node, "device/vbd/backend");
+            dom->vbds[i].mode = sexpr_mode(node, "device/vbd/mode");
+            i++;
+        }
     }
 
     i = 0;
     for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
          _for_i = _for_i->cdr, node = _for_i->car) {
-	if (sexpr_lookup(node, "device/vif")) {
-	    dom->vifs[i].backend = sexpr_int(node, "device/vif/backend");
-	    dom->vifs[i].bridge =
-		sexpr_strcpy(&ptr, node, "device/vif/bridge");
-	    dom->vifs[i].ip = sexpr_strcpy(&ptr, node, "device/vif/ip");
-	    sexpr_mac(dom->vifs[i].mac, node, "device/vif/mac");
-	    dom->vifs[i].script =
-		sexpr_strcpy(&ptr, node, "device/vif/script");
-	    dom->vifs[i].vifname =
-		sexpr_strcpy(&ptr, node, "device/vif/vifname");
-	    i++;
+        if (sexpr_lookup(node, "device/vif")) {
+            dom->vifs[i].backend = sexpr_int(node, "device/vif/backend");
+            dom->vifs[i].bridge =
+                sexpr_strcpy(&ptr, node, "device/vif/bridge");
+            dom->vifs[i].ip = sexpr_strcpy(&ptr, node, "device/vif/ip");
+            sexpr_mac(dom->vifs[i].mac, node, "device/vif/mac");
+            dom->vifs[i].script =
+                sexpr_strcpy(&ptr, node, "device/vif/script");
+            dom->vifs[i].vifname =
+                sexpr_strcpy(&ptr, node, "device/vif/vifname");
+            i++;
         }
     }
 
-error:
+  error:
     return dom;
 }
 
@@ -1960,15 +1962,16 @@ xend_get_domain_info(virDomainPtr domain, virDomainInfoPtr info)
     int ret;
 
     if ((domain == NULL) || (info == NULL))
-        return(-1);
+        return (-1);
 
-    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    root =
+        sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
     if (root == NULL)
-        return(-1);
+        return (-1);
 
     ret = sexpr_to_xend_domain_info(root, info);
     sexpr_free(root);
-    return(ret);
+    return (ret);
 }
 
 /**
@@ -2017,7 +2020,7 @@ xend_get_domain_ids(virConnectPtr xend, const char *domname,
     const char *value;
     int ret = -1;
 
-    if (uuid != NULL) 
+    if (uuid != NULL)
         memset(uuid, 0, 16);
     root = sexpr_get(xend, "/xend/domain/%s?detail=1", domname);
     if (root == NULL)
@@ -2026,25 +2029,26 @@ xend_get_domain_ids(virConnectPtr xend, const char *domname,
     value = sexpr_node(root, "domain/domid");
     if (value == NULL) {
         virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-	             "domain informations incomplete, missing domid");
+                     "domain informations incomplete, missing domid");
         goto error;
     }
     ret = strtol(value, NULL, 0);
     if ((ret == 0) && (value[0] != '0')) {
         virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-	             "domain informations incorrect domid not numberic");
+                     "domain informations incorrect domid not numberic");
         ret = -1;
     } else if (uuid != NULL) {
         char **ptr = (char **) &uuid;
+
         if (sexpr_uuid(ptr, root, "domain/uuid") == NULL) {
-	    virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-			 "domain informations incomplete, missing uuid");
-	}
+            virXendError(xend, VIR_ERR_INTERNAL_ERROR,
+                         "domain informations incomplete, missing uuid");
+        }
     }
 
-error:
+  error:
     sexpr_free(root);
-    return(ret);
+    return (ret);
 }
 
 /**
@@ -2222,7 +2226,8 @@ xend_log(virConnectPtr xend, char *buffer, size_t n_buffer)
  *         the caller must free() the returned value.
  */
 static char *
-xend_parse_sexp_desc(struct sexpr *root) {
+xend_parse_sexp_desc(struct sexpr *root)
+{
     char *ret;
     struct sexpr *cur, *node;
     const char *tmp;
@@ -2230,11 +2235,11 @@ xend_parse_sexp_desc(struct sexpr *root) {
 
     if (root == NULL) {
         /* ERROR */
-        return(NULL);
+        return (NULL);
     }
     ret = malloc(1000);
     if (ret == NULL)
-        return(NULL);
+        return (NULL);
     buf.content = ret;
     buf.size = 1000;
     buf.use = 0;
@@ -2243,122 +2248,125 @@ xend_parse_sexp_desc(struct sexpr *root) {
                       sexpr_int(root, "domain/domid"));
     tmp = sexpr_node(root, "domain/name");
     if (tmp == NULL) {
-	virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-		     "domain informations incomplete, missing name");
-	goto error;
+        virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+                     "domain informations incomplete, missing name");
+        goto error;
     }
     virBufferVSprintf(&buf, "  <name>%s</name>\n", tmp);
     tmp = sexpr_node(root, "domain/image/linux/kernel");
     if (tmp == NULL) {
         /*
-	 * TODO: we will need some fallback here for other guest OSes
-	 */
-	virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-		     "domain informations incomplete, missing kernel");
-	goto error;
+         * TODO: we will need some fallback here for other guest OSes
+         */
+        virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+                     "domain informations incomplete, missing kernel");
+        goto error;
     }
     virBufferAdd(&buf, "  <os>\n", 7);
     virBufferVSprintf(&buf, "    <type>linux</type>\n");
     virBufferVSprintf(&buf, "    <kernel>%s</kernel>\n", tmp);
     tmp = sexpr_node(root, "domain/image/linux/ramdisk");
     if ((tmp != NULL) && (tmp[0] != 0))
-	virBufferVSprintf(&buf, "    <initrd>%s</initrd>\n", tmp);
+        virBufferVSprintf(&buf, "    <initrd>%s</initrd>\n", tmp);
     tmp = sexpr_node(root, "domain/image/linux/root");
     if ((tmp != NULL) && (tmp[0] != 0))
-	virBufferVSprintf(&buf, "    <root>%s</root>\n", tmp);
+        virBufferVSprintf(&buf, "    <root>%s</root>\n", tmp);
     tmp = sexpr_node(root, "domain/image/linux/args");
     if ((tmp != NULL) && (tmp[0] != 0))
-	virBufferVSprintf(&buf, "    <cmdline>%s</cmdline>\n", tmp);
+        virBufferVSprintf(&buf, "    <cmdline>%s</cmdline>\n", tmp);
     virBufferAdd(&buf, "  </os>\n", 8);
-    virBufferVSprintf(&buf, "  <memory>%d</memory>\n", 
+    virBufferVSprintf(&buf, "  <memory>%d</memory>\n",
                       (int) (sexpr_u64(root, "domain/maxmem") << 10));
-    virBufferVSprintf(&buf, "  <vcpu>%d</vcpu>\n", 
+    virBufferVSprintf(&buf, "  <vcpu>%d</vcpu>\n",
                       sexpr_int(root, "domain/vcpus"));
     virBufferAdd(&buf, "  <devices>\n", 12);
     for (cur = root; cur->kind == SEXPR_CONS; cur = cur->cdr) {
         node = cur->car;
-	if (sexpr_lookup(node, "device/vbd")) {
-	    tmp = sexpr_node(node, "device/vbd/uname");
-	    if (tmp == NULL)
-	        continue;
-	    if (!memcmp(tmp, "file:", 5)) {
-	        tmp += 5;
-		virBufferVSprintf(&buf, "    <disk type='file'>\n");
-		virBufferVSprintf(&buf, "      <source file='%s'/>\n", tmp);
-		tmp = sexpr_node(node, "device/vbd/dev");
-		if (tmp == NULL) {
-		    virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-		     "domain informations incomplete, vbd has no dev");
-		    goto error;
-		}
-		virBufferVSprintf(&buf, "      <target dev='%s'/>\n", tmp);
-		tmp = sexpr_node(node, "device/vbd/mode");
-		if ((tmp != NULL) && (!strcmp(tmp, "r")))
-		    virBufferVSprintf(&buf, "      <readonly/>\n");
-		virBufferAdd(&buf, "    </disk>\n", 12);
-	    } else if (!memcmp(tmp, "phy:", 4)) {
-	        tmp += 4;
-		virBufferVSprintf(&buf, "    <disk type='block'>\n");
-		virBufferVSprintf(&buf, "      <source dev='%s'/>\n", tmp);
-		tmp = sexpr_node(node, "device/vbd/dev");
-		if (tmp == NULL) {
-		    virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-		     "domain informations incomplete, vbd has no dev");
-		    goto error;
-		}
-		virBufferVSprintf(&buf, "      <target dev='%s'/>\n", tmp);
-		tmp = sexpr_node(node, "device/vbd/mode");
-		if ((tmp != NULL) && (!strcmp(tmp, "r")))
-		    virBufferVSprintf(&buf, "      <readonly/>\n");
-		virBufferAdd(&buf, "    </disk>\n", 12);
-	    } else {
-	        char serial[1000];
+        if (sexpr_lookup(node, "device/vbd")) {
+            tmp = sexpr_node(node, "device/vbd/uname");
+            if (tmp == NULL)
+                continue;
+            if (!memcmp(tmp, "file:", 5)) {
+                tmp += 5;
+                virBufferVSprintf(&buf, "    <disk type='file'>\n");
+                virBufferVSprintf(&buf, "      <source file='%s'/>\n",
+                                  tmp);
+                tmp = sexpr_node(node, "device/vbd/dev");
+                if (tmp == NULL) {
+                    virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+                                 "domain informations incomplete, vbd has no dev");
+                    goto error;
+                }
+                virBufferVSprintf(&buf, "      <target dev='%s'/>\n", tmp);
+                tmp = sexpr_node(node, "device/vbd/mode");
+                if ((tmp != NULL) && (!strcmp(tmp, "r")))
+                    virBufferVSprintf(&buf, "      <readonly/>\n");
+                virBufferAdd(&buf, "    </disk>\n", 12);
+            } else if (!memcmp(tmp, "phy:", 4)) {
+                tmp += 4;
+                virBufferVSprintf(&buf, "    <disk type='block'>\n");
+                virBufferVSprintf(&buf, "      <source dev='%s'/>\n", tmp);
+                tmp = sexpr_node(node, "device/vbd/dev");
+                if (tmp == NULL) {
+                    virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+                                 "domain informations incomplete, vbd has no dev");
+                    goto error;
+                }
+                virBufferVSprintf(&buf, "      <target dev='%s'/>\n", tmp);
+                tmp = sexpr_node(node, "device/vbd/mode");
+                if ((tmp != NULL) && (!strcmp(tmp, "r")))
+                    virBufferVSprintf(&buf, "      <readonly/>\n");
+                virBufferAdd(&buf, "    </disk>\n", 12);
+            } else {
+                char serial[1000];
 
-	        TODO
-		sexpr2string(node, serial, 1000);
-		virBufferVSprintf(&buf, "<!-- Failed to parse %s -->\n",
-		                  serial);
-	        TODO
-	    }
-	} else if (sexpr_lookup(node, "device/vif")) {
-	    tmp = sexpr_node(node, "device/vif/bridge");
-	    if (tmp != NULL) {
-		virBufferVSprintf(&buf, "    <interface type='bridge'>\n");
-		virBufferVSprintf(&buf, "      <source bridge='%s'/>\n", tmp);
-		tmp = sexpr_node(node, "device/vif/vifname");
-		if (tmp != NULL)
-		    virBufferVSprintf(&buf, "      <target dev='%s'/>\n", tmp);
-		tmp = sexpr_node(node, "device/vif/mac");
-		if (tmp != NULL)
-		    virBufferVSprintf(&buf, "      <mac address='%s'/>\n", tmp);
-		tmp = sexpr_node(node, "device/vif/ip");
-		if (tmp != NULL)
-		    virBufferVSprintf(&buf, "      <ip address='%s'/>\n", tmp);
-		tmp = sexpr_node(node, "device/vif/script");
-		if (tmp != NULL)
-		    virBufferVSprintf(&buf, "      <script path='%s'/>\n", tmp);
-		virBufferAdd(&buf, "    </interface>\n", 17);
-	    } else {
-	        char serial[1000];
+                TODO sexpr2string(node, serial, 1000);
+                virBufferVSprintf(&buf, "<!-- Failed to parse %s -->\n",
+                                  serial);
+            TODO}
+        } else if (sexpr_lookup(node, "device/vif")) {
+            tmp = sexpr_node(node, "device/vif/bridge");
+            if (tmp != NULL) {
+                virBufferVSprintf(&buf, "    <interface type='bridge'>\n");
+                virBufferVSprintf(&buf, "      <source bridge='%s'/>\n",
+                                  tmp);
+                tmp = sexpr_node(node, "device/vif/vifname");
+                if (tmp != NULL)
+                    virBufferVSprintf(&buf, "      <target dev='%s'/>\n",
+                                      tmp);
+                tmp = sexpr_node(node, "device/vif/mac");
+                if (tmp != NULL)
+                    virBufferVSprintf(&buf, "      <mac address='%s'/>\n",
+                                      tmp);
+                tmp = sexpr_node(node, "device/vif/ip");
+                if (tmp != NULL)
+                    virBufferVSprintf(&buf, "      <ip address='%s'/>\n",
+                                      tmp);
+                tmp = sexpr_node(node, "device/vif/script");
+                if (tmp != NULL)
+                    virBufferVSprintf(&buf, "      <script path='%s'/>\n",
+                                      tmp);
+                virBufferAdd(&buf, "    </interface>\n", 17);
+            } else {
+                char serial[1000];
 
-	        TODO
-		sexpr2string(node->car, serial, 1000);
-		virBufferVSprintf(&buf, "<!-- Failed to parse %s -->\n",
-		                  serial);
-	    }
-	    
-	}
+                TODO sexpr2string(node->car, serial, 1000);
+                virBufferVSprintf(&buf, "<!-- Failed to parse %s -->\n",
+                                  serial);
+            }
+
+        }
     }
     virBufferAdd(&buf, "  </devices>\n", 13);
     virBufferAdd(&buf, "</domain>\n", 10);
 
     buf.content[buf.use] = 0;
-    return(ret);
+    return (ret);
 
-error:
+  error:
     if (ret != NULL)
         free(ret);
-    return(NULL);
+    return (NULL);
 }
 
 /**
@@ -2371,22 +2379,24 @@ error:
  *         the caller must free() the returned value.
  */
 char *
-xend_get_domain_xml(virDomainPtr domain) {
+xend_get_domain_xml(virDomainPtr domain)
+{
     char *ret = NULL;
     struct sexpr *root;
 
     if (!VIR_IS_DOMAIN(domain)) {
-	/* this should be caught at the interface but ... */
+        /* this should be caught at the interface but ... */
         virXendError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
-	return(NULL);
+        return (NULL);
     }
 
-    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    root =
+        sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
     if (root == NULL)
-        return(NULL);
+        return (NULL);
 
     ret = xend_parse_sexp_desc(root);
     sexpr_free(root);
 
-    return(ret);
+    return (ret);
 }

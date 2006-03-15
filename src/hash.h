@@ -18,12 +18,13 @@ extern "C" {
 /*
  * The hash table.
  */
-typedef struct _virHashTable virHashTable;
-typedef virHashTable *virHashTablePtr;
+    typedef struct _virHashTable virHashTable;
+    typedef virHashTable *virHashTablePtr;
 
 /*
  * function types:
  */
+
 /**
  * virHashDeallocator:
  * @payload:  the data in the hash
@@ -31,41 +32,37 @@ typedef virHashTable *virHashTablePtr;
  *
  * Callback to free data from a hash.
  */
-typedef void (*virHashDeallocator)(void *payload, char *name);
+    typedef void (*virHashDeallocator) (void *payload, char *name);
 
 /*
  * Constructor and destructor.
  */
-virHashTablePtr		virHashCreate	(int size);
-void			
-			virHashFree	(virHashTablePtr table,
-					 virHashDeallocator f);
-int			virHashSize	(virHashTablePtr table);
+    virHashTablePtr virHashCreate(int size);
+    void
+      virHashFree(virHashTablePtr table, virHashDeallocator f);
+    int virHashSize(virHashTablePtr table);
 
 /*
  * Add a new entry to the hash table.
  */
-int			virHashAddEntry	(virHashTablePtr table,
-		                         const char *name,
-		                         void *userdata);
-int			virHashUpdateEntry(virHashTablePtr table,
-		                         const char *name,
-		                         void *userdata,
-					 virHashDeallocator f);
+    int virHashAddEntry(virHashTablePtr table,
+                        const char *name, void *userdata);
+    int virHashUpdateEntry(virHashTablePtr table,
+                           const char *name,
+                           void *userdata, virHashDeallocator f);
 
 /*
  * Remove an entry from the hash table.
  */
-int    			virHashRemoveEntry(virHashTablePtr table,
-					 const char *name,
-					 virHashDeallocator f);
+    int virHashRemoveEntry(virHashTablePtr table,
+                           const char *name, virHashDeallocator f);
+
 /*
  * Retrieve the userdata.
  */
-void *			virHashLookup	(virHashTablePtr table,
-					 const char *name);
+    void *virHashLookup(virHashTablePtr table, const char *name);
 
 #ifdef __cplusplus
 }
 #endif
-#endif /* ! __VIR_HASH_H__ */
+#endif                          /* ! __VIR_HASH_H__ */

@@ -13,6 +13,7 @@
 
 /* required for uint8_t, uint32_t, etc ... */
 #include <stdint.h>
+
 /* required for dom0_getdomaininfo_t */
 #include <xen/dom0_ops.h>
 
@@ -20,23 +21,19 @@
 extern "C" {
 #endif
 
-int		xenHypervisorOpen		(int quiet);
-int		xenHypervisorClose		(int handle);
-unsigned long	xenHypervisorGetVersion		(int handle);
-int		xenHypervisorDestroyDomain	(int handle,
-						 int domain);
-int		xenHypervisorResumeDomain	(int handle,
-						 int domain);
-int		xenHypervisorPauseDomain	(int handle,
-						 int domain);
-int		xenHypervisorGetDomainInfo	(int handle,
-						 int domain,
-						 dom0_getdomaininfo_t *info);
-int		xenHypervisorSetMaxMemory	(int handle,
-						 int domain,
-						 unsigned long memory);
+    int xenHypervisorOpen(int quiet);
+    int xenHypervisorClose(int handle);
+    unsigned long xenHypervisorGetVersion(int handle);
+    int xenHypervisorDestroyDomain(int handle, int domain);
+    int xenHypervisorResumeDomain(int handle, int domain);
+    int xenHypervisorPauseDomain(int handle, int domain);
+    int xenHypervisorGetDomainInfo(int handle,
+                                   int domain,
+                                   dom0_getdomaininfo_t * info);
+    int xenHypervisorSetMaxMemory(int handle,
+                                  int domain, unsigned long memory);
 
 #ifdef __cplusplus
 }
 #endif
-#endif /* __VIR_XEN_INTERNAL_H__ */
+#endif                          /* __VIR_XEN_INTERNAL_H__ */

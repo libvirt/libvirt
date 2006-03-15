@@ -23,8 +23,7 @@
 #include <xen/xen.h>
 
 #ifndef __LINUX_PUBLIC_PRIVCMD_H__
-typedef struct hypercall_struct
-{
+typedef struct hypercall_struct {
     unsigned long op;
     unsigned long arg[5];
 } hypercall_t;
@@ -45,16 +44,16 @@ typedef struct hypercall_struct
  * Handle an error at the xend daemon interface
  */
 static void
-virXenError(virErrorNumber error, const char *info, int value) {
+virXenError(virErrorNumber error, const char *info, int value)
+{
     const char *errmsg;
-    
+
     if (error == VIR_ERR_OK)
         return;
 
     errmsg = __virErrorMsg(error, info);
     __virRaiseError(NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
-                    errmsg, info, NULL, value, 0, errmsg, info,
-		    value);
+                    errmsg, info, NULL, value, 0, errmsg, info, value);
 }
 
 /**
@@ -65,17 +64,19 @@ virXenError(virErrorNumber error, const char *info, int value) {
  *
  * Returns the handle or -1 in case of error.
  */
-int xenHypervisorOpen(int quiet) {
+int
+xenHypervisorOpen(int quiet)
+{
     int ret;
 
     ret = open(XEN_HYPERVISOR_SOCKET, O_RDWR);
     if (ret < 0) {
-	if (!quiet)
-	    virXenError(VIR_ERR_NO_XEN, XEN_HYPERVISOR_SOCKET, 0);
-        return(-1);
+        if (!quiet)
+            virXenError(VIR_ERR_NO_XEN, XEN_HYPERVISOR_SOCKET, 0);
+        return (-1);
     }
 
-    return(ret);
+    return (ret);
 }
 
 /**
@@ -86,16 +87,18 @@ int xenHypervisorOpen(int quiet) {
  *
  * Returns 0 in case of success or -1 in case of error.
  */
-int xenHypervisorClose(int handle) {
+int
+xenHypervisorClose(int handle)
+{
     int ret;
 
     if (handle < 0)
-        return(-1);
+        return (-1);
 
     ret = close(handle);
     if (ret < 0)
-        return(-1);
-    return(0);
+        return (-1);
+    return (0);
 }
 
 /**
@@ -108,18 +111,19 @@ int xenHypervisorClose(int handle) {
  * Returns 0 in case of success and -1 in case of error.
  */
 static int
-xenHypervisorDoOp(int handle, dom0_op_t *op) {
+xenHypervisorDoOp(int handle, dom0_op_t * op)
+{
     int ret;
     unsigned int cmd;
     hypercall_t hc;
 
     op->interface_version = DOM0_INTERFACE_VERSION;
     hc.op = __HYPERVISOR_dom0_op;
-    hc.arg[0] = (unsigned long)op; 
+    hc.arg[0] = (unsigned long) op;
 
     if (mlock(op, sizeof(dom0_op_t)) < 0) {
         virXenError(VIR_ERR_XEN_CALL, " locking", sizeof(dom0_op_t));
-        return(-1);
+        return (-1);
     }
 
     cmd = _IOC(_IOC_NONE, 'P', 0, sizeof(hc));
@@ -134,9 +138,9 @@ xenHypervisorDoOp(int handle, dom0_op_t *op) {
     }
 
     if (ret < 0)
-        return(-1);
-        
-    return(0);
+        return (-1);
+
+    return (0);
 }
 
 /**
@@ -148,13 +152,14 @@ xenHypervisorDoOp(int handle, dom0_op_t *op) {
  * Returns the hypervisor running version or 0 in case of error.
  */
 unsigned long
-xenHypervisorGetVersion(int handle) {
+xenHypervisorGetVersion(int handle)
+{
     int ret;
     unsigned int cmd;
     hypercall_t hc;
 
     hc.op = __HYPERVISOR_xen_version;
-    hc.arg[0] = (unsigned long) XENVER_version; 
+    hc.arg[0] = (unsigned long) XENVER_version;
     hc.arg[1] = 0;
 
     cmd = _IOC(_IOC_NONE, 'P', 0, sizeof(hc));
@@ -162,13 +167,13 @@ xenHypervisorGetVersion(int handle) {
 
     if (ret < 0) {
         virXenError(VIR_ERR_XEN_CALL, " getting version ", XENVER_version);
-        return(0);
+        return (0);
     }
     /*
      * use unsigned long in case the version grows behind expectations
      * allowed by int
      */
-    return((unsigned long) ret);
+    return ((unsigned long) ret);
 }
 
 /**
@@ -182,18 +187,21 @@ xenHypervisorGetVersion(int handle) {
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xenHypervisorGetDomainInfo(int handle, int domain, dom0_getdomaininfo_t *info) {
+xenHypervisorGetDomainInfo(int handle, int domain,
+                           dom0_getdomaininfo_t * info)
+{
     dom0_op_t op;
     int ret;
 
     if (info == NULL)
-        return(-1);
+        return (-1);
 
     memset(info, 0, sizeof(dom0_getdomaininfo_t));
 
     if (mlock(info, sizeof(dom0_getdomaininfo_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " locking", sizeof(dom0_getdomaininfo_t));
-        return(-1);
+        virXenError(VIR_ERR_XEN_CALL, " locking",
+                    sizeof(dom0_getdomaininfo_t));
+        return (-1);
     }
 
     op.cmd = DOM0_GETDOMAININFOLIST;
@@ -206,13 +214,14 @@ xenHypervisorGetDomainInfo(int handle, int domain, dom0_getdomaininfo_t *info) {
     ret = xenHypervisorDoOp(handle, &op);
 
     if (munlock(info, sizeof(dom0_getdomaininfo_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " release", sizeof(dom0_getdomaininfo_t));
+        virXenError(VIR_ERR_XEN_CALL, " release",
+                    sizeof(dom0_getdomaininfo_t));
         ret = -1;
     }
 
     if (ret < 0)
-        return(-1);
-    return(0);
+        return (-1);
+    return (0);
 }
 
 /**
@@ -225,7 +234,8 @@ xenHypervisorGetDomainInfo(int handle, int domain, dom0_getdomaininfo_t *info) {
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xenHypervisorPauseDomain(int handle, int domain) {
+xenHypervisorPauseDomain(int handle, int domain)
+{
     dom0_op_t op;
     int ret;
 
@@ -235,8 +245,8 @@ xenHypervisorPauseDomain(int handle, int domain) {
     ret = xenHypervisorDoOp(handle, &op);
 
     if (ret < 0)
-        return(-1);
-    return(0);
+        return (-1);
+    return (0);
 }
 
 /**
@@ -249,7 +259,8 @@ xenHypervisorPauseDomain(int handle, int domain) {
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xenHypervisorResumeDomain(int handle, int domain) {
+xenHypervisorResumeDomain(int handle, int domain)
+{
     dom0_op_t op;
     int ret;
 
@@ -259,8 +270,8 @@ xenHypervisorResumeDomain(int handle, int domain) {
     ret = xenHypervisorDoOp(handle, &op);
 
     if (ret < 0)
-        return(-1);
-    return(0);
+        return (-1);
+    return (0);
 }
 
 /**
@@ -273,7 +284,8 @@ xenHypervisorResumeDomain(int handle, int domain) {
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xenHypervisorDestroyDomain(int handle, int domain) {
+xenHypervisorDestroyDomain(int handle, int domain)
+{
     dom0_op_t op;
     int ret;
 
@@ -283,8 +295,8 @@ xenHypervisorDestroyDomain(int handle, int domain) {
     ret = xenHypervisorDoOp(handle, &op);
 
     if (ret < 0)
-        return(-1);
-    return(0);
+        return (-1);
+    return (0);
 }
 
 /**
@@ -298,7 +310,8 @@ xenHypervisorDestroyDomain(int handle, int domain) {
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xenHypervisorSetMaxMemory(int handle, int domain, unsigned long memory) {
+xenHypervisorSetMaxMemory(int handle, int domain, unsigned long memory)
+{
     dom0_op_t op;
     int ret;
 
@@ -309,6 +322,6 @@ xenHypervisorSetMaxMemory(int handle, int domain, unsigned long memory) {
     ret = xenHypervisorDoOp(handle, &op);
 
     if (ret < 0)
-        return(-1);
-    return(0);
+        return (-1);
+    return (0);
 }

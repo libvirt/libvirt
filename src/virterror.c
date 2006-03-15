@@ -16,10 +16,10 @@
 #include "virterror.h"
 #include "internal.h"
 
-static virError     lastErr = 		/* the last error */
-{ 0, 0, NULL, VIR_ERR_NONE, NULL, NULL, NULL, NULL, NULL, 0, 0};
-static virErrorFunc virErrorHandler = NULL;/* global error handlet */
-static void        *virUserData = NULL;	/* associated data */
+static virError lastErr =       /* the last error */
+{ 0, 0, NULL, VIR_ERR_NONE, NULL, NULL, NULL, NULL, NULL, 0, 0 };
+static virErrorFunc virErrorHandler = NULL;     /* global error handlet */
+static void *virUserData = NULL;        /* associated data */
 
 /*
  * Macro used to format the message as a string in __virRaiseError
@@ -68,10 +68,11 @@ static void        *virUserData = NULL;	/* associated data */
  * Returns a pointer to the last error or NULL if none occured.
  */
 virErrorPtr
-virGetLastError(void) {
+virGetLastError(void)
+{
     if (lastErr.code == VIR_ERR_OK)
-        return(NULL);
-    return(&lastErr);
+        return (NULL);
+    return (&lastErr);
 }
 
 /*
@@ -85,13 +86,14 @@ virGetLastError(void) {
  *         of parameter error.
  */
 int
-virCopyLastError(virErrorPtr to) {
+virCopyLastError(virErrorPtr to)
+{
     if (to == NULL)
-        return(-1);
+        return (-1);
     if (lastErr.code == VIR_ERR_OK)
-        return(0);
+        return (0);
     memcpy(to, &lastErr, sizeof(virError));
-    return(lastErr.code);
+    return (lastErr.code);
 }
 
 /**
@@ -101,7 +103,8 @@ virCopyLastError(virErrorPtr to) {
  * Reset the error being pointed to
  */
 void
-virResetError(virErrorPtr err) {
+virResetError(virErrorPtr err)
+{
     if (err == NULL)
         return;
     if (err->message != NULL)
@@ -121,7 +124,8 @@ virResetError(virErrorPtr err) {
  * Reset the last error caught at the library level.
  */
 void
-virResetLastError(void) {
+virResetLastError(void)
+{
     virResetError(&lastErr);
 }
 
@@ -136,10 +140,11 @@ virResetLastError(void) {
  * Returns a pointer to the last error or NULL if none occured.
  */
 virErrorPtr
-virConnGetLastError(virConnectPtr conn) {
+virConnGetLastError(virConnectPtr conn)
+{
     if (conn == NULL)
-	return(NULL);
-    return(&conn->err);
+        return (NULL);
+    return (&conn->err);
 }
 
 /**
@@ -154,15 +159,16 @@ virConnGetLastError(virConnectPtr conn) {
  *         of parameter error.
  */
 int
-virConnCopyLastError(virConnectPtr conn, virErrorPtr to) {
+virConnCopyLastError(virConnectPtr conn, virErrorPtr to)
+{
     if (conn == NULL)
-	return(-1);
+        return (-1);
     if (to == NULL)
-        return(-1);
+        return (-1);
     if (conn->err.code == VIR_ERR_OK)
-        return(0);
+        return (0);
     memcpy(to, &conn->err, sizeof(virError));
-    return(conn->err.code);
+    return (conn->err.code);
 }
 
 /**
@@ -172,7 +178,8 @@ virConnCopyLastError(virConnectPtr conn, virErrorPtr to) {
  * Reset the last error caught on that connection
  */
 void
-virConnResetLastError(virConnectPtr conn) {
+virConnResetLastError(virConnectPtr conn)
+{
     if (conn == NULL)
         return;
     virResetError(&conn->err);
@@ -188,7 +195,8 @@ virConnResetLastError(virConnectPtr conn) {
  * are those for which no handler at the connection level could caught.
  */
 void
-virSetErrorFunc(void *userData, virErrorFunc handler) {
+virSetErrorFunc(void *userData, virErrorFunc handler)
+{
     virErrorHandler = handler;
     virUserData = userData;
 }
@@ -204,7 +212,9 @@ virSetErrorFunc(void *userData, virErrorFunc handler) {
  * library handler.
  */
 void
-virConnSetErrorFunc(virConnectPtr conn, void *userData, virErrorFunc handler) {
+virConnSetErrorFunc(virConnectPtr conn, void *userData,
+                    virErrorFunc handler)
+{
     if (conn == NULL)
         return;
     conn->handler = handler;
@@ -218,7 +228,8 @@ virConnSetErrorFunc(virConnectPtr conn, void *userData, virErrorFunc handler) {
  * Default routine reporting an error to stderr.
  */
 void
-virDefaultErrorFunc(virErrorPtr err) {
+virDefaultErrorFunc(virErrorPtr err)
+{
     const char *lvl = "", *dom = "", *domain = "";
     int len;
 
@@ -226,39 +237,39 @@ virDefaultErrorFunc(virErrorPtr err) {
         return;
     switch (err->level) {
         case VIR_ERR_NONE:
-	    lvl = "";
-	    break;
+            lvl = "";
+            break;
         case VIR_ERR_WARNING:
-	    lvl = "warning";
-	    break;
+            lvl = "warning";
+            break;
         case VIR_ERR_ERROR:
-	    lvl = "error";
-	    break;
-    } 
+            lvl = "error";
+            break;
+    }
     switch (err->domain) {
         case VIR_FROM_NONE:
-	    dom = "";
-	    break;
+            dom = "";
+            break;
         case VIR_FROM_XEN:
-	    dom = "Xen ";
-	    break;
+            dom = "Xen ";
+            break;
         case VIR_FROM_XEND:
-	    dom = "Xen Daemon ";
-	    break;
+            dom = "Xen Daemon ";
+            break;
         case VIR_FROM_DOM:
-	    dom = "Domain ";
-	    break;
+            dom = "Domain ";
+            break;
     }
     if ((err->dom != NULL) && (err->code != VIR_ERR_INVALID_DOMAIN)) {
         domain = err->dom->name;
     }
     len = strlen(err->message);
     if ((len == 0) || (err->message[len - 1] != '\n'))
-	fprintf(stderr, "libvir: %s%s %s: %s\n",
-	        dom, lvl, domain, err->message);
-    else 
-	fprintf(stderr, "libvir: %s%s %s: %s",
-	        dom, lvl, domain, err->message);
+        fprintf(stderr, "libvir: %s%s %s: %s\n",
+                dom, lvl, domain, err->message);
+    else
+        fprintf(stderr, "libvir: %s%s %s: %s",
+                dom, lvl, domain, err->message);
 }
 
 /**
@@ -283,24 +294,25 @@ void
 __virRaiseError(virConnectPtr conn, virDomainPtr dom,
                 int domain, int code, virErrorLevel level,
                 const char *str1, const char *str2, const char *str3,
-		int int1, int int2, const char *msg, ...) {
+                int int1, int int2, const char *msg, ...)
+{
     virErrorPtr to = &lastErr;
     void *userData = virUserData;
     virErrorFunc handler = virErrorHandler;
     char *str;
 
     if (code == VIR_ERR_OK)
-	return;
+        return;
 
     /*
      * try to find the best place to save and report the error
      */
     if (conn != NULL) {
         to = &conn->err;
-	if (conn->handler != NULL) {
-	    handler = conn->handler;
-	    userData = conn->userData;
-	}
+        if (conn->handler != NULL) {
+            handler = conn->handler;
+            userData = conn->userData;
+        }
     }
 
     /*
@@ -352,124 +364,124 @@ __virRaiseError(virConnectPtr conn, virDomainPtr dom,
  * Returns the constant string associated to @error
  */
 const char *
-__virErrorMsg(virErrorNumber error, const char *info) {
+__virErrorMsg(virErrorNumber error, const char *info)
+{
     const char *errmsg = NULL;
 
     switch (error) {
         case VIR_ERR_OK:
-	    return(NULL);
-	case VIR_ERR_INTERNAL_ERROR:
-	    if (info != NULL)
-		errmsg = "internal error %s";
-	    else
-	        errmsg = "internal error";
-	    break;
-	case VIR_ERR_NO_MEMORY:
-	    errmsg = "out of memory";
-	    break;
-	case VIR_ERR_NO_SUPPORT:
-	    errmsg = "no support for hypervisor %s";
-	    break;
-	case VIR_ERR_NO_CONNECT:
-	    if (info == NULL)
-	        errmsg = "could not connect to hypervisor";
-	    else
-	        errmsg = "could not connect to %s";
-	    break;
-	case VIR_ERR_INVALID_CONN:
-	    errmsg = "invalid connection pointer in";
-	    break;
-	case VIR_ERR_INVALID_DOMAIN:
-	    errmsg = "invalid domain pointer in";
-	    break;
-	case VIR_ERR_INVALID_ARG:
-	    errmsg = "invalid domain pointer in";
-	    break;
-	case VIR_ERR_OPERATION_FAILED:
-	    if (info != NULL)
-	        errmsg = "operation failed: %s";
-	    else
-	        errmsg = "operation failed";
-	    break;
-	case VIR_ERR_GET_FAILED:
-	    if (info != NULL)
-	        errmsg = "GET operation failed: %s";
-	    else
-	        errmsg = "GET operation failed";
-	    break;
-	case VIR_ERR_POST_FAILED:
-	    if (info != NULL)
-	        errmsg = "POST operation failed: %s";
-	    else
-	        errmsg = "POST operation failed";
-	    break;
-	case VIR_ERR_HTTP_ERROR:
-	    errmsg = "got unknown HTTP error code %d";
-	    break;
-	case VIR_ERR_UNKNOWN_HOST:
-	    errmsg = "unknown host %s";
-	    break;
-	case VIR_ERR_SEXPR_SERIAL:
-	    if (info != NULL)
-	        errmsg = "failed to serialize S-Expr: %s";
-	    else
-	        errmsg = "failed to serialize S-Expr";
-	    break;
-	case VIR_ERR_NO_XEN:
-	    if (info == NULL)
-	        errmsg = "could not use Xen hypervisor entry";
-	    else
-	        errmsg = "could not use Xen hypervisor entry %s";
-	    break;
-	case VIR_ERR_XEN_CALL:
-	    errmsg = "failed Xen syscall %s %d";
-	    break;
-	case VIR_ERR_OS_TYPE:
-	    if (info == NULL)
-	        errmsg = "unknown OS type";
-	    else
-	        errmsg = "unknown OS type %s";
-	    break;
-	case VIR_ERR_NO_KERNEL:
-	    errmsg = "missing kernel informations";
-	    break;
-	case VIR_ERR_NO_ROOT:
-	    if (info == NULL)
-		errmsg = "missing root device informations";
-	    else
-		errmsg = "missing root device informations in %s";
-	    break;
-	case VIR_ERR_NO_SOURCE:
-	    if (info == NULL)
-		errmsg = "missing source informations for device";
-	    else
-		errmsg = "missing source informations for device %s";
-	    break;
-	case VIR_ERR_NO_TARGET:
-	    if (info == NULL)
-		errmsg = "missing target informations for device";
-	    else
-		errmsg = "missing target informations for device %s";
-	    break;
-	case VIR_ERR_NO_NAME:
-	    if (info == NULL)
-		errmsg = "missing domain name informations";
-	    else
-		errmsg = "missing domain name informations in %s";
-	    break;
-	case VIR_ERR_NO_OS:
-	    if (info == NULL)
-		errmsg = "missing operating system informations";
-	    else
-		errmsg = "missing operating system informations for %s";
-	    break;
-	case VIR_ERR_NO_DEVICE:
-	    if (info == NULL)
-		errmsg = "missing devices informations";
-	    else
-		errmsg = "missing devices informations for %s";
-	    break;
+            return (NULL);
+        case VIR_ERR_INTERNAL_ERROR:
+            if (info != NULL)
+                errmsg = "internal error %s";
+            else
+                errmsg = "internal error";
+            break;
+        case VIR_ERR_NO_MEMORY:
+            errmsg = "out of memory";
+            break;
+        case VIR_ERR_NO_SUPPORT:
+            errmsg = "no support for hypervisor %s";
+            break;
+        case VIR_ERR_NO_CONNECT:
+            if (info == NULL)
+                errmsg = "could not connect to hypervisor";
+            else
+                errmsg = "could not connect to %s";
+            break;
+        case VIR_ERR_INVALID_CONN:
+            errmsg = "invalid connection pointer in";
+            break;
+        case VIR_ERR_INVALID_DOMAIN:
+            errmsg = "invalid domain pointer in";
+            break;
+        case VIR_ERR_INVALID_ARG:
+            errmsg = "invalid domain pointer in";
+            break;
+        case VIR_ERR_OPERATION_FAILED:
+            if (info != NULL)
+                errmsg = "operation failed: %s";
+            else
+                errmsg = "operation failed";
+            break;
+        case VIR_ERR_GET_FAILED:
+            if (info != NULL)
+                errmsg = "GET operation failed: %s";
+            else
+                errmsg = "GET operation failed";
+            break;
+        case VIR_ERR_POST_FAILED:
+            if (info != NULL)
+                errmsg = "POST operation failed: %s";
+            else
+                errmsg = "POST operation failed";
+            break;
+        case VIR_ERR_HTTP_ERROR:
+            errmsg = "got unknown HTTP error code %d";
+            break;
+        case VIR_ERR_UNKNOWN_HOST:
+            errmsg = "unknown host %s";
+            break;
+        case VIR_ERR_SEXPR_SERIAL:
+            if (info != NULL)
+                errmsg = "failed to serialize S-Expr: %s";
+            else
+                errmsg = "failed to serialize S-Expr";
+            break;
+        case VIR_ERR_NO_XEN:
+            if (info == NULL)
+                errmsg = "could not use Xen hypervisor entry";
+            else
+                errmsg = "could not use Xen hypervisor entry %s";
+            break;
+        case VIR_ERR_XEN_CALL:
+            errmsg = "failed Xen syscall %s %d";
+            break;
+        case VIR_ERR_OS_TYPE:
+            if (info == NULL)
+                errmsg = "unknown OS type";
+            else
+                errmsg = "unknown OS type %s";
+            break;
+        case VIR_ERR_NO_KERNEL:
+            errmsg = "missing kernel informations";
+            break;
+        case VIR_ERR_NO_ROOT:
+            if (info == NULL)
+                errmsg = "missing root device informations";
+            else
+                errmsg = "missing root device informations in %s";
+            break;
+        case VIR_ERR_NO_SOURCE:
+            if (info == NULL)
+                errmsg = "missing source informations for device";
+            else
+                errmsg = "missing source informations for device %s";
+            break;
+        case VIR_ERR_NO_TARGET:
+            if (info == NULL)
+                errmsg = "missing target informations for device";
+            else
+                errmsg = "missing target informations for device %s";
+            break;
+        case VIR_ERR_NO_NAME:
+            if (info == NULL)
+                errmsg = "missing domain name informations";
+            else
+                errmsg = "missing domain name informations in %s";
+            break;
+        case VIR_ERR_NO_OS:
+            if (info == NULL)
+                errmsg = "missing operating system informations";
+            else
+                errmsg = "missing operating system informations for %s";
+            break;
+        case VIR_ERR_NO_DEVICE:
+            if (info == NULL)
+                errmsg = "missing devices informations";
+            else
+                errmsg = "missing devices informations for %s";
+            break;
     }
-    return(errmsg);
+    return (errmsg);
 }
-

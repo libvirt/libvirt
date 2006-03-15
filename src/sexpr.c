@@ -30,9 +30,10 @@
  * Handle an error in the S-Expression code
  */
 static void
-virSexprError(virErrorNumber error, const char *info) {
+virSexprError(virErrorNumber error, const char *info)
+{
     const char *errmsg;
-    
+
     if (error == VIR_ERR_OK)
         return;
 
@@ -56,7 +57,7 @@ sexpr_new(void)
     ret = (struct sexpr *) malloc(sizeof(*ret));
     if (ret == NULL) {
         virSexprError(VIR_ERR_NO_MEMORY, "failed to allocate a node");
-        return(NULL);
+        return (NULL);
     }
     ret->kind = SEXPR_NIL;
     return ret;
@@ -193,11 +194,11 @@ struct sexpr *
 sexpr_append(struct sexpr *lst, struct sexpr *value)
 {
     if (lst == NULL)
-        return(NULL);
+        return (NULL);
     if (value == NULL)
-        return(lst);
+        return (lst);
     append(lst, value);
-    return(lst);
+    return (lst);
 }
 
 /**
@@ -219,33 +220,34 @@ sexpr2string(struct sexpr * sexpr, char *buffer, size_t n_buffer)
     size_t ret = 0, tmp;
 
     if ((sexpr == NULL) || (buffer == NULL) || (n_buffer <= 0))
-        return(0);
+        return (0);
 
     switch (sexpr->kind) {
         case SEXPR_CONS:
             tmp = snprintf(buffer + ret, n_buffer - ret, "(");
-	    if (tmp == 0)
-	        goto error;
-	    ret += tmp;
-	    tmp =  sexpr2string(sexpr->car, buffer + ret, n_buffer - ret);
-	    if (tmp == 0)
-	        goto error;
-	    ret += tmp;
+            if (tmp == 0)
+                goto error;
+            ret += tmp;
+            tmp = sexpr2string(sexpr->car, buffer + ret, n_buffer - ret);
+            if (tmp == 0)
+                goto error;
+            ret += tmp;
             while (sexpr->cdr->kind != SEXPR_NIL) {
                 sexpr = sexpr->cdr;
                 tmp = snprintf(buffer + ret, n_buffer - ret, " ");
-		if (tmp == 0)
-		    goto error;
-		ret += tmp;
-                tmp = sexpr2string(sexpr->car, buffer + ret, n_buffer - ret);
-		if (tmp == 0)
-		    goto error;
-		ret += tmp;
+                if (tmp == 0)
+                    goto error;
+                ret += tmp;
+                tmp =
+                    sexpr2string(sexpr->car, buffer + ret, n_buffer - ret);
+                if (tmp == 0)
+                    goto error;
+                ret += tmp;
             }
             tmp = snprintf(buffer + ret, n_buffer - ret, ")");
-	    if (tmp == 0)
-	        goto error;
-	    ret += tmp;
+            if (tmp == 0)
+                goto error;
+            ret += tmp;
             break;
         case SEXPR_VALUE:
             if (strchr(sexpr->value, ' '))
@@ -254,21 +256,21 @@ sexpr2string(struct sexpr * sexpr, char *buffer, size_t n_buffer)
             else
                 tmp = snprintf(buffer + ret, n_buffer - ret, "%s",
                                sexpr->value);
-	    if (tmp == 0)
-	        goto error;
-	    ret += tmp;
+            if (tmp == 0)
+                goto error;
+            ret += tmp;
             break;
         case SEXPR_NIL:
             break;
-	default:
-	    goto error;
+        default:
+            goto error;
     }
 
-    return(ret);
-error:
+    return (ret);
+  error:
     buffer[n_buffer - 1] = 0;
     virSexprError(VIR_ERR_SEXPR_SERIAL, buffer);
-    return(0);
+    return (0);
 }
 
 #define IS_SPACE(c) ((c == 0x20) || (c == 0x9) || (c == 0xD) || (c == 0xA))
@@ -278,7 +280,7 @@ trim(const char *string)
 {
     while (IS_SPACE(*string))
         string++;
-    return(string);
+    return (string);
 }
 
 /**
@@ -345,9 +347,10 @@ _string2sexpr(const char *buffer, size_t * end)
             }
 
             ret->value = strndup(start, ptr - start);
-	    if (ret->value == NULL) {
-	        virSexprError(VIR_ERR_NO_MEMORY, "failed to copy a string");
-	    }
+            if (ret->value == NULL) {
+                virSexprError(VIR_ERR_NO_MEMORY,
+                              "failed to copy a string");
+            }
 
             if (*ptr == '\'')
                 ptr++;
@@ -359,23 +362,24 @@ _string2sexpr(const char *buffer, size_t * end)
             }
 
             ret->value = strndup(start, ptr - start);
-	    if (ret->value == NULL) {
-	        virSexprError(VIR_ERR_NO_MEMORY, "failed to copy a string");
-	    }
+            if (ret->value == NULL) {
+                virSexprError(VIR_ERR_NO_MEMORY,
+                              "failed to copy a string");
+            }
         }
 
         ret->kind = SEXPR_VALUE;
-	if (ret->value == NULL)
-	    goto error;
+        if (ret->value == NULL)
+            goto error;
     }
 
     *end = ptr - buffer;
 
     return ret;
 
-error:
+  error:
     sexpr_free(ret);
-    return(NULL);
+    return (NULL);
 }
 
 /**
@@ -415,7 +419,7 @@ sexpr_lookup(struct sexpr *sexpr, const char *node)
     char buffer[4096], *ptr, *token;
 
     if ((node == NULL) || (sexpr == NULL))
-        return(NULL);
+        return (NULL);
 
     snprintf(buffer, sizeof(buffer), "%s", node);
 
@@ -437,7 +441,7 @@ sexpr_lookup(struct sexpr *sexpr, const char *node)
             continue;
 
         sexpr = sexpr->cdr;
-        for (i=sexpr; i->kind != SEXPR_NIL; i=i->cdr) {
+        for (i = sexpr; i->kind != SEXPR_NIL; i = i->cdr) {
             if (i->kind != SEXPR_CONS ||
                 i->car->kind != SEXPR_CONS ||
                 i->car->car->kind != SEXPR_VALUE) {

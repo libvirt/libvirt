@@ -53,15 +53,17 @@ struct _virHashTable {
  * Calculate the hash key
  */
 static unsigned long
-virHashComputeKey(virHashTablePtr table, const char *name) {
+virHashComputeKey(virHashTablePtr table, const char *name)
+{
     unsigned long value = 0L;
     char ch;
-    
+
     if (name != NULL) {
-	value += 30 * (*name);
-	while ((ch = *name++) != 0) {
-	    value = value ^ ((value << 5) + (value >> 3) + (unsigned long)ch);
-	}
+        value += 30 * (*name);
+        while ((ch = *name++) != 0) {
+            value =
+                value ^ ((value << 5) + (value >> 3) + (unsigned long) ch);
+        }
     }
     return (value % table->size);
 }
@@ -75,24 +77,25 @@ virHashComputeKey(virHashTablePtr table, const char *name) {
  * Returns the newly created object, or NULL if an error occured.
  */
 virHashTablePtr
-virHashCreate(int size) {
+virHashCreate(int size)
+{
     virHashTablePtr table;
-  
+
     if (size <= 0)
         size = 256;
-  
+
     table = malloc(sizeof(virHashTable));
     if (table) {
         table->size = size;
-	table->nbElems = 0;
+        table->nbElems = 0;
         table->table = malloc(size * sizeof(virHashEntry));
         if (table->table) {
-  	    memset(table->table, 0, size * sizeof(virHashEntry));
-  	    return(table);
+            memset(table->table, 0, size * sizeof(virHashEntry));
+            return (table);
         }
         free(table);
     }
-    return(NULL);
+    return (NULL);
 }
 
 /**
@@ -105,84 +108,87 @@ virHashCreate(int size) {
  * Returns 0 in case of success, -1 in case of failure
  */
 static int
-virHashGrow(virHashTablePtr table, int size) {
+virHashGrow(virHashTablePtr table, int size)
+{
     unsigned long key;
     int oldsize, i;
     virHashEntryPtr iter, next;
     struct _virHashEntry *oldtable;
+
 #ifdef DEBUG_GROW
     unsigned long nbElem = 0;
 #endif
-  
+
     if (table == NULL)
-	return(-1);
+        return (-1);
     if (size < 8)
-        return(-1);
+        return (-1);
     if (size > 8 * 2048)
-	return(-1);
+        return (-1);
 
     oldsize = table->size;
     oldtable = table->table;
     if (oldtable == NULL)
-        return(-1);
-  
+        return (-1);
+
     table->table = malloc(size * sizeof(virHashEntry));
     if (table->table == NULL) {
-	table->table = oldtable;
-	return(-1);
+        table->table = oldtable;
+        return (-1);
     }
     memset(table->table, 0, size * sizeof(virHashEntry));
     table->size = size;
 
-    /*	If the two loops are merged, there would be situations where
-	a new entry needs to allocated and data copied into it from 
-	the main table. So instead, we run through the array twice, first
-	copying all the elements in the main array (where we can't get
-	conflicts) and then the rest, so we only free (and don't allocate)
-    */
+    /*  If the two loops are merged, there would be situations where
+     * a new entry needs to allocated and data copied into it from 
+     * the main table. So instead, we run through the array twice, first
+     * copying all the elements in the main array (where we can't get
+     * conflicts) and then the rest, so we only free (and don't allocate)
+     */
     for (i = 0; i < oldsize; i++) {
-	if (oldtable[i].valid == 0) 
-	    continue;
-	key = virHashComputeKey(table, oldtable[i].name);
-	memcpy(&(table->table[key]), &(oldtable[i]), sizeof(virHashEntry));
-	table->table[key].next = NULL;
+        if (oldtable[i].valid == 0)
+            continue;
+        key = virHashComputeKey(table, oldtable[i].name);
+        memcpy(&(table->table[key]), &(oldtable[i]), sizeof(virHashEntry));
+        table->table[key].next = NULL;
     }
 
     for (i = 0; i < oldsize; i++) {
-	iter = oldtable[i].next;
-	while (iter) {
-	    next = iter->next;
+        iter = oldtable[i].next;
+        while (iter) {
+            next = iter->next;
 
-	    /*
-	     * put back the entry in the new table
-	     */
+            /*
+             * put back the entry in the new table
+             */
 
-	    key = virHashComputeKey(table, iter->name);
-	    if (table->table[key].valid == 0) {
-		memcpy(&(table->table[key]), iter, sizeof(virHashEntry));
-		table->table[key].next = NULL;
-		free(iter);
-	    } else {
-	    	iter->next = table->table[key].next;
-	    	table->table[key].next = iter;
-	    }
+            key = virHashComputeKey(table, iter->name);
+            if (table->table[key].valid == 0) {
+                memcpy(&(table->table[key]), iter, sizeof(virHashEntry));
+                table->table[key].next = NULL;
+                free(iter);
+            } else {
+                iter->next = table->table[key].next;
+                table->table[key].next = iter;
+            }
 
 #ifdef DEBUG_GROW
-	    nbElem++;
+            nbElem++;
 #endif
 
-	    iter = next;
-	}
+            iter = next;
+        }
     }
 
     free(oldtable);
 
 #ifdef DEBUG_GROW
     xmlGenericError(xmlGenericErrorContext,
-	    "virHashGrow : from %d to %d, %d elems\n", oldsize, size, nbElem);
+                    "virHashGrow : from %d to %d, %d elems\n", oldsize,
+                    size, nbElem);
 #endif
 
-    return(0);
+    return (0);
 }
 
 /**
@@ -194,7 +200,8 @@ virHashGrow(virHashTablePtr table, int size) {
  * deallocated with @f if provided.
  */
 void
-virHashFree(virHashTablePtr table, virHashDeallocator f) {
+virHashFree(virHashTablePtr table, virHashDeallocator f)
+{
     int i;
     virHashEntryPtr iter;
     virHashEntryPtr next;
@@ -202,30 +209,30 @@ virHashFree(virHashTablePtr table, virHashDeallocator f) {
     int nbElems;
 
     if (table == NULL)
-	return;
+        return;
     if (table->table) {
-	nbElems = table->nbElems;
-	for(i = 0; (i < table->size) && (nbElems > 0); i++) {
-	    iter = &(table->table[i]);
-	    if (iter->valid == 0)
-		continue;
-	    inside_table = 1;
-	    while (iter) {
-		next = iter->next;
-		if ((f != NULL) && (iter->payload != NULL))
-		    f(iter->payload, iter->name);
-		if (iter->name)
-		    free(iter->name);
-		iter->payload = NULL;
-		if (!inside_table)
-		    free(iter);
-		nbElems--;
-		inside_table = 0;
-		iter = next;
-	    }
-	    inside_table = 0;
-	}
-	free(table->table);
+        nbElems = table->nbElems;
+        for (i = 0; (i < table->size) && (nbElems > 0); i++) {
+            iter = &(table->table[i]);
+            if (iter->valid == 0)
+                continue;
+            inside_table = 1;
+            while (iter) {
+                next = iter->next;
+                if ((f != NULL) && (iter->payload != NULL))
+                    f(iter->payload, iter->name);
+                if (iter->name)
+                    free(iter->name);
+                iter->payload = NULL;
+                if (!inside_table)
+                    free(iter);
+                nbElems--;
+                inside_table = 0;
+                iter = next;
+            }
+            inside_table = 0;
+        }
+        free(table->table);
     }
     free(table);
 }
@@ -242,38 +249,38 @@ virHashFree(virHashTablePtr table, virHashDeallocator f) {
  * Returns 0 the addition succeeded and -1 in case of error.
  */
 int
-virHashAddEntry(virHashTablePtr table, const char *name,
-		 void *userdata) {
+virHashAddEntry(virHashTablePtr table, const char *name, void *userdata)
+{
     unsigned long key, len = 0;
     virHashEntryPtr entry;
     virHashEntryPtr insert;
 
     if ((table == NULL) || (name == NULL))
-	return(-1);
+        return (-1);
 
     /*
      * Check for duplicate and insertion location.
      */
     key = virHashComputeKey(table, name);
     if (table->table[key].valid == 0) {
-	insert = NULL;
+        insert = NULL;
     } else {
-	for (insert = &(table->table[key]); insert->next != NULL;
-	     insert = insert->next) {
-	    if (!strcmp(insert->name, name))
-		return(-1);
-	    len++;
-	}
-	if (!strcmp(insert->name, name))
-	    return(-1);
+        for (insert = &(table->table[key]); insert->next != NULL;
+             insert = insert->next) {
+            if (!strcmp(insert->name, name))
+                return (-1);
+            len++;
+        }
+        if (!strcmp(insert->name, name))
+            return (-1);
     }
 
     if (insert == NULL) {
-	entry = &(table->table[key]);
+        entry = &(table->table[key]);
     } else {
-	entry = malloc(sizeof(virHashEntry));
-	if (entry == NULL)
-	     return(-1);
+        entry = malloc(sizeof(virHashEntry));
+        if (entry == NULL)
+            return (-1);
     }
 
     entry->name = strdup(name);
@@ -282,15 +289,15 @@ virHashAddEntry(virHashTablePtr table, const char *name,
     entry->valid = 1;
 
 
-    if (insert != NULL) 
-	insert->next = entry;
+    if (insert != NULL)
+        insert->next = entry;
 
     table->nbElems++;
 
     if (len > MAX_HASH_LEN)
-	virHashGrow(table, MAX_HASH_LEN * table->size);
+        virHashGrow(table, MAX_HASH_LEN * table->size);
 
-    return(0);
+    return (0);
 }
 
 /**
@@ -308,44 +315,45 @@ virHashAddEntry(virHashTablePtr table, const char *name,
  */
 int
 virHashUpdateEntry(virHashTablePtr table, const char *name,
-		   void *userdata, virHashDeallocator f) {
+                   void *userdata, virHashDeallocator f)
+{
     unsigned long key;
     virHashEntryPtr entry;
     virHashEntryPtr insert;
 
     if ((table == NULL) || name == NULL)
-	return(-1);
+        return (-1);
 
     /*
      * Check for duplicate and insertion location.
      */
     key = virHashComputeKey(table, name);
     if (table->table[key].valid == 0) {
-	insert = NULL;
+        insert = NULL;
     } else {
-	for (insert = &(table->table[key]); insert->next != NULL;
-	     insert = insert->next) {
-	    if (!strcmp(insert->name, name)) {
-		if (f)
-		    f(insert->payload, insert->name);
-		insert->payload = userdata;
-		return(0);
-	    }
-	}
-	if (!strcmp(insert->name, name)) {
-	    if (f)
-		f(insert->payload, insert->name);
-	    insert->payload = userdata;
-	    return(0);
-	}
+        for (insert = &(table->table[key]); insert->next != NULL;
+             insert = insert->next) {
+            if (!strcmp(insert->name, name)) {
+                if (f)
+                    f(insert->payload, insert->name);
+                insert->payload = userdata;
+                return (0);
+            }
+        }
+        if (!strcmp(insert->name, name)) {
+            if (f)
+                f(insert->payload, insert->name);
+            insert->payload = userdata;
+            return (0);
+        }
     }
 
     if (insert == NULL) {
-	entry =  &(table->table[key]);
+        entry = &(table->table[key]);
     } else {
-	entry = malloc(sizeof(virHashEntry));
-	if (entry == NULL)
-	     return(-1);
+        entry = malloc(sizeof(virHashEntry));
+        if (entry == NULL)
+            return (-1);
     }
 
     entry->name = strdup(name);
@@ -356,9 +364,9 @@ virHashUpdateEntry(virHashTablePtr table, const char *name,
 
 
     if (insert != NULL) {
-	insert->next = entry;
+        insert->next = entry;
     }
-    return(0);
+    return (0);
 }
 
 /**
@@ -371,22 +379,23 @@ virHashUpdateEntry(virHashTablePtr table, const char *name,
  * Returns the a pointer to the userdata
  */
 void *
-virHashLookup(virHashTablePtr table, const char *name) {
+virHashLookup(virHashTablePtr table, const char *name)
+{
     unsigned long key;
     virHashEntryPtr entry;
 
     if (table == NULL)
-	return(NULL);
+        return (NULL);
     if (name == NULL)
-	return(NULL);
+        return (NULL);
     key = virHashComputeKey(table, name);
     if (table->table[key].valid == 0)
-	return(NULL);
+        return (NULL);
     for (entry = &(table->table[key]); entry != NULL; entry = entry->next) {
-	if (!strcmp(entry->name, name))
-	    return(entry->payload);
+        if (!strcmp(entry->name, name))
+            return (entry->payload);
     }
-    return(NULL);
+    return (NULL);
 }
 
 /**
@@ -399,10 +408,11 @@ virHashLookup(virHashTablePtr table, const char *name) {
  * -1 in case of error
  */
 int
-virHashSize(virHashTablePtr table) {
+virHashSize(virHashTablePtr table)
+{
     if (table == NULL)
-	return(-1);
-    return(table->nbElems);
+        return (-1);
+    return (table->nbElems);
 }
 
 /**
@@ -419,43 +429,45 @@ virHashSize(virHashTablePtr table) {
  */
 int
 virHashRemoveEntry(virHashTablePtr table, const char *name,
-                   virHashDeallocator f) {
+                   virHashDeallocator f)
+{
     unsigned long key;
     virHashEntryPtr entry;
     virHashEntryPtr prev = NULL;
 
     if (table == NULL || name == NULL)
-        return(-1);
+        return (-1);
 
     key = virHashComputeKey(table, name);
     if (table->table[key].valid == 0) {
-        return(-1);
+        return (-1);
     } else {
-        for (entry = &(table->table[key]); entry != NULL; entry = entry->next) {
+        for (entry = &(table->table[key]); entry != NULL;
+             entry = entry->next) {
             if (!strcmp(entry->name, name)) {
                 if ((f != NULL) && (entry->payload != NULL))
                     f(entry->payload, entry->name);
                 entry->payload = NULL;
-		if(entry->name)
-		    free(entry->name);
-                if(prev) {
+                if (entry->name)
+                    free(entry->name);
+                if (prev) {
                     prev->next = entry->next;
-		    free(entry);
-		} else {
-		    if (entry->next == NULL) {
-			entry->valid = 0;
-		    } else {
-			entry = entry->next;
-			memcpy(&(table->table[key]), entry, sizeof(virHashEntry));
-			free(entry);
-		    }
-		}
+                    free(entry);
+                } else {
+                    if (entry->next == NULL) {
+                        entry->valid = 0;
+                    } else {
+                        entry = entry->next;
+                        memcpy(&(table->table[key]), entry,
+                               sizeof(virHashEntry));
+                        free(entry);
+                    }
+                }
                 table->nbElems--;
-                return(0);
+                return (0);
             }
             prev = entry;
         }
-        return(-1);
+        return (-1);
     }
 }
-
