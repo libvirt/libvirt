@@ -74,70 +74,70 @@ extern "C" {
  *
  * Internal structure associated to a connection
  */
-    struct _virConnect {
-        unsigned int magic;     /* specific value to check */
-        int handle;             /* internal handle used for hypercall */
-        struct xs_handle *xshandle;     /* handle to talk to the xenstore */
+struct _virConnect {
+    unsigned int magic;     /* specific value to check */
+    int handle;             /* internal handle used for hypercall */
+    struct xs_handle *xshandle;     /* handle to talk to the xenstore */
 
-        /* connection to xend */
-        int type;               /* PF_UNIX or PF_INET */
-        int len;                /* lenght of addr */
-        struct sockaddr *addr;  /* type of address used */
-        struct sockaddr_un addr_un;     /* the unix address */
-        struct sockaddr_in addr_in;     /* the inet address */
+    /* connection to xend */
+    int type;               /* PF_UNIX or PF_INET */
+    int len;                /* lenght of addr */
+    struct sockaddr *addr;  /* type of address used */
+    struct sockaddr_un addr_un;     /* the unix address */
+    struct sockaddr_in addr_in;     /* the inet address */
 
-        /* error stuff */
-        virError err;           /* the last error */
-        virErrorFunc handler;   /* associated handlet */
-        void *userData;         /* the user data */
+    /* error stuff */
+    virError err;           /* the last error */
+    virErrorFunc handler;   /* associated handlet */
+    void *userData;         /* the user data */
 
-        /* misc */
-        virHashTablePtr domains;        /* hash table for known domains */
-        int flags;              /* a set of connection flags */
-    };
-
-/**
- * virDomainFlags:
- *
- * a set of special flag values associated to the domain
- */
-
-    enum {
-        DOMAIN_IS_SHUTDOWN = (1 << 0)   /* the domain is being shutdown */
-    } virDomainFlags;
+    /* misc */
+    virHashTablePtr domains;        /* hash table for known domains */
+    int flags;              /* a set of connection flags */
+};
 
 /**
- * _virDomain:
- *
- * Internal structure associated to a domain
- */
-    struct _virDomain {
-        unsigned int magic;     /* specific value to check */
-        virConnectPtr conn;     /* pointer back to the connection */
-        char *name;             /* the domain external name */
-        char *path;             /* the domain internal path */
-        int handle;             /* internal handle for the dmonain ID */
-        int flags;              /* extra flags */
-        unsigned char uuid[16]; /* the domain unique identifier */
-    };
+* virDomainFlags:
+*
+* a set of special flag values associated to the domain
+*/
+
+enum {
+    DOMAIN_IS_SHUTDOWN = (1 << 0)   /* the domain is being shutdown */
+} virDomainFlags;
+
+/**
+* _virDomain:
+*
+* Internal structure associated to a domain
+*/
+struct _virDomain {
+    unsigned int magic;     /* specific value to check */
+    virConnectPtr conn;     /* pointer back to the connection */
+    char *name;             /* the domain external name */
+    char *path;             /* the domain internal path */
+    int handle;             /* internal handle for the domnain ID */
+    int flags;              /* extra flags */
+    unsigned char uuid[16]; /* the domain unique identifier */
+};
 
 /*
- * Internal routines
- */
-    char *virDomainGetVM(virDomainPtr domain);
-    char *virDomainGetVMInfo(virDomainPtr domain,
-                             const char *vm, const char *name);
+* Internal routines
+*/
+char *virDomainGetVM(virDomainPtr domain);
+char *virDomainGetVMInfo(virDomainPtr domain,
+			 const char *vm, const char *name);
 
-    void __virRaiseError(virConnectPtr conn,
-                         virDomainPtr dom,
-                         int domain,
-                         int code,
-                         virErrorLevel level,
-                         const char *str1,
-                         const char *str2,
-                         const char *str3,
-                         int int1, int int2, const char *msg, ...);
-    const char *__virErrorMsg(virErrorNumber error, const char *info);
+void __virRaiseError(virConnectPtr conn,
+		     virDomainPtr dom,
+		     int domain,
+		     int code,
+		     virErrorLevel level,
+		     const char *str1,
+		     const char *str2,
+		     const char *str3,
+		     int int1, int int2, const char *msg, ...);
+const char *__virErrorMsg(virErrorNumber error, const char *info);
 
 #ifdef __cplusplus
 }

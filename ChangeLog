@@ -1,3 +1,10 @@
+Mon Mar 20 18:43:19 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/driver.h src/internal.h src/libvirt.c src/xen_internal.c
+	  src/xen_internal.h docs/apibuild.py: starting the refactoring,
+	  first the direct Xen hypervisor module. New header describing the
+	  entry points of a driver.
+
 Wed Mar 15 13:10:25 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/hash.c src/hash.h src/internal.h src/libvirt.c src/sexpr.c

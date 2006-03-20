@@ -21,17 +21,19 @@
 extern "C" {
 #endif
 
-    int xenHypervisorOpen(int quiet);
-    int xenHypervisorClose(int handle);
-    unsigned long xenHypervisorGetVersion(int handle);
-    int xenHypervisorDestroyDomain(int handle, int domain);
-    int xenHypervisorResumeDomain(int handle, int domain);
-    int xenHypervisorPauseDomain(int handle, int domain);
-    int xenHypervisorGetDomainInfo(int handle,
-                                   int domain,
-                                   dom0_getdomaininfo_t * info);
-    int xenHypervisorSetMaxMemory(int handle,
-                                  int domain, unsigned long memory);
+int	xenHypervisorOpen		(virConnectPtr conn,
+					 const char *name,
+					 int flags);
+int	xenHypervisorClose		(virConnectPtr conn);
+int	xenHypervisorGetVersion		(virConnectPtr conn,
+				 	 unsigned long *hvVer);
+int	xenHypervisorDestroyDomain	(virDomainPtr domain);
+int	xenHypervisorResumeDomain	(virDomainPtr domain);
+int	xenHypervisorPauseDomain	(virDomainPtr domain);
+int	xenHypervisorGetDomainInfo	(virDomainPtr domain,
+				   	 virDomainInfoPtr info);
+int	xenHypervisorSetMaxMemory	(virDomainPtr domain,
+		      		  	 unsigned long memory);
 
 #ifdef __cplusplus
 }

@@ -19,6 +19,7 @@
 #include <unistd.h>
 #include <xs.h>
 #include "internal.h"
+#include "driver.h"
 #include "xen_internal.h"
 #include "xend_internal.h"
 #include "hash.h"
@@ -137,23 +138,13 @@ virConnectPtr
 virConnectOpen(const char *name)
 {
     virConnectPtr ret = NULL;
-    int handle = -1;
+    int res;
     struct xs_handle *xshandle = NULL;
 
     /* we can only talk to the local Xen supervisor ATM */
     if (name != NULL) {
         virLibConnError(NULL, VIR_ERR_NO_SUPPORT, name);
         return (NULL);
-    }
-
-    handle = xenHypervisorOpen(0);
-    if (handle == -1) {
-        goto failed;
-    }
-    xshandle = xs_daemon_open();
-    if (xshandle == NULL) {
-        virLibConnError(NULL, VIR_ERR_NO_CONNECT, "XenStore");
-        goto failed;
     }
 
     ret = (virConnectPtr) malloc(sizeof(virConnect));
@@ -163,7 +154,17 @@ virConnectOpen(const char *name)
     }
     memset(ret, 0, sizeof(virConnect));
     ret->magic = VIR_CONNECT_MAGIC;
-    ret->handle = handle;
+
+    res = xenHypervisorOpen(ret, name, 0);
+    if (res < 0) {
+        goto failed;
+    }
+    xshandle = xs_daemon_open();
+    if (xshandle == NULL) {
+        virLibConnError(NULL, VIR_ERR_NO_CONNECT, "XenStore");
+        goto failed;
+    }
+
     ret->xshandle = xshandle;
     if (xend_setup(ret) < 0)
         goto failed;
@@ -174,8 +175,7 @@ virConnectOpen(const char *name)
 
     return (ret);
   failed:
-    if (handle >= 0)
-        xenHypervisorClose(handle);
+    xenHypervisorClose(ret);
     if (xshandle != NULL)
         xs_daemon_close(xshandle);
     if (ret != NULL)
@@ -197,7 +197,7 @@ virConnectPtr
 virConnectOpenReadOnly(const char *name)
 {
     int method = 0;
-    int handle;
+    int res;
     virConnectPtr ret = NULL;
     struct xs_handle *xshandle = NULL;
 
@@ -207,16 +207,6 @@ virConnectOpenReadOnly(const char *name)
         return (NULL);
     }
 
-    handle = xenHypervisorOpen(1);
-    if (handle >= 0)
-        method++;
-    else
-        handle = -1;
-
-    xshandle = xs_daemon_open_readonly();
-    if (xshandle != NULL)
-        method++;
-
     ret = (virConnectPtr) malloc(sizeof(virConnect));
     if (ret == NULL) {
         virLibConnError(NULL, VIR_ERR_NO_MEMORY, "Allocating connection");
@@ -224,7 +214,15 @@ virConnectOpenReadOnly(const char *name)
     }
     memset(ret, 0, sizeof(virConnect));
     ret->magic = VIR_CONNECT_MAGIC;
-    ret->handle = handle;
+
+    res = xenHypervisorOpen(ret, name, VIR_DRV_OPEN_QUIET | VIR_DRV_OPEN_RO);
+    if (res >= 0)
+        method++;
+
+    xshandle = xs_daemon_open_readonly();
+    if (xshandle != NULL)
+        method++;
+
     ret->xshandle = xshandle;
     if (xend_setup(ret) == 0)
         method++;
@@ -240,8 +238,7 @@ virConnectOpenReadOnly(const char *name)
 
     return (ret);
   failed:
-    if (handle >= 0)
-        xenHypervisorClose(handle);
+    xenHypervisorClose(ret);
     if (xshandle != NULL)
         xs_daemon_close(xshandle);
     if (ret != NULL) {
@@ -266,6 +263,8 @@ static int
 virConnectCheckStoreID(virConnectPtr conn, int id)
 {
     if (conn->handle >= 0) {
+	TODO
+	/*
         dom0_getdomaininfo_t dominfo;
         int tmp;
 
@@ -273,6 +272,7 @@ virConnectCheckStoreID(virConnectPtr conn, int id)
         tmp = xenHypervisorGetDomainInfo(conn->handle, id, &dominfo);
         if (tmp < 0)
             return (-1);
+	 */
     }
     return (0);
 }
@@ -313,8 +313,7 @@ virConnectClose(virConnectPtr conn)
     if (conn->xshandle != NULL)
         xs_daemon_close(conn->xshandle);
     conn->xshandle = NULL;
-    if (conn->handle != -1)
-        xenHypervisorClose(conn->handle);
+    xenHypervisorClose(conn);
     conn->handle = -1;
     free(conn);
     return (0);
@@ -373,8 +372,7 @@ virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer)
         return (0);
     }
 
-    ver = xenHypervisorGetVersion(conn->handle);
-    *hvVer = (ver >> 16) * 1000000 + (ver & 0xFFFF) * 1000;
+    ver = xenHypervisorGetVersion(conn, hvVer);
     return (0);
 }
 
@@ -961,7 +959,7 @@ virDomainDestroy(virDomainPtr domain)
         return (0);
     }
 
-    ret = xenHypervisorDestroyDomain(domain->conn->handle, domain->handle);
+    ret = xenHypervisorDestroyDomain(domain);
     if (ret < 0)
         return (-1);
 
@@ -1023,8 +1021,7 @@ virDomainSuspend(virDomainPtr domain)
         return (0);
 
     /* then try a direct hypervisor access */
-    return (xenHypervisorPauseDomain
-            (domain->conn->handle, domain->handle));
+    return (xenHypervisorPauseDomain(domain));
 }
 
 /**
@@ -1053,8 +1050,7 @@ virDomainResume(virDomainPtr domain)
         return (0);
 
     /* then try a direct hypervisor access */
-    return (xenHypervisorResumeDomain
-            (domain->conn->handle, domain->handle));
+    return (xenHypervisorResumeDomain(domain));
 }
 
 /**
@@ -1278,7 +1274,8 @@ virDomainGetID(virDomainPtr domain)
  *
  * Get the type of domain operation system.
  *
- * Returns the new string or NULL in case of error
+ * Returns the new string or NULL in case of error, the string must be
+ *         freed by the caller.
  */
 char *
 virDomainGetOSType(virDomainPtr domain)
@@ -1330,15 +1327,12 @@ virDomainGetMaxMemory(virDomainPtr domain)
             free(tmp);
         }
     } else {
-        dom0_getdomaininfo_t dominfo;
+        virDomainInfo dominfo;
         int tmp;
 
-        dominfo.domain = domain->handle;
-        tmp =
-            xenHypervisorGetDomainInfo(domain->conn->handle,
-                                       domain->handle, &dominfo);
+        tmp = xenHypervisorGetDomainInfo(domain, &dominfo);
         if (tmp >= 0)
-            ret = dominfo.max_pages * 4;
+            ret = dominfo.maxMem;
     }
     return (ret);
 }
@@ -1373,8 +1367,7 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
         return (-1);
     if (domain->conn->xshandle == NULL)
         return (-1);
-    ret = xenHypervisorSetMaxMemory(domain->conn->handle, domain->handle,
-                                    memory);
+    ret = xenHypervisorSetMaxMemory(domain, memory);
     if (ret < 0)
         return (-1);
 
@@ -1429,12 +1422,15 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
      * if we have direct access though the hypervisor do a direct call
      */
     if (domain->conn->handle >= 0) {
+        ret = xenHypervisorGetDomainInfo(domain, info);
+        if (ret < 0)
+            goto xend_info;
+        return (0);
+	/*
         dom0_getdomaininfo_t dominfo;
 
         dominfo.domain = domain->handle;
-        ret =
-            xenHypervisorGetDomainInfo(domain->conn->handle,
-                                       domain->handle, &dominfo);
+        ret = xenHypervisorGetDomainInfo(domain, &dominfo);
         if (ret < 0)
             goto xend_info;
 
@@ -1458,16 +1454,15 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
                 info->state = VIR_DOMAIN_NONE;
         }
 
-        /*
          * the API brings back the cpu time in nanoseconds,
          * convert to microseconds, same thing convert to
          * kilobytes from page counts
-         */
         info->cpuTime = dominfo.cpu_time;
         info->memory = dominfo.tot_pages * 4;
         info->maxMem = dominfo.max_pages * 4;
         info->nrVirtCpu = dominfo.nr_online_vcpus;
         return (0);
+         */
     }
 
   xend_info:
