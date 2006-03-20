@@ -36,6 +36,35 @@ typedef struct hypercall_struct {
 
 #define XEN_HYPERVISOR_SOCKET "/proc/xen/privcmd"
 
+static virDriver xenHypervisorDriver = {
+    "Xen",
+    NULL, /* init */
+    xenHypervisorOpen, /* open */
+    xenHypervisorClose, /* close */
+    NULL, /* type */
+    xenHypervisorGetVersion, /* version */
+    NULL, /* listDomains */
+    NULL, /* numOfDomains */
+    NULL, /* domainCreateLinux */
+    NULL, /* domainLookupByID */
+    NULL, /* domainLookupByUUID */
+    NULL, /* domainLookupByName */
+    xenHypervisorPauseDomain, /* domainSuspend */
+    xenHypervisorResumeDomain, /* domainResume */
+    NULL, /* domainShutdown */
+    xenHypervisorDestroyDomain, /* domainDestroy */
+    NULL, /* domainFree */
+    NULL, /* domainGetName */
+    NULL, /* domainGetID */
+    NULL, /* domainGetUUID */
+    NULL, /* domainGetOSType */
+    NULL, /* domainGetMaxMemory */
+    xenHypervisorSetMaxMemory, /* domainSetMaxMemory */
+    xenHypervisorGetDomainInfo, /* domainGetInfo */
+    NULL, /* domainSave */
+    NULL /* domainRestore */
+};
+
 /**
  * virXenError:
  * @conn: the connection if available

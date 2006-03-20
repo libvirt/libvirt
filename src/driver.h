@@ -29,7 +29,7 @@ typedef int
 typedef const char *
 	(*virDrvGetType)		(virConnectPtr conn);
 typedef int
-	(*virDrvGetVersion)		(void * conn,
+	(*virDrvGetVersion)		(virConnectPtr conn,
 					 unsigned long *hvVer);
 typedef int
 	(*virDrvListDomains)		(virConnectPtr conn,

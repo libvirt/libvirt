@@ -1,3 +1,9 @@
+Tue Mar 21 00:40:29 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/driver.h src/xen_internal.c: just add a driver block for
+	  the Xen hypervisor direct access module. Need to convert
+	  xend_internal.[ch] and make one for the Xenstore now ...
+
 Mon Mar 20 18:43:19 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/driver.h src/internal.h src/libvirt.c src/xen_internal.c
