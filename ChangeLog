@@ -1,3 +1,7 @@
+Wed Mar 22 13:34:32 EST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* python/tests/create.py: adapt to new naming scheme in FC5
+
 Tue Mar 21 00:40:29 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/driver.h src/xen_internal.c: just add a driver block for

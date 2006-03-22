@@ -29,8 +29,13 @@ if osroot == None:
 
 kernel=open("/proc/version").read().split()
 kernelOv = kernel[2]
-kernelU = "/boot/vmlinuz-" + kernelOv.replace('hypervisor', 'guest')
-initrdU = "/boot/initrd-" + kernelOv.replace('hypervisor', 'guest') + ".img"
+
+if kernelOv.find('hypervisor'):
+    kernelU = "/boot/vmlinuz-" + kernelOv.replace('hypervisor', 'guest')
+    initrdU = "/boot/initrd-" + kernelOv.replace('hypervisor', 'guest') + ".img"
+elif kernelOv.find('xen0'):
+    kernelU = "/boot/vmlinuz-" + kernelOv.replace('xen0', 'xenU')
+    initrdU = "/boot/initrd-" + kernelOv.replace('xen0', 'xenU') + ".img"
 
 if not os.access(kernelU, os.R_OK):
     print "Did not found the guest kernel %s" % (kernelU)
