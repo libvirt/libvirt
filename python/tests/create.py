@@ -13,6 +13,7 @@ if not os.access("/proc/xen", os.R_OK):
 #
 osroots = [
   "/u/fc4.img",
+  "/xen/fc4.img",
 ]
 
 okay = 1

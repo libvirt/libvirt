@@ -166,7 +166,7 @@ virConnectOpen(const char *name)
     }
 
     ret->xshandle = xshandle;
-    if (xend_setup(ret) < 0)
+    if (xenDaemonOpen(ret, name, 0) < 0)
         goto failed;
     ret->domains = virHashCreate(20);
     ret->flags = 0;
@@ -224,7 +224,7 @@ virConnectOpenReadOnly(const char *name)
         method++;
 
     ret->xshandle = xshandle;
-    if (xend_setup(ret) == 0)
+    if (xenDaemonOpen(ret, name, VIR_DRV_OPEN_QUIET | VIR_DRV_OPEN_RO) == 0)
         method++;
     ret->domains = virHashCreate(20);
     if (ret->domains == NULL)
@@ -305,7 +305,7 @@ virDomainFreeName(virDomainPtr domain, const char *name ATTRIBUTE_UNUSED)
 int
 virConnectClose(virConnectPtr conn)
 {
-    xend_cleanup(conn);
+    xenDaemonClose(conn);
     if (!VIR_IS_CONNECT(conn))
         return (-1);
     virHashFree(conn->domains, (virHashDeallocator) virDomainFreeName);
@@ -404,10 +404,10 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids)
         return (-1);
     }
 
-    idlist = xend_get_domains(conn);
+    idlist = xenDaemonListDomains(conn);
     if (idlist != NULL) {
         for (ret = 0, i = 0; (idlist[i] != NULL) && (ret < maxids); i++) {
-            id = xend_get_domain_ids(conn, idlist[i], NULL);
+            id = xenDaemonDomainLookupByName_ids(conn, idlist[i], NULL);
             if (id >= 0)
                 ids[ret++] = (int) id;
         }
@@ -460,7 +460,7 @@ virConnectNumOfDomains(virConnectPtr conn)
     /* 
      * try first with Xend interface
      */
-    idlist = xend_get_domains(conn);
+    idlist = xenDaemonListDomains(conn);
     if (idlist != NULL) {
         char **tmp = idlist;
 
@@ -521,7 +521,7 @@ virDomainCreateLinux(virConnectPtr conn,
         return (NULL);
     }
 
-    ret = xend_create_sexpr(conn, sexpr);
+    ret = xenDaemonDomainCreateLinux(conn, sexpr);
     free(sexpr);
     if (ret != 0) {
         fprintf(stderr, "Failed to create domain %s\n", name);
@@ -531,14 +531,18 @@ virDomainCreateLinux(virConnectPtr conn,
     ret = xend_wait_for_devices(conn, name);
     if (ret != 0) {
         fprintf(stderr, "Failed to get devices for domain %s\n", name);
-        xend_destroy(conn, name);
         goto error;
     }
 
-    ret = xend_unpause(conn, name);
+    dom = virDomainLookupByName(conn, name);
+    if (dom == NULL) {
+        goto error;
+    }
+
+    ret = xenDaemonDomainResume(dom);
     if (ret != 0) {
         fprintf(stderr, "Failed to resume new domain %s\n", name);
-        xend_destroy(conn, name);
+        xenDaemonDomainDestroy(dom);
         goto error;
     }
 
@@ -725,13 +729,13 @@ virDomainLookupByID(virConnectPtr conn, int id)
     }
     /* fallback to xend API then */
     if (path == NULL) {
-        char **names = xend_get_domains(conn);
+        char **names = xenDaemonListDomains(conn);
         char **tmp = names;
         int ident;
 
         if (names != NULL) {
             while (*tmp != NULL) {
-                ident = xend_get_domain_ids(conn, *tmp, &uuid[0]);
+                ident = xenDaemonDomainLookupByName_ids(conn, *tmp, &uuid[0]);
                 if (ident == id) {
                     name = strdup(*tmp);
                     break;
@@ -799,7 +803,7 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (NULL);
     }
-    names = xend_get_domains(conn);
+    names = xenDaemonListDomains(conn);
     tmp = names;
 
     if (names == NULL) {
@@ -807,7 +811,7 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
             return (NULL);
     }
     while (*tmp != NULL) {
-        id = xend_get_domain_ids(conn, *tmp, &ident[0]);
+        id = xenDaemonDomainLookupByName_ids(conn, *tmp, &ident[0]);
         if (id >= 0) {
             if (!memcmp(uuid, ident, 16)) {
                 name = strdup(*tmp);
@@ -869,7 +873,7 @@ virDomainLookupByName(virConnectPtr conn, const char *name)
     }
 
     /* try first though Xend */
-    xenddomain = xend_get_domain(conn, name);
+    xenddomain = xenDaemonDomainLookupByName(conn, name);
     if (xenddomain != NULL) {
         id = xenddomain->live->id;
         uuid = xenddomain->uuid;
@@ -953,7 +957,7 @@ virDomainDestroy(virDomainPtr domain)
     /*
      * try first with the xend method
      */
-    ret = xend_destroy(domain->conn, domain->name);
+    ret = xenDaemonDomainDestroy(domain);
     if (ret == 0) {
         virDomainFree(domain);
         return (0);
@@ -1016,7 +1020,7 @@ virDomainSuspend(virDomainPtr domain)
     }
 
     /* first try though the Xen daemon */
-    ret = xend_pause(domain->conn, domain->name);
+    ret = xenDaemonDomainSuspend(domain);
     if (ret == 0)
         return (0);
 
@@ -1045,7 +1049,7 @@ virDomainResume(virDomainPtr domain)
     }
 
     /* first try though the Xen daemon */
-    ret = xend_unpause(domain->conn, domain->name);
+    ret = xenDaemonDomainResume(domain);
     if (ret == 0)
         return (0);
 
@@ -1100,7 +1104,7 @@ virDomainSave(virDomainPtr domain, const char *to)
 
     }
 
-    ret = xend_save(domain->conn, domain->name, to);
+    ret = xenDaemonDomainSave(domain, to);
     return (ret);
 }
 
@@ -1147,7 +1151,7 @@ virDomainRestore(virConnectPtr conn, const char *from)
         from = &filepath[0];
     }
 
-    ret = xend_restore(conn, from);
+    ret = xenDaemonDomainRestore(conn, from);
     return (ret);
 }
 
@@ -1177,7 +1181,7 @@ virDomainShutdown(virDomainPtr domain)
     /*
      * try first with the xend daemon
      */
-    ret = xend_shutdown(domain->conn, domain->name);
+    ret = xenDaemonDomainShutdown(domain);
     if (ret == 0)
         return (0);
 
@@ -1243,7 +1247,7 @@ virDomainGetUUID(virDomainPtr domain, unsigned char *uuid)
             (domain->uuid[10] == 0) && (domain->uuid[11] == 0) &&
             (domain->uuid[12] == 0) && (domain->uuid[13] == 0) &&
             (domain->uuid[14] == 0) && (domain->uuid[15] == 0))
-            xend_get_domain_ids(domain->conn, domain->name,
+            xenDaemonDomainLookupByName_ids(domain->conn, domain->name,
                                 &domain->uuid[0]);
         memcpy(uuid, &domain->uuid[0], 16);
     }
@@ -1355,34 +1359,43 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
     int ret;
     char s[256], v[30];
 
-    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
-        return (-1);
-    }
     if (memory < 4096) {
         virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
     }
+    if (domain == NULL) {
+        TODO
+	return (-1);
+    }
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
+    }
     if (domain->conn->flags & VIR_CONNECT_RO)
         return (-1);
-    if (domain->conn->xshandle == NULL)
-        return (-1);
+
+    ret = xenDaemonDomainSetMaxMemory(domain, memory);
+    if (ret == 0)
+        return(0);
+
     ret = xenHypervisorSetMaxMemory(domain, memory);
     if (ret < 0)
         return (-1);
 
-    /*
-     * try to update at the Xenstore level too
-     * Failing to do so should not be considered fatal though as long
-     * as the hypervisor call succeeded
-     */
-    snprintf(s, 255, "/local/domain/%d/memory/target", domain->handle);
-    s[255] = 0;
-    snprintf(v, 29, "%lu", memory);
-    v[30] = 0;
+    if (domain->conn->xshandle != NULL) {
+	/*
+	 * try to update at the Xenstore level too
+	 * Failing to do so should not be considered fatal though as long
+	 * as the hypervisor call succeeded
+	 */
+	snprintf(s, 255, "/local/domain/%d/memory/target", domain->handle);
+	s[255] = 0;
+	snprintf(v, 29, "%lu", memory);
+	v[30] = 0;
 
-    if (!xs_write(domain->conn->xshandle, 0, &s[0], &v[0], strlen(v)))
-        ret = -1;
+	if (!xs_write(domain->conn->xshandle, 0, &s[0], &v[0], strlen(v)))
+	    ret = -1;
+    }
 
     return (ret);
 }
@@ -1423,53 +1436,14 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
      */
     if (domain->conn->handle >= 0) {
         ret = xenHypervisorGetDomainInfo(domain, info);
-        if (ret < 0)
-            goto xend_info;
-        return (0);
-	/*
-        dom0_getdomaininfo_t dominfo;
-
-        dominfo.domain = domain->handle;
-        ret = xenHypervisorGetDomainInfo(domain, &dominfo);
-        if (ret < 0)
-            goto xend_info;
-
-        switch (dominfo.flags & 0xFF) {
-            case DOMFLAGS_DYING:
-                info->state = VIR_DOMAIN_SHUTDOWN;
-                break;
-            case DOMFLAGS_SHUTDOWN:
-                info->state = VIR_DOMAIN_SHUTOFF;
-                break;
-            case DOMFLAGS_PAUSED:
-                info->state = VIR_DOMAIN_PAUSED;
-                break;
-            case DOMFLAGS_BLOCKED:
-                info->state = VIR_DOMAIN_BLOCKED;
-                break;
-            case DOMFLAGS_RUNNING:
-                info->state = VIR_DOMAIN_RUNNING;
-                break;
-            default:
-                info->state = VIR_DOMAIN_NONE;
-        }
-
-         * the API brings back the cpu time in nanoseconds,
-         * convert to microseconds, same thing convert to
-         * kilobytes from page counts
-        info->cpuTime = dominfo.cpu_time;
-        info->memory = dominfo.tot_pages * 4;
-        info->maxMem = dominfo.max_pages * 4;
-        info->nrVirtCpu = dominfo.nr_online_vcpus;
-        return (0);
-         */
+        if (ret == 0)
+	    return (0);
     }
 
-  xend_info:
     /*
      * try to extract the informations though access to the Xen Daemon
      */
-    if (xend_get_domain_info(domain, info) == 0)
+    if (xenDaemonDomainGetInfo(domain, info) == 0)
         return (0);
 
     /*
@@ -1536,5 +1510,5 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
         return (NULL);
     }
 
-    return (xend_get_domain_xml(domain));
+    return (xenDaemonDomainDumpXML(domain));
 }

@@ -26,12 +26,43 @@
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <libxml/uri.h>
 
 #include "libvirt.h"
+#include "driver.h"
 #include "internal.h"
 #include "sexpr.h"
 #include "xml.h"
 #include "xend_internal.h"
+
+static virDriver xenDaemonDriver = {
+    "Xen",
+    NULL, /* init */
+    xenDaemonOpen, /* open */
+    xenDaemonClose, /* close */
+    NULL, /* type */
+    NULL, /* version */
+    NULL, /* listDomains */
+    NULL, /* numOfDomains */
+    NULL, /* domainCreateLinux */
+    NULL, /* domainLookupByID */
+    NULL, /* domainLookupByUUID */
+    NULL, /* domainLookupByName */
+    xenDaemonDomainSuspend, /* domainSuspend */
+    xenDaemonDomainResume, /* domainResume */
+    xenDaemonDomainShutdown, /* domainShutdown */
+    xenDaemonDomainDestroy, /* domainDestroy */
+    NULL, /* domainFree */
+    NULL, /* domainGetName */
+    NULL, /* domainGetID */
+    NULL, /* domainGetUUID */
+    NULL, /* domainGetOSType */
+    NULL, /* domainGetMaxMemory */
+    xenDaemonDomainSetMaxMemory, /* domainSetMaxMemory */
+    xenDaemonDomainGetInfo, /* domainGetInfo */
+    xenDaemonDomainSave, /* domainSave */
+    xenDaemonDomainRestore /* domainRestore */
+};
 
 /**
  * xend_connection_type:
@@ -575,99 +606,6 @@ sexpr_get(virConnectPtr xend, const char *fmt, ...)
 }
 
 /**
- * sexpr_append_str:
- * @sexpr: an S-Expression
- * @name: the name of the property
- * @value: the string value
- *
- * convenience function appending a (name value) property to the S-Expression
- *
- * Returns the augmented S-Expression
- */
-static struct sexpr *
-sexpr_append_str(struct sexpr *sexpr, const char *name, const char *value)
-{
-    struct sexpr *lst;
-
-    if (!value)
-        return sexpr;
-
-    lst = sexpr_append(sexpr_nil(), sexpr_string(name, -1));
-    lst = sexpr_append(lst, sexpr_string(value, -1));
-    return sexpr_append(sexpr, lst);
-}
-
-/**
- * sexpr_append_u64:
- * @sexpr: an S-Expression
- * @name: the name of the property
- * @value: a 64 bits unsigned int value
- *
- * convenience function appending a (name value) property to the S-Expression
- *
- * Returns the augmented S-Expression
- */
-static struct sexpr *
-sexpr_append_u64(struct sexpr *sexpr, const char *name, uint64_t value)
-{
-    char buffer[1024];
-
-    snprintf(buffer, sizeof(buffer), "%llu", value);
-    return sexpr_append_str(sexpr, name, buffer);
-}
-
-/**
- * sexpr_append_int:
- * @sexpr: an S-Expression
- * @name: the name of the property
- * @value: an int value
- *
- * convenience function appending a (name value) property to the S-Expression
- *
- * Returns the augmented S-Expression
- */
-static struct sexpr *
-sexpr_append_int(struct sexpr *sexpr, const char *name, int value)
-{
-    char buffer[1024];
-
-    snprintf(buffer, sizeof(buffer), "%d", value);
-    return sexpr_append_str(sexpr, name, buffer);
-}
-
-/**
- * sexpr_append_uuid:
- * @sexpr: an S-Expression
- * @name: the name of the property
- * @uuid: an unique identifier for a domain
- *
- * convenience function appending a (name uuid) property to the S-Expression
- *
- * Returns the augmented S-Expression
- */
-static struct sexpr *
-sexpr_append_uuid(struct sexpr *sexpr,
-                  const char *name, unsigned char *uuid)
-{
-    char buffer[1024];
-
-    if (uuid == NULL)
-        return sexpr;
-
-    snprintf(buffer, sizeof(buffer),
-             "%02x%02x%02x%02x-"
-             "%02x%02x%02x%02x-"
-             "%02x%02x%02x%02x-"
-             "%02x%02x%02x%02x",
-             uuid[0], uuid[1], uuid[2], uuid[3],
-             uuid[4], uuid[5], uuid[6], uuid[7],
-             uuid[8], uuid[9], uuid[10], uuid[11],
-             uuid[12], uuid[13], uuid[14], uuid[15]);
-
-    return sexpr_append_str(sexpr, name, buffer);
-}
-
-/**
  * sexpr_int:
  * @sexpr: an S-Expression
  * @name: the name for the value
@@ -955,65 +893,10 @@ urlencode(const char *string)
     return buffer;
 }
 
-/**
- * xend_device_vbd_to_sexpr:
- * @vbd: a virtual block device pointer
- *
- * Encode a virtual block device as an S-Expression understood by the
- * Xen Daemon
- *
- * Returns the result S-Expression pointer
- */
-static struct sexpr *
-xend_device_vbd_to_sexpr(const struct xend_device_vbd *vbd)
-{
-    struct sexpr *device = sexpr_nil();
-    const char *mode[] = { NULL, "r", "w", "w!" };
-
-    sexpr_append(device, sexpr_string("vbd", -1));
-    sexpr_append_str(device, "dev", vbd->dev);
-    sexpr_append_str(device, "uname", vbd->uname);
-    sexpr_append_int(device, "backend", vbd->backend);
-    sexpr_append_str(device, "mode", mode[vbd->mode]);
-
-    return device;
-}
-
-/**
- * xend_device_vif_to_sexpr:
- * @vif: a virtual network interface pointer
- *
- * Encode a virtual network interface as an S-Expression understood by the
- * Xen Daemon
- *
- * Returns the result S-Expression pointer
- */
-static struct sexpr *
-xend_device_vif_to_sexpr(const struct xend_device_vif *vif)
-{
-    struct sexpr *device;
-    char buffer[1024];
-
-    device = sexpr_append(sexpr_nil(), sexpr_string("vif", -1));
-
-    snprintf(buffer, sizeof(buffer),
-             "%02x:%02x:%02x:%02x:%02x:%02x",
-             vif->mac[0], vif->mac[1], vif->mac[2],
-             vif->mac[3], vif->mac[4], vif->mac[5]);
-    device = sexpr_append_str(device, "mac", buffer);
-    device = sexpr_append_int(device, "backend", vif->backend);
-    device = sexpr_append_str(device, "bridge", vif->bridge);
-    device = sexpr_append_str(device, "ip", vif->ip);
-    device = sexpr_append_str(device, "script", vif->script);
-    device = sexpr_append_str(device, "vifname", vif->vifname);
-
-    return device;
-}
-
 /* PUBLIC FUNCTIONS */
 
 /**
- * xend_setup_unix:
+ * xenDaemonOpen_unix:
  * @conn: an existing virtual connection block
  * @path: the path for the Xen Daemon socket
  *
@@ -1023,7 +906,7 @@ xend_device_vif_to_sexpr(const struct xend_device_vif *vif)
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xend_setup_unix(virConnectPtr xend, const char *path)
+xenDaemonOpen_unix(virConnectPtr xend, const char *path)
 {
     struct sockaddr_un *addr;
 
@@ -1046,7 +929,7 @@ xend_setup_unix(virConnectPtr xend, const char *path)
 }
 
 /**
- * xend_setup_tcp:
+ * xenDaemonOpen_tcp:
  * @conn: an existing virtual connection block
  * @host: the host name for the Xen Daemon
  * @port: the port 
@@ -1057,7 +940,7 @@ xend_setup_unix(virConnectPtr xend, const char *path)
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xend_setup_tcp(virConnectPtr xend, const char *host, int port)
+xenDaemonOpen_tcp(virConnectPtr xend, const char *host, int port)
 {
     struct in_addr ip;
     struct hostent *pent;
@@ -1088,33 +971,6 @@ xend_setup_tcp(virConnectPtr xend, const char *host, int port)
 }
 
 /**
- * xend_setup:
- * @conn: an existing virtual connection block
- *
- * Creates a localhost Xen Daemon connection
- * Note: this doesn't try to check if the connection actually works
- *
- * Returns 0 in case of success, -1 in case of error.
- */
-int
-xend_setup(virConnectPtr conn)
-{
-    return (xend_setup_tcp(conn, "localhost", 8000));
-
-/*    return(xend_setup_unix(conn, "/var/lib/xend/xend-socket")); */
-}
-
-/**
- * xend_cleanup:
- *
- * Cleanup a xend connection
- */
-void
-xend_cleanup(virConnectPtr xend ATTRIBUTE_UNUSED)
-{
-}
-
-/**
  * xend_wait_for_devices:
  * @xend: pointer to the Xem Daemon block
  * @name: name for the domain
@@ -1128,37 +984,6 @@ int
 xend_wait_for_devices(virConnectPtr xend, const char *name)
 {
     return xend_op(xend, name, "op", "wait_for_devices", NULL);
-}
-
-/**
- * xend_pause:
- * @xend: pointer to the Xem Daemon block
- * @name: name for the domain
- *
- * Pause the domain, the domain is not scheduled anymore though its resources
- * are preserved. Use xend_unpause() to resume execution.
- *
- * Returns 0 in case of success, -1 (with errno) in case of error.
- */
-int
-xend_pause(virConnectPtr xend, const char *name)
-{
-    return xend_op(xend, name, "op", "pause", NULL);
-}
-
-/**
- * xend_unpause:
- * @xend: pointer to the Xem Daemon block
- * @name: name for the domain
- *
- * Resume the domain after xend_pause() has been called
- *
- * Returns 0 in case of success, -1 (with errno) in case of error.
- */
-int
-xend_unpause(virConnectPtr xend, const char *name)
-{
-    return xend_op(xend, name, "op", "unpause", NULL);
 }
 
 /**
@@ -1203,27 +1028,6 @@ xend_reboot(virConnectPtr xend, const char *name)
 }
 
 /**
- * xend_shutdown:
- * @xend: pointer to the Xem Daemon block
- * @name: name for the domain
- *
- * Shutdown the domain, the OS is properly shutdown and the resources allocated
- * for the domain are freed.
- *
- * Returns 0 in case of success, -1 (with errno) in case of error.
- */
-int
-xend_shutdown(virConnectPtr xend, const char *name)
-{
-    if ((xend == NULL) || (name == NULL)) {
-        /* this should be caught at the interface but ... */
-        virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (-1);
-    }
-    return xend_op(xend, name, "op", "shutdown", "reason", "halt", NULL);
-}
-
-/**
  * xend_sysrq:
  * @xend: pointer to the Xem Daemon block
  * @name: name for the domain
@@ -1245,76 +1049,7 @@ xend_sysrq(virConnectPtr xend, const char *name, const char *key)
 }
 
 /**
- * xend_destroy:
- * @xend: pointer to the Xem Daemon block
- * @name: name for the domain
- *
- * Abruptly halt the domain, the OS is not properly shutdown and the
- * resources allocated for the domain are immediately freed, mounted
- * filesystems will be marked as uncleanly shutdown.
- *
- * Returns 0 in case of success, -1 (with errno) in case of error.
- */
-int
-xend_destroy(virConnectPtr xend, const char *name)
-{
-    if ((xend == NULL) || (name == NULL)) {
-        /* this should be caught at the interface but ... */
-        virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (-1);
-    }
-    return xend_op(xend, name, "op", "destroy", NULL);
-}
-
-/**
- * xend_save:
- * @xend: pointer to the Xem Daemon block
- * @name: name for the domain
- * @filename: path for the output file
- *
- * This method will suspend a domain and save its memory contents to
- * a file on disk.  Use xend_restore() to restore a domain after
- * saving.
- * Note that for remote Xen Daemon the file path will be interpreted in
- * the remote host.
- *
- * Returns 0 in case of success, -1 (with errno) in case of error.
- */
-int
-xend_save(virConnectPtr xend, const char *name, const char *filename)
-{
-    if ((xend == NULL) || (filename == NULL)) {
-        /* this should be caught at the interface but ... */
-        virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (-1);
-    }
-    return xend_op(xend, name, "op", "save", "file", filename, NULL);
-}
-
-/**
- * xend_restore:
- * @xend: pointer to the Xem Daemon block
- * @filename: path for the output file
- *
- * This method will restore a domain saved to disk by xend_save().
- * Note that for remote Xen Daemon the file path will be interpreted in
- * the remote host.
- *
- * Returns 0 in case of success, -1 (with errno) in case of error.
- */
-int
-xend_restore(virConnectPtr xend, const char *filename)
-{
-    if ((xend == NULL) || (filename == NULL)) {
-        /* this should be caught at the interface but ... */
-        virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (-1);
-    }
-    return xend_op(xend, "", "op", "restore", "file", filename, NULL);
-}
-
-/**
- * xend_get_domains:
+ * xenDaemonListDomains:
  * @xend: pointer to the Xem Daemon block
  *
  * This method will return an array of names of currently running
@@ -1323,7 +1058,7 @@ xend_restore(virConnectPtr xend, const char *filename)
  * Returns a list of names or NULL in case of error.
  */
 char **
-xend_get_domains(virConnectPtr xend)
+xenDaemonListDomains(virConnectPtr xend)
 {
     size_t extra = 0;
     struct sexpr *root = NULL;
@@ -1371,127 +1106,13 @@ xend_get_domains(virConnectPtr xend)
 }
 
 /**
- * xend_domain_to_sexpr:
- * @domain: a domain pointer 
- *
- * Internal function converting the domain informations into an S-Expression
- * that the Xen Daemon can use to create instances
- *
- * Returns the new S-Expression or NULL in case of error.
- */
-static struct sexpr *
-xend_domain_to_sexpr(const struct xend_domain *domain)
-{
-    struct sexpr *lst = sexpr_nil();
-    struct sexpr *image = sexpr_nil();
-    struct sexpr *builder = sexpr_nil();
-    const char *restart[] = { NULL, "restart",
-        "preserve", "rename-restart"
-    };
-    size_t i;
-
-    if (domain == NULL)
-        return (NULL);
-
-    lst = sexpr_append(lst, sexpr_string("vm", -1));
-    lst = sexpr_append_str(lst, "name", domain->name);
-    lst = sexpr_append_uuid(lst, "uuid", domain->uuid);
-    lst = sexpr_append_u64(lst, "memory", domain->memory);
-    lst = sexpr_append_int(lst, "ssidref", domain->ssidref);
-    lst = sexpr_append_u64(lst, "maxmem", domain->max_memory);
-    lst =
-        sexpr_append_str(lst, "on_poweroff", restart[domain->on_poweroff]);
-    lst = sexpr_append_str(lst, "on_reboot", restart[domain->on_reboot]);
-    lst = sexpr_append_str(lst, "on_crash", restart[domain->on_crash]);
-    lst = sexpr_append_int(lst, "vcpus", domain->vcpus);
-
-    builder = sexpr_append(builder, sexpr_string("linux", -1));
-    builder = sexpr_append_str(builder, "kernel", domain->image.kernel);
-    builder = sexpr_append_str(builder, "ramdisk", domain->image.ramdisk);
-    builder = sexpr_append_str(builder, "root", domain->image.root);
-    builder = sexpr_append_str(builder, "args", domain->image.extra);
-
-    image = sexpr_append(image, sexpr_string("image", -1));
-    image = sexpr_append(image, builder);
-
-    lst = sexpr_append(lst, image);
-
-    for (i = 0; i < domain->n_vbds; i++) {
-        struct sexpr *device = sexpr_nil();
-        struct sexpr *vbd = xend_device_vbd_to_sexpr(&domain->vbds[i]);
-
-        device = sexpr_append(device, sexpr_string("device", -1));
-        device = sexpr_append(device, vbd);
-        lst = sexpr_append(lst, device);
-    }
-
-    for (i = 0; i < domain->n_vifs; i++) {
-        struct sexpr *device = sexpr_nil();
-        struct sexpr *vif = xend_device_vif_to_sexpr(&domain->vifs[i]);
-
-        device = sexpr_append(device, sexpr_string("device", -1));
-        device = sexpr_append(device, vif);
-        lst = sexpr_append(lst, device);
-    }
-
-    for (i = 0; i < domain->n_ioports; i++) {
-        struct sexpr *device = sexpr_nil();
-        struct sexpr *ioport = sexpr_nil();
-
-        ioport = sexpr_append(ioport, sexpr_string("ioports", -1));
-        ioport = sexpr_append_int(ioport, "from", domain->ioports[i].from);
-        ioport = sexpr_append_int(ioport, "to", domain->ioports[i].to);
-
-        device = sexpr_append(device, sexpr_string("device", -1));
-        device = sexpr_append(device, ioport);
-        lst = sexpr_append(lst, device);
-    }
-
-    return lst;
-}
-
-/**
- * xend_create:
- * @xend: A xend instance
- * @info: A struct xen_domain instance describing the domain
- *
- * This method will create a domain based the passed in description.  The
- * domain will be paused after creation and must be unpaused with
- * xend_unpause() to begin execution.
- *
- * Returns 0 for success, -1 (with errno) on error
- */
-
-int
-xend_create(virConnectPtr xend, const struct xend_domain *dom)
-{
-    int ret, serrno;
-    struct sexpr *sexpr;
-    char buffer[4096];
-    char *ptr;
-
-    sexpr = xend_domain_to_sexpr(dom);
-    sexpr2string(sexpr, buffer, sizeof(buffer));
-    ptr = urlencode(buffer);
-
-    ret = xend_op(xend, "", "op", "create", "config", ptr, NULL);
-
-    serrno = errno;
-    free(ptr);
-    sexpr_free(sexpr);
-    errno = serrno;
-
-    return ret;
-}
-
-/**
- * xend_create_sexpr:
+ * xenDaemonDomainCreateLinux:
  * @xend: A xend instance
  * @sexpr: An S-Expr description of the domain.
  *
  * This method will create a domain based the passed in description.  The
  * domain will be paused after creation and must be unpaused with
- * xend_unpause() to begin execution.
+ * xenDaemonResumeDomain() to begin execution.
  * This method may be deprecated once switching to XML-RPC based communcations
  * with xend.
  *
@@ -1499,7 +1120,7 @@ xend_create(virConnectPtr xend, const struct xend_domain *dom)
  */
 
 int
-xend_create_sexpr(virConnectPtr xend, const char *sexpr)
+xenDaemonDomainCreateLinux(virConnectPtr xend, const char *sexpr)
 {
     int ret, serrno;
     char *ptr;
@@ -1519,28 +1140,6 @@ xend_create_sexpr(virConnectPtr xend, const char *sexpr)
     errno = serrno;
 
     return ret;
-}
-
-/**
- * xend_set_max_memory:
- * @xend: A xend instance
- * @name: The name of the domain
- * @value: The maximum memory in bytes
- *
- * This method will set the maximum amount of memory that can be allocated to
- * a domain.  Please note that a domain is able to allocate up to this amount
- * on its own (although under normal circumstances, memory allocation for a
- * domain is only done through xend_set_memory()).
- *
- * Returns 0 for success; -1 (with errno) on error
- */
-int
-xend_set_max_memory(virConnectPtr xend, const char *name, uint64_t value)
-{
-    char buf[1024];
-
-    snprintf(buf, sizeof(buf), "%llu", value >> 20);
-    return xend_op(xend, name, "op", "maxmem_set", "memory", buf, NULL);
 }
 
 /**
@@ -1570,159 +1169,6 @@ xend_set_memory(virConnectPtr xend, const char *name, uint64_t value)
                    NULL);
 }
 
-/**
- * xend_vbd_create:
- * @xend: A xend instance
- * @name: The name of the domain
- * @vbd: A virtual block device description
- *
- * This method creates and attachs a block device to a domain.  A successful
- * return value does not indicate that the device successfully attached,
- * rather, one should use xend_wait_for_devices() to block until the device
- * has been successfully attached.
- *
- * Returns 0 on success; -1 (with errno) on error
- */
-int
-xend_vbd_create(virConnectPtr xend,
-                const char *name, const struct xend_device_vbd *vbd)
-{
-    char buffer[4096];
-    char *ptr;
-    int ret;
-    struct sexpr *device;
-
-    device = xend_device_vbd_to_sexpr(vbd);
-
-    sexpr2string(device, buffer, sizeof(buffer));
-    ptr = urlencode(buffer);
-
-    ret = xend_op(xend, name, "op", "device_create", "config", ptr, NULL);
-
-    sexpr_free(device);
-
-    return ret;
-}
-
-/**
- * xend_vbd_destroy:
- * @xend: A xend instance
- * @name: The name of the domain
- * @vbd: A virtual block device description
- *
- * This method detachs a block device from a given domain.  A successful return
- * value does not indicate that the device successfully detached, rather, one
- * should use xend_wait_for_devices() to block until the device has been
- * successfully detached.
- *
- * Returns 0 on success; -1 (with errno) on error
- */
-int
-xend_vbd_destroy(virConnectPtr xend,
-                 const char *name, const struct xend_device_vbd *vbd)
-{
-    return xend_op(xend, name, "op", "device_destroy", "type", "vbd",
-                   "dev", vbd->dev, NULL);
-}
-
-/**
- * xend_vif_create:
- * @xend: A xend instance
- * @name: The name of the domain
- * @vif: A virtual network device description
- *
- * This method creates and attachs a network device to a domain.  A successful
- * return value does not indicate that the device successfully attached,
- * rather, one should use xend_wait_for_devices() to network until the device
- * has been successfully attached.
- *
- * Returns 0 on success; -1 (with errno) on error
- */
-int
-xend_vif_create(virConnectPtr xend,
-                const char *name, const struct xend_device_vif *vif)
-{
-    char buffer[4096];
-    char *ptr;
-    int ret;
-    struct sexpr *device;
-
-    device = xend_device_vif_to_sexpr(vif);
-
-    sexpr2string(device, buffer, sizeof(buffer));
-    ptr = urlencode(buffer);
-
-    ret = xend_op(xend, name, "op", "device_create", "config", ptr, NULL);
-
-    sexpr_free(device);
-
-    return ret;
-}
-
-static int
-get_vif_handle(virConnectPtr xend,
-               const char *name ATTRIBUTE_UNUSED,
-               const struct xend_device_vif *vif,
-               char *buffer, size_t n_buffer)
-{
-    struct sexpr *root;
-    char path[4096];
-    int ret = -1;
-    struct sexpr *_for_i, *node;
-
-    root = sexpr_get(xend, "/xend/domain");
-    if (root == NULL)
-        goto error;
-
-    errno = ESRCH;
-
-    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
-         _for_i = _for_i->cdr, node = _for_i->car) {
-        uint8_t mac[6];
-
-        if (node->car->kind != SEXPR_VALUE)
-            continue;
-
-        snprintf(path, sizeof(path), "%s/mac", node->car->value);
-        sexpr_mac(mac, node, path);
-        if (memcmp(mac, vif->mac, 6) == 0) {
-            snprintf(buffer, n_buffer, "%s", node->car->value);
-            ret = 0;
-            break;
-        }
-    }
-
-  error:
-    sexpr_free(root);
-    return ret;
-
-}
-
-/**
- * xend_vif_destroy:
- * @xend: A xend instance
- * @name: The name of the domain
- * @vif: A virtual network device description
- *
- * This method detachs a network device from a given domain.  A successful
- * return value does not indicate that the device successfully detached,
- * rather, one should use xend_wait_for_devices() to network until the device
- * has been successfully detached.
- *
- * Returns 0 on success; -1 (with errno) on error
- */
-int
-xend_vif_destroy(virConnectPtr xend,
-                 const char *name, const struct xend_device_vif *vif)
-{
-    char handle[1024];
-
-    if (get_vif_handle(xend, name, vif, handle, sizeof(handle)) == -1)
-        return -1;
-
-    return xend_op(xend, name, "op", "device_destroy", "type", "vif",
-                   "dev", handle, NULL);
-}
 
 /**
  * sexpr_to_xend_domain_size:
@@ -1780,50 +1226,6 @@ sexpr_to_xend_domain_size(struct sexpr *root, int *n_vbds, int *n_vifs)
     size += sizeof(struct xend_domain);
 
     return size;
-}
-
-/**
- * sexpr_to_xend_domain_info:
- * @root: an S-Expression describing a domain
- * @info: a info data structure to fill=up
- *
- * Internal routine filling up the info structure with the values from
- * the domain root provided.
- *
- * Returns 0 in case of success, -1 in case of error
- */
-static int
-sexpr_to_xend_domain_info(struct sexpr *root, virDomainInfoPtr info)
-{
-    const char *flags;
-
-
-    if ((root == NULL) || (info == NULL))
-        return (-1);
-
-    info->memory = sexpr_u64(root, "domain/memory") << 10;
-    info->maxMem = sexpr_u64(root, "domain/maxmem") << 10;
-    flags = sexpr_node(root, "domain/state");
-
-    if (flags) {
-        if (strchr(flags, 'c'))
-            info->state = VIR_DOMAIN_CRASHED;
-        else if (strchr(flags, 's'))
-            info->state = VIR_DOMAIN_SHUTDOWN;
-        else if (strchr(flags, 'd'))
-            info->state = VIR_DOMAIN_SHUTOFF;
-        else if (strchr(flags, 'p'))
-            info->state = VIR_DOMAIN_PAUSED;
-        else if (strchr(flags, 'b'))
-            info->state = VIR_DOMAIN_BLOCKED;
-        else if (strchr(flags, 'r'))
-            info->state = VIR_DOMAIN_RUNNING;
-    } else {
-        info->state = VIR_DOMAIN_NOSTATE;
-    }
-    info->cpuTime = sexpr_float(root, "domain/cpu_time") * 1000000000;
-    info->nrVirtCpu = sexpr_int(root, "domain/vcpus");
-    return (0);
 }
 
 /**
@@ -1946,36 +1348,7 @@ sexpr_to_xend_domain(struct sexpr *root)
 }
 
 /**
- * xend_get_domain_info:
- * @xend: A xend instance
- * @name: The name of the domain
- *
- * This method looks up information about a domain and update the
- * information block provided.
- *
- * Returns 0 in case of success, -1 in case of error
- */
-int
-xend_get_domain_info(virDomainPtr domain, virDomainInfoPtr info)
-{
-    struct sexpr *root;
-    int ret;
-
-    if ((domain == NULL) || (info == NULL))
-        return (-1);
-
-    root =
-        sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
-    if (root == NULL)
-        return (-1);
-
-    ret = sexpr_to_xend_domain_info(root, info);
-    sexpr_free(root);
-    return (ret);
-}
-
-/**
- * xend_get_domain:
+ * xenDaemonDomainLookupByName:
  * @xend: A xend instance
  * @name: The name of the domain
  *
@@ -1986,7 +1359,7 @@ xend_get_domain_info(virDomainPtr domain, virDomainInfoPtr info)
  * Returns domain info on success; NULL (with errno) on error
  */
 struct xend_domain *
-xend_get_domain(virConnectPtr xend, const char *domname)
+xenDaemonDomainLookupByName(virConnectPtr xend, const char *domname)
 {
     struct sexpr *root;
     struct xend_domain *dom = NULL;
@@ -2003,7 +1376,7 @@ xend_get_domain(virConnectPtr xend, const char *domname)
 }
 
 /**
- * xend_get_domain_ids:
+ * xenDaemonDomainLookupByName_ids:
  * @xend: A xend instance
  * @domname: The name of the domain
  * @uuid: return value for the UUID if not NULL
@@ -2013,7 +1386,7 @@ xend_get_domain(virConnectPtr xend, const char *domname)
  * Returns the id on success; -1 (with errno) on error
  */
 int
-xend_get_domain_ids(virConnectPtr xend, const char *domname,
+xenDaemonDomainLookupByName_ids(virConnectPtr xend, const char *domname,
                     unsigned char *uuid)
 {
     struct sexpr *root;
@@ -2369,8 +1742,286 @@ xend_parse_sexp_desc(struct sexpr *root)
     return (NULL);
 }
 
+/*****************************************************************
+ ******
+ ******
+ ******
+ ******
+             Needed helper code
+ ******
+ ******
+ ******
+ ******
+ *****************************************************************/
 /**
- * xend_get_domain_xml:
+ * sexpr_to_xend_domain_info:
+ * @root: an S-Expression describing a domain
+ * @info: a info data structure to fill=up
+ *
+ * Internal routine filling up the info structure with the values from
+ * the domain root provided.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+static int
+sexpr_to_xend_domain_info(struct sexpr *root, virDomainInfoPtr info)
+{
+    const char *flags;
+
+
+    if ((root == NULL) || (info == NULL))
+        return (-1);
+
+    info->memory = sexpr_u64(root, "domain/memory") << 10;
+    info->maxMem = sexpr_u64(root, "domain/maxmem") << 10;
+    flags = sexpr_node(root, "domain/state");
+
+    if (flags) {
+        if (strchr(flags, 'c'))
+            info->state = VIR_DOMAIN_CRASHED;
+        else if (strchr(flags, 's'))
+            info->state = VIR_DOMAIN_SHUTDOWN;
+        else if (strchr(flags, 'd'))
+            info->state = VIR_DOMAIN_SHUTOFF;
+        else if (strchr(flags, 'p'))
+            info->state = VIR_DOMAIN_PAUSED;
+        else if (strchr(flags, 'b'))
+            info->state = VIR_DOMAIN_BLOCKED;
+        else if (strchr(flags, 'r'))
+            info->state = VIR_DOMAIN_RUNNING;
+    } else {
+        info->state = VIR_DOMAIN_NOSTATE;
+    }
+    info->cpuTime = sexpr_float(root, "domain/cpu_time") * 1000000000;
+    info->nrVirtCpu = sexpr_int(root, "domain/vcpus");
+    return (0);
+}
+
+
+/*****************************************************************
+ ******
+ ******
+ ******
+ ******
+             Refactored
+ ******
+ ******
+ ******
+ ******
+ *****************************************************************/
+/**
+ * xenDaemonOpen:
+ * @conn: an existing virtual connection block
+ * @name: optional argument to select a connection type
+ * @flags: combination of virDrvOpenFlag(s)
+ *
+ * Creates a localhost Xen Daemon connection
+ * Note: this doesn't try to check if the connection actually works
+ *
+ * Returns 0 in case of success, -1 in case of error.
+ */
+int
+xenDaemonOpen(virConnectPtr conn, const char *name, int flags)
+{
+    xmlURIPtr uri;
+    int ret;
+
+    if (name == NULL) {
+        name = "http://localhost:8000/";
+    }
+    uri = xmlParseURI(name);
+    if (uri == NULL) {
+	if (!(flags & VIR_DRV_OPEN_QUIET))
+	    virXendError(conn, VIR_ERR_NO_SUPPORT, name);
+	return(-1);
+    }
+
+    xmlFreeURI(uri);
+    
+    return (xenDaemonOpen_tcp(conn, "localhost", 8000));
+
+/*    return(xenDaemonOpen_unix(conn, "/var/lib/xend/xend-socket")); */
+
+    return(ret);
+}
+
+/**
+ * xenDaemonClose:
+ * @conn: an existing virtual connection block
+ *
+ * This method should be called when a connection to xend instance
+ * initialized with xenDaemonOpen is no longer needed
+ * to free the associated resources.
+ *
+ * Returns 0 in case of succes, -1 in case of error
+ */
+int
+xenDaemonClose(virConnectPtr conn ATTRIBUTE_UNUSED)
+{
+    return(0);
+}
+
+/**
+ * xenDaemonDomainSuspend:
+ * @domain: pointer to the Domain block
+ *
+ * Pause the domain, the domain is not scheduled anymore though its resources
+ * are preserved. Use xenDaemonDomainResume() to resume execution.
+ *
+ * Returns 0 in case of success, -1 (with errno) in case of error.
+ */
+int
+xenDaemonDomainSuspend(virDomainPtr domain)
+{
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return(-1);
+    }
+    return xend_op(domain->conn, domain->name, "op", "pause", NULL);
+}
+
+/**
+ * xenDaemonDomainResume:
+ * @xend: pointer to the Xem Daemon block
+ * @name: name for the domain
+ *
+ * Resume the domain after xenDaemonDomainSuspend() has been called
+ *
+ * Returns 0 in case of success, -1 (with errno) in case of error.
+ */
+int
+xenDaemonDomainResume(virDomainPtr domain)
+{
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return(-1);
+    }
+    return xend_op(domain->conn, domain->name, "op", "unpause", NULL);
+}
+
+/**
+ * xenDaemonDomainShutdown:
+ * @domain: pointer to the Domain block
+ *
+ * Shutdown the domain, the OS is requested to properly shutdown
+ * and the domain may ignore it.  It will return immediately
+ * after queuing the request.
+ *
+ * Returns 0 in case of success, -1 (with errno) in case of error.
+ */
+int
+xenDaemonDomainShutdown(virDomainPtr domain)
+{
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return(-1);
+    }
+    return xend_op(domain->conn, domain->name, "op", "shutdown", "reason", "halt", NULL);
+}
+
+/**
+ * xenDaemonDomainDestroy:
+ * @domain: pointer to the Domain block
+ *
+ * Abruptly halt the domain, the OS is not properly shutdown and the
+ * resources allocated for the domain are immediately freed, mounted
+ * filesystems will be marked as uncleanly shutdown.
+ * After calling this function, the domain's status will change to
+ * dying and will go away completely once all of the resources have been
+ * unmapped (usually from the backend devices).
+ *
+ * Returns 0 in case of success, -1 (with errno) in case of error.
+ */
+int
+xenDaemonDomainDestroy(virDomainPtr domain)
+{
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return(-1);
+    }
+    return xend_op(domain->conn, domain->name, "op", "destroy", NULL);
+}
+
+/**
+ * xenDaemonDomainSave:
+ * @domain: pointer to the Domain block
+ * @filename: path for the output file
+ *
+ * This method will suspend a domain and save its memory contents to
+ * a file on disk.  Use xenDaemonDomainRestore() to restore a domain after
+ * saving.
+ * Note that for remote Xen Daemon the file path will be interpreted in
+ * the remote host.
+ *
+ * Returns 0 in case of success, -1 (with errno) in case of error.
+ */
+int
+xenDaemonDomainSave(virDomainPtr domain, const char *filename)
+{
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
+        (filename == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return(-1);
+    }
+    return xend_op(domain->conn, domain->name, "op", "save", "file", filename, NULL);
+}
+
+/**
+ * xenDaemonDomainRestore:
+ * @conn: pointer to the Xem Daemon block
+ * @filename: path for the output file
+ *
+ * This method will restore a domain saved to disk by xenDaemonDomainSave().
+ * Note that for remote Xen Daemon the file path will be interpreted in
+ * the remote host.
+ *
+ * Returns 0 in case of success, -1 (with errno) in case of error.
+ */
+int
+xenDaemonDomainRestore(virConnectPtr conn, const char *filename)
+{
+    if ((conn == NULL) || (filename == NULL)) {
+        /* this should be caught at the interface but ... */
+        virXendError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+    return xend_op(conn, "", "op", "restore", "file", filename, NULL);
+}
+
+/**
+ * xenDaemonDomainSetMaxMemory:
+ * @domain: pointer to the Domain block
+ * @memory: The maximum memory in kilobytes
+ *
+ * This method will set the maximum amount of memory that can be allocated to
+ * a domain.  Please note that a domain is able to allocate up to this amount
+ * on its own (although under normal circumstances, memory allocation for a
+ * domain is only done through xend_set_memory()).
+ *
+ * Returns 0 for success; -1 (with errno) on error
+ */
+int
+xenDaemonDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
+{
+    char buf[1024];
+
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return(-1);
+    }
+    snprintf(buf, sizeof(buf), "%lu", memory >> 10);
+    return xend_op(domain->conn, domain->name, "op", "maxmem_set", "memory",
+                   buf, NULL);
+}
+
+/**
+ * xenDaemonDomainDumpXML:
  * @domain: a domain object
  *
  * Provide an XML description of the domain.
@@ -2379,19 +2030,18 @@ xend_parse_sexp_desc(struct sexpr *root)
  *         the caller must free() the returned value.
  */
 char *
-xend_get_domain_xml(virDomainPtr domain)
+xenDaemonDomainDumpXML(virDomainPtr domain)
 {
     char *ret = NULL;
     struct sexpr *root;
 
-    if (!VIR_IS_DOMAIN(domain)) {
-        /* this should be caught at the interface but ... */
-        virXendError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (NULL);
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return(NULL);
     }
 
-    root =
-        sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
     if (root == NULL)
         return (NULL);
 
@@ -2400,3 +2050,32 @@ xend_get_domain_xml(virDomainPtr domain)
 
     return (ret);
 }
+
+/**
+ * xenDaemonDomainGetInfo:
+ * @domain: a domain object
+ * @info: pointer to a virDomainInfo structure allocated by the user
+ *
+ * This method looks up information about a domain and update the
+ * information block provided.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+int
+xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
+{
+    struct sexpr *root;
+    int ret;
+
+    if ((domain == NULL) || (info == NULL))
+        return (-1);
+
+    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    if (root == NULL)
+        return (-1);
+
+    ret = sexpr_to_xend_domain_info(root, info);
+    sexpr_free(root);
+    return (ret);
+}
+

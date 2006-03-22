@@ -1,3 +1,9 @@
+Wed Mar 22 14:43:16 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* python/tests/create.py: add one more image path
+	* src/libvirt.c src/xend_internal.c src/xend_internal.h: more work
+	  on the xend refactoring
+
 Wed Mar 22 13:34:32 EST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* python/tests/create.py: adapt to new naming scheme in FC5

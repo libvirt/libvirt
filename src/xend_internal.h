@@ -1,9 +1,10 @@
 /*
  * libxend/xend.h -- Xend library
  *
- * Copyright (C) 2005
+ * Copyright (C) 2005,2006
  *
  *      Anthony Liguori <aliguori@us.ibm.com>
+ *	Daniel Veillard <veillard@redhat.com>
  *
  *  This file is subject to the terms and conditions of the GNU Lesser General
  *  Public License. See the file COPYING in the main directory of this archive
@@ -444,20 +445,6 @@ extern "C" {
     };
 
 /**
- * \brief Setup the connection to the local Xend instance
- * \return 0 in case of success, -1 in case of error
- *
- * This method creates a new Xend instance preferrably trying
- * to connect with the domain socket but if necessary using
- * TCP (only on localhost though).
- *
- * This function may not fail if Xend is not running.
- *
- * Make sure to call xend_cleanup().
- */
-    int xend_setup(virConnectPtr conn);
-
-/**
  * \brief Setup the connection to a xend instance via TCP
  * \param host The host name to connect to
  * \param port The port number to connect to
@@ -467,9 +454,9 @@ extern "C" {
  *
  * This function may not fail if Xend is not running.
  *
- * Make sure to call xend_cleanup().
+ * Make sure to call xenDaemonClose().
  */
-    int xend_setup_tcp(virConnectPtr xend, const char *host, int port);
+int xenDaemonOpen_tcp(virConnectPtr xend, const char *host, int port);
 
 /**
  * \brief Setup the connection to xend instance via a Unix domain socket
@@ -480,19 +467,10 @@ extern "C" {
  *
  * This function may not fail if Xend is not running.
  *
- * Make sure to call xend_cleanup().
+ * Make sure to call xenDaemonClose().
  */
-    int xend_setup_unix(virConnectPtr xend, const char *path);
+int xenDaemonOpen_unix(virConnectPtr xend, const char *path);
 
-/**
- * \brief Delete a previously allocated Xend instance
- * \param xend The xend instance
- *
- * This method should be called when a connection to xend instance
- * initialized with xend_setup[_{tcp, unix}] is no longer needed
- * to free the associated resources.
- */
-    void xend_cleanup(virConnectPtr xend);
 
 /**
  * \brief Blocks until a domain's devices are initialized
@@ -509,29 +487,7 @@ extern "C" {
     int xend_wait_for_devices(virConnectPtr xend, const char *name);
 
 /**
- * \brief Pause a domain
- * \param xend A xend instance
- * \param name The domain's name
- * \return 0 for success; -1 (with errno) on error
- *
- * This method will make sure that Xen does not schedule the domain
- * anymore until after xend_unpause() has been called.
- */
-    int xend_pause(virConnectPtr xend, const char *name);
-
-/**
- * \brief Unpause a domain
- * \param xend A xend instance
- * \param name The domain's name
- * \return 0 for success; -1 (with errno) on error
- * 
- * This method will allow a paused domain (the result of xen_pause())
- * to be scheduled in the future.
- */
-    int xend_unpause(virConnectPtr xend, const char *name);
-
-/**
- * \brief Unpause a domain
+ * \brief Rename a domain
  * \param xend A xend instance
  * \param oldname The domain's name
  * \param name The new name
@@ -566,56 +522,6 @@ extern "C" {
     int xend_reboot(virConnectPtr xend, const char *name);
 
 /**
- * \brief Request a domain to shutdown
- * \param xend A xend instance
- * \param name The domain's name
- * \return 0 for success; -1 (with errno) on error
- * 
- * This method *requests* that a domain shutdown itself.  This is only
- * a request and the domain may ignore it.  It will return immediately
- * after queuing the request.
- */
-    int xend_shutdown(virConnectPtr xend, const char *name);
-
-/**
- * \brief Destroy a domain
- * \param xend A xend instance
- * \param name The domain's name
- * \return 0 for success; -1 (with errno) on error
- * 
- * This method will immediately destroy a domain.  If you call this
- * function while a domain is running, you risk corrupting its devices.
- * After calling this function, the domain's status will change to
- * dying and will go away completely once all of the resources have been
- * unmapped (usually from the backend devices).
- */
-    int xend_destroy(virConnectPtr xend, const char *name);
-
-/**
- * \brief Save a domain to the disk
- * \param xend A xend instance
- * \param name The domain's name
- * \param filename The filename to save to
- * \return 0 for success; -1 (with errno) on error
- * 
- * This method will suspend a domain and save its memory contents to
- * a file on disk.  Use xend_restore() to restore a domain after
- * saving.
- */
-    int xend_save(virConnectPtr xend, const char *name,
-                  const char *filename);
-
-/**
- * \brief Restore a domain from the disk
- * \param xend A xend instance
- * \param filename The filename to restore from
- * \return 0 for success; -1 (with errno) on error
- * 
- * This method will restore a domain saved to disk by xend_save().
- */
-    int xend_restore(virConnectPtr xend, const char *filename);
-
-/**
  * \brief Obtain a list of currently running domains
  * \param xend A xend instance
  * \return a NULL terminated array of names; NULL (with errno) on error
@@ -623,19 +529,7 @@ extern "C" {
  * This method will return an array of names of currently running
  * domains.  The memory should be released will a call to free().
  */
-    char **xend_get_domains(virConnectPtr xend);
-
-/**
- * \brief Create a new domain
- * \param xend A xend instance
- * \param info A struct xen_domain instance describing the domain
- * \return 0 for success; -1 (with errno) on error
- *
- * This method will create a domain based the passed in description.  The
- * domain will be paused after creation and must be unpaused with
- * xend_unpause() to begin execution.
- */
-    int xend_create(virConnectPtr xend, const struct xend_domain *info);
+    char **xenDaemonListDomains(virConnectPtr xend);
 
 /**
  * \brief Create a new domain
@@ -645,24 +539,9 @@ extern "C" {
  *
  * This method will create a domain based the passed in description.  The
  * domain will be paused after creation and must be unpaused with
- * xend_unpause() to begin execution.
+ * xenDaemonResumeDomain() to begin execution.
  */
-    int xend_create_sexpr(virConnectPtr xend, const char *sexpr);
-
-/**
- * \brief Set the maximum memory for a domain
- * \param xend A xend instance
- * \param name The name of the domain
- * \param value The maximum memory in bytes
- * \return 0 for success; -1 (with errno) on error
- *
- * This method will set the maximum amount of memory that can be allocated to
- * a domain.  Please note that a domain is able to allocate up to this amount
- * on its own (although under normal circumstances, memory allocation for a
- * domain is only done through xend_set_memory()).
- */
-    int xend_set_max_memory(virConnectPtr xend, const char *name,
-                            uint64_t value);
+    int xenDaemonDomainCreateLinux(virConnectPtr xend, const char *sexpr);
 
 /**
  * \brief Set the memory allocation for a domain
@@ -684,70 +563,6 @@ extern "C" {
                         uint64_t value);
 
 /**
- * \brief Create a virtual block device
- * \param xend A xend instance
- * \param name The name of the domain
- * \param vbd A virtual block device description
- * \return 0 on success; -1 (with errno) on error
- *
- * This method creates and attachs a block device to a domain.  A successful
- * return value does not indicate that the device successfully attached,
- * rather, one should use xend_wait_for_devices() to block until the device
- * has been successfully attached.
- */
-    int xend_vbd_create(virConnectPtr xend,
-                        const char *name,
-                        const struct xend_device_vbd *vbd);
-
-/**
- * \brief Destroy a virtual block device
- * \param xend A xend instance
- * \param name The name of the domain
- * \param vbd A virtual block device description
- * \return 0 on success; -1 (with errno) on error
- *
- * This method detachs a block device from a given domain.  A successful return
- * value does not indicate that the device successfully detached, rather, one
- * should use xend_wait_for_devices() to block until the device has been
- * successfully detached.
- */
-    int xend_vbd_destroy(virConnectPtr xend,
-                         const char *name,
-                         const struct xend_device_vbd *vbd);
-
-/**
- * \brief Create a virtual network device
- * \param xend A xend instance
- * \param name The name of the domain
- * \param vif A virtual network device description
- * \return 0 on success; -1 (with errno) on error
- *
- * This method creates and attachs a network device to a domain.  A successful
- * return value does not indicate that the device successfully attached,
- * rather, one should use xend_wait_for_devices() to network until the device
- * has been successfully attached.
- */
-    int xend_vif_create(virConnectPtr xend,
-                        const char *name,
-                        const struct xend_device_vif *vif);
-
-/**
- * \brief Destroy a virtual network device
- * \param xend A xend instance
- * \param name The name of the domain
- * \param vif A virtual network device description
- * \return 0 on success; -1 (with errno) on error
- *
- * This method detachs a network device from a given domain.  A successful
- * return value does not indicate that the device successfully detached,
- * rather, one should use xend_wait_for_devices() to network until the device
- * has been successfully detached.
- */
-    int xend_vif_destroy(virConnectPtr xend,
-                         const char *name,
-                         const struct xend_device_vif *vif);
-
-/**
  * \brief Lookup information about a domain
  * \param xend A xend instance
  * \param name The name of the domain
@@ -757,7 +572,7 @@ extern "C" {
  * it in the form of a struct xend_domain.  This should be
  * free()'d when no longer needed.
  */
-    struct xend_domain *xend_get_domain(virConnectPtr xend,
+    struct xend_domain *xenDaemonDomainLookupByName(virConnectPtr xend,
                                         const char *name);
 
 /**
@@ -769,19 +584,9 @@ extern "C" {
  *
  * This method looks up the ids of a domain
  */
-    int xend_get_domain_ids(virConnectPtr xend,
+    int xenDaemonDomainLookupByName_ids(virConnectPtr xend,
                             const char *name, unsigned char *uuid);
 
-/**
- * \brief Get status informations for a domain
- * \param domain A xend domain
- * \param info An information block provided by the user
- * \return 0 in case of success, -1 in case of error
- *
- * This method looks up information about a domain and update the
- * information block provided.
- */
-    int xend_get_domain_info(virDomainPtr domain, virDomainInfoPtr info);
 
 /**
  * \brief Lookup information about the host machine
@@ -845,15 +650,19 @@ extern "C" {
  */
     int xend_log(virConnectPtr xend, char *buffer, size_t n_buffer);
 
-/**
- * \brief Provide an XML description of the domain.
- * \param domain a xend domain object
- * \return a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
- *         the caller must free() the returned value.
- *
- * Provide an XML description of the domain.
- */
-    char *xend_get_domain_xml(virDomainPtr domain);
+/* refactored ones */
+int xenDaemonOpen(virConnectPtr conn, const char *name, int flags);
+int xenDaemonClose(virConnectPtr conn);
+int xenDaemonDomainSuspend(virDomainPtr domain);
+int xenDaemonDomainResume(virDomainPtr domain);
+int xenDaemonDomainShutdown(virDomainPtr domain);
+int xenDaemonDomainDestroy(virDomainPtr domain);
+int xenDaemonDomainSave(virDomainPtr domain, const char *filename);
+int xenDaemonDomainRestore(virConnectPtr conn, const char *filename);
+int xenDaemonDomainSetMaxMemory(virDomainPtr domain, unsigned long memory);
+int xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info);
+char *xenDaemonDomainDumpXML(virDomainPtr domain);
+
 #ifdef __cplusplus
 }
 #endif
