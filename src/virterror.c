@@ -256,6 +256,9 @@ virDefaultErrorFunc(virErrorPtr err)
         case VIR_FROM_XEND:
             dom = "Xen Daemon ";
             break;
+        case VIR_FROM_XENSTORE:
+            dom = "Xen Store ";
+            break;
         case VIR_FROM_DOM:
             dom = "Domain ";
             break;

@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <string.h>
+/* required for uint8_t, uint32_t, etc ... */
 #include <stdint.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -18,6 +19,9 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 
+#include <stdint.h>
+
+/* required for dom0_getdomaininfo_t */
 #include <xen/dom0_ops.h>
 #include <xen/version.h>
 #include <xen/xen.h>

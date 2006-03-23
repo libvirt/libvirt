@@ -84,7 +84,7 @@ if dom == None:
     print 'Failed to create a test domain'
     sys.exit(1)
 
-# print dom0
+print dom
 
 print "Domain: id %d running %s" % (dom.ID(), dom.OSType())
 

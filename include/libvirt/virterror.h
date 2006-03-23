@@ -40,6 +40,7 @@ typedef enum {
     VIR_FROM_NONE = 0,
     VIR_FROM_XEN,	/* Error at Xen hypervisor layer */
     VIR_FROM_XEND,	/* Error at connection with xend daemon */
+    VIR_FROM_XENSTORE,	/* Error at connection with xen store */
     VIR_FROM_SEXPR,	/* Error in the S-Epression code */
     VIR_FROM_XML,	/* Error in the XML code */
     VIR_FROM_DOM,	/* Error when operating on a domain */
@@ -98,6 +99,7 @@ typedef enum {
     VIR_ERR_NO_NAME, /* missing domain name informations */
     VIR_ERR_NO_OS, /* missing domain OS informations */
     VIR_ERR_NO_DEVICE, /* missing domain devices informations */
+    VIR_ERR_NO_XENSTORE,/* could not open Xen Store control */
 } virErrorNumber;
 
 /**

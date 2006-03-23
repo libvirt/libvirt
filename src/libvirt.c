@@ -17,11 +17,14 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
 #include <xs.h>
+
 #include "internal.h"
 #include "driver.h"
 #include "xen_internal.h"
 #include "xend_internal.h"
+#include "xs_internal.h"
 #include "hash.h"
 #include "xml.h"
 
@@ -138,8 +141,6 @@ virConnectPtr
 virConnectOpen(const char *name)
 {
     virConnectPtr ret = NULL;
-    int res;
-    struct xs_handle *xshandle = NULL;
 
     /* we can only talk to the local Xen supervisor ATM */
     if (name != NULL) {
@@ -155,31 +156,30 @@ virConnectOpen(const char *name)
     memset(ret, 0, sizeof(virConnect));
     ret->magic = VIR_CONNECT_MAGIC;
 
-    res = xenHypervisorOpen(ret, name, 0);
-    if (res < 0) {
+    /*
+     * open connections to the hypervisor, store and daemon
+     */
+    if (xenHypervisorOpen(ret, name, 0) < 0)
         goto failed;
-    }
-    xshandle = xs_daemon_open();
-    if (xshandle == NULL) {
-        virLibConnError(NULL, VIR_ERR_NO_CONNECT, "XenStore");
+    if (xenStoreOpen(ret, name, 0) < 0)
         goto failed;
-    }
-
-    ret->xshandle = xshandle;
     if (xenDaemonOpen(ret, name, 0) < 0)
         goto failed;
+
     ret->domains = virHashCreate(20);
-    ret->flags = 0;
     if (ret->domains == NULL)
         goto failed;
+    ret->flags = 0;
 
     return (ret);
-  failed:
-    xenHypervisorClose(ret);
-    if (xshandle != NULL)
-        xs_daemon_close(xshandle);
-    if (ret != NULL)
+
+failed:
+    if (ret != NULL) {
+	xenHypervisorClose(ret);
+	xenStoreClose(ret);
+	xenDaemonClose(ret);
         free(ret);
+    }
     return (NULL);
 }
 
@@ -199,7 +199,6 @@ virConnectOpenReadOnly(const char *name)
     int method = 0;
     int res;
     virConnectPtr ret = NULL;
-    struct xs_handle *xshandle = NULL;
 
     /* we can only talk to the local Xen supervisor ATM */
     if (name != NULL) {
@@ -219,62 +218,34 @@ virConnectOpenReadOnly(const char *name)
     if (res >= 0)
         method++;
 
-    xshandle = xs_daemon_open_readonly();
-    if (xshandle != NULL)
+    res = xenStoreOpen(ret, name, VIR_DRV_OPEN_QUIET | VIR_DRV_OPEN_RO);
+    if (res >= 0)
         method++;
 
-    ret->xshandle = xshandle;
     if (xenDaemonOpen(ret, name, VIR_DRV_OPEN_QUIET | VIR_DRV_OPEN_RO) == 0)
         method++;
-    ret->domains = virHashCreate(20);
-    if (ret->domains == NULL)
-        goto failed;
-    ret->flags = VIR_CONNECT_RO;
+
     if (method == 0) {
         virLibConnError(NULL, VIR_ERR_NO_CONNECT,
                         "could not connect to Xen Daemon nor Xen Store");
         goto failed;
     }
 
+    ret->domains = virHashCreate(20);
+    if (ret->domains == NULL)
+        goto failed;
+    ret->flags = VIR_CONNECT_RO;
+
     return (ret);
-  failed:
-    xenHypervisorClose(ret);
-    if (xshandle != NULL)
-        xs_daemon_close(xshandle);
+
+failed:
     if (ret != NULL) {
-        if (ret->domains != NULL)
-            virHashFree(ret->domains, NULL);
+	xenHypervisorClose(ret);
+	xenStoreClose(ret);
+	xenDaemonClose(ret);
         free(ret);
     }
     return (NULL);
-}
-
-/**
- * virConnectCheckStoreID:
- * @conn: pointer to the hypervisor connection
- * @id: the id number as returned from Xenstore
- *
- * the xenstore sometimes list non-running domains, double check
- * from the hypervisor if we have direct access
- *
- * Returns -1 if the check failed, 0 if successful or not possible to check
- */
-static int
-virConnectCheckStoreID(virConnectPtr conn, int id)
-{
-    if (conn->handle >= 0) {
-	TODO
-	/*
-        dom0_getdomaininfo_t dominfo;
-        int tmp;
-
-        dominfo.domain = id;
-        tmp = xenHypervisorGetDomainInfo(conn->handle, id, &dominfo);
-        if (tmp < 0)
-            return (-1);
-	 */
-    }
-    return (0);
 }
 
 /**
@@ -309,12 +280,11 @@ virConnectClose(virConnectPtr conn)
     if (!VIR_IS_CONNECT(conn))
         return (-1);
     virHashFree(conn->domains, (virHashDeallocator) virDomainFreeName);
-    conn->magic = -1;
-    if (conn->xshandle != NULL)
-        xs_daemon_close(conn->xshandle);
-    conn->xshandle = NULL;
+    conn->domains = NULL;
+    xenDaemonClose(conn);
+    xenStoreClose(conn);
     xenHypervisorClose(conn);
-    conn->handle = -1;
+    conn->magic = -1;
     free(conn);
     return (0);
 }
@@ -390,9 +360,9 @@ int
 virConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 {
     int ret = -1;
-    unsigned int num, i;
+    unsigned int i;
     long id;
-    char **idlist = NULL, *endptr;
+    char **idlist = NULL;
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -404,6 +374,9 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids)
         return (-1);
     }
 
+    /*
+     * try first though the Xen Daemon
+     */
     idlist = xenDaemonListDomains(conn);
     if (idlist != NULL) {
         for (ret = 0, i = 0; (idlist[i] != NULL) && (ret < maxids); i++) {
@@ -411,29 +384,14 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids)
             if (id >= 0)
                 ids[ret++] = (int) id;
         }
-        goto done;
-    }
-    if (conn->xshandle != NULL) {
-        idlist = xs_directory(conn->xshandle, 0, "/local/domain", &num);
-        if (idlist == NULL)
-            goto done;
-
-        for (ret = 0, i = 0; (i < num) && (ret < maxids); i++) {
-            id = strtol(idlist[i], &endptr, 10);
-            if ((endptr == idlist[i]) || (*endptr != 0)) {
-                ret = -1;
-                goto done;
-            }
-            if (virConnectCheckStoreID(conn, (int) id) < 0)
-                continue;
-            ids[ret++] = (int) id;
-        }
+	free(idlist);
+        return(ret);
     }
 
-  done:
-    if (idlist != NULL)
-        free(idlist);
-
+    /*
+     * Then fallback to the XenStore
+     */
+    ret = xenStoreListDomains(conn, ids, maxids);
     return (ret);
 }
 
@@ -449,7 +407,6 @@ int
 virConnectNumOfDomains(virConnectPtr conn)
 {
     int ret = -1;
-    unsigned int num;
     char **idlist = NULL;
 
     if (!VIR_IS_CONNECT(conn)) {
@@ -457,6 +414,7 @@ virConnectNumOfDomains(virConnectPtr conn)
         return (-1);
     }
 
+    /* TODO: there must be a way to do that with an hypervisor call too ! */
     /* 
      * try first with Xend interface
      */
@@ -469,15 +427,11 @@ virConnectNumOfDomains(virConnectPtr conn)
             tmp++;
             ret++;
         }
-
-    } else if (conn->xshandle != NULL) {
-        idlist = xs_directory(conn->xshandle, 0, "/local/domain", &num);
-        if (idlist) {
-            free(idlist);
-            ret = num;
-        }
+	free(idlist);
+	return(ret);
     }
-    return (ret);
+    /* Then Xen Store */
+    return(xenStoreNumOfDomains(conn));
 }
 
 /**
@@ -556,146 +510,6 @@ virDomainCreateLinux(virConnectPtr conn,
     return (NULL);
 }
 
-/**
- * virConnectDoStoreList:
- * @conn: pointer to the hypervisor connection
- * @path: the absolute path of the directory in the store to list
- * @nb: OUT pointer to the number of items found
- *
- * Internal API querying the Xenstore for a list
- *
- * Returns a string which must be freed by the caller or NULL in case of error
- */
-static char **
-virConnectDoStoreList(virConnectPtr conn, const char *path,
-                      unsigned int *nb)
-{
-    if ((conn == NULL) || (conn->xshandle == NULL) || (path == NULL) ||
-        (nb == NULL))
-        return (NULL);
-
-    return xs_directory(conn->xshandle, 0, path, nb);
-}
-
-/**
- * virDomainDoStoreQuery:
- * @domain: a domain object
- * @path: the relative path of the data in the store to retrieve
- *
- * Internal API querying the Xenstore for a string value.
- *
- * Returns a string which must be freed by the caller or NULL in case of error
- */
-static char *
-virDomainDoStoreQuery(virDomainPtr domain, const char *path)
-{
-    char s[256];
-    unsigned int len = 0;
-
-    if (!VIR_IS_CONNECTED_DOMAIN(domain))
-        return (NULL);
-    if (domain->conn->xshandle == NULL)
-        return (NULL);
-
-    snprintf(s, 255, "/local/domain/%d/%s", domain->handle, path);
-    s[255] = 0;
-
-    return xs_read(domain->conn->xshandle, 0, &s[0], &len);
-}
-
-
-/**
- * virDomainDoStoreWrite:
- * @domain: a domain object
- * @path: the relative path of the data in the store to retrieve
- *
- * Internal API setting up a string value in the Xenstore
- * Requires write access to the XenStore
- *
- * Returns 0 in case of success, -1 in case of failure
- */
-static int
-virDomainDoStoreWrite(virDomainPtr domain, const char *path,
-                      const char *value)
-{
-    char s[256];
-
-    int ret = -1;
-
-    if (!VIR_IS_CONNECTED_DOMAIN(domain))
-        return (-1);
-    if (domain->conn->xshandle == NULL)
-        return (-1);
-    if (domain->conn->flags & VIR_CONNECT_RO)
-        return (-1);
-
-    snprintf(s, 255, "/local/domain/%d/%s", domain->handle, path);
-    s[255] = 0;
-
-    if (xs_write(domain->conn->xshandle, 0, &s[0], value, strlen(value)))
-        ret = 0;
-
-    return (ret);
-}
-
-/**
- * virDomainGetVM:
- * @domain: a domain object
- *
- * Internal API extracting a xenstore vm path.
- *
- * Returns the new string or NULL in case of error
- */
-char *
-virDomainGetVM(virDomainPtr domain)
-{
-    char *vm;
-    char query[200];
-    unsigned int len;
-
-    if (!VIR_IS_CONNECTED_DOMAIN(domain))
-        return (NULL);
-    if (domain->conn->xshandle == NULL)
-        return (NULL);
-
-    snprintf(query, 199, "/local/domain/%d/vm", virDomainGetID(domain));
-    query[199] = 0;
-
-    vm = xs_read(domain->conn->xshandle, 0, &query[0], &len);
-
-    return (vm);
-}
-
-/**
- * virDomainGetVMInfo:
- * @domain: a domain object
- * @vm: the xenstore vm path
- * @name: the value's path
- *
- * Internal API extracting one information the device used 
- * by the domain from xensttore
- *
- * Returns the new string or NULL in case of error
- */
-char *
-virDomainGetVMInfo(virDomainPtr domain, const char *vm, const char *name)
-{
-    char s[256];
-    char *ret = NULL;
-    unsigned int len = 0;
-
-    if (!VIR_IS_CONNECTED_DOMAIN(domain))
-        return (NULL);
-    if (domain->conn->xshandle == NULL)
-        return (NULL);
-
-    snprintf(s, 255, "%s/%s", vm, name);
-    s[255] = 0;
-
-    ret = xs_read(domain->conn->xshandle, 0, &s[0], &len);
-
-    return (ret);
-}
 
 /**
  * virDomainLookupByID:
@@ -755,12 +569,8 @@ virDomainLookupByID(virConnectPtr conn, int id)
     ret->conn = conn;
     ret->handle = id;
     ret->path = path;
-    if (name == NULL) {
-        ret->name = virDomainDoStoreQuery(ret, "name");
-    } else {
-        ret->name = name;
-        memcpy(&ret->uuid[0], uuid, 16);
-    }
+    ret->name = name;
+    memcpy(&ret->uuid[0], uuid, 16);
     if (ret->name == NULL) {
         goto error;
     }
@@ -855,13 +665,6 @@ virDomainPtr
 virDomainLookupByName(virConnectPtr conn, const char *name)
 {
     virDomainPtr ret = NULL;
-    unsigned int num, i, len;
-    long id = -1;
-    char **idlist = NULL, *endptr;
-    char prop[200], *tmp, *path = NULL;
-    unsigned char *uuid = NULL;
-    int found = 0;
-    struct xend_domain *xenddomain = NULL;
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -873,61 +676,16 @@ virDomainLookupByName(virConnectPtr conn, const char *name)
     }
 
     /* try first though Xend */
-    xenddomain = xenDaemonDomainLookupByName(conn, name);
-    if (xenddomain != NULL) {
-        id = xenddomain->live->id;
-        uuid = xenddomain->uuid;
-        found = 1;
-        goto do_found;
+    ret = xenDaemonDomainLookupByName(conn, name);
+    if (ret != NULL) {
+        return(ret);
     }
 
     /* then though the XenStore */
-    if (conn->xshandle != NULL) {
-        idlist = xs_directory(conn->xshandle, 0, "/local/domain", &num);
-        if (idlist == NULL)
-            goto done;
-
-        for (i = 0; i < num; i++) {
-            id = strtol(idlist[i], &endptr, 10);
-            if ((endptr == idlist[i]) || (*endptr != 0)) {
-                goto done;
-            }
-            if (virConnectCheckStoreID(conn, (int) id) < 0)
-                continue;
-            snprintf(prop, 199, "/local/domain/%s/name", idlist[i]);
-            prop[199] = 0;
-            tmp = xs_read(conn->xshandle, 0, prop, &len);
-            if (tmp != NULL) {
-                found = !strcmp(name, tmp);
-                free(tmp);
-                if (found)
-                    break;
-            }
-        }
-        path = xs_get_domain_path(conn->xshandle, (unsigned int) id);
+    ret = xenStoreDomainLookupByName(conn, name);
+    if (ret != NULL) {
+        return(ret);
     }
-
-  do_found:
-
-    if (found) {
-        ret = (virDomainPtr) malloc(sizeof(virDomain));
-        if (ret == NULL)
-            goto done;
-        memset(ret, 0, sizeof(virDomain));
-        ret->magic = VIR_DOMAIN_MAGIC;
-        ret->conn = conn;
-        ret->handle = id;
-        ret->path = path;
-        if (uuid != NULL)
-            memcpy(ret->uuid, uuid, 16);
-        ret->name = strdup(name);
-    }
-
-  done:
-    if (xenddomain != NULL)
-        free(xenddomain);
-    if (idlist != NULL)
-        free(idlist);
 
     return (ret);
 }
@@ -1182,14 +940,16 @@ virDomainShutdown(virDomainPtr domain)
      * try first with the xend daemon
      */
     ret = xenDaemonDomainShutdown(domain);
-    if (ret == 0)
+    if (ret == 0) {
+        domain->flags |= DOMAIN_IS_SHUTDOWN;
         return (0);
+    }
 
     /*
      * this is very hackish, the domU kernel probes for a special 
      * node in the xenstore and launch the shutdown command if found.
      */
-    ret = virDomainDoStoreWrite(domain, "control/shutdown", "halt");
+    ret = xenDaemonDomainShutdown(domain);
     if (ret == 0) {
         domain->flags |= DOMAIN_IS_SHUTDOWN;
     }
@@ -1322,22 +1082,21 @@ virDomainGetMaxMemory(virDomainPtr domain)
         return (0);
     }
 
-    if (domain->conn->flags & VIR_CONNECT_RO) {
-        char *tmp;
-
-        tmp = virDomainDoStoreQuery(domain, "memory/target");
-        if (tmp != NULL) {
-            ret = (unsigned long) atol(tmp);
-            free(tmp);
-        }
-    } else {
+    /*
+     * try first with the hypervisor if available
+     */
+    if (!(domain->conn->flags & VIR_CONNECT_RO)) {
         virDomainInfo dominfo;
         int tmp;
 
         tmp = xenHypervisorGetDomainInfo(domain, &dominfo);
         if (tmp >= 0)
-            ret = dominfo.maxMem;
+	    return(dominfo.maxMem);
     }
+    ret = xenStoreDomainGetMaxMemory(domain);
+    if (ret > 0)
+        return(ret);
+    ret = xenDaemonDomainGetMaxMemory(domain);
     return (ret);
 }
 
@@ -1415,10 +1174,6 @@ int
 virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 {
     int ret;
-    char *tmp, **tmp2;
-    unsigned int nb_vcpus;
-    char request[200];
-
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
@@ -1447,44 +1202,12 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
         return (0);
 
     /*
-     * last fallback, try to get the inforamtions from the Xen store
+     * last fallback, try to get the informations from the Xen store
      */
+    if (xenStoreGetDomainInfo(domain, info) == 0)
+        return (0);
 
-    tmp = virDomainDoStoreQuery(domain, "running");
-    if (tmp != NULL) {
-        if (tmp[0] == '1')
-            info->state = VIR_DOMAIN_RUNNING;
-        free(tmp);
-    } else {
-        info->state = VIR_DOMAIN_NONE;
-    }
-    tmp = virDomainDoStoreQuery(domain, "memory/target");
-    if (tmp != NULL) {
-        info->memory = atol(tmp);
-        info->maxMem = atol(tmp);
-        free(tmp);
-    } else {
-        info->memory = 0;
-        info->maxMem = 0;
-    }
-#if 0
-    /* doesn't seems to work */
-    tmp = virDomainDoStoreQuery(domain, "cpu_time");
-    if (tmp != NULL) {
-        info->cpuTime = atol(tmp);
-        free(tmp);
-    } else {
-        info->cpuTime = 0;
-    }
-#endif
-    snprintf(request, 199, "/local/domain/%d/cpu", domain->handle);
-    request[199] = 0;
-    tmp2 = virConnectDoStoreList(domain->conn, request, &nb_vcpus);
-    if (tmp2 != NULL) {
-        info->nrVirtCpu = nb_vcpus;
-        free(tmp2);
-    }
-    return (0);
+    return (-1);
 }
 
 /**

@@ -666,35 +666,6 @@ sexpr_u64(struct sexpr *sexpr, const char *name)
     return 0;
 }
 
-/**
- * sexpr_u64:
- * @sexpr: an S-Expression
- * @name: the name for the value
- *
- * convenience function to lookup a value describing the default process when
- * a domain stops
- *
- * Returns the value found or 0 if not found (but may not be an error)
- */
-static virDomainRestart
-sexpr_poweroff(struct sexpr *sexpr, const char *name)
-{
-    const char *value = sexpr_node(sexpr, name);
-
-    if (value) {
-        if (strcmp(value, "poweroff") == 0) {
-            return VIR_DOMAIN_DESTROY;
-        } else if (strcmp(value, "restart") == 0) {
-            return VIR_DOMAIN_RESTART;
-        } else if (strcmp(value, "preserve") == 0) {
-            return VIR_DOMAIN_PRESERVE;
-        } else if (strcmp(value, "rename-restart") == 0) {
-            return VIR_DOMAIN_RENAME_RESTART;
-        }
-    }
-    return XEND_DEFAULT;
-}
-
 static int
 sexpr_strlen(struct sexpr *sexpr, const char *path)
 {
@@ -716,36 +687,6 @@ sexpr_strcpy(char **ptr, struct sexpr *node, const char *path)
     return ret;
 }
 
-/**
- * sexpr_mode:
- * @sexpr: an S-Expression
- * @name: the name for the value
- *
- * convenience function to lookup a value describing a virtual block device
- * mode from the S-Expression
- *
- * Returns the value found or 0 if not found (but may not be an error)
- */
-static virDeviceMode
-sexpr_mode(struct sexpr *node, const char *path)
-{
-    const char *mode = sexpr_node(node, path);
-    virDeviceMode ret;
-
-    if (!mode) {
-        ret = VIR_DEVICE_DEFAULT;
-    } else if (strcmp(mode, "r") == 0) {
-        ret = VIR_DEVICE_RO;
-    } else if (strcmp(mode, "w") == 0) {
-        ret = VIR_DEVICE_RW;
-    } else if (strcmp(mode, "w!") == 0) {
-        ret = VIR_DEVICE_RW_FORCE;
-    } else {
-        ret = VIR_DEVICE_DEFAULT;
-    }
-
-    return ret;
-}
 
 /**
  * sexpr_node_system:
@@ -769,31 +710,6 @@ sexpr_node_system(struct sexpr *node, const char *path)
     }
 
     return XEND_DEFAULT;
-}
-
-/**
- * sexpr_node_system:
- * @mac: return value for the MAC address
- * @sexpr: an S-Expression
- * @name: the name for the value
- *
- * convenience function to lookup a MAC address (assumed ethernet and hence
- * six bytes in length) from the S-Expression
- * The value is returned in @mac
- */
-static void
-sexpr_mac(uint8_t * mac, struct sexpr *node, const char *path)
-{
-    const char *r = sexpr_node(node, path);
-    int mmac[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-    if (r) {
-        int i;
-
-        sscanf(r, "%02x:%02x:%02x:%02x:%02x:%02x",
-               mmac + 0, mmac + 1, mmac + 2, mmac + 3, mmac + 4, mmac + 5);
-        for (i = 0; i < 6; i++)
-            mac[i] = mmac[i] & 0xFF;
-    }
 }
 
 /**
@@ -1171,211 +1087,6 @@ xend_set_memory(virConnectPtr xend, const char *name, uint64_t value)
 
 
 /**
- * sexpr_to_xend_domain_size:
- * @sexpr: the S-Expression
- * @n_vbds: the number of virtual block devices used (OUT)
- * @n_vifs: the number of network interface devices used (OUT)
- *
- * Helper function to compute the size in byte needed for the strings
- * of a domain.
- *
- * Returns the number of bytes and the output parameters
- */
-static size_t
-sexpr_to_xend_domain_size(struct sexpr *root, int *n_vbds, int *n_vifs)
-{
-    size_t size = 0;
-    struct sexpr *_for_i, *node;
-
-    size += sexpr_strlen(root, "domain/name");
-    size += sexpr_strlen(root, "domain/image/linux/kernel");
-    size += sexpr_strlen(root, "domain/image/linux/ramdisk");
-    size += sexpr_strlen(root, "domain/image/linux/root");
-    size += sexpr_strlen(root, "domain/image/linux/args");
-    if (sexpr_node(root, "domain/uuid"))
-        size += 16;
-
-    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
-         _for_i = _for_i->cdr, node = _for_i->car) {
-        if (sexpr_lookup(node, "device/vbd")) {
-            size += sexpr_strlen(node, "device/vbd/dev");
-            size += sexpr_strlen(node, "device/vbd/uname");
-            (*n_vbds)++;
-        }
-    }
-
-    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
-         _for_i = _for_i->cdr, node = _for_i->car) {
-        if (sexpr_lookup(node, "device/vif")) {
-            size += sexpr_strlen(node, "device/vif/bridge");
-            size += sexpr_strlen(node, "device/vif/ip");
-            size += sexpr_strlen(node, "device/vif/script");
-            size += sexpr_strlen(node, "device/vif/vifname");
-            (*n_vifs)++;
-        }
-    }
-
-    size += (*n_vbds) * sizeof(struct xend_device_vbd *);
-    size += (*n_vbds) * sizeof(struct xend_device_vbd);
-
-    size += (*n_vifs) * sizeof(struct xend_device_vif *);
-    size += (*n_vifs) * sizeof(struct xend_device_vif);
-
-    size += sizeof(struct xend_domain_live);
-
-    size += sizeof(struct xend_domain);
-
-    return size;
-}
-
-/**
- * sexpr_to_xend_domain:
- * @root: an S-Expression describing a domain
- *
- * Internal routine creating a domain node based on the S-Expression
- * provided by the Xen Daemon
- *
- * Returns a new structure or NULL in case of error.
- */
-static struct xend_domain *
-sexpr_to_xend_domain(struct sexpr *root)
-{
-    struct xend_domain *dom = NULL;
-    char *ptr;
-    int i;
-    int n_vbds = 0;
-    int n_vifs = 0;
-    struct sexpr *_for_i, *node;
-
-    ptr = malloc(sexpr_to_xend_domain_size(root, &n_vbds, &n_vifs));
-    if (ptr == NULL)
-        goto error;
-
-    dom = (struct xend_domain *) ptr;
-    ptr += sizeof(struct xend_domain);
-
-    dom->vbds = (struct xend_device_vbd *) ptr;
-    dom->n_vbds = n_vbds;
-    ptr += n_vbds * sizeof(struct xend_device_vbd);
-
-    dom->vifs = (struct xend_device_vif *) ptr;
-    dom->n_vifs = n_vifs;
-    ptr += n_vifs * sizeof(struct xend_device_vif);
-
-    dom->live = (struct xend_domain_live *) ptr;
-    ptr += sizeof(struct xend_domain_live);
-
-    dom->name = sexpr_strcpy(&ptr, root, "domain/name");
-    dom->uuid = sexpr_uuid(&ptr, root, "domain/uuid");
-    dom->image.kernel =
-        sexpr_strcpy(&ptr, root, "domain/image/linux/kernel");
-    dom->image.ramdisk =
-        sexpr_strcpy(&ptr, root, "domain/image/linux/ramdisk");
-    dom->image.root = sexpr_strcpy(&ptr, root, "domain/image/linux/root");
-    dom->image.extra = sexpr_strcpy(&ptr, root, "domain/image/linux/args");
-    dom->memory = sexpr_u64(root, "domain/memory") << 20;
-    dom->max_memory = sexpr_u64(root, "domain/maxmem") << 20;
-    dom->ssidref = sexpr_int(root, "domain/ssidref");
-    dom->on_poweroff = sexpr_poweroff(root, "domain/on_poweroff");
-    dom->on_reboot = sexpr_poweroff(root, "domain/on_reboot");
-    dom->on_crash = sexpr_poweroff(root, "domain/on_crash");
-    dom->vcpus = sexpr_int(root, "domain/vcpus");
-
-    {
-        const char *flags = sexpr_node(root, "domain/state");
-
-        if (flags) {
-            dom->live->running = strchr(flags, 'r');
-            dom->live->crashed = strchr(flags, 'c');
-            dom->live->blocked = strchr(flags, 'b');
-            dom->live->dying = strchr(flags, 'd');
-            dom->live->paused = strchr(flags, 'p');
-            dom->live->poweroff = false;
-            dom->live->reboot = false;
-            dom->live->suspend = false;
-            if (strchr(flags, 's') &&
-                (flags = sexpr_node(root, "domain/shutdown_reason"))) {
-                if (strcmp(flags, "poweroff") == 0) {
-                    dom->live->poweroff = true;
-                } else if (strcmp(flags, "reboot") == 0) {
-                    dom->live->reboot = true;
-                } else if (strcmp(flags, "suspend") == 0) {
-                    dom->live->suspend = true;
-                }
-            }
-        }
-    }
-
-    dom->live->id = sexpr_int(root, "domain/domid");
-    dom->live->cpu_time = sexpr_float(root, "domain/cpu_time");
-    dom->live->up_time = sexpr_float(root, "domain/up_time");
-    dom->live->start_time = sexpr_float(root, "domain/start_time");
-    dom->live->online_vcpus = sexpr_int(root, "domain/online_vcpus");
-    dom->live->vcpu_avail = sexpr_int(root, "domain/vcpu_avail");
-
-    i = 0;
-    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
-         _for_i = _for_i->cdr, node = _for_i->car) {
-        if (sexpr_lookup(node, "device/vbd")) {
-            dom->vbds[i].dev = sexpr_strcpy(&ptr, node, "device/vbd/dev");
-            dom->vbds[i].uname =
-                sexpr_strcpy(&ptr, node, "device/vbd/uname");
-            dom->vbds[i].backend = sexpr_int(node, "device/vbd/backend");
-            dom->vbds[i].mode = sexpr_mode(node, "device/vbd/mode");
-            i++;
-        }
-    }
-
-    i = 0;
-    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
-         _for_i = _for_i->cdr, node = _for_i->car) {
-        if (sexpr_lookup(node, "device/vif")) {
-            dom->vifs[i].backend = sexpr_int(node, "device/vif/backend");
-            dom->vifs[i].bridge =
-                sexpr_strcpy(&ptr, node, "device/vif/bridge");
-            dom->vifs[i].ip = sexpr_strcpy(&ptr, node, "device/vif/ip");
-            sexpr_mac(dom->vifs[i].mac, node, "device/vif/mac");
-            dom->vifs[i].script =
-                sexpr_strcpy(&ptr, node, "device/vif/script");
-            dom->vifs[i].vifname =
-                sexpr_strcpy(&ptr, node, "device/vif/vifname");
-            i++;
-        }
-    }
-
-  error:
-    return dom;
-}
-
-/**
- * xenDaemonDomainLookupByName:
- * @xend: A xend instance
- * @name: The name of the domain
- *
- * This method looks up information about a domain and returns
- * it in the form of a struct xend_domain.  This should be
- * free()'d when no longer needed.
- *
- * Returns domain info on success; NULL (with errno) on error
- */
-struct xend_domain *
-xenDaemonDomainLookupByName(virConnectPtr xend, const char *domname)
-{
-    struct sexpr *root;
-    struct xend_domain *dom = NULL;
-
-    root = sexpr_get(xend, "/xend/domain/%s?detail=1", domname);
-    if (root == NULL)
-        goto error;
-
-    dom = sexpr_to_xend_domain(root);
-
-  error:
-    sexpr_free(root);
-    return dom;
-}
-
-/**
  * xenDaemonDomainLookupByName_ids:
  * @xend: A xend instance
  * @domname: The name of the domain
@@ -1587,6 +1298,17 @@ xend_log(virConnectPtr xend, char *buffer, size_t n_buffer)
     return http2unix(xend_get(xend, "/xend/node/log", buffer, n_buffer));
 }
 
+/*****************************************************************
+ ******
+ ******
+ ******
+ ******
+             Needed helper code
+ ******
+ ******
+ ******
+ ******
+ *****************************************************************/
 /**
  * xend_parse_sexp_desc:
  * @root: the root of the parsed S-Expression
@@ -1742,17 +1464,6 @@ xend_parse_sexp_desc(struct sexpr *root)
     return (NULL);
 }
 
-/*****************************************************************
- ******
- ******
- ******
- ******
-             Needed helper code
- ******
- ******
- ******
- ******
- *****************************************************************/
 /**
  * sexpr_to_xend_domain_info:
  * @root: an S-Expression describing a domain
@@ -1795,6 +1506,56 @@ sexpr_to_xend_domain_info(struct sexpr *root, virDomainInfoPtr info)
     info->cpuTime = sexpr_float(root, "domain/cpu_time") * 1000000000;
     info->nrVirtCpu = sexpr_int(root, "domain/vcpus");
     return (0);
+}
+
+/**
+ * sexpr_to_domain:
+ * @conn: an existing virtual connection block
+ * @root: an S-Expression describing a domain
+ *
+ * Internal routine returning the associated virDomainPtr for this domain
+ *
+ * Returns the domain pointer or NULL in case of error.
+ */
+static virDomainPtr
+sexpr_to_domain(virConnectPtr conn, struct sexpr *root)
+{
+    virDomainPtr ret;
+    char *dst_uuid = NULL;
+    const char *name;
+
+    if ((conn == NULL) || (root == NULL))
+        return(NULL);
+
+    ret = (virDomainPtr) malloc(sizeof(virDomain));
+    if (ret == NULL) {
+        virXendError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
+	return(NULL);
+    }
+    memset(ret, 0, sizeof(virDomain));
+    ret->magic = VIR_DOMAIN_MAGIC;
+    ret->conn = conn;
+    ret->handle = sexpr_int(root, "domain/domid");
+    if (ret->handle < 0)
+        goto error;
+    dst_uuid = (char *) &(ret->uuid[0]);
+    if (sexpr_uuid(&dst_uuid, root, "domain/uuid") == NULL)
+        goto error;
+    name = sexpr_node(root, "domain/name");
+    if (name == NULL)
+        goto error;
+    ret->name = strdup(name);
+    if (ret->name == NULL)
+        goto error;
+
+    return (ret);
+error:
+    virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                 "failed to parse Xend domain informations");
+    if (ret->name != NULL)
+        free(ret->name );
+    free(ret);
+    return(NULL);
 }
 
 
@@ -1994,6 +1755,37 @@ xenDaemonDomainRestore(virConnectPtr conn, const char *filename)
 }
 
 /**
+ * xenDaemonDomainGetMaxMemory:
+ * @domain: pointer to the domain block
+ *
+ * Ask the Xen Daemon for the maximum memory allowed for a domain
+ *
+ * Returns the memory size in kilobytes or 0 in case of error.
+ */
+unsigned long
+xenDaemonDomainGetMaxMemory(virDomainPtr domain)
+{
+    unsigned long ret = 0;
+    struct sexpr *root;
+
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return(-1);
+    }
+
+    /* can we ask for a subset ? worth it ? */
+    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    if (root == NULL)
+        return(0);
+
+    ret = (unsigned long) sexpr_u64(root, "domain/memory") << 10;
+    sexpr_free(root);
+
+    return(ret);
+}
+
+/**
  * xenDaemonDomainSetMaxMemory:
  * @domain: pointer to the Domain block
  * @memory: The maximum memory in kilobytes
@@ -2067,8 +1859,13 @@ xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     struct sexpr *root;
     int ret;
 
-    if ((domain == NULL) || (info == NULL))
-        return (-1);
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
+        (info == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return(-1);
+    }
+
 
     root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
     if (root == NULL)
@@ -2077,5 +1874,37 @@ xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     ret = sexpr_to_xend_domain_info(root, info);
     sexpr_free(root);
     return (ret);
+}
+
+/**
+ * xenDaemonDomainLookupByName:
+ * @conn: A xend instance
+ * @name: The name of the domain
+ *
+ * This method looks up information about a domain and returns
+ * it in the form of a struct xend_domain.  This should be
+ * free()'d when no longer needed.
+ *
+ * Returns domain info on success; NULL (with errno) on error
+ */
+virDomainPtr
+xenDaemonDomainLookupByName(virConnectPtr conn, const char *domname)
+{
+    struct sexpr *root;
+    virDomainPtr ret = NULL;
+
+    if ((conn == NULL) || (domname == NULL)) {
+        virXendError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+	return(NULL);
+    }
+    root = sexpr_get(conn, "/xend/domain/%s?detail=1", domname);
+    if (root == NULL)
+        goto error;
+
+    ret = sexpr_to_domain(conn, root);
+
+error:
+    sexpr_free(root);
+    return(ret);
 }
 

@@ -563,19 +563,6 @@ int xenDaemonOpen_unix(virConnectPtr xend, const char *path);
                         uint64_t value);
 
 /**
- * \brief Lookup information about a domain
- * \param xend A xend instance
- * \param name The name of the domain
- * \return domain info on success; NULL (with errno) on error
- *
- * This method looks up information about a domain and returns
- * it in the form of a struct xend_domain.  This should be
- * free()'d when no longer needed.
- */
-    struct xend_domain *xenDaemonDomainLookupByName(virConnectPtr xend,
-                                        const char *name);
-
-/**
  * \brief Lookup the id of a domain
  * \param xend A xend instance
  * \param name The name of the domain
@@ -662,6 +649,8 @@ int xenDaemonDomainRestore(virConnectPtr conn, const char *filename);
 int xenDaemonDomainSetMaxMemory(virDomainPtr domain, unsigned long memory);
 int xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info);
 char *xenDaemonDomainDumpXML(virDomainPtr domain);
+virDomainPtr xenDaemonDomainLookupByName(virConnectPtr conn, const char *domname);
+unsigned long xenDaemonDomainGetMaxMemory(virDomainPtr domain);
 
 #ifdef __cplusplus
 }
