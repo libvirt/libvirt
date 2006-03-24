@@ -8,4 +8,4 @@ Version: @VERSION@
 Description: libvirt library
 Requires:
 Libs: -L${libdir} -lvirt @LIBS@
-Cflags:
+Cflags: -I${includedir}

@@ -1,3 +1,7 @@
+Fri Mar 24 14:17:52 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* libvirt.pc.in: applied patch from Daniel Berrange to fix --cflags
+
 Fri Mar 24 14:03:26 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/Makefile.am: fix out of tree build
