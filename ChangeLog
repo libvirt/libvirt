@@ -1,3 +1,8 @@
+Fri Mar 24 23:36:05 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* include/virterror.h: applied patch from Daniel Berrange for out of
+	  tree compiles.
+
 Fri Mar 24 14:17:52 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* libvirt.pc.in: applied patch from Daniel Berrange to fix --cflags
