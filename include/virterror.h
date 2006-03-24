@@ -92,13 +92,13 @@ typedef enum {
     VIR_ERR_NO_XEN,/* could not open Xen hypervisor control */
     VIR_ERR_XEN_CALL,/* failure doing an hypervisor call */
     VIR_ERR_OS_TYPE, /* unknown OS type */
-    VIR_ERR_NO_KERNEL, /* missing kernel informations */
-    VIR_ERR_NO_ROOT, /* missing root device informations */
-    VIR_ERR_NO_SOURCE, /* missing source device informations */
-    VIR_ERR_NO_TARGET, /* missing target device informations */
-    VIR_ERR_NO_NAME, /* missing domain name informations */
-    VIR_ERR_NO_OS, /* missing domain OS informations */
-    VIR_ERR_NO_DEVICE, /* missing domain devices informations */
+    VIR_ERR_NO_KERNEL, /* missing kernel information */
+    VIR_ERR_NO_ROOT, /* missing root device information */
+    VIR_ERR_NO_SOURCE, /* missing source device information */
+    VIR_ERR_NO_TARGET, /* missing target device information */
+    VIR_ERR_NO_NAME, /* missing domain name information */
+    VIR_ERR_NO_OS, /* missing domain OS information */
+    VIR_ERR_NO_DEVICE, /* missing domain devices information */
     VIR_ERR_NO_XENSTORE,/* could not open Xen Store control */
 } virErrorNumber;
 
