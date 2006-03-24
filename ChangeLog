@@ -1,3 +1,7 @@
+Fri Mar 24 14:03:26 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/Makefile.am: fix out of tree build
+
 Thu Mar 23 16:40:37 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xs_internal.c src/xs_internal.h include/virterror.h 

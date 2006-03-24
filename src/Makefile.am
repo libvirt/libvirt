@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-INCLUDES = -I$(top_builddir)/include -I@srcdir@/include @LIBXML_CFLAGS@
+INCLUDES = -I$(top_builddir)/include -I@top_srcdir@/include @LIBXML_CFLAGS@
 DEPS = libvirt.la
 LDADDS = @STATIC_BINARIES@ libvirt.la
 VIRSH_LIBS = @VIRSH_LIBS@
