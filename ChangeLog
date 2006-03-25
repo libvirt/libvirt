@@ -1,3 +1,8 @@
+Sat Mar 25 11:45:06 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/Makefile.am: add  driver.h to SOURCES as pointed by Jim Meyering
+	* doc/*: rebuilt
+
 Sat Mar 25 11:38:29 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/virterror.c: add message as pointed by Jim Meyering

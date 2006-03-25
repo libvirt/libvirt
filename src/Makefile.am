@@ -19,7 +19,8 @@ libvirt_la_SOURCES =						\
 		xs_internal.c xs_internal.h			\
 		xend_internal.c xend_internal.h			\
 		sexpr.c sexpr.h					\
-		virterror.c
+		virterror.c					\
+		driver.h
 
 bin_PROGRAMS=virsh
 
