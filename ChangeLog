@@ -1,3 +1,7 @@
+Sat Mar 25 11:38:29 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/virterror.c: add message as pointed by Jim Meyering
+
 Fri Mar 24 23:57:56 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* include/virterror.h: fix typos pointed by Jim Meyering

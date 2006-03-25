@@ -437,6 +437,12 @@ __virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = "could not use Xen hypervisor entry %s";
             break;
+	case VIR_ERR_NO_XENSTORE:
+            if (info == NULL)
+                errmsg = "could not connect to Xen Store";
+            else
+                errmsg = "could not connect to Xen Store %s";
+            break;
         case VIR_ERR_XEN_CALL:
             errmsg = "failed Xen syscall %s %d";
             break;
