@@ -100,6 +100,7 @@ typedef enum {
     VIR_ERR_NO_OS, /* missing domain OS information */
     VIR_ERR_NO_DEVICE, /* missing domain devices information */
     VIR_ERR_NO_XENSTORE,/* could not open Xen Store control */
+    VIR_ERR_DRIVER_FULL /* too many drivers registered */
 } virErrorNumber;
 
 /**

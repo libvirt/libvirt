@@ -638,6 +638,7 @@ int xenDaemonOpen_unix(virConnectPtr xend, const char *path);
     int xend_log(virConnectPtr xend, char *buffer, size_t n_buffer);
 
 /* refactored ones */
+void xenDaemonRegister(void);
 int xenDaemonOpen(virConnectPtr conn, const char *name, int flags);
 int xenDaemonClose(virConnectPtr conn);
 int xenDaemonDomainSuspend(virDomainPtr domain);

@@ -18,6 +18,7 @@
 extern "C" {
 #endif
 
+void	xenHypervisorRegister		(void);
 int	xenHypervisorOpen		(virConnectPtr conn,
 					 const char *name,
 					 int flags);

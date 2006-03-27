@@ -37,6 +37,45 @@
  * - memory wrappers for malloc/free ?
  */
 
+#define MAX_DRIVERS 5
+static virDriverPtr virDriverTab[MAX_DRIVERS];
+static int initialized = 0;
+
+/**
+ * virInitialize:
+ *
+ * Initialize the library. It's better to call this routine at startup
+ * in multithreaded applications to avoid potential race when initializing
+ * the library.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+int
+virInitialize(void)
+{
+    int i;
+
+    if (initialized)
+        return(0);
+
+    /*
+     * should not be needed but...
+     */
+    for (i = 0;i < MAX_DRIVERS;i++) 
+         virDriverTab[i] = NULL;
+
+    /*
+     * Note that the order is important the first ones have a higher priority
+     */
+    xenHypervisorRegister();
+    xenDaemonRegister();
+    xenStoreRegister();
+    initialized = 1;
+    return(0);
+}
+
+
+
 /**
  * virLibConnError:
  * @conn: the connection if available
@@ -82,6 +121,37 @@ virLibDomainError(virDomainPtr domain, virErrorNumber error,
     }
     __virRaiseError(conn, domain, VIR_FROM_DOM, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, 0, 0, errmsg, info);
+}
+
+/**
+ * virRegisterDriver:
+ * @driver: pointer to a driver block
+ *
+ * Register a virtualization driver
+ *
+ * Returns the driver priority or -1 in case of error.
+ */
+int
+virRegisterDriver(virDriverPtr driver)
+{
+    int i;
+
+    if (driver == NULL) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+	return(-1);
+    }
+    for (i = 0;i < MAX_DRIVERS;i++) {
+        if (virDriverTab[i] == driver)
+	    return(i);
+    }
+    for (i = 0;i < MAX_DRIVERS;i++) {
+        if (virDriverTab[i] == NULL) {
+	    virDriverTab[i] = driver;
+	    return(i);
+	}
+    }
+    virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+    return(-1);
 }
 
 /**

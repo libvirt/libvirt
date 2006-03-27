@@ -70,6 +70,16 @@ static virDriver xenHypervisorDriver = {
 };
 
 /**
+ * xenHypervisorRegister:
+ *
+ * Registers the xenHypervisor driver
+ */
+void xenHypervisorRegister(void)
+{
+    virRegisterDriver(&xenHypervisorDriver);
+}
+
+/**
  * virXenError:
  * @conn: the connection if available
  * @error: the error number

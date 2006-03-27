@@ -35,9 +35,10 @@ void	<a href="#virErrorFunc">virErrorFunc</a>			(void * userData, <br />					 <a
     <a name="VIR_FROM_NONE" id="VIR_FROM_NONE">VIR_FROM_NONE</a> = 0
     <a name="VIR_FROM_XEN" id="VIR_FROM_XEN">VIR_FROM_XEN</a> = 1 : Error at Xen hypervisor layer
     <a name="VIR_FROM_XEND" id="VIR_FROM_XEND">VIR_FROM_XEND</a> = 2 : Error at connection with xend daemon
-    <a name="VIR_FROM_SEXPR" id="VIR_FROM_SEXPR">VIR_FROM_SEXPR</a> = 3 : Error in the S-Epression code
-    <a name="VIR_FROM_XML" id="VIR_FROM_XML">VIR_FROM_XML</a> = 4 : Error in the XML code
-    <a name="VIR_FROM_DOM" id="VIR_FROM_DOM">VIR_FROM_DOM</a> = 5 : Error when operating on a domain
+    <a name="VIR_FROM_XENSTORE" id="VIR_FROM_XENSTORE">VIR_FROM_XENSTORE</a> = 3 : Error at connection with xen store
+    <a name="VIR_FROM_SEXPR" id="VIR_FROM_SEXPR">VIR_FROM_SEXPR</a> = 4 : Error in the S-Epression code
+    <a name="VIR_FROM_XML" id="VIR_FROM_XML">VIR_FROM_XML</a> = 5 : Error in the XML code
+    <a name="VIR_FROM_DOM" id="VIR_FROM_DOM">VIR_FROM_DOM</a> = 6 : Error when operating on a domain
 }
 </pre><h3>Enum <a name="virErrorLevel" id="virErrorLevel">virErrorLevel</a></h3><pre class="programlisting">Enum virErrorLevel {
     <a name="VIR_ERR_NONE" id="VIR_ERR_NONE">VIR_ERR_NONE</a> = 0
@@ -62,13 +63,15 @@ void	<a href="#virErrorFunc">virErrorFunc</a>			(void * userData, <br />					 <a
     <a name="VIR_ERR_NO_XEN" id="VIR_ERR_NO_XEN">VIR_ERR_NO_XEN</a> = 14 : could not open Xen hypervisor control
     <a name="VIR_ERR_XEN_CALL" id="VIR_ERR_XEN_CALL">VIR_ERR_XEN_CALL</a> = 15 : failure doing an hypervisor call
     <a name="VIR_ERR_OS_TYPE" id="VIR_ERR_OS_TYPE">VIR_ERR_OS_TYPE</a> = 16 : unknown OS type
-    <a name="VIR_ERR_NO_KERNEL" id="VIR_ERR_NO_KERNEL">VIR_ERR_NO_KERNEL</a> = 17 : missing kernel informations
-    <a name="VIR_ERR_NO_ROOT" id="VIR_ERR_NO_ROOT">VIR_ERR_NO_ROOT</a> = 18 : missing root device informations
-    <a name="VIR_ERR_NO_SOURCE" id="VIR_ERR_NO_SOURCE">VIR_ERR_NO_SOURCE</a> = 19 : missing source device informations
-    <a name="VIR_ERR_NO_TARGET" id="VIR_ERR_NO_TARGET">VIR_ERR_NO_TARGET</a> = 20 : missing target device informations
-    <a name="VIR_ERR_NO_NAME" id="VIR_ERR_NO_NAME">VIR_ERR_NO_NAME</a> = 21 : missing domain name informations
-    <a name="VIR_ERR_NO_OS" id="VIR_ERR_NO_OS">VIR_ERR_NO_OS</a> = 22 : missing domain OS informations
-    <a name="VIR_ERR_NO_DEVICE" id="VIR_ERR_NO_DEVICE">VIR_ERR_NO_DEVICE</a> = 23 : missing domain devices informations
+    <a name="VIR_ERR_NO_KERNEL" id="VIR_ERR_NO_KERNEL">VIR_ERR_NO_KERNEL</a> = 17 : missing kernel information
+    <a name="VIR_ERR_NO_ROOT" id="VIR_ERR_NO_ROOT">VIR_ERR_NO_ROOT</a> = 18 : missing root device information
+    <a name="VIR_ERR_NO_SOURCE" id="VIR_ERR_NO_SOURCE">VIR_ERR_NO_SOURCE</a> = 19 : missing source device information
+    <a name="VIR_ERR_NO_TARGET" id="VIR_ERR_NO_TARGET">VIR_ERR_NO_TARGET</a> = 20 : missing target device information
+    <a name="VIR_ERR_NO_NAME" id="VIR_ERR_NO_NAME">VIR_ERR_NO_NAME</a> = 21 : missing domain name information
+    <a name="VIR_ERR_NO_OS" id="VIR_ERR_NO_OS">VIR_ERR_NO_OS</a> = 22 : missing domain OS information
+    <a name="VIR_ERR_NO_DEVICE" id="VIR_ERR_NO_DEVICE">VIR_ERR_NO_DEVICE</a> = 23 : missing domain devices information
+    <a name="VIR_ERR_NO_XENSTORE" id="VIR_ERR_NO_XENSTORE">VIR_ERR_NO_XENSTORE</a> = 24 : could not open Xen Store control
+    <a name="VIR_ERR_DRIVER_FULL" id="VIR_ERR_DRIVER_FULL">VIR_ERR_DRIVER_FULL</a> = 25 : too many drivers registered
 }
 </pre><h3><a name="virConnCopyLastError" id="virConnCopyLastError"></a>Function: virConnCopyLastError</h3><pre class="programlisting">int	virConnCopyLastError		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br />					 <a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a> to)<br />
 </pre><p>Copy the content of the last error caught on that connection One will need to free the result with virResetError()</p>
@@ -93,4 +96,4 @@ void	virErrorFunc			(void * userData, <br />					 <a href="libvirt-virterror.htm
 </pre><p>Reset the last error caught at the library level.</p>
 <h3><a name="virSetErrorFunc" id="virSetErrorFunc"></a>Function: virSetErrorFunc</h3><pre class="programlisting">void	virSetErrorFunc			(void * userData, <br />					 <a href="libvirt-virterror.html#virErrorFunc">virErrorFunc</a> handler)<br />
 </pre><p>Set a library global error handling function, if @handler is NULL, it will reset to default printing on stderr. The error raised there are those for which no handler at the connection level could caught.</p>
-<div class="variablelist"><table border="0"><col align="left" /><tbody><tr><td><span class="term"><i><tt>userData</tt></i>:</span></td><td>pointer to the user data provided in the handler callback</td></tr><tr><td><span class="term"><i><tt>handler</tt></i>:</span></td><td>the function to get called in case of error or NULL</td></tr></tbody></table></div></div></div><div class="linkList2"><div class="llinks2"><h3 class="links2"><span>main menu</span></h3><ul><li><a href="../index.html">Home</a></li><li><a href="../html/index.html">API Menu</a></li><li><a href="../examples/index.html">C code examples</a></li><li><a href="../ChangeLog.html">Recent Changes</a></li></ul></div><div class="llinks2"><h3 class="links2"><span>related links</span></h3><ul><li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li><li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li><li><form action="../search.php" enctype="application/x-www-form-urlencoded" method="get"><input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" /></form></li><li><a href="http://xmlsoft.org/"><img src="../Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li></ul><p class="credits">Graphics and design by <a href="mail:dfong@redhat.com">Diana Fong</a></p></div></div><div id="bottom"><p class="p1"></p></div></div></body></html>
+<div class="variablelist"><table border="0"><col align="left" /><tbody><tr><td><span class="term"><i><tt>userData</tt></i>:</span></td><td>pointer to the user data provided in the handler callback</td></tr><tr><td><span class="term"><i><tt>handler</tt></i>:</span></td><td>the function to get called in case of error or NULL</td></tr></tbody></table></div></div></div><div class="linkList2"><div class="llinks2"><h3 class="links2"><span>main menu</span></h3><ul><li><a href="../index.html">Home</a></li><li><a href="../html/index.html">API Menu</a></li><li><a href="../examples/index.html">C code examples</a></li><li><a href="../ChangeLog.html">Recent Changes</a></li></ul></div><div class="llinks2"><h3 class="links2"><span>related links</span></h3><ul><li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li><li><a href="https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&amp;component=libvirt&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;bug_status=MODIFIED&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;long_desc_type=allwordssubstr">Open bugs</a></li><li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li><li><form action="../search.php" enctype="application/x-www-form-urlencoded" method="get"><input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" /></form></li><li><a href="http://xmlsoft.org/"><img src="../Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li></ul><p class="credits">Graphics and design by <a href="mail:dfong@redhat.com">Diana Fong</a></p></div></div><div id="bottom"><p class="p1"></p></div></div></body></html>

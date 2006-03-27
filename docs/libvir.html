@@ -133,8 +133,8 @@ case at the moment, the code currently handle only local node accesses.</p>
 
 <h2><a name="architecture">libvirt architecture</a></h2>
 
-<h3>This is Xen specific since this is the only hypervisor supported at the
-moment</h3>
+<h3>This is in a large part Xen specific since this is the only hypervisor
+supported at the moment</h3>
 
 <p>When running in a Xen environment, programs using libvirt have to execute
 in "Domain 0", which is the primary Linux OS loaded on the machine. That OS
@@ -169,6 +169,34 @@ connect to initialize the library. It will try to open the read-only socket
 also try to use the RPC to the Xen daemon. In this case use of hypervisor
 calls and write to the Xen Store will not be possible, restraining the amount
 of APIs available and slowing down information gathering about domains.</p>
+
+<h3>Internal architecture</h3>
+
+<p>As the previous section explains, libvirt can communicate using different
+channels with the current hypervisor, and should also be able to use
+different kind of hypervisor. To simplify the internal design, code, ease
+maintainance and simplify the support of other virtualization engine the
+internals have been structured as one core component, the libvirt.c module
+acting as a front-end for the library API and a set of hypvisor drivers
+defining a common set of routines. That way the Xen Daemon accces, the Xen
+Store one, the Hypervisor hypercall are all isolated in separate C modules
+implementing at least a subset of the common operations defined by the
+drivers present in driver.h:</p>
+<ul>
+  <li>xend_internal: implements the driver functions though the Xen
+  Daemon</li>
+  <li>xs_internal: implements the subset of the driver availble though the
+    Xen Store</li>
+  <li>xen_internal: provide the implementation of the functions possible via
+    direct hypervisor access</li>
+</ul>
+
+<p>Note that a given driver may only implement a subset of those functions,
+for example saving a domain state to disk and restoring it is only possible
+though the Xen Daemon, on the other hand all interfaces allow to query the
+runtime state of a given domain.</p>
+
+<p> </p>
 
 <h2><a name="Downloads">Downloads</a></h2>
 

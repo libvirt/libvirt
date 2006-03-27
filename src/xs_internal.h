@@ -15,6 +15,7 @@
 extern "C" {
 #endif
 
+void	xenStoreRegister	(void);
 int	xenStoreOpen		(virConnectPtr conn,
 				 const char *name,
 				 int flags);

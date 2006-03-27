@@ -176,6 +176,8 @@ int			virGetVersion		(unsigned long *libVer,
 /*
  * Connection and disconnections to the Hypervisor
  */
+int			virInitialize		(void);
+
 virConnectPtr		virConnectOpen		(const char *name);
 virConnectPtr		virConnectOpenReadOnly	(const char *name);
 int			virConnectClose		(virConnectPtr conn);

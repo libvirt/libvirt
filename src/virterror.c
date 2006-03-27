@@ -491,6 +491,12 @@ __virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = "missing devices informations for %s";
             break;
+        case VIR_ERR_DRIVER_FULL:
+            if (info == NULL)
+                errmsg = "too many drivers registered";
+            else
+                errmsg = "too many drivers registered in %s";
+            break;
     }
     return (errmsg);
 }

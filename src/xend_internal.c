@@ -65,6 +65,16 @@ static virDriver xenDaemonDriver = {
 };
 
 /**
+ * xenDaemonRegister:
+ *
+ * Registers the xenDaemon driver
+ */
+void xenDaemonRegister(void)
+{
+    virRegisterDriver(&xenDaemonDriver);
+}
+
+/**
  * xend_connection_type:
  *
  * The connection to the Xen Daemon can be done either though a normal TCP

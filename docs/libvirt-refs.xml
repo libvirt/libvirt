@@ -18,6 +18,7 @@
     <reference name='VIR_DOMAIN_RUNNING' href='html/libvirt-libvirt.html#VIR_DOMAIN_RUNNING'/>
     <reference name='VIR_DOMAIN_SHUTDOWN' href='html/libvirt-libvirt.html#VIR_DOMAIN_SHUTDOWN'/>
     <reference name='VIR_DOMAIN_SHUTOFF' href='html/libvirt-libvirt.html#VIR_DOMAIN_SHUTOFF'/>
+    <reference name='VIR_ERR_DRIVER_FULL' href='html/libvirt-virterror.html#VIR_ERR_DRIVER_FULL'/>
     <reference name='VIR_ERR_ERROR' href='html/libvirt-virterror.html#VIR_ERR_ERROR'/>
     <reference name='VIR_ERR_GET_FAILED' href='html/libvirt-virterror.html#VIR_ERR_GET_FAILED'/>
     <reference name='VIR_ERR_HTTP_ERROR' href='html/libvirt-virterror.html#VIR_ERR_HTTP_ERROR'/>
@@ -37,6 +38,7 @@
     <reference name='VIR_ERR_NO_SUPPORT' href='html/libvirt-virterror.html#VIR_ERR_NO_SUPPORT'/>
     <reference name='VIR_ERR_NO_TARGET' href='html/libvirt-virterror.html#VIR_ERR_NO_TARGET'/>
     <reference name='VIR_ERR_NO_XEN' href='html/libvirt-virterror.html#VIR_ERR_NO_XEN'/>
+    <reference name='VIR_ERR_NO_XENSTORE' href='html/libvirt-virterror.html#VIR_ERR_NO_XENSTORE'/>
     <reference name='VIR_ERR_OK' href='html/libvirt-virterror.html#VIR_ERR_OK'/>
     <reference name='VIR_ERR_OPERATION_FAILED' href='html/libvirt-virterror.html#VIR_ERR_OPERATION_FAILED'/>
     <reference name='VIR_ERR_OS_TYPE' href='html/libvirt-virterror.html#VIR_ERR_OS_TYPE'/>
@@ -50,6 +52,7 @@
     <reference name='VIR_FROM_SEXPR' href='html/libvirt-virterror.html#VIR_FROM_SEXPR'/>
     <reference name='VIR_FROM_XEN' href='html/libvirt-virterror.html#VIR_FROM_XEN'/>
     <reference name='VIR_FROM_XEND' href='html/libvirt-virterror.html#VIR_FROM_XEND'/>
+    <reference name='VIR_FROM_XENSTORE' href='html/libvirt-virterror.html#VIR_FROM_XENSTORE'/>
     <reference name='VIR_FROM_XML' href='html/libvirt-virterror.html#VIR_FROM_XML'/>
     <reference name='_virDomainInfo' href='html/libvirt-libvirt.html#_virDomainInfo'/>
     <reference name='_virDomainKernel' href='html/libvirt-libvirt.html#_virDomainKernel'/>
@@ -106,6 +109,7 @@
     <reference name='virErrorPtr' href='html/libvirt-virterror.html#virErrorPtr'/>
     <reference name='virGetLastError' href='html/libvirt-virterror.html#virGetLastError'/>
     <reference name='virGetVersion' href='html/libvirt-libvirt.html#virGetVersion'/>
+    <reference name='virInitialize' href='html/libvirt-libvirt.html#virInitialize'/>
     <reference name='virResetError' href='html/libvirt-virterror.html#virResetError'/>
     <reference name='virResetLastError' href='html/libvirt-virterror.html#virResetLastError'/>
     <reference name='virSetErrorFunc' href='html/libvirt-virterror.html#virSetErrorFunc'/>
@@ -131,6 +135,7 @@
       <ref name='VIR_DOMAIN_RUNNING'/>
       <ref name='VIR_DOMAIN_SHUTDOWN'/>
       <ref name='VIR_DOMAIN_SHUTOFF'/>
+      <ref name='VIR_ERR_DRIVER_FULL'/>
       <ref name='VIR_ERR_ERROR'/>
       <ref name='VIR_ERR_GET_FAILED'/>
       <ref name='VIR_ERR_HTTP_ERROR'/>
@@ -150,6 +155,7 @@
       <ref name='VIR_ERR_NO_SUPPORT'/>
       <ref name='VIR_ERR_NO_TARGET'/>
       <ref name='VIR_ERR_NO_XEN'/>
+      <ref name='VIR_ERR_NO_XENSTORE'/>
       <ref name='VIR_ERR_OK'/>
       <ref name='VIR_ERR_OPERATION_FAILED'/>
       <ref name='VIR_ERR_OS_TYPE'/>
@@ -163,6 +169,7 @@
       <ref name='VIR_FROM_SEXPR'/>
       <ref name='VIR_FROM_XEN'/>
       <ref name='VIR_FROM_XEND'/>
+      <ref name='VIR_FROM_XENSTORE'/>
       <ref name='VIR_FROM_XML'/>
     </letter>
     <letter name='_'>
@@ -223,6 +230,7 @@
       <ref name='virErrorPtr'/>
       <ref name='virGetLastError'/>
       <ref name='virGetVersion'/>
+      <ref name='virInitialize'/>
       <ref name='virResetError'/>
       <ref name='virResetLastError'/>
       <ref name='virSetErrorFunc'/>
@@ -382,8 +390,10 @@
       <ref name='virDomainState'/>
       <ref name='virDomainSuspend'/>
       <ref name='virGetVersion'/>
+      <ref name='virInitialize'/>
     </file>
     <file name='virterror'>
+      <ref name='VIR_ERR_DRIVER_FULL'/>
       <ref name='VIR_ERR_ERROR'/>
       <ref name='VIR_ERR_GET_FAILED'/>
       <ref name='VIR_ERR_HTTP_ERROR'/>
@@ -403,6 +413,7 @@
       <ref name='VIR_ERR_NO_SUPPORT'/>
       <ref name='VIR_ERR_NO_TARGET'/>
       <ref name='VIR_ERR_NO_XEN'/>
+      <ref name='VIR_ERR_NO_XENSTORE'/>
       <ref name='VIR_ERR_OK'/>
       <ref name='VIR_ERR_OPERATION_FAILED'/>
       <ref name='VIR_ERR_OS_TYPE'/>
@@ -416,6 +427,7 @@
       <ref name='VIR_FROM_SEXPR'/>
       <ref name='VIR_FROM_XEN'/>
       <ref name='VIR_FROM_XEND'/>
+      <ref name='VIR_FROM_XENSTORE'/>
       <ref name='VIR_FROM_XML'/>
       <ref name='_virError'/>
       <ref name='virConnCopyLastError'/>
@@ -510,6 +522,9 @@
         </word>
         <word name='Informations'>
           <ref name='_virDomainInfo'/>
+        </word>
+        <word name='Initialize'>
+          <ref name='virInitialize'/>
         </word>
       </letter>
       <letter name='K'>
@@ -725,6 +740,9 @@
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
         </word>
+        <word name='applications'>
+          <ref name='virInitialize'/>
+        </word>
         <word name='are'>
           <ref name='_virDomainInfo'/>
           <ref name='virConnectClose'/>
@@ -751,6 +769,9 @@
         <word name='availble'>
           <ref name='virGetVersion'/>
         </word>
+        <word name='avoid'>
+          <ref name='virInitialize'/>
+        </word>
       </letter>
       <letter name='b'>
         <word name='back'>
@@ -772,6 +793,9 @@
         <word name='below'>
           <ref name='_virDomainInfo'/>
         </word>
+        <word name='better'>
+          <ref name='virInitialize'/>
+        </word>
         <word name='block'>
           <ref name='_virDomainKernel'/>
         </word>
@@ -791,6 +815,7 @@
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainSave'/>
+          <ref name='virInitialize'/>
         </word>
         <word name='callback'>
           <ref name='virConnSetErrorFunc'/>
@@ -805,6 +830,7 @@
           <ref name='virSetErrorFunc'/>
         </word>
         <word name='caller'>
+          <ref name='virDomainGetOSType'/>
           <ref name='virDomainGetXMLDesc'/>
         </word>
         <word name='calling'>
@@ -1032,6 +1058,7 @@
         <word name='freed'>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainFree'/>
+          <ref name='virDomainGetOSType'/>
         </word>
         <word name='from'>
           <ref name='_virDomainInfo'/>
@@ -1131,6 +1158,9 @@
         <word name='init'>
           <ref name='_virDomainKernel'/>
         </word>
+        <word name='initializing'>
+          <ref name='virInitialize'/>
+        </word>
         <word name='instance'>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainFree'/>
@@ -1198,6 +1228,7 @@
           <ref name='virErrorFunc'/>
           <ref name='virGetLastError'/>
           <ref name='virGetVersion'/>
+          <ref name='virInitialize'/>
           <ref name='virResetLastError'/>
           <ref name='virSetErrorFunc'/>
         </word>
@@ -1278,11 +1309,15 @@
         <word name='multithreaded'>
           <ref name='virConnGetLastError'/>
           <ref name='virGetLastError'/>
+          <ref name='virInitialize'/>
         </word>
         <word name='must'>
+          <ref name='virDomainGetOSType'/>
           <ref name='virDomainGetXMLDesc'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk2'>
       <letter name='n'>
         <word name='name'>
           <ref name='virConnectGetType'/>
@@ -1330,8 +1365,6 @@
           <ref name='virDomainLookupByID'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk2'>
       <letter name='o'>
         <word name='object'>
           <ref name='virDomainCreateLinux'/>
@@ -1450,6 +1483,9 @@
         <word name='pointing'>
           <ref name='_virDomainKernel'/>
         </word>
+        <word name='potential'>
+          <ref name='virInitialize'/>
+        </word>
         <word name='printing'>
           <ref name='virSetErrorFunc'/>
         </word>
@@ -1490,6 +1526,9 @@
         </word>
       </letter>
       <letter name='r'>
+        <word name='race'>
+          <ref name='virInitialize'/>
+        </word>
         <word name='raised'>
           <ref name='_virError'/>
           <ref name='virErrorFunc'/>
@@ -1575,6 +1614,7 @@
         </word>
         <word name='routine'>
           <ref name='virDefaultErrorFunc'/>
+          <ref name='virInitialize'/>
         </word>
         <word name='running'>
           <ref name='_virDomainInfo'/>
@@ -1630,6 +1670,9 @@
         <word name='software'>
           <ref name='virConnectGetType'/>
         </word>
+        <word name='startup'>
+          <ref name='virInitialize'/>
+        </word>
         <word name='state'>
           <ref name='_virDomainInfo'/>
           <ref name='virDomainResume'/>
@@ -1679,6 +1722,7 @@
           <ref name='virDomainSetMaxMemory'/>
           <ref name='virDomainShutdown'/>
           <ref name='virDomainSuspend'/>
+          <ref name='virInitialize'/>
         </word>
         <word name='successful'>
           <ref name='virDomainSave'/>
@@ -1697,6 +1741,8 @@
           <ref name='virDomainGetOSType'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk3'>
       <letter name='t'>
         <word name='target'>
           <ref name='virConnCopyLastError'/>
@@ -1741,6 +1787,7 @@
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virInitialize'/>
         </word>
         <word name='those'>
           <ref name='virSetErrorFunc'/>
@@ -1753,8 +1800,6 @@
           <ref name='virGetVersion'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk3'>
       <letter name='u'>
         <word name='unknown'>
           <ref name='virGetVersion'/>
@@ -1859,6 +1904,7 @@
         </word>
         <word name='when'>
           <ref name='virErrorFunc'/>
+          <ref name='virInitialize'/>
         </word>
         <word name='where'>
           <ref name='virDomainGetMaxMemory'/>
@@ -1923,9 +1969,9 @@
     </chunk>
     <chunks>
       <chunk name='chunk0' start='A' end='c'/>
-      <chunk name='chunk1' start='d' end='n'/>
-      <chunk name='chunk2' start='o' end='t'/>
-      <chunk name='chunk3' start='u' end='z'/>
+      <chunk name='chunk1' start='d' end='m'/>
+      <chunk name='chunk2' start='n' end='s'/>
+      <chunk name='chunk3' start='t' end='z'/>
     </chunks>
   </index>
 </apirefs>

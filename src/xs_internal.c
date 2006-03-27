@@ -60,6 +60,16 @@ static virDriver xenStoreDriver = {
 };
 
 /**
+ * xenStoreRegister:
+ *
+ * Registers the xenStore driver
+ */
+void xenStoreRegister(void)
+{
+    virRegisterDriver(&xenStoreDriver);
+}
+
+/**
  * virXenStoreError:
  * @conn: the connection if available
  * @error: the error number
