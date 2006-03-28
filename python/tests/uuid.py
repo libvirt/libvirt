@@ -19,16 +19,18 @@ if ids == None or len(ids) == 0:
 
 id = ids[-1]
 
-dom = conn.lookupByID(id)
-if dom == None:
+try:
+    dom = conn.lookupByID(id)
+except:
     print 'Failed to find the domain %d'
     sys.exit(1)
 
 name0 = dom.name()
 uuid = dom.UUID()
 print "Using domain %s" % (name0)
-dom2 = conn.lookupByUUID(uuid)
-if dom2 == None:
+try:
+    dom2 = conn.lookupByUUID(uuid)
+except:
     print 'Failed to lookup domain %d based on its UUID'
     sys.exit(1)
 if dom2.name() != name0:

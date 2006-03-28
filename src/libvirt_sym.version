@@ -1,5 +1,6 @@
 {
     global:
+        virInitialize;
 	virConnectClose;
 	virConnectGetType;
 	virConnectGetVersion;

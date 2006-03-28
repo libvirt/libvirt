@@ -1,3 +1,11 @@
+Tue Mar 28 16:40:08 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* python/libvir.c: call the initialize entry point
+	* src/libvirt_sym.version: add initialize entry point
+	* src/libvirt.c: make sure we always initialize the lib
+	* python/tests/*.py: start updating exemple for exception
+	  handling as pointed by Jim Meyering
+
 Tue Mar 28 11:49:59 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* doc/site.xsl doc/libvir.html doc/*: added informations about

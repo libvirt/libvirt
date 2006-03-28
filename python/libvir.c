@@ -269,6 +269,8 @@ initlibvirtmod(void)
     if (initialized != 0)
         return;
 
+    virInitialize();
+
     /* intialize the python extension module */
     Py_InitModule((char *) "libvirtmod", libvirtMethods);
 

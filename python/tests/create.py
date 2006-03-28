@@ -115,13 +115,20 @@ time.sleep(10)
 print "shutdown of test domain"
 
 if dom.shutdown() != 0:
+    okay = 0
     print 'Failed to shutdown domain test'
 
 i = 0
 while i < 30:
     time.sleep(1)
     i = i + 1
-    t = dom.info()[4]
+    try:
+	t = dom.info()[4]
+    except:
+        okay = 0
+	t = -1
+	break;
+        
     if t == 0:
         break
 

@@ -57,6 +57,7 @@ virInitialize(void)
 
     if (initialized)
         return(0);
+    initialized = 1;
 
     /*
      * should not be needed but...
@@ -70,7 +71,6 @@ virInitialize(void)
     xenHypervisorRegister();
     xenDaemonRegister();
     xenStoreRegister();
-    initialized = 1;
     return(0);
 }
 
@@ -136,6 +136,9 @@ virRegisterDriver(virDriverPtr driver)
 {
     int i;
 
+    if (!initialized)
+        virInitialize();
+
     if (driver == NULL) {
         virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
 	return(-1);
@@ -173,6 +176,9 @@ int
 virGetVersion(unsigned long *libVer, const char *type,
               unsigned long *typeVer)
 {
+    if (!initialized)
+        virInitialize();
+
     if (libVer == NULL)
         return (-1);
     *libVer = LIBVIR_VERSION_NUMBER;
@@ -211,6 +217,9 @@ virConnectPtr
 virConnectOpen(const char *name)
 {
     virConnectPtr ret = NULL;
+
+    if (!initialized)
+        virInitialize();
 
     /* we can only talk to the local Xen supervisor ATM */
     if (name != NULL) {
@@ -269,6 +278,9 @@ virConnectOpenReadOnly(const char *name)
     int method = 0;
     int res;
     virConnectPtr ret = NULL;
+
+    if (!initialized)
+        virInitialize();
 
     /* we can only talk to the local Xen supervisor ATM */
     if (name != NULL) {

@@ -14,8 +14,9 @@ if conn == None:
 
 # print conn
 
-dom0 = conn.lookupByName("Domain-0")
-if dom0 == None:
+try:
+    dom0 = conn.lookupByName("Domain-0")
+except:
     print 'Failed to find the main domain'
     sys.exit(1)
 
