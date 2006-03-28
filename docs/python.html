@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>Binding for Python</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Binding for Python</h1><p>Libvirt comes with direct support for the Python language (just make sure
-you installed the libvirt-python package if not compiling from sources).
-Also note that Daniel Berrange provides
-<a href="http://hg.berrange.com/libraries/sys-virt">bindings for Perl</a>
-too.</p><p> The Python binding should be complete and are mostly automatically generated from
-the formal description of the API in xml. The bindings are articulated around
-2 classes <code>virConnect</code> and virDomain mapping to the C types.
-Functions in the C API taking either type as argument then becomes methods
-for the classes, their name is just stripped from the virConnect or
-virDomain(Get) prefix and the first letter gets converted to lower case, for
-example the C functions:</p><p><code>int <a href="html/libvirt-libvirt.html#virConnectNumOfDomains">virConnectNumOfDomains</a>
+you installed the libvirt-python package if not compiling from sources). Also
+note that Daniel Berrange provides <a href="http://hg.berrange.com/libraries/sys-virt">bindings for Perl</a>
+too.</p><p>The Python binding should be complete and are mostly automatically
+generated from the formal description of the API in xml. The bindings are
+articulated around 2 classes <code>virConnect</code> and virDomain mapping to
+the C types. Functions in the C API taking either type as argument then
+becomes methods for the classes, their name is just stripped from the
+virConnect or virDomain(Get) prefix and the first letter gets converted to
+lower case, for example the C functions:</p><p><code>int <a href="html/libvirt-libvirt.html#virConnectNumOfDomains">virConnectNumOfDomains</a>
 (virConnectPtr conn);</code></p><p><code>int <a href="html/libvirt-libvirt.html#virDomainSetMaxMemory">virDomainSetMaxMemory</a>
 (virDomainPtr domain, unsigned long memory);</code></p><p>become</p><p><code>virConn::numOfDomains(self)</code></p><p><code>virDomain::setMaxMemory(self, memory)</code></p><p>This process is fully automated, you can get a summary of the conversion
 in the file libvirtclass.txt present in the python dir or in the docs.There
@@ -35,8 +34,9 @@ if conn == None:
     print 'Failed to open connection to the hypervisor'
     sys.exit(1)
 
-dom0 = conn.<span style="color: #007F00; background-color: #FFFFFF">lookupByName</span>("Domain-0")
-if dom0 == None:
+try:
+    dom0 = conn.<span style="color: #007F00; background-color: #FFFFFF">lookupByName</span>("Domain-0")
+except:
     print 'Failed to find the main domain'
     sys.exit(1)
 
@@ -46,6 +46,7 @@ from the C API, the only points to notice are:</p><ul><li>the import of the modu
   <li>getting a connection to the hypervisor, in that case using the
     openReadOnly function allows the code to execute as a normal user.</li>
   <li>getting an object representing the Domain 0 using <span style="color: #007F00; background-color: #FFFFFF">lookupByName</span></li>
+  <li>if the domain is not found a libvirtError exception will be raised</li>
   <li>extracting and printing some informations about the domain using
     various <span style="color: #E50073; background-color: #FFFFFF">methods</span>
     associated to the virDomain class.</li>
