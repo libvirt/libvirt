@@ -1,3 +1,9 @@
+Tue Mar 28 11:49:59 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* doc/site.xsl doc/libvir.html doc/*: added informations about
+	  the Perl bindings, regenerated
+	* python/libvirt_wrap.h: added a missing include. 
+
 Mon Mar 27 17:22:16 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* doc/*: updated module list and rebuilt

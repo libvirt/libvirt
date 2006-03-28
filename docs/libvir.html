@@ -316,8 +316,12 @@ will remain functional in spite of the evolution of the library.</p>
 <h2><a name="Python" id="Python">Binding for Python</a></h2>
 
 <p>Libvirt comes with direct support for the Python language (just make sure
-you installed the libvirt-python package if not compiling from sources). The
-Python binding should be complete and are mostly automatically generated from
+you installed the libvirt-python package if not compiling from sources).
+Also note that Daniel Berrange provides
+<a href="http://hg.berrange.com/libraries/sys-virt">bindings for Perl</a>
+too.</p>
+
+<p> The Python binding should be complete and are mostly automatically generated from
 the formal description of the API in xml. The bindings are articulated around
 2 classes <code>virConnect</code> and virDomain mapping to the C types.
 Functions in the C API taking either type as argument then becomes methods

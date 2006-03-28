@@ -8,6 +8,7 @@
 
 #include <Python.h>
 #include <libvirt.h>
+#include <virterror.h>
 
 #ifdef __GNUC__
 #ifdef ATTRIBUTE_UNUSED
