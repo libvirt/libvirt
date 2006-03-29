@@ -497,6 +497,12 @@ __virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = "too many drivers registered in %s";
             break;
+        case VIR_ERR_CALL_FAILED:
+            if (info == NULL)
+                errmsg = "library call failed, possibly not supported";
+            else
+                errmsg = "library call %s failed, possibly not supported";
+            break;
     }
     return (errmsg);
 }

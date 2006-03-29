@@ -32,6 +32,9 @@ typedef int
 	(*virDrvGetVersion)		(virConnectPtr conn,
 					 unsigned long *hvVer);
 typedef int
+	(*virDrvNodeGetInfo)		(virConnectPtr conn,
+					 virNodeInfoPtr info);
+typedef int
 	(*virDrvListDomains)		(virConnectPtr conn,
 					 int *ids,
 					 int maxids);
@@ -100,6 +103,7 @@ struct _virDriver {
 	virDrvClose			close;
 	virDrvGetType			type;
 	virDrvGetVersion		version;
+	virDrvNodeGetInfo		nodeGetInfo;
 	virDrvListDomains		listDomains;
 	virDrvNumOfDomains		numOfDomains;
 	virDrvDomainCreateLinux		domainCreateLinux;

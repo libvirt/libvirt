@@ -78,6 +78,8 @@ extern "C" {
 #define VIR_IS_DOMAIN(obj)		((obj) && (obj)->magic==VIR_DOMAIN_MAGIC)
 #define VIR_IS_CONNECTED_DOMAIN(obj)	(VIR_IS_DOMAIN(obj) && VIR_IS_CONNECT((obj)->conn))
 
+#define MAX_DRIVERS 5
+
 /*
  * Flags for Xen connections
  */
@@ -90,6 +92,12 @@ extern "C" {
  */
 struct _virConnect {
     unsigned int magic;     /* specific value to check */
+
+    /* the list of available drivers for that connection */
+    virDriverPtr      drivers[MAX_DRIVERS];
+    int               nb_drivers;
+
+    /* extra data needed by drivers */
     int handle;             /* internal handle used for hypercall */
     struct xs_handle *xshandle;     /* handle to talk to the xenstore */
 

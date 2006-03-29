@@ -37,6 +37,7 @@ static virDriver xenStoreDriver = {
     xenStoreClose, /* close */
     NULL, /* type */
     NULL, /* version */
+    NULL, /* nodeGetInfo */
     xenStoreListDomains, /* listDomains */
     NULL, /* numOfDomains */
     NULL, /* domainCreateLinux */

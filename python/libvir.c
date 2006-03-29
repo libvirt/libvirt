@@ -197,6 +197,35 @@ libvirt_virDomainGetInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     return(py_retval);
 }
 
+static PyObject *
+libvirt_virNodeGetInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    PyObject *py_retval;
+    int c_retval;
+    virConnectPtr conn;
+    PyObject *pyobj_conn;
+    virNodeInfo info;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virDomainGetInfo", &pyobj_conn))
+        return(NULL);
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    c_retval = virNodeGetInfo(conn, &info);
+    if (c_retval < 0) {
+        Py_INCREF(Py_None);
+	return(Py_None);
+    }
+    py_retval = PyList_New(8);
+    PyList_SetItem(py_retval, 0, libvirt_charPtrWrap(&info.model[0]));
+    PyList_SetItem(py_retval, 1, libvirt_longWrap((long) info.memory));
+    PyList_SetItem(py_retval, 2, libvirt_intWrap((int) info.cpus));
+    PyList_SetItem(py_retval, 3, libvirt_intWrap((int) info.mhz));
+    PyList_SetItem(py_retval, 4, libvirt_intWrap((int) info.nodes));
+    PyList_SetItem(py_retval, 5, libvirt_intWrap((int) info.sockets));
+    PyList_SetItem(py_retval, 6, libvirt_intWrap((int) info.cores));
+    PyList_SetItem(py_retval, 7, libvirt_intWrap((int) info.threads));
+    return(py_retval);
+}
+
 PyObject *
 libvirt_virDomainGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     PyObject *py_retval;
@@ -255,6 +284,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virConnectClose", libvirt_virConnectClose, METH_VARARGS, NULL},
     {(char *) "virConnectListDomainsID", libvirt_virConnectListDomainsID, METH_VARARGS, NULL},
     {(char *) "virDomainGetInfo", libvirt_virDomainGetInfo, METH_VARARGS, NULL},
+    {(char *) "virNodeGetInfo", libvirt_virNodeGetInfo, METH_VARARGS, NULL},
     {(char *) "virDomainGetUUID", libvirt_virDomainGetUUID, METH_VARARGS, NULL},
     {(char *) "virDomainLookupByUUID", libvirt_virDomainLookupByUUID, METH_VARARGS, NULL},
     {(char *) "virRegisterErrorHandler", libvirt_virRegisterErrorHandler, METH_VARARGS, NULL},

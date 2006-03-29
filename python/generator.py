@@ -261,6 +261,7 @@ foreign_encoding_args = (
 skip_impl = (
     'virConnectListDomainsID',
     'virDomainGetInfo',
+    'virNodeGetInfo',
     'virDomainGetUUID',
     'virDomainLookupByUUID',
 )
@@ -561,6 +562,9 @@ def nameFixup(name, classe, type, file):
         func = string.lower(func[0:1]) + func[1:]
     elif name[0:9] == "virDomain":
         func = name[9:]
+        func = string.lower(func[0:1]) + func[1:]
+    elif name[0:7] == "virNode":
+        func = name[7:]
         func = string.lower(func[0:1]) + func[1:]
     elif name[0:10] == "virConnect":
         func = name[10:]

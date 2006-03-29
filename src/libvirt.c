@@ -37,7 +37,6 @@
  * - memory wrappers for malloc/free ?
  */
 
-#define MAX_DRIVERS 5
 static virDriverPtr virDriverTab[MAX_DRIVERS];
 static int initialized = 0;
 
@@ -216,16 +215,11 @@ virGetVersion(unsigned long *libVer, const char *type,
 virConnectPtr
 virConnectOpen(const char *name)
 {
+    int i, res;
     virConnectPtr ret = NULL;
 
     if (!initialized)
         virInitialize();
-
-    /* we can only talk to the local Xen supervisor ATM */
-    if (name != NULL) {
-        virLibConnError(NULL, VIR_ERR_NO_SUPPORT, name);
-        return (NULL);
-    }
 
     ret = (virConnectPtr) malloc(sizeof(virConnect));
     if (ret == NULL) {
@@ -234,16 +228,28 @@ virConnectOpen(const char *name)
     }
     memset(ret, 0, sizeof(virConnect));
     ret->magic = VIR_CONNECT_MAGIC;
+    ret->nb_drivers = 0;
 
-    /*
-     * open connections to the hypervisor, store and daemon
-     */
-    if (xenHypervisorOpen(ret, name, 0) < 0)
-        goto failed;
-    if (xenStoreOpen(ret, name, 0) < 0)
-        goto failed;
-    if (xenDaemonOpen(ret, name, 0) < 0)
-        goto failed;
+    for (i = 0;i < MAX_DRIVERS;i++) {
+        if ((virDriverTab[i] != NULL) && (virDriverTab[i]->open != NULL)) {
+	    res = virDriverTab[i]->open(ret, name, 0);
+	    /*
+	     * For a default connect to Xen make sure we manage to contact
+	     * all related drivers.
+	     */
+	    if ((res < 0) && (name == NULL) &&
+	        (!strcmp(virDriverTab[i]->name, "Xen")))
+		goto failed;
+	    if (res == 0)
+	        ret->drivers[ret->nb_drivers++] = virDriverTab[i];
+	}
+    }
+
+    if (ret->nb_drivers == 0) {
+	/* we failed to find an adequate driver */
+	virLibConnError(NULL, VIR_ERR_NO_SUPPORT, name);
+	goto failed;
+    }
 
     ret->domains = virHashCreate(20);
     if (ret->domains == NULL)
@@ -254,9 +260,10 @@ virConnectOpen(const char *name)
 
 failed:
     if (ret != NULL) {
-	xenHypervisorClose(ret);
-	xenStoreClose(ret);
-	xenDaemonClose(ret);
+	for (i = 0;i < ret->nb_drivers;i++) {
+	    if ((ret->drivers[i] != NULL) && (ret->drivers[i]->close != NULL))
+	        ret->drivers[i]->close(ret);
+	}
         free(ret);
     }
     return (NULL);
@@ -275,18 +282,11 @@ failed:
 virConnectPtr
 virConnectOpenReadOnly(const char *name)
 {
-    int method = 0;
-    int res;
+    int i, res;
     virConnectPtr ret = NULL;
 
     if (!initialized)
         virInitialize();
-
-    /* we can only talk to the local Xen supervisor ATM */
-    if (name != NULL) {
-        virLibConnError(NULL, VIR_ERR_NO_SUPPORT, name);
-        return (NULL);
-    }
 
     ret = (virConnectPtr) malloc(sizeof(virConnect));
     if (ret == NULL) {
@@ -295,22 +295,24 @@ virConnectOpenReadOnly(const char *name)
     }
     memset(ret, 0, sizeof(virConnect));
     ret->magic = VIR_CONNECT_MAGIC;
+    ret->nb_drivers = 0;
 
-    res = xenHypervisorOpen(ret, name, VIR_DRV_OPEN_QUIET | VIR_DRV_OPEN_RO);
-    if (res >= 0)
-        method++;
-
-    res = xenStoreOpen(ret, name, VIR_DRV_OPEN_QUIET | VIR_DRV_OPEN_RO);
-    if (res >= 0)
-        method++;
-
-    if (xenDaemonOpen(ret, name, VIR_DRV_OPEN_QUIET | VIR_DRV_OPEN_RO) == 0)
-        method++;
-
-    if (method == 0) {
-        virLibConnError(NULL, VIR_ERR_NO_CONNECT,
-                        "could not connect to Xen Daemon nor Xen Store");
-        goto failed;
+    for (i = 0;i < MAX_DRIVERS;i++) {
+        if ((virDriverTab[i] != NULL) && (virDriverTab[i]->open != NULL)) {
+	    res = virDriverTab[i]->open(ret, name,
+	                                VIR_DRV_OPEN_QUIET | VIR_DRV_OPEN_RO);
+	    if (res == 0)
+	        ret->drivers[ret->nb_drivers++] = virDriverTab[i];
+	}
+    }
+    if (ret->nb_drivers == 0) {
+	if (name == NULL)
+	    virLibConnError(NULL, VIR_ERR_NO_CONNECT,
+			    "could not connect to Xen Daemon nor Xen Store");
+	else
+	    /* we failed to find an adequate driver */
+	    virLibConnError(NULL, VIR_ERR_NO_SUPPORT, name);
+	goto failed;
     }
 
     ret->domains = virHashCreate(20);
@@ -322,9 +324,10 @@ virConnectOpenReadOnly(const char *name)
 
 failed:
     if (ret != NULL) {
-	xenHypervisorClose(ret);
-	xenStoreClose(ret);
-	xenDaemonClose(ret);
+	for (i = 0;i < ret->nb_drivers;i++) {
+	    if ((ret->drivers[i] != NULL) && (ret->drivers[i]->close != NULL))
+	        ret->drivers[i]->close(ret);
+	}
         free(ret);
     }
     return (NULL);
@@ -358,14 +361,16 @@ virDomainFreeName(virDomainPtr domain, const char *name ATTRIBUTE_UNUSED)
 int
 virConnectClose(virConnectPtr conn)
 {
-    xenDaemonClose(conn);
+    int i;
+
     if (!VIR_IS_CONNECT(conn))
         return (-1);
     virHashFree(conn->domains, (virHashDeallocator) virDomainFreeName);
     conn->domains = NULL;
-    xenDaemonClose(conn);
-    xenStoreClose(conn);
-    xenHypervisorClose(conn);
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) && (conn->drivers[i]->close != NULL))
+	    conn->drivers[i]->close(conn);
+    }
     conn->magic = -1;
     free(conn);
     return (0);
@@ -383,8 +388,7 @@ const char *
 virConnectGetType(virConnectPtr conn)
 {
     if (!VIR_IS_CONNECT(conn)) {
-        virLibConnError(conn, VIR_ERR_INVALID_CONN,
-                        "in virConnectGetType");
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
         return (NULL);
     }
     return ("Xen");
@@ -1316,4 +1320,42 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
     }
 
     return (xenDaemonDomainDumpXML(domain));
+}
+
+/**
+ * virNodeGetInfo:
+ * @conn: pointer to the hypervisor connection
+ * @info: pointer to a virNodeInfo structure allocated by the user
+ * 
+ * Extract hardware information about the node.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info) {
+    int i;
+    int ret = -1;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    if (info == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->nodeGetInfo != NULL)) {
+	    ret = conn->drivers[i]->nodeGetInfo(conn, info);
+	    if (ret == 0)
+	        break;
+	}
+    }
+    if (ret != 0) {
+        virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+        return (-1);
+    }
+    return(0);
 }

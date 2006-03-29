@@ -91,7 +91,8 @@ typedef enum {
 /**
  * virDomainInfoPtr:
  *
- * a virDomainInfo is a structure filled by virDomainGetInfo()
+ * a virDomainInfo is a structure filled by virDomainGetInfo() and extracting
+ * runtime informations for a given active Domain
  */
 
 typedef struct _virDomainInfo virDomainInfo;
@@ -101,19 +102,7 @@ struct _virDomainInfo {
     unsigned long maxMem;	/* the maximum memory in KBytes allowed */
     unsigned long memory;	/* the memory in KBytes used by the domain */
     unsigned short nrVirtCpu;	/* the number of virtual CPUs for the domain */
-
-    /*
-     * Informations below are only available to clients with a connection
-     * with full access to the hypervisor
-     */
     unsigned long long cpuTime;	/* the CPU time used in nanoseconds */
-    
-    /*
-     * TODO:
-     * - check what can be extracted publicly from xenstore
-     *   and what's private limited to the hypervisor call.
-     * - add padding to this structure for ABI long term protection
-     */
 };
 
 /**
@@ -158,6 +147,34 @@ typedef enum {
      VIR_DOMAIN_NONE = 0
 } virDomainCreateFlags;
 
+/**
+ * virNodeInfoPtr:
+ *
+ * a virNodeInfo is a structure filled by virNodeGetInfo() and providing
+ * the informations for the Node. 
+ */
+
+typedef struct _virNodeInfo virNodeInfo;
+
+struct _virNodeInfo {
+    char model[32];	/* string indicating the CPU model */
+    unsigned long memory;/* memory size in megabytes */
+    unsigned int cpus;	/* the number of active CPUs */
+    unsigned int mhz;	/* expected CPU frequency */
+    unsigned int nodes;	/* the number of NUMA cell, 1 for uniform mem access */
+    unsigned int sockets;/* number of CPU socket per node */
+    unsigned int cores;	/* number of core per socket */
+    unsigned int threads;/* number of threads per core */
+};
+
+/**
+ * virNodeInfoPtr:
+ *
+ * a virNodeInfoPtr is a pointer to a virNodeInfo structure.
+ */
+
+typedef virNodeInfo *virNodeInfoPtr;
+
 /* library versionning */
 
 /**
@@ -184,6 +201,8 @@ int			virConnectClose		(virConnectPtr conn);
 const char *		virConnectGetType	(virConnectPtr conn);
 int			virConnectGetVersion	(virConnectPtr conn,
 						 unsigned long *hvVer);
+int			virNodeGetInfo		(virConnectPtr conn,
+						 virNodeInfoPtr info);
 
 /*
  * Gather list of running domains

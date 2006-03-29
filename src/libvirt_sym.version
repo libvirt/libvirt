@@ -39,5 +39,6 @@
 	virConnCopyLastError;
 	virConnResetLastError;
 	virDefaultErrorFunc;
+	virNodeGetInfo;
     local: *;
 };

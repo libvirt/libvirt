@@ -1,3 +1,14 @@
+Wed Mar 29 14:43:56 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvirt.h[.in] include/virterror.h src/driver.h
+	  src/internal.h src/libvirt_sym.version src/xen_internal.c
+	  src/xs_internal.c: added a new entry point to get node hardware
+	  informations virGetNodeInfo, and associated driver hook.
+	* src/xend_internal.c: implemented the node and version information
+	  hooks for the Xen Daemon
+	* python/libvir.c python/libvirt-python-api.xml python/generator.py:
+	  also added Python bindings for the new call
+
 Tue Mar 28 16:40:08 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* python/libvir.c: call the initialize entry point

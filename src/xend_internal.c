@@ -35,13 +35,17 @@
 #include "xml.h"
 #include "xend_internal.h"
 
+static int xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
+static int xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer);
+
 static virDriver xenDaemonDriver = {
-    "Xen",
+    "XenDaemon",
     NULL, /* init */
     xenDaemonOpen, /* open */
     xenDaemonClose, /* close */
     NULL, /* type */
-    NULL, /* version */
+    xenDaemonGetVersion, /* version */
+    xenDaemonNodeGetInfo, /* nodeGetInfo */
     NULL, /* listDomains */
     NULL, /* numOfDomains */
     NULL, /* domainCreateLinux */
@@ -1519,6 +1523,43 @@ sexpr_to_xend_domain_info(struct sexpr *root, virDomainInfoPtr info)
 }
 
 /**
+ * sexpr_to_xend_node_info:
+ * @root: an S-Expression describing a domain
+ * @info: a info data structure to fill up
+ *
+ * Internal routine filling up the info structure with the values from
+ * the node root provided.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+static int
+sexpr_to_xend_node_info(struct sexpr *root, virNodeInfoPtr info)
+{
+    const char *machine;
+
+
+    if ((root == NULL) || (info == NULL))
+        return (-1);
+
+    machine = sexpr_node(root, "node/machine");
+    if (machine == NULL)
+        info->model[0] = 0;
+    else {
+        snprintf(&info->model[0], sizeof(info->model) - 1, "%s", machine);
+	info->model[sizeof(info->model) - 1] = 0;
+    }
+    info->memory = (unsigned long) sexpr_u64(root, "node/total_memory") << 10;
+
+    info->cpus = sexpr_int(root, "node/nr_cpus");
+    info->mhz = sexpr_int(root, "node/cpu_mhz");
+    info->nodes = sexpr_int(root, "node/nr_nodes");
+    info->sockets = sexpr_int(root, "node/sockets_per_node");
+    info->cores = sexpr_int(root, "node/cores_per_socket");
+    info->threads = sexpr_int(root, "node/threads_per_core");
+    return (0);
+}
+
+/**
  * sexpr_to_domain:
  * @conn: an existing virtual connection block
  * @root: an S-Expression describing a domain
@@ -1918,3 +1959,84 @@ error:
     return(ret);
 }
 
+/**
+ * xenDaemonNodeGetInfo:
+ * @conn: pointer to the Xen Daemon block
+ * @info: pointer to a virNodeInfo structure allocated by the user
+ * 
+ * Extract hardware information about the node.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+static int
+xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info) {
+    int ret = -1;
+    struct sexpr *root;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virXendError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    if (info == NULL) {
+        virXendError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+
+    root = sexpr_get(conn, "/xend/node/");
+    if (root == NULL)
+        return (-1);
+
+    ret = sexpr_to_xend_node_info(root, info);
+    sexpr_free(root);
+    return (ret);
+}
+
+/**
+ * xenDaemonGetVersion:
+ * @conn: pointer to the Xen Daemon block
+ * @hvVer: return value for the version of the running hypervisor (OUT)
+ *
+ * Get the version level of the Hypervisor running.
+ *
+ * Returns -1 in case of error, 0 otherwise. if the version can't be
+ *    extracted by lack of capacities returns 0 and @hvVer is 0, otherwise
+ *    @hvVer value is major * 1,000,000 + minor * 1,000 + release
+ */
+static int
+xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer)
+{
+    static unsigned long version = 0;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virXendError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    if (hvVer == NULL) {
+        virXendError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+    if (version == 0) {
+	struct sexpr *root;
+	const char *extra;
+	int major, minor, release = 0;
+        
+	root = sexpr_get(conn, "/xend/node/");
+	if (root == NULL)
+	    return(-1);
+
+	major = sexpr_int(root, "node/xen_major");
+	minor = sexpr_int(root, "node/xen_minor");
+	extra = sexpr_node(root, "node/xen_extra");
+	if (extra != NULL) {
+	    while (*extra != 0) {
+	        if ((*extra >= '0') && (*extra <= '9'))
+		    release = release * 10 + (*extra - '0');
+	        extra++;
+	    }
+	}
+	sexpr_free(root);
+	version = major * 1000000 + minor * 1000 + release;
+    }
+    *hvVer = version;
+    return(0);
+}

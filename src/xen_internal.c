@@ -47,6 +47,7 @@ static virDriver xenHypervisorDriver = {
     xenHypervisorClose, /* close */
     NULL, /* type */
     xenHypervisorGetVersion, /* version */
+    NULL, /* nodeGetInfo */
     NULL, /* listDomains */
     NULL, /* numOfDomains */
     NULL, /* domainCreateLinux */
