@@ -4,7 +4,8 @@ PYTESTS=		\
 	basic.py	\
 	create.py	\
 	uuid.py		\
-	error.py
+	error.py	\
+	node.py
 
 EXTRA_DIST = $(PYTESTS)
 

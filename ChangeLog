@@ -1,3 +1,10 @@
+Wed Mar 29 13:34:25 EST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* python/libvir.c: fixed a bug in the new wrapper
+	* python/tests/Makefile.am python/tests/node.py: added a new test for
+	  the new API
+	* python/tests/create.py: remove a debug
+
 Wed Mar 29 14:43:56 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvirt.h[.in] include/virterror.h src/driver.h

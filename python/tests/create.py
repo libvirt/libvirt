@@ -12,6 +12,7 @@ if not os.access("/proc/xen", os.R_OK):
 # Try to provide default OS images paths here, of course non standard
 #
 osroots = [
+  "/u/fc4-2.img",
   "/u/fc4.img",
   "/xen/fc4.img",
 ]
@@ -84,7 +85,7 @@ if dom == None:
     print 'Failed to create a test domain'
     sys.exit(1)
 
-print dom
+# print dom
 
 print "Domain: id %d running %s" % (dom.ID(), dom.OSType())
 

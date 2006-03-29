@@ -215,8 +215,8 @@ libvirt_virNodeGetInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
 	return(Py_None);
     }
     py_retval = PyList_New(8);
-    PyList_SetItem(py_retval, 0, libvirt_charPtrWrap(&info.model[0]));
-    PyList_SetItem(py_retval, 1, libvirt_longWrap((long) info.memory));
+    PyList_SetItem(py_retval, 0, libvirt_constcharPtrWrap(&info.model[0]));
+    PyList_SetItem(py_retval, 1, libvirt_longWrap((long) info.memory >> 10));
     PyList_SetItem(py_retval, 2, libvirt_intWrap((int) info.cpus));
     PyList_SetItem(py_retval, 3, libvirt_intWrap((int) info.mhz));
     PyList_SetItem(py_retval, 4, libvirt_intWrap((int) info.nodes));
