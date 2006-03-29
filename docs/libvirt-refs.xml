@@ -18,6 +18,7 @@
     <reference name='VIR_DOMAIN_RUNNING' href='html/libvirt-libvirt.html#VIR_DOMAIN_RUNNING'/>
     <reference name='VIR_DOMAIN_SHUTDOWN' href='html/libvirt-libvirt.html#VIR_DOMAIN_SHUTDOWN'/>
     <reference name='VIR_DOMAIN_SHUTOFF' href='html/libvirt-libvirt.html#VIR_DOMAIN_SHUTOFF'/>
+    <reference name='VIR_ERR_CALL_FAILED' href='html/libvirt-virterror.html#VIR_ERR_CALL_FAILED'/>
     <reference name='VIR_ERR_DRIVER_FULL' href='html/libvirt-virterror.html#VIR_ERR_DRIVER_FULL'/>
     <reference name='VIR_ERR_ERROR' href='html/libvirt-virterror.html#VIR_ERR_ERROR'/>
     <reference name='VIR_ERR_GET_FAILED' href='html/libvirt-virterror.html#VIR_ERR_GET_FAILED'/>
@@ -57,6 +58,7 @@
     <reference name='_virDomainInfo' href='html/libvirt-libvirt.html#_virDomainInfo'/>
     <reference name='_virDomainKernel' href='html/libvirt-libvirt.html#_virDomainKernel'/>
     <reference name='_virError' href='html/libvirt-virterror.html#_virError'/>
+    <reference name='_virNodeInfo' href='html/libvirt-libvirt.html#_virNodeInfo'/>
     <reference name='virConnCopyLastError' href='html/libvirt-virterror.html#virConnCopyLastError'/>
     <reference name='virConnGetLastError' href='html/libvirt-virterror.html#virConnGetLastError'/>
     <reference name='virConnResetLastError' href='html/libvirt-virterror.html#virConnResetLastError'/>
@@ -110,6 +112,9 @@
     <reference name='virGetLastError' href='html/libvirt-virterror.html#virGetLastError'/>
     <reference name='virGetVersion' href='html/libvirt-libvirt.html#virGetVersion'/>
     <reference name='virInitialize' href='html/libvirt-libvirt.html#virInitialize'/>
+    <reference name='virNodeGetInfo' href='html/libvirt-libvirt.html#virNodeGetInfo'/>
+    <reference name='virNodeInfo' href='html/libvirt-libvirt.html#virNodeInfo'/>
+    <reference name='virNodeInfoPtr' href='html/libvirt-libvirt.html#virNodeInfoPtr'/>
     <reference name='virResetError' href='html/libvirt-virterror.html#virResetError'/>
     <reference name='virResetLastError' href='html/libvirt-virterror.html#virResetLastError'/>
     <reference name='virSetErrorFunc' href='html/libvirt-virterror.html#virSetErrorFunc'/>
@@ -135,6 +140,7 @@
       <ref name='VIR_DOMAIN_RUNNING'/>
       <ref name='VIR_DOMAIN_SHUTDOWN'/>
       <ref name='VIR_DOMAIN_SHUTOFF'/>
+      <ref name='VIR_ERR_CALL_FAILED'/>
       <ref name='VIR_ERR_DRIVER_FULL'/>
       <ref name='VIR_ERR_ERROR'/>
       <ref name='VIR_ERR_GET_FAILED'/>
@@ -176,6 +182,7 @@
       <ref name='_virDomainInfo'/>
       <ref name='_virDomainKernel'/>
       <ref name='_virError'/>
+      <ref name='_virNodeInfo'/>
     </letter>
     <letter name='v'>
       <ref name='virConnCopyLastError'/>
@@ -231,6 +238,9 @@
       <ref name='virGetLastError'/>
       <ref name='virGetVersion'/>
       <ref name='virInitialize'/>
+      <ref name='virNodeGetInfo'/>
+      <ref name='virNodeInfo'/>
+      <ref name='virNodeInfoPtr'/>
       <ref name='virResetError'/>
       <ref name='virResetLastError'/>
       <ref name='virSetErrorFunc'/>
@@ -293,6 +303,7 @@
       <ref name='virDomainLookupByName'/>
       <ref name='virDomainLookupByUUID'/>
       <ref name='virDomainRestore'/>
+      <ref name='virNodeGetInfo'/>
     </type>
     <type name='virDomainInfoPtr'>
       <ref name='virDomainGetInfo'/>
@@ -324,6 +335,9 @@
       <ref name='virErrorFunc'/>
       <ref name='virResetError'/>
     </type>
+    <type name='virNodeInfoPtr'>
+      <ref name='virNodeGetInfo'/>
+    </type>
     <type name='void *'>
       <ref name='virConnSetErrorFunc'/>
       <ref name='virErrorFunc'/>
@@ -351,6 +365,7 @@
       <ref name='VIR_DOMAIN_SHUTOFF'/>
       <ref name='_virDomainInfo'/>
       <ref name='_virDomainKernel'/>
+      <ref name='_virNodeInfo'/>
       <ref name='virConnect'/>
       <ref name='virConnectClose'/>
       <ref name='virConnectGetType'/>
@@ -391,8 +406,12 @@
       <ref name='virDomainSuspend'/>
       <ref name='virGetVersion'/>
       <ref name='virInitialize'/>
+      <ref name='virNodeGetInfo'/>
+      <ref name='virNodeInfo'/>
+      <ref name='virNodeInfoPtr'/>
     </file>
     <file name='virterror'>
+      <ref name='VIR_ERR_CALL_FAILED'/>
       <ref name='VIR_ERR_DRIVER_FULL'/>
       <ref name='VIR_ERR_ERROR'/>
       <ref name='VIR_ERR_GET_FAILED'/>
@@ -451,9 +470,6 @@
   <index>
     <chunk name='chunk0'>
       <letter name='A'>
-        <word name='ABI'>
-          <ref name='_virDomainInfo'/>
-        </word>
         <word name='APIs'>
           <ref name='virConnectOpenReadOnly'/>
         </word>
@@ -463,7 +479,13 @@
       </letter>
       <letter name='C'>
         <word name='CPU'>
+          <ref name='_virDomainInfo'/>
+          <ref name='_virNodeInfo'/>
           <ref name='virDomainSuspend'/>
+        </word>
+        <word name='CPUs'>
+          <ref name='_virDomainInfo'/>
+          <ref name='_virNodeInfo'/>
         </word>
         <word name='Collect'>
           <ref name='virConnectListDomains'/>
@@ -491,6 +513,7 @@
       <letter name='E'>
         <word name='Extract'>
           <ref name='virDomainGetInfo'/>
+          <ref name='virNodeGetInfo'/>
         </word>
       </letter>
       <letter name='F'>
@@ -519,9 +542,6 @@
       <letter name='I'>
         <word name='IDs'>
           <ref name='virConnectListDomains'/>
-        </word>
-        <word name='Informations'>
-          <ref name='_virDomainInfo'/>
         </word>
         <word name='Initialize'>
           <ref name='virInitialize'/>
@@ -564,6 +584,9 @@
           <ref name='virGetLastError'/>
           <ref name='virGetVersion'/>
           <ref name='virSetErrorFunc'/>
+        </word>
+        <word name='NUMA'>
+          <ref name='_virNodeInfo'/>
         </word>
         <word name='Note'>
           <ref name='virDomainGetInfo'/>
@@ -628,7 +651,6 @@
       </letter>
       <letter name='T'>
         <word name='TODO:'>
-          <ref name='_virDomainInfo'/>
           <ref name='virDomainShutdown'/>
         </word>
         <word name='This'>
@@ -680,9 +702,10 @@
       <letter name='a'>
         <word name='about'>
           <ref name='virDomainGetInfo'/>
+          <ref name='virNodeGetInfo'/>
         </word>
         <word name='access'>
-          <ref name='_virDomainInfo'/>
+          <ref name='_virNodeInfo'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainCreateLinux'/>
           <ref name='virDomainDestroy'/>
@@ -695,12 +718,12 @@
           <ref name='virGetLastError'/>
         </word>
         <word name='active'>
+          <ref name='_virNodeInfo'/>
           <ref name='virConnectListDomains'/>
           <ref name='virConnectNumOfDomains'/>
           <ref name='virDomainSuspend'/>
         </word>
         <word name='add'>
-          <ref name='_virDomainInfo'/>
           <ref name='virDomainShutdown'/>
         </word>
         <word name='after'>
@@ -721,6 +744,7 @@
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
           <ref name='virDomainSuspend'/>
+          <ref name='virNodeGetInfo'/>
         </word>
         <word name='allowed'>
           <ref name='_virDomainInfo'/>
@@ -744,7 +768,6 @@
           <ref name='virInitialize'/>
         </word>
         <word name='are'>
-          <ref name='_virDomainInfo'/>
           <ref name='virConnectClose'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainDestroy'/>
@@ -762,7 +785,6 @@
           <ref name='virGetVersion'/>
         </word>
         <word name='available'>
-          <ref name='_virDomainInfo'/>
           <ref name='_virError'/>
           <ref name='virConnectOpenReadOnly'/>
         </word>
@@ -790,9 +812,6 @@
           <ref name='virErrorFunc'/>
           <ref name='virResetError'/>
         </word>
-        <word name='below'>
-          <ref name='_virDomainInfo'/>
-        </word>
         <word name='better'>
           <ref name='virInitialize'/>
         </word>
@@ -811,7 +830,6 @@
       </letter>
       <letter name='c'>
         <word name='call'>
-          <ref name='_virDomainInfo'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainSave'/>
@@ -837,7 +855,6 @@
           <ref name='virDomainResume'/>
         </word>
         <word name='can'>
-          <ref name='_virDomainInfo'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainGetInfo'/>
         </word>
@@ -853,17 +870,14 @@
           <ref name='virResetLastError'/>
           <ref name='virSetErrorFunc'/>
         </word>
+        <word name='cell'>
+          <ref name='_virNodeInfo'/>
+        </word>
         <word name='change'>
           <ref name='virDomainSetMaxMemory'/>
         </word>
-        <word name='check'>
-          <ref name='_virDomainInfo'/>
-        </word>
         <word name='clean'>
           <ref name='virResetError'/>
-        </word>
-        <word name='clients'>
-          <ref name='_virDomainInfo'/>
         </word>
         <word name='closes'>
           <ref name='virConnectClose'/>
@@ -884,7 +898,6 @@
           <ref name='virGetVersion'/>
         </word>
         <word name='connection'>
-          <ref name='_virDomainInfo'/>
           <ref name='_virError'/>
           <ref name='virConnCopyLastError'/>
           <ref name='virConnGetLastError'/>
@@ -903,6 +916,7 @@
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainLookupByUUID'/>
           <ref name='virDomainRestore'/>
+          <ref name='virNodeGetInfo'/>
           <ref name='virSetErrorFunc'/>
         </word>
         <word name='consequent'>
@@ -921,6 +935,9 @@
         <word name='copy'>
           <ref name='virConnCopyLastError'/>
           <ref name='virCopyLastError'/>
+        </word>
+        <word name='core'>
+          <ref name='_virNodeInfo'/>
         </word>
         <word name='could'>
           <ref name='virSetErrorFunc'/>
@@ -980,11 +997,13 @@
         <word name='especially'>
           <ref name='virConnectClose'/>
         </word>
+        <word name='expected'>
+          <ref name='_virNodeInfo'/>
+        </word>
         <word name='extra'>
           <ref name='_virError'/>
         </word>
         <word name='extracted'>
-          <ref name='_virDomainInfo'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainGetInfo'/>
         </word>
@@ -1008,6 +1027,7 @@
           <ref name='virDomainShutdown'/>
           <ref name='virDomainSuspend'/>
           <ref name='virGetVersion'/>
+          <ref name='virNodeGetInfo'/>
         </word>
         <word name='file'>
           <ref name='virDomainSave'/>
@@ -1027,6 +1047,7 @@
         </word>
         <word name='for'>
           <ref name='_virDomainInfo'/>
+          <ref name='_virNodeInfo'/>
           <ref name='virConnGetLastError'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainGetID'/>
@@ -1060,16 +1081,15 @@
           <ref name='virDomainFree'/>
           <ref name='virDomainGetOSType'/>
         </word>
+        <word name='frequency'>
+          <ref name='_virNodeInfo'/>
+        </word>
         <word name='from'>
-          <ref name='_virDomainInfo'/>
           <ref name='virDomainResume'/>
         </word>
         <word name='frozen'>
           <ref name='virDomainResume'/>
           <ref name='virDomainSuspend'/>
-        </word>
-        <word name='full'>
-          <ref name='_virDomainInfo'/>
         </word>
         <word name='function'>
           <ref name='virConnSetErrorFunc'/>
@@ -1127,6 +1147,9 @@
           <ref name='virConnSetErrorFunc'/>
           <ref name='virSetErrorFunc'/>
         </word>
+        <word name='hardware'>
+          <ref name='virNodeGetInfo'/>
+        </word>
         <word name='have'>
           <ref name='virGetVersion'/>
         </word>
@@ -1144,10 +1167,14 @@
         <word name='image'>
           <ref name='_virDomainKernel'/>
         </word>
+        <word name='indicating'>
+          <ref name='_virNodeInfo'/>
+        </word>
         <word name='information'>
           <ref name='_virError'/>
           <ref name='virDomainGetInfo'/>
           <ref name='virGetVersion'/>
+          <ref name='virNodeGetInfo'/>
         </word>
         <word name='informations'>
           <ref name='virDomainGetInfo'/>
@@ -1236,7 +1263,6 @@
           <ref name='virDomainGetName'/>
         </word>
         <word name='limited'>
-          <ref name='_virDomainInfo'/>
           <ref name='virDomainGetInfo'/>
         </word>
         <word name='line'>
@@ -1247,9 +1273,6 @@
         </word>
         <word name='listed'>
           <ref name='virDomainSave'/>
-        </word>
-        <word name='long'>
-          <ref name='_virDomainInfo'/>
         </word>
         <word name='lookup'>
           <ref name='virDomainLookupByName'/>
@@ -1278,8 +1301,15 @@
           <ref name='virDomainSuspend'/>
           <ref name='virGetLastError'/>
         </word>
+        <word name='megabytes'>
+          <ref name='_virNodeInfo'/>
+        </word>
+        <word name='mem'>
+          <ref name='_virNodeInfo'/>
+        </word>
         <word name='memory'>
           <ref name='_virDomainInfo'/>
+          <ref name='_virNodeInfo'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainSetMaxMemory'/>
@@ -1303,6 +1333,9 @@
           <ref name='virConnectGetVersion'/>
           <ref name='virGetVersion'/>
         </word>
+        <word name='model'>
+          <ref name='_virNodeInfo'/>
+        </word>
         <word name='monitoring'>
           <ref name='virConnectClose'/>
         </word>
@@ -1324,6 +1357,9 @@
           <ref name='virDomainGetName'/>
           <ref name='virDomainLookupByName'/>
         </word>
+        <word name='nanoseconds'>
+          <ref name='_virDomainInfo'/>
+        </word>
         <word name='need'>
           <ref name='virConnCopyLastError'/>
           <ref name='virConnectClose'/>
@@ -1339,6 +1375,10 @@
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainLookupByUUID'/>
+        </word>
+        <word name='node'>
+          <ref name='_virNodeInfo'/>
+          <ref name='virNodeGetInfo'/>
         </word>
         <word name='none'>
           <ref name='virConnGetLastError'/>
@@ -1358,7 +1398,9 @@
           <ref name='virGetVersion'/>
         </word>
         <word name='number'>
+          <ref name='_virDomainInfo'/>
           <ref name='_virError'/>
+          <ref name='_virNodeInfo'/>
           <ref name='virConnectListDomains'/>
           <ref name='virConnectNumOfDomains'/>
           <ref name='virDomainGetID'/>
@@ -1395,7 +1437,6 @@
           <ref name='virDomainCreateLinux'/>
         </word>
         <word name='only'>
-          <ref name='_virDomainInfo'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainGetInfo'/>
         </word>
@@ -1423,9 +1464,6 @@
         </word>
       </letter>
       <letter name='p'>
-        <word name='padding'>
-          <ref name='_virDomainInfo'/>
-        </word>
         <word name='parameter'>
           <ref name='virConnCopyLastError'/>
           <ref name='virCopyLastError'/>
@@ -1447,6 +1485,9 @@
         <word name='path'>
           <ref name='virDomainRestore'/>
           <ref name='virDomainSave'/>
+        </word>
+        <word name='per'>
+          <ref name='_virNodeInfo'/>
         </word>
         <word name='physical'>
           <ref name='virDomainGetMaxMemory'/>
@@ -1477,6 +1518,7 @@
           <ref name='virDomainLookupByUUID'/>
           <ref name='virDomainRestore'/>
           <ref name='virGetLastError'/>
+          <ref name='virNodeGetInfo'/>
           <ref name='virResetError'/>
           <ref name='virSetErrorFunc'/>
         </word>
@@ -1488,9 +1530,6 @@
         </word>
         <word name='printing'>
           <ref name='virSetErrorFunc'/>
-        </word>
-        <word name='private'>
-          <ref name='_virDomainInfo'/>
         </word>
         <word name='priviledged'>
           <ref name='virConnectGetVersion'/>
@@ -1507,9 +1546,6 @@
           <ref name='virDomainResume'/>
           <ref name='virDomainSuspend'/>
         </word>
-        <word name='protection'>
-          <ref name='_virDomainInfo'/>
-        </word>
         <word name='provided'>
           <ref name='virConnSetErrorFunc'/>
           <ref name='virErrorFunc'/>
@@ -1520,9 +1556,6 @@
         </word>
         <word name='public'>
           <ref name='virDomainGetName'/>
-        </word>
-        <word name='publicly'>
-          <ref name='_virDomainInfo'/>
         </word>
       </letter>
       <letter name='r'>
@@ -1663,9 +1696,13 @@
           <ref name='virDomainCreateLinux'/>
         </word>
         <word name='size'>
+          <ref name='_virNodeInfo'/>
           <ref name='virConnectListDomains'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
+        </word>
+        <word name='socket'>
+          <ref name='_virNodeInfo'/>
         </word>
         <word name='software'>
           <ref name='virConnectGetType'/>
@@ -1699,16 +1736,17 @@
         </word>
         <word name='string'>
           <ref name='_virError'/>
+          <ref name='_virNodeInfo'/>
           <ref name='virConnectGetType'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainGetOSType'/>
           <ref name='virDomainLookupByUUID'/>
         </word>
         <word name='structure'>
-          <ref name='_virDomainInfo'/>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainFree'/>
           <ref name='virDomainGetInfo'/>
+          <ref name='virNodeGetInfo'/>
         </word>
         <word name='success'>
           <ref name='virConnectClose'/>
@@ -1723,6 +1761,7 @@
           <ref name='virDomainShutdown'/>
           <ref name='virDomainSuspend'/>
           <ref name='virInitialize'/>
+          <ref name='virNodeGetInfo'/>
         </word>
         <word name='successful'>
           <ref name='virDomainSave'/>
@@ -1747,9 +1786,6 @@
         <word name='target'>
           <ref name='virConnCopyLastError'/>
           <ref name='virCopyLastError'/>
-        </word>
-        <word name='term'>
-          <ref name='_virDomainInfo'/>
         </word>
         <word name='terminated'>
           <ref name='virConnectGetType'/>
@@ -1782,7 +1818,6 @@
           <ref name='virDomainFree'/>
         </word>
         <word name='this'>
-          <ref name='_virDomainInfo'/>
           <ref name='_virError'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSave'/>
@@ -1791,6 +1826,12 @@
         </word>
         <word name='those'>
           <ref name='virSetErrorFunc'/>
+        </word>
+        <word name='threads'>
+          <ref name='_virNodeInfo'/>
+        </word>
+        <word name='time'>
+          <ref name='_virDomainInfo'/>
         </word>
         <word name='two'>
           <ref name='virGetVersion'/>
@@ -1801,6 +1842,9 @@
         </word>
       </letter>
       <letter name='u'>
+        <word name='uniform'>
+          <ref name='_virNodeInfo'/>
+        </word>
         <word name='unknown'>
           <ref name='virGetVersion'/>
         </word>
@@ -1833,6 +1877,7 @@
           <ref name='virConnSetErrorFunc'/>
           <ref name='virDomainGetInfo'/>
           <ref name='virErrorFunc'/>
+          <ref name='virNodeGetInfo'/>
           <ref name='virSetErrorFunc'/>
         </word>
       </letter>
@@ -1884,12 +1929,18 @@
         <word name='virErrorNumber'>
           <ref name='_virError'/>
         </word>
+        <word name='virNodeInfo'>
+          <ref name='virNodeGetInfo'/>
+        </word>
         <word name='virResetError'>
           <ref name='virConnCopyLastError'/>
           <ref name='virCopyLastError'/>
         </word>
         <word name='virSuspendDomain'>
           <ref name='virDomainResume'/>
+        </word>
+        <word name='virtual'>
+          <ref name='_virDomainInfo'/>
         </word>
       </letter>
       <letter name='w'>
@@ -1898,9 +1949,6 @@
           <ref name='virCopyLastError'/>
           <ref name='virDomainResume'/>
           <ref name='virGetVersion'/>
-        </word>
-        <word name='what'>
-          <ref name='_virDomainInfo'/>
         </word>
         <word name='when'>
           <ref name='virErrorFunc'/>
@@ -1934,7 +1982,6 @@
           <ref name='virSetErrorFunc'/>
         </word>
         <word name='with'>
-          <ref name='_virDomainInfo'/>
           <ref name='virConnCopyLastError'/>
           <ref name='virConnectClose'/>
           <ref name='virConnectGetVersion'/>
@@ -1951,9 +1998,6 @@
       <letter name='x'>
         <word name='xen'>
           <ref name='virConnectOpen'/>
-        </word>
-        <word name='xenstore'>
-          <ref name='_virDomainInfo'/>
         </word>
       </letter>
       <letter name='y'>

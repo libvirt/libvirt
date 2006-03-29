@@ -1,3 +1,7 @@
+Wed Mar 29 16:36:24 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* doc/*: rebuilt
+
 Wed Mar 29 13:34:25 EST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* python/libvir.c: fixed a bug in the new wrapper

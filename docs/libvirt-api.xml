@@ -22,10 +22,12 @@
      <exports symbol='VIR_DOMAIN_RESTART' type='enum'/>
      <exports symbol='VIR_DOMAIN_RUNNING' type='enum'/>
      <exports symbol='VIR_DOMAIN_NOSTATE' type='enum'/>
+     <exports symbol='virNodeInfoPtr' type='typedef'/>
      <exports symbol='virDomainInfoPtr' type='typedef'/>
      <exports symbol='virDomainKernelPtr' type='typedef'/>
      <exports symbol='virConnectPtr' type='typedef'/>
      <exports symbol='virDomainKernel' type='typedef'/>
+     <exports symbol='virNodeInfo' type='typedef'/>
      <exports symbol='virDomainState' type='typedef'/>
      <exports symbol='virDeviceMode' type='typedef'/>
      <exports symbol='virDomain' type='typedef'/>
@@ -36,6 +38,7 @@
      <exports symbol='virDomainInfo' type='typedef'/>
      <exports symbol='_virDomainInfo' type='struct'/>
      <exports symbol='_virDomainKernel' type='struct'/>
+     <exports symbol='_virNodeInfo' type='struct'/>
      <exports symbol='virDomainGetInfo' type='function'/>
      <exports symbol='virDomainShutdown' type='function'/>
      <exports symbol='virGetVersion' type='function'/>
@@ -47,6 +50,7 @@
      <exports symbol='virDomainLookupByUUID' type='function'/>
      <exports symbol='virDomainLookupByID' type='function'/>
      <exports symbol='virDomainGetOSType' type='function'/>
+     <exports symbol='virNodeGetInfo' type='function'/>
      <exports symbol='virDomainGetUUID' type='function'/>
      <exports symbol='virConnectNumOfDomains' type='function'/>
      <exports symbol='virDomainSetMaxMemory' type='function'/>
@@ -69,6 +73,7 @@
      <summary>error handling interfaces for the libvirt library</summary>
      <description>Provides the interfaces of the libvirt library to handle errors raised while using the library. </description>
      <author>Daniel Veillard &lt;veillard@redhat.com&gt; </author>
+     <exports symbol='VIR_ERR_CALL_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_WARNING' type='enum'/>
      <exports symbol='VIR_ERR_NO_XEN' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_ARG' type='enum'/>
@@ -144,7 +149,8 @@
     <enum name='VIR_DOMAIN_RUNNING' file='libvirt' value='1' type='virDomainState' info='the domain is running'/>
     <enum name='VIR_DOMAIN_SHUTDOWN' file='libvirt' value='4' type='virDomainState' info='the domain is being shut down'/>
     <enum name='VIR_DOMAIN_SHUTOFF' file='libvirt' value='5' type='virDomainState' info='the domain is shut off'/>
-    <enum name='VIR_ERR_DRIVER_FULL' file='virterror' value='25' type='virErrorNumber' info=' too many drivers registered'/>
+    <enum name='VIR_ERR_CALL_FAILED' file='virterror' value='26' type='virErrorNumber' info=' not supported by the drivers'/>
+    <enum name='VIR_ERR_DRIVER_FULL' file='virterror' value='25' type='virErrorNumber' info='too many drivers registered'/>
     <enum name='VIR_ERR_ERROR' file='virterror' value='2' type='virErrorLevel' info=' An error'/>
     <enum name='VIR_ERR_GET_FAILED' file='virterror' value='10' type='virErrorNumber' info='a HTTP GET command to failed'/>
     <enum name='VIR_ERR_HTTP_ERROR' file='virterror' value='12' type='virErrorNumber' info='unexpected HTTP error code'/>
@@ -191,14 +197,8 @@
       <field name='state' type='unsigned char' info=' the running state, one of virDomainFlags'/>
       <field name='maxMem' type='unsigned long' info=' the maximum memory in KBytes allowed'/>
       <field name='memory' type='unsigned long' info=' the memory in KBytes used by the domain'/>
-      <field name='nrVirtCpu' type='unsigned short' info='* Informations below are only available to clients with a connection
-* with full access to the hypervisor
-*'/>
-      <field name='cpuTime' type='unsigned long long' info='* TODO:
-* - check what can be extracted publicly from xenstore
-*   and what&apos;s private limited to the hypervisor call.
-* - add padding to this structure for ABI long term protection
-*'/>
+      <field name='nrVirtCpu' type='unsigned short' info=' the number of virtual CPUs for the domain'/>
+      <field name='cpuTime' type='unsigned long long' info=' the CPU time used in nanoseconds'/>
     </struct>
     <typedef name='virDomainInfoPtr' file='libvirt' type='virDomainInfo *'>
       <info>a virDomainInfoPtr is a pointer to a virDomainInfo structure.</info>
@@ -234,6 +234,19 @@
     <typedef name='virErrorLevel' file='virterror' type='enum'/>
     <typedef name='virErrorNumber' file='virterror' type='enum'/>
     <typedef name='virErrorPtr' file='virterror' type='virError *'/>
+    <struct name='virNodeInfo' file='libvirt' type='struct _virNodeInfo'>
+      <field name='model' type='charmodel[32]' info=' string indicating the CPU model'/>
+      <field name='memory' type='unsigned long' info=' memory size in megabytes'/>
+      <field name='cpus' type='unsigned int' info=' the number of active CPUs'/>
+      <field name='mhz' type='unsigned int' info=' expected CPU frequency'/>
+      <field name='nodes' type='unsigned int' info=' the number of NUMA cell, 1 for uniform mem access'/>
+      <field name='sockets' type='unsigned int' info=' number of CPU socket per node'/>
+      <field name='cores' type='unsigned int' info=' number of core per socket'/>
+      <field name='threads' type='unsigned int' info=' number of threads per core'/>
+    </struct>
+    <typedef name='virNodeInfoPtr' file='libvirt' type='virNodeInfo *'>
+      <info>a virNodeInfoPtr is a pointer to a virNodeInfo structure.</info>
+    </typedef>
     <function name='virConnCopyLastError' file='virterror' module='virterror'>
       <info>Copy the content of the last error caught on that connection One will need to free the result with virResetError()</info>
       <return type='int' info='0 if no error was found and the error code otherwise and -1 in case of parameter error.'/>
@@ -431,6 +444,12 @@
     <function name='virInitialize' file='libvirt' module='libvirt'>
       <info>Initialize the library. It&apos;s better to call this routine at startup in multithreaded applications to avoid potential race when initializing the library.</info>
       <return type='int' info='0 in case of success, -1 in case of error'/>
+    </function>
+    <function name='virNodeGetInfo' file='libvirt' module='libvirt'>
+      <info>Extract hardware information about the node.</info>
+      <return type='int' info='0 in case of success and -1 in case of failure.'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='info' type='virNodeInfoPtr' info='pointer to a virNodeInfo structure allocated by the user'/>
     </function>
     <function name='virResetError' file='virterror' module='virterror'>
       <info>Reset the error being pointed to</info>
