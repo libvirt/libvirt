@@ -24,6 +24,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <ctype.h>
+#include <fcntl.h>
 
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -416,6 +417,61 @@ cmdSuspend(vshControl * ctl, vshCmd * cmd)
     }
 
     virDomainFree(dom);
+    return ret;
+}
+
+/*
+ * "create" command
+ */
+static vshCmdInfo info_create[] = {
+    {"syntax", "create a domain from an XML <file>"},
+    {"help", "create a domain from an XML file"},
+    {"desc", "Create a domain."},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_create[] = {
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, "file conatining an XML domain description"},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdCreate(vshControl * ctl, vshCmd * cmd)
+{
+    virDomainPtr dom;
+    char *from;
+    int found;
+    int ret = TRUE;
+    char buffer[4096];
+    int fd, l;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    from = vshCommandOptString(cmd, "file", &found);
+    if (!found)
+        return FALSE;
+
+    fd = open(from, O_RDONLY);
+    if (fd < 0) {
+        vshError(ctl, FALSE, "Failed to read description file %s\n", from);
+        return(FALSE);
+    }
+    l = read(fd, &buffer[0], sizeof(buffer));
+    if ((l <= 0) || (l >= (int) sizeof(buffer))) {
+        vshError(ctl, FALSE, "Failed to read description file %s\n", from);
+        close(fd);
+        return(FALSE);
+    }
+    buffer[l] = 0;
+    dom = virDomainCreateLinux(ctl->conn, &buffer[0], 0);
+    if (dom != NULL) {
+        vshPrint(ctl, VSH_MESG, "Domain %s created from %s\n", 
+                 virDomainGetName(dom), from);
+    } else {
+        vshError(ctl, FALSE, "Failed to create domain\n");
+        ret = FALSE;
+    }
     return ret;
 }
 
@@ -896,6 +952,7 @@ cmdQuit(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
  */
 static vshCmdDef commands[] = {
     {"connect", cmdConnect, opts_connect, info_connect},
+    {"create", cmdCreate, opts_create, info_create},
     {"dinfo", cmdDinfo, opts_dinfo, info_dinfo},
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
     {"dstate", cmdDstate, opts_dstate, info_dstate},
@@ -1640,6 +1697,11 @@ vshReadlineOptionsGenerator(const char *text, int state)
             return NULL;
 
         cmdname = calloc((p - rl_line_buffer) + 1, 1);
+        if (cmdname == NULL) {
+            fprintf(stderr, "Failed to allocate %d bytes\n",
+                    (p - rl_line_buffer) + 1);
+            exit(1);
+        }
         memcpy(cmdname, rl_line_buffer, p - rl_line_buffer);
 
         cmd = vshCmddefSearch(cmdname);
@@ -1850,6 +1912,10 @@ vshParseArgv(vshControl * ctl, int argc, char **argv)
             sz += strlen(argv[i]) + 1;  /* +1 is for blank space between items */
 
         cmdstr = calloc(sz + 1, 1);
+        if (cmdstr == NULL) {
+            fprintf(stderr, "Failed to allocate %d bytes\n", sz + 1);
+            exit(1);
+        }
 
         for (i = end; i < argc; i++) {
             strncat(cmdstr, argv[i], sz);

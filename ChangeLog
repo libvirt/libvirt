@@ -1,3 +1,11 @@
+Thu Mar 30 16:04:47 EST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: allocation check (Jim Meyering) and adding a
+	  new create command
+	* src/xend_internal.c src/xml.c: trying to cope with the new 
+	  xvda domains states generated on FC5, but Dom0 bootloader
+	  really break the model, so that doesn't work.
+
 Thu Mar 30 12:15:46 EST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: catching memory allocation error and existing, as

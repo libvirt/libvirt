@@ -1362,6 +1362,9 @@ xend_parse_sexp_desc(struct sexpr *root)
         goto error;
     }
     virBufferVSprintf(&buf, "  <name>%s</name>\n", tmp);
+    tmp = sexpr_node(root, "domain/bootloader");
+    if (tmp != NULL)
+	virBufferVSprintf(&buf, "  <bootloader>%s</bootloader>\n", tmp);
     tmp = sexpr_node(root, "domain/image/linux/kernel");
     if (tmp == NULL) {
         /*
@@ -1434,11 +1437,15 @@ xend_parse_sexp_desc(struct sexpr *root)
                                   serial);
             TODO}
         } else if (sexpr_lookup(node, "device/vif")) {
+	    const char *tmp2;
+
             tmp = sexpr_node(node, "device/vif/bridge");
-            if (tmp != NULL) {
+	    tmp2 = sexpr_node(node, "device/vif/script");
+            if ((tmp != NULL) || (strstr(tmp2, "bridge"))) {
                 virBufferVSprintf(&buf, "    <interface type='bridge'>\n");
-                virBufferVSprintf(&buf, "      <source bridge='%s'/>\n",
-                                  tmp);
+		if (tmp != NULL)
+		    virBufferVSprintf(&buf, "      <source bridge='%s'/>\n",
+				      tmp);
                 tmp = sexpr_node(node, "device/vif/vifname");
                 if (tmp != NULL)
                     virBufferVSprintf(&buf, "      <target dev='%s'/>\n",
@@ -1451,16 +1458,15 @@ xend_parse_sexp_desc(struct sexpr *root)
                 if (tmp != NULL)
                     virBufferVSprintf(&buf, "      <ip address='%s'/>\n",
                                       tmp);
-                tmp = sexpr_node(node, "device/vif/script");
-                if (tmp != NULL)
+                if (tmp2 != NULL)
                     virBufferVSprintf(&buf, "      <script path='%s'/>\n",
-                                      tmp);
+                                      tmp2);
                 virBufferAdd(&buf, "    </interface>\n", 17);
             } else {
                 char serial[1000];
 
-                TODO sexpr2string(node->car, serial, 1000);
-                virBufferVSprintf(&buf, "<!-- Failed to parse %s -->\n",
+                TODO sexpr2string(node, serial, 1000);
+                virBufferVSprintf(&buf, "<!-- Failed to parse vif: %s -->\n",
                                   serial);
             }
 
