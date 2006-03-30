@@ -1,3 +1,8 @@
+Thu Mar 30 12:15:46 EST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: catching memory allocation error and existing, as
+	  pointed by Jim Meyering
+
 Wed Mar 29 16:36:24 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* doc/*: rebuilt

@@ -311,6 +311,11 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         return FALSE;
     }
     ids = malloc(sizeof(int) * maxid);
+    if (ids == NULL) {
+        fprintf(stderr, "Failed to allocate %d bytes\n", 
+                (int) sizeof(int) * maxid);
+        exit(1);
+    }
     virConnectListDomains(ctl->conn, &ids[0], maxid);
 
     vshPrint(ctl, VSH_HEADER, "%3s %-20s %s\n", "Id", "Name", "State");
@@ -1284,6 +1289,10 @@ vshCommandGetToken(vshControl * ctl, char *str, char **end, char **res)
         return VSH_TK_END;
 
     *res = malloc(sz + 1);
+    if (*res == NULL) {
+        fprintf(stderr, "Failed to allocate %d bytes\n", sz + 1);
+        exit(1);
+    }
     memcpy(*res, tkstr, sz);
     *(*res + sz) = '\0';
 
@@ -1379,6 +1388,11 @@ vshCommandParse(vshControl * ctl, char *cmdstr)
             if (opt) {
                 /* save option */
                 vshCmdOpt *arg = malloc(sizeof(vshCmdOpt));
+                if (arg == NULL) {
+                    fprintf(stderr, "Failed to allocate %d bytes\n", 
+                            (int) sizeof(vshCmdOpt));
+                    exit(1);
+                }
 
                 arg->def = opt;
                 arg->data = tkdata;
@@ -1404,6 +1418,12 @@ vshCommandParse(vshControl * ctl, char *cmdstr)
         /* commad parsed -- allocate new struct for the command */
         if (cmd) {
             vshCmd *c = malloc(sizeof(vshCmd));
+
+            if (c == NULL) {
+                fprintf(stderr, "Failed to allocate %d bytes\n", 
+                        (int) sizeof(vshCmd));
+                exit(1);
+            }
 
             c->opts = first;
             c->def = cmd;
@@ -1646,6 +1666,11 @@ vshReadlineOptionsGenerator(const char *text, int state)
                 continue;
         }
         res = malloc(strlen(name) + 3);
+        if (res == NULL) {
+            fprintf(stderr, "Failed to allocate %d bytes\n", 
+                    (int) strlen(name) + 3);
+            exit(1);
+        }
         sprintf(res, "--%s", name);
         return res;
     }
