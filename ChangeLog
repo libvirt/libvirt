@@ -1,3 +1,8 @@
+Thu Mar 30 16:38:18 EST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: applied patch from Daniel P. Berrange,
+	  plus a bit of code cleanup
+
 Thu Mar 30 16:04:47 EST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: allocation check (Jim Meyering) and adding a
