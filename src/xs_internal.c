@@ -46,7 +46,8 @@ static virDriver xenStoreDriver = {
     NULL, /* domainLookupByName */
     NULL, /* domainSuspend */
     NULL, /* domainResume */
-    NULL, /* domainShutdown */
+    xenStoreDomainShutdown, /* domainShutdown */
+    xenStoreDomainReboot, /* domainReboot */
     NULL, /* domainDestroy */
     NULL, /* domainFree */
     NULL, /* domainGetName */
@@ -597,5 +598,31 @@ xenStoreDomainShutdown(virDomainPtr domain)
      * node in the xenstore and launch the shutdown command if found.
      */
     return(virDomainDoStoreWrite(domain, "control/shutdown", "halt"));
+}
+
+/**
+ * xenStoreDomainReboot:
+ * @domain: pointer to the Domain block
+ * @flags: extra flags for the reboot operation, not used yet
+ *
+ * Reboot the domain, the OS is requested to properly shutdown
+ * and reboot but the domain may ignore it.  It will return immediately
+ * after queuing the request.
+ *
+ * Returns 0 in case of success, -1 in case of error.
+ */
+int
+xenStoreDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
+{
+    if ((domain == NULL) || (domain->conn == NULL)) {
+        virXenStoreError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	                 __FUNCTION__);
+        return(-1);
+    }
+    /*
+     * this is very hackish, the domU kernel probes for a special 
+     * node in the xenstore and launch the shutdown command if found.
+     */
+    return(virDomainDoStoreWrite(domain, "control/shutdown", "reboot"));
 }
 

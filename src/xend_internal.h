@@ -510,18 +510,6 @@ int xenDaemonOpen_unix(virConnectPtr xend, const char *path);
     int xend_sysrq(virConnectPtr xend, const char *name, const char *key);
 
 /**
- * \brief Request a domain to reboot
- * \param xend A xend instance
- * \param name The domain's name
- * \return 0 for success; -1 (with errno) on error
- * 
- * This method *requests* that a domain reboot itself.  This is only
- * a request and the domain may ignore it.  It will return immediately
- * after queuing the request.
- */
-    int xend_reboot(virConnectPtr xend, const char *name);
-
-/**
  * \brief Obtain a list of currently running domains
  * \param xend A xend instance
  * \return a NULL terminated array of names; NULL (with errno) on error
@@ -644,6 +632,7 @@ int xenDaemonClose(virConnectPtr conn);
 int xenDaemonDomainSuspend(virDomainPtr domain);
 int xenDaemonDomainResume(virDomainPtr domain);
 int xenDaemonDomainShutdown(virDomainPtr domain);
+int xenDaemonDomainReboot(virDomainPtr domain, unsigned int flags);
 int xenDaemonDomainDestroy(virDomainPtr domain);
 int xenDaemonDomainSave(virDomainPtr domain, const char *filename);
 int xenDaemonDomainRestore(virConnectPtr conn, const char *filename);

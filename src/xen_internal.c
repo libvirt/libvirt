@@ -57,6 +57,7 @@ static virDriver xenHypervisorDriver = {
     xenHypervisorPauseDomain, /* domainSuspend */
     xenHypervisorResumeDomain, /* domainResume */
     NULL, /* domainShutdown */
+    NULL, /* domainReboot */
     xenHypervisorDestroyDomain, /* domainDestroy */
     NULL, /* domainFree */
     NULL, /* domainGetName */

@@ -60,6 +60,9 @@ typedef int
 typedef int
 	(*virDrvDomainShutdown)		(virDomainPtr domain);
 typedef int
+	(*virDrvDomainReboot)		(virDomainPtr domain,
+					 unsigned int flags);
+typedef int
 	(*virDrvDomainDestroy)		(virDomainPtr domain);
 typedef int
 	(*virDrvDomainFree)		(virDomainPtr domain);
@@ -113,6 +116,7 @@ struct _virDriver {
 	virDrvDomainSuspend		domainSuspend;
 	virDrvDomainResume		domainResume;
 	virDrvDomainShutdown		domainShutdown;
+	virDrvDomainReboot		domainReboot;
 	virDrvDomainDestroy		domainDestroy;
 	virDrvDomainFree		domainFree;
 	virDrvDomainGetName		domainGetName;

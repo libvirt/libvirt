@@ -1,3 +1,11 @@
+Mon Apr  3 14:46:39 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvirt.h[.in] src/driver.h src/libvirt.c 
+	  src/libvirt_sym.version src/*_internal.[ch]: added an entry
+	  point for reboot and corresponding driver plug
+	* src/virsh.c: added a reboot option using it
+	* docs/*: regenerated 
+
 Thu Mar 30 16:38:18 EST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: applied patch from Daniel P. Berrange,

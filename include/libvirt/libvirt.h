@@ -230,6 +230,8 @@ virDomainPtr		virDomainLookupByID	(virConnectPtr conn,
 virDomainPtr		virDomainLookupByUUID	(virConnectPtr conn,
 						 const unsigned char *uuid);
 int			virDomainShutdown	(virDomainPtr domain);
+int			virDomainReboot		(virDomainPtr domain,
+						 unsigned int flags);
 int			virDomainDestroy	(virDomainPtr domain);
 int			virDomainFree		(virDomainPtr domain);
 

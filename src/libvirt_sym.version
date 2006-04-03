@@ -26,6 +26,7 @@
 	virDomainSave;
 	virDomainSetMaxMemory;
 	virDomainShutdown;
+	virDomainReboot;
 	virDomainSuspend;
 	virGetVersion;
 	virCopyLastError;

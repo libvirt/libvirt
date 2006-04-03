@@ -95,6 +95,7 @@
     <reference name='virDomainLookupByName' href='html/libvirt-libvirt.html#virDomainLookupByName'/>
     <reference name='virDomainLookupByUUID' href='html/libvirt-libvirt.html#virDomainLookupByUUID'/>
     <reference name='virDomainPtr' href='html/libvirt-libvirt.html#virDomainPtr'/>
+    <reference name='virDomainReboot' href='html/libvirt-libvirt.html#virDomainReboot'/>
     <reference name='virDomainRestart' href='html/libvirt-libvirt.html#virDomainRestart'/>
     <reference name='virDomainRestore' href='html/libvirt-libvirt.html#virDomainRestore'/>
     <reference name='virDomainResume' href='html/libvirt-libvirt.html#virDomainResume'/>
@@ -221,6 +222,7 @@
       <ref name='virDomainLookupByName'/>
       <ref name='virDomainLookupByUUID'/>
       <ref name='virDomainPtr'/>
+      <ref name='virDomainReboot'/>
       <ref name='virDomainRestart'/>
       <ref name='virDomainRestore'/>
       <ref name='virDomainResume'/>
@@ -280,6 +282,7 @@
     </type>
     <type name='unsigned int'>
       <ref name='virDomainCreateLinux'/>
+      <ref name='virDomainReboot'/>
     </type>
     <type name='unsigned long'>
       <ref name='virDomainSetMaxMemory'/>
@@ -318,6 +321,7 @@
       <ref name='virDomainGetOSType'/>
       <ref name='virDomainGetUUID'/>
       <ref name='virDomainGetXMLDesc'/>
+      <ref name='virDomainReboot'/>
       <ref name='virDomainResume'/>
       <ref name='virDomainSave'/>
       <ref name='virDomainSetMaxMemory'/>
@@ -396,6 +400,7 @@
       <ref name='virDomainLookupByName'/>
       <ref name='virDomainLookupByUUID'/>
       <ref name='virDomainPtr'/>
+      <ref name='virDomainReboot'/>
       <ref name='virDomainRestart'/>
       <ref name='virDomainRestore'/>
       <ref name='virDomainResume'/>
@@ -590,6 +595,7 @@
         </word>
         <word name='Note'>
           <ref name='virDomainGetInfo'/>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainShutdown'/>
         </word>
       </letter>
@@ -617,6 +623,9 @@
       <letter name='R'>
         <word name='Read-Only'>
           <ref name='virConnectGetVersion'/>
+        </word>
+        <word name='Reboot'>
+          <ref name='virDomainReboot'/>
         </word>
         <word name='Reset'>
           <ref name='virConnResetLastError'/>
@@ -727,6 +736,7 @@
           <ref name='virDomainShutdown'/>
         </word>
         <word name='after'>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainShutdown'/>
         </word>
@@ -808,6 +818,7 @@
           <ref name='virDomainLookupByUUID'/>
         </word>
         <word name='being'>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainShutdown'/>
           <ref name='virErrorFunc'/>
           <ref name='virResetError'/>
@@ -820,6 +831,7 @@
         </word>
         <word name='but'>
           <ref name='virConnGetLastError'/>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainShutdown'/>
           <ref name='virDomainSuspend'/>
           <ref name='virGetLastError'/>
@@ -1002,6 +1014,7 @@
         </word>
         <word name='extra'>
           <ref name='_virError'/>
+          <ref name='virDomainReboot'/>
         </word>
         <word name='extracted'>
           <ref name='virConnectGetVersion'/>
@@ -1020,6 +1033,7 @@
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainRestore'/>
           <ref name='virDomainResume'/>
           <ref name='virDomainSave'/>
@@ -1044,6 +1058,7 @@
         </word>
         <word name='flags'>
           <ref name='virDomainGetXMLDesc'/>
+          <ref name='virDomainReboot'/>
         </word>
         <word name='for'>
           <ref name='_virDomainInfo'/>
@@ -1055,6 +1070,7 @@
           <ref name='virDomainGetUUID'/>
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainShutdown'/>
           <ref name='virErrorFunc'/>
@@ -1135,6 +1151,7 @@
         </word>
         <word name='guest'>
           <ref name='virDomainCreateLinux'/>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainShutdown'/>
         </word>
       </letter>
@@ -1162,6 +1179,7 @@
       </letter>
       <letter name='i'>
         <word name='ignore'>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainShutdown'/>
         </word>
         <word name='image'>
@@ -1295,6 +1313,7 @@
           <ref name='virDomainCreateLinux'/>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainGetXMLDesc'/>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainResume'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainShutdown'/>
@@ -1392,6 +1411,7 @@
           <ref name='virDomainFree'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainGetXMLDesc'/>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainShutdown'/>
           <ref name='virGetLastError'/>
@@ -1422,6 +1442,7 @@
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainResume'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainSetMaxMemory'/>
@@ -1442,6 +1463,7 @@
         </word>
         <word name='operation'>
           <ref name='virDomainGetOSType'/>
+          <ref name='virDomainReboot'/>
         </word>
         <word name='option'>
           <ref name='virDomainShutdown'/>
@@ -1574,6 +1596,7 @@
           <ref name='virDomainSuspend'/>
         </word>
         <word name='reboot'>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainShutdown'/>
         </word>
         <word name='receive'>
@@ -1591,6 +1614,7 @@
           <ref name='virDefaultErrorFunc'/>
         </word>
         <word name='request'>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainShutdown'/>
         </word>
         <word name='requires'>
@@ -1611,6 +1635,9 @@
         <word name='resources'>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainSuspend'/>
+        </word>
+        <word name='restart'>
+          <ref name='virDomainReboot'/>
         </word>
         <word name='restarted'>
           <ref name='virDomainResume'/>
@@ -1725,9 +1752,11 @@
           <ref name='virSetErrorFunc'/>
         </word>
         <word name='still'>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainShutdown'/>
         </word>
         <word name='stopped'>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainShutdown'/>
         </word>
         <word name='store'>
@@ -1754,6 +1783,7 @@
           <ref name='virDomainFree'/>
           <ref name='virDomainGetInfo'/>
           <ref name='virDomainGetUUID'/>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainRestore'/>
           <ref name='virDomainResume'/>
           <ref name='virDomainSave'/>
@@ -1797,6 +1827,7 @@
           <ref name='virConnResetLastError'/>
           <ref name='virDomainGetInfo'/>
           <ref name='virDomainGetName'/>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainShutdown'/>
         </word>
         <word name='their'>
@@ -1809,6 +1840,7 @@
         </word>
         <word name='there'>
           <ref name='virConnectClose'/>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainShutdown'/>
           <ref name='virErrorFunc'/>
           <ref name='virSetErrorFunc'/>
@@ -1857,6 +1889,7 @@
         </word>
         <word name='usable'>
           <ref name='virConnectOpenReadOnly'/>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainShutdown'/>
         </word>
         <word name='use'>
@@ -1871,6 +1904,7 @@
           <ref name='virDomainFree'/>
           <ref name='virDomainGetInfo'/>
           <ref name='virDomainGetXMLDesc'/>
+          <ref name='virDomainReboot'/>
           <ref name='virDomainSuspend'/>
         </word>
         <word name='user'>
@@ -2003,6 +2037,7 @@
       <letter name='y'>
         <word name='yet'>
           <ref name='virDomainGetXMLDesc'/>
+          <ref name='virDomainReboot'/>
         </word>
       </letter>
       <letter name='z'>

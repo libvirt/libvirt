@@ -55,6 +55,7 @@ static virDriver xenDaemonDriver = {
     xenDaemonDomainSuspend, /* domainSuspend */
     xenDaemonDomainResume, /* domainResume */
     xenDaemonDomainShutdown, /* domainShutdown */
+    xenDaemonDomainReboot, /* domainReboot */
     xenDaemonDomainDestroy, /* domainDestroy */
     NULL, /* domainFree */
     NULL, /* domainGetName */
@@ -966,26 +967,6 @@ xend_rename(virConnectPtr xend, const char *old, const char *new)
 }
 
 /**
- * xend_reboot:
- * @xend: pointer to the Xem Daemon block
- * @name: name for the domain
- *
- * Reboot the domain, the OS is properly shutdown and restarted
- *
- * Returns 0 in case of success, -1 (with errno) in case of error.
- */
-int
-xend_reboot(virConnectPtr xend, const char *name)
-{
-    if ((xend == NULL) || (name == NULL)) {
-        /* this should be caught at the interface but ... */
-        virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (-1);
-    }
-    return xend_op(xend, name, "op", "shutdown", "reason", "reboot", NULL);
-}
-
-/**
  * xend_sysrq:
  * @xend: pointer to the Xem Daemon block
  * @name: name for the domain
@@ -1766,6 +1747,28 @@ xenDaemonDomainShutdown(virDomainPtr domain)
         return(-1);
     }
     return xend_op(domain->conn, domain->name, "op", "shutdown", "reason", "halt", NULL);
+}
+
+/**
+ * xenDaemonDomainReboot:
+ * @domain: pointer to the Domain block
+ * @flags: extra flags for the reboot operation, not used yet
+ *
+ * Reboot the domain, the OS is requested to properly shutdown
+ * and restart but the domain may ignore it.  It will return immediately
+ * after queuing the request.
+ *
+ * Returns 0 in case of success, -1 (with errno) in case of error.
+ */
+int
+xenDaemonDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
+{
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return(-1);
+    }
+    return xend_op(domain->conn, domain->name, "op", "shutdown", "reason", "reboot", NULL);
 }
 
 /**

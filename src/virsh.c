@@ -636,6 +636,45 @@ cmdShutdown(vshControl * ctl, vshCmd * cmd)
 }
 
 /*
+ * "reboot" command
+ */
+static vshCmdInfo info_reboot[] = {
+    {"syntax", "reboot <domain>"},
+    {"help", "reboot a domain"},
+    {"desc", "Run a reboot command in the targetted domain"},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_reboot[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id"},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdReboot(vshControl * ctl, vshCmd * cmd)
+{
+    virDomainPtr dom;
+    int ret = TRUE;
+    char *name;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", &name)))
+        return FALSE;
+
+    if (virDomainReboot(dom, 0) == 0) {
+        vshPrint(ctl, VSH_MESG, "Domain %s is being rebooted\n", name);
+    } else {
+        vshError(ctl, FALSE, "Failed to reboot domain\n");
+        ret = FALSE;
+    }
+
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "destroy" command
  */
 static vshCmdInfo info_destroy[] = {
@@ -961,6 +1000,7 @@ static vshCmdDef commands[] = {
     {"save", cmdSave, opts_save, info_save},
     {"restore", cmdRestore, opts_restore, info_restore},
     {"shutdown", cmdShutdown, opts_shutdown, info_shutdown},
+    {"reboot", cmdReboot, opts_reboot, info_reboot},
     {"destroy", cmdDestroy, opts_destroy, info_destroy},
     {"help", cmdHelp, opts_help, info_help},
     {"idof", cmdIdof, opts_idof, info_idof},

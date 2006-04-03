@@ -15,23 +15,26 @@
 extern "C" {
 #endif
 
-void	xenStoreRegister	(void);
-int	xenStoreOpen		(virConnectPtr conn,
-				 const char *name,
-				 int flags);
-int	xenStoreClose		(virConnectPtr conn);
-int	xenStoreGetDomainInfo	(virDomainPtr domain,
-			   	 virDomainInfoPtr info);
-int	xenStoreNumOfDomains	(virConnectPtr conn);
-int     xenStoreListDomains	(virConnectPtr conn,
-				 int *ids,
-				 int maxids);
-virDomainPtr xenStoreDomainLookupByName(virConnectPtr conn, const char *name);
-unsigned long xenStoreGetMaxMemory(virDomainPtr domain);
-int	xenStoreDomainSetMaxMemory	(virDomainPtr domain,
-		      	  	 unsigned long memory);
-unsigned long xenStoreDomainGetMaxMemory(virDomainPtr domain);
-int xenStoreDomainShutdown(virDomainPtr domain);
+void		xenStoreRegister	(void);
+int		xenStoreOpen		(virConnectPtr conn,
+					 const char *name,
+					 int flags);
+int		xenStoreClose		(virConnectPtr conn);
+int		xenStoreGetDomainInfo	(virDomainPtr domain,
+			   		 virDomainInfoPtr info);
+int		xenStoreNumOfDomains	(virConnectPtr conn);
+int     	xenStoreListDomains	(virConnectPtr conn,
+					 int *ids,
+					 int maxids);
+virDomainPtr 	xenStoreDomainLookupByName(virConnectPtr conn,
+					 const char *name);
+unsigned long 	xenStoreGetMaxMemory	(virDomainPtr domain);
+int		xenStoreDomainSetMaxMemory(virDomainPtr domain,
+		      	  	 	 unsigned long memory);
+unsigned long 	xenStoreDomainGetMaxMemory(virDomainPtr domain);
+int 		xenStoreDomainShutdown	(virDomainPtr domain);
+int 		xenStoreDomainReboot	(virDomainPtr domain,
+					 unsigned int flags);
 #ifdef __cplusplus
 }
 #endif

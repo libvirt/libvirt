@@ -664,9 +664,7 @@ virDomainLookupByID(virConnectPtr conn, int id)
     return (ret);
   error:
     if (ret != NULL)
-        free(path);
-    if (path != NULL)
-        free(path);
+        free(ret);
     if (path != NULL)
         free(path);
     return (NULL);
@@ -1036,6 +1034,47 @@ virDomainShutdown(virDomainPtr domain)
      * node in the xenstore and launch the shutdown command if found.
      */
     ret = xenDaemonDomainShutdown(domain);
+    if (ret == 0) {
+        domain->flags |= DOMAIN_IS_SHUTDOWN;
+    }
+    return (ret);
+}
+
+/**
+ * virDomainReboot:
+ * @domain: a domain object
+ * @flags: extra flags for the reboot operation, not used yet
+ *
+ * Reboot a domain, the domain object is still usable there after but
+ * the domain OS is being stopped for a restart.
+ * Note that the guest OS may ignore the request.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainReboot(virDomainPtr domain, unsigned int flags)
+{
+    int ret;
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
+    }
+
+    /*
+     * try first with the xend daemon
+     */
+    ret = xenDaemonDomainReboot(domain, flags);
+    if (ret == 0) {
+        domain->flags |= DOMAIN_IS_SHUTDOWN;
+        return (0);
+    }
+
+    /*
+     * this is very hackish, the domU kernel probes for a special 
+     * node in the xenstore and launch the shutdown command if found.
+     */
+    ret = xenDaemonDomainReboot(domain, flags);
     if (ret == 0) {
         domain->flags |= DOMAIN_IS_SHUTDOWN;
     }
