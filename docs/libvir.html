@@ -567,7 +567,7 @@ containing the same field as a virError in C, but cast to Python.</p>
   <li><em>Failure to use the API for non-root users</em>
     <p>Large parts of the API may only be accessible with root priviledges,
     however the read only access to the xenstore data doesnot have to be
-    forbidden to user, at least for monitoring purposes. If "virsh dinfo"
+    forbidden to user, at least for monitoring purposes. If "virsh dominfo"
     fails to run as an user, change the mode of the xenstore read-only socket
     with:</p>
     <p><code>chmod 666 /var/run/xenstored/socket_ro</code></p>

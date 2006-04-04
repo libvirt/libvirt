@@ -158,7 +158,7 @@ typedef struct _virNodeInfo virNodeInfo;
 
 struct _virNodeInfo {
     char model[32];	/* string indicating the CPU model */
-    unsigned long memory;/* memory size in megabytes */
+    unsigned long memory;/* memory size in kilobytes */
     unsigned int cpus;	/* the number of active CPUs */
     unsigned int mhz;	/* expected CPU frequency */
     unsigned int nodes;	/* the number of NUMA cell, 1 for uniform mem access */

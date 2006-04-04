@@ -1,3 +1,10 @@
+Tue Apr  4 12:41:53 CEST 2006 Karel Zak <kzak@redhat.com>
+
+	* src/virsh.c: add new command "nodeinfo"
+	* include/libvirt.h.in: fix typo (virNodeInfo.memory is in kB)
+	* docs/FAQ.html docs/libvir.html src/virsh.c: rename command 
+	  "dinfo" to "dominfo"
+
 Mon Apr  3 14:46:39 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvirt.h[.in] src/driver.h src/libvirt.c 

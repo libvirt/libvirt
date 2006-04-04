@@ -714,22 +714,22 @@ cmdDestroy(vshControl * ctl, vshCmd * cmd)
 }
 
 /*
- * "dinfo" command
+ * "dominfo" command
  */
-static vshCmdInfo info_dinfo[] = {
-    {"syntax", "dinfo <domain>"},
+static vshCmdInfo info_dominfo[] = {
+    {"syntax", "dominfo <domain>"},
     {"help", "domain information"},
     {"desc", "Returns basic information about the domain."},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_dinfo[] = {
+static vshCmdOptDef opts_dominfo[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id"},
     {NULL, 0, 0, NULL}
 };
 
 static int
-cmdDinfo(vshControl * ctl, vshCmd * cmd)
+cmdDominfo(vshControl * ctl, vshCmd * cmd)
 {
     virDomainInfo info;
     virDomainPtr dom;
@@ -775,6 +775,40 @@ cmdDinfo(vshControl * ctl, vshCmd * cmd)
 
     virDomainFree(dom);
     return ret;
+}
+
+/*
+ * "nodeinfo" command
+ */
+static vshCmdInfo info_nodeinfo[] = {
+    {"syntax", "nodeinfo"},
+    {"help", "node information"},
+    {"desc", "Returns basic information about the node."},
+    {NULL, NULL}
+};
+
+static int
+cmdNodeinfo(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
+{
+    virNodeInfo info;
+        
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (virNodeGetInfo(ctl->conn, &info) < 0) {
+        vshError(ctl, FALSE, "failed to get node information");
+        return FALSE;
+    }    
+    vshPrint(ctl, VSH_MESG, "%-20s %s\n", "CPU model:", info.model);
+    vshPrint(ctl, VSH_MESG, "%-20s %d\n", "CPU(s):", info.cpus);
+    vshPrint(ctl, VSH_MESG, "%-20s %d MHz\n", "CPU frequency:", info.mhz);
+    vshPrint(ctl, VSH_MESG, "%-20s %d\n", "CPU socket(s):", info.sockets);
+    vshPrint(ctl, VSH_MESG, "%-20s %d\n", "Core(s) per socket:", info.cores);
+    vshPrint(ctl, VSH_MESG, "%-20s %d\n", "Thread(s) per core:", info.threads);
+    vshPrint(ctl, VSH_MESG, "%-20s %d\n", "NUMA cell(s):", info.nodes);
+    vshPrint(ctl, VSH_MESG, "%-20s %lu kB\n", "Memory size:", info.memory);
+        
+    return TRUE;
 }
 
 /*
@@ -992,7 +1026,8 @@ cmdQuit(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 static vshCmdDef commands[] = {
     {"connect", cmdConnect, opts_connect, info_connect},
     {"create", cmdCreate, opts_create, info_create},
-    {"dinfo", cmdDinfo, opts_dinfo, info_dinfo},
+    {"dominfo", cmdDominfo, opts_dominfo, info_dominfo},
+    {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo},
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
     {"dstate", cmdDstate, opts_dstate, info_dstate},
     {"suspend", cmdSuspend, opts_suspend, info_suspend},
