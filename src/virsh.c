@@ -344,22 +344,22 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 }
 
 /*
- * "dstate" command
+ * "domstate" command
  */
-static vshCmdInfo info_dstate[] = {
-    {"syntax", "dstate <domain>"},
+static vshCmdInfo info_domstate[] = {
+    {"syntax", "domstate <domain>"},
     {"help", "domain state"},
     {"desc", "Returns state about a running domain."},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_dstate[] = {
+static vshCmdOptDef opts_domstate[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id"},
     {NULL, 0, 0, NULL}
 };
 
 static int
-cmdDstate(vshControl * ctl, vshCmd * cmd)
+cmdDomstate(vshControl * ctl, vshCmd * cmd)
 {
     virDomainInfo info;
     virDomainPtr dom;
@@ -852,21 +852,21 @@ cmdDumpXML(vshControl * ctl, vshCmd * cmd)
 }
 
 /*
- * "nameof" command
+ * "domname" command
  */
-static vshCmdInfo info_nameof[] = {
-    {"syntax", "nameof <id>"},
+static vshCmdInfo info_domname[] = {
+    {"syntax", "domname <id>"},
     {"help", "convert a domain Id to domain name"},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_nameof[] = {
+static vshCmdOptDef opts_domname[] = {
     {"id", VSH_OT_DATA, VSH_OFLAG_REQ, "domain Id"},
     {NULL, 0, 0, NULL}
 };
 
 static int
-cmdNameof(vshControl * ctl, vshCmd * cmd)
+cmdDomname(vshControl * ctl, vshCmd * cmd)
 {
     int found;
     int id = vshCommandOptInt(cmd, "id", &found);
@@ -889,21 +889,21 @@ cmdNameof(vshControl * ctl, vshCmd * cmd)
 }
 
 /*
- * "idof" command
+ * "domid" command
  */
-static vshCmdInfo info_idof[] = {
-    {"syntax", "idof <name>"},
+static vshCmdInfo info_domid[] = {
+    {"syntax", "domid <name>"},
     {"help", "convert a domain name to domain Id"},
     {NULL, NULL}
 };
 
-static vshCmdOptDef opts_idof[] = {
+static vshCmdOptDef opts_domid[] = {
     {"name", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name"},
     {NULL, 0, 0, NULL}
 };
 
 static int
-cmdIdof(vshControl * ctl, vshCmd * cmd)
+cmdDomid(vshControl * ctl, vshCmd * cmd)
 {
     char *name = vshCommandOptString(cmd, "name", NULL);
     virDomainPtr dom;
@@ -1026,23 +1026,23 @@ cmdQuit(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 static vshCmdDef commands[] = {
     {"connect", cmdConnect, opts_connect, info_connect},
     {"create", cmdCreate, opts_create, info_create},
+    {"destroy", cmdDestroy, opts_destroy, info_destroy},
+    {"domid", cmdDomid, opts_domid, info_domid},
     {"dominfo", cmdDominfo, opts_dominfo, info_dominfo},
-    {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo},
+    {"domname", cmdDomname, opts_domname, info_domname},
+    {"domstate", cmdDomstate, opts_domstate, info_domstate},
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
-    {"dstate", cmdDstate, opts_dstate, info_dstate},
-    {"suspend", cmdSuspend, opts_suspend, info_suspend},
+    {"help", cmdHelp, opts_help, info_help},
+    {"list", cmdList, NULL, info_list},
+    {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo},
+    {"quit", cmdQuit, NULL, info_quit},
+    {"reboot", cmdReboot, opts_reboot, info_reboot},
+    {"restore", cmdRestore, opts_restore, info_restore},
     {"resume", cmdResume, opts_resume, info_resume},
     {"save", cmdSave, opts_save, info_save},
-    {"restore", cmdRestore, opts_restore, info_restore},
     {"shutdown", cmdShutdown, opts_shutdown, info_shutdown},
-    {"reboot", cmdReboot, opts_reboot, info_reboot},
-    {"destroy", cmdDestroy, opts_destroy, info_destroy},
-    {"help", cmdHelp, opts_help, info_help},
-    {"idof", cmdIdof, opts_idof, info_idof},
-    {"list", cmdList, NULL, info_list},
-    {"nameof", cmdNameof, opts_nameof, info_nameof},
+    {"suspend", cmdSuspend, opts_suspend, info_suspend},
     {"version", cmdVersion, NULL, info_version},
-    {"quit", cmdQuit, NULL, info_quit},
     {NULL, NULL, NULL, NULL}
 };
 

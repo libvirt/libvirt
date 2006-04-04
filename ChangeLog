@@ -1,3 +1,8 @@
+Tue Apr  4 22:49:33 CEST 2006 Karel Zak <kzak@redhat.com>
+
+	* src/virsh.c: rename dstate, idof and nameof to domstate, 
+	  domname and domid
+
 Tue Apr  4 12:41:53 CEST 2006 Karel Zak <kzak@redhat.com>
 
 	* src/virsh.c: add new command "nodeinfo"
