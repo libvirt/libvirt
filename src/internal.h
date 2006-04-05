@@ -10,6 +10,7 @@
 #include <sys/un.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+#include <libxml/threads.h>
 
 #include "hash.h"
 #include "libvirt.h"
@@ -114,7 +115,8 @@ struct _virConnect {
     void *userData;         /* the user data */
 
     /* misc */
-    virHashTablePtr domains;        /* hash table for known domains */
+    xmlMutexPtr domains_mux;/* a mutex to protect the domain hash table */
+    virHashTablePtr domains;/* hash table for known domains */
     int flags;              /* a set of connection flags */
 };
 

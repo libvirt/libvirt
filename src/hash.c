@@ -17,8 +17,6 @@
  * Author: breese@users.sourceforge.net
  */
 
-#define IN_LIBXML
-
 #include <string.h>
 #include <stdlib.h>
 #include "hash.h"

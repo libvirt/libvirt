@@ -1,3 +1,10 @@
+Wed Apr  5 09:32:54 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/hash.c: tiny fix
+	* src/internal.h: starting to work on reentrancy
+	* src/libvirt.c: applied patch from Jim Fehlig to fix 
+	  virDomainLookupByID when run as root.
+
 Tue Apr  4 22:49:33 CEST 2006 Karel Zak <kzak@redhat.com>
 
 	* src/virsh.c: rename dstate, idof and nameof to domstate, 

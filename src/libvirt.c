@@ -33,9 +33,10 @@
  * TODO:
  * - use lock to protect against concurrent accesses ?
  * - use reference counting to garantee coherent pointer state ?
- * - error reporting layer
  * - memory wrappers for malloc/free ?
  */
+
+static int virDomainFreeName(virDomainPtr domain, const char *name);
 
 static virDriverPtr virDriverTab[MAX_DRIVERS];
 static int initialized = 0;
@@ -254,6 +255,9 @@ virConnectOpen(const char *name)
     ret->domains = virHashCreate(20);
     if (ret->domains == NULL)
         goto failed;
+    ret->domains_mux = xmlNewMutex();
+    if (ret->domains_mux == NULL)
+        goto failed;
     ret->flags = 0;
 
     return (ret);
@@ -264,6 +268,10 @@ failed:
 	    if ((ret->drivers[i] != NULL) && (ret->drivers[i]->close != NULL))
 	        ret->drivers[i]->close(ret);
 	}
+	if (ret->domains != NULL)
+	    virHashFree(ret->domains, (virHashDeallocator) virDomainFreeName);
+	if (ret->domains_mux != NULL)
+	    xmlFreeMutex(ret->domains_mux);
         free(ret);
     }
     return (NULL);
@@ -318,6 +326,9 @@ virConnectOpenReadOnly(const char *name)
     ret->domains = virHashCreate(20);
     if (ret->domains == NULL)
         goto failed;
+    ret->domains_mux = xmlNewMutex();
+    if (ret->domains_mux == NULL)
+        goto failed;
     ret->flags = VIR_CONNECT_RO;
 
     return (ret);
@@ -328,6 +339,10 @@ failed:
 	    if ((ret->drivers[i] != NULL) && (ret->drivers[i]->close != NULL))
 	        ret->drivers[i]->close(ret);
 	}
+	if (ret->domains != NULL)
+	    virHashFree(ret->domains, (virHashDeallocator) virDomainFreeName);
+	if (ret->domains_mux != NULL)
+	    xmlFreeMutex(ret->domains_mux);
         free(ret);
     }
     return (NULL);
@@ -367,6 +382,8 @@ virConnectClose(virConnectPtr conn)
         return (-1);
     virHashFree(conn->domains, (virHashDeallocator) virDomainFreeName);
     conn->domains = NULL;
+    xmlFreeMutex(conn->domains_mux);
+    conn->domains_mux = NULL;
     for (i = 0;i < conn->nb_drivers;i++) {
 	if ((conn->drivers[i] != NULL) && (conn->drivers[i]->close != NULL))
 	    conn->drivers[i]->close(conn);
@@ -610,6 +627,9 @@ virDomainPtr
 virDomainLookupByID(virConnectPtr conn, int id)
 {
     char *path = NULL;
+    char **names;
+    char **tmp;
+    int ident;
     virDomainPtr ret;
     char *name = NULL;
     unsigned char uuid[16];
@@ -623,27 +643,25 @@ virDomainLookupByID(virConnectPtr conn, int id)
         return (NULL);
     }
 
-    /* lookup is easier with the Xen store so try it first */
+    /* retrieve home path of the domain */
     if (conn->xshandle != NULL) {
         path = xs_get_domain_path(conn->xshandle, (unsigned int) id);
     }
-    /* fallback to xend API then */
-    if (path == NULL) {
-        char **names = xenDaemonListDomains(conn);
-        char **tmp = names;
-        int ident;
 
-        if (names != NULL) {
-            while (*tmp != NULL) {
-                ident = xenDaemonDomainLookupByName_ids(conn, *tmp, &uuid[0]);
-                if (ident == id) {
-                    name = strdup(*tmp);
-                    break;
-                }
-                tmp++;
-            }
-            free(names);
-        }
+    /* path does not contain name, use xend API to retrieve name */
+    names = xenDaemonListDomains(conn);
+    tmp = names;
+
+    if (names != NULL) {
+       while (*tmp != NULL) {
+          ident = xenDaemonDomainLookupByName_ids(conn, *tmp, &uuid[0]);
+          if (ident == id) {
+             name = strdup(*tmp);
+             break;
+          }
+          tmp++;
+       }
+       free(names);
     }
 
     ret = (virDomainPtr) malloc(sizeof(virDomain));
