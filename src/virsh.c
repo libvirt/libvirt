@@ -202,10 +202,18 @@ static virDomainPtr vshCommandOptDomain(vshControl * ctl, vshCmd * cmd,
 static void vshPrint(vshControl * ctl, vshOutType out, const char *format,
                      ...);
 
-
 static const char *vshDomainStateToString(int state);
 static int vshConnectionUsability(vshControl * ctl, virConnectPtr conn,
                                   int showerror);
+
+static void *_vshMalloc(vshControl * ctl, size_t sz, const char *filename, int line);
+#define vshMalloc(_ctl, _sz)    _vshMalloc(_ctl, _sz, __FILE__, __LINE__)
+
+static void *_vshCalloc(vshControl * ctl, size_t nmemb, size_t sz, const char *filename, int line);
+#define vshCalloc(_ctl, _nmemb, _sz)    _vshCalloc(_ctl, _nmemb, _sz, __FILE__, __LINE__)
+
+static char *_vshStrdup(vshControl * ctl, const char *s, const char *filename, int line);
+#define vshStrdup(_ctl, _s)    _vshStrdup(_ctl, _s, __FILE__, __LINE__)
 
 /* ---------------
  * Commands
@@ -311,12 +319,8 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         vshError(ctl, FALSE, "failed to list active domains.");
         return FALSE;
     }
-    ids = malloc(sizeof(int) * maxid);
-    if (ids == NULL) {
-        fprintf(stderr, "Failed to allocate %d bytes\n", 
-                (int) sizeof(int) * maxid);
-        exit(1);
-    }
+    ids = vshMalloc(ctl, sizeof(int) * maxid);
+
     virConnectListDomains(ctl->conn, &ids[0], maxid);
 
     vshPrint(ctl, VSH_HEADER, "%3s %-20s %s\n", "Id", "Name", "State");
@@ -1420,11 +1424,7 @@ vshCommandGetToken(vshControl * ctl, char *str, char **end, char **res)
     if (sz == 0)
         return VSH_TK_END;
 
-    *res = malloc(sz + 1);
-    if (*res == NULL) {
-        fprintf(stderr, "Failed to allocate %d bytes\n", sz + 1);
-        exit(1);
-    }
+    *res = vshMalloc(ctl, sz + 1);
     memcpy(*res, tkstr, sz);
     *(*res + sz) = '\0';
 
@@ -1519,12 +1519,7 @@ vshCommandParse(vshControl * ctl, char *cmdstr)
             }
             if (opt) {
                 /* save option */
-                vshCmdOpt *arg = malloc(sizeof(vshCmdOpt));
-                if (arg == NULL) {
-                    fprintf(stderr, "Failed to allocate %d bytes\n", 
-                            (int) sizeof(vshCmdOpt));
-                    exit(1);
-                }
+                vshCmdOpt *arg = vshMalloc(ctl, sizeof(vshCmdOpt));
 
                 arg->def = opt;
                 arg->data = tkdata;
@@ -1549,13 +1544,7 @@ vshCommandParse(vshControl * ctl, char *cmdstr)
 
         /* commad parsed -- allocate new struct for the command */
         if (cmd) {
-            vshCmd *c = malloc(sizeof(vshCmd));
-
-            if (c == NULL) {
-                fprintf(stderr, "Failed to allocate %d bytes\n", 
-                        (int) sizeof(vshCmd));
-                exit(1);
-            }
+            vshCmd *c = vshMalloc(ctl, sizeof(vshCmd));
 
             c->opts = first;
             c->def = cmd;
@@ -1666,7 +1655,7 @@ vshPrint(vshControl * ctl, vshOutType type, const char *format, ...)
         return;
 
     va_start(ap, format);
-    vfprintf(stderr, format, ap);
+    vfprintf(stdout, format, ap);
     va_end(ap);
 }
 
@@ -1687,9 +1676,46 @@ vshError(vshControl * ctl, int doexit, const char *format, ...)
     fputc('\n', stderr);
 
     if (doexit) {
-        vshDeinit(ctl);
+        if (ctl)
+            vshDeinit(ctl);
         exit(EXIT_FAILURE);
     }
+}
+
+static void *
+_vshMalloc(vshControl * ctl, size_t size, const char *filename, int line)
+{
+    void *x;
+
+    if ((x = malloc(size)))
+        return x;
+    vshError(ctl, TRUE, "%s: %d: failed to allocate %d bytes\n", 
+                filename, line, (int) size);
+    return NULL;
+}
+
+static void *
+_vshCalloc(vshControl * ctl, size_t nmemb, size_t size, const char *filename, int line)
+{
+    void *x;
+
+    if ((x = calloc(nmemb, size)))
+        return x;
+    vshError(ctl, TRUE, "%s: %d: failed to allocate %d bytes\n", 
+                filename, line, (int) (size*nmemb));
+    return NULL;
+}
+
+static char *
+_vshStrdup(vshControl * ctl, const char *s, const char *filename, int line)
+{
+    char *x;
+
+    if ((x = strdup(s)))
+        return x;
+    vshError(ctl, TRUE, "%s: %d: failed to allocate %d bytes\n", 
+                filename, line, strlen(s));
+    return NULL;
 }
 
 /*
@@ -1749,7 +1775,7 @@ vshReadlineCommandGenerator(const char *text, int state)
     while ((name = commands[list_index].name)) {
         list_index++;
         if (strncmp(name, text, len) == 0)
-            return strdup(name);
+            return vshStrdup(NULL, name);
     }
 
     /* If no names matched, then return NULL. */
@@ -1771,12 +1797,7 @@ vshReadlineOptionsGenerator(const char *text, int state)
         if (!(p = strchr(rl_line_buffer, ' ')))
             return NULL;
 
-        cmdname = calloc((p - rl_line_buffer) + 1, 1);
-        if (cmdname == NULL) {
-            fprintf(stderr, "Failed to allocate %d bytes\n",
-                    (p - rl_line_buffer) + 1);
-            exit(1);
-        }
+        cmdname = vshCalloc(NULL, (p - rl_line_buffer) + 1, 1);
         memcpy(cmdname, rl_line_buffer, p - rl_line_buffer);
 
         cmd = vshCmddefSearch(cmdname);
@@ -1802,12 +1823,7 @@ vshReadlineOptionsGenerator(const char *text, int state)
             if (strncmp(name, text + 2, len - 2))
                 continue;
         }
-        res = malloc(strlen(name) + 3);
-        if (res == NULL) {
-            fprintf(stderr, "Failed to allocate %d bytes\n", 
-                    (int) strlen(name) + 3);
-            exit(1);
-        }
+        res = vshMalloc(NULL, strlen(name) + 3);
         sprintf(res, "--%s", name);
         return res;
     }
@@ -1986,11 +2002,7 @@ vshParseArgv(vshControl * ctl, int argc, char **argv)
         for (i = end; i < argc; i++)
             sz += strlen(argv[i]) + 1;  /* +1 is for blank space between items */
 
-        cmdstr = calloc(sz + 1, 1);
-        if (cmdstr == NULL) {
-            fprintf(stderr, "Failed to allocate %d bytes\n", sz + 1);
-            exit(1);
-        }
+        cmdstr = vshCalloc(ctl, sz + 1, 1);
 
         for (i = end; i < argc; i++) {
             strncat(cmdstr, argv[i], sz);
