@@ -556,15 +556,15 @@ xenStoreDomainLookupByName(virConnectPtr conn, const char *name)
     if (!found)
         return(NULL);
 
-    ret = (virDomainPtr) malloc(sizeof(virDomain));
-    if (ret == NULL)
+    ret = virGetDomain(conn, name, NULL);
+    if (ret == NULL) {
+        virXenStoreError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
+	if (path != NULL)
+	    free(path);
 	goto done;
-    memset(ret, 0, sizeof(virDomain));
-    ret->magic = VIR_DOMAIN_MAGIC;
-    ret->conn = conn;
+    }
     ret->handle = id;
     ret->path = path;
-    ret->name = strdup(name);
 
 done:
     if (xenddomain != NULL)

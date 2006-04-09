@@ -1,5 +1,5 @@
 /*
- * hash.c: chained hash tables
+ * hash.c: chained hash tables for domain and domain/connection deallocations
  *
  * Reference: Your favorite introductory book on algorithms
  *
@@ -15,10 +15,13 @@
  * CONTRIBUTORS ACCEPT NO RESPONSIBILITY IN ANY CONCEIVABLE MANNER.
  *
  * Author: breese@users.sourceforge.net
+ *         Daniel Veillard <veillard@redhat.com>
  */
 
 #include <string.h>
 #include <stdlib.h>
+#include <libxml/threads.h>
+#include "internal.h"
 #include "hash.h"
 
 #define MAX_HASH_LEN 8
@@ -469,3 +472,254 @@ virHashRemoveEntry(virHashTablePtr table, const char *name,
         return (-1);
     }
 }
+
+/************************************************************************
+ *									*
+ *			Domain and Connections allocations		*
+ *									*
+ ************************************************************************/
+
+/**
+ * virHashError:
+ * @conn: the connection if available
+ * @error: the error noumber
+ * @info: extra information string
+ *
+ * Handle an error at the connection level
+ */
+static void
+virHashError(virConnectPtr conn, virErrorNumber error, const char *info)
+{
+    const char *errmsg;
+
+    if (error == VIR_ERR_OK)
+        return;
+
+    errmsg = __virErrorMsg(error, info);
+    __virRaiseError(conn, NULL, VIR_FROM_NONE, error, VIR_ERR_ERROR,
+                    errmsg, info, NULL, 0, 0, errmsg, info);
+}
+
+
+/**
+ * virDomainFreeName:
+ * @domain: a domain object
+ *
+ * Destroy the domain object, this is just used by the domain hash callback.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+static int
+virDomainFreeName(virDomainPtr domain, const char *name ATTRIBUTE_UNUSED)
+{
+    return (virDomainFree(domain));
+}
+
+/**
+ * virGetConnect:
+ *
+ * Allocates a new hypervisor connection structure
+ *
+ * Returns a new pointer or NULL in case of error.
+ */
+virConnectPtr
+virGetConnect(void) {
+    virConnectPtr ret;
+
+    ret = (virConnectPtr) malloc(sizeof(virConnect));
+    if (ret == NULL) {
+        virHashError(NULL, VIR_ERR_NO_MEMORY, "Allocating connection");
+        goto failed;
+    }
+    memset(ret, 0, sizeof(virConnect));
+    ret->magic = VIR_CONNECT_MAGIC;
+    ret->nb_drivers = 0;
+    ret->domains = virHashCreate(20);
+    if (ret->domains == NULL)
+        goto failed;
+    ret->domains_mux = xmlNewMutex();
+    if (ret->domains_mux == NULL)
+        goto failed;
+
+    ret->uses = 1;
+    return(ret);
+
+failed:
+    if (ret != NULL) {
+	if (ret->domains != NULL)
+	    virHashFree(ret->domains, (virHashDeallocator) virDomainFreeName);
+	if (ret->domains_mux != NULL)
+	    xmlFreeMutex(ret->domains_mux);
+        free(ret);
+    }
+    return(NULL);
+}
+
+/**
+ * virFreeConnect:
+ * @conn: the hypervisor connection
+ *
+ * Release the connection. if the use count drops to zero, the structure is
+ * actually freed.
+ *
+ * Returns the reference count or -1 in case of failure.
+ */
+int	
+virFreeConnect(virConnectPtr conn) {
+    int ret;
+
+    if ((!VIR_IS_CONNECT(conn)) || (conn->domains_mux == NULL)) {
+        virHashError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(-1);
+    }
+    xmlMutexLock(conn->domains_mux);
+    conn->uses--;
+    ret = conn->uses;
+    if (ret > 0) {
+	xmlMutexUnlock(conn->domains_mux);
+	return(ret);
+    }
+
+    if (conn->domains != NULL)
+        virHashFree(conn->domains, (virHashDeallocator) virDomainFreeName);
+    if (conn->domains_mux != NULL)
+        xmlFreeMutex(conn->domains_mux);
+    free(conn);
+    return(0);
+}
+
+/**
+ * virGetDomain:
+ * @conn: the hypervisor connection
+ * @name: pointer to the domain name or NULL
+ * @uuid: pointer to the uuid or NULL
+ *
+ * Lookup if the domain is already registered for that connection,
+ * if yes return a new pointer to it, if no allocate a new structure,
+ * and register it in the table. In any case a corresponding call to
+ * virFreeDomain() is needed to not leak data.
+ *
+ * Returns a pointer to the domain, or NULL in case of failure
+ */
+virDomainPtr
+virGetDomain(virConnectPtr conn, const char *name, const char *uuid) {
+    virDomainPtr ret = NULL;
+
+    if ((!VIR_IS_CONNECT(conn)) || ((name == NULL) && (uuid == NULL)) ||
+        (conn->domains_mux == NULL)) {
+        virHashError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(NULL);
+    }
+    xmlMutexLock(conn->domains_mux);
+
+    /* TODO search by UUID first as they are better differenciators */
+
+    ret = (virDomainPtr) virHashLookup(conn->domains, name);
+    if (ret != NULL) {
+        /* TODO check the UUID */
+	goto done;
+    }
+
+    /*
+     * not found, allocate a new one
+     */
+    ret = (virDomainPtr) malloc(sizeof(virDomain));
+    if (ret == NULL) {
+        virHashError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
+	goto error;
+    }
+    memset(ret, 0, sizeof(virDomain));
+    ret->name = strdup(name);
+    if (ret->name == NULL) {
+        virHashError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
+	goto error;
+    }
+    ret->magic = VIR_DOMAIN_MAGIC;
+    ret->conn = conn;
+    if (uuid != NULL)
+        memcpy(&(ret->uuid[0]), uuid, 16);
+
+    if (virHashAddEntry(conn->domains, name, ret) < 0) {
+        virHashError(conn, VIR_ERR_INTERNAL_ERROR,
+	             "Failed to add domain to connectio hash table");
+	goto error;
+    }
+    conn->uses++;
+done:
+    ret->uses++;
+    xmlMutexUnlock(conn->domains_mux);
+    return(ret);
+
+error:
+    xmlMutexUnlock(conn->domains_mux);
+    if (ret != NULL) {
+	if (ret->name != NULL)
+	    free(ret->name );
+	free(ret);
+    }
+    return(NULL);
+}
+
+/**
+ * virFreeDomain:
+ * @conn: the hypervisor connection
+ * @domain: the domain to release
+ *
+ * Release the given domain, if the reference count drops to zero, then
+ * the domain is really freed.
+ *
+ * Returns the reference count or -1 in case of failure.
+ */
+int
+virFreeDomain(virConnectPtr conn, virDomainPtr domain) {
+    int ret = 0;
+
+    if ((!VIR_IS_CONNECT(conn)) || (!VIR_IS_CONNECTED_DOMAIN(domain)) ||
+        (domain->conn != conn) || (conn->domains_mux == NULL)) {
+        virHashError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(-1);
+    }
+    xmlMutexLock(conn->domains_mux);
+
+    /*
+     * decrement the count for the domain
+     */
+    domain->uses--;
+    ret = domain->uses;
+    if (ret > 0)
+        goto done;
+
+    /* TODO search by UUID first as they are better differenciators */
+
+    if (virHashRemoveEntry(conn->domains, domain->name, NULL) < 0) {
+        virHashError(conn, VIR_ERR_INTERNAL_ERROR,
+	             "domain missing from connection hash table");
+        goto done;
+    }
+    domain->magic = -1;
+    domain->handle = -1;
+    if (domain->path != NULL)
+        free(domain->path);
+    if (domain->name)
+        free(domain->name);
+    free(domain);
+
+    /*
+     * decrement the count for the connection
+     */
+    conn->uses--;
+    if (conn->uses > 0)
+        goto done;
+    
+    if (conn->domains != NULL)
+        virHashFree(conn->domains, (virHashDeallocator) virDomainFreeName);
+    if (conn->domains_mux != NULL)
+        xmlFreeMutex(conn->domains_mux);
+    free(conn);
+    return(0);
+
+done:
+    xmlMutexUnlock(conn->domains_mux);
+    return(ret);
+}
+

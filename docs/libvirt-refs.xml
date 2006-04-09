@@ -1232,6 +1232,7 @@
           <ref name='_virDomainKernel'/>
         </word>
         <word name='kilobytes'>
+          <ref name='_virNodeInfo'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
         </word>
@@ -1319,9 +1320,6 @@
           <ref name='virDomainShutdown'/>
           <ref name='virDomainSuspend'/>
           <ref name='virGetLastError'/>
-        </word>
-        <word name='megabytes'>
-          <ref name='_virNodeInfo'/>
         </word>
         <word name='mem'>
           <ref name='_virNodeInfo'/>

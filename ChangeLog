@@ -1,3 +1,16 @@
+Sun Apr  9 13:10:34 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* TODO src/hash.[ch] src/internal.h src/libvirt.c src/xend_internal.c
+	  src/xs_internal.c: implementing domain pointers unification, thread
+	  safety and reference counting for domain and connections, this was
+	  the last critical change needed before making further progresses at
+	  the API level. Still a couple fo things TODO for this, unification
+	  at the Python level and adding UUID to hash. All domain/connect alloc
+	  and free routines are now centralized in hash.c
+	* docs/APIchunk1.html docs/libvirt-api.xml docs/libvirt-refs.xml
+	  docs/html/libvirt-libvirt.html: regenerated the docs, that doesn't
+	  change the API.
+
 Thu Apr  6 11:32:46 CEST 2006 Karel Zak <kzak@redhat.com> 
 
 	* src/virsh.c: use stdout for standard outputs, improve 

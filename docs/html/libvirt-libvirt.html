@@ -97,7 +97,7 @@ The content of this structure is not made public by the API.
 }
 </pre><h3><a name="virNodeInfo" id="virNodeInfo">Structure virNodeInfo</a></h3><pre class="programlisting">Structure virNodeInfo<br />struct _virNodeInfo {
     charmodel[32]	model	: string indicating the CPU model
-    unsigned long	memory	: memory size in megabytes
+    unsigned long	memory	: memory size in kilobytes
     unsigned int	cpus	: the number of active CPUs
     unsigned int	mhz	: expected CPU frequency
     unsigned int	nodes	: the number of NUMA cell, 1 for uniform

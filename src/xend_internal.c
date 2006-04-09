@@ -1586,41 +1586,37 @@ sexpr_to_xend_node_info(struct sexpr *root, virNodeInfoPtr info)
 static virDomainPtr
 sexpr_to_domain(virConnectPtr conn, struct sexpr *root)
 {
-    virDomainPtr ret;
+    virDomainPtr ret = NULL;
     char *dst_uuid = NULL;
+    char uuid[16];
     const char *name;
 
     if ((conn == NULL) || (root == NULL))
         return(NULL);
 
-    ret = (virDomainPtr) malloc(sizeof(virDomain));
-    if (ret == NULL) {
-        virXendError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
-	return(NULL);
-    }
-    memset(ret, 0, sizeof(virDomain));
-    ret->magic = VIR_DOMAIN_MAGIC;
-    ret->conn = conn;
-    ret->handle = sexpr_int(root, "domain/domid");
-    if (ret->handle < 0)
-        goto error;
-    dst_uuid = (char *) &(ret->uuid[0]);
+    dst_uuid = (char *) &uuid[0];
     if (sexpr_uuid(&dst_uuid, root, "domain/uuid") == NULL)
         goto error;
     name = sexpr_node(root, "domain/name");
     if (name == NULL)
         goto error;
-    ret->name = strdup(name);
-    if (ret->name == NULL)
+
+    ret = virGetDomain(conn, name, &uuid[0]);
+    if (ret == NULL) {
+        virXendError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
+	return(NULL);
+    }
+    ret->handle = sexpr_int(root, "domain/domid");
+    if (ret->handle < 0)
         goto error;
 
     return (ret);
+
 error:
     virXendError(conn, VIR_ERR_INTERNAL_ERROR,
                  "failed to parse Xend domain informations");
-    if (ret->name != NULL)
-        free(ret->name );
-    free(ret);
+    if (ret != NULL)
+        virFreeDomain(conn, ret);
     return(NULL);
 }
 

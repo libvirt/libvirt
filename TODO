@@ -1,6 +1,3 @@
-Absolute TODOs:
-- thread protection, reentrancy, refcounting, etc ...
-
 TODO:
 - Create() API, how do we best keep flexibility and allow various
   specific environment and space for evolution (VMX)
@@ -12,6 +9,8 @@ TODO:
   to return a non-None object
 - Add uuid to XML format
 - add error handling hooks at the python level
+- object unicity for domains at the Python level
+- UUID lookup in hash.c
 
 virsh TODO:
 - decide where will be default directory for domains configurations (/etc/xen/domains/* ?)
@@ -48,3 +47,4 @@ Done:
 - UUID based lookup and naming
 - Error API similar to libxml2 structured API
 - extract error messages from the Xend rpc
+- thread protection, reentrancy, refcounting, etc ...

@@ -94,6 +94,7 @@ extern "C" {
 struct _virConnect {
     unsigned int magic;     /* specific value to check */
 
+    int uses;               /* reference count */
     /* the list of available drivers for that connection */
     virDriverPtr      drivers[MAX_DRIVERS];
     int               nb_drivers;
@@ -137,6 +138,7 @@ enum {
 */
 struct _virDomain {
     unsigned int magic;     /* specific value to check */
+    int uses;               /* reference count */
     virConnectPtr conn;     /* pointer back to the connection */
     char *name;             /* the domain external name */
     char *path;             /* the domain internal path */
@@ -152,6 +154,11 @@ char *virDomainGetVM(virDomainPtr domain);
 char *virDomainGetVMInfo(virDomainPtr domain,
 			 const char *vm, const char *name);
 
+/************************************************************************
+ *									*
+ *		API for error handling					*
+ *									*
+ ************************************************************************/
 void __virRaiseError(virConnectPtr conn,
 		     virDomainPtr dom,
 		     int domain,
@@ -162,6 +169,20 @@ void __virRaiseError(virConnectPtr conn,
 		     const char *str3,
 		     int int1, int int2, const char *msg, ...);
 const char *__virErrorMsg(virErrorNumber error, const char *info);
+
+/************************************************************************
+ *									*
+ *		API for domain/connections (de)allocations		*
+ *									*
+ ************************************************************************/
+
+virConnectPtr	virGetConnect	(void);
+int		virFreeConnect	(virConnectPtr conn);
+virDomainPtr	virGetDomain	(virConnectPtr conn,
+				 const char *name,
+				 const char *uuid);
+int		virFreeDomain	(virConnectPtr conn,
+				 virDomainPtr domain);
 
 #ifdef __cplusplus
 }

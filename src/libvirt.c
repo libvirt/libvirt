@@ -25,7 +25,6 @@
 #include "xen_internal.h"
 #include "xend_internal.h"
 #include "xs_internal.h"
-#include "hash.h"
 #include "xml.h"
 
 
@@ -35,8 +34,6 @@
  * - use reference counting to garantee coherent pointer state ?
  * - memory wrappers for malloc/free ?
  */
-
-static int virDomainFreeName(virDomainPtr domain, const char *name);
 
 static virDriverPtr virDriverTab[MAX_DRIVERS];
 static int initialized = 0;
@@ -222,14 +219,11 @@ virConnectOpen(const char *name)
     if (!initialized)
         virInitialize();
 
-    ret = (virConnectPtr) malloc(sizeof(virConnect));
+    ret = virGetConnect();
     if (ret == NULL) {
         virLibConnError(NULL, VIR_ERR_NO_MEMORY, "Allocating connection");
         goto failed;
     }
-    memset(ret, 0, sizeof(virConnect));
-    ret->magic = VIR_CONNECT_MAGIC;
-    ret->nb_drivers = 0;
 
     for (i = 0;i < MAX_DRIVERS;i++) {
         if ((virDriverTab[i] != NULL) && (virDriverTab[i]->open != NULL)) {
@@ -252,14 +246,6 @@ virConnectOpen(const char *name)
 	goto failed;
     }
 
-    ret->domains = virHashCreate(20);
-    if (ret->domains == NULL)
-        goto failed;
-    ret->domains_mux = xmlNewMutex();
-    if (ret->domains_mux == NULL)
-        goto failed;
-    ret->flags = 0;
-
     return (ret);
 
 failed:
@@ -268,11 +254,7 @@ failed:
 	    if ((ret->drivers[i] != NULL) && (ret->drivers[i]->close != NULL))
 	        ret->drivers[i]->close(ret);
 	}
-	if (ret->domains != NULL)
-	    virHashFree(ret->domains, (virHashDeallocator) virDomainFreeName);
-	if (ret->domains_mux != NULL)
-	    xmlFreeMutex(ret->domains_mux);
-        free(ret);
+	virFreeConnect(ret);
     }
     return (NULL);
 }
@@ -296,14 +278,11 @@ virConnectOpenReadOnly(const char *name)
     if (!initialized)
         virInitialize();
 
-    ret = (virConnectPtr) malloc(sizeof(virConnect));
+    ret = virGetConnect();
     if (ret == NULL) {
         virLibConnError(NULL, VIR_ERR_NO_MEMORY, "Allocating connection");
         goto failed;
     }
-    memset(ret, 0, sizeof(virConnect));
-    ret->magic = VIR_CONNECT_MAGIC;
-    ret->nb_drivers = 0;
 
     for (i = 0;i < MAX_DRIVERS;i++) {
         if ((virDriverTab[i] != NULL) && (virDriverTab[i]->open != NULL)) {
@@ -322,13 +301,6 @@ virConnectOpenReadOnly(const char *name)
 	    virLibConnError(NULL, VIR_ERR_NO_SUPPORT, name);
 	goto failed;
     }
-
-    ret->domains = virHashCreate(20);
-    if (ret->domains == NULL)
-        goto failed;
-    ret->domains_mux = xmlNewMutex();
-    if (ret->domains_mux == NULL)
-        goto failed;
     ret->flags = VIR_CONNECT_RO;
 
     return (ret);
@@ -339,27 +311,9 @@ failed:
 	    if ((ret->drivers[i] != NULL) && (ret->drivers[i]->close != NULL))
 	        ret->drivers[i]->close(ret);
 	}
-	if (ret->domains != NULL)
-	    virHashFree(ret->domains, (virHashDeallocator) virDomainFreeName);
-	if (ret->domains_mux != NULL)
-	    xmlFreeMutex(ret->domains_mux);
-        free(ret);
+	virFreeConnect(ret);
     }
     return (NULL);
-}
-
-/**
- * virDomainFreeName:
- * @domain: a domain object
- *
- * Destroy the domain object, this is just used by the domain hash callback.
- *
- * Returns 0 in case of success and -1 in case of failure.
- */
-static int
-virDomainFreeName(virDomainPtr domain, const char *name ATTRIBUTE_UNUSED)
-{
-    return (virDomainFree(domain));
 }
 
 /**
@@ -376,20 +330,10 @@ virDomainFreeName(virDomainPtr domain, const char *name ATTRIBUTE_UNUSED)
 int
 virConnectClose(virConnectPtr conn)
 {
-    int i;
-
     if (!VIR_IS_CONNECT(conn))
         return (-1);
-    virHashFree(conn->domains, (virHashDeallocator) virDomainFreeName);
-    conn->domains = NULL;
-    xmlFreeMutex(conn->domains_mux);
-    conn->domains_mux = NULL;
-    for (i = 0;i < conn->nb_drivers;i++) {
-	if ((conn->drivers[i] != NULL) && (conn->drivers[i]->close != NULL))
-	    conn->drivers[i]->close(conn);
-    }
-    conn->magic = -1;
-    free(conn);
+    if (virFreeConnect(conn) < 0)
+        return (-1);
     return (0);
 }
 
@@ -663,26 +607,23 @@ virDomainLookupByID(virConnectPtr conn, int id)
        }
        free(names);
     }
+    if (name == NULL)
+        goto error;
 
-    ret = (virDomainPtr) malloc(sizeof(virDomain));
+    ret = virGetDomain(conn, name, &uuid[0]);
     if (ret == NULL) {
+        virLibConnError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
         goto error;
     }
-    memset(ret, 0, sizeof(virDomain));
-    ret->magic = VIR_DOMAIN_MAGIC;
-    ret->conn = conn;
     ret->handle = id;
     ret->path = path;
-    ret->name = name;
-    memcpy(&ret->uuid[0], uuid, 16);
-    if (ret->name == NULL) {
-        goto error;
-    }
+    if (name != NULL)
+        free(name);
 
     return (ret);
-  error:
-    if (ret != NULL)
-        free(ret);
+error:
+    if (name != NULL)
+        free(name);
     if (path != NULL)
         free(path);
     return (NULL);
@@ -737,19 +678,13 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     if (name == NULL)
         return (NULL);
 
-    ret = (virDomainPtr) malloc(sizeof(virDomain));
+    ret = virGetDomain(conn, name, &uuid[0]);
     if (ret == NULL) {
         if (name != NULL)
             free(name);
         return (NULL);
     }
-    memset(ret, 0, sizeof(virDomain));
-    ret->magic = VIR_DOMAIN_MAGIC;
-    ret->conn = conn;
     ret->handle = id;
-    ret->name = name;
-    ret->path = 0;
-    memcpy(ret->uuid, uuid, 16);
 
     return (ret);
 }
@@ -847,14 +782,9 @@ virDomainFree(virDomainPtr domain)
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
-    domain->magic = -1;
-    domain->handle = -1;
-    if (domain->path != NULL)
-        free(domain->path);
-    if (domain->name)
-        free(domain->name);
-    free(domain);
-    return (0);
+    if (virFreeDomain(domain->conn, domain) < 0)
+        return (-1);
+    return(0);
 }
 
 /**

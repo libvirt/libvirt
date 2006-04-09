@@ -237,7 +237,7 @@
     <typedef name='virErrorPtr' file='virterror' type='virError *'/>
     <struct name='virNodeInfo' file='libvirt' type='struct _virNodeInfo'>
       <field name='model' type='charmodel[32]' info=' string indicating the CPU model'/>
-      <field name='memory' type='unsigned long' info=' memory size in megabytes'/>
+      <field name='memory' type='unsigned long' info=' memory size in kilobytes'/>
       <field name='cpus' type='unsigned int' info=' the number of active CPUs'/>
       <field name='mhz' type='unsigned int' info=' expected CPU frequency'/>
       <field name='nodes' type='unsigned int' info=' the number of NUMA cell, 1 for uniform mem access'/>
