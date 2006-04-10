@@ -877,6 +877,30 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
     }
     xmlXPathFreeObject(obj);
 
+    obj = xmlXPathEval(BAD_CAST "string(/domain/on_poweroff[1])", ctxt);
+    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
+        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
+	virBufferVSprintf(&buf, "(on_poweroff '%s')", obj->stringval);
+	bootloader = 1;
+    }
+    xmlXPathFreeObject(obj);
+
+    obj = xmlXPathEval(BAD_CAST "string(/domain/on_reboot[1])", ctxt);
+    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
+        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
+	virBufferVSprintf(&buf, "(on_reboot '%s')", obj->stringval);
+	bootloader = 1;
+    }
+    xmlXPathFreeObject(obj);
+
+    obj = xmlXPathEval(BAD_CAST "string(/domain/on_crash[1])", ctxt);
+    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
+        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
+	virBufferVSprintf(&buf, "(on_crash '%s')", obj->stringval);
+	bootloader = 1;
+    }
+    xmlXPathFreeObject(obj);
+
     /* analyze of the os description */
     virBufferAdd(&buf, "(image ", 7);
     obj = xmlXPathEval(BAD_CAST "/domain/os[1]", ctxt);

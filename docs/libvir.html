@@ -309,6 +309,29 @@ children in no specific order:</p>
   <li>target: and optional target indicating the device name.</li>
 </ul>
 
+<p>Life cycle actions for the domain can also be expressed in the XML format,
+they drive what should be happening if the domain crashes, is rebooted or is
+poweroff. There is various actions possible when this happen:</p>
+<ul>
+  <li>destroy: The domain is cleaned up (that's the default normal processing
+    in Xen)</li>
+  <li>restart: A new domain is started in place of the old one with the same
+    configuration parameters</li>
+  <li>preserve: The domain will remain in memory until it is destroyed
+    manually, it won't be running but allows for post-mortem debugging</li>
+  <li>rename-restart: a variant of the previous one but where the old domain
+    is renamed before being saved to allow a restart</li>
+</ul>
+
+<p>The following could be used for a Xen production system:</p>
+<pre>&lt;domain&gt;
+  ...
+  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
+  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
+  &lt;on_crash&gt;rename-restart&lt;/on_crash&gt;
+  ...
+&lt;/domain&gt;</pre>
+
 <p>While the format may be extended in various ways as support for more
 hypervisor types and features are added, it is expected that this core subset
 will remain functional in spite of the evolution of the library.</p>

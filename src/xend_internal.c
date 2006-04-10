@@ -1400,6 +1400,16 @@ xend_parse_sexp_desc(struct sexpr *root)
                       (int) (sexpr_u64(root, "domain/maxmem") << 10));
     virBufferVSprintf(&buf, "  <vcpu>%d</vcpu>\n",
                       sexpr_int(root, "domain/vcpus"));
+    tmp = sexpr_node(root, "domain/on_poweroff");
+    if (tmp != NULL)
+	virBufferVSprintf(&buf, "  <on_poweroff>%s</on_poweroff>\n", tmp);
+    tmp = sexpr_node(root, "domain/on_reboot");
+    if (tmp != NULL)
+	virBufferVSprintf(&buf, "  <on_reboot>%s</on_reboot>\n", tmp);
+    tmp = sexpr_node(root, "domain/on_crash");
+    if (tmp != NULL)
+	virBufferVSprintf(&buf, "  <on_crash>%s</on_crash>\n", tmp);
+
     virBufferAdd(&buf, "  <devices>\n", 12);
     for (cur = root; cur->kind == SEXPR_CONS; cur = cur->cdr) {
         node = cur->car;

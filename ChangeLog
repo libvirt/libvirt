@@ -1,3 +1,11 @@
+Mon Apr 10 09:32:29 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c src/xml.c: applied patch from Jim Fehlig
+	  for lifecycle events
+	* docs/format.html docs/libvir.html: added the associated docs for
+	  the new constructs
+	* TODO: small update
+
 Sun Apr  9 13:10:34 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* TODO src/hash.[ch] src/internal.h src/libvirt.c src/xend_internal.c

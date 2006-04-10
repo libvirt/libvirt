@@ -2,7 +2,7 @@ TODO:
 - Create() API, how do we best keep flexibility and allow various
   specific environment and space for evolution (VMX)
 - track change of xend API & XML-RPC
-- API for the Node: extracting informations, selecting scheduling policy
+- API for the Node: selecting scheduling policy
 - better resources allocation APIs (%CPU, set memory)
 - DTD/RNG/XSD schemas for the XML Domain descriptions
 - in python bindings raise an exception if a lookup or connection fails
@@ -31,7 +31,7 @@ Would-be-nice TODO:
 - man page for virsh and the libraries entry points
 - support for QEmu and other virtualization engines
 - more documentation and examples on using the toolkit
-- examples and docs for the principle in the error handling code
+- examples for the error handling code
 
 Cleanup:
 - now that libxml2 is linked in, drop hash.[ch] and get back to libxml2 ones ?
@@ -47,4 +47,6 @@ Done:
 - UUID based lookup and naming
 - Error API similar to libxml2 structured API
 - extract error messages from the Xend rpc
+- API for the Node: extracting informations
+- docs for the principle in the error handling code
 - thread protection, reentrancy, refcounting, etc ...
