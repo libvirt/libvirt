@@ -5,6 +5,25 @@
        http://libvirt.org/news.html
 
 Releases
+0.1.0: Apr 10 2006:
+   - building fixes: --with-xen-distdir option (Ronald Aigner), out of tree
+    build and pkginfo cflag fix (Daniel Berrange)
+   - enhancement and fixes of the XML description format (David Lutterkort
+    and Jim Fehlig)
+   - new APIs: for Node information and Reboot
+   - internal code cleanup: refactoring internals into a driver model, more
+    error handling, structure sharing, thread safety and ref counting
+   - bug fixes: error message (Jim Meyering), error allocation in virsh (Jim
+    Meyering), virDomainLookupByID (Jim Fehlig), 
+   - documentation: updates on architecture, and format, typo fix (Jim
+    Meyering)
+   - bindings: exception handling in examples (Jim Meyering), perl ones out
+    of tree (Daniel Berrange)
+   - virsh: more options, create, nodeinfo (Karel Zak), renaming of some
+    options (Karel Zak), use stderr only for errors (Karel Zak), man page
+    (Andrew Puch)
+
+
 0.0.6: Feb 28 2006:
    - add UUID lookup and extract API
    - add error handling APIs both synchronous and asynchronous

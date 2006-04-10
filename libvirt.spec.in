@@ -72,6 +72,7 @@ rm -fr %{buildroot}
 %defattr(-, root, root)
 
 %doc AUTHORS ChangeLog NEWS README COPYING.LIB TODO
+%doc %{_mandir}/man1/virsh.1*
 %{_bindir}/virsh
 %{_libdir}/lib*.so.*
 
@@ -101,6 +102,13 @@ rm -fr %{buildroot}
 %doc python/libvirtclass.txt
 
 %changelog
+* Mon Apr 10 2006 Daniel Veillard <veillard@redhat.com> 0.1.0-1
+- various fixes
+- new APIs: for Node information and Reboot
+- virsh improvements and extensions
+- documentation updates and man page
+- enhancement and fixes of the XML description format
+
 * Tue Feb 28 2006 Daniel Veillard <veillard@redhat.com> 0.0.6-1
 - added error handling APIs
 - small bug fixes

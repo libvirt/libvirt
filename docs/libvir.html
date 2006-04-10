@@ -33,6 +33,26 @@ development of libvirt, it is preferable when possible to just use the <a
 href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p>
 
+<h3>0.1.0: Apr 10 2006</h3>
+<ul>
+  <li>building fixes: --with-xen-distdir option (Ronald Aigner), out of tree
+    build and pkginfo cflag fix (Daniel Berrange)</li>
+  <li>enhancement and fixes of the XML description format (David Lutterkort
+    and Jim Fehlig)</li>
+  <li>new APIs: for Node information and Reboot</li>
+  <li>internal code cleanup: refactoring internals into a driver model, more
+    error handling, structure sharing, thread safety and ref counting</li>
+  <li>bug fixes: error message (Jim Meyering), error allocation in virsh (Jim
+    Meyering), virDomainLookupByID (Jim Fehlig), </li>
+  <li>documentation: updates on architecture, and format, typo fix (Jim
+    Meyering)</li>
+  <li>bindings: exception handling in examples (Jim Meyering), perl ones out
+    of tree (Daniel Berrange)</li>
+  <li>virsh: more options, create, nodeinfo (Karel Zak), renaming of some
+    options (Karel Zak), use stderr only for errors (Karel Zak), man page
+    (Andrew Puch)</li>
+</ul>
+
 <h3>0.0.6: Feb 28 2006</h3>
 <ul>
   <li>add UUID lookup and extract API</li>
