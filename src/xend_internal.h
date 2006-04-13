@@ -532,25 +532,6 @@ int xenDaemonOpen_unix(virConnectPtr xend, const char *path);
     int xenDaemonDomainCreateLinux(virConnectPtr xend, const char *sexpr);
 
 /**
- * \brief Set the memory allocation for a domain
- * \param xend A xend instance
- * \param name The name of the domain
- * \param value The desired allocation in bytes
- * \return 0 for success; -1 (with errno) on error
- *
- * This method will set a target memory allocation for a given domain and
- * request that the guest meet this target.  The guest may or may not actually
- * achieve this target.  When this function returns, it does not signify that
- * the domain has actually reached that target.
- *
- * Memory for a domain can only be allocated up to the maximum memory setting.
- * There is no safe guard for allocations that are too small so be careful
- * when using this function to reduce a domain's memory usage.
- */
-    int xend_set_memory(virConnectPtr xend, const char *name,
-                        uint64_t value);
-
-/**
  * \brief Lookup the id of a domain
  * \param xend A xend instance
  * \param name The name of the domain
@@ -559,7 +540,7 @@ int xenDaemonOpen_unix(virConnectPtr xend, const char *path);
  *
  * This method looks up the ids of a domain
  */
-    int xenDaemonDomainLookupByName_ids(virConnectPtr xend,
+int xenDaemonDomainLookupByName_ids(virConnectPtr xend,
                             const char *name, unsigned char *uuid);
 
 
@@ -636,6 +617,7 @@ int xenDaemonDomainReboot(virDomainPtr domain, unsigned int flags);
 int xenDaemonDomainDestroy(virDomainPtr domain);
 int xenDaemonDomainSave(virDomainPtr domain, const char *filename);
 int xenDaemonDomainRestore(virConnectPtr conn, const char *filename);
+int xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory);
 int xenDaemonDomainSetMaxMemory(virDomainPtr domain, unsigned long memory);
 int xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info);
 char *xenDaemonDomainDumpXML(virDomainPtr domain);

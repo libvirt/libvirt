@@ -64,6 +64,7 @@ static virDriver xenDaemonDriver = {
     NULL, /* domainGetOSType */
     NULL, /* domainGetMaxMemory */
     xenDaemonDomainSetMaxMemory, /* domainSetMaxMemory */
+    xenDaemonDomainSetMemory, /* domainMaxMemory */
     xenDaemonDomainGetInfo, /* domainGetInfo */
     xenDaemonDomainSave, /* domainSave */
     xenDaemonDomainRestore /* domainRestore */
@@ -1082,34 +1083,6 @@ xenDaemonDomainCreateLinux(virConnectPtr xend, const char *sexpr)
 }
 
 /**
- * xend_set_memory:
- * @xend: A xend instance
- * @name: The name of the domain
- * @value: The desired allocation in bytes
- *
- * This method will set a target memory allocation for a given domain and
- * request that the guest meet this target.  The guest may or may not actually
- * achieve this target.  When this function returns, it does not signify that
- * the domain has actually reached that target.
- *
- * Memory for a domain can only be allocated up to the maximum memory setting.
- * There is no safe guard for allocations that are too small so be careful
- * when using this function to reduce a domain's memory usage.
- *
- * Returns 0 for success; -1 (with errno) on error
- */
-int
-xend_set_memory(virConnectPtr xend, const char *name, uint64_t value)
-{
-    char buf[1024];
-
-    snprintf(buf, sizeof(buf), "%llu", value >> 20);
-    return xend_op(xend, name, "op", "mem_target_set", "target", buf,
-                   NULL);
-}
-
-
-/**
  * xenDaemonDomainLookupByName_ids:
  * @xend: A xend instance
  * @domname: The name of the domain
@@ -1886,8 +1859,7 @@ xenDaemonDomainGetMaxMemory(virDomainPtr domain)
  *
  * This method will set the maximum amount of memory that can be allocated to
  * a domain.  Please note that a domain is able to allocate up to this amount
- * on its own (although under normal circumstances, memory allocation for a
- * domain is only done through xend_set_memory()).
+ * on its own.
  *
  * Returns 0 for success; -1 (with errno) on error
  */
@@ -1904,6 +1876,37 @@ xenDaemonDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
     snprintf(buf, sizeof(buf), "%lu", memory >> 10);
     return xend_op(domain->conn, domain->name, "op", "maxmem_set", "memory",
                    buf, NULL);
+}
+
+/**
+ * xenDaemonDomainSetMemory:
+ * @domain: pointer to the Domain block
+ * @memory: The target memory in kilobytes
+ *
+ * This method will set a target memory allocation for a given domain and
+ * request that the guest meet this target.  The guest may or may not actually
+ * achieve this target.  When this function returns, it does not signify that
+ * the domain has actually reached that target.
+ *
+ * Memory for a domain can only be allocated up to the maximum memory setting.
+ * There is no safe guard for allocations that are too small so be careful
+ * when using this function to reduce a domain's memory usage.
+ *
+ * Returns 0 for success; -1 (with errno) on error
+ */
+int
+xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory)
+{
+    char buf[1024];
+
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return(-1);
+    }
+    snprintf(buf, sizeof(buf), "%lu", memory >> 10);
+    return xend_op(domain->conn, domain->name, "op", "mem_target_set",
+                   "target", buf, NULL);
 }
 
 /**

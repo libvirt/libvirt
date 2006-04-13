@@ -610,7 +610,7 @@ virDomainLookupByID(virConnectPtr conn, int id)
     if (name == NULL)
         goto error;
 
-    ret = virGetDomain(conn, name, &uuid[0]);
+    ret = virGetDomain(conn, name, (const char *)&uuid[0]);
     if (ret == NULL) {
         virLibConnError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
         goto error;
@@ -678,7 +678,7 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     if (name == NULL)
         return (NULL);
 
-    ret = virGetDomain(conn, name, &uuid[0]);
+    ret = virGetDomain(conn, name, (const char *)&uuid[0]);
     if (ret == NULL) {
         if (name != NULL)
             free(name);
@@ -1188,8 +1188,8 @@ virDomainGetMaxMemory(virDomainPtr domain)
 int
 virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
 {
-    int ret;
-    char s[256], v[30];
+    int ret = -1 , i;
+    virConnectPtr conn;
 
     if (memory < 4096) {
         virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
@@ -1203,32 +1203,77 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
+    conn = domain->conn;
     if (domain->conn->flags & VIR_CONNECT_RO)
         return (-1);
 
-    ret = xenDaemonDomainSetMaxMemory(domain, memory);
-    if (ret == 0)
-        return(0);
+    /*
+     * in that case instead of trying only though one method try all availble.
+     * If needed that can be changed back if it's a performcance problem.
+     */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainSetMaxMemory != NULL)) {
+	    if (conn->drivers[i]->domainSetMaxMemory(domain, memory) == 0)
+	        ret = 0;
+	}
+    }
+    if (ret != 0) {
+        virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+        return (-1);
+    }
+    return (ret);
+}
 
-    ret = xenHypervisorSetMaxMemory(domain, memory);
-    if (ret < 0)
+/**
+ * virDomainSetMemory:
+ * @domain: a domain object or NULL
+ * @memory: the memory size in kilobytes
+ * 
+ * Dynamically change the target amount of physical memory allocated to a
+ * domain. If domain is NULL, then this change the amount of memory reserved
+ * to Domain0 i.e. the domain where the application runs.
+ * This function may requires priviledged access to the hypervisor.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainSetMemory(virDomainPtr domain, unsigned long memory)
+{
+    int ret = -1 , i;
+    virConnectPtr conn;
+
+    if (memory < 4096) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+    if (domain == NULL) {
+        TODO
+	return (-1);
+    }
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
+    }
+    conn = domain->conn;
+    if (domain->conn->flags & VIR_CONNECT_RO)
         return (-1);
 
-    if (domain->conn->xshandle != NULL) {
-	/*
-	 * try to update at the Xenstore level too
-	 * Failing to do so should not be considered fatal though as long
-	 * as the hypervisor call succeeded
-	 */
-	snprintf(s, 255, "/local/domain/%d/memory/target", domain->handle);
-	s[255] = 0;
-	snprintf(v, 29, "%lu", memory);
-	v[30] = 0;
-
-	if (!xs_write(domain->conn->xshandle, 0, &s[0], &v[0], strlen(v)))
-	    ret = -1;
+    /*
+     * in that case instead of trying only though one method try all availble.
+     * If needed that can be changed back if it's a performcance problem.
+     */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainSetMemory != NULL)) {
+	    if (conn->drivers[i]->domainSetMemory(domain, memory) == 0)
+	        ret = 0;
+	}
     }
-
+    if (ret != 0) {
+        virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+        return (-1);
+    }
     return (ret);
 }
 

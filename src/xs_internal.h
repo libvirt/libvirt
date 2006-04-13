@@ -29,7 +29,7 @@ int     	xenStoreListDomains	(virConnectPtr conn,
 virDomainPtr 	xenStoreDomainLookupByName(virConnectPtr conn,
 					 const char *name);
 unsigned long 	xenStoreGetMaxMemory	(virDomainPtr domain);
-int		xenStoreDomainSetMaxMemory(virDomainPtr domain,
+int		xenStoreDomainSetMemory	(virDomainPtr domain,
 		      	  	 	 unsigned long memory);
 unsigned long 	xenStoreDomainGetMaxMemory(virDomainPtr domain);
 int 		xenStoreDomainShutdown	(virDomainPtr domain);

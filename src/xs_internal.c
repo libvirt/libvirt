@@ -55,7 +55,8 @@ static virDriver xenStoreDriver = {
     NULL, /* domainGetUUID */
     NULL, /* domainGetOSType */
     xenStoreDomainGetMaxMemory, /* domainGetMaxMemory */
-    xenStoreDomainSetMaxMemory, /* domainSetMaxMemory */
+    NULL, /* domainSetMaxMemory */
+    xenStoreDomainSetMemory, /* domainSetMemory */
     xenStoreGetDomainInfo, /* domainGetInfo */
     NULL, /* domainSave */
     NULL /* domainRestore */
@@ -385,7 +386,7 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
 }
 
 /**
- * xenStoreDomainSetMaxMemory:
+ * xenStoreDomainSetMemory:
  * @domain: pointer to the domain block
  * @memory: the max memory size in kilobytes.
  *
@@ -394,7 +395,7 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xenStoreDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
+xenStoreDomainSetMemory(virDomainPtr domain, unsigned long memory)
 {
     int ret;
     char value[20];

@@ -101,6 +101,7 @@
     <reference name='virDomainResume' href='html/libvirt-libvirt.html#virDomainResume'/>
     <reference name='virDomainSave' href='html/libvirt-libvirt.html#virDomainSave'/>
     <reference name='virDomainSetMaxMemory' href='html/libvirt-libvirt.html#virDomainSetMaxMemory'/>
+    <reference name='virDomainSetMemory' href='html/libvirt-libvirt.html#virDomainSetMemory'/>
     <reference name='virDomainShutdown' href='html/libvirt-libvirt.html#virDomainShutdown'/>
     <reference name='virDomainState' href='html/libvirt-libvirt.html#virDomainState'/>
     <reference name='virDomainSuspend' href='html/libvirt-libvirt.html#virDomainSuspend'/>
@@ -228,6 +229,7 @@
       <ref name='virDomainResume'/>
       <ref name='virDomainSave'/>
       <ref name='virDomainSetMaxMemory'/>
+      <ref name='virDomainSetMemory'/>
       <ref name='virDomainShutdown'/>
       <ref name='virDomainState'/>
       <ref name='virDomainSuspend'/>
@@ -286,6 +288,7 @@
     </type>
     <type name='unsigned long'>
       <ref name='virDomainSetMaxMemory'/>
+      <ref name='virDomainSetMemory'/>
     </type>
     <type name='unsigned long *'>
       <ref name='virConnectGetVersion'/>
@@ -325,6 +328,7 @@
       <ref name='virDomainResume'/>
       <ref name='virDomainSave'/>
       <ref name='virDomainSetMaxMemory'/>
+      <ref name='virDomainSetMemory'/>
       <ref name='virDomainShutdown'/>
       <ref name='virDomainSuspend'/>
     </type>
@@ -406,6 +410,7 @@
       <ref name='virDomainResume'/>
       <ref name='virDomainSave'/>
       <ref name='virDomainSetMaxMemory'/>
+      <ref name='virDomainSetMemory'/>
       <ref name='virDomainShutdown'/>
       <ref name='virDomainState'/>
       <ref name='virDomainSuspend'/>
@@ -510,9 +515,11 @@
         <word name='Domain0'>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
         </word>
         <word name='Dynamically'>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
         </word>
       </letter>
       <letter name='E'>
@@ -586,6 +593,7 @@
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainLookupByUUID'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
           <ref name='virGetLastError'/>
           <ref name='virGetVersion'/>
           <ref name='virSetErrorFunc'/>
@@ -673,6 +681,7 @@
           <ref name='virDomainResume'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
           <ref name='virDomainSuspend'/>
         </word>
         <word name='Try'>
@@ -720,6 +729,7 @@
           <ref name='virDomainDestroy'/>
           <ref name='virDomainResume'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
           <ref name='virDomainSuspend'/>
         </word>
         <word name='accesses'>
@@ -753,6 +763,7 @@
           <ref name='virDomainGetInfo'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
           <ref name='virDomainSuspend'/>
           <ref name='virNodeGetInfo'/>
         </word>
@@ -765,6 +776,7 @@
         <word name='amount'>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
         </word>
         <word name='anymore'>
           <ref name='virDomainSave'/>
@@ -773,6 +785,7 @@
           <ref name='virConnectClose'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
         </word>
         <word name='applications'>
           <ref name='virInitialize'/>
@@ -887,6 +900,7 @@
         </word>
         <word name='change'>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
         </word>
         <word name='clean'>
           <ref name='virResetError'/>
@@ -1038,6 +1052,7 @@
           <ref name='virDomainResume'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
           <ref name='virDomainShutdown'/>
           <ref name='virDomainSuspend'/>
           <ref name='virGetVersion'/>
@@ -1116,6 +1131,7 @@
           <ref name='virDomainDestroy'/>
           <ref name='virDomainResume'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
           <ref name='virDomainSuspend'/>
           <ref name='virErrorFunc'/>
           <ref name='virSetErrorFunc'/>
@@ -1235,6 +1251,7 @@
           <ref name='_virNodeInfo'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
         </word>
         <word name='knowing'>
           <ref name='virDomainShutdown'/>
@@ -1317,6 +1334,7 @@
           <ref name='virDomainReboot'/>
           <ref name='virDomainResume'/>
           <ref name='virDomainSave'/>
+          <ref name='virDomainSetMemory'/>
           <ref name='virDomainShutdown'/>
           <ref name='virDomainSuspend'/>
           <ref name='virGetLastError'/>
@@ -1330,6 +1348,7 @@
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
           <ref name='virDomainSuspend'/>
         </word>
         <word name='message'>
@@ -1444,6 +1463,7 @@
           <ref name='virDomainResume'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
           <ref name='virDomainShutdown'/>
           <ref name='virDomainSuspend'/>
         </word>
@@ -1512,6 +1532,7 @@
         <word name='physical'>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
         </word>
         <word name='pointed'>
           <ref name='virResetError'/>
@@ -1557,6 +1578,7 @@
           <ref name='virDomainDestroy'/>
           <ref name='virDomainResume'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
           <ref name='virDomainSuspend'/>
         </word>
         <word name='problem'>
@@ -1620,11 +1642,13 @@
           <ref name='virDomainDestroy'/>
           <ref name='virDomainResume'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
           <ref name='virDomainSuspend'/>
         </word>
         <word name='reserved'>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
         </word>
         <word name='reset'>
           <ref name='virConnSetErrorFunc'/>
@@ -1685,6 +1709,7 @@
         <word name='runs'>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
         </word>
       </letter>
       <letter name='s'>
@@ -1725,6 +1750,7 @@
           <ref name='virConnectListDomains'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
         </word>
         <word name='socket'>
           <ref name='_virNodeInfo'/>
@@ -1786,6 +1812,7 @@
           <ref name='virDomainResume'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
           <ref name='virDomainShutdown'/>
           <ref name='virDomainSuspend'/>
           <ref name='virInitialize'/>
@@ -1814,6 +1841,7 @@
         <word name='target'>
           <ref name='virConnCopyLastError'/>
           <ref name='virCopyLastError'/>
+          <ref name='virDomainSetMemory'/>
         </word>
         <word name='terminated'>
           <ref name='virConnectGetType'/>
@@ -1835,6 +1863,7 @@
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
         </word>
         <word name='there'>
           <ref name='virConnectClose'/>
@@ -1852,6 +1881,7 @@
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
           <ref name='virInitialize'/>
         </word>
         <word name='those'>
@@ -1990,6 +2020,7 @@
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainResume'/>
           <ref name='virDomainSetMaxMemory'/>
+          <ref name='virDomainSetMemory'/>
         </word>
         <word name='which'>
           <ref name='virConnGetLastError'/>

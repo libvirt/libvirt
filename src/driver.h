@@ -81,6 +81,9 @@ typedef int
 	(*virDrvDomainSetMaxMemory)	(virDomainPtr domain,
 					 unsigned long memory);
 typedef int
+	(*virDrvDomainSetMemory)	(virDomainPtr domain,
+					 unsigned long memory);
+typedef int
 	(*virDrvDomainGetInfo)		(virDomainPtr domain,
 					 virDomainInfoPtr info);
 typedef int
@@ -125,6 +128,7 @@ struct _virDriver {
 	virDrvDomainGetOSType		domainGetOSType;
 	virDrvDomainGetMaxMemory	domainGetMaxMemory;
 	virDrvDomainSetMaxMemory	domainSetMaxMemory;
+	virDrvDomainSetMemory		domainSetMemory;
 	virDrvDomainGetInfo		domainGetInfo;
 	virDrvDomainSave		domainSave;
 	virDrvDomainRestore		domainRestore;
