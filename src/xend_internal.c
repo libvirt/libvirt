@@ -395,9 +395,9 @@ xend_req(int fd, char *content, size_t n_content)
             if (0 > (int) ret)
                 return -1;
 
-            content[nbuf + ret + 1] = '\0';
+            content[nbuf + ret] = 0;
         } else {
-            content[nbuf + 1] = '\0';
+            content[nbuf] = 0;
         }
     } else { /* Unable to complete reading header */
         content[0] = 0;
@@ -489,6 +489,9 @@ xend_post(virConnectPtr xend, const char *path, const char *ops,
 
     if ((ret < 0) || (ret >= 300)) {
         virXendError(NULL, VIR_ERR_POST_FAILED, content);
+    } else if ((ret = 202) && (strstr(content, "failed") != NULL)) {
+        virXendError(NULL, VIR_ERR_POST_FAILED, content);
+        ret = -1;
     }
 
     return ret;

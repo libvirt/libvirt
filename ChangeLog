@@ -1,3 +1,8 @@
+Thu Apr 20 14:31:13 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: fix an uninitialized memory access in error
+	  reporting.
+
 Thu Apr 13 17:19:25 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvirt.h include/libvirt.h.in doc/*: added new entry point
