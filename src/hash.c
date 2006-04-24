@@ -723,3 +723,47 @@ done:
     return(ret);
 }
 
+/**
+ * virGetDomainByID:
+ * @conn: the hypervisor connection
+ * @id: the ID number for the domain
+ *
+ * Lookup if the domain ID is already registered for that connection,
+ * if yes return a new pointer to it, if no return NULL
+ *
+ * Returns a pointer to the domain, or NULL if not found
+ */
+virDomainPtr
+virGetDomainByID(virConnectPtr conn, int id) {
+    virDomainPtr ret = NULL, cur;
+    virHashEntryPtr iter, next;
+    virHashTablePtr table;
+    int key;
+
+    if ((!VIR_IS_CONNECT(conn)) || (id < 0)) {
+        virHashError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(NULL);
+    }
+    xmlMutexLock(conn->domains_mux);
+
+    table = conn->domains;
+    if ((table == NULL) || (table->nbElems == 0))
+        goto done;
+    for (key = 0;key < table->size;key++) {
+        if (table->table[key].valid == 0)
+	    continue;
+	iter = &(table->table[key]);
+	while (iter != NULL) {
+	    next = iter->next;
+	    cur = (virDomainPtr) iter->payload;
+	    if ((cur != NULL) && (cur->handle == id)) {
+	        ret = cur;
+		goto done;
+	    }
+	    iter = next;
+	}
+    }
+done:
+    xmlMutexUnlock(conn->domains_mux);
+    return(ret);
+}

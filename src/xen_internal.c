@@ -48,8 +48,8 @@ static virDriver xenHypervisorDriver = {
     NULL, /* type */
     xenHypervisorGetVersion, /* version */
     NULL, /* nodeGetInfo */
-    NULL, /* listDomains */
-    NULL, /* numOfDomains */
+    xenHypervisorListDomains, /* listDomains */
+    xenHypervisorNumOfDomains, /* numOfDomains */
     NULL, /* domainCreateLinux */
     NULL, /* domainLookupByID */
     NULL, /* domainLookupByUUID */
@@ -131,7 +131,7 @@ xenHypervisorOpen(virConnectPtr conn, const char *name, int flags)
     }
     conn->handle = ret;
 
-    return (ret);
+    return(0);
 }
 
 /**
@@ -234,6 +234,144 @@ xenHypervisorGetVersion(virConnectPtr conn, unsigned long *hvVer)
 }
 
 /**
+ * xenHypervisorNumOfDomains:
+ * @conn: pointer to the connection block
+ *
+ * Provides the number of active domains.
+ *
+ * Returns the number of domain found or -1 in case of error
+ */
+int
+xenHypervisorNumOfDomains(virConnectPtr conn)
+{
+    dom0_op_t op;
+    dom0_getdomaininfo_t *dominfos;
+    int ret, nbids;
+    static int last_maxids = 2;
+    int maxids = last_maxids;
+
+    if ((conn == NULL) || (conn->handle < 0))
+        return (-1);
+
+retry:
+    dominfos = malloc(maxids * sizeof(dom0_getdomaininfo_t));
+    if (dominfos == NULL) {
+        virXenError(VIR_ERR_NO_MEMORY, "failed to allocate %d domain info",
+	            maxids);
+	return(-1);
+    }
+    
+    memset(dominfos, 0, sizeof(dom0_getdomaininfo_t) * maxids);
+
+    if (mlock(dominfos, sizeof(dom0_getdomaininfo_t) * maxids) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " locking",
+                    sizeof(dom0_getdomaininfo_t) * maxids);
+	free(dominfos);
+        return (-1);
+    }
+
+    op.cmd = DOM0_GETDOMAININFOLIST;
+    op.u.getdomaininfolist.first_domain = (domid_t) 0;
+    op.u.getdomaininfolist.max_domains = maxids;
+    op.u.getdomaininfolist.buffer = dominfos;
+    op.u.getdomaininfolist.num_domains = maxids;
+
+    ret = xenHypervisorDoOp(conn->handle, &op);
+
+    if (munlock(dominfos, sizeof(dom0_getdomaininfo_t) * maxids) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " release",
+                    sizeof(dom0_getdomaininfo_t) * maxids);
+        ret = -1;
+    }
+
+    free(dominfos);
+
+    if (ret < 0)
+        return (-1);
+
+    nbids = op.u.getdomaininfolist.num_domains;
+    if (nbids == maxids) {
+        last_maxids *= 2;
+        maxids *= 2;
+	goto retry;
+    }
+    if ((nbids < 0) || (nbids > maxids))
+        return(-1);
+    return(nbids);
+}
+
+/**
+ * xenHypervisorListDomains:
+ * @conn: pointer to the connection block
+ * @ids: array to collect the list of IDs of active domains
+ * @maxids: size of @ids
+ *
+ * Collect the list of active domains, and store their ID in @maxids
+ *
+ * Returns the number of domain found or -1 in case of error
+ */
+int
+xenHypervisorListDomains(virConnectPtr conn, int *ids, int maxids)
+{
+    dom0_op_t op;
+    dom0_getdomaininfo_t *dominfos;
+    int ret, nbids, i;
+
+    if ((conn == NULL) || (conn->handle < 0) ||
+        (ids == NULL) || (maxids < 1))
+        return (-1);
+
+    dominfos = malloc(maxids * sizeof(dom0_getdomaininfo_t));
+    if (dominfos == NULL) {
+        virXenError(VIR_ERR_NO_MEMORY, "failed to allocate %d domain info",
+	            maxids);
+	return(-1);
+    }
+    
+    memset(dominfos, 0, sizeof(dom0_getdomaininfo_t) * maxids);
+    memset(ids, 0, maxids * sizeof(int));
+
+    if (mlock(dominfos, sizeof(dom0_getdomaininfo_t) * maxids) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " locking",
+                    sizeof(dom0_getdomaininfo_t) * maxids);
+	free(dominfos);
+        return (-1);
+    }
+
+    op.cmd = DOM0_GETDOMAININFOLIST;
+    op.u.getdomaininfolist.first_domain = (domid_t) 0;
+    op.u.getdomaininfolist.max_domains = maxids;
+    op.u.getdomaininfolist.buffer = dominfos;
+    op.u.getdomaininfolist.num_domains = maxids;
+
+    ret = xenHypervisorDoOp(conn->handle, &op);
+
+    if (munlock(dominfos, sizeof(dom0_getdomaininfo_t) * maxids) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " release",
+                    sizeof(dom0_getdomaininfo_t) * maxids);
+        ret = -1;
+    }
+
+    if (ret < 0) {
+	free(dominfos);
+        return (-1);
+    }
+
+    nbids = op.u.getdomaininfolist.num_domains;
+    if ((nbids < 0) || (nbids > maxids)) {
+	free(dominfos);
+        return(-1);
+    }
+
+    for (i = 0;i < nbids;i++) {
+        ids[i] = dominfos[i].domain;
+    }
+
+    free(dominfos);
+    return (nbids);
+}
+
+/**
  * xenHypervisorGetDomainInfo:
  * @domain: pointer to the domain block
  * @info: the place where informations should be stored
@@ -256,7 +394,7 @@ xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
     memset(info, 0, sizeof(virDomainInfo));
     memset(&dominfo, 0, sizeof(dom0_getdomaininfo_t));
 
-    if (mlock(info, sizeof(dom0_getdomaininfo_t)) < 0) {
+    if (mlock(&dominfo, sizeof(dom0_getdomaininfo_t)) < 0) {
         virXenError(VIR_ERR_XEN_CALL, " locking",
                     sizeof(dom0_getdomaininfo_t));
         return (-1);
@@ -271,7 +409,7 @@ xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
 
     ret = xenHypervisorDoOp(domain->conn->handle, &op);
 
-    if (munlock(info, sizeof(dom0_getdomaininfo_t)) < 0) {
+    if (munlock(&dominfo, sizeof(dom0_getdomaininfo_t)) < 0) {
         virXenError(VIR_ERR_XEN_CALL, " release",
                     sizeof(dom0_getdomaininfo_t));
         ret = -1;

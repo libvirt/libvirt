@@ -407,7 +407,7 @@ int
 virConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 {
     int ret = -1;
-    unsigned int i;
+    int i;
     long id;
     char **idlist = NULL;
 
@@ -421,8 +421,18 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids)
         return (-1);
     }
 
+    /* Go though the driver registered entry points */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->listDomains != NULL)) {
+	    ret = conn->drivers[i]->listDomains(conn, ids, maxids);
+	    if (ret >= 0)
+	        return(ret);
+	}
+    }
+
     /*
-     * try first though the Xen Daemon
+     * try then though the Xen Daemon
      */
     idlist = xenDaemonListDomains(conn);
     if (idlist != NULL) {
@@ -454,6 +464,7 @@ int
 virConnectNumOfDomains(virConnectPtr conn)
 {
     int ret = -1;
+    int i;
     char **idlist = NULL;
 
     if (!VIR_IS_CONNECT(conn)) {
@@ -461,9 +472,18 @@ virConnectNumOfDomains(virConnectPtr conn)
         return (-1);
     }
 
-    /* TODO: there must be a way to do that with an hypervisor call too ! */
+    /* Go though the driver registered entry points */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->numOfDomains != NULL)) {
+	    ret = conn->drivers[i]->numOfDomains(conn);
+	    if (ret >= 0)
+	        return(ret);
+	}
+    }
+
     /* 
-     * try first with Xend interface
+     * try then with Xend interface
      */
     idlist = xenDaemonListDomains(conn);
     if (idlist != NULL) {

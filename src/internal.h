@@ -172,7 +172,7 @@ const char *__virErrorMsg(virErrorNumber error, const char *info);
 
 /************************************************************************
  *									*
- *		API for domain/connections (de)allocations		*
+ *	API for domain/connections (de)allocations and lookups		*
  *									*
  ************************************************************************/
 
@@ -183,6 +183,8 @@ virDomainPtr	virGetDomain	(virConnectPtr conn,
 				 const char *uuid);
 int		virFreeDomain	(virConnectPtr conn,
 				 virDomainPtr domain);
+virDomainPtr	virGetDomainByID(virConnectPtr conn,
+				 int id);
 
 #ifdef __cplusplus
 }

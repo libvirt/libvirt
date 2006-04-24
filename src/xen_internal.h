@@ -25,6 +25,10 @@ int	xenHypervisorOpen		(virConnectPtr conn,
 int	xenHypervisorClose		(virConnectPtr conn);
 int	xenHypervisorGetVersion		(virConnectPtr conn,
 				 	 unsigned long *hvVer);
+int	xenHypervisorNumOfDomains	(virConnectPtr conn);
+int	xenHypervisorListDomains	(virConnectPtr conn,
+					 int *ids,
+					 int maxids);
 int	xenHypervisorDestroyDomain	(virDomainPtr domain);
 int	xenHypervisorResumeDomain	(virDomainPtr domain);
 int	xenHypervisorPauseDomain	(virDomainPtr domain);

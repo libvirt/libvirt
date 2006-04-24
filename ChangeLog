@@ -1,3 +1,11 @@
+Mon Apr 24 18:23:29 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/hash.c src/internal.h: add virGetDomainByID() to speed up
+	  some processing but not used yet
+	* src/libvirt.c src/xen_internal.c src/xen_internal.h: added domain
+	  listing and number queries entry points based on the hypervisor
+	  which should speed up some processing as root.
+
 Thu Apr 20 14:31:13 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: fix an uninitialized memory access in error
