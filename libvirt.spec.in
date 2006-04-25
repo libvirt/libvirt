@@ -100,6 +100,7 @@ rm -fr %{buildroot}
 %doc python/tests/*.py
 %doc python/TODO
 %doc python/libvirtclass.txt
+%doc docs/examples/python
 
 %changelog
 * Mon Apr 10 2006 Daniel Veillard <veillard@redhat.com> 0.1.0-1

@@ -1,0 +1,15 @@
+Some simple examples on how to use the Python API for libvirt
+
+The examples are:
+
+dominfo.py  - print information about a running domU based on the results of
+              virDomainGetInfo and virDomainGetXMLDesc
+domstart.py - create a domU from an XML description if the domU isn't 
+              running yet 
+domsave.py  - save all running domU's into a directory
+domrestore.py - restore domU's from their saved files in a directory
+
+The XML files in this directory are examples of the XML format that libvirt
+expects, and will have to be adapted for your setup. They are only needed
+for domstart.py
+

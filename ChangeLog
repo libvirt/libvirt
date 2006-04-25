@@ -1,3 +1,9 @@
+Tue Apr 25 17:10:10 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in libvirt.spec.in docs/examples/Makefile.am 
+	  docs/examples/index.py docs/examples/python/*: integrated
+	  examples for Python from David Lutterkort
+
 Tue Apr 25 13:37:22 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: applied patch from Jim Fehlig when parsing

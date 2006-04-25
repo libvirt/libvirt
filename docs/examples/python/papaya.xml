@@ -1,0 +1,26 @@
+<domain type='xen'>
+  <name>papaya</name>
+  <os>
+    <type>linux</type>
+    <kernel>/var/xen/boot/vmlinuz-2.6.15-1.33_FC5guest</kernel>
+    <initrd>/var/xen/boot/initrd-2.6.15-1.33_FC5guest.img</initrd>
+    <cmdline>ro root=/dev/VolGroup00/LogVol00 rhgb quiet single</cmdline>
+  </os>
+  <memory>262144</memory>
+  <vcpu>1</vcpu>
+  <devices>
+    <disk type='file'>
+      <source file='/var/xen/papaya'/>
+      <target dev='xvda'/>
+    </disk>
+    <disk type='block'>
+      <source dev='/dev/mapper/vg00-lv02'/>
+      <target dev='sda1'/>
+    </disk>
+    <interface type='bridge'>
+      <source bridge='xenbr0'/>
+      <mac address='00:16:3e:78:a2:0c'/>
+      <script path='/etc/xen/scripts/vif-bridge'/>
+    </interface>
+  </devices>
+</domain>
