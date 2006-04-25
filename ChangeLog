@@ -1,3 +1,8 @@
+Tue Apr 25 13:37:22 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: applied patch from Jim Fehlig when parsing
+	  domain S-Expr the kernel may not be provided (Dom0)
+
 Mon Apr 24 18:23:29 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/hash.c src/internal.h: add virGetDomainByID() to speed up

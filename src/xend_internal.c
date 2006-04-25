@@ -1350,28 +1350,30 @@ xend_parse_sexp_desc(struct sexpr *root)
     tmp = sexpr_node(root, "domain/bootloader");
     if (tmp != NULL)
 	virBufferVSprintf(&buf, "  <bootloader>%s</bootloader>\n", tmp);
-    tmp = sexpr_node(root, "domain/image/linux/kernel");
-    if (tmp == NULL) {
-        /*
-         * TODO: we will need some fallback here for other guest OSes
-         */
-        virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-                     "domain informations incomplete, missing kernel");
-        goto error;
+    if (sexpr_lookup(root, "domain/image")) {
+        tmp = sexpr_node(root, "domain/image/linux/kernel");
+        if (tmp == NULL) {
+           /*
+            * TODO: we will need some fallback here for other guest OSes
+            */
+           virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+                        "domain informations incomplete, missing kernel");
+           goto error;
+        }
+        virBufferAdd(&buf, "  <os>\n", 7);
+        virBufferVSprintf(&buf, "    <type>linux</type>\n");
+        virBufferVSprintf(&buf, "    <kernel>%s</kernel>\n", tmp);
+        tmp = sexpr_node(root, "domain/image/linux/ramdisk");
+        if ((tmp != NULL) && (tmp[0] != 0))
+           virBufferVSprintf(&buf, "    <initrd>%s</initrd>\n", tmp);
+        tmp = sexpr_node(root, "domain/image/linux/root");
+        if ((tmp != NULL) && (tmp[0] != 0))
+           virBufferVSprintf(&buf, "    <root>%s</root>\n", tmp);
+        tmp = sexpr_node(root, "domain/image/linux/args");
+        if ((tmp != NULL) && (tmp[0] != 0))
+           virBufferVSprintf(&buf, "    <cmdline>%s</cmdline>\n", tmp);
+        virBufferAdd(&buf, "  </os>\n", 8);
     }
-    virBufferAdd(&buf, "  <os>\n", 7);
-    virBufferVSprintf(&buf, "    <type>linux</type>\n");
-    virBufferVSprintf(&buf, "    <kernel>%s</kernel>\n", tmp);
-    tmp = sexpr_node(root, "domain/image/linux/ramdisk");
-    if ((tmp != NULL) && (tmp[0] != 0))
-        virBufferVSprintf(&buf, "    <initrd>%s</initrd>\n", tmp);
-    tmp = sexpr_node(root, "domain/image/linux/root");
-    if ((tmp != NULL) && (tmp[0] != 0))
-        virBufferVSprintf(&buf, "    <root>%s</root>\n", tmp);
-    tmp = sexpr_node(root, "domain/image/linux/args");
-    if ((tmp != NULL) && (tmp[0] != 0))
-        virBufferVSprintf(&buf, "    <cmdline>%s</cmdline>\n", tmp);
-    virBufferAdd(&buf, "  </os>\n", 8);
     virBufferVSprintf(&buf, "  <memory>%d</memory>\n",
                       (int) (sexpr_u64(root, "domain/maxmem") << 10));
     virBufferVSprintf(&buf, "  <vcpu>%d</vcpu>\n",
