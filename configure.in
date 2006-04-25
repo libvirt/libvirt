@@ -148,8 +148,11 @@ AC_SUBST(LIBXML_MIN_VERSION)
 
 dnl virsh libraries
 AC_CHECK_LIB(curses, initscr, 
-	[VIRSH_LIBS="$VIRSH_LIBS -lcurses"], 
-	[AC_MSG_ERROR([curses library not found])],
+	[VIRSH_LIBS="$VIRSH_LIBS -lcurses"],
+	[AC_CHECK_LIB(ncurses, initscr,
+	        [VIRSH_LIBS="$VIRSH_LIBS -lncurses"],
+		[AC_MSG_ERROR([curses/ncurses library not found])],
+		[$VIRSH_LIBS])],
 	[$VIRSH_LIBS])
 AC_CHECK_LIB(readline, main, 
 	[VIRSH_LIBS="$VIRSH_LIBS -lreadline"], 

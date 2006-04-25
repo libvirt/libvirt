@@ -1,3 +1,7 @@
+Tue Apr 25 17:56:32 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in: patch for ncurses fallback from Jim Fehlig
+
 Tue Apr 25 17:10:10 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in libvirt.spec.in docs/examples/Makefile.am 
