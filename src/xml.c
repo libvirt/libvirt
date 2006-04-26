@@ -569,46 +569,10 @@ virDomainParseXMLOSDesc(xmlNodePtr node, virBufferPtr buf, int bootloader)
     }
     if (initrd != NULL)
         virBufferVSprintf(buf, "(ramdisk '%s')", (const char *) initrd);
-    if (root == NULL) {
-        const xmlChar *base, *tmp;
-
-        /* need to extract root info from command line */
-        if (cmdline == NULL) {
-            virXMLError(VIR_ERR_NO_ROOT, (const char *) cmdline, 0);
-            return (-1);
-        }
-        base = cmdline;
-        while (*base != 0) {
-            if ((base[0] == 'r') && (base[1] == 'o') && (base[2] == 'o') &&
-                (base[3] == 't')) {
-                base += 4;
-                break;
-            }
-            base++;
-        }
-        while ((*base == ' ') || (*base == '\t'))
-            base++;
-        if (*base == '=') {
-            base++;
-            while ((*base == ' ') || (*base == '\t'))
-                base++;
-        }
-        tmp = base;
-        while ((*tmp != 0) && (*tmp != ' ') && (*tmp != '\t'))
-            tmp++;
-        if (tmp == base) {
-            virXMLError(VIR_ERR_NO_ROOT, (const char *) cmdline, 0);
-            return (-1);
-        }
-        root = xmlStrndup(base, tmp - base);
+    if (root != NULL)
         virBufferVSprintf(buf, "(root '%s')", (const char *) root);
-        xmlFree((xmlChar *) root);
+    if (cmdline != NULL)
         virBufferVSprintf(buf, "(args '%s')", (const char *) cmdline);
-    } else {
-        virBufferVSprintf(buf, "(root '%s')", (const char *) root);
-        if (cmdline != NULL)
-            virBufferVSprintf(buf, "(args '%s')", (const char *) cmdline);
-    }
     virBufferAdd(buf, ")", 1);
     return (0);
 }

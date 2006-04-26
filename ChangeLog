@@ -1,3 +1,9 @@
+Wed Apr 26 08:32:38 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xml.c: applied patch from Jeremy Katz to not require a 
+	  root entry in XML nor try to extract it from command line
+	  informations.
+
 Wed Apr 26 07:45:28 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* docs//* : fixed perl binding URL to point to CPAN as provided by
