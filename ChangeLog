@@ -1,3 +1,8 @@
+Wed Apr 26 07:45:28 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* docs//* : fixed perl binding URL to point to CPAN as provided by
+	  Daniel P. Berrange.
+
 Tue Apr 25 17:56:32 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in: patch for ncurses fallback from Jim Fehlig
