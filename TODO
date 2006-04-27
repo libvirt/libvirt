@@ -7,7 +7,6 @@ TODO:
 - DTD/RNG/XSD schemas for the XML Domain descriptions
 - in python bindings raise an exception if a lookup or connection fails
   to return a non-None object
-- Add uuid to XML format
 - add error handling hooks at the python level
 - object unicity for domains at the Python level
 - UUID lookup in hash.c
@@ -50,3 +49,4 @@ Done:
 - API for the Node: extracting informations
 - docs for the principle in the error handling code
 - thread protection, reentrancy, refcounting, etc ...
+- Add uuid to XML format

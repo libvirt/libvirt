@@ -1347,6 +1347,21 @@ xend_parse_sexp_desc(struct sexpr *root)
         goto error;
     }
     virBufferVSprintf(&buf, "  <name>%s</name>\n", tmp);
+    tmp = sexpr_node(root, "domain/uuid");
+    if (tmp != NULL) {
+        char compact[33];
+	int i, j;
+	for (i = 0, j = 0;(i < 32) && (tmp[j] != 0);j++) {
+	    if (((tmp[j] >= '0') && (tmp[j] <= '9')) ||
+	        ((tmp[j] >= 'a') && (tmp[j] <= 'f')))
+		compact[i++] = tmp[j];
+	    else if ((tmp[j] >= 'A') && (tmp[j] <= 'F'))
+	        compact[i++] = tmp[j] + 'a' - 'A';
+	}
+	compact[i] = 0;
+	if (i > 0)
+	    virBufferVSprintf(&buf, "  <uuid>%s</uuid>\n", compact);
+    }
     tmp = sexpr_node(root, "domain/bootloader");
     if (tmp != NULL)
 	virBufferVSprintf(&buf, "  <bootloader>%s</bootloader>\n", tmp);

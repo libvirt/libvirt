@@ -462,6 +462,7 @@ char *
 virDomainGetXMLDesc(virDomainPtr domain, int flags)
 {
     char *ret = NULL;
+    unsigned char uuid[16];
     virBuffer buf;
     virDomainInfo info;
 
@@ -483,6 +484,14 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
                       virDomainGetID(domain));
     virBufferVSprintf(&buf, "  <name>%s</name>\n",
                       virDomainGetName(domain));
+    if (virDomainGetUUID(domain, &uuid[0]) == 0) {
+    virBufferVSprintf(&buf,
+"  <uuid>%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x</uuid>\n",
+                      uuid[0], uuid[1], uuid[2], uuid[3],
+                      uuid[4], uuid[5], uuid[6], uuid[7],
+                      uuid[8], uuid[9], uuid[10], uuid[11],
+                      uuid[12], uuid[13], uuid[14], uuid[15]);
+    }
     virDomainGetXMLBoot(domain, &buf);
     virBufferVSprintf(&buf, "  <memory>%lu</memory>\n", info.maxMem);
     virBufferVSprintf(&buf, "  <vcpu>%d</vcpu>\n", (int) info.nrVirtCpu);
