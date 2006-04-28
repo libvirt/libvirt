@@ -503,6 +503,18 @@ __virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = "library call %s failed, possibly not supported";
             break;
+	case VIR_ERR_XML_ERROR:
+	    if (info == NULL)
+	        errmsg = "XML description not well formed or invalid";
+	    else
+	        errmsg = "XML description for %s is not well formed or invalid";
+            break;
+	case VIR_ERR_DOM_EXIST:
+	    if (info == NULL)
+	        errmsg = "this domain exists already";
+	    else
+	        errmsg = "domain %s exists already";
+            break;
     }
     return (errmsg);
 }

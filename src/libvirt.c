@@ -18,6 +18,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <libxml/parser.h>
+#include <libxml/xpath.h>
+
 #include <xs.h>
 
 #include "internal.h"
@@ -1411,3 +1414,161 @@ virNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info) {
     }
     return(0);
 }
+
+/************************************************************************
+ *									*
+ *		Handling of defined but not running domains		*
+ *									*
+ ************************************************************************/
+
+/**
+ * virDomainDefineXML:
+ * @conn: pointer to the hypervisor connection
+ * @xml: the XML description for the domain, preferably in UTF-8
+ *
+ * define a domain, but does not start it
+ *
+ * Returns NULL in case of error, a pointer to the domain otherwise
+ */
+virDomainPtr
+virDomainDefineXML(virConnectPtr conn, const char *xml) {
+    virDomainPtr ret = NULL;
+    const char *name = NULL;
+    xmlDocPtr doc = NULL;
+    xmlXPathObjectPtr obj = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (NULL);
+    }
+    if (xml == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (NULL);
+    }
+
+    /*
+     * Check the XML description is at least well formed and extract the
+     * name.
+     * TODO: a full validation based on RNG for example should be done there
+     */
+    doc = xmlReadMemory(xml, strlen(xml), "domain_define.xml", NULL, 0);
+    if (doc == NULL) {
+        virLibConnError(conn, VIR_ERR_XML_ERROR, __FUNCTION__);
+	goto done;
+    }
+    ctxt = xmlXPathNewContext(doc);
+    if (ctxt == NULL) {
+        goto done;
+    }
+    obj = xmlXPathEval(BAD_CAST "string(/domain/name[1])", ctxt);
+    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
+        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
+        virLibConnError(conn, VIR_ERR_NO_NAME, xml);
+        goto done;
+    }
+    name = (const char *) obj->stringval;
+
+    /*
+     * Now look it up in the domain pool and check it's not an already run
+     * domain.
+     */
+    ret = virGetDomain(conn, name, NULL);
+    if (ret == NULL) {
+        goto done;
+    }
+    /*
+     * TODO: the lifecycle of domains, especially predefined ones need to be
+     *       explicitely written down
+     */
+    if (ret->handle != -1) {
+        virLibConnError(conn, VIR_ERR_DOM_EXIST, name);
+        virFreeDomain(conn, ret);
+	ret = NULL;
+	goto done;
+    }
+    if ((ret->uses > 1) && (!(ret->flags & DOMAIN_IS_DEFINED))) {
+        virLibConnError(conn, VIR_ERR_DOM_EXIST, name);
+        virFreeDomain(conn, ret);
+	ret = NULL;
+	goto done;
+    }
+    ret->flags |= DOMAIN_IS_DEFINED;
+    if (ret->xml != NULL) {
+        free(ret->xml);
+    }
+    ret->xml = strdup(xml);
+    if (ret->xml == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+	virFreeDomain(conn, ret);
+	ret = NULL;
+	goto done;
+    }
+    /* TODO shall we keep a list of defined domains there ? */
+
+done:
+    if (obj != NULL)
+	xmlXPathFreeObject(obj);
+    if (ctxt != NULL)
+        xmlXPathFreeContext(ctxt);
+    if (doc != NULL)
+        xmlFreeDoc(doc);
+    return(ret);
+}
+
+/**
+ * virDomainUndefine:
+ * @domain: pointer to a defined domain
+ *
+ * undefine a domain but does not stop it if it is running
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+int
+virDomainUndefine(virDomainPtr domain) {
+    int ret;
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
+    }
+    /* TODO shall we keep a list of defined domains there ? */
+
+    ret = virFreeDomain(domain->conn, domain);
+    if (ret < 0)
+        return(-1);
+    return(0);
+}
+
+/**
+ * virConnectListDefinedDomains:
+ * @conn: pointer to the hypervisor connection
+ * @names: pointer to an array to store the names
+ * @maxnames: size of the array
+ *
+ * list the defined domains, stores the pointers to the names in @names
+ * 
+ * Returns the number of names provided in the array or -1 in case of error
+ */
+int
+virConnectListDefinedDomains(virConnectPtr conn, const char **names,
+                             int maxnames) {
+    TODO
+    return(-1);
+}
+
+/**
+ * virDomainCreate:
+ * @domain: pointer to a defined domain
+ *
+ * launch a defined domain. If the call succeed the domain moves from the
+ * defined to the running domains pools.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+int
+virDomainCreate(virDomainPtr domain) {
+    
+    return(-1);
+}
+

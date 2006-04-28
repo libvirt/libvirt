@@ -101,7 +101,9 @@ typedef enum {
     VIR_ERR_NO_DEVICE, /* missing domain devices information */
     VIR_ERR_NO_XENSTORE,/* could not open Xen Store control */
     VIR_ERR_DRIVER_FULL, /* too many drivers registered */
-    VIR_ERR_CALL_FAILED /* not supported by the drivers */
+    VIR_ERR_CALL_FAILED, /* not supported by the drivers */
+    VIR_ERR_XML_ERROR, /* an XML description is not well formed or broken */
+    VIR_ERR_DOM_EXIST /* the domain already exist */
 } virErrorNumber;
 
 /**

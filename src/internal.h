@@ -128,7 +128,8 @@ struct _virConnect {
 */
 
 enum {
-    DOMAIN_IS_SHUTDOWN = (1 << 0)   /* the domain is being shutdown */
+    DOMAIN_IS_SHUTDOWN = (1 << 0),  /* the domain is being shutdown */
+    DOMAIN_IS_DEFINED  = (1 << 1)   /* the domain is defined not running */
 } virDomainFlags;
 
 /**
@@ -145,6 +146,7 @@ struct _virDomain {
     int handle;             /* internal handle for the domnain ID */
     int flags;              /* extra flags */
     unsigned char uuid[16]; /* the domain unique identifier */
+    char *xml;              /* the XML description for defined domains */
 };
 
 /*

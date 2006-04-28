@@ -1,3 +1,9 @@
+Fri Apr 28 18:31:49 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/hash.c src/internal.h src/libvirt.c src/virterror.c
+	  src/xml.h include/libvirt.h[.in] include/virterror.h: started
+	  adding new APIs, some still TODO, and not tested yet
+
 Thu Apr 27 14:17:04 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xml.c src/xend_internal.c TODO: added uuid to the XML

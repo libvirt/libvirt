@@ -274,6 +274,17 @@ int			virDomainSetMemory	(virDomainPtr domain,
 char *			virDomainGetXMLDesc	(virDomainPtr domain,
 						 int flags);
 
+/*
+ * defined but not running domains
+ */
+virDomainPtr		virDomainDefineXML	(virConnectPtr conn,
+						 const char *xml);
+int			virDomainUndefine	(virDomainPtr domain);
+int			virConnectListDefinedDomains(virConnectPtr conn,
+						 const char **names,
+						 int maxnames);
+int			virDomainCreate		(virDomainPtr domain);
+
 #ifdef __cplusplus
 }
 #endif

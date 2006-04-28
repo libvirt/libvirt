@@ -636,6 +636,7 @@ virGetDomain(virConnectPtr conn, const char *name, const char *uuid) {
     }
     ret->magic = VIR_DOMAIN_MAGIC;
     ret->conn = conn;
+    ret->handle = -1;
     if (uuid != NULL)
         memcpy(&(ret->uuid[0]), uuid, 16);
 
@@ -700,6 +701,8 @@ virFreeDomain(virConnectPtr conn, virDomainPtr domain) {
     domain->handle = -1;
     if (domain->path != NULL)
         free(domain->path);
+    if (domain->xml)
+        free(domain->xml);
     if (domain->name)
         free(domain->name);
     free(domain);
