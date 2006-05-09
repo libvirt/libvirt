@@ -17,6 +17,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <time.h>
+#include <stdarg.h>
 
 #include "xml.h"
 
@@ -84,6 +85,9 @@ struct _xmlRpcValue {
 };
 
 struct _xmlRpcContext;
+
+xmlRpcValuePtr *xmlRpcArgvNew(const char *fmt, va_list ap, int *argc);
+void xmlRpcArgvFree(int argc, xmlRpcValuePtr *argv);
 
 virBufferPtr xmlRpcMarshalRequest(const char *request,
 				  int argc, xmlRpcValuePtr *argv);

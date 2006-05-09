@@ -40,12 +40,16 @@
      <exports symbol='_virDomainKernel' type='struct'/>
      <exports symbol='_virNodeInfo' type='struct'/>
      <exports symbol='virDomainGetInfo' type='function'/>
+     <exports symbol='virDomainUndefine' type='function'/>
+     <exports symbol='virDomainDefineXML' type='function'/>
      <exports symbol='virDomainShutdown' type='function'/>
      <exports symbol='virGetVersion' type='function'/>
+     <exports symbol='virConnectListDefinedDomains' type='function'/>
      <exports symbol='virDomainLookupByName' type='function'/>
      <exports symbol='virDomainRestore' type='function'/>
      <exports symbol='virConnectGetType' type='function'/>
      <exports symbol='virDomainSave' type='function'/>
+     <exports symbol='virDomainCreate' type='function'/>
      <exports symbol='virConnectListDomains' type='function'/>
      <exports symbol='virDomainLookupByUUID' type='function'/>
      <exports symbol='virDomainLookupByID' type='function'/>
@@ -83,6 +87,7 @@
      <exports symbol='VIR_ERR_NO_DEVICE' type='enum'/>
      <exports symbol='VIR_ERR_NO_MEMORY' type='enum'/>
      <exports symbol='VIR_FROM_SEXPR' type='enum'/>
+     <exports symbol='VIR_ERR_XML_ERROR' type='enum'/>
      <exports symbol='VIR_FROM_NONE' type='enum'/>
      <exports symbol='VIR_ERR_HTTP_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_NO_XENSTORE' type='enum'/>
@@ -100,12 +105,13 @@
      <exports symbol='VIR_ERR_OPERATION_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_GET_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_DRIVER_FULL' type='enum'/>
-     <exports symbol='VIR_ERR_SEXPR_SERIAL' type='enum'/>
+     <exports symbol='VIR_ERR_DOM_EXIST' type='enum'/>
      <exports symbol='VIR_ERR_NO_SOURCE' type='enum'/>
      <exports symbol='VIR_ERR_NO_TARGET' type='enum'/>
      <exports symbol='VIR_ERR_INTERNAL_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_NO_SUPPORT' type='enum'/>
      <exports symbol='VIR_FROM_XEND' type='enum'/>
+     <exports symbol='VIR_ERR_SEXPR_SERIAL' type='enum'/>
      <exports symbol='VIR_FROM_XENSTORE' type='enum'/>
      <exports symbol='VIR_FROM_XEN' type='enum'/>
      <exports symbol='VIR_ERR_XEN_CALL' type='enum'/>
@@ -151,7 +157,8 @@
     <enum name='VIR_DOMAIN_RUNNING' file='libvirt' value='1' type='virDomainState' info='the domain is running'/>
     <enum name='VIR_DOMAIN_SHUTDOWN' file='libvirt' value='4' type='virDomainState' info='the domain is being shut down'/>
     <enum name='VIR_DOMAIN_SHUTOFF' file='libvirt' value='5' type='virDomainState' info='the domain is shut off'/>
-    <enum name='VIR_ERR_CALL_FAILED' file='virterror' value='26' type='virErrorNumber' info=' not supported by the drivers'/>
+    <enum name='VIR_ERR_CALL_FAILED' file='virterror' value='26' type='virErrorNumber' info='not supported by the drivers'/>
+    <enum name='VIR_ERR_DOM_EXIST' file='virterror' value='28' type='virErrorNumber' info=' the domain already exist'/>
     <enum name='VIR_ERR_DRIVER_FULL' file='virterror' value='25' type='virErrorNumber' info='too many drivers registered'/>
     <enum name='VIR_ERR_ERROR' file='virterror' value='2' type='virErrorLevel' info=' An error'/>
     <enum name='VIR_ERR_GET_FAILED' file='virterror' value='10' type='virErrorNumber' info='a HTTP GET command to failed'/>
@@ -181,6 +188,7 @@
     <enum name='VIR_ERR_UNKNOWN_HOST' file='virterror' value='4' type='virErrorNumber' info='could not resolve hostname'/>
     <enum name='VIR_ERR_WARNING' file='virterror' value='1' type='virErrorLevel' info='A simple warning'/>
     <enum name='VIR_ERR_XEN_CALL' file='virterror' value='15' type='virErrorNumber' info='failure doing an hypervisor call'/>
+    <enum name='VIR_ERR_XML_ERROR' file='virterror' value='27' type='virErrorNumber' info='an XML description is not well formed or broken'/>
     <enum name='VIR_FROM_DOM' file='virterror' value='6' type='virErrorDomain' info=' Error when operating on a domain'/>
     <enum name='VIR_FROM_NONE' file='virterror' value='0' type='virErrorDomain'/>
     <enum name='VIR_FROM_SEXPR' file='virterror' value='4' type='virErrorDomain' info='Error in the S-Epression code'/>
@@ -288,6 +296,13 @@
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='hvVer' type='unsigned long *' info='return value for the version of the running hypervisor (OUT)'/>
     </function>
+    <function name='virConnectListDefinedDomains' file='libvirt' module='libvirt'>
+      <info>list the defined domains, stores the pointers to the names in @names</info>
+      <return type='int' info='the number of names provided in the array or -1 in case of error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='names' type='const char **' info='pointer to an array to store the names'/>
+      <arg name='maxnames' type='int' info='size of the array'/>
+    </function>
     <function name='virConnectListDomains' file='libvirt' module='libvirt'>
       <info>Collect the list of active domains, and store their ID in @maxids</info>
       <return type='int' info='the number of domain found or -1 in case of error'/>
@@ -320,12 +335,23 @@
       <return type='void'/>
       <arg name='err' type='virErrorPtr' info='pointer to the error.'/>
     </function>
+    <function name='virDomainCreate' file='libvirt' module='libvirt'>
+      <info>launch a defined domain. If the call succeed the domain moves from the defined to the running domains pools.</info>
+      <return type='int' info='0 in case of success, -1 in case of error'/>
+      <arg name='domain' type='virDomainPtr' info='pointer to a defined domain'/>
+    </function>
     <function name='virDomainCreateLinux' file='libvirt' module='libvirt'>
       <info>Launch a new Linux guest domain, based on an XML description similar to the one returned by virDomainGetXMLDesc() This function may requires priviledged access to the hypervisor.</info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='xmlDesc' type='const char *' info='an XML description of the domain'/>
       <arg name='flags' type='unsigned int' info='an optional set of virDomainFlags'/>
+    </function>
+    <function name='virDomainDefineXML' file='libvirt' module='libvirt'>
+      <info>define a domain, but does not start it</info>
+      <return type='virDomainPtr' info='NULL in case of error, a pointer to the domain otherwise'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='xml' type='const char *' info='the XML description for the domain, preferably in UTF-8'/>
     </function>
     <function name='virDomainDestroy' file='libvirt' module='libvirt'>
       <info>Destroy the domain object. The running instance is shutdown if not down already and all resources used by it are given back to the hypervisor. The data structure is freed and should not be used thereafter if the call does not return an error. This function may requires priviledged access</info>
@@ -437,6 +463,11 @@
       <info>Suspends an active domain, the process is frozen without further access to CPU resources and I/O but the memory used by the domain at the hypervisor level will stay allocated. Use virDomainResume() to reactivate the domain. This function may requires priviledged access.</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
+    </function>
+    <function name='virDomainUndefine' file='libvirt' module='libvirt'>
+      <info>undefine a domain but does not stop it if it is running</info>
+      <return type='int' info='0 in case of success, -1 in case of error'/>
+      <arg name='domain' type='virDomainPtr' info='pointer to a defined domain'/>
     </function>
     <functype name='virErrorFunc' file='virterror' module='virterror'>
       <info>Signature of a function to use when there is an error raised by the library.</info>

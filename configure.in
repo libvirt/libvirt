@@ -94,7 +94,7 @@ dnl
 dnl To be able to make dist on a non-xenified host
 dnl
 AC_ARG_WITH(depends,
-[  --with-depends          check for dependancies (on)])
+	[  --with-depends          check for dependancies (on)])
 
 if test "$with_depends" != "no"
 then
@@ -254,4 +254,5 @@ AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           docs/examples/Makefile docs/devhelp/Makefile \
 	  docs/examples/python/Makefile \
           libvirt.pc libvirt.spec include/libvirt.h \
-	  python/Makefile python/tests/Makefile)
+	  python/Makefile python/tests/Makefile \
+          tests/Makefile)

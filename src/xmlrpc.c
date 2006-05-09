@@ -64,7 +64,7 @@ static xmlNodePtr xmlNextElement(xmlNodePtr node)
     return node;
 }
 
-static xmlRpcValuePtr xmlRpcValueUnmarshalDateTime(xmlNodePtr node)
+static xmlRpcValuePtr xmlRpcValueUnmarshalDateTime(xmlNodePtr node ATTRIBUTE_UNUSED)
 {
     /* we don't need this */
     TODO;
@@ -78,7 +78,7 @@ static xmlRpcValuePtr xmlRpcValueUnmarshalString(xmlNodePtr node)
     return ret;
 }
 
-static xmlRpcValuePtr xmlRpcValueUnmarshalBase64(xmlNodePtr node)
+static xmlRpcValuePtr xmlRpcValueUnmarshalBase64(xmlNodePtr node ATTRIBUTE_UNUSED)
 {
     /* we don't need this */
     TODO;
@@ -187,7 +187,7 @@ static xmlRpcValuePtr xmlRpcValueUnmarshalDict(xmlNodePtr node)
 xmlRpcValuePtr xmlRpcValueUnmarshal(xmlNodePtr node)
 {
     xmlNodePtr n;
-    xmlRpcValuePtr ret;
+    xmlRpcValuePtr ret = NULL;
 
     if (xmlStrEqual(node->name, BAD_CAST "value")) {
 	n = xmlFirstElement(node);
@@ -371,7 +371,7 @@ xmlRpcValuePtr xmlRpcUnmarshalResponse(xmlNodePtr node, bool *is_fault)
 static char *xmlRpcCallRaw(const char *url, const char *request)
 {
 	void *cxt;
-	char *contentType = "text/xml";
+	char *contentType = (char *) "text/xml";
 	int len, ret, serrno;
 	char *response = NULL;
 
@@ -442,7 +442,7 @@ static char **xmlRpcStringArray(xmlRpcValuePtr value)
 	    ret[i] = ptr;
 	    ptr += strlen(s) + 1;
 	} else
-	    ret[i] = "";
+	    ret[i] = (char *) "";
     }
 
     ret[i] = NULL;
@@ -450,29 +450,15 @@ static char **xmlRpcStringArray(xmlRpcValuePtr value)
     return ret;
 }
 
-int xmlRpcCall(xmlRpcContextPtr context, const char *method,
-	       const char *retfmt, const char *fmt, ...)
+xmlRpcValuePtr *
+xmlRpcArgvNew(const char *fmt, va_list ap, int *argc)
 {
-    va_list ap;
-    const char *ptr;
-    int argc;
     xmlRpcValuePtr *argv;
-    virBufferPtr buf;
+    const char *ptr;
     int i;
-    char *ret;
-    xmlDocPtr xml;
-    xmlNodePtr node;
-    bool fault;
-    xmlRpcValuePtr value;
-    void *retval;
-
-    argc = strlen(fmt);
-    argv = malloc(sizeof(*argv) * argc);
-
-    va_start(ap, fmt);
-
-    if (retfmt && *retfmt)
-	retval = va_arg(ap, void *);
+    
+    *argc = strlen(fmt);
+    argv = malloc(sizeof(*argv) * *argc);
 
     i = 0;
     for (ptr = fmt; *ptr; ptr++) {
@@ -494,23 +480,54 @@ int xmlRpcCall(xmlRpcContextPtr context, const char *method,
 	    argv[i]->value.string = strdup(va_arg(ap, const char *));
 	    break;
 	default:
-	    return -1;
+	    xmlRpcArgvFree(i, argv);  
+	    return NULL;
 	}
 	i++;
     }
-    va_end(ap);
+    return argv;
+}
 
-    buf = xmlRpcMarshalRequest(method, argc, argv);
-
+void
+xmlRpcArgvFree(int argc, xmlRpcValuePtr *argv)
+{
+    int i;
     for (i = 0; i < argc; i++)
 	xmlRpcValueFree(argv[i]);
 
     free(argv);
+}
+
+int xmlRpcCall(xmlRpcContextPtr context, const char *method,
+	       const char *retfmt, const char *fmt, ...)
+{
+    va_list ap;
+    int argc;
+    xmlRpcValuePtr *argv;
+    virBufferPtr buf;
+    char *ret;
+    xmlDocPtr xml;
+    xmlNodePtr node;
+    bool fault;
+    xmlRpcValuePtr value;
+    void *retval = NULL;
+
+    va_start(ap, fmt);
+    
+    if (retfmt && *retfmt)
+	retval = va_arg(ap, void *);
+ 
+    argv = xmlRpcArgvNew(fmt, ap, &argc);
+    
+    va_end(ap);
+
+    buf = xmlRpcMarshalRequest(method, argc, argv);
+
+    xmlRpcArgvFree(argc, argv);
 	
     ret = xmlRpcCallRaw(context->uri, buf->content);
 
-    free(buf->content);
-    free(buf);
+    virBufferFree(buf);
 
     xml = xmlReadDoc((const xmlChar *)ret, "response.xml", NULL,
 		     XML_PARSE_NOENT | XML_PARSE_NONET |

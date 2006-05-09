@@ -114,6 +114,16 @@ virBufferAdd(virBufferPtr buf, const char *str, int len)
     return (0);
 }
 
+void
+virBufferFree(virBufferPtr buf)
+{
+    if (buf) {
+       if (buf->content)
+	       free(buf->content);
+       free(buf);
+    }
+}
+
 /**
  * virBufferVSprintf:
  * @buf:  the buffer to dump

@@ -73,6 +73,8 @@ void	<a href="#virErrorFunc">virErrorFunc</a>			(void * userData, <br />					 <a
     <a name="VIR_ERR_NO_XENSTORE" id="VIR_ERR_NO_XENSTORE">VIR_ERR_NO_XENSTORE</a> = 24 : could not open Xen Store control
     <a name="VIR_ERR_DRIVER_FULL" id="VIR_ERR_DRIVER_FULL">VIR_ERR_DRIVER_FULL</a> = 25 : too many drivers registered
     <a name="VIR_ERR_CALL_FAILED" id="VIR_ERR_CALL_FAILED">VIR_ERR_CALL_FAILED</a> = 26 : not supported by the drivers
+    <a name="VIR_ERR_XML_ERROR" id="VIR_ERR_XML_ERROR">VIR_ERR_XML_ERROR</a> = 27 : an XML description is not well formed or broken
+    <a name="VIR_ERR_DOM_EXIST" id="VIR_ERR_DOM_EXIST">VIR_ERR_DOM_EXIST</a> = 28 : the domain already exist
 }
 </pre><h3><a name="virConnCopyLastError" id="virConnCopyLastError"></a>Function: virConnCopyLastError</h3><pre class="programlisting">int	virConnCopyLastError		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br />					 <a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a> to)<br />
 </pre><p>Copy the content of the last error caught on that connection One will need to free the result with virResetError()</p>

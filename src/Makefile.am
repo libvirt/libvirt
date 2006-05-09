@@ -9,8 +9,10 @@ EXTRA_DIST = libvirt_sym.version
 
 lib_LTLIBRARIES = libvirt.la
 libvirt_la_LIBADD = @LIBXML_LIBS@
+
 libvirt_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvirt_sym.version \
                     -version-info @LIBVIRT_VERSION_INFO@
+
 libvirt_la_SOURCES =						\
 		libvirt.c internal.h				\
 		hash.c hash.h					\
@@ -22,10 +24,10 @@ libvirt_la_SOURCES =						\
 		virterror.c					\
 		driver.h
 
-bin_PROGRAMS=virsh
+bin_PROGRAMS = virsh
 
-virsh_SOURCES=virsh.c
+virsh_SOURCES = virsh.c
 virsh_LDFLAGS =
 virsh_DEPENDENCIES = $(DEPS)
-virsh_LDADD= $(LDADDS) $(VIRSH_LIBS)
+virsh_LDADD = $(LDADDS) $(VIRSH_LIBS)
 

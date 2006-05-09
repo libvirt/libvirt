@@ -1,3 +1,12 @@
+Tue May  9 16:37:22 CEST 2006 Karel Zak <kzak@redhat.com>
+
+	* tests/Makefile.am tests/xmlrpctest.c tests/testutils.h: added test 
+	  directory with basic test utils
+	* tests/test_xmlrpc.sh tests/xmlrpcserver.py tests/xmlrpctest.c: added
+	  simple XML-RPC tests agains Python SimpleXMLRPCServer
+	* src/xmlrpc.c src/xmlrpc.h: minor refactoring, fixed gcc warnings
+	* src/xml.c src/xml.h: added virBufferFree()
+
 Fri Apr 28 18:31:49 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/hash.c src/internal.h src/libvirt.c src/virterror.c
