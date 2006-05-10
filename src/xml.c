@@ -23,14 +23,6 @@
 #include "sexpr.h"
 #include "xml.h"
 
-/**
- * virXenError:
- * @conn: the connection if available
- * @error: the error number
- * @info: extra information string
- *
- * Handle an error at the xend daemon interface
- */
 static void
 virXMLError(virErrorNumber error, const char *info, int value)
 {

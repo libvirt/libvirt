@@ -262,6 +262,9 @@ virDefaultErrorFunc(virErrorPtr err)
         case VIR_FROM_DOM:
             dom = "Domain ";
             break;
+        case VIR_FROM_RPC:
+            dom = "XML-RPC ";
+            break;
     }
     if ((err->dom != NULL) && (err->code != VIR_ERR_INVALID_DOMAIN)) {
         domain = err->dom->name;

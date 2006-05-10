@@ -9,6 +9,7 @@
  */
 
 #include "xmlrpc.h"
+#include "internal.h"
 
 #include <libxml/nanohttp.h>
 
@@ -20,8 +21,6 @@
    2) xmlRpcValueToSexpr
 */
 
-#define TODO do { } while (0)
-
 static xmlNodePtr xmlFirstElement(xmlNodePtr node);
 static xmlNodePtr xmlNextElement(xmlNodePtr node);
 
@@ -32,19 +31,39 @@ struct _xmlRpcContext
     char *faultMessage;
 };
 
+static void xmlRpcError(virErrorNumber error, const char *info, int value)
+{
+    const char *errmsg;
+
+    if (error == VIR_ERR_OK)
+        return;
+
+    errmsg = __virErrorMsg(error, info);
+    __virRaiseError(NULL, NULL, VIR_FROM_RPC, error, VIR_ERR_ERROR,
+                    errmsg, info, NULL, value, 0, errmsg, info, value);
+}
+
 static xmlRpcValuePtr xmlRpcValueNew(xmlRpcValueType type)
 {
     xmlRpcValuePtr ret = malloc(sizeof(*ret));
-    if (ret)
-	ret->kind = type;
+    
+    if (!ret)
+        xmlRpcError(VIR_ERR_NO_MEMORY, "allocate value", sizeof(*ret));
+    else
+        ret->kind = type;
     return ret;
 }
 
 static char *xmlGetText(xmlNodePtr node)
 {
     for (node = node->children; node; node = node->next)
-	if (node->type == XML_TEXT_NODE)
-	    return strdup((const char *)node->content);
+	if (node->type == XML_TEXT_NODE) {
+	    char *x = strdup((const char *)node->content);
+	    if (!x)
+		xmlRpcError(VIR_ERR_NO_MEMORY, "copying node content", 
+				strlen((const char *)node->content));
+	    return x;
+	}
     return NULL;
 }
 
@@ -67,21 +86,23 @@ static xmlNodePtr xmlNextElement(xmlNodePtr node)
 static xmlRpcValuePtr xmlRpcValueUnmarshalDateTime(xmlNodePtr node ATTRIBUTE_UNUSED)
 {
     /* we don't need this */
-    TODO;
+    TODO
     return NULL;
 }
 
 static xmlRpcValuePtr xmlRpcValueUnmarshalString(xmlNodePtr node)
 {
     xmlRpcValuePtr ret = xmlRpcValueNew(XML_RPC_STRING);
-    ret->value.string = xmlGetText(node);
+    
+    if (ret)
+        ret->value.string = xmlGetText(node);
     return ret;
 }
 
 static xmlRpcValuePtr xmlRpcValueUnmarshalBase64(xmlNodePtr node ATTRIBUTE_UNUSED)
 {
     /* we don't need this */
-    TODO;
+    TODO
     return NULL;
 }
 
@@ -89,11 +110,11 @@ static xmlRpcValuePtr xmlRpcValueUnmarshalInteger(xmlNodePtr node)
 {
     xmlRpcValuePtr ret = xmlRpcValueNew(XML_RPC_INTEGER);
     char *value = xmlGetText(node);
-
-    ret->value.integer = atoi(value);
-
-    free(value);
-
+    
+    if (ret && value)
+        ret->value.integer = atoi(value);
+    if (value)
+        free(value);
     return ret;
 }
 
@@ -102,13 +123,14 @@ static xmlRpcValuePtr xmlRpcValueUnmarshalBoolean(xmlNodePtr node)
     xmlRpcValuePtr ret = xmlRpcValueNew(XML_RPC_BOOLEAN);
     char *value = xmlGetText(node);
 
-    if (atoi(value))
+    if (!ret)
+        return NULL;
+    if (value && atoi(value))
 	ret->value.boolean = true;
     else
 	ret->value.boolean = false;
-
-    free(value);
-
+    if (value)
+        free(value);
     return ret;
 }
 
@@ -117,10 +139,10 @@ static xmlRpcValuePtr xmlRpcValueUnmarshalDouble(xmlNodePtr node)
     xmlRpcValuePtr ret = xmlRpcValueNew(XML_RPC_DOUBLE);
     char *value = xmlGetText(node);
 
-    ret->value.real = atof(value);
-
-    free(value);
-
+    if (ret && value)
+        ret->value.real = atof(value);
+    if (value)
+        free(value);
     return ret;
 }
 
@@ -130,11 +152,19 @@ static xmlRpcValuePtr xmlRpcValueUnmarshalArray(xmlNodePtr node)
     xmlNodePtr cur;
     int n_elements = 0;
 
+    if (!ret)
+        return NULL;
+    
     for (cur = xmlFirstElement(node); cur; cur = xmlNextElement(cur))
 	n_elements += 1;
 
     ret->value.array.elements = malloc(n_elements * sizeof(xmlRpcValue));
-
+    if (!ret->value.array.elements) {
+        xmlRpcError(VIR_ERR_NO_MEMORY, "allocate value array", 
+				n_elements * sizeof(xmlRpcValue));
+	free(ret);
+	return NULL;
+    }
     n_elements = 0;
     for (cur = xmlFirstElement(node); cur; cur = xmlNextElement(cur)) {
 	ret->value.array.elements[n_elements] = xmlRpcValueUnmarshal(cur);
@@ -151,6 +181,10 @@ static xmlRpcValueDictElementPtr xmlRpcValueUnmarshalDictElement(xmlNodePtr node
     xmlRpcValueDictElementPtr ret = malloc(sizeof(*ret));
     xmlNodePtr cur;
 
+    if (!ret) {
+        xmlRpcError(VIR_ERR_NO_MEMORY, "allocate dict", sizeof(*ret));
+	return NULL;
+    }
     memset(ret, 0, sizeof(*ret));
 
     for (cur = xmlFirstElement(node); cur; cur = xmlNextElement(cur)) {
@@ -159,7 +193,13 @@ static xmlRpcValueDictElementPtr xmlRpcValueUnmarshalDictElement(xmlNodePtr node
 	} else if (xmlStrEqual(cur->name, BAD_CAST "value")) {
 	    ret->value = xmlRpcValueUnmarshal(cur);
 	} else {
-	    /* What? */
+	    xmlRpcError(VIR_ERR_XML_ERROR, "unexpected dict node", 0);
+	    if (ret->name)
+		free(ret->name);
+	    if (ret->value)
+		xmlRpcValueFree(ret->value);
+	    free(ret);
+	    return NULL;
 	}
     }
 
@@ -174,12 +214,19 @@ static xmlRpcValuePtr xmlRpcValueUnmarshalDict(xmlNodePtr node)
     xmlRpcValuePtr ret = xmlRpcValueNew(XML_RPC_STRUCT);
     xmlNodePtr cur;
 
+    if (!ret)
+	return NULL;
+    
+    ret->value.dict.root = root;
+    
     for (cur = xmlFirstElement(node); cur; cur = xmlNextElement(cur)) {
 	*elem = xmlRpcValueUnmarshalDictElement(cur);
+	if (*elem==NULL) {
+	    xmlRpcValueFree(ret);
+	    return NULL;
+	} 
 	elem = &(*elem)->next;
     }
-
-    ret->value.dict.root = root;
 
     return ret;
 }
@@ -218,7 +265,7 @@ xmlRpcValuePtr xmlRpcValueUnmarshal(xmlNodePtr node)
     } else if (xmlStrEqual(node->name, BAD_CAST "nil")) {
 	ret = xmlRpcValueNew(XML_RPC_NIL);
     } else {
-	/* bug */
+	xmlRpcError(VIR_ERR_XML_ERROR, "unexpected value node", 0);
     }
 
     return ret;
@@ -299,11 +346,11 @@ void xmlRpcValueMarshal(xmlRpcValuePtr value, virBufferPtr buf, int indent)
 	break;
     case XML_RPC_DATE_TIME:
 	/* FIXME */
-	TODO;
+	TODO
 	break;
     case XML_RPC_BASE64:
 	/* FIXME */
-	TODO;
+	TODO
 	break;
     case XML_RPC_STRING:
 	virBufferStrcat(buf, 
@@ -344,6 +391,9 @@ virBufferPtr xmlRpcMarshalRequest(const char *request,
 
 xmlRpcValuePtr xmlRpcUnmarshalResponse(xmlNodePtr node, bool *is_fault)
 {
+    if (!node)
+	return NULL;
+
     if (!xmlStrEqual(node->name, BAD_CAST "methodResponse"))
 	return NULL;
 
@@ -361,7 +411,6 @@ xmlRpcValuePtr xmlRpcUnmarshalResponse(xmlNodePtr node, bool *is_fault)
 	return xmlRpcValueUnmarshal(xmlFirstElement(node));
     } else
 	return NULL;
-
 }
 
 static char *xmlRpcCallRaw(const char *url, const char *request)
@@ -378,24 +427,29 @@ static char *xmlRpcCallRaw(const char *url, const char *request)
 				NULL,
 				strlen(request));
 	
-	if (cxt == NULL)
+	if (cxt == NULL) {
+		xmlRpcError(VIR_ERR_POST_FAILED, "send request", 0);
 		goto error;
+	}
 
 	if (contentType && strcmp(contentType, "text/xml") != 0) {
 		errno = EINVAL;
+		xmlRpcError(VIR_ERR_POST_FAILED, "unexpected mime type", 0);
 		goto error;
 	}
 
 	len = xmlNanoHTTPContentLength(cxt);
 	response = malloc(len + 1);
-	if (response == NULL)
+	if (response == NULL) {
+		xmlRpcError(VIR_ERR_NO_MEMORY, "allocate response", len);
 		goto error;
-
+	}
 	ret = xmlNanoHTTPRead(cxt, response, len);
 	if (ret != len) {
 		errno = EINVAL;
 		free(response);
 		response = NULL;
+		xmlRpcError(VIR_ERR_POST_FAILED, "read response", 0);
 	}
 
 	response[len] = 0;
@@ -426,8 +480,10 @@ static char **xmlRpcStringArray(xmlRpcValuePtr value)
 	if (value->value.array.elements[i]->kind == XML_RPC_STRING)
 	    size += strlen(value->value.array.elements[i]->value.string) + 1;
 
-    ptr = malloc(size);
-
+    if (!(ptr = malloc(size))) {
+	xmlRpcError(VIR_ERR_NO_MEMORY, "allocate string array", size);
+	return NULL;
+    }
     ret = (char **)ptr;
     ptr += sizeof(char *) * (value->value.array.n_elements + 1);
 
@@ -454,29 +510,35 @@ xmlRpcArgvNew(const char *fmt, va_list ap, int *argc)
     int i;
     
     *argc = strlen(fmt);
-    argv = malloc(sizeof(*argv) * *argc);
-
+    if (!(argv = malloc(sizeof(*argv) * *argc))) {
+        xmlRpcError(VIR_ERR_NO_MEMORY, "read response", sizeof(*argv) * *argc);
+        return NULL;
+    }
     i = 0;
     for (ptr = fmt; *ptr; ptr++) {
 	switch (*ptr) {
 	case 'i':
-	    argv[i] = xmlRpcValueNew(XML_RPC_INTEGER);
-	    argv[i]->value.integer = va_arg(ap, int32_t);
+	    if ((argv[i] = xmlRpcValueNew(XML_RPC_INTEGER)))
+		argv[i]->value.integer = va_arg(ap, int32_t);
 	    break;
 	case 'f':
-	    argv[i] = xmlRpcValueNew(XML_RPC_DOUBLE);
-	    argv[i]->value.real = va_arg(ap, double);
+	    if ((argv[i] = xmlRpcValueNew(XML_RPC_DOUBLE)))
+		argv[i]->value.real = va_arg(ap, double);
 	    break;
 	case 'b':
-	    argv[i] = xmlRpcValueNew(XML_RPC_BOOLEAN);
-	    argv[i]->value.boolean = va_arg(ap, int);
+	    if ((argv[i] = xmlRpcValueNew(XML_RPC_BOOLEAN)))
+	        argv[i]->value.boolean = va_arg(ap, int);
 	    break;
 	case 's':
-	    argv[i] = xmlRpcValueNew(XML_RPC_STRING);
-	    argv[i]->value.string = strdup(va_arg(ap, const char *));
+	    if ((argv[i] = xmlRpcValueNew(XML_RPC_STRING)))
+  	        argv[i]->value.string = strdup(va_arg(ap, const char *));
 	    break;
 	default:
-	    xmlRpcArgvFree(i, argv);  
+	    argv[i] = NULL;
+	    break;
+	}
+	if (argv[i]==NULL) {
+	    xmlRpcArgvFree(i, argv);
 	    return NULL;
 	}
 	i++;
@@ -488,6 +550,8 @@ void
 xmlRpcArgvFree(int argc, xmlRpcValuePtr *argv)
 {
     int i;
+    if (!argv)
+	return;
     for (i = 0; i < argc; i++)
 	xmlRpcValueFree(argv[i]);
 
@@ -513,7 +577,8 @@ int xmlRpcCall(xmlRpcContextPtr context, const char *method,
     if (retfmt && *retfmt)
 	retval = va_arg(ap, void *);
  
-    argv = xmlRpcArgvNew(fmt, ap, &argc);
+    if (!(argv = xmlRpcArgvNew(fmt, ap, &argc)))
+	return -1;
     
     va_end(ap);
 
@@ -521,9 +586,15 @@ int xmlRpcCall(xmlRpcContextPtr context, const char *method,
 
     xmlRpcArgvFree(argc, argv);
 	
+    if (!buf)
+	return -1;
+    
     ret = xmlRpcCallRaw(context->uri, buf->content);
 
     virBufferFree(buf);
+
+    if (!ret)
+	return -1;
 
     xml = xmlReadDoc((const xmlChar *)ret, "response.xml", NULL,
 		     XML_PARSE_NOENT | XML_PARSE_NONET |
@@ -532,6 +603,7 @@ int xmlRpcCall(xmlRpcContextPtr context, const char *method,
 
     if (xml == NULL) {
 	errno = EINVAL;
+	xmlRpcError(VIR_ERR_XML_ERROR, "parse server response failed", 0);
 	return -1;
     }
 
@@ -572,7 +644,9 @@ int xmlRpcCall(xmlRpcContextPtr context, const char *method,
 
     xmlFreeDoc(xml);
 
-    if (fault) { /* FIXME we need generic dict routines */
+    if (fault) { 
+	/* FIXME we need generic dict routines */
+	/* FIXME we need faultMessage propagate to libvirt error API */
 	context->faultCode = value->value.dict.root->value->value.integer;
 	context->faultMessage = strdup(value->value.dict.root->next->value->value.string);
 	xmlRpcValueFree(value);
@@ -592,7 +666,8 @@ xmlRpcContextPtr xmlRpcContextNew(const char *uri)
     if (ret) {
 	ret->uri = strdup(uri);
 	ret->faultMessage = NULL;
-    }
+    } else
+	xmlRpcError(VIR_ERR_NO_MEMORY, "allocate new context", sizeof(*ret));
 
     return ret;
 }

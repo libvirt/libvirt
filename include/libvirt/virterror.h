@@ -44,6 +44,7 @@ typedef enum {
     VIR_FROM_SEXPR,	/* Error in the S-Epression code */
     VIR_FROM_XML,	/* Error in the XML code */
     VIR_FROM_DOM,	/* Error when operating on a domain */
+    VIR_FROM_RPC	/* Error in the XML-RPC code */
 } virErrorDomain;
 
 
