@@ -1,3 +1,10 @@
+Wed May 10 13:17:00 CEST 2006 Karel Zak <kzak@redhat.com>
+
+	* src/xml.c src/xml.h: added virBufferNew() and virBufferStrcat()
+	* tests/xmlrpctest.c: added performace tests for virBufferStrcat() and 
+	  virBufferVSprintf()
+	* src/xmlrpc.c: used virBufferStrcat()
+
 Tue May  9 16:37:22 CEST 2006 Karel Zak <kzak@redhat.com>
 
 	* tests/Makefile.am tests/xmlrpctest.c tests/testutils.h: added test 

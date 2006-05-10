@@ -266,13 +266,13 @@ void xmlRpcValueMarshal(xmlRpcValuePtr value, virBufferPtr buf, int indent)
     virBufferVSprintf(buf, "%*s<value>", indent, "");
     switch (value->kind) {
     case XML_RPC_ARRAY:
-	virBufferVSprintf(buf, "<array><data>\n", indent, "");
+	virBufferStrcat(buf, "<array><data>\n", NULL);
 	for (i = 0; i < value->value.array.n_elements; i++)
 	    xmlRpcValueMarshal(value->value.array.elements[i], buf, indent+2);
 	virBufferVSprintf(buf, "%*s</data></array>", indent, "");
 	break;
     case XML_RPC_STRUCT:
-	virBufferVSprintf(buf, "<struct>\n", indent, "");
+	virBufferStrcat(buf, "<struct>\n", NULL);
 	indent += 2;
 	for (elem = value->value.dict.root; elem; elem = elem->next) {
 	    virBufferVSprintf(buf, "%*s<member>\n", indent, "");
@@ -306,13 +306,14 @@ void xmlRpcValueMarshal(xmlRpcValuePtr value, virBufferPtr buf, int indent)
 	TODO;
 	break;
     case XML_RPC_STRING:
-	virBufferVSprintf(buf, "<string>%s</string>", value->value.string);
+	virBufferStrcat(buf, 
+		"<string>", value->value.string, "</string>", NULL);
 	break;
     case XML_RPC_NIL:
-	virBufferVSprintf(buf, "<nil> </nil>");
+	virBufferStrcat(buf, "<nil> </nil>", NULL);
 	break;
     }
-    virBufferVSprintf(buf, "</value>\n");
+    virBufferStrcat(buf, "</value>\n", NULL);
 }
 
 virBufferPtr xmlRpcMarshalRequest(const char *request,
@@ -321,28 +322,23 @@ virBufferPtr xmlRpcMarshalRequest(const char *request,
     virBufferPtr buf;
     int i;
 
-    buf = malloc(sizeof(*buf));
-    buf->size = 1024;
-    buf->content = malloc(buf->size);
-    buf->use = 0;
+    buf = virBufferNew(1024);
 
-    virBufferVSprintf(buf,
-		      "<?xml version=\"1.0\"?>\n"
-		      "<methodCall>\n"
-		      "  <methodName>%s</methodName>\n"
-		      "  <params>\n",
-		      request);
+    virBufferStrcat(buf,
+		    "<?xml version=\"1.0\"?>\n"
+		    "<methodCall>\n"
+		    "  <methodName>", request, "</methodName>\n"
+		    "  <params>\n", NULL);
     for (i = 0; i < argc; i++) {
-	virBufferVSprintf(buf,
-			  "    <param>\n");
+	virBufferStrcat(buf,  
+                    "    <param>\n", NULL);
 	xmlRpcValueMarshal(argv[i], buf, 6);
-	virBufferVSprintf(buf,
-			  "    </param>\n");
+	virBufferStrcat(buf,  
+                    "    </param>\n", NULL);
     }
-    virBufferVSprintf(buf,
-		      "  </params>\n"
-		      "</methodCall>\n");
-
+    virBufferStrcat(buf,
+                    "  </params>\n"
+		    "</methodCall>\n", NULL);
     return buf;
 }
 

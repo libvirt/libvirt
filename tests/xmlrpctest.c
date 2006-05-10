@@ -151,11 +151,10 @@ testMarshalRequestSTRING(void *data ATTRIBUTE_UNUSED)
     int check = data ? *((int *)data) : 0;
     virBufferPtr buf = marshalRequest("s", str);
 
-    if (check)
+    if (check) 
         ret = checkRequestValue(buf->content, 
                 "string(/methodCall/params/param[1]/value/string)",
                 XML_RPC_STRING, (void *) str);
-    
     virBufferFree(buf);
     return ret;
 }
@@ -177,6 +176,32 @@ testMarshalRequestDOUBLE(void *data)
     return ret;
 }
 
+static int
+testBufferStrcat(void *data ATTRIBUTE_UNUSED)
+{
+    virBufferPtr buf = virBufferNew(1000*32);  /* don't waste time with realloc */
+    int i;
+    
+    for (i=0; i < 1000; i++)
+        virBufferStrcat(buf, "My name is ", "libvirt", ".\n", NULL);
+
+    virBufferFree(buf);
+    return 0;
+}
+
+static int
+testBufferVSprintf(void *data ATTRIBUTE_UNUSED)
+{
+    virBufferPtr buf = virBufferNew(1000*32);  /* don't waste time with realloc */
+    int i;
+    
+    for (i=0; i < 1000; i++)
+        virBufferVSprintf(buf, "My name is %s.\n", "libvirt");
+
+    virBufferFree(buf);
+    return 0;
+}
+
 int
 main(int argc, char **argv)
 {
@@ -194,15 +219,17 @@ main(int argc, char **argv)
 	}
     if (argc == 2)
         url = argv[1];
-            
+    
+     /* 
+      * client-server tests 
+      */
 	if (!(cxt = xmlRpcContextNew(url)))
 	{
 		fprintf(stderr, "%s: failed create new RPC context\n", progname);
 		exit(EXIT_FAILURE);
 	}
 
-    /* client-server tests */
-    if (virtTestRun("XML-RPC methodCall INT+INT", 
+       if (virtTestRun("XML-RPC methodCall INT+INT", 
                 NLOOPS, testMethodPlusINT, (void *) cxt) != 0)
         ret = -1;
     
@@ -210,7 +237,11 @@ main(int argc, char **argv)
                 NLOOPS, testMethodPlusDOUBLE, (void *) cxt) != 0)
         ret = -1;
     
-    /* regression / performance tests */
+ 	xmlRpcContextFree(cxt);
+   
+    /* 
+     * regression / performance tests 
+     */
     if (virtTestRun("XML-RPC request marshalling: INT (check)", 
                 1, testMarshalRequestINT, (void *) &check) != 0)
         ret = -1;
@@ -231,8 +262,12 @@ main(int argc, char **argv)
     if (virtTestRun("XML-RPC request marshalling: STRING", 
                 NLOOPS, testMarshalRequestSTRING, NULL) != 0)
         ret = -1;
-    
-	xmlRpcContextFree(cxt);
+
+    if (virtTestRun("Buffer: strcat", NLOOPS, testBufferStrcat, NULL) != 0)
+        ret = -1;
+    if (virtTestRun("Buffer: sprintf", NLOOPS, testBufferVSprintf, NULL) != 0)
+        ret = -1;
+  
 
 	exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

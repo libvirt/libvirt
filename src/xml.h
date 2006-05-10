@@ -24,9 +24,11 @@ struct _virBuffer {
     unsigned int size;      /* The buffer size */
 };
 
+virBufferPtr virBufferNew(unsigned int size);
 void virBufferFree(virBufferPtr buf);
 int virBufferAdd(virBufferPtr buf, const char *str, int len);
 int virBufferVSprintf(virBufferPtr buf, const char *format, ...);
+int virBufferStrcat(virBufferPtr buf, ...);
 char *virDomainParseXMLDesc(const char *xmldesc, char **name);
 
 #ifdef __cplusplus

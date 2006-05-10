@@ -107,20 +107,40 @@ virBufferAdd(virBufferPtr buf, const char *str, int len)
             return (-1);
         }
     }
-
+    /* XXX: memmove() is 2x slower than memcpy(), do we really need it? */
     memmove(&buf->content[buf->use], str, len);
     buf->use += len;
     buf->content[buf->use] = 0;
     return (0);
 }
 
+virBufferPtr
+virBufferNew(unsigned int size)
+{
+    virBufferPtr buf;
+
+    if (!(buf = malloc(sizeof(*buf)))) {
+        virXMLError(VIR_ERR_NO_MEMORY, "allocate new buffer", sizeof(*buf));
+        return NULL;
+    }
+    if (size && (buf->content = malloc(size))==NULL) {
+        virXMLError(VIR_ERR_NO_MEMORY, "allocate buffer content", size);
+        free(buf);
+        return NULL;
+    }
+    buf->size = size;
+    buf->use = 0;
+
+    return buf;
+}
+	
 void
 virBufferFree(virBufferPtr buf)
 {
     if (buf) {
-       if (buf->content)
-	       free(buf->content);
-       free(buf);
+        if (buf->content)
+	   free(buf->content);
+       	free(buf);
     }
 }
 
@@ -160,6 +180,39 @@ virBufferVSprintf(virBufferPtr buf, const char *format, ...)
     buf->use += count;
     buf->content[buf->use] = 0;
     return (0);
+}
+
+/**
+ * virBufferStrcat:
+ * @buf:  the buffer to dump
+ * @argptr:  the variable list of strings, the last argument must be NULL
+ *
+ * Concatenate strings to an XML buffer.
+ *
+ * Returns 0 successful, -1 in case of internal or API error.
+ */
+int
+virBufferStrcat(virBufferPtr buf, ...)
+{
+    va_list ap;
+    char *str;
+    
+    va_start(ap, buf);
+    
+    while ((str = va_arg(ap, char *)) != NULL) {
+        unsigned int len = strlen(str);
+        unsigned int needSize = buf->use + len + 2;
+
+        if (needSize > buf->size) {
+           if (!virBufferGrow(buf, needSize))
+              return -1;
+	}
+        memcpy(&buf->content[buf->use], str, len);
+        buf->use += len;
+        buf->content[buf->use] = 0;
+    }
+    va_end(ap);
+    return 0;
 }
 
 #if 0
