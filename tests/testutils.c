@@ -34,7 +34,7 @@ virtTestCountAverage(double *items, int nitems)
 }
 
 /* 
- * Runs test anf count average time (if the nloops is grater than 1)
+ * Runs test and count average time (if the nloops is grater than 1)
  * 
  * returns: -1 = error, 0 = success 
  */

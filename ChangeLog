@@ -1,3 +1,12 @@
+Mon May 22 15:34:20 CEST 2006 Karel Zak <kzak@redhat.com>
+
+	* src/virsh.c: added UUID: to the dominfo command, vshPrint() refactoring,
+	  added support for domain look up by UUID
+	* virsh.1: added information about UUID, fixed list of commands and 
+	  domains statuses
+	* src/libvirt.c include/libvirt.h.in src/libvirt_sym.version: added
+	  virDomainGetUUIDString() and virDomainLookupByUUIDString()
+
 Wed May 10 15:50:32 CEST 2006 Karel Zak <kzak@redhat.com>
 
 	* src/virterror.c include/virterror.h: added VIR_FROM_RPC

@@ -655,7 +655,7 @@ error:
 /**
  * virDomainLookupByUUID:
  * @conn: pointer to the hypervisor connection
- * @uuid: the UUID string for the domain
+ * @uuid: the raw UUID for the domain
  *
  * Try to lookup a domain on the given hypervisor based on its UUID.
  *
@@ -710,6 +710,55 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     ret->handle = id;
 
     return (ret);
+}
+
+/**
+ * virDomainLookupByUUIDString:
+ * @conn: pointer to the hypervisor connection
+ * @uuidstr: the string UUID for the domain
+ *
+ * Try to lookup a domain on the given hypervisor based on its UUID.
+ *
+ * Returns a new domain object or NULL in case of failure
+ */
+virDomainPtr
+virDomainLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
+{
+    int raw[16], i;
+    unsigned char uuid[16];
+    int ret;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (NULL);
+    }
+    if (uuidstr == NULL) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (NULL);
+	
+    }
+    /* XXX: sexpr_uuid() also supports 'xxxx-xxxx-xxxx-xxxx' format. 
+     *      We needn't it here. Right? 
+     */
+    ret = sscanf(uuidstr,
+                 "%02x%02x%02x%02x-"
+                 "%02x%02x-"
+                 "%02x%02x-"
+                 "%02x%02x-"
+                 "%02x%02x%02x%02x%02x%02x",
+                 raw + 0, raw + 1, raw + 2, raw + 3,
+                 raw + 4, raw + 5, raw + 6, raw + 7,
+                 raw + 8, raw + 9, raw + 10, raw + 11,
+                 raw + 12, raw + 13, raw + 14, raw + 15);
+    
+    if (ret!=16) {
+	virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+	return (NULL);
+    }
+    for (i = 0; i < 16; i++)
+        uuid[i] = raw[i] & 0xFF;
+    
+    return virDomainLookupByUUID(conn, &uuid[0]);
 }
 
 /**
@@ -1107,6 +1156,42 @@ virDomainGetUUID(virDomainPtr domain, unsigned char *uuid)
                                 &domain->uuid[0]);
         memcpy(uuid, &domain->uuid[0], 16);
     }
+    return (0);
+}
+
+/**
+ * virDomainGetUUIDString:
+ * @domain: a domain object
+ * @buf: pointer to a 37 bytes array
+ *
+ * Get the UUID for a domain as string. For more information about 
+ * UUID see RFC4122.
+ *
+ * Returns -1 in case of error, 0 in case of success
+ */
+int
+virDomainGetUUIDString(virDomainPtr domain, char *buf)
+{
+    unsigned char uuid[16];
+    
+    if (!VIR_IS_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
+    }
+    if (buf == NULL) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+    
+    if (virDomainGetUUID(domain, &uuid[0]))
+	return (-1);
+
+    snprintf(buf, 37, 
+	"%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+                      uuid[0], uuid[1], uuid[2], uuid[3],
+                      uuid[4], uuid[5], uuid[6], uuid[7],
+                      uuid[8], uuid[9], uuid[10], uuid[11],
+                      uuid[12], uuid[13], uuid[14], uuid[15]);
     return (0);
 }
 

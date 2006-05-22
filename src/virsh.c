@@ -47,17 +47,6 @@ static char *progname;
         ((((int) ((T)->tv_sec - (U)->tv_sec)) * 1000000.0 + \
           ((int) ((T)->tv_usec - (U)->tv_usec))) / 1000.0)
 
-typedef enum {
-    VSH_MESG,                   /* standard output */
-    VSH_HEADER,                 /* header for standard output */
-    VSH_FOOTER,                 /* timing, last command state, or whatever */
-    VSH_DEBUG1,                 /* debugN where 'N' = level */
-    VSH_DEBUG2,
-    VSH_DEBUG3,
-    VSH_DEBUG4,
-    VSH_DEBUG5
-} vshOutType;
-
 /*
  * The error handler for virtsh
  */
@@ -198,9 +187,9 @@ static int vshCommandOptBool(vshCmd * cmd, const char *name);
 static virDomainPtr vshCommandOptDomain(vshControl * ctl, vshCmd * cmd,
                                         const char *optname, char **name);
 
-
-static void vshPrint(vshControl * ctl, vshOutType out, const char *format,
-                     ...);
+static void vshPrintExtra(vshControl * ctl, const char *format, ...);
+static void vshDebug(vshControl * ctl, int level, const char *format, ...);
+#define vshPrint(_ctl, ...)   fprintf(stdout, __VA_ARGS__)
 
 static const char *vshDomainStateToString(int state);
 static int vshConnectionUsability(vshControl * ctl, virConnectPtr conn,
@@ -244,9 +233,9 @@ cmdHelp(vshControl * ctl, vshCmd * cmd)
     if (!cmdname) {
         vshCmdDef *def;
 
-        vshPrint(ctl, VSH_HEADER, "Commands:\n\n");
+        vshPrint(ctl, "Commands:\n\n");
         for (def = commands; def->name; def++)
-            vshPrint(ctl, VSH_MESG, "    %-15s %s\n", def->name,
+            vshPrint(ctl, "    %-15s %s\n", def->name,
                      vshCmddefGetInfo(def, "help"));
         return TRUE;
     }
@@ -323,8 +312,8 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 
     virConnectListDomains(ctl->conn, &ids[0], maxid);
 
-    vshPrint(ctl, VSH_HEADER, "%3s %-20s %s\n", "Id", "Name", "State");
-    vshPrint(ctl, VSH_HEADER, "----------------------------------\n");
+    vshPrintExtra(ctl, "%3s %-20s %s\n", "Id", "Name", "State");
+    vshPrintExtra(ctl, "----------------------------------\n");
 
     for (i = 0; i < maxid; i++) {
         int ret;
@@ -336,7 +325,7 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
             continue;
         ret = virDomainGetInfo(dom, &info);
 
-        vshPrint(ctl, VSH_MESG, "%3d %-20s %s\n",
+        vshPrint(ctl, "%3d %-20s %s\n",
                  virDomainGetID(dom),
                  virDomainGetName(dom),
                  ret <
@@ -376,7 +365,7 @@ cmdDomstate(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (virDomainGetInfo(dom, &info) == 0)
-        vshPrint(ctl, VSH_MESG, "%s\n",
+        vshPrint(ctl, "%s\n",
                  vshDomainStateToString(info.state));
     else
         ret = FALSE;
@@ -414,7 +403,7 @@ cmdSuspend(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (virDomainSuspend(dom) == 0) {
-        vshPrint(ctl, VSH_MESG, "Domain %s suspended\n", name);
+        vshPrint(ctl, "Domain %s suspended\n", name);
     } else {
         vshError(ctl, FALSE, "Failed to suspend domain\n");
         ret = FALSE;
@@ -470,7 +459,7 @@ cmdCreate(vshControl * ctl, vshCmd * cmd)
     buffer[l] = 0;
     dom = virDomainCreateLinux(ctl->conn, &buffer[0], 0);
     if (dom != NULL) {
-        vshPrint(ctl, VSH_MESG, "Domain %s created from %s\n", 
+        vshPrint(ctl, "Domain %s created from %s\n", 
                  virDomainGetName(dom), from);
     } else {
         vshError(ctl, FALSE, "Failed to create domain\n");
@@ -513,7 +502,7 @@ cmdSave(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (virDomainSave(dom, to) == 0) {
-        vshPrint(ctl, VSH_MESG, "Domain %s saved\n", name);
+        vshPrint(ctl, "Domain %s saved\n", name);
     } else {
         vshError(ctl, FALSE, "Failed to save domain\n");
         ret = FALSE;
@@ -553,7 +542,7 @@ cmdRestore(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (virDomainRestore(ctl->conn, from) == 0) {
-        vshPrint(ctl, VSH_MESG, "Domain restored from %s\n", from);
+        vshPrint(ctl, "Domain restored from %s\n", from);
     } else {
         vshError(ctl, FALSE, "Failed to restore domain\n");
         ret = FALSE;
@@ -590,7 +579,7 @@ cmdResume(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (virDomainResume(dom) == 0) {
-        vshPrint(ctl, VSH_MESG, "Domain %s resumed\n", name);
+        vshPrint(ctl, "Domain %s resumed\n", name);
     } else {
         vshError(ctl, FALSE, "Failed to resume domain\n");
         ret = FALSE;
@@ -629,7 +618,7 @@ cmdShutdown(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (virDomainShutdown(dom) == 0) {
-        vshPrint(ctl, VSH_MESG, "Domain %s is being shutdown\n", name);
+        vshPrint(ctl, "Domain %s is being shutdown\n", name);
     } else {
         vshError(ctl, FALSE, "Failed to shutdown domain\n");
         ret = FALSE;
@@ -668,7 +657,7 @@ cmdReboot(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (virDomainReboot(dom, 0) == 0) {
-        vshPrint(ctl, VSH_MESG, "Domain %s is being rebooted\n", name);
+        vshPrint(ctl, "Domain %s is being rebooted\n", name);
     } else {
         vshError(ctl, FALSE, "Failed to reboot domain\n");
         ret = FALSE;
@@ -707,7 +696,7 @@ cmdDestroy(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (virDomainDestroy(dom) == 0) {
-        vshPrint(ctl, VSH_MESG, "Domain %s destroyed\n", name);
+        vshPrint(ctl, "Domain %s destroyed\n", name);
     } else {
         vshError(ctl, FALSE, "Failed to destroy domain\n");
         ret = FALSE;
@@ -738,7 +727,7 @@ cmdDominfo(vshControl * ctl, vshCmd * cmd)
     virDomainInfo info;
     virDomainPtr dom;
     int ret = TRUE;
-    char *str;
+    char *str, uuid[37];
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -746,31 +735,33 @@ cmdDominfo(vshControl * ctl, vshCmd * cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
         return FALSE;
 
-    vshPrint(ctl, VSH_MESG, "%-15s %d\n", "Id:", virDomainGetID(dom));
-    vshPrint(ctl, VSH_MESG, "%-15s %s\n", "Name:", virDomainGetName(dom));
+    vshPrint(ctl, "%-15s %d\n", "Id:", virDomainGetID(dom));
+    vshPrint(ctl, "%-15s %s\n", "Name:", virDomainGetName(dom));
+    if (virDomainGetUUIDString(dom, &uuid[0])==0)
+        vshPrint(ctl, "%-15s %s\n", "UUID:", uuid);
 
     if ((str = virDomainGetOSType(dom))) {
-        vshPrint(ctl, VSH_MESG, "%-15s %s\n", "OS Type:", str);
+        vshPrint(ctl, "%-15s %s\n", "OS Type:", str);
         free(str);
     }
 
     if (virDomainGetInfo(dom, &info) == 0) {
-        vshPrint(ctl, VSH_MESG, "%-15s %s\n", "State:",
+        vshPrint(ctl, "%-15s %s\n", "State:",
                  vshDomainStateToString(info.state));
 
-        vshPrint(ctl, VSH_MESG, "%-15s %d\n", "CPU(s):", info.nrVirtCpu);
+        vshPrint(ctl, "%-15s %d\n", "CPU(s):", info.nrVirtCpu);
 
         if (info.cpuTime != 0) {
             float cpuUsed = info.cpuTime;
 
             cpuUsed /= 1000000000;
 
-            vshPrint(ctl, VSH_MESG, "%-15s %.1fs\n", "CPU time:", cpuUsed);
+            vshPrint(ctl, "%-15s %.1fs\n", "CPU time:", cpuUsed);
         }
 
-        vshPrint(ctl, VSH_MESG, "%-15s %lu kB\n", "Max memory:",
+        vshPrint(ctl, "%-15s %lu kB\n", "Max memory:",
                  info.maxMem);
-        vshPrint(ctl, VSH_MESG, "%-15s %lu kB\n", "Used memory:",
+        vshPrint(ctl, "%-15s %lu kB\n", "Used memory:",
                  info.memory);
 
     } else {
@@ -803,14 +794,14 @@ cmdNodeinfo(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         vshError(ctl, FALSE, "failed to get node information");
         return FALSE;
     }    
-    vshPrint(ctl, VSH_MESG, "%-20s %s\n", "CPU model:", info.model);
-    vshPrint(ctl, VSH_MESG, "%-20s %d\n", "CPU(s):", info.cpus);
-    vshPrint(ctl, VSH_MESG, "%-20s %d MHz\n", "CPU frequency:", info.mhz);
-    vshPrint(ctl, VSH_MESG, "%-20s %d\n", "CPU socket(s):", info.sockets);
-    vshPrint(ctl, VSH_MESG, "%-20s %d\n", "Core(s) per socket:", info.cores);
-    vshPrint(ctl, VSH_MESG, "%-20s %d\n", "Thread(s) per core:", info.threads);
-    vshPrint(ctl, VSH_MESG, "%-20s %d\n", "NUMA cell(s):", info.nodes);
-    vshPrint(ctl, VSH_MESG, "%-20s %lu kB\n", "Memory size:", info.memory);
+    vshPrint(ctl, "%-20s %s\n", "CPU model:", info.model);
+    vshPrint(ctl, "%-20s %d\n", "CPU(s):", info.cpus);
+    vshPrint(ctl, "%-20s %d MHz\n", "CPU frequency:", info.mhz);
+    vshPrint(ctl, "%-20s %d\n", "CPU socket(s):", info.sockets);
+    vshPrint(ctl, "%-20s %d\n", "Core(s) per socket:", info.cores);
+    vshPrint(ctl, "%-20s %d\n", "Thread(s) per core:", info.threads);
+    vshPrint(ctl, "%-20s %d\n", "NUMA cell(s):", info.nodes);
+    vshPrint(ctl, "%-20s %lu kB\n", "Memory size:", info.memory);
         
     return TRUE;
 }
@@ -883,7 +874,7 @@ cmdDomname(vshControl * ctl, vshCmd * cmd)
 
     dom = virDomainLookupByID(ctl->conn, id);
     if (dom) {
-        vshPrint(ctl, VSH_MESG, "%s\n", virDomainGetName(dom));
+        vshPrint(ctl, "%s\n", virDomainGetName(dom));
         virDomainFree(dom);
     } else {
         vshError(ctl, FALSE, "failed to get domain '%d'", id);
@@ -919,7 +910,7 @@ cmdDomid(vshControl * ctl, vshCmd * cmd)
 
     dom = virDomainLookupByName(ctl->conn, name);
     if (dom) {
-        vshPrint(ctl, VSH_MESG, "%d\n", virDomainGetID(dom));
+        vshPrint(ctl, "%d\n", virDomainGetID(dom));
         virDomainFree(dom);
     } else {
         vshError(ctl, FALSE, "failed to get domain '%s'", name);
@@ -966,7 +957,7 @@ cmdVersion(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
     includeVersion %= 1000000;
     minor = includeVersion / 1000;
     rel = includeVersion % 1000;
-    vshPrint(ctl, VSH_MESG, "Compiled against library: libvir %d.%d.%d\n",
+    vshPrint(ctl, "Compiled against library: libvir %d.%d.%d\n",
              major, minor, rel);
 
     ret = virGetVersion(&libVersion, hvType, &apiVersion);
@@ -978,14 +969,14 @@ cmdVersion(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
     libVersion %= 1000000;
     minor = libVersion / 1000;
     rel = libVersion % 1000;
-    vshPrint(ctl, VSH_MESG, "Using library: libvir %d.%d.%d\n",
+    vshPrint(ctl, "Using library: libvir %d.%d.%d\n",
              major, minor, rel);
 
     major = apiVersion / 1000000;
     apiVersion %= 1000000;
     minor = apiVersion / 1000;
     rel = apiVersion % 1000;
-    vshPrint(ctl, VSH_MESG, "Using API: %s %d.%d.%d\n", hvType,
+    vshPrint(ctl, "Using API: %s %d.%d.%d\n", hvType,
              major, minor, rel);
 
     ret = virConnectGetVersion(ctl->conn, &hvVersion);
@@ -994,7 +985,7 @@ cmdVersion(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         return FALSE;
     }
     if (hvVersion == 0) {
-        vshPrint(ctl, VSH_MESG,
+        vshPrint(ctl,
                  "cannot extract running %s hypervisor version\n", hvType);
     } else {
         major = hvVersion / 1000000;
@@ -1002,7 +993,7 @@ cmdVersion(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         minor = hvVersion / 1000;
         rel = hvVersion % 1000;
 
-        vshPrint(ctl, VSH_MESG, "Running hypervisor: %s %d.%d.%d\n",
+        vshPrint(ctl, "Running hypervisor: %s %d.%d.%d\n",
                  hvType, major, minor, rel);
     }
     return TRUE;
@@ -1293,7 +1284,7 @@ vshCommandOptDomain(vshControl * ctl, vshCmd * cmd, const char *optname,
         return NULL;
     }
 
-    vshPrint(ctl, VSH_DEBUG5, "%s: found option <%s>: %s\n",
+    vshDebug(ctl, 5, "%s: found option <%s>: %s\n",
              cmd->def->name, optname, n);
 
     if (name)
@@ -1302,17 +1293,25 @@ vshCommandOptDomain(vshControl * ctl, vshCmd * cmd, const char *optname,
     /* try it by ID */
     id = (int) strtol(n, &end, 10);
     if (id >= 0 && end && *end == '\0') {
-        vshPrint(ctl, VSH_DEBUG5, "%s: <%s> seems like domain ID\n",
+        vshDebug(ctl, 5, "%s: <%s> seems like domain ID\n",
                  cmd->def->name, optname);
         dom = virDomainLookupByID(ctl->conn, id);
     }
 
+    /* try it by UUID */
+    if (dom==NULL && strlen(n)==36) {
+        vshDebug(ctl, 5, "%s: <%s> tring as domain UUID\n",
+                cmd->def->name, optname);
+        dom = virDomainLookupByUUIDString(ctl->conn, (const unsigned char *) n);
+    }
+    
     /* try it by NAME */
     if (!dom) {
-        vshPrint(ctl, VSH_DEBUG5, "%s: <%s> tring as domain NAME\n",
+        vshDebug(ctl, 5, "%s: <%s> tring as domain NAME\n",
                  cmd->def->name, optname);
         dom = virDomainLookupByName(ctl->conn, n);
     }
+
     if (!dom)
         vshError(ctl, FALSE, "failed to get domain '%s'", n);
 
@@ -1342,10 +1341,10 @@ vshCommandRun(vshControl * ctl, vshCmd * cmd)
             return ret;
 
         if (ctl->timing)
-            vshPrint(ctl, VSH_MESG, "\n(Time: %.3f ms)\n\n",
+            vshPrint(ctl, "\n(Time: %.3f ms)\n\n",
                      DIFF_MSEC(&after, &before));
         else
-            vshPrint(ctl, VSH_FOOTER, "\n");
+            vshPrintExtra(ctl, "\n");
         cmd = cmd->next;
     }
     return ret;
@@ -1532,7 +1531,7 @@ vshCommandParse(vshControl * ctl, char *cmdstr)
                     last->next = arg;
                 last = arg;
 
-                vshPrint(ctl, VSH_DEBUG4, "%s: %s(%s): %s\n",
+                vshDebug(ctl, 4, "%s: %s(%s): %s\n",
                          cmd->name,
                          opt->name,
                          tk == VSH_TK_OPTION ? "OPTION" : "DATA",
@@ -1592,6 +1591,8 @@ vshDomainStateToString(int state)
             return "in shutdown";
         case VIR_DOMAIN_SHUTOFF:
             return "shut off";
+        case VIR_DOMAIN_CRASHED:
+            return "crashed";
         default:
             return "no state";  /* = dom0 state */
     }
@@ -1612,52 +1613,32 @@ vshConnectionUsability(vshControl * ctl, virConnectPtr conn, int showerror)
     return TRUE;
 }
 
-static int
-vshWantedDebug(vshOutType type, int mode)
-{
-    switch (type) {
-        case VSH_DEBUG5:
-            if (mode < 5)
-                return FALSE;
-            return TRUE;
-        case VSH_DEBUG4:
-            if (mode < 4)
-                return FALSE;
-            return TRUE;
-        case VSH_DEBUG3:
-            if (mode < 3)
-                return FALSE;
-            return TRUE;
-        case VSH_DEBUG2:
-            if (mode < 2)
-                return FALSE;
-            return TRUE;
-        case VSH_DEBUG1:
-            if (mode < 1)
-                return FALSE;
-            return TRUE;
-        default:
-            /* it's right, all others types have to pass */
-            return TRUE;
-    }
-    return FALSE;
-}
-
 static void
-vshPrint(vshControl * ctl, vshOutType type, const char *format, ...)
+vshDebug(vshControl * ctl, int level, const char *format, ...)
 {
     va_list ap;
 
-    if (ctl->quiet == TRUE && (type == VSH_HEADER || type == VSH_FOOTER))
-        return;
-
-    if (!vshWantedDebug(type, ctl->debug))
+    if (level > ctl->debug)
         return;
 
     va_start(ap, format);
     vfprintf(stdout, format, ap);
     va_end(ap);
 }
+
+static void
+vshPrintExtra(vshControl * ctl, const char *format, ...)
+{
+    va_list ap;
+
+    if (ctl->quiet == TRUE)
+        return;
+
+    va_start(ap, format);
+    vfprintf(stdout, format, ap);
+    va_end(ap);
+}
+
 
 static void
 vshError(vshControl * ctl, int doexit, const char *format, ...)
@@ -2009,7 +1990,7 @@ vshParseArgv(vshControl * ctl, int argc, char **argv)
             sz -= strlen(argv[i]);
             strncat(cmdstr, " ", sz--);
         }
-        vshPrint(ctl, VSH_DEBUG2, "command: \"%s\"\n", cmdstr);
+        vshDebug(ctl, 2, "command: \"%s\"\n", cmdstr);
         ret = vshCommandParse(ctl, cmdstr);
 
         free(cmdstr);
@@ -2043,10 +2024,10 @@ main(int argc, char **argv)
     } else {
         /* interactive mode */
         if (!ctl->quiet) {
-            vshPrint(ctl, VSH_MESG,
+            vshPrint(ctl,
                      "Welcome to %s, the virtualization interactive terminal.\n\n",
                      progname);
-            vshPrint(ctl, VSH_MESG,
+            vshPrint(ctl,
                      "Type:  'help' for help with commands\n"
                      "       'quit' to quit\n\n");
         }

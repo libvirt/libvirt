@@ -13,6 +13,7 @@
 	virDomainFree;
 	virDomainGetID;
 	virDomainGetUUID;
+	virDomainGetUUIDString;
 	virDomainGetInfo;
 	virDomainGetMaxMemory;
 	virDomainGetName;
@@ -21,6 +22,7 @@
 	virDomainLookupByID;
 	virDomainLookupByName;
 	virDomainLookupByUUID;
+	virDomainLookupByUUIDString;
 	virDomainRestore;
 	virDomainResume;
 	virDomainSave;

@@ -138,13 +138,13 @@ virsh <subcommand> [args]
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
 The \fBvirsh\fR program is the main interface for managing virsh guest
-domains. The program can be used to create, pause, and shutdown
+domains. The program can be used to create, suspend, resume, save, and shutdown
 domains. It can also be used to list current domains. Libvirt is a C toolkit to interract with the virtualization capabilities of recent versions of Linux (and other OSes). It is free software available under the \s-1GNU\s0 Lesser General Public License. Virtualization of the Linux Operating System means the ability to run multiple instances of Operating Systems concurently on a single hardware system where the basic resources are driven by a Linux instance. The library aim at providing long term stable C \s-1API\s0 initially for the Xen paravirtualization but should be able to integrate other virtualization mechanisms if needed.
 .PP
 The basic structure of every virsh command is almost always:
 .PP
 .Vb 1
-\&  virsh <subcommand> <domain-id> [OPTIONS]
+\&  virsh <subcommand> <domain-id|name|uuid> [OPTIONS]
 .Ve
 .PP
 Where \fIsubcommand\fR is one of the sub commands listed below, \fIdomain-id\fR
@@ -181,18 +181,11 @@ The \fI\-\-readonly\fR option read-only connection
 .IP "\fBcreate\fR \fI\s-1FILE\s0\fR" 4
 .IX Item "create FILE"
 Create a domain from an \s-1XML\s0 <file> an easy way to create one if you have a pre-existing xen guest created via \fBxm\fR create <\s-1XMLFILE\s0>. 
-.Sp
-\&\fBExample\fR
-.Sp
-virsh dumpxml <domain\-name or id> to a file. 
-.IP "\fBdinfo\fR \fIdomain-name or id\fR" 4
-.IX Item "dinfo domain-name or id"
-Returns basic information about the domain.
-.IP "\fBdumpxml\fR \fIdomain-name or id\fR" 4
-.IX Item "dumpxml domain-name or id"
+.IP "\fBdumpxml\fR \fIdomain-name, id or uuid\fR" 4
+.IX Item "dumpxml domain-name, id or uuid"
 Ouput the domain informations as an \s-1XML\s0 dump to stdout, this format can be used by the create sub command. 
-.IP "\fBdestroy\fR \fIdomain-name or id\fR" 4
-.IX Item "destroy domain-name or id"
+.IP "\fBdestroy\fR \fIdomain-name, id or uuid\fR" 4
+.IX Item "destroy domain-name, id or uuid"
 Immediately terminate the domain domain\-id.  This doesn't give the domain
 \&\s-1OS\s0 any chance to react, and it the equivalent of ripping the power
 cord out on a physical machine.  In most cases you will want to use
@@ -200,14 +193,14 @@ the \fBshutdown\fR command instead.
 .IP "\fBdomid\fR \fIdomain-name\fR" 4
 .IX Item "domid domain-name"
 Converts a domain name to a domain id using xend's internal mapping.
-.IP "\fBdominfo\fR \fIdomain-name or id\fR" 4
-.IX Item "dominfo domain-name or id"
+.IP "\fBdominfo\fR \fIdomain-name, id or uuid\fR" 4
+.IX Item "dominfo domain-name, id or uuid"
 Returns basic information about the domain.
 .IP "\fBdomname\fR \fIdomain-id\fR" 4
 .IX Item "domname domain-id"
 convert a domain Id to domain name
-.IP "\fBdomstate\fR \fIdomain-name or id\fR" 4
-.IX Item "domstate domain-name or id"
+.IP "\fBdomstate\fR \fIdomain-name, id or uuid\fR" 4
+.IX Item "domstate domain-name, id or uuid"
 Returns state about a running domain.
 .IP "\fBhelp\fR optional \fIsubcommand\fR" 4
 .IX Item "help optional subcommand"
@@ -242,45 +235,43 @@ The State field lists 6 states for a Xen Domain, and which ones the
 current Domain is in.
 =back
 .RE
-.IP "\fBr \- running\fR" 4
-.IX Item "r - running"
+.IP "\fBrunning\fR" 4
+.IX Item "running"
 The domain is currently running on a \s-1CPU\s0
-.IP "\fBb \- blocked\fR" 4
-.IX Item "b - blocked"
+.IP "\fBblocked\fR" 4
+.IX Item "blocked"
 The domain is blocked, and not running or runable.  This can be caused
 because the domain is waiting on \s-1IO\s0 (a traditional wait state) or has
 gone to sleep because there was nothing else for it to do.
-.IP "\fBp \- paused\fR" 4
-.IX Item "p - paused"
+.IP "\fBpaused\fR" 4
+.IX Item "paused"
 The domain has been paused, usually occurring through the administrator
-running \fBxm pause\fR.  When in a paused state the domain will still
+running \fBvirsh suspend\fR.  When in a suspend state the domain will still
 consume allocated resources like memory, but will not be eligible for
 scheduling by the Xen hypervisor.
-.IP "\fBs \- shutdown\fR" 4
-.IX Item "s - shutdown"
-\&\s-1FIXME:\s0 Why would you ever see this state?
-.IP "\fBc \- crashed\fR" 4
-.IX Item "c - crashed"
+.IP "\fBin shutdown\fR" 4
+.IX Item "in shutdown"
+The domain is in process of dying, but hasn't completely shutdown or
+crashed.
+.IP "\fBshut off\fR" 4
+.IX Item "shut off"
+The domain is down.
+.IP "\fBcrashed\fR" 4
+.IX Item "crashed"
 The domain has crashed, which is always a violent ending.  Usually
 this state can only occur if the domain has been configured not to
 restart on crash.  See xmdomain.cfg for more info.
-.IP "\fBd \- dying\fR" 4
-.IX Item "d - dying"
-The domain is in process of dying, but hasn't completely shutdown or
-crashed.
-.Sp
-\&\s-1FIXME:\s0 Is this right?
 .RE
 .RS 4
 .RE
-.IP "\fBnodeinfo\fR \fIdomain-name or id\fR" 4
-.IX Item "nodeinfo domain-name or id"
+.IP "\fBnodeinfo\fR \fIdomain-name, id or uuid\fR" 4
+.IX Item "nodeinfo domain-name, id or uuid"
 Returns basic information about the node.
 .IP "\fBquit\fR" 4
 .IX Item "quit"
 quit this interactive terminal
-.IP "\fBreboot\fR \fIdomain-id\fR" 4
-.IX Item "reboot domain-id"
+.IP "\fBreboot\fR \fIdomain-name, id or uuid\fR" 4
+.IX Item "reboot domain-name, id or uuid"
 Reboot a domain.  This acts just as if the domain had the \fBreboot\fR
 command run from the console.  The command returns as soon as it has
 executed the reboot action, which may be significantly before the
@@ -292,8 +283,8 @@ created.
 .IP "\fBrestore\fR \fIstate-file\fR" 4
 .IX Item "restore state-file"
 Restores a domain from an \fBvirsh save\fR state file.  See \fIsave\fR for more info.
-.IP "\fBsave\fR \fIdomain-id\fR \fIstate-file\fR" 4
-.IX Item "save domain-id state-file"
+.IP "\fBsave\fR \fIdomain-name, id or uuid\fR \fIstate-file\fR" 4
+.IX Item "save domain-name, id or uuid state-file"
 Saves a running domain to a state file so that it can be restored
 later.  Once saved, the domain will no longer be running on the
 system, thus the memory allocated for the domain will be free for
@@ -302,8 +293,8 @@ other domains to use.  \fBvirsh restore\fR restores from this state file.
 This is roughly equivalent to doing a hibernate on a running computer,
 with all the same limitations.  Open network connections may be
 severed upon restore, as \s-1TCP\s0 timeouts may have expired.
-.IP "\fBshutdown\fR \fIdomain-id\fR" 4
-.IX Item "shutdown domain-id"
+.IP "\fBshutdown\fR \fIdomain-name, id or uuid\fR" 4
+.IX Item "shutdown domain-name, id or uuid"
 Gracefully shuts down a domain.  This coordinates with the domain \s-1OS\s0
 to perform graceful shutdown, so there is no guaruntee that it will
 succeed, and may take a variable length of time depending on what
@@ -312,8 +303,12 @@ services must be shutdown in the domain.
 For a xen guest vm the behavior of what happens to a domain when it reboots is set by the
 \&\fIon_shutdown\fR parameter of the xmdomain.cfg file when the domain was
 created.
-.IP "\fBresume\fR \fIdomain-id\fR" 4
-.IX Item "resume domain-id"
+.IP "\fBsuspend\fR \fIdomain-name, id or uuid\fR" 4
+.IX Item "suspend domain-name, id or uuid"
+Suspend a domain.  When in a suspened state the domain will still consume allocated resources
+such as memory, but will not be eligible for scheduling by the Xen hypervisor.
+.IP "\fBresume\fR \fIdomain-name, id or uuid\fR" 4
+.IX Item "resume domain-name, id or uuid"
 Moves a domain out of the paused state.  This will allow a previously
 paused domain to now be eligible for scheduling by the the under lying hypervisor.
 .IP "\fBversion\fR" 4
@@ -342,6 +337,7 @@ Running hypervisor: Xen 3.0.0
 .Vb 2
 \&  Andrew Puch <apuch @ redhat.com> 
 \&  Daniel Veillard <veillard @ redhat.com>
+\&  Karel Zak <kzak @ redhat.com>
 .Ve
 .Sp
 .Vb 3
