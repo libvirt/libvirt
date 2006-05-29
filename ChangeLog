@@ -1,3 +1,12 @@
+Fri May 26 11:59:20 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/hash.c, src/internal.h: Switch the uuid parameter in virGetDomain
+	  to be of type 'unsigned char' since its a raw UUID we're passing in,
+	  not a printable one.
+	* src/libvirt.c: Remove bogus "unsigned char" -> "char" type casts. Hook
+	  up the "domainLookupByID", "domainLookupByUUID", "domainLookupByName"
+	  and "domainGetInfo" driver backend functions.
+
 Mon May 29 17:02:26 CEST 2006 Karel Zak <kzak@redhat.com> 
 
 	* src/libvirt_sym.version: added in missing symbols referenced by python

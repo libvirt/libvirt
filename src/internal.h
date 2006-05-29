@@ -182,7 +182,7 @@ virConnectPtr	virGetConnect	(void);
 int		virFreeConnect	(virConnectPtr conn);
 virDomainPtr	virGetDomain	(virConnectPtr conn,
 				 const char *name,
-				 const char *uuid);
+				 const unsigned char *uuid);
 int		virFreeDomain	(virConnectPtr conn,
 				 virDomainPtr domain);
 virDomainPtr	virGetDomainByID(virConnectPtr conn,

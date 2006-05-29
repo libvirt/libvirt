@@ -602,7 +602,7 @@ virFreeConnect(virConnectPtr conn) {
  * Returns a pointer to the domain, or NULL in case of failure
  */
 virDomainPtr
-virGetDomain(virConnectPtr conn, const char *name, const char *uuid) {
+virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     virDomainPtr ret = NULL;
 
     if ((!VIR_IS_CONNECT(conn)) || ((name == NULL) && (uuid == NULL)) ||

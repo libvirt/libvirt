@@ -30,7 +30,6 @@
 #include "xs_internal.h"
 #include "xml.h"
 
-
 /*
  * TODO:
  * - use lock to protect against concurrent accesses ?
@@ -293,6 +292,7 @@ virConnectOpenReadOnly(const char *name)
 	                                VIR_DRV_OPEN_QUIET | VIR_DRV_OPEN_RO);
 	    if (res == 0)
 	        ret->drivers[ret->nb_drivers++] = virDriverTab[i];
+
 	}
     }
     if (ret->nb_drivers == 0) {
@@ -600,6 +600,7 @@ virDomainLookupByID(virConnectPtr conn, int id)
     virDomainPtr ret;
     char *name = NULL;
     unsigned char uuid[16];
+    int i;
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -608,6 +609,16 @@ virDomainLookupByID(virConnectPtr conn, int id)
     if (id < 0) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (NULL);
+    }
+
+    /* Go though the driver registered entry points */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainLookupByID != NULL)) {
+	    ret = conn->drivers[i]->domainLookupByID(conn, id);
+	    if (ret)
+	        return(ret);
+	}
     }
 
     /* retrieve home path of the domain */
@@ -633,7 +644,7 @@ virDomainLookupByID(virConnectPtr conn, int id)
     if (name == NULL)
         goto error;
 
-    ret = virGetDomain(conn, name, (const char *)&uuid[0]);
+    ret = virGetDomain(conn, name, uuid);
     if (ret == NULL) {
         virLibConnError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
         goto error;
@@ -670,6 +681,7 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     char **tmp;
     unsigned char ident[16];
     int id = -1;
+    int i;
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -679,6 +691,17 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (NULL);
     }
+
+    /* Go though the driver registered entry points */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainLookupByUUID != NULL)) {
+	    ret = conn->drivers[i]->domainLookupByUUID(conn, uuid);
+	    if (ret)
+	        return(ret);
+	}
+    }
+
     names = xenDaemonListDomains(conn);
     tmp = names;
 
@@ -701,7 +724,7 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     if (name == NULL)
         return (NULL);
 
-    ret = virGetDomain(conn, name, (const char *)&uuid[0]);
+    ret = virGetDomain(conn, name, uuid);
     if (ret == NULL) {
         if (name != NULL)
             free(name);
@@ -774,6 +797,7 @@ virDomainPtr
 virDomainLookupByName(virConnectPtr conn, const char *name)
 {
     virDomainPtr ret = NULL;
+    int i;
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -782,6 +806,16 @@ virDomainLookupByName(virConnectPtr conn, const char *name)
     if (name == NULL) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (NULL);
+    }
+
+    /* Go though the driver registered entry points */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainLookupByName != NULL)) {
+	    ret = conn->drivers[i]->domainLookupByName(conn, name);
+	    if (ret)
+	        return(ret);
+	}
     }
 
     /* try first though Xend */
@@ -1400,6 +1434,7 @@ int
 virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 {
     int ret;
+    int i;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
@@ -1411,6 +1446,14 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     }
 
     memset(info, 0, sizeof(virDomainInfo));
+
+    for (i = 0;i < domain->conn->nb_drivers;i++) {
+	if ((domain->conn->drivers[i] != NULL) &&
+	    (domain->conn->drivers[i]->domainGetInfo != NULL)) {
+	    if (domain->conn->drivers[i]->domainGetInfo(domain, info) == 0)
+	        return 0;
+	}
+    }
 
     /*
      * if we have direct access though the hypervisor do a direct call
