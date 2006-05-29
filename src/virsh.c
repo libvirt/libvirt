@@ -7,6 +7,8 @@
  *
  * Daniel Veillard <veillard@redhat.com>
  * Karel Zak <kzak@redhat.com>
+ * Daniel P. Berrange <berrange@redhat.com>
+ *
  *
  * $Id$
  */
@@ -154,6 +156,7 @@ typedef struct __vshCmd {
  * vshControl
  */
 typedef struct __vshControl {
+    char *name;                 /* connection name */
     virConnectPtr conn;         /* connection to hypervisor */
     vshCmd *cmd;                /* the current command */
     char *cmdstr;               /* string with command */
@@ -184,11 +187,23 @@ static int vshCommandOptInt(vshCmd * cmd, const char *name, int *found);
 static char *vshCommandOptString(vshCmd * cmd, const char *name,
                                  int *found);
 static int vshCommandOptBool(vshCmd * cmd, const char *name);
-static virDomainPtr vshCommandOptDomain(vshControl * ctl, vshCmd * cmd,
-                                        const char *optname, char **name);
+
+#define VSH_DOMBYID     (1 << 1)
+#define VSH_DOMBYUUID   (1 << 2)
+#define VSH_DOMBYNAME   (1 << 3)
+
+static virDomainPtr vshCommandOptDomainBy(vshControl * ctl, vshCmd * cmd,
+                            const char *optname, char **name, int flag);
+
+/* default is lookup by Id, Name and UUID */
+#define vshCommandOptDomain(_ctl, _cmd, _optname, _name) \
+                            vshCommandOptDomainBy(_ctl, _cmd, _optname, _name,\
+                                        VSH_DOMBYID|VSH_DOMBYUUID|VSH_DOMBYNAME)
 
 static void vshPrintExtra(vshControl * ctl, const char *format, ...);
 static void vshDebug(vshControl * ctl, int level, const char *format, ...);
+
+/* XXX: add batch support */
 #define vshPrint(_ctl, ...)   fprintf(stdout, __VA_ARGS__)
 
 static const char *vshDomainStateToString(int state);
@@ -246,7 +261,7 @@ cmdHelp(vshControl * ctl, vshCmd * cmd)
  * "connect" command 
  */
 static vshCmdInfo info_connect[] = {
-    {"syntax", "connect [--readonly]"},
+    {"syntax", "connect [name] [--readonly]"},
     {"help", "(re)connect to hypervisor"},
     {"desc",
      "Connect to local hypervisor. This is build-in command after shell start up."},
@@ -254,6 +269,7 @@ static vshCmdInfo info_connect[] = {
 };
 
 static vshCmdOptDef opts_connect[] = {
+    {"name",     VSH_OT_DATA, 0, "optional argument currently unused (or used for tests only)"},
     {"readonly", VSH_OT_BOOL, 0, "read-only connection"},
     {NULL, 0, 0, NULL}
 };
@@ -262,7 +278,7 @@ static int
 cmdConnect(vshControl * ctl, vshCmd * cmd)
 {
     int ro = vshCommandOptBool(cmd, "readonly");
-
+    
     if (ctl->conn) {
         if (virConnectClose(ctl->conn) != 0) {
             vshError(ctl, FALSE,
@@ -271,10 +287,15 @@ cmdConnect(vshControl * ctl, vshCmd * cmd)
         }
         ctl->conn = NULL;
     }
+    
+    if (ctl->name)
+        free(ctl->name);
+    ctl->name = vshCommandOptString(cmd, "name", NULL);
+
     if (!ro)
-        ctl->conn = virConnectOpen(NULL);
+        ctl->conn = virConnectOpen(ctl->name);
     else
-        ctl->conn = virConnectOpenReadOnly(NULL);
+        ctl->conn = virConnectOpenReadOnly(ctl->name);
 
     if (!ctl->conn)
         vshError(ctl, FALSE, "failed to connect to the hypervisor");
@@ -347,7 +368,7 @@ static vshCmdInfo info_domstate[] = {
 };
 
 static vshCmdOptDef opts_domstate[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
     {NULL, 0, 0, NULL}
 };
 
@@ -385,7 +406,7 @@ static vshCmdInfo info_suspend[] = {
 };
 
 static vshCmdOptDef opts_suspend[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
     {NULL, 0, 0, NULL}
 };
 
@@ -479,7 +500,7 @@ static vshCmdInfo info_save[] = {
 };
 
 static vshCmdOptDef opts_save[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
     {"file", VSH_OT_DATA, VSH_OFLAG_REQ, "where to save the data"},
     {NULL, 0, 0, NULL}
 };
@@ -561,7 +582,7 @@ static vshCmdInfo info_resume[] = {
 };
 
 static vshCmdOptDef opts_resume[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
     {NULL, 0, 0, NULL}
 };
 
@@ -600,7 +621,7 @@ static vshCmdInfo info_shutdown[] = {
 };
 
 static vshCmdOptDef opts_shutdown[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
     {NULL, 0, 0, NULL}
 };
 
@@ -639,7 +660,7 @@ static vshCmdInfo info_reboot[] = {
 };
 
 static vshCmdOptDef opts_reboot[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
     {NULL, 0, 0, NULL}
 };
 
@@ -678,7 +699,7 @@ static vshCmdInfo info_destroy[] = {
 };
 
 static vshCmdOptDef opts_destroy[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
     {NULL, 0, 0, NULL}
 };
 
@@ -717,7 +738,7 @@ static vshCmdInfo info_dominfo[] = {
 };
 
 static vshCmdOptDef opts_dominfo[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
     {NULL, 0, 0, NULL}
 };
 
@@ -817,7 +838,7 @@ static vshCmdInfo info_dumpxml[] = {
 };
 
 static vshCmdOptDef opts_dumpxml[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or id"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id, uuid"},
     {NULL, 0, 0, NULL}
 };
 
@@ -850,36 +871,29 @@ cmdDumpXML(vshControl * ctl, vshCmd * cmd)
  * "domname" command
  */
 static vshCmdInfo info_domname[] = {
-    {"syntax", "domname <id>"},
-    {"help", "convert a domain Id to domain name"},
+    {"syntax", "domname <domain>"},
+    {"help", "convert a domain Id or UUID to domain name"},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_domname[] = {
-    {"id", VSH_OT_DATA, VSH_OFLAG_REQ, "domain Id"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain id or uuid"},
     {NULL, 0, 0, NULL}
 };
 
 static int
 cmdDomname(vshControl * ctl, vshCmd * cmd)
 {
-    int found;
-    int id = vshCommandOptInt(cmd, "id", &found);
     virDomainPtr dom;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
-    if (!found)
+    if (!(dom = vshCommandOptDomainBy(ctl, cmd, "domain", NULL, 
+                                    VSH_DOMBYID|VSH_DOMBYUUID)))
         return FALSE;
 
-    dom = virDomainLookupByID(ctl->conn, id);
-    if (dom) {
-        vshPrint(ctl, "%s\n", virDomainGetName(dom));
-        virDomainFree(dom);
-    } else {
-        vshError(ctl, FALSE, "failed to get domain '%d'", id);
-        return FALSE;
-    }
+    vshPrint(ctl, "%s\n", virDomainGetName(dom));
+    virDomainFree(dom);
     return TRUE;
 }
 
@@ -887,37 +901,66 @@ cmdDomname(vshControl * ctl, vshCmd * cmd)
  * "domid" command
  */
 static vshCmdInfo info_domid[] = {
-    {"syntax", "domid <name>"},
-    {"help", "convert a domain name to domain Id"},
+    {"syntax", "domid <domain>"},
+    {"help", "convert a domain name or UUID to domain Id"},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_domid[] = {
-    {"name", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or uuid"},
     {NULL, 0, 0, NULL}
 };
 
 static int
 cmdDomid(vshControl * ctl, vshCmd * cmd)
 {
-    char *name = vshCommandOptString(cmd, "name", NULL);
     virDomainPtr dom;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
-    if (!name)
+    if (!(dom = vshCommandOptDomainBy(ctl, cmd, "domain", NULL, 
+                                    VSH_DOMBYNAME|VSH_DOMBYUUID)))
         return FALSE;
-
-    dom = virDomainLookupByName(ctl->conn, name);
-    if (dom) {
-        vshPrint(ctl, "%d\n", virDomainGetID(dom));
-        virDomainFree(dom);
-    } else {
-        vshError(ctl, FALSE, "failed to get domain '%s'", name);
-        return FALSE;
-    }
+    
+    vshPrint(ctl, "%d\n", virDomainGetID(dom));
+    virDomainFree(dom);
     return TRUE;
 }
+
+/*
+ * "domuuid" command
+ */
+static vshCmdInfo info_domuuid[] = {
+    {"syntax", "domuuid <domain>"},
+    {"help", "convert a domain name or id to domain UUID"},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_domuuid[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain id or name"},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdDomuuid(vshControl * ctl, vshCmd * cmd)
+{
+    virDomainPtr dom;
+    char uuid[37];
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+    if (!(dom = vshCommandOptDomainBy(ctl, cmd, "domain", NULL, 
+                                    VSH_DOMBYNAME|VSH_DOMBYID)))
+        return FALSE;
+    
+    if (virDomainGetUUIDString(dom, uuid) != -1)
+        vshPrint(ctl, "%s\n", uuid);
+    else
+        vshError(ctl, FALSE, "failed to get domain UUID");
+    
+    return TRUE;
+}
+
 
 /*
  * "version" command
@@ -1023,6 +1066,7 @@ static vshCmdDef commands[] = {
     {"create", cmdCreate, opts_create, info_create},
     {"destroy", cmdDestroy, opts_destroy, info_destroy},
     {"domid", cmdDomid, opts_domid, info_domid},
+    {"domuuid", cmdDomuuid, opts_domuuid, info_domuuid},
     {"dominfo", cmdDominfo, opts_dominfo, info_dominfo},
     {"domname", cmdDomname, opts_domname, info_domname},
     {"domstate", cmdDomstate, opts_domstate, info_domstate},
@@ -1272,8 +1316,8 @@ vshCommandOptBool(vshCmd * cmd, const char *name)
 
 
 static virDomainPtr
-vshCommandOptDomain(vshControl * ctl, vshCmd * cmd, const char *optname,
-                    char **name)
+vshCommandOptDomainBy(vshControl * ctl, vshCmd * cmd, const char *optname,
+                    char **name, int flag)
 {
     virDomainPtr dom = NULL;
     char *n, *end = NULL;
@@ -1291,22 +1335,22 @@ vshCommandOptDomain(vshControl * ctl, vshCmd * cmd, const char *optname,
         *name = n;
 
     /* try it by ID */
-    id = (int) strtol(n, &end, 10);
-    if (id >= 0 && end && *end == '\0') {
-        vshDebug(ctl, 5, "%s: <%s> seems like domain ID\n",
-                 cmd->def->name, optname);
-        dom = virDomainLookupByID(ctl->conn, id);
+    if (flag & VSH_DOMBYID) {
+        id = (int) strtol(n, &end, 10);
+        if (id >= 0 && end && *end == '\0') {
+            vshDebug(ctl, 5, "%s: <%s> seems like domain ID\n",
+                     cmd->def->name, optname);
+            dom = virDomainLookupByID(ctl->conn, id);
+        }
     }
-
     /* try it by UUID */
-    if (dom==NULL && strlen(n)==36) {
+    if (dom==NULL && (flag & VSH_DOMBYUUID) && strlen(n)==36) {
         vshDebug(ctl, 5, "%s: <%s> tring as domain UUID\n",
                 cmd->def->name, optname);
-        dom = virDomainLookupByUUIDString(ctl->conn, (const unsigned char *) n);
+        dom = virDomainLookupByUUIDString(ctl->conn, n);
     }
-    
     /* try it by NAME */
-    if (!dom) {
+    if (dom==NULL && (flag & VSH_DOMBYNAME)) {
         vshDebug(ctl, 5, "%s: <%s> tring as domain NAME\n",
                  cmd->def->name, optname);
         dom = virDomainLookupByName(ctl->conn, n);
@@ -1715,9 +1759,9 @@ vshInit(vshControl * ctl)
 
     /* basic connection to hypervisor */
     if (ctl->uid == 0)
-        ctl->conn = virConnectOpen(NULL);
+        ctl->conn = virConnectOpen(ctl->name);
     else
-        ctl->conn = virConnectOpenReadOnly(NULL);
+        ctl->conn = virConnectOpenReadOnly(ctl->name);
 
     if (!ctl->conn)
         vshError(ctl, TRUE, "failed to connect to the hypervisor");
@@ -1867,6 +1911,7 @@ vshUsage(vshControl * ctl, const char *cmdname)
     if (!cmdname) {
         fprintf(stdout, "\n%s [options] [commands]\n\n"
                 "  options:\n"
+                "    -c | --connect <name>   optional argument currently unused (or used for tests only)\n"
                 "    -d | --debug <num>      debug level [0-5]\n"
                 "    -h | --help             this help\n"
                 "    -q | --quiet            quiet mode\n"
@@ -1903,6 +1948,7 @@ vshParseArgv(vshControl * ctl, int argc, char **argv)
         {"quiet", 0, 0, 'q'},
         {"timing", 0, 0, 't'},
         {"version", 0, 0, 'v'},
+        {"connect", 1, 0, 'c'},
         {0, 0, 0, 0}
     };
 
@@ -1956,6 +2002,9 @@ vshParseArgv(vshControl * ctl, int argc, char **argv)
                 break;
             case 't':
                 ctl->timing = TRUE;
+                break;
+            case 'c':
+                ctl->name = vshStrdup(ctl, optarg);
                 break;
             case 'v':
                 fprintf(stdout, "%s\n", VERSION);

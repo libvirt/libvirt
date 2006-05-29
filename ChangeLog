@@ -1,3 +1,14 @@
+Mon May 29 16:33:39 CEST 2006 Karel Zak <kzak@redhat.com>
+
+	* src/virsh.c: improved vshCommandOptDomain(), added <name> to the 
+	  connect command and minor changes to Daniel B.'s patch
+
+Fri May 26 11:40:20 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/virsh.c: added 'domuuid' command to display printable UUID
+	  string for a domain. Added '--connect' argument to allow the name
+	  of the hypervisor connection passed to virConnect to be set.
+
 Mon May 22 15:34:20 CEST 2006 Karel Zak <kzak@redhat.com>
 
 	* src/virsh.c: added UUID: to the dominfo command, vshPrint() refactoring,
