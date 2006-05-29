@@ -8,7 +8,9 @@
 	virConnectNumOfDomains;
         virConnectOpen;
         virConnectOpenReadOnly;
+        virDomainCreate;
 	virDomainCreateLinux;
+        virDomainDefineXML;
 	virDomainDestroy;
 	virDomainFree;
 	virDomainGetID;
@@ -26,10 +28,12 @@
 	virDomainRestore;
 	virDomainResume;
 	virDomainSave;
+        virDomainSetMemory;
 	virDomainSetMaxMemory;
 	virDomainShutdown;
 	virDomainReboot;
 	virDomainSuspend;
+        virDomainUndefine;
 	virGetVersion;
 	virCopyLastError;
 	virConnSetErrorFunc;

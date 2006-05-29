@@ -1,3 +1,10 @@
+Mon May 29 17:02:26 CEST 2006 Karel Zak <kzak@redhat.com> 
+
+	* src/libvirt_sym.version: added in missing symbols referenced by python
+	  bindings (patch by Daniel P. Berrange)
+	* tests/Makefile.am: fixed include dirs to make VPATH builds work
+	  (patch by Daniel P. Berrange)
+
 Mon May 29 16:33:39 CEST 2006 Karel Zak <kzak@redhat.com>
 
 	* src/virsh.c: improved vshCommandOptDomain(), added <name> to the 

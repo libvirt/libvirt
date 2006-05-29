@@ -5,7 +5,8 @@ LIBVIRT = $(top_builddir)/src/.libs/libvirt.a
 INCLUDES = \
 	-I$(top_builddir)/include \
 	-I$(top_builddir)/src \
-	-I@top_srcdir@/include \
+	-I$(top_srcdir)/include \
+	-I$(top_srcdir)/src \
 	@LIBXML_CFLAGS@
 
 LDADDS = \
