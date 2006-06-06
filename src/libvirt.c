@@ -29,6 +29,7 @@
 #include "xend_internal.h"
 #include "xs_internal.h"
 #include "xml.h"
+#include "test.h"
 
 /*
  * TODO:
@@ -70,6 +71,7 @@ virInitialize(void)
     xenHypervisorRegister();
     xenDaemonRegister();
     xenStoreRegister();
+    testRegister();
     return(0);
 }
 
