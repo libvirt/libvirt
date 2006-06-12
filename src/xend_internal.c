@@ -1651,6 +1651,7 @@ xenDaemonOpen(virConnectPtr conn, const char *name, int flags)
 {
     xmlURIPtr uri;
     int ret;
+    unsigned long version;
 
     if (name == NULL) {
         name = "http://localhost:8000/";
@@ -1663,8 +1664,17 @@ xenDaemonOpen(virConnectPtr conn, const char *name, int flags)
     }
 
     xmlFreeURI(uri);
-    
-    return (xenDaemonOpen_tcp(conn, "localhost", 8000));
+
+    ret = xenDaemonOpen_tcp(conn, "localhost", 8000);
+    if (ret < 0) {
+      return ret;
+    }
+
+    /* A sort of "ping" to make sure the daemon is actually
+       alive & well, rather than just assuming it is */
+    if ((ret = xenDaemonGetVersion(conn, &version)) < 0) {
+      return ret;
+    }
 
 /*    return(xenDaemonOpen_unix(conn, "/var/lib/xend/xend-socket")); */
 

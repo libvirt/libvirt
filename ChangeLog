@@ -1,3 +1,10 @@
+Mon Jun 12 17:22:24 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Call 'xenDomainGetVersion' when trying
+	to open a connection, as a sort of "ping" test to verify the
+	Xen daemon connection - fail the open method, if the "ping" is
+	not successful.
+
 Mon Jun 05 22:31:20 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/test.c, src/test.h: New 'mock' hypervisor driver providing
