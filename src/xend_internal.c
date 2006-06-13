@@ -34,12 +34,16 @@
 #include "sexpr.h"
 #include "xml.h"
 #include "xend_internal.h"
+#include "xen_internal.h" /* for DOM0_INTERFACE_VERSION */
 
 static int xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
 static int xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer);
 
 static virDriver xenDaemonDriver = {
     "XenDaemon",
+    (DOM0_INTERFACE_VERSION >> 24) * 1000000 +
+    ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +
+    (DOM0_INTERFACE_VERSION & 0xFFFF),
     NULL, /* init */
     xenDaemonOpen, /* open */
     xenDaemonClose, /* close */
@@ -1660,6 +1664,10 @@ xenDaemonOpen(virConnectPtr conn, const char *name, int flags)
     if (uri == NULL) {
 	if (!(flags & VIR_DRV_OPEN_QUIET))
 	    virXendError(conn, VIR_ERR_NO_SUPPORT, name);
+	return(-1);
+    }
+    if ((uri->scheme != NULL) && (strncasecmp(uri->scheme, "xen", 3))) {
+        xmlFreeURI(uri);
 	return(-1);
     }
 

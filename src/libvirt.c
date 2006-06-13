@@ -161,7 +161,7 @@ virRegisterDriver(virDriverPtr driver)
 /**
  * virGetVersion:
  * @libVer: return value for the library version (OUT)
- * @type: hypervisor type
+ * @type: the type of connection/driver looked at
  * @typeVer: return value for the version of the hypervisor (OUT)
  *
  * Provides two information back, @libVer is the version of the library
@@ -177,6 +177,8 @@ int
 virGetVersion(unsigned long *libVer, const char *type,
               unsigned long *typeVer)
 {
+    int i;
+
     if (!initialized)
         virInitialize();
 
@@ -185,20 +187,18 @@ virGetVersion(unsigned long *libVer, const char *type,
     *libVer = LIBVIR_VERSION_NUMBER;
 
     if (typeVer != NULL) {
-        if ((type == NULL) || (!strcasecmp(type, "Xen"))) {
-            if ((DOM0_INTERFACE_VERSION & 0xFFFF0000) == (0xAAAA0000)) {
-                /* one time glitch hopefully ! */
-                *typeVer = 2 * 1000000 +
-                    ((DOM0_INTERFACE_VERSION >> 8) & 0xFF) * 1000 +
-                    (DOM0_INTERFACE_VERSION & 0xFF);
-            } else {
-                *typeVer = (DOM0_INTERFACE_VERSION >> 24) * 1000000 +
-                    ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +
-                    (DOM0_INTERFACE_VERSION & 0xFFFF);
-            }
-        } else {
+        if (type == NULL)
+	    type = "Xen";
+	for (i = 0;i < MAX_DRIVERS;i++) {
+	    if ((virDriverTab[i] != NULL) &&
+	        (!strcmp(virDriverTab[i]->name, type))) {
+		*typeVer = virDriverTab[i]->ver;
+		break;
+	    }
+	}
+        if (i >= MAX_DRIVERS) {
             *typeVer = 0;
-            virLibConnError(NULL, VIR_ERR_NO_SUPPORT, "type");
+            virLibConnError(NULL, VIR_ERR_NO_SUPPORT, type);
             return (-1);
         }
     }
@@ -237,7 +237,7 @@ virConnectOpen(const char *name)
 	     * all related drivers.
 	     */
 	    if ((res < 0) && (name == NULL) &&
-	        (!strcmp(virDriverTab[i]->name, "Xen")))
+	        (!strncmp(virDriverTab[i]->name, "Xen", 3)))
 		goto failed;
 	    if (res == 0)
 	        ret->drivers[ret->nb_drivers++] = virDriverTab[i];
@@ -353,11 +353,19 @@ virConnectClose(virConnectPtr conn)
 const char *
 virConnectGetType(virConnectPtr conn)
 {
+    int i;
+
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
         return (NULL);
     }
-    return ("Xen");
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->name != NULL)) {
+	    return(conn->drivers[i]->name);
+	}
+    }
+    return(NULL);
 }
 
 /**
@@ -376,7 +384,7 @@ virConnectGetType(virConnectPtr conn)
 int
 virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer)
 {
-    unsigned long ver;
+    int ret, i;
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -388,14 +396,17 @@ virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer)
         return (-1);
     }
 
-    /* this can't be extracted from the Xenstore */
-    if (conn->handle < 0) {
-        *hvVer = 0;
-        return (0);
-    }
+    *hvVer = 0;
 
-    ver = xenHypervisorGetVersion(conn, hvVer);
-    return (0);
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->version != NULL)) {
+	    ret = conn->drivers[i]->version(conn, hvVer);
+	    if (ret == 0)
+	        return(0);
+	}
+    }
+    return (-1);
 }
 
 /**

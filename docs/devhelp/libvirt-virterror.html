@@ -85,7 +85,8 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     <a name="VIR_FROM_XENSTORE">VIR_FROM_XENSTORE</a> = 3 /* Error at connection with xen store */
     <a name="VIR_FROM_SEXPR">VIR_FROM_SEXPR</a> = 4 /* Error in the S-Epression code */
     <a name="VIR_FROM_XML">VIR_FROM_XML</a> = 5 /* Error in the XML code */
-    <a name="VIR_FROM_DOM">VIR_FROM_DOM</a> = 6 /*  Error when operating on a domain */
+    <a name="VIR_FROM_DOM">VIR_FROM_DOM</a> = 6 /* Error when operating on a domain */
+    <a name="VIR_FROM_RPC">VIR_FROM_RPC</a> = 7 /*  Error in the XML-RPC code */
 };
 </pre><p/>
 </div>
@@ -125,7 +126,9 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     <a name="VIR_ERR_NO_DEVICE">VIR_ERR_NO_DEVICE</a> = 23 /* missing domain devices information */
     <a name="VIR_ERR_NO_XENSTORE">VIR_ERR_NO_XENSTORE</a> = 24 /* could not open Xen Store control */
     <a name="VIR_ERR_DRIVER_FULL">VIR_ERR_DRIVER_FULL</a> = 25 /* too many drivers registered */
-    <a name="VIR_ERR_CALL_FAILED">VIR_ERR_CALL_FAILED</a> = 26 /*  not supported by the drivers */
+    <a name="VIR_ERR_CALL_FAILED">VIR_ERR_CALL_FAILED</a> = 26 /* not supported by the drivers */
+    <a name="VIR_ERR_XML_ERROR">VIR_ERR_XML_ERROR</a> = 27 /* an XML description is not well formed or broken */
+    <a name="VIR_ERR_DOM_EXIST">VIR_ERR_DOM_EXIST</a> = 28 /*  the domain already exist */
 };
 </pre><p/>
 </div>

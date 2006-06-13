@@ -42,6 +42,9 @@ typedef struct hypercall_struct {
 
 static virDriver xenHypervisorDriver = {
     "Xen",
+    (DOM0_INTERFACE_VERSION >> 24) * 1000000 +
+    ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +
+    (DOM0_INTERFACE_VERSION & 0xFFFF),
     NULL, /* init */
     xenHypervisorOpen, /* open */
     xenHypervisorClose, /* close */

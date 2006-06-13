@@ -18,6 +18,7 @@
 
 static virDriver testDriver = {
   "Test",
+  LIBVIR_VERSION_NUMBER,
   NULL, /* init */
   testOpen, /* open */
   testClose, /* close */

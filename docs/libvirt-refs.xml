@@ -52,6 +52,7 @@
     <reference name='VIR_ERR_XML_ERROR' href='html/libvirt-virterror.html#VIR_ERR_XML_ERROR'/>
     <reference name='VIR_FROM_DOM' href='html/libvirt-virterror.html#VIR_FROM_DOM'/>
     <reference name='VIR_FROM_NONE' href='html/libvirt-virterror.html#VIR_FROM_NONE'/>
+    <reference name='VIR_FROM_RPC' href='html/libvirt-virterror.html#VIR_FROM_RPC'/>
     <reference name='VIR_FROM_SEXPR' href='html/libvirt-virterror.html#VIR_FROM_SEXPR'/>
     <reference name='VIR_FROM_XEN' href='html/libvirt-virterror.html#VIR_FROM_XEN'/>
     <reference name='VIR_FROM_XEND' href='html/libvirt-virterror.html#VIR_FROM_XEND'/>
@@ -91,6 +92,7 @@
     <reference name='virDomainGetName' href='html/libvirt-libvirt.html#virDomainGetName'/>
     <reference name='virDomainGetOSType' href='html/libvirt-libvirt.html#virDomainGetOSType'/>
     <reference name='virDomainGetUUID' href='html/libvirt-libvirt.html#virDomainGetUUID'/>
+    <reference name='virDomainGetUUIDString' href='html/libvirt-libvirt.html#virDomainGetUUIDString'/>
     <reference name='virDomainGetXMLDesc' href='html/libvirt-libvirt.html#virDomainGetXMLDesc'/>
     <reference name='virDomainInfo' href='html/libvirt-libvirt.html#virDomainInfo'/>
     <reference name='virDomainInfoPtr' href='html/libvirt-libvirt.html#virDomainInfoPtr'/>
@@ -99,6 +101,7 @@
     <reference name='virDomainLookupByID' href='html/libvirt-libvirt.html#virDomainLookupByID'/>
     <reference name='virDomainLookupByName' href='html/libvirt-libvirt.html#virDomainLookupByName'/>
     <reference name='virDomainLookupByUUID' href='html/libvirt-libvirt.html#virDomainLookupByUUID'/>
+    <reference name='virDomainLookupByUUIDString' href='html/libvirt-libvirt.html#virDomainLookupByUUIDString'/>
     <reference name='virDomainPtr' href='html/libvirt-libvirt.html#virDomainPtr'/>
     <reference name='virDomainReboot' href='html/libvirt-libvirt.html#virDomainReboot'/>
     <reference name='virDomainRestart' href='html/libvirt-libvirt.html#virDomainRestart'/>
@@ -182,6 +185,7 @@
       <ref name='VIR_ERR_XML_ERROR'/>
       <ref name='VIR_FROM_DOM'/>
       <ref name='VIR_FROM_NONE'/>
+      <ref name='VIR_FROM_RPC'/>
       <ref name='VIR_FROM_SEXPR'/>
       <ref name='VIR_FROM_XEN'/>
       <ref name='VIR_FROM_XEND'/>
@@ -225,6 +229,7 @@
       <ref name='virDomainGetName'/>
       <ref name='virDomainGetOSType'/>
       <ref name='virDomainGetUUID'/>
+      <ref name='virDomainGetUUIDString'/>
       <ref name='virDomainGetXMLDesc'/>
       <ref name='virDomainInfo'/>
       <ref name='virDomainInfoPtr'/>
@@ -233,6 +238,7 @@
       <ref name='virDomainLookupByID'/>
       <ref name='virDomainLookupByName'/>
       <ref name='virDomainLookupByUUID'/>
+      <ref name='virDomainLookupByUUIDString'/>
       <ref name='virDomainPtr'/>
       <ref name='virDomainReboot'/>
       <ref name='virDomainRestart'/>
@@ -279,6 +285,7 @@
       <ref name='virDomainLookupByID'/>
       <ref name='virDomainLookupByName'/>
       <ref name='virDomainLookupByUUID'/>
+      <ref name='virDomainLookupByUUIDString'/>
     </type>
     <type name='virErrorPtr'>
       <ref name='virConnGetLastError'/>
@@ -326,6 +333,7 @@
       <ref name='virDomainLookupByID'/>
       <ref name='virDomainLookupByName'/>
       <ref name='virDomainLookupByUUID'/>
+      <ref name='virDomainLookupByUUIDString'/>
       <ref name='virDomainRestore'/>
       <ref name='virNodeGetInfo'/>
     </type>
@@ -342,6 +350,7 @@
       <ref name='virDomainGetName'/>
       <ref name='virDomainGetOSType'/>
       <ref name='virDomainGetUUID'/>
+      <ref name='virDomainGetUUIDString'/>
       <ref name='virDomainGetXMLDesc'/>
       <ref name='virDomainReboot'/>
       <ref name='virDomainResume'/>
@@ -418,6 +427,7 @@
       <ref name='virDomainGetName'/>
       <ref name='virDomainGetOSType'/>
       <ref name='virDomainGetUUID'/>
+      <ref name='virDomainGetUUIDString'/>
       <ref name='virDomainGetXMLDesc'/>
       <ref name='virDomainInfo'/>
       <ref name='virDomainInfoPtr'/>
@@ -426,6 +436,7 @@
       <ref name='virDomainLookupByID'/>
       <ref name='virDomainLookupByName'/>
       <ref name='virDomainLookupByUUID'/>
+      <ref name='virDomainLookupByUUIDString'/>
       <ref name='virDomainPtr'/>
       <ref name='virDomainReboot'/>
       <ref name='virDomainRestart'/>
@@ -479,6 +490,7 @@
       <ref name='VIR_ERR_XML_ERROR'/>
       <ref name='VIR_FROM_DOM'/>
       <ref name='VIR_FROM_NONE'/>
+      <ref name='VIR_FROM_RPC'/>
       <ref name='VIR_FROM_SEXPR'/>
       <ref name='VIR_FROM_XEN'/>
       <ref name='VIR_FROM_XEND'/>
@@ -555,6 +567,9 @@
         </word>
       </letter>
       <letter name='F'>
+        <word name='For'>
+          <ref name='virDomainGetUUIDString'/>
+        </word>
         <word name='Free'>
           <ref name='virDomainFree'/>
         </word>
@@ -567,6 +582,7 @@
           <ref name='virDomainGetName'/>
           <ref name='virDomainGetOSType'/>
           <ref name='virDomainGetUUID'/>
+          <ref name='virDomainGetUUIDString'/>
         </word>
       </letter>
       <letter name='H'>
@@ -619,6 +635,7 @@
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainLookupByUUIDString'/>
           <ref name='virDomainSetMaxMemory'/>
           <ref name='virDomainSetMemory'/>
           <ref name='virGetLastError'/>
@@ -656,6 +673,9 @@
         </word>
       </letter>
       <letter name='R'>
+        <word name='RFC4122'>
+          <ref name='virDomainGetUUIDString'/>
+        </word>
         <word name='Read-Only'>
           <ref name='virConnectGetVersion'/>
         </word>
@@ -715,6 +735,7 @@
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainLookupByUUIDString'/>
         </word>
       </letter>
       <letter name='U'>
@@ -724,7 +745,9 @@
         </word>
         <word name='UUID'>
           <ref name='virDomainGetUUID'/>
+          <ref name='virDomainGetUUIDString'/>
           <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainLookupByUUIDString'/>
         </word>
         <word name='Use'>
           <ref name='virDomainSave'/>
@@ -749,6 +772,7 @@
       <letter name='a'>
         <word name='about'>
           <ref name='virDomainGetInfo'/>
+          <ref name='virDomainGetUUIDString'/>
           <ref name='virNodeGetInfo'/>
         </word>
         <word name='access'>
@@ -833,6 +857,7 @@
           <ref name='virConnectListDefinedDomains'/>
           <ref name='virConnectListDomains'/>
           <ref name='virDomainGetUUID'/>
+          <ref name='virDomainGetUUIDString'/>
         </word>
         <word name='assumed'>
           <ref name='virGetVersion'/>
@@ -859,6 +884,7 @@
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainLookupByUUIDString'/>
         </word>
         <word name='being'>
           <ref name='virDomainReboot'/>
@@ -883,6 +909,7 @@
         </word>
         <word name='bytes'>
           <ref name='virDomainGetUUID'/>
+          <ref name='virDomainGetUUIDString'/>
         </word>
       </letter>
       <letter name='c'>
@@ -955,30 +982,6 @@
         </word>
         <word name='compiled'>
           <ref name='virGetVersion'/>
-        </word>
-        <word name='connection'>
-          <ref name='_virError'/>
-          <ref name='virConnCopyLastError'/>
-          <ref name='virConnGetLastError'/>
-          <ref name='virConnResetLastError'/>
-          <ref name='virConnSetErrorFunc'/>
-          <ref name='virConnectClose'/>
-          <ref name='virConnectGetType'/>
-          <ref name='virConnectGetVersion'/>
-          <ref name='virConnectListDefinedDomains'/>
-          <ref name='virConnectListDomains'/>
-          <ref name='virConnectNumOfDomains'/>
-          <ref name='virConnectOpen'/>
-          <ref name='virConnectOpenReadOnly'/>
-          <ref name='virDomainCreateLinux'/>
-          <ref name='virDomainDefineXML'/>
-          <ref name='virDomainGetInfo'/>
-          <ref name='virDomainLookupByID'/>
-          <ref name='virDomainLookupByName'/>
-          <ref name='virDomainLookupByUUID'/>
-          <ref name='virDomainRestore'/>
-          <ref name='virNodeGetInfo'/>
-          <ref name='virSetErrorFunc'/>
         </word>
         <word name='consequent'>
           <ref name='_virError'/>
@@ -1063,6 +1066,9 @@
         <word name='down'>
           <ref name='virDomainDestroy'/>
         </word>
+        <word name='driver'>
+          <ref name='virGetVersion'/>
+        </word>
       </letter>
       <letter name='e'>
         <word name='encoded'>
@@ -1095,6 +1101,7 @@
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainLookupByUUIDString'/>
           <ref name='virDomainReboot'/>
           <ref name='virDomainRestore'/>
           <ref name='virDomainResume'/>
@@ -1132,8 +1139,10 @@
           <ref name='virDomainGetID'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainGetUUID'/>
+          <ref name='virDomainGetUUIDString'/>
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainLookupByUUIDString'/>
           <ref name='virDomainReboot'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainShutdown'/>
@@ -1210,6 +1219,7 @@
           <ref name='virDomainDestroy'/>
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainLookupByUUIDString'/>
         </word>
         <word name='global'>
           <ref name='virConnSetErrorFunc'/>
@@ -1257,6 +1267,7 @@
         <word name='information'>
           <ref name='_virError'/>
           <ref name='virDomainGetInfo'/>
+          <ref name='virDomainGetUUIDString'/>
           <ref name='virGetVersion'/>
           <ref name='virNodeGetInfo'/>
         </word>
@@ -1287,6 +1298,7 @@
           <ref name='virDomainGetName'/>
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainLookupByUUIDString'/>
           <ref name='virDomainSave'/>
         </word>
       </letter>
@@ -1364,11 +1376,17 @@
         <word name='listed'>
           <ref name='virDomainSave'/>
         </word>
+        <word name='looked'>
+          <ref name='virGetVersion'/>
+        </word>
         <word name='lookup'>
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainLookupByUUIDString'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk2'>
       <letter name='m'>
         <word name='major'>
           <ref name='virConnectGetVersion'/>
@@ -1429,6 +1447,9 @@
         <word name='monitoring'>
           <ref name='virConnectClose'/>
         </word>
+        <word name='more'>
+          <ref name='virDomainGetUUIDString'/>
+        </word>
         <word name='moves'>
           <ref name='virDomainCreate'/>
         </word>
@@ -1442,8 +1463,6 @@
           <ref name='virDomainGetXMLDesc'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk2'>
       <letter name='n'>
         <word name='name'>
           <ref name='virConnectGetType'/>
@@ -1471,6 +1490,7 @@
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainLookupByUUIDString'/>
         </word>
         <word name='node'>
           <ref name='_virNodeInfo'/>
@@ -1518,10 +1538,12 @@
           <ref name='virDomainGetName'/>
           <ref name='virDomainGetOSType'/>
           <ref name='virDomainGetUUID'/>
+          <ref name='virDomainGetUUIDString'/>
           <ref name='virDomainGetXMLDesc'/>
           <ref name='virDomainLookupByID'/>
           <ref name='virDomainLookupByName'/>
           <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainLookupByUUIDString'/>
           <ref name='virDomainReboot'/>
           <ref name='virDomainResume'/>
           <ref name='virDomainSave'/>
@@ -1660,6 +1682,9 @@
         <word name='ramdisk'>
           <ref name='_virDomainKernel'/>
         </word>
+        <word name='raw'>
+          <ref name='virDomainLookupByUUID'/>
+        </word>
         <word name='reactivate'>
           <ref name='virDomainSuspend'/>
         </word>
@@ -1762,6 +1787,8 @@
           <ref name='virDomainSetMemory'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk3'>
       <letter name='s'>
         <word name='same'>
           <ref name='virDomainGetName'/>
@@ -1774,6 +1801,9 @@
         </word>
         <word name='saving'>
           <ref name='virDomainSave'/>
+        </word>
+        <word name='see'>
+          <ref name='virDomainGetUUIDString'/>
         </word>
         <word name='set'>
           <ref name='virConnectOpenReadOnly'/>
@@ -1854,7 +1884,8 @@
           <ref name='virConnectGetType'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainGetOSType'/>
-          <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainGetUUIDString'/>
+          <ref name='virDomainLookupByUUIDString'/>
         </word>
         <word name='structure'>
           <ref name='virDomainDestroy'/>
@@ -1872,6 +1903,7 @@
           <ref name='virDomainFree'/>
           <ref name='virDomainGetInfo'/>
           <ref name='virDomainGetUUID'/>
+          <ref name='virDomainGetUUIDString'/>
           <ref name='virDomainReboot'/>
           <ref name='virDomainRestore'/>
           <ref name='virDomainResume'/>
@@ -1901,8 +1933,6 @@
           <ref name='virDomainGetOSType'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk3'>
       <letter name='t'>
         <word name='target'>
           <ref name='virConnCopyLastError'/>
@@ -2146,9 +2176,9 @@
     </chunk>
     <chunks>
       <chunk name='chunk0' start='A' end='c'/>
-      <chunk name='chunk1' start='d' end='m'/>
-      <chunk name='chunk2' start='n' end='s'/>
-      <chunk name='chunk3' start='t' end='z'/>
+      <chunk name='chunk1' start='d' end='l'/>
+      <chunk name='chunk2' start='m' end='r'/>
+      <chunk name='chunk3' start='s' end='z'/>
     </chunks>
   </index>
 </apirefs>

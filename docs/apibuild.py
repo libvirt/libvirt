@@ -35,6 +35,8 @@ ignored_files = {
   "xml.c": "internal code",
   "xmlrpc.h": "internal include",
   "xmlrpc.c": "internal code",
+  "test.h": "test driver",
+  "test.c": "test driver",
 }
 
 ignored_words = {

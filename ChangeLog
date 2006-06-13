@@ -1,3 +1,11 @@
+Tue Jun 13 16:37:27 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* docs//*: rebuilt the documentation
+	* src/driver.h src/libvirt.c src/test.c src/xen_internal.c 
+	  src/xend_internal.c src/xs_internal.c: started to fix some of
+	  the driver related problem raised by Daniel Berrange, added a
+	  ver version field to drivers.
+
 Mon Jun 12 17:22:24 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c: Call 'xenDomainGetVersion' when trying

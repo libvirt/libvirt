@@ -104,6 +104,7 @@ typedef virDriver *virDriverPtr;
  */
 struct _virDriver {
 	const char *name;
+	unsigned long ver;
 	virDrvInit			init;
 	virDrvOpen			open;
 	virDrvClose			close;
