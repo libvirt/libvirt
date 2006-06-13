@@ -1673,6 +1673,7 @@ xenDaemonOpen(virConnectPtr conn, const char *name, int flags)
     /* A sort of "ping" to make sure the daemon is actually
        alive & well, rather than just assuming it is */
     if ((ret = xenDaemonGetVersion(conn, &version)) < 0) {
+      xenDaemonClose(conn);
       return ret;
     }
 
