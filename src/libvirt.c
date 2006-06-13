@@ -217,11 +217,18 @@ virGetVersion(unsigned long *libVer, const char *type,
 virConnectPtr
 virConnectOpen(const char *name)
 {
-    int i, res;
+    int i, res, for_xen = 0;
     virConnectPtr ret = NULL;
 
     if (!initialized)
         virInitialize();
+
+    if (name == NULL) {
+        name = "Xen";
+	for_xen = 1;
+    } else if (strncasecmp(name, "xen", 3)) {
+	for_xen = 1;
+    }
 
     ret = virGetConnect();
     if (ret == NULL) {
@@ -236,8 +243,8 @@ virConnectOpen(const char *name)
 	     * For a default connect to Xen make sure we manage to contact
 	     * all related drivers.
 	     */
-	    if ((res < 0) && (name == NULL) &&
-	        (!strncmp(virDriverTab[i]->name, "Xen", 3)))
+	    if ((res < 0) && (for_xen) &&
+	        (!strncasecmp(virDriverTab[i]->name, "xen", 3)))
 		goto failed;
 	    if (res == 0)
 	        ret->drivers[ret->nb_drivers++] = virDriverTab[i];
@@ -281,6 +288,9 @@ virConnectOpenReadOnly(const char *name)
 
     if (!initialized)
         virInitialize();
+
+    if (name == NULL)
+        name = "Xen";
 
     ret = virGetConnect();
     if (ret == NULL) {
@@ -354,10 +364,19 @@ const char *
 virConnectGetType(virConnectPtr conn)
 {
     int i;
+    const char *ret;
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
         return (NULL);
+    }
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->type != NULL)) {
+	    ret = conn->drivers[i]->type(conn);
+	    if (ret != NULL)
+	        return(ret);
+	}
     }
     for (i = 0;i < conn->nb_drivers;i++) {
 	if ((conn->drivers[i] != NULL) &&

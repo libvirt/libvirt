@@ -1,3 +1,8 @@
+Tue Jun 13 18:35:22 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c src/xen_internal.c src/xend_internal.c
+	  src/xs_internal.c: fix the connection and GetType initialization.
+
 Tue Jun 13 16:37:27 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* docs//*: rebuilt the documentation

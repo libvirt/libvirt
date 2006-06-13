@@ -288,7 +288,7 @@ virConnectCheckStoreID(virConnectPtr conn, int id)
 int
 xenStoreOpen(virConnectPtr conn, const char *name, int flags)
 {
-    if ((name != NULL) && (strcmp(name, "xen")))
+    if ((name != NULL) && (strcasecmp(name, "xen")))
         return(-1);
 
     if (flags & VIR_DRV_OPEN_RO)

@@ -36,6 +36,7 @@
 #include "xend_internal.h"
 #include "xen_internal.h" /* for DOM0_INTERFACE_VERSION */
 
+static const char * xenDaemonGetType(virConnectPtr conn);
 static int xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
 static int xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer);
 
@@ -47,7 +48,7 @@ static virDriver xenDaemonDriver = {
     NULL, /* init */
     xenDaemonOpen, /* open */
     xenDaemonClose, /* close */
-    NULL, /* type */
+    xenDaemonGetType, /* type */
     xenDaemonGetVersion, /* version */
     xenDaemonNodeGetInfo, /* nodeGetInfo */
     NULL, /* listDomains */
@@ -2074,6 +2075,26 @@ xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info) {
     ret = sexpr_to_xend_node_info(root, info);
     sexpr_free(root);
     return (ret);
+}
+
+/**
+ * xenDaemonGetType:
+ * @conn: pointer to the Xen Daemon block
+ *
+ * Get the version level of the Hypervisor running.
+ *
+ * Returns -1 in case of error, 0 otherwise. if the version can't be
+ *    extracted by lack of capacities returns 0 and @hvVer is 0, otherwise
+ *    @hvVer value is major * 1,000,000 + minor * 1,000 + release
+ */
+static const char *
+xenDaemonGetType(virConnectPtr conn)
+{
+    if (!VIR_IS_CONNECT(conn)) {
+        virXendError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (NULL);
+    }
+    return("XenDaemon");
 }
 
 /**

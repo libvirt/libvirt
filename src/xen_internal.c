@@ -40,6 +40,8 @@ typedef struct hypercall_struct {
 
 #define XEN_HYPERVISOR_SOCKET "/proc/xen/privcmd"
 
+static const char * xenHypervisorGetType(virConnectPtr conn);
+
 static virDriver xenHypervisorDriver = {
     "Xen",
     (DOM0_INTERFACE_VERSION >> 24) * 1000000 +
@@ -48,7 +50,7 @@ static virDriver xenHypervisorDriver = {
     NULL, /* init */
     xenHypervisorOpen, /* open */
     xenHypervisorClose, /* close */
-    NULL, /* type */
+    xenHypervisorGetType, /* type */
     xenHypervisorGetVersion, /* version */
     NULL, /* nodeGetInfo */
     xenHypervisorListDomains, /* listDomains */
@@ -121,7 +123,7 @@ xenHypervisorOpen(virConnectPtr conn, const char *name, int flags)
 {
     int ret;
 
-    if ((name != NULL) && (strcmp(name, "xen")))
+    if ((name != NULL) && (strcasecmp(name, "xen")))
         return(-1);
 
     conn->handle = -1;
@@ -199,6 +201,26 @@ xenHypervisorDoOp(int handle, dom0_op_t * op)
         return (-1);
 
     return (0);
+}
+
+/**
+ * xenHypervisorGetType:
+ * @conn: pointer to the Xen Hypervisor block
+ *
+ * Get the version level of the Hypervisor running.
+ *
+ * Returns -1 in case of error, 0 otherwise. if the version can't be
+ *    extracted by lack of capacities returns 0 and @hvVer is 0, otherwise
+ *    @hvVer value is major * 1,000,000 + minor * 1,000 + release
+ */
+static const char *
+xenHypervisorGetType(virConnectPtr conn)
+{
+    if (!VIR_IS_CONNECT(conn)) {
+        virXenError(VIR_ERR_INVALID_CONN, __FUNCTION__, 0);
+        return (NULL);
+    }
+    return("Xen");
 }
 
 /**
