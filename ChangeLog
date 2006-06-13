@@ -1,3 +1,9 @@
+Tue Jun 13 14:06:01 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/virsh.c: use 'double' instead of 'float' when calculating
+	'CPU time' field for dominfo command, to ensure no unneccessary
+	loss of precision converting from nanoseconds to seconds.
+
 Tue Jun 13 18:35:22 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt.c src/xen_internal.c src/xend_internal.c

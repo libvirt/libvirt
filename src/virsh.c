@@ -773,11 +773,11 @@ cmdDominfo(vshControl * ctl, vshCmd * cmd)
         vshPrint(ctl, "%-15s %d\n", "CPU(s):", info.nrVirtCpu);
 
         if (info.cpuTime != 0) {
-            float cpuUsed = info.cpuTime;
+	    double cpuUsed = info.cpuTime;
 
-            cpuUsed /= 1000000000;
+            cpuUsed /= 1000000000.0;
 
-            vshPrint(ctl, "%-15s %.1fs\n", "CPU time:", cpuUsed);
+            vshPrint(ctl, "%-15s %.1lfs\n", "CPU time:", cpuUsed);
         }
 
         vshPrint(ctl, "%-15s %lu kB\n", "Max memory:",
