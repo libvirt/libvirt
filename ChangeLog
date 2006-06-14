@@ -1,3 +1,8 @@
+Wed Jun 14 18:59:30 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/test.h, src/test.c: Added implementation of the reboot
+	and shutdown methods for domains.
+
 Wed Jun 14 11:20:23 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/libvirt.c: connect virDomainDestroy, virDomainSuspend,

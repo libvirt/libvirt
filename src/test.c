@@ -33,8 +33,8 @@ static virDriver testDriver = {
   testLookupDomainByName, /* domainLookupByName */
   testPauseDomain, /* domainSuspend */
   testResumeDomain, /* domainResume */
-  NULL, /* domainShutdown */
-  NULL, /* domainReboot */
+  testShutdownDomain, /* domainShutdown */
+  testRebootDomain, /* domainReboot */
   testDestroyDomain, /* domainDestroy */
   NULL, /* domainFree */
   NULL, /* domainGetName */
@@ -49,6 +49,9 @@ static virDriver testDriver = {
   NULL /* domainRestore */
 };
 
+/* Amount of time it takes to shutdown */
+#define SHUTDOWN_DURATION 15
+
 typedef struct _testDev {
   char name[20];
   virDeviceMode mode;
@@ -62,6 +65,7 @@ typedef struct _testDom {
   unsigned char uuid[16];
   virDomainKernel kernel;
   virDomainInfo info;
+  time_t shutdownStartedAt;
   virDomainRestart onRestart;
   int numDevices;
   testDev devices[MAX_DEVICES];
@@ -327,6 +331,44 @@ int testPauseDomain (virDomainPtr domain)
   return 0;
 }
 
+/* We don't do an immediate shutdown. We basically pretend that
+   out shutdown sequence takes 'n' seconds to complete. SO, here
+   we just set state to shutdown, and subsquent calls to getDomainInfo
+   will check to see if shutdown ought to be marked complete. */
+int testShutdownDomain (virDomainPtr domain)
+{
+  testCon *con = &node->connections[domain->conn->handle];
+  struct timeval tv;
+  if (gettimeofday(&tv, NULL) < 0) {
+    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot get timeofday");
+    return -1;
+  }
+
+  con->domains[domain->handle].info.state = VIR_DOMAIN_SHUTDOWN;
+  con->domains[domain->handle].onRestart = VIR_DOMAIN_DESTROY;
+  con->domains[domain->handle].shutdownStartedAt = tv.tv_sec;
+  return 0;
+}
+
+/* Similar behaviour as shutdown */
+int testRebootDomain (virDomainPtr domain, virDomainRestart action)
+{
+  testCon *con = &node->connections[domain->conn->handle];
+  struct timeval tv;
+  if (gettimeofday(&tv, NULL) < 0) {
+    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot get timeofday");
+    return -1;
+  }
+
+  if (!action)
+    action = VIR_DOMAIN_RESTART;
+
+  con->domains[domain->handle].info.state = VIR_DOMAIN_SHUTDOWN;
+  con->domains[domain->handle].onRestart = action;
+  con->domains[domain->handle].shutdownStartedAt = tv.tv_sec;
+  return 0;
+}
+
 int testGetDomainInfo (virDomainPtr domain,
                        virDomainInfoPtr info)
 {
@@ -337,7 +379,40 @@ int testGetDomainInfo (virDomainPtr domain,
     return -1;
   }
 
-  con->domains[domain->handle].info.cpuTime = ((tv.tv_sec * 1000ll * 1000ll  * 1000ll) + (tv.tv_usec * 1000ll));
+  /* Check to see if there is an in-progresss shutdown/reboot that
+     needs to be marked completed now */
+  if (con->domains[domain->handle].info.state == VIR_DOMAIN_SHUTDOWN &&
+      (tv.tv_sec - con->domains[domain->handle].shutdownStartedAt) > SHUTDOWN_DURATION) {
+
+      switch (con->domains[domain->handle].onRestart) {
+      case VIR_DOMAIN_DESTROY:
+	con->domains[domain->handle].info.state = VIR_DOMAIN_SHUTOFF;
+	break;
+
+      case VIR_DOMAIN_RESTART:
+	con->domains[domain->handle].info.state = VIR_DOMAIN_RUNNING;
+	break;
+
+      case VIR_DOMAIN_PRESERVE:
+	con->domains[domain->handle].info.state = VIR_DOMAIN_SHUTOFF;
+	break;
+
+      case VIR_DOMAIN_RENAME_RESTART:
+	con->domains[domain->handle].info.state = VIR_DOMAIN_RUNNING;
+	break;
+
+      default:
+	con->domains[domain->handle].info.state = VIR_DOMAIN_SHUTOFF;
+	break;
+    }
+  }
+
+  if (con->domains[domain->handle].info.state == VIR_DOMAIN_SHUTOFF) {
+    con->domains[domain->handle].info.cpuTime = 0;
+    con->domains[domain->handle].info.memory = 0;
+  } else {
+    con->domains[domain->handle].info.cpuTime = ((tv.tv_sec * 1000ll * 1000ll  * 1000ll) + (tv.tv_usec * 1000ll));
+  }
   memcpy(info, &con->domains[domain->handle].info, sizeof(virDomainInfo));
   return 0;
 }

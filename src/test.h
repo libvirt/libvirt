@@ -39,6 +39,8 @@ extern "C" {
   int testDestroyDomain(virDomainPtr domain);
   int testResumeDomain(virDomainPtr domain);
   int testPauseDomain(virDomainPtr domain);
+  int testShutdownDomain (virDomainPtr domain);
+  int testRebootDomain (virDomainPtr domain, virDomainRestart action);
   int testGetDomainInfo(virDomainPtr domain,
 			      virDomainInfoPtr info);
   int testGetDomainID(virDomainPtr domain);
