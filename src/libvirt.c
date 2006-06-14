@@ -847,28 +847,35 @@ virDomainLookupByName(virConnectPtr conn, const char *name)
 int
 virDomainDestroy(virDomainPtr domain)
 {
-    int ret;
+    int ret = -1, i;
+    virConnectPtr conn;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
 
-    /*
-     * try first with the xend method
-     */
-    ret = xenDaemonDomainDestroy(domain);
-    if (ret == 0) {
-        virDomainFree(domain);
-        return (0);
+    conn = domain->conn;
+#if PEDANTIC
+    if (domain->conn->flags & VIR_CONNECT_RO)
+        return (-1);
+#endif
+
+    /* Go though the driver registered entry points */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainDestroy != NULL)) {
+	    if (conn->drivers[i]->domainDestroy(domain) == 0)
+	        ret = 0;
+	}
     }
 
-    ret = xenHypervisorDestroyDomain(domain);
-    if (ret < 0)
-        return (-1);
+    if (ret != 0) {
+        virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+        return (ret);
+    }
 
-    virDomainFree(domain);
-    return (0);
+    return (ret);
 }
 
 /**
@@ -907,20 +914,35 @@ virDomainFree(virDomainPtr domain)
 int
 virDomainSuspend(virDomainPtr domain)
 {
-    int ret;
+    int ret = -1, i;
+    virConnectPtr conn;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
 
-    /* first try though the Xen daemon */
-    ret = xenDaemonDomainSuspend(domain);
-    if (ret == 0)
-        return (0);
+    conn = domain->conn;
+#if PEDANTIC
+    if (domain->conn->flags & VIR_CONNECT_RO)
+        return (-1);
+#endif
 
-    /* then try a direct hypervisor access */
-    return (xenHypervisorPauseDomain(domain));
+    /* Go though the driver registered entry points */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainSuspend != NULL)) {
+	    if (conn->drivers[i]->domainSuspend(domain) == 0)
+	        ret = 0;
+	}
+    }
+
+    if (ret != 0) {
+        virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+        return (ret);
+    }
+
+    return (ret);
 }
 
 /**
@@ -936,20 +958,35 @@ virDomainSuspend(virDomainPtr domain)
 int
 virDomainResume(virDomainPtr domain)
 {
-    int ret;
+    int ret = -1, i;
+    virConnectPtr conn;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
 
-    /* first try though the Xen daemon */
-    ret = xenDaemonDomainResume(domain);
-    if (ret == 0)
-        return (0);
+    conn = domain->conn;
+#if PEDANTIC
+    if (domain->conn->flags & VIR_CONNECT_RO)
+        return (-1);
+#endif
 
-    /* then try a direct hypervisor access */
-    return (xenHypervisorResumeDomain(domain));
+    /* Go though the driver registered entry points */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainResume != NULL)) {
+	    if (conn->drivers[i]->domainResume(domain) == 0)
+	        ret = 0;
+	}
+    }
+
+    if (ret != 0) {
+        virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+        return (ret);
+    }
+
+    return (ret);
 }
 
 /**
@@ -1066,30 +1103,34 @@ virDomainRestore(virConnectPtr conn, const char *from)
 int
 virDomainShutdown(virDomainPtr domain)
 {
-    int ret;
+    int ret = -1, i;
+    virConnectPtr conn;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
 
-    /*
-     * try first with the xend daemon
-     */
-    ret = xenDaemonDomainShutdown(domain);
-    if (ret == 0) {
-        domain->flags |= DOMAIN_IS_SHUTDOWN;
-        return (0);
+    conn = domain->conn;
+#if PEDANTIC
+    if (domain->conn->flags & VIR_CONNECT_RO)
+        return (-1);
+#endif
+
+    /* Go though the driver registered entry points */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainShutdown != NULL)) {
+	    if (conn->drivers[i]->domainShutdown(domain) == 0)
+	        ret = 0;
+	}
     }
 
-    /*
-     * this is very hackish, the domU kernel probes for a special 
-     * node in the xenstore and launch the shutdown command if found.
-     */
-    ret = xenDaemonDomainShutdown(domain);
-    if (ret == 0) {
-        domain->flags |= DOMAIN_IS_SHUTDOWN;
+    if (ret != 0) {
+        virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+        return (ret);
     }
+
     return (ret);
 }
 
@@ -1107,30 +1148,34 @@ virDomainShutdown(virDomainPtr domain)
 int
 virDomainReboot(virDomainPtr domain, unsigned int flags)
 {
-    int ret;
+    int ret = -1, i;
+    virConnectPtr conn;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
 
-    /*
-     * try first with the xend daemon
-     */
-    ret = xenDaemonDomainReboot(domain, flags);
-    if (ret == 0) {
-        domain->flags |= DOMAIN_IS_SHUTDOWN;
-        return (0);
+    conn = domain->conn;
+#if PEDANTIC
+    if (domain->conn->flags & VIR_CONNECT_RO)
+        return (-1);
+#endif
+
+    /* Go though the driver registered entry points */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainReboot != NULL)) {
+	    if (conn->drivers[i]->domainReboot(domain, flags) == 0)
+	        ret = 0;
+	}
     }
 
-    /*
-     * this is very hackish, the domU kernel probes for a special 
-     * node in the xenstore and launch the shutdown command if found.
-     */
-    ret = xenDaemonDomainReboot(domain, flags);
-    if (ret == 0) {
-        domain->flags |= DOMAIN_IS_SHUTDOWN;
+    if (ret != 0) {
+        virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+        return (ret);
     }
+
     return (ret);
 }
 

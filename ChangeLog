@@ -1,3 +1,9 @@
+Wed Jun 14 11:20:23 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/libvirt.c: connect virDomainDestroy, virDomainSuspend,
+	virDomainResume, virDomainShutdown & virDomainReboot to the
+	driver backends.
+
 Wed Jun 14 15:51:00 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt.c src/xend_internal.c src/xend_internal.h: cleaned up
