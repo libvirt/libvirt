@@ -1,3 +1,7 @@
+Wed Jun 14 13:10:03 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c: Daniel P. Berrange pointed out a bug in virConnectOpen
+
 Tue Jun 13 14:06:01 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/virsh.c: use 'double' instead of 'float' when calculating

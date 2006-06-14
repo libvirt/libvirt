@@ -226,7 +226,7 @@ virConnectOpen(const char *name)
     if (name == NULL) {
         name = "Xen";
 	for_xen = 1;
-    } else if (strncasecmp(name, "xen", 3)) {
+    } else if (!strncasecmp(name, "xen", 3)) {
 	for_xen = 1;
     }
 
