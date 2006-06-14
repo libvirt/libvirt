@@ -517,7 +517,7 @@ int xenDaemonOpen_unix(virConnectPtr xend, const char *path);
  * This method will return an array of names of currently running
  * domains.  The memory should be released will a call to free().
  */
-    char **xenDaemonListDomains(virConnectPtr xend);
+    char **xenDaemonListDomainsOld(virConnectPtr xend);
 
 /**
  * \brief Create a new domain

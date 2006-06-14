@@ -39,6 +39,8 @@
 static const char * xenDaemonGetType(virConnectPtr conn);
 static int xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
 static int xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer);
+static int xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids);
+static int xenDaemonNumOfDomains(virConnectPtr conn);
 
 static virDriver xenDaemonDriver = {
     "XenDaemon",
@@ -51,8 +53,8 @@ static virDriver xenDaemonDriver = {
     xenDaemonGetType, /* type */
     xenDaemonGetVersion, /* version */
     xenDaemonNodeGetInfo, /* nodeGetInfo */
-    NULL, /* listDomains */
-    NULL, /* numOfDomains */
+    xenDaemonListDomains, /* listDomains */
+    xenDaemonNumOfDomains, /* numOfDomains */
     NULL, /* domainCreateLinux */
     NULL, /* domainLookupByID */
     NULL, /* domainLookupByUUID */
@@ -997,7 +999,7 @@ xend_sysrq(virConnectPtr xend, const char *name, const char *key)
 }
 
 /**
- * xenDaemonListDomains:
+ * xenDaemonListDomainsOld:
  * @xend: pointer to the Xem Daemon block
  *
  * This method will return an array of names of currently running
@@ -1006,7 +1008,7 @@ xend_sysrq(virConnectPtr xend, const char *name, const char *key)
  * Returns a list of names or NULL in case of error.
  */
 char **
-xenDaemonListDomains(virConnectPtr xend)
+xenDaemonListDomainsOld(virConnectPtr xend)
 {
     size_t extra = 0;
     struct sexpr *root = NULL;
@@ -1609,7 +1611,7 @@ sexpr_to_domain(virConnectPtr conn, struct sexpr *root)
     if (name == NULL)
         goto error;
 
-    ret = virGetDomain(conn, name, &uuid[0]);
+    ret = virGetDomain(conn, name, (const unsigned char *) &uuid[0]);
     if (ret == NULL) {
         virXendError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
 	return(NULL);
@@ -2145,4 +2147,81 @@ xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer)
     }
     *hvVer = version;
     return(0);
+}
+
+/**
+ * xenDaemonListDomains:
+ * @conn: pointer to the hypervisor connection
+ * @ids: array to collect the list of IDs of active domains
+ * @maxids: size of @ids
+ *
+ * Collect the list of active domains, and store their ID in @maxids
+ * TODO: this is quite expensive at the moment since there isn't one
+ *       xend RPC providing both name and id for all domains.
+ *
+ * Returns the number of domain found or -1 in case of error
+ */
+static int
+xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids)
+{
+    struct sexpr *root = NULL;
+    int ret = -1;
+    struct sexpr *_for_i, *node;
+    long id;
+
+    if ((ids == NULL) || (maxids <= 0))
+        goto error;
+    root = sexpr_get(conn, "/xend/domain");
+    if (root == NULL)
+        goto error;
+
+    ret = 0;
+
+    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
+         _for_i = _for_i->cdr, node = _for_i->car) {
+        if (node->kind != SEXPR_VALUE)
+            continue;
+        id = xenDaemonDomainLookupByName_ids(conn, node->value, NULL);
+        if (id >= 0)
+	    ids[ret++] = (int) id;
+    }
+
+error:
+    if (root != NULL)
+	sexpr_free(root);
+    return(ret);
+}
+
+/**
+ * xenDaemonNumOfDomains:
+ * @conn: pointer to the hypervisor connection
+ *
+ * Provides the number of active domains.
+ *
+ * Returns the number of domain found or -1 in case of error
+ */
+static int
+xenDaemonNumOfDomains(virConnectPtr conn)
+{
+    struct sexpr *root = NULL;
+    int ret = -1;
+    struct sexpr *_for_i, *node;
+
+    root = sexpr_get(conn, "/xend/domain");
+    if (root == NULL)
+        goto error;
+
+    ret = 0;
+
+    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
+         _for_i = _for_i->cdr, node = _for_i->car) {
+        if (node->kind != SEXPR_VALUE)
+            continue;
+	ret++;
+    }
+
+error:
+    if (root != NULL)
+	sexpr_free(root);
+    return(ret);
 }

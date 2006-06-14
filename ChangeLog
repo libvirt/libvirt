@@ -1,3 +1,9 @@
+Wed Jun 14 15:51:00 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c src/xend_internal.c src/xend_internal.h: cleaned up
+	  virConnectListDomains and virConnectNumOfDomains, implemented xend
+	  driver entry point for them.
+
 Wed Jun 14 13:10:03 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt.c: Daniel P. Berrange pointed out a bug in virConnectOpen

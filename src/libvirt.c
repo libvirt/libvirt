@@ -345,8 +345,14 @@ failed:
 int
 virConnectClose(virConnectPtr conn)
 {
+    int i;
+
     if (!VIR_IS_CONNECT(conn))
         return (-1);
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) && (conn->drivers[i]->close != NULL))
+	    conn->drivers[i]->close(conn);
+    }
     if (virFreeConnect(conn) < 0)
         return (-1);
     return (0);
@@ -415,8 +421,6 @@ virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer)
         return (-1);
     }
 
-    *hvVer = 0;
-
     for (i = 0;i < conn->nb_drivers;i++) {
 	if ((conn->drivers[i] != NULL) &&
 	    (conn->drivers[i]->version != NULL)) {
@@ -443,8 +447,6 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 {
     int ret = -1;
     int i;
-    long id;
-    char **idlist = NULL;
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -466,25 +468,7 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids)
 	}
     }
 
-    /*
-     * try then though the Xen Daemon
-     */
-    idlist = xenDaemonListDomains(conn);
-    if (idlist != NULL) {
-        for (ret = 0, i = 0; (idlist[i] != NULL) && (ret < maxids); i++) {
-            id = xenDaemonDomainLookupByName_ids(conn, idlist[i], NULL);
-            if (id >= 0)
-                ids[ret++] = (int) id;
-        }
-	free(idlist);
-        return(ret);
-    }
-
-    /*
-     * Then fallback to the XenStore
-     */
-    ret = xenStoreListDomains(conn, ids, maxids);
-    return (ret);
+    return (-1);
 }
 
 /**
@@ -500,7 +484,6 @@ virConnectNumOfDomains(virConnectPtr conn)
 {
     int ret = -1;
     int i;
-    char **idlist = NULL;
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -517,23 +500,7 @@ virConnectNumOfDomains(virConnectPtr conn)
 	}
     }
 
-    /* 
-     * try then with Xend interface
-     */
-    idlist = xenDaemonListDomains(conn);
-    if (idlist != NULL) {
-        char **tmp = idlist;
-
-        ret = 0;
-        while (*tmp != NULL) {
-            tmp++;
-            ret++;
-        }
-	free(idlist);
-	return(ret);
-    }
-    /* Then Xen Store */
-    return(xenStoreNumOfDomains(conn));
+    return(-1);
 }
 
 /**
@@ -659,7 +626,7 @@ virDomainLookupByID(virConnectPtr conn, int id)
     }
 
     /* path does not contain name, use xend API to retrieve name */
-    names = xenDaemonListDomains(conn);
+    names = xenDaemonListDomainsOld(conn);
     tmp = names;
 
     if (names != NULL) {
@@ -734,7 +701,7 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 	}
     }
 
-    names = xenDaemonListDomains(conn);
+    names = xenDaemonListDomainsOld(conn);
     tmp = names;
 
     if (names == NULL) {
