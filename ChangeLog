@@ -1,3 +1,8 @@
+Thu Jun 15 14:57:39 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c src/xend_internal.c src/xend_internal.h
+	  src/xs_internal.c: more cleanups for the driver architecture
+
 Wed Jun 14 18:59:30 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/test.h, src/test.c: Added implementation of the reboot

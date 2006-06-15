@@ -592,13 +592,7 @@ virDomainCreateLinux(virConnectPtr conn,
 virDomainPtr
 virDomainLookupByID(virConnectPtr conn, int id)
 {
-    char *path = NULL;
-    char **names;
-    char **tmp;
-    int ident;
     virDomainPtr ret;
-    char *name = NULL;
-    unsigned char uuid[16];
     int i;
 
     if (!VIR_IS_CONNECT(conn)) {
@@ -620,45 +614,6 @@ virDomainLookupByID(virConnectPtr conn, int id)
 	}
     }
 
-    /* retrieve home path of the domain */
-    if (conn->xshandle != NULL) {
-        path = xs_get_domain_path(conn->xshandle, (unsigned int) id);
-    }
-
-    /* path does not contain name, use xend API to retrieve name */
-    names = xenDaemonListDomainsOld(conn);
-    tmp = names;
-
-    if (names != NULL) {
-       while (*tmp != NULL) {
-          ident = xenDaemonDomainLookupByName_ids(conn, *tmp, &uuid[0]);
-          if (ident == id) {
-             name = strdup(*tmp);
-             break;
-          }
-          tmp++;
-       }
-       free(names);
-    }
-    if (name == NULL)
-        goto error;
-
-    ret = virGetDomain(conn, name, uuid);
-    if (ret == NULL) {
-        virLibConnError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
-        goto error;
-    }
-    ret->handle = id;
-    ret->path = path;
-    if (name != NULL)
-        free(name);
-
-    return (ret);
-error:
-    if (name != NULL)
-        free(name);
-    if (path != NULL)
-        free(path);
     return (NULL);
 }
 
@@ -675,11 +630,6 @@ virDomainPtr
 virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
     virDomainPtr ret;
-    char *name = NULL;
-    char **names;
-    char **tmp;
-    unsigned char ident[16];
-    int id = -1;
     int i;
 
     if (!VIR_IS_CONNECT(conn)) {
@@ -701,37 +651,7 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 	}
     }
 
-    names = xenDaemonListDomainsOld(conn);
-    tmp = names;
-
-    if (names == NULL) {
-        TODO                    /* try to fallback to xenstore lookup */
-            return (NULL);
-    }
-    while (*tmp != NULL) {
-        id = xenDaemonDomainLookupByName_ids(conn, *tmp, &ident[0]);
-        if (id >= 0) {
-            if (!memcmp(uuid, ident, 16)) {
-                name = strdup(*tmp);
-                break;
-            }
-        }
-        tmp++;
-    }
-    free(names);
-
-    if (name == NULL)
-        return (NULL);
-
-    ret = virGetDomain(conn, name, uuid);
-    if (ret == NULL) {
-        if (name != NULL)
-            free(name);
-        return (NULL);
-    }
-    ret->handle = id;
-
-    return (ret);
+    return (NULL);
 }
 
 /**
@@ -816,20 +736,7 @@ virDomainLookupByName(virConnectPtr conn, const char *name)
 	        return(ret);
 	}
     }
-
-    /* try first though Xend */
-    ret = xenDaemonDomainLookupByName(conn, name);
-    if (ret != NULL) {
-        return(ret);
-    }
-
-    /* then though the XenStore */
-    ret = xenStoreDomainLookupByName(conn, name);
-    if (ret != NULL) {
-        return(ret);
-    }
-
-    return (ret);
+    return (NULL);
 }
 
 /**
@@ -1498,27 +1405,6 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 	        return 0;
 	}
     }
-
-    /*
-     * if we have direct access though the hypervisor do a direct call
-     */
-    if (domain->conn->handle >= 0) {
-        ret = xenHypervisorGetDomainInfo(domain, info);
-        if (ret == 0)
-	    return (0);
-    }
-
-    /*
-     * try to extract the informations though access to the Xen Daemon
-     */
-    if (xenDaemonDomainGetInfo(domain, info) == 0)
-        return (0);
-
-    /*
-     * last fallback, try to get the informations from the Xen store
-     */
-    if (xenStoreGetDomainInfo(domain, info) == 0)
-        return (0);
 
     return (-1);
 }

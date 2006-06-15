@@ -41,6 +41,9 @@ static int xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
 static int xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer);
 static int xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids);
 static int xenDaemonNumOfDomains(virConnectPtr conn);
+static virDomainPtr xenDaemonLookupByID(virConnectPtr conn, int id);
+static virDomainPtr xenDaemonLookupByUUID(virConnectPtr conn,
+                                          const unsigned char *uuid);
 
 static virDriver xenDaemonDriver = {
     "XenDaemon",
@@ -56,9 +59,9 @@ static virDriver xenDaemonDriver = {
     xenDaemonListDomains, /* listDomains */
     xenDaemonNumOfDomains, /* numOfDomains */
     NULL, /* domainCreateLinux */
-    NULL, /* domainLookupByID */
-    NULL, /* domainLookupByUUID */
-    NULL, /* domainLookupByName */
+    xenDaemonLookupByID, /* domainLookupByID */
+    xenDaemonLookupByUUID, /* domainLookupByUUID */
+    xenDaemonDomainLookupByName, /* domainLookupByName */
     xenDaemonDomainSuspend, /* domainSuspend */
     xenDaemonDomainResume, /* domainResume */
     xenDaemonDomainShutdown, /* domainShutdown */
@@ -1007,7 +1010,7 @@ xend_sysrq(virConnectPtr xend, const char *name, const char *key)
  *
  * Returns a list of names or NULL in case of error.
  */
-char **
+static char **
 xenDaemonListDomainsOld(virConnectPtr xend)
 {
     size_t extra = 0;
@@ -2224,4 +2227,116 @@ error:
     if (root != NULL)
 	sexpr_free(root);
     return(ret);
+}
+
+/**
+ * xenDaemonLookupByID:
+ * @conn: pointer to the hypervisor connection
+ * @id: the domain ID number
+ *
+ * Try to find a domain based on the hypervisor ID number
+ *
+ * Returns a new domain object or NULL in case of failure
+ */
+static virDomainPtr
+xenDaemonLookupByID(virConnectPtr conn, int id) {
+    char **names;
+    char **tmp;
+    int ident;
+    char *name = NULL;
+    unsigned char uuid[16];
+    virDomainPtr ret;
+
+    /*
+     * Xend API forces to collect the full domain list by names, and then
+     * query each of them until the id is found
+     */
+    names = xenDaemonListDomainsOld(conn);
+    tmp = names;
+
+    if (names != NULL) {
+       while (*tmp != NULL) {
+          ident = xenDaemonDomainLookupByName_ids(conn, *tmp, &uuid[0]);
+          if (ident == id) {
+             name = strdup(*tmp);
+             break;
+          }
+          tmp++;
+       }
+       free(names);
+    }
+    if (name == NULL)
+        goto error;
+
+    ret = virGetDomain(conn, name, uuid);
+    if (ret == NULL) {
+        virXendError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
+        goto error;
+    }
+    ret->handle = id;
+    if (name != NULL)
+        free(name);
+    return (ret);
+
+error:
+    if (name != NULL)
+        free(name);
+    return (NULL);
+}
+
+/**
+ * xenDaemonLookupByUUID:
+ * @conn: pointer to the hypervisor connection
+ * @uuid: the raw UUID for the domain
+ *
+ * Try to lookup a domain on xend based on its UUID.
+ *
+ * Returns a new domain object or NULL in case of failure
+ */
+static virDomainPtr
+xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
+{
+    virDomainPtr ret;
+    char *name = NULL;
+    char **names;
+    char **tmp;
+    unsigned char ident[16];
+    int id = -1;
+
+    names = xenDaemonListDomainsOld(conn);
+    tmp = names;
+
+    if (names == NULL) {
+        TODO                    /* try to fallback to xenstore lookup */
+            return (NULL);
+    }
+    while (*tmp != NULL) {
+        id = xenDaemonDomainLookupByName_ids(conn, *tmp, &ident[0]);
+        if (id >= 0) {
+            if (!memcmp(uuid, ident, 16)) {
+                name = strdup(*tmp);
+                break;
+            }
+        }
+        tmp++;
+    }
+    free(names);
+
+    if (name == NULL)
+        goto error;
+
+    ret = virGetDomain(conn, name, uuid);
+    if (ret == NULL) {
+        virXendError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
+        goto error;
+    }
+    ret->handle = id;
+    if (name != NULL)
+        free(name);
+    return (ret);
+
+error:
+    if (name != NULL)
+        free(name);
+    return (NULL);
 }

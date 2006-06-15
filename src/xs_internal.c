@@ -46,7 +46,7 @@ static virDriver xenStoreDriver = {
     NULL, /* domainCreateLinux */
     NULL, /* domainLookupByID */
     NULL, /* domainLookupByUUID */
-    NULL, /* domainLookupByName */
+    xenStoreDomainLookupByName, /* domainLookupByName */
     NULL, /* domainSuspend */
     NULL, /* domainResume */
     xenStoreDomainShutdown, /* domainShutdown */

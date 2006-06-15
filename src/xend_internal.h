@@ -510,16 +510,6 @@ int xenDaemonOpen_unix(virConnectPtr xend, const char *path);
     int xend_sysrq(virConnectPtr xend, const char *name, const char *key);
 
 /**
- * \brief Obtain a list of currently running domains
- * \param xend A xend instance
- * \return a NULL terminated array of names; NULL (with errno) on error
- * 
- * This method will return an array of names of currently running
- * domains.  The memory should be released will a call to free().
- */
-    char **xenDaemonListDomainsOld(virConnectPtr xend);
-
-/**
  * \brief Create a new domain
  * \param xend A xend instance
  * \param sexpr An S-Expr defining the domain
