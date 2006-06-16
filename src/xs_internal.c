@@ -27,6 +27,7 @@
 #include "internal.h"
 #include "driver.h"
 #include "xs_internal.h"
+#include "xen_internal.h" /* for xenHypervisorCheckID */
 
 #define XEN_HYPERVISOR_SOCKET "/proc/xen/privcmd"
 
@@ -256,16 +257,11 @@ static int
 virConnectCheckStoreID(virConnectPtr conn, int id)
 {
     if (conn->handle >= 0) {
-	TODO
-	/*
-        dom0_getdomaininfo_t dominfo;
         int tmp;
 
-        dominfo.domain = id;
-        tmp = xenHypervisorGetDomainInfo(conn->handle, id, &dominfo);
+        tmp = xenHypervisorCheckID(conn, id);
         if (tmp < 0)
             return (-1);
-	 */
     }
     return (0);
 }

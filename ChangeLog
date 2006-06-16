@@ -1,3 +1,8 @@
+Fri Jun 16 15:08:42 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c src/xen_internal.h src/xs_internal.c: fix
+	  a TODO in xs_internal.c pointed out by Philippe Berthault
+
 Fri Jun 16 12:44:02 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt.c src/xen_internal.c src/xend_internal.c: more driver 

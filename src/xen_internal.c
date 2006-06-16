@@ -639,3 +639,52 @@ xenHypervisorSetMaxMemory(virDomainPtr domain, unsigned long memory)
         return (-1);
     return (0);
 }
+
+/**
+ * xenHypervisorCheckID:
+ * @domain: pointer to the domain block
+ * @info: the place where informations should be stored
+ *
+ * Do an hypervisor call to verify the domain ID is valid
+ *
+ * Returns 0 in case of success, -1 in case of error.
+ */
+int
+xenHypervisorCheckID(virConnectPtr conn, int id)
+{
+    dom0_op_t op;
+    dom0_getdomaininfo_t dominfo;
+    int ret;
+
+    if ((conn->handle < 0) || (id < 0))
+        return (-1);
+
+    memset(&dominfo, 0, sizeof(dom0_getdomaininfo_t));
+
+    if (mlock(&dominfo, sizeof(dom0_getdomaininfo_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " locking",
+                    sizeof(dom0_getdomaininfo_t));
+        return (-1);
+    }
+
+    op.cmd = DOM0_GETDOMAININFOLIST;
+    op.u.getdomaininfolist.first_domain = (domid_t) id;
+    op.u.getdomaininfolist.max_domains = 1;
+    op.u.getdomaininfolist.buffer = &dominfo;
+    op.u.getdomaininfolist.num_domains = 1;
+    dominfo.domain = id;
+
+    ret = xenHypervisorDoOp(conn->handle, &op);
+
+    if (munlock(&dominfo, sizeof(dom0_getdomaininfo_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " release",
+                    sizeof(dom0_getdomaininfo_t));
+        ret = -1;
+    }
+
+    if (ret < 0)
+        return (-1);
+
+    return (0);
+}
+

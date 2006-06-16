@@ -36,7 +36,8 @@ int	xenHypervisorGetDomainInfo	(virDomainPtr domain,
 				   	 virDomainInfoPtr info);
 int	xenHypervisorSetMaxMemory	(virDomainPtr domain,
 		      		  	 unsigned long memory);
-
+int	xenHypervisorCheckID		(virConnectPtr conn,
+					 int id);
 #ifdef __cplusplus
 }
 #endif
