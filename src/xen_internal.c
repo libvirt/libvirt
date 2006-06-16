@@ -41,6 +41,7 @@ typedef struct hypercall_struct {
 #define XEN_HYPERVISOR_SOCKET "/proc/xen/privcmd"
 
 static const char * xenHypervisorGetType(virConnectPtr conn);
+static unsigned long xenHypervisorGetMaxMemory(virDomainPtr domain);
 
 static virDriver xenHypervisorDriver = {
     "Xen",
@@ -69,7 +70,7 @@ static virDriver xenHypervisorDriver = {
     NULL, /* domainGetID */
     NULL, /* domainGetUUID */
     NULL, /* domainGetOSType */
-    NULL, /* domainGetMaxMemory */
+    xenHypervisorGetMaxMemory, /* domainGetMaxMemory */
     xenHypervisorSetMaxMemory, /* domainSetMaxMemory */
     NULL, /* domainSetMemory */
     xenHypervisorGetDomainInfo, /* domainGetInfo */
@@ -394,6 +395,56 @@ xenHypervisorListDomains(virConnectPtr conn, int *ids, int maxids)
 
     free(dominfos);
     return (nbids);
+}
+
+/**
+ * xenHypervisorGetMaxMemory:
+ * @domain: a domain object or NULL
+ * 
+ * Retrieve the maximum amount of physical memory allocated to a
+ * domain. If domain is NULL, then this get the amount of memory reserved
+ * to Domain0 i.e. the domain where the application runs.
+ *
+ * Returns the memory size in kilobytes or 0 in case of error.
+ */
+static unsigned long
+xenHypervisorGetMaxMemory(virDomainPtr domain)
+{
+    dom0_op_t op;
+    dom0_getdomaininfo_t dominfo;
+    int ret;
+
+    if ((domain == NULL) || (domain->conn == NULL) ||
+        (domain->conn->handle < 0))
+        return (0);
+
+    memset(&dominfo, 0, sizeof(dom0_getdomaininfo_t));
+
+    if (mlock(&dominfo, sizeof(dom0_getdomaininfo_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " locking",
+                    sizeof(dom0_getdomaininfo_t));
+        return (0);
+    }
+
+    op.cmd = DOM0_GETDOMAININFOLIST;
+    op.u.getdomaininfolist.first_domain = (domid_t) domain->handle;
+    op.u.getdomaininfolist.max_domains = 1;
+    op.u.getdomaininfolist.buffer = &dominfo;
+    op.u.getdomaininfolist.num_domains = 1;
+    dominfo.domain = domain->handle;
+
+    ret = xenHypervisorDoOp(domain->conn->handle, &op);
+
+    if (munlock(&dominfo, sizeof(dom0_getdomaininfo_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " release",
+                    sizeof(dom0_getdomaininfo_t));
+        ret = -1;
+    }
+
+    if (ret < 0)
+        return (0);
+
+    return((unsigned long) dominfo.max_pages * 4);
 }
 
 /**

@@ -516,14 +516,11 @@ virConnectNumOfDomains(virConnectPtr conn)
  * Returns a new domain object or NULL in case of failure
  */
 virDomainPtr
-virDomainCreateLinux(virConnectPtr conn,
-                     const char *xmlDesc,
-                     unsigned int flags ATTRIBUTE_UNUSED)
+virDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
+                     unsigned int flags)
 {
-    int ret;
-    char *sexpr;
-    char *name = NULL;
-    virDomainPtr dom;
+    virDomainPtr ret;
+    int i;
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -534,49 +531,15 @@ virDomainCreateLinux(virConnectPtr conn,
         return (NULL);
     }
 
-    sexpr = virDomainParseXMLDesc(xmlDesc, &name);
-    if ((sexpr == NULL) || (name == NULL)) {
-        if (sexpr != NULL)
-            free(sexpr);
-        if (name != NULL)
-            free(name);
-
-        return (NULL);
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainCreateLinux != NULL)) {
+	    ret = conn->drivers[i]->domainCreateLinux(conn, xmlDesc, flags);
+	    if (ret != NULL)
+	        return(ret);
+	}
     }
-
-    ret = xenDaemonDomainCreateLinux(conn, sexpr);
-    free(sexpr);
-    if (ret != 0) {
-        fprintf(stderr, "Failed to create domain %s\n", name);
-        goto error;
-    }
-
-    ret = xend_wait_for_devices(conn, name);
-    if (ret != 0) {
-        fprintf(stderr, "Failed to get devices for domain %s\n", name);
-        goto error;
-    }
-
-    dom = virDomainLookupByName(conn, name);
-    if (dom == NULL) {
-        goto error;
-    }
-
-    ret = xenDaemonDomainResume(dom);
-    if (ret != 0) {
-        fprintf(stderr, "Failed to resume new domain %s\n", name);
-        xenDaemonDomainDestroy(dom);
-        goto error;
-    }
-
-    dom = virDomainLookupByName(conn, name);
-    free(name);
-
-    return (dom);
-  error:
-    if (name != NULL)
-        free(name);
-    return (NULL);
+    return(NULL);
 }
 
 
@@ -865,7 +828,7 @@ virDomainSuspend(virDomainPtr domain)
 int
 virDomainResume(virDomainPtr domain)
 {
-    int ret = -1, i;
+    int i;
     virConnectPtr conn;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
@@ -884,16 +847,12 @@ virDomainResume(virDomainPtr domain)
 	if ((conn->drivers[i] != NULL) &&
 	    (conn->drivers[i]->domainResume != NULL)) {
 	    if (conn->drivers[i]->domainResume(domain) == 0)
-	        ret = 0;
+	        return(0);
 	}
     }
 
-    if (ret != 0) {
-        virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
-        return (ret);
-    }
-
-    return (ret);
+    virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    return (-1);
 }
 
 /**
@@ -911,13 +870,15 @@ virDomainResume(virDomainPtr domain)
 int
 virDomainSave(virDomainPtr domain, const char *to)
 {
-    int ret;
+    int ret, i;
     char filepath[4096];
+    virConnectPtr conn;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
+    conn = domain->conn;
     if (to == NULL) {
         virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
@@ -943,8 +904,17 @@ virDomainSave(virDomainPtr domain, const char *to)
 
     }
 
-    ret = xenDaemonDomainSave(domain, to);
-    return (ret);
+    /* Go though the driver registered entry points */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainSave != NULL)) {
+	    ret = conn->drivers[i]->domainSave(domain, to);
+	    if (ret == 0)
+	        return(0);
+	}
+    }
+    virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    return (-1);
 }
 
 /**
@@ -959,7 +929,7 @@ virDomainSave(virDomainPtr domain, const char *to)
 int
 virDomainRestore(virConnectPtr conn, const char *from)
 {
-    int ret;
+    int ret, i;
     char filepath[4096];
 
     if (!VIR_IS_CONNECT(conn)) {
@@ -990,8 +960,17 @@ virDomainRestore(virConnectPtr conn, const char *from)
         from = &filepath[0];
     }
 
-    ret = xenDaemonDomainRestore(conn, from);
-    return (ret);
+    /* Go though the driver registered entry points */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainSave != NULL)) {
+	    ret = conn->drivers[i]->domainRestore(conn, from);
+	    if (ret == 0)
+	        return(0);
+	}
+    }
+    virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    return (-1);
 }
 
 /**
@@ -1242,28 +1221,30 @@ unsigned long
 virDomainGetMaxMemory(virDomainPtr domain)
 {
     unsigned long ret = 0;
+    virConnectPtr conn;
+    int i;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (0);
     }
 
-    /*
-     * try first with the hypervisor if available
-     */
-    if (!(domain->conn->flags & VIR_CONNECT_RO)) {
-        virDomainInfo dominfo;
-        int tmp;
+    conn = domain->conn;
 
-        tmp = xenHypervisorGetDomainInfo(domain, &dominfo);
-        if (tmp >= 0)
-	    return(dominfo.maxMem);
+    /*
+     * in that case instead of trying only though one method try all availble.
+     * If needed that can be changed back if it's a performcance problem.
+     */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainGetMaxMemory != NULL)) {
+	    ret = conn->drivers[i]->domainGetMaxMemory(domain);
+	    if (ret != 0)
+	        return(ret);
+	}
     }
-    ret = xenStoreDomainGetMaxMemory(domain);
-    if (ret > 0)
-        return(ret);
-    ret = xenDaemonDomainGetMaxMemory(domain);
-    return (ret);
+    virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    return (-1);
 }
 
 /**
@@ -1384,7 +1365,6 @@ virDomainSetMemory(virDomainPtr domain, unsigned long memory)
 int
 virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 {
-    int ret;
     int i;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {

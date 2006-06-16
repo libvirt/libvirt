@@ -1,3 +1,8 @@
+Fri Jun 16 12:44:02 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c src/xen_internal.c src/xend_internal.c: more driver 
+	  related cleanups, nearly finished
+
 Thu Jun 15 14:57:39 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt.c src/xend_internal.c src/xend_internal.h

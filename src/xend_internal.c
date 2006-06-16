@@ -44,6 +44,9 @@ static int xenDaemonNumOfDomains(virConnectPtr conn);
 static virDomainPtr xenDaemonLookupByID(virConnectPtr conn, int id);
 static virDomainPtr xenDaemonLookupByUUID(virConnectPtr conn,
                                           const unsigned char *uuid);
+static virDomainPtr xenDaemonCreateLinux(virConnectPtr conn,
+                                         const char *xmlDesc,
+					 unsigned int flags);
 
 static virDriver xenDaemonDriver = {
     "XenDaemon",
@@ -58,7 +61,7 @@ static virDriver xenDaemonDriver = {
     xenDaemonNodeGetInfo, /* nodeGetInfo */
     xenDaemonListDomains, /* listDomains */
     xenDaemonNumOfDomains, /* numOfDomains */
-    NULL, /* domainCreateLinux */
+    xenDaemonCreateLinux, /* domainCreateLinux */
     xenDaemonLookupByID, /* domainLookupByID */
     xenDaemonLookupByUUID, /* domainLookupByUUID */
     xenDaemonDomainLookupByName, /* domainLookupByName */
@@ -72,7 +75,7 @@ static virDriver xenDaemonDriver = {
     NULL, /* domainGetID */
     NULL, /* domainGetUUID */
     NULL, /* domainGetOSType */
-    NULL, /* domainGetMaxMemory */
+    xenDaemonDomainGetMaxMemory, /* domainGetMaxMemory */
     xenDaemonDomainSetMaxMemory, /* domainSetMaxMemory */
     xenDaemonDomainSetMemory, /* domainMaxMemory */
     xenDaemonDomainGetInfo, /* domainGetInfo */
@@ -2340,3 +2343,79 @@ error:
         free(name);
     return (NULL);
 }
+
+/**
+ * xenDaemonCreateLinux:
+ * @conn: pointer to the hypervisor connection
+ * @xmlDesc: an XML description of the domain
+ * @flags: an optional set of virDomainFlags
+ *
+ * Launch a new Linux guest domain, based on an XML description similar
+ * to the one returned by virDomainGetXMLDesc()
+ * This function may requires priviledged access to the hypervisor.
+ * 
+ * Returns a new domain object or NULL in case of failure
+ */
+static virDomainPtr
+xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
+                     unsigned int flags ATTRIBUTE_UNUSED)
+{
+    int ret;
+    char *sexpr;
+    char *name = NULL;
+    virDomainPtr dom;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virXendError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (NULL);
+    }
+    if (xmlDesc == NULL) {
+        virXendError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (NULL);
+    }
+
+    sexpr = virDomainParseXMLDesc(xmlDesc, &name);
+    if ((sexpr == NULL) || (name == NULL)) {
+        if (sexpr != NULL)
+            free(sexpr);
+        if (name != NULL)
+            free(name);
+
+        return (NULL);
+    }
+
+    ret = xenDaemonDomainCreateLinux(conn, sexpr);
+    free(sexpr);
+    if (ret != 0) {
+        fprintf(stderr, "Failed to create domain %s\n", name);
+        goto error;
+    }
+
+    ret = xend_wait_for_devices(conn, name);
+    if (ret != 0) {
+        fprintf(stderr, "Failed to get devices for domain %s\n", name);
+        goto error;
+    }
+
+    dom = virDomainLookupByName(conn, name);
+    if (dom == NULL) {
+        goto error;
+    }
+
+    ret = xenDaemonDomainResume(dom);
+    if (ret != 0) {
+        fprintf(stderr, "Failed to resume new domain %s\n", name);
+        xenDaemonDomainDestroy(dom);
+        goto error;
+    }
+
+    dom = virDomainLookupByName(conn, name);
+    free(name);
+
+    return (dom);
+  error:
+    if (name != NULL)
+        free(name);
+    return (NULL);
+}
+
