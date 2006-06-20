@@ -25,12 +25,18 @@
 #include <xen/dom0_ops.h>
 #include <xen/version.h>
 #include <xen/xen.h>
+#include <xen/linux/privcmd.h>
 
-#ifndef __LINUX_PUBLIC_PRIVCMD_H__
+#if 0
+/* #ifndef __LINUX_PUBLIC_PRIVCMD_H__ */
 typedef struct hypercall_struct {
-    unsigned long op;
-    unsigned long arg[5];
+    __u64 op;
+    __u64 arg[5];
 } hypercall_t;
+#define XEN_IOCTL_HYPERCALL_CMD _IOC(_IOC_NONE, 'P', 0, sizeof(hypercall_t))
+#else
+typedef struct privcmd_hypercall hypercall_t;
+#define XEN_IOCTL_HYPERCALL_CMD IOCTL_PRIVCMD_HYPERCALL
 #endif
 
 
@@ -187,7 +193,7 @@ xenHypervisorDoOp(int handle, dom0_op_t * op)
         return (-1);
     }
 
-    cmd = _IOC(_IOC_NONE, 'P', 0, sizeof(hc));
+    cmd = XEN_IOCTL_HYPERCALL_CMD;
     ret = ioctl(handle, cmd, (unsigned long) &hc);
     if (ret < 0) {
         virXenError(VIR_ERR_XEN_CALL, " ioctl ", cmd);
@@ -248,7 +254,7 @@ xenHypervisorGetVersion(virConnectPtr conn, unsigned long *hvVer)
     hc.arg[0] = (unsigned long) XENVER_version;
     hc.arg[1] = 0;
 
-    cmd = _IOC(_IOC_NONE, 'P', 0, sizeof(hc));
+    cmd = XEN_IOCTL_HYPERCALL_CMD;
     ret = ioctl(conn->handle, cmd, (unsigned long) &hc);
 
     if (ret < 0) {

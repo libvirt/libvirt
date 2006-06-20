@@ -1,3 +1,7 @@
+Tue Jun 20 16:14:26 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c: fix breakage introduced in Xen changeset 10277
+	  
 Fri Jun 16 15:08:42 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.c src/xen_internal.h src/xs_internal.c: fix
