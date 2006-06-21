@@ -17,6 +17,7 @@
 #include "test.h"
 
 static virDriver testDriver = {
+  VIR_DRV_TEST,
   "Test",
   LIBVIR_VERSION_NUMBER,
   NULL, /* init */

@@ -32,6 +32,7 @@
 #define XEN_HYPERVISOR_SOCKET "/proc/xen/privcmd"
 
 static virDriver xenStoreDriver = {
+    VIR_DRV_XEN_STORE,
     "XenStore",
     (DOM0_INTERFACE_VERSION >> 24) * 1000000 +
     ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +

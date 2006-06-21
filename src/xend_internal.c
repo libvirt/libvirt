@@ -49,6 +49,7 @@ static virDomainPtr xenDaemonCreateLinux(virConnectPtr conn,
 					 unsigned int flags);
 
 static virDriver xenDaemonDriver = {
+    VIR_DRV_XEN_DAEMON,
     "XenDaemon",
     (DOM0_INTERFACE_VERSION >> 24) * 1000000 +
     ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +

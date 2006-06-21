@@ -1,3 +1,10 @@
+Wed Jun 21 13:02:30 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/driver.h src/libvirt.c src/test.c src/xen_internal.c
+	  src/xend_internal.c src/xs_internal.c: add driver numbers and
+	  tweak a bit suspend/resume/destroy operation to avoid doing
+	  them directly though the hypervisor if other succeeded first.
+
 Wed Jun 21 12:23:15 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.c: try to autodetect the Xen hypervisor version

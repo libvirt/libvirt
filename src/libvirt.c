@@ -731,9 +731,21 @@ virDomainDestroy(virDomainPtr domain)
         return (-1);
 #endif
 
-    /* Go though the driver registered entry points */
+    /*
+     * Go though the driver registered entry points but use the 
+     * XEN_HYPERVISOR directly only as a last mechanism
+     */
     for (i = 0;i < conn->nb_drivers;i++) {
 	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->no != VIR_DRV_XEN_HYPERVISOR) &&
+	    (conn->drivers[i]->domainDestroy != NULL)) {
+	    if (conn->drivers[i]->domainDestroy(domain) == 0)
+	        ret = 0;
+	}
+    }
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->no == VIR_DRV_XEN_HYPERVISOR) &&
 	    (conn->drivers[i]->domainDestroy != NULL)) {
 	    if (conn->drivers[i]->domainDestroy(domain) == 0)
 	        ret = 0;
@@ -798,9 +810,21 @@ virDomainSuspend(virDomainPtr domain)
         return (-1);
 #endif
 
-    /* Go though the driver registered entry points */
+    /*
+     * Go though the driver registered entry points but use the 
+     * XEN_HYPERVISOR directly only as a last mechanism
+     */
     for (i = 0;i < conn->nb_drivers;i++) {
 	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->no != VIR_DRV_XEN_HYPERVISOR) &&
+	    (conn->drivers[i]->domainSuspend != NULL)) {
+	    if (conn->drivers[i]->domainSuspend(domain) == 0)
+	        ret = 0;
+	}
+    }
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->no == VIR_DRV_XEN_HYPERVISOR) &&
 	    (conn->drivers[i]->domainSuspend != NULL)) {
 	    if (conn->drivers[i]->domainSuspend(domain) == 0)
 	        ret = 0;
@@ -842,9 +866,21 @@ virDomainResume(virDomainPtr domain)
         return (-1);
 #endif
 
-    /* Go though the driver registered entry points */
+    /*
+     * Go though the driver registered entry points but use the 
+     * XEN_HYPERVISOR directly only as a last mechanism
+     */
     for (i = 0;i < conn->nb_drivers;i++) {
 	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->no != VIR_DRV_XEN_HYPERVISOR) &&
+	    (conn->drivers[i]->domainResume != NULL)) {
+	    if (conn->drivers[i]->domainResume(domain) == 0)
+	        return(0);
+	}
+    }
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->no == VIR_DRV_XEN_HYPERVISOR) &&
 	    (conn->drivers[i]->domainResume != NULL)) {
 	    if (conn->drivers[i]->domainResume(domain) == 0)
 	        return(0);

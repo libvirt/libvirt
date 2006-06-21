@@ -54,6 +54,7 @@ static unsigned long xenHypervisorGetMaxMemory(virDomainPtr domain);
 static int xenHypervisorInit(void);
 
 static virDriver xenHypervisorDriver = {
+    VIR_DRV_XEN_HYPERVISOR,
     "Xen",
     (DOM0_INTERFACE_VERSION >> 24) * 1000000 +
     ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +
@@ -143,7 +144,7 @@ int xenHypervisorInit(void)
     ret = ioctl(fd, cmd, (unsigned long) &hc);
 
     if ((ret != -1) && (ret != 0)) {
-        fprintf(stderr, "Using new hypervisor call: %X\n", ret);
+        /* fprintf(stderr, "Using new hypervisor call: %X\n", ret); */
 	hv_version = ret;
 	xen_ioctl_hypercall_cmd = cmd;
         old_hypervisor = 0;
@@ -156,7 +157,7 @@ int xenHypervisorInit(void)
     cmd = _IOC(_IOC_NONE, 'P', 0, sizeof(old_hypercall_t));
     ret = ioctl(fd, cmd, (unsigned long) &old_hc);
     if ((ret != -1) && (ret != 0)) {
-        fprintf(stderr, "Using old hypervisor call: %X\n", ret);
+        /* fprintf(stderr, "Using old hypervisor call: %X\n", ret); */
 	hv_version = ret;
 	xen_ioctl_hypercall_cmd = cmd;
         old_hypervisor = 1;

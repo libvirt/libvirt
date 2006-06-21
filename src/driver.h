@@ -13,6 +13,17 @@
 extern "C" {
 #endif
 
+/*
+ * List of registered drivers numbers
+ */
+typedef enum {
+    VIR_DRV_XEN_HYPERVISOR = 1,
+    VIR_DRV_XEN_STORE = 2,
+    VIR_DRV_XEN_DAEMON = 3,
+    VIR_DRV_TEST = 4
+} virDrvNo;
+
+
 typedef enum {
     VIR_DRV_OPEN_QUIET = 1,
     VIR_DRV_OPEN_RO = 2
@@ -103,8 +114,9 @@ typedef virDriver *virDriverPtr;
  * entry points for it.
  */
 struct _virDriver {
-	const char *name;
-	unsigned long ver;
+	int	       no;	/* the number virDrvNo */
+	const char * name;	/* the name of the driver */
+	unsigned long ver;	/* the version of the backend */
 	virDrvInit			init;
 	virDrvOpen			open;
 	virDrvClose			close;
