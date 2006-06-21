@@ -1,3 +1,7 @@
+Wed Jun 21 14:41:04 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* NEWS libvirt.spec.in docs/*: preparing release of 0.1.1
+
 Wed Jun 21 13:02:30 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/driver.h src/libvirt.c src/test.c src/xen_internal.c

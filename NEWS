@@ -5,6 +5,30 @@
        http://libvirt.org/news.html
 
 Releases
+0.1.1: Jun 21 2006:
+   -  building fixes: ncurses fallback (Jim Fehlig), VPATH builds (Daniel P.
+       Berrange)
+  
+   -  driver cleanups: new entry points, cleanup of libvirt.c (with Daniel P.
+       Berrange)
+  
+   -  Cope with API change introduced in Xen changeset 10277
+  
+   -  new test driver for regression checks (Daniel P. Berrange)
+  
+   -  improvements: added UUID to XML serialization, buffer usage (Karel Zak),
+       --connect argument to virsh (Daniel P. Berrange), 
+  
+   -  bug fixes: uninitialized memory access in error reporting, S-Expr
+       parsing (Jim Fehlig, Jeremy Katz), virConnectOpen bug, remove a TODO
+       in xs_internal.c
+  
+   -  documentation: Python examples (David Lutterkort), new Perl binding URL,
+       man page update (Karel Zak)
+       
+
+
+
 0.1.0: Apr 10 2006:
    - building fixes: --with-xen-distdir option (Ronald Aigner), out of tree
     build and pkginfo cflag fix (Daniel Berrange)
