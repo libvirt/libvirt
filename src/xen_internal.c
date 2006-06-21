@@ -27,18 +27,21 @@
 #include <xen/xen.h>
 #include <xen/linux/privcmd.h>
 
-#if 0
 /* #ifndef __LINUX_PUBLIC_PRIVCMD_H__ */
-typedef struct hypercall_struct {
-    __u64 op;
-    __u64 arg[5];
-} hypercall_t;
-#define XEN_IOCTL_HYPERCALL_CMD _IOC(_IOC_NONE, 'P', 0, sizeof(hypercall_t))
-#else
+typedef struct old_hypercall_struct {
+    unsigned long op;
+    unsigned long arg[5];
+} old_hypercall_t;
+#define XEN_OLD_IOCTL_HYPERCALL_CMD \
+        _IOC(_IOC_NONE, 'P', 0, sizeof(old_hypercall_t))
+
 typedef struct privcmd_hypercall hypercall_t;
 #define XEN_IOCTL_HYPERCALL_CMD IOCTL_PRIVCMD_HYPERCALL
-#endif
 
+static int xen_ioctl_hypercall_cmd = 0;
+static int old_hypervisor = 0;
+static int initialized = 0;
+static int hv_version = 0;
 
 #include "internal.h"
 #include "driver.h"
@@ -48,13 +51,14 @@ typedef struct privcmd_hypercall hypercall_t;
 
 static const char * xenHypervisorGetType(virConnectPtr conn);
 static unsigned long xenHypervisorGetMaxMemory(virDomainPtr domain);
+static int xenHypervisorInit(void);
 
 static virDriver xenHypervisorDriver = {
     "Xen",
     (DOM0_INTERFACE_VERSION >> 24) * 1000000 +
     ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +
     (DOM0_INTERFACE_VERSION & 0xFFFF),
-    NULL, /* init */
+    xenHypervisorInit, /* init */
     xenHypervisorOpen, /* open */
     xenHypervisorClose, /* close */
     xenHypervisorGetType, /* type */
@@ -85,16 +89,6 @@ static virDriver xenHypervisorDriver = {
 };
 
 /**
- * xenHypervisorRegister:
- *
- * Registers the xenHypervisor driver
- */
-void xenHypervisorRegister(void)
-{
-    virRegisterDriver(&xenHypervisorDriver);
-}
-
-/**
  * virXenError:
  * @conn: the connection if available
  * @error: the error number
@@ -116,6 +110,84 @@ virXenError(virErrorNumber error, const char *info, int value)
 }
 
 /**
+ * xenHypervisorInit:
+ *
+ * Initialize the hypervisor layer. Try to detect the kind of interface
+ * used i.e. pre or post changeset 10277
+ */
+int xenHypervisorInit(void)
+{
+    int fd, ret, cmd;
+    hypercall_t hc;
+    old_hypercall_t old_hc;
+
+    if (initialized) {
+        if (old_hypervisor == -1)
+	    return(-1);
+	return(0);
+    }
+    initialized = 1;
+
+    ret = open(XEN_HYPERVISOR_SOCKET, O_RDWR);
+    if (ret < 0) {
+	old_hypervisor = -1;
+        return (-1);
+    }
+    fd = ret;
+
+    hc.op = __HYPERVISOR_xen_version;
+    hc.arg[0] = (unsigned long) XENVER_version;
+    hc.arg[1] = 0;
+
+    cmd = IOCTL_PRIVCMD_HYPERCALL;
+    ret = ioctl(fd, cmd, (unsigned long) &hc);
+
+    if ((ret != -1) && (ret != 0)) {
+        fprintf(stderr, "Using new hypervisor call: %X\n", ret);
+	hv_version = ret;
+	xen_ioctl_hypercall_cmd = cmd;
+        old_hypervisor = 0;
+	goto done;
+    }
+    
+    old_hc.op = __HYPERVISOR_xen_version;
+    old_hc.arg[0] = (unsigned long) XENVER_version;
+    old_hc.arg[1] = 0;
+    cmd = _IOC(_IOC_NONE, 'P', 0, sizeof(old_hypercall_t));
+    ret = ioctl(fd, cmd, (unsigned long) &old_hc);
+    if ((ret != -1) && (ret != 0)) {
+        fprintf(stderr, "Using old hypervisor call: %X\n", ret);
+	hv_version = ret;
+	xen_ioctl_hypercall_cmd = cmd;
+        old_hypervisor = 1;
+	goto done;
+    }
+
+    old_hypervisor = -1;
+    virXenError(VIR_ERR_XEN_CALL, " ioctl ", IOCTL_PRIVCMD_HYPERCALL);
+    close(fd);
+    return(-1);
+
+done:
+    close(fd);
+    return(0);
+
+}
+
+/**
+ * xenHypervisorRegister:
+ *
+ * Registers the xenHypervisor driver
+ */
+void xenHypervisorRegister(void)
+{
+    if (initialized == 0)
+        xenHypervisorInit();
+
+    virRegisterDriver(&xenHypervisorDriver);
+}
+
+/**
  * xenHypervisorOpen:
  * @conn: pointer to the connection block
  * @name: URL for the target, NULL for local
@@ -129,6 +201,9 @@ int
 xenHypervisorOpen(virConnectPtr conn, const char *name, int flags)
 {
     int ret;
+
+    if (initialized == 0)
+        xenHypervisorInit();
 
     if ((name != NULL) && (strcasecmp(name, "xen")))
         return(-1);
@@ -169,6 +244,47 @@ xenHypervisorClose(virConnectPtr conn)
 }
 
 /**
+ * xenHypervisorDoOldOp:
+ * @handle: the handle to the Xen hypervisor
+ * @op: pointer to the hyperviros operation structure
+ *
+ * Do an hypervisor operation though the old interface,
+ * this leads to an hypervisor call through ioctl.
+ *
+ * Returns 0 in case of success and -1 in case of error.
+ */
+static int
+xenHypervisorDoOldOp(int handle, dom0_op_t * op)
+{
+    int ret;
+    old_hypercall_t hc;
+
+    memset(&hc, 0, sizeof(hc));
+    op->interface_version = hv_version << 8;
+    hc.op = __HYPERVISOR_dom0_op;
+    hc.arg[0] = (unsigned long) op;
+
+    if (mlock(op, sizeof(dom0_op_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " locking", sizeof(dom0_op_t));
+        return (-1);
+    }
+
+    ret = ioctl(handle, xen_ioctl_hypercall_cmd, (unsigned long) &hc);
+    if (ret < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " ioctl ", xen_ioctl_hypercall_cmd);
+    }
+
+    if (munlock(op, sizeof(dom0_op_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " releasing", sizeof(dom0_op_t));
+        ret = -1;
+    }
+
+    if (ret < 0)
+        return (-1);
+
+    return (0);
+}
+/**
  * xenHypervisorDoOp:
  * @handle: the handle to the Xen hypervisor
  * @op: pointer to the hyperviros operation structure
@@ -181,9 +297,12 @@ static int
 xenHypervisorDoOp(int handle, dom0_op_t * op)
 {
     int ret;
-    unsigned int cmd;
     hypercall_t hc;
 
+    if (old_hypervisor)
+        return(xenHypervisorDoOldOp(handle, op));
+ 
+    memset(&hc, 0, sizeof(hc));
     op->interface_version = DOM0_INTERFACE_VERSION;
     hc.op = __HYPERVISOR_dom0_op;
     hc.arg[0] = (unsigned long) op;
@@ -193,10 +312,9 @@ xenHypervisorDoOp(int handle, dom0_op_t * op)
         return (-1);
     }
 
-    cmd = XEN_IOCTL_HYPERCALL_CMD;
-    ret = ioctl(handle, cmd, (unsigned long) &hc);
+    ret = ioctl(handle, xen_ioctl_hypercall_cmd, (unsigned long) &hc);
     if (ret < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " ioctl ", cmd);
+        virXenError(VIR_ERR_XEN_CALL, " ioctl ", xen_ioctl_hypercall_cmd);
     }
 
     if (munlock(op, sizeof(dom0_op_t)) < 0) {
@@ -242,26 +360,9 @@ xenHypervisorGetType(virConnectPtr conn)
 int
 xenHypervisorGetVersion(virConnectPtr conn, unsigned long *hvVer)
 {
-    int ret;
-    unsigned int cmd;
-    hypercall_t hc;
-
     if ((conn == NULL) || (conn->handle < 0) || (hvVer == NULL))
         return (-1);
-    *hvVer = 0;
-
-    hc.op = __HYPERVISOR_xen_version;
-    hc.arg[0] = (unsigned long) XENVER_version;
-    hc.arg[1] = 0;
-
-    cmd = XEN_IOCTL_HYPERCALL_CMD;
-    ret = ioctl(conn->handle, cmd, (unsigned long) &hc);
-
-    if (ret < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " getting version ", XENVER_version);
-        return (-1);
-    }
-    *hvVer = (ret >> 16) * 1000000 + (ret & 0xFFFF) * 1000;
+    *hvVer = (hv_version >> 16) * 1000000 + (hv_version & 0xFFFF) * 1000;
     return(0);
 }
 

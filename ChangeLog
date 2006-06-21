@@ -1,3 +1,8 @@
+Wed Jun 21 12:23:15 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c: try to autodetect the Xen hypervisor version
+	  used and switch automatically. A bit nasty though.
+
 Tue Jun 20 16:14:26 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.c: fix breakage introduced in Xen changeset 10277
