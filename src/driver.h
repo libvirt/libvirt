@@ -6,8 +6,8 @@
 #ifndef __VIR_DRIVER_H__
 #define __VIR_DRIVER_H__
 
-#include "libvirt.h"
-#include "virterror.h"
+#include "libvirt/libvirt.h"
+#include "libvirt/virterror.h"
 
 #ifdef __cplusplus
 extern "C" {

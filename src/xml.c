@@ -8,7 +8,7 @@
  * Daniel Veillard <veillard@redhat.com>
  */
 
-#include "libvirt.h"
+#include "libvirt/libvirt.h"
 
 #include <stdio.h>
 #include <stdlib.h>

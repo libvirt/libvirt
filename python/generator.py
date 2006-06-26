@@ -480,7 +480,7 @@ def buildStubs():
     wrapper = open("libvirt-py.c", "w")
     wrapper.write("/* Generated */\n\n")
     wrapper.write("#include <Python.h>\n")
-    wrapper.write("#include <libvirt.h>\n")
+    wrapper.write("#include <libvirt/libvirt.h>\n")
     wrapper.write("#include \"libvirt_wrap.h\"\n")
     wrapper.write("#include \"libvirt-py.h\"\n\n")
     for function in functions.keys():

@@ -14,7 +14,7 @@
 #ifndef __VIR_VIRERR_H__
 #define __VIR_VIRERR_H__
 
-#include "libvirt.h"
+#include <libvirt/libvirt.h>
 
 #ifdef __cplusplus
 extern "C" {

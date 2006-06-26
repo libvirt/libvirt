@@ -13,8 +13,8 @@
 #include <libxml/threads.h>
 
 #include "hash.h"
-#include "libvirt.h"
-#include "virterror.h"
+#include "libvirt/libvirt.h"
+#include "libvirt/virterror.h"
 #include "driver.h"
 
 #ifdef __cplusplus

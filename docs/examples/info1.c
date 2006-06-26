@@ -10,7 +10,7 @@
  */
 
 #include <stdio.h>
-#include <libvirt.h>
+#include <libvirt/libvirt.h>
 
 /**
  * getDomainInfo:

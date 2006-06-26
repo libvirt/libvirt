@@ -28,7 +28,7 @@
 #include <netdb.h>
 #include <libxml/uri.h>
 
-#include "libvirt.h"
+#include "libvirt/libvirt.h"
 #include "driver.h"
 #include "internal.h"
 #include "sexpr.h"

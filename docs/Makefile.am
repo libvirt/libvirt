@@ -46,7 +46,7 @@ $(srcdir)/html/index.html: libvirt-api.xml $(srcdir)/newapi.xsl
 	  echo "Validating the resulting XHTML pages" ; \
 	  $(XMLLINT) --nonet --valid --noout html/*.html ; fi );
 
-libvirt-api.xml libvirt-refs.xml: apibuild.py ../include/*.h ../src/*.h ../src/*.c
+libvirt-api.xml libvirt-refs.xml: apibuild.py ../include/libvirt/*.h ../src/*.h ../src/*.c
 	-(./apibuild.py)
 
 $(top_builddir)/NEWS: $(top_srcdir)/docs/news.xsl $(top_srcdir)/docs/news.html

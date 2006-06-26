@@ -19,7 +19,7 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
-#include "libvirt.h"
+#include "libvirt/libvirt.h"
 #include "xml.h"
 #include "xmlrpc.h"
 

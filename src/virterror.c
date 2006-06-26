@@ -12,8 +12,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include "libvirt.h"
-#include "virterror.h"
+#include "libvirt/libvirt.h"
+#include "libvirt/virterror.h"
 #include "internal.h"
 
 static virError lastErr =       /* the last error */

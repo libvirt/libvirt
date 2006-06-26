@@ -5,7 +5,7 @@
 #ifndef __VIR_XML_H__
 #define __VIR_XML_H__
 
-#include "libvirt.h"
+#include "libvirt/libvirt.h"
 
 #ifdef __cplusplus
 extern "C" {

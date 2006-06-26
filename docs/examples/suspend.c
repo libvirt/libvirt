@@ -13,7 +13,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <libvirt.h>
+#include <libvirt/libvirt.h>
 
 virConnectPtr conn = NULL; /* the hypervisor connection */
 
