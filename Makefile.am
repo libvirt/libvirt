@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = src include docs @PYTHON_SUBDIR@ tests
+SUBDIRS = src include docs @PYTHON_SUBDIR@ tests proxy
 
 EXTRA_DIST = libvirt.spec.in libvirt.spec COPYING.LIB \
              libvirt.pc.in libvirt.pc TODO AUTHORS ChangeLog \

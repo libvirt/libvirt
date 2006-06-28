@@ -1,0 +1,514 @@
+/*
+ * proxy_svr.c: root suid proxy server for Xen access to APIs with no
+ *              side effects from unauthenticated clients.
+ *
+ * Copyright (C) 2006 Red Hat, Inc.
+ *
+ * See COPYING.LIB for the License of this software
+ *
+ * Daniel Veillard <veillard@redhat.com>
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/poll.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include "proxy.h"
+#include "internal.h"
+#include "xen_internal.h"
+
+static int fdServer = -1;
+static int debug = 0;
+static int done = 0;
+
+#define MAX_CLIENT 64
+
+static int nbClients = 0; /* client 0 is the unix listen socket */
+static struct pollfd pollInfos[MAX_CLIENT + 1];
+
+static virConnect conninfos;
+static virConnectPtr conn = &conninfos;
+
+/************************************************************************
+ *									*
+ *	Interfaces with the Xen hypervisor				*
+ *									*
+ ************************************************************************/
+
+/**
+ * proxyInitXen:
+ *
+ * Initialize the communication layer with Xen
+ *
+ * Returns 0 or -1 in case of error
+ */
+static int
+proxyInitXen(void) {
+    int ret;
+
+    ret = xenHypervisorOpen(conn, NULL, VIR_DRV_OPEN_QUIET);
+    if (ret < 0) {
+        fprintf(stderr, "Failed to open Xen hypervisor\n");
+        return(-1);
+    }
+    ret = xenDaemonOpen_unix(conn, "/var/lib/xend/xend-socket");
+    if (ret < 0) {
+        fprintf(stderr, "Failed to connect to Xen daemon\n");
+        return(-1);
+    }
+    return(0);
+}
+
+/************************************************************************
+ *									*
+ *	Processing of the unix socket to listen for clients		*
+ *									*
+ ************************************************************************/
+
+/**
+ * proxyCloseUnixSocket:
+ *
+ * close the unix socket
+ *
+ * Returns 0 or -1 in case of error
+ */
+static int
+proxyCloseUnixSocket(void) {
+    int ret;
+
+    if (fdServer < 0)
+        return(0);
+    
+    ret = close(fdServer);
+    if (debug > 0)
+        fprintf(stderr, "closing unix socket %d: %d\n", fdServer, ret);
+    fdServer = -1;
+    pollInfos[0].fd = -1;
+    return(ret);
+}
+
+/**
+ * proxyListenUnixSocket:
+ * @path: the fileame for the socket
+ *
+ * create a new abstract socket based on that path and listen on it
+ *
+ * Returns the associated file descriptor or -1 in case of failure
+ */
+static int
+proxyListenUnixSocket(const char *path) {
+    int fd;
+    struct sockaddr_un addr;
+
+    if (fdServer >= 0)
+        return(fdServer);
+
+    fd = socket(PF_UNIX, SOCK_STREAM, 0);
+    if (fd < 0) {
+        fprintf(stderr, "Failed to create unix socket");
+	return(-1);
+    }
+
+    /*
+     * Abstract socket do not hit the filesystem, way more secure and 
+     * garanteed to be atomic
+     */
+    memset(&addr, 0, sizeof(addr));
+    addr.sun_family = AF_UNIX;
+    addr.sun_path[0] = '\0';
+    strncpy(&addr.sun_path[1], path, (sizeof(addr) - 4) - 2);
+
+    /*
+     * now bind the socket to that address and listen on it
+     */
+    if (bind(fd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
+        fprintf(stderr, "Failed to bind to socket %s\n", path);
+	close(fd);
+	return (-1);
+    }
+    if (listen(fd, 30 /* backlog */ ) < 0) {
+        fprintf(stderr, "Failed to listen to socket %s\n", path);
+	close(fd);
+	return (-1);
+    }
+
+    if (debug > 0)
+        fprintf(stderr, "opened and bound unix socket %d\n", fd);
+
+    fdServer = fd;
+    pollInfos[0].fd = fd;
+    pollInfos[0].events = POLLIN | POLLERR | POLLHUP | POLLNVAL;
+    return (fd);
+}
+
+/**
+ * proxyAcceptClientSocket:
+ *
+ * Process a request to the unix socket
+ *
+ * Returns the filedescriptor of the new client or -1 in case of error
+ */
+static int
+proxyAcceptClientSocket(void) {
+    int client;
+    socklen_t client_addrlen;
+    struct sockaddr client_addr;
+
+retry:
+    client_addrlen = sizeof(client_addr);
+    client = accept(pollInfos[0].fd, &client_addr, &client_addrlen);
+    if (client < 0) {
+        if (errno == EINTR) {
+	    if (debug > 0)
+	        fprintf(stderr, "accept connection on socket %d interrupted\n",
+		        pollInfos[0].fd);
+	    goto retry;
+	}
+        fprintf(stderr, "Failed to accept incoming connection on socket %d\n",
+	        pollInfos[0].fd);
+	done = 1;
+	return(-1);
+    }
+
+    if (nbClients >= MAX_CLIENT) {
+        fprintf(stderr, "Too many client registered\n");
+	close(client);
+	return(-1);
+    }
+    nbClients++;
+    pollInfos[nbClients].fd = client;
+    pollInfos[nbClients].events = POLLIN | POLLERR | POLLHUP | POLLNVAL;
+    if (debug > 0)
+	fprintf(stderr, "accept connection on socket %d for client %d\n",
+		client, nbClients);
+    return(client);
+}
+
+/************************************************************************
+ *									*
+ *		Processing of client sockets				*
+ *									*
+ ************************************************************************/
+
+/**
+ * proxyCloseClientSocket:
+ * @nr: client number
+ *
+ * Close the socket from that client, and recompact the pollInfo array
+ *
+ * Returns 0 in case of success and -1 in case of error
+ */
+static int
+proxyCloseClientSocket(int nr) {
+    int ret;
+
+    ret = close(pollInfos[nr].fd);
+    if (ret != 0)
+	fprintf(stderr, "Failed to close socket %d from client %d\n",
+	        pollInfos[nr].fd, nr);
+    else if (debug > 0)
+	fprintf(stderr, "Closed socket %d from client %d\n",
+	        pollInfos[nr].fd, nr);
+    if (nr < nbClients) {
+        memmove(&pollInfos[nr], &pollInfos[nr + 1],
+	        (nbClients - nr) * sizeof(pollInfos[0]));
+    }
+    nbClients--;
+    return(ret);
+}
+
+/**
+ * proxyCloseClientSockets:
+ *
+ * Close all the sockets from the clients
+ */
+static void
+proxyCloseClientSockets(void) {
+    int i, ret;
+
+    for (i = 1;i <= nbClients;i++) {
+        ret = close(pollInfos[i].fd);
+	if (ret != 0)
+	    fprintf(stderr, "Failed to close socket %d from client %d\n",
+	            pollInfos[i].fd, i);
+	else if (debug > 0)
+	    fprintf(stderr, "Closed socket %d from client %d\n",
+	            pollInfos[i].fd, i);
+    }
+    nbClients = 0;
+}
+
+/**
+ * proxyWriteClientSocket:
+ * @nr: the client number
+ * @req: pointer to the packet
+ *
+ * Send back a packet to the client. If it seems write would be blocking
+ * then try to disconnect from it.
+ *
+ * Return 0 in case of success and -1 in case of error.
+ */
+static int
+proxyWriteClientSocket(int nr, virProxyPacketPtr req) {
+    int ret;
+
+    if ((nr <= 0) || (nr > nbClients) || (req == NULL) ||
+        (req->len < sizeof(virProxyPacket)) || (req->len > 4096) ||
+	(pollInfos[nr].fd < 0)) {
+	fprintf(stderr, "write to client %d in error", nr);
+	proxyCloseClientSocket(nr);
+	return(-1);
+    }
+
+retry:
+    ret = write(pollInfos[nr].fd, (char *) req, req->len);
+    if (ret < 0) {
+        if (errno == EINTR) {
+	    if (debug > 0)
+	        fprintf(stderr, "write socket %d to client %d interrupted\n",
+		        pollInfos[nr].fd, nr);
+	    goto retry;
+	}
+        fprintf(stderr, "write %d bytes to socket %d from client %d failed\n",
+	        req->len, pollInfos[nr].fd, nr);
+	proxyCloseClientSocket(nr);
+	return(-1);
+    }
+    if (ret == 0) {
+	if (debug)
+	    fprintf(stderr, "end of stream from client %d on socket %d\n",
+	            nr, pollInfos[nr].fd);
+	proxyCloseClientSocket(nr);
+	return(-1);
+    }
+
+    if (ret != req->len) {
+        fprintf(stderr, "write %d of %d bytes to socket %d from client %d\n",
+	        ret, req->len, pollInfos[nr].fd, nr);
+	proxyCloseClientSocket(nr);
+	return(-1);
+    }
+    if (debug)
+        fprintf(stderr, "wrote %d bytes to client %d on socket %d\n",
+	        ret, nr, pollInfos[nr].fd);
+    
+    return(0);
+}
+/**
+ * proxyReadClientSocket:
+ * @nr: the client number
+ *
+ * Process a read from a client socket
+ */
+static int
+proxyReadClientSocket(int nr) {
+    char buffer[4096];
+    virProxyPacketPtr req;
+    int ret;
+
+retry:
+    ret = read(pollInfos[nr].fd, buffer, sizeof(virProxyPacket));
+    if (ret < 0) {
+        if (errno == EINTR) {
+	    if (debug > 0)
+	        fprintf(stderr, "read socket %d from client %d interrupted\n",
+		        pollInfos[nr].fd, nr);
+	    goto retry;
+	}
+        fprintf(stderr, "Failed to read socket %d from client %d\n",
+	        pollInfos[nr].fd, nr);
+	proxyCloseClientSocket(nr);
+	return(-1);
+    }
+    if (ret == 0) {
+	if (debug)
+	    fprintf(stderr, "end of stream from client %d on socket %d\n",
+	            nr, pollInfos[nr].fd);
+	proxyCloseClientSocket(nr);
+	return(-1);
+    }
+
+    if (debug)
+        fprintf(stderr, "read %d bytes from client %d on socket %d\n",
+	        ret, nr, pollInfos[nr].fd);
+    
+    req = (virProxyPacketPtr) &buffer[0];
+    if ((req->version != PROXY_PROTO_VERSION) ||
+        (req->len < sizeof(virProxyPacket)))
+	goto comm_error;
+    
+    if (debug)
+        fprintf(stderr, "Gor command %d from client %d\n", req->command, nr);
+
+    switch (req->command) {
+	case VIR_PROXY_NONE:
+	    if (req->len != sizeof(virProxyPacket))
+	        goto comm_error;
+	    break;
+	case VIR_PROXY_VERSION:
+	    if (req->len != sizeof(virProxyPacket))
+	        goto comm_error;
+	    TODO;
+	    req->data.larg = 3 * 1000000 + 2;
+	    break;
+	case VIR_PROXY_NODE_INFO:
+	case VIR_PROXY_LIST:
+	case VIR_PROXY_NUM_DOMAIN:
+	case VIR_PROXY_LOOKUP_ID:
+	case VIR_PROXY_LOOKUP_UUID:
+	case VIR_PROXY_LOOKUP_NAME:
+	case VIR_PROXY_MAX_MEMORY:
+	case VIR_PROXY_DOMAIN_INFO:
+	    break;
+	default:
+	    goto comm_error;
+    }
+    ret = proxyWriteClientSocket(nr, req);
+    return(ret);
+
+comm_error:
+    fprintf(stderr,
+	    "Communication error with client %d: malformed packet\n", nr);
+    proxyCloseClientSocket(nr);
+    return(-1);
+}
+
+/************************************************************************
+ *									*
+ *		Main loop processing					*
+ *									*
+ ************************************************************************/
+
+/**
+ * proxyProcessRequests:
+ *
+ * process requests and timers 
+ */
+static void
+proxyProcessRequests(void) {
+    int exit_timeout = 30;
+    int ret, i;
+
+    while (!done) {
+        /*
+	 * wait for requests, with a one second timeout
+	 */
+        ret = poll(&pollInfos[0], nbClients + 1, 1000);
+	if (ret == 0) { /* timeout */
+	    if (nbClients == 0) {
+	        exit_timeout--;
+		if (exit_timeout == 0) {
+		    done = 1;
+		    if (debug > 0) {
+		        fprintf(stderr, "Exitting after 30s without clients\n");
+		    }
+		}
+	    } else
+	        exit_timeout = 30;
+	    if (debug > 1)
+	        fprintf(stderr, "poll timeout\n");
+	    continue;
+	} else if (ret < 0) {
+	    if (errno == EINTR) {
+	        if (debug > 0)
+		    fprintf(stderr, "poll syscall interrupted\n");
+		    continue;
+	    }
+	    fprintf(stderr, "poll syscall failed\n");
+	    break;
+	}
+	/*
+	 * there have been I/O to process
+	 */
+	exit_timeout = 30;
+	if (pollInfos[0].revents != 0) {
+	    if (pollInfos[0].revents & POLLIN) {
+	        proxyAcceptClientSocket();
+	    } else {
+		fprintf(stderr, "Got an error %d on incoming socket %d\n",
+		        pollInfos[0].revents, pollInfos[0].fd);
+		break;
+	    }
+	}
+
+	/*
+	 * process the clients in reverse order since on error or disconnect
+	 * pollInfos is compacted to remove the given client.
+	 */
+	for (i = nbClients;i > 0;i--) {
+	    if (pollInfos[i].revents & POLLIN) {
+		proxyReadClientSocket(i);
+	    } else if (pollInfos[i].revents != 0) {
+		fprintf(stderr, "Got an error %d on client %d socket %d\n",
+		        pollInfos[i].revents, i, pollInfos[i].fd);
+		proxyCloseClientSocket(i);
+	    }
+	}
+	    
+    }
+}
+
+/**
+ * proxyMainLoop:
+ *
+ * main loop for the proxy, continually try to keep the unix socket
+ * open, serve client requests, and process timing events.
+ */
+
+static void 
+proxyMainLoop(void) {
+    while (! done) {
+	if (proxyListenUnixSocket(PROXY_SOCKET_PATH) < 0)
+	    break;
+	proxyProcessRequests();
+	proxyCloseUnixSocket();
+    }
+    proxyCloseClientSockets();
+    proxyCloseUnixSocket();
+}
+
+/**
+ * usage:
+ *
+ * dump on stdout informations about the program
+ */
+static void
+usage(const char *progname) {
+    printf("Usage: %s [-v] [-v]\n", progname);
+    printf("    option -v increase the verbosity level for debugging\n");
+    printf("This is a proxy for xen services used by libvirt to offer\n");
+    printf("safe and fast status information on the Xen virtualization.\n");
+    printf("This need not be run manually it's started automatically.\n");
+}
+
+/**
+ * main:
+ *
+ * Check that we are running with root priviledges, initialize the
+ * connections to the daemon and or hypervisor, and then run the main loop
+ */
+int main(int argc, char **argv) {
+    int i;
+
+    for (i = 1; i < argc; i++) {
+         if (!strcmp(argv[i], "-v")) {
+	     debug++;
+	 } else {
+	     usage(argv[0]);
+	     exit(1);
+	 }
+    }
+    
+    if (geteuid() != 0) {
+        fprintf(stderr, "%s must be run as root or suid\n", argv[0]);
+	/* exit(1); */
+    }
+
+    proxyInitXen();
+    proxyMainLoop();
+    exit(0);
+}

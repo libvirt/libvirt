@@ -1,3 +1,11 @@
+Wed Jun 28 19:23:25 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in Makefile.am proxy/Makefile.am proxy/libvirt_proxy.c
+	  proxy/proxy.h proxy/proxy_client.c src/internal.h src/xen_internal.c
+	  src/xend_internal.c: started working on a proxy to access xend
+	  for unpriviledged users to avoid opening xend HTTP service to
+	  serve those read-only operations.
+
 Mon Jun 26 16:05:27 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in libvirt.spec.in docs/examples/* include/Makefile.am

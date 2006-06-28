@@ -53,6 +53,7 @@ static const char * xenHypervisorGetType(virConnectPtr conn);
 static unsigned long xenHypervisorGetMaxMemory(virDomainPtr domain);
 static int xenHypervisorInit(void);
 
+#ifndef XEN_RO
 static virDriver xenHypervisorDriver = {
     VIR_DRV_XEN_HYPERVISOR,
     "Xen",
@@ -88,6 +89,7 @@ static virDriver xenHypervisorDriver = {
     NULL, /* domainSave */
     NULL /* domainRestore */
 };
+#endif /* !XEN_RO */
 
 /**
  * virXenError:
@@ -175,6 +177,7 @@ done:
 
 }
 
+#ifndef XEN_RO
 /**
  * xenHypervisorRegister:
  *
@@ -187,6 +190,7 @@ void xenHypervisorRegister(void)
 
     virRegisterDriver(&xenHypervisorDriver);
 }
+#endif /* !XEN_RO */
 
 /**
  * xenHypervisorOpen:

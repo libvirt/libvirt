@@ -256,4 +256,4 @@ AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           libvirt.pc libvirt.spec \
 	  include/libvirt/Makefile include/libvirt/libvirt.h \
 	  python/Makefile python/tests/Makefile \
-          tests/Makefile)
+          tests/Makefile proxy/Makefile)

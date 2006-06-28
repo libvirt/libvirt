@@ -48,6 +48,7 @@ static virDomainPtr xenDaemonCreateLinux(virConnectPtr conn,
                                          const char *xmlDesc,
 					 unsigned int flags);
 
+#ifndef XEN_RO
 static virDriver xenDaemonDriver = {
     VIR_DRV_XEN_DAEMON,
     "XenDaemon",
@@ -93,6 +94,7 @@ void xenDaemonRegister(void)
 {
     virRegisterDriver(&xenDaemonDriver);
 }
+#endif /* !XEN_RO */
 
 /**
  * xend_connection_type:
@@ -1322,6 +1324,7 @@ xend_log(virConnectPtr xend, char *buffer, size_t n_buffer)
  ******
  ******
  *****************************************************************/
+#ifndef XEN_RO
 /**
  * xend_parse_sexp_desc:
  * @root: the root of the parsed S-Expression
@@ -1509,6 +1512,7 @@ xend_parse_sexp_desc(struct sexpr *root)
         free(ret);
     return (NULL);
 }
+#endif /* !XEN_RO */
 
 /**
  * sexpr_to_xend_domain_info:
@@ -1591,6 +1595,7 @@ sexpr_to_xend_node_info(struct sexpr *root, virNodeInfoPtr info)
     return (0);
 }
 
+#ifndef XEN_RO
 /**
  * sexpr_to_domain:
  * @conn: an existing virtual connection block
@@ -1636,7 +1641,7 @@ error:
         virFreeDomain(conn, ret);
     return(NULL);
 }
-
+#endif /* !XEN_RO */
 
 /*****************************************************************
  ******
@@ -1649,6 +1654,7 @@ error:
  ******
  ******
  *****************************************************************/
+#ifndef XEN_RO
 /**
  * xenDaemonOpen:
  * @conn: an existing virtual connection block
@@ -1699,6 +1705,7 @@ xenDaemonOpen(virConnectPtr conn, const char *name, int flags)
 
     return(ret);
 }
+#endif /* !XEN_RO */
 
 /**
  * xenDaemonClose:
@@ -1958,6 +1965,7 @@ xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory)
                    "target", buf, NULL);
 }
 
+#ifndef XEN_RO
 /**
  * xenDaemonDomainDumpXML:
  * @domain: a domain object
@@ -1988,6 +1996,7 @@ xenDaemonDomainDumpXML(virDomainPtr domain)
 
     return (ret);
 }
+#endif /* !XEN_RO */
 
 /**
  * xenDaemonDomainGetInfo:
@@ -2022,6 +2031,7 @@ xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     return (ret);
 }
 
+#ifndef XEN_RO
 /**
  * xenDaemonDomainLookupByName:
  * @conn: A xend instance
@@ -2053,6 +2063,7 @@ error:
     sexpr_free(root);
     return(ret);
 }
+#endif
 
 /**
  * xenDaemonNodeGetInfo:

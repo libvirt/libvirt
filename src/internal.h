@@ -101,7 +101,8 @@ struct _virConnect {
 
     /* extra data needed by drivers */
     int handle;             /* internal handle used for hypercall */
-    struct xs_handle *xshandle;     /* handle to talk to the xenstore */
+    struct xs_handle *xshandle;/* handle to talk to the xenstore */
+    int proxy;              /* file descriptor if using the proxy */
 
     /* connection to xend */
     int type;               /* PF_UNIX or PF_INET */
