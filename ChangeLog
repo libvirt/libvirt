@@ -1,3 +1,11 @@
+Thu Jun 29 22:19:51 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/proxy_internal.c src/proxy_internal.h src/driver.h src/libvirt.c
+	  src/Makefile.am: moved proxy/proxy.h and proxy/proxy_client.c as
+	  proxy_internal.[ch] and integrated them as a new driver.
+	* proxy/Makefile.am proxy/libvirt_proxy.c src/xen_internal.c 
+	  src/xen_internal.h src/xend_internal.c: various related cleanups.
+
 Thu Jun 29 14:53:01 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* proxy/libvirt_proxy.c proxy/proxy.h proxy/proxy_client.c: more

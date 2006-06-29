@@ -17,8 +17,8 @@
 #include <sys/poll.h>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include "proxy.h"
 #include "internal.h"
+#include "proxy_internal.h"
 #include "xen_internal.h"
 #include "xend_internal.h"
 
@@ -278,7 +278,8 @@ proxyWriteClientSocket(int nr, virProxyPacketPtr req) {
     int ret;
 
     if ((nr <= 0) || (nr > nbClients) || (req == NULL) ||
-        (req->len < sizeof(virProxyPacket)) || (req->len > 4096) ||
+        (req->len < sizeof(virProxyPacket)) ||
+	(req->len > sizeof(virProxyFullPacket)) ||
 	(pollInfos[nr].fd < 0)) {
 	fprintf(stderr, "write to client %d in error", nr);
 	proxyCloseClientSocket(nr);
@@ -327,12 +328,12 @@ retry:
  */
 static int
 proxyReadClientSocket(int nr) {
-    char buffer[4096];
-    virProxyPacketPtr req;
+    virProxyFullPacket request;
+    virProxyPacketPtr req = (virProxyPacketPtr) &request;
     int ret;
 
 retry:
-    ret = read(pollInfos[nr].fd, buffer, sizeof(virProxyPacket));
+    ret = read(pollInfos[nr].fd, req, sizeof(virProxyPacket));
     if (ret < 0) {
         if (errno == EINTR) {
 	    if (debug > 0)
@@ -357,7 +358,6 @@ retry:
         fprintf(stderr, "read %d bytes from client %d on socket %d\n",
 	        ret, nr, pollInfos[nr].fd);
     
-    req = (virProxyPacketPtr) &buffer[0];
     if ((req->version != PROXY_PROTO_VERSION) ||
         (req->len < sizeof(virProxyPacket)))
 	goto comm_error;
@@ -380,10 +380,8 @@ retry:
 
 	    if (req->len != sizeof(virProxyPacket))
 	        goto comm_error;
-	    maxids = (sizeof(buffer) - sizeof(virProxyPacket)) / sizeof(int);
-	    maxids -= 10; /* just to be sure that should still be plenty */
-	    ret = xenHypervisorListDomains(conn,
-	                           (int *) &buffer[sizeof(virProxyPacket)],
+	    maxids = sizeof(request.extra.arg) / sizeof(int);
+	    ret = xenHypervisorListDomains(conn, &request.extra.arg[0],
 				           maxids);
 	    if (ret < 0) {
 	        req->len = sizeof(virProxyPacket);
@@ -400,6 +398,10 @@ retry:
 	    req->data.arg = xenHypervisorNumOfDomains(conn);
 	    break;
 	case VIR_PROXY_MAX_MEMORY:
+	    if (req->len != sizeof(virProxyPacket))
+	        goto comm_error;
+	    req->data.larg = xenHypervisorGetDomMaxMemory(conn, req->data.arg);
+	    break;
 	case VIR_PROXY_DOMAIN_INFO:
 	case VIR_PROXY_NODE_INFO:
 	case VIR_PROXY_LOOKUP_ID:

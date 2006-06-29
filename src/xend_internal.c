@@ -194,7 +194,6 @@ do_connect(virConnectPtr xend)
     }
 
     if (connect(s, xend->addr, xend->len) == -1) {
-        virXendError(xend, VIR_ERR_NO_CONNECT, "Xen Daemon");
         serrno = errno;
         close(s);
         errno = serrno;
@@ -2096,6 +2095,7 @@ xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info) {
     return (ret);
 }
 
+#ifndef XEN_RO
 /**
  * xenDaemonGetType:
  * @conn: pointer to the Xen Daemon block
@@ -2115,6 +2115,7 @@ xenDaemonGetType(virConnectPtr conn)
     }
     return("XenDaemon");
 }
+#endif
 
 /**
  * xenDaemonGetVersion:
@@ -2243,6 +2244,7 @@ error:
     return(ret);
 }
 
+#ifndef XEN_RO
 /**
  * xenDaemonLookupByID:
  * @conn: pointer to the hypervisor connection
@@ -2429,4 +2431,6 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
         free(name);
     return (NULL);
 }
+
+#endif
 

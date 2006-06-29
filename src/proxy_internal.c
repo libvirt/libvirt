@@ -18,13 +18,71 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/wait.h>
-#include "proxy.h"
 #include "internal.h"
+#include "driver.h"
+#include "proxy_internal.h"
 
 #define STANDALONE
 
-static int debug = 1;
+static int debug = 0;
 
+static int xenProxyClose(virConnectPtr conn);
+static int xenProxyOpen(virConnectPtr conn, const char *name, int flags);
+static int xenProxyGetVersion(virConnectPtr conn, unsigned long *hvVer);
+static int xenProxyNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
+static int xenProxyListDomains(virConnectPtr conn, int *ids, int maxids);
+static int xenProxyNumOfDomains(virConnectPtr conn);
+static virDomainPtr xenProxyLookupByID(virConnectPtr conn, int id);
+static virDomainPtr xenProxyLookupByUUID(virConnectPtr conn,
+					 const unsigned char *uuid);
+static virDomainPtr xenProxyDomainLookupByName(virConnectPtr conn,
+					       const char *domname);
+static unsigned long xenProxyDomainGetMaxMemory(virDomainPtr domain);
+static int xenProxyDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info);
+
+static virDriver xenProxyDriver = {
+    VIR_DRV_XEN_PROXY,
+    "XenProxy",
+    0,
+    NULL, /* init */
+    xenProxyOpen, /* open */
+    xenProxyClose, /* close */
+    NULL, /* type */
+    xenProxyGetVersion, /* version */
+    NULL, /* nodeGetInfo */
+    xenProxyListDomains, /* listDomains */
+    xenProxyNumOfDomains, /* numOfDomains */
+    NULL, /* domainCreateLinux */
+    xenProxyLookupByID, /* domainLookupByID */
+    xenProxyLookupByUUID, /* domainLookupByUUID */
+    xenProxyDomainLookupByName, /* domainLookupByName */
+    NULL, /* domainSuspend */
+    NULL, /* domainResume */
+    NULL, /* domainShutdown */
+    NULL, /* domainReboot */
+    NULL, /* domainDestroy */
+    NULL, /* domainFree */
+    NULL, /* domainGetName */
+    NULL, /* domainGetID */
+    NULL, /* domainGetUUID */
+    NULL, /* domainGetOSType */
+    xenProxyDomainGetMaxMemory, /* domainGetMaxMemory */
+    NULL, /* domainSetMaxMemory */
+    NULL, /* domainSetMemory */
+    xenProxyDomainGetInfo, /* domainGetInfo */
+    NULL, /* domainSave */
+    NULL /* domainRestore */
+};
+
+/**
+ * xenProxyRegister:
+ *
+ * Registers the xenHypervisor driver
+ */
+void xenProxyRegister(void)
+{
+    virRegisterDriver(&xenProxyDriver);
+}
 /************************************************************************
  *									*
  *			Error handling					*
@@ -42,16 +100,14 @@ static int debug = 1;
 static void
 virProxyError(virConnectPtr conn, virErrorNumber error, const char *info)
 {
+    const char *errmsg;
+
     if (error == VIR_ERR_OK)
         return;
-
-#if 0
-    const char *errmsg;
 
     errmsg = __virErrorMsg(error, info);
     __virRaiseError(conn, NULL, VIR_FROM_XEND, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, 0, 0, errmsg, info);
-#endif
 }
 
 /************************************************************************
@@ -70,10 +126,8 @@ static const char *
 virProxyFindServerPath(void)
 {
     static const char *serverPaths[] = {
-#ifdef STANDALONE
-        "/usr/bin/libvirt_proxy_dbg",
-#endif
         BINDIR "/libvirt_proxy",
+        "/usr/bin/libvirt_proxy_dbg",
         NULL
     };
     int i;
@@ -170,7 +224,6 @@ virProxyOpenClientSocket(const char *path) {
 retry:
     fd = socket(PF_UNIX, SOCK_STREAM, 0);
     if (fd < 0) {
-        fprintf(stderr, "Failed to create unix socket");
 	return(-1);
     }
 
@@ -187,7 +240,6 @@ retry:
      * now bind the socket to that address and listen on it
      */
     if (connect(fd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
-        fprintf(stderr, "Failed to connect to socket %s\n", path);
 	close(fd);
 	if (trials < 3) {
 	    if (virProxyForkServer() < 0)
@@ -309,12 +361,13 @@ retry:
  *
  * Shutdown the Xen proxy communication layer
  */
-void
+static int
 xenProxyClose(virConnectPtr conn) {
     if ((conn == NULL) || (conn->proxy < 0))
-        return;
+        return(-1);
     virProxyCloseClientSocket(conn->proxy);
     conn->proxy = -1;
+    return (0);
 }
 
 static int 
@@ -385,7 +438,7 @@ retry:
 	}
 	if (res->len > sizeof(virProxyPacket)) {
 	    ret  = virProxyReadClientSocket(conn->proxy,
-	                                    &(answer->extra.arg[0]),
+	                           (char *) &(answer->extra.arg[0]),
 	                                    res->len - ret);
 	    if (ret != (int) (res->len - sizeof(virProxyPacket))) {
 		fprintf(stderr,
@@ -417,35 +470,41 @@ retry:
 /**
  * xenProxyInit:
  * @conn: pointer to the hypervisor connection
+ * @name: URL for the target, NULL for local
+ * @flags: combination of virDrvOpenFlag(s)
  *
  * Try to initialize the Xen proxy communication layer
+ * This can be opened only for a read-only kind of access
  *
  * Returns 0 in case of success, and -1 in case of failure
  */
 int
-xenProxyInit(virConnectPtr conn) {
+xenProxyOpen(virConnectPtr conn, const char *name, int flags)
+{
     virProxyPacket req;
     int ret;
     int fd;
+    
+    if ((name != NULL) && (strcasecmp(name, "xen")))
+        return(-1);
+    if (!(flags & VIR_DRV_OPEN_RO))
+        return(-1);
         
-    if (!VIR_IS_CONNECT(conn)) {
-        virProxyError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
-        return (-1);
+    conn->proxy = -1;
+    fd = virProxyOpenClientSocket(PROXY_SOCKET_PATH);
+    if (fd < 0) {
+        if (!(flags & VIR_DRV_OPEN_QUIET))
+	    virProxyError(conn, VIR_ERR_NO_XEN, PROXY_SOCKET_PATH);
+	return(-1);
     }
-
-    if (conn->proxy <= 0) {
-	fd = virProxyOpenClientSocket(PROXY_SOCKET_PATH);
-	if (fd < 0) {
-	    return(-1);
-	}
-	conn->proxy = fd;
-    }
+    conn->proxy = fd;
 
     memset(&req, 0, sizeof(req));
     req.command = VIR_PROXY_NONE;
     req.len = sizeof(req);
     ret = xenProxyCommand(conn, &req, NULL);
     if ((ret < 0) || (req.command != VIR_PROXY_NONE)) {
+        virProxyError(conn, VIR_ERR_OPERATION_FAILED, __FUNCTION__);
         xenProxyClose(conn);
 	return(-1);
     }
@@ -496,19 +555,6 @@ xenProxyGetVersion(virConnectPtr conn, unsigned long *hvVer)
 }
 
 /**
- * xenProxyNodeGetInfo:
- * @conn: pointer to the Xen Daemon block
- * @info: pointer to a virNodeInfo structure allocated by the user
- * 
- * Extract hardware information about the node.
- *
- * Returns 0 in case of success and -1 in case of failure.
- */
-static int
-xenProxyNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info) {
-}
-
-/**
  * xenProxyListDomains:
  * @conn: pointer to the hypervisor connection
  * @ids: array to collect the list of IDs of active domains
@@ -543,8 +589,12 @@ xenProxyListDomains(virConnectPtr conn, int *ids, int maxids)
 	return(-1);
     }
     nb = ans.data.arg;
-    if ((nb > 1020) || (nb <= 0))
+    if ((nb > 1020) || (nb <= 0) ||
+        (ans.len <= sizeof(virProxyPacket)) ||
+	(ans.len > sizeof(virProxyFullPacket))) {
+        virProxyError(conn, VIR_ERR_OPERATION_FAILED, __FUNCTION__);
         return(-1);
+    }
     if (nb > maxids)
         nb = maxids;
     memmove(ids, &ans.extra.arg[0], nb * sizeof(int));
@@ -565,7 +615,6 @@ xenProxyNumOfDomains(virConnectPtr conn)
 {
     virProxyPacket req;
     int ret;
-    int nb;
 
     if (!VIR_IS_CONNECT(conn)) {
         virProxyError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -582,47 +631,37 @@ xenProxyNumOfDomains(virConnectPtr conn)
     return(req.data.arg);
 }
 
+
 /**
- * xenProxyLookupByID:
+ * xenProxyDomainGetDomMaxMemory:
  * @conn: pointer to the hypervisor connection
  * @id: the domain ID number
  *
- * Try to find a domain based on the hypervisor ID number
+ * Ask the Xen Daemon for the maximum memory allowed for a domain
  *
- * Returns the domain name (to be freed) or NULL in case of failure
+ * Returns the memory size in kilobytes or 0 in case of error.
  */
-static char *
-xenProxyLookupByID(virConnectPtr conn, int id) {
-}
-
-/**
- * xenProxyLookupByUUID:
- * @conn: pointer to the hypervisor connection
- * @uuid: the raw UUID for the domain
- *
- * Try to lookup a domain on xend based on its UUID.
- *
- * Returns the domain id or -1 in case of error
- */
-static int
-xenProxyLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
+static unsigned long
+xenProxyDomainGetDomMaxMemory(virConnectPtr conn, int id)
 {
-}
+    virProxyPacket req;
+    int ret;
 
-/**
- * xenProxyDomainLookupByName:
- * @conn: A xend instance
- * @name: The name of the domain
- *
- * This method looks up information about a domain based on its name
- *
- * Returns domain id or -1 in case of error
- */
-static int
-xenProxyDomainLookupByName(virConnectPtr conn, const char *domname)
-{
+    if (!VIR_IS_CONNECT(conn)) {
+        virProxyError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    memset(&req, 0, sizeof(req));
+    req.command = VIR_PROXY_MAX_MEMORY;
+    req.data.arg = id;
+    req.len = sizeof(req);
+    ret = xenProxyCommand(conn, &req, NULL);
+    if (ret < 0) {
+        xenProxyClose(conn);
+	return(-1);
+    }
+    return(req.data.larg);
 }
-
 
 /**
  * xenProxyDomainGetMaxMemory:
@@ -632,9 +671,17 @@ xenProxyDomainLookupByName(virConnectPtr conn, const char *domname)
  *
  * Returns the memory size in kilobytes or 0 in case of error.
  */
-unsigned long
+static unsigned long
 xenProxyDomainGetMaxMemory(virDomainPtr domain)
 {
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+	if (domain == NULL)
+	    virProxyError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+	else
+	    virProxyError(domain->conn, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (0);
+    }
+    return(xenProxyDomainGetDomMaxMemory(domain->conn, domain->handle));
 }
 
 /**
@@ -647,41 +694,101 @@ xenProxyDomainGetMaxMemory(virDomainPtr domain)
  *
  * Returns 0 in case of success, -1 in case of error
  */
-int
+static int
 xenProxyDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 {
-}
-
-#ifdef STANDALONE
-int main(int argc, char **argv) {
+    virProxyPacket req;
+    virProxyFullPacket ans;
     int ret;
-    unsigned long ver;
-    virConnect conn;
 
-    memset(&conn, 0, sizeof(conn));
-    conn.magic = VIR_CONNECT_MAGIC;
-    ret = xenProxyInit(&conn);
-    if (ret == 0) {
-        ret = xenProxyGetVersion(&conn, &ver);
-	if (ret != 0) {
-	    fprintf(stderr, "Failed to get version from proxy\n");
-	} else {
-	    int ids[50], i;
-
-	    printf("Proxy running with version %lu\n", ver);
-	    ret = xenProxyNumOfDomains(&conn);
-	    printf("There is %d running domains:", ret);
-	    ret = xenProxyListDomains(&conn, &ids, 50);
-	    if (ret < 0) {
-	        fprintf(stderr, "Failed to list domains\n");
-	    }
-	    for (i = 0;i < ret;i++)
-	        printf(" %d", ids[i]);
-	    printf("\n");
-
-	}
-	xenProxyClose(&conn);
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+	if (domain == NULL)
+	    virProxyError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+	else
+	    virProxyError(domain->conn, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (0);
     }
-    exit(0);
+    if (info == NULL) {
+        virProxyError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+	return (-1);
+    }
+    memset(&req, 0, sizeof(req));
+    req.command = VIR_PROXY_DOMAIN_INFO;
+    req.len = sizeof(req);
+    ret = xenProxyCommand(domain->conn, &req, &ans);
+    if (ret < 0) {
+        xenProxyClose(domain->conn);
+	return(-1);
+    }
+    if (ans.len != sizeof(virProxyPacket) + sizeof(virDomainInfo)) {
+        virProxyError(domain->conn, VIR_ERR_OPERATION_FAILED, __FUNCTION__);
+	return (-1);
+    }
+    memmove(info, &ans.extra.dinfo, sizeof(virDomainInfo));
+
+    return(0);
 }
-#endif
+
+/**
+ * xenProxyLookupByID:
+ * @conn: pointer to the hypervisor connection
+ * @id: the domain ID number
+ *
+ * Try to find a domain based on the hypervisor ID number
+ *
+ * Returns a new domain object or NULL in case of failure
+ */
+static virDomainPtr
+xenProxyLookupByID(virConnectPtr conn, int id)
+{
+    TODO
+    return(NULL);
+}
+
+/**
+ * xenProxyLookupByUUID:
+ * @conn: pointer to the hypervisor connection
+ * @uuid: the raw UUID for the domain
+ *
+ * Try to lookup a domain on xend based on its UUID.
+ *
+ * Returns a new domain object or NULL in case of failure
+ */
+static virDomainPtr
+xenProxyLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
+{
+    TODO
+    return(NULL);
+}
+
+/**
+ * xenProxyDomainLookupByName:
+ * @conn: A xend instance
+ * @name: The name of the domain
+ *
+ * This method looks up information about a domain based on its name
+ *
+ * Returns a new domain object or NULL in case of failure
+ */
+static virDomainPtr
+xenProxyDomainLookupByName(virConnectPtr conn, const char *domname)
+{
+    TODO
+    return(NULL);
+}
+
+/**
+ * xenProxyNodeGetInfo:
+ * @conn: pointer to the Xen Daemon block
+ * @info: pointer to a virNodeInfo structure allocated by the user
+ * 
+ * Extract hardware information about the node.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+static int
+xenProxyNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info) {
+    TODO
+    return(-1);
+}
+

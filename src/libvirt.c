@@ -28,6 +28,7 @@
 #include "xen_internal.h"
 #include "xend_internal.h"
 #include "xs_internal.h"
+#include "proxy_internal.h"
 #include "xml.h"
 #include "test.h"
 
@@ -69,6 +70,7 @@ virInitialize(void)
      * Note that the order is important the first ones have a higher priority
      */
     xenHypervisorRegister();
+    xenProxyRegister();
     xenDaemonRegister();
     xenStoreRegister();
     testRegister();
@@ -244,7 +246,8 @@ virConnectOpen(const char *name)
 	     * all related drivers.
 	     */
 	    if ((res < 0) && (for_xen) &&
-	        (!strncasecmp(virDriverTab[i]->name, "xen", 3)))
+	        (!strncasecmp(virDriverTab[i]->name, "xen", 3)) &&
+		(virDriverTab[i]->no != VIR_DRV_XEN_PROXY))
 		goto failed;
 	    if (res == 0)
 	        ret->drivers[ret->nb_drivers++] = virDriverTab[i];

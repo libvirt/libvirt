@@ -74,7 +74,9 @@ struct _virProxyFullPacket {
     } data;
     /* that should be aligned on a 16bytes boundary */
     union {
+        char       str[4080];   /* extra char array */
         int        arg[1020];   /* extra int array */
+	virDomainInfo dinfo;	/* domain informations */
     } extra;
 };
 typedef struct _virProxyFullPacket virProxyFullPacket;
@@ -82,8 +84,7 @@ typedef  virProxyFullPacket *virProxyFullPacketPtr;
 /*
  * Functions callable from libvirt library
  */
-int xenProxyInit(virConnectPtr conn);
-void xenProxyClose(virConnectPtr conn);
+void xenProxyRegister(void);
 
 #ifdef __cplusplus
 }

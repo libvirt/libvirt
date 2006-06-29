@@ -510,6 +510,55 @@ xenHypervisorListDomains(virConnectPtr conn, int *ids, int maxids)
 }
 
 /**
+ * xenHypervisorGetDomMaxMemory:
+ * @conn: connection data
+ * @id: domain id
+ * 
+ * Retrieve the maximum amount of physical memory allocated to a
+ * domain.
+ *
+ * Returns the memory size in kilobytes or 0 in case of error.
+ */
+unsigned long
+xenHypervisorGetDomMaxMemory(virConnectPtr conn, int id)
+{
+    dom0_op_t op;
+    dom0_getdomaininfo_t dominfo;
+    int ret;
+
+    if ((conn == NULL) || (conn->handle < 0))
+        return (0);
+
+    memset(&dominfo, 0, sizeof(dom0_getdomaininfo_t));
+
+    if (mlock(&dominfo, sizeof(dom0_getdomaininfo_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " locking",
+                    sizeof(dom0_getdomaininfo_t));
+        return (0);
+    }
+
+    op.cmd = DOM0_GETDOMAININFOLIST;
+    op.u.getdomaininfolist.first_domain = (domid_t) id;
+    op.u.getdomaininfolist.max_domains = 1;
+    op.u.getdomaininfolist.buffer = &dominfo;
+    op.u.getdomaininfolist.num_domains = 1;
+    dominfo.domain = id;
+
+    ret = xenHypervisorDoOp(conn->handle, &op);
+
+    if (munlock(&dominfo, sizeof(dom0_getdomaininfo_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " release",
+                    sizeof(dom0_getdomaininfo_t));
+        ret = -1;
+    }
+
+    if (ret < 0)
+        return (0);
+
+    return((unsigned long) dominfo.max_pages * 4);
+}
+
+/**
  * xenHypervisorGetMaxMemory:
  * @domain: a domain object or NULL
  * 
@@ -522,41 +571,11 @@ xenHypervisorListDomains(virConnectPtr conn, int *ids, int maxids)
 static unsigned long
 xenHypervisorGetMaxMemory(virDomainPtr domain)
 {
-    dom0_op_t op;
-    dom0_getdomaininfo_t dominfo;
-    int ret;
-
     if ((domain == NULL) || (domain->conn == NULL) ||
         (domain->conn->handle < 0))
         return (0);
 
-    memset(&dominfo, 0, sizeof(dom0_getdomaininfo_t));
-
-    if (mlock(&dominfo, sizeof(dom0_getdomaininfo_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " locking",
-                    sizeof(dom0_getdomaininfo_t));
-        return (0);
-    }
-
-    op.cmd = DOM0_GETDOMAININFOLIST;
-    op.u.getdomaininfolist.first_domain = (domid_t) domain->handle;
-    op.u.getdomaininfolist.max_domains = 1;
-    op.u.getdomaininfolist.buffer = &dominfo;
-    op.u.getdomaininfolist.num_domains = 1;
-    dominfo.domain = domain->handle;
-
-    ret = xenHypervisorDoOp(domain->conn->handle, &op);
-
-    if (munlock(&dominfo, sizeof(dom0_getdomaininfo_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " release",
-                    sizeof(dom0_getdomaininfo_t));
-        ret = -1;
-    }
-
-    if (ret < 0)
-        return (0);
-
-    return((unsigned long) dominfo.max_pages * 4);
+    return(xenHypervisorGetDomMaxMemory(domain->conn, domain->handle));
 }
 
 /**

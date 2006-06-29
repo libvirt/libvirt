@@ -1,6 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
-INCLUDES = -I$(top_builddir)/include -I@top_srcdir@/include @LIBXML_CFLAGS@
+INCLUDES = -I$(top_builddir)/include -I@top_srcdir@/include @LIBXML_CFLAGS@ \
+	   -DBINDIR=\""$(libexecdir)"\"
 DEPS = libvirt.la
 LDADDS = @STATIC_BINARIES@ libvirt.la
 VIRSH_LIBS = @VIRSH_LIBS@
@@ -23,7 +24,8 @@ libvirt_la_SOURCES =						\
 		xend_internal.c xend_internal.h			\
 		sexpr.c sexpr.h					\
 		virterror.c					\
-		driver.h
+		driver.h					\
+		proxy_internal.c proxy_internal.h
 
 bin_PROGRAMS = virsh
 
