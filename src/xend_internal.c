@@ -38,7 +38,6 @@
 
 static const char * xenDaemonGetType(virConnectPtr conn);
 static int xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
-static int xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer);
 static int xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids);
 static int xenDaemonNumOfDomains(virConnectPtr conn);
 static virDomainPtr xenDaemonLookupByID(virConnectPtr conn, int id);
@@ -885,24 +884,24 @@ urlencode(const char *string)
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xenDaemonOpen_unix(virConnectPtr xend, const char *path)
+xenDaemonOpen_unix(virConnectPtr conn, const char *path)
 {
     struct sockaddr_un *addr;
 
-    if ((xend == NULL) || (path == NULL))
+    if ((conn == NULL) || (path == NULL))
         return (-1);
 
-    addr = &xend->addr_un;
+    addr = &conn->addr_un;
     addr->sun_family = AF_UNIX;
     memset(addr->sun_path, 0, sizeof(addr->sun_path));
     strncpy(addr->sun_path, path, sizeof(addr->sun_path));
 
-    xend->len = sizeof(addr->sun_family) + strlen(addr->sun_path);
-    if ((unsigned int) xend->len > sizeof(addr->sun_path))
-        xend->len = sizeof(addr->sun_path);
+    conn->len = sizeof(addr->sun_family) + strlen(addr->sun_path);
+    if ((unsigned int) conn->len > sizeof(addr->sun_path))
+        conn->len = sizeof(addr->sun_path);
 
-    xend->addr = (struct sockaddr *) addr;
-    xend->type = PF_UNIX;
+    conn->addr = (struct sockaddr *) addr;
+    conn->type = PF_UNIX;
 
     return (0);
 }
@@ -919,18 +918,18 @@ xenDaemonOpen_unix(virConnectPtr xend, const char *path)
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xenDaemonOpen_tcp(virConnectPtr xend, const char *host, int port)
+xenDaemonOpen_tcp(virConnectPtr conn, const char *host, int port)
 {
     struct in_addr ip;
     struct hostent *pent;
 
-    if ((xend == NULL) || (host == NULL) || (port <= 0))
+    if ((conn == NULL) || (host == NULL) || (port <= 0))
         return (-1);
 
     pent = gethostbyname(host);
     if (pent == NULL) {
         if (inet_aton(host, &ip) == 0) {
-            virXendError(xend, VIR_ERR_UNKNOWN_HOST, host);
+            virXendError(conn, VIR_ERR_UNKNOWN_HOST, host);
             errno = ESRCH;
             return (-1);
         }
@@ -938,13 +937,13 @@ xenDaemonOpen_tcp(virConnectPtr xend, const char *host, int port)
         memcpy(&ip, pent->h_addr_list[0], sizeof(ip));
     }
 
-    xend->len = sizeof(struct sockaddr_in);
-    xend->addr = (struct sockaddr *) &xend->addr_in;
-    xend->type = PF_INET;
+    conn->len = sizeof(struct sockaddr_in);
+    conn->addr = (struct sockaddr *) &conn->addr_in;
+    conn->type = PF_INET;
 
-    xend->addr_in.sin_family = AF_INET;
-    xend->addr_in.sin_port = htons(port);
-    memcpy(&xend->addr_in.sin_addr, &ip, sizeof(ip));
+    conn->addr_in.sin_family = AF_INET;
+    conn->addr_in.sin_port = htons(port);
+    memcpy(&conn->addr_in.sin_addr, &ip, sizeof(ip));
 
     return (0);
 }
@@ -2128,7 +2127,7 @@ xenDaemonGetType(virConnectPtr conn)
  *    extracted by lack of capacities returns 0 and @hvVer is 0, otherwise
  *    @hvVer value is major * 1,000,000 + minor * 1,000 + release
  */
-static int
+int
 xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer)
 {
     static unsigned long version = 0;

@@ -600,6 +600,7 @@ int xenDaemonDomainLookupByName_ids(virConnectPtr xend,
 void xenDaemonRegister(void);
 int xenDaemonOpen(virConnectPtr conn, const char *name, int flags);
 int xenDaemonClose(virConnectPtr conn);
+int xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer);
 int xenDaemonDomainSuspend(virDomainPtr domain);
 int xenDaemonDomainResume(virDomainPtr domain);
 int xenDaemonDomainShutdown(virDomainPtr domain);

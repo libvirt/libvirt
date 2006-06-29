@@ -57,6 +57,29 @@ typedef struct _virProxyPacket virProxyPacket;
 typedef  virProxyPacket *virProxyPacketPtr;
 
 /*
+ * If there is extra data sent from the proxy to the client, 
+ * they are appended after the packet.
+ * the size may not be fixed, it's passed as len and includes the
+ * extra data.
+ */
+struct _virProxyFullPacket {
+    unsigned short version;	/* version of the proxy protocol */
+    unsigned short command;	/* command number a virProxyCommand */
+    unsigned short serial;	/* command serial number */
+    unsigned short len;		/* the length of the request */
+    union {
+        char       string[8];	/* string data */
+        int        arg;		/* or int argument */
+        long       larg;	/* or long argument */
+    } data;
+    /* that should be aligned on a 16bytes boundary */
+    union {
+        int        arg[1020];   /* extra int array */
+    } extra;
+};
+typedef struct _virProxyFullPacket virProxyFullPacket;
+typedef  virProxyFullPacket *virProxyFullPacketPtr;
+/*
  * Functions callable from libvirt library
  */
 int xenProxyInit(virConnectPtr conn);

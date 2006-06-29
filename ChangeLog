@@ -1,3 +1,9 @@
+Thu Jun 29 14:53:01 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* proxy/libvirt_proxy.c proxy/proxy.h proxy/proxy_client.c: more
+	  progresses on the proxy implementation.
+	* src/xend_internal.c src/xend_internal.h: exported one routine
+
 Wed Jun 28 19:23:25 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in Makefile.am proxy/Makefile.am proxy/libvirt_proxy.c

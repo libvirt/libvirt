@@ -20,9 +20,11 @@
 #include "proxy.h"
 #include "internal.h"
 #include "xen_internal.h"
+#include "xend_internal.h"
 
 static int fdServer = -1;
 static int debug = 0;
+static int persist = 0;
 static int done = 0;
 
 #define MAX_CLIENT 64
@@ -32,6 +34,8 @@ static struct pollfd pollInfos[MAX_CLIENT + 1];
 
 static virConnect conninfos;
 static virConnectPtr conn = &conninfos;
+
+static unsigned long xenVersion = 0;
 
 /************************************************************************
  *									*
@@ -49,17 +53,34 @@ static virConnectPtr conn = &conninfos;
 static int
 proxyInitXen(void) {
     int ret;
+    unsigned long xenVersion2;
 
     ret = xenHypervisorOpen(conn, NULL, VIR_DRV_OPEN_QUIET);
     if (ret < 0) {
         fprintf(stderr, "Failed to open Xen hypervisor\n");
         return(-1);
+    } else {
+        ret = xenHypervisorGetVersion(conn, &xenVersion);
+	if (ret != 0) {
+	    fprintf(stderr, "Failed to get Xen hypervisor version\n");
+	    return(-1);
+	}
     }
     ret = xenDaemonOpen_unix(conn, "/var/lib/xend/xend-socket");
     if (ret < 0) {
         fprintf(stderr, "Failed to connect to Xen daemon\n");
         return(-1);
     }
+    ret = xenDaemonGetVersion(conn, &xenVersion2);
+    if (ret != 0) {
+	fprintf(stderr, "Failed to get Xen daemon version\n");
+	return(-1);
+    }
+    if (debug)
+        fprintf(stderr, "Connected to hypervisor %lu and daemon %lu\n",
+	        xenVersion, xenVersion2);
+    if (xenVersion2 > xenVersion)
+        xenVersion = xenVersion2;
     return(0);
 }
 
@@ -342,7 +363,7 @@ retry:
 	goto comm_error;
     
     if (debug)
-        fprintf(stderr, "Gor command %d from client %d\n", req->command, nr);
+        fprintf(stderr, "Got command %d from client %d\n", req->command, nr);
 
     switch (req->command) {
 	case VIR_PROXY_NONE:
@@ -352,17 +373,39 @@ retry:
 	case VIR_PROXY_VERSION:
 	    if (req->len != sizeof(virProxyPacket))
 	        goto comm_error;
-	    TODO;
-	    req->data.larg = 3 * 1000000 + 2;
+	    req->data.larg = xenVersion;
 	    break;
-	case VIR_PROXY_NODE_INFO:
-	case VIR_PROXY_LIST:
+	case VIR_PROXY_LIST: {
+	    int maxids;
+
+	    if (req->len != sizeof(virProxyPacket))
+	        goto comm_error;
+	    maxids = (sizeof(buffer) - sizeof(virProxyPacket)) / sizeof(int);
+	    maxids -= 10; /* just to be sure that should still be plenty */
+	    ret = xenHypervisorListDomains(conn,
+	                           (int *) &buffer[sizeof(virProxyPacket)],
+				           maxids);
+	    if (ret < 0) {
+	        req->len = sizeof(virProxyPacket);
+		req->data.arg = 0;
+	    } else {
+	        req->len = sizeof(virProxyPacket) + ret * sizeof(int);
+		req->data.arg = ret;
+	    }
+	    break;
+	}
 	case VIR_PROXY_NUM_DOMAIN:
+	    if (req->len != sizeof(virProxyPacket))
+	        goto comm_error;
+	    req->data.arg = xenHypervisorNumOfDomains(conn);
+	    break;
+	case VIR_PROXY_MAX_MEMORY:
+	case VIR_PROXY_DOMAIN_INFO:
+	case VIR_PROXY_NODE_INFO:
 	case VIR_PROXY_LOOKUP_ID:
 	case VIR_PROXY_LOOKUP_UUID:
 	case VIR_PROXY_LOOKUP_NAME:
-	case VIR_PROXY_MAX_MEMORY:
-	case VIR_PROXY_DOMAIN_INFO:
+	    TODO;
 	    break;
 	default:
 	    goto comm_error;
@@ -399,7 +442,7 @@ proxyProcessRequests(void) {
 	 */
         ret = poll(&pollInfos[0], nbClients + 1, 1000);
 	if (ret == 0) { /* timeout */
-	    if (nbClients == 0) {
+	    if ((nbClients == 0) && (persist == 0)) {
 	        exit_timeout--;
 		if (exit_timeout == 0) {
 		    done = 1;
@@ -465,10 +508,8 @@ proxyMainLoop(void) {
 	if (proxyListenUnixSocket(PROXY_SOCKET_PATH) < 0)
 	    break;
 	proxyProcessRequests();
-	proxyCloseUnixSocket();
     }
     proxyCloseClientSockets();
-    proxyCloseUnixSocket();
 }
 
 /**
@@ -497,6 +538,8 @@ int main(int argc, char **argv) {
     for (i = 1; i < argc; i++) {
          if (!strcmp(argv[i], "-v")) {
 	     debug++;
+         } else if (!strcmp(argv[i], "-no-timeout")) {
+	     persist = 1;
 	 } else {
 	     usage(argv[0]);
 	     exit(1);
@@ -508,7 +551,22 @@ int main(int argc, char **argv) {
 	/* exit(1); */
     }
 
-    proxyInitXen();
-    proxyMainLoop();
+    /*
+     * setup a connection block
+     */
+    memset(conn, 0, sizeof(conninfos));
+    conn->magic = VIR_CONNECT_MAGIC;
+
+    /*
+     * very fist thing, use the socket as an exclusive lock, this then
+     * allow to do timed exits, avoiding constant CPU usage in case of
+     * failure.
+     */
+    if (proxyListenUnixSocket(PROXY_SOCKET_PATH) < 0)
+        exit(0);
+    if (proxyInitXen() == 0)
+	proxyMainLoop();
+    sleep(1);
+    proxyCloseUnixSocket();
     exit(0);
 }

@@ -42,12 +42,12 @@ static int debug = 1;
 static void
 virProxyError(virConnectPtr conn, virErrorNumber error, const char *info)
 {
-    const char *errmsg;
-
     if (error == VIR_ERR_OK)
         return;
 
 #if 0
+    const char *errmsg;
+
     errmsg = __virErrorMsg(error, info);
     __virRaiseError(conn, NULL, VIR_FROM_XEND, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, 0, 0, errmsg, info);
@@ -71,8 +71,7 @@ virProxyFindServerPath(void)
 {
     static const char *serverPaths[] = {
 #ifdef STANDALONE
-        "./libvirt_proxy",
-	BUILDDIR "/proxy/libvirt_proxy",
+        "/usr/bin/libvirt_proxy_dbg",
 #endif
         BINDIR "/libvirt_proxy",
         NULL
@@ -320,11 +319,10 @@ xenProxyClose(virConnectPtr conn) {
 
 static int 
 xenProxyCommand(virConnectPtr conn, virProxyPacketPtr request,
-                virProxyPacketPtr *answer) {
+                virProxyFullPacketPtr answer) {
     static int serial = 0;
     int ret;
     virProxyPacketPtr res = NULL;
-    char packet[4096];
 
     if ((conn == NULL) || (conn->proxy < 0))
         return(-1);
@@ -364,8 +362,8 @@ retry:
 	    return(-1);
 	}
     } else {
-        /* read in packet and duplicate if needed */
-        ret  = virProxyReadClientSocket(conn->proxy, &packet[0],
+        /* read in packet provided */
+        ret  = virProxyReadClientSocket(conn->proxy, (char *) answer,
 	                                sizeof(virProxyPacket));
 	if (ret < 0)
 	    return(-1);
@@ -376,9 +374,9 @@ retry:
 	    xenProxyClose(conn);
 	    return(-1);
 	}
-	res = (virProxyPacketPtr) &packet[0];
+	res = (virProxyPacketPtr) answer;
 	if ((res->len < sizeof(virProxyPacket)) ||
-	    (res->len > sizeof(packet))) {
+	    (res->len > sizeof(virProxyFullPacket))) {
 	    fprintf(stderr,
 		"Communication error with proxy: got %d bytes packet\n",
 		    res->len);
@@ -386,7 +384,8 @@ retry:
 	    return(-1);
 	}
 	if (res->len > sizeof(virProxyPacket)) {
-	    ret  = virProxyReadClientSocket(conn->proxy, &packet[ret],
+	    ret  = virProxyReadClientSocket(conn->proxy,
+	                                    &(answer->extra.arg[0]),
 	                                    res->len - ret);
 	    if (ret != (int) (res->len - sizeof(virProxyPacket))) {
 		fprintf(stderr,
@@ -412,8 +411,6 @@ retry:
 	fprintf(stderr, "gor asynchronous packet number %d\n", res->serial);
         goto retry;
     }
-    if (answer != NULL)
-	*answer = res;
     return(0);
 }
 
@@ -431,9 +428,10 @@ xenProxyInit(virConnectPtr conn) {
     int ret;
     int fd;
         
-
-    if (conn == NULL)
-        return(-1);
+    if (!VIR_IS_CONNECT(conn)) {
+        virProxyError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
 
     if (conn->proxy <= 0) {
 	fd = virProxyOpenClientSocket(PROXY_SOCKET_PATH);
@@ -517,14 +515,41 @@ xenProxyNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info) {
  * @maxids: size of @ids
  *
  * Collect the list of active domains, and store their ID in @maxids
- * TODO: this is quite expensive at the moment since there isn't one
- *       xend RPC providing both name and id for all domains.
  *
  * Returns the number of domain found or -1 in case of error
  */
 static int
 xenProxyListDomains(virConnectPtr conn, int *ids, int maxids)
 {
+    virProxyPacket req;
+    virProxyFullPacket ans;
+    int ret;
+    int nb;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virProxyError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    if ((ids == NULL) || (maxids <= 0)) {
+        virProxyError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+	return (-1);
+    }
+    memset(&req, 0, sizeof(req));
+    req.command = VIR_PROXY_LIST;
+    req.len = sizeof(req);
+    ret = xenProxyCommand(conn, &req, &ans);
+    if (ret < 0) {
+        xenProxyClose(conn);
+	return(-1);
+    }
+    nb = ans.data.arg;
+    if ((nb > 1020) || (nb <= 0))
+        return(-1);
+    if (nb > maxids)
+        nb = maxids;
+    memmove(ids, &ans.extra.arg[0], nb * sizeof(int));
+
+    return(nb);
 }
 
 /**
@@ -538,6 +563,23 @@ xenProxyListDomains(virConnectPtr conn, int *ids, int maxids)
 static int
 xenProxyNumOfDomains(virConnectPtr conn)
 {
+    virProxyPacket req;
+    int ret;
+    int nb;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virProxyError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    memset(&req, 0, sizeof(req));
+    req.command = VIR_PROXY_NUM_DOMAIN;
+    req.len = sizeof(req);
+    ret = xenProxyCommand(conn, &req, NULL);
+    if (ret < 0) {
+        xenProxyClose(conn);
+	return(-1);
+    }
+    return(req.data.arg);
 }
 
 /**
@@ -617,13 +659,26 @@ int main(int argc, char **argv) {
     virConnect conn;
 
     memset(&conn, 0, sizeof(conn));
+    conn.magic = VIR_CONNECT_MAGIC;
     ret = xenProxyInit(&conn);
     if (ret == 0) {
         ret = xenProxyGetVersion(&conn, &ver);
 	if (ret != 0) {
 	    fprintf(stderr, "Failed to get version from proxy\n");
 	} else {
+	    int ids[50], i;
+
 	    printf("Proxy running with version %lu\n", ver);
+	    ret = xenProxyNumOfDomains(&conn);
+	    printf("There is %d running domains:", ret);
+	    ret = xenProxyListDomains(&conn, &ids, 50);
+	    if (ret < 0) {
+	        fprintf(stderr, "Failed to list domains\n");
+	    }
+	    for (i = 0;i < ret;i++)
+	        printf(" %d", ids[i]);
+	    printf("\n");
+
 	}
 	xenProxyClose(&conn);
     }
