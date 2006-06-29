@@ -37,6 +37,9 @@ int	xenHypervisorResumeDomain	(virDomainPtr domain);
 int	xenHypervisorPauseDomain	(virDomainPtr domain);
 int	xenHypervisorGetDomainInfo	(virDomainPtr domain,
 				   	 virDomainInfoPtr info);
+int	xenHypervisorGetDomInfo		(virConnectPtr conn,
+					 int id,
+					 virDomainInfoPtr info);
 int	xenHypervisorSetMaxMemory	(virDomainPtr domain,
 		      		  	 unsigned long memory);
 int	xenHypervisorCheckID		(virConnectPtr conn,

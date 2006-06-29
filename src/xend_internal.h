@@ -614,6 +614,7 @@ int xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info);
 char *xenDaemonDomainDumpXML(virDomainPtr domain);
 virDomainPtr xenDaemonDomainLookupByName(virConnectPtr conn, const char *domname);
 unsigned long xenDaemonDomainGetMaxMemory(virDomainPtr domain);
+char **xenDaemonListDomainsOld(virConnectPtr xend);
 
 #ifdef __cplusplus
 }

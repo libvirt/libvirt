@@ -403,11 +403,64 @@ retry:
 	    req->data.larg = xenHypervisorGetDomMaxMemory(conn, req->data.arg);
 	    break;
 	case VIR_PROXY_DOMAIN_INFO:
+	    if (req->len != sizeof(virProxyPacket))
+	        goto comm_error;
+	    memset(&request.extra.dinfo, 0, sizeof(virDomainInfo));
+	    ret = xenHypervisorGetDomInfo(conn, req->data.arg,
+	                                  &request.extra.dinfo);
+	    if (ret < 0) {
+	        req->data.arg = -1;
+	    } else {
+	        req->len += sizeof(virDomainInfo);
+	    }
+	    break;
+	case VIR_PROXY_LOOKUP_ID: {
+	    char **names;
+	    char **tmp;
+	    int ident, len;
+	    char *name = NULL;
+	    unsigned char uuid[16];
+
+	    if (req->len != sizeof(virProxyPacket))
+	        goto comm_error;
+
+	    /*
+	     * Xend API forces to collect the full domain list by names, and
+             * then query each of them until the id is found
+	     */
+	    names = xenDaemonListDomainsOld(conn);
+	    tmp = names;
+
+	    if (names != NULL) {
+	       while (*tmp != NULL) {
+		  ident = xenDaemonDomainLookupByName_ids(conn, *tmp, &uuid[0]);
+		  if (ident == req->data.arg) {
+		     name = *tmp;
+		     break;
+		  }
+		  tmp++;
+	       }
+	    }
+            if (name == NULL) {
+                req->data.arg = -1;
+            } else {
+	        len = strlen(name);
+		if (len > 1000) {
+		    len = 1000;
+		    name[1000] = 0;
+		}
+	        req->len += 16 + len + 1;
+		memcpy(&request.extra.str[0], uuid, 16);
+		strcpy(&request.extra.str[16], name);
+	    }
+	    free(names);
+	    break;
+	}
 	case VIR_PROXY_NODE_INFO:
-	case VIR_PROXY_LOOKUP_ID:
 	case VIR_PROXY_LOOKUP_UUID:
 	case VIR_PROXY_LOOKUP_NAME:
 	    TODO;
+	    req->data.arg = -1;
 	    break;
 	default:
 	    goto comm_error;

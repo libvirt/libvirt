@@ -741,8 +741,39 @@ xenProxyDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 static virDomainPtr
 xenProxyLookupByID(virConnectPtr conn, int id)
 {
-    TODO
-    return(NULL);
+    virProxyPacket req;
+    virProxyFullPacket ans;
+    unsigned char uuid[16];
+    const char *name;
+    int ret;
+    virDomainPtr res;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virProxyError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (NULL);
+    }
+    memset(&req, 0, sizeof(req));
+    req.command = VIR_PROXY_LOOKUP_ID;
+    req.data.arg = id;
+    req.len = sizeof(req);
+    ret = xenProxyCommand(conn, &req, &ans);
+    if (ret < 0) {
+        xenProxyClose(conn);
+	return(NULL);
+    }
+    if (req.data.arg == -1) {
+	return(NULL);
+    }
+    memcpy(uuid, &ans.extra.str[0], 16);
+    name = &ans.extra.str[16];
+    res = virGetDomain(conn, name, uuid);
+
+    if (res == NULL)
+        virProxyError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
+    else
+	res->handle = id;
+    
+    return(res);
 }
 
 /**

@@ -1014,7 +1014,7 @@ xend_sysrq(virConnectPtr xend, const char *name, const char *key)
  *
  * Returns a list of names or NULL in case of error.
  */
-static char **
+char **
 xenDaemonListDomainsOld(virConnectPtr xend)
 {
     size_t extra = 0;

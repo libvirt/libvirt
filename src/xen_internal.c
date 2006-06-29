@@ -579,8 +579,9 @@ xenHypervisorGetMaxMemory(virDomainPtr domain)
 }
 
 /**
- * xenHypervisorGetDomainInfo:
- * @domain: pointer to the domain block
+ * xenHypervisorGetDomInfo:
+ * @conn: connection data
+ * @id: the domain ID
  * @info: the place where informations should be stored
  *
  * Do an hypervisor call to get the related set of domain informations.
@@ -588,14 +589,13 @@ xenHypervisorGetMaxMemory(virDomainPtr domain)
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
+xenHypervisorGetDomInfo(virConnectPtr conn, int id, virDomainInfoPtr info)
 {
     dom0_op_t op;
     dom0_getdomaininfo_t dominfo;
     int ret;
 
-    if ((domain == NULL) || (domain->conn == NULL) ||
-        (domain->conn->handle < 0) || (info == NULL))
+    if ((conn == NULL) || (conn->handle < 0) || (info == NULL))
         return (-1);
 
     memset(info, 0, sizeof(virDomainInfo));
@@ -608,13 +608,13 @@ xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
     }
 
     op.cmd = DOM0_GETDOMAININFOLIST;
-    op.u.getdomaininfolist.first_domain = (domid_t) domain->handle;
+    op.u.getdomaininfolist.first_domain = (domid_t) id;
     op.u.getdomaininfolist.max_domains = 1;
     op.u.getdomaininfolist.buffer = &dominfo;
     op.u.getdomaininfolist.num_domains = 1;
-    dominfo.domain = domain->handle;
+    dominfo.domain = id;
 
-    ret = xenHypervisorDoOp(domain->conn->handle, &op);
+    ret = xenHypervisorDoOp(conn->handle, &op);
 
     if (munlock(&dominfo, sizeof(dom0_getdomaininfo_t)) < 0) {
         virXenError(VIR_ERR_XEN_CALL, " release",
@@ -655,6 +655,30 @@ xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
     info->maxMem = dominfo.max_pages * 4;
     info->nrVirtCpu = dominfo.nr_online_vcpus;
     return (0);
+}
+
+/**
+ * xenHypervisorGetDomainInfo:
+ * @domain: pointer to the domain block
+ * @info: the place where informations should be stored
+ *
+ * Do an hypervisor call to get the related set of domain informations.
+ *
+ * Returns 0 in case of success, -1 in case of error.
+ */
+int
+xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
+{
+    dom0_op_t op;
+    dom0_getdomaininfo_t dominfo;
+    int ret;
+
+    if ((domain == NULL) || (domain->conn == NULL) ||
+        (domain->conn->handle < 0) || (info == NULL) ||
+	(domain->handle < 0))
+        return (-1);
+    return(xenHypervisorGetDomInfo(domain->conn, domain->handle, info));
+
 }
 
 /**

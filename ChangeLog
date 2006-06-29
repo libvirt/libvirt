@@ -1,3 +1,10 @@
+Thu Jun 29 23:57:35 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* proxy/libvirt_proxy.c src/proxy_internal.c src/xen_internal.c
+	  src/xen_internal.h src/xend_internal.c src/xend_internal.h:
+	  implemented id based lookup and other cleanups, virsh starts to
+	  work, but still some TODOs
+
 Thu Jun 29 22:19:51 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/proxy_internal.c src/proxy_internal.h src/driver.h src/libvirt.c
