@@ -752,6 +752,10 @@ xenProxyLookupByID(virConnectPtr conn, int id)
         virProxyError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
         return (NULL);
     }
+    if (id < 0) {
+        virProxyError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+	return (NULL);
+    }
     memset(&req, 0, sizeof(req));
     req.command = VIR_PROXY_LOOKUP_ID;
     req.data.arg = id;
@@ -788,8 +792,39 @@ xenProxyLookupByID(virConnectPtr conn, int id)
 static virDomainPtr
 xenProxyLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
-    TODO
-    return(NULL);
+    virProxyFullPacket req;
+    const char *name;
+    int ret;
+    virDomainPtr res;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virProxyError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (NULL);
+    }
+    if (uuid == NULL) {
+        virProxyError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+	return (NULL);
+    }
+    memset(&req, 0, sizeof(virProxyPacket));
+    req.command = VIR_PROXY_LOOKUP_UUID;
+    req.len = sizeof(virProxyPacket) + 16;
+    ret = xenProxyCommand(conn, (virProxyPacketPtr) &req, &req);
+    if (ret < 0) {
+        xenProxyClose(conn);
+	return(NULL);
+    }
+    if (req.data.arg == -1) {
+	return(NULL);
+    }
+    name = &req.extra.str[0];
+    res = virGetDomain(conn, name, uuid);
+
+    if (res == NULL)
+        virProxyError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
+    else
+	res->handle = req.data.arg;
+    
+    return(res);
 }
 
 /**
@@ -802,10 +837,45 @@ xenProxyLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
  * Returns a new domain object or NULL in case of failure
  */
 static virDomainPtr
-xenProxyDomainLookupByName(virConnectPtr conn, const char *domname)
+xenProxyDomainLookupByName(virConnectPtr conn, const char *name)
 {
-    TODO
-    return(NULL);
+    virProxyFullPacket req;
+    int ret, len;
+    virDomainPtr res;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virProxyError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (NULL);
+    }
+    if (name == NULL) {
+        virProxyError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+	return (NULL);
+    }
+    len = strlen(name);
+    if (len > 1000) {
+        virProxyError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+	return (NULL);
+    }
+    memset(&req, 0, sizeof(virProxyPacket));
+    req.command = VIR_PROXY_LOOKUP_NAME;
+    req.len = sizeof(virProxyPacket) + len + 1;
+    strcpy(&req.extra.str[0], name);
+    ret = xenProxyCommand(conn, (virProxyPacketPtr) &req, &req);
+    if (ret < 0) {
+        xenProxyClose(conn);
+	return(NULL);
+    }
+    if (req.data.arg == -1) {
+	return(NULL);
+    }
+    res = virGetDomain(conn, name, (const unsigned char *)&req.extra.str[0]);
+
+    if (res == NULL)
+        virProxyError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
+    else
+	res->handle = req.data.arg;
+    
+    return(res);
 }
 
 /**

@@ -359,12 +359,51 @@ retry:
 	        ret, nr, pollInfos[nr].fd);
     
     if ((req->version != PROXY_PROTO_VERSION) ||
-        (req->len < sizeof(virProxyPacket)))
+        (req->len < sizeof(virProxyPacket)) ||
+	(req->len > sizeof(virProxyFullPacket)))
 	goto comm_error;
+
     
     if (debug)
         fprintf(stderr, "Got command %d from client %d\n", req->command, nr);
 
+    /*
+     * complete reading the packet.
+     * TODO: we should detect when blocking and abort connection if this happen
+     */
+    if (req->len > ret) {
+        int total, extra;
+	char *base = (char *) &request;
+
+        total = ret;
+	while (total < req->len) {
+	    extra = req->len - total;
+retry2:
+	    ret = read(pollInfos[nr].fd, base + total, extra);
+	    if (ret < 0) {
+		if (errno == EINTR) {
+		    if (debug > 0)
+			fprintf(stderr,
+			        "read socket %d from client %d interrupted\n",
+				pollInfos[nr].fd, nr);
+		    goto retry2;
+		}
+		fprintf(stderr, "Failed to read socket %d from client %d\n",
+			pollInfos[nr].fd, nr);
+		proxyCloseClientSocket(nr);
+		return(-1);
+	    }
+	    if (ret == 0) {
+		if (debug)
+		    fprintf(stderr,
+		            "end of stream from client %d on socket %d\n",
+			    nr, pollInfos[nr].fd);
+		proxyCloseClientSocket(nr);
+		return(-1);
+	    }
+	    total += ret;
+	}
+    }
     switch (req->command) {
 	case VIR_PROXY_NONE:
 	    if (req->len != sizeof(virProxyPacket))
@@ -456,9 +495,71 @@ retry:
 	    free(names);
 	    break;
 	}
+	case VIR_PROXY_LOOKUP_UUID: {
+	    char **names;
+	    char **tmp;
+	    int ident, len;
+	    char *name = NULL;
+	    unsigned char uuid[16];
+
+	    if (req->len != sizeof(virProxyPacket) + 16)
+	        goto comm_error;
+
+	    /*
+	     * Xend API forces to collect the full domain list by names, and
+             * then query each of them until the id is found
+	     */
+	    names = xenDaemonListDomainsOld(conn);
+	    tmp = names;
+
+	    if (names != NULL) {
+	       while (*tmp != NULL) {
+		  ident = xenDaemonDomainLookupByName_ids(conn, *tmp, &uuid[0]);
+		  if (!memcmp(uuid, &request.extra.str[0], 16)) {
+		     name = *tmp;
+		     break;
+		  }
+		  tmp++;
+	       }
+	    }
+            if (name == NULL) {
+	        /* not found */
+                req->data.arg = -1;
+		req->len = sizeof(virProxyPacket);
+            } else {
+	        len = strlen(name);
+		if (len > 1000) {
+		    len = 1000;
+		    name[1000] = 0;
+		}
+	        req->len = sizeof(virProxyPacket) + len + 1;
+		strcpy(&request.extra.str[0], name);
+                req->data.arg = ident;
+	    }
+	    free(names);
+	    break;
+	}
+	case VIR_PROXY_LOOKUP_NAME: {
+	    int ident;
+	    unsigned char uuid[16];
+
+	    if (req->len > sizeof(virProxyPacket) + 1000)
+	        goto comm_error;
+
+	    ident = xenDaemonDomainLookupByName_ids(conn,
+	                                    &request.extra.str[0], &uuid[0]);
+	    if (ident < 0) {
+	        /* not found */
+                req->data.arg = -1;
+		req->len = sizeof(virProxyPacket);
+	    } else {
+	        req->len = sizeof(virProxyPacket) + 16;
+		memcpy(&request.extra.str[0], uuid, 16);
+		req->data.arg = ident;
+	    }
+	    break;
+	}
 	case VIR_PROXY_NODE_INFO:
-	case VIR_PROXY_LOOKUP_UUID:
-	case VIR_PROXY_LOOKUP_NAME:
 	    TODO;
 	    req->data.arg = -1;
 	    break;

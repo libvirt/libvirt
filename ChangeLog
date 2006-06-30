@@ -1,3 +1,9 @@
+Fri Jun 30 16:31:47 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* proxy/libvirt_proxy.c src/proxy_internal.c: more bug fixes,
+	  virsh starts to work normally over the proxy. Still one entry
+	  point missing but it's minor.
+
 Thu Jun 29 23:57:35 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* proxy/libvirt_proxy.c src/proxy_internal.c src/xen_internal.c
