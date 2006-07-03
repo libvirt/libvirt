@@ -49,7 +49,7 @@ static virDriver xenProxyDriver = {
     xenProxyClose, /* close */
     NULL, /* type */
     xenProxyGetVersion, /* version */
-    NULL, /* nodeGetInfo */
+    xenProxyNodeGetInfo, /* nodeGetInfo */
     xenProxyListDomains, /* listDomains */
     xenProxyNumOfDomains, /* numOfDomains */
     NULL, /* domainCreateLinux */
@@ -889,7 +889,34 @@ xenProxyDomainLookupByName(virConnectPtr conn, const char *name)
  */
 static int
 xenProxyNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info) {
-    TODO
-    return(-1);
+    virProxyPacket req;
+    virProxyFullPacket ans;
+    int ret;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virProxyError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+    if (info == NULL) {
+        virProxyError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+	return (-1);
+    }
+    memset(&req, 0, sizeof(req));
+    req.command = VIR_PROXY_NODE_INFO;
+    req.data.arg = 0;
+    req.len = sizeof(req);
+    ret = xenProxyCommand(conn, &req, &ans);
+    if (ret < 0) {
+        xenProxyClose(conn);
+	return(-1);
+    }
+    if (ans.data.arg == -1) {
+	return(-1);
+    }
+    if (ans.len != sizeof(virProxyPacket) + sizeof(virNodeInfo)) {
+	return(-1);
+    }
+    memcpy(info, &ans.extra.ninfo, sizeof(virNodeInfo));
+    return(0);
 }
 

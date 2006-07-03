@@ -37,7 +37,6 @@
 #include "xen_internal.h" /* for DOM0_INTERFACE_VERSION */
 
 static const char * xenDaemonGetType(virConnectPtr conn);
-static int xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
 static int xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids);
 static int xenDaemonNumOfDomains(virConnectPtr conn);
 static virDomainPtr xenDaemonLookupByID(virConnectPtr conn, int id);
@@ -2072,7 +2071,7 @@ error:
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
-static int
+int
 xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info) {
     int ret = -1;
     struct sexpr *root;

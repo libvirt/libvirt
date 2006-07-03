@@ -1,3 +1,8 @@
+Mon Jul  3 11:21:10 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* proxy/libvirt_proxy.c src/proxy_internal.[ch] src/xend_internal.[ch]:
+	  finished the last entry point missing for the proxy code.
+
 Fri Jun 30 16:31:47 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* proxy/libvirt_proxy.c src/proxy_internal.c: more bug fixes,

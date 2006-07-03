@@ -560,8 +560,22 @@ retry2:
 	    break;
 	}
 	case VIR_PROXY_NODE_INFO:
-	    TODO;
-	    req->data.arg = -1;
+	    if (req->len != sizeof(virProxyPacket))
+	        goto comm_error;
+
+	    /*
+	     * Hum, could we expect those informations to be unmutable and
+	     * cache them ? Since it's probably an unfrequent call better
+	     * not make assumption and do the xend RPC each call.
+	     */
+	    ret = xenDaemonNodeGetInfo(conn, &request.extra.ninfo);
+	    if (ret < 0) {
+                req->data.arg = -1;
+		req->len = sizeof(virProxyPacket);
+	    } else {
+                req->data.arg = 0;
+		req->len = sizeof(virProxyPacket) + sizeof(virNodeInfo);
+	    }
 	    break;
 	default:
 	    goto comm_error;
