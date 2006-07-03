@@ -25,6 +25,8 @@ ignored_files = {
   "driver.h": "internal driver interfaces",
   "xend_internal.h": "internal includes and defines",
   "xend_internal.c": "internal code",
+  "proxy_internal.h": "internal includes and defines",
+  "proxy_internal.c": "internal code",
   "xen_internal.h": "internal includes and defines",
   "xen_internal.c": "internal code",
   "xs_internal.h": "internal includes and defines",
@@ -2086,11 +2088,11 @@ def rebuild():
     builder = None
     if glob.glob("../src/libvirt.c") != [] :
         print "Rebuilding API description for libvirt"
-	builder = docBuilder("libvirt", ["../src", "../include"],
+	builder = docBuilder("libvirt", ["../src", "../include/libvirt"],
 	                     [])
     elif glob.glob("src/libvirt.c") != [] :
         print "Rebuilding API description for libvir"
-	builder = docBuilder("libvirt", ["src", "include"],
+	builder = docBuilder("libvirt", ["src", "include/libvirt"],
 	                     [])
     else:
         print "rebuild() failed, unable to guess the module"

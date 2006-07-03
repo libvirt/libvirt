@@ -75,6 +75,7 @@ rm -fr %{buildroot}
 %doc %{_mandir}/man1/virsh.1*
 %{_bindir}/virsh
 %{_libdir}/lib*.so.*
+%{_libexecdir}/libvirt_proxy
 
 %files devel
 %defattr(-, root, root)

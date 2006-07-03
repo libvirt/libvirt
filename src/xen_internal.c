@@ -669,10 +669,6 @@ xenHypervisorGetDomInfo(virConnectPtr conn, int id, virDomainInfoPtr info)
 int
 xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
 {
-    dom0_op_t op;
-    dom0_getdomaininfo_t dominfo;
-    int ret;
-
     if ((domain == NULL) || (domain->conn == NULL) ||
         (domain->conn->handle < 0) || (info == NULL) ||
 	(domain->handle < 0))

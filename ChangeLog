@@ -1,3 +1,11 @@
+Mon Jul  3 13:54:03 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* libvirt.spec.in proxy/Makefile.am src/proxy_internal.c 
+	  src/xen_internal.c: fixing the proxy installation, integrate in
+	  the spec file and fix a few bugs in the proxy, seems to behave 
+	  correctly now.
+	* docs/apibuild.py docs/*: fixing the doc and API generator
+
 Mon Jul  3 11:21:10 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* proxy/libvirt_proxy.c src/proxy_internal.[ch] src/xend_internal.[ch]:

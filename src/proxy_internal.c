@@ -468,7 +468,7 @@ retry:
 }
 
 /**
- * xenProxyInit:
+ * xenProxyOpen:
  * @conn: pointer to the hypervisor connection
  * @name: URL for the target, NULL for local
  * @flags: combination of virDrvOpenFlag(s)
@@ -714,6 +714,7 @@ xenProxyDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     }
     memset(&req, 0, sizeof(req));
     req.command = VIR_PROXY_DOMAIN_INFO;
+    req.data.arg = domain->handle;
     req.len = sizeof(req);
     ret = xenProxyCommand(domain->conn, &req, &ans);
     if (ret < 0) {
@@ -765,7 +766,7 @@ xenProxyLookupByID(virConnectPtr conn, int id)
         xenProxyClose(conn);
 	return(NULL);
     }
-    if (req.data.arg == -1) {
+    if (ans.data.arg == -1) {
 	return(NULL);
     }
     memcpy(uuid, &ans.extra.str[0], 16);

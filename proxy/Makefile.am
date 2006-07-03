@@ -5,7 +5,7 @@ INCLUDES = -I$(top_builddir)/include -I@top_srcdir@/include \
 	   -DXEN_RO
 
 
-bin_PROGRAMS = libvirt_proxy
+libexec_PROGRAMS = libvirt_proxy
 LIBS=
 
 libvirt_proxy_SOURCES = libvirt_proxy.c @top_srcdir@/src/xend_internal.c \
@@ -15,3 +15,6 @@ libvirt_proxy_LDFLAGS =
 libvirt_proxy_DEPENDENCIES =
 libvirt_proxy_LDADD =
 
+install-exec-hook:
+	chown root:root $(DESTDIR)$(libexecdir)/libvirt_proxy
+	chmod u+s $(DESTDIR)$(libexecdir)/libvirt_proxy
