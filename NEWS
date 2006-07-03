@@ -5,6 +5,13 @@
        http://libvirt.org/news.html
 
 Releases
+0.1.2: Jul 3 2006:
+   -  headers include paths fixup
+  
+   -  proxy mechanism for unpriviledged read-only access by httpu
+
+
+
 0.1.1: Jun 21 2006:
    -  building fixes: ncurses fallback (Jim Fehlig), VPATH builds (Daniel P.
        Berrange)

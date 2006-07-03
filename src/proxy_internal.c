@@ -106,7 +106,7 @@ virProxyError(virConnectPtr conn, virErrorNumber error, const char *info)
         return;
 
     errmsg = __virErrorMsg(error, info);
-    __virRaiseError(conn, NULL, VIR_FROM_XEND, error, VIR_ERR_ERROR,
+    __virRaiseError(conn, NULL, VIR_FROM_PROXY, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, 0, 0, errmsg, info);
 }
 
@@ -285,13 +285,14 @@ virProxyCloseClientSocket(int fd) {
  * @fd: the socket 
  * @buffer: the target memory area
  * @len: the lenght in bytes
+ * @quiet: quiet access
  *
  * Process a read from a client socket
  *
  * Returns the number of byte read or -1 in case of error.
  */
 static int
-virProxyReadClientSocket(int fd, char *buffer, int len) {
+virProxyReadClientSocket(int fd, char *buffer, int len, int quiet) {
     int ret;
 
     if ((fd < 0) || (buffer == NULL) || (len < 0))
@@ -305,7 +306,8 @@ retry:
 	        fprintf(stderr, "read socket %d interrupted\n", fd);
 	    goto retry;
 	}
-        fprintf(stderr, "Failed to read socket %d\n", fd);
+	if (!quiet)
+	    fprintf(stderr, "Failed to read socket %d\n", fd);
 	return(-1);
     }
 
@@ -372,7 +374,7 @@ xenProxyClose(virConnectPtr conn) {
 
 static int 
 xenProxyCommand(virConnectPtr conn, virProxyPacketPtr request,
-                virProxyFullPacketPtr answer) {
+                virProxyFullPacketPtr answer, int quiet) {
     static int serial = 0;
     int ret;
     virProxyPacketPtr res = NULL;
@@ -396,7 +398,7 @@ retry:
     if (answer == NULL) {
         /* read in situ */
 	ret  = virProxyReadClientSocket(conn->proxy, (char *) request,
-	                                sizeof(virProxyPacket));
+	                                sizeof(virProxyPacket), quiet);
 	if (ret < 0)
 	    return(-1);
 	if (ret != sizeof(virProxyPacket)) {
@@ -417,7 +419,7 @@ retry:
     } else {
         /* read in packet provided */
         ret  = virProxyReadClientSocket(conn->proxy, (char *) answer,
-	                                sizeof(virProxyPacket));
+	                                sizeof(virProxyPacket), quiet);
 	if (ret < 0)
 	    return(-1);
 	if (ret != sizeof(virProxyPacket)) {
@@ -439,7 +441,7 @@ retry:
 	if (res->len > sizeof(virProxyPacket)) {
 	    ret  = virProxyReadClientSocket(conn->proxy,
 	                           (char *) &(answer->extra.arg[0]),
-	                                    res->len - ret);
+	                                    res->len - ret, quiet);
 	    if (ret != (int) (res->len - sizeof(virProxyPacket))) {
 		fprintf(stderr,
 		    "Communication error with proxy: got %d bytes of %d\n",
@@ -502,9 +504,10 @@ xenProxyOpen(virConnectPtr conn, const char *name, int flags)
     memset(&req, 0, sizeof(req));
     req.command = VIR_PROXY_NONE;
     req.len = sizeof(req);
-    ret = xenProxyCommand(conn, &req, NULL);
+    ret = xenProxyCommand(conn, &req, NULL, 1);
     if ((ret < 0) || (req.command != VIR_PROXY_NONE)) {
-        virProxyError(conn, VIR_ERR_OPERATION_FAILED, __FUNCTION__);
+        if (!(flags & VIR_DRV_OPEN_QUIET))
+	    virProxyError(conn, VIR_ERR_OPERATION_FAILED, __FUNCTION__);
         xenProxyClose(conn);
 	return(-1);
     }
@@ -545,7 +548,7 @@ xenProxyGetVersion(virConnectPtr conn, unsigned long *hvVer)
     memset(&req, 0, sizeof(req));
     req.command = VIR_PROXY_VERSION;
     req.len = sizeof(req);
-    ret = xenProxyCommand(conn, &req, NULL);
+    ret = xenProxyCommand(conn, &req, NULL, 0);
     if (ret < 0) {
         xenProxyClose(conn);
 	return(-1);
@@ -583,7 +586,7 @@ xenProxyListDomains(virConnectPtr conn, int *ids, int maxids)
     memset(&req, 0, sizeof(req));
     req.command = VIR_PROXY_LIST;
     req.len = sizeof(req);
-    ret = xenProxyCommand(conn, &req, &ans);
+    ret = xenProxyCommand(conn, &req, &ans, 0);
     if (ret < 0) {
         xenProxyClose(conn);
 	return(-1);
@@ -623,7 +626,7 @@ xenProxyNumOfDomains(virConnectPtr conn)
     memset(&req, 0, sizeof(req));
     req.command = VIR_PROXY_NUM_DOMAIN;
     req.len = sizeof(req);
-    ret = xenProxyCommand(conn, &req, NULL);
+    ret = xenProxyCommand(conn, &req, NULL, 0);
     if (ret < 0) {
         xenProxyClose(conn);
 	return(-1);
@@ -655,7 +658,7 @@ xenProxyDomainGetDomMaxMemory(virConnectPtr conn, int id)
     req.command = VIR_PROXY_MAX_MEMORY;
     req.data.arg = id;
     req.len = sizeof(req);
-    ret = xenProxyCommand(conn, &req, NULL);
+    ret = xenProxyCommand(conn, &req, NULL, 0);
     if (ret < 0) {
         xenProxyClose(conn);
 	return(-1);
@@ -716,7 +719,7 @@ xenProxyDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     req.command = VIR_PROXY_DOMAIN_INFO;
     req.data.arg = domain->handle;
     req.len = sizeof(req);
-    ret = xenProxyCommand(domain->conn, &req, &ans);
+    ret = xenProxyCommand(domain->conn, &req, &ans, 0);
     if (ret < 0) {
         xenProxyClose(domain->conn);
 	return(-1);
@@ -761,7 +764,7 @@ xenProxyLookupByID(virConnectPtr conn, int id)
     req.command = VIR_PROXY_LOOKUP_ID;
     req.data.arg = id;
     req.len = sizeof(req);
-    ret = xenProxyCommand(conn, &req, &ans);
+    ret = xenProxyCommand(conn, &req, &ans, 0);
     if (ret < 0) {
         xenProxyClose(conn);
 	return(NULL);
@@ -809,7 +812,7 @@ xenProxyLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     memset(&req, 0, sizeof(virProxyPacket));
     req.command = VIR_PROXY_LOOKUP_UUID;
     req.len = sizeof(virProxyPacket) + 16;
-    ret = xenProxyCommand(conn, (virProxyPacketPtr) &req, &req);
+    ret = xenProxyCommand(conn, (virProxyPacketPtr) &req, &req, 0);
     if (ret < 0) {
         xenProxyClose(conn);
 	return(NULL);
@@ -861,7 +864,7 @@ xenProxyDomainLookupByName(virConnectPtr conn, const char *name)
     req.command = VIR_PROXY_LOOKUP_NAME;
     req.len = sizeof(virProxyPacket) + len + 1;
     strcpy(&req.extra.str[0], name);
-    ret = xenProxyCommand(conn, (virProxyPacketPtr) &req, &req);
+    ret = xenProxyCommand(conn, (virProxyPacketPtr) &req, &req, 0);
     if (ret < 0) {
         xenProxyClose(conn);
 	return(NULL);
@@ -906,7 +909,7 @@ xenProxyNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info) {
     req.command = VIR_PROXY_NODE_INFO;
     req.data.arg = 0;
     req.len = sizeof(req);
-    ret = xenProxyCommand(conn, &req, &ans);
+    ret = xenProxyCommand(conn, &req, &ans, 0);
     if (ret < 0) {
         xenProxyClose(conn);
 	return(-1);

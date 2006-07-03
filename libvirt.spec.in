@@ -104,6 +104,10 @@ rm -fr %{buildroot}
 %doc docs/examples/python
 
 %changelog
+* Mon Jul  3 2006 Daniel Veillard <veillard@redhat.com> 0.1.2-1
+- added a proxy mechanism for read only access using httpu
+- fixed header includes paths
+
 * Wed Jun 21 2006 Daniel Veillard <veillard@redhat.com> 0.1.1-1
 - extend and cleanup the driver infrastructure and code
 - python examples

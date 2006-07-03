@@ -184,7 +184,7 @@ typedef virNodeInfo *virNodeInfoPtr;
  * version * 1,000,000 + minor * 1000 + micro
  */
 
-#define LIBVIR_VERSION_NUMBER 1001
+#define LIBVIR_VERSION_NUMBER 1002
 
 int			virGetVersion		(unsigned long *libVer,
 						 const char *type,
