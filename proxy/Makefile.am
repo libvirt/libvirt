@@ -16,5 +16,4 @@ libvirt_proxy_DEPENDENCIES =
 libvirt_proxy_LDADD =
 
 install-exec-hook:
-	chown root:root $(DESTDIR)$(libexecdir)/libvirt_proxy
 	chmod u+s $(DESTDIR)$(libexecdir)/libvirt_proxy

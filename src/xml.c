@@ -591,27 +591,32 @@ virDomainParseXMLOSDesc(xmlNodePtr node, virBufferPtr buf, int bootloader)
             if ((type == NULL)
                 && (xmlStrEqual(cur->name, BAD_CAST "type"))) {
                 txt = cur->children;
-                if ((txt->type == XML_TEXT_NODE) && (txt->next == NULL))
+                if ((txt != NULL) && (txt->type == XML_TEXT_NODE) &&
+		    (txt->next == NULL))
                     type = txt->content;
             } else if ((kernel == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "kernel"))) {
                 txt = cur->children;
-                if ((txt->type == XML_TEXT_NODE) && (txt->next == NULL))
+                if ((txt != NULL) && (txt->type == XML_TEXT_NODE) &&
+		    (txt->next == NULL))
                     kernel = txt->content;
             } else if ((root == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "root"))) {
                 txt = cur->children;
-                if ((txt->type == XML_TEXT_NODE) && (txt->next == NULL))
+                if ((txt != NULL) && (txt->type == XML_TEXT_NODE) &&
+		    (txt->next == NULL))
                     root = txt->content;
             } else if ((initrd == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "initrd"))) {
                 txt = cur->children;
-                if ((txt->type == XML_TEXT_NODE) && (txt->next == NULL))
+                if ((txt != NULL) && (txt->type == XML_TEXT_NODE) &&
+		    (txt->next == NULL))
                     initrd = txt->content;
             } else if ((cmdline == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "cmdline"))) {
                 txt = cur->children;
-                if ((txt->type == XML_TEXT_NODE) && (txt->next == NULL))
+                if ((txt != NULL) && (txt->type == XML_TEXT_NODE) &&
+		    (txt->next == NULL))
                     cmdline = txt->content;
             }
         }

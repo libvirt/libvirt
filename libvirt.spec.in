@@ -14,7 +14,7 @@ Requires: readline
 BuildRequires: libxml2-devel
 BuildRequires: readline-devel
 Obsoletes: libvir
-ExclusiveArch: i386 x86_64 ia64
+ExclusiveArch: i386 x86_64
 
 %description
 This C library provides an API to use the Xen virtualization framework,
@@ -75,7 +75,7 @@ rm -fr %{buildroot}
 %doc %{_mandir}/man1/virsh.1*
 %{_bindir}/virsh
 %{_libdir}/lib*.so.*
-%{_libexecdir}/libvirt_proxy
+%attr(4755, root, root) %{_libexecdir}/libvirt_proxy
 
 %files devel
 %defattr(-, root, root)

@@ -1,3 +1,9 @@
+Tue Jul  4 13:50:55 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* libvirt.spec.in proxy/Makefile.am: do the chown at the rpm packaging
+	  level, to allow build as non-root
+	* src/xml.c: fix bug #197583 raised by markmc
+
 Mon Jul  3 15:41:58 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* NEWS docs/* configure.in libvirt.spec.in include/libvirt/libvirt.h:
