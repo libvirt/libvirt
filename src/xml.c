@@ -566,7 +566,7 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
  * virDomainParseXMLOSDesc:
  * @xmldesc: string with the XML description
  * @buf: a buffer for the result S-Expr
- * @bootloader: indocate if a bootloader script was provided
+ * @bootloader: indicate if a bootloader script was provided
  *
  * Parse the OS part of the XML description and add it to the S-Expr in buf
  * This is a temporary interface as the S-Expr interface
@@ -914,7 +914,6 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
 	virBufferVSprintf(&buf, "(on_poweroff '%s')", obj->stringval);
-	bootloader = 1;
     }
     xmlXPathFreeObject(obj);
 
@@ -922,7 +921,6 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
 	virBufferVSprintf(&buf, "(on_reboot '%s')", obj->stringval);
-	bootloader = 1;
     }
     xmlXPathFreeObject(obj);
 
@@ -930,7 +928,6 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
 	virBufferVSprintf(&buf, "(on_crash '%s')", obj->stringval);
-	bootloader = 1;
     }
     xmlXPathFreeObject(obj);
 

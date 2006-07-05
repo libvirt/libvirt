@@ -1,3 +1,8 @@
+Wed Jul  5 16:51:45 IST 2006 Mark McLoughlin <markmc@redhat.com>
+
+	* xml.c: only set bootloader flag when we actually get
+	a bootloader
+	
 Tue Jul  4 13:50:55 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* libvirt.spec.in proxy/Makefile.am: do the chown at the rpm packaging
