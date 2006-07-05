@@ -566,7 +566,6 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
  * virDomainParseXMLOSDesc:
  * @xmldesc: string with the XML description
  * @buf: a buffer for the result S-Expr
- * @bootloader: indicate if a bootloader script was provided
  *
  * Parse the OS part of the XML description and add it to the S-Expr in buf
  * This is a temporary interface as the S-Expr interface
@@ -576,7 +575,7 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
-virDomainParseXMLOSDesc(xmlNodePtr node, virBufferPtr buf, int bootloader)
+virDomainParseXMLOSDesc(xmlNodePtr node, virBufferPtr buf)
 {
     xmlNodePtr cur, txt;
     const xmlChar *type = NULL;
@@ -627,12 +626,10 @@ virDomainParseXMLOSDesc(xmlNodePtr node, virBufferPtr buf, int bootloader)
         virXMLError(VIR_ERR_OS_TYPE, (const char *) type, 0);
         return (-1);
     }
-    virBufferAdd(buf, "(linux ", 7);
+    virBufferAdd(buf, "(image (linux ", 14);
     if (kernel == NULL) {
-	if (bootloader == 0) {
-	    virXMLError(VIR_ERR_NO_KERNEL, NULL, 0);
-	    return (-1);
-	}
+      	virXMLError(VIR_ERR_NO_KERNEL, NULL, 0);
+	return (-1);
     } else {
 	virBufferVSprintf(buf, "(kernel '%s')", (const char *) kernel);
     }
@@ -642,7 +639,7 @@ virDomainParseXMLOSDesc(xmlNodePtr node, virBufferPtr buf, int bootloader)
         virBufferVSprintf(buf, "(root '%s')", (const char *) root);
     if (cmdline != NULL)
         virBufferVSprintf(buf, "(args '%s')", (const char *) cmdline);
-    virBufferAdd(buf, ")", 1);
+    virBufferAdd(buf, "))", 2);
     return (0);
 }
 
@@ -932,20 +929,18 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
     xmlXPathFreeObject(obj);
 
     /* analyze of the os description */
-    virBufferAdd(&buf, "(image ", 7);
     obj = xmlXPathEval(BAD_CAST "/domain/os[1]", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
-        (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr != 1)) {
-        virXMLError(VIR_ERR_NO_OS, nam, 0);
-        goto error;
-    }
-    res = virDomainParseXMLOSDesc(obj->nodesetval->nodeTab[0], &buf,
-                                  bootloader);
-    if (res != 0) {
-        goto error;
+    if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+        (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+	res = virDomainParseXMLOSDesc(obj->nodesetval->nodeTab[0], &buf);
+	if (res != 0) {
+	    goto error;
+	}
+    } else if (bootloader == 0) {
+	virXMLError(VIR_ERR_NO_OS, nam, 0);
+	goto error;
     }
     xmlXPathFreeObject(obj);
-    virBufferAdd(&buf, ")", 1);
 
     /* analyze of the devices */
     obj = xmlXPathEval(BAD_CAST "/domain/devices/disk", ctxt);

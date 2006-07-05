@@ -1,3 +1,9 @@
+Wed Jul  5 17:11:32 IST 2006 Mark McLoughlin <markmc@redhat.com>
+
+	* xml.c: make the entire <os> node optional if a bootloader
+	is specified. If we pass an image config to xend, the
+	bootloader gets ignored anyway.
+	
 Wed Jul  5 16:51:45 IST 2006 Mark McLoughlin <markmc@redhat.com>
 
 	* xml.c: only set bootloader flag when we actually get
