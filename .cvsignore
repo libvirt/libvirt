@@ -17,6 +17,5 @@ libtool
 ltconfig
 ltmain.sh
 update.log
-libxen.pc
-libxen.spec
-
+libvirt.pc
+libvirt.spec

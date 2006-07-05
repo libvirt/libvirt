@@ -1,0 +1,12 @@
+Makefile
+Makefile.in
+.deps
+.libs
+*.lo
+*.la
+libvirt.py
+libvirt-export.c
+libvirtclass.txt
+libvirt-py.[ch]
+libvirtclass.py
+gen_prog
