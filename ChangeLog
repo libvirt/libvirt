@@ -1,3 +1,10 @@
+Thu Jul  6 10:32:14 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: fixed xenDaemonOpen() to try both unix and
+	  http accesses by default and to use the provided URI otherwise,
+	  applied Jim Fehlig patch working around xend connection close bug
+	* autogen.sh: fixed package name
+
 Wed Jul  5 17:11:32 IST 2006 Mark McLoughlin <markmc@redhat.com>
 
 	* xml.c: make the entire <os> node optional if a bootloader

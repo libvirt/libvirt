@@ -302,6 +302,42 @@ swrites(int fd, const char *string)
     return swrite(fd, string, strlen(string));
 }
 
+/**
+ * sreads:
+ * @fd:  the file descriptor
+ * @buffer: the I/O buffer
+ * @n_buffer: the size of the I/O buffer
+ *
+ * Internal routine to do a synchronous read of a line
+ *
+ * Returns the number of bytes read, or -1 in case of error
+ */
+static ssize_t
+sreads(int fd, char *buffer, size_t n_buffer)
+{
+    size_t offset;
+
+    if (n_buffer < 1)
+        return (-1);
+
+    for (offset = 0; offset < (n_buffer - 1); offset++) {
+        ssize_t ret;
+
+        ret = sread(fd, buffer + offset, 1);
+        if (ret == 0)
+            break;
+        else if (ret == -1)
+            return ret;
+
+        if (buffer[offset] == '\n') {
+            offset++;
+            break;
+        }
+    }
+    buffer[offset] = 0;
+
+    return offset;
+}
 
 static int
 istartswith(const char *haystack, const char *needle)
@@ -324,95 +360,31 @@ static int
 xend_req(int fd, char *content, size_t n_content)
 {
     char buffer[4096];
-    int nbuf = -1;
     int content_length = -1;
     int retcode = 0;
 
-    /*
-     * Fill buffer with as much as possible to get 
-     * process going
-     */
-    nbuf = sread(fd, buffer, sizeof(buffer));
-
-    /*
-     * Extract lines from the buffer, until the 
-     * end of header is found
-     */
-    while (nbuf > -1) {
-        /* Seach for offset of first \r\n pair */
-        int i, offset = -1;
-
-        for (i = 0; i < (nbuf - 1); i++) {
-            if (buffer[i] == '\r' && buffer[i + 1] == '\n') {
-                offset = i;
-                break;
-            }
-        }
-
-        if (offset == -1) { /* No newline found, so try to fill more data */
-
-            if (nbuf == sizeof(buffer)) {
-                /* Already have 4096 bytes of data & no newline, 
-                 * get the hell out of this game */
-                break;
-            }
-
-            /* Fill remainder of buffer with more data */
-            int extra = sread(fd, buffer + nbuf, sizeof(buffer) - nbuf);
-
-            if (extra < 1) {
-                /* Couldn't get more, so quit trying */
-                break;
-            }
-            nbuf += extra;
-        } else if (!offset) { /* Immediate newline, indicates end of header */
-            /* Overwrite the \r\n pair */
-            offset += 2;
-            nbuf -= offset;
-            memmove(buffer, buffer + offset, nbuf);
+    while (sreads(fd, buffer, sizeof(buffer)) > 0) {
+        if (strcmp(buffer, "\r\n") == 0)
             break;
-        } else { /* We have a single line */
-            buffer[offset] = '\0';
 
-            if (istartswith(buffer, "Content-Length: "))
-                content_length = atoi(buffer + 16);
-            else if (istartswith(buffer, "HTTP/1.1 "))
-                retcode = atoi(buffer + 9);
-
-            /*
-	     * Now move buffer, overwriting first line, to make room for
-             * more data on next iteration of loop (if needed)
-	     */
-            offset += 2;
-            nbuf -= offset;
-            memmove(buffer, buffer + offset, nbuf);
-        }
+        if (istartswith(buffer, "Content-Length: "))
+            content_length = atoi(buffer + 16);
+        else if (istartswith(buffer, "HTTP/1.1 "))
+            retcode = atoi(buffer + 9);
     }
 
-    if (content_length > -1) {  /* Read the header, now get body */
+    if (content_length > -1) {
+        ssize_t ret;
+
         if ((unsigned int) content_length > (n_content + 1))
             content_length = n_content - 1;
 
-        /*
-	 * Copy across any data left in buffer after
-         * reading header
-	 */
-        if (nbuf > content_length) {
-            nbuf = content_length;
-        }
-        memmove(content, buffer, nbuf);
+        ret = sread(fd, content, content_length);
+        if (ret < 0)
+            return -1;
 
-        if (nbuf < content_length) { /* Still need more data for body */
-            size_t ret = sread(fd, content + nbuf, content_length - nbuf);
-
-            if (0 > (int) ret)
-                return -1;
-
-            content[nbuf + ret] = 0;
-        } else {
-            content[nbuf] = 0;
-        }
-    } else { /* Unable to complete reading header */
+        content[ret] = 0;
+    } else {
         content[0] = 0;
     }
 
@@ -1666,41 +1638,78 @@ error:
 int
 xenDaemonOpen(virConnectPtr conn, const char *name, int flags)
 {
-    xmlURIPtr uri;
+    xmlURIPtr uri = NULL;
     int ret;
     unsigned long version;
 
-    if (name == NULL) {
-        name = "http://localhost:8000/";
+    if ((name == NULL) || (name[0] == 0) || (!strcasecmp(name, "xen"))) {
+	/*
+	 * try first to open the unix socket
+	 */
+	ret = xenDaemonOpen_unix(conn, "/var/lib/xend/xend-socket");
+	if (ret < 0)
+	    goto try_http;
+	ret = xenDaemonGetVersion(conn, &version);
+	if (ret == 0)
+	    goto done;
+
+try_http:
+        /*
+	 * try though http on port 8000
+	 */
+	ret = xenDaemonOpen_tcp(conn, "localhost", 8000);
+	if (ret < 0)
+	    goto failed;
+	ret = xenDaemonGetVersion(conn, &version);
+	if (ret < 0)
+	    goto failed;
+    } else {
+        /*
+	 * We were given a connection name, expected to be an URL
+	 */
+	uri = xmlParseURI(name);
+	if (uri == NULL) {
+	    if (!(flags & VIR_DRV_OPEN_QUIET))
+		virXendError(conn, VIR_ERR_NO_SUPPORT, name);
+	    goto failed;
+	}
+
+	if (uri->scheme == NULL) {
+	    /* It should be a file access */
+	    if (uri->path == NULL) {
+		if (!(flags & VIR_DRV_OPEN_QUIET))
+		    virXendError(conn, VIR_ERR_NO_SUPPORT, name);
+	        goto failed;
+	    }
+	    ret = xenDaemonOpen_unix(conn, uri->path);
+	    if (ret < 0)
+	        goto failed;
+		
+	    ret = xenDaemonGetVersion(conn, &version);
+	    if (ret < 0)
+		goto failed;
+	} else if (!strcasecmp(uri->scheme, "http")) {
+	    ret = xenDaemonOpen_tcp(conn, uri->server, uri->port);
+            if (ret < 0)
+	        goto failed;
+	    ret = xenDaemonGetVersion(conn, &version);
+	    if (ret < 0)
+	        goto failed;
+	} else {
+	    if (!(flags & VIR_DRV_OPEN_QUIET))
+		virXendError(conn, VIR_ERR_NO_SUPPORT, name);
+	    goto failed;
+	}
     }
-    uri = xmlParseURI(name);
-    if (uri == NULL) {
-	if (!(flags & VIR_DRV_OPEN_QUIET))
-	    virXendError(conn, VIR_ERR_NO_SUPPORT, name);
-	return(-1);
-    }
-    if ((uri->scheme != NULL) && (strncasecmp(uri->scheme, "xen", 3))) {
+
+done:
+    if (uri != NULL)
         xmlFreeURI(uri);
-	return(-1);
-    }
-
-    xmlFreeURI(uri);
-
-    ret = xenDaemonOpen_tcp(conn, "localhost", 8000);
-    if (ret < 0) {
-      return ret;
-    }
-
-    /* A sort of "ping" to make sure the daemon is actually
-       alive & well, rather than just assuming it is */
-    if ((ret = xenDaemonGetVersion(conn, &version)) < 0) {
-      xenDaemonClose(conn);
-      return ret;
-    }
-
-/*    return(xenDaemonOpen_unix(conn, "/var/lib/xend/xend-socket")); */
-
     return(ret);
+failed:
+    if (uri != NULL)
+        xmlFreeURI(uri);
+    return(-1);
 }
 #endif /* !XEN_RO */
 
