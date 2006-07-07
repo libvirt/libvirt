@@ -1,8 +1,16 @@
+Fri Jul  7 09:47:14 EDT 2006 Daniel Berrange <berrange@redhat.com>
+	* src/xend_internal.c: changed xenDaemonLookupByID to simply do
+	an sexpr GET on /xend/domain/[ID] instead of listing all names
+	and iterating over /xend/domain/[NAME]. Reduces the running time
+	and number of GETs from O(n^2) to O(n).
+
+	* src/xend_internal.c: fixed xenDaemonOpen() to try both unix and
+
 Wed Jul  5 17:11:32 IST 2006 Mark McLoughlin <markmc@redhat.com>
 
 	* xml.c: allow a <domain> to not have any <disk> devices - e.g.
 	when using an NFS root.
-	
+
 Thu Jul  6 10:32:14 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: fixed xenDaemonOpen() to try both unix and

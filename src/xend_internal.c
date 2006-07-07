@@ -1082,7 +1082,7 @@ xenDaemonDomainCreateLinux(virConnectPtr xend, const char *sexpr)
  */
 int
 xenDaemonDomainLookupByName_ids(virConnectPtr xend, const char *domname,
-                    unsigned char *uuid)
+				unsigned char *uuid)
 {
     struct sexpr *root;
     const char *value;
@@ -1117,6 +1117,62 @@ xenDaemonDomainLookupByName_ids(virConnectPtr xend, const char *domname,
   error:
     sexpr_free(root);
     return (ret);
+}
+
+
+/**
+ * xenDaemonDomainLookupByID:
+ * @xend: A xend instance
+ * @id: The id of the domain
+ * @name: return value for the name if not NULL
+ * @uuid: return value for the UUID if not NULL
+ *
+ * This method looks up the name of a domain based on its id
+ *
+ * Returns the 0 on success; -1 (with errno) on error
+ */
+int
+xenDaemonDomainLookupByID(virConnectPtr xend,
+			  int id,
+			  char **domname,
+			  unsigned char *uuid)
+{
+    const char *name = NULL;
+    char *dst_uuid;
+    struct sexpr *root;
+
+    memset(uuid, 0, 16);
+
+    root = sexpr_get(xend, "/xend/domain/%d?detail=1", id);
+    if (root == NULL)
+      goto error;
+
+    name = sexpr_node(root, "domain/name");
+    if (name == NULL) {
+      virXendError(xend, VIR_ERR_INTERNAL_ERROR,
+                   "domain informations incomplete, missing name");
+      goto error;
+    }
+    if (domname)
+      *domname = strdup(name);
+
+    dst_uuid = (char *)&uuid[0];
+    if (sexpr_uuid(&dst_uuid, root, "domain/uuid") == NULL) {
+      virXendError(xend, VIR_ERR_INTERNAL_ERROR,
+                   "domain informations incomplete, missing uuid");
+      goto error;
+    }
+
+    sexpr_free(root);
+    return (0);
+
+error:
+    sexpr_free(root);
+    if (domname && *domname) {
+      free(*domname);
+      *domname = NULL;
+    }
+    return (-1);
 }
 
 /**
@@ -2264,33 +2320,13 @@ error:
  */
 static virDomainPtr
 xenDaemonLookupByID(virConnectPtr conn, int id) {
-    char **names;
-    char **tmp;
-    int ident;
     char *name = NULL;
     unsigned char uuid[16];
     virDomainPtr ret;
 
-    /*
-     * Xend API forces to collect the full domain list by names, and then
-     * query each of them until the id is found
-     */
-    names = xenDaemonListDomainsOld(conn);
-    tmp = names;
-
-    if (names != NULL) {
-       while (*tmp != NULL) {
-          ident = xenDaemonDomainLookupByName_ids(conn, *tmp, &uuid[0]);
-          if (ident == id) {
-             name = strdup(*tmp);
-             break;
-          }
-          tmp++;
-       }
-       free(names);
-    }
-    if (name == NULL)
+    if (xenDaemonDomainLookupByID(conn, id, &name, uuid) < 0) {
         goto error;
+    }
 
     ret = virGetDomain(conn, name, uuid);
     if (ret == NULL) {
@@ -2298,13 +2334,12 @@ xenDaemonLookupByID(virConnectPtr conn, int id) {
         goto error;
     }
     ret->handle = id;
-    if (name != NULL)
-        free(name);
+    free(name);
     return (ret);
 
-error:
+ error:
     if (name != NULL)
-        free(name);
+      free(name);
     return (NULL);
 }
 

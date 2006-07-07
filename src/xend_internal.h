@@ -535,6 +535,20 @@ int xenDaemonDomainLookupByName_ids(virConnectPtr xend,
 
 
 /**
+ * \brief Lookup the name of a domain
+ * \param xend A xend instance
+ * \param id The id of the domain
+ * \param name pointer to store a copy of the name
+ * \param uuid pointer to store a copy of the uuid
+ *
+ * This method looks up the name/uuid of a domain
+ */
+int xenDaemonDomainLookupByID(virConnectPtr xend,
+			      int id,
+			      char **name, unsigned char *uuid);
+
+
+/**
  * \brief Lookup information about the host machine
  * \param xend A xend instance
  * \return node info on success; NULL (with errno) on error

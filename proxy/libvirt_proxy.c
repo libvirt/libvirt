@@ -454,33 +454,14 @@ retry2:
 	    }
 	    break;
 	case VIR_PROXY_LOOKUP_ID: {
-	    char **names;
-	    char **tmp;
-	    int ident, len;
 	    char *name = NULL;
 	    unsigned char uuid[16];
+	    int len;
 
 	    if (req->len != sizeof(virProxyPacket))
 	        goto comm_error;
 
-	    /*
-	     * Xend API forces to collect the full domain list by names, and
-             * then query each of them until the id is found
-	     */
-	    names = xenDaemonListDomainsOld(conn);
-	    tmp = names;
-
-	    if (names != NULL) {
-	       while (*tmp != NULL) {
-		  ident = xenDaemonDomainLookupByName_ids(conn, *tmp, &uuid[0]);
-		  if (ident == req->data.arg) {
-		     name = *tmp;
-		     break;
-		  }
-		  tmp++;
-	       }
-	    }
-            if (name == NULL) {
+	    if (xenDaemonDomainLookupByID(conn, req->data.arg, &name, uuid) < 0) {
                 req->data.arg = -1;
             } else {
 	        len = strlen(name);
@@ -492,7 +473,8 @@ retry2:
 		memcpy(&request.extra.str[0], uuid, 16);
 		strcpy(&request.extra.str[16], name);
 	    }
-	    free(names);
+	    if (name)
+	        free(name);
 	    break;
 	}
 	case VIR_PROXY_LOOKUP_UUID: {
