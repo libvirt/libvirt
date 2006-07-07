@@ -944,20 +944,19 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
 
     /* analyze of the devices */
     obj = xmlXPathEval(BAD_CAST "/domain/devices/disk", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
-        (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr < 1)) {
-        virXMLError(VIR_ERR_NO_DEVICE, nam, 0);
-        goto error;
-    }
-    for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-        virBufferAdd(&buf, "(device ", 8);
-        res = virDomainParseXMLDiskDesc(obj->nodesetval->nodeTab[i], &buf);
-        if (res != 0) {
-            goto error;
-        }
-        virBufferAdd(&buf, ")", 1);
+    if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+        (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
+	for (i = 0; i < obj->nodesetval->nodeNr; i++) {
+	    virBufferAdd(&buf, "(device ", 8);
+	    res = virDomainParseXMLDiskDesc(obj->nodesetval->nodeTab[i], &buf);
+	    if (res != 0) {
+		goto error;
+	    }
+	    virBufferAdd(&buf, ")", 1);
+	}
     }
     xmlXPathFreeObject(obj);
+
     obj = xmlXPathEval(BAD_CAST "/domain/devices/interface", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {

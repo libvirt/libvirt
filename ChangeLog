@@ -1,3 +1,8 @@
+Wed Jul  5 17:11:32 IST 2006 Mark McLoughlin <markmc@redhat.com>
+
+	* xml.c: allow a <domain> to not have any <disk> devices - e.g.
+	when using an NFS root.
+	
 Thu Jul  6 10:32:14 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: fixed xenDaemonOpen() to try both unix and
