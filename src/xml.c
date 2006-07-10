@@ -563,19 +563,141 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
 #endif
 
 /**
- * virDomainParseXMLOSDesc:
- * @xmldesc: string with the XML description
+ * virDomainParseXMLOSDescHVM:
+ * @node: node containing HVM OS description
  * @buf: a buffer for the result S-Expr
+ * @ctxt: a path context representing the XML description
  *
- * Parse the OS part of the XML description and add it to the S-Expr in buf
- * This is a temporary interface as the S-Expr interface
+ * Parse the OS part of the XML description for an HVM domain and add it to
+ * the S-Expr in buf. This is a temporary interface as the S-Expr interface
  * will be replaced by XML-RPC in the future. However the XML format should
  * stay valid over time.
  *
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
-virDomainParseXMLOSDesc(xmlNodePtr node, virBufferPtr buf)
+virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr ctxt)
+{
+    xmlXPathObjectPtr obj = NULL;
+    xmlNodePtr cur, txt;
+    const xmlChar *type = NULL;
+    const xmlChar *loader = NULL;
+    const xmlChar *dev_model = NULL;
+    const xmlChar *boot_dev = NULL;
+    xmlChar *graphics_type = NULL;
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if ((type == NULL)
+                && (xmlStrEqual(cur->name, BAD_CAST "type"))) {
+                txt = cur->children;
+                if ((txt != NULL) && (txt->type == XML_TEXT_NODE) &&
+		    (txt->next == NULL))
+                    type = txt->content;
+            } else if ((loader == NULL) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "loader"))) {
+                txt = cur->children;
+                if ((txt != NULL) && (txt->type == XML_TEXT_NODE) &&
+		    (txt->next == NULL))
+                    loader = txt->content;
+            } else if ((boot_dev == NULL) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "boot"))) {
+                boot_dev = xmlGetProp(cur, BAD_CAST "dev");
+            }
+        }
+        cur = cur->next;
+    }
+    if ((type == NULL) || (!xmlStrEqual(type, BAD_CAST "hvm"))) {
+        /* VIR_ERR_OS_TYPE */
+        virXMLError(VIR_ERR_OS_TYPE, (const char *) type, 0);
+        return (-1);
+    }
+    virBufferAdd(buf, "(image (hvm ", 12);
+    if (loader == NULL) {
+       virXMLError(VIR_ERR_NO_KERNEL, NULL, 0);
+       goto error;
+    } else {
+       virBufferVSprintf(buf, "(kernel '%s')", (const char *) loader);
+    }
+
+    /* get the device emulation model */
+    obj = xmlXPathEval(BAD_CAST "string(/domain/devices/emulator[1])", ctxt);
+    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
+        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
+        virXMLError(VIR_ERR_NO_KERNEL, NULL, 0); /* TODO: error */
+        goto error;
+    }
+    virBufferVSprintf(buf, "(device_model '%s')",
+                      (const char *) obj->stringval);
+    xmlXPathFreeObject(obj);
+    obj = NULL;
+
+    if (boot_dev) {
+       /* TODO:
+        * Have to figure out the naming used here.
+        */
+       if (xmlStrEqual(type, BAD_CAST "hda")) {
+          virBufferVSprintf(buf, "(boot a)", (const char *) boot_dev);
+       } else if (xmlStrEqual(type, BAD_CAST "hdd")) {
+          virBufferVSprintf(buf, "(boot d)", (const char *) boot_dev);
+       } else {
+          /* Force hd[b|c] if boot_dev specified but not floppy or cdrom? */
+          virBufferVSprintf(buf, "(boot c)", (const char *) boot_dev);
+       }
+    }
+    /* TODO:
+     * Is a cdrom disk device specified?
+     * Kind of ugly since it is buried in the devices/diskk node.
+     */
+    
+    /* Is a graphics device specified? */
+    obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics[1]", ctxt);
+    if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+        (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr = 0)) {
+        virXMLError(VIR_ERR_NO_OS, "", 0); /* TODO: error */
+        goto error;
+    }
+
+    graphics_type = xmlGetProp(obj->nodesetval->nodeTab[0], BAD_CAST "type");
+    if (graphics_type != NULL) {
+        if (xmlStrEqual(graphics_type, BAD_CAST "sdl")) {
+            virBufferAdd(buf, "(sdl 1)", 7);
+            // TODO:
+            // Need to understand sdl options
+            //
+            //virBufferAdd(buf, "(display localhost:10.0)", 24);
+            //virBufferAdd(buf, "(xauthority /root/.Xauthority)", 30);
+        }
+        else if (xmlStrEqual(graphics_type, BAD_CAST "vnc"))
+            virBufferAdd(buf, "(vnc 1)", 7);
+        xmlFree(graphics_type);
+    }
+    xmlXPathFreeObject(obj);
+
+    virBufferAdd(buf, "))", 2);
+
+    return (0);
+error:
+    if (obj != NULL)
+        xmlXPathFreeObject(obj);
+    return(-1);
+}
+
+/**
+ * virDomainParseXMLOSDescPV:
+ * @node: node containing PV OS description
+ * @buf: a buffer for the result S-Expr
+ *
+ * Parse the OS part of the XML description for a paravirtualized domain
+ * and add it to the S-Expr in buf.  This is a temporary interface as the
+ * S-Expr interface will be replaced by XML-RPC in the future. However
+ * the XML format should stay valid over time.
+ *
+ * Returns 0 in case of success, -1 in case of error.
+ */
+static int
+virDomainParseXMLOSDescPV(xmlNodePtr node, virBufferPtr buf)
 {
     xmlNodePtr cur, txt;
     const xmlChar *type = NULL;
@@ -645,7 +767,7 @@ virDomainParseXMLOSDesc(xmlNodePtr node, virBufferPtr buf)
 
 /**
  * virDomainParseXMLDiskDesc:
- * @xmldesc: string with the XML description
+ * @node: node containing disk description
  * @buf: a buffer for the result S-Expr
  *
  * Parse the one disk in the XML description and add it to the S-Expr in buf
@@ -707,10 +829,7 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf)
         return (-1);
     }
     virBufferAdd(buf, "(vbd ", 5);
-    if (target[0] == '/')
-        virBufferVSprintf(buf, "(dev '%s')", (const char *) target);
-    else
-        virBufferVSprintf(buf, "(dev '/dev/%s')", (const char *) target);
+    virBufferVSprintf(buf, "(dev '%s')", (const char *) target);
     if (typ == 0)
         virBufferVSprintf(buf, "(uname 'file:%s')", source);
     else if (typ == 1) {
@@ -732,7 +851,7 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf)
 
 /**
  * virDomainParseXMLIfDesc:
- * @xmldesc: string with the XML description
+ * @node: node containing the interface description
  * @buf: a buffer for the result S-Expr
  *
  * Parse the one interface the XML description and add it to the S-Expr in buf
@@ -824,6 +943,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
     virBuffer buf;
     xmlChar *prop;
     xmlXPathObjectPtr obj = NULL;
+    xmlXPathObjectPtr tmpobj = NULL;
     xmlXPathContextPtr ctxt = NULL;
     int i, res;
     int bootloader = 0;
@@ -861,7 +981,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
         goto error;
     }
     /*
-     * extract soem of the basics, name, memory, cpus ...
+     * extract some of the basics, name, memory, cpus ...
      */
     obj = xmlXPathEval(BAD_CAST "string(/domain/name[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
@@ -928,14 +1048,29 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
     }
     xmlXPathFreeObject(obj);
 
-    /* analyze of the os description */
     obj = xmlXPathEval(BAD_CAST "/domain/os[1]", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
-	res = virDomainParseXMLOSDesc(obj->nodesetval->nodeTab[0], &buf);
-	if (res != 0) {
+	/* Analyze of the os description, based on HVM or PV. */
+	tmpobj = xmlXPathEval(BAD_CAST "string(/domain/os/type[1])", ctxt);
+	if ((tmpobj != NULL) &&
+	    ((tmpobj->type != XPATH_STRING) || (tmpobj->stringval == NULL) ||
+	     (tmpobj->stringval[0] == 0))) {
+	    xmlXPathFreeObject(tmpobj);
+	    virXMLError(VIR_ERR_OS_TYPE, nam, 0);
 	    goto error;
 	}
+
+	if ((tmpobj == NULL) || !xmlStrEqual(tmpobj->stringval, BAD_CAST "hvm")) {
+	    res = virDomainParseXMLOSDescPV(obj->nodesetval->nodeTab[0], &buf);
+	} else {
+	    res = virDomainParseXMLOSDescHVM(obj->nodesetval->nodeTab[0], &buf, ctxt);
+	}
+
+	xmlXPathFreeObject(tmpobj);
+
+	if (res != 0)
+	    goto error;
     } else if (bootloader == 0) {
 	virXMLError(VIR_ERR_NO_OS, nam, 0);
 	goto error;

@@ -1350,10 +1350,77 @@ xend_log(virConnectPtr xend, char *buffer, size_t n_buffer)
  ******
  *****************************************************************/
 #ifndef XEN_RO
+
+/**
+ * xend_parse_sexp_desc_os:
+ * @node: the root of the parsed S-Expression
+ * @buf: output buffer object
+ * @hvm: true or 1 if no contains HVM S-Expression 
+ *
+ * Parse the xend sexp for description of os and append it to buf.
+ *
+ * Returns 0 in case of success and -1 in case of error
+ */
+static int
+xend_parse_sexp_desc_os(struct sexpr *node, virBufferPtr buf, int hvm)
+{
+    const char *tmp;
+
+    if (node == NULL || buf == NULL) {
+       return(-1);
+    }
+    
+    virBufferAdd(buf, "  <os>\n", 7);
+    if (hvm) {
+        virBufferVSprintf(buf, "    <type>hvm</type>\n");
+        tmp = sexpr_node(node, "domain/image/hvm/kernel");
+        if (tmp == NULL) {
+            virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+                         "domain informations incomplete, missing kernel");
+            return(-1);
+	}
+        virBufferVSprintf(buf, "    <loader>%s</loader>\n", tmp);
+        tmp = sexpr_node(node, "domain/image/hvm/boot");
+        if ((tmp != NULL) && (tmp[0] != 0)) {
+           // FIXME:
+           // Figure out how to map the 'a', 'b', 'c' nonsense to a
+           // device.
+           if (tmp[0] == 'a')
+               virBufferAdd(buf, "    <boot dev='/dev/fd0'/>\n", 25 );
+           else if (tmp[0] == 'c')
+              // Don't know what to put here.  Say the vm has been given 3
+              // disks - hda, hdb, hdc.  How does one identify the boot disk?
+               virBufferAdd(buf, "    <boot dev='hda'/>\n", 22 );
+           else if (strcmp(tmp, "d") == 0)
+               virBufferAdd(buf, "    <boot dev='/dev/cdrom'/>\n", 24 );
+        }
+    } else {
+        virBufferVSprintf(buf, "    <type>linux</type>\n");
+        tmp = sexpr_node(node, "domain/image/linux/kernel");
+        if (tmp == NULL) {
+            virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+                         "domain informations incomplete, missing kernel");
+            return(-1);
+	}
+        virBufferVSprintf(buf, "    <kernel>%s</kernel>\n", tmp);
+        tmp = sexpr_node(node, "domain/image/linux/ramdisk");
+        if ((tmp != NULL) && (tmp[0] != 0))
+           virBufferVSprintf(buf, "    <initrd>%s</initrd>\n", tmp);
+        tmp = sexpr_node(node, "domain/image/linux/root");
+        if ((tmp != NULL) && (tmp[0] != 0))
+           virBufferVSprintf(buf, "    <root>%s</root>\n", tmp);
+        tmp = sexpr_node(node, "domain/image/linux/args");
+        if ((tmp != NULL) && (tmp[0] != 0))
+           virBufferVSprintf(buf, "    <cmdline>%s</cmdline>\n", tmp);
+    }
+
+    virBufferAdd(buf, "  </os>\n", 8);
+    return(0);
+}
+
 /**
  * xend_parse_sexp_desc:
  * @root: the root of the parsed S-Expression
- * @name: output name of the domain
  *
  * Parse the xend sexp description and turn it into the XML format similar
  * to the one unsed for creation.
@@ -1368,6 +1435,7 @@ xend_parse_sexp_desc(struct sexpr *root)
     struct sexpr *cur, *node;
     const char *tmp;
     virBuffer buf;
+    int hvm;
 
     if (root == NULL) {
         /* ERROR */
@@ -1407,30 +1475,12 @@ xend_parse_sexp_desc(struct sexpr *root)
     tmp = sexpr_node(root, "domain/bootloader");
     if (tmp != NULL)
 	virBufferVSprintf(&buf, "  <bootloader>%s</bootloader>\n", tmp);
+
     if (sexpr_lookup(root, "domain/image")) {
-        tmp = sexpr_node(root, "domain/image/linux/kernel");
-        if (tmp == NULL) {
-           /*
-            * TODO: we will need some fallback here for other guest OSes
-            */
-           virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-                        "domain informations incomplete, missing kernel");
-           goto error;
-        }
-        virBufferAdd(&buf, "  <os>\n", 7);
-        virBufferVSprintf(&buf, "    <type>linux</type>\n");
-        virBufferVSprintf(&buf, "    <kernel>%s</kernel>\n", tmp);
-        tmp = sexpr_node(root, "domain/image/linux/ramdisk");
-        if ((tmp != NULL) && (tmp[0] != 0))
-           virBufferVSprintf(&buf, "    <initrd>%s</initrd>\n", tmp);
-        tmp = sexpr_node(root, "domain/image/linux/root");
-        if ((tmp != NULL) && (tmp[0] != 0))
-           virBufferVSprintf(&buf, "    <root>%s</root>\n", tmp);
-        tmp = sexpr_node(root, "domain/image/linux/args");
-        if ((tmp != NULL) && (tmp[0] != 0))
-           virBufferVSprintf(&buf, "    <cmdline>%s</cmdline>\n", tmp);
-        virBufferAdd(&buf, "  </os>\n", 8);
+        hvm = sexpr_lookup(root, "domain/image/hvm") ? 1 : 0;
+        xend_parse_sexp_desc_os(root, &buf, hvm);
     }
+
     virBufferVSprintf(&buf, "  <memory>%d</memory>\n",
                       (int) (sexpr_u64(root, "domain/maxmem") << 10));
     virBufferVSprintf(&buf, "  <vcpu>%d</vcpu>\n",
@@ -1446,6 +1496,12 @@ xend_parse_sexp_desc(struct sexpr *root)
 	virBufferVSprintf(&buf, "  <on_crash>%s</on_crash>\n", tmp);
 
     virBufferAdd(&buf, "  <devices>\n", 12);
+
+    /* in case of HVM we have devices emulation */
+    tmp = sexpr_node(root, "domain/image/hvm/device_model");
+    if ((tmp != NULL) && (tmp[0] != 0))
+	virBufferVSprintf(&buf, "    <emulator>%s</emulator>\n", tmp);
+
     for (cur = root; cur->kind == SEXPR_CONS; cur = cur->cdr) {
         node = cur->car;
         if (sexpr_lookup(node, "device/vbd")) {
@@ -1523,9 +1579,32 @@ xend_parse_sexp_desc(struct sexpr *root)
                 virBufferVSprintf(&buf, "<!-- Failed to parse vif: %s -->\n",
                                   serial);
             }
-
         }
     }
+
+    if (hvm) {
+        /* Graphics device */
+        /* TODO:
+         * Support for some additional attributes for graphics device?
+         */
+        tmp = sexpr_node(root, "domain/image/hvm/vnc");
+        if (tmp != NULL) {
+            if (tmp[0] == '1')
+                virBufferAdd(&buf, "    <graphics type='vnc'/>\n", 27 );
+        }
+        
+        tmp = sexpr_node(root, "domain/image/hvm/sdl");
+        if (tmp != NULL) {
+           if (tmp[0] == '1')
+               virBufferAdd(&buf, "    <graphics type='sdl'/>\n", 27 );
+        }
+
+        /*
+         * TODO:
+         * Device for cdrom
+         */
+    }
+    
     virBufferAdd(&buf, "  </devices>\n", 13);
     virBufferAdd(&buf, "</domain>\n", 10);
 
