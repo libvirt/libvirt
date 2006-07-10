@@ -1,3 +1,8 @@
+Mon Jul 10 14:19:52 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* docs/format.html docs/libvir.html docs/news.html: updated the XML
+	  format documentation to cover the new HVM domains.
+
 Mon Jul 10 12:27:17 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c src/xml.c: patches from Jim Fehlig for HVM

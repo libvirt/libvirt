@@ -35,26 +35,27 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p>
 
 <h3>0.1.2: Jul 3 2006</h3>
 <ul>
-  <li> headers include paths fixup
-  <li> proxy mechanism for unpriviledged read-only access by httpu
+  <li>headers include paths fixup</li>
+  <li>proxy mechanism for unpriviledged read-only access by httpu</li>
 </ul>
+
 <h3>0.1.1: Jun 21 2006</h3>
 <ul>
-  <li> building fixes: ncurses fallback (Jim Fehlig), VPATH builds (Daniel P.
-       Berrange)
-  <li> driver cleanups: new entry points, cleanup of libvirt.c (with Daniel P.
-       Berrange)
-  <li> Cope with API change introduced in Xen changeset 10277
-  <li> new test driver for regression checks (Daniel P. Berrange)
-  <li> improvements: added UUID to XML serialization, buffer usage (Karel Zak),
-       --connect argument to virsh (Daniel P. Berrange), 
-  <li> bug fixes: uninitialized memory access in error reporting, S-Expr
-       parsing (Jim Fehlig, Jeremy Katz), virConnectOpen bug, remove a TODO
-       in xs_internal.c
-  <li> documentation: Python examples (David Lutterkort), new Perl binding URL,
-       man page update (Karel Zak)
-       
+  <li>building fixes: ncurses fallback (Jim Fehlig), VPATH builds (Daniel P.
+    Berrange)</li>
+  <li>driver cleanups: new entry points, cleanup of libvirt.c (with Daniel P.
+    Berrange)</li>
+  <li>Cope with API change introduced in Xen changeset 10277</li>
+  <li>new test driver for regression checks (Daniel P. Berrange)</li>
+  <li>improvements: added UUID to XML serialization, buffer usage (Karel
+    Zak), --connect argument to virsh (Daniel P. Berrange),</li>
+  <li>bug fixes: uninitialized memory access in error reporting, S-Expr
+    parsing (Jim Fehlig, Jeremy Katz), virConnectOpen bug, remove a TODO in
+    xs_internal.c</li>
+  <li>documentation: Python examples (David Lutterkort), new Perl binding
+    URL, man page update (Karel Zak)</li>
 </ul>
+
 <h3>0.1.0: Apr 10 2006</h3>
 <ul>
   <li>building fixes: --with-xen-distdir option (Ronald Aigner), out of tree
@@ -65,7 +66,7 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p>
   <li>internal code cleanup: refactoring internals into a driver model, more
     error handling, structure sharing, thread safety and ref counting</li>
   <li>bug fixes: error message (Jim Meyering), error allocation in virsh (Jim
-    Meyering), virDomainLookupByID (Jim Fehlig), </li>
+    Meyering), virDomainLookupByID (Jim Fehlig),</li>
   <li>documentation: updates on architecture, and format, typo fix (Jim
     Meyering)</li>
   <li>bindings: exception handling in examples (Jim Meyering), perl ones out
@@ -267,6 +268,20 @@ available except commiting to the base.</p>
 
 <h2><a name="Format">XML Format</a></h2>
 
+<p>This section describes the XML format used to represent domains, there are
+variations on the format based on the kind of domains run and the options
+used to launch them:</p>
+
+<p><a href="#Normal1">Normal paravirtualized Xen domains</a></p>
+
+<p><a href="#Fully1">Fully virtualized Xen domains</a></p>
+
+<p>The formats try as much as possible to follow the same structure and reuse
+elements and attributes where it makes sense.</p>
+
+<h3 id="Normal"><a name="Normal1" id="Normal1">Normal paravirtualized Xen
+guests</a>:</h3>
+
 <p>The library use an XML format to describe domains, as input to <a
 href="html/libvirt-libvirt.html#virDomainCreateLinux">virDomainCreateLinux()</a>
 and as the output of <a
@@ -377,6 +392,61 @@ poweroff. There is various actions possible when this happen:</p>
 <p>While the format may be extended in various ways as support for more
 hypervisor types and features are added, it is expected that this core subset
 will remain functional in spite of the evolution of the library.</p>
+
+<h3 id="Fully"><a name="Fully1" id="Fully1">Fully virtualized guests</a>
+(added in 0.1.3):</h3>
+
+<p>Here is an example of a domain description used to start an fully
+virtualized (a.k.a. HVM) Xen domain. This requires hardware virtualization
+support at the processor level but allows to run unmodified operating
+systems:</p>
+<pre>&lt;domain type='xen' id='3'&gt;
+  &lt;name&gt;fv0&lt;/name&gt;
+  &lt;uuid&gt;4dea22b31d52d8f32516782e98ab3fa0&lt;/uuid&gt;
+  &lt;os&gt;
+    <span style="color: #0000E5; background-color: #FFFFFF">&lt;type&gt;hvm&lt;/type&gt;</span>
+    <span style="color: #0000E5; background-color: #FFFFFF">&lt;loader&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;</span>
+    <span style="color: #0000E5; background-color: #FFFFFF">&lt;boot dev='hda'/&gt;</span>
+  &lt;/os&gt;
+  &lt;memory&gt;524288&lt;/memory&gt;
+  &lt;vcpu&gt;1&lt;/vcpu&gt;
+  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
+  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
+  &lt;on_crash&gt;restart&lt;/on_crash&gt;
+  &lt;devices&gt;
+    <span style="color: #0000E5; background-color: #FFFFFF">&lt;emulator&gt;/usr/lib/xen/bin/qemu-dm&lt;/emulator&gt;</span>
+    &lt;interface type='bridge'&gt;
+      &lt;source bridge='xenbr0'/&gt;
+      &lt;mac address='00:16:3e:5d:c7:9e'/&gt;
+      &lt;script path='vif-bridge'/&gt;
+    &lt;/interface&gt;
+    &lt;disk type='file'&gt;
+      &lt;source file='/root/fv0'/&gt;
+      &lt;target <span style="color: #0000E5; background-color: #FFFFFF">dev='ioemu:hda'</span>/&gt;
+    &lt;/disk&gt;
+    <span style="color: #0000E5; background-color: #FFFFFF">&lt;graphics type='vnc'/&gt;</span>
+  &lt;/devices&gt;
+&lt;/domain&gt;</pre>
+
+<p>There is a few things to notice specifically for HVM domains:</p>
+<ul>
+  <li>the &lt;os&gt; block description is very different, first it indicates
+    that the type is 'hvm' for hardware virtualization, then instead of a
+    kernel, boot and command line arguments, it points to an os boot loader
+    which ill extract the boot informations from the boot device specified in
+    a separate boot element</li>
+  <li>the &lt;devices&gt; section includes an emulator entry pointing to an
+    additional program in charge of emulating the devices</li>
+  <li>the disk entry indicates in the dev target section that the emulation
+    for the drive is the first IDE disk device hda</li>
+  <li>the &lt;devices&gt; section also include at least one entry for the
+    graphic device used to render the os. Currently there is just 2 types
+    possible 'vnc' or 'sdl'</li>
+</ul>
+
+<p>It is likely that the HVM description gets additional elements and
+attributes as the support for fully virtualized domain expands especially for
+the kind of devices emulated and the graphic options offered.</p>
 
 <h2><a name="Python" id="Python">Binding for Python</a></h2>
 

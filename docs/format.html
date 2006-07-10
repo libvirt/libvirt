@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>XML Format</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">XML Format</h1><p>The library use an XML format to describe domains, as input to <a href="html/libvirt-libvirt.html#virDomainCreateLinux">virDomainCreateLinux()</a>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>XML Format</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">XML Format</h1><p>This section describes the XML format used to represent domains, there are
+variations on the format based on the kind of domains run and the options
+used to launch them:</p><p><a href="#Normal1">Normal paravirtualized Xen domains</a></p><p><a href="#Fully1">Fully virtualized Xen domains</a></p><p>The formats try as much as possible to follow the same structure and reuse
+elements and attributes where it makes sense.</p><h3 id="Normal"><a name="Normal1" id="Normal1">Normal paravirtualized Xen
+guests</a>:</h3><p>The library use an XML format to describe domains, as input to <a href="html/libvirt-libvirt.html#virDomainCreateLinux">virDomainCreateLinux()</a>
 and as the output of <a href="html/libvirt-libvirt.html#virDomainGetXMLDesc">virDomainGetXMLDesc()</a>,
 the following is an example of the format as returned by the shell command
 <code>virsh xmldump fc4</code> , where fc4 was one of the running domains:</p><pre>&lt;domain type='xen' <span style="color: #0071FF; background-color: #FFFFFF">id='18'</span>&gt;
@@ -81,4 +85,48 @@ poweroff. There is various actions possible when this happen:</p><ul><li>destroy
   ...
 &lt;/domain&gt;</pre><p>While the format may be extended in various ways as support for more
 hypervisor types and features are added, it is expected that this core subset
-will remain functional in spite of the evolution of the library.</p></div></div><div class="linkList2"><div class="llinks2"><h3 class="links2"><span>main menu</span></h3><ul><li><a href="index.html">Home</a></li><li><a href="news.html">Releases</a></li><li><a href="intro.html">Introduction</a></li><li><a href="architecture.html">libvirt architecture</a></li><li><a href="downloads.html">Downloads</a></li><li><a href="format.html">XML Format</a></li><li><a href="python.html">Binding for Python</a></li><li><a href="errors.html">Handling of errors</a></li><li><a href="FAQ.html">FAQ</a></li><li><a href="bugs.html">Reporting bugs and getting help</a></li><li><a href="html/index.html">API Menu</a></li><li><a href="examples/index.html">C code examples</a></li><li><a href="ChangeLog.html">Recent Changes</a></li></ul></div><div class="llinks2"><h3 class="links2"><span>related links</span></h3><ul><li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li><li><a href="https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&amp;component=libvirt&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;bug_status=MODIFIED&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;long_desc_type=allwordssubstr">Open bugs</a></li><li><a href="http://search.cpan.org/~danberr/Sys-Virt-0.1.0/">Perl bindings</a></li><li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li><li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" /></form></li><li><a href="http://xmlsoft.org/"><img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li></ul><p class="credits">Graphics and design by <a href="mail:dfong@redhat.com">Diana Fong</a></p></div></div><div id="bottom"><p class="p1"></p></div></div></body></html>
+will remain functional in spite of the evolution of the library.</p><h3 id="Fully"><a name="Fully1" id="Fully1">Fully virtualized guests</a>
+(added in 0.1.3):</h3><p>Here is an example of a domain description used to start an fully
+virtualized (a.k.a. HVM) Xen domain. This requires hardware virtualization
+support at the processor level but allows to run unmodified operating
+systems:</p><pre>&lt;domain type='xen' id='3'&gt;
+  &lt;name&gt;fv0&lt;/name&gt;
+  &lt;uuid&gt;4dea22b31d52d8f32516782e98ab3fa0&lt;/uuid&gt;
+  &lt;os&gt;
+    <span style="color: #0000E5; background-color: #FFFFFF">&lt;type&gt;hvm&lt;/type&gt;</span>
+    <span style="color: #0000E5; background-color: #FFFFFF">&lt;loader&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;</span>
+    <span style="color: #0000E5; background-color: #FFFFFF">&lt;boot dev='hda'/&gt;</span>
+  &lt;/os&gt;
+  &lt;memory&gt;524288&lt;/memory&gt;
+  &lt;vcpu&gt;1&lt;/vcpu&gt;
+  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
+  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
+  &lt;on_crash&gt;restart&lt;/on_crash&gt;
+  &lt;devices&gt;
+    <span style="color: #0000E5; background-color: #FFFFFF">&lt;emulator&gt;/usr/lib/xen/bin/qemu-dm&lt;/emulator&gt;</span>
+    &lt;interface type='bridge'&gt;
+      &lt;source bridge='xenbr0'/&gt;
+      &lt;mac address='00:16:3e:5d:c7:9e'/&gt;
+      &lt;script path='vif-bridge'/&gt;
+    &lt;/interface&gt;
+    &lt;disk type='file'&gt;
+      &lt;source file='/root/fv0'/&gt;
+      &lt;target <span style="color: #0000E5; background-color: #FFFFFF">dev='ioemu:hda'</span>/&gt;
+    &lt;/disk&gt;
+    <span style="color: #0000E5; background-color: #FFFFFF">&lt;graphics type='vnc'/&gt;</span>
+  &lt;/devices&gt;
+&lt;/domain&gt;</pre><p>There is a few things to notice specifically for HVM domains:</p><ul><li>the &lt;os&gt; block description is very different, first it indicates
+    that the type is 'hvm' for hardware virtualization, then instead of a
+    kernel, boot and command line arguments, it points to an os boot loader
+    which ill extract the boot informations from the boot device specified in
+    a separate boot element</li>
+  <li>the &lt;devices&gt; section includes an emulator entry pointing to an
+    additional program in charge of emulating the devices</li>
+  <li>the disk entry indicates in the dev target section that the emulation
+    for the drive is the first IDE disk device hda</li>
+  <li>the &lt;devices&gt; section also include at least one entry for the
+    graphic device used to render the os. Currently there is just 2 types
+    possible 'vnc' or 'sdl'</li>
+</ul><p>It is likely that the HVM description gets additional elements and
+attributes as the support for fully virtualized domain expands especially for
+the kind of devices emulated and the graphic options offered.</p></div></div><div class="linkList2"><div class="llinks2"><h3 class="links2"><span>main menu</span></h3><ul><li><a href="index.html">Home</a></li><li><a href="news.html">Releases</a></li><li><a href="intro.html">Introduction</a></li><li><a href="architecture.html">libvirt architecture</a></li><li><a href="downloads.html">Downloads</a></li><li><a href="format.html">XML Format</a></li><li><a href="python.html">Binding for Python</a></li><li><a href="errors.html">Handling of errors</a></li><li><a href="FAQ.html">FAQ</a></li><li><a href="bugs.html">Reporting bugs and getting help</a></li><li><a href="html/index.html">API Menu</a></li><li><a href="examples/index.html">C code examples</a></li><li><a href="ChangeLog.html">Recent Changes</a></li></ul></div><div class="llinks2"><h3 class="links2"><span>related links</span></h3><ul><li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li><li><a href="https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&amp;component=libvirt&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;bug_status=MODIFIED&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;long_desc_type=allwordssubstr">Open bugs</a></li><li><a href="http://search.cpan.org/~danberr/Sys-Virt-0.1.0/">Perl bindings</a></li><li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li><li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" /></form></li><li><a href="http://xmlsoft.org/"><img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li></ul><p class="credits">Graphics and design by <a href="mail:dfong@redhat.com">Diana Fong</a></p></div></div><div id="bottom"><p class="p1"></p></div></div></body></html>

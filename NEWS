@@ -6,34 +6,24 @@
 
 Releases
 0.1.2: Jul 3 2006:
-   -  headers include paths fixup
-  
-   -  proxy mechanism for unpriviledged read-only access by httpu
-
+   - headers include paths fixup
+   - proxy mechanism for unpriviledged read-only access by httpu
 
 
 0.1.1: Jun 21 2006:
-   -  building fixes: ncurses fallback (Jim Fehlig), VPATH builds (Daniel P.
-       Berrange)
-  
-   -  driver cleanups: new entry points, cleanup of libvirt.c (with Daniel P.
-       Berrange)
-  
-   -  Cope with API change introduced in Xen changeset 10277
-  
-   -  new test driver for regression checks (Daniel P. Berrange)
-  
-   -  improvements: added UUID to XML serialization, buffer usage (Karel Zak),
-       --connect argument to virsh (Daniel P. Berrange), 
-  
-   -  bug fixes: uninitialized memory access in error reporting, S-Expr
-       parsing (Jim Fehlig, Jeremy Katz), virConnectOpen bug, remove a TODO
-       in xs_internal.c
-  
-   -  documentation: Python examples (David Lutterkort), new Perl binding URL,
-       man page update (Karel Zak)
-       
-
+   - building fixes: ncurses fallback (Jim Fehlig), VPATH builds (Daniel P.
+    Berrange)
+   - driver cleanups: new entry points, cleanup of libvirt.c (with Daniel P.
+    Berrange)
+   - Cope with API change introduced in Xen changeset 10277
+   - new test driver for regression checks (Daniel P. Berrange)
+   - improvements: added UUID to XML serialization, buffer usage (Karel
+    Zak), --connect argument to virsh (Daniel P. Berrange),
+   - bug fixes: uninitialized memory access in error reporting, S-Expr
+    parsing (Jim Fehlig, Jeremy Katz), virConnectOpen bug, remove a TODO in
+    xs_internal.c
+   - documentation: Python examples (David Lutterkort), new Perl binding
+    URL, man page update (Karel Zak)
 
 
 0.1.0: Apr 10 2006:
@@ -45,7 +35,7 @@ Releases
    - internal code cleanup: refactoring internals into a driver model, more
     error handling, structure sharing, thread safety and ref counting
    - bug fixes: error message (Jim Meyering), error allocation in virsh (Jim
-    Meyering), virDomainLookupByID (Jim Fehlig), 
+    Meyering), virDomainLookupByID (Jim Fehlig),
    - documentation: updates on architecture, and format, typo fix (Jim
     Meyering)
    - bindings: exception handling in examples (Jim Meyering), perl ones out
