@@ -1,3 +1,9 @@
+Tue Jul 11 18:03:51 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in libvirt.spec.in docs/* NEWS: preparing release of
+	  libvirt-0.1.3
+	* src/xend_internal.c: uninitialized var and disable TCP slow start 
+
 Mon Jul 10 14:19:52 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* docs/format.html docs/libvir.html docs/news.html: updated the XML
@@ -14,7 +20,6 @@ Fri Jul  7 09:47:14 EDT 2006 Daniel Berrange <berrange@redhat.com>
 	an sexpr GET on /xend/domain/[ID] instead of listing all names
 	and iterating over /xend/domain/[NAME]. Reduces the running time
 	and number of GETs from O(n^2) to O(n).
-	* src/xend_internal.c: fixed xenDaemonOpen() to try both unix and
 
 Wed Jul  5 17:11:32 IST 2006 Mark McLoughlin <markmc@redhat.com>
 

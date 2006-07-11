@@ -33,6 +33,17 @@ development of libvirt, it is preferable when possible to just use the <a
 href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p>
 
+<h3>0.1.3: Jul 11 2006</h3>
+<ul>
+  <li>bugfixes: build as non-root, fix xend access when root, handling of
+    empty XML elements (Mark McLoughlin), XML serialization and parsing fixes
+    (Mark McLoughlin), allow to create domains without disk (Mark
+    McLoughlin), </li>
+  <li>improvement: xenDaemonLookupByID from O(n^2) to O(n) (Daniel Berrange),
+    support for fully virtualized guest (Jim Fehlig, DV, Mark McLoughlin)</li>
+  <li>documentation: augmented to cover hvm domains</li>
+</ul>
+
 <h3>0.1.2: Jul 3 2006</h3>
 <ul>
   <li>headers include paths fixup</li>
@@ -396,7 +407,7 @@ will remain functional in spite of the evolution of the library.</p>
 <h3 id="Fully"><a name="Fully1" id="Fully1">Fully virtualized guests</a>
 (added in 0.1.3):</h3>
 
-<p>Here is an example of a domain description used to start an fully
+<p>Here is an example of a domain description used to start a fully
 virtualized (a.k.a. HVM) Xen domain. This requires hardware virtualization
 support at the processor level but allows to run unmodified operating
 systems:</p>
@@ -433,8 +444,8 @@ systems:</p>
   <li>the &lt;os&gt; block description is very different, first it indicates
     that the type is 'hvm' for hardware virtualization, then instead of a
     kernel, boot and command line arguments, it points to an os boot loader
-    which ill extract the boot informations from the boot device specified in
-    a separate boot element</li>
+    which will extract the boot informations from the boot device specified
+    in a separate boot element</li>
   <li>the &lt;devices&gt; section includes an emulator entry pointing to an
     additional program in charge of emulating the devices</li>
   <li>the disk entry indicates in the dev target section that the emulation
@@ -444,9 +455,10 @@ systems:</p>
     possible 'vnc' or 'sdl'</li>
 </ul>
 
-<p>It is likely that the HVM description gets additional elements and
-attributes as the support for fully virtualized domain expands especially for
-the kind of devices emulated and the graphic options offered.</p>
+<p>It is likely that the HVM description gets additional optional elements
+and attributes as the support for fully virtualized domain expands,
+especially for the variety of devices emulated and the graphic support
+options offered.</p>
 
 <h2><a name="Python" id="Python">Binding for Python</a></h2>
 

@@ -5,6 +5,16 @@
        http://libvirt.org/news.html
 
 Releases
+0.1.3: Jul 11 2006:
+   - bugfixes: build as non-root, fix xend access when root, handling of
+    empty XML elements (Mark McLoughlin), XML serialization and parsing fixes
+    (Mark McLoughlin), allow to create domains without disk (Mark
+    McLoughlin), 
+   - improvement: xenDaemonLookupByID from O(n^2) to O(n) (Daniel Berrange),
+    support for fully virtualized guest (Jim Fehlig, DV, Mark McLoughlin)
+   - documentation: augmented to cover hvm domains
+
+
 0.1.2: Jul 3 2006:
    - headers include paths fixup
    - proxy mechanism for unpriviledged read-only access by httpu

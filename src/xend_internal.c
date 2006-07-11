@@ -184,6 +184,7 @@ do_connect(virConnectPtr xend)
 {
     int s;
     int serrno;
+    int no_slow_start = 1;
 
     s = socket(xend->type, SOCK_STREAM, 0);
     if (s == -1) {
@@ -191,6 +192,13 @@ do_connect(virConnectPtr xend)
                      "failed to create a socket");
         return -1;
     }
+
+    /*
+     * try to desactivate slow-start
+     */
+    setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *)&no_slow_start,
+               sizeof(no_slow_start));
+
 
     if (connect(s, xend->addr, xend->len) == -1) {
         serrno = errno;
@@ -1435,7 +1443,7 @@ xend_parse_sexp_desc(struct sexpr *root)
     struct sexpr *cur, *node;
     const char *tmp;
     virBuffer buf;
-    int hvm;
+    int hvm = 0;
 
     if (root == NULL) {
         /* ERROR */
