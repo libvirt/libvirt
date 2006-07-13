@@ -11,8 +11,10 @@ BuildRequires: xen python python-devel
 Requires: xen
 Requires: libxml2
 Requires: readline
+Requires: ncurses
 BuildRequires: libxml2-devel
 BuildRequires: readline-devel
+BuildRequires: ncurses-devel
 Obsoletes: libvir
 ExclusiveArch: i386 x86_64
 

@@ -1,3 +1,8 @@
+Thu Jul 13 23:33:48 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xml.c: applied patch from Peter Vetere to pass down the
+	  UUID from the XML description if present when creating the domain.
+
 Tue Jul 11 18:03:51 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in libvirt.spec.in docs/* NEWS: preparing release of
