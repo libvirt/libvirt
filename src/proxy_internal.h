@@ -76,8 +76,8 @@ struct _virProxyFullPacket {
     union {
         char       str[4080];   /* extra char array */
         int        arg[1020];   /* extra int array */
-	virDomainInfo dinfo;	/* domain informations */
-	virNodeInfo   ninfo;	/* node informations */
+	virDomainInfo dinfo;	/* domain information */
+	virNodeInfo   ninfo;	/* node information */
     } extra;
 };
 typedef struct _virProxyFullPacket virProxyFullPacket;

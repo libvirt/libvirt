@@ -456,43 +456,43 @@ __virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = "unknown OS type %s";
             break;
         case VIR_ERR_NO_KERNEL:
-            errmsg = "missing kernel informations";
+            errmsg = "missing kernel information";
             break;
         case VIR_ERR_NO_ROOT:
             if (info == NULL)
-                errmsg = "missing root device informations";
+                errmsg = "missing root device information";
             else
-                errmsg = "missing root device informations in %s";
+                errmsg = "missing root device information in %s";
             break;
         case VIR_ERR_NO_SOURCE:
             if (info == NULL)
-                errmsg = "missing source informations for device";
+                errmsg = "missing source information for device";
             else
-                errmsg = "missing source informations for device %s";
+                errmsg = "missing source information for device %s";
             break;
         case VIR_ERR_NO_TARGET:
             if (info == NULL)
-                errmsg = "missing target informations for device";
+                errmsg = "missing target information for device";
             else
-                errmsg = "missing target informations for device %s";
+                errmsg = "missing target information for device %s";
             break;
         case VIR_ERR_NO_NAME:
             if (info == NULL)
-                errmsg = "missing domain name informations";
+                errmsg = "missing domain name information";
             else
-                errmsg = "missing domain name informations in %s";
+                errmsg = "missing domain name information in %s";
             break;
         case VIR_ERR_NO_OS:
             if (info == NULL)
-                errmsg = "missing operating system informations";
+                errmsg = "missing operating system information";
             else
-                errmsg = "missing operating system informations for %s";
+                errmsg = "missing operating system information for %s";
             break;
         case VIR_ERR_NO_DEVICE:
             if (info == NULL)
-                errmsg = "missing devices informations";
+                errmsg = "missing devices information";
             else
-                errmsg = "missing devices informations for %s";
+                errmsg = "missing devices information for %s";
             break;
         case VIR_ERR_DRIVER_FULL:
             if (info == NULL)

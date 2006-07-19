@@ -443,7 +443,7 @@ xend_get(virConnectPtr xend, const char *path,
  * xend_post:
  * @xend: pointer to the Xen Daemon structure
  * @path: the path used for the HTTP request
- * @ops: the informations sent for the POST
+ * @ops: the information sent for the POST
  * @content: the buffer to store the content
  * @n_content: the size of the buffer
  *
@@ -1105,20 +1105,20 @@ xenDaemonDomainLookupByName_ids(virConnectPtr xend, const char *domname,
     value = sexpr_node(root, "domain/domid");
     if (value == NULL) {
         virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-                     "domain informations incomplete, missing domid");
+                     "domain information incomplete, missing domid");
         goto error;
     }
     ret = strtol(value, NULL, 0);
     if ((ret == 0) && (value[0] != '0')) {
         virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-                     "domain informations incorrect domid not numberic");
+                     "domain information incorrect domid not numberic");
         ret = -1;
     } else if (uuid != NULL) {
         char **ptr = (char **) &uuid;
 
         if (sexpr_uuid(ptr, root, "domain/uuid") == NULL) {
             virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-                         "domain informations incomplete, missing uuid");
+                         "domain information incomplete, missing uuid");
         }
     }
 
@@ -1158,7 +1158,7 @@ xenDaemonDomainLookupByID(virConnectPtr xend,
     name = sexpr_node(root, "domain/name");
     if (name == NULL) {
       virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-                   "domain informations incomplete, missing name");
+                   "domain information incomplete, missing name");
       goto error;
     }
     if (domname)
@@ -1167,7 +1167,7 @@ xenDaemonDomainLookupByID(virConnectPtr xend,
     dst_uuid = (char *)&uuid[0];
     if (sexpr_uuid(&dst_uuid, root, "domain/uuid") == NULL) {
       virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-                   "domain informations incomplete, missing uuid");
+                   "domain information incomplete, missing uuid");
       goto error;
     }
 
@@ -1384,7 +1384,7 @@ xend_parse_sexp_desc_os(struct sexpr *node, virBufferPtr buf, int hvm)
         tmp = sexpr_node(node, "domain/image/hvm/kernel");
         if (tmp == NULL) {
             virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-                         "domain informations incomplete, missing kernel");
+                         "domain information incomplete, missing kernel");
             return(-1);
 	}
         virBufferVSprintf(buf, "    <loader>%s</loader>\n", tmp);
@@ -1407,7 +1407,7 @@ xend_parse_sexp_desc_os(struct sexpr *node, virBufferPtr buf, int hvm)
         tmp = sexpr_node(node, "domain/image/linux/kernel");
         if (tmp == NULL) {
             virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-                         "domain informations incomplete, missing kernel");
+                         "domain information incomplete, missing kernel");
             return(-1);
 	}
         virBufferVSprintf(buf, "    <kernel>%s</kernel>\n", tmp);
@@ -1461,7 +1461,7 @@ xend_parse_sexp_desc(struct sexpr *root)
     tmp = sexpr_node(root, "domain/name");
     if (tmp == NULL) {
         virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-                     "domain informations incomplete, missing name");
+                     "domain information incomplete, missing name");
         goto error;
     }
     virBufferVSprintf(&buf, "  <name>%s</name>\n", tmp);
@@ -1524,7 +1524,7 @@ xend_parse_sexp_desc(struct sexpr *root)
                 tmp = sexpr_node(node, "device/vbd/dev");
                 if (tmp == NULL) {
                     virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-                                 "domain informations incomplete, vbd has no dev");
+                                 "domain information incomplete, vbd has no dev");
                     goto error;
                 }
                 virBufferVSprintf(&buf, "      <target dev='%s'/>\n", tmp);
@@ -1539,7 +1539,7 @@ xend_parse_sexp_desc(struct sexpr *root)
                 tmp = sexpr_node(node, "device/vbd/dev");
                 if (tmp == NULL) {
                     virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-                                 "domain informations incomplete, vbd has no dev");
+                                 "domain information incomplete, vbd has no dev");
                     goto error;
                 }
                 virBufferVSprintf(&buf, "      <target dev='%s'/>\n", tmp);
@@ -1748,7 +1748,7 @@ sexpr_to_domain(virConnectPtr conn, struct sexpr *root)
 
 error:
     virXendError(conn, VIR_ERR_INTERNAL_ERROR,
-                 "failed to parse Xend domain informations");
+                 "failed to parse Xend domain information");
     if (ret != NULL)
         virFreeDomain(conn, ret);
     return(NULL);

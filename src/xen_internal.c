@@ -582,9 +582,9 @@ xenHypervisorGetMaxMemory(virDomainPtr domain)
  * xenHypervisorGetDomInfo:
  * @conn: connection data
  * @id: the domain ID
- * @info: the place where informations should be stored
+ * @info: the place where information should be stored
  *
- * Do an hypervisor call to get the related set of domain informations.
+ * Do an hypervisor call to get the related set of domain information.
  *
  * Returns 0 in case of success, -1 in case of error.
  */
@@ -660,9 +660,9 @@ xenHypervisorGetDomInfo(virConnectPtr conn, int id, virDomainInfoPtr info)
 /**
  * xenHypervisorGetDomainInfo:
  * @domain: pointer to the domain block
- * @info: the place where informations should be stored
+ * @info: the place where information should be stored
  *
- * Do an hypervisor call to get the related set of domain informations.
+ * Do an hypervisor call to get the related set of domain information.
  *
  * Returns 0 in case of success, -1 in case of error.
  */
@@ -794,7 +794,7 @@ xenHypervisorSetMaxMemory(virDomainPtr domain, unsigned long memory)
 /**
  * xenHypervisorCheckID:
  * @domain: pointer to the domain block
- * @info: the place where informations should be stored
+ * @info: the place where information should be stored
  *
  * Do an hypervisor call to verify the domain ID is valid
  *

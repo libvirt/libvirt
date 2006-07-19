@@ -231,7 +231,7 @@ static vshCmdInfo info_help[] = {
     {"syntax", "help [<command>]"},
     {"help", "print help"},
     {"desc", "Prints global help or command specific help."},
-    {"version", "Prints versionning informations."},
+    {"version", "Prints version information."},
     {NULL, NULL}
 };
 
@@ -833,7 +833,7 @@ cmdNodeinfo(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 static vshCmdInfo info_dumpxml[] = {
     {"syntax", "dumpxml <name>"},
     {"help", "domain information in XML"},
-    {"desc", "Ouput the domain informations as an XML dump to stdout"},
+    {"desc", "Ouput the domain information as an XML dump to stdout"},
     {NULL, NULL}
 };
 
@@ -968,7 +968,7 @@ cmdDomuuid(vshControl * ctl, vshCmd * cmd)
 static vshCmdInfo info_version[] = {
     {"syntax", "version"},
     {"help", "show versions"},
-    {"desc", "Display the version informations available"},
+    {"desc", "Display the version information available"},
     {NULL, NULL}
 };
 

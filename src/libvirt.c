@@ -1396,7 +1396,7 @@ virDomainSetMemory(virDomainPtr domain, unsigned long memory)
  * @info: pointer to a virDomainInfo structure allocated by the user
  * 
  * Extract information about a domain. Note that if the connection
- * used to get the domain is limited only a partial set of the informations
+ * used to get the domain is limited only a partial set of the information
  * can be extracted.
  *
  * Returns 0 in case of success and -1 in case of failure.

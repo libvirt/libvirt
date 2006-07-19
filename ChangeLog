@@ -1,3 +1,8 @@
+Wed Jul 19 17:26:48 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/*.c: Bulk replace 'informations' with 'information' to
+	correct English spelling
+
 Thu Jul 13 23:33:48 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xml.c: applied patch from Peter Vetere to pass down the

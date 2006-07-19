@@ -246,7 +246,7 @@ virDomainGetXMLDeviceInfo(virDomainPtr domain, const char *sub,
  * @buf: the output buffer object
  * @dev: the xenstrore internal device number
  *
- * Extract and dump in the buffer informations on the device used by the domain
+ * Extract and dump in the buffer information on the device used by the domain
  *
  * Returns 0 in case of success, -1 in case of failure
  */
@@ -357,7 +357,7 @@ virDomainGetXMLDevices(virDomainPtr domain, virBufferPtr buf)
  * @buf: the output buffer object
  * @dev: the xenstrore internal device number
  *
- * Extract and dump in the buffer informations on the interface used by
+ * Extract and dump in the buffer information on the interface used by
  * the domain
  *
  * Returns 0 in case of success, -1 in case of failure
@@ -457,7 +457,7 @@ virDomainGetXMLInterfaces(virDomainPtr domain, virBufferPtr buf)
  * @domain: a domain object
  * @buf: the output buffer object
  *
- * Extract the boot informations used to start that domain
+ * Extract the boot information used to start that domain
  *
  * Returns 0 in case of success, -1 in case of failure
  */
