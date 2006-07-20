@@ -2,7 +2,7 @@
 
 INCLUDES = -I$(top_builddir)/include -I@top_srcdir@/include \
            -I@top_srcdir@/proxy -I@top_srcdir@/src @LIBXML_CFLAGS@ \
-	   -DXEN_RO
+	   -DPROXY
 
 
 libexec_PROGRAMS = libvirt_proxy

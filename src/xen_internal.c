@@ -49,11 +49,13 @@ static int hv_version = 0;
 
 #define XEN_HYPERVISOR_SOCKET "/proc/xen/privcmd"
 
+#ifndef PROXY
 static const char * xenHypervisorGetType(virConnectPtr conn);
 static unsigned long xenHypervisorGetMaxMemory(virDomainPtr domain);
+#endif
 static int xenHypervisorInit(void);
 
-#ifndef XEN_RO
+#ifndef PROXY
 static virDriver xenHypervisorDriver = {
     VIR_DRV_XEN_HYPERVISOR,
     "Xen",
@@ -89,7 +91,7 @@ static virDriver xenHypervisorDriver = {
     NULL, /* domainSave */
     NULL /* domainRestore */
 };
-#endif /* !XEN_RO */
+#endif /* !PROXY */
 
 /**
  * virXenError:
@@ -177,7 +179,7 @@ done:
 
 }
 
-#ifndef XEN_RO
+#ifndef PROXY
 /**
  * xenHypervisorRegister:
  *
@@ -190,7 +192,7 @@ void xenHypervisorRegister(void)
 
     virRegisterDriver(&xenHypervisorDriver);
 }
-#endif /* !XEN_RO */
+#endif /* !PROXY */
 
 /**
  * xenHypervisorOpen:
@@ -333,6 +335,7 @@ xenHypervisorDoOp(int handle, dom0_op_t * op)
     return (0);
 }
 
+#ifndef PROXY
 /**
  * xenHypervisorGetType:
  * @conn: pointer to the Xen Hypervisor block
@@ -352,6 +355,7 @@ xenHypervisorGetType(virConnectPtr conn)
     }
     return("Xen");
 }
+#endif
 
 /**
  * xenHypervisorGetVersion:
@@ -558,6 +562,7 @@ xenHypervisorGetDomMaxMemory(virConnectPtr conn, int id)
     return((unsigned long) dominfo.max_pages * 4);
 }
 
+#ifndef PROXY
 /**
  * xenHypervisorGetMaxMemory:
  * @domain: a domain object or NULL
@@ -577,6 +582,7 @@ xenHypervisorGetMaxMemory(virDomainPtr domain)
 
     return(xenHypervisorGetDomMaxMemory(domain->conn, domain->handle));
 }
+#endif
 
 /**
  * xenHypervisorGetDomInfo:

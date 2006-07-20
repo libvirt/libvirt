@@ -1,3 +1,9 @@
+Thu Jul 20 09:05:15 EDT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* proxy/Makefile.am src/xen_internal.c src/xend_internal.c: cleanup
+	  code when compiled for the proxy, changed the command line macro and
+	  remove warnings.
+
 Wed Jul 19 17:26:48 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/*.c: Bulk replace 'informations' with 'information' to
