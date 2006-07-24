@@ -1,3 +1,7 @@
+Mon Jul 24 14:34:15 IST 2006 Mark McLoughlin <markmc@redhat.com>
+
+	* libvirt.spec.in: sync changes from fedora CVS
+
 Thu Jul 20 09:05:15 EDT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* proxy/Makefile.am src/xen_internal.c src/xend_internal.c: cleanup
