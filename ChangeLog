@@ -1,3 +1,9 @@
+Fri Jul 28 16:18:30 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/virterror.c: Hugh Brock pointed out that error message
+	  for bad argument were wrong and incomplete, this should fix it and
+	  a few other problems in error reporting
+
 Mon Jul 24 14:34:15 IST 2006 Mark McLoughlin <markmc@redhat.com>
 
 	* libvirt.spec.in: sync changes from fedora CVS

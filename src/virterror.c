@@ -387,7 +387,10 @@ __virErrorMsg(virErrorNumber error, const char *info)
             errmsg = "out of memory";
             break;
         case VIR_ERR_NO_SUPPORT:
-            errmsg = "no support for hypervisor %s";
+            if (info != NULL)
+		errmsg = "no support for hypervisor";
+	    else
+		errmsg = "no support for hypervisor %s";
             break;
         case VIR_ERR_NO_CONNECT:
             if (info == NULL)
@@ -396,13 +399,22 @@ __virErrorMsg(virErrorNumber error, const char *info)
                 errmsg = "could not connect to %s";
             break;
         case VIR_ERR_INVALID_CONN:
-            errmsg = "invalid connection pointer in";
+            if (info == NULL)
+		errmsg = "invalid connection pointer in";
+	    else
+		errmsg = "invalid connection pointer in %s";
             break;
         case VIR_ERR_INVALID_DOMAIN:
-            errmsg = "invalid domain pointer in";
+            if (info == NULL)
+		errmsg = "invalid domain pointer in";
+	    else
+	        errmsg = "invalid domain pointer in %s";
             break;
         case VIR_ERR_INVALID_ARG:
-            errmsg = "invalid domain pointer in";
+            if (info == NULL)
+		errmsg = "invalid argument in";
+	    else
+		errmsg = "invalid argument in %s";
             break;
         case VIR_ERR_OPERATION_FAILED:
             if (info != NULL)
@@ -426,7 +438,10 @@ __virErrorMsg(virErrorNumber error, const char *info)
             errmsg = "got unknown HTTP error code %d";
             break;
         case VIR_ERR_UNKNOWN_HOST:
-            errmsg = "unknown host %s";
+            if (info != NULL)
+		errmsg = "unknown host %s";
+	    else
+		errmsg = "unknown host";
             break;
         case VIR_ERR_SEXPR_SERIAL:
             if (info != NULL)
