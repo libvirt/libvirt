@@ -1,3 +1,7 @@
+Tue Aug  1 16:22:52 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* libvirt.spec.in: xen is now built for ia64, c.f. RH#199685
+
 Fri Jul 28 16:18:30 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/virterror.c: Hugh Brock pointed out that error message
