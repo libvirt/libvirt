@@ -18,7 +18,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
-
+#include <limits.h>
 #include <stdint.h>
 
 /* required for dom0_getdomaininfo_t */
@@ -845,3 +845,136 @@ xenHypervisorCheckID(virConnectPtr conn, int id)
     return (0);
 }
 
+/**
+ * xenHypervisorSetVcpus:
+ * @domain: pointer to domain object
+ * @nvcpus: the new number of virtual CPUs for this domain
+ *
+ * Dynamically change the number of virtual CPUs used by the domain.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+
+int
+xenHypervisorSetVcpus(virDomainPtr domain, unsigned int nvcpus)
+{
+    dom0_op_t op;
+
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->conn->handle < 0)
+     || (nvcpus < 1))
+        return (-1);
+    op.cmd = DOM0_MAX_VCPUS;
+    op.u.max_vcpus.domain = (domid_t) domain->handle;
+    op.u.max_vcpus.max = nvcpus;
+    if (xenHypervisorDoOp(domain->conn->handle, &op) < 0)
+        return (-1);
+    return 0;
+}
+
+/**
+ * xenHypervisorPinVcpu:
+ * @domain: pointer to domain object
+ * @vcpu: virtual CPU number
+ * @cpumap: pointer to a bit map of real CPUs (in 8-bit bytes)
+ * @maplen: length of cpumap in bytes
+ * 
+ * Dynamically change the real CPUs which can be allocated to a virtual CPU.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+
+int
+xenHypervisorPinVcpu(virDomainPtr domain, unsigned int vcpu,
+                     unsigned char *cpumap, int maplen)
+{
+    dom0_op_t op;
+    uint64_t *pm = (uint64_t *)&op.u.setvcpuaffinity.cpumap; 
+    int j;
+
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->conn->handle < 0)
+     || (cpumap == NULL) || (maplen < 1) || (maplen > (int)sizeof(cpumap_t))
+     || (sizeof(cpumap_t) & 7))
+        return (-1);
+    op.cmd = DOM0_SETVCPUAFFINITY;
+    op.u.setvcpuaffinity.domain = (domid_t) domain->handle;
+    op.u.setvcpuaffinity.vcpu = vcpu;
+    memset(pm, 0, sizeof(cpumap_t));
+    for (j = 0; j < maplen; j++)
+        *(pm + (j / 8)) |= cpumap[j] << (8 * (j & 7));
+    if (xenHypervisorDoOp(domain->conn->handle, &op) < 0)
+        return (-1);
+    return 0;
+}
+
+/**
+ * virDomainGetVcpus:
+ * @domain: pointer to domain object, or NULL for Domain0
+ * @info: pointer to an array of virVcpuInfo structures (OUT)
+ * @maxinfo: number of structures in info array
+ * @cpumaps: pointer to an bit map of real CPUs for all vcpus of this domain (in 8-bit bytes) (OUT)
+ *	If cpumaps is NULL, then no cupmap information is returned by the API.
+ *	It's assumed there is <maxinfo> cpumap in cpumaps array.
+ *	The memory allocated to cpumaps must be (maxinfo * maplen) bytes
+ *	(ie: calloc(maxinfo, maplen)).
+ *	One cpumap inside cpumaps has the format described in virDomainPinVcpu() API.
+ * @maplen: number of bytes in one cpumap, from 1 up to size of CPU map in
+ *	underlying virtualization system (Xen...).
+ * 
+ * Extract information about virtual CPUs of domain, store it in info array
+ * and also in cpumaps if this pointer is'nt NULL.
+ *
+ * Returns the number of info filled in case of success, -1 in case of failure.
+ */
+int
+xenHypervisorGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
+		      unsigned char *cpumaps, int maplen)
+{
+    dom0_op_t op;
+    uint64_t *pm = (uint64_t *)&op.u.getvcpuinfo.cpumap; 
+    virVcpuInfoPtr ipt;
+    int nbinfo, mapl, i;
+    unsigned char *cpumap;
+    int vcpu, cpu;
+
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->conn->handle < 0)
+     || (info == NULL) || (maxinfo < 1)
+     || (sizeof(cpumap_t) & 7))
+        return (-1);
+    if (cpumaps != NULL && maplen < 1)
+	return -1;
+
+    /* first get the number of virtual CPUs in this domain */
+    op.cmd = DOM0_GETDOMAININFO;
+    op.u.getdomaininfo.domain = (domid_t) domain->handle;
+    if (xenHypervisorDoOp(domain->conn->handle, &op) < 0)
+        return (-1);
+    nbinfo = (int)op.u.getdomaininfo.max_vcpu_id + 1;
+    if (nbinfo > maxinfo) nbinfo = maxinfo;
+
+    if (cpumaps != NULL)
+	memset(cpumaps, 0, maxinfo * maplen);
+
+    op.cmd = DOM0_GETVCPUINFO;
+    for (i=0, ipt=info; i < nbinfo; i++, ipt++) {
+        vcpu = op.u.getvcpuinfo.vcpu = i;
+        if (xenHypervisorDoOp(domain->conn->handle, &op) < 0)
+            return (-1);
+        ipt->number = i;
+        if (op.u.getvcpuinfo.online) {
+            if (op.u.getvcpuinfo.running) ipt->state = VIR_VCPU_RUNNING;
+            if (op.u.getvcpuinfo.blocked) ipt->state = VIR_VCPU_BLOCKED;
+        }
+        else ipt->state = VIR_VCPU_OFFLINE;
+        ipt->cpuTime = op.u.getvcpuinfo.cpu_time;
+        ipt->cpu = op.u.getvcpuinfo.online ? (int)op.u.getvcpuinfo.cpu : -1;
+	if (cpumaps != NULL && vcpu >= 0 && vcpu < maxinfo) {
+	    cpumap = (unsigned char *)VIR_GET_CPUMAP(cpumaps, maplen, vcpu);
+	    mapl = (maplen > (int)sizeof(cpumap_t)) ? (int)sizeof(cpumap_t) : maplen;
+            for (cpu = 0; cpu < (mapl * CHAR_BIT); cpu++) {
+		if (*pm & ((uint64_t)1<<cpu))
+		    VIR_USE_CPU(cpumap, cpu);
+	    }
+	}
+    }
+    return nbinfo;
+}

@@ -1392,14 +1392,18 @@ xend_parse_sexp_desc_os(struct sexpr *node, virBufferPtr buf, int hvm)
         virBufferVSprintf(buf, "    <loader>%s</loader>\n", tmp);
         tmp = sexpr_node(node, "domain/image/hvm/boot");
         if ((tmp != NULL) && (tmp[0] != 0)) {
-           // FIXME:
-           // Figure out how to map the 'a', 'b', 'c' nonsense to a
-           // device.
+	   /*
+            * FIXME:
+            * Figure out how to map the 'a', 'b', 'c' nonsense to a
+            * device.
+	    */
            if (tmp[0] == 'a')
                virBufferAdd(buf, "    <boot dev='/dev/fd0'/>\n", 25 );
            else if (tmp[0] == 'c')
-              // Don't know what to put here.  Say the vm has been given 3
-              // disks - hda, hdb, hdc.  How does one identify the boot disk?
+	   /*
+            * Don't know what to put here.  Say the vm has been given 3
+            * disks - hda, hdb, hdc.  How does one identify the boot disk?
+	    */
                virBufferAdd(buf, "    <boot dev='hda'/>\n", 22 );
            else if (strcmp(tmp, "d") == 0)
                virBufferAdd(buf, "    <boot dev='/dev/cdrom'/>\n", 24 );
@@ -2432,6 +2436,158 @@ xenDaemonLookupByID(virConnectPtr conn, int id) {
     if (name != NULL)
       free(name);
     return (NULL);
+}
+
+/**
+ * xenDaemonDomainSetVcpus:
+ * @domain: pointer to domain object
+ * @nvcpus: the new number of virtual CPUs for this domain
+ *
+ * Dynamically change the number of virtual CPUs used by the domain.
+ *
+ * Returns 0 for success; -1 (with errno) on error
+ */
+int
+xenDaemonDomainSetVcpus(virDomainPtr domain, int vcpus)
+{
+    char buf[16];
+
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)
+     || (vcpus < 1)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return (-1);
+    }
+    snprintf(buf, sizeof(buf), "%d", vcpus);
+    return(xend_op(domain->conn, domain->name, "op", "set_vcpus", "vcpus",
+                   buf, NULL));
+}
+
+/**
+ * xenDaemonDomainPinCpu:
+ * @domain: pointer to domain object
+ * @vcpu: virtual CPU number
+ * @cpumap: pointer to a bit map of real CPUs (in 8-bit bytes)
+ * @maplen: length of cpumap in bytes
+ * 
+ * Dynamically change the real CPUs which can be allocated to a virtual CPU.
+ *
+ * Returns 0 for success; -1 (with errno) on error
+ */
+int
+xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
+                     unsigned char *cpumap, int maplen)
+{
+    char buf[16], mapstr[sizeof(cpumap_t) * 64] = "[";
+    int i, j;
+
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)
+     || (cpumap == NULL) || (maplen < 1) || (maplen > (int)sizeof(cpumap_t))) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return (-1);
+    }
+
+    /* from bit map, build character string of mapped CPU numbers */
+    for (i = 0; i < maplen; i++) for (j = 0; j < 8; j++)
+     if (cpumap[i] & (1 << j)) {
+        sprintf(buf, "%d,", (8 * i) + j);
+        strcat(mapstr, buf);
+    }
+    mapstr[strlen(mapstr) - 1] = ']';
+    snprintf(buf, sizeof(buf), "%d", vcpu);
+    return(xend_op(domain->conn, domain->name, "op", "pincpu", "vcpu", buf,
+                  "cpumap", mapstr, NULL));
+}
+
+/**
+ * virDomainGetVcpus:
+ * @domain: pointer to domain object, or NULL for Domain0
+ * @info: pointer to an array of virVcpuInfo structures (OUT)
+ * @maxinfo: number of structures in info array
+ * @cpumaps: pointer to an bit map of real CPUs for all vcpus of this domain (in 8-bit bytes) (OUT)
+ *	If cpumaps is NULL, then no cupmap information is returned by the API.
+ *	It's assumed there is <maxinfo> cpumap in cpumaps array.
+ *	The memory allocated to cpumaps must be (maxinfo * maplen) bytes
+ *	(ie: calloc(maxinfo, maplen)).
+ *	One cpumap inside cpumaps has the format described in virDomainPinVcpu() API.
+ * @maplen: number of bytes in one cpumap, from 1 up to size of CPU map in
+ *	underlying virtualization system (Xen...).
+ * 
+ * Extract information about virtual CPUs of domain, store it in info array
+ * and also in cpumaps if this pointer is'nt NULL.
+ *
+ * Returns the number of info filled in case of success, -1 in case of failure.
+ */
+int
+xenDaemonDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
+			unsigned char *cpumaps, int maplen)
+{
+    struct sexpr *root, *s, *t;
+    virVcpuInfoPtr ipt = info;
+    int nbinfo = 0, oln;
+    unsigned char *cpumap;
+    int vcpu, cpu;
+
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)
+     || (info == NULL) || (maxinfo < 1)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return (-1);
+    }
+    if (cpumaps != NULL && maplen < 1) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return (-1);
+    }
+    root = sexpr_get(domain->conn, "/xend/domain/%s?op=vcpuinfo", domain->name);
+    if (root == NULL)
+        return (-1);
+
+    if (cpumaps != NULL)
+	memset(cpumaps, 0, maxinfo * maplen);
+
+    /* scan the sexprs from "(vcpu (number x)...)" and get parameter values */
+    for (s = root; s->kind == SEXPR_CONS; s = s->cdr)
+     if ((s->car->kind == SEXPR_CONS) &&
+	 (s->car->car->kind == SEXPR_VALUE) &&
+	 !strcmp(s->car->car->value, "vcpu")) {
+        t = s->car;
+        vcpu = ipt->number = sexpr_int(t, "vcpu/number");
+        if (oln = sexpr_int(t, "vcpu/online")) {
+            if (sexpr_int(t, "vcpu/running")) ipt->state = VIR_VCPU_RUNNING;
+            if (sexpr_int(t, "vcpu/blocked")) ipt->state = VIR_VCPU_BLOCKED;
+        }
+        else ipt->state = VIR_VCPU_OFFLINE;
+        ipt->cpuTime = sexpr_float(t, "vcpu/cpu_time") * 1000000000;
+        ipt->cpu = oln ? sexpr_int(t, "vcpu/cpu") : -1;
+
+	if (cpumaps != NULL && vcpu >= 0 && vcpu < maxinfo) {
+	    cpumap = (unsigned char *) VIR_GET_CPUMAP(cpumaps, maplen, vcpu);
+            /*
+	     * get sexpr from "(cpumap (x y z...))" and convert values
+	     * to bitmap
+	     */
+            for (t = t->cdr; t->kind == SEXPR_CONS; t = t->cdr)
+             if ((t->car->kind == SEXPR_CONS) &&
+	     	 (t->car->car->kind == SEXPR_VALUE) &&
+		 !strcmp(t->car->car->value, "cpumap") &&
+		 (t->car->cdr->kind == SEXPR_CONS)) {
+        	for (t = t->car->cdr->car; t->kind == SEXPR_CONS; t = t->cdr)
+        	 if (t->car->kind == SEXPR_VALUE) {
+                    cpu = strtol(t->car->value, NULL, 0);
+		    if (cpu >= 0)
+			VIR_USE_CPU(cpumap, cpu);
+        	}
+        	break;
+            }
+	}
+
+        if (++nbinfo == maxinfo) break;
+        ipt++;
+    }
+    sexpr_free(root);
+    return(nbinfo);
 }
 
 /**

@@ -1,3 +1,11 @@
+Fri Aug  4 11:49:44 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvirt/libvirt.h include/libvirt/libvirt.h.in
+	  src/libvirt.c src/libvirt_sym.version src/xen_internal.c
+	  src/xen_internal.h src/xend_internal.c src/xend_internal.h:
+	  applied patch from Michel Ponceau and Philippe Berthault for
+	  virtual CPU and affinity support plus a bit of cleanup.
+
 Tue Aug  1 16:22:52 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* libvirt.spec.in: xen is now built for ia64, c.f. RH#199685

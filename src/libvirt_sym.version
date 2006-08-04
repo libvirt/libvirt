@@ -47,5 +47,9 @@
 	virConnResetLastError;
 	virDefaultErrorFunc;
 	virNodeGetInfo;
+
+	virDomainSetVcpus;
+	virDomainPinVcpu;
+	virDomainGetVcpus;
     local: *;
 };

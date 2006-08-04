@@ -1649,3 +1649,132 @@ virDomainCreate(virDomainPtr domain) {
     return(-1);
 }
 
+/**
+ * virDomainSetVcpus:
+ * @domain: pointer to domain object, or NULL for Domain0
+ * @nvcpus: the new number of virtual CPUs for this domain
+ *
+ * Dynamically change the number of virtual CPUs used by the domain.
+ * Note that this call may fail if the underlying virtualization hypervisor
+ * does not support it or if growing the number is arbitrary limited.
+ * This function requires priviledged access to the hypervisor.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+
+int
+virDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
+{
+    if (domain == NULL) {
+        TODO
+	return (-1);
+    }
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO)
+        return (-1);
+    if (nvcpus < 1) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+    /* TODO: access though the driver API not directly */
+
+#if 0
+    if (xenHypervisorSetVcpus(domain, nvcpus) == 0)
+        return 0;
+#endif
+    return xenDaemonDomainSetVcpus(domain, nvcpus);
+}
+
+/**
+ * virDomainPinVcpu:
+ * @domain: pointer to domain object, or NULL for Domain0
+ * @vcpu: virtual CPU number
+ * @cpumap: pointer to a bit map of real CPUs (in 8-bit bytes) (IN)
+ * 	Each bit set to 1 means that corresponding CPU is usable.
+ * 	Bytes are stored in little-endian order: CPU0-7, 8-15...
+ * 	In each byte, lowest CPU number is least significant bit.
+ * @maplen: number of bytes in cpumap, from 1 up to size of CPU map in
+ *	underlying virtualization system (Xen...).
+ *	If maplen < size, missing bytes are set to zero.
+ *	If maplen > size, failure code is returned.
+ * 
+ * Dynamically change the real CPUs which can be allocated to a virtual CPU.
+ * This function requires priviledged access to the hypervisor.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+int
+virDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
+                 unsigned char *cpumap, int maplen)
+{
+    if (domain == NULL) {
+        TODO
+	return (-1);
+    }
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO)
+        return (-1);
+    if ((vcpu < 1) || (cpumap == NULL) || (maplen < 1)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+    /* TODO: access though the driver API not directly */
+    if (xenHypervisorPinVcpu(domain, vcpu, cpumap, maplen) == 0)
+        return 0;
+    return (-1); //xenDaemonDomainPinVcpu(domain, vcpu, cpumap, maplen);
+}
+
+/**
+ * virDomainGetVcpus:
+ * @domain: pointer to domain object, or NULL for Domain0
+ * @info: pointer to an array of virVcpuInfo structures (OUT)
+ * @maxinfo: number of structures in info array
+ * @cpumaps: pointer to an bit map of real CPUs for all vcpus of this
+ *      domain (in 8-bit bytes) (OUT)
+ *	If cpumaps is NULL, then no cupmap information is returned by the API.
+ *	It's assumed there is <maxinfo> cpumap in cpumaps array.
+ *	The memory allocated to cpumaps must be (maxinfo * maplen) bytes
+ *	(ie: calloc(maxinfo, maplen)).
+ *	One cpumap inside cpumaps has the format described in
+ *      virDomainPinVcpu() API.
+ * @maplen: number of bytes in one cpumap, from 1 up to size of CPU map in
+ *	underlying virtualization system (Xen...).
+ * 
+ * Extract information about virtual CPUs of domain, store it in info array
+ * and also in cpumaps if this pointer is'nt NULL.
+ *
+ * Returns the number of info filled in case of success, -1 in case of failure.
+ */
+int
+virDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
+		  unsigned char *cpumaps, int maplen)
+{
+    int ret;
+
+    if (domain == NULL) {
+        TODO
+	return (-1);
+    }
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
+    }
+    if ((info == NULL) || (maxinfo < 1)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+    if (cpumaps != NULL && maplen < 1) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+    /* TODO: access though the driver API not directly */
+    ret = xenHypervisorGetVcpus(domain, info, maxinfo, cpumaps, maplen);
+    if (ret != -1) return ret;
+    return xenDaemonDomainGetVcpus(domain, info, maxinfo, cpumaps, maplen);
+}

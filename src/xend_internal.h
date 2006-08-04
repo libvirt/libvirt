@@ -631,6 +631,18 @@ virDomainPtr xenDaemonDomainLookupByName(virConnectPtr conn, const char *domname
 unsigned long xenDaemonDomainGetMaxMemory(virDomainPtr domain);
 char **xenDaemonListDomainsOld(virConnectPtr xend);
 
+int	xenDaemonDomainSetVcpus		(virDomainPtr domain,
+					 int vcpus);
+int	xenDaemonDomainPinVcpu		(virDomainPtr domain,
+					 unsigned int vcpu,
+					 unsigned char *cpumap,
+					 int maplen);
+int	xenDaemonDomainGetVcpus		(virDomainPtr domain,
+					 virVcpuInfoPtr info,
+					 int maxinfo,
+					 unsigned char *cpumaps,
+					 int maplen);
+
 #ifdef __cplusplus
 }
 #endif

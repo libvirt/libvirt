@@ -44,6 +44,18 @@ int	xenHypervisorSetMaxMemory	(virDomainPtr domain,
 		      		  	 unsigned long memory);
 int	xenHypervisorCheckID		(virConnectPtr conn,
 					 int id);
+int	xenHypervisorSetVcpus		(virDomainPtr domain,
+					 unsigned int nvcpus);
+int	xenHypervisorPinVcpu		(virDomainPtr domain,
+					 unsigned int vcpu,
+					 unsigned char *cpumap,
+					 int maplen);
+int	xenHypervisorGetVcpus		(virDomainPtr domain,
+					 virVcpuInfoPtr info,
+					 int maxinfo,
+					 unsigned char *cpumaps,
+					 int maplen);
+
 #ifdef __cplusplus
 }
 #endif
