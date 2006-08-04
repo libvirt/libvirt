@@ -224,10 +224,10 @@ skipped_types = {
 py_types = {
     'void': (None, None, None, None),
     'int':  ('i', None, "int", "int"),
-    'long':  ('i', None, "int", "int"),
+    'long':  ('l', None, "long", "long"),
     'double':  ('d', None, "double", "double"),
     'unsigned int':  ('i', None, "int", "int"),
-    'unsigned long':  ('i', None, "int", "int"),
+    'unsigned long':  ('l', None, "long", "long"),
     'unsigned char *':  ('z', None, "charPtr", "char *"),
     'char *':  ('z', None, "charPtr", "char *"),
     'const char *':  ('z', None, "charPtrConst", "const char *"),

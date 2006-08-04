@@ -1,3 +1,9 @@
+Fri Aug  4 14:45:25 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* python/generator.py: fix the generator when handling long integers
+	  Dan Berrange reported problems due to this when using
+	  virDomainSetMemory bindings
+
 Fri Aug  4 11:49:44 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvirt/libvirt.h include/libvirt/libvirt.h.in
