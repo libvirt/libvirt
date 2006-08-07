@@ -1,3 +1,9 @@
+Mon Aug  7 11:06:20 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Added a 'port' attribute to the '<graphics>'
+	tag when display type is VNC, providing the port number on which
+	the VNC server is listening.
+	
 Mon Aug  7 18:47:48 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvirt/libvirt.h.in: previous change to libvirt.h should

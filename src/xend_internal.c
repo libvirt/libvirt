@@ -1598,13 +1598,12 @@ xend_parse_sexp_desc(struct sexpr *root)
 
     if (hvm) {
         /* Graphics device */
-        /* TODO:
-         * Support for some additional attributes for graphics device?
-         */
         tmp = sexpr_node(root, "domain/image/hvm/vnc");
+	/* XXX extract VNC port from XenStore if its available */
         if (tmp != NULL) {
             if (tmp[0] == '1')
-                virBufferAdd(&buf, "    <graphics type='vnc'/>\n", 27 );
+                virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'/>\n", 
+                                  5900 + sexpr_int(root, "domain/domid"));
         }
         
         tmp = sexpr_node(root, "domain/image/hvm/sdl");
