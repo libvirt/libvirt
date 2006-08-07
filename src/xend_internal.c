@@ -1406,7 +1406,7 @@ xend_parse_sexp_desc_os(struct sexpr *node, virBufferPtr buf, int hvm)
 	    */
                virBufferAdd(buf, "    <boot dev='hda'/>\n", 22 );
            else if (strcmp(tmp, "d") == 0)
-               virBufferAdd(buf, "    <boot dev='/dev/cdrom'/>\n", 24 );
+               virBufferAdd(buf, "    <boot dev='/dev/cdrom'/>\n", 29 );
         }
     } else {
         virBufferVSprintf(buf, "    <type>linux</type>\n");
