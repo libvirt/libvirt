@@ -1720,7 +1720,7 @@ virDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
     }
     if (domain->conn->flags & VIR_CONNECT_RO)
         return (-1);
-    if ((vcpu < 1) || (cpumap == NULL) || (maplen < 1)) {
+    if ((vcpu < 0) || (cpumap == NULL) || (maplen < 1)) {
         virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
     }

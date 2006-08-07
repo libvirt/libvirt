@@ -207,6 +207,7 @@ static void vshDebug(vshControl * ctl, int level, const char *format, ...);
 #define vshPrint(_ctl, ...)   fprintf(stdout, __VA_ARGS__)
 
 static const char *vshDomainStateToString(int state);
+static const char *vshDomainVcpuStateToString(int state);
 static int vshConnectionUsability(vshControl * ctl, virConnectPtr conn,
                                   int showerror);
 
@@ -794,6 +795,175 @@ cmdDominfo(vshControl * ctl, vshCmd * cmd)
 }
 
 /*
+ * "vcpuinfo" command
+ */
+static vshCmdInfo info_vcpuinfo[] = {
+    {"syntax", "vcpuinfo <domain>"},
+    {"help", "domain vcpu information"},
+    {"desc", "Returns basic information about the domain virtual CPUs."},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_vcpuinfo[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdVcpuinfo(vshControl * ctl, vshCmd * cmd)
+{
+    virDomainInfo info;
+    virDomainPtr dom;
+    virNodeInfo nodeinfo;
+    virVcpuInfoPtr cpuinfo;
+    unsigned char *cpumap;
+    int ncpus;
+    size_t cpumaplen;
+    int ret = TRUE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+        return FALSE;
+
+    if (virNodeGetInfo(ctl->conn, &nodeinfo) != 0) {
+        virDomainFree(dom);
+	return FALSE;
+    }
+
+    if (virDomainGetInfo(dom, &info) != 0) {
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    cpuinfo = malloc(sizeof(virVcpuInfo)*info.nrVirtCpu);
+    cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
+    cpumap = malloc(info.nrVirtCpu * cpumaplen);
+
+    if ((ncpus = virDomainGetVcpus(dom, 
+				   cpuinfo, info.nrVirtCpu,
+				   cpumap, cpumaplen)) >= 0) {
+        int n;
+	for (n = 0 ; n < ncpus ; n++) {
+	    unsigned int m;
+	    vshPrint(ctl, "%-15s %d\n", "VCPU:", n);
+	    vshPrint(ctl, "%-15s %d\n", "CPU:", cpuinfo[n].cpu);
+	    vshPrint(ctl, "%-15s %s\n", "State:",
+		     vshDomainVcpuStateToString(cpuinfo[n].state));
+	    if (cpuinfo[n].cpuTime != 0) {
+	        double cpuUsed = cpuinfo[n].cpuTime;
+		
+		cpuUsed /= 1000000000.0;
+		
+		vshPrint(ctl, "%-15s %.1lfs\n", "CPU time:", cpuUsed);
+	    }
+	    vshPrint(ctl, "%-15s ", "CPU Affinity:");
+	    for (m = 0 ; m < VIR_NODEINFO_MAXCPUS(nodeinfo) ; m++) {
+	        vshPrint(ctl, "%c", VIR_CPU_USABLE(cpumap, cpumaplen, n, m) ? 'y' : '-');
+	    }
+	    vshPrint(ctl, "\n");
+	    if (n < (ncpus - 1)) {
+	        vshPrint(ctl, "\n");
+	    }
+	}
+    } else {
+        ret = FALSE;
+    }
+
+    free(cpumap);
+    free(cpuinfo);
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
+ * "vcpupin" command
+ */
+static vshCmdInfo info_vcpupin[] = {
+    {"syntax", "vcpupin <domain>"},
+    {"help", "control domain vcpu affinity"},
+    {"desc", "Pin domain VCPUs to host physical CPUs"},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_vcpupin[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
+    {"vcpu", VSH_OT_DATA, VSH_OFLAG_REQ, "vcpu number"},
+    {"cpulist", VSH_OT_DATA, VSH_OFLAG_REQ, "host cpu number(s) (comma separated)"},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdVcpupin(vshControl * ctl, vshCmd * cmd)
+{
+    virDomainInfo info;
+    virDomainPtr dom;
+    virNodeInfo nodeinfo;
+    int vcpu;
+    char *cpulist;
+    int ret = TRUE;
+    int vcpufound = 0;
+    unsigned char *cpumap;
+    int cpumaplen;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+        return FALSE;
+
+    vcpu = vshCommandOptInt(cmd, "vcpu", &vcpufound);
+    if (!vcpufound) {
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    if (!(cpulist = vshCommandOptString(cmd, "cpulist", NULL))) {
+        virDomainFree(dom);
+        return FALSE;
+    }
+      
+    if (virNodeGetInfo(ctl->conn, &nodeinfo) != 0) {
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    if (virDomainGetInfo(dom, &info) != 0) {
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    if (vcpu >= info.nrVirtCpu) {
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
+    cpumap = malloc(cpumaplen);
+    memset(cpumap, 0, cpumaplen);
+
+    do {
+        unsigned int cpu = atoi(cpulist);
+
+        if (cpu < VIR_NODEINFO_MAXCPUS(nodeinfo)) {
+            VIR_USE_CPU(cpumap, cpu);
+        }
+        cpulist = index(cpulist, ',');
+        if (cpulist)
+            cpulist++;
+    } while (cpulist);
+
+    if (virDomainPinVcpu(dom, vcpu, cpumap, cpumaplen) != 0) {
+        ret = FALSE;
+    }
+
+    free(cpumap);
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "nodeinfo" command
  */
 static vshCmdInfo info_nodeinfo[] = {
@@ -1081,6 +1251,8 @@ static vshCmdDef commands[] = {
     {"save", cmdSave, opts_save, info_save},
     {"shutdown", cmdShutdown, opts_shutdown, info_shutdown},
     {"suspend", cmdSuspend, opts_suspend, info_suspend},
+    {"vcpuinfo", cmdVcpuinfo, opts_vcpuinfo, info_vcpuinfo},
+    {"vcpupin", cmdVcpupin, opts_vcpupin, info_vcpupin},
     {"version", cmdVersion, NULL, info_version},
     {NULL, NULL, NULL, NULL}
 };
@@ -1639,6 +1811,22 @@ vshDomainStateToString(int state)
             return "crashed";
         default:
             return "no state";  /* = dom0 state */
+    }
+    return NULL;
+}
+
+static const char *
+vshDomainVcpuStateToString(int state)
+{
+    switch (state) {
+        case VIR_VCPU_OFFLINE:
+            return "offline";
+        case VIR_VCPU_BLOCKED:
+            return "blocked";
+        case VIR_VCPU_RUNNING:
+            return "running";
+        default:
+            return "no state";
     }
     return NULL;
 }

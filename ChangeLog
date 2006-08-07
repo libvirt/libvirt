@@ -1,3 +1,11 @@
+Fri Aug  4 20:19:23 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/libvirt.c: Fix off-by-one in validated VCPU number (it is
+	zero based, not one based).
+	* include/libvirt/libvirt.h: Add some convenience macros for 
+	calculating neccessary CPU map lengths & total host CPUs
+	* src/virsh.c: Add 'vcpuinfo' and 'vcpumap' commands
+	
 Fri Aug  4 14:45:25 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* python/generator.py: fix the generator when handling long integers

@@ -167,6 +167,18 @@ struct _virNodeInfo {
     unsigned int threads;/* number of threads per core */
 };
 
+
+/**
+ * VIR_NODEINFO_MAXCPUS:
+ * @nodeinfo: virNodeInfo instance
+ *
+ * This macro is to calculate the total number of CPUs supported
+ * but not neccessarily active in the host.
+ */
+
+
+#define VIR_NODEINFO_MAXCPUS(nodeinfo) ((nodeinfo).nodes*(nodeinfo).sockets*(nodeinfo).cores*(nodeinfo).threads)
+
 /**
  * virNodeInfoPtr:
  *
@@ -338,6 +350,18 @@ int			virDomainPinVcpu	(virDomainPtr domain,
  */
 
 #define VIR_UNUSE_CPU(cpumap,cpu)	(cpumap[(cpu)/8] &= ~(1<<((cpu)%8)))
+
+/**
+ * VIR_CPU_MAPLEN
+ * @cpu: number of physical CPUs
+ *
+ * This macro is to be used in conjonction with virDomainPinVcpu() API.
+ * It returns the length (in bytes) required to store the complete
+ * CPU map between a single virtual & all physical CPUs of a domain.
+ */
+
+#define VIR_CPU_MAPLEN(cpu)      (((cpu)+7)/8)
+
 
 int			virDomainGetVcpus	(virDomainPtr domain,
 						 virVcpuInfoPtr info,
