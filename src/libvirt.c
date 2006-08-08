@@ -1665,6 +1665,9 @@ virDomainCreate(virDomainPtr domain) {
 int
 virDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
 {
+    int i;
+    virConnectPtr conn;
+
     if (domain == NULL) {
         TODO
 	return (-1);
@@ -1679,13 +1682,31 @@ virDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
         virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
     }
-    /* TODO: access though the driver API not directly */
+    conn = domain->conn;
 
-#if 0
-    if (xenHypervisorSetVcpus(domain, nvcpus) == 0)
-        return 0;
-#endif
-    return xenDaemonDomainSetVcpus(domain, nvcpus);
+    /*
+     * Go though the driver registered entry points but use the 
+     * XEN_HYPERVISOR directly only as a last mechanism
+     */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->no != VIR_DRV_XEN_HYPERVISOR) &&
+	    (conn->drivers[i]->domainSetVcpus != NULL)) {
+	    if (conn->drivers[i]->domainSetVcpus(domain, nvcpus) == 0)
+	        return(0);
+	}
+    }
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->no == VIR_DRV_XEN_HYPERVISOR) &&
+	    (conn->drivers[i]->domainSetVcpus != NULL)) {
+	    if (conn->drivers[i]->domainSetVcpus(domain, nvcpus) == 0)
+	        return(0);
+	}
+    }
+
+    virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    return (-1);
 }
 
 /**
@@ -1710,6 +1731,9 @@ int
 virDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
                  unsigned char *cpumap, int maplen)
 {
+    int i;
+    virConnectPtr conn;
+
     if (domain == NULL) {
         TODO
 	return (-1);
@@ -1720,14 +1744,25 @@ virDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
     }
     if (domain->conn->flags & VIR_CONNECT_RO)
         return (-1);
-    if ((vcpu < 0) || (cpumap == NULL) || (maplen < 1)) {
+    if ((vcpu > 32000) || (cpumap == NULL) || (maplen < 1)) {
         virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
     }
-    /* TODO: access though the driver API not directly */
-    if (xenHypervisorPinVcpu(domain, vcpu, cpumap, maplen) == 0)
-        return 0;
-    return (-1); //xenDaemonDomainPinVcpu(domain, vcpu, cpumap, maplen);
+    conn = domain->conn;
+
+    /*
+     * Go though the driver registered entry points
+     */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainPinVcpu != NULL)) {
+	    if (conn->drivers[i]->domainPinVcpu(domain, vcpu,
+	                                        cpumap, maplen) == 0)
+	        return(0);
+	}
+    }
+    virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    return (-1);
 }
 
 /**
@@ -1756,6 +1791,8 @@ virDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
 		  unsigned char *cpumaps, int maplen)
 {
     int ret;
+    int i;
+    virConnectPtr conn;
 
     if (domain == NULL) {
         TODO
@@ -1773,8 +1810,20 @@ virDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
         virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
     }
-    /* TODO: access though the driver API not directly */
-    ret = xenHypervisorGetVcpus(domain, info, maxinfo, cpumaps, maplen);
-    if (ret != -1) return ret;
-    return xenDaemonDomainGetVcpus(domain, info, maxinfo, cpumaps, maplen);
+    conn = domain->conn;
+
+    /*
+     * Go though the driver registered entry points
+     */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainGetVcpus != NULL)) {
+	    ret = conn->drivers[i]->domainGetVcpus(domain, info, maxinfo,
+	                                           cpumaps, maplen);
+	    if (ret >= 0)
+	        return(ret);
+	}
+    }
+    virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    return (-1);
 }

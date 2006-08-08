@@ -632,7 +632,7 @@ unsigned long xenDaemonDomainGetMaxMemory(virDomainPtr domain);
 char **xenDaemonListDomainsOld(virConnectPtr xend);
 
 int	xenDaemonDomainSetVcpus		(virDomainPtr domain,
-					 int vcpus);
+					 unsigned int vcpus);
 int	xenDaemonDomainPinVcpu		(virDomainPtr domain,
 					 unsigned int vcpu,
 					 unsigned char *cpumap,

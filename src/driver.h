@@ -105,6 +105,21 @@ typedef int
 	(*virDrvDomainRestore)		(virConnectPtr conn,
 					 const char *from);
 
+typedef int
+	(*virDrvDomainSetVcpus)		(virDomainPtr domain,
+					 unsigned int nvcpus);
+typedef int
+	(*virDrvDomainPinVcpu)		(virDomainPtr domain,
+					 unsigned int vcpu,
+					 unsigned char *cpumap,
+					 int maplen);
+typedef int
+	(*virDrvDomainGetVcpus)		(virDomainPtr domain,
+					 virVcpuInfoPtr info,
+					 int maxinfo,
+					 unsigned char *cpumaps,
+					 int maplen);
+
 typedef struct _virDriver virDriver;
 typedef virDriver *virDriverPtr;
 
@@ -146,6 +161,9 @@ struct _virDriver {
 	virDrvDomainGetInfo		domainGetInfo;
 	virDrvDomainSave		domainSave;
 	virDrvDomainRestore		domainRestore;
+	virDrvDomainSetVcpus		domainSetVcpus;
+	virDrvDomainPinVcpu		domainPinVcpu;
+	virDrvDomainGetVcpus		domainGetVcpus;
 };
 
 

@@ -1,3 +1,11 @@
+Tue Aug  8 23:24:51 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/driver.h src/libvirt.c src/proxy_internal.c src/test.c
+	  src/xen_internal.c src/xend_internal.c src/xend_internal.h
+	  src/xml.c src/xs_internal.c: cleanups, force the new vCPU
+	  and affinity entry point to go though the driver framework,
+	  and fix a few warning showing up in my pedantic environment.
+
 Mon Aug  7 18:33:45 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c: Added details of serial console TTY to XML 

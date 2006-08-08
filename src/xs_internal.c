@@ -64,7 +64,10 @@ static virDriver xenStoreDriver = {
     xenStoreDomainSetMemory, /* domainSetMemory */
     xenStoreGetDomainInfo, /* domainGetInfo */
     NULL, /* domainSave */
-    NULL /* domainRestore */
+    NULL, /* domainRestore */
+    NULL, /* domainSetVcpus */
+    NULL, /* domainPinVcpu */
+    NULL /* domainGetVcpus */
 };
 
 /**

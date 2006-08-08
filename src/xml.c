@@ -582,7 +582,6 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
     xmlNodePtr cur, txt;
     const xmlChar *type = NULL;
     const xmlChar *loader = NULL;
-    const xmlChar *dev_model = NULL;
     const xmlChar *boot_dev = NULL;
     xmlChar *graphics_type = NULL;
 
@@ -1020,8 +1019,8 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
     xmlXPathFreeObject(obj);
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/uuid[1])", ctxt);
-    if ((obj == NULL) || (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
+    if ((obj == NULL) || ((obj->type == XPATH_STRING) &&
+        (obj->stringval != NULL) && (obj->stringval[0] != 0))) {
         virBufferVSprintf(&buf, "(uuid '%s')", obj->stringval);
     }
     xmlXPathFreeObject(obj);

@@ -83,7 +83,10 @@ static virDriver xenDaemonDriver = {
     xenDaemonDomainSetMemory, /* domainMaxMemory */
     xenDaemonDomainGetInfo, /* domainGetInfo */
     xenDaemonDomainSave, /* domainSave */
-    xenDaemonDomainRestore /* domainRestore */
+    xenDaemonDomainRestore, /* domainRestore */
+    xenDaemonDomainSetVcpus, /* domainSetVcpus */
+    xenDaemonDomainPinVcpu, /* domainPinVcpu */
+    xenDaemonDomainGetVcpus /* domainGetVcpus */
 };
 
 /**
@@ -475,7 +478,7 @@ xend_post(virConnectPtr xend, const char *path, const char *ops,
             "Accept-Encoding: identity\r\n"
             "Content-Type: application/x-www-form-urlencoded\r\n"
             "Content-Length: ");
-    snprintf(buffer, sizeof(buffer), "%d", strlen(ops));
+    snprintf(buffer, sizeof(buffer), "%d", (int) strlen(ops));
     swrites(s, buffer);
     swrites(s, "\r\n\r\n");
     swrites(s, ops);
@@ -2458,7 +2461,7 @@ xenDaemonLookupByID(virConnectPtr conn, int id) {
  * Returns 0 for success; -1 (with errno) on error
  */
 int
-xenDaemonDomainSetVcpus(virDomainPtr domain, int vcpus)
+xenDaemonDomainSetVcpus(virDomainPtr domain, unsigned int vcpus)
 {
     char buf[16];
 
@@ -2564,7 +2567,7 @@ xenDaemonDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
 	 !strcmp(s->car->car->value, "vcpu")) {
         t = s->car;
         vcpu = ipt->number = sexpr_int(t, "vcpu/number");
-        if (oln = sexpr_int(t, "vcpu/online")) {
+        if ((oln = sexpr_int(t, "vcpu/online")) != 0) {
             if (sexpr_int(t, "vcpu/running")) ipt->state = VIR_VCPU_RUNNING;
             if (sexpr_int(t, "vcpu/blocked")) ipt->state = VIR_VCPU_BLOCKED;
         }

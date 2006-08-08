@@ -71,7 +71,10 @@ static virDriver xenProxyDriver = {
     NULL, /* domainSetMemory */
     xenProxyDomainGetInfo, /* domainGetInfo */
     NULL, /* domainSave */
-    NULL /* domainRestore */
+    NULL, /* domainRestore */
+    NULL, /* domainSetVcpus */
+    NULL, /* domainPinVcpu */
+    NULL /* domainGetVcpus */
 };
 
 /**
@@ -404,7 +407,7 @@ retry:
 	if (ret != sizeof(virProxyPacket)) {
 	    fprintf(stderr,
 		"Communication error with proxy: got %d bytes of %d\n",
-		    ret, sizeof(virProxyPacket));
+		    ret, (int) sizeof(virProxyPacket));
 	    xenProxyClose(conn);
 	    return(-1);
 	}
@@ -412,7 +415,7 @@ retry:
 	if (res->len != sizeof(virProxyPacket)) {
 	    fprintf(stderr,
 		"Communication error with proxy: expected %d bytes got %d\n",
-		    sizeof(virProxyPacket), res->len);
+		    (int) sizeof(virProxyPacket), res->len);
 	    xenProxyClose(conn);
 	    return(-1);
 	}
@@ -425,7 +428,7 @@ retry:
 	if (ret != sizeof(virProxyPacket)) {
 	    fprintf(stderr,
 		"Communication error with proxy: got %d bytes of %d\n",
-		    ret, sizeof(virProxyPacket));
+		    ret, (int) sizeof(virProxyPacket));
 	    xenProxyClose(conn);
 	    return(-1);
 	}
@@ -445,7 +448,7 @@ retry:
 	    if (ret != (int) (res->len - sizeof(virProxyPacket))) {
 		fprintf(stderr,
 		    "Communication error with proxy: got %d bytes of %d\n",
-			ret, sizeof(virProxyPacket));
+			ret, (int) sizeof(virProxyPacket));
 		xenProxyClose(conn);
 		return(-1);
 	    }

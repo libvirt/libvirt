@@ -47,7 +47,10 @@ static virDriver testDriver = {
   NULL, /* domainSetMemory */
   testGetDomainInfo, /* domainGetInfo */
   NULL, /* domainSave */
-  NULL /* domainRestore */
+  NULL, /* domainRestore */
+  NULL, /* domainSetVcpus */
+  NULL, /* domainPinVcpu */
+  NULL /* domainGetVcpus */
 };
 
 /* Amount of time it takes to shutdown */
@@ -211,14 +214,14 @@ int testClose(virConnectPtr conn)
   return 0;
 }
 
-int testGetVersion(virConnectPtr conn,
+int testGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED,
                    unsigned long *hvVer)
 {
   *hvVer = 1;
   return 0;
 }
 
-int testNodeGetInfo(virConnectPtr conn,
+int testNodeGetInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
                     virNodeInfoPtr info)
 {
   memcpy(info, &nodeInfo, sizeof(nodeInfo));
