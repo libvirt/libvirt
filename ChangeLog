@@ -1,3 +1,13 @@
+Mon Aug  7 18:33:45 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Added details of serial console TTY to XML 
+	representation of domain. Fetch VNC port from xenstore if it is
+	available (only in xen 3.0.3 or later).
+	* src/xs_internal.c, src/xs_internal.h: Added APIs for retrieving
+	the serial console TTY and VNC server port from xenstore.
+	* docs/libvir.html: Document 'port' attribute for VNC graphics,
+	and '<console>' element for serial console.
+	
 Mon Aug  7 21:57:41 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* TODO: updated with new items

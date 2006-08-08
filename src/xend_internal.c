@@ -35,6 +35,7 @@
 #include "xml.h"
 #include "xend_internal.h"
 #include "xen_internal.h" /* for DOM0_INTERFACE_VERSION */
+#include "xs_internal.h" /* To extract VNC port & Serial console TTY */
 
 #ifndef PROXY
 static const char * xenDaemonGetType(virConnectPtr conn);
@@ -1434,6 +1435,7 @@ xend_parse_sexp_desc_os(struct sexpr *node, virBufferPtr buf, int hvm)
 
 /**
  * xend_parse_sexp_desc:
+ * @domain: the domain associated with the XML
  * @root: the root of the parsed S-Expression
  *
  * Parse the xend sexp description and turn it into the XML format similar
@@ -1443,11 +1445,12 @@ xend_parse_sexp_desc_os(struct sexpr *node, virBufferPtr buf, int hvm)
  *         the caller must free() the returned value.
  */
 static char *
-xend_parse_sexp_desc(struct sexpr *root)
+xend_parse_sexp_desc(virDomainPtr domain, struct sexpr *root)
 {
     char *ret;
     struct sexpr *cur, *node;
     const char *tmp;
+    char *tty;
     virBuffer buf;
     int hvm = 0;
 
@@ -1599,11 +1602,13 @@ xend_parse_sexp_desc(struct sexpr *root)
     if (hvm) {
         /* Graphics device */
         tmp = sexpr_node(root, "domain/image/hvm/vnc");
-	/* XXX extract VNC port from XenStore if its available */
         if (tmp != NULL) {
-            if (tmp[0] == '1')
-                virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'/>\n", 
-                                  5900 + sexpr_int(root, "domain/domid"));
+            if (tmp[0] == '1') {
+                int port = xenStoreDomainGetVNCPort(domain);
+                if (port == -1) 
+                    port = 5900 + sexpr_int(root, "domain/domid");
+                virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'/>\n", port);
+            }
         }
         
         tmp = sexpr_node(root, "domain/image/hvm/sdl");
@@ -1618,6 +1623,12 @@ xend_parse_sexp_desc(struct sexpr *root)
          */
     }
     
+    tty = xenStoreDomainGetConsolePath(domain);
+    if (tty) {
+        virBufferVSprintf(&buf, "    <console tty='%s'/>\n", tty);
+        free(tty);
+    }
+
     virBufferAdd(&buf, "  </devices>\n", 13);
     virBufferAdd(&buf, "</domain>\n", 10);
 
@@ -2145,7 +2156,7 @@ xenDaemonDomainDumpXML(virDomainPtr domain)
     if (root == NULL)
         return (NULL);
 
-    ret = xend_parse_sexp_desc(root);
+    ret = xend_parse_sexp_desc(domain, root);
     sexpr_free(root);
 
     return (ret);

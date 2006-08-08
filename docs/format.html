@@ -28,6 +28,7 @@ the following is an example of the format as returned by the shell command
       &lt;mac address='</span><span style="color: #0000FF; background-color: #FFFFFF"></span><span style="color: #0000FF; background-color: #FFFFFF">aa:00:00:00:00:11'/&gt;
       &lt;script path='/etc/xen/scripts/vif-bridge'/&gt;
     &lt;/interface&gt;</span>
+    <span style="color: #FF8000; background-color: #FFFFFF">&lt;console tty='/dev/pts/5'/&gt;</span>
   &lt;/devices&gt;
 &lt;/domain&gt;</pre><p>The root element must be called <code>domain</code> with no namespace, the
 <code>type</code> attribute indicates the kind of hypervisor used, 'xen' is
@@ -47,10 +48,10 @@ significant:</p><ul><li>name: the domain name, preferably ASCII based</li>
       <li>root: the root filesystem from the guest viewpoint, it may be
         passed as part of the cmdline content too</li>
     </ul></li>
-  <li>devices: a list of <code>disk</code> and <code>interface</code>
-    descriptions in no special order</li>
+  <li>devices: a list of <code>disk</code>, <code>interface</code>
+    and <code>console</code> descriptions in no special order</li>
 </ul><p>The format of the devices and their type may grow over time, but the
-following should be sufficient for basic use:</p><p>A disk device indicates a block device, it can have two values for the
+following should be sufficient for basic use:</p><p>A <code>disk</code> device indicates a block device, it can have two values for the
 type attribute either 'file' or 'block' corresponding to the 2 options
 availble at the Xen layer. It has two mandatory children, and one optional
 one in no specific order:</p><ul><li>source with a file attribute containing the path in Domain 0 to the
@@ -60,14 +61,17 @@ one in no specific order:</p><ul><li>source with a file attribute containing the
     the guest</li>
   <li>readonly an optional empty element indicating the device is
   read-only</li>
-</ul><p>An interface element describes a network device mapped on the guest, it
+</ul><p>An <code>interface</code> element describes a network device mapped on the guest, it
 also has a type whose value is currently 'bridge', it also have a number of
 children in no specific order:</p><ul><li>source: indicating the bridge name</li>
   <li>mac: the optional mac address provided in the address attribute</li>
   <li>ip: the optional IP address provided in the address attribute</li>
   <li>script: the script used to bridge the interfcae in the Domain 0</li>
   <li>target: and optional target indicating the device name.</li>
-</ul><p>Life cycle actions for the domain can also be expressed in the XML format,
+</ul><p>A <code>console</code> element describes a serial console connection to the
+guest. It has no children, and a single attribute <code>tty</code> which provides
+the path to the Pseudo TTY on which the guest console can be accessed
+</p><p>Life cycle actions for the domain can also be expressed in the XML format,
 they drive what should be happening if the domain crashes, is rebooted or is
 poweroff. There is various actions possible when this happen:</p><ul><li>destroy: The domain is cleaned up (that's the default normal processing
     in Xen)</li>
@@ -113,7 +117,7 @@ systems:</p><pre>&lt;domain type='xen' id='3'&gt;
       &lt;source file='/root/fv0'/&gt;
       &lt;target <span style="color: #0000E5; background-color: #FFFFFF">dev='ioemu:hda'</span>/&gt;
     &lt;/disk&gt;
-    <span style="color: #0000E5; background-color: #FFFFFF">&lt;graphics type='vnc'/&gt;</span>
+    <span style="color: #0000E5; background-color: #FFFFFF">&lt;graphics type='vnc' port='5904'/&gt;</span>
   &lt;/devices&gt;
 &lt;/domain&gt;</pre><p>There is a few things to notice specifically for HVM domains:</p><ul><li>the &lt;os&gt; block description is very different, first it indicates
     that the type is 'hvm' for hardware virtualization, then instead of a

@@ -35,6 +35,9 @@ unsigned long 	xenStoreDomainGetMaxMemory(virDomainPtr domain);
 int 		xenStoreDomainShutdown	(virDomainPtr domain);
 int 		xenStoreDomainReboot	(virDomainPtr domain,
 					 unsigned int flags);
+int             xenStoreDomainGetVNCPort(virDomainPtr domain);
+char *          xenStoreDomainGetConsolePath(virDomainPtr domain);
+
 #ifdef __cplusplus
 }
 #endif

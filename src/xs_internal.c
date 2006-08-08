@@ -627,3 +627,41 @@ xenStoreDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
     return(virDomainDoStoreWrite(domain, "control/shutdown", "reboot"));
 }
 
+/**
+ * xenStoreDomainGetVNCPort:
+ * @domain: pointer to the domain block
+ *
+ * Return the port number on which the domain is listening for VNC
+ * connections. 
+ *
+ * Returns the port number, -1 in case of error
+ */
+int             xenStoreDomainGetVNCPort(virDomainPtr domain) {
+    char *tmp;
+    int ret = -1;
+
+    tmp = virDomainDoStoreQuery(domain, "console/vnc-port");
+    if (tmp != NULL) {
+        char *end;
+        ret = strtol(tmp, &end, 10);
+        if (ret == 0 && end == tmp)
+            ret = -1;
+        free(tmp);
+    }
+    return(ret);
+}
+
+/**
+ * xenStoreDomainGetConsolePath:
+ * @domain: pointer to the domain block
+ *
+ * Return the path to the psuedo TTY on which the guest domain's
+ * serial console is attached.
+ *
+ * Returns the path to the serial console. It is the callers
+ * responsibilty to free() the return string. Returns NULL
+ * on error
+ */
+char *          xenStoreDomainGetConsolePath(virDomainPtr domain) {
+    return virDomainDoStoreQuery(domain, "console/tty");
+}
