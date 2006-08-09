@@ -21,6 +21,7 @@
 #include "proxy_internal.h"
 #include "xen_internal.h"
 #include "xend_internal.h"
+#include "xs_internal.h"
 
 static int fdServer = -1;
 static int debug = 0;
@@ -70,6 +71,11 @@ proxyInitXen(void) {
     if (ret < 0) {
         fprintf(stderr, "Failed to connect to Xen daemon\n");
         return(-1);
+    }
+    ret = xenStoreOpen(conn, NULL, VIR_DRV_OPEN_QUIET | VIR_DRV_OPEN_RO);
+    if (ret < 0) {
+        fprintf(stderr, "Failed to open XenStore connection");
+        return (-1);
     }
     ret = xenDaemonGetVersion(conn, &xenVersion2);
     if (ret != 0) {
@@ -331,6 +337,7 @@ proxyReadClientSocket(int nr) {
     virProxyFullPacket request;
     virProxyPacketPtr req = (virProxyPacketPtr) &request;
     int ret;
+    char *xml;
 
 retry:
     ret = read(pollInfos[nr].fd, req, sizeof(virProxyPacket));
@@ -557,6 +564,27 @@ retry2:
 	    } else {
                 req->data.arg = 0;
 		req->len = sizeof(virProxyPacket) + sizeof(virNodeInfo);
+	    }
+	    break;
+	case VIR_PROXY_DOMAIN_XML:
+	    if (req->len != sizeof(virProxyPacket))
+	        goto comm_error;
+
+	    xml = xenDaemonDomainDumpXMLByID(conn, request.data.arg);
+            if (!xml) {
+                req->data.arg = -1;
+                req->len = sizeof(virProxyPacket);
+	    } else {
+                int xmllen = strlen(xml);
+                if (xmllen > sizeof(request.extra.str)) {
+                    req->data.arg = -2;
+                    req->len = sizeof(virProxyPacket);
+                } else {
+                    req->data.arg = 0;
+                    memmove(&request.extra.str[0], xml, xmllen);
+                    req->len = sizeof(virProxyPacket) + xmllen;
+                }
+                free(xml);
 	    }
 	    break;
 	default:

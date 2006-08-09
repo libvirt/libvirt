@@ -47,7 +47,7 @@ static virDomainPtr xenDaemonLookupByUUID(virConnectPtr conn,
 static virDomainPtr xenDaemonCreateLinux(virConnectPtr conn,
                                          const char *xmlDesc,
 					 unsigned int flags);
-#endif
+#endif /* PROXY */
 
 #ifndef PROXY
 static virDriver xenDaemonDriver = {
@@ -86,7 +86,8 @@ static virDriver xenDaemonDriver = {
     xenDaemonDomainRestore, /* domainRestore */
     xenDaemonDomainSetVcpus, /* domainSetVcpus */
     xenDaemonDomainPinVcpu, /* domainPinVcpu */
-    xenDaemonDomainGetVcpus /* domainGetVcpus */
+    xenDaemonDomainGetVcpus, /* domainGetVcpus */
+    xenDaemonDomainDumpXML, /* domainDumpXML */
 };
 
 /**
@@ -445,6 +446,7 @@ xend_get(virConnectPtr xend, const char *path,
     return ret;
 }
 
+#ifndef PROXY
 /**
  * xend_post:
  * @xend: pointer to the Xen Daemon structure
@@ -495,6 +497,8 @@ xend_post(virConnectPtr xend, const char *path, const char *ops,
 
     return ret;
 }
+#endif /* ! PROXY */
+
 
 /**
  * http2unix:
@@ -525,6 +529,7 @@ http2unix(int ret)
     return -1;
 }
 
+#ifndef PROXY
 /**
  * xend_op_ext2:
  * @xend: pointer to the Xen Daemon structure
@@ -562,6 +567,7 @@ xend_op_ext2(virConnectPtr xend, const char *path, char *error,
     return http2unix(xend_post(xend, path, ops, error, n_error));
 }
 
+
 /**
  * xend_node_op:
  * @xend: pointer to the Xen Daemon structure
@@ -586,6 +592,7 @@ xend_node_op(virConnectPtr xend, const char *path, const char *key, ...)
 
     return ret;
 }
+
 
 /**
  * xend_node_op:
@@ -620,6 +627,7 @@ xend_op_ext(virConnectPtr xend, const char *name, char *error,
 }
 
 #define xend_op(xend, name, key, ...) ({char error[1024]; xend_op_ext(xend, name, error, sizeof(error), key, __VA_ARGS__);})
+#endif /* ! PROXY */
 
 /**
  * sexpr_get:
@@ -819,6 +827,7 @@ sexpr_uuid(char **ptr, struct sexpr *node, const char *path)
 }
 
 
+#ifndef PROXY
 /**
  * urlencode:
  * @string: the input URL
@@ -854,6 +863,7 @@ urlencode(const char *string)
 
     return buffer;
 }
+#endif /* ! PROXY */
 
 /* PUBLIC FUNCTIONS */
 
@@ -890,6 +900,7 @@ xenDaemonOpen_unix(virConnectPtr conn, const char *path)
     return (0);
 }
 
+#ifndef PROXY
 /**
  * xenDaemonOpen_tcp:
  * @conn: an existing virtual connection block
@@ -932,6 +943,7 @@ xenDaemonOpen_tcp(virConnectPtr conn, const char *host, int port)
     return (0);
 }
 
+
 /**
  * xend_wait_for_devices:
  * @xend: pointer to the Xem Daemon block
@@ -947,6 +959,7 @@ xend_wait_for_devices(virConnectPtr xend, const char *name)
 {
     return xend_op(xend, name, "op", "wait_for_devices", NULL);
 }
+
 
 /**
  * xend_rename:
@@ -969,6 +982,7 @@ xend_rename(virConnectPtr xend, const char *old, const char *new)
     return xend_op(xend, old, "op", "rename", "name", new, NULL);
 }
 
+
 /**
  * xend_sysrq:
  * @xend: pointer to the Xem Daemon block
@@ -989,6 +1003,8 @@ xend_sysrq(virConnectPtr xend, const char *name, const char *key)
     }
     return xend_op(xend, name, "op", "sysrq", "key", key, NULL);
 }
+#endif /* PROXY */
+
 
 /**
  * xenDaemonListDomainsOld:
@@ -1047,6 +1063,7 @@ xenDaemonListDomainsOld(virConnectPtr xend)
     return ret;
 }
 
+#ifndef PROXY
 /**
  * xenDaemonDomainCreateLinux:
  * @xend: A xend instance
@@ -1083,6 +1100,7 @@ xenDaemonDomainCreateLinux(virConnectPtr xend, const char *sexpr)
 
     return ret;
 }
+#endif /* ! PROXY */
 
 /**
  * xenDaemonDomainLookupByName_ids:
@@ -1275,6 +1293,7 @@ xend_get_node(virConnectPtr xend)
     return node;
 }
 
+#ifndef PROXY
 /**
  * xend_node_shutdown:
  * @xend: A xend instance
@@ -1302,6 +1321,7 @@ xend_node_restart(virConnectPtr xend)
 {
     return xend_node_op(xend, "/xend/node/", "op", "restart", NULL);
 }
+
 
 /**
  * xend_dmesg:
@@ -1351,6 +1371,7 @@ xend_log(virConnectPtr xend, char *buffer, size_t n_buffer)
 {
     return http2unix(xend_get(xend, "/xend/node/log", buffer, n_buffer));
 }
+#endif /* PROXY */
 
 /*****************************************************************
  ******
@@ -1363,7 +1384,6 @@ xend_log(virConnectPtr xend, char *buffer, size_t n_buffer)
  ******
  ******
  *****************************************************************/
-#ifndef PROXY
 
 /**
  * xend_parse_sexp_desc_os:
@@ -1448,7 +1468,7 @@ xend_parse_sexp_desc_os(struct sexpr *node, virBufferPtr buf, int hvm)
  *         the caller must free() the returned value.
  */
 static char *
-xend_parse_sexp_desc(virDomainPtr domain, struct sexpr *root)
+xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root)
 {
     char *ret;
     struct sexpr *cur, *node;
@@ -1456,6 +1476,7 @@ xend_parse_sexp_desc(virDomainPtr domain, struct sexpr *root)
     char *tty;
     virBuffer buf;
     int hvm = 0;
+    int domid = -1;
 
     if (root == NULL) {
         /* ERROR */
@@ -1468,8 +1489,9 @@ xend_parse_sexp_desc(virDomainPtr domain, struct sexpr *root)
     buf.size = 1000;
     buf.use = 0;
 
-    virBufferVSprintf(&buf, "<domain type='xen' id='%d'>\n",
-                      sexpr_int(root, "domain/domid"));
+    domid = sexpr_int(root, "domain/domid");
+    virBufferVSprintf(&buf, "<domain type='xen' id='%d'>\n", domid);
+                      
     tmp = sexpr_node(root, "domain/name");
     if (tmp == NULL) {
         virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
@@ -1607,9 +1629,9 @@ xend_parse_sexp_desc(virDomainPtr domain, struct sexpr *root)
         tmp = sexpr_node(root, "domain/image/hvm/vnc");
         if (tmp != NULL) {
             if (tmp[0] == '1') {
-                int port = xenStoreDomainGetVNCPort(domain);
+                int port = xenStoreDomainGetVNCPort(conn, domid);
                 if (port == -1) 
-                    port = 5900 + sexpr_int(root, "domain/domid");
+                    port = 5900 + domid;
                 virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'/>\n", port);
             }
         }
@@ -1626,7 +1648,7 @@ xend_parse_sexp_desc(virDomainPtr domain, struct sexpr *root)
          */
     }
     
-    tty = xenStoreDomainGetConsolePath(domain);
+    tty = xenStoreDomainGetConsolePath(conn, domid);
     if (tty) {
         virBufferVSprintf(&buf, "    <console tty='%s'/>\n", tty);
         free(tty);
@@ -1643,7 +1665,7 @@ xend_parse_sexp_desc(virDomainPtr domain, struct sexpr *root)
         free(ret);
     return (NULL);
 }
-#endif /* !PROXY */
+
 
 /**
  * sexpr_to_xend_domain_info:
@@ -1873,7 +1895,7 @@ failed:
         xmlFreeURI(uri);
     return(-1);
 }
-#endif /* !PROXY */
+
 
 /**
  * xenDaemonClose:
@@ -2044,6 +2066,7 @@ xenDaemonDomainRestore(virConnectPtr conn, const char *filename)
     }
     return xend_op(conn, "", "op", "restore", "file", filename, NULL);
 }
+#endif /* !PROXY */
 
 /**
  * xenDaemonDomainGetMaxMemory:
@@ -2076,6 +2099,7 @@ xenDaemonDomainGetMaxMemory(virDomainPtr domain)
     return(ret);
 }
 
+#ifndef PROXY
 /**
  * xenDaemonDomainSetMaxMemory:
  * @domain: pointer to the Domain block
@@ -2133,6 +2157,25 @@ xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory)
                    "target", buf, NULL);
 }
 
+#endif /* ! PROXY */
+
+char *
+xenDaemonDomainDumpXMLByID(virConnectPtr conn, int domid)
+{
+    char *ret = NULL;
+    struct sexpr *root;
+
+    root = sexpr_get(conn, "/xend/domain/%d?detail=1", domid);
+    if (root == NULL)
+        return (NULL);
+
+    ret = xend_parse_sexp_desc(conn, root);
+    sexpr_free(root);
+
+    return (ret);
+}
+
+
 #ifndef PROXY
 /**
  * xenDaemonDomainDumpXML:
@@ -2144,25 +2187,15 @@ xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory)
  *         the caller must free() the returned value.
  */
 char *
-xenDaemonDomainDumpXML(virDomainPtr domain)
+xenDaemonDomainDumpXML(virDomainPtr domain, int flags)
 {
-    char *ret = NULL;
-    struct sexpr *root;
-
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
 	             __FUNCTION__);
         return(NULL);
     }
 
-    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
-    if (root == NULL)
-        return (NULL);
-
-    ret = xend_parse_sexp_desc(domain, root);
-    sexpr_free(root);
-
-    return (ret);
+    return xenDaemonDomainDumpXMLByID(domain->conn, domain->handle);
 }
 #endif /* !PROXY */
 
@@ -2231,7 +2264,7 @@ error:
     sexpr_free(root);
     return(ret);
 }
-#endif
+#endif /* ! PROXY */
 
 /**
  * xenDaemonNodeGetInfo:
@@ -2285,7 +2318,7 @@ xenDaemonGetType(virConnectPtr conn)
     }
     return("XenDaemon");
 }
-#endif
+#endif /* ! PROXY */
 
 /**
  * xenDaemonGetVersion:
@@ -2414,7 +2447,7 @@ error:
 	sexpr_free(root);
     return(ret);
 }
-#endif
+#endif /* ! PROXY */
 
 #ifndef PROXY
 /**
@@ -2734,6 +2767,5 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
         free(name);
     return (NULL);
 }
-
-#endif
+#endif /* ! PROXY */
 

@@ -92,7 +92,8 @@ static virDriver xenHypervisorDriver = {
     NULL, /* domainRestore */
     xenHypervisorSetVcpus, /* domainSetVcpus */
     xenHypervisorPinVcpu, /* domainPinVcpu */
-    xenHypervisorGetVcpus /* domainGetVcpus */
+    xenHypervisorGetVcpus, /* domainGetVcpus */
+    NULL, /* domainDumpXML */
 };
 #endif /* !PROXY */
 
@@ -686,6 +687,7 @@ xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
 
 }
 
+#ifndef PROXY
 /**
  * xenHypervisorPauseDomain:
  * @domain: pointer to the domain block
@@ -799,6 +801,7 @@ xenHypervisorSetMaxMemory(virDomainPtr domain, unsigned long memory)
         return (-1);
     return (0);
 }
+#endif /* PROXY */
 
 /**
  * xenHypervisorCheckID:
@@ -848,6 +851,7 @@ xenHypervisorCheckID(virConnectPtr conn, int id)
     return (0);
 }
 
+#ifndef PROXY
 /**
  * xenHypervisorSetVcpus:
  * @domain: pointer to domain object
@@ -908,6 +912,7 @@ xenHypervisorPinVcpu(virDomainPtr domain, unsigned int vcpu,
         return (-1);
     return 0;
 }
+#endif
 
 /**
  * virDomainGetVcpus:

@@ -562,6 +562,7 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
 
 #endif
 
+#ifndef PROXY
 /**
  * virDomainParseXMLOSDescHVM:
  * @node: node containing HVM OS description
@@ -1140,3 +1141,5 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
         free(ret);
     return (NULL);
 }
+
+#endif /* !PROXY */

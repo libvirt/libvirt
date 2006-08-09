@@ -1442,6 +1442,8 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 char *
 virDomainGetXMLDesc(virDomainPtr domain, int flags)
 {
+    int i;
+    char *ret = NULL;
     if (!VIR_IS_DOMAIN(domain)) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (NULL);
@@ -1451,7 +1453,19 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
         return (NULL);
     }
 
-    return (xenDaemonDomainDumpXML(domain));
+    for (i = 0;i < domain->conn->nb_drivers;i++) {
+	if ((domain->conn->drivers[i] != NULL) &&
+	    (domain->conn->drivers[i]->domainDumpXML != NULL)) {
+            ret = domain->conn->drivers[i]->domainDumpXML(domain, flags);
+	    if (ret)
+	        break;
+	}
+    }
+    if (!ret) {
+        virLibConnError(domain->conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+        return (NULL);
+    }
+    return(ret);
 }
 
 /**

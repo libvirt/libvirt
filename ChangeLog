@@ -1,3 +1,22 @@
+Wed Aug  9 10:17:03 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/driver.h, src/libvirt.c: Made the virDomainGetXMLDesc
+	method use the driver backends.
+	* src/xend_internal.c: Surround all functions which are not
+	needed for proxy with #ifndef PROXY. Refactor XML generator
+	functions to allow calling from proxy based on domain id
+	instead of virDomainPtr object
+	* src/xs_internal.c, src/xs_internal.h: Change signature
+	of method for extracting VNC port & console TTY to use domain
+	id instead of virDomainPtr. Surround functions not used by
+	proxy in #ifndef PROXY
+	* src/xml.c:Surround functions not used by proxy in #ifndef PROXY
+	* src/test.c, src/xen_internal.c: Added NULL entry for new
+	driver method for fetching XML
+	* src/proxy_internal.c, src/proxy_internal.h, proxy/libvirt_proxy.c:
+	Added implmentation of virDomainGetXMLDesc driver method which 
+	goes via proxy.
+	
 Tue Aug  8 23:24:51 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/driver.h src/libvirt.c src/proxy_internal.c src/test.c

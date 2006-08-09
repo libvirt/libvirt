@@ -31,6 +31,7 @@
 
 #define XEN_HYPERVISOR_SOCKET "/proc/xen/privcmd"
 
+#ifndef PROXY
 static virDriver xenStoreDriver = {
     VIR_DRV_XEN_STORE,
     "XenStore",
@@ -67,7 +68,8 @@ static virDriver xenStoreDriver = {
     NULL, /* domainRestore */
     NULL, /* domainSetVcpus */
     NULL, /* domainPinVcpu */
-    NULL /* domainGetVcpus */
+    NULL, /* domainGetVcpus */
+    NULL, /* domainDumpXML */
 };
 
 /**
@@ -79,6 +81,7 @@ void xenStoreRegister(void)
 {
     virRegisterDriver(&xenStoreDriver);
 }
+#endif /* ! PROXY */
 
 /**
  * virXenStoreError:
@@ -106,6 +109,7 @@ virXenStoreError(virConnectPtr conn, virErrorNumber error, const char *info)
  *		Helper internal APIs					*
  *									*
  ************************************************************************/
+#ifndef PROXY
 /**
  * virConnectDoStoreList:
  * @conn: pointer to the hypervisor connection
@@ -126,10 +130,12 @@ virConnectDoStoreList(virConnectPtr conn, const char *path,
 
     return xs_directory(conn->xshandle, 0, path, nb);
 }
+#endif /* ! PROXY */
 
 /**
  * virDomainDoStoreQuery:
- * @domain: a domain object
+ * @conn: pointer to the hypervisor connection
+ * @domid: id of the domain
  * @path: the relative path of the data in the store to retrieve
  *
  * Internal API querying the Xenstore for a string value.
@@ -137,23 +143,21 @@ virConnectDoStoreList(virConnectPtr conn, const char *path,
  * Returns a string which must be freed by the caller or NULL in case of error
  */
 static char *
-virDomainDoStoreQuery(virDomainPtr domain, const char *path)
+virDomainDoStoreQuery(virConnectPtr conn, int domid, const char *path)
 {
     char s[256];
     unsigned int len = 0;
 
-    if (!VIR_IS_CONNECTED_DOMAIN(domain))
-        return (NULL);
-    if (domain->conn->xshandle == NULL)
+    if (conn->xshandle == NULL)
         return (NULL);
 
-    snprintf(s, 255, "/local/domain/%d/%s", domain->handle, path);
+    snprintf(s, 255, "/local/domain/%d/%s", domid, path);
     s[255] = 0;
 
-    return xs_read(domain->conn->xshandle, 0, &s[0], &len);
+    return xs_read(conn->xshandle, 0, &s[0], &len);
 }
 
-
+#ifndef PROXY
 /**
  * virDomainDoStoreWrite:
  * @domain: a domain object
@@ -269,6 +273,7 @@ virConnectCheckStoreID(virConnectPtr conn, int id)
     }
     return (0);
 }
+#endif /* ! PROXY */
 
 /************************************************************************
  *									*
@@ -291,10 +296,14 @@ xenStoreOpen(virConnectPtr conn, const char *name, int flags)
     if ((name != NULL) && (strcasecmp(name, "xen")))
         return(-1);
 
+#ifdef PROXY
+    conn->xshandle = xs_daemon_open_readonly();
+#else
     if (flags & VIR_DRV_OPEN_RO)
 	conn->xshandle = xs_daemon_open_readonly();
     else
 	conn->xshandle = xs_daemon_open();
+#endif /* ! PROXY */
 
     if (conn->xshandle == NULL) {
         if (!(flags & VIR_DRV_OPEN_QUIET))
@@ -327,6 +336,7 @@ xenStoreClose(virConnectPtr conn)
     return (0);
 }
 
+#ifndef PROXY
 /**
  * xenStoreGetDomainInfo:
  * @domain: pointer to the domain block
@@ -343,6 +353,9 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
     unsigned int nb_vcpus;
     char request[200];
 
+    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+        return (-1);
+
     if ((domain == NULL) || (domain->conn == NULL) || (info == NULL)) {
         virXenStoreError(domain ? domain->conn : NULL, VIR_ERR_INVALID_ARG,
 	                 __FUNCTION__);
@@ -351,7 +364,7 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
     if (domain->conn->xshandle == NULL)
         return(-1);
 
-    tmp = virDomainDoStoreQuery(domain, "running");
+    tmp = virDomainDoStoreQuery(domain->conn, domain->handle, "running");
     if (tmp != NULL) {
         if (tmp[0] == '1')
             info->state = VIR_DOMAIN_RUNNING;
@@ -359,7 +372,7 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
     } else {
         info->state = VIR_DOMAIN_NONE;
     }
-    tmp = virDomainDoStoreQuery(domain, "memory/target");
+    tmp = virDomainDoStoreQuery(domain->conn, domain->handle, "memory/target");
     if (tmp != NULL) {
         info->memory = atol(tmp);
         info->maxMem = atol(tmp);
@@ -370,7 +383,7 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
     }
 #if 0
     /* doesn't seems to work */
-    tmp = virDomainDoStoreQuery(domain, "cpu_time");
+    tmp = virDomainDoStoreQuery(domain->conn, domain->handle, "cpu_time");
     if (tmp != NULL) {
         info->cpuTime = atol(tmp);
         free(tmp);
@@ -430,7 +443,10 @@ xenStoreDomainGetMaxMemory(virDomainPtr domain)
     char *tmp;
     unsigned long ret = 0;
 
-    tmp = virDomainDoStoreQuery(domain, "memory/target");
+    if (!VIR_IS_CONNECTED_DOMAIN(domain))
+        return (ret);
+
+    tmp = virDomainDoStoreQuery(domain->conn, domain->handle, "memory/target");
     if (tmp != NULL) {
 	ret = (unsigned long) atol(tmp);
 	free(tmp);
@@ -629,21 +645,23 @@ xenStoreDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
      */
     return(virDomainDoStoreWrite(domain, "control/shutdown", "reboot"));
 }
+#endif /* ! PROXY */
 
 /**
  * xenStoreDomainGetVNCPort:
- * @domain: pointer to the domain block
+ * @conn: the hypervisor connection
+ * @domid: id of the domain
  *
  * Return the port number on which the domain is listening for VNC
  * connections. 
  *
  * Returns the port number, -1 in case of error
  */
-int             xenStoreDomainGetVNCPort(virDomainPtr domain) {
+int             xenStoreDomainGetVNCPort(virConnectPtr conn, int domid) {
     char *tmp;
     int ret = -1;
 
-    tmp = virDomainDoStoreQuery(domain, "console/vnc-port");
+    tmp = virDomainDoStoreQuery(conn, domid, "console/vnc-port");
     if (tmp != NULL) {
         char *end;
         ret = strtol(tmp, &end, 10);
@@ -656,7 +674,8 @@ int             xenStoreDomainGetVNCPort(virDomainPtr domain) {
 
 /**
  * xenStoreDomainGetConsolePath:
- * @domain: pointer to the domain block
+ * @conn: the hypervisor connection
+ * @domid: id of the domain
  *
  * Return the path to the psuedo TTY on which the guest domain's
  * serial console is attached.
@@ -665,6 +684,6 @@ int             xenStoreDomainGetVNCPort(virDomainPtr domain) {
  * responsibilty to free() the return string. Returns NULL
  * on error
  */
-char *          xenStoreDomainGetConsolePath(virDomainPtr domain) {
-    return virDomainDoStoreQuery(domain, "console/tty");
+char *          xenStoreDomainGetConsolePath(virConnectPtr conn, int domid) {
+  return virDomainDoStoreQuery(conn, domid, "console/tty");
 }

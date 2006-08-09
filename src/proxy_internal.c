@@ -39,6 +39,7 @@ static virDomainPtr xenProxyDomainLookupByName(virConnectPtr conn,
 					       const char *domname);
 static unsigned long xenProxyDomainGetMaxMemory(virDomainPtr domain);
 static int xenProxyDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info);
+static char *xenProxyDomainDumpXML(virDomainPtr domain, int flags);
 
 static virDriver xenProxyDriver = {
     VIR_DRV_XEN_PROXY,
@@ -74,7 +75,8 @@ static virDriver xenProxyDriver = {
     NULL, /* domainRestore */
     NULL, /* domainSetVcpus */
     NULL, /* domainPinVcpu */
-    NULL /* domainGetVcpus */
+    NULL, /* domainGetVcpus */
+    xenProxyDomainDumpXML, /* domainDumpXML */
 };
 
 /**
@@ -927,3 +929,50 @@ xenProxyNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info) {
     return(0);
 }
 
+/**
+ * xenProxyDomainDumpXML:
+ * @domain: a domain object
+ * @flags: xml generation flags
+ *
+ * This method generates an XML description of a domain.
+ *
+ * Returns the XML document on success, NULL otherwise. 
+ */
+static char *
+xenProxyDomainDumpXML(virDomainPtr domain, int flags)
+{
+    virProxyPacket req;
+    virProxyFullPacket ans;
+    int ret;
+    int xmllen;
+    char *xml;
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+	if (domain == NULL)
+	    virProxyError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+	else
+	    virProxyError(domain->conn, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (NULL);
+    }
+    memset(&req, 0, sizeof(req));
+    req.command = VIR_PROXY_DOMAIN_XML;
+    req.data.arg = domain->handle;
+    req.len = sizeof(req);
+    ret = xenProxyCommand(domain->conn, &req, &ans, 0);
+    if (ret < 0) {
+        xenProxyClose(domain->conn);
+	return(NULL);
+    }
+    if (ans.len <= sizeof(virProxyPacket)) {
+        virProxyError(domain->conn, VIR_ERR_OPERATION_FAILED, __FUNCTION__);
+	return (NULL);
+    }
+    xmllen = ans.len - sizeof(virProxyPacket);
+    if (!(xml = malloc(xmllen+1))) {
+      return NULL;
+    }
+    memmove(xml, &ans.extra.dinfo, xmllen);
+    xml[xmllen] = '\0';
+
+    return(xml);
+}

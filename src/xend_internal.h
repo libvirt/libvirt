@@ -548,6 +548,9 @@ int xenDaemonDomainLookupByID(virConnectPtr xend,
 			      char **name, unsigned char *uuid);
 
 
+char *xenDaemonDomainDumpXMLByID(virConnectPtr xend,
+				 int domid);
+
 /**
  * \brief Lookup information about the host machine
  * \param xend A xend instance
@@ -626,7 +629,7 @@ int xenDaemonDomainRestore(virConnectPtr conn, const char *filename);
 int xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory);
 int xenDaemonDomainSetMaxMemory(virDomainPtr domain, unsigned long memory);
 int xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info);
-char *xenDaemonDomainDumpXML(virDomainPtr domain);
+char *xenDaemonDomainDumpXML(virDomainPtr domain, int flags);
 virDomainPtr xenDaemonDomainLookupByName(virConnectPtr conn, const char *domname);
 unsigned long xenDaemonDomainGetMaxMemory(virDomainPtr domain);
 char **xenDaemonListDomainsOld(virConnectPtr xend);
