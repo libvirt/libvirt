@@ -18,6 +18,7 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
+#include <math.h> /* for isnan() */
 #include "internal.h"
 #include "hash.h"
 #include "sexpr.h"
@@ -999,7 +1000,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
 
     obj = xmlXPathEval(BAD_CAST "number(/domain/memory[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NUMBER) ||
-        (obj->floatval < 64000)) {
+        (isnan(obj->floatval)) || (obj->floatval < 64000)) {
         virBufferVSprintf(&buf, "(memory 128)(maxmem 128)");
     } else {
         unsigned long mem = (obj->floatval / 1024);
@@ -1010,7 +1011,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
 
     obj = xmlXPathEval(BAD_CAST "number(/domain/vcpu[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NUMBER) ||
-        (obj->floatval <= 0)) {
+        (isnan(obj->floatval)) || (obj->floatval <= 0)) {
         virBufferVSprintf(&buf, "(vcpus 1)");
     } else {
         unsigned int cpu = (unsigned int) obj->floatval;

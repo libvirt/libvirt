@@ -1,3 +1,9 @@
+Thu Aug 10 15:28:52 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xml.c: markmc pointed out that using number(xpath) could lead
+	  to NaN and following comparison would be wrong in a couple of places
+	  if the element looked at was missing.
+
 Wed Aug  9 10:17:03 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/driver.h, src/libvirt.c: Made the virDomainGetXMLDesc
