@@ -38,7 +38,14 @@
     <p>Author(s): Daniel Veillard &lt;veillard@redhat.com&gt; </p>
     <div class="refsynopsisdiv">
       <h2>Synopsis</h2>
-      <pre class="synopsis">#define <a href="#LIBVIR_VERSION_NUMBER">LIBVIR_VERSION_NUMBER</a>;
+      <pre class="synopsis">#define <a href="#VIR_NODEINFO_MAXCPUS">VIR_NODEINFO_MAXCPUS</a>(nodeinfo);
+#define <a href="#LIBVIR_VERSION_NUMBER">LIBVIR_VERSION_NUMBER</a>;
+#define <a href="#VIR_USE_CPU">VIR_USE_CPU</a>(cpumap, cpu);
+#define <a href="#VIR_CPU_MAPLEN">VIR_CPU_MAPLEN</a>;
+#define <a href="#VIR_CPU_USABLE">VIR_CPU_USABLE</a>(cpumaps, maplen, vcpu, cpu);
+#define <a href="#VIR_COPY_CPUMAP">VIR_COPY_CPUMAP</a>(cpumaps, maplen, vcpu, cpumap);
+#define <a href="#VIR_GET_CPUMAP">VIR_GET_CPUMAP</a>(cpumaps, maplen, vcpu);
+#define <a href="#VIR_UNUSE_CPU">VIR_UNUSE_CPU</a>(cpumap, cpu);
 typedef <a href="libvirt-libvirt.html#virNodeInfo">virNodeInfo</a> * <a href="#virNodeInfoPtr">virNodeInfoPtr</a>;
 typedef <a href="libvirt-libvirt.html#virDomainInfo">virDomainInfo</a> * <a href="#virDomainInfoPtr">virDomainInfoPtr</a>;
 typedef <a href="libvirt-libvirt.html#virDomainKernel">virDomainKernel</a> * <a href="#virDomainKernelPtr">virDomainKernelPtr</a>;
@@ -49,10 +56,13 @@ typedef enum <a href="#virDomainState">virDomainState</a>;
 typedef enum <a href="#virDeviceMode">virDeviceMode</a>;
 typedef struct _virDomain <a href="#virDomain">virDomain</a>;
 typedef <a href="libvirt-libvirt.html#virDomain">virDomain</a> * <a href="#virDomainPtr">virDomainPtr</a>;
+typedef struct _virVcpuInfo <a href="#virVcpuInfo">virVcpuInfo</a>;
+typedef <a href="libvirt-libvirt.html#virVcpuInfo">virVcpuInfo</a> * <a href="#virVcpuInfoPtr">virVcpuInfoPtr</a>;
 typedef enum <a href="#virDomainRestart">virDomainRestart</a>;
 typedef struct _virConnect <a href="#virConnect">virConnect</a>;
 typedef enum <a href="#virDomainCreateFlags">virDomainCreateFlags</a>;
 typedef struct _virDomainInfo <a href="#virDomainInfo">virDomainInfo</a>;
+typedef enum <a href="#virVcpuState">virVcpuState</a>;
 int	<a href="#virDomainGetInfo">virDomainGetInfo</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 <a href="libvirt-libvirt.html#virDomainInfoPtr">virDomainInfoPtr</a> info);
 int	<a href="#virDomainUndefine">virDomainUndefine</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainDefineXML">virDomainDefineXML</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * xml);
@@ -60,6 +70,7 @@ int	<a href="#virDomainShutdown">virDomainShutdown</a>		(<a href="libvirt-libvir
 int	<a href="#virGetVersion">virGetVersion</a>			(unsigned long * libVer, <br/>					 const char * type, <br/>					 unsigned long * typeVer);
 int	<a href="#virConnectListDefinedDomains">virConnectListDefinedDomains</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char ** names, <br/>					 int maxnames);
 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainLookupByName">virDomainLookupByName</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * name);
+int	<a href="#virDomainPinVcpu">virDomainPinVcpu</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned int vcpu, <br/>					 unsigned char * cpumap, <br/>					 int maplen);
 int	<a href="#virDomainRestore">virDomainRestore</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * from);
 const char *	<a href="#virConnectGetType">virConnectGetType</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 int	<a href="#virDomainSave">virDomainSave</a>			(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 const char * to);
@@ -73,7 +84,7 @@ int	<a href="#virNodeGetInfo">virNodeGetInfo</a>			(<a href="libvirt-libvirt.htm
 int	<a href="#virDomainGetUUID">virDomainGetUUID</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned char * uuid);
 int	<a href="#virConnectNumOfDomains">virConnectNumOfDomains</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 int	<a href="#virDomainGetUUIDString">virDomainGetUUIDString</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 char * buf);
-unsigned long	<a href="#virDomainGetMaxMemory">virDomainGetMaxMemory</a>	(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
+int	<a href="#virDomainGetVcpus">virDomainGetVcpus</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 <a href="libvirt-libvirt.html#virVcpuInfoPtr">virVcpuInfoPtr</a> info, <br/>					 int maxinfo, <br/>					 unsigned char * cpumaps, <br/>					 int maplen);
 int	<a href="#virConnectGetVersion">virConnectGetVersion</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 unsigned long * hvVer);
 int	<a href="#virDomainSetMaxMemory">virDomainSetMaxMemory</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned long memory);
 int	<a href="#virDomainFree">virDomainFree</a>			(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
@@ -82,11 +93,13 @@ int	<a href="#virDomainSuspend">virDomainSuspend</a>		(<a href="libvirt-libvirt.
 int	<a href="#virConnectClose">virConnectClose</a>			(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 int	<a href="#virDomainReboot">virDomainReboot</a>			(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned int flags);
 int	<a href="#virInitialize">virInitialize</a>			(void);
+int	<a href="#virDomainSetVcpus">virDomainSetVcpus</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned int nvcpus);
 unsigned int	<a href="#virDomainGetID">virDomainGetID</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 int	<a href="#virDomainResume">virDomainResume</a>			(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainCreateLinux">virDomainCreateLinux</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * xmlDesc, <br/>					 unsigned int flags);
 int	<a href="#virDomainSetMemory">virDomainSetMemory</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned long memory);
 int	<a href="#virDomainDestroy">virDomainDestroy</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
+unsigned long	<a href="#virDomainGetMaxMemory">virDomainGetMaxMemory</a>	(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 char *	<a href="#virDomainGetXMLDesc">virDomainGetXMLDesc</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 int flags);
 const char *	<a href="#virDomainGetName">virDomainGetName</a>	(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virConnectOpenReadOnly">virConnectOpenReadOnly</a>	(const char * name);
@@ -100,6 +113,34 @@ const char *	<a href="#virDomainGetName">virDomainGetName</a>	(<a href="libvirt-
       <div class="refsect2" lang="en">
         <div class="refsect2" lang="en"><h3><a name="LIBVIR_VERSION_NUMBER">Macro </a>LIBVIR_VERSION_NUMBER</h3><pre class="programlisting">#define <a href="#LIBVIR_VERSION_NUMBER">LIBVIR_VERSION_NUMBER</a>;
 </pre><p>Macro providing the version of the library as version * 1,000,000 + minor * 1000 + micro</p>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="VIR_COPY_CPUMAP">Macro </a>VIR_COPY_CPUMAP</h3><pre class="programlisting">#define <a href="#VIR_COPY_CPUMAP">VIR_COPY_CPUMAP</a>(cpumaps, maplen, vcpu, cpumap);
+</pre><p>This macro is to be used in conjonction with virDomainGetVcpus() and virDomainPinVcpu() APIs. <a href="libvirt-libvirt.html#VIR_COPY_CPUMAP">VIR_COPY_CPUMAP</a> macro extract the cpumap of the specified vcpu from cpumaps array and copy it into cpumap to be used later by virDomainPinVcpu() API.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cpumaps</tt></i>:</span></td><td>pointer to an array of cpumap (in 8-bit bytes) (IN)</td></tr><tr><td><span class="term"><i><tt>maplen</tt></i>:</span></td><td>the length (in bytes) of one cpumap</td></tr><tr><td><span class="term"><i><tt>vcpu</tt></i>:</span></td><td>the virtual CPU number</td></tr><tr><td><span class="term"><i><tt>cpumap</tt></i>:</span></td><td>pointer to a cpumap (in 8-bit bytes) (OUT) This cpumap must be previously allocated by the caller (ie: malloc(maplen))</td></tr></tbody></table></div>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="VIR_CPU_MAPLEN">Macro </a>VIR_CPU_MAPLEN</h3><pre class="programlisting">#define <a href="#VIR_CPU_MAPLEN">VIR_CPU_MAPLEN</a>;
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="VIR_CPU_USABLE">Macro </a>VIR_CPU_USABLE</h3><pre class="programlisting">#define <a href="#VIR_CPU_USABLE">VIR_CPU_USABLE</a>(cpumaps, maplen, vcpu, cpu);
+</pre><p>This macro is to be used in conjonction with virDomainGetVcpus() API. <a href="libvirt-libvirt.html#VIR_CPU_USABLE">VIR_CPU_USABLE</a> macro returns a non zero value (true) if the cpu is usable by the vcpu, and 0 otherwise.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cpumaps</tt></i>:</span></td><td>pointer to an array of cpumap (in 8-bit bytes) (IN)</td></tr><tr><td><span class="term"><i><tt>maplen</tt></i>:</span></td><td>the length (in bytes) of one cpumap</td></tr><tr><td><span class="term"><i><tt>vcpu</tt></i>:</span></td><td>the virtual CPU number</td></tr><tr><td><span class="term"><i><tt>cpu</tt></i>:</span></td><td>the physical CPU number</td></tr></tbody></table></div>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="VIR_GET_CPUMAP">Macro </a>VIR_GET_CPUMAP</h3><pre class="programlisting">#define <a href="#VIR_GET_CPUMAP">VIR_GET_CPUMAP</a>(cpumaps, maplen, vcpu);
+</pre><p>This macro is to be used in conjonction with virDomainGetVcpus() and virDomainPinVcpu() APIs. <a href="libvirt-libvirt.html#VIR_GET_CPUMAP">VIR_GET_CPUMAP</a> macro returns a pointer to the cpumap of the specified vcpu from cpumaps array.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cpumaps</tt></i>:</span></td><td>pointer to an array of cpumap (in 8-bit bytes) (IN)</td></tr><tr><td><span class="term"><i><tt>maplen</tt></i>:</span></td><td>the length (in bytes) of one cpumap</td></tr><tr><td><span class="term"><i><tt>vcpu</tt></i>:</span></td><td>the virtual CPU number</td></tr></tbody></table></div>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="VIR_NODEINFO_MAXCPUS">Macro </a>VIR_NODEINFO_MAXCPUS</h3><pre class="programlisting">#define <a href="#VIR_NODEINFO_MAXCPUS">VIR_NODEINFO_MAXCPUS</a>(nodeinfo);
+</pre><p>This macro is to calculate the total number of CPUs supported but not neccessarily active in the host.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>nodeinfo</tt></i>:</span></td><td><a href="libvirt-libvirt.html#virNodeInfo">virNodeInfo</a> instance</td></tr></tbody></table></div>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="VIR_UNUSE_CPU">Macro </a>VIR_UNUSE_CPU</h3><pre class="programlisting">#define <a href="#VIR_UNUSE_CPU">VIR_UNUSE_CPU</a>(cpumap, cpu);
+</pre><p>This macro is to be used in conjonction with virDomainPinVcpu() API. USE_CPU macro reset the bit (CPU not usable) of the related cpu in cpumap.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cpumap</tt></i>:</span></td><td>pointer to a bit map of real CPUs (in 8-bit bytes) (IN/OUT)</td></tr><tr><td><span class="term"><i><tt>cpu</tt></i>:</span></td><td>the physical CPU number</td></tr></tbody></table></div>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="VIR_USE_CPU">Macro </a>VIR_USE_CPU</h3><pre class="programlisting">#define <a href="#VIR_USE_CPU">VIR_USE_CPU</a>(cpumap, cpu);
+</pre><p>This macro is to be used in conjonction with virDomainPinVcpu() API. USE_CPU macro set the bit (CPU usable) of the related cpu in cpumap.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cpumap</tt></i>:</span></td><td>pointer to a bit map of real CPUs (in 8-bit bytes) (IN/OUT)</td></tr><tr><td><span class="term"><i><tt>cpu</tt></i>:</span></td><td>the physical CPU number</td></tr></tbody></table></div>
 </div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnect">Structure </a>virConnect</h3><pre class="programlisting">struct _virConnect {
@@ -202,6 +243,27 @@ The content of this structure is not made public by the API.
 </pre><p>a <a href="libvirt-libvirt.html#virNodeInfoPtr">virNodeInfoPtr</a> is a pointer to a <a href="libvirt-libvirt.html#virNodeInfo">virNodeInfo</a> structure.</p>
 </div>
         <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virVcpuInfo">Structure </a>virVcpuInfo</h3><pre class="programlisting">struct _virVcpuInfo {
+    unsigned int	number	: virtual CPU number
+    int	state	: value from <a href="libvirt-libvirt.html#virVcpuState">virVcpuState</a>
+    unsigned long long	cpuTime	: CPU time used, in nanoseconds
+    int	cpu	: real CPU number, or -1 if offline
+} virVcpuInfo;
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virVcpuInfoPtr">Typedef </a>virVcpuInfoPtr</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virVcpuInfo">virVcpuInfo</a> * virVcpuInfoPtr;
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virVcpuState">Enum </a>virVcpuState</h3><pre class="programlisting">enum <a href="#virVcpuState">virVcpuState</a> {
+    <a name="VIR_VCPU_OFFLINE">VIR_VCPU_OFFLINE</a> = 0 /* the virtual CPU is offline */
+    <a name="VIR_VCPU_RUNNING">VIR_VCPU_RUNNING</a> = 1 /* the virtual CPU is running */
+    <a name="VIR_VCPU_BLOCKED">VIR_VCPU_BLOCKED</a> = 2 /*  the virtual CPU is blocked on resource */
+};
+</pre><p/>
+</div>
+        <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnectClose"/>virConnectClose ()</h3><pre class="programlisting">int	virConnectClose			(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br/>
 </pre><p>This function closes the connection to the Hypervisor. This should not be called if further interaction with the Hypervisor are needed especially if there is running domain which need further monitoring by the application.</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 in case of success or -1 in case of error.</td></tr></tbody></table></div></div>
@@ -259,7 +321,7 @@ The content of this structure is not made public by the API.
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>domain</tt></i>:</span></td><td>a domain object</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the domain ID number or (unsigned int) -1 in case of error</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virDomainGetInfo"/>virDomainGetInfo ()</h3><pre class="programlisting">int	virDomainGetInfo		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 <a href="libvirt-libvirt.html#virDomainInfoPtr">virDomainInfoPtr</a> info)<br/>
-</pre><p>Extract information about a domain. Note that if the connection used to get the domain is limited only a partial set of the informations can be extracted.</p>
+</pre><p>Extract information about a domain. Note that if the connection used to get the domain is limited only a partial set of the information can be extracted.</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>domain</tt></i>:</span></td><td>a domain object</td></tr><tr><td><span class="term"><i><tt>info</tt></i>:</span></td><td>pointer to a <a href="libvirt-libvirt.html#virDomainInfo">virDomainInfo</a> structure allocated by the user</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 in case of success and -1 in case of failure.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virDomainGetMaxMemory"/>virDomainGetMaxMemory ()</h3><pre class="programlisting">unsigned long	virDomainGetMaxMemory	(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain)<br/>
@@ -282,6 +344,10 @@ The content of this structure is not made public by the API.
 </pre><p>Get the UUID for a domain as string. For more information about UUID see RFC4122.</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>domain</tt></i>:</span></td><td>a domain object</td></tr><tr><td><span class="term"><i><tt>buf</tt></i>:</span></td><td>pointer to a 37 bytes array</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>-1 in case of error, 0 in case of success</td></tr></tbody></table></div></div>
         <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virDomainGetVcpus"/>virDomainGetVcpus ()</h3><pre class="programlisting">int	virDomainGetVcpus		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 <a href="libvirt-libvirt.html#virVcpuInfoPtr">virVcpuInfoPtr</a> info, <br/>					 int maxinfo, <br/>					 unsigned char * cpumaps, <br/>					 int maplen)<br/>
+</pre><p>Extract information about virtual CPUs of domain, store it in info array and also in cpumaps if this pointer is'nt NULL.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>domain</tt></i>:</span></td><td>pointer to domain object, or NULL for Domain0</td></tr><tr><td><span class="term"><i><tt>info</tt></i>:</span></td><td>pointer to an array of <a href="libvirt-libvirt.html#virVcpuInfo">virVcpuInfo</a> structures (OUT)</td></tr><tr><td><span class="term"><i><tt>maxinfo</tt></i>:</span></td><td>number of structures in info array</td></tr><tr><td><span class="term"><i><tt>cpumaps</tt></i>:</span></td><td>pointer to an bit map of real CPUs for all vcpus of this domain (in 8-bit bytes) (OUT) If cpumaps is NULL, then no cupmap information is returned by the API. It's assumed there is &lt;maxinfo&gt; cpumap in cpumaps array. The memory allocated to cpumaps must be (maxinfo * maplen) bytes (ie: calloc(maxinfo, maplen)). One cpumap inside cpumaps has the format described in virDomainPinVcpu() API.</td></tr><tr><td><span class="term"><i><tt>maplen</tt></i>:</span></td><td>number of bytes in one cpumap, from 1 up to size of CPU map in underlying virtualization system (Xen...).</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of info filled in case of success, -1 in case of failure.</td></tr></tbody></table></div></div>
+        <hr/>
         <div class="refsect2" lang="en"><h3><a name="virDomainGetXMLDesc"/>virDomainGetXMLDesc ()</h3><pre class="programlisting">char *	virDomainGetXMLDesc		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 int flags)<br/>
 </pre><p>Provide an XML description of the domain. The description may be reused later to relaunch the domain with virDomainCreateLinux().</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>domain</tt></i>:</span></td><td>a domain object</td></tr><tr><td><span class="term"><i><tt>flags</tt></i>:</span></td><td>and OR'ed set of extraction flags, not used yet</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a 0 terminated UTF-8 encoded XML instance, or NULL in case of error. the caller must free() the returned value.</td></tr></tbody></table></div></div>
@@ -301,6 +367,10 @@ The content of this structure is not made public by the API.
         <div class="refsect2" lang="en"><h3><a name="virDomainLookupByUUIDString"/>virDomainLookupByUUIDString ()</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	virDomainLookupByUUIDString	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>						 const char * uuidstr)<br/>
 </pre><p>Try to lookup a domain on the given hypervisor based on its UUID.</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>uuidstr</tt></i>:</span></td><td>the string UUID for the domain</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a new domain object or NULL in case of failure</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virDomainPinVcpu"/>virDomainPinVcpu ()</h3><pre class="programlisting">int	virDomainPinVcpu		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned int vcpu, <br/>					 unsigned char * cpumap, <br/>					 int maplen)<br/>
+</pre><p>Dynamically change the real CPUs which can be allocated to a virtual CPU. This function requires priviledged access to the hypervisor.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>domain</tt></i>:</span></td><td>pointer to domain object, or NULL for Domain0</td></tr><tr><td><span class="term"><i><tt>vcpu</tt></i>:</span></td><td>virtual CPU number</td></tr><tr><td><span class="term"><i><tt>cpumap</tt></i>:</span></td><td>pointer to a bit map of real CPUs (in 8-bit bytes) (IN) Each bit set to 1 means that corresponding CPU is usable. Bytes are stored in little-endian order: CPU0-7, 8-15... In each byte, lowest CPU number is least significant bit.</td></tr><tr><td><span class="term"><i><tt>maplen</tt></i>:</span></td><td>number of bytes in cpumap, from 1 up to size of CPU map in underlying virtualization system (Xen...). If maplen &lt; size, missing bytes are set to zero. If maplen &gt; size, failure code is returned.</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 in case of success, -1 in case of failure.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virDomainReboot"/>virDomainReboot ()</h3><pre class="programlisting">int	virDomainReboot			(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned int flags)<br/>
 </pre><p>Reboot a domain, the domain object is still usable there after but the domain OS is being stopped for a restart. Note that the guest OS may ignore the request.</p>
@@ -325,6 +395,10 @@ The content of this structure is not made public by the API.
         <div class="refsect2" lang="en"><h3><a name="virDomainSetMemory"/>virDomainSetMemory ()</h3><pre class="programlisting">int	virDomainSetMemory		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned long memory)<br/>
 </pre><p>Dynamically change the target amount of physical memory allocated to a domain. If domain is NULL, then this change the amount of memory reserved to Domain0 i.e. the domain where the application runs. This function may requires priviledged access to the hypervisor.</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>domain</tt></i>:</span></td><td>a domain object or NULL</td></tr><tr><td><span class="term"><i><tt>memory</tt></i>:</span></td><td>the memory size in kilobytes</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 in case of success and -1 in case of failure.</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virDomainSetVcpus"/>virDomainSetVcpus ()</h3><pre class="programlisting">int	virDomainSetVcpus		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned int nvcpus)<br/>
+</pre><p>Dynamically change the number of virtual CPUs used by the domain. Note that this call may fail if the underlying virtualization hypervisor does not support it or if growing the number is arbitrary limited. This function requires priviledged access to the hypervisor.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>domain</tt></i>:</span></td><td>pointer to domain object, or NULL for Domain0</td></tr><tr><td><span class="term"><i><tt>nvcpus</tt></i>:</span></td><td>the new number of virtual CPUs for this domain</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 in case of success, -1 in case of failure.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virDomainShutdown"/>virDomainShutdown ()</h3><pre class="programlisting">int	virDomainShutdown		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain)<br/>
 </pre><p>Shutdown a domain, the domain object is still usable there after but the domain OS is being stopped. Note that the guest OS may ignore the request. TODO: should we add an option for reboot, knowing it may not be doable in the general case ?</p>

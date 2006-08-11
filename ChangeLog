@@ -1,3 +1,8 @@
+Fri Aug 11 13:08:01 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in: updated python detection code from latest libxml2 one
+	* docs//*: rebuilt the docs
+
 Thu Aug 10 15:28:52 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xml.c: markmc pointed out that using number(xpath) could lead

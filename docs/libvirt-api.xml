@@ -5,15 +5,25 @@
      <summary>core interfaces for the libvirt library</summary>
      <description>Provides the interfaces of the libvirt library to handle Xen domains from a process running in domain 0 </description>
      <author>Daniel Veillard &lt;veillard@redhat.com&gt; </author>
+     <exports symbol='VIR_NODEINFO_MAXCPUS' type='macro'/>
      <exports symbol='LIBVIR_VERSION_NUMBER' type='macro'/>
+     <exports symbol='VIR_USE_CPU' type='macro'/>
+     <exports symbol='VIR_CPU_MAPLEN' type='macro'/>
+     <exports symbol='VIR_CPU_USABLE' type='macro'/>
+     <exports symbol='VIR_COPY_CPUMAP' type='macro'/>
+     <exports symbol='VIR_GET_CPUMAP' type='macro'/>
+     <exports symbol='VIR_UNUSE_CPU' type='macro'/>
      <exports symbol='VIR_DOMAIN_SHUTOFF' type='enum'/>
      <exports symbol='VIR_DOMAIN_DESTROY' type='enum'/>
      <exports symbol='VIR_DEVICE_DEFAULT' type='enum'/>
      <exports symbol='VIR_DOMAIN_RENAME_RESTART' type='enum'/>
      <exports symbol='VIR_DOMAIN_PRESERVE' type='enum'/>
+     <exports symbol='VIR_VCPU_BLOCKED' type='enum'/>
      <exports symbol='VIR_DOMAIN_SHUTDOWN' type='enum'/>
+     <exports symbol='VIR_VCPU_OFFLINE' type='enum'/>
      <exports symbol='VIR_DEVICE_RO' type='enum'/>
      <exports symbol='VIR_DEVICE_RW_FORCE' type='enum'/>
+     <exports symbol='VIR_VCPU_RUNNING' type='enum'/>
      <exports symbol='VIR_DOMAIN_CRASHED' type='enum'/>
      <exports symbol='VIR_DOMAIN_NONE' type='enum'/>
      <exports symbol='VIR_DEVICE_RW' type='enum'/>
@@ -32,13 +42,17 @@
      <exports symbol='virDeviceMode' type='typedef'/>
      <exports symbol='virDomain' type='typedef'/>
      <exports symbol='virDomainPtr' type='typedef'/>
+     <exports symbol='virVcpuInfo' type='typedef'/>
+     <exports symbol='virVcpuInfoPtr' type='typedef'/>
      <exports symbol='virDomainRestart' type='typedef'/>
      <exports symbol='virConnect' type='typedef'/>
      <exports symbol='virDomainCreateFlags' type='typedef'/>
      <exports symbol='virDomainInfo' type='typedef'/>
+     <exports symbol='virVcpuState' type='typedef'/>
      <exports symbol='_virDomainInfo' type='struct'/>
      <exports symbol='_virDomainKernel' type='struct'/>
      <exports symbol='_virNodeInfo' type='struct'/>
+     <exports symbol='_virVcpuInfo' type='struct'/>
      <exports symbol='virDomainGetInfo' type='function'/>
      <exports symbol='virDomainUndefine' type='function'/>
      <exports symbol='virDomainDefineXML' type='function'/>
@@ -46,6 +60,7 @@
      <exports symbol='virGetVersion' type='function'/>
      <exports symbol='virConnectListDefinedDomains' type='function'/>
      <exports symbol='virDomainLookupByName' type='function'/>
+     <exports symbol='virDomainPinVcpu' type='function'/>
      <exports symbol='virDomainRestore' type='function'/>
      <exports symbol='virConnectGetType' type='function'/>
      <exports symbol='virDomainSave' type='function'/>
@@ -59,7 +74,7 @@
      <exports symbol='virDomainGetUUID' type='function'/>
      <exports symbol='virConnectNumOfDomains' type='function'/>
      <exports symbol='virDomainGetUUIDString' type='function'/>
-     <exports symbol='virDomainGetMaxMemory' type='function'/>
+     <exports symbol='virDomainGetVcpus' type='function'/>
      <exports symbol='virConnectGetVersion' type='function'/>
      <exports symbol='virDomainSetMaxMemory' type='function'/>
      <exports symbol='virDomainFree' type='function'/>
@@ -68,11 +83,13 @@
      <exports symbol='virConnectClose' type='function'/>
      <exports symbol='virDomainReboot' type='function'/>
      <exports symbol='virInitialize' type='function'/>
+     <exports symbol='virDomainSetVcpus' type='function'/>
      <exports symbol='virDomainGetID' type='function'/>
      <exports symbol='virDomainResume' type='function'/>
      <exports symbol='virDomainCreateLinux' type='function'/>
      <exports symbol='virDomainSetMemory' type='function'/>
      <exports symbol='virDomainDestroy' type='function'/>
+     <exports symbol='virDomainGetMaxMemory' type='function'/>
      <exports symbol='virDomainGetXMLDesc' type='function'/>
      <exports symbol='virDomainGetName' type='function'/>
      <exports symbol='virConnectOpenReadOnly' type='function'/>
@@ -145,6 +162,42 @@
     <macro name='LIBVIR_VERSION_NUMBER' file='libvirt'>
       <info>Macro providing the version of the library as version * 1,000,000 + minor * 1000 + micro</info>
     </macro>
+    <macro name='VIR_COPY_CPUMAP' file='libvirt'>
+      <info>This macro is to be used in conjonction with virDomainGetVcpus() and virDomainPinVcpu() APIs. VIR_COPY_CPUMAP macro extract the cpumap of the specified vcpu from cpumaps array and copy it into cpumap to be used later by virDomainPinVcpu() API.</info>
+      <arg name='cpumaps' info='pointer to an array of cpumap (in 8-bit bytes) (IN)'/>
+      <arg name='maplen' info='the length (in bytes) of one cpumap'/>
+      <arg name='vcpu' info='the virtual CPU number'/>
+      <arg name='cpumap' info='pointer to a cpumap (in 8-bit bytes) (OUT) This cpumap must be previously allocated by the caller (ie: malloc(maplen))'/>
+    </macro>
+    <macro name='VIR_CPU_MAPLEN' file='libvirt'>
+    </macro>
+    <macro name='VIR_CPU_USABLE' file='libvirt'>
+      <info>This macro is to be used in conjonction with virDomainGetVcpus() API. VIR_CPU_USABLE macro returns a non zero value (true) if the cpu is usable by the vcpu, and 0 otherwise.</info>
+      <arg name='cpumaps' info='pointer to an array of cpumap (in 8-bit bytes) (IN)'/>
+      <arg name='maplen' info='the length (in bytes) of one cpumap'/>
+      <arg name='vcpu' info='the virtual CPU number'/>
+      <arg name='cpu' info='the physical CPU number'/>
+    </macro>
+    <macro name='VIR_GET_CPUMAP' file='libvirt'>
+      <info>This macro is to be used in conjonction with virDomainGetVcpus() and virDomainPinVcpu() APIs. VIR_GET_CPUMAP macro returns a pointer to the cpumap of the specified vcpu from cpumaps array.</info>
+      <arg name='cpumaps' info='pointer to an array of cpumap (in 8-bit bytes) (IN)'/>
+      <arg name='maplen' info='the length (in bytes) of one cpumap'/>
+      <arg name='vcpu' info='the virtual CPU number'/>
+    </macro>
+    <macro name='VIR_NODEINFO_MAXCPUS' file='libvirt'>
+      <info>This macro is to calculate the total number of CPUs supported but not neccessarily active in the host.</info>
+      <arg name='nodeinfo' info='virNodeInfo instance'/>
+    </macro>
+    <macro name='VIR_UNUSE_CPU' file='libvirt'>
+      <info>This macro is to be used in conjonction with virDomainPinVcpu() API. USE_CPU macro reset the bit (CPU not usable) of the related cpu in cpumap.</info>
+      <arg name='cpumap' info='pointer to a bit map of real CPUs (in 8-bit bytes) (IN/OUT)'/>
+      <arg name='cpu' info='the physical CPU number'/>
+    </macro>
+    <macro name='VIR_USE_CPU' file='libvirt'>
+      <info>This macro is to be used in conjonction with virDomainPinVcpu() API. USE_CPU macro set the bit (CPU usable) of the related cpu in cpumap.</info>
+      <arg name='cpumap' info='pointer to a bit map of real CPUs (in 8-bit bytes) (IN/OUT)'/>
+      <arg name='cpu' info='the physical CPU number'/>
+    </macro>
     <enum name='VIR_DEVICE_DEFAULT' file='libvirt' value='0' type='virDeviceMode' info='Default mode'/>
     <enum name='VIR_DEVICE_RO' file='libvirt' value='1' type='virDeviceMode' info='Access read-only'/>
     <enum name='VIR_DEVICE_RW' file='libvirt' value='2' type='virDeviceMode' info='Access read-write'/>
@@ -202,6 +255,9 @@
     <enum name='VIR_FROM_XEND' file='virterror' value='2' type='virErrorDomain' info='Error at connection with xend daemon'/>
     <enum name='VIR_FROM_XENSTORE' file='virterror' value='3' type='virErrorDomain' info='Error at connection with xen store'/>
     <enum name='VIR_FROM_XML' file='virterror' value='5' type='virErrorDomain' info='Error in the XML code'/>
+    <enum name='VIR_VCPU_BLOCKED' file='libvirt' value='2' type='virVcpuState' info=' the virtual CPU is blocked on resource'/>
+    <enum name='VIR_VCPU_OFFLINE' file='libvirt' value='0' type='virVcpuState' info='the virtual CPU is offline'/>
+    <enum name='VIR_VCPU_RUNNING' file='libvirt' value='1' type='virVcpuState' info='the virtual CPU is running'/>
     <struct name='virConnect' file='libvirt' type='struct _virConnect'/>
     <typedef name='virConnectPtr' file='libvirt' type='virConnect *'>
       <info>a virConnectPtr is pointer to a virConnect private structure, this is the type used to reference a connection to the Xen Hypervisor in the API.</info>
@@ -263,6 +319,14 @@
     <typedef name='virNodeInfoPtr' file='libvirt' type='virNodeInfo *'>
       <info>a virNodeInfoPtr is a pointer to a virNodeInfo structure.</info>
     </typedef>
+    <struct name='virVcpuInfo' file='libvirt' type='struct _virVcpuInfo'>
+      <field name='number' type='unsigned int' info=' virtual CPU number'/>
+      <field name='state' type='int' info=' value from virVcpuState'/>
+      <field name='cpuTime' type='unsigned long long' info=' CPU time used, in nanoseconds'/>
+      <field name='cpu' type='int' info=' real CPU number, or -1 if offline'/>
+    </struct>
+    <typedef name='virVcpuInfoPtr' file='libvirt' type='virVcpuInfo *'/>
+    <typedef name='virVcpuState' file='libvirt' type='enum'/>
     <function name='virConnCopyLastError' file='virterror' module='virterror'>
       <info>Copy the content of the last error caught on that connection One will need to free the result with virResetError()</info>
       <return type='int' info='0 if no error was found and the error code otherwise and -1 in case of parameter error.'/>
@@ -375,7 +439,7 @@
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
     <function name='virDomainGetInfo' file='libvirt' module='libvirt'>
-      <info>Extract information about a domain. Note that if the connection used to get the domain is limited only a partial set of the informations can be extracted.</info>
+      <info>Extract information about a domain. Note that if the connection used to get the domain is limited only a partial set of the information can be extracted.</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='info' type='virDomainInfoPtr' info='pointer to a virDomainInfo structure allocated by the user'/>
@@ -407,6 +471,15 @@
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='buf' type='char *' info='pointer to a 37 bytes array'/>
     </function>
+    <function name='virDomainGetVcpus' file='libvirt' module='libvirt'>
+      <info>Extract information about virtual CPUs of domain, store it in info array and also in cpumaps if this pointer is&apos;nt NULL.</info>
+      <return type='int' info='the number of info filled in case of success, -1 in case of failure.'/>
+      <arg name='domain' type='virDomainPtr' info='pointer to domain object, or NULL for Domain0'/>
+      <arg name='info' type='virVcpuInfoPtr' info='pointer to an array of virVcpuInfo structures (OUT)'/>
+      <arg name='maxinfo' type='int' info='number of structures in info array'/>
+      <arg name='cpumaps' type='unsigned char *' info='pointer to an bit map of real CPUs for all vcpus of this domain (in 8-bit bytes) (OUT) If cpumaps is NULL, then no cupmap information is returned by the API. It&apos;s assumed there is &lt;maxinfo&gt; cpumap in cpumaps array. The memory allocated to cpumaps must be (maxinfo * maplen) bytes (ie: calloc(maxinfo, maplen)). One cpumap inside cpumaps has the format described in virDomainPinVcpu() API.'/>
+      <arg name='maplen' type='int' info='number of bytes in one cpumap, from 1 up to size of CPU map in underlying virtualization system (Xen...).'/>
+    </function>
     <function name='virDomainGetXMLDesc' file='libvirt' module='libvirt'>
       <info>Provide an XML description of the domain. The description may be reused later to relaunch the domain with virDomainCreateLinux().</info>
       <return type='char *' info='a 0 terminated UTF-8 encoded XML instance, or NULL in case of error. the caller must free() the returned value.'/>
@@ -436,6 +509,14 @@
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='uuidstr' type='const char *' info='the string UUID for the domain'/>
+    </function>
+    <function name='virDomainPinVcpu' file='libvirt' module='libvirt'>
+      <info>Dynamically change the real CPUs which can be allocated to a virtual CPU. This function requires priviledged access to the hypervisor.</info>
+      <return type='int' info='0 in case of success, -1 in case of failure.'/>
+      <arg name='domain' type='virDomainPtr' info='pointer to domain object, or NULL for Domain0'/>
+      <arg name='vcpu' type='unsigned int' info='virtual CPU number'/>
+      <arg name='cpumap' type='unsigned char *' info='pointer to a bit map of real CPUs (in 8-bit bytes) (IN) Each bit set to 1 means that corresponding CPU is usable. Bytes are stored in little-endian order: CPU0-7, 8-15... In each byte, lowest CPU number is least significant bit.'/>
+      <arg name='maplen' type='int' info='number of bytes in cpumap, from 1 up to size of CPU map in underlying virtualization system (Xen...). If maplen &lt; size, missing bytes are set to zero. If maplen &gt; size, failure code is returned.'/>
     </function>
     <function name='virDomainReboot' file='libvirt' module='libvirt'>
       <info>Reboot a domain, the domain object is still usable there after but the domain OS is being stopped for a restart. Note that the guest OS may ignore the request.</info>
@@ -471,6 +552,12 @@
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object or NULL'/>
       <arg name='memory' type='unsigned long' info='the memory size in kilobytes'/>
+    </function>
+    <function name='virDomainSetVcpus' file='libvirt' module='libvirt'>
+      <info>Dynamically change the number of virtual CPUs used by the domain. Note that this call may fail if the underlying virtualization hypervisor does not support it or if growing the number is arbitrary limited. This function requires priviledged access to the hypervisor.</info>
+      <return type='int' info='0 in case of success, -1 in case of failure.'/>
+      <arg name='domain' type='virDomainPtr' info='pointer to domain object, or NULL for Domain0'/>
+      <arg name='nvcpus' type='unsigned int' info='the new number of virtual CPUs for this domain'/>
     </function>
     <function name='virDomainShutdown' file='libvirt' module='libvirt'>
       <info>Shutdown a domain, the domain object is still usable there after but the domain OS is being stopped. Note that the guest OS may ignore the request.  TODO: should we add an option for reboot, knowing it may not be doable in the general case ?</info>
