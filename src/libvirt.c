@@ -720,7 +720,7 @@ virDomainLookupByName(virConnectPtr conn, const char *name)
 int
 virDomainDestroy(virDomainPtr domain)
 {
-    int ret = -1, i;
+    int i;
     virConnectPtr conn;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
@@ -743,7 +743,7 @@ virDomainDestroy(virDomainPtr domain)
 	    (conn->drivers[i]->no != VIR_DRV_XEN_HYPERVISOR) &&
 	    (conn->drivers[i]->domainDestroy != NULL)) {
 	    if (conn->drivers[i]->domainDestroy(domain) == 0)
-	        ret = 0;
+	        return (0);
 	}
     }
     for (i = 0;i < conn->nb_drivers;i++) {
@@ -751,16 +751,12 @@ virDomainDestroy(virDomainPtr domain)
 	    (conn->drivers[i]->no == VIR_DRV_XEN_HYPERVISOR) &&
 	    (conn->drivers[i]->domainDestroy != NULL)) {
 	    if (conn->drivers[i]->domainDestroy(domain) == 0)
-	        ret = 0;
+	        return (0);
 	}
     }
 
-    if (ret != 0) {
         virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
-        return (ret);
-    }
-
-    return (ret);
+    return (-1);
 }
 
 /**
@@ -799,7 +795,7 @@ virDomainFree(virDomainPtr domain)
 int
 virDomainSuspend(virDomainPtr domain)
 {
-    int ret = -1, i;
+    int i;
     virConnectPtr conn;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
@@ -822,7 +818,7 @@ virDomainSuspend(virDomainPtr domain)
 	    (conn->drivers[i]->no != VIR_DRV_XEN_HYPERVISOR) &&
 	    (conn->drivers[i]->domainSuspend != NULL)) {
 	    if (conn->drivers[i]->domainSuspend(domain) == 0)
-	        ret = 0;
+	        return (0);
 	}
     }
     for (i = 0;i < conn->nb_drivers;i++) {
@@ -830,16 +826,12 @@ virDomainSuspend(virDomainPtr domain)
 	    (conn->drivers[i]->no == VIR_DRV_XEN_HYPERVISOR) &&
 	    (conn->drivers[i]->domainSuspend != NULL)) {
 	    if (conn->drivers[i]->domainSuspend(domain) == 0)
-	        ret = 0;
+	        return (0);
 	}
     }
 
-    if (ret != 0) {
         virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
-        return (ret);
-    }
-
-    return (ret);
+    return (-1);
 }
 
 /**

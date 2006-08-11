@@ -268,7 +268,10 @@ virDomainGetXMLDevice(virDomainPtr domain, virBufferPtr buf, long dev)
         }
         val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "dev");
         if (val != NULL) {
-            virBufferVSprintf(buf, "      <target dev='%s'/>\n", val);
+            char *tmp = val;
+            if (!strncmp(tmp, "ioemu:", 6))
+                tmp += 6;
+            virBufferVSprintf(buf, "      <target dev='%s'/>\n", tmp);
             free(val);
         }
         val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "read-only");
@@ -286,7 +289,10 @@ virDomainGetXMLDevice(virDomainPtr domain, virBufferPtr buf, long dev)
         }
         val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "dev");
         if (val != NULL) {
-            virBufferVSprintf(buf, "      <target dev='%s'/>\n", val);
+            char *tmp = val;
+            if (!strncmp(tmp, "ioemu:", 6))
+                tmp += 6;
+            virBufferVSprintf(buf, "      <target dev='%s'/>\n", tmp);
             free(val);
         }
         val = virDomainGetXMLDeviceInfo(domain, "vbd", dev, "read-only");
@@ -635,22 +641,72 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
     obj = NULL;
 
     if (boot_dev) {
-       /* TODO:
-        * Have to figure out the naming used here.
-        */
-       if (xmlStrEqual(type, BAD_CAST "hda")) {
+       if (xmlStrEqual(boot_dev, BAD_CAST "fd")) {
           virBufferVSprintf(buf, "(boot a)", (const char *) boot_dev);
-       } else if (xmlStrEqual(type, BAD_CAST "hdd")) {
+       } else if (xmlStrEqual(boot_dev, BAD_CAST "cdrom")) {
           virBufferVSprintf(buf, "(boot d)", (const char *) boot_dev);
-       } else {
-          /* Force hd[b|c] if boot_dev specified but not floppy or cdrom? */
+       } else if (xmlStrEqual(boot_dev, BAD_CAST "hd")) {
           virBufferVSprintf(buf, "(boot c)", (const char *) boot_dev);
+       } else {
+         /* Any other type of boot dev is unsupported right now */
+         virXMLError(VIR_ERR_XML_ERROR, NULL, 0);
+       }
+
+       /* get the 1st floppy device file */
+       obj = xmlXPathEval(BAD_CAST "/domain/devices/disk[@device='floppy' and target/@dev='fda']/source", ctxt);
+       if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+           (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+         cur = obj->nodesetval->nodeTab[0];
+         virBufferVSprintf(buf, "(fda '%s')",
+                           (const char *) xmlGetProp(cur, BAD_CAST "file"));
+         cur = NULL;
+       }
+       if (obj) {
+         xmlXPathFreeObject(obj);
+         obj = NULL;
+    }
+
+       /* get the 2nd floppy device file */
+       obj = xmlXPathEval(BAD_CAST "/domain/devices/disk[@device='floppy' and target/@dev='fdb']/source", ctxt);
+       if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+           (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+         cur = obj->nodesetval->nodeTab[0];
+         virBufferVSprintf(buf, "(fdb '%s')",
+                           (const char *) xmlGetProp(cur, BAD_CAST "file"));
+         cur = NULL;
+       }
+       if (obj) {
+         xmlXPathFreeObject(obj);
+         obj = NULL;
+       }
+
+
+       /* get the cdrom device file */
+       /* XXX new (3.0.3) Xend puts cdrom devs in usual (devices) block */
+       obj = xmlXPathEval(BAD_CAST "/domain/devices/disk[@device='cdrom' and target/@dev='hdc']/source", ctxt);
+       if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+           (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+         cur = obj->nodesetval->nodeTab[0];
+         virBufferVSprintf(buf, "(cdrom '%s')",
+                           (const char *) xmlGetProp(cur, BAD_CAST "file"));
+         cur = NULL;
+       }
+       if (obj) {
+         xmlXPathFreeObject(obj);
+         obj = NULL;
        }
     }
-    /* TODO:
-     * Is a cdrom disk device specified?
-     * Kind of ugly since it is buried in the devices/diskk node.
-     */
+
+    obj = xmlXPathEval(BAD_CAST "count(domain/devices/console) > 0", ctxt);
+    if ((obj == NULL) || (obj->type != XPATH_BOOLEAN)) {
+      virXMLError(VIR_ERR_XML_ERROR, NULL, 0);
+      goto error;
+    }
+    if (obj->boolval) {
+      virBufferAdd(buf, "(serial pty)", 12);
+    }
+    xmlXPathFreeObject(obj);
+    obj = NULL;
     
     /* Is a graphics device specified? */
     obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics[1]", ctxt);
@@ -779,10 +835,11 @@ virDomainParseXMLOSDescPV(xmlNodePtr node, virBufferPtr buf)
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
-virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf)
+virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm)
 {
     xmlNodePtr cur;
     xmlChar *type = NULL;
+    xmlChar *device = NULL;
     xmlChar *source = NULL;
     xmlChar *target = NULL;
     int ro = 0;
@@ -796,6 +853,8 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf)
             typ = 1;
         xmlFree(type);
     }
+    device = xmlGetProp(node, BAD_CAST "device");
+    
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
@@ -829,7 +888,29 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf)
             xmlFree(source);
         return (-1);
     }
+
+    /* Skip floppy/cdrom disk used as the boot device
+     * since that's incorporated into the HVM kernel
+     * (image (hvm..)) part of the sexpr, rather than
+     * the (devices...) bit. Odd Xend HVM config :-(
+     * XXX This will have to change in Xen 3.0.3
+     */
+    if (hvm && device &&
+        (!strcmp((const char *)device, "floppy") ||
+         !strcmp((const char *)device, "cdrom"))) {
+      return 0;
+    }
+
+
+    virBufferAdd(buf, "(device ", 8);
     virBufferAdd(buf, "(vbd ", 5);
+    /* XXX ioemu prefix is going away in Xen 3.0.3 */
+    if (hvm) {
+        char *tmp = (char *)target;
+        if (!strncmp((const char *) tmp, "ioemu:", 6))
+            tmp += 6;
+        virBufferVSprintf(buf, "(dev 'ioemu:%s')", (const char *) tmp);
+    } else
     virBufferVSprintf(buf, "(dev '%s')", (const char *) target);
     if (typ == 0)
         virBufferVSprintf(buf, "(uname 'file:%s')", source);
@@ -844,6 +925,7 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf)
     else if (ro == 1)
         virBufferVSprintf(buf, "(mode 'r')");
 
+    virBufferAdd(buf, ")", 1);
     virBufferAdd(buf, ")", 1);
     xmlFree(target);
     xmlFree(source);
@@ -912,6 +994,7 @@ virDomainParseXMLIfDesc(xmlNodePtr node, virBufferPtr buf)
     }
     if (script != NULL)
         virBufferVSprintf(buf, "(script '%s')", script);
+    virBufferAdd(buf, "(type ioemu)", 12);
 
     virBufferAdd(buf, ")", 1);
     if (mac != NULL)
@@ -948,6 +1031,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
     xmlXPathContextPtr ctxt = NULL;
     int i, res;
     int bootloader = 0;
+    int hvm = 0;
 
     if (name != NULL)
         *name = NULL;
@@ -1072,6 +1156,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
 	if ((tmpobj == NULL) || !xmlStrEqual(tmpobj->stringval, BAD_CAST "hvm")) {
 	    res = virDomainParseXMLOSDescPV(obj->nodesetval->nodeTab[0], &buf);
 	} else {
+	    hvm = 1;
 	    res = virDomainParseXMLOSDescHVM(obj->nodesetval->nodeTab[0], &buf, ctxt);
 	}
 
@@ -1090,12 +1175,10 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
 	for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-	    virBufferAdd(&buf, "(device ", 8);
-	    res = virDomainParseXMLDiskDesc(obj->nodesetval->nodeTab[i], &buf);
+            res = virDomainParseXMLDiskDesc(obj->nodesetval->nodeTab[i], &buf, hvm);
 	    if (res != 0) {
 		goto error;
 	    }
-	    virBufferAdd(&buf, ")", 1);
 	}
     }
     xmlXPathFreeObject(obj);

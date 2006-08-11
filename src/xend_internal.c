@@ -791,6 +791,18 @@ sexpr_uuid(char **ptr, struct sexpr *node, const char *path)
         goto error;
 
     ret = sscanf(r,
+                 "%02x%02x%02x%02x"
+                 "%02x%02x%02x%02x"
+                 "%02x%02x%02x%02x"
+                 "%02x%02x%02x%02x",
+                 uuid + 0, uuid + 1, uuid + 2, uuid + 3,
+                 uuid + 4, uuid + 5, uuid + 6, uuid + 7,
+                 uuid + 8, uuid + 9, uuid + 10, uuid + 11,
+                 uuid + 12, uuid + 13, uuid + 14, uuid + 15);
+    if (ret == 16)
+        goto done;
+
+    ret = sscanf(r,
                  "%02x%02x%02x%02x-"
                  "%02x%02x-"
                  "%02x%02x-"
@@ -1416,21 +1428,19 @@ xend_parse_sexp_desc_os(struct sexpr *node, virBufferPtr buf, int hvm)
         virBufferVSprintf(buf, "    <loader>%s</loader>\n", tmp);
         tmp = sexpr_node(node, "domain/image/hvm/boot");
         if ((tmp != NULL) && (tmp[0] != 0)) {
-	   /*
-            * FIXME:
-            * Figure out how to map the 'a', 'b', 'c' nonsense to a
-            * device.
-	    */
            if (tmp[0] == 'a')
-               virBufferAdd(buf, "    <boot dev='/dev/fd0'/>\n", 25 );
+               /* XXX no way to deal with boot from 2nd floppy */
+               virBufferAdd(buf, "    <boot dev='fd'/>\n", 21 );
            else if (tmp[0] == 'c')
 	   /*
             * Don't know what to put here.  Say the vm has been given 3
             * disks - hda, hdb, hdc.  How does one identify the boot disk?
+                * We're going to assume that first disk is the boot disk since
+                * this is most common practice
 	    */
-               virBufferAdd(buf, "    <boot dev='hda'/>\n", 22 );
+               virBufferAdd(buf, "    <boot dev='hd'/>\n", 21 );
            else if (strcmp(tmp, "d") == 0)
-               virBufferAdd(buf, "    <boot dev='/dev/cdrom'/>\n", 29 );
+               virBufferAdd(buf, "    <boot dev='cdrom'/>\n", 24 );
         }
     } else {
         virBufferVSprintf(buf, "    <type>linux</type>\n");
@@ -1482,11 +1492,11 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root)
         /* ERROR */
         return (NULL);
     }
-    ret = malloc(1000);
+    ret = malloc(4000);
     if (ret == NULL)
         return (NULL);
     buf.content = ret;
-    buf.size = 1000;
+    buf.size = 4000;
     buf.use = 0;
 
     domid = sexpr_int(root, "domain/domid");
@@ -1552,7 +1562,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root)
                 continue;
             if (!memcmp(tmp, "file:", 5)) {
                 tmp += 5;
-                virBufferVSprintf(&buf, "    <disk type='file'>\n");
+                virBufferVSprintf(&buf, "    <disk type='file' device='disk'>\n");
                 virBufferVSprintf(&buf, "      <source file='%s'/>\n",
                                   tmp);
                 tmp = sexpr_node(node, "device/vbd/dev");
@@ -1561,6 +1571,8 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root)
                                  "domain information incomplete, vbd has no dev");
                     goto error;
                 }
+                if (!strncmp(tmp, "ioemu:", 6)) 
+                    tmp += 6;
                 virBufferVSprintf(&buf, "      <target dev='%s'/>\n", tmp);
                 tmp = sexpr_node(node, "device/vbd/mode");
                 if ((tmp != NULL) && (!strcmp(tmp, "r")))
@@ -1568,7 +1580,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root)
                 virBufferAdd(&buf, "    </disk>\n", 12);
             } else if (!memcmp(tmp, "phy:", 4)) {
                 tmp += 4;
-                virBufferVSprintf(&buf, "    <disk type='block'>\n");
+                virBufferVSprintf(&buf, "    <disk type='block' device='disk'>\n");
                 virBufferVSprintf(&buf, "      <source dev='%s'/>\n", tmp);
                 tmp = sexpr_node(node, "device/vbd/dev");
                 if (tmp == NULL) {
@@ -1576,6 +1588,8 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root)
                                  "domain information incomplete, vbd has no dev");
                     goto error;
                 }
+                if (!strncmp(tmp, "ioemu:", 6)) 
+                    tmp += 6;
                 virBufferVSprintf(&buf, "      <target dev='%s'/>\n", tmp);
                 tmp = sexpr_node(node, "device/vbd/mode");
                 if ((tmp != NULL) && (!strcmp(tmp, "r")))
@@ -1625,6 +1639,30 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root)
     }
 
     if (hvm) {
+        tmp = sexpr_node(root, "domain/image/hvm/fda");
+        if ((tmp != NULL) && (tmp[0] != 0)) {
+            virBufferAdd(&buf, "    <disk type='file' device='floppy'>\n", 39);
+            virBufferVSprintf(&buf, "      <source file='%s'/>\n", tmp);
+            virBufferAdd(&buf, "      <target dev='fda'/>\n", 26);
+            virBufferAdd(&buf, "    </disk>\n", 12);
+        }
+        tmp = sexpr_node(root, "domain/image/hvm/fdb");
+        if ((tmp != NULL) && (tmp[0] != 0)) {
+            virBufferAdd(&buf, "    <disk type='file' device='floppy'>\n", 39);
+            virBufferVSprintf(&buf, "      <source file='%s'/>\n", tmp);
+            virBufferAdd(&buf, "      <target dev='fdb'/>\n", 26);
+            virBufferAdd(&buf, "    </disk>\n", 12);
+        }
+        /* XXX new (3.0.3) Xend puts cdrom devs in usual (devices) block */
+        tmp = sexpr_node(root, "domain/image/hvm/cdrom");
+        if ((tmp != NULL) && (tmp[0] != 0)) {
+            virBufferAdd(&buf, "    <disk type='file' device='cdrom'>\n", 38);
+            virBufferVSprintf(&buf, "      <source file='%s'/>\n", tmp);
+            virBufferAdd(&buf, "      <target dev='hdc'/>\n", 26);
+            virBufferAdd(&buf, "      <readonly/>\n", 18);
+            virBufferAdd(&buf, "    </disk>\n", 12);
+        }
+        
         /* Graphics device */
         tmp = sexpr_node(root, "domain/image/hvm/vnc");
         if (tmp != NULL) {
@@ -1641,11 +1679,6 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root)
            if (tmp[0] == '1')
                virBufferAdd(&buf, "    <graphics type='sdl'/>\n", 27 );
         }
-
-        /*
-         * TODO:
-         * Device for cdrom
-         */
     }
     
     tty = xenStoreDomainGetConsolePath(conn, domid);

@@ -1,3 +1,20 @@
+Fri Aug 11 09:37:02 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/libvirt.c: Avoid duplicated attempts to shutdown or
+	pause a domain if the first attempt succeeded.
+	* src/xend_internal.c, src/xml.c: When parsing UUID from
+	SEXPR also allow for format without any embedded '-'. The
+	ioemu: prefix is no longer required for HVM domains. It is
+	added when generating SEXPR, and removing when parsing SEXPR
+	never appearing in XML. CDROM & floppy devices for HVM domains
+	are now included in XML under <devices><disk> tag. The <disk>
+	tag now has a 'device' attribute allowing one of 'floppy',
+	'cdrom', 'disk' to be specified. If the <console> tag is present
+	in XML, HVM domains get a serial console activated. <boot>
+	tag now expects one of 'fd' 'hd' or 'cdrom' when specifying
+	boot device preference. Increased size of XML doc buffer from
+	1k to 4k to deal with large numbers of devices
+
 Fri Aug 11 13:08:01 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in: updated python detection code from latest libxml2 one
@@ -25,9 +42,9 @@ Wed Aug  9 10:17:03 EDT 2006 Daniel Berrange <berrange@redhat.com>
 	* src/test.c, src/xen_internal.c: Added NULL entry for new
 	driver method for fetching XML
 	* src/proxy_internal.c, src/proxy_internal.h, proxy/libvirt_proxy.c:
-	Added implmentation of virDomainGetXMLDesc driver method which 
+	Added implmentation of virDomainGetXMLDesc driver method which
 	goes via proxy.
-	
+
 Tue Aug  8 23:24:51 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/driver.h src/libvirt.c src/proxy_internal.c src/test.c
@@ -38,14 +55,14 @@ Tue Aug  8 23:24:51 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 Mon Aug  7 18:33:45 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
-	* src/xend_internal.c: Added details of serial console TTY to XML 
+	* src/xend_internal.c: Added details of serial console TTY to XML
 	representation of domain. Fetch VNC port from xenstore if it is
 	available (only in xen 3.0.3 or later).
 	* src/xs_internal.c, src/xs_internal.h: Added APIs for retrieving
 	the serial console TTY and VNC server port from xenstore.
 	* docs/libvir.html: Document 'port' attribute for VNC graphics,
 	and '<console>' element for serial console.
-	
+
 Mon Aug  7 21:57:41 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* TODO: updated with new items
@@ -60,7 +77,7 @@ Mon Aug  7 11:06:20 EDT 2006 Daniel Berrange <berrange@redhat.com>
 	* src/xend_internal.c: Added a 'port' attribute to the '<graphics>'
 	tag when display type is VNC, providing the port number on which
 	the VNC server is listening.
-	
+
 Mon Aug  7 18:47:48 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvirt/libvirt.h.in: previous change to libvirt.h should
@@ -70,10 +87,10 @@ Fri Aug  4 20:19:23 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/libvirt.c: Fix off-by-one in validated VCPU number (it is
 	zero based, not one based).
-	* include/libvirt/libvirt.h: Add some convenience macros for 
+	* include/libvirt/libvirt.h: Add some convenience macros for
 	calculating neccessary CPU map lengths & total host CPUs
 	* src/virsh.c: Add 'vcpuinfo' and 'vcpumap' commands
-	
+
 Fri Aug  4 14:45:25 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* python/generator.py: fix the generator when handling long integers
