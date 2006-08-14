@@ -1,3 +1,9 @@
+Mon Aug 14 10:55:02 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* docs/libvir.html, docs/format.html: Updated description of
+	HVM boot device, and disk device configuration to match up
+	new new behaviour from previous changes
+
 Fri Aug 11 09:37:02 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/libvirt.c: Avoid duplicated attempts to shutdown or
