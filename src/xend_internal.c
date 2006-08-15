@@ -1547,6 +1547,17 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root)
     if (tmp != NULL)
 	virBufferVSprintf(&buf, "  <on_crash>%s</on_crash>\n", tmp);
 
+    if (hvm) {
+        virBufferAdd(&buf, "  <features>\n", 13);
+        if (sexpr_int(root, "domain/image/hvm/acpi"))
+            virBufferAdd(&buf, "    <acpi/>\n", 12);
+        if (sexpr_int(root, "domain/image/hvm/apic"))
+            virBufferAdd(&buf, "    <apic/>\n", 12);
+        if (sexpr_int(root, "domain/image/hvm/pae"))
+            virBufferAdd(&buf, "    <pae/>\n", 11);
+        virBufferAdd(&buf, "  </features>\n", 14);
+    }
+       
     virBufferAdd(&buf, "  <devices>\n", 12);
 
     /* in case of HVM we have devices emulation */

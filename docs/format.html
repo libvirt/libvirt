@@ -99,13 +99,18 @@ systems:</p><pre>&lt;domain type='xen' id='3'&gt;
   &lt;os&gt;
     <span style="color: #0000E5; background-color: #FFFFFF">&lt;type&gt;hvm&lt;/type&gt;</span>
     <span style="color: #0000E5; background-color: #FFFFFF">&lt;loader&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;</span>
-    <span style="color: #0000E5; background-color: #FFFFFF">&lt;boot dev='da'/&gt;</span>
+    <span style="color: #0000E5; background-color: #FFFFFF">&lt;boot dev='hd'/&gt;</span>
   &lt;/os&gt;
   &lt;memory&gt;524288&lt;/memory&gt;
   &lt;vcpu&gt;1&lt;/vcpu&gt;
   &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
   &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
   &lt;on_crash&gt;restart&lt;/on_crash&gt;
+  &lt;features&gt;
+     <span style="color: #E50000; background-color: #FFFFFF">&lt;pae/&gt;
+     &lt;acpi/&gt;
+     &lt;apic/&gt;</span>
+  &lt;/features&gt;
   &lt;devices&gt;
     <span style="color: #0000E5; background-color: #FFFFFF">&lt;emulator&gt;/usr/lib/xen/bin/qemu-dm&lt;/emulator&gt;</span>
     &lt;interface type='bridge'&gt;
@@ -128,7 +133,13 @@ systems:</p><pre>&lt;domain type='xen' id='3'&gt;
     &lt;/disk&gt;
     <span style="color: #0000E5; background-color: #FFFFFF">&lt;graphics type='vnc' port='5904'/&gt;</span>
   &lt;/devices&gt;
-&lt;/domain&gt;</pre><p>There is a few things to notice specifically for HVM domains:</p><ul><li>the <code>&lt;os&gt;</code> block description is very different, first it indicates
+&lt;/domain&gt;</pre><p>There is a few things to notice specifically for HVM domains:</p><ul><li>the optional <code>&lt;features&gt;</code> block is used to enable certain
+    guest CPU / system features. For HVM guests the following features are defined:
+    <ul><li><code>pae</code> - enable PAE memory addressing</li>
+    <li><code>apic</code> - enable IO APIC</li>
+    <li><code>acpi</code> - enable ACPI bios</li>
+    </ul></li>
+  <li>the <code>&lt;os&gt;</code> block description is very different, first it indicates
     that the type is 'hvm' for hardware virtualization, then instead of a
     kernel, boot and command line arguments, it points to an os boot loader
     which will extract the boot informations from the boot device specified

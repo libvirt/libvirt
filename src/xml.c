@@ -567,7 +567,7 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
     return (ret);
 }
 
-#endif
+#endif /* 0 - UNUSED */
 
 #ifndef PROXY
 /**
@@ -694,6 +694,28 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
        if (obj) {
          xmlXPathFreeObject(obj);
          obj = NULL;
+       }
+
+       obj = xmlXPathEval(BAD_CAST "/domain/features/acpi", ctxt);
+       if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+	   (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+           virBufferAdd(buf, "(acpi 1)", 8);
+	   xmlXPathFreeObject(obj);
+	   obj = NULL;
+       }
+       obj = xmlXPathEval(BAD_CAST "/domain/features/apic", ctxt);
+       if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+	   (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+           virBufferAdd(buf, "(apic 1)", 8);
+	   xmlXPathFreeObject(obj);
+	   obj = NULL;
+       }
+       obj = xmlXPathEval(BAD_CAST "/domain/features/pae", ctxt);
+       if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+	   (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+           virBufferAdd(buf, "(pae 1)", 7);
+	   xmlXPathFreeObject(obj);
+	   obj = NULL;
        }
     }
 

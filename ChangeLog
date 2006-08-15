@@ -1,3 +1,11 @@
+Tue Aug 15 11:55:15 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/xml.c, src/xend_internal.c: Added a <features> block
+	to XML allowing enablement of guest CPU / system features.
+	Currently support PAE, ACPI, APIC for HVM domains.
+	* docs/libvir.html: Documented new <features> block and those
+	features enabled for HVM guests
+
 Mon Aug 14 10:55:02 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* docs/libvir.html, docs/format.html: Updated description of
