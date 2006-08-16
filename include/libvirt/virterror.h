@@ -105,7 +105,8 @@ typedef enum {
     VIR_ERR_DRIVER_FULL, /* too many drivers registered */
     VIR_ERR_CALL_FAILED, /* not supported by the drivers */
     VIR_ERR_XML_ERROR, /* an XML description is not well formed or broken */
-    VIR_ERR_DOM_EXIST /* the domain already exist */
+    VIR_ERR_DOM_EXIST,/* the domain already exist */
+    VIR_ERR_OPERATION_DENIED /* operation forbidden on read-only connections */
 } virErrorNumber;
 
 /**

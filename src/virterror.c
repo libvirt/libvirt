@@ -533,6 +533,12 @@ __virErrorMsg(virErrorNumber error, const char *info)
 	    else
 	        errmsg = "domain %s exists already";
             break;
+	case VIR_ERR_OPERATION_DENIED:
+	    if (info == NULL)
+	        errmsg = "operation forbidden for read only access";
+	    else
+	        errmsg = "operation %s forbidden for read only access";
+            break;
     }
     return (errmsg);
 }

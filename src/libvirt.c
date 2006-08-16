@@ -533,6 +533,10 @@ virDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (NULL);
     }
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+	return (NULL);
+    }
 
     for (i = 0;i < conn->nb_drivers;i++) {
 	if ((conn->drivers[i] != NULL) &&
@@ -729,10 +733,10 @@ virDomainDestroy(virDomainPtr domain)
     }
 
     conn = domain->conn;
-#if PEDANTIC
-    if (domain->conn->flags & VIR_CONNECT_RO)
-        return (-1);
-#endif
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+	return (-1);
+    }
 
     /*
      * Go though the driver registered entry points but use the 
@@ -802,6 +806,10 @@ virDomainSuspend(virDomainPtr domain)
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+	return (-1);
+    }
 
     conn = domain->conn;
 #if PEDANTIC
@@ -853,6 +861,10 @@ virDomainResume(virDomainPtr domain)
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+	return (-1);
     }
 
     conn = domain->conn;
@@ -908,6 +920,10 @@ virDomainSave(virDomainPtr domain, const char *to)
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+	return (-1);
     }
     conn = domain->conn;
     if (to == NULL) {
@@ -966,6 +982,10 @@ virDomainRestore(virConnectPtr conn, const char *from)
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
         return (-1);
+    }
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+	return (-1);
     }
     if (from == NULL) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
@@ -1027,6 +1047,10 @@ virDomainShutdown(virDomainPtr domain)
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+	return (-1);
+    }
 
     conn = domain->conn;
 #if PEDANTIC
@@ -1071,6 +1095,10 @@ virDomainReboot(virDomainPtr domain, unsigned int flags)
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+	return (-1);
     }
 
     conn = domain->conn;
@@ -1296,16 +1324,20 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
     int ret = -1 , i;
     virConnectPtr conn;
 
-    if (memory < 4096) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (-1);
-    }
     if (domain == NULL) {
         TODO
 	return (-1);
     }
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+	return (-1);
+    }
+    if (memory < 4096) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
     }
     conn = domain->conn;
@@ -1348,10 +1380,6 @@ virDomainSetMemory(virDomainPtr domain, unsigned long memory)
     int ret = -1 , i;
     virConnectPtr conn;
 
-    if (memory < 4096) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (-1);
-    }
     if (domain == NULL) {
         TODO
 	return (-1);
@@ -1360,9 +1388,16 @@ virDomainSetMemory(virDomainPtr domain, unsigned long memory)
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
-    conn = domain->conn;
-    if (domain->conn->flags & VIR_CONNECT_RO)
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+	return (-1);
+    }
+    if (memory < 4096) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
+    }
+
+    conn = domain->conn;
 
     /*
      * in that case instead of trying only though one method try all availble.
@@ -1525,6 +1560,10 @@ virDomainDefineXML(virConnectPtr conn, const char *xml) {
         virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
         return (NULL);
     }
+    if (conn->flags & VIR_CONNECT_RO) {
+        virLibConnError(conn, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+	return (NULL);
+    }
     if (xml == NULL) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (NULL);
@@ -1615,6 +1654,11 @@ virDomainUndefine(virDomainPtr domain) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+	return (-1);
+    }
+
     /* TODO shall we keep a list of defined domains there ? */
 
     ret = virFreeDomain(domain->conn, domain);
@@ -1652,6 +1696,14 @@ virConnectListDefinedDomains(virConnectPtr conn, const char **names,
 int
 virDomainCreate(virDomainPtr domain) {
     
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+	return (-1);
+    }
     return(-1);
 }
 
@@ -1682,8 +1734,10 @@ virDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
-    if (domain->conn->flags & VIR_CONNECT_RO)
-        return (-1);
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+	return (-1);
+    }
     if (nvcpus < 1) {
         virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
@@ -1748,8 +1802,10 @@ virDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
-    if (domain->conn->flags & VIR_CONNECT_RO)
-        return (-1);
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+	return (-1);
+    }
     if ((vcpu > 32000) || (cpumap == NULL) || (maplen < 1)) {
         virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);

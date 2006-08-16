@@ -1,3 +1,9 @@
+Wed Aug 16 17:24:59 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvirt/virterror.h src/libvirt.c src/virterror.c: enforce
+	  blocking operations with side effect on read-only connections. Adds
+	  a new error code and message.
+
 Tue Aug 15 11:55:15 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/xml.c, src/xend_internal.c: Added a <features> block
