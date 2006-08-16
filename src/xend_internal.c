@@ -2176,7 +2176,7 @@ xenDaemonDomainDumpXMLByID(virConnectPtr conn, int domid)
  *         the caller must free() the returned value.
  */
 char *
-xenDaemonDomainDumpXML(virDomainPtr domain, int flags)
+xenDaemonDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
 {
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,

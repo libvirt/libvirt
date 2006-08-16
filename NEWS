@@ -5,11 +5,29 @@
        http://libvirt.org/news.html
 
 Releases
+0.1.4: Aug 16 2006:
+   - bug fixes: spec file fix (Mark McLoughlin), error report problem (with
+    Hugh Brock), long integer in Python bindings (with Daniel Berrange), XML
+    generation bug for CDRom (Daniel Berrange), bug whem using number() XPath
+    function (Mark McLoughlin), fix python detection code, remove duplicate
+    initialization errors (Daniel Berrange)
+   - improvements: UUID in XML description (Peter Vetere), proxy code
+    cleanup, virtual CPU and affinity support + virsh support (Michel
+    Ponceau, Philippe Berthault, Daniel Berrange), port and tty informations
+    for console in XML (Daniel Berrange), added XML dump to driver and proxy
+    support (Daniel Berrange), extention of boot options with support for
+    floppy and cdrom (Daniel Berrange), features block in XML to report/ask
+    PAE, ACPI, APIC for HVM domains (Daniel Berrange), fail saide-effect
+    operations when using read-only connection, large improvements to test
+    driver (Daniel Berrange) 
+   - documentation: spelling (Daniel Berrange), test driver examples.
+
+
 0.1.3: Jul 11 2006:
    - bugfixes: build as non-root, fix xend access when root, handling of
     empty XML elements (Mark McLoughlin), XML serialization and parsing fixes
     (Mark McLoughlin), allow to create domains without disk (Mark
-    McLoughlin), 
+  McLoughlin),
    - improvement: xenDaemonLookupByID from O(n^2) to O(n) (Daniel Berrange),
     support for fully virtualized guest (Jim Fehlig, DV, Mark McLoughlin)
    - documentation: augmented to cover hvm domains

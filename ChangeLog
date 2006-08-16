@@ -1,3 +1,11 @@
+Wed Aug 16 19:07:52 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* NEWS configure.in doc//* include/libvirt/libvirt.h 
+	  include/libvirt/libvirt.h.in: preparing release of 0.1.4,
+	  regenerated docs, fixed a few things
+	* src/proxy_internal.c src/test.c src/xend_internal.c:
+	  a few trivial fixes
+
 Wed Aug 16 12:33:02 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/virsh.c: Added 'setvcpus', 'setmem', 'setmaxmem'

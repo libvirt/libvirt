@@ -45,6 +45,7 @@
     <reference name='VIR_ERR_NO_XEN' href='html/libvirt-virterror.html#VIR_ERR_NO_XEN'/>
     <reference name='VIR_ERR_NO_XENSTORE' href='html/libvirt-virterror.html#VIR_ERR_NO_XENSTORE'/>
     <reference name='VIR_ERR_OK' href='html/libvirt-virterror.html#VIR_ERR_OK'/>
+    <reference name='VIR_ERR_OPERATION_DENIED' href='html/libvirt-virterror.html#VIR_ERR_OPERATION_DENIED'/>
     <reference name='VIR_ERR_OPERATION_FAILED' href='html/libvirt-virterror.html#VIR_ERR_OPERATION_FAILED'/>
     <reference name='VIR_ERR_OS_TYPE' href='html/libvirt-virterror.html#VIR_ERR_OS_TYPE'/>
     <reference name='VIR_ERR_POST_FAILED' href='html/libvirt-virterror.html#VIR_ERR_POST_FAILED'/>
@@ -196,6 +197,7 @@
       <ref name='VIR_ERR_NO_XEN'/>
       <ref name='VIR_ERR_NO_XENSTORE'/>
       <ref name='VIR_ERR_OK'/>
+      <ref name='VIR_ERR_OPERATION_DENIED'/>
       <ref name='VIR_ERR_OPERATION_FAILED'/>
       <ref name='VIR_ERR_OS_TYPE'/>
       <ref name='VIR_ERR_POST_FAILED'/>
@@ -543,6 +545,7 @@
       <ref name='VIR_ERR_NO_XEN'/>
       <ref name='VIR_ERR_NO_XENSTORE'/>
       <ref name='VIR_ERR_OK'/>
+      <ref name='VIR_ERR_OPERATION_DENIED'/>
       <ref name='VIR_ERR_OPERATION_FAILED'/>
       <ref name='VIR_ERR_OS_TYPE'/>
       <ref name='VIR_ERR_POST_FAILED'/>
@@ -584,6 +587,7 @@
       <letter name='A'>
         <word name='API'>
           <ref name='VIR_COPY_CPUMAP'/>
+          <ref name='VIR_CPU_MAPLEN'/>
           <ref name='VIR_CPU_USABLE'/>
           <ref name='VIR_UNUSE_CPU'/>
           <ref name='VIR_USE_CPU'/>
@@ -605,6 +609,7 @@
       </letter>
       <letter name='C'>
         <word name='CPU'>
+          <ref name='VIR_CPU_MAPLEN'/>
           <ref name='VIR_UNUSE_CPU'/>
           <ref name='VIR_USE_CPU'/>
           <ref name='_virDomainInfo'/>
@@ -620,9 +625,11 @@
           <ref name='virDomainPinVcpu'/>
         </word>
         <word name='CPUs'>
+          <ref name='VIR_CPU_MAPLEN'/>
           <ref name='VIR_NODEINFO_MAXCPUS'/>
           <ref name='_virDomainInfo'/>
           <ref name='_virNodeInfo'/>
+          <ref name='cpu'/>
           <ref name='cpumap'/>
           <ref name='virDomainGetVcpus'/>
           <ref name='virDomainPinVcpu'/>
@@ -803,6 +810,7 @@
         </word>
         <word name='This'>
           <ref name='VIR_COPY_CPUMAP'/>
+          <ref name='VIR_CPU_MAPLEN'/>
           <ref name='VIR_CPU_USABLE'/>
           <ref name='VIR_GET_CPUMAP'/>
           <ref name='VIR_NODEINFO_MAXCPUS'/>
@@ -924,6 +932,7 @@
           <ref name='virDomainFree'/>
         </word>
         <word name='all'>
+          <ref name='VIR_CPU_MAPLEN'/>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainGetVcpus'/>
         </word>
@@ -1027,6 +1036,9 @@
         <word name='better'>
           <ref name='virInitialize'/>
         </word>
+        <word name='between'>
+          <ref name='VIR_CPU_MAPLEN'/>
+        </word>
         <word name='bit'>
           <ref name='VIR_UNUSE_CPU'/>
           <ref name='VIR_USE_CPU'/>
@@ -1051,6 +1063,7 @@
           <ref name='virDomainPinVcpu'/>
         </word>
         <word name='bytes'>
+          <ref name='VIR_CPU_MAPLEN'/>
           <ref name='cpumap'/>
           <ref name='cpumaps'/>
           <ref name='maplen'/>
@@ -1143,8 +1156,12 @@
         <word name='compiled'>
           <ref name='virGetVersion'/>
         </word>
+        <word name='complete'>
+          <ref name='VIR_CPU_MAPLEN'/>
+        </word>
         <word name='conjonction'>
           <ref name='VIR_COPY_CPUMAP'/>
+          <ref name='VIR_CPU_MAPLEN'/>
           <ref name='VIR_CPU_USABLE'/>
           <ref name='VIR_GET_CPUMAP'/>
           <ref name='VIR_UNUSE_CPU'/>
@@ -1588,6 +1605,7 @@
           <ref name='virDomainPinVcpu'/>
         </word>
         <word name='length'>
+          <ref name='VIR_CPU_MAPLEN'/>
           <ref name='maplen'/>
         </word>
         <word name='level'>
@@ -1648,6 +1666,7 @@
       <letter name='m'>
         <word name='macro'>
           <ref name='VIR_COPY_CPUMAP'/>
+          <ref name='VIR_CPU_MAPLEN'/>
           <ref name='VIR_CPU_USABLE'/>
           <ref name='VIR_GET_CPUMAP'/>
           <ref name='VIR_NODEINFO_MAXCPUS'/>
@@ -1662,6 +1681,7 @@
           <ref name='cpumap'/>
         </word>
         <word name='map'>
+          <ref name='VIR_CPU_MAPLEN'/>
           <ref name='cpumap'/>
           <ref name='virDomainGetVcpus'/>
           <ref name='virDomainPinVcpu'/>
@@ -1923,6 +1943,7 @@
           <ref name='_virNodeInfo'/>
         </word>
         <word name='physical'>
+          <ref name='VIR_CPU_MAPLEN'/>
           <ref name='cpu'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
@@ -2033,6 +2054,9 @@
           <ref name='virDomainReboot'/>
           <ref name='virDomainShutdown'/>
         </word>
+        <word name='required'>
+          <ref name='VIR_CPU_MAPLEN'/>
+        </word>
         <word name='requires'>
           <ref name='virDomainCreateLinux'/>
           <ref name='virDomainDestroy'/>
@@ -2087,6 +2111,7 @@
           <ref name='virGetVersion'/>
         </word>
         <word name='returns'>
+          <ref name='VIR_CPU_MAPLEN'/>
           <ref name='VIR_CPU_USABLE'/>
           <ref name='VIR_GET_CPUMAP'/>
           <ref name='virConnectGetVersion'/>
@@ -2158,6 +2183,9 @@
         <word name='similar'>
           <ref name='virDomainCreateLinux'/>
         </word>
+        <word name='single'>
+          <ref name='VIR_CPU_MAPLEN'/>
+        </word>
         <word name='size'>
           <ref name='_virNodeInfo'/>
           <ref name='virConnectListDefinedDomains'/>
@@ -2210,6 +2238,7 @@
           <ref name='virDomainShutdown'/>
         </word>
         <word name='store'>
+          <ref name='VIR_CPU_MAPLEN'/>
           <ref name='virConnectListDefinedDomains'/>
           <ref name='virConnectListDomains'/>
           <ref name='virConnectOpen'/>
@@ -2407,6 +2436,7 @@
         </word>
         <word name='used'>
           <ref name='VIR_COPY_CPUMAP'/>
+          <ref name='VIR_CPU_MAPLEN'/>
           <ref name='VIR_CPU_USABLE'/>
           <ref name='VIR_GET_CPUMAP'/>
           <ref name='VIR_UNUSE_CPU'/>
@@ -2480,6 +2510,7 @@
         </word>
         <word name='virDomainPinVcpu'>
           <ref name='VIR_COPY_CPUMAP'/>
+          <ref name='VIR_CPU_MAPLEN'/>
           <ref name='VIR_GET_CPUMAP'/>
           <ref name='VIR_UNUSE_CPU'/>
           <ref name='VIR_USE_CPU'/>
@@ -2518,6 +2549,7 @@
           <ref name='_virVcpuInfo'/>
         </word>
         <word name='virtual'>
+          <ref name='VIR_CPU_MAPLEN'/>
           <ref name='_virDomainInfo'/>
           <ref name='_virVcpuInfo'/>
           <ref name='vcpu'/>
@@ -2573,6 +2605,7 @@
         </word>
         <word name='with'>
           <ref name='VIR_COPY_CPUMAP'/>
+          <ref name='VIR_CPU_MAPLEN'/>
           <ref name='VIR_CPU_USABLE'/>
           <ref name='VIR_GET_CPUMAP'/>
           <ref name='VIR_UNUSE_CPU'/>

@@ -2,10 +2,25 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>Releases</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Releases</h1><p>Here is the list of official releases, however since it is early on in the
 development of libvirt, it is preferable when possible to just use the <a href="downloads.html">CVS version or snapshot</a>, contact the mailing list
-and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3>0.1.3: Jul 11 2006</h3><ul><li>bugfixes: build as non-root, fix xend access when root, handling of
+and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3>0.1.4: Aug 16 2006</h3><ul><li>bug fixes: spec file fix (Mark McLoughlin), error report problem (with
+    Hugh Brock), long integer in Python bindings (with Daniel Berrange), XML
+    generation bug for CDRom (Daniel Berrange), bug whem using number() XPath
+    function (Mark McLoughlin), fix python detection code, remove duplicate
+    initialization errors (Daniel Berrange)</li>
+  <li>improvements: UUID in XML description (Peter Vetere), proxy code
+    cleanup, virtual CPU and affinity support + virsh support (Michel
+    Ponceau, Philippe Berthault, Daniel Berrange), port and tty informations
+    for console in XML (Daniel Berrange), added XML dump to driver and proxy
+    support (Daniel Berrange), extention of boot options with support for
+    floppy and cdrom (Daniel Berrange), features block in XML to report/ask
+    PAE, ACPI, APIC for HVM domains (Daniel Berrange), fail saide-effect
+    operations when using read-only connection, large improvements to test
+    driver (Daniel Berrange) </li>
+  <li>documentation: spelling (Daniel Berrange), test driver examples.</li>
+</ul><h3>0.1.3: Jul 11 2006</h3><ul><li>bugfixes: build as non-root, fix xend access when root, handling of
     empty XML elements (Mark McLoughlin), XML serialization and parsing fixes
     (Mark McLoughlin), allow to create domains without disk (Mark
-    McLoughlin), </li>
+  McLoughlin),</li>
   <li>improvement: xenDaemonLookupByID from O(n^2) to O(n) (Daniel Berrange),
     support for fully virtualized guest (Jim Fehlig, DV, Mark McLoughlin)</li>
   <li>documentation: augmented to cover hvm domains</li>

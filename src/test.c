@@ -705,7 +705,7 @@ testDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
     return (NULL);
   }
   if (conn->flags & VIR_CONNECT_RO) {
-    testError(conn, NULL, VIR_ERR_READ_ONLY, __FUNCTION__);
+    testError(conn, NULL, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
     return (NULL);
   }
   
@@ -821,7 +821,7 @@ int testDestroyDomain (virDomainPtr domain)
     return(-1);
   }
   if (domain->conn->flags & VIR_CONNECT_RO) {
-    testError(domain->conn, domain, VIR_ERR_READ_ONLY, __FUNCTION__);
+    testError(domain->conn, domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
     return (-1);
   }
   
@@ -839,7 +839,7 @@ int testResumeDomain (virDomainPtr domain)
     return(-1);
   }
   if (domain->conn->flags & VIR_CONNECT_RO) {
-    testError(domain->conn, domain, VIR_ERR_READ_ONLY, __FUNCTION__);
+    testError(domain->conn, domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
     return (-1);
   }
 
@@ -857,7 +857,7 @@ int testPauseDomain (virDomainPtr domain)
     return(-1);
   }
   if (domain->conn->flags & VIR_CONNECT_RO) {
-    testError(domain->conn, domain, VIR_ERR_READ_ONLY, __FUNCTION__);
+    testError(domain->conn, domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
     return (-1);
   }
 
@@ -880,7 +880,7 @@ int testShutdownDomain (virDomainPtr domain)
     return (-1);
   }
   if (domain->conn->flags & VIR_CONNECT_RO) {
-    testError(domain->conn, domain, VIR_ERR_READ_ONLY, __FUNCTION__);
+    testError(domain->conn, domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
     return (-1);
   }
 
@@ -908,7 +908,7 @@ int testRebootDomain (virDomainPtr domain, virDomainRestart action)
     return(-1);
   }
   if (domain->conn->flags & VIR_CONNECT_RO) {
-    testError(domain->conn, domain, VIR_ERR_READ_ONLY, __FUNCTION__);
+    testError(domain->conn, domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
     return (-1);
   }
 
@@ -1006,7 +1006,7 @@ int testSetMaxMemory (virDomainPtr domain,
     return(-1);
   }
   if (domain->conn->flags & VIR_CONNECT_RO) {
-    testError(domain->conn, domain, VIR_ERR_READ_ONLY, __FUNCTION__);
+    testError(domain->conn, domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
     return (-1);
   }
 
@@ -1026,7 +1026,7 @@ int testSetMemory (virDomainPtr domain,
     return(-1);
   }
   if (domain->conn->flags & VIR_CONNECT_RO) {
-    testError(domain->conn, domain, VIR_ERR_READ_ONLY, __FUNCTION__);
+    testError(domain->conn, domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
     return (-1);
   }
 
@@ -1051,7 +1051,7 @@ int testSetVcpus(virDomainPtr domain,
     return(-1);
   }
   if (domain->conn->flags & VIR_CONNECT_RO) {
-    testError(domain->conn, domain, VIR_ERR_READ_ONLY, __FUNCTION__);
+    testError(domain->conn, domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
     return (-1);
   }
 

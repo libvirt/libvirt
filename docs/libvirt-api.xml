@@ -128,6 +128,7 @@
      <exports symbol='VIR_ERR_DOM_EXIST' type='enum'/>
      <exports symbol='VIR_ERR_NO_SOURCE' type='enum'/>
      <exports symbol='VIR_ERR_NO_TARGET' type='enum'/>
+     <exports symbol='VIR_ERR_OPERATION_DENIED' type='enum'/>
      <exports symbol='VIR_ERR_INTERNAL_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_NO_SUPPORT' type='enum'/>
      <exports symbol='VIR_FROM_XEND' type='enum'/>
@@ -170,6 +171,8 @@
       <arg name='cpumap' info='pointer to a cpumap (in 8-bit bytes) (OUT) This cpumap must be previously allocated by the caller (ie: malloc(maplen))'/>
     </macro>
     <macro name='VIR_CPU_MAPLEN' file='libvirt'>
+      <info>This macro is to be used in conjonction with virDomainPinVcpu() API. It returns the length (in bytes) required to store the complete CPU map between a single virtual &amp; all physical CPUs of a domain.</info>
+      <arg name='cpu' info='number of physical CPUs'/>
     </macro>
     <macro name='VIR_CPU_USABLE' file='libvirt'>
       <info>This macro is to be used in conjonction with virDomainGetVcpus() API. VIR_CPU_USABLE macro returns a non zero value (true) if the cpu is usable by the vcpu, and 0 otherwise.</info>
@@ -215,7 +218,7 @@
     <enum name='VIR_DOMAIN_SHUTDOWN' file='libvirt' value='4' type='virDomainState' info='the domain is being shut down'/>
     <enum name='VIR_DOMAIN_SHUTOFF' file='libvirt' value='5' type='virDomainState' info='the domain is shut off'/>
     <enum name='VIR_ERR_CALL_FAILED' file='virterror' value='26' type='virErrorNumber' info='not supported by the drivers'/>
-    <enum name='VIR_ERR_DOM_EXIST' file='virterror' value='28' type='virErrorNumber' info=' the domain already exist'/>
+    <enum name='VIR_ERR_DOM_EXIST' file='virterror' value='28' type='virErrorNumber' info='the domain already exist'/>
     <enum name='VIR_ERR_DRIVER_FULL' file='virterror' value='25' type='virErrorNumber' info='too many drivers registered'/>
     <enum name='VIR_ERR_ERROR' file='virterror' value='2' type='virErrorLevel' info=' An error'/>
     <enum name='VIR_ERR_GET_FAILED' file='virterror' value='10' type='virErrorNumber' info='a HTTP GET command to failed'/>
@@ -238,6 +241,7 @@
     <enum name='VIR_ERR_NO_XEN' file='virterror' value='14' type='virErrorNumber' info='could not open Xen hypervisor control'/>
     <enum name='VIR_ERR_NO_XENSTORE' file='virterror' value='24' type='virErrorNumber' info='could not open Xen Store control'/>
     <enum name='VIR_ERR_OK' file='virterror' value='0' type='virErrorNumber'/>
+    <enum name='VIR_ERR_OPERATION_DENIED' file='virterror' value='29' type='virErrorNumber' info=' operation forbidden on read-only connections'/>
     <enum name='VIR_ERR_OPERATION_FAILED' file='virterror' value='9' type='virErrorNumber' info='a command to hypervisor failed'/>
     <enum name='VIR_ERR_OS_TYPE' file='virterror' value='16' type='virErrorNumber' info='unknown OS type'/>
     <enum name='VIR_ERR_POST_FAILED' file='virterror' value='11' type='virErrorNumber' info='a HTTP POST command to failed'/>

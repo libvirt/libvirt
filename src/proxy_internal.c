@@ -939,7 +939,7 @@ xenProxyNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info) {
  * Returns the XML document on success, NULL otherwise. 
  */
 static char *
-xenProxyDomainDumpXML(virDomainPtr domain, int flags)
+xenProxyDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
 {
     virProxyPacket req;
     virProxyFullPacket ans;

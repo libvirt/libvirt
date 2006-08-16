@@ -41,7 +41,7 @@
       <pre class="synopsis">#define <a href="#VIR_NODEINFO_MAXCPUS">VIR_NODEINFO_MAXCPUS</a>(nodeinfo);
 #define <a href="#LIBVIR_VERSION_NUMBER">LIBVIR_VERSION_NUMBER</a>;
 #define <a href="#VIR_USE_CPU">VIR_USE_CPU</a>(cpumap, cpu);
-#define <a href="#VIR_CPU_MAPLEN">VIR_CPU_MAPLEN</a>;
+#define <a href="#VIR_CPU_MAPLEN">VIR_CPU_MAPLEN</a>(cpu);
 #define <a href="#VIR_CPU_USABLE">VIR_CPU_USABLE</a>(cpumaps, maplen, vcpu, cpu);
 #define <a href="#VIR_COPY_CPUMAP">VIR_COPY_CPUMAP</a>(cpumaps, maplen, vcpu, cpumap);
 #define <a href="#VIR_GET_CPUMAP">VIR_GET_CPUMAP</a>(cpumaps, maplen, vcpu);
@@ -119,8 +119,8 @@ const char *	<a href="#virDomainGetName">virDomainGetName</a>	(<a href="libvirt-
 </pre><p>This macro is to be used in conjonction with virDomainGetVcpus() and virDomainPinVcpu() APIs. <a href="libvirt-libvirt.html#VIR_COPY_CPUMAP">VIR_COPY_CPUMAP</a> macro extract the cpumap of the specified vcpu from cpumaps array and copy it into cpumap to be used later by virDomainPinVcpu() API.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cpumaps</tt></i>:</span></td><td>pointer to an array of cpumap (in 8-bit bytes) (IN)</td></tr><tr><td><span class="term"><i><tt>maplen</tt></i>:</span></td><td>the length (in bytes) of one cpumap</td></tr><tr><td><span class="term"><i><tt>vcpu</tt></i>:</span></td><td>the virtual CPU number</td></tr><tr><td><span class="term"><i><tt>cpumap</tt></i>:</span></td><td>pointer to a cpumap (in 8-bit bytes) (OUT) This cpumap must be previously allocated by the caller (ie: malloc(maplen))</td></tr></tbody></table></div>
 </div>
         <hr/>
-        <div class="refsect2" lang="en"><h3><a name="VIR_CPU_MAPLEN">Macro </a>VIR_CPU_MAPLEN</h3><pre class="programlisting">#define <a href="#VIR_CPU_MAPLEN">VIR_CPU_MAPLEN</a>;
-</pre><p/>
+        <div class="refsect2" lang="en"><h3><a name="VIR_CPU_MAPLEN">Macro </a>VIR_CPU_MAPLEN</h3><pre class="programlisting">#define <a href="#VIR_CPU_MAPLEN">VIR_CPU_MAPLEN</a>(cpu);
+</pre><p>This macro is to be used in conjonction with virDomainPinVcpu() API. It returns the length (in bytes) required to store the complete CPU map between a single virtual &amp; all physical CPUs of a domain.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cpu</tt></i>:</span></td><td>number of physical CPUs</td></tr></tbody></table></div>
 </div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="VIR_CPU_USABLE">Macro </a>VIR_CPU_USABLE</h3><pre class="programlisting">#define <a href="#VIR_CPU_USABLE">VIR_CPU_USABLE</a>(cpumaps, maplen, vcpu, cpu);

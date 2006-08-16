@@ -196,7 +196,7 @@ typedef virNodeInfo *virNodeInfoPtr;
  * version * 1,000,000 + minor * 1000 + micro
  */
 
-#define LIBVIR_VERSION_NUMBER 1003
+#define LIBVIR_VERSION_NUMBER 1004
 
 int			virGetVersion		(unsigned long *libVer,
 						 const char *type,
@@ -352,7 +352,7 @@ int			virDomainPinVcpu	(virDomainPtr domain,
 #define VIR_UNUSE_CPU(cpumap,cpu)	(cpumap[(cpu)/8] &= ~(1<<((cpu)%8)))
 
 /**
- * VIR_CPU_MAPLEN
+ * VIR_CPU_MAPLEN:
  * @cpu: number of physical CPUs
  *
  * This macro is to be used in conjonction with virDomainPinVcpu() API.
