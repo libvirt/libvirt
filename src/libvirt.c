@@ -240,7 +240,7 @@ virConnectOpen(const char *name)
 
     for (i = 0;i < MAX_DRIVERS;i++) {
         if ((virDriverTab[i] != NULL) && (virDriverTab[i]->open != NULL)) {
-	    res = virDriverTab[i]->open(ret, name, 0);
+	    res = virDriverTab[i]->open(ret, name, VIR_DRV_OPEN_QUIET);
 	    /*
 	     * For a default connect to Xen make sure we manage to contact
 	     * all related drivers.
@@ -812,10 +812,6 @@ virDomainSuspend(virDomainPtr domain)
     }
 
     conn = domain->conn;
-#if PEDANTIC
-    if (domain->conn->flags & VIR_CONNECT_RO)
-        return (-1);
-#endif
 
     /*
      * Go though the driver registered entry points but use the 
@@ -868,10 +864,6 @@ virDomainResume(virDomainPtr domain)
     }
 
     conn = domain->conn;
-#if PEDANTIC
-    if (domain->conn->flags & VIR_CONNECT_RO)
-        return (-1);
-#endif
 
     /*
      * Go though the driver registered entry points but use the 
@@ -1053,10 +1045,6 @@ virDomainShutdown(virDomainPtr domain)
     }
 
     conn = domain->conn;
-#if PEDANTIC
-    if (domain->conn->flags & VIR_CONNECT_RO)
-        return (-1);
-#endif
 
     /* Go though the driver registered entry points */
     for (i = 0;i < conn->nb_drivers;i++) {
@@ -1102,10 +1090,6 @@ virDomainReboot(virDomainPtr domain, unsigned int flags)
     }
 
     conn = domain->conn;
-#if PEDANTIC
-    if (domain->conn->flags & VIR_CONNECT_RO)
-        return (-1);
-#endif
 
     /* Go though the driver registered entry points */
     for (i = 0;i < conn->nb_drivers;i++) {
@@ -1196,7 +1180,7 @@ int
 virDomainGetUUIDString(virDomainPtr domain, char *buf)
 {
     unsigned char uuid[16];
-    
+
     if (!VIR_IS_DOMAIN(domain)) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
@@ -1341,8 +1325,6 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
         return (-1);
     }
     conn = domain->conn;
-    if (domain->conn->flags & VIR_CONNECT_RO)
-        return (-1);
 
     /*
      * in that case instead of trying only though one method try all availble.
@@ -1738,6 +1720,7 @@ virDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
         virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
 	return (-1);
     }
+
     if (nvcpus < 1) {
         virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
@@ -1806,6 +1789,7 @@ virDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
         virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
 	return (-1);
     }
+
     if ((vcpu > 32000) || (cpumap == NULL) || (maplen < 1)) {
         virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
