@@ -1,3 +1,9 @@
+Wed Aug 16 12:33:02 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/virsh.c: Added 'setvcpus', 'setmem', 'setmaxmem'
+	commands to virsh shell. Allow full read-write connection
+	to non-Xen test hypervisor.
+
 Wed Aug 16 11:38:02 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/test.c, src/test.h: Allow a hypervisor config to be

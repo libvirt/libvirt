@@ -964,6 +964,135 @@ cmdVcpupin(vshControl * ctl, vshCmd * cmd)
 }
 
 /*
+ * "setvcpus" command
+ */
+static vshCmdInfo info_setvcpus[] = {
+    {"syntax", "setvcpus <domain> <count>"},
+    {"help", "change number of virtual CPUs"},
+    {"desc", "Change the number of virtual CPUs active in the guest domain"},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_setvcpus[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
+    {"count", VSH_OT_DATA, VSH_OFLAG_REQ, "number of virtual CPUs"},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdSetvcpus(vshControl * ctl, vshCmd * cmd)
+{
+    virDomainPtr dom;
+    int count;
+    int ret = TRUE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+        return FALSE;
+
+    count = vshCommandOptInt(cmd, "count", &count);
+    if (!count) {
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    if (virDomainSetVcpus(dom, count) != 0) {
+        ret = FALSE;
+    }
+
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
+ * "setmemory" command
+ */
+static vshCmdInfo info_setmem[] = {
+    {"syntax", "setmem <domain> <bytes>"},
+    {"help", "change memory allocation"},
+    {"desc", "Change the current memory allocation in the guest domain"},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_setmem[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
+    {"bytes", VSH_OT_DATA, VSH_OFLAG_REQ, "number of bytes of memory"},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdSetmem(vshControl * ctl, vshCmd * cmd)
+{
+    virDomainPtr dom;
+    int bytes;
+    int ret = TRUE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+        return FALSE;
+
+    bytes = vshCommandOptInt(cmd, "bytes", &bytes);
+    if (!bytes) {
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    if (virDomainSetMemory(dom, bytes) != 0) {
+        ret = FALSE;
+    }
+
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
+ * "setmaxmem" command
+ */
+static vshCmdInfo info_setmaxmem[] = {
+    {"syntax", "setmaxmem <domain> <bytes>"},
+    {"help", "change maximum memory limit"},
+    {"desc", "Change the maximum memory allocation limit in the guest domain"},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_setmaxmem[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
+    {"bytes", VSH_OT_DATA, VSH_OFLAG_REQ, "maxmimum memory limit in bytes"},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdSetmaxmem(vshControl * ctl, vshCmd * cmd)
+{
+    virDomainPtr dom;
+    int bytes;
+    int ret = TRUE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+        return FALSE;
+
+    bytes = vshCommandOptInt(cmd, "bytes", &bytes);
+    if (!bytes) {
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    if (virDomainSetMaxMemory(dom, bytes) != 0) {
+        ret = FALSE;
+    }
+
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "nodeinfo" command
  */
 static vshCmdInfo info_nodeinfo[] = {
@@ -1250,6 +1379,9 @@ static vshCmdDef commands[] = {
     {"resume", cmdResume, opts_resume, info_resume},
     {"save", cmdSave, opts_save, info_save},
     {"shutdown", cmdShutdown, opts_shutdown, info_shutdown},
+    {"setmem", cmdSetmem, opts_setmem, info_setmem},
+    {"setmaxmem", cmdSetmaxmem, opts_setmaxmem, info_setmaxmem},
+    {"setvcpus", cmdSetvcpus, opts_setvcpus, info_setvcpus},
     {"suspend", cmdSuspend, opts_suspend, info_suspend},
     {"vcpuinfo", cmdVcpuinfo, opts_vcpuinfo, info_vcpuinfo},
     {"vcpupin", cmdVcpupin, opts_vcpupin, info_vcpupin},
@@ -1945,8 +2077,10 @@ vshInit(vshControl * ctl)
     /* set up the library error handler */
     virSetErrorFunc(NULL, virshErrorHandler);
 
-    /* basic connection to hypervisor */
-    if (ctl->uid == 0)
+    /* basic connection to hypervisor, for Xen connections unless
+       we're root open a read only connections. Allow 'test' HV
+       to be RW all the time though */
+    if (ctl->uid == 0 || (ctl->name && !strncmp(ctl->name, "test", 4)))
         ctl->conn = virConnectOpen(ctl->name);
     else
         ctl->conn = virConnectOpenReadOnly(ctl->name);
