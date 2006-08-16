@@ -1,0 +1,25 @@
+<domain type='test'>
+  <name>fc4</name>
+  <uuid>EF86180145B911CB88E3AFBFE5370493</uuid>
+  <os>
+    <type>linux</type>
+    <kernel>/boot/vmlinuz-2.6.15-1.43_FC5guest</kernel>
+    <initrd>/boot/initrd-2.6.15-1.43_FC5guest.img</initrd>
+    <root>/dev/sda1</root>
+    <cmdline> ro selinux=0 3</cmdline>
+  </os>
+  <memory>131072</memory>
+  <vcpu>1</vcpu>
+  <devices>
+    <disk type='file'>
+      <source file='/u/fc4.img'/>
+      <target dev='sda1'/>
+    </disk>
+    <interface type='bridge'>
+      <source bridge='xenbr0'/>
+      <mac address='aa:00:00:00:00:11'/>
+      <script path='/etc/xen/scripts/vif-bridge'/>
+    </interface>
+    <console tty='/dev/pts/5'/>
+  </devices>
+</domain>

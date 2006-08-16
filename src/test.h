@@ -30,6 +30,9 @@ int testNumOfDomains(virConnectPtr conn);
 int testListDomains(virConnectPtr conn,
 	            int *ids,
 	            int maxids);
+virDomainPtr
+testDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
+		      unsigned int flags ATTRIBUTE_UNUSED);
 virDomainPtr testLookupDomainByID(virConnectPtr conn,
 			          int id);
 virDomainPtr testLookupDomainByUUID(virConnectPtr conn,
@@ -44,10 +47,14 @@ int testRebootDomain (virDomainPtr domain,
 		      virDomainRestart action);
 int testGetDomainInfo(virDomainPtr domain,
 	              virDomainInfoPtr info);
-int testGetDomainID(virDomainPtr domain);
-const char*testGetDomainName(virDomainPtr domain);
+unsigned long testGetMaxMemory(virDomainPtr domain);
 int testSetMaxMemory(virDomainPtr domain,
 	     	     unsigned long memory);
+int testSetMemory(virDomainPtr domain,
+		  unsigned long memory);
+int testSetVcpus(virDomainPtr domain,
+		 unsigned int nrCpus);
+char * testDomainDumpXML(virDomainPtr domain, int flags);
 
 #ifdef __cplusplus
 }

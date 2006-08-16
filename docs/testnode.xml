@@ -1,0 +1,23 @@
+<node>
+<!-- This file gives an example config for the mock 'test' backend 
+     driver to libvirt. This is intended to allow relible unit testing
+     of applications using libvirt. To use this with virsh, run something
+     like:
+
+      virsh -connect test:////path/to/this/dir/testnode.xml nodeinfo
+
+     -->
+  <domain file="testdomfv0.xml"/>
+  <domain file="testdomfc4.xml"/>
+
+  <cpu>
+    <mhz>6000</mhz>
+    <model>i986</model>
+    <active>50</active>
+    <nodes>4</nodes>
+    <sockets>4</sockets>
+    <cores>4</cores>
+    <threads>2</threads>
+  </cpu>
+  <memory>137438953472</memory>
+</node>
