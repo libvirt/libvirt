@@ -1249,3 +1249,64 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
 }
 
 #endif /* !PROXY */
+
+
+
+unsigned char *virParseUUID(char **ptr, const char *uuid) {
+    int rawuuid[16];
+    unsigned char *dst_uuid = NULL;
+    int ret;
+    int i;
+
+    memset(rawuuid, 0xFF, sizeof(rawuuid));
+
+    if (uuid == NULL)
+        goto error;
+
+    ret = sscanf(uuid,
+                 "%02x%02x%02x%02x"
+                 "%02x%02x%02x%02x"
+                 "%02x%02x%02x%02x"
+                 "%02x%02x%02x%02x",
+                 rawuuid + 0, rawuuid + 1, rawuuid + 2, rawuuid + 3,
+                 rawuuid + 4, rawuuid + 5, rawuuid + 6, rawuuid + 7,
+                 rawuuid + 8, rawuuid + 9, rawuuid + 10, rawuuid + 11,
+                 rawuuid + 12, rawuuid + 13, rawuuid + 14, rawuuid + 15);
+    if (ret == 16)
+        goto done;
+
+    ret = sscanf(uuid,
+                 "%02x%02x%02x%02x-"
+                 "%02x%02x-"
+                 "%02x%02x-"
+                 "%02x%02x-"
+                 "%02x%02x%02x%02x%02x%02x",
+                 rawuuid + 0, rawuuid + 1, rawuuid + 2, rawuuid + 3,
+                 rawuuid + 4, rawuuid + 5, rawuuid + 6, rawuuid + 7,
+                 rawuuid + 8, rawuuid + 9, rawuuid + 10, rawuuid + 11,
+                 rawuuid + 12, rawuuid + 13, rawuuid + 14, rawuuid + 15);
+    if (ret == 16)
+        goto done;
+
+    ret = sscanf(uuid,
+                 "%02x%02x%02x%02x-"
+                 "%02x%02x%02x%02x-"
+                 "%02x%02x%02x%02x-"
+                 "%02x%02x%02x%02x",
+                 rawuuid + 0, rawuuid + 1, rawuuid + 2, rawuuid + 3,
+                 rawuuid + 4, rawuuid + 5, rawuuid + 6, rawuuid + 7,
+                 rawuuid + 8, rawuuid + 9, rawuuid + 10, rawuuid + 11,
+                 rawuuid + 12, rawuuid + 13, rawuuid + 14, rawuuid + 15);
+    if (ret != 16)
+        goto error;
+
+  done:
+    dst_uuid = (unsigned char *) *ptr;
+    *ptr += 16;
+
+    for (i = 0; i < 16; i++)
+        dst_uuid[i] = rawuuid[i] & 0xFF;
+
+  error:
+    return dst_uuid;
+}

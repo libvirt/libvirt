@@ -780,62 +780,7 @@ static unsigned char *
 sexpr_uuid(char **ptr, struct sexpr *node, const char *path)
 {
     const char *r = sexpr_node(node, path);
-    int uuid[16];
-    unsigned char *dst_uuid = NULL;
-    int ret;
-    int i;
-
-    memset(uuid, 0xFF, sizeof(uuid));
-
-    if (r == NULL)
-        goto error;
-
-    ret = sscanf(r,
-                 "%02x%02x%02x%02x"
-                 "%02x%02x%02x%02x"
-                 "%02x%02x%02x%02x"
-                 "%02x%02x%02x%02x",
-                 uuid + 0, uuid + 1, uuid + 2, uuid + 3,
-                 uuid + 4, uuid + 5, uuid + 6, uuid + 7,
-                 uuid + 8, uuid + 9, uuid + 10, uuid + 11,
-                 uuid + 12, uuid + 13, uuid + 14, uuid + 15);
-    if (ret == 16)
-        goto done;
-
-    ret = sscanf(r,
-                 "%02x%02x%02x%02x-"
-                 "%02x%02x-"
-                 "%02x%02x-"
-                 "%02x%02x-"
-                 "%02x%02x%02x%02x%02x%02x",
-                 uuid + 0, uuid + 1, uuid + 2, uuid + 3,
-                 uuid + 4, uuid + 5, uuid + 6, uuid + 7,
-                 uuid + 8, uuid + 9, uuid + 10, uuid + 11,
-                 uuid + 12, uuid + 13, uuid + 14, uuid + 15);
-    if (ret == 16)
-        goto done;
-
-    ret = sscanf(r,
-                 "%02x%02x%02x%02x-"
-                 "%02x%02x%02x%02x-"
-                 "%02x%02x%02x%02x-"
-                 "%02x%02x%02x%02x",
-                 uuid + 0, uuid + 1, uuid + 2, uuid + 3,
-                 uuid + 4, uuid + 5, uuid + 6, uuid + 7,
-                 uuid + 8, uuid + 9, uuid + 10, uuid + 11,
-                 uuid + 12, uuid + 13, uuid + 14, uuid + 15);
-    if (ret != 16)
-        goto error;
-
-  done:
-    dst_uuid = (unsigned char *) *ptr;
-    *ptr += 16;
-
-    for (i = 0; i < 16; i++)
-        dst_uuid[i] = uuid[i] & 0xFF;
-
-  error:
-    return dst_uuid;
+    return virParseUUID(ptr, r);
 }
 
 
