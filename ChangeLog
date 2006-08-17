@@ -1,3 +1,7 @@
+Thu Aug 17 19:42:50 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xml.c: fix virParseUUID() 
+
 Wed Aug 16 19:07:52 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* NEWS configure.in doc//* include/libvirt/libvirt.h 

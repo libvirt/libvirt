@@ -1254,59 +1254,56 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
 
 unsigned char *virParseUUID(char **ptr, const char *uuid) {
     int rawuuid[16];
+    const char *cur;
     unsigned char *dst_uuid = NULL;
-    int ret;
     int i;
-
-    memset(rawuuid, 0xFF, sizeof(rawuuid));
 
     if (uuid == NULL)
         goto error;
 
-    ret = sscanf(uuid,
-                 "%02x%02x%02x%02x"
-                 "%02x%02x%02x%02x"
-                 "%02x%02x%02x%02x"
-                 "%02x%02x%02x%02x",
-                 rawuuid + 0, rawuuid + 1, rawuuid + 2, rawuuid + 3,
-                 rawuuid + 4, rawuuid + 5, rawuuid + 6, rawuuid + 7,
-                 rawuuid + 8, rawuuid + 9, rawuuid + 10, rawuuid + 11,
-                 rawuuid + 12, rawuuid + 13, rawuuid + 14, rawuuid + 15);
-    if (ret == 16)
-        goto done;
+    /*
+     * do a liberal scan allowing '-' and ' ' anywhere between character
+     * pairs as long as there is 32 of them in the end.
+     */
+    cur = uuid;
+    for (i = 0;i < 16;) {
+        rawuuid[i] = 0;
+        if (*cur == 0)
+	    goto error;
+	if ((*cur == '-') || (*cur == ' ')) {
+	    cur++;
+	    continue;
+	}
+	if ((*cur >= '0') && (*cur <= '9'))
+	    rawuuid[i] = *cur - '0';
+	else if ((*cur >= 'a') && (*cur <= 'f'))
+	    rawuuid[i] = *cur - 'a' + 10;
+	else if ((*cur >= 'A') && (*cur <= 'F'))
+	    rawuuid[i] = *cur - 'A' + 10;
+	else
+	    goto error;
+	rawuuid[i] *= 16;
+	cur++;
+        if (*cur == 0)
+	    goto error;
+	if ((*cur >= '0') && (*cur <= '9'))
+	    rawuuid[i] += *cur - '0';
+	else if ((*cur >= 'a') && (*cur <= 'f'))
+	    rawuuid[i] += *cur - 'a' + 10;
+	else if ((*cur >= 'A') && (*cur <= 'F'))
+	    rawuuid[i] += *cur - 'A' + 10;
+	else
+	    goto error;
+        i++;
+	cur++;
+    }
 
-    ret = sscanf(uuid,
-                 "%02x%02x%02x%02x-"
-                 "%02x%02x-"
-                 "%02x%02x-"
-                 "%02x%02x-"
-                 "%02x%02x%02x%02x%02x%02x",
-                 rawuuid + 0, rawuuid + 1, rawuuid + 2, rawuuid + 3,
-                 rawuuid + 4, rawuuid + 5, rawuuid + 6, rawuuid + 7,
-                 rawuuid + 8, rawuuid + 9, rawuuid + 10, rawuuid + 11,
-                 rawuuid + 12, rawuuid + 13, rawuuid + 14, rawuuid + 15);
-    if (ret == 16)
-        goto done;
-
-    ret = sscanf(uuid,
-                 "%02x%02x%02x%02x-"
-                 "%02x%02x%02x%02x-"
-                 "%02x%02x%02x%02x-"
-                 "%02x%02x%02x%02x",
-                 rawuuid + 0, rawuuid + 1, rawuuid + 2, rawuuid + 3,
-                 rawuuid + 4, rawuuid + 5, rawuuid + 6, rawuuid + 7,
-                 rawuuid + 8, rawuuid + 9, rawuuid + 10, rawuuid + 11,
-                 rawuuid + 12, rawuuid + 13, rawuuid + 14, rawuuid + 15);
-    if (ret != 16)
-        goto error;
-
-  done:
     dst_uuid = (unsigned char *) *ptr;
     *ptr += 16;
 
     for (i = 0; i < 16; i++)
         dst_uuid[i] = rawuuid[i] & 0xFF;
 
-  error:
-    return dst_uuid;
+error:
+    return(dst_uuid);
 }
