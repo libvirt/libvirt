@@ -1,10 +1,15 @@
+Thu Aug 18 15:22:23 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/xml.c: fix networking in paravirt guests - only set the
+	'(type ioemu)' option for HVM.
+
 Thu Aug 17 19:42:50 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
-	* src/xml.c: fix virParseUUID() 
+	* src/xml.c: fix virParseUUID()
 
 Wed Aug 16 19:07:52 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
-	* NEWS configure.in doc//* include/libvirt/libvirt.h 
+	* NEWS configure.in doc//* include/libvirt/libvirt.h
 	  include/libvirt/libvirt.h.in: preparing release of 0.1.4,
 	  regenerated docs, fixed a few things
 	* src/proxy_internal.c src/test.c src/xend_internal.c:
@@ -23,13 +28,13 @@ Wed Aug 16 11:38:02 EDT 2006 Daniel Berrange <berrange@redhat.com>
 	setMemory, setMaxMemory, createLinux, dumpXML, setVcpus.
 	* docs/testnode.xml, docs/testfc4.xml, docs/testfv0.xml:
 	Example config for using with test driver
-	
+
 Wed Aug 16 11:36:21 EDT 2006 Daniel Berrange <berrange@redhat.com>
-	
-	* src/xend_internal.c, src/xml.c, src/xml.h: Refactored the 
+
+	* src/xend_internal.c, src/xml.c, src/xml.h: Refactored the
 	sexpr_uuid method into a re-usable virParseUUID method which
 	can be used by any backend
-	
+
 Wed Aug 16 11:31:59 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/libvirt.c: Remove some duplicated changes for VIR_DOMAIN_RO

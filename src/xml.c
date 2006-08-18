@@ -967,7 +967,7 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm)
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
-virDomainParseXMLIfDesc(xmlNodePtr node, virBufferPtr buf)
+virDomainParseXMLIfDesc(xmlNodePtr node, virBufferPtr buf, int hvm)
 {
     xmlNodePtr cur;
     xmlChar *type = NULL;
@@ -1016,7 +1016,8 @@ virDomainParseXMLIfDesc(xmlNodePtr node, virBufferPtr buf)
     }
     if (script != NULL)
         virBufferVSprintf(buf, "(script '%s')", script);
-    virBufferAdd(buf, "(type ioemu)", 12);
+    if (hvm)
+        virBufferAdd(buf, "(type ioemu)", 12);
 
     virBufferAdd(buf, ")", 1);
     if (mac != NULL)
@@ -1210,8 +1211,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
         for (i = 0; i < obj->nodesetval->nodeNr; i++) {
             virBufferAdd(&buf, "(device ", 8);
-            res =
-                virDomainParseXMLIfDesc(obj->nodesetval->nodeTab[i], &buf);
+            res = virDomainParseXMLIfDesc(obj->nodesetval->nodeTab[i], &buf, hvm);
             if (res != 0) {
                 goto error;
             }
