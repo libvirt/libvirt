@@ -332,7 +332,10 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
     }
     ids = vshMalloc(ctl, sizeof(int) * maxid);
 
-    virConnectListDomains(ctl->conn, &ids[0], maxid);
+    if (virConnectListDomains(ctl->conn, &ids[0], maxid) < 0) {
+        vshError(ctl, FALSE, "failed to list active domains.");
+        return FALSE;
+    }
 
     vshPrintExtra(ctl, "%3s %-20s %s\n", "Id", "Name", "State");
     vshPrintExtra(ctl, "----------------------------------\n");

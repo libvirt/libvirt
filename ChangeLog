@@ -1,4 +1,10 @@
-Thu Aug 18 15:22:23 EDT 2006 Daniel Berrange <berrange@redhat.com>
+Mon Aug 21 13:00:03 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/virsh.c: check return code of virConnectListDomains in case
+	there was a failure, and stop the 'list' command immediately
+	rather than continuing with bogus domain ID data.
+
+Fri Aug 18 15:22:23 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/xml.c: fix networking in paravirt guests - only set the
 	'(type ioemu)' option for HVM.
