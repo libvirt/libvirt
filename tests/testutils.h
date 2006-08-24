@@ -28,6 +28,9 @@ int	virtTestRun		(const char *title,
 int virtTestLoadFile(const char *name,
 		     char **buf,
 		     int buflen);
+int virtTestCaptureProgramOutput(const char *const argv[],
+				 char **buf,
+				 int buflen);
 
 #ifdef __cplusplus
 }

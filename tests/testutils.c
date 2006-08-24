@@ -15,8 +15,11 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <unistd.h>
-
+#include <fcntl.h>
+#include <limits.h>
+#include <paths.h>
 #include "testutils.h"
 
 #define GETTIMEOFDAY(T) gettimeofday(T, NULL)
@@ -105,3 +108,91 @@ int virtTestLoadFile(const char *name,
     return st.st_size;
 }
 
+static
+void virtTestCaptureProgramExecChild(const char *const argv[],
+				     int pipefd) {
+  int i;
+  int open_max;
+  int stdinfd = -1;
+  int stderrfd = -1;
+  const char *const env[] = {
+    "LANG=C",
+    NULL
+  };
+  
+  if ((stdinfd = open(_PATH_DEVNULL, O_RDONLY)) < 0)
+    goto cleanup;
+  if ((stderrfd = open(_PATH_DEVNULL, O_WRONLY)) < 0)
+    goto cleanup;
+
+  open_max = sysconf (_SC_OPEN_MAX);
+  for (i = 0; i < open_max; i++) {
+    if (i != stdinfd &&
+	i != stderrfd &&
+	i != pipefd)
+      close(i);
+  }
+
+  if (dup2(stdinfd, STDIN_FILENO) != STDIN_FILENO)
+    goto cleanup;
+  if (dup2(pipefd, STDOUT_FILENO) != STDOUT_FILENO)
+    goto cleanup;
+  if (dup2(stderrfd, STDERR_FILENO) != STDERR_FILENO)
+    goto cleanup;
+  
+  /* SUS is crazy here, hence the cast */
+  execve(argv[0], (char *const*)argv, (char *const*)env);
+
+ cleanup:
+  if (stdinfd != -1)
+    close(stdinfd);
+  if (stderrfd != -1)
+    close(stderrfd);
+}
+
+
+int virtTestCaptureProgramOutput(const char *const argv[],
+				 char **buf,
+				 int buflen) {
+  int pipefd[2];
+  
+  if (pipe(pipefd) < 0)
+    return -1;
+
+  int pid = fork();
+  switch (pid) {
+    case 0:
+        close(pipefd[0]);
+	virtTestCaptureProgramExecChild(argv, pipefd[1]);
+	
+	close(pipefd[1]);
+	_exit(1);
+	
+    case -1:
+        return -1;
+      
+    default:
+      {
+	int got = 0;
+	int ret = -1;
+	int want = buflen-1;
+
+	close(pipefd[1]);
+
+	while (want) {
+	  if ((ret = read(pipefd[0], (*buf)+got, want)) <= 0)
+	    break;
+	  got += ret;
+	  want -= ret;
+	}
+	close(pipefd[0]);
+
+	if (!ret)
+	  (*buf)[got] = '\0';
+
+	waitpid(pid, NULL, 0);
+
+	return ret;
+      }
+  }
+}

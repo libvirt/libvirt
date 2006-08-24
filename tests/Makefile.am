@@ -1,5 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
+SUBDIRS = virshdata
+
 LIBVIRT = $(top_builddir)/src/.libs/libvirt.a
 
 INCLUDES = \
@@ -7,7 +9,8 @@ INCLUDES = \
 	-I$(top_builddir)/src \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/src \
-	@LIBXML_CFLAGS@
+	@LIBXML_CFLAGS@ \
+        -D_XOPEN_SOURCE=600 -D_POSIX_C_SOURCE=199506L
 
 LDADDS = \
 	@STATIC_BINARIES@ \
@@ -16,9 +19,9 @@ LDADDS = \
 
 EXTRA_DIST = xmlrpcserver.py
 
-noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest
+noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest
 
-TESTS = xml2sexprtest sexpr2xmltest
+TESTS = xml2sexprtest sexpr2xmltest virshtest
 
 valgrind:
 	$(MAKE) check TESTS_ENVIRONMENT="valgrind --quiet"
@@ -44,6 +47,12 @@ sexpr2xmltest_SOURCES = \
 	testutils.c testutils.h
 sexpr2xmltest_LDFLAGS =
 sexpr2xmltest_LDADD = $(LDADDS)
+
+virshtest_SOURCES = \
+	virshtest.c \
+	testutils.c testutils.h
+virshtest_LDFLAGS =
+virshtest_LDADD = $(LDADDS)
 
 $(LIBVIRT):
 	-@(cd $(top_builddir)/src && $(MAKE) MAKEFLAGS+=--silent)

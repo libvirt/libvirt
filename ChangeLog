@@ -1,3 +1,13 @@
+Thu Aug 24 16:43:47 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* tests/virshtest.c: Test suite for validating output / operation
+	of various virsh commands.
+	* tests/virshdata/*.txt: Known good output for validating results
+	during testing
+	* tests/testutils.h, tests/testutils.c: Added convenience method
+	for forking a child process & capturing its output.
+	* tests/Makefile.am: Enable POSIX / XOpen standards
+
 Thu Aug 24 11:03:42 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* tests/Makefile.am: Added a 'valgrind' target which simply
