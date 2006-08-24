@@ -1,3 +1,13 @@
+Thu Aug 24 10:04:02 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* tests/xml2sexpr.c, tests/sexpr2xml.c: New tests suites for
+	validating the SEXPR<->XML conversion
+	* tests/*.sexpr, tests/*.xml: Data files for test suite
+	* src/xend_internal.h, src/xend_internal.c: Expose the method
+	for converting SEXPR -> XML to allow use by unit tests
+	* src/xs_internal.c: Check if connection is NULL before
+	deferencing it - test suite passes in NULL.
+
 Mon Aug 21 13:00:03 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/virsh.c: check return code of virConnectListDomains in case

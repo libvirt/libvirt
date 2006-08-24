@@ -13,6 +13,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "testutils.h"
 
@@ -72,3 +75,33 @@ virtTestRun(const char *title, int nloops, int (*body)(void *data), void *data)
 		free(ts);
 	return ret;  
 }
+
+int virtTestLoadFile(const char *name,
+		     char **buf,
+		     int buflen) {
+    FILE *fp = fopen(name, "r");
+    struct stat st;
+    
+    if (!fp)
+        return -1;
+
+    if (fstat(fileno(fp), &st) < 0) {
+        fclose(fp);
+        return -1;
+    }
+
+    if (st.st_size > (buflen-1)) {
+        fclose(fp);
+        return -1;
+    }
+
+    if (fread(*buf, st.st_size, 1, fp) != 1) {
+        fclose(fp);
+        return -1;
+    }
+    (*buf)[st.st_size] = '\0';
+
+    fclose(fp);
+    return st.st_size;
+}
+

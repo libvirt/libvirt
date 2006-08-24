@@ -148,7 +148,7 @@ virDomainDoStoreQuery(virConnectPtr conn, int domid, const char *path)
     char s[256];
     unsigned int len = 0;
 
-    if (conn->xshandle == NULL)
+    if (!conn || conn->xshandle == NULL)
         return (NULL);
 
     snprintf(s, 255, "/local/domain/%d/%s", domid, path);

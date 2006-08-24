@@ -16,7 +16,9 @@ LDADDS = \
 
 EXTRA_DIST = xmlrpcserver.py
 
-noinst_PROGRAMS = xmlrpctest
+noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest
+
+TESTS = xml2sexprtest sexpr2xmltest
 
 # Note: xmlrpc.[c|h] is not in libvirt yet
 xmlrpctest_SOURCES = \
@@ -27,6 +29,18 @@ xmlrpctest_SOURCES = \
 
 xmlrpctest_LDFLAGS =
 xmlrpctest_LDADD = $(LDADDS)
+
+xml2sexprtest_SOURCES = \
+	xml2sexprtest.c \
+	testutils.c testutils.h
+xml2sexprtest_LDFLAGS =
+xml2sexprtest_LDADD = $(LDADDS)
+
+sexpr2xmltest_SOURCES = \
+	sexpr2xmltest.c \
+	testutils.c testutils.h
+sexpr2xmltest_LDFLAGS =
+sexpr2xmltest_LDADD = $(LDADDS)
 
 $(LIBVIRT):
 	-@(cd $(top_builddir)/src && $(MAKE) MAKEFLAGS+=--silent)

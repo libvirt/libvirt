@@ -613,6 +613,8 @@ char *xenDaemonDomainDumpXMLByID(virConnectPtr xend,
  */
     int xend_log(virConnectPtr xend, char *buffer, size_t n_buffer);
 
+  char *xend_parse_domain_sexp(virConnectPtr conn,  char *root);
+
 /* refactored ones */
 void xenDaemonRegister(void);
 int xenDaemonOpen(virConnectPtr conn, const char *name, int flags);

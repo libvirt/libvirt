@@ -1655,6 +1655,20 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root)
     return (NULL);
 }
 
+char *
+xend_parse_domain_sexp(virConnectPtr conn, char *sexpr) {
+  struct sexpr *root = string2sexpr(sexpr);
+  char *data;
+
+  if (!root)
+      return NULL;
+
+  data = xend_parse_sexp_desc(conn, root);
+
+  sexpr_free(root);
+
+  return data;
+}
 
 /**
  * sexpr_to_xend_domain_info:

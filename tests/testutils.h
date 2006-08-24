@@ -25,6 +25,9 @@ int	virtTestRun		(const char *title,
 				 int nloops, 
 				 int (*body)(void *data), 
 				 void *data);
+int virtTestLoadFile(const char *name,
+		     char **buf,
+		     int buflen);
 
 #ifdef __cplusplus
 }

@@ -3,3 +3,5 @@ Makefile.in
 .deps
 .libs
 xmlrpctest
+sexpr2xmltest
+xml2sexprtest
