@@ -20,6 +20,9 @@ noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest
 
 TESTS = xml2sexprtest sexpr2xmltest
 
+valgrind:
+	$(MAKE) check TESTS_ENVIRONMENT="valgrind --quiet"
+
 # Note: xmlrpc.[c|h] is not in libvirt yet
 xmlrpctest_SOURCES = \
 	xmlrpctest.c \
