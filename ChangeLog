@@ -1,3 +1,7 @@
+Sat Aug 26 00:17:24 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* docs/site.xsl docs/*.html: add links to virt-manager
+
 Fri Aug 25 17:42:12 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/virsh.c: Allow VIRSH_DEFAULT_CONNECT_URI to be set to

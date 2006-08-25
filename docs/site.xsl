@@ -104,6 +104,7 @@
       <ul>
         <li> <a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li>
         <li> <a href="https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&amp;component=libvirt&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;bug_status=MODIFIED&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;long_desc_type=allwordssubstr">Open bugs</a></li>
+	<li> <a href="http://virt-manager.et.redhat.com/">virt-manager</a></li>
 	<li> <a href="http://search.cpan.org/~danberr/Sys-Virt-0.1.0/">Perl bindings</a></li>
         <li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li>
         <li><form action="{$href_base}search.php" enctype="application/x-www-form-urlencoded" method="get">
@@ -152,6 +153,7 @@
       <ul>
         <li> <a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li>
         <li> <a href="https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&amp;component=libvirt&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;bug_status=MODIFIED&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;long_desc_type=allwordssubstr">Open bugs</a></li>
+	<li> <a href="http://virt-manager.et.redhat.com/">virt-manager</a></li>
 	<li> <a href="http://search.cpan.org/~danberr/Sys-Virt-0.1.0/">Perl bindings</a></li>
         <li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li>
         <li><form action="{$href_base}search.php" enctype="application/x-www-form-urlencoded" method="get">
@@ -193,6 +195,7 @@
     </div>
     <p><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></p>
     <p> <a href="https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&amp;component=libvirt&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;bug_status=MODIFIED&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;long_desc_type=allwordssubstr">Open bugs</a></p>
+    <p> <a href="http://virt-manager.et.redhat.com/">virt-manager</a></p>
     <p> <a href="http://search.cpan.org/~danberr/Sys-Virt-0.1.0/">Perl bindings</a></p>
     <p><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></p>
     <a href="http://xmlsoft.org/"><img src="{$href_base}Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo"/></a>
@@ -221,6 +224,7 @@
       <ul>
         <li> <a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li>
 	<li> <a href="https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&amp;component=libvirt&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;bug_status=MODIFIED&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;long_desc_type=allwordssubstr">Open bugs</a></li>
+	<li> <a href="http://virt-manager.et.redhat.com/">virt-manager</a></li>
 	<li> <a href="http://search.cpan.org/~danberr/Sys-Virt-0.1.0/">Perl bindings</a></li>
         <li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li>
         <li><form action="{$href_base}search.php" enctype="application/x-www-form-urlencoded" method="get">
