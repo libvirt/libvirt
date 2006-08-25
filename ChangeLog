@@ -1,3 +1,10 @@
+Fri Aug 25 17:42:12 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/virsh.c: Allow VIRSH_DEFAULT_CONNECT_URI to be set to
+	override the default Xen connection attempt in favour of a
+	different backend. Fix 'virsh list' so that it doesn't assume
+	there is always a Domain-0 (a Xen-ism).
+	
 Thu Aug 24 16:43:47 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* tests/virshtest.c: Test suite for validating output / operation

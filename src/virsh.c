@@ -319,24 +319,24 @@ static vshCmdInfo info_list[] = {
 static int
 cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 {
-    int *ids, maxid, i;
+    int *ids = NULL, maxid, i;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
     maxid = virConnectNumOfDomains(ctl->conn);
-    if (maxid <= 0) {
-        /* strange, there should be at least dom0... */
+    if (maxid < 0) {
         vshError(ctl, FALSE, "failed to list active domains.");
         return FALSE;
     }
-    ids = vshMalloc(ctl, sizeof(int) * maxid);
+    if (maxid) {
+        ids = vshMalloc(ctl, sizeof(int) * maxid);
 
-    if (virConnectListDomains(ctl->conn, &ids[0], maxid) < 0) {
-        vshError(ctl, FALSE, "failed to list active domains.");
-        return FALSE;
+        if (virConnectListDomains(ctl->conn, &ids[0], maxid) < 0) {
+            vshError(ctl, FALSE, "failed to list active domains.");
+            return FALSE;
+        }
     }
-
     vshPrintExtra(ctl, "%3s %-20s %s\n", "Id", "Name", "State");
     vshPrintExtra(ctl, "----------------------------------\n");
 
@@ -357,7 +357,8 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
                  0 ? "no state" : vshDomainStateToString(info.state));
         virDomainFree(dom);
     }
-    free(ids);
+    if (ids)
+        free(ids);
     return TRUE;
 }
 
@@ -2377,6 +2378,7 @@ int
 main(int argc, char **argv)
 {
     vshControl _ctl, *ctl = &_ctl;
+    char *defaultConn;
     int ret = TRUE;
 
     if (!(progname = strrchr(argv[0], '/')))
@@ -2386,6 +2388,10 @@ main(int argc, char **argv)
 
     memset(ctl, 0, sizeof(vshControl));
     ctl->imode = TRUE;          /* default is interactive mode */
+
+    if ((defaultConn = getenv("VIRSH_DEFAULT_CONNECT_URI"))) {
+      ctl->name = strdup(defaultConn);
+    }
 
     if (!vshParseArgv(ctl, argc, argv))
         exit(EXIT_FAILURE);
