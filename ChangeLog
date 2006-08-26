@@ -1,3 +1,8 @@
+Sat Aug 26 16:36:15 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/sexpr.c src/sexpr.h src/xend_internal.c src/xml.c: applied
+	  patch from Jeremy Katz to add graphical console for PV Xen guests
+
 Sat Aug 26 00:17:24 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* docs/site.xsl docs/*.html: add links to virt-manager

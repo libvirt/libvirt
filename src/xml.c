@@ -571,6 +571,40 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
 
 #ifndef PROXY
 /**
+ * virtDomainParseXMLGraphicsDesc:
+ * @node: node containing graphics description
+ * @buf: a buffer for the result S-Expr
+ *
+ * Parse the graphics part of the XML description and add it to the S-Expr 
+ * in buf.  This is a temporary interface as the S-Expr interface will be 
+ * replaced by XML-RPC in the future. However the XML format should stay 
+ * valid over time.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+static int virDomainParseXMLGraphicsDesc(xmlNodePtr node, virBufferPtr buf)
+{
+    xmlChar *graphics_type = NULL;
+
+    graphics_type = xmlGetProp(node, BAD_CAST "type");
+    if (graphics_type != NULL) {
+        if (xmlStrEqual(graphics_type, BAD_CAST "sdl")) {
+            virBufferAdd(buf, "(sdl 1)", 7);
+            // TODO:
+            // Need to understand sdl options
+            //
+            //virBufferAdd(buf, "(display localhost:10.0)", 24);
+            //virBufferAdd(buf, "(xauthority /root/.Xauthority)", 30);
+        }
+        else if (xmlStrEqual(graphics_type, BAD_CAST "vnc"))
+            virBufferAdd(buf, "(vnc 1)", 7);
+        xmlFree(graphics_type);
+    }
+    return 0;
+}
+
+
+/**
  * virDomainParseXMLOSDescHVM:
  * @node: node containing HVM OS description
  * @buf: a buffer for the result S-Expr
@@ -591,7 +625,7 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
     const xmlChar *type = NULL;
     const xmlChar *loader = NULL;
     const xmlChar *boot_dev = NULL;
-    xmlChar *graphics_type = NULL;
+    int res;
 
     cur = node->children;
     while (cur != NULL) {
@@ -733,24 +767,11 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
     /* Is a graphics device specified? */
     obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics[1]", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-        (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr = 0)) {
-        virXMLError(VIR_ERR_NO_OS, "", 0); /* TODO: error */
-        goto error;
-    }
-
-    graphics_type = xmlGetProp(obj->nodesetval->nodeTab[0], BAD_CAST "type");
-    if (graphics_type != NULL) {
-        if (xmlStrEqual(graphics_type, BAD_CAST "sdl")) {
-            virBufferAdd(buf, "(sdl 1)", 7);
-            // TODO:
-            // Need to understand sdl options
-            //
-            //virBufferAdd(buf, "(display localhost:10.0)", 24);
-            //virBufferAdd(buf, "(xauthority /root/.Xauthority)", 30);
+        (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr > 0)) {
+        res = virDomainParseXMLGraphicsDesc(obj->nodesetval->nodeTab[0], buf);
+        if (res != 0) {
+            goto error;
         }
-        else if (xmlStrEqual(graphics_type, BAD_CAST "vnc"))
-            virBufferAdd(buf, "(vnc 1)", 7);
-        xmlFree(graphics_type);
     }
     xmlXPathFreeObject(obj);
 
@@ -767,6 +788,7 @@ error:
  * virDomainParseXMLOSDescPV:
  * @node: node containing PV OS description
  * @buf: a buffer for the result S-Expr
+ * @ctxt: a path context representing the XML description
  *
  * Parse the OS part of the XML description for a paravirtualized domain
  * and add it to the S-Expr in buf.  This is a temporary interface as the
@@ -776,14 +798,16 @@ error:
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
-virDomainParseXMLOSDescPV(xmlNodePtr node, virBufferPtr buf)
+virDomainParseXMLOSDescPV(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr ctxt)
 {
     xmlNodePtr cur, txt;
+    xmlXPathObjectPtr obj = NULL;
     const xmlChar *type = NULL;
     const xmlChar *root = NULL;
     const xmlChar *kernel = NULL;
     const xmlChar *initrd = NULL;
     const xmlChar *cmdline = NULL;
+    int res;
 
     cur = node->children;
     while (cur != NULL) {
@@ -840,6 +864,19 @@ virDomainParseXMLOSDescPV(xmlNodePtr node, virBufferPtr buf)
         virBufferVSprintf(buf, "(root '%s')", (const char *) root);
     if (cmdline != NULL)
         virBufferVSprintf(buf, "(args '%s')", (const char *) cmdline);
+
+    /* Is a graphics device specified? */
+    obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics[1]", ctxt);
+    if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+        (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr > 0)) {
+        res = virDomainParseXMLGraphicsDesc(obj->nodesetval->nodeTab[0], buf);
+        if (res != 0) {
+            goto error;
+        }
+    }
+    xmlXPathFreeObject(obj);
+
+ error:
     virBufferAdd(buf, "))", 2);
     return (0);
 }
@@ -1177,7 +1214,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
 	}
 
 	if ((tmpobj == NULL) || !xmlStrEqual(tmpobj->stringval, BAD_CAST "hvm")) {
-	    res = virDomainParseXMLOSDescPV(obj->nodesetval->nodeTab[0], &buf);
+	    res = virDomainParseXMLOSDescPV(obj->nodesetval->nodeTab[0], &buf, ctxt);
 	} else {
 	    hvm = 1;
 	    res = virDomainParseXMLOSDescHVM(obj->nodesetval->nodeTab[0], &buf, ctxt);

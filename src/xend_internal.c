@@ -1618,23 +1618,23 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root)
             virBufferAdd(&buf, "      <readonly/>\n", 18);
             virBufferAdd(&buf, "    </disk>\n", 12);
         }
+    }
         
-        /* Graphics device */
-        tmp = sexpr_node(root, "domain/image/hvm/vnc");
-        if (tmp != NULL) {
-            if (tmp[0] == '1') {
-                int port = xenStoreDomainGetVNCPort(conn, domid);
-                if (port == -1) 
-                    port = 5900 + domid;
-                virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'/>\n", port);
-            }
+    /* Graphics device */
+    tmp = sexpr_fmt_node(root, "domain/image/%s/vnc", hvm ? "hvm" : "linux");
+    if (tmp != NULL) {
+        if (tmp[0] == '1') {
+            int port = xenStoreDomainGetVNCPort(conn, domid);
+            if (port == -1) 
+                port = 5900 + domid;
+            virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'/>\n", port);
         }
+    }
         
-        tmp = sexpr_node(root, "domain/image/hvm/sdl");
-        if (tmp != NULL) {
-           if (tmp[0] == '1')
-               virBufferAdd(&buf, "    <graphics type='sdl'/>\n", 27 );
-        }
+    tmp = sexpr_fmt_node(root, "domain/image/%s/sdl", hvm ? "hvm" : "linux");
+    if (tmp != NULL) {
+        if (tmp[0] == '1')
+            virBufferAdd(&buf, "    <graphics type='sdl'/>\n", 27 );
     }
     
     tty = xenStoreDomainGetConsolePath(conn, domid);

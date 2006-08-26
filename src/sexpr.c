@@ -486,3 +486,27 @@ sexpr_node(struct sexpr *sexpr, const char *node)
 
     return (n && n->car->kind == SEXPR_VALUE) ? n->car->value : NULL;
 }
+
+/**
+ * sexpr_fmt_node:
+ * @sexpr: a pointer to a parsed S-Expression
+ * @fmt: a path for the node to lookup in the S-Expression
+ * @... extra data to build the path
+ *
+ * Search a node value in the S-Expression based on its path
+ * NOTE: path are limited to 4096 bytes.
+ *
+ * Returns the value of the node or NULL if not found.
+ */
+const char *
+sexpr_fmt_node(struct sexpr *sexpr, const char *fmt, ...)
+{
+    va_list ap;
+    char node[4096];
+
+    va_start(ap, fmt);
+    vsnprintf(node, sizeof(node), fmt, ap);
+    va_end(ap);
+
+    return sexpr_node(sexpr, node);
+}
