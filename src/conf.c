@@ -770,6 +770,15 @@ virConfFree(virConfPtr conf)
 virConfValuePtr
 virConfGetValue(virConfPtr conf, const char *setting)
 {
+    virConfEntryPtr cur;
+
+    cur = conf->entries;
+    while (cur != NULL) {
+        if ((cur->name != NULL) && (!strcmp(cur->name, setting)))
+	    return(cur->value);
+        cur = cur->next;
+    }
+    return(NULL);
 }
 
 /**

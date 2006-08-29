@@ -1,3 +1,7 @@
+Tue Aug 29 23:48:43 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/conf.c: add missing entry point virConfGetValue()
+
 Tue Aug 29 23:28:31 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* TODO libvirt.spec.in: update
