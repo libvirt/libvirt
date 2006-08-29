@@ -51,11 +51,11 @@ libvirt_virErrorFuncHandler(ATTRIBUTE_UNUSED void *ctx, virErrorPtr err)
         Py_XINCREF(libvirt_virPythonErrorFuncCtxt);
         PyTuple_SetItem(info, 0, PyInt_FromLong((long) err->code));
         PyTuple_SetItem(info, 1, PyInt_FromLong((long) err->domain));
-	PyTuple_SetItem(info, 2, libvirt_charPtrWrap(err->message));
+	PyTuple_SetItem(info, 2, libvirt_constcharPtrWrap(err->message));
         PyTuple_SetItem(info, 3, PyInt_FromLong((long) err->level));
-	PyTuple_SetItem(info, 4, libvirt_charPtrWrap(err->str1));
-	PyTuple_SetItem(info, 5, libvirt_charPtrWrap(err->str2));
-	PyTuple_SetItem(info, 6, libvirt_charPtrWrap(err->str3));
+	PyTuple_SetItem(info, 4, libvirt_constcharPtrWrap(err->str1));
+	PyTuple_SetItem(info, 5, libvirt_constcharPtrWrap(err->str2));
+	PyTuple_SetItem(info, 6, libvirt_constcharPtrWrap(err->str3));
         PyTuple_SetItem(info, 7, PyInt_FromLong((long) err->int1));
         PyTuple_SetItem(info, 8, PyInt_FromLong((long) err->int2));
 	/* TODO pass conn and dom if available */
