@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = virshdata
+SUBDIRS = virshdata confdata
 
 LIBVIRT = $(top_builddir)/src/.libs/libvirt.a
 
