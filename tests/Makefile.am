@@ -17,11 +17,11 @@ LDADDS = \
 	@LIBXML_LIBS@ \
 	$(LIBVIRT)
 
-EXTRA_DIST = xmlrpcserver.py
+EXTRA_DIST = xmlrpcserver.py test_conf.sh
 
-noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest
+noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest conftest
 
-TESTS = xml2sexprtest sexpr2xmltest virshtest
+TESTS = xml2sexprtest sexpr2xmltest virshtest test_conf.sh
 
 valgrind:
 	$(MAKE) check TESTS_ENVIRONMENT="valgrind --quiet"
@@ -53,6 +53,11 @@ virshtest_SOURCES = \
 	testutils.c testutils.h
 virshtest_LDFLAGS =
 virshtest_LDADD = $(LDADDS)
+
+conftest_SOURCES = \
+	conftest.c
+conftest_LDFLAGS =
+conftest_LDADD = $(LDADDS)
 
 $(LIBVIRT):
 	-@(cd $(top_builddir)/src && $(MAKE) MAKEFLAGS+=--silent)

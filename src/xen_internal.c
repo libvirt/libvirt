@@ -1,7 +1,7 @@
 /*
  * xen_internal.c: direct access to Xen hypervisor level
  *
- * Copyright (C) 2005 Red Hat, Inc.
+ * Copyright (C) 2005, 2006 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *

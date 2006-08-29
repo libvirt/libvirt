@@ -45,7 +45,8 @@ typedef enum {
     VIR_FROM_XML,	/* Error in the XML code */
     VIR_FROM_DOM,	/* Error when operating on a domain */
     VIR_FROM_RPC,	/* Error in the XML-RPC code */
-    VIR_FROM_PROXY	/* Error in the proxy code */
+    VIR_FROM_PROXY,	/* Error in the proxy code */
+    VIR_FROM_CONF	/* Error in the configuration file handling */
 } virErrorDomain;
 
 
@@ -106,7 +107,12 @@ typedef enum {
     VIR_ERR_CALL_FAILED, /* not supported by the drivers */
     VIR_ERR_XML_ERROR, /* an XML description is not well formed or broken */
     VIR_ERR_DOM_EXIST,/* the domain already exist */
-    VIR_ERR_OPERATION_DENIED /* operation forbidden on read-only connections */
+    VIR_ERR_OPERATION_DENIED, /* operation forbidden on read-only connections */
+    VIR_ERR_OPEN_FAILED, /* failed to open a conf file */
+    VIR_ERR_READ_FAILED, /* failed to read a conf file */
+    VIR_ERR_PARSE_FAILED, /* failed to parse a conf file */
+    VIR_ERR_CONF_SYNTAX, /* failed to parse the syntax of a conf file */
+    VIR_ERR_WRITE_FAILED /* failed to write a conf file */
 } virErrorNumber;
 
 /**

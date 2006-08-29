@@ -1,4 +1,5 @@
 TODO:
+- libvirt-proxy dropping root priviledge after initialization.
 - check impact of HVM device rename
   http://lists.xensource.com/archives/html/xen-devel/2006-08/msg00369.html
 - Finish integration of vCPU and affinity APIs

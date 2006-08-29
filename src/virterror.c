@@ -539,6 +539,36 @@ __virErrorMsg(virErrorNumber error, const char *info)
 	    else
 	        errmsg = "operation %s forbidden for read only access";
             break;
+	case VIR_ERR_OPEN_FAILED:
+	    if (info == NULL)
+	        errmsg = "failed to open configuration file for reading";
+	    else
+	        errmsg = "failed to open %s for reading";
+            break;
+	case VIR_ERR_READ_FAILED:
+	    if (info == NULL)
+	        errmsg = "failed to read configuration file";
+	    else
+	        errmsg = "failed to read configuration file %s";
+            break;
+	case VIR_ERR_PARSE_FAILED:
+	    if (info == NULL)
+	        errmsg = "failed to parse configuration file";
+	    else
+	        errmsg = "failed to parse configuration file %s";
+            break;
+	case VIR_ERR_CONF_SYNTAX:
+	    if (info == NULL)
+	        errmsg = "configuration file syntax error";
+	    else
+	        errmsg = "configuration file syntax error: %s";
+            break;
+	case VIR_ERR_WRITE_FAILED:
+	    if (info == NULL)
+	        errmsg = "failed to write configuration file";
+	    else
+	        errmsg = "failed to write configuration file: %s";
+            break;
     }
     return (errmsg);
 }
