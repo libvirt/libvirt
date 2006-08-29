@@ -1,3 +1,9 @@
+Tue Aug 29 13:14:20 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Add handling of HTTP 500 error code
+	which can be returned by XenD do indicate failure error when
+	performing the requested operation (Identified by Pete Vetere).
+	
 Tue Aug 29 15:41:46 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* python/libvir.c: Pete Vetere pointed out a bug in string cast 

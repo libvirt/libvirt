@@ -521,6 +521,9 @@ http2unix(int ret)
         case 404:
             errno = ESRCH;
             break;
+        case 500:
+            errno = EIO;
+            break;
         default:
             virXendErrorInt(NULL, VIR_ERR_HTTP_ERROR, ret);
             errno = EINVAL;
