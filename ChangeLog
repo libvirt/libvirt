@@ -1,4 +1,4 @@
-Tue Aug 29 23:48:43 CEST 2006 Daniel Veillard <veillard@redhat.com>
+Wed Aug 30 09:30:23 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/driver.h: Defined new driver entry points for ListDefinedDomains,
 	NumOfDefinedDomains, DomainStart, DomainUndefine, DomainDefineXML.
