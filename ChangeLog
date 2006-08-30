@@ -1,5 +1,18 @@
 Tue Aug 29 23:48:43 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
+	* src/driver.h: Defined new driver entry points for ListDefinedDomains,
+	NumOfDefinedDomains, DomainStart, DomainUndefine, DomainDefineXML.
+	* src/xen_internal.c, src/xend_internal.c, src/xs_internal.h,
+	src/test.c, src/proxy_internal.c: Added NULL entries for new driver
+	backend APIs.
+	* src/libvirt.c: Hook up new driver entry points to corresponding
+	public API.
+	* src/libvirt_sym.version: Added  virConnectNumOfDefinedDomains and
+	previously missing virConnectListDefinedDomains
+	* include/libvirt/libvirt.h: Added virConnectNumOfDefinedDomains
+
+Tue Aug 29 23:48:43 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
 	* src/conf.c: add missing entry point virConfGetValue()
 
 Tue Aug 29 23:28:31 CEST 2006 Daniel Veillard <veillard@redhat.com>
@@ -17,10 +30,10 @@ Tue Aug 29 13:14:20 EDT 2006 Daniel Berrange <berrange@redhat.com>
 	* src/xend_internal.c: Add handling of HTTP 500 error code
 	which can be returned by XenD do indicate failure error when
 	performing the requested operation (Identified by Pete Vetere).
-	
+
 Tue Aug 29 15:41:46 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
-	* python/libvir.c: Pete Vetere pointed out a bug in string cast 
+	* python/libvir.c: Pete Vetere pointed out a bug in string cast
 	  when handling errors in Python
 
 Sat Aug 26 16:36:15 CEST 2006 Daniel Veillard <veillard@redhat.com>

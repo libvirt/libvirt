@@ -70,6 +70,11 @@ static virDriver xenStoreDriver = {
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
     NULL, /* domainDumpXML */
+    NULL, /* listDefinedDomains */
+    NULL, /* numOfDefinedDomains */
+    NULL, /* domainCreate */
+    NULL, /* domainDefineXML */
+    NULL, /* domainUndefine */
 };
 
 /**

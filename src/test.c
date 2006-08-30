@@ -58,6 +58,11 @@ static virDriver testDriver = {
   NULL, /* domainPinVcpu */
   NULL, /* domainGetVcpus */
   testDomainDumpXML, /* domainDumpXML */
+  NULL, /* listDefinedDomains */
+  NULL, /* numOfDefinedDomains */
+  NULL, /* domainCreate */
+  NULL, /* domainDefineXML */
+  NULL, /* domainUndefine */
 };
 
 /* Amount of time it takes to shutdown */

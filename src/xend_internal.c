@@ -88,6 +88,11 @@ static virDriver xenDaemonDriver = {
     xenDaemonDomainPinVcpu, /* domainPinVcpu */
     xenDaemonDomainGetVcpus, /* domainGetVcpus */
     xenDaemonDomainDumpXML, /* domainDumpXML */
+    NULL, /* listDefinedDomains */
+    NULL, /* numOfDefinedDomains */
+    NULL, /* domainCreate */
+    NULL, /* domainDefineXML */
+    NULL, /* domainUndefine */
 };
 
 /**

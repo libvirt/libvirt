@@ -94,6 +94,11 @@ static virDriver xenHypervisorDriver = {
     xenHypervisorPinVcpu, /* domainPinVcpu */
     xenHypervisorGetVcpus, /* domainGetVcpus */
     NULL, /* domainDumpXML */
+    NULL, /* listDefinedDomains */
+    NULL, /* numOfDefinedDomains */
+    NULL, /* domainCreate */
+    NULL, /* domainDefineXML */
+    NULL, /* domainUndefine */
 };
 #endif /* !PROXY */
 

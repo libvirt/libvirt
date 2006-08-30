@@ -1533,10 +1533,7 @@ virNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info) {
 virDomainPtr
 virDomainDefineXML(virConnectPtr conn, const char *xml) {
     virDomainPtr ret = NULL;
-    const char *name = NULL;
-    xmlDocPtr doc = NULL;
-    xmlXPathObjectPtr obj = NULL;
-    xmlXPathContextPtr ctxt = NULL;
+    int i;
 
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -1551,72 +1548,16 @@ virDomainDefineXML(virConnectPtr conn, const char *xml) {
         return (NULL);
     }
 
-    /*
-     * Check the XML description is at least well formed and extract the
-     * name.
-     * TODO: a full validation based on RNG for example should be done there
-     */
-    doc = xmlReadMemory(xml, strlen(xml), "domain_define.xml", NULL, 0);
-    if (doc == NULL) {
-        virLibConnError(conn, VIR_ERR_XML_ERROR, __FUNCTION__);
-	goto done;
+    /* Go though the driver registered entry points */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainDefineXML != NULL)) {
+            ret = conn->drivers[i]->domainDefineXML(conn, xml);
+	    if (ret)
+	        return(ret);
+	}
     }
-    ctxt = xmlXPathNewContext(doc);
-    if (ctxt == NULL) {
-        goto done;
-    }
-    obj = xmlXPathEval(BAD_CAST "string(/domain/name[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
-        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        virLibConnError(conn, VIR_ERR_NO_NAME, xml);
-        goto done;
-    }
-    name = (const char *) obj->stringval;
 
-    /*
-     * Now look it up in the domain pool and check it's not an already run
-     * domain.
-     */
-    ret = virGetDomain(conn, name, NULL);
-    if (ret == NULL) {
-        goto done;
-    }
-    /*
-     * TODO: the lifecycle of domains, especially predefined ones need to be
-     *       explicitely written down
-     */
-    if (ret->handle != -1) {
-        virLibConnError(conn, VIR_ERR_DOM_EXIST, name);
-        virFreeDomain(conn, ret);
-	ret = NULL;
-	goto done;
-    }
-    if ((ret->uses > 1) && (!(ret->flags & DOMAIN_IS_DEFINED))) {
-        virLibConnError(conn, VIR_ERR_DOM_EXIST, name);
-        virFreeDomain(conn, ret);
-	ret = NULL;
-	goto done;
-    }
-    ret->flags |= DOMAIN_IS_DEFINED;
-    if (ret->xml != NULL) {
-        free(ret->xml);
-    }
-    ret->xml = strdup(xml);
-    if (ret->xml == NULL) {
-        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
-	virFreeDomain(conn, ret);
-	ret = NULL;
-	goto done;
-    }
-    /* TODO shall we keep a list of defined domains there ? */
-
-done:
-    if (obj != NULL)
-	xmlXPathFreeObject(obj);
-    if (ctxt != NULL)
-        xmlXPathFreeContext(ctxt);
-    if (doc != NULL)
-        xmlFreeDoc(doc);
     return(ret);
 }
 
@@ -1630,23 +1571,62 @@ done:
  */
 int
 virDomainUndefine(virDomainPtr domain) {
-    int ret;
+    int ret, i;
+    virConnectPtr conn;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
+    conn = domain->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
         virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
 	return (-1);
     }
 
-    /* TODO shall we keep a list of defined domains there ? */
+    /* Go though the driver registered entry points */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainUndefine != NULL)) {
+	    ret = conn->drivers[i]->domainUndefine(domain);
+	    if (ret >= 0)
+	        return(ret);
+	}
+    }
 
-    ret = virFreeDomain(domain->conn, domain);
-    if (ret < 0)
-        return(-1);
-    return(0);
+    return(-1);
+}
+
+/**
+ * virConnectNumOfDefinedDomains:
+ * @conn: pointer to the hypervisor connection
+ *
+ * Provides the number of active domains.
+ *
+ * Returns the number of domain found or -1 in case of error
+ */
+int
+virConnectNumOfDefinedDomains(virConnectPtr conn)
+{
+    int ret = -1;
+    int i;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+
+    /* Go though the driver registered entry points */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->numOfDefinedDomains != NULL)) {
+	    ret = conn->drivers[i]->numOfDefinedDomains(conn);
+	    if (ret >= 0)
+	        return(ret);
+	}
+    }
+
+    return(-1);
 }
 
 /**
@@ -1662,8 +1642,30 @@ virDomainUndefine(virDomainPtr domain) {
 int
 virConnectListDefinedDomains(virConnectPtr conn, const char **names,
                              int maxnames) {
-    TODO
-    return(-1);
+    int ret = -1;
+    int i;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+
+    if ((names == NULL) || (maxnames <= 0)) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+
+    /* Go though the driver registered entry points */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->listDefinedDomains != NULL)) {
+	    ret = conn->drivers[i]->listDefinedDomains(conn, names, maxnames);
+	    if (ret >= 0)
+	        return(ret);
+	}
+    }
+
+    return (-1);
 }
 
 /**
@@ -1677,16 +1679,31 @@ virConnectListDefinedDomains(virConnectPtr conn, const char **names,
  */
 int
 virDomainCreate(virDomainPtr domain) {
-    
+    int i, ret = -1;
+    virConnectPtr conn;
+    if (domain == NULL) {
+        TODO
+	return (-1);
+    }
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
-    if (domain->conn->flags & VIR_CONNECT_RO) {
+    conn = domain->conn;
+    if (conn->flags & VIR_CONNECT_RO) {
         virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
 	return (-1);
     }
-    return(-1);
+
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainCreate != NULL)) {
+	    ret = conn->drivers[i]->domainCreate(domain);
+	    if (ret == 0)
+	        return(ret);
+	}
+    }
+    return(ret);
 }
 
 /**

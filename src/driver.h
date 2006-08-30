@@ -107,7 +107,18 @@ typedef int
 typedef char *
 	(*virDrvDomainDumpXML)		(virDomainPtr dom,
 					 int flags);
-
+typedef int
+	(*virDrvListDefinedDomains)	(virConnectPtr conn,
+					 const char **names,
+					 int maxnames);
+typedef int
+	(*virDrvNumOfDefinedDomains)	(virConnectPtr conn);
+typedef int
+	(*virDrvDomainCreate)	(virDomainPtr dom);
+typedef virDomainPtr
+	(*virDrvDomainDefineXML)(virConnectPtr conn, const char *xml);
+typedef int
+	(*virDrvDomainUndefine) (virDomainPtr dom);
 typedef int
 	(*virDrvDomainSetVcpus)		(virDomainPtr domain,
 					 unsigned int nvcpus);
@@ -168,6 +179,11 @@ struct _virDriver {
 	virDrvDomainPinVcpu		domainPinVcpu;
 	virDrvDomainGetVcpus		domainGetVcpus;
 	virDrvDomainDumpXML		domainDumpXML;
+	virDrvListDefinedDomains	listDefinedDomains;
+	virDrvNumOfDefinedDomains	numOfDefinedDomains;
+	virDrvDomainCreate		domainCreate;
+	virDrvDomainDefineXML           domainDefineXML;
+	virDrvDomainUndefine            domainUndefine;
 };
 
 

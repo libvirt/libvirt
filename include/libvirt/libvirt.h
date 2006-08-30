@@ -297,7 +297,8 @@ char *			virDomainGetXMLDesc	(virDomainPtr domain,
 virDomainPtr		virDomainDefineXML	(virConnectPtr conn,
 						 const char *xml);
 int			virDomainUndefine	(virDomainPtr domain);
-int			virConnectListDefinedDomains(virConnectPtr conn,
+int                     virConnectNumOfDefinedDomains  (virConnectPtr conn);
+int			virConnectListDefinedDomains (virConnectPtr conn,
 						 const char **names,
 						 int maxnames);
 int			virDomainCreate		(virDomainPtr domain);

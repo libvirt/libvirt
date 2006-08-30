@@ -77,6 +77,11 @@ static virDriver xenProxyDriver = {
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
     xenProxyDomainDumpXML, /* domainDumpXML */
+    NULL, /* listDefinedDomains */
+    NULL, /* numOfDefinedDomains */
+    NULL, /* domainCreate */
+    NULL, /* domainDefineXML */
+    NULL, /* domainUndefine */
 };
 
 /**
