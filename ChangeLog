@@ -1,3 +1,9 @@
+Wed Aug 30 09:34:45 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/virsh.c: Added --all & --inactive flags to list command to control
+	inclusion of inactive domains in listing. Added start, define, undefine
+	commands to allow management of inactive domains.
+
 Wed Aug 30 09:30:23 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/driver.h: Defined new driver entry points for ListDefinedDomains,

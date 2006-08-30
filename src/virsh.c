@@ -314,28 +314,63 @@ static vshCmdInfo info_list[] = {
     {NULL, NULL}
 };
 
+static vshCmdOptDef opts_list[] = {
+    {"inactive", VSH_OT_BOOL, 0, "list inactive domains"},
+    {"all", VSH_OT_BOOL, 0, "list inactive & active domains"},
+    {NULL, 0, 0, NULL}
+};
+
 
 
 static int
 cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 {
-    int *ids = NULL, maxid, i;
+    int inactive = vshCommandOptBool(cmd, "inactive");
+    int all = vshCommandOptBool(cmd, "all");
+    int active = !inactive || all ? 1 : 0;
+    int *ids = NULL, maxid = 0, i;
+    const char **names = NULL;
+    int maxname = 0;
+    inactive |= all;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
-
-    maxid = virConnectNumOfDomains(ctl->conn);
-    if (maxid < 0) {
+    
+    if (active) {
+      maxid = virConnectNumOfDomains(ctl->conn);
+      if (maxid < 0) {
         vshError(ctl, FALSE, "failed to list active domains.");
         return FALSE;
-    }
-    if (maxid) {
+      }
+      if (maxid) {
         ids = vshMalloc(ctl, sizeof(int) * maxid);
-
+	
         if (virConnectListDomains(ctl->conn, &ids[0], maxid) < 0) {
-            vshError(ctl, FALSE, "failed to list active domains.");
-            return FALSE;
+	  vshError(ctl, FALSE, "failed to list active domains.");
+	  free(ids);
+	  return FALSE;
         }
+      }
+    }
+    if (inactive) {
+      maxname = virConnectNumOfDefinedDomains(ctl->conn);
+      if (maxname < 0) {
+        vshError(ctl, FALSE, "failed to list inactive domains.");
+	if (ids)
+	  free(ids);
+        return FALSE;
+      }
+      if (maxname) {
+        names = vshMalloc(ctl, sizeof(int) * maxname);
+	
+        if (virConnectListDefinedDomains(ctl->conn, names, maxname) < 0) {
+	  vshError(ctl, FALSE, "failed to list inactive domains.");
+	  if (ids)
+	    free(ids);
+	  free(names);
+	  return FALSE;
+        }
+      }
     }
     vshPrintExtra(ctl, "%3s %-20s %s\n", "Id", "Name", "State");
     vshPrintExtra(ctl, "----------------------------------\n");
@@ -357,8 +392,27 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
                  0 ? "no state" : vshDomainStateToString(info.state));
         virDomainFree(dom);
     }
+    for (i = 0; i < maxname; i++) {
+        int ret;
+        virDomainInfo info;
+        virDomainPtr dom = virDomainLookupByName(ctl->conn, names[i]);
+
+        /* this kind of work with domains is not atomic operation */
+        if (!dom)
+            continue;
+        ret = virDomainGetInfo(dom, &info);
+
+        vshPrint(ctl, "%3d %-20s %s\n",
+                 virDomainGetID(dom),
+		 names[i],
+                 ret <
+                 0 ? "no state" : vshDomainStateToString(info.state));
+        virDomainFree(dom);
+    }
     if (ids)
         free(ids);
+    if (names)
+        free(names);
     return TRUE;
 }
 
@@ -489,6 +543,149 @@ cmdCreate(vshControl * ctl, vshCmd * cmd)
                  virDomainGetName(dom), from);
     } else {
         vshError(ctl, FALSE, "Failed to create domain\n");
+        ret = FALSE;
+    }
+    return ret;
+}
+
+/*
+ * "define" command
+ */
+static vshCmdInfo info_define[] = {
+    {"syntax", "define a domain from an XML <file>"},
+    {"help", "define (but don't start) a domain from an XML file"},
+    {"desc", "Define a domain."},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_define[] = {
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, "file conatining an XML domain description"},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdDefine(vshControl * ctl, vshCmd * cmd)
+{
+    virDomainPtr dom;
+    char *from;
+    int found;
+    int ret = TRUE;
+    char buffer[4096];
+    int fd, l;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    from = vshCommandOptString(cmd, "file", &found);
+    if (!found)
+        return FALSE;
+
+    fd = open(from, O_RDONLY);
+    if (fd < 0) {
+        vshError(ctl, FALSE, "Failed to read description file %s\n", from);
+        return(FALSE);
+    }
+    l = read(fd, &buffer[0], sizeof(buffer));
+    if ((l <= 0) || (l >= (int) sizeof(buffer))) {
+        vshError(ctl, FALSE, "Failed to read description file %s\n", from);
+        close(fd);
+        return(FALSE);
+    }
+    buffer[l] = 0;
+    dom = virDomainDefineXML(ctl->conn, &buffer[0]);
+    if (dom != NULL) {
+        vshPrint(ctl, "Domain %s defined from %s\n",
+                 virDomainGetName(dom), from);
+    } else {
+        vshError(ctl, FALSE, "Failed to define domain\n");
+        ret = FALSE;
+    }
+    return ret;
+}
+
+/*
+ * "undefine" command
+ */
+static vshCmdInfo info_undefine[] = {
+    {"syntax", "undefine <domain>"},
+    {"help", "Undefine an inactive domain"},
+    {"desc", "Undefine the configuration for an inactive domain"},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_undefine[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, or uuid"},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdUndefine(vshControl * ctl, vshCmd * cmd)
+{
+    virDomainPtr dom;
+    int ret = TRUE;
+    char *name;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", &name)))
+        return FALSE;
+
+    if (virDomainUndefine(dom) == 0) {
+        vshPrint(ctl, "Domain %s has been undefined\n", name);
+    } else {
+        vshError(ctl, FALSE, "Failed to undefine domain\n");
+        ret = FALSE;
+    }
+
+    return ret;
+}
+
+
+/*
+ * "start" command
+ */
+static vshCmdInfo info_start[] = {
+    {"syntax", "start a domain "},
+    {"help", "start a (previously defined) inactive domain"},
+    {"desc", "Start a domain."},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_start[] = {
+    {"name", VSH_OT_DATA, VSH_OFLAG_REQ, "name of the inactive domain" },
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdStart(vshControl * ctl, vshCmd * cmd)
+{
+    virDomainPtr dom;
+    char *name;
+    int found;
+    int ret = TRUE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    name = vshCommandOptString(cmd, "name", &found);
+    if (!found)
+        return FALSE;
+
+    dom = virDomainLookupByName(ctl->conn, name);
+    if (!dom)
+        return FALSE;
+
+    if (virDomainGetID(dom) != (unsigned int)-1) {
+        vshError(ctl, FALSE, "Domain is already active\n");
+        return FALSE;
+    }
+
+    if (virDomainCreate(dom) == 0) {
+        vshPrint(ctl, "Domain %s started\n",
+                 name);
+    } else {
+        vshError(ctl, FALSE, "Failed to start domain\n");
         ret = FALSE;
     }
     return ret;
@@ -1367,7 +1564,9 @@ cmdQuit(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 static vshCmdDef commands[] = {
     {"connect", cmdConnect, opts_connect, info_connect},
     {"create", cmdCreate, opts_create, info_create},
+    {"start", cmdStart, opts_start, info_start},
     {"destroy", cmdDestroy, opts_destroy, info_destroy},
+    {"define", cmdDefine, opts_define, info_define},
     {"domid", cmdDomid, opts_domid, info_domid},
     {"domuuid", cmdDomuuid, opts_domuuid, info_domuuid},
     {"dominfo", cmdDominfo, opts_dominfo, info_dominfo},
@@ -1375,7 +1574,7 @@ static vshCmdDef commands[] = {
     {"domstate", cmdDomstate, opts_domstate, info_domstate},
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
     {"help", cmdHelp, opts_help, info_help},
-    {"list", cmdList, NULL, info_list},
+    {"list", cmdList, opts_list, info_list},
     {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo},
     {"quit", cmdQuit, NULL, info_quit},
     {"reboot", cmdReboot, opts_reboot, info_reboot},
@@ -1387,6 +1586,7 @@ static vshCmdDef commands[] = {
     {"setmaxmem", cmdSetmaxmem, opts_setmaxmem, info_setmaxmem},
     {"setvcpus", cmdSetvcpus, opts_setvcpus, info_setvcpus},
     {"suspend", cmdSuspend, opts_suspend, info_suspend},
+    {"undefine", cmdUndefine, opts_undefine, info_undefine},
     {"vcpuinfo", cmdVcpuinfo, opts_vcpuinfo, info_vcpuinfo},
     {"vcpupin", cmdVcpupin, opts_vcpupin, info_vcpupin},
     {"version", cmdVersion, NULL, info_version},
