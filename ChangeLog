@@ -1,3 +1,10 @@
+Sat Sep  2 22:28:18 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c: converting to handle the new incompatible 
+	  hypercalls while still able to detect older versions, lot of
+	  work, seems okay, there is just one function not yet converted
+	* src/xs_internal.c: dropping virConnectCheckStoreID()
+
 Wed Aug 30 09:34:45 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/virsh.c: Added --all & --inactive flags to list command to control

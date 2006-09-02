@@ -27,21 +27,221 @@
 #include <xen/xen.h>
 #include <xen/linux/privcmd.h>
 
-/* #ifndef __LINUX_PUBLIC_PRIVCMD_H__ */
-typedef struct old_hypercall_struct {
+/* #define DEBUG */
+/*
+ * so far there is 2 versions of the structures usable for doing 
+ * hypervisor calls.
+ */
+/* the old one */
+typedef struct v0_hypercall_struct {
     unsigned long op;
     unsigned long arg[5];
-} old_hypercall_t;
-#define XEN_OLD_IOCTL_HYPERCALL_CMD \
-        _IOC(_IOC_NONE, 'P', 0, sizeof(old_hypercall_t))
+} v0_hypercall_t;
+#define XEN_V0_IOCTL_HYPERCALL_CMD \
+        _IOC(_IOC_NONE, 'P', 0, sizeof(v0_hypercall_t))
 
-typedef struct privcmd_hypercall hypercall_t;
-#define XEN_IOCTL_HYPERCALL_CMD IOCTL_PRIVCMD_HYPERCALL
+/* the new one */
+typedef struct v1_hypercall_struct
+{
+    uint64_t op;
+    uint64_t arg[5];
+} v1_hypercall_t;
+#define XEN_V1_IOCTL_HYPERCALL_CMD \
+	 _IOC(_IOC_NONE, 'P', 0, sizeof(v1_hypercall_t))
+
+typedef v1_hypercall_t hypercall_t;
+
+#ifndef __HYPERVISOR_sysctl
+#define __HYPERVISOR_sysctl 35
+#endif
+#ifndef __HYPERVISOR_domctl
+#define __HYPERVISOR_domctl 36
+#endif
 
 static int xen_ioctl_hypercall_cmd = 0;
-static int old_hypervisor = 0;
 static int initialized = 0;
+static int in_init = 0;
 static int hv_version = 0;
+static int hypervisor_version = 2;
+static int sys_interface_version = -1;
+static int dom_interface_version = -1;
+
+/*
+ * The content of the structures for a getdomaininfolist system hypercall
+ */
+#ifndef DOMFLAGS_DYING
+#define DOMFLAGS_DYING     (1<<0) /* Domain is scheduled to die.             */
+#define DOMFLAGS_SHUTDOWN  (1<<2) /* The guest OS has shut down.             */
+#define DOMFLAGS_PAUSED    (1<<3) /* Currently paused by control software.   */
+#define DOMFLAGS_BLOCKED   (1<<4) /* Currently blocked pending an event.     */
+#define DOMFLAGS_RUNNING   (1<<5) /* Domain is currently running.            */
+#define DOMFLAGS_CPUMASK      255 /* CPU to which this domain is bound.      */
+#define DOMFLAGS_CPUSHIFT       8
+#define DOMFLAGS_SHUTDOWNMASK 255 /* DOMFLAGS_SHUTDOWN guest-supplied code.  */
+#define DOMFLAGS_SHUTDOWNSHIFT 16
+#endif
+
+#define XEN_V0_OP_GETDOMAININFOLIST	38
+#define XEN_V1_OP_GETDOMAININFOLIST	38
+#define XEN_V2_OP_GETDOMAININFOLIST	6
+
+struct xen_v0_getdomaininfo {
+    domid_t  domain;	/* the domain number */
+    uint32_t flags;	/* falgs, see before */
+    uint64_t tot_pages;	/* total number of pages used */
+    uint64_t max_pages;	/* maximum number of pages allowed */
+    uint64_t shared_info_frame;  /* MFN of shared_info struct */
+    uint64_t cpu_time;  /* CPU time used */
+    uint32_t nr_online_vcpus;  /* Number of VCPUs currently online. */
+    uint32_t max_vcpu_id; /* Maximum VCPUID in use by this domain. */
+    uint32_t ssidref;
+    xen_domain_handle_t handle;
+};
+typedef struct xen_v0_getdomaininfo xen_v0_getdomaininfo;
+
+struct xen_v0_getdomaininfolist {
+    domid_t   first_domain;
+    uint32_t  max_domains;
+    struct xen_v0_getdomaininfo *buffer;
+    uint32_t  num_domains;
+};
+typedef struct xen_v0_getdomaininfolist xen_v0_getdomaininfolist;
+
+struct xen_v0_domainop {
+    domid_t   domain;
+};
+typedef struct xen_v0_domainop xen_v0_domainop;
+
+/*
+ * The informations for a destroydomain system hypercall
+ */
+#define XEN_V0_OP_DESTROYDOMAIN	9
+#define XEN_V1_OP_DESTROYDOMAIN	9
+#define XEN_V2_OP_DESTROYDOMAIN	2
+
+/*
+ * The informations for a pausedomain system hypercall
+ */
+#define XEN_V0_OP_PAUSEDOMAIN	10
+#define XEN_V1_OP_PAUSEDOMAIN	10
+#define XEN_V2_OP_PAUSEDOMAIN	3
+
+/*
+ * The informations for an unpausedomain system hypercall
+ */
+#define XEN_V0_OP_UNPAUSEDOMAIN	11
+#define XEN_V1_OP_UNPAUSEDOMAIN	11
+#define XEN_V2_OP_UNPAUSEDOMAIN	4
+
+/*
+ * The informations for an setmaxmem system hypercall
+ */
+#define XEN_V0_OP_SETMAXMEM	28
+#define XEN_V1_OP_SETMAXMEM	28
+#define XEN_V2_OP_SETMAXMEM	14
+
+struct xen_v0_setmaxmem {
+    domid_t	domain;
+    uint64_t	maxmem;
+};
+typedef struct xen_v0_setmaxmem xen_v0_setmaxmem;
+typedef struct xen_v0_setmaxmem xen_v1_setmaxmem;
+
+struct xen_v2_setmaxmem {
+    uint64_t	maxmem;
+};
+typedef struct xen_v2_setmaxmem xen_v2_setmaxmem;
+
+/*
+ * The informations for an setmaxvcpu system hypercall
+ */
+#define XEN_V0_OP_SETMAXVCPU	41
+#define XEN_V1_OP_SETMAXVCPU	41
+#define XEN_V2_OP_SETMAXVCPU	15
+
+struct xen_v0_setmaxvcpu {
+    domid_t	domain;
+    uint32_t	maxvcpu;
+};
+typedef struct xen_v0_setmaxvcpu xen_v0_setmaxvcpu;
+typedef struct xen_v0_setmaxvcpu xen_v1_setmaxvcpu;
+
+struct xen_v2_setmaxvcpu {
+    uint32_t	maxvcpu;
+};
+typedef struct xen_v2_setmaxvcpu xen_v2_setmaxvcpu;
+
+/*
+ * The informations for an setvcpumap system hypercall
+ * Note that between 1 and 2 the limitation to 64 physical CPU was lifted
+ * hence the difference in structures
+ */
+#define XEN_V0_OP_SETVCPUMAP	20
+#define XEN_V1_OP_SETVCPUMAP	20
+#define XEN_V2_OP_SETVCPUMAP	9
+
+struct xen_v0_setvcpumap {
+    domid_t	domain;
+    uint32_t	vcpu;
+    cpumap_t    cpumap;
+};
+typedef struct xen_v0_setvcpumap xen_v0_setvcpumap;
+typedef struct xen_v0_setvcpumap xen_v1_setvcpumap;
+
+struct xen_v2_cpumap {
+    uint8_t    *bitmap;
+    uint32_t    nr_cpus;
+};
+struct xen_v2_setvcpumap {
+    uint32_t	vcpu;
+    struct xen_v2_cpumap cpumap;
+};
+typedef struct xen_v2_setvcpumap xen_v2_setvcpumap;
+
+/*
+ * The hypercall operation structures also have changed on
+ * changeset 86d26e6ec89b
+ */
+/* the old structure */
+struct xen_op_v0 {
+    uint32_t cmd;
+    uint32_t interface_version;
+    union {
+        xen_v0_getdomaininfolist getdomaininfolist;
+	xen_v0_domainop          domain;
+	xen_v0_setmaxmem         setmaxmem;
+	xen_v0_setmaxvcpu        setmaxvcpu;
+	xen_v0_setvcpumap        setvcpumap;
+	uint8_t padding[128];
+    } u;
+};
+typedef struct xen_op_v0 xen_op_v0;
+typedef struct xen_op_v0 xen_op_v1;
+
+/* the new structure for systems operations */
+struct xen_op_v2_sys {
+    uint32_t cmd;
+    uint32_t interface_version;
+    union {
+        xen_v0_getdomaininfolist getdomaininfolist;
+	uint8_t padding[128];
+    } u;
+};
+typedef struct xen_op_v2_sys xen_op_v2_sys;
+
+/* the new structure for domains operation */
+struct xen_op_v2_dom {
+    uint32_t cmd;
+    uint32_t interface_version;
+    domid_t  domain;
+    union {
+	xen_v2_setmaxmem         setmaxmem;
+	xen_v2_setmaxvcpu        setmaxvcpu;
+	xen_v2_setvcpumap        setvcpumap;
+	uint8_t padding[128];
+    } u;
+};
+typedef struct xen_op_v2_dom xen_op_v2_dom;
 
 #include "internal.h"
 #include "driver.h"
@@ -115,12 +315,511 @@ virXenError(virErrorNumber error, const char *info, int value)
 {
     const char *errmsg;
 
-    if (error == VIR_ERR_OK)
+    if ((error == VIR_ERR_OK) || (in_init != 0))
         return;
 
     errmsg = __virErrorMsg(error, info);
     __virRaiseError(NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, value, 0, errmsg, info, value);
+}
+
+/**
+ * xenHypervisorDoV0Op:
+ * @handle: the handle to the Xen hypervisor
+ * @op: pointer to the hyperviros operation structure
+ *
+ * Do an hypervisor operation though the old interface,
+ * this leads to an hypervisor call through ioctl.
+ *
+ * Returns 0 in case of success and -1 in case of error.
+ */
+static int
+xenHypervisorDoV0Op(int handle, xen_op_v0 * op)
+{
+    int ret;
+    v0_hypercall_t hc;
+
+    memset(&hc, 0, sizeof(hc));
+    op->interface_version = hv_version << 8;
+    hc.op = __HYPERVISOR_dom0_op;
+    hc.arg[0] = (unsigned long) op;
+
+    if (mlock(op, sizeof(dom0_op_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " locking", sizeof(*op));
+        return (-1);
+    }
+
+    ret = ioctl(handle, xen_ioctl_hypercall_cmd, (unsigned long) &hc);
+    if (ret < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " ioctl ", xen_ioctl_hypercall_cmd);
+    }
+
+    if (munlock(op, sizeof(dom0_op_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " releasing", sizeof(*op));
+        ret = -1;
+    }
+
+    if (ret < 0)
+        return (-1);
+
+    return (0);
+}
+/**
+ * xenHypervisorDoV1Op:
+ * @handle: the handle to the Xen hypervisor
+ * @op: pointer to the hyperviros operation structure
+ *
+ * Do an hypervisor v1 operation, this leads to an hypervisor call through
+ * ioctl.
+ *
+ * Returns 0 in case of success and -1 in case of error.
+ */
+static int
+xenHypervisorDoV1Op(int handle, xen_op_v1* op)
+{
+    int ret;
+    hypercall_t hc;
+
+    memset(&hc, 0, sizeof(hc));
+    op->interface_version = DOM0_INTERFACE_VERSION;
+    hc.op = __HYPERVISOR_dom0_op;
+    hc.arg[0] = (unsigned long) op;
+
+    if (mlock(op, sizeof(dom0_op_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " locking", sizeof(*op));
+        return (-1);
+    }
+
+    ret = ioctl(handle, xen_ioctl_hypercall_cmd, (unsigned long) &hc);
+    if (ret < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " ioctl ", xen_ioctl_hypercall_cmd);
+    }
+
+    if (munlock(op, sizeof(dom0_op_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " releasing", sizeof(*op));
+        ret = -1;
+    }
+
+    if (ret < 0)
+        return (-1);
+
+    return (0);
+}
+
+/**
+ * xenHypervisorDoV2Sys:
+ * @handle: the handle to the Xen hypervisor
+ * @op: pointer to the hypervisor operation structure
+ *
+ * Do an hypervisor v2 stsyem operation, this leads to an hypervisor
+ * call through ioctl.
+ *
+ * Returns 0 in case of success and -1 in case of error.
+ */
+static int
+xenHypervisorDoV2Sys(int handle, xen_op_v2_sys* op)
+{
+    int ret;
+    hypercall_t hc;
+
+    memset(&hc, 0, sizeof(hc));
+    op->interface_version = sys_interface_version;
+    hc.op = __HYPERVISOR_sysctl;
+    hc.arg[0] = (unsigned long) op;
+
+    if (mlock(op, sizeof(dom0_op_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " locking", sizeof(*op));
+        return (-1);
+    }
+
+    ret = ioctl(handle, xen_ioctl_hypercall_cmd, (unsigned long) &hc);
+    if (ret < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " ioctl ", xen_ioctl_hypercall_cmd);
+    }
+
+    if (munlock(op, sizeof(dom0_op_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " releasing", sizeof(*op));
+        ret = -1;
+    }
+
+    if (ret < 0)
+        return (-1);
+
+    return (0);
+}
+
+/**
+ * xenHypervisorDoV2Dom:
+ * @handle: the handle to the Xen hypervisor
+ * @op: pointer to the hypervisor domain operation structure
+ *
+ * Do an hypervisor v2 domain operation, this leads to an hypervisor
+ * call through ioctl.
+ *
+ * Returns 0 in case of success and -1 in case of error.
+ */
+static int
+xenHypervisorDoV2Dom(int handle, xen_op_v2_dom* op)
+{
+    int ret;
+    hypercall_t hc;
+
+    memset(&hc, 0, sizeof(hc));
+    op->interface_version = dom_interface_version;
+    hc.op = __HYPERVISOR_domctl;
+    hc.arg[0] = (unsigned long) op;
+
+    if (mlock(op, sizeof(dom0_op_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " locking", sizeof(*op));
+        return (-1);
+    }
+
+    ret = ioctl(handle, xen_ioctl_hypercall_cmd, (unsigned long) &hc);
+    if (ret < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " ioctl ", xen_ioctl_hypercall_cmd);
+    }
+
+    if (munlock(op, sizeof(dom0_op_t)) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " releasing", sizeof(*op));
+        ret = -1;
+    }
+
+    if (ret < 0)
+        return (-1);
+
+    return (0);
+}
+
+/**
+ * virXen_getdomaininfolist:
+ * @handle: the hypervisor handle
+ * @first_domain: first domain in the range
+ * @maxids: maximum number of domains to list
+ * @dominfos: output structures
+ *
+ * Do a low level hypercall to list existing domains informations
+ *
+ * Returns the number of domains or -1 in case of failure
+ */
+static int
+virXen_getdomaininfolist(int handle, int first_domain, int maxids,
+                         xen_v0_getdomaininfo *dominfos)
+{
+    int ret = -1;
+
+    if (mlock(dominfos, sizeof(xen_v0_getdomaininfo) * maxids) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " locking",
+                    sizeof(xen_v0_getdomaininfo) * maxids);
+        return (-1);
+    }
+    if (hypervisor_version > 1) {
+        xen_op_v2_sys op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V2_OP_GETDOMAININFOLIST;
+	op.u.getdomaininfolist.first_domain = (domid_t) first_domain;
+	op.u.getdomaininfolist.max_domains = maxids;
+	op.u.getdomaininfolist.buffer = dominfos;
+	op.u.getdomaininfolist.num_domains = maxids;
+	ret = xenHypervisorDoV2Sys(handle, &op);
+	if (ret == 0)
+	    ret = op.u.getdomaininfolist.num_domains;
+    } else if (hypervisor_version == 1) {
+        xen_op_v1 op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V1_OP_GETDOMAININFOLIST;
+	op.u.getdomaininfolist.first_domain = (domid_t) first_domain;
+	op.u.getdomaininfolist.max_domains = maxids;
+	op.u.getdomaininfolist.buffer = dominfos;
+	op.u.getdomaininfolist.num_domains = maxids;
+	ret = xenHypervisorDoV1Op(handle, &op);
+	if (ret == 0)
+	    ret = op.u.getdomaininfolist.num_domains;
+    } else if (hypervisor_version == 0) {
+        xen_op_v0 op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V0_OP_GETDOMAININFOLIST;
+	op.u.getdomaininfolist.first_domain = (domid_t) first_domain;
+	op.u.getdomaininfolist.max_domains = maxids;
+	op.u.getdomaininfolist.buffer = dominfos;
+	op.u.getdomaininfolist.num_domains = maxids;
+	ret = xenHypervisorDoV0Op(handle, &op);
+	if (ret == 0)
+	    ret = op.u.getdomaininfolist.num_domains;
+    }
+    if (munlock(dominfos, sizeof(xen_v0_getdomaininfo) * maxids) < 0) {
+        virXenError(VIR_ERR_XEN_CALL, " release",
+                    sizeof(xen_v0_getdomaininfo));
+        ret = -1;
+    }
+    return(ret);
+}
+
+/**
+ * virXen_pausedomain:
+ * @handle: the hypervisor handle
+ * @id: the domain id
+ *
+ * Do a low level hypercall to pause the domain
+ *
+ * Returns 0 or -1 in case of failure
+ */
+static int
+virXen_pausedomain(int handle, int id) 
+{
+    int ret = -1;
+
+    if (hypervisor_version > 1) {
+        xen_op_v2_dom op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V2_OP_PAUSEDOMAIN;
+	op.domain = (domid_t) id;
+	ret = xenHypervisorDoV2Dom(handle, &op);
+    } else if (hypervisor_version == 1) {
+        xen_op_v1 op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V1_OP_PAUSEDOMAIN;
+	op.u.domain.domain = (domid_t) id;
+	ret = xenHypervisorDoV1Op(handle, &op);
+    } else if (hypervisor_version == 0) {
+        xen_op_v0 op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V0_OP_PAUSEDOMAIN;
+	op.u.domain.domain = (domid_t) id;
+	ret = xenHypervisorDoV0Op(handle, &op);
+    }
+    return(ret);
+}
+
+/**
+ * virXen_unpausedomain:
+ * @handle: the hypervisor handle
+ * @id: the domain id
+ *
+ * Do a low level hypercall to unpause the domain
+ *
+ * Returns 0 or -1 in case of failure
+ */
+static int
+virXen_unpausedomain(int handle, int id) 
+{
+    int ret = -1;
+
+    if (hypervisor_version > 1) {
+        xen_op_v2_dom op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V2_OP_UNPAUSEDOMAIN;
+	op.domain = (domid_t) id;
+	ret = xenHypervisorDoV2Dom(handle, &op);
+    } else if (hypervisor_version == 1) {
+        xen_op_v1 op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V1_OP_UNPAUSEDOMAIN;
+	op.u.domain.domain = (domid_t) id;
+	ret = xenHypervisorDoV1Op(handle, &op);
+    } else if (hypervisor_version == 0) {
+        xen_op_v0 op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V0_OP_UNPAUSEDOMAIN;
+	op.u.domain.domain = (domid_t) id;
+	ret = xenHypervisorDoV0Op(handle, &op);
+    }
+    return(ret);
+}
+
+/**
+ * virXen_destroydomain:
+ * @handle: the hypervisor handle
+ * @id: the domain id
+ *
+ * Do a low level hypercall to destroy the domain
+ *
+ * Returns 0 or -1 in case of failure
+ */
+static int
+virXen_destroydomain(int handle, int id) 
+{
+    int ret = -1;
+
+    if (hypervisor_version > 1) {
+        xen_op_v2_dom op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V2_OP_DESTROYDOMAIN;
+	op.domain = (domid_t) id;
+	ret = xenHypervisorDoV2Dom(handle, &op);
+    } else if (hypervisor_version == 1) {
+        xen_op_v1 op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V1_OP_DESTROYDOMAIN;
+	op.u.domain.domain = (domid_t) id;
+	ret = xenHypervisorDoV1Op(handle, &op);
+    } else if (hypervisor_version == 0) {
+        xen_op_v0 op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V0_OP_DESTROYDOMAIN;
+	op.u.domain.domain = (domid_t) id;
+	ret = xenHypervisorDoV0Op(handle, &op);
+    }
+    return(ret);
+}
+
+/**
+ * virXen_setmaxmem:
+ * @handle: the hypervisor handle
+ * @id: the domain id
+ * @memory: the amount of memory in kilobytes
+ *
+ * Do a low level hypercall to change the max memory amount
+ *
+ * Returns 0 or -1 in case of failure
+ */
+static int
+virXen_setmaxmem(int handle, int id, unsigned long memory) 
+{
+    int ret = -1;
+
+    if (hypervisor_version > 1) {
+        xen_op_v2_dom op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V2_OP_SETMAXMEM;
+	op.domain = (domid_t) id;
+	op.u.setmaxmem.maxmem = memory;
+	ret = xenHypervisorDoV2Dom(handle, &op);
+    } else if (hypervisor_version == 1) {
+        xen_op_v1 op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V1_OP_SETMAXMEM;
+	op.u.setmaxmem.domain = (domid_t) id;
+	op.u.setmaxmem.maxmem = memory;
+	ret = xenHypervisorDoV1Op(handle, &op);
+    } else if (hypervisor_version == 0) {
+        xen_op_v1 op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V0_OP_SETMAXMEM;
+	op.u.setmaxmem.domain = (domid_t) id;
+	op.u.setmaxmem.maxmem = memory;
+	ret = xenHypervisorDoV0Op(handle, &op);
+    }
+    return(ret);
+}
+
+/**
+ * virXen_setmaxvcpus:
+ * @handle: the hypervisor handle
+ * @id: the domain id
+ * @vcpus: the numbers of vcpus
+ *
+ * Do a low level hypercall to change the max vcpus amount
+ *
+ * Returns 0 or -1 in case of failure
+ */
+static int
+virXen_setmaxvcpus(int handle, int id, unsigned int vcpus) 
+{
+    int ret = -1;
+
+    if (hypervisor_version > 1) {
+        xen_op_v2_dom op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V2_OP_SETMAXVCPU;
+	op.domain = (domid_t) id;
+	op.u.setmaxvcpu.maxvcpu = vcpus;
+	ret = xenHypervisorDoV2Dom(handle, &op);
+    } else if (hypervisor_version == 1) {
+        xen_op_v1 op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V1_OP_SETMAXVCPU;
+	op.u.setmaxvcpu.domain = (domid_t) id;
+	op.u.setmaxvcpu.maxvcpu = vcpus;
+	ret = xenHypervisorDoV1Op(handle, &op);
+    } else if (hypervisor_version == 0) {
+        xen_op_v1 op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V0_OP_SETMAXVCPU;
+	op.u.setmaxvcpu.domain = (domid_t) id;
+	op.u.setmaxvcpu.maxvcpu = vcpus;
+	ret = xenHypervisorDoV0Op(handle, &op);
+    }
+    return(ret);
+}
+
+/**
+ * virXen_setvcpumap:
+ * @handle: the hypervisor handle
+ * @id: the domain id
+ * @vcpu: the vcpu to map
+ * @cpumap: the bitmap for this vcpu
+ *
+ * Do a low level hypercall to change the pinning for vcpu
+ *
+ * Returns 0 or -1 in case of failure
+ */
+static int
+virXen_setvcpumap(int handle, int id, unsigned int vcpu,
+                  unsigned char * cpumap, int maplen)
+{
+    int ret = -1;
+
+    if (hypervisor_version > 1) {
+        xen_op_v2_dom op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V2_OP_SETVCPUMAP;
+	op.domain = (domid_t) id;
+	op.u.setvcpumap.vcpu = vcpu;
+	op.u.setvcpumap.cpumap.bitmap = cpumap;
+	op.u.setvcpumap.cpumap.nr_cpus = maplen * 8;
+	ret = xenHypervisorDoV2Dom(handle, &op);
+    } else {
+	cpumap_t xen_cpumap; /* limited to 64 CPUs in old hypervisors */
+	uint64_t *pm = &xen_cpumap;
+	int j;
+
+	if ((maplen > (int)sizeof(cpumap_t)) || (sizeof(cpumap_t) & 7))
+	    return (-1);
+
+	memset(pm, 0, sizeof(cpumap_t));
+	for (j = 0; j < maplen; j++)
+	    *(pm + (j / 8)) |= cpumap[j] << (8 * (j & 7));
+
+        if (hypervisor_version == 1) {
+	    xen_op_v1 op;
+
+	    memset(&op, 0, sizeof(op));
+	    op.cmd = XEN_V1_OP_SETVCPUMAP;
+	    op.u.setvcpumap.domain = (domid_t) id;
+	    op.u.setvcpumap.vcpu = vcpu;
+	    op.u.setvcpumap.cpumap = xen_cpumap;
+	    ret = xenHypervisorDoV1Op(handle, &op);
+	} else if (hypervisor_version == 0) {
+	    xen_op_v1 op;
+
+	    memset(&op, 0, sizeof(op));
+	    op.cmd = XEN_V0_OP_SETVCPUMAP;
+	    op.u.setvcpumap.domain = (domid_t) id;
+	    op.u.setvcpumap.vcpu = vcpu;
+	    op.u.setvcpumap.cpumap = xen_cpumap;
+	    ret = xenHypervisorDoV0Op(handle, &op);
+	}
+    }
+    return(ret);
 }
 
 /**
@@ -133,22 +832,28 @@ int xenHypervisorInit(void)
 {
     int fd, ret, cmd;
     hypercall_t hc;
-    old_hypercall_t old_hc;
+    v0_hypercall_t v0_hc;
+    xen_v0_getdomaininfo info;
 
     if (initialized) {
-        if (old_hypervisor == -1)
+        if (hypervisor_version == -1)
 	    return(-1);
 	return(0);
     }
     initialized = 1;
+    in_init = 1;
 
     ret = open(XEN_HYPERVISOR_SOCKET, O_RDWR);
     if (ret < 0) {
-	old_hypervisor = -1;
+	hypervisor_version = -1;
         return (-1);
     }
     fd = ret;
 
+    /*
+     * The size of the hypervisor call block changed July 2006
+     * this detect if we are using the new or old hypercall_t structure
+     */
     hc.op = __HYPERVISOR_xen_version;
     hc.arg[0] = (unsigned long) XENVER_version;
     hc.arg[1] = 0;
@@ -157,33 +862,72 @@ int xenHypervisorInit(void)
     ret = ioctl(fd, cmd, (unsigned long) &hc);
 
     if ((ret != -1) && (ret != 0)) {
-        /* fprintf(stderr, "Using new hypervisor call: %X\n", ret); */
+        fprintf(stderr, "Using new hypervisor call: %X\n", ret);
 	hv_version = ret;
 	xen_ioctl_hypercall_cmd = cmd;
-        old_hypervisor = 0;
-	goto done;
+	goto detect_v2;
     }
     
-    old_hc.op = __HYPERVISOR_xen_version;
-    old_hc.arg[0] = (unsigned long) XENVER_version;
-    old_hc.arg[1] = 0;
-    cmd = _IOC(_IOC_NONE, 'P', 0, sizeof(old_hypercall_t));
-    ret = ioctl(fd, cmd, (unsigned long) &old_hc);
+    /*
+     * check if the old hypercall are actually working
+     */
+    v0_hc.op = __HYPERVISOR_xen_version;
+    v0_hc.arg[0] = (unsigned long) XENVER_version;
+    v0_hc.arg[1] = 0;
+    cmd = _IOC(_IOC_NONE, 'P', 0, sizeof(v0_hypercall_t));
+    ret = ioctl(fd, cmd, (unsigned long) &v0_hc);
     if ((ret != -1) && (ret != 0)) {
-        /* fprintf(stderr, "Using old hypervisor call: %X\n", ret); */
+        fprintf(stderr, "Using old hypervisor call: %X\n", ret);
 	hv_version = ret;
 	xen_ioctl_hypercall_cmd = cmd;
-        old_hypervisor = 1;
+        hypervisor_version = 0;
 	goto done;
     }
 
-    old_hypervisor = -1;
+    /*
+     * we faild to make any hypercall
+     */
+
+    hypervisor_version = -1;
     virXenError(VIR_ERR_XEN_CALL, " ioctl ", IOCTL_PRIVCMD_HYPERCALL);
     close(fd);
+    in_init = 0;
+    return(-1);
+
+detect_v2:
+    /*
+     * The hypercalls were refactored into 3 different section in August 2006
+     * Try to detect if we are running a version post 3.0.2 with the new ones
+     * or the old ones
+     */
+    hypervisor_version = 2;
+    /* TODO: one probably will need to autodetect thse subversions too */
+    sys_interface_version = 2; /* XEN_SYSCTL_INTERFACE_VERSION */
+    dom_interface_version = 3; /* XEN_DOMCTL_INTERFACE_VERSION */
+    if (virXen_getdomaininfolist(fd, 0, 1, &info) == 1) {
+        fprintf(stderr, "Using hypervisor call v2, sys version 2\n");
+	goto done;
+    }
+    hypervisor_version = 1;
+    sys_interface_version = -1;
+    if (virXen_getdomaininfolist(fd, 0, 1, &info) == 1) {
+        fprintf(stderr, "Using hypervisor call v1\n");
+	goto done;
+    }
+
+    /*
+     * we faild to make the getdomaininfolist hypercall
+     */
+
+    hypervisor_version = -1;
+    virXenError(VIR_ERR_XEN_CALL, " ioctl ", IOCTL_PRIVCMD_HYPERCALL);
+    close(fd);
+    in_init = 0;
     return(-1);
 
 done:
     close(fd);
+    in_init = 0;
     return(0);
 
 }
@@ -259,90 +1003,6 @@ xenHypervisorClose(virConnectPtr conn)
     return (0);
 }
 
-/**
- * xenHypervisorDoOldOp:
- * @handle: the handle to the Xen hypervisor
- * @op: pointer to the hyperviros operation structure
- *
- * Do an hypervisor operation though the old interface,
- * this leads to an hypervisor call through ioctl.
- *
- * Returns 0 in case of success and -1 in case of error.
- */
-static int
-xenHypervisorDoOldOp(int handle, dom0_op_t * op)
-{
-    int ret;
-    old_hypercall_t hc;
-
-    memset(&hc, 0, sizeof(hc));
-    op->interface_version = hv_version << 8;
-    hc.op = __HYPERVISOR_dom0_op;
-    hc.arg[0] = (unsigned long) op;
-
-    if (mlock(op, sizeof(dom0_op_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " locking", sizeof(dom0_op_t));
-        return (-1);
-    }
-
-    ret = ioctl(handle, xen_ioctl_hypercall_cmd, (unsigned long) &hc);
-    if (ret < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " ioctl ", xen_ioctl_hypercall_cmd);
-    }
-
-    if (munlock(op, sizeof(dom0_op_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " releasing", sizeof(dom0_op_t));
-        ret = -1;
-    }
-
-    if (ret < 0)
-        return (-1);
-
-    return (0);
-}
-/**
- * xenHypervisorDoOp:
- * @handle: the handle to the Xen hypervisor
- * @op: pointer to the hyperviros operation structure
- *
- * Do an hypervisor operation, this leads to an hypervisor call through ioctl.
- *
- * Returns 0 in case of success and -1 in case of error.
- */
-static int
-xenHypervisorDoOp(int handle, dom0_op_t * op)
-{
-    int ret;
-    hypercall_t hc;
-
-    if (old_hypervisor)
-        return(xenHypervisorDoOldOp(handle, op));
- 
-    memset(&hc, 0, sizeof(hc));
-    op->interface_version = DOM0_INTERFACE_VERSION;
-    hc.op = __HYPERVISOR_dom0_op;
-    hc.arg[0] = (unsigned long) op;
-
-    if (mlock(op, sizeof(dom0_op_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " locking", sizeof(dom0_op_t));
-        return (-1);
-    }
-
-    ret = ioctl(handle, xen_ioctl_hypercall_cmd, (unsigned long) &hc);
-    if (ret < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " ioctl ", xen_ioctl_hypercall_cmd);
-    }
-
-    if (munlock(op, sizeof(dom0_op_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " releasing", sizeof(dom0_op_t));
-        ret = -1;
-    }
-
-    if (ret < 0)
-        return (-1);
-
-    return (0);
-}
 
 #ifndef PROXY
 /**
@@ -395,8 +1055,7 @@ xenHypervisorGetVersion(virConnectPtr conn, unsigned long *hvVer)
 int
 xenHypervisorNumOfDomains(virConnectPtr conn)
 {
-    dom0_op_t op;
-    dom0_getdomaininfo_t *dominfos;
+    xen_v0_getdomaininfo *dominfos;
     int ret, nbids;
     static int last_maxids = 2;
     int maxids = last_maxids;
@@ -405,42 +1064,23 @@ xenHypervisorNumOfDomains(virConnectPtr conn)
         return (-1);
 
 retry:
-    dominfos = malloc(maxids * sizeof(dom0_getdomaininfo_t));
+    dominfos = malloc(maxids * sizeof(xen_v0_getdomaininfo));
     if (dominfos == NULL) {
         virXenError(VIR_ERR_NO_MEMORY, "failed to allocate %d domain info",
 	            maxids);
 	return(-1);
     }
     
-    memset(dominfos, 0, sizeof(dom0_getdomaininfo_t) * maxids);
+    memset(dominfos, 0, sizeof(xen_v0_getdomaininfo) * maxids);
 
-    if (mlock(dominfos, sizeof(dom0_getdomaininfo_t) * maxids) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " locking",
-                    sizeof(dom0_getdomaininfo_t) * maxids);
-	free(dominfos);
-        return (-1);
-    }
-
-    op.cmd = DOM0_GETDOMAININFOLIST;
-    op.u.getdomaininfolist.first_domain = (domid_t) 0;
-    op.u.getdomaininfolist.max_domains = maxids;
-    op.u.getdomaininfolist.buffer = dominfos;
-    op.u.getdomaininfolist.num_domains = maxids;
-
-    ret = xenHypervisorDoOp(conn->handle, &op);
-
-    if (munlock(dominfos, sizeof(dom0_getdomaininfo_t) * maxids) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " release",
-                    sizeof(dom0_getdomaininfo_t) * maxids);
-        ret = -1;
-    }
+    ret = virXen_getdomaininfolist(conn->handle, 0, maxids, dominfos);
 
     free(dominfos);
 
     if (ret < 0)
         return (-1);
 
-    nbids = op.u.getdomaininfolist.num_domains;
+    nbids = ret;
     if (nbids == maxids) {
         last_maxids *= 2;
         maxids *= 2;
@@ -464,51 +1104,31 @@ retry:
 int
 xenHypervisorListDomains(virConnectPtr conn, int *ids, int maxids)
 {
-    dom0_op_t op;
-    dom0_getdomaininfo_t *dominfos;
+    xen_v0_getdomaininfo *dominfos;
     int ret, nbids, i;
 
     if ((conn == NULL) || (conn->handle < 0) ||
         (ids == NULL) || (maxids < 1))
         return (-1);
 
-    dominfos = malloc(maxids * sizeof(dom0_getdomaininfo_t));
+    dominfos = malloc(maxids * sizeof(xen_v0_getdomaininfo));
     if (dominfos == NULL) {
         virXenError(VIR_ERR_NO_MEMORY, "failed to allocate %d domain info",
 	            maxids);
 	return(-1);
     }
     
-    memset(dominfos, 0, sizeof(dom0_getdomaininfo_t) * maxids);
+    memset(dominfos, 0, sizeof(xen_v0_getdomaininfo) * maxids);
     memset(ids, 0, maxids * sizeof(int));
 
-    if (mlock(dominfos, sizeof(dom0_getdomaininfo_t) * maxids) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " locking",
-                    sizeof(dom0_getdomaininfo_t) * maxids);
-	free(dominfos);
-        return (-1);
-    }
-
-    op.cmd = DOM0_GETDOMAININFOLIST;
-    op.u.getdomaininfolist.first_domain = (domid_t) 0;
-    op.u.getdomaininfolist.max_domains = maxids;
-    op.u.getdomaininfolist.buffer = dominfos;
-    op.u.getdomaininfolist.num_domains = maxids;
-
-    ret = xenHypervisorDoOp(conn->handle, &op);
-
-    if (munlock(dominfos, sizeof(dom0_getdomaininfo_t) * maxids) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " release",
-                    sizeof(dom0_getdomaininfo_t) * maxids);
-        ret = -1;
-    }
+    ret = virXen_getdomaininfolist(conn->handle, 0, maxids, dominfos);
 
     if (ret < 0) {
 	free(dominfos);
         return (-1);
     }
 
-    nbids = op.u.getdomaininfolist.num_domains;
+    nbids = ret;
     if ((nbids < 0) || (nbids > maxids)) {
 	free(dominfos);
         return(-1);
@@ -535,37 +1155,18 @@ xenHypervisorListDomains(virConnectPtr conn, int *ids, int maxids)
 unsigned long
 xenHypervisorGetDomMaxMemory(virConnectPtr conn, int id)
 {
-    dom0_op_t op;
-    dom0_getdomaininfo_t dominfo;
+    xen_v0_getdomaininfo dominfo;
     int ret;
 
     if ((conn == NULL) || (conn->handle < 0))
         return (0);
 
-    memset(&dominfo, 0, sizeof(dom0_getdomaininfo_t));
+    memset(&dominfo, 0, sizeof(xen_v0_getdomaininfo));
 
-    if (mlock(&dominfo, sizeof(dom0_getdomaininfo_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " locking",
-                    sizeof(dom0_getdomaininfo_t));
-        return (0);
-    }
-
-    op.cmd = DOM0_GETDOMAININFOLIST;
-    op.u.getdomaininfolist.first_domain = (domid_t) id;
-    op.u.getdomaininfolist.max_domains = 1;
-    op.u.getdomaininfolist.buffer = &dominfo;
-    op.u.getdomaininfolist.num_domains = 1;
     dominfo.domain = id;
+    ret = virXen_getdomaininfolist(conn->handle, id, 1, &dominfo);
 
-    ret = xenHypervisorDoOp(conn->handle, &op);
-
-    if (munlock(&dominfo, sizeof(dom0_getdomaininfo_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " release",
-                    sizeof(dom0_getdomaininfo_t));
-        ret = -1;
-    }
-
-    if (ret < 0)
+    if ((ret < 0) || (dominfo.domain != id))
         return (0);
 
     return((unsigned long) dominfo.max_pages * 4);
@@ -606,38 +1207,18 @@ xenHypervisorGetMaxMemory(virDomainPtr domain)
 int
 xenHypervisorGetDomInfo(virConnectPtr conn, int id, virDomainInfoPtr info)
 {
-    dom0_op_t op;
-    dom0_getdomaininfo_t dominfo;
+    xen_v0_getdomaininfo dominfo;
     int ret;
 
     if ((conn == NULL) || (conn->handle < 0) || (info == NULL))
         return (-1);
 
     memset(info, 0, sizeof(virDomainInfo));
-    memset(&dominfo, 0, sizeof(dom0_getdomaininfo_t));
+    memset(&dominfo, 0, sizeof(xen_v0_getdomaininfo));
 
-    if (mlock(&dominfo, sizeof(dom0_getdomaininfo_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " locking",
-                    sizeof(dom0_getdomaininfo_t));
-        return (-1);
-    }
+    ret = virXen_getdomaininfolist(conn->handle, id, 1, &dominfo);
 
-    op.cmd = DOM0_GETDOMAININFOLIST;
-    op.u.getdomaininfolist.first_domain = (domid_t) id;
-    op.u.getdomaininfolist.max_domains = 1;
-    op.u.getdomaininfolist.buffer = &dominfo;
-    op.u.getdomaininfolist.num_domains = 1;
-    dominfo.domain = id;
-
-    ret = xenHypervisorDoOp(conn->handle, &op);
-
-    if (munlock(&dominfo, sizeof(dom0_getdomaininfo_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " release",
-                    sizeof(dom0_getdomaininfo_t));
-        ret = -1;
-    }
-
-    if (ret < 0)
+    if ((ret < 0) || (dominfo.domain != id))
         return (-1);
 
     switch (dominfo.flags & 0xFF) {
@@ -704,18 +1285,13 @@ xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
 int
 xenHypervisorPauseDomain(virDomainPtr domain)
 {
-    dom0_op_t op;
     int ret;
 
     if ((domain == NULL) || (domain->conn == NULL) ||
         (domain->conn->handle < 0))
         return (-1);
 
-    op.cmd = DOM0_PAUSEDOMAIN;
-    op.u.pausedomain.domain = (domid_t) domain->handle;
-
-    ret = xenHypervisorDoOp(domain->conn->handle, &op);
-
+    ret = virXen_pausedomain(domain->conn->handle, domain->handle);
     if (ret < 0)
         return (-1);
     return (0);
@@ -732,18 +1308,13 @@ xenHypervisorPauseDomain(virDomainPtr domain)
 int
 xenHypervisorResumeDomain(virDomainPtr domain)
 {
-    dom0_op_t op;
     int ret;
 
     if ((domain == NULL) || (domain->conn == NULL) ||
         (domain->conn->handle < 0))
         return (-1);
 
-    op.cmd = DOM0_UNPAUSEDOMAIN;
-    op.u.unpausedomain.domain = (domid_t) domain->handle;
-
-    ret = xenHypervisorDoOp(domain->conn->handle, &op);
-
+    ret = virXen_unpausedomain(domain->conn->handle, domain->handle);
     if (ret < 0)
         return (-1);
     return (0);
@@ -760,18 +1331,13 @@ xenHypervisorResumeDomain(virDomainPtr domain)
 int
 xenHypervisorDestroyDomain(virDomainPtr domain)
 {
-    dom0_op_t op;
     int ret;
 
     if ((domain == NULL) || (domain->conn == NULL) ||
         (domain->conn->handle < 0))
         return (-1);
 
-    op.cmd = DOM0_DESTROYDOMAIN;
-    op.u.destroydomain.domain = (domid_t) domain->handle;
-
-    ret = xenHypervisorDoOp(domain->conn->handle, &op);
-
+    ret = virXen_destroydomain(domain->conn->handle, domain->handle);
     if (ret < 0)
         return (-1);
     return (0);
@@ -789,72 +1355,18 @@ xenHypervisorDestroyDomain(virDomainPtr domain)
 int
 xenHypervisorSetMaxMemory(virDomainPtr domain, unsigned long memory)
 {
-    dom0_op_t op;
     int ret;
 
     if ((domain == NULL) || (domain->conn == NULL) ||
         (domain->conn->handle < 0))
         return (-1);
 
-    op.cmd = DOM0_SETDOMAINMAXMEM;
-    op.u.setdomainmaxmem.domain = (domid_t) domain->handle;
-    op.u.setdomainmaxmem.max_memkb = memory;
-
-    ret = xenHypervisorDoOp(domain->conn->handle, &op);
-
+    ret = virXen_setmaxmem(domain->conn->handle, domain->handle, memory);
     if (ret < 0)
         return (-1);
     return (0);
 }
 #endif /* PROXY */
-
-/**
- * xenHypervisorCheckID:
- * @domain: pointer to the domain block
- * @info: the place where information should be stored
- *
- * Do an hypervisor call to verify the domain ID is valid
- *
- * Returns 0 in case of success, -1 in case of error.
- */
-int
-xenHypervisorCheckID(virConnectPtr conn, int id)
-{
-    dom0_op_t op;
-    dom0_getdomaininfo_t dominfo;
-    int ret;
-
-    if ((conn->handle < 0) || (id < 0))
-        return (-1);
-
-    memset(&dominfo, 0, sizeof(dom0_getdomaininfo_t));
-
-    if (mlock(&dominfo, sizeof(dom0_getdomaininfo_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " locking",
-                    sizeof(dom0_getdomaininfo_t));
-        return (-1);
-    }
-
-    op.cmd = DOM0_GETDOMAININFOLIST;
-    op.u.getdomaininfolist.first_domain = (domid_t) id;
-    op.u.getdomaininfolist.max_domains = 1;
-    op.u.getdomaininfolist.buffer = &dominfo;
-    op.u.getdomaininfolist.num_domains = 1;
-    dominfo.domain = id;
-
-    ret = xenHypervisorDoOp(conn->handle, &op);
-
-    if (munlock(&dominfo, sizeof(dom0_getdomaininfo_t)) < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " release",
-                    sizeof(dom0_getdomaininfo_t));
-        ret = -1;
-    }
-
-    if (ret < 0)
-        return (-1);
-
-    return (0);
-}
 
 #ifndef PROXY
 /**
@@ -870,17 +1382,16 @@ xenHypervisorCheckID(virConnectPtr conn, int id)
 int
 xenHypervisorSetVcpus(virDomainPtr domain, unsigned int nvcpus)
 {
-    dom0_op_t op;
+    int ret;
 
-    if ((domain == NULL) || (domain->conn == NULL) || (domain->conn->handle < 0)
-     || (nvcpus < 1))
+    if ((domain == NULL) || (domain->conn == NULL) ||
+        (domain->conn->handle < 0) || (nvcpus < 1))
         return (-1);
-    op.cmd = DOM0_MAX_VCPUS;
-    op.u.max_vcpus.domain = (domid_t) domain->handle;
-    op.u.max_vcpus.max = nvcpus;
-    if (xenHypervisorDoOp(domain->conn->handle, &op) < 0)
+
+    ret = virXen_setmaxvcpus(domain->conn->handle, domain->handle, nvcpus);
+    if (ret < 0)
         return (-1);
-    return 0;
+    return (0);
 }
 
 /**
@@ -899,23 +1410,15 @@ int
 xenHypervisorPinVcpu(virDomainPtr domain, unsigned int vcpu,
                      unsigned char *cpumap, int maplen)
 {
-    dom0_op_t op;
-    uint64_t *pm = (uint64_t *)&op.u.setvcpuaffinity.cpumap; 
-    int j;
+    int ret;
 
-    if ((domain == NULL) || (domain->conn == NULL) || (domain->conn->handle < 0)
-     || (cpumap == NULL) || (maplen < 1) || (maplen > (int)sizeof(cpumap_t))
-     || (sizeof(cpumap_t) & 7))
+    if ((domain == NULL) || (domain->conn == NULL) ||
+        (domain->conn->handle < 0) || (cpumap == NULL) || (maplen < 1))
+    ret = virXen_setvcpumap(domain->conn->handle, domain->handle, vcpu,
+                            cpumap, maplen);
+    if (ret < 0)
         return (-1);
-    op.cmd = DOM0_SETVCPUAFFINITY;
-    op.u.setvcpuaffinity.domain = (domid_t) domain->handle;
-    op.u.setvcpuaffinity.vcpu = vcpu;
-    memset(pm, 0, sizeof(cpumap_t));
-    for (j = 0; j < maplen; j++)
-        *(pm + (j / 8)) |= cpumap[j] << (8 * (j & 7));
-    if (xenHypervisorDoOp(domain->conn->handle, &op) < 0)
-        return (-1);
-    return 0;
+    return (0);
 }
 #endif
 
@@ -942,6 +1445,7 @@ int
 xenHypervisorGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
 		      unsigned char *cpumaps, int maplen)
 {
+#ifdef TO_DO
     dom0_op_t op;
     uint64_t *pm = (uint64_t *)&op.u.getvcpuinfo.cpumap; 
     virVcpuInfoPtr ipt;
@@ -990,4 +1494,5 @@ xenHypervisorGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
 	}
     }
     return nbinfo;
+#endif
 }

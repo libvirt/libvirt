@@ -256,6 +256,7 @@ virDomainGetVMInfo(virDomainPtr domain, const char *vm, const char *name)
     return (ret);
 }
 
+#if 0
 /**
  * virConnectCheckStoreID:
  * @conn: pointer to the hypervisor connection
@@ -278,6 +279,7 @@ virConnectCheckStoreID(virConnectPtr conn, int id)
     }
     return (0);
 }
+#endif
 #endif /* ! PROXY */
 
 /************************************************************************
@@ -521,8 +523,10 @@ xenStoreListDomains(virConnectPtr conn, int *ids, int maxids)
 	    ret = -1;
 	    break;
 	}
+#if 0
 	if (virConnectCheckStoreID(conn, (int) id) < 0)
 	    continue;
+#endif
 	ids[ret++] = (int) id;
     }
     return(ret);
@@ -564,8 +568,10 @@ xenStoreDomainLookupByName(virConnectPtr conn, const char *name)
 	if ((endptr == idlist[i]) || (*endptr != 0)) {
 	    goto done;
 	}
+#if 0
 	if (virConnectCheckStoreID(conn, (int) id) < 0)
 	    continue;
+#endif
 	snprintf(prop, 199, "/local/domain/%s/name", idlist[i]);
 	prop[199] = 0;
 	tmp = xs_read(conn->xshandle, 0, prop, &len);
