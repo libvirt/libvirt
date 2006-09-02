@@ -862,7 +862,9 @@ int xenHypervisorInit(void)
     ret = ioctl(fd, cmd, (unsigned long) &hc);
 
     if ((ret != -1) && (ret != 0)) {
+#ifdef DEBUG
         fprintf(stderr, "Using new hypervisor call: %X\n", ret);
+#endif
 	hv_version = ret;
 	xen_ioctl_hypercall_cmd = cmd;
 	goto detect_v2;
@@ -877,7 +879,9 @@ int xenHypervisorInit(void)
     cmd = _IOC(_IOC_NONE, 'P', 0, sizeof(v0_hypercall_t));
     ret = ioctl(fd, cmd, (unsigned long) &v0_hc);
     if ((ret != -1) && (ret != 0)) {
+#ifdef DEBUG
         fprintf(stderr, "Using old hypervisor call: %X\n", ret);
+#endif
 	hv_version = ret;
 	xen_ioctl_hypercall_cmd = cmd;
         hypervisor_version = 0;
@@ -905,13 +909,17 @@ detect_v2:
     sys_interface_version = 2; /* XEN_SYSCTL_INTERFACE_VERSION */
     dom_interface_version = 3; /* XEN_DOMCTL_INTERFACE_VERSION */
     if (virXen_getdomaininfolist(fd, 0, 1, &info) == 1) {
+#ifdef DEBUG
         fprintf(stderr, "Using hypervisor call v2, sys version 2\n");
+#endif
 	goto done;
     }
     hypervisor_version = 1;
     sys_interface_version = -1;
     if (virXen_getdomaininfolist(fd, 0, 1, &info) == 1) {
+#ifdef DEBUG
         fprintf(stderr, "Using hypervisor call v1\n");
+#endif
 	goto done;
     }
 
@@ -929,7 +937,6 @@ done:
     close(fd);
     in_init = 0;
     return(0);
-
 }
 
 #ifndef PROXY
