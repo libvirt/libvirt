@@ -1,3 +1,13 @@
+Sun Sep  3 12:34:23 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/virsh.c: use the return value of virConnectListDomains when
+	iterating over list of ids/names, because it is not neccessarily
+	the same as the value returned by virConnectNumOfDomains. Use qsort
+	to sort active domains by Id, and inactive domains by name, since 
+	there is no guarenteed sort ordering when listing domains. For inactive
+	domains display a '-' instead of '-1' to make it clear they have no
+	sensible ID number.
+	
 Sat Sep  2 22:28:18 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.c: converting to handle the new incompatible 

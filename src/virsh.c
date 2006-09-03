@@ -321,7 +321,22 @@ static vshCmdOptDef opts_list[] = {
 };
 
 
+static int domidsorter(const void *a, const void *b) {
+  const int *ia = (const int *)a;
+  const int *ib = (const int *)b;
 
+  if (*ia > *ib)
+    return 1;
+  else if (*ia < *ib)
+    return -1;
+  return 0;
+}
+static int domnamesorter(const void *a, const void *b) {
+  const char **sa = (const char**)a;
+  const char **sb = (const char**)b;
+
+  return strcasecmp(*sa, *sb);
+}
 static int
 cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 {
@@ -345,11 +360,13 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
       if (maxid) {
         ids = vshMalloc(ctl, sizeof(int) * maxid);
 	
-        if (virConnectListDomains(ctl->conn, &ids[0], maxid) < 0) {
+        if ((maxid = virConnectListDomains(ctl->conn, &ids[0], maxid)) < 0) {
 	  vshError(ctl, FALSE, "failed to list active domains.");
 	  free(ids);
 	  return FALSE;
         }
+	
+	qsort(&ids[0], maxid, sizeof(int), domidsorter);
       }
     }
     if (inactive) {
@@ -361,15 +378,17 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         return FALSE;
       }
       if (maxname) {
-        names = vshMalloc(ctl, sizeof(int) * maxname);
+        names = vshMalloc(ctl, sizeof(char *) * maxname);
 	
-        if (virConnectListDefinedDomains(ctl->conn, names, maxname) < 0) {
+        if ((maxname = virConnectListDefinedDomains(ctl->conn, names, maxname)) < 0) {
 	  vshError(ctl, FALSE, "failed to list inactive domains.");
 	  if (ids)
 	    free(ids);
 	  free(names);
 	  return FALSE;
         }
+
+	qsort(&names[0], maxname, sizeof(char*), domnamesorter);
       }
     }
     vshPrintExtra(ctl, "%3s %-20s %s\n", "Id", "Name", "State");
@@ -394,6 +413,7 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
     }
     for (i = 0; i < maxname; i++) {
         int ret;
+        unsigned int id;
         virDomainInfo info;
         virDomainPtr dom = virDomainLookupByName(ctl->conn, names[i]);
 
@@ -401,12 +421,21 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         if (!dom)
             continue;
         ret = virDomainGetInfo(dom, &info);
+	id = virDomainGetID(dom);
 
-        vshPrint(ctl, "%3d %-20s %s\n",
-                 virDomainGetID(dom),
-		 names[i],
-                 ret <
-                 0 ? "no state" : vshDomainStateToString(info.state));
+	if (id == ((unsigned int)-1)) {
+	  vshPrint(ctl, "%3s %-20s %s\n",
+		   "-",
+		   names[i],
+		   ret <
+		   0 ? "no state" : vshDomainStateToString(info.state));
+	} else {
+	  vshPrint(ctl, "%3d %-20s %s\n",
+		   id,
+		   names[i],
+		   ret <
+		   0 ? "no state" : vshDomainStateToString(info.state));
+	}
         virDomainFree(dom);
     }
     if (ids)
@@ -950,6 +979,7 @@ cmdDominfo(vshControl * ctl, vshCmd * cmd)
     virDomainInfo info;
     virDomainPtr dom;
     int ret = TRUE;
+    unsigned int id;
     char *str, uuid[37];
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
@@ -958,7 +988,11 @@ cmdDominfo(vshControl * ctl, vshCmd * cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
         return FALSE;
 
-    vshPrint(ctl, "%-15s %d\n", "Id:", virDomainGetID(dom));
+    id = virDomainGetID(dom);
+    if (id == ((unsigned int)-1))
+      vshPrint(ctl, "%-15s %s\n", "Id:", "-");
+    else
+      vshPrint(ctl, "%-15s %d\n", "Id:", id);
     vshPrint(ctl, "%-15s %s\n", "Name:", virDomainGetName(dom));
     if (virDomainGetUUIDString(dom, &uuid[0])==0)
         vshPrint(ctl, "%-15s %s\n", "UUID:", uuid);
@@ -1415,6 +1449,7 @@ static int
 cmdDomid(vshControl * ctl, vshCmd * cmd)
 {
     virDomainPtr dom;
+    unsigned int id;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -1422,7 +1457,11 @@ cmdDomid(vshControl * ctl, vshCmd * cmd)
                                     VSH_DOMBYNAME|VSH_DOMBYUUID)))
         return FALSE;
     
-    vshPrint(ctl, "%d\n", virDomainGetID(dom));
+    id = virDomainGetID(dom);
+    if (id == ((unsigned int)-1))
+      vshPrint(ctl, "%s\n", "-");
+    else
+      vshPrint(ctl, "%d\n", id);
     virDomainFree(dom);
     return TRUE;
 }
