@@ -6,3 +6,4 @@ xmlrpctest
 sexpr2xmltest
 xml2sexprtest
 virshtest
+conftest
