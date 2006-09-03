@@ -443,6 +443,9 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
 	    }
 	    NEXT;
 	    SKIP_BLANKS;
+	    if (CUR == ']') {
+	        break;
+	    }
 	    tmp = virConfParseValue(ctxt);
 	    if (tmp == NULL) {
 	        virConfFreeList(lst);
@@ -508,7 +511,7 @@ virConfParseName(virConfParserCtxtPtr ctxt)
         virConfError(NULL, VIR_ERR_CONF_SYNTAX, "expecting a name", ctxt->line);
 	return(NULL);
     }
-    while ((ctxt->cur < ctxt->end) && ((IS_CHAR(CUR)) || (IS_DIGIT(CUR))))
+    while ((ctxt->cur < ctxt->end) && ((IS_CHAR(CUR)) || (IS_DIGIT(CUR)) || (CUR == '_')))
         NEXT;
     ret = strndup(base, ctxt->cur - base);
     if (ret == NULL) {
