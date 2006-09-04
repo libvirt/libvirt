@@ -1,3 +1,9 @@
+Mon Sep  4 14:13:24 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/xen_intern$al.h: Added missing return(-1) statements
+	in xenHypervisorGetVcpus and xenHypervisorPinVcpu methods.
+	#ifndef out the pause/resume/etc methods from proxy code
+	
 Sun Sep  3 12:50:12 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/conf.c: Allow '_' in variable names, and don't fail if there

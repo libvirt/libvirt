@@ -448,6 +448,7 @@ xenHypervisorDoV2Sys(int handle, xen_op_v2_sys* op)
     return (0);
 }
 
+#ifndef PROXY
 /**
  * xenHypervisorDoV2Dom:
  * @handle: the handle to the Xen hypervisor
@@ -489,6 +490,7 @@ xenHypervisorDoV2Dom(int handle, xen_op_v2_dom* op)
 
     return (0);
 }
+#endif /* PROXY */
 
 /**
  * virXen_getdomaininfolist:
@@ -557,6 +559,7 @@ virXen_getdomaininfolist(int handle, int first_domain, int maxids,
     return(ret);
 }
 
+#ifndef PROXY
 /**
  * virXen_pausedomain:
  * @handle: the hypervisor handle
@@ -821,6 +824,7 @@ virXen_setvcpumap(int handle, int id, unsigned int vcpu,
     }
     return(ret);
 }
+#endif /* !PROXY*/
 
 /**
  * xenHypervisorInit:
@@ -1421,6 +1425,8 @@ xenHypervisorPinVcpu(virDomainPtr domain, unsigned int vcpu,
 
     if ((domain == NULL) || (domain->conn == NULL) ||
         (domain->conn->handle < 0) || (cpumap == NULL) || (maplen < 1))
+        return (-1);
+
     ret = virXen_setvcpumap(domain->conn->handle, domain->handle, vcpu,
                             cpumap, maplen);
     if (ret < 0)
@@ -1502,4 +1508,5 @@ xenHypervisorGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
     }
     return nbinfo;
 #endif
+    return -1;
 }
