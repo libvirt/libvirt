@@ -199,6 +199,43 @@ struct xen_v2_setvcpumap {
 typedef struct xen_v2_setvcpumap xen_v2_setvcpumap;
 
 /*
+ * The informations for an vcpuinfo system hypercall
+ */
+#define XEN_V0_OP_GETVCPUINFO   43
+#define XEN_V1_OP_GETVCPUINFO	43
+#define XEN_V2_OP_GETVCPUINFO   14
+
+struct xen_v0_vcpuinfo {
+    domid_t	domain;		/* owner's domain */
+    uint32_t	vcpu;		/* the vcpu number */
+    uint8_t	online;		/* seen as on line */
+    uint8_t	blocked;	/* blocked on event */
+    uint8_t	running;	/* scheduled on CPU */
+    uint64_t    cpu_time;	/* nanosecond of CPU used */
+    uint32_t	cpu;		/* current mapping */
+    cpumap_t	cpumap;		/* deprecated in V2 */
+};
+typedef struct xen_v0_vcpuinfo xen_v0_vcpuinfo;
+typedef struct xen_v0_vcpuinfo xen_v1_vcpuinfo;
+
+struct xen_v2_vcpuinfo {
+    domid_t	domain;		/* owner's domain */
+    uint32_t	vcpu;		/* the vcpu number */
+    uint8_t	online;		/* seen as on line */
+    uint8_t	blocked;	/* blocked on event */
+    uint8_t	running;	/* scheduled on CPU */
+    uint64_t    cpu_time;	/* nanosecond of CPU used */
+    uint32_t	cpu;		/* current mapping */
+};
+typedef struct xen_v2_vcpuinfo xen_v2_vcpuinfo;
+
+/*
+ * from V2 the pinning of a vcpu is read with a separate call
+ */
+#define XEN_V2_OP_GETVCPUMAP	25
+typedef struct xen_v2_setvcpumap xen_v2_getvcpumap;
+
+/*
  * The hypercall operation structures also have changed on
  * changeset 86d26e6ec89b
  */
@@ -212,6 +249,7 @@ struct xen_op_v0 {
 	xen_v0_setmaxmem         setmaxmem;
 	xen_v0_setmaxvcpu        setmaxvcpu;
 	xen_v0_setvcpumap        setvcpumap;
+	xen_v0_vcpuinfo          getvcpuinfo;
 	uint8_t padding[128];
     } u;
 };
@@ -238,6 +276,8 @@ struct xen_op_v2_dom {
 	xen_v2_setmaxmem         setmaxmem;
 	xen_v2_setmaxvcpu        setmaxvcpu;
 	xen_v2_setvcpumap        setvcpumap;
+	xen_v2_vcpuinfo          getvcpuinfo;
+	xen_v2_getvcpumap        getvcpumap;
 	uint8_t padding[128];
     } u;
 };
@@ -709,7 +749,7 @@ virXen_setmaxmem(int handle, int id, unsigned long memory)
 	op.u.setmaxmem.maxmem = memory;
 	ret = xenHypervisorDoV1Op(handle, &op);
     } else if (hypervisor_version == 0) {
-        xen_op_v1 op;
+        xen_op_v0 op;
 
         memset(&op, 0, sizeof(op));
 	op.cmd = XEN_V0_OP_SETMAXMEM;
@@ -752,7 +792,7 @@ virXen_setmaxvcpus(int handle, int id, unsigned int vcpus)
 	op.u.setmaxvcpu.maxvcpu = vcpus;
 	ret = xenHypervisorDoV1Op(handle, &op);
     } else if (hypervisor_version == 0) {
-        xen_op_v1 op;
+        xen_op_v0 op;
 
         memset(&op, 0, sizeof(op));
 	op.cmd = XEN_V0_OP_SETMAXVCPU;
@@ -769,6 +809,7 @@ virXen_setmaxvcpus(int handle, int id, unsigned int vcpus)
  * @id: the domain id
  * @vcpu: the vcpu to map
  * @cpumap: the bitmap for this vcpu
+ * @maplen: the size of the bitmap in bytes
  *
  * Do a low level hypercall to change the pinning for vcpu
  *
@@ -783,6 +824,10 @@ virXen_setvcpumap(int handle, int id, unsigned int vcpu,
     if (hypervisor_version > 1) {
         xen_op_v2_dom op;
 
+	if (mlock(cpumap, maplen) < 0) {
+	    virXenError(VIR_ERR_XEN_CALL, " locking", maplen);
+	    return (-1);
+	}
         memset(&op, 0, sizeof(op));
 	op.cmd = XEN_V2_OP_SETVCPUMAP;
 	op.domain = (domid_t) id;
@@ -790,6 +835,10 @@ virXen_setvcpumap(int handle, int id, unsigned int vcpu,
 	op.u.setvcpumap.cpumap.bitmap = cpumap;
 	op.u.setvcpumap.cpumap.nr_cpus = maplen * 8;
 	ret = xenHypervisorDoV2Dom(handle, &op);
+	if (munlock(cpumap, maplen) < 0) {
+	    virXenError(VIR_ERR_XEN_CALL, " release", maplen);
+	    ret = -1;
+	}
     } else {
 	cpumap_t xen_cpumap; /* limited to 64 CPUs in old hypervisors */
 	uint64_t *pm = &xen_cpumap;
@@ -812,7 +861,7 @@ virXen_setvcpumap(int handle, int id, unsigned int vcpu,
 	    op.u.setvcpumap.cpumap = xen_cpumap;
 	    ret = xenHypervisorDoV1Op(handle, &op);
 	} else if (hypervisor_version == 0) {
-	    xen_op_v1 op;
+	    xen_op_v0 op;
 
 	    memset(&op, 0, sizeof(op));
 	    op.cmd = XEN_V0_OP_SETVCPUMAP;
@@ -820,6 +869,118 @@ virXen_setvcpumap(int handle, int id, unsigned int vcpu,
 	    op.u.setvcpumap.vcpu = vcpu;
 	    op.u.setvcpumap.cpumap = xen_cpumap;
 	    ret = xenHypervisorDoV0Op(handle, &op);
+	}
+    }
+    return(ret);
+}
+/**
+ * virXen_getvcpusinfo:
+ * @handle: the hypervisor handle
+ * @id: the domain id
+ * @vcpu: the vcpu to map
+ * @cpumap: the bitmap for this vcpu
+ * @maplen: the size of the bitmap in bytes
+ *
+ * Do a low level hypercall to change the pinning for vcpu
+ *
+ * Returns 0 or -1 in case of failure
+ */
+static int
+virXen_getvcpusinfo(int handle, int id, unsigned int vcpu, virVcpuInfoPtr ipt,
+		    unsigned char *cpumap, int maplen)
+{
+    int ret = -1;
+
+    if (hypervisor_version > 1) {
+        xen_op_v2_dom op;
+
+        memset(&op, 0, sizeof(op));
+	op.cmd = XEN_V2_OP_GETVCPUINFO;
+	op.domain = (domid_t) id;
+	op.u.setvcpumap.vcpu = vcpu;
+	ret = xenHypervisorDoV2Dom(handle, &op);
+	if (ret < 0)
+	    return(-1);
+	ipt->number = id;
+	if (op.u.getvcpuinfo.online) {
+	    if (op.u.getvcpuinfo.running) ipt->state = VIR_VCPU_RUNNING;
+	    if (op.u.getvcpuinfo.blocked) ipt->state = VIR_VCPU_BLOCKED;
+	}
+	else ipt->state = VIR_VCPU_OFFLINE;
+	ipt->cpuTime = op.u.getvcpuinfo.cpu_time;
+	ipt->cpu = op.u.getvcpuinfo.online ? (int)op.u.getvcpuinfo.cpu : -1;
+	if ((cpumap != NULL) && (maplen > 0)) {
+	    if (mlock(cpumap, maplen) < 0) {
+		virXenError(VIR_ERR_XEN_CALL, " locking", maplen);
+		return (-1);
+	    }
+	    memset(&op, 0, sizeof(op));
+	    op.cmd = XEN_V2_OP_GETVCPUMAP;
+	    op.domain = (domid_t) id;
+	    op.u.setvcpumap.vcpu = vcpu;
+	    op.u.setvcpumap.cpumap.bitmap = cpumap;
+	    op.u.setvcpumap.cpumap.nr_cpus = maplen * 8;
+	    ret = xenHypervisorDoV2Dom(handle, &op);
+	    if (munlock(cpumap, maplen) < 0) {
+		virXenError(VIR_ERR_XEN_CALL, " release", maplen);
+		ret = -1;
+	    }
+	}
+    } else {
+	int mapl = maplen;
+	int cpu;
+	
+	if (maplen > (int)sizeof(cpumap_t))
+	    mapl = (int)sizeof(cpumap_t);
+
+        if (hypervisor_version == 1) {
+	    xen_op_v1 op;
+
+	    memset(&op, 0, sizeof(op));
+	    op.cmd = XEN_V1_OP_GETVCPUINFO;
+	    op.u.getvcpuinfo.domain = (domid_t) id;
+	    op.u.getvcpuinfo.vcpu = vcpu;
+	    ret = xenHypervisorDoV1Op(handle, &op);
+	    if (ret < 0)
+	        return(-1);
+	    ipt->number = id;
+	    if (op.u.getvcpuinfo.online) {
+		if (op.u.getvcpuinfo.running) ipt->state = VIR_VCPU_RUNNING;
+		if (op.u.getvcpuinfo.blocked) ipt->state = VIR_VCPU_BLOCKED;
+	    }
+	    else ipt->state = VIR_VCPU_OFFLINE;
+	    ipt->cpuTime = op.u.getvcpuinfo.cpu_time;
+	    ipt->cpu = op.u.getvcpuinfo.online ? (int)op.u.getvcpuinfo.cpu : -1;
+	    if ((cpumap != NULL) && (maplen > 0)) {
+		for (cpu = 0; cpu < (mapl * 8); cpu++) {
+		    if (op.u.getvcpuinfo.cpumap & ((uint64_t)1<<cpu))
+			VIR_USE_CPU(cpumap, cpu);
+		}
+	    }
+	} else if (hypervisor_version == 0) {
+	    xen_op_v1 op;
+
+	    memset(&op, 0, sizeof(op));
+	    op.cmd = XEN_V0_OP_GETVCPUINFO;
+	    op.u.getvcpuinfo.domain = (domid_t) id;
+	    op.u.getvcpuinfo.vcpu = vcpu;
+	    ret = xenHypervisorDoV0Op(handle, &op);
+	    if (ret < 0)
+	        return(-1);
+	    ipt->number = id;
+	    if (op.u.getvcpuinfo.online) {
+		if (op.u.getvcpuinfo.running) ipt->state = VIR_VCPU_RUNNING;
+		if (op.u.getvcpuinfo.blocked) ipt->state = VIR_VCPU_BLOCKED;
+	    }
+	    else ipt->state = VIR_VCPU_OFFLINE;
+	    ipt->cpuTime = op.u.getvcpuinfo.cpu_time;
+	    ipt->cpu = op.u.getvcpuinfo.online ? (int)op.u.getvcpuinfo.cpu : -1;
+	    if ((cpumap != NULL) && (maplen > 0)) {
+		for (cpu = 0; cpu < (mapl * 8); cpu++) {
+		    if (op.u.getvcpuinfo.cpumap & ((uint64_t)1<<cpu))
+			VIR_USE_CPU(cpumap, cpu);
+		}
+	    }
 	}
     }
     return(ret);
@@ -1458,55 +1619,46 @@ int
 xenHypervisorGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
 		      unsigned char *cpumaps, int maplen)
 {
-#ifdef TO_DO
-    dom0_op_t op;
-    uint64_t *pm = (uint64_t *)&op.u.getvcpuinfo.cpumap; 
+    xen_v0_getdomaininfo dominfo;
+    int ret;
+
     virVcpuInfoPtr ipt;
-    int nbinfo, mapl, i;
-    unsigned char *cpumap;
-    int vcpu, cpu;
+    int nbinfo, i;
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->conn->handle < 0)
      || (info == NULL) || (maxinfo < 1)
      || (sizeof(cpumap_t) & 7))
         return (-1);
-    if (cpumaps != NULL && maplen < 1)
+    if ((cpumaps != NULL) && (maplen < 1))
 	return -1;
 
     /* first get the number of virtual CPUs in this domain */
-    op.cmd = DOM0_GETDOMAININFO;
-    op.u.getdomaininfo.domain = (domid_t) domain->handle;
-    if (xenHypervisorDoOp(domain->conn->handle, &op) < 0)
+    memset(&dominfo, 0, sizeof(xen_v0_getdomaininfo));
+    ret = virXen_getdomaininfolist(domain->conn->handle, domain->handle,
+                                   1, &dominfo);
+
+    if ((ret < 0) || (dominfo.domain != domain->handle))
         return (-1);
-    nbinfo = (int)op.u.getdomaininfo.max_vcpu_id + 1;
+    nbinfo = dominfo.max_vcpu_id + 1;
     if (nbinfo > maxinfo) nbinfo = maxinfo;
 
     if (cpumaps != NULL)
 	memset(cpumaps, 0, maxinfo * maplen);
 
-    op.cmd = DOM0_GETVCPUINFO;
-    for (i=0, ipt=info; i < nbinfo; i++, ipt++) {
-        vcpu = op.u.getvcpuinfo.vcpu = i;
-        if (xenHypervisorDoOp(domain->conn->handle, &op) < 0)
-            return (-1);
-        ipt->number = i;
-        if (op.u.getvcpuinfo.online) {
-            if (op.u.getvcpuinfo.running) ipt->state = VIR_VCPU_RUNNING;
-            if (op.u.getvcpuinfo.blocked) ipt->state = VIR_VCPU_BLOCKED;
-        }
-        else ipt->state = VIR_VCPU_OFFLINE;
-        ipt->cpuTime = op.u.getvcpuinfo.cpu_time;
-        ipt->cpu = op.u.getvcpuinfo.online ? (int)op.u.getvcpuinfo.cpu : -1;
-	if (cpumaps != NULL && vcpu >= 0 && vcpu < maxinfo) {
-	    cpumap = (unsigned char *)VIR_GET_CPUMAP(cpumaps, maplen, vcpu);
-	    mapl = (maplen > (int)sizeof(cpumap_t)) ? (int)sizeof(cpumap_t) : maplen;
-            for (cpu = 0; cpu < (mapl * CHAR_BIT); cpu++) {
-		if (*pm & ((uint64_t)1<<cpu))
-		    VIR_USE_CPU(cpumap, cpu);
-	    }
+    for (i = 0, ipt = info; i < nbinfo; i++, ipt++) {
+        if ((cpumaps != NULL) && (i < maxinfo)) {
+	    ret = virXen_getvcpusinfo(domain->conn->handle, domain->handle, i,
+	                              ipt,
+		     (unsigned char *)VIR_GET_CPUMAP(cpumaps, maplen, i),
+		                      maplen);
+	    if (ret < 0)
+	        return(-1);
+	} else {
+	    ret = virXen_getvcpusinfo(domain->conn->handle, domain->handle, i,
+	                              ipt, NULL, 0);
+	    if (ret < 0)
+	        return(-1);
 	}
     }
     return nbinfo;
-#endif
-    return -1;
 }

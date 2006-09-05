@@ -1,6 +1,11 @@
+Tue Sep  5 13:24:30 MYT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c: finished to convert to the new hypervisor
+	  calls the xenHypervisorGetVcpus entry point, though it is untested
+
 Mon Sep  4 14:13:24 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
-	* src/xen_intern$al.h: Added missing return(-1) statements
+	* src/xen_internal.h: Added missing return(-1) statements
 	in xenHypervisorGetVcpus and xenHypervisorPinVcpu methods.
 	#ifndef out the pause/resume/etc methods from proxy code
 	
