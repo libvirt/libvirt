@@ -576,7 +576,7 @@ retry2:
                 req->len = sizeof(virProxyPacket);
 	    } else {
                 int xmllen = strlen(xml);
-                if (xmllen > sizeof(request.extra.str)) {
+                if (xmllen > (int) sizeof(request.extra.str)) {
                     req->data.arg = -2;
                     req->len = sizeof(virProxyPacket);
                 } else {

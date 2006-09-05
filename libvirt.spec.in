@@ -107,6 +107,24 @@ rm -fr %{buildroot}
 %doc docs/examples/python
 
 %changelog
+* Tue Sep  5 2006 Daniel Veillard <veillard@redhat.com> 0.1.5-1
+- new release
+- bug fixes
+- support for new hypervisor calls
+- early code for config files and defined domains
+
+* Mon Sep  4 2006 Daniel Berrange <berrange@redhat.com> - 0.1.4-5
+- add patch to address dom0_ops API breakage in Xen 3.0.3 tree
+
+* Mon Aug 28 2006 Jeremy Katz <katzj@redhat.com> - 0.1.4-4
+- add patch to support paravirt framebuffer in Xen 
+
+* Mon Aug 21 2006 Daniel Veillard <veillard@redhat.com> 0.1.4-3
+- another patch to fix network handling in non-HVM guests
+
+* Thu Aug 17 2006 Daniel Veillard <veillard@redhat.com> 0.1.4-2
+- patch to fix virParseUUID()
+
 * Wed Aug 16 2006 Daniel Veillard <veillard@redhat.com> 0.1.4-1
 - vCPUs and affinity support
 - more complete XML, console and boot options

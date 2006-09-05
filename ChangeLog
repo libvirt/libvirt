@@ -1,3 +1,9 @@
+Tue Sep  5 13:50:05 MYT 2006 Daniel Veillard <veillard@redhat.com>
+
+	* NEWS configure.in docs//* include/libvirt/libvirt.h libvirt.specx.*:
+	  preparing release 0.1.5
+	* proxy/libvirt_proxy.c src/xen_internal.c: tiny fixes
+
 Tue Sep  5 13:24:30 MYT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.c: finished to convert to the new hypervisor

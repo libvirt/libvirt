@@ -1619,6 +1619,7 @@ int
 xenHypervisorGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
 		      unsigned char *cpumaps, int maplen)
 {
+#ifndef PROXY
     xen_v0_getdomaininfo dominfo;
     int ret;
 
@@ -1661,4 +1662,7 @@ xenHypervisorGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
 	}
     }
     return nbinfo;
+#else
+    return(-1);
+#endif
 }

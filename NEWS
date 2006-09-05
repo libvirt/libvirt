@@ -5,6 +5,21 @@
        http://libvirt.org/news.html
 
 Releases
+0.1.5: Sep 5 2006:
+   - Support for new hypercalls change in Xen changeset 86d26e6ec89b
+   - bug fixes: virParseUUID() was wrong, netwoking for paravirt guestsi
+      (Daniel Berrange), virsh on non-existent domains (Daniel Berrange),
+      string cast bug when handling error in python (Pete Vetere), HTTP
+      500 xend error code handling (Pete Vetere and Daniel Berrange)
+   - improvements: test suite for SEXPR <-> XML format conversions (Daniel
+      Berrange), virsh output regression suite (Daniel Berrange), new environ
+      variable VIRSH_DEFAULT_CONNECT_URI for the default URI when connecting
+      (Daniel Berrange), graphical console support for paravirt guests
+      (Jeremy Katz), parsing of simple Xen config files (with Daniel Berrange),
+      early work on defined (not running) domains (Daniel Berrange),
+      virsh output improvement (Daniel Berrange
+
+
 0.1.4: Aug 16 2006:
    - bug fixes: spec file fix (Mark McLoughlin), error report problem (with
     Hugh Brock), long integer in Python bindings (with Daniel Berrange), XML
