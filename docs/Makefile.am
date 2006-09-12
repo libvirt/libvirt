@@ -9,7 +9,8 @@ APIPAGES=APIconstructors.html APIfiles.html APIfunctions.html \
     APIsymbols.html APIchunk0.html
 EXTRA_DIST=							\
 	   libvirt-api.xml libvirt-refs.xml apibuild.py		\
-	   *.xsl *.html *.gif html/*.html html/*.png
+	   *.xsl *.html *.gif html/*.html html/*.png \
+	   test*.xml
 
 
 man_MANS=

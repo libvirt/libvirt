@@ -1,2 +1,2 @@
 
-EXTRA_DIST = $(wildcard *.in) $(wildcard *.out)
+EXTRA_DIST = $(wildcard *.conf) $(wildcard *.out)
