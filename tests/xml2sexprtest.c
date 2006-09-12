@@ -68,6 +68,13 @@ static int testCompareFVversion2(void *data ATTRIBUTE_UNUSED) {
 			  2);
 }
 
+static int testCompareFVversion2VNC(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("xml2sexprdata/xml2sexpr-fv-vncunused.xml",
+                          "xml2sexprdata/xml2sexpr-fv-vncunused.sexpr",
+                          "fvtest",
+                          2);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -94,6 +101,10 @@ main(int argc, char **argv)
 
     if (virtTestRun("XML-2-SEXPR FV config (format 2)", 
 		    1, testCompareFVversion2, NULL) != 0)
+        ret = -1;
+
+    if (virtTestRun("XML-2-SEXPR FV config (format 2, VNC unused)",
+                    1, testCompareFVversion2VNC, NULL) != 0)
         ret = -1;
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);

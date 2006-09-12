@@ -574,6 +574,7 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
  * virtDomainParseXMLGraphicsDesc:
  * @node: node containing graphics description
  * @buf: a buffer for the result S-Expr
+ * @xendConfigVersion: xend configuration file format
  *
  * Parse the graphics part of the XML description and add it to the S-Expr 
  * in buf.  This is a temporary interface as the S-Expr interface will be 
@@ -582,7 +583,7 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
  *
  * Returns 0 in case of success, -1 in case of error
  */
-static int virDomainParseXMLGraphicsDesc(xmlNodePtr node, virBufferPtr buf)
+static int virDomainParseXMLGraphicsDesc(xmlNodePtr node, virBufferPtr buf, int xendConfigVersion)
 {
     xmlChar *graphics_type = NULL;
 
@@ -596,8 +597,22 @@ static int virDomainParseXMLGraphicsDesc(xmlNodePtr node, virBufferPtr buf)
             //virBufferAdd(buf, "(display localhost:10.0)", 24);
             //virBufferAdd(buf, "(xauthority /root/.Xauthority)", 30);
         }
-        else if (xmlStrEqual(graphics_type, BAD_CAST "vnc"))
+        else if (xmlStrEqual(graphics_type, BAD_CAST "vnc")) {
+            xmlChar *vncport = NULL;
+            long port;
+
             virBufferAdd(buf, "(vnc 1)", 7);
+            if (xendConfigVersion >= 2) {
+                vncport = xmlGetProp(node, BAD_CAST "port");
+                if (vncport != NULL) {
+                    port = strtol((const char *)vncport, NULL, 10);
+                    if (port == -1)
+                        virBufferAdd(buf, "(vncunused 1)", 13);
+                    else if (port > 5900)
+                        virBufferVSprintf(buf, "(vncdisplay %d)", port - 5900);
+                }
+            }
+        }
         xmlFree(graphics_type);
     }
     return 0;
@@ -771,7 +786,7 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
     obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics[1]", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr > 0)) {
-        res = virDomainParseXMLGraphicsDesc(obj->nodesetval->nodeTab[0], buf);
+        res = virDomainParseXMLGraphicsDesc(obj->nodesetval->nodeTab[0], buf, xendConfigVersion);
         if (res != 0) {
             goto error;
         }
@@ -792,6 +807,7 @@ error:
  * @node: node containing PV OS description
  * @buf: a buffer for the result S-Expr
  * @ctxt: a path context representing the XML description
+ * @xendConfigVersion: xend configuration file format
  *
  * Parse the OS part of the XML description for a paravirtualized domain
  * and add it to the S-Expr in buf.  This is a temporary interface as the
@@ -801,7 +817,7 @@ error:
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
-virDomainParseXMLOSDescPV(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr ctxt)
+virDomainParseXMLOSDescPV(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr ctxt, int xendConfigVersion)
 {
     xmlNodePtr cur, txt;
     xmlXPathObjectPtr obj = NULL;
@@ -872,7 +888,7 @@ virDomainParseXMLOSDescPV(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr 
     obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics[1]", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr > 0)) {
-        res = virDomainParseXMLGraphicsDesc(obj->nodesetval->nodeTab[0], buf);
+        res = virDomainParseXMLGraphicsDesc(obj->nodesetval->nodeTab[0], buf, xendConfigVersion);
         if (res != 0) {
             goto error;
         }
@@ -1234,7 +1250,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
 	}
 
 	if ((tmpobj == NULL) || !xmlStrEqual(tmpobj->stringval, BAD_CAST "hvm")) {
-	    res = virDomainParseXMLOSDescPV(obj->nodesetval->nodeTab[0], &buf, ctxt);
+	    res = virDomainParseXMLOSDescPV(obj->nodesetval->nodeTab[0], &buf, ctxt, xendConfigVersion);
 	} else {
 	    hvm = 1;
 	    res = virDomainParseXMLOSDescHVM(obj->nodesetval->nodeTab[0], &buf, ctxt, xendConfigVersion);
@@ -1364,3 +1380,12 @@ unsigned char *virParseUUID(char **ptr, const char *uuid) {
 error:
     return(dst_uuid);
 }
+
+/*
+ * Local variables:
+ *  indent-tabs-mode: nil
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  tab-width: 4
+ * End:
+ */

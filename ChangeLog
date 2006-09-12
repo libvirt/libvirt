@@ -1,3 +1,10 @@
+Tue Sep 11 20:37:28 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/xml.c: Added support for setting VNC port when creating
+	domains with new (version 2) style XenD config
+	* tests/xml2sexprtest.c: Added test for setting VNC port
+	* tests/xml2sexprdata/*vncunused*: Data files for new VNC test
+
 Tue Sep 11 20:23:42 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* docs/Makefile.am: Added test XML files to EXTRA_DIST
