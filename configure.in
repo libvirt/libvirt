@@ -257,4 +257,6 @@ AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
 	  include/libvirt/Makefile include/libvirt/libvirt.h \
 	  python/Makefile python/tests/Makefile \
           tests/Makefile proxy/Makefile \
+          tests/xml2sexprdata/Makefile \
+          tests/sexpr2xmldata/Makefile \
           tests/virshdata/Makefile tests/confdata/Makefile)

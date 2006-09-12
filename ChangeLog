@@ -1,3 +1,13 @@
+Tue Sep 11 20:11:05 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c, src/xml.c: Added support for new 3.0.3
+	style XenD cdrom configuration for HVM guests.
+	* configure.in, tests/Makefile.am: Added new test directories
+	* tests/xml2sexprdata*, tests/sexpr2xmldata*: Removed config files
+	for test suite.
+	* tests/xml2sexprdata/*, tests/sexpr2xmldata/*: New home for test
+	suite config files
+
 Tue Sep  5 13:50:05 MYT 2006 Daniel Veillard <veillard@redhat.com>
 
 	* NEWS configure.in docs//* include/libvirt/libvirt.h libvirt.specx.*:

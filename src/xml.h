@@ -29,7 +29,7 @@ void virBufferFree(virBufferPtr buf);
 int virBufferAdd(virBufferPtr buf, const char *str, int len);
 int virBufferVSprintf(virBufferPtr buf, const char *format, ...);
 int virBufferStrcat(virBufferPtr buf, ...);
-char *virDomainParseXMLDesc(const char *xmldesc, char **name);
+char *virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion);
 unsigned char *virParseUUID(char **ptr, const char *uuid);
 
 #ifdef __cplusplus

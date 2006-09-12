@@ -609,6 +609,7 @@ static int virDomainParseXMLGraphicsDesc(xmlNodePtr node, virBufferPtr buf)
  * @node: node containing HVM OS description
  * @buf: a buffer for the result S-Expr
  * @ctxt: a path context representing the XML description
+ * @xendConfigVersion: xend configuration file format
  *
  * Parse the OS part of the XML description for an HVM domain and add it to
  * the S-Expr in buf. This is a temporary interface as the S-Expr interface
@@ -618,7 +619,7 @@ static int virDomainParseXMLGraphicsDesc(xmlNodePtr node, virBufferPtr buf)
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
-virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr ctxt)
+virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr ctxt, int xendConfigVersion)
 {
     xmlXPathObjectPtr obj = NULL;
     xmlNodePtr cur, txt;
@@ -690,44 +691,46 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
        obj = xmlXPathEval(BAD_CAST "/domain/devices/disk[@device='floppy' and target/@dev='fda']/source", ctxt);
        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
-         cur = obj->nodesetval->nodeTab[0];
-         virBufferVSprintf(buf, "(fda '%s')",
-                           (const char *) xmlGetProp(cur, BAD_CAST "file"));
-         cur = NULL;
+           cur = obj->nodesetval->nodeTab[0];
+           virBufferVSprintf(buf, "(fda '%s')",
+                             (const char *) xmlGetProp(cur, BAD_CAST "file"));
+           cur = NULL;
        }
        if (obj) {
-         xmlXPathFreeObject(obj);
-         obj = NULL;
-    }
+           xmlXPathFreeObject(obj);
+           obj = NULL;
+       }
 
        /* get the 2nd floppy device file */
        obj = xmlXPathEval(BAD_CAST "/domain/devices/disk[@device='floppy' and target/@dev='fdb']/source", ctxt);
        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
-         cur = obj->nodesetval->nodeTab[0];
-         virBufferVSprintf(buf, "(fdb '%s')",
-                           (const char *) xmlGetProp(cur, BAD_CAST "file"));
-         cur = NULL;
+           cur = obj->nodesetval->nodeTab[0];
+           virBufferVSprintf(buf, "(fdb '%s')",
+                             (const char *) xmlGetProp(cur, BAD_CAST "file"));
+           cur = NULL;
        }
        if (obj) {
-         xmlXPathFreeObject(obj);
-         obj = NULL;
+           xmlXPathFreeObject(obj);
+           obj = NULL;
        }
 
 
        /* get the cdrom device file */
-       /* XXX new (3.0.3) Xend puts cdrom devs in usual (devices) block */
-       obj = xmlXPathEval(BAD_CAST "/domain/devices/disk[@device='cdrom' and target/@dev='hdc']/source", ctxt);
-       if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-           (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
-         cur = obj->nodesetval->nodeTab[0];
-         virBufferVSprintf(buf, "(cdrom '%s')",
-                           (const char *) xmlGetProp(cur, BAD_CAST "file"));
-         cur = NULL;
-       }
-       if (obj) {
-         xmlXPathFreeObject(obj);
-         obj = NULL;
+       /* Only XenD <= 3.0.2 wants cdrom config here */
+       if (xendConfigVersion == 1) {
+           obj = xmlXPathEval(BAD_CAST "/domain/devices/disk[@device='cdrom' and target/@dev='hdc']/source", ctxt);
+           if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+               (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+               cur = obj->nodesetval->nodeTab[0];
+               virBufferVSprintf(buf, "(cdrom '%s')",
+                                 (const char *) xmlGetProp(cur, BAD_CAST "file"));
+               cur = NULL;
+           }
+           if (obj) {
+               xmlXPathFreeObject(obj);
+               obj = NULL;
+           }
        }
 
        obj = xmlXPathEval(BAD_CAST "/domain/features/acpi", ctxt);
@@ -885,6 +888,7 @@ virDomainParseXMLOSDescPV(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr 
  * virDomainParseXMLDiskDesc:
  * @node: node containing disk description
  * @buf: a buffer for the result S-Expr
+ * @xendConfigVersion: xend configuration file format
  *
  * Parse the one disk in the XML description and add it to the S-Expr in buf
  * This is a temporary interface as the S-Expr interface
@@ -894,7 +898,7 @@ virDomainParseXMLOSDescPV(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr 
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
-virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm)
+virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendConfigVersion)
 {
     xmlNodePtr cur;
     xmlChar *type = NULL;
@@ -903,6 +907,7 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm)
     xmlChar *target = NULL;
     int ro = 0;
     int typ = 0;
+    int cdrom = 0;
 
     type = xmlGetProp(node, BAD_CAST "type");
     if (type != NULL) {
@@ -948,29 +953,43 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm)
         return (-1);
     }
 
-    /* Skip floppy/cdrom disk used as the boot device
-     * since that's incorporated into the HVM kernel
-     * (image (hvm..)) part of the sexpr, rather than
-     * the (devices...) bit. Odd Xend HVM config :-(
-     * XXX This will have to change in Xen 3.0.3
+    /* Xend (all versions) put the floppy device config
+     * under the hvm (image (os)) block
      */
-    if (hvm && device &&
-        (!strcmp((const char *)device, "floppy") ||
-         !strcmp((const char *)device, "cdrom"))) {
-      return 0;
+    if (hvm && 
+	device &&
+        !strcmp((const char *)device, "floppy")) {
+        return 0;
+    }
+
+    /* Xend <= 3.0.2 doesn't include cdrom config here */
+    if (hvm && 
+	device &&
+	!strcmp((const char *)device, "cdrom")) {
+        if (xendConfigVersion == 1)
+            return 0;
+        else
+            cdrom = 1;
     }
 
 
     virBufferAdd(buf, "(device ", 8);
     virBufferAdd(buf, "(vbd ", 5);
-    /* XXX ioemu prefix is going away in Xen 3.0.3 */
+
     if (hvm) {
         char *tmp = (char *)target;
+        /* Just in case user mistakenly still puts ioemu: in their XML */
         if (!strncmp((const char *) tmp, "ioemu:", 6))
             tmp += 6;
-        virBufferVSprintf(buf, "(dev 'ioemu:%s')", (const char *) tmp);
+
+        /* Xend <= 3.0.2 wants a ioemu: prefix on devices for HVM */
+        if (xendConfigVersion == 1)
+            virBufferVSprintf(buf, "(dev 'ioemu:%s')", (const char *) tmp);
+        else /* But newer does not */
+            virBufferVSprintf(buf, "(dev '%s%s')", (const char *) tmp, cdrom ? ":cdrom" : "");
     } else
-    virBufferVSprintf(buf, "(dev '%s')", (const char *) target);
+        virBufferVSprintf(buf, "(dev '%s')", (const char *) target);
+
     if (typ == 0)
         virBufferVSprintf(buf, "(uname 'file:%s')", source);
     else if (typ == 1) {
@@ -1069,6 +1088,7 @@ virDomainParseXMLIfDesc(xmlNodePtr node, virBufferPtr buf, int hvm)
 /**
  * virDomainParseXMLDesc:
  * @xmldesc: string with the XML description
+ * @xendConfigVersion: xend configuration file format
  *
  * Parse the XML description and turn it into the xend sexp needed to
  * create the comain. This is a temporary interface as the S-Expr interface
@@ -1079,7 +1099,7 @@ virDomainParseXMLIfDesc(xmlNodePtr node, virBufferPtr buf, int hvm)
  *         the caller must free() the returned value.
  */
 char *
-virDomainParseXMLDesc(const char *xmldesc, char **name)
+virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
 {
     xmlDocPtr xml = NULL;
     xmlNodePtr node;
@@ -1217,7 +1237,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
 	    res = virDomainParseXMLOSDescPV(obj->nodesetval->nodeTab[0], &buf, ctxt);
 	} else {
 	    hvm = 1;
-	    res = virDomainParseXMLOSDescHVM(obj->nodesetval->nodeTab[0], &buf, ctxt);
+	    res = virDomainParseXMLOSDescHVM(obj->nodesetval->nodeTab[0], &buf, ctxt, xendConfigVersion);
 	}
 
 	xmlXPathFreeObject(tmpobj);
@@ -1235,7 +1255,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name)
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
 	for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-            res = virDomainParseXMLDiskDesc(obj->nodesetval->nodeTab[i], &buf, hvm);
+	  res = virDomainParseXMLDiskDesc(obj->nodesetval->nodeTab[i], &buf, hvm, xendConfigVersion);
 	    if (res != 0) {
 		goto error;
 	    }

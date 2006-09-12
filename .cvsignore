@@ -19,3 +19,4 @@ ltmain.sh
 update.log
 libvirt.pc
 libvirt.spec
+COPYING

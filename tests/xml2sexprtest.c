@@ -10,7 +10,7 @@ static char *progname;
 
 #define MAX_FILE 4096
 
-static int testCompareFiles(const char *xml, const char *sexpr, const char *name) {
+static int testCompareFiles(const char *xml, const char *sexpr, const char *name, int xendConfigVersion) {
   char xmlData[MAX_FILE];
   char sexprData[MAX_FILE];
   char *gotname = NULL;
@@ -24,7 +24,7 @@ static int testCompareFiles(const char *xml, const char *sexpr, const char *name
   if (virtTestLoadFile(sexpr, &sexprPtr, MAX_FILE) < 0)
     return -1;
 
-  if (!(gotsexpr = virDomainParseXMLDesc(xmlData, &gotname))) 
+  if (!(gotsexpr = virDomainParseXMLDesc(xmlData, &gotname, xendConfigVersion))) 
     return -1;
 
   if (getenv("DEBUG_TESTS")) {
@@ -40,16 +40,32 @@ static int testCompareFiles(const char *xml, const char *sexpr, const char *name
   return 0;
 }
 
-static int testComparePV(void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexpr-pv.xml",
-			  "xml2sexpr-pv.sexpr",
-			  "pvtest");
+static int testComparePVversion1(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("xml2sexprdata/xml2sexpr-pv.xml",
+			  "xml2sexprdata/xml2sexpr-pv.sexpr",
+			  "pvtest",
+			  1);
 }
 
-static int testCompareFV(void *data ATTRIBUTE_UNUSED) {
-  return testCompareFiles("xml2sexpr-fv.xml",
-			  "xml2sexpr-fv.sexpr",
-			  "fvtest");
+static int testCompareFVversion1(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("xml2sexprdata/xml2sexpr-fv.xml",
+			  "xml2sexprdata/xml2sexpr-fv.sexpr",
+			  "fvtest",
+			  1);
+}
+
+static int testComparePVversion2(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("xml2sexprdata/xml2sexpr-pv.xml",
+			  "xml2sexprdata/xml2sexpr-pv.sexpr",
+			  "pvtest",
+			  2);
+}
+
+static int testCompareFVversion2(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("xml2sexprdata/xml2sexpr-fv.xml",
+			  "xml2sexprdata/xml2sexpr-fv-v2.sexpr",
+			  "fvtest",
+			  2);
 }
 
 int
@@ -64,12 +80,20 @@ main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
     
-    if (virtTestRun("XML-2-SEXPR PV config", 
-		    1, testComparePV, NULL) != 0)
+    if (virtTestRun("XML-2-SEXPR PV config (format 1)", 
+		    1, testComparePVversion1, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("XML-2-SEXPR FV config", 
-		    1, testCompareFV, NULL) != 0)
+    if (virtTestRun("XML-2-SEXPR FV config (format 1)", 
+		    1, testCompareFVversion1, NULL) != 0)
+        ret = -1;
+
+    if (virtTestRun("XML-2-SEXPR PV config (format 2)",
+		    1, testComparePVversion2, NULL) != 0)
+        ret = -1;
+
+    if (virtTestRun("XML-2-SEXPR FV config (format 2)", 
+		    1, testCompareFVversion2, NULL) != 0)
         ret = -1;
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);

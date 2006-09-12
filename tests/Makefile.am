@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = virshdata confdata
+SUBDIRS = virshdata confdata sexpr2xmldata xml2sexprdata
 
 LIBVIRT = $(top_builddir)/src/.libs/libvirt.a
 

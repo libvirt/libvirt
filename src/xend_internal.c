@@ -1258,6 +1258,36 @@ xend_get_node(virConnectPtr xend)
     return node;
 }
 
+static int
+xend_get_config_version(virConnectPtr conn) {
+    int ret = -1;
+    struct sexpr *root;
+    const char *value;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virXendError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+
+    root = sexpr_get(conn, "/xend/node/");
+    if (root == NULL)
+        return (-1);
+
+    value = sexpr_node(root, "node/xend_config_format");
+
+    if (value) {
+        return strtol(value, NULL, 10);
+    } else {
+        /* Xen prior to 3.0.3 did not have the xend_config_format
+	   field, and is implicitly version 1. */
+        return 1;
+    }
+
+    sexpr_free(root);
+    return (ret);
+}
+
+
 #ifndef PROXY
 /**
  * xend_node_shutdown:
@@ -1431,7 +1461,7 @@ xend_parse_sexp_desc_os(struct sexpr *node, virBufferPtr buf, int hvm)
  *         the caller must free() the returned value.
  */
 static char *
-xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root)
+xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersion)
 {
     char *ret;
     struct sexpr *cur, *node;
@@ -1525,37 +1555,62 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root)
             if (tmp == NULL)
                 continue;
             if (!memcmp(tmp, "file:", 5)) {
-                tmp += 5;
-                virBufferVSprintf(&buf, "    <disk type='file' device='disk'>\n");
-                virBufferVSprintf(&buf, "      <source file='%s'/>\n",
-                                  tmp);
-                tmp = sexpr_node(node, "device/vbd/dev");
-                if (tmp == NULL) {
+                int cdrom = 0;
+                const char *src = tmp+5;
+                const char *dst = sexpr_node(node, "device/vbd/dev");
+
+                if (dst == NULL) {
                     virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
                                  "domain information incomplete, vbd has no dev");
                     goto error;
                 }
-                if (!strncmp(tmp, "ioemu:", 6)) 
-                    tmp += 6;
-                virBufferVSprintf(&buf, "      <target dev='%s'/>\n", tmp);
+                if (!strncmp(dst, "ioemu:", 6)) 
+                    dst += 6;
+                /* New style cdrom config from Xen >= 3.0.3 */
+                if (xendConfigVersion > 1) {
+                    char *offset = rindex(dst, ':');
+                    if (offset && !strcmp(offset, ":cdrom")) {
+		        offset[0] = '\0';
+                        cdrom = 1;
+                    }
+                }
+
+                virBufferVSprintf(&buf, "    <disk type='file' device='%s'>\n", cdrom ? "cdrom" : "disk");
+                virBufferVSprintf(&buf, "      <source file='%s'/>\n", src);
+                virBufferVSprintf(&buf, "      <target dev='%s'/>\n", dst);
                 tmp = sexpr_node(node, "device/vbd/mode");
+                /* XXX should we force mode == r, if cdrom==1, or assume
+                   xend has already done this ? */
                 if ((tmp != NULL) && (!strcmp(tmp, "r")))
                     virBufferVSprintf(&buf, "      <readonly/>\n");
                 virBufferAdd(&buf, "    </disk>\n", 12);
             } else if (!memcmp(tmp, "phy:", 4)) {
-                tmp += 4;
-                virBufferVSprintf(&buf, "    <disk type='block' device='disk'>\n");
-                virBufferVSprintf(&buf, "      <source dev='%s'/>\n", tmp);
-                tmp = sexpr_node(node, "device/vbd/dev");
-                if (tmp == NULL) {
+                int cdrom = 0;
+                const char *src = tmp+4;
+                const char *dst = sexpr_node(node, "device/vbd/dev");
+
+                if (dst == NULL) {
                     virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
                                  "domain information incomplete, vbd has no dev");
                     goto error;
                 }
-                if (!strncmp(tmp, "ioemu:", 6)) 
-                    tmp += 6;
-                virBufferVSprintf(&buf, "      <target dev='%s'/>\n", tmp);
+                if (!strncmp(dst, "ioemu:", 6)) 
+                    dst += 6;
+                /* New style cdrom config from Xen >= 3.0.3 */
+                if (xendConfigVersion > 1) {
+                    char *offset = rindex(dst, ':');
+                    if (offset && !strcmp(offset, ":cdrom")) {
+		        offset[0] = '\0';
+                        cdrom = 1;
+                    }
+                }
+
+                virBufferVSprintf(&buf, "    <disk type='block' device='%s'>\n", cdrom ? "cdrom" : "disk");
+                virBufferVSprintf(&buf, "      <source dev='%s'/>\n", src);
+                virBufferVSprintf(&buf, "      <target dev='%s'/>\n", dst);
                 tmp = sexpr_node(node, "device/vbd/mode");
+                /* XXX should we force mode == r, if cdrom==1, or assume
+                   xend has already done this ? */
                 if ((tmp != NULL) && (!strcmp(tmp, "r")))
                     virBufferVSprintf(&buf, "      <readonly/>\n");
                 virBufferAdd(&buf, "    </disk>\n", 12);
@@ -1617,14 +1672,17 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root)
             virBufferAdd(&buf, "      <target dev='fdb'/>\n", 26);
             virBufferAdd(&buf, "    </disk>\n", 12);
         }
-        /* XXX new (3.0.3) Xend puts cdrom devs in usual (devices) block */
-        tmp = sexpr_node(root, "domain/image/hvm/cdrom");
-        if ((tmp != NULL) && (tmp[0] != 0)) {
-            virBufferAdd(&buf, "    <disk type='file' device='cdrom'>\n", 38);
-            virBufferVSprintf(&buf, "      <source file='%s'/>\n", tmp);
-            virBufferAdd(&buf, "      <target dev='hdc'/>\n", 26);
-            virBufferAdd(&buf, "      <readonly/>\n", 18);
-            virBufferAdd(&buf, "    </disk>\n", 12);
+
+        /* Old style cdrom config from Xen <= 3.0.2 */
+	if (xendConfigVersion == 1) {
+            tmp = sexpr_node(root, "domain/image/hvm/cdrom");
+            if ((tmp != NULL) && (tmp[0] != 0)) {
+                virBufferAdd(&buf, "    <disk type='file' device='cdrom'>\n", 38);
+                virBufferVSprintf(&buf, "      <source file='%s'/>\n", tmp);
+                virBufferAdd(&buf, "      <target dev='hdc'/>\n", 26);
+                virBufferAdd(&buf, "      <readonly/>\n", 18);
+                virBufferAdd(&buf, "    </disk>\n", 12);
+            }
         }
     }
         
@@ -1664,14 +1722,14 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root)
 }
 
 char *
-xend_parse_domain_sexp(virConnectPtr conn, char *sexpr) {
+xend_parse_domain_sexp(virConnectPtr conn, char *sexpr, int xendConfigVersion) {
   struct sexpr *root = string2sexpr(sexpr);
   char *data;
 
   if (!root)
       return NULL;
 
-  data = xend_parse_sexp_desc(conn, root);
+  data = xend_parse_sexp_desc(conn, root, xendConfigVersion);
 
   sexpr_free(root);
 
@@ -2175,12 +2233,18 @@ xenDaemonDomainDumpXMLByID(virConnectPtr conn, int domid)
 {
     char *ret = NULL;
     struct sexpr *root;
+    int xendConfigVersion;
 
     root = sexpr_get(conn, "/xend/domain/%d?detail=1", domid);
     if (root == NULL)
         return (NULL);
 
-    ret = xend_parse_sexp_desc(conn, root);
+    if ((xendConfigVersion = xend_get_config_version(conn)) < 0) {
+        virXendError(conn, VIR_ERR_INTERNAL_ERROR, "cannot determine xend config version");
+        return (NULL);
+    }
+
+    ret = xend_parse_sexp_desc(conn, root, xendConfigVersion);
     sexpr_free(root);
 
     return (ret);
@@ -2724,6 +2788,7 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
     char *sexpr;
     char *name = NULL;
     virDomainPtr dom;
+    int xendConfigVersion;
 
     if (!VIR_IS_CONNECT(conn)) {
         virXendError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -2734,7 +2799,12 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
         return (NULL);
     }
 
-    sexpr = virDomainParseXMLDesc(xmlDesc, &name);
+    if ((xendConfigVersion = xend_get_config_version(conn)) < 0) {
+        virXendError(conn, VIR_ERR_INTERNAL_ERROR, "cannot determine xend config version");
+        return (NULL);
+    }
+
+    sexpr = virDomainParseXMLDesc(xmlDesc, &name, xendConfigVersion);
     if ((sexpr == NULL) || (name == NULL)) {
         if (sexpr != NULL)
             free(sexpr);
