@@ -28,8 +28,8 @@ static int testCompareFiles(const char *xml, const char *sexpr, const char *name
     return -1;
 
   if (getenv("DEBUG_TESTS")) {
-      printf("In  %d '%s'\n", strlen(sexprData), sexprData);
-      printf("Out %d '%s'\n", strlen(gotsexpr), gotsexpr);
+      printf("Expect %d '%s'\n", (int)strlen(sexprData), sexprData);
+      printf("Actual %d '%s'\n", (int)strlen(gotsexpr), gotsexpr);
   }
   if (strcmp(sexprData, gotsexpr))
     return -1;

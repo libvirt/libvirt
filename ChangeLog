@@ -1,3 +1,16 @@
+Thu Sep 14 10:33:23 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/xml.c: Append :disk for normal disk devices being created
+	when Xen >= 3.0.3, even though its technically optional
+	* src/xend_internal.c: Strip the :disk trailing component when
+	generating XML when Xen >= 3.0.3. We don't want to expose
+	that postfix in the <target> element, since its already set in
+	the device attribute on <disk> element.
+	* tests/sexpr2xmldata/*, tests/xml2sexprdata/*: Update to test
+	for handling of :disk postfix in sexpr/XML
+	* tests/virshtest.c, tests/sexpr2xmltest.c, tests/xml2sexprtest.c:
+	Cast size_t arg to an int to avoid format warnings from printf
+
 Tue Sep 11 20:37:28 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/xml.c: Added support for setting VNC port when creating

@@ -28,8 +28,8 @@ static int testCompareFiles(const char *xml, const char *sexpr, int xendConfigVe
     return -1;
 
   if (getenv("DEBUG_TESTS")) {
-      printf("In  %d '%s'\n", strlen(xmlData), xmlData);
-      printf("Out %d '%s'\n", strlen(gotxml), gotxml);
+      printf("Expect %d '%s'\n", (int)strlen(xmlData), xmlData);
+      printf("Actual %d '%s'\n", (int)strlen(gotxml), gotxml);
   }
   if (strcmp(xmlData, gotxml))
     return -1;

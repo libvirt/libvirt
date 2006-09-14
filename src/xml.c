@@ -973,15 +973,15 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
      * under the hvm (image (os)) block
      */
     if (hvm && 
-	device &&
+        device &&
         !strcmp((const char *)device, "floppy")) {
         return 0;
     }
 
     /* Xend <= 3.0.2 doesn't include cdrom config here */
     if (hvm && 
-	device &&
-	!strcmp((const char *)device, "cdrom")) {
+        device &&
+        !strcmp((const char *)device, "cdrom")) {
         if (xendConfigVersion == 1)
             return 0;
         else
@@ -1002,7 +1002,7 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
         if (xendConfigVersion == 1)
             virBufferVSprintf(buf, "(dev 'ioemu:%s')", (const char *) tmp);
         else /* But newer does not */
-            virBufferVSprintf(buf, "(dev '%s%s')", (const char *) tmp, cdrom ? ":cdrom" : "");
+            virBufferVSprintf(buf, "(dev '%s%s')", (const char *) tmp, cdrom ? ":cdrom" : ":disk");
     } else
         virBufferVSprintf(buf, "(dev '%s')", (const char *) target);
 

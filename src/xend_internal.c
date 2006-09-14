@@ -1566,12 +1566,18 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
                 }
                 if (!strncmp(dst, "ioemu:", 6)) 
                     dst += 6;
-                /* New style cdrom config from Xen >= 3.0.3 */
+                /* New style disk config from Xen >= 3.0.3 */
                 if (xendConfigVersion > 1) {
                     char *offset = rindex(dst, ':');
-                    if (offset && !strcmp(offset, ":cdrom")) {
-		        offset[0] = '\0';
-                        cdrom = 1;
+                    if (offset) {
+                        if (!strcmp(offset, ":cdrom")) {
+                            cdrom = 1;
+                        } else if (!strcmp(offset, ":disk")) {
+                            /* defualt anyway */
+                        } else {
+                            /* Unknown, lets pretend its a disk */
+                        }
+                        offset[0] = '\0';
                     }
                 }
 
@@ -1599,9 +1605,15 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
                 /* New style cdrom config from Xen >= 3.0.3 */
                 if (xendConfigVersion > 1) {
                     char *offset = rindex(dst, ':');
-                    if (offset && !strcmp(offset, ":cdrom")) {
-		        offset[0] = '\0';
-                        cdrom = 1;
+                    if (offset) {
+                        if (!strcmp(offset, ":cdrom")) {
+                            cdrom = 1;
+                        } else if (!strcmp(offset, ":disk")) {
+                            /* defualt anyway */
+                        } else {
+                            /* Unknown, lets pretend its a disk */
+                        }
+                        offset[0] = '\0';
                     }
                 }
 
@@ -2850,3 +2862,11 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
 }
 #endif /* ! PROXY */
 
+/*
+ * Local variables:
+ *  indent-tabs-mode: nil
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  tab-width: 4
+ * End:
+ */

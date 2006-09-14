@@ -43,8 +43,8 @@ static int testCompareOutput(const char *expect, const char *filter, const char 
       return -1;
 
   if (getenv("DEBUG_TESTS")) {
-      printf("Expect %d '%s'\n", strlen(expectData), expectData);
-      printf("Actual %d '%s'\n", strlen(actualData), actualData);
+      printf("Expect %d '%s'\n", (int)strlen(expectData), expectData);
+      printf("Actual %d '%s'\n", (int)strlen(actualData), actualData);
   }
   if (strcmp(expectData, actualData))
     return -1;
