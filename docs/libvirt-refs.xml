@@ -22,6 +22,7 @@
     <reference name='VIR_DOMAIN_SHUTDOWN' href='html/libvirt-libvirt.html#VIR_DOMAIN_SHUTDOWN'/>
     <reference name='VIR_DOMAIN_SHUTOFF' href='html/libvirt-libvirt.html#VIR_DOMAIN_SHUTOFF'/>
     <reference name='VIR_ERR_CALL_FAILED' href='html/libvirt-virterror.html#VIR_ERR_CALL_FAILED'/>
+    <reference name='VIR_ERR_CONF_SYNTAX' href='html/libvirt-virterror.html#VIR_ERR_CONF_SYNTAX'/>
     <reference name='VIR_ERR_DOM_EXIST' href='html/libvirt-virterror.html#VIR_ERR_DOM_EXIST'/>
     <reference name='VIR_ERR_DRIVER_FULL' href='html/libvirt-virterror.html#VIR_ERR_DRIVER_FULL'/>
     <reference name='VIR_ERR_ERROR' href='html/libvirt-virterror.html#VIR_ERR_ERROR'/>
@@ -45,15 +46,20 @@
     <reference name='VIR_ERR_NO_XEN' href='html/libvirt-virterror.html#VIR_ERR_NO_XEN'/>
     <reference name='VIR_ERR_NO_XENSTORE' href='html/libvirt-virterror.html#VIR_ERR_NO_XENSTORE'/>
     <reference name='VIR_ERR_OK' href='html/libvirt-virterror.html#VIR_ERR_OK'/>
+    <reference name='VIR_ERR_OPEN_FAILED' href='html/libvirt-virterror.html#VIR_ERR_OPEN_FAILED'/>
     <reference name='VIR_ERR_OPERATION_DENIED' href='html/libvirt-virterror.html#VIR_ERR_OPERATION_DENIED'/>
     <reference name='VIR_ERR_OPERATION_FAILED' href='html/libvirt-virterror.html#VIR_ERR_OPERATION_FAILED'/>
     <reference name='VIR_ERR_OS_TYPE' href='html/libvirt-virterror.html#VIR_ERR_OS_TYPE'/>
+    <reference name='VIR_ERR_PARSE_FAILED' href='html/libvirt-virterror.html#VIR_ERR_PARSE_FAILED'/>
     <reference name='VIR_ERR_POST_FAILED' href='html/libvirt-virterror.html#VIR_ERR_POST_FAILED'/>
+    <reference name='VIR_ERR_READ_FAILED' href='html/libvirt-virterror.html#VIR_ERR_READ_FAILED'/>
     <reference name='VIR_ERR_SEXPR_SERIAL' href='html/libvirt-virterror.html#VIR_ERR_SEXPR_SERIAL'/>
     <reference name='VIR_ERR_UNKNOWN_HOST' href='html/libvirt-virterror.html#VIR_ERR_UNKNOWN_HOST'/>
     <reference name='VIR_ERR_WARNING' href='html/libvirt-virterror.html#VIR_ERR_WARNING'/>
+    <reference name='VIR_ERR_WRITE_FAILED' href='html/libvirt-virterror.html#VIR_ERR_WRITE_FAILED'/>
     <reference name='VIR_ERR_XEN_CALL' href='html/libvirt-virterror.html#VIR_ERR_XEN_CALL'/>
     <reference name='VIR_ERR_XML_ERROR' href='html/libvirt-virterror.html#VIR_ERR_XML_ERROR'/>
+    <reference name='VIR_FROM_CONF' href='html/libvirt-virterror.html#VIR_FROM_CONF'/>
     <reference name='VIR_FROM_DOM' href='html/libvirt-virterror.html#VIR_FROM_DOM'/>
     <reference name='VIR_FROM_NONE' href='html/libvirt-virterror.html#VIR_FROM_NONE'/>
     <reference name='VIR_FROM_PROXY' href='html/libvirt-virterror.html#VIR_FROM_PROXY'/>
@@ -174,6 +180,7 @@
       <ref name='VIR_DOMAIN_SHUTDOWN'/>
       <ref name='VIR_DOMAIN_SHUTOFF'/>
       <ref name='VIR_ERR_CALL_FAILED'/>
+      <ref name='VIR_ERR_CONF_SYNTAX'/>
       <ref name='VIR_ERR_DOM_EXIST'/>
       <ref name='VIR_ERR_DRIVER_FULL'/>
       <ref name='VIR_ERR_ERROR'/>
@@ -197,15 +204,20 @@
       <ref name='VIR_ERR_NO_XEN'/>
       <ref name='VIR_ERR_NO_XENSTORE'/>
       <ref name='VIR_ERR_OK'/>
+      <ref name='VIR_ERR_OPEN_FAILED'/>
       <ref name='VIR_ERR_OPERATION_DENIED'/>
       <ref name='VIR_ERR_OPERATION_FAILED'/>
       <ref name='VIR_ERR_OS_TYPE'/>
+      <ref name='VIR_ERR_PARSE_FAILED'/>
       <ref name='VIR_ERR_POST_FAILED'/>
+      <ref name='VIR_ERR_READ_FAILED'/>
       <ref name='VIR_ERR_SEXPR_SERIAL'/>
       <ref name='VIR_ERR_UNKNOWN_HOST'/>
       <ref name='VIR_ERR_WARNING'/>
+      <ref name='VIR_ERR_WRITE_FAILED'/>
       <ref name='VIR_ERR_XEN_CALL'/>
       <ref name='VIR_ERR_XML_ERROR'/>
+      <ref name='VIR_FROM_CONF'/>
       <ref name='VIR_FROM_DOM'/>
       <ref name='VIR_FROM_NONE'/>
       <ref name='VIR_FROM_PROXY'/>
@@ -522,6 +534,7 @@
     </file>
     <file name='virterror'>
       <ref name='VIR_ERR_CALL_FAILED'/>
+      <ref name='VIR_ERR_CONF_SYNTAX'/>
       <ref name='VIR_ERR_DOM_EXIST'/>
       <ref name='VIR_ERR_DRIVER_FULL'/>
       <ref name='VIR_ERR_ERROR'/>
@@ -545,15 +558,20 @@
       <ref name='VIR_ERR_NO_XEN'/>
       <ref name='VIR_ERR_NO_XENSTORE'/>
       <ref name='VIR_ERR_OK'/>
+      <ref name='VIR_ERR_OPEN_FAILED'/>
       <ref name='VIR_ERR_OPERATION_DENIED'/>
       <ref name='VIR_ERR_OPERATION_FAILED'/>
       <ref name='VIR_ERR_OS_TYPE'/>
+      <ref name='VIR_ERR_PARSE_FAILED'/>
       <ref name='VIR_ERR_POST_FAILED'/>
+      <ref name='VIR_ERR_READ_FAILED'/>
       <ref name='VIR_ERR_SEXPR_SERIAL'/>
       <ref name='VIR_ERR_UNKNOWN_HOST'/>
       <ref name='VIR_ERR_WARNING'/>
+      <ref name='VIR_ERR_WRITE_FAILED'/>
       <ref name='VIR_ERR_XEN_CALL'/>
       <ref name='VIR_ERR_XML_ERROR'/>
+      <ref name='VIR_FROM_CONF'/>
       <ref name='VIR_FROM_DOM'/>
       <ref name='VIR_FROM_NONE'/>
       <ref name='VIR_FROM_PROXY'/>

@@ -87,7 +87,8 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     <a name="VIR_FROM_XML">VIR_FROM_XML</a> = 5 /* Error in the XML code */
     <a name="VIR_FROM_DOM">VIR_FROM_DOM</a> = 6 /* Error when operating on a domain */
     <a name="VIR_FROM_RPC">VIR_FROM_RPC</a> = 7 /* Error in the XML-RPC code */
-    <a name="VIR_FROM_PROXY">VIR_FROM_PROXY</a> = 8 /*  Error in the proxy code */
+    <a name="VIR_FROM_PROXY">VIR_FROM_PROXY</a> = 8 /* Error in the proxy code */
+    <a name="VIR_FROM_CONF">VIR_FROM_CONF</a> = 9 /*  Error in the configuration file handling */
 };
 </pre><p/>
 </div>
@@ -130,7 +131,12 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     <a name="VIR_ERR_CALL_FAILED">VIR_ERR_CALL_FAILED</a> = 26 /* not supported by the drivers */
     <a name="VIR_ERR_XML_ERROR">VIR_ERR_XML_ERROR</a> = 27 /* an XML description is not well formed or broken */
     <a name="VIR_ERR_DOM_EXIST">VIR_ERR_DOM_EXIST</a> = 28 /* the domain already exist */
-    <a name="VIR_ERR_OPERATION_DENIED">VIR_ERR_OPERATION_DENIED</a> = 29 /*  operation forbidden on read-only connections */
+    <a name="VIR_ERR_OPERATION_DENIED">VIR_ERR_OPERATION_DENIED</a> = 29 /* operation forbidden on read-only connections */
+    <a name="VIR_ERR_OPEN_FAILED">VIR_ERR_OPEN_FAILED</a> = 30 /* failed to open a conf file */
+    <a name="VIR_ERR_READ_FAILED">VIR_ERR_READ_FAILED</a> = 31 /* failed to read a conf file */
+    <a name="VIR_ERR_PARSE_FAILED">VIR_ERR_PARSE_FAILED</a> = 32 /* failed to parse a conf file */
+    <a name="VIR_ERR_CONF_SYNTAX">VIR_ERR_CONF_SYNTAX</a> = 33 /* failed to parse the syntax of a conf file */
+    <a name="VIR_ERR_WRITE_FAILED">VIR_ERR_WRITE_FAILED</a> = 34 /*  failed to write a conf file */
 };
 </pre><p/>
 </div>

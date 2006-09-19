@@ -109,11 +109,13 @@
      <exports symbol='VIR_FROM_RPC' type='enum'/>
      <exports symbol='VIR_ERR_XML_ERROR' type='enum'/>
      <exports symbol='VIR_FROM_NONE' type='enum'/>
-     <exports symbol='VIR_ERR_HTTP_ERROR' type='enum'/>
+     <exports symbol='VIR_ERR_DOM_EXIST' type='enum'/>
      <exports symbol='VIR_ERR_NO_XENSTORE' type='enum'/>
      <exports symbol='VIR_FROM_DOM' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_DOMAIN' type='enum'/>
      <exports symbol='VIR_FROM_XML' type='enum'/>
+     <exports symbol='VIR_FROM_CONF' type='enum'/>
+     <exports symbol='VIR_ERR_PARSE_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_NO_KERNEL' type='enum'/>
      <exports symbol='VIR_ERR_POST_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_OS_TYPE' type='enum'/>
@@ -125,17 +127,21 @@
      <exports symbol='VIR_ERR_OPERATION_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_GET_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_DRIVER_FULL' type='enum'/>
-     <exports symbol='VIR_ERR_DOM_EXIST' type='enum'/>
+     <exports symbol='VIR_ERR_HTTP_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_NO_SOURCE' type='enum'/>
      <exports symbol='VIR_ERR_NO_TARGET' type='enum'/>
      <exports symbol='VIR_ERR_OPERATION_DENIED' type='enum'/>
+     <exports symbol='VIR_ERR_WRITE_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_INTERNAL_ERROR' type='enum'/>
+     <exports symbol='VIR_ERR_CONF_SYNTAX' type='enum'/>
      <exports symbol='VIR_ERR_NO_SUPPORT' type='enum'/>
      <exports symbol='VIR_FROM_XEND' type='enum'/>
      <exports symbol='VIR_FROM_PROXY' type='enum'/>
+     <exports symbol='VIR_ERR_READ_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_SEXPR_SERIAL' type='enum'/>
      <exports symbol='VIR_FROM_XENSTORE' type='enum'/>
      <exports symbol='VIR_FROM_XEN' type='enum'/>
+     <exports symbol='VIR_ERR_OPEN_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_XEN_CALL' type='enum'/>
      <exports symbol='VIR_ERR_UNKNOWN_HOST' type='enum'/>
      <exports symbol='VIR_ERR_NO_CONNECT' type='enum'/>
@@ -218,6 +224,7 @@
     <enum name='VIR_DOMAIN_SHUTDOWN' file='libvirt' value='4' type='virDomainState' info='the domain is being shut down'/>
     <enum name='VIR_DOMAIN_SHUTOFF' file='libvirt' value='5' type='virDomainState' info='the domain is shut off'/>
     <enum name='VIR_ERR_CALL_FAILED' file='virterror' value='26' type='virErrorNumber' info='not supported by the drivers'/>
+    <enum name='VIR_ERR_CONF_SYNTAX' file='virterror' value='33' type='virErrorNumber' info='failed to parse the syntax of a conf file'/>
     <enum name='VIR_ERR_DOM_EXIST' file='virterror' value='28' type='virErrorNumber' info='the domain already exist'/>
     <enum name='VIR_ERR_DRIVER_FULL' file='virterror' value='25' type='virErrorNumber' info='too many drivers registered'/>
     <enum name='VIR_ERR_ERROR' file='virterror' value='2' type='virErrorLevel' info=' An error'/>
@@ -241,18 +248,23 @@
     <enum name='VIR_ERR_NO_XEN' file='virterror' value='14' type='virErrorNumber' info='could not open Xen hypervisor control'/>
     <enum name='VIR_ERR_NO_XENSTORE' file='virterror' value='24' type='virErrorNumber' info='could not open Xen Store control'/>
     <enum name='VIR_ERR_OK' file='virterror' value='0' type='virErrorNumber'/>
-    <enum name='VIR_ERR_OPERATION_DENIED' file='virterror' value='29' type='virErrorNumber' info=' operation forbidden on read-only connections'/>
+    <enum name='VIR_ERR_OPEN_FAILED' file='virterror' value='30' type='virErrorNumber' info='failed to open a conf file'/>
+    <enum name='VIR_ERR_OPERATION_DENIED' file='virterror' value='29' type='virErrorNumber' info='operation forbidden on read-only connections'/>
     <enum name='VIR_ERR_OPERATION_FAILED' file='virterror' value='9' type='virErrorNumber' info='a command to hypervisor failed'/>
     <enum name='VIR_ERR_OS_TYPE' file='virterror' value='16' type='virErrorNumber' info='unknown OS type'/>
+    <enum name='VIR_ERR_PARSE_FAILED' file='virterror' value='32' type='virErrorNumber' info='failed to parse a conf file'/>
     <enum name='VIR_ERR_POST_FAILED' file='virterror' value='11' type='virErrorNumber' info='a HTTP POST command to failed'/>
+    <enum name='VIR_ERR_READ_FAILED' file='virterror' value='31' type='virErrorNumber' info='failed to read a conf file'/>
     <enum name='VIR_ERR_SEXPR_SERIAL' file='virterror' value='13' type='virErrorNumber' info='failure to serialize an S-Expr'/>
     <enum name='VIR_ERR_UNKNOWN_HOST' file='virterror' value='4' type='virErrorNumber' info='could not resolve hostname'/>
     <enum name='VIR_ERR_WARNING' file='virterror' value='1' type='virErrorLevel' info='A simple warning'/>
+    <enum name='VIR_ERR_WRITE_FAILED' file='virterror' value='34' type='virErrorNumber' info=' failed to write a conf file'/>
     <enum name='VIR_ERR_XEN_CALL' file='virterror' value='15' type='virErrorNumber' info='failure doing an hypervisor call'/>
     <enum name='VIR_ERR_XML_ERROR' file='virterror' value='27' type='virErrorNumber' info='an XML description is not well formed or broken'/>
+    <enum name='VIR_FROM_CONF' file='virterror' value='9' type='virErrorDomain' info=' Error in the configuration file handling'/>
     <enum name='VIR_FROM_DOM' file='virterror' value='6' type='virErrorDomain' info='Error when operating on a domain'/>
     <enum name='VIR_FROM_NONE' file='virterror' value='0' type='virErrorDomain'/>
-    <enum name='VIR_FROM_PROXY' file='virterror' value='8' type='virErrorDomain' info=' Error in the proxy code'/>
+    <enum name='VIR_FROM_PROXY' file='virterror' value='8' type='virErrorDomain' info='Error in the proxy code'/>
     <enum name='VIR_FROM_RPC' file='virterror' value='7' type='virErrorDomain' info='Error in the XML-RPC code'/>
     <enum name='VIR_FROM_SEXPR' file='virterror' value='4' type='virErrorDomain' info='Error in the S-Epression code'/>
     <enum name='VIR_FROM_XEN' file='virterror' value='1' type='virErrorDomain' info='Error at Xen hypervisor layer'/>

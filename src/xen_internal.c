@@ -90,7 +90,7 @@ struct xen_v0_getdomaininfo {
     uint32_t flags;	/* falgs, see before */
     uint64_t tot_pages;	/* total number of pages used */
     uint64_t max_pages;	/* maximum number of pages allowed */
-    uint64_t shared_info_frame;  /* MFN of shared_info struct */
+    unsigned long shared_info_frame; /* MFN of shared_info struct */
     uint64_t cpu_time;  /* CPU time used */
     uint32_t nr_online_vcpus;  /* Number of VCPUs currently online. */
     uint32_t max_vcpu_id; /* Maximum VCPUID in use by this domain. */

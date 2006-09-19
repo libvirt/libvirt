@@ -1,3 +1,8 @@
+Tue Sep 19 16:59:53 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c: applied patch from Jim Fehlig, about
+	  one of the content of the hypercall structures in 3.0.2
+
 Thu Sep 14 10:33:23 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/xml.c: Append :disk for normal disk devices being created
