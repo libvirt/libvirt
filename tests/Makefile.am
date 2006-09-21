@@ -19,9 +19,10 @@ LDADDS = \
 
 EXTRA_DIST = xmlrpcserver.py test_conf.sh
 
-noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest conftest
+noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest conftest \
+	reconnect
 
-TESTS = xml2sexprtest sexpr2xmltest virshtest test_conf.sh
+TESTS = xml2sexprtest sexpr2xmltest virshtest test_conf.sh reconnect
 
 valgrind:
 	$(MAKE) check TESTS_ENVIRONMENT="valgrind --quiet"
@@ -58,6 +59,11 @@ conftest_SOURCES = \
 	conftest.c
 conftest_LDFLAGS =
 conftest_LDADD = $(LDADDS)
+
+reconnect_SOURCES = \
+	reconnect.c
+reconnect_LDFLAGS =
+reconnect_LDADD = $(LDADDS)
 
 $(LIBVIRT):
 	-@(cd $(top_builddir)/src && $(MAKE) MAKEFLAGS+=--silent)

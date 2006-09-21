@@ -2421,8 +2421,11 @@ xenDaemonGetType(virConnectPtr conn)
 int
 xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer)
 {
-    static unsigned long version = 0;
-
+    struct sexpr *root;
+    const char *extra;
+    int major, minor, release = 0;
+    unsigned long version;
+    
     if (!VIR_IS_CONNECT(conn)) {
         virXendError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
         return (-1);
@@ -2431,28 +2434,22 @@ xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer)
         virXendError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
     }
-    if (version == 0) {
-	struct sexpr *root;
-	const char *extra;
-	int major, minor, release = 0;
-        
-	root = sexpr_get(conn, "/xend/node/");
-	if (root == NULL)
-	    return(-1);
+    root = sexpr_get(conn, "/xend/node/");
+    if (root == NULL)
+	return(-1);
 
-	major = sexpr_int(root, "node/xen_major");
-	minor = sexpr_int(root, "node/xen_minor");
-	extra = sexpr_node(root, "node/xen_extra");
-	if (extra != NULL) {
-	    while (*extra != 0) {
-	        if ((*extra >= '0') && (*extra <= '9'))
-		    release = release * 10 + (*extra - '0');
-	        extra++;
-	    }
+    major = sexpr_int(root, "node/xen_major");
+    minor = sexpr_int(root, "node/xen_minor");
+    extra = sexpr_node(root, "node/xen_extra");
+    if (extra != NULL) {
+	while (*extra != 0) {
+	    if ((*extra >= '0') && (*extra <= '9'))
+		release = release * 10 + (*extra - '0');
+	    extra++;
 	}
-	sexpr_free(root);
-	version = major * 1000000 + minor * 1000 + release;
     }
+    sexpr_free(root);
+    version = major * 1000000 + minor * 1000 + release;
     *hvVer = version;
     return(0);
 }

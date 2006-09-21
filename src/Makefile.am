@@ -35,3 +35,8 @@ virsh_LDFLAGS =
 virsh_DEPENDENCIES = $(DEPS)
 virsh_LDADD = $(LDADDS) $(VIRSH_LIBS)
 
+#
+# target to ease building test programs
+#
+tst: tst.c
+	$(CC) $(CFLAGS) -I../include -o tst tst.c .libs/libvirt.a -lxml2 -lxenstore -lpthread
