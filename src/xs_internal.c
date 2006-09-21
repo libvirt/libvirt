@@ -315,7 +315,7 @@ xenStoreOpen(virConnectPtr conn, const char *name, int flags)
     if (conn->xshandle == NULL) {
         if (!(flags & VIR_DRV_OPEN_QUIET))
             virXenStoreError(conn, VIR_ERR_NO_XEN, 
-	                     "failed to connect to Xen Store");
+	                     _("failed to connect to Xen Store"));
         return (-1);
     }
     return (0);
@@ -589,7 +589,7 @@ xenStoreDomainLookupByName(virConnectPtr conn, const char *name)
 
     ret = virGetDomain(conn, name, NULL);
     if (ret == NULL) {
-        virXenStoreError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
+        virXenStoreError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
 	if (path != NULL)
 	    free(path);
 	goto done;

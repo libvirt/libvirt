@@ -1,5 +1,15 @@
 Thu Sep 21 10:19:02 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
+	* Makefile.am: Added po directory
+	* autogen.sh: Call autopoint to install the gettext infrastructure
+	* src/*.c, proxy/*.c: Pass all strings through gettext for translation.
+	Set up the text domains in libvirt, proxy & virsh at startup.
+	* libvirt.spec.in: Include compiled .po files in distro
+	* tests/virshdata/*.txt: Tweak expected data to take account of
+	some text changes.
+
+Thu Sep 21 10:19:02 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
 	* docs/*.html: re-generated documentation to pull in latest
 	APIs
 

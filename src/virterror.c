@@ -240,10 +240,10 @@ virDefaultErrorFunc(virErrorPtr err)
             lvl = "";
             break;
         case VIR_ERR_WARNING:
-            lvl = "warning";
+            lvl = _("warning");
             break;
         case VIR_ERR_ERROR:
-            lvl = "error";
+            lvl = _("error");
             break;
     }
     switch (err->domain) {
@@ -325,7 +325,7 @@ __virRaiseError(virConnectPtr conn, virDomainPtr dom,
      * formats the message
      */
     if (msg == NULL) {
-        str = strdup("No error message provided");
+        str = strdup(_("No error message provided"));
     } else {
         VIR_GET_VAR_STR(msg, str);
     }
@@ -379,195 +379,195 @@ __virErrorMsg(virErrorNumber error, const char *info)
             return (NULL);
         case VIR_ERR_INTERNAL_ERROR:
             if (info != NULL)
-                errmsg = "internal error %s";
+	      errmsg = _("internal error %s");
             else
-                errmsg = "internal error";
+	      errmsg = _("internal error");
             break;
         case VIR_ERR_NO_MEMORY:
-            errmsg = "out of memory";
+            errmsg = _("out of memory");
             break;
         case VIR_ERR_NO_SUPPORT:
             if (info != NULL)
-		errmsg = "no support for hypervisor";
+		errmsg = _("no support for hypervisor");
 	    else
-		errmsg = "no support for hypervisor %s";
+		errmsg = _("no support for hypervisor %s");
             break;
         case VIR_ERR_NO_CONNECT:
             if (info == NULL)
-                errmsg = "could not connect to hypervisor";
+                errmsg = _("could not connect to hypervisor");
             else
-                errmsg = "could not connect to %s";
+                errmsg = _("could not connect to %s");
             break;
         case VIR_ERR_INVALID_CONN:
             if (info == NULL)
-		errmsg = "invalid connection pointer in";
+		errmsg = _("invalid connection pointer in");
 	    else
-		errmsg = "invalid connection pointer in %s";
+		errmsg = _("invalid connection pointer in %s");
             break;
         case VIR_ERR_INVALID_DOMAIN:
             if (info == NULL)
-		errmsg = "invalid domain pointer in";
+		errmsg = _("invalid domain pointer in");
 	    else
-	        errmsg = "invalid domain pointer in %s";
+	        errmsg = _("invalid domain pointer in %s");
             break;
         case VIR_ERR_INVALID_ARG:
             if (info == NULL)
-		errmsg = "invalid argument in";
+		errmsg = _("invalid argument in");
 	    else
-		errmsg = "invalid argument in %s";
+		errmsg = _("invalid argument in %s");
             break;
         case VIR_ERR_OPERATION_FAILED:
             if (info != NULL)
-                errmsg = "operation failed: %s";
+                errmsg = _("operation failed: %s");
             else
-                errmsg = "operation failed";
+                errmsg = _("operation failed");
             break;
         case VIR_ERR_GET_FAILED:
             if (info != NULL)
-                errmsg = "GET operation failed: %s";
+                errmsg = _("GET operation failed: %s");
             else
-                errmsg = "GET operation failed";
+                errmsg = _("GET operation failed");
             break;
         case VIR_ERR_POST_FAILED:
             if (info != NULL)
-                errmsg = "POST operation failed: %s";
+                errmsg = _("POST operation failed: %s");
             else
-                errmsg = "POST operation failed";
+                errmsg = _("POST operation failed");
             break;
         case VIR_ERR_HTTP_ERROR:
-            errmsg = "got unknown HTTP error code %d";
+            errmsg = _("got unknown HTTP error code %d");
             break;
         case VIR_ERR_UNKNOWN_HOST:
             if (info != NULL)
-		errmsg = "unknown host %s";
+		errmsg = _("unknown host %s");
 	    else
-		errmsg = "unknown host";
+		errmsg = _("unknown host");
             break;
         case VIR_ERR_SEXPR_SERIAL:
             if (info != NULL)
-                errmsg = "failed to serialize S-Expr: %s";
+                errmsg = _("failed to serialize S-Expr: %s");
             else
-                errmsg = "failed to serialize S-Expr";
+                errmsg = _("failed to serialize S-Expr");
             break;
         case VIR_ERR_NO_XEN:
             if (info == NULL)
-                errmsg = "could not use Xen hypervisor entry";
+                errmsg = _("could not use Xen hypervisor entry");
             else
-                errmsg = "could not use Xen hypervisor entry %s";
+                errmsg = _("could not use Xen hypervisor entry %s");
             break;
 	case VIR_ERR_NO_XENSTORE:
             if (info == NULL)
-                errmsg = "could not connect to Xen Store";
+                errmsg = _("could not connect to Xen Store");
             else
-                errmsg = "could not connect to Xen Store %s";
+                errmsg = _("could not connect to Xen Store %s");
             break;
         case VIR_ERR_XEN_CALL:
-            errmsg = "failed Xen syscall %s %d";
+            errmsg = _("failed Xen syscall %s %d");
             break;
         case VIR_ERR_OS_TYPE:
             if (info == NULL)
-                errmsg = "unknown OS type";
+                errmsg = _("unknown OS type");
             else
-                errmsg = "unknown OS type %s";
+                errmsg = _("unknown OS type %s");
             break;
         case VIR_ERR_NO_KERNEL:
-            errmsg = "missing kernel information";
+            errmsg = _("missing kernel information");
             break;
         case VIR_ERR_NO_ROOT:
             if (info == NULL)
-                errmsg = "missing root device information";
+                errmsg = _("missing root device information");
             else
-                errmsg = "missing root device information in %s";
+                errmsg = _("missing root device information in %s");
             break;
         case VIR_ERR_NO_SOURCE:
             if (info == NULL)
-                errmsg = "missing source information for device";
+                errmsg = _("missing source information for device");
             else
-                errmsg = "missing source information for device %s";
+                errmsg = _("missing source information for device %s");
             break;
         case VIR_ERR_NO_TARGET:
             if (info == NULL)
-                errmsg = "missing target information for device";
+                errmsg = _("missing target information for device");
             else
-                errmsg = "missing target information for device %s";
+                errmsg = _("missing target information for device %s");
             break;
         case VIR_ERR_NO_NAME:
             if (info == NULL)
-                errmsg = "missing domain name information";
+                errmsg = _("missing domain name information");
             else
-                errmsg = "missing domain name information in %s";
+                errmsg = _("missing domain name information in %s");
             break;
         case VIR_ERR_NO_OS:
             if (info == NULL)
-                errmsg = "missing operating system information";
+                errmsg = _("missing operating system information");
             else
-                errmsg = "missing operating system information for %s";
+                errmsg = _("missing operating system information for %s");
             break;
         case VIR_ERR_NO_DEVICE:
             if (info == NULL)
-                errmsg = "missing devices information";
+                errmsg = _("missing devices information");
             else
-                errmsg = "missing devices information for %s";
+                errmsg = _("missing devices information for %s");
             break;
         case VIR_ERR_DRIVER_FULL:
             if (info == NULL)
-                errmsg = "too many drivers registered";
+                errmsg = _("too many drivers registered");
             else
-                errmsg = "too many drivers registered in %s";
+                errmsg = _("too many drivers registered in %s");
             break;
         case VIR_ERR_CALL_FAILED:
             if (info == NULL)
-                errmsg = "library call failed, possibly not supported";
+                errmsg = _("library call failed, possibly not supported");
             else
-                errmsg = "library call %s failed, possibly not supported";
+                errmsg = _("library call %s failed, possibly not supported");
             break;
 	case VIR_ERR_XML_ERROR:
 	    if (info == NULL)
-	        errmsg = "XML description not well formed or invalid";
+	        errmsg = _("XML description not well formed or invalid");
 	    else
-	        errmsg = "XML description for %s is not well formed or invalid";
+	        errmsg = _("XML description for %s is not well formed or invalid");
             break;
 	case VIR_ERR_DOM_EXIST:
 	    if (info == NULL)
-	        errmsg = "this domain exists already";
+	        errmsg = _("this domain exists already");
 	    else
-	        errmsg = "domain %s exists already";
+	        errmsg = _("domain %s exists already");
             break;
 	case VIR_ERR_OPERATION_DENIED:
 	    if (info == NULL)
-	        errmsg = "operation forbidden for read only access";
+	        errmsg = _("operation forbidden for read only access");
 	    else
-	        errmsg = "operation %s forbidden for read only access";
+	        errmsg = _("operation %s forbidden for read only access");
             break;
 	case VIR_ERR_OPEN_FAILED:
 	    if (info == NULL)
-	        errmsg = "failed to open configuration file for reading";
+	        errmsg = _("failed to open configuration file for reading");
 	    else
-	        errmsg = "failed to open %s for reading";
+	        errmsg = _("failed to open %s for reading");
             break;
 	case VIR_ERR_READ_FAILED:
 	    if (info == NULL)
-	        errmsg = "failed to read configuration file";
+	        errmsg = _("failed to read configuration file");
 	    else
-	        errmsg = "failed to read configuration file %s";
+	        errmsg = _("failed to read configuration file %s");
             break;
 	case VIR_ERR_PARSE_FAILED:
 	    if (info == NULL)
-	        errmsg = "failed to parse configuration file";
+	        errmsg = _("failed to parse configuration file");
 	    else
-	        errmsg = "failed to parse configuration file %s";
+	        errmsg = _("failed to parse configuration file %s");
             break;
 	case VIR_ERR_CONF_SYNTAX:
 	    if (info == NULL)
-	        errmsg = "configuration file syntax error";
+	        errmsg = _("configuration file syntax error");
 	    else
-	        errmsg = "configuration file syntax error: %s";
+	        errmsg = _("configuration file syntax error: %s");
             break;
 	case VIR_ERR_WRITE_FAILED:
 	    if (info == NULL)
-	        errmsg = "failed to write configuration file";
+	        errmsg = _("failed to write configuration file");
 	    else
-	        errmsg = "failed to write configuration file: %s";
+	        errmsg = _("failed to write configuration file: %s");
             break;
     }
     return (errmsg);

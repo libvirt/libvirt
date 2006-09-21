@@ -715,6 +715,19 @@ usage(const char *progname) {
 int main(int argc, char **argv) {
     int i;
 
+    if (!setlocale(LC_ALL, "")) {
+        perror("setlocale");
+	return -1;
+    }
+    if (!bindtextdomain(GETTEXT_PACKAGE, LOCALEBASEDIR)) {
+        perror("bindtextdomain");
+	return -1;
+    }
+    if (!textdomain(GETTEXT_PACKAGE)) {
+        perror("textdomain");
+	return -1;
+    }
+
     for (i = 1; i < argc; i++) {
          if (!strcmp(argv[i], "-v")) {
 	     debug++;
@@ -725,7 +738,8 @@ int main(int argc, char **argv) {
 	     exit(1);
 	 }
     }
-    
+
+
     if (geteuid() != 0) {
         fprintf(stderr, "%s must be run as root or suid\n", argv[0]);
 	/* exit(1); */

@@ -1238,7 +1238,7 @@ xenHypervisorNumOfDomains(virConnectPtr conn)
 retry:
     dominfos = malloc(maxids * sizeof(xen_v0_getdomaininfo));
     if (dominfos == NULL) {
-        virXenError(VIR_ERR_NO_MEMORY, "failed to allocate %d domain info",
+        virXenError(VIR_ERR_NO_MEMORY, _("allocating %d domain info"),
 	            maxids);
 	return(-1);
     }
@@ -1285,7 +1285,7 @@ xenHypervisorListDomains(virConnectPtr conn, int *ids, int maxids)
 
     dominfos = malloc(maxids * sizeof(xen_v0_getdomaininfo));
     if (dominfos == NULL) {
-        virXenError(VIR_ERR_NO_MEMORY, "failed to allocate %d domain info",
+        virXenError(VIR_ERR_NO_MEMORY, "allocating %d domain info",
 	            maxids);
 	return(-1);
     }

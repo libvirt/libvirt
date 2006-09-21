@@ -2,7 +2,7 @@ Id:             1
 Name:           fc4
 UUID:           ef861801-45b9-11cb-88e3-afbfe5370493
 OS Type:        linux
-State:          running 
+State:          running
 CPU(s):         1
 Max memory:     131072 kB
 Used memory:    131072 kB

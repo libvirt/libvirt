@@ -261,10 +261,10 @@ wr_sync(int fd, void *buffer, size_t size, int do_read)
         if (len == -1) {
             if (do_read)
                 virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-                             "faid to read from Xen Daemon");
+                             _("failed to read from Xen Daemon"));
             else
                 virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-                             "faid to read from Xen Daemon");
+                             _("failed to read from Xen Daemon"));
 
             return (-1);
         }
@@ -1053,7 +1053,7 @@ xenDaemonDomainCreateLinux(virConnectPtr xend, const char *sexpr)
     if (ptr == NULL) {
         /* this should be caught at the interface but ... */
         virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-                     "Failed to urlencode the create S-Expr");
+                     _("failed to urlencode the create S-Expr"));
         return (-1);
     }
 
@@ -1094,20 +1094,20 @@ xenDaemonDomainLookupByName_ids(virConnectPtr xend, const char *domname,
     value = sexpr_node(root, "domain/domid");
     if (value == NULL) {
         virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-                     "domain information incomplete, missing domid");
+                     _("domain information incomplete, missing domid"));
         goto error;
     }
     ret = strtol(value, NULL, 0);
     if ((ret == 0) && (value[0] != '0')) {
         virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-                     "domain information incorrect domid not numberic");
+                     _("domain information incorrect domid not numeric"));
         ret = -1;
     } else if (uuid != NULL) {
         char **ptr = (char **) &uuid;
 
         if (sexpr_uuid(ptr, root, "domain/uuid") == NULL) {
             virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-                         "domain information incomplete, missing uuid");
+                         _("domain information incomplete, missing uuid"));
         }
     }
 
@@ -1147,7 +1147,7 @@ xenDaemonDomainLookupByID(virConnectPtr xend,
     name = sexpr_node(root, "domain/name");
     if (name == NULL) {
       virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-                   "domain information incomplete, missing name");
+                   _("domain information incomplete, missing name"));
       goto error;
     }
     if (domname)
@@ -1156,7 +1156,7 @@ xenDaemonDomainLookupByID(virConnectPtr xend,
     dst_uuid = (char *)&uuid[0];
     if (sexpr_uuid(&dst_uuid, root, "domain/uuid") == NULL) {
       virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-                   "domain information incomplete, missing uuid");
+                   _("domain information incomplete, missing uuid"));
       goto error;
     }
 
@@ -1405,7 +1405,7 @@ xend_parse_sexp_desc_os(struct sexpr *node, virBufferPtr buf, int hvm)
         tmp = sexpr_node(node, "domain/image/hvm/kernel");
         if (tmp == NULL) {
             virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-                         "domain information incomplete, missing kernel");
+                         _("domain information incomplete, missing kernel"));
             return(-1);
 	}
         virBufferVSprintf(buf, "    <loader>%s</loader>\n", tmp);
@@ -1430,7 +1430,7 @@ xend_parse_sexp_desc_os(struct sexpr *node, virBufferPtr buf, int hvm)
         tmp = sexpr_node(node, "domain/image/linux/kernel");
         if (tmp == NULL) {
             virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-                         "domain information incomplete, missing kernel");
+                         _("domain information incomplete, missing kernel"));
             return(-1);
 	}
         virBufferVSprintf(buf, "    <kernel>%s</kernel>\n", tmp);
@@ -1484,11 +1484,11 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
 
     domid = sexpr_int(root, "domain/domid");
     virBufferVSprintf(&buf, "<domain type='xen' id='%d'>\n", domid);
-                      
+
     tmp = sexpr_node(root, "domain/name");
     if (tmp == NULL) {
         virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-                     "domain information incomplete, missing name");
+                     _("domain information incomplete, missing name"));
         goto error;
     }
     virBufferVSprintf(&buf, "  <name>%s</name>\n", tmp);
@@ -1540,7 +1540,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
             virBufferAdd(&buf, "    <pae/>\n", 11);
         virBufferAdd(&buf, "  </features>\n", 14);
     }
-       
+
     virBufferAdd(&buf, "  <devices>\n", 12);
 
     /* in case of HVM we have devices emulation */
@@ -1561,9 +1561,10 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
 
                 if (dst == NULL) {
                     virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-                                 "domain information incomplete, vbd has no dev");
+                                 _("domain information incomplete, vbd has no dev"));
                     goto error;
                 }
+
                 if (!strncmp(dst, "ioemu:", 6)) 
                     dst += 6;
                 /* New style disk config from Xen >= 3.0.3 */
@@ -1597,9 +1598,10 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
 
                 if (dst == NULL) {
                     virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-                                 "domain information incomplete, vbd has no dev");
+                                 _("domain information incomplete, vbd has no dev"));
                     goto error;
                 }
+
                 if (!strncmp(dst, "ioemu:", 6)) 
                     dst += 6;
                 /* New style cdrom config from Xen >= 3.0.3 */
@@ -1859,7 +1861,7 @@ sexpr_to_domain(virConnectPtr conn, struct sexpr *root)
 
     ret = virGetDomain(conn, name, (const unsigned char *) &uuid[0]);
     if (ret == NULL) {
-        virXendError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
+        virXendError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
 	return(NULL);
     }
     ret->handle = sexpr_int(root, "domain/domid");
@@ -1870,7 +1872,7 @@ sexpr_to_domain(virConnectPtr conn, struct sexpr *root)
 
 error:
     virXendError(conn, VIR_ERR_INTERNAL_ERROR,
-                 "failed to parse Xend domain information");
+                 _("failed to parse Xend domain information"));
     if (ret != NULL)
         virFreeDomain(conn, ret);
     return(NULL);
@@ -1949,7 +1951,7 @@ try_http:
 	    ret = xenDaemonOpen_unix(conn, uri->path);
 	    if (ret < 0)
 	        goto failed;
-		
+
 	    ret = xenDaemonGetVersion(conn, &version);
 	    if (ret < 0)
 		goto failed;
@@ -2555,7 +2557,7 @@ xenDaemonLookupByID(virConnectPtr conn, int id) {
 
     ret = virGetDomain(conn, name, uuid);
     if (ret == NULL) {
-        virXendError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
+        virXendError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
         goto error;
     }
     ret->handle = id;
@@ -2763,7 +2765,7 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 
     ret = virGetDomain(conn, name, uuid);
     if (ret == NULL) {
-        virXendError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
+      virXendError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
         goto error;
     }
     ret->handle = id;
@@ -2826,13 +2828,13 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
     ret = xenDaemonDomainCreateLinux(conn, sexpr);
     free(sexpr);
     if (ret != 0) {
-        fprintf(stderr, "Failed to create domain %s\n", name);
+        fprintf(stderr, _("Failed to create domain %s\n"), name);
         goto error;
     }
 
     ret = xend_wait_for_devices(conn, name);
     if (ret != 0) {
-        fprintf(stderr, "Failed to get devices for domain %s\n", name);
+        fprintf(stderr, _("Failed to get devices for domain %s\n"), name);
         goto error;
     }
 
@@ -2843,7 +2845,7 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
 
     ret = xenDaemonDomainResume(dom);
     if (ret != 0) {
-        fprintf(stderr, "Failed to resume new domain %s\n", name);
+        fprintf(stderr, _("Failed to resume new domain %s\n"), name);
         xenDaemonDomainDestroy(dom);
         goto error;
     }

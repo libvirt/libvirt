@@ -10,8 +10,8 @@ INCLUDES = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/src \
 	@LIBXML_CFLAGS@ \
-        -D_XOPEN_SOURCE=600 -D_POSIX_C_SOURCE=199506L
-
+        -D_XOPEN_SOURCE=600 -D_POSIX_C_SOURCE=199506L \
+        -DGETTEXT_PACKAGE=\"$(PACKAGE)\"
 LDADDS = \
 	@STATIC_BINARIES@ \
 	@LIBXML_LIBS@ \

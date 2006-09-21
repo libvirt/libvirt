@@ -8,6 +8,14 @@ THEDIR=`pwd`
 cd $srcdir
 DIE=0
 
+(autopoint --version) < /dev/null > /dev/null 2>&1 || {
+        echo
+        echo "You must have autopoint installed to compile libvirt."
+        echo "Download the appropriate package for your distribution,"
+        echo "or see http://www.gnu.org/software/gettext"
+        DIE=1
+}
+
 (autoconf --version) < /dev/null > /dev/null 2>&1 || {
 	echo
 	echo "You must have autoconf installed to compile libvirt."
@@ -46,6 +54,8 @@ if test -z "$*"; then
         echo "to pass any to it, please specify them on the $0 command line."
 fi
 
+autopoint --force
+#rm -rf m4
 libtoolize --copy --force
 aclocal $ACLOCAL_FLAGS
 automake --add-missing

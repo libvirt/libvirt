@@ -60,8 +60,8 @@ static char *xmlGetText(xmlNodePtr node)
 	if (node->type == XML_TEXT_NODE) {
 	    char *x = strdup((const char *)node->content);
 	    if (!x)
-		xmlRpcError(VIR_ERR_NO_MEMORY, "copying node content", 
-				strlen((const char *)node->content));
+                xmlRpcError(VIR_ERR_NO_MEMORY, _("copying node content"),
+                            strlen((const char *)node->content));
 	    return x;
 	}
     return NULL;
@@ -154,14 +154,14 @@ static xmlRpcValuePtr xmlRpcValueUnmarshalArray(xmlNodePtr node)
 
     if (!ret)
         return NULL;
-    
+
     for (cur = xmlFirstElement(node); cur; cur = xmlNextElement(cur))
 	n_elements += 1;
 
     ret->value.array.elements = malloc(n_elements * sizeof(xmlRpcValue));
     if (!ret->value.array.elements) {
-        xmlRpcError(VIR_ERR_NO_MEMORY, "allocate value array", 
-				n_elements * sizeof(xmlRpcValue));
+        xmlRpcError(VIR_ERR_NO_MEMORY, _("allocate value array"),
+                    n_elements * sizeof(xmlRpcValue));
 	free(ret);
 	return NULL;
     }
@@ -193,7 +193,7 @@ static xmlRpcValueDictElementPtr xmlRpcValueUnmarshalDictElement(xmlNodePtr node
 	} else if (xmlStrEqual(cur->name, BAD_CAST "value")) {
 	    ret->value = xmlRpcValueUnmarshal(cur);
 	} else {
-	    xmlRpcError(VIR_ERR_XML_ERROR, "unexpected dict node", 0);
+            xmlRpcError(VIR_ERR_XML_ERROR, _("unexpected dict node"), 0);
 	    if (ret->name)
 		free(ret->name);
 	    if (ret->value)
@@ -265,7 +265,7 @@ xmlRpcValuePtr xmlRpcValueUnmarshal(xmlNodePtr node)
     } else if (xmlStrEqual(node->name, BAD_CAST "nil")) {
 	ret = xmlRpcValueNew(XML_RPC_NIL);
     } else {
-	xmlRpcError(VIR_ERR_XML_ERROR, "unexpected value node", 0);
+        xmlRpcError(VIR_ERR_XML_ERROR, _("unexpected value node"), 0);
     }
 
     return ret;
@@ -426,22 +426,22 @@ static char *xmlRpcCallRaw(const char *url, const char *request)
 				&contentType,
 				NULL,
 				strlen(request));
-	
+
 	if (cxt == NULL) {
-		xmlRpcError(VIR_ERR_POST_FAILED, "send request", 0);
+                xmlRpcError(VIR_ERR_POST_FAILED, _("send request"), 0);
 		goto error;
 	}
 
 	if (contentType && strcmp(contentType, "text/xml") != 0) {
 		errno = EINVAL;
-		xmlRpcError(VIR_ERR_POST_FAILED, "unexpected mime type", 0);
+		xmlRpcError(VIR_ERR_POST_FAILED, _("unexpected mime type"), 0);
 		goto error;
 	}
 
 	len = xmlNanoHTTPContentLength(cxt);
 	response = malloc(len + 1);
 	if (response == NULL) {
-		xmlRpcError(VIR_ERR_NO_MEMORY, "allocate response", len);
+		xmlRpcError(VIR_ERR_NO_MEMORY, _("allocate response"), len);
 		goto error;
 	}
 	ret = xmlNanoHTTPRead(cxt, response, len);
@@ -449,7 +449,7 @@ static char *xmlRpcCallRaw(const char *url, const char *request)
 		errno = EINVAL;
 		free(response);
 		response = NULL;
-		xmlRpcError(VIR_ERR_POST_FAILED, "read response", 0);
+		xmlRpcError(VIR_ERR_POST_FAILED, _("read response"), 0);
 	}
 
 	response[len] = 0;
@@ -481,7 +481,7 @@ static char **xmlRpcStringArray(xmlRpcValuePtr value)
 	    size += strlen(value->value.array.elements[i]->value.string) + 1;
 
     if (!(ptr = malloc(size))) {
-	xmlRpcError(VIR_ERR_NO_MEMORY, "allocate string array", size);
+	xmlRpcError(VIR_ERR_NO_MEMORY, _("allocate string array"), size);
 	return NULL;
     }
     ret = (char **)ptr;
@@ -511,7 +511,7 @@ xmlRpcArgvNew(const char *fmt, va_list ap, int *argc)
     
     *argc = strlen(fmt);
     if (!(argv = malloc(sizeof(*argv) * *argc))) {
-        xmlRpcError(VIR_ERR_NO_MEMORY, "read response", sizeof(*argv) * *argc);
+        xmlRpcError(VIR_ERR_NO_MEMORY, _("read response"), sizeof(*argv) * *argc);
         return NULL;
     }
     i = 0;
@@ -603,7 +603,7 @@ int xmlRpcCall(xmlRpcContextPtr context, const char *method,
 
     if (xml == NULL) {
 	errno = EINVAL;
-	xmlRpcError(VIR_ERR_XML_ERROR, "parse server response failed", 0);
+	xmlRpcError(VIR_ERR_XML_ERROR, _("parse server response failed"), 0);
 	return -1;
     }
 
@@ -667,7 +667,7 @@ xmlRpcContextPtr xmlRpcContextNew(const char *uri)
 	ret->uri = strdup(uri);
 	ret->faultMessage = NULL;
     } else
-	xmlRpcError(VIR_ERR_NO_MEMORY, "allocate new context", sizeof(*ret));
+        xmlRpcError(VIR_ERR_NO_MEMORY, _("allocate new context"), sizeof(*ret));
 
     return ret;
 }

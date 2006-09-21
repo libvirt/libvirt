@@ -190,7 +190,7 @@ virProxyForkServer(void)
         setsid();
         if (fork() == 0) {
             execl(proxyPath, proxyPath, NULL);
-            fprintf(stderr, "failed to exec %s\n", proxyPath);
+            fprintf(stderr, _("failed to exec %s\n"), proxyPath);
         }
         /*
          * calling exit() generate troubles for termination handlers
@@ -284,7 +284,7 @@ virProxyCloseClientSocket(int fd) {
 
     ret = close(fd);
     if (ret != 0)
-	fprintf(stderr, "Failed to close socket %d\n", fd);
+        fprintf(stderr, _("Failed to close socket %d\n"), fd);
     else if (debug > 0)
 	fprintf(stderr, "Closed socket %d\n", fd);
     return(ret);
@@ -317,7 +317,7 @@ retry:
 	    goto retry;
 	}
 	if (!quiet)
-	    fprintf(stderr, "Failed to read socket %d\n", fd);
+            fprintf(stderr, _("Failed to read socket %d\n"), fd);
 	return(-1);
     }
 
@@ -351,7 +351,7 @@ retry:
 		        fd, len);
 	    goto retry;
 	}
-        fprintf(stderr, "Failed to write to socket %d\n", fd);
+        fprintf(stderr, _("Failed to write to socket %d\n"), fd);
 	return(-1);
     }
     if (debug)
@@ -413,7 +413,7 @@ retry:
 	    return(-1);
 	if (ret != sizeof(virProxyPacket)) {
 	    fprintf(stderr,
-		"Communication error with proxy: got %d bytes of %d\n",
+		    _("Communication error with proxy: got %d bytes of %d\n"),
 		    ret, (int) sizeof(virProxyPacket));
 	    xenProxyClose(conn);
 	    return(-1);
@@ -421,7 +421,7 @@ retry:
 	res = request;
 	if (res->len != sizeof(virProxyPacket)) {
 	    fprintf(stderr,
-		"Communication error with proxy: expected %d bytes got %d\n",
+		    _("Communication error with proxy: expected %d bytes got %d\n"),
 		    (int) sizeof(virProxyPacket), res->len);
 	    xenProxyClose(conn);
 	    return(-1);
@@ -434,7 +434,7 @@ retry:
 	    return(-1);
 	if (ret != sizeof(virProxyPacket)) {
 	    fprintf(stderr,
-		"Communication error with proxy: got %d bytes of %d\n",
+		    _("Communication error with proxy: got %d bytes of %d\n"),
 		    ret, (int) sizeof(virProxyPacket));
 	    xenProxyClose(conn);
 	    return(-1);
@@ -443,7 +443,7 @@ retry:
 	if ((res->len < sizeof(virProxyPacket)) ||
 	    (res->len > sizeof(virProxyFullPacket))) {
 	    fprintf(stderr,
-		"Communication error with proxy: got %d bytes packet\n",
+		    _("Communication error with proxy: got %d bytes packet\n"),
 		    res->len);
 	    xenProxyClose(conn);
 	    return(-1);
@@ -454,7 +454,7 @@ retry:
 	                                    res->len - ret, quiet);
 	    if (ret != (int) (res->len - sizeof(virProxyPacket))) {
 		fprintf(stderr,
-		    "Communication error with proxy: got %d bytes of %d\n",
+			_("Communication error with proxy: got %d bytes of %d\n"),
 			ret, (int) sizeof(virProxyPacket));
 		xenProxyClose(conn);
 		return(-1);
@@ -467,13 +467,13 @@ retry:
     if ((res == NULL) || (res->version != PROXY_PROTO_VERSION) ||
         (res->len < sizeof(virProxyPacket))) {
 	fprintf(stderr,
-	    "Communication error with proxy: malformed packet\n");
+		_("Communication error with proxy: malformed packet\n"));
 	xenProxyClose(conn);
 	return(-1);
     }
     if (res->serial != serial) {
         TODO /* Asynchronous communication */
-	fprintf(stderr, "gor asynchronous packet number %d\n", res->serial);
+	fprintf(stderr, _("got asynchronous packet number %d\n"), res->serial);
         goto retry;
     }
     return(0);
@@ -787,7 +787,7 @@ xenProxyLookupByID(virConnectPtr conn, int id)
     res = virGetDomain(conn, name, uuid);
 
     if (res == NULL)
-        virProxyError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
+        virProxyError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
     else
 	res->handle = id;
     
@@ -834,7 +834,7 @@ xenProxyLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     res = virGetDomain(conn, name, uuid);
 
     if (res == NULL)
-        virProxyError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
+        virProxyError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
     else
 	res->handle = req.data.arg;
     
@@ -885,7 +885,7 @@ xenProxyDomainLookupByName(virConnectPtr conn, const char *name)
     res = virGetDomain(conn, name, (const unsigned char *)&req.extra.str[0]);
 
     if (res == NULL)
-        virProxyError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
+        virProxyError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
     else
 	res->handle = req.data.arg;
     

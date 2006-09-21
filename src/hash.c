@@ -528,7 +528,7 @@ virGetConnect(void) {
 
     ret = (virConnectPtr) malloc(sizeof(virConnect));
     if (ret == NULL) {
-        virHashError(NULL, VIR_ERR_NO_MEMORY, "Allocating connection");
+        virHashError(NULL, VIR_ERR_NO_MEMORY, _("allocating connection"));
         goto failed;
     }
     memset(ret, 0, sizeof(virConnect));
@@ -625,13 +625,13 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
      */
     ret = (virDomainPtr) malloc(sizeof(virDomain));
     if (ret == NULL) {
-        virHashError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
+        virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
 	goto error;
     }
     memset(ret, 0, sizeof(virDomain));
     ret->name = strdup(name);
     if (ret->name == NULL) {
-        virHashError(conn, VIR_ERR_NO_MEMORY, "Allocating domain");
+        virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
 	goto error;
     }
     ret->magic = VIR_DOMAIN_MAGIC;
@@ -642,7 +642,7 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
 
     if (virHashAddEntry(conn->domains, name, ret) < 0) {
         virHashError(conn, VIR_ERR_INTERNAL_ERROR,
-	             "Failed to add domain to connectio hash table");
+	             _("failed to add domain to connection hash table"));
 	goto error;
     }
     conn->uses++;
@@ -694,7 +694,7 @@ virFreeDomain(virConnectPtr conn, virDomainPtr domain) {
 
     if (virHashRemoveEntry(conn->domains, domain->name, NULL) < 0) {
         virHashError(conn, VIR_ERR_INTERNAL_ERROR,
-	             "domain missing from connection hash table");
+	             _("domain missing from connection hash table"));
         goto done;
     }
     domain->magic = -1;

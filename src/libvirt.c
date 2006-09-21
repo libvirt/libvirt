@@ -60,10 +60,13 @@ virInitialize(void)
         return(0);
     initialized = 1;
 
+    if (!bindtextdomain(GETTEXT_PACKAGE, LOCALEBASEDIR))
+        return (-1);
+
     /*
      * should not be needed but...
      */
-    for (i = 0;i < MAX_DRIVERS;i++) 
+    for (i = 0;i < MAX_DRIVERS;i++)
          virDriverTab[i] = NULL;
 
     /*
@@ -140,7 +143,8 @@ virRegisterDriver(virDriverPtr driver)
     int i;
 
     if (!initialized)
-        virInitialize();
+        if (virInitialize() < 0)
+	    return -1;
 
     if (driver == NULL) {
         virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
@@ -182,7 +186,8 @@ virGetVersion(unsigned long *libVer, const char *type,
     int i;
 
     if (!initialized)
-        virInitialize();
+        if (virInitialize() < 0)
+	    return -1;
 
     if (libVer == NULL)
         return (-1);
@@ -223,7 +228,8 @@ virConnectOpen(const char *name)
     virConnectPtr ret = NULL;
 
     if (!initialized)
-        virInitialize();
+        if (virInitialize() < 0)
+	    return NULL;
 
     if (name == NULL) {
         name = "Xen";
@@ -234,7 +240,7 @@ virConnectOpen(const char *name)
 
     ret = virGetConnect();
     if (ret == NULL) {
-        virLibConnError(NULL, VIR_ERR_NO_MEMORY, "Allocating connection");
+        virLibConnError(NULL, VIR_ERR_NO_MEMORY, _("allocating connection"));
         goto failed;
     }
 
@@ -290,14 +296,15 @@ virConnectOpenReadOnly(const char *name)
     virConnectPtr ret = NULL;
 
     if (!initialized)
-        virInitialize();
+        if (virInitialize() < 0)
+	    return NULL;
 
     if (name == NULL)
         name = "Xen";
 
     ret = virGetConnect();
     if (ret == NULL) {
-        virLibConnError(NULL, VIR_ERR_NO_MEMORY, "Allocating connection");
+        virLibConnError(NULL, VIR_ERR_NO_MEMORY, _("allocating connection"));
         goto failed;
     }
 
@@ -313,7 +320,7 @@ virConnectOpenReadOnly(const char *name)
     if (ret->nb_drivers == 0) {
 	if (name == NULL)
 	    virLibConnError(NULL, VIR_ERR_NO_CONNECT,
-			    "could not connect to Xen Daemon nor Xen Store");
+			    _("Xen Daemon or Xen Store"));
 	else
 	    /* we failed to find an adequate driver */
 	    virLibConnError(NULL, VIR_ERR_NO_SUPPORT, name);

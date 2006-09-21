@@ -16,10 +16,15 @@
 #include "libvirt/libvirt.h"
 #include "libvirt/virterror.h"
 #include "driver.h"
+#include <libintl.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define _(str) dgettext(GETTEXT_PACKAGE, (str))
+#define _N(str) dgettext(GETTEXT_PACKAGE, (str))
+#define gettext_noop(str) (str)
 
 /**
  * ATTRIBUTE_UNUSED:

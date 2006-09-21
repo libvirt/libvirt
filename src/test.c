@@ -197,26 +197,26 @@ static int testLoadDomain(virConnectPtr conn,
   virDomainRestart onCrash = VIR_DOMAIN_RENAME_RESTART;
 
   if (gettimeofday(&tv, NULL) < 0) {
-    testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, "cannot get timeofday");
+    testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, _("getting time of day"));
     return -1;
   }
 
   root = xmlDocGetRootElement(xml);
   if ((root == NULL) || (!xmlStrEqual(root->name, BAD_CAST "domain"))) {
-    testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, "malformed root element");
+    testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain"));
     goto error;
   }
 
   ctxt = xmlXPathNewContext(xml);
   if (ctxt == NULL) {
-    testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, "cannot create xpath context");
+    testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, _("creating xpath context"));
     goto error;
   }
 
   obj = xmlXPathEval(BAD_CAST "string(/domain/name[1])", ctxt);
   if ((obj == NULL) || (obj->type != XPATH_STRING) ||
       (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-    testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, "missing name element on domain");
+    testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, _("domain name"));
     goto error;
   }
   name = strdup((const char *)obj->stringval);
@@ -225,12 +225,12 @@ static int testLoadDomain(virConnectPtr conn,
   obj = xmlXPathEval(BAD_CAST "string(/domain/uuid[1])", ctxt);
   if ((obj == NULL) || (obj->type != XPATH_STRING) ||
       (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-    testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, "missing uuid element on domain");
+    testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain uuid"));
     goto error;
   }
   dst_uuid = (char *) &rawuuid[0];
   if (!(virParseUUID((char **)&dst_uuid, (const char *)obj->stringval))) {
-    testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, "malformed uuid data in domain");
+    testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain uuid"));
     goto error;
   }
   xmlXPathFreeObject(obj);
@@ -238,12 +238,12 @@ static int testLoadDomain(virConnectPtr conn,
   obj = xmlXPathEval(BAD_CAST "string(/domain/memory[1])", ctxt);
   if ((obj == NULL) || (obj->type != XPATH_STRING) ||
       (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-    testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, "missing memory element on domain");
+    testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain memory"));
     goto error;
   }
   memory = strtoll((const char*)obj->stringval, &conv, 10);
   if (conv == (const char*)obj->stringval) {
-    testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, "malformed memory value for domain");
+    testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain memory"));
     goto error;
   }
   xmlXPathFreeObject(obj);
@@ -255,7 +255,7 @@ static int testLoadDomain(virConnectPtr conn,
   } else {
     nrVirtCpu = strtoll((const char*)obj->stringval, &conv, 10);
     if (conv == (const char*)obj->stringval) {
-      testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, "malformed vcpus value for domain");
+      testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain vcpus"));
       goto error;
     }
   }
@@ -266,7 +266,7 @@ static int testLoadDomain(virConnectPtr conn,
   if ((obj != NULL) && (obj->type == XPATH_STRING) &&
       (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
     if (!(onReboot = testRestartStringToFlag((const char *)obj->stringval))) {
-      testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, "malformed on_reboot value for domain");
+      testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain reboot behaviour"));
       goto error;
     }
   }
@@ -277,7 +277,7 @@ static int testLoadDomain(virConnectPtr conn,
   if ((obj != NULL) && (obj->type == XPATH_STRING) &&
       (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
     if (!(onReboot = testRestartStringToFlag((const char *)obj->stringval))) {
-      testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, "malformed on_poweroff value for domain");
+      testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain poweroff behaviour"));
       goto error;
     }
   }
@@ -288,7 +288,7 @@ static int testLoadDomain(virConnectPtr conn,
   if ((obj != NULL) && (obj->type == XPATH_STRING) &&
       (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
     if (!(onReboot = testRestartStringToFlag((const char *)obj->stringval))) {
-      testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, "malformed on_crash value for domain");
+      testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain crash behaviour"));
       goto error;
     }
   }
@@ -331,7 +331,7 @@ static int testLoadDomainFromDoc(virConnectPtr conn,
   if (!(xml = xmlReadDoc(BAD_CAST doc, "domain.xml", NULL,
 			 XML_PARSE_NOENT | XML_PARSE_NONET |
 			 XML_PARSE_NOERROR | XML_PARSE_NOWARNING))) {
-    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot parse domain definition");
+    testError(NULL, NULL, VIR_ERR_XML_ERROR, _("domain"));
     return -1;
   }
 
@@ -349,14 +349,14 @@ static int testLoadDomainFromFile(virConnectPtr conn,
   xmlDocPtr xml;
 
   if ((fd = open(file, O_RDONLY)) < 0) {
-    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot load domain definition");
+    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("load domain definition file"));
     return -1;
   }
 
   if (!(xml = xmlReadFd(fd, file, NULL,
 			XML_PARSE_NOENT | XML_PARSE_NONET |
 			XML_PARSE_NOERROR | XML_PARSE_NOWARNING))) {
-    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot parse domain definition");
+    testError(NULL, NULL, VIR_ERR_XML_ERROR, _("domain"));
     close(fd);
     return -1;
   }
@@ -376,7 +376,7 @@ static int testOpenDefault(virConnectPtr conn,
   struct timeval tv;
 
   if (gettimeofday(&tv, NULL) < 0) {
-    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot get timeofday");
+    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("getting time of day"));
     return -1;
   }
 
@@ -431,14 +431,14 @@ static int testOpenFromFile(virConnectPtr conn,
   virNodeInfoPtr nodeInfo;
 
   if ((fd = open(file, O_RDONLY)) < 0) {
-    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot load host definition");
+    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("loading host definition file"));
     return -1;
   }
 
   if (!(xml = xmlReadFd(fd, file, NULL,
 			XML_PARSE_NOENT | XML_PARSE_NONET |
 			XML_PARSE_NOERROR | XML_PARSE_NOWARNING))) {
-    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot parse host definition");
+    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("host"));
     goto error;
   }
   close(fd);
@@ -446,13 +446,13 @@ static int testOpenFromFile(virConnectPtr conn,
 
   root = xmlDocGetRootElement(xml);
   if ((root == NULL) || (!xmlStrEqual(root->name, BAD_CAST "node"))) {
-    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "malformed root element");
+    testError(NULL, NULL, VIR_ERR_XML_ERROR, _("node"));
     goto error;
   }
 
   ctxt = xmlXPathNewContext(xml);
   if (ctxt == NULL) {
-    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot create xpath context");
+    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("creating xpath context"));
     goto error;
   }
 
@@ -468,7 +468,7 @@ static int testOpenFromFile(virConnectPtr conn,
     char *conv = NULL;
     nodeInfo->nodes = strtol((const char*)obj->stringval, &conv, 10);
     if (conv == (const char*)obj->stringval) {
-      testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, "malformed nodes value for node cpu");
+      testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu numa nodes"));
       goto error;
     }
     xmlXPathFreeObject(obj);
@@ -480,7 +480,7 @@ static int testOpenFromFile(virConnectPtr conn,
     char *conv = NULL;
     nodeInfo->sockets = strtol((const char*)obj->stringval, &conv, 10);
     if (conv == (const char*)obj->stringval) {
-      testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, "malformed sockets value for node cpu");
+      testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu sockets"));
       goto error;
     }
     xmlXPathFreeObject(obj);
@@ -492,7 +492,7 @@ static int testOpenFromFile(virConnectPtr conn,
     char *conv = NULL;
     nodeInfo->cores = strtol((const char*)obj->stringval, &conv, 10);
     if (conv == (const char*)obj->stringval) {
-      testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, "malformed cores value for node cpu");
+      testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu cores"));
       goto error;
     }
     xmlXPathFreeObject(obj);
@@ -504,7 +504,7 @@ static int testOpenFromFile(virConnectPtr conn,
     char *conv = NULL;
     nodeInfo->threads = strtol((const char*)obj->stringval, &conv, 10);
     if (conv == (const char*)obj->stringval) {
-      testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, "malformed threads value for node cpu");
+      testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu threads"));
       goto error;
     }
     xmlXPathFreeObject(obj);
@@ -516,7 +516,7 @@ static int testOpenFromFile(virConnectPtr conn,
     char *conv = NULL;
     unsigned int active = strtol((const char*)obj->stringval, &conv, 10);    
     if (conv == (const char*)obj->stringval) {
-      testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, "malformed active value for node cpu");
+      testError(conn, NULL, VIR_ERR_XML_ERROR, _("node active cpu"));
       goto error;
     }
     if (active < nodeInfo->cpus) {
@@ -530,7 +530,7 @@ static int testOpenFromFile(virConnectPtr conn,
     char *conv = NULL;
     nodeInfo->mhz = strtol((const char*)obj->stringval, &conv, 10);
     if (conv == (const char*)obj->stringval) {
-      testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, "malformed threads value for node cpu");
+      testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu mhz"));
       goto error;
     }
     xmlXPathFreeObject(obj);
@@ -549,7 +549,7 @@ static int testOpenFromFile(virConnectPtr conn,
     char *conv = NULL;
     nodeInfo->memory = strtol((const char*)obj->stringval, &conv, 10);
     if (conv == (const char*)obj->stringval) {
-      testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, "malformed memory value for node");
+      testError(conn, NULL, VIR_ERR_XML_ERROR, _("node memory"));
       goto error;
     }
     xmlXPathFreeObject(obj);
@@ -558,7 +558,7 @@ static int testOpenFromFile(virConnectPtr conn,
   obj = xmlXPathEval(BAD_CAST "/node/domain", ctxt);
   if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
       (obj->nodesetval == NULL)) {
-    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot extract domain list");
+    testError(NULL, NULL, VIR_ERR_XML_ERROR, _("node domain list"));
     goto error;
   }
 
@@ -567,7 +567,7 @@ static int testOpenFromFile(virConnectPtr conn,
     char *absFile = testBuildFilename(file, (const char *)domFile);
     free(domFile);
     if (!absFile) {
-      testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot resolve filename");
+      testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("resolving domain filename"));
       goto error;
     }
     if (testLoadDomainFromFile(conn, i, absFile) != 0) {
@@ -605,7 +605,7 @@ static int getNextConnection(void) {
   if (node == NULL) {
     node = calloc(1, sizeof(testNode));
     if (!node) {
-      testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot allocate memory");
+      testError(NULL, NULL, VIR_ERR_NO_MEMORY, _("allocating node"));
       return -1;
     }
   }
@@ -645,7 +645,7 @@ int testOpen(virConnectPtr conn,
 
 
   if ((connid = getNextConnection()) < 0) {
-    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "too many connections");
+    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("too many connections"));
     return -1;
   }
 
@@ -722,7 +722,7 @@ testDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
 	return NULL;
       dom = virGetDomain(conn, con->domains[i].name, con->domains[i].uuid);
       if (dom == NULL) {
-	testError(conn, NULL, VIR_ERR_NO_MEMORY, "allocating domain");
+	testError(conn, NULL, VIR_ERR_NO_MEMORY, _("allocating domain"));
 	return NULL;
       }
       con->numDomains++;
@@ -730,7 +730,7 @@ testDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
     }
   }
   
-  testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "too many domains");
+  testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("too many domains"));
   return (NULL);
 }
 
@@ -747,7 +747,7 @@ virDomainPtr testLookupDomainByID(virConnectPtr conn,
 
   dom = virGetDomain(conn, con->domains[id].name, con->domains[id].uuid);
   if (dom == NULL) {
-    testError(conn, NULL, VIR_ERR_NO_MEMORY, "Allocating domain");
+    testError(conn, NULL, VIR_ERR_NO_MEMORY, _("allocating domain"));
     return(NULL);
   }
   dom->handle = id;
@@ -770,7 +770,7 @@ virDomainPtr testLookupDomainByUUID(virConnectPtr conn,
   if (id >= 0) {
     dom = virGetDomain(conn, con->domains[id].name, con->domains[id].uuid);
     if (dom == NULL) {
-      testError(conn, NULL, VIR_ERR_NO_MEMORY, "Allocating domain");
+      testError(conn, NULL, VIR_ERR_NO_MEMORY, _("allocating domain"));
       return(NULL);
     }
     dom->handle = id;
@@ -794,7 +794,7 @@ virDomainPtr testLookupDomainByName(virConnectPtr conn,
   if (id >= 0) {
     dom = virGetDomain(conn, con->domains[id].name, con->domains[id].uuid);
     if (dom == NULL) {
-      testError(conn, NULL, VIR_ERR_NO_MEMORY, "Allocating domain");
+      testError(conn, NULL, VIR_ERR_NO_MEMORY, _("allocating domain"));
       return(NULL);
     }
     dom->handle = id;
@@ -892,7 +892,7 @@ int testShutdownDomain (virDomainPtr domain)
   con = &node->connections[domain->conn->handle];
 
   if (gettimeofday(&tv, NULL) < 0) {
-    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot get timeofday");
+    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("getting time of day"));
     return (-1);
   }
 
@@ -920,7 +920,7 @@ int testRebootDomain (virDomainPtr domain, virDomainRestart action)
   con = &node->connections[domain->conn->handle];
 
   if (gettimeofday(&tv, NULL) < 0) {
-    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot get timeofday");
+    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("getting time of day"));
     return (-1);
   }
 
@@ -947,7 +947,7 @@ int testGetDomainInfo (virDomainPtr domain,
   con = &node->connections[domain->conn->handle];
 
   if (gettimeofday(&tv, NULL) < 0) {
-    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot get timeofday");
+    testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("getting time of day"));
     return (-1);
   }
 
@@ -1038,7 +1038,7 @@ int testSetMemory (virDomainPtr domain,
   con = &node->connections[domain->conn->handle];
 
   if (memory > con->domains[domain->handle].info.maxMem) {
-    testError(domain->conn, domain, VIR_ERR_INVALID_ARG, "memory over maximum limit");
+    testError(domain->conn, domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
     return (-1);
   }
 
@@ -1064,7 +1064,7 @@ int testSetVcpus(virDomainPtr domain,
 
   /* We allow more cpus in guest than host */
   if (nrCpus > 32) {
-    testError(domain->conn, domain, VIR_ERR_INVALID_ARG, "too many virtual cpus");
+    testError(domain->conn, domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
     return (-1);
   }
 

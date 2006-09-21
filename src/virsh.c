@@ -230,9 +230,9 @@ static char *_vshStrdup(vshControl * ctl, const char *s, const char *filename, i
  */
 static vshCmdInfo info_help[] = {
     {"syntax", "help [<command>]"},
-    {"help", "print help"},
-    {"desc", "Prints global help or command specific help."},
-    {"version", "Prints version information."},
+    {"help", gettext_noop("print help")},
+    {"desc", gettext_noop("Prints global help or command specific help.")},
+
     {NULL, NULL}
 };
 
@@ -249,10 +249,10 @@ cmdHelp(vshControl * ctl, vshCmd * cmd)
     if (!cmdname) {
         vshCmdDef *def;
 
-        vshPrint(ctl, "Commands:\n\n");
+        vshPrint(ctl, _("Commands:\n\n"));
         for (def = commands; def->name; def++)
             vshPrint(ctl, "    %-15s %s\n", def->name,
-                     vshCmddefGetInfo(def, "help"));
+                     _N(vshCmddefGetInfo(def, "help")));
         return TRUE;
     }
     return vshCmddefHelp(ctl, cmdname, FALSE);
@@ -263,15 +263,15 @@ cmdHelp(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_connect[] = {
     {"syntax", "connect [name] [--readonly]"},
-    {"help", "(re)connect to hypervisor"},
+    {"help", gettext_noop("(re)connect to hypervisor")},
     {"desc",
-     "Connect to local hypervisor. This is build-in command after shell start up."},
+     gettext_noop("Connect to local hypervisor. This is built-in command after shell start up.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_connect[] = {
-    {"name",     VSH_OT_DATA, 0, "optional argument currently unused (or used for tests only)"},
-    {"readonly", VSH_OT_BOOL, 0, "read-only connection"},
+    {"name",     VSH_OT_DATA, 0, gettext_noop("hypervisor connection URI")},
+    {"readonly", VSH_OT_BOOL, 0, gettext_noop("read-only connection")},
     {NULL, 0, 0, NULL}
 };
 
@@ -283,7 +283,7 @@ cmdConnect(vshControl * ctl, vshCmd * cmd)
     if (ctl->conn) {
         if (virConnectClose(ctl->conn) != 0) {
             vshError(ctl, FALSE,
-                     "failed to disconnect from the hypervisor");
+                     _("Failed to disconnect from the hypervisor"));
             return FALSE;
         }
         ctl->conn = NULL;
@@ -299,7 +299,7 @@ cmdConnect(vshControl * ctl, vshCmd * cmd)
         ctl->conn = virConnectOpenReadOnly(ctl->name);
 
     if (!ctl->conn)
-        vshError(ctl, FALSE, "failed to connect to the hypervisor");
+        vshError(ctl, FALSE, _("Failed to connect to the hypervisor"));
 
     return ctl->conn ? TRUE : FALSE;
 }
@@ -309,14 +309,14 @@ cmdConnect(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_list[] = {
     {"syntax", "list"},
-    {"help", "list domains"},
-    {"desc", "Returns list of domains."},
+    {"help", gettext_noop("list domains")},
+    {"desc", gettext_noop("Returns list of domains.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_list[] = {
-    {"inactive", VSH_OT_BOOL, 0, "list inactive domains"},
-    {"all", VSH_OT_BOOL, 0, "list inactive & active domains"},
+    {"inactive", VSH_OT_BOOL, 0, gettext_noop("list inactive domains")},
+    {"all", VSH_OT_BOOL, 0, gettext_noop("list inactive & active domains")},
     {NULL, 0, 0, NULL}
 };
 
@@ -354,14 +354,14 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
     if (active) {
       maxid = virConnectNumOfDomains(ctl->conn);
       if (maxid < 0) {
-        vshError(ctl, FALSE, "failed to list active domains.");
+        vshError(ctl, FALSE, _("Failed to list active domains"));
         return FALSE;
       }
       if (maxid) {
         ids = vshMalloc(ctl, sizeof(int) * maxid);
 	
         if ((maxid = virConnectListDomains(ctl->conn, &ids[0], maxid)) < 0) {
-	  vshError(ctl, FALSE, "failed to list active domains.");
+	  vshError(ctl, FALSE, _("Failed to list active domains"));
 	  free(ids);
 	  return FALSE;
         }
@@ -372,7 +372,7 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
     if (inactive) {
       maxname = virConnectNumOfDefinedDomains(ctl->conn);
       if (maxname < 0) {
-        vshError(ctl, FALSE, "failed to list inactive domains.");
+        vshError(ctl, FALSE, _("Failed to list inactive domains"));
 	if (ids)
 	  free(ids);
         return FALSE;
@@ -381,7 +381,7 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         names = vshMalloc(ctl, sizeof(char *) * maxname);
 	
         if ((maxname = virConnectListDefinedDomains(ctl->conn, names, maxname)) < 0) {
-	  vshError(ctl, FALSE, "failed to list inactive domains.");
+	  vshError(ctl, FALSE, _("Failed to list inactive domains"));
 	  if (ids)
 	    free(ids);
 	  free(names);
@@ -391,7 +391,7 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 	qsort(&names[0], maxname, sizeof(char*), domnamesorter);
       }
     }
-    vshPrintExtra(ctl, "%3s %-20s %s\n", "Id", "Name", "State");
+    vshPrintExtra(ctl, "%3s %-20s %s\n", _("Id"), _("Name"), _("State"));
     vshPrintExtra(ctl, "----------------------------------\n");
 
     for (i = 0; i < maxid; i++) {
@@ -408,7 +408,7 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
                  virDomainGetID(dom),
                  virDomainGetName(dom),
                  ret <
-                 0 ? "no state" : vshDomainStateToString(info.state));
+                 0 ? _("no state") : _N(vshDomainStateToString(info.state)));
         virDomainFree(dom);
     }
     for (i = 0; i < maxname; i++) {
@@ -436,6 +436,7 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 		   ret <
 		   0 ? "no state" : vshDomainStateToString(info.state));
 	}
+
         virDomainFree(dom);
     }
     if (ids)
@@ -450,13 +451,13 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
  */
 static vshCmdInfo info_domstate[] = {
     {"syntax", "domstate <domain>"},
-    {"help", "domain state"},
-    {"desc", "Returns state about a running domain."},
+    {"help", gettext_noop("domain state")},
+    {"desc", gettext_noop("Returns state about a running domain.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_domstate[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -475,7 +476,7 @@ cmdDomstate(vshControl * ctl, vshCmd * cmd)
 
     if (virDomainGetInfo(dom, &info) == 0)
         vshPrint(ctl, "%s\n",
-                 vshDomainStateToString(info.state));
+                 _N(vshDomainStateToString(info.state)));
     else
         ret = FALSE;
 
@@ -488,13 +489,13 @@ cmdDomstate(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_suspend[] = {
     {"syntax", "suspend <domain>"},
-    {"help", "suspend a domain"},
-    {"desc", "Suspend a running domain."},
+    {"help", gettext_noop("suspend a domain")},
+    {"desc", gettext_noop("Suspend a running domain.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_suspend[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -512,9 +513,9 @@ cmdSuspend(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (virDomainSuspend(dom) == 0) {
-        vshPrint(ctl, "Domain %s suspended\n", name);
+        vshPrint(ctl, _("Domain %s suspended\n"), name);
     } else {
-        vshError(ctl, FALSE, "Failed to suspend domain\n");
+        vshError(ctl, FALSE, _("Failed to suspend domain %s"), name);
         ret = FALSE;
     }
 
@@ -527,13 +528,13 @@ cmdSuspend(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_create[] = {
     {"syntax", "create a domain from an XML <file>"},
-    {"help", "create a domain from an XML file"},
-    {"desc", "Create a domain."},
+    {"help", gettext_noop("create a domain from an XML file")},
+    {"desc", gettext_noop("Create a domain.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_create[] = {
-    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, "file conatining an XML domain description"},
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file conatining an XML domain description")},
     {NULL, 0, 0, NULL}
 };
 
@@ -556,22 +557,22 @@ cmdCreate(vshControl * ctl, vshCmd * cmd)
 
     fd = open(from, O_RDONLY);
     if (fd < 0) {
-        vshError(ctl, FALSE, "Failed to read description file %s\n", from);
+        vshError(ctl, FALSE, _("Failed to read description file %s"), from);
         return(FALSE);
     }
     l = read(fd, &buffer[0], sizeof(buffer));
     if ((l <= 0) || (l >= (int) sizeof(buffer))) {
-        vshError(ctl, FALSE, "Failed to read description file %s\n", from);
+        vshError(ctl, FALSE, _("Failed to read description file %s"), from);
         close(fd);
         return(FALSE);
     }
     buffer[l] = 0;
     dom = virDomainCreateLinux(ctl->conn, &buffer[0], 0);
     if (dom != NULL) {
-        vshPrint(ctl, "Domain %s created from %s\n", 
+        vshPrint(ctl, _("Domain %s created from %s\n"),
                  virDomainGetName(dom), from);
     } else {
-        vshError(ctl, FALSE, "Failed to create domain\n");
+        vshError(ctl, FALSE, _("Failed to create domain from %s"), from);
         ret = FALSE;
     }
     return ret;
@@ -582,13 +583,13 @@ cmdCreate(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_define[] = {
     {"syntax", "define a domain from an XML <file>"},
-    {"help", "define (but don't start) a domain from an XML file"},
-    {"desc", "Define a domain."},
+    {"help", gettext_noop("define (but don't start) a domain from an XML file")},
+    {"desc", gettext_noop("Define a domain.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_define[] = {
-    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, "file conatining an XML domain description"},
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file conatining an XML domain description")},
     {NULL, 0, 0, NULL}
 };
 
@@ -611,22 +612,22 @@ cmdDefine(vshControl * ctl, vshCmd * cmd)
 
     fd = open(from, O_RDONLY);
     if (fd < 0) {
-        vshError(ctl, FALSE, "Failed to read description file %s\n", from);
+        vshError(ctl, FALSE, _("Failed to read description file %s"), from);
         return(FALSE);
     }
     l = read(fd, &buffer[0], sizeof(buffer));
     if ((l <= 0) || (l >= (int) sizeof(buffer))) {
-        vshError(ctl, FALSE, "Failed to read description file %s\n", from);
+        vshError(ctl, FALSE, _("Failed to read description file %s"), from);
         close(fd);
         return(FALSE);
     }
     buffer[l] = 0;
     dom = virDomainDefineXML(ctl->conn, &buffer[0]);
     if (dom != NULL) {
-        vshPrint(ctl, "Domain %s defined from %s\n",
+        vshPrint(ctl, _("Domain %s defined from %s\n"),
                  virDomainGetName(dom), from);
     } else {
-        vshError(ctl, FALSE, "Failed to define domain\n");
+        vshError(ctl, FALSE, _("Failed to define domain from %s"), from);
         ret = FALSE;
     }
     return ret;
@@ -637,13 +638,13 @@ cmdDefine(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_undefine[] = {
     {"syntax", "undefine <domain>"},
-    {"help", "Undefine an inactive domain"},
-    {"desc", "Undefine the configuration for an inactive domain"},
+    {"help", gettext_noop("undefine an inactive domain")},
+    {"desc", gettext_noop("Undefine the configuration for an inactive domain.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_undefine[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, or uuid"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -661,9 +662,9 @@ cmdUndefine(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (virDomainUndefine(dom) == 0) {
-        vshPrint(ctl, "Domain %s has been undefined\n", name);
+        vshPrint(ctl, _("Domain %s has been undefined\n"), name);
     } else {
-        vshError(ctl, FALSE, "Failed to undefine domain\n");
+        vshError(ctl, FALSE, _("Failed to undefine domain %s"), name);
         ret = FALSE;
     }
 
@@ -676,13 +677,13 @@ cmdUndefine(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_start[] = {
     {"syntax", "start a domain "},
-    {"help", "start a (previously defined) inactive domain"},
-    {"desc", "Start a domain."},
+    {"help", gettext_noop("start a (previously defined) inactive domain")},
+    {"desc", gettext_noop("Start a domain.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_start[] = {
-    {"name", VSH_OT_DATA, VSH_OFLAG_REQ, "name of the inactive domain" },
+    {"name", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the inactive domain")},
     {NULL, 0, 0, NULL}
 };
 
@@ -706,15 +707,15 @@ cmdStart(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (virDomainGetID(dom) != (unsigned int)-1) {
-        vshError(ctl, FALSE, "Domain is already active\n");
+        vshError(ctl, FALSE, _("Domain is already active"));
         return FALSE;
     }
 
     if (virDomainCreate(dom) == 0) {
-        vshPrint(ctl, "Domain %s started\n",
+        vshPrint(ctl, _("Domain %s started\n"),
                  name);
     } else {
-        vshError(ctl, FALSE, "Failed to start domain\n");
+      vshError(ctl, FALSE, _("Failed to start domain %s"), name);
         ret = FALSE;
     }
     return ret;
@@ -725,14 +726,14 @@ cmdStart(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_save[] = {
     {"syntax", "save <domain> <file>"},
-    {"help", "save a domain state to a file"},
-    {"desc", "Save a running domain."},
+    {"help", gettext_noop("save a domain state to a file")},
+    {"desc", gettext_noop("Save a running domain.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_save[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
-    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, "where to save the data"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("where to save the data")},
     {NULL, 0, 0, NULL}
 };
 
@@ -754,9 +755,9 @@ cmdSave(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (virDomainSave(dom, to) == 0) {
-        vshPrint(ctl, "Domain %s saved\n", name);
+        vshPrint(ctl, _("Domain %s saved to %s\n"), name, to);
     } else {
-        vshError(ctl, FALSE, "Failed to save domain\n");
+        vshError(ctl, FALSE, _("Failed to save domain %s to %s"), name, to);
         ret = FALSE;
     }
 
@@ -769,13 +770,13 @@ cmdSave(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_restore[] = {
     {"syntax", "restore a domain from <file>"},
-    {"help", "restore a domain from a saved state in a file"},
-    {"desc", "Restore a domain."},
+    {"help", gettext_noop("restore a domain from a saved state in a file")},
+    {"desc", gettext_noop("Restore a domain.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_restore[] = {
-    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, "the state to restore"},
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("the state to restore")},
     {NULL, 0, 0, NULL}
 };
 
@@ -794,9 +795,9 @@ cmdRestore(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (virDomainRestore(ctl->conn, from) == 0) {
-        vshPrint(ctl, "Domain restored from %s\n", from);
+        vshPrint(ctl, _("Domain restored from %s\n"), from);
     } else {
-        vshError(ctl, FALSE, "Failed to restore domain\n");
+        vshError(ctl, FALSE, _("Failed to restore domain from %s"), from);
         ret = FALSE;
     }
     return ret;
@@ -807,13 +808,13 @@ cmdRestore(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_resume[] = {
     {"syntax", "resume <domain>"},
-    {"help", "resume a domain"},
-    {"desc", "Resume a previously suspended domain."},
+    {"help", gettext_noop("resume a domain")},
+    {"desc", gettext_noop("Resume a previously suspended domain.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_resume[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -831,9 +832,9 @@ cmdResume(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (virDomainResume(dom) == 0) {
-        vshPrint(ctl, "Domain %s resumed\n", name);
+        vshPrint(ctl, _("Domain %s resumed\n"), name);
     } else {
-        vshError(ctl, FALSE, "Failed to resume domain\n");
+        vshError(ctl, FALSE, _("Failed to resume domain %s"), name);
         ret = FALSE;
     }
 
@@ -846,13 +847,13 @@ cmdResume(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_shutdown[] = {
     {"syntax", "shutdown <domain>"},
-    {"help", "gracefully shutdown a domain"},
-    {"desc", "Run shutdown in the targetted domain"},
+    {"help", gettext_noop("gracefully shutdown a domain")},
+    {"desc", gettext_noop("Run shutdown in the target domain.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_shutdown[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -870,9 +871,9 @@ cmdShutdown(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (virDomainShutdown(dom) == 0) {
-        vshPrint(ctl, "Domain %s is being shutdown\n", name);
+        vshPrint(ctl, _("Domain %s is being shutdown\n"), name);
     } else {
-        vshError(ctl, FALSE, "Failed to shutdown domain\n");
+        vshError(ctl, FALSE, _("Failed to shutdown domain %s"), name);
         ret = FALSE;
     }
 
@@ -885,13 +886,13 @@ cmdShutdown(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_reboot[] = {
     {"syntax", "reboot <domain>"},
-    {"help", "reboot a domain"},
-    {"desc", "Run a reboot command in the targetted domain"},
+    {"help", gettext_noop("reboot a domain")},
+    {"desc", gettext_noop("Run a reboot command in the target domain.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_reboot[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -909,9 +910,9 @@ cmdReboot(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (virDomainReboot(dom, 0) == 0) {
-        vshPrint(ctl, "Domain %s is being rebooted\n", name);
+        vshPrint(ctl, _("Domain %s is being rebooted\n"), name);
     } else {
-        vshError(ctl, FALSE, "Failed to reboot domain\n");
+        vshError(ctl, FALSE, _("Failed to reboot domain %s"), name);
         ret = FALSE;
     }
 
@@ -924,13 +925,13 @@ cmdReboot(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_destroy[] = {
     {"syntax", "destroy <domain>"},
-    {"help", "destroy a domain"},
-    {"desc", "Destroy a given domain."},
+    {"help", gettext_noop("destroy a domain")},
+    {"desc", gettext_noop("Destroy a given domain.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_destroy[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -948,9 +949,9 @@ cmdDestroy(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (virDomainDestroy(dom) == 0) {
-        vshPrint(ctl, "Domain %s destroyed\n", name);
+        vshPrint(ctl, _("Domain %s destroyed\n"), name);
     } else {
-        vshError(ctl, FALSE, "Failed to destroy domain\n");
+        vshError(ctl, FALSE, _("Failed to destroy domain %s"), name);
         ret = FALSE;
         virDomainFree(dom);
     }
@@ -963,13 +964,13 @@ cmdDestroy(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_dominfo[] = {
     {"syntax", "dominfo <domain>"},
-    {"help", "domain information"},
-    {"desc", "Returns basic information about the domain."},
+    {"help", gettext_noop("domain information")},
+    {"desc", gettext_noop("Returns basic information about the domain.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_dominfo[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -990,35 +991,36 @@ cmdDominfo(vshControl * ctl, vshCmd * cmd)
 
     id = virDomainGetID(dom);
     if (id == ((unsigned int)-1))
-      vshPrint(ctl, "%-15s %s\n", "Id:", "-");
+      vshPrint(ctl, "%-15s %s\n", _("Id:"), "-");
     else
-      vshPrint(ctl, "%-15s %d\n", "Id:", id);
-    vshPrint(ctl, "%-15s %s\n", "Name:", virDomainGetName(dom));
+      vshPrint(ctl, "%-15s %d\n", _("Id:"), id);
+    vshPrint(ctl, "%-15s %s\n", _("Name:"), virDomainGetName(dom));
+
     if (virDomainGetUUIDString(dom, &uuid[0])==0)
-        vshPrint(ctl, "%-15s %s\n", "UUID:", uuid);
+        vshPrint(ctl, "%-15s %s\n", _("UUID:"), uuid);
 
     if ((str = virDomainGetOSType(dom))) {
-        vshPrint(ctl, "%-15s %s\n", "OS Type:", str);
+        vshPrint(ctl, "%-15s %s\n", _("OS Type:"), str);
         free(str);
     }
 
     if (virDomainGetInfo(dom, &info) == 0) {
-        vshPrint(ctl, "%-15s %s\n", "State:",
-                 vshDomainStateToString(info.state));
+        vshPrint(ctl, "%-15s %s\n", _("State:"),
+                 _N(vshDomainStateToString(info.state)));
 
-        vshPrint(ctl, "%-15s %d\n", "CPU(s):", info.nrVirtCpu);
+        vshPrint(ctl, "%-15s %d\n", _("CPU(s):"), info.nrVirtCpu);
 
         if (info.cpuTime != 0) {
 	    double cpuUsed = info.cpuTime;
 
             cpuUsed /= 1000000000.0;
 
-            vshPrint(ctl, "%-15s %.1lfs\n", "CPU time:", cpuUsed);
+            vshPrint(ctl, "%-15s %.1lfs\n", _("CPU time:"), cpuUsed);
         }
 
-        vshPrint(ctl, "%-15s %lu kB\n", "Max memory:",
+        vshPrint(ctl, "%-15s %lu kB\n", _("Max memory:"),
                  info.maxMem);
-        vshPrint(ctl, "%-15s %lu kB\n", "Used memory:",
+	vshPrint(ctl, "%-15s %lu kB\n", _("Used memory:"),
                  info.memory);
 
     } else {
@@ -1034,13 +1036,13 @@ cmdDominfo(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_vcpuinfo[] = {
     {"syntax", "vcpuinfo <domain>"},
-    {"help", "domain vcpu information"},
-    {"desc", "Returns basic information about the domain virtual CPUs."},
+    {"help", gettext_noop("domain vcpu information")},
+    {"desc", gettext_noop("Returns basic information about the domain virtual CPUs.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_vcpuinfo[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1082,18 +1084,18 @@ cmdVcpuinfo(vshControl * ctl, vshCmd * cmd)
         int n;
 	for (n = 0 ; n < ncpus ; n++) {
 	    unsigned int m;
-	    vshPrint(ctl, "%-15s %d\n", "VCPU:", n);
-	    vshPrint(ctl, "%-15s %d\n", "CPU:", cpuinfo[n].cpu);
-	    vshPrint(ctl, "%-15s %s\n", "State:",
-		     vshDomainVcpuStateToString(cpuinfo[n].state));
+	    vshPrint(ctl, "%-15s %d\n", _("VCPU:"), n);
+	    vshPrint(ctl, "%-15s %d\n", _("CPU:"), cpuinfo[n].cpu);
+	    vshPrint(ctl, "%-15s %s\n", _("State:"),
+		     _N(vshDomainVcpuStateToString(cpuinfo[n].state)));
 	    if (cpuinfo[n].cpuTime != 0) {
 	        double cpuUsed = cpuinfo[n].cpuTime;
 		
 		cpuUsed /= 1000000000.0;
 		
-		vshPrint(ctl, "%-15s %.1lfs\n", "CPU time:", cpuUsed);
+		vshPrint(ctl, "%-15s %.1lfs\n", _("CPU time:"), cpuUsed);
 	    }
-	    vshPrint(ctl, "%-15s ", "CPU Affinity:");
+	    vshPrint(ctl, "%-15s ", _("CPU Affinity:"));
 	    for (m = 0 ; m < VIR_NODEINFO_MAXCPUS(nodeinfo) ; m++) {
 	        vshPrint(ctl, "%c", VIR_CPU_USABLE(cpumap, cpumaplen, n, m) ? 'y' : '-');
 	    }
@@ -1117,15 +1119,15 @@ cmdVcpuinfo(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_vcpupin[] = {
     {"syntax", "vcpupin <domain>"},
-    {"help", "control domain vcpu affinity"},
-    {"desc", "Pin domain VCPUs to host physical CPUs"},
+    {"help", gettext_noop("control domain vcpu affinity")},
+    {"desc", gettext_noop("Pin domain VCPUs to host physical CPUs.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_vcpupin[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
-    {"vcpu", VSH_OT_DATA, VSH_OFLAG_REQ, "vcpu number"},
-    {"cpulist", VSH_OT_DATA, VSH_OFLAG_REQ, "host cpu number(s) (comma separated)"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {"vcpu", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("vcpu number")},
+    {"cpulist", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("host cpu number(s) (comma separated)")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1203,14 +1205,14 @@ cmdVcpupin(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_setvcpus[] = {
     {"syntax", "setvcpus <domain> <count>"},
-    {"help", "change number of virtual CPUs"},
-    {"desc", "Change the number of virtual CPUs active in the guest domain"},
+    {"help", gettext_noop("change number of virtual CPUs")},
+    {"desc", gettext_noop("Change the number of virtual CPUs active in the guest domain.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_setvcpus[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
-    {"count", VSH_OT_DATA, VSH_OFLAG_REQ, "number of virtual CPUs"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {"count", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("number of virtual CPUs")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1246,14 +1248,14 @@ cmdSetvcpus(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_setmem[] = {
     {"syntax", "setmem <domain> <bytes>"},
-    {"help", "change memory allocation"},
-    {"desc", "Change the current memory allocation in the guest domain"},
+    {"help", gettext_noop("change memory allocation")},
+    {"desc", gettext_noop("Change the current memory allocation in the guest domain.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_setmem[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
-    {"bytes", VSH_OT_DATA, VSH_OFLAG_REQ, "number of bytes of memory"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {"bytes", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("number of bytes of memory")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1289,14 +1291,14 @@ cmdSetmem(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_setmaxmem[] = {
     {"syntax", "setmaxmem <domain> <bytes>"},
-    {"help", "change maximum memory limit"},
-    {"desc", "Change the maximum memory allocation limit in the guest domain"},
+    {"help", gettext_noop("change maximum memory limit")},
+    {"desc", gettext_noop("Change the maximum memory allocation limit in the guest domain.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_setmaxmem[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id or uuid"},
-    {"bytes", VSH_OT_DATA, VSH_OFLAG_REQ, "maxmimum memory limit in bytes"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {"bytes", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("maxmimum memory limit in bytes")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1332,8 +1334,8 @@ cmdSetmaxmem(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_nodeinfo[] = {
     {"syntax", "nodeinfo"},
-    {"help", "node information"},
-    {"desc", "Returns basic information about the node."},
+    {"help", gettext_noop("node information")},
+    {"desc", gettext_noop("Returns basic information about the node.")},
     {NULL, NULL}
 };
 
@@ -1341,23 +1343,23 @@ static int
 cmdNodeinfo(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 {
     virNodeInfo info;
-        
+
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
     if (virNodeGetInfo(ctl->conn, &info) < 0) {
-        vshError(ctl, FALSE, "failed to get node information");
+        vshError(ctl, FALSE, _("failed to get node information"));
         return FALSE;
-    }    
-    vshPrint(ctl, "%-20s %s\n", "CPU model:", info.model);
-    vshPrint(ctl, "%-20s %d\n", "CPU(s):", info.cpus);
-    vshPrint(ctl, "%-20s %d MHz\n", "CPU frequency:", info.mhz);
-    vshPrint(ctl, "%-20s %d\n", "CPU socket(s):", info.sockets);
-    vshPrint(ctl, "%-20s %d\n", "Core(s) per socket:", info.cores);
-    vshPrint(ctl, "%-20s %d\n", "Thread(s) per core:", info.threads);
-    vshPrint(ctl, "%-20s %d\n", "NUMA cell(s):", info.nodes);
-    vshPrint(ctl, "%-20s %lu kB\n", "Memory size:", info.memory);
-        
+    }
+    vshPrint(ctl, "%-20s %s\n", _("CPU model:"), info.model);
+    vshPrint(ctl, "%-20s %d\n", _("CPU(s):"), info.cpus);
+    vshPrint(ctl, "%-20s %d MHz\n", _("CPU frequency:"), info.mhz);
+    vshPrint(ctl, "%-20s %d\n", _("CPU socket(s):"), info.sockets);
+    vshPrint(ctl, "%-20s %d\n", _("Core(s) per socket:"), info.cores);
+    vshPrint(ctl, "%-20s %d\n", _("Thread(s) per core:"), info.threads);
+    vshPrint(ctl, "%-20s %d\n", _("NUMA cell(s):"), info.nodes);
+    vshPrint(ctl, "%-20s %lu kB\n", _("Memory size:"), info.memory);
+
     return TRUE;
 }
 
@@ -1366,13 +1368,13 @@ cmdNodeinfo(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
  */
 static vshCmdInfo info_dumpxml[] = {
     {"syntax", "dumpxml <name>"},
-    {"help", "domain information in XML"},
-    {"desc", "Ouput the domain information as an XML dump to stdout"},
+    {"help", gettext_noop("domain information in XML")},
+    {"desc", gettext_noop("Ouput the domain information as an XML dump to stdout.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_dumpxml[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name, id, uuid"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1406,12 +1408,12 @@ cmdDumpXML(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_domname[] = {
     {"syntax", "domname <domain>"},
-    {"help", "convert a domain Id or UUID to domain name"},
+    {"help", gettext_noop("convert a domain id or UUID to domain name")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_domname[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain id or uuid"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain id or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1436,12 +1438,12 @@ cmdDomname(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_domid[] = {
     {"syntax", "domid <domain>"},
-    {"help", "convert a domain name or UUID to domain Id"},
+    {"help", gettext_noop("convert a domain name or UUID to domain id")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_domid[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain name or uuid"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name or uuid")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1471,12 +1473,12 @@ cmdDomid(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_domuuid[] = {
     {"syntax", "domuuid <domain>"},
-    {"help", "convert a domain name or id to domain UUID"},
+    {"help", gettext_noop("convert a domain name or id to domain UUID")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_domuuid[] = {
-    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, "domain id or name"},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain id or name")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1488,15 +1490,15 @@ cmdDomuuid(vshControl * ctl, vshCmd * cmd)
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
-    if (!(dom = vshCommandOptDomainBy(ctl, cmd, "domain", NULL, 
+    if (!(dom = vshCommandOptDomainBy(ctl, cmd, "domain", NULL,
                                     VSH_DOMBYNAME|VSH_DOMBYID)))
         return FALSE;
-    
+
     if (virDomainGetUUIDString(dom, uuid) != -1)
         vshPrint(ctl, "%s\n", uuid);
     else
-        vshError(ctl, FALSE, "failed to get domain UUID");
-    
+        vshError(ctl, FALSE, _("failed to get domain UUID"));
+
     return TRUE;
 }
 
@@ -1506,8 +1508,8 @@ cmdDomuuid(vshControl * ctl, vshCmd * cmd)
  */
 static vshCmdInfo info_version[] = {
     {"syntax", "version"},
-    {"help", "show versions"},
-    {"desc", "Display the version information available"},
+    {"help", gettext_noop("show version")},
+    {"desc", gettext_noop("Display the system version information.")},
     {NULL, NULL}
 };
 
@@ -1530,7 +1532,7 @@ cmdVersion(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 
     hvType = virConnectGetType(ctl->conn);
     if (hvType == NULL) {
-        vshError(ctl, FALSE, "failed to get hypervisor type\n");
+        vshError(ctl, FALSE, _("failed to get hypervisor type"));
         return FALSE;
     }
 
@@ -1539,43 +1541,43 @@ cmdVersion(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
     includeVersion %= 1000000;
     minor = includeVersion / 1000;
     rel = includeVersion % 1000;
-    vshPrint(ctl, "Compiled against library: libvir %d.%d.%d\n",
+    vshPrint(ctl, _("Compiled against library: libvir %d.%d.%d\n"),
              major, minor, rel);
 
     ret = virGetVersion(&libVersion, hvType, &apiVersion);
     if (ret < 0) {
-        vshError(ctl, FALSE, "failed to get the library version");
+        vshError(ctl, FALSE, _("failed to get the library version"));
         return FALSE;
     }
     major = libVersion / 1000000;
     libVersion %= 1000000;
     minor = libVersion / 1000;
     rel = libVersion % 1000;
-    vshPrint(ctl, "Using library: libvir %d.%d.%d\n",
+    vshPrint(ctl, _("Using library: libvir %d.%d.%d\n"),
              major, minor, rel);
 
     major = apiVersion / 1000000;
     apiVersion %= 1000000;
     minor = apiVersion / 1000;
     rel = apiVersion % 1000;
-    vshPrint(ctl, "Using API: %s %d.%d.%d\n", hvType,
+    vshPrint(ctl, _("Using API: %s %d.%d.%d\n"), hvType,
              major, minor, rel);
 
     ret = virConnectGetVersion(ctl->conn, &hvVersion);
     if (ret < 0) {
-        vshError(ctl, FALSE, "failed to get the hypervisor version");
+        vshError(ctl, FALSE, _("failed to get the hypervisor version"));
         return FALSE;
     }
     if (hvVersion == 0) {
         vshPrint(ctl,
-                 "cannot extract running %s hypervisor version\n", hvType);
+                 _("Cannot extract running %s hypervisor version\n"), hvType);
     } else {
         major = hvVersion / 1000000;
         hvVersion %= 1000000;
         minor = hvVersion / 1000;
         rel = hvVersion % 1000;
 
-        vshPrint(ctl, "Running hypervisor: %s %d.%d.%d\n",
+        vshPrint(ctl, _("Running hypervisor: %s %d.%d.%d\n"),
                  hvType, major, minor, rel);
     }
     return TRUE;
@@ -1586,7 +1588,7 @@ cmdVersion(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
  */
 static vshCmdInfo info_quit[] = {
     {"syntax", "quit"},
-    {"help", "quit this interactive terminal"},
+    {"help", gettext_noop("quit this interactive terminal")},
     {NULL, NULL}
 };
 
@@ -1698,8 +1700,8 @@ vshCommandCheckOpts(vshControl * ctl, vshCmd * cmd)
             if (!ok) {
                 vshError(ctl, FALSE,
                          d->type == VSH_OT_DATA ?
-                         "command '%s' requires <%s> option" :
-                         "command '%s' requires --%s option",
+                         _("command '%s' requires <%s> option") :
+			 _("command '%s' requires --%s option"),
                          def->name, d->name);
                 err = 1;
             }
@@ -1726,39 +1728,39 @@ vshCmddefHelp(vshControl * ctl, const char *cmdname, int withprog)
     vshCmdDef *def = vshCmddefSearch(cmdname);
 
     if (!def) {
-        vshError(ctl, FALSE, "command '%s' doesn't exist", cmdname);
+        vshError(ctl, FALSE, _("command '%s' doesn't exist"), cmdname);
         return FALSE;
     } else {
         vshCmdOptDef *opt;
-        const char *desc = vshCmddefGetInfo(def, "desc");
-        const char *help = vshCmddefGetInfo(def, "help");
+        const char *desc = _N(vshCmddefGetInfo(def, "desc"));
+        const char *help = _N(vshCmddefGetInfo(def, "help"));
         const char *syntax = vshCmddefGetInfo(def, "syntax");
 
-        fputs("  NAME\n", stdout);
+        fputs(_("  NAME\n"), stdout);
         fprintf(stdout, "    %s - %s\n", def->name, help);
 
         if (syntax) {
-            fputs("\n  SYNOPSIS\n", stdout);
+            fputs(("\n  SYNOPSIS\n"), stdout);
             if (!withprog)
                 fprintf(stdout, "    %s\n", syntax);
             else
                 fprintf(stdout, "    %s %s\n", progname, syntax);
         }
         if (desc) {
-            fputs("\n  DESCRIPTION\n", stdout);
+            fputs(_("\n  DESCRIPTION\n"), stdout);
             fprintf(stdout, "    %s\n", desc);
         }
         if (def->opts) {
-            fputs("\n  OPTIONS\n", stdout);
+            fputs(_("\n  OPTIONS\n"), stdout);
             for (opt = def->opts; opt->name; opt++) {
                 char buf[256];
 
                 if (opt->type == VSH_OT_BOOL)
                     snprintf(buf, sizeof(buf), "--%s", opt->name);
                 else if (opt->type == VSH_OT_INT)
-                    snprintf(buf, sizeof(buf), "--%s <number>", opt->name);
+                    snprintf(buf, sizeof(buf), _("--%s <number>"), opt->name);
                 else if (opt->type == VSH_OT_STRING)
-                    snprintf(buf, sizeof(buf), "--%s <string>", opt->name);
+                    snprintf(buf, sizeof(buf), _("--%s <string>"), opt->name);
                 else if (opt->type == VSH_OT_DATA)
                     snprintf(buf, sizeof(buf), "<%s>", opt->name);
 
@@ -1871,7 +1873,7 @@ vshCommandOptDomainBy(vshControl * ctl, vshCmd * cmd, const char *optname,
     int id;
 
     if (!(n = vshCommandOptString(cmd, optname, NULL))) {
-        vshError(ctl, FALSE, "undefined domain name or id");
+        vshError(ctl, FALSE, _("undefined domain name or id"));
         return NULL;
     }
 
@@ -1904,7 +1906,7 @@ vshCommandOptDomainBy(vshControl * ctl, vshCmd * cmd, const char *optname,
     }
 
     if (!dom)
-        vshError(ctl, FALSE, "failed to get domain '%s'", n);
+        vshError(ctl, FALSE, _("failed to get domain '%s'"), n);
 
     return dom;
 }
@@ -1932,7 +1934,7 @@ vshCommandRun(vshControl * ctl, vshCmd * cmd)
             return ret;
 
         if (ctl->timing)
-            vshPrint(ctl, "\n(Time: %.3f ms)\n\n",
+            vshPrint(ctl, _("\n(Time: %.3f ms)\n\n"),
                      DIFF_MSEC(&after, &before));
         else
             vshPrintExtra(ctl, "\n");
@@ -2006,7 +2008,7 @@ vshCommandGetToken(vshControl * ctl, char *str, char **end, char **res)
         sz++;
     }
     if (quote) {
-        vshError(ctl, FALSE, "missing \"");
+        vshError(ctl, FALSE, _("missing \""));
         return VSH_TK_ERROR;
     }
     if (tkstr == NULL || *tkstr == '\0' || p == NULL)
@@ -2067,19 +2069,19 @@ vshCommandParse(vshControl * ctl, char *cmdstr)
                 /* first token must be command name */
                 if (tk != VSH_TK_DATA) {
                     vshError(ctl, FALSE,
-                             "unexpected token (command name): '%s'",
+                             _("unexpected token (command name): '%s'"),
                              tkdata);
                     goto syntaxError;
                 }
                 if (!(cmd = vshCmddefSearch(tkdata))) {
-                    vshError(ctl, FALSE, "unknown command: '%s'", tkdata);
+                    vshError(ctl, FALSE, _("unknown command: '%s'"), tkdata);
                     goto syntaxError;   /* ... or ignore this command only? */
                 }
                 free(tkdata);
             } else if (tk == VSH_TK_OPTION) {
                 if (!(opt = vshCmddefGetOption(cmd, tkdata))) {
                     vshError(ctl, FALSE,
-                             "command '%s' doesn't support option --%s",
+                             _("command '%s' doesn't support option --%s"),
                              cmd->name, tkdata);
                     goto syntaxError;
                 }
@@ -2094,16 +2096,16 @@ vshCommandParse(vshControl * ctl, char *cmdstr)
                         goto syntaxError;
                     if (tk != VSH_TK_DATA) {
                         vshError(ctl, FALSE,
-                                 "expected syntax: --%s <%s>",
+                                 _("expected syntax: --%s <%s>"),
                                  opt->name,
                                  opt->type ==
-                                 VSH_OT_INT ? "number" : "string");
+                                 VSH_OT_INT ? _("number") : _("string"));
                         goto syntaxError;
                     }
                 }
             } else if (tk == VSH_TK_DATA) {
                 if (!(opt = vshCmddefGetData(cmd, data_ct++))) {
-                    vshError(ctl, FALSE, "unexpected data '%s'", tkdata);
+                    vshError(ctl, FALSE, _("unexpected data '%s'"), tkdata);
                     goto syntaxError;
                 }
             }
@@ -2125,7 +2127,7 @@ vshCommandParse(vshControl * ctl, char *cmdstr)
                 vshDebug(ctl, 4, "%s: %s(%s): %s\n",
                          cmd->name,
                          opt->name,
-                         tk == VSH_TK_OPTION ? "OPTION" : "DATA",
+                         tk == VSH_TK_OPTION ? _("OPTION") : _("DATA"),
                          arg->data);
             }
             if (!str)
@@ -2173,19 +2175,19 @@ vshDomainStateToString(int state)
 {
     switch (state) {
         case VIR_DOMAIN_RUNNING:
-            return "running ";
+            return gettext_noop("running");
         case VIR_DOMAIN_BLOCKED:
-            return "blocked ";
+            return gettext_noop("blocked");
         case VIR_DOMAIN_PAUSED:
-            return "paused ";
+            return gettext_noop("paused");
         case VIR_DOMAIN_SHUTDOWN:
-            return "in shutdown";
+            return gettext_noop("in shutdown");
         case VIR_DOMAIN_SHUTOFF:
-            return "shut off";
+            return gettext_noop("shut off");
         case VIR_DOMAIN_CRASHED:
-            return "crashed";
+            return gettext_noop("crashed");
         default:
-            return "no state";  /* = dom0 state */
+            return gettext_noop("no state");  /* = dom0 state */
     }
     return NULL;
 }
@@ -2195,13 +2197,13 @@ vshDomainVcpuStateToString(int state)
 {
     switch (state) {
         case VIR_VCPU_OFFLINE:
-            return "offline";
+            return gettext_noop("offline");
         case VIR_VCPU_BLOCKED:
-            return "blocked";
+            return gettext_noop("blocked");
         case VIR_VCPU_RUNNING:
-            return "running";
+            return gettext_noop("running");
         default:
-            return "no state";
+            return gettext_noop("no state");
     }
     return NULL;
 }
@@ -2214,7 +2216,7 @@ vshConnectionUsability(vshControl * ctl, virConnectPtr conn, int showerror)
      */
     if (!conn) {
         if (showerror)
-            vshError(ctl, FALSE, "no valid connection.");
+            vshError(ctl, FALSE, _("no valid connection"));
         return FALSE;
     }
     return TRUE;
@@ -2253,9 +2255,9 @@ vshError(vshControl * ctl, int doexit, const char *format, ...)
     va_list ap;
 
     if (doexit)
-        fprintf(stderr, "%s: error: ", progname);
+        fprintf(stderr, _("%s: error: "), progname);
     else
-        fputs("error: ", stderr);
+        fputs(_("error: "), stderr);
 
     va_start(ap, format);
     vfprintf(stderr, format, ap);
@@ -2277,8 +2279,8 @@ _vshMalloc(vshControl * ctl, size_t size, const char *filename, int line)
 
     if ((x = malloc(size)))
         return x;
-    vshError(ctl, TRUE, "%s: %d: failed to allocate %d bytes\n", 
-                filename, line, (int) size);
+    vshError(ctl, TRUE, _("%s: %d: failed to allocate %d bytes"),
+	     filename, line, (int) size);
     return NULL;
 }
 
@@ -2289,8 +2291,8 @@ _vshCalloc(vshControl * ctl, size_t nmemb, size_t size, const char *filename, in
 
     if ((x = calloc(nmemb, size)))
         return x;
-    vshError(ctl, TRUE, "%s: %d: failed to allocate %d bytes\n", 
-                filename, line, (int) (size*nmemb));
+    vshError(ctl, TRUE, _("%s: %d: failed to allocate %d bytes"),
+	     filename, line, (int) (size*nmemb));
     return NULL;
 }
 
@@ -2301,8 +2303,8 @@ _vshStrdup(vshControl * ctl, const char *s, const char *filename, int line)
 
     if ((x = strdup(s)))
         return x;
-    vshError(ctl, TRUE, "%s: %d: failed to allocate %d bytes\n", 
-                filename, line, strlen(s));
+    vshError(ctl, TRUE, _("%s: %d: failed to allocate %d bytes"),
+	     filename, line, strlen(s));
     return NULL;
 }
 
@@ -2329,7 +2331,7 @@ vshInit(vshControl * ctl)
         ctl->conn = virConnectOpenReadOnly(ctl->name);
 
     if (!ctl->conn)
-        vshError(ctl, TRUE, "failed to connect to the hypervisor");
+        vshError(ctl, TRUE, _("failed to connect to the hypervisor"));
 
     return TRUE;
 }
@@ -2474,23 +2476,23 @@ vshUsage(vshControl * ctl, const char *cmdname)
 
     /* global help */
     if (!cmdname) {
-        fprintf(stdout, "\n%s [options] [commands]\n\n"
-                "  options:\n"
-                "    -c | --connect <name>   optional argument currently unused (or used for tests only)\n"
-                "    -d | --debug <num>      debug level [0-5]\n"
-                "    -h | --help             this help\n"
-                "    -q | --quiet            quiet mode\n"
-                "    -t | --timing           print timing information\n"
-                "    -v | --version          program version\n\n"
-                "  commands (non interactive mode):\n", progname);
+        fprintf(stdout, _("\n%s [options] [commands]\n\n"
+			  "  options:\n"
+			  "    -c | --connect <uri>    hypervisor connection URI\n"
+			  "    -d | --debug <num>      debug level [0-5]\n"
+			  "    -h | --help             this help\n"
+			  "    -q | --quiet            quiet mode\n"
+			  "    -t | --timing           print timing information\n"
+			  "    -v | --version          program version\n\n"
+			  "  commands (non interactive mode):\n"), progname);
 
         for (cmd = commands; cmd->name; cmd++)
             fprintf(stdout,
-                    "    %-15s %s\n", cmd->name, vshCmddefGetInfo(cmd,
-                                                                  "help"));
+                    "    %-15s %s\n", cmd->name, _N(vshCmddefGetInfo(cmd,
+								     "help")));
 
         fprintf(stdout,
-                "\n  (specify --help <command> for details about the command)\n\n");
+                _("\n  (specify --help <command> for details about the command)\n\n"));
         return;
     }
     if (!vshCmddefHelp(ctl, cmdname, TRUE))
@@ -2576,7 +2578,7 @@ vshParseArgv(vshControl * ctl, int argc, char **argv)
                 exit(EXIT_SUCCESS);
             default:
                 vshError(ctl, TRUE,
-                  "unsupported option '-%c'. See --help.", arg);
+			 _("unsupported option '-%c'. See --help."), arg);
                 break;
         }
     }
@@ -2620,6 +2622,19 @@ main(int argc, char **argv)
     char *defaultConn;
     int ret = TRUE;
 
+    if (!setlocale(LC_ALL, "")) {
+        perror("setlocale");
+	return -1;
+    }
+    if (!bindtextdomain(GETTEXT_PACKAGE, LOCALEBASEDIR)) {
+        perror("bindtextdomain");
+	return -1;
+    }
+    if (!textdomain(GETTEXT_PACKAGE)) {
+        perror("textdomain");
+	return -1;
+    }
+
     if (!(progname = strrchr(argv[0], '/')))
         progname = argv[0];
     else
@@ -2644,11 +2659,11 @@ main(int argc, char **argv)
         /* interactive mode */
         if (!ctl->quiet) {
             vshPrint(ctl,
-                     "Welcome to %s, the virtualization interactive terminal.\n\n",
+                     _("Welcome to %s, the virtualization interactive terminal.\n\n"),
                      progname);
             vshPrint(ctl,
-                     "Type:  'help' for help with commands\n"
-                     "       'quit' to quit\n\n");
+                     _("Type:  'help' for help with commands\n"
+		       "       'quit' to quit\n\n"));
         }
         vshReadlineInit();
         do {

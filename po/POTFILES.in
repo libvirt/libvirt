@@ -1,0 +1,13 @@
+src/libvirt.c
+src/virterror.c
+src/xmlrpc.c
+src/hash.c
+src/test.c
+src/xml.c
+src/sexpr.c
+src/xend_internal.c
+src/virsh.c
+src/conf.c
+src/xs_internal.c
+src/proxy_internal.c
+src/xen_internal.c

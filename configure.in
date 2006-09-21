@@ -246,6 +246,10 @@ AC_SUBST(PYTHON_VERSION)
 AC_SUBST(PYTHON_INCLUDES)
 AC_SUBST(PYTHON_SITE_PACKAGES)
 
+AM_GNU_GETTEXT_VERSION([0.14.1])
+AM_GNU_GETTEXT([external])
+ALL_LINGUAS=en_GB
+
 # very annoying
 rm -f COPYING
 cp COPYING.LIB COPYING
@@ -254,6 +258,7 @@ AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           docs/examples/Makefile docs/devhelp/Makefile \
 	  docs/examples/python/Makefile \
           libvirt.pc libvirt.spec \
+          po/Makefile.in \
 	  include/libvirt/Makefile include/libvirt/libvirt.h \
 	  python/Makefile python/tests/Makefile \
           tests/Makefile proxy/Makefile \

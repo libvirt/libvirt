@@ -61,7 +61,7 @@ virBufferGrow(virBufferPtr buf, unsigned int len)
 
     newbuf = (char *) realloc(buf->content, size);
     if (newbuf == NULL) {
-        virXMLError(VIR_ERR_NO_MEMORY, "growing buffer", size);
+        virXMLError(VIR_ERR_NO_MEMORY, _("growing buffer"), size);
         return (-1);
     }
     buf->content = newbuf;
@@ -113,11 +113,11 @@ virBufferNew(unsigned int size)
     virBufferPtr buf;
 
     if (!(buf = malloc(sizeof(*buf)))) {
-        virXMLError(VIR_ERR_NO_MEMORY, "allocate new buffer", sizeof(*buf));
+        virXMLError(VIR_ERR_NO_MEMORY, _("allocate new buffer"), sizeof(*buf));
         return NULL;
     }
     if (size && (buf->content = malloc(size))==NULL) {
-        virXMLError(VIR_ERR_NO_MEMORY, "allocate buffer content", size);
+        virXMLError(VIR_ERR_NO_MEMORY, _("allocate buffer content"), size);
         free(buf);
         return NULL;
     }

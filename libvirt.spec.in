@@ -1,3 +1,5 @@
+# -*- rpm-spec -*-
+
 Summary: Library providing an API to use the Xen virtualization
 Name: libvirt
 Version: @VERSION@
@@ -6,7 +8,7 @@ License: LGPL
 Group: Development/Libraries
 Source: libvirt-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
-URL: http://libvir.org/
+URL: http://libvirt.org/
 BuildRequires: python python-devel
 Requires: xen
 Requires: libxml2
@@ -16,6 +18,7 @@ BuildRequires: xen-devel
 BuildRequires: libxml2-devel
 BuildRequires: readline-devel
 BuildRequires: ncurses-devel
+BuildRequires: gettext
 Obsoletes: libvir
 ExclusiveArch: i386 x86_64 ia64
 
@@ -61,6 +64,7 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.a
+%find_lang %{name}
 
 %clean
 rm -fr %{buildroot}
@@ -71,7 +75,7 @@ rm -fr %{buildroot}
 %postun
 /sbin/ldconfig
 
-%files
+%files -f %{name}.lang
 %defattr(-, root, root)
 
 %doc AUTHORS ChangeLog NEWS README COPYING.LIB TODO
