@@ -1,3 +1,8 @@
+Thu Sep 21 10:19:02 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* docs/*.html: re-generated documentation to pull in latest
+	APIs
+
 Thu Sep 21 10:19:01 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/Makefile.am: add a tst target to ease building test progs

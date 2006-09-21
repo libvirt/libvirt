@@ -91,6 +91,7 @@
     <reference name='virConnectGetVersion' href='html/libvirt-libvirt.html#virConnectGetVersion'/>
     <reference name='virConnectListDefinedDomains' href='html/libvirt-libvirt.html#virConnectListDefinedDomains'/>
     <reference name='virConnectListDomains' href='html/libvirt-libvirt.html#virConnectListDomains'/>
+    <reference name='virConnectNumOfDefinedDomains' href='html/libvirt-libvirt.html#virConnectNumOfDefinedDomains'/>
     <reference name='virConnectNumOfDomains' href='html/libvirt-libvirt.html#virConnectNumOfDomains'/>
     <reference name='virConnectOpen' href='html/libvirt-libvirt.html#virConnectOpen'/>
     <reference name='virConnectOpenReadOnly' href='html/libvirt-libvirt.html#virConnectOpenReadOnly'/>
@@ -253,6 +254,7 @@
       <ref name='virConnectGetVersion'/>
       <ref name='virConnectListDefinedDomains'/>
       <ref name='virConnectListDomains'/>
+      <ref name='virConnectNumOfDefinedDomains'/>
       <ref name='virConnectNumOfDomains'/>
       <ref name='virConnectOpen'/>
       <ref name='virConnectOpenReadOnly'/>
@@ -381,6 +383,7 @@
       <ref name='virConnectGetVersion'/>
       <ref name='virConnectListDefinedDomains'/>
       <ref name='virConnectListDomains'/>
+      <ref name='virConnectNumOfDefinedDomains'/>
       <ref name='virConnectNumOfDomains'/>
       <ref name='virDomainCreateLinux'/>
       <ref name='virDomainDefineXML'/>
@@ -480,6 +483,7 @@
       <ref name='virConnectGetVersion'/>
       <ref name='virConnectListDefinedDomains'/>
       <ref name='virConnectListDomains'/>
+      <ref name='virConnectNumOfDefinedDomains'/>
       <ref name='virConnectNumOfDomains'/>
       <ref name='virConnectOpen'/>
       <ref name='virConnectOpenReadOnly'/>
@@ -777,6 +781,7 @@
           <ref name='virGetLastError'/>
         </word>
         <word name='Provides'>
+          <ref name='virConnectNumOfDefinedDomains'/>
           <ref name='virConnectNumOfDomains'/>
           <ref name='virGetVersion'/>
         </word>
@@ -932,6 +937,7 @@
           <ref name='VIR_NODEINFO_MAXCPUS'/>
           <ref name='_virNodeInfo'/>
           <ref name='virConnectListDomains'/>
+          <ref name='virConnectNumOfDefinedDomains'/>
           <ref name='virConnectNumOfDomains'/>
           <ref name='virDomainSuspend'/>
         </word>
@@ -1291,6 +1297,7 @@
         <word name='domains'>
           <ref name='virConnectListDefinedDomains'/>
           <ref name='virConnectListDomains'/>
+          <ref name='virConnectNumOfDefinedDomains'/>
           <ref name='virConnectNumOfDomains'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainCreate'/>
@@ -1408,6 +1415,7 @@
         <word name='found'>
           <ref name='virConnCopyLastError'/>
           <ref name='virConnectListDomains'/>
+          <ref name='virConnectNumOfDefinedDomains'/>
           <ref name='virConnectNumOfDomains'/>
           <ref name='virCopyLastError'/>
         </word>

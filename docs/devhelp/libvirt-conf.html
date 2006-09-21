@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>conf: </title>
+    <meta name="generator" content="Libvirt devhelp stylesheet"/>
+    <link rel="start" href="index.html" title="libvirt Reference Manual"/>
+    <link rel="up" href="general.html" title="API"/>
+    <link rel="stylesheet" href="style.css" type="text/css"/>
+    <link rel="chapter" href="general.html" title="API"/>
+  </head>
+  <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+    <table class="navigation" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+      <tr valign="middle">
+        <td>
+          <a accesskey="p" href="libvirt-virterror.html">
+            <img src="left.png" width="24" height="24" border="0" alt="Prev"/>
+          </a>
+        </td>
+        <td>
+          <a accesskey="u" href="general.html">
+            <img src="up.png" width="24" height="24" border="0" alt="Up"/>
+          </a>
+        </td>
+        <td>
+          <a accesskey="h" href="index.html">
+            <img src="home.png" width="24" height="24" border="0" alt="Home"/>
+          </a>
+        </td>
+        <th width="100%" align="center">libvirt Reference Manual</th>
+      </tr>
+    </table>
+    <h2>
+      <span class="refentrytitle">conf</span>
+    </h2>
+    <p>conf - </p>
+    <p></p>
+    <p>Author(s): </p>
+    <div class="refsynopsisdiv">
+      <h2>Synopsis</h2>
+      <pre class="synopsis">typedef <a href="libvirt-conf.html#virConfValue">virConfValue</a> * <a href="#virConfValuePtr">virConfValuePtr</a>;
+typedef enum <a href="#virConfType">virConfType</a>;
+typedef struct _virConfValue <a href="#virConfValue">virConfValue</a>;
+typedef struct _virConf <a href="#virConf">virConf</a>;
+typedef <a href="libvirt-conf.html#virConf">virConf</a> * <a href="#virConfPtr">virConfPtr</a>;
+int	<a href="#virConfWriteFile">virConfWriteFile</a>		(const char * filename, <br/>					 <a href="libvirt-conf.html#virConfPtr">virConfPtr</a> conf);
+<a href="libvirt-conf.html#virConfValuePtr">virConfValuePtr</a>	<a href="#virConfGetValue">virConfGetValue</a>		(<a href="libvirt-conf.html#virConfPtr">virConfPtr</a> conf, <br/>					 const char * setting);
+<a href="libvirt-conf.html#virConfPtr">virConfPtr</a>	<a href="#virConfReadMem">virConfReadMem</a>		(const char * memory, <br/>					 int len);
+int	<a href="#virConfFree">virConfFree</a>			(<a href="libvirt-conf.html#virConfPtr">virConfPtr</a> conf);
+<a href="libvirt-conf.html#virConfPtr">virConfPtr</a>	<a href="#virConfReadFile">virConfReadFile</a>		(const char * filename);
+int	<a href="#virConfWriteMem">virConfWriteMem</a>			(char * memory, <br/>					 int * len, <br/>					 <a href="libvirt-conf.html#virConfPtr">virConfPtr</a> conf);
+</pre>
+    </div>
+    <div class="refsect1" lang="en">
+      <h2>Description</h2>
+    </div>
+    <div class="refsect1" lang="en">
+      <h2>Details</h2>
+      <div class="refsect2" lang="en">
+        <div class="refsect2" lang="en"><h3><a name="virConf">Structure </a>virConf</h3><pre class="programlisting">struct _virConf {
+The content of this structure is not made public by the API.
+} virConf;
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConfPtr">Typedef </a>virConfPtr</h3><pre class="programlisting"><a href="libvirt-conf.html#virConf">virConf</a> * virConfPtr;
+</pre><p>a pointer to a parsed configuration file</p>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConfType">Enum </a>virConfType</h3><pre class="programlisting">enum <a href="#virConfType">virConfType</a> {
+    <a name="VIR_CONF_NONE">VIR_CONF_NONE</a> = 0 /* undefined */
+    <a name="VIR_CONF_LONG">VIR_CONF_LONG</a> = 1 /* a long int */
+    <a name="VIR_CONF_STRING">VIR_CONF_STRING</a> = 2 /* a string */
+    <a name="VIR_CONF_LIST">VIR_CONF_LIST</a> = 3 /*  a list */
+};
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConfValue">Structure </a>virConfValue</h3><pre class="programlisting">struct _virConfValue {
+    <a href="libvirt-conf.html#virConfType">virConfType</a>	type	: the <a href="libvirt-conf.html#virConfType">virConfType</a>
+    <a href="libvirt-conf.html#virConfValuePtr">virConfValuePtr</a>	next	: next element if in a list
+    long	l	: long integer
+    char *	str	: pointer to 0 terminated string
+    <a href="libvirt-conf.html#virConfValuePtr">virConfValuePtr</a>	list	: list of a list
+} virConfValue;
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConfValuePtr">Typedef </a>virConfValuePtr</h3><pre class="programlisting"><a href="libvirt-conf.html#virConfValue">virConfValue</a> * virConfValuePtr;
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConfFree"/>virConfFree ()</h3><pre class="programlisting">int	virConfFree			(<a href="libvirt-conf.html#virConfPtr">virConfPtr</a> conf)<br/>
+</pre><p>Frees all data associated to the handle</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conf</tt></i>:</span></td><td>a configuration file handle</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 in case of success, -1 in case of error.</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConfGetValue"/>virConfGetValue ()</h3><pre class="programlisting"><a href="libvirt-conf.html#virConfValuePtr">virConfValuePtr</a>	virConfGetValue		(<a href="libvirt-conf.html#virConfPtr">virConfPtr</a> conf, <br/>					 const char * setting)<br/>
+</pre><p>Lookup the value associated to this entry in the configuration file</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conf</tt></i>:</span></td><td>a configuration file handle</td></tr><tr><td><span class="term"><i><tt>setting</tt></i>:</span></td><td/></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a pointer to the value or NULL if the lookup failed, the data associated will be freed when virConfFree() is called</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConfReadFile"/>virConfReadFile ()</h3><pre class="programlisting"><a href="libvirt-conf.html#virConfPtr">virConfPtr</a>	virConfReadFile		(const char * filename)<br/>
+</pre><p>Reads a configuration file.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>filename</tt></i>:</span></td><td>the path to the configuration file.</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>an handle to lookup settings or NULL if it failed to read or parse the file, use virConfFree() to free the data.</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConfReadMem"/>virConfReadMem ()</h3><pre class="programlisting"><a href="libvirt-conf.html#virConfPtr">virConfPtr</a>	virConfReadMem		(const char * memory, <br/>					 int len)<br/>
+</pre><p>Reads a configuration file loaded in memory. The string can be zero terminated in which case @len can be 0</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>memory</tt></i>:</span></td><td>pointer to the content of the configuration file</td></tr><tr><td><span class="term"><i><tt>len</tt></i>:</span></td><td>lenght in byte</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>an handle to lookup settings or NULL if it failed to parse the content, use virConfFree() to free the data.</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConfWriteFile"/>virConfWriteFile ()</h3><pre class="programlisting">int	virConfWriteFile		(const char * filename, <br/>					 <a href="libvirt-conf.html#virConfPtr">virConfPtr</a> conf)<br/>
+</pre><p>Writes a configuration file back to a file.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>filename</tt></i>:</span></td><td>the path to the configuration file.</td></tr><tr><td><span class="term"><i><tt>conf</tt></i>:</span></td><td>the conf</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of bytes written or -1 in case of error.</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConfWriteMem"/>virConfWriteMem ()</h3><pre class="programlisting">int	virConfWriteMem			(char * memory, <br/>					 int * len, <br/>					 <a href="libvirt-conf.html#virConfPtr">virConfPtr</a> conf)<br/>
+</pre><p>Writes a configuration file back to a memory area. @len is an IN/OUT parameter, it indicates the size available in bytes, and on output the size required for the configuration file (even if the call fails due to insufficient space).</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>memory</tt></i>:</span></td><td>pointer to the memory to store the config file</td></tr><tr><td><span class="term"><i><tt>len</tt></i>:</span></td><td>pointer to the lenght in byte of the store, on output the size</td></tr><tr><td><span class="term"><i><tt>conf</tt></i>:</span></td><td>the conf</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of bytes written or -1 in case of error.</td></tr></tbody></table></div></div>
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>
