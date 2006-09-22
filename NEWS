@@ -5,6 +5,15 @@
        http://libvirt.org/news.html
 
 Releases
+0.1.6: Sep 5 2006:
+   - Support for localization of strings using gettext (Daniel Berrange)
+   - Support for new Xen-3.0.3 cdrom and disk configuration (Daniel Berrange)
+   - Support for setting VNC port when creating domains with new
+      xend config files (Daniel Berrange) 
+   - Fix bug when running against xen-3.0.2 hypercalls (Jim Fehlig)
+   - Fix reconnection problem when talking directly to http xend
+
+
 0.1.5: Sep 5 2006:
    - Support for new hypercalls change in Xen changeset 86d26e6ec89b
    - bug fixes: virParseUUID() was wrong, netwoking for paravirt guestsi

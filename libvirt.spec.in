@@ -111,6 +111,19 @@ rm -fr %{buildroot}
 %doc docs/examples/python
 
 %changelog
+* Fri Sep 22 2006 Daniel Veillard <veillard@redhat.com> 0.1.6-1
+- Support for localization
+- Support for new Xen-3.0.3 cdrom and disk configuration
+- Support for setting VNC port
+- Fix bug when running against xen-3.0.2 hypercalls
+- Fix reconnection problem when talking directly to http xend
+
+* Tue Sep  5 2006 Jeremy Katz <katzj@redhat.com> - 0.1.5-3
+- patch from danpb to support new-format cd devices for HVM guests
+
+* Tue Sep  5 2006 Daniel Veillard <veillard@redhat.com> 0.1.5-2
+- reactivating ia64 support
+
 * Tue Sep  5 2006 Daniel Veillard <veillard@redhat.com> 0.1.5-1
 - new release
 - bug fixes

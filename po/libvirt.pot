@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-09-20 10:20-0400\n"
+"POT-Creation-Date: 2006-09-21 17:03+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -369,8 +369,8 @@ msgid "allocate new context"
 msgstr ""
 
 #: src/hash.c:628 src/hash.c:634 src/test.c:725 src/test.c:750 src/test.c:773
-#: src/test.c:797 src/xend_internal.c:1864 src/xend_internal.c:2563
-#: src/xend_internal.c:2771 src/xs_internal.c:592 src/proxy_internal.c:790
+#: src/test.c:797 src/xend_internal.c:1864 src/xend_internal.c:2560
+#: src/xend_internal.c:2768 src/xs_internal.c:592 src/proxy_internal.c:790
 #: src/proxy_internal.c:837 src/proxy_internal.c:888
 msgid "allocating domain"
 msgstr ""
@@ -543,17 +543,17 @@ msgstr ""
 msgid "failed to parse Xend domain information"
 msgstr ""
 
-#: src/xend_internal.c:2834
+#: src/xend_internal.c:2831
 #, c-format
 msgid "Failed to create domain %s\n"
 msgstr ""
 
-#: src/xend_internal.c:2840
+#: src/xend_internal.c:2837
 #, c-format
 msgid "Failed to get devices for domain %s\n"
 msgstr ""
 
-#: src/xend_internal.c:2851
+#: src/xend_internal.c:2848
 #, c-format
 msgid "Failed to resume new domain %s\n"
 msgstr ""

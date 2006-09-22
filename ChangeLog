@@ -1,3 +1,7 @@
+Fri Sep 22 11:02:48 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* docs/* libvirt.spec.in configure.in NEWS: preparing release of 0.1.6
+
 Thu Sep 21 10:19:02 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* Makefile.am: Added po directory
