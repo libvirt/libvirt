@@ -2653,7 +2653,7 @@ xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
  */
 int
 xenDaemonDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
-			unsigned char *cpumaps, int maplen)
+                        unsigned char *cpumaps, int maplen)
 {
     struct sexpr *root, *s, *t;
     virVcpuInfoPtr ipt = info;
@@ -2662,14 +2662,14 @@ xenDaemonDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
     int vcpu, cpu;
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)
-     || (info == NULL) || (maxinfo < 1)) {
+        || (info == NULL) || (maxinfo < 1)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return (-1);
     }
     if (cpumaps != NULL && maplen < 1) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return (-1);
     }
     root = sexpr_get(domain->conn, "/xend/domain/%s?op=vcpuinfo", domain->name);
@@ -2677,46 +2677,49 @@ xenDaemonDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
         return (-1);
 
     if (cpumaps != NULL)
-	memset(cpumaps, 0, maxinfo * maplen);
+        memset(cpumaps, 0, maxinfo * maplen);
 
     /* scan the sexprs from "(vcpu (number x)...)" and get parameter values */
-    for (s = root; s->kind == SEXPR_CONS; s = s->cdr)
-     if ((s->car->kind == SEXPR_CONS) &&
-	 (s->car->car->kind == SEXPR_VALUE) &&
-	 !strcmp(s->car->car->value, "vcpu")) {
-        t = s->car;
-        vcpu = ipt->number = sexpr_int(t, "vcpu/number");
-        if ((oln = sexpr_int(t, "vcpu/online")) != 0) {
-            if (sexpr_int(t, "vcpu/running")) ipt->state = VIR_VCPU_RUNNING;
-            if (sexpr_int(t, "vcpu/blocked")) ipt->state = VIR_VCPU_BLOCKED;
-        }
-        else ipt->state = VIR_VCPU_OFFLINE;
-        ipt->cpuTime = sexpr_float(t, "vcpu/cpu_time") * 1000000000;
-        ipt->cpu = oln ? sexpr_int(t, "vcpu/cpu") : -1;
-
-	if (cpumaps != NULL && vcpu >= 0 && vcpu < maxinfo) {
-	    cpumap = (unsigned char *) VIR_GET_CPUMAP(cpumaps, maplen, vcpu);
-            /*
-	     * get sexpr from "(cpumap (x y z...))" and convert values
-	     * to bitmap
-	     */
-            for (t = t->cdr; t->kind == SEXPR_CONS; t = t->cdr)
-             if ((t->car->kind == SEXPR_CONS) &&
-	     	 (t->car->car->kind == SEXPR_VALUE) &&
-		 !strcmp(t->car->car->value, "cpumap") &&
-		 (t->car->cdr->kind == SEXPR_CONS)) {
-        	for (t = t->car->cdr->car; t->kind == SEXPR_CONS; t = t->cdr)
-        	 if (t->car->kind == SEXPR_VALUE) {
-                    cpu = strtol(t->car->value, NULL, 0);
-		    if (cpu >= 0)
-			VIR_USE_CPU(cpumap, cpu);
-        	}
-        	break;
+    for (s = root; s->kind == SEXPR_CONS; s = s->cdr) {
+        if ((s->car->kind == SEXPR_CONS) &&
+            (s->car->car->kind == SEXPR_VALUE) &&
+            !strcmp(s->car->car->value, "vcpu")) {
+            t = s->car;
+            vcpu = ipt->number = sexpr_int(t, "vcpu/number");
+            if ((oln = sexpr_int(t, "vcpu/online")) != 0) {
+                if (sexpr_int(t, "vcpu/running")) ipt->state = VIR_VCPU_RUNNING;
+                if (sexpr_int(t, "vcpu/blocked")) ipt->state = VIR_VCPU_BLOCKED;
             }
-	}
+            else
+                ipt->state = VIR_VCPU_OFFLINE;
+            ipt->cpuTime = sexpr_float(t, "vcpu/cpu_time") * 1000000000;
+            ipt->cpu = oln ? sexpr_int(t, "vcpu/cpu") : -1;
 
-        if (++nbinfo == maxinfo) break;
-        ipt++;
+            if (cpumaps != NULL && vcpu >= 0 && vcpu < maxinfo) {
+                cpumap = (unsigned char *) VIR_GET_CPUMAP(cpumaps, maplen, vcpu);
+                /*
+                 * get sexpr from "(cpumap (x y z...))" and convert values
+                 * to bitmap
+                 */
+                for (t = t->cdr; t->kind == SEXPR_CONS; t = t->cdr)
+                    if ((t->car->kind == SEXPR_CONS) &&
+                        (t->car->car->kind == SEXPR_VALUE) &&
+                        !strcmp(t->car->car->value, "cpumap") &&
+                        (t->car->cdr->kind == SEXPR_CONS)) {
+                        for (t = t->car->cdr->car; t->kind == SEXPR_CONS; t = t->cdr)
+                            if (t->car->kind == SEXPR_VALUE) {
+                                cpu = strtol(t->car->value, NULL, 0);
+                                if (cpu >= 0 && (VIR_CPU_MAPLEN(cpu+1) <= maplen)) {
+                                    VIR_USE_CPU(cpumap, cpu);
+                                }
+                            }
+                        break;
+                    }
+            }
+
+            if (++nbinfo == maxinfo) break;
+            ipt++;
+        }
     }
     sexpr_free(root);
     return(nbinfo);

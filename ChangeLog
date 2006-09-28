@@ -1,3 +1,13 @@
+Thu Sep 21 10:19:02 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Check if the physical CPU will fit in the maplen
+	provided by the caller when populating VCPU<->CPU mapping. This is because
+	XenD will return data for 32 physical CPUs, even if the box only has 4
+	CPUs. The caller of course will only have allocated a map big enough for
+	the actual number of physical CPUs. We simply check against maplen param
+	supplied by caller & discard info about CPUs which don't fit. Also santise
+	whitespace.
+
 Fri Sep 22 11:02:48 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* docs/* libvirt.spec.in configure.in NEWS: preparing release of 0.1.6
