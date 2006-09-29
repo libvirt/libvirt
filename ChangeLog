@@ -1,3 +1,7 @@
+Fri Sep 29 11:27:36 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* docs/* libvirt.spec.in configure.in NEWS: preparing release of 0.1.7
+
 Thu Sep 21 10:19:02 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/xen_internal.c: Fork different version of getdomaininfo struct for

@@ -5,7 +5,13 @@
        http://libvirt.org/news.html
 
 Releases
-0.1.6: Sep 5 2006:
+0.1.7: Sep 29 2006:
+   -  fix a memory bug on getting vcpu informations from xend (Daniel Berrange)
+   -  fix another problem in the hypercalls change in Xen changeset
+       86d26e6ec89b when getting domain informations (Daniel Berrange)
+
+
+0.1.6: Sep 22 2006:
    - Support for localization of strings using gettext (Daniel Berrange)
    - Support for new Xen-3.0.3 cdrom and disk configuration (Daniel Berrange)
    - Support for setting VNC port when creating domains with new
