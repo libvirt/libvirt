@@ -27,6 +27,7 @@
 #include <sys/time.h>
 #include <ctype.h>
 #include <fcntl.h>
+#include <locale.h>
 
 #include <readline/readline.h>
 #include <readline/history.h>
