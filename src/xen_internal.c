@@ -1489,6 +1489,13 @@ xenHypervisorGetDomInfo(virConnectPtr conn, int id, virDomainInfoPtr info)
 {
     xen_getdomaininfo dominfo;
     int ret;
+    static int kb_per_pages = 0;
+
+    if (kb_per_pages == 0) {
+        kb_per_pages = sysconf(_SC_PAGESIZE) / 1024;
+	if (kb_per_pages <= 0) 
+	    kb_per_pages = 4;
+    }
 
     if ((conn == NULL) || (conn->handle < 0) || (info == NULL))
         return (-1);
@@ -1527,8 +1534,8 @@ xenHypervisorGetDomInfo(virConnectPtr conn, int id, virDomainInfoPtr info)
      * kilobytes from page counts
      */
     info->cpuTime = XEN_GETDOMAININFO_CPUTIME(dominfo);
-    info->memory = XEN_GETDOMAININFO_TOT_PAGES(dominfo) * 4;
-    info->maxMem = XEN_GETDOMAININFO_MAX_PAGES(dominfo) * 4;
+    info->memory = XEN_GETDOMAININFO_TOT_PAGES(dominfo) * kb_per_pages;
+    info->maxMem = XEN_GETDOMAININFO_MAX_PAGES(dominfo) * kb_per_pages;
     info->nrVirtCpu = XEN_GETDOMAININFO_CPUCOUNT(dominfo);
     return (0);
 }

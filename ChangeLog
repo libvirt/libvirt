@@ -1,3 +1,7 @@
+Fri Sep 29 17:16:40 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c: fix for system with page size != 4k
+
 Fri Sep 29 13:05:12 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* docs/bugs.html docs/libvir.html: added pointers on how to report
