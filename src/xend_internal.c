@@ -2820,6 +2820,7 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
 
     sexpr = virDomainParseXMLDesc(xmlDesc, &name, xendConfigVersion);
     if ((sexpr == NULL) || (name == NULL)) {
+        virXendError(conn, VIR_ERR_XML_ERROR, "Failed to parse the XML domain description");
         if (sexpr != NULL)
             free(sexpr);
         if (name != NULL)

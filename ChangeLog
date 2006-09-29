@@ -1,3 +1,10 @@
+Fri Sep 29 13:05:12 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* docs/bugs.html docs/libvir.html: added pointers on how to report
+	  bugs in bugzilla as suggested by markmc
+	* src/xend_internal.c: first step for #208545 raise an error at the
+	  libvirt level
+
 Fri Sep 29 11:27:36 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* docs/* libvirt.spec.in configure.in NEWS: preparing release of 0.1.7
