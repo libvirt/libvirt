@@ -656,7 +656,7 @@ virXen_getdomaininfolist(int handle, int first_domain, int maxids,
     if (mlock(XEN_GETDOMAININFOLIST_DATA(dominfos),
               XEN_GETDOMAININFO_SIZE * maxids) < 0) {
         virXenError(VIR_ERR_XEN_CALL, " locking",
-                    sizeof(xen_v0_getdomaininfo) * maxids);
+                    XEN_GETDOMAININFO_SIZE * maxids);
         return (-1);
     }
     if (hypervisor_version > 1) {
@@ -696,10 +696,10 @@ virXen_getdomaininfolist(int handle, int first_domain, int maxids,
         if (ret == 0)
             ret = op.u.getdomaininfolist.num_domains;
     }
-    if (mlock(XEN_GETDOMAININFOLIST_DATA(dominfos),
-              XEN_GETDOMAININFO_SIZE * maxids) < 0) {
+    if (munlock(XEN_GETDOMAININFOLIST_DATA(dominfos),
+                XEN_GETDOMAININFO_SIZE * maxids) < 0) {
         virXenError(VIR_ERR_XEN_CALL, " release",
-                    sizeof(xen_v0_getdomaininfo));
+                    XEN_GETDOMAININFO_SIZE * maxids);
         ret = -1;
     }
     return(ret);

@@ -1,3 +1,8 @@
+Mon Oct  2 23:16:06 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c: Daniel Berrange fixed some mlock size problem
+	  doing a bit of cleanup too
+
 Fri Sep 29 17:31:36 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: add #include <locale.h> to be able to compile without
