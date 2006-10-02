@@ -145,7 +145,15 @@ typedef union xen_getdomaininfolist xen_getdomaininfolist;
      domlist.v0[n].domain :                         \
      domlist.v2[n].domain)
 
+#define XEN_GETDOMAININFOLIST_DATA(domlist)     \
+    (hypervisor_version < 2 ?                   \
+     (void*)(domlist->v0) :                     \
+     (void*)(domlist->v2))
 
+#define XEN_GETDOMAININFO_SIZE                  \
+    (hypervisor_version < 2 ?                   \
+     sizeof(xen_v0_getdomaininfo) :             \
+     sizeof(xen_v2_getdomaininfo))
 
 #define XEN_GETDOMAININFO_CLEAR(dominfo)                        \
     (hypervisor_version < 2 ?                                   \
@@ -645,7 +653,8 @@ virXen_getdomaininfolist(int handle, int first_domain, int maxids,
 {
     int ret = -1;
 
-    if (mlock(dominfos, sizeof(xen_v0_getdomaininfo) * maxids) < 0) {
+    if (mlock(XEN_GETDOMAININFOLIST_DATA(dominfos),
+              XEN_GETDOMAININFO_SIZE * maxids) < 0) {
         virXenError(VIR_ERR_XEN_CALL, " locking",
                     sizeof(xen_v0_getdomaininfo) * maxids);
         return (-1);
@@ -687,7 +696,8 @@ virXen_getdomaininfolist(int handle, int first_domain, int maxids,
         if (ret == 0)
             ret = op.u.getdomaininfolist.num_domains;
     }
-    if (munlock(dominfos, sizeof(xen_v0_getdomaininfo) * maxids) < 0) {
+    if (mlock(XEN_GETDOMAININFOLIST_DATA(dominfos),
+              XEN_GETDOMAININFO_SIZE * maxids) < 0) {
         virXenError(VIR_ERR_XEN_CALL, " release",
                     sizeof(xen_v0_getdomaininfo));
         ret = -1;
