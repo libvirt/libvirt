@@ -25,7 +25,7 @@ noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest conftest \
 TESTS = xml2sexprtest sexpr2xmltest virshtest test_conf.sh reconnect
 
 valgrind:
-	$(MAKE) check TESTS_ENVIRONMENT="valgrind --quiet"
+	$(MAKE) check TESTS_ENVIRONMENT="valgrind --quiet --leak-check=full"
 
 # Note: xmlrpc.[c|h] is not in libvirt yet
 xmlrpctest_SOURCES = \

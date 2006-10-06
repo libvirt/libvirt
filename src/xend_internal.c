@@ -1260,7 +1260,6 @@ xend_get_node(virConnectPtr xend)
 
 static int
 xend_get_config_version(virConnectPtr conn) {
-    int ret = -1;
     struct sexpr *root;
     const char *value;
 
@@ -1276,15 +1275,16 @@ xend_get_config_version(virConnectPtr conn) {
     value = sexpr_node(root, "node/xend_config_format");
 
     if (value) {
-        return strtol(value, NULL, 10);
-    } else {
-        /* Xen prior to 3.0.3 did not have the xend_config_format
-	   field, and is implicitly version 1. */
-        return 1;
-    }
+        int version = strtol(value, NULL, 10);
+        sexpr_free(root);
+        return version;
+    } 
 
     sexpr_free(root);
-    return (ret);
+
+    /* Xen prior to 3.0.3 did not have the xend_config_format
+       field, and is implicitly version 1. */
+    return 1;
 }
 
 

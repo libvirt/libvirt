@@ -598,18 +598,16 @@ static int virDomainParseXMLGraphicsDesc(xmlNodePtr node, virBufferPtr buf, int 
             //virBufferAdd(buf, "(xauthority /root/.Xauthority)", 30);
         }
         else if (xmlStrEqual(graphics_type, BAD_CAST "vnc")) {
-            xmlChar *vncport = NULL;
-            long port;
-
             virBufferAdd(buf, "(vnc 1)", 7);
             if (xendConfigVersion >= 2) {
-                vncport = xmlGetProp(node, BAD_CAST "port");
+                xmlChar *vncport = xmlGetProp(node, BAD_CAST "port");
                 if (vncport != NULL) {
-                    port = strtol((const char *)vncport, NULL, 10);
+                    long port = strtol((const char *)vncport, NULL, 10);
                     if (port == -1)
                         virBufferAdd(buf, "(vncunused 1)", 13);
                     else if (port > 5900)
                         virBufferVSprintf(buf, "(vncdisplay %d)", port - 5900);
+                    xmlFree(vncport);
                 }
             }
         }
@@ -638,9 +636,9 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
 {
     xmlXPathObjectPtr obj = NULL;
     xmlNodePtr cur, txt;
-    const xmlChar *type = NULL;
-    const xmlChar *loader = NULL;
-    const xmlChar *boot_dev = NULL;
+    xmlChar *type = NULL;
+    xmlChar *loader = NULL;
+    xmlChar *boot_dev = NULL;
     int res;
 
     cur = node->children;
@@ -720,9 +718,12 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
        obj = xmlXPathEval(BAD_CAST "/domain/devices/disk[@device='floppy' and target/@dev='fdb']/source", ctxt);
        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+           xmlChar *fdfile = NULL;
            cur = obj->nodesetval->nodeTab[0];
+           fdfile = xmlGetProp(cur, BAD_CAST "file");
            virBufferVSprintf(buf, "(fdb '%s')",
-                             (const char *) xmlGetProp(cur, BAD_CAST "file"));
+                             (const char *) fdfile);
+           xmlFree(fdfile);
            cur = NULL;
        }
        if (obj) {
@@ -737,9 +738,12 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
            obj = xmlXPathEval(BAD_CAST "/domain/devices/disk[@device='cdrom' and target/@dev='hdc']/source", ctxt);
            if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
                (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+               xmlChar *cdfile = NULL;
                cur = obj->nodesetval->nodeTab[0];
+               cdfile = xmlGetProp(cur, BAD_CAST "file");
                virBufferVSprintf(buf, "(cdrom '%s')",
-                                 (const char *) xmlGetProp(cur, BAD_CAST "file"));
+                                 (const char *)cdfile);
+               xmlFree(cdfile);
                cur = NULL;
            }
            if (obj) {
@@ -750,25 +754,26 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
 
        obj = xmlXPathEval(BAD_CAST "/domain/features/acpi", ctxt);
        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-	   (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+           (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
            virBufferAdd(buf, "(acpi 1)", 8);
-	   xmlXPathFreeObject(obj);
-	   obj = NULL;
        }
+       if (obj)
+           xmlXPathFreeObject(obj);
        obj = xmlXPathEval(BAD_CAST "/domain/features/apic", ctxt);
        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-	   (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+           (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
            virBufferAdd(buf, "(apic 1)", 8);
-	   xmlXPathFreeObject(obj);
-	   obj = NULL;
        }
+       if (obj)
+           xmlXPathFreeObject(obj);
        obj = xmlXPathEval(BAD_CAST "/domain/features/pae", ctxt);
        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-	   (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+           (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
            virBufferAdd(buf, "(pae 1)", 7);
-	   xmlXPathFreeObject(obj);
-	   obj = NULL;
        }
+       if (obj)
+           xmlXPathFreeObject(obj);
+       obj = NULL;
     }
 
     obj = xmlXPathEval(BAD_CAST "count(domain/devices/console) > 0", ctxt);
@@ -795,8 +800,13 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
 
     virBufferAdd(buf, "))", 2);
 
+    if (boot_dev)
+        xmlFree(boot_dev);
+
     return (0);
 error:
+    if (boot_dev)
+        xmlFree(boot_dev);
     if (obj != NULL)
         xmlXPathFreeObject(obj);
     return(-1);
@@ -960,12 +970,16 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
 
         if (target != NULL)
             xmlFree(target);
+        if (device != NULL)
+            xmlFree(device);
         return (-1);
     }
     if (target == NULL) {
         virXMLError(VIR_ERR_NO_TARGET, (const char *) source, 0);
         if (source != NULL)
             xmlFree(source);
+        if (device != NULL)
+            xmlFree(device);
         return (-1);
     }
 
@@ -975,7 +989,7 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
     if (hvm && 
         device &&
         !strcmp((const char *)device, "floppy")) {
-        return 0;
+        goto cleanup;
     }
 
     /* Xend <= 3.0.2 doesn't include cdrom config here */
@@ -983,7 +997,7 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
         device &&
         !strcmp((const char *)device, "cdrom")) {
         if (xendConfigVersion == 1)
-            return 0;
+            goto cleanup;
         else
             cdrom = 1;
     }
@@ -1021,6 +1035,9 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
 
     virBufferAdd(buf, ")", 1);
     virBufferAdd(buf, ")", 1);
+
+ cleanup:
+    xmlFree(device);
     xmlFree(target);
     xmlFree(source);
     return (0);
@@ -1302,6 +1319,8 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
 
     if (name != NULL)
         *name = nam;
+    else
+        free(nam);
 
     return (ret);
 

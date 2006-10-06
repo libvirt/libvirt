@@ -17,24 +17,30 @@ static int testCompareFiles(const char *xml, const char *sexpr, int xendConfigVe
   char *gotxml = NULL;
   char *xmlPtr = &(xmlData[0]);
   char *sexprPtr = &(sexprData[0]);
+  int ret = -1;
 
   if (virtTestLoadFile(xml, &xmlPtr, MAX_FILE) < 0)
-    return -1;
+    goto fail;
 
   if (virtTestLoadFile(sexpr, &sexprPtr, MAX_FILE) < 0)
-    return -1;
+    goto fail;
 
   if (!(gotxml = xend_parse_domain_sexp(NULL, sexprData, xendConfigVersion)))
-    return -1;
+    goto fail;
 
   if (getenv("DEBUG_TESTS")) {
       printf("Expect %d '%s'\n", (int)strlen(xmlData), xmlData);
       printf("Actual %d '%s'\n", (int)strlen(gotxml), gotxml);
   }
   if (strcmp(xmlData, gotxml))
-    return -1;
+    goto fail;
 
-  return 0;
+  ret = 0;
+
+ fail:
+  free(gotxml);
+
+  return ret;
 }
 
 static int testComparePVversion1(void *data ATTRIBUTE_UNUSED) {

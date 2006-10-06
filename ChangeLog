@@ -1,3 +1,15 @@
+Fri Oct  6 10:33:20 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Fixed memory leak in xend_get_config_version
+	routine.
+	* src/xml.c: Fixed memory leaks in XML parsing routines relating
+	to VNC port, HVM boot devices, HVM floppy & CDROM, HVM features,
+	disk device type.
+	* tests/Makefile.am: Use --leak-check=full when running valgrind
+	to detect all leaks, in addition to memory corruption checks
+	* tests/sexpr2xmltest.c, tests/xml2sexprtest.c: Fixed memory leaks
+	in test harness leading to valgrind false-positives.
+
 Mon Oct  2 23:16:06 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.c: Daniel Berrange fixed some mlock size problem
