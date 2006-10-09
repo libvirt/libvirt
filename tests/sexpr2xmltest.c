@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <string.h>
 
@@ -67,33 +66,74 @@ static int testCompareFVversion2(void *data ATTRIBUTE_UNUSED) {
 			  2);
 }
 
+static int testCompareDiskFile(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("sexpr2xmldata/sexpr2xml-disk-file.xml",
+			  "sexpr2xmldata/sexpr2xml-disk-file.sexpr",
+			  1);
+}
+
+static int testCompareDiskBlock(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("sexpr2xmldata/sexpr2xml-disk-block.xml",
+			  "sexpr2xmldata/sexpr2xml-disk-block.sexpr",
+			  1);
+}
+
+static int testCompareDiskDrvBlktapQcow(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("sexpr2xmldata/sexpr2xml-disk-drv-blktap-qcow.xml",
+			  "sexpr2xmldata/sexpr2xml-disk-drv-blktap-qcow.sexpr",
+			  1);
+}
+
+static int testCompareDiskDrvBlktapRaw(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("sexpr2xmldata/sexpr2xml-disk-drv-blktap-raw.xml",
+			  "sexpr2xmldata/sexpr2xml-disk-drv-blktap-raw.sexpr",
+			  1);
+}
+
+
 int
 main(int argc, char **argv)
 {
     int ret = 0;
-    
+
     progname = argv[0];
-    
+
     if (argc > 1) {
-        fprintf(stderr, "Usage: %s\n", progname); 
-        exit(EXIT_FAILURE);
+	fprintf(stderr, "Usage: %s\n", progname);
+	exit(EXIT_FAILURE);
     }
-    
-    if (virtTestRun("SEXPR-2-XML PV config (version 1)", 
+
+    if (virtTestRun("SEXPR-2-XML PV config (version 1)",
 		    1, testComparePVversion1, NULL) != 0)
-        ret = -1;
+	ret = -1;
 
-    if (virtTestRun("SEXPR-2-XML FV config (version 1)", 
+    if (virtTestRun("SEXPR-2-XML FV config (version 1)",
 		    1, testCompareFVversion1, NULL) != 0)
-        ret = -1;
+	ret = -1;
 
-    if (virtTestRun("SEXPR-2-XML PV config (version 2)", 
+    if (virtTestRun("SEXPR-2-XML PV config (version 2)",
 		    1, testComparePVversion2, NULL) != 0)
-        ret = -1;
+	ret = -1;
 
-    if (virtTestRun("SEXPR-2-XML FV config  (version 2)", 
+    if (virtTestRun("SEXPR-2-XML FV config  (version 2)",
 		    1, testCompareFVversion2, NULL) != 0)
-        ret = -1;
+	ret = -1;
+
+    if (virtTestRun("SEXPR-2-XML Disk File config",
+		    1, testCompareDiskFile, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("SEXPR-2-XML Disk Block config",
+		    1, testCompareDiskBlock, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("SEXPR-2-XML Disk Driver blktap qcow config",
+		    1, testCompareDiskDrvBlktapQcow, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("SEXPR-2-XML Disk Driver blktap raw config",
+		    1, testCompareDiskDrvBlktapRaw, NULL) != 0)
+	ret = -1;
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

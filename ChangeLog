@@ -1,3 +1,13 @@
+Mon Oct  9 09:34:42 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xml.c, src/xend_internal.c: Added support for a <driver>
+	element in disk specification, allowing use of alternate Xen
+	drivers such as blktap.
+	* tests/xml2sexprtest.c, tests/sexpr2xmltest.c: Added tests for
+	new <driver> element, and blktap driver impl.
+	* tests/xml2sexprdata/*, tests/sexpr2xmldata/*: New / updated
+	data files for new <driver> element
+
 Fri Oct  6 10:33:20 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c: Fixed memory leak in xend_get_config_version

@@ -17,11 +17,13 @@
   <devices>
     <emulator>/usr/lib64/xen/bin/qemu-dm</emulator>
     <disk type='file' device='cdrom'>
+      <driver name='file'/>
       <source file='/root/boot.iso'/>
       <target dev='hdc'/>
       <readonly/>
     </disk>
     <disk type='file' device='disk'>
+      <driver name='file'/>
       <source file='/root/foo.img'/>
       <target dev='hda'/>
     </disk>

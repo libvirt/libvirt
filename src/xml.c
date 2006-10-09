@@ -931,6 +931,8 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
     xmlChar *device = NULL;
     xmlChar *source = NULL;
     xmlChar *target = NULL;
+    xmlChar *drvName = NULL;
+    xmlChar *drvType = NULL;
     int ro = 0;
     int typ = 0;
     int cdrom = 0;
@@ -944,7 +946,7 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
         xmlFree(type);
     }
     device = xmlGetProp(node, BAD_CAST "device");
-    
+
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
@@ -958,6 +960,11 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
             } else if ((target == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "target"))) {
                 target = xmlGetProp(cur, BAD_CAST "dev");
+            } else if ((drvName == NULL) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "driver"))) {
+                drvName = xmlGetProp(cur, BAD_CAST "name");
+                if (drvName && !strcmp((const char *)drvName, "tap"))
+                    drvType = xmlGetProp(cur, BAD_CAST "type");
             } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
                 ro = 1;
             }
@@ -986,14 +993,14 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
     /* Xend (all versions) put the floppy device config
      * under the hvm (image (os)) block
      */
-    if (hvm && 
+    if (hvm &&
         device &&
         !strcmp((const char *)device, "floppy")) {
         goto cleanup;
     }
 
     /* Xend <= 3.0.2 doesn't include cdrom config here */
-    if (hvm && 
+    if (hvm &&
         device &&
         !strcmp((const char *)device, "cdrom")) {
         if (xendConfigVersion == 1)
@@ -1004,7 +1011,14 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
 
 
     virBufferAdd(buf, "(device ", 8);
-    virBufferAdd(buf, "(vbd ", 5);
+    /* Normally disks are in a (device (vbd ...)) block
+       but blktap disks ended up in a differently named
+       (device (tap ....)) block.... */
+    if (drvName && !strcmp((const char *)drvName, "tap")) {
+        virBufferAdd(buf, "(tap ", 5);
+    } else {
+        virBufferAdd(buf, "(vbd ", 5);
+    }
 
     if (hvm) {
         char *tmp = (char *)target;
@@ -1014,19 +1028,32 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
 
         /* Xend <= 3.0.2 wants a ioemu: prefix on devices for HVM */
         if (xendConfigVersion == 1)
-            virBufferVSprintf(buf, "(dev 'ioemu:%s')", (const char *) tmp);
+            virBufferVSprintf(buf, "(dev 'ioemu:%s')", (const char *)tmp);
         else /* But newer does not */
-            virBufferVSprintf(buf, "(dev '%s%s')", (const char *) tmp, cdrom ? ":cdrom" : ":disk");
+            virBufferVSprintf(buf, "(dev '%s%s')", (const char *)tmp, cdrom ? ":cdrom" : ":disk");
     } else
-        virBufferVSprintf(buf, "(dev '%s')", (const char *) target);
+        virBufferVSprintf(buf, "(dev '%s')", (const char *)target);
 
-    if (typ == 0)
-        virBufferVSprintf(buf, "(uname 'file:%s')", source);
-    else if (typ == 1) {
-        if (source[0] == '/')
-            virBufferVSprintf(buf, "(uname 'phy:%s')", source);
-        else
-            virBufferVSprintf(buf, "(uname 'phy:/dev/%s')", source);
+    if (drvName) {
+        if (!strcmp((const char *)drvName, "tap")) {
+            virBufferVSprintf(buf, "(uname '%s:%s:%s')",
+                              (const char *)drvName,
+                              (drvType ? (const char *)drvType : "aio"),
+                              (const char *)source);
+        } else {
+            virBufferVSprintf(buf, "(uname '%s:%s')",
+                              (const char *)drvName,
+                              (const char *)source);
+        }
+    } else {
+        if (typ == 0)
+            virBufferVSprintf(buf, "(uname 'file:%s')", source);
+        else if (typ == 1) {
+            if (source[0] == '/')
+                virBufferVSprintf(buf, "(uname 'phy:%s')", source);
+            else
+                virBufferVSprintf(buf, "(uname 'phy:/dev/%s')", source);
+        }
     }
     if (ro == 0)
         virBufferVSprintf(buf, "(mode 'w')");
@@ -1037,6 +1064,8 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
     virBufferAdd(buf, ")", 1);
 
  cleanup:
+    xmlFree(drvType);
+    xmlFree(drvName);
     xmlFree(device);
     xmlFree(target);
     xmlFree(source);

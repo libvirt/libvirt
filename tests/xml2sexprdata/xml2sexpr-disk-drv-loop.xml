@@ -1,4 +1,4 @@
-<domain type='xen' id='6'>
+<domain type='xen' id='15'>
   <name>pvtest</name>
   <uuid>596a5d2171f48fb2e068e2386a5c413e</uuid>
   <os>
@@ -14,9 +14,11 @@
   <on_crash>destroy</on_crash>
   <devices>
     <disk type='file' device='disk'>
-      <driver name='file'/>
+      <driver name="file"/>
       <source file='/root/some.img'/>
       <target dev='xvda'/>
     </disk>
+    <console tty='/dev/pts/4'/>
   </devices>
 </domain>
+

@@ -1451,7 +1451,7 @@ xend_parse_sexp_desc_os(struct sexpr *node, virBufferPtr buf, int hvm)
 
 /**
  * xend_parse_sexp_desc:
- * @domain: the domain associated with the XML
+ * @conn: the connection associated with the XML
  * @root: the root of the parsed S-Expression
  *
  * Parse the xend sexp description and turn it into the XML format similar
@@ -1487,7 +1487,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
 
     tmp = sexpr_node(root, "domain/name");
     if (tmp == NULL) {
-        virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+        virXendError(conn, VIR_ERR_INTERNAL_ERROR,
                      _("domain information incomplete, missing name"));
         goto error;
     }
@@ -1498,10 +1498,11 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
 	int i, j;
 	for (i = 0, j = 0;(i < 32) && (tmp[j] != 0);j++) {
 	    if (((tmp[j] >= '0') && (tmp[j] <= '9')) ||
-	        ((tmp[j] >= 'a') && (tmp[j] <= 'f')))
-		compact[i++] = tmp[j];
-	    else if ((tmp[j] >= 'A') && (tmp[j] <= 'F'))
+	        ((tmp[j] >= 'a') && (tmp[j] <= 'f'))) {
+            compact[i++] = tmp[j];
+        } else if ((tmp[j] >= 'A') && (tmp[j] <= 'F')) {
 	        compact[i++] = tmp[j] + 'a' - 'A';
+        }
 	}
 	compact[i] = 0;
 	if (i > 0)
@@ -1509,7 +1510,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
     }
     tmp = sexpr_node(root, "domain/bootloader");
     if (tmp != NULL)
-	virBufferVSprintf(&buf, "  <bootloader>%s</bootloader>\n", tmp);
+        virBufferVSprintf(&buf, "  <bootloader>%s</bootloader>\n", tmp);
 
     if (sexpr_lookup(root, "domain/image")) {
         hvm = sexpr_lookup(root, "domain/image/hvm") ? 1 : 0;
@@ -1522,13 +1523,13 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
                       sexpr_int(root, "domain/vcpus"));
     tmp = sexpr_node(root, "domain/on_poweroff");
     if (tmp != NULL)
-	virBufferVSprintf(&buf, "  <on_poweroff>%s</on_poweroff>\n", tmp);
+        virBufferVSprintf(&buf, "  <on_poweroff>%s</on_poweroff>\n", tmp);
     tmp = sexpr_node(root, "domain/on_reboot");
     if (tmp != NULL)
-	virBufferVSprintf(&buf, "  <on_reboot>%s</on_reboot>\n", tmp);
+        virBufferVSprintf(&buf, "  <on_reboot>%s</on_reboot>\n", tmp);
     tmp = sexpr_node(root, "domain/on_crash");
     if (tmp != NULL)
-	virBufferVSprintf(&buf, "  <on_crash>%s</on_crash>\n", tmp);
+        virBufferVSprintf(&buf, "  <on_crash>%s</on_crash>\n", tmp);
 
     if (hvm) {
         virBufferAdd(&buf, "  <features>\n", 13);
@@ -1546,105 +1547,150 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
     /* in case of HVM we have devices emulation */
     tmp = sexpr_node(root, "domain/image/hvm/device_model");
     if ((tmp != NULL) && (tmp[0] != 0))
-	virBufferVSprintf(&buf, "    <emulator>%s</emulator>\n", tmp);
+        virBufferVSprintf(&buf, "    <emulator>%s</emulator>\n", tmp);
 
     for (cur = root; cur->kind == SEXPR_CONS; cur = cur->cdr) {
         node = cur->car;
-        if (sexpr_lookup(node, "device/vbd")) {
-            tmp = sexpr_node(node, "device/vbd/uname");
-            if (tmp == NULL)
-                continue;
-            if (!memcmp(tmp, "file:", 5)) {
-                int cdrom = 0;
-                const char *src = tmp+5;
-                const char *dst = sexpr_node(node, "device/vbd/dev");
+        /* Normally disks are in a (device (vbd ...)) block
+           but blktap disks ended up in a differently named
+           (device (tap ....)) block.... */
+        if (sexpr_lookup(node, "device/vbd") ||
+            sexpr_lookup(node, "device/tap")) {
+            char *offset;
+            int isBlock = 0;
+            int cdrom = 0;
+            char *drvName = NULL;
+            char *drvType = NULL;
+            const char *src = NULL;
+            const char *dst = NULL;
+            const char *mode = NULL;
 
-                if (dst == NULL) {
-                    virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-                                 _("domain information incomplete, vbd has no dev"));
-                    goto error;
-                }
-
-                if (!strncmp(dst, "ioemu:", 6)) 
-                    dst += 6;
-                /* New style disk config from Xen >= 3.0.3 */
-                if (xendConfigVersion > 1) {
-                    char *offset = rindex(dst, ':');
-                    if (offset) {
-                        if (!strcmp(offset, ":cdrom")) {
-                            cdrom = 1;
-                        } else if (!strcmp(offset, ":disk")) {
-                            /* defualt anyway */
-                        } else {
-                            /* Unknown, lets pretend its a disk */
-                        }
-                        offset[0] = '\0';
-                    }
-                }
-
-                virBufferVSprintf(&buf, "    <disk type='file' device='%s'>\n", cdrom ? "cdrom" : "disk");
-                virBufferVSprintf(&buf, "      <source file='%s'/>\n", src);
-                virBufferVSprintf(&buf, "      <target dev='%s'/>\n", dst);
-                tmp = sexpr_node(node, "device/vbd/mode");
-                /* XXX should we force mode == r, if cdrom==1, or assume
-                   xend has already done this ? */
-                if ((tmp != NULL) && (!strcmp(tmp, "r")))
-                    virBufferVSprintf(&buf, "      <readonly/>\n");
-                virBufferAdd(&buf, "    </disk>\n", 12);
-            } else if (!memcmp(tmp, "phy:", 4)) {
-                int cdrom = 0;
-                const char *src = tmp+4;
-                const char *dst = sexpr_node(node, "device/vbd/dev");
-
-                if (dst == NULL) {
-                    virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
-                                 _("domain information incomplete, vbd has no dev"));
-                    goto error;
-                }
-
-                if (!strncmp(dst, "ioemu:", 6)) 
-                    dst += 6;
-                /* New style cdrom config from Xen >= 3.0.3 */
-                if (xendConfigVersion > 1) {
-                    char *offset = rindex(dst, ':');
-                    if (offset) {
-                        if (!strcmp(offset, ":cdrom")) {
-                            cdrom = 1;
-                        } else if (!strcmp(offset, ":disk")) {
-                            /* defualt anyway */
-                        } else {
-                            /* Unknown, lets pretend its a disk */
-                        }
-                        offset[0] = '\0';
-                    }
-                }
-
-                virBufferVSprintf(&buf, "    <disk type='block' device='%s'>\n", cdrom ? "cdrom" : "disk");
-                virBufferVSprintf(&buf, "      <source dev='%s'/>\n", src);
-                virBufferVSprintf(&buf, "      <target dev='%s'/>\n", dst);
-                tmp = sexpr_node(node, "device/vbd/mode");
-                /* XXX should we force mode == r, if cdrom==1, or assume
-                   xend has already done this ? */
-                if ((tmp != NULL) && (!strcmp(tmp, "r")))
-                    virBufferVSprintf(&buf, "      <readonly/>\n");
-                virBufferAdd(&buf, "    </disk>\n", 12);
+            /* Again dealing with (vbd...) vs (tap ...) differences */
+            if (sexpr_lookup(node, "device/vbd")) {
+                src = sexpr_node(node, "device/vbd/uname");
+                dst = sexpr_node(node, "device/vbd/dev");
+                mode = sexpr_node(node, "device/vbd/mode");
             } else {
-                char serial[1000];
+                src = sexpr_node(node, "device/tap/uname");
+                dst = sexpr_node(node, "device/tap/dev");
+                mode = sexpr_node(node, "device/tap/mode");
+            }
 
-                TODO sexpr2string(node, serial, 1000);
-                virBufferVSprintf(&buf, "<!-- Failed to parse %s -->\n",
-                                  serial);
-            TODO}
+            if (src == NULL) {
+                virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("domain information incomplete, vbd has no src"));
+                goto bad_parse;
+            }
+
+            if (dst == NULL) {
+                virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("domain information incomplete, vbd has no dev"));
+                goto bad_parse;
+            }
+
+
+            offset = strchr(src, ':');
+            if (!offset) {
+                virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                             _("cannot parse vbd filename, missing driver name"));
+                goto bad_parse;
+            }
+
+            drvName = malloc((offset-src)+1);
+            if (!drvName) {
+                virXendError(conn, VIR_ERR_NO_MEMORY,
+                             _("allocate new buffer"));
+                goto bad_parse;
+            }
+            strncpy(drvName, src, (offset-src));
+            drvName[offset-src] = '\0';
+
+            src = offset + 1;
+
+            if (!strcmp(drvName, "tap")) {
+                offset = strchr(src, ':');
+                if (!offset) {
+                    virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("cannot parse vbd filename, missing driver type"));
+                    goto bad_parse;
+                }
+
+                drvType = malloc((offset-src)+1);
+                if (!drvType) {
+                    virXendError(conn, VIR_ERR_NO_MEMORY,
+                                 _("allocate new buffer"));
+                    goto bad_parse;
+                }
+                strncpy(drvType, src, (offset-src));
+                drvType[offset-src] = '\0';
+                src = offset + 1;
+                /* Its possible to use blktap driver for block devs
+                   too, but kinda pointless because blkback is better,
+                   so we assume common case here. If blktap becomes
+                   omnipotent, we can revisit this, perhaps stat()'ing
+                   the src file in question */
+                isBlock = 0;
+            } else if (!strcmp(drvName, "phy")) {
+                isBlock = 1;
+            } else if (!strcmp(drvName, "file")) {
+                isBlock = 0;
+            }
+
+            if (!strncmp(dst, "ioemu:", 6))
+                dst += 6;
+
+            /* New style disk config from Xen >= 3.0.3 */
+            if (xendConfigVersion > 1) {
+                offset = rindex(dst, ':');
+                if (offset) {
+                    if (!strcmp(offset, ":cdrom")) {
+                        cdrom = 1;
+                    } else if (!strcmp(offset, ":disk")) {
+                        /* The default anyway */
+                    } else {
+                        /* Unknown, lets pretend its a disk too */
+                    }
+                    offset[0] = '\0';
+                }
+            }
+
+            virBufferVSprintf(&buf, "    <disk type='%s' device='%s'>\n",
+                              isBlock ? "block" : "file",
+                              cdrom ? "cdrom" : "disk");
+            if (drvType) {
+                virBufferVSprintf(&buf, "      <driver name='%s' type='%s'/>\n", drvName, drvType);
+            } else {
+                virBufferVSprintf(&buf, "      <driver name='%s'/>\n", drvName);
+            }
+            if (isBlock) {
+                virBufferVSprintf(&buf, "      <source dev='%s'/>\n", src);
+            } else {
+                virBufferVSprintf(&buf, "      <source file='%s'/>\n", src);
+            }
+            virBufferVSprintf(&buf, "      <target dev='%s'/>\n", dst);
+
+
+            /* XXX should we force mode == r, if cdrom==1, or assume
+               xend has already done this ? */
+            if ((mode != NULL) && (!strcmp(mode, "r")))
+                virBufferVSprintf(&buf, "      <readonly/>\n");
+            virBufferAdd(&buf, "    </disk>\n", 12);
+
+            bad_parse:
+            if (drvName)
+                free(drvName);
+            if (drvType)
+                free(drvType);
         } else if (sexpr_lookup(node, "device/vif")) {
-	    const char *tmp2;
+            const char *tmp2;
 
             tmp = sexpr_node(node, "device/vif/bridge");
-	    tmp2 = sexpr_node(node, "device/vif/script");
+            tmp2 = sexpr_node(node, "device/vif/script");
             if ((tmp != NULL) || (strstr(tmp2, "bridge"))) {
                 virBufferVSprintf(&buf, "    <interface type='bridge'>\n");
-		if (tmp != NULL)
-		    virBufferVSprintf(&buf, "      <source bridge='%s'/>\n",
-				      tmp);
+                if (tmp != NULL)
+                    virBufferVSprintf(&buf, "      <source bridge='%s'/>\n",
+                                      tmp);
                 tmp = sexpr_node(node, "device/vif/vifname");
                 if (tmp != NULL)
                     virBufferVSprintf(&buf, "      <target dev='%s'/>\n",
@@ -1688,10 +1734,11 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
         }
 
         /* Old style cdrom config from Xen <= 3.0.2 */
-	if (xendConfigVersion == 1) {
+        if (xendConfigVersion == 1) {
             tmp = sexpr_node(root, "domain/image/hvm/cdrom");
             if ((tmp != NULL) && (tmp[0] != 0)) {
                 virBufferAdd(&buf, "    <disk type='file' device='cdrom'>\n", 38);
+                virBufferAdd(&buf, "      <driver name='file'/>\n", 28);
                 virBufferVSprintf(&buf, "      <source file='%s'/>\n", tmp);
                 virBufferAdd(&buf, "      <target dev='hdc'/>\n", 26);
                 virBufferAdd(&buf, "      <readonly/>\n", 18);
@@ -1699,24 +1746,24 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
             }
         }
     }
-        
+
     /* Graphics device */
     tmp = sexpr_fmt_node(root, "domain/image/%s/vnc", hvm ? "hvm" : "linux");
     if (tmp != NULL) {
         if (tmp[0] == '1') {
             int port = xenStoreDomainGetVNCPort(conn, domid);
-            if (port == -1) 
+            if (port == -1)
                 port = 5900 + domid;
             virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'/>\n", port);
         }
     }
-        
+
     tmp = sexpr_fmt_node(root, "domain/image/%s/sdl", hvm ? "hvm" : "linux");
     if (tmp != NULL) {
         if (tmp[0] == '1')
             virBufferAdd(&buf, "    <graphics type='sdl'/>\n", 27 );
     }
-    
+
     tty = xenStoreDomainGetConsolePath(conn, domid);
     if (tty) {
         virBufferVSprintf(&buf, "    <console tty='%s'/>\n", tty);
