@@ -1,3 +1,8 @@
+Wed Oct 11 16:23:58 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* virsh.1: fixed some typo and unclear language pointed out by 
+	  Noriko Mizumoto
+
 Mon Oct  9 09:34:42 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xml.c, src/xend_internal.c: Added support for a <driver>

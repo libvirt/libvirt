@@ -139,7 +139,7 @@ virsh <subcommand> [args]
 .IX Header "DESCRIPTION"
 The \fBvirsh\fR program is the main interface for managing virsh guest
 domains. The program can be used to create, suspend, resume, save, and shutdown
-domains. It can also be used to list current domains. Libvirt is a C toolkit to interract with the virtualization capabilities of recent versions of Linux (and other OSes). It is free software available under the \s-1GNU\s0 Lesser General Public License. Virtualization of the Linux Operating System means the ability to run multiple instances of Operating Systems concurently on a single hardware system where the basic resources are driven by a Linux instance. The library aim at providing long term stable C \s-1API\s0 initially for the Xen paravirtualization but should be able to integrate other virtualization mechanisms if needed.
+domains. It can also be used to list current domains. Libvirt is a C toolkit to interact with the virtualization capabilities of recent versions of Linux (and other OSes). It is free software available under the \s-1GNU\s0 Lesser General Public License. Virtualization of the Linux Operating System means the ability to run multiple instances of Operating Systems concurrently on a single hardware system where the basic resources are driven by a Linux instance. The library aim at providing long term stable C \s-1API\s0 initially for the Xen paravirtualization but should be able to integrate other virtualization mechanisms if needed.
 .PP
 The basic structure of every virsh command is almost always:
 .PP
@@ -152,12 +152,12 @@ is the numeric domain id, or the domain name (which will be internally
 translated to domain id), and \fI\s-1OPTIONS\s0\fR are sub command specific
 options.  There are a few exceptions to this rule in the cases where
 the sub command in question acts on all domains, the entire machine,
-or directly on the xen hypervisor.  Those exceptions will be clear for
+or directly on the xen hypervisor.  Those exceptions will be explained for
 each of those sub commands.
 .SH "NOTES"
 .IX Header "NOTES"
-All \fBvirsh\fR opperations rely upon the libvirt library.
-For any virsh commands to run xend/qemu, or what ever virtual library that libvirt suports.  For this reason you should start xend/qemu as a service when your system first boots using xen/qemu.
+All \fBvirsh\fR operations rely upon the libvirt library.
+So any virsh commands may require to run xend or qemu (or which ever virtualization layer that libvirt will use).  For this reason you should start xend or qemu as a service when your system first boots.
 .PP
 Most \fBvirsh\fR commands require root privledges to run due to the
 communications channels used to talk to the hypervisor.  Running as
@@ -187,7 +187,7 @@ Ouput the domain informations as an \s-1XML\s0 dump to stdout, this format can b
 .IP "\fBdestroy\fR \fIdomain-name, id or uuid\fR" 4
 .IX Item "destroy domain-name, id or uuid"
 Immediately terminate the domain domain\-id.  This doesn't give the domain
-\&\s-1OS\s0 any chance to react, and it the equivalent of ripping the power
+\&\s-1OS\s0 any chance to react, and it is the equivalent of ripping the power
 cord out on a physical machine.  In most cases you will want to use
 the \fBshutdown\fR command instead.
 .IP "\fBdomid\fR \fIdomain-name\fR" 4
@@ -274,8 +274,8 @@ quit this interactive terminal
 .IX Item "reboot domain-name, id or uuid"
 Reboot a domain.  This acts just as if the domain had the \fBreboot\fR
 command run from the console.  The command returns as soon as it has
-executed the reboot action, which may be significantly before the
-domain actually reboots.
+started the reboot action, but it may take significantly longuer before
+the domain actually reboots.
 .Sp
 For xen vm the behavior of what happens to a domain when it reboots is set by the
 \&\fIon_reboot\fR parameter of the xmdomain.cfg file when the domain was
