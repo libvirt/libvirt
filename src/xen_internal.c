@@ -27,6 +27,9 @@
 #include <xen/xen.h>
 #include <xen/linux/privcmd.h>
 
+/* required for shutdown flags */
+#include <xen/sched.h>
+
 /* #define DEBUG */
 /*
  * so far there is 2 versions of the structures usable for doing
@@ -79,6 +82,17 @@ static int dom_interface_version = -1;
 #define DOMFLAGS_CPUSHIFT       8
 #define DOMFLAGS_SHUTDOWNMASK 255 /* DOMFLAGS_SHUTDOWN guest-supplied code.  */
 #define DOMFLAGS_SHUTDOWNSHIFT 16
+#endif
+
+/*
+ * These flags explain why a system is in the state of "shutdown".  Normally,
+ * They are defined in xen/sched.h
+ */
+#ifndef SHUTDOWN_poweroff
+#define SHUTDOWN_poweroff   0  /* Domain exited normally. Clean up and kill. */
+#define SHUTDOWN_reboot     1  /* Clean up, kill, and then restart.          */
+#define SHUTDOWN_suspend    2  /* Clean up, save suspend info, kill.         */
+#define SHUTDOWN_crash      3  /* Tell controller we've crashed.             */
 #endif
 
 #define XEN_V0_OP_GETDOMAININFOLIST	38
@@ -1500,6 +1514,7 @@ xenHypervisorGetDomInfo(virConnectPtr conn, int id, virDomainInfoPtr info)
     xen_getdomaininfo dominfo;
     int ret;
     static int kb_per_pages = 0;
+    uint32_t domain_flags, domain_state, domain_shutdown_cause;
 
     if (kb_per_pages == 0) {
         kb_per_pages = sysconf(_SC_PAGESIZE) / 1024;
@@ -1518,12 +1533,22 @@ xenHypervisorGetDomInfo(virConnectPtr conn, int id, virDomainInfoPtr info)
     if ((ret < 0) || (XEN_GETDOMAININFO_DOMAIN(dominfo) != id))
         return (-1);
 
-    switch (XEN_GETDOMAININFO_FLAGS(dominfo) & 0xFF) {
+    domain_flags = XEN_GETDOMAININFO_FLAGS(dominfo);
+    domain_state = domain_flags & 0xFF;
+    switch (domain_state) {
 	case DOMFLAGS_DYING:
 	    info->state = VIR_DOMAIN_SHUTDOWN;
 	    break;
 	case DOMFLAGS_SHUTDOWN:
-	    info->state = VIR_DOMAIN_SHUTOFF;
+            /* The domain is shutdown.  Determine the cause. */
+            domain_shutdown_cause = domain_flags >> DOMFLAGS_SHUTDOWNSHIFT;
+            switch (domain_shutdown_cause) {
+                case SHUTDOWN_crash:
+                    info->state = VIR_DOMAIN_CRASHED;
+                    break;
+                default:
+                    info->state = VIR_DOMAIN_SHUTOFF;
+            }
 	    break;
 	case DOMFLAGS_PAUSED:
 	    info->state = VIR_DOMAIN_PAUSED;

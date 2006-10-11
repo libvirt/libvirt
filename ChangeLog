@@ -1,3 +1,8 @@
+Wed Oct 11 17:16:44 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c: applied patch from Peter Vetere so that
+	  crashed domains ain't reported as shut off.
+
 Wed Oct 11 16:23:58 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* virsh.1: fixed some typo and unclear language pointed out by 
