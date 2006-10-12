@@ -1036,7 +1036,7 @@ virXen_getvcpusinfo(int handle, int id, unsigned int vcpu, virVcpuInfoPtr ipt,
         ret = xenHypervisorDoV2Dom(handle, &op);
         if (ret < 0)
             return(-1);
-        ipt->number = id;
+        ipt->number = vcpu;
         if (op.u.getvcpuinfo.online) {
             if (op.u.getvcpuinfo.running) ipt->state = VIR_VCPU_RUNNING;
             if (op.u.getvcpuinfo.blocked) ipt->state = VIR_VCPU_BLOCKED;
@@ -1078,7 +1078,7 @@ virXen_getvcpusinfo(int handle, int id, unsigned int vcpu, virVcpuInfoPtr ipt,
             ret = xenHypervisorDoV1Op(handle, &op);
             if (ret < 0)
                 return(-1);
-            ipt->number = id;
+            ipt->number = vcpu;
             if (op.u.getvcpuinfo.online) {
                 if (op.u.getvcpuinfo.running) ipt->state = VIR_VCPU_RUNNING;
                 if (op.u.getvcpuinfo.blocked) ipt->state = VIR_VCPU_BLOCKED;
@@ -1102,7 +1102,7 @@ virXen_getvcpusinfo(int handle, int id, unsigned int vcpu, virVcpuInfoPtr ipt,
             ret = xenHypervisorDoV0Op(handle, &op);
             if (ret < 0)
                 return(-1);
-            ipt->number = id;
+            ipt->number = vcpu;
             if (op.u.getvcpuinfo.online) {
                 if (op.u.getvcpuinfo.running) ipt->state = VIR_VCPU_RUNNING;
                 if (op.u.getvcpuinfo.blocked) ipt->state = VIR_VCPU_BLOCKED;

@@ -1,3 +1,8 @@
+Thu Oct 12 13:37:24 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c: applied patch from Philippe Berthault
+	  fixing the vcpu number initialization
+
 Wed Oct 11 17:16:44 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.c: applied patch from Peter Vetere so that
