@@ -1466,6 +1466,12 @@ xenHypervisorGetDomMaxMemory(virConnectPtr conn, int id)
     if ((conn == NULL) || (conn->handle < 0))
         return (0);
 
+    if (kb_per_pages == 0) {
+        kb_per_pages = sysconf(_SC_PAGESIZE) / 1024;
+	if (kb_per_pages <= 0) 
+	    kb_per_pages = 4;
+    }
+
     XEN_GETDOMAININFO_CLEAR(dominfo);
 
     ret = virXen_getdomaininfo(conn->handle, id, &dominfo);
@@ -1473,7 +1479,7 @@ xenHypervisorGetDomMaxMemory(virConnectPtr conn, int id)
     if ((ret < 0) || (XEN_GETDOMAININFO_DOMAIN(dominfo) != id))
         return (0);
 
-    return((unsigned long) XEN_GETDOMAININFO_MAX_PAGES(dominfo) * 4);
+    return((unsigned long) XEN_GETDOMAININFO_MAX_PAGES(dominfo) * kb_per_pages);
 }
 
 #ifndef PROXY
