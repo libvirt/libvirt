@@ -111,7 +111,18 @@ rm -fr %{buildroot}
 %doc docs/examples/python
 
 %changelog
-* Fri Sep 22 2007 Daniel Veillard <veillard@redhat.com> 0.1.7-1
+* Mon Oct 16 2006 Daniel Veillard <veillard@redhat.com> 0.1.8-1
+- fix missing page size detection code for ia64
+- fix mlock size when getting domain info list from hypervisor
+- vcpu number initialization
+- don't label crashed domains as shut off
+- fix virsh man page
+- blktapdd support for alternate drivers like blktap
+- memory leak fixes (xend interface and XML parsing)
+- compile fix
+- mlock/munlock size fixes
+
+* Fri Sep 22 2006 Daniel Veillard <veillard@redhat.com> 0.1.7-1
 - Fix bug when running against xen-3.0.3 hypercalls
 - Fix memory bug when getting vcpus info from xend
 

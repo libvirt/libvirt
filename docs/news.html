@@ -2,7 +2,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>Releases</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Releases</h1><p>Here is the list of official releases, however since it is early on in the
 development of libvirt, it is preferable when possible to just use the <a href="downloads.html">CVS version or snapshot</a>, contact the mailing list
-and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3>0.1.7: Sep 29 2006</h3><ul><li> fix a memory bug on getting vcpu informations from xend (Daniel Berrange)</li>
+and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3>0.1.8: Oct 16 2006</h3><ul><li> Bug for system with page size != 4k</li>
+  <li> vcpu number initialization (Philippe Berthault)</li>
+  <li> don't label crashed domains as shut off (Peter Vetere)</li>
+  <li> fix virsh man page (Noriko Mizumoto)</li>
+  <li> blktapdd support for alternate drivers like blktap (Daniel Berrange)</li>
+  <li> memory leak fixes (xend interface and XML parsing) (Daniel Berrange)</li>
+  <li> compile fix</li>
+  <li> mlock/munlock size fixes (Daniel Berrange)</li>
+  <li> improve error reporting</li>
+</ul><h3>0.1.7: Sep 29 2006</h3><ul><li> fix a memory bug on getting vcpu informations from xend (Daniel Berrange)</li>
   <li> fix another problem in the hypercalls change in Xen changeset
        86d26e6ec89b when getting domain informations (Daniel Berrange)</li>
 </ul><h3>0.1.6: Sep 22 2006</h3><ul><li>Support for localization of strings using gettext (Daniel Berrange)</li>

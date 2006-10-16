@@ -1,3 +1,10 @@
+Mon Oct 16 17:10:15 CEST 2006 Daniel Veillard <veillard@redhat.com>
+
+	* config.h.in configure.in libvirt.spec.in docs/libvir.html
+	  docs/news.html include/libvirt/libvirt.h: preparing release of
+	  libvirt-0.1.8
+	* src/xen_internal.c: fixed a compilation problem
+
 Thu Oct 12 17:31:13 CEST 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.c: one of the fix for system with page size != 4k

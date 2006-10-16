@@ -68,6 +68,7 @@ static int hv_version = 0;
 static int hypervisor_version = 2;
 static int sys_interface_version = -1;
 static int dom_interface_version = -1;
+static int kb_per_pages = 0;
 
 /*
  * The content of the structures for a getdomaininfolist system hypercall
@@ -1519,7 +1520,6 @@ xenHypervisorGetDomInfo(virConnectPtr conn, int id, virDomainInfoPtr info)
 {
     xen_getdomaininfo dominfo;
     int ret;
-    static int kb_per_pages = 0;
     uint32_t domain_flags, domain_state, domain_shutdown_cause;
 
     if (kb_per_pages == 0) {

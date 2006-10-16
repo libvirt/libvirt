@@ -33,6 +33,18 @@ development of libvirt, it is preferable when possible to just use the <a
 href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p>
 
+<h3>0.1.8: Oct 16 2006</h3>
+<ul>
+  <li> Bug for system with page size != 4k</li>
+  <li> vcpu number initialization (Philippe Berthault)</li>
+  <li> don't label crashed domains as shut off (Peter Vetere)</li>
+  <li> fix virsh man page (Noriko Mizumoto)</li>
+  <li> blktapdd support for alternate drivers like blktap (Daniel Berrange)</li>
+  <li> memory leak fixes (xend interface and XML parsing) (Daniel Berrange)</li>
+  <li> compile fix</li>
+  <li> mlock/munlock size fixes (Daniel Berrange)</li>
+  <li> improve error reporting</li>
+</ul>
 <h3>0.1.7: Sep 29 2006</h3>
 <ul>
   <li> fix a memory bug on getting vcpu informations from xend (Daniel Berrange)</li>
