@@ -421,8 +421,10 @@ def print_function_wrapper(name, output, export, include):
         output.write("        return(NULL);\n")
     if c_convert != "":
         output.write(c_convert)
-                                                              
-    output.write(c_call)
+
+    output.write("LIBVIRT_BEGIN_ALLOW_THREADS;\n");
+    output.write(c_call);
+    output.write("LIBVIRT_END_ALLOW_THREADS;\n");
     output.write(ret_convert)
     output.write("}\n\n")
     if cond != None and cond != "":
