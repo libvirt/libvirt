@@ -444,7 +444,8 @@ xend_get(virConnectPtr xend, const char *path,
     ret = xend_req(s, content, n_content);
     close(s);
 
-    if ((ret < 0) || (ret >= 300)) {
+    if (((ret < 0) || (ret >= 300)) &&
+        ((ret != 404) || (strncmp(path, "/xend/domain/", 13)))) {
         virXendError(NULL, VIR_ERR_GET_FAILED, content);
     }
 

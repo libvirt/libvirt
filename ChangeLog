@@ -1,3 +1,10 @@
+Tue Oct 31 10:31:34 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: when getting informations about a non
+	  existant domain, it is not a good idea to raise the HTTP
+	  404 GET error, the handling is better done somewhere up in
+	  the stack.
+
 Tue Oct 24 15:31:23 EDT 2006 Daniel P.Berrange <berrange@redhat.com>
 
 	* python/generator.py, python/libvir.c: Drop python interpreter

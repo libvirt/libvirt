@@ -5,6 +5,18 @@
        http://libvirt.org/news.html
 
 Releases
+0.1.8: Oct 16 2006:
+   -  Bug for system with page size != 4k
+   -  vcpu number initialization (Philippe Berthault)
+   -  don't label crashed domains as shut off (Peter Vetere)
+   -  fix virsh man page (Noriko Mizumoto)
+   -  blktapdd support for alternate drivers like blktap (Daniel Berrange)
+   -  memory leak fixes (xend interface and XML parsing) (Daniel Berrange)
+   -  compile fix
+   -  mlock/munlock size fixes (Daniel Berrange)
+   -  improve error reporting
+
+
 0.1.7: Sep 29 2006:
    -  fix a memory bug on getting vcpu informations from xend (Daniel Berrange)
    -  fix another problem in the hypercalls change in Xen changeset
