@@ -32,6 +32,8 @@
 #define XEN_HYPERVISOR_SOCKET "/proc/xen/privcmd"
 
 #ifndef PROXY
+static char *xenStoreDomainGetOSType(virDomainPtr domain);
+
 static virDriver xenStoreDriver = {
     VIR_DRV_XEN_STORE,
     "XenStore",
@@ -59,7 +61,7 @@ static virDriver xenStoreDriver = {
     NULL, /* domainGetName */
     NULL, /* domainGetID */
     NULL, /* domainGetUUID */
-    NULL, /* domainGetOSType */
+    xenStoreDomainGetOSType, /* domainGetOSType */
     xenStoreDomainGetMaxMemory, /* domainGetMaxMemory */
     NULL, /* domainSetMaxMemory */
     xenStoreDomainSetMemory, /* domainSetMemory */
@@ -656,6 +658,34 @@ xenStoreDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
      */
     return(virDomainDoStoreWrite(domain, "control/shutdown", "reboot"));
 }
+
+/*
+ * xenStoreDomainGetOSType:
+ * @domain: a domain object
+ *
+ * Get the type of domain operation system.
+ *
+ * Returns the new string or NULL in case of error, the string must be
+ *         freed by the caller.
+ */
+static char *
+xenStoreDomainGetOSType(virDomainPtr domain) {
+    char *vm, *str = NULL;
+
+    if ((domain == NULL) || (domain->conn == NULL)) {
+        virXenStoreError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	                 __FUNCTION__);
+        return(NULL);
+    }
+
+    vm = virDomainGetVM(domain);
+    if (vm) {
+        str = virDomainGetVMInfo(domain, vm, "image/ostype");
+        free(vm);
+    }
+
+    return (str);
+}
 #endif /* ! PROXY */
 
 /**
@@ -698,3 +728,42 @@ int             xenStoreDomainGetVNCPort(virConnectPtr conn, int domid) {
 char *          xenStoreDomainGetConsolePath(virConnectPtr conn, int domid) {
   return virDomainDoStoreQuery(conn, domid, "console/tty");
 }
+
+#ifdef PROXY
+/*
+ * xenStoreDomainGetOSTypeID:
+ * @conn: pointer to the connection.
+ * @id: the domain id
+ *
+ * Get the type of domain operation system.
+ *
+ * Returns the new string or NULL in case of error, the string must be
+ *         freed by the caller.
+ */
+char *
+xenStoreDomainGetOSTypeID(virConnectPtr conn, int id) {
+    char *vm, *str = NULL;
+    char query[200];
+    unsigned int len;
+
+    if (id < 0)
+        return(NULL);
+
+
+    if (conn->xshandle == NULL)
+        return (NULL);
+
+    snprintf(query, 199, "/local/domain/%d/vm", id);
+    query[199] = 0;
+
+    vm = xs_read(conn->xshandle, 0, &query[0], &len);
+
+    if (vm) {
+        snprintf(query, 199, "%s/image/ostype", vm);
+	str = xs_read(conn->xshandle, 0, &query[0], &len);
+        free(vm);
+    }
+
+    return (str);
+}
+#endif /* PROXY */

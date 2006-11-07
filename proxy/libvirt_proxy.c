@@ -337,7 +337,7 @@ proxyReadClientSocket(int nr) {
     virProxyFullPacket request;
     virProxyPacketPtr req = (virProxyPacketPtr) &request;
     int ret;
-    char *xml;
+    char *xml, *ostype;
 
 retry:
     ret = read(pollInfos[nr].fd, req, sizeof(virProxyPacket));
@@ -585,6 +585,27 @@ retry2:
                     req->len = sizeof(virProxyPacket) + xmllen;
                 }
                 free(xml);
+	    }
+	    break;
+	case VIR_PROXY_DOMAIN_OSTYPE:
+	    if (req->len != sizeof(virProxyPacket))
+	        goto comm_error;
+
+	    ostype = xenStoreDomainGetOSTypeID(conn, request.data.arg);
+            if (!ostype) {
+                req->data.arg = -1;
+                req->len = sizeof(virProxyPacket);
+	    } else {
+                int ostypelen = strlen(ostype);
+                if (ostypelen > (int) sizeof(request.extra.str)) {
+                    req->data.arg = -2;
+                    req->len = sizeof(virProxyPacket);
+                } else {
+                    req->data.arg = 0;
+                    memmove(&request.extra.str[0], ostype, ostypelen);
+                    req->len = sizeof(virProxyPacket) + ostypelen;
+                }
+                free(ostype);
 	    }
 	    break;
 	default:

@@ -36,6 +36,7 @@ typedef enum {
 	VIR_PROXY_MAX_MEMORY = 8,
 	VIR_PROXY_DOMAIN_INFO = 9,
 	VIR_PROXY_DOMAIN_XML = 10,
+	VIR_PROXY_DOMAIN_OSTYPE = 11
 } virProxyCommand;
 
 /*

@@ -30,6 +30,7 @@ and the virsh command line tool to control virtual domains.
 Summary: Libraries, includes, etc. to compile with the libvirt library
 Group: Development/Libraries
 Requires: libvirt = %{version}
+Requires: pkgconfig
 Obsoletes: libvir-devel
 
 %description devel

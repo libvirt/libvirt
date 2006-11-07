@@ -1239,18 +1239,23 @@ virDomainGetID(virDomainPtr domain)
 char *
 virDomainGetOSType(virDomainPtr domain)
 {
-    char *vm, *str = NULL;
+    char *str = NULL;
+    int i;
 
     if (!VIR_IS_DOMAIN(domain)) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (NULL);
     }
 
-    vm = virDomainGetVM(domain);
-    if (vm) {
-        str = virDomainGetVMInfo(domain, vm, "image/ostype");
-        free(vm);
+    for (i = 0;i < domain->conn->nb_drivers;i++) {
+	if ((domain->conn->drivers[i] != NULL) &&
+	    (domain->conn->drivers[i]->domainGetOSType != NULL)) {
+	    str = domain->conn->drivers[i]->domainGetOSType(domain);
+	    if (str != NULL)
+	        break;
+	}
     }
+
     if (str == NULL)
         str = strdup("linux");
 

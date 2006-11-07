@@ -36,8 +36,13 @@ int 		xenStoreDomainShutdown	(virDomainPtr domain);
 int 		xenStoreDomainReboot	(virDomainPtr domain,
 					 unsigned int flags);
 
-int             xenStoreDomainGetVNCPort(virConnectPtr conn, int domid);
-char *          xenStoreDomainGetConsolePath(virConnectPtr conn, int domid);
+/* those are entry point for the proxy */
+int             xenStoreDomainGetVNCPort(virConnectPtr conn,
+					 int domid);
+char *          xenStoreDomainGetConsolePath(virConnectPtr conn,
+					 int domid);
+char *		xenStoreDomainGetOSTypeID(virConnectPtr conn,
+					 int id);
 
 #ifdef __cplusplus
 }

@@ -1,3 +1,12 @@
+Tue Nov  7 16:33:43 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* libvirt.spec.in: libvirt-devel depends on pkgconfig
+	* proxy/libvirt_proxy.c src/libvirt.c src/proxy_internal.[ch]
+	  src/xs_internal.[ch]: the virtGetOsType entry point was calling
+	  the xenstore directly instead of going though driver, refactored
+	  and implemented a specific new RPC with the proxy when this is
+	  called as non-root fixes rhbz#214264 .
+
 Tue Oct 31 10:31:34 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: when getting informations about a non

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-16 17:09+0200\n"
+"POT-Creation-Date: 2006-11-07 16:20+0100\n"
 "PO-Revision-Date: 2006-09-20 10:20-0400\n"
 "Last-Translator: Daniel Berrange <berrange@redhat.com>\n"
 "Language-Team: English <en@li.org>\n"
@@ -369,9 +369,9 @@ msgid "allocate new context"
 msgstr ""
 
 #: src/hash.c:628 src/hash.c:634 src/test.c:725 src/test.c:750 src/test.c:773
-#: src/test.c:797 src/xend_internal.c:1911 src/xend_internal.c:2607
-#: src/xend_internal.c:2818 src/xs_internal.c:592 src/proxy_internal.c:790
-#: src/proxy_internal.c:837 src/proxy_internal.c:888
+#: src/test.c:797 src/xend_internal.c:1912 src/xend_internal.c:2608
+#: src/xend_internal.c:2819 src/xs_internal.c:594 src/proxy_internal.c:791
+#: src/proxy_internal.c:838 src/proxy_internal.c:889
 msgid "allocating domain"
 msgstr ""
 
@@ -491,7 +491,7 @@ msgstr ""
 msgid "growing buffer"
 msgstr ""
 
-#: src/xml.c:116 src/xend_internal.c:1602 src/xend_internal.c:1621
+#: src/xml.c:116 src/xend_internal.c:1603 src/xend_internal.c:1622
 msgid "allocate new buffer"
 msgstr ""
 
@@ -511,61 +511,61 @@ msgstr ""
 msgid "failed to read from Xen Daemon"
 msgstr ""
 
-#: src/xend_internal.c:1056
+#: src/xend_internal.c:1057
 msgid "failed to urlencode the create S-Expr"
 msgstr ""
 
-#: src/xend_internal.c:1097
+#: src/xend_internal.c:1098
 msgid "domain information incomplete, missing domid"
 msgstr ""
 
-#: src/xend_internal.c:1103
+#: src/xend_internal.c:1104
 msgid "domain information incorrect domid not numeric"
 msgstr ""
 
-#: src/xend_internal.c:1110 src/xend_internal.c:1159
+#: src/xend_internal.c:1111 src/xend_internal.c:1160
 msgid "domain information incomplete, missing uuid"
 msgstr ""
 
-#: src/xend_internal.c:1150 src/xend_internal.c:1491
+#: src/xend_internal.c:1151 src/xend_internal.c:1492
 msgid "domain information incomplete, missing name"
 msgstr ""
 
-#: src/xend_internal.c:1408 src/xend_internal.c:1433
+#: src/xend_internal.c:1409 src/xend_internal.c:1434
 msgid "domain information incomplete, missing kernel"
 msgstr ""
 
-#: src/xend_internal.c:1581
+#: src/xend_internal.c:1582
 msgid "domain information incomplete, vbd has no src"
 msgstr ""
 
-#: src/xend_internal.c:1587
+#: src/xend_internal.c:1588
 msgid "domain information incomplete, vbd has no dev"
 msgstr ""
 
-#: src/xend_internal.c:1595
+#: src/xend_internal.c:1596
 msgid "cannot parse vbd filename, missing driver name"
 msgstr ""
 
-#: src/xend_internal.c:1614
+#: src/xend_internal.c:1615
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 
-#: src/xend_internal.c:1922
+#: src/xend_internal.c:1923
 msgid "failed to parse Xend domain information"
 msgstr ""
 
-#: src/xend_internal.c:2882
+#: src/xend_internal.c:2883
 #, c-format
 msgid "Failed to create domain %s\n"
 msgstr ""
 
-#: src/xend_internal.c:2888
+#: src/xend_internal.c:2889
 #, c-format
 msgid "Failed to get devices for domain %s\n"
 msgstr ""
 
-#: src/xend_internal.c:2899
+#: src/xend_internal.c:2900
 #, c-format
 msgid "Failed to resume new domain %s\n"
 msgstr ""
@@ -1370,51 +1370,51 @@ msgstr ""
 msgid "failed to save content"
 msgstr ""
 
-#: src/xs_internal.c:318
+#: src/xs_internal.c:320
 msgid "failed to connect to Xen Store"
 msgstr ""
 
-#: src/proxy_internal.c:193
+#: src/proxy_internal.c:194
 #, c-format
 msgid "failed to exec %s\n"
 msgstr ""
 
-#: src/proxy_internal.c:287
+#: src/proxy_internal.c:288
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr ""
 
-#: src/proxy_internal.c:320
+#: src/proxy_internal.c:321
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr ""
 
-#: src/proxy_internal.c:354
+#: src/proxy_internal.c:355
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr ""
 
-#: src/proxy_internal.c:416 src/proxy_internal.c:437 src/proxy_internal.c:457
+#: src/proxy_internal.c:417 src/proxy_internal.c:438 src/proxy_internal.c:458
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr ""
 
-#: src/proxy_internal.c:424
+#: src/proxy_internal.c:425
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr ""
 
-#: src/proxy_internal.c:446
+#: src/proxy_internal.c:447
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr ""
 
-#: src/proxy_internal.c:470
+#: src/proxy_internal.c:471
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
 msgstr ""
 
-#: src/proxy_internal.c:476
+#: src/proxy_internal.c:477
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr ""

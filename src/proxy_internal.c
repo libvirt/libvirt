@@ -40,6 +40,7 @@ static virDomainPtr xenProxyDomainLookupByName(virConnectPtr conn,
 static unsigned long xenProxyDomainGetMaxMemory(virDomainPtr domain);
 static int xenProxyDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info);
 static char *xenProxyDomainDumpXML(virDomainPtr domain, int flags);
+static char *xenProxyDomainGetOSType(virDomainPtr domain);
 
 static virDriver xenProxyDriver = {
     VIR_DRV_XEN_PROXY,
@@ -66,7 +67,7 @@ static virDriver xenProxyDriver = {
     NULL, /* domainGetName */
     NULL, /* domainGetID */
     NULL, /* domainGetUUID */
-    NULL, /* domainGetOSType */
+    xenProxyDomainGetOSType, /* domainGetOSType */
     xenProxyDomainGetMaxMemory, /* domainGetMaxMemory */
     NULL, /* domainSetMaxMemory */
     NULL, /* domainSetMemory */
@@ -974,10 +975,60 @@ xenProxyDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
     }
     xmllen = ans.len - sizeof(virProxyPacket);
     if (!(xml = malloc(xmllen+1))) {
-      return NULL;
+	virProxyError(domain->conn, VIR_ERR_NO_MEMORY, __FUNCTION__);
+        return NULL;
     }
     memmove(xml, &ans.extra.dinfo, xmllen);
     xml[xmllen] = '\0';
 
     return(xml);
+}
+
+/**
+ * xenProxyDomainGetOSType:
+ * @domain: a domain object
+ *
+ * Get the type of domain operation system.
+ *
+ * Returns the new string or NULL in case of error, the string must be
+ *         freed by the caller.
+ */
+static char *
+xenProxyDomainGetOSType(virDomainPtr domain)
+{
+    virProxyPacket req;
+    virProxyFullPacket ans;
+    int ret;
+    int oslen;
+    char *ostype;
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+	if (domain == NULL)
+	    virProxyError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+	else
+	    virProxyError(domain->conn, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (NULL);
+    }
+    memset(&req, 0, sizeof(req));
+    req.command = VIR_PROXY_DOMAIN_OSTYPE;
+    req.data.arg = domain->handle;
+    req.len = sizeof(req);
+    ret = xenProxyCommand(domain->conn, &req, &ans, 0);
+    if (ret < 0) {
+        xenProxyClose(domain->conn);
+	return(NULL);
+    }
+    if (ans.len <= sizeof(virProxyPacket)) {
+        virProxyError(domain->conn, VIR_ERR_OPERATION_FAILED, __FUNCTION__);
+	return (NULL);
+    }
+    oslen = ans.len - sizeof(virProxyPacket);
+    if (!(ostype = malloc(oslen+1))) {
+	virProxyError(domain->conn, VIR_ERR_NO_MEMORY, __FUNCTION__);
+        return NULL;
+    }
+    memmove(ostype, &ans.extra.dinfo, oslen);
+    ostype[oslen] = '\0';
+
+    return(ostype);
 }
