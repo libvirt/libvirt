@@ -1,3 +1,10 @@
+Tue Nov  7 15:58:43 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Ensure that virConnectPtr object is passed
+	around to all functions which can throw errors, so that errors get
+	correctly associated with the connection, rather than global error
+	variables.
+
 Tue Nov  7 16:33:43 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* libvirt.spec.in: libvirt-devel depends on pkgconfig

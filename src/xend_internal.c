@@ -224,6 +224,7 @@ do_connect(virConnectPtr xend)
 
 /**
  * wr_sync:
+ * @xend: the xend connection object
  * @fd:  the file descriptor
  * @buffer: the I/O buffer
  * @size: the size of the I/O
@@ -234,7 +235,7 @@ do_connect(virConnectPtr xend)
  * Returns the number of bytes exchanged, or -1 in case of error
  */
 static size_t
-wr_sync(int fd, void *buffer, size_t size, int do_read)
+wr_sync(virConnectPtr xend, int fd, void *buffer, size_t size, int do_read)
 {
     size_t offset = 0;
 
@@ -260,10 +261,10 @@ wr_sync(int fd, void *buffer, size_t size, int do_read)
         /* unrecoverable error */
         if (len == -1) {
             if (do_read)
-                virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+                virXendError(xend, VIR_ERR_INTERNAL_ERROR,
                              _("failed to read from Xen Daemon"));
             else
-                virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+                virXendError(xend, VIR_ERR_INTERNAL_ERROR,
                              _("failed to read from Xen Daemon"));
 
             return (-1);
@@ -277,6 +278,7 @@ wr_sync(int fd, void *buffer, size_t size, int do_read)
 
 /**
  * sread:
+ * @xend: the xend connection object
  * @fd:  the file descriptor
  * @buffer: the I/O buffer
  * @size: the size of the I/O
@@ -286,13 +288,14 @@ wr_sync(int fd, void *buffer, size_t size, int do_read)
  * Returns the number of bytes read, or -1 in case of error
  */
 static ssize_t
-sread(int fd, void *buffer, size_t size)
+sread(virConnectPtr xend, int fd, void *buffer, size_t size)
 {
-    return wr_sync(fd, buffer, size, 1);
+    return wr_sync(xend, fd, buffer, size, 1);
 }
 
 /**
  * swrite:
+ * @xend: the xend connection object
  * @fd:  the file descriptor
  * @buffer: the I/O buffer
  * @size: the size of the I/O
@@ -302,13 +305,14 @@ sread(int fd, void *buffer, size_t size)
  * Returns the number of bytes written, or -1 in case of error
  */
 static ssize_t
-swrite(int fd, const void *buffer, size_t size)
+swrite(virConnectPtr xend, int fd, const void *buffer, size_t size)
 {
-    return wr_sync(fd, (void *) buffer, size, 0);
+    return wr_sync(xend, fd, (void *) buffer, size, 0);
 }
 
 /**
  * swrites:
+ * @xend: the xend connection object
  * @fd:  the file descriptor
  * @string: the string to write
  *
@@ -317,13 +321,14 @@ swrite(int fd, const void *buffer, size_t size)
  * Returns the number of bytes written, or -1 in case of error
  */
 static ssize_t
-swrites(int fd, const char *string)
+swrites(virConnectPtr xend, int fd, const char *string)
 {
-    return swrite(fd, string, strlen(string));
+    return swrite(xend, fd, string, strlen(string));
 }
 
 /**
  * sreads:
+ * @xend: the xend connection object
  * @fd:  the file descriptor
  * @buffer: the I/O buffer
  * @n_buffer: the size of the I/O buffer
@@ -333,7 +338,7 @@ swrites(int fd, const char *string)
  * Returns the number of bytes read, or -1 in case of error
  */
 static ssize_t
-sreads(int fd, char *buffer, size_t n_buffer)
+sreads(virConnectPtr xend, int fd, char *buffer, size_t n_buffer)
 {
     size_t offset;
 
@@ -343,7 +348,7 @@ sreads(int fd, char *buffer, size_t n_buffer)
     for (offset = 0; offset < (n_buffer - 1); offset++) {
         ssize_t ret;
 
-        ret = sread(fd, buffer + offset, 1);
+        ret = sread(xend, fd, buffer + offset, 1);
         if (ret == 0)
             break;
         else if (ret == -1)
@@ -368,6 +373,7 @@ istartswith(const char *haystack, const char *needle)
 
 /**
  * xend_req:
+ * @xend: the xend connection object
  * @fd: the file descriptor
  * @content: the buffer to store the content
  * @n_content: the size of the buffer
@@ -377,13 +383,13 @@ istartswith(const char *haystack, const char *needle)
  * Returns the HTTP return code.
  */
 static int
-xend_req(int fd, char *content, size_t n_content)
+xend_req(virConnectPtr xend, int fd, char *content, size_t n_content)
 {
     char buffer[4096];
     int content_length = -1;
     int retcode = 0;
 
-    while (sreads(fd, buffer, sizeof(buffer)) > 0) {
+    while (sreads(xend, fd, buffer, sizeof(buffer)) > 0) {
         if (strcmp(buffer, "\r\n") == 0)
             break;
 
@@ -399,7 +405,7 @@ xend_req(int fd, char *content, size_t n_content)
         if ((unsigned int) content_length > (n_content + 1))
             content_length = n_content - 1;
 
-        ret = sread(fd, content, content_length);
+        ret = sread(xend, fd, content, content_length);
         if (ret < 0)
             return -1;
 
@@ -432,21 +438,21 @@ xend_get(virConnectPtr xend, const char *path,
     if (s == -1)
         return s;
 
-    swrites(s, "GET ");
-    swrites(s, path);
-    swrites(s, " HTTP/1.1\r\n");
+    swrites(xend, s, "GET ");
+    swrites(xend, s, path);
+    swrites(xend, s, " HTTP/1.1\r\n");
 
-    swrites(s,
+    swrites(xend, s,
             "Host: localhost:8000\r\n"
             "Accept-Encoding: identity\r\n"
             "Content-Type: application/x-www-form-urlencoded\r\n" "\r\n");
 
-    ret = xend_req(s, content, n_content);
+    ret = xend_req(xend, s, content, n_content);
     close(s);
 
     if (((ret < 0) || (ret >= 300)) &&
         ((ret != 404) || (strncmp(path, "/xend/domain/", 13)))) {
-        virXendError(NULL, VIR_ERR_GET_FAILED, content);
+        virXendError(xend, VIR_ERR_GET_FAILED, content);
     }
 
     return ret;
@@ -477,27 +483,27 @@ xend_post(virConnectPtr xend, const char *path, const char *ops,
     if (s == -1)
         return s;
 
-    swrites(s, "POST ");
-    swrites(s, path);
-    swrites(s, " HTTP/1.1\r\n");
+    swrites(xend, s, "POST ");
+    swrites(xend, s, path);
+    swrites(xend, s, " HTTP/1.1\r\n");
 
-    swrites(s,
+    swrites(xend, s,
             "Host: localhost:8000\r\n"
             "Accept-Encoding: identity\r\n"
             "Content-Type: application/x-www-form-urlencoded\r\n"
             "Content-Length: ");
     snprintf(buffer, sizeof(buffer), "%d", (int) strlen(ops));
-    swrites(s, buffer);
-    swrites(s, "\r\n\r\n");
-    swrites(s, ops);
+    swrites(xend ,s, buffer);
+    swrites(xend, s, "\r\n\r\n");
+    swrites(xend, s, ops);
 
-    ret = xend_req(s, content, n_content);
+    ret = xend_req(xend, s, content, n_content);
     close(s);
 
     if ((ret < 0) || (ret >= 300)) {
-        virXendError(NULL, VIR_ERR_POST_FAILED, content);
+        virXendError(xend, VIR_ERR_POST_FAILED, content);
     } else if ((ret = 202) && (strstr(content, "failed") != NULL)) {
-        virXendError(NULL, VIR_ERR_POST_FAILED, content);
+        virXendError(xend, VIR_ERR_POST_FAILED, content);
         ret = -1;
     }
 
@@ -508,6 +514,7 @@ xend_post(virConnectPtr xend, const char *path, const char *ops,
 
 /**
  * http2unix:
+ * @xend: the xend connection object
  * @ret: the http return code
  *
  * Convert the HTTP return code to 0/-1 and set errno if needed
@@ -515,7 +522,7 @@ xend_post(virConnectPtr xend, const char *path, const char *ops,
  * Return -1 in case of error code 0 otherwise
  */
 static int
-http2unix(int ret)
+http2unix(virConnectPtr xend, int ret)
 {
     switch (ret) {
         case -1:
@@ -531,7 +538,7 @@ http2unix(int ret)
             errno = EIO;
             break;
         default:
-            virXendErrorInt(NULL, VIR_ERR_HTTP_ERROR, ret);
+            virXendErrorInt(xend, VIR_ERR_HTTP_ERROR, ret);
             errno = EINVAL;
             break;
     }
@@ -573,7 +580,7 @@ xend_op_ext2(virConnectPtr xend, const char *path, char *error,
                                sizeof(ops) - offset, "%s", "&");
     }
 
-    return http2unix(xend_post(xend, path, ops, error, n_error));
+    return http2unix(xend, xend_post(xend, path, ops, error, n_error));
 }
 
 
@@ -661,7 +668,7 @@ sexpr_get(virConnectPtr xend, const char *fmt, ...)
     va_end(ap);
 
     ret = xend_get(xend, path, buffer, sizeof(buffer));
-    ret = http2unix(ret);
+    ret = http2unix(xend ,ret);
     if (ret == -1)
         return NULL;
 
@@ -1333,7 +1340,7 @@ xend_node_restart(virConnectPtr xend)
 int
 xend_dmesg(virConnectPtr xend, char *buffer, size_t n_buffer)
 {
-    return http2unix(xend_get(xend, "/xend/node/dmesg", buffer, n_buffer));
+    return http2unix(xend, xend_get(xend, "/xend/node/dmesg", buffer, n_buffer));
 }
 
 /**
@@ -1365,7 +1372,7 @@ xend_dmesg_clear(virConnectPtr xend)
 int
 xend_log(virConnectPtr xend, char *buffer, size_t n_buffer)
 {
-    return http2unix(xend_get(xend, "/xend/node/log", buffer, n_buffer));
+    return http2unix(xend, xend_get(xend, "/xend/node/log", buffer, n_buffer));
 }
 #endif /* PROXY */
 
@@ -1383,6 +1390,7 @@ xend_log(virConnectPtr xend, char *buffer, size_t n_buffer)
 
 /**
  * xend_parse_sexp_desc_os:
+ * @xend: the xend connection object
  * @node: the root of the parsed S-Expression
  * @buf: output buffer object
  * @hvm: true or 1 if no contains HVM S-Expression 
@@ -1392,7 +1400,7 @@ xend_log(virConnectPtr xend, char *buffer, size_t n_buffer)
  * Returns 0 in case of success and -1 in case of error
  */
 static int
-xend_parse_sexp_desc_os(struct sexpr *node, virBufferPtr buf, int hvm)
+xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf, int hvm)
 {
     const char *tmp;
 
@@ -1405,7 +1413,7 @@ xend_parse_sexp_desc_os(struct sexpr *node, virBufferPtr buf, int hvm)
         virBufferVSprintf(buf, "    <type>hvm</type>\n");
         tmp = sexpr_node(node, "domain/image/hvm/kernel");
         if (tmp == NULL) {
-            virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+            virXendError(xend, VIR_ERR_INTERNAL_ERROR,
                          _("domain information incomplete, missing kernel"));
             return(-1);
 	}
@@ -1430,7 +1438,7 @@ xend_parse_sexp_desc_os(struct sexpr *node, virBufferPtr buf, int hvm)
         virBufferVSprintf(buf, "    <type>linux</type>\n");
         tmp = sexpr_node(node, "domain/image/linux/kernel");
         if (tmp == NULL) {
-            virXendError(NULL, VIR_ERR_INTERNAL_ERROR,
+            virXendError(xend, VIR_ERR_INTERNAL_ERROR,
                          _("domain information incomplete, missing kernel"));
             return(-1);
 	}
@@ -1515,7 +1523,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
 
     if (sexpr_lookup(root, "domain/image")) {
         hvm = sexpr_lookup(root, "domain/image/hvm") ? 1 : 0;
-        xend_parse_sexp_desc_os(root, &buf, hvm);
+        xend_parse_sexp_desc_os(conn, root, &buf, hvm);
     }
 
     virBufferVSprintf(&buf, "  <memory>%d</memory>\n",
