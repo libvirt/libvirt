@@ -260,6 +260,8 @@ foreign_encoding_args = (
 # code is still automatically generated (so they are not in skip_function()).
 skip_impl = (
     'virConnectListDomainsID',
+    'virConnGetLastError',
+    'virGetLastError',
     'virDomainGetInfo',
     'virNodeGetInfo',
     'virDomainGetUUID',
@@ -869,9 +871,18 @@ def buildWrappers():
 			    classes.write(
 			        "        if ret is None:return None\n");
 			else:
-			    classes.write(
+                            if classname == "virConnect":
+                                classes.write(
+		     "        if ret is None:raise libvirtError('%s() failed', conn=self)\n" %
+                                              (name))
+                            elif classname == "virDomain":
+                                classes.write(
 		     "        if ret is None:raise libvirtError('%s() failed')\n" %
-					  (name))
+                                              (name))
+                            else:
+                                classes.write(
+		     "        if ret is None:raise libvirtError('%s() failed')\n" %
+                                              (name))
 
 			#
 			# generate the returned class wrapper for the object

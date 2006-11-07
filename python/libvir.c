@@ -18,6 +18,8 @@
 void initlibvirmod(void);
 
 PyObject *libvirt_virDomainGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
+PyObject *libvirt_virGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
+PyObject *libvirt_virConnGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
 
 
 /************************************************************************
@@ -28,6 +30,62 @@ PyObject *libvirt_virDomainGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *ar
 
 static PyObject *libvirt_virPythonErrorFuncHandler = NULL;
 static PyObject *libvirt_virPythonErrorFuncCtxt = NULL;
+
+PyObject *
+libvirt_virGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *args ATTRIBUTE_UNUSED)
+{
+    virError err;
+    PyObject *info;
+
+    if (virCopyLastError(&err) <= 0) {
+        Py_INCREF(Py_None);
+	return(Py_None);
+    }
+
+    info = PyTuple_New(9);
+    PyTuple_SetItem(info, 0, PyInt_FromLong((long) err.code));
+    PyTuple_SetItem(info, 1, PyInt_FromLong((long) err.domain));
+    PyTuple_SetItem(info, 2, libvirt_constcharPtrWrap(err.message));
+    PyTuple_SetItem(info, 3, PyInt_FromLong((long) err.level));
+    PyTuple_SetItem(info, 4, libvirt_constcharPtrWrap(err.str1));
+    PyTuple_SetItem(info, 5, libvirt_constcharPtrWrap(err.str2));
+    PyTuple_SetItem(info, 6, libvirt_constcharPtrWrap(err.str3));
+    PyTuple_SetItem(info, 7, PyInt_FromLong((long) err.int1));
+    PyTuple_SetItem(info, 8, PyInt_FromLong((long) err.int2));
+
+    return info;
+}
+
+PyObject *
+libvirt_virConnGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
+{
+    virError err;
+    PyObject *info;
+    virConnectPtr conn;
+    PyObject *pyobj_conn;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virConGetLastError", &pyobj_conn))
+        return(NULL);
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    if (virConnCopyLastError(conn, &err) <= 0) {
+        Py_INCREF(Py_None);
+	return(Py_None);
+    }
+
+    info = PyTuple_New(9);
+    PyTuple_SetItem(info, 0, PyInt_FromLong((long) err.code));
+    PyTuple_SetItem(info, 1, PyInt_FromLong((long) err.domain));
+    PyTuple_SetItem(info, 2, libvirt_constcharPtrWrap(err.message));
+    PyTuple_SetItem(info, 3, PyInt_FromLong((long) err.level));
+    PyTuple_SetItem(info, 4, libvirt_constcharPtrWrap(err.str1));
+    PyTuple_SetItem(info, 5, libvirt_constcharPtrWrap(err.str2));
+    PyTuple_SetItem(info, 6, libvirt_constcharPtrWrap(err.str3));
+    PyTuple_SetItem(info, 7, PyInt_FromLong((long) err.int1));
+    PyTuple_SetItem(info, 8, PyInt_FromLong((long) err.int2));
+
+    return info;
+}
 
 static void
 libvirt_virErrorFuncHandler(ATTRIBUTE_UNUSED void *ctx, virErrorPtr err)
@@ -311,6 +369,8 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainGetUUID", libvirt_virDomainGetUUID, METH_VARARGS, NULL},
     {(char *) "virDomainLookupByUUID", libvirt_virDomainLookupByUUID, METH_VARARGS, NULL},
     {(char *) "virRegisterErrorHandler", libvirt_virRegisterErrorHandler, METH_VARARGS, NULL},
+    {(char *) "virGetLastError", libvirt_virGetLastError, METH_VARARGS, NULL},
+    {(char *) "virConnGetLastError", libvirt_virConnGetLastError, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 

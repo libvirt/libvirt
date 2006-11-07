@@ -7,10 +7,63 @@
 import libvirtmod
 import types
 
-# The root of all libxml2 errors.
+# The root of all libvirt errors.
 class libvirtError(Exception):
-    pass
+    def __init__(self, msg, conn=None):
+        Exception.__init__(self, msg)
 
+        if conn is None:
+            self.err = virGetLastError()
+        else:
+            self.err = conn.virConnGetLastError()
+
+    def get_error_code(self):
+        if self.err is None:
+            return None
+        return self.err[0]
+
+    def get_error_domain(self):
+        if self.err is None:
+            return None
+        return self.err[1]
+
+    def get_error_message(self):
+        if self.err is None:
+            return None
+        return self.err[2]
+
+    def get_error_level(self):
+        if self.err is None:
+            return None
+        return self.err[3]
+
+    def get_str1(self):
+        if self.err is None:
+            return None
+        return self.err[4]
+
+    def get_str2(self):
+        if self.err is None:
+            return None
+        return self.err[5]
+
+    def get_str3(self):
+        if self.err is None:
+            return None
+        return self.err[6]
+
+    def get_int1(self):
+        if self.err is None:
+            return None
+        return self.err[7]
+
+    def get_int2(self):
+        if self.err is None:
+            return None
+        return self.err[8]
+
+    def __str__(self):
+        return Exception.__str__(self) + " " + self.get_error_message()
 
 #
 # register the libvirt global error handler

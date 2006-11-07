@@ -1,3 +1,12 @@
+Tue Nov  7 16:17:23 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
+
+	* python/generator.py: Pass in connection object when generating
+	an exception
+	* python/libvir.py: Allow raw error object to be passed into the
+	python exception object.
+	* python/libvir.c: Added binding for virGetLastError and
+	virConnGetLastError
+
 Tue Nov  7 15:58:43 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c: Ensure that virConnectPtr object is passed
