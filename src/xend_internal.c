@@ -2870,13 +2870,14 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
     }
 
     if ((xendConfigVersion = xend_get_config_version(conn)) < 0) {
-        virXendError(conn, VIR_ERR_INTERNAL_ERROR, "cannot determine xend config version");
+        virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+	             "cannot determine xend config version");
         return (NULL);
     }
 
     sexpr = virDomainParseXMLDesc(xmlDesc, &name, xendConfigVersion);
     if ((sexpr == NULL) || (name == NULL)) {
-        virXendError(conn, VIR_ERR_XML_ERROR, "Failed to parse the XML domain description");
+        virXendError(conn, VIR_ERR_XML_ERROR, "domain");
         if (sexpr != NULL)
             free(sexpr);
         if (name != NULL)

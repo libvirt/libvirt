@@ -1,3 +1,9 @@
+Wed Nov  8 16:58:56 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvirt/virterror.h src/virterror.c src/xend_internal.c
+	  src/xml.c: give proper indication of the failures raised by the
+	  XML parser on not well formed XML, should fix rhbz#208545
+
 Wed Nov  8 14:01:11 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt.c src/proxy_internal.c src/xs_internal.c: fix the

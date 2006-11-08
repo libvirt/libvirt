@@ -112,7 +112,8 @@ typedef enum {
     VIR_ERR_READ_FAILED, /* failed to read a conf file */
     VIR_ERR_PARSE_FAILED, /* failed to parse a conf file */
     VIR_ERR_CONF_SYNTAX, /* failed to parse the syntax of a conf file */
-    VIR_ERR_WRITE_FAILED /* failed to write a conf file */
+    VIR_ERR_WRITE_FAILED, /* failed to write a conf file */
+    VIR_ERR_XML_DETAIL /* detail of an XML error */
 } virErrorNumber;
 
 /**

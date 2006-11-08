@@ -253,6 +253,9 @@ virDefaultErrorFunc(virErrorPtr err)
         case VIR_FROM_XEN:
             dom = "Xen ";
             break;
+        case VIR_FROM_XML:
+            dom = "XML ";
+            break;
         case VIR_FROM_XEND:
             dom = "Xen Daemon ";
             break;
@@ -270,7 +273,11 @@ virDefaultErrorFunc(virErrorPtr err)
         domain = err->dom->name;
     }
     len = strlen(err->message);
-    if ((len == 0) || (err->message[len - 1] != '\n'))
+    if ((err->domain == VIR_FROM_XML) && (err->code == VIR_ERR_XML_DETAIL) &&
+        (err->int1 != 0))
+        fprintf(stderr, "libvir: %s%s %s: line %d: %s",
+                dom, lvl, domain, err->int1, err->message);
+    else if ((len == 0) || (err->message[len - 1] != '\n'))
         fprintf(stderr, "libvir: %s%s %s: %s\n",
                 dom, lvl, domain, err->message);
     else
@@ -568,6 +575,12 @@ __virErrorMsg(virErrorNumber error, const char *info)
 	        errmsg = _("failed to write configuration file");
 	    else
 	        errmsg = _("failed to write configuration file: %s");
+            break;
+	case VIR_ERR_XML_DETAIL:
+	    if (info == NULL)
+	        errmsg = _("parser error");
+	    else
+	        errmsg = "%s";
             break;
     }
     return (errmsg);

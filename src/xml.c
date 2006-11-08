@@ -911,6 +911,27 @@ virDomainParseXMLOSDescPV(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr 
 }
 
 /**
+ * virCatchXMLParseError:
+ * @ctx: the context
+ * @msg: the error message
+ * @...: extra arguments
+ *
+ * SAX callback on parsing errors, act as a gate for libvirt own
+ * error reporting.
+ */
+static void
+virCatchXMLParseError(void *ctx, const char *msg, ...) {
+    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
+
+    if ((ctxt != NULL) && 
+        (ctxt->lastError.level == XML_ERR_FATAL) &&
+	(ctxt->lastError.message != NULL)) {
+        virXMLError(VIR_ERR_XML_DETAIL, ctxt->lastError.message,
+	            ctxt->lastError.line);
+    }
+}
+
+/**
  * virDomainParseXMLDiskDesc:
  * @node: node containing disk description
  * @buf: a buffer for the result S-Expr
@@ -1168,6 +1189,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
     char *ret = NULL, *nam = NULL;
     virBuffer buf;
     xmlChar *prop;
+    xmlParserCtxtPtr pctxt;
     xmlXPathObjectPtr obj = NULL;
     xmlXPathObjectPtr tmpobj = NULL;
     xmlXPathContextPtr ctxt = NULL;
@@ -1184,9 +1206,16 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
     buf.size = 1000;
     buf.use = 0;
 
-    xml = xmlReadDoc((const xmlChar *) xmldesc, "domain.xml", NULL,
-                     XML_PARSE_NOENT | XML_PARSE_NONET |
-                     XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
+    pctxt = xmlNewParserCtxt();
+    if ((pctxt == NULL) || (pctxt->sax == NULL)) {
+        goto error;
+    }
+
+    pctxt->sax->error = virCatchXMLParseError;
+
+    xml = xmlCtxtReadDoc(pctxt, (const xmlChar *) xmldesc, "domain.xml", NULL,
+                         XML_PARSE_NOENT | XML_PARSE_NONET |
+                         XML_PARSE_NOWARNING);
     if (xml == NULL) {
         goto error;
     }
