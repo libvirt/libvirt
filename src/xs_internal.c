@@ -683,6 +683,8 @@ xenStoreDomainGetOSType(virDomainPtr domain) {
         str = virDomainGetVMInfo(domain, vm, "image/ostype");
         free(vm);
     }
+    if (str == NULL)
+        str = strdup("linux");
 
     return (str);
 }
@@ -763,6 +765,9 @@ xenStoreDomainGetOSTypeID(virConnectPtr conn, int id) {
 	str = xs_read(conn->xshandle, 0, &query[0], &len);
         free(vm);
     }
+    if (str == NULL)
+        str = strdup("linux");
+
 
     return (str);
 }

@@ -1018,6 +1018,10 @@ xenProxyDomainGetOSType(virDomainPtr domain)
         xenProxyClose(domain->conn);
 	return(NULL);
     }
+    if ((ans.len == sizeof(virProxyPacket)) && (ans.data.arg < 0)) {
+	return(NULL);
+    }
+
     if (ans.len <= sizeof(virProxyPacket)) {
         virProxyError(domain->conn, VIR_ERR_OPERATION_FAILED, __FUNCTION__);
 	return (NULL);

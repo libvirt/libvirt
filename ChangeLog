@@ -1,3 +1,9 @@
+Wed Nov  8 14:01:11 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c src/proxy_internal.c src/xs_internal.c: fix the
+	  patch for rhbz#214264 in the case of Domain 0 on Xen and push the
+	  defaulting to "linux" down to the xen specific parts.
+
 Tue Nov  7 16:17:23 EDT 2006 Daniel P. Berrange <berrange@redhat.com>
 
 	* python/generator.py: Pass in connection object when generating

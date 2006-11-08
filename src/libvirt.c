@@ -1256,9 +1256,6 @@ virDomainGetOSType(virDomainPtr domain)
 	}
     }
 
-    if (str == NULL)
-        str = strdup("linux");
-
     return (str);
 }
 
