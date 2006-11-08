@@ -30,6 +30,7 @@ int testNumOfDomains(virConnectPtr conn);
 int testListDomains(virConnectPtr conn,
 	            int *ids,
 	            int maxids);
+char *testGetOSType(virDomainPtr dom);
 virDomainPtr
 testDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
 		      unsigned int flags ATTRIBUTE_UNUSED);

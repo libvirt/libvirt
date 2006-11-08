@@ -47,7 +47,7 @@ static virDriver testDriver = {
   NULL, /* domainGetName */
   NULL, /* domainGetID */
   NULL, /* domainGetUUID */
-  NULL, /* domainGetOSType */
+  testGetOSType, /* domainGetOSType */
   testGetMaxMemory, /* domainGetMaxMemory */
   testSetMaxMemory, /* domainSetMaxMemory */
   testSetMemory, /* domainSetMemory */
@@ -987,6 +987,10 @@ int testGetDomainInfo (virDomainPtr domain,
   }
   memcpy(info, &con->domains[domain->handle].info, sizeof(virDomainInfo));
   return (0);
+}
+
+char *testGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED) {
+  return strdup("linux");
 }
 
 unsigned long testGetMaxMemory(virDomainPtr domain) {
