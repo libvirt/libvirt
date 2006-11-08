@@ -5,5 +5,5 @@ CPU socket(s):       4
 Core(s) per socket:  4
 Thread(s) per core:  2
 NUMA cell(s):        4
-Memory size:         137438953472 kB
+Memory size:         137438953 kB
 

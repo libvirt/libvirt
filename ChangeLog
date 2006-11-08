@@ -1,3 +1,9 @@
+Wed Nov  8 13:03:41 EDT 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/virshdata/nodeinfo-custom.txt, docs/testnode.xml: Reduce amount
+	of RAM in test node to a sensible size to avoid integer wraparound on
+	32-bit archs.
+
 Wed Nov  8 13:00:56 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/test.c, src/test.h: Added implementation of the virDomainGetOSType
