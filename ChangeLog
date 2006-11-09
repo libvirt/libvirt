@@ -1,3 +1,7 @@
+Thu Nov  9 10:22:43 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* tests/reconnect.c: fixed the reconnect test when running as non-root
+
 Wed Nov  8 13:03:41 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/virshdata/nodeinfo-custom.txt, docs/testnode.xml: Reduce amount
