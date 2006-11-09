@@ -58,6 +58,7 @@
     <reference name='VIR_ERR_WARNING' href='html/libvirt-virterror.html#VIR_ERR_WARNING'/>
     <reference name='VIR_ERR_WRITE_FAILED' href='html/libvirt-virterror.html#VIR_ERR_WRITE_FAILED'/>
     <reference name='VIR_ERR_XEN_CALL' href='html/libvirt-virterror.html#VIR_ERR_XEN_CALL'/>
+    <reference name='VIR_ERR_XML_DETAIL' href='html/libvirt-virterror.html#VIR_ERR_XML_DETAIL'/>
     <reference name='VIR_ERR_XML_ERROR' href='html/libvirt-virterror.html#VIR_ERR_XML_ERROR'/>
     <reference name='VIR_FROM_CONF' href='html/libvirt-virterror.html#VIR_FROM_CONF'/>
     <reference name='VIR_FROM_DOM' href='html/libvirt-virterror.html#VIR_FROM_DOM'/>
@@ -217,6 +218,7 @@
       <ref name='VIR_ERR_WARNING'/>
       <ref name='VIR_ERR_WRITE_FAILED'/>
       <ref name='VIR_ERR_XEN_CALL'/>
+      <ref name='VIR_ERR_XML_DETAIL'/>
       <ref name='VIR_ERR_XML_ERROR'/>
       <ref name='VIR_FROM_CONF'/>
       <ref name='VIR_FROM_DOM'/>
@@ -574,6 +576,7 @@
       <ref name='VIR_ERR_WARNING'/>
       <ref name='VIR_ERR_WRITE_FAILED'/>
       <ref name='VIR_ERR_XEN_CALL'/>
+      <ref name='VIR_ERR_XML_DETAIL'/>
       <ref name='VIR_ERR_XML_ERROR'/>
       <ref name='VIR_FROM_CONF'/>
       <ref name='VIR_FROM_DOM'/>

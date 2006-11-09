@@ -1,3 +1,10 @@
+Thu Nov  9 15:39:19 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* python/generator.py: changed the generator to generate a reference
+	  from Domain class instances to the Connect they were issued from
+	  should fix rhbz#204490
+	* docs//*: rebuilt
+
 Thu Nov  9 10:22:43 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* tests/reconnect.c: fixed the reconnect test when running as non-root

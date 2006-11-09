@@ -540,6 +540,10 @@ classes_destructors = {
     "virConnect": "virConnectClose",
 }
 
+classes_references = {
+    "virDomain": "virConnect",
+}
+
 functions_noexcept = {
 }
 
@@ -890,6 +894,12 @@ def buildWrappers():
 			classes.write("        __tmp = ");
 			classes.write(classes_type[ret[0]][1] % ("ret"));
 			classes.write("\n");
+
+			#
+			# hook up a reference if needed
+			#
+			if classes_references.has_key(classes_type[ret[0]][2]):
+			    classes.write("        __tmp.ref = self\n");
 
                         #
 			# Sometime one need to keep references of the source

@@ -123,6 +123,7 @@
      <exports symbol='VIR_ERR_INVALID_CONN' type='enum'/>
      <exports symbol='VIR_ERR_NONE' type='enum'/>
      <exports symbol='VIR_ERR_OK' type='enum'/>
+     <exports symbol='VIR_ERR_XML_DETAIL' type='enum'/>
      <exports symbol='VIR_ERR_NO_NAME' type='enum'/>
      <exports symbol='VIR_ERR_NO_ROOT' type='enum'/>
      <exports symbol='VIR_ERR_OPERATION_FAILED' type='enum'/>
@@ -259,8 +260,9 @@
     <enum name='VIR_ERR_SEXPR_SERIAL' file='virterror' value='13' type='virErrorNumber' info='failure to serialize an S-Expr'/>
     <enum name='VIR_ERR_UNKNOWN_HOST' file='virterror' value='4' type='virErrorNumber' info='could not resolve hostname'/>
     <enum name='VIR_ERR_WARNING' file='virterror' value='1' type='virErrorLevel' info='A simple warning'/>
-    <enum name='VIR_ERR_WRITE_FAILED' file='virterror' value='34' type='virErrorNumber' info=' failed to write a conf file'/>
+    <enum name='VIR_ERR_WRITE_FAILED' file='virterror' value='34' type='virErrorNumber' info='failed to write a conf file'/>
     <enum name='VIR_ERR_XEN_CALL' file='virterror' value='15' type='virErrorNumber' info='failure doing an hypervisor call'/>
+    <enum name='VIR_ERR_XML_DETAIL' file='virterror' value='35' type='virErrorNumber' info=' detail of an XML error'/>
     <enum name='VIR_ERR_XML_ERROR' file='virterror' value='27' type='virErrorNumber' info='an XML description is not well formed or broken'/>
     <enum name='VIR_FROM_CONF' file='virterror' value='9' type='virErrorDomain' info=' Error in the configuration file handling'/>
     <enum name='VIR_FROM_DOM' file='virterror' value='6' type='virErrorDomain' info='Error when operating on a domain'/>

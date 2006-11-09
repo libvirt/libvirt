@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-11-07 16:20+0100\n"
+"POT-Creation-Date: 2006-11-09 14:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,296 +32,300 @@ msgstr ""
 msgid "error"
 msgstr ""
 
-#: src/virterror.c:328
+#: src/virterror.c:335
 msgid "No error message provided"
 msgstr ""
 
-#: src/virterror.c:382
+#: src/virterror.c:389
 #, c-format
 msgid "internal error %s"
 msgstr ""
 
-#: src/virterror.c:384
+#: src/virterror.c:391
 msgid "internal error"
 msgstr ""
 
-#: src/virterror.c:387
+#: src/virterror.c:394
 msgid "out of memory"
 msgstr ""
 
-#: src/virterror.c:391
+#: src/virterror.c:398
 msgid "no support for hypervisor"
 msgstr ""
 
-#: src/virterror.c:393
+#: src/virterror.c:400
 #, c-format
 msgid "no support for hypervisor %s"
 msgstr ""
 
-#: src/virterror.c:397
+#: src/virterror.c:404
 msgid "could not connect to hypervisor"
 msgstr ""
 
-#: src/virterror.c:399
+#: src/virterror.c:406
 #, c-format
 msgid "could not connect to %s"
 msgstr ""
 
-#: src/virterror.c:403
+#: src/virterror.c:410
 msgid "invalid connection pointer in"
 msgstr ""
 
-#: src/virterror.c:405
+#: src/virterror.c:412
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr ""
 
-#: src/virterror.c:409
+#: src/virterror.c:416
 msgid "invalid domain pointer in"
 msgstr ""
 
-#: src/virterror.c:411
+#: src/virterror.c:418
 #, c-format
 msgid "invalid domain pointer in %s"
 msgstr ""
 
-#: src/virterror.c:415
+#: src/virterror.c:422
 msgid "invalid argument in"
 msgstr ""
 
-#: src/virterror.c:417
+#: src/virterror.c:424
 #, c-format
 msgid "invalid argument in %s"
 msgstr ""
 
-#: src/virterror.c:421
+#: src/virterror.c:428
 #, c-format
 msgid "operation failed: %s"
 msgstr ""
 
-#: src/virterror.c:423
+#: src/virterror.c:430
 msgid "operation failed"
 msgstr ""
 
-#: src/virterror.c:427
+#: src/virterror.c:434
 #, c-format
 msgid "GET operation failed: %s"
 msgstr ""
 
-#: src/virterror.c:429
+#: src/virterror.c:436
 msgid "GET operation failed"
 msgstr ""
 
-#: src/virterror.c:433
+#: src/virterror.c:440
 #, c-format
 msgid "POST operation failed: %s"
 msgstr ""
 
-#: src/virterror.c:435
+#: src/virterror.c:442
 msgid "POST operation failed"
 msgstr ""
 
-#: src/virterror.c:438
+#: src/virterror.c:445
 #, c-format
 msgid "got unknown HTTP error code %d"
 msgstr ""
 
-#: src/virterror.c:442
+#: src/virterror.c:449
 #, c-format
 msgid "unknown host %s"
 msgstr ""
 
-#: src/virterror.c:444
+#: src/virterror.c:451
 msgid "unknown host"
 msgstr ""
 
-#: src/virterror.c:448
+#: src/virterror.c:455
 #, c-format
 msgid "failed to serialize S-Expr: %s"
 msgstr ""
 
-#: src/virterror.c:450
+#: src/virterror.c:457
 msgid "failed to serialize S-Expr"
 msgstr ""
 
-#: src/virterror.c:454
+#: src/virterror.c:461
 msgid "could not use Xen hypervisor entry"
 msgstr ""
 
-#: src/virterror.c:456
+#: src/virterror.c:463
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr ""
 
-#: src/virterror.c:460
+#: src/virterror.c:467
 msgid "could not connect to Xen Store"
 msgstr ""
 
-#: src/virterror.c:462
+#: src/virterror.c:469
 #, c-format
 msgid "could not connect to Xen Store %s"
 msgstr ""
 
-#: src/virterror.c:465
+#: src/virterror.c:472
 #, c-format
 msgid "failed Xen syscall %s %d"
 msgstr ""
 
-#: src/virterror.c:469
+#: src/virterror.c:476
 msgid "unknown OS type"
 msgstr ""
 
-#: src/virterror.c:471
+#: src/virterror.c:478
 #, c-format
 msgid "unknown OS type %s"
 msgstr ""
 
-#: src/virterror.c:474
+#: src/virterror.c:481
 msgid "missing kernel information"
 msgstr ""
 
-#: src/virterror.c:478
+#: src/virterror.c:485
 msgid "missing root device information"
 msgstr ""
 
-#: src/virterror.c:480
+#: src/virterror.c:487
 #, c-format
 msgid "missing root device information in %s"
 msgstr ""
 
-#: src/virterror.c:484
+#: src/virterror.c:491
 msgid "missing source information for device"
 msgstr ""
 
-#: src/virterror.c:486
+#: src/virterror.c:493
 #, c-format
 msgid "missing source information for device %s"
 msgstr ""
 
-#: src/virterror.c:490
+#: src/virterror.c:497
 msgid "missing target information for device"
 msgstr ""
 
-#: src/virterror.c:492
+#: src/virterror.c:499
 #, c-format
 msgid "missing target information for device %s"
 msgstr ""
 
-#: src/virterror.c:496
+#: src/virterror.c:503
 msgid "missing domain name information"
 msgstr ""
 
-#: src/virterror.c:498
+#: src/virterror.c:505
 #, c-format
 msgid "missing domain name information in %s"
 msgstr ""
 
-#: src/virterror.c:502
+#: src/virterror.c:509
 msgid "missing operating system information"
 msgstr ""
 
-#: src/virterror.c:504
+#: src/virterror.c:511
 #, c-format
 msgid "missing operating system information for %s"
 msgstr ""
 
-#: src/virterror.c:508
+#: src/virterror.c:515
 msgid "missing devices information"
 msgstr ""
 
-#: src/virterror.c:510
+#: src/virterror.c:517
 #, c-format
 msgid "missing devices information for %s"
 msgstr ""
 
-#: src/virterror.c:514
+#: src/virterror.c:521
 msgid "too many drivers registered"
 msgstr ""
 
-#: src/virterror.c:516
+#: src/virterror.c:523
 #, c-format
 msgid "too many drivers registered in %s"
 msgstr ""
 
-#: src/virterror.c:520
+#: src/virterror.c:527
 msgid "library call failed, possibly not supported"
 msgstr ""
 
-#: src/virterror.c:522
+#: src/virterror.c:529
 #, c-format
 msgid "library call %s failed, possibly not supported"
 msgstr ""
 
-#: src/virterror.c:526
+#: src/virterror.c:533
 msgid "XML description not well formed or invalid"
 msgstr ""
 
-#: src/virterror.c:528
+#: src/virterror.c:535
 #, c-format
 msgid "XML description for %s is not well formed or invalid"
 msgstr ""
 
-#: src/virterror.c:532
+#: src/virterror.c:539
 msgid "this domain exists already"
 msgstr ""
 
-#: src/virterror.c:534
+#: src/virterror.c:541
 #, c-format
 msgid "domain %s exists already"
 msgstr ""
 
-#: src/virterror.c:538
+#: src/virterror.c:545
 msgid "operation forbidden for read only access"
 msgstr ""
 
-#: src/virterror.c:540
+#: src/virterror.c:547
 #, c-format
 msgid "operation %s forbidden for read only access"
 msgstr ""
 
-#: src/virterror.c:544
+#: src/virterror.c:551
 msgid "failed to open configuration file for reading"
 msgstr ""
 
-#: src/virterror.c:546
+#: src/virterror.c:553
 #, c-format
 msgid "failed to open %s for reading"
 msgstr ""
 
-#: src/virterror.c:550
+#: src/virterror.c:557
 msgid "failed to read configuration file"
 msgstr ""
 
-#: src/virterror.c:552
+#: src/virterror.c:559
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr ""
 
-#: src/virterror.c:556
+#: src/virterror.c:563
 msgid "failed to parse configuration file"
 msgstr ""
 
-#: src/virterror.c:558
+#: src/virterror.c:565
 #, c-format
 msgid "failed to parse configuration file %s"
 msgstr ""
 
-#: src/virterror.c:562
+#: src/virterror.c:569
 msgid "configuration file syntax error"
 msgstr ""
 
-#: src/virterror.c:564
+#: src/virterror.c:571
 #, c-format
 msgid "configuration file syntax error: %s"
 msgstr ""
 
-#: src/virterror.c:568
+#: src/virterror.c:575
 msgid "failed to write configuration file"
 msgstr ""
 
-#: src/virterror.c:570
+#: src/virterror.c:577
 #, c-format
 msgid "failed to write configuration file: %s"
+msgstr ""
+
+#: src/virterror.c:581
+msgid "parser error"
 msgstr ""
 
 #: src/xmlrpc.c:63
@@ -369,8 +373,8 @@ msgid "allocate new context"
 msgstr ""
 
 #: src/hash.c:628 src/hash.c:634 src/test.c:725 src/test.c:750 src/test.c:773
-#: src/test.c:797 src/xend_internal.c:1912 src/xend_internal.c:2608
-#: src/xend_internal.c:2819 src/xs_internal.c:594 src/proxy_internal.c:791
+#: src/test.c:797 src/xend_internal.c:1920 src/xend_internal.c:2616
+#: src/xend_internal.c:2827 src/xs_internal.c:594 src/proxy_internal.c:791
 #: src/proxy_internal.c:838 src/proxy_internal.c:889
 msgid "allocating domain"
 msgstr ""
@@ -491,7 +495,7 @@ msgstr ""
 msgid "growing buffer"
 msgstr ""
 
-#: src/xml.c:116 src/xend_internal.c:1603 src/xend_internal.c:1622
+#: src/xml.c:116 src/xend_internal.c:1611 src/xend_internal.c:1630
 msgid "allocate new buffer"
 msgstr ""
 
@@ -507,65 +511,65 @@ msgstr ""
 msgid "failed to copy a string"
 msgstr ""
 
-#: src/xend_internal.c:264 src/xend_internal.c:267
+#: src/xend_internal.c:265 src/xend_internal.c:268
 msgid "failed to read from Xen Daemon"
 msgstr ""
 
-#: src/xend_internal.c:1057
+#: src/xend_internal.c:1064
 msgid "failed to urlencode the create S-Expr"
 msgstr ""
 
-#: src/xend_internal.c:1098
+#: src/xend_internal.c:1105
 msgid "domain information incomplete, missing domid"
 msgstr ""
 
-#: src/xend_internal.c:1104
+#: src/xend_internal.c:1111
 msgid "domain information incorrect domid not numeric"
 msgstr ""
 
-#: src/xend_internal.c:1111 src/xend_internal.c:1160
+#: src/xend_internal.c:1118 src/xend_internal.c:1167
 msgid "domain information incomplete, missing uuid"
 msgstr ""
 
-#: src/xend_internal.c:1151 src/xend_internal.c:1492
+#: src/xend_internal.c:1158 src/xend_internal.c:1500
 msgid "domain information incomplete, missing name"
 msgstr ""
 
-#: src/xend_internal.c:1409 src/xend_internal.c:1434
+#: src/xend_internal.c:1417 src/xend_internal.c:1442
 msgid "domain information incomplete, missing kernel"
 msgstr ""
 
-#: src/xend_internal.c:1582
+#: src/xend_internal.c:1590
 msgid "domain information incomplete, vbd has no src"
 msgstr ""
 
-#: src/xend_internal.c:1588
+#: src/xend_internal.c:1596
 msgid "domain information incomplete, vbd has no dev"
 msgstr ""
 
-#: src/xend_internal.c:1596
+#: src/xend_internal.c:1604
 msgid "cannot parse vbd filename, missing driver name"
 msgstr ""
 
-#: src/xend_internal.c:1615
+#: src/xend_internal.c:1623
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 
-#: src/xend_internal.c:1923
+#: src/xend_internal.c:1931
 msgid "failed to parse Xend domain information"
 msgstr ""
 
-#: src/xend_internal.c:2883
+#: src/xend_internal.c:2892
 #, c-format
 msgid "Failed to create domain %s\n"
 msgstr ""
 
-#: src/xend_internal.c:2889
+#: src/xend_internal.c:2898
 #, c-format
 msgid "Failed to get devices for domain %s\n"
 msgstr ""
 
-#: src/xend_internal.c:2900
+#: src/xend_internal.c:2909
 #, c-format
 msgid "Failed to resume new domain %s\n"
 msgstr ""
