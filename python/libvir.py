@@ -63,7 +63,10 @@ class libvirtError(Exception):
         return self.err[8]
 
     def __str__(self):
-        return Exception.__str__(self) + " " + self.get_error_message()
+        if self.get_error_message() is None:
+            return Exception.__str__(self)
+        else:
+            return Exception.__str__(self) + " " + self.get_error_message()
 
 #
 # register the libvirt global error handler
