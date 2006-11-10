@@ -1385,6 +1385,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
 
     xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
+    xmlFreeParserCtxt(pctxt);
 
     if (name != NULL)
         *name = nam;
@@ -1404,6 +1405,8 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
         xmlXPathFreeContext(ctxt);
     if (xml != NULL)
         xmlFreeDoc(xml);
+    if (pctxt != NULL)
+        xmlFreeParserCtxt(pctxt);
     if (ret != NULL)
         free(ret);
     return (NULL);
