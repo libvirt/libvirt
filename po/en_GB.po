@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-11-09 14:26+0100\n"
+"POT-Creation-Date: 2006-11-10 11:04+0100\n"
 "PO-Revision-Date: 2006-09-20 10:20-0400\n"
 "Last-Translator: Daniel Berrange <berrange@redhat.com>\n"
 "Language-Team: English <en@li.org>\n"
@@ -373,8 +373,8 @@ msgid "allocate new context"
 msgstr ""
 
 #: src/hash.c:628 src/hash.c:634 src/test.c:725 src/test.c:750 src/test.c:773
-#: src/test.c:797 src/xend_internal.c:1920 src/xend_internal.c:2616
-#: src/xend_internal.c:2827 src/xs_internal.c:594 src/proxy_internal.c:791
+#: src/test.c:797 src/xend_internal.c:1927 src/xend_internal.c:2623
+#: src/xend_internal.c:2834 src/xs_internal.c:594 src/proxy_internal.c:791
 #: src/proxy_internal.c:838 src/proxy_internal.c:889
 msgid "allocating domain"
 msgstr ""
@@ -495,7 +495,7 @@ msgstr ""
 msgid "growing buffer"
 msgstr ""
 
-#: src/xml.c:116 src/xend_internal.c:1611 src/xend_internal.c:1630
+#: src/xml.c:116 src/xend_internal.c:1618 src/xend_internal.c:1637
 msgid "allocate new buffer"
 msgstr ""
 
@@ -531,7 +531,7 @@ msgstr ""
 msgid "domain information incomplete, missing uuid"
 msgstr ""
 
-#: src/xend_internal.c:1158 src/xend_internal.c:1500
+#: src/xend_internal.c:1158 src/xend_internal.c:1501
 msgid "domain information incomplete, missing name"
 msgstr ""
 
@@ -539,37 +539,37 @@ msgstr ""
 msgid "domain information incomplete, missing kernel"
 msgstr ""
 
-#: src/xend_internal.c:1590
+#: src/xend_internal.c:1597
 msgid "domain information incomplete, vbd has no src"
 msgstr ""
 
-#: src/xend_internal.c:1596
+#: src/xend_internal.c:1603
 msgid "domain information incomplete, vbd has no dev"
 msgstr ""
 
-#: src/xend_internal.c:1604
+#: src/xend_internal.c:1611
 msgid "cannot parse vbd filename, missing driver name"
 msgstr ""
 
-#: src/xend_internal.c:1623
+#: src/xend_internal.c:1630
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 
-#: src/xend_internal.c:1931
+#: src/xend_internal.c:1938
 msgid "failed to parse Xend domain information"
 msgstr ""
 
-#: src/xend_internal.c:2892
+#: src/xend_internal.c:2899
 #, c-format
 msgid "Failed to create domain %s\n"
 msgstr ""
 
-#: src/xend_internal.c:2898
+#: src/xend_internal.c:2905
 #, c-format
 msgid "Failed to get devices for domain %s\n"
 msgstr ""
 
-#: src/xend_internal.c:2909
+#: src/xend_internal.c:2916
 #, c-format
 msgid "Failed to resume new domain %s\n"
 msgstr ""

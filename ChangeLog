@@ -1,3 +1,13 @@
+Fri Nov 10 11:19:32 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c src/xml.c: add an extra element currentMemory
+	  to the XML description and handle its serialization back and
+	  forth between XML and S-Expr
+	* tests/sexpr2xmltest.c tests/xml2sexprtest.c 
+	  tests/sexpr2xmldata/sexpr2xml-curmem.*
+	  tests/xml2sexprdata/xml2sexpr-curmem.*: added specific regression
+	  tests for this, this didn't disturb any of the other tests.
+
 Thu Nov  9 15:39:19 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* python/generator.py: changed the generator to generate a reference

@@ -131,6 +131,13 @@ static int testCompareDiskDrvBlktapRaw(void *data ATTRIBUTE_UNUSED) {
 			  2);
 }
 
+static int testCompareMemoryResize(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("xml2sexprdata/xml2sexpr-curmem.xml",
+			  "xml2sexprdata/xml2sexpr-curmem.sexpr",
+			  "rhel5",
+			  2);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -189,6 +196,10 @@ main(int argc, char **argv)
 
     if (virtTestRun("XML-2-SEXPR Disk Drv Blktap Raw",
 		    1, testCompareDiskDrvBlktapRaw, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("XML-2-SEXPR Memory Resize",
+		    1, testCompareMemoryResize, NULL) != 0)
 	ret = -1;
 
 

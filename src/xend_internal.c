@@ -1479,6 +1479,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
     virBuffer buf;
     int hvm = 0;
     int domid = -1;
+    int max_mem, cur_mem;
 
     if (root == NULL) {
         /* ERROR */
@@ -1526,8 +1527,14 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
         xend_parse_sexp_desc_os(conn, root, &buf, hvm);
     }
 
-    virBufferVSprintf(&buf, "  <memory>%d</memory>\n",
-                      (int) (sexpr_u64(root, "domain/maxmem") << 10));
+    max_mem = (int) (sexpr_u64(root, "domain/maxmem") << 10);
+    cur_mem = (int) (sexpr_u64(root, "domain/memory") << 10);
+    if (cur_mem > max_mem)
+        max_mem = cur_mem;
+    virBufferVSprintf(&buf, "  <memory>%d</memory>\n", max_mem);
+    if ((cur_mem > 63) && (cur_mem != max_mem))
+	virBufferVSprintf(&buf, "  <currentMemory>%d</currentMemory>\n",
+	                  cur_mem);
     virBufferVSprintf(&buf, "  <vcpu>%d</vcpu>\n",
                       sexpr_int(root, "domain/vcpus"));
     tmp = sexpr_node(root, "domain/on_poweroff");

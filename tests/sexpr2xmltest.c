@@ -90,6 +90,12 @@ static int testCompareDiskDrvBlktapRaw(void *data ATTRIBUTE_UNUSED) {
 			  1);
 }
 
+static int testCompareResizedMemory(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("sexpr2xmldata/sexpr2xml-curmem.xml",
+			  "sexpr2xmldata/sexpr2xml-curmem.sexpr",
+			  1);
+}
+
 
 int
 main(int argc, char **argv)
@@ -133,6 +139,10 @@ main(int argc, char **argv)
 
     if (virtTestRun("SEXPR-2-XML Disk Driver blktap raw config",
 		    1, testCompareDiskDrvBlktapRaw, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("SEXPR-2-XML Resized memory config",
+		    1, testCompareResizedMemory, NULL) != 0)
 	ret = -1;
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);

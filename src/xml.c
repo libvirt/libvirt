@@ -1196,6 +1196,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
     int i, res;
     int bootloader = 0;
     int hvm = 0;
+    unsigned long mem = 0, max_mem = 0;
 
     if (name != NULL)
         *name = NULL;
@@ -1256,13 +1257,23 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
     obj = xmlXPathEval(BAD_CAST "number(/domain/memory[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NUMBER) ||
         (isnan(obj->floatval)) || (obj->floatval < 64000)) {
-        virBufferVSprintf(&buf, "(memory 128)(maxmem 128)");
+	max_mem = 128;
     } else {
-        unsigned long mem = (obj->floatval / 1024);
-
-        virBufferVSprintf(&buf, "(memory %lu)(maxmem %lu)", mem, mem);
+        max_mem = (obj->floatval / 1024);
     }
     xmlXPathFreeObject(obj);
+    obj = xmlXPathEval(BAD_CAST "number(/domain/currentMemory[1])", ctxt);
+    if ((obj == NULL) || (obj->type != XPATH_NUMBER) ||
+        (isnan(obj->floatval)) || (obj->floatval < 64000)) {
+        mem = max_mem;
+    } else {
+        mem = (obj->floatval / 1024);
+	if (mem > max_mem) {
+	    max_mem = mem;
+	}
+    }
+    xmlXPathFreeObject(obj);
+    virBufferVSprintf(&buf, "(memory %lu)(maxmem %lu)", mem, max_mem);
 
     obj = xmlXPathEval(BAD_CAST "number(/domain/vcpu[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NUMBER) ||
