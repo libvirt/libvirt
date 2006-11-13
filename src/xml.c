@@ -955,6 +955,7 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
     xmlChar *drvName = NULL;
     xmlChar *drvType = NULL;
     int ro = 0;
+    int shareable = 0;
     int typ = 0;
     int cdrom = 0;
 
@@ -988,6 +989,8 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
                     drvType = xmlGetProp(cur, BAD_CAST "type");
             } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
                 ro = 1;
+            } else if (xmlStrEqual(cur->name, BAD_CAST "shareable")) {
+	        shareable = 1;
             }
         }
         cur = cur->next;
@@ -1076,10 +1079,12 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
                 virBufferVSprintf(buf, "(uname 'phy:/dev/%s')", source);
         }
     }
-    if (ro == 0)
-        virBufferVSprintf(buf, "(mode 'w')");
-    else if (ro == 1)
+    if (ro == 1)
         virBufferVSprintf(buf, "(mode 'r')");
+    else if (shareable == 1)
+        virBufferVSprintf(buf, "(mode 'w!')");
+    else
+        virBufferVSprintf(buf, "(mode 'w')");
 
     virBufferAdd(buf, ")", 1);
     virBufferAdd(buf, ")", 1);

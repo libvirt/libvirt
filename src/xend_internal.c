@@ -1690,6 +1690,8 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
                xend has already done this ? */
             if ((mode != NULL) && (!strcmp(mode, "r")))
                 virBufferVSprintf(&buf, "      <readonly/>\n");
+	    else if ((mode != NULL) && (!strcmp(mode, "w!")))
+                virBufferVSprintf(&buf, "      <shareable/>\n");
             virBufferAdd(&buf, "    </disk>\n", 12);
 
             bad_parse:

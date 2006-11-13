@@ -1,3 +1,8 @@
+Mon Nov 13 17:18:00 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c src/xml.c: fix for shareable drive support
+	  rhbz#214908
+
 Fri Nov 10 17:53:41 EDT 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/xml.c: Fix memory leak, by freeing xmlParserContextPtr object
