@@ -1498,7 +1498,7 @@ static unsigned long
 xenHypervisorGetMaxMemory(virDomainPtr domain)
 {
     if ((domain == NULL) || (domain->conn == NULL) ||
-        (domain->conn->handle < 0))
+        (domain->conn->handle < 0) || (domain->handle < 0))
         return (0);
 
     return(xenHypervisorGetDomMaxMemory(domain->conn, domain->handle));
@@ -1597,6 +1597,7 @@ xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
         (domain->conn->handle < 0) || (info == NULL) ||
         (domain->handle < 0))
         return (-1);
+
     return(xenHypervisorGetDomInfo(domain->conn, domain->handle, info));
 
 }
@@ -1616,7 +1617,7 @@ xenHypervisorPauseDomain(virDomainPtr domain)
     int ret;
 
     if ((domain == NULL) || (domain->conn == NULL) ||
-        (domain->conn->handle < 0))
+        (domain->conn->handle < 0) || (domain->handle < 0))
         return (-1);
 
     ret = virXen_pausedomain(domain->conn->handle, domain->handle);
@@ -1639,7 +1640,7 @@ xenHypervisorResumeDomain(virDomainPtr domain)
     int ret;
 
     if ((domain == NULL) || (domain->conn == NULL) ||
-        (domain->conn->handle < 0))
+        (domain->conn->handle < 0) || (domain->handle < 0))
         return (-1);
 
     ret = virXen_unpausedomain(domain->conn->handle, domain->handle);
@@ -1662,7 +1663,7 @@ xenHypervisorDestroyDomain(virDomainPtr domain)
     int ret;
 
     if ((domain == NULL) || (domain->conn == NULL) ||
-        (domain->conn->handle < 0))
+        (domain->conn->handle < 0) || (domain->handle < 0))
         return (-1);
 
     ret = virXen_destroydomain(domain->conn->handle, domain->handle);
@@ -1686,7 +1687,7 @@ xenHypervisorSetMaxMemory(virDomainPtr domain, unsigned long memory)
     int ret;
 
     if ((domain == NULL) || (domain->conn == NULL) ||
-        (domain->conn->handle < 0))
+        (domain->conn->handle < 0) || (domain->handle < 0))
         return (-1);
 
     ret = virXen_setmaxmem(domain->conn->handle, domain->handle, memory);
@@ -1713,7 +1714,8 @@ xenHypervisorSetVcpus(virDomainPtr domain, unsigned int nvcpus)
     int ret;
 
     if ((domain == NULL) || (domain->conn == NULL) ||
-        (domain->conn->handle < 0) || (nvcpus < 1))
+        (domain->conn->handle < 0) || (domain->handle < 0) ||
+        (nvcpus < 1))
         return (-1);
 
     ret = virXen_setmaxvcpus(domain->conn->handle, domain->handle, nvcpus);
@@ -1741,7 +1743,8 @@ xenHypervisorPinVcpu(virDomainPtr domain, unsigned int vcpu,
     int ret;
 
     if ((domain == NULL) || (domain->conn == NULL) ||
-        (domain->conn->handle < 0) || (cpumap == NULL) || (maplen < 1))
+        (domain->conn->handle < 0) || (domain->handle < 0) ||
+        (cpumap == NULL) || (maplen < 1))
         return (-1);
 
     ret = virXen_setvcpumap(domain->conn->handle, domain->handle, vcpu,
@@ -1782,9 +1785,10 @@ xenHypervisorGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
     virVcpuInfoPtr ipt;
     int nbinfo, i;
 
-    if ((domain == NULL) || (domain->conn == NULL) || (domain->conn->handle < 0)
-        || (info == NULL) || (maxinfo < 1)
-        || (sizeof(cpumap_t) & 7))
+    if ((domain == NULL) || (domain->conn == NULL) ||
+        (domain->conn->handle < 0) || (domain->handle < 0) ||
+        (info == NULL) || (maxinfo < 1) ||
+        (sizeof(cpumap_t) & 7))
         return (-1);
     if ((cpumaps != NULL) && (maplen < 1))
         return -1;

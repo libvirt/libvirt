@@ -1,16 +1,24 @@
-Wed Nov 15 15:59:13 EST 2006 Daniel Berrange <berrange@redhat.com>
+Wed Nov 15 15:08:13 EST 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/xen_internal.c, src/xs_internal.c, src/xend_internal.c,
+	src/proxy.c: Don't try to invoke APIs if domain is is < 0, letting
+	these inactive domains be handled by other driver backend.
+	* src/xend_internal.h: make xend_config_version() api available
+	to other drivers
+
+Wed Nov 15 14:59:13 EST 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/hash.c, src/hash.h: Added three new methods for iterating
 	over hashtable entries, virHashForEach, virHashRemoveSet &
 	virHashSearch.
 
-Wed Nov 15 15:52:01 EST 2006 Daniel Berrange <berrange@redhat.com>
+Wed Nov 15 14:52:01 EST 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/conf.c, src/conf.h: Add two new APIs virConfNew() and
 	virConfSetValue() for creating & populating new config objects
 	in memory instead of from a file
 
-Wed Nov 15 15:42:01 EST 2006 Daniel Berrange <berrange@redhat.com>
+Wed Nov 15 14:42:01 EST 2006 Daniel Berrange <berrange@redhat.com>
 
 	* python/libvir.c, python/libvirt_wrap.h, python/types.h: Ensure
 	that  unsigned longs are marshalled to python Long type instead

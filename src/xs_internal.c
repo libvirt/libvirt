@@ -372,6 +372,8 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
     }
     if (domain->conn->xshandle == NULL)
         return(-1);
+    if (domain->handle == -1)
+        return(-1);
 
     tmp = virDomainDoStoreQuery(domain->conn, domain->handle, "running");
     if (tmp != NULL) {
@@ -430,6 +432,8 @@ xenStoreDomainSetMemory(virDomainPtr domain, unsigned long memory)
 	                 __FUNCTION__);
 	return(-1);
     }
+    if (domain->handle == -1)
+        return(-1);
     snprintf(value, 19, "%lu", memory);
     value[19] = 0;
     ret = virDomainDoStoreWrite(domain, "memory/target", &value[0]);
@@ -454,6 +458,8 @@ xenStoreDomainGetMaxMemory(virDomainPtr domain)
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain))
         return (ret);
+    if (domain->handle == -1)
+        return(-1);
 
     tmp = virDomainDoStoreQuery(domain->conn, domain->handle, "memory/target");
     if (tmp != NULL) {
@@ -626,6 +632,8 @@ xenStoreDomainShutdown(virDomainPtr domain)
 	                 __FUNCTION__);
         return(-1);
     }
+    if (domain->handle == -1)
+        return(-1);
     /*
      * this is very hackish, the domU kernel probes for a special 
      * node in the xenstore and launch the shutdown command if found.
@@ -652,6 +660,8 @@ xenStoreDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
 	                 __FUNCTION__);
         return(-1);
     }
+    if (domain->handle == -1)
+        return(-1);
     /*
      * this is very hackish, the domU kernel probes for a special 
      * node in the xenstore and launch the shutdown command if found.

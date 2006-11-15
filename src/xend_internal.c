@@ -1266,7 +1266,7 @@ xend_get_node(virConnectPtr xend)
     return node;
 }
 
-static int
+int
 xend_get_config_version(virConnectPtr conn) {
     struct sexpr *root;
     const char *value;
@@ -2075,6 +2075,8 @@ xenDaemonDomainSuspend(virDomainPtr domain)
 	             __FUNCTION__);
         return(-1);
     }
+    if (domain->handle < 0)
+        return(-1);
     return xend_op(domain->conn, domain->name, "op", "pause", NULL);
 }
 
@@ -2095,6 +2097,8 @@ xenDaemonDomainResume(virDomainPtr domain)
 	             __FUNCTION__);
         return(-1);
     }
+    if (domain->handle < 0)
+        return(-1);
     return xend_op(domain->conn, domain->name, "op", "unpause", NULL);
 }
 
@@ -2116,6 +2120,8 @@ xenDaemonDomainShutdown(virDomainPtr domain)
 	             __FUNCTION__);
         return(-1);
     }
+    if (domain->handle < 0)
+        return(-1);
     return xend_op(domain->conn, domain->name, "op", "shutdown", "reason", "halt", NULL);
 }
 
@@ -2138,6 +2144,8 @@ xenDaemonDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
 	             __FUNCTION__);
         return(-1);
     }
+    if (domain->handle < 0)
+        return(-1);
     return xend_op(domain->conn, domain->name, "op", "shutdown", "reason", "reboot", NULL);
 }
 
@@ -2162,6 +2170,8 @@ xenDaemonDomainDestroy(virDomainPtr domain)
 	             __FUNCTION__);
         return(-1);
     }
+    if (domain->handle < 0)
+        return(-1);
     return xend_op(domain->conn, domain->name, "op", "destroy", NULL);
 }
 
@@ -2187,6 +2197,8 @@ xenDaemonDomainSave(virDomainPtr domain, const char *filename)
 	             __FUNCTION__);
         return(-1);
     }
+    if (domain->handle < 0)
+        return(-1);
     return xend_op(domain->conn, domain->name, "op", "save", "file", filename, NULL);
 }
 
@@ -2232,6 +2244,8 @@ xenDaemonDomainGetMaxMemory(virDomainPtr domain)
 	             __FUNCTION__);
         return(-1);
     }
+    if (domain->handle < 0)
+        return(-1);
 
     /* can we ask for a subset ? worth it ? */
     root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
@@ -2266,6 +2280,9 @@ xenDaemonDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
 	             __FUNCTION__);
         return(-1);
     }
+    if (domain->handle < 0)
+        return(-1);
+
     snprintf(buf, sizeof(buf), "%lu", memory >> 10);
     return xend_op(domain->conn, domain->name, "op", "maxmem_set", "memory",
                    buf, NULL);
@@ -2297,6 +2314,9 @@ xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory)
 	             __FUNCTION__);
         return(-1);
     }
+    if (domain->handle < 0)
+        return(-1);
+
     snprintf(buf, sizeof(buf), "%lu", memory >> 10);
     return xend_op(domain->conn, domain->name, "op", "mem_target_set",
                    "target", buf, NULL);
@@ -2345,6 +2365,8 @@ xenDaemonDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
 	             __FUNCTION__);
         return(NULL);
     }
+    if (domain->handle < 0)
+        return(NULL);
 
     return xenDaemonDomainDumpXMLByID(domain->conn, domain->handle);
 }
@@ -2372,7 +2394,8 @@ xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 	             __FUNCTION__);
         return(-1);
     }
-
+    if (domain->handle < 0)
+        return(-1);
 
     root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
     if (root == NULL)
@@ -2652,6 +2675,9 @@ xenDaemonDomainSetVcpus(virDomainPtr domain, unsigned int vcpus)
 	             __FUNCTION__);
         return (-1);
     }
+    if (domain->handle < 0)
+        return(-1);
+
     snprintf(buf, sizeof(buf), "%d", vcpus);
     return(xend_op(domain->conn, domain->name, "op", "set_vcpus", "vcpus",
                    buf, NULL));
@@ -2681,6 +2707,8 @@ xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
 	             __FUNCTION__);
         return (-1);
     }
+    if (domain->handle < 0)
+        return(-1);
 
     /* from bit map, build character string of mapped CPU numbers */
     for (i = 0; i < maplen; i++) for (j = 0; j < 8; j++)
@@ -2734,6 +2762,9 @@ xenDaemonDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
                      __FUNCTION__);
         return (-1);
     }
+    if (domain->handle < 0)
+        return(-1);
+
     root = sexpr_get(domain->conn, "/xend/domain/%s?op=vcpuinfo", domain->name);
     if (root == NULL)
         return (-1);

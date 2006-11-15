@@ -663,7 +663,7 @@ xenProxyDomainGetDomMaxMemory(virConnectPtr conn, int id)
 
     if (!VIR_IS_CONNECT(conn)) {
         virProxyError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
-        return (-1);
+        return (0);
     }
     memset(&req, 0, sizeof(req));
     req.command = VIR_PROXY_MAX_MEMORY;
@@ -672,7 +672,7 @@ xenProxyDomainGetDomMaxMemory(virConnectPtr conn, int id)
     ret = xenProxyCommand(conn, &req, NULL, 0);
     if (ret < 0) {
         xenProxyClose(conn);
-	return(-1);
+        return(0);
     }
     return(req.data.larg);
 }
@@ -695,6 +695,8 @@ xenProxyDomainGetMaxMemory(virDomainPtr domain)
 	    virProxyError(domain->conn, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (0);
     }
+    if (domain->handle < 0)
+        return (0);
     return(xenProxyDomainGetDomMaxMemory(domain->conn, domain->handle));
 }
 
@@ -716,15 +718,17 @@ xenProxyDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     int ret;
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
-	if (domain == NULL)
-	    virProxyError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
-	else
-	    virProxyError(domain->conn, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
-        return (0);
+        if (domain == NULL)
+            virProxyError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        else
+            virProxyError(domain->conn, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
     }
+    if (domain->handle < 0)
+        return (-1);
     if (info == NULL) {
         virProxyError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-	return (-1);
+        return (-1);
     }
     memset(&req, 0, sizeof(req));
     req.command = VIR_PROXY_DOMAIN_INFO;
@@ -733,11 +737,11 @@ xenProxyDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     ret = xenProxyCommand(domain->conn, &req, &ans, 0);
     if (ret < 0) {
         xenProxyClose(domain->conn);
-	return(-1);
+        return(-1);
     }
     if (ans.len != sizeof(virProxyPacket) + sizeof(virDomainInfo)) {
         virProxyError(domain->conn, VIR_ERR_OPERATION_FAILED, __FUNCTION__);
-	return (-1);
+        return (-1);
     }
     memmove(info, &ans.extra.dinfo, sizeof(virDomainInfo));
 
@@ -960,6 +964,8 @@ xenProxyDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
 	    virProxyError(domain->conn, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (NULL);
     }
+    if (domain->handle < 0)
+        return (NULL);
     memset(&req, 0, sizeof(req));
     req.command = VIR_PROXY_DOMAIN_XML;
     req.data.arg = domain->handle;
