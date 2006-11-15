@@ -1700,7 +1700,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
             if (drvType)
                 free(drvType);
         } else if (sexpr_lookup(node, "device/vif")) {
-            char *tmp2;
+            const char *tmp2;
             tmp2 = sexpr_node(node, "device/vif/script");
             if (tmp2 && strstr(tmp2, "bridge")) {
                 virBufferVSprintf(&buf, "    <interface type='bridge'>\n");
