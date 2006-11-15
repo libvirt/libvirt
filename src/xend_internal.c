@@ -1700,38 +1700,35 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
             if (drvType)
                 free(drvType);
         } else if (sexpr_lookup(node, "device/vif")) {
-            const char *tmp2;
-
-            tmp = sexpr_node(node, "device/vif/bridge");
+            char *tmp2;
             tmp2 = sexpr_node(node, "device/vif/script");
-            if ((tmp != NULL) || (strstr(tmp2, "bridge"))) {
+            if (tmp2 && strstr(tmp2, "bridge")) {
                 virBufferVSprintf(&buf, "    <interface type='bridge'>\n");
+                tmp = sexpr_node(node, "device/vif/bridge");
                 if (tmp != NULL)
                     virBufferVSprintf(&buf, "      <source bridge='%s'/>\n",
                                       tmp);
-                tmp = sexpr_node(node, "device/vif/vifname");
-                if (tmp != NULL)
-                    virBufferVSprintf(&buf, "      <target dev='%s'/>\n",
-                                      tmp);
-                tmp = sexpr_node(node, "device/vif/mac");
-                if (tmp != NULL)
-                    virBufferVSprintf(&buf, "      <mac address='%s'/>\n",
-                                      tmp);
-                tmp = sexpr_node(node, "device/vif/ip");
-                if (tmp != NULL)
-                    virBufferVSprintf(&buf, "      <ip address='%s'/>\n",
-                                      tmp);
-                if (tmp2 != NULL)
-                    virBufferVSprintf(&buf, "      <script path='%s'/>\n",
-                                      tmp2);
-                virBufferAdd(&buf, "    </interface>\n", 17);
             } else {
-                char serial[1000];
-
-                TODO sexpr2string(node, serial, 1000);
-                virBufferVSprintf(&buf, "<!-- Failed to parse vif: %s -->\n",
-                                  serial);
+                virBufferVSprintf(&buf, "    <interface type='ethernet'>\n");
             }
+
+            tmp = sexpr_node(node, "device/vif/vifname");
+            if (tmp)
+                virBufferVSprintf(&buf, "      <target dev='%s'/>\n",
+                                  tmp);
+            tmp = sexpr_node(node, "device/vif/mac");
+            if (tmp)
+                virBufferVSprintf(&buf, "      <mac address='%s'/>\n",
+                                  tmp);
+            tmp = sexpr_node(node, "device/vif/ip");
+            if (tmp)
+                virBufferVSprintf(&buf, "      <ip address='%s'/>\n",
+                                  tmp);
+            if (tmp2)
+                virBufferVSprintf(&buf, "      <script path='%s'/>\n",
+                                  tmp2);
+
+            virBufferAdd(&buf, "    </interface>\n", 17);
         }
     }
 

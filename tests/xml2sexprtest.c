@@ -138,6 +138,21 @@ static int testCompareMemoryResize(void *data ATTRIBUTE_UNUSED) {
 			  2);
 }
 
+static int testCompareNetRouted(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("xml2sexprdata/xml2sexpr-net-routed.xml",
+			  "xml2sexprdata/xml2sexpr-net-routed.sexpr",
+			  "pvtest",
+			  2);
+}
+
+static int testCompareNetBridged(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("xml2sexprdata/xml2sexpr-net-bridged.xml",
+			  "xml2sexprdata/xml2sexpr-net-bridged.sexpr",
+			  "pvtest",
+			  2);
+}
+
+
 int
 main(int argc, char **argv)
 {
@@ -202,6 +217,13 @@ main(int argc, char **argv)
 		    1, testCompareMemoryResize, NULL) != 0)
 	ret = -1;
 
+    if (virtTestRun("XML-2-SEXPR Net Routed",
+		    1, testCompareNetRouted, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("XML-2-SEXPR Net Bridged",
+		    1, testCompareNetBridged, NULL) != 0)
+	ret = -1;
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

@@ -1,3 +1,14 @@
+Tue Nov 14 18:42:01 EST 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Added support for parsing non-bridge style
+	networking configs for guests.
+	* src/xml.c: Ensure the <ip address> element gets serialized to
+	the SEXPR for non-bridged networks.
+	* tests/xml2sexprtest.c, tests/sexpr2xmltest.c: Added new tests
+	covering different networking configs
+	* tests/xml2sexprdata/, tests/sexpr2xmldata/: Added more data
+	files for new test cases
+
 Mon Nov 13 17:18:00 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c src/xml.c: fix for shareable drive support

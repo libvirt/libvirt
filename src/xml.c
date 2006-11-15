@@ -1118,6 +1118,7 @@ virDomainParseXMLIfDesc(xmlNodePtr node, virBufferPtr buf, int hvm)
     xmlChar *source = NULL;
     xmlChar *mac = NULL;
     xmlChar *script = NULL;
+    xmlChar *ip = NULL;
     int typ = 0;
 
     type = xmlGetProp(node, BAD_CAST "type");
@@ -1133,7 +1134,6 @@ virDomainParseXMLIfDesc(xmlNodePtr node, virBufferPtr buf, int hvm)
         if (cur->type == XML_ELEMENT_NODE) {
             if ((source == NULL) &&
                 (xmlStrEqual(cur->name, BAD_CAST "source"))) {
-
                 if (typ == 0)
                     source = xmlGetProp(cur, BAD_CAST "bridge");
                 else
@@ -1144,6 +1144,13 @@ virDomainParseXMLIfDesc(xmlNodePtr node, virBufferPtr buf, int hvm)
             } else if ((script == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "script"))) {
                 script = xmlGetProp(cur, BAD_CAST "path");
+            } else if ((ip == NULL) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "ip"))) {
+                /* XXX in future expect to need to have > 1 ip
+                   address element - eg ipv4 & ipv6. For now
+                   xen only supports a single address though
+                   so lets ignore that complication */
+                ip = xmlGetProp(cur, BAD_CAST "address");
             }
         }
         cur = cur->next;
@@ -1160,6 +1167,8 @@ virDomainParseXMLIfDesc(xmlNodePtr node, virBufferPtr buf, int hvm)
     }
     if (script != NULL)
         virBufferVSprintf(buf, "(script '%s')", script);
+    if (ip != NULL)
+        virBufferVSprintf(buf, "(ip '%s')", ip);
     if (hvm)
         virBufferAdd(buf, "(type ioemu)", 12);
 
@@ -1170,6 +1179,8 @@ virDomainParseXMLIfDesc(xmlNodePtr node, virBufferPtr buf, int hvm)
         xmlFree(source);
     if (script != NULL)
         xmlFree(script);
+    if (ip != NULL)
+        xmlFree(ip);
     return (0);
 }
 

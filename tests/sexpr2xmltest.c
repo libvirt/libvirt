@@ -97,6 +97,19 @@ static int testCompareResizedMemory(void *data ATTRIBUTE_UNUSED) {
 }
 
 
+static int testCompareNetRouted(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("sexpr2xmldata/sexpr2xml-net-routed.xml",
+			  "sexpr2xmldata/sexpr2xml-net-routed.sexpr",
+			  1);
+}
+
+static int testCompareNetBridged(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("sexpr2xmldata/sexpr2xml-net-bridged.xml",
+			  "sexpr2xmldata/sexpr2xml-net-bridged.sexpr",
+			  1);
+}
+
+
 int
 main(int argc, char **argv)
 {
@@ -143,6 +156,14 @@ main(int argc, char **argv)
 
     if (virtTestRun("SEXPR-2-XML Resized memory config",
 		    1, testCompareResizedMemory, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("SEXPR-2-XML net routed",
+		    1, testCompareNetRouted, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("SEXPR-2-XML net bridged",
+		    1, testCompareNetBridged, NULL) != 0)
 	ret = -1;
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
