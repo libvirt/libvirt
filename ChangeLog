@@ -1,3 +1,9 @@
+Wed Nov 15 15:42:01 EST 2006 Daniel Berrange <berrange@redhat.com>
+
+	* python/libvir.c, python/libvirt_wrap.h, python/types.h: Ensure
+	that  unsigned longs are marshalled to python Long type instead
+	of Int, to avoid 32-bit integer wraparound
+
 Tue Nov 14 18:42:01 EST 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c: Added support for parsing non-bridge style

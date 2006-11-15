@@ -261,8 +261,8 @@ libvirt_virDomainGetInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     }
     py_retval = PyList_New(5);
     PyList_SetItem(py_retval, 0, libvirt_intWrap((int) info.state));
-    PyList_SetItem(py_retval, 1, libvirt_longWrap((long) info.maxMem));
-    PyList_SetItem(py_retval, 2, libvirt_longWrap((long) info.memory));
+    PyList_SetItem(py_retval, 1, libvirt_ulongWrap(info.maxMem));
+    PyList_SetItem(py_retval, 2, libvirt_ulongWrap(info.memory));
     PyList_SetItem(py_retval, 3, libvirt_intWrap((int) info.nrVirtCpu));
     PyList_SetItem(py_retval, 4,
                    libvirt_longlongWrap((unsigned long long) info.cpuTime));
