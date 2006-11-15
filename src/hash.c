@@ -473,6 +473,127 @@ virHashRemoveEntry(virHashTablePtr table, const char *name,
     }
 }
 
+
+/**
+ * virHashForEach
+ * @table: the hash table to process
+ * @iter: callback to process each element
+ * @data: opaque data to pass to the iterator
+ *
+ * Iterates over every element in the hash table, invoking the
+ * 'iter' callback. The callback must not call any other virHash*
+ * functions, and in particular must not attempt to remove the
+ * element.
+ *
+ * Returns number of items iterated over upon completion, -1 on failure
+ */
+int virHashForEach(virHashTablePtr table, virHashIterator iter, const void *data) {
+    int i, count = 0;
+
+    if (table == NULL || iter == NULL)
+        return (-1);
+
+    for (i = 0 ; i < table->size ; i++) {
+        virHashEntryPtr entry = table->table + i;
+        while (entry) {
+            if (entry->valid) {
+                iter(entry->payload, entry->name, data);
+                count++;
+            }
+            entry = entry->next;
+        }
+    }
+    return (count);
+}
+
+/**
+ * virHashRemoveSet
+ * @table: the hash table to process
+ * @iter: callback to identify elements for removal
+ * @f: callback to free memory from element payload
+ * @data: opaque data to pass to the iterator
+ *
+ * Iterates over all elements in the hash table, invoking the 'iter'
+ * callback. If the callback returns a non-zero value, the element
+ * will be removed from the hash table & its payload passed to the
+ * callback 'f' for de-allocation.
+ *
+ * Returns number of items removed on success, -1 on failure
+ */
+int virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, virHashDeallocator f, const void *data) {
+    int i, count = 0;
+
+    if (table == NULL || iter == NULL)
+        return (-1);
+
+    for (i = 0 ; i < table->size ; i++) {
+        virHashEntryPtr prev = NULL;
+        virHashEntryPtr entry = &(table->table[i]);
+
+        while (entry && entry->valid) {
+            if (iter(entry->payload, entry->name, data)) {
+                count++;
+                f(entry->payload, entry->name);
+                if (entry->name)
+                    free(entry->name);
+                if (prev) {
+                    prev->next = entry->next;
+                    free(entry);
+                } else {
+                    if (entry->next == NULL) {
+                        entry->valid = 0;
+                        entry->name = NULL;
+                    } else {
+                        entry = entry->next;
+                        memcpy(&(table->table[i]), entry,
+                               sizeof(virHashEntry));
+                        free(entry);
+                        entry = NULL;
+                    }
+                }
+                table->nbElems--;
+            }
+            prev = entry;
+            if (entry) {
+                entry = entry->next;
+            } else {
+                entry = NULL;
+            }
+        }
+    }
+    return (count);
+}
+
+/**
+ * virHashSearch:
+ * @table: the hash table to search
+ * @iter: an iterator to identify the desired element
+ * @data: extra opaque information passed to the iter
+ *
+ * Iterates over the hash table calling the 'iter' callback
+ * for each element. The first element for which the iter
+ * returns non-zero will be returned by this function.
+ * The elements are processed in a undefined order
+ */
+void *virHashSearch(virHashTablePtr table, virHashSearcher iter, const void *data) {
+    int i;
+
+    if (table == NULL || iter == NULL)
+        return (NULL);
+
+    for (i = 0 ; i < table->size ; i++) {
+        virHashEntryPtr entry = table->table + i;
+        while (entry) {
+            if (entry->valid) {
+                if (iter(entry->payload, entry->name, data))
+                    return entry->payload;
+            }
+            entry = entry->next;
+        }
+    }
+    return (NULL);
+}
+
 /************************************************************************
  *									*
  *			Domain and Connections allocations		*
@@ -770,3 +891,11 @@ done:
     xmlMutexUnlock(conn->domains_mux);
     return(ret);
 }
+/*
+ * Local variables:
+ *  indent-tabs-mode: nil
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  tab-width: 4
+ * End:
+ */

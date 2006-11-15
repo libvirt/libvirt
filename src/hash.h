@@ -33,7 +33,27 @@ typedef virHashTable *virHashTablePtr;
  *
  * Callback to free data from a hash.
  */
-typedef void (*virHashDeallocator) (void *payload, char *name);
+typedef void (*virHashDeallocator) (void *payload, const char *name);
+/**
+ * virHashIterator:
+ * @payload: the data in the hash
+ * @name: the name associated
+ * @data: user supplied data blob
+ *
+ * Callback to process a hash entry during iteration
+ */
+typedef void (*virHashIterator) (const void *payload, const char *name, const void *data);
+/**
+ * virHashSearcher
+ * @payload: the data in the hash
+ * @name: the name associated
+ * @data: user supplied data blob
+ *
+ * Callback to identify hash entry desired
+ * Returns 1 if the hash entry is desired, 0 to move
+ * to next entry
+ */
+typedef int (*virHashSearcher) (const void *payload, const char *name, const void *data);
 
 /*
  * Constructor and destructor.
@@ -61,6 +81,14 @@ int virHashRemoveEntry(virHashTablePtr table,
  * Retrieve the userdata.
  */
 void *virHashLookup(virHashTablePtr table, const char *name);
+
+
+/*
+ * Iterators
+ */
+int virHashForEach(virHashTablePtr table, virHashIterator iter, const void *data);
+int virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, virHashDeallocator f, const void *data);
+void *virHashSearch(virHashTablePtr table, virHashSearcher iter, const void *data);
 
 #ifdef __cplusplus
 }

@@ -1,3 +1,9 @@
+Wed Nov 15 15:59:13 EST 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/hash.c, src/hash.h: Added three new methods for iterating
+	over hashtable entries, virHashForEach, virHashRemoveSet &
+	virHashSearch.
+
 Wed Nov 15 15:52:01 EST 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/conf.c, src/conf.h: Add two new APIs virConfNew() and
