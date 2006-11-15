@@ -144,6 +144,22 @@ virConfFreeValue(virConfValuePtr val)
     free(val);
 }
 
+virConfPtr virConfNew(void)
+{
+    virConfPtr ret;
+
+    ret = (virConfPtr) malloc(sizeof(virConf));
+    if (ret == NULL) {
+        virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"), 0);
+        return(NULL);
+    }
+    memset(ret, 0, sizeof(virConf));
+
+    ret->filename = NULL;
+
+    return(ret);
+}
+
 /**
  * virConfCreate:
  * @filename: the name to report errors
@@ -155,17 +171,9 @@ virConfFreeValue(virConfValuePtr val)
 static virConfPtr
 virConfCreate(const char *filename)
 {
-    virConfPtr ret;
-
-    ret = (virConfPtr) malloc(sizeof(virConf));
-    if (ret == NULL) {
-        virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"), 0);
-        return(NULL);
-    }
-    memset(ret, 0, sizeof(virConf));
-
-    ret->filename = filename;
-
+    virConfPtr ret = virConfNew();
+    if (ret)
+        ret->filename = filename;
     return(ret);
 }
 
@@ -785,6 +793,60 @@ virConfGetValue(virConfPtr conf, const char *setting)
 }
 
 /**
+ * virConfGetValue:
+ * @conf: a configuration file handle
+ * @entry: the name of the entry
+ * @value: the new configuration value
+ *
+ * Set (or replace) the value associated to this entry in the configuration
+ * file. The passed in 'value' will be owned by the conf object upon return
+ * of this method, even in case of error. It should not be referenced again
+ * by the caller.
+ *
+ * Returns 0 on success, or -1 on failure.
+ */
+int             virConfSetValue         (virConfPtr conf,
+                                         const char *setting,
+                                         virConfValuePtr value) {
+    virConfEntryPtr cur, prev = NULL;
+
+    cur = conf->entries;
+    while (cur != NULL) {
+        if ((cur->name != NULL) && (!strcmp(cur->name, setting))) {
+            break;
+        }
+        prev = cur;
+        cur = cur->next;
+    }
+    if (!cur) {
+        if (!(cur = malloc(sizeof(virConfEntry)))) {
+            virConfFreeValue(value);
+            return (-1);
+        }
+        cur->next = NULL;
+        cur->comment = NULL;
+        if (!(cur->name = strdup(setting))) {
+            virConfFreeValue(value);
+            free(cur);
+            return (-1);
+        }
+        cur->value = value;
+        if (prev) {
+            prev->next = cur;
+        } else {
+            conf->entries = cur;
+        }
+    } else {
+        if (cur->value) {
+            virConfFreeValue(cur->value);
+        }
+        cur->value = value;
+    }
+    return (0);
+}
+
+
+/**
  * virConfWriteFile:
  * @filename: the path to the configuration file.
  * @conf: the conf
@@ -878,3 +940,13 @@ error:
     virBufferFree(buf);
     return(ret);
 }
+
+
+/*
+ * Local variables:
+ *  indent-tabs-mode: nil
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  tab-width: 4
+ * End:
+ */

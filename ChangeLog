@@ -1,3 +1,9 @@
+Wed Nov 15 15:52:01 EST 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/conf.c, src/conf.h: Add two new APIs virConfNew() and
+	virConfSetValue() for creating & populating new config objects
+	in memory instead of from a file
+
 Wed Nov 15 15:42:01 EST 2006 Daniel Berrange <berrange@redhat.com>
 
 	* python/libvir.c, python/libvirt_wrap.h, python/types.h: Ensure

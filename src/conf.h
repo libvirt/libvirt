@@ -50,6 +50,7 @@ struct _virConfValue {
 typedef struct _virConf virConf;
 typedef virConf *virConfPtr;
 
+virConfPtr      virConfNew              (void);
 virConfPtr	virConfReadFile		(const char *filename);
 virConfPtr	virConfReadMem		(const char *memory,
 					 int len);
@@ -57,6 +58,9 @@ int		virConfFree		(virConfPtr conf);
 
 virConfValuePtr	virConfGetValue		(virConfPtr conf,
 					 const char *setting);
+int             virConfSetValue         (virConfPtr conf,
+					 const char *setting,
+					 virConfValuePtr value);
 int		virConfWriteFile	(const char *filename,
 					 virConfPtr conf);
 int		virConfWriteMem		(char *memory,
