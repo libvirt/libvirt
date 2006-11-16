@@ -21,7 +21,8 @@ typedef enum {
     VIR_DRV_XEN_STORE = 2,
     VIR_DRV_XEN_DAEMON = 3,
     VIR_DRV_TEST = 4,
-    VIR_DRV_XEN_PROXY = 5
+    VIR_DRV_XEN_PROXY = 5,
+    VIR_DRV_XEN_XM = 6
 } virDrvNo;
 
 

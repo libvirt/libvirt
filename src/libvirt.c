@@ -28,6 +28,7 @@
 #include "xen_internal.h"
 #include "xend_internal.h"
 #include "xs_internal.h"
+#include "xm_internal.h"
 #include "proxy_internal.h"
 #include "xml.h"
 #include "test.h"
@@ -76,6 +77,7 @@ virInitialize(void)
     xenProxyRegister();
     xenDaemonRegister();
     xenStoreRegister();
+    xenXMRegister();
     testRegister();
     return(0);
 }

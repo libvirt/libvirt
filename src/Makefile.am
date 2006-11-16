@@ -27,7 +27,8 @@ libvirt_la_SOURCES =						\
 		virterror.c					\
 		driver.h					\
 		proxy_internal.c proxy_internal.h		\
-		conf.c conf.h
+		conf.c conf.h                                   \
+		xm_internal.c xm_internal.h
 
 bin_PROGRAMS = virsh
 

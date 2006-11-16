@@ -1,3 +1,13 @@
+Thu Nov 16 13:09:42 EST 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/Makefile.am: Added new xm_internal.c source file
+	* src/libvirt.c: Call the xenXMRegister() method to activate
+	the XM backend
+	* src/driver.h: Added a unique id for XM driver backend
+	* src/internal.h:  Increase number of drivers allowed
+	* src/xm_internal.h, src/xm_internal.c: New driver for
+	managing inactive domains from /etc/xen config files
+
 Thu Nov 16 18:18:12 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvirt/libvirt.h include/libvirt/libvirt.h.in

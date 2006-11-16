@@ -84,7 +84,7 @@ extern "C" {
 #define VIR_IS_DOMAIN(obj)		((obj) && (obj)->magic==VIR_DOMAIN_MAGIC)
 #define VIR_IS_CONNECTED_DOMAIN(obj)	(VIR_IS_DOMAIN(obj) && VIR_IS_CONNECT((obj)->conn))
 
-#define MAX_DRIVERS 5
+#define MAX_DRIVERS 10
 
 /*
  * Flags for Xen connections
