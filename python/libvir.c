@@ -241,6 +241,52 @@ libvirt_virConnectListDomainsID(PyObject *self ATTRIBUTE_UNUSED,
 }
 
 static PyObject *
+libvirt_virConnectListDefinedDomains(PyObject *self ATTRIBUTE_UNUSED,
+				     PyObject *args) {
+    PyObject *py_retval;
+    char **names = NULL;
+    int c_retval, i;
+    virConnectPtr conn;
+    PyObject *pyobj_conn;
+
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virConnectListDomains", &pyobj_conn))
+        return(NULL);
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    c_retval = virConnectNumOfDefinedDomains(conn);
+    if (c_retval < 0) {
+        Py_INCREF(Py_None);
+        return (Py_None);
+    }
+    
+    if (c_retval) {
+        names = malloc(sizeof(char *) * c_retval);
+        if (!names) {
+            Py_INCREF(Py_None);
+            return (Py_None);
+        }
+        c_retval = virConnectListDefinedDomains(conn, (const char **)names, c_retval);
+        if (c_retval < 0) {
+            free(names);
+            Py_INCREF(Py_None);
+            return(Py_None);
+        }
+    }
+    py_retval = PyList_New(c_retval);
+
+    if (names) {
+        for (i = 0;i < c_retval;i++) {
+            PyList_SetItem(py_retval, i, libvirt_constcharPtrWrap(names[i]));
+            free(names[i]);
+        }
+        free(names);
+    }
+
+    return(py_retval);
+}
+
+static PyObject *
 libvirt_virDomainGetInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     PyObject *py_retval;
     int c_retval;
@@ -364,6 +410,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainFree", libvirt_virDomainFree, METH_VARARGS, NULL},
     {(char *) "virConnectClose", libvirt_virConnectClose, METH_VARARGS, NULL},
     {(char *) "virConnectListDomainsID", libvirt_virConnectListDomainsID, METH_VARARGS, NULL},
+    {(char *) "virConnectListDefinedDomains", libvirt_virConnectListDefinedDomains, METH_VARARGS, NULL},
     {(char *) "virDomainGetInfo", libvirt_virDomainGetInfo, METH_VARARGS, NULL},
     {(char *) "virNodeGetInfo", libvirt_virNodeGetInfo, METH_VARARGS, NULL},
     {(char *) "virDomainGetUUID", libvirt_virDomainGetUUID, METH_VARARGS, NULL},

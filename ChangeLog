@@ -1,3 +1,8 @@
+Wed Nov 15 18:23:13 EST 2006 Daniel Berrange <berrange@redhat.com>
+
+	* python/generator.py, python/libvir.c, python/libvirt-python-api.xml:
+	Added binding for virConnectListDefinedDomains API.
+
 Wed Nov 15 15:08:13 EST 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/xen_internal.c, src/xs_internal.c, src/xend_internal.c,

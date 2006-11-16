@@ -260,6 +260,7 @@ foreign_encoding_args = (
 # code is still automatically generated (so they are not in skip_function()).
 skip_impl = (
     'virConnectListDomainsID',
+    'virConnectListDefinedDomains',
     'virConnGetLastError',
     'virGetLastError',
     'virDomainGetInfo',

@@ -6,6 +6,11 @@
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <return type='int *' info="the list of ID or None in case of error"/>
     </function>
+    <function name='virConnectListDefinedDomains' file='python'>
+      <info>list the defined domains, stores the pointers to the names in @names</info>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <return type='str *' info='the list of Names of None in case of error'/>
+    </function>
     <function name='virDomainLookupByUUID' file='python'>
       <info>Try to lookup a domain on the given hypervisor based on its UUID.</info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
