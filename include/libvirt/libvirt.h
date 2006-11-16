@@ -415,6 +415,8 @@ int			virDomainGetVcpus	(virDomainPtr domain,
  */
 #define VIR_GET_CPUMAP(cpumaps,maplen,vcpu)	&(cpumaps[(vcpu)*(maplen)])
 
+int virDomainAttachDevice(virDomainPtr domain, char *xml);
+int virDomainDetachDevice(virDomainPtr domain, char *xml);
 
 #ifdef __cplusplus
 }

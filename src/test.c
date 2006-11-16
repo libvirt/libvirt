@@ -63,6 +63,8 @@ static virDriver testDriver = {
   NULL, /* domainCreate */
   NULL, /* domainDefineXML */
   NULL, /* domainUndefine */
+  NULL, /* domainAttachDevice */
+  NULL, /* domainDetachDevice */
 };
 
 /* Amount of time it takes to shutdown */

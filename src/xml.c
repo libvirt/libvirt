@@ -1488,6 +1488,153 @@ error:
     return(dst_uuid);
 }
 
+#ifndef PROXY
+/**
+ * virParseXMLDevice:
+ * @xmldesc: string with the XML description
+ * @hvm: 1 for fully virtualized guest, 0 for paravirtualized
+ * @xendConfigVersion: xend configuration file format
+ *
+ * Parse the XML description and turn it into the xend sexp needed to
+ * create the device. This is a temporary interface as the S-Expr interface
+ * will be replaced by XML-RPC in the future. However the XML format should
+ * stay valid over time.
+ *
+ * Returns the 0-terminated S-Expr string, or NULL in case of error.
+ *         the caller must free() the returned value.
+ */
+char *
+virParseXMLDevice(char *xmldesc, int hvm, int xendConfigVersion)
+{
+    xmlDocPtr xml = NULL;
+    xmlNodePtr node;
+    virBuffer buf;
+
+    buf.content = malloc(1000);
+    if (buf.content == NULL)
+        return (NULL);
+    buf.size = 1000;
+    buf.use = 0;
+    xml = xmlReadDoc((const xmlChar *) xmldesc, "domain.xml", NULL,
+                     XML_PARSE_NOENT | XML_PARSE_NONET |
+                     XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
+    if (xml == NULL)
+        goto error;
+    node = xmlDocGetRootElement(xml);
+    if (node == NULL)
+        goto error;
+    if (xmlStrEqual(node->name, BAD_CAST "disk")) {
+        if (virDomainParseXMLDiskDesc(node, &buf, hvm, xendConfigVersion) != 0)
+            goto error;
+    }
+    else if (xmlStrEqual(node->name, BAD_CAST "interface")) {
+        if (virDomainParseXMLIfDesc(node, &buf, hvm) != 0)
+            goto error;
+    }
+cleanup:
+    if (xml != NULL)
+        xmlFreeDoc(xml);
+    return buf.content;
+error:
+    free(buf.content);
+    buf.content = NULL;
+    goto cleanup;
+}
+
+/**
+ * virDomainXMLDevID:
+ * @domain: pointer to domain object
+ * @xmldesc: string with the XML description
+ * @class: Xen device class "vbd" or "vif" (OUT)
+ * @ref: Xen device reference (OUT)
+ *
+ * Set class according to XML root, and:
+ *  - if disk, copy in ref the target name from description
+ *  - if network, get MAC address from description, scan XenStore and
+ *    copy in ref the corresponding vif number.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+int
+virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref)
+{
+    xmlDocPtr xml = NULL;
+    xmlNodePtr node, cur;
+    xmlChar *attr = NULL;
+    char dir[80], path[128], **list = NULL, *mac = NULL;
+    int ret = 0, num, i, len;
+
+    xml = xmlReadDoc((const xmlChar *) xmldesc, "domain.xml", NULL,
+                     XML_PARSE_NOENT | XML_PARSE_NONET |
+                     XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
+    if (xml == NULL)
+        goto error;
+    node = xmlDocGetRootElement(xml);
+    if (node == NULL)
+        goto error;
+    if (xmlStrEqual(node->name, BAD_CAST "disk")) {
+        strcpy(class, "vbd");
+        for (cur = node->children; cur != NULL; cur = cur->next) {
+            if ((cur->type != XML_ELEMENT_NODE) ||
+               (!xmlStrEqual(cur->name, BAD_CAST "target"))) continue;
+            attr = xmlGetProp(cur, BAD_CAST "dev");
+            if (attr == NULL)
+                goto error;
+            strcpy(ref, attr);
+            goto cleanup;
+        }
+    }
+    else if (xmlStrEqual(node->name, BAD_CAST "interface")) {
+        strcpy(class, "vif");
+        for (cur = node->children; cur != NULL; cur = cur->next) {
+            if ((cur->type != XML_ELEMENT_NODE) ||
+                (!xmlStrEqual(cur->name, BAD_CAST "mac"))) continue;
+            attr = xmlGetProp(cur, BAD_CAST "address");
+            if (attr == NULL)
+                goto error;
+
+/*
+ * TODO: this part need to be isolated as a high level routine in
+ *       xs_internal.[ch]
+ */
+            sprintf(dir, "/local/domain/0/backend/vif/%d", domain->handle);
+            list = xs_directory(domain->conn->xshandle, 0, dir, &num);
+            if (list == NULL)
+                goto error;
+            for (i = 0; i < num; i++) {
+                sprintf(path, "%s/%s/%s", dir, list[i], "mac");
+                mac = xs_read(domain->conn->xshandle, 0, path, &len);
+                if (mac == NULL)
+                    goto error;
+                if ((strlen(attr) != len) || memcmp(attr, mac, len)) {
+                    free(mac);
+                    mac = NULL;
+                    continue;
+                }
+                strcpy(ref, list[i]);
+                goto cleanup;
+            }
+/*
+ * end of TODO block
+ */
+            goto error;
+        }
+    }
+error:
+    ret = -1;
+cleanup:
+    if (xml != NULL)
+        xmlFreeDoc(xml);
+    if (attr != NULL)
+        xmlFree(attr);
+    if (list != NULL)
+        free(list);
+    if (mac != NULL)
+        free(mac);
+    return ret;
+}
+#endif /* !PROXY */
+
 /*
  * Local variables:
  *  indent-tabs-mode: nil

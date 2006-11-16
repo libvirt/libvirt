@@ -47,6 +47,8 @@ static virDomainPtr xenDaemonLookupByUUID(virConnectPtr conn,
 static virDomainPtr xenDaemonCreateLinux(virConnectPtr conn,
                                          const char *xmlDesc,
 					 unsigned int flags);
+static int xenDaemonAttachDevice(virDomainPtr domain, char *xml);
+static int xenDaemonDetachDevice(virDomainPtr domain, char *xml);
 #endif /* PROXY */
 
 #ifndef PROXY
@@ -93,6 +95,8 @@ static virDriver xenDaemonDriver = {
     NULL, /* domainCreate */
     NULL, /* domainDefineXML */
     NULL, /* domainUndefine */
+    xenDaemonAttachDevice, /* domainAttachDevice */
+    xenDaemonDetachDevice /* domainDetachDevice */
 };
 
 /**
@@ -2956,6 +2960,73 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
     if (name != NULL)
         free(name);
     return (NULL);
+}
+
+/**
+ * xenDaemonAttachDevice:
+ * @domain: pointer to domain object
+ * @xml: pointer to XML description of device
+ * 
+ * Create a virtual device attachment to backend.
+ * XML description is translated into S-expression.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+static int
+xenDaemonAttachDevice(virDomainPtr domain, char *xml)
+{
+    char *sexpr, *conf;
+    int xendConfigVersion, hvm = 0, ret;
+
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return (-1);
+    }
+    if ((xendConfigVersion = xend_get_config_version(domain->conn)) < 0) {
+        virXendError(domain->conn, VIR_ERR_INTERNAL_ERROR,
+          "cannot determine xend config version");
+        return (-1);
+    }
+    if (strcmp(virDomainGetOSType(domain), "linux"))
+        hvm = 1;
+    sexpr = virParseXMLDevice(xml, hvm, xendConfigVersion);
+    if (sexpr == NULL)
+        return (-1);
+    if (!memcmp(sexpr, "(device ", 8)) {
+        conf = sexpr + 8;
+        *(conf + strlen(conf) -1) = 0; /* suppress final ) */
+    }
+    else conf = sexpr;
+    ret = xend_op(domain->conn, domain->name, "op", "device_create",
+        "config", conf, NULL);
+    free(sexpr);
+    return ret;
+}
+
+/**
+ * xenDaemonDetachDevice:
+ * @domain: pointer to domain object
+ * @xml: pointer to XML description of device
+ * 
+ * Destroy a virtual device attachment to backend.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+static int
+xenDaemonDetachDevice(virDomainPtr domain, char *xml)
+{
+    char class[8], ref[80];
+
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return (-1);
+    }
+    if (virDomainXMLDevID(domain, xml, class, ref))
+        return (-1);
+    return(xend_op(domain->conn, domain->name, "op", "device_destroy",
+        "type", class, "dev", ref, NULL));
 }
 #endif /* ! PROXY */
 

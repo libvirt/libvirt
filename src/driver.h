@@ -133,6 +133,12 @@ typedef int
 					 int maxinfo,
 					 unsigned char *cpumaps,
 					 int maplen);
+typedef int
+	(*virDrvDomainAttachDevice)	(virDomainPtr domain,
+					 char *xml);
+typedef int
+	(*virDrvDomainDetachDevice)	(virDomainPtr domain,
+					 char *xml);
 
 typedef struct _virDriver virDriver;
 typedef virDriver *virDriverPtr;
@@ -184,6 +190,8 @@ struct _virDriver {
 	virDrvDomainCreate		domainCreate;
 	virDrvDomainDefineXML           domainDefineXML;
 	virDrvDomainUndefine            domainUndefine;
+	virDrvDomainAttachDevice	domainAttachDevice;
+	virDrvDomainDetachDevice	domainDetachDevice;
 };
 
 

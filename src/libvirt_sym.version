@@ -53,5 +53,8 @@
 	virDomainSetVcpus;
 	virDomainPinVcpu;
 	virDomainGetVcpus;
+
+    virDomainAttachDevice;
+    virDomainDetachDevice;
     local: *;
 };

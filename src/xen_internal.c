@@ -458,6 +458,8 @@ static virDriver xenHypervisorDriver = {
     NULL, /* domainCreate */
     NULL, /* domainDefineXML */
     NULL, /* domainUndefine */
+    NULL, /* domainAttachDevice */
+    NULL, /* domainDetachDevice */
 };
 #endif /* !PROXY */
 

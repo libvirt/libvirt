@@ -1,3 +1,14 @@
+Thu Nov 16 18:18:12 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvirt/libvirt.h include/libvirt/libvirt.h.in
+	  src/driver.h src/libvirt.c src/libvirt_sym.version
+	  src/proxy_internal.c src/test.c src/xen_internal.c
+	  src/xend_internal.c src/xml.c src/xml.h src/xs_internal.c:
+	  intagrated patch from Michel Ponceau to add hot-plug devices
+	  support to the API, integrated in driver API and fixed
+	  a few small things. Still a TODO in src/xml.c about 
+	  moving xenstore direct accesses to a new routine.
+
 Wed Nov 15 18:23:13 EST 2006 Daniel Berrange <berrange@redhat.com>
 
 	* python/generator.py, python/libvir.c, python/libvirt-python-api.xml:

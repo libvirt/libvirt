@@ -1899,3 +1899,85 @@ virDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
     virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
     return (-1);
 }
+
+/**
+ * virDomainAttachDevice:
+ * @domain: pointer to domain object
+ * @xml: pointer to XML description of one device
+ * 
+ * Create a virtual device attachment to backend.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+int
+virDomainAttachDevice(virDomainPtr domain, char *xml)
+{
+    int ret;
+    int i;
+    virConnectPtr conn;
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+	return (-1);
+    }
+    conn = domain->conn;
+
+    /*
+     * Go though the driver registered entry points
+     */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainAttachDevice != NULL)) {
+	    ret = conn->drivers[i]->domainAttachDevice(domain, xml);
+	    if (ret >= 0)
+	        return(ret);
+	}
+    }
+    virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    return (-1);
+}
+
+/**
+ * virDomainDetachDevice:
+ * @domain: pointer to domain object
+ * @xml: pointer to XML description of one device
+ * 
+ * Destroy a virtual device attachment to backend.
+ *
+ * Returns 0 in case of success, -1 in case of failure.
+ */
+int
+virDomainDetachDevice(virDomainPtr domain, char *xml)
+{
+    int ret;
+    int i;
+    virConnectPtr conn;
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+	return (-1);
+    }
+    conn = domain->conn;
+
+    /*
+     * Go though the driver registered entry points
+     */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainDetachDevice != NULL)) {
+	    ret = conn->drivers[i]->domainDetachDevice(domain, xml);
+	    if (ret >= 0)
+	        return(ret);
+	}
+    }
+    virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    return (-1);
+}

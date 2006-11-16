@@ -83,6 +83,8 @@ static virDriver xenProxyDriver = {
     NULL, /* domainCreate */
     NULL, /* domainDefineXML */
     NULL, /* domainUndefine */
+    NULL, /* domainAttachDevice */
+    NULL, /* domainDetachDevice */
 };
 
 /**
