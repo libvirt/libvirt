@@ -1,3 +1,9 @@
+Thu Nov 16 19:36:12 EST 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/xm_internal.c: Add support for device_model parameter to
+	make HVM guests work. Also support serial console in HVM, since
+	it needs to be explicitly turned on, unlike PV.
+
 Thu Nov 16 18:16:42 EST 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/xml.c: Mark 'msg' parameter in XML error handler as unused.

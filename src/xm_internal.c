@@ -579,6 +579,11 @@ char *xenXMDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED) {
 
     virBufferAdd(buf, "  <devices>\n", -1);
 
+    if (hvm) {
+        if (xenXMConfigGetString(entry->conf, "device_model", &str) == 0)
+            virBufferVSprintf(buf, "    <emulator>%s</emulator>\n", str);
+    }
+
     list = virConfGetValue(entry->conf, "disk");
     while (list && list->type == VIR_CONF_LIST) {
         virConfValuePtr el = list->list;
@@ -730,6 +735,12 @@ char *xenXMDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED) {
     }
     if (xenXMConfigGetInt(entry->conf, "sdl", &val) == 0 && val) {
         virBufferAdd(buf, "    <graphics type='sdl'/>\n", -1);
+    }
+
+    if (hvm) {
+        if (xenXMConfigGetString(entry->conf, "serial", &str) == 0 && !strcmp(str, "pty")) {
+            virBufferAdd(buf, "    <console/>\n", -1);
+        }
     }
 
     virBufferAdd(buf, "  </devices>\n", -1);
