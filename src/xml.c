@@ -920,12 +920,12 @@ virDomainParseXMLOSDescPV(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr 
  * error reporting.
  */
 static void
-virCatchXMLParseError(void *ctx, const char *msg, ...) {
+virCatchXMLParseError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...) {
     xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
 
-    if ((ctxt != NULL) && 
+    if ((ctxt != NULL) &&
         (ctxt->lastError.level == XML_ERR_FATAL) &&
-	(ctxt->lastError.message != NULL)) {
+        (ctxt->lastError.message != NULL)) {
         virXMLError(VIR_ERR_XML_DETAIL, ctxt->lastError.message,
 	            ctxt->lastError.line);
     }
@@ -1562,7 +1562,8 @@ virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref)
     xmlNodePtr node, cur;
     xmlChar *attr = NULL;
     char dir[80], path[128], **list = NULL, *mac = NULL;
-    int ret = 0, num, i, len;
+    int ret = 0;
+    unsigned int num, i, len;
 
     xml = xmlReadDoc((const xmlChar *) xmldesc, "domain.xml", NULL,
                      XML_PARSE_NOENT | XML_PARSE_NONET |
@@ -1580,7 +1581,7 @@ virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref)
             attr = xmlGetProp(cur, BAD_CAST "dev");
             if (attr == NULL)
                 goto error;
-            strcpy(ref, attr);
+            strcpy(ref, (char *)attr);
             goto cleanup;
         }
     }
@@ -1606,7 +1607,7 @@ virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref)
                 mac = xs_read(domain->conn->xshandle, 0, path, &len);
                 if (mac == NULL)
                     goto error;
-                if ((strlen(attr) != len) || memcmp(attr, mac, len)) {
+                if ((strlen((char*)attr) != len) || memcmp(attr, mac, len)) {
                     free(mac);
                     mac = NULL;
                     continue;

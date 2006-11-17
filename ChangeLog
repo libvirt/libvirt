@@ -1,3 +1,9 @@
+Thu Nov 16 18:16:42 EST 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/xml.c: Mark 'msg' parameter in XML error handler as unused.
+	Fix device id lookup code to use unsigned integers avoid type
+	mis-matches.
+
 Thu Nov 16 13:09:42 EST 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/Makefile.am: Added new xm_internal.c source file
