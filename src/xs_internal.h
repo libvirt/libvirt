@@ -43,6 +43,9 @@ char *          xenStoreDomainGetConsolePath(virConnectPtr conn,
 					 int domid);
 char *		xenStoreDomainGetOSTypeID(virConnectPtr conn,
 					 int id);
+char *		xenStoreDomainGetNetworkID(virConnectPtr conn,
+					 int id,
+					 const char *mac);
 
 #ifdef __cplusplus
 }

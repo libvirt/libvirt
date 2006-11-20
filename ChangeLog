@@ -1,3 +1,9 @@
+Mon Nov 20 16:51:43 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xml.c src/xs_internal.c src/xs_internal.h: cleanup for the
+	  dynamic device code to isolate as a separate function 
+	  xenStoreDomainGetNetworkID() the access to the XenStore
+
 Thu Nov 16 19:36:12 EST 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/xm_internal.c: Add support for device_model parameter to

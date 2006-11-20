@@ -23,6 +23,7 @@
 #include "hash.h"
 #include "sexpr.h"
 #include "xml.h"
+#include "xs_internal.h" /* for xenStoreDomainGetNetworkID */
 
 static void
 virXMLError(virErrorNumber error, const char *info, int value)
@@ -1561,9 +1562,8 @@ virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref)
     xmlDocPtr xml = NULL;
     xmlNodePtr node, cur;
     xmlChar *attr = NULL;
-    char dir[80], path[128], **list = NULL, *mac = NULL;
+    char *xref;
     int ret = 0;
-    unsigned int num, i, len;
 
     xml = xmlReadDoc((const xmlChar *) xmldesc, "domain.xml", NULL,
                      XML_PARSE_NOENT | XML_PARSE_NONET |
@@ -1594,30 +1594,14 @@ virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref)
             if (attr == NULL)
                 goto error;
 
-/*
- * TODO: this part need to be isolated as a high level routine in
- *       xs_internal.[ch]
- */
-            sprintf(dir, "/local/domain/0/backend/vif/%d", domain->handle);
-            list = xs_directory(domain->conn->xshandle, 0, dir, &num);
-            if (list == NULL)
-                goto error;
-            for (i = 0; i < num; i++) {
-                sprintf(path, "%s/%s/%s", dir, list[i], "mac");
-                mac = xs_read(domain->conn->xshandle, 0, path, &len);
-                if (mac == NULL)
-                    goto error;
-                if ((strlen((char*)attr) != len) || memcmp(attr, mac, len)) {
-                    free(mac);
-                    mac = NULL;
-                    continue;
-                }
-                strcpy(ref, list[i]);
-                goto cleanup;
-            }
-/*
- * end of TODO block
- */
+            xref = xenStoreDomainGetNetworkID(domain->conn, domain->handle,
+	                                     (char *) attr);
+	    if (xref != NULL) {
+	        strcpy(ref, xref);
+		free(xref);
+	        goto cleanup;
+	    }
+	                                     
             goto error;
         }
     }
@@ -1628,10 +1612,6 @@ cleanup:
         xmlFreeDoc(xml);
     if (attr != NULL)
         xmlFree(attr);
-    if (list != NULL)
-        free(list);
-    if (mac != NULL)
-        free(mac);
     return ret;
 }
 #endif /* !PROXY */

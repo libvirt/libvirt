@@ -784,3 +784,52 @@ xenStoreDomainGetOSTypeID(virConnectPtr conn, int id) {
     return (str);
 }
 #endif /* PROXY */
+
+/*
+ * xenStoreDomainGetNetworkID:
+ * @conn: pointer to the connection.
+ * @id: the domain id
+ * @mac: the mac address
+ *
+ * Get the reference (i.e. the string number) for the device on that domain
+ * which uses the given mac address
+ *
+ * Returns the new string or NULL in case of error, the string must be
+ *         freed by the caller.
+ */
+char *
+xenStoreDomainGetNetworkID(virConnectPtr conn, int id, const char *mac) {
+    char dir[80], path[128], **list = NULL, *val = NULL;
+    unsigned int maclen, len, i, num;
+    char *ret = NULL;
+
+    if (id < 0)
+        return(NULL);
+    if (conn->xshandle == NULL)
+        return (NULL);
+    if (mac == NULL)
+        return (NULL);
+    maclen = strlen(mac);
+    if (maclen <= 0)
+        return (NULL);
+
+    sprintf(dir, "/local/domain/0/backend/vif/%d", id);
+    list = xs_directory(conn->xshandle, 0, dir, &num);
+    if (list == NULL)
+	return(NULL);
+    for (i = 0; i < num; i++) {
+	sprintf(path, "%s/%s/%s", dir, list[i], "mac");
+	val = xs_read(conn->xshandle, 0, path, &len);
+	if (val == NULL)
+	    break;
+	if ((maclen != len) || memcmp(val, mac, len)) {
+	    free(val);
+	} else {
+	    ret = list[i];
+	    free(val);
+	    break;
+	}
+    }
+    free(list);
+    return(ret);
+}
