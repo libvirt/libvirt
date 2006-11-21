@@ -1,3 +1,8 @@
+Tue Nov 21 18:05:33 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xs_internal.c: Michel Ponceau pointed out a bug in 
+	  xenStoreDomainGetNetworkID refactoring
+
 Mon Nov 20 16:51:43 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xml.c src/xs_internal.c src/xs_internal.h: cleanup for the

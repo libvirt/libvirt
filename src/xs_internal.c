@@ -825,7 +825,7 @@ xenStoreDomainGetNetworkID(virConnectPtr conn, int id, const char *mac) {
 	if ((maclen != len) || memcmp(val, mac, len)) {
 	    free(val);
 	} else {
-	    ret = list[i];
+	    ret = strdup(list[i]);
 	    free(val);
 	    break;
 	}
