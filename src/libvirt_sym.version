@@ -28,6 +28,7 @@
 	virDomainRestore;
 	virDomainResume;
 	virDomainSave;
+	virDomainCoreDump;
         virDomainSetMemory;
 	virDomainSetMaxMemory;
 	virDomainShutdown;
