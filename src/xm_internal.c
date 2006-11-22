@@ -84,6 +84,7 @@ static virDriver xenXMDriver = {
     xenXMDomainGetInfo, /* domainGetInfo */
     NULL, /* domainSave */
     NULL, /* domainRestore */
+    NULL, /* domainCoreDump */
     xenXMDomainSetVcpus, /* domainSetVcpus */
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */

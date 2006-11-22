@@ -265,6 +265,13 @@ int			virDomainRestore	(virConnectPtr conn,
 						 const char *from);
 
 /*
+ * Domain core dump
+ */
+int			virDomainCoreDump	(virDomainPtr domain,
+						 const char *to,
+						 int flags);
+
+/*
  * Domain runtime informations
  */
 int			virDomainGetInfo	(virDomainPtr domain,

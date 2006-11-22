@@ -40,8 +40,11 @@
 </dd><dt>Collect</dt><dd><a href="html/libvirt-libvirt.html#virConnectListDomains">virConnectListDomains</a><br />
 </dd><dt>Copy</dt><dd><a href="html/libvirt-virterror.html#virConnCopyLastError">virConnCopyLastError</a><br />
 <a href="html/libvirt-virterror.html#virCopyLastError">virCopyLastError</a><br />
-</dd></dl><h2>Letter D:</h2><dl><dt>Default</dt><dd><a href="html/libvirt-virterror.html#virDefaultErrorFunc">virDefaultErrorFunc</a><br />
+</dd><dt>Create</dt><dd><a href="html/libvirt-libvirt.html#virDomainAttachDevice">virDomainAttachDevice</a><br />
+</dd></dl><h2>Letter D:</h2><dl><dt>Daemon</dt><dd><a href="html/libvirt-libvirt.html#virDomainCoreDump">virDomainCoreDump</a><br />
+</dd><dt>Default</dt><dd><a href="html/libvirt-virterror.html#virDefaultErrorFunc">virDefaultErrorFunc</a><br />
 </dd><dt>Destroy</dt><dd><a href="html/libvirt-libvirt.html#virDomainDestroy">virDomainDestroy</a><br />
+<a href="html/libvirt-libvirt.html#virDomainDetachDevice">virDomainDetachDevice</a><br />
 </dd><dt>Domain0</dt><dd><a href="html/libvirt-libvirt.html#virDomainGetMaxMemory">virDomainGetMaxMemory</a><br />
 <a href="html/libvirt-libvirt.html#virDomainGetVcpus">virDomainGetVcpus</a><br />
 <a href="html/libvirt-libvirt.html#virDomainPinVcpu">virDomainPinVcpu</a><br />
@@ -76,7 +79,8 @@
 </dd><dt>Linux</dt><dd><a href="html/libvirt-libvirt.html#virDomainCreateLinux">virDomainCreateLinux</a><br />
 </dd></dl><h2>Letter M:</h2><dl><dt>Macro</dt><dd><a href="html/libvirt-libvirt.html#LIBVIR_VERSION_NUMBER">LIBVIR_VERSION_NUMBER</a><br />
 </dd></dl><h2>Letter N:</h2><dl><dt>NUMA</dt><dd><a href="html/libvirt-libvirt.html#_virNodeInfo">_virNodeInfo</a><br />
-</dd><dt>Note</dt><dd><a href="html/libvirt-libvirt.html#virDomainGetInfo">virDomainGetInfo</a><br />
+</dd><dt>Note</dt><dd><a href="html/libvirt-libvirt.html#virDomainCoreDump">virDomainCoreDump</a><br />
+<a href="html/libvirt-libvirt.html#virDomainGetInfo">virDomainGetInfo</a><br />
 <a href="html/libvirt-libvirt.html#virDomainReboot">virDomainReboot</a><br />
 <a href="html/libvirt-libvirt.html#virDomainSetVcpus">virDomainSetVcpus</a><br />
 <a href="html/libvirt-libvirt.html#virDomainShutdown">virDomainShutdown</a><br />
@@ -121,6 +125,7 @@
 <a href="html/libvirt-libvirt.html#virConnectGetVersion">virConnectGetVersion</a><br />
 <a href="html/libvirt-libvirt.html#virConnectOpen">virConnectOpen</a><br />
 <a href="html/libvirt-libvirt.html#virConnectOpenReadOnly">virConnectOpenReadOnly</a><br />
+<a href="html/libvirt-libvirt.html#virDomainCoreDump">virDomainCoreDump</a><br />
 <a href="html/libvirt-libvirt.html#virDomainCreateLinux">virDomainCreateLinux</a><br />
 <a href="html/libvirt-libvirt.html#virDomainDestroy">virDomainDestroy</a><br />
 <a href="html/libvirt-libvirt.html#virDomainPinVcpu">virDomainPinVcpu</a><br />
@@ -149,10 +154,13 @@
 </dd><dt>VIR_CPU_USABLE</dt><dd><a href="html/libvirt-libvirt.html#VIR_CPU_USABLE">VIR_CPU_USABLE</a><br />
 </dd><dt>VIR_GET_CPUMAP</dt><dd><a href="html/libvirt-libvirt.html#VIR_GET_CPUMAP">VIR_GET_CPUMAP</a><br />
 </dd></dl><h2>Letter W:</h2><dl><dt>What</dt><dd><a href="html/libvirt-virterror.html#_virError">_virError</a><br />
-</dd></dl><h2>Letter X:</h2><dl><dt>XML</dt><dd><a href="html/libvirt-libvirt.html#virDomainCreateLinux">virDomainCreateLinux</a><br />
+</dd></dl><h2>Letter X:</h2><dl><dt>XML</dt><dd><a href="html/libvirt-libvirt.html#virDomainAttachDevice">virDomainAttachDevice</a><br />
+<a href="html/libvirt-libvirt.html#virDomainCreateLinux">virDomainCreateLinux</a><br />
 <a href="html/libvirt-libvirt.html#virDomainDefineXML">virDomainDefineXML</a><br />
+<a href="html/libvirt-libvirt.html#virDomainDetachDevice">virDomainDetachDevice</a><br />
 <a href="html/libvirt-libvirt.html#virDomainGetXMLDesc">virDomainGetXMLDesc</a><br />
-</dd><dt>Xen</dt><dd><a href="html/libvirt-libvirt.html#virDomainGetVcpus">virDomainGetVcpus</a><br />
+</dd><dt>Xen</dt><dd><a href="html/libvirt-libvirt.html#virDomainCoreDump">virDomainCoreDump</a><br />
+<a href="html/libvirt-libvirt.html#virDomainGetVcpus">virDomainGetVcpus</a><br />
 <a href="html/libvirt-libvirt.html#virDomainPinVcpu">virDomainPinVcpu</a><br />
 <a href="html/libvirt-libvirt.html#virGetVersion">virGetVersion</a><br />
 </dd></dl><h2>Letter a:</h2><dl><dt>about</dt><dd><a href="html/libvirt-libvirt.html#virDomainGetInfo">virDomainGetInfo</a><br />
@@ -201,6 +209,7 @@
 </dd><dt>amount</dt><dd><a href="html/libvirt-libvirt.html#virDomainGetMaxMemory">virDomainGetMaxMemory</a><br />
 <a href="html/libvirt-libvirt.html#virDomainSetMaxMemory">virDomainSetMaxMemory</a><br />
 <a href="html/libvirt-libvirt.html#virDomainSetMemory">virDomainSetMemory</a><br />
+</dd><dt>analysis</dt><dd><a href="html/libvirt-libvirt.html#virDomainCoreDump">virDomainCoreDump</a><br />
 </dd><dt>anymore</dt><dd><a href="html/libvirt-libvirt.html#virDomainSave">virDomainSave</a><br />
 </dd><dt>application</dt><dd><a href="html/libvirt-libvirt.html#virConnectClose">virConnectClose</a><br />
 <a href="html/libvirt-libvirt.html#virDomainGetMaxMemory">virDomainGetMaxMemory</a><br />
@@ -225,6 +234,8 @@
 <a href="html/libvirt-libvirt.html#virDomainGetVcpus">virDomainGetVcpus</a><br />
 </dd><dt>assumed</dt><dd><a href="html/libvirt-libvirt.html#virDomainGetVcpus">virDomainGetVcpus</a><br />
 <a href="html/libvirt-libvirt.html#virGetVersion">virGetVersion</a><br />
+</dd><dt>attachment</dt><dd><a href="html/libvirt-libvirt.html#virDomainAttachDevice">virDomainAttachDevice</a><br />
+<a href="html/libvirt-libvirt.html#virDomainDetachDevice">virDomainDetachDevice</a><br />
 </dd><dt>available</dt><dd><a href="html/libvirt-virterror.html#_virError">_virError</a><br />
 <a href="html/libvirt-libvirt.html#virConnectOpenReadOnly">virConnectOpenReadOnly</a><br />
 </dd><dt>availble</dt><dd><a href="html/libvirt-libvirt.html#virGetVersion">virGetVersion</a><br />

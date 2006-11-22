@@ -105,6 +105,10 @@ typedef int
 typedef int
 	(*virDrvDomainRestore)		(virConnectPtr conn,
 					 const char *from);
+typedef int
+	(*virDrvDomainCoreDump)		(virDomainPtr domain,
+					 const char *to,
+					 int flags);
 typedef char *
 	(*virDrvDomainDumpXML)		(virDomainPtr dom,
 					 int flags);
@@ -182,6 +186,7 @@ struct _virDriver {
 	virDrvDomainGetInfo		domainGetInfo;
 	virDrvDomainSave		domainSave;
 	virDrvDomainRestore		domainRestore;
+	virDrvDomainCoreDump		domainCoreDump;
 	virDrvDomainSetVcpus		domainSetVcpus;
 	virDrvDomainPinVcpu		domainPinVcpu;
 	virDrvDomainGetVcpus		domainGetVcpus;

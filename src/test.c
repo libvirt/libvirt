@@ -54,6 +54,7 @@ static virDriver testDriver = {
   testGetDomainInfo, /* domainGetInfo */
   NULL, /* domainSave */
   NULL, /* domainRestore */
+  NULL, /* domainCoreDump */
   testSetVcpus, /* domainSetVcpus */
   NULL, /* domainPinVcpu */
   NULL, /* domainGetVcpus */

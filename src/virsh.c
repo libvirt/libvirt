@@ -805,6 +805,51 @@ cmdRestore(vshControl * ctl, vshCmd * cmd)
 }
 
 /*
+ * "dump" command
+ */
+static vshCmdInfo info_dump[] = {
+    {"syntax", "dump <domain> <file>"},
+    {"help", gettext_noop("dump the core of a domain to a file for analysis")},
+    {"desc", gettext_noop("Core dump a domain.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_dump[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("where to dump the core")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdDump(vshControl * ctl, vshCmd * cmd)
+{
+    virDomainPtr dom;
+    char *name;
+    char *to;
+    int ret = TRUE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(to = vshCommandOptString(cmd, "file", NULL)))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", &name)))
+        return FALSE;
+
+    if (virDomainCoreDump(dom, to, 0) == 0) {
+        vshPrint(ctl, _("Domain %s dumpd to %s\n"), name, to);
+    } else {
+        vshError(ctl, FALSE, _("Failed to core dump domain %s to %s"),
+                 name, to);
+        ret = FALSE;
+    }
+
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "resume" command
  */
 static vshCmdInfo info_resume[] = {
@@ -1623,6 +1668,7 @@ static vshCmdDef commands[] = {
     {"restore", cmdRestore, opts_restore, info_restore},
     {"resume", cmdResume, opts_resume, info_resume},
     {"save", cmdSave, opts_save, info_save},
+    {"dump", cmdDump, opts_dump, info_dump},
     {"shutdown", cmdShutdown, opts_shutdown, info_shutdown},
     {"setmem", cmdSetmem, opts_setmem, info_setmem},
     {"setmaxmem", cmdSetmaxmem, opts_setmaxmem, info_setmaxmem},

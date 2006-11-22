@@ -449,6 +449,7 @@ static virDriver xenHypervisorDriver = {
     xenHypervisorGetDomainInfo, /* domainGetInfo */
     NULL, /* domainSave */
     NULL, /* domainRestore */
+    NULL, /* domainCoreDump */
     xenHypervisorSetVcpus, /* domainSetVcpus */
     xenHypervisorPinVcpu, /* domainPinVcpu */
     xenHypervisorGetVcpus, /* domainGetVcpus */

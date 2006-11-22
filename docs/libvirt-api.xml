@@ -66,6 +66,7 @@
      <exports symbol='virDomainSave' type='function'/>
      <exports symbol='virDomainCreate' type='function'/>
      <exports symbol='virConnectListDomains' type='function'/>
+     <exports symbol='virDomainCoreDump' type='function'/>
      <exports symbol='virDomainLookupByUUID' type='function'/>
      <exports symbol='virDomainLookupByUUIDString' type='function'/>
      <exports symbol='virDomainLookupByID' type='function'/>
@@ -74,8 +75,8 @@
      <exports symbol='virDomainGetUUID' type='function'/>
      <exports symbol='virConnectNumOfDomains' type='function'/>
      <exports symbol='virDomainGetUUIDString' type='function'/>
-     <exports symbol='virDomainGetVcpus' type='function'/>
-     <exports symbol='virConnectGetVersion' type='function'/>
+     <exports symbol='virDomainGetMaxMemory' type='function'/>
+     <exports symbol='virDomainAttachDevice' type='function'/>
      <exports symbol='virDomainSetMaxMemory' type='function'/>
      <exports symbol='virDomainFree' type='function'/>
      <exports symbol='virConnectOpen' type='function'/>
@@ -90,8 +91,10 @@
      <exports symbol='virDomainCreateLinux' type='function'/>
      <exports symbol='virDomainSetMemory' type='function'/>
      <exports symbol='virDomainDestroy' type='function'/>
-     <exports symbol='virDomainGetMaxMemory' type='function'/>
+     <exports symbol='virDomainDetachDevice' type='function'/>
+     <exports symbol='virDomainGetVcpus' type='function'/>
      <exports symbol='virDomainGetXMLDesc' type='function'/>
+     <exports symbol='virConnectGetVersion' type='function'/>
      <exports symbol='virDomainGetName' type='function'/>
      <exports symbol='virConnectOpenReadOnly' type='function'/>
     </file>
@@ -429,6 +432,19 @@
       <return type='void'/>
       <arg name='err' type='virErrorPtr' info='pointer to the error.'/>
     </function>
+    <function name='virDomainAttachDevice' file='libvirt' module='libvirt'>
+      <info>Create a virtual device attachment to backend.</info>
+      <return type='int' info='0 in case of success, -1 in case of failure.'/>
+      <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
+      <arg name='xml' type='char *' info='pointer to XML description of one device'/>
+    </function>
+    <function name='virDomainCoreDump' file='libvirt' module='libvirt'>
+      <info>This method will dump the core of a domain on a given file for analysis. Note that for remote Xen Daemon the file path will be interpreted in the remote host.</info>
+      <return type='int' info='0 in case of success and -1 in case of failure.'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+      <arg name='to' type='const char *' info='path for the core file'/>
+      <arg name='flags' type='int' info='extra flags, currently unused'/>
+    </function>
     <function name='virDomainCreate' file='libvirt' module='libvirt'>
       <info>launch a defined domain. If the call succeed the domain moves from the defined to the running domains pools.</info>
       <return type='int' info='0 in case of success, -1 in case of error'/>
@@ -451,6 +467,12 @@
       <info>Destroy the domain object. The running instance is shutdown if not down already and all resources used by it are given back to the hypervisor. The data structure is freed and should not be used thereafter if the call does not return an error. This function may requires priviledged access</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
+    </function>
+    <function name='virDomainDetachDevice' file='libvirt' module='libvirt'>
+      <info>Destroy a virtual device attachment to backend.</info>
+      <return type='int' info='0 in case of success, -1 in case of failure.'/>
+      <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
+      <arg name='xml' type='char *' info='pointer to XML description of one device'/>
     </function>
     <function name='virDomainFree' file='libvirt' module='libvirt'>
       <info>Free the domain object. The running instance is kept alive. The data structure is freed and should not be used thereafter.</info>

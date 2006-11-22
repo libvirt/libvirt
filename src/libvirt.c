@@ -1026,6 +1026,72 @@ virDomainRestore(virConnectPtr conn, const char *from)
 }
 
 /**
+ * virDomainCoreDump:
+ * @domain: a domain object
+ * @to: path for the core file
+ * @flags: extra flags, currently unused
+ *
+ * This method will dump the core of a domain on a given file for analysis.
+ * Note that for remote Xen Daemon the file path will be interpreted in
+ * the remote host.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ */
+int
+virDomainCoreDump(virDomainPtr domain, const char *to, int flags)
+{
+    int ret, i;
+    char filepath[4096];
+    virConnectPtr conn;
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+	return (-1);
+    }
+    conn = domain->conn;
+    if (to == NULL) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+
+    /*
+     * We must absolutize the file path as the save is done out of process
+     * TODO: check for URI when libxml2 is linked in.
+     */
+    if (to[0] != '/') {
+        unsigned int len, t;
+
+        t = strlen(to);
+        if (getcwd(filepath, sizeof(filepath) - (t + 3)) == NULL)
+            return (-1);
+        len = strlen(filepath);
+        /* that should be covered by getcwd() semantic, but be 100% sure */
+        if (len > sizeof(filepath) - (t + 3))
+            return (-1);
+        filepath[len] = '/';
+        strcpy(&filepath[len + 1], to);
+        to = &filepath[0];
+
+    }
+
+    /* Go though the driver registered entry points */
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainCoreDump != NULL)) {
+	    ret = conn->drivers[i]->domainCoreDump(domain, to, flags);
+	    if (ret == 0)
+	        return(0);
+	}
+    }
+    virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    return (-1);
+}
+
+/**
  * virDomainShutdown:
  * @domain: a domain object
  *

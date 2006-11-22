@@ -84,6 +84,7 @@ void	<a href="#virErrorFunc">virErrorFunc</a>			(void * userData, <br />					 <a
     <a name="VIR_ERR_PARSE_FAILED" id="VIR_ERR_PARSE_FAILED">VIR_ERR_PARSE_FAILED</a> = 32 : failed to parse a conf file
     <a name="VIR_ERR_CONF_SYNTAX" id="VIR_ERR_CONF_SYNTAX">VIR_ERR_CONF_SYNTAX</a> = 33 : failed to parse the syntax of a conf file
     <a name="VIR_ERR_WRITE_FAILED" id="VIR_ERR_WRITE_FAILED">VIR_ERR_WRITE_FAILED</a> = 34 : failed to write a conf file
+    <a name="VIR_ERR_XML_DETAIL" id="VIR_ERR_XML_DETAIL">VIR_ERR_XML_DETAIL</a> = 35 : detail of an XML error
 }
 </pre><h3><a name="virConnCopyLastError" id="virConnCopyLastError"></a>Function: virConnCopyLastError</h3><pre class="programlisting">int	virConnCopyLastError		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br />					 <a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a> to)<br />
 </pre><p>Copy the content of the last error caught on that connection One will need to free the result with virResetError()</p>

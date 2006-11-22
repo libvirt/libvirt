@@ -49,6 +49,8 @@ static virDomainPtr xenDaemonCreateLinux(virConnectPtr conn,
 					 unsigned int flags);
 static int xenDaemonAttachDevice(virDomainPtr domain, char *xml);
 static int xenDaemonDetachDevice(virDomainPtr domain, char *xml);
+static int xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
+                                   int flags);
 #endif /* PROXY */
 
 #ifndef PROXY
@@ -86,6 +88,7 @@ static virDriver xenDaemonDriver = {
     xenDaemonDomainGetInfo, /* domainGetInfo */
     xenDaemonDomainSave, /* domainSave */
     xenDaemonDomainRestore, /* domainRestore */
+    xenDaemonDomainCoreDump, /* domainCoreDump */
     xenDaemonDomainSetVcpus, /* domainSetVcpus */
     xenDaemonDomainPinVcpu, /* domainPinVcpu */
     xenDaemonDomainGetVcpus, /* domainGetVcpus */
@@ -2204,6 +2207,34 @@ xenDaemonDomainSave(virDomainPtr domain, const char *filename)
     if (domain->handle < 0)
         return(-1);
     return xend_op(domain->conn, domain->name, "op", "save", "file", filename, NULL);
+}
+
+/**
+ * xenDaemonDomainCoreDump:
+ * @domain: pointer to the Domain block
+ * @filename: path for the output file
+ * @flags: extra flags, currently unused
+ *
+ * This method will dump the core of a domain on a given file for analysis.
+ * Note that for remote Xen Daemon the file path will be interpreted in
+ * the remote host.
+ *
+ * Returns 0 in case of success, -1 in case of error.
+ */
+static int
+xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
+                        int flags ATTRIBUTE_UNUSED)
+{
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
+        (filename == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return(-1);
+    }
+    if (domain->handle < 0)
+        return(-1);
+    return xend_op(domain->conn, domain->name, "op", "dump", "file", filename,
+                   "live", "1", "crash", "0", NULL);
 }
 
 /**

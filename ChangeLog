@@ -1,3 +1,12 @@
+Wed Nov 22 17:57:58 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* docs//*: regenerated
+	* include/libvirt/libvirt.h include/libvirt/libvirt.h.in src/driver.h
+	  src/libvirt.c src/proxy_internal.c src/test.c src/virsh.c
+	  src/xen_internal.c src/xend_internal.c src/xm_internal.c
+	  src/xs_internal.c: added support for dumping core of domains 
+	  assuming a xend with the latest patch to do so.
+
 Tue Nov 21 18:05:33 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xs_internal.c: Michel Ponceau pointed out a bug in 

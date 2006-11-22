@@ -31,6 +31,8 @@ ignored_files = {
   "xen_internal.c": "internal code",
   "xs_internal.h": "internal includes and defines",
   "xs_internal.c": "internal code",
+  "xm_internal.h": "internal code",
+  "xm_internal.c": "internal code",
   "sexpr.h": "internal includes and defines",
   "sexpr.c": "internal code",
   "xml.h": "internal includes and defines",
