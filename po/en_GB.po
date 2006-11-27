@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-11-10 11:04+0100\n"
+"POT-Creation-Date: 2006-11-27 16:59+0100\n"
 "PO-Revision-Date: 2006-09-20 10:20-0400\n"
 "Last-Translator: Daniel Berrange <berrange@redhat.com>\n"
 "Language-Team: English <en@li.org>\n"
@@ -16,11 +16,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/libvirt.c:243 src/libvirt.c:307 src/hash.c:531
+#: src/libvirt.c:245 src/libvirt.c:309 src/hash.c:652
 msgid "allocating connection"
 msgstr ""
 
-#: src/libvirt.c:323
+#: src/libvirt.c:325
 msgid "Xen Daemon or Xen Store"
 msgstr ""
 
@@ -372,134 +372,134 @@ msgstr ""
 msgid "allocate new context"
 msgstr ""
 
-#: src/hash.c:628 src/hash.c:634 src/test.c:725 src/test.c:750 src/test.c:773
-#: src/test.c:797 src/xend_internal.c:1927 src/xend_internal.c:2623
-#: src/xend_internal.c:2834 src/xs_internal.c:594 src/proxy_internal.c:791
-#: src/proxy_internal.c:838 src/proxy_internal.c:889
+#: src/hash.c:749 src/hash.c:755 src/test.c:728 src/test.c:753 src/test.c:776
+#: src/test.c:800 src/xend_internal.c:1933 src/xend_internal.c:2680
+#: src/xend_internal.c:2899 src/xs_internal.c:603 src/proxy_internal.c:798
+#: src/proxy_internal.c:845 src/proxy_internal.c:896
 msgid "allocating domain"
 msgstr ""
 
-#: src/hash.c:645
+#: src/hash.c:766
 msgid "failed to add domain to connection hash table"
 msgstr ""
 
-#: src/hash.c:697
+#: src/hash.c:818
 msgid "domain missing from connection hash table"
 msgstr ""
 
-#: src/test.c:200 src/test.c:379 src/test.c:895 src/test.c:923 src/test.c:950
+#: src/test.c:203 src/test.c:382 src/test.c:898 src/test.c:926 src/test.c:953
 msgid "getting time of day"
 msgstr ""
 
-#: src/test.c:206 src/test.c:334 src/test.c:359
+#: src/test.c:209 src/test.c:337 src/test.c:362
 msgid "domain"
 msgstr ""
 
-#: src/test.c:212 src/test.c:455
+#: src/test.c:215 src/test.c:458
 msgid "creating xpath context"
 msgstr ""
 
-#: src/test.c:219
+#: src/test.c:222
 msgid "domain name"
 msgstr ""
 
-#: src/test.c:228 src/test.c:233
+#: src/test.c:231 src/test.c:236
 msgid "domain uuid"
 msgstr ""
 
-#: src/test.c:241 src/test.c:246
+#: src/test.c:244 src/test.c:249
 msgid "domain memory"
 msgstr ""
 
-#: src/test.c:258
+#: src/test.c:261
 msgid "domain vcpus"
 msgstr ""
 
-#: src/test.c:269
+#: src/test.c:272
 msgid "domain reboot behaviour"
 msgstr ""
 
-#: src/test.c:280
+#: src/test.c:283
 msgid "domain poweroff behaviour"
 msgstr ""
 
-#: src/test.c:291
+#: src/test.c:294
 msgid "domain crash behaviour"
 msgstr ""
 
-#: src/test.c:352
+#: src/test.c:355
 msgid "load domain definition file"
 msgstr ""
 
-#: src/test.c:434
+#: src/test.c:437
 msgid "loading host definition file"
 msgstr ""
 
-#: src/test.c:441
+#: src/test.c:444
 msgid "host"
 msgstr ""
 
-#: src/test.c:449
+#: src/test.c:452
 msgid "node"
 msgstr ""
 
-#: src/test.c:471
+#: src/test.c:474
 msgid "node cpu numa nodes"
 msgstr ""
 
-#: src/test.c:483
+#: src/test.c:486
 msgid "node cpu sockets"
 msgstr ""
 
-#: src/test.c:495
+#: src/test.c:498
 msgid "node cpu cores"
 msgstr ""
 
-#: src/test.c:507
+#: src/test.c:510
 msgid "node cpu threads"
 msgstr ""
 
-#: src/test.c:519
+#: src/test.c:522
 msgid "node active cpu"
 msgstr ""
 
-#: src/test.c:533
+#: src/test.c:536
 msgid "node cpu mhz"
 msgstr ""
 
-#: src/test.c:552
+#: src/test.c:555
 msgid "node memory"
 msgstr ""
 
-#: src/test.c:561
+#: src/test.c:564
 msgid "node domain list"
 msgstr ""
 
-#: src/test.c:570
+#: src/test.c:573
 msgid "resolving domain filename"
 msgstr ""
 
-#: src/test.c:608
+#: src/test.c:611
 msgid "allocating node"
 msgstr ""
 
-#: src/test.c:648
+#: src/test.c:651
 msgid "too many connections"
 msgstr ""
 
-#: src/test.c:733
+#: src/test.c:736
 msgid "too many domains"
 msgstr ""
 
-#: src/xml.c:64
+#: src/xml.c:65
 msgid "growing buffer"
 msgstr ""
 
-#: src/xml.c:116 src/xend_internal.c:1618 src/xend_internal.c:1637
+#: src/xml.c:117 src/xend_internal.c:1625 src/xend_internal.c:1644
 msgid "allocate new buffer"
 msgstr ""
 
-#: src/xml.c:120
+#: src/xml.c:121
 msgid "allocate buffer content"
 msgstr ""
 
@@ -511,65 +511,65 @@ msgstr ""
 msgid "failed to copy a string"
 msgstr ""
 
-#: src/xend_internal.c:265 src/xend_internal.c:268
+#: src/xend_internal.c:272 src/xend_internal.c:275
 msgid "failed to read from Xen Daemon"
 msgstr ""
 
-#: src/xend_internal.c:1064
+#: src/xend_internal.c:1071
 msgid "failed to urlencode the create S-Expr"
 msgstr ""
 
-#: src/xend_internal.c:1105
+#: src/xend_internal.c:1112
 msgid "domain information incomplete, missing domid"
 msgstr ""
 
-#: src/xend_internal.c:1111
+#: src/xend_internal.c:1118
 msgid "domain information incorrect domid not numeric"
 msgstr ""
 
-#: src/xend_internal.c:1118 src/xend_internal.c:1167
+#: src/xend_internal.c:1125 src/xend_internal.c:1174
 msgid "domain information incomplete, missing uuid"
 msgstr ""
 
-#: src/xend_internal.c:1158 src/xend_internal.c:1501
+#: src/xend_internal.c:1165 src/xend_internal.c:1508
 msgid "domain information incomplete, missing name"
 msgstr ""
 
-#: src/xend_internal.c:1417 src/xend_internal.c:1442
+#: src/xend_internal.c:1424 src/xend_internal.c:1449
 msgid "domain information incomplete, missing kernel"
 msgstr ""
 
-#: src/xend_internal.c:1597
+#: src/xend_internal.c:1604
 msgid "domain information incomplete, vbd has no src"
 msgstr ""
 
-#: src/xend_internal.c:1603
+#: src/xend_internal.c:1610
 msgid "domain information incomplete, vbd has no dev"
 msgstr ""
 
-#: src/xend_internal.c:1611
+#: src/xend_internal.c:1618
 msgid "cannot parse vbd filename, missing driver name"
 msgstr ""
 
-#: src/xend_internal.c:1630
+#: src/xend_internal.c:1637
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 
-#: src/xend_internal.c:1938
+#: src/xend_internal.c:1944
 msgid "failed to parse Xend domain information"
 msgstr ""
 
-#: src/xend_internal.c:2899
+#: src/xend_internal.c:2964
 #, c-format
 msgid "Failed to create domain %s\n"
 msgstr ""
 
-#: src/xend_internal.c:2905
+#: src/xend_internal.c:2970
 #, c-format
 msgid "Failed to get devices for domain %s\n"
 msgstr ""
 
-#: src/xend_internal.c:2916
+#: src/xend_internal.c:2981
 #, c-format
 msgid "Failed to resume new domain %s\n"
 msgstr ""
@@ -649,7 +649,7 @@ msgstr ""
 msgid "State"
 msgstr ""
 
-#: src/virsh.c:412 src/virsh.c:2191 src/virsh.c:2207
+#: src/virsh.c:412 src/virsh.c:2237 src/virsh.c:2253
 msgid "no state"
 msgstr ""
 
@@ -662,9 +662,9 @@ msgid "Returns state about a running domain."
 msgstr ""
 
 #: src/virsh.c:461 src/virsh.c:499 src/virsh.c:736 src/virsh.c:818
-#: src/virsh.c:857 src/virsh.c:896 src/virsh.c:935 src/virsh.c:974
-#: src/virsh.c:1046 src/virsh.c:1129 src/virsh.c:1215 src/virsh.c:1258
-#: src/virsh.c:1301 src/virsh.c:1378
+#: src/virsh.c:863 src/virsh.c:902 src/virsh.c:941 src/virsh.c:980
+#: src/virsh.c:1019 src/virsh.c:1091 src/virsh.c:1174 src/virsh.c:1260
+#: src/virsh.c:1303 src/virsh.c:1346 src/virsh.c:1423
 msgid "domain name, id or uuid"
 msgstr ""
 
@@ -739,7 +739,7 @@ msgstr ""
 msgid "Undefine the configuration for an inactive domain."
 msgstr ""
 
-#: src/virsh.c:648 src/virsh.c:1447
+#: src/virsh.c:648 src/virsh.c:1492
 msgid "domain name or uuid"
 msgstr ""
 
@@ -824,365 +824,387 @@ msgid "Failed to restore domain from %s"
 msgstr ""
 
 #: src/virsh.c:812
-msgid "resume a domain"
+msgid "dump the core of a domain to a file for analysis"
 msgstr ""
 
 #: src/virsh.c:813
+msgid "Core dump a domain."
+msgstr ""
+
+#: src/virsh.c:819
+msgid "where to dump the core"
+msgstr ""
+
+#: src/virsh.c:841
+#, c-format
+msgid "Domain %s dumpd to %s\n"
+msgstr ""
+
+#: src/virsh.c:843
+#, c-format
+msgid "Failed to core dump domain %s to %s"
+msgstr ""
+
+#: src/virsh.c:857
+msgid "resume a domain"
+msgstr ""
+
+#: src/virsh.c:858
 msgid "Resume a previously suspended domain."
 msgstr ""
 
-#: src/virsh.c:836
+#: src/virsh.c:881
 #, c-format
 msgid "Domain %s resumed\n"
 msgstr ""
 
-#: src/virsh.c:838
+#: src/virsh.c:883
 #, c-format
 msgid "Failed to resume domain %s"
 msgstr ""
 
-#: src/virsh.c:851
+#: src/virsh.c:896
 msgid "gracefully shutdown a domain"
 msgstr ""
 
-#: src/virsh.c:852
+#: src/virsh.c:897
 msgid "Run shutdown in the target domain."
 msgstr ""
 
-#: src/virsh.c:875
+#: src/virsh.c:920
 #, c-format
 msgid "Domain %s is being shutdown\n"
 msgstr ""
 
-#: src/virsh.c:877
+#: src/virsh.c:922
 #, c-format
 msgid "Failed to shutdown domain %s"
 msgstr ""
 
-#: src/virsh.c:890
+#: src/virsh.c:935
 msgid "reboot a domain"
 msgstr ""
 
-#: src/virsh.c:891
+#: src/virsh.c:936
 msgid "Run a reboot command in the target domain."
 msgstr ""
 
-#: src/virsh.c:914
+#: src/virsh.c:959
 #, c-format
 msgid "Domain %s is being rebooted\n"
 msgstr ""
 
-#: src/virsh.c:916
+#: src/virsh.c:961
 #, c-format
 msgid "Failed to reboot domain %s"
 msgstr ""
 
-#: src/virsh.c:929
+#: src/virsh.c:974
 msgid "destroy a domain"
 msgstr ""
 
-#: src/virsh.c:930
+#: src/virsh.c:975
 msgid "Destroy a given domain."
 msgstr ""
 
-#: src/virsh.c:953
+#: src/virsh.c:998
 #, c-format
 msgid "Domain %s destroyed\n"
 msgstr ""
 
-#: src/virsh.c:955
+#: src/virsh.c:1000
 #, c-format
 msgid "Failed to destroy domain %s"
 msgstr ""
 
-#: src/virsh.c:968
+#: src/virsh.c:1013
 msgid "domain information"
 msgstr ""
 
-#: src/virsh.c:969
+#: src/virsh.c:1014
 msgid "Returns basic information about the domain."
 msgstr ""
 
-#: src/virsh.c:995 src/virsh.c:997
+#: src/virsh.c:1040 src/virsh.c:1042
 msgid "Id:"
 msgstr ""
 
-#: src/virsh.c:998
+#: src/virsh.c:1043
 msgid "Name:"
 msgstr ""
 
-#: src/virsh.c:1001
+#: src/virsh.c:1046
 msgid "UUID:"
 msgstr ""
 
-#: src/virsh.c:1004
+#: src/virsh.c:1049
 msgid "OS Type:"
 msgstr ""
 
-#: src/virsh.c:1009 src/virsh.c:1090
+#: src/virsh.c:1054 src/virsh.c:1135
 msgid "State:"
 msgstr ""
 
-#: src/virsh.c:1012 src/virsh.c:1356
+#: src/virsh.c:1057 src/virsh.c:1401
 msgid "CPU(s):"
 msgstr ""
 
-#: src/virsh.c:1019 src/virsh.c:1097
+#: src/virsh.c:1064 src/virsh.c:1142
 msgid "CPU time:"
 msgstr ""
 
-#: src/virsh.c:1022
+#: src/virsh.c:1067
 msgid "Max memory:"
 msgstr ""
 
-#: src/virsh.c:1024
+#: src/virsh.c:1069
 msgid "Used memory:"
 msgstr ""
 
-#: src/virsh.c:1040
+#: src/virsh.c:1085
 msgid "domain vcpu information"
 msgstr ""
 
-#: src/virsh.c:1041
+#: src/virsh.c:1086
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr ""
 
-#: src/virsh.c:1088
+#: src/virsh.c:1133
 msgid "VCPU:"
 msgstr ""
 
-#: src/virsh.c:1089
+#: src/virsh.c:1134
 msgid "CPU:"
 msgstr ""
 
-#: src/virsh.c:1099
+#: src/virsh.c:1144
 msgid "CPU Affinity:"
 msgstr ""
 
-#: src/virsh.c:1123
+#: src/virsh.c:1168
 msgid "control domain vcpu affinity"
 msgstr ""
 
-#: src/virsh.c:1124
+#: src/virsh.c:1169
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr ""
 
-#: src/virsh.c:1130
+#: src/virsh.c:1175
 msgid "vcpu number"
 msgstr ""
 
-#: src/virsh.c:1131
+#: src/virsh.c:1176
 msgid "host cpu number(s) (comma separated)"
 msgstr ""
 
-#: src/virsh.c:1209
+#: src/virsh.c:1254
 msgid "change number of virtual CPUs"
 msgstr ""
 
-#: src/virsh.c:1210
+#: src/virsh.c:1255
 msgid "Change the number of virtual CPUs active in the guest domain."
 msgstr ""
 
-#: src/virsh.c:1216
+#: src/virsh.c:1261
 msgid "number of virtual CPUs"
 msgstr ""
 
-#: src/virsh.c:1252
+#: src/virsh.c:1297
 msgid "change memory allocation"
 msgstr ""
 
-#: src/virsh.c:1253
+#: src/virsh.c:1298
 msgid "Change the current memory allocation in the guest domain."
 msgstr ""
 
-#: src/virsh.c:1259
+#: src/virsh.c:1304
 msgid "number of bytes of memory"
 msgstr ""
 
-#: src/virsh.c:1295
+#: src/virsh.c:1340
 msgid "change maximum memory limit"
 msgstr ""
 
-#: src/virsh.c:1296
+#: src/virsh.c:1341
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr ""
 
-#: src/virsh.c:1302
+#: src/virsh.c:1347
 msgid "maxmimum memory limit in bytes"
 msgstr ""
 
-#: src/virsh.c:1338
+#: src/virsh.c:1383
 msgid "node information"
 msgstr ""
 
-#: src/virsh.c:1339
+#: src/virsh.c:1384
 msgid "Returns basic information about the node."
 msgstr ""
 
-#: src/virsh.c:1352
+#: src/virsh.c:1397
 msgid "failed to get node information"
 msgstr ""
 
-#: src/virsh.c:1355
+#: src/virsh.c:1400
 msgid "CPU model:"
 msgstr ""
 
-#: src/virsh.c:1357
+#: src/virsh.c:1402
 msgid "CPU frequency:"
 msgstr ""
 
-#: src/virsh.c:1358
+#: src/virsh.c:1403
 msgid "CPU socket(s):"
 msgstr ""
 
-#: src/virsh.c:1359
+#: src/virsh.c:1404
 msgid "Core(s) per socket:"
 msgstr ""
 
-#: src/virsh.c:1360
+#: src/virsh.c:1405
 msgid "Thread(s) per core:"
 msgstr ""
 
-#: src/virsh.c:1361
+#: src/virsh.c:1406
 msgid "NUMA cell(s):"
 msgstr ""
 
-#: src/virsh.c:1362
+#: src/virsh.c:1407
 msgid "Memory size:"
 msgstr ""
 
-#: src/virsh.c:1372
+#: src/virsh.c:1417
 msgid "domain information in XML"
 msgstr ""
 
-#: src/virsh.c:1373
+#: src/virsh.c:1418
 msgid "Ouput the domain information as an XML dump to stdout."
 msgstr ""
 
-#: src/virsh.c:1412
+#: src/virsh.c:1457
 msgid "convert a domain id or UUID to domain name"
 msgstr ""
 
-#: src/virsh.c:1417
+#: src/virsh.c:1462
 msgid "domain id or uuid"
 msgstr ""
 
-#: src/virsh.c:1442
+#: src/virsh.c:1487
 msgid "convert a domain name or UUID to domain id"
 msgstr ""
 
-#: src/virsh.c:1477
+#: src/virsh.c:1522
 msgid "convert a domain name or id to domain UUID"
 msgstr ""
 
-#: src/virsh.c:1482
+#: src/virsh.c:1527
 msgid "domain id or name"
 msgstr ""
 
-#: src/virsh.c:1501
+#: src/virsh.c:1546
 msgid "failed to get domain UUID"
 msgstr ""
 
-#: src/virsh.c:1512
+#: src/virsh.c:1557
 msgid "show version"
 msgstr ""
 
-#: src/virsh.c:1513
+#: src/virsh.c:1558
 msgid "Display the system version information."
 msgstr ""
 
-#: src/virsh.c:1536
+#: src/virsh.c:1581
 msgid "failed to get hypervisor type"
 msgstr ""
 
-#: src/virsh.c:1545
+#: src/virsh.c:1590
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr ""
 
-#: src/virsh.c:1550
+#: src/virsh.c:1595
 msgid "failed to get the library version"
 msgstr ""
 
-#: src/virsh.c:1557
+#: src/virsh.c:1602
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
 msgstr ""
 
-#: src/virsh.c:1564
+#: src/virsh.c:1609
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
 msgstr ""
 
-#: src/virsh.c:1569
+#: src/virsh.c:1614
 msgid "failed to get the hypervisor version"
 msgstr ""
 
-#: src/virsh.c:1574
+#: src/virsh.c:1619
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr ""
 
-#: src/virsh.c:1581
+#: src/virsh.c:1626
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr ""
 
-#: src/virsh.c:1592
+#: src/virsh.c:1637
 msgid "quit this interactive terminal"
 msgstr ""
 
-#: src/virsh.c:1704
+#: src/virsh.c:1750
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr ""
 
-#: src/virsh.c:1705
+#: src/virsh.c:1751
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr ""
 
-#: src/virsh.c:1732
+#: src/virsh.c:1778
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr ""
 
-#: src/virsh.c:1740
+#: src/virsh.c:1786
 msgid "  NAME\n"
 msgstr ""
 
-#: src/virsh.c:1751
+#: src/virsh.c:1797
 msgid ""
 "\n"
 "  DESCRIPTION\n"
 msgstr ""
 
-#: src/virsh.c:1755
+#: src/virsh.c:1801
 msgid ""
 "\n"
 "  OPTIONS\n"
 msgstr ""
 
-#: src/virsh.c:1762
+#: src/virsh.c:1808
 #, c-format
 msgid "--%s <number>"
 msgstr ""
 
-#: src/virsh.c:1764
+#: src/virsh.c:1810
 #, c-format
 msgid "--%s <string>"
 msgstr ""
 
-#: src/virsh.c:1877
+#: src/virsh.c:1923
 msgid "undefined domain name or id"
 msgstr ""
 
-#: src/virsh.c:1910
+#: src/virsh.c:1956
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr ""
 
-#: src/virsh.c:1938
+#: src/virsh.c:1984
 #, c-format
 msgid ""
 "\n"
@@ -1190,102 +1212,102 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/virsh.c:2012
+#: src/virsh.c:2058
 msgid "missing \""
 msgstr ""
 
-#: src/virsh.c:2073
+#: src/virsh.c:2119
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr ""
 
-#: src/virsh.c:2078
+#: src/virsh.c:2124
 #, c-format
 msgid "unknown command: '%s'"
 msgstr ""
 
-#: src/virsh.c:2085
+#: src/virsh.c:2131
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr ""
 
-#: src/virsh.c:2100
+#: src/virsh.c:2146
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr ""
 
-#: src/virsh.c:2103
+#: src/virsh.c:2149
 msgid "number"
 msgstr ""
 
-#: src/virsh.c:2103
+#: src/virsh.c:2149
 msgid "string"
 msgstr ""
 
-#: src/virsh.c:2109
+#: src/virsh.c:2155
 #, c-format
 msgid "unexpected data '%s'"
 msgstr ""
 
-#: src/virsh.c:2131
+#: src/virsh.c:2177
 msgid "OPTION"
 msgstr ""
 
-#: src/virsh.c:2131
+#: src/virsh.c:2177
 msgid "DATA"
 msgstr ""
 
-#: src/virsh.c:2179 src/virsh.c:2205
+#: src/virsh.c:2225 src/virsh.c:2251
 msgid "running"
 msgstr ""
 
-#: src/virsh.c:2181 src/virsh.c:2203
+#: src/virsh.c:2227 src/virsh.c:2249
 msgid "blocked"
 msgstr ""
 
-#: src/virsh.c:2183
+#: src/virsh.c:2229
 msgid "paused"
 msgstr ""
 
-#: src/virsh.c:2185
+#: src/virsh.c:2231
 msgid "in shutdown"
 msgstr ""
 
-#: src/virsh.c:2187
+#: src/virsh.c:2233
 msgid "shut off"
 msgstr ""
 
-#: src/virsh.c:2189
+#: src/virsh.c:2235
 msgid "crashed"
 msgstr ""
 
-#: src/virsh.c:2201
+#: src/virsh.c:2247
 msgid "offline"
 msgstr ""
 
-#: src/virsh.c:2220
+#: src/virsh.c:2266
 msgid "no valid connection"
 msgstr ""
 
-#: src/virsh.c:2259
+#: src/virsh.c:2305
 #, c-format
 msgid "%s: error: "
 msgstr ""
 
-#: src/virsh.c:2261
+#: src/virsh.c:2307
 msgid "error: "
 msgstr ""
 
-#: src/virsh.c:2283 src/virsh.c:2295 src/virsh.c:2307
+#: src/virsh.c:2329 src/virsh.c:2341 src/virsh.c:2353
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr ""
 
-#: src/virsh.c:2335
+#: src/virsh.c:2381
 msgid "failed to connect to the hypervisor"
 msgstr ""
 
-#: src/virsh.c:2480
+#: src/virsh.c:2526
 #, c-format
 msgid ""
 "\n"
@@ -1302,7 +1324,7 @@ msgid ""
 "  commands (non interactive mode):\n"
 msgstr ""
 
-#: src/virsh.c:2496
+#: src/virsh.c:2542
 #, c-format
 msgid ""
 "\n"
@@ -1310,120 +1332,120 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/virsh.c:2582
+#: src/virsh.c:2628
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr ""
 
-#: src/virsh.c:2663
+#: src/virsh.c:2709
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
 msgstr ""
 
-#: src/virsh.c:2666
+#: src/virsh.c:2712
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
 "\n"
 msgstr ""
 
-#: src/conf.c:162 src/conf.c:196 src/conf.c:479 src/conf.c:518 src/conf.c:546
-#: src/conf.c:624
+#: src/conf.c:153 src/conf.c:204 src/conf.c:487 src/conf.c:526 src/conf.c:554
+#: src/conf.c:632
 msgid "allocating configuration"
 msgstr ""
 
-#: src/conf.c:331
+#: src/conf.c:339
 msgid "unterminated number"
 msgstr ""
 
-#: src/conf.c:363 src/conf.c:380 src/conf.c:392
+#: src/conf.c:371 src/conf.c:388 src/conf.c:400
 msgid "unterminated string"
 msgstr ""
 
-#: src/conf.c:420 src/conf.c:473
+#: src/conf.c:428 src/conf.c:481
 msgid "expecting a value"
 msgstr ""
 
-#: src/conf.c:440
+#: src/conf.c:448
 msgid "expecting a separator in list"
 msgstr ""
 
-#: src/conf.c:463
+#: src/conf.c:471
 msgid "list is not closed with ] "
 msgstr ""
 
-#: src/conf.c:511
+#: src/conf.c:519
 msgid "expecting a name"
 msgstr ""
 
-#: src/conf.c:574
+#: src/conf.c:582
 msgid "expecting a separator"
 msgstr ""
 
-#: src/conf.c:606
+#: src/conf.c:614
 msgid "expecting an assignment"
 msgstr ""
 
-#: src/conf.c:819
+#: src/conf.c:881
 msgid "failed to open file"
 msgstr ""
 
-#: src/conf.c:827
+#: src/conf.c:889
 msgid "failed to save content"
 msgstr ""
 
-#: src/xs_internal.c:320
+#: src/xs_internal.c:323
 msgid "failed to connect to Xen Store"
 msgstr ""
 
-#: src/proxy_internal.c:194
+#: src/proxy_internal.c:197
 #, c-format
 msgid "failed to exec %s\n"
 msgstr ""
 
-#: src/proxy_internal.c:288
+#: src/proxy_internal.c:291
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr ""
 
-#: src/proxy_internal.c:321
+#: src/proxy_internal.c:324
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr ""
 
-#: src/proxy_internal.c:355
+#: src/proxy_internal.c:358
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr ""
 
-#: src/proxy_internal.c:417 src/proxy_internal.c:438 src/proxy_internal.c:458
+#: src/proxy_internal.c:420 src/proxy_internal.c:441 src/proxy_internal.c:461
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr ""
 
-#: src/proxy_internal.c:425
+#: src/proxy_internal.c:428
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr ""
 
-#: src/proxy_internal.c:447
+#: src/proxy_internal.c:450
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr ""
 
-#: src/proxy_internal.c:471
+#: src/proxy_internal.c:474
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
 msgstr ""
 
-#: src/proxy_internal.c:477
+#: src/proxy_internal.c:480
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr ""
 
-#: src/xen_internal.c:1376
+#: src/xen_internal.c:1379
 #, c-format
 msgid "allocating %d domain info"
 msgstr ""

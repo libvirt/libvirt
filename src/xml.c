@@ -1314,7 +1314,14 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
 	virBufferVSprintf(&buf, "(bootloader '%s')", obj->stringval);
-	bootloader = 1;
+	/*
+	 * if using pygrub, the kernel and initrd strings are not 
+	 * significant and should be discarded
+	 */
+	if (xmlStrstr(obj->stringval, BAD_CAST "pygrub"))
+	    bootloader = 2;
+	else
+	    bootloader = 1;
     }
     xmlXPathFreeObject(obj);
 
@@ -1339,35 +1346,40 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
     }
     xmlXPathFreeObject(obj);
 
-    obj = xmlXPathEval(BAD_CAST "/domain/os[1]", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-        (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
-	/* Analyze of the os description, based on HVM or PV. */
-	tmpobj = xmlXPathEval(BAD_CAST "string(/domain/os/type[1])", ctxt);
-	if ((tmpobj != NULL) &&
-	    ((tmpobj->type != XPATH_STRING) || (tmpobj->stringval == NULL) ||
-	     (tmpobj->stringval[0] == 0))) {
+    if (bootloader != 2) {
+	obj = xmlXPathEval(BAD_CAST "/domain/os[1]", ctxt);
+	if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+	    (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+	    /* Analyze of the os description, based on HVM or PV. */
+	    tmpobj = xmlXPathEval(BAD_CAST "string(/domain/os/type[1])", ctxt);
+	    if ((tmpobj != NULL) &&
+		((tmpobj->type != XPATH_STRING) || (tmpobj->stringval == NULL)
+		 || (tmpobj->stringval[0] == 0))) {
+		xmlXPathFreeObject(tmpobj);
+		virXMLError(VIR_ERR_OS_TYPE, nam, 0);
+		goto error;
+	    }
+
+	    if ((tmpobj == NULL)
+		|| !xmlStrEqual(tmpobj->stringval, BAD_CAST "hvm")) {
+		res = virDomainParseXMLOSDescPV(obj->nodesetval->nodeTab[0],
+					        &buf, ctxt, xendConfigVersion);
+	    } else {
+		hvm = 1;
+		res = virDomainParseXMLOSDescHVM(obj->nodesetval->nodeTab[0],
+					         &buf, ctxt, xendConfigVersion);
+	    }
+
 	    xmlXPathFreeObject(tmpobj);
-	    virXMLError(VIR_ERR_OS_TYPE, nam, 0);
+
+	    if (res != 0)
+		goto error;
+	} else if (bootloader == 0) {
+	    virXMLError(VIR_ERR_NO_OS, nam, 0);
 	    goto error;
 	}
-
-	if ((tmpobj == NULL) || !xmlStrEqual(tmpobj->stringval, BAD_CAST "hvm")) {
-	    res = virDomainParseXMLOSDescPV(obj->nodesetval->nodeTab[0], &buf, ctxt, xendConfigVersion);
-	} else {
-	    hvm = 1;
-	    res = virDomainParseXMLOSDescHVM(obj->nodesetval->nodeTab[0], &buf, ctxt, xendConfigVersion);
-	}
-
-	xmlXPathFreeObject(tmpobj);
-
-	if (res != 0)
-	    goto error;
-    } else if (bootloader == 0) {
-	virXMLError(VIR_ERR_NO_OS, nam, 0);
-	goto error;
+	xmlXPathFreeObject(obj);
     }
-    xmlXPathFreeObject(obj);
 
     /* analyze of the devices */
     obj = xmlXPathEval(BAD_CAST "/domain/devices/disk", ctxt);

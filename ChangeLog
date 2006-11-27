@@ -1,3 +1,9 @@
+Mon Nov 27 23:27:26 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xml.c: patch for rhbz#214741, when using pygrub 
+	  do not push the os image information for domain creation
+	  via xend
+
 Wed Nov 22 17:57:58 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* docs//*: regenerated
