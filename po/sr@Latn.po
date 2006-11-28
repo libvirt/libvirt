@@ -1,0 +1,1486 @@
+# Serbian(Latin) translations for libvirt
+# Copyright (C) 2006 Red Hat, Inc.
+# This file is distributed under the same license as the libvirt package.
+# Miloš Komarčević <kmilos@gmail.com>, 206.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libvirt\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-11-27 16:59+0100\n"
+"PO-Revision-Date: 2006-10-01 12:36+0100\n"
+"Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
+"Language-Team: Serbian (sr) <fedora@prevod.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/libvirt.c:245 src/libvirt.c:309 src/hash.c:652
+msgid "allocating connection"
+msgstr "zauzimam vezu"
+
+#: src/libvirt.c:325
+msgid "Xen Daemon or Xen Store"
+msgstr "Xen demon ili Xen skladište"
+
+#: src/virterror.c:243
+msgid "warning"
+msgstr "upozorenje"
+
+#: src/virterror.c:246
+msgid "error"
+msgstr "greška"
+
+#: src/virterror.c:335
+msgid "No error message provided"
+msgstr "Nije pružena poruka o grešci"
+
+#: src/virterror.c:389
+#, c-format
+msgid "internal error %s"
+msgstr "unutrašnja greška %s"
+
+#: src/virterror.c:391
+msgid "internal error"
+msgstr "unutrašnja greška"
+
+#: src/virterror.c:394
+msgid "out of memory"
+msgstr "nestalo memorije"
+
+#: src/virterror.c:398
+msgid "no support for hypervisor"
+msgstr "nema podrške za hipervizora"
+
+#: src/virterror.c:400
+#, c-format
+msgid "no support for hypervisor %s"
+msgstr "nema podrške za %s hipervizora"
+
+#: src/virterror.c:404
+msgid "could not connect to hypervisor"
+msgstr "ne mogu da se povežem sa hipervizorom"
+
+#: src/virterror.c:406
+#, c-format
+msgid "could not connect to %s"
+msgstr "ne mogu da se povežem sa %s"
+
+#: src/virterror.c:410
+msgid "invalid connection pointer in"
+msgstr "neispravan pokazivač veze u"
+
+#: src/virterror.c:412
+#, c-format
+msgid "invalid connection pointer in %s"
+msgstr "neispravan pokazivač veze u %s"
+
+#: src/virterror.c:416
+msgid "invalid domain pointer in"
+msgstr "neispravan pokazivač domena u"
+
+#: src/virterror.c:418
+#, c-format
+msgid "invalid domain pointer in %s"
+msgstr "neispravan pokazivač domena u %s"
+
+#: src/virterror.c:422
+msgid "invalid argument in"
+msgstr "neispravan argument u"
+
+#: src/virterror.c:424
+#, c-format
+msgid "invalid argument in %s"
+msgstr "neispravan argument u %s"
+
+#: src/virterror.c:428
+#, c-format
+msgid "operation failed: %s"
+msgstr "neuspela radnja: %s"
+
+#: src/virterror.c:430
+msgid "operation failed"
+msgstr "neuspela radnja"
+
+#: src/virterror.c:434
+#, c-format
+msgid "GET operation failed: %s"
+msgstr "neuspela GET radnja: %s"
+
+#: src/virterror.c:436
+msgid "GET operation failed"
+msgstr "neuspela GET radnja"
+
+#: src/virterror.c:440
+#, c-format
+msgid "POST operation failed: %s"
+msgstr "neuspela POST radnja: %s"
+
+#: src/virterror.c:442
+msgid "POST operation failed"
+msgstr "neuspela POST radnja"
+
+#: src/virterror.c:445
+#, c-format
+msgid "got unknown HTTP error code %d"
+msgstr "dobijen nepoznat broj HTTP greške %d"
+
+#: src/virterror.c:449
+#, c-format
+msgid "unknown host %s"
+msgstr "nepoznat domaćin %s"
+
+#: src/virterror.c:451
+msgid "unknown host"
+msgstr "nepoznat domaćin"
+
+#: src/virterror.c:455
+#, c-format
+msgid "failed to serialize S-Expr: %s"
+msgstr "ne mogu da serijalizujem S-izraz: %s"
+
+#: src/virterror.c:457
+msgid "failed to serialize S-Expr"
+msgstr "ne mogu da serijalizujem S-izraz"
+
+#: src/virterror.c:461
+msgid "could not use Xen hypervisor entry"
+msgstr "ne mogu da upotrebim stavku Xen hipervizora"
+
+#: src/virterror.c:463
+#, c-format
+msgid "could not use Xen hypervisor entry %s"
+msgstr "ne mogu da upotrebim %s stavku Xen hipervizora"
+
+#: src/virterror.c:467
+msgid "could not connect to Xen Store"
+msgstr "ne mogu da se povežem sa Xen skladištem"
+
+#: src/virterror.c:469
+#, c-format
+msgid "could not connect to Xen Store %s"
+msgstr "ne mogu da se povežem sa Xen skladištem %s"
+
+#: src/virterror.c:472
+#, c-format
+msgid "failed Xen syscall %s %d"
+msgstr "neuspeo Xen syscall %s %d"
+
+#: src/virterror.c:476
+msgid "unknown OS type"
+msgstr "nepoznata vrsta OS-a"
+
+#: src/virterror.c:478
+#, c-format
+msgid "unknown OS type %s"
+msgstr "nepoznata vrsta OS-a %s"
+
+#: src/virterror.c:481
+msgid "missing kernel information"
+msgstr "nedostaju podaci o jezgru"
+
+#: src/virterror.c:485
+msgid "missing root device information"
+msgstr "nedostaju podaci o korenskom uređaju"
+
+#: src/virterror.c:487
+#, c-format
+msgid "missing root device information in %s"
+msgstr "nedostaju podaci o korenskom uređaju %s"
+
+#: src/virterror.c:491
+msgid "missing source information for device"
+msgstr "nedostaju izvorni podaci za uređaj"
+
+#: src/virterror.c:493
+#, c-format
+msgid "missing source information for device %s"
+msgstr "nedostaju izvorni podaci za uređaj %s"
+
+#: src/virterror.c:497
+msgid "missing target information for device"
+msgstr "nedostaju ciljni podaci za uređaj"
+
+#: src/virterror.c:499
+#, c-format
+msgid "missing target information for device %s"
+msgstr "nedostaju ciljni podaci za uređaj %s"
+
+#: src/virterror.c:503
+msgid "missing domain name information"
+msgstr "nedostaju podaci o imenu domena"
+
+#: src/virterror.c:505
+#, c-format
+msgid "missing domain name information in %s"
+msgstr "nedostaju podaci o imenu domena u %s"
+
+#: src/virterror.c:509
+msgid "missing operating system information"
+msgstr "nedostaju podaci o operativnom sistemu"
+
+#: src/virterror.c:511
+#, c-format
+msgid "missing operating system information for %s"
+msgstr "nedostaju podaci o operativnom sistemu za %s"
+
+#: src/virterror.c:515
+msgid "missing devices information"
+msgstr "nedostaju podaci o uređajima"
+
+#: src/virterror.c:517
+#, c-format
+msgid "missing devices information for %s"
+msgstr "nedostaju podaci o uređajima za %s"
+
+#: src/virterror.c:521
+msgid "too many drivers registered"
+msgstr "registrovano je previše upravljačkih programa"
+
+#: src/virterror.c:523
+#, c-format
+msgid "too many drivers registered in %s"
+msgstr "registrovano je previše upravljačkih programa u %s"
+
+#: src/virterror.c:527
+msgid "library call failed, possibly not supported"
+msgstr "neuspeo poziv u biblioteci, verovatno nije podržan"
+
+#: src/virterror.c:529
+#, c-format
+msgid "library call %s failed, possibly not supported"
+msgstr "neuspeo poziv %s u biblioteci, verovatno nije podržan"
+
+#: src/virterror.c:533
+msgid "XML description not well formed or invalid"
+msgstr "XML opis nije dobro oblikovan ili je neispravan"
+
+#: src/virterror.c:535
+#, c-format
+msgid "XML description for %s is not well formed or invalid"
+msgstr "XML opis za %s nije dobro oblikovan ili je neispravan"
+
+#: src/virterror.c:539
+msgid "this domain exists already"
+msgstr "ovaj domen već postoji"
+
+#: src/virterror.c:541
+#, c-format
+msgid "domain %s exists already"
+msgstr "domen %s već postoji"
+
+#: src/virterror.c:545
+msgid "operation forbidden for read only access"
+msgstr "radnja je zabranjena za pristup samo čitanja"
+
+#: src/virterror.c:547
+#, c-format
+msgid "operation %s forbidden for read only access"
+msgstr "radnja %s je zabranjena za pristup samo čitanja"
+
+#: src/virterror.c:551
+msgid "failed to open configuration file for reading"
+msgstr "neuspelo otvaranje datoteku podešavanja za čitanje"
+
+#: src/virterror.c:553
+#, c-format
+msgid "failed to open %s for reading"
+msgstr "neuspelo otvaranje %s za čitanje"
+
+#: src/virterror.c:557
+msgid "failed to read configuration file"
+msgstr "neuspelo čitanje datoteke podešavanja"
+
+#: src/virterror.c:559
+#, c-format
+msgid "failed to read configuration file %s"
+msgstr "neuspelo čitanje %s datoteke podešavanja"
+
+#: src/virterror.c:563
+msgid "failed to parse configuration file"
+msgstr "neuspelo tumačenje datoteke podešavanja"
+
+#: src/virterror.c:565
+#, c-format
+msgid "failed to parse configuration file %s"
+msgstr "neuspelo tumačenje %s datoteke podešavanja"
+
+#: src/virterror.c:569
+msgid "configuration file syntax error"
+msgstr "sintaksna greška u datoteci podešavanja"
+
+#: src/virterror.c:571
+#, c-format
+msgid "configuration file syntax error: %s"
+msgstr "sintaksna greška u datoteci podešavanja: %s"
+
+#: src/virterror.c:575
+msgid "failed to write configuration file"
+msgstr "neuspelo upisivanje datoteke podešavanja"
+
+#: src/virterror.c:577
+#, c-format
+msgid "failed to write configuration file: %s"
+msgstr "neuspelo upisivanje datoteke podešavanja: %s"
+
+#: src/virterror.c:581
+#, fuzzy
+msgid "parser error"
+msgstr "unutrašnja greška"
+
+#: src/xmlrpc.c:63
+msgid "copying node content"
+msgstr "umnožavam sadržaj čvora"
+
+#: src/xmlrpc.c:163
+msgid "allocate value array"
+msgstr "zauzimam niz vrednosti"
+
+#: src/xmlrpc.c:196
+msgid "unexpected dict node"
+msgstr "neočekivan dict čvor"
+
+#: src/xmlrpc.c:268
+msgid "unexpected value node"
+msgstr "neočekivan čvor vrednosti"
+
+#: src/xmlrpc.c:431
+msgid "send request"
+msgstr "pošalji zahtev"
+
+#: src/xmlrpc.c:437
+msgid "unexpected mime type"
+msgstr "neočekivana mime vrsta"
+
+#: src/xmlrpc.c:444
+msgid "allocate response"
+msgstr "dodeli odgovor"
+
+#: src/xmlrpc.c:452 src/xmlrpc.c:514
+msgid "read response"
+msgstr "pročitaj odgovor"
+
+#: src/xmlrpc.c:484
+msgid "allocate string array"
+msgstr "zauzmi niz znakova"
+
+#: src/xmlrpc.c:606
+msgid "parse server response failed"
+msgstr "neuspeo odgovor servera tumačenja"
+
+#: src/xmlrpc.c:670
+msgid "allocate new context"
+msgstr "zauzmi novi kontekst"
+
+#: src/hash.c:749 src/hash.c:755 src/test.c:728 src/test.c:753 src/test.c:776
+#: src/test.c:800 src/xend_internal.c:1933 src/xend_internal.c:2680
+#: src/xend_internal.c:2899 src/xs_internal.c:603 src/proxy_internal.c:798
+#: src/proxy_internal.c:845 src/proxy_internal.c:896
+msgid "allocating domain"
+msgstr "zauzimam domen"
+
+#: src/hash.c:766
+msgid "failed to add domain to connection hash table"
+msgstr "neuspelo dodavanje domena u heš tabelu veza"
+
+#: src/hash.c:818
+msgid "domain missing from connection hash table"
+msgstr "domen nedostaje u heš tabeli veza"
+
+#: src/test.c:203 src/test.c:382 src/test.c:898 src/test.c:926 src/test.c:953
+msgid "getting time of day"
+msgstr "dobavljam vreme dana"
+
+#: src/test.c:209 src/test.c:337 src/test.c:362
+msgid "domain"
+msgstr "domen"
+
+#: src/test.c:215 src/test.c:458
+msgid "creating xpath context"
+msgstr "pravim xpath kontekst"
+
+#: src/test.c:222
+msgid "domain name"
+msgstr "ime domena"
+
+#: src/test.c:231 src/test.c:236
+msgid "domain uuid"
+msgstr "uuid domena"
+
+#: src/test.c:244 src/test.c:249
+msgid "domain memory"
+msgstr "memorija domena"
+
+#: src/test.c:261
+msgid "domain vcpus"
+msgstr "vcpu-i domena"
+
+#: src/test.c:272
+msgid "domain reboot behaviour"
+msgstr "ponašanje ponovnog pokretanja domena"
+
+#: src/test.c:283
+msgid "domain poweroff behaviour"
+msgstr "ponašanje gašenja domena"
+
+#: src/test.c:294
+msgid "domain crash behaviour"
+msgstr "ponašanje krahiranja domena"
+
+#: src/test.c:355
+msgid "load domain definition file"
+msgstr "učitaj datoteku definicije domena"
+
+#: src/test.c:437
+msgid "loading host definition file"
+msgstr "učitavam datoteku definicije domaćina"
+
+#: src/test.c:444
+msgid "host"
+msgstr "domaćin"
+
+#: src/test.c:452
+msgid "node"
+msgstr "čvor"
+
+#: src/test.c:474
+msgid "node cpu numa nodes"
+msgstr "cpu numa čvorovi za čvor"
+
+#: src/test.c:486
+msgid "node cpu sockets"
+msgstr "cpu priključci za čvor"
+
+#: src/test.c:498
+msgid "node cpu cores"
+msgstr "cpu srži za čvor"
+
+#: src/test.c:510
+msgid "node cpu threads"
+msgstr "cpu niti za čvor"
+
+#: src/test.c:522
+msgid "node active cpu"
+msgstr "aktivni cpu za čvor"
+
+#: src/test.c:536
+msgid "node cpu mhz"
+msgstr "cpu mhz za čvor"
+
+#: src/test.c:555
+msgid "node memory"
+msgstr "memorija čvora"
+
+#: src/test.c:564
+msgid "node domain list"
+msgstr "spisak domena za čvor"
+
+#: src/test.c:573
+msgid "resolving domain filename"
+msgstr "razrešavam ime datoteke domena"
+
+#: src/test.c:611
+msgid "allocating node"
+msgstr "zauzimam čvor"
+
+#: src/test.c:651
+msgid "too many connections"
+msgstr "previše veza"
+
+#: src/test.c:736
+msgid "too many domains"
+msgstr "previše domena"
+
+#: src/xml.c:65
+msgid "growing buffer"
+msgstr "rastući bafer"
+
+#: src/xml.c:117 src/xend_internal.c:1625 src/xend_internal.c:1644
+msgid "allocate new buffer"
+msgstr "zauzmi novi bafer"
+
+#: src/xml.c:121
+msgid "allocate buffer content"
+msgstr "zauzmi sadržaj bafera"
+
+#: src/sexpr.c:59
+msgid "failed to allocate a node"
+msgstr "neuspelo zauzimanje čvora"
+
+#: src/sexpr.c:352 src/sexpr.c:367
+msgid "failed to copy a string"
+msgstr "neuspelo umnožavanje niza"
+
+#: src/xend_internal.c:272 src/xend_internal.c:275
+msgid "failed to read from Xen Daemon"
+msgstr "neuspelo čitanje iz Xen demona"
+
+#: src/xend_internal.c:1071
+msgid "failed to urlencode the create S-Expr"
+msgstr "neuspeh pri urlencode S-izraza create"
+
+#: src/xend_internal.c:1112
+msgid "domain information incomplete, missing domid"
+msgstr "nepotpuni podaci o domenu, nedostaje domid"
+
+#: src/xend_internal.c:1118
+msgid "domain information incorrect domid not numeric"
+msgstr "podaci o domenu su netačni ili domid nije brojčan"
+
+#: src/xend_internal.c:1125 src/xend_internal.c:1174
+msgid "domain information incomplete, missing uuid"
+msgstr "nepotpuni podaci o domenu, nedostaje uuid"
+
+#: src/xend_internal.c:1165 src/xend_internal.c:1508
+msgid "domain information incomplete, missing name"
+msgstr "nepotpuni podaci o domenu, nedostaje ime"
+
+#: src/xend_internal.c:1424 src/xend_internal.c:1449
+msgid "domain information incomplete, missing kernel"
+msgstr "nepotpuni podaci o domenu, nedostaje jezgro"
+
+#: src/xend_internal.c:1604
+#, fuzzy
+msgid "domain information incomplete, vbd has no src"
+msgstr "nepotpuni podaci o domenu, vbd nema dev"
+
+#: src/xend_internal.c:1610
+msgid "domain information incomplete, vbd has no dev"
+msgstr "nepotpuni podaci o domenu, vbd nema dev"
+
+#: src/xend_internal.c:1618
+msgid "cannot parse vbd filename, missing driver name"
+msgstr ""
+
+#: src/xend_internal.c:1637
+msgid "cannot parse vbd filename, missing driver type"
+msgstr ""
+
+#: src/xend_internal.c:1944
+msgid "failed to parse Xend domain information"
+msgstr "neuspelo tumačenje podataka o Xend domenu"
+
+#: src/xend_internal.c:2964
+#, c-format
+msgid "Failed to create domain %s\n"
+msgstr "Neuspelo pravljenje domena %s\n"
+
+#: src/xend_internal.c:2970
+#, c-format
+msgid "Failed to get devices for domain %s\n"
+msgstr "Neuspelo pribavljanje uređaja za domen %s\n"
+
+#: src/xend_internal.c:2981
+#, c-format
+msgid "Failed to resume new domain %s\n"
+msgstr "Neuspelo nastavljanje novog domena %s\n"
+
+#: src/virsh.c:234
+msgid "print help"
+msgstr "štampaj pomoć"
+
+#: src/virsh.c:235
+msgid "Prints global help or command specific help."
+msgstr "Štampa opštu pomoć ili pomoć za određenu naredbu."
+
+#: src/virsh.c:253
+msgid ""
+"Commands:\n"
+"\n"
+msgstr ""
+"Naredbe:\n"
+"\n"
+
+#: src/virsh.c:267
+msgid "(re)connect to hypervisor"
+msgstr "poveži se (ponovo) sa hipervizorom"
+
+#: src/virsh.c:269
+msgid ""
+"Connect to local hypervisor. This is built-in command after shell start up."
+msgstr ""
+"Povezivanje sa lokalnim hipervizorom. Ovo je ugrađena naredba posle "
+"podizanja ljuske."
+
+#: src/virsh.c:274
+msgid "hypervisor connection URI"
+msgstr "URI hipervizorske veze"
+
+#: src/virsh.c:275
+msgid "read-only connection"
+msgstr "veza samo za čitanje"
+
+#: src/virsh.c:287
+msgid "Failed to disconnect from the hypervisor"
+msgstr "Neuspelo prekidanje veze sa hipervizorom"
+
+#: src/virsh.c:303
+msgid "Failed to connect to the hypervisor"
+msgstr "Neuspelo povezivanje sa hipervizorom"
+
+#: src/virsh.c:313
+msgid "list domains"
+msgstr "ispiši domene"
+
+#: src/virsh.c:314
+msgid "Returns list of domains."
+msgstr "Vraća spisak domena."
+
+#: src/virsh.c:319
+msgid "list inactive domains"
+msgstr "ispiši neaktivne domene"
+
+#: src/virsh.c:320
+msgid "list inactive & active domains"
+msgstr "ispiši neaktivne i aktivne domene"
+
+#: src/virsh.c:358 src/virsh.c:365
+msgid "Failed to list active domains"
+msgstr "Neuspelo ispisivanje aktivnih domena"
+
+#: src/virsh.c:376 src/virsh.c:385
+msgid "Failed to list inactive domains"
+msgstr "Neuspelo ispisivanje neaktivnih domena"
+
+#: src/virsh.c:395
+msgid "Id"
+msgstr "Id"
+
+#: src/virsh.c:395
+msgid "Name"
+msgstr "Ime"
+
+#: src/virsh.c:395
+msgid "State"
+msgstr "Stanje"
+
+#: src/virsh.c:412 src/virsh.c:2237 src/virsh.c:2253
+msgid "no state"
+msgstr "nema stanja"
+
+#: src/virsh.c:455
+msgid "domain state"
+msgstr "stanje domena"
+
+#: src/virsh.c:456
+msgid "Returns state about a running domain."
+msgstr "Vraća stanje o tekućem domenu."
+
+#: src/virsh.c:461 src/virsh.c:499 src/virsh.c:736 src/virsh.c:818
+#: src/virsh.c:863 src/virsh.c:902 src/virsh.c:941 src/virsh.c:980
+#: src/virsh.c:1019 src/virsh.c:1091 src/virsh.c:1174 src/virsh.c:1260
+#: src/virsh.c:1303 src/virsh.c:1346 src/virsh.c:1423
+msgid "domain name, id or uuid"
+msgstr "ime domena, id ili uuid"
+
+#: src/virsh.c:493
+msgid "suspend a domain"
+msgstr "obustavi domen"
+
+#: src/virsh.c:494
+msgid "Suspend a running domain."
+msgstr "Obustavlja tekući domen. "
+
+#: src/virsh.c:517
+#, c-format
+msgid "Domain %s suspended\n"
+msgstr "Domen %s je obustavljen\n"
+
+#: src/virsh.c:519
+#, c-format
+msgid "Failed to suspend domain %s"
+msgstr "Neuspelo obustavljanje domena %s"
+
+#: src/virsh.c:532
+msgid "create a domain from an XML file"
+msgstr "napravi domen iz XML datoteke"
+
+#: src/virsh.c:533
+msgid "Create a domain."
+msgstr "Pravljenje domena."
+
+#: src/virsh.c:538 src/virsh.c:593
+msgid "file conatining an XML domain description"
+msgstr "datoteka koja sadrži XML opis domena"
+
+#: src/virsh.c:561 src/virsh.c:566 src/virsh.c:616 src/virsh.c:621
+#, c-format
+msgid "Failed to read description file %s"
+msgstr "Neuspelo čitanje %s datoteke opisa"
+
+#: src/virsh.c:573
+#, c-format
+msgid "Domain %s created from %s\n"
+msgstr "Domen %s je napravljen iz %s\n"
+
+#: src/virsh.c:576
+#, c-format
+msgid "Failed to create domain from %s"
+msgstr "Neuspelo pravljenje domena iz %s"
+
+#: src/virsh.c:587
+msgid "define (but don't start) a domain from an XML file"
+msgstr "definiši (ali nemoj pokretati) domen iz XML datoteke"
+
+#: src/virsh.c:588
+msgid "Define a domain."
+msgstr "Definisanje domena."
+
+#: src/virsh.c:628
+#, c-format
+msgid "Domain %s defined from %s\n"
+msgstr "Domen %s je definisan iz %s\n"
+
+#: src/virsh.c:631
+#, c-format
+msgid "Failed to define domain from %s"
+msgstr "Neuspelo definisanje domena iz %s"
+
+#: src/virsh.c:642
+msgid "undefine an inactive domain"
+msgstr "ukini definiciju neaktivnog domena"
+
+#: src/virsh.c:643
+msgid "Undefine the configuration for an inactive domain."
+msgstr "Ukidanje definicije podešavanja za neaktivan domen."
+
+#: src/virsh.c:648 src/virsh.c:1492
+msgid "domain name or uuid"
+msgstr "ime domena ili uuid"
+
+#: src/virsh.c:666
+#, c-format
+msgid "Domain %s has been undefined\n"
+msgstr "Domenu %s je ukinuta definicija\n"
+
+#: src/virsh.c:668
+#, c-format
+msgid "Failed to undefine domain %s"
+msgstr "Neuspelo ukidanje definicije domena %s"
+
+#: src/virsh.c:681
+msgid "start a (previously defined) inactive domain"
+msgstr "pokreni (prethodno definisan) neaktivni domen"
+
+#: src/virsh.c:682
+msgid "Start a domain."
+msgstr "Pokreće domen."
+
+#: src/virsh.c:687
+msgid "name of the inactive domain"
+msgstr "ime neaktivnog domena"
+
+#: src/virsh.c:711
+msgid "Domain is already active"
+msgstr "Domen je već aktivan"
+
+#: src/virsh.c:716
+#, c-format
+msgid "Domain %s started\n"
+msgstr "Domen %s je pokrenut\n"
+
+#: src/virsh.c:719
+#, c-format
+msgid "Failed to start domain %s"
+msgstr "Neuspelo pokretanje domena %s"
+
+#: src/virsh.c:730
+msgid "save a domain state to a file"
+msgstr "sačuvaj stanje domena u datoteku"
+
+#: src/virsh.c:731
+msgid "Save a running domain."
+msgstr "Čuvanje tekućeg domena."
+
+#: src/virsh.c:737
+msgid "where to save the data"
+msgstr "gde sačuvati podatke"
+
+#: src/virsh.c:759
+#, c-format
+msgid "Domain %s saved to %s\n"
+msgstr "Domen %s je sačuvan u %s\n"
+
+#: src/virsh.c:761
+#, c-format
+msgid "Failed to save domain %s to %s"
+msgstr "Neuspelo čuvanje domena %s u %s"
+
+#: src/virsh.c:774
+msgid "restore a domain from a saved state in a file"
+msgstr "vrati domen iz sačuvanog stanja u datoteci"
+
+#: src/virsh.c:775
+msgid "Restore a domain."
+msgstr "Vraćanje domena."
+
+#: src/virsh.c:780
+msgid "the state to restore"
+msgstr "stanje za povraćaj"
+
+#: src/virsh.c:799
+#, c-format
+msgid "Domain restored from %s\n"
+msgstr "Domen je povraćen iz %s\n"
+
+#: src/virsh.c:801
+#, c-format
+msgid "Failed to restore domain from %s"
+msgstr "Neuspelo vraćanje domena iz %s"
+
+#: src/virsh.c:812
+msgid "dump the core of a domain to a file for analysis"
+msgstr ""
+
+#: src/virsh.c:813
+#, fuzzy
+msgid "Core dump a domain."
+msgstr "nastavi domen"
+
+#: src/virsh.c:819
+#, fuzzy
+msgid "where to dump the core"
+msgstr "gde sačuvati podatke"
+
+#: src/virsh.c:841
+#, fuzzy, c-format
+msgid "Domain %s dumpd to %s\n"
+msgstr "Domen %s je sačuvan u %s\n"
+
+#: src/virsh.c:843
+#, fuzzy, c-format
+msgid "Failed to core dump domain %s to %s"
+msgstr "Neuspelo čuvanje domena %s u %s"
+
+#: src/virsh.c:857
+msgid "resume a domain"
+msgstr "nastavi domen"
+
+#: src/virsh.c:858
+msgid "Resume a previously suspended domain."
+msgstr "Nastavljanje prethodno obustavljenog domena."
+
+#: src/virsh.c:881
+#, c-format
+msgid "Domain %s resumed\n"
+msgstr "Domen %s je nastavljen\n"
+
+#: src/virsh.c:883
+#, c-format
+msgid "Failed to resume domain %s"
+msgstr "Neuspelo nastavljanje domena %s"
+
+#: src/virsh.c:896
+msgid "gracefully shutdown a domain"
+msgstr "ljubazno ugasi domen"
+
+#: src/virsh.c:897
+msgid "Run shutdown in the target domain."
+msgstr "Pokretanje gašenja u ciljnom domenu."
+
+#: src/virsh.c:920
+#, c-format
+msgid "Domain %s is being shutdown\n"
+msgstr "Domen %s se gasi\n"
+
+#: src/virsh.c:922
+#, c-format
+msgid "Failed to shutdown domain %s"
+msgstr "Neuspelo gašenje domena %s"
+
+#: src/virsh.c:935
+msgid "reboot a domain"
+msgstr "ponovo pokreni domen"
+
+#: src/virsh.c:936
+msgid "Run a reboot command in the target domain."
+msgstr "Pokretanje naredbe ponovnog pokretanja u ciljnom domenu."
+
+#: src/virsh.c:959
+#, c-format
+msgid "Domain %s is being rebooted\n"
+msgstr "Domen %s se ponovo pokreće\n"
+
+#: src/virsh.c:961
+#, c-format
+msgid "Failed to reboot domain %s"
+msgstr "Neuspelo ponovno pokretanje domena %s"
+
+#: src/virsh.c:974
+msgid "destroy a domain"
+msgstr "uništi domen"
+
+#: src/virsh.c:975
+msgid "Destroy a given domain."
+msgstr "Uništavanje zadatog domena."
+
+#: src/virsh.c:998
+#, c-format
+msgid "Domain %s destroyed\n"
+msgstr "Domen %s je uništen\n"
+
+#: src/virsh.c:1000
+#, c-format
+msgid "Failed to destroy domain %s"
+msgstr "Neuspelo uništavanje domena %s"
+
+#: src/virsh.c:1013
+msgid "domain information"
+msgstr "podaci o domenu"
+
+#: src/virsh.c:1014
+msgid "Returns basic information about the domain."
+msgstr "Vraća osnovne podatke o domenu."
+
+#: src/virsh.c:1040 src/virsh.c:1042
+msgid "Id:"
+msgstr "Id:"
+
+#: src/virsh.c:1043
+msgid "Name:"
+msgstr "Ime:"
+
+#: src/virsh.c:1046
+msgid "UUID:"
+msgstr "UUID:"
+
+#: src/virsh.c:1049
+msgid "OS Type:"
+msgstr "Vrsta OS-a:"
+
+#: src/virsh.c:1054 src/virsh.c:1135
+msgid "State:"
+msgstr "Stanje:"
+
+#: src/virsh.c:1057 src/virsh.c:1401
+msgid "CPU(s):"
+msgstr "CPU(-i):"
+
+#: src/virsh.c:1064 src/virsh.c:1142
+msgid "CPU time:"
+msgstr "CPU vreme:"
+
+#: src/virsh.c:1067
+msgid "Max memory:"
+msgstr "Najviše memorije:"
+
+#: src/virsh.c:1069
+msgid "Used memory:"
+msgstr "Upotrebljena memorija:"
+
+#: src/virsh.c:1085
+msgid "domain vcpu information"
+msgstr "podaci o vcpu domena"
+
+#: src/virsh.c:1086
+msgid "Returns basic information about the domain virtual CPUs."
+msgstr "Vraća osnovne podatke o virtuelnim CPU-ima domena."
+
+#: src/virsh.c:1133
+msgid "VCPU:"
+msgstr "VCPU:"
+
+#: src/virsh.c:1134
+msgid "CPU:"
+msgstr "CPU:"
+
+#: src/virsh.c:1144
+msgid "CPU Affinity:"
+msgstr "CPU sklonost:"
+
+#: src/virsh.c:1168
+msgid "control domain vcpu affinity"
+msgstr "kontroliši sklonost vcpu domena"
+
+#: src/virsh.c:1169
+msgid "Pin domain VCPUs to host physical CPUs."
+msgstr "Prikuj VCPU-e domena za fizičke CPU-e domaćina."
+
+#: src/virsh.c:1175
+msgid "vcpu number"
+msgstr "vcpu broj"
+
+#: src/virsh.c:1176
+msgid "host cpu number(s) (comma separated)"
+msgstr "cpu broj(evi) domaćina (razdvojeni zarezom)"
+
+#: src/virsh.c:1254
+msgid "change number of virtual CPUs"
+msgstr "promeni broj virtuelnih CPU-a"
+
+#: src/virsh.c:1255
+msgid "Change the number of virtual CPUs active in the guest domain."
+msgstr "Menja broj virtuelnih CPU-a aktivnih u domenu gosta."
+
+#: src/virsh.c:1261
+msgid "number of virtual CPUs"
+msgstr "broj virtuelnih CPU-a"
+
+#: src/virsh.c:1297
+msgid "change memory allocation"
+msgstr "promeni dodelu memorije"
+
+#: src/virsh.c:1298
+msgid "Change the current memory allocation in the guest domain."
+msgstr "Menja tekuću dodelu memorije za domen gosta."
+
+#: src/virsh.c:1304
+msgid "number of bytes of memory"
+msgstr "broj bajtova za memoriju"
+
+#: src/virsh.c:1340
+msgid "change maximum memory limit"
+msgstr "promeni najvišu granicu memorije"
+
+#: src/virsh.c:1341
+msgid "Change the maximum memory allocation limit in the guest domain."
+msgstr "Menja granicu najvećeg zauzeća memorije u domenu gosta."
+
+#: src/virsh.c:1347
+msgid "maxmimum memory limit in bytes"
+msgstr "najviša granica memorije u bajtovima"
+
+#: src/virsh.c:1383
+msgid "node information"
+msgstr "podaci o čvoru"
+
+#: src/virsh.c:1384
+msgid "Returns basic information about the node."
+msgstr "Vraća osnovne podatke o čvoru."
+
+#: src/virsh.c:1397
+msgid "failed to get node information"
+msgstr "neuspelo dobavljanje podataka o čvoru"
+
+#: src/virsh.c:1400
+msgid "CPU model:"
+msgstr "CPU model:"
+
+#: src/virsh.c:1402
+msgid "CPU frequency:"
+msgstr "CPU učestanost:"
+
+#: src/virsh.c:1403
+msgid "CPU socket(s):"
+msgstr "CPU priključaka:"
+
+#: src/virsh.c:1404
+msgid "Core(s) per socket:"
+msgstr "Srži po priključku:"
+
+#: src/virsh.c:1405
+msgid "Thread(s) per core:"
+msgstr "Niti po srži:"
+
+#: src/virsh.c:1406
+msgid "NUMA cell(s):"
+msgstr "NUMA ćelija:"
+
+#: src/virsh.c:1407
+msgid "Memory size:"
+msgstr "Veličina memorije:"
+
+#: src/virsh.c:1417
+msgid "domain information in XML"
+msgstr "podaci o domenu u XML-u"
+
+#: src/virsh.c:1418
+msgid "Ouput the domain information as an XML dump to stdout."
+msgstr "Ispiši podatke o domenu kao XML izbačaj na stdout."
+
+#: src/virsh.c:1457
+msgid "convert a domain id or UUID to domain name"
+msgstr "prebaci id ili UUID domena u ime domena"
+
+#: src/virsh.c:1462
+msgid "domain id or uuid"
+msgstr "id ili uuid domena"
+
+#: src/virsh.c:1487
+msgid "convert a domain name or UUID to domain id"
+msgstr "prebaci ime ili UUID domena u id domena"
+
+#: src/virsh.c:1522
+msgid "convert a domain name or id to domain UUID"
+msgstr "prebaci ime ili id domena u UUID domena"
+
+#: src/virsh.c:1527
+msgid "domain id or name"
+msgstr "id ili ime domena"
+
+#: src/virsh.c:1546
+msgid "failed to get domain UUID"
+msgstr "neuspelo dobavljanje UUID domena"
+
+#: src/virsh.c:1557
+msgid "show version"
+msgstr "prikaži verziju"
+
+#: src/virsh.c:1558
+msgid "Display the system version information."
+msgstr "Prikazuje podatke o verziji sistema."
+
+#: src/virsh.c:1581
+msgid "failed to get hypervisor type"
+msgstr "neuspelo dobavljanje vrste hipervizora"
+
+#: src/virsh.c:1590
+#, c-format
+msgid "Compiled against library: libvir %d.%d.%d\n"
+msgstr "Kompilirano uz biblioteku: libvir %d.%d.%d\n"
+
+#: src/virsh.c:1595
+msgid "failed to get the library version"
+msgstr "neuspelo dobavljanje verzije biblioteke"
+
+#: src/virsh.c:1602
+#, c-format
+msgid "Using library: libvir %d.%d.%d\n"
+msgstr "Koristim biblioteku: libvir %d.%d.%d\n"
+
+#: src/virsh.c:1609
+#, c-format
+msgid "Using API: %s %d.%d.%d\n"
+msgstr "Koristim API: %s %d.%d.%d\n"
+
+#: src/virsh.c:1614
+msgid "failed to get the hypervisor version"
+msgstr "neuspelo dobavljanje verzije hipervizora"
+
+#: src/virsh.c:1619
+#, c-format
+msgid "Cannot extract running %s hypervisor version\n"
+msgstr "Ne mogu da izvučem verziju tekućeg %s hipervizora\n"
+
+#: src/virsh.c:1626
+#, c-format
+msgid "Running hypervisor: %s %d.%d.%d\n"
+msgstr "Tekući hipervizor: %s %d.%d.%d\n"
+
+#: src/virsh.c:1637
+msgid "quit this interactive terminal"
+msgstr "napusti ovaj interaktivni terminal"
+
+#: src/virsh.c:1750
+#, c-format
+msgid "command '%s' requires <%s> option"
+msgstr "naredba „%s“ zahteva <%s> opciju"
+
+#: src/virsh.c:1751
+#, c-format
+msgid "command '%s' requires --%s option"
+msgstr "naredba „%s“ zahteva --%s opciju"
+
+#: src/virsh.c:1778
+#, c-format
+msgid "command '%s' doesn't exist"
+msgstr "naredba „%s“ ne postoji"
+
+#: src/virsh.c:1786
+msgid "  NAME\n"
+msgstr "  IME\n"
+
+#: src/virsh.c:1797
+msgid ""
+"\n"
+"  DESCRIPTION\n"
+msgstr ""
+"\n"
+"  OPIS\n"
+
+#: src/virsh.c:1801
+msgid ""
+"\n"
+"  OPTIONS\n"
+msgstr ""
+"\n"
+"  OPCIJE\n"
+
+#: src/virsh.c:1808
+#, c-format
+msgid "--%s <number>"
+msgstr "--%s <broj>"
+
+#: src/virsh.c:1810
+#, c-format
+msgid "--%s <string>"
+msgstr "--%s <niska>"
+
+#: src/virsh.c:1923
+msgid "undefined domain name or id"
+msgstr "nedefinisano ime ili id domena"
+
+#: src/virsh.c:1956
+#, c-format
+msgid "failed to get domain '%s'"
+msgstr "neuspelo dobavljanje domena „%s“"
+
+#: src/virsh.c:1984
+#, c-format
+msgid ""
+"\n"
+"(Time: %.3f ms)\n"
+"\n"
+msgstr ""
+"\n"
+"(Vreme: %.3f ms)\n"
+"\n"
+
+#: src/virsh.c:2058
+msgid "missing \""
+msgstr "nedostaje \""
+
+#: src/virsh.c:2119
+#, c-format
+msgid "unexpected token (command name): '%s'"
+msgstr "neočekivani izraz (ime naredbe): „%s“"
+
+#: src/virsh.c:2124
+#, c-format
+msgid "unknown command: '%s'"
+msgstr "neočekivana naredba: „%s“"
+
+#: src/virsh.c:2131
+#, c-format
+msgid "command '%s' doesn't support option --%s"
+msgstr "naredba „%s“ ne podržava opciju --%s"
+
+#: src/virsh.c:2146
+#, c-format
+msgid "expected syntax: --%s <%s>"
+msgstr "očekivana sintaksa: --%s <%s>"
+
+#: src/virsh.c:2149
+msgid "number"
+msgstr "broj"
+
+#: src/virsh.c:2149
+msgid "string"
+msgstr "niska"
+
+#: src/virsh.c:2155
+#, c-format
+msgid "unexpected data '%s'"
+msgstr "neočekivani podaci „%s“"
+
+#: src/virsh.c:2177
+msgid "OPTION"
+msgstr "OPCIJA"
+
+#: src/virsh.c:2177
+msgid "DATA"
+msgstr "PODACI"
+
+#: src/virsh.c:2225 src/virsh.c:2251
+msgid "running"
+msgstr "pokrenuto"
+
+#: src/virsh.c:2227 src/virsh.c:2249
+msgid "blocked"
+msgstr "blokirano"
+
+#: src/virsh.c:2229
+msgid "paused"
+msgstr "pauzirano"
+
+#: src/virsh.c:2231
+msgid "in shutdown"
+msgstr "u gašenju"
+
+#: src/virsh.c:2233
+msgid "shut off"
+msgstr "zaustavljeno"
+
+#: src/virsh.c:2235
+msgid "crashed"
+msgstr "krahiralo"
+
+#: src/virsh.c:2247
+msgid "offline"
+msgstr "van upotrebe"
+
+#: src/virsh.c:2266
+msgid "no valid connection"
+msgstr "nema ispravne veze"
+
+#: src/virsh.c:2305
+#, c-format
+msgid "%s: error: "
+msgstr "%s: greška: "
+
+#: src/virsh.c:2307
+msgid "error: "
+msgstr "greška: "
+
+#: src/virsh.c:2329 src/virsh.c:2341 src/virsh.c:2353
+#, c-format
+msgid "%s: %d: failed to allocate %d bytes"
+msgstr "%s: %d: neuspelo zauzimanje %d bajtova"
+
+#: src/virsh.c:2381
+msgid "failed to connect to the hypervisor"
+msgstr "neuspelo povezivanje sa hipervizorom"
+
+#: src/virsh.c:2526
+#, c-format
+msgid ""
+"\n"
+"%s [options] [commands]\n"
+"\n"
+"  options:\n"
+"    -c | --connect <uri>    hypervisor connection URI\n"
+"    -d | --debug <num>      debug level [0-5]\n"
+"    -h | --help             this help\n"
+"    -q | --quiet            quiet mode\n"
+"    -t | --timing           print timing information\n"
+"    -v | --version          program version\n"
+"\n"
+"  commands (non interactive mode):\n"
+msgstr ""
+"\n"
+"%s [opcije] [naredbe]\n"
+"\n"
+"  opcije:\n"
+"    -c | --connect <uri>    URI hipervizorske veze\n"
+"    -d | --debug <br>      nivo lova na greške  [0-5]\n"
+"    -h | --help             ova pomoć\n"
+"    -q | --quiet            tihi režim\n"
+"    -t | --timing           štampaj vremenske podatke\n"
+"    -v | --version          verzija programa\n"
+"\n"
+"  naredbe (neinteraktivni režim):\n"
+
+#: src/virsh.c:2542
+#, c-format
+msgid ""
+"\n"
+"  (specify --help <command> for details about the command)\n"
+"\n"
+msgstr ""
+"\n"
+"  (navedite --help <naredba> za detalje o naredbi)\n"
+"\n"
+
+#: src/virsh.c:2628
+#, c-format
+msgid "unsupported option '-%c'. See --help."
+msgstr "nepodržana opcija „-%c“. Pogledajte --help."
+
+#: src/virsh.c:2709
+#, c-format
+msgid ""
+"Welcome to %s, the virtualization interactive terminal.\n"
+"\n"
+msgstr ""
+"Dobrodošli u %s, interaktivni terminal za virtualizaciju.\n"
+"\n"
+
+#: src/virsh.c:2712
+msgid ""
+"Type:  'help' for help with commands\n"
+"       'quit' to quit\n"
+"\n"
+msgstr ""
+"Unesite:  „help“ za pomoć oko naredbi\n"
+"          „quit“ za izlaz\n"
+"\n"
+
+#: src/conf.c:153 src/conf.c:204 src/conf.c:487 src/conf.c:526 src/conf.c:554
+#: src/conf.c:632
+msgid "allocating configuration"
+msgstr "dodeljujem podešavanja"
+
+#: src/conf.c:339
+msgid "unterminated number"
+msgstr "nedovršen broj"
+
+#: src/conf.c:371 src/conf.c:388 src/conf.c:400
+msgid "unterminated string"
+msgstr "nedovršena niska"
+
+#: src/conf.c:428 src/conf.c:481
+msgid "expecting a value"
+msgstr "očekujem vrednost"
+
+#: src/conf.c:448
+msgid "expecting a separator in list"
+msgstr "očekujem razdelnik u spisku"
+
+#: src/conf.c:471
+msgid "list is not closed with ] "
+msgstr "spisak nije zatvoren sa ] "
+
+#: src/conf.c:519
+msgid "expecting a name"
+msgstr "očekujem ime"
+
+#: src/conf.c:582
+msgid "expecting a separator"
+msgstr "očekujem razdelnik"
+
+#: src/conf.c:614
+msgid "expecting an assignment"
+msgstr "očekujem dodelu"
+
+#: src/conf.c:881
+msgid "failed to open file"
+msgstr "neuspelo otvaranje datoteke"
+
+#: src/conf.c:889
+msgid "failed to save content"
+msgstr "neuspelo čuvanje sadržaja"
+
+#: src/xs_internal.c:323
+msgid "failed to connect to Xen Store"
+msgstr "neuspelo povezivanje sa Xen skladištem"
+
+#: src/proxy_internal.c:197
+#, c-format
+msgid "failed to exec %s\n"
+msgstr "neuspelo izvršavanje %s\n"
+
+#: src/proxy_internal.c:291
+#, c-format
+msgid "Failed to close socket %d\n"
+msgstr "Neuspelo zatvaranje priključka %d\n"
+
+#: src/proxy_internal.c:324
+#, c-format
+msgid "Failed to read socket %d\n"
+msgstr "Neuspelo čitanje priključka %d\n"
+
+#: src/proxy_internal.c:358
+#, c-format
+msgid "Failed to write to socket %d\n"
+msgstr "Neuspelo pisanje na priključak %d\n"
+
+#: src/proxy_internal.c:420 src/proxy_internal.c:441 src/proxy_internal.c:461
+#, c-format
+msgid "Communication error with proxy: got %d bytes of %d\n"
+msgstr "Greška u komunikaciji sa proksijem: primljeno %d bajtova od %d\n"
+
+#: src/proxy_internal.c:428
+#, c-format
+msgid "Communication error with proxy: expected %d bytes got %d\n"
+msgstr ""
+"Greška u komunikaciji sa proksijem: očekivano %d bajtova a primljeno %d\n"
+
+#: src/proxy_internal.c:450
+#, c-format
+msgid "Communication error with proxy: got %d bytes packet\n"
+msgstr "Greška u komunikaciji sa proksijem: primljen paket od %d bajtova\n"
+
+#: src/proxy_internal.c:474
+#, c-format
+msgid "Communication error with proxy: malformed packet\n"
+msgstr "Greška u komunikaciji sa proksijem: pogrešno oblikovan paket\n"
+
+#: src/proxy_internal.c:480
+#, c-format
+msgid "got asynchronous packet number %d\n"
+msgstr "primljen asinhroni broj paketa %d\n"
+
+#: src/xen_internal.c:1379
+#, c-format
+msgid "allocating %d domain info"
+msgstr "dodeljujem info %d domena"

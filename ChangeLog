@@ -1,3 +1,8 @@
+Tue Nov 28 13:15:00 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in: update for ALL_LINGUAS
+	* po/*.po: updated with strings from Red Hat translators
+
 Mon Nov 27 23:27:26 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xml.c: patch for rhbz#214741, when using pygrub 

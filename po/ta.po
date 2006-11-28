@@ -1,0 +1,1490 @@
+# translation of ta.po to Tamil
+# Copyright (C) 2006 Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# Felix <ifelix@redhat.com>, 2006.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ta\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-11-27 16:59+0100\n"
+"PO-Revision-Date: 2006-10-18 15:35+0530\n"
+"Last-Translator: Felix <ifelix@redhat.com>\n"
+"Language-Team: Tamil <ta@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Tamil\n"
+"X-Poedit-Country: INDIA\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Generator: KBabel 1.9.1\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"\n"
+
+#: src/libvirt.c:245 src/libvirt.c:309 src/hash.c:652
+msgid "allocating connection"
+msgstr "இணைப்புகள் ஒதுக்கப்படுகிறது"
+
+#: src/libvirt.c:325
+msgid "Xen Daemon or Xen Store"
+msgstr "Xen டீமான் அல்லது Xen Store"
+
+#: src/virterror.c:243
+msgid "warning"
+msgstr "எச்சரிக்கை"
+
+#: src/virterror.c:246
+msgid "error"
+msgstr "பிழை"
+
+#: src/virterror.c:335
+msgid "No error message provided"
+msgstr "பிழையான செய்திகள் கொடுக்கப்படவில்லை"
+
+#: src/virterror.c:389
+#, c-format
+msgid "internal error %s"
+msgstr "உள்ளார்ந்த பிழை %s"
+
+#: src/virterror.c:391
+msgid "internal error"
+msgstr "உள்ளார்ந்த பிழை"
+
+#: src/virterror.c:394
+msgid "out of memory"
+msgstr "நினைவகம் போதவில்லை"
+
+#: src/virterror.c:398
+msgid "no support for hypervisor"
+msgstr "hypervisorக்கு துணையில்லை"
+
+#: src/virterror.c:400
+#, c-format
+msgid "no support for hypervisor %s"
+msgstr "hypervisor %sக்கு துணையில்லை"
+
+#: src/virterror.c:404
+msgid "could not connect to hypervisor"
+msgstr "hypervisorஉடன் இணைக்க முடியவில்லை"
+
+#: src/virterror.c:406
+#, c-format
+msgid "could not connect to %s"
+msgstr " %sஉடன் இணைக்க முடியவில்லை"
+
+#: src/virterror.c:410
+msgid "invalid connection pointer in"
+msgstr "தவறான இணைப்பு புள்ளி"
+
+#: src/virterror.c:412
+#, c-format
+msgid "invalid connection pointer in %s"
+msgstr "%sஇல் தவறான இணைப்பு புள்ளி"
+
+#: src/virterror.c:416
+msgid "invalid domain pointer in"
+msgstr "தவறான கள புள்ளி"
+
+#: src/virterror.c:418
+#, c-format
+msgid "invalid domain pointer in %s"
+msgstr "%sஇல் தவறான களப்புள்ளி"
+
+#: src/virterror.c:422
+msgid "invalid argument in"
+msgstr "தவறான அளவுரு"
+
+#: src/virterror.c:424
+#, c-format
+msgid "invalid argument in %s"
+msgstr "%sஇல் தவறான அளவுரு"
+
+#: src/virterror.c:428
+#, c-format
+msgid "operation failed: %s"
+msgstr "செயற்பாடு செயலிழக்கப்பட்டது: %s"
+
+#: src/virterror.c:430
+msgid "operation failed"
+msgstr "செயற்பாடு செயலிழக்கப்பட்டது"
+
+#: src/virterror.c:434
+#, c-format
+msgid "GET operation failed: %s"
+msgstr "GET செயற்பாடு செயலிழக்கப்பட்டது: %s"
+
+#: src/virterror.c:436
+msgid "GET operation failed"
+msgstr "GET செயற்பாடு செயலிழக்கப்பட்டது"
+
+#: src/virterror.c:440
+#, c-format
+msgid "POST operation failed: %s"
+msgstr "POST செயற்பாடு செயலிழக்கப்பட்டது: %s"
+
+#: src/virterror.c:442
+msgid "POST operation failed"
+msgstr "POST செயற்பாடு செயலிழக்கப்பட்டது"
+
+#: src/virterror.c:445
+#, c-format
+msgid "got unknown HTTP error code %d"
+msgstr "தெரியாத HTTP பிழை குறியீடு %d பெறப்பட்டது"
+
+#: src/virterror.c:449
+#, c-format
+msgid "unknown host %s"
+msgstr "தெரியாத புரவலன் %s"
+
+#: src/virterror.c:451
+msgid "unknown host"
+msgstr "தெரியாத புரவலன்"
+
+#: src/virterror.c:455
+#, c-format
+msgid "failed to serialize S-Expr: %s"
+msgstr "S-Exprஐ வரிசைப்படுத்த முடியவில்லை: %s"
+
+#: src/virterror.c:457
+msgid "failed to serialize S-Expr"
+msgstr "S-Expr ஐ வரிசைப்படுத்த முடியவில்லை"
+
+#: src/virterror.c:461
+msgid "could not use Xen hypervisor entry"
+msgstr "Xen hypervisor உள்ளீட்டை பயன்படுத்த முடியவில்லை"
+
+#: src/virterror.c:463
+#, c-format
+msgid "could not use Xen hypervisor entry %s"
+msgstr "Xen hypervisor உள்ளீடு %sஐ பயன்படுத்த முடியவில்லை"
+
+#: src/virterror.c:467
+msgid "could not connect to Xen Store"
+msgstr "Xen Store உடன் இணைக்க முடியவில்லை"
+
+#: src/virterror.c:469
+#, c-format
+msgid "could not connect to Xen Store %s"
+msgstr "Xen Store %s உடன் இணைக்க முடியவில்லை"
+
+#: src/virterror.c:472
+#, c-format
+msgid "failed Xen syscall %s %d"
+msgstr "செயலிழக்கப்பட்ட Xen syscall %s %d"
+
+#: src/virterror.c:476
+msgid "unknown OS type"
+msgstr "தெரியாத OS வகை"
+
+#: src/virterror.c:478
+#, c-format
+msgid "unknown OS type %s"
+msgstr "தெரியாத OS வகை %s"
+
+#: src/virterror.c:481
+msgid "missing kernel information"
+msgstr "விடுபட்ட கர்னல் தகவல்"
+
+#: src/virterror.c:485
+msgid "missing root device information"
+msgstr "விடுபட்ட ரூட் சாதன தகவல்"
+
+#: src/virterror.c:487
+#, c-format
+msgid "missing root device information in %s"
+msgstr "%s இல் விடுபட்ட ரூட் சாதன தகவல்"
+
+#: src/virterror.c:491
+msgid "missing source information for device"
+msgstr "சாதனத்திற்கு விடுபட்ட மூல தகவல்"
+
+#: src/virterror.c:493
+#, c-format
+msgid "missing source information for device %s"
+msgstr "சாதனம் %sக்கு விடுபட்ட மூல தகவல்"
+
+#: src/virterror.c:497
+msgid "missing target information for device"
+msgstr "சாதனத்திற்கு விடுபட்ட இலக்கு தகவல்"
+
+#: src/virterror.c:499
+#, c-format
+msgid "missing target information for device %s"
+msgstr "சாதனம் %s க்கு விடுபட்ட இலக்கு தகவல்"
+
+#: src/virterror.c:503
+msgid "missing domain name information"
+msgstr "விடுபட்ட செயற்கள பெயர் தகவல்"
+
+#: src/virterror.c:505
+#, c-format
+msgid "missing domain name information in %s"
+msgstr "%sஇல் விடுபட்ட செயற்கள பெயர் தகவல்"
+
+#: src/virterror.c:509
+msgid "missing operating system information"
+msgstr "விடுபட்ட இயக்கத்தள தகவல்"
+
+#: src/virterror.c:511
+#, c-format
+msgid "missing operating system information for %s"
+msgstr "%sக்கு விடுபட்ட இயக்கத்தள தகவல்"
+
+#: src/virterror.c:515
+msgid "missing devices information"
+msgstr "விடுபட்ட சாதனங்கள் தகவல்"
+
+#: src/virterror.c:517
+#, c-format
+msgid "missing devices information for %s"
+msgstr "%sக்கு விடுபட்ட சாதனங்கள் தகவல்"
+
+#: src/virterror.c:521
+msgid "too many drivers registered"
+msgstr "பல இயக்கிகள் பதிவு செய்யப்பட்டன"
+
+#: src/virterror.c:523
+#, c-format
+msgid "too many drivers registered in %s"
+msgstr "பல இயக்கிகள் %s இல் பதிவு செய்யப்பட்டன"
+
+#: src/virterror.c:527
+msgid "library call failed, possibly not supported"
+msgstr "நூலக அழைப்பு செய்ய முடியவில்லை, துணைபுரிய வாய்ப்பில்லை"
+
+#: src/virterror.c:529
+#, c-format
+msgid "library call %s failed, possibly not supported"
+msgstr "நூலக அழைப்பு %s செய்ய முடியவில்லை, துணைபுரிய வாய்ப்பில்லை"
+
+#: src/virterror.c:533
+msgid "XML description not well formed or invalid"
+msgstr "XML விவரம் சரியாக அமைக்கப்படவில்லை அல்லது தவறானது"
+
+#: src/virterror.c:535
+#, c-format
+msgid "XML description for %s is not well formed or invalid"
+msgstr "XML விவரம் %sக்கு சரியாக அமைக்கப்படவில்லை அல்லது தவறானது"
+
+#: src/virterror.c:539
+msgid "this domain exists already"
+msgstr "இந்த செயற்களம் ஏற்கனவே உள்ளது"
+
+#: src/virterror.c:541
+#, c-format
+msgid "domain %s exists already"
+msgstr "செயற்களம் %s ஏற்கனவே உள்ளது"
+
+#: src/virterror.c:545
+msgid "operation forbidden for read only access"
+msgstr "வாசிப்பு மட்டும் அணுகலுக்கு செயல்பாடு தடை செய்யப்பட்டுள்ளது"
+
+#: src/virterror.c:547
+#, c-format
+msgid "operation %s forbidden for read only access"
+msgstr "வாசிப்பு மட்டும் அணுகலுக்கு செயல்பாடு %s தடை செய்யப்பட்டுள்ளது"
+
+#: src/virterror.c:551
+msgid "failed to open configuration file for reading"
+msgstr "வாசிக்க கட்டமைப்பு கோப்பினை திறக்க முடியவில்லை"
+
+#: src/virterror.c:553
+#, c-format
+msgid "failed to open %s for reading"
+msgstr "வாசிக்க %s ஐ திறக்க முடியவில்லை"
+
+#: src/virterror.c:557
+msgid "failed to read configuration file"
+msgstr "கட்டமைப்பு கோப்பினை வாசிக்க முடியவில்லை"
+
+#: src/virterror.c:559
+#, c-format
+msgid "failed to read configuration file %s"
+msgstr "கட்டமைப்பு கோப்பு %s ஐ வாசிக்க முடியவில்லை"
+
+#: src/virterror.c:563
+msgid "failed to parse configuration file"
+msgstr "கட்டமைப்பு கோப்பினை இலக்கணப்படுத்த முடியவில்லை"
+
+#: src/virterror.c:565
+#, c-format
+msgid "failed to parse configuration file %s"
+msgstr "கட்டமைப்பு கோப்பு %s ஐ இலக்கணப்படுத்த முடியவில்லை"
+
+#: src/virterror.c:569
+msgid "configuration file syntax error"
+msgstr "கட்டமைப்பு கோப்பு இலக்கண பிழை"
+
+#: src/virterror.c:571
+#, c-format
+msgid "configuration file syntax error: %s"
+msgstr "கட்டமைப்பு கோப்பு இலக்கண பிழை: %s"
+
+#: src/virterror.c:575
+msgid "failed to write configuration file"
+msgstr "கட்டமைப்பு கோப்பினை எழுத முடியவில்லை"
+
+#: src/virterror.c:577
+#, c-format
+msgid "failed to write configuration file: %s"
+msgstr "கட்டமைப்பு கோப்பினை எழுத முடியவில்லை: %s"
+
+#: src/virterror.c:581
+#, fuzzy
+msgid "parser error"
+msgstr "உள்ளார்ந்த பிழை"
+
+#: src/xmlrpc.c:63
+msgid "copying node content"
+msgstr "முனை உள்ளடக்கத்தை நகலெடுக்கிறது"
+
+#: src/xmlrpc.c:163
+msgid "allocate value array"
+msgstr "மதிப்பளவு வரிசையை ஒதுக்கவும்"
+
+#: src/xmlrpc.c:196
+msgid "unexpected dict node"
+msgstr "எதிர்பாராத dict முனை"
+
+#: src/xmlrpc.c:268
+msgid "unexpected value node"
+msgstr "எதிர்பாராத மதிப்பு முனை"
+
+#: src/xmlrpc.c:431
+msgid "send request"
+msgstr "வேண்டுகோளை அனுப்பவும்"
+
+#: src/xmlrpc.c:437
+msgid "unexpected mime type"
+msgstr "எதிர்பாராத mime வகை"
+
+#: src/xmlrpc.c:444
+msgid "allocate response"
+msgstr "பதிலை ஒதுக்கவும்"
+
+#: src/xmlrpc.c:452 src/xmlrpc.c:514
+msgid "read response"
+msgstr "பதிலை படிக்கவும்"
+
+#: src/xmlrpc.c:484
+msgid "allocate string array"
+msgstr "சர வரிசையை ஒதுக்கவும்"
+
+#: src/xmlrpc.c:606
+msgid "parse server response failed"
+msgstr "parse சேவையகம் பதிலளிக்கவில்லை"
+
+#: src/xmlrpc.c:670
+msgid "allocate new context"
+msgstr "புதிய சூழல் ஒதுக்கீடு"
+
+#: src/hash.c:749 src/hash.c:755 src/test.c:728 src/test.c:753 src/test.c:776
+#: src/test.c:800 src/xend_internal.c:1933 src/xend_internal.c:2680
+#: src/xend_internal.c:2899 src/xs_internal.c:603 src/proxy_internal.c:798
+#: src/proxy_internal.c:845 src/proxy_internal.c:896
+msgid "allocating domain"
+msgstr "செயற்கள ஒதுக்கீடு"
+
+#: src/hash.c:766
+msgid "failed to add domain to connection hash table"
+msgstr "இணைப்பு hash அட்டவணையில் செயற்களத்தை சேர்க்க முடியவில்லை"
+
+#: src/hash.c:818
+msgid "domain missing from connection hash table"
+msgstr "இணைப்பு hash அட்டவணையிலிருந்து விடுபட்ட செயற்களம்"
+
+#: src/test.c:203 src/test.c:382 src/test.c:898 src/test.c:926 src/test.c:953
+msgid "getting time of day"
+msgstr "நாளின் நேரத்தைப் பெறுகிறது"
+
+#: src/test.c:209 src/test.c:337 src/test.c:362
+msgid "domain"
+msgstr "செயற்களம்"
+
+#: src/test.c:215 src/test.c:458
+msgid "creating xpath context"
+msgstr "xpath சூழலை உருவாக்குகிறது"
+
+#: src/test.c:222
+msgid "domain name"
+msgstr "செயற்களப் பெயர்"
+
+#: src/test.c:231 src/test.c:236
+msgid "domain uuid"
+msgstr "செயற்கள uuid"
+
+#: src/test.c:244 src/test.c:249
+msgid "domain memory"
+msgstr "செயற்கள நினைவகம்"
+
+#: src/test.c:261
+msgid "domain vcpus"
+msgstr "செயற்கள vcpus"
+
+#: src/test.c:272
+msgid "domain reboot behaviour"
+msgstr "செயற்கள மறு துவக்க பண்பு"
+
+#: src/test.c:283
+msgid "domain poweroff behaviour"
+msgstr "செயற்கள மின்நிறுத்த பண்பு"
+
+#: src/test.c:294
+msgid "domain crash behaviour"
+msgstr "செயற்கள அழித்தல் பண்பு"
+
+#: src/test.c:355
+msgid "load domain definition file"
+msgstr "செயற்கள விளக்க கோப்பினை ஏற்றவும்"
+
+#: src/test.c:437
+msgid "loading host definition file"
+msgstr "புரவலன் விளக்க கோப்பு ஏற்றப்படுகிறது"
+
+#: src/test.c:444
+msgid "host"
+msgstr "புரவலன்"
+
+#: src/test.c:452
+msgid "node"
+msgstr "முனை"
+
+#: src/test.c:474
+msgid "node cpu numa nodes"
+msgstr "node cpu numa nodes"
+
+#: src/test.c:486
+msgid "node cpu sockets"
+msgstr "node cpu sockets"
+
+#: src/test.c:498
+msgid "node cpu cores"
+msgstr "node cpu cores"
+
+#: src/test.c:510
+msgid "node cpu threads"
+msgstr "node cpu threads"
+
+#: src/test.c:522
+msgid "node active cpu"
+msgstr "node active cpu"
+
+#: src/test.c:536
+msgid "node cpu mhz"
+msgstr "node cpu mhz"
+
+#: src/test.c:555
+msgid "node memory"
+msgstr "முனை நினைவகம்"
+
+#: src/test.c:564
+msgid "node domain list"
+msgstr "முனை செயற்களப் பட்டியல்"
+
+#: src/test.c:573
+msgid "resolving domain filename"
+msgstr "செயற்கள கோப்புப்பெயர் முடிக்கப்பட்டது"
+
+#: src/test.c:611
+msgid "allocating node"
+msgstr "முனை ஒதுக்கப்படுகிறது"
+
+#: src/test.c:651
+msgid "too many connections"
+msgstr "அதிகமான இணைப்புகள்"
+
+#: src/test.c:736
+msgid "too many domains"
+msgstr "அதிகமான செயற்களம்"
+
+#: src/xml.c:65
+msgid "growing buffer"
+msgstr "வளரும் இடையகம்"
+
+#: src/xml.c:117 src/xend_internal.c:1625 src/xend_internal.c:1644
+msgid "allocate new buffer"
+msgstr "புதிய இடையகத்தை ஒதுக்கவும்"
+
+#: src/xml.c:121
+msgid "allocate buffer content"
+msgstr "இடையக உள்ளடக்கத்தை ஒதுக்கவும்"
+
+#: src/sexpr.c:59
+msgid "failed to allocate a node"
+msgstr "ஒரு முனையை ஒதுக்க முடியவில்லை"
+
+#: src/sexpr.c:352 src/sexpr.c:367
+msgid "failed to copy a string"
+msgstr "ஒரு சரத்தை நகலெடுக்க முடியவில்லை"
+
+#: src/xend_internal.c:272 src/xend_internal.c:275
+msgid "failed to read from Xen Daemon"
+msgstr "Xen  டீமானிலிருந்து வாசிக்க முடியவில்லை"
+
+#: src/xend_internal.c:1071
+msgid "failed to urlencode the create S-Expr"
+msgstr "S-Exprக்கு urlencode செய்ய முடியவில்லை"
+
+#: src/xend_internal.c:1112
+msgid "domain information incomplete, missing domid"
+msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, விடுபட்ட domid"
+
+#: src/xend_internal.c:1118
+msgid "domain information incorrect domid not numeric"
+msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, domid எண்ணல்ல"
+
+#: src/xend_internal.c:1125 src/xend_internal.c:1174
+msgid "domain information incomplete, missing uuid"
+msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, விடுபட்ட uuid"
+
+#: src/xend_internal.c:1165 src/xend_internal.c:1508
+msgid "domain information incomplete, missing name"
+msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, விடுபட்ட பெயர்"
+
+#: src/xend_internal.c:1424 src/xend_internal.c:1449
+msgid "domain information incomplete, missing kernel"
+msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, விடுபட்ட கர்னல்"
+
+#: src/xend_internal.c:1604
+#, fuzzy
+msgid "domain information incomplete, vbd has no src"
+msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, vbd  dev எதுவும் கொண்டிருக்கவில்லை"
+
+#: src/xend_internal.c:1610
+msgid "domain information incomplete, vbd has no dev"
+msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, vbd  dev எதுவும் கொண்டிருக்கவில்லை"
+
+#: src/xend_internal.c:1618
+msgid "cannot parse vbd filename, missing driver name"
+msgstr ""
+
+#: src/xend_internal.c:1637
+msgid "cannot parse vbd filename, missing driver type"
+msgstr ""
+
+#: src/xend_internal.c:1944
+msgid "failed to parse Xend domain information"
+msgstr "Xend செயற்கள தகவலை இலக்கணப்படுத்த முடியவில்லை"
+
+#: src/xend_internal.c:2964
+#, c-format
+msgid "Failed to create domain %s\n"
+msgstr "செயற்களம் %s ஐ உருவாக்க முடியவில்லை\n"
+
+#: src/xend_internal.c:2970
+#, c-format
+msgid "Failed to get devices for domain %s\n"
+msgstr "செயற்களம் %sக்கு சாதனங்களை பெற முடியவில்லை\n"
+
+#: src/xend_internal.c:2981
+#, c-format
+msgid "Failed to resume new domain %s\n"
+msgstr "புதிய செயற்களம்%sஐ தொடர முடியவில்லை\n"
+
+#: src/virsh.c:234
+msgid "print help"
+msgstr "அச்சு உதவி"
+
+#: src/virsh.c:235
+msgid "Prints global help or command specific help."
+msgstr "முழுமையான உதவி அல்லது கட்டளை குறிப்பிட்ட உதவியை அச்சிடுகிறது."
+
+#: src/virsh.c:253
+msgid ""
+"Commands:\n"
+"\n"
+msgstr ""
+"கட்டளைகள்:\n"
+"\n"
+
+#: src/virsh.c:267
+msgid "(re)connect to hypervisor"
+msgstr "hypervisor உடன் (மறு)இணைப்பு செய்யப்படுகிறது"
+
+#: src/virsh.c:269
+msgid ""
+"Connect to local hypervisor. This is built-in command after shell start up."
+msgstr ""
+"உள்ளமை hypervisor உடன் இணைக்கிறது. இது ஷெல் துவக்கத்தில் உள் கட்டப்பட்ட கட்டளையாகும்."
+
+#: src/virsh.c:274
+msgid "hypervisor connection URI"
+msgstr "hypervisor இணைப்பு URI"
+
+#: src/virsh.c:275
+msgid "read-only connection"
+msgstr "வாசிப்பு மட்டும் இணைப்புகள்"
+
+#: src/virsh.c:287
+msgid "Failed to disconnect from the hypervisor"
+msgstr "hypervisor இலிருந்து துண்டிக்க முடியவில்லை"
+
+#: src/virsh.c:303
+msgid "Failed to connect to the hypervisor"
+msgstr "hypervisor உடன் இணைக்க முடியவில்லை"
+
+#: src/virsh.c:313
+msgid "list domains"
+msgstr "செயற்கள பட்டியல்"
+
+#: src/virsh.c:314
+msgid "Returns list of domains."
+msgstr "செயற்களங்களின் பட்டியலை கொடுக்கிறது."
+
+#: src/virsh.c:319
+msgid "list inactive domains"
+msgstr "செயலிலில்லாத செயற்களங்களை பட்டியலிடவும்"
+
+#: src/virsh.c:320
+msgid "list inactive & active domains"
+msgstr "செயலற்ற & செயலிலுள்ள செயற்களங்களை பட்டியலிடவும்"
+
+#: src/virsh.c:358 src/virsh.c:365
+msgid "Failed to list active domains"
+msgstr "செயலிலுள்ள செயற்களங்களை பட்டியலிட முடியவில்லை"
+
+#: src/virsh.c:376 src/virsh.c:385
+msgid "Failed to list inactive domains"
+msgstr "செயலற்ற செயற்களங்களை பட்டியலிட முடியவில்லை"
+
+#: src/virsh.c:395
+msgid "Id"
+msgstr "Id"
+
+#: src/virsh.c:395
+msgid "Name"
+msgstr "பெயர்"
+
+#: src/virsh.c:395
+msgid "State"
+msgstr "நிலை"
+
+#: src/virsh.c:412 src/virsh.c:2237 src/virsh.c:2253
+msgid "no state"
+msgstr "நிலையில்லை"
+
+#: src/virsh.c:455
+msgid "domain state"
+msgstr "செயற்கள நிலை"
+
+#: src/virsh.c:456
+msgid "Returns state about a running domain."
+msgstr "இயங்கும் செயற்களத்தின் நிலையை கொடுக்கிறது"
+
+#: src/virsh.c:461 src/virsh.c:499 src/virsh.c:736 src/virsh.c:818
+#: src/virsh.c:863 src/virsh.c:902 src/virsh.c:941 src/virsh.c:980
+#: src/virsh.c:1019 src/virsh.c:1091 src/virsh.c:1174 src/virsh.c:1260
+#: src/virsh.c:1303 src/virsh.c:1346 src/virsh.c:1423
+msgid "domain name, id or uuid"
+msgstr "செயற்களத்தின் பெயர், id or uuid"
+
+#: src/virsh.c:493
+msgid "suspend a domain"
+msgstr "செயற்களத்தின் தற்காலிக நிறுத்தம்"
+
+#: src/virsh.c:494
+msgid "Suspend a running domain."
+msgstr "இயக்கத்திலுள்ள செயற்களத்தின் தற்காலிக நீக்கம்."
+
+#: src/virsh.c:517
+#, c-format
+msgid "Domain %s suspended\n"
+msgstr "செயற்களம் %s தற்காலிகமாக நிறுத்தப்பட்டது\n"
+
+#: src/virsh.c:519
+#, c-format
+msgid "Failed to suspend domain %s"
+msgstr "செயற்களம் %sஐ தற்காலிகமாக நிறுத்த முடியவில்லை"
+
+#: src/virsh.c:532
+msgid "create a domain from an XML file"
+msgstr "XML கோப்பிலிருந்து செயற்களத்தை உருவாக்கவும்"
+
+#: src/virsh.c:533
+msgid "Create a domain."
+msgstr "செயற்களத்தை உருவாக்கவும்."
+
+#: src/virsh.c:538 src/virsh.c:593
+msgid "file conatining an XML domain description"
+msgstr "XML செயற்கள விளக்கத்தை கொண்டுள்ள கோப்பு"
+
+#: src/virsh.c:561 src/virsh.c:566 src/virsh.c:616 src/virsh.c:621
+#, c-format
+msgid "Failed to read description file %s"
+msgstr "விளக்க கோப்பு %sஐ வாசிக்க முடியவில்லை"
+
+#: src/virsh.c:573
+#, c-format
+msgid "Domain %s created from %s\n"
+msgstr "செயற்களம் %s %sலிருந்து உருவாக்கப்பட்டது\n"
+
+#: src/virsh.c:576
+#, c-format
+msgid "Failed to create domain from %s"
+msgstr " %s லிருந்து செயற்களத்தை உருவாக்க முடியவில்லை"
+
+#: src/virsh.c:587
+msgid "define (but don't start) a domain from an XML file"
+msgstr "ஒரு XML கோப்பிலிருந்து ஒரு செயற்களத்தை வரையறுக்கவும் (ஆனால் ஆரம்பிக்க வேண்டாம்)"
+
+#: src/virsh.c:588
+msgid "Define a domain."
+msgstr "செயற்களத்தை வரையறுக்கவும்"
+
+#: src/virsh.c:628
+#, c-format
+msgid "Domain %s defined from %s\n"
+msgstr "செயற்களம் %s %sலிருந்து வரையறுக்கவும்\n"
+
+#: src/virsh.c:631
+#, c-format
+msgid "Failed to define domain from %s"
+msgstr " %s லிருந்து செயற்களத்தை வரையறுக்க முடியவில்லை"
+
+#: src/virsh.c:642
+msgid "undefine an inactive domain"
+msgstr "வரையறுக்கப்படாத ஒரு செயலற்ற செயற்களம்"
+
+#: src/virsh.c:643
+msgid "Undefine the configuration for an inactive domain."
+msgstr "ஒரு செயலற்ற செயற்களத்திற்கு வரையறுக்கப்படாத கட்டமைப்பு."
+
+#: src/virsh.c:648 src/virsh.c:1492
+msgid "domain name or uuid"
+msgstr "செயற்களப் பெயர் அல்லது uuid"
+
+#: src/virsh.c:666
+#, c-format
+msgid "Domain %s has been undefined\n"
+msgstr "செயற்களம் %s வரையறுக்கப்படவில்லை\n"
+
+#: src/virsh.c:668
+#, c-format
+msgid "Failed to undefine domain %s"
+msgstr "செயற்களம் %sஐ வரையறுக்கப்படாதது முடியவில்லை"
+
+#: src/virsh.c:681
+msgid "start a (previously defined) inactive domain"
+msgstr "ஒரு செயலற்ற செயற்களத்தை ஆரம்பிக்கவும் (முன்பு வரையறுக்கப்பட்டது)"
+
+#: src/virsh.c:682
+msgid "Start a domain."
+msgstr "ஒரு செயற்களத்தை துவக்கவும்."
+
+#: src/virsh.c:687
+msgid "name of the inactive domain"
+msgstr "செயலற்ற செயற்களப் பெயர்"
+
+#: src/virsh.c:711
+msgid "Domain is already active"
+msgstr "செயற்களம் ஏற்கனவே செயலில் உள்ளது"
+
+#: src/virsh.c:716
+#, c-format
+msgid "Domain %s started\n"
+msgstr "செயற்களம் %s தொடங்கப்பட்டது\n"
+
+#: src/virsh.c:719
+#, c-format
+msgid "Failed to start domain %s"
+msgstr "செயற்களம் %s ஐ துவக்க முடியவில்லை"
+
+#: src/virsh.c:730
+msgid "save a domain state to a file"
+msgstr "செயற்களத்தின் நிலையை கோப்பாக சேமிக்கவும்"
+
+#: src/virsh.c:731
+msgid "Save a running domain."
+msgstr "இயங்கும் செயற்களத்தை சேமிக்கவும்."
+
+#: src/virsh.c:737
+msgid "where to save the data"
+msgstr "தரவினை எங்கே சேமிக்க வேண்டும்"
+
+#: src/virsh.c:759
+#, c-format
+msgid "Domain %s saved to %s\n"
+msgstr "செயற்களம் %s %s இல் சேமிக்கப்பட்டது\n"
+
+#: src/virsh.c:761
+#, c-format
+msgid "Failed to save domain %s to %s"
+msgstr "%s லிருந்து %s க்கு செயற்களத்தை சேமிக்க முடியவில்லை"
+
+#: src/virsh.c:774
+msgid "restore a domain from a saved state in a file"
+msgstr "ஒரு கோப்பில் சேமிக்கப்பட்ட நிலையிலிருந்து ஒரு செயற்களத்தை மீட்டெடுக்கவும்"
+
+#: src/virsh.c:775
+msgid "Restore a domain."
+msgstr "செயற்களத்தை மீட்டெடுக்கவும்."
+
+#: src/virsh.c:780
+msgid "the state to restore"
+msgstr "நிலையினை மீட்டெடுக்கவும்"
+
+#: src/virsh.c:799
+#, c-format
+msgid "Domain restored from %s\n"
+msgstr "%sலிருந்து செயற்களம் மீட்டெடுக்கப்பட்டது\n"
+
+#: src/virsh.c:801
+#, c-format
+msgid "Failed to restore domain from %s"
+msgstr "%s லிருந்து செயற்களத்தை மீட்டெடுக்க முடியவில்லை"
+
+#: src/virsh.c:812
+msgid "dump the core of a domain to a file for analysis"
+msgstr ""
+
+#: src/virsh.c:813
+#, fuzzy
+msgid "Core dump a domain."
+msgstr "ஒரு செயற்களத்தை மீண்டும் தொடங்குகிறது"
+
+#: src/virsh.c:819
+#, fuzzy
+msgid "where to dump the core"
+msgstr "தரவினை எங்கே சேமிக்க வேண்டும்"
+
+#: src/virsh.c:841
+#, fuzzy, c-format
+msgid "Domain %s dumpd to %s\n"
+msgstr "செயற்களம் %s %s இல் சேமிக்கப்பட்டது\n"
+
+#: src/virsh.c:843
+#, fuzzy, c-format
+msgid "Failed to core dump domain %s to %s"
+msgstr "%s லிருந்து %s க்கு செயற்களத்தை சேமிக்க முடியவில்லை"
+
+#: src/virsh.c:857
+msgid "resume a domain"
+msgstr "ஒரு செயற்களத்தை மீண்டும் தொடங்குகிறது"
+
+#: src/virsh.c:858
+msgid "Resume a previously suspended domain."
+msgstr "முன்பு தற்காலிகமாக நிறுத்தப்பட்ட செயற்களும் மீண்டும் தொடரப்படுகிறது."
+
+#: src/virsh.c:881
+#, c-format
+msgid "Domain %s resumed\n"
+msgstr "செயற்களம் %s மீண்டும் தொடரப்படுகிறது\n"
+
+#: src/virsh.c:883
+#, c-format
+msgid "Failed to resume domain %s"
+msgstr "செயற்களம் %sஐ மீண்டும் தொடர செய்ய முடியவில்லை"
+
+#: src/virsh.c:896
+msgid "gracefully shutdown a domain"
+msgstr "ஒரு செயற்களத்தை பணிநிறுத்தம் செய்யவும்"
+
+#: src/virsh.c:897
+msgid "Run shutdown in the target domain."
+msgstr "இலக்கு செயற்களத்தில் பணிநிறுத்தத்தை இயக்கவும்"
+
+#: src/virsh.c:920
+#, c-format
+msgid "Domain %s is being shutdown\n"
+msgstr "செயற்களம் %s பணி நிறுத்தம் செய்யப்படுகிறது\n"
+
+#: src/virsh.c:922
+#, c-format
+msgid "Failed to shutdown domain %s"
+msgstr "செயற்களம் %sஐ பணி நிறுத்தம் செய்ய முடியவில்லை"
+
+#: src/virsh.c:935
+msgid "reboot a domain"
+msgstr "ஒரு செயற்களத்தை மறு துவக்கம் செய்கிறது"
+
+#: src/virsh.c:936
+msgid "Run a reboot command in the target domain."
+msgstr "இலக்கு செயற்களத்தில் மறு துவக்க கட்டளையை இயக்கவும்."
+
+#: src/virsh.c:959
+#, c-format
+msgid "Domain %s is being rebooted\n"
+msgstr "செயற்களம் %s மறு துவக்கப்படுகிறது\n"
+
+#: src/virsh.c:961
+#, c-format
+msgid "Failed to reboot domain %s"
+msgstr "செயற்களம் %sஐ மறு துவக்க முடியவில்லை"
+
+#: src/virsh.c:974
+msgid "destroy a domain"
+msgstr "ஒரு செயற்களத்தை சேதப்படுத்தவும்"
+
+#: src/virsh.c:975
+msgid "Destroy a given domain."
+msgstr "கொடுக்கப்பட்ட செயற்களத்தை சேதப்படுத்தவும்."
+
+#: src/virsh.c:998
+#, c-format
+msgid "Domain %s destroyed\n"
+msgstr "செயற்களம் %s சேதப்படுத்தப்பட்டது\n"
+
+#: src/virsh.c:1000
+#, c-format
+msgid "Failed to destroy domain %s"
+msgstr "செயற்களம் %sஐ சேதப்படுத்த முடியவில்லை"
+
+#: src/virsh.c:1013
+msgid "domain information"
+msgstr "செயற்கள தகவல்"
+
+#: src/virsh.c:1014
+msgid "Returns basic information about the domain."
+msgstr "செயற்களம் பற்றிய அடிப்படை தகவலை கொடுக்கிறது."
+
+#: src/virsh.c:1040 src/virsh.c:1042
+msgid "Id:"
+msgstr "Id:"
+
+#: src/virsh.c:1043
+msgid "Name:"
+msgstr "பெயர்:"
+
+#: src/virsh.c:1046
+msgid "UUID:"
+msgstr "UUID:"
+
+#: src/virsh.c:1049
+msgid "OS Type:"
+msgstr "OS வகை:"
+
+#: src/virsh.c:1054 src/virsh.c:1135
+msgid "State:"
+msgstr "நிலை:"
+
+#: src/virsh.c:1057 src/virsh.c:1401
+msgid "CPU(s):"
+msgstr "CPU(s):"
+
+#: src/virsh.c:1064 src/virsh.c:1142
+msgid "CPU time:"
+msgstr "CPU நேரம்:"
+
+#: src/virsh.c:1067
+msgid "Max memory:"
+msgstr "அதிகபட்ச நினைவகம்:"
+
+#: src/virsh.c:1069
+msgid "Used memory:"
+msgstr "பயன்படுத்தப்பட்ட நினைவகம்:"
+
+#: src/virsh.c:1085
+msgid "domain vcpu information"
+msgstr "vcpu செயற்கள தகவல்"
+
+#: src/virsh.c:1086
+msgid "Returns basic information about the domain virtual CPUs."
+msgstr "செயற்களம் மெய்நிகர் CPUகள் பற்றிய அடிப்படை தகவலை கொடுக்கிறது."
+
+#: src/virsh.c:1133
+msgid "VCPU:"
+msgstr "VCPU :"
+
+#: src/virsh.c:1134
+msgid "CPU:"
+msgstr "CPU :"
+
+#: src/virsh.c:1144
+msgid "CPU Affinity:"
+msgstr "CPU Affinity:"
+
+#: src/virsh.c:1168
+msgid "control domain vcpu affinity"
+msgstr "செயற்கள vcpu உறவினை கட்டுப்படுத்தவும்"
+
+#: src/virsh.c:1169
+msgid "Pin domain VCPUs to host physical CPUs."
+msgstr "Pin செயற்கள VCPUகள் பருநிலை CPUகளை நிறுவுகிறது."
+
+#: src/virsh.c:1175
+msgid "vcpu number"
+msgstr "vcpu எண்"
+
+#: src/virsh.c:1176
+msgid "host cpu number(s) (comma separated)"
+msgstr "புரவலன் cpu எண்(கள்) (அரைப்புள்ளியால் பிரிக்கப்பட்டுள்ளது)"
+
+#: src/virsh.c:1254
+msgid "change number of virtual CPUs"
+msgstr " CPUகள் மெய்நிகர் எண்ணிக்கையை மாற்றவும்"
+
+#: src/virsh.c:1255
+msgid "Change the number of virtual CPUs active in the guest domain."
+msgstr "விருந்தினர் செயற்களத்தில் செயலிலுள்ள மெய்நிகர் CPUக்களின் எண்ணிக்கையை மாற்றவும்"
+
+#: src/virsh.c:1261
+msgid "number of virtual CPUs"
+msgstr "மெய்நிகர் CPUகளின் எண்ணிக்கை"
+
+#: src/virsh.c:1297
+msgid "change memory allocation"
+msgstr "நினைவக ஒதுக்கீட்டை மாற்றவும்"
+
+#: src/virsh.c:1298
+msgid "Change the current memory allocation in the guest domain."
+msgstr "விருந்தினர் செயற்களத்தில் நடப்பு நினைவக ஒதுக்கீட்டை மாற்றவும்."
+
+#: src/virsh.c:1304
+msgid "number of bytes of memory"
+msgstr "நினைவகத்தின் பைட்டுகளின் எண்ணிக்கை"
+
+#: src/virsh.c:1340
+msgid "change maximum memory limit"
+msgstr "அதிகபட்ச நினைவக வரையறையை மாற்றவும்"
+
+#: src/virsh.c:1341
+msgid "Change the maximum memory allocation limit in the guest domain."
+msgstr "விருந்தினர் செயற்களத்தில் அதிகபட்ச நினைவக ஒதுக்கீட்டை மாற்றவும்."
+
+#: src/virsh.c:1347
+msgid "maxmimum memory limit in bytes"
+msgstr "அதிகபட்ச நினைவக வரையறை பைட்டுகளில்"
+
+#: src/virsh.c:1383
+msgid "node information"
+msgstr "முனை தகவல்"
+
+#: src/virsh.c:1384
+msgid "Returns basic information about the node."
+msgstr "முனை பற்றிய அடிப்படை தகவலை கொடுக்கிறது"
+
+#: src/virsh.c:1397
+msgid "failed to get node information"
+msgstr "முனை தகவலை பெறுவதில் தோல்வி"
+
+#: src/virsh.c:1400
+msgid "CPU model:"
+msgstr "CPU மாதிர:"
+
+#: src/virsh.c:1402
+msgid "CPU frequency:"
+msgstr "CPU அலைவரிசை:"
+
+#: src/virsh.c:1403
+msgid "CPU socket(s):"
+msgstr "CPU சாக்கெட்(கள்):"
+
+#: src/virsh.c:1404
+msgid "Core(s) per socket:"
+msgstr "சாக்கெட்டுக்கான கோர்கள்:"
+
+#: src/virsh.c:1405
+msgid "Thread(s) per core:"
+msgstr "கோருக்கான த்ரட்(கள்):"
+
+#: src/virsh.c:1406
+msgid "NUMA cell(s):"
+msgstr "NUMA கலங்கள்:"
+
+#: src/virsh.c:1407
+msgid "Memory size:"
+msgstr "நினைவக அளவு:"
+
+#: src/virsh.c:1417
+msgid "domain information in XML"
+msgstr " XML பற்றிய செயற்கள தகவல்"
+
+#: src/virsh.c:1418
+msgid "Ouput the domain information as an XML dump to stdout."
+msgstr "XML dump லிருந்து stdoutக்கு செயற்கள தகவலின் வெளியீடு."
+
+#: src/virsh.c:1457
+msgid "convert a domain id or UUID to domain name"
+msgstr "செயற்கள ஐடி அல்லது UUIDஐ செயற்கள பெயருக்கு மாற்றவும்"
+
+#: src/virsh.c:1462
+msgid "domain id or uuid"
+msgstr "செயற்களம் id அல்லது uuid"
+
+#: src/virsh.c:1487
+msgid "convert a domain name or UUID to domain id"
+msgstr "செயற்கள பெயரை மாற்றவும் அல்லது UUID ஐ செயற்களம் ஐடிக்கு மாற்றவும்"
+
+#: src/virsh.c:1522
+msgid "convert a domain name or id to domain UUID"
+msgstr "செயற்கள பெயர் அல்லது idஐ செயற்களம் UUIDக்கு மாற்றவும்"
+
+#: src/virsh.c:1527
+msgid "domain id or name"
+msgstr "செயற்களம் ஐடி அல்லது பெயர்"
+
+#: src/virsh.c:1546
+msgid "failed to get domain UUID"
+msgstr "UUID செயற்களத்தை பெற முடியவில்லை"
+
+#: src/virsh.c:1557
+msgid "show version"
+msgstr "பதிப்பை காட்டவும்"
+
+#: src/virsh.c:1558
+msgid "Display the system version information."
+msgstr "கணினி பதிப்பு தகவலை காட்டவும்"
+
+#: src/virsh.c:1581
+msgid "failed to get hypervisor type"
+msgstr "hypervisor வகையை பெற முடியவில்லை"
+
+#: src/virsh.c:1590
+#, c-format
+msgid "Compiled against library: libvir %d.%d.%d\n"
+msgstr "நூலகத்திற்கு எதிரான மொழிமாற்றம்: libvir %d.%d.%d\n"
+
+#: src/virsh.c:1595
+msgid "failed to get the library version"
+msgstr "நூலக பதிப்பை பெற முடியவில்லை"
+
+#: src/virsh.c:1602
+#, c-format
+msgid "Using library: libvir %d.%d.%d\n"
+msgstr "நூலகத்தை பயன்படுத்துதல்: libvir %d.%d.%d\n"
+
+#: src/virsh.c:1609
+#, c-format
+msgid "Using API: %s %d.%d.%d\n"
+msgstr "API பயன்படுத்துதல்: %s %d.%d.%d\n"
+
+#: src/virsh.c:1614
+msgid "failed to get the hypervisor version"
+msgstr "hypervisor பதிப்பை பெற முடியவில்லை"
+
+#: src/virsh.c:1619
+#, c-format
+msgid "Cannot extract running %s hypervisor version\n"
+msgstr "இயங்கும் %s hypervisor பதிப்பினை பிரித்தெடுக்க முடியாது\n"
+
+#: src/virsh.c:1626
+#, c-format
+msgid "Running hypervisor: %s %d.%d.%d\n"
+msgstr "இயங்கும் hypervisor: %s %d.%d.%d\n"
+
+#: src/virsh.c:1637
+msgid "quit this interactive terminal"
+msgstr "இந்த இடைச்செயல் முனையத்தை விட்டு வெளயேறவும்"
+
+#: src/virsh.c:1750
+#, c-format
+msgid "command '%s' requires <%s> option"
+msgstr "கட்டளை '%s' க்கு <%s> விருப்பம் தேவைப்படுகிறது"
+
+#: src/virsh.c:1751
+#, c-format
+msgid "command '%s' requires --%s option"
+msgstr "கட்டளை '%s' க்கு --%s விருப்பம் தேவைப்படுகிறது"
+
+#: src/virsh.c:1778
+#, c-format
+msgid "command '%s' doesn't exist"
+msgstr "கட்டளை '%s' இல்லை"
+
+#: src/virsh.c:1786
+msgid "  NAME\n"
+msgstr "  பெயர்\n"
+
+#: src/virsh.c:1797
+msgid ""
+"\n"
+"  DESCRIPTION\n"
+msgstr ""
+"\n"
+"  விளக்கம்\n"
+
+#: src/virsh.c:1801
+msgid ""
+"\n"
+"  OPTIONS\n"
+msgstr ""
+"\n"
+" விருப்பங்கள்\n"
+
+#: src/virsh.c:1808
+#, c-format
+msgid "--%s <number>"
+msgstr "--%s <number>"
+
+#: src/virsh.c:1810
+#, c-format
+msgid "--%s <string>"
+msgstr "--%s <string>"
+
+#: src/virsh.c:1923
+msgid "undefined domain name or id"
+msgstr "வரையறுக்கப்படாத செயற்கள பெயர் அல்லது id"
+
+#: src/virsh.c:1956
+#, c-format
+msgid "failed to get domain '%s'"
+msgstr "செயற்களம் '%s'ஐ பெற முடியவில்லை"
+
+#: src/virsh.c:1984
+#, c-format
+msgid ""
+"\n"
+"(Time: %.3f ms)\n"
+"\n"
+msgstr ""
+"\n"
+"(நேரம்: %.3f ms)\n"
+"\n"
+
+#: src/virsh.c:2058
+msgid "missing \""
+msgstr "விடுபட்ட \""
+
+#: src/virsh.c:2119
+#, c-format
+msgid "unexpected token (command name): '%s'"
+msgstr "எதிர்பாராத டோக்கன் (கட்டளை பெயர்): '%s'"
+
+#: src/virsh.c:2124
+#, c-format
+msgid "unknown command: '%s'"
+msgstr "தெரியாத கட்டளை: '%s'"
+
+#: src/virsh.c:2131
+#, c-format
+msgid "command '%s' doesn't support option --%s"
+msgstr "கட்டளை '%s'  --%sவிருப்பத்திற்கு துணை புரியாது"
+
+#: src/virsh.c:2146
+#, c-format
+msgid "expected syntax: --%s <%s>"
+msgstr "எதிர்பார்த்த இலக்கணம்: --%s <%s>"
+
+#: src/virsh.c:2149
+msgid "number"
+msgstr "எண்"
+
+#: src/virsh.c:2149
+msgid "string"
+msgstr "சரம்"
+
+#: src/virsh.c:2155
+#, c-format
+msgid "unexpected data '%s'"
+msgstr "எதிர்பாராத தரவு '%s'"
+
+#: src/virsh.c:2177
+msgid "OPTION"
+msgstr "விருப்பம்"
+
+#: src/virsh.c:2177
+msgid "DATA"
+msgstr "தகவல்"
+
+#: src/virsh.c:2225 src/virsh.c:2251
+msgid "running"
+msgstr "இயங்குகிறது"
+
+#: src/virsh.c:2227 src/virsh.c:2249
+msgid "blocked"
+msgstr "தடுக்கப்பட்டது"
+
+#: src/virsh.c:2229
+msgid "paused"
+msgstr "இடை நிறுத்தப்பட்டது"
+
+#: src/virsh.c:2231
+msgid "in shutdown"
+msgstr "பணி நிறுத்தத்தில்"
+
+#: src/virsh.c:2233
+msgid "shut off"
+msgstr "பணி நிறுத்தம்"
+
+#: src/virsh.c:2235
+msgid "crashed"
+msgstr "முறிவுற்றது"
+
+#: src/virsh.c:2247
+msgid "offline"
+msgstr "இணைப்பில் இல்லாமல்"
+
+#: src/virsh.c:2266
+msgid "no valid connection"
+msgstr "சரியான இணைப்பு இல்லை"
+
+#: src/virsh.c:2305
+#, c-format
+msgid "%s: error: "
+msgstr "%s: பிழை: "
+
+#: src/virsh.c:2307
+msgid "error: "
+msgstr "பிழை: "
+
+#: src/virsh.c:2329 src/virsh.c:2341 src/virsh.c:2353
+#, c-format
+msgid "%s: %d: failed to allocate %d bytes"
+msgstr "%s: %d: %d பைட்டுகளை ஒதுக்க முடியவில்லை"
+
+#: src/virsh.c:2381
+msgid "failed to connect to the hypervisor"
+msgstr "hypervisor உடன் இணைக்க முடியவில்லை"
+
+#: src/virsh.c:2526
+#, c-format
+msgid ""
+"\n"
+"%s [options] [commands]\n"
+"\n"
+"  options:\n"
+"    -c | --connect <uri>    hypervisor connection URI\n"
+"    -d | --debug <num>      debug level [0-5]\n"
+"    -h | --help             this help\n"
+"    -q | --quiet            quiet mode\n"
+"    -t | --timing           print timing information\n"
+"    -v | --version          program version\n"
+"\n"
+"  commands (non interactive mode):\n"
+msgstr ""
+"\n"
+"%s [options] [commands]\n"
+"\n"
+"  options:\n"
+"    -c | --connect <uri>    hypervisor connection URI\n"
+"    -d | --debug <num>      debug level [0-5]\n"
+"    -h | --help             this help\n"
+"    -q | --quiet            quiet mode\n"
+"    -t | --timing           print timing information\n"
+"    -v | --version          program version\n"
+"\n"
+"  commands (non interactive mode):\n"
+
+#: src/virsh.c:2542
+#, c-format
+msgid ""
+"\n"
+"  (specify --help <command> for details about the command)\n"
+"\n"
+msgstr ""
+"\n"
+"  (specify --help <command> for details about the command)\n"
+"\n"
+
+#: src/virsh.c:2628
+#, c-format
+msgid "unsupported option '-%c'. See --help."
+msgstr "துணையில்லாத விருப்பம் '-%c'. --help ஐ பார்க்கவும்."
+
+#: src/virsh.c:2709
+#, c-format
+msgid ""
+"Welcome to %s, the virtualization interactive terminal.\n"
+"\n"
+msgstr ""
+"%sக்கு வரவேற்கப்படுகிறீர்கள், மெய்நிகராக்க இடைச்செயல் முனையம்.\n"
+"\n"
+
+#: src/virsh.c:2712
+msgid ""
+"Type:  'help' for help with commands\n"
+"       'quit' to quit\n"
+"\n"
+msgstr ""
+"வகை:  'help' கட்டளைகளுடன் உதவி\n"
+"       'quit' வெளியேறுதல்\n"
+"\n"
+
+#: src/conf.c:153 src/conf.c:204 src/conf.c:487 src/conf.c:526 src/conf.c:554
+#: src/conf.c:632
+msgid "allocating configuration"
+msgstr "கட்டமைப்பினை ஒதுக்குகிறது"
+
+#: src/conf.c:339
+msgid "unterminated number"
+msgstr "முடிவுறாத எண்"
+
+#: src/conf.c:371 src/conf.c:388 src/conf.c:400
+msgid "unterminated string"
+msgstr "முடிவுறாத சரம்"
+
+#: src/conf.c:428 src/conf.c:481
+msgid "expecting a value"
+msgstr "எதிர்பார்த்த ஒரு மதிப்பு"
+
+#: src/conf.c:448
+msgid "expecting a separator in list"
+msgstr "பட்டியலில் பிரிப்பி எதிர்பார்க்கப்படுகிறது"
+
+#: src/conf.c:471
+msgid "list is not closed with ] "
+msgstr "பட்டியல்] ஆல் மூடப்படவில்லை"
+
+#: src/conf.c:519
+msgid "expecting a name"
+msgstr "எதிர்பார்த்த பெயர்"
+
+#: src/conf.c:582
+msgid "expecting a separator"
+msgstr "எதிர்பார்த்த ஒரு பிரிப்பி"
+
+#: src/conf.c:614
+msgid "expecting an assignment"
+msgstr "திட்டம் எதிர்பார்க்கப்படுகிறது"
+
+#: src/conf.c:881
+msgid "failed to open file"
+msgstr "கோப்பினை திறக்க முடியவில்லை"
+
+#: src/conf.c:889
+msgid "failed to save content"
+msgstr "உள்ளடக்கத்தை சேமிக்க முடியவில்லை"
+
+#: src/xs_internal.c:323
+msgid "failed to connect to Xen Store"
+msgstr "Xen Store உடன் இணைக்க முடியவில்லை"
+
+#: src/proxy_internal.c:197
+#, c-format
+msgid "failed to exec %s\n"
+msgstr "%s ஐ இயக்க முடியவில்லை\n"
+
+#: src/proxy_internal.c:291
+#, c-format
+msgid "Failed to close socket %d\n"
+msgstr "சாக்கெட் %dஐ மூட முடியவில்லை\n"
+
+#: src/proxy_internal.c:324
+#, c-format
+msgid "Failed to read socket %d\n"
+msgstr "சாக்கெட் %dஐ வாசிக்க முடியவில்லை\n"
+
+#: src/proxy_internal.c:358
+#, c-format
+msgid "Failed to write to socket %d\n"
+msgstr "சாக்கெட் %dஐ எழுத முடியவில்லை\n"
+
+#: src/proxy_internal.c:420 src/proxy_internal.c:441 src/proxy_internal.c:461
+#, c-format
+msgid "Communication error with proxy: got %d bytes of %d\n"
+msgstr "பதிலாளுடன் தொடர்பு பிழை: %d பைட்டில் %d பெறப்பட்டது\n"
+
+#: src/proxy_internal.c:428
+#, c-format
+msgid "Communication error with proxy: expected %d bytes got %d\n"
+msgstr "பதிலாளுடன் தொடர்பு பிழை: எதிர்பார்த்த %d பைட்டுகள் %dஐ பெற்றன\n"
+
+#: src/proxy_internal.c:450
+#, c-format
+msgid "Communication error with proxy: got %d bytes packet\n"
+msgstr "பதிலாளுடன் தொடர்பு பிழை: %d பைட்டுகள் பாக்கெட் பெறப்பட்டது\n"
+
+#: src/proxy_internal.c:474
+#, c-format
+msgid "Communication error with proxy: malformed packet\n"
+msgstr "பதிலாளுடன் தொடர்பு பிழை: தவறான பாக்கெட்\n"
+
+#: src/proxy_internal.c:480
+#, c-format
+msgid "got asynchronous packet number %d\n"
+msgstr "ஒருங்கிணைக்கப்படாத பாக்கெட் எண் %d பெறப்பட்டது\n"
+
+#: src/xen_internal.c:1379
+#, c-format
+msgid "allocating %d domain info"
+msgstr "%d செயற்களத் தகவல் ஒதுக்கப்படுகிறது"

@@ -1,0 +1,1494 @@
+# translation of ru.po to 
+# translation of ru.po to
+# translation of ru.po to
+# translation of ru.po to
+# translation of ru.po to
+# translation of ru.po to
+# translation of ru.po to
+# translation of ru.po to
+# Copyright (C) 2006 Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+# Yulia Poyarkova <ypoyarko@redhat.com>, 2006.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ru\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-11-27 16:59+0100\n"
+"PO-Revision-Date: 2006-11-27 11:29+1000\n"
+"Last-Translator: Yulia Poyarkova <ypoyarko@redhat.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.9.1\n"
+
+#: src/libvirt.c:245 src/libvirt.c:309 src/hash.c:652
+msgid "allocating connection"
+msgstr "выделение соединения"
+
+#: src/libvirt.c:325
+msgid "Xen Daemon or Xen Store"
+msgstr "Демон Xen или хранилище Xen"
+
+#: src/virterror.c:243
+msgid "warning"
+msgstr "предупреждение"
+
+#: src/virterror.c:246
+msgid "error"
+msgstr "ошибка"
+
+#: src/virterror.c:335
+msgid "No error message provided"
+msgstr "Не указано сообщение об ошибке"
+
+#: src/virterror.c:389
+#, c-format
+msgid "internal error %s"
+msgstr "внутренняя ошибка %s"
+
+#: src/virterror.c:391
+msgid "internal error"
+msgstr "внутренняя ошибка"
+
+#: src/virterror.c:394
+msgid "out of memory"
+msgstr "недостаточно памяти"
+
+#: src/virterror.c:398
+msgid "no support for hypervisor"
+msgstr "нет поддержки гипервизора"
+
+#: src/virterror.c:400
+#, c-format
+msgid "no support for hypervisor %s"
+msgstr "нет поддержки гипервизора %s"
+
+#: src/virterror.c:404
+msgid "could not connect to hypervisor"
+msgstr "невозможно подключиться к гипервизору"
+
+#: src/virterror.c:406
+#, c-format
+msgid "could not connect to %s"
+msgstr "невозможно подключиться к %s"
+
+#: src/virterror.c:410
+msgid "invalid connection pointer in"
+msgstr "неправильный указатель соединения в"
+
+#: src/virterror.c:412
+#, c-format
+msgid "invalid connection pointer in %s"
+msgstr "неправильный указатель соединения в %s"
+
+#: src/virterror.c:416
+msgid "invalid domain pointer in"
+msgstr "неправильный указатель домена в"
+
+#: src/virterror.c:418
+#, c-format
+msgid "invalid domain pointer in %s"
+msgstr "неправильный указатель домена в %s"
+
+#: src/virterror.c:422
+msgid "invalid argument in"
+msgstr "неверный аргумент в"
+
+#: src/virterror.c:424
+#, c-format
+msgid "invalid argument in %s"
+msgstr "неверный аргумент %s"
+
+#: src/virterror.c:428
+#, c-format
+msgid "operation failed: %s"
+msgstr "ошибка действия: %s"
+
+#: src/virterror.c:430
+msgid "operation failed"
+msgstr "ошибка действия"
+
+#: src/virterror.c:434
+#, c-format
+msgid "GET operation failed: %s"
+msgstr "Ошибка действия GET: %s"
+
+#: src/virterror.c:436
+msgid "GET operation failed"
+msgstr "Ошибка действия GET"
+
+#: src/virterror.c:440
+#, c-format
+msgid "POST operation failed: %s"
+msgstr "Ошибка действия POST: %s"
+
+#: src/virterror.c:442
+msgid "POST operation failed"
+msgstr "Ошибка действия POST"
+
+#: src/virterror.c:445
+#, c-format
+msgid "got unknown HTTP error code %d"
+msgstr "неизвестный код ошибки HTTP %d"
+
+#: src/virterror.c:449
+#, c-format
+msgid "unknown host %s"
+msgstr "неизвестный узел %s"
+
+#: src/virterror.c:451
+msgid "unknown host"
+msgstr "неизвестный узел"
+
+#: src/virterror.c:455
+#, c-format
+msgid "failed to serialize S-Expr: %s"
+msgstr "ошибка преобразования S-Expr: %s"
+
+#: src/virterror.c:457
+msgid "failed to serialize S-Expr"
+msgstr "ошибка преобразования S-Expr"
+
+#: src/virterror.c:461
+msgid "could not use Xen hypervisor entry"
+msgstr "невозможно использовать запись Xen гипервизора"
+
+#: src/virterror.c:463
+#, c-format
+msgid "could not use Xen hypervisor entry %s"
+msgstr "невозможно использовать запись Xen %s "
+
+#: src/virterror.c:467
+msgid "could not connect to Xen Store"
+msgstr "невозможно подключиться к хранилищу Xen"
+
+#: src/virterror.c:469
+#, c-format
+msgid "could not connect to Xen Store %s"
+msgstr "невозможно подключиться к хранилищу Xen %s"
+
+#: src/virterror.c:472
+#, c-format
+msgid "failed Xen syscall %s %d"
+msgstr "ошибка Xen syscall %s %d"
+
+#: src/virterror.c:476
+msgid "unknown OS type"
+msgstr "неизвестный тип ОС"
+
+#: src/virterror.c:478
+#, c-format
+msgid "unknown OS type %s"
+msgstr "неизвестный тип ОС %s"
+
+#: src/virterror.c:481
+msgid "missing kernel information"
+msgstr "отсутствует информация ядра"
+
+#: src/virterror.c:485
+msgid "missing root device information"
+msgstr "отсутствует информация о корневом устройстве"
+
+#: src/virterror.c:487
+#, c-format
+msgid "missing root device information in %s"
+msgstr "отсутствует информация о корневом устройстве %s"
+
+#: src/virterror.c:491
+msgid "missing source information for device"
+msgstr "отсутствует исходная информация для устройства"
+
+#: src/virterror.c:493
+#, c-format
+msgid "missing source information for device %s"
+msgstr "отсутствует исходная информация для устройства %s"
+
+#: src/virterror.c:497
+msgid "missing target information for device"
+msgstr "отсутствует целевая информация для устройства"
+
+#: src/virterror.c:499
+#, c-format
+msgid "missing target information for device %s"
+msgstr "отсутствует целевая информация для устройства %s"
+
+#: src/virterror.c:503
+msgid "missing domain name information"
+msgstr "отсутствует информация об имени домена"
+
+#: src/virterror.c:505
+#, c-format
+msgid "missing domain name information in %s"
+msgstr "отсутствует информация об имени домена в %s"
+
+#: src/virterror.c:509
+msgid "missing operating system information"
+msgstr "отсутствует информация об ОС"
+
+#: src/virterror.c:511
+#, c-format
+msgid "missing operating system information for %s"
+msgstr "отсутствует информация об ОС для %s"
+
+#: src/virterror.c:515
+msgid "missing devices information"
+msgstr "отсутствует информация об устройствах"
+
+#: src/virterror.c:517
+#, c-format
+msgid "missing devices information for %s"
+msgstr "отсутствует информация об устройствах для %s"
+
+#: src/virterror.c:521
+msgid "too many drivers registered"
+msgstr "зарегистрировано слишком много драйверов"
+
+#: src/virterror.c:523
+#, c-format
+msgid "too many drivers registered in %s"
+msgstr "зарегистрировано слишком много драйверов в %s"
+
+#: src/virterror.c:527
+msgid "library call failed, possibly not supported"
+msgstr "ошибка обращения к библиотеке, возможно не поддерживается"
+
+#: src/virterror.c:529
+#, c-format
+msgid "library call %s failed, possibly not supported"
+msgstr "ошибка обращения %s к библиотеке, возможно не поддерживается"
+
+#: src/virterror.c:533
+msgid "XML description not well formed or invalid"
+msgstr "описание XML неправильно сформировано или неверно"
+
+#: src/virterror.c:535
+#, c-format
+msgid "XML description for %s is not well formed or invalid"
+msgstr "описание XML для %s неправильно сформировано или неверно"
+
+#: src/virterror.c:539
+msgid "this domain exists already"
+msgstr "домен уже существует"
+
+#: src/virterror.c:541
+#, c-format
+msgid "domain %s exists already"
+msgstr "домен %s уже существует"
+
+#: src/virterror.c:545
+msgid "operation forbidden for read only access"
+msgstr "действию запрещен доступ в режиме чтения"
+
+#: src/virterror.c:547
+#, c-format
+msgid "operation %s forbidden for read only access"
+msgstr "действию %s запрещен доступ в режиме чтения"
+
+#: src/virterror.c:551
+msgid "failed to open configuration file for reading"
+msgstr "ошибка при попытке открыть файл конфигурации для чтения"
+
+#: src/virterror.c:553
+#, c-format
+msgid "failed to open %s for reading"
+msgstr "ошибка при попытке открыть %s для чтения"
+
+#: src/virterror.c:557
+msgid "failed to read configuration file"
+msgstr "ошибка чтения файла конфигурации"
+
+#: src/virterror.c:559
+#, c-format
+msgid "failed to read configuration file %s"
+msgstr "ошибка чтения файла конфигурации %s"
+
+#: src/virterror.c:563
+msgid "failed to parse configuration file"
+msgstr "ошибка разбора файла конфигурации"
+
+#: src/virterror.c:565
+#, c-format
+msgid "failed to parse configuration file %s"
+msgstr "ошибка разбора файла конфигурации %s"
+
+#: src/virterror.c:569
+msgid "configuration file syntax error"
+msgstr "ошибка синтаксиса файла конфигурации"
+
+#: src/virterror.c:571
+#, c-format
+msgid "configuration file syntax error: %s"
+msgstr "ошибка синтаксиса файла конфигурации: %s"
+
+#: src/virterror.c:575
+msgid "failed to write configuration file"
+msgstr "ошибка записи файла конфигурации"
+
+#: src/virterror.c:577
+#, c-format
+msgid "failed to write configuration file: %s"
+msgstr "ошибка записи файла конфигурации: %s"
+
+#: src/virterror.c:581
+#, fuzzy
+msgid "parser error"
+msgstr "внутренняя ошибка"
+
+#: src/xmlrpc.c:63
+msgid "copying node content"
+msgstr "копирование содержимого узла"
+
+#: src/xmlrpc.c:163
+msgid "allocate value array"
+msgstr "выделить массив для значений"
+
+#: src/xmlrpc.c:196
+msgid "unexpected dict node"
+msgstr "непредвиденный узел dict"
+
+#: src/xmlrpc.c:268
+msgid "unexpected value node"
+msgstr "непредвиденный узел значений"
+
+#: src/xmlrpc.c:431
+msgid "send request"
+msgstr "отправить запрос"
+
+#: src/xmlrpc.c:437
+msgid "unexpected mime type"
+msgstr "непредвиденный тип mime"
+
+#: src/xmlrpc.c:444
+msgid "allocate response"
+msgstr "назначить ответ"
+
+#: src/xmlrpc.c:452 src/xmlrpc.c:514
+msgid "read response"
+msgstr "прочитать ответ"
+
+#: src/xmlrpc.c:484
+msgid "allocate string array"
+msgstr "выделить массив строк"
+
+#: src/xmlrpc.c:606
+msgid "parse server response failed"
+msgstr "ошибка разбора ответа сервера"
+
+#: src/xmlrpc.c:670
+msgid "allocate new context"
+msgstr "назначить новый контекст"
+
+#: src/hash.c:749 src/hash.c:755 src/test.c:728 src/test.c:753 src/test.c:776
+#: src/test.c:800 src/xend_internal.c:1933 src/xend_internal.c:2680
+#: src/xend_internal.c:2899 src/xs_internal.c:603 src/proxy_internal.c:798
+#: src/proxy_internal.c:845 src/proxy_internal.c:896
+msgid "allocating domain"
+msgstr "выделение домена"
+
+#: src/hash.c:766
+msgid "failed to add domain to connection hash table"
+msgstr "ошибка добавления домена к хэш-таблице соединений"
+
+#: src/hash.c:818
+msgid "domain missing from connection hash table"
+msgstr "домен отсутствует в хэш-таблице соединений"
+
+#: src/test.c:203 src/test.c:382 src/test.c:898 src/test.c:926 src/test.c:953
+msgid "getting time of day"
+msgstr "получение времени дня"
+
+#: src/test.c:209 src/test.c:337 src/test.c:362
+msgid "domain"
+msgstr "домен"
+
+#: src/test.c:215 src/test.c:458
+msgid "creating xpath context"
+msgstr "создание контекста xpath"
+
+#: src/test.c:222
+msgid "domain name"
+msgstr "имя домена"
+
+#: src/test.c:231 src/test.c:236
+msgid "domain uuid"
+msgstr "uuid домена"
+
+#: src/test.c:244 src/test.c:249
+msgid "domain memory"
+msgstr "память домена"
+
+#: src/test.c:261
+msgid "domain vcpus"
+msgstr "vcpus домена"
+
+#: src/test.c:272
+msgid "domain reboot behaviour"
+msgstr "поведение домена при перезагрузке"
+
+#: src/test.c:283
+msgid "domain poweroff behaviour"
+msgstr "поведение домена при отключении питания"
+
+#: src/test.c:294
+msgid "domain crash behaviour"
+msgstr "поведение домена при аварийном выходе"
+
+#: src/test.c:355
+msgid "load domain definition file"
+msgstr "загрузить файл определений домена"
+
+#: src/test.c:437
+msgid "loading host definition file"
+msgstr "загрузка файла определения хоста"
+
+#: src/test.c:444
+msgid "host"
+msgstr "хост"
+
+#: src/test.c:452
+msgid "node"
+msgstr "узел"
+
+#: src/test.c:474
+msgid "node cpu numa nodes"
+msgstr "узлы numa cpu узла"
+
+#: src/test.c:486
+msgid "node cpu sockets"
+msgstr "сокеты cpu узла"
+
+#: src/test.c:498
+msgid "node cpu cores"
+msgstr "ядра cpu узла"
+
+#: src/test.c:510
+msgid "node cpu threads"
+msgstr "потоки cpu узла"
+
+#: src/test.c:522
+msgid "node active cpu"
+msgstr "активный cpu узла"
+
+#: src/test.c:536
+msgid "node cpu mhz"
+msgstr "cpu узла (Mгц)"
+
+#: src/test.c:555
+msgid "node memory"
+msgstr "память узла"
+
+#: src/test.c:564
+msgid "node domain list"
+msgstr "список доменов узла"
+
+#: src/test.c:573
+msgid "resolving domain filename"
+msgstr "разрешение имени файла домена"
+
+#: src/test.c:611
+msgid "allocating node"
+msgstr "выделение узла"
+
+#: src/test.c:651
+msgid "too many connections"
+msgstr "слишком много подключений"
+
+#: src/test.c:736
+msgid "too many domains"
+msgstr "слишком много доменов"
+
+#: src/xml.c:65
+msgid "growing buffer"
+msgstr "растущий буфер"
+
+#: src/xml.c:117 src/xend_internal.c:1625 src/xend_internal.c:1644
+msgid "allocate new buffer"
+msgstr "выделить новый буфер"
+
+#: src/xml.c:121
+msgid "allocate buffer content"
+msgstr "назначить содержимое буфера"
+
+#: src/sexpr.c:59
+msgid "failed to allocate a node"
+msgstr "ошибка выделения узла"
+
+#: src/sexpr.c:352 src/sexpr.c:367
+msgid "failed to copy a string"
+msgstr "ошибка копирования строки"
+
+#: src/xend_internal.c:272 src/xend_internal.c:275
+msgid "failed to read from Xen Daemon"
+msgstr "ошибка чтения из демона Xen"
+
+#: src/xend_internal.c:1071
+msgid "failed to urlencode the create S-Expr"
+msgstr "ошибка urlencode при создании S-Expr"
+
+#: src/xend_internal.c:1112
+msgid "domain information incomplete, missing domid"
+msgstr "неполная информация домена, отсутствует domid"
+
+#: src/xend_internal.c:1118
+msgid "domain information incorrect domid not numeric"
+msgstr "неверная информация домена, domid должен быть числом"
+
+#: src/xend_internal.c:1125 src/xend_internal.c:1174
+msgid "domain information incomplete, missing uuid"
+msgstr "неполная информация домена, отсутствует uuid"
+
+#: src/xend_internal.c:1165 src/xend_internal.c:1508
+msgid "domain information incomplete, missing name"
+msgstr "неполная информация домена, отсутствует имя"
+
+#: src/xend_internal.c:1424 src/xend_internal.c:1449
+msgid "domain information incomplete, missing kernel"
+msgstr "неполная информация домена, отсутствует ядро"
+
+#: src/xend_internal.c:1604
+#, fuzzy
+msgid "domain information incomplete, vbd has no src"
+msgstr "неполная информация домена, нет dev для vbd"
+
+#: src/xend_internal.c:1610
+msgid "domain information incomplete, vbd has no dev"
+msgstr "неполная информация домена, нет dev для vbd"
+
+#: src/xend_internal.c:1618
+msgid "cannot parse vbd filename, missing driver name"
+msgstr ""
+
+#: src/xend_internal.c:1637
+msgid "cannot parse vbd filename, missing driver type"
+msgstr ""
+
+#: src/xend_internal.c:1944
+msgid "failed to parse Xend domain information"
+msgstr "ошибка разбора информации домена Xend"
+
+#: src/xend_internal.c:2964
+#, c-format
+msgid "Failed to create domain %s\n"
+msgstr "Ошибка создания домена %s\n"
+
+#: src/xend_internal.c:2970
+#, c-format
+msgid "Failed to get devices for domain %s\n"
+msgstr "Ошибка получения устройств для домена %s\n"
+
+#: src/xend_internal.c:2981
+#, c-format
+msgid "Failed to resume new domain %s\n"
+msgstr "Ошибка при возобновлении работы нового домена %s\n"
+
+#: src/virsh.c:234
+msgid "print help"
+msgstr "помощь печати"
+
+#: src/virsh.c:235
+msgid "Prints global help or command specific help."
+msgstr "Распечатывает общую информацию помощи или помощь для отдельных команд."
+
+#: src/virsh.c:253
+msgid ""
+"Commands:\n"
+"\n"
+msgstr ""
+"Команды:\n"
+"\n"
+
+#: src/virsh.c:267
+msgid "(re)connect to hypervisor"
+msgstr "(пере)подключиться к гипервизору"
+
+#: src/virsh.c:269
+msgid ""
+"Connect to local hypervisor. This is built-in command after shell start up."
+msgstr ""
+"Подключиться к локальному гипервизору. Эта встроенная команда активна после "
+"старта оболочки."
+
+#: src/virsh.c:274
+msgid "hypervisor connection URI"
+msgstr "URI соединения гипервизора"
+
+#: src/virsh.c:275
+msgid "read-only connection"
+msgstr "соединение только для чтения"
+
+#: src/virsh.c:287
+msgid "Failed to disconnect from the hypervisor"
+msgstr "Ошибка отключения от гипервизора"
+
+#: src/virsh.c:303
+msgid "Failed to connect to the hypervisor"
+msgstr "Ошибка подключения к гипервизору"
+
+#: src/virsh.c:313
+msgid "list domains"
+msgstr "просмотр доменов"
+
+#: src/virsh.c:314
+msgid "Returns list of domains."
+msgstr "Возвращает список доменов."
+
+#: src/virsh.c:319
+msgid "list inactive domains"
+msgstr "просмотр неактивных доменов"
+
+#: src/virsh.c:320
+msgid "list inactive & active domains"
+msgstr "просмотр неактивных и активных доменов"
+
+#: src/virsh.c:358 src/virsh.c:365
+msgid "Failed to list active domains"
+msgstr "Ошибка отображения списка активных доменов"
+
+#: src/virsh.c:376 src/virsh.c:385
+msgid "Failed to list inactive domains"
+msgstr "Ошибка отображения списка неактивных доменов"
+
+#: src/virsh.c:395
+msgid "Id"
+msgstr "ID"
+
+#: src/virsh.c:395
+msgid "Name"
+msgstr "Имя"
+
+#: src/virsh.c:395
+msgid "State"
+msgstr "Статус"
+
+#: src/virsh.c:412 src/virsh.c:2237 src/virsh.c:2253
+msgid "no state"
+msgstr "нет статуса"
+
+#: src/virsh.c:455
+msgid "domain state"
+msgstr "статус домена"
+
+#: src/virsh.c:456
+msgid "Returns state about a running domain."
+msgstr "Возвращает состояние выполняющегося домена."
+
+#: src/virsh.c:461 src/virsh.c:499 src/virsh.c:736 src/virsh.c:818
+#: src/virsh.c:863 src/virsh.c:902 src/virsh.c:941 src/virsh.c:980
+#: src/virsh.c:1019 src/virsh.c:1091 src/virsh.c:1174 src/virsh.c:1260
+#: src/virsh.c:1303 src/virsh.c:1346 src/virsh.c:1423
+msgid "domain name, id or uuid"
+msgstr "имя домена, id или uuid"
+
+#: src/virsh.c:493
+msgid "suspend a domain"
+msgstr "перевести домен в состояние ожидания"
+
+#: src/virsh.c:494
+msgid "Suspend a running domain."
+msgstr "Перевести выполняющийся домен в состояние ожидания."
+
+#: src/virsh.c:517
+#, c-format
+msgid "Domain %s suspended\n"
+msgstr "Домен %s переведен в состояние ожидания \n"
+
+#: src/virsh.c:519
+#, c-format
+msgid "Failed to suspend domain %s"
+msgstr "Ошибка при переведении домена %s в состояние ожидания"
+
+#: src/virsh.c:532
+msgid "create a domain from an XML file"
+msgstr "создать домен из файла XML"
+
+#: src/virsh.c:533
+msgid "Create a domain."
+msgstr "Создать домен."
+
+#: src/virsh.c:538 src/virsh.c:593
+msgid "file conatining an XML domain description"
+msgstr "файл, содержащий XML описание домена"
+
+#: src/virsh.c:561 src/virsh.c:566 src/virsh.c:616 src/virsh.c:621
+#, c-format
+msgid "Failed to read description file %s"
+msgstr "Ошибка чтения файла описания %s"
+
+#: src/virsh.c:573
+#, c-format
+msgid "Domain %s created from %s\n"
+msgstr "Домен %s создан из %s\n"
+
+#: src/virsh.c:576
+#, c-format
+msgid "Failed to create domain from %s"
+msgstr "Ошибка создания домена из %s"
+
+#: src/virsh.c:587
+msgid "define (but don't start) a domain from an XML file"
+msgstr "определить (но не запускать) домен из файла XML"
+
+#: src/virsh.c:588
+msgid "Define a domain."
+msgstr "Определить домен."
+
+#: src/virsh.c:628
+#, c-format
+msgid "Domain %s defined from %s\n"
+msgstr "Домен %s определен на основе %s\n"
+
+#: src/virsh.c:631
+#, c-format
+msgid "Failed to define domain from %s"
+msgstr "Ошибка определения домена на основе %s"
+
+#: src/virsh.c:642
+msgid "undefine an inactive domain"
+msgstr "отменить определение неактивного домена"
+
+#: src/virsh.c:643
+msgid "Undefine the configuration for an inactive domain."
+msgstr "Отменить назначение конфигурации для неактивного домена."
+
+#: src/virsh.c:648 src/virsh.c:1492
+msgid "domain name or uuid"
+msgstr "имя домена или uuid"
+
+#: src/virsh.c:666
+#, c-format
+msgid "Domain %s has been undefined\n"
+msgstr "Конфигурация домена %s отменена\n"
+
+#: src/virsh.c:668
+#, c-format
+msgid "Failed to undefine domain %s"
+msgstr "Ошибка отмены конфигурации домена %s"
+
+#: src/virsh.c:681
+msgid "start a (previously defined) inactive domain"
+msgstr "запустить ранее определенный неактивный домен"
+
+#: src/virsh.c:682
+msgid "Start a domain."
+msgstr "Запуск домена."
+
+#: src/virsh.c:687
+msgid "name of the inactive domain"
+msgstr "имя неактивного домена"
+
+#: src/virsh.c:711
+msgid "Domain is already active"
+msgstr "Домен уже активен"
+
+#: src/virsh.c:716
+#, c-format
+msgid "Domain %s started\n"
+msgstr "Домен %s запущен\n"
+
+#: src/virsh.c:719
+#, c-format
+msgid "Failed to start domain %s"
+msgstr "Ошибка запуска домена %s"
+
+#: src/virsh.c:730
+msgid "save a domain state to a file"
+msgstr "сохранить статус домена в файл"
+
+#: src/virsh.c:731
+msgid "Save a running domain."
+msgstr "Сохранить выполняющийся домен."
+
+#: src/virsh.c:737
+msgid "where to save the data"
+msgstr "где сохранить"
+
+#: src/virsh.c:759
+#, c-format
+msgid "Domain %s saved to %s\n"
+msgstr "Домен %s сохранен в %s\n"
+
+#: src/virsh.c:761
+#, c-format
+msgid "Failed to save domain %s to %s"
+msgstr "Ошибка сохранения домена %s в %s"
+
+#: src/virsh.c:774
+msgid "restore a domain from a saved state in a file"
+msgstr "восстановить домен из сохраненного файла статуса"
+
+#: src/virsh.c:775
+msgid "Restore a domain."
+msgstr "Восстановить домен."
+
+#: src/virsh.c:780
+msgid "the state to restore"
+msgstr "восстанавливаемый статус"
+
+#: src/virsh.c:799
+#, c-format
+msgid "Domain restored from %s\n"
+msgstr "Домен восстановлен из %s\n"
+
+#: src/virsh.c:801
+#, c-format
+msgid "Failed to restore domain from %s"
+msgstr "Ошибка восстановления домена из %s"
+
+#: src/virsh.c:812
+msgid "dump the core of a domain to a file for analysis"
+msgstr ""
+
+#: src/virsh.c:813
+#, fuzzy
+msgid "Core dump a domain."
+msgstr "возобновить домен"
+
+#: src/virsh.c:819
+#, fuzzy
+msgid "where to dump the core"
+msgstr "где сохранить"
+
+#: src/virsh.c:841
+#, fuzzy, c-format
+msgid "Domain %s dumpd to %s\n"
+msgstr "Домен %s сохранен в %s\n"
+
+#: src/virsh.c:843
+#, fuzzy, c-format
+msgid "Failed to core dump domain %s to %s"
+msgstr "Ошибка сохранения домена %s в %s"
+
+#: src/virsh.c:857
+msgid "resume a domain"
+msgstr "возобновить домен"
+
+#: src/virsh.c:858
+msgid "Resume a previously suspended domain."
+msgstr "Возобновить работу ранее приостановленного домена."
+
+#: src/virsh.c:881
+#, c-format
+msgid "Domain %s resumed\n"
+msgstr "Выполнение домена %s возобновлено\n"
+
+#: src/virsh.c:883
+#, c-format
+msgid "Failed to resume domain %s"
+msgstr "Ошибка возобновления работы домена %s"
+
+#: src/virsh.c:896
+msgid "gracefully shutdown a domain"
+msgstr "коректно отключить домен"
+
+#: src/virsh.c:897
+msgid "Run shutdown in the target domain."
+msgstr "Выполнить отключение целевого домена."
+
+#: src/virsh.c:920
+#, c-format
+msgid "Domain %s is being shutdown\n"
+msgstr "Отключение домена %s\n"
+
+#: src/virsh.c:922
+#, c-format
+msgid "Failed to shutdown domain %s"
+msgstr "Ошибка отключения домена %s"
+
+#: src/virsh.c:935
+msgid "reboot a domain"
+msgstr "перезагрузить домен"
+
+#: src/virsh.c:936
+msgid "Run a reboot command in the target domain."
+msgstr "Выполнить команду reboot целевого домена."
+
+#: src/virsh.c:959
+#, c-format
+msgid "Domain %s is being rebooted\n"
+msgstr "Перезагрузка домена %s\n"
+
+#: src/virsh.c:961
+#, c-format
+msgid "Failed to reboot domain %s"
+msgstr "Ошибка перезагрузки домена %s"
+
+#: src/virsh.c:974
+msgid "destroy a domain"
+msgstr "разрушить домен"
+
+#: src/virsh.c:975
+msgid "Destroy a given domain."
+msgstr "Разрушить заданный домен."
+
+#: src/virsh.c:998
+#, c-format
+msgid "Domain %s destroyed\n"
+msgstr "Домен %s разрушен\n"
+
+#: src/virsh.c:1000
+#, c-format
+msgid "Failed to destroy domain %s"
+msgstr "Ошибка разрушения домена %s"
+
+#: src/virsh.c:1013
+msgid "domain information"
+msgstr "информация о домене"
+
+#: src/virsh.c:1014
+msgid "Returns basic information about the domain."
+msgstr "Возвращает основную информацию о домене."
+
+#: src/virsh.c:1040 src/virsh.c:1042
+msgid "Id:"
+msgstr "ID:"
+
+#: src/virsh.c:1043
+msgid "Name:"
+msgstr "Имя:"
+
+#: src/virsh.c:1046
+msgid "UUID:"
+msgstr "UUID:"
+
+#: src/virsh.c:1049
+msgid "OS Type:"
+msgstr "Тип ОС:"
+
+#: src/virsh.c:1054 src/virsh.c:1135
+msgid "State:"
+msgstr "Статус:"
+
+#: src/virsh.c:1057 src/virsh.c:1401
+msgid "CPU(s):"
+msgstr "CPU:"
+
+#: src/virsh.c:1064 src/virsh.c:1142
+msgid "CPU time:"
+msgstr "Время CPU:"
+
+#: src/virsh.c:1067
+msgid "Max memory:"
+msgstr "Макс.память:"
+
+#: src/virsh.c:1069
+msgid "Used memory:"
+msgstr "Занято памяти:"
+
+#: src/virsh.c:1085
+msgid "domain vcpu information"
+msgstr "данные vcpu домена"
+
+#: src/virsh.c:1086
+msgid "Returns basic information about the domain virtual CPUs."
+msgstr "Возвращает основную информацию о виртуальных процессорах домена."
+
+#: src/virsh.c:1133
+msgid "VCPU:"
+msgstr "VCPU:"
+
+#: src/virsh.c:1134
+msgid "CPU:"
+msgstr "CPU:"
+
+#: src/virsh.c:1144
+msgid "CPU Affinity:"
+msgstr "Привязка CPU:"
+
+#: src/virsh.c:1168
+msgid "control domain vcpu affinity"
+msgstr "контролирует принадлежность задач виртуальным процессорам домена"
+
+#: src/virsh.c:1169
+msgid "Pin domain VCPUs to host physical CPUs."
+msgstr "Сопоставить VCPU домена физическим CPU."
+
+#: src/virsh.c:1175
+msgid "vcpu number"
+msgstr "число vcpu"
+
+#: src/virsh.c:1176
+msgid "host cpu number(s) (comma separated)"
+msgstr "номера cpu хоста (разделенные запятой)"
+
+#: src/virsh.c:1254
+msgid "change number of virtual CPUs"
+msgstr "изменить число виртуальных процессоров"
+
+#: src/virsh.c:1255
+msgid "Change the number of virtual CPUs active in the guest domain."
+msgstr "Изменить число виртуальных процессоров, активных в гостевом домене."
+
+#: src/virsh.c:1261
+msgid "number of virtual CPUs"
+msgstr "число виртуальных процессоров"
+
+#: src/virsh.c:1297
+msgid "change memory allocation"
+msgstr "изменить выделение памяти"
+
+#: src/virsh.c:1298
+msgid "Change the current memory allocation in the guest domain."
+msgstr "Изменить распределение памяти в гостевом домене."
+
+#: src/virsh.c:1304
+msgid "number of bytes of memory"
+msgstr "байты памяти"
+
+#: src/virsh.c:1340
+msgid "change maximum memory limit"
+msgstr "изменить максимальный лимит памяти"
+
+#: src/virsh.c:1341
+msgid "Change the maximum memory allocation limit in the guest domain."
+msgstr ""
+"Изменить максимально допустимый лимит выделяемой памяти в гостевом домене."
+
+#: src/virsh.c:1347
+msgid "maxmimum memory limit in bytes"
+msgstr "максимальный лимит памяти в байтах"
+
+#: src/virsh.c:1383
+msgid "node information"
+msgstr "информация об узле"
+
+#: src/virsh.c:1384
+msgid "Returns basic information about the node."
+msgstr "Возвращает общую информацию об узле."
+
+#: src/virsh.c:1397
+msgid "failed to get node information"
+msgstr "ошибка получения данных узла"
+
+#: src/virsh.c:1400
+msgid "CPU model:"
+msgstr "Модель CPU:"
+
+#: src/virsh.c:1402
+msgid "CPU frequency:"
+msgstr "Частота CPU:"
+
+#: src/virsh.c:1403
+msgid "CPU socket(s):"
+msgstr "Сокет(ы) CPU:"
+
+#: src/virsh.c:1404
+msgid "Core(s) per socket:"
+msgstr "Ядер на сокет:"
+
+#: src/virsh.c:1405
+msgid "Thread(s) per core:"
+msgstr "Потоков на ядро:"
+
+#: src/virsh.c:1406
+msgid "NUMA cell(s):"
+msgstr "Ячейки NUMA:"
+
+#: src/virsh.c:1407
+msgid "Memory size:"
+msgstr "Объем памяти:"
+
+#: src/virsh.c:1417
+msgid "domain information in XML"
+msgstr "информация о домене в XML"
+
+#: src/virsh.c:1418
+msgid "Ouput the domain information as an XML dump to stdout."
+msgstr "Вывод информации о домене в виде XML или на stdout."
+
+#: src/virsh.c:1457
+msgid "convert a domain id or UUID to domain name"
+msgstr "преобразовать ID домена или UUID в имя домена"
+
+#: src/virsh.c:1462
+msgid "domain id or uuid"
+msgstr "ID домена или UUID"
+
+#: src/virsh.c:1487
+msgid "convert a domain name or UUID to domain id"
+msgstr "преобразовать имя домена или UUID в ID домена"
+
+#: src/virsh.c:1522
+msgid "convert a domain name or id to domain UUID"
+msgstr "преобразовать имя домена или ID в UUID домена"
+
+#: src/virsh.c:1527
+msgid "domain id or name"
+msgstr "ID домена или имя"
+
+#: src/virsh.c:1546
+msgid "failed to get domain UUID"
+msgstr "ошибка получения UUID домена"
+
+#: src/virsh.c:1557
+msgid "show version"
+msgstr "показать версию"
+
+#: src/virsh.c:1558
+msgid "Display the system version information."
+msgstr "Отобразить информацию о версии системы"
+
+#: src/virsh.c:1581
+msgid "failed to get hypervisor type"
+msgstr "ошибка получения типа гипервизора"
+
+#: src/virsh.c:1590
+#, c-format
+msgid "Compiled against library: libvir %d.%d.%d\n"
+msgstr "Выполнена компиляция на базе библиотеки: libvir %d.%d.%d\n"
+
+#: src/virsh.c:1595
+msgid "failed to get the library version"
+msgstr "ошибка получения версии библиотеки"
+
+#: src/virsh.c:1602
+#, c-format
+msgid "Using library: libvir %d.%d.%d\n"
+msgstr "Используется библиотека: libvir %d.%d.%d\n"
+
+#: src/virsh.c:1609
+#, c-format
+msgid "Using API: %s %d.%d.%d\n"
+msgstr "Используется API: %s %d.%d.%d\n"
+
+#: src/virsh.c:1614
+msgid "failed to get the hypervisor version"
+msgstr "ошибка получения версии гипервизора"
+
+#: src/virsh.c:1619
+#, c-format
+msgid "Cannot extract running %s hypervisor version\n"
+msgstr "Невозможно извлечь версию гипервизора, выполняющего %s\n"
+
+#: src/virsh.c:1626
+#, c-format
+msgid "Running hypervisor: %s %d.%d.%d\n"
+msgstr "Выполняется гипервизор: %s %d.%d.%d\n"
+
+#: src/virsh.c:1637
+msgid "quit this interactive terminal"
+msgstr "выйти из интерактивного терминала"
+
+#: src/virsh.c:1750
+#, c-format
+msgid "command '%s' requires <%s> option"
+msgstr "формат команды '%s' требует указания опции <%s>"
+
+#: src/virsh.c:1751
+#, c-format
+msgid "command '%s' requires --%s option"
+msgstr "формат команды '%s' требует указания опции --%s"
+
+#: src/virsh.c:1778
+#, c-format
+msgid "command '%s' doesn't exist"
+msgstr "команда '%s' не существует"
+
+#: src/virsh.c:1786
+msgid "  NAME\n"
+msgstr "  ИМЯ\n"
+
+#: src/virsh.c:1797
+msgid ""
+"\n"
+"  DESCRIPTION\n"
+msgstr ""
+"\n"
+"  ОПИСАНИЕ\n"
+
+#: src/virsh.c:1801
+msgid ""
+"\n"
+"  OPTIONS\n"
+msgstr ""
+"\n"
+"  ПАРАМЕТРЫ\n"
+
+#: src/virsh.c:1808
+#, c-format
+msgid "--%s <number>"
+msgstr "--%s <число>"
+
+#: src/virsh.c:1810
+#, c-format
+msgid "--%s <string>"
+msgstr "--%s <строка>"
+
+#: src/virsh.c:1923
+msgid "undefined domain name or id"
+msgstr "неопределенное имя домена или ID"
+
+#: src/virsh.c:1956
+#, c-format
+msgid "failed to get domain '%s'"
+msgstr "ошибка при получении домена '%s'"
+
+#: src/virsh.c:1984
+#, c-format
+msgid ""
+"\n"
+"(Time: %.3f ms)\n"
+"\n"
+msgstr ""
+"\n"
+"(Время: %.3f мс)\n"
+"\n"
+
+#: src/virsh.c:2058
+msgid "missing \""
+msgstr "отсутствует \""
+
+#: src/virsh.c:2119
+#, c-format
+msgid "unexpected token (command name): '%s'"
+msgstr "непредвиденный признак (имя команды): '%s'"
+
+#: src/virsh.c:2124
+#, c-format
+msgid "unknown command: '%s'"
+msgstr "неизвестная команда: '%s'"
+
+#: src/virsh.c:2131
+#, c-format
+msgid "command '%s' doesn't support option --%s"
+msgstr "команда '%s' не поддерживает опции --%s"
+
+#: src/virsh.c:2146
+#, c-format
+msgid "expected syntax: --%s <%s>"
+msgstr "ожидаемый формат: --%s <%s>"
+
+#: src/virsh.c:2149
+msgid "number"
+msgstr "число"
+
+#: src/virsh.c:2149
+msgid "string"
+msgstr "строка"
+
+#: src/virsh.c:2155
+#, c-format
+msgid "unexpected data '%s'"
+msgstr "неожидаемые данные '%s'"
+
+#: src/virsh.c:2177
+msgid "OPTION"
+msgstr "ПАРАМЕТР"
+
+#: src/virsh.c:2177
+msgid "DATA"
+msgstr "ДАННЫЕ"
+
+#: src/virsh.c:2225 src/virsh.c:2251
+msgid "running"
+msgstr "выполнение"
+
+#: src/virsh.c:2227 src/virsh.c:2249
+msgid "blocked"
+msgstr "заблокирован"
+
+#: src/virsh.c:2229
+msgid "paused"
+msgstr "приостановлен"
+
+#: src/virsh.c:2231
+msgid "in shutdown"
+msgstr "отключается"
+
+#: src/virsh.c:2233
+msgid "shut off"
+msgstr "отключить"
+
+#: src/virsh.c:2235
+msgid "crashed"
+msgstr "аварийный сбой"
+
+#: src/virsh.c:2247
+msgid "offline"
+msgstr "автономный режим"
+
+#: src/virsh.c:2266
+msgid "no valid connection"
+msgstr "нет действительного соединения"
+
+#: src/virsh.c:2305
+#, c-format
+msgid "%s: error: "
+msgstr "%s: ошибка: "
+
+#: src/virsh.c:2307
+msgid "error: "
+msgstr "ошибка: "
+
+#: src/virsh.c:2329 src/virsh.c:2341 src/virsh.c:2353
+#, c-format
+msgid "%s: %d: failed to allocate %d bytes"
+msgstr "Сбой %s: %d: при попытке выделения %d байт"
+
+#: src/virsh.c:2381
+msgid "failed to connect to the hypervisor"
+msgstr "ошибка подключения к гипервизору"
+
+#: src/virsh.c:2526
+#, c-format
+msgid ""
+"\n"
+"%s [options] [commands]\n"
+"\n"
+"  options:\n"
+"    -c | --connect <uri>    hypervisor connection URI\n"
+"    -d | --debug <num>      debug level [0-5]\n"
+"    -h | --help             this help\n"
+"    -q | --quiet            quiet mode\n"
+"    -t | --timing           print timing information\n"
+"    -v | --version          program version\n"
+"\n"
+"  commands (non interactive mode):\n"
+msgstr ""
+"\n"
+"%s [параметры] [команды]\n"
+"\n"
+"  параметры:\n"
+"    -c | --connect <uri>    URI подключения гипервизора\n"
+"    -d | --debug <число>  уровень отладки [0-5]\n"
+"    -h | --help             данный экран помощи\n"
+"    -q | --quiet            режим без вывода сообщений\n"
+"    -t | --timing           вывод информации времени\n"
+"    -v | --version          версия программы\n"
+"\n"
+"  команды (текстовый режим):\n"
+
+#: src/virsh.c:2542
+#, c-format
+msgid ""
+"\n"
+"  (specify --help <command> for details about the command)\n"
+"\n"
+msgstr ""
+"\n"
+"  (наберите --help <команда> для подробной информации о команде)\n"
+"\n"
+
+#: src/virsh.c:2628
+#, c-format
+msgid "unsupported option '-%c'. See --help."
+msgstr "неподдерживаемая опция '-%c'. Обратитесь к --help."
+
+#: src/virsh.c:2709
+#, c-format
+msgid ""
+"Welcome to %s, the virtualization interactive terminal.\n"
+"\n"
+msgstr ""
+"Добро пожаловать в %s - интерактивный терминал виртуализации.\n"
+"\n"
+
+#: src/virsh.c:2712
+msgid ""
+"Type:  'help' for help with commands\n"
+"       'quit' to quit\n"
+"\n"
+msgstr ""
+"Введите:  'help' для получения помощи по командам\n"
+"       'quit' для выхода\n"
+"\n"
+
+#: src/conf.c:153 src/conf.c:204 src/conf.c:487 src/conf.c:526 src/conf.c:554
+#: src/conf.c:632
+msgid "allocating configuration"
+msgstr "назначение конфигурации"
+
+#: src/conf.c:339
+msgid "unterminated number"
+msgstr "незавершенное число"
+
+#: src/conf.c:371 src/conf.c:388 src/conf.c:400
+msgid "unterminated string"
+msgstr "незавершенная строка"
+
+#: src/conf.c:428 src/conf.c:481
+msgid "expecting a value"
+msgstr "ожидается значение"
+
+#: src/conf.c:448
+msgid "expecting a separator in list"
+msgstr "ожидается разделитель списка"
+
+#: src/conf.c:471
+msgid "list is not closed with ] "
+msgstr "отсутствует ] в конце списка"
+
+#: src/conf.c:519
+msgid "expecting a name"
+msgstr "ожидается имя"
+
+#: src/conf.c:582
+msgid "expecting a separator"
+msgstr "ожидается разделитель"
+
+#: src/conf.c:614
+msgid "expecting an assignment"
+msgstr "ожидается присвоение"
+
+#: src/conf.c:881
+msgid "failed to open file"
+msgstr "ошибка открытия файла"
+
+#: src/conf.c:889
+msgid "failed to save content"
+msgstr "ошибка сохранения содержимого"
+
+#: src/xs_internal.c:323
+msgid "failed to connect to Xen Store"
+msgstr "ошибка подключения к Xen Store"
+
+#: src/proxy_internal.c:197
+#, c-format
+msgid "failed to exec %s\n"
+msgstr "ошибка запуска %s\n"
+
+#: src/proxy_internal.c:291
+#, c-format
+msgid "Failed to close socket %d\n"
+msgstr "Ошибка закрытия сокета %d\n"
+
+#: src/proxy_internal.c:324
+#, c-format
+msgid "Failed to read socket %d\n"
+msgstr "Ошибка чтения сокета %d\n"
+
+#: src/proxy_internal.c:358
+#, c-format
+msgid "Failed to write to socket %d\n"
+msgstr "Ошибка записи сокета %d\n"
+
+#: src/proxy_internal.c:420 src/proxy_internal.c:441 src/proxy_internal.c:461
+#, c-format
+msgid "Communication error with proxy: got %d bytes of %d\n"
+msgstr "Ошибка связи с прокси: получено %d байт из %d\n"
+
+#: src/proxy_internal.c:428
+#, c-format
+msgid "Communication error with proxy: expected %d bytes got %d\n"
+msgstr "Ошибка связи с прокси: ожидалось %d байт, получено %d байт\n"
+
+#: src/proxy_internal.c:450
+#, c-format
+msgid "Communication error with proxy: got %d bytes packet\n"
+msgstr "Ошибка связи с прокси: получен пакет из %d байт\n"
+
+#: src/proxy_internal.c:474
+#, c-format
+msgid "Communication error with proxy: malformed packet\n"
+msgstr "Ошибка связи с прокси: плохо сформированный пакет\n"
+
+#: src/proxy_internal.c:480
+#, c-format
+msgid "got asynchronous packet number %d\n"
+msgstr "получен асинхронный номер пакета - %d\n"
+
+#: src/xen_internal.c:1379
+#, c-format
+msgid "allocating %d domain info"
+msgstr "выделение %d данных домена"
