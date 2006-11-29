@@ -1,1208 +1,1215 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Free Software Foundation, Inc.
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# English translations for libvirt package.
+# Copyright (C) 2006 Free Software Foundation, Inc.
+# This file is distributed under the same license as the libvirt package.
+# Automatically generated, 2006.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-11-27 16:59+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2006-11-27 16:59+0100\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/libvirt.c:245 src/libvirt.c:309 src/hash.c:652
 msgid "allocating connection"
-msgstr ""
+msgstr "allocating connection"
 
 #: src/libvirt.c:325
 msgid "Xen Daemon or Xen Store"
-msgstr ""
+msgstr "Xen Daemon or Xen Store"
 
 #: src/virterror.c:243
 msgid "warning"
-msgstr ""
+msgstr "warning"
 
 #: src/virterror.c:246
 msgid "error"
-msgstr ""
+msgstr "error"
 
 #: src/virterror.c:335
 msgid "No error message provided"
-msgstr ""
+msgstr "No error message provided"
 
 #: src/virterror.c:389
 #, c-format
 msgid "internal error %s"
-msgstr ""
+msgstr "internal error %s"
 
 #: src/virterror.c:391
 msgid "internal error"
-msgstr ""
+msgstr "internal error"
 
 #: src/virterror.c:394
 msgid "out of memory"
-msgstr ""
+msgstr "out of memory"
 
 #: src/virterror.c:398
 msgid "no support for hypervisor"
-msgstr ""
+msgstr "no support for hypervisor"
 
 #: src/virterror.c:400
 #, c-format
 msgid "no support for hypervisor %s"
-msgstr ""
+msgstr "no support for hypervisor %s"
 
 #: src/virterror.c:404
 msgid "could not connect to hypervisor"
-msgstr ""
+msgstr "could not connect to hypervisor"
 
 #: src/virterror.c:406
 #, c-format
 msgid "could not connect to %s"
-msgstr ""
+msgstr "could not connect to %s"
 
 #: src/virterror.c:410
 msgid "invalid connection pointer in"
-msgstr ""
+msgstr "invalid connection pointer in"
 
 #: src/virterror.c:412
 #, c-format
 msgid "invalid connection pointer in %s"
-msgstr ""
+msgstr "invalid connection pointer in %s"
 
 #: src/virterror.c:416
 msgid "invalid domain pointer in"
-msgstr ""
+msgstr "invalid domain pointer in"
 
 #: src/virterror.c:418
 #, c-format
 msgid "invalid domain pointer in %s"
-msgstr ""
+msgstr "invalid domain pointer in %s"
 
 #: src/virterror.c:422
 msgid "invalid argument in"
-msgstr ""
+msgstr "invalid argument in"
 
 #: src/virterror.c:424
 #, c-format
 msgid "invalid argument in %s"
-msgstr ""
+msgstr "invalid argument in %s"
 
 #: src/virterror.c:428
 #, c-format
 msgid "operation failed: %s"
-msgstr ""
+msgstr "operation failed: %s"
 
 #: src/virterror.c:430
 msgid "operation failed"
-msgstr ""
+msgstr "operation failed"
 
 #: src/virterror.c:434
 #, c-format
 msgid "GET operation failed: %s"
-msgstr ""
+msgstr "GET operation failed: %s"
 
 #: src/virterror.c:436
 msgid "GET operation failed"
-msgstr ""
+msgstr "GET operation failed"
 
 #: src/virterror.c:440
 #, c-format
 msgid "POST operation failed: %s"
-msgstr ""
+msgstr "POST operation failed: %s"
 
 #: src/virterror.c:442
 msgid "POST operation failed"
-msgstr ""
+msgstr "POST operation failed"
 
 #: src/virterror.c:445
 #, c-format
 msgid "got unknown HTTP error code %d"
-msgstr ""
+msgstr "got unknown HTTP error code %d"
 
 #: src/virterror.c:449
 #, c-format
 msgid "unknown host %s"
-msgstr ""
+msgstr "unknown host %s"
 
 #: src/virterror.c:451
 msgid "unknown host"
-msgstr ""
+msgstr "unknown host"
 
 #: src/virterror.c:455
 #, c-format
 msgid "failed to serialize S-Expr: %s"
-msgstr ""
+msgstr "failed to serialize S-Expr: %s"
 
 #: src/virterror.c:457
 msgid "failed to serialize S-Expr"
-msgstr ""
+msgstr "failed to serialize S-Expr"
 
 #: src/virterror.c:461
 msgid "could not use Xen hypervisor entry"
-msgstr ""
+msgstr "could not use Xen hypervisor entry"
 
 #: src/virterror.c:463
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
-msgstr ""
+msgstr "could not use Xen hypervisor entry %s"
 
 #: src/virterror.c:467
 msgid "could not connect to Xen Store"
-msgstr ""
+msgstr "could not connect to Xen Store"
 
 #: src/virterror.c:469
 #, c-format
 msgid "could not connect to Xen Store %s"
-msgstr ""
+msgstr "could not connect to Xen Store %s"
 
 #: src/virterror.c:472
 #, c-format
 msgid "failed Xen syscall %s %d"
-msgstr ""
+msgstr "failed Xen syscall %s %d"
 
 #: src/virterror.c:476
 msgid "unknown OS type"
-msgstr ""
+msgstr "unknown OS type"
 
 #: src/virterror.c:478
 #, c-format
 msgid "unknown OS type %s"
-msgstr ""
+msgstr "unknown OS type %s"
 
 #: src/virterror.c:481
 msgid "missing kernel information"
-msgstr ""
+msgstr "missing kernel information"
 
 #: src/virterror.c:485
 msgid "missing root device information"
-msgstr ""
+msgstr "missing root device information"
 
 #: src/virterror.c:487
 #, c-format
 msgid "missing root device information in %s"
-msgstr ""
+msgstr "missing root device information in %s"
 
 #: src/virterror.c:491
 msgid "missing source information for device"
-msgstr ""
+msgstr "missing source information for device"
 
 #: src/virterror.c:493
 #, c-format
 msgid "missing source information for device %s"
-msgstr ""
+msgstr "missing source information for device %s"
 
 #: src/virterror.c:497
 msgid "missing target information for device"
-msgstr ""
+msgstr "missing target information for device"
 
 #: src/virterror.c:499
 #, c-format
 msgid "missing target information for device %s"
-msgstr ""
+msgstr "missing target information for device %s"
 
 #: src/virterror.c:503
 msgid "missing domain name information"
-msgstr ""
+msgstr "missing domain name information"
 
 #: src/virterror.c:505
 #, c-format
 msgid "missing domain name information in %s"
-msgstr ""
+msgstr "missing domain name information in %s"
 
 #: src/virterror.c:509
 msgid "missing operating system information"
-msgstr ""
+msgstr "missing operating system information"
 
 #: src/virterror.c:511
 #, c-format
 msgid "missing operating system information for %s"
-msgstr ""
+msgstr "missing operating system information for %s"
 
 #: src/virterror.c:515
 msgid "missing devices information"
-msgstr ""
+msgstr "missing devices information"
 
 #: src/virterror.c:517
 #, c-format
 msgid "missing devices information for %s"
-msgstr ""
+msgstr "missing devices information for %s"
 
 #: src/virterror.c:521
 msgid "too many drivers registered"
-msgstr ""
+msgstr "too many drivers registered"
 
 #: src/virterror.c:523
 #, c-format
 msgid "too many drivers registered in %s"
-msgstr ""
+msgstr "too many drivers registered in %s"
 
 #: src/virterror.c:527
 msgid "library call failed, possibly not supported"
-msgstr ""
+msgstr "library call failed, possibly not supported"
 
 #: src/virterror.c:529
 #, c-format
 msgid "library call %s failed, possibly not supported"
-msgstr ""
+msgstr "library call %s failed, possibly not supported"
 
 #: src/virterror.c:533
 msgid "XML description not well formed or invalid"
-msgstr ""
+msgstr "XML description not well formed or invalid"
 
 #: src/virterror.c:535
 #, c-format
 msgid "XML description for %s is not well formed or invalid"
-msgstr ""
+msgstr "XML description for %s is not well formed or invalid"
 
 #: src/virterror.c:539
 msgid "this domain exists already"
-msgstr ""
+msgstr "this domain exists already"
 
 #: src/virterror.c:541
 #, c-format
 msgid "domain %s exists already"
-msgstr ""
+msgstr "domain %s exists already"
 
 #: src/virterror.c:545
 msgid "operation forbidden for read only access"
-msgstr ""
+msgstr "operation forbidden for read only access"
 
 #: src/virterror.c:547
 #, c-format
 msgid "operation %s forbidden for read only access"
-msgstr ""
+msgstr "operation %s forbidden for read only access"
 
 #: src/virterror.c:551
 msgid "failed to open configuration file for reading"
-msgstr ""
+msgstr "failed to open configuration file for reading"
 
 #: src/virterror.c:553
 #, c-format
 msgid "failed to open %s for reading"
-msgstr ""
+msgstr "failed to open %s for reading"
 
 #: src/virterror.c:557
 msgid "failed to read configuration file"
-msgstr ""
+msgstr "failed to read configuration file"
 
 #: src/virterror.c:559
 #, c-format
 msgid "failed to read configuration file %s"
-msgstr ""
+msgstr "failed to read configuration file %s"
 
 #: src/virterror.c:563
 msgid "failed to parse configuration file"
-msgstr ""
+msgstr "failed to parse configuration file"
 
 #: src/virterror.c:565
 #, c-format
 msgid "failed to parse configuration file %s"
-msgstr ""
+msgstr "failed to parse configuration file %s"
 
 #: src/virterror.c:569
 msgid "configuration file syntax error"
-msgstr ""
+msgstr "configuration file syntax error"
 
 #: src/virterror.c:571
 #, c-format
 msgid "configuration file syntax error: %s"
-msgstr ""
+msgstr "configuration file syntax error: %s"
 
 #: src/virterror.c:575
 msgid "failed to write configuration file"
-msgstr ""
+msgstr "failed to write configuration file"
 
 #: src/virterror.c:577
 #, c-format
 msgid "failed to write configuration file: %s"
-msgstr ""
+msgstr "failed to write configuration file: %s"
 
 #: src/virterror.c:581
 msgid "parser error"
-msgstr ""
+msgstr "parser error"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
-msgstr ""
+msgstr "copying node content"
 
 #: src/xmlrpc.c:163
 msgid "allocate value array"
-msgstr ""
+msgstr "allocate value array"
 
 #: src/xmlrpc.c:196
 msgid "unexpected dict node"
-msgstr ""
+msgstr "unexpected dict node"
 
 #: src/xmlrpc.c:268
 msgid "unexpected value node"
-msgstr ""
+msgstr "unexpected value node"
 
 #: src/xmlrpc.c:431
 msgid "send request"
-msgstr ""
+msgstr "send request"
 
 #: src/xmlrpc.c:437
 msgid "unexpected mime type"
-msgstr ""
+msgstr "unexpected mime type"
 
 #: src/xmlrpc.c:444
 msgid "allocate response"
-msgstr ""
+msgstr "allocate response"
 
 #: src/xmlrpc.c:452 src/xmlrpc.c:514
 msgid "read response"
-msgstr ""
+msgstr "read response"
 
 #: src/xmlrpc.c:484
 msgid "allocate string array"
-msgstr ""
+msgstr "allocate string array"
 
 #: src/xmlrpc.c:606
 msgid "parse server response failed"
-msgstr ""
+msgstr "parse server response failed"
 
 #: src/xmlrpc.c:670
 msgid "allocate new context"
-msgstr ""
+msgstr "allocate new context"
 
 #: src/hash.c:749 src/hash.c:755 src/test.c:728 src/test.c:753 src/test.c:776
 #: src/test.c:800 src/xend_internal.c:1933 src/xend_internal.c:2680
 #: src/xend_internal.c:2899 src/xs_internal.c:603 src/proxy_internal.c:798
 #: src/proxy_internal.c:845 src/proxy_internal.c:896
 msgid "allocating domain"
-msgstr ""
+msgstr "allocating domain"
 
 #: src/hash.c:766
 msgid "failed to add domain to connection hash table"
-msgstr ""
+msgstr "failed to add domain to connection hash table"
 
 #: src/hash.c:818
 msgid "domain missing from connection hash table"
-msgstr ""
+msgstr "domain missing from connection hash table"
 
 #: src/test.c:203 src/test.c:382 src/test.c:898 src/test.c:926 src/test.c:953
 msgid "getting time of day"
-msgstr ""
+msgstr "getting time of day"
 
 #: src/test.c:209 src/test.c:337 src/test.c:362
 msgid "domain"
-msgstr ""
+msgstr "domain"
 
 #: src/test.c:215 src/test.c:458
 msgid "creating xpath context"
-msgstr ""
+msgstr "creating xpath context"
 
 #: src/test.c:222
 msgid "domain name"
-msgstr ""
+msgstr "domain name"
 
 #: src/test.c:231 src/test.c:236
 msgid "domain uuid"
-msgstr ""
+msgstr "domain uuid"
 
 #: src/test.c:244 src/test.c:249
 msgid "domain memory"
-msgstr ""
+msgstr "domain memory"
 
 #: src/test.c:261
 msgid "domain vcpus"
-msgstr ""
+msgstr "domain vcpus"
 
 #: src/test.c:272
 msgid "domain reboot behaviour"
-msgstr ""
+msgstr "domain reboot behaviour"
 
 #: src/test.c:283
 msgid "domain poweroff behaviour"
-msgstr ""
+msgstr "domain poweroff behaviour"
 
 #: src/test.c:294
 msgid "domain crash behaviour"
-msgstr ""
+msgstr "domain crash behaviour"
 
 #: src/test.c:355
 msgid "load domain definition file"
-msgstr ""
+msgstr "load domain definition file"
 
 #: src/test.c:437
 msgid "loading host definition file"
-msgstr ""
+msgstr "loading host definition file"
 
 #: src/test.c:444
 msgid "host"
-msgstr ""
+msgstr "host"
 
 #: src/test.c:452
 msgid "node"
-msgstr ""
+msgstr "node"
 
 #: src/test.c:474
 msgid "node cpu numa nodes"
-msgstr ""
+msgstr "node cpu numa nodes"
 
 #: src/test.c:486
 msgid "node cpu sockets"
-msgstr ""
+msgstr "node cpu sockets"
 
 #: src/test.c:498
 msgid "node cpu cores"
-msgstr ""
+msgstr "node cpu cores"
 
 #: src/test.c:510
 msgid "node cpu threads"
-msgstr ""
+msgstr "node cpu threads"
 
 #: src/test.c:522
 msgid "node active cpu"
-msgstr ""
+msgstr "node active cpu"
 
 #: src/test.c:536
 msgid "node cpu mhz"
-msgstr ""
+msgstr "node cpu mhz"
 
 #: src/test.c:555
 msgid "node memory"
-msgstr ""
+msgstr "node memory"
 
 #: src/test.c:564
 msgid "node domain list"
-msgstr ""
+msgstr "node domain list"
 
 #: src/test.c:573
 msgid "resolving domain filename"
-msgstr ""
+msgstr "resolving domain filename"
 
 #: src/test.c:611
 msgid "allocating node"
-msgstr ""
+msgstr "allocating node"
 
 #: src/test.c:651
 msgid "too many connections"
-msgstr ""
+msgstr "too many connections"
 
 #: src/test.c:736
 msgid "too many domains"
-msgstr ""
+msgstr "too many domains"
 
 #: src/xml.c:65
 msgid "growing buffer"
-msgstr ""
+msgstr "growing buffer"
 
 #: src/xml.c:117 src/xend_internal.c:1625 src/xend_internal.c:1644
 msgid "allocate new buffer"
-msgstr ""
+msgstr "allocate new buffer"
 
 #: src/xml.c:121
 msgid "allocate buffer content"
-msgstr ""
+msgstr "allocate buffer content"
 
 #: src/sexpr.c:59
 msgid "failed to allocate a node"
-msgstr ""
+msgstr "failed to allocate a node"
 
 #: src/sexpr.c:352 src/sexpr.c:367
 msgid "failed to copy a string"
-msgstr ""
+msgstr "failed to copy a string"
 
 #: src/xend_internal.c:272 src/xend_internal.c:275
 msgid "failed to read from Xen Daemon"
-msgstr ""
+msgstr "failed to read from Xen Daemon"
 
 #: src/xend_internal.c:1071
 msgid "failed to urlencode the create S-Expr"
-msgstr ""
+msgstr "failed to urlencode the create S-Expr"
 
 #: src/xend_internal.c:1112
 msgid "domain information incomplete, missing domid"
-msgstr ""
+msgstr "domain information incomplete, missing domid"
 
 #: src/xend_internal.c:1118
 msgid "domain information incorrect domid not numeric"
-msgstr ""
+msgstr "domain information incorrect domid not numeric"
 
 #: src/xend_internal.c:1125 src/xend_internal.c:1174
 msgid "domain information incomplete, missing uuid"
-msgstr ""
+msgstr "domain information incomplete, missing uuid"
 
 #: src/xend_internal.c:1165 src/xend_internal.c:1508
 msgid "domain information incomplete, missing name"
-msgstr ""
+msgstr "domain information incomplete, missing name"
 
 #: src/xend_internal.c:1424 src/xend_internal.c:1449
 msgid "domain information incomplete, missing kernel"
-msgstr ""
+msgstr "domain information incomplete, missing kernel"
 
 #: src/xend_internal.c:1604
 msgid "domain information incomplete, vbd has no src"
-msgstr ""
+msgstr "domain information incomplete, vbd has no src"
 
 #: src/xend_internal.c:1610
 msgid "domain information incomplete, vbd has no dev"
-msgstr ""
+msgstr "domain information incomplete, vbd has no dev"
 
 #: src/xend_internal.c:1618
 msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
+msgstr "cannot parse vbd filename, missing driver name"
 
 #: src/xend_internal.c:1637
 msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
+msgstr "cannot parse vbd filename, missing driver type"
 
 #: src/xend_internal.c:1944
 msgid "failed to parse Xend domain information"
-msgstr ""
+msgstr "failed to parse Xend domain information"
 
 #: src/xend_internal.c:2964
 #, c-format
 msgid "Failed to create domain %s\n"
-msgstr ""
+msgstr "Failed to create domain %s\n"
 
 #: src/xend_internal.c:2970
 #, c-format
 msgid "Failed to get devices for domain %s\n"
-msgstr ""
+msgstr "Failed to get devices for domain %s\n"
 
 #: src/xend_internal.c:2981
 #, c-format
 msgid "Failed to resume new domain %s\n"
-msgstr ""
+msgstr "Failed to resume new domain %s\n"
 
 #: src/virsh.c:234
 msgid "print help"
-msgstr ""
+msgstr "print help"
 
 #: src/virsh.c:235
 msgid "Prints global help or command specific help."
-msgstr ""
+msgstr "Prints global help or command specific help."
 
 #: src/virsh.c:253
 msgid ""
 "Commands:\n"
 "\n"
 msgstr ""
+"Commands:\n"
+"\n"
 
 #: src/virsh.c:267
 msgid "(re)connect to hypervisor"
-msgstr ""
+msgstr "(re)connect to hypervisor"
 
 #: src/virsh.c:269
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr ""
+"Connect to local hypervisor. This is built-in command after shell start up."
 
 #: src/virsh.c:274
 msgid "hypervisor connection URI"
-msgstr ""
+msgstr "hypervisor connection URI"
 
 #: src/virsh.c:275
 msgid "read-only connection"
-msgstr ""
+msgstr "read-only connection"
 
 #: src/virsh.c:287
 msgid "Failed to disconnect from the hypervisor"
-msgstr ""
+msgstr "Failed to disconnect from the hypervisor"
 
 #: src/virsh.c:303
 msgid "Failed to connect to the hypervisor"
-msgstr ""
+msgstr "Failed to connect to the hypervisor"
 
 #: src/virsh.c:313
 msgid "list domains"
-msgstr ""
+msgstr "list domains"
 
 #: src/virsh.c:314
 msgid "Returns list of domains."
-msgstr ""
+msgstr "Returns list of domains."
 
 #: src/virsh.c:319
 msgid "list inactive domains"
-msgstr ""
+msgstr "list inactive domains"
 
 #: src/virsh.c:320
 msgid "list inactive & active domains"
-msgstr ""
+msgstr "list inactive & active domains"
 
 #: src/virsh.c:358 src/virsh.c:365
 msgid "Failed to list active domains"
-msgstr ""
+msgstr "Failed to list active domains"
 
 #: src/virsh.c:376 src/virsh.c:385
 msgid "Failed to list inactive domains"
-msgstr ""
+msgstr "Failed to list inactive domains"
 
 #: src/virsh.c:395
 msgid "Id"
-msgstr ""
+msgstr "Id"
 
 #: src/virsh.c:395
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
 #: src/virsh.c:395
 msgid "State"
-msgstr ""
+msgstr "State"
 
 #: src/virsh.c:412 src/virsh.c:2237 src/virsh.c:2253
 msgid "no state"
-msgstr ""
+msgstr "no state"
 
 #: src/virsh.c:455
 msgid "domain state"
-msgstr ""
+msgstr "domain state"
 
 #: src/virsh.c:456
 msgid "Returns state about a running domain."
-msgstr ""
+msgstr "Returns state about a running domain."
 
 #: src/virsh.c:461 src/virsh.c:499 src/virsh.c:736 src/virsh.c:818
 #: src/virsh.c:863 src/virsh.c:902 src/virsh.c:941 src/virsh.c:980
 #: src/virsh.c:1019 src/virsh.c:1091 src/virsh.c:1174 src/virsh.c:1260
 #: src/virsh.c:1303 src/virsh.c:1346 src/virsh.c:1423
 msgid "domain name, id or uuid"
-msgstr ""
+msgstr "domain name, id or uuid"
 
 #: src/virsh.c:493
 msgid "suspend a domain"
-msgstr ""
+msgstr "suspend a domain"
 
 #: src/virsh.c:494
 msgid "Suspend a running domain."
-msgstr ""
+msgstr "Suspend a running domain."
 
 #: src/virsh.c:517
 #, c-format
 msgid "Domain %s suspended\n"
-msgstr ""
+msgstr "Domain %s suspended\n"
 
 #: src/virsh.c:519
 #, c-format
 msgid "Failed to suspend domain %s"
-msgstr ""
+msgstr "Failed to suspend domain %s"
 
 #: src/virsh.c:532
 msgid "create a domain from an XML file"
-msgstr ""
+msgstr "create a domain from an XML file"
 
 #: src/virsh.c:533
 msgid "Create a domain."
-msgstr ""
+msgstr "Create a domain."
 
 #: src/virsh.c:538 src/virsh.c:593
 msgid "file conatining an XML domain description"
-msgstr ""
+msgstr "file conatining an XML domain description"
 
 #: src/virsh.c:561 src/virsh.c:566 src/virsh.c:616 src/virsh.c:621
 #, c-format
 msgid "Failed to read description file %s"
-msgstr ""
+msgstr "Failed to read description file %s"
 
 #: src/virsh.c:573
 #, c-format
 msgid "Domain %s created from %s\n"
-msgstr ""
+msgstr "Domain %s created from %s\n"
 
 #: src/virsh.c:576
 #, c-format
 msgid "Failed to create domain from %s"
-msgstr ""
+msgstr "Failed to create domain from %s"
 
 #: src/virsh.c:587
 msgid "define (but don't start) a domain from an XML file"
-msgstr ""
+msgstr "define (but don't start) a domain from an XML file"
 
 #: src/virsh.c:588
 msgid "Define a domain."
-msgstr ""
+msgstr "Define a domain."
 
 #: src/virsh.c:628
 #, c-format
 msgid "Domain %s defined from %s\n"
-msgstr ""
+msgstr "Domain %s defined from %s\n"
 
 #: src/virsh.c:631
 #, c-format
 msgid "Failed to define domain from %s"
-msgstr ""
+msgstr "Failed to define domain from %s"
 
 #: src/virsh.c:642
 msgid "undefine an inactive domain"
-msgstr ""
+msgstr "undefine an inactive domain"
 
 #: src/virsh.c:643
 msgid "Undefine the configuration for an inactive domain."
-msgstr ""
+msgstr "Undefine the configuration for an inactive domain."
 
 #: src/virsh.c:648 src/virsh.c:1492
 msgid "domain name or uuid"
-msgstr ""
+msgstr "domain name or uuid"
 
 #: src/virsh.c:666
 #, c-format
 msgid "Domain %s has been undefined\n"
-msgstr ""
+msgstr "Domain %s has been undefined\n"
 
 #: src/virsh.c:668
 #, c-format
 msgid "Failed to undefine domain %s"
-msgstr ""
+msgstr "Failed to undefine domain %s"
 
 #: src/virsh.c:681
 msgid "start a (previously defined) inactive domain"
-msgstr ""
+msgstr "start a (previously defined) inactive domain"
 
 #: src/virsh.c:682
 msgid "Start a domain."
-msgstr ""
+msgstr "Start a domain."
 
 #: src/virsh.c:687
 msgid "name of the inactive domain"
-msgstr ""
+msgstr "name of the inactive domain"
 
 #: src/virsh.c:711
 msgid "Domain is already active"
-msgstr ""
+msgstr "Domain is already active"
 
 #: src/virsh.c:716
 #, c-format
 msgid "Domain %s started\n"
-msgstr ""
+msgstr "Domain %s started\n"
 
 #: src/virsh.c:719
 #, c-format
 msgid "Failed to start domain %s"
-msgstr ""
+msgstr "Failed to start domain %s"
 
 #: src/virsh.c:730
 msgid "save a domain state to a file"
-msgstr ""
+msgstr "save a domain state to a file"
 
 #: src/virsh.c:731
 msgid "Save a running domain."
-msgstr ""
+msgstr "Save a running domain."
 
 #: src/virsh.c:737
 msgid "where to save the data"
-msgstr ""
+msgstr "where to save the data"
 
 #: src/virsh.c:759
 #, c-format
 msgid "Domain %s saved to %s\n"
-msgstr ""
+msgstr "Domain %s saved to %s\n"
 
 #: src/virsh.c:761
 #, c-format
 msgid "Failed to save domain %s to %s"
-msgstr ""
+msgstr "Failed to save domain %s to %s"
 
 #: src/virsh.c:774
 msgid "restore a domain from a saved state in a file"
-msgstr ""
+msgstr "restore a domain from a saved state in a file"
 
 #: src/virsh.c:775
 msgid "Restore a domain."
-msgstr ""
+msgstr "Restore a domain."
 
 #: src/virsh.c:780
 msgid "the state to restore"
-msgstr ""
+msgstr "the state to restore"
 
 #: src/virsh.c:799
 #, c-format
 msgid "Domain restored from %s\n"
-msgstr ""
+msgstr "Domain restored from %s\n"
 
 #: src/virsh.c:801
 #, c-format
 msgid "Failed to restore domain from %s"
-msgstr ""
+msgstr "Failed to restore domain from %s"
 
 #: src/virsh.c:812
 msgid "dump the core of a domain to a file for analysis"
-msgstr ""
+msgstr "dump the core of a domain to a file for analysis"
 
 #: src/virsh.c:813
 msgid "Core dump a domain."
-msgstr ""
+msgstr "Core dump a domain."
 
 #: src/virsh.c:819
 msgid "where to dump the core"
-msgstr ""
+msgstr "where to dump the core"
 
 #: src/virsh.c:841
 #, c-format
 msgid "Domain %s dumpd to %s\n"
-msgstr ""
+msgstr "Domain %s dumpd to %s\n"
 
 #: src/virsh.c:843
 #, c-format
 msgid "Failed to core dump domain %s to %s"
-msgstr ""
+msgstr "Failed to core dump domain %s to %s"
 
 #: src/virsh.c:857
 msgid "resume a domain"
-msgstr ""
+msgstr "resume a domain"
 
 #: src/virsh.c:858
 msgid "Resume a previously suspended domain."
-msgstr ""
+msgstr "Resume a previously suspended domain."
 
 #: src/virsh.c:881
 #, c-format
 msgid "Domain %s resumed\n"
-msgstr ""
+msgstr "Domain %s resumed\n"
 
 #: src/virsh.c:883
 #, c-format
 msgid "Failed to resume domain %s"
-msgstr ""
+msgstr "Failed to resume domain %s"
 
 #: src/virsh.c:896
 msgid "gracefully shutdown a domain"
-msgstr ""
+msgstr "gracefully shutdown a domain"
 
 #: src/virsh.c:897
 msgid "Run shutdown in the target domain."
-msgstr ""
+msgstr "Run shutdown in the target domain."
 
 #: src/virsh.c:920
 #, c-format
 msgid "Domain %s is being shutdown\n"
-msgstr ""
+msgstr "Domain %s is being shutdown\n"
 
 #: src/virsh.c:922
 #, c-format
 msgid "Failed to shutdown domain %s"
-msgstr ""
+msgstr "Failed to shutdown domain %s"
 
 #: src/virsh.c:935
 msgid "reboot a domain"
-msgstr ""
+msgstr "reboot a domain"
 
 #: src/virsh.c:936
 msgid "Run a reboot command in the target domain."
-msgstr ""
+msgstr "Run a reboot command in the target domain."
 
 #: src/virsh.c:959
 #, c-format
 msgid "Domain %s is being rebooted\n"
-msgstr ""
+msgstr "Domain %s is being rebooted\n"
 
 #: src/virsh.c:961
 #, c-format
 msgid "Failed to reboot domain %s"
-msgstr ""
+msgstr "Failed to reboot domain %s"
 
 #: src/virsh.c:974
 msgid "destroy a domain"
-msgstr ""
+msgstr "destroy a domain"
 
 #: src/virsh.c:975
 msgid "Destroy a given domain."
-msgstr ""
+msgstr "Destroy a given domain."
 
 #: src/virsh.c:998
 #, c-format
 msgid "Domain %s destroyed\n"
-msgstr ""
+msgstr "Domain %s destroyed\n"
 
 #: src/virsh.c:1000
 #, c-format
 msgid "Failed to destroy domain %s"
-msgstr ""
+msgstr "Failed to destroy domain %s"
 
 #: src/virsh.c:1013
 msgid "domain information"
-msgstr ""
+msgstr "domain information"
 
 #: src/virsh.c:1014
 msgid "Returns basic information about the domain."
-msgstr ""
+msgstr "Returns basic information about the domain."
 
 #: src/virsh.c:1040 src/virsh.c:1042
 msgid "Id:"
-msgstr ""
+msgstr "Id:"
 
 #: src/virsh.c:1043
 msgid "Name:"
-msgstr ""
+msgstr "Name:"
 
 #: src/virsh.c:1046
 msgid "UUID:"
-msgstr ""
+msgstr "UUID:"
 
 #: src/virsh.c:1049
 msgid "OS Type:"
-msgstr ""
+msgstr "OS Type:"
 
 #: src/virsh.c:1054 src/virsh.c:1135
 msgid "State:"
-msgstr ""
+msgstr "State:"
 
 #: src/virsh.c:1057 src/virsh.c:1401
 msgid "CPU(s):"
-msgstr ""
+msgstr "CPU(s):"
 
 #: src/virsh.c:1064 src/virsh.c:1142
 msgid "CPU time:"
-msgstr ""
+msgstr "CPU time:"
 
 #: src/virsh.c:1067
 msgid "Max memory:"
-msgstr ""
+msgstr "Max memory:"
 
 #: src/virsh.c:1069
 msgid "Used memory:"
-msgstr ""
+msgstr "Used memory:"
 
 #: src/virsh.c:1085
 msgid "domain vcpu information"
-msgstr ""
+msgstr "domain vcpu information"
 
 #: src/virsh.c:1086
 msgid "Returns basic information about the domain virtual CPUs."
-msgstr ""
+msgstr "Returns basic information about the domain virtual CPUs."
 
 #: src/virsh.c:1133
 msgid "VCPU:"
-msgstr ""
+msgstr "VCPU:"
 
 #: src/virsh.c:1134
 msgid "CPU:"
-msgstr ""
+msgstr "CPU:"
 
 #: src/virsh.c:1144
 msgid "CPU Affinity:"
-msgstr ""
+msgstr "CPU Affinity:"
 
 #: src/virsh.c:1168
 msgid "control domain vcpu affinity"
-msgstr ""
+msgstr "control domain vcpu affinity"
 
 #: src/virsh.c:1169
 msgid "Pin domain VCPUs to host physical CPUs."
-msgstr ""
+msgstr "Pin domain VCPUs to host physical CPUs."
 
 #: src/virsh.c:1175
 msgid "vcpu number"
-msgstr ""
+msgstr "vcpu number"
 
 #: src/virsh.c:1176
 msgid "host cpu number(s) (comma separated)"
-msgstr ""
+msgstr "host cpu number(s) (comma separated)"
 
 #: src/virsh.c:1254
 msgid "change number of virtual CPUs"
-msgstr ""
+msgstr "change number of virtual CPUs"
 
 #: src/virsh.c:1255
 msgid "Change the number of virtual CPUs active in the guest domain."
-msgstr ""
+msgstr "Change the number of virtual CPUs active in the guest domain."
 
 #: src/virsh.c:1261
 msgid "number of virtual CPUs"
-msgstr ""
+msgstr "number of virtual CPUs"
 
 #: src/virsh.c:1297
 msgid "change memory allocation"
-msgstr ""
+msgstr "change memory allocation"
 
 #: src/virsh.c:1298
 msgid "Change the current memory allocation in the guest domain."
-msgstr ""
+msgstr "Change the current memory allocation in the guest domain."
 
 #: src/virsh.c:1304
 msgid "number of bytes of memory"
-msgstr ""
+msgstr "number of bytes of memory"
 
 #: src/virsh.c:1340
 msgid "change maximum memory limit"
-msgstr ""
+msgstr "change maximum memory limit"
 
 #: src/virsh.c:1341
 msgid "Change the maximum memory allocation limit in the guest domain."
-msgstr ""
+msgstr "Change the maximum memory allocation limit in the guest domain."
 
 #: src/virsh.c:1347
 msgid "maxmimum memory limit in bytes"
-msgstr ""
+msgstr "maxmimum memory limit in bytes"
 
 #: src/virsh.c:1383
 msgid "node information"
-msgstr ""
+msgstr "node information"
 
 #: src/virsh.c:1384
 msgid "Returns basic information about the node."
-msgstr ""
+msgstr "Returns basic information about the node."
 
 #: src/virsh.c:1397
 msgid "failed to get node information"
-msgstr ""
+msgstr "failed to get node information"
 
 #: src/virsh.c:1400
 msgid "CPU model:"
-msgstr ""
+msgstr "CPU model:"
 
 #: src/virsh.c:1402
 msgid "CPU frequency:"
-msgstr ""
+msgstr "CPU frequency:"
 
 #: src/virsh.c:1403
 msgid "CPU socket(s):"
-msgstr ""
+msgstr "CPU socket(s):"
 
 #: src/virsh.c:1404
 msgid "Core(s) per socket:"
-msgstr ""
+msgstr "Core(s) per socket:"
 
 #: src/virsh.c:1405
 msgid "Thread(s) per core:"
-msgstr ""
+msgstr "Thread(s) per core:"
 
 #: src/virsh.c:1406
 msgid "NUMA cell(s):"
-msgstr ""
+msgstr "NUMA cell(s):"
 
 #: src/virsh.c:1407
 msgid "Memory size:"
-msgstr ""
+msgstr "Memory size:"
 
 #: src/virsh.c:1417
 msgid "domain information in XML"
-msgstr ""
+msgstr "domain information in XML"
 
 #: src/virsh.c:1418
 msgid "Ouput the domain information as an XML dump to stdout."
-msgstr ""
+msgstr "Ouput the domain information as an XML dump to stdout."
 
 #: src/virsh.c:1457
 msgid "convert a domain id or UUID to domain name"
-msgstr ""
+msgstr "convert a domain id or UUID to domain name"
 
 #: src/virsh.c:1462
 msgid "domain id or uuid"
-msgstr ""
+msgstr "domain id or uuid"
 
 #: src/virsh.c:1487
 msgid "convert a domain name or UUID to domain id"
-msgstr ""
+msgstr "convert a domain name or UUID to domain id"
 
 #: src/virsh.c:1522
 msgid "convert a domain name or id to domain UUID"
-msgstr ""
+msgstr "convert a domain name or id to domain UUID"
 
 #: src/virsh.c:1527
 msgid "domain id or name"
-msgstr ""
+msgstr "domain id or name"
 
 #: src/virsh.c:1546
 msgid "failed to get domain UUID"
-msgstr ""
+msgstr "failed to get domain UUID"
 
 #: src/virsh.c:1557
 msgid "show version"
-msgstr ""
+msgstr "show version"
 
 #: src/virsh.c:1558
 msgid "Display the system version information."
-msgstr ""
+msgstr "Display the system version information."
 
 #: src/virsh.c:1581
 msgid "failed to get hypervisor type"
-msgstr ""
+msgstr "failed to get hypervisor type"
 
 #: src/virsh.c:1590
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
-msgstr ""
+msgstr "Compiled against library: libvir %d.%d.%d\n"
 
 #: src/virsh.c:1595
 msgid "failed to get the library version"
-msgstr ""
+msgstr "failed to get the library version"
 
 #: src/virsh.c:1602
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
-msgstr ""
+msgstr "Using library: libvir %d.%d.%d\n"
 
 #: src/virsh.c:1609
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
-msgstr ""
+msgstr "Using API: %s %d.%d.%d\n"
 
 #: src/virsh.c:1614
 msgid "failed to get the hypervisor version"
-msgstr ""
+msgstr "failed to get the hypervisor version"
 
 #: src/virsh.c:1619
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
-msgstr ""
+msgstr "Cannot extract running %s hypervisor version\n"
 
 #: src/virsh.c:1626
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
-msgstr ""
+msgstr "Running hypervisor: %s %d.%d.%d\n"
 
 #: src/virsh.c:1637
 msgid "quit this interactive terminal"
-msgstr ""
+msgstr "quit this interactive terminal"
 
 #: src/virsh.c:1750
 #, c-format
 msgid "command '%s' requires <%s> option"
-msgstr ""
+msgstr "command '%s' requires <%s> option"
 
 #: src/virsh.c:1751
 #, c-format
 msgid "command '%s' requires --%s option"
-msgstr ""
+msgstr "command '%s' requires --%s option"
 
 #: src/virsh.c:1778
 #, c-format
 msgid "command '%s' doesn't exist"
-msgstr ""
+msgstr "command '%s' doesn't exist"
 
 #: src/virsh.c:1786
 msgid "  NAME\n"
-msgstr ""
+msgstr "  NAME\n"
 
 #: src/virsh.c:1797
 msgid ""
 "\n"
 "  DESCRIPTION\n"
 msgstr ""
+"\n"
+"  DESCRIPTION\n"
 
 #: src/virsh.c:1801
 msgid ""
 "\n"
 "  OPTIONS\n"
 msgstr ""
+"\n"
+"  OPTIONS\n"
 
 #: src/virsh.c:1808
 #, c-format
 msgid "--%s <number>"
-msgstr ""
+msgstr "--%s <number>"
 
 #: src/virsh.c:1810
 #, c-format
 msgid "--%s <string>"
-msgstr ""
+msgstr "--%s <string>"
 
 #: src/virsh.c:1923
 msgid "undefined domain name or id"
-msgstr ""
+msgstr "undefined domain name or id"
 
 #: src/virsh.c:1956
 #, c-format
 msgid "failed to get domain '%s'"
-msgstr ""
+msgstr "failed to get domain '%s'"
 
 #: src/virsh.c:1984
 #, c-format
@@ -1211,101 +1218,104 @@ msgid ""
 "(Time: %.3f ms)\n"
 "\n"
 msgstr ""
+"\n"
+"(Time: %.3f ms)\n"
+"\n"
 
 #: src/virsh.c:2058
 msgid "missing \""
-msgstr ""
+msgstr "missing \""
 
 #: src/virsh.c:2119
 #, c-format
 msgid "unexpected token (command name): '%s'"
-msgstr ""
+msgstr "unexpected token (command name): '%s'"
 
 #: src/virsh.c:2124
 #, c-format
 msgid "unknown command: '%s'"
-msgstr ""
+msgstr "unknown command: '%s'"
 
 #: src/virsh.c:2131
 #, c-format
 msgid "command '%s' doesn't support option --%s"
-msgstr ""
+msgstr "command '%s' doesn't support option --%s"
 
 #: src/virsh.c:2146
 #, c-format
 msgid "expected syntax: --%s <%s>"
-msgstr ""
+msgstr "expected syntax: --%s <%s>"
 
 #: src/virsh.c:2149
 msgid "number"
-msgstr ""
+msgstr "number"
 
 #: src/virsh.c:2149
 msgid "string"
-msgstr ""
+msgstr "string"
 
 #: src/virsh.c:2155
 #, c-format
 msgid "unexpected data '%s'"
-msgstr ""
+msgstr "unexpected data '%s'"
 
 #: src/virsh.c:2177
 msgid "OPTION"
-msgstr ""
+msgstr "OPTION"
 
 #: src/virsh.c:2177
 msgid "DATA"
-msgstr ""
+msgstr "DATA"
 
 #: src/virsh.c:2225 src/virsh.c:2251
 msgid "running"
-msgstr ""
+msgstr "running"
 
 #: src/virsh.c:2227 src/virsh.c:2249
 msgid "blocked"
-msgstr ""
+msgstr "blocked"
 
 #: src/virsh.c:2229
 msgid "paused"
-msgstr ""
+msgstr "paused"
 
 #: src/virsh.c:2231
 msgid "in shutdown"
-msgstr ""
+msgstr "in shutdown"
 
 #: src/virsh.c:2233
 msgid "shut off"
-msgstr ""
+msgstr "shut off"
 
 #: src/virsh.c:2235
 msgid "crashed"
-msgstr ""
+msgstr "crashed"
 
 #: src/virsh.c:2247
 msgid "offline"
-msgstr ""
+msgstr "offline"
 
 #: src/virsh.c:2266
 msgid "no valid connection"
-msgstr ""
+msgstr "no valid connection"
 
 #: src/virsh.c:2305
 #, c-format
 msgid "%s: error: "
-msgstr ""
+msgstr "%s: error: "
 
 #: src/virsh.c:2307
 msgid "error: "
-msgstr ""
+msgstr "error: "
 
 #: src/virsh.c:2329 src/virsh.c:2341 src/virsh.c:2353
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
-msgstr ""
+msgstr "%s: %d: failed to allocate %d bytes"
 
 #: src/virsh.c:2381
 msgid "failed to connect to the hypervisor"
-msgstr ""
+msgstr "failed to connect to the hypervisor"
 
 #: src/virsh.c:2526
 #, c-format
@@ -1323,6 +1333,18 @@ msgid ""
 "\n"
 "  commands (non interactive mode):\n"
 msgstr ""
+"\n"
+"%s [options] [commands]\n"
+"\n"
+"  options:\n"
+"    -c | --connect <uri>    hypervisor connection URI\n"
+"    -d | --debug <num>      debug level [0-5]\n"
+"    -h | --help             this help\n"
+"    -q | --quiet            quiet mode\n"
+"    -t | --timing           print timing information\n"
+"    -v | --version          program version\n"
+"\n"
+"  commands (non interactive mode):\n"
 
 #: src/virsh.c:2542
 #, c-format
@@ -1331,11 +1353,14 @@ msgid ""
 "  (specify --help <command> for details about the command)\n"
 "\n"
 msgstr ""
+"\n"
+"  (specify --help <command> for details about the command)\n"
+"\n"
 
 #: src/virsh.c:2628
 #, c-format
 msgid "unsupported option '-%c'. See --help."
-msgstr ""
+msgstr "unsupported option '-%c'. See --help."
 
 #: src/virsh.c:2709
 #, c-format
@@ -1343,6 +1368,8 @@ msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
 msgstr ""
+"Welcome to %s, the virtualization interactive terminal.\n"
+"\n"
 
 #: src/virsh.c:2712
 msgid ""
@@ -1350,102 +1377,105 @@ msgid ""
 "       'quit' to quit\n"
 "\n"
 msgstr ""
+"Type:  'help' for help with commands\n"
+"       'quit' to quit\n"
+"\n"
 
 #: src/conf.c:153 src/conf.c:204 src/conf.c:487 src/conf.c:526 src/conf.c:554
 #: src/conf.c:632
 msgid "allocating configuration"
-msgstr ""
+msgstr "allocating configuration"
 
 #: src/conf.c:339
 msgid "unterminated number"
-msgstr ""
+msgstr "unterminated number"
 
 #: src/conf.c:371 src/conf.c:388 src/conf.c:400
 msgid "unterminated string"
-msgstr ""
+msgstr "unterminated string"
 
 #: src/conf.c:428 src/conf.c:481
 msgid "expecting a value"
-msgstr ""
+msgstr "expecting a value"
 
 #: src/conf.c:448
 msgid "expecting a separator in list"
-msgstr ""
+msgstr "expecting a separator in list"
 
 #: src/conf.c:471
 msgid "list is not closed with ] "
-msgstr ""
+msgstr "list is not closed with ] "
 
 #: src/conf.c:519
 msgid "expecting a name"
-msgstr ""
+msgstr "expecting a name"
 
 #: src/conf.c:582
 msgid "expecting a separator"
-msgstr ""
+msgstr "expecting a separator"
 
 #: src/conf.c:614
 msgid "expecting an assignment"
-msgstr ""
+msgstr "expecting an assignment"
 
 #: src/conf.c:881
 msgid "failed to open file"
-msgstr ""
+msgstr "failed to open file"
 
 #: src/conf.c:889
 msgid "failed to save content"
-msgstr ""
+msgstr "failed to save content"
 
 #: src/xs_internal.c:323
 msgid "failed to connect to Xen Store"
-msgstr ""
+msgstr "failed to connect to Xen Store"
 
 #: src/proxy_internal.c:197
 #, c-format
 msgid "failed to exec %s\n"
-msgstr ""
+msgstr "failed to exec %s\n"
 
 #: src/proxy_internal.c:291
 #, c-format
 msgid "Failed to close socket %d\n"
-msgstr ""
+msgstr "Failed to close socket %d\n"
 
 #: src/proxy_internal.c:324
 #, c-format
 msgid "Failed to read socket %d\n"
-msgstr ""
+msgstr "Failed to read socket %d\n"
 
 #: src/proxy_internal.c:358
 #, c-format
 msgid "Failed to write to socket %d\n"
-msgstr ""
+msgstr "Failed to write to socket %d\n"
 
 #: src/proxy_internal.c:420 src/proxy_internal.c:441 src/proxy_internal.c:461
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
-msgstr ""
+msgstr "Communication error with proxy: got %d bytes of %d\n"
 
 #: src/proxy_internal.c:428
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
-msgstr ""
+msgstr "Communication error with proxy: expected %d bytes got %d\n"
 
 #: src/proxy_internal.c:450
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
-msgstr ""
+msgstr "Communication error with proxy: got %d bytes packet\n"
 
 #: src/proxy_internal.c:474
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
-msgstr ""
+msgstr "Communication error with proxy: malformed packet\n"
 
 #: src/proxy_internal.c:480
 #, c-format
 msgid "got asynchronous packet number %d\n"
-msgstr ""
+msgstr "got asynchronous packet number %d\n"
 
 #: src/xen_internal.c:1379
 #, c-format
 msgid "allocating %d domain info"
-msgstr ""
+msgstr "allocating %d domain info"

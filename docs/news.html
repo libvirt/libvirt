@@ -2,7 +2,28 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>Releases</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Releases</h1><p>Here is the list of official releases, however since it is early on in the
 development of libvirt, it is preferable when possible to just use the <a href="downloads.html">CVS version or snapshot</a>, contact the mailing list
-and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3>0.1.8: Oct 16 2006</h3><ul><li> Bug for system with page size != 4k</li>
+and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3>0.1.9: Nov 29 2006</h3><ul><li>python bindings: release interpeter lock when calling C (Daniel Berrange)</li>
+  <li>don't raise HTTP error when looking informations for a domain</li>
+  <li>some refactoring to use the driver for all entry points</li>
+  <li>better error reporting (Daniel Berrange)</li>
+  <li>fix OS reporting when running as non-root</li>
+  <li>provide XML parsing errors</li>
+  <li>extension of the test framework (Daniel Berrange)</li>
+  <li>fix the reconnect regression test</li>
+  <li>python bindings: Domain instances now link to the Connect to avoid garbage collection and disconnect</li>
+  <li>separate the notion of maximum memory and current use at the XML level</li>
+  <li>Fix a memory leak (Daniel Berrange)</li>
+  <li>add support for shareable drives</li>
+  <li>add support for non-bridge style networking configs for guests(Daniel Berrange)</li>
+  <li>python bindings: fix unsigned long marshalling (Daniel Berrange)</li>
+  <li>new config APIs virConfNew() and virConfSetValue() to build configs from scratch</li>
+  <li>hot plug device support based on Michel Ponceau patch</li>
+  <li>added support for inactive domains, new APIs, various associated cleanup (Daniel Berrange)</li>
+  <li>special device model for HVM guests (Daniel Berrange)</li>
+  <li>add API to dump core of domains (but requires a patched xend)</li>
+  <li>pygrub bootloader informations take over &lt;os&gt; informations</li>
+  <li>updated the localization strings</li>
+</ul><h3>0.1.8: Oct 16 2006</h3><ul><li> Bug for system with page size != 4k</li>
   <li> vcpu number initialization (Philippe Berthault)</li>
   <li> don't label crashed domains as shut off (Peter Vetere)</li>
   <li> fix virsh man page (Noriko Mizumoto)</li>

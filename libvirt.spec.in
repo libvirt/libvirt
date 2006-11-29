@@ -112,6 +112,17 @@ rm -fr %{buildroot}
 %doc docs/examples/python
 
 %changelog
+* Wed Nov 29 2006 Daniel Veillard <veillard@redhat.com> 0.1.9-1
+- better error reporting
+- python bindings fixes and extensions
+- add support for shareable drives
+- add support for non-bridge style networking
+- hot plug device support
+- added support for inactive domains
+- API to dump core of domains
+- various bug fixes, cleanups and improvements
+- updated the localization
+
 * Mon Oct 16 2006 Daniel Veillard <veillard@redhat.com> 0.1.8-1
 - fix missing page size detection code for ia64
 - fix mlock size when getting domain info list from hypervisor

@@ -1,3 +1,10 @@
+Wed Nov 29 13:13:39 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* NEWS configure.in libvirt.spec.in docs/libvir.html docs/news.html
+	  include/libvirt/libvirt.h: preparing libvirt-0.1.9 release
+	* po/*.po: more updates and fix all the .po to not barf when msgfmt
+	  tries to process them
+
 Tue Nov 28 13:15:00 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in: update for ALL_LINGUAS

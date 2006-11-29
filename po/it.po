@@ -36,8 +36,63 @@
 # translation of it.po to
 # translation of it.po to
 # translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
 # Copyright (C) 2006 Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
+# , 2006.
 # , 2006.
 # , 2006.
 # , 2006.
@@ -164,7 +219,7 @@ msgstr ""
 "Project-Id-Version: it\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-11-27 16:59+0100\n"
-"PO-Revision-Date: 2006-11-28 07:46+0100\n"
+"PO-Revision-Date: 2006-11-29 00:52+0100\n"
 "Last-Translator: \n"
 "Language-Team:  <it@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -174,7 +229,7 @@ msgstr ""
 
 #: src/libvirt.c:245 src/libvirt.c:309 src/hash.c:652
 msgid "allocating connection"
-msgstr "allocazione collegamento in corso"
+msgstr "assegnazione collegamento in corso"
 
 #: src/libvirt.c:325
 msgid "Xen Daemon or Xen Store"
@@ -1254,122 +1309,126 @@ msgstr "converte un id o UUID del dominio in un nome del dominio"
 
 #: src/virsh.c:1462
 msgid "domain id or uuid"
-msgstr ""
+msgstr "id o uuid del dominio"
 
 #: src/virsh.c:1487
 msgid "convert a domain name or UUID to domain id"
-msgstr ""
+msgstr "converte un nome del dominio o UUID in id del dominio"
 
 #: src/virsh.c:1522
 msgid "convert a domain name or id to domain UUID"
-msgstr ""
+msgstr "converte un nome del dominio o id in UUID del dominio"
 
 #: src/virsh.c:1527
 msgid "domain id or name"
-msgstr ""
+msgstr "id o nome del dominio"
 
 #: src/virsh.c:1546
 msgid "failed to get domain UUID"
-msgstr ""
+msgstr "impossibile ottenere l'UUID del dominio"
 
 #: src/virsh.c:1557
 msgid "show version"
-msgstr ""
+msgstr "mostra versione"
 
 #: src/virsh.c:1558
 msgid "Display the system version information."
-msgstr ""
+msgstr "Visualizza le informazioni della versione del sistema."
 
 #: src/virsh.c:1581
 msgid "failed to get hypervisor type"
-msgstr ""
+msgstr "impossibile ottenere il tipo di hypervisor"
 
 #: src/virsh.c:1590
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
-msgstr ""
+msgstr "Compilato rispetto la libreria: libvir %d.%d.%d\n"
 
 #: src/virsh.c:1595
 msgid "failed to get the library version"
-msgstr ""
+msgstr "impossibile ottenere la versione della libreria"
 
 #: src/virsh.c:1602
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
-msgstr ""
+msgstr "Utilizzo libreria in corso: libvir %d.%d.%d\n"
 
 #: src/virsh.c:1609
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
-msgstr ""
+msgstr "Utilizzo API in corso: %s %d.%d.%d\n"
 
 #: src/virsh.c:1614
 msgid "failed to get the hypervisor version"
-msgstr ""
+msgstr "impossibile ottenere la versione dell'hypervisor"
 
 #: src/virsh.c:1619
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
-msgstr ""
+msgstr "Impossibile estrarre la versione dell'hypervisor %s in esecuzione\n"
 
 #: src/virsh.c:1626
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
-msgstr ""
+msgstr "Esecuzione hypervisor: %s %d.%d.%d\n"
 
 #: src/virsh.c:1637
 msgid "quit this interactive terminal"
-msgstr ""
+msgstr "abbandona questo terminale interattivo"
 
 #: src/virsh.c:1750
 #, c-format
 msgid "command '%s' requires <%s> option"
-msgstr ""
+msgstr "il comando '%s' richiede l'opzione <%s>"
 
 #: src/virsh.c:1751
 #, c-format
 msgid "command '%s' requires --%s option"
-msgstr ""
+msgstr "il comando '%s' richiede l'opzione --%s"
 
 #: src/virsh.c:1778
 #, c-format
 msgid "command '%s' doesn't exist"
-msgstr ""
+msgstr "il comando '%s' non esiste"
 
 #: src/virsh.c:1786
 msgid "  NAME\n"
-msgstr ""
+msgstr "  NOME\n"
 
 #: src/virsh.c:1797
 msgid ""
 "\n"
 "  DESCRIPTION\n"
 msgstr ""
+"\n"
+"  DESCRIZIONE\n"
 
 #: src/virsh.c:1801
 msgid ""
 "\n"
 "  OPTIONS\n"
 msgstr ""
+"\n"
+"  OPZIONI\n"
 
 #: src/virsh.c:1808
 #, c-format
 msgid "--%s <number>"
-msgstr ""
+msgstr "--%s <number>"
 
 #: src/virsh.c:1810
 #, c-format
 msgid "--%s <string>"
-msgstr ""
+msgstr "--%s <string>"
 
 #: src/virsh.c:1923
 msgid "undefined domain name or id"
-msgstr ""
+msgstr "id o nome del dominio non definito"
 
 #: src/virsh.c:1956
 #, c-format
 msgid "failed to get domain '%s'"
-msgstr ""
+msgstr "impossibile ottenere il dominio '%s'"
 
 #: src/virsh.c:1984
 #, c-format
@@ -1378,101 +1437,104 @@ msgid ""
 "(Time: %.3f ms)\n"
 "\n"
 msgstr ""
+"\n"
+"(Tempo: %.3f ms)\n"
+"\n"
 
 #: src/virsh.c:2058
 msgid "missing \""
-msgstr ""
+msgstr "mancante \""
 
 #: src/virsh.c:2119
 #, c-format
 msgid "unexpected token (command name): '%s'"
-msgstr ""
+msgstr "token inaspettato (nome del comando): '%s'"
 
 #: src/virsh.c:2124
 #, c-format
 msgid "unknown command: '%s'"
-msgstr ""
+msgstr "comando sconosciuto: '%s'"
 
 #: src/virsh.c:2131
 #, c-format
 msgid "command '%s' doesn't support option --%s"
-msgstr ""
+msgstr "il comando '%s' non supporta l'opzione --%s"
 
 #: src/virsh.c:2146
 #, c-format
 msgid "expected syntax: --%s <%s>"
-msgstr ""
+msgstr "sintassi prevista: --%s <%s>"
 
 #: src/virsh.c:2149
 msgid "number"
-msgstr ""
+msgstr "numero"
 
 #: src/virsh.c:2149
 msgid "string"
-msgstr ""
+msgstr "stringa"
 
 #: src/virsh.c:2155
 #, c-format
 msgid "unexpected data '%s'"
-msgstr ""
+msgstr "dato inaspettato '%s'"
 
 #: src/virsh.c:2177
 msgid "OPTION"
-msgstr ""
+msgstr "OPZIONE"
 
 #: src/virsh.c:2177
 msgid "DATA"
-msgstr ""
+msgstr "DATI"
 
 #: src/virsh.c:2225 src/virsh.c:2251
 msgid "running"
-msgstr ""
+msgstr "in esecuzione"
 
 #: src/virsh.c:2227 src/virsh.c:2249
 msgid "blocked"
-msgstr ""
+msgstr "bloccato"
 
 #: src/virsh.c:2229
 msgid "paused"
-msgstr ""
+msgstr "in pausa"
 
 #: src/virsh.c:2231
 msgid "in shutdown"
-msgstr ""
+msgstr "in arresto"
 
 #: src/virsh.c:2233
 msgid "shut off"
-msgstr ""
+msgstr "disabilitato"
 
 #: src/virsh.c:2235
 msgid "crashed"
-msgstr ""
+msgstr "crashed"
 
 #: src/virsh.c:2247
 msgid "offline"
-msgstr ""
+msgstr "scollegato"
 
 #: src/virsh.c:2266
 msgid "no valid connection"
-msgstr ""
+msgstr "collegamento non valido"
 
 #: src/virsh.c:2305
 #, c-format
 msgid "%s: error: "
-msgstr ""
+msgstr "%s: errore: "
 
 #: src/virsh.c:2307
 msgid "error: "
-msgstr ""
+msgstr "errore: "
 
 #: src/virsh.c:2329 src/virsh.c:2341 src/virsh.c:2353
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
-msgstr ""
+msgstr "%s: %d: impossibile allocare %d byte"
 
 #: src/virsh.c:2381
 msgid "failed to connect to the hypervisor"
-msgstr ""
+msgstr "impossibile collegarsi all'hypervisor"
 
 #: src/virsh.c:2526
 #, c-format
@@ -1490,6 +1552,18 @@ msgid ""
 "\n"
 "  commands (non interactive mode):\n"
 msgstr ""
+"\n"
+"%s [opzioni] [comandi]\n"
+"\n"
+"  opzioni:\n"
+"    -c | --connect <uri>    URI di collegamento dell'hypervisor\n"
+"    -d | --debug <num>      [0-5] livello di debug\n"
+"    -h | --help             questo aiuto\n"
+"    -q | --quiet            modalità silenzioso\n"
+"    -t | --timing           stampa le informazioni sui tempi\n"
+"    -v | --version          versione del programma\n"
+"\n"
+"  comandi (modalità non interattiva):\n"
 
 #: src/virsh.c:2542
 #, c-format
@@ -1498,11 +1572,14 @@ msgid ""
 "  (specify --help <command> for details about the command)\n"
 "\n"
 msgstr ""
+"\n"
+"  (specifica --help <command> per informazioni sul comando)\n"
+"\n"
 
 #: src/virsh.c:2628
 #, c-format
 msgid "unsupported option '-%c'. See --help."
-msgstr ""
+msgstr "opzione non supportata '-%c'. Consultare --help."
 
 #: src/virsh.c:2709
 #, c-format
@@ -1510,6 +1587,8 @@ msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
 msgstr ""
+"Benvenuti a %s, il termiale interattivo per la virtualizzazione.\n"
+"\n"
 
 #: src/virsh.c:2712
 msgid ""
@@ -1517,102 +1596,106 @@ msgid ""
 "       'quit' to quit\n"
 "\n"
 msgstr ""
+"Digitate:  'help' per un aiuto con i comandi\n"
+"       'quit' per uscire\n"
+"\n"
 
 #: src/conf.c:153 src/conf.c:204 src/conf.c:487 src/conf.c:526 src/conf.c:554
 #: src/conf.c:632
 msgid "allocating configuration"
-msgstr ""
+msgstr "assegnazione configurazione in corso"
 
 #: src/conf.c:339
 msgid "unterminated number"
-msgstr ""
+msgstr "numero non terminato"
 
 #: src/conf.c:371 src/conf.c:388 src/conf.c:400
 msgid "unterminated string"
-msgstr ""
+msgstr "stringa non terminata"
 
 #: src/conf.c:428 src/conf.c:481
 msgid "expecting a value"
-msgstr ""
+msgstr "in attesa di un valore"
 
 #: src/conf.c:448
 msgid "expecting a separator in list"
-msgstr ""
+msgstr "in attesa di un separatore nell'elenco"
 
 #: src/conf.c:471
 msgid "list is not closed with ] "
-msgstr ""
+msgstr "l'elenco non termina con ] "
 
 #: src/conf.c:519
 msgid "expecting a name"
-msgstr ""
+msgstr "in attesa di un nome"
 
 #: src/conf.c:582
 msgid "expecting a separator"
-msgstr ""
+msgstr "in attesa di un separatore"
 
 #: src/conf.c:614
 msgid "expecting an assignment"
-msgstr ""
+msgstr "in attesa di un incarico"
 
 #: src/conf.c:881
 msgid "failed to open file"
-msgstr ""
+msgstr "impossibile aprire un file"
 
 #: src/conf.c:889
 msgid "failed to save content"
-msgstr ""
+msgstr "impossibile salvare il contenuto"
 
 #: src/xs_internal.c:323
 msgid "failed to connect to Xen Store"
-msgstr ""
+msgstr "impossibile collegarsi a Xen Store"
 
 #: src/proxy_internal.c:197
 #, c-format
 msgid "failed to exec %s\n"
-msgstr ""
+msgstr "impossibile eseguire %s\n"
 
 #: src/proxy_internal.c:291
 #, c-format
 msgid "Failed to close socket %d\n"
-msgstr ""
+msgstr "Impossibile chiudere il socket %d\n"
 
 #: src/proxy_internal.c:324
 #, c-format
 msgid "Failed to read socket %d\n"
-msgstr ""
+msgstr "Impossibile leggere il socket %d\n"
 
 #: src/proxy_internal.c:358
 #, c-format
 msgid "Failed to write to socket %d\n"
-msgstr ""
+msgstr "Impossibile scrivere sul socket %d\n"
 
 #: src/proxy_internal.c:420 src/proxy_internal.c:441 src/proxy_internal.c:461
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
-msgstr ""
+msgstr "Errore di comunicazione con il proxy: presenti %d byte di %d\n"
 
 #: src/proxy_internal.c:428
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
-msgstr ""
+msgstr "Errore di comunicazione con il proxy: previsti %d byte presenti %d\n"
 
 #: src/proxy_internal.c:450
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr ""
+"Errore di comunicazione con il proxy: presente un pacchetto di %d byte\n"
 
 #: src/proxy_internal.c:474
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
-msgstr ""
+msgstr "Errore di comunicazione con il proxy: pacchetto malformato\n"
 
 #: src/proxy_internal.c:480
 #, c-format
 msgid "got asynchronous packet number %d\n"
-msgstr ""
+msgstr "presente un numero %d asincrono del pacchetto \n"
 
 #: src/xen_internal.c:1379
 #, c-format
 msgid "allocating %d domain info"
-msgstr ""
+msgstr "allocazione informazioni del dominio %d"

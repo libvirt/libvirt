@@ -5,6 +5,30 @@
        http://libvirt.org/news.html
 
 Releases
+0.1.9: Nov 29 2006:
+   - python bindings: release interpeter lock when calling C (Daniel Berrange)
+   - don't raise HTTP error when looking informations for a domain
+   - some refactoring to use the driver for all entry points
+   - better error reporting (Daniel Berrange)
+   - fix OS reporting when running as non-root
+   - provide XML parsing errors
+   - extension of the test framework (Daniel Berrange)
+   - fix the reconnect regression test
+   - python bindings: Domain instances now link to the Connect to avoid garbage collection and disconnect
+   - separate the notion of maximum memory and current use at the XML level
+   - Fix a memory leak (Daniel Berrange)
+   - add support for shareable drives
+   - add support for non-bridge style networking configs for guests(Daniel Berrange)
+   - python bindings: fix unsigned long marshalling (Daniel Berrange)
+   - new config APIs virConfNew() and virConfSetValue() to build configs from scratch
+   - hot plug device support based on Michel Ponceau patch
+   - added support for inactive domains, new APIs, various associated cleanup (Daniel Berrange)
+   - special device model for HVM guests (Daniel Berrange)
+   - add API to dump core of domains (but requires a patched xend)
+   - pygrub bootloader informations take over <os> informations
+   - updated the localization strings
+
+
 0.1.8: Oct 16 2006:
    -  Bug for system with page size != 4k
    -  vcpu number initialization (Philippe Berthault)
