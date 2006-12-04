@@ -1,32 +1,44 @@
-# English translations for libvirt package.
-# Copyright (C) 2006 Free Software Foundation, Inc.
+# Catalan translation of libvirt package
+# Traducció al català del mòdul libvirt
+# Copyright (C) 2006 Free Software Foundation
 # This file is distributed under the same license as the libvirt package.
-# Automatically generated, 2006.
+# Xavier Conde Rueda <xavi.conde@gmail.com>, 2006.
+#
+# This file is translated according to the glossary and style guide of
+#   Softcatalà. If you plan to modify this file, please read first the page
+#   of the Catalan translation team for the Fedora project at:
+#   http://www.softcatala.org/projectes/fedora/
+#   and contact the previous translator.
+#
+# Aquest fitxer s'ha de traduir d'acord amb el recull de termes i la guia
+#   d'estil de Softcatalà. Si voleu modificar aquest fitxer, llegiu si
+#   us plau la pàgina de catalanització del projecte Fedora a:
+#   http://www.softcatala.org/projectes/fedora/
+#   i contacteu l'anterior traductor/a.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-11-27 16:59+0100\n"
-"PO-Revision-Date: 2006-11-27 16:59+0100\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2006-12-02 10:20-0100\n"
+"Last-Translator: Xavier Conde Rueda <xavi.conde@gmail.com>\n"
+"Language-Team: Catalan <fedora@softcatala.net>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/libvirt.c:245 src/libvirt.c:309 src/hash.c:652
 msgid "allocating connection"
-msgstr "allocating connection"
+msgstr "s'està assignant la connexió"
 
 #: src/libvirt.c:325
 msgid "Xen Daemon or Xen Store"
-msgstr "Xen Daemon or Xen Store"
+msgstr "Dimoni Xen o emmagatzematge Xen"
 
 #: src/virterror.c:243
 msgid "warning"
-msgstr "warning"
+msgstr "avís"
 
 #: src/virterror.c:246
 msgid "error"
@@ -34,410 +46,412 @@ msgstr "error"
 
 #: src/virterror.c:335
 msgid "No error message provided"
-msgstr "No error message provided"
+msgstr "No s'ha proporcionat cap missatge d'error"
 
 #: src/virterror.c:389
 #, c-format
 msgid "internal error %s"
-msgstr "internal error %s"
+msgstr "error intern %s"
 
 #: src/virterror.c:391
 msgid "internal error"
-msgstr "internal error"
+msgstr "error intern"
 
 #: src/virterror.c:394
 msgid "out of memory"
-msgstr "out of memory"
+msgstr "sense memòria"
 
 #: src/virterror.c:398
 msgid "no support for hypervisor"
-msgstr "no support for hypervisor"
+msgstr "l'hipervisor no està disponible"
 
 #: src/virterror.c:400
 #, c-format
 msgid "no support for hypervisor %s"
-msgstr "no support for hypervisor %s"
+msgstr "l'hipervisor %s no està disponible"
 
 #: src/virterror.c:404
 msgid "could not connect to hypervisor"
-msgstr "could not connect to hypervisor"
+msgstr "no s'ha pogut connectar a l'hipervisor"
 
 #: src/virterror.c:406
 #, c-format
 msgid "could not connect to %s"
-msgstr "could not connect to %s"
+msgstr "no s'ha pogut connectar a %s"
 
 #: src/virterror.c:410
 msgid "invalid connection pointer in"
-msgstr "invalid connection pointer in"
+msgstr "punter de connexió invàlid a"
 
 #: src/virterror.c:412
 #, c-format
 msgid "invalid connection pointer in %s"
-msgstr "invalid connection pointer in %s"
+msgstr "punter de connexió invàlid a %s"
 
 #: src/virterror.c:416
 msgid "invalid domain pointer in"
-msgstr "invalid domain pointer in"
+msgstr "punter de domini invàlid"
 
 #: src/virterror.c:418
 #, c-format
 msgid "invalid domain pointer in %s"
-msgstr "invalid domain pointer in %s"
+msgstr "punter de domini invàlid a %s"
 
 #: src/virterror.c:422
 msgid "invalid argument in"
-msgstr "invalid argument in"
+msgstr "argument invàlid a"
 
 #: src/virterror.c:424
 #, c-format
 msgid "invalid argument in %s"
-msgstr "invalid argument in %s"
+msgstr "argument invàlid a %s"
 
 #: src/virterror.c:428
 #, c-format
 msgid "operation failed: %s"
-msgstr "operation failed: %s"
+msgstr "ha fallat l'operació: %s"
 
 #: src/virterror.c:430
 msgid "operation failed"
-msgstr "operation failed"
+msgstr "ha fallat l'operació"
 
 #: src/virterror.c:434
 #, c-format
 msgid "GET operation failed: %s"
-msgstr "GET operation failed: %s"
+msgstr "ha fallat l'operació GET: %s"
 
 #: src/virterror.c:436
 msgid "GET operation failed"
-msgstr "GET operation failed"
+msgstr "ha fallat l'operació GET"
 
 #: src/virterror.c:440
 #, c-format
 msgid "POST operation failed: %s"
-msgstr "POST operation failed: %s"
+msgstr "ha fallat l'operació POST: %s"
 
 #: src/virterror.c:442
 msgid "POST operation failed"
-msgstr "POST operation failed"
+msgstr "ha fallat l'operació POST"
 
 #: src/virterror.c:445
 #, c-format
 msgid "got unknown HTTP error code %d"
-msgstr "got unknown HTTP error code %d"
+msgstr "s'ha rebut un codi d'error HTTP %d desconegut"
 
 #: src/virterror.c:449
 #, c-format
 msgid "unknown host %s"
-msgstr "unknown host %s"
+msgstr "es desconeix el servidor remot %s"
 
 #: src/virterror.c:451
 msgid "unknown host"
-msgstr "unknown host"
+msgstr "servidor remot desconegut"
 
 #: src/virterror.c:455
 #, c-format
 msgid "failed to serialize S-Expr: %s"
-msgstr "failed to serialize S-Expr: %s"
+msgstr "no s'ha pogut serialitzar S-Expr: %s"
 
 #: src/virterror.c:457
 msgid "failed to serialize S-Expr"
-msgstr "failed to serialize S-Expr"
+msgstr "no s'ha pogut serialitzar S-Expr"
 
 #: src/virterror.c:461
 msgid "could not use Xen hypervisor entry"
-msgstr "could not use Xen hypervisor entry"
+msgstr "no s'ha pogut usar l'hipervisor Xen"
 
 #: src/virterror.c:463
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
-msgstr "could not use Xen hypervisor entry %s"
+msgstr "no s'ha pogut fer servir l'entrada de l'hipervisor Xen %s"
 
 #: src/virterror.c:467
 msgid "could not connect to Xen Store"
-msgstr "could not connect to Xen Store"
+msgstr "no s'ha pogut connectar al magatzem Xen"
 
 #: src/virterror.c:469
 #, c-format
 msgid "could not connect to Xen Store %s"
-msgstr "could not connect to Xen Store %s"
+msgstr "no s'ha pogut connectar al magatzem Xen %s"
 
 #: src/virterror.c:472
 #, c-format
 msgid "failed Xen syscall %s %d"
-msgstr "failed Xen syscall %s %d"
+msgstr "ha fallat la crida de sistema Xen %s %d"
 
 #: src/virterror.c:476
 msgid "unknown OS type"
-msgstr "unknown OS type"
+msgstr "tipus d'SO desconegut"
 
 #: src/virterror.c:478
 #, c-format
 msgid "unknown OS type %s"
-msgstr "unknown OS type %s"
+msgstr "tipus d'SO desconegut %s"
 
 #: src/virterror.c:481
 msgid "missing kernel information"
-msgstr "missing kernel information"
+msgstr "manca la informació del nucli"
 
 #: src/virterror.c:485
 msgid "missing root device information"
-msgstr "missing root device information"
+msgstr "manca la informació del dispositiu arrel"
 
 #: src/virterror.c:487
 #, c-format
 msgid "missing root device information in %s"
-msgstr "missing root device information in %s"
+msgstr "manca la informació del dispositiu arrel a %s"
 
 #: src/virterror.c:491
 msgid "missing source information for device"
-msgstr "missing source information for device"
+msgstr "manca la font d'informació per al dispositiu"
 
 #: src/virterror.c:493
 #, c-format
 msgid "missing source information for device %s"
-msgstr "missing source information for device %s"
+msgstr "manca la font d'informació per al dispositiu %s"
 
 #: src/virterror.c:497
 msgid "missing target information for device"
-msgstr "missing target information for device"
+msgstr "manca la informació del destí per al dispositiu"
 
 #: src/virterror.c:499
 #, c-format
 msgid "missing target information for device %s"
-msgstr "missing target information for device %s"
+msgstr "manca la informació del destí per al dispositiu %s"
 
 #: src/virterror.c:503
 msgid "missing domain name information"
-msgstr "missing domain name information"
+msgstr "manca la informació del nom de domini"
 
 #: src/virterror.c:505
 #, c-format
 msgid "missing domain name information in %s"
-msgstr "missing domain name information in %s"
+msgstr "manca la informació del nom de domini a %s"
 
 #: src/virterror.c:509
 msgid "missing operating system information"
-msgstr "missing operating system information"
+msgstr "manca la informació del sistema operatiu"
 
 #: src/virterror.c:511
 #, c-format
 msgid "missing operating system information for %s"
-msgstr "missing operating system information for %s"
+msgstr "manca la informació del sistema operatiu per a %s"
 
 #: src/virterror.c:515
 msgid "missing devices information"
-msgstr "missing devices information"
+msgstr "manca la informació de dispositius"
 
 #: src/virterror.c:517
 #, c-format
 msgid "missing devices information for %s"
-msgstr "missing devices information for %s"
+msgstr "manca la informació de dispositius per a %s"
 
 #: src/virterror.c:521
 msgid "too many drivers registered"
-msgstr "too many drivers registered"
+msgstr "s'han registrat massa controladors"
 
 #: src/virterror.c:523
 #, c-format
 msgid "too many drivers registered in %s"
-msgstr "too many drivers registered in %s"
+msgstr "s'han registrat massa controladors a %s"
 
 #: src/virterror.c:527
 msgid "library call failed, possibly not supported"
-msgstr "library call failed, possibly not supported"
+msgstr "ha fallat la crida a la biblioteca, potser no està disponible"
 
 #: src/virterror.c:529
 #, c-format
 msgid "library call %s failed, possibly not supported"
-msgstr "library call %s failed, possibly not supported"
+msgstr "ha fallat la crida %s a la biblioteca, potser no està disponible"
 
 #: src/virterror.c:533
 msgid "XML description not well formed or invalid"
-msgstr "XML description not well formed or invalid"
+msgstr "La descripció XML no està ben formada o és invàlida"
 
 #: src/virterror.c:535
 #, c-format
 msgid "XML description for %s is not well formed or invalid"
-msgstr "XML description for %s is not well formed or invalid"
+msgstr "La descripció XML per a %s no està ben formada o és invàlida"
 
 #: src/virterror.c:539
 msgid "this domain exists already"
-msgstr "this domain exists already"
+msgstr "aquest domini ja existeix"
 
 #: src/virterror.c:541
 #, c-format
 msgid "domain %s exists already"
-msgstr "domain %s exists already"
+msgstr "el domini %s ja existeix"
 
 #: src/virterror.c:545
 msgid "operation forbidden for read only access"
-msgstr "operation forbidden for read only access"
+msgstr "operació prohibida en accedir només per a llegir"
 
 #: src/virterror.c:547
 #, c-format
 msgid "operation %s forbidden for read only access"
-msgstr "operation %s forbidden for read only access"
+msgstr "operació %s prohibida en accedir només per a llegir"
 
 #: src/virterror.c:551
 msgid "failed to open configuration file for reading"
-msgstr "failed to open configuration file for reading"
+msgstr "no s'ha pogut obrir el fitxer de configuració per a llegir"
 
 #: src/virterror.c:553
 #, c-format
 msgid "failed to open %s for reading"
-msgstr "failed to open %s for reading"
+msgstr "no s'ha pogut obrir %s per a llegir"
 
 #: src/virterror.c:557
 msgid "failed to read configuration file"
-msgstr "failed to read configuration file"
+msgstr "no s'ha pogut llegir el fitxer de configuració"
 
 #: src/virterror.c:559
 #, c-format
 msgid "failed to read configuration file %s"
-msgstr "failed to read configuration file %s"
+msgstr "no s'ha pogut llegir el fitxer de configuració %s"
 
 #: src/virterror.c:563
 msgid "failed to parse configuration file"
-msgstr "failed to parse configuration file"
+msgstr "no s'ha pogut analitzar el fitxer de configuració"
 
 #: src/virterror.c:565
 #, c-format
 msgid "failed to parse configuration file %s"
-msgstr "failed to parse configuration file %s"
+msgstr "no s'ha pogut analitzar el fitxer de configuració %s"
 
 #: src/virterror.c:569
 msgid "configuration file syntax error"
-msgstr "configuration file syntax error"
+msgstr "error de sintaxi del fitxer de configuració"
 
 #: src/virterror.c:571
 #, c-format
 msgid "configuration file syntax error: %s"
-msgstr "configuration file syntax error: %s"
+msgstr "error de sintaxi del fitxer de configuració: %s"
 
 #: src/virterror.c:575
 msgid "failed to write configuration file"
-msgstr "failed to write configuration file"
+msgstr "no s'ha pogut escriure el fitxer de configuració"
 
 #: src/virterror.c:577
 #, c-format
 msgid "failed to write configuration file: %s"
-msgstr "failed to write configuration file: %s"
+msgstr "no s'ha pogut escriure el fitxer de configuració: %s"
 
 #: src/virterror.c:581
+#, fuzzy
 msgid "parser error"
-msgstr "parser error"
+msgstr "error intern"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
-msgstr "copying node content"
+msgstr "s'està copiant el contingut del node"
 
 #: src/xmlrpc.c:163
 msgid "allocate value array"
-msgstr "allocate value array"
+msgstr "assignació d'una matriu de valors"
 
 #: src/xmlrpc.c:196
 msgid "unexpected dict node"
-msgstr "unexpected dict node"
+msgstr "node dict inesperat"
 
 #: src/xmlrpc.c:268
 msgid "unexpected value node"
-msgstr "unexpected value node"
+msgstr "node value inesperat"
 
 #: src/xmlrpc.c:431
 msgid "send request"
-msgstr "send request"
+msgstr "envia sol·licitud"
 
 #: src/xmlrpc.c:437
 msgid "unexpected mime type"
-msgstr "unexpected mime type"
+msgstr "tipus mime inesperat"
 
 #: src/xmlrpc.c:444
 msgid "allocate response"
-msgstr "allocate response"
+msgstr "assigna la resposta"
 
 #: src/xmlrpc.c:452 src/xmlrpc.c:514
 msgid "read response"
-msgstr "read response"
+msgstr "llegeix la resposta"
 
 #: src/xmlrpc.c:484
 msgid "allocate string array"
-msgstr "allocate string array"
+msgstr "assigna una matriu de cadenes"
 
 #: src/xmlrpc.c:606
 msgid "parse server response failed"
-msgstr "parse server response failed"
+msgstr "ha fallat l'anàlisi de la resposta del servidor"
 
 #: src/xmlrpc.c:670
 msgid "allocate new context"
-msgstr "allocate new context"
+msgstr "assigna un nou context"
 
 #: src/hash.c:749 src/hash.c:755 src/test.c:728 src/test.c:753 src/test.c:776
 #: src/test.c:800 src/xend_internal.c:1933 src/xend_internal.c:2680
 #: src/xend_internal.c:2899 src/xs_internal.c:603 src/proxy_internal.c:798
 #: src/proxy_internal.c:845 src/proxy_internal.c:896
 msgid "allocating domain"
-msgstr "allocating domain"
+msgstr "assignació d'un domini"
 
 #: src/hash.c:766
 msgid "failed to add domain to connection hash table"
-msgstr "failed to add domain to connection hash table"
+msgstr ""
+"no s'ha pogut afegir el domini a la taula de dispersió de la connexions"
 
 #: src/hash.c:818
 msgid "domain missing from connection hash table"
-msgstr "domain missing from connection hash table"
+msgstr "manca el domini a la taula de dispersió de connexions"
 
 #: src/test.c:203 src/test.c:382 src/test.c:898 src/test.c:926 src/test.c:953
 msgid "getting time of day"
-msgstr "getting time of day"
+msgstr "obtenció de la data i hora"
 
 #: src/test.c:209 src/test.c:337 src/test.c:362
 msgid "domain"
-msgstr "domain"
+msgstr "domini"
 
 #: src/test.c:215 src/test.c:458
 msgid "creating xpath context"
-msgstr "creating xpath context"
+msgstr "creació del context xpath"
 
 #: src/test.c:222
 msgid "domain name"
-msgstr "domain name"
+msgstr "nom de domini"
 
 #: src/test.c:231 src/test.c:236
 msgid "domain uuid"
-msgstr "domain uuid"
+msgstr "uuid de domini"
 
 #: src/test.c:244 src/test.c:249
 msgid "domain memory"
-msgstr "domain memory"
+msgstr "memòria del domini"
 
 #: src/test.c:261
 msgid "domain vcpus"
-msgstr "domain vcpus"
+msgstr "vcpu del domini"
 
 #: src/test.c:272
 msgid "domain reboot behaviour"
-msgstr "domain reboot behaviour"
+msgstr "comportament del reinici del domini"
 
 #: src/test.c:283
 msgid "domain poweroff behaviour"
-msgstr "domain poweroff behaviour"
+msgstr "comportament de l'apagada del domini"
 
 #: src/test.c:294
 msgid "domain crash behaviour"
-msgstr "domain crash behaviour"
+msgstr "comportament de la fallada del domini"
 
 #: src/test.c:355
 msgid "load domain definition file"
-msgstr "load domain definition file"
+msgstr "carrega el fitxer de definició del domini"
 
 #: src/test.c:437
 msgid "loading host definition file"
-msgstr "loading host definition file"
+msgstr "s'està carregant el fitxer de definició del sistema amfitrió"
 
 #: src/test.c:444
 msgid "host"
-msgstr "host"
+msgstr "amfitrió"
 
 #: src/test.c:452
 msgid "node"
@@ -445,200 +459,202 @@ msgstr "node"
 
 #: src/test.c:474
 msgid "node cpu numa nodes"
-msgstr "node cpu numa nodes"
+msgstr "node dels nodes cpu i numa"
 
 #: src/test.c:486
 msgid "node cpu sockets"
-msgstr "node cpu sockets"
+msgstr "node de sòcols de cpu"
 
 #: src/test.c:498
 msgid "node cpu cores"
-msgstr "node cpu cores"
+msgstr "node de nuclis de cpu"
 
 #: src/test.c:510
 msgid "node cpu threads"
-msgstr "node cpu threads"
+msgstr "node de fluxos de cpu"
 
 #: src/test.c:522
 msgid "node active cpu"
-msgstr "node active cpu"
+msgstr "node de cpu activa"
 
 #: src/test.c:536
 msgid "node cpu mhz"
-msgstr "node cpu mhz"
+msgstr "node mhz de cpu"
 
 #: src/test.c:555
 msgid "node memory"
-msgstr "node memory"
+msgstr "node de memòria"
 
 #: src/test.c:564
 msgid "node domain list"
-msgstr "node domain list"
+msgstr "node de llista de domini"
 
 #: src/test.c:573
 msgid "resolving domain filename"
-msgstr "resolving domain filename"
+msgstr "s'està resolent el nom de fitxer del domini"
 
 #: src/test.c:611
 msgid "allocating node"
-msgstr "allocating node"
+msgstr "s'està assignant un node"
 
 #: src/test.c:651
 msgid "too many connections"
-msgstr "too many connections"
+msgstr "massa connexions"
 
 #: src/test.c:736
 msgid "too many domains"
-msgstr "too many domains"
+msgstr "massa dominis"
 
 #: src/xml.c:65
 msgid "growing buffer"
-msgstr "growing buffer"
+msgstr ""
 
 #: src/xml.c:117 src/xend_internal.c:1625 src/xend_internal.c:1644
 msgid "allocate new buffer"
-msgstr "allocate new buffer"
+msgstr ""
 
 #: src/xml.c:121
 msgid "allocate buffer content"
-msgstr "allocate buffer content"
+msgstr "assigna el contingut d'una memòria intermèdia"
 
 #: src/sexpr.c:59
 msgid "failed to allocate a node"
-msgstr "failed to allocate a node"
+msgstr "no s'ha pogut assignar un node"
 
 #: src/sexpr.c:352 src/sexpr.c:367
 msgid "failed to copy a string"
-msgstr "failed to copy a string"
+msgstr "no s'ha pogut copiar una cadena"
 
 #: src/xend_internal.c:272 src/xend_internal.c:275
 msgid "failed to read from Xen Daemon"
-msgstr "failed to read from Xen Daemon"
+msgstr "no s'ha pogut llegir el dimoni Xen"
 
 #: src/xend_internal.c:1071
 msgid "failed to urlencode the create S-Expr"
-msgstr "failed to urlencode the create S-Expr"
+msgstr "no s'ha pogut codificar la url de creació de l'S-Expr"
 
 #: src/xend_internal.c:1112
 msgid "domain information incomplete, missing domid"
-msgstr "domain information incomplete, missing domid"
+msgstr "la informació del domini és incompleta, manca el domid"
 
 #: src/xend_internal.c:1118
 msgid "domain information incorrect domid not numeric"
-msgstr "domain information incorrect domid not numeric"
+msgstr "la informació del domini és incorrecta, domid no és numèric"
 
 #: src/xend_internal.c:1125 src/xend_internal.c:1174
 msgid "domain information incomplete, missing uuid"
-msgstr "domain information incomplete, missing uuid"
+msgstr "la informació del domini és incompleta, manca l'uuid"
 
 #: src/xend_internal.c:1165 src/xend_internal.c:1508
 msgid "domain information incomplete, missing name"
-msgstr "domain information incomplete, missing name"
+msgstr "la informació del domini és incompleta, manca el nom"
 
 #: src/xend_internal.c:1424 src/xend_internal.c:1449
 msgid "domain information incomplete, missing kernel"
-msgstr "domain information incomplete, missing kernel"
+msgstr "la informació del domini és incompleta, manca el nucli"
 
 #: src/xend_internal.c:1604
+#, fuzzy
 msgid "domain information incomplete, vbd has no src"
-msgstr "domain information incomplete, vbd has no src"
+msgstr "la informació del domini és incompleta, vbd no té dev"
 
 #: src/xend_internal.c:1610
 msgid "domain information incomplete, vbd has no dev"
-msgstr "domain information incomplete, vbd has no dev"
+msgstr "la informació del domini és incompleta, vbd no té dev"
 
 #: src/xend_internal.c:1618
 msgid "cannot parse vbd filename, missing driver name"
-msgstr "cannot parse vbd filename, missing driver name"
+msgstr ""
 
 #: src/xend_internal.c:1637
 msgid "cannot parse vbd filename, missing driver type"
-msgstr "cannot parse vbd filename, missing driver type"
+msgstr ""
 
 #: src/xend_internal.c:1944
 msgid "failed to parse Xend domain information"
-msgstr "failed to parse Xend domain information"
+msgstr "no s'ha pogut analitzar la informació del domini Xen"
 
 #: src/xend_internal.c:2964
 #, c-format
 msgid "Failed to create domain %s\n"
-msgstr "Failed to create domain %s\n"
+msgstr "No s'ha pogut crear el domini %s\n"
 
 #: src/xend_internal.c:2970
 #, c-format
 msgid "Failed to get devices for domain %s\n"
-msgstr "Failed to get devices for domain %s\n"
+msgstr "No s'ha pogut obtenir els dispositius per al domini %s\n"
 
 #: src/xend_internal.c:2981
 #, c-format
 msgid "Failed to resume new domain %s\n"
-msgstr "Failed to resume new domain %s\n"
+msgstr "No s'ha pogut recuperar el nou domini %s\n"
 
 #: src/virsh.c:234
 msgid "print help"
-msgstr "print help"
+msgstr "escriure ajuda"
 
 #: src/virsh.c:235
 msgid "Prints global help or command specific help."
-msgstr "Prints global help or command specific help."
+msgstr "Escriu ajuda global o ajuda específica d'una ordre."
 
 #: src/virsh.c:253
 msgid ""
 "Commands:\n"
 "\n"
 msgstr ""
-"Commands:\n"
+"Ordres:\n"
 "\n"
 
 #: src/virsh.c:267
 msgid "(re)connect to hypervisor"
-msgstr "(re)connect to hypervisor"
+msgstr "torna a connectar a l'hipervisor"
 
 #: src/virsh.c:269
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr ""
-"Connect to local hypervisor. This is built-in command after shell start up."
+"Connecta a l'hipervisor local. És una ordre interna, després d'iniciar "
+"l'entorn d'ordres."
 
 #: src/virsh.c:274
 msgid "hypervisor connection URI"
-msgstr "hypervisor connection URI"
+msgstr "URI de la connexió de l'hipervisor"
 
 #: src/virsh.c:275
 msgid "read-only connection"
-msgstr "read-only connection"
+msgstr "connexió només de lectura"
 
 #: src/virsh.c:287
 msgid "Failed to disconnect from the hypervisor"
-msgstr "Failed to disconnect from the hypervisor"
+msgstr "No s'ha pogut desconnectar des de l'hipervisor"
 
 #: src/virsh.c:303
 msgid "Failed to connect to the hypervisor"
-msgstr "Failed to connect to the hypervisor"
+msgstr "No s'ha pogut connectar a l'hipervisor"
 
 #: src/virsh.c:313
 msgid "list domains"
-msgstr "list domains"
+msgstr "llista els dominis"
 
 #: src/virsh.c:314
 msgid "Returns list of domains."
-msgstr "Returns list of domains."
+msgstr "Retorna una llista de dominis."
 
 #: src/virsh.c:319
 msgid "list inactive domains"
-msgstr "list inactive domains"
+msgstr "llista els dominis inactius"
 
 #: src/virsh.c:320
 msgid "list inactive & active domains"
-msgstr "list inactive & active domains"
+msgstr "llista els dominis actius i inactius"
 
 #: src/virsh.c:358 src/virsh.c:365
 msgid "Failed to list active domains"
-msgstr "Failed to list active domains"
+msgstr "No s'ha pogut llistar els dominis actius"
 
 #: src/virsh.c:376 src/virsh.c:385
 msgid "Failed to list inactive domains"
-msgstr "Failed to list inactive domains"
+msgstr "No s'ha pogut llistar els dominis inactius"
 
 #: src/virsh.c:395
 msgid "Id"
@@ -646,287 +662,289 @@ msgstr "Id"
 
 #: src/virsh.c:395
 msgid "Name"
-msgstr "Name"
+msgstr "Nom"
 
 #: src/virsh.c:395
 msgid "State"
-msgstr "State"
+msgstr "Estat"
 
 #: src/virsh.c:412 src/virsh.c:2237 src/virsh.c:2253
 msgid "no state"
-msgstr "no state"
+msgstr "cap estat"
 
 #: src/virsh.c:455
 msgid "domain state"
-msgstr "domain state"
+msgstr "estat del domini"
 
 #: src/virsh.c:456
 msgid "Returns state about a running domain."
-msgstr "Returns state about a running domain."
+msgstr "Retorna l'estat quant a un domini en execució."
 
 #: src/virsh.c:461 src/virsh.c:499 src/virsh.c:736 src/virsh.c:818
 #: src/virsh.c:863 src/virsh.c:902 src/virsh.c:941 src/virsh.c:980
 #: src/virsh.c:1019 src/virsh.c:1091 src/virsh.c:1174 src/virsh.c:1260
 #: src/virsh.c:1303 src/virsh.c:1346 src/virsh.c:1423
 msgid "domain name, id or uuid"
-msgstr "domain name, id or uuid"
+msgstr "nom de domini, id o uuid"
 
 #: src/virsh.c:493
 msgid "suspend a domain"
-msgstr "suspend a domain"
+msgstr "suspèn un domini"
 
 #: src/virsh.c:494
 msgid "Suspend a running domain."
-msgstr "Suspend a running domain."
+msgstr "Suspèn un domini en execució."
 
 #: src/virsh.c:517
 #, c-format
 msgid "Domain %s suspended\n"
-msgstr "Domain %s suspended\n"
+msgstr "S'ha suspès el domini %s\n"
 
 #: src/virsh.c:519
 #, c-format
 msgid "Failed to suspend domain %s"
-msgstr "Failed to suspend domain %s"
+msgstr "No s'ha pogut suspendre el domini %s"
 
 #: src/virsh.c:532
 msgid "create a domain from an XML file"
-msgstr "create a domain from an XML file"
+msgstr "crea un domini des d'un fitxer XML"
 
 #: src/virsh.c:533
 msgid "Create a domain."
-msgstr "Create a domain."
+msgstr "Crea un domini."
 
 #: src/virsh.c:538 src/virsh.c:593
 msgid "file conatining an XML domain description"
-msgstr "file conatining an XML domain description"
+msgstr "fitxer que conté una descripció de domini"
 
 #: src/virsh.c:561 src/virsh.c:566 src/virsh.c:616 src/virsh.c:621
 #, c-format
 msgid "Failed to read description file %s"
-msgstr "Failed to read description file %s"
+msgstr "No s'ha pogut llegir el fitxer de descripció %s"
 
 #: src/virsh.c:573
 #, c-format
 msgid "Domain %s created from %s\n"
-msgstr "Domain %s created from %s\n"
+msgstr "S'ha creat el domini %s des de %s\n"
 
 #: src/virsh.c:576
 #, c-format
 msgid "Failed to create domain from %s"
-msgstr "Failed to create domain from %s"
+msgstr "No s'ha pogut crear un domini des de %s"
 
 #: src/virsh.c:587
 msgid "define (but don't start) a domain from an XML file"
-msgstr "define (but don't start) a domain from an XML file"
+msgstr "defineix (però no iniciïs) un domini des d'un fitxer XML"
 
 #: src/virsh.c:588
 msgid "Define a domain."
-msgstr "Define a domain."
+msgstr "Defineix un domini."
 
 #: src/virsh.c:628
 #, c-format
 msgid "Domain %s defined from %s\n"
-msgstr "Domain %s defined from %s\n"
+msgstr "El domini %s s'ha definit des de %s\n"
 
 #: src/virsh.c:631
 #, c-format
 msgid "Failed to define domain from %s"
-msgstr "Failed to define domain from %s"
+msgstr "No s'ha pogut definir el domini des de %s"
 
 #: src/virsh.c:642
 msgid "undefine an inactive domain"
-msgstr "undefine an inactive domain"
+msgstr "no defineixis un domini inactiu"
 
 #: src/virsh.c:643
 msgid "Undefine the configuration for an inactive domain."
-msgstr "Undefine the configuration for an inactive domain."
+msgstr "No defineixis la configuració per a un domini inactiu."
 
 #: src/virsh.c:648 src/virsh.c:1492
 msgid "domain name or uuid"
-msgstr "domain name or uuid"
+msgstr "nom de domini o uuid"
 
 #: src/virsh.c:666
 #, c-format
 msgid "Domain %s has been undefined\n"
-msgstr "Domain %s has been undefined\n"
+msgstr "S'ha indefinit el domini %s\n"
 
 #: src/virsh.c:668
 #, c-format
 msgid "Failed to undefine domain %s"
-msgstr "Failed to undefine domain %s"
+msgstr "No s'ha definit el domini %s"
 
 #: src/virsh.c:681
 msgid "start a (previously defined) inactive domain"
-msgstr "start a (previously defined) inactive domain"
+msgstr "inicia un domini inactiu definit prèviament"
 
 #: src/virsh.c:682
 msgid "Start a domain."
-msgstr "Start a domain."
+msgstr "Inicia un domini."
 
 #: src/virsh.c:687
 msgid "name of the inactive domain"
-msgstr "name of the inactive domain"
+msgstr "nom del domini inactiu"
 
 #: src/virsh.c:711
 msgid "Domain is already active"
-msgstr "Domain is already active"
+msgstr "El domini ja és actiu"
 
 #: src/virsh.c:716
 #, c-format
 msgid "Domain %s started\n"
-msgstr "Domain %s started\n"
+msgstr "S'ha iniciat el domini %s\n"
 
 #: src/virsh.c:719
 #, c-format
 msgid "Failed to start domain %s"
-msgstr "Failed to start domain %s"
+msgstr "No s'ha pogut iniciar el domini %s"
 
 #: src/virsh.c:730
 msgid "save a domain state to a file"
-msgstr "save a domain state to a file"
+msgstr "desa un estat de domini a un fitxer"
 
 #: src/virsh.c:731
 msgid "Save a running domain."
-msgstr "Save a running domain."
+msgstr "Desa un domini en execució."
 
 #: src/virsh.c:737
 msgid "where to save the data"
-msgstr "where to save the data"
+msgstr "on desar les dades"
 
 #: src/virsh.c:759
 #, c-format
 msgid "Domain %s saved to %s\n"
-msgstr "Domain %s saved to %s\n"
+msgstr "S'ha desat el domini %s a %s\n"
 
 #: src/virsh.c:761
 #, c-format
 msgid "Failed to save domain %s to %s"
-msgstr "Failed to save domain %s to %s"
+msgstr "No s'ha pogut desar el domini %s a %s"
 
 #: src/virsh.c:774
 msgid "restore a domain from a saved state in a file"
-msgstr "restore a domain from a saved state in a file"
+msgstr "restaura un domini des d'un estat desat en un fitxer"
 
 #: src/virsh.c:775
 msgid "Restore a domain."
-msgstr "Restore a domain."
+msgstr "Restaura un domini."
 
 #: src/virsh.c:780
 msgid "the state to restore"
-msgstr "the state to restore"
+msgstr "l'estat a restaurar"
 
 #: src/virsh.c:799
 #, c-format
 msgid "Domain restored from %s\n"
-msgstr "Domain restored from %s\n"
+msgstr "S'ha restaurat un domini des de %s\n"
 
 #: src/virsh.c:801
 #, c-format
 msgid "Failed to restore domain from %s"
-msgstr "Failed to restore domain from %s"
+msgstr "No s'ha pogut restaurar un domini des de %s"
 
 #: src/virsh.c:812
 msgid "dump the core of a domain to a file for analysis"
-msgstr "dump the core of a domain to a file for analysis"
+msgstr ""
 
 #: src/virsh.c:813
+#, fuzzy
 msgid "Core dump a domain."
-msgstr "Core dump a domain."
+msgstr "recupera un domini"
 
 #: src/virsh.c:819
+#, fuzzy
 msgid "where to dump the core"
-msgstr "where to dump the core"
+msgstr "on desar les dades"
 
 #: src/virsh.c:841
-#, c-format
+#, fuzzy, c-format
 msgid "Domain %s dumpd to %s\n"
-msgstr "Domain %s dumpd to %s\n"
+msgstr "S'ha desat el domini %s a %s\n"
 
 #: src/virsh.c:843
-#, c-format
+#, fuzzy, c-format
 msgid "Failed to core dump domain %s to %s"
-msgstr "Failed to core dump domain %s to %s"
+msgstr "No s'ha pogut desar el domini %s a %s"
 
 #: src/virsh.c:857
 msgid "resume a domain"
-msgstr "resume a domain"
+msgstr "recupera un domini"
 
 #: src/virsh.c:858
 msgid "Resume a previously suspended domain."
-msgstr "Resume a previously suspended domain."
+msgstr "Recupera un domini suspès anteriorment."
 
 #: src/virsh.c:881
 #, c-format
 msgid "Domain %s resumed\n"
-msgstr "Domain %s resumed\n"
+msgstr "S'ha recuperat el domini %s\n"
 
 #: src/virsh.c:883
 #, c-format
 msgid "Failed to resume domain %s"
-msgstr "Failed to resume domain %s"
+msgstr "No s'ha pogut recuperar el domini %s"
 
 #: src/virsh.c:896
 msgid "gracefully shutdown a domain"
-msgstr "gracefully shutdown a domain"
+msgstr "apaga un domini"
 
 #: src/virsh.c:897
 msgid "Run shutdown in the target domain."
-msgstr "Run shutdown in the target domain."
+msgstr "Executa l'apagada en el domini destí."
 
 #: src/virsh.c:920
 #, c-format
 msgid "Domain %s is being shutdown\n"
-msgstr "Domain %s is being shutdown\n"
+msgstr "S'està apagant el domini %s\n"
 
 #: src/virsh.c:922
 #, c-format
 msgid "Failed to shutdown domain %s"
-msgstr "Failed to shutdown domain %s"
+msgstr "No s'ha pogut apagar el domini %s"
 
 #: src/virsh.c:935
 msgid "reboot a domain"
-msgstr "reboot a domain"
+msgstr "reiniciar un domini"
 
 #: src/virsh.c:936
 msgid "Run a reboot command in the target domain."
-msgstr "Run a reboot command in the target domain."
+msgstr "Executeu una ordre de reinici en el domini destí."
 
 #: src/virsh.c:959
 #, c-format
 msgid "Domain %s is being rebooted\n"
-msgstr "Domain %s is being rebooted\n"
+msgstr "S'està reiniciant el domini %s\n"
 
 #: src/virsh.c:961
 #, c-format
 msgid "Failed to reboot domain %s"
-msgstr "Failed to reboot domain %s"
+msgstr "No s'ha pogut reiniciar el domini %s"
 
 #: src/virsh.c:974
 msgid "destroy a domain"
-msgstr "destroy a domain"
+msgstr "destrueix un domini"
 
 #: src/virsh.c:975
 msgid "Destroy a given domain."
-msgstr "Destroy a given domain."
+msgstr "Destrueix un domini."
 
 #: src/virsh.c:998
 #, c-format
 msgid "Domain %s destroyed\n"
-msgstr "Domain %s destroyed\n"
+msgstr "S'ha destruït el domini %s\n"
 
 #: src/virsh.c:1000
 #, c-format
 msgid "Failed to destroy domain %s"
-msgstr "Failed to destroy domain %s"
+msgstr "No s'ha destruït el domini %s"
 
 #: src/virsh.c:1013
 msgid "domain information"
-msgstr "domain information"
+msgstr "informació del domini"
 
 #: src/virsh.c:1014
 msgid "Returns basic information about the domain."
-msgstr "Returns basic information about the domain."
+msgstr "Retorna informació bàsica quant al domini."
 
 #: src/virsh.c:1040 src/virsh.c:1042
 msgid "Id:"
@@ -934,7 +952,7 @@ msgstr "Id:"
 
 #: src/virsh.c:1043
 msgid "Name:"
-msgstr "Name:"
+msgstr "Nom:"
 
 #: src/virsh.c:1046
 msgid "UUID:"
@@ -942,11 +960,11 @@ msgstr "UUID:"
 
 #: src/virsh.c:1049
 msgid "OS Type:"
-msgstr "OS Type:"
+msgstr "Tipus SO:"
 
 #: src/virsh.c:1054 src/virsh.c:1135
 msgid "State:"
-msgstr "State:"
+msgstr "Estat:"
 
 #: src/virsh.c:1057 src/virsh.c:1401
 msgid "CPU(s):"
@@ -954,23 +972,23 @@ msgstr "CPU(s):"
 
 #: src/virsh.c:1064 src/virsh.c:1142
 msgid "CPU time:"
-msgstr "CPU time:"
+msgstr "Temps de CPU:"
 
 #: src/virsh.c:1067
 msgid "Max memory:"
-msgstr "Max memory:"
+msgstr "Memòria màxima:"
 
 #: src/virsh.c:1069
 msgid "Used memory:"
-msgstr "Used memory:"
+msgstr "Memòria emprada:"
 
 #: src/virsh.c:1085
 msgid "domain vcpu information"
-msgstr "domain vcpu information"
+msgstr "informació del vcpu del domini"
 
 #: src/virsh.c:1086
 msgid "Returns basic information about the domain virtual CPUs."
-msgstr "Returns basic information about the domain virtual CPUs."
+msgstr "Retorna informació bàsica quant a les CPU virtuals del domini."
 
 #: src/virsh.c:1133
 msgid "VCPU:"
@@ -982,199 +1000,200 @@ msgstr "CPU:"
 
 #: src/virsh.c:1144
 msgid "CPU Affinity:"
-msgstr "CPU Affinity:"
+msgstr "Afinitat de la CPU:"
 
 #: src/virsh.c:1168
 msgid "control domain vcpu affinity"
-msgstr "control domain vcpu affinity"
+msgstr "controleu l'afinitat de la vcpu del domini"
 
 #: src/virsh.c:1169
 msgid "Pin domain VCPUs to host physical CPUs."
-msgstr "Pin domain VCPUs to host physical CPUs."
+msgstr "Associa les VCPU del domini a CPU físiques de l'amfitrió."
 
 #: src/virsh.c:1175
 msgid "vcpu number"
-msgstr "vcpu number"
+msgstr "números de vcpu"
 
 #: src/virsh.c:1176
 msgid "host cpu number(s) (comma separated)"
-msgstr "host cpu number(s) (comma separated)"
+msgstr "números de cpu de l'amfitrió (separat per comes)"
 
 #: src/virsh.c:1254
 msgid "change number of virtual CPUs"
-msgstr "change number of virtual CPUs"
+msgstr "canvia el nombre de CPU virtuals"
 
 #: src/virsh.c:1255
 msgid "Change the number of virtual CPUs active in the guest domain."
-msgstr "Change the number of virtual CPUs active in the guest domain."
+msgstr "Canvia el nombre de CPU virtuals actives en el domini convidat."
 
 #: src/virsh.c:1261
 msgid "number of virtual CPUs"
-msgstr "number of virtual CPUs"
+msgstr "nombre de CPU virtuals"
 
 #: src/virsh.c:1297
 msgid "change memory allocation"
-msgstr "change memory allocation"
+msgstr "canvia l'assignació de memòria"
 
 #: src/virsh.c:1298
 msgid "Change the current memory allocation in the guest domain."
-msgstr "Change the current memory allocation in the guest domain."
+msgstr "Canvia l'assignació de memòria actual en el domini convidat."
 
 #: src/virsh.c:1304
 msgid "number of bytes of memory"
-msgstr "number of bytes of memory"
+msgstr "nombre de bytes de memòria"
 
 #: src/virsh.c:1340
 msgid "change maximum memory limit"
-msgstr "change maximum memory limit"
+msgstr "canvia el límit de memòria màxima"
 
 #: src/virsh.c:1341
 msgid "Change the maximum memory allocation limit in the guest domain."
-msgstr "Change the maximum memory allocation limit in the guest domain."
+msgstr "Canvia el límit d'assignació màxima de memòria en el domini convidat."
 
 #: src/virsh.c:1347
 msgid "maxmimum memory limit in bytes"
-msgstr "maxmimum memory limit in bytes"
+msgstr "límit de memòria màxim en bytes"
 
 #: src/virsh.c:1383
 msgid "node information"
-msgstr "node information"
+msgstr "informació de node"
 
 #: src/virsh.c:1384
 msgid "Returns basic information about the node."
-msgstr "Returns basic information about the node."
+msgstr "Retorna informació bàsica quant al node."
 
 #: src/virsh.c:1397
 msgid "failed to get node information"
-msgstr "failed to get node information"
+msgstr "no es pot obtenir informació de node"
 
 #: src/virsh.c:1400
 msgid "CPU model:"
-msgstr "CPU model:"
+msgstr "Model de CPU:"
 
 #: src/virsh.c:1402
 msgid "CPU frequency:"
-msgstr "CPU frequency:"
+msgstr "Freqüència de CPU:"
 
 #: src/virsh.c:1403
 msgid "CPU socket(s):"
-msgstr "CPU socket(s):"
+msgstr "Sòcols de CPU:"
 
 #: src/virsh.c:1404
 msgid "Core(s) per socket:"
-msgstr "Core(s) per socket:"
+msgstr "Nuclis per sòcol:"
 
 #: src/virsh.c:1405
 msgid "Thread(s) per core:"
-msgstr "Thread(s) per core:"
+msgstr "Fluxos per nucli:"
 
 #: src/virsh.c:1406
 msgid "NUMA cell(s):"
-msgstr "NUMA cell(s):"
+msgstr "Cel·les NUMA:"
 
 #: src/virsh.c:1407
 msgid "Memory size:"
-msgstr "Memory size:"
+msgstr "Mida de memòria:"
 
 #: src/virsh.c:1417
 msgid "domain information in XML"
-msgstr "domain information in XML"
+msgstr "informació de domini en XML"
 
 #: src/virsh.c:1418
 msgid "Ouput the domain information as an XML dump to stdout."
-msgstr "Ouput the domain information as an XML dump to stdout."
+msgstr ""
+"Escriu la informació de domini com a bolcat XML per la sortida estàndard."
 
 #: src/virsh.c:1457
 msgid "convert a domain id or UUID to domain name"
-msgstr "convert a domain id or UUID to domain name"
+msgstr "converteix un id de domini o UUID a nom de domini"
 
 #: src/virsh.c:1462
 msgid "domain id or uuid"
-msgstr "domain id or uuid"
+msgstr "id de domini o uuid"
 
 #: src/virsh.c:1487
 msgid "convert a domain name or UUID to domain id"
-msgstr "convert a domain name or UUID to domain id"
+msgstr "converteix un nom de domini o UUID a id de domini"
 
 #: src/virsh.c:1522
 msgid "convert a domain name or id to domain UUID"
-msgstr "convert a domain name or id to domain UUID"
+msgstr "converteix un nom de domini o id a UUID de domini"
 
 #: src/virsh.c:1527
 msgid "domain id or name"
-msgstr "domain id or name"
+msgstr "id de domini o nom"
 
 #: src/virsh.c:1546
 msgid "failed to get domain UUID"
-msgstr "failed to get domain UUID"
+msgstr "no s'ha pogut obtenir un UUID de domini"
 
 #: src/virsh.c:1557
 msgid "show version"
-msgstr "show version"
+msgstr "mostra la versió"
 
 #: src/virsh.c:1558
 msgid "Display the system version information."
-msgstr "Display the system version information."
+msgstr "Mostra la informació de la versió del sistema."
 
 #: src/virsh.c:1581
 msgid "failed to get hypervisor type"
-msgstr "failed to get hypervisor type"
+msgstr "no s'ha pogut obtenir el tipus d'hipervisor"
 
 #: src/virsh.c:1590
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
-msgstr "Compiled against library: libvir %d.%d.%d\n"
+msgstr "S'ha compilat contra la biblioteca: libvir %d.%d.%d\n"
 
 #: src/virsh.c:1595
 msgid "failed to get the library version"
-msgstr "failed to get the library version"
+msgstr "no s'ha pogut obtenir la versió de la biblioteca"
 
 #: src/virsh.c:1602
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
-msgstr "Using library: libvir %d.%d.%d\n"
+msgstr "S'està fent servir la biblioteca: libvir %d.%d.%d\n"
 
 #: src/virsh.c:1609
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
-msgstr "Using API: %s %d.%d.%d\n"
+msgstr "S'està fent servir l'API: %s %d.%d.%d\n"
 
 #: src/virsh.c:1614
 msgid "failed to get the hypervisor version"
-msgstr "failed to get the hypervisor version"
+msgstr "no s'ha pogut obtenir la versió de l'hipervisor"
 
 #: src/virsh.c:1619
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
-msgstr "Cannot extract running %s hypervisor version\n"
+msgstr "No es pot extreure la versió de l'hipervisor %s en execució\n"
 
 #: src/virsh.c:1626
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
-msgstr "Running hypervisor: %s %d.%d.%d\n"
+msgstr "S'està executant l'hipervisor: %s %d.%d.%d\n"
 
 #: src/virsh.c:1637
 msgid "quit this interactive terminal"
-msgstr "quit this interactive terminal"
+msgstr "surt d'aquest terminal interactiu"
 
 #: src/virsh.c:1750
 #, c-format
 msgid "command '%s' requires <%s> option"
-msgstr "command '%s' requires <%s> option"
+msgstr "l'ordre '%s' requereix l'opció <%s>"
 
 #: src/virsh.c:1751
 #, c-format
 msgid "command '%s' requires --%s option"
-msgstr "command '%s' requires --%s option"
+msgstr "l'ordre '%s' requereix l'opció --%s"
 
 #: src/virsh.c:1778
 #, c-format
 msgid "command '%s' doesn't exist"
-msgstr "command '%s' doesn't exist"
+msgstr "l'ordre '%s' no existeix"
 
 #: src/virsh.c:1786
 msgid "  NAME\n"
-msgstr "  NAME\n"
+msgstr "  NOM\n"
 
 #: src/virsh.c:1797
 msgid ""
@@ -1182,7 +1201,7 @@ msgid ""
 "  DESCRIPTION\n"
 msgstr ""
 "\n"
-"  DESCRIPTION\n"
+"  DESCRIPCIÓ\n"
 
 #: src/virsh.c:1801
 msgid ""
@@ -1190,26 +1209,26 @@ msgid ""
 "  OPTIONS\n"
 msgstr ""
 "\n"
-"  OPTIONS\n"
+"  OPCIONS\n"
 
 #: src/virsh.c:1808
 #, c-format
 msgid "--%s <number>"
-msgstr "--%s <number>"
+msgstr "--%s <nombre>"
 
 #: src/virsh.c:1810
 #, c-format
 msgid "--%s <string>"
-msgstr "--%s <string>"
+msgstr "--%s <cadena>"
 
 #: src/virsh.c:1923
 msgid "undefined domain name or id"
-msgstr "undefined domain name or id"
+msgstr "nom de domini o id no definits"
 
 #: src/virsh.c:1956
 #, c-format
 msgid "failed to get domain '%s'"
-msgstr "failed to get domain '%s'"
+msgstr "no s'ha pogut obtenir el domini '%s'"
 
 #: src/virsh.c:1984
 #, c-format
@@ -1219,85 +1238,85 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"(Time: %.3f ms)\n"
+"(Temps: %.3f ms)\n"
 "\n"
 
 #: src/virsh.c:2058
 msgid "missing \""
-msgstr "missing \""
+msgstr "manca \""
 
 #: src/virsh.c:2119
 #, c-format
 msgid "unexpected token (command name): '%s'"
-msgstr "unexpected token (command name): '%s'"
+msgstr "símbol inesperat (nom d'ordre): '%s'"
 
 #: src/virsh.c:2124
 #, c-format
 msgid "unknown command: '%s'"
-msgstr "unknown command: '%s'"
+msgstr "ordre desconeguda: '%s'"
 
 #: src/virsh.c:2131
 #, c-format
 msgid "command '%s' doesn't support option --%s"
-msgstr "command '%s' doesn't support option --%s"
+msgstr "l'ordre '%s' no reconeix l'opció --%s"
 
 #: src/virsh.c:2146
 #, c-format
 msgid "expected syntax: --%s <%s>"
-msgstr "expected syntax: --%s <%s>"
+msgstr "sintaxi inesperada: --%s <%s>"
 
 #: src/virsh.c:2149
 msgid "number"
-msgstr "number"
+msgstr "nombre"
 
 #: src/virsh.c:2149
 msgid "string"
-msgstr "string"
+msgstr "cadena"
 
 #: src/virsh.c:2155
 #, c-format
 msgid "unexpected data '%s'"
-msgstr "unexpected data '%s'"
+msgstr "dades inesperades '%s'"
 
 #: src/virsh.c:2177
 msgid "OPTION"
-msgstr "OPTION"
+msgstr "OPCIÓ"
 
 #: src/virsh.c:2177
 msgid "DATA"
-msgstr "DATA"
+msgstr "DADES"
 
 #: src/virsh.c:2225 src/virsh.c:2251
 msgid "running"
-msgstr "running"
+msgstr "s'està executant"
 
 #: src/virsh.c:2227 src/virsh.c:2249
 msgid "blocked"
-msgstr "blocked"
+msgstr "blocat"
 
 #: src/virsh.c:2229
 msgid "paused"
-msgstr "paused"
+msgstr "aturat"
 
 #: src/virsh.c:2231
 msgid "in shutdown"
-msgstr "in shutdown"
+msgstr "apagant-se"
 
 #: src/virsh.c:2233
 msgid "shut off"
-msgstr "shut off"
+msgstr "apagat"
 
 #: src/virsh.c:2235
 msgid "crashed"
-msgstr "crashed"
+msgstr "ha fallat"
 
 #: src/virsh.c:2247
 msgid "offline"
-msgstr "offline"
+msgstr "desconnectat"
 
 #: src/virsh.c:2266
 msgid "no valid connection"
-msgstr "no valid connection"
+msgstr "connexió invàlida"
 
 #: src/virsh.c:2305
 #, c-format
@@ -1306,16 +1325,16 @@ msgstr "%s: error: "
 
 #: src/virsh.c:2307
 msgid "error: "
-msgstr "error: "
+msgstr "errror: "
 
 #: src/virsh.c:2329 src/virsh.c:2341 src/virsh.c:2353
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
-msgstr "%s: %d: failed to allocate %d bytes"
+msgstr "%s: %d: no s'ha pogut assignar %d bytes"
 
 #: src/virsh.c:2381
 msgid "failed to connect to the hypervisor"
-msgstr "failed to connect to the hypervisor"
+msgstr "no s'ha pogut connectar a l'hipervisor"
 
 #: src/virsh.c:2526
 #, c-format
@@ -1334,17 +1353,17 @@ msgid ""
 "  commands (non interactive mode):\n"
 msgstr ""
 "\n"
-"%s [options] [commands]\n"
+"%s [opcions] [ordres]\n"
 "\n"
 "  options:\n"
-"    -c | --connect <uri>    hypervisor connection URI\n"
-"    -d | --debug <num>      debug level [0-5]\n"
-"    -h | --help             this help\n"
-"    -q | --quiet            quiet mode\n"
-"    -t | --timing           print timing information\n"
-"    -v | --version          program version\n"
+"    -c | --connect <uri>    URI de connexió a l'hipervisor\n"
+"    -d | --debug <núm>      nivell de depuració [0-5]\n"
+"    -h | --help             aquesta ajuda\n"
+"    -q | --quiet            mode silenciós\n"
+"    -t | --timing           escriu informació de temps\n"
+"    -v | --version          versió del programa\n"
 "\n"
-"  commands (non interactive mode):\n"
+"  ordres (mode no interactiu):\n"
 
 #: src/virsh.c:2542
 #, c-format
@@ -1354,13 +1373,12 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
-"\n"
+"  (especifiqueu --help <ordre> per a detalls quant a l'ordre)\n"
 
 #: src/virsh.c:2628
 #, c-format
 msgid "unsupported option '-%c'. See --help."
-msgstr "unsupported option '-%c'. See --help."
+msgstr "l'opció '-%c' no està disponible. Veieu --help."
 
 #: src/virsh.c:2709
 #, c-format
@@ -1368,7 +1386,7 @@ msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
 msgstr ""
-"Welcome to %s, the virtualization interactive terminal.\n"
+"Benvinguts a %s, el terminal interactiu de virtualització.\n"
 "\n"
 
 #: src/virsh.c:2712
@@ -1377,105 +1395,108 @@ msgid ""
 "       'quit' to quit\n"
 "\n"
 msgstr ""
-"Type:  'help' for help with commands\n"
-"       'quit' to quit\n"
+"Escriviu:  'help' per a obtenir ajuda amb les ordres\n"
+"           'quit' per sortir\n"
 "\n"
 
 #: src/conf.c:153 src/conf.c:204 src/conf.c:487 src/conf.c:526 src/conf.c:554
 #: src/conf.c:632
 msgid "allocating configuration"
-msgstr "allocating configuration"
+msgstr "s'està assignant la configuració"
 
 #: src/conf.c:339
 msgid "unterminated number"
-msgstr "unterminated number"
+msgstr "número no acabat"
 
 #: src/conf.c:371 src/conf.c:388 src/conf.c:400
 msgid "unterminated string"
-msgstr "unterminated string"
+msgstr "cadena sense acabar"
 
 #: src/conf.c:428 src/conf.c:481
 msgid "expecting a value"
-msgstr "expecting a value"
+msgstr "s'espera un valor"
 
 #: src/conf.c:448
 msgid "expecting a separator in list"
-msgstr "expecting a separator in list"
+msgstr "s'espera un separador a la llista"
 
 #: src/conf.c:471
 msgid "list is not closed with ] "
-msgstr "list is not closed with ] "
+msgstr "la llista no s'ha tancat amb ] "
 
 #: src/conf.c:519
 msgid "expecting a name"
-msgstr "expecting a name"
+msgstr "s'espera un nom"
 
 #: src/conf.c:582
 msgid "expecting a separator"
-msgstr "expecting a separator"
+msgstr "s'espera un separador"
 
 #: src/conf.c:614
 msgid "expecting an assignment"
-msgstr "expecting an assignment"
+msgstr "s'espera una assignació"
 
 #: src/conf.c:881
 msgid "failed to open file"
-msgstr "failed to open file"
+msgstr "no s'ha pogut obrir el fitxer"
 
 #: src/conf.c:889
 msgid "failed to save content"
-msgstr "failed to save content"
+msgstr "no s'ha pogut desar el contingut"
 
 #: src/xs_internal.c:323
 msgid "failed to connect to Xen Store"
-msgstr "failed to connect to Xen Store"
+msgstr "no s'ha pogut connectar al magatzem Xen"
 
 #: src/proxy_internal.c:197
 #, c-format
 msgid "failed to exec %s\n"
-msgstr "failed to exec %s\n"
+msgstr "no s'ha pogut executar %s\n"
 
 #: src/proxy_internal.c:291
 #, c-format
 msgid "Failed to close socket %d\n"
-msgstr "Failed to close socket %d\n"
+msgstr "No s'ha pogut tancar el sòcol %d\n"
 
 #: src/proxy_internal.c:324
 #, c-format
 msgid "Failed to read socket %d\n"
-msgstr "Failed to read socket %d\n"
+msgstr "No s'ha pogut llegir el sòcol %d\n"
 
 #: src/proxy_internal.c:358
 #, c-format
 msgid "Failed to write to socket %d\n"
-msgstr "Failed to write to socket %d\n"
+msgstr "No s'ha pogut escriure el sòcol %d\n"
 
 #: src/proxy_internal.c:420 src/proxy_internal.c:441 src/proxy_internal.c:461
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
-msgstr "Communication error with proxy: got %d bytes of %d\n"
+msgstr "Error de comunicació amb l'intermediari: s'han rebut %d bytes de %d\n"
 
 #: src/proxy_internal.c:428
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
-msgstr "Communication error with proxy: expected %d bytes got %d\n"
+msgstr ""
+"Error de comunicació amb l'intermediari: s'esperaven %d bytes, se n'han "
+"rebut %d\n"
 
 #: src/proxy_internal.c:450
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
-msgstr "Communication error with proxy: got %d bytes packet\n"
+msgstr ""
+"Error de comunicació amb l'intermediari: s'ha rebut un paquet de %d bytes\n"
 
 #: src/proxy_internal.c:474
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
-msgstr "Communication error with proxy: malformed packet\n"
+msgstr "Error de comunicació amb l'intermediari: paquet mal format\n"
 
 #: src/proxy_internal.c:480
 #, c-format
 msgid "got asynchronous packet number %d\n"
-msgstr "got asynchronous packet number %d\n"
+msgstr "s'ha rebut un número de paquet asíncron %d\n"
 
 #: src/xen_internal.c:1379
 #, c-format
 msgid "allocating %d domain info"
-msgstr "allocating %d domain info"
+msgstr "s'està assignant %d informació de domini"

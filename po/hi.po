@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: hi\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-11-27 16:59+0100\n"
-"PO-Revision-Date: 2006-10-26 18:32+0530\n"
+"PO-Revision-Date: 2006-11-30 16:49+0530\n"
 "Last-Translator: Rajesh Ranjan <rranjan@redhat.com>\n"
 "Language-Team: Hindi <fedora-trans-hi@redhat.com>\n"
 "MIME-Version: 1.0\n"
@@ -16,6 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"\n"
 "\n"
 
 #: src/libvirt.c:245 src/libvirt.c:309 src/hash.c:652
@@ -121,7 +122,7 @@ msgstr "POST ऑपरेशन विफल: %s"
 
 #: src/virterror.c:442
 msgid "POST operation failed"
-msgstr "POST ऑपरेशन विफल"
+msgstr "उत्तर ऑपरेशन विफल"
 
 #: src/virterror.c:445
 #, c-format
@@ -408,7 +409,7 @@ msgstr "डोमेन नाम"
 
 #: src/test.c:231 src/test.c:236
 msgid "domain uuid"
-msgstr "डोमेन  uuid"
+msgstr "डोमेन uuid"
 
 #: src/test.c:244 src/test.c:249
 msgid "domain memory"
@@ -432,7 +433,7 @@ msgstr "डोमेन क्रैश व्यवहार"
 
 #: src/test.c:355
 msgid "load domain definition file"
-msgstr "डोमेन परिभाषा फाइळ लोड करें"
+msgstr "डोमेन परिभाषा फाइल लोड करें"
 
 #: src/test.c:437
 msgid "loading host definition file"
@@ -591,7 +592,7 @@ msgid ""
 "Commands:\n"
 "\n"
 msgstr ""
-"Commands:\n"
+"कमांड:\n"
 "\n"
 
 #: src/virsh.c:267
@@ -601,11 +602,11 @@ msgstr "हाइपरविजर से फिर जुड़ें"
 #: src/virsh.c:269
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
-msgstr "स्थानीय हाइपरविजर से जोड़ें. यह अंतर्निमित कमांड है शेल के आरंभ होने पर."
+msgstr "स्थानीय हाइपरविजर से जोड़ें. यह शेल के आरंभ होने पर अंतर्निमित कमांड है."
 
 #: src/virsh.c:274
 msgid "hypervisor connection URI"
-msgstr "हाइपर विजर संबंधन URI"
+msgstr "हाइपरविजर संबंधन URI"
 
 #: src/virsh.c:275
 msgid "read-only connection"
@@ -955,7 +956,7 @@ msgstr "स्थिति:"
 
 #: src/virsh.c:1057 src/virsh.c:1401
 msgid "CPU(s):"
-msgstr "CPU(s):"
+msgstr "CPU:"
 
 #: src/virsh.c:1064 src/virsh.c:1142
 msgid "CPU time:"
@@ -1179,7 +1180,7 @@ msgstr "कमांड '%s' मौजूद नहीं है"
 
 #: src/virsh.c:1786
 msgid "  NAME\n"
-msgstr "  NAME\n"
+msgstr "  नाम\n"
 
 #: src/virsh.c:1797
 msgid ""
@@ -1187,7 +1188,7 @@ msgid ""
 "  DESCRIPTION\n"
 msgstr ""
 "\n"
-"  DESCRIPTION\n"
+"  विवरण\n"
 
 #: src/virsh.c:1801
 msgid ""
@@ -1195,7 +1196,7 @@ msgid ""
 "  OPTIONS\n"
 msgstr ""
 "\n"
-"  OPTIONS\n"
+"  विकल्प\n"
 
 #: src/virsh.c:1808
 #, c-format
@@ -1224,7 +1225,7 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"(Time: %.3f ms)\n"
+"(समय: %.3f ms)\n"
 "\n"
 
 #: src/virsh.c:2058
@@ -1234,7 +1235,7 @@ msgstr "गुम \""
 #: src/virsh.c:2119
 #, c-format
 msgid "unexpected token (command name): '%s'"
-msgstr "अप्रत्याशित टोकेन (command name): '%s'"
+msgstr "अप्रत्याशित टोकेन (कमांड नाम): '%s'"
 
 #: src/virsh.c:2124
 #, c-format
@@ -1286,7 +1287,7 @@ msgstr "ठहराया गया"
 
 #: src/virsh.c:2231
 msgid "in shutdown"
-msgstr "बंद करें में"
+msgstr "बंद स्थिति में"
 
 #: src/virsh.c:2233
 msgid "shut off"
@@ -1339,17 +1340,17 @@ msgid ""
 "  commands (non interactive mode):\n"
 msgstr ""
 "\n"
-"%s [options] [commands]\n"
+"%s [विकल्प] [कमांड]\n"
 "\n"
 "  options:\n"
-"    -c | --connect <uri>    hypervisor connection URI\n"
-"    -d | --debug <num>      debug level [0-5]\n"
-"    -h | --help             this help\n"
-"    -q | --quiet            quiet mode\n"
-"    -t | --timing           print timing information\n"
-"    -v | --version          program version\n"
+"    -c | --connect <uri>    हाइपरविजर संबंधन URI\n"
+"    -d | --debug <num>      डिबग स्तर [0-5]\n"
+"    -h | --help             यह मदद\n"
+"    -q | --quiet            शांत मोड\n"
+"    -t | --timing           मुद्रण समय सूचना\n"
+"    -v | --version          प्रोग्राम संस्करण\n"
 "\n"
-"  commands (non interactive mode):\n"
+"  कमांड (गैर अंतःक्रियात्मक मोड):\n"
 
 #: src/virsh.c:2542
 #, c-format
@@ -1359,7 +1360,7 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (कमांड के बारे में विस्तार से जानने के लिये --help <command> निर्दिष्ट करें)\n"
 "\n"
 
 #: src/virsh.c:2628
@@ -1382,8 +1383,8 @@ msgid ""
 "       'quit' to quit\n"
 "\n"
 msgstr ""
-"प्रकार:  'help' for help with commands\n"
-"       'quit' to quit\n"
+"प्रकार:  'help' कमांड के साथ मदद के लिये\n"
+"       'quit' छोड़ने के लिये\n"
 "\n"
 
 #: src/conf.c:153 src/conf.c:204 src/conf.c:487 src/conf.c:526 src/conf.c:554
@@ -1478,7 +1479,7 @@ msgstr "प्रॉक्सी के साथ संचार त्रु�
 #: src/proxy_internal.c:480
 #, c-format
 msgid "got asynchronous packet number %d\n"
-msgstr "अतुल्यकालित पैकेट संख्य %d\n"
+msgstr "अतुल्यकालित पैकेट संख्या %d\n"
 
 #: src/xen_internal.c:1379
 #, c-format
