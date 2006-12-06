@@ -1,3 +1,10 @@
+Wed Dec  6 15:06:28 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c: the structure passed to the vcpuinfo hypercall
+	  had changed between version 1 and version 2 too, the leading domain
+	  field disapeared since it goes in the including op. Fixes redhat
+	  bugs #217370 and #217743
+
 Mon Dec  4 17:47:03 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* po/ca.po po/fr.po po/hi.po: merging more localizations coming

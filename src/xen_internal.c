@@ -338,7 +338,6 @@ typedef struct xen_v0_vcpuinfo xen_v0_vcpuinfo;
 typedef struct xen_v0_vcpuinfo xen_v1_vcpuinfo;
 
 struct xen_v2_vcpuinfo {
-    domid_t	domain;		/* owner's domain */
     uint32_t	vcpu;		/* the vcpu number */
     uint8_t	online;		/* seen as on line */
     uint8_t	blocked;	/* blocked on event */
@@ -1036,7 +1035,7 @@ virXen_getvcpusinfo(int handle, int id, unsigned int vcpu, virVcpuInfoPtr ipt,
         memset(&op, 0, sizeof(op));
         op.cmd = XEN_V2_OP_GETVCPUINFO;
         op.domain = (domid_t) id;
-        op.u.setvcpumap.vcpu = vcpu;
+        op.u.getvcpuinfo.vcpu = (uint16_t) vcpu;
         ret = xenHypervisorDoV2Dom(handle, &op);
         if (ret < 0)
             return(-1);
