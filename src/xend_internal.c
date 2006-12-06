@@ -1736,6 +1736,19 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
                                   tmp2);
 
             virBufferAdd(&buf, "    </interface>\n", 17);
+        } else if (!hvm &&
+                   sexpr_lookup(node, "device/vfb")) {
+            /* New style graphics config for PV guests only in 3.0.4 */
+            tmp = sexpr_node(node, "device/vfb/type");
+
+            if (tmp && !strcmp(tmp, "sdl")) {
+                virBufferAdd(&buf, "    <graphics type='sdl'/>\n", 27);
+            } else if (tmp && !strcmp(tmp, "vnc")) {
+                int port = xenStoreDomainGetVNCPort(conn, domid);
+                if (port == -1)
+                    port = 5900 + domid;
+                virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'/>\n", port);
+            }
         }
     }
 
@@ -1769,7 +1782,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
         }
     }
 
-    /* Graphics device */
+    /* Graphics device (HVM, or old (pre-3.0.4) style PV vnc config) */
     tmp = sexpr_fmt_node(root, "domain/image/%s/vnc", hvm ? "hvm" : "linux");
     if (tmp != NULL) {
         if (tmp[0] == '1') {
@@ -1780,6 +1793,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
         }
     }
 
+    /* Graphics device (HVM, or old (pre-3.0.4) style PV sdl config) */
     tmp = sexpr_fmt_node(root, "domain/image/%s/sdl", hvm ? "hvm" : "linux");
     if (tmp != NULL) {
         if (tmp[0] == '1')
