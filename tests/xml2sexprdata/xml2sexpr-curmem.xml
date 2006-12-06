@@ -2,12 +2,6 @@
   <name>rhel5</name>
   <uuid>4f77abd2301958e83bab6fbf2118f880</uuid>
   <bootloader>/usr/bin/pygrub</bootloader>
-  <os>
-    <type>linux</type>
-    <kernel>/var/lib/xen/vmlinuz.blj7cs</kernel>
-    <initrd>/var/lib/xen/initrd.gULTf1</initrd>
-    <cmdline>ro root=/dev/VolGroup00/LogVol00 rhgb quiet</cmdline>
-  </os>
   <memory>394240</memory>
   <currentMemory>179200</currentMemory>
   <vcpu>1</vcpu>

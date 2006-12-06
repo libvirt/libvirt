@@ -1,3 +1,8 @@
+Mon Dec  6 17:40:03 EST 2006 Daniel Berrange <berrange@redhat.com>
+
+	* test/xml2sexprdata/xml2sexpr-curmem.xml, test/xml2sexprdata/xml2sexpr-curmem.sexpr:
+	Fix test case to reflect recent change to bootloader/image handling
+
 Wed Dec  6 15:06:28 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.c: the structure passed to the vcpuinfo hypercall
