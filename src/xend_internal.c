@@ -2625,7 +2625,9 @@ xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids)
             continue;
         id = xenDaemonDomainLookupByName_ids(conn, node->value, NULL);
         if (id >= 0)
-	    ids[ret++] = (int) id;
+            ids[ret++] = (int) id;
+        if (ret >= maxids)
+            break;
     }
 
 error:

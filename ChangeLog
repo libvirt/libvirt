@@ -1,4 +1,9 @@
-Mon Dec  6 17:46:03 EST 2006 Daniel Berrange <berrange@redhat.com>
+Thu Dec  7 12:28:03 EST 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Add bounds checking in xenDaemonListDomains to
+	avoid overflowing the 'ids' array.
+
+Wed Dec  6 17:46:03 EST 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c: Support parsing of new paravirt framebuffer
 	graphics configuration from xen 3.0.4 tree.
@@ -6,7 +11,7 @@ Mon Dec  6 17:46:03 EST 2006 Daniel Berrange <berrange@redhat.com>
 	config parsing in paravirt & fullyvirt.
 	* test/sexpr2xmldata/sexpr2xml-pv-vfb-*: New test data files
 
-Mon Dec  6 17:40:03 EST 2006 Daniel Berrange <berrange@redhat.com>
+Wed Dec  6 17:40:03 EST 2006 Daniel Berrange <berrange@redhat.com>
 
 	* test/xml2sexprdata/xml2sexpr-curmem.xml, test/xml2sexprdata/xml2sexpr-curmem.sexpr:
 	Fix test case to reflect recent change to bootloader/image handling
