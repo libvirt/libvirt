@@ -1,3 +1,19 @@
+Thu Dec 12 09:05:03 EST 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Added support for vnclisten parameter
+	in generated XML
+	* src/xml.c: Support new style paravirt framebuffer graphics
+	configuration from xen 3.0.4 tree. Also add support for setting
+	vncpasswd & vnclisten address SEXPR values, based on passwd
+	and listen XML attributes.
+	* tests/sexpr2xmltest.c: Whitespace cleanup.
+	* tests/xml2sexprtest.c: Added test cases for new style paravirt
+	framebuffer graphics configuration
+	* tests/xml2sexprdata/xml2sexpr-pv-vfb*: Data files for new
+	tests for graphics
+	* tests/sexpr2xmldata/sexpr2xml-pv-vfb-*.xml: Added listen address
+	attribute
+
 Thu Dec  7 12:28:03 EST 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c: Add bounds checking in xenDaemonListDomains to

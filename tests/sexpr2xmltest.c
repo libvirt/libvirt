@@ -64,14 +64,14 @@ static int testComparePVOrigVFB(void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-pv-vfb-orig.xml",
                           "sexpr2xmldata/sexpr2xml-pv-vfb-orig.sexpr",
                           2);
-}   
+}
 
 
 static int testComparePVNewVFB(void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-pv-vfb-new.xml",
                           "sexpr2xmldata/sexpr2xml-pv-vfb-new.sexpr",
                           3);
-}   
+}
 
 
 static int testCompareFVversion2(void *data ATTRIBUTE_UNUSED) {
@@ -147,6 +147,7 @@ main(int argc, char **argv)
     if (virtTestRun("SEXPR-2-XML PV config (version 2)",
 		    1, testComparePVversion2, NULL) != 0)
 	ret = -1;
+
     if (virtTestRun("SEXPR-2-XML PV config (Orig VFB)",
                     1, testComparePVOrigVFB, NULL) != 0)
         ret = -1;

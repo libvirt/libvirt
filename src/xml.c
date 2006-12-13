@@ -572,7 +572,7 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
 
 #ifndef PROXY
 /**
- * virtDomainParseXMLGraphicsDesc:
+ * virtDomainParseXMLGraphicsDescImage:
  * @node: node containing graphics description
  * @buf: a buffer for the result S-Expr
  * @xendConfigVersion: xend configuration file format
@@ -584,7 +584,7 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
  *
  * Returns 0 in case of success, -1 in case of error
  */
-static int virDomainParseXMLGraphicsDesc(xmlNodePtr node, virBufferPtr buf, int xendConfigVersion)
+static int virDomainParseXMLGraphicsDescImage(xmlNodePtr node, virBufferPtr buf, int xendConfigVersion)
 {
     xmlChar *graphics_type = NULL;
 
@@ -592,16 +592,19 @@ static int virDomainParseXMLGraphicsDesc(xmlNodePtr node, virBufferPtr buf, int 
     if (graphics_type != NULL) {
         if (xmlStrEqual(graphics_type, BAD_CAST "sdl")) {
             virBufferAdd(buf, "(sdl 1)", 7);
-            // TODO:
-            // Need to understand sdl options
-            //
-            //virBufferAdd(buf, "(display localhost:10.0)", 24);
-            //virBufferAdd(buf, "(xauthority /root/.Xauthority)", 30);
+            /* TODO:
+             * Need to understand sdl options
+             *
+             *virBufferAdd(buf, "(display localhost:10.0)", 24);
+             *virBufferAdd(buf, "(xauthority /root/.Xauthority)", 30);
+             */
         }
         else if (xmlStrEqual(graphics_type, BAD_CAST "vnc")) {
             virBufferAdd(buf, "(vnc 1)", 7);
             if (xendConfigVersion >= 2) {
                 xmlChar *vncport = xmlGetProp(node, BAD_CAST "port");
+                xmlChar *vnclisten = xmlGetProp(node, BAD_CAST "listen");
+                xmlChar *vncpasswd = xmlGetProp(node, BAD_CAST "passwd");
                 if (vncport != NULL) {
                     long port = strtol((const char *)vncport, NULL, 10);
                     if (port == -1)
@@ -610,8 +613,74 @@ static int virDomainParseXMLGraphicsDesc(xmlNodePtr node, virBufferPtr buf, int 
                         virBufferVSprintf(buf, "(vncdisplay %d)", port - 5900);
                     xmlFree(vncport);
                 }
+                if (vnclisten != NULL) {
+                    virBufferVSprintf(buf, "(vnclisten %s)", vnclisten);
+                    xmlFree(vnclisten);
+                }
+                if (vncpasswd != NULL) {
+                    virBufferVSprintf(buf, "(vncpasswd %s)", vncpasswd);
+                    xmlFree(vncpasswd);
+                }
             }
         }
+        xmlFree(graphics_type);
+    }
+    return 0;
+}
+
+
+/**
+ * virtDomainParseXMLGraphicsDescVFB:
+ * @node: node containing graphics description
+ * @buf: a buffer for the result S-Expr
+ *
+ * Parse the graphics part of the XML description and add it to the S-Expr 
+ * in buf.  This is a temporary interface as the S-Expr interface will be 
+ * replaced by XML-RPC in the future. However the XML format should stay 
+ * valid over time.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+static int virDomainParseXMLGraphicsDescVFB(xmlNodePtr node, virBufferPtr buf)
+{
+    xmlChar *graphics_type = NULL;
+
+    graphics_type = xmlGetProp(node, BAD_CAST "type");
+    if (graphics_type != NULL) {
+        virBufferAdd(buf, "(device (vkbd))", 15);
+        virBufferAdd(buf, "(device (vfb ", 13);
+        if (xmlStrEqual(graphics_type, BAD_CAST "sdl")) {
+            virBufferAdd(buf, "(type sdl)", 10);
+            /* TODO:
+             * Need to understand sdl options
+             *
+             *virBufferAdd(buf, "(display localhost:10.0)", 24);
+             *virBufferAdd(buf, "(xauthority /root/.Xauthority)", 30);
+             */
+        }
+        else if (xmlStrEqual(graphics_type, BAD_CAST "vnc")) {
+            virBufferAdd(buf, "(type vnc)", 10);
+            xmlChar *vncport = xmlGetProp(node, BAD_CAST "port");
+            xmlChar *vnclisten = xmlGetProp(node, BAD_CAST "listen");
+            xmlChar *vncpasswd = xmlGetProp(node, BAD_CAST "passwd");
+            if (vncport != NULL) {
+                long port = strtol((const char *)vncport, NULL, 10);
+                if (port == -1)
+                    virBufferAdd(buf, "(vncunused 1)", 13);
+                else if (port > 5900)
+                    virBufferVSprintf(buf, "(vncdisplay %d)", port - 5900);
+                xmlFree(vncport);
+            }
+            if (vnclisten != NULL) {
+                virBufferVSprintf(buf, "(vnclisten %s)", vnclisten);
+                xmlFree(vnclisten);
+            }
+            if (vncpasswd != NULL) {
+                virBufferVSprintf(buf, "(vncpasswd %s)", vncpasswd);
+                xmlFree(vncpasswd);
+            }
+        }
+        virBufferAdd(buf, "))", 2);
         xmlFree(graphics_type);
     }
     return 0;
@@ -792,7 +861,7 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
     obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics[1]", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr > 0)) {
-        res = virDomainParseXMLGraphicsDesc(obj->nodesetval->nodeTab[0], buf, xendConfigVersion);
+        res = virDomainParseXMLGraphicsDescImage(obj->nodesetval->nodeTab[0], buf, xendConfigVersion);
         if (res != 0) {
             goto error;
         }
@@ -896,15 +965,18 @@ virDomainParseXMLOSDescPV(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr 
         virBufferVSprintf(buf, "(args '%s')", (const char *) cmdline);
 
     /* Is a graphics device specified? */
-    obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics[1]", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-        (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr > 0)) {
-        res = virDomainParseXMLGraphicsDesc(obj->nodesetval->nodeTab[0], buf, xendConfigVersion);
-        if (res != 0) {
-            goto error;
+    /* Old style config before merge of PVFB */
+    if (xendConfigVersion < 3) {
+        obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics[1]", ctxt);
+        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr > 0)) {
+            res = virDomainParseXMLGraphicsDescImage(obj->nodesetval->nodeTab[0], buf, xendConfigVersion);
+            if (res != 0) {
+                goto error;
+            }
         }
+        xmlXPathFreeObject(obj);
     }
-    xmlXPathFreeObject(obj);
 
  error:
     virBufferAdd(buf, "))", 2);
@@ -1407,6 +1479,21 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
         }
     }
     xmlXPathFreeObject(obj);
+
+    /* New style PVFB config  - 3.0.4 merge */
+    if (xendConfigVersion >= 3 && !hvm) {
+        obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics", ctxt);
+        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
+            for (i = 0; i < obj->nodesetval->nodeNr; i++) {
+                res = virDomainParseXMLGraphicsDescVFB(obj->nodesetval->nodeTab[i], &buf);
+                if (res != 0) {
+                    goto error;
+                }
+            }
+        }
+        xmlXPathFreeObject(obj);
+    }
 
 
     virBufferAdd(&buf, ")", 1); /* closes (vm */

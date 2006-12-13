@@ -1745,9 +1745,14 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
                 virBufferAdd(&buf, "    <graphics type='sdl'/>\n", 27);
             } else if (tmp && !strcmp(tmp, "vnc")) {
                 int port = xenStoreDomainGetVNCPort(conn, domid);
+                const char *listenAddr = sexpr_node(node, "device/vfb/vnclisten");
                 if (port == -1)
                     port = 5900 + domid;
-                virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'/>\n", port);
+                if (listenAddr) {
+                    virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d' listen='%s'/>\n", port, listenAddr);
+                } else {
+                    virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'/>\n", port);
+                }
             }
         }
     }
@@ -1787,9 +1792,13 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
     if (tmp != NULL) {
         if (tmp[0] == '1') {
             int port = xenStoreDomainGetVNCPort(conn, domid);
+            const char *listenAddr = sexpr_fmt_node(root, "domain/image/%s/vnclisten", hvm ? "hvm" : "linux");
             if (port == -1)
                 port = 5900 + domid;
-            virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'/>\n", port);
+            if (listenAddr)
+                virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d' listen='%s'/>\n", port, listenAddr);
+            else
+                virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'/>\n", port);
         }
     }
 

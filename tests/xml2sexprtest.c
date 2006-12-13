@@ -82,6 +82,21 @@ static int testCompareFVversion2VNC(void *data ATTRIBUTE_UNUSED) {
 			  2);
 }
 
+static int testComparePVOrigVFB(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("xml2sexprdata/xml2sexpr-pv-vfb-orig.xml",
+                          "xml2sexprdata/xml2sexpr-pv-vfb-orig.sexpr",
+			  "pvtest",
+                          2);
+}
+
+
+static int testComparePVNewVFB(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("xml2sexprdata/xml2sexpr-pv-vfb-new.xml",
+                          "xml2sexprdata/xml2sexpr-pv-vfb-new.sexpr",
+			  "pvtest",
+                          3);
+}
+
 static int testCompareDiskFile(void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("xml2sexprdata/xml2sexpr-disk-file.xml",
 			  "xml2sexprdata/xml2sexpr-disk-file.sexpr",
@@ -184,6 +199,14 @@ main(int argc, char **argv)
     if (virtTestRun("XML-2-SEXPR FV config (format 2, VNC unused)",
 		    1, testCompareFVversion2VNC, NULL) != 0)
 	ret = -1;
+
+    if (virtTestRun("XML-2-SEXPR PV config (Orig VFB)",
+                    1, testComparePVOrigVFB, NULL) != 0)
+        ret = -1;
+
+    if (virtTestRun("XML-2-SEXPR PV config (New VFB)",
+                    1, testComparePVNewVFB, NULL) != 0)
+        ret = -1;
 
     if (virtTestRun("XML-2-SEXPR Disk File",
 		    1, testCompareDiskFile, NULL) != 0)
