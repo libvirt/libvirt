@@ -1,4 +1,16 @@
-Thu Dec 12 09:05:03 EST 2006 Daniel Berrange <berrange@redhat.com>
+Wed Dec 13 17:24:03 EST 2006 Daniel Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Implement the ListDefinedDomains, NumOfDefinedDomains,
+	DomainCreate ,DomainDefineXML, DomainUndefine APIs to manage inactive domains
+	when running with Xen 3.0.4.  Make GetMaxMemory,  SetMaxMemory, SetMemory,
+	GetInfo, SetVCPUs & DumpXML work with inactive domains. Cache xendConfigVersion
+	when first connecting to Xend.
+	* src/xend_internal.h: Prototypes for new APIs
+	* src/xm_internal.c: Updated for new way of getting xendConfigVersion
+	data
+	* src/internal.h: Added xendConfigVersion field for virConnect struct
+
+Tue Dec 12 09:05:03 EST 2006 Daniel Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c: Added support for vnclisten parameter
 	in generated XML

@@ -994,7 +994,7 @@ virDomainPtr xenXMDomainLookupByUUID(virConnectPtr conn,
 int xenXMDomainCreate(virDomainPtr domain) {
     char *xml;
     char *sexpr;
-    int ret, xendConfigVersion;
+    int ret;
     unsigned char uuid[16];
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
@@ -1011,12 +1011,7 @@ int xenXMDomainCreate(virDomainPtr domain) {
     if (!(xml = xenXMDomainDumpXML(domain, 0)))
         return (-1);
 
-    if ((xendConfigVersion = xend_get_config_version(domain->conn)) < 0) {
-        xenXMError(domain->conn, VIR_ERR_INTERNAL_ERROR, "cannot determine xend config version");
-        return (-1);
-    }
-
-    if (!(sexpr = virDomainParseXMLDesc(xml, NULL, xendConfigVersion))) {
+    if (!(sexpr = virDomainParseXMLDesc(xml, NULL, domain->conn->xendConfigVersion))) {
         free(xml);
         return (-1);
     }

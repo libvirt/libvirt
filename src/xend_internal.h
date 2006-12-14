@@ -551,6 +551,9 @@ int xenDaemonDomainLookupByID(virConnectPtr xend,
 char *xenDaemonDomainDumpXMLByID(virConnectPtr xend,
 				 int domid);
 
+char *xenDaemonDomainDumpXMLByName(virConnectPtr xend,
+				   const char *name);
+
 /**
  * \brief Lookup information about the host machine
  * \param xend A xend instance
@@ -613,7 +616,6 @@ char *xenDaemonDomainDumpXMLByID(virConnectPtr xend,
  */
     int xend_log(virConnectPtr xend, char *buffer, size_t n_buffer);
 
-  int xend_get_config_version(virConnectPtr conn);
   char *xend_parse_domain_sexp(virConnectPtr conn,  char *root, int xendConfigVersion);
 
 /* refactored ones */
@@ -636,6 +638,10 @@ char *xenDaemonDomainDumpXML(virDomainPtr domain, int flags);
 virDomainPtr xenDaemonDomainLookupByName(virConnectPtr conn, const char *domname);
 unsigned long xenDaemonDomainGetMaxMemory(virDomainPtr domain);
 char **xenDaemonListDomainsOld(virConnectPtr xend);
+
+virDomainPtr xenDaemonDomainDefineXML(virConnectPtr xend, const char *sexpr);
+int xenDaemonDomainCreate(virDomainPtr domain);
+int xenDaemonDomainUndefine(virDomainPtr domain);
 
 int	xenDaemonDomainSetVcpus		(virDomainPtr domain,
 					 unsigned int vcpus);

@@ -41,6 +41,8 @@
 static const char * xenDaemonGetType(virConnectPtr conn);
 static int xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids);
 static int xenDaemonNumOfDomains(virConnectPtr conn);
+static int xenDaemonListDefinedDomains(virConnectPtr conn, const char **names, int maxnames);
+static int xenDaemonNumOfDefinedDomains(virConnectPtr conn);
 static virDomainPtr xenDaemonLookupByID(virConnectPtr conn, int id);
 static virDomainPtr xenDaemonLookupByUUID(virConnectPtr conn,
                                           const unsigned char *uuid);
@@ -93,11 +95,11 @@ static virDriver xenDaemonDriver = {
     xenDaemonDomainPinVcpu, /* domainPinVcpu */
     xenDaemonDomainGetVcpus, /* domainGetVcpus */
     xenDaemonDomainDumpXML, /* domainDumpXML */
-    NULL, /* listDefinedDomains */
-    NULL, /* numOfDefinedDomains */
-    NULL, /* domainCreate */
-    NULL, /* domainDefineXML */
-    NULL, /* domainUndefine */
+    xenDaemonListDefinedDomains, /* listDefinedDomains */
+    xenDaemonNumOfDefinedDomains, /* numOfDefinedDomains */
+    xenDaemonDomainCreate, /* domainCreate */
+    xenDaemonDomainDefineXML, /* domainDefineXML */
+    xenDaemonDomainUndefine, /* domainUndefine */
     xenDaemonAttachDevice, /* domainAttachDevice */
     xenDaemonDetachDevice /* domainDetachDevice */
 };
@@ -702,6 +704,7 @@ sexpr_int(struct sexpr *sexpr, const char *name)
     return 0;
 }
 
+
 /**
  * sexpr_float:
  * @sexpr: an S-Expression
@@ -1273,8 +1276,8 @@ xend_get_node(virConnectPtr xend)
     return node;
 }
 
-int
-xend_get_config_version(virConnectPtr conn) {
+static int
+xend_detect_config_version(virConnectPtr conn) {
     struct sexpr *root;
     const char *value;
 
@@ -1286,22 +1289,19 @@ xend_get_config_version(virConnectPtr conn) {
     root = sexpr_get(conn, "/xend/node/");
     if (root == NULL)
         return (-1);
-
+    
     value = sexpr_node(root, "node/xend_config_format");
-
+    
     if (value) {
-        int version = strtol(value, NULL, 10);
-        sexpr_free(root);
-        return version;
-    } 
-
+        conn->xendConfigVersion = strtol(value, NULL, 10);
+    }  else {
+        /* Xen prior to 3.0.3 did not have the xend_config_format
+           field, and is implicitly version 1. */
+        conn->xendConfigVersion = 1;
+    }
     sexpr_free(root);
-
-    /* Xen prior to 3.0.3 did not have the xend_config_format
-       field, and is implicitly version 1. */
-    return 1;
+    return conn->xendConfigVersion;
 }
-
 
 #ifndef PROXY
 /**
@@ -1853,7 +1853,7 @@ xend_parse_domain_sexp(virConnectPtr conn, char *sexpr, int xendConfigVersion) {
  * Returns 0 in case of success, -1 in case of error
  */
 static int
-sexpr_to_xend_domain_info(struct sexpr *root, virDomainInfoPtr info)
+sexpr_to_xend_domain_info(virDomainPtr domain, struct sexpr *root, virDomainInfoPtr info)
 {
     const char *flags;
 
@@ -1879,7 +1879,12 @@ sexpr_to_xend_domain_info(struct sexpr *root, virDomainInfoPtr info)
         else if (strchr(flags, 'r'))
             info->state = VIR_DOMAIN_RUNNING;
     } else {
-        info->state = VIR_DOMAIN_NOSTATE;
+        /* Inactive domains don't have a state reported, so
+           mark them SHUTOFF, rather than NOSTATE */
+        if (domain->handle < 0)
+            info->state = VIR_DOMAIN_SHUTOFF;
+        else
+            info->state = VIR_DOMAIN_NOSTATE;
     }
     info->cpuTime = sexpr_float(root, "domain/cpu_time") * 1000000000;
     info->nrVirtCpu = sexpr_int(root, "domain/vcpus");
@@ -1940,6 +1945,7 @@ sexpr_to_domain(virConnectPtr conn, struct sexpr *root)
     char *dst_uuid = NULL;
     char uuid[16];
     const char *name;
+    const char *tmp;
 
     if ((conn == NULL) || (root == NULL))
         return(NULL);
@@ -1954,11 +1960,19 @@ sexpr_to_domain(virConnectPtr conn, struct sexpr *root)
     ret = virGetDomain(conn, name, (const unsigned char *) &uuid[0]);
     if (ret == NULL) {
         virXendError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
-	return(NULL);
+        return(NULL);
     }
-    ret->handle = sexpr_int(root, "domain/domid");
-    if (ret->handle < 0)
+    tmp = sexpr_node(root, "domain/domid");
+    /* New 3.0.4 XenD will not report a domid for inactive domains,
+     * so only error out for old XenD
+     */
+    if (!tmp && conn->xendConfigVersion < 3)
         goto error;
+
+    if (tmp)
+        ret->handle = sexpr_int(root, "domain/domid");
+    else
+        ret->handle = -1; /* An inactive domain */
 
     return (ret);
 
@@ -2062,6 +2076,15 @@ try_http:
     }
 
 done:
+    /* The XenD config version is used to determine
+     * which APIs / features to activate. Lookup & cache
+     * it now to avoid repeated HTTP calls
+     */
+    if (xend_detect_config_version(conn) < 0) {
+        virXendError(conn, VIR_ERR_INTERNAL_ERROR, "cannot determine xend config version");
+        goto failed;
+    }
+
     if (uri != NULL)
         xmlFreeURI(uri);
     return(ret);
@@ -2302,7 +2325,7 @@ xenDaemonDomainGetMaxMemory(virDomainPtr domain)
 	             __FUNCTION__);
         return(-1);
     }
-    if (domain->handle < 0)
+    if (domain->handle < 0 && domain->conn->xendConfigVersion < 3)
         return(-1);
 
     /* can we ask for a subset ? worth it ? */
@@ -2338,7 +2361,7 @@ xenDaemonDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
 	             __FUNCTION__);
         return(-1);
     }
-    if (domain->handle < 0)
+    if (domain->handle < 0 && domain->conn->xendConfigVersion < 3)
         return(-1);
 
     snprintf(buf, sizeof(buf), "%lu", memory >> 10);
@@ -2372,7 +2395,7 @@ xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory)
 	             __FUNCTION__);
         return(-1);
     }
-    if (domain->handle < 0)
+    if (domain->handle < 0 && domain->conn->xendConfigVersion < 3)
         return(-1);
 
     snprintf(buf, sizeof(buf), "%lu", memory >> 10);
@@ -2382,23 +2405,36 @@ xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory)
 
 #endif /* ! PROXY */
 
+/* XXX change proxy to use Name instead of ID, then
+   dumpxml will work over proxy for inactive domains
+   and this can be removed */
 char *
 xenDaemonDomainDumpXMLByID(virConnectPtr conn, int domid)
 {
     char *ret = NULL;
     struct sexpr *root;
-    int xendConfigVersion;
 
     root = sexpr_get(conn, "/xend/domain/%d?detail=1", domid);
     if (root == NULL)
         return (NULL);
 
-    if ((xendConfigVersion = xend_get_config_version(conn)) < 0) {
-        virXendError(conn, VIR_ERR_INTERNAL_ERROR, "cannot determine xend config version");
-        return (NULL);
-    }
+    ret = xend_parse_sexp_desc(conn, root, conn->xendConfigVersion);
+    sexpr_free(root);
 
-    ret = xend_parse_sexp_desc(conn, root, xendConfigVersion);
+    return (ret);
+}
+
+char *
+xenDaemonDomainDumpXMLByName(virConnectPtr conn, const char *name)
+{
+    char *ret = NULL;
+    struct sexpr *root;
+
+    root = sexpr_get(conn, "/xend/domain/%s?detail=1", name);
+    if (root == NULL)
+        return (NULL);
+
+    ret = xend_parse_sexp_desc(conn, root, conn->xendConfigVersion);
     sexpr_free(root);
 
     return (ret);
@@ -2423,10 +2459,12 @@ xenDaemonDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
 	             __FUNCTION__);
         return(NULL);
     }
-    if (domain->handle < 0)
+    if (domain->handle < 0 && domain->conn->xendConfigVersion < 3)
         return(NULL);
-
-    return xenDaemonDomainDumpXMLByID(domain->conn, domain->handle);
+    if (domain->handle < 0)
+        return xenDaemonDomainDumpXMLByName(domain->conn, domain->name);
+    else
+        return xenDaemonDomainDumpXMLByID(domain->conn, domain->handle);
 }
 #endif /* !PROXY */
 
@@ -2452,14 +2490,14 @@ xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 	             __FUNCTION__);
         return(-1);
     }
-    if (domain->handle < 0)
+    if (domain->handle < 0 && domain->conn->xendConfigVersion < 3)
         return(-1);
 
     root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
     if (root == NULL)
         return (-1);
 
-    ret = sexpr_to_xend_domain_info(root, info);
+    ret = sexpr_to_xend_domain_info(domain, root, info);
     sexpr_free(root);
     return (ret);
 }
@@ -2484,8 +2522,9 @@ xenDaemonDomainLookupByName(virConnectPtr conn, const char *domname)
 
     if ((conn == NULL) || (domname == NULL)) {
         virXendError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-	return(NULL);
+        return(NULL);
     }
+
     root = sexpr_get(conn, "/xend/domain/%s?detail=1", domname);
     if (root == NULL)
         goto error;
@@ -2735,7 +2774,7 @@ xenDaemonDomainSetVcpus(virDomainPtr domain, unsigned int vcpus)
 	             __FUNCTION__);
         return (-1);
     }
-    if (domain->handle < 0)
+    if (domain->handle < 0 && domain->conn->xendConfigVersion < 3)
         return(-1);
 
     snprintf(buf, sizeof(buf), "%d", vcpus);
@@ -2955,7 +2994,6 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
     char *sexpr;
     char *name = NULL;
     virDomainPtr dom;
-    int xendConfigVersion;
 
     if (!VIR_IS_CONNECT(conn)) {
         virXendError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -2966,13 +3004,7 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
         return (NULL);
     }
 
-    if ((xendConfigVersion = xend_get_config_version(conn)) < 0) {
-        virXendError(conn, VIR_ERR_INTERNAL_ERROR,
-	             "cannot determine xend config version");
-        return (NULL);
-    }
-
-    sexpr = virDomainParseXMLDesc(xmlDesc, &name, xendConfigVersion);
+    sexpr = virDomainParseXMLDesc(xmlDesc, &name, conn->xendConfigVersion);
     if ((sexpr == NULL) || (name == NULL)) {
         virXendError(conn, VIR_ERR_XML_ERROR, "domain");
         if (sexpr != NULL)
@@ -3032,21 +3064,17 @@ static int
 xenDaemonAttachDevice(virDomainPtr domain, char *xml)
 {
     char *sexpr, *conf;
-    int xendConfigVersion, hvm = 0, ret;
+    int hvm = 0, ret;
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
 	             __FUNCTION__);
         return (-1);
     }
-    if ((xendConfigVersion = xend_get_config_version(domain->conn)) < 0) {
-        virXendError(domain->conn, VIR_ERR_INTERNAL_ERROR,
-          "cannot determine xend config version");
-        return (-1);
-    }
+
     if (strcmp(virDomainGetOSType(domain), "linux"))
         hvm = 1;
-    sexpr = virParseXMLDevice(xml, hvm, xendConfigVersion);
+    sexpr = virParseXMLDevice(xml, hvm, domain->conn->xendConfigVersion);
     if (sexpr == NULL)
         return (-1);
     if (!memcmp(sexpr, "(device ", 8)) {
@@ -3084,7 +3112,143 @@ xenDaemonDetachDevice(virDomainPtr domain, char *xml)
     return(xend_op(domain->conn, domain->name, "op", "device_destroy",
         "type", class, "dev", ref, NULL));
 }
+
+
+virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
+    int ret;
+    char *sexpr;
+    char *name = NULL;
+    virDomainPtr dom;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virXendError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (NULL);
+    }
+    if (xmlDesc == NULL) {
+        virXendError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (NULL);
+    }
+
+    sexpr = virDomainParseXMLDesc(xmlDesc, &name, conn->xendConfigVersion);
+    if ((sexpr == NULL) || (name == NULL)) {
+        virXendError(conn, VIR_ERR_XML_ERROR, "domain");
+        if (sexpr != NULL)
+            free(sexpr);
+        if (name != NULL)
+            free(name);
+
+        return (NULL);
+    }
+
+    ret = xend_op(conn, "", "op", "new", "config", sexpr, NULL);
+    free(sexpr);
+    if (ret != 0) {
+        fprintf(stderr, _("Failed to create inactive domain %s\n"), name);
+        goto error;
+    }
+
+    dom = virDomainLookupByName(conn, name);
+    if (dom == NULL) {
+        goto error;
+    }
+
+    return (dom);
+  error:
+    if (name != NULL)
+        free(name);
+    return (NULL);
+}
+int xenDaemonDomainCreate(virDomainPtr domain) {
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return(-1);
+    }
+    if (domain->conn->xendConfigVersion < 3)
+        return(-1);
+
+    return xend_op(domain->conn, domain->name, "op", "start", NULL);
+}
+
+int xenDaemonDomainUndefine(virDomainPtr domain) {
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return(-1);
+    }
+    if (domain->conn->xendConfigVersion < 3)
+        return(-1);
+
+    return xend_op(domain->conn, domain->name, "op", "delete", NULL);
+}
+
+/**
+ * xenDaemonNumOfDomains:
+ * @conn: pointer to the hypervisor connection
+ *
+ * Provides the number of active domains.
+ *
+ * Returns the number of domain found or -1 in case of error
+ */
+static int
+xenDaemonNumOfDefinedDomains(virConnectPtr conn)
+{
+    struct sexpr *root = NULL;
+    int ret = -1;
+    struct sexpr *_for_i, *node;
+
+    root = sexpr_get(conn, "/xend/domain?state=halted");
+    if (root == NULL)
+        goto error;
+
+    ret = 0;
+
+    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
+         _for_i = _for_i->cdr, node = _for_i->car) {
+        if (node->kind != SEXPR_VALUE)
+            continue;
+        ret++;
+    }
+
+error:
+    if (root != NULL)
+        sexpr_free(root);
+    return(ret);
+}
+
+int xenDaemonListDefinedDomains(virConnectPtr conn, const char **names, int maxnames) {
+    struct sexpr *root = NULL;
+    int ret = -1;
+    struct sexpr *_for_i, *node;
+
+    if ((names == NULL) || (maxnames <= 0))
+        goto error;
+    root = sexpr_get(conn, "/xend/domain?state=halted");
+    if (root == NULL)
+        goto error;
+
+    ret = 0;
+
+    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
+         _for_i = _for_i->cdr, node = _for_i->car) {
+        if (node->kind != SEXPR_VALUE)
+            continue;
+
+        names[ret++] = strdup(node->value);
+        if (ret >= maxnames)
+            break;
+    }
+
+error:
+    if (root != NULL)
+        sexpr_free(root);
+    return(ret);
+}
+
 #endif /* ! PROXY */
+
+
+
 
 /*
  * Local variables:
