@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zh_TW\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-11-27 16:59+0100\n"
+"POT-Creation-Date: 2006-12-14 10:47+0100\n"
 "PO-Revision-Date: 2006-11-26 19:30+1000\n"
 "Last-Translator: Chester Cheng <ccheng@redhat.com>\n"
 "Language-Team: Chinese, Traditional <zh_TW@li.org>\n"
@@ -375,8 +375,8 @@ msgid "allocate new context"
 msgstr "分配新的內文"
 
 #: src/hash.c:749 src/hash.c:755 src/test.c:728 src/test.c:753 src/test.c:776
-#: src/test.c:800 src/xend_internal.c:1933 src/xend_internal.c:2680
-#: src/xend_internal.c:2899 src/xs_internal.c:603 src/proxy_internal.c:798
+#: src/test.c:800 src/xend_internal.c:1962 src/xend_internal.c:2744
+#: src/xend_internal.c:2963 src/xs_internal.c:603 src/proxy_internal.c:798
 #: src/proxy_internal.c:845 src/proxy_internal.c:896
 msgid "allocating domain"
 msgstr "分配區域"
@@ -513,27 +513,27 @@ msgstr "無法分配節點"
 msgid "failed to copy a string"
 msgstr "無法複製字串"
 
-#: src/xend_internal.c:272 src/xend_internal.c:275
+#: src/xend_internal.c:274 src/xend_internal.c:277
 msgid "failed to read from Xen Daemon"
 msgstr "無法從 Xen 系統程式讀取"
 
-#: src/xend_internal.c:1071
+#: src/xend_internal.c:1074
 msgid "failed to urlencode the create S-Expr"
 msgstr "無法 urlencode 以建立 S-Expr"
 
-#: src/xend_internal.c:1112
+#: src/xend_internal.c:1115
 msgid "domain information incomplete, missing domid"
 msgstr "區域的資訊不全，沒有 domid"
 
-#: src/xend_internal.c:1118
+#: src/xend_internal.c:1121
 msgid "domain information incorrect domid not numeric"
 msgstr "區域的資訊不正確，domid 並非數字型態"
 
-#: src/xend_internal.c:1125 src/xend_internal.c:1174
+#: src/xend_internal.c:1128 src/xend_internal.c:1177
 msgid "domain information incomplete, missing uuid"
 msgstr "區域的資訊不全，沒有 uuid"
 
-#: src/xend_internal.c:1165 src/xend_internal.c:1508
+#: src/xend_internal.c:1168 src/xend_internal.c:1508
 msgid "domain information incomplete, missing name"
 msgstr "區域的資訊不全，沒有名稱"
 
@@ -558,24 +558,29 @@ msgstr ""
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 
-#: src/xend_internal.c:1944
+#: src/xend_internal.c:1981
 msgid "failed to parse Xend domain information"
 msgstr "無法解析 Xend 的區域資訊"
 
-#: src/xend_internal.c:2964
+#: src/xend_internal.c:3021
 #, c-format
 msgid "Failed to create domain %s\n"
 msgstr "無法建立區域 %s\n"
 
-#: src/xend_internal.c:2970
+#: src/xend_internal.c:3027
 #, c-format
 msgid "Failed to get devices for domain %s\n"
 msgstr "無法為區域 %s 取得裝置\n"
 
-#: src/xend_internal.c:2981
+#: src/xend_internal.c:3038
 #, c-format
 msgid "Failed to resume new domain %s\n"
 msgstr "無法繼續新的區域 %s\n"
+
+#: src/xend_internal.c:3146
+#, fuzzy, c-format
+msgid "Failed to create inactive domain %s\n"
+msgstr "無法建立區域 %s\n"
 
 #: src/virsh.c:234
 msgid "print help"
@@ -1479,7 +1484,7 @@ msgstr "使用代理伺服器時通訊錯誤：封包格式錯誤\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "取得非同步的封包號碼 %d\n"
 
-#: src/xen_internal.c:1379
+#: src/xen_internal.c:1378
 #, c-format
 msgid "allocating %d domain info"
 msgstr "分配 %d 區域資訊"

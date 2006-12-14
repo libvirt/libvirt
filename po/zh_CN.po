@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zh_CN\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-11-27 16:59+0100\n"
+"POT-Creation-Date: 2006-12-14 10:47+0100\n"
 "PO-Revision-Date: 2006-10-13 10:21+1000\n"
 "Last-Translator: Tony Fu <tfu@redhat.com>\n"
 "Language-Team:  <zh@li.org>\n"
@@ -378,8 +378,8 @@ msgid "allocate new context"
 msgstr "分配新的上下文"
 
 #: src/hash.c:749 src/hash.c:755 src/test.c:728 src/test.c:753 src/test.c:776
-#: src/test.c:800 src/xend_internal.c:1933 src/xend_internal.c:2680
-#: src/xend_internal.c:2899 src/xs_internal.c:603 src/proxy_internal.c:798
+#: src/test.c:800 src/xend_internal.c:1962 src/xend_internal.c:2744
+#: src/xend_internal.c:2963 src/xs_internal.c:603 src/proxy_internal.c:798
 #: src/proxy_internal.c:845 src/proxy_internal.c:896
 msgid "allocating domain"
 msgstr "正在分配域名"
@@ -516,27 +516,27 @@ msgstr "分配一个节点失败"
 msgid "failed to copy a string"
 msgstr "复制一个字符串失败"
 
-#: src/xend_internal.c:272 src/xend_internal.c:275
+#: src/xend_internal.c:274 src/xend_internal.c:277
 msgid "failed to read from Xen Daemon"
 msgstr "从 Xen 守护进程读失败"
 
-#: src/xend_internal.c:1071
+#: src/xend_internal.c:1074
 msgid "failed to urlencode the create S-Expr"
 msgstr "urlencode 创建的 S-Expr 失败"
 
-#: src/xend_internal.c:1112
+#: src/xend_internal.c:1115
 msgid "domain information incomplete, missing domid"
 msgstr "域信息不完全，缺少 domid"
 
-#: src/xend_internal.c:1118
+#: src/xend_internal.c:1121
 msgid "domain information incorrect domid not numeric"
 msgstr "域信息不正确，domid 不是数字值"
 
-#: src/xend_internal.c:1125 src/xend_internal.c:1174
+#: src/xend_internal.c:1128 src/xend_internal.c:1177
 msgid "domain information incomplete, missing uuid"
 msgstr "域信息不完全，缺少 uuid"
 
-#: src/xend_internal.c:1165 src/xend_internal.c:1508
+#: src/xend_internal.c:1168 src/xend_internal.c:1508
 msgid "domain information incomplete, missing name"
 msgstr "域信息不完全，缺少名称"
 
@@ -561,24 +561,29 @@ msgstr ""
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 
-#: src/xend_internal.c:1944
+#: src/xend_internal.c:1981
 msgid "failed to parse Xend domain information"
 msgstr "解释 Xend 域信息失败"
 
-#: src/xend_internal.c:2964
+#: src/xend_internal.c:3021
 #, c-format
 msgid "Failed to create domain %s\n"
 msgstr "创建域 %s 失败\n"
 
-#: src/xend_internal.c:2970
+#: src/xend_internal.c:3027
 #, c-format
 msgid "Failed to get devices for domain %s\n"
 msgstr "为域 %s 获得设备失败\n"
 
-#: src/xend_internal.c:2981
+#: src/xend_internal.c:3038
 #, c-format
 msgid "Failed to resume new domain %s\n"
 msgstr "恢复新域 %s 失败\n"
+
+#: src/xend_internal.c:3146
+#, fuzzy, c-format
+msgid "Failed to create inactive domain %s\n"
+msgstr "创建域 %s 失败\n"
 
 #: src/virsh.c:234
 msgid "print help"
@@ -1482,7 +1487,7 @@ msgstr "与代理服务器通讯错误：数据包格式不正确\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "获得了异步数据包号 %d\n"
 
-#: src/xen_internal.c:1379
+#: src/xen_internal.c:1378
 #, c-format
 msgid "allocating %d domain info"
 msgstr "分配 %d 域信息"

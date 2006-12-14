@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-11-27 16:59+0100\n"
+"POT-Creation-Date: 2006-12-14 10:47+0100\n"
 "PO-Revision-Date: 2006-11-27 16:59+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -373,8 +373,8 @@ msgid "allocate new context"
 msgstr "allocate new context"
 
 #: src/hash.c:749 src/hash.c:755 src/test.c:728 src/test.c:753 src/test.c:776
-#: src/test.c:800 src/xend_internal.c:1933 src/xend_internal.c:2680
-#: src/xend_internal.c:2899 src/xs_internal.c:603 src/proxy_internal.c:798
+#: src/test.c:800 src/xend_internal.c:1962 src/xend_internal.c:2744
+#: src/xend_internal.c:2963 src/xs_internal.c:603 src/proxy_internal.c:798
 #: src/proxy_internal.c:845 src/proxy_internal.c:896
 msgid "allocating domain"
 msgstr "allocating domain"
@@ -511,27 +511,27 @@ msgstr "failed to allocate a node"
 msgid "failed to copy a string"
 msgstr "failed to copy a string"
 
-#: src/xend_internal.c:272 src/xend_internal.c:275
+#: src/xend_internal.c:274 src/xend_internal.c:277
 msgid "failed to read from Xen Daemon"
 msgstr "failed to read from Xen Daemon"
 
-#: src/xend_internal.c:1071
+#: src/xend_internal.c:1074
 msgid "failed to urlencode the create S-Expr"
 msgstr "failed to urlencode the create S-Expr"
 
-#: src/xend_internal.c:1112
+#: src/xend_internal.c:1115
 msgid "domain information incomplete, missing domid"
 msgstr "domain information incomplete, missing domid"
 
-#: src/xend_internal.c:1118
+#: src/xend_internal.c:1121
 msgid "domain information incorrect domid not numeric"
 msgstr "domain information incorrect domid not numeric"
 
-#: src/xend_internal.c:1125 src/xend_internal.c:1174
+#: src/xend_internal.c:1128 src/xend_internal.c:1177
 msgid "domain information incomplete, missing uuid"
 msgstr "domain information incomplete, missing uuid"
 
-#: src/xend_internal.c:1165 src/xend_internal.c:1508
+#: src/xend_internal.c:1168 src/xend_internal.c:1508
 msgid "domain information incomplete, missing name"
 msgstr "domain information incomplete, missing name"
 
@@ -555,24 +555,29 @@ msgstr "cannot parse vbd filename, missing driver name"
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "cannot parse vbd filename, missing driver type"
 
-#: src/xend_internal.c:1944
+#: src/xend_internal.c:1981
 msgid "failed to parse Xend domain information"
 msgstr "failed to parse Xend domain information"
 
-#: src/xend_internal.c:2964
+#: src/xend_internal.c:3021
 #, c-format
 msgid "Failed to create domain %s\n"
 msgstr "Failed to create domain %s\n"
 
-#: src/xend_internal.c:2970
+#: src/xend_internal.c:3027
 #, c-format
 msgid "Failed to get devices for domain %s\n"
 msgstr "Failed to get devices for domain %s\n"
 
-#: src/xend_internal.c:2981
+#: src/xend_internal.c:3038
 #, c-format
 msgid "Failed to resume new domain %s\n"
 msgstr "Failed to resume new domain %s\n"
+
+#: src/xend_internal.c:3146
+#, fuzzy, c-format
+msgid "Failed to create inactive domain %s\n"
+msgstr "Failed to create domain %s\n"
 
 #: src/virsh.c:234
 msgid "print help"
@@ -1475,7 +1480,7 @@ msgstr "Communication error with proxy: malformed packet\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "got asynchronous packet number %d\n"
 
-#: src/xen_internal.c:1379
+#: src/xen_internal.c:1378
 #, c-format
 msgid "allocating %d domain info"
 msgstr "allocating %d domain info"

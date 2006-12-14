@@ -1,10 +1,16 @@
+Thu Dec 14 10:58:00 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* po/*.po po/libvirt.pot: merged new ms transations, updated
+	  with the current source.
+
 Wed Dec 13 17:24:03 EST 2006 Daniel Berrange <berrange@redhat.com>
 
-	* src/xend_internal.c: Implement the ListDefinedDomains, NumOfDefinedDomains,
-	DomainCreate ,DomainDefineXML, DomainUndefine APIs to manage inactive domains
-	when running with Xen 3.0.4.  Make GetMaxMemory,  SetMaxMemory, SetMemory,
-	GetInfo, SetVCPUs & DumpXML work with inactive domains. Cache xendConfigVersion
-	when first connecting to Xend.
+	* src/xend_internal.c: Implement the ListDefinedDomains,
+	NumOfDefinedDomains, DomainCreate ,DomainDefineXML, DomainUndefine
+	APIs to manage inactive domains when running with Xen 3.0.4.  Make
+	GetMaxMemory,  SetMaxMemory, SetMemory, GetInfo, SetVCPUs & DumpXML
+	work with inactive domains. Cache xendConfigVersion when first
+	connecting to Xend.
 	* src/xend_internal.h: Prototypes for new APIs
 	* src/xm_internal.c: Updated for new way of getting xendConfigVersion
 	data

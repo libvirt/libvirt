@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-11-27 16:59+0100\n"
+"POT-Creation-Date: 2006-12-14 10:47+0100\n"
 "PO-Revision-Date: 2006-09-28 20:29+0100\n"
 "Last-Translator: José Nuno Coelho Pires <jncp@netcabo.pt>\n"
 "Language-Team: pt <kde-i18n-pt@kde.org>\n"
@@ -371,8 +371,8 @@ msgid "allocate new context"
 msgstr "reservar um contexto novo"
 
 #: src/hash.c:749 src/hash.c:755 src/test.c:728 src/test.c:753 src/test.c:776
-#: src/test.c:800 src/xend_internal.c:1933 src/xend_internal.c:2680
-#: src/xend_internal.c:2899 src/xs_internal.c:603 src/proxy_internal.c:798
+#: src/test.c:800 src/xend_internal.c:1962 src/xend_internal.c:2744
+#: src/xend_internal.c:2963 src/xs_internal.c:603 src/proxy_internal.c:798
 #: src/proxy_internal.c:845 src/proxy_internal.c:896
 msgid "allocating domain"
 msgstr "a reservar o domínio"
@@ -509,27 +509,27 @@ msgstr "não foi possível reservar um nó"
 msgid "failed to copy a string"
 msgstr "não foi possível copiar a cadeia de caracteres"
 
-#: src/xend_internal.c:272 src/xend_internal.c:275
+#: src/xend_internal.c:274 src/xend_internal.c:277
 msgid "failed to read from Xen Daemon"
 msgstr "não foi possível ler do Servidor do Xen"
 
-#: src/xend_internal.c:1071
+#: src/xend_internal.c:1074
 msgid "failed to urlencode the create S-Expr"
 msgstr "não foi possível codificar o URL da Expr-S da criação"
 
-#: src/xend_internal.c:1112
+#: src/xend_internal.c:1115
 msgid "domain information incomplete, missing domid"
 msgstr "informação do domínio incompleta, falta o 'domid'"
 
-#: src/xend_internal.c:1118
+#: src/xend_internal.c:1121
 msgid "domain information incorrect domid not numeric"
 msgstr "informação do domínio incompleta, o 'domid' não é numérico"
 
-#: src/xend_internal.c:1125 src/xend_internal.c:1174
+#: src/xend_internal.c:1128 src/xend_internal.c:1177
 msgid "domain information incomplete, missing uuid"
 msgstr "informação do domínio incompleta, falta o 'uuid'"
 
-#: src/xend_internal.c:1165 src/xend_internal.c:1508
+#: src/xend_internal.c:1168 src/xend_internal.c:1508
 msgid "domain information incomplete, missing name"
 msgstr "informação do domínio incompleta, falta o nome"
 
@@ -554,24 +554,29 @@ msgstr ""
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 
-#: src/xend_internal.c:1944
+#: src/xend_internal.c:1981
 msgid "failed to parse Xend domain information"
 msgstr "não foi possível processar a informação do domínio do Xend"
 
-#: src/xend_internal.c:2964
+#: src/xend_internal.c:3021
 #, c-format
 msgid "Failed to create domain %s\n"
 msgstr "Não foi possível criar o domínio %s\n"
 
-#: src/xend_internal.c:2970
+#: src/xend_internal.c:3027
 #, c-format
 msgid "Failed to get devices for domain %s\n"
 msgstr "Não foi possível obter os dispositivos do domínio %s\n"
 
-#: src/xend_internal.c:2981
+#: src/xend_internal.c:3038
 #, c-format
 msgid "Failed to resume new domain %s\n"
 msgstr "Não foi possível prosseguir com o domínio novo %s\n"
+
+#: src/xend_internal.c:3146
+#, fuzzy, c-format
+msgid "Failed to create inactive domain %s\n"
+msgstr "Não foi possível criar o domínio %s\n"
 
 #: src/virsh.c:234
 msgid "print help"
@@ -1479,7 +1484,7 @@ msgstr "Erro de comunicação com o 'proxy': pacote inválido\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "foi obtido um número de pacote assíncrono %d\n"
 
-#: src/xen_internal.c:1379
+#: src/xen_internal.c:1378
 #, c-format
 msgid "allocating %d domain info"
 msgstr "a reservar a informação de %d domínios"

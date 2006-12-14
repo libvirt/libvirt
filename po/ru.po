@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ru\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-11-27 16:59+0100\n"
+"POT-Creation-Date: 2006-12-14 10:47+0100\n"
 "PO-Revision-Date: 2006-11-27 11:29+1000\n"
 "Last-Translator: Yulia Poyarkova <ypoyarko@redhat.com>\n"
 "Language-Team: \n"
@@ -381,8 +381,8 @@ msgid "allocate new context"
 msgstr "назначить новый контекст"
 
 #: src/hash.c:749 src/hash.c:755 src/test.c:728 src/test.c:753 src/test.c:776
-#: src/test.c:800 src/xend_internal.c:1933 src/xend_internal.c:2680
-#: src/xend_internal.c:2899 src/xs_internal.c:603 src/proxy_internal.c:798
+#: src/test.c:800 src/xend_internal.c:1962 src/xend_internal.c:2744
+#: src/xend_internal.c:2963 src/xs_internal.c:603 src/proxy_internal.c:798
 #: src/proxy_internal.c:845 src/proxy_internal.c:896
 msgid "allocating domain"
 msgstr "выделение домена"
@@ -519,27 +519,27 @@ msgstr "ошибка выделения узла"
 msgid "failed to copy a string"
 msgstr "ошибка копирования строки"
 
-#: src/xend_internal.c:272 src/xend_internal.c:275
+#: src/xend_internal.c:274 src/xend_internal.c:277
 msgid "failed to read from Xen Daemon"
 msgstr "ошибка чтения из демона Xen"
 
-#: src/xend_internal.c:1071
+#: src/xend_internal.c:1074
 msgid "failed to urlencode the create S-Expr"
 msgstr "ошибка urlencode при создании S-Expr"
 
-#: src/xend_internal.c:1112
+#: src/xend_internal.c:1115
 msgid "domain information incomplete, missing domid"
 msgstr "неполная информация домена, отсутствует domid"
 
-#: src/xend_internal.c:1118
+#: src/xend_internal.c:1121
 msgid "domain information incorrect domid not numeric"
 msgstr "неверная информация домена, domid должен быть числом"
 
-#: src/xend_internal.c:1125 src/xend_internal.c:1174
+#: src/xend_internal.c:1128 src/xend_internal.c:1177
 msgid "domain information incomplete, missing uuid"
 msgstr "неполная информация домена, отсутствует uuid"
 
-#: src/xend_internal.c:1165 src/xend_internal.c:1508
+#: src/xend_internal.c:1168 src/xend_internal.c:1508
 msgid "domain information incomplete, missing name"
 msgstr "неполная информация домена, отсутствует имя"
 
@@ -564,24 +564,29 @@ msgstr ""
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 
-#: src/xend_internal.c:1944
+#: src/xend_internal.c:1981
 msgid "failed to parse Xend domain information"
 msgstr "ошибка разбора информации домена Xend"
 
-#: src/xend_internal.c:2964
+#: src/xend_internal.c:3021
 #, c-format
 msgid "Failed to create domain %s\n"
 msgstr "Ошибка создания домена %s\n"
 
-#: src/xend_internal.c:2970
+#: src/xend_internal.c:3027
 #, c-format
 msgid "Failed to get devices for domain %s\n"
 msgstr "Ошибка получения устройств для домена %s\n"
 
-#: src/xend_internal.c:2981
+#: src/xend_internal.c:3038
 #, c-format
 msgid "Failed to resume new domain %s\n"
 msgstr "Ошибка при возобновлении работы нового домена %s\n"
+
+#: src/xend_internal.c:3146
+#, fuzzy, c-format
+msgid "Failed to create inactive domain %s\n"
+msgstr "Ошибка создания домена %s\n"
 
 #: src/virsh.c:234
 msgid "print help"
@@ -1488,7 +1493,7 @@ msgstr "Ошибка связи с прокси: плохо сформирова
 msgid "got asynchronous packet number %d\n"
 msgstr "получен асинхронный номер пакета - %d\n"
 
-#: src/xen_internal.c:1379
+#: src/xen_internal.c:1378
 #, c-format
 msgid "allocating %d domain info"
 msgstr "выделение %d данных домена"
