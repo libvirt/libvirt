@@ -1,3 +1,8 @@
+Mon Dec 18 23:11:53 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: Dan Berrange pointed out a ref count bug
+	  rhbz#143946 , patch applied
+
 Thu Dec 14 10:58:00 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* po/*.po po/libvirt.pot: merged new ms transations, updated

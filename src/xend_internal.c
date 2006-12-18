@@ -3040,7 +3040,6 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
         goto error;
     }
 
-    dom = virDomainLookupByName(conn, name);
     free(name);
 
     return (dom);
