@@ -1,3 +1,10 @@
+Tue Dec 19 12:26:53 EST 2006 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xm_internal.c: Maintain hash of config filenames, separate from
+	hash mapping domain names to config files. This deals with case of two
+	config files specifying same named guest, which although not recommended
+	seems to be encountered 'in the wild'.
+
 Mon Dec 18 23:11:53 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: Dan Berrange pointed out a ref count bug

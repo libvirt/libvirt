@@ -39,6 +39,7 @@ typedef struct xenXMConfCache {
 
 static char configDir[PATH_MAX];
 static virHashTablePtr configCache = NULL;
+static virHashTablePtr nameConfigMap = NULL;
 static int nconnections = 0;
 static time_t lastRefresh = 0;
 
@@ -132,16 +133,6 @@ void xenXMRegister(void)
 }
 
 
-/* Remove any configs which were not refreshed recently */
-static int xenXMConfigReaper(const void *payload, const char *key ATTRIBUTE_UNUSED, const void *data) {
-    time_t now = *(const time_t *)data;
-    xenXMConfCachePtr entry = (xenXMConfCachePtr)payload;
-
-    if (entry->refreshedAt != now)
-        return (1);
-    return (0);
-}
-
 /* Convenience method to grab a int from the config file object */
 static int xenXMConfigGetInt(virConfPtr conf, const char *name, long *value) {
     virConfValuePtr val;
@@ -217,8 +208,28 @@ static void xenXMConfigGenerateUUID(unsigned char *uuid) {
 
 /* Ensure that a config object has a valid UUID in it,
    if it doesn't then (re-)generate one */
-static int xenXMConfigEnsureUUID(virConfPtr conf) {
+static int xenXMConfigEnsureIdentity(virConfPtr conf, const char *filename) {
     unsigned char uuid[16];
+    const char *name;
+
+    /* Had better have a name...*/
+    if (xenXMConfigGetString(conf, "name", &name) < 0) {
+        virConfValuePtr value;
+        value = malloc(sizeof(virConfValue));
+        if (!value) {
+            return (-1);
+        }
+
+        /* Set name based on filename */
+        value->type = VIR_CONF_STRING;
+        value->str = strdup(filename);
+        if (!value->str) {
+            free(value);
+            return (-1);
+        }
+        if (virConfSetValue(conf, "name", value) < 0)
+            return (-1);
+    }
 
     /* If there is no uuid...*/
     if (xenXMConfigGetUUID(conf, "uuid", uuid) < 0) {
@@ -262,6 +273,26 @@ static void xenXMConfigFree(void *payload, const char *key ATTRIBUTE_UNUSED) {
 }
 
 
+/* Remove any configs which were not refreshed recently */
+static int xenXMConfigReaper(const void *payload, const char *key ATTRIBUTE_UNUSED, const void *data) {
+    time_t now = *(const time_t *)data;
+    xenXMConfCachePtr entry = (xenXMConfCachePtr)payload;
+
+    if (entry->refreshedAt != now) {
+        const char *olddomname;
+        /* We're going to pure this config file, so check if it
+           is currently mapped as owner of a named domain. */
+        if (xenXMConfigGetString(entry->conf, "name", &olddomname) != -1) {
+            char *nameowner = (char *)virHashLookup(nameConfigMap, olddomname);
+            if (nameowner && !strcmp(nameowner, key)) {
+                virHashRemoveEntry(nameConfigMap, olddomname, NULL);
+            }
+        }
+        return (1);
+    }
+    return (0);
+}
+
 /* This method is called by various methods to scan /etc/xen
    (or whatever directory was set by  LIBVIRT_XM_CONFIG_DIR
    environment variable) and process any domain configs. It
@@ -293,6 +324,7 @@ static int xenXMConfigCacheRefresh(void) {
         struct stat st;
         int newborn = 0;
         char path[PATH_MAX];
+        const char *domname = NULL;
 
         /*
          * Skip a bunch of crufty files that clearly aren't config files
@@ -335,14 +367,24 @@ static int xenXMConfigCacheRefresh(void) {
 
         /* If we already have a matching entry and it is not
            modified, then carry on to next one*/
-        if ((entry = virHashLookup(configCache, ent->d_name))) {
+        if ((entry = virHashLookup(configCache, path))) {
+            const char *olddomname = NULL;
+
             if (entry->refreshedAt >= st.st_mtime) {
                 entry->refreshedAt = now;
                 continue;
             }
-        }
 
-        if (entry) { /* Existing entry which needs refresh */
+            /* If we currently own the name, then release it and
+               re-acquire it later - just in case it was renamed */
+            if (xenXMConfigGetString(entry->conf, "name", &olddomname) != -1) {
+                char *nameowner = (char *)virHashLookup(nameConfigMap, olddomname);
+                if (nameowner && !strcmp(nameowner, path)) {
+                    virHashRemoveEntry(nameConfigMap, olddomname, NULL);
+                }
+            }
+
+            /* Clear existing config entry which needs refresh */
             virConfFree(entry->conf);
             entry->conf = NULL;
         } else { /* Completely new entry */
@@ -355,21 +397,41 @@ static int xenXMConfigCacheRefresh(void) {
         entry->refreshedAt = now;
 
         if (!(entry->conf = virConfReadFile(entry->filename)) ||
-            xenXMConfigEnsureUUID(entry->conf) < 0) {
+            xenXMConfigEnsureIdentity(entry->conf, ent->d_name) < 0) {
             if (!newborn) {
-                virHashRemoveEntry(configCache, ent->d_name, NULL);
+                virHashRemoveEntry(configCache, path, NULL);
             }
             free(entry);
             continue;
         }
 
+        /* Lookup what domain name the conf contains */
+        if (xenXMConfigGetString(entry->conf, "name", &domname) < 0) {
+            if (!newborn) {
+                virHashRemoveEntry(configCache, path, NULL);
+            }
+            free(entry);
+            goto cleanup;
+        }
+
         /* If its a completely new entry, it must be stuck into
            the cache (refresh'd entries are already registered) */
         if (newborn) {
-            if (virHashAddEntry(configCache, ent->d_name, entry) < 0) {
+            if (virHashAddEntry(configCache, entry->filename, entry) < 0) {
                 virConfFree(entry->conf);
                 free(entry);
                 goto cleanup;
+            }
+        }
+
+        /* See if we need to map this config file in as the primary owner
+         * of the domain in question
+         */
+        if (!virHashLookup(nameConfigMap, domname)) {
+            if (virHashAddEntry(nameConfigMap, domname, entry->filename) < 0) {
+                virHashRemoveEntry(configCache, ent->d_name, NULL);
+                virConfFree(entry->conf);
+                free(entry);
             }
         }
     }
@@ -405,6 +467,12 @@ int xenXMOpen(virConnectPtr conn ATTRIBUTE_UNUSED, const char *name, int flags A
         configCache = virHashCreate(50);
         if (!configCache)
             return (-1);
+        nameConfigMap = virHashCreate(50);
+        if (!nameConfigMap) {
+            virHashFree(configCache, NULL);
+            configCache = NULL;
+            return (-1);
+        }
     }
     nconnections++;
 
@@ -417,6 +485,8 @@ int xenXMOpen(virConnectPtr conn ATTRIBUTE_UNUSED, const char *name, int flags A
  */
 int xenXMClose(virConnectPtr conn ATTRIBUTE_UNUSED) {
     if (!nconnections--) {
+        virHashFree(nameConfigMap, NULL);
+        nameConfigMap = NULL;
         virHashFree(configCache, xenXMConfigFree);
         configCache = NULL;
     }
@@ -435,6 +505,7 @@ const char *xenXMGetType(virConnectPtr conn ATTRIBUTE_UNUSED) {
  * VCPUs and memory. 
  */
 int xenXMDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
+    const char *filename;
     xenXMConfCachePtr entry;
     long vcpus;
     long mem;
@@ -447,7 +518,10 @@ int xenXMDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
     if (domain->handle != -1)
         return (-1);
 
-    if (!(entry = virHashLookup(configCache, domain->name)))
+    if (!(filename = virHashLookup(nameConfigMap, domain->name)))
+        return (-1);
+
+    if (!(entry = virHashLookup(configCache, filename)))
         return (-1);
 
     memset(info, 0, sizeof(virDomainInfo));
@@ -480,6 +554,7 @@ int xenXMDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
  */
 char *xenXMDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED) {
     virBufferPtr buf;
+    const char *filename;
     xenXMConfCachePtr entry;
     char *xml;
     const char *name;
@@ -496,7 +571,11 @@ char *xenXMDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED) {
     }
     if (domain->handle != -1)
         return (NULL);
-    if (!(entry = virHashLookup(configCache, domain->name)))
+
+    if (!(filename = virHashLookup(nameConfigMap, domain->name)))
+        return (NULL);
+
+    if (!(entry = virHashLookup(configCache, filename)))
         return (NULL);
 
     if (xenXMConfigGetString(entry->conf, "name", &name) < 0)
@@ -759,6 +838,7 @@ char *xenXMDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED) {
  * Update amount of memory in the config file
  */
 int xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory) {
+    const char *filename;
     xenXMConfCachePtr entry;
     virConfValuePtr value;
 
@@ -772,7 +852,10 @@ int xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory) {
     if (domain->handle != -1)
         return (-1);
 
-    if (!(entry = virHashLookup(configCache, domain->name)))
+    if (!(filename = virHashLookup(nameConfigMap, domain->name)))
+        return (-1);
+
+    if (!(entry = virHashLookup(configCache, filename)))
         return (-1);
 
     if (!(value = malloc(sizeof(virConfValue))))
@@ -797,6 +880,7 @@ int xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory) {
  * Update maximum memory limit in config
  */
 int xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory) {
+    const char *filename;
     xenXMConfCachePtr entry;
     virConfValuePtr value;
 
@@ -810,7 +894,10 @@ int xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory) {
     if (domain->handle != -1)
         return (-1);
 
-    if (!(entry = virHashLookup(configCache, domain->name)))
+    if (!(filename = virHashLookup(nameConfigMap, domain->name)))
+        return (-1);
+
+    if (!(entry = virHashLookup(configCache, filename)))
         return (-1);
 
     if (!(value = malloc(sizeof(virConfValue))))
@@ -835,6 +922,7 @@ int xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory) {
  * Get max memory limit from config
  */
 unsigned long xenXMDomainGetMaxMemory(virDomainPtr domain) {
+    const char *filename;
     xenXMConfCachePtr entry;
     long val;
 
@@ -846,7 +934,10 @@ unsigned long xenXMDomainGetMaxMemory(virDomainPtr domain) {
     if (domain->handle != -1)
         return (-1);
 
-    if (!(entry = virHashLookup(configCache, domain->name)))
+    if (!(filename = virHashLookup(nameConfigMap, domain->name)))
+        return (-1);
+
+    if (!(entry = virHashLookup(configCache, filename)))
         return (-1);
 
     if (xenXMConfigGetInt(entry->conf, "maxmem", &val) < 0 ||
@@ -862,6 +953,7 @@ unsigned long xenXMDomainGetMaxMemory(virDomainPtr domain) {
  * Set the VCPU count in config
  */
 int xenXMDomainSetVcpus(virDomainPtr domain, unsigned int vcpus) {
+    const char *filename;
     xenXMConfCachePtr entry;
     virConfValuePtr value;
 
@@ -875,7 +967,10 @@ int xenXMDomainSetVcpus(virDomainPtr domain, unsigned int vcpus) {
     if (domain->handle != -1)
         return (-1);
 
-    if (!(entry = virHashLookup(configCache, domain->name)))
+    if (!(filename = virHashLookup(nameConfigMap, domain->name)))
+        return (-1);
+
+    if (!(entry = virHashLookup(configCache, filename)))
         return (-1);
 
     if (!(value = malloc(sizeof(virConfValue))))
@@ -900,6 +995,7 @@ int xenXMDomainSetVcpus(virDomainPtr domain, unsigned int vcpus) {
  * Find an inactive domain based on its name
  */
 virDomainPtr xenXMDomainLookupByName(virConnectPtr conn, const char *domname) {
+    const char *filename;
     xenXMConfCachePtr entry;
     virDomainPtr ret;
     unsigned char uuid[16];
@@ -915,7 +1011,10 @@ virDomainPtr xenXMDomainLookupByName(virConnectPtr conn, const char *domname) {
     if (xenXMConfigCacheRefresh() < 0)
         return (NULL);
 
-    if (!(entry = virHashLookup(configCache, domname))) {
+    if (!(filename = virHashLookup(nameConfigMap, domname)))
+        return (NULL);
+
+    if (!(entry = virHashLookup(configCache, filename))) {
         return (NULL);
     }
 
@@ -1227,7 +1326,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
     if (!(value = virConfGetValue(conf, "name")) || value->type != VIR_CONF_STRING || value->str == NULL)
         goto error;
 
-    if (virHashLookup(configCache, value->str) != 0)
+    if (virHashLookup(nameConfigMap, value->str))
         goto error;
 
     if ((strlen(configDir) + 1 + strlen(value->str) + 1) > PATH_MAX)
@@ -1253,8 +1352,14 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
     if (xenXMConfigGetUUID(conf, "uuid", uuid) < 0)
         goto error;
 
-    if (virHashAddEntry(configCache, value->str, entry) < 0)
+    if (virHashAddEntry(configCache, filename, entry) < 0)
         goto error;
+
+    if (virHashAddEntry(nameConfigMap, value->str, entry->filename) < 0) {
+        virHashRemoveEntry(configCache, filename, NULL);
+        goto error;
+    }
+
     entry = NULL;
 
     if (!(ret = virGetDomain(conn, value->str, uuid)))
@@ -1283,6 +1388,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
  * Delete a domain from disk
  */
 int xenXMDomainUndefine(virDomainPtr domain) {
+    const char *filename;
     xenXMConfCachePtr entry;
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         xenXMError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
@@ -1295,11 +1401,17 @@ int xenXMDomainUndefine(virDomainPtr domain) {
     if (domain->conn->flags & VIR_CONNECT_RO)
         return (-1);
 
-    if (!(entry = virHashLookup(configCache, domain->name)))
+    if (!(filename = virHashLookup(nameConfigMap, domain->name)))
+        return (-1);
+
+    if (!(entry = virHashLookup(configCache, filename)))
         return (-1);
 
     if (unlink(entry->filename) < 0)
         return (-1);
+
+    if (virHashRemoveEntry(nameConfigMap, entry->filename, NULL) < 0)
+        return(-1);
 
     if (virHashRemoveEntry(configCache, domain->name, xenXMConfigFree) < 0)
         return (-1);
@@ -1354,7 +1466,7 @@ int xenXMListDefinedDomains(virConnectPtr conn, const char **names, int maxnames
     ctx.max = maxnames;
     ctx.names = names;
 
-    virHashForEach(configCache, xenXMListIterator, &ctx);
+    virHashForEach(nameConfigMap, xenXMListIterator, &ctx);
     return (ctx.count);
 }
 
@@ -1371,7 +1483,7 @@ int xenXMNumOfDefinedDomains(virConnectPtr conn) {
     if (xenXMConfigCacheRefresh() < 0)
         return (-1);
 
-    return virHashSize(configCache);
+    return virHashSize(nameConfigMap);
 }
 
 /*
