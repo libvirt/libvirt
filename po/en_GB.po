@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-14 10:47+0100\n"
+"POT-Creation-Date: 2006-12-20 15:40+0100\n"
 "PO-Revision-Date: 2006-09-20 10:20-0400\n"
 "Last-Translator: Daniel Berrange <berrange@redhat.com>\n"
 "Language-Team: English <en@li.org>\n"
@@ -574,7 +574,7 @@ msgstr ""
 msgid "Failed to resume new domain %s\n"
 msgstr ""
 
-#: src/xend_internal.c:3146
+#: src/xend_internal.c:3145
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr ""

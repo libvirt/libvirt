@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zh_CN\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-14 10:47+0100\n"
+"POT-Creation-Date: 2006-12-20 15:40+0100\n"
 "PO-Revision-Date: 2006-10-13 10:21+1000\n"
 "Last-Translator: Tony Fu <tfu@redhat.com>\n"
 "Language-Team:  <zh@li.org>\n"
@@ -580,7 +580,7 @@ msgstr "为域 %s 获得设备失败\n"
 msgid "Failed to resume new domain %s\n"
 msgstr "恢复新域 %s 失败\n"
 
-#: src/xend_internal.c:3146
+#: src/xend_internal.c:3145
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "创建域 %s 失败\n"

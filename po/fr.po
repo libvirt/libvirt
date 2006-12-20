@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-14 10:47+0100\n"
+"POT-Creation-Date: 2006-12-20 15:40+0100\n"
 "PO-Revision-Date: 2006-12-01 14:58+1000\n"
 "Last-Translator: Decroux Fabien <fdecroux@redhat.com>\n"
 "Language-Team: French <fr@li.org>\n"
@@ -580,7 +580,7 @@ msgstr "Échec de la récupération des périphériques pour le domaine %s\n"
 msgid "Failed to resume new domain %s\n"
 msgstr "Échec de la reprise du nouveau domaine %s\n"
 
-#: src/xend_internal.c:3146
+#: src/xend_internal.c:3145
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "échec de la création du domaine %s\n"

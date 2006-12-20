@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-14 10:47+0100\n"
-"PO-Revision-Date: 2006-10-13 18:08+0530\n"
+"POT-Creation-Date: 2006-12-20 15:40+0100\n"
+"PO-Revision-Date: 2006-12-14 15:30+0530\n"
 "Last-Translator: Ankit Patel <ankit@redhat.com>\n"
 "Language-Team: Gujarati <fedora-trans-gu@redhat.com>\n"
 "MIME-Version: 1.0\n"
@@ -16,6 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"\n"
 "\n"
 
 #: src/libvirt.c:245 src/libvirt.c:309 src/hash.c:652
@@ -327,9 +328,8 @@ msgid "failed to write configuration file: %s"
 msgstr "રૂપરેખાંકન ફાઈલ લખવામાં નિષ્ફળ: %s"
 
 #: src/virterror.c:581
-#, fuzzy
 msgid "parser error"
-msgstr "આંતરિક ભૂલ"
+msgstr "પદચ્છેદન ભૂલ"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -543,9 +543,8 @@ msgid "domain information incomplete, missing kernel"
 msgstr "ડોમેઈન જાણકારી અપૂર્ણ, ગુમ થયેલ કર્નલ"
 
 #: src/xend_internal.c:1604
-#, fuzzy
 msgid "domain information incomplete, vbd has no src"
-msgstr "ડોમેઈન જાણકારી અપૂર્ણ, vbd ને કોઈ dev નથી"
+msgstr "ડોમેઈન જાણકારી અપૂર્ણ, vbd ને કોઈ src નથી"
 
 #: src/xend_internal.c:1610
 msgid "domain information incomplete, vbd has no dev"
@@ -553,11 +552,11 @@ msgstr "ડોમેઈન જાણકારી અપૂર્ણ, vbd ને 
 
 #: src/xend_internal.c:1618
 msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
+msgstr "vbd ફાઈલનામ પદચ્છેદન કરી શકતા નથી, ગુમ થયેલ ડ્રાઈવર નામ"
 
 #: src/xend_internal.c:1637
 msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
+msgstr "vbd ફાઈલનામ પદચ્છેદન કરી શકતા નથી, ગુમ થયેલ ડ્રાઈવર પ્રકાર"
 
 #: src/xend_internal.c:1981
 msgid "failed to parse Xend domain information"
@@ -578,10 +577,10 @@ msgstr "ડોમેઈન %s માટે ઉપકરણો મેળવવા
 msgid "Failed to resume new domain %s\n"
 msgstr "નવું ડોમેઈન %s પાછું મેળવવામાં નિષ્ફળ\n"
 
-#: src/xend_internal.c:3146
-#, fuzzy, c-format
+#: src/xend_internal.c:3145
+#, c-format
 msgid "Failed to create inactive domain %s\n"
-msgstr "ડોમેઈન %s બનાવવામાં નિષ્ફળ\n"
+msgstr "અસક્રિય ડોમેઈન %s બનાવવામાં નિષ્ફળ\n"
 
 #: src/virsh.c:234
 msgid "print help"
@@ -836,27 +835,25 @@ msgstr "%s માંથી ડોમેઈન પુનઃસંગ્રહવ�
 
 #: src/virsh.c:812
 msgid "dump the core of a domain to a file for analysis"
-msgstr ""
+msgstr "ડોમેઈનના મૂળનું ફાઈલમાં વિશ્લેષણ માટે ડમ્પ કરો"
 
 #: src/virsh.c:813
-#, fuzzy
 msgid "Core dump a domain."
-msgstr "ડોમેઈન છોડો"
+msgstr "ડોમેઈનનું મૂળ ડમ્પ કરો."
 
 #: src/virsh.c:819
-#, fuzzy
 msgid "where to dump the core"
-msgstr "માહિતીને ક્યાં સંગ્રહવી"
+msgstr "મૂળને ક્યાં ડમ્પ કરવું"
 
 #: src/virsh.c:841
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s dumpd to %s\n"
-msgstr "ડોમેઈન %s એ %s માં સંગ્રહાયું\n"
+msgstr "ડોમેઈન %s એ %s માં ડમ્પ થઈ ગયું\n"
 
 #: src/virsh.c:843
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to core dump domain %s to %s"
-msgstr "ડોમેઈન %s ને %s માં સંગ્રહવામાં નિષ્ફળ"
+msgstr "ડોમેઈન %s ના મૂળને %s માં ડમ્પ કરવામાં નિષ્ફળ"
 
 #: src/virsh.c:857
 msgid "resume a domain"

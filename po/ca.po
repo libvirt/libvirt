@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-14 10:47+0100\n"
+"POT-Creation-Date: 2006-12-20 15:40+0100\n"
 "PO-Revision-Date: 2006-12-02 10:20-0100\n"
 "Last-Translator: Xavier Conde Rueda <xavi.conde@gmail.com>\n"
 "Language-Team: Catalan <fedora@softcatala.net>\n"
@@ -589,7 +589,7 @@ msgstr "No s'ha pogut obtenir els dispositius per al domini %s\n"
 msgid "Failed to resume new domain %s\n"
 msgstr "No s'ha pogut recuperar el nou domini %s\n"
 
-#: src/xend_internal.c:3146
+#: src/xend_internal.c:3145
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "No s'ha pogut crear el domini %s\n"

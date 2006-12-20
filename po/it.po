@@ -51,8 +51,13 @@
 # translation of it.po to
 # translation of it.po to
 # translation of it.po to
+# translation of it.po to
+# translation of it.po to
 # Copyright (C) 2006 Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
+# , 2006.
+# , 2006.
+# , 2006.
 # , 2006.
 # , 2006.
 # , 2006.
@@ -218,8 +223,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-14 10:47+0100\n"
-"PO-Revision-Date: 2006-11-29 00:52+0100\n"
+"POT-Creation-Date: 2006-12-20 15:40+0100\n"
+"PO-Revision-Date: 2006-12-15 00:32+0100\n"
 "Last-Translator: \n"
 "Language-Team:  <it@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -538,9 +543,8 @@ msgid "failed to write configuration file: %s"
 msgstr "errore nella scrittura del file di configurazione: %s"
 
 #: src/virterror.c:581
-#, fuzzy
 msgid "parser error"
-msgstr "errore interno"
+msgstr "errore analizzatore"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -754,9 +758,8 @@ msgid "domain information incomplete, missing kernel"
 msgstr "informazioni del dominio incomplete, kernel mancante"
 
 #: src/xend_internal.c:1604
-#, fuzzy
 msgid "domain information incomplete, vbd has no src"
-msgstr "informazioni del dominio incomplete, vbd non presenta dev"
+msgstr "informazioni del dominio incomplete, vbd non presenta src"
 
 #: src/xend_internal.c:1610
 msgid "domain information incomplete, vbd has no dev"
@@ -764,11 +767,11 @@ msgstr "informazioni del dominio incomplete, vbd non presenta dev"
 
 #: src/xend_internal.c:1618
 msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
+msgstr "impossibile analizzare il filename vbd, nome del driver mancante"
 
 #: src/xend_internal.c:1637
 msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
+msgstr "impossibile analizzare il filename vbd, tipo di driver mancante"
 
 #: src/xend_internal.c:1981
 msgid "failed to parse Xend domain information"
@@ -789,10 +792,10 @@ msgstr "Impossibile ottenere i dispositivi per il dominio %s\n"
 msgid "Failed to resume new domain %s\n"
 msgstr "impossibile ripristinare il nuovo dominio %s\n"
 
-#: src/xend_internal.c:3146
-#, fuzzy, c-format
+#: src/xend_internal.c:3145
+#, c-format
 msgid "Failed to create inactive domain %s\n"
-msgstr "Impossibile creare il dominio %s\n"
+msgstr "Impossibile creare il dominio inattivo %s\n"
 
 #: src/virsh.c:234
 msgid "print help"
@@ -1049,27 +1052,25 @@ msgstr "Impossibile ripristinare il dominio da %s"
 
 #: src/virsh.c:812
 msgid "dump the core of a domain to a file for analysis"
-msgstr ""
+msgstr "il core di un dominio è stato spostato in un file per l'analisi"
 
 #: src/virsh.c:813
-#, fuzzy
 msgid "Core dump a domain."
-msgstr "ripristinare un dominio"
+msgstr "Core dump di un domain."
 
 #: src/virsh.c:819
-#, fuzzy
 msgid "where to dump the core"
-msgstr "dove salvare i dati"
+msgstr "dove spostare il core"
 
 #: src/virsh.c:841
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s dumpd to %s\n"
-msgstr "Dominio %s salvato su %s\n"
+msgstr "Dominio %s spostato su %s\n"
 
 #: src/virsh.c:843
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to core dump domain %s to %s"
-msgstr "Impossibile salvare il dominio %s su %s"
+msgstr "Impossibile eseguire il core dump del dominio %s su %s"
 
 #: src/virsh.c:857
 msgid "resume a domain"

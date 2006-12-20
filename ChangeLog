@@ -1,3 +1,9 @@
+Wed Dec 20 15:56:38 CET 2006 Daniel Veillard <veillard@redhat.com>
+
+	* po/*: updated localization files
+	* configure.in NEWS libvirt.spec.in docs/libvir.html docs/news.html
+	  include/libvirt/libvirt.h: preparing release of 0.1.10
+
 Tue Dec 19 12:26:53 EST 2006 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xm_internal.c: Maintain hash of config filenames, separate from

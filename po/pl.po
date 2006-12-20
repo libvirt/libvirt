@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-14 10:47+0100\n"
-"PO-Revision-Date: 2006-11-21 20:41+0200\n"
+"POT-Creation-Date: 2006-12-20 15:40+0100\n"
+"PO-Revision-Date: 2006-12-15 15:58+0200\n"
 "Last-Translator: Piotr Drąg <raven@pmail.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -540,9 +540,8 @@ msgid "domain information incomplete, missing kernel"
 msgstr "informacje o domenie są niekompletne, brak jądra"
 
 #: src/xend_internal.c:1604
-#, fuzzy
 msgid "domain information incomplete, vbd has no src"
-msgstr "informacje o domenie są niekompletne, vbd nie ma dev"
+msgstr "informacje o domenie są niekompletne, vbd nie ma src"
 
 #: src/xend_internal.c:1610
 msgid "domain information incomplete, vbd has no dev"
@@ -550,11 +549,11 @@ msgstr "informacje o domenie są niekompletne, vbd nie ma dev"
 
 #: src/xend_internal.c:1618
 msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
+msgstr "nie można przeanalizować nazwy pliku vbd, brak nazwy sterownika"
 
 #: src/xend_internal.c:1637
 msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
+msgstr "nie można przeanalizować nazwy pliku vbd, brak typu sterownika"
 
 #: src/xend_internal.c:1981
 msgid "failed to parse Xend domain information"
@@ -575,7 +574,7 @@ msgstr "Uzyskanie urządzeń dla domeny %s nie powiodło się\n"
 msgid "Failed to resume new domain %s\n"
 msgstr "Ponownie nowej domeny %s nie powiodło się\n"
 
-#: src/xend_internal.c:3146
+#: src/xend_internal.c:3145
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "utworzenie domeny %s nie powiodło się\n"
@@ -835,27 +834,25 @@ msgstr "Przywrócenie domeny z %s nie powiodło się"
 
 #: src/virsh.c:812
 msgid "dump the core of a domain to a file for analysis"
-msgstr ""
+msgstr "zrzuć core domeny do pliku do analiz"
 
 #: src/virsh.c:813
-#, fuzzy
 msgid "Core dump a domain."
-msgstr "wznów domenę"
+msgstr "Zrzuć core domeny."
 
 #: src/virsh.c:819
-#, fuzzy
 msgid "where to dump the core"
-msgstr "gdzie zapisać dane"
+msgstr "gdzie zrzucić core"
 
 #: src/virsh.c:841
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s dumpd to %s\n"
-msgstr "Domena %s została zapisana do %s\n"
+msgstr "Domena %s została zrzucona do %s\n"
 
 #: src/virsh.c:843
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to core dump domain %s to %s"
-msgstr "Zapisanie domeny %s do %s nie powiodło się"
+msgstr "Zrzucanie core domeny %s do %s nie powiodło się"
 
 #: src/virsh.c:857
 msgid "resume a domain"

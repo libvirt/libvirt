@@ -2,15 +2,16 @@
 # Copyright (C) 2006 Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # Noriko Mizumoto <noriko@redhat.com>, 2006.
+# Kiyoto James Hashida <khashida@redhat.com>, 2006.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: ja\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-14 10:47+0100\n"
-"PO-Revision-Date: 2006-11-16 14:40+1000\n"
-"Last-Translator: Noriko Mizumoto <noriko@redhat.com>\n"
-"Language-Team: Japanese <fedora-trans-ja@redhat.com>\n"
+"POT-Creation-Date: 2006-12-20 15:40+0100\n"
+"PO-Revision-Date: 2006-12-15 10:32\n"
+"Last-Translator: Kiyoto James Hashida <khashida@redhat.com>\n"
+"Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -326,9 +327,8 @@ msgid "failed to write configuration file: %s"
 msgstr "設定ファイルの書き込みに失敗しました: %s"
 
 #: src/virterror.c:581
-#, fuzzy
 msgid "parser error"
-msgstr "内部エラー"
+msgstr "構文解析エラー"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -542,9 +542,8 @@ msgid "domain information incomplete, missing kernel"
 msgstr "ドメイン情報が不完全です、カーネルが不足してます"
 
 #: src/xend_internal.c:1604
-#, fuzzy
 msgid "domain information incomplete, vbd has no src"
-msgstr "ドメイン情報が不完全です、vbd に dev がありません"
+msgstr "ドメイン情報が不完全です、vbd に src がありません"
 
 #: src/xend_internal.c:1610
 msgid "domain information incomplete, vbd has no dev"
@@ -552,11 +551,11 @@ msgstr "ドメイン情報が不完全です、vbd に dev がありません"
 
 #: src/xend_internal.c:1618
 msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
+msgstr "vbd のファイル名を構文解析できません。ドライバ名欠如"
 
 #: src/xend_internal.c:1637
 msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
+msgstr "vbd のファイル名を構文解析できません。ドライバタイプ欠如"
 
 #: src/xend_internal.c:1981
 msgid "failed to parse Xend domain information"
@@ -577,10 +576,10 @@ msgstr "ドメイン %s のデバイス取得に失敗しました\n"
 msgid "Failed to resume new domain %s\n"
 msgstr "新しいドメイン %s の再開に失敗しました\n"
 
-#: src/xend_internal.c:3146
-#, fuzzy, c-format
+#: src/xend_internal.c:3145
+#, c-format
 msgid "Failed to create inactive domain %s\n"
-msgstr "ドメイン %s の作成に失敗しました\n"
+msgstr "停止中のドメイン %s の作成に失敗しました\n"
 
 #: src/virsh.c:234
 msgid "print help"
@@ -837,27 +836,25 @@ msgstr "ドメインの %s からの復元に失敗しました"
 
 #: src/virsh.c:812
 msgid "dump the core of a domain to a file for analysis"
-msgstr ""
+msgstr "ドメインのコアを解析の為にファイルにダンプします"
 
 #: src/virsh.c:813
-#, fuzzy
 msgid "Core dump a domain."
-msgstr "ドメインの再開"
+msgstr "ドメインのコアダンプ"
 
 #: src/virsh.c:819
-#, fuzzy
 msgid "where to dump the core"
-msgstr "データを保存する場所"
+msgstr "コアをダンプする場所"
 
 #: src/virsh.c:841
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s dumpd to %s\n"
-msgstr "ドメイン %s は %s に保存されました\n"
+msgstr "ドメイン %s は %s にダンプ\n"
 
 #: src/virsh.c:843
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to core dump domain %s to %s"
-msgstr "ドメイン %s の %s への保存に失敗しました"
+msgstr "ドメイン %s の %s へのダンプ失敗です"
 
 #: src/virsh.c:857
 msgid "resume a domain"

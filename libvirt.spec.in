@@ -112,6 +112,12 @@ rm -fr %{buildroot}
 %doc docs/examples/python
 
 %changelog
+* Wed Dec 20 2006 Daniel Veillard <veillard@redhat.com> 0.1.10-1
+- support for inactive Xen domains
+- improved support for Xen display and vnc
+- a few bug fixes
+- localization updates
+
 * Wed Nov 29 2006 Daniel Veillard <veillard@redhat.com> 0.1.9-1
 - better error reporting
 - python bindings fixes and extensions

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bn_IN\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-14 10:47+0100\n"
-"PO-Revision-Date: 2006-11-23 17:19+0530\n"
+"POT-Creation-Date: 2006-12-20 15:40+0100\n"
+"PO-Revision-Date: 2006-12-14 16:36+0530\n"
 "Last-Translator: Runa Bhattacharjee <runab@redhat.com>\n"
 "Language-Team: Bengali India\n"
 "MIME-Version: 1.0\n"
@@ -16,6 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"\n"
 "\n"
 
 #: src/libvirt.c:245 src/libvirt.c:309 src/hash.c:652
@@ -327,9 +328,8 @@ msgid "failed to write configuration file: %s"
 msgstr "কনফিগারেশন ফাইলের মধ্যে লিখতে ব্যর্থ: %s"
 
 #: src/virterror.c:581
-#, fuzzy
 msgid "parser error"
-msgstr "অভ্যন্তরীণ ত্রুটি"
+msgstr "পার্সার সংক্রান্ত ত্রুটি"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -543,9 +543,8 @@ msgid "domain information incomplete, missing kernel"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, কার্নেল অনুপস্থিত"
 
 #: src/xend_internal.c:1604
-#, fuzzy
 msgid "domain information incomplete, vbd has no src"
-msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, vbd'র মধ্যে dev অনুপস্থিত"
+msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, vbd'র মধ্যে src অনুপস্থিত"
 
 #: src/xend_internal.c:1610
 msgid "domain information incomplete, vbd has no dev"
@@ -553,11 +552,11 @@ msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্
 
 #: src/xend_internal.c:1618
 msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
+msgstr "vbd ফাইলের নাম পার্স করতে ব্যর্থ, ড্রাইভারের নাম অনুপস্থিত"
 
 #: src/xend_internal.c:1637
 msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
+msgstr "vbd ফাইলের নাম পার্স করতে ব্যর্থ, ড্রাইভারের ধরন অনুপস্থিত"
 
 #: src/xend_internal.c:1981
 msgid "failed to parse Xend domain information"
@@ -578,10 +577,10 @@ msgstr "ডোমেইন %s'র জন্য ডিভাইস প্রা�
 msgid "Failed to resume new domain %s\n"
 msgstr "নতুন ডোমেইন %s পুনরাম্ভ করতে ব্যর্থ\n"
 
-#: src/xend_internal.c:3146
-#, fuzzy, c-format
+#: src/xend_internal.c:3145
+#, c-format
 msgid "Failed to create inactive domain %s\n"
-msgstr "ডোমেইন %s নির্মাণ করতে ব্যর্থ\n"
+msgstr "নিষ্ক্রিয় ডোমেইন %s নির্মাণ করতে ব্যর্থ\n"
 
 #: src/virsh.c:234
 msgid "print help"
@@ -838,25 +837,23 @@ msgstr "%s থেকে ডোমেইন পুনরুদ্ধার কর
 
 #: src/virsh.c:812
 msgid "dump the core of a domain to a file for analysis"
-msgstr ""
+msgstr "পর্যালোচনার উদ্দেশ্যে কোনো ডোমেইনের কোর তথ্য সংরক্ষণ করুন"
 
 #: src/virsh.c:813
-#, fuzzy
 msgid "Core dump a domain."
-msgstr "ডোমেইন পুনরারম্ভ করুন"
+msgstr "ডোমেইনের কোর তথ্য সংরক্ষণ করুন।"
 
 #: src/virsh.c:819
-#, fuzzy
 msgid "where to dump the core"
 msgstr "তথ্য সংরক্ষণের স্থান"
 
 #: src/virsh.c:841
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s dumpd to %s\n"
 msgstr "ডোমেইন %s, %s'এ সংরক্ষণ করা হয়েছে\n"
 
 #: src/virsh.c:843
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to core dump domain %s to %s"
 msgstr "%s ডোমেইন %s'এ সংরক্ষণ করতে ব্যর্থ"
 

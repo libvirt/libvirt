@@ -6,6 +6,7 @@
 # translation of ru.po to
 # translation of ru.po to
 # translation of ru.po to
+# translation of ru.po to
 # Copyright (C) 2006 Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # Yulia Poyarkova <ypoyarko@redhat.com>, 2006.
@@ -14,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ru\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-14 10:47+0100\n"
-"PO-Revision-Date: 2006-11-27 11:29+1000\n"
+"POT-Creation-Date: 2006-12-20 15:40+0100\n"
+"PO-Revision-Date: 2006-12-15 10:47+1000\n"
 "Last-Translator: Yulia Poyarkova <ypoyarko@redhat.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -332,9 +333,8 @@ msgid "failed to write configuration file: %s"
 msgstr "ошибка записи файла конфигурации: %s"
 
 #: src/virterror.c:581
-#, fuzzy
 msgid "parser error"
-msgstr "внутренняя ошибка"
+msgstr "ошибка разбора"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -548,9 +548,8 @@ msgid "domain information incomplete, missing kernel"
 msgstr "неполная информация домена, отсутствует ядро"
 
 #: src/xend_internal.c:1604
-#, fuzzy
 msgid "domain information incomplete, vbd has no src"
-msgstr "неполная информация домена, нет dev для vbd"
+msgstr "неполная информация домена, нет src для vbd"
 
 #: src/xend_internal.c:1610
 msgid "domain information incomplete, vbd has no dev"
@@ -558,11 +557,11 @@ msgstr "неполная информация домена, нет dev для vb
 
 #: src/xend_internal.c:1618
 msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
+msgstr "ошибка разбора имени файла vbd, отсутствует имя драйвера"
 
 #: src/xend_internal.c:1637
 msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
+msgstr "ошибка разбора имени файла vbd, отсутствует тип драйвера"
 
 #: src/xend_internal.c:1981
 msgid "failed to parse Xend domain information"
@@ -583,10 +582,10 @@ msgstr "Ошибка получения устройств для домена %
 msgid "Failed to resume new domain %s\n"
 msgstr "Ошибка при возобновлении работы нового домена %s\n"
 
-#: src/xend_internal.c:3146
-#, fuzzy, c-format
+#: src/xend_internal.c:3145
+#, c-format
 msgid "Failed to create inactive domain %s\n"
-msgstr "Ошибка создания домена %s\n"
+msgstr "Ошибка создания неактивного домена %s\n"
 
 #: src/virsh.c:234
 msgid "print help"
@@ -843,27 +842,25 @@ msgstr "Ошибка восстановления домена из %s"
 
 #: src/virsh.c:812
 msgid "dump the core of a domain to a file for analysis"
-msgstr ""
+msgstr "выполнить дамп ядра домена в файл для анализа"
 
 #: src/virsh.c:813
-#, fuzzy
 msgid "Core dump a domain."
-msgstr "возобновить домен"
+msgstr "Дамп ядра домена."
 
 #: src/virsh.c:819
-#, fuzzy
 msgid "where to dump the core"
-msgstr "где сохранить"
+msgstr "где сохранить дамп ядра"
 
 #: src/virsh.c:841
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s dumpd to %s\n"
-msgstr "Домен %s сохранен в %s\n"
+msgstr "Дамп домена %s сохранен в %s\n"
 
 #: src/virsh.c:843
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to core dump domain %s to %s"
-msgstr "Ошибка сохранения домена %s в %s"
+msgstr "Ошибка сохранения дампа домена %s в %s"
 
 #: src/virsh.c:857
 msgid "resume a domain"

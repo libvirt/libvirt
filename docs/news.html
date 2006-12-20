@@ -2,7 +2,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>Releases</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Releases</h1><p>Here is the list of official releases, however since it is early on in the
 development of libvirt, it is preferable when possible to just use the <a href="downloads.html">CVS version or snapshot</a>, contact the mailing list
-and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3>0.1.9: Nov 29 2006</h3><ul><li>python bindings: release interpeter lock when calling C (Daniel Berrange)</li>
+and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3>0.1.10: Dec 20 2006</h3><ul><li>more localizations</li>
+  <li>bug fixes: VCPU info breakages on xen 3.0.3, xenDaemonListDomains buffer overflow (Daniel Berrange), reference count bug when creating Xen domains (Daniel Berrange).</li>
+  <li>improvements: support graphic framebuffer for Xen paravirt (Daniel Berrange), VNC listen IP range support (Daniel Berrange), support for default Xen config files and inactive domains of 3.0.4 (Daniel Berrange).</li>
+</ul><h3>0.1.9: Nov 29 2006</h3><ul><li>python bindings: release interpeter lock when calling C (Daniel Berrange)</li>
   <li>don't raise HTTP error when looking informations for a domain</li>
   <li>some refactoring to use the driver for all entry points</li>
   <li>better error reporting (Daniel Berrange)</li>

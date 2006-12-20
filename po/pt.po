@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-14 10:47+0100\n"
-"PO-Revision-Date: 2006-09-28 20:29+0100\n"
+"POT-Creation-Date: 2006-12-20 15:40+0100\n"
+"PO-Revision-Date: 2006-12-14 15:51+0000\n"
 "Last-Translator: José Nuno Coelho Pires <jncp@netcabo.pt>\n"
 "Language-Team: pt <kde-i18n-pt@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -322,9 +322,8 @@ msgid "failed to write configuration file: %s"
 msgstr "não foi possível gravar o ficheiro de configuração: %s"
 
 #: src/virterror.c:581
-#, fuzzy
 msgid "parser error"
-msgstr "erro interno"
+msgstr "erro de processamento"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -538,9 +537,8 @@ msgid "domain information incomplete, missing kernel"
 msgstr "informação do domínio incompleta, falta o 'kernel'"
 
 #: src/xend_internal.c:1604
-#, fuzzy
 msgid "domain information incomplete, vbd has no src"
-msgstr "informação do domínio incompleta, o 'vbd' não tem dispositivo"
+msgstr "informação do domínio incompleta, o 'vbd' não tem origem"
 
 #: src/xend_internal.c:1610
 msgid "domain information incomplete, vbd has no dev"
@@ -549,10 +547,14 @@ msgstr "informação do domínio incompleta, o 'vbd' não tem dispositivo"
 #: src/xend_internal.c:1618
 msgid "cannot parse vbd filename, missing driver name"
 msgstr ""
+"não é possível processar o nome do ficheiro 'vbd', falta o nome do "
+"controlador"
 
 #: src/xend_internal.c:1637
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
+"não é possível processar o nome do ficheiro 'vbd', falta o tipo do "
+"controlador"
 
 #: src/xend_internal.c:1981
 msgid "failed to parse Xend domain information"
@@ -573,10 +575,10 @@ msgstr "Não foi possível obter os dispositivos do domínio %s\n"
 msgid "Failed to resume new domain %s\n"
 msgstr "Não foi possível prosseguir com o domínio novo %s\n"
 
-#: src/xend_internal.c:3146
-#, fuzzy, c-format
+#: src/xend_internal.c:3145
+#, c-format
 msgid "Failed to create inactive domain %s\n"
-msgstr "Não foi possível criar o domínio %s\n"
+msgstr "Não foi possível criar o domínio inactivo %s\n"
 
 #: src/virsh.c:234
 msgid "print help"
@@ -833,27 +835,25 @@ msgstr "Não foi possível repor o domínio a partir de %s"
 
 #: src/virsh.c:812
 msgid "dump the core of a domain to a file for analysis"
-msgstr ""
+msgstr "colocar o núcleo de um domínio num ficheiro para análise"
 
 #: src/virsh.c:813
-#, fuzzy
 msgid "Core dump a domain."
-msgstr "prosseguir um domínio"
+msgstr "Gerar o 'core' de um domínio."
 
 #: src/virsh.c:819
-#, fuzzy
 msgid "where to dump the core"
-msgstr "onde gravar os dados"
+msgstr "onde gravar o 'core'"
 
 #: src/virsh.c:841
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s dumpd to %s\n"
 msgstr "O domínio %s foi gravado em %s\n"
 
 #: src/virsh.c:843
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to core dump domain %s to %s"
-msgstr "Não foi possível gravar o domínio %s em %s"
+msgstr "Não foi possível gravar o 'core' do domínio %s em %s"
 
 #: src/virsh.c:857
 msgid "resume a domain"

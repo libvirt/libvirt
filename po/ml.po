@@ -1,20 +1,20 @@
 # translation of ml.po to Malayalam
 # Copyright (C) 2006 Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
-# Ani Peter <apeter@redhat.com>, 2006.
 #
+# Ani Peter <apeter@redhat.com>, 2006.
 msgid ""
 msgstr ""
 "Project-Id-Version: ml\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-14 10:47+0100\n"
-"PO-Revision-Date: 2006-10-19 12:46+0530\n"
+"POT-Creation-Date: 2006-12-20 15:40+0100\n"
+"PO-Revision-Date: 2006-12-14 15:51+0530\n"
 "Last-Translator: Ani Peter <apeter@redhat.com>\n"
-"Language-Team: Malayalam\n"
+"Language-Team: Malayalam <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.9.1\n"
+"X-Generator: KBabel 1.11.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "\n"
 
@@ -327,9 +327,8 @@ msgid "failed to write configuration file: %s"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയല്‍ എഴുതുന്നതില്‍ പരാജയം: %s"
 
 #: src/virterror.c:581
-#, fuzzy
 msgid "parser error"
-msgstr "ആന്തരിക പിശക് "
+msgstr "പാഴ്സറിലുളള പിശക് "
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -543,9 +542,8 @@ msgid "domain information incomplete, missing kernel"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, കേര്‍ണല്‍ ലഭ്യമല്ല"
 
 #: src/xend_internal.c:1604
-#, fuzzy
 msgid "domain information incomplete, vbd has no src"
-msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, vbd-യ്ക്ക് dev ലഭ്യമല്ല"
+msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, vbd-യ്ക്ക് src ലഭ്യമല്ല"
 
 #: src/xend_internal.c:1610
 msgid "domain information incomplete, vbd has no dev"
@@ -553,11 +551,11 @@ msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമ�
 
 #: src/xend_internal.c:1618
 msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
+msgstr "vbd ഫയല്‍ നെയിം പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല, ഡ്റൈവറിന്‍റെ പേര് ലഭ്യമല്ല"
 
 #: src/xend_internal.c:1637
 msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
+msgstr "vbd ഫയല്‍ നെയിം പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല, ഡ്റൈവറിന്‍റെ ടൈപ്പ് ലഭ്യമല്ല"
 
 #: src/xend_internal.c:1981
 msgid "failed to parse Xend domain information"
@@ -578,10 +576,10 @@ msgstr "ഡൊമെയിന്‍ %s-നുളള ഡിവൈസുകള്�
 msgid "Failed to resume new domain %s\n"
 msgstr "പുതിയ ഡൊമെയിന്‍ %s തുടങ്ങുന്നതില്‍ പരാജയം\n"
 
-#: src/xend_internal.c:3146
-#, fuzzy, c-format
+#: src/xend_internal.c:3145
+#, c-format
 msgid "Failed to create inactive domain %s\n"
-msgstr "ഡൊമെയിന്‍ %s ഉണ്ടാക്കുന്നതില്‍ പരാജയം\n"
+msgstr "നിഷ്ക്റിയമായ ഡൊമെയിന്‍ %s ഉണ്ടാക്കുന്നതില്‍ പരാജയം\n"
 
 #: src/virsh.c:234
 msgid "print help"
@@ -837,27 +835,25 @@ msgstr "%s-ല്‍ നിന്നും ഡൊമെയിന്‍ വീണ
 
 #: src/virsh.c:812
 msgid "dump the core of a domain to a file for analysis"
-msgstr ""
+msgstr "ഫയല്‍ നിരീക്ഷിക്കുന്നതിനായി ഒരു ഡൊമെയിന്‍ കോറ്‍ ഡന്പ് ചെയ്യുക"
 
 #: src/virsh.c:813
-#, fuzzy
 msgid "Core dump a domain."
-msgstr "ഒരു ഡൊമെയിന്‍ വീണ്ടും ആരംഭിക്കുക"
+msgstr "ഒരു ഡൊമെയിന്‍ കോറ്‍ ഡന്പ് ചെയ്യുക"
 
 #: src/virsh.c:819
-#, fuzzy
 msgid "where to dump the core"
-msgstr "ഡേറ്റാ സൂക്ഷിക്കേണ്ടത് എവിടെ എന്ന്"
+msgstr "കോറ്‍ ഡംന്പ് ചെയ്യേണ്ടത് എവിടെ എന്ന്"
 
 #: src/virsh.c:841
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s dumpd to %s\n"
-msgstr "ഡൊമെയിന്‍ %s-നെ %s ആയി സൂക്ഷിച്ചിരിക്കുന്നു\n"
+msgstr "ഡൊമെയിന്‍ %s-നെ %s-ലേക്ക് ഡംന്പ് ചെയ്യുന്നു\n"
 
 #: src/virsh.c:843
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to core dump domain %s to %s"
-msgstr "ഡൊമെയിന്‍ %s-നെ %s ആയി സൂക്ഷിക്കുന്നതില്‍ പരാജയം"
+msgstr "ഡൊമെയിന്‍ %s-നെ %s-ലേക്ക് ഡംന്പ് ചെയ്യുന്നതില്‍ പരാജയം"
 
 #: src/virsh.c:857
 msgid "resume a domain"
@@ -1093,7 +1089,7 @@ msgstr "XML-ലുളള ഡൊമെയിന്‍ വിവരം"
 
 #: src/virsh.c:1418
 msgid "Ouput the domain information as an XML dump to stdout."
-msgstr "ഒരു XML ഡംപായി stdout-ലേക്ക് ഡൊമെയിന്‍ വിവരങ്ങള്‍ ലഭ്യമാക്കുക."
+msgstr "ഒരു XML ഡന്പായി stdout-ലേക്ക് ഡൊമെയിന്‍ വിവരങ്ങള്‍ ലഭ്യമാക്കുക."
 
 #: src/virsh.c:1457
 msgid "convert a domain id or UUID to domain name"

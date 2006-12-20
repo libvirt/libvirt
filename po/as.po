@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: as\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-14 10:47+0100\n"
+"POT-Creation-Date: 2006-12-20 15:40+0100\n"
 "PO-Revision-Date: 2006-09-29 12:41+0530\n"
 "Last-Translator: Amitakhya Phukan <amitakhya.phukan@gmail.com>\n"
 "Language-Team: Assamese\n"
@@ -574,7 +574,7 @@ msgstr ""
 msgid "Failed to resume new domain %s\n"
 msgstr ""
 
-#: src/xend_internal.c:3146
+#: src/xend_internal.c:3145
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr ""

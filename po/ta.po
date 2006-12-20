@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-14 10:47+0100\n"
-"PO-Revision-Date: 2006-10-18 15:35+0530\n"
+"POT-Creation-Date: 2006-12-20 15:40+0100\n"
+"PO-Revision-Date: 2006-12-14 15:59+0530\n"
 "Last-Translator: Felix <ifelix@redhat.com>\n"
 "Language-Team: Tamil <ta@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,6 +19,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: KBabel 1.9.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"\n"
 "\n"
 
 #: src/libvirt.c:245 src/libvirt.c:309 src/hash.c:652
@@ -330,9 +331,8 @@ msgid "failed to write configuration file: %s"
 msgstr "கட்டமைப்பு கோப்பினை எழுத முடியவில்லை: %s"
 
 #: src/virterror.c:581
-#, fuzzy
 msgid "parser error"
-msgstr "உள்ளார்ந்த பிழை"
+msgstr "பிரிப்பு பிழை"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -546,9 +546,8 @@ msgid "domain information incomplete, missing kernel"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, விடுபட்ட கர்னல்"
 
 #: src/xend_internal.c:1604
-#, fuzzy
 msgid "domain information incomplete, vbd has no src"
-msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, vbd  dev எதுவும் கொண்டிருக்கவில்லை"
+msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, vbd ஆனது src ஐ கொண்டிருக்கவில்லை"
 
 #: src/xend_internal.c:1610
 msgid "domain information incomplete, vbd has no dev"
@@ -556,11 +555,11 @@ msgstr "செயற்களம் தகவல் நிறைவு பெற
 
 #: src/xend_internal.c:1618
 msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
+msgstr "vbd கோப்பு பெயரை பிரிக்க முடியவில்லை, இயக்கி பெயர் விடுபட்டுள்ளது"
 
 #: src/xend_internal.c:1637
 msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
+msgstr "vbd கோப்பு பெயரை பிரிக்க முடியவில்லை, இயக்கி வகை விடுபட்டுள்ளது"
 
 #: src/xend_internal.c:1981
 msgid "failed to parse Xend domain information"
@@ -581,8 +580,8 @@ msgstr "செயற்களம் %sக்கு சாதனங்களை �
 msgid "Failed to resume new domain %s\n"
 msgstr "புதிய செயற்களம்%sஐ தொடர முடியவில்லை\n"
 
-#: src/xend_internal.c:3146
-#, fuzzy, c-format
+#: src/xend_internal.c:3145
+#, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "செயற்களம் %s ஐ உருவாக்க முடியவில்லை\n"
 
@@ -840,27 +839,25 @@ msgstr "%s லிருந்து செயற்களத்தை மீட�
 
 #: src/virsh.c:812
 msgid "dump the core of a domain to a file for analysis"
-msgstr ""
+msgstr "செயற்களத்தை ஆய்வு செய்ய ஒரு கோப்பில் கோர் சேமிக்கவும்"
 
 #: src/virsh.c:813
-#, fuzzy
 msgid "Core dump a domain."
-msgstr "ஒரு செயற்களத்தை மீண்டும் தொடங்குகிறது"
+msgstr "ஒரு செயற்களத்தை கோரில் சேமிக்கவும்"
 
 #: src/virsh.c:819
-#, fuzzy
 msgid "where to dump the core"
-msgstr "தரவினை எங்கே சேமிக்க வேண்டும்"
+msgstr "கோரை எங்கு சேமிக்க வேண்டும்"
 
 #: src/virsh.c:841
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s dumpd to %s\n"
 msgstr "செயற்களம் %s %s இல் சேமிக்கப்பட்டது\n"
 
 #: src/virsh.c:843
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to core dump domain %s to %s"
-msgstr "%s லிருந்து %s க்கு செயற்களத்தை சேமிக்க முடியவில்லை"
+msgstr "%s லிருந்து %s க்கு செயற்களத்தை கோர் சேமிக்க முடியவில்லை"
 
 #: src/virsh.c:857
 msgid "resume a domain"

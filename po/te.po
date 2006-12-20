@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: te\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-14 10:47+0100\n"
-"PO-Revision-Date: 2006-11-24 11:58+0530\n"
+"POT-Creation-Date: 2006-12-20 15:40+0100\n"
+"PO-Revision-Date: 2006-12-15 17:13+0530\n"
 "Last-Translator: Sree Ganesh <sthottem@redhat.com>\n"
 "Language-Team: Telugu <en@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -541,9 +541,8 @@ msgid "domain information incomplete, missing kernel"
 msgstr "క్షేత్ర సమాచారం అసంపూర్తిగా ఉంది, కెర్నలు తప్పిపోయింది"
 
 #: src/xend_internal.c:1604
-#, fuzzy
 msgid "domain information incomplete, vbd has no src"
-msgstr "క్షేత్ర సమాచారం అసంపూర్తిగా ఉంది, vbd devని కలిగిలేదు"
+msgstr "క్షేత్ర సమాచారం అసంపూర్తిగా ఉంది, vbd srcని కలిగిలేదు"
 
 #: src/xend_internal.c:1610
 msgid "domain information incomplete, vbd has no dev"
@@ -551,11 +550,11 @@ msgstr "క్షేత్ర సమాచారం అసంపూర్తి�
 
 #: src/xend_internal.c:1618
 msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
+msgstr "vbd ఫైలు పేరు విశ్లేషించటానికి కుదరదు, డ్రైవరు పేరు తప్పిపోయింది"
 
 #: src/xend_internal.c:1637
 msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
+msgstr "vbd ఫైలు పేరు విశ్లేషించటానికి కుదరదు, డ్రైవరు రకం తప్పిపోయింది"
 
 #: src/xend_internal.c:1981
 msgid "failed to parse Xend domain information"
@@ -576,7 +575,7 @@ msgstr "క్షేత్రం కోసం సాధనాలను పొం
 msgid "Failed to resume new domain %s\n"
 msgstr "కొత్త క్షేత్రాన్ని సంగ్రహించటంలో విఫలమైంది %s\n"
 
-#: src/xend_internal.c:3146
+#: src/xend_internal.c:3145
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "%s క్షేత్రాన్ని సృష్టించటంలో విఫలమైంది\n"
@@ -834,25 +833,23 @@ msgstr "%s నుండీ క్షేత్రాన్ని తిరిగ�
 
 #: src/virsh.c:812
 msgid "dump the core of a domain to a file for analysis"
-msgstr ""
+msgstr "క్షేత్రం కోరును విశ్లేషణకోసం ఫైలుకి నింపు"
 
 #: src/virsh.c:813
-#, fuzzy
 msgid "Core dump a domain."
 msgstr "క్షేత్రాన్ని సంక్షిప్తీకరించు"
 
 #: src/virsh.c:819
-#, fuzzy
 msgid "where to dump the core"
-msgstr "సమాచారాన్ని ఎక్కడ భద్రపరవాలి"
+msgstr "కోర్ను ఎక్కడ నింపా"
 
 #: src/virsh.c:841
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s dumpd to %s\n"
-msgstr "%s క్షేత్రం %sలో భద్రపరవబడింది\n"
+msgstr "%s క్షేత్రంను %sలో నిం\n"
 
 #: src/virsh.c:843
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to core dump domain %s to %s"
 msgstr "%s క్షేత్రాన్ని %sకి భద్రపరవటంలో విఫలమైంది"
 

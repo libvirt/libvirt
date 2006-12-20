@@ -1,14 +1,14 @@
 # Serbian(Latin) translations for libvirt
 # Copyright (C) 2006 Red Hat, Inc.
 # This file is distributed under the same license as the libvirt package.
-# Miloš Komarčević <kmilos@gmail.com>, 206.
+# Miloš Komarčević <kmilos@gmail.com>, 2006.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-14 10:47+0100\n"
-"PO-Revision-Date: 2006-10-01 12:36+0100\n"
+"POT-Creation-Date: 2006-12-20 15:40+0100\n"
+"PO-Revision-Date: 2006-12-17 12:20+0100\n"
 "Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
 "Language-Team: Serbian (sr) <fedora@prevod.org>\n"
 "MIME-Version: 1.0\n"
@@ -540,9 +540,8 @@ msgid "domain information incomplete, missing kernel"
 msgstr "nepotpuni podaci o domenu, nedostaje jezgro"
 
 #: src/xend_internal.c:1604
-#, fuzzy
 msgid "domain information incomplete, vbd has no src"
-msgstr "nepotpuni podaci o domenu, vbd nema dev"
+msgstr "nepotpuni podaci o domenu, vbd nema src"
 
 #: src/xend_internal.c:1610
 msgid "domain information incomplete, vbd has no dev"
@@ -551,10 +550,12 @@ msgstr "nepotpuni podaci o domenu, vbd nema dev"
 #: src/xend_internal.c:1618
 msgid "cannot parse vbd filename, missing driver name"
 msgstr ""
+"ne mogu protumačiti vbd ime datoteke, nedostaje ime upravljačkog programa"
 
 #: src/xend_internal.c:1637
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
+"ne mogu protumačiti vbd ime datoteke, nedostaje vrsta upravljačkog programa"
 
 #: src/xend_internal.c:1981
 msgid "failed to parse Xend domain information"
@@ -575,7 +576,7 @@ msgstr "Neuspelo pribavljanje uređaja za domen %s\n"
 msgid "Failed to resume new domain %s\n"
 msgstr "Neuspelo nastavljanje novog domena %s\n"
 
-#: src/xend_internal.c:3146
+#: src/xend_internal.c:3145
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Neuspelo pravljenje domena %s\n"
@@ -835,27 +836,25 @@ msgstr "Neuspelo vraćanje domena iz %s"
 
 #: src/virsh.c:812
 msgid "dump the core of a domain to a file for analysis"
-msgstr ""
+msgstr "izbaci srž domena u datoteku radi analize"
 
 #: src/virsh.c:813
-#, fuzzy
 msgid "Core dump a domain."
-msgstr "nastavi domen"
+msgstr "Izbaci srž domena"
 
 #: src/virsh.c:819
-#, fuzzy
 msgid "where to dump the core"
-msgstr "gde sačuvati podatke"
+msgstr "gde izbaciti srž"
 
 #: src/virsh.c:841
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s dumpd to %s\n"
-msgstr "Domen %s je sačuvan u %s\n"
+msgstr "Domen %s je izbačen u %s\n"
 
 #: src/virsh.c:843
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to core dump domain %s to %s"
-msgstr "Neuspelo čuvanje domena %s u %s"
+msgstr "Neuspeo izbačaj srži domena %s u %s"
 
 #: src/virsh.c:857
 msgid "resume a domain"

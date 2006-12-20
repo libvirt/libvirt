@@ -5,6 +5,12 @@
        http://libvirt.org/news.html
 
 Releases
+0.1.10: Dec 20 2006:
+   - more localizations
+   - bug fixes: VCPU info breakages on xen 3.0.3, xenDaemonListDomains buffer overflow (Daniel Berrange), reference count bug when creating Xen domains (Daniel Berrange).
+   - improvements: support graphic framebuffer for Xen paravirt (Daniel Berrange), VNC listen IP range support (Daniel Berrange), support for default Xen config files and inactive domains of 3.0.4 (Daniel Berrange).
+
+
 0.1.9: Nov 29 2006:
    - python bindings: release interpeter lock when calling C (Daniel Berrange)
    - don't raise HTTP error when looking informations for a domain

@@ -1,5 +1,6 @@
 # translation of de.po to 
 # translation of de.po to
+# translation of de.po to
 # Copyright (C) 2006 Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # Timo Trinks <ttrinks@redhat.com>, 2006.
@@ -8,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-14 10:47+0100\n"
-"PO-Revision-Date: 2006-11-24 12:18+1000\n"
+"POT-Creation-Date: 2006-12-20 15:40+0100\n"
+"PO-Revision-Date: 2006-12-15 08:03+1000\n"
 "Last-Translator: Timo Trinks <ttrinks@redhat.com>\n"
 "Language-Team:  <en@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -326,9 +327,8 @@ msgid "failed to write configuration file: %s"
 msgstr "Schreiben der Konfigurationsdatei schlug fehl: %s"
 
 #: src/virterror.c:581
-#, fuzzy
 msgid "parser error"
-msgstr "Interner Fehler"
+msgstr "Analyse-Fehler"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -542,9 +542,8 @@ msgid "domain information incomplete, missing kernel"
 msgstr "Domaininformation unvollständig, fehlender Kernel"
 
 #: src/xend_internal.c:1604
-#, fuzzy
 msgid "domain information incomplete, vbd has no src"
-msgstr "Domaininformation unvollständig, vbd besitzt kein dev"
+msgstr "Domaininformation unvollständig, vbd besitzt kein src"
 
 #: src/xend_internal.c:1610
 msgid "domain information incomplete, vbd has no dev"
@@ -552,11 +551,11 @@ msgstr "Domaininformation unvollständig, vbd besitzt kein dev"
 
 #: src/xend_internal.c:1618
 msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
+msgstr "vbd Dateiname kann nicht analysiert werden, fehlender Treibername"
 
 #: src/xend_internal.c:1637
 msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
+msgstr "vbd Dateiname kann nicht analysiert werden, fehlender Treibertyp"
 
 #: src/xend_internal.c:1981
 msgid "failed to parse Xend domain information"
@@ -577,10 +576,10 @@ msgstr "Ermittlung der Geräte für Domain %s schlug fehl\n"
 msgid "Failed to resume new domain %s\n"
 msgstr "Fehler beim Zusammenfassen der neuen Domain %s\n"
 
-#: src/xend_internal.c:3146
-#, fuzzy, c-format
+#: src/xend_internal.c:3145
+#, c-format
 msgid "Failed to create inactive domain %s\n"
-msgstr "Fehler beim Erstellen der Domain %s\n"
+msgstr "Fehler beim Erstellen einer inaktiven Domain %s\n"
 
 #: src/virsh.c:234
 msgid "print help"
@@ -838,27 +837,25 @@ msgstr "Wiederherstellen der Domain aus %s gescheitert"
 
 #: src/virsh.c:812
 msgid "dump the core of a domain to a file for analysis"
-msgstr ""
+msgstr "den Kern einer Domain zu Analysezwecken in eine Datei dumpen"
 
 #: src/virsh.c:813
-#, fuzzy
 msgid "Core dump a domain."
-msgstr "Domain wiederaufnehmen"
+msgstr "Eine Domain debuggen."
 
 #: src/virsh.c:819
-#, fuzzy
 msgid "where to dump the core"
-msgstr "wo die Daten gespeichert werden sollen"
+msgstr "wo der Kern gespeichert werden sollen"
 
 #: src/virsh.c:841
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s dumpd to %s\n"
-msgstr "Domain %s nach %s gespeichert\n"
+msgstr "Domain %s nach %s debugged\n"
 
 #: src/virsh.c:843
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to core dump domain %s to %s"
-msgstr "Speichern der Domain %s nach %s gescheitert"
+msgstr "Fehler beim Debuggen der Domain %s nach %s"
 
 #: src/virsh.c:857
 msgid "resume a domain"

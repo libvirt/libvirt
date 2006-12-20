@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: or\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-14 10:47+0100\n"
-"PO-Revision-Date: 2006-10-06 15:32+0530\n"
+"POT-Creation-Date: 2006-12-20 15:40+0100\n"
+"PO-Revision-Date: 2006-12-14 16:58+0530\n"
 "Last-Translator: Subhransu Behera <sbehera@redhat.com>\n"
 "Language-Team: Oriya <oriya-group@lists.sarovar.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,6 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 "Plural-Forms: Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"\n"
 "\n"
 "\n"
 "\n"
@@ -330,9 +331,8 @@ msgid "failed to write configuration file: %s"
 msgstr "ବିନ୍ଯାସ ଫାଇଲକୁ ଲେଖିବାରେ ବିଫଳ: %s"
 
 #: src/virterror.c:581
-#, fuzzy
 msgid "parser error"
-msgstr "ଆଭ୍ଯନ୍ତରୀଣ ତୃଟି"
+msgstr "ବିଶ୍ଳେଷଣ ତୃଟି"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -546,9 +546,8 @@ msgid "domain information incomplete, missing kernel"
 msgstr "ପରିସର ସୂଚନା ଅସମ୍ପୂର୍ଣ୍ଣ, କର୍ଣ୍ଣଲ ଅନୁପସ୍ଥିତ "
 
 #: src/xend_internal.c:1604
-#, fuzzy
 msgid "domain information incomplete, vbd has no src"
-msgstr "ପରିସର ସୂଚନା ଅସମ୍ପୂର୍ଣ୍ଣ, vbd ର କୌଣସି dev ନାହିଁ"
+msgstr "ପରିସର ସୂଚନା ଅସମ୍ପୂର୍ଣ୍ଣ, vbd ର କୌଣସି src ନାହିଁ"
 
 #: src/xend_internal.c:1610
 msgid "domain information incomplete, vbd has no dev"
@@ -556,11 +555,11 @@ msgstr "ପରିସର ସୂଚନା ଅସମ୍ପୂର୍ଣ୍ଣ, vbd �
 
 #: src/xend_internal.c:1618
 msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
+msgstr "vbd ଫାଇଲ ନାମକୁ ବିଶ୍ଳେଷଣ କରିପାରିବ ନାହିଁ, ଡ୍ରାଇଭର ନାମ ଅନୁପସ୍ଥିତ"
 
 #: src/xend_internal.c:1637
 msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
+msgstr "vbd ଫାଇଲ ନାମକୁ ବିଶ୍ଳେଷଣ କରିପାରିବ ନାହିଁ, ଡ୍ରାଇଭର ପ୍ରକାର ଅନୁପସ୍ଥିତ"
 
 #: src/xend_internal.c:1981
 msgid "failed to parse Xend domain information"
@@ -581,10 +580,10 @@ msgstr "%s ପରିସର ପାଇଁ ପରିସର ପାଇବାରେ �
 msgid "Failed to resume new domain %s\n"
 msgstr "ନୂତନ ପରିସର %s କୁ ପୁନର୍ବାର ଆରମ୍ଭ କରିବାରେ ବିଫଳ\n"
 
-#: src/xend_internal.c:3146
-#, fuzzy, c-format
+#: src/xend_internal.c:3145
+#, c-format
 msgid "Failed to create inactive domain %s\n"
-msgstr "%s ପରିସରକୁ ସୃଷ୍ଟି କରିବାରେ ବିଫଳ\n"
+msgstr "%s ନିଷ୍କ୍ରିୟ ପରିସରକୁ ସୃଷ୍ଟି କରିବାରେ ବିଫଳ\n"
 
 #: src/virsh.c:234
 msgid "print help"
@@ -841,27 +840,25 @@ msgstr "%s ରୁ ପରିସରକୁ ପୁନଃସ୍ଥାପନ କରି
 
 #: src/virsh.c:812
 msgid "dump the core of a domain to a file for analysis"
-msgstr ""
+msgstr "ବିଶ୍ଳେଷଣ ପାଇଁ ଗୋଟିଏ ପରିସରର ଅନ୍ତଃସ୍ଥଳକୁ ଗୋଟିଏ ଫାଇଲକୁ ପଠାନ୍ତୁ"
 
 #: src/virsh.c:813
-#, fuzzy
 msgid "Core dump a domain."
-msgstr "ଗୋଟିଏ ପରିସରକୁ ପୁନଃପ୍ରାରମ୍ଭ କରନ୍ତୁ"
+msgstr "ଗୋଟିଏ ପରିସରର ଅନ୍ତଃସ୍ଥଳକୁ ପଠାନ୍ତୁ"
 
 #: src/virsh.c:819
-#, fuzzy
 msgid "where to dump the core"
-msgstr "ତଥ୍ଯକୁ କେଉଁଠାରେ ସଂରକ୍ଷଣ କରାଯିବ"
+msgstr "ଅନ୍ତଃସ୍ଥଳକୁ କେଉଁଠାକୁ ପଠାଯିବ"
 
 #: src/virsh.c:841
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s dumpd to %s\n"
-msgstr "%s ପରିସରକୁ %s ରେ ସଂରକ୍ଷଣ କରାଯାଇଛି\n"
+msgstr "%s ପରିସରକୁ %s କୁ ପଠାଯାଉଛି\n"
 
 #: src/virsh.c:843
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to core dump domain %s to %s"
-msgstr "%s ପରିସରକୁ %s ରେ ସଂରକ୍ଷଣ କରିବାରେ ବିଫଳ"
+msgstr "%s ପରିସରକୁ %s କୁ ପଠାଇବାରେ ବିଫଳ"
 
 #: src/virsh.c:857
 msgid "resume a domain"
