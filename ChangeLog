@@ -1,3 +1,8 @@
+Tue Jan  9 17:28:18 CET 2007 Daniel Veillard <veillard@redhat.com>
+	
+	* docs/libvirt.rng: first version of the Relax-NG schemas to validate
+	  XML instances
+
 Wed Dec 20 15:56:38 CET 2006 Daniel Veillard <veillard@redhat.com>
 
 	* po/*: updated localization files

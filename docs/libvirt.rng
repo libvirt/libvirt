@@ -1,0 +1,464 @@
+<?xml version="1.0" ?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+    datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <!-- We handle only document defining a domain -->
+  <start>
+    <ref name='domain'/>
+  </start>
+
+  <!-- 
+      We handle only document defining a domain
+      Currently the only type supported is 'xen'
+      The description must start with the identification informations and then
+      os, resources, features, devices and termination informations can be
+      given in any order.
+    -->
+  <define name='domain'>
+    <element name="domain">
+      <attribute name='type'>
+        <value>xen</value>
+      </attribute>
+      <ref name='ids'/>
+      <interleave>
+        <ref name='os'/>
+        <ref name='resources'/>
+        <ref name='features'/>
+        <ref name='termination'/>
+        <ref name='devices'/>
+      </interleave>
+    </element>
+  </define>
+
+  <!-- 
+      The Identifiers can be:
+      - an optional id attribute with a number on the domain element
+      - a mandatory name
+      - an optional uuid
+    -->
+  <define name='ids'>
+    <optional>
+      <attribute name='id'>
+        <ref name='unsignedInt'/>
+      </attribute>
+    </optional>
+    <interleave>
+      <element name="name">
+        <ref name='domainName'/>
+      </element>
+      <optional>
+        <element name="uuid">
+          <ref name='UUID'/>
+        </element>
+      </optional>
+    </interleave>
+  </define>
+
+  <!--
+      Resources usage defines the amount of memory (maximum and possibly
+      current usage) and number of virtual CPUs used by that domain.
+    -->
+
+  <define name='resources'>
+    <interleave>
+      <element name='memory'>
+        <ref name='memoryKB'/>
+      </element>
+      <element name='vcpu'>
+        <ref name='countCPU'/>
+      </element>
+    </interleave>
+  </define>
+
+  <!--
+      The Operating system can be:
+      - a linux paravirtualized OS
+      - a fully virtualized machine where the OS is unknown
+    -->
+  <define name='os'>
+    <element name='os'>
+      <choice>
+        <ref name='linux'/>
+        <ref name='hvm'/>
+      </choice>
+    </element>
+  </define>
+
+  <!--
+      A paravirtualized linux domain, this requires at least a kernel path
+      and the root device, the initrd and command line arguments are optional
+    -->
+  <define name='linux'>
+    <element name='type'>
+      <value>linux</value>
+    </element>
+    <interleave>
+      <element name='kernel'>
+        <ref name='absFilePath'/>
+      </element>
+      <optional>
+        <element name='initrd'>
+	  <ref name='absFilePath'/>
+	</element>
+      </optional>
+      <element name='root'>
+        <ref name='devicePath'/>
+      </element>
+      <optional>
+        <element name='cmdline'>
+	  <text/>
+	</element>
+      </optional>
+    </interleave>
+  </define>
+
+  <!--
+      A fully virtualized domain, this requires the path to the loader and
+      an optional boot device (hd, fd or cdrom).
+    -->
+  <define name='hvm'>
+    <element name='type'>
+      <value>hvm</value>
+    </element>
+    <interleave>
+      <element name='loader'>
+        <ref name='absFilePath'/>
+      </element>
+      <optional>
+        <element name='boot'>
+	  <attribute name='dev'>
+	    <choice>
+	      <value>hd</value>
+	      <value>fd</value>
+	      <value>cdrom</value>
+	    </choice>
+	  </attribute>
+	  <empty/>
+	</element>
+      </optional>
+    </interleave>
+  </define>
+
+  <!--
+      A disk description can be either of type file or block
+      The name of the attribute on the source element depends on the type
+
+    -->
+  <define name='disk'>
+    <element name='disk'>
+      <choice>
+        <group>
+          <attribute name='type'>
+	    <value>file</value>
+	  </attribute>
+	  <optional>
+	    <attribute name='device'>
+	      <choice>
+	        <value>floppy</value>
+	        <value>disk</value>
+	        <value>cdrom</value>
+	      </choice>
+	    </attribute>
+	  </optional>
+	  <interleave>
+	    <element name='source'>
+	      <attribute name='file'>
+	        <ref name='absFilePath'/>
+	      </attribute>
+	      <empty/>
+	    </element>
+	    <ref name='target'/>
+	    <ref name='readonly'/>
+	  </interleave>
+        </group>
+        <group>
+          <attribute name='type'>
+	    <value>block</value>
+	  </attribute>
+	  <interleave>
+	    <element name='source'>
+	      <attribute name='dev'>
+	        <ref name='deviceName'/>
+	      </attribute>
+	      <empty/>
+	    </element>
+	    <ref name='target'/>
+	    <ref name='readonly'/>
+	  </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+
+  <define name='target'>
+    <element name='target'>
+      <attribute name='dev'>
+	<ref name='deviceName'/>
+      </attribute>
+    </element>
+  </define>
+
+  <define name='readonly'>
+    <optional>
+      <element name='readonly'>
+	<empty/>
+      </element>
+    </optional>
+  </define>
+
+  <!--
+      An interface description
+
+    -->
+  <define name='interface'>
+    <element name='interface'>
+      <attribute name='type'>
+        <value>bridge</value>
+      </attribute>
+      <interleave>
+        <element name='source'>
+	  <attribute name='bridge'>
+            <ref name='deviceName'/>
+	  </attribute>
+	  <empty/>
+        </element>
+	<optional>
+	  <element name='mac'>
+	    <attribute name='address'>
+	      <ref name='addrMAC'/>
+	    </attribute>
+	    <empty/>
+	  </element>
+	</optional>
+	<optional>
+	  <element name='ip'>
+	    <attribute name='address'>
+	      <ref name='addrIP'/>
+	    </attribute>
+	    <empty/>
+	  </element>
+	</optional>
+	<optional>
+	  <element name='script'>
+	    <attribute name='path'>
+	      <ref name='filePath'/>
+	    </attribute>
+	    <empty/>
+	  </element>
+	</optional>
+      </interleave>
+    </element>
+  </define>
+
+  <!--
+      An emulator descritpion is just a path to the binary used for the task
+    -->
+  <define name='emulator'>
+    <element name='emulator'>
+      <ref name='absFilePath'/>
+    </element>
+  </define>
+
+  <!--
+      A graphic description
+    -->
+  <define name='graphic'>
+    <element name='graphics'>
+      <choice>
+        <attribute name='type'>
+	  <value>sdl</value>
+	</attribute>
+	<group>
+          <attribute name='type'>
+	    <value>vnc</value>
+	  </attribute>
+          <attribute name='port'>
+	    <ref name='PortNumber'/>
+	  </attribute>
+	</group>
+      </choice>
+    </element>
+  </define>
+
+  <!--
+      When a domain terminates multiple policies can be applied depending
+      on how it ended:
+    -->
+  <define name='termination'>
+    <interleave>
+      <optional>
+        <element name='on_reboot'>
+	  <ref name='offOptions'/>
+	</element>
+      </optional>
+      <optional>
+        <element name='on_poweroff'>
+	  <ref name='offOptions'/>
+	</element>
+      </optional>
+      <optional>
+        <element name='on_crash'>
+	  <ref name='offOptions'/>
+	</element>
+      </optional>
+    </interleave>
+  </define>
+
+  <!--
+      Options when a domain terminates:
+      destroy: The domain is cleaned up
+      restart: A new domain is started in place of the old one
+      preserve: The domain will remain in memory until it is destroyed manually
+      rename-restart: a variant of the previous one but where the old domain is
+                      renamed before being saved to allow a restart
+    -->
+  <define name='offOptions'>
+    <choice>
+      <value>destroy</value>
+      <value>restart</value>
+      <value>preserve</value>
+      <value>rename-restart</value>
+    </choice>
+  </define>
+
+  <!--
+      The description for a console
+      just a tty device
+    -->
+  <define name='console'>
+    <element name='console'>
+      <attribute name='tty'>
+        <ref name='devicePath'/>
+      </attribute>
+      <empty/>
+    </element>
+  </define>
+
+  <!--
+      The devices bloc allows:
+      - an optional emulator path, restricted to hvm configs but hard to check
+      - an optional graphic description , restricted to hvm configs too
+      - zero or more disk devices
+      - zero or more interface devices
+    -->
+  <define name='devices'>
+    <element name='devices'>
+      <interleave>
+	<optional>
+	  <ref name='emulator'/>
+	</optional>
+	<optional>
+	  <ref name='graphic'/>
+	</optional>
+	<zeroOrMore>
+	  <ref name='disk'/>
+	</zeroOrMore>
+	<zeroOrMore>
+	  <ref name='interface'/>
+	</zeroOrMore>
+	<optional>
+	  <ref name='console'/>
+	</optional>
+      </interleave>
+    </element>
+  </define>
+
+  <!--
+      A set of optional features: PAE, APIC and ACPI support
+    -->
+  <define name='features'>
+    <optional>
+      <element name="features">
+        <interleave>
+	  <optional>
+	    <element name="pae">
+	      <empty/>
+	    </element>
+	  </optional>
+	  <optional>
+	    <element name="apic">
+	      <empty/>
+	    </element>
+	  </optional>
+	  <optional>
+	    <element name="acpi">
+	      <empty/>
+	    </element>
+	  </optional>
+	</interleave>
+      </element>
+    </optional>
+  </define>
+
+  <!--
+       Type library
+
+       Our unsignedInt doesn't allow a leading '+' in its lexical form
+       A domain name shoul be made of ascii, numbers, _-+ and is non-empty
+       UUID currently allows only the 32 characters strict syntax
+       memoryKB request at least 4Mbytes though Xen will grow bigger if too low
+    -->
+  <define name='unsignedInt'>
+    <data type='unsignedInt'>
+      <param name="pattern">[0-9]+</param>
+    </data>
+  </define>
+  <define name='countCPU'>
+    <data type='unsignedShort'>
+      <param name="pattern">[0-9]+</param>
+      <param name="minInclusive">1</param>
+    </data>
+  </define>
+  <define name='PortNumber'>
+    <data type='unsignedShort'>
+      <param name="pattern">[0-9]+</param>
+      <param name="minInclusive">1</param>
+    </data>
+  </define>
+  <define name='memoryKB'>
+    <data type='unsignedInt'>
+      <param name="pattern">[0-9]+</param>
+      <param name="minInclusive">4000</param>
+    </data>
+  </define>
+  <define name='domainName'>
+    <data type='string'>
+      <param name="pattern">[a-zA-Z0-9_\+\-]+</param>
+    </data>
+  </define>
+  <define name='UUID'>
+    <!-- TODO: be more flexible on UUID -->
+    <data type='string'>
+      <param name="pattern">[a-fA-F0-9]{32}</param>
+    </data>
+  </define>
+  <define name='filePath'>
+    <data type='string'>
+      <param name="pattern">[a-zA-Z0-9_\+\-\%\./]+</param>
+    </data>
+  </define>
+  <define name='absFilePath'>
+    <data type='string'>
+      <param name="pattern">/[a-zA-Z0-9_\+\-\%\./]+</param>
+    </data>
+  </define>
+  <define name='devicePath'>
+    <data type='string'>
+      <param name="pattern">/[a-zA-Z0-9_\+\-\%/]+</param>
+    </data>
+  </define>
+  <define name='deviceName'>
+    <data type='string'>
+      <param name="pattern">[a-zA-Z0-9_\-]+</param>
+    </data>
+  </define>
+  <define name='addrMAC'>
+    <data type='string'>
+      <param name="pattern">([a-fA-F0-9]{2}:){5}[a-fA-F0-9]{2}</param>
+    </data>
+  </define>
+  <define name='addrIP'>
+    <data type='string'>
+      <param name="pattern">([0-2]?[0-9]?[0-9]\.){3}[0-2]?[0-9]?[0-9]</param>
+    </data>
+  </define>
+</grammar>
