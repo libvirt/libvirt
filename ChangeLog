@@ -1,3 +1,7 @@
+Wed Jan 10 16:20:02 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* docs/libvirt.rng: udated for the upcoming KVM and QEmu support
+
 Wed Jan 10 11:06:36 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* docs/libvirt.rng: went through the existing tests with the RNG and

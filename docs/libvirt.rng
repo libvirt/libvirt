@@ -8,13 +8,29 @@
 
   <!-- 
       We handle only document defining a domain
-      Currently the only type supported is 'xen'
+      Currently the virtualization types supported are:
+        - xen, either paravirualized with a linux os or fully virtualized (hvm)
+	- kvm, requiring a path to the emulator in devices
+	- qemu, where the arch and machine must be provided in the os block
+    -->
+  <define name='domain'>
+    <element name="domain">
+      <choice>
+        <ref name='xen-domain'/>
+        <ref name='kvm-domain'/>
+        <ref name='qemu-domain'/>
+      </choice>
+    </element>
+  </define>
+
+  <!--
+      Description of a Xen domain:
       The description must start with the identification informations and then
       os or bootloader, resources, features, devices and termination informations
       can be given in any order.
     -->
-  <define name='domain'>
-    <element name="domain">
+  <define name='xen-domain'>
+    <group>
       <attribute name='type'>
         <value>xen</value>
       </attribute>
@@ -39,7 +55,115 @@
         <ref name='termination'/>
         <ref name='devices'/>
       </interleave>
-    </element>
+    </group>
+  </define>
+
+  <!--
+      Description of a QEmu domain:
+      The description must start with the identification informations and then
+      os, resources, devices can be given in any order.
+      The specific part are the combinations of architectures and machines
+      being emulated.
+    -->
+  <define name='qemu-domain'>
+    <group>
+      <attribute name='type'>
+        <value>qemu</value>
+      </attribute>
+      <ref name='ids'/>
+      <interleave>
+        <element name='os'>
+	  <element name='type'>
+	    <choice>
+	      <ref name='qemu-x86'/>
+	      <ref name='qemu-mips'/>
+	      <ref name='qemu-sparc'/>
+	      <ref name='qemu-ppc'/>
+	    </choice>
+	    <value>hvm</value>
+	  </element>
+	</element>
+        <ref name='resources'/>
+        <ref name='devices'/>
+      </interleave>
+    </group>
+  </define>
+
+  <define name='qemu-x86'>
+    <group>
+      <attribute name='arch'>
+	<choice>
+	  <value>x86_64</value>
+	  <value>x86_64</value>
+	</choice>
+      </attribute>
+      <attribute name='machine'>
+	<choice>
+	  <value>pc</value>
+	  <value>isapc</value>
+	</choice>
+      </attribute>
+    </group>
+  </define>
+
+  <define name='qemu-mips'>
+    <group>
+      <attribute name='arch'>
+        <value>mips</value>
+      </attribute>
+      <attribute name='machine'>
+        <value>mips</value>
+      </attribute>
+    </group>
+  </define>
+
+  <define name='qemu-sparc'>
+    <group>
+      <attribute name='arch'>
+	<value>sparc</value>
+      </attribute>
+      <attribute name='machine'>
+	<value>sun4m</value>
+      </attribute>
+    </group>
+  </define>
+
+  <define name='qemu-ppc'>
+    <group>
+      <attribute name='arch'>
+	<value>ppc</value>
+      </attribute>
+      <attribute name='machine'>
+	<choice>
+	  <value>g3bw</value>
+	  <value>mac99</value>
+	  <value>prep</value>
+	</choice>
+      </attribute>
+    </group>
+  </define>
+
+  <!--
+      Description of a KVM domain:
+      The description must start with the identification informations and then
+      os, resources, devices can be given in any order.
+    -->
+  <define name='kvm-domain'>
+    <group>
+      <attribute name='type'>
+        <value>kvm</value>
+      </attribute>
+      <ref name='ids'/>
+      <interleave>
+        <element name='os'>
+	  <element name='type'>
+	    <value>hvm</value>
+	  </element>
+	</element>
+        <ref name='resources'/>
+        <ref name='devices-with-emulator'/>
+      </interleave>
+    </group>
   </define>
 
   <!-- 
@@ -301,6 +425,14 @@
 	    <ref name='interface-options'/>
 	  </interleave>
 	</group>
+        <group>
+          <attribute name='type'>
+            <value>user</value>
+          </attribute>
+	  <interleave>
+	    <ref name='interface-options'/>
+	  </interleave>
+	</group>
       </choice>
     </element>
   </define>
@@ -310,6 +442,7 @@
         - the MAC address
 	- the IP address bound to the interface
 	- the name of the script used to set up the binding
+	- the target device used
     -->
   <define name='interface-options'>
       <interleave>
@@ -474,6 +607,29 @@
   </define>
 
   <!--
+      Sometimes the emulator is mandatory, e.g. with KVM
+    -->
+  <define name='devices-with-emulator'>
+    <element name='devices'>
+      <interleave>
+	<ref name='emulator'/>
+	<optional>
+	  <ref name='graphic'/>
+	</optional>
+	<zeroOrMore>
+	  <ref name='disk'/>
+	</zeroOrMore>
+	<zeroOrMore>
+	  <ref name='interface'/>
+	</zeroOrMore>
+	<optional>
+	  <ref name='console'/>
+	</optional>
+      </interleave>
+    </element>
+  </define>
+
+  <!--
       A set of optional features: PAE, APIC and ACPI support
     -->
   <define name='features'>
@@ -541,10 +697,14 @@
     </data>
   </define>
   <define name='UUID'>
-    <!-- TODO: be more flexible on UUID -->
-    <data type='string'>
-      <param name="pattern">[a-fA-F0-9]{32}</param>
-    </data>
+    <choice>
+      <data type='string'>
+        <param name="pattern">[a-fA-F0-9]{32}</param>
+      </data>
+      <data type='string'>
+        <param name="pattern">[a-fA-F0-9]{8}\-([a-fA-F0-9]{4}\-){3}[a-fA-F0-9]{12}</param>
+      </data>
+    </choice>
   </define>
   <define name='filePath'>
     <data type='string'>
