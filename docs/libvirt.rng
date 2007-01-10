@@ -10,8 +10,8 @@
       We handle only document defining a domain
       Currently the only type supported is 'xen'
       The description must start with the identification informations and then
-      os, resources, features, devices and termination informations can be
-      given in any order.
+      os or bootloader, resources, features, devices and termination informations
+      can be given in any order.
     -->
   <define name='domain'>
     <element name="domain">
@@ -20,7 +20,20 @@
       </attribute>
       <ref name='ids'/>
       <interleave>
-        <ref name='os'/>
+        <choice>
+	  <group>
+            <ref name='os'/>
+	    <optional>
+              <ref name='bootloader'/>
+	    </optional>
+	  </group>
+	  <group>
+	    <ref name='bootloader'/>
+	    <optional>
+              <ref name='os'/>
+	    </optional>
+	  </group>
+	</choice>
         <ref name='resources'/>
         <ref name='features'/>
         <ref name='termination'/>
@@ -56,6 +69,7 @@
   <!--
       Resources usage defines the amount of memory (maximum and possibly
       current usage) and number of virtual CPUs used by that domain.
+      We can't check here the rule that currentMemory <= memory
     -->
 
   <define name='resources'>
@@ -63,12 +77,29 @@
       <element name='memory'>
         <ref name='memoryKB'/>
       </element>
-      <element name='vcpu'>
-        <ref name='countCPU'/>
-      </element>
+      <optional>
+        <element name='currentMemory'>
+          <ref name='memoryKB'/>
+        </element>
+      </optional>
+      <optional>
+        <element name='vcpu'>
+          <ref name='countCPU'/>
+        </element>
+      </optional>
     </interleave>
   </define>
 
+  <!--
+      A bootloader may be used to extract the OS information instead of
+      defining the OS parameter in the instance. It points just to the
+      binary or script used to extract the data from the first disk device.
+    -->
+  <define name='bootloader'>
+    <element name='bootloader'>
+      <ref name='absFilePath'/>
+    </element>
+  </define>
   <!--
       The Operating system can be:
       - a linux paravirtualized OS
@@ -100,9 +131,11 @@
 	  <ref name='absFilePath'/>
 	</element>
       </optional>
-      <element name='root'>
-        <ref name='devicePath'/>
-      </element>
+      <optional>
+        <element name='root'>
+          <ref name='devicePath'/>
+        </element>
+      </optional>
       <optional>
         <element name='cmdline'>
 	  <text/>
@@ -145,20 +178,20 @@
     -->
   <define name='disk'>
     <element name='disk'>
+      <optional>
+	<attribute name='device'>
+	  <choice>
+	    <value>floppy</value>
+	    <value>disk</value>
+	    <value>cdrom</value>
+	  </choice>
+	</attribute>
+      </optional>
       <choice>
         <group>
           <attribute name='type'>
 	    <value>file</value>
 	  </attribute>
-	  <optional>
-	    <attribute name='device'>
-	      <choice>
-	        <value>floppy</value>
-	        <value>disk</value>
-	        <value>cdrom</value>
-	      </choice>
-	    </attribute>
-	  </optional>
 	  <interleave>
 	    <element name='source'>
 	      <attribute name='file'>
@@ -166,8 +199,13 @@
 	      </attribute>
 	      <empty/>
 	    </element>
+	    <optional>
+	      <ref name='driver'/>
+	    </optional>
 	    <ref name='target'/>
-	    <ref name='readonly'/>
+	    <optional>
+	      <ref name='readonly'/>
+	    </optional>
 	  </interleave>
         </group>
         <group>
@@ -181,8 +219,13 @@
 	      </attribute>
 	      <empty/>
 	    </element>
+	    <optional>
+	      <ref name='driver'/>
+	    </optional>
 	    <ref name='target'/>
-	    <ref name='readonly'/>
+	    <optional>
+	      <ref name='readonly'/>
+	    </optional>
 	  </interleave>
         </group>
       </choice>
@@ -198,29 +241,86 @@
   </define>
 
   <define name='readonly'>
-    <optional>
-      <element name='readonly'>
-	<empty/>
-      </element>
-    </optional>
+    <element name='readonly'>
+      <empty/>
+    </element>
   </define>
 
   <!--
-      An interface description
-
+      Disk may use a special driver for access. Currently this is 
+      only defined for Xen for tap/aio and file, but will certainly be
+      extended in the future, and libvirt doesn't look for specific values.
+    -->
+  <define name='driver'>
+      <element name='driver'>
+        <attribute name='name'>
+	  <ref name='genericName'/>
+	</attribute>
+        <optional>
+          <attribute name='type'>
+	    <ref name='genericName'/>
+	  </attribute>
+	</optional>
+	<empty/>
+      </element>
+  </define>
+  <!--
+      An interface description can either be of type bridge in which case
+      it will use a bridging source, or of type ethernet which uses a device
+      source and a device target instead. They both share a set of interface
+      options.
     -->
   <define name='interface'>
     <element name='interface'>
-      <attribute name='type'>
-        <value>bridge</value>
-      </attribute>
+      <choice>
+        <group>
+          <attribute name='type'>
+            <value>bridge</value>
+          </attribute>
+	  <interleave>
+	    <element name='source'>
+	      <attribute name='bridge'>
+		<ref name='deviceName'/>
+	      </attribute>
+	      <empty/>
+	    </element>
+	    <ref name='interface-options'/>
+	  </interleave>
+	</group>
+        <group>
+          <attribute name='type'>
+            <value>ethernet</value>
+          </attribute>
+	  <interleave>
+	    <element name='source'>
+	      <attribute name='dev'>
+		<ref name='deviceName'/>
+	      </attribute>
+	      <empty/>
+	    </element>
+	    <ref name='interface-options'/>
+	  </interleave>
+	</group>
+      </choice>
+    </element>
+  </define>
+
+  <!--
+      The interface options possible are:
+        - the MAC address
+	- the IP address bound to the interface
+	- the name of the script used to set up the binding
+    -->
+  <define name='interface-options'>
       <interleave>
-        <element name='source'>
-	  <attribute name='bridge'>
-            <ref name='deviceName'/>
-	  </attribute>
-	  <empty/>
-        </element>
+	<optional>
+	  <element name='target'>
+	    <attribute name='dev'>
+	      <ref name='deviceName'/>
+	    </attribute>
+	    <empty/>
+	  </element>
+	</optional>
 	<optional>
 	  <element name='mac'>
 	    <attribute name='address'>
@@ -246,7 +346,6 @@
 	  </element>
 	</optional>
       </interleave>
-    </element>
   </define>
 
   <!--
@@ -259,7 +358,9 @@
   </define>
 
   <!--
-      A graphic description
+      A graphic description, currently in Xen only 2 types are supported:
+        - sdl without arguments
+	- vnc with a required port and optional listen IP address and password
     -->
   <define name='graphic'>
     <element name='graphics'>
@@ -274,6 +375,16 @@
           <attribute name='port'>
 	    <ref name='PortNumber'/>
 	  </attribute>
+	  <optional>
+	    <attribute name='listen'>
+	      <ref name='addrIP'/>
+	    </attribute>
+	  </optional>
+	  <optional>
+	    <attribute name='passwd'>
+	      <text/>
+	    </attribute>
+	  </optional>
 	</group>
       </choice>
     </element>
@@ -409,9 +520,8 @@
     </data>
   </define>
   <define name='PortNumber'>
-    <data type='unsignedShort'>
-      <param name="pattern">[0-9]+</param>
-      <param name="minInclusive">1</param>
+    <data type='short'>
+      <param name="minInclusive">-1</param>
     </data>
   </define>
   <define name='memoryKB'>
@@ -421,6 +531,11 @@
     </data>
   </define>
   <define name='domainName'>
+    <data type='string'>
+      <param name="pattern">[a-zA-Z0-9_\+\-]+</param>
+    </data>
+  </define>
+  <define name='genericName'>
     <data type='string'>
       <param name="pattern">[a-zA-Z0-9_\+\-]+</param>
     </data>
@@ -448,7 +563,7 @@
   </define>
   <define name='deviceName'>
     <data type='string'>
-      <param name="pattern">[a-zA-Z0-9_\-]+</param>
+      <param name="pattern">[a-zA-Z0-9_\-\:\.\/]+</param>
     </data>
   </define>
   <define name='addrMAC'>

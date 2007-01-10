@@ -1,3 +1,8 @@
+Wed Jan 10 11:06:36 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* docs/libvirt.rng: went through the existing tests with the RNG and
+	  fixed or added a number constructs
+
 Tue Jan  9 17:28:18 CET 2007 Daniel Veillard <veillard@redhat.com>
 	
 	* docs/libvirt.rng: first version of the Relax-NG schemas to validate
