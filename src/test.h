@@ -1,15 +1,28 @@
 /*
  * test.h: A "mock" hypervisor for use by application unit tests
  *
- * Copyright (C) 2006 Red Hat, Inc.
+ * Copyright (C) 2006-2006 Red Hat, Inc.
+ * Copyright (C) 2006  Daniel P. Berrange
  *
- * See COPYING.LIB for the License of this software
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
  * Daniel Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIR_TEST_SIMPLE_INTERNAL_H__
-#define __VIR_TEST_SIMPLE_INTERNAL_H__
+#ifndef __VIR_TEST_INTERNAL_H__
+#define __VIR_TEST_INTERNAL_H__
 
 #include <libvirt/virterror.h>
 
@@ -17,47 +30,18 @@
 extern "C" {
 #endif
 
-void testRegister(void);
-int testOpen(virConnectPtr conn,
-             const char *name,
-             int flags);
-int testClose  (virConnectPtr conn);
-int testGetVersion(virConnectPtr conn,
-	           unsigned long *hvVer);
-int testNodeGetInfo(virConnectPtr conn,
-	            virNodeInfoPtr info);
-int testNumOfDomains(virConnectPtr conn);
-int testListDomains(virConnectPtr conn,
-	            int *ids,
-	            int maxids);
-char *testGetOSType(virDomainPtr dom);
-virDomainPtr
-testDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
-		      unsigned int flags ATTRIBUTE_UNUSED);
-virDomainPtr testLookupDomainByID(virConnectPtr conn,
-			          int id);
-virDomainPtr testLookupDomainByUUID(virConnectPtr conn,
-			            const unsigned char *uuid);
-virDomainPtr testLookupDomainByName(virConnectPtr conn,
-			            const char *name);
-int testDestroyDomain(virDomainPtr domain);
-int testResumeDomain(virDomainPtr domain);
-int testPauseDomain(virDomainPtr domain);
-int testShutdownDomain (virDomainPtr domain);
-int testRebootDomain (virDomainPtr domain,
-		      virDomainRestart action);
-int testGetDomainInfo(virDomainPtr domain,
-	              virDomainInfoPtr info);
-unsigned long testGetMaxMemory(virDomainPtr domain);
-int testSetMaxMemory(virDomainPtr domain,
-	     	     unsigned long memory);
-int testSetMemory(virDomainPtr domain,
-		  unsigned long memory);
-int testSetVcpus(virDomainPtr domain,
-		 unsigned int nrCpus);
-char * testDomainDumpXML(virDomainPtr domain, int flags);
+    void testRegister(void);
 
 #ifdef __cplusplus
 }
 #endif
-#endif                          /* __VIR_TEST_INTERNAL_H__ */
+#endif /* __VIR_TEST_INTERNAL_H__ */
+
+/*
+ * Local variables:
+ *  indent-tabs-mode: nil
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  tab-width: 4
+ * End:
+ */
