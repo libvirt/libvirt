@@ -8,7 +8,8 @@
     <root>/dev/sda1</root>
     <cmdline> ro selinux=0 3</cmdline>
   </os>
-  <memory>131072</memory>
+  <memory>261072</memory>
+  <currentMemory>131072</currentMemory>
   <vcpu>1</vcpu>
   <devices>
     <disk type='file'>

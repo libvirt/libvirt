@@ -1,3 +1,8 @@
+Thu Jan 18 16:12:13 EST 2007 Daniel Berrange <berrange@redhat.com>
+
+	* docs/testnode.xml, docs/testdomfc4.xml: Tweak memory settings to
+	be more realistic for testing purposes
+
 Thu Jan 18 16:05:13 EST 2007 Daniel Berrange <berrange@redhat.com>
 
 	* src/test.h, src/test.c: Implement full inactive domain management

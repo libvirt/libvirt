@@ -19,5 +19,5 @@
     <cores>4</cores>
     <threads>2</threads>
   </cpu>
-  <memory>137438953</memory>
+  <memory>8192000</memory>
 </node>
