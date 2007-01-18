@@ -3127,6 +3127,8 @@ virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
         virXendError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (NULL);
     }
+    if (conn->xendConfigVersion < 3)
+        return(NULL);
 
     sexpr = virDomainParseXMLDesc(xmlDesc, &name, conn->xendConfigVersion);
     if ((sexpr == NULL) || (name == NULL)) {
@@ -3196,6 +3198,9 @@ xenDaemonNumOfDefinedDomains(virConnectPtr conn)
     int ret = -1;
     struct sexpr *_for_i, *node;
 
+    if (conn->xendConfigVersion < 3)
+        return(-1);
+
     root = sexpr_get(conn, "/xend/domain?state=halted");
     if (root == NULL)
         goto error;
@@ -3219,6 +3224,9 @@ int xenDaemonListDefinedDomains(virConnectPtr conn, const char **names, int maxn
     struct sexpr *root = NULL;
     int ret = -1;
     struct sexpr *_for_i, *node;
+
+    if (conn->xendConfigVersion < 3)
+        return(-1);
 
     if ((names == NULL) || (maxnames <= 0))
         goto error;
