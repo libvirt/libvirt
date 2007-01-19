@@ -1,3 +1,9 @@
+Fri Jan 19 15:07:13 EST 2007 Daniel Berrange <berrange@redhat.com>
+
+	* src/conf.c: Free stored config parameters, when free'ing
+	the virConfPtr object. For values, only free the object
+	corresponding to the values' type
+
 Thu Jan 18 16:12:13 EST 2007 Daniel Berrange <berrange@redhat.com>
 
 	* docs/testnode.xml, docs/testdomfc4.xml: Tweak memory settings to

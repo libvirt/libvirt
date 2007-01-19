@@ -120,9 +120,9 @@ virConfFreeList(virConfValuePtr list)
 
     while (list != NULL) {
         next = list->next;
-	list->next = NULL;
-	virConfFreeValue(list);
-	list = next;
+        list->next = NULL;
+        virConfFreeValue(list);
+        list = next;
     }
 }
 
@@ -137,9 +137,11 @@ virConfFreeValue(virConfValuePtr val)
 {
     if (val == NULL)
         return;
-    if (val->str != NULL)
+    if (val->type == VIR_CONF_STRING &&
+        val->str != NULL)
         free(val->str);
-    if (val->list != NULL)
+    if (val->type == VIR_CONF_LIST &&
+        val->list != NULL)
         virConfFreeList(val->list);
     free(val);
 }
@@ -204,6 +206,7 @@ virConfAddEntry(virConfPtr conf, char *name, virConfValuePtr value, char *comm)
         virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"), 0);
         return(NULL);
     }
+
     memset(ret, 0, sizeof(virConfEntry));
     ret->name = name;
     ret->value = value;
@@ -494,7 +497,6 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
     ret->l = l;
     ret->str = str;
     ret->list = lst;
-
     return(ret);
 }
 
@@ -760,9 +762,22 @@ virConfReadMem(const char *memory, int len)
 int
 virConfFree(virConfPtr conf)
 {
+    virConfEntryPtr tmp;
     if (conf == NULL) {
         virConfError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__, 0);
-	return(-1);
+        return(-1);
+    }
+
+    tmp = conf->entries;
+    while (tmp) {
+        virConfEntryPtr next;
+        free(tmp->name);
+        virConfFreeValue(tmp->value);
+        if (tmp->comment)
+            free(tmp->comment);
+        next = tmp->next;
+        free(tmp);
+        tmp = next;
     }
     free(conf);
     return(0);
@@ -818,12 +833,12 @@ int             virConfSetValue         (virConfPtr conf,
         prev = cur;
         cur = cur->next;
     }
+
     if (!cur) {
         if (!(cur = malloc(sizeof(virConfEntry)))) {
             virConfFreeValue(value);
             return (-1);
         }
-        cur->next = NULL;
         cur->comment = NULL;
         if (!(cur->name = strdup(setting))) {
             virConfFreeValue(value);
@@ -832,8 +847,10 @@ int             virConfSetValue         (virConfPtr conf,
         }
         cur->value = value;
         if (prev) {
+            cur->next = prev->next;
             prev->next = cur;
         } else {
+            cur->next = conf->entries;
             conf->entries = cur;
         }
     } else {
@@ -925,17 +942,17 @@ virConfWriteMem(char *memory, int *len, virConfPtr conf)
     cur = conf->entries;
     while (cur != NULL) {
         virConfSaveEntry(buf, cur);
-	cur = cur->next;
+        cur = cur->next;
     }
     
     if ((int) buf->use >= *len) {
         *len = buf->use;
-	ret = -1;
-	goto error;
+        ret = -1;
+        goto error;
     }
     memcpy(memory, buf->content, buf->use);
     ret = buf->use;
-
+    *len = buf->use;
 error:
     virBufferFree(buf);
     return(ret);
