@@ -1,3 +1,9 @@
+Fri Jan 19 15:23:13 EST 2007 Daniel Berrange <berrange@redhat.com>
+
+	* src/xm_internal.c: Finished off the conversion from XML
+	to XM config files, and the reverse, to deal with all known
+	libvirt guest config options.
+
 Fri Jan 19 15:07:13 EST 2007 Daniel Berrange <berrange@redhat.com>
 
 	* src/conf.c: Free stored config parameters, when free'ing

@@ -1,19 +1,32 @@
 /*
  * xm_internal.h: helper routines for dealing with inactive domains
  *
- * Copyright (C) 2006
+ * Copyright (C) 2006-2007 Red Hat
+ * Copyright (C) 2006 Daniel P. Berrange
  *
- *      Daniel Berrange <berrange@redhat.com>
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  *
- *  This file is subject to the terms and conditions of the GNU Lesser General
- *  Public License. See the file COPYING.LIB in the main directory of this
- *  archive for more details.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ *
+ * Author: Daniel P. Berrange <berrange@redhat.com>
+ *
  */
 
 #ifndef _LIBVIRT_XM_INTERNAL_H_
 #define _LIBVIRT_XM_INTERNAL_H_
 
 #include "libvirt/libvirt.h"
+#include "conf.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,6 +53,8 @@ int xenXMDomainCreate(virDomainPtr domain);
 virDomainPtr xenXMDomainDefineXML(virConnectPtr con, const char *xml);
 int xenXMDomainUndefine(virDomainPtr domain);
 
+virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml);
+char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf);
 
 #ifdef __cplusplus
 }
