@@ -1,0 +1,24 @@
+<domain type='xen'>
+  <name>XenGuest1</name>
+  <uuid>c7a5fdb0cdaf9455926ad65c16db1809</uuid>
+  <bootloader>/usr/bin/pygrub</bootloader>
+  <currentMemory>403456</currentMemory>
+  <memory>592896</memory>
+  <vcpu>1</vcpu>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <disk type='block' device='disk'>
+      <driver name='phy'/>
+      <source dev='/dev/HostVG/XenGuest1'/>
+      <target dev='xvda'/>
+    </disk>
+    <interface type='bridge'>
+      <mac address='00:16:3E:66:94:9C'/>
+      <ip address='192.168.0.9'/>
+    </interface>
+    <graphics type='vnc' port='-1' listen='127.0.0.1' passwd='123poi'/>
+    <console/>
+  </devices>
+</domain>

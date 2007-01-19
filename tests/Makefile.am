@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = virshdata confdata sexpr2xmldata xml2sexprdata
+SUBDIRS = virshdata confdata sexpr2xmldata xml2sexprdata xmconfigdata
 
 LIBVIRT = $(top_builddir)/src/.libs/libvirt.a
 
@@ -20,9 +20,9 @@ LDADDS = \
 EXTRA_DIST = xmlrpcserver.py test_conf.sh
 
 noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest conftest \
-	reconnect
+	reconnect xmconfigtest
 
-TESTS = xml2sexprtest sexpr2xmltest virshtest test_conf.sh reconnect
+TESTS = xml2sexprtest sexpr2xmltest virshtest test_conf.sh reconnect xmconfigtest
 
 valgrind:
 	$(MAKE) check TESTS_ENVIRONMENT="valgrind --quiet --leak-check=full"
@@ -48,6 +48,12 @@ sexpr2xmltest_SOURCES = \
 	testutils.c testutils.h
 sexpr2xmltest_LDFLAGS =
 sexpr2xmltest_LDADD = $(LDADDS)
+
+xmconfigtest_SOURCES = \
+	xmconfigtest.c \
+	testutils.c testutils.h
+xmconfigtest_LDFLAGS =
+xmconfigtest_LDADD = $(LDADDS)
 
 virshtest_SOURCES = \
 	virshtest.c \

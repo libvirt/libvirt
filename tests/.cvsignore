@@ -8,3 +8,4 @@ xml2sexprtest
 virshtest
 conftest
 reconnect
+xmconfigtest

@@ -269,4 +269,5 @@ AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           tests/Makefile proxy/Makefile \
           tests/xml2sexprdata/Makefile \
           tests/sexpr2xmldata/Makefile \
+          tests/xmconfigdata/Makefile \
           tests/virshdata/Makefile tests/confdata/Makefile)

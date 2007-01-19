@@ -1,0 +1,38 @@
+<domain type='xen'>
+  <name>XenGuest2</name>
+  <uuid>c7a5fdb2cdaf9455926ad65c16db1809</uuid>
+  <os>
+    <type>hvm</type>
+    <loader>/usr/lib/xen/boot/hvmloader</loader>
+    <boot>cdrom</boot>
+  </os>
+  <currentMemory>403456</currentMemory>
+  <memory>592896</memory>
+  <vcpu>1</vcpu>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <features>
+    <pae/>
+    <acpi/>
+    <apic/>
+  </features>
+  <devices>
+    <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
+    <disk type='block' device='disk'>
+      <driver name='phy'/>
+      <source dev='/dev/HostVG/XenGuest2'/>
+      <target dev='hda'/>
+    </disk>
+    <disk type='file' device='cdrom'>
+      <driver name='file'/>
+      <source file='/root/boot.iso'/>
+      <target dev='hdc'/>
+      <readonly/>
+    </disk>
+    <interface type='bridge'>
+      <mac address='00:16:3E:66:92:9C'/>
+    </interface>
+    <graphics type='vnc' port='-1' listen='127.0.0.1' passwd='123poi'/>
+  </devices>
+</domain>
