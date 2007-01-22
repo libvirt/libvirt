@@ -437,10 +437,6 @@ static virDriver xenHypervisorDriver = {
     NULL, /* domainShutdown */
     NULL, /* domainReboot */
     xenHypervisorDestroyDomain, /* domainDestroy */
-    NULL, /* domainFree */
-    NULL, /* domainGetName */
-    NULL, /* domainGetID */
-    NULL, /* domainGetUUID */
     NULL, /* domainGetOSType */
     xenHypervisorGetMaxMemory, /* domainGetMaxMemory */
     xenHypervisorSetMaxMemory, /* domainSetMaxMemory */

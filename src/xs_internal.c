@@ -57,10 +57,6 @@ static virDriver xenStoreDriver = {
     xenStoreDomainShutdown, /* domainShutdown */
     xenStoreDomainReboot, /* domainReboot */
     NULL, /* domainDestroy */
-    NULL, /* domainFree */
-    NULL, /* domainGetName */
-    NULL, /* domainGetID */
-    NULL, /* domainGetUUID */
     xenStoreDomainGetOSType, /* domainGetOSType */
     xenStoreDomainGetMaxMemory, /* domainGetMaxMemory */
     NULL, /* domainSetMaxMemory */

@@ -63,10 +63,6 @@ static virDriver xenProxyDriver = {
     NULL, /* domainShutdown */
     NULL, /* domainReboot */
     NULL, /* domainDestroy */
-    NULL, /* domainFree */
-    NULL, /* domainGetName */
-    NULL, /* domainGetID */
-    NULL, /* domainGetUUID */
     xenProxyDomainGetOSType, /* domainGetOSType */
     xenProxyDomainGetMaxMemory, /* domainGetMaxMemory */
     NULL, /* domainSetMaxMemory */

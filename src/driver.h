@@ -77,15 +77,6 @@ typedef int
 					 unsigned int flags);
 typedef int
 	(*virDrvDomainDestroy)		(virDomainPtr domain);
-typedef int
-	(*virDrvDomainFree)		(virDomainPtr domain);
-typedef const char *
-	(*virDrvDomainGetName)		(virDomainPtr domain);
-typedef int
-	(*virDrvDomainGetID)		(virDomainPtr domain);
-typedef int
-	(*virDrvDomainGetUUID)		(virDomainPtr domain,
-					 unsigned char *uuid);
 typedef char *
 	(*virDrvDomainGetOSType)	(virDomainPtr domain);
 typedef unsigned long
@@ -175,10 +166,6 @@ struct _virDriver {
 	virDrvDomainShutdown		domainShutdown;
 	virDrvDomainReboot		domainReboot;
 	virDrvDomainDestroy		domainDestroy;
-	virDrvDomainFree		domainFree;
-	virDrvDomainGetName		domainGetName;
-	virDrvDomainGetID		domainGetID;
-	virDrvDomainGetUUID		domainGetUUID;
 	virDrvDomainGetOSType		domainGetOSType;
 	virDrvDomainGetMaxMemory	domainGetMaxMemory;
 	virDrvDomainSetMaxMemory	domainSetMaxMemory;

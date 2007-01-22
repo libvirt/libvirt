@@ -79,10 +79,6 @@ static virDriver xenDaemonDriver = {
     xenDaemonDomainShutdown, /* domainShutdown */
     xenDaemonDomainReboot, /* domainReboot */
     xenDaemonDomainDestroy, /* domainDestroy */
-    NULL, /* domainFree */
-    NULL, /* domainGetName */
-    NULL, /* domainGetID */
-    NULL, /* domainGetUUID */
     NULL, /* domainGetOSType */
     xenDaemonDomainGetMaxMemory, /* domainGetMaxMemory */
     xenDaemonDomainSetMaxMemory, /* domainSetMaxMemory */

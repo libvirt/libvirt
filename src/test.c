@@ -107,10 +107,6 @@ static virDriver testDriver = {
     testShutdownDomain, /* domainShutdown */
     testRebootDomain, /* domainReboot */
     testDestroyDomain, /* domainDestroy */
-    NULL, /* domainFree */
-    NULL, /* domainGetName */
-    NULL, /* domainGetID */
-    NULL, /* domainGetUUID */
     testGetOSType, /* domainGetOSType */
     testGetMaxMemory, /* domainGetMaxMemory */
     testSetMaxMemory, /* domainSetMaxMemory */

@@ -86,10 +86,6 @@ static virDriver xenXMDriver = {
     NULL, /* domainShutdown */
     NULL, /* domainReboot */
     NULL, /* domainDestroy */
-    NULL, /* domainFree */
-    NULL, /* domainGetName */
-    NULL, /* domainGetID */
-    NULL, /* domainGetUUID */
     NULL, /* domainGetOSType */
     xenXMDomainGetMaxMemory, /* domainGetMaxMemory */
     xenXMDomainSetMaxMemory, /* domainSetMaxMemory */
