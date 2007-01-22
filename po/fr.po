@@ -1,20 +1,22 @@
+# translation of fr.po to 
 # translation of fr.po to French
 # translation of libvirt.po to Français
-# Copyright (C) 2006 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2007 Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # Guillaume <guillaume.chardin@gmail.com>, 2006.
 # Guillaume CHARDIN <guillaume.chardin@gmail.com>, 2006.
 # Decroux Fabien <fdecroux@redhat.com>, 2006.
 # Alain PORTAL <aportal@univ-montp2.fr>, 2006.
+# Myriam Malga <mmalga@redhat.com>, 2007.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-20 15:40+0100\n"
-"PO-Revision-Date: 2006-12-01 14:58+1000\n"
-"Last-Translator: Decroux Fabien <fdecroux@redhat.com>\n"
-"Language-Team: French <fr@li.org>\n"
+"POT-Creation-Date: 2007-01-22 16:17+0100\n"
+"PO-Revision-Date: 2007-01-17 10:44+1000\n"
+"Last-Translator: Myriam Malga <mmalga@redhat.com>\n"
+"Language-Team:  <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -377,8 +379,8 @@ msgstr "échec de l'analyse de la réponse du serveur"
 msgid "allocate new context"
 msgstr "alloue un nouveau contexte"
 
-#: src/hash.c:749 src/hash.c:755 src/test.c:728 src/test.c:753 src/test.c:776
-#: src/test.c:800 src/xend_internal.c:1962 src/xend_internal.c:2744
+#: src/hash.c:749 src/hash.c:755 src/test.c:864 src/test.c:893 src/test.c:916
+#: src/test.c:940 src/xend_internal.c:1962 src/xend_internal.c:2744
 #: src/xend_internal.c:2963 src/xs_internal.c:603 src/proxy_internal.c:798
 #: src/proxy_internal.c:845 src/proxy_internal.c:896
 msgid "allocating domain"
@@ -392,109 +394,124 @@ msgstr "Impossible d'ajouter le domaine à la table de hachage de connexion"
 msgid "domain missing from connection hash table"
 msgstr "domaine manquant dans la table de hachage"
 
-#: src/test.c:203 src/test.c:382 src/test.c:898 src/test.c:926 src/test.c:953
+#: src/test.c:268 src/test.c:479 src/test.c:1047 src/test.c:1078
+#: src/test.c:1129
 msgid "getting time of day"
 msgstr "récupère l'heure du jour"
 
-#: src/test.c:209 src/test.c:337 src/test.c:362
+#: src/test.c:274 src/test.c:434 src/test.c:459 src/test.c:1318
 msgid "domain"
 msgstr "domaine"
 
-#: src/test.c:215 src/test.c:458
+#: src/test.c:280 src/test.c:559
 msgid "creating xpath context"
 msgstr "création du contexte xpath"
 
-#: src/test.c:222
+#: src/test.c:287
 msgid "domain name"
 msgstr "nom du domaine"
 
-#: src/test.c:231 src/test.c:236
+#: src/test.c:296 src/test.c:301
 msgid "domain uuid"
 msgstr "UUID de domaine"
 
-#: src/test.c:244 src/test.c:249
+#: src/test.c:309 src/test.c:314
 msgid "domain memory"
 msgstr "mémoire du domaine"
 
-#: src/test.c:261
+#: src/test.c:327
+#, fuzzy
+msgid "domain current memory"
+msgstr "mémoire du domaine"
+
+#: src/test.c:344
 msgid "domain vcpus"
 msgstr "vcpus du domaine"
 
-#: src/test.c:272
+#: src/test.c:355
 msgid "domain reboot behaviour"
 msgstr "comportement lors du redémarrage du domaine"
 
-#: src/test.c:283
+#: src/test.c:366
 msgid "domain poweroff behaviour"
 msgstr "comportement lors de l'arrêt du domaine"
 
-#: src/test.c:294
+#: src/test.c:377
 msgid "domain crash behaviour"
 msgstr "comportement lors du plantage du domaine"
 
-#: src/test.c:355
+#: src/test.c:452
 msgid "load domain definition file"
 msgstr "fichier de définition du domaine local"
 
-#: src/test.c:437
+#: src/test.c:538
 msgid "loading host definition file"
 msgstr "chargement du fichier de définition de l'hôte"
 
-#: src/test.c:444
+#: src/test.c:545
 msgid "host"
 msgstr "hôte"
 
-#: src/test.c:452
+#: src/test.c:553
 msgid "node"
 msgstr "noeud"
 
-#: src/test.c:474
+#: src/test.c:575
 msgid "node cpu numa nodes"
 msgstr "CPU noeud, noeud NUMA (Non Uniform Memory Access)"
 
-#: src/test.c:486
+#: src/test.c:587
 msgid "node cpu sockets"
 msgstr "sockets cpu noeud"
 
-#: src/test.c:498
+#: src/test.c:599
 msgid "node cpu cores"
 msgstr "coeurs cpu noeud"
 
-#: src/test.c:510
+#: src/test.c:611
 msgid "node cpu threads"
 msgstr "threads cpu noeud"
 
-#: src/test.c:522
+#: src/test.c:623
 msgid "node active cpu"
 msgstr "cpu actif noeud"
 
-#: src/test.c:536
+#: src/test.c:637
 msgid "node cpu mhz"
 msgstr "mhz cpu noeud"
 
-#: src/test.c:555
+#: src/test.c:656
 msgid "node memory"
 msgstr "mémoire noeud"
 
-#: src/test.c:564
+#: src/test.c:665
 msgid "node domain list"
 msgstr "liste de domaine noeud"
 
-#: src/test.c:573
+#: src/test.c:675
 msgid "resolving domain filename"
 msgstr "résolution du domaine du fichier"
 
-#: src/test.c:611
+#: src/test.c:714
 msgid "allocating node"
 msgstr "noeud d'allocation"
 
-#: src/test.c:651
+#: src/test.c:770
 msgid "too many connections"
 msgstr "trop de connexions"
 
-#: src/test.c:736
+#: src/test.c:849
 msgid "too many domains"
 msgstr "trop de domaines"
+
+#: src/test.c:1347
+#, fuzzy
+msgid "Domain is already running"
+msgstr "Le domaine est déjà actif"
+
+#: src/test.c:1371
+msgid "Domain is still running"
+msgstr ""
 
 #: src/xml.c:65
 msgid "growing buffer"
@@ -545,9 +562,8 @@ msgid "domain information incomplete, missing kernel"
 msgstr "information de domaine incorrecte, noyau manquant"
 
 #: src/xend_internal.c:1604
-#, fuzzy
 msgid "domain information incomplete, vbd has no src"
-msgstr "information de domaine incorrecte, vbd n'a pas de dev"
+msgstr "information de domaine incorrecte, vbd n'a pas de src"
 
 #: src/xend_internal.c:1610
 msgid "domain information incomplete, vbd has no dev"
@@ -555,11 +571,12 @@ msgstr "information de domaine incorrecte, vbd n'a pas de dev"
 
 #: src/xend_internal.c:1618
 msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
+msgstr "échec lors de l'analyse du nom de fichier vbd, le nom du pilote manque"
 
 #: src/xend_internal.c:1637
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
+"échec lors de l'analyse du nom de fichier vbd, le type de pilote manque"
 
 #: src/xend_internal.c:1981
 msgid "failed to parse Xend domain information"
@@ -580,7 +597,7 @@ msgstr "Échec de la récupération des périphériques pour le domaine %s\n"
 msgid "Failed to resume new domain %s\n"
 msgstr "Échec de la reprise du nouveau domaine %s\n"
 
-#: src/xend_internal.c:3145
+#: src/xend_internal.c:3147
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "échec de la création du domaine %s\n"
@@ -840,27 +857,25 @@ msgstr "Échec de la restauration du domaine depuis %s"
 
 #: src/virsh.c:812
 msgid "dump the core of a domain to a file for analysis"
-msgstr ""
+msgstr "copier le core d'un domaine dans un fichier pour analyse"
 
 #: src/virsh.c:813
-#, fuzzy
 msgid "Core dump a domain."
-msgstr "reprend un domaine"
+msgstr "Core dump un domaine."
 
 #: src/virsh.c:819
-#, fuzzy
 msgid "where to dump the core"
-msgstr "où enregistrer les données"
+msgstr "où copier le core"
 
 #: src/virsh.c:841
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s dumpd to %s\n"
-msgstr "Domaine %s enregistré dans %s\n"
+msgstr "Domaine %s copié dans %s\n"
 
 #: src/virsh.c:843
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to core dump domain %s to %s"
-msgstr "Échec de l'enregistrement du domaine %s dans %s"
+msgstr "Échec du core dump du domaine %s dans %s"
 
 #: src/virsh.c:857
 msgid "resume a domain"
@@ -1397,48 +1412,48 @@ msgstr ""
 "       'quit' pour quitter\n"
 "\n"
 
-#: src/conf.c:153 src/conf.c:204 src/conf.c:487 src/conf.c:526 src/conf.c:554
-#: src/conf.c:632
+#: src/conf.c:155 src/conf.c:206 src/conf.c:490 src/conf.c:528 src/conf.c:556
+#: src/conf.c:634
 msgid "allocating configuration"
 msgstr "configuration d'allocation"
 
-#: src/conf.c:339
+#: src/conf.c:342
 msgid "unterminated number"
 msgstr "nombre sans fin"
 
-#: src/conf.c:371 src/conf.c:388 src/conf.c:400
+#: src/conf.c:374 src/conf.c:391 src/conf.c:403
 msgid "unterminated string"
 msgstr "chaîne sans fin"
 
-#: src/conf.c:428 src/conf.c:481
+#: src/conf.c:431 src/conf.c:484
 msgid "expecting a value"
 msgstr "valeur attendue"
 
-#: src/conf.c:448
+#: src/conf.c:451
 msgid "expecting a separator in list"
 msgstr "séparateur attendu dans la liste"
 
-#: src/conf.c:471
+#: src/conf.c:474
 msgid "list is not closed with ] "
 msgstr "la liste n'est pas terminée avec « ] »"
 
-#: src/conf.c:519
+#: src/conf.c:521
 msgid "expecting a name"
 msgstr "nom attendu"
 
-#: src/conf.c:582
+#: src/conf.c:584
 msgid "expecting a separator"
 msgstr "séparateur attendu"
 
-#: src/conf.c:614
+#: src/conf.c:616
 msgid "expecting an assignment"
 msgstr "affectation attendue"
 
-#: src/conf.c:881
+#: src/conf.c:898
 msgid "failed to open file"
 msgstr "échec de l'ouverture du fichier"
 
-#: src/conf.c:889
+#: src/conf.c:906
 msgid "failed to save content"
 msgstr "échec de l'enregistrement du contenu"
 

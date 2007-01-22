@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: or\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-20 15:40+0100\n"
+"POT-Creation-Date: 2007-01-22 16:17+0100\n"
 "PO-Revision-Date: 2006-12-14 16:58+0530\n"
 "Last-Translator: Subhransu Behera <sbehera@redhat.com>\n"
 "Language-Team: Oriya <oriya-group@lists.sarovar.org>\n"
@@ -378,8 +378,8 @@ msgstr "ବିଶ୍ଳେଷଣ ସେବକର ଉତ୍ତର ବିଫଳ"
 msgid "allocate new context"
 msgstr "ନୂତନ ପ୍ରସଙ୍ଗ ବାଣ୍ଟନ୍ତୁ"
 
-#: src/hash.c:749 src/hash.c:755 src/test.c:728 src/test.c:753 src/test.c:776
-#: src/test.c:800 src/xend_internal.c:1962 src/xend_internal.c:2744
+#: src/hash.c:749 src/hash.c:755 src/test.c:864 src/test.c:893 src/test.c:916
+#: src/test.c:940 src/xend_internal.c:1962 src/xend_internal.c:2744
 #: src/xend_internal.c:2963 src/xs_internal.c:603 src/proxy_internal.c:798
 #: src/proxy_internal.c:845 src/proxy_internal.c:896
 msgid "allocating domain"
@@ -393,109 +393,124 @@ msgstr "ସଂଯୋଗ hash ସାରଣୀରେ ପରିସର ଯୋଗ କ
 msgid "domain missing from connection hash table"
 msgstr "ସଂଯୋଗ hash ସାରଣୀରେ ପରିସର ଅନୁପସ୍ଥିତ"
 
-#: src/test.c:203 src/test.c:382 src/test.c:898 src/test.c:926 src/test.c:953
+#: src/test.c:268 src/test.c:479 src/test.c:1047 src/test.c:1078
+#: src/test.c:1129
 msgid "getting time of day"
 msgstr "ଦିନର ସମୟ ପାଉଅଛି"
 
-#: src/test.c:209 src/test.c:337 src/test.c:362
+#: src/test.c:274 src/test.c:434 src/test.c:459 src/test.c:1318
 msgid "domain"
 msgstr "ପରିସର"
 
-#: src/test.c:215 src/test.c:458
+#: src/test.c:280 src/test.c:559
 msgid "creating xpath context"
 msgstr "xpath ପ୍ରସଙ୍ଗ ସୃଷ୍ଟି କରୁଅଛି"
 
-#: src/test.c:222
+#: src/test.c:287
 msgid "domain name"
 msgstr "ପରିସର ନାମ"
 
-#: src/test.c:231 src/test.c:236
+#: src/test.c:296 src/test.c:301
 msgid "domain uuid"
 msgstr "ପରସର uuid"
 
-#: src/test.c:244 src/test.c:249
+#: src/test.c:309 src/test.c:314
 msgid "domain memory"
 msgstr "ପରିସର ସ୍ମୃତି"
 
-#: src/test.c:261
+#: src/test.c:327
+#, fuzzy
+msgid "domain current memory"
+msgstr "ପରିସର ସ୍ମୃତି"
+
+#: src/test.c:344
 msgid "domain vcpus"
 msgstr "ପରିସର vcpus"
 
-#: src/test.c:272
+#: src/test.c:355
 msgid "domain reboot behaviour"
 msgstr "ପରିସର ପୁନଃପ୍ରାରମ୍ଭ କରିବା ସମୟରେ ଆଚରଣ"
 
-#: src/test.c:283
+#: src/test.c:366
 msgid "domain poweroff behaviour"
 msgstr "ପରିସର ବନ୍ଦ କରିବା ସମୟରେ ଆଚରଣ"
 
-#: src/test.c:294
+#: src/test.c:377
 msgid "domain crash behaviour"
 msgstr "ପରିସର ଅକାମୀ ହେବା ସମୟରେ ଆଚରଣ"
 
-#: src/test.c:355
+#: src/test.c:452
 msgid "load domain definition file"
 msgstr "ପରିସର ସଂଜ୍ଞା ଫାଇଲକୁ ଧାରଣ କରନ୍ତୁ"
 
-#: src/test.c:437
+#: src/test.c:538
 msgid "loading host definition file"
 msgstr "ଆଧାର ସଂଜ୍ଞା ଫାଇଲକୁ ଧାରଣ କରୁଅଛି"
 
-#: src/test.c:444
+#: src/test.c:545
 msgid "host"
 msgstr "ଆଧାର"
 
-#: src/test.c:452
+#: src/test.c:553
 msgid "node"
 msgstr "ନୋଡ"
 
-#: src/test.c:474
+#: src/test.c:575
 msgid "node cpu numa nodes"
 msgstr "ନୋଡ cpu numa ନୋଡ"
 
-#: src/test.c:486
+#: src/test.c:587
 msgid "node cpu sockets"
 msgstr "ନୋଡ cpu ସକେଟ"
 
-#: src/test.c:498
+#: src/test.c:599
 msgid "node cpu cores"
 msgstr "ନୋଡ cpu ଅନ୍ତଃସ୍ଥଳ"
 
-#: src/test.c:510
+#: src/test.c:611
 msgid "node cpu threads"
 msgstr "ନୋଡ cpu ଥ୍ରେଡ"
 
-#: src/test.c:522
+#: src/test.c:623
 msgid "node active cpu"
 msgstr "ନୋଡ ସକ୍ରିୟ cpu"
 
-#: src/test.c:536
+#: src/test.c:637
 msgid "node cpu mhz"
 msgstr "ନୋଡ cpu ମେଗା-ହର୍ଜ"
 
-#: src/test.c:555
+#: src/test.c:656
 msgid "node memory"
 msgstr "ନୋଡ ସ୍ମୃତି"
 
-#: src/test.c:564
+#: src/test.c:665
 msgid "node domain list"
 msgstr "ନୋଡ ପରିସର ତାଲିକା"
 
-#: src/test.c:573
+#: src/test.c:675
 msgid "resolving domain filename"
 msgstr "ପରିସର ଫାଇଲ ନାମକୁ ସମାଧାନ କରୁଅଛି"
 
-#: src/test.c:611
+#: src/test.c:714
 msgid "allocating node"
 msgstr "ନୋଡ ବାଣ୍ଟୁଅଛି"
 
-#: src/test.c:651
+#: src/test.c:770
 msgid "too many connections"
 msgstr "ଅତ୍ଯଧିକ ସଂଯୋଗ"
 
-#: src/test.c:736
+#: src/test.c:849
 msgid "too many domains"
 msgstr "ଅତ୍ଯଧିକ ପରିସର"
+
+#: src/test.c:1347
+#, fuzzy
+msgid "Domain is already running"
+msgstr "ପରିସରଟି ପୂର୍ବରୁ ସକ୍ରିୟ ଅଛି"
+
+#: src/test.c:1371
+msgid "Domain is still running"
+msgstr ""
 
 #: src/xml.c:65
 msgid "growing buffer"
@@ -580,7 +595,7 @@ msgstr "%s ପରିସର ପାଇଁ ପରିସର ପାଇବାରେ �
 msgid "Failed to resume new domain %s\n"
 msgstr "ନୂତନ ପରିସର %s କୁ ପୁନର୍ବାର ଆରମ୍ଭ କରିବାରେ ବିଫଳ\n"
 
-#: src/xend_internal.c:3145
+#: src/xend_internal.c:3147
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "%s ନିଷ୍କ୍ରିୟ ପରିସରକୁ ସୃଷ୍ଟି କରିବାରେ ବିଫଳ\n"
@@ -1391,48 +1406,48 @@ msgstr ""
 "        ବନ୍ଦ କରିବା ପାଇଁ 'quit'\n"
 "\n"
 
-#: src/conf.c:153 src/conf.c:204 src/conf.c:487 src/conf.c:526 src/conf.c:554
-#: src/conf.c:632
+#: src/conf.c:155 src/conf.c:206 src/conf.c:490 src/conf.c:528 src/conf.c:556
+#: src/conf.c:634
 msgid "allocating configuration"
 msgstr "ବିନ୍ଯାସ ବାଣ୍ଟୁଅଛି"
 
-#: src/conf.c:339
+#: src/conf.c:342
 msgid "unterminated number"
 msgstr "ଅସମାପ୍ତ ସଂଖ୍ଯା"
 
-#: src/conf.c:371 src/conf.c:388 src/conf.c:400
+#: src/conf.c:374 src/conf.c:391 src/conf.c:403
 msgid "unterminated string"
 msgstr "ଅସମାପ୍ତ ବାକ୍ଯଖଣ୍ଡ"
 
-#: src/conf.c:428 src/conf.c:481
+#: src/conf.c:431 src/conf.c:484
 msgid "expecting a value"
 msgstr "ଗୋଟିଏ ମୂଲ୍ଯ ଆଶା କରୁଅଛି"
 
-#: src/conf.c:448
+#: src/conf.c:451
 msgid "expecting a separator in list"
 msgstr "ତାଲିକାରେ ଗୋଟିଏ ବିଭାଜକକୁ ଆଶା କରୁଅଛି"
 
-#: src/conf.c:471
+#: src/conf.c:474
 msgid "list is not closed with ] "
 msgstr "ତାଲିକାଟି ] ଦ୍ବାରା ବନ୍ଦ ହେଉନାହିଁ"
 
-#: src/conf.c:519
+#: src/conf.c:521
 msgid "expecting a name"
 msgstr "ଗୋଟିଏ ନାମ ଆଶା କରୁଅଛି"
 
-#: src/conf.c:582
+#: src/conf.c:584
 msgid "expecting a separator"
 msgstr "ଗୋଟିଏ ବିଭାଜକ ଆଶା କରୁଅଛି"
 
-#: src/conf.c:614
+#: src/conf.c:616
 msgid "expecting an assignment"
 msgstr "ଗୋଟିଏ କାର୍ଯ୍ଯ ଆଶା କରୁଅଛି"
 
-#: src/conf.c:881
+#: src/conf.c:898
 msgid "failed to open file"
 msgstr "ଫାଇଲ ଖୋଲିବାରେ ବିଫଳ"
 
-#: src/conf.c:889
+#: src/conf.c:906
 msgid "failed to save content"
 msgstr "ବିଷୟ ବସ୍ତୁକୁ ସଂରକ୍ଷଣ କରିବାରେ ବିଫଳ"
 

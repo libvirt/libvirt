@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ml\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-20 15:40+0100\n"
+"POT-Creation-Date: 2007-01-22 16:17+0100\n"
 "PO-Revision-Date: 2006-12-14 15:51+0530\n"
 "Last-Translator: Ani Peter <apeter@redhat.com>\n"
 "Language-Team: Malayalam <en@li.org>\n"
@@ -374,8 +374,8 @@ msgstr "പാര്‍സ് സര്‍വറിന്‍റെ മറുപ�
 msgid "allocate new context"
 msgstr "പുതിയ കോണ്‍ടോക്സ്റ്റ് വ്യക്തമാക്കുക"
 
-#: src/hash.c:749 src/hash.c:755 src/test.c:728 src/test.c:753 src/test.c:776
-#: src/test.c:800 src/xend_internal.c:1962 src/xend_internal.c:2744
+#: src/hash.c:749 src/hash.c:755 src/test.c:864 src/test.c:893 src/test.c:916
+#: src/test.c:940 src/xend_internal.c:1962 src/xend_internal.c:2744
 #: src/xend_internal.c:2963 src/xs_internal.c:603 src/proxy_internal.c:798
 #: src/proxy_internal.c:845 src/proxy_internal.c:896
 msgid "allocating domain"
@@ -389,109 +389,124 @@ msgstr "കണക്ഷന്‍ ഹാഷ് ടേബിളിലേക്ക�
 msgid "domain missing from connection hash table"
 msgstr "ഹാഷ് ടേബിളിലില്‍ ഡൊമെയിന്‍ ലഭ്യമല്ല"
 
-#: src/test.c:203 src/test.c:382 src/test.c:898 src/test.c:926 src/test.c:953
+#: src/test.c:268 src/test.c:479 src/test.c:1047 src/test.c:1078
+#: src/test.c:1129
 msgid "getting time of day"
 msgstr "ഇന്നത്തെ സമയം ലഭ്യമാക്കുന്നു"
 
-#: src/test.c:209 src/test.c:337 src/test.c:362
+#: src/test.c:274 src/test.c:434 src/test.c:459 src/test.c:1318
 msgid "domain"
 msgstr "ഡൊമെയിന്‍"
 
-#: src/test.c:215 src/test.c:458
+#: src/test.c:280 src/test.c:559
 msgid "creating xpath context"
 msgstr "xpath കോണ്‍ടെക്സ്റ്റ് ഉണ്ടാക്കുന്നു"
 
-#: src/test.c:222
+#: src/test.c:287
 msgid "domain name"
 msgstr "ഡൊമെയിന്‍ പേര്"
 
-#: src/test.c:231 src/test.c:236
+#: src/test.c:296 src/test.c:301
 msgid "domain uuid"
 msgstr "ഡൊമെയിന്‍ uuid"
 
-#: src/test.c:244 src/test.c:249
+#: src/test.c:309 src/test.c:314
 msgid "domain memory"
 msgstr "ഡൊമെയിന്‍ മെമ്മറി"
 
-#: src/test.c:261
+#: src/test.c:327
+#, fuzzy
+msgid "domain current memory"
+msgstr "ഡൊമെയിന്‍ മെമ്മറി"
+
+#: src/test.c:344
 msgid "domain vcpus"
 msgstr "ഡൊമെയിന്‍ vcpus"
 
-#: src/test.c:272
+#: src/test.c:355
 msgid "domain reboot behaviour"
 msgstr "ഡൊമെയിന്‍ റീബൂട്ട് പ്രക്രിയ"
 
-#: src/test.c:283
+#: src/test.c:366
 msgid "domain poweroff behaviour"
 msgstr "ഡൊമെയിന്‍ പവര്‍ ഓഫ് പ്രക്രിയ"
 
-#: src/test.c:294
+#: src/test.c:377
 msgid "domain crash behaviour"
 msgstr "ഡൊമെയിന്‍ ക്രാഷ് പ്രക്രിയ"
 
-#: src/test.c:355
+#: src/test.c:452
 msgid "load domain definition file"
 msgstr "ഡൊമെയിന്‍ വ്യക്തമാക്കുന്ന ഫയല്‍ ലോഡ് ചെയ്യുക"
 
-#: src/test.c:437
+#: src/test.c:538
 msgid "loading host definition file"
 msgstr "ഹോസ്റ്റ് ഡെഫനിഷന്‍ ഫയല്‍ ലോഡ് ചെയ്യുന്നു"
 
-#: src/test.c:444
+#: src/test.c:545
 msgid "host"
 msgstr "ഹോസ്റ്റ്"
 
-#: src/test.c:452
+#: src/test.c:553
 msgid "node"
 msgstr "നോഡ്"
 
-#: src/test.c:474
+#: src/test.c:575
 msgid "node cpu numa nodes"
 msgstr "node cpu numa nodes"
 
-#: src/test.c:486
+#: src/test.c:587
 msgid "node cpu sockets"
 msgstr "നോഡ് cpu സോക്കറ്റുകള്‍"
 
-#: src/test.c:498
+#: src/test.c:599
 msgid "node cpu cores"
 msgstr "നോഡ് cpu കോര്‍സ്"
 
-#: src/test.c:510
+#: src/test.c:611
 msgid "node cpu threads"
 msgstr "നോഡ് cpu ത്രെഡ്സ്"
 
-#: src/test.c:522
+#: src/test.c:623
 msgid "node active cpu"
 msgstr "നോഡ് ആക്റ്റീവ് cpu"
 
-#: src/test.c:536
+#: src/test.c:637
 msgid "node cpu mhz"
 msgstr "നോഡ് cpu mhz"
 
-#: src/test.c:555
+#: src/test.c:656
 msgid "node memory"
 msgstr "നോഡ് മെമ്മറി"
 
-#: src/test.c:564
+#: src/test.c:665
 msgid "node domain list"
 msgstr "നോഡ് ഡൊമെയിന്‍ ലിസ്റ്റ്"
 
-#: src/test.c:573
+#: src/test.c:675
 msgid "resolving domain filename"
 msgstr "ഡൊമെയിന്‍ ഫയല്‍നെയിം റിസോള്‍വ് ചെയ്യുന്നു"
 
-#: src/test.c:611
+#: src/test.c:714
 msgid "allocating node"
 msgstr "നോഡ് ലഭ്യമാക്കുന്നു"
 
-#: src/test.c:651
+#: src/test.c:770
 msgid "too many connections"
 msgstr "അനവധി കണക്ഷനുകള്‍"
 
-#: src/test.c:736
+#: src/test.c:849
 msgid "too many domains"
 msgstr "അനവധി ഡൊമെയിനുകള്‍"
+
+#: src/test.c:1347
+#, fuzzy
+msgid "Domain is already running"
+msgstr "ഡൊമെയിന്‍ നിലിവില്‍ പ്രവര്‍ത്തനത്തിലാണ്"
+
+#: src/test.c:1371
+msgid "Domain is still running"
+msgstr ""
 
 #: src/xml.c:65
 msgid "growing buffer"
@@ -576,7 +591,7 @@ msgstr "ഡൊമെയിന്‍ %s-നുളള ഡിവൈസുകള്�
 msgid "Failed to resume new domain %s\n"
 msgstr "പുതിയ ഡൊമെയിന്‍ %s തുടങ്ങുന്നതില്‍ പരാജയം\n"
 
-#: src/xend_internal.c:3145
+#: src/xend_internal.c:3147
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "നിഷ്ക്റിയമായ ഡൊമെയിന്‍ %s ഉണ്ടാക്കുന്നതില്‍ പരാജയം\n"
@@ -1388,48 +1403,48 @@ msgstr ""
 "       പുറത്ത് കടക്കുന്നതിനായി 'quit'\n"
 "\n"
 
-#: src/conf.c:153 src/conf.c:204 src/conf.c:487 src/conf.c:526 src/conf.c:554
-#: src/conf.c:632
+#: src/conf.c:155 src/conf.c:206 src/conf.c:490 src/conf.c:528 src/conf.c:556
+#: src/conf.c:634
 msgid "allocating configuration"
 msgstr "കോണ്‍ഫിഗറേഷന്‍ ലഭ്യമാക്കുന്നു"
 
-#: src/conf.c:339
+#: src/conf.c:342
 msgid "unterminated number"
 msgstr "അവസാനിപ്പിക്കാത്ത നംബര്‍"
 
-#: src/conf.c:371 src/conf.c:388 src/conf.c:400
+#: src/conf.c:374 src/conf.c:391 src/conf.c:403
 msgid "unterminated string"
 msgstr "അവസാനിപ്പിക്കാത്ത സ്ട്രിങ്"
 
-#: src/conf.c:428 src/conf.c:481
+#: src/conf.c:431 src/conf.c:484
 msgid "expecting a value"
 msgstr "ഒരു മൂല്ല്യം പ്രതീക്ഷിക്കുന്നു"
 
-#: src/conf.c:448
+#: src/conf.c:451
 msgid "expecting a separator in list"
 msgstr "ലിസ്റ്റില്‍ ഒരു സെപറേറ്റര്‍ പ്രതീക്ഷിക്കുന്നു"
 
-#: src/conf.c:471
+#: src/conf.c:474
 msgid "list is not closed with ] "
 msgstr "ലിസ്റ്റിന്‍റെ അവസാനം ] ഇല്ല"
 
-#: src/conf.c:519
+#: src/conf.c:521
 msgid "expecting a name"
 msgstr "ഒരു പേര് പ്രതീക്ഷിക്കുന്നു"
 
-#: src/conf.c:582
+#: src/conf.c:584
 msgid "expecting a separator"
 msgstr "ഒരു സെപ്പറേറ്റര്‍ പ്രതീക്ഷിക്കുന്നു"
 
-#: src/conf.c:614
+#: src/conf.c:616
 msgid "expecting an assignment"
 msgstr "ഒരു അസ്സൈന്‍മെന്‍റ് പ്രതീക്ഷിക്കുന്നു"
 
-#: src/conf.c:881
+#: src/conf.c:898
 msgid "failed to open file"
 msgstr "ഫയല്‍ തുറക്കുന്നതില്‍ പരാജയം"
 
-#: src/conf.c:889
+#: src/conf.c:906
 msgid "failed to save content"
 msgstr "ഉള്ളടക്കം സൂക്ഷിക്കുന്നതില്‍ പരാജയം"
 

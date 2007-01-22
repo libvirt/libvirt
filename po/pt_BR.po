@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pt_BR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-20 15:40+0100\n"
+"POT-Creation-Date: 2007-01-22 16:17+0100\n"
 "PO-Revision-Date: 2006-12-14 11:43-0200\n"
 "Last-Translator: Igor Pires Soares <igor@projetofedora.org>\n"
 "Language-Team: Brazilian Portuguese <fedora-trans-pt_br@redhat.com>\n"
@@ -373,8 +373,8 @@ msgstr "falha ao analisar resposta do servidor"
 msgid "allocate new context"
 msgstr "alocar novo contexto"
 
-#: src/hash.c:749 src/hash.c:755 src/test.c:728 src/test.c:753 src/test.c:776
-#: src/test.c:800 src/xend_internal.c:1962 src/xend_internal.c:2744
+#: src/hash.c:749 src/hash.c:755 src/test.c:864 src/test.c:893 src/test.c:916
+#: src/test.c:940 src/xend_internal.c:1962 src/xend_internal.c:2744
 #: src/xend_internal.c:2963 src/xs_internal.c:603 src/proxy_internal.c:798
 #: src/proxy_internal.c:845 src/proxy_internal.c:896
 msgid "allocating domain"
@@ -388,109 +388,124 @@ msgstr "não foi possível adicionar domínio à tabela hash de conexões"
 msgid "domain missing from connection hash table"
 msgstr "domínio não disponível na tabela hash de conexões"
 
-#: src/test.c:203 src/test.c:382 src/test.c:898 src/test.c:926 src/test.c:953
+#: src/test.c:268 src/test.c:479 src/test.c:1047 src/test.c:1078
+#: src/test.c:1129
 msgid "getting time of day"
 msgstr "obtendo horário"
 
-#: src/test.c:209 src/test.c:337 src/test.c:362
+#: src/test.c:274 src/test.c:434 src/test.c:459 src/test.c:1318
 msgid "domain"
 msgstr "domínio"
 
-#: src/test.c:215 src/test.c:458
+#: src/test.c:280 src/test.c:559
 msgid "creating xpath context"
 msgstr "criando contexto de xpath"
 
-#: src/test.c:222
+#: src/test.c:287
 msgid "domain name"
 msgstr "nome do domínio"
 
-#: src/test.c:231 src/test.c:236
+#: src/test.c:296 src/test.c:301
 msgid "domain uuid"
 msgstr "UUID do domínio"
 
-#: src/test.c:244 src/test.c:249
+#: src/test.c:309 src/test.c:314
 msgid "domain memory"
 msgstr "memória do domínio"
 
-#: src/test.c:261
+#: src/test.c:327
+#, fuzzy
+msgid "domain current memory"
+msgstr "memória do domínio"
+
+#: src/test.c:344
 msgid "domain vcpus"
 msgstr "vCPUs do domínio"
 
-#: src/test.c:272
+#: src/test.c:355
 msgid "domain reboot behaviour"
 msgstr "comportamento da inicialização do domínio"
 
-#: src/test.c:283
+#: src/test.c:366
 msgid "domain poweroff behaviour"
 msgstr "comportamento do desligamento do domínio"
 
-#: src/test.c:294
+#: src/test.c:377
 msgid "domain crash behaviour"
 msgstr "comportamento do travamento do domínio"
 
-#: src/test.c:355
+#: src/test.c:452
 msgid "load domain definition file"
 msgstr "carregar arquivo de definição do domínio"
 
-#: src/test.c:437
+#: src/test.c:538
 msgid "loading host definition file"
 msgstr "carregando arquivo de definição do host"
 
-#: src/test.c:444
+#: src/test.c:545
 msgid "host"
 msgstr "host"
 
-#: src/test.c:452
+#: src/test.c:553
 msgid "node"
 msgstr "nó"
 
-#: src/test.c:474
+#: src/test.c:575
 msgid "node cpu numa nodes"
 msgstr "nós NUMA da CPU do nó"
 
-#: src/test.c:486
+#: src/test.c:587
 msgid "node cpu sockets"
 msgstr "soquetes da CPU do nó"
 
-#: src/test.c:498
+#: src/test.c:599
 msgid "node cpu cores"
 msgstr "núcleos da CPU do nó"
 
-#: src/test.c:510
+#: src/test.c:611
 msgid "node cpu threads"
 msgstr "threads da CPU do nó"
 
-#: src/test.c:522
+#: src/test.c:623
 msgid "node active cpu"
 msgstr "CPU ativa do nó"
 
-#: src/test.c:536
+#: src/test.c:637
 msgid "node cpu mhz"
 msgstr "MHz da CPU do nó"
 
-#: src/test.c:555
+#: src/test.c:656
 msgid "node memory"
 msgstr "memória do nó"
 
-#: src/test.c:564
+#: src/test.c:665
 msgid "node domain list"
 msgstr "lista de domínios do nó"
 
-#: src/test.c:573
+#: src/test.c:675
 msgid "resolving domain filename"
 msgstr "resolvendo nome do arquivo do domínio"
 
-#: src/test.c:611
+#: src/test.c:714
 msgid "allocating node"
 msgstr "alocando nó"
 
-#: src/test.c:651
+#: src/test.c:770
 msgid "too many connections"
 msgstr "conexões excessivas"
 
-#: src/test.c:736
+#: src/test.c:849
 msgid "too many domains"
 msgstr "domínios excessivos"
+
+#: src/test.c:1347
+#, fuzzy
+msgid "Domain is already running"
+msgstr "Domínio já está ativo"
+
+#: src/test.c:1371
+msgid "Domain is still running"
+msgstr ""
 
 #: src/xml.c:65
 msgid "growing buffer"
@@ -575,7 +590,7 @@ msgstr "Não foi possível obter dispositivos para o domínio %s\n"
 msgid "Failed to resume new domain %s\n"
 msgstr "Não foi possível prosseguir com domínio novo %s\n"
 
-#: src/xend_internal.c:3145
+#: src/xend_internal.c:3147
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Não foi possível criar o domínio inativo %s\n"
@@ -1388,48 +1403,48 @@ msgstr ""
 "       'quit' para sair\n"
 "\n"
 
-#: src/conf.c:153 src/conf.c:204 src/conf.c:487 src/conf.c:526 src/conf.c:554
-#: src/conf.c:632
+#: src/conf.c:155 src/conf.c:206 src/conf.c:490 src/conf.c:528 src/conf.c:556
+#: src/conf.c:634
 msgid "allocating configuration"
 msgstr "alocando a configuração"
 
-#: src/conf.c:339
+#: src/conf.c:342
 msgid "unterminated number"
 msgstr "número sem terminação"
 
-#: src/conf.c:371 src/conf.c:388 src/conf.c:400
+#: src/conf.c:374 src/conf.c:391 src/conf.c:403
 msgid "unterminated string"
 msgstr "texto sem terminação"
 
-#: src/conf.c:428 src/conf.c:481
+#: src/conf.c:431 src/conf.c:484
 msgid "expecting a value"
 msgstr "esperando um valor"
 
-#: src/conf.c:448
+#: src/conf.c:451
 msgid "expecting a separator in list"
 msgstr "esperando um separador na lista"
 
-#: src/conf.c:471
+#: src/conf.c:474
 msgid "list is not closed with ] "
 msgstr "lista não termina em ] "
 
-#: src/conf.c:519
+#: src/conf.c:521
 msgid "expecting a name"
 msgstr "esperando um nome"
 
-#: src/conf.c:582
+#: src/conf.c:584
 msgid "expecting a separator"
 msgstr "esperando um separador"
 
-#: src/conf.c:614
+#: src/conf.c:616
 msgid "expecting an assignment"
 msgstr "esperando uma atribuição"
 
-#: src/conf.c:881
+#: src/conf.c:898
 msgid "failed to open file"
 msgstr "não foi possível abrir o arquivo"
 
-#: src/conf.c:889
+#: src/conf.c:906
 msgid "failed to save content"
 msgstr "não foi possível salvar o conteúdo"
 

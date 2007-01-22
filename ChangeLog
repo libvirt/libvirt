@@ -1,3 +1,10 @@
+Mon Jan 22 16:24:54 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in libvirt.spec.in docs/*.html include/libvirt/libvirt.h:
+	  preparing release of 0.1.11
+	* docs/Makefile.am libvirt.spec.in: package libvirt.rng in
+	* po/*: translation update
+
 Fri Jan 19 15:28:13 EST 2007 Daniel Berrange <berrange@redhat.com>
 
 	* tests/xmconfigtest.c: Test suite to check conversion from

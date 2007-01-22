@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: te\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-20 15:40+0100\n"
+"POT-Creation-Date: 2007-01-22 16:17+0100\n"
 "PO-Revision-Date: 2006-12-15 17:13+0530\n"
 "Last-Translator: Sree Ganesh <sthottem@redhat.com>\n"
 "Language-Team: Telugu <en@li.org>\n"
@@ -373,8 +373,8 @@ msgstr "విశ్లేషణ సర్వరు బాధ్యత విఫ
 msgid "allocate new context"
 msgstr "కొత్త సందర్భాన్ని కేటాయించు"
 
-#: src/hash.c:749 src/hash.c:755 src/test.c:728 src/test.c:753 src/test.c:776
-#: src/test.c:800 src/xend_internal.c:1962 src/xend_internal.c:2744
+#: src/hash.c:749 src/hash.c:755 src/test.c:864 src/test.c:893 src/test.c:916
+#: src/test.c:940 src/xend_internal.c:1962 src/xend_internal.c:2744
 #: src/xend_internal.c:2963 src/xs_internal.c:603 src/proxy_internal.c:798
 #: src/proxy_internal.c:845 src/proxy_internal.c:896
 msgid "allocating domain"
@@ -388,109 +388,124 @@ msgstr "అనుసంధాన హాష్ పట్టికకు క్ష
 msgid "domain missing from connection hash table"
 msgstr "అనుసంధాన హాష్ పట్టికనుండీ క్షేత్రం తప్పిపోయింది"
 
-#: src/test.c:203 src/test.c:382 src/test.c:898 src/test.c:926 src/test.c:953
+#: src/test.c:268 src/test.c:479 src/test.c:1047 src/test.c:1078
+#: src/test.c:1129
 msgid "getting time of day"
 msgstr "రోజు యొక్క సమయాన్ని పొందుతోంది"
 
-#: src/test.c:209 src/test.c:337 src/test.c:362
+#: src/test.c:274 src/test.c:434 src/test.c:459 src/test.c:1318
 msgid "domain"
 msgstr "క్షేత్రం"
 
-#: src/test.c:215 src/test.c:458
+#: src/test.c:280 src/test.c:559
 msgid "creating xpath context"
 msgstr "xమార్గ సందర్భాన్ని సృష్టిస్తోంది"
 
-#: src/test.c:222
+#: src/test.c:287
 msgid "domain name"
 msgstr "క్షేత్ర నామం"
 
-#: src/test.c:231 src/test.c:236
+#: src/test.c:296 src/test.c:301
 msgid "domain uuid"
 msgstr "క్షేత్ర uuid"
 
-#: src/test.c:244 src/test.c:249
+#: src/test.c:309 src/test.c:314
 msgid "domain memory"
 msgstr "క్షేత్ర మెమోరీ"
 
-#: src/test.c:261
+#: src/test.c:327
+#, fuzzy
+msgid "domain current memory"
+msgstr "క్షేత్ర మెమోరీ"
+
+#: src/test.c:344
 msgid "domain vcpus"
 msgstr "క్షేత్ర vcpus"
 
-#: src/test.c:272
+#: src/test.c:355
 msgid "domain reboot behaviour"
 msgstr "క్షేత్ర పునఃప్రారంభ వర్తనం"
 
-#: src/test.c:283
+#: src/test.c:366
 msgid "domain poweroff behaviour"
 msgstr "క్షేత్ర poweroff వర్తనం"
 
-#: src/test.c:294
+#: src/test.c:377
 msgid "domain crash behaviour"
 msgstr "క్షేత్ర క్రాష్ వర్తనం"
 
-#: src/test.c:355
+#: src/test.c:452
 msgid "load domain definition file"
 msgstr "క్షేత్ర నిర్వచన ఫైలును లోడ్ చేస్తోంది"
 
-#: src/test.c:437
+#: src/test.c:538
 msgid "loading host definition file"
 msgstr "ఆతిధేయ నిర్వచన ఫైలును లోడుచేస్తోంది"
 
-#: src/test.c:444
+#: src/test.c:545
 msgid "host"
 msgstr "ఆతిధేయి"
 
-#: src/test.c:452
+#: src/test.c:553
 msgid "node"
 msgstr "node"
 
-#: src/test.c:474
+#: src/test.c:575
 msgid "node cpu numa nodes"
 msgstr "node cpu numa nodes"
 
-#: src/test.c:486
+#: src/test.c:587
 msgid "node cpu sockets"
 msgstr "నోడ్ cpu సాకెట్లు"
 
-#: src/test.c:498
+#: src/test.c:599
 msgid "node cpu cores"
 msgstr "node cpu cores"
 
-#: src/test.c:510
+#: src/test.c:611
 msgid "node cpu threads"
 msgstr "node cpu threads"
 
-#: src/test.c:522
+#: src/test.c:623
 msgid "node active cpu"
 msgstr "node క్రియాశీల cpu"
 
-#: src/test.c:536
+#: src/test.c:637
 msgid "node cpu mhz"
 msgstr "node cpu mhz"
 
-#: src/test.c:555
+#: src/test.c:656
 msgid "node memory"
 msgstr "node మెమోరీ"
 
-#: src/test.c:564
+#: src/test.c:665
 msgid "node domain list"
 msgstr "node క్షేత్ర జాబితా"
 
-#: src/test.c:573
+#: src/test.c:675
 msgid "resolving domain filename"
 msgstr "క్షేత్ర ఫైలు పేరును తీర్మానిస్తోంది"
 
-#: src/test.c:611
+#: src/test.c:714
 msgid "allocating node"
 msgstr "నోడును కేటాయిస్తోంది"
 
-#: src/test.c:651
+#: src/test.c:770
 msgid "too many connections"
 msgstr "ఎక్కువ అనుసంధానాలు"
 
-#: src/test.c:736
+#: src/test.c:849
 msgid "too many domains"
 msgstr "ఎక్కువ క్షేత్రాలు"
+
+#: src/test.c:1347
+#, fuzzy
+msgid "Domain is already running"
+msgstr "క్షేత్రం ఇప్పటికే ‌క్రియాసహితంగా ఉంది"
+
+#: src/test.c:1371
+msgid "Domain is still running"
+msgstr ""
 
 #: src/xml.c:65
 msgid "growing buffer"
@@ -575,7 +590,7 @@ msgstr "క్షేత్రం కోసం సాధనాలను పొం
 msgid "Failed to resume new domain %s\n"
 msgstr "కొత్త క్షేత్రాన్ని సంగ్రహించటంలో విఫలమైంది %s\n"
 
-#: src/xend_internal.c:3145
+#: src/xend_internal.c:3147
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "%s క్షేత్రాన్ని సృష్టించటంలో విఫలమైంది\n"
@@ -1386,48 +1401,48 @@ msgstr ""
 "       'బయటకు' బయటకు రావటానికి\n"
 "\n"
 
-#: src/conf.c:153 src/conf.c:204 src/conf.c:487 src/conf.c:526 src/conf.c:554
-#: src/conf.c:632
+#: src/conf.c:155 src/conf.c:206 src/conf.c:490 src/conf.c:528 src/conf.c:556
+#: src/conf.c:634
 msgid "allocating configuration"
 msgstr "ఆకృతీకరణను కేటాయిస్తోంది"
 
-#: src/conf.c:339
+#: src/conf.c:342
 msgid "unterminated number"
 msgstr "పూర్తికాని సంఖ్య"
 
-#: src/conf.c:371 src/conf.c:388 src/conf.c:400
+#: src/conf.c:374 src/conf.c:391 src/conf.c:403
 msgid "unterminated string"
 msgstr "పూర్తికాని స్ట్రింగు"
 
-#: src/conf.c:428 src/conf.c:481
+#: src/conf.c:431 src/conf.c:484
 msgid "expecting a value"
 msgstr "ఒక విలువను ఊహిస్తున్నాను"
 
-#: src/conf.c:448
+#: src/conf.c:451
 msgid "expecting a separator in list"
 msgstr "జాబితాలో ఒక వేర్పాటును ఆశిస్తున్నాను"
 
-#: src/conf.c:471
+#: src/conf.c:474
 msgid "list is not closed with ] "
 msgstr "జాబితా ]తో మూయబడలేదు"
 
-#: src/conf.c:519
+#: src/conf.c:521
 msgid "expecting a name"
 msgstr "ఒక పేరును ఆశిస్తున్నాను"
 
-#: src/conf.c:582
+#: src/conf.c:584
 msgid "expecting a separator"
 msgstr "ఒక వేర్పాటును ఆశిస్తున్నాను"
 
-#: src/conf.c:614
+#: src/conf.c:616
 msgid "expecting an assignment"
 msgstr "ఒక సమర్పణను ఆశిస్తున్నాను"
 
-#: src/conf.c:881
+#: src/conf.c:898
 msgid "failed to open file"
 msgstr "ఫైలును తెరవటంలో విఫలమైంది"
 
-#: src/conf.c:889
+#: src/conf.c:906
 msgid "failed to save content"
 msgstr "విషయాన్ని భధ్రపరవటంలో విఫలమైంది"
 

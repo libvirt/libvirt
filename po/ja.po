@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ja\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-20 15:40+0100\n"
+"POT-Creation-Date: 2007-01-22 16:17+0100\n"
 "PO-Revision-Date: 2006-12-15 10:32\n"
 "Last-Translator: Kiyoto James Hashida <khashida@redhat.com>\n"
 "Language-Team: Japanese <ja@li.org>\n"
@@ -374,8 +374,8 @@ msgstr "サーバー応答の解析に失敗しました"
 msgid "allocate new context"
 msgstr "新しいコンテキストの割り当て"
 
-#: src/hash.c:749 src/hash.c:755 src/test.c:728 src/test.c:753 src/test.c:776
-#: src/test.c:800 src/xend_internal.c:1962 src/xend_internal.c:2744
+#: src/hash.c:749 src/hash.c:755 src/test.c:864 src/test.c:893 src/test.c:916
+#: src/test.c:940 src/xend_internal.c:1962 src/xend_internal.c:2744
 #: src/xend_internal.c:2963 src/xs_internal.c:603 src/proxy_internal.c:798
 #: src/proxy_internal.c:845 src/proxy_internal.c:896
 msgid "allocating domain"
@@ -389,109 +389,124 @@ msgstr "接続ハッシュテーブルへのドメインの追加に失敗しま
 msgid "domain missing from connection hash table"
 msgstr "接続ハッシュテーブルにないドメインです"
 
-#: src/test.c:203 src/test.c:382 src/test.c:898 src/test.c:926 src/test.c:953
+#: src/test.c:268 src/test.c:479 src/test.c:1047 src/test.c:1078
+#: src/test.c:1129
 msgid "getting time of day"
 msgstr "現在の時刻を取得中"
 
-#: src/test.c:209 src/test.c:337 src/test.c:362
+#: src/test.c:274 src/test.c:434 src/test.c:459 src/test.c:1318
 msgid "domain"
 msgstr "ドメイン"
 
-#: src/test.c:215 src/test.c:458
+#: src/test.c:280 src/test.c:559
 msgid "creating xpath context"
 msgstr "xpath コンテキストを作成中"
 
-#: src/test.c:222
+#: src/test.c:287
 msgid "domain name"
 msgstr "ドメイン名"
 
-#: src/test.c:231 src/test.c:236
+#: src/test.c:296 src/test.c:301
 msgid "domain uuid"
 msgstr "ドメイン uuid"
 
-#: src/test.c:244 src/test.c:249
+#: src/test.c:309 src/test.c:314
 msgid "domain memory"
 msgstr "ドメインメモリ"
 
-#: src/test.c:261
+#: src/test.c:327
+#, fuzzy
+msgid "domain current memory"
+msgstr "ドメインメモリ"
+
+#: src/test.c:344
 msgid "domain vcpus"
 msgstr "ドメイン vcpus"
 
-#: src/test.c:272
+#: src/test.c:355
 msgid "domain reboot behaviour"
 msgstr "ドメインの再起動動作"
 
-#: src/test.c:283
+#: src/test.c:366
 msgid "domain poweroff behaviour"
 msgstr "ドメインの電源オフ動作"
 
-#: src/test.c:294
+#: src/test.c:377
 msgid "domain crash behaviour"
 msgstr "ドメインのクラッシュ動作"
 
-#: src/test.c:355
+#: src/test.c:452
 msgid "load domain definition file"
 msgstr "ドメインの定義ファイルをロード"
 
-#: src/test.c:437
+#: src/test.c:538
 msgid "loading host definition file"
 msgstr "ホストの定義ファイルをロード中"
 
-#: src/test.c:444
+#: src/test.c:545
 msgid "host"
 msgstr "ホスト"
 
-#: src/test.c:452
+#: src/test.c:553
 msgid "node"
 msgstr "ノード"
 
-#: src/test.c:474
+#: src/test.c:575
 msgid "node cpu numa nodes"
 msgstr "node cpu numa nodes"
 
-#: src/test.c:486
+#: src/test.c:587
 msgid "node cpu sockets"
 msgstr "node cpu sockets"
 
-#: src/test.c:498
+#: src/test.c:599
 msgid "node cpu cores"
 msgstr "node cpu cores"
 
-#: src/test.c:510
+#: src/test.c:611
 msgid "node cpu threads"
 msgstr "node cpu threads"
 
-#: src/test.c:522
+#: src/test.c:623
 msgid "node active cpu"
 msgstr "node active cpu"
 
-#: src/test.c:536
+#: src/test.c:637
 msgid "node cpu mhz"
 msgstr "node cpu mhz"
 
-#: src/test.c:555
+#: src/test.c:656
 msgid "node memory"
 msgstr "ノードメモリ"
 
-#: src/test.c:564
+#: src/test.c:665
 msgid "node domain list"
 msgstr "ノードドメイン一覧"
 
-#: src/test.c:573
+#: src/test.c:675
 msgid "resolving domain filename"
 msgstr "ドメインファイル名を解決中"
 
-#: src/test.c:611
+#: src/test.c:714
 msgid "allocating node"
 msgstr "ノードの割り当て中"
 
-#: src/test.c:651
+#: src/test.c:770
 msgid "too many connections"
 msgstr "接続が多すぎます"
 
-#: src/test.c:736
+#: src/test.c:849
 msgid "too many domains"
 msgstr "ドメインが多すぎます"
+
+#: src/test.c:1347
+#, fuzzy
+msgid "Domain is already running"
+msgstr "ドメインはすでにアクティブになっています"
+
+#: src/test.c:1371
+msgid "Domain is still running"
+msgstr ""
 
 #: src/xml.c:65
 msgid "growing buffer"
@@ -576,7 +591,7 @@ msgstr "ドメイン %s のデバイス取得に失敗しました\n"
 msgid "Failed to resume new domain %s\n"
 msgstr "新しいドメイン %s の再開に失敗しました\n"
 
-#: src/xend_internal.c:3145
+#: src/xend_internal.c:3147
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "停止中のドメイン %s の作成に失敗しました\n"
@@ -1389,48 +1404,48 @@ msgstr ""
 "       'quit' と入力すると終了します\n"
 "\n"
 
-#: src/conf.c:153 src/conf.c:204 src/conf.c:487 src/conf.c:526 src/conf.c:554
-#: src/conf.c:632
+#: src/conf.c:155 src/conf.c:206 src/conf.c:490 src/conf.c:528 src/conf.c:556
+#: src/conf.c:634
 msgid "allocating configuration"
 msgstr "設定を割り当て中"
 
-#: src/conf.c:339
+#: src/conf.c:342
 msgid "unterminated number"
 msgstr "終り方が不適切な数字です"
 
-#: src/conf.c:371 src/conf.c:388 src/conf.c:400
+#: src/conf.c:374 src/conf.c:391 src/conf.c:403
 msgid "unterminated string"
 msgstr "終り方が不適切な文字列です"
 
-#: src/conf.c:428 src/conf.c:481
+#: src/conf.c:431 src/conf.c:484
 msgid "expecting a value"
 msgstr "値を予期しています"
 
-#: src/conf.c:448
+#: src/conf.c:451
 msgid "expecting a separator in list"
 msgstr "一覧にセパレータを予期しています"
 
-#: src/conf.c:471
+#: src/conf.c:474
 msgid "list is not closed with ] "
 msgstr "一覧が ] で閉じられていません"
 
-#: src/conf.c:519
+#: src/conf.c:521
 msgid "expecting a name"
 msgstr "名前を予期しています"
 
-#: src/conf.c:582
+#: src/conf.c:584
 msgid "expecting a separator"
 msgstr "セパレータを予期しています"
 
-#: src/conf.c:614
+#: src/conf.c:616
 msgid "expecting an assignment"
 msgstr "割り当てを予期しています"
 
-#: src/conf.c:881
+#: src/conf.c:898
 msgid "failed to open file"
 msgstr "ファイルを開くのに失敗しました"
 
-#: src/conf.c:889
+#: src/conf.c:906
 msgid "failed to save content"
 msgstr "内容の保存に失敗しました"
 
