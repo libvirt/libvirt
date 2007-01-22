@@ -1223,7 +1223,7 @@ virDomainGetUUID(virDomainPtr domain, unsigned char *uuid)
         return (-1);
     }
 
-    if (domain->handle == 0) {
+    if (domain->id == 0) {
         memset(uuid, 0, 16);
     } else {
         if ((domain->uuid[0] == 0) && (domain->uuid[1] == 0) &&
@@ -1292,7 +1292,7 @@ virDomainGetID(virDomainPtr domain)
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return ((unsigned int) -1);
     }
-    return (domain->handle);
+    return (domain->id);
 }
 
 /**

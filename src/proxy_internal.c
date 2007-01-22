@@ -694,9 +694,9 @@ xenProxyDomainGetMaxMemory(virDomainPtr domain)
 	    virProxyError(domain->conn, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (0);
     }
-    if (domain->handle < 0)
+    if (domain->id < 0)
         return (0);
-    return(xenProxyDomainGetDomMaxMemory(domain->conn, domain->handle));
+    return(xenProxyDomainGetDomMaxMemory(domain->conn, domain->id));
 }
 
 /**
@@ -723,7 +723,7 @@ xenProxyDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
             virProxyError(domain->conn, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
-    if (domain->handle < 0)
+    if (domain->id < 0)
         return (-1);
     if (info == NULL) {
         virProxyError(domain->conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
@@ -731,7 +731,7 @@ xenProxyDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     }
     memset(&req, 0, sizeof(req));
     req.command = VIR_PROXY_DOMAIN_INFO;
-    req.data.arg = domain->handle;
+    req.data.arg = domain->id;
     req.len = sizeof(req);
     ret = xenProxyCommand(domain->conn, &req, &ans, 0);
     if (ret < 0) {
@@ -793,7 +793,7 @@ xenProxyLookupByID(virConnectPtr conn, int id)
     if (res == NULL)
         virProxyError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
     else
-	res->handle = id;
+	res->id = id;
     
     return(res);
 }
@@ -840,7 +840,7 @@ xenProxyLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     if (res == NULL)
         virProxyError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
     else
-	res->handle = req.data.arg;
+	res->id = req.data.arg;
     
     return(res);
 }
@@ -891,7 +891,7 @@ xenProxyDomainLookupByName(virConnectPtr conn, const char *name)
     if (res == NULL)
         virProxyError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
     else
-	res->handle = req.data.arg;
+	res->id = req.data.arg;
     
     return(res);
 }
@@ -963,11 +963,11 @@ xenProxyDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
 	    virProxyError(domain->conn, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (NULL);
     }
-    if (domain->handle < 0)
+    if (domain->id < 0)
         return (NULL);
     memset(&req, 0, sizeof(req));
     req.command = VIR_PROXY_DOMAIN_XML;
-    req.data.arg = domain->handle;
+    req.data.arg = domain->id;
     req.len = sizeof(req);
     ret = xenProxyCommand(domain->conn, &req, &ans, 0);
     if (ret < 0) {
@@ -1016,7 +1016,7 @@ xenProxyDomainGetOSType(virDomainPtr domain)
     }
     memset(&req, 0, sizeof(req));
     req.command = VIR_PROXY_DOMAIN_OSTYPE;
-    req.data.arg = domain->handle;
+    req.data.arg = domain->id;
     req.len = sizeof(req);
     ret = xenProxyCommand(domain->conn, &req, &ans, 0);
     if (ret < 0) {

@@ -137,7 +137,7 @@ typedef struct _testDev {
 
 typedef struct _testDom {
     int active;
-    int handle;
+    int id;
     char name[20];
     unsigned char uuid[16];
     virDomainKernel kernel;
@@ -389,7 +389,7 @@ static int testLoadDomain(virConnectPtr conn,
         return (-1);
 
     con->domains[handle].active = 1;
-    con->domains[handle].handle = domid;
+    con->domains[handle].id = domid;
     strncpy(con->domains[handle].name, name, sizeof(con->domains[handle].name));
     free(name);
     name = NULL;
@@ -482,7 +482,7 @@ static int testOpenDefault(virConnectPtr conn,
 
     node->connections[connid].numDomains = 1;
     node->connections[connid].domains[0].active = 1;
-    node->connections[connid].domains[0].handle = nextDomID++;
+    node->connections[connid].domains[0].id = nextDomID++;
     node->connections[connid].domains[0].onReboot = VIR_DOMAIN_RESTART;
     node->connections[connid].domains[0].onCrash = VIR_DOMAIN_RESTART;
     node->connections[connid].domains[0].onPoweroff = VIR_DOMAIN_DESTROY;
@@ -725,8 +725,8 @@ static int getDomainIndex(virDomainPtr domain) {
     testCon *con;
     con = &node->connections[domain->conn->handle];
     for (i = 0 ; i < MAX_DOMAINS ; i++) {
-        if (domain->handle >= 0) {
-            if (domain->handle == con->domains[i].handle)
+        if (domain->id >= 0) {
+            if (domain->id == con->domains[i].id)
                 return (i);
         } else {
             if (!strcmp(domain->name, con->domains[i].name))
@@ -850,7 +850,7 @@ testDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
     if (testLoadDomainFromDoc(conn, domid, xmlDesc) < 0)
         return (NULL);
     for (i = 0 ; i < MAX_DOMAINS ; i++) {
-        if (con->domains[i].handle == domid) {
+        if (con->domains[i].id == domid) {
             handle = i;
             break;
         }
@@ -874,7 +874,7 @@ virDomainPtr testLookupDomainByID(virConnectPtr conn,
 
     for (i = 0 ; i < MAX_DOMAINS ; i++) {
         if (con->domains[i].active &&
-            con->domains[i].handle == id) {
+            con->domains[i].id == id) {
             idx = i;
             break;
         }
@@ -889,7 +889,7 @@ virDomainPtr testLookupDomainByID(virConnectPtr conn,
         testError(conn, NULL, VIR_ERR_NO_MEMORY, _("allocating domain"));
         return(NULL);
     }
-    dom->handle = id;
+    dom->id = id;
     return (dom);
 }
 
@@ -912,7 +912,7 @@ virDomainPtr testLookupDomainByUUID(virConnectPtr conn,
             testError(conn, NULL, VIR_ERR_NO_MEMORY, _("allocating domain"));
             return(NULL);
         }
-        dom->handle = con->domains[idx].handle;
+        dom->id = con->domains[idx].id;
     }
     return (dom);
 }
@@ -936,7 +936,7 @@ virDomainPtr testLookupDomainByName(virConnectPtr conn,
             testError(conn, NULL, VIR_ERR_NO_MEMORY, _("allocating domain"));
             return(NULL);
         }
-        dom->handle = con->domains[idx].handle;
+        dom->id = con->domains[idx].id;
     }
     return (dom);
 }
@@ -951,7 +951,7 @@ int testListDomains (virConnectPtr conn,
     for (i = 0, n = 0 ; i < MAX_DOMAINS && n < maxids ; i++) {
         if (con->domains[i].active &&
             con->domains[i].info.state != VIR_DOMAIN_SHUTOFF) {
-            ids[n++] = con->domains[i].handle;
+            ids[n++] = con->domains[i].id;
         }
     }
     return (n);
@@ -1045,8 +1045,8 @@ int testShutdownDomain (virDomainPtr domain)
     }
 
     con->domains[domidx].info.state = VIR_DOMAIN_SHUTOFF;
-    domain->handle = -1;
-    con->domains[domidx].handle = -1;
+    domain->id = -1;
+    con->domains[domidx].id = -1;
 
     return (0);
 }
@@ -1100,8 +1100,8 @@ int testRebootDomain (virDomainPtr domain, virDomainRestart action)
         con->domains[domidx].info.state = VIR_DOMAIN_SHUTOFF;
         break;
     }
-    domain->handle = -1;
-    con->domains[domidx].handle = -1;
+    domain->id = -1;
+    con->domains[domidx].id = -1;
 
     return (0);
 }
@@ -1250,7 +1250,7 @@ char * testDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
         return (NULL);
     }
 
-    virBufferVSprintf(buf, "<domain type='test' id='%d'>\n", domain->handle);
+    virBufferVSprintf(buf, "<domain type='test' id='%d'>\n", domain->id);
     virBufferVSprintf(buf, "  <name>%s</name>\n", domain->name);
     uuid = domain->uuid;
     virBufferVSprintf(buf,
@@ -1344,7 +1344,7 @@ int testDomainCreate(virDomainPtr domain) {
         return (-1);
     }
 
-    domain->handle = con->domains[domidx].handle = nextDomID++;
+    domain->id = con->domains[domidx].id = nextDomID++;
     con->domains[domidx].info.state = VIR_DOMAIN_RUNNING;
 
     return (0);

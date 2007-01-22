@@ -523,7 +523,7 @@ int xenXMDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
         return(-1);
     }
 
-    if (domain->handle != -1)
+    if (domain->id != -1)
         return (-1);
 
     if (!(filename = virHashLookup(nameConfigMap, domain->name)))
@@ -991,7 +991,7 @@ char *xenXMDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED) {
                    __FUNCTION__);
         return(NULL);
     }
-    if (domain->handle != -1)
+    if (domain->id != -1)
         return (NULL);
 
     if (!(filename = virHashLookup(nameConfigMap, domain->name)))
@@ -1019,7 +1019,7 @@ int xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory) {
     }
     if (domain->conn->flags & VIR_CONNECT_RO)
         return (-1);
-    if (domain->handle != -1)
+    if (domain->id != -1)
         return (-1);
 
     if (!(filename = virHashLookup(nameConfigMap, domain->name)))
@@ -1061,7 +1061,7 @@ int xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory) {
     }
     if (domain->conn->flags & VIR_CONNECT_RO)
         return (-1);
-    if (domain->handle != -1)
+    if (domain->id != -1)
         return (-1);
 
     if (!(filename = virHashLookup(nameConfigMap, domain->name)))
@@ -1101,7 +1101,7 @@ unsigned long xenXMDomainGetMaxMemory(virDomainPtr domain) {
                    __FUNCTION__);
         return (-1);
     }
-    if (domain->handle != -1)
+    if (domain->id != -1)
         return (-1);
 
     if (!(filename = virHashLookup(nameConfigMap, domain->name)))
@@ -1134,7 +1134,7 @@ int xenXMDomainSetVcpus(virDomainPtr domain, unsigned int vcpus) {
     }
     if (domain->conn->flags & VIR_CONNECT_RO)
         return (-1);
-    if (domain->handle != -1)
+    if (domain->id != -1)
         return (-1);
 
     if (!(filename = virHashLookup(nameConfigMap, domain->name)))
@@ -1199,7 +1199,7 @@ virDomainPtr xenXMDomainLookupByName(virConnectPtr conn, const char *domname) {
 
     /* Ensure its marked inactive, because may be cached
        handle to a previously active domain */
-    ret->handle = -1;
+    ret->id = -1;
 
     return (ret);
 }
@@ -1258,7 +1258,7 @@ virDomainPtr xenXMDomainLookupByUUID(virConnectPtr conn,
 
     /* Ensure its marked inactive, because may be cached
        handle to a previously active domain */
-    ret->handle = -1;
+    ret->id = -1;
 
     return (ret);
 }
@@ -1279,7 +1279,7 @@ int xenXMDomainCreate(virDomainPtr domain) {
         return (-1);
     }
 
-    if (domain->handle != -1)
+    if (domain->id != -1)
         return (-1);
     if (domain->conn->flags & VIR_CONNECT_RO)
         return (-1);
@@ -1309,13 +1309,13 @@ int xenXMDomainCreate(virDomainPtr domain) {
     if ((ret = xenDaemonDomainLookupByName_ids(domain->conn, domain->name, uuid)) < 0) {
         return (-1);
     }
-    domain->handle = ret;
+    domain->id = ret;
 
     ret = xenDaemonDomainResume(domain);
     if (ret != 0) {
         fprintf(stderr, "Failed to resume new domain %s\n", domain->name);
         xenDaemonDomainDestroy(domain);
-        domain->handle = -1;
+        domain->id = -1;
         return (-1);
     }
 
@@ -2128,7 +2128,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
 
     if (!(ret = virGetDomain(conn, value->str, uuid)))
         goto error;
-    ret->handle = -1;
+    ret->id = -1;
 
     return (ret);
 
@@ -2152,7 +2152,7 @@ int xenXMDomainUndefine(virDomainPtr domain) {
         return (-1);
     }
 
-    if (domain->handle != -1)
+    if (domain->id != -1)
         return (-1);
     if (domain->conn->flags & VIR_CONNECT_RO)
         return (-1);

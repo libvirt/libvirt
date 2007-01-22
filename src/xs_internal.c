@@ -189,7 +189,7 @@ virDomainDoStoreWrite(virDomainPtr domain, const char *path,
     if (domain->conn->flags & VIR_CONNECT_RO)
         return (-1);
 
-    snprintf(s, 255, "/local/domain/%d/%s", domain->handle, path);
+    snprintf(s, 255, "/local/domain/%d/%s", domain->id, path);
     s[255] = 0;
 
     if (xs_write(domain->conn->xshandle, 0, &s[0], value, strlen(value)))
@@ -271,7 +271,7 @@ virDomainGetVMInfo(virDomainPtr domain, const char *vm, const char *name)
 static int
 virConnectCheckStoreID(virConnectPtr conn, int id)
 {
-    if (conn->handle >= 0) {
+    if (conn->id >= 0) {
         int tmp;
 
         tmp = xenHypervisorCheckID(conn, id);
@@ -371,10 +371,10 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
     }
     if (domain->conn->xshandle == NULL)
         return(-1);
-    if (domain->handle == -1)
+    if (domain->id == -1)
         return(-1);
 
-    tmp = virDomainDoStoreQuery(domain->conn, domain->handle, "running");
+    tmp = virDomainDoStoreQuery(domain->conn, domain->id, "running");
     if (tmp != NULL) {
         if (tmp[0] == '1')
             info->state = VIR_DOMAIN_RUNNING;
@@ -382,7 +382,7 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
     } else {
         info->state = VIR_DOMAIN_NONE;
     }
-    tmp = virDomainDoStoreQuery(domain->conn, domain->handle, "memory/target");
+    tmp = virDomainDoStoreQuery(domain->conn, domain->id, "memory/target");
     if (tmp != NULL) {
         info->memory = atol(tmp);
         info->maxMem = atol(tmp);
@@ -393,7 +393,7 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
     }
 #if 0
     /* doesn't seems to work */
-    tmp = virDomainDoStoreQuery(domain->conn, domain->handle, "cpu_time");
+    tmp = virDomainDoStoreQuery(domain->conn, domain->id, "cpu_time");
     if (tmp != NULL) {
         info->cpuTime = atol(tmp);
         free(tmp);
@@ -401,7 +401,7 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
         info->cpuTime = 0;
     }
 #endif
-    snprintf(request, 199, "/local/domain/%d/cpu", domain->handle);
+    snprintf(request, 199, "/local/domain/%d/cpu", domain->id);
     request[199] = 0;
     tmp2 = virConnectDoStoreList(domain->conn, request, &nb_vcpus);
     if (tmp2 != NULL) {
@@ -431,7 +431,7 @@ xenStoreDomainSetMemory(virDomainPtr domain, unsigned long memory)
 	                 __FUNCTION__);
 	return(-1);
     }
-    if (domain->handle == -1)
+    if (domain->id == -1)
         return(-1);
     snprintf(value, 19, "%lu", memory);
     value[19] = 0;
@@ -457,10 +457,10 @@ xenStoreDomainGetMaxMemory(virDomainPtr domain)
 
     if (!VIR_IS_CONNECTED_DOMAIN(domain))
         return (ret);
-    if (domain->handle == -1)
+    if (domain->id == -1)
         return(-1);
 
-    tmp = virDomainDoStoreQuery(domain->conn, domain->handle, "memory/target");
+    tmp = virDomainDoStoreQuery(domain->conn, domain->id, "memory/target");
     if (tmp != NULL) {
 	ret = (unsigned long) atol(tmp);
 	free(tmp);
@@ -601,7 +601,7 @@ xenStoreDomainLookupByName(virConnectPtr conn, const char *name)
 	    free(path);
 	goto done;
     }
-    ret->handle = id;
+    ret->id = id;
     ret->path = path;
 
 done:
@@ -631,7 +631,7 @@ xenStoreDomainShutdown(virDomainPtr domain)
 	                 __FUNCTION__);
         return(-1);
     }
-    if (domain->handle == -1)
+    if (domain->id == -1)
         return(-1);
     /*
      * this is very hackish, the domU kernel probes for a special 
@@ -659,7 +659,7 @@ xenStoreDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
 	                 __FUNCTION__);
         return(-1);
     }
-    if (domain->handle == -1)
+    if (domain->id == -1)
         return(-1);
     /*
      * this is very hackish, the domU kernel probes for a special 

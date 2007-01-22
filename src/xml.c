@@ -236,7 +236,7 @@ virDomainGetXMLDeviceInfo(virDomainPtr domain, const char *sub,
     unsigned int len = 0;
 
     snprintf(s, 255, "/local/domain/0/backend/%s/%d/%ld/%s",
-             sub, domain->handle, dev, name);
+             sub, domain->id, dev, name);
     s[255] = 0;
 
     return xs_read(domain->conn->xshandle, 0, &s[0], &len);
@@ -1693,7 +1693,7 @@ virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref)
             if (attr == NULL)
                 goto error;
 
-            xref = xenStoreDomainGetNetworkID(domain->conn, domain->handle,
+            xref = xenStoreDomainGetNetworkID(domain->conn, domain->id,
 	                                     (char *) attr);
 	    if (xref != NULL) {
 	        strcpy(ref, xref);

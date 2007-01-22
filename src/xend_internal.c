@@ -1877,7 +1877,7 @@ sexpr_to_xend_domain_info(virDomainPtr domain, struct sexpr *root, virDomainInfo
     } else {
         /* Inactive domains don't have a state reported, so
            mark them SHUTOFF, rather than NOSTATE */
-        if (domain->handle < 0)
+        if (domain->id < 0)
             info->state = VIR_DOMAIN_SHUTOFF;
         else
             info->state = VIR_DOMAIN_NOSTATE;
@@ -1966,9 +1966,9 @@ sexpr_to_domain(virConnectPtr conn, struct sexpr *root)
         goto error;
 
     if (tmp)
-        ret->handle = sexpr_int(root, "domain/domid");
+        ret->id = sexpr_int(root, "domain/domid");
     else
-        ret->handle = -1; /* An inactive domain */
+        ret->id = -1; /* An inactive domain */
 
     return (ret);
 
@@ -2124,7 +2124,7 @@ xenDaemonDomainSuspend(virDomainPtr domain)
 	             __FUNCTION__);
         return(-1);
     }
-    if (domain->handle < 0)
+    if (domain->id < 0)
         return(-1);
     return xend_op(domain->conn, domain->name, "op", "pause", NULL);
 }
@@ -2146,7 +2146,7 @@ xenDaemonDomainResume(virDomainPtr domain)
 	             __FUNCTION__);
         return(-1);
     }
-    if (domain->handle < 0)
+    if (domain->id < 0)
         return(-1);
     return xend_op(domain->conn, domain->name, "op", "unpause", NULL);
 }
@@ -2169,7 +2169,7 @@ xenDaemonDomainShutdown(virDomainPtr domain)
 	             __FUNCTION__);
         return(-1);
     }
-    if (domain->handle < 0)
+    if (domain->id < 0)
         return(-1);
     return xend_op(domain->conn, domain->name, "op", "shutdown", "reason", "halt", NULL);
 }
@@ -2193,7 +2193,7 @@ xenDaemonDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
 	             __FUNCTION__);
         return(-1);
     }
-    if (domain->handle < 0)
+    if (domain->id < 0)
         return(-1);
     return xend_op(domain->conn, domain->name, "op", "shutdown", "reason", "reboot", NULL);
 }
@@ -2219,7 +2219,7 @@ xenDaemonDomainDestroy(virDomainPtr domain)
 	             __FUNCTION__);
         return(-1);
     }
-    if (domain->handle < 0)
+    if (domain->id < 0)
         return(-1);
     return xend_op(domain->conn, domain->name, "op", "destroy", NULL);
 }
@@ -2246,7 +2246,7 @@ xenDaemonDomainSave(virDomainPtr domain, const char *filename)
 	             __FUNCTION__);
         return(-1);
     }
-    if (domain->handle < 0)
+    if (domain->id < 0)
         return(-1);
     return xend_op(domain->conn, domain->name, "op", "save", "file", filename, NULL);
 }
@@ -2273,7 +2273,7 @@ xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
 	             __FUNCTION__);
         return(-1);
     }
-    if (domain->handle < 0)
+    if (domain->id < 0)
         return(-1);
     return xend_op(domain->conn, domain->name, "op", "dump", "file", filename,
                    "live", "1", "crash", "0", NULL);
@@ -2321,7 +2321,7 @@ xenDaemonDomainGetMaxMemory(virDomainPtr domain)
 	             __FUNCTION__);
         return(-1);
     }
-    if (domain->handle < 0 && domain->conn->xendConfigVersion < 3)
+    if (domain->id < 0 && domain->conn->xendConfigVersion < 3)
         return(-1);
 
     /* can we ask for a subset ? worth it ? */
@@ -2357,7 +2357,7 @@ xenDaemonDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
 	             __FUNCTION__);
         return(-1);
     }
-    if (domain->handle < 0 && domain->conn->xendConfigVersion < 3)
+    if (domain->id < 0 && domain->conn->xendConfigVersion < 3)
         return(-1);
 
     snprintf(buf, sizeof(buf), "%lu", memory >> 10);
@@ -2391,7 +2391,7 @@ xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory)
 	             __FUNCTION__);
         return(-1);
     }
-    if (domain->handle < 0 && domain->conn->xendConfigVersion < 3)
+    if (domain->id < 0 && domain->conn->xendConfigVersion < 3)
         return(-1);
 
     snprintf(buf, sizeof(buf), "%lu", memory >> 10);
@@ -2455,12 +2455,12 @@ xenDaemonDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
 	             __FUNCTION__);
         return(NULL);
     }
-    if (domain->handle < 0 && domain->conn->xendConfigVersion < 3)
+    if (domain->id < 0 && domain->conn->xendConfigVersion < 3)
         return(NULL);
-    if (domain->handle < 0)
+    if (domain->id < 0)
         return xenDaemonDomainDumpXMLByName(domain->conn, domain->name);
     else
-        return xenDaemonDomainDumpXMLByID(domain->conn, domain->handle);
+        return xenDaemonDomainDumpXMLByID(domain->conn, domain->id);
 }
 #endif /* !PROXY */
 
@@ -2486,7 +2486,7 @@ xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 	             __FUNCTION__);
         return(-1);
     }
-    if (domain->handle < 0 && domain->conn->xendConfigVersion < 3)
+    if (domain->id < 0 && domain->conn->xendConfigVersion < 3)
         return(-1);
 
     root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
@@ -2740,7 +2740,7 @@ xenDaemonLookupByID(virConnectPtr conn, int id) {
         virXendError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
         goto error;
     }
-    ret->handle = id;
+    ret->id = id;
     free(name);
     return (ret);
 
@@ -2770,7 +2770,7 @@ xenDaemonDomainSetVcpus(virDomainPtr domain, unsigned int vcpus)
 	             __FUNCTION__);
         return (-1);
     }
-    if (domain->handle < 0 && domain->conn->xendConfigVersion < 3)
+    if (domain->id < 0 && domain->conn->xendConfigVersion < 3)
         return(-1);
 
     snprintf(buf, sizeof(buf), "%d", vcpus);
@@ -2802,7 +2802,7 @@ xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
 	             __FUNCTION__);
         return (-1);
     }
-    if (domain->handle < 0)
+    if (domain->id < 0)
         return(-1);
 
     /* from bit map, build character string of mapped CPU numbers */
@@ -2857,7 +2857,7 @@ xenDaemonDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
                      __FUNCTION__);
         return (-1);
     }
-    if (domain->handle < 0)
+    if (domain->id < 0)
         return(-1);
 
     root = sexpr_get(domain->conn, "/xend/domain/%s?op=vcpuinfo", domain->name);
@@ -2959,7 +2959,7 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
       virXendError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
         goto error;
     }
-    ret->handle = id;
+    ret->id = id;
     if (name != NULL)
         free(name);
     return (ret);

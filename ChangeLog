@@ -1,3 +1,13 @@
+Mon Jan 22 16:23:52 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* src/internal.h: virDomain.handle refers to the "id"
+	in the API, so re-name to virDomain.id to avoid
+	confusion.
+	
+	* src/hash.c, src/libvirt.c, src/proxy_internal.c, src/test.c,
+	src/xen_internal.c, src/xend_internal.c, src/xm_internal.c,
+	src/xml.c, src/xs_internal.c: update for rename.
+
 Mon Jan 22 16:17:25 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* src/driver.h: remove Free(), GetName(), GetID() and
