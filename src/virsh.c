@@ -292,7 +292,7 @@ cmdConnect(vshControl * ctl, vshCmd * cmd)
     
     if (ctl->name)
         free(ctl->name);
-    ctl->name = vshCommandOptString(cmd, "name", NULL);
+    ctl->name = vshStrdup(ctl, vshCommandOptString(cmd, "name", NULL));
 
     if (!ro)
         ctl->conn = virConnectOpen(ctl->name);

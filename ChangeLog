@@ -1,9 +1,14 @@
+Mon Jan 22 15:41:52 EST 2007 Daniel Berrange <berrange@redhat.com>
+
+	* src/virsh.c: Fix crash in 'connect' command by ensuring
+	we always strdup the connection URI string.
+
 Mon Jan 22 16:23:52 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* src/internal.h: virDomain.handle refers to the "id"
 	in the API, so re-name to virDomain.id to avoid
 	confusion.
-	
+
 	* src/hash.c, src/libvirt.c, src/proxy_internal.c, src/test.c,
 	src/xen_internal.c, src/xend_internal.c, src/xm_internal.c,
 	src/xml.c, src/xs_internal.c: update for rename.
