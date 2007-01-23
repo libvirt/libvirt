@@ -309,7 +309,7 @@ cmdConnect(vshControl * ctl, vshCmd * cmd)
  * "list" command
  */
 static vshCmdInfo info_list[] = {
-    {"syntax", "list"},
+    {"syntax", "list [--inactive | --all]"},
     {"help", gettext_noop("list domains")},
     {"desc", gettext_noop("Returns list of domains.")},
     {NULL, NULL}
@@ -419,8 +419,10 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         virDomainPtr dom = virDomainLookupByName(ctl->conn, names[i]);
 
         /* this kind of work with domains is not atomic operation */
-        if (!dom)
+        if (!dom) {
+	    free(names[i]);
             continue;
+	}
         ret = virDomainGetInfo(dom, &info);
 	id = virDomainGetID(dom);
 
@@ -439,6 +441,7 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 	}
 
         virDomainFree(dom);
+	free(names[i]);
     }
     if (ids)
         free(ids);
@@ -546,7 +549,7 @@ cmdCreate(vshControl * ctl, vshCmd * cmd)
     char *from;
     int found;
     int ret = TRUE;
-    char buffer[4096];
+    char buffer[BUFSIZ];
     int fd, l;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
@@ -601,7 +604,7 @@ cmdDefine(vshControl * ctl, vshCmd * cmd)
     char *from;
     int found;
     int ret = TRUE;
-    char buffer[4096];
+    char buffer[BUFSIZ];
     int fd, l;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
@@ -677,7 +680,7 @@ cmdUndefine(vshControl * ctl, vshCmd * cmd)
  * "start" command
  */
 static vshCmdInfo info_start[] = {
-    {"syntax", "start a domain "},
+    {"syntax", "start <domain>"},
     {"help", gettext_noop("start a (previously defined) inactive domain")},
     {"desc", gettext_noop("Start a domain.")},
     {NULL, NULL}

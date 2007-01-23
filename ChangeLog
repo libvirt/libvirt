@@ -1,3 +1,10 @@
+Mon Jan 23 12:28:42 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	Issues pointed out by Karel Zak <kzak@redhat.com>
+
+	* src/virsh.c: fix up some syntax strings, use BUFSIZ
+	and free names returned from virConnectListDefinedDomains()
+	
 Mon Jan 22 15:41:52 EST 2007 Daniel Berrange <berrange@redhat.com>
 
 	* src/virsh.c: Fix crash in 'connect' command by ensuring
