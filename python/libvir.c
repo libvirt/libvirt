@@ -349,7 +349,7 @@ libvirt_virNodeGetInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
 PyObject *
 libvirt_virDomainGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     PyObject *py_retval;
-    unsigned char uuid[16];
+    unsigned char uuid[VIR_UUID_BUFLEN];
     virDomainPtr domain;
     PyObject *pyobj_domain;
     int c_retval;
@@ -370,7 +370,7 @@ libvirt_virDomainGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
         Py_INCREF(Py_None);
 	return(Py_None);
     }
-    py_retval = PyString_FromStringAndSize((char *) &uuid[0], 16);
+    py_retval = PyString_FromStringAndSize((char *) &uuid[0], VIR_UUID_BUFLEN);
 
     return(py_retval);
 }
@@ -388,7 +388,7 @@ libvirt_virDomainLookupByUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
         return(NULL);
     conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
 
-    if ((uuid == NULL) || (len != 16)) {
+    if ((uuid == NULL) || (len != VIR_UUID_BUFLEN)) {
         Py_INCREF(Py_None);
 	return(Py_None);
     }

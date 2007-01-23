@@ -761,7 +761,7 @@ xenProxyLookupByID(virConnectPtr conn, int id)
 {
     virProxyPacket req;
     virProxyFullPacket ans;
-    unsigned char uuid[16];
+    unsigned char uuid[VIR_UUID_BUFLEN];
     const char *name;
     int ret;
     virDomainPtr res;
@@ -786,8 +786,8 @@ xenProxyLookupByID(virConnectPtr conn, int id)
     if (ans.data.arg == -1) {
 	return(NULL);
     }
-    memcpy(uuid, &ans.extra.str[0], 16);
-    name = &ans.extra.str[16];
+    memcpy(uuid, &ans.extra.str[0], VIR_UUID_BUFLEN);
+    name = &ans.extra.str[VIR_UUID_BUFLEN];
     res = virGetDomain(conn, name, uuid);
 
     if (res == NULL)
@@ -825,7 +825,7 @@ xenProxyLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     }
     memset(&req, 0, sizeof(virProxyPacket));
     req.command = VIR_PROXY_LOOKUP_UUID;
-    req.len = sizeof(virProxyPacket) + 16;
+    req.len = sizeof(virProxyPacket) + VIR_UUID_BUFLEN;
     ret = xenProxyCommand(conn, (virProxyPacketPtr) &req, &req, 0);
     if (ret < 0) {
         xenProxyClose(conn);

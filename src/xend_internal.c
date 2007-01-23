@@ -1100,7 +1100,7 @@ xenDaemonDomainLookupByName_ids(virConnectPtr xend, const char *domname,
     int ret = -1;
 
     if (uuid != NULL)
-        memset(uuid, 0, 16);
+        memset(uuid, 0, VIR_UUID_BUFLEN);
     root = sexpr_get(xend, "/xend/domain/%s?detail=1", domname);
     if (root == NULL)
         goto error;
@@ -1152,7 +1152,7 @@ xenDaemonDomainLookupByID(virConnectPtr xend,
     char *dst_uuid;
     struct sexpr *root;
 
-    memset(uuid, 0, 16);
+    memset(uuid, 0, VIR_UUID_BUFLEN);
 
     root = sexpr_get(xend, "/xend/domain/%d?detail=1", id);
     if (root == NULL)
@@ -1939,7 +1939,7 @@ sexpr_to_domain(virConnectPtr conn, struct sexpr *root)
 {
     virDomainPtr ret = NULL;
     char *dst_uuid = NULL;
-    char uuid[16];
+    char uuid[VIR_UUID_BUFLEN];
     const char *name;
     const char *tmp;
 
@@ -2728,7 +2728,7 @@ error:
 static virDomainPtr
 xenDaemonLookupByID(virConnectPtr conn, int id) {
     char *name = NULL;
-    unsigned char uuid[16];
+    unsigned char uuid[VIR_UUID_BUFLEN];
     virDomainPtr ret;
 
     if (xenDaemonDomainLookupByID(conn, id, &name, uuid) < 0) {
@@ -2762,7 +2762,7 @@ xenDaemonLookupByID(virConnectPtr conn, int id) {
 int
 xenDaemonDomainSetVcpus(virDomainPtr domain, unsigned int vcpus)
 {
-    char buf[16];
+    char buf[VIR_UUID_BUFLEN];
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)
      || (vcpus < 1)) {
@@ -2793,7 +2793,7 @@ int
 xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
                      unsigned char *cpumap, int maplen)
 {
-    char buf[16], mapstr[sizeof(cpumap_t) * 64] = "[";
+    char buf[VIR_UUID_BUFLEN], mapstr[sizeof(cpumap_t) * 64] = "[";
     int i, j;
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)
@@ -2929,7 +2929,7 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     char *name = NULL;
     char **names;
     char **tmp;
-    unsigned char ident[16];
+    unsigned char ident[VIR_UUID_BUFLEN];
     int id = -1;
 
     names = xenDaemonListDomainsOld(conn);
@@ -2942,7 +2942,7 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     while (*tmp != NULL) {
         id = xenDaemonDomainLookupByName_ids(conn, *tmp, &ident[0]);
         if (id >= 0) {
-            if (!memcmp(uuid, ident, 16)) {
+            if (!memcmp(uuid, ident, VIR_UUID_BUFLEN)) {
                 name = strdup(*tmp);
                 break;
             }

@@ -525,7 +525,7 @@ char *
 virDomainGetXMLDesc(virDomainPtr domain, int flags)
 {
     char *ret = NULL;
-    unsigned char uuid[16];
+    unsigned char uuid[VIR_UUID_BUFLEN];
     virBuffer buf;
     virDomainInfo info;
 
@@ -1533,7 +1533,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
 
 
 unsigned char *virParseUUID(char **ptr, const char *uuid) {
-    int rawuuid[16];
+    int rawuuid[VIR_UUID_BUFLEN];
     const char *cur;
     unsigned char *dst_uuid = NULL;
     int i;
@@ -1546,7 +1546,7 @@ unsigned char *virParseUUID(char **ptr, const char *uuid) {
      * pairs as long as there is 32 of them in the end.
      */
     cur = uuid;
-    for (i = 0;i < 16;) {
+    for (i = 0;i < VIR_UUID_BUFLEN;) {
         rawuuid[i] = 0;
         if (*cur == 0)
 	    goto error;
@@ -1581,7 +1581,7 @@ unsigned char *virParseUUID(char **ptr, const char *uuid) {
     dst_uuid = (unsigned char *) *ptr;
     *ptr += 16;
 
-    for (i = 0; i < 16; i++)
+    for (i = 0; i < VIR_UUID_BUFLEN; i++)
         dst_uuid[i] = rawuuid[i] & 0xFF;
 
 error:

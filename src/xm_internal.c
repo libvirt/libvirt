@@ -209,7 +209,7 @@ static int xenXMConfigGetUUID(virConfPtr conf, const char *name, unsigned char *
    have one in its config */
 static void xenXMConfigGenerateUUID(unsigned char *uuid) {
     int i;
-    for (i = 0 ; i < 16 ; i++) {
+    for (i = 0 ; i < VIR_UUID_BUFLEN ; i++) {
         uuid[i] = (unsigned char)(1 + (int) (256.0 * (rand() / (RAND_MAX + 1.0))));
     }
 }
@@ -217,7 +217,7 @@ static void xenXMConfigGenerateUUID(unsigned char *uuid) {
 /* Ensure that a config object has a valid UUID in it,
    if it doesn't then (re-)generate one */
 static int xenXMConfigEnsureIdentity(virConfPtr conf, const char *filename) {
-    unsigned char uuid[16];
+    unsigned char uuid[VIR_UUID_BUFLEN];
     const char *name;
 
     /* Had better have a name...*/
@@ -242,7 +242,7 @@ static int xenXMConfigEnsureIdentity(virConfPtr conf, const char *filename) {
     /* If there is no uuid...*/
     if (xenXMConfigGetUUID(conf, "uuid", uuid) < 0) {
         virConfValuePtr value;
-        char uuidstr[37];
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
 
         value = malloc(sizeof(virConfValue));
         if (!value) {
@@ -251,13 +251,13 @@ static int xenXMConfigEnsureIdentity(virConfPtr conf, const char *filename) {
 
         /* ... then generate one */
         xenXMConfigGenerateUUID(uuid);
-        snprintf(uuidstr, 37,
+        snprintf(uuidstr, VIR_UUID_STRING_BUFLEN,
                  "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x</uuid>\n",
                  uuid[0], uuid[1], uuid[2], uuid[3],
                  uuid[4], uuid[5], uuid[6], uuid[7],
                  uuid[8], uuid[9], uuid[10], uuid[11],
                  uuid[12], uuid[13], uuid[14], uuid[15]);
-        uuidstr[36] = '\0';
+        uuidstr[VIR_UUID_STRING_BUFLEN-1] = '\0';
 
         value->type = VIR_CONF_STRING;
         value->str = strdup(uuidstr);
@@ -565,7 +565,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
     virBufferPtr buf;
     char *xml;
     const char *name;
-    unsigned char uuid[16];
+    unsigned char uuid[VIR_UUID_BUFLEN];
     const char *str;
     int hvm = 0;
     long val;
@@ -1168,7 +1168,7 @@ virDomainPtr xenXMDomainLookupByName(virConnectPtr conn, const char *domname) {
     const char *filename;
     xenXMConfCachePtr entry;
     virDomainPtr ret;
-    unsigned char uuid[16];
+    unsigned char uuid[VIR_UUID_BUFLEN];
     if (!VIR_IS_CONNECT(conn)) {
         xenXMError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
         return (NULL);
@@ -1209,7 +1209,7 @@ virDomainPtr xenXMDomainLookupByName(virConnectPtr conn, const char *domname) {
  * Hash table iterator to search for a domain based on UUID
  */
 static int xenXMDomainSearchForUUID(const void *payload, const char *name ATTRIBUTE_UNUSED, const void *data) {
-    unsigned char uuid[16];
+    unsigned char uuid[VIR_UUID_BUFLEN];
     const unsigned char *wantuuid = (const unsigned char *)data;
     const xenXMConfCachePtr entry = (const xenXMConfCachePtr)payload;
 
@@ -1217,7 +1217,7 @@ static int xenXMDomainSearchForUUID(const void *payload, const char *name ATTRIB
         return (0);
     }
 
-    if (!memcmp(uuid, wantuuid, 16))
+    if (!memcmp(uuid, wantuuid, VIR_UUID_BUFLEN))
         return (1);
 
     return (0);
@@ -1271,7 +1271,7 @@ int xenXMDomainCreate(virDomainPtr domain) {
     char *xml;
     char *sexpr;
     int ret;
-    unsigned char uuid[16];
+    unsigned char uuid[VIR_UUID_BUFLEN];
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         xenXMError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
@@ -2046,7 +2046,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
 virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
     virDomainPtr ret;
     char filename[PATH_MAX];
-    unsigned char uuid[16];
+    unsigned char uuid[VIR_UUID_BUFLEN];
     virConfPtr conf = NULL;
     xenXMConfCachePtr entry = NULL;
     virConfValuePtr value;

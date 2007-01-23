@@ -1030,7 +1030,7 @@ cmdDominfo(vshControl * ctl, vshCmd * cmd)
     virDomainPtr dom;
     int ret = TRUE;
     unsigned int id;
-    char *str, uuid[37];
+    char *str, uuid[VIR_UUID_STRING_BUFLEN];
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -1535,7 +1535,7 @@ static int
 cmdDomuuid(vshControl * ctl, vshCmd * cmd)
 {
     virDomainPtr dom;
-    char uuid[37];
+    char uuid[VIR_UUID_STRING_BUFLEN];
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -1943,7 +1943,7 @@ vshCommandOptDomainBy(vshControl * ctl, vshCmd * cmd, const char *optname,
         }
     }
     /* try it by UUID */
-    if (dom==NULL && (flag & VSH_DOMBYUUID) && strlen(n)==36) {
+    if (dom==NULL && (flag & VSH_DOMBYUUID) && strlen(n)==VIR_UUID_STRING_BUFLEN-1) {
         vshDebug(ctl, 5, "%s: <%s> tring as domain UUID\n",
                 cmd->def->name, optname);
         dom = virDomainLookupByUUIDString(ctl->conn, n);

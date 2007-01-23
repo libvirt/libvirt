@@ -645,8 +645,8 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 virDomainPtr
 virDomainLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
 {
-    int raw[16], i;
-    unsigned char uuid[16];
+    int raw[VIR_UUID_BUFLEN], i;
+    unsigned char uuid[VIR_UUID_BUFLEN];
     int ret;
 
     if (!VIR_IS_CONNECT(conn)) {
@@ -672,11 +672,11 @@ virDomainLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
                  raw + 8, raw + 9, raw + 10, raw + 11,
                  raw + 12, raw + 13, raw + 14, raw + 15);
     
-    if (ret!=16) {
+    if (ret!=VIR_UUID_BUFLEN) {
 	virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
 	return (NULL);
     }
-    for (i = 0; i < 16; i++)
+    for (i = 0; i < VIR_UUID_BUFLEN; i++)
         uuid[i] = raw[i] & 0xFF;
     
     return virDomainLookupByUUID(conn, &uuid[0]);
@@ -1205,7 +1205,7 @@ virDomainGetName(virDomainPtr domain)
 /**
  * virDomainGetUUID:
  * @domain: a domain object
- * @uuid: pointer to a 16 bytes array
+ * @uuid: pointer to a VIR_UUID_BUFLEN bytes array
  *
  * Get the UUID for a domain
  *
@@ -1224,7 +1224,7 @@ virDomainGetUUID(virDomainPtr domain, unsigned char *uuid)
     }
 
     if (domain->id == 0) {
-        memset(uuid, 0, 16);
+        memset(uuid, 0, VIR_UUID_BUFLEN);
     } else {
         if ((domain->uuid[0] == 0) && (domain->uuid[1] == 0) &&
             (domain->uuid[2] == 0) && (domain->uuid[3] == 0) &&
@@ -1236,7 +1236,7 @@ virDomainGetUUID(virDomainPtr domain, unsigned char *uuid)
             (domain->uuid[14] == 0) && (domain->uuid[15] == 0))
             xenDaemonDomainLookupByName_ids(domain->conn, domain->name,
                                 &domain->uuid[0]);
-        memcpy(uuid, &domain->uuid[0], 16);
+        memcpy(uuid, &domain->uuid[0], VIR_UUID_BUFLEN);
     }
     return (0);
 }
@@ -1244,7 +1244,7 @@ virDomainGetUUID(virDomainPtr domain, unsigned char *uuid)
 /**
  * virDomainGetUUIDString:
  * @domain: a domain object
- * @buf: pointer to a 37 bytes array
+ * @buf: pointer to a VIR_UUID_STRING_BUFLEN bytes array
  *
  * Get the UUID for a domain as string. For more information about 
  * UUID see RFC4122.
@@ -1254,7 +1254,7 @@ virDomainGetUUID(virDomainPtr domain, unsigned char *uuid)
 int
 virDomainGetUUIDString(virDomainPtr domain, char *buf)
 {
-    unsigned char uuid[16];
+    unsigned char uuid[VIR_UUID_BUFLEN];
 
     if (!VIR_IS_DOMAIN(domain)) {
         virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
@@ -1268,7 +1268,7 @@ virDomainGetUUIDString(virDomainPtr domain, char *buf)
     if (virDomainGetUUID(domain, &uuid[0]))
 	return (-1);
 
-    snprintf(buf, 37, 
+    snprintf(buf, VIR_UUID_STRING_BUFLEN,
 	"%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
                       uuid[0], uuid[1], uuid[2], uuid[3],
                       uuid[4], uuid[5], uuid[6], uuid[7],

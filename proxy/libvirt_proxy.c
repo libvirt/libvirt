@@ -462,7 +462,7 @@ retry2:
 	    break;
 	case VIR_PROXY_LOOKUP_ID: {
 	    char *name = NULL;
-	    unsigned char uuid[16];
+	    unsigned char uuid[VIR_UUID_BUFLEN];
 	    int len;
 
 	    if (req->len != sizeof(virProxyPacket))
@@ -476,9 +476,9 @@ retry2:
 		    len = 1000;
 		    name[1000] = 0;
 		}
-	        req->len += 16 + len + 1;
-		memcpy(&request.extra.str[0], uuid, 16);
-		strcpy(&request.extra.str[16], name);
+	        req->len += VIR_UUID_BUFLEN + len + 1;
+		memcpy(&request.extra.str[0], uuid, VIR_UUID_BUFLEN);
+		strcpy(&request.extra.str[VIR_UUID_BUFLEN], name);
 	    }
 	    if (name)
 	        free(name);
@@ -489,9 +489,9 @@ retry2:
 	    char **tmp;
 	    int ident, len;
 	    char *name = NULL;
-	    unsigned char uuid[16];
+	    unsigned char uuid[VIR_UUID_BUFLEN];
 
-	    if (req->len != sizeof(virProxyPacket) + 16)
+	    if (req->len != sizeof(virProxyPacket) + VIR_UUID_BUFLEN)
 	        goto comm_error;
 
 	    /*
@@ -504,7 +504,7 @@ retry2:
 	    if (names != NULL) {
 	       while (*tmp != NULL) {
 		  ident = xenDaemonDomainLookupByName_ids(conn, *tmp, &uuid[0]);
-		  if (!memcmp(uuid, &request.extra.str[0], 16)) {
+		  if (!memcmp(uuid, &request.extra.str[0], VIR_UUID_BUFLEN)) {
 		     name = *tmp;
 		     break;
 		  }
@@ -530,7 +530,7 @@ retry2:
 	}
 	case VIR_PROXY_LOOKUP_NAME: {
 	    int ident;
-	    unsigned char uuid[16];
+	    unsigned char uuid[VIR_UUID_BUFLEN];
 
 	    if (req->len > sizeof(virProxyPacket) + 1000)
 	        goto comm_error;
@@ -542,8 +542,8 @@ retry2:
                 req->data.arg = -1;
 		req->len = sizeof(virProxyPacket);
 	    } else {
-	        req->len = sizeof(virProxyPacket) + 16;
-		memcpy(&request.extra.str[0], uuid, 16);
+	        req->len = sizeof(virProxyPacket) + VIR_UUID_BUFLEN;
+		memcpy(&request.extra.str[0], uuid, VIR_UUID_BUFLEN);
 		req->data.arg = ident;
 	    }
 	    break;

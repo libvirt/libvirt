@@ -1,3 +1,15 @@
+Mon Jan 23 14:36:18 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* include/libvirt/libvirt.h.in: add VIR_UUID_BUFLEN and
+	VIR_UUID_STRING_BUFLEN
+
+	* libvirt/proxy/libvirt_proxy.c, libvirt/src/hash.c,
+	libvirt/src/internal.h,	libvirt/src/libvirt.c,
+	libvirt/src/proxy_internal.c, libvirt/src/test.c,
+	libvirt/src/virsh.c, libvirt/src/xend_internal.c,
+	libvirt/src/xm_internal.c, libvirt/src/xml.c,
+	libvirt/python/libvir.c: use them
+	
 Mon Jan 23 12:28:42 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	Issues pointed out by Karel Zak <kzak@redhat.com>

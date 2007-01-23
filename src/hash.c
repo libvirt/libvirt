@@ -759,7 +759,7 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     ret->conn = conn;
     ret->id = -1;
     if (uuid != NULL)
-        memcpy(&(ret->uuid[0]), uuid, 16);
+        memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
 
     if (virHashAddEntry(conn->domains, name, ret) < 0) {
         virHashError(conn, VIR_ERR_INTERNAL_ERROR,

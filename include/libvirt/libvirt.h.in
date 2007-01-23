@@ -187,6 +187,24 @@ struct _virNodeInfo {
 
 typedef virNodeInfo *virNodeInfoPtr;
 
+/**
+ * VIR_UUID_STRING_BUFLEN:
+ *
+ * This macro provides the length of the buffer required
+ * for virDomainGetUUID()
+ */
+
+#define VIR_UUID_BUFLEN (16)
+
+/**
+ * VIR_UUID_STRING_BUFLEN:
+ *
+ * This macro provides the length of the buffer required
+ * for virDomainGetUUIDString()
+ */
+
+#define VIR_UUID_STRING_BUFLEN (36+1)
+
 /* library versionning */
 
 /**

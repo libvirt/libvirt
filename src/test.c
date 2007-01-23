@@ -139,7 +139,7 @@ typedef struct _testDom {
     int active;
     int id;
     char name[20];
-    unsigned char uuid[16];
+    unsigned char uuid[VIR_UUID_BUFLEN];
     virDomainKernel kernel;
     virDomainInfo info;
     unsigned int maxVCPUs;
@@ -247,7 +247,7 @@ static int testLoadDomain(virConnectPtr conn,
     xmlXPathContextPtr ctxt = NULL;
     xmlXPathObjectPtr obj = NULL;
     char *name = NULL;
-    unsigned char rawuuid[16];
+    unsigned char rawuuid[VIR_UUID_BUFLEN];
     char *dst_uuid;
     testCon *con;
     struct timeval tv;
@@ -397,7 +397,7 @@ static int testLoadDomain(virConnectPtr conn,
     if (memory > maxMem)
         memory = maxMem;
 
-    memmove(con->domains[handle].uuid, rawuuid, 16);
+    memmove(con->domains[handle].uuid, rawuuid, VIR_UUID_BUFLEN);
     con->domains[handle].info.maxMem = maxMem;
     con->domains[handle].info.memory = memory;
     con->domains[handle].info.state = domid < 0 ? VIR_DOMAIN_SHUTOFF : VIR_DOMAIN_RUNNING;
@@ -487,7 +487,7 @@ static int testOpenDefault(virConnectPtr conn,
     node->connections[connid].domains[0].onCrash = VIR_DOMAIN_RESTART;
     node->connections[connid].domains[0].onPoweroff = VIR_DOMAIN_DESTROY;
     strcpy(node->connections[connid].domains[0].name, "test");
-    for (u = 0 ; u < 16 ; u++) {
+    for (u = 0 ; u < VIR_UUID_BUFLEN ; u++) {
         node->connections[connid].domains[0].uuid[u] = (u * 75)%255;
     }
     node->connections[connid].domains[0].info.maxMem = 8192 * 1024;
@@ -901,7 +901,7 @@ virDomainPtr testLookupDomainByUUID(virConnectPtr conn,
     int i, idx = -1;
     for (i = 0 ; i < MAX_DOMAINS ; i++) {
         if (con->domains[i].active &&
-            memcmp(uuid, con->domains[i].uuid, 16) == 0) {
+            memcmp(uuid, con->domains[i].uuid, VIR_UUID_BUFLEN) == 0) {
             idx = i;
             break;
         }

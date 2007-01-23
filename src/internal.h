@@ -145,15 +145,15 @@ enum {
 * Internal structure associated to a domain
 */
 struct _virDomain {
-    unsigned int magic;     /* specific value to check */
-    int uses;               /* reference count */
-    virConnectPtr conn;     /* pointer back to the connection */
-    char *name;             /* the domain external name */
-    char *path;             /* the domain internal path */
-    int id;                 /* the domain ID */
-    int flags;              /* extra flags */
-    unsigned char uuid[16]; /* the domain unique identifier */
-    char *xml;              /* the XML description for defined domains */
+    unsigned int magic;                  /* specific value to check */
+    int uses;                            /* reference count */
+    virConnectPtr conn;                  /* pointer back to the connection */
+    char *name;                          /* the domain external name */
+    char *path;                          /* the domain internal path */
+    int id;                              /* the domain ID */
+    int flags;                           /* extra flags */
+    unsigned char uuid[VIR_UUID_BUFLEN]; /* the domain unique identifier */
+    char *xml;                           /* the XML description for defined domains */
 };
 
 /*
