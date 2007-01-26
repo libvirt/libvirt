@@ -2606,7 +2606,7 @@ vshParseArgv(vshControl * ctl, int argc, char **argv)
     end = end ? : argc;
 
     /* standard (non-command) options */
-    while ((arg = getopt_long(end, argv, "d:hqtv", opt, &idx)) != -1) {
+    while ((arg = getopt_long(end, argv, "d:hqtcv", opt, &idx)) != -1) {
         switch (arg) {
             case 'd':
                 ctl->debug = atoi(optarg);
