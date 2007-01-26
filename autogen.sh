@@ -68,7 +68,7 @@ if test x$OBJ_DIR != x; then
     cd "$OBJ_DIR"
 fi
 
-$srcdir/configure "$@"
-
-echo 
-echo "Now type 'make' to compile libvirt."
+$srcdir/configure "$@" && {
+    echo 
+    echo "Now type 'make' to compile libvirt."
+}

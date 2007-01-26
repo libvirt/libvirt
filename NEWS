@@ -5,6 +5,13 @@
        http://libvirt.org/news.html
 
 Releases
+0.1.11: Jan 22 2007:
+   - Finish XML <-> XM config files support
+   - Remove memory leak when freeing virConf objects
+   - Finishing inactive domain support (Daniel Berrange)
+   - Added a Relax-NG schemas to check XML instances
+
+
 0.1.10: Dec 20 2006:
    - more localizations
    - bug fixes: VCPU info breakages on xen 3.0.3, xenDaemonListDomains buffer overflow (Daniel Berrange), reference count bug when creating Xen domains (Daniel Berrange).
