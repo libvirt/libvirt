@@ -114,7 +114,7 @@ static int testCompareDominfoByID(void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_CUSTOM,
     "dominfo",
-    "1",
+    "2",
     NULL
   };
   return testCompareOutput("virshdata/dominfo-fc4.txt",
@@ -153,7 +153,7 @@ static int testCompareDomuuidByID(void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_CUSTOM,
     "domuuid",
-    "1",
+    "2",
     NULL
   };
   return testCompareOutput("virshdata/domuuid-fc4.txt",
@@ -203,7 +203,7 @@ static int testCompareDomnameByID(void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_CUSTOM,
     "domname",
-    "1",
+    "2",
     NULL
   };
   return testCompareOutput("virshdata/domname-fc4.txt",
@@ -228,7 +228,7 @@ static int testCompareDomstateByID(void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_CUSTOM,
     "domstate",
-    "1",
+    "2",
     NULL
   };
   return testCompareOutput("virshdata/domstate-fc4.txt",
