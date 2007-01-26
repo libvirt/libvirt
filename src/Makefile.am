@@ -32,7 +32,7 @@ libvirt_la_SOURCES =						\
 
 bin_PROGRAMS = virsh
 
-virsh_SOURCES = virsh.c
+virsh_SOURCES = virsh.c console.c console.h
 virsh_LDFLAGS =
 virsh_DEPENDENCIES = $(DEPS)
 virsh_LDADD = $(LDADDS) $(VIRSH_LIBS)

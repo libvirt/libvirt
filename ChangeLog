@@ -1,3 +1,10 @@
+Fri Jan 26 06:53:52 EST 2007 Daniel Berrange <berrange@redhat.com>
+
+	* src/virshc: Added 'console' and 'vncdisplay' commands to
+	the virsh tool
+	* src/console.c, src/console.h: Impl of a simple interactive
+	serial console
+
 Fri Jan 26 12:48:13 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: Richard W.M. Jones pointed out a missing option

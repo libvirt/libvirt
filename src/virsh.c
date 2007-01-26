@@ -1,5 +1,5 @@
 /*
- * virsh.c: a Xen shell used to exercise the libvir API
+ * virsh.c: a Xen shell used to exercise the libvirt API
  *
  * Copyright (C) 2005 Red Hat, Inc.
  *
@@ -29,11 +29,16 @@
 #include <fcntl.h>
 #include <locale.h>
 
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
+
 #include <readline/readline.h>
 #include <readline/history.h>
 
 #include "config.h"
 #include "internal.h"
+#include "console.h"
 
 static char *progname;
 
@@ -303,6 +308,71 @@ cmdConnect(vshControl * ctl, vshCmd * cmd)
         vshError(ctl, FALSE, _("Failed to connect to the hypervisor"));
 
     return ctl->conn ? TRUE : FALSE;
+}
+
+/*
+ * "console" command 
+ */
+static vshCmdInfo info_console[] = {
+    {"syntax", "console <domain>"},
+    {"help", gettext_noop("connect to the guest console")},
+    {"desc",
+     gettext_noop("Connect the virtual serial console for the guest")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_console[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdConsole(vshControl * ctl, vshCmd * cmd)
+{
+    xmlDocPtr xml = NULL;
+    xmlXPathObjectPtr obj = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    virDomainPtr dom;
+    int ret = FALSE;
+    char *doc;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+        return FALSE;
+
+    doc = virDomainGetXMLDesc(dom, 0);
+    if (!doc)
+	goto cleanup;
+
+    xml = xmlReadDoc((const xmlChar *) doc, "domain.xml", NULL,
+		     XML_PARSE_NOENT | XML_PARSE_NONET |
+		     XML_PARSE_NOWARNING);
+    free(doc);
+    if (!xml)
+        goto cleanup;
+    ctxt = xmlXPathNewContext(xml);
+    if (!ctxt)
+        goto cleanup;
+
+    obj = xmlXPathEval(BAD_CAST "string(/domain/devices/console/@tty)", ctxt);
+    if ((obj != NULL) && ((obj->type == XPATH_STRING) &&
+        (obj->stringval != NULL) && (obj->stringval[0] != 0))) {
+        if (virRunConsole((const char *)obj->stringval) == 0)
+            ret = TRUE;
+    } else {
+        vshPrintExtra(ctl, _("No console available for domain\n"));
+    }
+    xmlXPathFreeObject(obj);
+
+ cleanup:
+    if (ctxt)
+        xmlXPathFreeContext(ctxt);
+    if (xml)
+        xmlFreeDoc(xml);
+    virDomainFree(dom);
+    return ret;
 }
 
 /*
@@ -1633,6 +1703,88 @@ cmdVersion(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 }
 
 /*
+ * "dumpxml" command
+ */
+static vshCmdInfo info_vncdisplay[] = {
+    {"syntax", "vncdisplay <domain>"},
+    {"help", gettext_noop("vnc display")},
+    {"desc", gettext_noop("Ouput the IP address and port number for the VNC display.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_vncdisplay[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdVNCDisplay(vshControl * ctl, vshCmd * cmd)
+{
+    xmlDocPtr xml = NULL;
+    xmlXPathObjectPtr obj = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    virDomainPtr dom;
+    int ret = FALSE;
+    int port = 0;
+    char *doc;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+        return FALSE;
+
+    doc = virDomainGetXMLDesc(dom, 0);
+    if (!doc)
+	goto cleanup;
+
+    xml = xmlReadDoc((const xmlChar *) doc, "domain.xml", NULL,
+		     XML_PARSE_NOENT | XML_PARSE_NONET |
+		     XML_PARSE_NOWARNING);
+    free(doc);
+    if (!xml)
+        goto cleanup;
+    ctxt = xmlXPathNewContext(xml);
+    if (!ctxt)
+        goto cleanup;
+
+    obj = xmlXPathEval(BAD_CAST "string(/domain/devices/graphics[@type='vnc']/@port)", ctxt);
+    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
+	(obj->stringval == NULL) || (obj->stringval[0] == 0)) {
+        goto cleanup;
+    }
+    port = strtol((const char *)obj->stringval, NULL, 10);
+    if (port == -1) {
+      goto cleanup;
+    }
+    xmlXPathFreeObject(obj);
+
+    obj = xmlXPathEval(BAD_CAST "string(/domain/devices/graphics[@type='vnc']/@listen)", ctxt);
+    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
+	(obj->stringval == NULL) || (obj->stringval[0] == 0)) {
+        goto cleanup;
+    }
+    if (!strcmp((const char*)obj->stringval, "0.0.0.0")) {
+        vshPrint(ctl, ":%d\n", port-5900);
+    } else {
+        vshPrint(ctl, "%s:%d\n", (const char *)obj->stringval, port-5900);
+    }
+    xmlXPathFreeObject(obj);
+    obj = NULL;
+
+ cleanup:
+    if (obj)
+      xmlXPathFreeObject(obj);
+    if (ctxt)
+        xmlXPathFreeContext(ctxt);
+    if (xml)
+        xmlFreeDoc(xml);
+    virDomainFree(dom);
+    return ret;
+}
+
+
+/*
  * "quit" command
  */
 static vshCmdInfo info_quit[] = {
@@ -1653,6 +1805,7 @@ cmdQuit(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
  */
 static vshCmdDef commands[] = {
     {"connect", cmdConnect, opts_connect, info_connect},
+    {"console", cmdConsole, opts_console, info_console},
     {"create", cmdCreate, opts_create, info_create},
     {"start", cmdStart, opts_start, info_start},
     {"destroy", cmdDestroy, opts_destroy, info_destroy},
@@ -1681,6 +1834,7 @@ static vshCmdDef commands[] = {
     {"vcpuinfo", cmdVcpuinfo, opts_vcpuinfo, info_vcpuinfo},
     {"vcpupin", cmdVcpupin, opts_vcpupin, info_vcpupin},
     {"version", cmdVersion, NULL, info_version},
+    {"vncdisplay", cmdVNCDisplay, opts_vncdisplay, info_vncdisplay},
     {NULL, NULL, NULL, NULL}
 };
 
