@@ -27,7 +27,7 @@
 extern "C" {
 #endif
 
-    int virRunConsole(const char *tty);
+    int vshRunConsole(const char *tty);
 
 #ifdef __cplusplus
 }

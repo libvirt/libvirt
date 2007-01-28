@@ -42,7 +42,7 @@ static void do_signal(int sig ATTRIBUTE_UNUSED) {
     got_signal = 1;
 }
 
-int virRunConsole(const char *tty) {
+int vshRunConsole(const char *tty) {
     int ttyfd, ret = -1;
     struct termios ttyattr, rawattr;
     void (*old_sigquit)(int);

@@ -1,3 +1,9 @@
+Sun Jan 28 14:44:23 EST 2007 Daniel Berrange <berrange@redhat.com>
+
+	* sc/console.c, src/console.h, src/virsh.c: Rename the
+	virRunConsole method to vshRunConsole to avoid it getting
+	picked up in auto-generated python bindings
+
 Fri Jan 26 07:59:52 EST 2007 Daniel Berrange <berrange@redhat.com>
 
 	* src/virshtest.c: Fixed up for new way test driver enumerates

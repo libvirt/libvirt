@@ -359,7 +359,7 @@ cmdConsole(vshControl * ctl, vshCmd * cmd)
     obj = xmlXPathEval(BAD_CAST "string(/domain/devices/console/@tty)", ctxt);
     if ((obj != NULL) && ((obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0))) {
-        if (virRunConsole((const char *)obj->stringval) == 0)
+        if (vshRunConsole((const char *)obj->stringval) == 0)
             ret = TRUE;
     } else {
         vshPrintExtra(ctl, _("No console available for domain\n"));
