@@ -246,6 +246,28 @@ AC_SUBST(PYTHON_VERSION)
 AC_SUBST(PYTHON_INCLUDES)
 AC_SUBST(PYTHON_SITE_PACKAGES)
 
+AC_MSG_CHECKING([whether this host is running a Xen kernel])
+RUNNING_XEN=
+if test -d /proc/sys/xen
+then
+    RUNNING_XEN=yes
+else
+    RUNNING_XEN=no
+fi
+AC_MSG_RESULT($RUNNING_XEN)
+
+AC_MSG_CHECKING([If XenD UNIX socket /var/run/xend/xmlrpc.sock is accessible])
+RUNNING_XEND=
+if test -S /var/run/xend/xmlrpc.sock
+then
+    RUNNING_XEND=yes
+else
+    RUNNING_XEND=no
+fi
+AC_MSG_RESULT($RUNNING_XEND)
+
+AM_CONDITIONAL(ENABLE_XEN_TESTS, [test "$RUNNING_XEN" != "no" -a "$RUNNING_XEND" != "no"])
+
 AM_GNU_GETTEXT_VERSION([0.14.1])
 AM_GNU_GETTEXT([external])
 if test -d po

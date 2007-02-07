@@ -1,3 +1,9 @@
+Wed Feb  7 07:40:21 EST 2007 Daniel Berrange <berrange@redhat.com>
+
+	* configure.in, tests/Makefile.am: Only enable the low level
+	Xen tests if XenD is actually running & accessible via the
+	UNIX socket
+
 Sun Jan 28 14:44:23 EST 2007 Daniel Berrange <berrange@redhat.com>
 
 	* sc/console.c, src/console.h, src/virsh.c: Rename the
@@ -37,7 +43,7 @@ Mon Jan 23 14:36:18 IST 2007 Mark McLoughlin <markmc@redhat.com>
 	libvirt/src/virsh.c, libvirt/src/xend_internal.c,
 	libvirt/src/xm_internal.c, libvirt/src/xml.c,
 	libvirt/python/libvir.c: use them
-	
+
 Mon Jan 23 12:28:42 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	Issues pointed out by Karel Zak <kzak@redhat.com>

@@ -22,7 +22,10 @@ EXTRA_DIST = xmlrpcserver.py test_conf.sh
 noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest conftest \
 	reconnect xmconfigtest
 
-TESTS = xml2sexprtest sexpr2xmltest virshtest test_conf.sh reconnect xmconfigtest
+TESTS = xml2sexprtest sexpr2xmltest virshtest test_conf.sh xmconfigtest
+if ENABLE_XEN_TESTS
+  TESTS += reconnect
+endif
 
 valgrind:
 	$(MAKE) check TESTS_ENVIRONMENT="valgrind --quiet --leak-check=full"
