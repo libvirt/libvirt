@@ -6,7 +6,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = libvirt.spec.in libvirt.spec COPYING.LIB \
              libvirt.pc.in libvirt.pc TODO AUTHORS ChangeLog \
-	     NEWS README $(man_MANS)
+	     NEWS README $(man_MANS) autobuild.sh
 
 man_MANS = virsh.1
 

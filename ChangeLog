@@ -1,3 +1,8 @@
+Wed Feb  7 11:30:14 EST 2007 Daniel Berrange <berrange@redhat.com>
+
+	* autobuild.sh, src/Makefile.am: Added a control file for
+	automating build and test processes
+
 Wed Feb  7 07:43:21 EST 2007 Daniel Berrange <berrange@redhat.com>
 
 	* src/xml.c, tests/xml2sexprdata/*.sexpr: Also include the
