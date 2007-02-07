@@ -127,14 +127,14 @@ virBufferNew(unsigned int size)
 
     return buf;
 }
-	
+
 void
 virBufferFree(virBufferPtr buf)
 {
     if (buf) {
         if (buf->content)
-	   free(buf->content);
-       	free(buf);
+            free(buf->content);
+        free(buf);
     }
 }
 
@@ -190,17 +190,17 @@ virBufferStrcat(virBufferPtr buf, ...)
 {
     va_list ap;
     char *str;
-    
+
     va_start(ap, buf);
-    
+
     while ((str = va_arg(ap, char *)) != NULL) {
         unsigned int len = strlen(str);
         unsigned int needSize = buf->use + len + 2;
 
         if (needSize > buf->size) {
-           if (!virBufferGrow(buf, needSize))
-              return -1;
-	}
+            if (!virBufferGrow(buf, needSize))
+                return -1;
+        }
         memcpy(&buf->content[buf->use], str, len);
         buf->use += len;
         buf->content[buf->use] = 0;
@@ -352,7 +352,7 @@ virDomainGetXMLDevices(virDomainPtr domain, virBufferPtr buf)
         virDomainGetXMLDevice(domain, buf, id);
     }
 
-  done:
+ done:
     if (list != NULL)
         free(list);
 
@@ -450,7 +450,7 @@ virDomainGetXMLInterfaces(virDomainPtr domain, virBufferPtr buf)
         virDomainGetXMLInterface(domain, buf, id);
     }
 
-  done:
+ done:
     if (list != NULL)
         free(list);
 
@@ -548,12 +548,12 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
     virBufferVSprintf(&buf, "  <name>%s</name>\n",
                       virDomainGetName(domain));
     if (virDomainGetUUID(domain, &uuid[0]) == 0) {
-    virBufferVSprintf(&buf,
-"  <uuid>%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x</uuid>\n",
-                      uuid[0], uuid[1], uuid[2], uuid[3],
-                      uuid[4], uuid[5], uuid[6], uuid[7],
-                      uuid[8], uuid[9], uuid[10], uuid[11],
-                      uuid[12], uuid[13], uuid[14], uuid[15]);
+        virBufferVSprintf(&buf,
+                          "  <uuid>%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x</uuid>\n",
+                          uuid[0], uuid[1], uuid[2], uuid[3],
+                          uuid[4], uuid[5], uuid[6], uuid[7],
+                          uuid[8], uuid[9], uuid[10], uuid[11],
+                          uuid[12], uuid[13], uuid[14], uuid[15]);
     }
     virDomainGetXMLBoot(domain, &buf);
     virBufferVSprintf(&buf, "  <memory>%lu</memory>\n", info.maxMem);
@@ -577,9 +577,9 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
  * @buf: a buffer for the result S-Expr
  * @xendConfigVersion: xend configuration file format
  *
- * Parse the graphics part of the XML description and add it to the S-Expr 
- * in buf.  This is a temporary interface as the S-Expr interface will be 
- * replaced by XML-RPC in the future. However the XML format should stay 
+ * Parse the graphics part of the XML description and add it to the S-Expr
+ * in buf.  This is a temporary interface as the S-Expr interface will be
+ * replaced by XML-RPC in the future. However the XML format should stay
  * valid over time.
  *
  * Returns 0 in case of success, -1 in case of error
@@ -634,9 +634,9 @@ static int virDomainParseXMLGraphicsDescImage(xmlNodePtr node, virBufferPtr buf,
  * @node: node containing graphics description
  * @buf: a buffer for the result S-Expr
  *
- * Parse the graphics part of the XML description and add it to the S-Expr 
- * in buf.  This is a temporary interface as the S-Expr interface will be 
- * replaced by XML-RPC in the future. However the XML format should stay 
+ * Parse the graphics part of the XML description and add it to the S-Expr
+ * in buf.  This is a temporary interface as the S-Expr interface will be
+ * replaced by XML-RPC in the future. However the XML format should stay
  * valid over time.
  *
  * Returns 0 in case of success, -1 in case of error
@@ -719,13 +719,13 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
                 && (xmlStrEqual(cur->name, BAD_CAST "type"))) {
                 txt = cur->children;
                 if ((txt != NULL) && (txt->type == XML_TEXT_NODE) &&
-		    (txt->next == NULL))
+                    (txt->next == NULL))
                     type = txt->content;
             } else if ((loader == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "loader"))) {
                 txt = cur->children;
                 if ((txt != NULL) && (txt->type == XML_TEXT_NODE) &&
-		    (txt->next == NULL))
+                    (txt->next == NULL))
                     loader = txt->content;
             } else if ((boot_dev == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "boot"))) {
@@ -741,10 +741,10 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
     }
     virBufferAdd(buf, "(image (hvm ", 12);
     if (loader == NULL) {
-       virXMLError(VIR_ERR_NO_KERNEL, NULL, 0);
-       goto error;
+        virXMLError(VIR_ERR_NO_KERNEL, NULL, 0);
+        goto error;
     } else {
-       virBufferVSprintf(buf, "(kernel '%s')", (const char *) loader);
+        virBufferVSprintf(buf, "(kernel '%s')", (const char *) loader);
     }
 
     /* get the device emulation model */
@@ -762,104 +762,104 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
     virBufferVSprintf(buf, "(vcpus %d)", vcpus);
 
     if (boot_dev) {
-       if (xmlStrEqual(boot_dev, BAD_CAST "fd")) {
-          virBufferVSprintf(buf, "(boot a)", (const char *) boot_dev);
-       } else if (xmlStrEqual(boot_dev, BAD_CAST "cdrom")) {
-          virBufferVSprintf(buf, "(boot d)", (const char *) boot_dev);
-       } else if (xmlStrEqual(boot_dev, BAD_CAST "hd")) {
-          virBufferVSprintf(buf, "(boot c)", (const char *) boot_dev);
-       } else {
-         /* Any other type of boot dev is unsupported right now */
-         virXMLError(VIR_ERR_XML_ERROR, NULL, 0);
-       }
+        if (xmlStrEqual(boot_dev, BAD_CAST "fd")) {
+            virBufferVSprintf(buf, "(boot a)", (const char *) boot_dev);
+        } else if (xmlStrEqual(boot_dev, BAD_CAST "cdrom")) {
+            virBufferVSprintf(buf, "(boot d)", (const char *) boot_dev);
+        } else if (xmlStrEqual(boot_dev, BAD_CAST "hd")) {
+            virBufferVSprintf(buf, "(boot c)", (const char *) boot_dev);
+        } else {
+            /* Any other type of boot dev is unsupported right now */
+            virXMLError(VIR_ERR_XML_ERROR, NULL, 0);
+        }
 
-       /* get the 1st floppy device file */
-       obj = xmlXPathEval(BAD_CAST "/domain/devices/disk[@device='floppy' and target/@dev='fda']/source", ctxt);
-       if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-           (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
-           cur = obj->nodesetval->nodeTab[0];
-           virBufferVSprintf(buf, "(fda '%s')",
-                             (const char *) xmlGetProp(cur, BAD_CAST "file"));
-           cur = NULL;
-       }
-       if (obj) {
-           xmlXPathFreeObject(obj);
-           obj = NULL;
-       }
+        /* get the 1st floppy device file */
+        obj = xmlXPathEval(BAD_CAST "/domain/devices/disk[@device='floppy' and target/@dev='fda']/source", ctxt);
+        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+            cur = obj->nodesetval->nodeTab[0];
+            virBufferVSprintf(buf, "(fda '%s')",
+                              (const char *) xmlGetProp(cur, BAD_CAST "file"));
+            cur = NULL;
+        }
+        if (obj) {
+            xmlXPathFreeObject(obj);
+            obj = NULL;
+        }
 
-       /* get the 2nd floppy device file */
-       obj = xmlXPathEval(BAD_CAST "/domain/devices/disk[@device='floppy' and target/@dev='fdb']/source", ctxt);
-       if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-           (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
-           xmlChar *fdfile = NULL;
-           cur = obj->nodesetval->nodeTab[0];
-           fdfile = xmlGetProp(cur, BAD_CAST "file");
-           virBufferVSprintf(buf, "(fdb '%s')",
-                             (const char *) fdfile);
-           xmlFree(fdfile);
-           cur = NULL;
-       }
-       if (obj) {
-           xmlXPathFreeObject(obj);
-           obj = NULL;
-       }
+        /* get the 2nd floppy device file */
+        obj = xmlXPathEval(BAD_CAST "/domain/devices/disk[@device='floppy' and target/@dev='fdb']/source", ctxt);
+        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+            xmlChar *fdfile = NULL;
+            cur = obj->nodesetval->nodeTab[0];
+            fdfile = xmlGetProp(cur, BAD_CAST "file");
+            virBufferVSprintf(buf, "(fdb '%s')",
+                              (const char *) fdfile);
+            xmlFree(fdfile);
+            cur = NULL;
+        }
+        if (obj) {
+            xmlXPathFreeObject(obj);
+            obj = NULL;
+        }
 
 
-       /* get the cdrom device file */
-       /* Only XenD <= 3.0.2 wants cdrom config here */
-       if (xendConfigVersion == 1) {
-           obj = xmlXPathEval(BAD_CAST "/domain/devices/disk[@device='cdrom' and target/@dev='hdc']/source", ctxt);
-           if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-               (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
-               xmlChar *cdfile = NULL;
-               cur = obj->nodesetval->nodeTab[0];
-               cdfile = xmlGetProp(cur, BAD_CAST "file");
-               virBufferVSprintf(buf, "(cdrom '%s')",
-                                 (const char *)cdfile);
-               xmlFree(cdfile);
-               cur = NULL;
-           }
-           if (obj) {
-               xmlXPathFreeObject(obj);
-               obj = NULL;
-           }
-       }
+        /* get the cdrom device file */
+        /* Only XenD <= 3.0.2 wants cdrom config here */
+        if (xendConfigVersion == 1) {
+            obj = xmlXPathEval(BAD_CAST "/domain/devices/disk[@device='cdrom' and target/@dev='hdc']/source", ctxt);
+            if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+                (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+                xmlChar *cdfile = NULL;
+                cur = obj->nodesetval->nodeTab[0];
+                cdfile = xmlGetProp(cur, BAD_CAST "file");
+                virBufferVSprintf(buf, "(cdrom '%s')",
+                                  (const char *)cdfile);
+                xmlFree(cdfile);
+                cur = NULL;
+            }
+            if (obj) {
+                xmlXPathFreeObject(obj);
+                obj = NULL;
+            }
+        }
 
-       obj = xmlXPathEval(BAD_CAST "/domain/features/acpi", ctxt);
-       if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-           (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
-           virBufferAdd(buf, "(acpi 1)", 8);
-       }
-       if (obj)
-           xmlXPathFreeObject(obj);
-       obj = xmlXPathEval(BAD_CAST "/domain/features/apic", ctxt);
-       if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-           (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
-           virBufferAdd(buf, "(apic 1)", 8);
-       }
-       if (obj)
-           xmlXPathFreeObject(obj);
-       obj = xmlXPathEval(BAD_CAST "/domain/features/pae", ctxt);
-       if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-           (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
-           virBufferAdd(buf, "(pae 1)", 7);
-       }
-       if (obj)
-           xmlXPathFreeObject(obj);
-       obj = NULL;
+        obj = xmlXPathEval(BAD_CAST "/domain/features/acpi", ctxt);
+        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+            virBufferAdd(buf, "(acpi 1)", 8);
+        }
+        if (obj)
+            xmlXPathFreeObject(obj);
+        obj = xmlXPathEval(BAD_CAST "/domain/features/apic", ctxt);
+        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+            virBufferAdd(buf, "(apic 1)", 8);
+        }
+        if (obj)
+            xmlXPathFreeObject(obj);
+        obj = xmlXPathEval(BAD_CAST "/domain/features/pae", ctxt);
+        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+            virBufferAdd(buf, "(pae 1)", 7);
+        }
+        if (obj)
+            xmlXPathFreeObject(obj);
+        obj = NULL;
     }
 
     obj = xmlXPathEval(BAD_CAST "count(domain/devices/console) > 0", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_BOOLEAN)) {
-      virXMLError(VIR_ERR_XML_ERROR, NULL, 0);
-      goto error;
+        virXMLError(VIR_ERR_XML_ERROR, NULL, 0);
+        goto error;
     }
     if (obj->boolval) {
-      virBufferAdd(buf, "(serial pty)", 12);
+        virBufferAdd(buf, "(serial pty)", 12);
     }
     xmlXPathFreeObject(obj);
     obj = NULL;
-    
+
     /* Is a graphics device specified? */
     obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics[1]", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
@@ -877,7 +877,7 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
         xmlFree(boot_dev);
 
     return (0);
-error:
+ error:
     if (boot_dev)
         xmlFree(boot_dev);
     if (obj != NULL)
@@ -918,31 +918,31 @@ virDomainParseXMLOSDescPV(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr 
                 && (xmlStrEqual(cur->name, BAD_CAST "type"))) {
                 txt = cur->children;
                 if ((txt != NULL) && (txt->type == XML_TEXT_NODE) &&
-		    (txt->next == NULL))
+                    (txt->next == NULL))
                     type = txt->content;
             } else if ((kernel == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "kernel"))) {
                 txt = cur->children;
                 if ((txt != NULL) && (txt->type == XML_TEXT_NODE) &&
-		    (txt->next == NULL))
+                    (txt->next == NULL))
                     kernel = txt->content;
             } else if ((root == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "root"))) {
                 txt = cur->children;
                 if ((txt != NULL) && (txt->type == XML_TEXT_NODE) &&
-		    (txt->next == NULL))
+                    (txt->next == NULL))
                     root = txt->content;
             } else if ((initrd == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "initrd"))) {
                 txt = cur->children;
                 if ((txt != NULL) && (txt->type == XML_TEXT_NODE) &&
-		    (txt->next == NULL))
+                    (txt->next == NULL))
                     initrd = txt->content;
             } else if ((cmdline == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "cmdline"))) {
                 txt = cur->children;
                 if ((txt != NULL) && (txt->type == XML_TEXT_NODE) &&
-		    (txt->next == NULL))
+                    (txt->next == NULL))
                     cmdline = txt->content;
             }
         }
@@ -955,10 +955,10 @@ virDomainParseXMLOSDescPV(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr 
     }
     virBufferAdd(buf, "(image (linux ", 14);
     if (kernel == NULL) {
-      	virXMLError(VIR_ERR_NO_KERNEL, NULL, 0);
-	return (-1);
+        virXMLError(VIR_ERR_NO_KERNEL, NULL, 0);
+        return (-1);
     } else {
-	virBufferVSprintf(buf, "(kernel '%s')", (const char *) kernel);
+        virBufferVSprintf(buf, "(kernel '%s')", (const char *) kernel);
     }
     if (initrd != NULL)
         virBufferVSprintf(buf, "(ramdisk '%s')", (const char *) initrd);
@@ -1003,7 +1003,7 @@ virCatchXMLParseError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...) {
         (ctxt->lastError.level == XML_ERR_FATAL) &&
         (ctxt->lastError.message != NULL)) {
         virXMLError(VIR_ERR_XML_DETAIL, ctxt->lastError.message,
-	            ctxt->lastError.line);
+                    ctxt->lastError.line);
     }
 }
 
@@ -1066,7 +1066,7 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
             } else if (xmlStrEqual(cur->name, BAD_CAST "readonly")) {
                 ro = 1;
             } else if (xmlStrEqual(cur->name, BAD_CAST "shareable")) {
-	        shareable = 1;
+                shareable = 1;
             }
         }
         cur = cur->next;
@@ -1350,7 +1350,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
     obj = xmlXPathEval(BAD_CAST "number(/domain/memory[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NUMBER) ||
         (isnan(obj->floatval)) || (obj->floatval < 64000)) {
-	max_mem = 128;
+        max_mem = 128;
     } else {
         max_mem = (obj->floatval / 1024);
     }
@@ -1361,9 +1361,9 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
         mem = max_mem;
     } else {
         mem = (obj->floatval / 1024);
-	if (mem > max_mem) {
-	    max_mem = mem;
-	}
+        if (mem > max_mem) {
+            max_mem = mem;
+        }
     }
     xmlXPathFreeObject(obj);
     virBufferVSprintf(&buf, "(memory %lu)(maxmem %lu)", mem, max_mem);
@@ -1378,7 +1378,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/uuid[1])", ctxt);
     if ((obj == NULL) || ((obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0))) {
+                          (obj->stringval != NULL) && (obj->stringval[0] != 0))) {
         virBufferVSprintf(&buf, "(uuid '%s')", obj->stringval);
     }
     xmlXPathFreeObject(obj);
@@ -1386,84 +1386,84 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
     obj = xmlXPathEval(BAD_CAST "string(/domain/bootloader[1])", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-	virBufferVSprintf(&buf, "(bootloader '%s')", obj->stringval);
-	/*
-	 * if using pygrub, the kernel and initrd strings are not 
-	 * significant and should be discarded
-	 */
-	if (xmlStrstr(obj->stringval, BAD_CAST "pygrub"))
-	    bootloader = 2;
-	else
-	    bootloader = 1;
+        virBufferVSprintf(&buf, "(bootloader '%s')", obj->stringval);
+        /*
+         * if using pygrub, the kernel and initrd strings are not
+         * significant and should be discarded
+         */
+        if (xmlStrstr(obj->stringval, BAD_CAST "pygrub"))
+            bootloader = 2;
+        else
+            bootloader = 1;
     }
     xmlXPathFreeObject(obj);
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/on_poweroff[1])", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-	virBufferVSprintf(&buf, "(on_poweroff '%s')", obj->stringval);
+        virBufferVSprintf(&buf, "(on_poweroff '%s')", obj->stringval);
     }
     xmlXPathFreeObject(obj);
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/on_reboot[1])", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-	virBufferVSprintf(&buf, "(on_reboot '%s')", obj->stringval);
+        virBufferVSprintf(&buf, "(on_reboot '%s')", obj->stringval);
     }
     xmlXPathFreeObject(obj);
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/on_crash[1])", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-	virBufferVSprintf(&buf, "(on_crash '%s')", obj->stringval);
+        virBufferVSprintf(&buf, "(on_crash '%s')", obj->stringval);
     }
     xmlXPathFreeObject(obj);
 
     if (bootloader != 2) {
-	obj = xmlXPathEval(BAD_CAST "/domain/os[1]", ctxt);
-	if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-	    (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
-	    /* Analyze of the os description, based on HVM or PV. */
-	    tmpobj = xmlXPathEval(BAD_CAST "string(/domain/os/type[1])", ctxt);
-	    if ((tmpobj != NULL) &&
-		((tmpobj->type != XPATH_STRING) || (tmpobj->stringval == NULL)
-		 || (tmpobj->stringval[0] == 0))) {
-		xmlXPathFreeObject(tmpobj);
-		virXMLError(VIR_ERR_OS_TYPE, nam, 0);
-		goto error;
-	    }
+        obj = xmlXPathEval(BAD_CAST "/domain/os[1]", ctxt);
+        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+            /* Analyze of the os description, based on HVM or PV. */
+            tmpobj = xmlXPathEval(BAD_CAST "string(/domain/os/type[1])", ctxt);
+            if ((tmpobj != NULL) &&
+                ((tmpobj->type != XPATH_STRING) || (tmpobj->stringval == NULL)
+                 || (tmpobj->stringval[0] == 0))) {
+                xmlXPathFreeObject(tmpobj);
+                virXMLError(VIR_ERR_OS_TYPE, nam, 0);
+                goto error;
+            }
 
-	    if ((tmpobj == NULL)
-		|| !xmlStrEqual(tmpobj->stringval, BAD_CAST "hvm")) {
-		res = virDomainParseXMLOSDescPV(obj->nodesetval->nodeTab[0],
-					        &buf, ctxt, xendConfigVersion);
-	    } else {
-		hvm = 1;
-		res = virDomainParseXMLOSDescHVM(obj->nodesetval->nodeTab[0],
-                                         &buf, ctxt, vcpus, xendConfigVersion);
-	    }
+            if ((tmpobj == NULL)
+                || !xmlStrEqual(tmpobj->stringval, BAD_CAST "hvm")) {
+                res = virDomainParseXMLOSDescPV(obj->nodesetval->nodeTab[0],
+                                                &buf, ctxt, xendConfigVersion);
+            } else {
+                hvm = 1;
+                res = virDomainParseXMLOSDescHVM(obj->nodesetval->nodeTab[0],
+                                                 &buf, ctxt, vcpus, xendConfigVersion);
+            }
 
-	    xmlXPathFreeObject(tmpobj);
+            xmlXPathFreeObject(tmpobj);
 
-	    if (res != 0)
-		goto error;
-	} else if (bootloader == 0) {
-	    virXMLError(VIR_ERR_NO_OS, nam, 0);
-	    goto error;
-	}
-	xmlXPathFreeObject(obj);
+            if (res != 0)
+                goto error;
+        } else if (bootloader == 0) {
+            virXMLError(VIR_ERR_NO_OS, nam, 0);
+            goto error;
+        }
+        xmlXPathFreeObject(obj);
     }
 
     /* analyze of the devices */
     obj = xmlXPathEval(BAD_CAST "/domain/devices/disk", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
-	for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-	  res = virDomainParseXMLDiskDesc(obj->nodesetval->nodeTab[i], &buf, hvm, xendConfigVersion);
-	    if (res != 0) {
-		goto error;
-	    }
-	}
+        for (i = 0; i < obj->nodesetval->nodeNr; i++) {
+            res = virDomainParseXMLDiskDesc(obj->nodesetval->nodeTab[i], &buf, hvm, xendConfigVersion);
+            if (res != 0) {
+                goto error;
+            }
+        }
     }
     xmlXPathFreeObject(obj);
 
@@ -1511,7 +1511,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
 
     return (ret);
 
-  error:
+ error:
     if (nam != NULL)
         free(nam);
     if (name != NULL)
@@ -1550,33 +1550,33 @@ unsigned char *virParseUUID(char **ptr, const char *uuid) {
     for (i = 0;i < VIR_UUID_BUFLEN;) {
         rawuuid[i] = 0;
         if (*cur == 0)
-	    goto error;
-	if ((*cur == '-') || (*cur == ' ')) {
-	    cur++;
-	    continue;
-	}
-	if ((*cur >= '0') && (*cur <= '9'))
-	    rawuuid[i] = *cur - '0';
-	else if ((*cur >= 'a') && (*cur <= 'f'))
-	    rawuuid[i] = *cur - 'a' + 10;
-	else if ((*cur >= 'A') && (*cur <= 'F'))
-	    rawuuid[i] = *cur - 'A' + 10;
-	else
-	    goto error;
-	rawuuid[i] *= 16;
-	cur++;
+            goto error;
+        if ((*cur == '-') || (*cur == ' ')) {
+            cur++;
+            continue;
+        }
+        if ((*cur >= '0') && (*cur <= '9'))
+            rawuuid[i] = *cur - '0';
+        else if ((*cur >= 'a') && (*cur <= 'f'))
+            rawuuid[i] = *cur - 'a' + 10;
+        else if ((*cur >= 'A') && (*cur <= 'F'))
+            rawuuid[i] = *cur - 'A' + 10;
+        else
+            goto error;
+        rawuuid[i] *= 16;
+        cur++;
         if (*cur == 0)
-	    goto error;
-	if ((*cur >= '0') && (*cur <= '9'))
-	    rawuuid[i] += *cur - '0';
-	else if ((*cur >= 'a') && (*cur <= 'f'))
-	    rawuuid[i] += *cur - 'a' + 10;
-	else if ((*cur >= 'A') && (*cur <= 'F'))
-	    rawuuid[i] += *cur - 'A' + 10;
-	else
-	    goto error;
+            goto error;
+        if ((*cur >= '0') && (*cur <= '9'))
+            rawuuid[i] += *cur - '0';
+        else if ((*cur >= 'a') && (*cur <= 'f'))
+            rawuuid[i] += *cur - 'a' + 10;
+        else if ((*cur >= 'A') && (*cur <= 'F'))
+            rawuuid[i] += *cur - 'A' + 10;
+        else
+            goto error;
         i++;
-	cur++;
+        cur++;
     }
 
     dst_uuid = (unsigned char *) *ptr;
@@ -1585,7 +1585,7 @@ unsigned char *virParseUUID(char **ptr, const char *uuid) {
     for (i = 0; i < VIR_UUID_BUFLEN; i++)
         dst_uuid[i] = rawuuid[i] & 0xFF;
 
-error:
+ error:
     return(dst_uuid);
 }
 
@@ -1632,11 +1632,11 @@ virParseXMLDevice(char *xmldesc, int hvm, int xendConfigVersion)
         if (virDomainParseXMLIfDesc(node, &buf, hvm) != 0)
             goto error;
     }
-cleanup:
+ cleanup:
     if (xml != NULL)
         xmlFreeDoc(xml);
     return buf.content;
-error:
+ error:
     free(buf.content);
     buf.content = NULL;
     goto cleanup;
@@ -1677,7 +1677,7 @@ virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref)
         strcpy(class, "vbd");
         for (cur = node->children; cur != NULL; cur = cur->next) {
             if ((cur->type != XML_ELEMENT_NODE) ||
-               (!xmlStrEqual(cur->name, BAD_CAST "target"))) continue;
+                (!xmlStrEqual(cur->name, BAD_CAST "target"))) continue;
             attr = xmlGetProp(cur, BAD_CAST "dev");
             if (attr == NULL)
                 goto error;
@@ -1695,19 +1695,19 @@ virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref)
                 goto error;
 
             xref = xenStoreDomainGetNetworkID(domain->conn, domain->id,
-	                                     (char *) attr);
-	    if (xref != NULL) {
-	        strcpy(ref, xref);
-		free(xref);
-	        goto cleanup;
-	    }
-	                                     
+                                              (char *) attr);
+            if (xref != NULL) {
+                strcpy(ref, xref);
+                free(xref);
+                goto cleanup;
+            }
+
             goto error;
         }
     }
-error:
+ error:
     ret = -1;
-cleanup:
+ cleanup:
     if (xml != NULL)
         xmlFreeDoc(xml);
     if (attr != NULL)
