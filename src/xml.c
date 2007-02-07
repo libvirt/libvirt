@@ -692,6 +692,7 @@ static int virDomainParseXMLGraphicsDescVFB(xmlNodePtr node, virBufferPtr buf)
  * @node: node containing HVM OS description
  * @buf: a buffer for the result S-Expr
  * @ctxt: a path context representing the XML description
+ * @vcpus: number of virtual CPUs to configure
  * @xendConfigVersion: xend configuration file format
  *
  * Parse the OS part of the XML description for an HVM domain and add it to
@@ -702,7 +703,7 @@ static int virDomainParseXMLGraphicsDescVFB(xmlNodePtr node, virBufferPtr buf)
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
-virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr ctxt, int xendConfigVersion)
+virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr ctxt, int vcpus, int xendConfigVersion)
 {
     xmlXPathObjectPtr obj = NULL;
     xmlNodePtr cur, txt;
@@ -757,6 +758,8 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
                       (const char *) obj->stringval);
     xmlXPathFreeObject(obj);
     obj = NULL;
+
+    virBufferVSprintf(buf, "(vcpus %d)", vcpus);
 
     if (boot_dev) {
        if (xmlStrEqual(boot_dev, BAD_CAST "fd")) {
@@ -1285,6 +1288,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
     int i, res;
     int bootloader = 0;
     int hvm = 0;
+    unsigned int vcpus = 1;
     unsigned long mem = 0, max_mem = 0;
 
     if (name != NULL)
@@ -1365,14 +1369,11 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
     virBufferVSprintf(&buf, "(memory %lu)(maxmem %lu)", mem, max_mem);
 
     obj = xmlXPathEval(BAD_CAST "number(/domain/vcpu[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_NUMBER) ||
-        (isnan(obj->floatval)) || (obj->floatval <= 0)) {
-        virBufferVSprintf(&buf, "(vcpus 1)");
-    } else {
-        unsigned int cpu = (unsigned int) obj->floatval;
-
-        virBufferVSprintf(&buf, "(vcpus %u)", cpu);
+    if ((obj != NULL) && (obj->type == XPATH_NUMBER) &&
+        (!isnan(obj->floatval)) && (obj->floatval > 0)) {
+        vcpus = (unsigned int) obj->floatval;
     }
+    virBufferVSprintf(&buf, "(vcpus %u)", vcpus);
     xmlXPathFreeObject(obj);
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/uuid[1])", ctxt);
@@ -1439,7 +1440,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
 	    } else {
 		hvm = 1;
 		res = virDomainParseXMLOSDescHVM(obj->nodesetval->nodeTab[0],
-					         &buf, ctxt, xendConfigVersion);
+                                         &buf, ctxt, vcpus, xendConfigVersion);
 	    }
 
 	    xmlXPathFreeObject(tmpobj);

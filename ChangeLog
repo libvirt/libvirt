@@ -1,3 +1,9 @@
+Wed Feb  7 07:43:21 EST 2007 Daniel Berrange <berrange@redhat.com>
+
+	* src/xml.c, tests/xml2sexprdata/*.sexpr: Also include the
+	vcpu info in the (image (hvm))  part of the SEXPR for fully
+	virt guests, so it gets passed on into QEMU.
+
 Wed Feb  7 07:40:21 EST 2007 Daniel Berrange <berrange@redhat.com>
 
 	* configure.in, tests/Makefile.am: Only enable the low level
