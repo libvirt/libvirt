@@ -742,51 +742,6 @@ sexpr_u64(struct sexpr *sexpr, const char *name)
     return 0;
 }
 
-static int
-sexpr_strlen(struct sexpr *sexpr, const char *path)
-{
-    const char *r = sexpr_node(sexpr, path);
-
-    return r ? (strlen(r) + 1) : 0;
-}
-
-static const char *
-sexpr_strcpy(char **ptr, struct sexpr *node, const char *path)
-{
-    const char *ret = sexpr_node(node, path);
-
-    if (ret) {
-        strcpy(*ptr, ret);
-        ret = *ptr;
-        *ptr += (strlen(ret) + 1);
-    }
-    return ret;
-}
-
-
-/**
- * sexpr_node_system:
- * @sexpr: an S-Expression
- * @name: the name for the value
- *
- * convenience function to lookup a value describing the kind of system
- * from the S-Expression
- *
- * Returns the value found or 0 if not found (but may not be an error)
- */
-static enum xend_node_system
-sexpr_node_system(struct sexpr *node, const char *path)
-{
-    const char *syst = sexpr_node(node, path);
-
-    if (syst) {
-        if (strcmp(syst, "Linux") == 0) {
-            return XEND_SYSTEM_LINUX;
-        }
-    }
-
-    return XEND_DEFAULT;
-}
 
 /**
  * sexpr_uuid:
@@ -940,48 +895,6 @@ xend_wait_for_devices(virConnectPtr xend, const char *name)
 }
 
 
-/**
- * xend_rename:
- * @xend: pointer to the Xem Daemon block
- * @old: old name for the domain
- * @new: new name for the domain
- *
- * Rename the domain
- *
- * Returns 0 in case of success, -1 (with errno) in case of error.
- */
-int
-xend_rename(virConnectPtr xend, const char *old, const char *new)
-{
-    if ((xend == NULL) || (old == NULL) || (new == NULL)) {
-        /* this should be caught at the interface but ... */
-        virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (-1);
-    }
-    return xend_op(xend, old, "op", "rename", "name", new, NULL);
-}
-
-
-/**
- * xend_sysrq:
- * @xend: pointer to the Xem Daemon block
- * @name: name for the domain
- * @key: the SysReq key
- *
- * Send a SysReq key which is used to debug Linux kernels running in the domain
- *
- * Returns 0 in case of success, -1 (with errno) in case of error.
- */
-int
-xend_sysrq(virConnectPtr xend, const char *name, const char *key)
-{
-    if ((xend == NULL) || (name == NULL) || (key == NULL)) {
-        /* this should be caught at the interface but ... */
-        virXendError(xend, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (-1);
-    }
-    return xend_op(xend, name, "op", "sysrq", "key", key, NULL);
-}
 #endif /* PROXY */
 
 
@@ -1186,91 +1099,6 @@ error:
     return (-1);
 }
 
-/**
- * xend_get_node:
- * @xend: A xend instance
- *
- * This method returns information about the physical host
- * machine running Xen.
- *
- * Returns node info on success; NULL (with errno) on error
- */
-struct xend_node *
-xend_get_node(virConnectPtr xend)
-{
-    struct sexpr *root;
-    struct xend_node *node = NULL;
-    size_t size;
-    char *ptr;
-
-    root = sexpr_get(xend, "/xend/node/");
-    if (root == NULL)
-        goto error;
-
-    size = sizeof(struct xend_node);
-    size += sexpr_strlen(root, "node/host");
-    size += sexpr_strlen(root, "node/release");
-    size += sexpr_strlen(root, "node/version");
-    size += sexpr_strlen(root, "node/machine");
-    size += sexpr_strlen(root, "node/hw_caps");
-    size += sexpr_strlen(root, "node/xen_caps");
-    size += sexpr_strlen(root, "node/platform_params");
-    size += sexpr_strlen(root, "node/xen_changeset");
-    size += sexpr_strlen(root, "node/cc_compiler");
-    size += sexpr_strlen(root, "node/cc_compile_by");
-    size += sexpr_strlen(root, "node/cc_compile_domain");
-    size += sexpr_strlen(root, "node/cc_compile_date");
-
-    ptr = malloc(size);
-    if (ptr == NULL)
-        goto error;
-
-    node = (struct xend_node *) ptr;
-    ptr += sizeof(struct xend_node);
-
-    node->system = sexpr_node_system(root, "node/system");
-    node->host = sexpr_strcpy(&ptr, root, "node/host");
-    node->release = sexpr_strcpy(&ptr, root, "node/release");
-    node->version = sexpr_strcpy(&ptr, root, "node/version");
-    node->machine = sexpr_strcpy(&ptr, root, "node/machine");
-    node->nr_cpus = sexpr_int(root, "node/nr_cpus");
-    node->nr_nodes = sexpr_int(root, "node/nr_nodes");
-    node->sockets_per_node = sexpr_int(root, "node/sockets_per_node");
-    node->cores_per_socket = sexpr_int(root, "node/cores_per_socket");
-    node->threads_per_core = sexpr_int(root, "node/threads_per_core");
-    node->cpu_mhz = sexpr_int(root, "node/cpu_mhz");
-    node->hw_caps = sexpr_strcpy(&ptr, root, "node/hw_caps");
-    node->total_memory = sexpr_u64(root, "node/total_memory") << 12;
-    node->free_memory = sexpr_u64(root, "node/free_memory") << 12;
-    node->xen_major = sexpr_int(root, "node/xen_major");
-    node->xen_minor = sexpr_int(root, "node/xen_minor");
-    {
-        const char *tmp;
-
-        tmp = sexpr_node(root, "node/xen_extra");
-        if (tmp) {
-            if (*tmp == '.')
-                tmp++;
-            node->xen_extra = atoi(tmp);
-        } else {
-            node->xen_extra = 0;
-        }
-    }
-    node->xen_caps = sexpr_strcpy(&ptr, root, "node/xen_caps");
-    node->platform_params =
-        sexpr_strcpy(&ptr, root, "node/platform_params");
-    node->xen_changeset = sexpr_strcpy(&ptr, root, "node/xen_changeset");
-    node->cc_compiler = sexpr_strcpy(&ptr, root, "node/cc_compiler");
-    node->cc_compile_by = sexpr_strcpy(&ptr, root, "node/cc_compile_by");
-    node->cc_compile_domain =
-        sexpr_strcpy(&ptr, root, "node/cc_compile_domain");
-    node->cc_compile_date =
-        sexpr_strcpy(&ptr, root, "node/cc_compile_date");
-
-  error:
-    sexpr_free(root);
-    return node;
-}
 
 static int
 xend_detect_config_version(virConnectPtr conn) {

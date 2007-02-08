@@ -1,3 +1,8 @@
+Thu Feb  8 12:59:14 EST 2007 Daniel Berrange <berrange@redhat.com>
+
+	* src/xml.c, src/xend_internal.c, src/xend_internal.h: Remove
+	obsolete / unused code.
+
 Wed Feb  7 11:30:14 EST 2007 Daniel Berrange <berrange@redhat.com>
 
 	* autobuild.sh, src/Makefile.am: Added a control file for
