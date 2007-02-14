@@ -84,6 +84,7 @@ rm -fr %{buildroot}
 %{_bindir}/virsh
 %{_libdir}/lib*.so.*
 %attr(4755, root, root) %{_libexecdir}/libvirt_proxy
+%attr(0755, root, root) %{_libexecdir}/libvirt_qemud
 %doc docs/libvirt.rng
 
 %files devel
