@@ -443,6 +443,91 @@ int			virDomainGetVcpus	(virDomainPtr domain,
 int virDomainAttachDevice(virDomainPtr domain, char *xml);
 int virDomainDetachDevice(virDomainPtr domain, char *xml);
 
+/*
+ * Virtual Networks API
+ */
+
+/**
+ * virNetwork:
+ *
+ * a virNetwork is a private structure representing a virtual network.
+ */
+typedef struct _virNetwork virNetwork;
+
+/**
+ * virNetworkPtr:
+ *
+ * a virNetworkPtr is pointer to a virNetwork private structure, this is the
+ * type used to reference a virtual network in the API.
+ */
+typedef virNetwork *virNetworkPtr;
+
+/*
+ * List active networks
+ */
+int			virConnectNumOfNetworks	(virConnectPtr conn);
+int			virConnectListNetworks	(virConnectPtr conn,
+						 const char **names,
+						 int maxnames);
+
+/*
+ * List inactive networks
+ */
+int			virConnectNumOfDefinedNetworks	(virConnectPtr conn);
+int			virConnectListDefinedNetworks	(virConnectPtr conn,
+							 const char **names,
+							 int maxnames);
+
+/*
+ * Lookup network by name or uuid
+ */
+virNetworkPtr		virNetworkLookupByName		(virConnectPtr conn,
+							 const char *name);
+virNetworkPtr 		virNetworkLookupByUUID		(virConnectPtr conn,
+							 const unsigned char *uuid);
+virNetworkPtr		virNetworkLookupByUUIDString	(virConnectPtr conn,
+							 const char *uuid);
+
+/*
+ * Create active transient network
+ */
+virNetworkPtr		virNetworkCreateXML	(virConnectPtr conn,
+						 const char *xmlDesc);
+
+/*
+ * Define inactive persistent network
+ */
+virNetworkPtr		virNetworkDefineXML	(virConnectPtr conn,
+						 const char *xmlDesc);
+
+/*
+ * Delete persistent network
+ */
+int			virNetworkUndefine	(virNetworkPtr network);
+
+/*
+ * Activate persistent network
+ */
+int			virNetworkCreate	(virNetworkPtr network);
+
+/*
+ * Network destroy/free
+ */
+int			virNetworkDestroy	(virNetworkPtr network);
+int			virNetworkFree		(virNetworkPtr network);
+
+/*
+ * Network informations
+ */
+const char*		virNetworkGetName	(virNetworkPtr network);
+int			virNetworkGetUUID	(virNetworkPtr network,
+						 unsigned char *uuid);
+int			virNetworkGetUUIDString	(virNetworkPtr network,
+						 char *buf);
+char *			virNetworkGetXMLDesc	(virNetworkPtr network,
+						 int flags);
+char *			virNetworkGetBridgeName (virNetworkPtr network);
+
 #ifdef __cplusplus
 }
 #endif

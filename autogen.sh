@@ -58,8 +58,8 @@ autopoint --force
 #rm -rf m4
 libtoolize --copy --force
 aclocal -I m4
-automake --add-missing
 autoheader
+automake --add-missing
 autoconf
 
 cd $THEDIR

@@ -1,3 +1,7 @@
+Tue Feb 14 16:35:56 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* autogen.sh: run autoheader before automake
+	
 Tue Feb 14 16:23:25 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/iptables.[ch]: add code for managing iptables
