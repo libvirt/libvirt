@@ -1,3 +1,8 @@
+Tue Feb 14 12:17:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* po/libvirt.pot, po/*.po: Updated the i18n strings wrt to
+	the recent code changes
+
 Tue Feb 14 11:58:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemud.c, src/conf.c, src/internal.c, src/driver.c: Change
