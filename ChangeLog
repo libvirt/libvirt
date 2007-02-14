@@ -1,3 +1,8 @@
+Tue Feb 14 14:40:52 EST 2007 Mark McLoughlin <markmc@redhat.com
+
+	* qemud/conf.c, qemud/dispatch.c, qemud/driver.c,
+	  qemud/qemud.c: include autoconf's config.h
+	
 Tue Feb 14 14:39:18 EST 2007 Mark McLoughlin <markmc@redhat.com
 
 	* conf.[ch]: rename from config.[ch] so we can use

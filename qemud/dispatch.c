@@ -21,6 +21,8 @@
  * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
+#include <config.h>
+
 #include <limits.h>
 #include <string.h>
 #include <stdlib.h>
