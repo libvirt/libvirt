@@ -223,7 +223,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-14 12:10-0500\n"
+"POT-Creation-Date: 2007-02-14 18:55+0100\n"
 "PO-Revision-Date: 2006-12-15 00:32+0100\n"
 "Last-Translator: \n"
 "Language-Team:  <it@li.org>\n"
@@ -827,7 +827,22 @@ msgstr "impossibile analizzare il filename vbd, tipo di driver mancante"
 msgid "failed to parse Xend domain information"
 msgstr "impossibile analizzare le informazioni del dominio Xend"
 
-#: src/xend_internal.c:2969
+#: src/xend_internal.c:2845
+#, c-format
+msgid "Failed to create domain %s\n"
+msgstr "Impossibile creare il dominio %s\n"
+
+#: src/xend_internal.c:2851
+#, c-format
+msgid "Failed to get devices for domain %s\n"
+msgstr "Impossibile ottenere i dispositivi per il dominio %s\n"
+
+#: src/xend_internal.c:2862
+#, c-format
+msgid "Failed to resume new domain %s\n"
+msgstr "impossibile ripristinare il nuovo dominio %s\n"
+
+#: src/xend_internal.c:2971
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Impossibile creare il dominio inattivo %s\n"
@@ -1959,12 +1974,3 @@ msgstr "presente un numero %d asincrono del pacchetto \n"
 #, c-format
 msgid "allocating %d domain info"
 msgstr "allocazione informazioni del dominio %d"
-
-#~ msgid "Failed to create domain %s\n"
-#~ msgstr "Impossibile creare il dominio %s\n"
-
-#~ msgid "Failed to get devices for domain %s\n"
-#~ msgstr "Impossibile ottenere i dispositivi per il dominio %s\n"
-
-#~ msgid "Failed to resume new domain %s\n"
-#~ msgstr "impossibile ripristinare il nuovo dominio %s\n"

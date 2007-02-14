@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ru\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-14 12:10-0500\n"
+"POT-Creation-Date: 2007-02-14 18:55+0100\n"
 "PO-Revision-Date: 2006-12-15 10:47+1000\n"
 "Last-Translator: Yulia Poyarkova <ypoyarko@redhat.com>\n"
 "Language-Team: \n"
@@ -617,7 +617,22 @@ msgstr "ошибка разбора имени файла vbd, отсутств�
 msgid "failed to parse Xend domain information"
 msgstr "ошибка разбора информации домена Xend"
 
-#: src/xend_internal.c:2969
+#: src/xend_internal.c:2845
+#, c-format
+msgid "Failed to create domain %s\n"
+msgstr "Ошибка создания домена %s\n"
+
+#: src/xend_internal.c:2851
+#, c-format
+msgid "Failed to get devices for domain %s\n"
+msgstr "Ошибка получения устройств для домена %s\n"
+
+#: src/xend_internal.c:2862
+#, c-format
+msgid "Failed to resume new domain %s\n"
+msgstr "Ошибка при возобновлении работы нового домена %s\n"
+
+#: src/xend_internal.c:2971
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Ошибка создания неактивного домена %s\n"
@@ -1748,12 +1763,3 @@ msgstr "получен асинхронный номер пакета - %d\n"
 #, c-format
 msgid "allocating %d domain info"
 msgstr "выделение %d данных домена"
-
-#~ msgid "Failed to create domain %s\n"
-#~ msgstr "Ошибка создания домена %s\n"
-
-#~ msgid "Failed to get devices for domain %s\n"
-#~ msgstr "Ошибка получения устройств для домена %s\n"
-
-#~ msgid "Failed to resume new domain %s\n"
-#~ msgstr "Ошибка при возобновлении работы нового домена %s\n"

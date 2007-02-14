@@ -43,6 +43,8 @@ ignored_files = {
   "test.c": "test driver",
   "conf.h": "internal code",
   "conf.c": "internal code",
+  "console.h": "internal code",
+  "console.c": "internal code",
 }
 
 ignored_words = {

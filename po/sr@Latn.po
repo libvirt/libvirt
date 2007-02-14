@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-14 12:10-0500\n"
+"POT-Creation-Date: 2007-02-14 18:55+0100\n"
 "PO-Revision-Date: 2006-12-17 12:20+0100\n"
 "Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
 "Language-Team: Serbian (sr) <fedora@prevod.org>\n"
@@ -611,7 +611,22 @@ msgstr ""
 msgid "failed to parse Xend domain information"
 msgstr "neuspelo tumačenje podataka o Xend domenu"
 
-#: src/xend_internal.c:2969
+#: src/xend_internal.c:2845
+#, c-format
+msgid "Failed to create domain %s\n"
+msgstr "Neuspelo pravljenje domena %s\n"
+
+#: src/xend_internal.c:2851
+#, c-format
+msgid "Failed to get devices for domain %s\n"
+msgstr "Neuspelo pribavljanje uređaja za domen %s\n"
+
+#: src/xend_internal.c:2862
+#, c-format
+msgid "Failed to resume new domain %s\n"
+msgstr "Neuspelo nastavljanje novog domena %s\n"
+
+#: src/xend_internal.c:2971
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Neuspelo pravljenje domena %s\n"
@@ -1742,12 +1757,3 @@ msgstr "primljen asinhroni broj paketa %d\n"
 #, c-format
 msgid "allocating %d domain info"
 msgstr "dodeljujem info %d domena"
-
-#~ msgid "Failed to create domain %s\n"
-#~ msgstr "Neuspelo pravljenje domena %s\n"
-
-#~ msgid "Failed to get devices for domain %s\n"
-#~ msgstr "Neuspelo pribavljanje uređaja za domen %s\n"
-
-#~ msgid "Failed to resume new domain %s\n"
-#~ msgstr "Neuspelo nastavljanje novog domena %s\n"

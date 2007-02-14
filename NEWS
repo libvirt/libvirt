@@ -5,6 +5,16 @@
        http://libvirt.org/news.html
 
 Releases
+0.2.0: Feb 14 2007:
+   - Various internal cleanups (Mark McLoughlin, Richard Jones,
+      Daniel Berrange, Karel Zak)
+   - Bug fixes: avoid a crash in connect (Daniel Berrange), virsh args
+      parsing (Richard Jones), 
+      
+   - Add support for QEmu and KVM virtualization (Daniel Berrange)
+   - Add support for network configuration (Mark McLoughlin)
+
+
 0.1.11: Jan 22 2007:
    - Finish XML <-> XM config files support
    - Remove memory leak when freeing virConf objects

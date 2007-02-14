@@ -9,8 +9,10 @@
      <exports symbol='LIBVIR_VERSION_NUMBER' type='macro'/>
      <exports symbol='VIR_USE_CPU' type='macro'/>
      <exports symbol='VIR_CPU_MAPLEN' type='macro'/>
+     <exports symbol='VIR_UUID_BUFLEN' type='macro'/>
      <exports symbol='VIR_CPU_USABLE' type='macro'/>
      <exports symbol='VIR_COPY_CPUMAP' type='macro'/>
+     <exports symbol='VIR_UUID_STRING_BUFLEN' type='macro'/>
      <exports symbol='VIR_GET_CPUMAP' type='macro'/>
      <exports symbol='VIR_UNUSE_CPU' type='macro'/>
      <exports symbol='VIR_DOMAIN_SHUTOFF' type='enum'/>
@@ -33,11 +35,13 @@
      <exports symbol='VIR_DOMAIN_RUNNING' type='enum'/>
      <exports symbol='VIR_DOMAIN_NOSTATE' type='enum'/>
      <exports symbol='virNodeInfoPtr' type='typedef'/>
+     <exports symbol='virNetworkPtr' type='typedef'/>
      <exports symbol='virDomainInfoPtr' type='typedef'/>
      <exports symbol='virDomainKernelPtr' type='typedef'/>
      <exports symbol='virConnectPtr' type='typedef'/>
      <exports symbol='virDomainKernel' type='typedef'/>
      <exports symbol='virNodeInfo' type='typedef'/>
+     <exports symbol='virNetwork' type='typedef'/>
      <exports symbol='virDomainState' type='typedef'/>
      <exports symbol='virDeviceMode' type='typedef'/>
      <exports symbol='virDomain' type='typedef'/>
@@ -54,25 +58,34 @@
      <exports symbol='_virNodeInfo' type='struct'/>
      <exports symbol='_virVcpuInfo' type='struct'/>
      <exports symbol='virDomainGetInfo' type='function'/>
-     <exports symbol='virDomainUndefine' type='function'/>
+     <exports symbol='virNetworkFree' type='function'/>
+     <exports symbol='virNetworkGetName' type='function'/>
+     <exports symbol='virDomainGetName' type='function'/>
      <exports symbol='virDomainDefineXML' type='function'/>
      <exports symbol='virDomainShutdown' type='function'/>
+     <exports symbol='virNetworkUndefine' type='function'/>
      <exports symbol='virGetVersion' type='function'/>
      <exports symbol='virConnectListDefinedDomains' type='function'/>
+     <exports symbol='virNetworkGetUUID' type='function'/>
      <exports symbol='virDomainLookupByName' type='function'/>
+     <exports symbol='virNetworkGetBridgeName' type='function'/>
      <exports symbol='virDomainPinVcpu' type='function'/>
      <exports symbol='virDomainRestore' type='function'/>
      <exports symbol='virConnectGetType' type='function'/>
      <exports symbol='virDomainSave' type='function'/>
      <exports symbol='virDomainCreate' type='function'/>
      <exports symbol='virConnectListDomains' type='function'/>
+     <exports symbol='virNetworkLookupByUUIDString' type='function'/>
      <exports symbol='virDomainCoreDump' type='function'/>
      <exports symbol='virDomainLookupByUUID' type='function'/>
      <exports symbol='virDomainLookupByUUIDString' type='function'/>
-     <exports symbol='virDomainLookupByID' type='function'/>
+     <exports symbol='virConnectNumOfDefinedNetworks' type='function'/>
+     <exports symbol='virDomainUndefine' type='function'/>
      <exports symbol='virDomainGetOSType' type='function'/>
+     <exports symbol='virConnectListDefinedNetworks' type='function'/>
      <exports symbol='virNodeGetInfo' type='function'/>
      <exports symbol='virDomainGetUUID' type='function'/>
+     <exports symbol='virNetworkCreateXML' type='function'/>
      <exports symbol='virConnectNumOfDomains' type='function'/>
      <exports symbol='virDomainGetUUIDString' type='function'/>
      <exports symbol='virDomainGetMaxMemory' type='function'/>
@@ -82,26 +95,36 @@
      <exports symbol='virConnectOpen' type='function'/>
      <exports symbol='virDomainSuspend' type='function'/>
      <exports symbol='virConnectNumOfDefinedDomains' type='function'/>
+     <exports symbol='virNetworkDefineXML' type='function'/>
+     <exports symbol='virNetworkCreate' type='function'/>
      <exports symbol='virConnectClose' type='function'/>
      <exports symbol='virDomainReboot' type='function'/>
      <exports symbol='virInitialize' type='function'/>
      <exports symbol='virDomainSetVcpus' type='function'/>
+     <exports symbol='virNetworkGetUUIDString' type='function'/>
+     <exports symbol='virNetworkLookupByName' type='function'/>
+     <exports symbol='virNetworkGetXMLDesc' type='function'/>
      <exports symbol='virDomainGetID' type='function'/>
      <exports symbol='virDomainResume' type='function'/>
      <exports symbol='virDomainCreateLinux' type='function'/>
      <exports symbol='virDomainSetMemory' type='function'/>
+     <exports symbol='virNetworkDestroy' type='function'/>
      <exports symbol='virDomainDestroy' type='function'/>
+     <exports symbol='virConnectNumOfNetworks' type='function'/>
      <exports symbol='virDomainDetachDevice' type='function'/>
+     <exports symbol='virNetworkLookupByUUID' type='function'/>
      <exports symbol='virDomainGetVcpus' type='function'/>
      <exports symbol='virDomainGetXMLDesc' type='function'/>
      <exports symbol='virConnectGetVersion' type='function'/>
-     <exports symbol='virDomainGetName' type='function'/>
+     <exports symbol='virConnectListNetworks' type='function'/>
+     <exports symbol='virDomainLookupByID' type='function'/>
      <exports symbol='virConnectOpenReadOnly' type='function'/>
     </file>
     <file name='virterror'>
      <summary>error handling interfaces for the libvirt library</summary>
      <description>Provides the interfaces of the libvirt library to handle errors raised while using the library. </description>
      <author>Daniel Veillard &lt;veillard@redhat.com&gt; </author>
+     <exports symbol='VIR_FROM_XML' type='enum'/>
      <exports symbol='VIR_ERR_CALL_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_WARNING' type='enum'/>
      <exports symbol='VIR_ERR_NO_XEN' type='enum'/>
@@ -117,9 +140,10 @@
      <exports symbol='VIR_ERR_NO_XENSTORE' type='enum'/>
      <exports symbol='VIR_FROM_DOM' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_DOMAIN' type='enum'/>
-     <exports symbol='VIR_FROM_XML' type='enum'/>
+     <exports symbol='VIR_FROM_QEMU' type='enum'/>
      <exports symbol='VIR_FROM_CONF' type='enum'/>
-     <exports symbol='VIR_ERR_PARSE_FAILED' type='enum'/>
+     <exports symbol='VIR_ERR_INVALID_NETWORK' type='enum'/>
+     <exports symbol='VIR_ERR_OPERATION_DENIED' type='enum'/>
      <exports symbol='VIR_ERR_NO_KERNEL' type='enum'/>
      <exports symbol='VIR_ERR_POST_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_OS_TYPE' type='enum'/>
@@ -127,15 +151,17 @@
      <exports symbol='VIR_ERR_NONE' type='enum'/>
      <exports symbol='VIR_ERR_OK' type='enum'/>
      <exports symbol='VIR_ERR_XML_DETAIL' type='enum'/>
+     <exports symbol='VIR_FROM_NET' type='enum'/>
      <exports symbol='VIR_ERR_NO_NAME' type='enum'/>
      <exports symbol='VIR_ERR_NO_ROOT' type='enum'/>
      <exports symbol='VIR_ERR_OPERATION_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_GET_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_DRIVER_FULL' type='enum'/>
      <exports symbol='VIR_ERR_HTTP_ERROR' type='enum'/>
+     <exports symbol='VIR_ERR_PARSE_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_NO_SOURCE' type='enum'/>
      <exports symbol='VIR_ERR_NO_TARGET' type='enum'/>
-     <exports symbol='VIR_ERR_OPERATION_DENIED' type='enum'/>
+     <exports symbol='VIR_ERR_NETWORK_EXIST' type='enum'/>
      <exports symbol='VIR_ERR_WRITE_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_INTERNAL_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_CONF_SYNTAX' type='enum'/>
@@ -212,6 +238,11 @@
       <arg name='cpumap' info='pointer to a bit map of real CPUs (in 8-bit bytes) (IN/OUT)'/>
       <arg name='cpu' info='the physical CPU number'/>
     </macro>
+    <macro name='VIR_UUID_BUFLEN' file='libvirt'>
+    </macro>
+    <macro name='VIR_UUID_STRING_BUFLEN' file='libvirt'>
+      <info>This macro provides the length of the buffer required for virDomainGetUUIDString()</info>
+    </macro>
     <enum name='VIR_DEVICE_DEFAULT' file='libvirt' value='0' type='virDeviceMode' info='Default mode'/>
     <enum name='VIR_DEVICE_RO' file='libvirt' value='1' type='virDeviceMode' info='Access read-only'/>
     <enum name='VIR_DEVICE_RW' file='libvirt' value='2' type='virDeviceMode' info='Access read-write'/>
@@ -239,6 +270,8 @@
     <enum name='VIR_ERR_INVALID_ARG' file='virterror' value='8' type='virErrorNumber' info='invalid function argument'/>
     <enum name='VIR_ERR_INVALID_CONN' file='virterror' value='6' type='virErrorNumber' info='invalid connection object'/>
     <enum name='VIR_ERR_INVALID_DOMAIN' file='virterror' value='7' type='virErrorNumber' info='invalid domain object'/>
+    <enum name='VIR_ERR_INVALID_NETWORK' file='virterror' value='36' type='virErrorNumber' info='invalid network object'/>
+    <enum name='VIR_ERR_NETWORK_EXIST' file='virterror' value='37' type='virErrorNumber' info=' the network already exist'/>
     <enum name='VIR_ERR_NONE' file='virterror' value='0' type='virErrorLevel'/>
     <enum name='VIR_ERR_NO_CONNECT' file='virterror' value='5' type='virErrorNumber' info='can&apos;t connect to hypervisor'/>
     <enum name='VIR_ERR_NO_DEVICE' file='virterror' value='23' type='virErrorNumber' info='missing domain devices information'/>
@@ -265,12 +298,14 @@
     <enum name='VIR_ERR_WARNING' file='virterror' value='1' type='virErrorLevel' info='A simple warning'/>
     <enum name='VIR_ERR_WRITE_FAILED' file='virterror' value='34' type='virErrorNumber' info='failed to write a conf file'/>
     <enum name='VIR_ERR_XEN_CALL' file='virterror' value='15' type='virErrorNumber' info='failure doing an hypervisor call'/>
-    <enum name='VIR_ERR_XML_DETAIL' file='virterror' value='35' type='virErrorNumber' info=' detail of an XML error'/>
+    <enum name='VIR_ERR_XML_DETAIL' file='virterror' value='35' type='virErrorNumber' info='detail of an XML error'/>
     <enum name='VIR_ERR_XML_ERROR' file='virterror' value='27' type='virErrorNumber' info='an XML description is not well formed or broken'/>
-    <enum name='VIR_FROM_CONF' file='virterror' value='9' type='virErrorDomain' info=' Error in the configuration file handling'/>
+    <enum name='VIR_FROM_CONF' file='virterror' value='9' type='virErrorDomain' info='Error in the configuration file handling'/>
     <enum name='VIR_FROM_DOM' file='virterror' value='6' type='virErrorDomain' info='Error when operating on a domain'/>
+    <enum name='VIR_FROM_NET' file='virterror' value='11' type='virErrorDomain' info=' Error when operating on a network'/>
     <enum name='VIR_FROM_NONE' file='virterror' value='0' type='virErrorDomain'/>
     <enum name='VIR_FROM_PROXY' file='virterror' value='8' type='virErrorDomain' info='Error in the proxy code'/>
+    <enum name='VIR_FROM_QEMU' file='virterror' value='10' type='virErrorDomain' info='Error at the QEMU daemon'/>
     <enum name='VIR_FROM_RPC' file='virterror' value='7' type='virErrorDomain' info='Error in the XML-RPC code'/>
     <enum name='VIR_FROM_SEXPR' file='virterror' value='4' type='virErrorDomain' info='Error in the S-Epression code'/>
     <enum name='VIR_FROM_XEN' file='virterror' value='1' type='virErrorDomain' info='Error at Xen hypervisor layer'/>
@@ -323,11 +358,16 @@
       <field name='str3' type='char *' info=' extra string information'/>
       <field name='int1' type='int' info=' extra number information'/>
       <field name='int2' type='int' info=' extra number information'/>
+      <field name='net' type='virNetworkPtr' info=' the network if available'/>
     </struct>
     <typedef name='virErrorDomain' file='virterror' type='enum'/>
     <typedef name='virErrorLevel' file='virterror' type='enum'/>
     <typedef name='virErrorNumber' file='virterror' type='enum'/>
     <typedef name='virErrorPtr' file='virterror' type='virError *'/>
+    <struct name='virNetwork' file='libvirt' type='struct _virNetwork'/>
+    <typedef name='virNetworkPtr' file='libvirt' type='virNetwork *'>
+      <info>a virNetworkPtr is pointer to a virNetwork private structure, this is the type used to reference a virtual network in the API.</info>
+    </typedef>
     <struct name='virNodeInfo' file='libvirt' type='struct _virNodeInfo'>
       <field name='model' type='charmodel[32]' info=' string indicating the CPU model'/>
       <field name='memory' type='unsigned long' info=' memory size in kilobytes'/>
@@ -395,6 +435,13 @@
       <arg name='names' type='const char **' info='pointer to an array to store the names'/>
       <arg name='maxnames' type='int' info='size of the array'/>
     </function>
+    <function name='virConnectListDefinedNetworks' file='libvirt' module='libvirt'>
+      <info>list the inactive networks, stores the pointers to the names in @names</info>
+      <return type='int' info='the number of names provided in the array or -1 in case of error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='names' type='const char **' info='pointer to an array to store the names'/>
+      <arg name='maxnames' type='int' info='size of the array'/>
+    </function>
     <function name='virConnectListDomains' file='libvirt' module='libvirt'>
       <info>Collect the list of active domains, and store their ID in @maxids</info>
       <return type='int' info='the number of domain found or -1 in case of error'/>
@@ -402,14 +449,31 @@
       <arg name='ids' type='int *' info='array to collect the list of IDs of active domains'/>
       <arg name='maxids' type='int' info='size of @ids'/>
     </function>
+    <function name='virConnectListNetworks' file='libvirt' module='libvirt'>
+      <info>Collect the list of active networks, and store their names in @names</info>
+      <return type='int' info='the number of networks found or -1 in case of error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='names' type='const char **' info='array to collect the list of names of active networks'/>
+      <arg name='maxnames' type='int' info='size of @names'/>
+    </function>
     <function name='virConnectNumOfDefinedDomains' file='libvirt' module='libvirt'>
       <info>Provides the number of active domains.</info>
       <return type='int' info='the number of domain found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
+    <function name='virConnectNumOfDefinedNetworks' file='libvirt' module='libvirt'>
+      <info>Provides the number of inactive networks.</info>
+      <return type='int' info='the number of networks found or -1 in case of error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+    </function>
     <function name='virConnectNumOfDomains' file='libvirt' module='libvirt'>
       <info>Provides the number of active domains.</info>
       <return type='int' info='the number of domain found or -1 in case of error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+    </function>
+    <function name='virConnectNumOfNetworks' file='libvirt' module='libvirt'>
+      <info>Provides the number of active networks.</info>
+      <return type='int' info='the number of network found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virConnectOpen' file='libvirt' module='libvirt'>
@@ -509,13 +573,13 @@
       <info>Get the UUID for a domain</info>
       <return type='int' info='-1 in case of error, 0 in case of success'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
-      <arg name='uuid' type='unsigned char *' info='pointer to a 16 bytes array'/>
+      <arg name='uuid' type='unsigned char *' info='pointer to a VIR_UUID_BUFLEN bytes array'/>
     </function>
     <function name='virDomainGetUUIDString' file='libvirt' module='libvirt'>
       <info>Get the UUID for a domain as string. For more information about UUID see RFC4122.</info>
       <return type='int' info='-1 in case of error, 0 in case of success'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
-      <arg name='buf' type='char *' info='pointer to a 37 bytes array'/>
+      <arg name='buf' type='char *' info='pointer to a VIR_UUID_STRING_BUFLEN bytes array'/>
     </function>
     <function name='virDomainGetVcpus' file='libvirt' module='libvirt'>
       <info>Extract information about virtual CPUs of domain, store it in info array and also in cpumaps if this pointer is&apos;nt NULL.</info>
@@ -640,6 +704,84 @@
     <function name='virInitialize' file='libvirt' module='libvirt'>
       <info>Initialize the library. It&apos;s better to call this routine at startup in multithreaded applications to avoid potential race when initializing the library.</info>
       <return type='int' info='0 in case of success, -1 in case of error'/>
+    </function>
+    <function name='virNetworkCreate' file='libvirt' module='libvirt'>
+      <info>Create and start a defined network. If the call succeed the network moves from the defined to the running networks pools.</info>
+      <return type='int' info='0 in case of success, -1 in case of error'/>
+      <arg name='network' type='virNetworkPtr' info='pointer to a defined network'/>
+    </function>
+    <function name='virNetworkCreateXML' file='libvirt' module='libvirt'>
+      <info>Create and start a new virtual network, based on an XML description similar to the one returned by virNetworkGetXMLDesc()</info>
+      <return type='virNetworkPtr' info='a new network object or NULL in case of failure'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='xmlDesc' type='const char *' info='an XML description of the network'/>
+    </function>
+    <function name='virNetworkDefineXML' file='libvirt' module='libvirt'>
+      <info>Define a network, but does not create it</info>
+      <return type='virNetworkPtr' info='NULL in case of error, a pointer to the network otherwise'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='xml' type='const char *' info='the XML description for the network, preferably in UTF-8'/>
+    </function>
+    <function name='virNetworkDestroy' file='libvirt' module='libvirt'>
+      <info>Destroy the network object. The running instance is shutdown if not down already and all resources used by it are given back to the hypervisor. The data structure is freed and should not be used thereafter if the call does not return an error. This function may requires priviledged access</info>
+      <return type='int' info='0 in case of success and -1 in case of failure.'/>
+      <arg name='network' type='virNetworkPtr' info='a network object'/>
+    </function>
+    <function name='virNetworkFree' file='libvirt' module='libvirt'>
+      <info>Free the network object. The running instance is kept alive. The data structure is freed and should not be used thereafter.</info>
+      <return type='int' info='0 in case of success and -1 in case of failure.'/>
+      <arg name='network' type='virNetworkPtr' info='a network object'/>
+    </function>
+    <function name='virNetworkGetBridgeName' file='libvirt' module='libvirt'>
+      <info></info>
+      <return type='char *' info='a bridge interface name to which a domain may connect a network interface in order to join the network.  Returns a 0 terminated interface name, or NULL in case of error. the caller must free() the returned value.'/>
+      <arg name='network' type='virNetworkPtr' info='a network object'/>
+    </function>
+    <function name='virNetworkGetName' file='libvirt' module='libvirt'>
+      <info>Get the public name for that network</info>
+      <return type='const char *' info='a pointer to the name or NULL, the string need not be deallocated its lifetime will be the same as the network object.'/>
+      <arg name='network' type='virNetworkPtr' info='a network object'/>
+    </function>
+    <function name='virNetworkGetUUID' file='libvirt' module='libvirt'>
+      <info>Get the UUID for a network</info>
+      <return type='int' info='-1 in case of error, 0 in case of success'/>
+      <arg name='network' type='virNetworkPtr' info='a network object'/>
+      <arg name='uuid' type='unsigned char *' info='pointer to a VIR_UUID_BUFLEN bytes array'/>
+    </function>
+    <function name='virNetworkGetUUIDString' file='libvirt' module='libvirt'>
+      <info>Get the UUID for a network as string. For more information about UUID see RFC4122.</info>
+      <return type='int' info='-1 in case of error, 0 in case of success'/>
+      <arg name='network' type='virNetworkPtr' info='a network object'/>
+      <arg name='buf' type='char *' info='pointer to a VIR_UUID_STRING_BUFLEN bytes array'/>
+    </function>
+    <function name='virNetworkGetXMLDesc' file='libvirt' module='libvirt'>
+      <info>Provide an XML description of the network. The description may be reused later to relaunch the network with virNetworkCreateXML().</info>
+      <return type='char *' info='a 0 terminated UTF-8 encoded XML instance, or NULL in case of error. the caller must free() the returned value.'/>
+      <arg name='network' type='virNetworkPtr' info='a network object'/>
+      <arg name='flags' type='int' info='and OR&apos;ed set of extraction flags, not used yet'/>
+    </function>
+    <function name='virNetworkLookupByName' file='libvirt' module='libvirt'>
+      <info>Try to lookup a network on the given hypervisor based on its name.</info>
+      <return type='virNetworkPtr' info='a new network object or NULL in case of failure'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='name' type='const char *' info='name for the network'/>
+    </function>
+    <function name='virNetworkLookupByUUID' file='libvirt' module='libvirt'>
+      <info>Try to lookup a network on the given hypervisor based on its UUID.</info>
+      <return type='virNetworkPtr' info='a new network object or NULL in case of failure'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='uuid' type='const unsigned char *' info='the raw UUID for the network'/>
+    </function>
+    <function name='virNetworkLookupByUUIDString' file='libvirt' module='libvirt'>
+      <info>Try to lookup a network on the given hypervisor based on its UUID.</info>
+      <return type='virNetworkPtr' info='a new network object or NULL in case of failure'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='uuidstr' type='const char *' info='the string UUID for the network'/>
+    </function>
+    <function name='virNetworkUndefine' file='libvirt' module='libvirt'>
+      <info>Undefine a network but does not stop it if it is running</info>
+      <return type='int' info='0 in case of success, -1 in case of error'/>
+      <arg name='network' type='virNetworkPtr' info='pointer to a defined network'/>
     </function>
     <function name='virNodeGetInfo' file='libvirt' module='libvirt'>
       <info>Extract hardware information about the node.</info>

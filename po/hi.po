@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hi\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-14 12:10-0500\n"
+"POT-Creation-Date: 2007-02-14 18:55+0100\n"
 "PO-Revision-Date: 2006-12-14 18:50+0530\n"
 "Last-Translator: Rajesh Ranjan <rranjan@redhat.com>\n"
 "Language-Team: Hindi <fedora-trans-hi@redhat.com>\n"
@@ -613,7 +613,22 @@ msgstr "vbd फाइलनाम विश्लेषित नहीं क�
 msgid "failed to parse Xend domain information"
 msgstr "Xend डोमेन सूचना विश्लेषण में विफल"
 
-#: src/xend_internal.c:2969
+#: src/xend_internal.c:2845
+#, c-format
+msgid "Failed to create domain %s\n"
+msgstr "डोमेन %s बनाने में विफल\n"
+
+#: src/xend_internal.c:2851
+#, c-format
+msgid "Failed to get devices for domain %s\n"
+msgstr "डोमेन %s के लिये युक्ति पाने में विफल\n"
+
+#: src/xend_internal.c:2862
+#, c-format
+msgid "Failed to resume new domain %s\n"
+msgstr "नया डोमेन %s बहाल करने में विफल\n"
+
+#: src/xend_internal.c:2971
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "निष्क्रिय डोमेन %s बनाने में विफल\n"
@@ -1741,12 +1756,3 @@ msgstr "अतुल्यकालित पैकेट संख्या %d\
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d डोमेन सूचना दे रहा है"
-
-#~ msgid "Failed to create domain %s\n"
-#~ msgstr "डोमेन %s बनाने में विफल\n"
-
-#~ msgid "Failed to get devices for domain %s\n"
-#~ msgstr "डोमेन %s के लिये युक्ति पाने में विफल\n"
-
-#~ msgid "Failed to resume new domain %s\n"
-#~ msgstr "नया डोमेन %s बहाल करने में विफल\n"

@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zh_CN\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-14 12:10-0500\n"
+"POT-Creation-Date: 2007-02-14 18:55+0100\n"
 "PO-Revision-Date: 2007-01-17 15:28+1000\n"
 "Last-Translator: Tony Fu <tfu@redhat.com>\n"
 "Language-Team:  <zh@li.org>\n"
@@ -615,7 +615,22 @@ msgstr "缺少驱动类型，无法解释 vbd 文件名"
 msgid "failed to parse Xend domain information"
 msgstr "解释 Xend 域信息失败"
 
-#: src/xend_internal.c:2969
+#: src/xend_internal.c:2845
+#, c-format
+msgid "Failed to create domain %s\n"
+msgstr "创建域 %s 失败\n"
+
+#: src/xend_internal.c:2851
+#, c-format
+msgid "Failed to get devices for domain %s\n"
+msgstr "为域 %s 获得设备失败\n"
+
+#: src/xend_internal.c:2862
+#, c-format
+msgid "Failed to resume new domain %s\n"
+msgstr "恢复新域 %s 失败\n"
+
+#: src/xend_internal.c:2971
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "创建域 %s 失败\n"
@@ -1743,12 +1758,3 @@ msgstr "获得了异步数据包号 %d\n"
 #, c-format
 msgid "allocating %d domain info"
 msgstr "分配 %d 域信息"
-
-#~ msgid "Failed to create domain %s\n"
-#~ msgstr "创建域 %s 失败\n"
-
-#~ msgid "Failed to get devices for domain %s\n"
-#~ msgstr "为域 %s 获得设备失败\n"
-
-#~ msgid "Failed to resume new domain %s\n"
-#~ msgstr "恢复新域 %s 失败\n"

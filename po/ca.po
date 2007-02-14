@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-14 12:10-0500\n"
+"POT-Creation-Date: 2007-02-14 18:55+0100\n"
 "PO-Revision-Date: 2006-12-02 10:20-0100\n"
 "Last-Translator: Xavier Conde Rueda <xavi.conde@gmail.com>\n"
 "Language-Team: Catalan <fedora@softcatala.net>\n"
@@ -625,7 +625,22 @@ msgstr ""
 msgid "failed to parse Xend domain information"
 msgstr "no s'ha pogut analitzar la informació del domini Xen"
 
-#: src/xend_internal.c:2969
+#: src/xend_internal.c:2845
+#, c-format
+msgid "Failed to create domain %s\n"
+msgstr "No s'ha pogut crear el domini %s\n"
+
+#: src/xend_internal.c:2851
+#, c-format
+msgid "Failed to get devices for domain %s\n"
+msgstr "No s'ha pogut obtenir els dispositius per al domini %s\n"
+
+#: src/xend_internal.c:2862
+#, c-format
+msgid "Failed to resume new domain %s\n"
+msgstr "No s'ha pogut recuperar el nou domini %s\n"
+
+#: src/xend_internal.c:2971
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "No s'ha pogut crear el domini %s\n"
@@ -1761,12 +1776,3 @@ msgstr "s'ha rebut un número de paquet asíncron %d\n"
 #, c-format
 msgid "allocating %d domain info"
 msgstr "s'està assignant %d informació de domini"
-
-#~ msgid "Failed to create domain %s\n"
-#~ msgstr "No s'ha pogut crear el domini %s\n"
-
-#~ msgid "Failed to get devices for domain %s\n"
-#~ msgstr "No s'ha pogut obtenir els dispositius per al domini %s\n"
-
-#~ msgid "Failed to resume new domain %s\n"
-#~ msgstr "No s'ha pogut recuperar el nou domini %s\n"

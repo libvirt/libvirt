@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-14 12:10-0500\n"
+"POT-Creation-Date: 2007-02-14 18:55+0100\n"
 "PO-Revision-Date: 2006-12-09 03:02+0800\n"
 "Last-Translator: Sharuzzaman Ahmat Raslan <sharuzzaman@myrealbox.com>\n"
 "Language-Team: ms <ms@li.org>\n"
@@ -677,7 +677,22 @@ msgstr ""
 msgid "failed to parse Xend domain information"
 msgstr ""
 
-#: src/xend_internal.c:2969
+#: src/xend_internal.c:2845
+#, fuzzy, c-format
+msgid "Failed to create domain %s\n"
+msgstr "Gagal mencipta direktori %s"
+
+#: src/xend_internal.c:2851
+#, fuzzy, c-format
+msgid "Failed to get devices for domain %s\n"
+msgstr "Gagal mencipta direktori %s"
+
+#: src/xend_internal.c:2862
+#, fuzzy, c-format
+msgid "Failed to resume new domain %s\n"
+msgstr "Gagal menyimpan direktori baru dalam %s"
+
+#: src/xend_internal.c:2971
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Gagal mencipta direktori %s"
@@ -1852,11 +1867,3 @@ msgstr ""
 #, c-format
 msgid "allocating %d domain info"
 msgstr "mengumpukkan maklumat domain %d"
-
-#, fuzzy
-#~ msgid "Failed to create domain %s\n"
-#~ msgstr "Gagal mencipta direktori %s"
-
-#, fuzzy
-#~ msgid "Failed to resume new domain %s\n"
-#~ msgstr "Gagal menyimpan direktori baru dalam %s"

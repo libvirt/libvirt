@@ -1,3 +1,9 @@
+Wed Feb 14 19:06:26 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in NEWS include/libvirt/libvirt.h docs/* docs/apibuild.py:
+	  prepare release of 0.2.0, update doc, avoid console module for API.
+	* po/*: regenerated
+
 Tue Feb 14 12:35:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* libvirt.spec.in: Added dep on libsysfs-devel. Pre-create

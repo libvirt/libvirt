@@ -74,6 +74,7 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     char *	str3	: extra string information
     int	int1	: extra number information
     int	int2	: extra number information
+    <a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a>	net	: the network if available
 } virError;
 </pre><p/>
 </div>
@@ -88,7 +89,9 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     <a name="VIR_FROM_DOM">VIR_FROM_DOM</a> = 6 /* Error when operating on a domain */
     <a name="VIR_FROM_RPC">VIR_FROM_RPC</a> = 7 /* Error in the XML-RPC code */
     <a name="VIR_FROM_PROXY">VIR_FROM_PROXY</a> = 8 /* Error in the proxy code */
-    <a name="VIR_FROM_CONF">VIR_FROM_CONF</a> = 9 /*  Error in the configuration file handling */
+    <a name="VIR_FROM_CONF">VIR_FROM_CONF</a> = 9 /* Error in the configuration file handling */
+    <a name="VIR_FROM_QEMU">VIR_FROM_QEMU</a> = 10 /* Error at the QEMU daemon */
+    <a name="VIR_FROM_NET">VIR_FROM_NET</a> = 11 /*  Error when operating on a network */
 };
 </pre><p/>
 </div>
@@ -137,7 +140,9 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     <a name="VIR_ERR_PARSE_FAILED">VIR_ERR_PARSE_FAILED</a> = 32 /* failed to parse a conf file */
     <a name="VIR_ERR_CONF_SYNTAX">VIR_ERR_CONF_SYNTAX</a> = 33 /* failed to parse the syntax of a conf file */
     <a name="VIR_ERR_WRITE_FAILED">VIR_ERR_WRITE_FAILED</a> = 34 /* failed to write a conf file */
-    <a name="VIR_ERR_XML_DETAIL">VIR_ERR_XML_DETAIL</a> = 35 /*  detail of an XML error */
+    <a name="VIR_ERR_XML_DETAIL">VIR_ERR_XML_DETAIL</a> = 35 /* detail of an XML error */
+    <a name="VIR_ERR_INVALID_NETWORK">VIR_ERR_INVALID_NETWORK</a> = 36 /* invalid network object */
+    <a name="VIR_ERR_NETWORK_EXIST">VIR_ERR_NETWORK_EXIST</a> = 37 /*  the network already exist */
 };
 </pre><p/>
 </div>

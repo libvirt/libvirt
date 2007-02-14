@@ -2,7 +2,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>Releases</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Releases</h1><p>Here is the list of official releases, however since it is early on in the
 development of libvirt, it is preferable when possible to just use the <a href="downloads.html">CVS version or snapshot</a>, contact the mailing list
-and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3>0.1.11: Jan 22 2007</h3><ul><li>Finish XML &lt;-&gt; XM config files support</li>
+and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3>0.2.0: Feb 14 2007</h3><ul><li>Various internal cleanups (Mark McLoughlin, Richard Jones,
+      Daniel Berrange, Karel Zak)</li>
+  <li>Bug fixes: avoid a crash in connect (Daniel Berrange), virsh args
+      parsing (Richard Jones)</li>
+  <li>Add support for QEmu and KVM virtualization (Daniel Berrange)</li>
+  <li>Add support for network configuration (Mark McLoughlin)</li>
+  <li>Minor improvements: regression testing (Daniel Berrange), 
+      localization string updates</li>
+</ul><h3>0.1.11: Jan 22 2007</h3><ul><li>Finish XML &lt;-&gt; XM config files support</li>
   <li>Remove memory leak when freeing virConf objects</li>
   <li>Finishing inactive domain support (Daniel Berrange)</li>
   <li>Added a Relax-NG schemas to check XML instances</li>

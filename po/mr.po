@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-14 12:10-0500\n"
+"POT-Creation-Date: 2007-02-14 18:55+0100\n"
 "PO-Revision-Date: 2007-01-17 10:24+0530\n"
 "Last-Translator: Rahul Bhalerao <rahul.bhalerao@redhat.com>\n"
 "Language-Team: Marathi\n"
@@ -612,7 +612,22 @@ msgstr "vbd फाइलनाव विश्लेषित करू शक�
 msgid "failed to parse Xend domain information"
 msgstr "Xend डोमेन माहिती विश्लेषित करण्यात अपयशी"
 
-#: src/xend_internal.c:2969
+#: src/xend_internal.c:2845
+#, c-format
+msgid "Failed to create domain %s\n"
+msgstr "डोमेन %s निर्माण करण्यात अपयशी\n"
+
+#: src/xend_internal.c:2851
+#, c-format
+msgid "Failed to get devices for domain %s\n"
+msgstr "डोमेन %s साठी यंत्रे मिळवणे अपयशी\n"
+
+#: src/xend_internal.c:2862
+#, c-format
+msgid "Failed to resume new domain %s\n"
+msgstr "नविन डोमेन %s पुन्हा घेण्यास अपयशी\n"
+
+#: src/xend_internal.c:2971
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "डोमेन %s निर्माण करण्यात अपयशी\n"
@@ -1740,12 +1755,3 @@ msgstr "असिंक्रोनस पॅकेट संख्या %d म
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d डोमेन माहिती वाटत आहे"
-
-#~ msgid "Failed to create domain %s\n"
-#~ msgstr "डोमेन %s निर्माण करण्यात अपयशी\n"
-
-#~ msgid "Failed to get devices for domain %s\n"
-#~ msgstr "डोमेन %s साठी यंत्रे मिळवणे अपयशी\n"
-
-#~ msgid "Failed to resume new domain %s\n"
-#~ msgstr "नविन डोमेन %s पुन्हा घेण्यास अपयशी\n"

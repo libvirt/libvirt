@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-14 12:10-0500\n"
+"POT-Creation-Date: 2007-02-14 18:55+0100\n"
 "PO-Revision-Date: 2006-12-14 18:24+0100\n"
 "Last-Translator: Renato Pavicic <renato@translator-shop.org>\n"
 "Language-Team: CROATIAN <www.translator-shop.org>\n"
@@ -607,7 +607,22 @@ msgstr ""
 msgid "failed to parse Xend domain information"
 msgstr "raščlanjivanje podataka Xend domene nije uspjelo"
 
-#: src/xend_internal.c:2969
+#: src/xend_internal.c:2845
+#, c-format
+msgid "Failed to create domain %s\n"
+msgstr "Izrada domene %s nije uspjela\n"
+
+#: src/xend_internal.c:2851
+#, c-format
+msgid "Failed to get devices for domain %s\n"
+msgstr "Dohvaćanje uređaja za domenu %s nije uspjelo\n"
+
+#: src/xend_internal.c:2862
+#, c-format
+msgid "Failed to resume new domain %s\n"
+msgstr "Nastavljanje nove domene %s nije uspjelo\n"
+
+#: src/xend_internal.c:2971
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Izrada neaktivne domene %s nije uspjela\n"
@@ -1734,12 +1749,3 @@ msgstr "dobiven asinkroni broj paketa %d\n"
 #, c-format
 msgid "allocating %d domain info"
 msgstr "dodjeljivanje podataka domene: %d"
-
-#~ msgid "Failed to create domain %s\n"
-#~ msgstr "Izrada domene %s nije uspjela\n"
-
-#~ msgid "Failed to get devices for domain %s\n"
-#~ msgstr "Dohvaćanje uređaja za domenu %s nije uspjelo\n"
-
-#~ msgid "Failed to resume new domain %s\n"
-#~ msgstr "Nastavljanje nove domene %s nije uspjelo\n"

@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-02-14 12:10-0500\n"
+"POT-Creation-Date: 2007-02-14 18:55+0100\n"
 "PO-Revision-Date: 2007-01-17 10:44+1000\n"
 "Last-Translator: Myriam Malga <mmalga@redhat.com>\n"
 "Language-Team:  <fr@li.org>\n"
@@ -617,7 +617,22 @@ msgstr ""
 msgid "failed to parse Xend domain information"
 msgstr "échec lors de l'analyse des informations du domaine Xen"
 
-#: src/xend_internal.c:2969
+#: src/xend_internal.c:2845
+#, c-format
+msgid "Failed to create domain %s\n"
+msgstr "échec de la création du domaine %s\n"
+
+#: src/xend_internal.c:2851
+#, c-format
+msgid "Failed to get devices for domain %s\n"
+msgstr "Échec de la récupération des périphériques pour le domaine %s\n"
+
+#: src/xend_internal.c:2862
+#, c-format
+msgid "Failed to resume new domain %s\n"
+msgstr "Échec de la reprise du nouveau domaine %s\n"
+
+#: src/xend_internal.c:2971
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "échec de la création du domaine %s\n"
@@ -1749,12 +1764,3 @@ msgstr "nombre de paquets asynchrones reçus : %d\n"
 #, c-format
 msgid "allocating %d domain info"
 msgstr "attribue les informations de domaine %d"
-
-#~ msgid "Failed to create domain %s\n"
-#~ msgstr "échec de la création du domaine %s\n"
-
-#~ msgid "Failed to get devices for domain %s\n"
-#~ msgstr "Échec de la récupération des périphériques pour le domaine %s\n"
-
-#~ msgid "Failed to resume new domain %s\n"
-#~ msgstr "Échec de la reprise du nouveau domaine %s\n"
