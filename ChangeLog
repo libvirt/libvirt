@@ -1,3 +1,8 @@
+Wed Feb 14 17:01:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/qemud.c: Ensure we create the main libvirt config
+	directory at startup
+
 Wed Feb 14 16:47:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/conf.c: Fixed generation of <features> block, and

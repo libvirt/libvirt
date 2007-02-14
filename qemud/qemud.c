@@ -239,6 +239,7 @@ static int qemudListen(struct qemud_server *server, int sys) {
 
 static struct qemud_server *qemudInitialize(int sys) {
     struct qemud_server *server;
+    char libvirtConf[PATH_MAX];
 
     if (!(server = calloc(1, sizeof(struct qemud_server))))
         return NULL;
@@ -249,6 +250,15 @@ static struct qemud_server *qemudInitialize(int sys) {
     server->nextvmid = 1;
 
     if (sys) {
+        if (snprintf(libvirtConf, sizeof(libvirtConf), "%s/libvirt", SYSCONF_DIR) >= (int)sizeof(libvirtConf)) {
+            goto cleanup;
+        }
+        if (mkdir(libvirtConf, 0777) < 0) {
+            if (errno != EEXIST) {
+                goto cleanup;
+            }
+        }
+
         if (snprintf(server->configDir, sizeof(server->configDir), "%s/libvirt/qemu", SYSCONF_DIR) >= (int)sizeof(server->configDir)) {
             goto cleanup;
         }
@@ -258,12 +268,23 @@ static struct qemud_server *qemudInitialize(int sys) {
     } else {
         struct passwd *pw;
         int uid;
+
         if ((uid = geteuid()) < 0) {
             goto cleanup;
         }
         if (!(pw = getpwuid(uid))) {
             goto cleanup;
         }
+
+        if (snprintf(libvirtConf, sizeof(libvirtConf), "%s/.libvirt", pw->pw_dir) >= (int)sizeof(libvirtConf)) {
+            goto cleanup;
+        }
+        if (mkdir(libvirtConf, 0777) < 0) {
+            if (errno != EEXIST) {
+                goto cleanup;
+            }
+        }
+
 
         if (snprintf(server->configDir, sizeof(server->configDir), "%s/.libvirt/qemu", pw->pw_dir) >= (int)sizeof(server->configDir)) {
             goto cleanup;
