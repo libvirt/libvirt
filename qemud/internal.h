@@ -30,6 +30,7 @@
 #include <gnutls/gnutls.h>
 
 #include "protocol.h"
+#include "bridge.h"
 
 #ifdef __GNUC__
 #ifdef HAVE_ANSIDECL_H
@@ -203,6 +204,13 @@ struct qemud_vm {
 struct qemud_network_def {
     unsigned char uuid[QEMUD_UUID_RAW_LEN];
     char name[QEMUD_MAX_NAME_LEN];
+
+    char bridge[BR_IFNAME_MAXLEN];
+    int disableSTP;
+    int forwardDelay;
+
+    char ipAddress[BR_INET_ADDR_MAXLEN];
+    char netmask[BR_INET_ADDR_MAXLEN];
 };
 
 /* Virtual Network runtime state */
@@ -210,6 +218,11 @@ struct qemud_network {
     char configFile[PATH_MAX];
 
     struct qemud_network_def def;
+
+    char bridge[BR_IFNAME_MAXLEN];
+
+    unsigned int active : 1;
+
     struct qemud_network *next;
 };
 
@@ -249,6 +262,7 @@ struct qemud_server {
     struct qemud_network *activenetworks;
     int ninactivenetworks;
     struct qemud_network *inactivenetworks;
+    brControl *brctl;
     char configDir[PATH_MAX];
     char networkConfigDir[PATH_MAX];
     char errorMessage[QEMUD_MAX_ERROR_LEN];

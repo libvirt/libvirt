@@ -102,6 +102,28 @@ then
 dnl search for the Xen store library
 AC_SEARCH_LIBS(xs_read, [xenstore], [], [AC_MSG_ERROR([Xen store library not found])])
 
+dnl
+dnl check for libsyfs (>= 2.0.0); allow disabling bridge parameters support altogether
+dnl
+AC_ARG_ENABLE(bridge-params,
+              AC_HELP_STRING([--disable-bridge-params],
+                             [disable support for setting bridge parameters using libsysfs [default=no]]),,
+              enable_bridge_params=yes)
+
+if test x"$enable_bridge_params" == "xyes"; then
+    AC_CHECK_LIB(sysfs, sysfs_open_device,
+                 [AC_CHECK_HEADER(sysfs/libsysfs.h,
+		                  AC_DEFINE(ENABLE_BRIDGE_PARAMS, , [enable setting bridge parameters using libsysfs])
+				  SYSFS_LIBS="-lsysfs" AC_SUBST(SYSFS_LIBS),
+				  AC_MSG_ERROR([You must install libsysfs in order to compile libvirt]))])
+fi
+
+dnl
+dnl check for kernel headers required by qemud/bridge.c
+dnl
+AC_CHECK_HEADERS(linux/param.h linux/sockios.h linux/if_bridge.h linux/if_tun.h,,
+                 AC_MSG_ERROR([You must install kernel-headers in order to compile libvirt]))
+
 dnl ==========================================================================
 dnl find libxml2 library, borrowed from xmlsec
 dnl ==========================================================================

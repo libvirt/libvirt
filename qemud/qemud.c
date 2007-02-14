@@ -706,14 +706,115 @@ static int qemudDispatchVMFailure(struct qemud_server *server, struct qemud_vm *
 
 int qemudStartNetworkDaemon(struct qemud_server *server,
                             struct qemud_network *network) {
-    server = NULL; network = NULL;
+    const char *name;
+    int err;
+
+    if (network->active) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "network is already active");
+        return -1;
+    }
+
+    if (!server->brctl && (err = brInit(&server->brctl))) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "cannot initialize bridge support: %s", strerror(err));
+        return -1;
+    }
+
+    if (network->def.bridge[0] == '\0' ||
+        strchr(network->def.bridge, '%')) {
+        name = "vnet%d";
+    } else {
+        name = network->def.bridge;
+    }
+
+    if ((err = brAddBridge(server->brctl, name, network->bridge, sizeof(network->bridge)))) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "cannot create bridge '%s' : %s", name, strerror(err));
+        return -1;
+    }
+
+    if (network->def.ipAddress[0] &&
+        (err = brSetInetAddress(server->brctl, network->bridge, network->def.ipAddress))) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "cannot set IP address on bridge '%s' to '%s' : %s\n",
+                         network->bridge, network->def.ipAddress, strerror(err));
+        goto err_delbr;
+    }
+
+    if (network->def.netmask[0] &&
+        (err = brSetInetNetmask(server->brctl, network->bridge, network->def.netmask))) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "cannot set netmask on bridge '%s' to '%s' : %s\n",
+                         network->bridge, network->def.netmask, strerror(err));
+        goto err_delbr;
+    }
+
+    if (network->def.ipAddress[0] &&
+        (err = brSetInterfaceUp(server->brctl, network->bridge, 1))) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "failed to bring the bridge '%s' up : %s\n",
+                         network->bridge, strerror(err));
+        goto err_delbr;
+    }
+
+    network->active = 1;
+
     return 0;
+
+ err_delbr:
+    if ((err = brDeleteBridge(server->brctl, network->bridge))) {
+        printf("Damn! Couldn't delete bridge '%s' : %s\n",
+               network->bridge, strerror(err));
+    }
+
+    return -1;
 }
 
 
 int qemudShutdownNetworkDaemon(struct qemud_server *server,
                                struct qemud_network *network) {
-    server = NULL; network = NULL;
+    struct qemud_network *prev, *curr;
+    int err;
+
+    if (!network->active)
+        return 0;
+
+    if (network->def.ipAddress[0] &&
+        (err = brSetInterfaceUp(server->brctl, network->bridge, 0))) {
+        printf("Damn! Failed to bring down bridge '%s' : %s\n",
+               network->bridge, strerror(err));
+    }
+
+    if ((err = brDeleteBridge(server->brctl, network->bridge))) {
+        printf("Damn! Failed to delete bridge '%s' : %s\n",
+               network->bridge, strerror(err));
+    }
+
+    /* Move it to inactive networks list */
+    prev = NULL;
+    curr = server->activenetworks;
+    while (curr) {
+        if (curr == network) {
+            if (prev) {
+                prev->next = curr->next;
+            } else {
+                server->activenetworks = curr->next;
+            }
+            server->nactivenetworks--;
+
+            curr->next = server->inactivenetworks;
+            server->inactivenetworks = curr;
+            server->ninactivenetworks++;
+            break;
+        }
+        prev = curr;
+        curr = curr->next;
+    }
+
+    network->bridge[0] = '\0';
+    network->active = 0;
+
     return 0;
 }
 
@@ -723,6 +824,7 @@ static int qemudDispatchPoll(struct qemud_server *server, struct pollfd *fds) {
     struct qemud_client *client = server->clients;
     struct qemud_vm *vm = server->activevms;
     struct qemud_vm *tmp;
+    struct qemud_network *network, *prevnet;
     int ret = 0;
     int fd = 0;
 
@@ -803,6 +905,25 @@ static int qemudDispatchPoll(struct qemud_server *server, struct pollfd *fds) {
         } else {
             tmp = vm;
             vm = vm->next;
+        }
+    }
+
+    /* Cleanup any networks too */
+    network = server->inactivenetworks;
+    prevnet = NULL;
+    while (network) {
+        if (!network->configFile[0]) {
+            struct qemud_network *next = network->next;
+            if (prevnet) {
+                prevnet->next = next;
+            } else {
+                server->inactivenetworks = next;
+            }
+            qemudFreeNetwork(network);
+            network = next;
+        } else {
+            prevnet = network;
+            network = network->next;
         }
     }
 
@@ -896,6 +1017,8 @@ static void qemudCleanup(struct qemud_server *server) {
         close(sock->fd);
         sock = sock->next;
     }
+    if (server->brctl)
+        brShutdown(server->brctl);
     free(server);
 }
 
