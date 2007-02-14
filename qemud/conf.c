@@ -1098,186 +1098,17 @@ struct qemud_vm *qemudLoadConfigXML(struct qemud_server *server,
 }
 
 
-void qemudFreeNetwork(struct qemud_network *network) {
-    free(network);
-}
-
-
-static int qemudSaveNetworkConfig(struct qemud_server *server,
-                                  struct qemud_network *network) {
-    char *xml;
-    int fd, ret = -1;
-    int towrite;
-
-    if (!(xml = qemudGenerateNetworkXML(server, network))) {
-        return -1;
-    }
-
-    if (qemudEnsureConfigDir(server, server->networkConfigDir) < 0) {
-        goto cleanup;
-    }
-
-    if ((fd = open(network->configFile,
-                   O_WRONLY | O_CREAT | O_TRUNC,
-                   S_IRUSR | S_IWUSR )) < 0) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot create config file %s", network->configFile);
-        goto cleanup;
-    }
-
-    towrite = strlen(xml);
-    if (write(fd, xml, towrite) != towrite) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot write config file %s", network->configFile);
-        goto cleanup;
-    }
-
-    if (close(fd) < 0) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot save config file %s", network->configFile);
-        goto cleanup;
-    }
-
-    ret = 0;
-
- cleanup:
-
-    free(xml);
-
-    return ret;
-}
-
-
-static int qemudParseNetworkXML(struct qemud_server *server,
-                                xmlDocPtr xml,
-                                struct qemud_network *network) {
-    xmlNodePtr root = NULL;
-    xmlXPathContextPtr ctxt = NULL;
-    xmlXPathObjectPtr obj = NULL;
-
-    /* Prepare parser / xpath context */
-    root = xmlDocGetRootElement(xml);
-    if ((root == NULL) || (!xmlStrEqual(root->name, BAD_CAST "network"))) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "incorrect root element");
-        goto error;
-    }
-
-    ctxt = xmlXPathNewContext(xml);
-    if (ctxt == NULL) {
-        qemudReportError(server, VIR_ERR_NO_MEMORY, "xmlXPathContext");
-        goto error;
-    }
-
-
-    /* Extract network name */
-    obj = xmlXPathEval(BAD_CAST "string(/network/name[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
-        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        qemudReportError(server, VIR_ERR_NO_NAME, NULL);
-        goto error;
-    }
-    if (strlen((const char *)obj->stringval) >= (QEMUD_MAX_NAME_LEN-1)) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "network name length too long");
-        goto error;
-    }
-    strcpy(network->def.name, (const char *)obj->stringval);
-    xmlXPathFreeObject(obj);
-
-
-    /* Extract network uuid */
-    obj = xmlXPathEval(BAD_CAST "string(/network/uuid[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
-        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        /* XXX auto-generate a UUID */
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "missing uuid element");
-        goto error;
-    }
-    if (qemudParseUUID((const char *)obj->stringval, network->def.uuid) < 0) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "malformed uuid element");
-        goto error;
-    }
-    xmlXPathFreeObject(obj);
-
-    xmlXPathFreeContext(ctxt);
-
-    return 0;
-
- error:
-    /* XXX free all the stuff in the qemud_network struct, or leave it upto
-       the caller ? */
-    if (obj)
-        xmlXPathFreeObject(obj);
-    if (ctxt)
-        xmlXPathFreeContext(ctxt);
-    return -1;
-}
-
-
-struct qemud_network *qemudLoadNetworkConfigXML(struct qemud_server *server,
-                                                const char *file,
-                                                const char *doc,
-                                                int save) {
-    struct qemud_network *network = NULL;
-    xmlDocPtr xml;
-
-    if (!(xml = xmlReadDoc(BAD_CAST doc, file ? file : "network.xml", NULL,
-                           XML_PARSE_NOENT | XML_PARSE_NONET |
-                           XML_PARSE_NOERROR | XML_PARSE_NOWARNING))) {
-        qemudReportError(server, VIR_ERR_XML_ERROR, NULL);
-        return NULL;
-    }
-
-    if (!(network = calloc(1, sizeof(struct qemud_network)))) {
-        qemudReportError(server, VIR_ERR_NO_MEMORY, "network");
-        return NULL;
-    }
-
-    if (qemudParseNetworkXML(server, xml, network) < 0) {
-        xmlFreeDoc(xml);
-        qemudFreeNetwork(network);
-        return NULL;
-    }
-    xmlFreeDoc(xml);
-
-    if (qemudFindNetworkByUUID(server, network->def.uuid) ||
-        qemudFindNetworkByName(server, network->def.name)) {
-        qemudReportError(server, VIR_ERR_NETWORK_EXIST, network->def.name);
-        qemudFreeNetwork(network);
-        return NULL;
-    }
-
-    if (file) {
-        strncpy(network->configFile, file, PATH_MAX);
-        network->configFile[PATH_MAX-1] = '\0';
-    } else {
-        if (save) {
-            if (qemudMakeConfigPath(server->networkConfigDir, network->def.name, ".xml", network->configFile, PATH_MAX) < 0) {
-                qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot construct config file path");
-                qemudFreeNetwork(network);
-                return NULL;
-            }
-
-            if (qemudSaveNetworkConfig(server, network) < 0) {
-                qemudFreeNetwork(network);
-                return NULL;
-            }
-        } else {
-            network->configFile[0] = '\0';
-        }
-    }
-
-    return network;
-}
-
-
 /* Load a guest from its persistent config file */
 static void qemudLoadConfig(struct qemud_server *server,
-                            const char *file,
-                            int isGuest) {
+                            const char *file) {
     FILE *fh;
     struct stat st;
+    struct qemud_vm *vm;
     char xml[QEMUD_MAX_XML_LEN];
     int ret;
 
     if (!(fh = fopen(file, "r"))) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot open config file %s", file);
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot open guest config file %s", file);
         return;
     }
 
@@ -1287,7 +1118,7 @@ static void qemudLoadConfig(struct qemud_server *server,
     }
 
     if (st.st_size >= QEMUD_MAX_XML_LEN) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "config too large in file %s", file);
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "guest config too large in file %s", file);
         goto cleanup;
     }
 
@@ -1297,20 +1128,10 @@ static void qemudLoadConfig(struct qemud_server *server,
     }
     xml[st.st_size] = '\0';
 
-    if (isGuest) {
-        struct qemud_vm *vm;
-        if ((vm = qemudLoadConfigXML(server, file, xml, 1))) {
-            vm->next = server->inactivevms;
-            server->inactivevms = vm;
-            server->ninactivevms++;
-        }
-    } else {
-        struct qemud_network *network;
-        if ((network = qemudLoadNetworkConfigXML(server, file, xml, 1))) {
-            network->next = server->inactivenetworks;
-            server->inactivenetworks = network;
-            server->ninactivenetworks++;
-        }
+    if ((vm = qemudLoadConfigXML(server, file, xml, 1))) {
+        vm->next = server->inactivevms;
+        server->inactivevms = vm;
+        server->ninactivevms++;
     }
   
  cleanup:
@@ -1320,8 +1141,7 @@ static void qemudLoadConfig(struct qemud_server *server,
 
 static
 int qemudScanConfigDir(struct qemud_server *server,
-                       const char *configDir,
-                       int isGuest) {
+                       const char *configDir) {
     DIR *dir;
     struct dirent *entry;
 
@@ -1339,7 +1159,7 @@ int qemudScanConfigDir(struct qemud_server *server,
         if (qemudMakeConfigPath(configDir, entry->d_name, NULL, file, PATH_MAX) < 0)
             continue;
 
-        qemudLoadConfig(server, file, isGuest);
+        qemudLoadConfig(server, file);
     }
 
     closedir(dir);
@@ -1349,9 +1169,7 @@ int qemudScanConfigDir(struct qemud_server *server,
 
 /* Scan for all guest and network config files */
 int qemudScanConfigs(struct qemud_server *server) {
-    if (qemudScanConfigDir(server, server->configDir, 0) < 0)
-        return -1;
-    return qemudScanConfigDir(server, server->networkConfigDir, 1);
+    return qemudScanConfigDir(server, server->configDir);
 }
 
 /* Simple grow-on-demand string buffer */
@@ -1606,53 +1424,18 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm) {
 }
 
 
-char *qemudGenerateNetworkXML(struct qemud_server *server,
-                              struct qemud_network *network) {
-    struct qemudBuffer buf;
-    unsigned char *uuid;
-
-    buf.len = QEMUD_MAX_XML_LEN;
-    buf.used = 0;
-    buf.data = malloc(buf.len);
-
-    if (qemudBufferPrintf(&buf, "<network>\n") < 0)
-        goto no_memory;
-
-    if (qemudBufferPrintf(&buf, "  <name>%s</name>\n", network->def.name) < 0)
-        goto no_memory;
-
-    uuid = network->def.uuid;
-    if (qemudBufferPrintf(&buf, "  <uuid>%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x</uuid>\n",
-                          uuid[0], uuid[1], uuid[2], uuid[3],
-                          uuid[4], uuid[5], uuid[6], uuid[7],
-                          uuid[8], uuid[9], uuid[10], uuid[11],
-                          uuid[12], uuid[13], uuid[14], uuid[15]) < 0)
-        goto no_memory;
-
-    if (qemudBufferAdd(&buf, "</network>\n") < 0)
-        goto no_memory;
-
-    return buf.data;
-
- no_memory:
-    qemudReportError(server, VIR_ERR_NO_MEMORY, "xml");
-    free(buf.data);
-    return NULL;
-}
-
-
-int qemudDeleteConfig(struct qemud_server *server,
-                      const char *configFile,
-                      const char *name) {
-    if (!configFile[0]) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "no config file for %s", name);
+int qemudDeleteConfigXML(struct qemud_server *server, struct qemud_vm *vm) {
+    if (!vm->configFile[0]) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "no config file for guest %s", vm->def.name);
         return -1;
     }
 
-    if (unlink(configFile) < 0) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot remove config for %s", name);
+    if (unlink(vm->configFile) < 0) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot remove config for guest %s", vm->def.name);
         return -1;
     }
+
+    vm->configFile[0] = '\0';
 
     return 0;
 }
