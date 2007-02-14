@@ -324,103 +324,110 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
 }
 
 
+static int
+qemudExec(struct qemud_server *server, char **argv,
+          int *retpid, int *outfd, int *errfd) {
+    int pid, null;
+    int pipeout[2] = {-1,-1};
+    int pipeerr[2] = {-1,-1};
+
+    if ((null = open(_PATH_DEVNULL, O_RDONLY)) < 0) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot open %s : %s",
+                         _PATH_DEVNULL, strerror(errno));
+        goto cleanup;
+    }
+
+    if ((outfd != NULL && pipe(pipeout) < 0) ||
+        (errfd != NULL && pipe(pipeerr) < 0)) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot create pipe : %s",
+                         strerror(errno));
+        goto cleanup;
+    }
+
+    if ((pid = fork()) < 0) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot fork child process : %s",
+                         strerror(errno));
+        goto cleanup;
+    }
+
+    if (pid) { /* parent */
+        close(null);
+        if (outfd) {
+            close(pipeout[1]);
+            qemudSetNonBlock(pipeout[0]);
+            *outfd = pipeout[0];
+        }
+        if (errfd) {
+            close(pipeerr[1]);
+            qemudSetNonBlock(pipeerr[0]);
+            *errfd = pipeerr[0];
+        }
+        *retpid = pid;
+        return 0;
+    }
+
+    /* child */
+
+    if (pipeout[0] > 0 && close(pipeout[0]) < 0)
+        _exit(1);
+    if (pipeerr[0] > 0 && close(pipeerr[0]) < 0)
+        _exit(1);
+
+    if (dup2(null, STDIN_FILENO) < 0)
+        _exit(1);
+    if (dup2(pipeout[1] > 0 ? pipeout[1] : null, STDOUT_FILENO) < 0)
+        _exit(1);
+    if (dup2(pipeerr[1] > 0 ? pipeerr[1] : null, STDERR_FILENO) < 0)
+        _exit(1);
+
+    int i, open_max = sysconf (_SC_OPEN_MAX);
+    for (i = 0; i < open_max; i++)
+        if (i != STDOUT_FILENO &&
+            i != STDERR_FILENO &&
+            i != STDIN_FILENO)
+            close(i);
+
+    execvp(argv[0], argv);
+
+    _exit(1);
+
+    return 0;
+
+ cleanup:
+    if (pipeerr[0] > 0)
+        close(pipeerr[0] > 0);
+    if (pipeerr[1])
+        close(pipeerr[1] > 0);
+    if (pipeout[0])
+        close(pipeout[0] > 0);
+    if (pipeout[1])
+        close(pipeout[1] > 0);
+    if (null > 0)
+        close(null);
+    return -1;
+}
+
+
 int qemudStartVMDaemon(struct qemud_server *server,
                        struct qemud_vm *vm) {
     char **argv = NULL;
-    int argc = 0;
-    int pid;
     int i, ret = -1;
-    int stdinfd = -1;
-    int pipeout[2] = {-1,-1};
-    int pipeerr[2] = {-1,-1};
 
     if (vm->def.vncPort < 0)
         vm->def.vncActivePort = 5900 + server->nextvmid;
     else
         vm->def.vncActivePort = vm->def.vncPort;
 
-    if (qemudBuildCommandLine(server, vm, &argv, &argc) < 0)
+    if (qemudBuildCommandLine(server, vm, &argv) < 0)
         return -1;
 
-    if (1) { /* XXX debug stuff */
-        QEMUD_DEBUG("Spawn QEMU '");
-        for (i = 0 ; i < argc; i++) {
-            QEMUD_DEBUG("%s", argv[i]);
-            if (i == (argc-1)) {
-                QEMUD_DEBUG("'\n");
-            } else {
-                QEMUD_DEBUG(" ");
-            }
-        }
-    }
-
-    if ((stdinfd = open(_PATH_DEVNULL, O_RDONLY)) < 0) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot open %s", _PATH_DEVNULL);
-        goto cleanup;
-    }
-
-    if (pipe(pipeout) < 0) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot create pipe");
-        goto cleanup;
-    }
-
-    if (pipe(pipeerr) < 0) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot create pipe");
-        goto cleanup;
-    }
-
-    if ((pid = fork()) < 0) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot fork child process");
-        goto cleanup;
-    }
-
-    if (pid) { /* parent */
-        close(stdinfd);
-        close(pipeout[1]);
-        close(pipeerr[1]);
-        qemudSetNonBlock(pipeout[0]);
-        qemudSetNonBlock(pipeerr[0]);
+    if (qemudExec(server, argv, &vm->pid, &vm->stdout, &vm->stderr) == 0) {
         vm->def.id = server->nextvmid++;
-        vm->pid = pid;
-        vm->stdout = pipeout[0];
-        vm->stderr = pipeerr[0];
-
-    } else { /* child */
-        int null;
-        if ((null = open(_PATH_DEVNULL, O_RDONLY)) < 0)
-            _exit(1);
-
-        if (close(pipeout[0]) < 0)
-            _exit(1);
-        if (close(pipeerr[0]) < 0)
-            _exit(1);
-
-        if (dup2(stdinfd, STDIN_FILENO) < 0)
-            _exit(1);
-        if (dup2(pipeout[1], STDOUT_FILENO) < 0)
-            _exit(1);
-        if (dup2(pipeerr[1], STDERR_FILENO) < 0)
-            _exit(1);
-
-        int open_max = sysconf (_SC_OPEN_MAX);
-        for (i = 0; i < open_max; i++)
-            if (i != STDOUT_FILENO &&
-                i != STDERR_FILENO &&
-                i != STDIN_FILENO)
-                close(i);
-
-        execvp(argv[0], argv);
-
-        _exit(1);
+        ret = 0;
     }
-
-    ret = 0;
-
- cleanup:
   
-    for (i = 0 ; i < argc ; i++) {
+    for (i = 0 ; argv[i] ; i++)
         free(argv[i]);
-    }
     free(argv);
 
     return ret;

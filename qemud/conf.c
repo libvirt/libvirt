@@ -776,16 +776,15 @@ static int qemudParseXML(struct qemud_server *server,
  */
 int qemudBuildCommandLine(struct qemud_server *server,
                           struct qemud_vm *vm,
-                          char ***argv,
-                          int *argc) {
-    int n = -1, i;
+                          char ***argv) {
+    int len, n = -1, i;
     char memory[50];
     char vcpus[50];
     char boot[QEMUD_MAX_BOOT_DEVS+1];
     struct qemud_vm_disk_def *disk = vm->def.disks;
     struct qemud_vm_net_def *net = vm->def.nets;
 
-    *argc = 1 + /* qemu */
+    len = 1 + /* qemu */
         2 + /* machine type */
         (vm->def.virtType == QEMUD_VIRT_QEMU ? 1 : 0) + /* Disable kqemu */
         2 * vm->def.ndisks + /* disks*/
@@ -804,7 +803,7 @@ int qemudBuildCommandLine(struct qemud_server *server,
     sprintf(memory, "%d", vm->def.memory/1024);
     sprintf(vcpus, "%d", vm->def.vcpus);
 
-    if (!(*argv = malloc(sizeof(char *) * (*argc +1))))
+    if (!(*argv = malloc(sizeof(char *) * (len+1))))
         goto no_memory;
     if (!((*argv)[++n] = strdup(vm->def.os.binary)))
         goto no_memory;
