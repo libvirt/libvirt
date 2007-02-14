@@ -1,3 +1,9 @@
+Tue Feb 14 14:33:22 EST 2007 Mark McLoughlin <markmc@redhat.com
+
+	* autogen.sh: run autoheader
+
+	* config.h.in: remove
+	
 Tue Feb 13 19:46:35 EST 2007 Daniel Berrange <berrange@redhat.com>
 
 	* autobuild.sh: Run coverage tests during automated build
