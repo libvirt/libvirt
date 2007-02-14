@@ -1,7 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 
-INCLUDES = -I$(top_builddir)/include -I@top_srcdir@/include @LIBXML_CFLAGS@ \
+INCLUDES = -I$(top_builddir)/include -I@top_srcdir@/include @LIBXML_CFLAGS@ -I@top_srcdir@/qemud \
 	   -DBINDIR=\""$(libexecdir)"\" -DLOCALEBASEDIR=\""$(datadir)/locale"\" \
+           -DLOCAL_STATE_DIR=\""$(localstatedir)"\" \
            -DGETTEXT_PACKAGE=\"$(PACKAGE)\"
 DEPS = libvirt.la
 LDADDS = @STATIC_BINARIES@ libvirt.la
@@ -11,7 +12,6 @@ EXTRA_DIST = libvirt_sym.version
 
 lib_LTLIBRARIES = libvirt.la
 libvirt_la_LIBADD = @LIBXML_LIBS@
-
 libvirt_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvirt_sym.version \
                     -version-info @LIBVIRT_VERSION_INFO@
 
@@ -28,7 +28,8 @@ libvirt_la_SOURCES =						\
 		driver.h					\
 		proxy_internal.c proxy_internal.h		\
 		conf.c conf.h                                   \
-		xm_internal.c xm_internal.h
+		xm_internal.c xm_internal.h                     \
+		qemu_internal.c qemu_internal.h
 
 bin_PROGRAMS = virsh
 

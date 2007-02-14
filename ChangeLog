@@ -1,3 +1,20 @@
+Tue Feb 13 19:29:35 EST 2007 Daniel Berrange <berrange@redhat.com>
+
+	* src/qemu_internal.h, src/qemu_internal.c, src/Makefile.am,
+	src/driver.h, src/libvirt.c: Added a new driver to talk to
+	the QEMU daemon
+
+	* src/virterror.c, include/libvirt/virterror.c: Added new
+	error domain for QEMU.
+
+	* qemud/*: Added a daemon service for managing QEMU machines
+	via the libvirt qemu_internal driver
+
+	* src/virsh.c: use a read-write connection by default for QEMU
+	urls.
+
+	* configure.in, Makefile.am: Added qemud subdirectory.
+
 Thu Feb  8 12:59:14 EST 2007 Daniel Berrange <berrange@redhat.com>
 
 	* src/xml.c, src/xend_internal.c, src/xend_internal.h: Remove

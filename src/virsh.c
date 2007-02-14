@@ -2529,7 +2529,9 @@ vshInit(vshControl * ctl)
     /* basic connection to hypervisor, for Xen connections unless
        we're root open a read only connections. Allow 'test' HV
        to be RW all the time though */
-    if (ctl->uid == 0 || (ctl->name && !strncmp(ctl->name, "test", 4)))
+    if (ctl->uid == 0 || (ctl->name && 
+			  (!strncmp(ctl->name, "test", 4) ||
+			   !strncmp(ctl->name, "qemu", 4))))
         ctl->conn = virConnectOpen(ctl->name);
     else
         ctl->conn = virConnectOpenReadOnly(ctl->name);

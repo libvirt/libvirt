@@ -22,7 +22,8 @@ typedef enum {
     VIR_DRV_XEN_DAEMON = 3,
     VIR_DRV_TEST = 4,
     VIR_DRV_XEN_PROXY = 5,
-    VIR_DRV_XEN_XM = 6
+    VIR_DRV_XEN_XM = 6,
+    VIR_DRV_QEMU = 7
 } virDrvNo;
 
 

@@ -268,6 +268,9 @@ virDefaultErrorFunc(virErrorPtr err)
         case VIR_FROM_RPC:
             dom = "XML-RPC ";
             break;
+        case VIR_FROM_QEMU:
+            dom = "QEMU ";
+            break;
     }
     if ((err->dom != NULL) && (err->code != VIR_ERR_INVALID_DOMAIN)) {
         domain = err->dom->name;

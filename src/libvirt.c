@@ -32,6 +32,7 @@
 #include "proxy_internal.h"
 #include "xml.h"
 #include "test.h"
+#include "qemu_internal.h"
 
 /*
  * TODO:
@@ -79,6 +80,8 @@ virInitialize(void)
     xenStoreRegister();
     xenXMRegister();
     testRegister();
+    qemuRegister();
+
     return(0);
 }
 
@@ -441,6 +444,7 @@ virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer)
 	        return(0);
 	}
     }
+
     return (-1);
 }
 
