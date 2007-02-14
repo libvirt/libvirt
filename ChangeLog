@@ -1,3 +1,10 @@
+Tue Feb 14 16:53:25 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	Fix from Richard W.M. Jones <rjones@redhat.com>
+
+	* virsh.c: add a colon after the connect arg to
+	getopt_long()
+	
 Tue Feb 14 16:48:24 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* src/qemu_internal.c: correctly register the network
