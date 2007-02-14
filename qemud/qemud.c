@@ -251,6 +251,9 @@ static struct qemud_server *qemudInitialize(int sys) {
         if (snprintf(server->configDir, sizeof(server->configDir), "%s/qemud", SYSCONF_DIR) >= (int)sizeof(server->configDir)) {
             goto cleanup;
         }
+        if (snprintf(server->networkConfigDir, sizeof(server->networkConfigDir), "%s/qemud/networks", SYSCONF_DIR) >= (int)sizeof(server->networkConfigDir)) {
+            goto cleanup;
+        }
     } else {
         struct passwd *pw;
         int uid;
@@ -264,7 +267,12 @@ static struct qemud_server *qemudInitialize(int sys) {
         if (snprintf(server->configDir, sizeof(server->configDir), "%s/.qemud", pw->pw_dir) >= (int)sizeof(server->configDir)) {
             goto cleanup;
         }
+
+        if (snprintf(server->networkConfigDir, sizeof(server->networkConfigDir), "%s/.qemud.d/networks", pw->pw_dir) >= (int)sizeof(server->networkConfigDir)) {
+            goto cleanup;
+        }
     }
+
 
     if (qemudListen(server, sys) < 0) {
         goto cleanup;
@@ -692,6 +700,20 @@ static int qemudDispatchVMFailure(struct qemud_server *server, struct qemud_vm *
                                   int fd ATTRIBUTE_UNUSED) {
     if (qemudShutdownVMDaemon(server, vm) < 0)
         return -1;
+    return 0;
+}
+
+
+int qemudStartNetworkDaemon(struct qemud_server *server,
+                            struct qemud_network *network) {
+    server = NULL; network = NULL;
+    return 0;
+}
+
+
+int qemudShutdownNetworkDaemon(struct qemud_server *server,
+                               struct qemud_network *network) {
+    server = NULL; network = NULL;
     return 0;
 }
 

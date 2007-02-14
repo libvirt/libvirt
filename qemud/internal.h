@@ -207,6 +207,8 @@ struct qemud_network_def {
 
 /* Virtual Network runtime state */
 struct qemud_network {
+    char configFile[PATH_MAX];
+
     struct qemud_network_def def;
     struct qemud_network *next;
 };
@@ -243,7 +245,12 @@ struct qemud_server {
     int ninactivevms;
     struct qemud_vm *inactivevms;
     int nextvmid;
+    int nactivenetworks;
+    struct qemud_network *activenetworks;
+    int ninactivenetworks;
+    struct qemud_network *inactivenetworks;
     char configDir[PATH_MAX];
+    char networkConfigDir[PATH_MAX];
     char errorMessage[QEMUD_MAX_ERROR_LEN];
     int errorCode;
 };
@@ -253,6 +260,13 @@ int qemudStartVMDaemon(struct qemud_server *server,
 
 int qemudShutdownVMDaemon(struct qemud_server *server,
                           struct qemud_vm *vm);
+
+int qemudStartNetworkDaemon(struct qemud_server *server,
+                            struct qemud_network *network);
+
+int qemudShutdownNetworkDaemon(struct qemud_server *server,
+                               struct qemud_network *network);
+
 
 #endif
 

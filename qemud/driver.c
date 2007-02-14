@@ -522,8 +522,10 @@ int qemudDomainUndefine(struct qemud_server *server, const unsigned char *uuid) 
         return -1;
     }
 
-    if (qemudDeleteConfigXML(server, vm) < 0)
+    if (qemudDeleteConfig(server, vm->configFile, vm->def.name) < 0)
         return -1;
+
+    vm->configFile[0] = '\0';
 
     while (curr) {
         if (curr == vm) {
@@ -547,67 +549,198 @@ int qemudDomainUndefine(struct qemud_server *server, const unsigned char *uuid) 
 
 struct qemud_network *qemudFindNetworkByUUID(const struct qemud_server *server,
                                              const unsigned char *uuid) {
-    server = NULL; uuid = NULL;
+    struct qemud_network *network = server->activenetworks;
+
+    while (network) {
+        if (!memcmp(network->def.uuid, uuid, QEMUD_UUID_RAW_LEN))
+            return network;
+        network = network->next;
+    }
+
+    network = server->inactivenetworks;
+    while (network) {
+        if (!memcmp(network->def.uuid, uuid, QEMUD_UUID_RAW_LEN))
+            return network;
+        network = network->next;
+    }
+
     return NULL;
 }
 
 struct qemud_network *qemudFindNetworkByName(const struct qemud_server *server,
                                              const char *name) {
-    server = NULL; name = NULL;
+    struct qemud_network *network = server->activenetworks;
+
+    while (network) {
+        if (!strcmp(network->def.name, name))
+            return network;
+        network = network->next;
+    }
+
+    network = server->inactivenetworks;
+    while (network) {
+        if (!strcmp(network->def.name, name))
+            return network;
+        network = network->next;
+    }
+
     return NULL;
 }
 
 int qemudNumNetworks(struct qemud_server *server) {
-    server = NULL;
-    return 0;
+    return server->nactivenetworks;
 }
 
 int qemudListNetworks(struct qemud_server *server, char *const*names, int nnames) {
-    server = NULL; names = NULL; nnames = 0;
-    return 0;
+    struct qemud_network *network = server->activenetworks;
+    int got = 0;
+    while (network && got < nnames) {
+        strncpy(names[got], network->def.name, QEMUD_MAX_NAME_LEN-1);
+        names[got][QEMUD_MAX_NAME_LEN-1] = '\0';
+        network = network->next;
+        got++;
+    }
+    return got;
 }
 
 int qemudNumDefinedNetworks(struct qemud_server *server) {
-    server = NULL;
-    return 0;
+    return server->ninactivenetworks;
 }
 
 int qemudListDefinedNetworks(struct qemud_server *server, char *const*names, int nnames) {
-    server = NULL; names = NULL; nnames = 0;
-    return 0;
+    struct qemud_network *network = server->inactivenetworks;
+    int got = 0;
+    while (network && got < nnames) {
+        strncpy(names[got], network->def.name, QEMUD_MAX_NAME_LEN-1);
+        names[got][QEMUD_MAX_NAME_LEN-1] = '\0';
+        network = network->next;
+        got++;
+    }
+    return got;
 }
 
 struct qemud_network *qemudNetworkCreate(struct qemud_server *server, const char *xml) {
-    server = NULL; xml = NULL;
-    return NULL;
+    struct qemud_network *network;
+
+    if (!(network = qemudLoadNetworkConfigXML(server, NULL, xml, 0))) {
+        return NULL;
+    }
+
+    if (qemudStartNetworkDaemon(server, network) < 0) {
+        qemudFreeNetwork(network);
+        return NULL;
+    }
+
+    network->next = server->activenetworks;
+    server->activenetworks = network;
+    server->nactivenetworks++;
+
+    return network;
 }
 
 struct qemud_network *qemudNetworkDefine(struct qemud_server *server, const char *xml) {
-    server = NULL; xml = NULL;
-    return NULL;
+    struct qemud_network *network;
+
+    if (!(network = qemudLoadNetworkConfigXML(server, NULL, xml, 1))) {
+        return NULL;
+    }
+
+    network->next = server->inactivenetworks;
+    server->inactivenetworks = network;
+    server->ninactivenetworks++;
+
+    return network;
 }
 
 int qemudNetworkUndefine(struct qemud_server *server, const unsigned char *uuid) {
-    qemudReportError(server, VIR_ERR_INVALID_NETWORK, "no network with matching uuid");
-    uuid = NULL;
-    return -1;
+    struct qemud_network *network = qemudFindNetworkByUUID(server, uuid);
+    struct qemud_network *prev = NULL, *curr = server->inactivenetworks;
+
+    if (!network) {
+        qemudReportError(server, VIR_ERR_INVALID_DOMAIN, "no network with matching uuid");
+        return -1;
+    }
+
+    if (qemudDeleteConfig(server, network->configFile, network->def.name) < 0)
+        return -1;
+
+    network->configFile[0] = '\0';
+
+    while (curr) {
+        if (curr == network) {
+            if (prev) {
+                prev->next = curr->next;
+            } else {
+                server->inactivenetworks = curr->next;
+            }
+            server->ninactivenetworks--;
+            break;
+        }
+
+        prev = curr;
+        curr = curr->next;
+    }
+
+    qemudFreeNetwork(network);
+
+    return 0;
 }
 
 int qemudNetworkStart(struct qemud_server *server, struct qemud_network *network) {
-    server = NULL; network = NULL;
-    return 1;
+    struct qemud_network *prev = NULL, *curr = server->inactivenetworks;
+    if (qemudStartNetworkDaemon(server, network) < 0) {
+        return 1;
+    }
+
+    while (curr) {
+        if (curr == network) {
+            if (prev)
+                prev->next = curr->next;
+            else
+                server->inactivenetworks = curr->next;
+            server->ninactivenetworks--;
+            break;
+        }
+        prev = curr;
+        curr = curr->next;
+    }
+
+    network->next = server->activenetworks;
+    server->activenetworks = network;
+    server->nactivenetworks++;
+
+    return 0;
 }
 
 int qemudNetworkDestroy(struct qemud_server *server, const unsigned char *uuid) {
-    uuid = NULL;
-    qemudReportError(server, VIR_ERR_INVALID_NETWORK, "no network with matching uuid");
-    return -1;
+    struct qemud_network *network = qemudFindNetworkByUUID(server, uuid);
+    if (!network) {
+        qemudReportError(server, VIR_ERR_INVALID_NETWORK, "no network with matching uuid");
+        return -1;
+    }
+
+    if (qemudShutdownNetworkDaemon(server, network) < 0)
+        return -1;
+
+    return 0;
 }
 
 int qemudNetworkDumpXML(struct qemud_server *server, const unsigned char *uuid, char *xml, int xmllen) {
-    qemudReportError(server, VIR_ERR_INVALID_NETWORK, "no network with matching uuid");
-    uuid = NULL; xml = NULL; xmllen = 0;
-    return -1;
+    struct qemud_network *network = qemudFindNetworkByUUID(server, uuid);
+    char *networkxml;
+    if (!network) {
+        qemudReportError(server, VIR_ERR_INVALID_NETWORK, "no network with matching uuid");
+        return -1;
+    }
+
+    networkxml = qemudGenerateNetworkXML(server, network);
+    if (!networkxml)
+        return -1;
+
+    strncpy(xml, networkxml, xmllen);
+    xml[xmllen-1] = '\0';
+
+    return 0;
 }
 
 /*
