@@ -1,3 +1,15 @@
+Tue Feb 14 16:14:32 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* src/xend_internal.c, src/xm_internal.c: pass the
+	connection to virDomainParseXMLDesc()
+	
+	* src/xml.[ch]: make virDomainParseXMLDesc accept
+	a virConnectPtr so that we can use it later to
+	lookup the bridge associated with a network
+	
+	* tests/xml2sexprtest.c: just pass NULL here, it's
+	safe
+	
 Tue Feb 14 16:08:55 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/conf.c: add support for connecting a qemu

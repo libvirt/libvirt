@@ -1287,7 +1287,7 @@ int xenXMDomainCreate(virDomainPtr domain) {
     if (!(xml = xenXMDomainDumpXML(domain, 0)))
         return (-1);
 
-    if (!(sexpr = virDomainParseXMLDesc(xml, NULL, domain->conn->xendConfigVersion))) {
+    if (!(sexpr = virDomainParseXMLDesc(domain->conn, xml, NULL, domain->conn->xendConfigVersion))) {
         free(xml);
         return (-1);
     }

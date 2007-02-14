@@ -29,9 +29,9 @@ void virBufferFree(virBufferPtr buf);
 int virBufferAdd(virBufferPtr buf, const char *str, int len);
 int virBufferVSprintf(virBufferPtr buf, const char *format, ...);
 int virBufferStrcat(virBufferPtr buf, ...);
-char *virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion);
+char *virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int xendConfigVersion);
 unsigned char *virParseUUID(char **ptr, const char *uuid);
-char *virParseXMLDevice(char *xmldesc, int hvm, int xendConfigVersion);
+char *virParseXMLDevice(virConnectPtr conn, char *xmldesc, int hvm, int xendConfigVersion);
 int virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref);
 
 #ifdef __cplusplus

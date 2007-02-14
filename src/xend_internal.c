@@ -2828,7 +2828,7 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
         return (NULL);
     }
 
-    sexpr = virDomainParseXMLDesc(xmlDesc, &name, conn->xendConfigVersion);
+    sexpr = virDomainParseXMLDesc(conn, xmlDesc, &name, conn->xendConfigVersion);
     if ((sexpr == NULL) || (name == NULL)) {
         virXendError(conn, VIR_ERR_XML_ERROR, "domain");
         if (sexpr != NULL)
@@ -2897,7 +2897,7 @@ xenDaemonAttachDevice(virDomainPtr domain, char *xml)
 
     if (strcmp(virDomainGetOSType(domain), "linux"))
         hvm = 1;
-    sexpr = virParseXMLDevice(xml, hvm, domain->conn->xendConfigVersion);
+    sexpr = virParseXMLDevice(domain->conn, xml, hvm, domain->conn->xendConfigVersion);
     if (sexpr == NULL)
         return (-1);
     if (!memcmp(sexpr, "(device ", 8)) {
@@ -2954,7 +2954,7 @@ virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
     if (conn->xendConfigVersion < 3)
         return(NULL);
 
-    sexpr = virDomainParseXMLDesc(xmlDesc, &name, conn->xendConfigVersion);
+    sexpr = virDomainParseXMLDesc(conn, xmlDesc, &name, conn->xendConfigVersion);
     if ((sexpr == NULL) || (name == NULL)) {
         virXendError(conn, VIR_ERR_XML_ERROR, "domain");
         if (sexpr != NULL)

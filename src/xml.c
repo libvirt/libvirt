@@ -26,7 +26,7 @@
 #include "xs_internal.h" /* for xenStoreDomainGetNetworkID */
 
 static void
-virXMLError(virErrorNumber error, const char *info, int value)
+virXMLError(virConnectPtr conn, virErrorNumber error, const char *info, int value)
 {
     const char *errmsg;
 
@@ -34,7 +34,7 @@ virXMLError(virErrorNumber error, const char *info, int value)
         return;
 
     errmsg = __virErrorMsg(error, info);
-    __virRaiseError(NULL, NULL, NULL, VIR_FROM_XML, error, VIR_ERR_ERROR,
+    __virRaiseError(conn, NULL, NULL, VIR_FROM_XML, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, value, 0, errmsg, info, value);
 }
 
@@ -62,7 +62,7 @@ virBufferGrow(virBufferPtr buf, unsigned int len)
 
     newbuf = (char *) realloc(buf->content, size);
     if (newbuf == NULL) {
-        virXMLError(VIR_ERR_NO_MEMORY, _("growing buffer"), size);
+        virXMLError(NULL, VIR_ERR_NO_MEMORY, _("growing buffer"), size);
         return (-1);
     }
     buf->content = newbuf;
@@ -114,11 +114,11 @@ virBufferNew(unsigned int size)
     virBufferPtr buf;
 
     if (!(buf = malloc(sizeof(*buf)))) {
-        virXMLError(VIR_ERR_NO_MEMORY, _("allocate new buffer"), sizeof(*buf));
+        virXMLError(NULL, VIR_ERR_NO_MEMORY, _("allocate new buffer"), sizeof(*buf));
         return NULL;
     }
     if (size && (buf->content = malloc(size))==NULL) {
-        virXMLError(VIR_ERR_NO_MEMORY, _("allocate buffer content"), size);
+        virXMLError(NULL, VIR_ERR_NO_MEMORY, _("allocate buffer content"), size);
         free(buf);
         return NULL;
     }
@@ -213,6 +213,7 @@ virBufferStrcat(virBufferPtr buf, ...)
 #ifndef PROXY
 /**
  * virtDomainParseXMLGraphicsDescImage:
+ * @conn: pointer to the hypervisor connection
  * @node: node containing graphics description
  * @buf: a buffer for the result S-Expr
  * @xendConfigVersion: xend configuration file format
@@ -224,7 +225,7 @@ virBufferStrcat(virBufferPtr buf, ...)
  *
  * Returns 0 in case of success, -1 in case of error
  */
-static int virDomainParseXMLGraphicsDescImage(xmlNodePtr node, virBufferPtr buf, int xendConfigVersion)
+static int virDomainParseXMLGraphicsDescImage(virConnectPtr conn ATTRIBUTE_UNUSED, xmlNodePtr node, virBufferPtr buf, int xendConfigVersion)
 {
     xmlChar *graphics_type = NULL;
 
@@ -271,6 +272,7 @@ static int virDomainParseXMLGraphicsDescImage(xmlNodePtr node, virBufferPtr buf,
 
 /**
  * virtDomainParseXMLGraphicsDescVFB:
+ * @conn: pointer to the hypervisor connection
  * @node: node containing graphics description
  * @buf: a buffer for the result S-Expr
  *
@@ -281,7 +283,7 @@ static int virDomainParseXMLGraphicsDescImage(xmlNodePtr node, virBufferPtr buf,
  *
  * Returns 0 in case of success, -1 in case of error
  */
-static int virDomainParseXMLGraphicsDescVFB(xmlNodePtr node, virBufferPtr buf)
+static int virDomainParseXMLGraphicsDescVFB(virConnectPtr conn ATTRIBUTE_UNUSED, xmlNodePtr node, virBufferPtr buf)
 {
     xmlChar *graphics_type = NULL;
 
@@ -329,6 +331,7 @@ static int virDomainParseXMLGraphicsDescVFB(xmlNodePtr node, virBufferPtr buf)
 
 /**
  * virDomainParseXMLOSDescHVM:
+ * @conn: pointer to the hypervisor connection
  * @node: node containing HVM OS description
  * @buf: a buffer for the result S-Expr
  * @ctxt: a path context representing the XML description
@@ -343,7 +346,7 @@ static int virDomainParseXMLGraphicsDescVFB(xmlNodePtr node, virBufferPtr buf)
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
-virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr ctxt, int vcpus, int xendConfigVersion)
+virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr ctxt, int vcpus, int xendConfigVersion)
 {
     xmlXPathObjectPtr obj = NULL;
     xmlNodePtr cur, txt;
@@ -376,12 +379,12 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
     }
     if ((type == NULL) || (!xmlStrEqual(type, BAD_CAST "hvm"))) {
         /* VIR_ERR_OS_TYPE */
-        virXMLError(VIR_ERR_OS_TYPE, (const char *) type, 0);
+        virXMLError(conn, VIR_ERR_OS_TYPE, (const char *) type, 0);
         return (-1);
     }
     virBufferAdd(buf, "(image (hvm ", 12);
     if (loader == NULL) {
-        virXMLError(VIR_ERR_NO_KERNEL, NULL, 0);
+        virXMLError(conn, VIR_ERR_NO_KERNEL, NULL, 0);
         goto error;
     } else {
         virBufferVSprintf(buf, "(kernel '%s')", (const char *) loader);
@@ -391,7 +394,7 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
     obj = xmlXPathEval(BAD_CAST "string(/domain/devices/emulator[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        virXMLError(VIR_ERR_NO_KERNEL, NULL, 0); /* TODO: error */
+        virXMLError(conn, VIR_ERR_NO_KERNEL, NULL, 0); /* TODO: error */
         goto error;
     }
     virBufferVSprintf(buf, "(device_model '%s')",
@@ -410,7 +413,7 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
             virBufferVSprintf(buf, "(boot c)", (const char *) boot_dev);
         } else {
             /* Any other type of boot dev is unsupported right now */
-            virXMLError(VIR_ERR_XML_ERROR, NULL, 0);
+            virXMLError(conn, VIR_ERR_XML_ERROR, NULL, 0);
         }
 
         /* get the 1st floppy device file */
@@ -491,7 +494,7 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
 
     obj = xmlXPathEval(BAD_CAST "count(domain/devices/console) > 0", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_BOOLEAN)) {
-        virXMLError(VIR_ERR_XML_ERROR, NULL, 0);
+        virXMLError(conn, VIR_ERR_XML_ERROR, NULL, 0);
         goto error;
     }
     if (obj->boolval) {
@@ -504,7 +507,7 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
     obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics[1]", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr > 0)) {
-        res = virDomainParseXMLGraphicsDescImage(obj->nodesetval->nodeTab[0], buf, xendConfigVersion);
+        res = virDomainParseXMLGraphicsDescImage(conn, obj->nodesetval->nodeTab[0], buf, xendConfigVersion);
         if (res != 0) {
             goto error;
         }
@@ -527,6 +530,7 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
 
 /**
  * virDomainParseXMLOSDescPV:
+ * @conn: pointer to the hypervisor connection
  * @node: node containing PV OS description
  * @buf: a buffer for the result S-Expr
  * @ctxt: a path context representing the XML description
@@ -540,7 +544,7 @@ virDomainParseXMLOSDescHVM(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
-virDomainParseXMLOSDescPV(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr ctxt, int xendConfigVersion)
+virDomainParseXMLOSDescPV(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr ctxt, int xendConfigVersion)
 {
     xmlNodePtr cur, txt;
     xmlXPathObjectPtr obj = NULL;
@@ -590,12 +594,12 @@ virDomainParseXMLOSDescPV(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr 
     }
     if ((type != NULL) && (!xmlStrEqual(type, BAD_CAST "linux"))) {
         /* VIR_ERR_OS_TYPE */
-        virXMLError(VIR_ERR_OS_TYPE, (const char *) type, 0);
+        virXMLError(conn, VIR_ERR_OS_TYPE, (const char *) type, 0);
         return (-1);
     }
     virBufferAdd(buf, "(image (linux ", 14);
     if (kernel == NULL) {
-        virXMLError(VIR_ERR_NO_KERNEL, NULL, 0);
+        virXMLError(conn, VIR_ERR_NO_KERNEL, NULL, 0);
         return (-1);
     } else {
         virBufferVSprintf(buf, "(kernel '%s')", (const char *) kernel);
@@ -613,7 +617,7 @@ virDomainParseXMLOSDescPV(xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr 
         obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics[1]", ctxt);
         if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
             (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr > 0)) {
-            res = virDomainParseXMLGraphicsDescImage(obj->nodesetval->nodeTab[0], buf, xendConfigVersion);
+            res = virDomainParseXMLGraphicsDescImage(conn, obj->nodesetval->nodeTab[0], buf, xendConfigVersion);
             if (res != 0) {
                 goto error;
             }
@@ -642,7 +646,7 @@ virCatchXMLParseError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...) {
     if ((ctxt != NULL) &&
         (ctxt->lastError.level == XML_ERR_FATAL) &&
         (ctxt->lastError.message != NULL)) {
-        virXMLError(VIR_ERR_XML_DETAIL, ctxt->lastError.message,
+        virXMLError(NULL, VIR_ERR_XML_DETAIL, ctxt->lastError.message,
                     ctxt->lastError.line);
     }
 }
@@ -650,6 +654,7 @@ virCatchXMLParseError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...) {
 /**
  * virDomainParseXMLDiskDesc:
  * @node: node containing disk description
+ * @conn: pointer to the hypervisor connection
  * @buf: a buffer for the result S-Expr
  * @xendConfigVersion: xend configuration file format
  *
@@ -661,7 +666,7 @@ virCatchXMLParseError(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...) {
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
-virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendConfigVersion)
+virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf, int hvm, int xendConfigVersion)
 {
     xmlNodePtr cur;
     xmlChar *type = NULL;
@@ -713,7 +718,7 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
     }
 
     if (source == NULL) {
-        virXMLError(VIR_ERR_NO_SOURCE, (const char *) target, 0);
+        virXMLError(conn, VIR_ERR_NO_SOURCE, (const char *) target, 0);
 
         if (target != NULL)
             xmlFree(target);
@@ -722,7 +727,7 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
         return (-1);
     }
     if (target == NULL) {
-        virXMLError(VIR_ERR_NO_TARGET, (const char *) source, 0);
+        virXMLError(conn, VIR_ERR_NO_TARGET, (const char *) source, 0);
         if (source != NULL)
             xmlFree(source);
         if (device != NULL)
@@ -816,6 +821,7 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
 
 /**
  * virDomainParseXMLIfDesc:
+ * @conn: pointer to the hypervisor connection
  * @node: node containing the interface description
  * @buf: a buffer for the result S-Expr
  *
@@ -827,7 +833,7 @@ virDomainParseXMLDiskDesc(xmlNodePtr node, virBufferPtr buf, int hvm, int xendCo
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
-virDomainParseXMLIfDesc(xmlNodePtr node, virBufferPtr buf, int hvm)
+virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED, xmlNodePtr node, virBufferPtr buf, int hvm)
 {
     xmlNodePtr cur;
     xmlChar *type = NULL;
@@ -902,6 +908,7 @@ virDomainParseXMLIfDesc(xmlNodePtr node, virBufferPtr buf, int hvm)
 
 /**
  * virDomainParseXMLDesc:
+ * @conn: pointer to the hypervisor connection
  * @xmldesc: string with the XML description
  * @xendConfigVersion: xend configuration file format
  *
@@ -914,7 +921,7 @@ virDomainParseXMLIfDesc(xmlNodePtr node, virBufferPtr buf, int hvm)
  *         the caller must free() the returned value.
  */
 char *
-virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
+virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int xendConfigVersion)
 {
     xmlDocPtr xml = NULL;
     xmlNodePtr node;
@@ -945,6 +952,9 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
         goto error;
     }
 
+    /* TODO pass the connection point to the error handler:
+     *   pctxt->userData = virConnectPtr;
+     */
     pctxt->sax->error = virCatchXMLParseError;
 
     xml = xmlCtxtReadDoc(pctxt, (const xmlChar *) xmldesc, "domain.xml", NULL,
@@ -976,13 +986,13 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
     obj = xmlXPathEval(BAD_CAST "string(/domain/name[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        virXMLError(VIR_ERR_NO_NAME, xmldesc, 0);
+        virXMLError(conn, VIR_ERR_NO_NAME, xmldesc, 0);
         goto error;
     }
     virBufferVSprintf(&buf, "(name '%s')", obj->stringval);
     nam = strdup((const char *) obj->stringval);
     if (nam == NULL) {
-        virXMLError(VIR_ERR_NO_MEMORY, "copying name", 0);
+        virXMLError(conn, VIR_ERR_NO_MEMORY, "copying name", 0);
         goto error;
     }
     xmlXPathFreeObject(obj);
@@ -1069,17 +1079,17 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
                 ((tmpobj->type != XPATH_STRING) || (tmpobj->stringval == NULL)
                  || (tmpobj->stringval[0] == 0))) {
                 xmlXPathFreeObject(tmpobj);
-                virXMLError(VIR_ERR_OS_TYPE, nam, 0);
+                virXMLError(conn, VIR_ERR_OS_TYPE, nam, 0);
                 goto error;
             }
 
             if ((tmpobj == NULL)
                 || !xmlStrEqual(tmpobj->stringval, BAD_CAST "hvm")) {
-                res = virDomainParseXMLOSDescPV(obj->nodesetval->nodeTab[0],
+                res = virDomainParseXMLOSDescPV(conn, obj->nodesetval->nodeTab[0],
                                                 &buf, ctxt, xendConfigVersion);
             } else {
                 hvm = 1;
-                res = virDomainParseXMLOSDescHVM(obj->nodesetval->nodeTab[0],
+                res = virDomainParseXMLOSDescHVM(conn, obj->nodesetval->nodeTab[0],
                                                  &buf, ctxt, vcpus, xendConfigVersion);
             }
 
@@ -1088,7 +1098,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
             if (res != 0)
                 goto error;
         } else if (bootloader == 0) {
-            virXMLError(VIR_ERR_NO_OS, nam, 0);
+            virXMLError(conn, VIR_ERR_NO_OS, nam, 0);
             goto error;
         }
         xmlXPathFreeObject(obj);
@@ -1099,7 +1109,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
         for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-            res = virDomainParseXMLDiskDesc(obj->nodesetval->nodeTab[i], &buf, hvm, xendConfigVersion);
+            res = virDomainParseXMLDiskDesc(conn, obj->nodesetval->nodeTab[i], &buf, hvm, xendConfigVersion);
             if (res != 0) {
                 goto error;
             }
@@ -1112,7 +1122,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
         for (i = 0; i < obj->nodesetval->nodeNr; i++) {
             virBufferAdd(&buf, "(device ", 8);
-            res = virDomainParseXMLIfDesc(obj->nodesetval->nodeTab[i], &buf, hvm);
+            res = virDomainParseXMLIfDesc(conn, obj->nodesetval->nodeTab[i], &buf, hvm);
             if (res != 0) {
                 goto error;
             }
@@ -1127,7 +1137,7 @@ virDomainParseXMLDesc(const char *xmldesc, char **name, int xendConfigVersion)
         if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
             (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
             for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-                res = virDomainParseXMLGraphicsDescVFB(obj->nodesetval->nodeTab[i], &buf);
+                res = virDomainParseXMLGraphicsDescVFB(conn, obj->nodesetval->nodeTab[i], &buf);
                 if (res != 0) {
                     goto error;
                 }
@@ -1232,6 +1242,7 @@ unsigned char *virParseUUID(char **ptr, const char *uuid) {
 #ifndef PROXY
 /**
  * virParseXMLDevice:
+ * @conn: pointer to the hypervisor connection
  * @xmldesc: string with the XML description
  * @hvm: 1 for fully virtualized guest, 0 for paravirtualized
  * @xendConfigVersion: xend configuration file format
@@ -1245,7 +1256,7 @@ unsigned char *virParseUUID(char **ptr, const char *uuid) {
  *         the caller must free() the returned value.
  */
 char *
-virParseXMLDevice(char *xmldesc, int hvm, int xendConfigVersion)
+virParseXMLDevice(virConnectPtr conn, char *xmldesc, int hvm, int xendConfigVersion)
 {
     xmlDocPtr xml = NULL;
     xmlNodePtr node;
@@ -1265,11 +1276,11 @@ virParseXMLDevice(char *xmldesc, int hvm, int xendConfigVersion)
     if (node == NULL)
         goto error;
     if (xmlStrEqual(node->name, BAD_CAST "disk")) {
-        if (virDomainParseXMLDiskDesc(node, &buf, hvm, xendConfigVersion) != 0)
+        if (virDomainParseXMLDiskDesc(conn, node, &buf, hvm, xendConfigVersion) != 0)
             goto error;
     }
     else if (xmlStrEqual(node->name, BAD_CAST "interface")) {
-        if (virDomainParseXMLIfDesc(node, &buf, hvm) != 0)
+        if (virDomainParseXMLIfDesc(conn, node, &buf, hvm) != 0)
             goto error;
     }
  cleanup:

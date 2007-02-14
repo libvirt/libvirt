@@ -24,7 +24,7 @@ static int testCompareFiles(const char *xml, const char *sexpr, const char *name
   if (virtTestLoadFile(sexpr, &sexprPtr, MAX_FILE) < 0)
     goto fail;
 
-  if (!(gotsexpr = virDomainParseXMLDesc(xmlData, &gotname, xendConfigVersion)))
+  if (!(gotsexpr = virDomainParseXMLDesc(NULL, xmlData, &gotname, xendConfigVersion)))
     goto fail;
 
   if (getenv("DEBUG_TESTS")) {
