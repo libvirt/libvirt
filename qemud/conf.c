@@ -1725,7 +1725,7 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm, int liv
         goto cleanup;
     }
 
-    if (vm->id >= 0) {
+    if (vm->id >= 0 && live) {
         if (qemudBufferPrintf(&buf, "<domain type='%s' id='%d'>\n", type, vm->id) < 0)
             goto no_memory;
     } else {
@@ -1772,16 +1772,6 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm, int liv
         if (qemudBufferPrintf(&buf, "    <cmdline>%s</cmdline>\n", def->os.cmdline) < 0)
             goto no_memory;
 
-    if (def->features & QEMUD_FEATURE_ACPI) {
-        if (qemudBufferAdd(&buf, "  <features>\n") < 0)
-            goto no_memory;
-        if (qemudBufferAdd(&buf, "    <acpi>\n") < 0)
-            goto no_memory;
-        if (qemudBufferAdd(&buf, "  </features>\n") < 0)
-            goto no_memory;
-    }
-
-
     for (n = 0 ; n < def->os.nBootDevs ; n++) {
         const char *boottype = "hd";
         switch (def->os.bootDevs[n]) {
@@ -1804,6 +1794,16 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm, int liv
 
     if (qemudBufferAdd(&buf, "  </os>\n") < 0)
         goto no_memory;
+
+    if (def->features & QEMUD_FEATURE_ACPI) {
+        if (qemudBufferAdd(&buf, "  <features>\n") < 0)
+            goto no_memory;
+        if (qemudBufferAdd(&buf, "    <acpi/>\n") < 0)
+            goto no_memory;
+        if (qemudBufferAdd(&buf, "  </features>\n") < 0)
+            goto no_memory;
+    }
+
 
     if (qemudBufferAdd(&buf, "  <devices>\n") < 0)
         goto no_memory;
@@ -1888,7 +1888,7 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm, int liv
     if (def->graphicsType == QEMUD_GRAPHICS_VNC) {
         if (def->vncPort) {
             qemudBufferPrintf(&buf, "    <graphics type='vnc' port='%d'/>\n",
-                              vm->id == -1 ? def->vncPort : def->vncActivePort);
+                              vm->id >= 0 && live ? def->vncActivePort : def->vncPort);
         } else {
             qemudBufferPrintf(&buf, "    <graphics type='vnc'/>\n");
         }

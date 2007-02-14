@@ -1,3 +1,8 @@
+Wed Feb 14 16:47:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/conf.c: Fixed generation of <features> block, and
+	don't include ID, or VNC port in inactive XML generation
+
 Wed Feb 14 16:45:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_internal.c: Fixed path to the libvirt_qemud
