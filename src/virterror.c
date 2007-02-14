@@ -271,6 +271,9 @@ virDefaultErrorFunc(virErrorPtr err)
         case VIR_FROM_QEMU:
             dom = "QEMU ";
             break;
+        case VIR_FROM_NET:
+            dom = "Network ";
+            break;
     }
     if ((err->dom != NULL) && (err->code != VIR_ERR_INVALID_DOMAIN)) {
         domain = err->dom->name;
@@ -584,6 +587,18 @@ __virErrorMsg(virErrorNumber error, const char *info)
 	        errmsg = _("parser error");
 	    else
 	        errmsg = "%s";
+            break;
+        case VIR_ERR_INVALID_NETWORK:
+            if (info == NULL)
+		errmsg = _("invalid network pointer in");
+	    else
+	        errmsg = _("invalid network pointer in %s");
+            break;
+	case VIR_ERR_NETWORK_EXIST:
+	    if (info == NULL)
+	        errmsg = _("this network exists already");
+	    else
+	        errmsg = _("network %s exists already");
             break;
     }
     return (errmsg);

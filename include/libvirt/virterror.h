@@ -48,6 +48,7 @@ typedef enum {
     VIR_FROM_PROXY,	/* Error in the proxy code */
     VIR_FROM_CONF,	/* Error in the configuration file handling */
     VIR_FROM_QEMU,      /* Error at the QEMU daemon */
+    VIR_FROM_NET,       /* Error when operating on a network */
 } virErrorDomain;
 
 
@@ -114,7 +115,9 @@ typedef enum {
     VIR_ERR_PARSE_FAILED, /* failed to parse a conf file */
     VIR_ERR_CONF_SYNTAX, /* failed to parse the syntax of a conf file */
     VIR_ERR_WRITE_FAILED, /* failed to write a conf file */
-    VIR_ERR_XML_DETAIL /* detail of an XML error */
+    VIR_ERR_XML_DETAIL, /* detail of an XML error */
+    VIR_ERR_INVALID_NETWORK, /* invalid network object */
+    VIR_ERR_NETWORK_EXIST, /* the network already exist */
 } virErrorNumber;
 
 /**

@@ -57,5 +57,24 @@
 
     virDomainAttachDevice;
     virDomainDetachDevice;
+
+	virConnectNumOfNetworks;
+	virConnectListNetworks;
+	virConnectNumOfDefinedNetworks;
+	virConnectListDefinedNetworks;
+	virNetworkLookupByName;
+	virNetworkLookupByUUID;
+	virNetworkLookupByUUIDString;
+	virNetworkCreateXML;
+	virNetworkDefineXML;
+	virNetworkUndefine;
+	virNetworkCreate;
+	virNetworkDestroy;
+	virNetworkFree;
+	virNetworkGetName;
+	virNetworkGetUUID;
+	virNetworkGetUUIDString;
+	virNetworkGetXMLDesc;
+
     local: *;
 };

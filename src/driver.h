@@ -188,6 +188,65 @@ struct _virDriver {
 	virDrvDomainDetachDevice	domainDetachDevice;
 };
 
+typedef int
+	(*virDrvNumOfNetworks)		(virConnectPtr conn);
+typedef int
+	(*virDrvListNetworks)		(virConnectPtr conn,
+					 const char **names,
+					 int maxnames);
+typedef int
+	(*virDrvNumOfDefinedNetworks)	(virConnectPtr conn);
+typedef int
+	(*virDrvListDefinedNetworks)	(virConnectPtr conn,
+					 const char **names,
+					 int maxnames);
+typedef virNetworkPtr
+	(*virDrvNetworkLookupByUUID)	(virConnectPtr conn,
+					 const unsigned char *uuid);
+typedef virNetworkPtr
+	(*virDrvNetworkLookupByName)	(virConnectPtr conn,
+					 const char *name);
+typedef virNetworkPtr
+	(*virDrvNetworkCreateXML)	(virConnectPtr conn,
+					 const char *xmlDesc);
+typedef virNetworkPtr
+	(*virDrvNetworkDefineXML)	(virConnectPtr conn, const char *xml);
+typedef int
+	(*virDrvNetworkUndefine)	(virNetworkPtr network);
+typedef int
+	(*virDrvNetworkCreate)		(virNetworkPtr network);
+typedef int
+	(*virDrvNetworkDestroy)		(virNetworkPtr network);
+typedef char *
+	(*virDrvNetworkDumpXML)		(virNetworkPtr network,
+					 int flags);
+
+typedef struct _virNetworkDriver virNetworkDriver;
+typedef virNetworkDriver *virNetworkDriverPtr;
+
+/**
+ * _virNetworkDriver:
+ *
+ * Structure associated to a network virtualization driver, defining the various
+ * entry points for it.
+ */
+struct _virNetworkDriver {
+	virDrvOpen			open;
+	virDrvClose			close;
+	virDrvNumOfNetworks		numOfNetworks;
+	virDrvListNetworks		listNetworks;
+	virDrvNumOfDefinedNetworks	numOfDefinedNetworks;
+	virDrvListDefinedNetworks	listDefinedNetworks;
+	virDrvNetworkLookupByUUID	networkLookupByUUID;
+	virDrvNetworkLookupByName	networkLookupByName;
+	virDrvNetworkCreateXML		networkCreateXML;
+	virDrvNetworkDefineXML		networkDefineXML;
+	virDrvNetworkUndefine		networkUndefine;
+	virDrvNetworkCreate		networkCreate;
+	virDrvNetworkDestroy		networkDestroy;
+	virDrvNetworkDumpXML		networkDumpXML;
+};
+
 
 /*
  * Registration
@@ -195,6 +254,7 @@ struct _virDriver {
  *       lookup based on the URI given in a virConnectOpen(ReadOnly)
  */
 int virRegisterDriver(virDriverPtr);
+int virRegisterNetworkDriver(virNetworkDriverPtr);
 
 #ifdef __cplusplus
 }
