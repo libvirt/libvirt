@@ -57,7 +57,7 @@ fi
 autopoint --force
 #rm -rf m4
 libtoolize --copy --force
-aclocal $ACLOCAL_FLAGS
+aclocal -I m4
 automake --add-missing
 autoconf
 

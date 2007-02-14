@@ -13,8 +13,9 @@ EXTRA_DIST = libvirt_sym.version
 lib_LTLIBRARIES = libvirt.la
 libvirt_la_LIBADD = @LIBXML_LIBS@
 libvirt_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvirt_sym.version \
-                    -version-info @LIBVIRT_VERSION_INFO@
-
+                    -version-info @LIBVIRT_VERSION_INFO@ \
+                    $(COVERAGE_CFLAGS:-f%=-Wc,-f%)
+libvirt_la_CFLAGS = $(COVERAGE_CFLAGS)
 libvirt_la_SOURCES =						\
 		libvirt.c internal.h				\
 		hash.c hash.h					\
@@ -34,12 +35,25 @@ libvirt_la_SOURCES =						\
 bin_PROGRAMS = virsh
 
 virsh_SOURCES = virsh.c console.c console.h
-virsh_LDFLAGS =
+virsh_LDFLAGS = $(COVERAGE_LDFLAGS)
 virsh_DEPENDENCIES = $(DEPS)
 virsh_LDADD = $(LDADDS) $(VIRSH_LIBS)
+virsh_CFLAGS = $(COVERAGE_CFLAGS)
 
 #
 # target to ease building test programs
 #
 tst: tst.c
 	$(CC) $(CFLAGS) -I../include -o tst tst.c .libs/libvirt.a -lxml2 -lxenstore -lpthread
+
+COVERAGE_FILES = $(libvirt_la_SOURCES:%.c=libvirt_la-%.cov)
+
+cov: clean-cov $(COVERAGE_FILES)
+
+clean-cov:
+	rm -f *.cov *.gcov
+
+%.cov: .libs/%.o
+	gcov -b -f -o .libs $< > $@
+
+CLEANFILES = *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda

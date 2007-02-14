@@ -268,6 +268,23 @@ AC_MSG_RESULT($RUNNING_XEND)
 
 AM_CONDITIONAL(ENABLE_XEN_TESTS, [test "$RUNNING_XEN" != "no" -a "$RUNNING_XEND" != "no"])
 
+AC_ARG_ENABLE(test-coverage,
+[  --enable-test-coverage   turn on code coverage instrumentation],
+[case "${enableval}" in
+   yes|no) ;;
+   *)      AC_MSG_ERROR([bad value ${enableval} for test-coverage option]) ;;
+ esac],
+              [enableval=no])
+
+if test "${enableval}" = yes; then
+  gl_COMPILER_FLAGS(-fprofile-arcs)
+  gl_COMPILER_FLAGS(-ftest-coverage)
+  AC_SUBST([COVERAGE_CFLAGS], [$COMPILER_FLAGS])
+  AC_SUBST([COVERAGE_LDFLAGS], [$COMPILER_FLAGS])
+  COMPILER_FLAGS=
+fi
+
+
 AM_GNU_GETTEXT_VERSION([0.14.1])
 AM_GNU_GETTEXT([external])
 if test -d po
@@ -285,7 +302,7 @@ AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           docs/examples/Makefile docs/devhelp/Makefile \
 	  docs/examples/python/Makefile \
           libvirt.pc libvirt.spec \
-          po/Makefile.in \
+          po/Makefile.in scripts/Makefile \
 	  include/libvirt/Makefile include/libvirt/libvirt.h \
 	  python/Makefile python/tests/Makefile \
           qemud/Makefile \

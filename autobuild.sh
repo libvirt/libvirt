@@ -1,25 +1,26 @@
 #!/bin/sh
 
 set -e
+set -v
 
 # Make things clean.
 
 test -n "$1" && RESULTS="$1" || RESULTS="results.log"
 
 test -f Makefile && make -k distclean || :
-rm -rf MANIFEST blib
+rm -rf coverage
 
 #rm -rf build
 #mkdir build
 #cd build
 
-./autogen.sh --prefix=$AUTOBUILD_INSTALL_ROOT
+./autogen.sh --prefix=$AUTOBUILD_INSTALL_ROOT --enable-test-coverage
 
 make
 make install
 
-make check 1>$RESULTS 2>&1
-#make cov
+make check 2>&1 | tee $RESULTS
+make cov
 
 rm -f *.tar.gz
 make dist

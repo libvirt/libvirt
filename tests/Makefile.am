@@ -2,7 +2,13 @@
 
 SUBDIRS = virshdata confdata sexpr2xmldata xml2sexprdata xmconfigdata
 
-LIBVIRT = $(top_builddir)/src/.libs/libvirt.a
+# Wierd libtool related juju...
+#
+# We explicitly want wildcard here instead of just linking
+# to the libvirt.a file. This ensures that when coverage
+# tests are run, all the output data ends up in the correct
+# location. ie, src/ instead of src/.libs.
+LIBVIRT = $(wildcard $(top_builddir)/src/.libs/*.o)
 
 INCLUDES = \
 	-I$(top_builddir)/include \
@@ -11,11 +17,14 @@ INCLUDES = \
 	-I$(top_srcdir)/src \
 	@LIBXML_CFLAGS@ \
         -D_XOPEN_SOURCE=600 -D_POSIX_C_SOURCE=199506L \
-        -DGETTEXT_PACKAGE=\"$(PACKAGE)\"
+        -DGETTEXT_PACKAGE=\"$(PACKAGE)\" \
+         $(COVERAGE_CFLAGS)
+
 LDADDS = \
 	@STATIC_BINARIES@ \
 	@LIBXML_LIBS@ \
-	$(LIBVIRT)
+	$(LIBVIRT) \
+        $(COVERAGE_LDFLAGS)
 
 EXTRA_DIST = xmlrpcserver.py test_conf.sh
 

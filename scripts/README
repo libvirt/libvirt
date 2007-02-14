@@ -1,0 +1,3 @@
+This directory provides a collection of tools used in the
+build / test process. They are not installed / used after
+deployment.
