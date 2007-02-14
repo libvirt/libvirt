@@ -201,7 +201,7 @@ static int qemudListen(struct qemud_server *server, int sys) {
     char sockname[PATH_MAX];
 
     if (sys) {
-        if (snprintf(sockname, sizeof(sockname), "%s/run/qemud/sock", LOCAL_STATE_DIR) >= (int)sizeof(sockname)) {
+        if (snprintf(sockname, sizeof(sockname), "%s/run/libvirt/qemud-sock", LOCAL_STATE_DIR) >= (int)sizeof(sockname)) {
             return -1;
         }
         unlink(sockname);
@@ -209,7 +209,7 @@ static int qemudListen(struct qemud_server *server, int sys) {
             return -1;
 
 
-        if (snprintf(sockname, sizeof(sockname), "%s/run/qemud/sock-ro", LOCAL_STATE_DIR) >= (int)sizeof(sockname)) {
+        if (snprintf(sockname, sizeof(sockname), "%s/run/libvirt/qemud-sock-ro", LOCAL_STATE_DIR) >= (int)sizeof(sockname)) {
             return -1;
         }
         unlink(sockname);
@@ -226,7 +226,7 @@ static int qemudListen(struct qemud_server *server, int sys) {
         if (!(pw = getpwuid(uid)))
             return -1;
 
-        if (snprintf(sockname, sizeof(sockname), "@%s/.qemud/sock", pw->pw_dir) >= (int)sizeof(sockname)) {
+        if (snprintf(sockname, sizeof(sockname), "@%s/.libvirt/qemud-sock", pw->pw_dir) >= (int)sizeof(sockname)) {
             return -1;
         }
 
@@ -249,10 +249,10 @@ static struct qemud_server *qemudInitialize(int sys) {
     server->nextvmid = 1;
 
     if (sys) {
-        if (snprintf(server->configDir, sizeof(server->configDir), "%s/qemud", SYSCONF_DIR) >= (int)sizeof(server->configDir)) {
+        if (snprintf(server->configDir, sizeof(server->configDir), "%s/libvirt/qemu", SYSCONF_DIR) >= (int)sizeof(server->configDir)) {
             goto cleanup;
         }
-        if (snprintf(server->networkConfigDir, sizeof(server->networkConfigDir), "%s/qemud/networks", SYSCONF_DIR) >= (int)sizeof(server->networkConfigDir)) {
+        if (snprintf(server->networkConfigDir, sizeof(server->networkConfigDir), "%s/libvirt/qemu/networks", SYSCONF_DIR) >= (int)sizeof(server->networkConfigDir)) {
             goto cleanup;
         }
     } else {
@@ -265,11 +265,11 @@ static struct qemud_server *qemudInitialize(int sys) {
             goto cleanup;
         }
 
-        if (snprintf(server->configDir, sizeof(server->configDir), "%s/.qemud", pw->pw_dir) >= (int)sizeof(server->configDir)) {
+        if (snprintf(server->configDir, sizeof(server->configDir), "%s/.libvirt/qemu", pw->pw_dir) >= (int)sizeof(server->configDir)) {
             goto cleanup;
         }
 
-        if (snprintf(server->networkConfigDir, sizeof(server->networkConfigDir), "%s/.qemud.d/networks", pw->pw_dir) >= (int)sizeof(server->networkConfigDir)) {
+        if (snprintf(server->networkConfigDir, sizeof(server->networkConfigDir), "%s/.libvirt/qemu/networks", pw->pw_dir) >= (int)sizeof(server->networkConfigDir)) {
             goto cleanup;
         }
     }

@@ -1,5 +1,11 @@
 Tue Feb 14 12:19:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
+	* src/qemu_internal.c, qemud/qemud.c: Move configs into
+	/etc/libvirt/qemu or $HOME/.libvirt/qemu and the socket into
+	$HOME/.libvirt/qemud-sock or /var/run/libvirt/qemud-sock
+
+Tue Feb 14 12:19:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
 	* python/generator.py: blacklist  vshRunConsole method from
 	the python bindings
 

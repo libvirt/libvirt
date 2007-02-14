@@ -336,11 +336,11 @@ static int qemuOpenConnection(virConnectPtr conn, xmlURIPtr uri, int readonly AT
 
     if (!strcmp(uri->path, "/system")) {
         if (readonly) {
-            if (snprintf(path, sizeof(path), "%s/run/qemud/sock-ro", LOCAL_STATE_DIR) >= (int)sizeof(path)) {
+            if (snprintf(path, sizeof(path), "%s/run/libvirt/qemud-sock-ro", LOCAL_STATE_DIR) >= (int)sizeof(path)) {
                 return -1;
             }
         } else {
-            if (snprintf(path, sizeof(path), "%s/run/qemud/sock", LOCAL_STATE_DIR) >= (int)sizeof(path)) {
+            if (snprintf(path, sizeof(path), "%s/run/libvirt/qemud-sock", LOCAL_STATE_DIR) >= (int)sizeof(path)) {
                 return -1;
             }
         }
@@ -355,7 +355,7 @@ static int qemuOpenConnection(virConnectPtr conn, xmlURIPtr uri, int readonly AT
         if (!(pw = getpwuid(uid)))
             return -1;
 
-        if (snprintf(path, sizeof(path), "@%s/.qemud/sock", pw->pw_dir) == sizeof(path)) {
+        if (snprintf(path, sizeof(path), "@%s/.libvirt/qemud-sock", pw->pw_dir) == sizeof(path)) {
             return -1;
         }
     }
