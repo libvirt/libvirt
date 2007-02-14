@@ -842,6 +842,7 @@ virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED, xmlNodePtr node, vi
     xmlChar *script = NULL;
     xmlChar *ip = NULL;
     int typ = 0;
+    int ret = -1;
 
     type = xmlGetProp(node, BAD_CAST "type");
     if (type != NULL) {
@@ -849,6 +850,8 @@ virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED, xmlNodePtr node, vi
             typ = 0;
         else if (xmlStrEqual(type, BAD_CAST "ethernet"))
             typ = 1;
+        else if (xmlStrEqual(type, BAD_CAST "network"))
+            typ = 2;
         xmlFree(type);
     }
     cur = node->children;
@@ -858,8 +861,10 @@ virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED, xmlNodePtr node, vi
                 (xmlStrEqual(cur->name, BAD_CAST "source"))) {
                 if (typ == 0)
                     source = xmlGetProp(cur, BAD_CAST "bridge");
-                else
+                else if (typ == 1)
                     source = xmlGetProp(cur, BAD_CAST "dev");
+                else
+                    source = xmlGetProp(cur, BAD_CAST "network");
             } else if ((mac == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "mac"))) {
                 mac = xmlGetProp(cur, BAD_CAST "address");
@@ -884,8 +889,18 @@ virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED, xmlNodePtr node, vi
     if (source != NULL) {
         if (typ == 0)
             virBufferVSprintf(buf, "(bridge '%s')", (const char *) source);
-        else                    /* TODO does that work like that ? */
+        else if (typ == 1)      /* TODO does that work like that ? */
             virBufferVSprintf(buf, "(dev '%s')", (const char *) source);
+        else {
+            virNetworkPtr network = virNetworkLookupByName(conn, (const char *) source);
+            char *bridge;
+            if (!network || !(bridge = virNetworkGetBridgeName(network))) {
+                virXMLError(conn, VIR_ERR_NO_SOURCE, (const char *) source, 0);
+                goto error;
+            }
+            virBufferVSprintf(buf, "(bridge '%s')", bridge);
+            free(bridge);
+        }
     }
     if (script != NULL)
         virBufferVSprintf(buf, "(script '%s')", script);
@@ -895,6 +910,8 @@ virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED, xmlNodePtr node, vi
         virBufferAdd(buf, "(type ioemu)", 12);
 
     virBufferAdd(buf, ")", 1);
+    ret = 0;
+ error:
     if (mac != NULL)
         xmlFree(mac);
     if (source != NULL)
@@ -903,7 +920,7 @@ virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED, xmlNodePtr node, vi
         xmlFree(script);
     if (ip != NULL)
         xmlFree(ip);
-    return (0);
+    return (ret);
 }
 
 /**

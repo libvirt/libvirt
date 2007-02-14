@@ -1,3 +1,8 @@
+Tue Feb 14 16:21:18 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* src/xml.c: with <interface type="network"> connect the
+	Xen guest to the appropriate bridge.
+	
 Tue Feb 14 16:17:51 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* include/libvirt/libvirt.h.in, src/libvirt.c: add
