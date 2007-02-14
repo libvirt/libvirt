@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = src qemud proxy include docs @PYTHON_SUBDIR@ tests po scripts
+SUBDIRS = src qemud proxy include docs @PYTHON_SUBDIR@ tests po m4 scripts
 
 ACLOCAL_AMFLAGS = -I m4
 
