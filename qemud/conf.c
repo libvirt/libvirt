@@ -93,6 +93,29 @@ static int qemudParseUUID(const char *uuid,
     return -1;
 }
 
+/* Free all memory associated with a struct qemud_vm object */
+void qemudFreeVMDef(struct qemud_vm_def *def) {
+    struct qemud_vm_disk_def *disk = def->disks;
+    struct qemud_vm_net_def *net = def->nets;
+
+    while (disk) {
+        struct qemud_vm_disk_def *prev = disk;
+        disk = disk->next;
+        free(prev);
+    }
+    while (net) {
+        struct qemud_vm_net_def *prev = net;
+        net = net->next;
+        free(prev);
+    }
+}
+
+void qemudFreeVM(struct qemud_vm *vm) {
+    qemudFreeVMDef(vm->def);
+    if (vm->newDef)
+        qemudFreeVMDef(vm->newDef);
+    free(vm);
+}
 
 /* Build up a fully qualfiied path for a config file to be
  * associated with a persistent guest or network */
@@ -482,15 +505,20 @@ static struct qemud_vm_net_def *qemudParseInterfaceXML(struct qemud_server *serv
  * Parses a libvirt XML definition of a guest, and populates the
  * the qemud_vm struct with matching data about the guests config
  */
-static int qemudParseXML(struct qemud_server *server,
-                         xmlDocPtr xml,
-                         struct qemud_vm *vm) {
+static struct qemud_vm_def *qemudParseXML(struct qemud_server *server,
+                                          xmlDocPtr xml) {
     xmlNodePtr root = NULL;
     xmlChar *prop = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlXPathObjectPtr obj = NULL;
     char *conv = NULL;
     int i;
+    struct qemud_vm_def *def;
+
+    if (!(def = calloc(1, sizeof(struct qemud_vm_def)))) {
+        qemudReportError(server, VIR_ERR_NO_MEMORY, "xmlXPathContext");
+        return NULL;
+    }
 
     /* Prepare parser / xpath context */
     root = xmlDocGetRootElement(xml);
@@ -513,11 +541,11 @@ static int qemudParseXML(struct qemud_server *server,
     }
 
     if (!strcmp((char *)prop, "qemu"))
-        vm->def.virtType = QEMUD_VIRT_QEMU;
+        def->virtType = QEMUD_VIRT_QEMU;
     else if (!strcmp((char *)prop, "kqemu"))
-        vm->def.virtType = QEMUD_VIRT_KQEMU;
+        def->virtType = QEMUD_VIRT_KQEMU;
     else if (!strcmp((char *)prop, "kvm"))
-        vm->def.virtType = QEMUD_VIRT_KVM;
+        def->virtType = QEMUD_VIRT_KVM;
     else {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "invalid domain type attribute");
         goto error;
@@ -537,7 +565,7 @@ static int qemudParseXML(struct qemud_server *server,
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "domain name length too long");
         goto error;
     }
-    strcpy(vm->def.name, (const char *)obj->stringval);
+    strcpy(def->name, (const char *)obj->stringval);
     xmlXPathFreeObject(obj);
 
 
@@ -549,7 +577,7 @@ static int qemudParseXML(struct qemud_server *server,
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "missing uuid element");
         goto error;
     }
-    if (qemudParseUUID((const char *)obj->stringval, vm->def.uuid) < 0) {
+    if (qemudParseUUID((const char *)obj->stringval, def->uuid) < 0) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "malformed uuid element");
         goto error;
     }
@@ -564,7 +592,7 @@ static int qemudParseXML(struct qemud_server *server,
         goto error;
     } else {
         conv = NULL;
-        vm->def.maxmem = strtoll((const char*)obj->stringval, &conv, 10);
+        def->maxmem = strtoll((const char*)obj->stringval, &conv, 10);
         if (conv == (const char*)obj->stringval) {
             qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "malformed memory information");
             goto error;
@@ -578,12 +606,12 @@ static int qemudParseXML(struct qemud_server *server,
     obj = xmlXPathEval(BAD_CAST "string(/domain/currentMemory[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        vm->def.memory = vm->def.maxmem;
+        def->memory = def->maxmem;
     } else {
         conv = NULL;
-        vm->def.memory = strtoll((const char*)obj->stringval, &conv, 10);
-        if (vm->def.memory > vm->def.maxmem)
-            vm->def.memory = vm->def.maxmem;
+        def->memory = strtoll((const char*)obj->stringval, &conv, 10);
+        if (def->memory > def->maxmem)
+            def->memory = def->maxmem;
         if (conv == (const char*)obj->stringval) {
             qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "malformed memory information");
             goto error;
@@ -596,10 +624,10 @@ static int qemudParseXML(struct qemud_server *server,
     obj = xmlXPathEval(BAD_CAST "string(/domain/vcpu[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        vm->def.vcpus = 1;
+        def->vcpus = 1;
     } else {
         conv = NULL;
-        vm->def.vcpus = strtoll((const char*)obj->stringval, &conv, 10);
+        def->vcpus = strtoll((const char*)obj->stringval, &conv, 10);
         if (conv == (const char*)obj->stringval) {
             qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "malformed vcpu information");
             goto error;
@@ -612,7 +640,7 @@ static int qemudParseXML(struct qemud_server *server,
     obj = xmlXPathEval(BAD_CAST "/domain/features/acpi", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
-        vm->def.features |= QEMUD_FEATURE_ACPI;
+        def->features |= QEMUD_FEATURE_ACPI;
     }
 
     /* Extract OS type info */
@@ -626,7 +654,7 @@ static int qemudParseXML(struct qemud_server *server,
         qemudReportError(server, VIR_ERR_OS_TYPE, "%s", obj->stringval);
         goto error;
     }
-    strcpy(vm->def.os.type, (const char *)obj->stringval);
+    strcpy(def->os.type, (const char *)obj->stringval);
     xmlXPathFreeObject(obj);
 
 
@@ -638,13 +666,13 @@ static int qemudParseXML(struct qemud_server *server,
             qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "architecture type too long");
             goto error;
         }
-        strcpy(vm->def.os.arch, defaultArch);
+        strcpy(def->os.arch, defaultArch);
     } else {
         if (strlen((const char *)obj->stringval) >= (QEMUD_OS_TYPE_MAX_LEN-1)) {
             qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "architecture type too long");
             goto error;
         }
-        strcpy(vm->def.os.arch, (const char *)obj->stringval);
+        strcpy(def->os.arch, (const char *)obj->stringval);
     }
     if (obj)
         xmlXPathFreeObject(obj);
@@ -652,18 +680,18 @@ static int qemudParseXML(struct qemud_server *server,
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/type[1]/@machine)", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        const char *defaultMachine = qemudDefaultMachineForArch(vm->def.os.arch);
+        const char *defaultMachine = qemudDefaultMachineForArch(def->os.arch);
         if (strlen(defaultMachine) >= (QEMUD_OS_MACHINE_MAX_LEN-1)) {
             qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "machine type too long");
             goto error;
         }
-        strcpy(vm->def.os.machine, defaultMachine);
+        strcpy(def->os.machine, defaultMachine);
     } else {
         if (strlen((const char *)obj->stringval) >= (QEMUD_OS_MACHINE_MAX_LEN-1)) {
             qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "architecture type too long");
             goto error;
         }
-        strcpy(vm->def.os.machine, (const char *)obj->stringval);
+        strcpy(def->os.machine, (const char *)obj->stringval);
     }
     if (obj)
         xmlXPathFreeObject(obj);
@@ -676,7 +704,7 @@ static int qemudParseXML(struct qemud_server *server,
             qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "kernel path too long");
             goto error;
         }
-        strcpy(vm->def.os.kernel, (const char *)obj->stringval);
+        strcpy(def->os.kernel, (const char *)obj->stringval);
     }
     if (obj)
         xmlXPathFreeObject(obj);
@@ -689,7 +717,7 @@ static int qemudParseXML(struct qemud_server *server,
             qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "initrd path too long");
             goto error;
         }
-        strcpy(vm->def.os.initrd, (const char *)obj->stringval);
+        strcpy(def->os.initrd, (const char *)obj->stringval);
     }
     if (obj)
         xmlXPathFreeObject(obj);
@@ -702,7 +730,7 @@ static int qemudParseXML(struct qemud_server *server,
             qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "cmdline arguments too long");
             goto error;
         }
-        strcpy(vm->def.os.cmdline, (const char *)obj->stringval);
+        strcpy(def->os.cmdline, (const char *)obj->stringval);
     }
     if (obj)
         xmlXPathFreeObject(obj);
@@ -715,40 +743,40 @@ static int qemudParseXML(struct qemud_server *server,
         for (i = 0; i < obj->nodesetval->nodeNr && i < QEMUD_MAX_BOOT_DEVS ; i++) {
             prop = xmlGetProp(obj->nodesetval->nodeTab[i], BAD_CAST "dev");
             if (!strcmp((char *)prop, "hd")) {
-                vm->def.os.bootDevs[vm->def.os.nBootDevs++] = QEMUD_BOOT_DISK;
+                def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_DISK;
             } else if (!strcmp((char *)prop, "fd")) {
-                vm->def.os.bootDevs[vm->def.os.nBootDevs++] = QEMUD_BOOT_FLOPPY;
+                def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_FLOPPY;
             } else if (!strcmp((char *)prop, "cdrom")) {
-                vm->def.os.bootDevs[vm->def.os.nBootDevs++] = QEMUD_BOOT_CDROM;
+                def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_CDROM;
             } else if (!strcmp((char *)prop, "net")) {
-                vm->def.os.bootDevs[vm->def.os.nBootDevs++] = QEMUD_BOOT_NET;
+                def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_NET;
             } else {
                 goto error;
             }
         }
     }
     xmlXPathFreeObject(obj);
-    if (vm->def.os.nBootDevs == 0) {
-        vm->def.os.nBootDevs = 1;
-        vm->def.os.bootDevs[0] = QEMUD_BOOT_DISK;
+    if (def->os.nBootDevs == 0) {
+        def->os.nBootDevs = 1;
+        def->os.bootDevs[0] = QEMUD_BOOT_DISK;
     }
 
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/devices/emulator[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        char *tmp = qemudLocateBinaryForArch(server, vm->def.virtType, vm->def.os.arch);
+        char *tmp = qemudLocateBinaryForArch(server, def->virtType, def->os.arch);
         if (!tmp) {
             goto error;
         }
-        strcpy(vm->def.os.binary, tmp);
+        strcpy(def->os.binary, tmp);
         free(tmp);
     } else {
         if (strlen((const char *)obj->stringval) >= (PATH_MAX-1)) {
             qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "emulator path too long");
             goto error;
         }
-        strcpy(vm->def.os.binary, (const char *)obj->stringval);
+        strcpy(def->os.binary, (const char *)obj->stringval);
     }
     if (obj)
         xmlXPathFreeObject(obj);
@@ -756,20 +784,20 @@ static int qemudParseXML(struct qemud_server *server,
     obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
         (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr == 0)) {
-        vm->def.graphicsType = QEMUD_GRAPHICS_NONE;
+        def->graphicsType = QEMUD_GRAPHICS_NONE;
     } else {
         prop = xmlGetProp(obj->nodesetval->nodeTab[0], BAD_CAST "type");
         if (!strcmp((char *)prop, "vnc")) {
-            vm->def.graphicsType = QEMUD_GRAPHICS_VNC;
+            def->graphicsType = QEMUD_GRAPHICS_VNC;
             prop = xmlGetProp(obj->nodesetval->nodeTab[0], BAD_CAST "port");
             if (prop) {
                 conv = NULL;
-                vm->def.vncPort = strtoll((const char*)prop, &conv, 10);
+                def->vncPort = strtoll((const char*)prop, &conv, 10);
             } else {
-                vm->def.vncPort = -1;
+                def->vncPort = -1;
             }
         } else if (!strcmp((char *)prop, "sdl")) {
-            vm->def.graphicsType = QEMUD_GRAPHICS_SDL;
+            def->graphicsType = QEMUD_GRAPHICS_SDL;
         } else {
             qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "Unsupported graphics type %s", prop);
             goto error;
@@ -785,9 +813,9 @@ static int qemudParseXML(struct qemud_server *server,
             if (!(disk = qemudParseDiskXML(server, obj->nodesetval->nodeTab[i]))) {
                 goto error;
             }
-            vm->def.ndisks++;
-            disk->next = vm->def.disks;
-            vm->def.disks = disk;
+            def->ndisks++;
+            disk->next = def->disks;
+            def->disks = disk;
         }
     }
     xmlXPathFreeObject(obj);
@@ -802,15 +830,15 @@ static int qemudParseXML(struct qemud_server *server,
             if (!(net = qemudParseInterfaceXML(server, obj->nodesetval->nodeTab[i]))) {
                 goto error;
             }
-            vm->def.nnets++;
-            net->next = vm->def.nets;
-            vm->def.nets = net;
+            def->nnets++;
+            net->next = def->nets;
+            def->nets = net;
         }
     }
     xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
 
-    return 0;
+    return def;
 
  error:
     if (prop)
@@ -819,7 +847,8 @@ static int qemudParseXML(struct qemud_server *server,
         xmlXPathFreeObject(obj);
     if (ctxt)
         xmlXPathFreeContext(ctxt);
-    return -1;
+    qemudFreeVMDef(def);
+    return NULL;
 }
 
 
@@ -904,37 +933,37 @@ int qemudBuildCommandLine(struct qemud_server *server,
     char memory[50];
     char vcpus[50];
     char boot[QEMUD_MAX_BOOT_DEVS+1];
-    struct qemud_vm_disk_def *disk = vm->def.disks;
-    struct qemud_vm_net_def *net = vm->def.nets;
+    struct qemud_vm_disk_def *disk = vm->def->disks;
+    struct qemud_vm_net_def *net = vm->def->nets;
 
     len = 1 + /* qemu */
         2 + /* machine type */
-        (vm->def.virtType == QEMUD_VIRT_QEMU ? 1 : 0) + /* Disable kqemu */
-        2 * vm->def.ndisks + /* disks*/
-        (vm->def.nnets > 0 ? (4 * vm->def.nnets) : 2) + /* networks */
+        (vm->def->virtType == QEMUD_VIRT_QEMU ? 1 : 0) + /* Disable kqemu */
+        2 * vm->def->ndisks + /* disks*/
+        (vm->def->nnets > 0 ? (4 * vm->def->nnets) : 2) + /* networks */
         2 + /* memory*/
         2 + /* cpus */
         2 + /* boot device */
         2 + /* monitor */
-        (vm->def.features & QEMUD_FEATURE_ACPI ? 0 : 1) + /* acpi */
-        (vm->def.os.kernel[0] ? 2 : 0) + /* kernel */
-        (vm->def.os.initrd[0] ? 2 : 0) + /* initrd */
-        (vm->def.os.cmdline[0] ? 2 : 0) + /* cmdline */
-        (vm->def.graphicsType == QEMUD_GRAPHICS_VNC ? 2 :
-         (vm->def.graphicsType == QEMUD_GRAPHICS_SDL ? 0 : 1)); /* graphics */
+        (vm->def->features & QEMUD_FEATURE_ACPI ? 0 : 1) + /* acpi */
+        (vm->def->os.kernel[0] ? 2 : 0) + /* kernel */
+        (vm->def->os.initrd[0] ? 2 : 0) + /* initrd */
+        (vm->def->os.cmdline[0] ? 2 : 0) + /* cmdline */
+        (vm->def->graphicsType == QEMUD_GRAPHICS_VNC ? 2 :
+         (vm->def->graphicsType == QEMUD_GRAPHICS_SDL ? 0 : 1)); /* graphics */
 
-    sprintf(memory, "%d", vm->def.memory/1024);
-    sprintf(vcpus, "%d", vm->def.vcpus);
+    sprintf(memory, "%d", vm->def->memory/1024);
+    sprintf(vcpus, "%d", vm->def->vcpus);
 
     if (!(*argv = malloc(sizeof(char *) * (len+1))))
         goto no_memory;
-    if (!((*argv)[++n] = strdup(vm->def.os.binary)))
+    if (!((*argv)[++n] = strdup(vm->def->os.binary)))
         goto no_memory;
     if (!((*argv)[++n] = strdup("-M")))
         goto no_memory;
-    if (!((*argv)[++n] = strdup(vm->def.os.machine)))
+    if (!((*argv)[++n] = strdup(vm->def->os.machine)))
         goto no_memory;
-    if (vm->def.virtType == QEMUD_VIRT_QEMU) {
+    if (vm->def->virtType == QEMUD_VIRT_QEMU) {
         if (!((*argv)[++n] = strdup("-no-kqemu")))
         goto no_memory;
     }
@@ -952,13 +981,13 @@ int qemudBuildCommandLine(struct qemud_server *server,
     if (!((*argv)[++n] = strdup("pty")))
         goto no_memory;
 
-    if (!(vm->def.features & QEMUD_FEATURE_ACPI)) {
+    if (!(vm->def->features & QEMUD_FEATURE_ACPI)) {
     if (!((*argv)[++n] = strdup("-no-acpi")))
         goto no_memory;
     }
 
-    for (i = 0 ; i < vm->def.os.nBootDevs ; i++) {
-        switch (vm->def.os.bootDevs[i]) {
+    for (i = 0 ; i < vm->def->os.nBootDevs ; i++) {
+        switch (vm->def->os.bootDevs[i]) {
         case QEMUD_BOOT_CDROM:
             boot[i] = 'd';
             break;
@@ -976,28 +1005,28 @@ int qemudBuildCommandLine(struct qemud_server *server,
             break;
         }
     }
-    boot[vm->def.os.nBootDevs] = '\0';
+    boot[vm->def->os.nBootDevs] = '\0';
     if (!((*argv)[++n] = strdup("-boot")))
         goto no_memory;
     if (!((*argv)[++n] = strdup(boot)))
         goto no_memory;
 
-    if (vm->def.os.kernel[0]) {
+    if (vm->def->os.kernel[0]) {
         if (!((*argv)[++n] = strdup("-kernel")))
             goto no_memory;
-        if (!((*argv)[++n] = strdup(vm->def.os.kernel)))
+        if (!((*argv)[++n] = strdup(vm->def->os.kernel)))
             goto no_memory;
     }
-    if (vm->def.os.initrd[0]) {
+    if (vm->def->os.initrd[0]) {
         if (!((*argv)[++n] = strdup("-initrd")))
             goto no_memory;
-        if (!((*argv)[++n] = strdup(vm->def.os.initrd)))
+        if (!((*argv)[++n] = strdup(vm->def->os.initrd)))
             goto no_memory;
     }
-    if (vm->def.os.cmdline[0]) {
+    if (vm->def->os.cmdline[0]) {
         if (!((*argv)[++n] = strdup("-append")))
             goto no_memory;
-        if (!((*argv)[++n] = strdup(vm->def.os.cmdline)))
+        if (!((*argv)[++n] = strdup(vm->def->os.cmdline)))
             goto no_memory;
     }
 
@@ -1058,14 +1087,14 @@ int qemudBuildCommandLine(struct qemud_server *server,
         }
     }
 
-    if (vm->def.graphicsType == QEMUD_GRAPHICS_VNC) {
+    if (vm->def->graphicsType == QEMUD_GRAPHICS_VNC) {
         char port[10];
-        snprintf(port, 10, "%d", vm->def.vncActivePort - 5900);
+        snprintf(port, 10, "%d", vm->def->vncActivePort - 5900);
         if (!((*argv)[++n] = strdup("-vnc")))
             goto no_memory;
         if (!((*argv)[++n] = strdup(port)))
             goto no_memory;
-    } else if (vm->def.graphicsType == QEMUD_GRAPHICS_NONE) {
+    } else if (vm->def->graphicsType == QEMUD_GRAPHICS_NONE) {
         if (!((*argv)[++n] = strdup("-nographic")))
             goto no_memory;
     } else {
@@ -1094,24 +1123,6 @@ int qemudBuildCommandLine(struct qemud_server *server,
     return -1;
 }
 
-/* Free all memory associated with a struct qemud_vm object */
-void qemudFreeVM(struct qemud_vm *vm) {
-    struct qemud_vm_disk_def *disk = vm->def.disks;
-    struct qemud_vm_net_def *net = vm->def.nets;
-
-    while (disk) {
-        struct qemud_vm_disk_def *prev = disk;
-        disk = disk->next;
-        free(prev);
-    }
-    while (net) {
-        struct qemud_vm_net_def *prev = net;
-        net = net->next;
-        free(prev);
-    }
-
-    free(vm);
-}
 
 /* Save a guest's config data into a persistent file */
 static int qemudSaveConfig(struct qemud_server *server,
@@ -1120,7 +1131,7 @@ static int qemudSaveConfig(struct qemud_server *server,
     int fd = -1, ret = -1;
     int towrite;
 
-    if (!(xml = qemudGenerateXML(server, vm))) {
+    if (!(xml = qemudGenerateXML(server, vm, 0))) {
         return -1;
     }
 
@@ -1170,8 +1181,10 @@ struct qemud_vm *qemudLoadConfigXML(struct qemud_server *server,
                                     const char *file,
                                     const char *doc,
                                     int save) {
+    struct qemud_vm_def *def = NULL;
     struct qemud_vm *vm = NULL;
     xmlDocPtr xml;
+    int newVM = 0;
 
     if (!(xml = xmlReadDoc(BAD_CAST doc, file ? file : "domain.xml", NULL,
                            XML_PARSE_NOENT | XML_PARSE_NONET |
@@ -1180,34 +1193,34 @@ struct qemud_vm *qemudLoadConfigXML(struct qemud_server *server,
         return NULL;
     }
 
-    if (!(vm = calloc(1, sizeof(struct qemud_vm)))) {
-        qemudReportError(server, VIR_ERR_NO_MEMORY, "vm");
-        return NULL;
-    }
-
-    vm->stdout = -1;
-    vm->stderr = -1;
-    vm->monitor = -1;
-    vm->pid = -1;
-    vm->def.id = -1;
-
-    if (qemudParseXML(server, xml, vm) < 0) {
+    if (!(def = qemudParseXML(server, xml))) {
         xmlFreeDoc(xml);
-        qemudFreeVM(vm);
         return NULL;
     }
     xmlFreeDoc(xml);
 
-    if (qemudFindVMByUUID(server, vm->def.uuid)) {
-        qemudReportError(server, VIR_ERR_DOM_EXIST, vm->def.name);
-        qemudFreeVM(vm);
-        return NULL;
-    }
+    if ((vm = qemudFindVMByName(server, def->name))) {
+        if (vm->id == -1) {
+            qemudFreeVMDef(vm->def);
+            vm->def = def;
+        } else {
+            if (vm->newDef)
+                qemudFreeVMDef(vm->newDef);
+            vm->newDef = def;
+        }
+    } else {
+        if (!(vm = calloc(1, sizeof(struct qemud_vm)))) {
+            qemudReportError(server, VIR_ERR_NO_MEMORY, "vm");
+            return NULL;
+        }
 
-    if (qemudFindVMByName(server, vm->def.name)) {
-        qemudReportError(server, VIR_ERR_DOM_EXIST, vm->def.name);
-        qemudFreeVM(vm);
-        return NULL;
+        vm->stdout = -1;
+        vm->stderr = -1;
+        vm->monitor = -1;
+        vm->pid = -1;
+        vm->id = -1;
+        vm->def = def;
+        newVM = 1;
     }
 
     if (file) {
@@ -1215,7 +1228,7 @@ struct qemud_vm *qemudLoadConfigXML(struct qemud_server *server,
         vm->configFile[PATH_MAX-1] = '\0';
     } else {
         if (save) {
-            if (qemudMakeConfigPath(server->configDir, vm->def.name, ".xml", vm->configFile, PATH_MAX) < 0) {
+            if (qemudMakeConfigPath(server->configDir, vm->def->name, ".xml", vm->configFile, PATH_MAX) < 0) {
                 qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
                                  "cannot construct config file path");
                 qemudFreeVM(vm);
@@ -1229,6 +1242,12 @@ struct qemud_vm *qemudLoadConfigXML(struct qemud_server *server,
         } else {
             vm->configFile[0] = '\0';
         }
+    }
+
+    if (newVM) {
+        vm->next = server->inactivevms;
+        server->inactivevms = vm;
+        server->ninactivevms++;
     }
 
     return vm;
@@ -1577,12 +1596,7 @@ static void qemudLoadConfig(struct qemud_server *server,
     xml[st.st_size] = '\0';
 
     if (isGuest) {
-        struct qemud_vm *vm;
-        if ((vm = qemudLoadConfigXML(server, file, xml, 1))) {
-            vm->next = server->inactivevms;
-            server->inactivevms = vm;
-            server->ninactivevms++;
-        }
+        qemudLoadConfigXML(server, file, xml, 1);
     } else {
         struct qemud_network *network;
         if ((network = qemudLoadNetworkConfigXML(server, file, xml, 1))) {
@@ -1591,7 +1605,6 @@ static void qemudLoadConfig(struct qemud_server *server,
             server->ninactivenetworks++;
         }
     }
-  
  cleanup:
     fclose(fh);
 }
@@ -1683,7 +1696,8 @@ int qemudBufferPrintf(struct qemudBuffer *buf,
 }
 
 /* Generate an XML document describing the guest's configuration */
-char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm) {
+char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm, int live) {
+    struct qemud_vm_def *def = live ? vm->def : (vm->newDef ? vm->newDef : vm->def);
     struct qemudBuffer buf;
     unsigned char *uuid;
     struct qemud_vm_disk_def *disk;
@@ -1695,7 +1709,7 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm) {
     buf.used = 0;
     buf.data = malloc(buf.len);
 
-    switch (vm->def.virtType) {
+    switch (def->virtType) {
     case QEMUD_VIRT_QEMU:
         type = "qemu";
         break;
@@ -1707,58 +1721,58 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm) {
         break;
     }
     if (!type) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "unexpected domain type %d", vm->def.virtType);
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "unexpected domain type %d", def->virtType);
         goto cleanup;
     }
 
-    if (vm->def.id >= 0) {
-        if (qemudBufferPrintf(&buf, "<domain type='%s' id='%d'>\n", type, vm->def.id) < 0)
+    if (vm->id >= 0) {
+        if (qemudBufferPrintf(&buf, "<domain type='%s' id='%d'>\n", type, vm->id) < 0)
             goto no_memory;
     } else {
         if (qemudBufferPrintf(&buf, "<domain type='%s'>\n", type) < 0)
             goto no_memory;
     }
 
-    if (qemudBufferPrintf(&buf, "  <name>%s</name>\n", vm->def.name) < 0)
+    if (qemudBufferPrintf(&buf, "  <name>%s</name>\n", def->name) < 0)
         goto no_memory;
 
-    uuid = vm->def.uuid;
+    uuid = def->uuid;
     if (qemudBufferPrintf(&buf, "  <uuid>%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x</uuid>\n",
                           uuid[0], uuid[1], uuid[2], uuid[3],
                           uuid[4], uuid[5], uuid[6], uuid[7],
                           uuid[8], uuid[9], uuid[10], uuid[11],
                           uuid[12], uuid[13], uuid[14], uuid[15]) < 0)
         goto no_memory;
-    if (qemudBufferPrintf(&buf, "  <memory>%d</memory>\n", vm->def.maxmem) < 0)
+    if (qemudBufferPrintf(&buf, "  <memory>%d</memory>\n", def->maxmem) < 0)
         goto no_memory;
-    if (qemudBufferPrintf(&buf, "  <currentMemory>%d</currentMemory>\n", vm->def.memory) < 0)
+    if (qemudBufferPrintf(&buf, "  <currentMemory>%d</currentMemory>\n", def->memory) < 0)
         goto no_memory;
-    if (qemudBufferPrintf(&buf, "  <vcpu>%d</vcpu>\n", vm->def.vcpus) < 0)
+    if (qemudBufferPrintf(&buf, "  <vcpu>%d</vcpu>\n", def->vcpus) < 0)
         goto no_memory;
 
     if (qemudBufferAdd(&buf, "  <os>\n") < 0)
         goto no_memory;
 
-    if (vm->def.virtType == QEMUD_VIRT_QEMU) {
+    if (def->virtType == QEMUD_VIRT_QEMU) {
         if (qemudBufferPrintf(&buf, "    <type arch='%s' machine='%s'>%s</type>\n",
-                              vm->def.os.arch, vm->def.os.machine, vm->def.os.type) < 0)
+                              def->os.arch, def->os.machine, def->os.type) < 0)
             goto no_memory;
     } else {
-        if (qemudBufferPrintf(&buf, "    <type>%s</type>\n", vm->def.os.type) < 0)
+        if (qemudBufferPrintf(&buf, "    <type>%s</type>\n", def->os.type) < 0)
             goto no_memory;
     }
 
-    if (vm->def.os.kernel[0])
-        if (qemudBufferPrintf(&buf, "    <kernel>%s</kernel>\n", vm->def.os.kernel) < 0)
+    if (def->os.kernel[0])
+        if (qemudBufferPrintf(&buf, "    <kernel>%s</kernel>\n", def->os.kernel) < 0)
             goto no_memory;
-    if (vm->def.os.initrd[0])
-        if (qemudBufferPrintf(&buf, "    <initrd>%s</initrd>\n", vm->def.os.initrd) < 0)
+    if (def->os.initrd[0])
+        if (qemudBufferPrintf(&buf, "    <initrd>%s</initrd>\n", def->os.initrd) < 0)
             goto no_memory;
-    if (vm->def.os.cmdline[0])
-        if (qemudBufferPrintf(&buf, "    <cmdline>%s</cmdline>\n", vm->def.os.cmdline) < 0)
+    if (def->os.cmdline[0])
+        if (qemudBufferPrintf(&buf, "    <cmdline>%s</cmdline>\n", def->os.cmdline) < 0)
             goto no_memory;
 
-    if (vm->def.features & QEMUD_FEATURE_ACPI) {
+    if (def->features & QEMUD_FEATURE_ACPI) {
         if (qemudBufferAdd(&buf, "  <features>\n") < 0)
             goto no_memory;
         if (qemudBufferAdd(&buf, "    <acpi>\n") < 0)
@@ -1768,9 +1782,9 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm) {
     }
 
 
-    for (n = 0 ; n < vm->def.os.nBootDevs ; n++) {
+    for (n = 0 ; n < def->os.nBootDevs ; n++) {
         const char *boottype = "hd";
-        switch (vm->def.os.bootDevs[n]) {
+        switch (def->os.bootDevs[n]) {
         case QEMUD_BOOT_FLOPPY:
             boottype = "fd";
             break;
@@ -1794,10 +1808,10 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm) {
     if (qemudBufferAdd(&buf, "  <devices>\n") < 0)
         goto no_memory;
 
-    if (qemudBufferPrintf(&buf, "    <emulator>%s</emulator>\n", vm->def.os.binary) < 0)
+    if (qemudBufferPrintf(&buf, "    <emulator>%s</emulator>\n", def->os.binary) < 0)
         goto no_memory;
 
-    disk = vm->def.disks;
+    disk = def->disks;
     while (disk) {
         const char *types[] = {
             "block",
@@ -1832,7 +1846,7 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm) {
         disk = disk->next;
     }
 
-    net = vm->def.nets;
+    net = def->nets;
     while (net) {
         const char *types[] = {
             "user",
@@ -1871,10 +1885,10 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm) {
         net = net->next;
     }
 
-    if (vm->def.graphicsType == QEMUD_GRAPHICS_VNC) {
-        if (vm->def.vncPort) {
+    if (def->graphicsType == QEMUD_GRAPHICS_VNC) {
+        if (def->vncPort) {
             qemudBufferPrintf(&buf, "    <graphics type='vnc' port='%d'/>\n",
-                              vm->def.id == -1 ? vm->def.vncPort : vm->def.vncActivePort);
+                              vm->id == -1 ? def->vncPort : def->vncActivePort);
         } else {
             qemudBufferPrintf(&buf, "    <graphics type='vnc'/>\n");
         }

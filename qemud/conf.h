@@ -30,18 +30,27 @@ int qemudBuildCommandLine(struct qemud_server *server,
                           struct qemud_vm *vm,
                           char ***argv);
 
+void qemudFreeVMDef(struct qemud_vm_def *vm);
+int qemudScanConfigs(struct qemud_server *server);
+int qemudDeleteConfig(struct qemud_server *server,
+                      const char *configFile,
+                      const char *name);
+
 void qemudFreeVM(struct qemud_vm *vm);
 struct qemud_vm *qemudLoadConfigXML(struct qemud_server *server,
                                     const char *file,
                                     const char *doc,
                                     int persist);
-int qemudScanConfigs(struct qemud_server *server);
 char *qemudGenerateXML(struct qemud_server *server,
-                       struct qemud_vm *vm);
+                       struct qemud_vm *vm, int live);
 
-int qemudDeleteConfigXML(struct qemud_server *server,
-                         struct qemud_vm *vm);
-
+void qemudFreeNetwork(struct qemud_network *network);
+struct qemud_network *qemudLoadNetworkConfigXML(struct qemud_server *server,
+                                                const char *file,
+                                                const char *doc,
+                                                int persist);
+char *qemudGenerateNetworkXML(struct qemud_server *server,
+                              struct qemud_network *network);
 
 #endif
 

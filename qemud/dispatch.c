@@ -154,9 +154,9 @@ static int qemudDispatchDomainCreate(struct qemud_server *server, struct qemud_c
     } else {
         out->header.type = QEMUD_PKT_DOMAIN_CREATE;
         out->header.dataSize = sizeof(out->data.domainCreateReply);
-        out->data.domainCreateReply.id = vm->def.id;
-        memcpy(out->data.domainCreateReply.uuid, vm->def.uuid, QEMUD_UUID_RAW_LEN);
-        strncpy(out->data.domainCreateReply.name, vm->def.name, QEMUD_MAX_NAME_LEN-1);
+        out->data.domainCreateReply.id = vm->id;
+        memcpy(out->data.domainCreateReply.uuid, vm->def->uuid, QEMUD_UUID_RAW_LEN);
+        strncpy(out->data.domainCreateReply.name, vm->def->name, QEMUD_MAX_NAME_LEN-1);
         out->data.domainCreateReply.name[QEMUD_MAX_NAME_LEN-1] = '\0';
     }
     return 0;
@@ -174,8 +174,8 @@ static int qemudDispatchDomainLookupByID(struct qemud_server *server, struct qem
     } else {
         out->header.type = QEMUD_PKT_DOMAIN_LOOKUP_BY_ID;
         out->header.dataSize = sizeof(out->data.domainLookupByIDReply);
-        memcpy(out->data.domainLookupByIDReply.uuid, vm->def.uuid, QEMUD_UUID_RAW_LEN);
-        strncpy(out->data.domainLookupByIDReply.name, vm->def.name, QEMUD_MAX_NAME_LEN-1);
+        memcpy(out->data.domainLookupByIDReply.uuid, vm->def->uuid, QEMUD_UUID_RAW_LEN);
+        strncpy(out->data.domainLookupByIDReply.name, vm->def->name, QEMUD_MAX_NAME_LEN-1);
         out->data.domainLookupByIDReply.name[QEMUD_MAX_NAME_LEN-1] = '\0';
     }
     return 0;
@@ -193,8 +193,8 @@ static int qemudDispatchDomainLookupByUUID(struct qemud_server *server, struct q
     } else {
         out->header.type = QEMUD_PKT_DOMAIN_LOOKUP_BY_UUID;
         out->header.dataSize = sizeof(out->data.domainLookupByUUIDReply);
-        out->data.domainLookupByUUIDReply.id = vm->def.id;
-        strncpy(out->data.domainLookupByUUIDReply.name, vm->def.name, QEMUD_MAX_NAME_LEN-1);
+        out->data.domainLookupByUUIDReply.id = vm->id;
+        strncpy(out->data.domainLookupByUUIDReply.name, vm->def->name, QEMUD_MAX_NAME_LEN-1);
         out->data.domainLookupByUUIDReply.name[QEMUD_MAX_NAME_LEN-1] = '\0';
     }
     return 0;
@@ -214,8 +214,8 @@ static int qemudDispatchDomainLookupByName(struct qemud_server *server, struct q
     } else {
         out->header.type = QEMUD_PKT_DOMAIN_LOOKUP_BY_NAME;
         out->header.dataSize = sizeof(out->data.domainLookupByNameReply);
-        out->data.domainLookupByNameReply.id = vm->def.id;
-        memcpy(out->data.domainLookupByNameReply.uuid, vm->def.uuid, QEMUD_UUID_RAW_LEN);
+        out->data.domainLookupByNameReply.id = vm->id;
+        memcpy(out->data.domainLookupByNameReply.uuid, vm->def->uuid, QEMUD_UUID_RAW_LEN);
     }
     return 0;
 }
@@ -420,7 +420,7 @@ static int qemudDispatchDomainStart(struct qemud_server *server, struct qemud_cl
     } else {
         out->header.type = QEMUD_PKT_DOMAIN_START;
         out->header.dataSize = sizeof(out->data.domainStartReply);
-        out->data.domainStartReply.id = vm->def.id;
+        out->data.domainStartReply.id = vm->id;
     }
     return 0;
 }
@@ -439,8 +439,8 @@ static int qemudDispatchDomainDefine(struct qemud_server *server, struct qemud_c
     } else {
         out->header.type = QEMUD_PKT_DOMAIN_DEFINE;
         out->header.dataSize = sizeof(out->data.domainDefineReply);
-        memcpy(out->data.domainDefineReply.uuid, vm->def.uuid, QEMUD_UUID_RAW_LEN);
-        strncpy(out->data.domainDefineReply.name, vm->def.name, QEMUD_MAX_NAME_LEN-1);
+        memcpy(out->data.domainDefineReply.uuid, vm->def->uuid, QEMUD_UUID_RAW_LEN);
+        strncpy(out->data.domainDefineReply.name, vm->def->name, QEMUD_MAX_NAME_LEN-1);
         out->data.domainDefineReply.name[QEMUD_MAX_NAME_LEN-1] = '\0';
     }
     return 0;

@@ -225,7 +225,7 @@ struct qemud_vm *qemudFindVMByID(const struct qemud_server *server, int id) {
     struct qemud_vm *vm = server->activevms;
 
     while (vm) {
-        if (vm->def.id == id)
+        if (vm->id == id)
             return vm;
         vm = vm->next;
     }
@@ -238,14 +238,14 @@ struct qemud_vm *qemudFindVMByUUID(const struct qemud_server *server,
     struct qemud_vm *vm = server->activevms;
 
     while (vm) {
-        if (!memcmp(vm->def.uuid, uuid, QEMUD_UUID_RAW_LEN))
+        if (!memcmp(vm->def->uuid, uuid, QEMUD_UUID_RAW_LEN))
             return vm;
         vm = vm->next;
     }
 
     vm = server->inactivevms;
     while (vm) {
-        if (!memcmp(vm->def.uuid, uuid, QEMUD_UUID_RAW_LEN))
+        if (!memcmp(vm->def->uuid, uuid, QEMUD_UUID_RAW_LEN))
             return vm;
         vm = vm->next;
     }
@@ -258,14 +258,14 @@ struct qemud_vm *qemudFindVMByName(const struct qemud_server *server,
     struct qemud_vm *vm = server->activevms;
 
     while (vm) {
-        if (!strcmp(vm->def.name, name))
+        if (!strcmp(vm->def->name, name))
             return vm;
         vm = vm->next;
     }
 
     vm = server->inactivevms;
     while (vm) {
-        if (!strcmp(vm->def.name, name))
+        if (!strcmp(vm->def->name, name))
             return vm;
         vm = vm->next;
     }
@@ -281,7 +281,7 @@ int qemudListDomains(struct qemud_server *server, int *ids, int nids) {
     struct qemud_vm *vm = server->activevms;
     int got = 0;
     while (vm && got < nids) {
-        ids[got] = vm->def.id;
+        ids[got] = vm->id;
         vm = vm->next;
         got++;
     }
@@ -297,15 +297,10 @@ struct qemud_vm *qemudDomainCreate(struct qemud_server *server, const char *xml)
         return NULL;
     }
 
-    if (qemudStartVMDaemon(server, vm) < 0) {
+    if (qemudDomainStart(server, vm) < 0) {
         qemudFreeVM(vm);
         return NULL;
     }
-
-    vm->next = server->activevms;
-    server->activevms = vm;
-    server->nactivevms++;
-    server->nvmfds += 2;
 
     return vm;
 }
@@ -399,9 +394,9 @@ int qemudDomainGetInfo(struct qemud_server *server, const unsigned char *uuid,
         }
     }
 
-    *maxmem = vm->def.maxmem;
-    *memory = vm->def.memory;
-    *nrVirtCpu = vm->def.vcpus;
+    *maxmem = vm->def->maxmem;
+    *memory = vm->def->memory;
+    *nrVirtCpu = vm->def->vcpus;
     return 0;
 }
 
@@ -437,7 +432,7 @@ int qemudDomainDumpXML(struct qemud_server *server, const unsigned char *uuid, c
         return -1;
     }
 
-    vmxml = qemudGenerateXML(server, vm);
+    vmxml = qemudGenerateXML(server, vm, 1);
     if (!vmxml)
         return -1;
 
@@ -452,7 +447,7 @@ int qemudListDefinedDomains(struct qemud_server *server, char *const*names, int 
     struct qemud_vm *vm = server->inactivevms;
     int got = 0;
     while (vm && got < nnames) {
-        strncpy(names[got], vm->def.name, QEMUD_MAX_NAME_LEN-1);
+        strncpy(names[got], vm->def->name, QEMUD_MAX_NAME_LEN-1);
         names[got][QEMUD_MAX_NAME_LEN-1] = '\0';
         vm = vm->next;
         got++;
@@ -501,10 +496,6 @@ struct qemud_vm *qemudDomainDefine(struct qemud_server *server, const char *xml)
         return NULL;
     }
 
-    vm->next = server->inactivevms;
-    server->inactivevms = vm;
-    server->ninactivevms++;
-
     return vm;
 }
 
@@ -522,7 +513,7 @@ int qemudDomainUndefine(struct qemud_server *server, const unsigned char *uuid) 
         return -1;
     }
 
-    if (qemudDeleteConfig(server, vm->configFile, vm->def.name) < 0)
+    if (qemudDeleteConfig(server, vm->configFile, vm->def->name) < 0)
         return -1;
 
     vm->configFile[0] = '\0';

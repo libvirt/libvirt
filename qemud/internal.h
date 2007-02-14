@@ -169,7 +169,6 @@ struct qemud_vm_os_def {
 
 /* Guest VM main configuration */
 struct qemud_vm_def {
-    int id;
     int virtType;
     unsigned char uuid[QEMUD_UUID_RAW_LEN];
     char name[QEMUD_MAX_NAME_LEN];
@@ -198,13 +197,15 @@ struct qemud_vm {
     int stderr;
     int monitor;
     int pid;
+    int id;
 
     int *tapfds;
     int ntapfds;
 
     char configFile[PATH_MAX];
 
-    struct qemud_vm_def def;
+    struct qemud_vm_def *def; /* The current definition */
+    struct qemud_vm_def *newDef; /* New definition to activate at shutdown */
 
     struct qemud_vm *next;
 };

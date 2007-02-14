@@ -1,3 +1,9 @@
+Tue Feb 14 11:58:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemud.c, src/conf.c, src/internal.c, src/driver.c: Change
+	the handling of the internal VM config to allow replacing of the
+	config for a VM which is running.
+
 Tue Feb 14 16:53:25 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	Fix from Richard W.M. Jones <rjones@redhat.com>

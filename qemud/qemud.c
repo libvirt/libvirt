@@ -438,16 +438,16 @@ int qemudStartVMDaemon(struct qemud_server *server,
     char **argv = NULL;
     int i, ret = -1;
 
-    if (vm->def.vncPort < 0)
-        vm->def.vncActivePort = 5900 + server->nextvmid;
+    if (vm->def->vncPort < 0)
+        vm->def->vncActivePort = 5900 + server->nextvmid;
     else
-        vm->def.vncActivePort = vm->def.vncPort;
+        vm->def->vncActivePort = vm->def->vncPort;
 
     if (qemudBuildCommandLine(server, vm, &argv) < 0)
         return -1;
 
     if (qemudExec(server, argv, &vm->pid, &vm->stdout, &vm->stderr, vm->tapfds) == 0) {
-        vm->def.id = server->nextvmid++;
+        vm->id = server->nextvmid++;
         ret = 0;
     }
 
@@ -711,7 +711,7 @@ int qemudShutdownVMDaemon(struct qemud_server *server, struct qemud_vm *vm) {
     curr->monitor = -1;
     server->nvmfds -= 2;
 
-    net = vm->def.nets;
+    net = vm->def->nets;
     while (net) {
         if (net->type == QEMUD_NET_NETWORK)
             qemudNetworkIfaceDisconnect(server, vm, net);
@@ -726,7 +726,13 @@ int qemudShutdownVMDaemon(struct qemud_server *server, struct qemud_vm *vm) {
     }
 
     vm->pid = -1;
-    vm->def.id = -1;
+    vm->id = -1;
+
+    if (vm->newDef) {
+        qemudFreeVMDef(vm->def);
+        vm->def = vm->newDef;
+        vm->newDef = NULL;
+    }
 
     return 0;
 }
