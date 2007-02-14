@@ -1,3 +1,8 @@
+Tue Feb 14 16:48:24 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* src/qemu_internal.c: correctly register the network
+	driver
+	
 Tue Feb 14 16:35:56 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* autogen.sh: run autoheader before automake

@@ -1155,7 +1155,7 @@ static virNetworkDriver qemuNetworkDriver = {
 
 void qemuRegister(void) {
     virRegisterDriver(&qemuDriver);
-    virRegisterDriver(&qemuNetworkDriver);
+    virRegisterNetworkDriver(&qemuNetworkDriver);
 }
 
 /*
