@@ -856,10 +856,16 @@ int qemudBuildCommandLine(struct qemud_server *server,
     } else {
         while (net) {
             char nic[3+1+7+1+17+1];
-            sprintf(nic, "nic,macaddr=%02x:%02x:%02x:%02x:%02x:%02x",
-                    net->mac[0], net->mac[1],
-                    net->mac[2], net->mac[3],
-                    net->mac[4], net->mac[5]);
+
+            if (!net->mac[0] && !net->mac[1] && !net->mac[2] &&
+                !net->mac[3] && !net->mac[4] && !net->mac[5]) {
+                strncpy(nic, "nic", 4);
+            } else {
+                sprintf(nic, "nic,macaddr=%02x:%02x:%02x:%02x:%02x:%02x",
+                        net->mac[0], net->mac[1],
+                        net->mac[2], net->mac[3],
+                        net->mac[4], net->mac[5]);
+            }
 
             if (!((*argv)[++n] = strdup("-net")))
                 goto no_memory;
@@ -896,8 +902,8 @@ int qemudBuildCommandLine(struct qemud_server *server,
  no_memory:
     if (argv) {
         for (i = 0 ; i < n ; i++)
-            free(argv[i]);
-        free(argv);
+            free((*argv)[i]);
+        free(*argv);
     }
     qemudReportError(server, VIR_ERR_NO_MEMORY, "argv");
     return -1;
@@ -1353,8 +1359,7 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm) {
     }
 
     net = vm->def.nets;
-    disk = vm->def.disks;
-    while (disk) {
+    while (net) {
         const char *types[] = {
             "user",
             "tap",
@@ -1367,7 +1372,9 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm) {
                               types[net->type]) < 0)
             goto no_memory;
 
-        if (qemudBufferPrintf(&buf, "      <mac address='%02x:%02x:%02x:%02x:%02x:%02x'/>\n",
+        if (net->mac[0] && net->mac[1] && net->mac[2] &&
+            net->mac[3] && net->mac[4] && net->mac[5] &&
+            qemudBufferPrintf(&buf, "      <mac address='%02x:%02x:%02x:%02x:%02x:%02x'/>\n",
                               net->mac[0], net->mac[1], net->mac[2],
                               net->mac[3], net->mac[4], net->mac[5]) < 0)
             goto no_memory;
@@ -1375,7 +1382,7 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm) {
         if (qemudBufferPrintf(&buf, "    </interface>\n") < 0)
             goto no_memory;
 
-        disk = disk->next;
+        net = net->next;
     }
 
     if (vm->def.graphicsType == QEMUD_GRAPHICS_VNC) {

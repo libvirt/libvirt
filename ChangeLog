@@ -1,3 +1,9 @@
+Tue Feb 14 14:50:22 EST 2007 Mark McLoughlin <markmc@redhat.com
+
+	* qemud/conf.c: handle an unspecified MAC address, 
+	fix the argv freeing code in qemudBuildCommandLine()
+	and fix copy and paste error in qemudGenerateXML()
+	
 Tue Feb 14 14:42:38 EST 2007 Mark McLoughlin <markmc@redhat.com
 
 	* src/internal.h: add virConnect->qemud_fd so that
