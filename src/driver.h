@@ -220,6 +220,8 @@ typedef int
 typedef char *
 	(*virDrvNetworkDumpXML)		(virNetworkPtr network,
 					 int flags);
+typedef char *
+	(*virDrvNetworkGetBridgeName)	(virNetworkPtr network);
 
 typedef struct _virNetworkDriver virNetworkDriver;
 typedef virNetworkDriver *virNetworkDriverPtr;
@@ -245,6 +247,7 @@ struct _virNetworkDriver {
 	virDrvNetworkCreate		networkCreate;
 	virDrvNetworkDestroy		networkDestroy;
 	virDrvNetworkDumpXML		networkDumpXML;
+	virDrvNetworkGetBridgeName	networkGetBridgeName;
 };
 
 

@@ -113,6 +113,10 @@ int qemudNetworkDumpXML(struct qemud_server *server,
                         const unsigned char *uuid,
                         char *xml,
                         int xmllen);
+int qemudNetworkGetBridgeName(struct qemud_server *server,
+                              const unsigned char *uuid,
+                              char *ifname,
+                              int ifnamelen);
 
 #endif
 

@@ -1077,6 +1077,22 @@ static char * qemuNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUS
     return strdup(reply.data.networkDumpXMLReply.xml);
 }
 
+static char * qemuNetworkGetBridgeName(virNetworkPtr network) {
+    struct qemud_packet req, reply;
+
+    req.header.type = QEMUD_PKT_NETWORK_GET_BRIDGE_NAME;
+    req.header.dataSize = sizeof(req.data.networkGetBridgeNameRequest);
+    memmove(req.data.networkGetBridgeNameRequest.uuid, network->uuid, QEMUD_UUID_RAW_LEN);
+
+    if (qemuProcessRequest(network->conn, NULL, &req, &reply) < 0) {
+        return NULL;
+    }
+
+    reply.data.networkGetBridgeNameReply.ifname[QEMUD_MAX_IFNAME_LEN-1] = '\0';
+
+    return strdup(reply.data.networkGetBridgeNameReply.ifname);
+}
+
 static virDriver qemuDriver = {
     VIR_DRV_QEMU,
     "QEMU",
@@ -1134,13 +1150,13 @@ static virNetworkDriver qemuNetworkDriver = {
     qemuNetworkCreate, /* networkCreate */
     qemuNetworkDestroy, /* networkDestroy */
     qemuNetworkDumpXML, /* networkDumpXML */
+    qemuNetworkGetBridgeName, /* networkGetBridgeName */
 };
 
 void qemuRegister(void) {
     virRegisterDriver(&qemuDriver);
     virRegisterDriver(&qemuNetworkDriver);
 }
-
 
 /*
  * Local variables:

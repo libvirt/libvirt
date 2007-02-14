@@ -26,6 +26,7 @@
 #define QEMUD_PROTOCOL_H__
 
 #include <stdint.h>
+#include <net/if.h> /* for IF_NAMESIZE */
 
 /* List of different packet types which can be sent */
 enum {
@@ -62,6 +63,7 @@ enum {
     QEMUD_PKT_NETWORK_START,
     QEMUD_PKT_NETWORK_DESTROY,
     QEMUD_PKT_NETWORK_DUMP_XML,
+    QEMUD_PKT_NETWORK_GET_BRIDGE_NAME,
 
     QEMUD_PKT_MAX,
 } qemud_packet_type;
@@ -73,6 +75,7 @@ enum {
 #define QEMUD_UUID_RAW_LEN 16
 #define QEMUD_MAX_NAME_LEN 50
 #define QEMUD_MAX_XML_LEN 4096
+#define QEMUD_MAX_IFNAME_LEN IF_NAMESIZE
 #define QEMUD_MAX_NUM_DOMAINS 100
 #define QEMUD_MAX_NUM_NETWORKS 100
 #define QEMUD_MAX_ERROR_LEN 1024
@@ -270,6 +273,12 @@ union qemud_packet_data {
     struct {
         char xml[QEMUD_MAX_XML_LEN];
     } networkDumpXMLReply;
+    struct {
+        unsigned char uuid[QEMUD_UUID_RAW_LEN];
+    } networkGetBridgeNameRequest;
+    struct {
+        char ifname[QEMUD_MAX_IFNAME_LEN];
+    } networkGetBridgeNameReply;
 };
 
 /* Each packet has header & data */

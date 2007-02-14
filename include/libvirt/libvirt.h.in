@@ -526,6 +526,7 @@ int			virNetworkGetUUIDString	(virNetworkPtr network,
 						 char *buf);
 char *			virNetworkGetXMLDesc	(virNetworkPtr network,
 						 int flags);
+char *			virNetworkGetBridgeName (virNetworkPtr network);
 
 #ifdef __cplusplus
 }

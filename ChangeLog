@@ -1,3 +1,22 @@
+Tue Feb 14 16:17:51 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* include/libvirt/libvirt.h.in, src/libvirt.c: add
+	virNetworkGetBridgeName() to allow finding out what
+	bridge to connect to in order to join a network.
+	
+	* src/driver.h: add networkGetBridgeName() to vtable.
+	
+	* qemud/protocol.h: add the request and reply to
+	the qemud protocol.
+	
+	* qemud/dispatch.c, qemud/driver.[ch]: handle them
+	here.
+	
+	* src/qemu_internal.c: implement GetBridgeName()
+	in the qemu driver.
+	
+	* src/libvirt_sym.version: add new symbol.
+	
 Tue Feb 14 16:14:32 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* src/xend_internal.c, src/xm_internal.c: pass the

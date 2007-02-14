@@ -2731,3 +2731,38 @@ virNetworkGetXMLDesc(virNetworkPtr network, int flags)
     }
     return(ret);
 }
+
+/**
+ * virNetworkGetBridgeName:
+ * @network: a network object
+ *
+ * Return a bridge interface name to which a domain may connect
+ * a network interface in order to join the network.
+ *
+ * Returns a 0 terminated interface name, or NULL in case of error.
+ *         the caller must free() the returned value.
+ */
+char *
+virNetworkGetBridgeName(virNetworkPtr network)
+{
+    int i;
+    char *ret = NULL;
+    if (!VIR_IS_NETWORK(network)) {
+        virLibNetworkError(network, VIR_ERR_INVALID_NETWORK, __FUNCTION__);
+        return (NULL);
+    }
+
+    for (i = 0;i < network->conn->nb_network_drivers;i++) {
+	if ((network->conn->networkDrivers[i] != NULL) &&
+	    (network->conn->networkDrivers[i]->networkGetBridgeName != NULL)) {
+            ret = network->conn->networkDrivers[i]->networkGetBridgeName(network);
+	    if (ret)
+	        break;
+	}
+    }
+    if (!ret) {
+        virLibConnError(network->conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+        return (NULL);
+    }
+    return(ret);
+}

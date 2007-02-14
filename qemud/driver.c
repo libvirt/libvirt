@@ -743,6 +743,20 @@ int qemudNetworkDumpXML(struct qemud_server *server, const unsigned char *uuid, 
     return 0;
 }
 
+int qemudNetworkGetBridgeName(struct qemud_server *server, const unsigned char *uuid, char *ifname, int ifnamelen) {
+    struct qemud_network *network = qemudFindNetworkByUUID(server, uuid);
+
+    if (!network) {
+        qemudReportError(server, VIR_ERR_INVALID_NETWORK, "no network with matching id");
+        return -1;
+    }
+
+    strncpy(ifname, network->bridge, ifnamelen);
+    ifname[ifnamelen-1] = '\0';
+
+    return 0;
+}
+
 /*
  * Local variables:
  *  indent-tabs-mode: nil

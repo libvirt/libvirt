@@ -75,6 +75,7 @@
 	virNetworkGetUUID;
 	virNetworkGetUUIDString;
 	virNetworkGetXMLDesc;
+	virNetworkGetBridgeName;
 
     local: *;
 };

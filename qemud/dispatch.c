@@ -699,6 +699,24 @@ static int qemudDispatchNetworkDumpXML(struct qemud_server *server, struct qemud
     return 0;
 }
 
+static int qemudDispatchNetworkGetBridgeName(struct qemud_server *server, struct qemud_client *client,
+                                             struct qemud_packet *in, struct qemud_packet *out) {
+    if (in->header.dataSize != sizeof(in->data.networkGetBridgeNameRequest))
+        return -1;
+
+    int ret = qemudNetworkGetBridgeName(server,
+                                        in->data.networkDumpXMLRequest.uuid,
+                                        out->data.networkGetBridgeNameReply.ifname, QEMUD_MAX_IFNAME_LEN);
+    if (ret < 0) {
+        if (qemudDispatchFailure(server, client, out) < 0)
+            return -1;
+    } else {
+        out->header.type = QEMUD_PKT_NETWORK_GET_BRIDGE_NAME;
+        out->header.dataSize = sizeof(out->data.networkGetBridgeNameReply);
+    }
+    return 0;
+}
+
 
 typedef int (*clientFunc)(struct qemud_server *server, struct qemud_client *client,
                           struct qemud_packet *in, struct qemud_packet *out);
@@ -740,6 +758,7 @@ clientFunc funcsTransmitRW[QEMUD_PKT_MAX] = {
     qemudDispatchNetworkStart,
     qemudDispatchNetworkDestroy,
     qemudDispatchNetworkDumpXML,
+    qemudDispatchNetworkGetBridgeName,
 };
 
 clientFunc funcsTransmitRO[QEMUD_PKT_MAX] = {
@@ -776,6 +795,7 @@ clientFunc funcsTransmitRO[QEMUD_PKT_MAX] = {
     NULL,
     NULL,
     qemudDispatchNetworkDumpXML,
+    qemudDispatchNetworkGetBridgeName,
 };
 
 /*
