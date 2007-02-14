@@ -125,7 +125,7 @@ struct _virConnect {
     void *userData;         /* the user data */
 
     /* misc */
-    xmlMutexPtr domains_mux;/* a mutex to protect the domain hash table */
+    xmlMutexPtr hashes_mux;/* a mutex to protect the domain hash table */
     virHashTablePtr domains;/* hash table for known domains */
     int flags;              /* a set of connection flags */
 };

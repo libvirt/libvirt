@@ -660,8 +660,8 @@ virGetConnect(void) {
     ret->domains = virHashCreate(20);
     if (ret->domains == NULL)
         goto failed;
-    ret->domains_mux = xmlNewMutex();
-    if (ret->domains_mux == NULL)
+    ret->hashes_mux = xmlNewMutex();
+    if (ret->hashes_mux == NULL)
         goto failed;
 
     ret->uses = 1;
@@ -671,8 +671,8 @@ failed:
     if (ret != NULL) {
 	if (ret->domains != NULL)
 	    virHashFree(ret->domains, (virHashDeallocator) virDomainFreeName);
-	if (ret->domains_mux != NULL)
-	    xmlFreeMutex(ret->domains_mux);
+	if (ret->hashes_mux != NULL)
+	    xmlFreeMutex(ret->hashes_mux);
         free(ret);
     }
     return(NULL);
@@ -691,22 +691,22 @@ int
 virFreeConnect(virConnectPtr conn) {
     int ret;
 
-    if ((!VIR_IS_CONNECT(conn)) || (conn->domains_mux == NULL)) {
+    if ((!VIR_IS_CONNECT(conn)) || (conn->hashes_mux == NULL)) {
         virHashError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
-    xmlMutexLock(conn->domains_mux);
+    xmlMutexLock(conn->hashes_mux);
     conn->uses--;
     ret = conn->uses;
     if (ret > 0) {
-	xmlMutexUnlock(conn->domains_mux);
+	xmlMutexUnlock(conn->hashes_mux);
 	return(ret);
     }
 
     if (conn->domains != NULL)
         virHashFree(conn->domains, (virHashDeallocator) virDomainFreeName);
-    if (conn->domains_mux != NULL)
-        xmlFreeMutex(conn->domains_mux);
+    if (conn->hashes_mux != NULL)
+        xmlFreeMutex(conn->hashes_mux);
     free(conn);
     return(0);
 }
@@ -729,11 +729,11 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     virDomainPtr ret = NULL;
 
     if ((!VIR_IS_CONNECT(conn)) || ((name == NULL) && (uuid == NULL)) ||
-        (conn->domains_mux == NULL)) {
+        (conn->hashes_mux == NULL)) {
         virHashError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
     }
-    xmlMutexLock(conn->domains_mux);
+    xmlMutexLock(conn->hashes_mux);
 
     /* TODO search by UUID first as they are better differenciators */
 
@@ -771,11 +771,11 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     conn->uses++;
 done:
     ret->uses++;
-    xmlMutexUnlock(conn->domains_mux);
+    xmlMutexUnlock(conn->hashes_mux);
     return(ret);
 
 error:
-    xmlMutexUnlock(conn->domains_mux);
+    xmlMutexUnlock(conn->hashes_mux);
     if (ret != NULL) {
 	if (ret->name != NULL)
 	    free(ret->name );
@@ -799,11 +799,11 @@ virFreeDomain(virConnectPtr conn, virDomainPtr domain) {
     int ret = 0;
 
     if ((!VIR_IS_CONNECT(conn)) || (!VIR_IS_CONNECTED_DOMAIN(domain)) ||
-        (domain->conn != conn) || (conn->domains_mux == NULL)) {
+        (domain->conn != conn) || (conn->hashes_mux == NULL)) {
         virHashError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
-    xmlMutexLock(conn->domains_mux);
+    xmlMutexLock(conn->hashes_mux);
 
     /*
      * decrement the count for the domain
@@ -839,13 +839,13 @@ virFreeDomain(virConnectPtr conn, virDomainPtr domain) {
     
     if (conn->domains != NULL)
         virHashFree(conn->domains, (virHashDeallocator) virDomainFreeName);
-    if (conn->domains_mux != NULL)
-        xmlFreeMutex(conn->domains_mux);
+    if (conn->hashes_mux != NULL)
+        xmlFreeMutex(conn->hashes_mux);
     free(conn);
     return(0);
 
 done:
-    xmlMutexUnlock(conn->domains_mux);
+    xmlMutexUnlock(conn->hashes_mux);
     return(ret);
 }
 
@@ -870,7 +870,7 @@ virGetDomainByID(virConnectPtr conn, int id) {
         virHashError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
     }
-    xmlMutexLock(conn->domains_mux);
+    xmlMutexLock(conn->hashes_mux);
 
     table = conn->domains;
     if ((table == NULL) || (table->nbElems == 0))
@@ -890,7 +890,7 @@ virGetDomainByID(virConnectPtr conn, int id) {
 	}
     }
 done:
-    xmlMutexUnlock(conn->domains_mux);
+    xmlMutexUnlock(conn->hashes_mux);
     return(ret);
 }
 /*

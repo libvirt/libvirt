@@ -1,6 +1,12 @@
+Tue Feb 14 14:58:35 EST 2007 Mark McLoughlin <markmc@redhat.com
+
+	* src/hash.c, src/internal.h: Re-name virConnect->domains_mux
+	to virConnect->hashes_mux since it will also be used to
+	protect the networks hash.
+	
 Tue Feb 14 14:57:52 EST 2007 Mark McLoughlin <markmc@redhat.com
 
-	* src/conf.c: qemudSaveConfig() will always report a
+	* qemud/conf.c: qemudSaveConfig() will always report a
 	more specific error, so	we should avoid overwriting
 	this error.
 	
