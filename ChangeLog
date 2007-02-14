@@ -1,3 +1,28 @@
+Tue Feb 14 16:23:25 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/iptables.[ch]: add code for managing iptables
+	rules.
+
+	* qemud/Makefile.am: add iptables.[ch].
+	
+	* qemud/qemud.c: add and remove iptables rules as
+	appropriate.
+	
+	* qemud/conf.c: when starting a guess, add a rule
+	allowing it to forward packets across the networks
+	bridge.
+	
+	* qemud/internal.h: add iptables context ptr
+	
+	* configure.in: add --with-iptables-dir and
+	--with-iptables-prefix to allow us to put our rules
+	in a chain with the given prefix and save the rules
+	in files in the given dir so as to integrate with
+	the proposed "service iptables restart" solution
+	in:
+	
+	   https://bugzilla.redhat.com/227011
+	
 Tue Feb 14 16:21:18 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* src/xml.c: with <interface type="network"> connect the

@@ -79,6 +79,31 @@ dnl
     fi
 
 dnl
+dnl allow the creation of iptables rules in chains with a
+dnl specific prefix rather than in the standard toplevel chains
+dnl
+AC_ARG_WITH(iptables-prefix,
+            AC_HELP_STRING([--with-iptables-prefix=prefix],
+                           [prefix used for iptables chains, default is to use standard toplevel chains]),
+            [IPTABLES_PREFIX=$withval])
+AC_DEFINE_UNQUOTED(IPTABLES_PREFIX, "$IPTABLES_PREFIX", [prefix used for iptables chains])
+
+dnl
+dnl also support saving the various chains to files
+dnl in e.g. /etc/sysconfig/iptables.d
+dnl
+AC_ARG_WITH(iptables-dir,
+            AC_HELP_STRING([--with-iptables-dir=path],
+                           [directory used to save iptables chains, defaults to not saving]),
+            [IPTABLES_DIR=$withval])
+if test x"$IPTABLES_DIR" != "x"; then
+   AC_DEFINE_UNQUOTED(IPTABLES_DIR, "$IPTABLES_DIR", [directory used for saving iptables chains])
+fi
+
+AC_PATH_PROG(IPTABLES_PATH, iptables, /sbin/iptables)
+AC_DEFINE_UNQUOTED(IPTABLES_PATH, "$IPTABLES_PATH", [path to iptables binary])
+
+dnl
 dnl Specify the xen-distribution directory to be able to compile on a
 dnl non-xenified host
 dnl

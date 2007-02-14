@@ -31,6 +31,7 @@
 
 #include "protocol.h"
 #include "bridge.h"
+#include "iptables.h"
 
 #ifdef __GNUC__
 #ifdef HAVE_ANSIDECL_H
@@ -283,6 +284,7 @@ struct qemud_server {
     int ninactivenetworks;
     struct qemud_network *inactivenetworks;
     brControl *brctl;
+    iptablesContext *iptables;
     char configDir[PATH_MAX];
     char networkConfigDir[PATH_MAX];
     char errorMessage[QEMUD_MAX_ERROR_LEN];

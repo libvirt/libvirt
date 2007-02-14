@@ -43,6 +43,7 @@
 #include "internal.h"
 #include "conf.h"
 #include "driver.h"
+#include "iptables.h"
 
 static int qemudParseUUID(const char *uuid,
                           unsigned char *rawuuid) {
@@ -860,6 +861,13 @@ qemudNetworkIfaceConnect(struct qemud_server *server,
         goto error;
     }
 
+    if ((err = iptablesAddPhysdevForward(server->iptables, net->dst.network.tapifname))) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "Failed to add iptables rule to allow bridging from '%s' :%s",
+                         net->dst.network.tapifname, strerror(err));
+        goto error;
+    }
+
     snprintf(tapfdstr, sizeof(tapfdstr), "tap,fd=%d,script=", tapfd);
 
     if (!(retval = strdup(tapfdstr)))
@@ -875,6 +883,7 @@ qemudNetworkIfaceConnect(struct qemud_server *server,
     return retval;
 
  no_memory:
+    iptablesRemovePhysdevForward(server->iptables, net->dst.network.tapifname);
     qemudReportError(server, VIR_ERR_NO_MEMORY, "tapfds");
  error:
     if (retval)
