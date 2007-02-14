@@ -462,6 +462,243 @@ static int qemudDispatchDomainUndefine(struct qemud_server *server, struct qemud
     return 0;
 }
 
+static int qemudDispatchNumNetworks(struct qemud_server *server, struct qemud_client *client,
+                                    struct qemud_packet *in, struct qemud_packet *out) {
+    if (in->header.dataSize != 0)
+        return -1;
+
+    int nnetworks = qemudNumNetworks(server);
+    if (nnetworks < 0) {
+        if (qemudDispatchFailure(server, client, out) < 0)
+            return -1;
+    } else {
+        out->header.type = QEMUD_PKT_NUM_NETWORKS;
+        out->header.dataSize = sizeof(out->data.numNetworksReply);
+        out->data.numNetworksReply.numNetworks = nnetworks;
+    }
+    return 0;
+}
+
+static int qemudDispatchListNetworks(struct qemud_server *server, struct qemud_client *client,
+                                     struct qemud_packet *in, struct qemud_packet *out) {
+    char **names;
+    int i;
+    if (in->header.dataSize != 0)
+        return -1;
+
+    if (!(names = malloc(sizeof(char *)*QEMUD_MAX_NUM_NETWORKS)))
+        return -1;
+
+    for (i = 0 ; i < QEMUD_MAX_NUM_NETWORKS ; i++) {
+        names[i] = out->data.listNetworksReply.networks[i];
+    }
+
+    int nnetworks = qemudListNetworks(server,
+                                      names,
+                                      QEMUD_MAX_NUM_NETWORKS);
+    free(names);
+    if (nnetworks < 0) {
+        if (qemudDispatchFailure(server, client, out) < 0)
+            return -1;
+    } else {
+        out->header.type = QEMUD_PKT_LIST_NETWORKS;
+        out->header.dataSize = sizeof(out->data.listNetworksReply);
+        out->data.listNetworksReply.numNetworks = nnetworks;
+    }
+    return 0;
+}
+
+static int qemudDispatchNumDefinedNetworks(struct qemud_server *server, struct qemud_client *client,
+                                           struct qemud_packet *in, struct qemud_packet *out) {
+    if (in->header.dataSize != 0)
+        return -1;
+
+    int nnetworks = qemudNumDefinedNetworks(server);
+    if (nnetworks < 0) {
+        if (qemudDispatchFailure(server, client, out) < 0)
+            return -1;
+    } else {
+        out->header.type = QEMUD_PKT_NUM_DEFINED_NETWORKS;
+        out->header.dataSize = sizeof(out->data.numDefinedNetworksReply);
+        out->data.numDefinedNetworksReply.numNetworks = nnetworks;
+    }
+    return 0;
+}
+
+static int qemudDispatchListDefinedNetworks(struct qemud_server *server, struct qemud_client *client,
+                                            struct qemud_packet *in, struct qemud_packet *out) {
+    char **names;
+    int i;
+    if (in->header.dataSize != 0)
+        return -1;
+
+    if (!(names = malloc(sizeof(char *)*QEMUD_MAX_NUM_NETWORKS)))
+        return -1;
+
+    for (i = 0 ; i < QEMUD_MAX_NUM_NETWORKS ; i++) {
+        names[i] = out->data.listDefinedNetworksReply.networks[i];
+    }
+
+    int nnetworks = qemudListDefinedNetworks(server,
+                                             names,
+                                             QEMUD_MAX_NUM_NETWORKS);
+    free(names);
+    if (nnetworks < 0) {
+        if (qemudDispatchFailure(server, client, out) < 0)
+            return -1;
+    } else {
+        out->header.type = QEMUD_PKT_LIST_DEFINED_NETWORKS;
+        out->header.dataSize = sizeof(out->data.listDefinedNetworksReply);
+        out->data.listDefinedNetworksReply.numNetworks = nnetworks;
+    }
+    return 0;
+}
+
+static int qemudDispatchNetworkLookupByName(struct qemud_server *server, struct qemud_client *client,
+                                            struct qemud_packet *in, struct qemud_packet *out) {
+    if (in->header.dataSize != sizeof(in->data.networkLookupByNameRequest))
+        return -1;
+
+    /* Paranoia NULL termination */
+    in->data.networkLookupByNameRequest.name[QEMUD_MAX_NAME_LEN-1] = '\0';
+    struct qemud_network *network = qemudFindNetworkByName(server, in->data.networkLookupByNameRequest.name);
+    if (!network) {
+        if (qemudDispatchFailure(server, client, out) < 0)
+            return -1;
+    } else {
+        out->header.type = QEMUD_PKT_NETWORK_LOOKUP_BY_NAME;
+        out->header.dataSize = sizeof(out->data.networkLookupByNameReply);
+        memcpy(out->data.networkLookupByNameReply.uuid, network->def.uuid, QEMUD_UUID_RAW_LEN);
+    }
+    return 0;
+}
+
+static int qemudDispatchNetworkLookupByUUID(struct qemud_server *server, struct qemud_client *client,
+                                            struct qemud_packet *in, struct qemud_packet *out) {
+    if (in->header.dataSize != sizeof(in->data.networkLookupByUUIDRequest))
+        return -1;
+
+    struct qemud_network *network = qemudFindNetworkByUUID(server, in->data.networkLookupByUUIDRequest.uuid);
+    if (!network) {
+        if (qemudDispatchFailure(server, client, out) < 0)
+            return -1;
+    } else {
+        out->header.type = QEMUD_PKT_NETWORK_LOOKUP_BY_UUID;
+        out->header.dataSize = sizeof(out->data.networkLookupByUUIDReply);
+        strncpy(out->data.networkLookupByUUIDReply.name, network->def.name, QEMUD_MAX_NAME_LEN-1);
+        out->data.networkLookupByUUIDReply.name[QEMUD_MAX_NAME_LEN-1] = '\0';
+    }
+    return 0;
+}
+
+static int qemudDispatchNetworkCreate(struct qemud_server *server, struct qemud_client *client,
+                                      struct qemud_packet *in, struct qemud_packet *out) {
+    if (in->header.dataSize != sizeof(in->data.networkCreateRequest))
+        return -1;
+
+    in->data.networkCreateRequest.xml[QEMUD_MAX_XML_LEN-1] ='\0';
+
+    struct qemud_network *network = qemudNetworkCreate(server, in->data.networkCreateRequest.xml);
+    if (!network) {
+        if (qemudDispatchFailure(server, client, out) < 0)
+            return -1;
+    } else {
+        out->header.type = QEMUD_PKT_NETWORK_CREATE;
+        out->header.dataSize = sizeof(out->data.networkCreateReply);
+        memcpy(out->data.networkCreateReply.uuid, network->def.uuid, QEMUD_UUID_RAW_LEN);
+        strncpy(out->data.networkCreateReply.name, network->def.name, QEMUD_MAX_NAME_LEN-1);
+        out->data.networkCreateReply.name[QEMUD_MAX_NAME_LEN-1] = '\0';
+    }
+    return 0;
+}
+
+static int qemudDispatchNetworkDefine(struct qemud_server *server, struct qemud_client *client,
+                                      struct qemud_packet *in, struct qemud_packet *out) {
+    if (in->header.dataSize != sizeof(in->data.networkDefineRequest))
+        return -1;
+
+    in->data.networkDefineRequest.xml[QEMUD_MAX_XML_LEN-1] ='\0';
+
+    struct qemud_network *network = qemudNetworkDefine(server, in->data.networkDefineRequest.xml);
+    if (!network) {
+        if (qemudDispatchFailure(server, client, out) < 0)
+            return -1;
+    } else {
+        out->header.type = QEMUD_PKT_NETWORK_DEFINE;
+        out->header.dataSize = sizeof(out->data.networkDefineReply);
+        memcpy(out->data.networkDefineReply.uuid, network->def.uuid, QEMUD_UUID_RAW_LEN);
+        strncpy(out->data.networkDefineReply.name, network->def.name, QEMUD_MAX_NAME_LEN-1);
+        out->data.networkDefineReply.name[QEMUD_MAX_NAME_LEN-1] = '\0';
+    }
+    return 0;
+}
+
+static int qemudDispatchNetworkUndefine(struct qemud_server *server, struct qemud_client *client,
+                                        struct qemud_packet *in, struct qemud_packet *out) {
+    if (in->header.dataSize != sizeof(in->data.networkUndefineRequest))
+        return -1;
+
+    int ret = qemudNetworkUndefine(server, in->data.networkUndefineRequest.uuid);
+    if (ret < 0) {
+        if (qemudDispatchFailure(server, client, out) < 0)
+            return -1;
+    } else {
+        out->header.type = QEMUD_PKT_NETWORK_UNDEFINE;
+        out->header.dataSize = 0;
+    }
+    return 0;
+}
+
+static int qemudDispatchNetworkStart(struct qemud_server *server, struct qemud_client *client,
+                                     struct qemud_packet *in, struct qemud_packet *out) {
+    if (in->header.dataSize != sizeof(in->data.networkStartRequest))
+        return -1;
+
+    struct qemud_network *network = qemudFindNetworkByUUID(server, in->data.networkStartRequest.uuid);
+    if (!network || qemudNetworkStart(server, network) < 0) {
+        if (qemudDispatchFailure(server, client, out) < 0)
+            return -1;
+    } else {
+        out->header.type = QEMUD_PKT_NETWORK_START;
+        out->header.dataSize = 0;
+    }
+    return 0;
+}
+
+static int qemudDispatchNetworkDestroy(struct qemud_server *server, struct qemud_client *client,
+                                      struct qemud_packet *in, struct qemud_packet *out) {
+    if (in->header.dataSize != sizeof(in->data.networkDestroyRequest))
+        return -1;
+
+    int ret = qemudNetworkDestroy(server, in->data.networkDestroyRequest.uuid);
+    if (ret < 0) {
+        if (qemudDispatchFailure(server, client, out) < 0)
+            return -1;
+    } else {
+        out->header.type = QEMUD_PKT_NETWORK_DESTROY;
+        out->header.dataSize = 0;
+    }
+    return 0;
+}
+
+static int qemudDispatchNetworkDumpXML(struct qemud_server *server, struct qemud_client *client,
+                                      struct qemud_packet *in, struct qemud_packet *out) {
+    if (in->header.dataSize != sizeof(in->data.networkDumpXMLRequest))
+        return -1;
+
+    int ret = qemudNetworkDumpXML(server,
+                                  in->data.networkDumpXMLRequest.uuid,
+                                  out->data.networkDumpXMLReply.xml, QEMUD_MAX_XML_LEN);
+    if (ret < 0) {
+        if (qemudDispatchFailure(server, client, out) < 0)
+            return -1;
+    } else {
+        out->header.type = QEMUD_PKT_NETWORK_DUMP_XML;
+        out->header.dataSize = sizeof(out->data.networkDumpXMLReply);
+    }
+    return 0;
+}
+
 
 typedef int (*clientFunc)(struct qemud_server *server, struct qemud_client *client,
                           struct qemud_packet *in, struct qemud_packet *out);
@@ -490,7 +727,19 @@ clientFunc funcsTransmitRW[QEMUD_PKT_MAX] = {
     qemudDispatchNumDefinedDomains,
     qemudDispatchDomainStart,
     qemudDispatchDomainDefine,
-    qemudDispatchDomainUndefine
+    qemudDispatchDomainUndefine,
+    qemudDispatchNumNetworks,
+    qemudDispatchListNetworks,
+    qemudDispatchNumDefinedNetworks,
+    qemudDispatchListDefinedNetworks,
+    qemudDispatchNetworkLookupByUUID,
+    qemudDispatchNetworkLookupByName,
+    qemudDispatchNetworkCreate,
+    qemudDispatchNetworkDefine,
+    qemudDispatchNetworkUndefine,
+    qemudDispatchNetworkStart,
+    qemudDispatchNetworkDestroy,
+    qemudDispatchNetworkDumpXML,
 };
 
 clientFunc funcsTransmitRO[QEMUD_PKT_MAX] = {
@@ -515,6 +764,18 @@ clientFunc funcsTransmitRO[QEMUD_PKT_MAX] = {
     NULL,
     NULL,
     NULL,
+    qemudDispatchNumNetworks,
+    qemudDispatchListNetworks,
+    qemudDispatchNumDefinedNetworks,
+    qemudDispatchListDefinedNetworks,
+    qemudDispatchNetworkLookupByUUID,
+    qemudDispatchNetworkLookupByName,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    qemudDispatchNetworkDumpXML,
 };
 
 /*

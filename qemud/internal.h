@@ -199,6 +199,18 @@ struct qemud_vm {
     struct qemud_vm *next;
 };
 
+/* Virtual Network main configuration */
+struct qemud_network_def {
+    unsigned char uuid[QEMUD_UUID_RAW_LEN];
+    char name[QEMUD_MAX_NAME_LEN];
+};
+
+/* Virtual Network runtime state */
+struct qemud_network {
+    struct qemud_network_def def;
+    struct qemud_network *next;
+};
+
 /* Stores the per-client connection state */
 struct qemud_client {
     int fd;

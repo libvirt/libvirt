@@ -50,6 +50,18 @@ enum {
     QEMUD_PKT_DOMAIN_START,
     QEMUD_PKT_DOMAIN_DEFINE,
     QEMUD_PKT_DOMAIN_UNDEFINE,
+    QEMUD_PKT_NUM_NETWORKS,
+    QEMUD_PKT_LIST_NETWORKS,
+    QEMUD_PKT_NUM_DEFINED_NETWORKS,
+    QEMUD_PKT_LIST_DEFINED_NETWORKS,
+    QEMUD_PKT_NETWORK_LOOKUP_BY_UUID,
+    QEMUD_PKT_NETWORK_LOOKUP_BY_NAME,
+    QEMUD_PKT_NETWORK_CREATE,
+    QEMUD_PKT_NETWORK_DEFINE,
+    QEMUD_PKT_NETWORK_UNDEFINE,
+    QEMUD_PKT_NETWORK_START,
+    QEMUD_PKT_NETWORK_DESTROY,
+    QEMUD_PKT_NETWORK_DUMP_XML,
 
     QEMUD_PKT_MAX,
 } qemud_packet_type;
@@ -62,6 +74,7 @@ enum {
 #define QEMUD_MAX_NAME_LEN 50
 #define QEMUD_MAX_XML_LEN 4096
 #define QEMUD_MAX_NUM_DOMAINS 100
+#define QEMUD_MAX_NUM_NETWORKS 100
 #define QEMUD_MAX_ERROR_LEN 1024
 
 /* Possible guest VM states */
@@ -200,6 +213,63 @@ union qemud_packet_data {
     struct {
         unsigned char uuid[QEMUD_UUID_RAW_LEN];
     } domainUndefineRequest;
+    struct {
+        int32_t numNetworks;
+    } numNetworksReply;
+    struct {
+        int32_t numNetworks;
+        char networks[QEMUD_MAX_NUM_NETWORKS][QEMUD_MAX_NAME_LEN];
+    } listNetworksReply;
+    struct {
+        int32_t numNetworks;
+    } numDefinedNetworksReply;
+    struct {
+        int32_t numNetworks;
+        char networks[QEMUD_MAX_NUM_NETWORKS][QEMUD_MAX_NAME_LEN];
+    } listDefinedNetworksReply;
+    struct {
+        char name[QEMUD_MAX_NAME_LEN];
+    } networkLookupByNameRequest;
+    struct {
+        int32_t id;
+        unsigned char uuid[QEMUD_UUID_RAW_LEN];
+    } networkLookupByNameReply;
+    struct {
+        unsigned char uuid[QEMUD_UUID_RAW_LEN];
+    } networkLookupByUUIDRequest;
+    struct {
+        int32_t id;
+        char name[QEMUD_MAX_NAME_LEN];
+    } networkLookupByUUIDReply;
+    struct {
+        char xml[QEMUD_MAX_XML_LEN];
+    } networkCreateRequest;
+    struct {
+        unsigned char uuid[QEMUD_UUID_RAW_LEN];
+        char name[QEMUD_MAX_NAME_LEN];
+    } networkCreateReply;
+    struct {
+        char xml[QEMUD_MAX_XML_LEN];
+    } networkDefineRequest;
+    struct {
+        unsigned char uuid[QEMUD_UUID_RAW_LEN];
+        char name[QEMUD_MAX_NAME_LEN];
+    } networkDefineReply;
+    struct {
+        unsigned char uuid[QEMUD_UUID_RAW_LEN];
+    } networkUndefineRequest;
+    struct {
+        unsigned char uuid[QEMUD_UUID_RAW_LEN];
+    } networkStartRequest;
+    struct {
+        unsigned char uuid[QEMUD_UUID_RAW_LEN];
+    } networkDestroyRequest;
+    struct {
+        unsigned char uuid[QEMUD_UUID_RAW_LEN];
+    } networkDumpXMLRequest;
+    struct {
+        char xml[QEMUD_MAX_XML_LEN];
+    } networkDumpXMLReply;
 };
 
 /* Each packet has header & data */

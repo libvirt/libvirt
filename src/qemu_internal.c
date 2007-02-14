@@ -61,7 +61,7 @@ qemuError(virConnectPtr con,
         return;
 
     errmsg = __virErrorMsg(error, info);
-    __virRaiseError(con, dom, VIR_FROM_QEMU, error, VIR_ERR_ERROR,
+    __virRaiseError(con, dom, NULL, VIR_FROM_QEMU, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, 0, 0, errmsg, info, 0);
 }
 
@@ -806,6 +806,276 @@ static int qemuUndefine(virDomainPtr dom) {
     return ret;
 }
 
+static int qemuNetworkOpen(virConnectPtr conn,
+                           const char *name,
+                           int flags) {
+    xmlURIPtr uri = NULL;
+    int ret = -1;
+
+    if (conn->qemud_fd == -1)
+        return 0;
+
+    if (name)
+        uri = xmlParseURI(name);
+
+    if (uri && !strcmp(uri->scheme, "qemu"))
+        ret = qemuOpen(conn, name, flags);
+    else if (geteuid() == 0)
+        ret = qemuOpen(conn, "qemu:///system", flags);
+    else
+        ret = qemuOpen(conn, "qemu:///session", flags);
+
+    if (uri)
+        xmlFreeURI(uri);
+
+    return ret;
+}
+
+static int qemuNumOfNetworks(virConnectPtr conn) {
+    struct qemud_packet req, reply;
+
+    req.header.type = QEMUD_PKT_NUM_NETWORKS;
+    req.header.dataSize = 0;
+
+    if (qemuProcessRequest(conn, NULL, &req, &reply) < 0) {
+        return -1;
+    }
+
+    return reply.data.numNetworksReply.numNetworks;
+}
+
+static int qemuListNetworks(virConnectPtr conn,
+                            const char **names,
+                            int maxnames) {
+    struct qemud_packet req, reply;
+    int i, nNetworks;
+
+    req.header.type = QEMUD_PKT_LIST_NETWORKS;
+    req.header.dataSize = 0;
+
+    if (qemuProcessRequest(conn, NULL, &req, &reply) < 0) {
+        return -1;
+    }
+
+    nNetworks = reply.data.listNetworksReply.numNetworks;
+    if (nNetworks > maxnames)
+        return -1;
+
+    for (i = 0 ; i < nNetworks ; i++) {
+        reply.data.listNetworksReply.networks[i][QEMUD_MAX_NAME_LEN-1] = '\0';
+        names[i] = strdup(reply.data.listNetworksReply.networks[i]);
+    }
+
+    return nNetworks;
+}
+
+static int qemuNumOfDefinedNetworks(virConnectPtr conn) {
+    struct qemud_packet req, reply;
+
+    req.header.type = QEMUD_PKT_NUM_DEFINED_NETWORKS;
+    req.header.dataSize = 0;
+
+    if (qemuProcessRequest(conn, NULL, &req, &reply) < 0) {
+        return -1;
+    }
+
+    return reply.data.numDefinedNetworksReply.numNetworks;
+}
+
+static int qemuListDefinedNetworks(virConnectPtr conn,
+                                   const char **names,
+                                   int maxnames) {
+    struct qemud_packet req, reply;
+    int i, nNetworks;
+
+    req.header.type = QEMUD_PKT_LIST_DEFINED_NETWORKS;
+    req.header.dataSize = 0;
+
+    if (qemuProcessRequest(conn, NULL, &req, &reply) < 0) {
+        return -1;
+    }
+
+    nNetworks = reply.data.listDefinedNetworksReply.numNetworks;
+    if (nNetworks > maxnames)
+        return -1;
+
+    for (i = 0 ; i < nNetworks ; i++) {
+        reply.data.listDefinedNetworksReply.networks[i][QEMUD_MAX_NAME_LEN-1] = '\0';
+        names[i] = strdup(reply.data.listDefinedNetworksReply.networks[i]);
+    }
+
+    return nNetworks;
+}
+
+static virNetworkPtr qemuNetworkLookupByUUID(virConnectPtr conn,
+                                             const unsigned char *uuid) {
+    struct qemud_packet req, reply;
+    virNetworkPtr network;
+
+    req.header.type = QEMUD_PKT_NETWORK_LOOKUP_BY_UUID;
+    req.header.dataSize = sizeof(req.data.networkLookupByUUIDRequest);
+    memmove(req.data.networkLookupByUUIDRequest.uuid, uuid, QEMUD_UUID_RAW_LEN);
+
+    if (qemuProcessRequest(conn, NULL, &req, &reply) < 0) {
+        return NULL;
+    }
+
+    reply.data.networkLookupByUUIDReply.name[QEMUD_MAX_NAME_LEN-1] = '\0';
+
+    if (!(network = virGetNetwork(conn,
+                                  reply.data.networkLookupByUUIDReply.name,
+                                  uuid)))
+        return NULL;
+
+    return network;
+}
+
+static virNetworkPtr qemuNetworkLookupByName(virConnectPtr conn,
+                                             const char *name) {
+    struct qemud_packet req, reply;
+    virNetworkPtr network;
+
+    if (strlen(name) > (QEMUD_MAX_NAME_LEN-1))
+        return NULL;
+
+    req.header.type = QEMUD_PKT_NETWORK_LOOKUP_BY_NAME;
+    req.header.dataSize = sizeof(req.data.networkLookupByNameRequest);
+    strcpy(req.data.networkLookupByNameRequest.name, name);
+
+    if (qemuProcessRequest(conn, NULL, &req, &reply) < 0) {
+        return NULL;
+    }
+
+    if (!(network = virGetNetwork(conn,
+                                  name,
+                                  reply.data.networkLookupByNameReply.uuid)))
+        return NULL;
+
+    return network;
+}
+
+static virNetworkPtr qemuNetworkCreateXML(virConnectPtr conn,
+                                          const char *xmlDesc) {
+    struct qemud_packet req, reply;
+    virNetworkPtr network;
+    int len = strlen(xmlDesc);
+
+    if (len > (QEMUD_MAX_XML_LEN-1)) {
+        return NULL;
+    }
+
+    req.header.type = QEMUD_PKT_NETWORK_CREATE;
+    req.header.dataSize = sizeof(req.data.networkCreateRequest);
+    strcpy(req.data.networkCreateRequest.xml, xmlDesc);
+    req.data.networkCreateRequest.xml[QEMUD_MAX_XML_LEN-1] = '\0';
+
+    if (qemuProcessRequest(conn, NULL, &req, &reply) < 0) {
+        return NULL;
+    }
+
+    reply.data.networkCreateReply.name[QEMUD_MAX_NAME_LEN-1] = '\0';
+
+    if (!(network = virGetNetwork(conn,
+                                  reply.data.networkCreateReply.name,
+                                  reply.data.networkCreateReply.uuid)))
+        return NULL;
+
+    return network;
+}
+
+
+static virNetworkPtr qemuNetworkDefineXML(virConnectPtr conn,
+                                          const char *xml) {
+    struct qemud_packet req, reply;
+    virNetworkPtr network;
+    int len = strlen(xml);
+
+    if (len > (QEMUD_MAX_XML_LEN-1)) {
+        return NULL;
+    }
+
+    req.header.type = QEMUD_PKT_NETWORK_DEFINE;
+    req.header.dataSize = sizeof(req.data.networkDefineRequest);
+    strcpy(req.data.networkDefineRequest.xml, xml);
+    req.data.networkDefineRequest.xml[QEMUD_MAX_XML_LEN-1] = '\0';
+
+    if (qemuProcessRequest(conn, NULL, &req, &reply) < 0) {
+        return NULL;
+    }
+
+    reply.data.networkDefineReply.name[QEMUD_MAX_NAME_LEN-1] = '\0';
+
+    if (!(network = virGetNetwork(conn,
+                                  reply.data.networkDefineReply.name,
+                                  reply.data.networkDefineReply.uuid)))
+        return NULL;
+
+    return network;
+}
+
+static int qemuNetworkUndefine(virNetworkPtr network) {
+    struct qemud_packet req, reply;
+    int ret = 0;
+
+    req.header.type = QEMUD_PKT_NETWORK_UNDEFINE;
+    req.header.dataSize = sizeof(req.data.networkUndefineRequest);
+    memcpy(req.data.networkUndefineRequest.uuid, network->uuid, QEMUD_UUID_RAW_LEN);
+
+    if (qemuProcessRequest(network->conn, NULL, &req, &reply) < 0) {
+        ret = -1;
+        goto cleanup;
+    }
+
+ cleanup:
+    if (virFreeNetwork(network->conn, network) < 0)
+        ret = -1;
+
+    return ret;
+}
+
+static int qemuNetworkCreate(virNetworkPtr network) {
+    struct qemud_packet req, reply;
+
+    req.header.type = QEMUD_PKT_NETWORK_START;
+    req.header.dataSize = sizeof(req.data.networkStartRequest);
+    memcpy(req.data.networkStartRequest.uuid, network->uuid, QEMUD_UUID_RAW_LEN);
+
+    if (qemuProcessRequest(network->conn, NULL, &req, &reply) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
+static int qemuNetworkDestroy(virNetworkPtr network) {
+    struct qemud_packet req, reply;
+
+    req.header.type = QEMUD_PKT_NETWORK_DESTROY;
+    req.header.dataSize = sizeof(req.data.networkDestroyRequest);
+    memcpy(req.data.networkDestroyRequest.uuid, network->uuid, QEMUD_UUID_RAW_LEN);
+
+    if (qemuProcessRequest(network->conn, NULL, &req, &reply) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
+static char * qemuNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSED) {
+    struct qemud_packet req, reply;
+
+    req.header.type = QEMUD_PKT_NETWORK_DUMP_XML;
+    req.header.dataSize = sizeof(req.data.networkDumpXMLRequest);
+    memmove(req.data.networkDumpXMLRequest.uuid, network->uuid, QEMUD_UUID_RAW_LEN);
+
+    if (qemuProcessRequest(network->conn, NULL, &req, &reply) < 0) {
+        return NULL;
+    }
+
+    reply.data.networkDumpXMLReply.xml[QEMUD_MAX_XML_LEN-1] = '\0';
+
+    return strdup(reply.data.networkDumpXMLReply.xml);
+}
 
 static virDriver qemuDriver = {
     VIR_DRV_QEMU,
@@ -849,8 +1119,26 @@ static virDriver qemuDriver = {
     NULL, /* domainDetachDevice */
 };
 
+static virNetworkDriver qemuNetworkDriver = {
+    qemuNetworkOpen, /* open */
+    qemuClose, /* close */
+    qemuNumOfNetworks, /* numOfNetworks */
+    qemuListNetworks, /* listNetworks */
+    qemuNumOfDefinedNetworks, /* numOfDefinedNetworks */
+    qemuListDefinedNetworks, /* listDefinedNetworks */
+    qemuNetworkLookupByUUID, /* networkLookupByUUID */
+    qemuNetworkLookupByName, /* networkLookupByName */
+    qemuNetworkCreateXML , /* networkCreateXML */
+    qemuNetworkDefineXML , /* networkDefineXML */
+    qemuNetworkUndefine, /* networkUndefine */
+    qemuNetworkCreate, /* networkCreate */
+    qemuNetworkDestroy, /* networkDestroy */
+    qemuNetworkDumpXML, /* networkDumpXML */
+};
+
 void qemuRegister(void) {
     virRegisterDriver(&qemuDriver);
+    virRegisterDriver(&qemuNetworkDriver);
 }
 
 

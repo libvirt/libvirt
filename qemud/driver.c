@@ -545,6 +545,70 @@ int qemudDomainUndefine(struct qemud_server *server, const unsigned char *uuid) 
     return 0;
 }
 
+struct qemud_network *qemudFindNetworkByUUID(const struct qemud_server *server,
+                                             const unsigned char *uuid) {
+    server = NULL; uuid = NULL;
+    return NULL;
+}
+
+struct qemud_network *qemudFindNetworkByName(const struct qemud_server *server,
+                                             const char *name) {
+    server = NULL; name = NULL;
+    return NULL;
+}
+
+int qemudNumNetworks(struct qemud_server *server) {
+    server = NULL;
+    return 0;
+}
+
+int qemudListNetworks(struct qemud_server *server, char *const*names, int nnames) {
+    server = NULL; names = NULL; nnames = 0;
+    return 0;
+}
+
+int qemudNumDefinedNetworks(struct qemud_server *server) {
+    server = NULL;
+    return 0;
+}
+
+int qemudListDefinedNetworks(struct qemud_server *server, char *const*names, int nnames) {
+    server = NULL; names = NULL; nnames = 0;
+    return 0;
+}
+
+struct qemud_network *qemudNetworkCreate(struct qemud_server *server, const char *xml) {
+    server = NULL; xml = NULL;
+    return NULL;
+}
+
+struct qemud_network *qemudNetworkDefine(struct qemud_server *server, const char *xml) {
+    server = NULL; xml = NULL;
+    return NULL;
+}
+
+int qemudNetworkUndefine(struct qemud_server *server, const unsigned char *uuid) {
+    qemudReportError(server, VIR_ERR_INVALID_NETWORK, "no network with matching uuid");
+    uuid = NULL;
+    return -1;
+}
+
+int qemudNetworkStart(struct qemud_server *server, struct qemud_network *network) {
+    server = NULL; network = NULL;
+    return 1;
+}
+
+int qemudNetworkDestroy(struct qemud_server *server, const unsigned char *uuid) {
+    uuid = NULL;
+    qemudReportError(server, VIR_ERR_INVALID_NETWORK, "no network with matching uuid");
+    return -1;
+}
+
+int qemudNetworkDumpXML(struct qemud_server *server, const unsigned char *uuid, char *xml, int xmllen) {
+    qemudReportError(server, VIR_ERR_INVALID_NETWORK, "no network with matching uuid");
+    uuid = NULL; xml = NULL; xmllen = 0;
+    return -1;
+}
 
 /*
  * Local variables:
