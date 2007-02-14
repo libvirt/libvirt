@@ -93,6 +93,55 @@ static int qemudParseUUID(const char *uuid,
 }
 
 
+/* Build up a fully qualfiied path for a config file to be
+ * associated with a persistent guest or network */
+static int
+qemudMakeConfigPath(const char *configDir,
+                    const char *name,
+                    const char *ext,
+                    char *buf,
+                    unsigned int buflen) {
+    if ((strlen(configDir) + 1 + strlen(name) + (ext ? strlen(ext) : 0) + 1) > buflen)
+        return -1;
+
+    strcpy(buf, configDir);
+    strcat(buf, "/");
+    strcat(buf, name);
+    if (ext)
+        strcat(buf, ext);
+    return 0;
+}
+
+static int
+qemudEnsureConfigDir(struct qemud_server *server,
+                     const char *configDir) {
+    struct stat sb;
+
+    /* XXX: needs to be recursive */
+
+    if (stat(configDir, &sb) < 0) {
+        if (errno == ENOENT) {
+            if (mkdir(configDir, 0700) < 0) {
+                qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                                 "cannot create config directory %s: %s",
+                                 configDir, strerror(errno));
+                return -1;
+            }
+        } else {
+            qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                             "cannot stat config directory %s",
+                             configDir, strerror(errno));
+            return -1;
+        }
+    } else if (!S_ISDIR(sb.st_mode)) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "config directory %s is not a directory", configDir);
+        return -1;
+    }
+
+    return 0;
+}
+
 struct qemu_arch_info {
     const char *arch;
     const char **machines;
@@ -928,57 +977,19 @@ void qemudFreeVM(struct qemud_vm *vm) {
     free(vm);
 }
 
-/* Build up a fully qualified path for a config file to be
- * associated with a persistent guest */
-static
-int qemudMakeConfigPath(struct qemud_server *server,
-                        const char *name,
-                        const char *ext,
-                        char *buf,
-                        unsigned int buflen) {
-    if ((strlen(server->configDir) + 1 + strlen(name) + (ext ? strlen(ext) : 0) + 1) > buflen)
-        return -1;
-
-    strcpy(buf, server->configDir);
-    strcat(buf, "/");
-    strcat(buf, name);
-    if (ext)
-        strcat(buf, ext);
-    return 0;
-}
-
-
 /* Save a guest's config data into a persistent file */
 static int qemudSaveConfig(struct qemud_server *server,
                            struct qemud_vm *vm) {
     char *xml;
     int fd = -1, ret = -1;
     int towrite;
-    struct stat sb;
 
     if (!(xml = qemudGenerateXML(server, vm))) {
         return -1;
     }
 
-    if (stat(server->configDir, &sb) < 0) {
-        if (errno == ENOENT) {
-            if (mkdir(server->configDir, 0700) < 0) {
-                qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
-                                 "cannot create config directory %s",
-                                 server->configDir);
-                return -1;
-            }
-        } else {
-            qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
-                             "cannot stat config directory %s",
-                             server->configDir);
-            return -1;
-        }
-    } else if (!S_ISDIR(sb.st_mode)) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
-                         "config directory %s is not a directory",
-                         server->configDir);
-        return -1;
+    if (qemudEnsureConfigDir(server, server->configDir) < 0) {
+        goto cleanup;
     }
 
     if ((fd = open(vm->configFile,
@@ -1068,7 +1079,7 @@ struct qemud_vm *qemudLoadConfigXML(struct qemud_server *server,
         vm->configFile[PATH_MAX-1] = '\0';
     } else {
         if (save) {
-            if (qemudMakeConfigPath(server, vm->def.name, ".xml", vm->configFile, PATH_MAX) < 0) {
+            if (qemudMakeConfigPath(server->configDir, vm->def.name, ".xml", vm->configFile, PATH_MAX) < 0) {
                 qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
                                  "cannot construct config file path");
                 qemudFreeVM(vm);
@@ -1131,12 +1142,13 @@ static void qemudLoadConfig(struct qemud_server *server,
 }
 
 
-/* Scan for all guest config files */
-int qemudScanConfigs(struct qemud_server *server) {
+static
+int qemudScanConfigDir(struct qemud_server *server,
+                       const char *configDir) {
     DIR *dir;
     struct dirent *entry;
 
-    if (!(dir = opendir(server->configDir))) {
+    if (!(dir = opendir(configDir))) {
         if (errno == ENOENT)
             return 0;
         return -1;
@@ -1147,7 +1159,7 @@ int qemudScanConfigs(struct qemud_server *server) {
         if (entry->d_name[0] == '.')
             continue;
 
-        if (qemudMakeConfigPath(server, entry->d_name, NULL, file, PATH_MAX) < 0)
+        if (qemudMakeConfigPath(configDir, entry->d_name, NULL, file, PATH_MAX) < 0)
             continue;
 
         qemudLoadConfig(server, file);
@@ -1158,6 +1170,10 @@ int qemudScanConfigs(struct qemud_server *server) {
     return 0;
 }
 
+/* Scan for all guest and network config files */
+int qemudScanConfigs(struct qemud_server *server) {
+    return qemudScanConfigDir(server, server->configDir);
+}
 
 /* Simple grow-on-demand string buffer */
 /* XXX re-factor to shared library */

@@ -1,3 +1,13 @@
+Tue Feb 14 14:52:12 EST 2007 Mark McLoughlin <markmc@redhat.com
+
+	* qemud/conf.c: Re-factor bits of conf.c so that:
+
+	  - qemudMakeConfigPath() can be re-used given another configDir
+	  - split qemudEnsureConfigDir() out of qemudSaveConfig() so
+	    that it may be re-used to create another configDir
+	  - split qemudScanConfigDir() out so that qemudScanConfigs()
+	    can scan multiple configDirs
+	
 Tue Feb 14 14:50:22 EST 2007 Mark McLoughlin <markmc@redhat.com
 
 	* qemud/conf.c: handle an unspecified MAC address, 
