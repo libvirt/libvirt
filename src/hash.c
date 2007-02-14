@@ -617,7 +617,7 @@ virHashError(virConnectPtr conn, virErrorNumber error, const char *info)
         return;
 
     errmsg = __virErrorMsg(error, info);
-    __virRaiseError(conn, NULL, NULL, VIR_FROM_NONE, error, VIR_ERR_ERROR,
+    __virRaiseError(conn, NULL, VIR_FROM_NONE, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, 0, 0, errmsg, info);
 }
 
@@ -634,20 +634,6 @@ static int
 virDomainFreeName(virDomainPtr domain, const char *name ATTRIBUTE_UNUSED)
 {
     return (virDomainFree(domain));
-}
-
-/**
- * virNetworkFreeName:
- * @network: a network object
- *
- * Destroy the network object, this is just used by the network hash callback.
- *
- * Returns 0 in case of success and -1 in case of failure.
- */
-static int
-virNetworkFreeName(virNetworkPtr network, const char *name ATTRIBUTE_UNUSED)
-{
-    return (virNetworkFree(network));
 }
 
 /**
@@ -674,11 +660,8 @@ virGetConnect(void) {
     ret->domains = virHashCreate(20);
     if (ret->domains == NULL)
         goto failed;
-    ret->networks = virHashCreate(20);
-    if (ret->networks == NULL)
-        goto failed;
-    ret->hashes_mux = xmlNewMutex();
-    if (ret->hashes_mux == NULL)
+    ret->domains_mux = xmlNewMutex();
+    if (ret->domains_mux == NULL)
         goto failed;
 
     ret->uses = 1;
@@ -688,10 +671,8 @@ failed:
     if (ret != NULL) {
 	if (ret->domains != NULL)
 	    virHashFree(ret->domains, (virHashDeallocator) virDomainFreeName);
-	if (ret->networks != NULL)
-	    virHashFree(ret->networks, (virHashDeallocator) virNetworkFreeName);
-	if (ret->hashes_mux != NULL)
-	    xmlFreeMutex(ret->hashes_mux);
+	if (ret->domains_mux != NULL)
+	    xmlFreeMutex(ret->domains_mux);
         free(ret);
     }
     return(NULL);
@@ -710,24 +691,22 @@ int
 virFreeConnect(virConnectPtr conn) {
     int ret;
 
-    if ((!VIR_IS_CONNECT(conn)) || (conn->hashes_mux == NULL)) {
+    if ((!VIR_IS_CONNECT(conn)) || (conn->domains_mux == NULL)) {
         virHashError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
-    xmlMutexLock(conn->hashes_mux);
+    xmlMutexLock(conn->domains_mux);
     conn->uses--;
     ret = conn->uses;
     if (ret > 0) {
-	xmlMutexUnlock(conn->hashes_mux);
+	xmlMutexUnlock(conn->domains_mux);
 	return(ret);
     }
 
     if (conn->domains != NULL)
         virHashFree(conn->domains, (virHashDeallocator) virDomainFreeName);
-    if (conn->networks != NULL)
-        virHashFree(conn->networks, (virHashDeallocator) virNetworkFreeName);
-    if (conn->hashes_mux != NULL)
-        xmlFreeMutex(conn->hashes_mux);
+    if (conn->domains_mux != NULL)
+        xmlFreeMutex(conn->domains_mux);
     free(conn);
     return(0);
 }
@@ -750,11 +729,11 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     virDomainPtr ret = NULL;
 
     if ((!VIR_IS_CONNECT(conn)) || ((name == NULL) && (uuid == NULL)) ||
-        (conn->hashes_mux == NULL)) {
+        (conn->domains_mux == NULL)) {
         virHashError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
     }
-    xmlMutexLock(conn->hashes_mux);
+    xmlMutexLock(conn->domains_mux);
 
     /* TODO search by UUID first as they are better differenciators */
 
@@ -792,11 +771,11 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     conn->uses++;
 done:
     ret->uses++;
-    xmlMutexUnlock(conn->hashes_mux);
+    xmlMutexUnlock(conn->domains_mux);
     return(ret);
 
 error:
-    xmlMutexUnlock(conn->hashes_mux);
+    xmlMutexUnlock(conn->domains_mux);
     if (ret != NULL) {
 	if (ret->name != NULL)
 	    free(ret->name );
@@ -820,11 +799,11 @@ virFreeDomain(virConnectPtr conn, virDomainPtr domain) {
     int ret = 0;
 
     if ((!VIR_IS_CONNECT(conn)) || (!VIR_IS_CONNECTED_DOMAIN(domain)) ||
-        (domain->conn != conn) || (conn->hashes_mux == NULL)) {
+        (domain->conn != conn) || (conn->domains_mux == NULL)) {
         virHashError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(-1);
     }
-    xmlMutexLock(conn->hashes_mux);
+    xmlMutexLock(conn->domains_mux);
 
     /*
      * decrement the count for the domain
@@ -860,13 +839,13 @@ virFreeDomain(virConnectPtr conn, virDomainPtr domain) {
     
     if (conn->domains != NULL)
         virHashFree(conn->domains, (virHashDeallocator) virDomainFreeName);
-    if (conn->hashes_mux != NULL)
-        xmlFreeMutex(conn->hashes_mux);
+    if (conn->domains_mux != NULL)
+        xmlFreeMutex(conn->domains_mux);
     free(conn);
     return(0);
 
 done:
-    xmlMutexUnlock(conn->hashes_mux);
+    xmlMutexUnlock(conn->domains_mux);
     return(ret);
 }
 
@@ -891,7 +870,7 @@ virGetDomainByID(virConnectPtr conn, int id) {
         virHashError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return(NULL);
     }
-    xmlMutexLock(conn->hashes_mux);
+    xmlMutexLock(conn->domains_mux);
 
     table = conn->domains;
     if ((table == NULL) || (table->nbElems == 0))
@@ -911,142 +890,9 @@ virGetDomainByID(virConnectPtr conn, int id) {
 	}
     }
 done:
-    xmlMutexUnlock(conn->hashes_mux);
+    xmlMutexUnlock(conn->domains_mux);
     return(ret);
 }
-
-/**
- * virGetNetwork:
- * @conn: the hypervisor connection
- * @name: pointer to the network name or NULL
- * @uuid: pointer to the uuid or NULL
- *
- * Lookup if the network is already registered for that connection,
- * if yes return a new pointer to it, if no allocate a new structure,
- * and register it in the table. In any case a corresponding call to
- * virFreeNetwork() is needed to not leak data.
- *
- * Returns a pointer to the network, or NULL in case of failure
- */
-virNetworkPtr
-virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid) {
-    virNetworkPtr ret = NULL;
-
-    if ((!VIR_IS_CONNECT(conn)) || ((name == NULL) && (uuid == NULL)) ||
-        (conn->hashes_mux == NULL)) {
-        virHashError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return(NULL);
-    }
-    xmlMutexLock(conn->hashes_mux);
-
-    /* TODO search by UUID first as they are better differenciators */
-
-    ret = (virNetworkPtr) virHashLookup(conn->networks, name);
-    if (ret != NULL) {
-        /* TODO check the UUID */
-	goto done;
-    }
-
-    /*
-     * not found, allocate a new one
-     */
-    ret = (virNetworkPtr) malloc(sizeof(virNetwork));
-    if (ret == NULL) {
-        virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating network"));
-	goto error;
-    }
-    memset(ret, 0, sizeof(virNetwork));
-    ret->name = strdup(name);
-    if (ret->name == NULL) {
-        virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating network"));
-	goto error;
-    }
-    ret->magic = VIR_NETWORK_MAGIC;
-    ret->conn = conn;
-    if (uuid != NULL)
-        memcpy(&(ret->uuid[0]), uuid, VIR_UUID_BUFLEN);
-
-    if (virHashAddEntry(conn->networks, name, ret) < 0) {
-        virHashError(conn, VIR_ERR_INTERNAL_ERROR,
-	             _("failed to add network to connection hash table"));
-	goto error;
-    }
-    conn->uses++;
-done:
-    ret->uses++;
-    xmlMutexUnlock(conn->hashes_mux);
-    return(ret);
-
-error:
-    xmlMutexUnlock(conn->hashes_mux);
-    if (ret != NULL) {
-	if (ret->name != NULL)
-	    free(ret->name );
-	free(ret);
-    }
-    return(NULL);
-}
-
-/**
- * virFreeNetwork:
- * @conn: the hypervisor connection
- * @network: the network to release
- *
- * Release the given network, if the reference count drops to zero, then
- * the network is really freed.
- *
- * Returns the reference count or -1 in case of failure.
- */
-int
-virFreeNetwork(virConnectPtr conn, virNetworkPtr network) {
-    int ret = 0;
-
-    if ((!VIR_IS_CONNECT(conn)) || (!VIR_IS_CONNECTED_NETWORK(network)) ||
-        (network->conn != conn) || (conn->hashes_mux == NULL)) {
-        virHashError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return(-1);
-    }
-    xmlMutexLock(conn->hashes_mux);
-
-    /*
-     * decrement the count for the network
-     */
-    network->uses--;
-    ret = network->uses;
-    if (ret > 0)
-        goto done;
-
-    /* TODO search by UUID first as they are better differenciators */
-
-    if (virHashRemoveEntry(conn->networks, network->name, NULL) < 0) {
-        virHashError(conn, VIR_ERR_INTERNAL_ERROR,
-	             _("network missing from connection hash table"));
-        goto done;
-    }
-    network->magic = -1;
-    if (network->name)
-        free(network->name);
-    free(network);
-
-    /*
-     * decrement the count for the connection
-     */
-    conn->uses--;
-    if (conn->uses > 0)
-        goto done;
-
-    if (conn->networks != NULL)
-        virHashFree(conn->networks, (virHashDeallocator) virNetworkFreeName);
-    if (conn->hashes_mux != NULL)
-        xmlFreeMutex(conn->hashes_mux);
-    free(conn);
-    return(0);
-
-done:
-    xmlMutexUnlock(conn->hashes_mux);
-    return(ret);
-}
-
 /*
  * Local variables:
  *  indent-tabs-mode: nil

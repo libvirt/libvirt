@@ -84,16 +84,6 @@ extern "C" {
 #define VIR_IS_DOMAIN(obj)		((obj) && (obj)->magic==VIR_DOMAIN_MAGIC)
 #define VIR_IS_CONNECTED_DOMAIN(obj)	(VIR_IS_DOMAIN(obj) && VIR_IS_CONNECT((obj)->conn))
 
-/**
- * VIR_NETWORK_MAGIC:
- *
- * magic value used to protect the API when pointers to network structures
- * are passed down by the uers.
- */
-#define VIR_NETWORK_MAGIC		0xDEAD1234
-#define VIR_IS_NETWORK(obj)		((obj) && (obj)->magic==VIR_NETWORK_MAGIC)
-#define VIR_IS_CONNECTED_NETWORK(obj)	(VIR_IS_NETWORK(obj) && VIR_IS_CONNECT((obj)->conn))
-
 #define MAX_DRIVERS 10
 
 /*
@@ -113,10 +103,6 @@ struct _virConnect {
     /* the list of available drivers for that connection */
     virDriverPtr      drivers[MAX_DRIVERS];
     int               nb_drivers;
-
-    /* the list of available network drivers */
-    virNetworkDriverPtr networkDrivers[MAX_DRIVERS];
-    int                 nb_network_drivers;
 
     /* extra data needed by drivers */
     int handle;             /* internal handle used for hypercall */
@@ -139,9 +125,8 @@ struct _virConnect {
     void *userData;         /* the user data */
 
     /* misc */
-    xmlMutexPtr hashes_mux;/* a mutex to protect the domain and networks hash tables */
+    xmlMutexPtr domains_mux;/* a mutex to protect the domain hash table */
     virHashTablePtr domains;/* hash table for known domains */
-    virHashTablePtr networks;/* hash table for known domains */
     int flags;              /* a set of connection flags */
 };
 
@@ -173,19 +158,6 @@ struct _virDomain {
     char *xml;                           /* the XML description for defined domains */
 };
 
-/**
-* _virNetwork:
-*
-* Internal structure associated to a domain
-*/
-struct _virNetwork {
-    unsigned int magic;                  /* specific value to check */
-    int uses;                            /* reference count */
-    virConnectPtr conn;                  /* pointer back to the connection */
-    char *name;                          /* the network external name */
-    unsigned char uuid[VIR_UUID_BUFLEN]; /* the network unique identifier */
-};
-
 /*
 * Internal routines
 */
@@ -200,7 +172,6 @@ char *virDomainGetVMInfo(virDomainPtr domain,
  ************************************************************************/
 void __virRaiseError(virConnectPtr conn,
 		     virDomainPtr dom,
-		     virNetworkPtr net,
 		     int domain,
 		     int code,
 		     virErrorLevel level,
@@ -225,11 +196,6 @@ int		virFreeDomain	(virConnectPtr conn,
 				 virDomainPtr domain);
 virDomainPtr	virGetDomainByID(virConnectPtr conn,
 				 int id);
-virNetworkPtr	virGetNetwork	(virConnectPtr conn,
-				 const char *name,
-				 const unsigned char *uuid);
-int		virFreeNetwork	(virConnectPtr conn,
-				 virNetworkPtr domain);
 
 #ifdef __cplusplus
 }

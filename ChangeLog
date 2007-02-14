@@ -1,102 +1,16 @@
-Tue Feb 14 15:43:28 EST 2007 Mark McLoughlin <markmc@redhat.com>
-
-	* src/virsh.c: add the net-* commands.
-	
-Tue Feb 14 15:37:17 EST 2007 Mark McLoughlin <markmc@redhat.com>
-
-	Note: potential ABI break here, but people should
-	only really be using virError structs returned from
-	libvirt itself.
-
-	* include/libvirt/virterror.h: add virNetwork
-	to virError
-	
-	* src/internal.h, src/virterror.c: add network param
-	to __virRaiseError()
-	
-	* src/conf.c, src/hash.c, src/libvirt.c, src/proxy_internal.c,
-	src/qemu_internal.c, src/sexpr.c, src/test.c, src/xen_internal.c,
-	src/xend_internal.c, src/xm_internal.c, src/xml.c, src/xmlrpc.c,
-	src/xs_internal.c: update.
-	
-Tue Feb 14 15:33:05 EST 2007 Mark McLoughlin <markmc@redhat.com>
-
-	* include/libvirt/libvirt.h.in: add the networks APIs
-	
-	* include/libvirt/virterror.h: add some error codes
-	
-	* src/driver.h: add network driver vtable
-	
-	* src/hash.c: add networks hash
-	
-	* src/internal.h: add virNetwork
-
-	* src/libvirt.c: hook up the APIs to the network
-	driver
-	
-	* src/libvirt_sym.version: add the new APIs
-	
-	* src/virterror.c: handle the new error codes
-	
-Tue Feb 14 15:07:26 EST 2007 Mark McLoughlin <markmc@redhat.com>
-
-	* src/conf.h: fix merge error - remove the argc argument
-	from qemudBuildCommandLine()
-	
-Tue Feb 14 15:03:22 EST 2007 Mark McLoughlin <markmc@redhat.com>
-
-	* src/virsh.c: Re-name some of the VSH_DOMBYFOO stuff
-	to VSH_BYFOO in order to re-use it for the network stuff.
-	
-Tue Feb 14 14:58:35 EST 2007 Mark McLoughlin <markmc@redhat.com>
-
-	* src/hash.c, src/internal.h: Re-name virConnect->domains_mux
-	to virConnect->hashes_mux since it will also be used to
-	protect the networks hash.
-	
-Tue Feb 14 14:57:52 EST 2007 Mark McLoughlin <markmc@redhat.com>
-
-	* qemud/conf.c: qemudSaveConfig() will always report a
-	more specific error, so	we should avoid overwriting
-	this error.
-	
-Tue Feb 14 14:54:25 EST 2007 Mark McLoughlin <markmc@redhat.com>
-
-	* qemud/qemud.c: Re-factor out qemudExec() so that it can
-	be used to launch dnsmasq.
-
-	* qemud/conf.c: don't return argc from qemudBuildCommandLine()
-	as exec() doesn't need it.
-	
-Tue Feb 14 14:52:12 EST 2007 Mark McLoughlin <markmc@redhat.com>
-
-	* qemud/conf.c: Re-factor bits of conf.c so that:
-
-	  - qemudMakeConfigPath() can be re-used given another configDir
-	  - split qemudEnsureConfigDir() out of qemudSaveConfig() so
-	    that it may be re-used to create another configDir
-	  - split qemudScanConfigDir() out so that qemudScanConfigs()
-	    can scan multiple configDirs
-	
-Tue Feb 14 14:50:22 EST 2007 Mark McLoughlin <markmc@redhat.com>
-
-	* qemud/conf.c: handle an unspecified MAC address, 
-	fix the argv freeing code in qemudBuildCommandLine()
-	and fix copy and paste error in qemudGenerateXML()
-	
-Tue Feb 14 14:42:38 EST 2007 Mark McLoughlin <markmc@redhat.com>
+Tue Feb 14 14:42:38 EST 2007 Mark McLoughlin <markmc@redhat.com
 
 	* src/internal.h: add virConnect->qemud_fd so that
 	xen and qemu don't share the handle member.
 
 	* src/hash.c, src/qemu_internal.c: update
 	
-Tue Feb 14 14:40:52 EST 2007 Mark McLoughlin <markmc@redhat.com>
+Tue Feb 14 14:40:52 EST 2007 Mark McLoughlin <markmc@redhat.com
 
 	* qemud/conf.c, qemud/dispatch.c, qemud/driver.c,
 	  qemud/qemud.c: include autoconf's config.h
 	
-Tue Feb 14 14:39:18 EST 2007 Mark McLoughlin <markmc@redhat.com>
+Tue Feb 14 14:39:18 EST 2007 Mark McLoughlin <markmc@redhat.com
 
 	* conf.[ch]: rename from config.[ch] so we can use
 	autoconf's config.h
@@ -105,7 +19,7 @@ Tue Feb 14 14:39:18 EST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* driver.c, qemud.c: upd.
 	
-Tue Feb 14 14:33:22 EST 2007 Mark McLoughlin <markmc@redhat.com>
+Tue Feb 14 14:33:22 EST 2007 Mark McLoughlin <markmc@redhat.com
 
 	* autogen.sh: run autoheader
 
