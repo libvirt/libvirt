@@ -3,7 +3,7 @@
 Summary: Library providing an API to use the Xen virtualization
 Name: libvirt
 Version: @VERSION@
-Release: 1
+Release: 1%{?dist}
 License: LGPL
 Group: Development/Libraries
 Source: libvirt-%{version}.tar.gz
@@ -20,6 +20,7 @@ BuildRequires: readline-devel
 BuildRequires: ncurses-devel
 BuildRequires: gettext
 BuildRequires: libsysfs-devel
+BuildRequires: gnutls-devel
 Obsoletes: libvir
 ExclusiveArch: i386 x86_64 ia64
 
@@ -43,7 +44,6 @@ Summary: Python bindings for the libvirt library
 Group: Development/Libraries
 Requires: libvirt = %{version}
 Obsoletes: libvir-python
-Requires: %{_libdir}/python%(echo `python -c "import sys; print sys.version[0:3]"`)
 
 %description python
 The libvirt-python package contains a module that permits applications
@@ -119,6 +119,11 @@ rm -fr %{buildroot}
 %doc docs/examples/python
 
 %changelog
+* Wed Feb 14 2007 Daniel Veillard <veillard@redhat.com> 0.2.0-1
+- support for KVM and QEmu
+- support for network configuration
+- assorted fixes
+
 * Wed Dec 20 2006 Daniel Veillard <veillard@redhat.com> 0.1.11-1
 - finish inactive Xen domains support
 - memory leak fix

@@ -1,3 +1,8 @@
+Wed Feb 14 19:53:33 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* libvirt.spec.in: spec cleanup and missing BuildRequires
+	* qemud/Makefile.am: avoid -Werror
+
 Wed Feb 14 19:06:26 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in NEWS include/libvirt/libvirt.h docs/* docs/apibuild.py:
