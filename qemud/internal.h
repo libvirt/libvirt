@@ -200,6 +200,14 @@ struct qemud_vm {
     struct qemud_vm *next;
 };
 
+/* Store start and end addresses of a dhcp range */
+struct qemud_dhcp_range_def {
+    char start[BR_INET_ADDR_MAXLEN];
+    char end[BR_INET_ADDR_MAXLEN];
+
+    struct qemud_dhcp_range_def *next;
+};
+
 /* Virtual Network main configuration */
 struct qemud_network_def {
     unsigned char uuid[QEMUD_UUID_RAW_LEN];
@@ -211,6 +219,9 @@ struct qemud_network_def {
 
     char ipAddress[BR_INET_ADDR_MAXLEN];
     char netmask[BR_INET_ADDR_MAXLEN];
+
+    int nranges;
+    struct qemud_dhcp_range_def *ranges;
 };
 
 /* Virtual Network runtime state */
@@ -220,6 +231,7 @@ struct qemud_network {
     struct qemud_network_def def;
 
     char bridge[BR_IFNAME_MAXLEN];
+    int dnsmasqPid;
 
     unsigned int active : 1;
 

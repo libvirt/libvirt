@@ -703,6 +703,105 @@ static int qemudDispatchVMFailure(struct qemud_server *server, struct qemud_vm *
     return 0;
 }
 
+static int
+qemudBuildDnsmasqArgv(struct qemud_server *server,
+                      struct qemud_network *network,
+                      char ***argv) {
+    int i, len;
+    char buf[BR_INET_ADDR_MAXLEN * 2];
+    struct qemud_dhcp_range_def *range;
+
+    len =
+        1 + /* dnsmasq */
+        1 + /* --keep-in-foreground */
+        1 + /* --bind-interfaces */
+        2 + /* --pid-file "" */
+        2 + /* --conf-file "" */
+        2 + /* --except-interface lo */
+        2 + /* --listen-address 10.0.0.1 */
+        (2 * network->def.nranges) + /* --dhcp-range 10.0.0.2,10.0.0.254 */
+        1;  /* NULL */
+
+    if (!(*argv = malloc(len * sizeof(char *))))
+        goto no_memory;
+
+    memset(*argv, 0, len * sizeof(char *));
+
+#define APPEND_ARG(v, n, s) do {     \
+        if (!((v)[(n)] = strdup(s))) \
+            goto no_memory;          \
+    } while (0)
+
+    i = 0;
+
+    APPEND_ARG(*argv, i++, "dnsmasq");
+
+    APPEND_ARG(*argv, i++, "--keep-in-foreground");
+    APPEND_ARG(*argv, i++, "--bind-interfaces");
+
+    APPEND_ARG(*argv, i++, "--pid-file");
+    APPEND_ARG(*argv, i++, "");
+
+    APPEND_ARG(*argv, i++, "--conf-file");
+    APPEND_ARG(*argv, i++, "");
+
+    APPEND_ARG(*argv, i++, "--except-interface");
+    APPEND_ARG(*argv, i++, "lo");
+
+    APPEND_ARG(*argv, i++, "--listen-address");
+    APPEND_ARG(*argv, i++, network->def.ipAddress);
+
+    range = network->def.ranges;
+    while (range) {
+        snprintf(buf, sizeof(buf), "%s,%s",
+                 range->start, range->end);
+
+        APPEND_ARG(*argv, i++, "--dhcp-range");
+        APPEND_ARG(*argv, i++, buf);
+
+        range = range->next;
+    }
+
+#undef APPEND_ARG
+
+    return 0;
+
+ no_memory:
+    if (argv) {
+        for (i = 0; (*argv)[i]; i++)
+            free((*argv)[i]);
+        free(*argv);
+    }
+    qemudReportError(server, VIR_ERR_NO_MEMORY, "dnsmasq argv");
+    return -1;
+}
+
+
+static int
+dhcpStartDhcpDaemon(struct qemud_server *server,
+                    struct qemud_network *network)
+{
+    char **argv;
+    int ret, i;
+
+    if (network->def.ipAddress[0] == '\0') {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "cannot start dhcp daemon without IP address for server");
+        return -1;
+    }
+
+    argv = NULL;
+    if (qemudBuildDnsmasqArgv(server, network, &argv) < 0)
+        return -1;
+
+    ret = qemudExec(server, argv, &network->dnsmasqPid, NULL, NULL);
+
+    for (i = 0; argv[i]; i++)
+        free(argv[i]);
+    free(argv);
+
+    return ret;
+}
 
 int qemudStartNetworkDaemon(struct qemud_server *server,
                             struct qemud_network *network) {
@@ -758,9 +857,20 @@ int qemudStartNetworkDaemon(struct qemud_server *server,
         goto err_delbr;
     }
 
+    if (network->def.ranges &&
+        dhcpStartDhcpDaemon(server, network) < 0)
+        goto err_delbr1;
+
     network->active = 1;
 
     return 0;
+
+ err_delbr1:
+    if (network->def.ipAddress[0] &&
+        (err = brSetInterfaceUp(server->brctl, network->bridge, 0))) {
+        printf("Damn! Failed to bring down bridge '%s' : %s\n",
+               network->bridge, strerror(err));
+    }
 
  err_delbr:
     if ((err = brDeleteBridge(server->brctl, network->bridge))) {
@@ -779,6 +889,9 @@ int qemudShutdownNetworkDaemon(struct qemud_server *server,
 
     if (!network->active)
         return 0;
+
+    if (network->dnsmasqPid > 0)
+        kill(network->dnsmasqPid, SIGTERM);
 
     if (network->def.ipAddress[0] &&
         (err = brSetInterfaceUp(server->brctl, network->bridge, 0))) {
@@ -812,7 +925,15 @@ int qemudShutdownNetworkDaemon(struct qemud_server *server,
         curr = curr->next;
     }
 
+    if (network->dnsmasqPid > 0 &&
+        waitpid(network->dnsmasqPid, NULL, WNOHANG) != network->dnsmasqPid) {
+        kill(network->dnsmasqPid, SIGKILL);
+        if (waitpid(network->dnsmasqPid, NULL, 0) != network->dnsmasqPid)
+            printf("Got unexpected pid for dnsmasq, damn\n");
+    }
+
     network->bridge[0] = '\0';
+    network->dnsmasqPid = -1;
     network->active = 0;
 
     return 0;

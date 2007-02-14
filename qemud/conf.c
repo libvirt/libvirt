@@ -1099,6 +1099,12 @@ struct qemud_vm *qemudLoadConfigXML(struct qemud_server *server,
 
 
 void qemudFreeNetwork(struct qemud_network *network) {
+    struct qemud_dhcp_range_def *range = network->def.ranges;
+    while (range) {
+        struct qemud_dhcp_range_def *next = range->next;
+        free(range);
+        range = next;
+    }
     free(network);
 }
 
@@ -1177,11 +1183,61 @@ static int qemudParseBridgeXML(struct qemud_server *server ATTRIBUTE_UNUSED,
     return 1;
 }
 
+static int qemudParseDhcpRangesXML(struct qemud_server *server,
+                                   struct qemud_network *network,
+                                   xmlNodePtr node) {
+
+    xmlNodePtr cur;
+
+    cur = node->children;
+    while (cur != NULL) {
+        struct qemud_dhcp_range_def *range;
+        xmlChar *start, *end;
+
+        if (cur->type != XML_ELEMENT_NODE ||
+            !xmlStrEqual(cur->name, BAD_CAST "range")) {
+            cur = cur->next;
+            continue;
+        }
+
+        if (!(range = calloc(1, sizeof(struct qemud_dhcp_range_def)))) {
+            qemudReportError(server, VIR_ERR_NO_MEMORY, "range");
+            return 0;
+        }
+
+        start = xmlGetProp(cur, BAD_CAST "start");
+        end = xmlGetProp(cur, BAD_CAST "end");
+
+        if (start && start[0] && end && end[0]) {
+            strncpy(range->start, (const char *)start, BR_INET_ADDR_MAXLEN-1);
+            range->start[BR_INET_ADDR_MAXLEN-1] = '\0';
+
+            strncpy(range->end, (const char *)end, BR_INET_ADDR_MAXLEN-1);
+            range->end[BR_INET_ADDR_MAXLEN-1] = '\0';
+
+            range->next = network->def.ranges;
+            network->def.ranges = range;
+            network->def.nranges++;
+        } else {
+            free(range);
+        }
+
+        if (start)
+            xmlFree(start);
+        if (end)
+            xmlFree(end);
+
+        cur = cur->next;
+    }
+
+    return 1;
+}
 
 static int qemudParseInetXML(struct qemud_server *server ATTRIBUTE_UNUSED,
                              struct qemud_network *network,
                              xmlNodePtr node) {
     xmlChar *address, *netmask;
+    xmlNodePtr cur;
 
     address = xmlGetProp(node, BAD_CAST "address");
     if (address != NULL) {
@@ -1197,6 +1253,15 @@ static int qemudParseInetXML(struct qemud_server *server ATTRIBUTE_UNUSED,
         network->def.netmask[BR_INET_ADDR_MAXLEN-1] = '\0';
         xmlFree(netmask);
         netmask = NULL;
+    }
+
+    cur = node->children;
+    while (cur != NULL) {
+        if (cur->type == XML_ELEMENT_NODE &&
+            xmlStrEqual(cur->name, BAD_CAST "dhcp") &&
+            !qemudParseDhcpRangesXML(server, network, cur))
+            return 0;
+        cur = cur->next;
     }
 
     return 1;
@@ -1724,7 +1789,24 @@ char *qemudGenerateNetworkXML(struct qemud_server *server,
             qemudBufferPrintf(&buf, " netmask='%s'", network->def.netmask) < 0)
             goto no_memory;
 
-        if (qemudBufferAdd(&buf, "/>\n") < 0)
+        if (qemudBufferAdd(&buf, ">\n") < 0)
+            goto no_memory;
+
+        if (network->def.ranges) {
+            struct qemud_dhcp_range_def *range = network->def.ranges;
+            if (qemudBufferAdd(&buf, "    <dhcp>\n") < 0)
+                goto no_memory;
+            while (range) {
+                if (qemudBufferPrintf(&buf, "      <range start='%s' end='%s' />\n",
+                                      range->start, range->end) < 0)
+                    goto no_memory;
+                range = range->next;
+            }
+            if (qemudBufferAdd(&buf, "    </dhcp>\n") < 0)
+                goto no_memory;
+        }
+
+        if (qemudBufferAdd(&buf, "  </ip>\n") < 0)
             goto no_memory;
     }
 
