@@ -95,6 +95,7 @@ enum qemud_vm_net_type {
     QEMUD_NET_SERVER,
     QEMUD_NET_CLIENT,
     QEMUD_NET_MCAST,
+    QEMUD_NET_NETWORK,
     /*  QEMUD_NET_VDE*/
 };
 
@@ -123,6 +124,10 @@ struct qemud_vm_net_def {
         struct {
             char vlan[PATH_MAX];
         } vde;
+        struct {
+            char name[QEMUD_MAX_NAME_LEN];
+            char tapifname[BR_IFNAME_MAXLEN];
+        } network;
     } dst;
 
     struct qemud_vm_net_def *next;
@@ -192,6 +197,9 @@ struct qemud_vm {
     int stderr;
     int monitor;
     int pid;
+
+    int *tapfds;
+    int ntapfds;
 
     char configFile[PATH_MAX];
 

@@ -333,8 +333,23 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
 
 
 static int
+qemudLeaveFdOpen(int *openfds, int fd)
+{
+    int i;
+
+    if (!openfds)
+        return 0;
+
+    for (i = 0; openfds[i] != -1; i++)
+        if (fd == openfds[i])
+            return 1;
+
+    return 0;
+}
+
+static int
 qemudExec(struct qemud_server *server, char **argv,
-          int *retpid, int *outfd, int *errfd) {
+          int *retpid, int *outfd, int *errfd, int *openfds) {
     int pid, null;
     int pipeout[2] = {-1,-1};
     int pipeerr[2] = {-1,-1};
@@ -392,7 +407,8 @@ qemudExec(struct qemud_server *server, char **argv,
     for (i = 0; i < open_max; i++)
         if (i != STDOUT_FILENO &&
             i != STDERR_FILENO &&
-            i != STDIN_FILENO)
+            i != STDIN_FILENO &&
+            !qemudLeaveFdOpen(openfds, i))
             close(i);
 
     execvp(argv[0], argv);
@@ -429,9 +445,19 @@ int qemudStartVMDaemon(struct qemud_server *server,
     if (qemudBuildCommandLine(server, vm, &argv) < 0)
         return -1;
 
-    if (qemudExec(server, argv, &vm->pid, &vm->stdout, &vm->stderr) == 0) {
+    if (qemudExec(server, argv, &vm->pid, &vm->stdout, &vm->stderr, vm->tapfds) == 0) {
         vm->def.id = server->nextvmid++;
         ret = 0;
+    }
+
+    if (vm->tapfds) {
+        for (i = 0; vm->tapfds[i] != -1; i++) {
+            close(vm->tapfds[i]);
+            vm->tapfds[i] = -1;
+        }
+        free(vm->tapfds);
+        vm->tapfds = NULL;
+        vm->ntapfds = 0;
     }
   
     for (i = 0 ; argv[i] ; i++)
@@ -632,8 +658,17 @@ static int qemudVMData(struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 }
 
+static void
+qemudNetworkIfaceDisconnect(struct qemud_server *server ATTRIBUTE_UNUSED,
+                            struct qemud_vm *vm ATTRIBUTE_UNUSED,
+                            struct qemud_vm_net_def *net) {
+    /* FIXME: will be needed to remove iptables rules */
+    net = NULL;
+}
+
 int qemudShutdownVMDaemon(struct qemud_server *server, struct qemud_vm *vm) {
     struct qemud_vm *prev = NULL, *curr = server->activevms;
+    struct qemud_vm_net_def *net;
 
     /* Already cleaned-up */
     if (vm->pid < 0)
@@ -675,6 +710,13 @@ int qemudShutdownVMDaemon(struct qemud_server *server, struct qemud_vm *vm) {
     curr->stderr = -1;
     curr->monitor = -1;
     server->nvmfds -= 2;
+
+    net = vm->def.nets;
+    while (net) {
+        if (net->type == QEMUD_NET_NETWORK)
+            qemudNetworkIfaceDisconnect(server, vm, net);
+        net = net->next;
+    }
 
     if (waitpid(vm->pid, NULL, WNOHANG) != vm->pid) {
         kill(vm->pid, SIGKILL);
@@ -794,7 +836,7 @@ dhcpStartDhcpDaemon(struct qemud_server *server,
     if (qemudBuildDnsmasqArgv(server, network, &argv) < 0)
         return -1;
 
-    ret = qemudExec(server, argv, &network->dnsmasqPid, NULL, NULL);
+    ret = qemudExec(server, argv, &network->dnsmasqPid, NULL, NULL, NULL);
 
     for (i = 0; argv[i]; i++)
         free(argv[i]);

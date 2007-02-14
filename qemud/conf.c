@@ -366,6 +366,8 @@ static struct qemud_vm_net_def *qemudParseInterfaceXML(struct qemud_server *serv
     xmlNodePtr cur;
     xmlChar *macaddr = NULL;
     xmlChar *type = NULL;
+    xmlChar *network = NULL;
+    xmlChar *tapifname = NULL;
 
     if (!net) {
         qemudReportError(server, VIR_ERR_NO_MEMORY, "net");
@@ -386,6 +388,8 @@ static struct qemud_vm_net_def *qemudParseInterfaceXML(struct qemud_server *serv
             net->type = QEMUD_NET_CLIENT;
         else if (xmlStrEqual(type, BAD_CAST "mcast"))
             net->type = QEMUD_NET_MCAST;
+        else if (xmlStrEqual(type, BAD_CAST "network"))
+            net->type = QEMUD_NET_NETWORK;
         /*
         else if (xmlStrEqual(type, BAD_CAST "vde"))
           typ = QEMUD_NET_VDE;
@@ -402,6 +406,14 @@ static struct qemud_vm_net_def *qemudParseInterfaceXML(struct qemud_server *serv
             if ((macaddr == NULL) &&
                 (xmlStrEqual(cur->name, BAD_CAST "mac"))) {
                 macaddr = xmlGetProp(cur, BAD_CAST "address");
+            } else if ((network == NULL) &&
+                       (net->type == QEMUD_NET_NETWORK) &&
+                       (xmlStrEqual(cur->name, BAD_CAST "source"))) {
+                network = xmlGetProp(cur, BAD_CAST "network");
+            } else if ((tapifname == NULL) &&
+                       (net->type == QEMUD_NET_NETWORK) &&
+                       xmlStrEqual(cur->name, BAD_CAST "tap")) {
+                tapifname = xmlGetProp(cur, BAD_CAST "ifname");
             }
         }
         cur = cur->next;
@@ -421,7 +433,47 @@ static struct qemud_vm_net_def *qemudParseInterfaceXML(struct qemud_server *serv
         xmlFree(macaddr);
     }
 
+    if (net->type == QEMUD_NET_NETWORK) {
+        int len;
+
+        if (network == NULL) {
+            qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                             "No <source> 'network' attribute specified with <interface type='network'/>");
+            goto error;
+        } else if ((len = xmlStrlen(network)) >= QEMUD_MAX_NAME_LEN) {
+            qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                             "Network name '%s' too long", network);
+            goto error;
+        } else {
+            strncpy(net->dst.network.name, (char *)network, len);
+            net->dst.network.name[len] = '\0';
+        }
+
+        if (network)
+            xmlFree(network);
+
+        if (tapifname != NULL) {
+            if ((len == xmlStrlen(tapifname)) >= BR_IFNAME_MAXLEN) {
+                qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                                 "TAP interface name '%s' is too long", tapifname);
+                goto error;
+            } else {
+                strncpy(net->dst.network.tapifname, (char *)tapifname, len);
+                net->dst.network.tapifname[len] = '\0';
+            }
+            xmlFree(tapifname);
+        }
+    }
+
     return net;
+
+ error:
+    if (network)
+        xmlFree(network);
+    if (tapifname)
+        xmlFree(tapifname);
+    free(net);
+    return NULL;
 }
 
 
@@ -770,6 +822,68 @@ static int qemudParseXML(struct qemud_server *server,
 }
 
 
+static char *
+qemudNetworkIfaceConnect(struct qemud_server *server,
+                         struct qemud_vm *vm,
+                         struct qemud_vm_net_def *net)
+{
+    struct qemud_network *network;
+    const char *tapifname;
+    char tapfdstr[4+3+32+7];
+    char *retval = NULL;
+    int err;
+    int tapfd = -1;
+    int *tapfds;
+
+    if (!(network = qemudFindNetworkByName(server, net->dst.network.name))) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "Network '%s' not found", net->dst.network.name);
+        goto error;
+    } else if (network->bridge[0] == '\0') {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "Network '%s' not active", net->dst.network.name);
+        goto error;
+    }
+
+    if (net->dst.network.tapifname[0] == '\0' ||
+        strchr(net->dst.network.tapifname, '%')) {
+        tapifname = "vnet%d";
+    } else {
+        tapifname = net->dst.network.tapifname;
+    }
+
+    if ((err = brAddTap(server->brctl, network->bridge, tapifname,
+                        &net->dst.network.tapifname[0], BR_IFNAME_MAXLEN, &tapfd))) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "Failed to add tap interface '%s' to bridge '%s' : %s",
+                         tapifname, network->bridge, strerror(err));
+        goto error;
+    }
+
+    snprintf(tapfdstr, sizeof(tapfdstr), "tap,fd=%d,script=", tapfd);
+
+    if (!(retval = strdup(tapfdstr)))
+        goto no_memory;
+
+    if (!(tapfds = realloc(vm->tapfds, sizeof(int) * (vm->ntapfds+2))))
+        goto no_memory;
+
+    vm->tapfds = tapfds;
+    vm->tapfds[vm->ntapfds++] = tapfd;
+    vm->tapfds[vm->ntapfds]   = -1;
+
+    return retval;
+
+ no_memory:
+    qemudReportError(server, VIR_ERR_NO_MEMORY, "tapfds");
+ error:
+    if (retval)
+        free(retval);
+    if (tapfd != -1)
+        close(tapfd);
+    return NULL;
+}
+
 /*
  * Constructs a argv suitable for launching qemu with config defined
  * for a given virtual machine.
@@ -921,9 +1035,15 @@ int qemudBuildCommandLine(struct qemud_server *server,
                 goto no_memory;
             if (!((*argv)[++n] = strdup("-net")))
                 goto no_memory;
-            /* XXX don't hardcode user */
-            if (!((*argv)[++n] = strdup("user")))
-                goto no_memory;
+
+            if (net->type != QEMUD_NET_NETWORK) {
+                /* XXX don't hardcode user */
+                if (!((*argv)[++n] = strdup("user")))
+                    goto no_memory;
+            } else {
+                if (!((*argv)[++n] = qemudNetworkIfaceConnect(server, vm, net)))
+                    goto error;
+            }
 
             net = net->next;
         }
@@ -948,12 +1068,20 @@ int qemudBuildCommandLine(struct qemud_server *server,
     return 0;
 
  no_memory:
+    qemudReportError(server, VIR_ERR_NO_MEMORY, "argv");
+ error:
+    if (vm->tapfds) {
+        for (i = 0; vm->tapfds[i] != -1; i++)
+            close(vm->tapfds[i]);
+        free(vm->tapfds);
+        vm->tapfds = NULL;
+        vm->ntapfds = 0;
+    }
     if (argv) {
         for (i = 0 ; i < n ; i++)
             free((*argv)[i]);
         free(*argv);
     }
-    qemudReportError(server, VIR_ERR_NO_MEMORY, "argv");
     return -1;
 }
 
@@ -1715,6 +1843,18 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm) {
                               net->mac[0], net->mac[1], net->mac[2],
                               net->mac[3], net->mac[4], net->mac[5]) < 0)
             goto no_memory;
+
+        if (net->type == QEMUD_NET_NETWORK) {
+            if (qemudBufferPrintf(&buf, "      <network name='%s", net->dst.network.name) < 0)
+                goto no_memory;
+
+            if (net->dst.network.tapifname[0] != '\0' &&
+                qemudBufferPrintf(&buf, " tapifname='%s'", net->dst.network.tapifname) < 0)
+                goto no_memory;
+
+            if (qemudBufferPrintf(&buf, "/>\n") < 0)
+                goto no_memory;
+        }
 
         if (qemudBufferPrintf(&buf, "    </interface>\n") < 0)
             goto no_memory;
