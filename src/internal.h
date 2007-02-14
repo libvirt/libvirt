@@ -200,6 +200,7 @@ char *virDomainGetVMInfo(virDomainPtr domain,
  ************************************************************************/
 void __virRaiseError(virConnectPtr conn,
 		     virDomainPtr dom,
+		     virNetworkPtr net,
 		     int domain,
 		     int code,
 		     virErrorLevel level,

@@ -17,7 +17,7 @@
 #include "internal.h"
 
 static virError lastErr =       /* the last error */
-{ 0, 0, NULL, VIR_ERR_NONE, NULL, NULL, NULL, NULL, NULL, 0, 0 };
+{ 0, 0, NULL, VIR_ERR_NONE, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL };
 static virErrorFunc virErrorHandler = NULL;     /* global error handlet */
 static void *virUserData = NULL;        /* associated data */
 
@@ -230,7 +230,7 @@ virConnSetErrorFunc(virConnectPtr conn, void *userData,
 void
 virDefaultErrorFunc(virErrorPtr err)
 {
-    const char *lvl = "", *dom = "", *domain = "";
+    const char *lvl = "", *dom = "", *domain = "", *network = "";
     int len;
 
     if ((err == NULL) || (err->code == VIR_ERR_OK))
@@ -277,24 +277,27 @@ virDefaultErrorFunc(virErrorPtr err)
     }
     if ((err->dom != NULL) && (err->code != VIR_ERR_INVALID_DOMAIN)) {
         domain = err->dom->name;
+    } else if ((err->net != NULL) && (err->code != VIR_ERR_INVALID_NETWORK)) {
+        network = err->net->name;
     }
     len = strlen(err->message);
     if ((err->domain == VIR_FROM_XML) && (err->code == VIR_ERR_XML_DETAIL) &&
         (err->int1 != 0))
-        fprintf(stderr, "libvir: %s%s %s: line %d: %s",
-                dom, lvl, domain, err->int1, err->message);
+        fprintf(stderr, "libvir: %s%s %s%s: line %d: %s",
+                dom, lvl, domain, network, err->int1, err->message);
     else if ((len == 0) || (err->message[len - 1] != '\n'))
-        fprintf(stderr, "libvir: %s%s %s: %s\n",
-                dom, lvl, domain, err->message);
+        fprintf(stderr, "libvir: %s%s %s%s: %s\n",
+                dom, lvl, domain, network, err->message);
     else
-        fprintf(stderr, "libvir: %s%s %s: %s",
-                dom, lvl, domain, err->message);
+        fprintf(stderr, "libvir: %s%s %s%s: %s",
+                dom, lvl, domain, network, err->message);
 }
 
 /**
  * __virRaiseError:
  * @conn: the connection to the hypervisor if available
  * @dom: the domain if available
+ * @net: the network if available
  * @domain: the virErrorDomain indicating where it's coming from
  * @code: the virErrorNumber code for the error
  * @level: the virErrorLevel for the error
@@ -310,7 +313,7 @@ virDefaultErrorFunc(virErrorPtr err)
  * immediately if a callback is found and store it for later handling.
  */
 void
-__virRaiseError(virConnectPtr conn, virDomainPtr dom,
+__virRaiseError(virConnectPtr conn, virDomainPtr dom, virNetworkPtr net,
                 int domain, int code, virErrorLevel level,
                 const char *str1, const char *str2, const char *str3,
                 int int1, int int2, const char *msg, ...)
@@ -349,6 +352,7 @@ __virRaiseError(virConnectPtr conn, virDomainPtr dom,
     virResetError(to);
     to->conn = conn;
     to->dom = dom;
+    to->net = net;
     to->domain = domain;
     to->code = code;
     to->message = str;

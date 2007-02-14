@@ -106,7 +106,7 @@ virXenStoreError(virConnectPtr conn, virErrorNumber error, const char *info)
         return;
 
     errmsg = __virErrorMsg(error, info);
-    __virRaiseError(conn, NULL, VIR_FROM_XENSTORE, error, VIR_ERR_ERROR,
+    __virRaiseError(conn, NULL, NULL, VIR_FROM_XENSTORE, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, 0, 0, errmsg, info);
 }
 

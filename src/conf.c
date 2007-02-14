@@ -95,7 +95,7 @@ virConfError(virConfPtr conf ATTRIBUTE_UNUSED,
         return;
 
     errmsg = __virErrorMsg(error, info);
-    __virRaiseError(NULL, NULL, VIR_FROM_CONF, error, VIR_ERR_ERROR,
+    __virRaiseError(NULL, NULL, NULL, VIR_FROM_CONF, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, line, 0, errmsg, info, line);
 }
 

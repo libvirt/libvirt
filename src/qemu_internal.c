@@ -61,7 +61,7 @@ qemuError(virConnectPtr con,
         return;
 
     errmsg = __virErrorMsg(error, info);
-    __virRaiseError(con, dom, VIR_FROM_QEMU, error, VIR_ERR_ERROR,
+    __virRaiseError(con, dom, NULL, VIR_FROM_QEMU, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, 0, 0, errmsg, info, 0);
 }
 
@@ -244,7 +244,7 @@ qemuOpenClientUNIX(virConnectPtr conn, const char *path, int autostart) {
         return (-1);
     }
 
-    conn->handle = fd;
+    conn->qemud_fd = fd;
 
     return (0);
 }
@@ -269,7 +269,7 @@ static int qemuProcessRequest(virConnectPtr conn,
 
     /* Block sending entire outgoing packet */
     while (outLeft) {
-        int got = write(conn->handle, out+outDone, outLeft);
+        int got = write(conn->qemud_fd, out+outDone, outLeft);
         if (got < 0) {
             return -1;
         }
@@ -279,7 +279,7 @@ static int qemuProcessRequest(virConnectPtr conn,
 
     /* Block waiting for header to come back */
     while (inLeft) {
-        int done = read(conn->handle, in+inGot, inLeft);
+        int done = read(conn->qemud_fd, in+inGot, inLeft);
         if (done <= 0) {
             return -1;
         }
@@ -307,7 +307,7 @@ static int qemuProcessRequest(virConnectPtr conn,
     /* Now block reading in body */
     inLeft = reply->header.dataSize;
     while (inLeft) {
-        int done = read(conn->handle, in+inGot, inLeft);
+        int done = read(conn->qemud_fd, in+inGot, inLeft);
         if (done <= 0) {
             return -1;
         }
@@ -389,11 +389,11 @@ static int qemuOpen(virConnectPtr conn,
         return -1;
     }
 
-    conn->handle = -1;
+    conn->qemud_fd = -1;
     qemuOpenConnection(conn, uri, flags & VIR_DRV_OPEN_RO ? 1 : 0);
     xmlFreeURI(uri);
 
-    if (conn->handle < 0) {
+    if (conn->qemud_fd < 0) {
         return -1;
     }
 
@@ -402,9 +402,9 @@ static int qemuOpen(virConnectPtr conn,
 
 
 static int qemuClose  (virConnectPtr conn) {
-    if (conn->handle != -1) {
-        close(conn->handle);
-        conn->handle = -1;
+    if (conn->qemud_fd != -1) {
+        close(conn->qemud_fd);
+        conn->qemud_fd = -1;
     }
     return 0;
 }

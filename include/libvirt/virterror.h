@@ -72,6 +72,7 @@ struct _virError {
     char       *str3;	/* extra string information */
     int		int1;	/* extra number information */
     int		int2;	/* extra number information */
+    virNetworkPtr net;	/* the network if available */
 };
 
 /**

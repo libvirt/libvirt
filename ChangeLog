@@ -1,3 +1,20 @@
+Tue Feb 14 15:37:17 EST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	Note: potential ABI break here, but people should
+	only really be using virError structs returned from
+	libvirt itself.
+
+	* include/libvirt/virterror.h: add virNetwork
+	to virError
+	
+	* src/internal.h, src/virterror.c: add network param
+	to __virRaiseError()
+	
+	* src/conf.c, src/hash.c, src/libvirt.c, src/proxy_internal.c,
+	src/qemu_internal.c, src/sexpr.c, src/test.c, src/xen_internal.c,
+	src/xend_internal.c, src/xm_internal.c, src/xml.c, src/xmlrpc.c,
+	src/xs_internal.c: update.
+	
 Tue Feb 14 15:33:05 EST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* include/libvirt/libvirt.h.in: add the networks APIs

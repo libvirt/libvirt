@@ -38,7 +38,7 @@ virSexprError(virErrorNumber error, const char *info)
         return;
 
     errmsg = __virErrorMsg(error, info);
-    __virRaiseError(NULL, NULL, VIR_FROM_SEXPR, error, VIR_ERR_ERROR,
+    __virRaiseError(NULL, NULL, NULL, VIR_FROM_SEXPR, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, 0, 0, errmsg, info);
 }
 

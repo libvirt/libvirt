@@ -107,7 +107,7 @@ virLibConnError(virConnectPtr conn, virErrorNumber error, const char *info)
         return;
 
     errmsg = __virErrorMsg(error, info);
-    __virRaiseError(conn, NULL, VIR_FROM_NONE, error, VIR_ERR_ERROR,
+    __virRaiseError(conn, NULL, NULL, VIR_FROM_NONE, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, 0, 0, errmsg, info);
 }
 
@@ -133,7 +133,7 @@ virLibDomainError(virDomainPtr domain, virErrorNumber error,
     if (error != VIR_ERR_INVALID_DOMAIN) {
         conn = domain->conn;
     }
-    __virRaiseError(conn, domain, VIR_FROM_DOM, error, VIR_ERR_ERROR,
+    __virRaiseError(conn, domain, NULL, VIR_FROM_DOM, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, 0, 0, errmsg, info);
 }
 
@@ -159,8 +159,7 @@ virLibNetworkError(virNetworkPtr network, virErrorNumber error,
     if (error != VIR_ERR_INVALID_NETWORK) {
         conn = network->conn;
     }
-    /* XXX: should be able to pass network pointer here */
-    __virRaiseError(conn, NULL, VIR_FROM_NET, error, VIR_ERR_ERROR,
+    __virRaiseError(conn, NULL, network, VIR_FROM_NET, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, 0, 0, errmsg, info);
 }
 
