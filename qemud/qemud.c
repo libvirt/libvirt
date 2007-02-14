@@ -47,7 +47,7 @@
 #include "internal.h"
 #include "dispatch.h"
 #include "driver.h"
-#include "config.h"
+#include "conf.h"
 
 static void reapchild(int sig ATTRIBUTE_UNUSED) {
     /* We explicitly waitpid the child later */

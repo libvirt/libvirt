@@ -21,8 +21,8 @@
  * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __QEMUD_CONFIG_H
-#define __QEMUD_CONFIG_H
+#ifndef __QEMUD_CONF_H
+#define __QEMUD_CONF_H
 
 #include "internal.h"
 

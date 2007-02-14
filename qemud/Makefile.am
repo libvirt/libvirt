@@ -7,7 +7,7 @@ libexec_PROGRAMS = libvirt_qemud
 libvirt_qemud_SOURCES = qemud.c internal.h protocol.h \
                 driver.c driver.h \
                 dispatch.c dispatch.h \
-                config.c config.h
+                conf.c conf.h
 #-D_XOPEN_SOURCE=600 -D_XOPEN_SOURCE_EXTENDED=1 -D_POSIX_C_SOURCE=199506L
 libvirt_qemud_CFLAGS = \
         -I$(top_srcdir)/include -I$(top_builddir)/include $(LIBXML_CFLAGS) \

@@ -37,7 +37,7 @@
 
 #include "internal.h"
 #include "driver.h"
-#include "config.h"
+#include "conf.h"
 
 void qemudReportError(struct qemud_server *server,
                       int code, const char *fmt, ...) {

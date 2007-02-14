@@ -39,7 +39,7 @@
 
 #include "protocol.h"
 #include "internal.h"
-#include "config.h"
+#include "conf.h"
 #include "driver.h"
 
 static int qemudParseUUID(const char *uuid,
