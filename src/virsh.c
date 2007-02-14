@@ -194,9 +194,9 @@ static char *vshCommandOptString(vshCmd * cmd, const char *name,
                                  int *found);
 static int vshCommandOptBool(vshCmd * cmd, const char *name);
 
-#define VSH_DOMBYID     (1 << 1)
-#define VSH_DOMBYUUID   (1 << 2)
-#define VSH_DOMBYNAME   (1 << 3)
+#define VSH_BYID     (1 << 1)
+#define VSH_BYUUID   (1 << 2)
+#define VSH_BYNAME   (1 << 3)
 
 static virDomainPtr vshCommandOptDomainBy(vshControl * ctl, vshCmd * cmd,
                                           const char *optname, char **name, int flag);
@@ -204,7 +204,15 @@ static virDomainPtr vshCommandOptDomainBy(vshControl * ctl, vshCmd * cmd,
 /* default is lookup by Id, Name and UUID */
 #define vshCommandOptDomain(_ctl, _cmd, _optname, _name)            \
     vshCommandOptDomainBy(_ctl, _cmd, _optname, _name,              \
-                          VSH_DOMBYID|VSH_DOMBYUUID|VSH_DOMBYNAME)
+                          VSH_BYID|VSH_BYUUID|VSH_BYNAME)
+
+static virNetworkPtr vshCommandOptNetworkBy(vshControl * ctl, vshCmd * cmd,
+                            const char *optname, char **name, int flag);
+
+/* default is lookup by Name and UUID */
+#define vshCommandOptNetwork(_ctl, _cmd, _optname, _name)           \
+    vshCommandOptNetworkBy(_ctl, _cmd, _optname, _name,             \
+                           VSH_BYUUID|VSH_BYNAME)
 
 static void vshPrintExtra(vshControl * ctl, const char *format, ...);
 static void vshDebug(vshControl * ctl, int level, const char *format, ...);
@@ -225,6 +233,25 @@ static void *_vshCalloc(vshControl * ctl, size_t nmemb, size_t sz, const char *f
 
 static char *_vshStrdup(vshControl * ctl, const char *s, const char *filename, int line);
 #define vshStrdup(_ctl, _s)    _vshStrdup(_ctl, _s, __FILE__, __LINE__)
+
+
+static int idsorter(const void *a, const void *b) {
+  const int *ia = (const int *)a;
+  const int *ib = (const int *)b;
+
+  if (*ia > *ib)
+    return 1;
+  else if (*ia < *ib)
+    return -1;
+  return 0;
+}
+static int namesorter(const void *a, const void *b) {
+  const char **sa = (const char**)a;
+  const char **sb = (const char**)b;
+
+  return strcasecmp(*sa, *sb);
+}
+
 
 /* ---------------
  * Commands
@@ -392,22 +419,6 @@ static vshCmdOptDef opts_list[] = {
 };
 
 
-static int domidsorter(const void *a, const void *b) {
-    const int *ia = (const int *)a;
-    const int *ib = (const int *)b;
-
-    if (*ia > *ib)
-        return 1;
-    else if (*ia < *ib)
-        return -1;
-    return 0;
-}
-static int domnamesorter(const void *a, const void *b) {
-    const char **sa = (const char**)a;
-    const char **sb = (const char**)b;
-
-    return strcasecmp(*sa, *sb);
-}
 static int
 cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 {
@@ -437,7 +448,7 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
                 return FALSE;
             }
 
-            qsort(&ids[0], maxid, sizeof(int), domidsorter);
+            qsort(&ids[0], maxid, sizeof(int), idsorter);
         }
     }
     if (inactive) {
@@ -459,7 +470,7 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
                 return FALSE;
             }
 
-            qsort(&names[0], maxname, sizeof(char*), domnamesorter);
+            qsort(&names[0], maxname, sizeof(char*), namesorter);
         }
     }
     vshPrintExtra(ctl, "%3s %-20s %s\n", _("Id"), _("Name"), _("State"));
@@ -1544,7 +1555,7 @@ cmdDomname(vshControl * ctl, vshCmd * cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
     if (!(dom = vshCommandOptDomainBy(ctl, cmd, "domain", NULL,
-                                      VSH_DOMBYID|VSH_DOMBYUUID)))
+                                      VSH_BYID|VSH_BYUUID)))
         return FALSE;
 
     vshPrint(ctl, "%s\n", virDomainGetName(dom));
@@ -1575,7 +1586,7 @@ cmdDomid(vshControl * ctl, vshCmd * cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
     if (!(dom = vshCommandOptDomainBy(ctl, cmd, "domain", NULL,
-                                      VSH_DOMBYNAME|VSH_DOMBYUUID)))
+                                      VSH_BYNAME|VSH_BYUUID)))
         return FALSE;
 
     id = virDomainGetID(dom);
@@ -1610,13 +1621,466 @@ cmdDomuuid(vshControl * ctl, vshCmd * cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
     if (!(dom = vshCommandOptDomainBy(ctl, cmd, "domain", NULL,
-                                      VSH_DOMBYNAME|VSH_DOMBYID)))
+                                      VSH_BYNAME|VSH_BYID)))
         return FALSE;
 
     if (virDomainGetUUIDString(dom, uuid) != -1)
         vshPrint(ctl, "%s\n", uuid);
     else
         vshError(ctl, FALSE, _("failed to get domain UUID"));
+
+    return TRUE;
+}
+
+
+/*
+ * "net-create" command
+ */
+static vshCmdInfo info_network_create[] = {
+    {"syntax", "create a network from an XML <file>"},
+    {"help", gettext_noop("create a network from an XML file")},
+    {"desc", gettext_noop("Create a network.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_network_create[] = {
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file containing an XML network description")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNetworkCreate(vshControl * ctl, vshCmd * cmd)
+{
+    virNetworkPtr network;
+    char *from;
+    int found;
+    int ret = TRUE;
+    char buffer[BUFSIZ];
+    int fd, l;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    from = vshCommandOptString(cmd, "file", &found);
+    if (!found)
+        return FALSE;
+
+    fd = open(from, O_RDONLY);
+    if (fd < 0) {
+        vshError(ctl, FALSE, _("Failed to read description file %s"), from);
+        return(FALSE);
+    }
+    l = read(fd, &buffer[0], sizeof(buffer));
+    if ((l <= 0) || (l >= (int) sizeof(buffer))) {
+        vshError(ctl, FALSE, _("Failed to read description file %s"), from);
+        close(fd);
+        return(FALSE);
+    }
+    buffer[l] = 0;
+    network = virNetworkCreateXML(ctl->conn, &buffer[0]);
+    if (network != NULL) {
+        vshPrint(ctl, _("Network %s created from %s\n"),
+                 virNetworkGetName(network), from);
+    } else {
+        vshError(ctl, FALSE, _("Failed to create network from %s"), from);
+        ret = FALSE;
+    }
+    return ret;
+}
+
+
+/*
+ * "net-define" command
+ */
+static vshCmdInfo info_network_define[] = {
+    {"syntax", "define a network from an XML <file>"},
+    {"help", gettext_noop("define (but don't start) a network from an XML file")},
+    {"desc", gettext_noop("Define a network.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_network_define[] = {
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file conatining an XML network description")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNetworkDefine(vshControl * ctl, vshCmd * cmd)
+{
+    virNetworkPtr network;
+    char *from;
+    int found;
+    int ret = TRUE;
+    char buffer[BUFSIZ];
+    int fd, l;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    from = vshCommandOptString(cmd, "file", &found);
+    if (!found)
+        return FALSE;
+
+    fd = open(from, O_RDONLY);
+    if (fd < 0) {
+        vshError(ctl, FALSE, _("Failed to read description file %s"), from);
+        return(FALSE);
+    }
+    l = read(fd, &buffer[0], sizeof(buffer));
+    if ((l <= 0) || (l >= (int) sizeof(buffer))) {
+        vshError(ctl, FALSE, _("Failed to read description file %s"), from);
+        close(fd);
+        return(FALSE);
+    }
+    buffer[l] = 0;
+    network = virNetworkDefineXML(ctl->conn, &buffer[0]);
+    if (network != NULL) {
+        vshPrint(ctl, _("Network %s defined from %s\n"),
+                 virNetworkGetName(network), from);
+    } else {
+        vshError(ctl, FALSE, _("Failed to define network from %s"), from);
+        ret = FALSE;
+    }
+    return ret;
+}
+
+
+/*
+ * "net-destroy" command
+ */
+static vshCmdInfo info_network_destroy[] = {
+    {"syntax", "net-destroy <network>"},
+    {"help", gettext_noop("destroy a network")},
+    {"desc", gettext_noop("Destroy a given network.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_network_destroy[] = {
+    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network name, id or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNetworkDestroy(vshControl * ctl, vshCmd * cmd)
+{
+    virNetworkPtr network;
+    int ret = TRUE;
+    char *name;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(network = vshCommandOptNetwork(ctl, cmd, "network", &name)))
+        return FALSE;
+
+    if (virNetworkDestroy(network) == 0) {
+        vshPrint(ctl, _("Network %s destroyed\n"), name);
+    } else {
+        vshError(ctl, FALSE, _("Failed to destroy network %s"), name);
+        ret = FALSE;
+        virNetworkFree(network);
+    }
+
+    return ret;
+}
+
+
+/*
+ * "net-dumpxml" command
+ */
+static vshCmdInfo info_network_dumpxml[] = {
+    {"syntax", "net-dumpxml <name>"},
+    {"help", gettext_noop("network information in XML")},
+    {"desc", gettext_noop("Ouput the network information as an XML dump to stdout.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_network_dumpxml[] = {
+    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network name, id or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNetworkDumpXML(vshControl * ctl, vshCmd * cmd)
+{
+    virNetworkPtr network;
+    int ret = TRUE;
+    char *dump;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(network = vshCommandOptNetwork(ctl, cmd, "network", NULL)))
+        return FALSE;
+
+    dump = virNetworkGetXMLDesc(network, 0);
+    if (dump != NULL) {
+        printf("%s", dump);
+        free(dump);
+    } else {
+        ret = FALSE;
+    }
+
+    virNetworkFree(network);
+    return ret;
+}
+
+
+/*
+ * "net-list" command
+ */
+static vshCmdInfo info_network_list[] = {
+    {"syntax", "net-list [ --inactive | --all ]"},
+    {"help", gettext_noop("list networks")},
+    {"desc", gettext_noop("Returns list of networks.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_network_list[] = {
+    {"inactive", VSH_OT_BOOL, 0, gettext_noop("list inactive networks")},
+    {"all", VSH_OT_BOOL, 0, gettext_noop("list inactive & active networks")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNetworkList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
+{
+    int inactive = vshCommandOptBool(cmd, "inactive");
+    int all = vshCommandOptBool(cmd, "all");
+    int active = !inactive || all ? 1 : 0;
+    int maxactive = 0, maxinactive = 0, i;
+    const char **activeNames = NULL, **inactiveNames = NULL;
+    inactive |= all;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (active) {
+      maxactive = virConnectNumOfNetworks(ctl->conn);
+      if (maxactive < 0) {
+        vshError(ctl, FALSE, _("Failed to list active networks"));
+        return FALSE;
+      }
+      if (maxactive) {
+        activeNames = vshMalloc(ctl, sizeof(int) * maxactive);
+
+        if ((maxactive = virConnectListNetworks(ctl->conn, &activeNames[0], maxactive)) < 0) {
+	  vshError(ctl, FALSE, _("Failed to list active networks"));
+	  free(activeNames);
+	  return FALSE;
+        }
+
+	qsort(&activeNames[0], maxactive, sizeof(int), namesorter);
+      }
+    }
+    if (inactive) {
+      maxinactive = virConnectNumOfDefinedNetworks(ctl->conn);
+      if (maxinactive < 0) {
+        vshError(ctl, FALSE, _("Failed to list inactive networks"));
+	if (activeNames)
+	  free(activeNames);
+        return FALSE;
+      }
+      if (maxinactive) {
+        inactiveNames = vshMalloc(ctl, sizeof(char *) * maxinactive);
+
+        if ((maxinactive = virConnectListDefinedNetworks(ctl->conn, inactiveNames, maxinactive)) < 0) {
+	  vshError(ctl, FALSE, _("Failed to list inactive networks"));
+	  if (activeNames)
+	    free(activeNames);
+	  free(inactiveNames);
+	  return FALSE;
+        }
+
+	qsort(&inactiveNames[0], maxinactive, sizeof(char*), namesorter);
+      }
+    }
+    vshPrintExtra(ctl, "%-20s\n", _("Name"));
+    vshPrintExtra(ctl, "----------------------------------\n");
+
+    for (i = 0; i < maxactive; i++) {
+        virNetworkPtr network = virNetworkLookupByName(ctl->conn, activeNames[i]);
+
+        /* this kind of work with networks is not atomic operation */
+        if (!network) {
+            free(activeNames[i]);
+            continue;
+	}
+
+        vshPrint(ctl, "%-20s\n",
+                 virNetworkGetName(network));
+        virNetworkFree(network);
+        free(activeNames[i]);
+    }
+    for (i = 0; i < maxinactive; i++) {
+        virNetworkPtr network = virNetworkLookupByName(ctl->conn, inactiveNames[i]);
+
+        /* this kind of work with networks is not atomic operation */
+        if (!network) {
+            free(inactiveNames[i]);
+            continue;
+	}
+
+	vshPrint(ctl, "%-20s\n",
+		 inactiveNames[i]);
+
+        virNetworkFree(network);
+        free(inactiveNames[i]);
+    }
+    if (activeNames)
+        free(activeNames);
+    if (inactiveNames)
+        free(inactiveNames);
+    return TRUE;
+}
+
+
+/*
+ * "net-name" command
+ */
+static vshCmdInfo info_network_name[] = {
+    {"syntax", "net-name <network>"},
+    {"help", gettext_noop("convert a network UUID to network name")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_network_name[] = {
+    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNetworkName(vshControl * ctl, vshCmd * cmd)
+{
+    virNetworkPtr network;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+    if (!(network = vshCommandOptNetworkBy(ctl, cmd, "network", NULL,
+					   VSH_BYUUID)))
+        return FALSE;
+
+    vshPrint(ctl, "%s\n", virNetworkGetName(network));
+    virNetworkFree(network);
+    return TRUE;
+}
+
+
+/*
+ * "net-start" command
+ */
+static vshCmdInfo info_network_start[] = {
+    {"syntax", "start <network>"},
+    {"help", gettext_noop("start a (previously defined) inactive network")},
+    {"desc", gettext_noop("Start a network.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_network_start[] = {
+    {"name", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the inactive network")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNetworkStart(vshControl * ctl, vshCmd * cmd)
+{
+    virNetworkPtr network;
+    char *name;
+    int found;
+    int ret = TRUE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    name = vshCommandOptString(cmd, "name", &found);
+    if (!found)
+        return FALSE;
+
+    network = virNetworkLookupByName(ctl->conn, name);
+    if (!network)
+        return FALSE;
+
+    if (virNetworkCreate(network) == 0) {
+        vshPrint(ctl, _("Network %s started\n"),
+                 name);
+    } else {
+      vshError(ctl, FALSE, _("Failed to start network %s"), name);
+        ret = FALSE;
+    }
+    return ret;
+}
+
+
+/*
+ * "net-undefine" command
+ */
+static vshCmdInfo info_network_undefine[] = {
+    {"syntax", "net-undefine <network>"},
+    {"help", gettext_noop("undefine an inactive network")},
+    {"desc", gettext_noop("Undefine the configuration for an inactive network.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_network_undefine[] = {
+    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network name or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNetworkUndefine(vshControl * ctl, vshCmd * cmd)
+{
+    virNetworkPtr network;
+    int ret = TRUE;
+    char *name;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(network = vshCommandOptNetwork(ctl, cmd, "network", &name)))
+        return FALSE;
+
+    if (virNetworkUndefine(network) == 0) {
+        vshPrint(ctl, _("Network %s has been undefined\n"), name);
+    } else {
+        vshError(ctl, FALSE, _("Failed to undefine network %s"), name);
+        ret = FALSE;
+    }
+
+    return ret;
+}
+
+
+/*
+ * "net-uuid" command
+ */
+static vshCmdInfo info_network_uuid[] = {
+    {"syntax", "net-uuid <network>"},
+    {"help", gettext_noop("convert a network name to network UUID")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_network_uuid[] = {
+    {"network", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network name")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNetworkUuid(vshControl * ctl, vshCmd * cmd)
+{
+    virNetworkPtr network;
+    char uuid[VIR_UUID_STRING_BUFLEN];
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(network = vshCommandOptNetworkBy(ctl, cmd, "network", NULL,
+					   VSH_BYNAME)))
+        return FALSE;
+
+    if (virNetworkGetUUIDString(network, uuid) != -1)
+        vshPrint(ctl, "%s\n", uuid);
+    else
+        vshError(ctl, FALSE, _("failed to get network UUID"));
 
     return TRUE;
 }
@@ -1818,6 +2282,15 @@ static vshCmdDef commands[] = {
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
     {"help", cmdHelp, opts_help, info_help},
     {"list", cmdList, opts_list, info_list},
+    {"net-create", cmdNetworkCreate, opts_network_create, info_network_create},
+    {"net-define", cmdNetworkDefine, opts_network_define, info_network_define},
+    {"net-destroy", cmdNetworkDestroy, opts_network_destroy, info_network_destroy},
+    {"net-dumpxml", cmdNetworkDumpXML, opts_network_dumpxml, info_network_dumpxml},
+    {"net-list", cmdNetworkList, opts_network_list, info_network_list},
+    {"net-name", cmdNetworkName, opts_network_name, info_network_name},
+    {"net-start", cmdNetworkStart, opts_network_start, info_network_start},
+    {"net-undefine", cmdNetworkUndefine, opts_network_undefine, info_network_undefine},
+    {"net-uuid", cmdNetworkUuid, opts_network_uuid, info_network_uuid},
     {"nodeinfo", cmdNodeinfo, NULL, info_nodeinfo},
     {"quit", cmdQuit, NULL, info_quit},
     {"reboot", cmdReboot, opts_reboot, info_reboot},
@@ -2088,7 +2561,7 @@ vshCommandOptDomainBy(vshControl * ctl, vshCmd * cmd, const char *optname,
         *name = n;
 
     /* try it by ID */
-    if (flag & VSH_DOMBYID) {
+    if (flag & VSH_BYID) {
         id = (int) strtol(n, &end, 10);
         if (id >= 0 && end && *end == '\0') {
             vshDebug(ctl, 5, "%s: <%s> seems like domain ID\n",
@@ -2097,13 +2570,13 @@ vshCommandOptDomainBy(vshControl * ctl, vshCmd * cmd, const char *optname,
         }
     }
     /* try it by UUID */
-    if (dom==NULL && (flag & VSH_DOMBYUUID) && strlen(n)==VIR_UUID_STRING_BUFLEN-1) {
+    if (dom==NULL && (flag & VSH_BYUUID) && strlen(n)==VIR_UUID_STRING_BUFLEN-1) {
         vshDebug(ctl, 5, "%s: <%s> tring as domain UUID\n",
                  cmd->def->name, optname);
         dom = virDomainLookupByUUIDString(ctl->conn, n);
     }
     /* try it by NAME */
-    if (dom==NULL && (flag & VSH_DOMBYNAME)) {
+    if (dom==NULL && (flag & VSH_BYNAME)) {
         vshDebug(ctl, 5, "%s: <%s> tring as domain NAME\n",
                  cmd->def->name, optname);
         dom = virDomainLookupByName(ctl->conn, n);
@@ -2113,6 +2586,43 @@ vshCommandOptDomainBy(vshControl * ctl, vshCmd * cmd, const char *optname,
         vshError(ctl, FALSE, _("failed to get domain '%s'"), n);
 
     return dom;
+}
+
+static virNetworkPtr
+vshCommandOptNetworkBy(vshControl * ctl, vshCmd * cmd, const char *optname,
+		       char **name, int flag)
+{
+    virNetworkPtr network = NULL;
+    char *n;
+
+    if (!(n = vshCommandOptString(cmd, optname, NULL))) {
+        vshError(ctl, FALSE, _("undefined network name"));
+        return NULL;
+    }
+
+    vshDebug(ctl, 5, "%s: found option <%s>: %s\n",
+             cmd->def->name, optname, n);
+
+    if (name)
+        *name = n;
+
+    /* try it by UUID */
+    if (network==NULL && (flag & VSH_BYUUID) && strlen(n)==VIR_UUID_STRING_BUFLEN-1) {
+        vshDebug(ctl, 5, "%s: <%s> tring as network UUID\n",
+		 cmd->def->name, optname);
+        network = virNetworkLookupByUUIDString(ctl->conn, n);
+    }
+    /* try it by NAME */
+    if (network==NULL && (flag & VSH_BYNAME)) {
+        vshDebug(ctl, 5, "%s: <%s> tring as network NAME\n",
+                 cmd->def->name, optname);
+        network = virNetworkLookupByName(ctl->conn, n);
+    }
+
+    if (!network)
+        vshError(ctl, FALSE, _("failed to get network '%s'"), n);
+
+    return network;
 }
 
 /*
