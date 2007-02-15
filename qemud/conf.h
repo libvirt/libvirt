@@ -30,12 +30,12 @@ int qemudBuildCommandLine(struct qemud_server *server,
                           struct qemud_vm *vm,
                           char ***argv);
 
-void qemudFreeVMDef(struct qemud_vm_def *vm);
 int qemudScanConfigs(struct qemud_server *server);
 int qemudDeleteConfig(struct qemud_server *server,
                       const char *configFile,
                       const char *name);
 
+void qemudFreeVMDef(struct qemud_vm_def *vm);
 void qemudFreeVM(struct qemud_vm *vm);
 struct qemud_vm *qemudLoadConfigXML(struct qemud_server *server,
                                     const char *file,
