@@ -1957,7 +1957,8 @@ char *qemudGenerateNetworkXML(struct qemud_server *server,
                           uuid[12], uuid[13], uuid[14], uuid[15]) < 0)
         goto no_memory;
 
-    if (qemudBufferPrintf(&buf, "  <bridge name='%s' stp='%s' delay='%d' />\n",
+    if ((def->bridge != '\0' || def->disableSTP || def->forwardDelay) &&
+        qemudBufferPrintf(&buf, "  <bridge name='%s' stp='%s' delay='%d' />\n",
                           def->bridge,
                           def->disableSTP ? "off" : "on",
                           def->forwardDelay) < 0)

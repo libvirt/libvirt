@@ -1,3 +1,8 @@
+Thu Feb 15 16:00:05 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/bridge.c: don't output bridge parameters if they
+	are the default.
+	
 Thu Feb 15 15:56:32 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/conf.[ch], qemud/dispatch.c, qemud/internal.h,
