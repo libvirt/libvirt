@@ -1663,9 +1663,9 @@ int qemudScanConfigDir(struct qemud_server *server,
 
 /* Scan for all guest and network config files */
 int qemudScanConfigs(struct qemud_server *server) {
-    if (qemudScanConfigDir(server, server->configDir, 0) < 0)
+    if (qemudScanConfigDir(server, server->configDir, 1) < 0)
         return -1;
-    return qemudScanConfigDir(server, server->networkConfigDir, 1);
+    return qemudScanConfigDir(server, server->networkConfigDir, 0);
 }
 
 /* Simple grow-on-demand string buffer */
@@ -1890,7 +1890,7 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm, int liv
             goto no_memory;
 
         if (net->type == QEMUD_NET_NETWORK) {
-            if (qemudBufferPrintf(&buf, "      <network name='%s", net->dst.network.name) < 0)
+            if (qemudBufferPrintf(&buf, "      <network name='%s'", net->dst.network.name) < 0)
                 goto no_memory;
 
             if (net->dst.network.tapifname[0] != '\0' &&
