@@ -788,7 +788,7 @@ qemudBuildDnsmasqArgv(struct qemud_server *server,
         2 + /* --conf-file "" */
         2 + /* --except-interface lo */
         2 + /* --listen-address 10.0.0.1 */
-        (2 * network->def.nranges) + /* --dhcp-range 10.0.0.2,10.0.0.254 */
+        (2 * network->def->nranges) + /* --dhcp-range 10.0.0.2,10.0.0.254 */
         1;  /* NULL */
 
     if (!(*argv = malloc(len * sizeof(char *))))
@@ -818,9 +818,9 @@ qemudBuildDnsmasqArgv(struct qemud_server *server,
     APPEND_ARG(*argv, i++, "lo");
 
     APPEND_ARG(*argv, i++, "--listen-address");
-    APPEND_ARG(*argv, i++, network->def.ipAddress);
+    APPEND_ARG(*argv, i++, network->def->ipAddress);
 
-    range = network->def.ranges;
+    range = network->def->ranges;
     while (range) {
         snprintf(buf, sizeof(buf), "%s,%s",
                  range->start, range->end);
@@ -853,7 +853,7 @@ dhcpStartDhcpDaemon(struct qemud_server *server,
     char **argv;
     int ret, i;
 
-    if (network->def.ipAddress[0] == '\0') {
+    if (network->def->ipAddress[0] == '\0') {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
                          "cannot start dhcp daemon without IP address for server");
         return -1;
@@ -1012,11 +1012,11 @@ int qemudStartNetworkDaemon(struct qemud_server *server,
         return -1;
     }
 
-    if (network->def.bridge[0] == '\0' ||
-        strchr(network->def.bridge, '%')) {
+    if (network->def->bridge[0] == '\0' ||
+        strchr(network->def->bridge, '%')) {
         name = "vnet%d";
     } else {
-        name = network->def.bridge;
+        name = network->def->bridge;
     }
 
     if ((err = brAddBridge(server->brctl, name, network->bridge, sizeof(network->bridge)))) {
@@ -1025,23 +1025,23 @@ int qemudStartNetworkDaemon(struct qemud_server *server,
         return -1;
     }
 
-    if (network->def.ipAddress[0] &&
-        (err = brSetInetAddress(server->brctl, network->bridge, network->def.ipAddress))) {
+    if (network->def->ipAddress[0] &&
+        (err = brSetInetAddress(server->brctl, network->bridge, network->def->ipAddress))) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
                          "cannot set IP address on bridge '%s' to '%s' : %s\n",
-                         network->bridge, network->def.ipAddress, strerror(err));
+                         network->bridge, network->def->ipAddress, strerror(err));
         goto err_delbr;
     }
 
-    if (network->def.netmask[0] &&
-        (err = brSetInetNetmask(server->brctl, network->bridge, network->def.netmask))) {
+    if (network->def->netmask[0] &&
+        (err = brSetInetNetmask(server->brctl, network->bridge, network->def->netmask))) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
                          "cannot set netmask on bridge '%s' to '%s' : %s\n",
-                         network->bridge, network->def.netmask, strerror(err));
+                         network->bridge, network->def->netmask, strerror(err));
         goto err_delbr;
     }
 
-    if (network->def.ipAddress[0] &&
+    if (network->def->ipAddress[0] &&
         (err = brSetInterfaceUp(server->brctl, network->bridge, 1))) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
                          "failed to bring the bridge '%s' up : %s\n",
@@ -1058,7 +1058,7 @@ int qemudStartNetworkDaemon(struct qemud_server *server,
         goto err_delbr2;
     }
 
-    if (network->def.ranges &&
+    if (network->def->ranges &&
         dhcpStartDhcpDaemon(server, network) < 0)
         goto err_delbr2;
 
@@ -1070,7 +1070,7 @@ int qemudStartNetworkDaemon(struct qemud_server *server,
     qemudRemoveIptablesRules(server, network);
 
  err_delbr1:
-    if (network->def.ipAddress[0] &&
+    if (network->def->ipAddress[0] &&
         (err = brSetInterfaceUp(server->brctl, network->bridge, 0))) {
         printf("Damn! Failed to bring down bridge '%s' : %s\n",
                network->bridge, strerror(err));
@@ -1099,7 +1099,7 @@ int qemudShutdownNetworkDaemon(struct qemud_server *server,
 
     qemudRemoveIptablesRules(server, network);
 
-    if (network->def.ipAddress[0] &&
+    if (network->def->ipAddress[0] &&
         (err = brSetInterfaceUp(server->brctl, network->bridge, 0))) {
         printf("Damn! Failed to bring down bridge '%s' : %s\n",
                network->bridge, strerror(err));
@@ -1141,6 +1141,12 @@ int qemudShutdownNetworkDaemon(struct qemud_server *server,
     network->bridge[0] = '\0';
     network->dnsmasqPid = -1;
     network->active = 0;
+
+    if (network->newDef) {
+        qemudFreeNetworkDef(network->def);
+        network->def = network->newDef;
+        network->newDef = NULL;
+    }
 
     return 0;
 }

@@ -568,7 +568,7 @@ static int qemudDispatchNetworkLookupByName(struct qemud_server *server, struct 
     } else {
         out->header.type = QEMUD_PKT_NETWORK_LOOKUP_BY_NAME;
         out->header.dataSize = sizeof(out->data.networkLookupByNameReply);
-        memcpy(out->data.networkLookupByNameReply.uuid, network->def.uuid, QEMUD_UUID_RAW_LEN);
+        memcpy(out->data.networkLookupByNameReply.uuid, network->def->uuid, QEMUD_UUID_RAW_LEN);
     }
     return 0;
 }
@@ -585,7 +585,7 @@ static int qemudDispatchNetworkLookupByUUID(struct qemud_server *server, struct 
     } else {
         out->header.type = QEMUD_PKT_NETWORK_LOOKUP_BY_UUID;
         out->header.dataSize = sizeof(out->data.networkLookupByUUIDReply);
-        strncpy(out->data.networkLookupByUUIDReply.name, network->def.name, QEMUD_MAX_NAME_LEN-1);
+        strncpy(out->data.networkLookupByUUIDReply.name, network->def->name, QEMUD_MAX_NAME_LEN-1);
         out->data.networkLookupByUUIDReply.name[QEMUD_MAX_NAME_LEN-1] = '\0';
     }
     return 0;
@@ -605,8 +605,8 @@ static int qemudDispatchNetworkCreate(struct qemud_server *server, struct qemud_
     } else {
         out->header.type = QEMUD_PKT_NETWORK_CREATE;
         out->header.dataSize = sizeof(out->data.networkCreateReply);
-        memcpy(out->data.networkCreateReply.uuid, network->def.uuid, QEMUD_UUID_RAW_LEN);
-        strncpy(out->data.networkCreateReply.name, network->def.name, QEMUD_MAX_NAME_LEN-1);
+        memcpy(out->data.networkCreateReply.uuid, network->def->uuid, QEMUD_UUID_RAW_LEN);
+        strncpy(out->data.networkCreateReply.name, network->def->name, QEMUD_MAX_NAME_LEN-1);
         out->data.networkCreateReply.name[QEMUD_MAX_NAME_LEN-1] = '\0';
     }
     return 0;
@@ -626,8 +626,8 @@ static int qemudDispatchNetworkDefine(struct qemud_server *server, struct qemud_
     } else {
         out->header.type = QEMUD_PKT_NETWORK_DEFINE;
         out->header.dataSize = sizeof(out->data.networkDefineReply);
-        memcpy(out->data.networkDefineReply.uuid, network->def.uuid, QEMUD_UUID_RAW_LEN);
-        strncpy(out->data.networkDefineReply.name, network->def.name, QEMUD_MAX_NAME_LEN-1);
+        memcpy(out->data.networkDefineReply.uuid, network->def->uuid, QEMUD_UUID_RAW_LEN);
+        strncpy(out->data.networkDefineReply.name, network->def->name, QEMUD_MAX_NAME_LEN-1);
         out->data.networkDefineReply.name[QEMUD_MAX_NAME_LEN-1] = '\0';
     }
     return 0;

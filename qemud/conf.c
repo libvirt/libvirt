@@ -1256,24 +1256,13 @@ struct qemud_vm *qemudLoadConfigXML(struct qemud_server *server,
 }
 
 
-void qemudFreeNetwork(struct qemud_network *network) {
-    struct qemud_dhcp_range_def *range = network->def.ranges;
-    while (range) {
-        struct qemud_dhcp_range_def *next = range->next;
-        free(range);
-        range = next;
-    }
-    free(network);
-}
-
-
 static int qemudSaveNetworkConfig(struct qemud_server *server,
                                   struct qemud_network *network) {
     char *xml;
     int fd, ret = -1;
     int towrite;
 
-    if (!(xml = qemudGenerateNetworkXML(server, network))) {
+    if (!(xml = qemudGenerateNetworkXML(server, network, 0))) {
         return -1;
     }
 
@@ -1308,16 +1297,32 @@ static int qemudSaveNetworkConfig(struct qemud_server *server,
     return ret;
 }
 
+void qemudFreeNetworkDef(struct qemud_network_def *def) {
+    struct qemud_dhcp_range_def *range = def->ranges;
+    while (range) {
+        struct qemud_dhcp_range_def *next = range->next;
+        free(range);
+        range = next;
+    }
+    free(def);
+}
+
+void qemudFreeNetwork(struct qemud_network *network) {
+    qemudFreeNetworkDef(network->def);
+    if (network->newDef)
+        qemudFreeNetworkDef(network->newDef);
+    free(network);
+}
 
 static int qemudParseBridgeXML(struct qemud_server *server ATTRIBUTE_UNUSED,
-                               struct qemud_network *network,
+                               struct qemud_network_def *def,
                                xmlNodePtr node) {
     xmlChar *name, *stp, *delay;
 
     name = xmlGetProp(node, BAD_CAST "name");
     if (name != NULL) {
-        strncpy(network->def.bridge, (const char *)name, IF_NAMESIZE-1);
-        network->def.bridge[IF_NAMESIZE-1] = '\0';
+        strncpy(def->bridge, (const char *)name, IF_NAMESIZE-1);
+        def->bridge[IF_NAMESIZE-1] = '\0';
         xmlFree(name);
         name = NULL;
     }
@@ -1325,7 +1330,7 @@ static int qemudParseBridgeXML(struct qemud_server *server ATTRIBUTE_UNUSED,
     stp = xmlGetProp(node, BAD_CAST "stp");
     if (stp != NULL) {
         if (xmlStrEqual(stp, BAD_CAST "off")) {
-            network->def.disableSTP = 1;
+            def->disableSTP = 1;
         }
         xmlFree(stp);
         stp = NULL;
@@ -1333,7 +1338,7 @@ static int qemudParseBridgeXML(struct qemud_server *server ATTRIBUTE_UNUSED,
 
     delay = xmlGetProp(node, BAD_CAST "delay");
     if (delay != NULL) {
-        network->def.forwardDelay = strtol((const char *)delay, NULL, 10);
+        def->forwardDelay = strtol((const char *)delay, NULL, 10);
         xmlFree(delay);
         delay = NULL;
     }
@@ -1342,7 +1347,7 @@ static int qemudParseBridgeXML(struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 static int qemudParseDhcpRangesXML(struct qemud_server *server,
-                                   struct qemud_network *network,
+                                   struct qemud_network_def *def,
                                    xmlNodePtr node) {
 
     xmlNodePtr cur;
@@ -1373,9 +1378,9 @@ static int qemudParseDhcpRangesXML(struct qemud_server *server,
             strncpy(range->end, (const char *)end, BR_INET_ADDR_MAXLEN-1);
             range->end[BR_INET_ADDR_MAXLEN-1] = '\0';
 
-            range->next = network->def.ranges;
-            network->def.ranges = range;
-            network->def.nranges++;
+            range->next = def->ranges;
+            def->ranges = range;
+            def->nranges++;
         } else {
             free(range);
         }
@@ -1392,23 +1397,23 @@ static int qemudParseDhcpRangesXML(struct qemud_server *server,
 }
 
 static int qemudParseInetXML(struct qemud_server *server ATTRIBUTE_UNUSED,
-                             struct qemud_network *network,
+                             struct qemud_network_def *def,
                              xmlNodePtr node) {
     xmlChar *address, *netmask;
     xmlNodePtr cur;
 
     address = xmlGetProp(node, BAD_CAST "address");
     if (address != NULL) {
-        strncpy(network->def.ipAddress, (const char *)address, BR_INET_ADDR_MAXLEN-1);
-        network->def.ipAddress[BR_INET_ADDR_MAXLEN-1] = '\0';
+        strncpy(def->ipAddress, (const char *)address, BR_INET_ADDR_MAXLEN-1);
+        def->ipAddress[BR_INET_ADDR_MAXLEN-1] = '\0';
         xmlFree(address);
         address = NULL;
     }
 
     netmask = xmlGetProp(node, BAD_CAST "netmask");
     if (netmask != NULL) {
-        strncpy(network->def.netmask, (const char *)netmask, BR_INET_ADDR_MAXLEN-1);
-        network->def.netmask[BR_INET_ADDR_MAXLEN-1] = '\0';
+        strncpy(def->netmask, (const char *)netmask, BR_INET_ADDR_MAXLEN-1);
+        def->netmask[BR_INET_ADDR_MAXLEN-1] = '\0';
         xmlFree(netmask);
         netmask = NULL;
     }
@@ -1417,7 +1422,7 @@ static int qemudParseInetXML(struct qemud_server *server ATTRIBUTE_UNUSED,
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE &&
             xmlStrEqual(cur->name, BAD_CAST "dhcp") &&
-            !qemudParseDhcpRangesXML(server, network, cur))
+            !qemudParseDhcpRangesXML(server, def, cur))
             return 0;
         cur = cur->next;
     }
@@ -1426,12 +1431,17 @@ static int qemudParseInetXML(struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 
-static int qemudParseNetworkXML(struct qemud_server *server,
-                                xmlDocPtr xml,
-                                struct qemud_network *network) {
+static struct qemud_network_def *qemudParseNetworkXML(struct qemud_server *server,
+                                                      xmlDocPtr xml) {
     xmlNodePtr root = NULL;
     xmlXPathContextPtr ctxt = NULL;
     xmlXPathObjectPtr obj = NULL;
+    struct qemud_network_def *def;
+
+    if (!(def = calloc(1, sizeof(struct qemud_network_def)))) {
+        qemudReportError(server, VIR_ERR_NO_MEMORY, "network_def");
+        return NULL;
+    }
 
     /* Prepare parser / xpath context */
     root = xmlDocGetRootElement(xml);
@@ -1458,7 +1468,7 @@ static int qemudParseNetworkXML(struct qemud_server *server,
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "network name length too long");
         goto error;
     }
-    strcpy(network->def.name, (const char *)obj->stringval);
+    strcpy(def->name, (const char *)obj->stringval);
     xmlXPathFreeObject(obj);
 
 
@@ -1470,7 +1480,7 @@ static int qemudParseNetworkXML(struct qemud_server *server,
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "missing uuid element");
         goto error;
     }
-    if (qemudParseUUID((const char *)obj->stringval, network->def.uuid) < 0) {
+    if (qemudParseUUID((const char *)obj->stringval, def->uuid) < 0) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "malformed uuid element");
         goto error;
     }
@@ -1480,7 +1490,7 @@ static int qemudParseNetworkXML(struct qemud_server *server,
     obj = xmlXPathEval(BAD_CAST "/network/bridge[1]", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr > 0)) {
-        if (!qemudParseBridgeXML(server, network, obj->nodesetval->nodeTab[0])) {
+        if (!qemudParseBridgeXML(server, def, obj->nodesetval->nodeTab[0])) {
             goto error;
         }
     }
@@ -1490,7 +1500,7 @@ static int qemudParseNetworkXML(struct qemud_server *server,
     obj = xmlXPathEval(BAD_CAST "/network/ip[1]", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr > 0)) {
-        if (!qemudParseInetXML(server, network, obj->nodesetval->nodeTab[0])) {
+        if (!qemudParseInetXML(server, def, obj->nodesetval->nodeTab[0])) {
             goto error;
         }
     }
@@ -1498,7 +1508,7 @@ static int qemudParseNetworkXML(struct qemud_server *server,
 
     xmlXPathFreeContext(ctxt);
 
-    return 0;
+    return def;
 
  error:
     /* XXX free all the stuff in the qemud_network struct, or leave it upto
@@ -1507,15 +1517,18 @@ static int qemudParseNetworkXML(struct qemud_server *server,
         xmlXPathFreeObject(obj);
     if (ctxt)
         xmlXPathFreeContext(ctxt);
-    return -1;
+    qemudFreeNetworkDef(def);
+    return NULL;
 }
 
 struct qemud_network *qemudLoadNetworkConfigXML(struct qemud_server *server,
                                                 const char *file,
                                                 const char *doc,
                                                 int save) {
+    struct qemud_network_def *def = NULL;
     struct qemud_network *network = NULL;
     xmlDocPtr xml;
+    int newNetwork = 0;
 
     if (!(xml = xmlReadDoc(BAD_CAST doc, file ? file : "network.xml", NULL,
                            XML_PARSE_NOENT | XML_PARSE_NONET |
@@ -1524,23 +1537,28 @@ struct qemud_network *qemudLoadNetworkConfigXML(struct qemud_server *server,
         return NULL;
     }
 
-    if (!(network = calloc(1, sizeof(struct qemud_network)))) {
-        qemudReportError(server, VIR_ERR_NO_MEMORY, "network");
-        return NULL;
-    }
-
-    if (qemudParseNetworkXML(server, xml, network) < 0) {
+    if (!(def = qemudParseNetworkXML(server, xml))) {
         xmlFreeDoc(xml);
-        qemudFreeNetwork(network);
         return NULL;
     }
     xmlFreeDoc(xml);
 
-    if (qemudFindNetworkByUUID(server, network->def.uuid) ||
-        qemudFindNetworkByName(server, network->def.name)) {
-        qemudReportError(server, VIR_ERR_NETWORK_EXIST, network->def.name);
-        qemudFreeNetwork(network);
-        return NULL;
+    if ((network = qemudFindNetworkByName(server, def->name))) {
+        if (!network->active) {
+            qemudFreeNetworkDef(network->def);
+            network->def = def;
+        } else {
+            if (network->newDef)
+                qemudFreeNetworkDef(network->newDef);
+            network->newDef = def;
+        }
+    } else {
+        if (!(network = calloc(1, sizeof(struct qemud_network)))) {
+            qemudReportError(server, VIR_ERR_NO_MEMORY, "network");
+            return NULL;
+        }
+
+        newNetwork = 1;
     }
 
     if (file) {
@@ -1548,7 +1566,7 @@ struct qemud_network *qemudLoadNetworkConfigXML(struct qemud_server *server,
         network->configFile[PATH_MAX-1] = '\0';
     } else {
         if (save) {
-            if (qemudMakeConfigPath(server->networkConfigDir, network->def.name, ".xml", network->configFile, PATH_MAX) < 0) {
+            if (qemudMakeConfigPath(server->networkConfigDir, network->def->name, ".xml", network->configFile, PATH_MAX) < 0) {
                 qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot construct config file path");
                 qemudFreeNetwork(network);
                 return NULL;
@@ -1561,6 +1579,12 @@ struct qemud_network *qemudLoadNetworkConfigXML(struct qemud_server *server,
         } else {
             network->configFile[0] = '\0';
         }
+    }
+
+    if (newNetwork) {
+        network->next = server->inactivenetworks;
+        server->inactivenetworks = network;
+        server->ninactivenetworks++;
     }
 
     return network;
@@ -1600,12 +1624,7 @@ static void qemudLoadConfig(struct qemud_server *server,
     if (isGuest) {
         qemudLoadConfigXML(server, file, xml, 1);
     } else {
-        struct qemud_network *network;
-        if ((network = qemudLoadNetworkConfigXML(server, file, xml, 1))) {
-            network->next = server->inactivenetworks;
-            server->inactivenetworks = network;
-            server->ninactivenetworks++;
-        }
+        qemudLoadNetworkConfigXML(server, file, xml, 1);
     }
  cleanup:
     fclose(fh);
@@ -1914,7 +1933,9 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm, int liv
 
 
 char *qemudGenerateNetworkXML(struct qemud_server *server,
-                              struct qemud_network *network) {
+                              struct qemud_network *network,
+                              int live) {
+    struct qemud_network_def *def = live ? network->def : (network->newDef ? network->newDef : network->def);
     struct qemudBuffer buf;
     unsigned char *uuid;
 
@@ -1925,10 +1946,10 @@ char *qemudGenerateNetworkXML(struct qemud_server *server,
     if (qemudBufferPrintf(&buf, "<network>\n") < 0)
         goto no_memory;
 
-    if (qemudBufferPrintf(&buf, "  <name>%s</name>\n", network->def.name) < 0)
+    if (qemudBufferPrintf(&buf, "  <name>%s</name>\n", def->name) < 0)
         goto no_memory;
 
-    uuid = network->def.uuid;
+    uuid = def->uuid;
     if (qemudBufferPrintf(&buf, "  <uuid>%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x</uuid>\n",
                           uuid[0], uuid[1], uuid[2], uuid[3],
                           uuid[4], uuid[5], uuid[6], uuid[7],
@@ -1937,28 +1958,28 @@ char *qemudGenerateNetworkXML(struct qemud_server *server,
         goto no_memory;
 
     if (qemudBufferPrintf(&buf, "  <bridge name='%s' stp='%s' delay='%d' />\n",
-                          network->def.bridge,
-                          network->def.disableSTP ? "off" : "on",
-                          network->def.forwardDelay) < 0)
+                          def->bridge,
+                          def->disableSTP ? "off" : "on",
+                          def->forwardDelay) < 0)
         goto no_memory;
 
-    if (network->def.ipAddress[0] || network->def.netmask[0]) {
+    if (def->ipAddress[0] || def->netmask[0]) {
         if (qemudBufferAdd(&buf, "  <ip") < 0)
             goto no_memory;
 
-        if (network->def.ipAddress[0] &&
-            qemudBufferPrintf(&buf, " address='%s'", network->def.ipAddress) < 0)
+        if (def->ipAddress[0] &&
+            qemudBufferPrintf(&buf, " address='%s'", def->ipAddress) < 0)
             goto no_memory;
 
-        if (network->def.netmask[0] &&
-            qemudBufferPrintf(&buf, " netmask='%s'", network->def.netmask) < 0)
+        if (def->netmask[0] &&
+            qemudBufferPrintf(&buf, " netmask='%s'", def->netmask) < 0)
             goto no_memory;
 
         if (qemudBufferAdd(&buf, ">\n") < 0)
             goto no_memory;
 
-        if (network->def.ranges) {
-            struct qemud_dhcp_range_def *range = network->def.ranges;
+        if (def->ranges) {
+            struct qemud_dhcp_range_def *range = def->ranges;
             if (qemudBufferAdd(&buf, "    <dhcp>\n") < 0)
                 goto no_memory;
             while (range) {

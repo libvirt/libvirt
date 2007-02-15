@@ -537,14 +537,14 @@ struct qemud_network *qemudFindNetworkByUUID(const struct qemud_server *server,
     struct qemud_network *network = server->activenetworks;
 
     while (network) {
-        if (!memcmp(network->def.uuid, uuid, QEMUD_UUID_RAW_LEN))
+        if (!memcmp(network->def->uuid, uuid, QEMUD_UUID_RAW_LEN))
             return network;
         network = network->next;
     }
 
     network = server->inactivenetworks;
     while (network) {
-        if (!memcmp(network->def.uuid, uuid, QEMUD_UUID_RAW_LEN))
+        if (!memcmp(network->def->uuid, uuid, QEMUD_UUID_RAW_LEN))
             return network;
         network = network->next;
     }
@@ -557,14 +557,14 @@ struct qemud_network *qemudFindNetworkByName(const struct qemud_server *server,
     struct qemud_network *network = server->activenetworks;
 
     while (network) {
-        if (!strcmp(network->def.name, name))
+        if (!strcmp(network->def->name, name))
             return network;
         network = network->next;
     }
 
     network = server->inactivenetworks;
     while (network) {
-        if (!strcmp(network->def.name, name))
+        if (!strcmp(network->def->name, name))
             return network;
         network = network->next;
     }
@@ -580,7 +580,7 @@ int qemudListNetworks(struct qemud_server *server, char *const*names, int nnames
     struct qemud_network *network = server->activenetworks;
     int got = 0;
     while (network && got < nnames) {
-        strncpy(names[got], network->def.name, QEMUD_MAX_NAME_LEN-1);
+        strncpy(names[got], network->def->name, QEMUD_MAX_NAME_LEN-1);
         names[got][QEMUD_MAX_NAME_LEN-1] = '\0';
         network = network->next;
         got++;
@@ -596,7 +596,7 @@ int qemudListDefinedNetworks(struct qemud_server *server, char *const*names, int
     struct qemud_network *network = server->inactivenetworks;
     int got = 0;
     while (network && got < nnames) {
-        strncpy(names[got], network->def.name, QEMUD_MAX_NAME_LEN-1);
+        strncpy(names[got], network->def->name, QEMUD_MAX_NAME_LEN-1);
         names[got][QEMUD_MAX_NAME_LEN-1] = '\0';
         network = network->next;
         got++;
@@ -611,30 +611,16 @@ struct qemud_network *qemudNetworkCreate(struct qemud_server *server, const char
         return NULL;
     }
 
-    if (qemudStartNetworkDaemon(server, network) < 0) {
+    if (qemudNetworkStart(server, network) < 0) {
         qemudFreeNetwork(network);
         return NULL;
     }
-
-    network->next = server->activenetworks;
-    server->activenetworks = network;
-    server->nactivenetworks++;
 
     return network;
 }
 
 struct qemud_network *qemudNetworkDefine(struct qemud_server *server, const char *xml) {
-    struct qemud_network *network;
-
-    if (!(network = qemudLoadNetworkConfigXML(server, NULL, xml, 1))) {
-        return NULL;
-    }
-
-    network->next = server->inactivenetworks;
-    server->inactivenetworks = network;
-    server->ninactivenetworks++;
-
-    return network;
+    return qemudLoadNetworkConfigXML(server, NULL, xml, 1);
 }
 
 int qemudNetworkUndefine(struct qemud_server *server, const unsigned char *uuid) {
@@ -646,7 +632,7 @@ int qemudNetworkUndefine(struct qemud_server *server, const unsigned char *uuid)
         return -1;
     }
 
-    if (qemudDeleteConfig(server, network->configFile, network->def.name) < 0)
+    if (qemudDeleteConfig(server, network->configFile, network->def->name) < 0)
         return -1;
 
     network->configFile[0] = '\0';
@@ -718,7 +704,7 @@ int qemudNetworkDumpXML(struct qemud_server *server, const unsigned char *uuid, 
         return -1;
     }
 
-    networkxml = qemudGenerateNetworkXML(server, network);
+    networkxml = qemudGenerateNetworkXML(server, network, 1);
     if (!networkxml)
         return -1;
 

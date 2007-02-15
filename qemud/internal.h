@@ -238,7 +238,8 @@ struct qemud_network_def {
 struct qemud_network {
     char configFile[PATH_MAX];
 
-    struct qemud_network_def def;
+    struct qemud_network_def *def; /* The current definition */
+    struct qemud_network_def *newDef; /* New definition to activate at shutdown */
 
     char bridge[BR_IFNAME_MAXLEN];
     int dnsmasqPid;
