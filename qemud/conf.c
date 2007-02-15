@@ -1558,6 +1558,7 @@ struct qemud_network *qemudLoadNetworkConfigXML(struct qemud_server *server,
             return NULL;
         }
 
+        network->def = def;
         newNetwork = 1;
     }
 

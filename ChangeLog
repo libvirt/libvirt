@@ -1,3 +1,7 @@
+Thu Feb 15 19:05:48 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/conf.c: fix segfault
+	
 Thu Feb 15 19:04:10 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/conf.h: move qemudFreeVMDef() down a bit
