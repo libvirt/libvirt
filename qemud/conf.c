@@ -1876,6 +1876,7 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm, int liv
             "server",
             "client",
             "mcast",
+            "network",
             "vde",
         };
         if (qemudBufferPrintf(&buf, "    <interface type='%s'>\n",
@@ -1890,7 +1891,7 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm, int liv
             goto no_memory;
 
         if (net->type == QEMUD_NET_NETWORK) {
-            if (qemudBufferPrintf(&buf, "      <network name='%s'", net->dst.network.name) < 0)
+            if (qemudBufferPrintf(&buf, "      <source network='%s'", net->dst.network.name) < 0)
                 goto no_memory;
 
             if (net->dst.network.tapifname[0] != '\0' &&
