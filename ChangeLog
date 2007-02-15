@@ -1,3 +1,9 @@
+Thu Feb 15 15:47:46 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/conf.c: fix a couple of qemud_vm_def leaks
+
+	* driver.c: simplify qemudDomainDefine()
+	
 Wed Feb 14 17:01:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/qemud.c: Ensure we create the main libvirt config

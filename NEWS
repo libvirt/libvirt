@@ -9,10 +9,11 @@ Releases
    - Various internal cleanups (Mark McLoughlin, Richard Jones,
       Daniel Berrange, Karel Zak)
    - Bug fixes: avoid a crash in connect (Daniel Berrange), virsh args
-      parsing (Richard Jones), 
-      
+      parsing (Richard Jones)
    - Add support for QEmu and KVM virtualization (Daniel Berrange)
    - Add support for network configuration (Mark McLoughlin)
+   - Minor improvements: regression testing (Daniel Berrange), 
+      localization string updates
 
 
 0.1.11: Jan 22 2007:

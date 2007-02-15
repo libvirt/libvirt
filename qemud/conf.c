@@ -108,6 +108,7 @@ void qemudFreeVMDef(struct qemud_vm_def *def) {
         net = net->next;
         free(prev);
     }
+    free(def);
 }
 
 void qemudFreeVM(struct qemud_vm *vm) {
@@ -1211,6 +1212,7 @@ struct qemud_vm *qemudLoadConfigXML(struct qemud_server *server,
     } else {
         if (!(vm = calloc(1, sizeof(struct qemud_vm)))) {
             qemudReportError(server, VIR_ERR_NO_MEMORY, "vm");
+            qemudFreeVMDef(def);
             return NULL;
         }
 

@@ -490,13 +490,7 @@ int qemudDomainStart(struct qemud_server *server, struct qemud_vm *vm) {
 
 
 struct qemud_vm *qemudDomainDefine(struct qemud_server *server, const char *xml) {
-    struct qemud_vm *vm;
-
-    if (!(vm = qemudLoadConfigXML(server, NULL, xml, 1))) {
-        return NULL;
-    }
-
-    return vm;
+    return qemudLoadConfigXML(server, NULL, xml, 1);
 }
 
 int qemudDomainUndefine(struct qemud_server *server, const unsigned char *uuid) {
