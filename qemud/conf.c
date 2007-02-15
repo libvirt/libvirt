@@ -1907,13 +1907,31 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm, int liv
         net = net->next;
     }
 
+    switch (def->graphicsType) {
+    case QEMUD_GRAPHICS_VNC:
+        if (qemudBufferAdd(&buf, "    <graphics type='vnc'") < 0)
+            goto no_memory;
+
+        if (def->vncPort &&
+            qemudBufferPrintf(&buf, " port='%d'",
+                              vm->id >= 0 && live ? def->vncActivePort : def->vncPort) < 0)
+            goto no_memory;
+
+        if (qemudBufferAdd(&buf, "/>\n") < 0)
+            goto no_memory;
+        break;
+
+    case QEMUD_GRAPHICS_SDL:
+        if (qemudBufferAdd(&buf, "    <graphics type='sdl'/>\n") < 0)
+            goto no_memory;
+        break;
+
+    case QEMUD_GRAPHICS_NONE:
+    default:
+        break;
+    }
+
     if (def->graphicsType == QEMUD_GRAPHICS_VNC) {
-        if (def->vncPort) {
-            qemudBufferPrintf(&buf, "    <graphics type='vnc' port='%d'/>\n",
-                              vm->id >= 0 && live ? def->vncActivePort : def->vncPort);
-        } else {
-            qemudBufferPrintf(&buf, "    <graphics type='vnc'/>\n");
-        }
     }
 
     if (qemudBufferAdd(&buf, "  </devices>\n") < 0)
