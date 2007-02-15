@@ -1,3 +1,9 @@
+Thu Feb 15 15:56:32 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/conf.[ch], qemud/dispatch.c, qemud/internal.h,
+	  qemud/qemud.c, qemud/driver.c: allow re-defining network
+	configs; basically copying dan's patch for domains.
+	
 Thu Feb 15 15:47:46 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/conf.c: fix a couple of qemud_vm_def leaks
