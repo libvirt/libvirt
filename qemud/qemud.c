@@ -980,15 +980,17 @@ qemudEnableIpForwarding(void)
 {
 #define PROC_IP_FORWARD "/proc/sys/net/ipv4/ip_forward"
 
-  int fd;
+    int fd, ret;
 
-  if ((fd = open(PROC_IP_FORWARD, O_WRONLY|O_TRUNC)) == -1 ||
-      write(fd, "1\n", 2) < 0)
-      return 0;
+    if ((fd = open(PROC_IP_FORWARD, O_WRONLY|O_TRUNC)) == -1)
+        return 0;
 
-  close (fd);
+    if (write(fd, "1\n", 2) < 0)
+        ret = 0;
 
-  return 1;
+    close (fd);
+
+    return 1;
 
 #undef PROC_IP_FORWARD
 }

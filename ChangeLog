@@ -1,3 +1,8 @@
+Fri Feb 16 18:23:15 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/qemud.c: fix qemudEnableIpForwarding() to not leak
+	an fd if writing to /proc/sys/net/ipv4/ip_forward fails.
+	
 Fri Feb 16 11:56:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* tests/Makefile.am: Fixed linkage of test suites
