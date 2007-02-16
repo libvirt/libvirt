@@ -44,8 +44,6 @@
 
 #include <libvirt/virterror.h>
 
-#include <gnutls/x509.h>
-
 #include "internal.h"
 #include "dispatch.h"
 #include "driver.h"
