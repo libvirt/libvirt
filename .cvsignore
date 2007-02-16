@@ -24,3 +24,5 @@ m4
 ABOUT-NLS
 config.rpath
 mkinstalldirs
+coverage
+results.log
