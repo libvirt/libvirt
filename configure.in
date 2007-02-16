@@ -78,6 +78,14 @@ dnl
 	CFLAGS="-g -O -W -Wformat -Wunused -Wimplicit -Wreturn-type -Wswitch -Wcomment -Wtrigraphs -Wformat -Wchar-subscripts -Wuninitialized -Wparentheses -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wredundant-decls -Wall"
     fi
 
+dnl --enable-debug=(yes|no)
+AC_ARG_ENABLE(debug,
+              AC_HELP_STRING([--enable-debug=no/yes],
+                             [enable debugging output]))
+if test x"$enable_debug" = x"yes"; then
+   AC_DEFINE(ENABLE_DEBUG, [], [whether debugging is enabled])
+fi
+
 dnl
 dnl allow the creation of iptables rules in chains with a
 dnl specific prefix rather than in the standard toplevel chains

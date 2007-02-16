@@ -90,7 +90,7 @@ int qemudMonitorCommand(struct qemud_server *server ATTRIBUTE_UNUSED,
             size += got;
         }
         if (buf)
-            QEMUD_DEBUG("Mon [%s]\n", buf);
+            qemudDebug("Mon [%s]", buf);
         /* Look for QEMU prompt to indicate completion */
         if (buf && ((tmp = strstr(buf, "\n(qemu)")) != NULL)) {
             tmp[0] = '\0';
@@ -203,7 +203,7 @@ static int qemudGetProcessInfo(unsigned long long *cpuTime, int pid) {
     }
 
     if (fscanf(pidinfo, "%*d %*s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %lu %lu", &usertime, &systime) != 2) {
-        QEMUD_DEBUG("not enough arg\n");
+        qemudDebug("not enough arg");
         return -1;
     }
 
@@ -214,7 +214,7 @@ static int qemudGetProcessInfo(unsigned long long *cpuTime, int pid) {
      */
     *cpuTime = 1000 * 1000 * 1000 * (usertime + systime) / sysconf(_SC_CLK_TCK);
 
-    QEMUD_DEBUG("Got %lu %lu %lld\n", usertime, systime, *cpuTime);
+    qemudDebug("Got %lu %lu %lld", usertime, systime, *cpuTime);
 
     fclose(pidinfo);
 
@@ -322,7 +322,7 @@ int qemudDomainSuspend(struct qemud_server *server, int id) {
         qemudReportError(server, VIR_ERR_OPERATION_FAILED, "suspend operation failed");
         return -1;
     }
-    printf("Reply %s\n", info);
+    qemudDebug("Reply %s", info);
     free(info);
     return 0;
 }
@@ -343,7 +343,7 @@ int qemudDomainResume(struct qemud_server *server, int id) {
         qemudReportError(server, VIR_ERR_OPERATION_FAILED, "resume operation failed");
         return -1;
     }
-    printf("Reply %s\n", info);
+    qemudDebug("Reply %s", info);
     free(info);
     return -1;
 }

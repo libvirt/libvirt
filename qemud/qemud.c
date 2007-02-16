@@ -38,6 +38,8 @@
 #include <stdlib.h>
 #include <pwd.h>
 #include <stdio.h>
+#include <stdarg.h>
+#include <syslog.h>
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
@@ -50,6 +52,8 @@
 #include "conf.h"
 #include "iptables.h"
 
+static int godaemon = 0;
+static int verbose = 0;
 static int sigwrite = -1;
 
 static void sig_handler(int sig) {
@@ -71,8 +75,14 @@ static int qemudDispatchSignal(struct qemud_server *server)
     struct qemud_network *network;
     int ret;
 
-    if (read(server->sigread, &sigc, 1) != 1)
+    if (read(server->sigread, &sigc, 1) != 1) {
+        qemudLog(QEMUD_ERR, "Failed to read from signal pipe: %s",
+                 strerror(errno));
         return -1;
+    }
+
+    qemudLog(QEMUD_INFO, "Received signal %d; shuting down guests and "
+             "networks and purging config", sigc);
 
     /* shutdown active VMs */
     vm = server->activevms;
@@ -114,11 +124,13 @@ static int qemudDispatchSignal(struct qemud_server *server)
 
     switch (sigc) {
     case SIGHUP:
+        qemudLog(QEMUD_INFO, "Reloading configuration");
         ret = qemudScanConfigs(server);
         break;
 
     case SIGINT:
     case SIGTERM:
+        qemudLog(QEMUD_WARN, "Shutting down on signal %d", sigc);
         server->shutdown = 1;
         break;
 
@@ -131,27 +143,92 @@ static int qemudDispatchSignal(struct qemud_server *server)
 
 static int qemudSetCloseExec(int fd) {
     int flags;
-    if ((flags = fcntl(fd, F_GETFD)) < 0) {
-        return -1;
-    }
+    if ((flags = fcntl(fd, F_GETFD)) < 0)
+        goto error;
     flags |= FD_CLOEXEC;
-    if ((fcntl(fd, F_SETFD, flags)) < 0) {
-        return -1;
-    }
+    if ((fcntl(fd, F_SETFD, flags)) < 0)
+        goto error;
     return 0;
+ error:
+    qemudLog(QEMUD_ERR, "Failed to set close-on-exec file descriptor flag");
+    return -1;
 }
 
 
 static int qemudSetNonBlock(int fd) {
     int flags;
-    if ((flags = fcntl(fd, F_GETFL)) < 0) {
-        return -1;
-    }
+    if ((flags = fcntl(fd, F_GETFL)) < 0)
+        goto error;
     flags |= O_NONBLOCK;
-    if ((fcntl(fd, F_SETFL, flags)) < 0) {
-        return -1;
-    }
+    if ((fcntl(fd, F_SETFL, flags)) < 0)
+        goto error;
     return 0;
+ error:
+    qemudLog(QEMUD_ERR, "Failed to set non-blocking file descriptor flag");
+    return -1;
+}
+
+void qemudLog(int priority, const char *fmt, ...)
+{
+    va_list args;
+
+    va_start(args, fmt);
+
+    if (godaemon) {
+        int sysprio = -1;
+
+        switch(priority) {
+        case QEMUD_ERR:
+            sysprio = LOG_ERR;
+            break;
+        case QEMUD_WARN:
+            sysprio = LOG_WARNING;
+            break;
+        case QEMUD_INFO:
+            if (verbose)
+                sysprio = LOG_INFO;
+            break;
+#ifdef ENABLE_DEBUG
+        case QEMUD_DEBUG:
+            if (verbose)
+                sysprio = LOG_DEBUG;
+            break;
+#endif
+        default:
+            break;
+        }
+
+        if (sysprio != -1)
+            vsyslog(sysprio, fmt, args);
+    } else {
+        switch(priority) {
+        case QEMUD_ERR:
+        case QEMUD_WARN:
+            vfprintf(stderr, fmt, args);
+            fputc('\n', stderr);
+            break;
+
+        case QEMUD_INFO:
+            if (verbose) {
+                vprintf(fmt, args);
+                fputc('\n', stdout);
+            }
+            break;
+
+#ifdef ENABLE_DEBUG
+        case QEMUD_DEBUG:
+            if (verbose) {
+                vprintf(fmt, args);
+                fputc('\n', stdout);
+            }
+            break;
+#endif
+        default:
+            break;
+        }
+    }
+
+    va_end(args);
 }
 
 static int qemudGoDaemon(void) {
@@ -227,20 +304,24 @@ static int qemudListenUnix(struct qemud_server *server,
     struct sockaddr_un addr;
     mode_t oldmask;
 
-    if (!sock)
+    if (!sock) {
+        qemudLog(QEMUD_ERR, "Failed to allocate memory for struct qemud_socket");
         return -1;
+    }
 
     sock->readonly = readonly;
     sock->next = server->sockets;
     server->sockets = sock;
     server->nsockets++;
 
-    if ((sock->fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0)
+    if ((sock->fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
+        qemudLog(QEMUD_ERR, "Failed to create socket: %s",
+                 strerror(errno));
         return -1;
+    }
 
-    if (qemudSetCloseExec(sock->fd) < 0)
-        return -1;
-    if (qemudSetNonBlock(sock->fd) < 0)
+    if (qemudSetCloseExec(sock->fd) < 0 ||
+        qemudSetNonBlock(sock->fd) < 0)
         return -1;
 
     memset(&addr, 0, sizeof(addr));
@@ -254,12 +335,18 @@ static int qemudListenUnix(struct qemud_server *server,
         oldmask = umask(~(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH));
     else
         oldmask = umask(~(S_IRUSR | S_IWUSR));
-    if (bind(sock->fd, (struct sockaddr *)&addr, sizeof(addr)) < 0)
+    if (bind(sock->fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+        qemudLog(QEMUD_ERR, "Failed to bind socket to '%s': %s",
+                 path, strerror(errno));
         return -1;
+    }
     umask(oldmask);
 
-    if (listen(sock->fd, 30) < 0)
+    if (listen(sock->fd, 30) < 0) {
+        qemudLog(QEMUD_ERR, "Failed to listen for connections on '%s': %s",
+                 path, strerror(errno));
         return -1;
+    }
 
     return 0;
 }
@@ -268,17 +355,16 @@ static int qemudListen(struct qemud_server *server, int sys) {
     char sockname[PATH_MAX];
 
     if (sys) {
-        if (snprintf(sockname, sizeof(sockname), "%s/run/libvirt/qemud-sock", LOCAL_STATE_DIR) >= (int)sizeof(sockname)) {
-            return -1;
-        }
+        if (snprintf(sockname, sizeof(sockname), "%s/run/libvirt/qemud-sock", LOCAL_STATE_DIR) >= (int)sizeof(sockname))
+            goto snprintf_error;
+
         unlink(sockname);
         if (qemudListenUnix(server, sockname, 0) < 0)
             return -1;
 
+        if (snprintf(sockname, sizeof(sockname), "%s/run/libvirt/qemud-sock-ro", LOCAL_STATE_DIR) >= (int)sizeof(sockname))
+            goto snprintf_error;
 
-        if (snprintf(sockname, sizeof(sockname), "%s/run/libvirt/qemud-sock-ro", LOCAL_STATE_DIR) >= (int)sizeof(sockname)) {
-            return -1;
-        }
         unlink(sockname);
         if (qemudListenUnix(server, sockname, 1) < 0)
             return -1;
@@ -287,29 +373,38 @@ static int qemudListen(struct qemud_server *server, int sys) {
         int uid;
 
         if ((uid = geteuid()) < 0) {
+            qemudLog(QEMUD_ERR, "You must run the daemon as root to use system mode");
             return -1;
         }
 
-        if (!(pw = getpwuid(uid)))
-            return -1;
-
-        if (snprintf(sockname, sizeof(sockname), "@%s/.libvirt/qemud-sock", pw->pw_dir) >= (int)sizeof(sockname)) {
+        if (!(pw = getpwuid(uid))) {
+            qemudLog(QEMUD_ERR, "Failed to find user record for uid '%s': %s",
+                     uid, strerror(errno));
             return -1;
         }
+
+        if (snprintf(sockname, sizeof(sockname), "@%s/.libvirt/qemud-sock", pw->pw_dir) >= (int)sizeof(sockname))
+            goto snprintf_error;
 
         if (qemudListenUnix(server, sockname, 0) < 0)
             return -1;
     }
 
     return 0;
+
+ snprintf_error:
+    qemudLog(QEMUD_ERR, "Resulting path to long for buffer in qemudListen()");
+    return -1;
 }
 
 static struct qemud_server *qemudInitialize(int sys, int sigread) {
     struct qemud_server *server;
     char libvirtConf[PATH_MAX];
 
-    if (!(server = calloc(1, sizeof(struct qemud_server))))
+    if (!(server = calloc(1, sizeof(struct qemud_server)))) {
+        qemudLog(QEMUD_ERR, "Failed to allocate struct qemud_server");
         return NULL;
+    }
 
     /* XXX extract actual version */
     server->qemuVersion = (0*1000000)+(8*1000)+(0);
@@ -319,47 +414,54 @@ static struct qemud_server *qemudInitialize(int sys, int sigread) {
 
     if (sys) {
         if (snprintf(libvirtConf, sizeof(libvirtConf), "%s/libvirt", SYSCONF_DIR) >= (int)sizeof(libvirtConf)) {
-            goto cleanup;
+            goto snprintf_cleanup;
         }
         if (mkdir(libvirtConf, 0777) < 0) {
             if (errno != EEXIST) {
+                qemudLog(QEMUD_ERR, "Failed to create directory '%s': %s",
+                         libvirtConf, strerror(errno));
                 goto cleanup;
             }
         }
 
         if (snprintf(server->configDir, sizeof(server->configDir), "%s/libvirt/qemu", SYSCONF_DIR) >= (int)sizeof(server->configDir)) {
-            goto cleanup;
+            goto snprintf_cleanup;
         }
         if (snprintf(server->networkConfigDir, sizeof(server->networkConfigDir), "%s/libvirt/qemu/networks", SYSCONF_DIR) >= (int)sizeof(server->networkConfigDir)) {
-            goto cleanup;
+            goto snprintf_cleanup;
         }
     } else {
         struct passwd *pw;
         int uid;
 
         if ((uid = geteuid()) < 0) {
+            qemudLog(QEMUD_ERR, "You must run the daemon as root to use system mode");
             goto cleanup;
         }
         if (!(pw = getpwuid(uid))) {
+            qemudLog(QEMUD_ERR, "Failed to find user record for uid '%s': %s",
+                     uid, strerror(errno));
             goto cleanup;
         }
 
         if (snprintf(libvirtConf, sizeof(libvirtConf), "%s/.libvirt", pw->pw_dir) >= (int)sizeof(libvirtConf)) {
-            goto cleanup;
+            goto snprintf_cleanup;
         }
         if (mkdir(libvirtConf, 0777) < 0) {
             if (errno != EEXIST) {
+                qemudLog(QEMUD_ERR, "Failed to create directory '%s': %s",
+                         libvirtConf, strerror(errno));
                 goto cleanup;
             }
         }
 
 
         if (snprintf(server->configDir, sizeof(server->configDir), "%s/.libvirt/qemu", pw->pw_dir) >= (int)sizeof(server->configDir)) {
-            goto cleanup;
+            goto snprintf_cleanup;
         }
 
         if (snprintf(server->networkConfigDir, sizeof(server->networkConfigDir), "%s/.libvirt/qemu/networks", pw->pw_dir) >= (int)sizeof(server->networkConfigDir)) {
-            goto cleanup;
+            goto snprintf_cleanup;
         }
     }
 
@@ -373,6 +475,9 @@ static struct qemud_server *qemudInitialize(int sys, int sigread) {
     }
 
     return server;
+
+ snprintf_cleanup:
+    qemudLog(QEMUD_ERR, "Resulting path to long for buffer in qemudInitialize()");
 
  cleanup:
     if (server) {
@@ -397,15 +502,12 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
     if ((fd = accept(sock->fd, (struct sockaddr *)&addr, &addrlen)) < 0) {
         if (errno == EAGAIN)
             return 0;
+        qemudLog(QEMUD_ERR, "Failed to accept connection: %s", strerror(errno));
         return -1;
     }
 
-    if (qemudSetCloseExec(fd) < 0) {
-        close(fd);
-        return -1;
-    }
-
-    if (qemudSetNonBlock(fd) < 0) {
+    if (qemudSetCloseExec(fd) < 0 ||
+        qemudSetNonBlock(fd) < 0) {
         close(fd);
         return -1;
     }
@@ -583,12 +685,12 @@ static int qemudClientRead(struct qemud_server *server,
                            char *buf, size_t want) {
     int ret;
     if ((ret = read(client->fd, buf, want)) <= 0) {
-        QEMUD_DEBUG("Plain read error %d\n", ret);
+        qemudDebug("Plain read error %d", ret);
         if (!ret || errno != EAGAIN)
             qemudDispatchClientFailure(server, client);
         return -1;
     }
-    QEMUD_DEBUG("Plain data read %d\n", ret);
+    qemudDebug("Plain data read %d", ret);
     return ret;
 }
 
@@ -613,17 +715,17 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
 
     /* If we've finished header, move onto body */
     if (client->incomingReceived == sizeof(struct qemud_packet_header)) {
-        QEMUD_DEBUG("Type %d, data %d\n",
+        qemudDebug("Type %d, data %d",
                     client->incoming.header.type,
                     client->incoming.header.dataSize);
         /* Client lied about dataSize */
         if (client->incoming.header.dataSize > sizeof(union qemud_packet_data)) {
-            QEMUD_DEBUG("Bogus data size %u\n", client->incoming.header.dataSize);
+            qemudDebug("Bogus data size %u", client->incoming.header.dataSize);
             qemudDispatchClientFailure(server, client);
             return;
         }
         if (client->incoming.header.dataSize) {
-            QEMUD_DEBUG("- Restarting recv to process body (%d bytes)\n",
+            qemudDebug("- Restarting recv to process body (%d bytes)",
                         client->incoming.header.dataSize);
             goto restart;
         }
@@ -633,7 +735,7 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
     if (ret == want) {
         if (qemudDispatchClientRequest(server, client) < 0)
             qemudDispatchClientFailure(server, client);
-        QEMUD_DEBUG("Dispatch\n");
+        qemudDebug("Dispatch");
     }
 }
 
@@ -643,12 +745,12 @@ static int qemudClientWrite(struct qemud_server *server,
                            char *buf, size_t want) {
     int ret;
     if ((ret = write(client->fd, buf, want)) < 0) {
-        QEMUD_DEBUG("Plain write error %d\n", ret);
+        qemudDebug("Plain write error %d", ret);
         if (errno != EAGAIN)
             qemudDispatchClientFailure(server, client);
         return -1;
     }
-    QEMUD_DEBUG("Plain data write %d\n", ret);
+    qemudDebug("Plain data write %d", ret);
     return ret;
 }
 
@@ -662,7 +764,7 @@ static void qemudDispatchClientWrite(struct qemud_server *server, struct qemud_c
         return;
     }
     client->outgoingSent += ret;
-    QEMUD_DEBUG("Done %d %d\n", todo, ret);
+    qemudDebug("Done %d %d", todo, ret);
     if (todo == ret)
         client->tx = 0;
 }
@@ -724,12 +826,12 @@ static int qemudVMData(struct qemud_server *server ATTRIBUTE_UNUSED,
                         close(monfd);
                         return -1;
                     }
-                    QEMUD_DEBUG("[%s]\n", line);
+                    qemudDebug("[%s]", line);
                 }
                 vm->monitor = monfd;
             }
         }
-        QEMUD_DEBUG("[%s]\n", buf);
+        qemudDebug("[%s]", buf);
     }
 }
 
@@ -743,6 +845,8 @@ qemudNetworkIfaceDisconnect(struct qemud_server *server,
 int qemudShutdownVMDaemon(struct qemud_server *server, struct qemud_vm *vm) {
     struct qemud_vm *prev = NULL, *curr = server->activevms;
     struct qemud_vm_net_def *net;
+
+    qemudLog(QEMUD_INFO, "Shutting down VM '%s'", vm->def->name);
 
     /* Already cleaned-up */
     if (vm->pid < 0)
@@ -770,7 +874,7 @@ int qemudShutdownVMDaemon(struct qemud_server *server, struct qemud_vm *vm) {
     }
 
     if (!curr) {
-        QEMUD_DEBUG("Could not find VM to shutdown\n");
+        qemudDebug("Could not find VM to shutdown");
         return 0;
     }
 
@@ -795,7 +899,7 @@ int qemudShutdownVMDaemon(struct qemud_server *server, struct qemud_vm *vm) {
     if (waitpid(vm->pid, NULL, WNOHANG) != vm->pid) {
         kill(vm->pid, SIGKILL);
         if (waitpid(vm->pid, NULL, 0) != vm->pid) {
-            QEMUD_DEBUG("Got unexpected pid, damn\n");
+            qemudLog(QEMUD_WARN, "Got unexpected pid, damn");
         }
     }
 
@@ -1127,14 +1231,14 @@ int qemudStartNetworkDaemon(struct qemud_server *server,
  err_delbr1:
     if (network->def->ipAddress[0] &&
         (err = brSetInterfaceUp(server->brctl, network->bridge, 0))) {
-        printf("Damn! Failed to bring down bridge '%s' : %s\n",
-               network->bridge, strerror(err));
+        qemudLog(QEMUD_WARN, "Failed to bring down bridge '%s' : %s",
+                 network->bridge, strerror(err));
     }
 
  err_delbr:
     if ((err = brDeleteBridge(server->brctl, network->bridge))) {
-        printf("Damn! Couldn't delete bridge '%s' : %s\n",
-               network->bridge, strerror(err));
+        qemudLog(QEMUD_WARN, "Failed to delete bridge '%s' : %s\n",
+                 network->bridge, strerror(err));
     }
 
     return -1;
@@ -1146,6 +1250,8 @@ int qemudShutdownNetworkDaemon(struct qemud_server *server,
     struct qemud_network *prev, *curr;
     int err;
 
+    qemudLog(QEMUD_INFO, "Shutting down network '%s'", network->def->name);
+
     if (!network->active)
         return 0;
 
@@ -1156,13 +1262,13 @@ int qemudShutdownNetworkDaemon(struct qemud_server *server,
 
     if (network->def->ipAddress[0] &&
         (err = brSetInterfaceUp(server->brctl, network->bridge, 0))) {
-        printf("Damn! Failed to bring down bridge '%s' : %s\n",
-               network->bridge, strerror(err));
+        qemudLog(QEMUD_WARN, "Failed to bring down bridge '%s' : %s\n",
+                 network->bridge, strerror(err));
     }
 
     if ((err = brDeleteBridge(server->brctl, network->bridge))) {
-        printf("Damn! Failed to delete bridge '%s' : %s\n",
-               network->bridge, strerror(err));
+        qemudLog(QEMUD_WARN, "Failed to delete bridge '%s' : %s\n",
+                 network->bridge, strerror(err));
     }
 
     /* Move it to inactive networks list */
@@ -1190,7 +1296,7 @@ int qemudShutdownNetworkDaemon(struct qemud_server *server,
         waitpid(network->dnsmasqPid, NULL, WNOHANG) != network->dnsmasqPid) {
         kill(network->dnsmasqPid, SIGKILL);
         if (waitpid(network->dnsmasqPid, NULL, 0) != network->dnsmasqPid)
-            printf("Got unexpected pid for dnsmasq, damn\n");
+            qemudLog(QEMUD_WARN, "Got unexpected pid for dnsmasq\n");
     }
 
     network->bridge[0] = '\0';
@@ -1224,6 +1330,7 @@ static int qemudDispatchPoll(struct qemud_server *server, struct pollfd *fds) {
 
     while (sock) {
         struct qemud_socket *next = sock->next;
+        /* FIXME: the daemon shouldn't exit on error here */
         if (fds[fd].revents)
             if (qemudDispatchServer(server, sock) < 0)
                 return -1;
@@ -1234,7 +1341,7 @@ static int qemudDispatchPoll(struct qemud_server *server, struct pollfd *fds) {
     while (client) {
         struct qemud_client *next = client->next;
         if (fds[fd].revents) {
-            QEMUD_DEBUG("Poll data normal\n");
+            qemudDebug("Poll data normal");
             if (fds[fd].revents == POLLOUT)
                 qemudDispatchClientWrite(server, client);
             else if (fds[fd].revents == POLLIN)
@@ -1279,7 +1386,7 @@ static int qemudDispatchPoll(struct qemud_server *server, struct pollfd *fds) {
         }
         vm = next;
         if (failed)
-            ret = -1;
+            ret = -1; /* FIXME: the daemon shouldn't exit on failure here */
     }
 
     /* Cleanup any VMs which shutdown & dont have an associated
@@ -1387,12 +1494,16 @@ static int qemudOneLoop(struct qemud_server *server, int timeout) {
         if (errno == EINTR) {
             goto retry;
         }
+        qemudLog(QEMUD_ERR, "Error polling on file descriptors: %s",
+                 strerror(errno));
         return -1;
     }
 
     /* Must have timed out */
-    if (ret == 0)
+    if (ret == 0) {
+        qemudLog(QEMUD_INFO, "Timed out while polling on file descriptors");
         return -1;
+    }
 
     if (qemudDispatchPoll(server, fds) < 0)
         return -1;
@@ -1425,8 +1536,6 @@ static void qemudCleanup(struct qemud_server *server) {
 
 #define MAX_LISTEN 5
 int main(int argc, char **argv) {
-    int godaemon = 0;
-    int verbose = 0;
     int sys = 0;
     int timeout = -1;
     struct qemud_server *server;
@@ -1482,10 +1591,16 @@ int main(int argc, char **argv) {
         }
     }
 
+    if (godaemon)
+        openlog("libvirt-qemud", 0, 0);
+
     if (pipe(sigpipe) < 0 ||
         qemudSetNonBlock(sigpipe[0]) < 0 ||
-        qemudSetNonBlock(sigpipe[1]) < 0)
+        qemudSetNonBlock(sigpipe[1]) < 0) {
+        qemudLog(QEMUD_ERR, "Failed to create pipe: %s",
+                 strerror(errno));
         return 1;
+    }
 
     sigwrite = sigpipe[1];
 
@@ -1503,8 +1618,11 @@ int main(int argc, char **argv) {
 
     if (godaemon) {
         int pid = qemudGoDaemon();
-        if (pid < 0)
+        if (pid < 0) {
+            qemudLog(QEMUD_ERR, "Failed to fork as daemon: %s",
+                     strerror(errno));
             return 1;
+        }
         if (pid > 0)
             return 0;
     }
@@ -1517,6 +1635,9 @@ int main(int argc, char **argv) {
     qemudCleanup(server);
 
     close(sigwrite);
+
+    if (godaemon)
+        closelog();
 
     return 0;
 }

@@ -43,13 +43,16 @@
 #define ATTRIBUTE_UNUSED
 #endif
 
-#ifdef DEBUG
-#define QEMUD_DEBUG(args...) fprintf(stderr, args)
-#else
-#define QEMUD_DEBUG(args...) do {} while(0)
-#endif
-
 #define UUID_LEN 16
+
+typedef enum {
+    QEMUD_ERR,
+    QEMUD_WARN,
+    QEMUD_INFO,
+#ifdef ENABLE_DEBUG
+    QEMUD_DEBUG
+#endif
+} qemudLogPriority;
 
 /* Different types of QEMU acceleration possible */
 enum qemud_vm_virt_type {
@@ -306,6 +309,13 @@ int qemudStartNetworkDaemon(struct qemud_server *server,
 int qemudShutdownNetworkDaemon(struct qemud_server *server,
                                struct qemud_network *network);
 
+void qemudLog(int priority, const char *fmt, ...);
+
+#ifdef ENABLE_DEBUG
+#define qemudDebug(...) qemudLog(QEMUD_DEBUG, __VA_ARGS__)
+#else
+#define qemudDebug(fmt, ...) do { } while(0);
+#endif
 
 #endif
 

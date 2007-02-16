@@ -812,7 +812,7 @@ int qemudDispatch(struct qemud_server *server, struct qemud_client *client,
                   struct qemud_packet *in, struct qemud_packet *out) {
     clientFunc *funcs;
     unsigned int type = in->header.type;
-    QEMUD_DEBUG("> Dispatching request %d readonly ? %d\n", type, client->readonly);
+    qemudDebug("> Dispatching request %d readonly ? %d", type, client->readonly);
 
     server->errorCode = 0;
     server->errorMessage[0] = '\0';
@@ -820,12 +820,12 @@ int qemudDispatch(struct qemud_server *server, struct qemud_client *client,
     memset(out, 0, sizeof(struct qemud_packet));
 
     if (type >= QEMUD_PKT_MAX) {
-        QEMUD_DEBUG("Illegal request type\n");
+        qemudDebug("Illegal request type");
         return -1;
     }
 
     if (type == QEMUD_PKT_FAILURE) {
-        QEMUD_DEBUG("Illegal request type\n");
+        qemudDebug("Illegal request type");
         return -1;
     }
 
@@ -835,17 +835,17 @@ int qemudDispatch(struct qemud_server *server, struct qemud_client *client,
         funcs = funcsTransmitRW;
 
     if (!funcs[type]) {
-        QEMUD_DEBUG("Illegal operation requested\n");
+        qemudDebug("Illegal operation requested");
         qemudReportError(server, VIR_ERR_OPERATION_DENIED, NULL);
         qemudDispatchFailure(server, client, out);
     } else {
         if ((funcs[type])(server, client, in, out) < 0) {
-            QEMUD_DEBUG("Dispatch failed\n");
+            qemudDebug("Dispatch failed");
             return -1;
         }
     }
 
-    QEMUD_DEBUG("< Returning reply %d (%d bytes)\n",
+    qemudDebug("< Returning reply %d (%d bytes)",
            out->header.type,
            out->header.dataSize);
 

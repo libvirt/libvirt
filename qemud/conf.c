@@ -1642,6 +1642,8 @@ int qemudScanConfigDir(struct qemud_server *server,
     if (!(dir = opendir(configDir))) {
         if (errno == ENOENT)
             return 0;
+        qemudLog(QEMUD_ERR, "Failed to open dir '%s': %s",
+                 configDir, strerror(errno));
         return -1;
     }
 

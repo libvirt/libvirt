@@ -1,3 +1,13 @@
+Fri Feb 16 18:28:32 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/qemud.c, qemud/dispatch.c, qemud/internal.h
+	qemud/conf.c, qemud/driver.c, configure.in: add a 
+	qemudLog() function which uses syslog() if we're in daemon
+	mode, doesn't output INFO/DEBUG messages unless	the
+	verbose flag is set and doesn't output DEBUG messages
+	unless compiled with --enable-debug. Also, make a first
+	pass through fatal errors and add error messages for them.
+	
 Fri Feb 16 18:26:55 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/internal.h, qemud/qemud.c: improve signal handling
