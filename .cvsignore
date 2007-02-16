@@ -26,3 +26,4 @@ config.rpath
 mkinstalldirs
 coverage
 results.log
+libvirt-*.tar.gz
