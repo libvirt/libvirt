@@ -1,3 +1,10 @@
+Fri Feb 16 18:24:08 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/qemud.c, qemud/bridge.c, qemud/iptables.c: fix
+	our FD_CLOEXEC usage so that all fds which should be
+	closed on exec are marked as such and that we leave
+	exec() to do the actual closing.
+	
 Fri Feb 16 18:23:15 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/qemud.c: fix qemudEnableIpForwarding() to not leak

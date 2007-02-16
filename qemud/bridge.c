@@ -54,6 +54,7 @@ int
 brInit(brControl **ctlp)
 {
     int fd;
+    int flags;
 
     if (!ctlp || *ctlp)
         return EINVAL;
@@ -61,6 +62,13 @@ brInit(brControl **ctlp)
     fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd < 0)
         return errno;
+
+    if ((flags = fcntl(fd, F_GETFD)) < 0 ||
+        fcntl(fd, F_SETFD, flags | FD_CLOEXEC) < 0) {
+        int err = errno;
+        close(fd);
+        return err;
+    }
 
     *ctlp = (brControl *)malloc(sizeof(struct _brControl));
     if (!*ctlp)

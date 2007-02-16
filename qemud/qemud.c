@@ -85,7 +85,7 @@ static int qemudGoDaemon(void) {
         {
             int stdinfd = -1;
             int stdoutfd = -1;
-            int i, open_max, nextpid;
+            int nextpid;
 
             if ((stdinfd = open(_PATH_DEVNULL, O_RDONLY)) < 0)
                 goto cleanup;
@@ -103,13 +103,6 @@ static int qemudGoDaemon(void) {
             if (close(stdoutfd) < 0)
                 goto cleanup;
             stdoutfd = -1;
-
-            open_max = sysconf (_SC_OPEN_MAX);
-            for (i = 0; i < open_max; i++)
-                if (i != STDIN_FILENO &&
-                    i != STDOUT_FILENO &&
-                    i != STDERR_FILENO)
-                    close(i);
 
             if (setsid() < 0)
                 goto cleanup;
@@ -353,23 +346,8 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
 
 
 static int
-qemudLeaveFdOpen(int *openfds, int fd)
-{
-    int i;
-
-    if (!openfds)
-        return 0;
-
-    for (i = 0; openfds[i] != -1; i++)
-        if (fd == openfds[i])
-            return 1;
-
-    return 0;
-}
-
-static int
 qemudExec(struct qemud_server *server, char **argv,
-          int *retpid, int *outfd, int *errfd, int *openfds) {
+          int *retpid, int *outfd, int *errfd) {
     int pid, null;
     int pipeout[2] = {-1,-1};
     int pipeerr[2] = {-1,-1};
@@ -398,11 +376,13 @@ qemudExec(struct qemud_server *server, char **argv,
         if (outfd) {
             close(pipeout[1]);
             qemudSetNonBlock(pipeout[0]);
+            qemudSetCloseExec(pipeout[0]);
             *outfd = pipeout[0];
         }
         if (errfd) {
             close(pipeerr[1]);
             qemudSetNonBlock(pipeerr[0]);
+            qemudSetCloseExec(pipeerr[0]);
             *errfd = pipeerr[0];
         }
         *retpid = pid;
@@ -423,13 +403,11 @@ qemudExec(struct qemud_server *server, char **argv,
     if (dup2(pipeerr[1] > 0 ? pipeerr[1] : null, STDERR_FILENO) < 0)
         _exit(1);
 
-    int i, open_max = sysconf (_SC_OPEN_MAX);
-    for (i = 0; i < open_max; i++)
-        if (i != STDOUT_FILENO &&
-            i != STDERR_FILENO &&
-            i != STDIN_FILENO &&
-            !qemudLeaveFdOpen(openfds, i))
-            close(i);
+    close(null);
+    if (pipeout[1] > 0)
+        close(pipeout[1]);
+    if (pipeerr[1] > 0)
+        close(pipeerr[1]);
 
     execvp(argv[0], argv);
 
@@ -439,13 +417,13 @@ qemudExec(struct qemud_server *server, char **argv,
 
  cleanup:
     if (pipeerr[0] > 0)
-        close(pipeerr[0] > 0);
-    if (pipeerr[1])
-        close(pipeerr[1] > 0);
-    if (pipeout[0])
-        close(pipeout[0] > 0);
-    if (pipeout[1])
-        close(pipeout[1] > 0);
+        close(pipeerr[0]);
+    if (pipeerr[1] > 0)
+        close(pipeerr[1]);
+    if (pipeout[0] > 0)
+        close(pipeout[0]);
+    if (pipeout[1] > 0)
+        close(pipeout[1]);
     if (null > 0)
         close(null);
     return -1;
@@ -465,7 +443,7 @@ int qemudStartVMDaemon(struct qemud_server *server,
     if (qemudBuildCommandLine(server, vm, &argv) < 0)
         return -1;
 
-    if (qemudExec(server, argv, &vm->pid, &vm->stdout, &vm->stderr, vm->tapfds) == 0) {
+    if (qemudExec(server, argv, &vm->pid, &vm->stdout, &vm->stderr) == 0) {
         vm->id = server->nextvmid++;
         ret = 0;
     }
@@ -861,7 +839,7 @@ dhcpStartDhcpDaemon(struct qemud_server *server,
     if (qemudBuildDnsmasqArgv(server, network, &argv) < 0)
         return -1;
 
-    ret = qemudExec(server, argv, &network->dnsmasqPid, NULL, NULL, NULL);
+    ret = qemudExec(server, argv, &network->dnsmasqPid, NULL, NULL);
 
     for (i = 0; argv[i]; i++)
         free(argv[i]);

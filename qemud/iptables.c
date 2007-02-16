@@ -317,15 +317,11 @@ iptablesSpawn(int errors, char * const *argv)
     }
 
     if (pid == 0) { /* child */
-        int i, open_max = sysconf(_SC_OPEN_MAX);
-
-        for (i = 0; i < open_max; i++) {
-            if (i != STDOUT_FILENO &&
-                i != STDERR_FILENO &&
-                i != STDIN_FILENO)
-                close(i);
-        else if (errors == NO_ERRORS)
-            dup2(null, i);
+        if (errors == NO_ERRORS) {
+            dup2(null, STDIN_FILENO);
+            dup2(null, STDOUT_FILENO);
+            dup2(null, STDERR_FILENO);
+            close(null);
         }
 
         execvp(argv[0], argv);
