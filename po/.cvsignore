@@ -12,3 +12,4 @@ Makevars.template
 Makefile.in.in
 Makefile.in
 Makefile
+remove-potcdate.sed
