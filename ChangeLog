@@ -1,3 +1,10 @@
+Fri Feb 16 18:26:55 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/internal.h, qemud/qemud.c: improve signal handling
+	and handle SIGHUP by shutting down all guests and networks
+	and re-loading configs, and handle SIGINT and SIGTERM
+	by shutting down cleanly.
+	
 Fri Feb 16 18:24:08 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/qemud.c, qemud/bridge.c, qemud/iptables.c: fix

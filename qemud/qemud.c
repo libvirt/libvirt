@@ -50,9 +50,85 @@
 #include "conf.h"
 #include "iptables.h"
 
-static void reapchild(int sig ATTRIBUTE_UNUSED) {
-    /* We explicitly waitpid the child later */
+static int sigwrite = -1;
+
+static void sig_handler(int sig) {
+    unsigned char sigc = sig;
+    int origerrno;
+
+    if (sig == SIGCHLD) /* We explicitly waitpid the child later */
+        return;
+
+    origerrno = errno;
+    write(sigwrite, &sigc, 1);
+    errno = origerrno;
 }
+
+static int qemudDispatchSignal(struct qemud_server *server)
+{
+    unsigned char sigc;
+    struct qemud_vm *vm;
+    struct qemud_network *network;
+    int ret;
+
+    if (read(server->sigread, &sigc, 1) != 1)
+        return -1;
+
+    /* shutdown active VMs */
+    vm = server->activevms;
+    while (vm) {
+        struct qemud_vm *next = vm->next;
+        qemudShutdownVMDaemon(server, vm);
+        vm = next;
+    }
+
+    /* free inactive VMs */
+    vm = server->inactivevms;
+    while (vm) {
+        struct qemud_vm *next = vm->next;
+        qemudFreeVM(vm);
+        vm = next;
+    }
+    server->inactivevms = NULL;
+    server->ninactivevms = 0;
+
+    /* shutdown active networks */
+    network = server->activenetworks;
+    while (network) {
+        struct qemud_network *next = network->next;
+        qemudShutdownNetworkDaemon(server, network);
+        network = next;
+    }
+
+    /* free inactive networks */
+    network = server->inactivenetworks;
+    while (network) {
+        struct qemud_network *next = network->next;
+        qemudFreeNetwork(network);
+        network = next;
+    }
+    server->inactivenetworks = NULL;
+    server->ninactivenetworks = 0;
+
+    ret = 0;
+
+    switch (sigc) {
+    case SIGHUP:
+        ret = qemudScanConfigs(server);
+        break;
+
+    case SIGINT:
+    case SIGTERM:
+        server->shutdown = 1;
+        break;
+
+    default:
+        break;
+    }
+
+    return ret;
+}
+
 static int qemudSetCloseExec(int fd) {
     int flags;
     if ((flags = fcntl(fd, F_GETFD)) < 0) {
@@ -228,7 +304,7 @@ static int qemudListen(struct qemud_server *server, int sys) {
     return 0;
 }
 
-static struct qemud_server *qemudInitialize(int sys) {
+static struct qemud_server *qemudInitialize(int sys, int sigread) {
     struct qemud_server *server;
     char libvirtConf[PATH_MAX];
 
@@ -239,6 +315,7 @@ static struct qemud_server *qemudInitialize(int sys) {
     server->qemuVersion = (0*1000000)+(8*1000)+(0);
     /* We don't have a dom-0, so start from 1 */
     server->nextvmid = 1;
+    server->sigread = sigread;
 
     if (sys) {
         if (snprintf(libvirtConf, sizeof(libvirtConf), "%s/libvirt", SYSCONF_DIR) >= (int)sizeof(libvirtConf)) {
@@ -1139,6 +1216,12 @@ static int qemudDispatchPoll(struct qemud_server *server, struct pollfd *fds) {
     int ret = 0;
     int fd = 0;
 
+    if (fds[fd++].revents && qemudDispatchSignal(server) < 0)
+        return -1;
+
+    if (server->shutdown)
+        return 0;
+
     while (sock) {
         struct qemud_socket *next = sock->next;
         if (fds[fd].revents)
@@ -1247,6 +1330,10 @@ static void qemudPreparePoll(struct qemud_server *server, struct pollfd *fds) {
     struct qemud_client *client;
     struct qemud_vm *vm;
 
+    fds[fd].fd = server->sigread;
+    fds[fd].events = POLLIN;
+    fd++;
+
     for (sock = server->sockets ; sock ; sock = sock->next) {
         fds[fd].fd = sock->fd;
         fds[fd].events = POLLIN;
@@ -1280,7 +1367,7 @@ static void qemudPreparePoll(struct qemud_server *server, struct pollfd *fds) {
 
 
 static int qemudOneLoop(struct qemud_server *server, int timeout) {
-    int nfds = server->nsockets + server->nclients + server->nvmfds;
+    int nfds = server->nsockets + server->nclients + server->nvmfds + 1; /* server->sigread */
     struct pollfd fds[nfds];
     int thistimeout = -1;
     int ret;
@@ -1316,7 +1403,7 @@ static int qemudOneLoop(struct qemud_server *server, int timeout) {
 static int qemudRunLoop(struct qemud_server *server, int timeout) {
     int ret;
 
-    while ((ret = qemudOneLoop(server, timeout)) == 0)
+    while ((ret = qemudOneLoop(server, timeout)) == 0 && !server->shutdown)
         ;
 
     return ret == -1 ? -1 : 0;
@@ -1324,6 +1411,7 @@ static int qemudRunLoop(struct qemud_server *server, int timeout) {
 
 static void qemudCleanup(struct qemud_server *server) {
     struct qemud_socket *sock = server->sockets;
+    close(server->sigread);
     while (sock) {
         close(sock->fd);
         sock = sock->next;
@@ -1342,6 +1430,8 @@ int main(int argc, char **argv) {
     int sys = 0;
     int timeout = -1;
     struct qemud_server *server;
+    struct sigaction sig_action;
+    int sigpipe[2];
 
     struct option opts[] = {
         { "verbose", no_argument, &verbose, 1},
@@ -1392,10 +1482,24 @@ int main(int argc, char **argv) {
         }
     }
 
-    if (signal(SIGPIPE, SIG_IGN) == SIG_ERR)
-        return 3;
-    if (signal(SIGCHLD, reapchild) == SIG_ERR)
-        return 3;
+    if (pipe(sigpipe) < 0 ||
+        qemudSetNonBlock(sigpipe[0]) < 0 ||
+        qemudSetNonBlock(sigpipe[1]) < 0)
+        return 1;
+
+    sigwrite = sigpipe[1];
+
+    sig_action.sa_handler = sig_handler;
+    sig_action.sa_flags = 0;
+    sigemptyset(&sig_action.sa_mask);
+
+    sigaction(SIGHUP, &sig_action, NULL);
+    sigaction(SIGINT, &sig_action, NULL);
+    sigaction(SIGTERM, &sig_action, NULL);
+    sigaction(SIGCHLD, &sig_action, NULL);
+
+    sig_action.sa_handler = SIG_IGN;
+    sigaction(SIGPIPE, &sig_action, NULL);
 
     if (godaemon) {
         int pid = qemudGoDaemon();
@@ -1405,12 +1509,14 @@ int main(int argc, char **argv) {
             return 0;
     }
 
-    if (!(server = qemudInitialize(sys)))
+    if (!(server = qemudInitialize(sys, sigpipe[0])))
         return 2;
 
     qemudRunLoop(server, timeout);
 
     qemudCleanup(server);
+
+    close(sigwrite);
 
     return 0;
 }

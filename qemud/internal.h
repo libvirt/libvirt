@@ -274,6 +274,7 @@ struct qemud_server {
     int qemuVersion;
     int nclients;
     struct qemud_client *clients;
+    int sigread;
     int nvmfds;
     int nactivevms;
     struct qemud_vm *activevms;
@@ -290,6 +291,7 @@ struct qemud_server {
     char networkConfigDir[PATH_MAX];
     char errorMessage[QEMUD_MAX_ERROR_LEN];
     int errorCode;
+    unsigned int shutdown : 1;
 };
 
 int qemudStartVMDaemon(struct qemud_server *server,
