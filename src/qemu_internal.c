@@ -1097,7 +1097,6 @@ static virDriver qemuDriver = {
     VIR_DRV_QEMU,
     "QEMU",
     LIBVIR_VERSION_NUMBER,
-    NULL, /* init */
     qemuOpen, /* open */
     qemuClose, /* close */
     NULL, /* type */

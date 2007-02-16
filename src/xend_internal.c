@@ -62,7 +62,6 @@ static virDriver xenDaemonDriver = {
     (DOM0_INTERFACE_VERSION >> 24) * 1000000 +
     ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +
     (DOM0_INTERFACE_VERSION & 0xFFFF),
-    NULL, /* init */
     xenDaemonOpen, /* open */
     xenDaemonClose, /* close */
     xenDaemonGetType, /* type */

@@ -411,7 +411,6 @@ typedef struct xen_op_v2_dom xen_op_v2_dom;
 static const char * xenHypervisorGetType(virConnectPtr conn);
 static unsigned long xenHypervisorGetMaxMemory(virDomainPtr domain);
 #endif
-static int xenHypervisorInit(void);
 
 #ifndef PROXY
 static virDriver xenHypervisorDriver = {
@@ -420,7 +419,6 @@ static virDriver xenHypervisorDriver = {
     (DOM0_INTERFACE_VERSION >> 24) * 1000000 +
     ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +
     (DOM0_INTERFACE_VERSION & 0xFFFF),
-    xenHypervisorInit, /* init */
     xenHypervisorOpen, /* open */
     xenHypervisorClose, /* close */
     xenHypervisorGetType, /* type */
@@ -1127,7 +1125,8 @@ virXen_getvcpusinfo(int handle, int id, unsigned int vcpu, virVcpuInfoPtr ipt,
  * Initialize the hypervisor layer. Try to detect the kind of interface
  * used i.e. pre or post changeset 10277
  */
-int xenHypervisorInit(void)
+int
+xenHypervisorInit(void)
 {
     int fd, ret, cmd;
     hypercall_t hc;

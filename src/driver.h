@@ -33,8 +33,6 @@ typedef enum {
 } virDrvOpenFlag;
 
 typedef int
-	(*virDrvInit)			(void);
-typedef int
 	(*virDrvOpen)			(virConnectPtr conn,
 					 const char *name,
 					 int flags);
@@ -150,7 +148,6 @@ struct _virDriver {
 	int	       no;	/* the number virDrvNo */
 	const char * name;	/* the name of the driver */
 	unsigned long ver;	/* the version of the backend */
-	virDrvInit			init;
 	virDrvOpen			open;
 	virDrvClose			close;
 	virDrvGetType			type;

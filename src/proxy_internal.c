@@ -46,7 +46,6 @@ static virDriver xenProxyDriver = {
     VIR_DRV_XEN_PROXY,
     "XenProxy",
     0,
-    NULL, /* init */
     xenProxyOpen, /* open */
     xenProxyClose, /* close */
     NULL, /* type */
