@@ -8,7 +8,7 @@ SUBDIRS = virshdata confdata sexpr2xmldata xml2sexprdata xmconfigdata
 # to the libvirt.a file. This ensures that when coverage
 # tests are run, all the output data ends up in the correct
 # location. ie, src/ instead of src/.libs.
-LIBVIRT = $(wildcard $(top_builddir)/src/.libs/*.o)
+LIBVIRT = $(wildcard $(top_builddir)/src/.libs/libvirt_la-*.o)
 
 INCLUDES = \
 	-I$(top_builddir)/include \
