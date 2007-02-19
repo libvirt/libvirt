@@ -349,8 +349,8 @@ brSetInetAddr(brControl *ctl,
     else if (ret == 0)
         return EINVAL;
 
-    ((struct sockaddr_in *)&ifr.ifr_addr)->sin_family = AF_INET;
-    ((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr   = inaddr;
+    ((struct sockaddr_in *)((void *)&ifr.ifr_addr))->sin_family = AF_INET;
+    ((struct sockaddr_in *)((void *)&ifr.ifr_addr))->sin_addr   = inaddr;
 
     if (ioctl(ctl->fd, cmd, &ifr) < 0)
         return errno;
@@ -386,7 +386,7 @@ brGetInetAddr(brControl *ctl,
     if (maxlen < BR_INET_ADDR_MAXLEN || ifr.ifr_addr.sa_family != AF_INET)
         return EFAULT;
 
-    inaddr = &((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr;
+    inaddr = &((struct sockaddr_in *)((void *)&ifr.ifr_addr))->sin_addr;
 
     if (!inet_ntop(AF_INET, inaddr, addr, maxlen))
         return errno;

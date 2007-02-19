@@ -447,13 +447,20 @@ static struct qemud_vm_net_def *qemudParseInterfaceXML(struct qemud_server *serv
     net->vlan = 0;
 
     if (macaddr) {
+        unsigned int mac[6];
         sscanf((const char *)macaddr, "%02x:%02x:%02x:%02x:%02x:%02x",
-               (unsigned int*)&net->mac[0],
-               (unsigned int*)&net->mac[1],
-               (unsigned int*)&net->mac[2],
-               (unsigned int*)&net->mac[3],
-               (unsigned int*)&net->mac[4],
-               (unsigned int*)&net->mac[5]);
+               (unsigned int*)&mac[0],
+               (unsigned int*)&mac[1],
+               (unsigned int*)&mac[2],
+               (unsigned int*)&mac[3],
+               (unsigned int*)&mac[4],
+               (unsigned int*)&mac[5]);
+        net->mac[0] = mac[0];
+        net->mac[1] = mac[1];
+        net->mac[2] = mac[2];
+        net->mac[3] = mac[3];
+        net->mac[4] = mac[4];
+        net->mac[5] = mac[5];
 
         xmlFree(macaddr);
     }
