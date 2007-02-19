@@ -81,50 +81,11 @@ static int qemudDispatchSignal(struct qemud_server *server)
         return -1;
     }
 
-    qemudLog(QEMUD_INFO, "Received signal %d; shuting down guests and "
-             "networks and purging config", sigc);
-
-    /* shutdown active VMs */
-    vm = server->activevms;
-    while (vm) {
-        struct qemud_vm *next = vm->next;
-        qemudShutdownVMDaemon(server, vm);
-        vm = next;
-    }
-
-    /* free inactive VMs */
-    vm = server->inactivevms;
-    while (vm) {
-        struct qemud_vm *next = vm->next;
-        qemudFreeVM(vm);
-        vm = next;
-    }
-    server->inactivevms = NULL;
-    server->ninactivevms = 0;
-
-    /* shutdown active networks */
-    network = server->activenetworks;
-    while (network) {
-        struct qemud_network *next = network->next;
-        qemudShutdownNetworkDaemon(server, network);
-        network = next;
-    }
-
-    /* free inactive networks */
-    network = server->inactivenetworks;
-    while (network) {
-        struct qemud_network *next = network->next;
-        qemudFreeNetwork(network);
-        network = next;
-    }
-    server->inactivenetworks = NULL;
-    server->ninactivenetworks = 0;
-
     ret = 0;
 
     switch (sigc) {
     case SIGHUP:
-        qemudLog(QEMUD_INFO, "Reloading configuration");
+        qemudLog(QEMUD_INFO, "Reloading configuration on SIGHUP");
         ret = qemudScanConfigs(server);
         break;
 
@@ -132,6 +93,43 @@ static int qemudDispatchSignal(struct qemud_server *server)
     case SIGQUIT:
     case SIGTERM:
         qemudLog(QEMUD_WARN, "Shutting down on signal %d", sigc);
+
+        /* shutdown active VMs */
+        vm = server->activevms;
+        while (vm) {
+            struct qemud_vm *next = vm->next;
+            qemudShutdownVMDaemon(server, vm);
+            vm = next;
+        }
+
+        /* free inactive VMs */
+        vm = server->inactivevms;
+        while (vm) {
+            struct qemud_vm *next = vm->next;
+            qemudFreeVM(vm);
+            vm = next;
+        }
+        server->inactivevms = NULL;
+        server->ninactivevms = 0;
+
+        /* shutdown active networks */
+        network = server->activenetworks;
+        while (network) {
+            struct qemud_network *next = network->next;
+            qemudShutdownNetworkDaemon(server, network);
+            network = next;
+        }
+
+        /* free inactive networks */
+        network = server->inactivenetworks;
+        while (network) {
+            struct qemud_network *next = network->next;
+            qemudFreeNetwork(network);
+            network = next;
+        }
+        server->inactivenetworks = NULL;
+        server->ninactivenetworks = 0;
+
         server->shutdown = 1;
         break;
 
