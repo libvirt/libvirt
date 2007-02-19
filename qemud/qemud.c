@@ -129,6 +129,7 @@ static int qemudDispatchSignal(struct qemud_server *server)
         break;
 
     case SIGINT:
+    case SIGQUIT:
     case SIGTERM:
         qemudLog(QEMUD_WARN, "Shutting down on signal %d", sigc);
         server->shutdown = 1;
@@ -1610,6 +1611,7 @@ int main(int argc, char **argv) {
 
     sigaction(SIGHUP, &sig_action, NULL);
     sigaction(SIGINT, &sig_action, NULL);
+    sigaction(SIGQUIT, &sig_action, NULL);
     sigaction(SIGTERM, &sig_action, NULL);
     sigaction(SIGCHLD, &sig_action, NULL);
 

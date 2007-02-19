@@ -1,3 +1,7 @@
+Fri Feb 19 16:58:53 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/qemud.c: handle SIGQUIT.
+	
 Mon Feb 19 09:38:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/bridge.c, qemud/conf.c: Fixed int -> char casts to deal
