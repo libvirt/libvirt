@@ -1,3 +1,8 @@
+Fri Feb 20 19:07:12 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/conf.c: don't free active networks/vms if we
+	fail to save the new config
+	
 Fri Feb 20 18:25:42 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* virsh.c: cmdNetworkList() re-indent this.

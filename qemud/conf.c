@@ -1247,12 +1247,14 @@ struct qemud_vm *qemudLoadConfigXML(struct qemud_server *server,
             if (qemudMakeConfigPath(server->configDir, vm->def->name, ".xml", vm->configFile, PATH_MAX) < 0) {
                 qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
                                  "cannot construct config file path");
-                qemudFreeVM(vm);
+                if (newVM)
+                    qemudFreeVM(vm);
                 return NULL;
             }
 
             if (qemudSaveConfig(server, vm) < 0) {
-                qemudFreeVM(vm);
+                if (newVM)
+                    qemudFreeVM(vm);
                 return NULL;
             }
         } else {
@@ -1587,12 +1589,14 @@ struct qemud_network *qemudLoadNetworkConfigXML(struct qemud_server *server,
         if (save) {
             if (qemudMakeConfigPath(server->networkConfigDir, network->def->name, ".xml", network->configFile, PATH_MAX) < 0) {
                 qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot construct config file path");
-                qemudFreeNetwork(network);
+                if (newNetwork)
+                    qemudFreeNetwork(network);
                 return NULL;
             }
 
             if (qemudSaveNetworkConfig(server, network) < 0) {
-                qemudFreeNetwork(network);
+                if (newNetwork)
+                    qemudFreeNetwork(network);
                 return NULL;
             }
         } else {
