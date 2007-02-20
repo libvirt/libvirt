@@ -350,55 +350,111 @@ static int qemudListenUnix(struct qemud_server *server,
     return 0;
 }
 
-static int qemudListen(struct qemud_server *server, int sys) {
-    char sockname[PATH_MAX];
+static int
+qemudEnsureDir(const char *path)
+{
+    struct stat st;
+    char parent[PATH_MAX];
+    char *p;
+    int err;
+
+    if (stat(path, &st) >= 0)
+        return 0;
+
+    strncpy(parent, path, PATH_MAX);
+    parent[PATH_MAX - 1] = '\0';
+
+    if (!(p = strrchr(parent, '/')))
+        return EINVAL;
+
+    if (p == parent)
+        return EPERM;
+
+    *p = '\0';
+
+    if ((err = qemudEnsureDir(parent)))
+        return err;
+
+    if (mkdir(path, 0777) < 0 && errno != EEXIST)
+        return errno;
+
+    return 0;
+}
+
+static int qemudInitPaths(int sys,
+                          char *configDir,
+                          char *networkConfigDir,
+                          char *sockname,
+                          char *roSockname,
+                          int maxlen) {
+    uid_t uid;
+    int err;
+
+    uid = geteuid();
 
     if (sys) {
-        if (snprintf(sockname, sizeof(sockname), "%s/run/libvirt/qemud-sock", LOCAL_STATE_DIR) >= (int)sizeof(sockname))
-            goto snprintf_error;
-
-        unlink(sockname);
-        if (qemudListenUnix(server, sockname, 0) < 0)
-            return -1;
-
-        if (snprintf(sockname, sizeof(sockname), "%s/run/libvirt/qemud-sock-ro", LOCAL_STATE_DIR) >= (int)sizeof(sockname))
-            goto snprintf_error;
-
-        unlink(sockname);
-        if (qemudListenUnix(server, sockname, 1) < 0)
-            return -1;
-    } else {
-        struct passwd *pw;
-        int uid;
-
-        if ((uid = geteuid()) < 0) {
+        if (uid != 0) {
             qemudLog(QEMUD_ERR, "You must run the daemon as root to use system mode");
             return -1;
         }
 
+        if (snprintf(configDir, maxlen, "%s/libvirt/qemu", SYSCONF_DIR) >= maxlen)
+            goto snprintf_error;
+
+        if (snprintf(networkConfigDir, maxlen, "%s/libvirt/qemu/networks", SYSCONF_DIR) >= maxlen)
+            goto snprintf_error;
+
+        if (snprintf(sockname, maxlen, "%s/run/libvirt/qemud-sock", LOCAL_STATE_DIR) >= maxlen)
+            goto snprintf_error;
+
+        unlink(sockname);
+
+        if (snprintf(roSockname, maxlen, "%s/run/libvirt/qemud-sock-ro", LOCAL_STATE_DIR) >= maxlen)
+            goto snprintf_error;
+
+        unlink(sockname);
+    } else {
+        struct passwd *pw;
+
         if (!(pw = getpwuid(uid))) {
-            qemudLog(QEMUD_ERR, "Failed to find user record for uid '%s': %s",
+            qemudLog(QEMUD_ERR, "Failed to find user record for uid '%d': %s",
                      uid, strerror(errno));
             return -1;
         }
 
-        if (snprintf(sockname, sizeof(sockname), "@%s/.libvirt/qemud-sock", pw->pw_dir) >= (int)sizeof(sockname))
+        if (snprintf(configDir, maxlen, "%s/.libvirt/qemu", pw->pw_dir) >= maxlen)
             goto snprintf_error;
 
-        if (qemudListenUnix(server, sockname, 0) < 0)
-            return -1;
+        if (snprintf(networkConfigDir, maxlen, "%s/.libvirt/qemu/networks", pw->pw_dir) >= maxlen)
+            goto snprintf_error;
+
+        if (snprintf(sockname, maxlen, "@%s/.libvirt/qemud-sock", pw->pw_dir) >= maxlen)
+            goto snprintf_error;
+    }
+
+    if ((err = qemudEnsureDir(configDir))) {
+        qemudLog(QEMUD_ERR, "Failed to create directory '%s': %s",
+                 configDir, strerror(err));
+        return -1;
+    }
+
+    if ((err = qemudEnsureDir(networkConfigDir))) {
+        qemudLog(QEMUD_ERR, "Failed to create directory '%s': %s",
+                 networkConfigDir, strerror(err));
+        return -1;
     }
 
     return 0;
 
  snprintf_error:
-    qemudLog(QEMUD_ERR, "Resulting path to long for buffer in qemudListen()");
+    qemudLog(QEMUD_ERR, "Resulting path to long for buffer in qemudInitPaths()");
     return -1;
 }
 
 static struct qemud_server *qemudInitialize(int sys, int sigread) {
     struct qemud_server *server;
-    char libvirtConf[PATH_MAX];
+    char sockname[PATH_MAX];
+    char roSockname[PATH_MAX];
 
     if (!(server = calloc(1, sizeof(struct qemud_server)))) {
         qemudLog(QEMUD_ERR, "Failed to allocate struct qemud_server");
@@ -411,72 +467,23 @@ static struct qemud_server *qemudInitialize(int sys, int sigread) {
     server->nextvmid = 1;
     server->sigread = sigread;
 
-    if (sys) {
-        if (snprintf(libvirtConf, sizeof(libvirtConf), "%s/libvirt", SYSCONF_DIR) >= (int)sizeof(libvirtConf)) {
-            goto snprintf_cleanup;
-        }
-        if (mkdir(libvirtConf, 0777) < 0) {
-            if (errno != EEXIST) {
-                qemudLog(QEMUD_ERR, "Failed to create directory '%s': %s",
-                         libvirtConf, strerror(errno));
-                goto cleanup;
-            }
-        }
+    roSockname[0] = '\0';
 
-        if (snprintf(server->configDir, sizeof(server->configDir), "%s/libvirt/qemu", SYSCONF_DIR) >= (int)sizeof(server->configDir)) {
-            goto snprintf_cleanup;
-        }
-        if (snprintf(server->networkConfigDir, sizeof(server->networkConfigDir), "%s/libvirt/qemu/networks", SYSCONF_DIR) >= (int)sizeof(server->networkConfigDir)) {
-            goto snprintf_cleanup;
-        }
-    } else {
-        struct passwd *pw;
-        int uid;
-
-        if ((uid = geteuid()) < 0) {
-            qemudLog(QEMUD_ERR, "You must run the daemon as root to use system mode");
-            goto cleanup;
-        }
-        if (!(pw = getpwuid(uid))) {
-            qemudLog(QEMUD_ERR, "Failed to find user record for uid '%s': %s",
-                     uid, strerror(errno));
-            goto cleanup;
-        }
-
-        if (snprintf(libvirtConf, sizeof(libvirtConf), "%s/.libvirt", pw->pw_dir) >= (int)sizeof(libvirtConf)) {
-            goto snprintf_cleanup;
-        }
-        if (mkdir(libvirtConf, 0777) < 0) {
-            if (errno != EEXIST) {
-                qemudLog(QEMUD_ERR, "Failed to create directory '%s': %s",
-                         libvirtConf, strerror(errno));
-                goto cleanup;
-            }
-        }
-
-
-        if (snprintf(server->configDir, sizeof(server->configDir), "%s/.libvirt/qemu", pw->pw_dir) >= (int)sizeof(server->configDir)) {
-            goto snprintf_cleanup;
-        }
-
-        if (snprintf(server->networkConfigDir, sizeof(server->networkConfigDir), "%s/.libvirt/qemu/networks", pw->pw_dir) >= (int)sizeof(server->networkConfigDir)) {
-            goto snprintf_cleanup;
-        }
-    }
-
-
-    if (qemudListen(server, sys) < 0) {
+    if (qemudInitPaths(sys, server->configDir, server->networkConfigDir,
+                       sockname, roSockname, PATH_MAX) < 0)
         goto cleanup;
-    }
+
+    if (qemudListenUnix(server, sockname, 0) < 0)
+        goto cleanup;
+
+    if (roSockname[0] == '\0' && qemudListenUnix(server, roSockname, 1) < 0)
+        goto cleanup;
 
     if (qemudScanConfigs(server) < 0) {
         goto cleanup;
     }
 
     return server;
-
- snprintf_cleanup:
-    qemudLog(QEMUD_ERR, "Resulting path to long for buffer in qemudInitialize()");
 
  cleanup:
     if (server) {

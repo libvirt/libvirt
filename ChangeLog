@@ -1,3 +1,9 @@
+Fri Feb 20 09:03:05 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/qemud.c: clean up qemudInitialize() and qemudListen()
+	so as to coalesce the two "system vs. user" code paths and
+	fix up some problems noticed by dan.
+	
 Fri Feb 19 16:59:18 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/qemud.c: don't shutdown guest and networks on
