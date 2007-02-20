@@ -231,8 +231,8 @@ static void
 iptRulesFree(iptRules *rules)
 {
     if (rules->table) {
-        free(rules->chain);
-        rules->chain = NULL;
+        free(rules->table);
+        rules->table = NULL;
     }
 
     if (rules->chain) {

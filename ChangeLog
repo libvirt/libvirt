@@ -1,3 +1,14 @@
+Fri Feb 20 17:49:22 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	Fix a few leaks
+
+	* qemud/qemud.c: qemudCleanup(): free the socket
+	structures
+
+	* qemud/conf.c: fix various leaks in the xml parsing
+
+	* qemud/iptables.c: fix a typo causing a leak
+	
 Fri Feb 20 16:49:53 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/conf.c, qemud/qemud.c: only create config dirs

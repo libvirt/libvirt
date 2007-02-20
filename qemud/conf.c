@@ -651,6 +651,7 @@ static struct qemud_vm_def *qemudParseXML(struct qemud_server *server,
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
         def->features |= QEMUD_FEATURE_ACPI;
     }
+    xmlXPathFreeObject(obj);
 
     /* Extract OS type info */
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/type[1])", ctxt);
@@ -794,8 +795,7 @@ static struct qemud_vm_def *qemudParseXML(struct qemud_server *server,
     if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
         (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr == 0)) {
         def->graphicsType = QEMUD_GRAPHICS_NONE;
-    } else {
-        prop = xmlGetProp(obj->nodesetval->nodeTab[0], BAD_CAST "type");
+    } else if ((prop = xmlGetProp(obj->nodesetval->nodeTab[0], BAD_CAST "type"))) {
         if (!strcmp((char *)prop, "vnc")) {
             def->graphicsType = QEMUD_GRAPHICS_VNC;
             prop = xmlGetProp(obj->nodesetval->nodeTab[0], BAD_CAST "port");
@@ -811,7 +811,9 @@ static struct qemud_vm_def *qemudParseXML(struct qemud_server *server,
             qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "Unsupported graphics type %s", prop);
             goto error;
         }
+        xmlFree(prop);
     }
+    xmlXPathFreeObject(obj);
 
     /* analysis of the disk devices */
     obj = xmlXPathEval(BAD_CAST "/domain/devices/disk", ctxt);

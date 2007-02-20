@@ -1483,16 +1483,23 @@ static int qemudRunLoop(struct qemud_server *server, int timeout) {
 }
 
 static void qemudCleanup(struct qemud_server *server) {
-    struct qemud_socket *sock = server->sockets;
+    struct qemud_socket *sock;
+
     close(server->sigread);
+
+    sock = server->sockets;
     while (sock) {
+        struct qemud_socket *next = sock->next;
         close(sock->fd);
-        sock = sock->next;
+        free(sock);
+        sock = next;
     }
+
     if (server->brctl)
         brShutdown(server->brctl);
     if (server->iptables)
         iptablesContextFree(server->iptables);
+
     free(server);
 }
 
