@@ -350,37 +350,6 @@ static int qemudListenUnix(struct qemud_server *server,
     return 0;
 }
 
-static int
-qemudEnsureDir(const char *path)
-{
-    struct stat st;
-    char parent[PATH_MAX];
-    char *p;
-    int err;
-
-    if (stat(path, &st) >= 0)
-        return 0;
-
-    strncpy(parent, path, PATH_MAX);
-    parent[PATH_MAX - 1] = '\0';
-
-    if (!(p = strrchr(parent, '/')))
-        return EINVAL;
-
-    if (p == parent)
-        return EPERM;
-
-    *p = '\0';
-
-    if ((err = qemudEnsureDir(parent)))
-        return err;
-
-    if (mkdir(path, 0777) < 0 && errno != EEXIST)
-        return errno;
-
-    return 0;
-}
-
 static int qemudInitPaths(int sys,
                           char *configDir,
                           char *networkConfigDir,
@@ -388,7 +357,6 @@ static int qemudInitPaths(int sys,
                           char *roSockname,
                           int maxlen) {
     uid_t uid;
-    int err;
 
     uid = geteuid();
 
@@ -430,18 +398,6 @@ static int qemudInitPaths(int sys,
 
         if (snprintf(sockname, maxlen, "@%s/.libvirt/qemud-sock", pw->pw_dir) >= maxlen)
             goto snprintf_error;
-    }
-
-    if ((err = qemudEnsureDir(configDir))) {
-        qemudLog(QEMUD_ERR, "Failed to create directory '%s': %s",
-                 configDir, strerror(err));
-        return -1;
-    }
-
-    if ((err = qemudEnsureDir(networkConfigDir))) {
-        qemudLog(QEMUD_ERR, "Failed to create directory '%s': %s",
-                 networkConfigDir, strerror(err));
-        return -1;
     }
 
     return 0;

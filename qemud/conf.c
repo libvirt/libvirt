@@ -138,31 +138,32 @@ qemudMakeConfigPath(const char *configDir,
 }
 
 static int
-qemudEnsureConfigDir(struct qemud_server *server,
-                     const char *configDir) {
-    struct stat sb;
+qemudEnsureDir(const char *path)
+{
+    struct stat st;
+    char parent[PATH_MAX];
+    char *p;
+    int err;
 
-    /* XXX: needs to be recursive */
+    if (stat(path, &st) >= 0)
+        return 0;
 
-    if (stat(configDir, &sb) < 0) {
-        if (errno == ENOENT) {
-            if (mkdir(configDir, 0700) < 0) {
-                qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
-                                 "cannot create config directory %s: %s",
-                                 configDir, strerror(errno));
-                return -1;
-            }
-        } else {
-            qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
-                             "cannot stat config directory %s",
-                             configDir, strerror(errno));
-            return -1;
-        }
-    } else if (!S_ISDIR(sb.st_mode)) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
-                         "config directory %s is not a directory", configDir);
-        return -1;
-    }
+    strncpy(parent, path, PATH_MAX);
+    parent[PATH_MAX - 1] = '\0';
+
+    if (!(p = strrchr(parent, '/')))
+        return EINVAL;
+
+    if (p == parent)
+        return EPERM;
+
+    *p = '\0';
+
+    if ((err = qemudEnsureDir(parent)))
+        return err;
+
+    if (mkdir(path, 0777) < 0 && errno != EEXIST)
+        return errno;
 
     return 0;
 }
@@ -1138,12 +1139,16 @@ static int qemudSaveConfig(struct qemud_server *server,
     char *xml;
     int fd = -1, ret = -1;
     int towrite;
+    int err;
 
     if (!(xml = qemudGenerateXML(server, vm, 0))) {
         return -1;
     }
 
-    if (qemudEnsureConfigDir(server, server->configDir) < 0) {
+    if ((err = qemudEnsureDir(server->configDir))) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "cannot create config directory %s: %s",
+                         server->configDir, strerror(err));
         goto cleanup;
     }
 
@@ -1268,12 +1273,16 @@ static int qemudSaveNetworkConfig(struct qemud_server *server,
     char *xml;
     int fd, ret = -1;
     int towrite;
+    int err;
 
     if (!(xml = qemudGenerateNetworkXML(server, network, 0))) {
         return -1;
     }
 
-    if (qemudEnsureConfigDir(server, server->networkConfigDir) < 0) {
+    if ((err = qemudEnsureDir(server->networkConfigDir))) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "cannot create config directory %s: %s",
+                         server->networkConfigDir, strerror(err));
         goto cleanup;
     }
 
