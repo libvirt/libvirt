@@ -1856,44 +1856,44 @@ cmdNetworkList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         return FALSE;
 
     if (active) {
-      maxactive = virConnectNumOfNetworks(ctl->conn);
-      if (maxactive < 0) {
-        vshError(ctl, FALSE, _("Failed to list active networks"));
-        return FALSE;
-      }
-      if (maxactive) {
-        activeNames = vshMalloc(ctl, sizeof(int) * maxactive);
-
-        if ((maxactive = virConnectListNetworks(ctl->conn, &activeNames[0], maxactive)) < 0) {
-	  vshError(ctl, FALSE, _("Failed to list active networks"));
-	  free(activeNames);
-	  return FALSE;
+        maxactive = virConnectNumOfNetworks(ctl->conn);
+        if (maxactive < 0) {
+            vshError(ctl, FALSE, _("Failed to list active networks"));
+            return FALSE;
         }
+        if (maxactive) {
+            activeNames = vshMalloc(ctl, sizeof(int) * maxactive);
 
-	qsort(&activeNames[0], maxactive, sizeof(int), namesorter);
-      }
+            if ((maxactive = virConnectListNetworks(ctl->conn, &activeNames[0], maxactive)) < 0) {
+                vshError(ctl, FALSE, _("Failed to list active networks"));
+                free(activeNames);
+                return FALSE;
+            }
+
+            qsort(&activeNames[0], maxactive, sizeof(int), namesorter);
+        }
     }
     if (inactive) {
-      maxinactive = virConnectNumOfDefinedNetworks(ctl->conn);
-      if (maxinactive < 0) {
-        vshError(ctl, FALSE, _("Failed to list inactive networks"));
-	if (activeNames)
-	  free(activeNames);
-        return FALSE;
-      }
-      if (maxinactive) {
-        inactiveNames = vshMalloc(ctl, sizeof(char *) * maxinactive);
-
-        if ((maxinactive = virConnectListDefinedNetworks(ctl->conn, inactiveNames, maxinactive)) < 0) {
-	  vshError(ctl, FALSE, _("Failed to list inactive networks"));
-	  if (activeNames)
-	    free(activeNames);
-	  free(inactiveNames);
-	  return FALSE;
+        maxinactive = virConnectNumOfDefinedNetworks(ctl->conn);
+        if (maxinactive < 0) {
+            vshError(ctl, FALSE, _("Failed to list inactive networks"));
+            if (activeNames)
+                free(activeNames);
+            return FALSE;
         }
+        if (maxinactive) {
+            inactiveNames = vshMalloc(ctl, sizeof(char *) * maxinactive);
 
-	qsort(&inactiveNames[0], maxinactive, sizeof(char*), namesorter);
-      }
+            if ((maxinactive = virConnectListDefinedNetworks(ctl->conn, inactiveNames, maxinactive)) < 0) {
+                vshError(ctl, FALSE, _("Failed to list inactive networks"));
+                if (activeNames)
+                    free(activeNames);
+                free(inactiveNames);
+                return FALSE;
+            }
+
+            qsort(&inactiveNames[0], maxinactive, sizeof(char*), namesorter);
+        }
     }
     vshPrintExtra(ctl, "%-20s\n", _("Name"));
     vshPrintExtra(ctl, "----------------------------------\n");
@@ -1905,7 +1905,7 @@ cmdNetworkList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         if (!network) {
             free(activeNames[i]);
             continue;
-	}
+        }
 
         vshPrint(ctl, "%-20s\n",
                  virNetworkGetName(network));
@@ -1919,10 +1919,10 @@ cmdNetworkList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         if (!network) {
             free(inactiveNames[i]);
             continue;
-	}
+        }
 
-	vshPrint(ctl, "%-20s\n",
-		 inactiveNames[i]);
+        vshPrint(ctl, "%-20s\n",
+                 inactiveNames[i]);
 
         virNetworkFree(network);
         free(inactiveNames[i]);
