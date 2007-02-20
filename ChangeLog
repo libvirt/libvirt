@@ -1,13 +1,18 @@
-Fri Feb 20 19:07:12 IST 2007 Mark McLoughlin <markmc@redhat.com>
+Tue Feb 20 19:08:58 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/conf.c: use strerror(errno) in some error messages
+	to make them a bit more useful
+	
+Tue Feb 20 19:07:12 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/conf.c: don't free active networks/vms if we
 	fail to save the new config
 	
-Fri Feb 20 18:25:42 IST 2007 Mark McLoughlin <markmc@redhat.com>
+Tue Feb 20 18:25:42 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* virsh.c: cmdNetworkList() re-indent this.
 	
-Fri Feb 20 17:49:22 IST 2007 Mark McLoughlin <markmc@redhat.com>
+Tue Feb 20 17:49:22 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	Fix a few leaks
 
@@ -18,28 +23,28 @@ Fri Feb 20 17:49:22 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/iptables.c: fix a typo causing a leak
 	
-Fri Feb 20 16:49:53 IST 2007 Mark McLoughlin <markmc@redhat.com>
+Tue Feb 20 16:49:53 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/conf.c, qemud/qemud.c: only create config dirs
 	when actually trying to write out config.
 
-Fri Feb 20 09:56:35 IST 2007 Mark McLoughlin <markmc@redhat.com>
+Tue Feb 20 09:56:35 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/bridge.c: change the fix for the alignment warning
 	a little.
 	
-Fri Feb 20 09:03:05 IST 2007 Mark McLoughlin <markmc@redhat.com>
+Tue Feb 20 09:03:05 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/qemud.c: clean up qemudInitialize() and qemudListen()
 	so as to coalesce the two "system vs. user" code paths and
 	fix up some problems noticed by dan.
 	
-Fri Feb 19 16:59:18 IST 2007 Mark McLoughlin <markmc@redhat.com>
+Mon Feb 19 16:59:18 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/qemud.c: don't shutdown guest and networks on
 	SIGHUP
 	
-Fri Feb 19 16:58:53 IST 2007 Mark McLoughlin <markmc@redhat.com>
+Mon Feb 19 16:58:53 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/qemud.c: handle SIGQUIT.
 	

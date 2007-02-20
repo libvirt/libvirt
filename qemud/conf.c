@@ -1158,23 +1158,23 @@ static int qemudSaveConfig(struct qemud_server *server,
                    O_WRONLY | O_CREAT | O_TRUNC,
                    S_IRUSR | S_IWUSR )) < 0) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
-                         "cannot create config file %s",
-                         vm->configFile);
+                         "cannot create config file %s: %s",
+                         vm->configFile, strerror(errno));
         goto cleanup;
     }
 
     towrite = strlen(xml);
     if (write(fd, xml, towrite) != towrite) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
-                         "cannot write config file %s",
-                         vm->configFile);
+                         "cannot write config file %s: %s",
+                         vm->configFile, strerror(errno));
         goto cleanup;
     }
 
     if (close(fd) < 0) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
-                         "cannot save config file %s",
-                         vm->configFile);
+                         "cannot save config file %s: %s",
+                         vm->configFile, strerror(errno));
         goto cleanup;
     }
 
@@ -1293,18 +1293,24 @@ static int qemudSaveNetworkConfig(struct qemud_server *server,
     if ((fd = open(network->configFile,
                    O_WRONLY | O_CREAT | O_TRUNC,
                    S_IRUSR | S_IWUSR )) < 0) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot create config file %s", network->configFile);
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "cannot create config file %s: %s",
+                         network->configFile, strerror(errno));
         goto cleanup;
     }
 
     towrite = strlen(xml);
     if (write(fd, xml, towrite) != towrite) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot write config file %s", network->configFile);
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "cannot write config file %s",
+                         network->configFile, strerror(errno));
         goto cleanup;
     }
 
     if (close(fd) < 0) {
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot save config file %s", network->configFile);
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "cannot save config file %s",
+                         network->configFile, strerror(errno));
         goto cleanup;
     }
 
