@@ -1,3 +1,8 @@
+Fri Feb 20 09:56:35 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/bridge.c: change the fix for the alignment warning
+	a little.
+	
 Fri Feb 20 09:03:05 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/qemud.c: clean up qemudInitialize() and qemudListen()
