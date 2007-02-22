@@ -50,7 +50,9 @@ typedef struct xenXMConfCache {
 } xenXMConfCache;
 
 static char configDir[PATH_MAX];
+/* Config file name to config object */
 static virHashTablePtr configCache = NULL;
+/* Name to config file name */
 static virHashTablePtr nameConfigMap = NULL;
 static int nconnections = 0;
 static time_t lastRefresh = 0;
@@ -1295,13 +1297,6 @@ int xenXMDomainCreate(virDomainPtr domain) {
     ret = xenDaemonDomainCreateLinux(domain->conn, sexpr);
     free(sexpr);
     if (ret != 0) {
-        fprintf(stderr, "Failed to create domain %s\n", domain->name);
-        return (-1);
-    }
-
-    ret = xend_wait_for_devices(domain->conn, domain->name);
-    if (ret != 0) {
-        fprintf(stderr, "Failed to get devices for domain %s\n", domain->name);
         return (-1);
     }
 
@@ -1310,15 +1305,20 @@ int xenXMDomainCreate(virDomainPtr domain) {
     }
     domain->id = ret;
 
-    ret = xenDaemonDomainResume(domain);
-    if (ret != 0) {
-        fprintf(stderr, "Failed to resume new domain %s\n", domain->name);
-        xenDaemonDomainDestroy(domain);
-        domain->id = -1;
-        return (-1);
-    }
+    if ((ret = xend_wait_for_devices(domain->conn, domain->name)) < 0)
+        goto cleanup;
+
+    if ((ret = xenDaemonDomainResume(domain)) < 0)
+        goto cleanup;
 
     return (0);
+
+ cleanup:
+    if (domain->id != -1) {
+        xenDaemonDomainDestroy(domain);
+        domain->id = -1;
+    }
+    return (-1);
 }
 
 
@@ -2165,10 +2165,12 @@ int xenXMDomainUndefine(virDomainPtr domain) {
     if (unlink(entry->filename) < 0)
         return (-1);
 
-    if (virHashRemoveEntry(nameConfigMap, entry->filename, NULL) < 0)
+    /* Remove the name -> filename mapping */
+    if (virHashRemoveEntry(nameConfigMap, domain->name, NULL) < 0)
         return(-1);
 
-    if (virHashRemoveEntry(configCache, domain->name, xenXMConfigFree) < 0)
+    /* Remove the config record itself */
+    if (virHashRemoveEntry(configCache, entry->filename, xenXMConfigFree) < 0)
         return (-1);
 
     return (0);

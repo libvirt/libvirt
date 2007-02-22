@@ -2816,7 +2816,7 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
     int ret;
     char *sexpr;
     char *name = NULL;
-    virDomainPtr dom;
+    virDomainPtr dom = NULL;
 
     if (!VIR_IS_CONNECT(conn)) {
         virXendError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -2841,32 +2841,30 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
     ret = xenDaemonDomainCreateLinux(conn, sexpr);
     free(sexpr);
     if (ret != 0) {
-        fprintf(stderr, _("Failed to create domain %s\n"), name);
         goto error;
     }
 
-    ret = xend_wait_for_devices(conn, name);
-    if (ret != 0) {
-        fprintf(stderr, _("Failed to get devices for domain %s\n"), name);
+    /* This comes before wait_for_devices, to ensure that latter
+       cleanup will destroy the domain upon failure */
+    if (!(dom = virDomainLookupByName(conn, name)))
         goto error;
-    }
 
-    dom = virDomainLookupByName(conn, name);
-    if (dom == NULL) {
+    if ((ret = xend_wait_for_devices(conn, name)) < 0)
         goto error;
-    }
 
-    ret = xenDaemonDomainResume(dom);
-    if (ret != 0) {
-        fprintf(stderr, _("Failed to resume new domain %s\n"), name);
-        xenDaemonDomainDestroy(dom);
+    if ((ret = xenDaemonDomainResume(dom)) < 0)
         goto error;
-    }
 
     free(name);
 
     return (dom);
+
   error:
+    /* Make sure we don't leave a still-born domain around */
+    if (dom != NULL) {
+        xenDaemonDomainDestroy(dom);
+        virFreeDomain(dom->conn, dom);
+    }
     if (name != NULL)
         free(name);
     return (NULL);

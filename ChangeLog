@@ -1,3 +1,10 @@
+Thu Feb 22 14:06:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xm_internal.c, src/xend_internal.c: Re-arrange VM creation
+	commands to ensure we destroy stillborn domains if device hotplug
+	fails to complete. Fix deletion of inactive VMs from internal
+	cache of domain configs.
+
 Thu Feb 22 11:45:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xs_internal.c: Refuse to do shutdown / reboot on
