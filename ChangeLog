@@ -1,3 +1,9 @@
+Thu Feb 22 11:45:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xs_internal.c: Refuse to do shutdown / reboot on
+	Dom0 guest. Signed-off-by: Kazuki Mizushima
+	<mizushima.kazuk@jp.fujitsu.com>
+
 Thu Feb 22 10:37:08 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/conf.c: fix another xml property leak.

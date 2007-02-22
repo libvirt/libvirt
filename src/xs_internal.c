@@ -630,7 +630,7 @@ xenStoreDomainShutdown(virDomainPtr domain)
 	                 __FUNCTION__);
         return(-1);
     }
-    if (domain->id == -1)
+    if (domain->id == -1 || domain->id == 0)
         return(-1);
     /*
      * this is very hackish, the domU kernel probes for a special 
@@ -658,7 +658,7 @@ xenStoreDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
 	                 __FUNCTION__);
         return(-1);
     }
-    if (domain->id == -1)
+    if (domain->id == -1 || domain->id == 0)
         return(-1);
     /*
      * this is very hackish, the domU kernel probes for a special 
