@@ -1,3 +1,7 @@
+Thu Feb 22 10:37:08 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/conf.c: fix another xml property leak.
+	
 Tue Feb 20 19:08:58 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/conf.c: use strerror(errno) in some error messages

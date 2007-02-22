@@ -751,7 +751,8 @@ static struct qemud_vm_def *qemudParseXML(struct qemud_server *server,
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
         for (i = 0; i < obj->nodesetval->nodeNr && i < QEMUD_MAX_BOOT_DEVS ; i++) {
-            prop = xmlGetProp(obj->nodesetval->nodeTab[i], BAD_CAST "dev");
+            if (!(prop = xmlGetProp(obj->nodesetval->nodeTab[i], BAD_CAST "dev")))
+                continue;
             if (!strcmp((char *)prop, "hd")) {
                 def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_DISK;
             } else if (!strcmp((char *)prop, "fd")) {
@@ -761,8 +762,10 @@ static struct qemud_vm_def *qemudParseXML(struct qemud_server *server,
             } else if (!strcmp((char *)prop, "net")) {
                 def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_NET;
             } else {
+                xmlFree(prop);
                 goto error;
             }
+            xmlFree(prop);
         }
     }
     xmlXPathFreeObject(obj);

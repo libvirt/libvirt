@@ -328,11 +328,6 @@ int			virConnectListDefinedDomains (virConnectPtr conn,
 						 int maxnames);
 int			virDomainCreate		(virDomainPtr domain);
 
-int			virDomainGetAutostart	(virDomainPtr domain,
-						 int *autostart);
-int			virDomainSetAutostart	(virDomainPtr domain,
-						 int autostart);
-
 /**
  * virVcpuInfo: structure for information about a virtual CPU in a domain.
  */
@@ -532,11 +527,6 @@ int			virNetworkGetUUIDString	(virNetworkPtr network,
 char *			virNetworkGetXMLDesc	(virNetworkPtr network,
 						 int flags);
 char *			virNetworkGetBridgeName (virNetworkPtr network);
-
-int			virNetworkGetAutostart	(virNetworkPtr network,
-						 int *autostart);
-int			virNetworkSetAutostart	(virNetworkPtr network,
-						 int autostart);
 
 #ifdef __cplusplus
 }
