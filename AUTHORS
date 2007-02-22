@@ -1,2 +1,35 @@
-Daniel Veillard <veillard@redhat.com> or <daniel@veillard.com>
-Karel Zak <kzak@redhat.com> 
+   libvirt Authors
+   ===============
+
+The libvirt project was initiated by:
+
+  Daniel Veillard      <veillard@redhat.com> or <daniel@veillard.com>
+
+The primary maintainers for various code sub-systems / drivers 
+are:
+
+  Daniel Veillard      <veillard@redhat.com>   (xen & everything else)
+  Karel Zak            <kzak@redhat.com>       (virsh tool)
+  Daniel Berrange      <berrange@redhat.com>   (test & qemu drivers)
+  Mark McLoughlin      <markmc@redhat.com>     (network driver)
+
+Patches have also been contributed by:
+
+  David Lutterkort     <dlutter@redhat.com>
+  Anthony Liguori      <aliguori@us.ibm.com>
+  Jim Meyering         <meyering@redhat.com>
+  Andrew Puch          <apuch@redhat.com>
+  Jim Fehlig           <jfehlig@novell.com>
+  Philippe Berthault   <philippe.berthault@Bull.net>
+  Hugh Brock           <hbrock@redhat.com>
+  Michel Ponceau       <michel.ponceau@bull.net>
+  Jeremy Katz          <katzj@redhat.com>
+  Pete Vetere          <pvetere@redhat.com>
+  Richard W.M. Jones   <rjones@redhat.com>
+  Atsushi SAKAI        <sakaia@jp.fujitsu.com>
+  Kazuki Mizushima     <mizushima.kazuk@jp.fujitsu.com>
+
+  [....send patches to get your name here....]
+
+
+-- End
