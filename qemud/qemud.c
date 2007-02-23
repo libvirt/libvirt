@@ -1255,8 +1255,7 @@ static int qemudDispatchPoll(struct qemud_server *server, struct pollfd *fds) {
     struct qemud_socket *sock = server->sockets;
     struct qemud_client *client = server->clients;
     struct qemud_vm *vm;
-    struct qemud_vm *tmp;
-    struct qemud_network *network, *prevnet;
+    struct qemud_network *network;
     int ret = 0;
     int fd = 0;
 
@@ -1336,42 +1335,24 @@ static int qemudDispatchPoll(struct qemud_server *server, struct pollfd *fds) {
     /* Cleanup any VMs which shutdown & dont have an associated
        config file */
     vm = server->vms;
-    tmp = NULL;
     while (vm) {
-        if (!qemudIsActiveVM(vm) && !vm->configFile[0]) {
-            struct qemud_vm *next = vm->next;
-            if (tmp) {
-                tmp->next = next;
-            } else {
-                server->vms = next;
-            }
-            qemudFreeVM(vm);
-            server->ninactivevms--;
-            vm = next;
-        } else {
-            tmp = vm;
-            vm = vm->next;
-        }
+        struct qemud_vm *next = vm->next;
+
+        if (!qemudIsActiveVM(vm) && !vm->configFile[0])
+            qemudRemoveInactiveVM(server, vm);
+
+        vm = next;
     }
 
     /* Cleanup any networks too */
     network = server->networks;
-    prevnet = NULL;
     while (network) {
-        if (!qemudIsActiveNetwork(network) && !network->configFile[0]) {
-            struct qemud_network *next = network->next;
-            if (prevnet) {
-                prevnet->next = next;
-            } else {
-                server->networks = next;
-            }
-            qemudFreeNetwork(network);
-            server->ninactivenetworks--;
-            network = next;
-        } else {
-            prevnet = network;
-            network = network->next;
-        }
+        struct qemud_network *next = network->next;
+
+        if (!qemudIsActiveNetwork(network) && !network->configFile[0])
+            qemudRemoveInactiveNetwork(server, network);
+
+        network = next;
     }
 
     return ret;

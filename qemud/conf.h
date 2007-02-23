@@ -26,33 +26,55 @@
 
 #include "internal.h"
 
-int qemudBuildCommandLine(struct qemud_server *server,
-                          struct qemud_vm *vm,
-                          char ***argv);
+int         qemudBuildCommandLine       (struct qemud_server *server,
+                                         struct qemud_vm *vm,
+                                         char ***argv);
 
-int qemudScanConfigs(struct qemud_server *server);
-int qemudDeleteConfig(struct qemud_server *server,
-                      const char *configFile,
-                      const char *name);
+int         qemudScanConfigs            (struct qemud_server *server);
+int         qemudDeleteConfig           (struct qemud_server *server,
+                                         const char *configFile,
+                                         const char *name);
 
-void qemudFreeVMDef(struct qemud_vm_def *vm);
-void qemudFreeVM(struct qemud_vm *vm);
-struct qemud_vm *qemudLoadConfigXML(struct qemud_server *server,
-                                    const char *file,
-                                    const char *doc,
-                                    int persist);
-char *qemudGenerateXML(struct qemud_server *server,
-                       struct qemud_vm *vm, int live);
+void        qemudFreeVMDef              (struct qemud_vm_def *vm);
+void        qemudFreeVM                 (struct qemud_vm *vm);
 
-void qemudFreeNetworkDef(struct qemud_network_def *def);
-void qemudFreeNetwork(struct qemud_network *network);
-struct qemud_network *qemudLoadNetworkConfigXML(struct qemud_server *server,
-                                                const char *file,
-                                                const char *doc,
-                                                int persist);
-char *qemudGenerateNetworkXML(struct qemud_server *server,
-                              struct qemud_network *network,
-                              int live);
+struct qemud_vm *
+            qemudAssignVMDef            (struct qemud_server *server,
+                                         struct qemud_vm_def *def);
+void        qemudRemoveInactiveVM       (struct qemud_server *server,
+                                         struct qemud_vm *vm);
+
+struct qemud_vm_def *
+            qemudParseVMDef             (struct qemud_server *server,
+                                         const char *xmlStr,
+                                         const char *displayName);
+int         qemudSaveVMDef              (struct qemud_server *server,
+                                         struct qemud_vm *vm,
+                                         struct qemud_vm_def *def);
+char *      qemudGenerateXML            (struct qemud_server *server,
+                                         struct qemud_vm *vm,
+                                         struct qemud_vm_def *def,
+                                         int live);
+
+void        qemudFreeNetworkDef         (struct qemud_network_def *def);
+void        qemudFreeNetwork            (struct qemud_network *network);
+
+struct qemud_network *
+            qemudAssignNetworkDef       (struct qemud_server *server,
+                                         struct qemud_network_def *def);
+void        qemudRemoveInactiveNetwork  (struct qemud_server *server,
+                                         struct qemud_network *network);
+
+struct qemud_network_def *
+            qemudParseNetworkDef        (struct qemud_server *server,
+                                         const char *xmlStr,
+                                         const char *displayName);
+int         qemudSaveNetworkDef         (struct qemud_server *server,
+                                         struct qemud_network *network,
+                                         struct qemud_network_def *def);
+char *      qemudGenerateNetworkXML     (struct qemud_server *server,
+                                         struct qemud_network *network,
+                                         struct qemud_network_def *def);
 
 #endif
 

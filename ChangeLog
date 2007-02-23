@@ -1,3 +1,19 @@
+Fri Feb 23 08:41:34 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/conf.[ch]: significantly re-factor qemudLoadConfigXML()
+	so that "parse the XML", "assign the def to a VM" and
+	"save the XML" operations are in separate functions.
+	Add qemudRemoveInactiveVM() and qemudRemoveInactiveNetwork().
+	Report errors when loading config files at startup. Check
+	that a domain/network's name matches the config filename.
+	
+	* qemud/driver.c: update the Create() and Define() functions
+	to explicitly parse/assign/save. Also, fix bug where if
+	Create() failed, we would free the VM without removing it
+	from the inactive list.
+	
+	* qemud/qemud.c: use qemudRemoveInactiveVM/Network()
+	
 Fri Feb 23 08:40:52 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/driver.[ch], qemud/dispatch.c: fix the fact that
