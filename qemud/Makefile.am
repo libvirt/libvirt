@@ -19,3 +19,19 @@ libvirt_qemud_LDFLAGS = $(LIBXML_LIBS) $(SYSFS_LIBS)
 libvirt_qemud_DEPENDENCIES =
 libvirt_qemud_LDADD =
 
+EXTRA_DIST = libvirt_qemud.init.in
+
+if LIBVIRT_INIT_SCRIPTS_RED_HAT
+initdir = $(sysconfdir)/rc.d/init.d
+init_SCRIPTS = libvirtd
+
+libvirtd: libvirtd.in
+	sed						\
+	    -e s!\@localstatedir\@!@localstatedir@!	\
+	    -e s!\@sbindir\@!@sbindir@!			\
+	    -e s!\@sysconfdir\@!@sysconfdir@!		\
+	    < $< > $@
+	chmod a+x libvirtd
+
+CLEANFILES = libvirtd
+endif # DBUS_INIT_SCRIPTS_RED_HAT

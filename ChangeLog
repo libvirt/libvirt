@@ -1,3 +1,13 @@
+Fri Feb 23 12:49:11 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/libvirtd.in: add init script for libvirt_qemud
+
+	* qemud/Makefile.am: install it unless we were configured
+	with --with-init-scripts=none
+
+	* configure.in: add --with-init-scripts to allow us
+	have different flavour init scripts
+	
 Fri Feb 23 12:46:44 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/qemud.c: add --pid-file and default to writing

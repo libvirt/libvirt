@@ -102,6 +102,23 @@ AC_DEFINE_UNQUOTED(QEMUD_PID_FILE, "$QEMUD_PID_FILE", [PID file path for qemud])
 AC_MSG_RESULT($QEMUD_PID_FILE)
 
 dnl
+dnl init script flavor
+dnl
+AC_MSG_CHECKING([for init script flavor])
+AC_ARG_WITH(init-script,
+            AC_HELP_STRING([--with-init-scripts=[redhat|auto|none]],
+                           [Style of init scripts to install (defaults to auto)]))
+if test "x$with_init_scripts" = "x" -o "x$with_init_scripts" = "xauto"; then
+    if test -f /etc/redhat-release ; then
+        with_init_scripts=redhat
+    else
+        with_init_scripts=none
+    fi
+fi
+AM_CONDITIONAL(LIBVIRT_INIT_SCRIPTS_RED_HAT, test x$with_init_scripts = xredhat)
+AC_MSG_RESULT($with_init_scripts)
+
+dnl
 dnl allow the creation of iptables rules in chains with a
 dnl specific prefix rather than in the standard toplevel chains
 dnl

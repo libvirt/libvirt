@@ -1,0 +1,77 @@
+#!/bin/sh
+
+# libvirt_qemud:   QEMU and virtual network management daemon
+#
+# chkconfig: 345 97 03
+# description:  This is a daemon for managing QEMU guest instances
+#               and libvirt virtual networks
+#               See http://libvirt.org
+#
+# processname: libvirt_qemud
+# pidfile: @localstatedir@/run/libvirt_qemud.pid
+#
+
+# Sanity checks.
+[ -x @sbindir@/libvirt_qemud ] || exit 0
+
+# Source function library.
+. @sysconfdir@/rc.d/init.d/functions
+
+SERVICE=libvirtd
+PROCESS=libvirt_qemud
+
+
+RETVAL=0
+
+start() {
+    echo -n $"Starting $SERVICE daemon: "
+    daemon --check $SERVICE $PROCESS --system --daemon
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch @localstatedir@/lock/subsys/$SERVICE
+}
+
+stop() {
+    echo -n $"Stopping $SERVICE daemon: "
+
+    killproc $PROCESS -TERM
+    RETVAL=$?
+    echo
+    if [ $RETVAL -eq 0 ]; then
+        rm -f @localstatedir@/lock/subsys/$SERVICE
+        rm -f @localstatedir@/run/$SERVICE.pid
+    fi
+}
+
+restart() {
+    stop
+    start
+}
+
+reload() {
+    echo -n $"Reloading $SERVICE configuration: "
+
+    killproc $PROCESS -HUP
+    RETVAL=$?
+    echo
+    return $RETVAL
+}
+
+# See how we were called.
+case "$1" in
+    start|stop|restart|reload)
+        $1
+        ;;
+    status)
+        status $PROCESS
+        RETVAL=$?
+        ;;
+    condrestart)
+        [ -f @localstatedir@/lock/subsys/$SERVICE ] && restart || :
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|reload}"
+	exit 1
+        ;;
+esac
+exit $RETVAL
