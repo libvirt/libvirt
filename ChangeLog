@@ -1,3 +1,9 @@
+Fri Feb 23 10:26:24 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* src/virsh.c: in "start" and "net-start" use e.g.
+	vshCommandOptDomainBy() so that we actually get an
+	error message if the domain/network isn't found.
+	
 Fri Feb 23 09:11:53 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/conf.c: actually autostart guests/networks at startup

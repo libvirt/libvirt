@@ -814,19 +814,12 @@ static int
 cmdStart(vshControl * ctl, vshCmd * cmd)
 {
     virDomainPtr dom;
-    char *name;
-    int found;
     int ret = TRUE;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    name = vshCommandOptString(cmd, "name", &found);
-    if (!found)
-        return FALSE;
-
-    dom = virDomainLookupByName(ctl->conn, name);
-    if (!dom)
+    if (!(dom = vshCommandOptDomainBy(ctl, cmd, "name", NULL, VSH_BYNAME)))
         return FALSE;
 
     if (virDomainGetID(dom) != (unsigned int)-1) {
@@ -836,9 +829,10 @@ cmdStart(vshControl * ctl, vshCmd * cmd)
 
     if (virDomainCreate(dom) == 0) {
         vshPrint(ctl, _("Domain %s started\n"),
-                 name);
+                 virDomainGetName(dom));
     } else {
-        vshError(ctl, FALSE, _("Failed to start domain %s"), name);
+        vshError(ctl, FALSE, _("Failed to start domain %s"),
+                 virDomainGetName(dom));
         ret = FALSE;
     }
     return ret;
@@ -2085,26 +2079,20 @@ static int
 cmdNetworkStart(vshControl * ctl, vshCmd * cmd)
 {
     virNetworkPtr network;
-    char *name;
-    int found;
     int ret = TRUE;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
 
-    name = vshCommandOptString(cmd, "name", &found);
-    if (!found)
-        return FALSE;
-
-    network = virNetworkLookupByName(ctl->conn, name);
-    if (!network)
-        return FALSE;
+    if (!(network = vshCommandOptNetworkBy(ctl, cmd, "name", NULL, VSH_BYNAME)))
+         return FALSE;
 
     if (virNetworkCreate(network) == 0) {
         vshPrint(ctl, _("Network %s started\n"),
-                 name);
+                 virNetworkGetName(network));
     } else {
-      vshError(ctl, FALSE, _("Failed to start network %s"), name);
+        vshError(ctl, FALSE, _("Failed to start network %s"),
+                 virNetworkGetName(network));
         ret = FALSE;
     }
     return ret;
