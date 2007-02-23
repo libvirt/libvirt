@@ -96,7 +96,9 @@ static virDriver xenDaemonDriver = {
     xenDaemonDomainDefineXML, /* domainDefineXML */
     xenDaemonDomainUndefine, /* domainUndefine */
     xenDaemonAttachDevice, /* domainAttachDevice */
-    xenDaemonDetachDevice /* domainDetachDevice */
+    xenDaemonDetachDevice, /* domainDetachDevice */
+    NULL, /* domainGetAutostart */
+    NULL, /* domainSetAutostart */
 };
 
 /**

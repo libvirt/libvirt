@@ -1,3 +1,18 @@
+Fri Feb 23 08:49:12 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* include/libvirt/libvirt.h.in, src/libvirt.c add
+	virDomainGetAutostart(), virDomainSetAutostart(),
+	virNetworkGetAutostart() and virNetworkSetAutostart().
+
+	* src/libvirt_sym.version: export the API
+	
+	* src/driver.h: add methods to the driver vtables.
+	
+	* src/proxy_internal.c,	src/qemu_internal.c,
+	  src/test.c, src/xen_internal.c, src/xend_internal.c,
+	  src/xm_internal.c, src/xs_internal.c: set those
+	methods to NULL
+	
 Fri Feb 23 08:41:34 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/conf.[ch]: significantly re-factor qemudLoadConfigXML()

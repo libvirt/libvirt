@@ -75,6 +75,8 @@ static virDriver xenStoreDriver = {
     NULL, /* domainUndefine */
     NULL, /* domainAttachDevice */
     NULL, /* domainDetachDevice */
+    NULL, /* domainGetAutostart */
+    NULL, /* domainSetAutostart */
 };
 
 /**

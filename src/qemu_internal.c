@@ -1132,6 +1132,8 @@ static virDriver qemuDriver = {
     qemuUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */
     NULL, /* domainDetachDevice */
+    NULL, /* domainGetAutostart */
+    NULL, /* domainSetAutostart */
 };
 
 static virNetworkDriver qemuNetworkDriver = {
@@ -1150,6 +1152,8 @@ static virNetworkDriver qemuNetworkDriver = {
     qemuNetworkDestroy, /* networkDestroy */
     qemuNetworkDumpXML, /* networkDumpXML */
     qemuNetworkGetBridgeName, /* networkGetBridgeName */
+    NULL, /* networkGetAutostart */
+    NULL, /* networkSetAutostart */
 };
 
 void qemuRegister(void) {

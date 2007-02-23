@@ -1862,6 +1862,69 @@ virDomainCreate(virDomainPtr domain) {
 }
 
 /**
+ * virDomainGetAutostart:
+ * @domain: a domain object
+ *
+ * Return a boolean value indicating whether the domain
+ * configured to be automatically started when the host
+ * machine boots.
+ *
+ * Returns -1 in case of error, 0 in case of success
+ */
+int
+virDomainGetAutostart(virDomainPtr domain,
+                      int *autostart) {
+    int i;
+
+    if (!VIR_IS_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
+    }
+    if (!autostart) {
+        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+
+    for (i = 0;i < domain->conn->nb_drivers;i++) {
+	if ((domain->conn->drivers[i] != NULL) &&
+	    (domain->conn->drivers[i]->domainGetAutostart != NULL) &&
+            (domain->conn->drivers[i]->domainGetAutostart(domain, autostart) == 0))
+            return (0);
+    }
+    virLibConnError(domain->conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    return (-1);
+}
+
+/**
+ * virDomainSetAutostart:
+ * @domain: a domain object
+ *
+ * Configure the domain to be automatically started
+ * when the host machine boots.
+ *
+ * Returns -1 in case of error, 0 in case of success
+ */
+int
+virDomainSetAutostart(virDomainPtr domain,
+                      int autostart) {
+    int i;
+
+    if (!VIR_IS_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
+    }
+
+    for (i = 0;i < domain->conn->nb_drivers;i++) {
+	if ((domain->conn->drivers[i] != NULL) &&
+	    (domain->conn->drivers[i]->domainSetAutostart != NULL) &&
+            (domain->conn->drivers[i]->domainSetAutostart(domain, autostart) == 0))
+            return (0);
+    }
+    virLibConnError(domain->conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    return (-1);
+}
+
+/**
  * virDomainSetVcpus:
  * @domain: pointer to domain object, or NULL for Domain0
  * @nvcpus: the new number of virtual CPUs for this domain
@@ -2765,4 +2828,67 @@ virNetworkGetBridgeName(virNetworkPtr network)
         return (NULL);
     }
     return(ret);
+}
+
+/**
+ * virNetworkGetAutostart:
+ * @network: a network object
+ *
+ * Return a boolean value indicating whether the network
+ * configured to be automatically started when the host
+ * machine boots.
+ *
+ * Returns -1 in case of error, 0 in case of success
+ */
+int
+virNetworkGetAutostart(virNetworkPtr network,
+                       int *autostart) {
+    int i;
+
+    if (!VIR_IS_NETWORK(network)) {
+        virLibNetworkError(network, VIR_ERR_INVALID_NETWORK, __FUNCTION__);
+        return (-1);
+    }
+    if (!autostart) {
+        virLibNetworkError(network, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+
+    for (i = 0;i < network->conn->nb_network_drivers;i++) {
+	if ((network->conn->networkDrivers[i] != NULL) &&
+	    (network->conn->networkDrivers[i]->networkGetAutostart != NULL) &&
+            (network->conn->networkDrivers[i]->networkGetAutostart(network, autostart) == 0))
+            return (0);
+    }
+    virLibConnError(network->conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    return (-1);
+}
+
+/**
+ * virNetworkSetAutostart:
+ * @network: a network object
+ *
+ * Configure the network to be automatically started
+ * when the host machine boots.
+ *
+ * Returns -1 in case of error, 0 in case of success
+ */
+int
+virNetworkSetAutostart(virNetworkPtr network,
+                       int autostart) {
+    int i;
+
+    if (!VIR_IS_NETWORK(network)) {
+        virLibNetworkError(network, VIR_ERR_INVALID_NETWORK, __FUNCTION__);
+        return (-1);
+    }
+
+    for (i = 0;i < network->conn->nb_network_drivers;i++) {
+	if ((network->conn->networkDrivers[i] != NULL) &&
+	    (network->conn->networkDrivers[i]->networkSetAutostart != NULL) &&
+            (network->conn->networkDrivers[i]->networkSetAutostart(network, autostart) == 0))
+            return (0);
+    }
+    virLibConnError(network->conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    return (-1);
 }

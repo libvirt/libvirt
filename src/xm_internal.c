@@ -106,6 +106,8 @@ static virDriver xenXMDriver = {
     xenXMDomainUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */
     NULL, /* domainDetachDevice */
+    NULL, /* domainGetAutostart */
+    NULL, /* domainSetAutostart */
 };
 
 static void

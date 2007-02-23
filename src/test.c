@@ -125,6 +125,8 @@ static virDriver testDriver = {
     testDomainUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */
     NULL, /* domainDetachDevice */
+    NULL, /* domainGetAutostart */
+    NULL, /* domainSetAutostart */
 };
 
 typedef struct _testDev {

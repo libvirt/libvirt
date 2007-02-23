@@ -37,6 +37,8 @@
 	virConnectListDefinedDomains;
 	virConnectNumOfDefinedDomains;
 	virDomainUndefine;
+	virDomainGetAutostart;
+	virDomainSetAutostart;
 	virGetVersion;
 	virCopyLastError;
 	virConnSetErrorFunc;
@@ -76,6 +78,8 @@
 	virNetworkGetUUIDString;
 	virNetworkGetXMLDesc;
 	virNetworkGetBridgeName;
+	virNetworkGetAutostart;
+	virNetworkSetAutostart;
 
     local: *;
 };

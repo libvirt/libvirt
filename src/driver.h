@@ -134,6 +134,12 @@ typedef int
 typedef int
 	(*virDrvDomainDetachDevice)	(virDomainPtr domain,
 					 char *xml);
+typedef int
+	(*virDrvDomainGetAutostart)	(virDomainPtr domain,
+					 int *autostart);
+typedef int
+	(*virDrvDomainSetAutostart)	(virDomainPtr domain,
+					 int autostart);
 
 typedef struct _virDriver virDriver;
 typedef virDriver *virDriverPtr;
@@ -183,6 +189,8 @@ struct _virDriver {
 	virDrvDomainUndefine            domainUndefine;
 	virDrvDomainAttachDevice	domainAttachDevice;
 	virDrvDomainDetachDevice	domainDetachDevice;
+	virDrvDomainGetAutostart	domainGetAutostart;
+	virDrvDomainSetAutostart	domainSetAutostart;
 };
 
 typedef int
@@ -219,6 +227,13 @@ typedef char *
 					 int flags);
 typedef char *
 	(*virDrvNetworkGetBridgeName)	(virNetworkPtr network);
+typedef int
+	(*virDrvNetworkGetAutostart)	(virNetworkPtr network,
+					 int *autostart);
+typedef int
+	(*virDrvNetworkSetAutostart)	(virNetworkPtr network,
+					 int autostart);
+
 
 typedef struct _virNetworkDriver virNetworkDriver;
 typedef virNetworkDriver *virNetworkDriverPtr;
@@ -245,6 +260,8 @@ struct _virNetworkDriver {
 	virDrvNetworkDestroy		networkDestroy;
 	virDrvNetworkDumpXML		networkDumpXML;
 	virDrvNetworkGetBridgeName	networkGetBridgeName;
+	virDrvNetworkGetAutostart	networkGetAutostart;
+	virDrvNetworkSetAutostart	networkSetAutostart;
 };
 
 
