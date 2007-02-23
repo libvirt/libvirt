@@ -285,7 +285,7 @@ struct qemud_vm *qemudDomainCreate(struct qemud_server *server, const char *xml)
         return NULL;
     }
 
-    if (qemudDomainStart(server, vm) < 0) {
+    if (qemudStartVMDaemon(server, vm) < 0) {
         qemudFreeVM(vm);
         return NULL;
     }
@@ -339,13 +339,14 @@ int qemudDomainResume(struct qemud_server *server, int id) {
 
 int qemudDomainDestroy(struct qemud_server *server, int id) {
     struct qemud_vm *vm = qemudFindVMByID(server, id);
+
     if (!vm) {
-        qemudReportError(server, VIR_ERR_INVALID_DOMAIN, "no domain with matching id %d", id);
+        qemudReportError(server, VIR_ERR_INVALID_DOMAIN,
+                         "no domain with matching id %d", id);
         return -1;
     }
-    if (qemudShutdownVMDaemon(server, vm) < 0)
-        return -1;
-    return 0;
+
+    return qemudShutdownVMDaemon(server, vm);
 }
 
 
@@ -446,8 +447,16 @@ int qemudNumDefinedDomains(struct qemud_server *server) {
 }
 
 
-int qemudDomainStart(struct qemud_server *server, struct qemud_vm *vm) {
-    return qemudStartVMDaemon(server, vm);
+struct qemud_vm *qemudDomainStart(struct qemud_server *server, const unsigned char *uuid) {
+    struct qemud_vm *vm = qemudFindVMByUUID(server, uuid);
+
+    if (!vm) {
+        qemudReportError(server, VIR_ERR_INVALID_DOMAIN,
+                         "no domain with matching uuid");
+        return NULL;
+    }
+
+    return qemudStartVMDaemon(server, vm) < 0 ? NULL : vm;
 }
 
 
@@ -563,7 +572,7 @@ struct qemud_network *qemudNetworkCreate(struct qemud_server *server, const char
         return NULL;
     }
 
-    if (qemudNetworkStart(server, network) < 0) {
+    if (qemudStartNetworkDaemon(server, network) < 0) {
         qemudFreeNetwork(network);
         return NULL;
     }
@@ -609,21 +618,28 @@ int qemudNetworkUndefine(struct qemud_server *server, const unsigned char *uuid)
     return 0;
 }
 
-int qemudNetworkStart(struct qemud_server *server, struct qemud_network *network) {
-    return qemudStartNetworkDaemon(server, network);
+struct qemud_network *qemudNetworkStart(struct qemud_server *server, const unsigned char *uuid) {
+    struct qemud_network *network = qemudFindNetworkByUUID(server, uuid);
+
+    if (!network) {
+        qemudReportError(server, VIR_ERR_INVALID_NETWORK,
+                         "no network with matching uuid");
+        return NULL;
+    }
+
+    return qemudStartNetworkDaemon(server, network) < 0 ? NULL : network;
 }
 
 int qemudNetworkDestroy(struct qemud_server *server, const unsigned char *uuid) {
     struct qemud_network *network = qemudFindNetworkByUUID(server, uuid);
+
     if (!network) {
-        qemudReportError(server, VIR_ERR_INVALID_NETWORK, "no network with matching uuid");
+        qemudReportError(server, VIR_ERR_INVALID_NETWORK,
+                         "no network with matching uuid");
         return -1;
     }
 
-    if (qemudShutdownNetworkDaemon(server, network) < 0)
-        return -1;
-
-    return 0;
+    return qemudShutdownNetworkDaemon(server, network);
 }
 
 int qemudNetworkDumpXML(struct qemud_server *server, const unsigned char *uuid, char *xml, int xmllen) {

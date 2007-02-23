@@ -79,8 +79,8 @@ int qemudListDefinedDomains(struct qemud_server *server,
                             char *const*names,
                             int nnames);
 int qemudNumDefinedDomains(struct qemud_server *server);
-int qemudDomainStart(struct qemud_server *server,
-                     struct qemud_vm *vm);
+struct qemud_vm *qemudDomainStart(struct qemud_server *server,
+                                  const unsigned char *uuid);
 struct qemud_vm *qemudDomainDefine(struct qemud_server *server,
                                    const char *xml);
 int qemudDomainUndefine(struct qemud_server *server,
@@ -103,10 +103,10 @@ struct qemud_network *qemudNetworkCreate(struct qemud_server *server,
                                          const char *xml);
 struct qemud_network *qemudNetworkDefine(struct qemud_server *server,
                                          const char *xml);
+struct qemud_network *qemudNetworkStart(struct qemud_server *server,
+                                        const unsigned char *uuid);
 int qemudNetworkUndefine(struct qemud_server *server,
                          const unsigned char *uuid);
-int qemudNetworkStart(struct qemud_server *server,
-                      struct qemud_network *network);
 int qemudNetworkDestroy(struct qemud_server *server,
                         const unsigned char *uuid);
 int qemudNetworkDumpXML(struct qemud_server *server,

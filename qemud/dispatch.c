@@ -257,8 +257,7 @@ static int qemudDispatchDomainDestroy(struct qemud_server *server, struct qemud_
     if (in->header.dataSize != sizeof(in->data.domainDestroyRequest))
         return -1;
 
-    int ret = qemudDomainDestroy(server, in->data.domainDestroyRequest.id);
-    if (ret < 0) {
+    if (qemudDomainDestroy(server, in->data.domainDestroyRequest.id) < 0) {
         if (qemudDispatchFailure(server, client, out) < 0)
             return -1;
     } else {
@@ -410,11 +409,12 @@ static int qemudDispatchNumDefinedDomains(struct qemud_server *server, struct qe
 
 static int qemudDispatchDomainStart(struct qemud_server *server, struct qemud_client *client,
                                     struct qemud_packet *in, struct qemud_packet *out) {
+    struct qemud_vm *vm;
+
     if (in->header.dataSize != sizeof(in->data.domainStartRequest))
         return -1;
 
-    struct qemud_vm *vm = qemudFindVMByUUID(server, in->data.domainStartRequest.uuid);
-    if (!vm || qemudDomainStart(server, vm) < 0) {
+    if (!(vm = qemudDomainStart(server, in->data.domainStartRequest.uuid))) {
         if (qemudDispatchFailure(server, client, out) < 0)
             return -1;
     } else {
@@ -651,11 +651,12 @@ static int qemudDispatchNetworkUndefine(struct qemud_server *server, struct qemu
 
 static int qemudDispatchNetworkStart(struct qemud_server *server, struct qemud_client *client,
                                      struct qemud_packet *in, struct qemud_packet *out) {
+    struct qemud_network *network;
+
     if (in->header.dataSize != sizeof(in->data.networkStartRequest))
         return -1;
 
-    struct qemud_network *network = qemudFindNetworkByUUID(server, in->data.networkStartRequest.uuid);
-    if (!network || qemudNetworkStart(server, network) < 0) {
+    if (!(network = qemudNetworkStart(server, in->data.networkStartRequest.uuid))) {
         if (qemudDispatchFailure(server, client, out) < 0)
             return -1;
     } else {
@@ -670,8 +671,7 @@ static int qemudDispatchNetworkDestroy(struct qemud_server *server, struct qemud
     if (in->header.dataSize != sizeof(in->data.networkDestroyRequest))
         return -1;
 
-    int ret = qemudNetworkDestroy(server, in->data.networkDestroyRequest.uuid);
-    if (ret < 0) {
+    if (qemudNetworkDestroy(server, in->data.networkDestroyRequest.uuid) < 0) {
         if (qemudDispatchFailure(server, client, out) < 0)
             return -1;
     } else {
