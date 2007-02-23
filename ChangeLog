@@ -1,3 +1,11 @@
+Fri Feb 23 12:46:44 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/qemud.c: add --pid-file and default to writing
+	out a PID file to /var/run/libvirt_qemud.pid in daemon
+	mode.
+
+	* configure.in: add --with-pid-file arg
+	
 Fri Feb 23 12:45:08 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/Makefile.am: install libvirt_qemud in /usr/sbin

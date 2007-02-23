@@ -87,6 +87,21 @@ if test x"$enable_debug" = x"yes"; then
 fi
 
 dnl
+dnl PID file
+dnl
+AC_MSG_CHECKING([where to write libvirt_qemud PID file])
+AC_ARG_WITH(pid-file, AC_HELP_STRING([--with-qemud-pid-file=[pidfile|none]], [PID file for libvirt_qemud]))
+if test "x$with_qemud_pid_file" == "x" ; then
+   QEMUD_PID_FILE="$localstatedir/run/libvirt_qemud.pid"
+elif test "x$with_qemud_pid_file" == "xnone" ; then
+   QEMUD_PID_FILE=""
+else
+   QEMUD_PID_FILE="$with_qemud_pid_file"
+fi
+AC_DEFINE_UNQUOTED(QEMUD_PID_FILE, "$QEMUD_PID_FILE", [PID file path for qemud])
+AC_MSG_RESULT($QEMUD_PID_FILE)
+
+dnl
 dnl allow the creation of iptables rules in chains with a
 dnl specific prefix rather than in the standard toplevel chains
 dnl

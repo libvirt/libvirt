@@ -301,6 +301,42 @@ static int qemudGoDaemon(void) {
     }
 }
 
+static int qemudWritePidFile(const char *pidFile) {
+    int fd;
+    FILE *fh;
+
+    if (pidFile[0] == '\0')
+        return 0;
+
+    if ((fd = open(pidFile, O_WRONLY|O_CREAT|O_EXCL, 0644)) < 0) {
+        qemudLog(QEMUD_ERR, "Failed to open pid file '%s' : %s",
+                 pidFile, strerror(errno));
+        return -1;
+    }
+
+    if (!(fh = fdopen(fd, "w"))) {
+        qemudLog(QEMUD_ERR, "Failed to fdopen pid file '%s' : %s",
+                 pidFile, strerror(errno));
+        close(fd);
+        return -1;
+    }
+
+    if (fprintf(fh, "%lu\n", (unsigned long)getpid()) < 0) {
+        qemudLog(QEMUD_ERR, "Failed to write to pid file '%s' : %s",
+                 pidFile, strerror(errno));
+        close(fd);
+        return -1;
+    }
+
+    if (fclose(fh) == EOF) {
+        qemudLog(QEMUD_ERR, "Failed to close pid file '%s' : %s",
+                 pidFile, strerror(errno));
+        return -1;
+    }
+
+    return 0;
+}
+
 static int qemudListenUnix(struct qemud_server *server,
                            const char *path, int readonly) {
     struct qemud_socket *sock = calloc(1, sizeof(struct qemud_socket));
@@ -1483,12 +1519,15 @@ int main(int argc, char **argv) {
     struct qemud_server *server;
     struct sigaction sig_action;
     int sigpipe[2];
+    char *pid_file = NULL;
+    int ret = 1;
 
     struct option opts[] = {
         { "verbose", no_argument, &verbose, 1},
         { "daemon", no_argument, &godaemon, 1},
         { "system", no_argument, &sys, 1},
         { "timeout", required_argument, 0, 't'},
+        { "pid-file", required_argument, 0, 'p'},
         {0, 0, 0, 0}
     };
 
@@ -1497,7 +1536,7 @@ int main(int argc, char **argv) {
         int c;
         char *tmp;
 
-        c = getopt_long(argc, argv, "vsdt:", opts, &optidx);
+        c = getopt_long(argc, argv, "vsdt:p:", opts, &optidx);
 
         if (c == -1) {
             break;
@@ -1524,6 +1563,11 @@ int main(int argc, char **argv) {
             if (timeout <= 0)
                 timeout = -1;
             break;
+
+        case 'p':
+            pid_file = strdup(optarg);
+            break;
+
         case '?':
             return 2;
             break;
@@ -1541,7 +1585,7 @@ int main(int argc, char **argv) {
         qemudSetNonBlock(sigpipe[1]) < 0) {
         qemudLog(QEMUD_ERR, "Failed to create pipe: %s",
                  strerror(errno));
-        return 1;
+        goto error1;
     }
 
     sigwrite = sigpipe[1];
@@ -1564,14 +1608,19 @@ int main(int argc, char **argv) {
         if (pid < 0) {
             qemudLog(QEMUD_ERR, "Failed to fork as daemon: %s",
                      strerror(errno));
-            return 1;
+            goto error1;
         }
         if (pid > 0)
-            return 0;
+            goto out;
+
+        if (qemudWritePidFile(pid_file ? pid_file : QEMUD_PID_FILE) < 0)
+            goto error1;
     }
 
-    if (!(server = qemudInitialize(sys, sigpipe[0])))
-        return 2;
+    if (!(server = qemudInitialize(sys, sigpipe[0]))) {
+        ret = 2;
+        goto error2;
+    }
 
     qemudRunLoop(server, timeout);
 
@@ -1582,7 +1631,18 @@ int main(int argc, char **argv) {
     if (godaemon)
         closelog();
 
-    return 0;
+ out:
+    ret = 0;
+
+ error2:
+    if (godaemon)
+        unlink(pid_file ? pid_file : QEMUD_PID_FILE);
+
+ error1:
+    if (pid_file)
+        free(pid_file);
+
+    return ret;
 }
 
 /*
