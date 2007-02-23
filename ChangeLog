@@ -1,3 +1,12 @@
+Fri Feb 22 08:37:23 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/conf.c,	qemud/driver.c, qemud/internal.h,
+	qemud/qemud.c: Merge the ->activevms and ->inactivevms
+	into a single ->vms list in order to make things
+	easier to manage. Likewise for networks. Also add
+	qemudIsActiveVM() and qemudIsActiveNetwork() inline
+	functions.
+	
 Thu Feb 22 14:06:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xm_internal.c, src/xend_internal.c: Re-arrange VM creation

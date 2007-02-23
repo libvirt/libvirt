@@ -222,10 +222,10 @@ static int qemudGetProcessInfo(unsigned long long *cpuTime, int pid) {
 }
 
 struct qemud_vm *qemudFindVMByID(const struct qemud_server *server, int id) {
-    struct qemud_vm *vm = server->activevms;
+    struct qemud_vm *vm = server->vms;
 
     while (vm) {
-        if (vm->id == id)
+        if (qemudIsActiveVM(vm) && vm->id == id)
             return vm;
         vm = vm->next;
     }
@@ -235,15 +235,8 @@ struct qemud_vm *qemudFindVMByID(const struct qemud_server *server, int id) {
 
 struct qemud_vm *qemudFindVMByUUID(const struct qemud_server *server,
                                    const unsigned char *uuid) {
-    struct qemud_vm *vm = server->activevms;
+    struct qemud_vm *vm = server->vms;
 
-    while (vm) {
-        if (!memcmp(vm->def->uuid, uuid, QEMUD_UUID_RAW_LEN))
-            return vm;
-        vm = vm->next;
-    }
-
-    vm = server->inactivevms;
     while (vm) {
         if (!memcmp(vm->def->uuid, uuid, QEMUD_UUID_RAW_LEN))
             return vm;
@@ -255,15 +248,8 @@ struct qemud_vm *qemudFindVMByUUID(const struct qemud_server *server,
 
 struct qemud_vm *qemudFindVMByName(const struct qemud_server *server,
                                    const char *name) {
-    struct qemud_vm *vm = server->activevms;
+    struct qemud_vm *vm = server->vms;
 
-    while (vm) {
-        if (!strcmp(vm->def->name, name))
-            return vm;
-        vm = vm->next;
-    }
-
-    vm = server->inactivevms;
     while (vm) {
         if (!strcmp(vm->def->name, name))
             return vm;
@@ -278,12 +264,14 @@ int qemudGetVersion(struct qemud_server *server) {
 }
 
 int qemudListDomains(struct qemud_server *server, int *ids, int nids) {
-    struct qemud_vm *vm = server->activevms;
+    struct qemud_vm *vm = server->vms;
     int got = 0;
     while (vm && got < nids) {
-        ids[got] = vm->id;
+        if (qemudIsActiveVM(vm)) {
+            ids[got] = vm->id;
+            got++;
+        }
         vm = vm->next;
-        got++;
     }
     return got;
 }
@@ -313,7 +301,7 @@ int qemudDomainSuspend(struct qemud_server *server, int id) {
         qemudReportError(server, VIR_ERR_INVALID_DOMAIN, "no domain with matching id %d", id);
         return -1;
     }
-    if (vm->pid == -1) {
+    if (!qemudIsActiveVM(vm)) {
         qemudReportError(server, VIR_ERR_OPERATION_FAILED, "domain is not running");
         return -1;
     }
@@ -335,7 +323,7 @@ int qemudDomainResume(struct qemud_server *server, int id) {
         qemudReportError(server, VIR_ERR_INVALID_DOMAIN, "no domain with matching id %d", id);
         return -1;
     }
-    if (vm->pid == -1) {
+    if (!qemudIsActiveVM(vm)) {
         qemudReportError(server, VIR_ERR_OPERATION_FAILED, "domain is not running");
         return -1;
     }
@@ -355,11 +343,6 @@ int qemudDomainDestroy(struct qemud_server *server, int id) {
         qemudReportError(server, VIR_ERR_INVALID_DOMAIN, "no domain with matching id %d", id);
         return -1;
     }
-    if (vm->pid == -1) {
-        qemudReportError(server, VIR_ERR_OPERATION_FAILED, "domain is not running");
-        return -1;
-    }
-
     if (qemudShutdownVMDaemon(server, vm) < 0)
         return -1;
     return 0;
@@ -378,14 +361,14 @@ int qemudDomainGetInfo(struct qemud_server *server, const unsigned char *uuid,
         return -1;
     }
 
-    if (vm->pid == -1) {
+    if (!qemudIsActiveVM(vm)) {
         *runstate = QEMUD_STATE_STOPPED;
     } else {
         /* XXX in future need to add PAUSED */
         *runstate = QEMUD_STATE_RUNNING;
     }
 
-    if (vm->pid == -1) {
+    if (!qemudIsActiveVM(vm)) {
         *cputime = 0;
     } else {
         if (qemudGetProcessInfo(cputime, vm->pid) < 0) {
@@ -408,7 +391,7 @@ int qemudDomainSave(struct qemud_server *server, int id,
         qemudReportError(server, VIR_ERR_INVALID_DOMAIN, "no domain with matching id %d", id);
         return -1;
     }
-    if (vm->pid == -1) {
+    if (!qemudIsActiveVM(vm)) {
         qemudReportError(server, VIR_ERR_OPERATION_FAILED, "domain is not running");
         return -1;
     }
@@ -444,13 +427,15 @@ int qemudDomainDumpXML(struct qemud_server *server, const unsigned char *uuid, c
 
 
 int qemudListDefinedDomains(struct qemud_server *server, char *const*names, int nnames) {
-    struct qemud_vm *vm = server->inactivevms;
+    struct qemud_vm *vm = server->vms;
     int got = 0;
     while (vm && got < nnames) {
-        strncpy(names[got], vm->def->name, QEMUD_MAX_NAME_LEN-1);
-        names[got][QEMUD_MAX_NAME_LEN-1] = '\0';
+        if (!qemudIsActiveVM(vm)) {
+            strncpy(names[got], vm->def->name, QEMUD_MAX_NAME_LEN-1);
+            names[got][QEMUD_MAX_NAME_LEN-1] = '\0';
+            got++;
+        }
         vm = vm->next;
-        got++;
     }
     return got;
 }
@@ -462,30 +447,7 @@ int qemudNumDefinedDomains(struct qemud_server *server) {
 
 
 int qemudDomainStart(struct qemud_server *server, struct qemud_vm *vm) {
-    struct qemud_vm *prev = NULL, *curr = server->inactivevms;
-    if (qemudStartVMDaemon(server, vm) < 0) {
-        return 1;
-    }
-
-    while (curr) {
-        if (curr == vm) {
-            if (prev)
-                prev->next = curr->next;
-            else
-                server->inactivevms = curr->next;
-            server->ninactivevms--;
-            break;
-        }
-        prev = curr;
-        curr = curr->next;
-    }
-
-    vm->next = server->activevms;
-    server->activevms = vm;
-    server->nactivevms++;
-    server->nvmfds += 2;
-
-    return 0;
+    return qemudStartVMDaemon(server, vm);
 }
 
 
@@ -495,14 +457,14 @@ struct qemud_vm *qemudDomainDefine(struct qemud_server *server, const char *xml)
 
 int qemudDomainUndefine(struct qemud_server *server, const unsigned char *uuid) {
     struct qemud_vm *vm = qemudFindVMByUUID(server, uuid);
-    struct qemud_vm *prev = NULL, *curr = server->inactivevms;
+    struct qemud_vm *prev = NULL, *curr = server->vms;
 
     if (!vm) {
         qemudReportError(server, VIR_ERR_INVALID_DOMAIN, "no domain with matching uuid");
         return -1;
     }
 
-    if (vm->pid != -1) {
+    if (qemudIsActiveVM(vm)) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "cannot delete active domain");
         return -1;
     }
@@ -517,7 +479,7 @@ int qemudDomainUndefine(struct qemud_server *server, const unsigned char *uuid) 
             if (prev) {
                 prev->next = curr->next;
             } else {
-                server->inactivevms = curr->next;
+                server->vms = curr->next;
             }
             server->ninactivevms--;
             break;
@@ -534,15 +496,8 @@ int qemudDomainUndefine(struct qemud_server *server, const unsigned char *uuid) 
 
 struct qemud_network *qemudFindNetworkByUUID(const struct qemud_server *server,
                                              const unsigned char *uuid) {
-    struct qemud_network *network = server->activenetworks;
+    struct qemud_network *network = server->networks;
 
-    while (network) {
-        if (!memcmp(network->def->uuid, uuid, QEMUD_UUID_RAW_LEN))
-            return network;
-        network = network->next;
-    }
-
-    network = server->inactivenetworks;
     while (network) {
         if (!memcmp(network->def->uuid, uuid, QEMUD_UUID_RAW_LEN))
             return network;
@@ -554,15 +509,8 @@ struct qemud_network *qemudFindNetworkByUUID(const struct qemud_server *server,
 
 struct qemud_network *qemudFindNetworkByName(const struct qemud_server *server,
                                              const char *name) {
-    struct qemud_network *network = server->activenetworks;
+    struct qemud_network *network = server->networks;
 
-    while (network) {
-        if (!strcmp(network->def->name, name))
-            return network;
-        network = network->next;
-    }
-
-    network = server->inactivenetworks;
     while (network) {
         if (!strcmp(network->def->name, name))
             return network;
@@ -577,13 +525,15 @@ int qemudNumNetworks(struct qemud_server *server) {
 }
 
 int qemudListNetworks(struct qemud_server *server, char *const*names, int nnames) {
-    struct qemud_network *network = server->activenetworks;
+    struct qemud_network *network = server->networks;
     int got = 0;
     while (network && got < nnames) {
-        strncpy(names[got], network->def->name, QEMUD_MAX_NAME_LEN-1);
-        names[got][QEMUD_MAX_NAME_LEN-1] = '\0';
+        if (qemudIsActiveNetwork(network)) {
+            strncpy(names[got], network->def->name, QEMUD_MAX_NAME_LEN-1);
+            names[got][QEMUD_MAX_NAME_LEN-1] = '\0';
+            got++;
+        }
         network = network->next;
-        got++;
     }
     return got;
 }
@@ -593,13 +543,15 @@ int qemudNumDefinedNetworks(struct qemud_server *server) {
 }
 
 int qemudListDefinedNetworks(struct qemud_server *server, char *const*names, int nnames) {
-    struct qemud_network *network = server->inactivenetworks;
+    struct qemud_network *network = server->networks;
     int got = 0;
     while (network && got < nnames) {
-        strncpy(names[got], network->def->name, QEMUD_MAX_NAME_LEN-1);
-        names[got][QEMUD_MAX_NAME_LEN-1] = '\0';
+        if (!qemudIsActiveNetwork(network)) {
+            strncpy(names[got], network->def->name, QEMUD_MAX_NAME_LEN-1);
+            names[got][QEMUD_MAX_NAME_LEN-1] = '\0';
+            got++;
+        }
         network = network->next;
-        got++;
     }
     return got;
 }
@@ -625,7 +577,7 @@ struct qemud_network *qemudNetworkDefine(struct qemud_server *server, const char
 
 int qemudNetworkUndefine(struct qemud_server *server, const unsigned char *uuid) {
     struct qemud_network *network = qemudFindNetworkByUUID(server, uuid);
-    struct qemud_network *prev = NULL, *curr = server->inactivenetworks;
+    struct qemud_network *prev = NULL, *curr = server->networks;
 
     if (!network) {
         qemudReportError(server, VIR_ERR_INVALID_DOMAIN, "no network with matching uuid");
@@ -642,7 +594,7 @@ int qemudNetworkUndefine(struct qemud_server *server, const unsigned char *uuid)
             if (prev) {
                 prev->next = curr->next;
             } else {
-                server->inactivenetworks = curr->next;
+                server->networks = curr->next;
             }
             server->ninactivenetworks--;
             break;
@@ -658,29 +610,7 @@ int qemudNetworkUndefine(struct qemud_server *server, const unsigned char *uuid)
 }
 
 int qemudNetworkStart(struct qemud_server *server, struct qemud_network *network) {
-    struct qemud_network *prev = NULL, *curr = server->inactivenetworks;
-    if (qemudStartNetworkDaemon(server, network) < 0) {
-        return 1;
-    }
-
-    while (curr) {
-        if (curr == network) {
-            if (prev)
-                prev->next = curr->next;
-            else
-                server->inactivenetworks = curr->next;
-            server->ninactivenetworks--;
-            break;
-        }
-        prev = curr;
-        curr = curr->next;
-    }
-
-    network->next = server->activenetworks;
-    server->activenetworks = network;
-    server->nactivenetworks++;
-
-    return 0;
+    return qemudStartNetworkDaemon(server, network);
 }
 
 int qemudNetworkDestroy(struct qemud_server *server, const unsigned char *uuid) {

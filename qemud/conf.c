@@ -1218,7 +1218,7 @@ struct qemud_vm *qemudLoadConfigXML(struct qemud_server *server,
     xmlFreeDoc(xml);
 
     if ((vm = qemudFindVMByName(server, def->name))) {
-        if (vm->id == -1) {
+        if (!qemudIsActiveVM(vm)) {
             qemudFreeVMDef(vm->def);
             vm->def = def;
         } else {
@@ -1266,8 +1266,8 @@ struct qemud_vm *qemudLoadConfigXML(struct qemud_server *server,
     }
 
     if (newVM) {
-        vm->next = server->inactivevms;
-        server->inactivevms = vm;
+        vm->next = server->vms;
+        server->vms = vm;
         server->ninactivevms++;
     }
 
@@ -1573,7 +1573,7 @@ struct qemud_network *qemudLoadNetworkConfigXML(struct qemud_server *server,
     xmlFreeDoc(xml);
 
     if ((network = qemudFindNetworkByName(server, def->name))) {
-        if (!network->active) {
+        if (!qemudIsActiveNetwork(network)) {
             qemudFreeNetworkDef(network->def);
             network->def = def;
         } else {
@@ -1614,8 +1614,8 @@ struct qemud_network *qemudLoadNetworkConfigXML(struct qemud_server *server,
     }
 
     if (newNetwork) {
-        network->next = server->inactivenetworks;
-        server->inactivenetworks = network;
+        network->next = server->networks;
+        server->networks = network;
         server->ninactivenetworks++;
     }
 
@@ -1780,7 +1780,7 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm, int liv
         goto cleanup;
     }
 
-    if (vm->id >= 0 && live) {
+    if (qemudIsActiveVM(vm) && live) {
         if (qemudBufferPrintf(&buf, "<domain type='%s' id='%d'>\n", type, vm->id) < 0)
             goto no_memory;
     } else {
@@ -1948,7 +1948,7 @@ char *qemudGenerateXML(struct qemud_server *server, struct qemud_vm *vm, int liv
 
         if (def->vncPort &&
             qemudBufferPrintf(&buf, " port='%d'",
-                              vm->id >= 0 && live ? def->vncActivePort : def->vncPort) < 0)
+                              qemudIsActiveVM(vm) && live ? def->vncActivePort : def->vncPort) < 0)
             goto no_memory;
 
         if (qemudBufferAdd(&buf, "/>\n") < 0)

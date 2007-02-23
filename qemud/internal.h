@@ -280,14 +280,12 @@ struct qemud_server {
     int sigread;
     int nvmfds;
     int nactivevms;
-    struct qemud_vm *activevms;
     int ninactivevms;
-    struct qemud_vm *inactivevms;
+    struct qemud_vm *vms;
     int nextvmid;
     int nactivenetworks;
-    struct qemud_network *activenetworks;
     int ninactivenetworks;
-    struct qemud_network *inactivenetworks;
+    struct qemud_network *networks;
     brControl *brctl;
     iptablesContext *iptables;
     char configDir[PATH_MAX];
@@ -316,6 +314,18 @@ void qemudLog(int priority, const char *fmt, ...);
 #else
 #define qemudDebug(fmt, ...) do { } while(0);
 #endif
+
+static inline int
+qemudIsActiveVM(struct qemud_vm *vm)
+{
+    return vm->id != -1;
+}
+
+static inline int
+qemudIsActiveNetwork(struct qemud_network *network)
+{
+    return network->active;
+}
 
 #endif
 

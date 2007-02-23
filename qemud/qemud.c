@@ -95,39 +95,43 @@ static int qemudDispatchSignal(struct qemud_server *server)
         qemudLog(QEMUD_WARN, "Shutting down on signal %d", sigc);
 
         /* shutdown active VMs */
-        vm = server->activevms;
+        vm = server->vms;
         while (vm) {
             struct qemud_vm *next = vm->next;
-            qemudShutdownVMDaemon(server, vm);
+            if (qemudIsActiveVM(vm))
+                qemudShutdownVMDaemon(server, vm);
             vm = next;
         }
 
         /* free inactive VMs */
-        vm = server->inactivevms;
+        vm = server->vms;
         while (vm) {
             struct qemud_vm *next = vm->next;
             qemudFreeVM(vm);
             vm = next;
         }
-        server->inactivevms = NULL;
+        server->vms = NULL;
+        server->nactivevms = 0;
         server->ninactivevms = 0;
 
         /* shutdown active networks */
-        network = server->activenetworks;
+        network = server->networks;
         while (network) {
             struct qemud_network *next = network->next;
-            qemudShutdownNetworkDaemon(server, network);
+            if (qemudIsActiveNetwork(network))
+                qemudShutdownNetworkDaemon(server, network);
             network = next;
         }
 
         /* free inactive networks */
-        network = server->inactivenetworks;
+        network = server->networks;
         while (network) {
             struct qemud_network *next = network->next;
             qemudFreeNetwork(network);
             network = next;
         }
-        server->inactivenetworks = NULL;
+        server->networks = NULL;
+        server->nactivenetworks = 0;
         server->ninactivenetworks = 0;
 
         server->shutdown = 1;
@@ -576,6 +580,12 @@ int qemudStartVMDaemon(struct qemud_server *server,
     char **argv = NULL;
     int i, ret = -1;
 
+    if (qemudIsActiveVM(vm)) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "VM is already active");
+        return -1;
+    }
+
     if (vm->def->vncPort < 0)
         vm->def->vncActivePort = 5900 + server->nextvmid;
     else
@@ -586,6 +596,11 @@ int qemudStartVMDaemon(struct qemud_server *server,
 
     if (qemudExec(server, argv, &vm->pid, &vm->stdout, &vm->stderr) == 0) {
         vm->id = server->nextvmid++;
+
+        server->ninactivevms--;
+        server->nactivevms++;
+        server->nvmfds += 2;
+
         ret = 0;
     }
 
@@ -805,50 +820,24 @@ qemudNetworkIfaceDisconnect(struct qemud_server *server,
 }
 
 int qemudShutdownVMDaemon(struct qemud_server *server, struct qemud_vm *vm) {
-    struct qemud_vm *prev = NULL, *curr = server->activevms;
     struct qemud_vm_net_def *net;
+
+    if (!qemudIsActiveVM(vm))
+        return 0;
 
     qemudLog(QEMUD_INFO, "Shutting down VM '%s'", vm->def->name);
 
-    /* Already cleaned-up */
-    if (vm->pid < 0)
-        return 0;
-
     kill(vm->pid, SIGTERM);
 
-    /* Move it to inactive vm list */
-    while (curr) {
-        if (curr == vm) {
-            if (prev) {
-                prev->next = curr->next;
-            } else {
-                server->activevms = curr->next;
-            }
-            server->nactivevms--;
-
-            curr->next = server->inactivevms;
-            server->inactivevms = curr;
-            server->ninactivevms++;
-            break;
-        }
-        prev = curr;
-        curr = curr->next;
-    }
-
-    if (!curr) {
-        qemudDebug("Could not find VM to shutdown");
-        return 0;
-    }
-
-    qemudVMData(server, vm, curr->stdout);
-    qemudVMData(server, vm, curr->stderr);
-    close(curr->stdout);
-    close(curr->stderr);
-    if (curr->monitor != -1)
-        close(curr->monitor);
-    curr->stdout = -1;
-    curr->stderr = -1;
-    curr->monitor = -1;
+    qemudVMData(server, vm, vm->stdout);
+    qemudVMData(server, vm, vm->stderr);
+    close(vm->stdout);
+    close(vm->stderr);
+    if (vm->monitor != -1)
+        close(vm->monitor);
+    vm->stdout = -1;
+    vm->stderr = -1;
+    vm->monitor = -1;
     server->nvmfds -= 2;
 
     net = vm->def->nets;
@@ -873,6 +862,9 @@ int qemudShutdownVMDaemon(struct qemud_server *server, struct qemud_vm *vm) {
         vm->def = vm->newDef;
         vm->newDef = NULL;
     }
+
+    server->nactivevms--;
+    server->ninactivevms++;
 
     return 0;
 }
@@ -1121,7 +1113,7 @@ int qemudStartNetworkDaemon(struct qemud_server *server,
     const char *name;
     int err;
 
-    if (network->active) {
+    if (qemudIsActiveNetwork(network)) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
                          "network is already active");
         return -1;
@@ -1185,6 +1177,9 @@ int qemudStartNetworkDaemon(struct qemud_server *server,
 
     network->active = 1;
 
+    server->ninactivenetworks--;
+    server->nactivenetworks++;
+
     return 0;
 
  err_delbr2:
@@ -1209,12 +1204,11 @@ int qemudStartNetworkDaemon(struct qemud_server *server,
 
 int qemudShutdownNetworkDaemon(struct qemud_server *server,
                                struct qemud_network *network) {
-    struct qemud_network *prev, *curr;
     int err;
 
     qemudLog(QEMUD_INFO, "Shutting down network '%s'", network->def->name);
 
-    if (!network->active)
+    if (!qemudIsActiveNetwork(network))
         return 0;
 
     if (network->dnsmasqPid > 0)
@@ -1231,27 +1225,6 @@ int qemudShutdownNetworkDaemon(struct qemud_server *server,
     if ((err = brDeleteBridge(server->brctl, network->bridge))) {
         qemudLog(QEMUD_WARN, "Failed to delete bridge '%s' : %s\n",
                  network->bridge, strerror(err));
-    }
-
-    /* Move it to inactive networks list */
-    prev = NULL;
-    curr = server->activenetworks;
-    while (curr) {
-        if (curr == network) {
-            if (prev) {
-                prev->next = curr->next;
-            } else {
-                server->activenetworks = curr->next;
-            }
-            server->nactivenetworks--;
-
-            curr->next = server->inactivenetworks;
-            server->inactivenetworks = curr;
-            server->ninactivenetworks++;
-            break;
-        }
-        prev = curr;
-        curr = curr->next;
     }
 
     if (network->dnsmasqPid > 0 &&
@@ -1271,6 +1244,9 @@ int qemudShutdownNetworkDaemon(struct qemud_server *server,
         network->newDef = NULL;
     }
 
+    server->nactivenetworks--;
+    server->ninactivenetworks++;
+
     return 0;
 }
 
@@ -1278,7 +1254,7 @@ int qemudShutdownNetworkDaemon(struct qemud_server *server,
 static int qemudDispatchPoll(struct qemud_server *server, struct pollfd *fds) {
     struct qemud_socket *sock = server->sockets;
     struct qemud_client *client = server->clients;
-    struct qemud_vm *vm = server->activevms;
+    struct qemud_vm *vm;
     struct qemud_vm *tmp;
     struct qemud_network *network, *prevnet;
     int ret = 0;
@@ -1314,11 +1290,17 @@ static int qemudDispatchPoll(struct qemud_server *server, struct pollfd *fds) {
         fd++;
         client = next;
     }
+    vm = server->vms;
     while (vm) {
         struct qemud_vm *next = vm->next;
         int failed = 0,
             stdoutfd = vm->stdout,
             stderrfd = vm->stderr;
+
+        if (!qemudIsActiveVM(vm)) {
+            vm = next;
+            continue;
+        }
 
         if (stdoutfd != -1) {
             if (fds[fd].revents) {
@@ -1353,17 +1335,18 @@ static int qemudDispatchPoll(struct qemud_server *server, struct pollfd *fds) {
 
     /* Cleanup any VMs which shutdown & dont have an associated
        config file */
-    vm = server->inactivevms;
+    vm = server->vms;
     tmp = NULL;
     while (vm) {
-        if (!vm->configFile[0]) {
+        if (!qemudIsActiveVM(vm) && !vm->configFile[0]) {
             struct qemud_vm *next = vm->next;
             if (tmp) {
                 tmp->next = next;
             } else {
-                server->inactivevms = next;
+                server->vms = next;
             }
             qemudFreeVM(vm);
+            server->ninactivevms--;
             vm = next;
         } else {
             tmp = vm;
@@ -1372,17 +1355,18 @@ static int qemudDispatchPoll(struct qemud_server *server, struct pollfd *fds) {
     }
 
     /* Cleanup any networks too */
-    network = server->inactivenetworks;
+    network = server->networks;
     prevnet = NULL;
     while (network) {
-        if (!network->configFile[0]) {
+        if (!qemudIsActiveNetwork(network) && !network->configFile[0]) {
             struct qemud_network *next = network->next;
             if (prevnet) {
                 prevnet->next = next;
             } else {
-                server->inactivenetworks = next;
+                server->networks = next;
             }
             qemudFreeNetwork(network);
+            server->ninactivenetworks--;
             network = next;
         } else {
             prevnet = network;
@@ -1419,7 +1403,9 @@ static void qemudPreparePoll(struct qemud_server *server, struct pollfd *fds) {
             fds[fd].events = POLLIN | POLLERR | POLLHUP;
         fd++;
     }
-    for (vm = server->activevms ; vm ; vm = vm->next) {
+    for (vm = server->vms ; vm ; vm = vm->next) {
+        if (!qemudIsActiveVM(vm))
+            continue;
         if (vm->stdout != -1) {
             fds[fd].fd = vm->stdout;
             fds[fd].events = POLLIN | POLLERR | POLLHUP;
