@@ -1,3 +1,9 @@
+Fri Feb 23 14:32:54 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/conf.c: don't load config files unless they have
+	a ".xml" suffix, e.g. backup files ... we spew a warning
+	later if we do.
+	
 Fri Feb 23 12:49:11 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/libvirtd.in: add init script for libvirt_qemud

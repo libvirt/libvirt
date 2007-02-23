@@ -1751,6 +1751,19 @@ compareFileToNameSuffix(const char *file,
 }
 
 static int
+hasSuffix(const char *str,
+          const char *suffix)
+{
+    int len = strlen(str);
+    int suffixlen = strlen(suffix);
+
+    if (len < suffixlen)
+        return 0;
+
+    return strcmp(str + len - suffixlen, suffix) == 0;
+}
+
+static int
 checkLinkPointsTo(const char *checkLink,
                   const char *checkDest)
 {
@@ -1943,6 +1956,9 @@ int qemudScanConfigDir(struct qemud_server *server,
         char autostartLink[PATH_MAX];
 
         if (entry->d_name[0] == '.')
+            continue;
+
+        if (!hasSuffix(entry->d_name, ".xml"))
             continue;
 
         if (qemudMakeConfigPath(configDir, entry->d_name, NULL, path, PATH_MAX) < 0) {
