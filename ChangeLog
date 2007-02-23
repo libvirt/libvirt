@@ -1,5 +1,15 @@
 Fri Feb 23 09:03:19 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
+	* qemud/internal.h: put the config directory paths in
+	an array in order to make them easier to initialize,
+	but still expose pointers to each of them as members
+	in the server struct.
+
+	* qemud/qemud.c: cleanup the config directory path
+	initialization.
+	
+Fri Feb 23 09:03:19 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
 	* qemud/driver.c: maintain the autostart flag on disk
 	using symlinks from the "autostart" directories to
 	the corresponding config files.

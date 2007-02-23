@@ -354,15 +354,22 @@ static int qemudListenUnix(struct qemud_server *server,
     return 0;
 }
 
-static int qemudInitPaths(int sys,
-                          char *configDir,
-                          char *networkConfigDir,
-                          char *autostartDir,
-                          char *networkAutostartDir,
+static int qemudInitPaths(struct qemud_server *server,
+                          int sys,
                           char *sockname,
                           char *roSockname,
                           int maxlen) {
+    const char *paths[] = {
+        "libvirt/qemu",                    /* QEMUD_DIR_DOMAINS */
+        "libvirt/qemu/autostart",          /* QEMUD_DIR_AUTO_DOMAINS */
+        "libvirt/qemu/networks",           /* QEMUD_DIR_NETWORKS */
+        "libvirt/qemu/networks/autostart", /* QEMUD_DIR_AUTO_NETWORKS */
+    };
+
     uid_t uid;
+    struct passwd *pw;
+    char base[PATH_MAX] = SYSCONF_DIR "/";
+    int i;
 
     uid = geteuid();
 
@@ -371,18 +378,6 @@ static int qemudInitPaths(int sys,
             qemudLog(QEMUD_ERR, "You must run the daemon as root to use system mode");
             return -1;
         }
-
-        if (snprintf(configDir, maxlen, "%s/libvirt/qemu", SYSCONF_DIR) >= maxlen)
-            goto snprintf_error;
-
-        if (snprintf(networkConfigDir, maxlen, "%s/libvirt/qemu/networks", SYSCONF_DIR) >= maxlen)
-            goto snprintf_error;
-
-        if (snprintf(autostartDir, maxlen, "%s/libvirt/qemu/autostart", SYSCONF_DIR) >= maxlen)
-            goto snprintf_error;
-
-        if (snprintf(networkAutostartDir, maxlen, "%s/libvirt/qemu/networks/autostart", SYSCONF_DIR) >= maxlen)
-            goto snprintf_error;
 
         if (snprintf(sockname, maxlen, "%s/run/libvirt/qemud-sock", LOCAL_STATE_DIR) >= maxlen)
             goto snprintf_error;
@@ -394,29 +389,22 @@ static int qemudInitPaths(int sys,
 
         unlink(sockname);
     } else {
-        struct passwd *pw;
-
         if (!(pw = getpwuid(uid))) {
             qemudLog(QEMUD_ERR, "Failed to find user record for uid '%d': %s",
                      uid, strerror(errno));
             return -1;
         }
 
-        if (snprintf(configDir, maxlen, "%s/.libvirt/qemu", pw->pw_dir) >= maxlen)
-            goto snprintf_error;
-
-        if (snprintf(networkConfigDir, maxlen, "%s/.libvirt/qemu/networks", pw->pw_dir) >= maxlen)
-            goto snprintf_error;
-
-        if (snprintf(autostartDir, maxlen, "%s/.libvirt/qemu/autostart", pw->pw_dir) >= maxlen)
-            goto snprintf_error;
-
-        if (snprintf(networkAutostartDir, maxlen, "%s/.libvirt/qemu/networks/autostart", pw->pw_dir) >= maxlen)
-            goto snprintf_error;
-
         if (snprintf(sockname, maxlen, "@%s/.libvirt/qemud-sock", pw->pw_dir) >= maxlen)
             goto snprintf_error;
+
+        if (snprintf(base, PATH_MAX, "%s/.", pw->pw_dir) >= PATH_MAX)
+            goto snprintf_error;
     }
+
+    for (i = 0; i < QEMUD_N_CONFIG_DIRS; i++)
+        if (snprintf(server->configDirs[i], PATH_MAX, "%s%s", base, paths[i]) >= PATH_MAX)
+            goto snprintf_error;
 
     return 0;
 
@@ -443,10 +431,13 @@ static struct qemud_server *qemudInitialize(int sys, int sigread) {
 
     roSockname[0] = '\0';
 
-    if (qemudInitPaths(sys, server->configDir, server->networkConfigDir,
-                       server->autostartDir, server->networkAutostartDir,
-                       sockname, roSockname, PATH_MAX) < 0)
+    if (qemudInitPaths(server, sys, sockname, roSockname, PATH_MAX) < 0)
         goto cleanup;
+
+    server->configDir           = server->configDirs[QEMUD_DIR_CONFIG];
+    server->autostartDir        = server->configDirs[QEMUD_DIR_AUTOSTART];
+    server->networkConfigDir    = server->configDirs[QEMUD_DIR_NETWORK_CONFIG];
+    server->networkAutostartDir = server->configDirs[QEMUD_DIR_NETWORK_AUTOSTART];
 
     if (qemudListenUnix(server, sockname, 0) < 0)
         goto cleanup;

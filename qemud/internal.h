@@ -54,6 +54,15 @@ typedef enum {
 #endif
 } qemudLogPriority;
 
+typedef enum {
+    QEMUD_DIR_CONFIG = 0,
+    QEMUD_DIR_AUTOSTART,
+    QEMUD_DIR_NETWORK_CONFIG,
+    QEMUD_DIR_NETWORK_AUTOSTART,
+
+    QEMUD_N_CONFIG_DIRS
+} qemudConfigDirType;
+
 /* Different types of QEMU acceleration possible */
 enum qemud_vm_virt_type {
     QEMUD_VIRT_QEMU,
@@ -293,10 +302,11 @@ struct qemud_server {
     struct qemud_network *networks;
     brControl *brctl;
     iptablesContext *iptables;
-    char configDir[PATH_MAX];
-    char networkConfigDir[PATH_MAX];
-    char autostartDir[PATH_MAX];
-    char networkAutostartDir[PATH_MAX];
+    char configDirs[QEMUD_N_CONFIG_DIRS][PATH_MAX];
+    char *configDir;
+    char *autostartDir;
+    char *networkConfigDir;
+    char *networkAutostartDir;
     char errorMessage[QEMUD_MAX_ERROR_LEN];
     int errorCode;
     unsigned int shutdown : 1;
