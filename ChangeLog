@@ -1,3 +1,10 @@
+Fri Feb 23 12:14:34 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/driver.c, qemud/internal.h, qemud/qemud.c, qemud/conf.c,
+	qemud/conf.h: Added code to detect QEMU version number. Adapt
+	command line construction code to use correct options for VNC
+	and KQEMU based on version number
+
 Fri Feb 23 10:52:23 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/Makefile.am: Fix up name of init script in EXTRA_DIST

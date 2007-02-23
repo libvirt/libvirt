@@ -26,6 +26,7 @@
 
 #include "internal.h"
 
+int         qemudExtractVersion         (struct qemud_server *server);
 int         qemudBuildCommandLine       (struct qemud_server *server,
                                          struct qemud_vm *vm,
                                          char ***argv);

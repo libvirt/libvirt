@@ -260,6 +260,9 @@ struct qemud_vm *qemudFindVMByName(const struct qemud_server *server,
 }
 
 int qemudGetVersion(struct qemud_server *server) {
+    if (qemudExtractVersion(server) < 0)
+        return -1;
+
     return server->qemuVersion;
 }
 

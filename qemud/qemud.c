@@ -459,8 +459,6 @@ static struct qemud_server *qemudInitialize(int sys, int sigread) {
         return NULL;
     }
 
-    /* XXX extract actual version */
-    server->qemuVersion = (0*1000000)+(8*1000)+(0);
     /* We don't have a dom-0, so start from 1 */
     server->nextvmid = 1;
     server->sigread = sigread;

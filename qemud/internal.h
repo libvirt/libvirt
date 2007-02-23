@@ -161,6 +161,13 @@ enum qemud_vm_grapics_type {
     QEMUD_GRAPHICS_VNC,
 };
 
+/* Internal flags to keep track of qemu command line capabilities */
+enum qemud_cmd_flags {
+    QEMUD_CMD_FLAG_KQEMU = 1,
+    QEMUD_CMD_FLAG_VNC_COLON = 2,
+};
+
+
 enum qemud_vm_features {
     QEMUD_FEATURE_ACPI = 1,
 };
@@ -289,6 +296,7 @@ struct qemud_server {
     int nsockets;
     struct qemud_socket *sockets;
     int qemuVersion;
+    int qemuCmdFlags; /* values from enum qemud_cmd_flags */
     int nclients;
     struct qemud_client *clients;
     int sigread;

@@ -31,6 +31,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <sys/wait.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -256,6 +257,112 @@ static char *qemudLocateBinaryForArch(struct qemud_server *server,
     strcat(path, name);
     return path;
 }
+
+
+static int qemudExtractVersionInfo(const char *qemu, int *version, int *flags) {
+    pid_t child;
+    int newstdout[2];
+
+    *flags = 0;
+    *version = 0;
+
+    if (pipe(newstdout) < 0) {
+        return -1;
+    }
+
+    if ((child = fork()) < 0) {
+        close(newstdout[0]);
+        close(newstdout[1]);
+        return -1;
+    }
+
+    if (child == 0) { /* Kid */
+        if (close(STDIN_FILENO) < 0)
+            goto cleanup1;
+        if (close(STDERR_FILENO) < 0)
+            goto cleanup1;
+        if (close(newstdout[0]) < 0)
+            goto cleanup1;
+        if (dup2(newstdout[1], STDOUT_FILENO) < 0)
+            goto cleanup1;
+
+        /* Just in case QEMU is translated someday.. */
+        setenv("LANG", "C", 1);
+        execl(qemu, qemu, (char*)NULL);
+
+    cleanup1:
+        _exit(-1); /* Just in case */
+    } else { /* Parent */
+        char help[4096]; /* Ought to be enough to hold QEMU help screen */
+        int got, ret = -1;
+        int major, minor, micro;
+
+        if (close(newstdout[1]) < 0)
+            goto cleanup2;
+
+    reread:
+        if ((got = read(newstdout[0], help, sizeof(help)-1)) < 0) {
+            if (errno == EINTR)
+                goto reread;
+            goto cleanup2;
+        }
+        help[got] = '\0';
+
+        if (sscanf(help, "QEMU PC emulator version %d.%d.%d", &major,&minor, &micro) != 3) {
+            goto cleanup2;
+        }
+
+        *version = (major * 1000 * 1000) + (minor * 1000) + micro;
+        if (strstr(help, "-no-kqemu"))
+            *flags |= QEMUD_CMD_FLAG_KQEMU;
+        if (*version >= 9000)
+            *flags |= QEMUD_CMD_FLAG_VNC_COLON;
+        ret = 0;
+
+        qemudDebug("Version %d %d %d  Cooked version: %d, with flags ? %d",
+                   major, minor, micro, *version, *flags);
+
+    cleanup2:
+        if (close(newstdout[0]) < 0)
+            ret = -1;
+
+    rewait:
+        if (waitpid(child, &got, 0) != child) {
+            if (errno == EINTR) {
+                goto rewait;
+            }
+            qemudLog(QEMUD_ERR, "Unexpected exit status from qemu %d pid %lu", got, (unsigned long)child);
+            ret = -1;
+        }
+        /* Check & log unexpected exit status, but don't fail,
+         * as there's really no need to throw an error if we did
+         * actually read a valid version number above */
+        if (WEXITSTATUS(got) != 1) {
+            qemudLog(QEMUD_WARN, "Unexpected exit status '%d', qemu probably failed", got);
+        }
+
+        return ret;
+    }
+}
+
+int qemudExtractVersion(struct qemud_server *server) {
+    char *binary = NULL;
+
+    if (server->qemuVersion > 0)
+        return 0;
+
+    if (!(binary = qemudLocateBinaryForArch(server, QEMUD_VIRT_QEMU, "i686")))
+        return -1;
+
+    if (qemudExtractVersionInfo(binary, &server->qemuVersion, &server->qemuCmdFlags) < 0) {
+        free(binary);
+        return -1;
+    }
+
+    free(binary);
+    return 0;
+}
+
 
 /* Parse the XML definition for a disk */
 static struct qemud_vm_disk_def *qemudParseDiskXML(struct qemud_server *server,
@@ -950,9 +1057,13 @@ int qemudBuildCommandLine(struct qemud_server *server,
     struct qemud_vm_disk_def *disk = vm->def->disks;
     struct qemud_vm_net_def *net = vm->def->nets;
 
+    if (qemudExtractVersion(server) < 0)
+        return -1;
+
     len = 1 + /* qemu */
         2 + /* machine type */
-        (vm->def->virtType == QEMUD_VIRT_QEMU ? 1 : 0) + /* Disable kqemu */
+        (((server->qemuCmdFlags & QEMUD_CMD_FLAG_KQEMU) &&
+          (vm->def->virtType == QEMUD_VIRT_QEMU)) ? 1 : 0) + /* Disable kqemu */
         2 * vm->def->ndisks + /* disks*/
         (vm->def->nnets > 0 ? (4 * vm->def->nnets) : 2) + /* networks */
         2 + /* memory*/
@@ -977,9 +1088,10 @@ int qemudBuildCommandLine(struct qemud_server *server,
         goto no_memory;
     if (!((*argv)[++n] = strdup(vm->def->os.machine)))
         goto no_memory;
-    if (vm->def->virtType == QEMUD_VIRT_QEMU) {
+    if ((server->qemuCmdFlags & QEMUD_CMD_FLAG_KQEMU) && 
+        (vm->def->virtType == QEMUD_VIRT_QEMU)) {
         if (!((*argv)[++n] = strdup("-no-kqemu")))
-        goto no_memory;
+            goto no_memory;
     }
     if (!((*argv)[++n] = strdup("-m")))
         goto no_memory;
@@ -996,8 +1108,8 @@ int qemudBuildCommandLine(struct qemud_server *server,
         goto no_memory;
 
     if (!(vm->def->features & QEMUD_FEATURE_ACPI)) {
-    if (!((*argv)[++n] = strdup("-no-acpi")))
-        goto no_memory;
+        if (!((*argv)[++n] = strdup("-no-acpi")))
+            goto no_memory;
     }
 
     for (i = 0 ; i < vm->def->os.nBootDevs ; i++) {
@@ -1103,7 +1215,14 @@ int qemudBuildCommandLine(struct qemud_server *server,
 
     if (vm->def->graphicsType == QEMUD_GRAPHICS_VNC) {
         char port[10];
-        snprintf(port, 10, "%d", vm->def->vncActivePort - 5900);
+        int ret;
+        ret = snprintf(port, sizeof(port),
+                       ((server->qemuCmdFlags & QEMUD_CMD_FLAG_VNC_COLON) ?
+                        ":%d" : "%d"),
+                       vm->def->vncActivePort - 5900);
+        if (ret < 0 || ret >= (int)sizeof(port))
+            goto error;
+
         if (!((*argv)[++n] = strdup("-vnc")))
             goto no_memory;
         if (!((*argv)[++n] = strdup(port)))
