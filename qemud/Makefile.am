@@ -2,7 +2,7 @@
 
 INCLUDES = @LIBXML_CFLAGS@
 
-libexec_PROGRAMS = libvirt_qemud
+sbin_PROGRAMS = libvirt_qemud
 
 libvirt_qemud_SOURCES = qemud.c internal.h protocol.h \
                 driver.c driver.h \

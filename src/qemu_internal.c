@@ -99,8 +99,8 @@ static const char *
 qemuFindServerPath(void)
 {
     static const char *serverPaths[] = {
-        BINDIR "/libvirt_qemud",
-        BINDIR "/libvirt_qemud_dbg",
+        SBINDIR "/libvirt_qemud",
+        SBINDIR "/libvirt_qemud_dbg",
         NULL
     };
     int i;

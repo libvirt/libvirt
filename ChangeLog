@@ -1,3 +1,11 @@
+Fri Feb 23 12:45:08 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/Makefile.am: install libvirt_qemud in /usr/sbin
+	instead of /usr/libexec
+	
+	* src/Makefile.am, src/qemu_internal.c: pass the correct
+	path to libvirt
+	
 Fri Feb 23 10:26:24 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* src/virsh.c: in "start" and "net-start" use e.g.
