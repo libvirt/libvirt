@@ -509,6 +509,41 @@ int qemudDomainUndefine(struct qemud_server *server, const unsigned char *uuid) 
     return 0;
 }
 
+int qemudDomainGetAutostart(struct qemud_server *server,
+                             const unsigned char *uuid,
+                             int *autostart) {
+    struct qemud_vm *vm = qemudFindVMByUUID(server, uuid);
+
+    if (!vm) {
+        qemudReportError(server, VIR_ERR_INVALID_DOMAIN, "no domain with matching uuid");
+        return -1;
+    }
+
+    *autostart = vm->autostart;
+
+    return 0;
+}
+
+int qemudDomainSetAutostart(struct qemud_server *server,
+                             const unsigned char *uuid,
+                             int autostart) {
+    struct qemud_vm *vm = qemudFindVMByUUID(server, uuid);
+
+    if (!vm) {
+        qemudReportError(server, VIR_ERR_INVALID_DOMAIN, "no domain with matching uuid");
+        return -1;
+    }
+
+    autostart = (autostart != 0);
+
+    if (vm->autostart == autostart)
+        return 0;
+
+    vm->autostart = autostart;
+
+    return 0;
+}
+
 struct qemud_network *qemudFindNetworkByUUID(const struct qemud_server *server,
                                              const unsigned char *uuid) {
     struct qemud_network *network = server->networks;
@@ -681,6 +716,41 @@ int qemudNetworkGetBridgeName(struct qemud_server *server, const unsigned char *
 
     strncpy(ifname, network->bridge, ifnamelen);
     ifname[ifnamelen-1] = '\0';
+
+    return 0;
+}
+
+int qemudNetworkGetAutostart(struct qemud_server *server,
+                             const unsigned char *uuid,
+                             int *autostart) {
+    struct qemud_network *network = qemudFindNetworkByUUID(server, uuid);
+
+    if (!network) {
+        qemudReportError(server, VIR_ERR_INVALID_NETWORK, "no network with matching uuid");
+        return -1;
+    }
+
+    *autostart = network->autostart;
+
+    return 0;
+}
+
+int qemudNetworkSetAutostart(struct qemud_server *server,
+                             const unsigned char *uuid,
+                             int autostart) {
+    struct qemud_network *network = qemudFindNetworkByUUID(server, uuid);
+
+    if (!network) {
+        qemudReportError(server, VIR_ERR_INVALID_NETWORK, "no network with matching uuid");
+        return -1;
+    }
+
+    autostart = (autostart != 0);
+
+    if (network->autostart == autostart)
+        return 0;
+
+    network->autostart = autostart;
 
     return 0;
 }

@@ -717,6 +717,97 @@ static int qemudDispatchNetworkGetBridgeName(struct qemud_server *server, struct
     return 0;
 }
 
+static int qemudDispatchDomainGetAutostart(struct qemud_server *server, struct qemud_client *client,
+                                           struct qemud_packet *in, struct qemud_packet *out)
+{
+    int ret;
+    int autostart;
+
+    if (in->header.dataSize != sizeof(in->data.domainGetAutostartRequest))
+        return -1;
+
+    autostart = 0;
+
+    ret = qemudDomainGetAutostart(server,
+                                  in->data.domainGetAutostartRequest.uuid,
+                                  &autostart);
+    if (ret < 0) {
+        if (qemudDispatchFailure(server, client, out) < 0)
+            return -1;
+    } else {
+        out->header.type = QEMUD_PKT_DOMAIN_GET_AUTOSTART;
+        out->header.dataSize = sizeof(out->data.networkGetAutostartReply);
+        out->data.networkGetAutostartReply.autostart = (autostart != 0);
+    }
+    return 0;
+}
+
+static int qemudDispatchDomainSetAutostart(struct qemud_server *server, struct qemud_client *client,
+                                           struct qemud_packet *in, struct qemud_packet *out)
+{
+    int ret;
+
+    if (in->header.dataSize != sizeof(in->data.domainSetAutostartRequest))
+        return -1;
+
+    ret = qemudDomainSetAutostart(server,
+                                  in->data.domainGetAutostartRequest.uuid,
+                                  in->data.domainSetAutostartRequest.autostart);
+    if (ret < 0) {
+        if (qemudDispatchFailure(server, client, out) < 0)
+            return -1;
+    } else {
+        out->header.type = QEMUD_PKT_DOMAIN_SET_AUTOSTART;
+        out->header.dataSize = 0;
+    }
+    return 0;
+}
+
+static int qemudDispatchNetworkGetAutostart(struct qemud_server *server, struct qemud_client *client,
+                                            struct qemud_packet *in, struct qemud_packet *out)
+{
+    int ret;
+    int autostart;
+
+    if (in->header.dataSize != sizeof(in->data.networkGetAutostartRequest))
+        return -1;
+
+    autostart = 0;
+
+    ret = qemudNetworkGetAutostart(server,
+                                   in->data.networkGetAutostartRequest.uuid,
+                                   &autostart);
+    if (ret < 0) {
+        if (qemudDispatchFailure(server, client, out) < 0)
+            return -1;
+    } else {
+        out->header.type = QEMUD_PKT_NETWORK_GET_AUTOSTART;
+        out->header.dataSize = sizeof(out->data.networkGetAutostartReply);
+        out->data.networkGetAutostartReply.autostart = (autostart != 0);
+    }
+    return 0;
+}
+
+static int qemudDispatchNetworkSetAutostart(struct qemud_server *server, struct qemud_client *client,
+                                            struct qemud_packet *in, struct qemud_packet *out)
+{
+    int ret;
+
+    if (in->header.dataSize != sizeof(in->data.networkSetAutostartRequest))
+        return -1;
+
+    ret = qemudNetworkSetAutostart(server,
+                                   in->data.networkGetAutostartRequest.uuid,
+                                   in->data.networkSetAutostartRequest.autostart);
+    if (ret < 0) {
+        if (qemudDispatchFailure(server, client, out) < 0)
+            return -1;
+    } else {
+        out->header.type = QEMUD_PKT_NETWORK_SET_AUTOSTART;
+        out->header.dataSize = 0;
+    }
+    return 0;
+}
 
 typedef int (*clientFunc)(struct qemud_server *server, struct qemud_client *client,
                           struct qemud_packet *in, struct qemud_packet *out);
@@ -759,6 +850,10 @@ clientFunc funcsTransmitRW[QEMUD_PKT_MAX] = {
     qemudDispatchNetworkDestroy,
     qemudDispatchNetworkDumpXML,
     qemudDispatchNetworkGetBridgeName,
+    qemudDispatchDomainGetAutostart,
+    qemudDispatchDomainSetAutostart,
+    qemudDispatchNetworkGetAutostart,
+    qemudDispatchNetworkSetAutostart,
 };
 
 clientFunc funcsTransmitRO[QEMUD_PKT_MAX] = {
@@ -796,6 +891,10 @@ clientFunc funcsTransmitRO[QEMUD_PKT_MAX] = {
     NULL,
     qemudDispatchNetworkDumpXML,
     qemudDispatchNetworkGetBridgeName,
+    qemudDispatchDomainGetAutostart,
+    NULL,
+    qemudDispatchNetworkGetAutostart,
+    NULL,
 };
 
 /*

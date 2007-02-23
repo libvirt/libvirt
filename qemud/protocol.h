@@ -64,6 +64,10 @@ enum {
     QEMUD_PKT_NETWORK_DESTROY,
     QEMUD_PKT_NETWORK_DUMP_XML,
     QEMUD_PKT_NETWORK_GET_BRIDGE_NAME,
+    QEMUD_PKT_DOMAIN_GET_AUTOSTART,
+    QEMUD_PKT_DOMAIN_SET_AUTOSTART,
+    QEMUD_PKT_NETWORK_GET_AUTOSTART,
+    QEMUD_PKT_NETWORK_SET_AUTOSTART,
 
     QEMUD_PKT_MAX,
 } qemud_packet_type;
@@ -279,6 +283,26 @@ union qemud_packet_data {
     struct {
         char ifname[QEMUD_MAX_IFNAME_LEN];
     } networkGetBridgeNameReply;
+    struct {
+        unsigned char uuid[QEMUD_UUID_RAW_LEN];
+    } domainGetAutostartRequest;
+    struct {
+        int autostart;
+    } domainGetAutostartReply;
+    struct {
+        unsigned char uuid[QEMUD_UUID_RAW_LEN];
+        unsigned int autostart : 1;
+    } domainSetAutostartRequest;
+    struct {
+        unsigned char uuid[QEMUD_UUID_RAW_LEN];
+    } networkGetAutostartRequest;
+    struct {
+        unsigned int autostart : 1;
+    } networkGetAutostartReply;
+    struct {
+        unsigned char uuid[QEMUD_UUID_RAW_LEN];
+        unsigned int autostart : 1;
+    } networkSetAutostartRequest;
 };
 
 /* Each packet has header & data */

@@ -209,6 +209,8 @@ struct qemud_vm {
     struct qemud_vm_def *def; /* The current definition */
     struct qemud_vm_def *newDef; /* New definition to activate at shutdown */
 
+    unsigned int autostart : 1;
+
     struct qemud_vm *next;
 };
 
@@ -247,6 +249,7 @@ struct qemud_network {
     int dnsmasqPid;
 
     unsigned int active : 1;
+    unsigned int autostart : 1;
 
     struct qemud_network *next;
 };

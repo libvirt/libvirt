@@ -85,6 +85,12 @@ struct qemud_vm *qemudDomainDefine(struct qemud_server *server,
                                    const char *xml);
 int qemudDomainUndefine(struct qemud_server *server,
                         const unsigned char *uuid);
+int qemudDomainGetAutostart(struct qemud_server *server,
+                            const unsigned char *uuid,
+                            int *autostart);
+int qemudDomainSetAutostart(struct qemud_server *server,
+                            const unsigned char *uuid,
+                            int autostart);
 
 struct qemud_network *qemudFindNetworkByUUID(const struct qemud_server *server,
                                              const unsigned char *uuid);
@@ -117,6 +123,12 @@ int qemudNetworkGetBridgeName(struct qemud_server *server,
                               const unsigned char *uuid,
                               char *ifname,
                               int ifnamelen);
+int qemudNetworkGetAutostart(struct qemud_server *server,
+                             const unsigned char *uuid,
+                             int *autostart);
+int qemudNetworkSetAutostart(struct qemud_server *server,
+                             const unsigned char *uuid,
+                             int autostart);
 
 #endif
 

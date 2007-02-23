@@ -806,6 +806,39 @@ static int qemuUndefine(virDomainPtr dom) {
     return ret;
 }
 
+static int qemuDomainGetAutostart(virDomainPtr dom,
+                                  int *autostart) {
+    struct qemud_packet req, reply;
+
+    req.header.type = QEMUD_PKT_DOMAIN_GET_AUTOSTART;
+    req.header.dataSize = sizeof(req.data.domainGetAutostartRequest);
+    memmove(req.data.domainGetAutostartRequest.uuid, dom->uuid, QEMUD_UUID_RAW_LEN);
+
+    if (qemuProcessRequest(dom->conn, NULL, &req, &reply) < 0) {
+        return -1;
+    }
+
+    *autostart = reply.data.domainGetAutostartReply.autostart;
+
+    return 0;
+}
+
+static int qemuDomainSetAutostart(virDomainPtr dom,
+                                  int autostart) {
+    struct qemud_packet req, reply;
+
+    req.header.type = QEMUD_PKT_DOMAIN_SET_AUTOSTART;
+    req.header.dataSize = sizeof(req.data.domainSetAutostartRequest);
+    req.data.domainSetAutostartRequest.autostart = (autostart != 0);
+    memmove(req.data.domainSetAutostartRequest.uuid, dom->uuid, QEMUD_UUID_RAW_LEN);
+
+    if (qemuProcessRequest(dom->conn, NULL, &req, &reply) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
 static int qemuNetworkOpen(virConnectPtr conn,
                            const char *name,
                            int flags) {
@@ -1093,6 +1126,39 @@ static char * qemuNetworkGetBridgeName(virNetworkPtr network) {
     return strdup(reply.data.networkGetBridgeNameReply.ifname);
 }
 
+static int qemuNetworkGetAutostart(virNetworkPtr network,
+                                   int *autostart) {
+    struct qemud_packet req, reply;
+
+    req.header.type = QEMUD_PKT_NETWORK_GET_AUTOSTART;
+    req.header.dataSize = sizeof(req.data.networkGetAutostartRequest);
+    memmove(req.data.networkGetAutostartRequest.uuid, network->uuid, QEMUD_UUID_RAW_LEN);
+
+    if (qemuProcessRequest(network->conn, NULL, &req, &reply) < 0) {
+        return -1;
+    }
+
+    *autostart = reply.data.networkGetAutostartReply.autostart;
+
+    return 0;
+}
+
+static int qemuNetworkSetAutostart(virNetworkPtr network,
+                                   int autostart) {
+    struct qemud_packet req, reply;
+
+    req.header.type = QEMUD_PKT_NETWORK_SET_AUTOSTART;
+    req.header.dataSize = sizeof(req.data.networkSetAutostartRequest);
+    req.data.networkSetAutostartRequest.autostart = (autostart != 0);
+    memmove(req.data.networkSetAutostartRequest.uuid, network->uuid, QEMUD_UUID_RAW_LEN);
+
+    if (qemuProcessRequest(network->conn, NULL, &req, &reply) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
 static virDriver qemuDriver = {
     VIR_DRV_QEMU,
     "QEMU",
@@ -1132,8 +1198,8 @@ static virDriver qemuDriver = {
     qemuUndefine, /* domainUndefine */
     NULL, /* domainAttachDevice */
     NULL, /* domainDetachDevice */
-    NULL, /* domainGetAutostart */
-    NULL, /* domainSetAutostart */
+    qemuDomainGetAutostart, /* domainGetAutostart */
+    qemuDomainSetAutostart, /* domainSetAutostart */
 };
 
 static virNetworkDriver qemuNetworkDriver = {
@@ -1152,8 +1218,8 @@ static virNetworkDriver qemuNetworkDriver = {
     qemuNetworkDestroy, /* networkDestroy */
     qemuNetworkDumpXML, /* networkDumpXML */
     qemuNetworkGetBridgeName, /* networkGetBridgeName */
-    NULL, /* networkGetAutostart */
-    NULL, /* networkSetAutostart */
+    qemuNetworkGetAutostart, /* networkGetAutostart */
+    qemuNetworkSetAutostart, /* networkSetAutostart */
 };
 
 void qemuRegister(void) {

@@ -1,3 +1,15 @@
+Fri Feb 23 09:00:13 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/protocol.h: add the (domain/network)(Get/Set)Autostart
+	requests and replies to the protocol.
+
+	* src/qemu_internal.c: hookup the qemu driver autostart
+	methods
+
+	* qemud/dispatch.c, qemud/driver.[ch], internal.h: add
+	the daemon side, but just set an in-memory autostart
+	flag for now.
+	
 Fri Feb 23 08:51:05 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* src/virsh.c: add "autostart" and "net-autostart" commands
