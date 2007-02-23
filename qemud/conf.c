@@ -1971,11 +1971,49 @@ int qemudScanConfigDir(struct qemud_server *server,
     return 0;
 }
 
+static
+void qemudAutostartConfigs(struct qemud_server *server) {
+    struct qemud_network *network;
+    struct qemud_vm *vm;
+
+    network = server->networks;
+    while (network != NULL) {
+        struct qemud_network *next = network->next;
+
+        if (network->autostart &&
+            !qemudIsActiveNetwork(network) &&
+            qemudStartNetworkDaemon(server, network) < 0)
+            qemudLog(QEMUD_ERR, "Failed to autostart network '%s'",
+                     network->def->name);
+
+        network = next;
+    }
+
+    vm = server->vms;
+    while (vm != NULL) {
+        struct qemud_vm *next = vm->next;
+
+        if (vm->autostart &&
+            !qemudIsActiveVM(vm) &&
+            qemudStartVMDaemon(server, vm) < 0)
+            qemudLog(QEMUD_ERR, "Failed to autostart VM '%s'",
+                     vm->def->name);
+
+        vm = next;
+    }
+}
+
 /* Scan for all guest and network config files */
 int qemudScanConfigs(struct qemud_server *server) {
     if (qemudScanConfigDir(server, server->configDir, server->autostartDir, 1) < 0)
         return -1;
-    return qemudScanConfigDir(server, server->networkConfigDir, server->networkAutostartDir, 0);
+
+    if (qemudScanConfigDir(server, server->networkConfigDir, server->networkAutostartDir, 0) < 0)
+        return -1;
+
+    qemudAutostartConfigs(server);
+
+    return 0;
 }
 
 /* Simple grow-on-demand string buffer */

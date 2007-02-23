@@ -1,4 +1,9 @@
-Fri Feb 23 09:03:19 IST 2007 Mark McLoughlin <markmc@redhat.com>
+Fri Feb 23 09:11:53 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/conf.c: actually autostart guests/networks at startup
+	as appropriate.
+	
+Fri Feb 23 09:08:02 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/internal.h: put the config directory paths in
 	an array in order to make them easier to initialize,
