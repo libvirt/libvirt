@@ -292,6 +292,51 @@ cmdHelp(vshControl * ctl, vshCmd * cmd)
 }
 
 /*
+ * "autostart" command
+ */
+static vshCmdInfo info_autostart[] = {
+    {"syntax", "autostart [--disable] <domain>"},
+    {"help", gettext_noop("autostart a domain")},
+    {"desc",
+     gettext_noop("Configure a domain to be automatically started at boot.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_autostart[] = {
+    {"domain",  VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {"disable", VSH_OT_BOOL, 0, gettext_noop("disable autostarting")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdAutostart(vshControl * ctl, vshCmd * cmd)
+{
+    virDomainPtr dom;
+    char *name;
+    int autostart;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", &name)))
+        return FALSE;
+
+    autostart = !vshCommandOptBool(cmd, "disable");
+
+    if (virDomainSetAutostart(dom, autostart) < 0) {
+        vshError(ctl, FALSE, _("Failed to %smark domain %s as autostarted"),
+                 autostart ? "" : "un", name);
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    vshPrint(ctl, _("Domain %s %smarked as autostarted\n"),
+             name, autostart ? "" : "un");
+
+    return TRUE;
+}
+
+/*
  * "connect" command
  */
 static vshCmdInfo info_connect[] = {
@@ -477,49 +522,42 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
     vshPrintExtra(ctl, "----------------------------------\n");
 
     for (i = 0; i < maxid; i++) {
-        int ret;
         virDomainInfo info;
         virDomainPtr dom = virDomainLookupByID(ctl->conn, ids[i]);
+        const char *state;
 
         /* this kind of work with domains is not atomic operation */
         if (!dom)
             continue;
-        ret = virDomainGetInfo(dom, &info);
+
+        if (virDomainGetInfo(dom, &info) < 0)
+            state = _("no state");
+        else
+            state = _N(vshDomainStateToString(info.state));
 
         vshPrint(ctl, "%3d %-20s %s\n",
                  virDomainGetID(dom),
                  virDomainGetName(dom),
-                 ret <
-                 0 ? _("no state") : _N(vshDomainStateToString(info.state)));
+                 state);
         virDomainFree(dom);
     }
     for (i = 0; i < maxname; i++) {
-        int ret;
-        unsigned int id;
         virDomainInfo info;
         virDomainPtr dom = virDomainLookupByName(ctl->conn, names[i]);
+        const char *state;
 
         /* this kind of work with domains is not atomic operation */
         if (!dom) {
             free(names[i]);
             continue;
         }
-        ret = virDomainGetInfo(dom, &info);
-        id = virDomainGetID(dom);
 
-        if (id == ((unsigned int)-1)) {
-            vshPrint(ctl, "%3s %-20s %s\n",
-                     "-",
-                     names[i],
-                     ret <
-                     0 ? "no state" : vshDomainStateToString(info.state));
-        } else {
-            vshPrint(ctl, "%3d %-20s %s\n",
-                     id,
-                     names[i],
-                     ret <
-                     0 ? "no state" : vshDomainStateToString(info.state));
-        }
+        if (virDomainGetInfo(dom, &info) < 0)
+            state = _("no state");
+        else
+            state = _N(vshDomainStateToString(info.state));
+
+        vshPrint(ctl, "%3s %-20s %s\n", "-", names[i], state);
 
         virDomainFree(dom);
         free(names[i]);
@@ -1632,6 +1670,50 @@ cmdDomuuid(vshControl * ctl, vshCmd * cmd)
     return TRUE;
 }
 
+/*
+ * "net-autostart" command
+ */
+static vshCmdInfo info_network_autostart[] = {
+    {"syntax", "net-autostart [--disable] <network>"},
+    {"help", gettext_noop("autostart a network")},
+    {"desc",
+     gettext_noop("Configure a network to be automatically started at boot.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_network_autostart[] = {
+    {"network",  VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network name or uuid")},
+    {"disable", VSH_OT_BOOL, 0, gettext_noop("disable autostarting")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdNetworkAutostart(vshControl * ctl, vshCmd * cmd)
+{
+    virNetworkPtr network;
+    char *name;
+    int autostart;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(network = vshCommandOptNetwork(ctl, cmd, "network", &name)))
+        return FALSE;
+
+    autostart = !vshCommandOptBool(cmd, "disable");
+
+    if (virNetworkSetAutostart(network, autostart) < 0) {
+        vshError(ctl, FALSE, _("Failed to %smark network %s as autostarted"),
+                 autostart ? "" : "un", name);
+        virNetworkFree(network);
+        return FALSE;
+    }
+
+    vshPrint(ctl, _("Network %s %smarked as autostarted\n"),
+             name, autostart ? "" : "un");
+
+    return TRUE;
+}
 
 /*
  * "net-create" command
@@ -1895,11 +1977,13 @@ cmdNetworkList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
             qsort(&inactiveNames[0], maxinactive, sizeof(char*), namesorter);
         }
     }
-    vshPrintExtra(ctl, "%-20s\n", _("Name"));
-    vshPrintExtra(ctl, "----------------------------------\n");
+    vshPrintExtra(ctl, "%-20s %-10s %-10s\n", _("Name"), _("State"), _("Autostart"));
+    vshPrintExtra(ctl, "-----------------------------------------\n");
 
     for (i = 0; i < maxactive; i++) {
         virNetworkPtr network = virNetworkLookupByName(ctl->conn, activeNames[i]);
+        const char *autostartStr;
+        int autostart = 0;
 
         /* this kind of work with networks is not atomic operation */
         if (!network) {
@@ -1907,13 +1991,22 @@ cmdNetworkList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
             continue;
         }
 
-        vshPrint(ctl, "%-20s\n",
-                 virNetworkGetName(network));
+        if (virNetworkGetAutostart(network, &autostart) < 0)
+            autostartStr = _("no autostart");
+        else
+            autostartStr = autostart ? "yes" : "no";
+
+        vshPrint(ctl, "%-20s %-10s %-10s\n",
+                 virNetworkGetName(network),
+                 _("active"),
+                 autostartStr);
         virNetworkFree(network);
         free(activeNames[i]);
     }
     for (i = 0; i < maxinactive; i++) {
         virNetworkPtr network = virNetworkLookupByName(ctl->conn, inactiveNames[i]);
+        const char *autostartStr;
+        int autostart = 0;
 
         /* this kind of work with networks is not atomic operation */
         if (!network) {
@@ -1921,8 +2014,15 @@ cmdNetworkList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
             continue;
         }
 
-        vshPrint(ctl, "%-20s\n",
-                 inactiveNames[i]);
+        if (virNetworkGetAutostart(network, &autostart) < 0)
+            autostartStr = _("no autostart");
+        else
+            autostartStr = autostart ? "yes" : "no";
+
+        vshPrint(ctl, "%-20s %s %s\n",
+                 inactiveNames[i],
+                 _("inactive"),
+                 autostartStr);
 
         virNetworkFree(network);
         free(inactiveNames[i]);
@@ -2268,6 +2368,7 @@ cmdQuit(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
  * Commands
  */
 static vshCmdDef commands[] = {
+    {"autostart", cmdAutostart, opts_autostart, info_autostart},
     {"connect", cmdConnect, opts_connect, info_connect},
     {"console", cmdConsole, opts_console, info_console},
     {"create", cmdCreate, opts_create, info_create},
@@ -2282,6 +2383,7 @@ static vshCmdDef commands[] = {
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
     {"help", cmdHelp, opts_help, info_help},
     {"list", cmdList, opts_list, info_list},
+    {"net-autostart", cmdNetworkAutostart, opts_network_autostart, info_network_autostart},
     {"net-create", cmdNetworkCreate, opts_network_create, info_network_create},
     {"net-define", cmdNetworkDefine, opts_network_define, info_network_define},
     {"net-destroy", cmdNetworkDestroy, opts_network_destroy, info_network_destroy},

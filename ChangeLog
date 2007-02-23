@@ -1,3 +1,8 @@
+Fri Feb 23 08:51:05 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* src/virsh.c: add "autostart" and "net-autostart" commands
+	and cleanup the "list" and "net-list" commands a bit.
+	
 Fri Feb 23 08:49:12 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* include/libvirt/libvirt.h.in, src/libvirt.c add
