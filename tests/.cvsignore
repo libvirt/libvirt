@@ -9,3 +9,6 @@ virshtest
 conftest
 reconnect
 xmconfigtest
+*.gcda
+*.gcno
+

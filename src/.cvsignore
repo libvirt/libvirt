@@ -5,3 +5,7 @@ Makefile.in
 *.lo
 *.la
 virsh
+*.gcda
+*.gcno
+*.gcov
+*.cov
