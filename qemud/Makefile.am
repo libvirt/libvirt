@@ -19,7 +19,7 @@ libvirt_qemud_LDFLAGS = $(LIBXML_LIBS) $(SYSFS_LIBS)
 libvirt_qemud_DEPENDENCIES =
 libvirt_qemud_LDADD =
 
-EXTRA_DIST = libvirt_qemud.init.in
+EXTRA_DIST = libvirtd.in
 
 if LIBVIRT_INIT_SCRIPTS_RED_HAT
 initdir = $(sysconfdir)/rc.d/init.d

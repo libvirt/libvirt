@@ -1,3 +1,10 @@
+Fri Feb 23 10:52:23 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/Makefile.am: Fix up name of init script in EXTRA_DIST
+	target.
+	* libvirt.spec.in: Update path to libvirt_qemud and add the
+	init script & post/pre scripts to register with chkconfig
+
 Fri Feb 23 14:32:54 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/conf.c: don't load config files unless they have

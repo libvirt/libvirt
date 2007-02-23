@@ -74,6 +74,13 @@ rm -fr %{buildroot}
 
 %post
 /sbin/ldconfig
+/sbin/chkconfig --add libvirtd
+
+%preun
+if [ $1 = 0 ]; then
+    /sbin/service libvirtd stop 1>/dev/null 2>&1
+    /sbin/chkconfig --del libvirtd
+fi
 
 %postun
 /sbin/ldconfig
@@ -85,10 +92,13 @@ rm -fr %{buildroot}
 %doc %{_mandir}/man1/virsh.1*
 %{_bindir}/virsh
 %{_libdir}/lib*.so.*
+%config %{_sysconfdir}/libvirt/
+%config %{_sysconfdir}/libvirt/qemu/
 %config %{_sysconfdir}/libvirt/qemu/networks/
+%{_sysconfdir}/rc.d/init.d/libvirtd
 %{_localstatedir}/run/libvirt/
 %attr(4755, root, root) %{_libexecdir}/libvirt_proxy
-%attr(0755, root, root) %{_libexecdir}/libvirt_qemud
+%attr(0755, root, root) %{_sbindir}/libvirt_qemud
 %doc docs/libvirt.rng
 
 %files devel
