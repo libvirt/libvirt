@@ -205,6 +205,7 @@ struct qemud_vm {
     int ntapfds;
 
     char configFile[PATH_MAX];
+    char autostartLink[PATH_MAX];
 
     struct qemud_vm_def *def; /* The current definition */
     struct qemud_vm_def *newDef; /* New definition to activate at shutdown */
@@ -241,6 +242,7 @@ struct qemud_network_def {
 /* Virtual Network runtime state */
 struct qemud_network {
     char configFile[PATH_MAX];
+    char autostartLink[PATH_MAX];
 
     struct qemud_network_def *def; /* The current definition */
     struct qemud_network_def *newDef; /* New definition to activate at shutdown */
@@ -293,6 +295,8 @@ struct qemud_server {
     iptablesContext *iptables;
     char configDir[PATH_MAX];
     char networkConfigDir[PATH_MAX];
+    char autostartDir[PATH_MAX];
+    char networkAutostartDir[PATH_MAX];
     char errorMessage[QEMUD_MAX_ERROR_LEN];
     int errorCode;
     unsigned int shutdown : 1;

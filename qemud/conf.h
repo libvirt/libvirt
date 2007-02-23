@@ -34,6 +34,7 @@ int         qemudScanConfigs            (struct qemud_server *server);
 int         qemudDeleteConfig           (struct qemud_server *server,
                                          const char *configFile,
                                          const char *name);
+int         qemudEnsureDir              (const char *path);
 
 void        qemudFreeVMDef              (struct qemud_vm_def *vm);
 void        qemudFreeVM                 (struct qemud_vm *vm);

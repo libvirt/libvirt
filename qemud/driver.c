@@ -502,7 +502,12 @@ int qemudDomainUndefine(struct qemud_server *server, const unsigned char *uuid) 
     if (qemudDeleteConfig(server, vm->configFile, vm->def->name) < 0)
         return -1;
 
+    if (unlink(vm->autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR)
+        qemudLog(QEMUD_WARN, "Failed to delete autostart link '%s': %s",
+                 vm->autostartLink, strerror(errno));
+
     vm->configFile[0] = '\0';
+    vm->autostartLink[0] = '\0';
 
     qemudRemoveInactiveVM(server, vm);
 
@@ -538,6 +543,31 @@ int qemudDomainSetAutostart(struct qemud_server *server,
 
     if (vm->autostart == autostart)
         return 0;
+
+    if (autostart) {
+        int err;
+
+        if ((err = qemudEnsureDir(server->autostartDir))) {
+            qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                             "cannot create autostart directory %s: %s",
+                             server->autostartDir, strerror(err));
+            return -1;
+        }
+
+        if (symlink(vm->configFile, vm->autostartLink) < 0) {
+            qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                             "Failed to create symlink '%s' to '%s': %s",
+                             vm->autostartLink, vm->configFile, strerror(errno));
+            return -1;
+        }
+    } else {
+        if (unlink(vm->autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
+            qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                             "Failed to delete symlink '%s': %s",
+                             vm->autostartLink, strerror(errno));
+            return -1;
+        }
+    }
 
     vm->autostart = autostart;
 
@@ -657,7 +687,12 @@ int qemudNetworkUndefine(struct qemud_server *server, const unsigned char *uuid)
     if (qemudDeleteConfig(server, network->configFile, network->def->name) < 0)
         return -1;
 
+    if (unlink(network->autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR)
+        qemudLog(QEMUD_WARN, "Failed to delete autostart link '%s': %s",
+                 network->autostartLink, strerror(errno));
+
     network->configFile[0] = '\0';
+    network->autostartLink[0] = '\0';
 
     qemudRemoveInactiveNetwork(server, network);
 
@@ -749,6 +784,31 @@ int qemudNetworkSetAutostart(struct qemud_server *server,
 
     if (network->autostart == autostart)
         return 0;
+
+    if (autostart) {
+        int err;
+
+        if ((err = qemudEnsureDir(server->networkAutostartDir))) {
+            qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                             "cannot create autostart directory %s: %s",
+                             server->networkAutostartDir, strerror(err));
+            return -1;
+        }
+
+        if (symlink(network->configFile, network->autostartLink) < 0) {
+            qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                             "Failed to create symlink '%s' to '%s': %s",
+                             network->autostartLink, network->configFile, strerror(errno));
+            return -1;
+        }
+    } else {
+        if (unlink(network->autostartLink) < 0 && errno != ENOENT && errno != ENOTDIR) {
+            qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                             "Failed to delete symlink '%s': %s",
+                             network->autostartLink, strerror(errno));
+            return -1;
+        }
+    }
 
     network->autostart = autostart;
 

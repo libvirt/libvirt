@@ -357,6 +357,8 @@ static int qemudListenUnix(struct qemud_server *server,
 static int qemudInitPaths(int sys,
                           char *configDir,
                           char *networkConfigDir,
+                          char *autostartDir,
+                          char *networkAutostartDir,
                           char *sockname,
                           char *roSockname,
                           int maxlen) {
@@ -374,6 +376,12 @@ static int qemudInitPaths(int sys,
             goto snprintf_error;
 
         if (snprintf(networkConfigDir, maxlen, "%s/libvirt/qemu/networks", SYSCONF_DIR) >= maxlen)
+            goto snprintf_error;
+
+        if (snprintf(autostartDir, maxlen, "%s/libvirt/qemu/autostart", SYSCONF_DIR) >= maxlen)
+            goto snprintf_error;
+
+        if (snprintf(networkAutostartDir, maxlen, "%s/libvirt/qemu/networks/autostart", SYSCONF_DIR) >= maxlen)
             goto snprintf_error;
 
         if (snprintf(sockname, maxlen, "%s/run/libvirt/qemud-sock", LOCAL_STATE_DIR) >= maxlen)
@@ -398,6 +406,12 @@ static int qemudInitPaths(int sys,
             goto snprintf_error;
 
         if (snprintf(networkConfigDir, maxlen, "%s/.libvirt/qemu/networks", pw->pw_dir) >= maxlen)
+            goto snprintf_error;
+
+        if (snprintf(autostartDir, maxlen, "%s/.libvirt/qemu/autostart", pw->pw_dir) >= maxlen)
+            goto snprintf_error;
+
+        if (snprintf(networkAutostartDir, maxlen, "%s/.libvirt/qemu/networks/autostart", pw->pw_dir) >= maxlen)
             goto snprintf_error;
 
         if (snprintf(sockname, maxlen, "@%s/.libvirt/qemud-sock", pw->pw_dir) >= maxlen)
@@ -430,6 +444,7 @@ static struct qemud_server *qemudInitialize(int sys, int sigread) {
     roSockname[0] = '\0';
 
     if (qemudInitPaths(sys, server->configDir, server->networkConfigDir,
+                       server->autostartDir, server->networkAutostartDir,
                        sockname, roSockname, PATH_MAX) < 0)
         goto cleanup;
 

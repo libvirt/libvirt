@@ -137,7 +137,7 @@ qemudMakeConfigPath(const char *configDir,
     return 0;
 }
 
-static int
+int
 qemudEnsureDir(const char *path)
 {
     struct stat st;
@@ -1287,6 +1287,14 @@ qemudSaveVMDef(struct qemud_server *server,
                              "cannot construct config file path");
             return -1;
         }
+
+        if (qemudMakeConfigPath(server->autostartDir, def->name, ".xml",
+                                vm->autostartLink, PATH_MAX) < 0) {
+            qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                             "cannot construct autostart link path");
+            vm->configFile[0] = '\0';
+            return -1;
+        }
     }
 
     return qemudSaveConfig(server, vm, def);
@@ -1666,6 +1674,14 @@ qemudSaveNetworkDef(struct qemud_server *server,
                              "cannot construct config file path");
             return -1;
         }
+
+        if (qemudMakeConfigPath(server->networkAutostartDir, def->name, ".xml",
+                                network->autostartLink, PATH_MAX) < 0) {
+            qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                             "cannot construct autostart link path");
+            network->configFile[0] = '\0';
+            return -1;
+        }
     }
 
     return qemudSaveNetworkConfig(server, network, def);
@@ -1734,11 +1750,105 @@ compareFileToNameSuffix(const char *file,
         return 0;
 }
 
+static int
+checkLinkPointsTo(const char *checkLink,
+                  const char *checkDest)
+{
+    char dest[PATH_MAX];
+    char real[PATH_MAX];
+    char checkReal[PATH_MAX];
+    int n;
+    int passed = 0;
+
+    /* read the link destination */
+    if ((n = readlink(checkLink, dest, PATH_MAX)) < 0) {
+        switch (errno) {
+        case ENOENT:
+        case ENOTDIR:
+            break;
+
+        case EINVAL:
+            qemudLog(QEMUD_WARN, "Autostart file '%s' is not a symlink",
+                     checkLink);
+            break;
+
+        default:
+            qemudLog(QEMUD_WARN, "Failed to read autostart symlink '%s': %s",
+                     checkLink, strerror(errno));
+            break;
+        }
+
+        goto failed;
+    } else if (n >= PATH_MAX) {
+        qemudLog(QEMUD_WARN, "Symlink '%s' contents too long to fit in buffer",
+                 checkLink);
+        goto failed;
+    }
+
+    dest[n] = '\0';
+
+    /* make absolute */
+    if (dest[0] != '/') {
+        char dir[PATH_MAX];
+        char tmp[PATH_MAX];
+        char *p;
+
+        strncpy(dir, checkLink, PATH_MAX);
+        dir[PATH_MAX] = '\0';
+
+        if (!(p = strrchr(dir, '/'))) {
+            qemudLog(QEMUD_WARN, "Symlink path '%s' is not absolute", checkLink);
+            goto failed;
+        }
+
+        if (p == dir) /* handle unlikely root dir case */
+            p++;
+
+        *p = '\0';
+
+        if (qemudMakeConfigPath(dir, dest, NULL, tmp, PATH_MAX) < 0) {
+            qemudLog(QEMUD_WARN, "Path '%s/%s' is too long", dir, dest);
+            goto failed;
+        }
+
+        strncpy(dest, tmp, PATH_MAX);
+        dest[PATH_MAX] = '\0';
+    }
+
+    /* canonicalize both paths */
+    if (!realpath(dest, real)) {
+        qemudLog(QEMUD_WARN, "Failed to expand path '%s' :%s",
+                 dest, strerror(errno));
+        strncpy(real, dest, PATH_MAX);
+        real[PATH_MAX] = '\0';
+    }
+
+    if (!realpath(checkDest, checkReal)) {
+        qemudLog(QEMUD_WARN, "Failed to expand path '%s' :%s",
+                 checkDest, strerror(errno));
+        strncpy(checkReal, checkDest, PATH_MAX);
+        checkReal[PATH_MAX] = '\0';
+    }
+
+    /* compare */
+    if (strcmp(checkReal, real) != 0) {
+        qemudLog(QEMUD_WARN, "Autostart link '%s' is not a symlink to '%s', ignoring",
+                 checkLink, checkReal);
+        goto failed;
+    }
+
+    passed = 1;
+
+ failed:
+    return passed;
+}
+
 static struct qemud_vm *
 qemudLoadConfig(struct qemud_server *server,
                 const char *file,
                 const char *path,
-                const char *xml) {
+                const char *xml,
+                const char *autostartLink) {
     struct qemud_vm_def *def;
     struct qemud_vm *vm;
 
@@ -1764,6 +1874,11 @@ qemudLoadConfig(struct qemud_server *server,
     strncpy(vm->configFile, path, PATH_MAX);
     vm->configFile[PATH_MAX-1] = '\0';
 
+    strncpy(vm->autostartLink, autostartLink, PATH_MAX);
+    vm->autostartLink[PATH_MAX-1] = '\0';
+
+    vm->autostart = checkLinkPointsTo(vm->autostartLink, vm->configFile);
+
     return vm;
 }
 
@@ -1771,7 +1886,8 @@ static struct qemud_network *
 qemudLoadNetworkConfig(struct qemud_server *server,
                        const char *file,
                        const char *path,
-                       const char *xml) {
+                       const char *xml,
+                       const char *autostartLink) {
     struct qemud_network_def *def;
     struct qemud_network *network;
 
@@ -1797,12 +1913,18 @@ qemudLoadNetworkConfig(struct qemud_server *server,
     strncpy(network->configFile, path, PATH_MAX);
     network->configFile[PATH_MAX-1] = '\0';
 
+    strncpy(network->autostartLink, autostartLink, PATH_MAX);
+    network->autostartLink[PATH_MAX-1] = '\0';
+
+    network->autostart = checkLinkPointsTo(network->autostartLink, network->configFile);
+
     return network;
 }
 
 static
 int qemudScanConfigDir(struct qemud_server *server,
                        const char *configDir,
+                       const char *autostartDir,
                        int isGuest) {
     DIR *dir;
     struct dirent *entry;
@@ -1818,6 +1940,7 @@ int qemudScanConfigDir(struct qemud_server *server,
     while ((entry = readdir(dir))) {
         char xml[QEMUD_MAX_XML_LEN];
         char path[PATH_MAX];
+        char autostartLink[PATH_MAX];
 
         if (entry->d_name[0] == '.')
             continue;
@@ -1828,13 +1951,19 @@ int qemudScanConfigDir(struct qemud_server *server,
             continue;
         }
 
+        if (qemudMakeConfigPath(autostartDir, entry->d_name, NULL, autostartLink, PATH_MAX) < 0) {
+            qemudLog(QEMUD_WARN, "Autostart link path '%s/%s' is too long",
+                     autostartDir, entry->d_name);
+            continue;
+        }
+
         if (!qemudReadFile(path, xml, QEMUD_MAX_XML_LEN))
             continue;
 
         if (isGuest)
-            qemudLoadConfig(server, entry->d_name, path, xml);
+            qemudLoadConfig(server, entry->d_name, path, xml, autostartLink);
         else
-            qemudLoadNetworkConfig(server, entry->d_name, path, xml);
+            qemudLoadNetworkConfig(server, entry->d_name, path, xml, autostartLink);
     }
 
     closedir(dir);
@@ -1844,9 +1973,9 @@ int qemudScanConfigDir(struct qemud_server *server,
 
 /* Scan for all guest and network config files */
 int qemudScanConfigs(struct qemud_server *server) {
-    if (qemudScanConfigDir(server, server->configDir, 1) < 0)
+    if (qemudScanConfigDir(server, server->configDir, server->autostartDir, 1) < 0)
         return -1;
-    return qemudScanConfigDir(server, server->networkConfigDir, 0);
+    return qemudScanConfigDir(server, server->networkConfigDir, server->networkAutostartDir, 0);
 }
 
 /* Simple grow-on-demand string buffer */

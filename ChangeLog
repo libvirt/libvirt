@@ -1,3 +1,21 @@
+Fri Feb 23 09:03:19 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/driver.c: maintain the autostart flag on disk
+	using symlinks from the "autostart" directories to
+	the corresponding config files.
+
+	* qemud/internal.h: add paths to the autostart links
+	to the vm/network structures and paths to the autostart
+	dirs to the server struct.
+
+	* qemud/qemud.c: initialize the server autostart dir
+	patches.
+
+	* qemud/conf.h: expose qemudEnsureDir()
+
+	* qemud/conf.c: check the autostart symlinks when
+	loading config files at startup.
+	
 Fri Feb 23 09:00:13 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/protocol.h: add the (domain/network)(Get/Set)Autostart
