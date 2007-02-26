@@ -45,6 +45,7 @@
 #include "conf.h"
 #include "driver.h"
 #include "iptables.h"
+#include "uuid.h"
 
 static int qemudParseUUID(const char *uuid,
                           unsigned char *rawuuid) {
@@ -689,11 +690,13 @@ static struct qemud_vm_def *qemudParseXML(struct qemud_server *server,
     obj = xmlXPathEval(BAD_CAST "string(/domain/uuid[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        /* XXX auto-generate a UUID */
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "missing uuid element");
-        goto error;
-    }
-    if (qemudParseUUID((const char *)obj->stringval, def->uuid) < 0) {
+        int err;
+        if ((err = qemudGenerateUUID(def->uuid))) {
+            qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                             "Failed to generate UUID: %s", strerror(err));
+            goto error;
+        }
+    } else if (qemudParseUUID((const char *)obj->stringval, def->uuid) < 0) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "malformed uuid element");
         goto error;
     }
@@ -1650,11 +1653,13 @@ static struct qemud_network_def *qemudParseNetworkXML(struct qemud_server *serve
     obj = xmlXPathEval(BAD_CAST "string(/network/uuid[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        /* XXX auto-generate a UUID */
-        qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "missing uuid element");
-        goto error;
-    }
-    if (qemudParseUUID((const char *)obj->stringval, def->uuid) < 0) {
+        int err;
+        if ((err = qemudGenerateUUID(def->uuid))) {
+            qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                             "Failed to generate UUID: %s", strerror(err));
+            goto error;
+        }
+    } else if (qemudParseUUID((const char *)obj->stringval, def->uuid) < 0) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR, "%s", "malformed uuid element");
         goto error;
     }

@@ -1,3 +1,11 @@
+Mon Feb 26 15:31:23 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/uuid.[ch]: add uuid generation code
+
+	* qemud/Makefile.am: build it
+
+	* qemud/conf.c: generate a UUID if not specified in the XML
+	
 Mon Feb 26 15:20:56 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/conf.c: qemudAutostartConfigs(): print the detailed
