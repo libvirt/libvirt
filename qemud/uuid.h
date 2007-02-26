@@ -24,4 +24,7 @@
 
 int qemudGenerateUUID(unsigned char *uuid);
 
+int qemudParseUUID   (const char *uuid,
+		      unsigned char *rawuuid);
+
 #endif /* __QEMUD_UUID_H__ */

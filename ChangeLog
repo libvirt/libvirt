@@ -1,3 +1,8 @@
+Mon Feb 26 15:33:08 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/conf.c, qemud/uuid.[ch]: move qemudParseUUID()
+	into uuid.c
+	
 Mon Feb 26 15:31:23 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/uuid.[ch]: add uuid generation code

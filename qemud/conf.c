@@ -47,54 +47,6 @@
 #include "iptables.h"
 #include "uuid.h"
 
-static int qemudParseUUID(const char *uuid,
-                          unsigned char *rawuuid) {
-    const char *cur;
-    int i;
-
-    /*
-     * do a liberal scan allowing '-' and ' ' anywhere between character
-     * pairs as long as there is 32 of them in the end.
-     */
-    cur = uuid;
-    for (i = 0;i < 16;) {
-        rawuuid[i] = 0;
-        if (*cur == 0)
-            goto error;
-        if ((*cur == '-') || (*cur == ' ')) {
-            cur++;
-            continue;
-        }
-        if ((*cur >= '0') && (*cur <= '9'))
-            rawuuid[i] = *cur - '0';
-        else if ((*cur >= 'a') && (*cur <= 'f'))
-            rawuuid[i] = *cur - 'a' + 10;
-        else if ((*cur >= 'A') && (*cur <= 'F'))
-            rawuuid[i] = *cur - 'A' + 10;
-        else
-            goto error;
-        rawuuid[i] *= 16;
-        cur++;
-        if (*cur == 0)
-            goto error;
-        if ((*cur >= '0') && (*cur <= '9'))
-            rawuuid[i] += *cur - '0';
-        else if ((*cur >= 'a') && (*cur <= 'f'))
-            rawuuid[i] += *cur - 'a' + 10;
-        else if ((*cur >= 'A') && (*cur <= 'F'))
-            rawuuid[i] += *cur - 'A' + 10;
-        else
-            goto error;
-        i++;
-        cur++;
-    }
-
-    return 0;
-
- error:
-    return -1;
-}
-
 /* Free all memory associated with a struct qemud_vm object */
 void qemudFreeVMDef(struct qemud_vm_def *def) {
     struct qemud_vm_disk_def *disk = def->disks;
