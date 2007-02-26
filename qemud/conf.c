@@ -2118,8 +2118,8 @@ void qemudAutostartConfigs(struct qemud_server *server) {
         if (network->autostart &&
             !qemudIsActiveNetwork(network) &&
             qemudStartNetworkDaemon(server, network) < 0)
-            qemudLog(QEMUD_ERR, "Failed to autostart network '%s'",
-                     network->def->name);
+            qemudLog(QEMUD_ERR, "Failed to autostart network '%s': %s",
+                     network->def->name, server->errorMessage);
 
         network = next;
     }
@@ -2131,8 +2131,8 @@ void qemudAutostartConfigs(struct qemud_server *server) {
         if (vm->autostart &&
             !qemudIsActiveVM(vm) &&
             qemudStartVMDaemon(server, vm) < 0)
-            qemudLog(QEMUD_ERR, "Failed to autostart VM '%s'",
-                     vm->def->name);
+            qemudLog(QEMUD_ERR, "Failed to autostart VM '%s': %s",
+                     vm->def->name, server->errorMessage);
 
         vm = next;
     }
