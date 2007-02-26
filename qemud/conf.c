@@ -2216,6 +2216,9 @@ char *qemudGenerateXML(struct qemud_server *server,
     buf.used = 0;
     buf.data = malloc(buf.len);
 
+    if (!buf.data)
+        goto no_memory;
+
     switch (def->virtType) {
     case QEMUD_VIRT_QEMU:
         type = "qemu";
@@ -2432,7 +2435,8 @@ char *qemudGenerateXML(struct qemud_server *server,
  no_memory:
     qemudReportError(server, VIR_ERR_NO_MEMORY, "xml");
  cleanup:
-    free(buf.data);
+    if (buf.data)
+        free(buf.data);
     return NULL;
 }
 
@@ -2446,6 +2450,9 @@ char *qemudGenerateNetworkXML(struct qemud_server *server,
     buf.len = QEMUD_MAX_XML_LEN;
     buf.used = 0;
     buf.data = malloc(buf.len);
+
+    if (!buf.data)
+        goto no_memory;
 
     if (qemudBufferPrintf(&buf, "<network>\n") < 0)
         goto no_memory;
@@ -2508,7 +2515,8 @@ char *qemudGenerateNetworkXML(struct qemud_server *server,
 
  no_memory:
     qemudReportError(server, VIR_ERR_NO_MEMORY, "xml");
-    free(buf.data);
+    if (buf.data)
+        free(buf.data);
     return NULL;
 }
 
