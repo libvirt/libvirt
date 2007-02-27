@@ -508,7 +508,14 @@ xend_post(virConnectPtr xend, const char *path, const char *ops,
 
     if ((ret < 0) || (ret >= 300)) {
         virXendError(xend, VIR_ERR_POST_FAILED, content);
-    } else if ((ret = 202) && (strstr(content, "failed") != NULL)) {
+    } else if ((ret == 202) && (strstr(content, "failed") != NULL)) {
+        virXendError(xend, VIR_ERR_POST_FAILED, content);
+        ret = -1;
+    } else if ((ret == 202) && (strstr(content, "Cannot") != NULL)) {
+        /* This is to catch case of 'virsh dump Domain-0 foo'
+         * which returns a success code, but the word 'Cannot'
+         * in body to indicate error
+         */
         virXendError(xend, VIR_ERR_POST_FAILED, content);
         ret = -1;
     }
