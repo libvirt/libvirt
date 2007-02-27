@@ -1571,8 +1571,6 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
             } else if (tmp && !strcmp(tmp, "vnc")) {
                 int port = xenStoreDomainGetVNCPort(conn, domid);
                 const char *listenAddr = sexpr_node(node, "device/vfb/vnclisten");
-                if (port == -1)
-                    port = 5900 + domid;
                 if (listenAddr) {
                     virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d' listen='%s'/>\n", port, listenAddr);
                 } else {
@@ -1618,7 +1616,13 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
         if (tmp[0] == '1') {
             int port = xenStoreDomainGetVNCPort(conn, domid);
             const char *listenAddr = sexpr_fmt_node(root, "domain/image/%s/vnclisten", hvm ? "hvm" : "linux");
-            if (port == -1)
+            /* For Xen >= 3.0.3, don't generate a fixed port mapping
+             * because it will almost certainly be wrong ! Just leave
+             * it as -1 which lets caller see that the VNC server isn't
+             * present yet. Subsquent dumps of the XML will eventually
+             * find the port in XenStore once VNC server has started
+             */
+            if (port == -1 && xendConfigVersion < 2)
                 port = 5900 + domid;
             if (listenAddr)
                 virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d' listen='%s'/>\n", port, listenAddr);

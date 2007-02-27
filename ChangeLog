@@ -1,3 +1,10 @@
+Tue Feb 27 10:20:43 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Only hardcode port = 5900+domid if
+	running against old XenD < 3.0.3, because in newer XenD
+	port is guarenteed to be available in XenStore if the VNC
+	server is running.
+
 Mon Feb 26 15:33:08 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/conf.c, qemud/uuid.[ch]: move qemudParseUUID()
