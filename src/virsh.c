@@ -3344,12 +3344,14 @@ vshParseArgv(vshControl * ctl, int argc, char **argv)
                 int sz = strlen(last);
 
                 for (o = opt; o->name; o++) {
-                    if (sz == 2 && *(last + 1) == o->val)
-                        /* valid virsh short option */
-                        valid = TRUE;
-                    else if (sz > 2 && strcmp(o->name, last + 2) == 0)
-                        /* valid virsh long option */
-                        valid = TRUE;
+                    if (o->has_arg == 1){
+                        if (sz == 2 && *(last + 1) == o->val)
+                            /* valid virsh short option */
+                            valid = TRUE;
+                        else if (sz > 2 && strcmp(o->name, last + 2) == 0)
+                            /* valid virsh long option */
+                            valid = TRUE;
+                    }
                 }
             }
             if (!valid) {
