@@ -3207,6 +3207,9 @@ vshReadlineOptionsGenerator(const char *text, int state)
     if (!cmd)
         return NULL;
 
+    if (!cmd->opts)
+        return NULL;
+
     while ((name = cmd->opts[list_index].name)) {
         vshCmdOptDef *opt = &cmd->opts[list_index];
         char *res;
