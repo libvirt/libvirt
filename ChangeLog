@@ -1,3 +1,9 @@
+Thu Mar 01 18;22:23 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Instead of looking for string 'Cannot'
+	in POST response, look for 'xend.err' which is likely to catch
+	many more error replies from XenD. Signed-off-by: Kazuki Mizushima
+
 Thu Mar 01 16:17:48 EST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* acinclude.m4: add LIBVIRT_COMPILE_WARNINGS, copied from
