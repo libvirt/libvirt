@@ -17,6 +17,7 @@
 #include <sys/poll.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <locale.h>
 #include "internal.h"
 #include "proxy_internal.h"
 #include "xen_internal.h"
