@@ -50,6 +50,8 @@ test "x$U" != "x" && AC_MSG_ERROR(Compiler not ANSI compliant)
 
 AM_PROG_LIBTOOL
 
+LIBVIRT_COMPILE_WARNINGS(maximum)
+
 dnl Specific dir for HTML output ?
 AC_ARG_WITH(html-dir, AC_HELP_STRING([--with-html-dir=path],
             [path to base html directory, default $datadir/doc/html]),
@@ -70,13 +72,6 @@ else
     STATIC_BINARIES=
 fi
 AC_SUBST(STATIC_BINARIES)
-
-dnl
-dnl make CFLAGS very pedantic at least during the devel phase for everybody
-dnl
-    if test "${GCC}" = "yes" ; then
-	CFLAGS="-g -O -W -Wformat -Wunused -Wimplicit -Wreturn-type -Wswitch -Wcomment -Wtrigraphs -Wformat -Wchar-subscripts -Wuninitialized -Wparentheses -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline -Wredundant-decls -Wall"
-    fi
 
 dnl --enable-debug=(yes|no)
 AC_ARG_ENABLE(debug,

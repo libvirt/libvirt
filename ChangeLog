@@ -1,3 +1,14 @@
+Thu Mar 01 16:17:48 EST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* acinclude.m4: add LIBVIRT_COMPILE_WARNINGS, copied from
+	GNOME but with a few more flags we'd been using.
+	
+	* configure.in: use that instead of setting CFLAGS
+	directly.
+	
+	* proxy/Makefile.am, python/Makefile.am, qemud/Makefile.am,
+	  src/Makefile.am, tests/Makefile.am: use $(WARN_CFLAGS)
+	
 Thu Mar 01 16:00:12 EST 2007 Mark McLoughlin <markmc@redhat.com>
 	
 	Fix from Richard W.M. Jones <rjones@redhat.com>
