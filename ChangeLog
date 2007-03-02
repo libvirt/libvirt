@@ -1,3 +1,10 @@
+Fri Mar 02 15:16:23 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Change lookup by UUID to request a path
+	of /xen/domain/[uuid] directly for new XenD, rather than iterating
+	over domains sequentially. Derived from patch by
+	Tatsuro Enokura <fj7716hz@aa.jp.fujitsu.com>
+
 Fri Mar 02 09:21:23 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/virsh.c: Fix output of VNC display in the case where

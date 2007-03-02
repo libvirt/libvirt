@@ -1331,7 +1331,16 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
     buf.size = 4000;
     buf.use = 0;
 
-    domid = sexpr_int(root, "domain/domid");
+    tmp = sexpr_node(root, "domain/domid");
+    if (tmp == NULL && xendConfigVersion < 3) { /* Old XenD, domid was mandatory */
+        virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                     _("domain information incomplete, missing id"));
+        goto error;
+    }
+    if (tmp)
+        domid = sexpr_int(root, "domain/domid");
+    else
+        domid = -1;
     virBufferVSprintf(&buf, "<domain type='xen' id='%d'>\n", domid);
 
     tmp = sexpr_node(root, "domain/name");
@@ -2767,47 +2776,66 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
     virDomainPtr ret;
     char *name = NULL;
-    char **names;
-    char **tmp;
-    unsigned char ident[VIR_UUID_BUFLEN];
     int id = -1;
+    /* Old approach for xen <= 3.0.3 */
+    if (conn->xendConfigVersion < 3) {
+        char **names, **tmp;
+        unsigned char ident[VIR_UUID_BUFLEN];
+        names = xenDaemonListDomainsOld(conn);
+        tmp = names;
 
-    names = xenDaemonListDomainsOld(conn);
-    tmp = names;
-
-    if (names == NULL) {
-        TODO                    /* try to fallback to xenstore lookup */
+        if (names == NULL) {
             return (NULL);
-    }
-    while (*tmp != NULL) {
-        id = xenDaemonDomainLookupByName_ids(conn, *tmp, &ident[0]);
-        if (id >= 0) {
-            if (!memcmp(uuid, ident, VIR_UUID_BUFLEN)) {
-                name = strdup(*tmp);
-                break;
-            }
         }
-        tmp++;
+        while (*tmp != NULL) {
+            id = xenDaemonDomainLookupByName_ids(conn, *tmp, &ident[0]);
+            if (id >= 0) {
+                if (!memcmp(uuid, ident, VIR_UUID_BUFLEN)) {
+                    name = strdup(*tmp);
+                    break;
+                }
+            }
+            tmp++;
+        }
+        free(names);
+    } else { /* New approach for xen >= 3.0.4 */
+        char *domname = NULL;
+        char uuidstr[VIR_UUID_STRING_BUFLEN];
+        struct sexpr *root = NULL;
+
+        memset(uuidstr, '\0', VIR_UUID_STRING_BUFLEN);
+
+        snprintf(uuidstr, VIR_UUID_STRING_BUFLEN,
+                 "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+                 uuid[0], uuid[1], uuid[2], uuid[3],
+                 uuid[4], uuid[5], uuid[6], uuid[7],
+                 uuid[8], uuid[9], uuid[10], uuid[11],
+                 uuid[12], uuid[13], uuid[14], uuid[15]);
+        printf("Dpooing %s\n", uuidstr);
+        root = sexpr_get(conn, "/xend/domain/%s?detail=1", uuidstr);
+        if (root == NULL)
+            return (NULL);
+        domname = (char*)sexpr_node(root, "domain/name");
+        if (sexpr_node(root, "domain/domid")) /* only active domains have domid */
+            id = sexpr_int(root, "domain/domid");
+        else
+            id = -1;
+        name = domname ? strdup(domname) : NULL;
+        sexpr_free(root);
     }
-    free(names);
 
     if (name == NULL)
-        goto error;
+        return (NULL);
 
     ret = virGetDomain(conn, name, uuid);
     if (ret == NULL) {
-      virXendError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
-        goto error;
+        virXendError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
+        free(name);
+        return (NULL);
     }
     ret->id = id;
-    if (name != NULL)
-        free(name);
+    free(name);
     return (ret);
-
-error:
-    if (name != NULL)
-        free(name);
-    return (NULL);
 }
 
 /**
