@@ -1,4 +1,9 @@
-Thu Mar 01 18;22:23 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+Fri Mar 02 09:21:23 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/virsh.c: Fix output of VNC display in the case where
+	there is no explicit listen attribute in the XML
+
+Thu Mar 01 18:22:23 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c: Instead of looking for string 'Cannot'
 	in POST response, look for 'xend.err' which is likely to catch

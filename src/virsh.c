@@ -2313,10 +2313,8 @@ cmdVNCDisplay(vshControl * ctl, vshCmd * cmd)
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/devices/graphics[@type='vnc']/@listen)", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
-        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        goto cleanup;
-    }
-    if (!strcmp((const char*)obj->stringval, "0.0.0.0")) {
+        (obj->stringval == NULL) || (obj->stringval[0] == 0) ||
+        !strcmp((const char*)obj->stringval, "0.0.0.0")) {
         vshPrint(ctl, ":%d\n", port-5900);
     } else {
         vshPrint(ctl, "%s:%d\n", (const char *)obj->stringval, port-5900);
