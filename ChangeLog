@@ -1,3 +1,8 @@
+Mon Mar 05 12:19:42 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_internal.c: Remove bogus ATTRIBUTE_UNUSED annotation
+	from qemuOpenConnection (from Rich Jones)
+
 Mon Mar 05 12:07:42 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/qemud.c: Parse QEMU stderr immediately at startup to

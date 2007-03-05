@@ -327,7 +327,7 @@ static int qemuProcessRequest(virConnectPtr conn,
 /*
  * Open a connection to the libvirt QEMU daemon
  */
-static int qemuOpenConnection(virConnectPtr conn, xmlURIPtr uri, int readonly ATTRIBUTE_UNUSED) {
+static int qemuOpenConnection(virConnectPtr conn, xmlURIPtr uri, int readonly) {
     char path[PATH_MAX];
 
     if (uri->server != NULL) {
