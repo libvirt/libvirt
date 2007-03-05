@@ -85,7 +85,7 @@ dnl
 dnl PID file
 dnl
 AC_MSG_CHECKING([where to write libvirt_qemud PID file])
-AC_ARG_WITH(pid-file, AC_HELP_STRING([--with-qemud-pid-file=[pidfile|none]], [PID file for libvirt_qemud]))
+AC_ARG_WITH(qemud-pid-file, AC_HELP_STRING([--with-qemud-pid-file=[pidfile|none]], [PID file for libvirt_qemud]))
 if test "x$with_qemud_pid_file" == "x" ; then
    QEMUD_PID_FILE="$localstatedir/run/libvirt_qemud.pid"
 elif test "x$with_qemud_pid_file" == "xnone" ; then

@@ -1,3 +1,12 @@
+Mon Mar 05 11:07:38 IST 2007 Mark McLoughlin <markmc@redhat.com:
+
+	* libvirt.spec.in: BuildRequires: /sbin/iptables and
+	run configure with the --with-init-script and
+	--with-qemud-pid-file parameters.
+
+	* configure.in: it's --with-qemud-pid-file, not
+	--with-pid-file
+	
 Mon Mar 05 10:52:02 IST 2007 Mark McLoughlin <markmc@redhat.com:
 
 	* libvirt.spec.in: sync some of the chanes from dist-cvs

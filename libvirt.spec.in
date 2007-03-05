@@ -20,6 +20,7 @@ BuildRequires: readline-devel
 BuildRequires: ncurses-devel
 BuildRequires: gettext
 BuildRequires: libsysfs-devel
+BuildRequires: /sbin/iptables
 Obsoletes: libvir
 ExclusiveArch: i386 x86_64 ia64
 
@@ -53,7 +54,7 @@ supplied by the libvirt library to use the Xen virtualization framework.
 %setup -q
 
 %build
-%configure
+%configure --with-init-script=redhat --with-qemud-pid-file=%{_localstatedir}/run/libvirt_qemud.pid
 make
 
 %install
