@@ -216,6 +216,7 @@ struct qemud_vm {
     int monitor;
     int pid;
     int id;
+    int state;
 
     int *tapfds;
     int ntapfds;

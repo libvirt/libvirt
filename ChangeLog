@@ -1,3 +1,14 @@
+Mon Mar 05 12:07:42 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/qemud.c: Parse QEMU stderr immediately at startup to
+	identify monitor, and then wait for monitor prompt. Re-arrange
+	order of file descriptor watches/processing to avoid re-entrancy
+	problems.
+	* qemud/driver.c: Make handling of monitor commands slightly
+	more robust. Added support for 'paused' CPU state in status
+	* qemud/internal.h, qemud/conf.c: Added support for 'paused'
+	CPU state
+
 Mon Mar 05 16:39:54 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/qemud.c: don't try and listen to a null socket

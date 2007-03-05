@@ -43,6 +43,7 @@
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
+#include <ctype.h>
 
 #include <libvirt/virterror.h>
 
@@ -614,6 +615,213 @@ qemudExec(struct qemud_server *server, char **argv,
     return -1;
 }
 
+/* Return -1 for error, 1 to continue reading and 0 for success */
+typedef int qemudHandlerMonitorOutput(struct qemud_server *server,
+                                      struct qemud_vm *vm,
+                                      const char *output,
+                                      int fd);
+
+static int
+qemudReadMonitorOutput(struct qemud_server *server,
+                       struct qemud_vm *vm,
+                       int fd,
+                       char *buffer,
+                       int buflen,
+                       qemudHandlerMonitorOutput func,
+                       const char *what)
+{
+#define MONITOR_TIMEOUT 3000
+
+    int got = 0;
+
+   /* Consume & discard the initial greeting */
+    while (got < (buflen-1)) {
+        int ret;
+
+        ret = read(fd, buffer+got, buflen-got-1);
+        if (ret == 0) {
+            qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                             "End-of-file while reading %s startup output", what);
+            return -1;
+        }
+        if (ret < 0) {
+            struct pollfd pfd = { .fd = fd, .events = POLLIN };
+            if (errno != EAGAIN &&
+                errno != EINTR) {
+                qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                                 "Failure while reading %s startup output: %s",
+                                 what, strerror(errno));
+                return -1;
+            }
+
+            ret = poll(&pfd, 1, MONITOR_TIMEOUT);
+            if (ret == 0) {
+                qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                                 "Timed out while reading %s startup output", what);
+                return -1;
+            } else if (ret == -1) {
+                if (errno != EINTR) {
+                    qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                                     "Failure while reading %s startup output: %s",
+                                     what, strerror(errno));
+                    return -1;
+                }
+            } else if (pfd.revents & POLLHUP) {
+                qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                                 "End-of-file while reading %s startup output", what);
+                return -1;
+            } else if (pfd.revents != POLLIN) {
+                qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                                 "Failure while reading %s startup output", what);
+                return -1;
+            }
+        } else {
+            got += ret;
+            buffer[got] = '\0';
+            if ((ret = func(server, vm, buffer, fd)) != 1)
+                return ret;
+        }
+    }
+
+    qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                     "Out of space while reading %s startup output", what);
+    return -1;
+
+#undef MONITOR_TIMEOUT
+}
+
+static int
+qemudCheckMonitorPrompt(struct qemud_server *server ATTRIBUTE_UNUSED,
+                        struct qemud_vm *vm,
+                        const char *output,
+                        int fd)
+{
+    if (strstr(output, "(qemu) ") == NULL)
+        return 1; /* keep reading */
+
+    vm->monitor = fd;
+
+    return 0;
+}
+
+static int qemudOpenMonitor(struct qemud_server *server, struct qemud_vm *vm, const char *monitor) {
+    int monfd;
+    char buffer[1024];
+    int ret = -1;
+
+    if (!(monfd = open(monitor, O_RDWR))) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "Unable to open monitor path %s", monitor);
+        return -1;
+    }
+    if (qemudSetCloseExec(monfd) < 0) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "Unable to set monitor close-on-exec flag");
+        goto error;
+    }
+    if (qemudSetNonBlock(monfd) < 0) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "Unable to put monitor into non-blocking mode");
+        goto error;
+    }
+
+    ret = qemudReadMonitorOutput(server, vm, monfd,
+                                 buffer, sizeof(buffer),
+                                 qemudCheckMonitorPrompt,
+                                 "monitor");
+ error:
+    close(monfd);
+    return ret;
+}
+
+static int qemudExtractMonitorPath(const char *haystack, char *path, int pathmax) {
+    static const char needle[] = "char device redirected to";
+    char *tmp;
+
+    if (!(tmp = strstr(haystack, needle)))
+        return -1;
+
+    strncpy(path, tmp+sizeof(needle), pathmax-1);
+    path[pathmax-1] = '\0';
+
+    while (*path) {
+        /*
+         * The monitor path ends at first whitespace char
+         * so lets search for it & NULL terminate it there
+         */
+        if (isspace(*path)) {
+            *path = '\0';
+            return 0;
+        }
+        path++;
+    }
+
+    /*
+     * We found a path, but didn't find any whitespace,
+     * so it must be still incomplete - we should at
+     * least see a \n
+     */
+    return -1;
+}
+
+static int
+qemudOpenMonitorPath(struct qemud_server *server,
+                     struct qemud_vm *vm,
+                     const char *output,
+                     int fd ATTRIBUTE_UNUSED)
+{
+    char monitor[PATH_MAX];
+
+    if (qemudExtractMonitorPath(output, monitor, sizeof(monitor)) < 0)
+        return 1; /* keep reading */
+
+    return qemudOpenMonitor(server, vm, monitor);
+}
+
+static int qemudWaitForMonitor(struct qemud_server *server, struct qemud_vm *vm) {
+    char buffer[1024]; /* Plenty of space to get startup greeting */
+
+    return qemudReadMonitorOutput(server, vm, vm->stderr,
+                                  buffer, sizeof(buffer),
+                                  qemudOpenMonitorPath,
+                                  "PTY");
+}
+
+static int qemudNextFreeVNCPort(struct qemud_server *server ATTRIBUTE_UNUSED) {
+    int i;
+
+    for (i = 5900 ; i < 6000 ; i++) {
+        int fd;
+        int reuse = 1;
+        struct sockaddr_in addr;
+        addr.sin_family = AF_INET;
+        addr.sin_port = htons(i);
+        addr.sin_addr.s_addr = htonl(INADDR_ANY);
+        fd = socket(PF_INET, SOCK_STREAM, 0);
+        if (fd < 0)
+            return -1;
+
+        if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (void*)&reuse, sizeof(reuse)) < 0) {
+            close(fd);
+            break;
+        }
+
+        if (bind(fd, (struct sockaddr*)&addr, sizeof(addr)) == 0) {
+            /* Not in use, lets grab it */
+            close(fd);
+            return i;
+        }
+        close(fd);
+
+        if (errno == EADDRINUSE) {
+            /* In use, try next */
+            continue;
+        }
+        /* Some other bad failure, get out.. */
+        break;
+    }
+    return -1;
+}
 
 int qemudStartVMDaemon(struct qemud_server *server,
                        struct qemud_vm *vm) {
@@ -626,9 +834,15 @@ int qemudStartVMDaemon(struct qemud_server *server,
         return -1;
     }
 
-    if (vm->def->vncPort < 0)
-        vm->def->vncActivePort = 5900 + server->nextvmid;
-    else
+    if (vm->def->vncPort < 0) {
+        int port = qemudNextFreeVNCPort(server);
+        if (port < 0) {
+            qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                             "Unable to find an unused VNC port");
+            return -1;
+        }
+        vm->def->vncActivePort = port;
+    } else
         vm->def->vncActivePort = vm->def->vncPort;
 
     if (qemudBuildCommandLine(server, vm, &argv) < 0)
@@ -636,12 +850,18 @@ int qemudStartVMDaemon(struct qemud_server *server,
 
     if (qemudExec(server, argv, &vm->pid, &vm->stdout, &vm->stderr) == 0) {
         vm->id = server->nextvmid++;
+        vm->state = QEMUD_STATE_RUNNING;
 
         server->ninactivevms--;
         server->nactivevms++;
         server->nvmfds += 2;
 
         ret = 0;
+
+        if (qemudWaitForMonitor(server, vm) < 0) {
+            qemudShutdownVMDaemon(server, vm);
+            ret = -1;
+        }
     }
 
     if (vm->tapfds) {
@@ -804,50 +1024,6 @@ static int qemudVMData(struct qemud_server *server ATTRIBUTE_UNUSED,
         }
         buf[ret] = '\0';
 
-        /*
-         * XXX this is bad - we should wait for tty and open the
-         * monitor when actually starting the guest, so we can
-         * reliably trap startup failures
-         */
-        if (vm->monitor == -1) {
-            char monitor[20];
-            /* Fairly lame assuming we receive the data all in one chunk.
-               This isn't guarenteed, but in practice it seems good enough.
-               This will probably bite me in the future.... */
-            if (sscanf(buf, "char device redirected to %19s", monitor) == 1) {
-                int monfd;
-
-                if (!(monfd = open(monitor, O_RDWR))) {
-                    perror("cannot open monitor");
-                    return -1;
-                }
-                if (qemudSetCloseExec(monfd) < 0) {
-                    close(monfd);
-                    return -1;
-                }
-                if (qemudSetNonBlock(monfd) < 0) {
-                    close(monfd);
-                    return -1;
-                }
-
-                /* Consume & discard the initial greeting */
-                /* XXX this is broken, we need to block until
-                   we see the initial prompt to ensure startup
-                   has completed */
-                for(;;) {
-                    char line[1024];
-                    if (read(monfd, line, sizeof(line)) < 0) {
-                        if (errno == EAGAIN) {
-                            break;
-                        }
-                        close(monfd);
-                        return -1;
-                    }
-                    qemudDebug("[%s]", line);
-                }
-                vm->monitor = monfd;
-            }
-        }
         qemudDebug("[%s]", buf);
     }
 }
@@ -896,6 +1072,7 @@ int qemudShutdownVMDaemon(struct qemud_server *server, struct qemud_vm *vm) {
 
     vm->pid = -1;
     vm->id = -1;
+    vm->state = QEMUD_STATE_STOPPED;
 
     if (vm->newDef) {
         qemudFreeVMDef(vm->def);
@@ -1305,30 +1482,6 @@ static int qemudDispatchPoll(struct qemud_server *server, struct pollfd *fds) {
     if (server->shutdown)
         return 0;
 
-    while (sock) {
-        struct qemud_socket *next = sock->next;
-        /* FIXME: the daemon shouldn't exit on error here */
-        if (fds[fd].revents)
-            if (qemudDispatchServer(server, sock) < 0)
-                return -1;
-        fd++;
-        sock = next;
-    }
-
-    while (client) {
-        struct qemud_client *next = client->next;
-        if (fds[fd].revents) {
-            qemudDebug("Poll data normal");
-            if (fds[fd].revents == POLLOUT)
-                qemudDispatchClientWrite(server, client);
-            else if (fds[fd].revents == POLLIN)
-                qemudDispatchClientRead(server, client);
-            else
-                qemudDispatchClientFailure(server, client);
-        }
-        fd++;
-        client = next;
-    }
     vm = server->vms;
     while (vm) {
         struct qemud_vm *next = vm->next;
@@ -1371,6 +1524,29 @@ static int qemudDispatchPoll(struct qemud_server *server, struct pollfd *fds) {
         if (failed)
             ret = -1; /* FIXME: the daemon shouldn't exit on failure here */
     }
+    while (client) {
+        struct qemud_client *next = client->next;
+        if (fds[fd].revents) {
+            qemudDebug("Poll data normal");
+            if (fds[fd].revents == POLLOUT)
+                qemudDispatchClientWrite(server, client);
+            else if (fds[fd].revents == POLLIN)
+                qemudDispatchClientRead(server, client);
+            else
+                qemudDispatchClientFailure(server, client);
+        }
+        fd++;
+        client = next;
+    }
+    while (sock) {
+        struct qemud_socket *next = sock->next;
+        /* FIXME: the daemon shouldn't exit on error here */
+        if (fds[fd].revents)
+            if (qemudDispatchServer(server, sock) < 0)
+                return -1;
+        fd++;
+        sock = next;
+    }
 
     /* Cleanup any VMs which shutdown & dont have an associated
        config file */
@@ -1408,22 +1584,6 @@ static void qemudPreparePoll(struct qemud_server *server, struct pollfd *fds) {
     fds[fd].events = POLLIN;
     fd++;
 
-    for (sock = server->sockets ; sock ; sock = sock->next) {
-        fds[fd].fd = sock->fd;
-        fds[fd].events = POLLIN;
-        fd++;
-    }
-
-    for (client = server->clients ; client ; client = client->next) {
-        fds[fd].fd = client->fd;
-        /* Refuse to read more from client if tx is pending to
-           rate limit */
-        if (client->tx)
-            fds[fd].events = POLLOUT | POLLERR | POLLHUP;
-        else
-            fds[fd].events = POLLIN | POLLERR | POLLHUP;
-        fd++;
-    }
     for (vm = server->vms ; vm ; vm = vm->next) {
         if (!qemudIsActiveVM(vm))
             continue;
@@ -1437,6 +1597,21 @@ static void qemudPreparePoll(struct qemud_server *server, struct pollfd *fds) {
             fds[fd].events = POLLIN | POLLERR | POLLHUP;
             fd++;
         }
+    }
+    for (client = server->clients ; client ; client = client->next) {
+        fds[fd].fd = client->fd;
+        /* Refuse to read more from client if tx is pending to
+           rate limit */
+        if (client->tx)
+            fds[fd].events = POLLOUT | POLLERR | POLLHUP;
+        else
+            fds[fd].events = POLLIN | POLLERR | POLLHUP;
+        fd++;
+    }
+    for (sock = server->sockets ; sock ; sock = sock->next) {
+        fds[fd].fd = sock->fd;
+        fds[fd].events = POLLIN;
+        fd++;
     }
 }
 

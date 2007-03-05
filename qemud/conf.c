@@ -1308,6 +1308,7 @@ qemudAssignVMDef(struct qemud_server *server,
     vm->monitor = -1;
     vm->pid = -1;
     vm->id = -1;
+    vm->state = QEMUD_STATE_STOPPED;
     vm->def = def;
     vm->next = server->vms;
 

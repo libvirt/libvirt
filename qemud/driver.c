@@ -60,6 +60,7 @@ int qemudMonitorCommand(struct qemud_server *server ATTRIBUTE_UNUSED,
                         char **reply) {
     int size = 0;
     char *buf = NULL;
+
     if (write(vm->monitor, cmd, strlen(cmd)) < 0) {
         return -1;
     }
@@ -74,13 +75,20 @@ int qemudMonitorCommand(struct qemud_server *server ATTRIBUTE_UNUSED,
         for (;;) {
             char data[1024];
             int got = read(vm->monitor, data, sizeof(data));
+
+            if (got == 0) {
+                if (buf)
+                    free(buf);
+                return -1;
+            }
             if (got < 0) {
                 if (errno == EINTR)
                     continue;
                 if (errno == EAGAIN)
                     break;
 
-                free(buf);
+                if (buf)
+                    free(buf);
                 return -1;
             }
             if (!(buf = realloc(buf, size+got+1)))
@@ -92,7 +100,7 @@ int qemudMonitorCommand(struct qemud_server *server ATTRIBUTE_UNUSED,
         if (buf)
             qemudDebug("Mon [%s]", buf);
         /* Look for QEMU prompt to indicate completion */
-        if (buf && ((tmp = strstr(buf, "\n(qemu)")) != NULL)) {
+        if (buf && ((tmp = strstr(buf, "\n(qemu) ")) != NULL)) {
             tmp[0] = '\0';
             break;
         }
@@ -314,11 +322,14 @@ int qemudDomainSuspend(struct qemud_server *server, int id) {
         qemudReportError(server, VIR_ERR_OPERATION_FAILED, "domain is not running");
         return -1;
     }
+    if (vm->state == QEMUD_STATE_PAUSED)
+        return 0;
 
     if (qemudMonitorCommand(server, vm, "stop\n", &info) < 0) {
         qemudReportError(server, VIR_ERR_OPERATION_FAILED, "suspend operation failed");
         return -1;
     }
+    vm->state = QEMUD_STATE_PAUSED;
     qemudDebug("Reply %s", info);
     free(info);
     return 0;
@@ -336,13 +347,16 @@ int qemudDomainResume(struct qemud_server *server, int id) {
         qemudReportError(server, VIR_ERR_OPERATION_FAILED, "domain is not running");
         return -1;
     }
+    if (vm->state == QEMUD_STATE_RUNNING)
+        return 0;
     if (qemudMonitorCommand(server, vm, "cont\n", &info) < 0) {
         qemudReportError(server, VIR_ERR_OPERATION_FAILED, "resume operation failed");
         return -1;
     }
+    vm->state = QEMUD_STATE_RUNNING;
     qemudDebug("Reply %s", info);
     free(info);
-    return -1;
+    return 0;
 }
 
 
@@ -371,12 +385,7 @@ int qemudDomainGetInfo(struct qemud_server *server, const unsigned char *uuid,
         return -1;
     }
 
-    if (!qemudIsActiveVM(vm)) {
-        *runstate = QEMUD_STATE_STOPPED;
-    } else {
-        /* XXX in future need to add PAUSED */
-        *runstate = QEMUD_STATE_RUNNING;
-    }
+    *runstate = vm->state;
 
     if (!qemudIsActiveVM(vm)) {
         *cputime = 0;
