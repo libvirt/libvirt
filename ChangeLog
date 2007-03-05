@@ -1,8 +1,13 @@
-Mon Mar 05 11:33:18 IST 2007 Mark McLoughlin <markmc@redhat.com:
+Mon Mar 05 16:39:54 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/qemud.c: don't try and listen to a null socket
+	path when run as a session daemon. Noticed by Rich Jones
+	
+Mon Mar 05 11:33:18 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/driver.c: fix a couple of invalid free() calls
 	
-Mon Mar 05 11:07:38 IST 2007 Mark McLoughlin <markmc@redhat.com:
+Mon Mar 05 11:07:38 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* libvirt.spec.in: BuildRequires: /sbin/iptables and
 	run configure with the --with-init-script and
@@ -11,7 +16,7 @@ Mon Mar 05 11:07:38 IST 2007 Mark McLoughlin <markmc@redhat.com:
 	* configure.in: it's --with-qemud-pid-file, not
 	--with-pid-file
 	
-Mon Mar 05 10:52:02 IST 2007 Mark McLoughlin <markmc@redhat.com:
+Mon Mar 05 10:52:02 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* libvirt.spec.in: sync some of the chanes from dist-cvs
 	so that this looks pretty much as it should do for the

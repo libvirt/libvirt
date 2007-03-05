@@ -476,7 +476,7 @@ static struct qemud_server *qemudInitialize(int sys, int sigread) {
     if (qemudListenUnix(server, sockname, 0) < 0)
         goto cleanup;
 
-    if (roSockname[0] == '\0' && qemudListenUnix(server, roSockname, 1) < 0)
+    if (roSockname[0] != '\0' && qemudListenUnix(server, roSockname, 1) < 0)
         goto cleanup;
 
     if (qemudScanConfigs(server) < 0) {
