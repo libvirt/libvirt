@@ -1,3 +1,7 @@
+Mon Mar 05 11:33:18 IST 2007 Mark McLoughlin <markmc@redhat.com:
+
+	* qemud/driver.c: fix a couple of invalid free() calls
+	
 Mon Mar 05 11:07:38 IST 2007 Mark McLoughlin <markmc@redhat.com:
 
 	* libvirt.spec.in: BuildRequires: /sbin/iptables and

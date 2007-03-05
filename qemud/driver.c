@@ -432,7 +432,7 @@ int qemudDomainDumpXML(struct qemud_server *server, const unsigned char *uuid, c
     strncpy(xml, vmxml, xmllen);
     xml[xmllen-1] = '\0';
 
-    free(xml);
+    free(vmxml);
 
     return 0;
 }
@@ -743,7 +743,7 @@ int qemudNetworkDumpXML(struct qemud_server *server, const unsigned char *uuid, 
     strncpy(xml, networkxml, xmllen);
     xml[xmllen-1] = '\0';
 
-    free(xml);
+    free(networkxml);
 
     return 0;
 }
