@@ -3,7 +3,7 @@
 Summary: Library providing an API to use the Xen virtualization
 Name: libvirt
 Version: @VERSION@
-Release: 1%{?dist}
+Release: 4%{?dist}
 License: LGPL
 Group: Development/Libraries
 Source: libvirt-%{version}.tar.gz
@@ -128,21 +128,36 @@ fi
 %doc docs/examples/python
 
 %changelog
-* Wed Feb 14 2007 Daniel Veillard <veillard@redhat.com> 0.2.0-1
+* Fri Feb 23 2007 Daniel P. Berrange <berrange@redhat.com> - 0.2.0-4.fc7
+- Fix loading of guest & network configs
+
+* Fri Feb 16 2007 Daniel P. Berrange <berrange@redhat.com> - 0.2.0-3.fc7
+- Disable kqemu support since its not in Fedora qemu binary
+- Fix for -vnc arg syntax change in 0.9.0  QEMU
+
+* Thu Feb 15 2007 Daniel P. Berrange <berrange@redhat.com> - 0.2.0-2.fc7
+- Fixed path to qemu daemon for autostart
+- Fixed generation of <features> block in XML
+- Pre-create config directory at startup
+
+* Wed Feb 14 2007 Daniel Veillard <veillard@redhat.com> 0.2.0-1.fc7
 - support for KVM and QEmu
 - support for network configuration
 - assorted fixes
 
-* Wed Dec 20 2006 Daniel Veillard <veillard@redhat.com> 0.1.11-1
+* Mon Jan 22 2007 Daniel Veillard <veillard@redhat.com> 0.1.11-1.fc7
 - finish inactive Xen domains support
 - memory leak fix
 - RelaxNG schemas for XML configs
 
-* Wed Dec 20 2006 Daniel Veillard <veillard@redhat.com> 0.1.10-1
+* Wed Dec 20 2006 Daniel Veillard <veillard@redhat.com> 0.1.10-1.fc7
 - support for inactive Xen domains
 - improved support for Xen display and vnc
 - a few bug fixes
 - localization updates
+
+* Thu Dec  7 2006 Jeremy Katz <katzj@redhat.com> - 0.1.9-2
+- rebuild against python 2.5
 
 * Wed Nov 29 2006 Daniel Veillard <veillard@redhat.com> 0.1.9-1
 - better error reporting
@@ -154,6 +169,13 @@ fi
 - API to dump core of domains
 - various bug fixes, cleanups and improvements
 - updated the localization
+
+* Tue Nov  7 2006 Daniel Veillard <veillard@redhat.com> 0.1.8-3
+- it's pkgconfig not pgkconfig !
+
+* Mon Nov  6 2006 Daniel Veillard <veillard@redhat.com> 0.1.8-2
+- fixing spec file, added %dist, -devel requires pkgconfig and xen-devel
+- Resolves: rhbz#202320
 
 * Mon Oct 16 2006 Daniel Veillard <veillard@redhat.com> 0.1.8-1
 - fix missing page size detection code for ia64

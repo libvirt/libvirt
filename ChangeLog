@@ -1,3 +1,9 @@
+Mon Mar 05 10:52:02 IST 2007 Mark McLoughlin <markmc@redhat.com:
+
+	* libvirt.spec.in: sync some of the chanes from dist-cvs
+	so that this looks pretty much as it should do for the
+	next release.
+	
 Fri Mar 02 15:16:23 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c: Change lookup by UUID to request a path
@@ -16,7 +22,7 @@ Thu Mar 01 18:22:23 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 	in POST response, look for 'xend.err' which is likely to catch
 	many more error replies from XenD. Signed-off-by: Kazuki Mizushima
 
-Thu Mar 01 16:17:48 EST 2007 Mark McLoughlin <markmc@redhat.com>
+Thu Mar 01 16:17:48 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* acinclude.m4: add LIBVIRT_COMPILE_WARNINGS, copied from
 	GNOME but with a few more flags we'd been using.
@@ -27,7 +33,7 @@ Thu Mar 01 16:17:48 EST 2007 Mark McLoughlin <markmc@redhat.com>
 	* proxy/Makefile.am, python/Makefile.am, qemud/Makefile.am,
 	  src/Makefile.am, tests/Makefile.am: use $(WARN_CFLAGS)
 	
-Thu Mar 01 16:00:12 EST 2007 Mark McLoughlin <markmc@redhat.com>
+Thu Mar 01 16:00:12 IST 2007 Mark McLoughlin <markmc@redhat.com>
 	
 	Fix from Richard W.M. Jones <rjones@redhat.com>
 
@@ -198,7 +204,7 @@ Fri Feb 23 08:49:12 IST 2007 Mark McLoughlin <markmc@redhat.com>
 	  src/xm_internal.c, src/xs_internal.c: set those
 	methods to NULL
 	
-Fri Feb 23 08:41:34 IST 2007 Mark McLoughlin <markmc@redhat.com>
+Fri Feb 23 08:41:34 IST 2007 MarkMcLoughlin <markmc@redhat.com>
 
 	* qemud/conf.[ch]: significantly re-factor qemudLoadConfigXML()
 	so that "parse the XML", "assign the def to a VM" and
