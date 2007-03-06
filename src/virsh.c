@@ -471,7 +471,7 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
     int all = vshCommandOptBool(cmd, "all");
     int active = !inactive || all ? 1 : 0;
     int *ids = NULL, maxid = 0, i;
-    const char **names = NULL;
+    char **names = NULL;
     int maxname = 0;
     inactive |= all;
 
@@ -1925,7 +1925,7 @@ cmdNetworkList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
     int all = vshCommandOptBool(cmd, "all");
     int active = !inactive || all ? 1 : 0;
     int maxactive = 0, maxinactive = 0, i;
-    const char **activeNames = NULL, **inactiveNames = NULL;
+    char **activeNames = NULL, **inactiveNames = NULL;
     inactive |= all;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))

@@ -1,4 +1,4 @@
-/*
+/* -*- c -*-
  * libvirt.h:
  * Summary: core interfaces for the libvirt library
  * Description: Provides the interfaces of the libvirt library to handle
@@ -324,7 +324,7 @@ virDomainPtr		virDomainDefineXML	(virConnectPtr conn,
 int			virDomainUndefine	(virDomainPtr domain);
 int                     virConnectNumOfDefinedDomains  (virConnectPtr conn);
 int			virConnectListDefinedDomains (virConnectPtr conn,
-						 const char **names,
+						 char **const names,
 						 int maxnames);
 int			virDomainCreate		(virDomainPtr domain);
 
@@ -472,7 +472,7 @@ typedef virNetwork *virNetworkPtr;
  */
 int			virConnectNumOfNetworks	(virConnectPtr conn);
 int			virConnectListNetworks	(virConnectPtr conn,
-						 const char **names,
+						 char **const names,
 						 int maxnames);
 
 /*
@@ -480,7 +480,7 @@ int			virConnectListNetworks	(virConnectPtr conn,
  */
 int			virConnectNumOfDefinedNetworks	(virConnectPtr conn);
 int			virConnectListDefinedNetworks	(virConnectPtr conn,
-							 const char **names,
+							 char **const names,
 							 int maxnames);
 
 /*

@@ -104,7 +104,7 @@ typedef char *
 					 int flags);
 typedef int
 	(*virDrvListDefinedDomains)	(virConnectPtr conn,
-					 const char **names,
+					 char **const names,
 					 int maxnames);
 typedef int
 	(*virDrvNumOfDefinedDomains)	(virConnectPtr conn);
@@ -197,13 +197,13 @@ typedef int
 	(*virDrvNumOfNetworks)		(virConnectPtr conn);
 typedef int
 	(*virDrvListNetworks)		(virConnectPtr conn,
-					 const char **names,
+					 char **const names,
 					 int maxnames);
 typedef int
 	(*virDrvNumOfDefinedNetworks)	(virConnectPtr conn);
 typedef int
 	(*virDrvListDefinedNetworks)	(virConnectPtr conn,
-					 const char **names,
+					 char **const names,
 					 int maxnames);
 typedef virNetworkPtr
 	(*virDrvNetworkLookupByUUID)	(virConnectPtr conn,

@@ -2196,7 +2196,7 @@ struct xenXMListIteratorContext {
     virConnectPtr conn;
     int max;
     int count;
-    const char **names;
+    char ** names;
 };
 
 static void xenXMListIterator(const void *payload ATTRIBUTE_UNUSED, const char *name, const void *data) {
@@ -2220,7 +2220,7 @@ static void xenXMListIterator(const void *payload ATTRIBUTE_UNUSED, const char *
  * List all defined domains, filtered to remove any which
  * are currently running
  */
-int xenXMListDefinedDomains(virConnectPtr conn, const char **names, int maxnames) {
+int xenXMListDefinedDomains(virConnectPtr conn, char **const names, int maxnames) {
     struct xenXMListIteratorContext ctx;
 
     if (!VIR_IS_CONNECT(conn)) {

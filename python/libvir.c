@@ -15,7 +15,7 @@
 #include "libvirt_wrap.h"
 #include "libvirt-py.h"
 
-void initlibvirmod(void);
+extern void initlibvirtmod(void);
 
 PyObject *libvirt_virDomainGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
 PyObject *libvirt_virGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
@@ -266,7 +266,7 @@ libvirt_virConnectListDefinedDomains(PyObject *self ATTRIBUTE_UNUSED,
             Py_INCREF(Py_None);
             return (Py_None);
         }
-        c_retval = virConnectListDefinedDomains(conn, (const char **)names, c_retval);
+        c_retval = virConnectListDefinedDomains(conn, names, c_retval);
         if (c_retval < 0) {
             free(names);
             Py_INCREF(Py_None);
@@ -375,7 +375,7 @@ libvirt_virDomainGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     return(py_retval);
 }
 
-PyObject *
+static PyObject *
 libvirt_virDomainLookupByUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     PyObject *py_retval;
     virDomainPtr c_retval;

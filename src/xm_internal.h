@@ -46,7 +46,7 @@ virDomainPtr xenXMDomainLookupByName(virConnectPtr conn, const char *domname);
 virDomainPtr xenXMDomainLookupByUUID(virConnectPtr conn,
 				     const unsigned char *uuid);
 
-int xenXMListDefinedDomains(virConnectPtr conn, const char **names, int maxnames);
+int xenXMListDefinedDomains(virConnectPtr conn, char ** const names, int maxnames);
 int xenXMNumOfDefinedDomains(virConnectPtr conn);
 
 int xenXMDomainCreate(virDomainPtr domain);

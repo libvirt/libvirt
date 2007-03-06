@@ -717,7 +717,7 @@ static int qemuNumOfDefinedDomains(virConnectPtr conn) {
 }
 
 static int qemuListDefinedDomains(virConnectPtr conn,
-                                  const char **names,
+                                  char **const names,
                                   int maxnames){
     struct qemud_packet req, reply;
     int i, nDomains;
@@ -878,7 +878,7 @@ static int qemuNumOfNetworks(virConnectPtr conn) {
 }
 
 static int qemuListNetworks(virConnectPtr conn,
-                            const char **names,
+                            char **const names,
                             int maxnames) {
     struct qemud_packet req, reply;
     int i, nNetworks;
@@ -916,7 +916,7 @@ static int qemuNumOfDefinedNetworks(virConnectPtr conn) {
 }
 
 static int qemuListDefinedNetworks(virConnectPtr conn,
-                                   const char **names,
+                                   char **const names,
                                    int maxnames) {
     struct qemud_packet req, reply;
     int i, nNetworks;

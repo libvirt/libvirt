@@ -33,7 +33,9 @@ all-local: libvirt.py
 python_LTLIBRARIES = libvirtmod.la
 
 libvirtmod_la_SOURCES = libvir.c types.c libvirt-py.c libvirt-py.h
-libvirtmod_la_LIBADD = $(mylibs) 
+libvirtmod_la_LIBADD = $(mylibs)
+# Python header files contain a redundant decl, hence:
+libvirtmod_la_CFLAGS = -Wno-redundant-decls
 
 libvirt.py: $(srcdir)/libvir.py libvirtclass.py
 	cat $(srcdir)/libvir.py libvirtclass.py > libvirt.py

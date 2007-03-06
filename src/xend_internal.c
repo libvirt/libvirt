@@ -41,7 +41,7 @@
 static const char * xenDaemonGetType(virConnectPtr conn);
 static int xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids);
 static int xenDaemonNumOfDomains(virConnectPtr conn);
-static int xenDaemonListDefinedDomains(virConnectPtr conn, const char **names, int maxnames);
+static int xenDaemonListDefinedDomains(virConnectPtr conn, char **const names, int maxnames);
 static int xenDaemonNumOfDefinedDomains(virConnectPtr conn);
 static virDomainPtr xenDaemonLookupByID(virConnectPtr conn, int id);
 static virDomainPtr xenDaemonLookupByUUID(virConnectPtr conn,
@@ -1038,7 +1038,8 @@ xenDaemonDomainLookupByName_ids(virConnectPtr xend, const char *domname,
                      _("domain information incorrect domid not numeric"));
         ret = -1;
     } else if (uuid != NULL) {
-        char **ptr = (char **) &uuid;
+        char *uuid_c = (char *) uuid;
+        char **ptr = &uuid_c;
 
         if (sexpr_uuid(ptr, root, "domain/uuid") == NULL) {
             virXendError(xend, VIR_ERR_INTERNAL_ERROR,
@@ -1108,6 +1109,7 @@ error:
 }
 
 
+#ifndef PROXY
 static int
 xend_detect_config_version(virConnectPtr conn) {
     struct sexpr *root;
@@ -1135,7 +1137,6 @@ xend_detect_config_version(virConnectPtr conn) {
     return conn->xendConfigVersion;
 }
 
-#ifndef PROXY
 /**
  * xend_node_shutdown:
  * @xend: A xend instance
@@ -3087,7 +3088,7 @@ error:
     return(ret);
 }
 
-int xenDaemonListDefinedDomains(virConnectPtr conn, const char **names, int maxnames) {
+int xenDaemonListDefinedDomains(virConnectPtr conn, char **const names, int maxnames) {
     struct sexpr *root = NULL;
     int ret = -1;
     struct sexpr *_for_i, *node;

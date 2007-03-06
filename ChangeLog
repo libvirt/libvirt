@@ -1,3 +1,14 @@
+Tue Mar 06 16:52:12 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* include/libvirt/libvirt.h.in, python/libvir.c, src/driver.h
+	src/libvirt.c, src/qemu_internal.c, src/test.c, src/virsh.c,
+	src/xend_internal.c, src/xm_intenral.c: Change const char **
+	to char **const to fix compiler warnings
+	* python/Makefile.am: Don't warn about redundant decls
+	* python/libvirt_wrap.h: Ensure PyGILState is always initialized
+	* tests/reconnect.c: Added ATTRIBUTE_UNUSED annotation
+	  All patches from Richard Jones
+
 Tue Mar 06 14:21:12 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c, src/xml.c, src/xm_internal.c: Support

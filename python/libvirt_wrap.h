@@ -90,7 +90,7 @@ PyObject * libvirt_virDomainPtrWrap(virDomainPtr node);
 
 #define LIBVIRT_ENSURE_THREAD_STATE			\
   LIBVIRT_STMT_START {					\
-  PyGILState_STATE _save;				\
+    PyGILState_STATE _save = PyGILState_UNLOCKED;	\
     if (PyEval_ThreadsInitialized())			\
       _save = PyGILState_Ensure();
 

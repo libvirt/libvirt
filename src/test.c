@@ -76,7 +76,7 @@ char * testDomainDumpXML(virDomainPtr domain, int flags);
 
 int testNumOfDefinedDomains(virConnectPtr conn);
 int testListDefinedDomains(virConnectPtr conn,
-                           const char **names,
+                           char **const names,
                            int maxnames);
 
 virDomainPtr testDomainDefineXML(virConnectPtr conn,
@@ -1289,7 +1289,7 @@ int testNumOfDefinedDomains(virConnectPtr conn) {
 }
 
 int testListDefinedDomains(virConnectPtr conn,
-                           const char **names,
+                           char **const names,
                            int maxnames) {
     testCon *con = &node->connections[conn->handle];
     int n = 0, i;

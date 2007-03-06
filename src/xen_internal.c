@@ -1127,7 +1127,7 @@ virXen_getvcpusinfo(int handle, int id, unsigned int vcpu, virVcpuInfoPtr ipt,
  * Initialize the hypervisor layer. Try to detect the kind of interface
  * used i.e. pre or post changeset 10277
  */
-int
+static int
 xenHypervisorInit(void)
 {
     int fd, ret, cmd;

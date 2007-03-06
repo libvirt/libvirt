@@ -4,6 +4,7 @@ Makefile.in
 .libs
 *.lo
 *.la
+*.loT
 libvirt.py
 libvirt-export.c
 libvirtclass.txt

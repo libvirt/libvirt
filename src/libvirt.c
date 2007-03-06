@@ -1795,7 +1795,7 @@ virConnectNumOfDefinedDomains(virConnectPtr conn)
  * Returns the number of names provided in the array or -1 in case of error
  */
 int
-virConnectListDefinedDomains(virConnectPtr conn, const char **names,
+virConnectListDefinedDomains(virConnectPtr conn, char **const names,
                              int maxnames) {
     int ret = -1;
     int i;
@@ -2234,7 +2234,7 @@ virConnectNumOfNetworks(virConnectPtr conn)
  * Returns the number of networks found or -1 in case of error
  */
 int
-virConnectListNetworks(virConnectPtr conn, const char **names, int maxnames)
+virConnectListNetworks(virConnectPtr conn, char **const names, int maxnames)
 {
     int ret = -1;
     int i;
@@ -2305,7 +2305,7 @@ virConnectNumOfDefinedNetworks(virConnectPtr conn)
  * Returns the number of names provided in the array or -1 in case of error
  */
 int
-virConnectListDefinedNetworks(virConnectPtr conn, const char **names,
+virConnectListDefinedNetworks(virConnectPtr conn, char **const names,
                               int maxnames) {
     int ret = -1;
     int i;
