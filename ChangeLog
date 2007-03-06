@@ -1,3 +1,8 @@
+Tue Mar 06 17:02:12 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/hash.c: virGetDomain and virGetNetwork require that both
+	name and UUID are non-NULL. (Patch from Rich Jones)
+
 Tue Mar 06 16:52:12 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* include/libvirt/libvirt.h.in, python/libvir.c, src/driver.h
