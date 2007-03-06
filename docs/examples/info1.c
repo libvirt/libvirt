@@ -55,7 +55,7 @@ error:
 	virConnectClose(conn);
 }
 
-int main(int argc, char **argv) {
+int main() {
 
     getDomainInfo(0);
 
