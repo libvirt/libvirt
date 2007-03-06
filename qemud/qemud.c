@@ -424,7 +424,7 @@ static int qemudInitPaths(struct qemud_server *server,
         if (snprintf(roSockname, maxlen, "%s/run/libvirt/qemud-sock-ro", LOCAL_STATE_DIR) >= maxlen)
             goto snprintf_error;
 
-        unlink(sockname);
+        unlink(roSockname);
     } else {
         if (!(pw = getpwuid(uid))) {
             qemudLog(QEMUD_ERR, "Failed to find user record for uid '%d': %s",
