@@ -579,6 +579,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
     long vncunused = 1;
     const char *vnclisten = NULL;
     const char *vncpasswd = NULL;
+    const char *keymap = NULL;
 
     if (xenXMConfigGetString(conf, "name", &name) < 0)
         return (NULL);
@@ -890,6 +891,8 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                 vnclisten = NULL;
             if (xenXMConfigGetString(conf, "vncpasswd", &vncpasswd) < 0)
                 vncpasswd = NULL;
+            if (xenXMConfigGetString(conf, "keymap", &keymap) < 0)
+                keymap = NULL;
         }
         if (xenXMConfigGetInt(conf, "sdl", &val) == 0 && val)
             sdl = 1;
@@ -924,6 +927,8 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                     vnclisten = key + 10;
                 } else if (!strncmp(key, "vncpasswd=", 10)) {
                     vncpasswd = key + 10;
+                } else if (!strncmp(key, "keymap=", 7)) {
+                    keymap = key + 7;
                 } else if (!strncmp(key, "vncdisplay=", 11)) {
                     int port = strtol(key+11, NULL, 10);
                     if (port == -1)
@@ -942,21 +947,19 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
     }
 
     if (vnc) {
-        if (vncpasswd) {
-            if (vnclisten)
-                virBufferVSprintf(buf, "    <graphics type='vnc' port='%d' listen='%s' passwd='%s'/>\n",
-                                  (vncunused ? -1 : 5900+vncdisplay), vnclisten, vncpasswd);
-            else
-                virBufferVSprintf(buf, "    <graphics type='vnc' port='%d' passwd='%s'/>\n",
-                                  (vncunused ? -1 : 5900+vncdisplay), vncpasswd);
-        } else {
-            if (vnclisten)
-                virBufferVSprintf(buf, "    <graphics type='vnc' port='%d' listen='%s'/>\n",
-                                  (vncunused ? -1 : 5900+vncdisplay), vnclisten);
-            else
-                virBufferVSprintf(buf, "    <graphics type='vnc' port='%d'/>\n",
-                                  (vncunused ? -1 : 5900+vncdisplay));
+        virBufferVSprintf(buf,
+                          "    <graphics type='vnc' port='%d'",
+                          (vncunused ? -1 : 5900+vncdisplay));
+        if (vnclisten) {
+            virBufferVSprintf(buf, " listen='%s'", vnclisten);
         }
+        if (vncpasswd) {
+            virBufferVSprintf(buf, " passwd='%s'", vncpasswd);
+        }
+        if (keymap) {
+            virBufferVSprintf(buf, " keymap='%s'", keymap);
+        }
+        virBufferAdd(buf, "/>\n", 3);
     }
     if (sdl) {
         virBufferAdd(buf, "    <graphics type='sdl'/>\n", -1);
@@ -1863,6 +1866,9 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
         if (xenXMConfigSetStringFromXPath(conn, conf, ctxt, "vncpasswd", "string(/domain/devices/graphics[@type='vnc']/@passwd)", 1,
                                           "cannot set the vncpasswd parameter") < 0)
             goto error;
+        if (xenXMConfigSetStringFromXPath(conn, conf, ctxt, "keymap", "string(/domain/devices/graphics[@type='vnc']/@keymap)", 1,
+                                          "cannot set the keymap parameter") < 0)
+            goto error;
 
         /* XXX vncdisplay */
         /*
@@ -1894,6 +1900,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
                     xmlChar *vncport = xmlGetProp(obj->nodesetval->nodeTab[i], BAD_CAST "port");
                     xmlChar *vnclisten = xmlGetProp(obj->nodesetval->nodeTab[i], BAD_CAST "listen");
                     xmlChar *vncpasswd = xmlGetProp(obj->nodesetval->nodeTab[i], BAD_CAST "passwd");
+                    xmlChar *keymap = xmlGetProp(obj->nodesetval->nodeTab[i], BAD_CAST "keymap");
                     int vncunused = vncport ? (!strcmp((const char*)vncport, "-1") ? 1 : 0) : 1;
                     if (vncunused)
                         len += 12;
@@ -1903,6 +1910,8 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
                         len += 11 + strlen((const char*)vnclisten);
                     if (vncpasswd)
                         len += 11 + strlen((const char*)vncpasswd);
+                    if (keymap)
+                        len += 8 + strlen((const char*)keymap);
                     if ((val = malloc(len)) != NULL) {
                         strcpy(val, "type=vnc");
                         if (vncunused) {
@@ -1922,6 +1931,11 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
                             strcat(val, ",vncpasswd=");
                             strcat(val, (const char*)vncpasswd);
                             xmlFree(vncpasswd);
+                        }
+                        if (keymap) {
+                            strcat(val, ",keymap=");
+                            strcat(val, (const char*)keymap);
+                            xmlFree(keymap);
                         }
                     }
                 }

@@ -32,6 +32,6 @@
       <target dev='hdc'/>
       <readonly/>
     </disk>
-    <graphics type='vnc' port='5903'/>
+    <graphics type='vnc' port='5903' keymap='ja'/>
   </devices>
 </domain>

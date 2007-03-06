@@ -5,7 +5,7 @@ The libvirt project was initiated by:
 
   Daniel Veillard      <veillard@redhat.com> or <daniel@veillard.com>
 
-The primary maintainers for various code sub-systems / drivers 
+The primary maintainers for various code sub-systems / drivers
 are:
 
   Daniel Veillard      <veillard@redhat.com>   (xen & everything else)
@@ -30,6 +30,7 @@ Patches have also been contributed by:
   Kazuki Mizushima     <mizushima.kazuk@jp.fujitsu.com>
   Saori Fukuta         <fukuta.saori@jp.fujitsu.com>
   Tatsuro Enokura      <fj7716hz@aa.jp.fujitsu.com>
+  Takahashi Tomohiro   <takatom@jp.fujitsu.com>
 
   [....send patches to get your name here....]
 

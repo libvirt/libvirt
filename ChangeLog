@@ -1,3 +1,11 @@
+Tue Mar 06 14:21:12 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c, src/xml.c, src/xm_internal.c: Support
+	the 'keymap' attribute for VNC configuration. Based on patch
+	signed off by: Takahashi Tomohiro
+	* tests/sexpr2xmldata/, tests/xml2sexprdata/: Update to test
+	handling of keymap attribute
+
 Tue Mar 06 11:47:12 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemud.c: Unlink read-only socket upon startup (patch

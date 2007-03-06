@@ -246,6 +246,7 @@ static int virDomainParseXMLGraphicsDescImage(virConnectPtr conn ATTRIBUTE_UNUSE
                 xmlChar *vncport = xmlGetProp(node, BAD_CAST "port");
                 xmlChar *vnclisten = xmlGetProp(node, BAD_CAST "listen");
                 xmlChar *vncpasswd = xmlGetProp(node, BAD_CAST "passwd");
+                xmlChar *keymap = xmlGetProp(node, BAD_CAST "keymap");
                 if (vncport != NULL) {
                     long port = strtol((const char *)vncport, NULL, 10);
                     if (port == -1)
@@ -261,6 +262,10 @@ static int virDomainParseXMLGraphicsDescImage(virConnectPtr conn ATTRIBUTE_UNUSE
                 if (vncpasswd != NULL) {
                     virBufferVSprintf(buf, "(vncpasswd %s)", vncpasswd);
                     xmlFree(vncpasswd);
+                }
+                if (keymap != NULL) {
+                    virBufferVSprintf(buf, "(keymap %s)", keymap);
+                    xmlFree(keymap);
                 }
             }
         }
@@ -305,6 +310,7 @@ static int virDomainParseXMLGraphicsDescVFB(virConnectPtr conn ATTRIBUTE_UNUSED,
             xmlChar *vncport = xmlGetProp(node, BAD_CAST "port");
             xmlChar *vnclisten = xmlGetProp(node, BAD_CAST "listen");
             xmlChar *vncpasswd = xmlGetProp(node, BAD_CAST "passwd");
+            xmlChar *keymap = xmlGetProp(node, BAD_CAST "keymap");
             if (vncport != NULL) {
                 long port = strtol((const char *)vncport, NULL, 10);
                 if (port == -1)
@@ -320,6 +326,10 @@ static int virDomainParseXMLGraphicsDescVFB(virConnectPtr conn ATTRIBUTE_UNUSED,
             if (vncpasswd != NULL) {
                 virBufferVSprintf(buf, "(vncpasswd %s)", vncpasswd);
                 xmlFree(vncpasswd);
+            }
+            if (keymap != NULL) {
+                virBufferVSprintf(buf, "(keymap %s)", keymap);
+                xmlFree(keymap);
             }
         }
         virBufferAdd(buf, "))", 2);

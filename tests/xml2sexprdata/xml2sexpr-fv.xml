@@ -30,7 +30,7 @@
       <source file='/root/foo.img'/>
       <target dev='ioemu:hda'/>
     </disk>
-    <graphics type='vnc' port='5917'/>
+    <graphics type='vnc' port='5917' keymap='ja'/>
   </devices>
 </domain>
 
