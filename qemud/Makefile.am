@@ -20,7 +20,17 @@ libvirt_qemud_LDFLAGS = $(LIBXML_LIBS) $(SYSFS_LIBS)
 libvirt_qemud_DEPENDENCIES =
 libvirt_qemud_LDADD =
 
-EXTRA_DIST = libvirtd.in
+install-data-local:
+	mkdir -p $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart
+	$(INSTALL_DATA) $(srcdir)/default-network.xml $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml
+	ln -s ../default.xml $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
+
+uninstall-local:
+	rm -f $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
+	rm -f $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml
+	rmdir $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart || :
+
+EXTRA_DIST = libvirtd.in default-network.xml
 
 if LIBVIRT_INIT_SCRIPTS_RED_HAT
 initdir = $(sysconfdir)/rc.d/init.d

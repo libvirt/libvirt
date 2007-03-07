@@ -96,6 +96,8 @@ fi
 %config %{_sysconfdir}/libvirt/
 %config %{_sysconfdir}/libvirt/qemu/
 %config %{_sysconfdir}/libvirt/qemu/networks/
+%config %{_sysconfdir}/libvirt/qemu/networks/default.xml
+%config %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
 %{_sysconfdir}/rc.d/init.d/libvirtd
 %{_localstatedir}/run/libvirt/
 %attr(4755, root, root) %{_libexecdir}/libvirt_proxy

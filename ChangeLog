@@ -1,3 +1,11 @@
+Wed Mar 07 11:53:22 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/default-network.xml: add a default network
+
+	* qemud/Makefile.am: install it, and the autostart symlink 
+
+	* libvirt.spec.in: update
+
 Tue Mar 06 17:02:12 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/hash.c: virGetDomain and virGetNetwork require that both
