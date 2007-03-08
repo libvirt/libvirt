@@ -171,6 +171,9 @@ typedef struct __vshControl {
     int quiet;                  /* quiet mode */
     int debug;                  /* print debug messages? */
     int timing;                 /* print timing info? */
+    int readonly;               /* connect readonly (first time only, not
+                                 * during explicit connect command)
+                                 */
 } __vshControl;
 
 
@@ -371,10 +374,13 @@ cmdConnect(vshControl * ctl, vshCmd * cmd)
         free(ctl->name);
     ctl->name = vshStrdup(ctl, vshCommandOptString(cmd, "name", NULL));
 
-    if (!ro)
+    if (!ro) {
         ctl->conn = virConnectOpen(ctl->name);
-    else
+        ctl->readonly = 0;
+    } else {
         ctl->conn = virConnectOpenReadOnly(ctl->name);
+        ctl->readonly = 1;
+    }
 
     if (!ctl->conn)
         vshError(ctl, FALSE, _("Failed to connect to the hypervisor"));
@@ -3137,12 +3143,12 @@ vshInit(vshControl * ctl)
     /* set up the library error handler */
     virSetErrorFunc(NULL, virshErrorHandler);
 
-    /* basic connection to hypervisor, for Xen connections unless
-       we're root open a read only connections. Allow 'test' HV
-       to be RW all the time though */
-    if (ctl->uid == 0 || (ctl->name && 
-			  (!strncmp(ctl->name, "test", 4) ||
-			   !strncmp(ctl->name, "qemu", 4))))
+    /* Force a non-root, Xen connection to readonly */
+    if ((ctl->name == NULL ||
+         !strcasecmp(ctl->name, "xen")) && ctl->uid != 0)
+         ctl->readonly = 1;
+
+    if (!ctl->readonly)
         ctl->conn = virConnectOpen(ctl->name);
     else
         ctl->conn = virConnectOpenReadOnly(ctl->name);
@@ -3299,6 +3305,7 @@ vshUsage(vshControl * ctl, const char *cmdname)
         fprintf(stdout, _("\n%s [options] [commands]\n\n"
                           "  options:\n"
                           "    -c | --connect <uri>    hypervisor connection URI\n"
+                          "    -r | --readonly         connect readonly\n"
                           "    -d | --debug <num>      debug level [0-5]\n"
                           "    -h | --help             this help\n"
                           "    -q | --quiet            quiet mode\n"
@@ -3336,6 +3343,7 @@ vshParseArgv(vshControl * ctl, int argc, char **argv)
         {"timing", 0, 0, 't'},
         {"version", 0, 0, 'v'},
         {"connect", 1, 0, 'c'},
+        {"readonly", 0, 0, 'r'},
         {0, 0, 0, 0}
     };
 
@@ -3378,7 +3386,7 @@ vshParseArgv(vshControl * ctl, int argc, char **argv)
     end = end ? : argc;
 
     /* standard (non-command) options */
-    while ((arg = getopt_long(end, argv, "d:hqtc:v", opt, &idx)) != -1) {
+    while ((arg = getopt_long(end, argv, "d:hqtc:vr", opt, &idx)) != -1) {
         switch (arg) {
         case 'd':
             ctl->debug = atoi(optarg);
@@ -3398,6 +3406,9 @@ vshParseArgv(vshControl * ctl, int argc, char **argv)
         case 'v':
             fprintf(stdout, "%s\n", VERSION);
             exit(EXIT_SUCCESS);
+        case 'r':
+            ctl->readonly = TRUE;
+            break;
         default:
             vshError(ctl, TRUE,
                      _("unsupported option '-%c'. See --help."), arg);

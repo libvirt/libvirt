@@ -1,3 +1,9 @@
+Thu Mar  8 08:45:46 EST 2007 Daniel P., Berrange <berrange@redhat.com>
+
+	* src/virsh.c: Added an explicit --readonly option to virsh
+	to override the simple Xen-specific heuristic when running
+	as non-root. Patch from Rich Jones
+
 Thu Mar  8 09:54:46 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xml.c: applied patch from Nobuhiro Itou to allow the
