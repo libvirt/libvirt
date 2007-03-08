@@ -251,7 +251,7 @@ static int virDomainParseXMLGraphicsDescImage(virConnectPtr conn ATTRIBUTE_UNUSE
                     long port = strtol((const char *)vncport, NULL, 10);
                     if (port == -1)
                         virBufferAdd(buf, "(vncunused 1)", 13);
-                    else if (port > 5900)
+                    else if (port >= 5900)
                         virBufferVSprintf(buf, "(vncdisplay %d)", port - 5900);
                     xmlFree(vncport);
                 }
@@ -315,7 +315,7 @@ static int virDomainParseXMLGraphicsDescVFB(virConnectPtr conn ATTRIBUTE_UNUSED,
                 long port = strtol((const char *)vncport, NULL, 10);
                 if (port == -1)
                     virBufferAdd(buf, "(vncunused 1)", 13);
-                else if (port > 5900)
+                else if (port >= 5900)
                     virBufferVSprintf(buf, "(vncdisplay %d)", port - 5900);
                 xmlFree(vncport);
             }

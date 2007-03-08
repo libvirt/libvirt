@@ -1,3 +1,8 @@
+Thu Mar  8 09:54:46 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xml.c: applied patch from Nobuhiro Itou to allow the
+	  VNC port 5900 to be used with xend, it's an edge case.
+
 Thu Mar  8 09:22:29 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvirt/libvirt.h include/libvirt/libvirt.h.in
