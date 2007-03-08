@@ -1,3 +1,9 @@
+Thu Mar  8 10:14:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_internal.c: Fix inverted check on file handle to
+	avoid opening connection twice. Avoid SEGV if uri->scheme is
+	NULL. Don't run autostart for system instance.
+
 Thu Mar  8 09:47:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/libvirt.c: Refactored driver registration to avoid

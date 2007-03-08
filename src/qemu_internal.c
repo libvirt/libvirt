@@ -329,6 +329,7 @@ static int qemuProcessRequest(virConnectPtr conn,
  */
 static int qemuOpenConnection(virConnectPtr conn, xmlURIPtr uri, int readonly) {
     char path[PATH_MAX];
+    int autostart = 0;
 
     if (uri->server != NULL) {
         return -1;
@@ -358,8 +359,9 @@ static int qemuOpenConnection(virConnectPtr conn, xmlURIPtr uri, int readonly) {
         if (snprintf(path, sizeof(path), "@%s/.libvirt/qemud-sock", pw->pw_dir) == sizeof(path)) {
             return -1;
         }
+        autostart = 1;
     }
-    return qemuOpenClientUNIX(conn, path, 1);
+    return qemuOpenClientUNIX(conn, path, autostart);
 }
 
 
@@ -845,13 +847,13 @@ static int qemuNetworkOpen(virConnectPtr conn,
     xmlURIPtr uri = NULL;
     int ret = -1;
 
-    if (conn->qemud_fd == -1)
+    if (conn->qemud_fd != -1)
         return 0;
 
     if (name)
         uri = xmlParseURI(name);
 
-    if (uri && !strcmp(uri->scheme, "qemu"))
+    if (uri && uri->scheme && !strcmp(uri->scheme, "qemu"))
         ret = qemuOpen(conn, name, flags);
     else if (geteuid() == 0)
         ret = qemuOpen(conn, "qemu:///system", flags);
