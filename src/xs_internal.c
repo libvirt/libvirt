@@ -429,13 +429,16 @@ xenStoreDomainSetMemory(virDomainPtr domain, unsigned long memory)
     int ret;
     char value[20];
 
-    if ((domain == NULL) || (domain->conn == NULL) || (memory < 4096)) {
+    if ((domain == NULL) || (domain->conn == NULL) ||
+        (memory < 1024 * MIN_XEN_GUEST_SIZE)) {
         virXenStoreError(domain ? domain->conn : NULL, VIR_ERR_INVALID_ARG,
 	                 __FUNCTION__);
 	return(-1);
     }
     if (domain->id == -1)
         return(-1);
+    if ((domain->id == 0) && (memory < (2 * MIN_XEN_GUEST_SIZE * 1024)))
+	return(-1);
     snprintf(value, 19, "%lu", memory);
     value[19] = 0;
     ret = virDomainDoStoreWrite(domain, "memory/target", &value[0]);
