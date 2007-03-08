@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>List of function manipulating types in libvirt</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">List of function manipulating types in libvirt</h1><h2>Type const char **:</h2><p><a href="html/libvirt-libvirt.html#virConnectListDefinedDomains">virConnectListDefinedDomains</a><br />
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>List of function manipulating types in libvirt</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">List of function manipulating types in libvirt</h1><h2>Type char ** const:</h2><p><a href="html/libvirt-libvirt.html#virConnectListDefinedDomains">virConnectListDefinedDomains</a><br />
 <a href="html/libvirt-libvirt.html#virConnectListDefinedNetworks">virConnectListDefinedNetworks</a><br />
 <a href="html/libvirt-libvirt.html#virConnectListNetworks">virConnectListNetworks</a><br />
 </p><h2>Type const unsigned char *:</h2><p><a href="html/libvirt-libvirt.html#virDomainLookupByUUID">virDomainLookupByUUID</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkLookupByUUID">virNetworkLookupByUUID</a><br />
 </p><h2>Type int *:</h2><p><a href="html/libvirt-libvirt.html#virConnectListDomains">virConnectListDomains</a><br />
+<a href="html/libvirt-libvirt.html#virDomainGetAutostart">virDomainGetAutostart</a><br />
+<a href="html/libvirt-libvirt.html#virNetworkGetAutostart">virNetworkGetAutostart</a><br />
 </p><h2>Type unsigned char *:</h2><p><a href="html/libvirt-libvirt.html#virDomainGetUUID">virDomainGetUUID</a><br />
 <a href="html/libvirt-libvirt.html#virDomainGetVcpus">virDomainGetVcpus</a><br />
 <a href="html/libvirt-libvirt.html#virDomainPinVcpu">virDomainPinVcpu</a><br />
@@ -23,6 +25,7 @@
 <a href="html/libvirt-virterror.html#virConnResetLastError">virConnResetLastError</a><br />
 <a href="html/libvirt-virterror.html#virConnSetErrorFunc">virConnSetErrorFunc</a><br />
 <a href="html/libvirt-libvirt.html#virConnectClose">virConnectClose</a><br />
+<a href="html/libvirt-libvirt.html#virConnectGetMaxVcpus">virConnectGetMaxVcpus</a><br />
 <a href="html/libvirt-libvirt.html#virConnectGetType">virConnectGetType</a><br />
 <a href="html/libvirt-libvirt.html#virConnectGetVersion">virConnectGetVersion</a><br />
 <a href="html/libvirt-libvirt.html#virConnectListDefinedDomains">virConnectListDefinedDomains</a><br />
@@ -53,9 +56,11 @@
 <a href="html/libvirt-libvirt.html#virDomainDestroy">virDomainDestroy</a><br />
 <a href="html/libvirt-libvirt.html#virDomainDetachDevice">virDomainDetachDevice</a><br />
 <a href="html/libvirt-libvirt.html#virDomainFree">virDomainFree</a><br />
+<a href="html/libvirt-libvirt.html#virDomainGetAutostart">virDomainGetAutostart</a><br />
 <a href="html/libvirt-libvirt.html#virDomainGetID">virDomainGetID</a><br />
 <a href="html/libvirt-libvirt.html#virDomainGetInfo">virDomainGetInfo</a><br />
 <a href="html/libvirt-libvirt.html#virDomainGetMaxMemory">virDomainGetMaxMemory</a><br />
+<a href="html/libvirt-libvirt.html#virDomainGetMaxVcpus">virDomainGetMaxVcpus</a><br />
 <a href="html/libvirt-libvirt.html#virDomainGetName">virDomainGetName</a><br />
 <a href="html/libvirt-libvirt.html#virDomainGetOSType">virDomainGetOSType</a><br />
 <a href="html/libvirt-libvirt.html#virDomainGetUUID">virDomainGetUUID</a><br />
@@ -66,6 +71,7 @@
 <a href="html/libvirt-libvirt.html#virDomainReboot">virDomainReboot</a><br />
 <a href="html/libvirt-libvirt.html#virDomainResume">virDomainResume</a><br />
 <a href="html/libvirt-libvirt.html#virDomainSave">virDomainSave</a><br />
+<a href="html/libvirt-libvirt.html#virDomainSetAutostart">virDomainSetAutostart</a><br />
 <a href="html/libvirt-libvirt.html#virDomainSetMaxMemory">virDomainSetMaxMemory</a><br />
 <a href="html/libvirt-libvirt.html#virDomainSetMemory">virDomainSetMemory</a><br />
 <a href="html/libvirt-libvirt.html#virDomainSetVcpus">virDomainSetVcpus</a><br />
@@ -82,11 +88,13 @@
 </p><h2>Type virNetworkPtr:</h2><p><a href="html/libvirt-libvirt.html#virNetworkCreate">virNetworkCreate</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkDestroy">virNetworkDestroy</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkFree">virNetworkFree</a><br />
+<a href="html/libvirt-libvirt.html#virNetworkGetAutostart">virNetworkGetAutostart</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkGetBridgeName">virNetworkGetBridgeName</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkGetName">virNetworkGetName</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkGetUUID">virNetworkGetUUID</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkGetUUIDString">virNetworkGetUUIDString</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkGetXMLDesc">virNetworkGetXMLDesc</a><br />
+<a href="html/libvirt-libvirt.html#virNetworkSetAutostart">virNetworkSetAutostart</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkUndefine">virNetworkUndefine</a><br />
 </p><h2>Type virNodeInfoPtr:</h2><p><a href="html/libvirt-libvirt.html#virNodeGetInfo">virNodeGetInfo</a><br />
 </p><h2>Type virVcpuInfoPtr:</h2><p><a href="html/libvirt-libvirt.html#virDomainGetVcpus">virDomainGetVcpus</a><br />

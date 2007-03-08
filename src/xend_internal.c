@@ -66,6 +66,7 @@ static virDriver xenDaemonDriver = {
     xenDaemonClose, /* close */
     xenDaemonGetType, /* type */
     xenDaemonGetVersion, /* version */
+    NULL, /* getMaxVcpus */
     xenDaemonNodeGetInfo, /* nodeGetInfo */
     xenDaemonListDomains, /* listDomains */
     xenDaemonNumOfDomains, /* numOfDomains */
@@ -89,6 +90,7 @@ static virDriver xenDaemonDriver = {
     xenDaemonDomainSetVcpus, /* domainSetVcpus */
     xenDaemonDomainPinVcpu, /* domainPinVcpu */
     xenDaemonDomainGetVcpus, /* domainGetVcpus */
+    NULL, /* domainGetMaxVcpus */
     xenDaemonDomainDumpXML, /* domainDumpXML */
     xenDaemonListDefinedDomains, /* listDefinedDomains */
     xenDaemonNumOfDefinedDomains, /* numOfDefinedDomains */

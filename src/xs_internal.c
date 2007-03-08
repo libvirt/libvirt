@@ -44,6 +44,7 @@ static virDriver xenStoreDriver = {
     xenStoreClose, /* close */
     NULL, /* type */
     NULL, /* version */
+    NULL, /* getMaxVcpus */
     NULL, /* nodeGetInfo */
     xenStoreListDomains, /* listDomains */
     NULL, /* numOfDomains */
@@ -67,6 +68,7 @@ static virDriver xenStoreDriver = {
     NULL, /* domainSetVcpus */
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
+    NULL, /* domainGetMaxVcpus */
     NULL, /* domainDumpXML */
     NULL, /* listDefinedDomains */
     NULL, /* numOfDefinedDomains */

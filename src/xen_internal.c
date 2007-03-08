@@ -190,6 +190,11 @@ typedef union xen_getdomaininfolist xen_getdomaininfolist;
      dominfo.v0.nr_online_vcpus :               \
      dominfo.v2.nr_online_vcpus)
 
+#define XEN_GETDOMAININFO_MAXCPUID(dominfo)  \
+    (hypervisor_version < 2 ?                   \
+     dominfo.v0.max_vcpu_id :                   \
+     dominfo.v2.max_vcpu_id)
+
 #define XEN_GETDOMAININFO_FLAGS(dominfo)        \
     (hypervisor_version < 2 ?                   \
      dominfo.v0.flags :                         \
@@ -423,6 +428,7 @@ static virDriver xenHypervisorDriver = {
     xenHypervisorClose, /* close */
     xenHypervisorGetType, /* type */
     xenHypervisorGetVersion, /* version */
+    xenHypervisorNumOfMaxVcpus, /* getMaxVcpus */
     NULL, /* nodeGetInfo */
     xenHypervisorListDomains, /* listDomains */
     xenHypervisorNumOfDomains, /* numOfDomains */
@@ -446,6 +452,7 @@ static virDriver xenHypervisorDriver = {
     xenHypervisorSetVcpus, /* domainSetVcpus */
     xenHypervisorPinVcpu, /* domainPinVcpu */
     xenHypervisorGetVcpus, /* domainGetVcpus */
+    xenHypervisorGetVcpuMax, /* domainGetMaxVcpus */
     NULL, /* domainDumpXML */
     NULL, /* listDefinedDomains */
     NULL, /* numOfDefinedDomains */
@@ -1448,6 +1455,20 @@ xenHypervisorListDomains(virConnectPtr conn, int *ids, int maxids)
 }
 
 /**
+ * xenHypervisorNumOfMaxVcpus:
+ *
+ * Returns the maximum of CPU defined by Xen.
+ */
+int
+xenHypervisorNumOfMaxVcpus(virConnectPtr conn)
+{
+    if ((conn == NULL) || (conn->handle < 0))
+        return (-1);
+
+    return MAX_VIRT_CPUS;
+}
+
+/**
  * xenHypervisorGetDomMaxMemory:
  * @conn: connection data
  * @id: domain id
@@ -1823,6 +1844,41 @@ xenHypervisorGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
     return nbinfo;
 }
 #endif
+
+/**
+ * xenHypervisorGetVcpuMax:
+ *
+ *  Returns the maximum number of virtual CPUs supported for
+ *  the guest VM. If the guest is inactive, this is the maximum
+ *  of CPU defined by Xen. If the guest is running this reflect
+ *  the maximum number of virtual CPUs the guest was booted with.
+ */
+int
+xenHypervisorGetVcpuMax(virDomainPtr domain)
+{
+    xen_getdomaininfo dominfo;
+    int ret;
+    int maxcpu;
+
+    if ((domain == NULL) || (domain->conn == NULL) ||
+        (domain->conn->handle < 0))
+        return (-1);
+
+    /* inactive domain */
+    if (domain->id < 0) {
+        maxcpu = MAX_VIRT_CPUS;
+    } else {
+        XEN_GETDOMAININFO_CLEAR(dominfo);
+        ret = virXen_getdomaininfo(domain->conn->handle, domain->id,
+                                   &dominfo);
+
+        if ((ret < 0) || (XEN_GETDOMAININFO_DOMAIN(dominfo) != domain->id))
+            return (-1);
+        maxcpu = XEN_GETDOMAININFO_MAXCPUID(dominfo) + 1;
+    }
+
+    return maxcpu;
+}
 
 /*
  * Local variables:

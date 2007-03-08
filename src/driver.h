@@ -44,6 +44,8 @@ typedef int
 	(*virDrvGetVersion)		(virConnectPtr conn,
 					 unsigned long *hvVer);
 typedef int
+	(*virDrvGetMaxVcpus)		(virConnectPtr conn);
+typedef int
 	(*virDrvNodeGetInfo)		(virConnectPtr conn,
 					 virNodeInfoPtr info);
 typedef int
@@ -129,6 +131,8 @@ typedef int
 					 unsigned char *cpumaps,
 					 int maplen);
 typedef int
+	(*virDrvDomainGetMaxVcpus)	(virDomainPtr domain);
+typedef int
 	(*virDrvDomainAttachDevice)	(virDomainPtr domain,
 					 char *xml);
 typedef int
@@ -158,6 +162,7 @@ struct _virDriver {
 	virDrvClose			close;
 	virDrvGetType			type;
 	virDrvGetVersion		version;
+	virDrvGetMaxVcpus		getMaxVcpus;
 	virDrvNodeGetInfo		nodeGetInfo;
 	virDrvListDomains		listDomains;
 	virDrvNumOfDomains		numOfDomains;
@@ -181,6 +186,7 @@ struct _virDriver {
 	virDrvDomainSetVcpus		domainSetVcpus;
 	virDrvDomainPinVcpu		domainPinVcpu;
 	virDrvDomainGetVcpus		domainGetVcpus;
+	virDrvDomainGetMaxVcpus		domainGetMaxVcpus;
 	virDrvDomainDumpXML		domainDumpXML;
 	virDrvListDefinedDomains	listDefinedDomains;
 	virDrvNumOfDefinedDomains	numOfDefinedDomains;

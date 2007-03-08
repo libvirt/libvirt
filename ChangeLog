@@ -1,3 +1,15 @@
+Thu Mar  8 09:22:29 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvirt/libvirt.h include/libvirt/libvirt.h.in
+	  src/driver.h src/libvirt.c src/libvirt_sym.version
+	  src/proxy_internal.c src/qemu_internal.c src/test.c src/virsh.c
+	  src/xen_internal.c src/xen_internal.h src/xend_internal.c
+	  src/xm_internal.c src/xs_internal.c: applied patch from
+	  Masayuki Sunou to add and entry point to check the maximum
+	  number of virtual CPU supported by a virtualization mechanism
+	* doc/*.html doc/libvirt-*.xml: regenerated the interfaces descriptions
+	  and associated docs.
+
 Wed Mar 07 11:53:22 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/default-network.xml: add a default network

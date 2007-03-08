@@ -1383,6 +1383,7 @@ cmdSetvcpus(vshControl * ctl, vshCmd * cmd)
 {
     virDomainPtr dom;
     int count;
+    int maxcpu;
     int ret = TRUE;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
@@ -1393,6 +1394,18 @@ cmdSetvcpus(vshControl * ctl, vshCmd * cmd)
 
     count = vshCommandOptInt(cmd, "count", &count);
     if (!count) {
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    maxcpu = virDomainGetMaxVcpus(dom);
+    if (!maxcpu) {
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    if (count > maxcpu) {
+        vshError(ctl, FALSE, _("Too many virtual CPU's."));
         virDomainFree(dom);
         return FALSE;
     }

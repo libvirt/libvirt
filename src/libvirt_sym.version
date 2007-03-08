@@ -36,6 +36,7 @@
 	virDomainSuspend;
 	virConnectListDefinedDomains;
 	virConnectNumOfDefinedDomains;
+	virConnectGetMaxVcpus;
 	virDomainUndefine;
 	virDomainGetAutostart;
 	virDomainSetAutostart;
@@ -56,6 +57,7 @@
 	virDomainSetVcpus;
 	virDomainPinVcpu;
 	virDomainGetVcpus;
+	virDomainGetMaxVcpus;
 
     virDomainAttachDevice;
     virDomainDetachDevice;

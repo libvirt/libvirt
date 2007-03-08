@@ -32,6 +32,7 @@ int	xenHypervisorNumOfDomains	(virConnectPtr conn);
 int	xenHypervisorListDomains	(virConnectPtr conn,
 					 int *ids,
 					 int maxids);
+int	xenHypervisorNumOfMaxVcpus	(virConnectPtr conn);
 int	xenHypervisorDestroyDomain	(virDomainPtr domain);
 int	xenHypervisorResumeDomain	(virDomainPtr domain);
 int	xenHypervisorPauseDomain	(virDomainPtr domain);
@@ -55,6 +56,7 @@ int	xenHypervisorGetVcpus		(virDomainPtr domain,
 					 int maxinfo,
 					 unsigned char *cpumaps,
 					 int maplen);
+int	xenHypervisorGetVcpuMax		(virDomainPtr domain);
 
 #ifdef __cplusplus
 }

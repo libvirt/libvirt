@@ -50,6 +50,7 @@ static virDriver xenProxyDriver = {
     xenProxyClose, /* close */
     NULL, /* type */
     xenProxyGetVersion, /* version */
+    NULL, /* getMaxVcpus */
     xenProxyNodeGetInfo, /* nodeGetInfo */
     xenProxyListDomains, /* listDomains */
     xenProxyNumOfDomains, /* numOfDomains */
@@ -73,6 +74,7 @@ static virDriver xenProxyDriver = {
     NULL, /* domainSetVcpus */
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
+    NULL, /* domainGetMaxVcpus */
     xenProxyDomainDumpXML, /* domainDumpXML */
     NULL, /* listDefinedDomains */
     NULL, /* numOfDefinedDomains */

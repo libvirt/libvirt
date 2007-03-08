@@ -231,6 +231,8 @@ int			virConnectClose		(virConnectPtr conn);
 const char *		virConnectGetType	(virConnectPtr conn);
 int			virConnectGetVersion	(virConnectPtr conn,
 						 unsigned long *hvVer);
+int			virConnectGetMaxVcpus	(virConnectPtr conn,
+						 const char *type);
 int			virNodeGetInfo		(virConnectPtr conn,
 						 virNodeInfoPtr info);
 
@@ -310,6 +312,8 @@ int			virDomainSetMaxMemory	(virDomainPtr domain,
 						 unsigned long memory);
 int			virDomainSetMemory	(virDomainPtr domain,
 						 unsigned long memory);
+int			virDomainGetMaxVcpus	(virDomainPtr domain);
+
 /*
  * XML domain description
  */

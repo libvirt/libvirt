@@ -523,6 +523,44 @@ virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer)
 }
 
 /**
+ * virConnectGetMaxVcpus:
+ * @conn: pointer to the hypervisor connection
+ * @type: value of the 'type' attribute in the <domain> element
+ *
+ * Returns the maximum number of virtual CPUs supported for a guest VM of a
+ * specific type. The 'type' parameter here corresponds to the 'type'
+ * attribute in the <domain> element of the XML.
+ *
+ * Returns the maximum of virtual CPU or -1 in case of error.
+ */
+int
+virConnectGetMaxVcpus(virConnectPtr conn,
+                      const char *type)
+{
+    int ret = -1;
+    int i;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+
+    if (type == NULL)
+        type = "Xen";
+    for (i = 0;i < MAX_DRIVERS;i++) {
+        if ((virDriverTab[i] != NULL) &&
+           (!strcmp(virDriverTab[i]->name, type))) {
+            ret = conn->drivers[i]->getMaxVcpus(conn);
+            if (ret >= 0)
+                return(ret);
+        }
+    }
+
+    return (-1);
+
+}
+
+/**
  * virConnectListDomains:
  * @conn: pointer to the hypervisor connection
  * @ids: array to collect the list of IDs of active domains
@@ -2108,6 +2146,44 @@ virDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
     virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
     return (-1);
 }
+
+/**
+ * virDomainGetMaxVcpus:
+ * @domain: pointer to domain object
+ * 
+ *  Returns the maximum number of virtual CPUs supported for
+ *  the guest VM. If the guest is inactive, this is basically
+ *  the same as virConnectGetMaxVcpus. If the guest is running
+ *  this will reflect the maximum number of virtual CPUs the
+ *  guest was booted with.
+ *
+ * Returns the maximum of virtual CPU or -1 in case of error.
+ */
+int
+virDomainGetMaxVcpus(virDomainPtr domain) {
+    int i;
+    int ret = 0;
+    virConnectPtr conn;
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return (-1);
+    }
+
+    conn = domain->conn;
+
+    for (i = 0;i < conn->nb_drivers;i++) {
+	if ((conn->drivers[i] != NULL) &&
+	    (conn->drivers[i]->domainGetMaxVcpus != NULL)) {
+	    ret = conn->drivers[i]->domainGetMaxVcpus(domain);
+	    if (ret != 0)
+	        return(ret);
+	}
+    }
+    virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    return (-1);
+}
+
 
 /**
  * virDomainAttachDevice:

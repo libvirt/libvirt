@@ -1167,6 +1167,7 @@ static virDriver qemuDriver = {
     qemuClose, /* close */
     NULL, /* type */
     qemuGetVersion, /* version */
+    NULL, /* getMaxVcpus */
     qemuNodeGetInfo, /* nodeGetInfo */
     qemuListDomains, /* listDomains */
     qemuNumOfDomains, /* numOfDomains */
@@ -1190,6 +1191,7 @@ static virDriver qemuDriver = {
     NULL, /* domainSetVcpus */
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
+    NULL, /* domainGetMaxVcpus */
     qemuDomainDumpXML, /* domainDumpXML */
     qemuListDefinedDomains, /* listDomains */
     qemuNumOfDefinedDomains, /* numOfDomains */

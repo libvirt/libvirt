@@ -94,6 +94,7 @@ static virDriver testDriver = {
     testClose, /* close */
     NULL, /* type */
     testGetVersion, /* version */
+    NULL, /* getMaxVcpus */
     testNodeGetInfo, /* nodeGetInfo */
     testListDomains, /* listDomains */
     testNumOfDomains, /* numOfDomains */
@@ -117,6 +118,7 @@ static virDriver testDriver = {
     testSetVcpus, /* domainSetVcpus */
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
+    NULL, /* domainGetMaxVcpus */
     testDomainDumpXML, /* domainDumpXML */
     testListDefinedDomains, /* listDefinedDomains */
     testNumOfDefinedDomains, /* numOfDefinedDomains */

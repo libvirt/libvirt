@@ -75,6 +75,7 @@ static virDriver xenXMDriver = {
     xenXMClose, /* close */
     xenXMGetType, /* type */
     NULL, /* version */
+    NULL, /* getMaxVcpus */
     NULL, /* nodeGetInfo */
     NULL, /* listDomains */
     NULL, /* numOfDomains */
@@ -98,6 +99,7 @@ static virDriver xenXMDriver = {
     xenXMDomainSetVcpus, /* domainSetVcpus */
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
+    NULL, /* domainGetMaxVcpus */
     xenXMDomainDumpXML, /* domainDumpXML */
     xenXMListDefinedDomains, /* listDefinedDomains */
     xenXMNumOfDefinedDomains, /* numOfDefinedDomains */
