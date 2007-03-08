@@ -1383,7 +1383,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
     if (cur_mem > max_mem)
         max_mem = cur_mem;
     virBufferVSprintf(&buf, "  <memory>%d</memory>\n", max_mem);
-    if ((cur_mem > 63) && (cur_mem != max_mem))
+    if ((cur_mem >= MIN_XEN_GUEST_SIZE) && (cur_mem != max_mem))
 	virBufferVSprintf(&buf, "  <currentMemory>%d</currentMemory>\n",
 	                  cur_mem);
     virBufferVSprintf(&buf, "  <vcpu>%d</vcpu>\n",

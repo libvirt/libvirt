@@ -1026,7 +1026,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
 
     obj = xmlXPathEval(BAD_CAST "number(/domain/memory[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NUMBER) ||
-        (isnan(obj->floatval)) || (obj->floatval < 64000)) {
+        (isnan(obj->floatval)) || (obj->floatval < MIN_XEN_GUEST_SIZE * 1024)) {
         max_mem = 128;
     } else {
         max_mem = (obj->floatval / 1024);
@@ -1034,7 +1034,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
     xmlXPathFreeObject(obj);
     obj = xmlXPathEval(BAD_CAST "number(/domain/currentMemory[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NUMBER) ||
-        (isnan(obj->floatval)) || (obj->floatval < 64000)) {
+        (isnan(obj->floatval)) || (obj->floatval < MIN_XEN_GUEST_SIZE * 1024)) {
         mem = max_mem;
     } else {
         mem = (obj->floatval / 1024);

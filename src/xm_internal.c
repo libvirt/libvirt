@@ -540,7 +540,7 @@ int xenXMDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info) {
     memset(info, 0, sizeof(virDomainInfo));
     if (xenXMConfigGetInt(entry->conf, "memory", &mem) < 0 ||
         mem < 0)
-        info->memory = 64 * 1024;
+        info->memory = MIN_XEN_GUEST_SIZE * 1024 * 2;
     else
         info->memory = (unsigned long)mem * 1024;
     if (xenXMConfigGetInt(entry->conf, "maxmem", &mem) < 0 ||
@@ -649,19 +649,19 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
     }
 
     if (xenXMConfigGetInt(conf, "memory", &val) < 0)
-        val = 64;
-    virBufferVSprintf(buf, "  <currentMemory>%ld</currentMemory>\n", val * 1024);
+        val = MIN_XEN_GUEST_SIZE * 2;
+    virBufferVSprintf(buf, "  <currentMemory>%ld</currentMemory>\n",
+                      val * 1024);
 
     if (xenXMConfigGetInt(conf, "maxmem", &val) < 0)
         if (xenXMConfigGetInt(conf, "memory", &val) < 0)
-            val = 64;
+            val = MIN_XEN_GUEST_SIZE * 2;
     virBufferVSprintf(buf, "  <memory>%ld</memory>\n", val * 1024);
 
 
     if (xenXMConfigGetInt(conf, "vcpus", &val) < 0)
         val = 1;
     virBufferVSprintf(buf, "  <vcpu>%ld</vcpu>\n", val);
-
 
 
     if (xenXMConfigGetString(conf, "on_poweroff", &str) < 0)
@@ -1122,7 +1122,7 @@ unsigned long xenXMDomainGetMaxMemory(virDomainPtr domain) {
         val < 0)
         if (xenXMConfigGetInt(entry->conf, "memory", &val) < 0 ||
             val < 0)
-            val = 64;
+            val = MIN_XEN_GUEST_SIZE * 2;
 
     return (val * 1024);
 }

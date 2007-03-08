@@ -1,3 +1,10 @@
+Thu Mar  8 15:10:12 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/internal.h src/xend_internal.c src/xm_internal.c src/xml.c:
+	  add a check for minimal size of Xen Dom0, track places where we
+	  had arbitrary minimal memory requirement and use a predefined
+	  macro to clean this up.
+
 Thu Mar  8 08:45:46 EST 2007 Daniel P., Berrange <berrange@redhat.com>
 
 	* src/virsh.c: Added an explicit --readonly option to virsh
