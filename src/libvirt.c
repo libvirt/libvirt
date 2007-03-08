@@ -42,7 +42,9 @@
  */
 
 static virDriverPtr virDriverTab[MAX_DRIVERS];
+static int virDriverTabCount = 0;
 static virNetworkDriverPtr virNetworkDriverTab[MAX_DRIVERS];
+static int virNetworkDriverTabCount = 0;
 static int initialized = 0;
 
 /**
@@ -57,22 +59,12 @@ static int initialized = 0;
 int
 virInitialize(void)
 {
-    int i;
-
     if (initialized)
         return(0);
     initialized = 1;
 
     if (!bindtextdomain(GETTEXT_PACKAGE, LOCALEBASEDIR))
         return (-1);
-
-    /*
-     * should not be needed but...
-     */
-    for (i = 0;i < MAX_DRIVERS;i++) {
-         virDriverTab[i] = NULL;
-         virNetworkDriverTab[i] = NULL;
-    }
 
     /*
      * Note that the order is important the first ones have a higher priority
@@ -163,35 +155,6 @@ virLibNetworkError(virNetworkPtr network, virErrorNumber error,
                     errmsg, info, NULL, 0, 0, errmsg, info);
 }
 
-static int
-_virRegisterDriver(void *driver, int isNetwork)
-{
-    void **drivers;
-    int i;
-
-    if (!initialized)
-        if (virInitialize() < 0)
-	    return -1;
-
-    if (driver == NULL) {
-        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
-	return(-1);
-    }
-    drivers = isNetwork ? (void **) virNetworkDriverTab : (void **) virDriverTab;
-    for (i = 0;i < MAX_DRIVERS;i++) {
-        if (drivers[i] == driver)
-	    return(i);
-    }
-    for (i = 0;i < MAX_DRIVERS;i++) {
-        if (drivers[i] == NULL) {
-	    drivers[i] = driver;
-	    return(i);
-	}
-    }
-    virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
-    return(-1);
-}
-
 /**
  * virRegisterNetworkDriver:
  * @driver: pointer to a network driver block
@@ -203,7 +166,21 @@ _virRegisterDriver(void *driver, int isNetwork)
 int
 virRegisterNetworkDriver(virNetworkDriverPtr driver)
 {
-    return _virRegisterDriver(driver, 1);
+    if (virInitialize() < 0)
+      return -1;
+
+    if (driver == NULL) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+	return(-1);
+    }
+
+    if (virNetworkDriverTabCount >= MAX_DRIVERS) {
+    	virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+	return(-1);
+    }
+
+    virNetworkDriverTab[virNetworkDriverTabCount] = driver;
+    return virNetworkDriverTabCount++;
 }
 
 /**
@@ -217,7 +194,21 @@ virRegisterNetworkDriver(virNetworkDriverPtr driver)
 int
 virRegisterDriver(virDriverPtr driver)
 {
-    return _virRegisterDriver(driver, 0);
+    if (virInitialize() < 0)
+      return -1;
+
+    if (driver == NULL) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+	return(-1);
+    }
+
+    if (virDriverTabCount >= MAX_DRIVERS) {
+    	virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+	return(-1);
+    }
+
+    virDriverTab[virDriverTabCount] = driver;
+    return virDriverTabCount++;
 }
 
 /**
@@ -252,14 +243,14 @@ virGetVersion(unsigned long *libVer, const char *type,
     if (typeVer != NULL) {
         if (type == NULL)
 	    type = "Xen";
-	for (i = 0;i < MAX_DRIVERS;i++) {
+	for (i = 0;i < virDriverTabCount;i++) {
 	    if ((virDriverTab[i] != NULL) &&
 	        (!strcmp(virDriverTab[i]->name, type))) {
 		*typeVer = virDriverTab[i]->ver;
 		break;
 	    }
 	}
-        if (i >= MAX_DRIVERS) {
+        if (i >= virDriverTabCount) {
             *typeVer = 0;
             virLibConnError(NULL, VIR_ERR_NO_SUPPORT, type);
             return (-1);
@@ -300,8 +291,8 @@ virConnectOpen(const char *name)
         goto failed;
     }
 
-    for (i = 0;i < MAX_DRIVERS;i++) {
-        if ((virDriverTab[i] != NULL) && (virDriverTab[i]->open != NULL)) {
+    for (i = 0;i < virDriverTabCount;i++) {
+        if ((virDriverTab[i]->open != NULL)) {
 	    res = virDriverTab[i]->open(ret, name, VIR_DRV_OPEN_QUIET);
 	    /*
 	     * For a default connect to Xen make sure we manage to contact
@@ -316,8 +307,8 @@ virConnectOpen(const char *name)
 	}
     }
 
-    for (i = 0;i < MAX_DRIVERS;i++) {
-        if ((virNetworkDriverTab[i] != NULL) && (virNetworkDriverTab[i]->open != NULL) &&
+    for (i = 0;i < virNetworkDriverTabCount;i++) {
+        if ((virNetworkDriverTab[i]->open != NULL) &&
 	    (res = virNetworkDriverTab[i]->open(ret, name, VIR_DRV_OPEN_QUIET)) == 0) {
             ret->networkDrivers[ret->nb_network_drivers++] = virNetworkDriverTab[i];
         }
@@ -375,16 +366,18 @@ virConnectOpenReadOnly(const char *name)
         goto failed;
     }
 
-    for (i = 0;i < MAX_DRIVERS;i++) {
-        if ((virDriverTab[i] != NULL) && (virDriverTab[i]->open != NULL)) {
+    for (i = 0;i < virDriverTabCount;i++) {
+        if ((virDriverTab[i]->open != NULL)) {
 	    res = virDriverTab[i]->open(ret, name,
 	                                VIR_DRV_OPEN_QUIET | VIR_DRV_OPEN_RO);
 	    if (res == 0)
 	        ret->drivers[ret->nb_drivers++] = virDriverTab[i];
 
 	}
-        if ((virNetworkDriverTab[i] != NULL) && (virNetworkDriverTab[i]->open != NULL) &&
-	    (res = virNetworkDriverTab[i]->open(ret, name, VIR_DRV_OPEN_QUIET)) == 0) {
+    }
+    for (i = 0;i < virNetworkDriverTabCount;i++) {
+        if ((virNetworkDriverTab[i]->open != NULL) &&
+	    (res = virNetworkDriverTab[i]->open(ret, name, VIR_DRV_OPEN_QUIET|VIR_DRV_OPEN_RO)) == 0) {
             ret->networkDrivers[ret->nb_network_drivers++] = virNetworkDriverTab[i];
         }
     }

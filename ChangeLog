@@ -1,3 +1,9 @@
+Thu Mar  8 09:47:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/libvirt.c: Refactored driver registration to avoid
+	type-punning problems by casting different structs. Also
+	fix network driver opening to open read-only when needed.
+
 Thu Mar  8 15:10:12 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/internal.h src/xend_internal.c src/xm_internal.c src/xml.c:
@@ -5,7 +11,7 @@ Thu Mar  8 15:10:12 CET 2007 Daniel Veillard <veillard@redhat.com>
 	  had arbitrary minimal memory requirement and use a predefined
 	  macro to clean this up.
 
-Thu Mar  8 08:45:46 EST 2007 Daniel P., Berrange <berrange@redhat.com>
+Thu Mar  8 08:45:46 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/virsh.c: Added an explicit --readonly option to virsh
 	to override the simple Xen-specific heuristic when running
