@@ -14,7 +14,9 @@ rm -rf coverage
 #mkdir build
 #cd build
 
-./autogen.sh --prefix=$AUTOBUILD_INSTALL_ROOT --enable-test-coverage
+./autogen.sh --prefix=$AUTOBUILD_INSTALL_ROOT \
+  --enable-test-coverage \
+  --enable-compile-warnings=error 
 
 make
 make install

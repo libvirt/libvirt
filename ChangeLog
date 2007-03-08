@@ -1,3 +1,8 @@
+Thu Mar  8 16:32:14 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* autobuild.sh: Make all compiler warnings fatal for automated
+	build & test harness
+
 Thu Mar  8 16:30:41 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* libvirt.spec.in: Add some macro magic to allow Release field
