@@ -1,3 +1,8 @@
+Thu Mar  8 18:31:14 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/Makefile.am: Make sure to create $PREFIX/var/run/libvirt
+	so that the system daemon can create its socket
+
 Thu Mar  8 16:32:14 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* autobuild.sh: Make all compiler warnings fatal for automated
