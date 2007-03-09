@@ -59,8 +59,8 @@
 	virDomainGetVcpus;
 	virDomainGetMaxVcpus;
 
-    virDomainAttachDevice;
-    virDomainDetachDevice;
+	virDomainAttachDevice;
+	virDomainDetachDevice;
 
 	virConnectNumOfNetworks;
 	virConnectListNetworks;
@@ -82,6 +82,15 @@
 	virNetworkGetBridgeName;
 	virNetworkGetAutostart;
 	virNetworkSetAutostart;
+
+	__virConfNew;
+	__virConfReadFile;
+	__virConfReadMem;
+	__virConfFree;
+	__virConfGetValue;
+	__virConfSetValue;
+	__virConfWriteFile;
+	__virConfWriteMem;
 
     local: *;
 };

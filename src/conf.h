@@ -50,22 +50,31 @@ struct _virConfValue {
 typedef struct _virConf virConf;
 typedef virConf *virConfPtr;
 
-virConfPtr      virConfNew              (void);
-virConfPtr	virConfReadFile		(const char *filename);
-virConfPtr	virConfReadMem		(const char *memory,
+virConfPtr      __virConfNew             (void);
+virConfPtr	__virConfReadFile	(const char *filename);
+virConfPtr	__virConfReadMem		(const char *memory,
 					 int len);
-int		virConfFree		(virConfPtr conf);
+int		__virConfFree		(virConfPtr conf);
 
-virConfValuePtr	virConfGetValue		(virConfPtr conf,
+virConfValuePtr	__virConfGetValue	(virConfPtr conf,
 					 const char *setting);
-int             virConfSetValue         (virConfPtr conf,
+int             __virConfSetValue        (virConfPtr conf,
 					 const char *setting,
 					 virConfValuePtr value);
-int		virConfWriteFile	(const char *filename,
+int		__virConfWriteFile	(const char *filename,
 					 virConfPtr conf);
-int		virConfWriteMem		(char *memory,
+int		__virConfWriteMem	(char *memory,
 					 int *len,
 					 virConfPtr conf);
+
+#define virConfNew() (__virConfNew())
+#define virConfReadFile(f) (__virConfReadFile((f)))
+#define virConfReadMem(m,l) (__virConfReadMem((m),(l)))
+#define virConfFree(c) (__virConfFree((c)))
+#define virConfGetValue(c,s) (__virConfGetValue((c),(s)))
+#define virConfSetValue(c,s,v) (__virConfSetValue((c),(s),(v)))
+#define virConfWriteFile(f,c) (__virConfWriteFile((f),(c)))
+#define virConfWriteMem(m,l,c) (__virConfWriteMem((m),(l),(c)))
 
 #ifdef __cplusplus
 }

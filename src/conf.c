@@ -146,7 +146,8 @@ virConfFreeValue(virConfValuePtr val)
     free(val);
 }
 
-virConfPtr virConfNew(void)
+virConfPtr
+__virConfNew(void)
 {
     virConfPtr ret;
 
@@ -694,7 +695,7 @@ error:
  ************************************************************************/
 
 /**
- * virConfReadFile:
+ * __virConfReadFile:
  * @filename: the path to the configuration file.
  *
  * Reads a configuration file.
@@ -703,7 +704,7 @@ error:
  *         read or parse the file, use virConfFree() to free the data.
  */
 virConfPtr
-virConfReadFile(const char *filename)
+__virConfReadFile(const char *filename)
 {
     char content[4096];
     int fd;
@@ -728,7 +729,7 @@ virConfReadFile(const char *filename)
 }
 
 /**
- * virConfReadMem:
+ * __virConfReadMem:
  * @memory: pointer to the content of the configuration file
  * @len: lenght in byte
  *
@@ -739,7 +740,7 @@ virConfReadFile(const char *filename)
  *         parse the content, use virConfFree() to free the data.
  */
 virConfPtr
-virConfReadMem(const char *memory, int len)
+__virConfReadMem(const char *memory, int len)
 {
     if ((memory == NULL) || (len < 0)) {
         virConfError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__, 0);
@@ -752,7 +753,7 @@ virConfReadMem(const char *memory, int len)
 }
 
 /**
- * virConfFree:
+ * __virConfFree:
  * @conf: a configuration file handle
  *
  * Frees all data associated to the handle
@@ -760,7 +761,7 @@ virConfReadMem(const char *memory, int len)
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-virConfFree(virConfPtr conf)
+__virConfFree(virConfPtr conf)
 {
     virConfEntryPtr tmp;
     if (conf == NULL) {
@@ -784,7 +785,7 @@ virConfFree(virConfPtr conf)
 }
 
 /**
- * virConfGetValue:
+ * __virConfGetValue:
  * @conf: a configuration file handle
  * @entry: the name of the entry
  *
@@ -794,7 +795,7 @@ virConfFree(virConfPtr conf)
  *         associated will be freed when virConfFree() is called
  */
 virConfValuePtr
-virConfGetValue(virConfPtr conf, const char *setting)
+__virConfGetValue(virConfPtr conf, const char *setting)
 {
     virConfEntryPtr cur;
 
@@ -808,7 +809,7 @@ virConfGetValue(virConfPtr conf, const char *setting)
 }
 
 /**
- * virConfGetValue:
+ * __virConfSetValue:
  * @conf: a configuration file handle
  * @entry: the name of the entry
  * @value: the new configuration value
@@ -820,9 +821,11 @@ virConfGetValue(virConfPtr conf, const char *setting)
  *
  * Returns 0 on success, or -1 on failure.
  */
-int             virConfSetValue         (virConfPtr conf,
-                                         const char *setting,
-                                         virConfValuePtr value) {
+int
+__virConfSetValue (virConfPtr conf,
+                  const char *setting,
+                  virConfValuePtr value)
+{
     virConfEntryPtr cur, prev = NULL;
 
     cur = conf->entries;
@@ -864,7 +867,7 @@ int             virConfSetValue         (virConfPtr conf,
 
 
 /**
- * virConfWriteFile:
+ * __virConfWriteFile:
  * @filename: the path to the configuration file.
  * @conf: the conf
  *
@@ -873,7 +876,7 @@ int             virConfSetValue         (virConfPtr conf,
  * Returns the number of bytes written or -1 in case of error.
  */
 int
-virConfWriteFile(const char *filename, virConfPtr conf)
+__virConfWriteFile(const char *filename, virConfPtr conf)
 {
     virBufferPtr buf;
     virConfEntryPtr cur;
@@ -913,7 +916,7 @@ error:
 }
 
 /**
- * virConfWriteMem:
+ * __virConfWriteMem:
  * @memory: pointer to the memory to store the config file
  * @len: pointer to the lenght in byte of the store, on output the size
  * @conf: the conf
@@ -926,7 +929,7 @@ error:
  * Returns the number of bytes written or -1 in case of error.
  */
 int
-virConfWriteMem(char *memory, int *len, virConfPtr conf)
+__virConfWriteMem(char *memory, int *len, virConfPtr conf)
 {
     virBufferPtr buf;
     virConfEntryPtr cur;

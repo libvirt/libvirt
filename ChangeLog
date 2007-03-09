@@ -1,3 +1,10 @@
+Fri Mar  9 15:46:11 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/libvirt_sym.version, src/conf.h, src/conf.c: Export virConf*
+	symbols for private use by libvirt daemon. Prefixed symbols with
+	__ to indicate privateness, and not present in any installed header
+	files. Patch from Rich Jones.
+
 Fri Mar  9 10:41:11 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* python/generator.py, python/libvir.c, python/libvirt_wrap.h,
