@@ -11,11 +11,27 @@
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <return type='str *' info='the list of Names of None in case of error'/>
     </function>
+    <function name='virConnectListNetworks' file='python'>
+      <info>list the networks, stores the pointers to the names in @names</info>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <return type='str *' info='the list of Names of None in case of error'/>
+    </function>
+    <function name='virConnectListDefinedNetworks' file='python'>
+      <info>list the defined networks, stores the pointers to the names in @names</info>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <return type='str *' info='the list of Names of None in case of error'/>
+    </function>
     <function name='virDomainLookupByUUID' file='python'>
       <info>Try to lookup a domain on the given hypervisor based on its UUID.</info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='uuid' type='const unsigned char *' info='the UUID string for the domain, must be 16 bytes'/>
+    </function>
+    <function name='virNetworkLookupByUUID' file='python'>
+      <info>Try to lookup a network on the given hypervisor based on its UUID.</info>
+      <return type='virNetworkPtr' info='a new network object or NULL in case of failure'/>
+      <arg name='conn' type='virNetworkPtr' info='pointer to the hypervisor connection'/>
+      <arg name='uuid' type='const unsigned char *' info='the UUID string for the network, must be 16 bytes'/>
     </function>
     <function name='virDomainGetInfo' file='python'>
       <info>Extract informations about a domain. Note that if the connection used to get the domain is limited only a partial set of the informations can be extracted.</info>
@@ -31,6 +47,11 @@
       <info>Extract the UUID unique Identifier of a domain.</info>
       <return type='char *' info='the 16 bytes string or None in case of error'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
+    </function>
+    <function name='virNetworkGetUUID' file='python'>
+      <info>Extract the UUID unique Identifier of a network.</info>
+      <return type='char *' info='the 16 bytes string or None in case of error'/>
+      <arg name='domain' type='virNetworkPtr' info='a network object'/>
     </function>
   </symbols>
 </api>

@@ -125,6 +125,24 @@ libvirt_virDomainPtrWrap(virDomainPtr node)
 }
 
 PyObject *
+libvirt_virNetworkPtrWrap(virNetworkPtr node)
+{
+    PyObject *ret;
+
+#ifdef DEBUG
+    printf("libvirt_virNetworkPtrWrap: node = %p\n", node);
+#endif
+    if (node == NULL) {
+        Py_INCREF(Py_None);
+        return (Py_None);
+    }
+    ret =
+        PyCObject_FromVoidPtrAndDesc((void *) node, (char *) "virNetworkPtr",
+                                     NULL);
+    return (ret);
+}
+
+PyObject *
 libvirt_virConnectPtrWrap(virConnectPtr node)
 {
     PyObject *ret;

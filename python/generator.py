@@ -235,6 +235,10 @@ py_types = {
     'const virDomainPtr':  ('O', "virDomain", "virDomainPtr", "virDomainPtr"),
     'virDomain *':  ('O', "virDomain", "virDomainPtr", "virDomainPtr"),
     'const virDomain *':  ('O', "virDomain", "virDomainPtr", "virDomainPtr"),
+    'virNetworkPtr':  ('O', "virNetwork", "virNetworkPtr", "virNetworkPtr"),
+    'const virNetworkPtr':  ('O', "virNetwork", "virNetworkPtr", "virNetworkPtr"),
+    'virNetwork *':  ('O', "virNetwork", "virNetworkPtr", "virNetworkPtr"),
+    'const virNetwork *':  ('O', "virNetwork", "virNetworkPtr", "virNetworkPtr"),
     'virConnectPtr':  ('O', "virConnect", "virConnectPtr", "virConnectPtr"),
     'const virConnectPtr':  ('O', "virConnect", "virConnectPtr", "virConnectPtr"),
     'virConnect *':  ('O', "virConnect", "virConnectPtr", "virConnectPtr"),
@@ -261,18 +265,24 @@ foreign_encoding_args = (
 skip_impl = (
     'virConnectListDomainsID',
     'virConnectListDefinedDomains',
+    'virConnectListNetworks',
+    'virConnectListDefinedNetworks',
     'virConnGetLastError',
     'virGetLastError',
     'virDomainGetInfo',
     'virNodeGetInfo',
     'virDomainGetUUID',
     'virDomainLookupByUUID',
+    'virNetworkGetUUID',
+    'virNetworkLookupByUUID',
 )
 
 def skip_function(name):
     if name == "virConnectClose":
         return 1
     if name == "virDomainFree":
+        return 1
+    if name == "virNetworkFree":
         return 1
     if name == "vshRunConsole":
         return 1
@@ -526,6 +536,8 @@ def buildStubs():
 classes_type = {
     "virDomainPtr": ("._o", "virDomain(_obj=%s)", "virDomain"),
     "virDomain *": ("._o", "virDomain(_obj=%s)", "virDomain"),
+    "virNetworkPtr": ("._o", "virNetwork(_obj=%s)", "virNetwork"),
+    "virNetwork *": ("._o", "virNetwork(_obj=%s)", "virNetwork"),
     "virConnectPtr": ("._o", "virConnect(_obj=%s)", "virConnect"),
     "virConnect *": ("._o", "virConnect(_obj=%s)", "virConnect"),
 }
@@ -533,17 +545,19 @@ classes_type = {
 converter_type = {
 }
 
-primary_classes = ["virDomain", "virConnect"]
+primary_classes = ["virDomain", "virNetwork", "virConnect"]
 
 classes_ancestor = {
 }
 classes_destructors = {
     "virDomain": "virDomainFree",
+    "virNetwork": "virNetworkFree",
     "virConnect": "virConnectClose",
 }
 
 classes_references = {
     "virDomain": "virConnect",
+    "virNetwork": "virConnect",
 }
 
 functions_noexcept = {
@@ -558,6 +572,7 @@ function_classes["None"] = []
 
 function_post = {
     'virDomainDestroy': "self._o = None",
+    'virNetworkDestroy': "self._o = None",
 }
 
 def nameFixup(name, classe, type, file):
@@ -572,6 +587,12 @@ def nameFixup(name, classe, type, file):
         func = string.lower(func[0:1]) + func[1:]
     elif name[0:9] == "virDomain":
         func = name[9:]
+        func = string.lower(func[0:1]) + func[1:]
+    elif name[0:13] == "virNetworkGet":
+        func = name[13:]
+        func = string.lower(func[0:1]) + func[1:]
+    elif name[0:10] == "virNetwork":
+        func = name[10:]
         func = string.lower(func[0:1]) + func[1:]
     elif name[0:7] == "virNode":
         func = name[7:]
@@ -588,6 +609,8 @@ def nameFixup(name, classe, type, file):
         func = "ID"
     if func == "uUID":
         func = "UUID"
+    if func == "uUIDString":
+        func = "UUIDString"
     if func == "oSType":
         func = "OSType"
     if func == "xMLDesc":

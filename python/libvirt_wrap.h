@@ -39,6 +39,15 @@ typedef struct {
 } PyvirDomain_Object;
 
 
+#define PyvirNetwork_Get(v) (((v) == Py_None) ? NULL : \
+	(((PyvirNetwork_Object *)(v))->obj))
+
+typedef struct {
+    PyObject_HEAD
+    virNetworkPtr obj;
+} PyvirNetwork_Object;
+
+
 PyObject * libvirt_intWrap(int val);
 PyObject * libvirt_longWrap(long val);
 PyObject * libvirt_ulongWrap(unsigned long val);
@@ -48,6 +57,7 @@ PyObject * libvirt_constcharPtrWrap(const char *str);
 PyObject * libvirt_charPtrConstWrap(const char *str);
 PyObject * libvirt_virConnectPtrWrap(virConnectPtr node);
 PyObject * libvirt_virDomainPtrWrap(virDomainPtr node);
+PyObject * libvirt_virNetworkPtrWrap(virNetworkPtr node);
 
 
 /* Provide simple macro statement wrappers (adapted from GLib, in turn from Perl):
