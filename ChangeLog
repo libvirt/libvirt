@@ -1,3 +1,7 @@
+Thu Mar  8 22:07:14 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/conf.c: Fix double free in XML parsing routine
+
 Thu Mar  8 18:31:14 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/Makefile.am: Make sure to create $PREFIX/var/run/libvirt

@@ -828,6 +828,7 @@ static struct qemud_vm_def *qemudParseXML(struct qemud_server *server,
                 goto error;
             }
             xmlFree(prop);
+            prop = NULL;
         }
     }
     xmlXPathFreeObject(obj);
@@ -877,6 +878,7 @@ static struct qemud_vm_def *qemudParseXML(struct qemud_server *server,
             goto error;
         }
         xmlFree(prop);
+        prop = NULL;
     }
     xmlXPathFreeObject(obj);
 
