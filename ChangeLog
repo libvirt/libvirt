@@ -1,3 +1,7 @@
+Fri Mar  9 14:43:11 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: bad pointer/int mismatch fixes from Richard Jones
+
 Thu Mar  8 22:07:14 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/conf.c: Fix double free in XML parsing routine

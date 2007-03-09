@@ -1957,15 +1957,16 @@ cmdNetworkList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
             return FALSE;
         }
         if (maxactive) {
-            activeNames = vshMalloc(ctl, sizeof(int) * maxactive);
+            activeNames = vshMalloc(ctl, sizeof(char *) * maxactive);
 
-            if ((maxactive = virConnectListNetworks(ctl->conn, &activeNames[0], maxactive)) < 0) {
+            if ((maxactive = virConnectListNetworks(ctl->conn, activeNames,
+	                                            maxactive)) < 0) {
                 vshError(ctl, FALSE, _("Failed to list active networks"));
                 free(activeNames);
                 return FALSE;
             }
 
-            qsort(&activeNames[0], maxactive, sizeof(int), namesorter);
+            qsort(&activeNames[0], maxactive, sizeof(char *), namesorter);
         }
     }
     if (inactive) {
