@@ -1,6 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
 INCLUDES = @LIBXML_CFLAGS@
+UUID=$(shell uuidgen)
 
 sbin_PROGRAMS = libvirt_qemud
 
@@ -23,6 +24,7 @@ libvirt_qemud_LDADD =
 install-data-local:
 	mkdir -p $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart
 	$(INSTALL_DATA) $(srcdir)/default-network.xml $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml
+	sed -i -e "s,</name>,</name>\n  <uuid>$(UUID)</uuid>," $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml
 	test -e $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml || \
            ln -s ../default.xml $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
 	mkdir -p $(DESTDIR)$(localstatedir)/run/libvirt

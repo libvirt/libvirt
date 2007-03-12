@@ -1,3 +1,8 @@
+Mon Mar 10 10:09:11 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/Makefile.am: Generate a fixed, but random UUID in the default
+	network config file when installing it
+
 Fri Mar  9 15:46:11 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/libvirt_sym.version, src/conf.h, src/conf.c: Export virConf*
