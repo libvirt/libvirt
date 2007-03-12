@@ -1,4 +1,10 @@
-Mon Mar 10 10:09:11 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+Mon Mar 12 12:32:11 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* libvirt.spec.in: Generate a random UUID for the default network
+	for each RPM installation. Mark /etc directories as %dir as needed
+	and make files mode 0700 to protect passwords for VNC server
+
+Mon Mar 12 10:09:11 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/Makefile.am: Generate a fixed, but random UUID in the default
 	network config file when installing it

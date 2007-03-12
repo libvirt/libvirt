@@ -74,6 +74,8 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.a
 install -d -m 0755 $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/
 install -d -m 0755 $RPM_BUILD_ROOT%{_localstatedir}/run/libvirt/
+# Strip auto-generated UUID - we need it generated per-install
+sed -i -e "/<uuid>/d" $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/default.xml
 %find_lang %{name}
 
 %clean
@@ -82,6 +84,10 @@ rm -fr %{buildroot}
 %post
 /sbin/ldconfig
 /sbin/chkconfig --add libvirtd
+if [ $1 = 1 ]; then
+    UUID=`/usr/bin/uuidgen`
+    sed -i -e "s,</name>,</name>\n  <uuid>$UUID</uuid>," %{_sysconfdir}/libvirt/qemu/networks/default.xml
+fi
 
 %preun
 if [ $1 = 0 ]; then
@@ -99,13 +105,13 @@ fi
 %doc %{_mandir}/man1/virsh.1*
 %{_bindir}/virsh
 %{_libdir}/lib*.so.*
-%config %{_sysconfdir}/libvirt/
-%config %{_sysconfdir}/libvirt/qemu/
-%config %{_sysconfdir}/libvirt/qemu/networks/
-%config %{_sysconfdir}/libvirt/qemu/networks/default.xml
-%config %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/
+%config %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/default.xml
+%config %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
 %{_sysconfdir}/rc.d/init.d/libvirtd
-%{_localstatedir}/run/libvirt/
+%dir %{_localstatedir}/run/libvirt/
 %attr(4755, root, root) %{_libexecdir}/libvirt_proxy
 %attr(0755, root, root) %{_sbindir}/libvirt_qemud
 %doc docs/libvirt.rng
