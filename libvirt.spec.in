@@ -84,7 +84,8 @@ rm -fr %{buildroot}
 %post
 /sbin/ldconfig
 /sbin/chkconfig --add libvirtd
-if [ $1 = 1 ]; then
+grep uuid  %{_sysconfdir}/libvirt/qemu/networks/default.xml 1>/dev/null 2>&1
+if [ $? != 0 ]; then
     UUID=`/usr/bin/uuidgen`
     sed -i -e "s,</name>,</name>\n  <uuid>$UUID</uuid>," %{_sysconfdir}/libvirt/qemu/networks/default.xml
 fi

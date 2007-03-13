@@ -1,3 +1,9 @@
+Mon Mar 12 23:17:11 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* libvirt.spec.in: Don't run UUID generation on first install,
+	instead run it if there is no <uuid> in the default network.
+	This ensures RPM upgrades get a UUID inserted
+
 Mon Mar 12 12:32:11 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* libvirt.spec.in: Generate a random UUID for the default network
