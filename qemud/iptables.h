@@ -42,22 +42,30 @@ int              iptablesRemoveUdpInput          (iptablesContext *ctx,
                                                   int port);
 
 int              iptablesAddPhysdevForward       (iptablesContext *ctx,
-                                                  const char *iface);
+                                                  const char *iface,
+                                                  const char *target);
 int              iptablesRemovePhysdevForward    (iptablesContext *ctx,
-                                                  const char *iface);
+                                                  const char *iface,
+                                                  const char *target);
 
 int              iptablesAddInterfaceForward     (iptablesContext *ctx,
-                                                  const char *iface);
+                                                  const char *iface,
+                                                  const char *target);
 int              iptablesRemoveInterfaceForward  (iptablesContext *ctx,
-                                                  const char *iface);
+                                                  const char *iface,
+                                                  const char *target);
 
 int              iptablesAddStateForward         (iptablesContext *ctx,
-                                                  const char *iface);
+                                                  const char *iface,
+                                                  const char *target);
 int              iptablesRemoveStateForward      (iptablesContext *ctx,
-                                                  const char *iface);
+                                                  const char *iface,
+                                                  const char *target);
 
-int              iptablesAddNonBridgedMasq       (iptablesContext *ctx);
-int              iptablesRemoveNonBridgedMasq    (iptablesContext *ctx);
+int              iptablesAddNonBridgedMasq       (iptablesContext *ctx,
+                                                  const char *target);
+int              iptablesRemoveNonBridgedMasq    (iptablesContext *ctx,
+                                                  const char *target);
 
 #endif /* __QEMUD_IPTABLES_H__ */
 

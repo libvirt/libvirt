@@ -1032,7 +1032,18 @@ static void
 qemudNetworkIfaceDisconnect(struct qemud_server *server,
                             struct qemud_vm *vm ATTRIBUTE_UNUSED,
                             struct qemud_vm_net_def *net) {
-    iptablesRemovePhysdevForward(server->iptables, net->dst.network.tapifname);
+    struct qemud_network *network;
+    if (net->type != QEMUD_NET_NETWORK)
+        return;
+
+    if (!(network = qemudFindNetworkByName(server, net->dst.network.name))) {
+        return;
+    } else if (network->bridge[0] == '\0') {
+        return;
+    }
+
+    if (network->def->forward)
+        iptablesRemovePhysdevForward(server->iptables, net->dst.network.ifname, network->def->forwardDev);
 }
 
 int qemudShutdownVMDaemon(struct qemud_server *server, struct qemud_vm *vm) {
@@ -1105,7 +1116,7 @@ qemudBuildDnsmasqArgv(struct qemud_server *server,
                       struct qemud_network *network,
                       char ***argv) {
     int i, len;
-    char buf[BR_INET_ADDR_MAXLEN * 2];
+    char buf[PATH_MAX];
     struct qemud_dhcp_range_def *range;
 
     len =
@@ -1114,8 +1125,10 @@ qemudBuildDnsmasqArgv(struct qemud_server *server,
         1 + /* --bind-interfaces */
         2 + /* --pid-file "" */
         2 + /* --conf-file "" */
+        /*2 + *//* --interface virbr0 */
         2 + /* --except-interface lo */
         2 + /* --listen-address 10.0.0.1 */
+        1 + /* --dhcp-leasefile=path */
         (2 * network->def->nranges) + /* --dhcp-range 10.0.0.2,10.0.0.254 */
         1;  /* NULL */
 
@@ -1142,11 +1155,29 @@ qemudBuildDnsmasqArgv(struct qemud_server *server,
     APPEND_ARG(*argv, i++, "--conf-file");
     APPEND_ARG(*argv, i++, "");
 
+    /*
+     * XXX does not actually work, due to some kind of
+     * race condition setting up ipv6 addresses on the
+     * interface. A sleep(10) makes it work, but that's
+     * clearly not practical
+     *
+     * APPEND_ARG(*argv, i++, "--interface");
+     * APPEND_ARG(*argv, i++, network->def->bridge);
+     */
+    APPEND_ARG(*argv, i++, "--listen-address");
+    APPEND_ARG(*argv, i++, network->def->ipAddress);
+
     APPEND_ARG(*argv, i++, "--except-interface");
     APPEND_ARG(*argv, i++, "lo");
 
-    APPEND_ARG(*argv, i++, "--listen-address");
-    APPEND_ARG(*argv, i++, network->def->ipAddress);
+    /*
+     * NB, dnsmasq command line arg bug means we need to
+     * use a single arg '--dhcp-leasefile=path' rather than
+     * two separate args in '--dhcp-leasefile path' style
+     */
+    snprintf(buf, sizeof(buf), "--dhcp-leasefile=%s/lib/libvirt/dhcp-%s.leases",
+             LOCAL_STATE_DIR, network->def->name);
+    APPEND_ARG(*argv, i++, buf);
 
     range = network->def->ranges;
     while (range) {
@@ -1211,7 +1242,7 @@ qemudAddIptablesRules(struct qemud_server *server,
     }
 
     /* allow bridging from the bridge interface itself */
-    if ((err = iptablesAddPhysdevForward(server->iptables, network->bridge))) {
+    if ((err = iptablesAddPhysdevForward(server->iptables, network->bridge, network->def->forwardDev))) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
                          "failed to add iptables rule to allow bridging from '%s' : %s\n",
                          network->bridge, strerror(err));
@@ -1219,7 +1250,7 @@ qemudAddIptablesRules(struct qemud_server *server,
     }
 
     /* allow forwarding packets from the bridge interface */
-    if ((err = iptablesAddInterfaceForward(server->iptables, network->bridge))) {
+    if ((err = iptablesAddInterfaceForward(server->iptables, network->bridge, network->def->forwardDev))) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
                          "failed to add iptables rule to allow forwarding from '%s' : %s\n",
                          network->bridge, strerror(err));
@@ -1227,7 +1258,7 @@ qemudAddIptablesRules(struct qemud_server *server,
     }
 
     /* allow forwarding packets to the bridge interface if they are part of an existing connection */
-    if ((err = iptablesAddStateForward(server->iptables, network->bridge))) {
+    if ((err = iptablesAddStateForward(server->iptables, network->bridge, network->def->forwardDev))) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
                          "failed to add iptables rule to allow forwarding to '%s' : %s\n",
                          network->bridge, strerror(err));
@@ -1235,7 +1266,7 @@ qemudAddIptablesRules(struct qemud_server *server,
     }
 
     /* enable masquerading */
-    if ((err = iptablesAddNonBridgedMasq(server->iptables))) {
+    if ((err = iptablesAddNonBridgedMasq(server->iptables, network->def->forwardDev))) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
                          "failed to add iptables rule to enable masquerading : %s\n",
                          strerror(err));
@@ -1281,13 +1312,13 @@ qemudAddIptablesRules(struct qemud_server *server,
  err6:
     iptablesRemoveTcpInput(server->iptables, network->bridge, 67);
  err5:
-    iptablesRemoveNonBridgedMasq(server->iptables);
+    iptablesRemoveNonBridgedMasq(server->iptables, network->def->forwardDev);
  err4:
-    iptablesRemoveStateForward(server->iptables, network->bridge);
+    iptablesRemoveStateForward(server->iptables, network->bridge, network->def->forwardDev);
  err3:
-    iptablesRemoveInterfaceForward(server->iptables, network->bridge);
+    iptablesRemoveInterfaceForward(server->iptables, network->bridge, network->def->forwardDev);
  err2:
-    iptablesRemovePhysdevForward(server->iptables, network->bridge);
+    iptablesRemovePhysdevForward(server->iptables, network->bridge, network->def->forwardDev);
  err1:
     return 0;
 }
@@ -1295,14 +1326,16 @@ qemudAddIptablesRules(struct qemud_server *server,
 static void
 qemudRemoveIptablesRules(struct qemud_server *server,
                          struct qemud_network *network) {
-    iptablesRemoveUdpInput(server->iptables, network->bridge, 53);
-    iptablesRemoveTcpInput(server->iptables, network->bridge, 53);
-    iptablesRemoveUdpInput(server->iptables, network->bridge, 67);
-    iptablesRemoveTcpInput(server->iptables, network->bridge, 67);
-    iptablesRemoveNonBridgedMasq(server->iptables);
-    iptablesRemoveStateForward(server->iptables, network->bridge);
-    iptablesRemoveInterfaceForward(server->iptables, network->bridge);
-    iptablesRemovePhysdevForward(server->iptables, network->bridge);
+    if (network->def->forward) {
+        iptablesRemoveUdpInput(server->iptables, network->bridge, 53);
+        iptablesRemoveTcpInput(server->iptables, network->bridge, 53);
+        iptablesRemoveUdpInput(server->iptables, network->bridge, 67);
+        iptablesRemoveTcpInput(server->iptables, network->bridge, 67);
+        iptablesRemoveNonBridgedMasq(server->iptables, network->def->forwardDev);
+        iptablesRemoveStateForward(server->iptables, network->bridge, network->def->forwardDev);
+        iptablesRemoveInterfaceForward(server->iptables, network->bridge, network->def->forwardDev);
+        iptablesRemovePhysdevForward(server->iptables, network->bridge, network->def->forwardDev);
+    }
 }
 
 static int
@@ -1379,10 +1412,12 @@ int qemudStartNetworkDaemon(struct qemud_server *server,
         goto err_delbr;
     }
 
-    if (!qemudAddIptablesRules(server, network))
+    if (network->def->forward &&
+        !qemudAddIptablesRules(server, network))
         goto err_delbr1;
 
-    if (!qemudEnableIpForwarding()) {
+    if (network->def->forward &&
+        !qemudEnableIpForwarding()) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
                          "failed to enable IP forwarding : %s\n", strerror(err));
         goto err_delbr2;

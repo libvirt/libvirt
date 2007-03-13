@@ -103,43 +103,35 @@ struct qemud_vm_disk_def {
 /* 5 different types of networking config */
 enum qemud_vm_net_type {
     QEMUD_NET_USER,
-    QEMUD_NET_TAP,
+    QEMUD_NET_ETHERNET,
     QEMUD_NET_SERVER,
     QEMUD_NET_CLIENT,
     QEMUD_NET_MCAST,
     QEMUD_NET_NETWORK,
-    /*  QEMUD_NET_VDE*/
+    QEMUD_NET_BRIDGE,
 };
 
 /* Stores the virtual network interface configuration */
 struct qemud_vm_net_def {
     int type;
-    int vlan;
     unsigned char mac[QEMUD_MAC_ADDRESS_LEN];
     union {
         struct {
-            char ifname[NAME_MAX];
+            char ifname[BR_IFNAME_MAXLEN];
             char script[PATH_MAX];
-        } tap;
+        } ethernet;
         struct {
-            struct sockaddr_in listen;
+            char address[BR_INET_ADDR_MAXLEN];
             int port;
-        } server;
-        struct {
-            struct sockaddr_in connect;
-            int port;
-        } client;
-        struct {
-            struct sockaddr_in group;
-            int port;
-        } mcast;
-        struct {
-            char vlan[PATH_MAX];
-        } vde;
+        } socket; /* any of NET_CLIENT or NET_SERVER or NET_MCAST */
         struct {
             char name[QEMUD_MAX_NAME_LEN];
-            char tapifname[BR_IFNAME_MAXLEN];
+            char ifname[BR_IFNAME_MAXLEN];
         } network;
+        struct {
+            char brname[BR_IFNAME_MAXLEN];
+            char ifname[BR_IFNAME_MAXLEN];
+        } bridge;
     } dst;
 
     struct qemud_vm_net_def *next;
@@ -248,6 +240,9 @@ struct qemud_network_def {
     char bridge[BR_IFNAME_MAXLEN];
     int disableSTP;
     int forwardDelay;
+
+    int forward;
+    char forwardDev[BR_IFNAME_MAXLEN];
 
     char ipAddress[BR_INET_ADDR_MAXLEN];
     char netmask[BR_INET_ADDR_MAXLEN];

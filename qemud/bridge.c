@@ -190,27 +190,22 @@ brDeleteInterface(brControl *ctl,
     return brAddDelInterface(ctl, SIOCBRDELIF, bridge, iface);
 }
 
+
 int
 brAddTap(brControl *ctl,
          const char *bridge,
-         const char *ifnameOrFmt,
          char *ifname,
          int maxlen,
          int *tapfd)
 {
     int id, subst, fd;
 
-    if (!ctl || !ctl->fd || !bridge || !ifnameOrFmt || !tapfd)
+    if (!ctl || !ctl->fd || !bridge || !ifname || !tapfd)
         return EINVAL;
-
-    if (!ifname)
-        maxlen = BR_IFNAME_MAXLEN;
-    else if (maxlen >= BR_IFNAME_MAXLEN)
-        maxlen = BR_IFNAME_MAXLEN;
 
     subst = id = 0;
 
-    if (strstr(ifnameOrFmt, "%d"))
+    if (strstr(ifname, "%d"))
         subst = 1;
 
     if ((fd = open("/dev/net/tun", O_RDWR)) < 0)
@@ -225,19 +220,19 @@ brAddTap(brControl *ctl,
         try.ifr_flags = IFF_TAP|IFF_NO_PI;
 
         if (subst) {
-            len = snprintf(try.ifr_name, maxlen, ifnameOrFmt, id);
+            len = snprintf(try.ifr_name, maxlen, ifname, id);
             if (len >= maxlen) {
                 errno = EADDRINUSE;
                 goto error;
             }
         } else {
-            len = strlen(ifnameOrFmt);
+            len = strlen(ifname);
             if (len >= maxlen - 1) {
                 errno = EINVAL;
                 goto error;
             }
 
-            strncpy(try.ifr_name, ifnameOrFmt, len);
+            strncpy(try.ifr_name, ifname, len);
             try.ifr_name[len] = '\0';
         }
 

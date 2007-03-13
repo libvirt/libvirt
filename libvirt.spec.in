@@ -113,6 +113,7 @@ fi
 %config %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
 %{_sysconfdir}/rc.d/init.d/libvirtd
 %dir %{_localstatedir}/run/libvirt/
+%dir %{_localstatedir}/lib/libvirt/
 %attr(4755, root, root) %{_libexecdir}/libvirt_proxy
 %attr(0755, root, root) %{_sbindir}/libvirt_qemud
 %doc docs/libvirt.rng

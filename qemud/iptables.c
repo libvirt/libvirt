@@ -532,20 +532,17 @@ iptablesInput(iptablesContext *ctx,
               int tcp)
 {
     char portstr[32];
-    int ret;
 
     snprintf(portstr, sizeof(portstr), "%d", port);
     portstr[sizeof(portstr) - 1] = '\0';
 
-    ret = iptablesAddRemoveRule(ctx->input_filter,
-                                action,
-                                "--in-interface", iface,
-                                "--protocol", tcp ? "tcp" : "udp",
-                                "--destination-port", portstr,
-                                "--jump", "ACCEPT",
-                                NULL);
-
-    return ret;
+    return iptablesAddRemoveRule(ctx->input_filter,
+                                 action,
+                                 "--in-interface", iface,
+                                 "--protocol", tcp ? "tcp" : "udp",
+                                 "--destination-port", portstr,
+                                 "--jump", "ACCEPT",
+                                 NULL);
 }
 
 int
@@ -583,106 +580,158 @@ iptablesRemoveUdpInput(iptablesContext *ctx,
 static int
 iptablesPhysdevForward(iptablesContext *ctx,
                        const char *iface,
+                       const char *target,
                        int action)
 {
-    return iptablesAddRemoveRule(ctx->forward_filter,
-                                 action,
-                                 "--match", "physdev",
-                                 "--physdev-in", iface,
-                                 "--jump", "ACCEPT",
-                                 NULL);
+    if (target && target[0]) {
+        return iptablesAddRemoveRule(ctx->forward_filter,
+                                     action,
+                                     "--match", "physdev",
+                                     "--physdev-in", iface,
+                                     "--out", target,
+                                     "--jump", "ACCEPT",
+                                     NULL);
+    } else {
+        return iptablesAddRemoveRule(ctx->forward_filter,
+                                     action,
+                                     "--match", "physdev",
+                                     "--physdev-in", iface,
+                                     "--jump", "ACCEPT",
+                                     NULL);
+    }
 }
 
 int
 iptablesAddPhysdevForward(iptablesContext *ctx,
-                          const char *iface)
+                          const char *iface,
+                          const char *target)
 {
-    return iptablesPhysdevForward(ctx, iface, ADD);
+    return iptablesPhysdevForward(ctx, iface, target, ADD);
 }
 
 int
 iptablesRemovePhysdevForward(iptablesContext *ctx,
-                             const char *iface)
+                             const char *iface,
+                             const char *target)
 {
-    return iptablesPhysdevForward(ctx, iface, REMOVE);
+    return iptablesPhysdevForward(ctx, iface, target, REMOVE);
 }
 
 static int
 iptablesInterfaceForward(iptablesContext *ctx,
                          const char *iface,
+                         const char *target,
                          int action)
 {
-    return iptablesAddRemoveRule(ctx->forward_filter,
-                                 action,
-                                 "--in-interface", iface,
-                                 "--jump", "ACCEPT",
-                                 NULL);
+    if (target && target[0]) {
+        return iptablesAddRemoveRule(ctx->forward_filter,
+                                     action,
+                                     "--in-interface", iface,
+                                     "--out-interface", target,
+                                     "--jump", "ACCEPT",
+                                     NULL);
+    } else {
+        return iptablesAddRemoveRule(ctx->forward_filter,
+                                     action,
+                                     "--in-interface", iface,
+                                     "--jump", "ACCEPT",
+                                     NULL);
+    }
 }
 
 int
 iptablesAddInterfaceForward(iptablesContext *ctx,
-                            const char *iface)
+                            const char *iface,
+                            const char *target)
 {
-    return iptablesInterfaceForward(ctx, iface, ADD);
+    return iptablesInterfaceForward(ctx, iface, target, ADD);
 }
 
 int
 iptablesRemoveInterfaceForward(iptablesContext *ctx,
-                               const char *iface)
+                               const char *iface,
+                               const char *target)
 {
-    return iptablesInterfaceForward(ctx, iface, REMOVE);
+    return iptablesInterfaceForward(ctx, iface, target, REMOVE);
 }
 
 static int
 iptablesStateForward(iptablesContext *ctx,
                      const char *iface,
+                     const char *target,
                      int action)
 {
-    return iptablesAddRemoveRule(ctx->forward_filter,
-                                 action,
-                                 "--out-interface", iface,
-                                 "--match", "state",
-                                 "--state", "ESTABLISHED,RELATED",
-                                 "--jump", "ACCEPT",
-                                 NULL);
+    if (target && target[0]) {
+        return iptablesAddRemoveRule(ctx->forward_filter,
+                                     action,
+                                     "--in-interface", target,
+                                     "--out-interface", iface,
+                                     "--match", "state",
+                                     "--state", "ESTABLISHED,RELATED",
+                                     "--jump", "ACCEPT",
+                                     NULL);
+    } else {
+        return iptablesAddRemoveRule(ctx->forward_filter,
+                                     action,
+                                     "--out-interface", iface,
+                                     "--match", "state",
+                                     "--state", "ESTABLISHED,RELATED",
+                                     "--jump", "ACCEPT",
+                                     NULL);
+    }
 }
 
 int
 iptablesAddStateForward(iptablesContext *ctx,
-                        const char *iface)
+                        const char *iface,
+                        const char *target)
 {
-    return iptablesStateForward(ctx, iface, ADD);
+    return iptablesStateForward(ctx, iface, target, ADD);
 }
 
 int
 iptablesRemoveStateForward(iptablesContext *ctx,
-                           const char *iface)
+                           const char *iface,
+                           const char *target)
 {
-    return iptablesStateForward(ctx, iface, REMOVE);
+    return iptablesStateForward(ctx, iface, target, REMOVE);
 }
 
 static int
 iptablesNonBridgedMasq(iptablesContext *ctx,
+                       const char *target,
                        int action)
 {
-    return iptablesAddRemoveRule(ctx->nat_postrouting,
-                                 action,
-                                 "--match", "physdev",
-                                 "!", "--physdev-is-bridged",
-                                 "--jump", "MASQUERADE",
-                                 NULL);
+    if (target && target[0]) {
+        return iptablesAddRemoveRule(ctx->nat_postrouting,
+                                     action,
+                                     "--out-interface", target,
+                                     "--match", "physdev",
+                                     "!", "--physdev-is-bridged",
+                                     "--jump", "MASQUERADE",
+                                     NULL);
+    } else {
+        return iptablesAddRemoveRule(ctx->nat_postrouting,
+                                     action,
+                                     "--match", "physdev",
+                                     "!", "--physdev-is-bridged",
+                                     "--jump", "MASQUERADE",
+                                     NULL);
+    }
 }
 
 int
-iptablesAddNonBridgedMasq(iptablesContext *ctx)
+iptablesAddNonBridgedMasq(iptablesContext *ctx,
+                          const char *target)
 {
-    return iptablesNonBridgedMasq(ctx, ADD);
+    return iptablesNonBridgedMasq(ctx, target, ADD);
 }
 
 int
-iptablesRemoveNonBridgedMasq(iptablesContext *ctx)
+iptablesRemoveNonBridgedMasq(iptablesContext *ctx,
+                             const char *target)
 {
-    return iptablesNonBridgedMasq(ctx, REMOVE);
+    return iptablesNonBridgedMasq(ctx, target, REMOVE);
 }
 
 /*

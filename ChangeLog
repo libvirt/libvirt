@@ -1,3 +1,39 @@
+Tue Mar 13 18:04:14 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/qemud.c: Use the --dhcp-leasefile arg to dnsmasq to
+	ensure multiple instances of dnsmasq can co-exist without
+	splaterring each other's leases.
+
+	* qemud/bridge.c: Use a single ifname arg instead of two separate
+	ifnameOrFmt & ifname args to simply use by callers
+
+	* qemud/conf.c: Autogenerate a MAC address if none is provided.
+	Added support for ethernet, bridge, mcast, client and server
+	networking config types in XML parser, generator and command
+	line args. Use the 'vlan' attribute for all QEMU nics to ensure
+	they don't all appear on same virtual LAN. Ensure order of
+	QEMU NICs matches order they are declared in the XML. Tweak
+	existing XML generation of 'network' type to match syntax
+	used by Xen for specifying tap device name. Add support for
+	creating isolated networks, or networks forwarding to an
+	explicit named physical device.
+
+	* qemud/default-network.xml: Add <forward/> to make default network
+	automatically forward to any active physical device.
+
+	* qemud/internal.h: Added struct fields for new types of network
+	config, and for tracking network forward device.
+
+	* qemud/iptables.h, qemud/iptables.c: Allow an optional target
+	device name to be passed in to restrict IP tables forwarding
+	rules.
+
+	* qemud/Makefile.am: Create $sysconfdir/lib/libvirt for DHCP
+	leases file
+
+	* libvirt.spec.in: Include %{_sysconfdir}/lib/libvirt for DHCP
+	leases file
+
 Mon Mar 12 23:17:11 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* libvirt.spec.in: Don't run UUID generation on first install,

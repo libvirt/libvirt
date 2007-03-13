@@ -28,12 +28,14 @@ install-data-local:
 	test -e $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml || \
            ln -s ../default.xml $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
 	mkdir -p $(DESTDIR)$(localstatedir)/run/libvirt
+	mkdir -p $(DESTDIR)$(localstatedir)/lib/libvirt
 
 uninstall-local:
 	rm -f $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
 	rm -f $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml
 	rmdir $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart || :
 	rmdir $(DESTDIR)$(localstatedir)/run/libvirt || :
+	rmdir $(DESTDIR)$(localstatedir)/lib/libvirt || :
 
 EXTRA_DIST = libvirtd.in default-network.xml
 
