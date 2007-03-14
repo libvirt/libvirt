@@ -1,3 +1,9 @@
+Wed Mar 14 14:12:32 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: applied patch from Kazuki Mizushima, an
+	  inversion between shutoff and shutdown flags
+	* po/* doc/*: automatic update
+
 Tue Mar 13 18:04:14 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/qemud.c: Use the --dhcp-leasefile arg to dnsmasq to

@@ -1722,9 +1722,9 @@ sexpr_to_xend_domain_info(virDomainPtr domain, struct sexpr *root, virDomainInfo
         if (strchr(flags, 'c'))
             info->state = VIR_DOMAIN_CRASHED;
         else if (strchr(flags, 's'))
-            info->state = VIR_DOMAIN_SHUTDOWN;
-        else if (strchr(flags, 'd'))
             info->state = VIR_DOMAIN_SHUTOFF;
+        else if (strchr(flags, 'd'))
+            info->state = VIR_DOMAIN_SHUTDOWN;
         else if (strchr(flags, 'p'))
             info->state = VIR_DOMAIN_PAUSED;
         else if (strchr(flags, 'b'))

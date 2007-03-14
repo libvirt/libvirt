@@ -3,5 +3,3 @@ Makefile.in
 Makefile
 info1
 suspend
-.libs
-.deps
