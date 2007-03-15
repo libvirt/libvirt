@@ -1,3 +1,12 @@
+Thu Mar 15 15:26:20 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c src/xen_internal.c: applied patch from Atsushi SAKAI
+	  to better handle the case where there is no limit in the domain
+	  upper memory size
+	* docs/architecture.html docs/format.html docs/intro.html
+	  docs/libvir.html: started to update the documentation to reflect
+	  the current state
+
 Thu Mar 15 08:40:33 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in proxy/Makefile.am proxy/libvirt_proxy.c 

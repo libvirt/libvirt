@@ -1186,8 +1186,13 @@ cmdDominfo(vshControl * ctl, vshCmd * cmd)
             vshPrint(ctl, "%-15s %.1lfs\n", _("CPU time:"), cpuUsed);
         }
 
-        vshPrint(ctl, "%-15s %lu kB\n", _("Max memory:"),
+        if (info.maxMem != UINT_MAX)
+            vshPrint(ctl, "%-15s %lu kB\n", _("Max memory:"),
                  info.maxMem);
+        else
+            vshPrint(ctl, "%-15s %-15s\n", _("Max memory:"),
+                 _("no limit"));
+
         vshPrint(ctl, "%-15s %lu kB\n", _("Used memory:"),
                  info.memory);
 

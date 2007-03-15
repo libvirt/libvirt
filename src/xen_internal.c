@@ -1598,7 +1598,9 @@ xenHypervisorGetDomInfo(virConnectPtr conn, int id, virDomainInfoPtr info)
      */
     info->cpuTime = XEN_GETDOMAININFO_CPUTIME(dominfo);
     info->memory = XEN_GETDOMAININFO_TOT_PAGES(dominfo) * kb_per_pages;
-    info->maxMem = XEN_GETDOMAININFO_MAX_PAGES(dominfo) * kb_per_pages;
+    info->maxMem = XEN_GETDOMAININFO_MAX_PAGES(dominfo);
+    if(info->maxMem != UINT_MAX)
+        info->maxMem *= kb_per_pages;
     info->nrVirtCpu = XEN_GETDOMAININFO_CPUCOUNT(dominfo);
     return (0);
 }
