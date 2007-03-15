@@ -1449,7 +1449,7 @@ xenHypervisorGetCapabilities (virConnectPtr conn)
     struct utsname utsname;
     char line[1024], *str, *token;
     regmatch_t subs[3];
-    char *saveptr;
+    char *saveptr = NULL;
     FILE *fp;
     int i, r;
 
