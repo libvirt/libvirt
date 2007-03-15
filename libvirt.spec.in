@@ -72,10 +72,18 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.a
-install -d -m 0755 $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/
 install -d -m 0755 $RPM_BUILD_ROOT%{_localstatedir}/run/libvirt/
+
+# We don't want to install /etc/libvirt/qemu/networks in the main %files list
+# because if the admin wants to delete the default network completely, we don't
+# want to end up re-incarnating it on every RPM upgrade.
+install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/libvirt/networks/
+cp $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/default.xml \
+   $RPM_BUILD_ROOT%{_datadir}/libvirt/networks/default.xml
+rm -f $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/default.xml
+rm -f $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
 # Strip auto-generated UUID - we need it generated per-install
-sed -i -e "/<uuid>/d" $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu/networks/default.xml
+sed -i -e "/<uuid>/d" $RPM_BUILD_ROOT%{_datadir}/libvirt/networks/default.xml
 %find_lang %{name}
 
 %clean
@@ -83,12 +91,21 @@ rm -fr %{buildroot}
 
 %post
 /sbin/ldconfig
-/sbin/chkconfig --add libvirtd
-grep uuid  %{_sysconfdir}/libvirt/qemu/networks/default.xml 1>/dev/null 2>&1
-if [ $? != 0 ]; then
+
+# We want to install the default network for initial RPM installs
+# or on the first upgrade from a non-network aware libvirt only.
+# We check this by looking to see if the daemon is already installed
+/sbin/chkconfig --list libvirtd 1>/dev/null 2>&1
+if [ $? != 0 ]
+then
     UUID=`/usr/bin/uuidgen`
-    sed -i -e "s,</name>,</name>\n  <uuid>$UUID</uuid>," %{_sysconfdir}/libvirt/qemu/networks/default.xml
+    sed -e "s,</name>,</name>\n  <uuid>$UUID</uuid>," \
+         < %{_datadir}/libvirt/networks/default.xml \
+         > %{_sysconfdir}/libvirt/qemu/networks/default.xml
+    ln -s ../default.xml %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
 fi
+
+/sbin/chkconfig --add libvirtd
 
 %preun
 if [ $1 = 0 ]; then
@@ -109,9 +126,10 @@ fi
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/
-%config %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/default.xml
-%config %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
 %{_sysconfdir}/rc.d/init.d/libvirtd
+%dir %{_datadir}/libvirt/
+%dir %{_datadir}/libvirt/networks/
+%{_datadir}/libvirt/networks/default.xml
 %dir %{_localstatedir}/run/libvirt/
 %dir %{_localstatedir}/lib/libvirt/
 %attr(4755, root, root) %{_libexecdir}/libvirt_proxy
