@@ -1,5 +1,14 @@
 Thu Mar 15 14:14:20 EST 2007 Daniel P Berrange <berrange@redhat.com>
 
+	* src/qemud_internal.c: Paranoia ensure the XML returned by
+	the getCapabilities call is NULL terminated before strduping
+	to protect from malicious / buggy server
+	* qemud/dispatch.c: Packet length for getCapabilities call
+	should be the size of the reply body, not the size of the
+	XML string.
+
+Thu Mar 15 14:14:20 EST 2007 Daniel P Berrange <berrange@redhat.com>
+
 	* src/xen_internal.c: Fix missing NULL initializer
 
 Thu Mar 15 13:20:20 EST 2007 Daniel P Berrange <berrange@redhat.com>

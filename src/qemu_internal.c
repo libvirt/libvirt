@@ -468,6 +468,8 @@ qemuGetCapabilities (virConnectPtr conn)
         return NULL;
     }
 
+    reply.data.getCapabilitiesReply.xml[QEMUD_MAX_XML_LEN-1] = '\0';
+
     xml = strdup (reply.data.getCapabilitiesReply.xml);
     if (!xml) {
         qemuError (conn, NULL, VIR_ERR_NO_MEMORY, NULL);

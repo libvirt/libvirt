@@ -269,7 +269,7 @@ qemudDispatchGetCapabilities (struct qemud_server *server,
         return 0;
     }
     out->header.type = QEMUD_PKT_GET_CAPABILITIES;
-    out->header.dataSize = len;
+    out->header.dataSize = sizeof(out->data.getCapabilitiesReply);
     strcpy (out->data.getCapabilitiesReply.xml, xml->content);
     bufferFree (xml);
     return 0;
