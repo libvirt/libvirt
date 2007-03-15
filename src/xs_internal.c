@@ -47,6 +47,7 @@ static virDriver xenStoreDriver = {
     NULL, /* version */
     NULL, /* getMaxVcpus */
     NULL, /* nodeGetInfo */
+    NULL, /* getCapabilities */
     xenStoreListDomains, /* listDomains */
     NULL, /* numOfDomains */
     NULL, /* domainCreateLinux */

@@ -119,6 +119,7 @@ typedef enum {
     VIR_ERR_XML_DETAIL, /* detail of an XML error */
     VIR_ERR_INVALID_NETWORK, /* invalid network object */
     VIR_ERR_NETWORK_EXIST, /* the network already exist */
+    VIR_ERR_SYSTEM_ERROR, /* general system call failure */
 } virErrorNumber;
 
 /**
@@ -133,7 +134,7 @@ typedef void (*virErrorFunc) (void *userData, virErrorPtr error);
 /*
  * Errors can be handled as asynchronous callbacks or after the routine
  * failed. They can also be handled globally at the library level, or
- * at the connection level (which then has priority
+ * at the connection level (which then has priority).
  */
 
 virErrorPtr		virGetLastError		(void);

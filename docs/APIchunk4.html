@@ -19,6 +19,7 @@
 <a href="html/libvirt-libvirt.html#virNetworkCreateXML">virNetworkCreateXML</a><br />
 </dd><dt>only</dt><dd><a href="html/libvirt-libvirt.html#virConnectGetVersion">virConnectGetVersion</a><br />
 <a href="html/libvirt-libvirt.html#virDomainGetInfo">virDomainGetInfo</a><br />
+</dd><dt>opaque</dt><dd><a href="html/libvirt-libvirt.html#virConnectGetCapabilities">virConnectGetCapabilities</a><br />
 </dd><dt>operation</dt><dd><a href="html/libvirt-libvirt.html#virDomainGetOSType">virDomainGetOSType</a><br />
 <a href="html/libvirt-libvirt.html#virDomainReboot">virDomainReboot</a><br />
 </dd><dt>option</dt><dd><a href="html/libvirt-libvirt.html#virDomainShutdown">virDomainShutdown</a><br />
@@ -84,7 +85,8 @@
 <a href="html/libvirt-libvirt.html#virConnectListDefinedNetworks">virConnectListDefinedNetworks</a><br />
 <a href="html/libvirt-virterror.html#virErrorFunc">virErrorFunc</a><br />
 <a href="html/libvirt-virterror.html#virSetErrorFunc">virSetErrorFunc</a><br />
-</dd><dt>provides</dt><dd><a href="html/libvirt-libvirt.html#VIR_UUID_STRING_BUFLEN">VIR_UUID_STRING_BUFLEN</a><br />
+</dd><dt>provides</dt><dd><a href="html/libvirt-libvirt.html#VIR_UUID_BUFLEN">VIR_UUID_BUFLEN</a><br />
+<a href="html/libvirt-libvirt.html#VIR_UUID_STRING_BUFLEN">VIR_UUID_STRING_BUFLEN</a><br />
 </dd><dt>providing</dt><dd><a href="html/libvirt-libvirt.html#LIBVIR_VERSION_NUMBER">LIBVIR_VERSION_NUMBER</a><br />
 </dd><dt>public</dt><dd><a href="html/libvirt-libvirt.html#virDomainGetName">virDomainGetName</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkGetName">virNetworkGetName</a><br />
@@ -116,6 +118,7 @@
 </dd><dt>request</dt><dd><a href="html/libvirt-libvirt.html#virDomainReboot">virDomainReboot</a><br />
 <a href="html/libvirt-libvirt.html#virDomainShutdown">virDomainShutdown</a><br />
 </dd><dt>required</dt><dd><a href="html/libvirt-libvirt.html#VIR_CPU_MAPLEN">VIR_CPU_MAPLEN</a><br />
+<a href="html/libvirt-libvirt.html#VIR_UUID_BUFLEN">VIR_UUID_BUFLEN</a><br />
 <a href="html/libvirt-libvirt.html#VIR_UUID_STRING_BUFLEN">VIR_UUID_STRING_BUFLEN</a><br />
 </dd><dt>requires</dt><dd><a href="html/libvirt-libvirt.html#virDomainCreateLinux">virDomainCreateLinux</a><br />
 <a href="html/libvirt-libvirt.html#virDomainDestroy">virDomainDestroy</a><br />
@@ -146,12 +149,15 @@
 <a href="html/libvirt-libvirt.html#virDomainDestroy">virDomainDestroy</a><br />
 <a href="html/libvirt-libvirt.html#virGetVersion">virGetVersion</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkDestroy">virNetworkDestroy</a><br />
-</dd><dt>returned</dt><dd><a href="html/libvirt-libvirt.html#virDomainCreateLinux">virDomainCreateLinux</a><br />
+</dd><dt>returned</dt><dd><a href="html/libvirt-libvirt.html#virConnectGetCapabilities">virConnectGetCapabilities</a><br />
+<a href="html/libvirt-libvirt.html#virDomainCreateLinux">virDomainCreateLinux</a><br />
+<a href="html/libvirt-libvirt.html#virDomainGetAutostart">virDomainGetAutostart</a><br />
 <a href="html/libvirt-libvirt.html#virDomainGetVcpus">virDomainGetVcpus</a><br />
 <a href="html/libvirt-libvirt.html#virDomainGetXMLDesc">virDomainGetXMLDesc</a><br />
 <a href="html/libvirt-libvirt.html#virDomainPinVcpu">virDomainPinVcpu</a><br />
 <a href="html/libvirt-libvirt.html#virGetVersion">virGetVersion</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkCreateXML">virNetworkCreateXML</a><br />
+<a href="html/libvirt-libvirt.html#virNetworkGetAutostart">virNetworkGetAutostart</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkGetBridgeName">virNetworkGetBridgeName</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkGetXMLDesc">virNetworkGetXMLDesc</a><br />
 </dd><dt>returns</dt><dd><a href="html/libvirt-libvirt.html#VIR_CPU_MAPLEN">VIR_CPU_MAPLEN</a><br />
@@ -199,9 +205,11 @@
 <a href="html/libvirt-libvirt.html#virConnectOpenReadOnly">virConnectOpenReadOnly</a><br />
 <a href="html/libvirt-libvirt.html#virDomainDestroy">virDomainDestroy</a><br />
 <a href="html/libvirt-libvirt.html#virDomainFree">virDomainFree</a><br />
+<a href="html/libvirt-libvirt.html#virDomainSetAutostart">virDomainSetAutostart</a><br />
 <a href="html/libvirt-libvirt.html#virDomainShutdown">virDomainShutdown</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkDestroy">virNetworkDestroy</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkFree">virNetworkFree</a><br />
+<a href="html/libvirt-libvirt.html#virNetworkSetAutostart">virNetworkSetAutostart</a><br />
 </dd><dt>shutdown</dt><dd><a href="html/libvirt-libvirt.html#virDomainDestroy">virDomainDestroy</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkDestroy">virNetworkDestroy</a><br />
 </dd><dt>significant</dt><dd><a href="html/libvirt-libvirt.html#virDomainPinVcpu">virDomainPinVcpu</a><br />
@@ -255,6 +263,7 @@
 <a href="html/libvirt-libvirt.html#virConnectListDefinedNetworks">virConnectListDefinedNetworks</a><br />
 </dd><dt>string</dt><dd><a href="html/libvirt-virterror.html#_virError">_virError</a><br />
 <a href="html/libvirt-libvirt.html#_virNodeInfo">_virNodeInfo</a><br />
+<a href="html/libvirt-libvirt.html#virConnectGetCapabilities">virConnectGetCapabilities</a><br />
 <a href="html/libvirt-libvirt.html#virConnectGetType">virConnectGetType</a><br />
 <a href="html/libvirt-libvirt.html#virDomainGetName">virDomainGetName</a><br />
 <a href="html/libvirt-libvirt.html#virDomainGetOSType">virDomainGetOSType</a><br />
@@ -263,7 +272,8 @@
 <a href="html/libvirt-libvirt.html#virNetworkGetName">virNetworkGetName</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkGetUUIDString">virNetworkGetUUIDString</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkLookupByUUIDString">virNetworkLookupByUUIDString</a><br />
-</dd><dt>structure</dt><dd><a href="html/libvirt-libvirt.html#virDomainDestroy">virDomainDestroy</a><br />
+</dd><dt>structure</dt><dd><a href="html/libvirt-libvirt.html#virConnectGetCapabilities">virConnectGetCapabilities</a><br />
+<a href="html/libvirt-libvirt.html#virDomainDestroy">virDomainDestroy</a><br />
 <a href="html/libvirt-libvirt.html#virDomainFree">virDomainFree</a><br />
 <a href="html/libvirt-libvirt.html#virDomainGetInfo">virDomainGetInfo</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkDestroy">virNetworkDestroy</a><br />

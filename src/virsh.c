@@ -1550,6 +1550,33 @@ cmdNodeinfo(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 }
 
 /*
+ * "capabilities" command
+ */
+static vshCmdInfo info_capabilities[] = {
+    {"syntax", "capabilities"},
+    {"help", gettext_noop("capabilities")},
+    {"desc", gettext_noop("Returns capabilities of hypervisor/driver.")},
+    {NULL, NULL}
+};
+
+static int
+cmdCapabilities (vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
+{
+    char *caps;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if ((caps = virConnectGetCapabilities (ctl->conn)) == NULL) {
+        vshError(ctl, FALSE, _("failed to get capabilities"));
+        return FALSE;
+    }
+    vshPrint (ctl, "%s\n", caps);
+
+    return TRUE;
+}
+
+/*
  * "dumpxml" command
  */
 static vshCmdInfo info_dumpxml[] = {
@@ -2380,6 +2407,7 @@ cmdQuit(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
  */
 static vshCmdDef commands[] = {
     {"autostart", cmdAutostart, opts_autostart, info_autostart},
+    {"capabilities", cmdCapabilities, NULL, info_capabilities},
     {"connect", cmdConnect, opts_connect, info_connect},
     {"console", cmdConsole, opts_console, info_console},
     {"create", cmdCreate, opts_create, info_create},

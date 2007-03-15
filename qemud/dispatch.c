@@ -23,6 +23,7 @@
 
 #include <config.h>
 
+#include <unistd.h>
 #include <limits.h>
 #include <string.h>
 #include <stdlib.h>
@@ -33,6 +34,8 @@
 #include "internal.h"
 #include "driver.h"
 #include "dispatch.h"
+#include "conf.h"
+#include "buf.h"
 
 
 static int qemudDispatchFailure(struct qemud_server *server ATTRIBUTE_UNUSED,
@@ -97,6 +100,178 @@ static int qemudDispatchGetNodeInfo(struct qemud_server *server, struct qemud_cl
     strncpy(out->data.getNodeInfoReply.model, info.machine, sizeof(out->data.getNodeInfoReply.model));
     out->data.getNodeInfoReply.model[sizeof(out->data.getNodeInfoReply.model)-1] = '\0';
 
+    return 0;
+}
+
+static int
+qemudDispatchGetCapabilities (struct qemud_server *server,
+                              struct qemud_client *client,
+                              struct qemud_packet *in,
+                              struct qemud_packet *out)
+{
+    struct utsname utsname;
+    int i, j, r;
+    int have_kqemu = 0;
+    int have_kvm = 0;
+    bufferPtr xml;
+    int len;
+
+    if (in->header.dataSize != 0) return -1;
+
+    /* Really, this never fails - look at the man-page. */
+    uname (&utsname);
+
+    have_kqemu = access ("/dev/kqemu", F_OK) == 0;
+    have_kvm = access ("/dev/kvm", F_OK) == 0;
+
+    /* Construct the XML. */
+    xml = bufferNew (1024);
+    if (!xml) {
+        qemudReportError (server, VIR_ERR_NO_MEMORY, NULL);
+        qemudDispatchFailure (server, client, out);
+        return 0;
+    }
+
+    r = bufferVSprintf (xml,
+                        "\
+<capabilities>\n\
+  <host>\n\
+    <cpu>\n\
+      <arch>%s</arch>\n\
+    </cpu>\n\
+  </host>\n",
+                        utsname.machine);
+    if (r == -1) {
+    vir_buffer_failed:
+        bufferFree (xml);
+        qemudReportError (server, VIR_ERR_NO_MEMORY, NULL);
+        qemudDispatchFailure (server, client, out);
+        return 0;
+    }
+
+    i = -1;
+    if (strcmp (utsname.machine, "i686") == 0) i = 0;
+    else if (strcmp (utsname.machine, "x86_64") == 0) i = 1;
+    if (i >= 0) {
+        /* For the default (PC-like) guest, qemudArchs[0] or [1]. */
+        r = bufferVSprintf (xml,
+                            "\
+\n\
+  <guest>\n\
+    <os_type>hvm</os_type>\n\
+    <arch name=\"%s\">\n\
+      <wordsize>%d</wordsize>\n\
+      <emulator>/usr/bin/%s</emulator>\n\
+      <domain type=\"qemu\"/>\n",
+                            qemudArchs[i].arch,
+                            qemudArchs[i].wordsize,
+                            qemudArchs[i].binary);
+        if (r == -1) goto vir_buffer_failed;
+
+        for (j = 0; qemudArchs[i].machines[j]; ++j) {
+            r = bufferVSprintf (xml,
+                                "\
+      <machine>%s</machine>\n",
+                                qemudArchs[i].machines[j]);
+            if (r == -1) goto vir_buffer_failed;
+        }
+
+        if (have_kqemu) {
+            r = bufferAdd (xml,
+                           "\
+      <domain type=\"kqemu\"/>\n", -1);
+            if (r == -1) goto vir_buffer_failed;
+        }
+        if (have_kvm) {
+            r = bufferAdd (xml,
+                           "\
+      <domain type=\"kvm\">\n\
+        <emulator>/usr/bin/qemu-kvm</emulator>\n\
+      </domain>\n", -1);
+            if (r == -1) goto vir_buffer_failed;
+        }
+        r = bufferAdd (xml,
+                       "\
+    </arch>\n\
+  </guest>\n", -1);
+        if (r == -1) goto vir_buffer_failed;
+
+        /* The "other" PC architecture needs emulation. */
+        i = i ^ 1;
+        r = bufferVSprintf (xml,
+                            "\
+\n\
+  <guest>\n\
+    <os_type>hvm</os_type>\n\
+    <arch name=\"%s\">\n\
+      <wordsize>%d</wordsize>\n\
+      <emulator>/usr/bin/%s</emulator>\n\
+      <domain type=\"qemu\"/>\n",
+                            qemudArchs[i].arch,
+                            qemudArchs[i].wordsize,
+                            qemudArchs[i].binary);
+        if (r == -1) goto vir_buffer_failed;
+        for (j = 0; qemudArchs[i].machines[j]; ++j) {
+            r = bufferVSprintf (xml,
+                                "\
+      <machine>%s</machine>\n",
+                                qemudArchs[i].machines[j]);
+            if (r == -1) goto vir_buffer_failed;
+        }
+        r = bufferAdd (xml,
+                       "\
+    </arch>\n\
+  </guest>\n", -1);
+        if (r == -1) goto vir_buffer_failed;
+    }
+
+    /* The non-PC architectures, qemudArchs[>=2]. */
+    for (i = 2; qemudArchs[i].arch; ++i) {
+        r = bufferVSprintf (xml,
+                            "\
+\n\
+  <guest>\n\
+    <os_type>hvm</os_type>\n\
+    <arch name=\"%s\">\n\
+      <wordsize>%d</wordsize>\n\
+      <emulator>/usr/bin/%s</emulator>\n\
+      <domain type=\"qemu\"/>\n",
+                            qemudArchs[i].arch,
+                            qemudArchs[i].wordsize,
+                            qemudArchs[i].binary);
+        if (r == -1) goto vir_buffer_failed;
+        for (j = 0; qemudArchs[i].machines[j]; ++j) {
+            r = bufferVSprintf (xml,
+                                "\
+      <machine>%s</machine>\n",
+                                qemudArchs[i].machines[j]);
+            if (r == -1) goto vir_buffer_failed;
+        }
+        r = bufferAdd (xml,
+                       "\
+    </arch>\n\
+  </guest>\n", -1);
+        if (r == -1) goto vir_buffer_failed;
+    }
+
+    /* Finish off. */
+    r = bufferAdd (xml,
+                      "\
+</capabilities>\n", -1);
+    if (r == -1) goto vir_buffer_failed;
+
+    /* Copy the XML into the outgoing packet, assuming it's not too large. */
+    len = strlen (xml->content);
+    if (len > QEMUD_MAX_XML_LEN) {
+        bufferFree (xml);
+        qemudReportError (server, VIR_ERR_XML_ERROR, NULL);
+        qemudDispatchFailure (server, client, out);
+        return 0;
+    }
+    out->header.type = QEMUD_PKT_GET_CAPABILITIES;
+    out->header.dataSize = len;
+    strcpy (out->data.getCapabilitiesReply.xml, xml->content);
+    bufferFree (xml);
     return 0;
 }
 
@@ -854,6 +1029,7 @@ clientFunc funcsTransmitRW[QEMUD_PKT_MAX] = {
     qemudDispatchDomainSetAutostart,
     qemudDispatchNetworkGetAutostart,
     qemudDispatchNetworkSetAutostart,
+    qemudDispatchGetCapabilities,
 };
 
 clientFunc funcsTransmitRO[QEMUD_PKT_MAX] = {

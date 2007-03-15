@@ -67,7 +67,7 @@
      <exports symbol='virNetworkUndefine' type='function'/>
      <exports symbol='virGetVersion' type='function'/>
      <exports symbol='virConnectListDefinedDomains' type='function'/>
-     <exports symbol='virDomainSetMaxMemory' type='function'/>
+     <exports symbol='virConnectGetCapabilities' type='function'/>
      <exports symbol='virNetworkGetUUID' type='function'/>
      <exports symbol='virDomainLookupByName' type='function'/>
      <exports symbol='virNetworkLookupByUUID' type='function'/>
@@ -121,6 +121,7 @@
      <exports symbol='virDomainGetAutostart' type='function'/>
      <exports symbol='virDomainGetVcpus' type='function'/>
      <exports symbol='virDomainGetXMLDesc' type='function'/>
+     <exports symbol='virDomainSetMaxMemory' type='function'/>
      <exports symbol='virConnectGetVersion' type='function'/>
      <exports symbol='virConnectListNetworks' type='function'/>
      <exports symbol='virDomainLookupByID' type='function'/>
@@ -132,6 +133,7 @@
      <author>Daniel Veillard &lt;veillard@redhat.com&gt; </author>
      <exports symbol='VIR_FROM_XML' type='enum'/>
      <exports symbol='VIR_ERR_CALL_FAILED' type='enum'/>
+     <exports symbol='VIR_ERR_SYSTEM_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_WARNING' type='enum'/>
      <exports symbol='VIR_ERR_NO_XEN' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_ARG' type='enum'/>
@@ -245,6 +247,7 @@
       <arg name='cpu' info='the physical CPU number'/>
     </macro>
     <macro name='VIR_UUID_BUFLEN' file='libvirt'>
+      <info>This macro provides the length of the buffer required for virDomainGetUUID()</info>
     </macro>
     <macro name='VIR_UUID_STRING_BUFLEN' file='libvirt'>
       <info>This macro provides the length of the buffer required for virDomainGetUUIDString()</info>
@@ -277,7 +280,7 @@
     <enum name='VIR_ERR_INVALID_CONN' file='virterror' value='6' type='virErrorNumber' info='invalid connection object'/>
     <enum name='VIR_ERR_INVALID_DOMAIN' file='virterror' value='7' type='virErrorNumber' info='invalid domain object'/>
     <enum name='VIR_ERR_INVALID_NETWORK' file='virterror' value='36' type='virErrorNumber' info='invalid network object'/>
-    <enum name='VIR_ERR_NETWORK_EXIST' file='virterror' value='37' type='virErrorNumber' info=' the network already exist'/>
+    <enum name='VIR_ERR_NETWORK_EXIST' file='virterror' value='37' type='virErrorNumber' info='the network already exist'/>
     <enum name='VIR_ERR_NONE' file='virterror' value='0' type='virErrorLevel'/>
     <enum name='VIR_ERR_NO_CONNECT' file='virterror' value='5' type='virErrorNumber' info='can&apos;t connect to hypervisor'/>
     <enum name='VIR_ERR_NO_DEVICE' file='virterror' value='23' type='virErrorNumber' info='missing domain devices information'/>
@@ -300,6 +303,7 @@
     <enum name='VIR_ERR_POST_FAILED' file='virterror' value='11' type='virErrorNumber' info='a HTTP POST command to failed'/>
     <enum name='VIR_ERR_READ_FAILED' file='virterror' value='31' type='virErrorNumber' info='failed to read a conf file'/>
     <enum name='VIR_ERR_SEXPR_SERIAL' file='virterror' value='13' type='virErrorNumber' info='failure to serialize an S-Expr'/>
+    <enum name='VIR_ERR_SYSTEM_ERROR' file='virterror' value='38' type='virErrorNumber' info=' general system call failure'/>
     <enum name='VIR_ERR_UNKNOWN_HOST' file='virterror' value='4' type='virErrorNumber' info='could not resolve hostname'/>
     <enum name='VIR_ERR_WARNING' file='virterror' value='1' type='virErrorLevel' info='A simple warning'/>
     <enum name='VIR_ERR_WRITE_FAILED' file='virterror' value='34' type='virErrorNumber' info='failed to write a conf file'/>
@@ -423,9 +427,14 @@
       <return type='int' info='0 in case of success or -1 in case of error.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
+    <function name='virConnectGetCapabilities' file='libvirt' module='libvirt'>
+      <info>Provides capabilities of the hypervisor / driver.</info>
+      <return type='char *' info='NULL in case of error, or a pointer to an opaque virCapabilities structure (virCapabilitiesPtr). The client must free the returned string after use.'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+    </function>
     <function name='virConnectGetMaxVcpus' file='libvirt' module='libvirt'>
-      <info></info>
-      <return type='int' info='the maximum number of virtual CPUs supported for a guest VM of a specific type. The &apos;type&apos; parameter here corresponds to the &apos;type&apos; attribute in the &lt;domain&gt; element of the XML.  Returns the maximum of virtual CPU or -1 in case of error.'/>
+      <info>Provides the maximum number of virtual CPUs supported for a guest VM of a specific type. The &apos;type&apos; parameter here corresponds to the &apos;type&apos; attribute in the &lt;domain&gt; element of the XML.</info>
+      <return type='int' info='the maximum of virtual CPU or -1 in case of error.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='type' type='const char *' info='value of the &apos;type&apos; attribute in the &lt;domain&gt; element'/>
     </function>
@@ -556,10 +565,10 @@
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
     <function name='virDomainGetAutostart' file='libvirt' module='libvirt'>
-      <info></info>
-      <return type='int' info='a boolean value indicating whether the domain configured to be automatically started when the host machine boots.  Returns -1 in case of error, 0 in case of success'/>
+      <info>Provides a boolean value indicating whether the domain configured to be automatically started when the host machine boots.</info>
+      <return type='int' info='-1 in case of error, 0 in case of success'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
-      <arg name='autostart' type='int *' info=''/>
+      <arg name='autostart' type='int *' info='the value returned'/>
     </function>
     <function name='virDomainGetID' file='libvirt' module='libvirt'>
       <info>Get the hypervisor ID number for the domain</info>
@@ -578,8 +587,8 @@
       <arg name='domain' type='virDomainPtr' info='a domain object or NULL'/>
     </function>
     <function name='virDomainGetMaxVcpus' file='libvirt' module='libvirt'>
-      <info></info>
-      <return type='int' info='the maximum number of virtual CPUs supported for the guest VM. If the guest is inactive, this is basically the same as virConnectGetMaxVcpus. If the guest is running this will reflect the maximum number of virtual CPUs the guest was booted with.  Returns the maximum of virtual CPU or -1 in case of error.'/>
+      <info>Provides the maximum number of virtual CPUs supported for the guest VM. If the guest is inactive, this is basically the same as virConnectGetMaxVcpus. If the guest is running this will reflect the maximum number of virtual CPUs the guest was booted with.</info>
+      <return type='int' info='the maximum of virtual CPU or -1 in case of error.'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
     </function>
     <function name='virDomainGetName' file='libvirt' module='libvirt'>
@@ -678,7 +687,7 @@
       <info>Configure the domain to be automatically started when the host machine boots.</info>
       <return type='int' info='-1 in case of error, 0 in case of success'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
-      <arg name='autostart' type='int' info=''/>
+      <arg name='autostart' type='int' info='whether the domain should be automatically started 0 or 1'/>
     </function>
     <function name='virDomainSetMaxMemory' file='libvirt' module='libvirt'>
       <info>Dynamically change the maximum amount of physical memory allocated to a domain. If domain is NULL, then this change the amount of memory reserved to Domain0 i.e. the domain where the application runs. This function requires priviledged access to the hypervisor.</info>
@@ -762,14 +771,14 @@
       <arg name='network' type='virNetworkPtr' info='a network object'/>
     </function>
     <function name='virNetworkGetAutostart' file='libvirt' module='libvirt'>
-      <info></info>
-      <return type='int' info='a boolean value indicating whether the network configured to be automatically started when the host machine boots.  Returns -1 in case of error, 0 in case of success'/>
+      <info>Provides a boolean value indicating whether the network configured to be automatically started when the host machine boots.</info>
+      <return type='int' info='-1 in case of error, 0 in case of success'/>
       <arg name='network' type='virNetworkPtr' info='a network object'/>
-      <arg name='autostart' type='int *' info=''/>
+      <arg name='autostart' type='int *' info='the value returned'/>
     </function>
     <function name='virNetworkGetBridgeName' file='libvirt' module='libvirt'>
-      <info></info>
-      <return type='char *' info='a bridge interface name to which a domain may connect a network interface in order to join the network.  Returns a 0 terminated interface name, or NULL in case of error. the caller must free() the returned value.'/>
+      <info>Provides a bridge interface name to which a domain may connect a network interface in order to join the network.</info>
+      <return type='char *' info='a 0 terminated interface name, or NULL in case of error. the caller must free() the returned value.'/>
       <arg name='network' type='virNetworkPtr' info='a network object'/>
     </function>
     <function name='virNetworkGetName' file='libvirt' module='libvirt'>
@@ -817,7 +826,7 @@
       <info>Configure the network to be automatically started when the host machine boots.</info>
       <return type='int' info='-1 in case of error, 0 in case of success'/>
       <arg name='network' type='virNetworkPtr' info='a network object'/>
-      <arg name='autostart' type='int' info=''/>
+      <arg name='autostart' type='int' info='whether the network should be automatically started 0 or 1'/>
     </function>
     <function name='virNetworkUndefine' file='libvirt' module='libvirt'>
       <info>Undefine a network but does not stop it if it is running</info>

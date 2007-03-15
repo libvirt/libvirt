@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>Introduction</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Introduction</h1><p>Libvirt is a C toolkit to interact with the virtualization capabilities of
-recent versions of Linux (and other OSes), but libvirt won't try to provide
-all possible interfaces for interacting with the virtualization features.</p><p>To avoid ambiguity about the terms used here here are the definitions for
-some of the specific concepts used in libvirt documentation:</p><ul><li>a <strong>node</strong> is a single physical machine</li>
-  <li>an <strong>hypervisor</strong> is a layer of software allowing to
-    virtualize a node in a set of virtual machines with possibly different
-    configurations than the node itself</li>
-  <li>a <strong>domain</strong> is an instance of an operating system running
-    on a virtualized machine provided by the hypervisor</li>
-</ul><p style="text-align: center"><img alt="Hypervisor and domains running on a node" src="node.gif" /></p><p>Now we can define the goal of libvirt: to provide the lowest possible
-generic and stable layer to manage domains on a node.</p><p>This implies the following:</p><ul><li>the API is not targetted to a single virtualization environment, it
-    currently supports Xen and QEmu/KVM. This also implies that some very
-    specific capabilities which are not generic enough may not be provided as
-    libvirt APIs</li>
-  <li>the API should allow to do efficiently and cleanly all the operations
-    needed to manage domains on a node</li>
-  <li>the API will not try to provide hight level multi-nodes management
-    features like load balancing, though they could be implemented on top of
-    libvirt</li>
-  <li>stability of the API is a big concern, libvirt should isolate
-    applications from the frequent changes expected at the lower level of the
-    virtualization framework</li>
-</ul><p>So libvirt should be a building block for higher level management tools
-and for applications focusing on virtualization of a single node (the only
-exception being domain migration between node capabilities which may need to
-be added at the libvirt level). Where possible libvirt should be extendable
-to be able to provide the same API for remote nodes, however this is not the
-case at the moment, the code currently handle only local node accesses
-(extension for remote access support is being worked on, see 
-<a href="bugs.html">the mailing list</a> discussions about it).</p></div></div><div class="linkList2"><div class="llinks2"><h3 class="links2"><span>main menu</span></h3><ul><li><a href="index.html">Home</a></li><li><a href="news.html">Releases</a></li><li><a href="intro.html">Introduction</a></li><li><a href="architecture.html">libvirt architecture</a></li><li><a href="downloads.html">Downloads</a></li><li><a href="format.html">XML Format</a></li><li><a href="python.html">Binding for Python</a></li><li><a href="errors.html">Handling of errors</a></li><li><a href="FAQ.html">FAQ</a></li><li><a href="bugs.html">Reporting bugs and getting help</a></li><li><a href="html/index.html">API Menu</a></li><li><a href="examples/index.html">C code examples</a></li><li><a href="ChangeLog.html">Recent Changes</a></li></ul></div><div class="llinks2"><h3 class="links2"><span>related links</span></h3><ul><li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li><li><a href="https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&amp;component=libvirt&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;bug_status=MODIFIED&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;long_desc_type=allwordssubstr">Open bugs</a></li><li><a href="http://virt-manager.et.redhat.com/">virt-manager</a></li><li><a href="http://search.cpan.org/~danberr/Sys-Virt-0.1.0/">Perl bindings</a></li><li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li><li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" /></form></li><li><a href="http://xmlsoft.org/"><img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li></ul><p class="credits">Graphics and design by <a href="mail:dfong@redhat.com">Diana Fong</a></p></div></div><div id="bottom"><p class="p1"></p></div></div></body></html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>Introduction</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Introduction</h1><p>Libvirt is a C toolkit to interact with the virtualization capabilities
+ofrecent versions of Linux (and other OSes), but libvirt won't try to
+provideall possible interfaces for interacting with the virtualization
+features.</p><p>To avoid ambiguity about the terms used here here are the definitions
+forsome of the specific concepts used in libvirt documentation:</p><ul><li>a <strong>node</strong>is a single physical machine</li>
+  <li>an <strong>hypervisor</strong>is a layer of software allowing
+    tovirtualize a node in a set of virtual machines with possibly
+    differentconfigurations than the node itself</li>
+  <li>a <strong>domain</strong>is an instance of an operating system
+    runningon a virtualized machine provided by the hypervisor</li>
+</ul><p style="text-align: center"><img alt="Hypervisor and domains running on a node" src="node.gif" /></p><p>Now we can define the goal of libvirt: to provide the lowest
+possiblegeneric and stable layer to manage domains on a node.</p><p>This implies the following:</p><ul><li>the API is not targetted to a single virtualization environment,
+    itcurrently supports Xen and QEmu/KVM. This also implies that some
+    veryspecific capabilities which are not generic enough may not be
+    provided aslibvirt APIs</li>
+  <li>the API should allow to do efficiently and cleanly all the
+    operationsneeded to manage domains on a node</li>
+  <li>the API will not try to provide hight level multi-nodes
+    managementfeatures like load balancing, though they could be implemented
+    on top oflibvirt</li>
+  <li>stability of the API is a big concern, libvirt should
+    isolateapplications from the frequent changes expected at the lower level
+    of thevirtualization framework</li>
+</ul><p>So libvirt should be a building block for higher level management toolsand
+for applications focusing on virtualization of a single node (the
+onlyexception being domain migration between node capabilities which may need
+tobe added at the libvirt level). Where possible libvirt should be
+extendableto be able to provide the same API for remote nodes, however this
+is not thecase at the moment, the code currently handle only local node
+accesses(extension for remote access support is being worked on, see<a href="bugs.html">the mailing list</a>discussions about it).</p></div></div><div class="linkList2"><div class="llinks2"><h3 class="links2"><span>main menu</span></h3><ul><li><a href="index.html">Home</a></li><li><a href="news.html">Releases</a></li><li><a href="intro.html">Introduction</a></li><li><a href="architecture.html">libvirt architecture</a></li><li><a href="downloads.html">Downloads</a></li><li><a href="format.html">XML Format</a></li><li><a href="python.html">Binding for Python</a></li><li><a href="errors.html">Handling of errors</a></li><li><a href="FAQ.html">FAQ</a></li><li><a href="bugs.html">Reporting bugs and getting help</a></li><li><a href="html/index.html">API Menu</a></li><li><a href="examples/index.html">C code examples</a></li><li><a href="ChangeLog.html">Recent Changes</a></li></ul></div><div class="llinks2"><h3 class="links2"><span>related links</span></h3><ul><li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li><li><a href="https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&amp;component=libvirt&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;bug_status=MODIFIED&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;long_desc_type=allwordssubstr">Open bugs</a></li><li><a href="http://virt-manager.et.redhat.com/">virt-manager</a></li><li><a href="http://search.cpan.org/~danberr/Sys-Virt-0.1.0/">Perl bindings</a></li><li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li><li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" /></form></li><li><a href="http://xmlsoft.org/"><img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li></ul><p class="credits">Graphics and design by <a href="mail:dfong@redhat.com">Diana Fong</a></p></div></div><div id="bottom"><p class="p1"></p></div></div></body></html>

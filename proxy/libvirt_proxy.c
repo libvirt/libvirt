@@ -788,9 +788,24 @@ int main(int argc, char **argv) {
     proxyCloseUnixSocket();
     exit(0);
 }
+
 #else /* WITHOUT_XEN */
 int main(void) {
     fprintf(stderr, "libvirt was compiled without Xen support\n");
     exit(1);
 }
 #endif /* WITH_XEN */
+
+/*
+ * vim: set tabstop=4:
+ * vim: set shiftwidth=4:
+ * vim: set expandtab:
+ */
+/*
+ * Local variables:
+ *  indent-tabs-mode: nil
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  tab-width: 4
+ * End:
+ */

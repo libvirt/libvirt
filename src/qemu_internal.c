@@ -452,6 +452,31 @@ static int qemuNodeGetInfo(virConnectPtr conn,
 }
 
 
+static char *
+qemuGetCapabilities (virConnectPtr conn)
+{
+    struct qemud_packet req, reply;
+    char *xml;
+
+    /* Punt the request across to the daemon, because the daemon
+     * has tables describing available architectures.
+     */
+    req.header.type = QEMUD_PKT_GET_CAPABILITIES;
+    req.header.dataSize = 0;
+
+    if (qemuProcessRequest(conn, NULL, &req, &reply) < 0) {
+        return NULL;
+    }
+
+    xml = strdup (reply.data.getCapabilitiesReply.xml);
+    if (!xml) {
+        qemuError (conn, NULL, VIR_ERR_NO_MEMORY, NULL);
+        return NULL;
+    }
+
+    return xml;
+}
+
 static int qemuNumOfDomains(virConnectPtr conn) {
     struct qemud_packet req, reply;
 
@@ -1172,6 +1197,7 @@ static virDriver qemuDriver = {
     qemuGetVersion, /* version */
     NULL, /* getMaxVcpus */
     qemuNodeGetInfo, /* nodeGetInfo */
+    qemuGetCapabilities, /* getCapabilities */
     qemuListDomains, /* listDomains */
     qemuNumOfDomains, /* numOfDomains */
     qemuDomainCreateLinux, /* domainCreateLinux */
@@ -1227,6 +1253,11 @@ static virNetworkDriver qemuNetworkDriver = {
     qemuNetworkSetAutostart, /* networkSetAutostart */
 };
 
+/**
+ * qemuRegister:
+ *
+ * Registers QEmu/KVM in libvirt driver system
+ */
 void qemuRegister(void) {
     virRegisterDriver(&qemuDriver);
     virRegisterNetworkDriver(&qemuNetworkDriver);

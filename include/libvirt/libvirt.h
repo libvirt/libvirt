@@ -188,7 +188,7 @@ struct _virNodeInfo {
 typedef virNodeInfo *virNodeInfoPtr;
 
 /**
- * VIR_UUID_STRING_BUFLEN:
+ * VIR_UUID_BUFLEN:
  *
  * This macro provides the length of the buffer required
  * for virDomainGetUUID()
@@ -231,10 +231,15 @@ int			virConnectClose		(virConnectPtr conn);
 const char *		virConnectGetType	(virConnectPtr conn);
 int			virConnectGetVersion	(virConnectPtr conn,
 						 unsigned long *hvVer);
-int			virConnectGetMaxVcpus	(virConnectPtr conn,
+/*
+ * Capabilities of the connection / driver.
+ */
+
+int                     virConnectGetMaxVcpus   (virConnectPtr conn,
 						 const char *type);
 int			virNodeGetInfo		(virConnectPtr conn,
 						 virNodeInfoPtr info);
+char *                  virConnectGetCapabilities (virConnectPtr conn);
 
 /*
  * Gather list of running domains

@@ -53,6 +53,7 @@
 	virConnResetLastError;
 	virDefaultErrorFunc;
 	virNodeGetInfo;
+	virConnectGetCapabilities;
 
 	virDomainSetVcpus;
 	virDomainPinVcpu;

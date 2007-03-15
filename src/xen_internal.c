@@ -22,6 +22,9 @@
 #include <sys/ioctl.h>
 #include <limits.h>
 #include <stdint.h>
+#include <regex.h>
+#include <errno.h>
+#include <sys/utsname.h>
 
 /* required for dom0_getdomaininfo_t */
 #include <xen/dom0_ops.h>
@@ -31,6 +34,8 @@
 
 /* required for shutdown flags */
 #include <xen/sched.h>
+
+#include "xml.h"
 
 /* #define DEBUG */
 /*
@@ -71,6 +76,17 @@ static int hypervisor_version = 2;
 static int sys_interface_version = -1;
 static int dom_interface_version = -1;
 static int kb_per_pages = 0;
+
+/* Regular expressions used by xenHypervisorGetCapabilities, and
+ * compiled once by xenHypervisorInit.  Note that these are POSIX.2
+ * extended regular expressions (regex(7)).
+ */
+static const char *flags_hvm_re = "^flags[[:blank:]]+:.* (vmx|svm)[[:space:]]";
+static regex_t flags_hvm_rec;
+static const char *flags_pae_re = "^flags[[:blank:]]+:.* pae[[:space:]]";
+static regex_t flags_pae_rec;
+static const char *xen_cap_re = "(xen|hvm)-[[:digit:]]+\\.[[:digit:]]+-(x86_32|x86_64|ia64)(p|be)?";
+static regex_t xen_cap_rec;
 
 /*
  * The content of the structures for a getdomaininfolist system hypercall
@@ -432,6 +448,7 @@ static virDriver xenHypervisorDriver = {
     xenHypervisorGetVersion, /* version */
     xenHypervisorNumOfMaxVcpus, /* getMaxVcpus */
     NULL, /* nodeGetInfo */
+    xenHypervisorGetCapabilities, /* getCapabilities */
     xenHypervisorListDomains, /* listDomains */
     xenHypervisorNumOfDomains, /* numOfDomains */
     NULL, /* domainCreateLinux */
@@ -470,9 +487,9 @@ static virDriver xenHypervisorDriver = {
 
 /**
  * virXenError:
- * @conn: the connection if available
  * @error: the error number
  * @info: extra information string
+ * @value: extra information number
  *
  * Handle an error at the xend daemon interface
  */
@@ -486,7 +503,31 @@ virXenError(virErrorNumber error, const char *info, int value)
 
     errmsg = __virErrorMsg(error, info);
     __virRaiseError(NULL, NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
-                    errmsg, info, NULL, value, 0, errmsg, info, value);
+                    errmsg, info, NULL, value, 0, errmsg, info);
+}
+
+/**
+ * virXenPerror:
+ * @conn: the connection (if available)
+ * @msg: name of system call or file (as in perror(3))
+ *
+ * Raise error from a failed system call, using errno as the source.
+ */
+static void
+virXenPerror (virConnectPtr conn, const char *msg)
+{
+    char *msg_s;
+
+    msg_s = malloc (strlen (msg) + 10);
+    if (msg_s) {
+        strcpy (msg_s, msg);
+        strcat (msg_s, ": %s");
+    }
+
+    __virRaiseError (conn, NULL, NULL,
+                     VIR_FROM_XEN, VIR_ERR_SYSTEM_ERROR, VIR_ERR_ERROR,
+                     msg, NULL, NULL, errno, 0,
+                     msg_s ? msg_s : msg, strerror (errno));
 }
 
 /**
@@ -1139,7 +1180,7 @@ virXen_getvcpusinfo(int handle, int id, unsigned int vcpu, virVcpuInfoPtr ipt,
 static int
 xenHypervisorInit(void)
 {
-    int fd, ret, cmd;
+    int fd, ret, cmd, errcode;
     hypercall_t hc;
     v0_hypercall_t v0_hc;
     xen_getdomaininfo info;
@@ -1152,6 +1193,42 @@ xenHypervisorInit(void)
     initialized = 1;
     in_init = 1;
 
+    /* Compile regular expressions used by xenHypervisorGetCapabilities.
+     * Note that errors here are really internal errors since these
+     * regexps should never fail to compile.
+     */
+    errcode = regcomp (&flags_hvm_rec, flags_hvm_re, REG_EXTENDED);
+    if (errcode != 0) {
+        char error[100];
+        regerror (errcode, &flags_hvm_rec, error, sizeof error);
+        regfree (&flags_hvm_rec);
+        virXenError (VIR_ERR_INTERNAL_ERROR, error, 0);
+        in_init = 0;
+        return -1;
+    }
+    errcode = regcomp (&flags_pae_rec, flags_pae_re, REG_EXTENDED);
+    if (errcode != 0) {
+        char error[100];
+        regerror (errcode, &flags_pae_rec, error, sizeof error);
+        regfree (&flags_pae_rec);
+        regfree (&flags_hvm_rec);
+        virXenError (VIR_ERR_INTERNAL_ERROR, error, 0);
+        in_init = 0;
+        return -1;
+    }
+    errcode = regcomp (&xen_cap_rec, xen_cap_re, REG_EXTENDED);
+    if (errcode != 0) {
+        char error[100];
+        regerror (errcode, &xen_cap_rec, error, sizeof error);
+        regfree (&xen_cap_rec);
+        regfree (&flags_pae_rec);
+        regfree (&flags_hvm_rec);
+        virXenError (VIR_ERR_INTERNAL_ERROR, error, 0);
+        in_init = 0;
+        return -1;
+    }
+
+    /* Xen hypervisor version detection begins. */
     ret = open(XEN_HYPERVISOR_SOCKET, O_RDWR);
     if (ret < 0) {
         hypervisor_version = -1;
@@ -1358,6 +1435,242 @@ xenHypervisorGetVersion(virConnectPtr conn, unsigned long *hvVer)
         return (-1);
     *hvVer = (hv_version >> 16) * 1000000 + (hv_version & 0xFFFF) * 1000;
     return(0);
+}
+
+/**
+ * xenHypervisorGetCapabilities:
+ * @conn: pointer to the connection block
+ *
+ * Return the capabilities of this hypervisor.
+ */
+char *
+xenHypervisorGetCapabilities (virConnectPtr conn)
+{
+    struct utsname utsname;
+    char line[1024], *str, *token;
+    regmatch_t subs[3];
+    char *saveptr;
+    FILE *fp;
+    int i, r;
+
+    char hvm_type[4] = ""; /* "vmx" or "svm" (or "" if not in CPU). */
+    int host_pae = 0;
+    const int max_guest_archs = 32;
+    struct {
+        const char *token;
+        const char *model;
+        int bits;
+        int hvm;
+        int pae;
+        int ia64_be;
+    } guest_archs[max_guest_archs];
+    int nr_guest_archs = 0;
+
+    virBufferPtr xml;
+    char *xml_str;
+
+    /* Really, this never fails - look at the man-page. */
+    uname (&utsname);
+
+    /* /proc/cpuinfo: flags: Intel calls HVM "vmx", AMD calls it "svm".
+     * It's not clear if this will work on IA64, let alone other
+     * architectures and non-Linux. (XXX)
+     */
+    fp = fopen ("/proc/cpuinfo", "r");
+    if (fp == NULL) {
+        if (errno == ENOENT)
+            goto nocpuinfo;
+        virXenPerror (conn, "/proc/cpuinfo");
+        return NULL;
+    }
+
+    while (fgets (line, sizeof line, fp)) {
+        if (regexec (&flags_hvm_rec, line, 1, subs, 0) == 0
+            && subs[0].rm_so != -1)
+            strncpy (hvm_type,
+                     &line[subs[0].rm_so], subs[0].rm_eo-subs[0].rm_so+1);
+        else if (regexec (&flags_hvm_rec, line, 0, NULL, 0) == 0)
+            host_pae = 1;
+    }
+
+    fclose (fp);
+
+ nocpuinfo:
+    /* Most of the useful info is in /sys/hypervisor/properties/capabilities
+     * which is documented in the code in xen-unstable.hg/xen/arch/.../setup.c.
+     *
+     * It is a space-separated list of supported guest architectures.
+     *
+     * For x86:
+     *    TYP-VER-ARCH[p]
+     *    ^   ^   ^    ^
+     *    |   |   |    +-- PAE supported
+     *    |   |   +------- x86_32 or x86_64
+     *    |   +----------- the version of Xen, eg. "3.0"
+     *    +--------------- "xen" or "hvm" for para or full virt respectively
+     *
+     * For PPC this file appears to be always empty (?)
+     *
+     * For IA64:
+     *    TYP-VER-ARCH[be]
+     *    ^   ^   ^    ^
+     *    |   |   |    +-- Big-endian supported
+     *    |   |   +------- always "ia64"
+     *    |   +----------- the version of Xen, eg. "3.0"
+     *    +--------------- "xen" or "hvm" for para or full virt respectively
+     */
+    fp = fopen ("/sys/hypervisor/properties/capabilities", "r");
+    if (fp == NULL) {
+        if (errno == ENOENT)
+            goto noxencaps;
+        virXenPerror (conn, "/sys/hypervisor/properties/capabilities");
+        return NULL;
+    }
+
+    /* Expecting one line in this file - ignore any more. */
+    if (!fgets (line, sizeof line, fp)) {
+        fclose (fp);
+        goto noxencaps;
+    }
+
+    fclose (fp);
+
+    /* Split the line into tokens.  strtok_r is OK here because we "own"
+     * this buffer.  Parse out the features from each token.
+     */
+    for (str = line, nr_guest_archs = 0;
+         nr_guest_archs < max_guest_archs
+             && (token = strtok_r (str, " ", &saveptr)) != NULL;
+         str = NULL) {
+        if (regexec (&xen_cap_rec, token, 3, subs, 0) == 0) {
+            guest_archs[nr_guest_archs].token = token;
+            guest_archs[nr_guest_archs].hvm =
+                strncmp (&token[subs[0].rm_so], "hvm", 3) == 0;
+            if (strncmp (&token[subs[1].rm_so], "x86_32", 6) == 0) {
+                guest_archs[nr_guest_archs].model = "i686";
+                guest_archs[nr_guest_archs].bits = 32;
+            }
+            else if (strncmp (&token[subs[1].rm_so], "x86_64", 6) == 0) {
+                guest_archs[nr_guest_archs].model = "x86_64";
+                guest_archs[nr_guest_archs].bits = 64;
+            }
+            else if (strncmp (&token[subs[1].rm_so], "ia64", 4) == 0) {
+                guest_archs[nr_guest_archs].model = "ia64";
+                guest_archs[nr_guest_archs].bits = 64;
+            }
+            else {
+                guest_archs[nr_guest_archs].model = ""; /* can never happen */
+            }
+            guest_archs[nr_guest_archs].pae =
+                guest_archs[nr_guest_archs].ia64_be = 0;
+            if (subs[2].rm_so != -1) {
+                if (strncmp (&token[subs[2].rm_so], "p", 1) == 0)
+                    guest_archs[nr_guest_archs].pae = 1;
+                else if (strncmp (&token[subs[2].rm_so], "be", 2) == 0)
+                    guest_archs[nr_guest_archs].ia64_be = 1;
+            }
+            nr_guest_archs++;
+        }
+    }
+
+ noxencaps:
+    /* Construct the final XML. */
+    xml = virBufferNew (1024);
+    if (!xml) return NULL;
+    r = virBufferVSprintf (xml,
+                           "\
+<capabilities>\n\
+  <host>\n\
+    <cpu>\n\
+      <arch>%s</arch>\n\
+      <features>\n",
+                           utsname.machine);
+    if (r == -1) return NULL;
+
+    if (strcmp (hvm_type, "") != 0) {
+        r = virBufferVSprintf (xml,
+                               "\
+        <%s/>\n",
+                               hvm_type);
+        if (r == -1) {
+        vir_buffer_failed:
+            virBufferFree (xml);
+            return NULL;
+        }
+    }
+    if (host_pae) {
+        r = virBufferAdd (xml, "\
+        <pae/>\n", -1);
+        if (r == -1) goto vir_buffer_failed;
+    }
+    r = virBufferAdd (xml,
+                      "\
+      </features>\n\
+    </cpu>\n\
+  </host>\n", -1);
+    if (r == -1) goto vir_buffer_failed;
+
+    for (i = 0; i < nr_guest_archs; ++i) {
+        r = virBufferVSprintf (xml,
+                               "\
+\n\
+  <!-- %s -->\n\
+  <guest>\n\
+    <os_type>%s</os_type>\n\
+    <arch name=\"%s\">\n\
+      <wordsize>%d</wordsize>\n\
+      <domain type=\"xen\"></domain>\n\
+      <emulator>/usr/lib%s/xen/bin/qemu-dm</emulator>\n",
+                               guest_archs[i].token,
+                               guest_archs[i].hvm ? "hvm" : "xen",
+                               guest_archs[i].model,
+                               guest_archs[i].bits,
+                               guest_archs[i].bits == 64 ? "64" : "");
+        if (r == -1) goto vir_buffer_failed;
+        if (guest_archs[i].hvm) {
+            r = virBufferAdd (xml,
+                              "\
+      <machine>pc</machine>\n\
+      <machine>isapc</machine>\n\
+      <loader>/usr/lib/xen/boot/hvmloader</loader>\n", -1);
+            if (r == -1) goto vir_buffer_failed;
+        }
+        r = virBufferAdd (xml,
+                          "\
+    </arch>\n\
+    <features>", -1);
+        if (r == -1) goto vir_buffer_failed;
+        if (guest_archs[i].pae) {
+            r = virBufferAdd (xml,
+                              "\
+        <pae/>\n\
+        <nonpae/>\n", -1);
+            if (r == -1) goto vir_buffer_failed;
+        }
+        if (guest_archs[i].ia64_be) {
+            r = virBufferAdd (xml,
+                              "\
+        <ia64_be/>\n", -1);
+            if (r == -1) goto vir_buffer_failed;
+        }
+        r = virBufferAdd (xml,
+                          "\
+    </features>\n\
+  </guest>\n", -1);
+        if (r == -1) goto vir_buffer_failed;
+    }
+    r = virBufferAdd (xml,
+                      "\
+</capabilities>\n", -1);
+    if (r == -1) goto vir_buffer_failed;
+    xml_str = strdup (xml->content);
+    if (!xml_str) {
+        virXenError(VIR_ERR_NO_MEMORY, "strdup", 0);
+        goto vir_buffer_failed;
+    }
+    virBufferFree (xml);
+
+    return xml_str;
 }
 
 /**
@@ -1885,6 +2198,11 @@ xenHypervisorGetVcpuMax(virDomainPtr domain)
 }
 
 #endif /* WITH_XEN */
+/*
+ * vim: set tabstop=4:
+ * vim: set shiftwidth=4:
+ * vim: set expandtab:
+ */
 /*
  * Local variables:
  *  indent-tabs-mode: nil

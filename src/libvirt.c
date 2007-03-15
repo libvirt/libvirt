@@ -528,7 +528,7 @@ virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer)
  * @conn: pointer to the hypervisor connection
  * @type: value of the 'type' attribute in the <domain> element
  *
- * Returns the maximum number of virtual CPUs supported for a guest VM of a
+ * Provides the maximum number of virtual CPUs supported for a guest VM of a
  * specific type. The 'type' parameter here corresponds to the 'type'
  * attribute in the <domain> element of the XML.
  *
@@ -1711,6 +1711,36 @@ virNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info) {
     return(0);
 }
 
+/**
+ * virConnectGetCapabilities:
+ * @conn: pointer to the hypervisor connection
+ *
+ * Provides capabilities of the hypervisor / driver.
+ *
+ * Returns NULL in case of error, or a pointer to an opaque
+ * virCapabilities structure (virCapabilitiesPtr).
+ * The client must free the returned string after use.
+ */
+char *
+virConnectGetCapabilities (virConnectPtr conn)
+{
+    int i;
+
+    if (!VIR_IS_CONNECT (conn)) {
+        virLibConnError (conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return NULL;
+    }
+
+    for (i = 0; i < conn->nb_drivers; i++) {
+        if (conn->drivers[i] && conn->drivers[i]->getCapabilities) {
+            return conn->drivers[i]->getCapabilities (conn);
+        }
+    }
+
+    virLibConnError(conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    return NULL;
+}
+
 /************************************************************************
  *									*
  *		Handling of defined but not running domains		*
@@ -1905,8 +1935,9 @@ virDomainCreate(virDomainPtr domain) {
 /**
  * virDomainGetAutostart:
  * @domain: a domain object
+ * @autostart: the value returned
  *
- * Return a boolean value indicating whether the domain
+ * Provides a boolean value indicating whether the domain
  * configured to be automatically started when the host
  * machine boots.
  *
@@ -1939,6 +1970,7 @@ virDomainGetAutostart(virDomainPtr domain,
 /**
  * virDomainSetAutostart:
  * @domain: a domain object
+ * @autostart: whether the domain should be automatically started 0 or 1
  *
  * Configure the domain to be automatically started
  * when the host machine boots.
@@ -2154,11 +2186,11 @@ virDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
  * virDomainGetMaxVcpus:
  * @domain: pointer to domain object
  * 
- *  Returns the maximum number of virtual CPUs supported for
- *  the guest VM. If the guest is inactive, this is basically
- *  the same as virConnectGetMaxVcpus. If the guest is running
- *  this will reflect the maximum number of virtual CPUs the
- *  guest was booted with.
+ * Provides the maximum number of virtual CPUs supported for
+ * the guest VM. If the guest is inactive, this is basically
+ * the same as virConnectGetMaxVcpus. If the guest is running
+ * this will reflect the maximum number of virtual CPUs the
+ * guest was booted with.
  *
  * Returns the maximum of virtual CPU or -1 in case of error.
  */
@@ -2878,7 +2910,7 @@ virNetworkGetXMLDesc(virNetworkPtr network, int flags)
  * virNetworkGetBridgeName:
  * @network: a network object
  *
- * Return a bridge interface name to which a domain may connect
+ * Provides a bridge interface name to which a domain may connect
  * a network interface in order to join the network.
  *
  * Returns a 0 terminated interface name, or NULL in case of error.
@@ -2912,8 +2944,9 @@ virNetworkGetBridgeName(virNetworkPtr network)
 /**
  * virNetworkGetAutostart:
  * @network: a network object
+ * @autostart: the value returned
  *
- * Return a boolean value indicating whether the network
+ * Provides a boolean value indicating whether the network
  * configured to be automatically started when the host
  * machine boots.
  *
@@ -2946,6 +2979,7 @@ virNetworkGetAutostart(virNetworkPtr network,
 /**
  * virNetworkSetAutostart:
  * @network: a network object
+ * @autostart: whether the network should be automatically started 0 or 1
  *
  * Configure the network to be automatically started
  * when the host machine boots.
@@ -2971,3 +3005,17 @@ virNetworkSetAutostart(virNetworkPtr network,
     virLibConnError(network->conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
     return (-1);
 }
+
+/*
+ * vim: set tabstop=4:
+ * vim: set shiftwidth=4:
+ * vim: set expandtab:
+ */
+/*
+ * Local variables:
+ *  indent-tabs-mode: nil
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  tab-width: 4
+ * End:
+ */

@@ -1,3 +1,18 @@
+Thu Mar 15 18:20:03 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvirt/libvirt.h[.in] include/libvirt/virterror.h
+	  proxy/libvirt_proxy.c qemud/Makefile.am qemud/conf.c qemud/conf.h
+	  qemud/dispatch.c qemud/internal.h qemud/protocol.h 
+	  src/driver.h src/internal.h src/libvirt.c src/libvirt_sym.version
+	  src/proxy_internal.c src/proxy_internal.h src/qemu_internal.c
+	  src/test.c src/virsh.c src/virterror.c src/xen_internal.c
+	  src/xen_internal.h src/xend_internal.c src/xm_internal.c
+	  src/xml.h src/xs_internal.c: applied patch from Richard Jones
+	  adding virConnectGetCapabilities(), plus various small little
+	  fixes
+	* docs/*: fixed the api extractor script and regenerated
+
+
 Thu Mar 15 16:21:46 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* python/generator.py: fix the python binding generation for

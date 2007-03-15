@@ -72,6 +72,7 @@ static virDriver xenDaemonDriver = {
     xenDaemonGetVersion, /* version */
     NULL, /* getMaxVcpus */
     xenDaemonNodeGetInfo, /* nodeGetInfo */
+    NULL, /* getCapabilities */
     xenDaemonListDomains, /* listDomains */
     xenDaemonNumOfDomains, /* numOfDomains */
     xenDaemonCreateLinux, /* domainCreateLinux */

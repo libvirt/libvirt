@@ -604,6 +604,26 @@ __virErrorMsg(virErrorNumber error, const char *info)
 	    else
 	        errmsg = _("network %s exists already");
             break;
+    case VIR_ERR_SYSTEM_ERROR:
+        if (info == NULL)
+            errmsg = _("system call error");
+        else
+            errmsg = "%s";
+        break;
     }
     return (errmsg);
 }
+
+/*
+ * vim: set tabstop=4:
+ * vim: set shiftwidth=4:
+ * vim: set expandtab:
+ */
+/*
+ * Local variables:
+ *  indent-tabs-mode: nil
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  tab-width: 4
+ * End:
+ */

@@ -78,6 +78,7 @@ static virDriver xenXMDriver = {
     NULL, /* version */
     NULL, /* getMaxVcpus */
     NULL, /* nodeGetInfo */
+    NULL, /* getCapabilities */
     NULL, /* listDomains */
     NULL, /* numOfDomains */
     NULL, /* domainCreateLinux */

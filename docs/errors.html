@@ -3,67 +3,65 @@
 <html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>Handling of errors</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Handling of errors</h1><p>The main goals of libvirt when it comes to error handling are:</p><ul><li>provide as much detail as possible</li>
   <li>provide the informations as soon as possible</li>
   <li>dont force the library user into one style of error handling</li>
-</ul><p>As result the library provide both synchronous, callback based and
-asynchronous error reporting. When an error happens in the library code the
-error is logged, allowing to retrieve it later and if the user registered an
-error callback it will be called synchronously. Once the call to libvirt ends
-the error can be detected by the return value and the full information for
-the last logged error can be retrieved.</p><p>To avoid as much as prossible troubles with a global variable in a
-multithreaded environment, libvirt will associate when possible the errors to
-the current connection they are related to, that way the error is stored in a
-dynamic structure which can be made thread specific. Error callback can be
-set specifically to a connection with</p><p>So error handling in the code is the following:</p><ol><li>if the error can be associated to a connection for example when failing
-    to look up a domain
-    <ol><li>if there is a callback associated to the connection set with <a href="html/libvirt-virterror.html#virConnSetErrorFunc">virConnSetErrorFunc</a>,
-        call it with the error informations</li>
-      <li>otherwise if there is a global callback set with <a href="html/libvirt-virterror.html#virSetErrorFunc">virSetErrorFunc</a>,
-        call it with the error information</li>
-      <li>otherwise call <a href="html/libvirt-virterror.html#virDefaultErrorFunc">virDefaultErrorFunc</a>
-        which is the default error function of the library issuing the error
-        on stderr</li>
+</ul><p>As result the library provide both synchronous, callback based
+andasynchronous error reporting. When an error happens in the library code
+theerror is logged, allowing to retrieve it later and if the user registered
+anerror callback it will be called synchronously. Once the call to libvirt
+endsthe error can be detected by the return value and the full information
+forthe last logged error can be retrieved.</p><p>To avoid as much as prossible troubles with a global variable in
+amultithreaded environment, libvirt will associate when possible the errors
+tothe current connection they are related to, that way the error is stored in
+adynamic structure which can be made thread specific. Error callback can
+beset specifically to a connection with</p><p>So error handling in the code is the following:</p><ol><li>if the error can be associated to a connection for example when
+    failingto look up a domain
+    <ol><li>if there is a callback associated to the connection set with <a href="html/libvirt-virterror.html#virConnSetErrorFunc">virConnSetErrorFunc</a>,call
+        it with the error informations</li>
+      <li>otherwise if there is a global callback set with <a href="html/libvirt-virterror.html#virSetErrorFunc">virSetErrorFunc</a>,call
+        it with the error information</li>
+      <li>otherwise call <a href="html/libvirt-virterror.html#virDefaultErrorFunc">virDefaultErrorFunc</a>which
+        is the default error function of the library issuing the erroron
+        stderr</li>
       <li>save the error in the connection for later retrieval with <a href="html/libvirt-virterror.html#virConnGetLastError">virConnGetLastError</a></li>
     </ol></li>
   <li>otherwise like when failing to create an hypervisor connection:
-    <ol><li>if there is a global callback set with <a href="html/libvirt-virterror.html#virSetErrorFunc">virSetErrorFunc</a>,
-        call it with the error information</li>
-      <li>otherwise call <a href="html/libvirt-virterror.html#virDefaultErrorFunc">virDefaultErrorFunc</a>
-        which is the default error function of the library issuing the error
-        on stderr</li>
+    <ol><li>if there is a global callback set with <a href="html/libvirt-virterror.html#virSetErrorFunc">virSetErrorFunc</a>,call
+        it with the error information</li>
+      <li>otherwise call <a href="html/libvirt-virterror.html#virDefaultErrorFunc">virDefaultErrorFunc</a>which
+        is the default error function of the library issuing the erroron
+        stderr</li>
       <li>save the error in the connection for later retrieval with <a href="html/libvirt-virterror.html#virGetLastError">virGetLastError</a></li>
     </ol></li>
-</ol><p>In all cases the error informations are provided as a <a href="html/libvirt-virterror.html#virErrorPtr">virErrorPtr</a> pointer to
-read-only structure <a href="html/libvirt-virterror.html#virError">virError</a> containing the
-following fields:</p><ul><li>code: an error number from the <a href="html/libvirt-virterror.html#virErrorNumber">virErrorNumber</a>
-  enum</li>
-  <li>domain: an enum indicating which part of libvirt raised the error see
-    <a href="html/libvirt-virterror.html#virErrorDomain">virErrorDomain</a></li>
-  <li>level: the error level, usually VIR_ERR_ERROR, though there is room for
-    warnings like VIR_ERR_WARNING</li>
+</ol><p>In all cases the error informations are provided as a <a href="html/libvirt-virterror.html#virErrorPtr">virErrorPtr</a>pointer
+toread-only structure <a href="html/libvirt-virterror.html#virError">virError</a>containing
+thefollowing fields:</p><ul><li>code: an error number from the <a href="html/libvirt-virterror.html#virErrorNumber">virErrorNumber</a>enum</li>
+  <li>domain: an enum indicating which part of libvirt raised the error see<a href="html/libvirt-virterror.html#virErrorDomain">virErrorDomain</a></li>
+  <li>level: the error level, usually VIR_ERR_ERROR, though there is room
+    forwarnings like VIR_ERR_WARNING</li>
   <li>message: the full human-readable formatted string of the error</li>
-  <li>conn: if available a pointer to the <a href="html/libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>
-    connection to the hypervisor where this happened</li>
-  <li>dom: if available a pointer to the <a href="html/libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain
-    targetted in the operation</li>
-</ul><p>and then extra raw informations about the error which may be initialized
-to 0 or NULL if unused</p><ul><li>str1, str2, str3: string informations, usually str1 is the error
-    message format</li>
+  <li>conn: if available a pointer to the <a href="html/libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>connection
+    to the hypervisor where this happened</li>
+  <li>dom: if available a pointer to the <a href="html/libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>domaintargetted
+    in the operation</li>
+</ul><p>and then extra raw informations about the error which may be initializedto
+0 or NULL if unused</p><ul><li>str1, str2, str3: string informations, usually str1 is the errormessage
+    format</li>
   <li>int1, int2: integer informations</li>
-</ul><p>So usually, setting up specific error handling with libvirt consist of
-registering an handler with with <a href="html/libvirt-virterror.html#virSetErrorFunc">virSetErrorFunc</a> or
-with <a href="html/libvirt-virterror.html#virConnSetErrorFunc">virConnSetErrorFunc</a>,
-chech the value of the code value, take appropriate action, if needed let
-libvirt print the error on stderr by calling <a href="html/libvirt-virterror.html#virDefaultErrorFunc">virDefaultErrorFunc</a>.
-For asynchronous error handing, set such a function doing nothing to avoid
-the error being reported on stderr, and call virConnGetLastError or
-virGetLastError when an API call returned an error value. It can be a good
-idea to use <a href="html/libvirt-virterror.html#virResetLastError">virResetError</a> or <a href="html/libvirt-virterror.html#virConnResetLastError">virConnResetLastError</a>
-once an error has been processed fully.</p><p>At the python level, there only a global reporting callback function at
-this point, see the error.py example about it:</p><pre>def handler(ctxt, err):
+</ul><p>So usually, setting up specific error handling with libvirt consist
+ofregistering an handler with with <a href="html/libvirt-virterror.html#virSetErrorFunc">virSetErrorFunc</a>orwith
+<a href="html/libvirt-virterror.html#virConnSetErrorFunc">virConnSetErrorFunc</a>,chech
+the value of the code value, take appropriate action, if needed letlibvirt
+print the error on stderr by calling <a href="html/libvirt-virterror.html#virDefaultErrorFunc">virDefaultErrorFunc</a>.For
+asynchronous error handing, set such a function doing nothing to avoidthe
+error being reported on stderr, and call virConnGetLastError
+orvirGetLastError when an API call returned an error value. It can be a
+goodidea to use <a href="html/libvirt-virterror.html#virResetLastError">virResetError</a>or <a href="html/libvirt-virterror.html#virConnResetLastError">virConnResetLastError</a>once
+an error has been processed fully.</p><p>At the python level, there only a global reporting callback function
+atthis point, see the error.py example about it:</p><pre>def handler(ctxt, err):
     global errno
 
     #print "handler(%s, %s)" % (ctxt, err)
     errno = err
 
-libvirt.registerErrorHandler(handler, 'context') </pre><p>the second argument to the registerErrorHandler function is passed as the
-fist argument of the callback like in the C version. The error is a tuple
-containing the same field as a virError in C, but cast to Python.</p></div></div><div class="linkList2"><div class="llinks2"><h3 class="links2"><span>main menu</span></h3><ul><li><a href="index.html">Home</a></li><li><a href="news.html">Releases</a></li><li><a href="intro.html">Introduction</a></li><li><a href="architecture.html">libvirt architecture</a></li><li><a href="downloads.html">Downloads</a></li><li><a href="format.html">XML Format</a></li><li><a href="python.html">Binding for Python</a></li><li><a href="errors.html">Handling of errors</a></li><li><a href="FAQ.html">FAQ</a></li><li><a href="bugs.html">Reporting bugs and getting help</a></li><li><a href="html/index.html">API Menu</a></li><li><a href="examples/index.html">C code examples</a></li><li><a href="ChangeLog.html">Recent Changes</a></li></ul></div><div class="llinks2"><h3 class="links2"><span>related links</span></h3><ul><li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li><li><a href="https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&amp;component=libvirt&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;bug_status=MODIFIED&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;long_desc_type=allwordssubstr">Open bugs</a></li><li><a href="http://virt-manager.et.redhat.com/">virt-manager</a></li><li><a href="http://search.cpan.org/~danberr/Sys-Virt-0.1.0/">Perl bindings</a></li><li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li><li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" /></form></li><li><a href="http://xmlsoft.org/"><img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li></ul><p class="credits">Graphics and design by <a href="mail:dfong@redhat.com">Diana Fong</a></p></div></div><div id="bottom"><p class="p1"></p></div></div></body></html>
+libvirt.registerErrorHandler(handler, 'context') </pre><p>the second argument to the registerErrorHandler function is passed as
+thefist argument of the callback like in the C version. The error is a
+tuplecontaining the same field as a virError in C, but cast to Python.</p></div></div><div class="linkList2"><div class="llinks2"><h3 class="links2"><span>main menu</span></h3><ul><li><a href="index.html">Home</a></li><li><a href="news.html">Releases</a></li><li><a href="intro.html">Introduction</a></li><li><a href="architecture.html">libvirt architecture</a></li><li><a href="downloads.html">Downloads</a></li><li><a href="format.html">XML Format</a></li><li><a href="python.html">Binding for Python</a></li><li><a href="errors.html">Handling of errors</a></li><li><a href="FAQ.html">FAQ</a></li><li><a href="bugs.html">Reporting bugs and getting help</a></li><li><a href="html/index.html">API Menu</a></li><li><a href="examples/index.html">C code examples</a></li><li><a href="ChangeLog.html">Recent Changes</a></li></ul></div><div class="llinks2"><h3 class="links2"><span>related links</span></h3><ul><li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li><li><a href="https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&amp;component=libvirt&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;bug_status=MODIFIED&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;long_desc_type=allwordssubstr">Open bugs</a></li><li><a href="http://virt-manager.et.redhat.com/">virt-manager</a></li><li><a href="http://search.cpan.org/~danberr/Sys-Virt-0.1.0/">Perl bindings</a></li><li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li><li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" /></form></li><li><a href="http://xmlsoft.org/"><img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li></ul><p class="credits">Graphics and design by <a href="mail:dfong@redhat.com">Diana Fong</a></p></div></div><div id="bottom"><p class="p1"></p></div></div></body></html>

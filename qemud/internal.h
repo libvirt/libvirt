@@ -39,8 +39,12 @@
 #ifndef ATTRIBUTE_UNUSED
 #define ATTRIBUTE_UNUSED __attribute__((unused))
 #endif
+#ifndef ATTRIBUTE_FORMAT
+#define ATTRIBUTE_FORMAT(args...) __attribute__((__format__ (args)))
+#endif
 #else
 #define ATTRIBUTE_UNUSED
+#define ATTRIBUTE_FORMAT(...)
 #endif
 
 #define UUID_LEN 16

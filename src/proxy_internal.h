@@ -78,8 +78,8 @@ struct _virProxyFullPacket {
     union {
         char       str[4080];   /* extra char array */
         int        arg[1020];   /* extra int array */
-	virDomainInfo dinfo;	/* domain information */
-	virNodeInfo   ninfo;	/* node information */
+        virDomainInfo dinfo;	/* domain information */
+        virNodeInfo   ninfo;	/* node information */
     } extra;
 };
 typedef struct _virProxyFullPacket virProxyFullPacket;
@@ -93,3 +93,17 @@ void xenProxyRegister(void);
 }
 #endif                          /* __cplusplus */
 #endif /* __LIBVIR_PROXY_H__ */
+
+/*
+ * vim: set tabstop=4:
+ * vim: set shiftwidth=4:
+ * vim: set expandtab:
+ */
+/*
+ * Local variables:
+ *  indent-tabs-mode: nil
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  tab-width: 4
+ * End:
+ */

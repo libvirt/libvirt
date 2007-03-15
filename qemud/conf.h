@@ -78,6 +78,14 @@ char *      qemudGenerateNetworkXML     (struct qemud_server *server,
                                          struct qemud_network *network,
                                          struct qemud_network_def *def);
 
+struct qemu_arch_info {
+    const char *arch;
+    int wordsize;
+    const char **machines;
+    const char *binary;
+};
+extern struct qemu_arch_info qemudArchs[];
+
 #endif
 
 /*

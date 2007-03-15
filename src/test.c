@@ -44,6 +44,7 @@ int testGetVersion(virConnectPtr conn,
                    unsigned long *hvVer);
 int testNodeGetInfo(virConnectPtr conn,
                     virNodeInfoPtr info);
+char *testGetCapabilities (virConnectPtr conn);
 int testNumOfDomains(virConnectPtr conn);
 int testListDomains(virConnectPtr conn,
                     int *ids,
@@ -97,6 +98,7 @@ static virDriver testDriver = {
     testGetVersion, /* version */
     NULL, /* getMaxVcpus */
     testNodeGetInfo, /* nodeGetInfo */
+    testGetCapabilities, /* getCapabilities */
     testListDomains, /* listDomains */
     testNumOfDomains, /* numOfDomains */
     testDomainCreateLinux, /* domainCreateLinux */
@@ -179,8 +181,11 @@ typedef struct _testNode {
 static testNode *node = NULL;
 static int nextDomID = 1;
 
+#define TEST_MODEL "i686"
+#define TEST_MODEL_WORDSIZE "32"
+
 static const virNodeInfo defaultNodeInfo = {
-    "i686",
+    TEST_MODEL,
     1024*1024*3, /* 3 GB */
     16,
     1400,
@@ -809,6 +814,43 @@ int testNodeGetInfo(virConnectPtr conn,
     return (0);
 }
 
+char *
+testGetCapabilities (virConnectPtr conn)
+{
+    static char caps[] = "\
+<capabilities>\n\
+  <host>\n\
+    <cpu>\n\
+      <arch>" TEST_MODEL "</arch>\n\
+      <features>\n\
+        <pae/>\n\
+        <nonpae/>\n\
+      </features>\n\
+    </cpu>\n\
+  </host>\n\
+\n\
+  <guest>\n\
+    <os_type>linux</os_type>\n\
+    <arch name=\"" TEST_MODEL "\">\n\
+      <wordsize>" TEST_MODEL_WORDSIZE "</wordsize>\n\
+      <domain type=\"test\"/>\n\
+    </arch>\n\
+    <features>\n\
+      <pae/>\n\
+      <nonpae/>\n\
+    </features>\n\
+  </guest>\n\
+</capabilities>\n\
+";
+
+    char *caps_copy = strdup (caps);
+    if (!caps_copy) {
+        testError(conn, NULL, VIR_ERR_NO_MEMORY, __FUNCTION__);
+        return NULL;
+    }
+    return caps_copy;
+}
+
 int testNumOfDomains(virConnectPtr conn)
 {
     int numActive = 0, i;
@@ -1378,6 +1420,11 @@ int testDomainUndefine(virDomainPtr domain) {
 }
 #endif /* WITH_TEST */
 
+/*
+ * vim: set tabstop=4:
+ * vim: set shiftwidth=4:
+ * vim: set expandtab:
+ */
 /*
  * Local variables:
  *  indent-tabs-mode: nil

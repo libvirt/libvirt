@@ -68,6 +68,7 @@ enum {
     QEMUD_PKT_DOMAIN_SET_AUTOSTART,
     QEMUD_PKT_NETWORK_GET_AUTOSTART,
     QEMUD_PKT_NETWORK_SET_AUTOSTART,
+    QEMUD_PKT_GET_CAPABILITIES,
 
     QEMUD_PKT_MAX,
 } qemud_packet_type;
@@ -124,6 +125,9 @@ union qemud_packet_data {
         uint32_t cores;
         uint32_t threads;
     } getNodeInfoReply;
+    struct {
+        char xml[QEMUD_MAX_XML_LEN];
+    } getCapabilitiesReply;
     struct {
         int32_t numDomains;
         int32_t domains[QEMUD_MAX_NUM_DOMAINS];

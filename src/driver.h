@@ -48,6 +48,8 @@ typedef int
 typedef int
 	(*virDrvNodeGetInfo)		(virConnectPtr conn,
 					 virNodeInfoPtr info);
+typedef char *
+	(*virDrvGetCapabilities) (virConnectPtr conn);
 typedef int
 	(*virDrvListDomains)		(virConnectPtr conn,
 					 int *ids,
@@ -164,6 +166,7 @@ struct _virDriver {
 	virDrvGetVersion		version;
 	virDrvGetMaxVcpus		getMaxVcpus;
 	virDrvNodeGetInfo		nodeGetInfo;
+    virDrvGetCapabilities   getCapabilities;
 	virDrvListDomains		listDomains;
 	virDrvNumOfDomains		numOfDomains;
 	virDrvDomainCreateLinux		domainCreateLinux;
@@ -283,3 +286,17 @@ int virRegisterNetworkDriver(virNetworkDriverPtr);
 }
 #endif /* __cplusplus */
 #endif /* __VIR_DRIVER_H__ */
+
+/*
+ * vim: set tabstop=4:
+ * vim: set shiftwidth=4:
+ * vim: set expandtab:
+ */
+/*
+ * Local variables:
+ *  indent-tabs-mode: nil
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  tab-width: 4
+ * End:
+ */

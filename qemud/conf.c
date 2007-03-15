@@ -46,6 +46,7 @@
 #include "driver.h"
 #include "iptables.h"
 #include "uuid.h"
+#include "buf.h"
 
 /* Free all memory associated with a struct qemud_vm object */
 void qemudFreeVMDef(struct qemud_vm_def *def) {
@@ -122,49 +123,46 @@ qemudEnsureDir(const char *path)
     return 0;
 }
 
-struct qemu_arch_info {
-    const char *arch;
-    const char **machines;
-    const char *binary;
-};
-
 /* The list of possible machine types for various architectures,
    as supported by QEMU - taken from 'qemu -M ?' for each arch */
 static const char *arch_info_x86_machines[] = {
-    "pc", "isapc"
+    "pc", "isapc", NULL
 };
 static const char *arch_info_mips_machines[] = {
-    "mips"
+    "mips", NULL
 };
 static const char *arch_info_sparc_machines[] = {
-    "sun4m"
+    "sun4m", NULL
 };
 static const char *arch_info_ppc_machines[] = {
-    "g3bw", "mac99", "prep"
+    "g3bw", "mac99", "prep", NULL
 };
 
 /* The archicture tables for supported QEMU archs */
-static struct qemu_arch_info archs[] = { 
-    {  "i686", arch_info_x86_machines, "qemu" },
-    {  "x86_64", arch_info_x86_machines, "qemu-system-x86_64" },
-    {  "mips", arch_info_mips_machines, "qemu-system-mips" },
-    {  "mipsel", arch_info_mips_machines, "qemu-system-mipsel" },
-    {  "sparc", arch_info_sparc_machines, "qemu-system-sparc" },
-    {  "ppc", arch_info_ppc_machines, "qemu-system-ppc" },
+struct qemu_arch_info qemudArchs[] = { 
+    /* i686 must be in position 0 */
+    {  "i686", 32, arch_info_x86_machines, "qemu" },
+    /* x86_64 must be in position 1 */
+    {  "x86_64", 64, arch_info_x86_machines, "qemu-system-x86_64" },
+    {  "mips", 32, arch_info_mips_machines, "qemu-system-mips" },
+    {  "mipsel", 32, arch_info_mips_machines, "qemu-system-mipsel" },
+    {  "sparc", 32, arch_info_sparc_machines, "qemu-system-sparc" },
+    {  "ppc", 32, arch_info_ppc_machines, "qemu-system-ppc" },
+    { NULL, -1, NULL, NULL }
 };
 
 /* Return the default architecture if none is explicitly requested*/
 static const char *qemudDefaultArch(void) {
-    return archs[0].arch;
+    return qemudArchs[0].arch;
 }
 
 /* Return the default machine type for a given architecture */
 static const char *qemudDefaultMachineForArch(const char *arch) {
     int i;
 
-    for (i = 0 ; i < (int)(sizeof(archs) / sizeof(struct qemu_arch_info)) ; i++) {
-        if (!strcmp(archs[i].arch, arch)) {
-            return archs[i].machines[0];
+    for (i = 0; qemudArchs[i].arch; i++) {
+        if (!strcmp(qemudArchs[i].arch, arch)) {
+            return qemudArchs[i].machines[0];
         }
     }
 
@@ -175,9 +173,9 @@ static const char *qemudDefaultMachineForArch(const char *arch) {
 static const char *qemudDefaultBinaryForArch(const char *arch) {
     int i;
 
-    for (i = 0 ; i < (int)(sizeof(archs) / sizeof(struct qemu_arch_info)) ; i++) {
-        if (!strcmp(archs[i].arch, arch)) {
-            return archs[i].binary;
+    for (i = 0 ; qemudArchs[i].arch; i++) {
+        if (!strcmp(qemudArchs[i].arch, arch)) {
+            return qemudArchs[i].binary;
         }
     }
 
@@ -2354,72 +2352,20 @@ int qemudScanConfigs(struct qemud_server *server) {
     return 0;
 }
 
-/* Simple grow-on-demand string buffer */
-/* XXX re-factor to shared library */
-struct qemudBuffer {
-    char *data;
-    int len;
-    int used;
-};
-
-static
-int qemudBufferAdd(struct qemudBuffer *buf, const char *str) {
-    int need = strlen(str);
-  
-    if ((need+1) > (buf->len-buf->used)) {
-        return -1;
-    }
-  
-    memcpy(buf->data + buf->used, str, need+1);
-    buf->used += need;
-
-    return 0;
-}
-
-
-static
-int qemudBufferPrintf(struct qemudBuffer *buf,
-                      const char *format, ...) {
-    int size, count;
-    va_list locarg, argptr;
-
-    if ((format == NULL) || (buf == NULL)) {
-        return -1;
-    }
-    size = buf->len - buf->used - 1;
-    va_start(argptr, format);
-    va_copy(locarg, argptr);
-
-    if ((count = vsnprintf(&buf->data[buf->used],
-                           size,
-                           format,
-                           locarg)) >= size) {
-        return -1;
-    }
-    va_end(locarg);
-    buf->used += count;
-
-    buf->data[buf->used] = '\0';
-    return 0;
-}
-
 /* Generate an XML document describing the guest's configuration */
 char *qemudGenerateXML(struct qemud_server *server,
                        struct qemud_vm *vm,
                        struct qemud_vm_def *def,
                        int live) {
-    struct qemudBuffer buf;
+    bufferPtr buf = 0;
     unsigned char *uuid;
     struct qemud_vm_disk_def *disk;
     struct qemud_vm_net_def *net;
     const char *type = NULL;
     int n;
 
-    buf.len = QEMUD_MAX_XML_LEN;
-    buf.used = 0;
-    buf.data = malloc(buf.len);
-
-    if (!buf.data)
+    buf = bufferNew (QEMUD_MAX_XML_LEN);
+    if (!buf)
         goto no_memory;
 
     switch (def->virtType) {
@@ -2439,50 +2385,50 @@ char *qemudGenerateXML(struct qemud_server *server,
     }
 
     if (qemudIsActiveVM(vm) && live) {
-        if (qemudBufferPrintf(&buf, "<domain type='%s' id='%d'>\n", type, vm->id) < 0)
+        if (bufferVSprintf(buf, "<domain type='%s' id='%d'>\n", type, vm->id) < 0)
             goto no_memory;
     } else {
-        if (qemudBufferPrintf(&buf, "<domain type='%s'>\n", type) < 0)
+        if (bufferVSprintf(buf, "<domain type='%s'>\n", type) < 0)
             goto no_memory;
     }
 
-    if (qemudBufferPrintf(&buf, "  <name>%s</name>\n", def->name) < 0)
+    if (bufferVSprintf(buf, "  <name>%s</name>\n", def->name) < 0)
         goto no_memory;
 
     uuid = def->uuid;
-    if (qemudBufferPrintf(&buf, "  <uuid>%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x</uuid>\n",
+    if (bufferVSprintf(buf, "  <uuid>%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x</uuid>\n",
                           uuid[0], uuid[1], uuid[2], uuid[3],
                           uuid[4], uuid[5], uuid[6], uuid[7],
                           uuid[8], uuid[9], uuid[10], uuid[11],
                           uuid[12], uuid[13], uuid[14], uuid[15]) < 0)
         goto no_memory;
-    if (qemudBufferPrintf(&buf, "  <memory>%d</memory>\n", def->maxmem) < 0)
+    if (bufferVSprintf(buf, "  <memory>%d</memory>\n", def->maxmem) < 0)
         goto no_memory;
-    if (qemudBufferPrintf(&buf, "  <currentMemory>%d</currentMemory>\n", def->memory) < 0)
+    if (bufferVSprintf(buf, "  <currentMemory>%d</currentMemory>\n", def->memory) < 0)
         goto no_memory;
-    if (qemudBufferPrintf(&buf, "  <vcpu>%d</vcpu>\n", def->vcpus) < 0)
+    if (bufferVSprintf(buf, "  <vcpu>%d</vcpu>\n", def->vcpus) < 0)
         goto no_memory;
 
-    if (qemudBufferAdd(&buf, "  <os>\n") < 0)
+    if (bufferAdd(buf, "  <os>\n", -1) < 0)
         goto no_memory;
 
     if (def->virtType == QEMUD_VIRT_QEMU) {
-        if (qemudBufferPrintf(&buf, "    <type arch='%s' machine='%s'>%s</type>\n",
+        if (bufferVSprintf(buf, "    <type arch='%s' machine='%s'>%s</type>\n",
                               def->os.arch, def->os.machine, def->os.type) < 0)
             goto no_memory;
     } else {
-        if (qemudBufferPrintf(&buf, "    <type>%s</type>\n", def->os.type) < 0)
+        if (bufferVSprintf(buf, "    <type>%s</type>\n", def->os.type) < 0)
             goto no_memory;
     }
 
     if (def->os.kernel[0])
-        if (qemudBufferPrintf(&buf, "    <kernel>%s</kernel>\n", def->os.kernel) < 0)
+        if (bufferVSprintf(buf, "    <kernel>%s</kernel>\n", def->os.kernel) < 0)
             goto no_memory;
     if (def->os.initrd[0])
-        if (qemudBufferPrintf(&buf, "    <initrd>%s</initrd>\n", def->os.initrd) < 0)
+        if (bufferVSprintf(buf, "    <initrd>%s</initrd>\n", def->os.initrd) < 0)
             goto no_memory;
     if (def->os.cmdline[0])
-        if (qemudBufferPrintf(&buf, "    <cmdline>%s</cmdline>\n", def->os.cmdline) < 0)
+        if (bufferVSprintf(buf, "    <cmdline>%s</cmdline>\n", def->os.cmdline) < 0)
             goto no_memory;
 
     for (n = 0 ; n < def->os.nBootDevs ; n++) {
@@ -2501,27 +2447,27 @@ char *qemudGenerateXML(struct qemud_server *server,
             boottype = "net";
             break;
         }
-        if (qemudBufferPrintf(&buf, "    <boot dev='%s'/>\n", boottype) < 0)
+        if (bufferVSprintf(buf, "    <boot dev='%s'/>\n", boottype) < 0)
             goto no_memory;
     }
 
-    if (qemudBufferAdd(&buf, "  </os>\n") < 0)
+    if (bufferAdd(buf, "  </os>\n", -1) < 0)
         goto no_memory;
 
     if (def->features & QEMUD_FEATURE_ACPI) {
-        if (qemudBufferAdd(&buf, "  <features>\n") < 0)
+        if (bufferAdd(buf, "  <features>\n", -1) < 0)
             goto no_memory;
-        if (qemudBufferAdd(&buf, "    <acpi/>\n") < 0)
+        if (bufferAdd(buf, "    <acpi/>\n", -1) < 0)
             goto no_memory;
-        if (qemudBufferAdd(&buf, "  </features>\n") < 0)
+        if (bufferAdd(buf, "  </features>\n", -1) < 0)
             goto no_memory;
     }
 
 
-    if (qemudBufferAdd(&buf, "  <devices>\n") < 0)
+    if (bufferAdd(buf, "  <devices>\n", -1) < 0)
         goto no_memory;
 
-    if (qemudBufferPrintf(&buf, "    <emulator>%s</emulator>\n", def->os.binary) < 0)
+    if (bufferVSprintf(buf, "    <emulator>%s</emulator>\n", def->os.binary) < 0)
         goto no_memory;
 
     disk = def->disks;
@@ -2539,21 +2485,21 @@ char *qemudGenerateXML(struct qemud_server *server,
             "cdrom",
             "floppy",
         };
-        if (qemudBufferPrintf(&buf, "    <disk type='%s' device='%s'>\n",
+        if (bufferVSprintf(buf, "    <disk type='%s' device='%s'>\n",
                               types[disk->type], devices[disk->device]) < 0)
             goto no_memory;
 
-        if (qemudBufferPrintf(&buf, "      <source %s='%s'/>\n", typeAttrs[disk->type], disk->src) < 0)
+        if (bufferVSprintf(buf, "      <source %s='%s'/>\n", typeAttrs[disk->type], disk->src) < 0)
             goto no_memory;
 
-        if (qemudBufferPrintf(&buf, "      <target dev='%s'/>\n", disk->dst) < 0)
+        if (bufferVSprintf(buf, "      <target dev='%s'/>\n", disk->dst) < 0)
             goto no_memory;
 
         if (disk->readonly)
-            if (qemudBufferAdd(&buf, "      <readonly/>\n") < 0)
+            if (bufferAdd(buf, "      <readonly/>\n", -1) < 0)
                 goto no_memory;
 
-        if (qemudBufferPrintf(&buf, "    </disk>\n") < 0)
+        if (bufferVSprintf(buf, "    </disk>\n") < 0)
             goto no_memory;
 
         disk = disk->next;
@@ -2570,42 +2516,42 @@ char *qemudGenerateXML(struct qemud_server *server,
             "network",
             "bridge",
         };
-        if (qemudBufferPrintf(&buf, "    <interface type='%s'>\n",
+        if (bufferVSprintf(buf, "    <interface type='%s'>\n",
                               types[net->type]) < 0)
             goto no_memory;
 
-        if (qemudBufferPrintf(&buf, "      <mac address='%02x:%02x:%02x:%02x:%02x:%02x'/>\n",
+        if (bufferVSprintf(buf, "      <mac address='%02x:%02x:%02x:%02x:%02x:%02x'/>\n",
                               net->mac[0], net->mac[1], net->mac[2],
                               net->mac[3], net->mac[4], net->mac[5]) < 0)
             goto no_memory;
 
         switch (net->type) {
         case QEMUD_NET_NETWORK:
-            if (qemudBufferPrintf(&buf, "      <source network='%s'/>\n", net->dst.network.name) < 0)
+            if (bufferVSprintf(buf, "      <source network='%s'/>\n", net->dst.network.name) < 0)
                 goto no_memory;
 
             if (net->dst.network.ifname[0] != '\0') {
-                if (qemudBufferPrintf(&buf, "      <target dev='%s'/>\n", net->dst.network.ifname) < 0)
+                if (bufferVSprintf(buf, "      <target dev='%s'/>\n", net->dst.network.ifname) < 0)
                     goto no_memory;
             }
             break;
 
         case QEMUD_NET_ETHERNET:
             if (net->dst.ethernet.ifname[0] != '\0') {
-                if (qemudBufferPrintf(&buf, "      <target dev='%s'/>\n", net->dst.ethernet.ifname) < 0)
+                if (bufferVSprintf(buf, "      <target dev='%s'/>\n", net->dst.ethernet.ifname) < 0)
                     goto no_memory;
             }
             if (net->dst.ethernet.script[0] != '\0') {
-                if (qemudBufferPrintf(&buf, "      <script path='%s'/>\n", net->dst.ethernet.script) < 0)
+                if (bufferVSprintf(buf, "      <script path='%s'/>\n", net->dst.ethernet.script) < 0)
                     goto no_memory;
             }
             break;
 
         case QEMUD_NET_BRIDGE:
-            if (qemudBufferPrintf(&buf, "      <source dev='%s'/>\n", net->dst.bridge.brname) < 0)
+            if (bufferVSprintf(buf, "      <source dev='%s'/>\n", net->dst.bridge.brname) < 0)
                 goto no_memory;
             if (net->dst.bridge.ifname[0] != '\0') {
-                if (qemudBufferPrintf(&buf, "      <target dev='%s'/>\n", net->dst.bridge.ifname) < 0)
+                if (bufferVSprintf(buf, "      <target dev='%s'/>\n", net->dst.bridge.ifname) < 0)
                     goto no_memory;
             }
             break;
@@ -2614,17 +2560,17 @@ char *qemudGenerateXML(struct qemud_server *server,
         case QEMUD_NET_CLIENT:
         case QEMUD_NET_MCAST:
             if (net->dst.socket.address[0] != '\0') {
-                if (qemudBufferPrintf(&buf, "      <source address='%s' port='%d'/>\n",
+                if (bufferVSprintf(buf, "      <source address='%s' port='%d'/>\n",
                                       net->dst.socket.address, net->dst.socket.port) < 0)
                     goto no_memory;
             } else {
-                if (qemudBufferPrintf(&buf, "      <source port='%d'/>\n",
+                if (bufferVSprintf(buf, "      <source port='%d'/>\n",
                                       net->dst.socket.port) < 0)
                     goto no_memory;
             }
         }
 
-        if (qemudBufferPrintf(&buf, "    </interface>\n") < 0)
+        if (bufferVSprintf(buf, "    </interface>\n") < 0)
             goto no_memory;
 
         net = net->next;
@@ -2632,20 +2578,20 @@ char *qemudGenerateXML(struct qemud_server *server,
 
     switch (def->graphicsType) {
     case QEMUD_GRAPHICS_VNC:
-        if (qemudBufferAdd(&buf, "    <graphics type='vnc'") < 0)
+        if (bufferAdd(buf, "    <graphics type='vnc'", -1) < 0)
             goto no_memory;
 
         if (def->vncPort &&
-            qemudBufferPrintf(&buf, " port='%d'",
+            bufferVSprintf(buf, " port='%d'",
                               qemudIsActiveVM(vm) && live ? def->vncActivePort : def->vncPort) < 0)
             goto no_memory;
 
-        if (qemudBufferAdd(&buf, "/>\n") < 0)
+        if (bufferAdd(buf, "/>\n", -1) < 0)
             goto no_memory;
         break;
 
     case QEMUD_GRAPHICS_SDL:
-        if (qemudBufferAdd(&buf, "    <graphics type='sdl'/>\n") < 0)
+        if (bufferAdd(buf, "    <graphics type='sdl'/>\n", -1) < 0)
             goto no_memory;
         break;
 
@@ -2657,20 +2603,19 @@ char *qemudGenerateXML(struct qemud_server *server,
     if (def->graphicsType == QEMUD_GRAPHICS_VNC) {
     }
 
-    if (qemudBufferAdd(&buf, "  </devices>\n") < 0)
+    if (bufferAdd(buf, "  </devices>\n", -1) < 0)
         goto no_memory;
 
 
-    if (qemudBufferAdd(&buf, "</domain>\n") < 0)
+    if (bufferAdd(buf, "</domain>\n", -1) < 0)
         goto no_memory;
 
-    return buf.data;
+    return bufferContentAndFree (buf);
 
  no_memory:
     qemudReportError(server, VIR_ERR_NO_MEMORY, "xml");
  cleanup:
-    if (buf.data)
-        free(buf.data);
+    if (buf) bufferFree (buf);
     return NULL;
 }
 
@@ -2678,24 +2623,21 @@ char *qemudGenerateXML(struct qemud_server *server,
 char *qemudGenerateNetworkXML(struct qemud_server *server,
                               struct qemud_network *network ATTRIBUTE_UNUSED,
                               struct qemud_network_def *def) {
-    struct qemudBuffer buf;
+    bufferPtr buf = 0;
     unsigned char *uuid;
 
-    buf.len = QEMUD_MAX_XML_LEN;
-    buf.used = 0;
-    buf.data = malloc(buf.len);
-
-    if (!buf.data)
+    buf = bufferNew (QEMUD_MAX_XML_LEN);
+    if (!buf)
         goto no_memory;
 
-    if (qemudBufferPrintf(&buf, "<network>\n") < 0)
+    if (bufferVSprintf(buf, "<network>\n") < 0)
         goto no_memory;
 
-    if (qemudBufferPrintf(&buf, "  <name>%s</name>\n", def->name) < 0)
+    if (bufferVSprintf(buf, "  <name>%s</name>\n", def->name) < 0)
         goto no_memory;
 
     uuid = def->uuid;
-    if (qemudBufferPrintf(&buf, "  <uuid>%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x</uuid>\n",
+    if (bufferVSprintf(buf, "  <uuid>%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x</uuid>\n",
                           uuid[0], uuid[1], uuid[2], uuid[3],
                           uuid[4], uuid[5], uuid[6], uuid[7],
                           uuid[8], uuid[9], uuid[10], uuid[11],
@@ -2704,62 +2646,61 @@ char *qemudGenerateNetworkXML(struct qemud_server *server,
 
     if (def->forward) {
         if (def->forwardDev[0]) {
-            qemudBufferPrintf(&buf, "  <forward dev='%s'/>\n",
+            bufferVSprintf(buf, "  <forward dev='%s'/>\n",
                               def->forwardDev);
         } else {
-            qemudBufferAdd(&buf, "  <forward/>\n");
+            bufferAdd(buf, "  <forward/>\n", -1);
         }
     }
 
     if ((def->bridge != '\0' || def->disableSTP || def->forwardDelay) &&
-        qemudBufferPrintf(&buf, "  <bridge name='%s' stp='%s' delay='%d' />\n",
+        bufferVSprintf(buf, "  <bridge name='%s' stp='%s' delay='%d' />\n",
                           def->bridge,
                           def->disableSTP ? "off" : "on",
                           def->forwardDelay) < 0)
         goto no_memory;
 
     if (def->ipAddress[0] || def->netmask[0]) {
-        if (qemudBufferAdd(&buf, "  <ip") < 0)
+        if (bufferAdd(buf, "  <ip", -1) < 0)
             goto no_memory;
 
         if (def->ipAddress[0] &&
-            qemudBufferPrintf(&buf, " address='%s'", def->ipAddress) < 0)
+            bufferVSprintf(buf, " address='%s'", def->ipAddress) < 0)
             goto no_memory;
 
         if (def->netmask[0] &&
-            qemudBufferPrintf(&buf, " netmask='%s'", def->netmask) < 0)
+            bufferVSprintf(buf, " netmask='%s'", def->netmask) < 0)
             goto no_memory;
 
-        if (qemudBufferAdd(&buf, ">\n") < 0)
+        if (bufferAdd(buf, ">\n", -1) < 0)
             goto no_memory;
 
         if (def->ranges) {
             struct qemud_dhcp_range_def *range = def->ranges;
-            if (qemudBufferAdd(&buf, "    <dhcp>\n") < 0)
+            if (bufferAdd(buf, "    <dhcp>\n", -1) < 0)
                 goto no_memory;
             while (range) {
-                if (qemudBufferPrintf(&buf, "      <range start='%s' end='%s' />\n",
+                if (bufferVSprintf(buf, "      <range start='%s' end='%s' />\n",
                                       range->start, range->end) < 0)
                     goto no_memory;
                 range = range->next;
             }
-            if (qemudBufferAdd(&buf, "    </dhcp>\n") < 0)
+            if (bufferAdd(buf, "    </dhcp>\n", -1) < 0)
                 goto no_memory;
         }
 
-        if (qemudBufferAdd(&buf, "  </ip>\n") < 0)
+        if (bufferAdd(buf, "  </ip>\n", -1) < 0)
             goto no_memory;
     }
 
-    if (qemudBufferAdd(&buf, "</network>\n") < 0)
+    if (bufferAdd(buf, "</network>\n", -1) < 0)
         goto no_memory;
 
-    return buf.data;
+    return bufferContentAndFree (buf);
 
  no_memory:
     qemudReportError(server, VIR_ERR_NO_MEMORY, "xml");
-    if (buf.data)
-        free(buf.data);
+    if (buf) bufferFree (buf);
     return NULL;
 }
 
