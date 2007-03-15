@@ -3,7 +3,7 @@
 INCLUDES = -I$(top_builddir)/include -I@top_srcdir@/include @LIBXML_CFLAGS@ -I@top_srcdir@/qemud \
 	   -DBINDIR=\""$(libexecdir)"\" -DSBINDIR=\""$(sbindir)"\" -DLOCALEBASEDIR=\""$(datadir)/locale"\" \
            -DLOCAL_STATE_DIR=\""$(localstatedir)"\" \
-           -DGETTEXT_PACKAGE=\"$(PACKAGE)\" $(WARN_CFLAGS)
+           -DGETTEXT_PACKAGE=\"$(PACKAGE)\" $(WARN_CFLAGS) $(LIBVIRT_FEATURES)
 DEPS = libvirt.la
 LDADDS = @STATIC_BINARIES@ libvirt.la
 VIRSH_LIBS = @VIRSH_LIBS@

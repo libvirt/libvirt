@@ -21,14 +21,16 @@
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 
-#include <xs.h>
-
 #include "internal.h"
 #include "driver.h"
+
+#ifdef WITH_XEN
+#include <xs.h>
 #include "xen_internal.h"
 #include "xend_internal.h"
 #include "xs_internal.h"
 #include "xm_internal.h"
+#endif
 #include "proxy_internal.h"
 #include "xml.h"
 #include "test.h"
@@ -69,13 +71,19 @@ virInitialize(void)
     /*
      * Note that the order is important the first ones have a higher priority
      */
+#ifdef WITH_XEN
     xenHypervisorRegister();
     xenProxyRegister();
     xenDaemonRegister();
     xenStoreRegister();
     xenXMRegister();
+#endif
+#ifdef WITH_TEST
     testRegister();
+#endif
+#ifdef WITH_QEMU
     qemuRegister();
+#endif
 
     return(0);
 }
@@ -1335,6 +1343,7 @@ virDomainGetUUID(virDomainPtr domain, unsigned char *uuid)
     if (domain->id == 0) {
         memset(uuid, 0, VIR_UUID_BUFLEN);
     } else {
+#ifdef WITH_XEN
         if ((domain->uuid[0] == 0) && (domain->uuid[1] == 0) &&
             (domain->uuid[2] == 0) && (domain->uuid[3] == 0) &&
             (domain->uuid[4] == 0) && (domain->uuid[5] == 0) &&
@@ -1345,6 +1354,7 @@ virDomainGetUUID(virDomainPtr domain, unsigned char *uuid)
             (domain->uuid[14] == 0) && (domain->uuid[15] == 0))
             xenDaemonDomainLookupByName_ids(domain->conn, domain->name,
                                 &domain->uuid[0]);
+#endif
         memcpy(uuid, &domain->uuid[0], VIR_UUID_BUFLEN);
     }
     return (0);

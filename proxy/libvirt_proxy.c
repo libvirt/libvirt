@@ -19,6 +19,8 @@
 #include <sys/un.h>
 #include <locale.h>
 #include "internal.h"
+
+#ifdef WITH_XEN
 #include "proxy_internal.h"
 #include "xen_internal.h"
 #include "xend_internal.h"
@@ -786,3 +788,9 @@ int main(int argc, char **argv) {
     proxyCloseUnixSocket();
     exit(0);
 }
+#else /* WITHOUT_XEN */
+int main(void) {
+    fprintf(stderr, "libvirt was compiled without Xen support\n");
+    exit(1);
+}
+#endif /* WITH_XEN */

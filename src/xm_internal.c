@@ -22,6 +22,7 @@
  *
  */
 
+#ifdef WITH_XEN
 #include <dirent.h>
 #include <time.h>
 #include <sys/stat.h>
@@ -2261,6 +2262,7 @@ int xenXMNumOfDefinedDomains(virConnectPtr conn) {
     return virHashSize(nameConfigMap);
 }
 
+#endif /* WITH_XEN */
 /*
  * Local variables:
  *  indent-tabs-mode: nil

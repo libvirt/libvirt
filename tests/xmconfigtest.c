@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef WITH_XEN
 #include "xm_internal.h"
 #include "testutils.h"
 #include "internal.h"
@@ -214,7 +215,14 @@ main(int argc, char **argv)
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
-
+#else /* WITHOUT_XEN */
+int
+main(void)
+{
+    fprintf(stderr, "libvirt compiled without Xen support\n");
+    exit(0);
+}
+#endif /* WITH_XEN */
 
 /*
  * Local variables:

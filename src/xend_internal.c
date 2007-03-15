@@ -10,6 +10,7 @@
  *  archive for more details.
  */
 
+#ifdef WITH_XEN
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -36,6 +37,9 @@
 #include "xend_internal.h"
 #include "xen_internal.h" /* for DOM0_INTERFACE_VERSION */
 #include "xs_internal.h" /* To extract VNC port & Serial console TTY */
+
+/* required for cpumap_t */
+#include <xen/dom0_ops.h>
 
 #ifndef PROXY
 static const char * xenDaemonGetType(virConnectPtr conn);
@@ -3123,9 +3127,7 @@ error:
 }
 
 #endif /* ! PROXY */
-
-
-
+#endif /* WITH_XEN */
 
 /*
  * Local variables:

@@ -8,6 +8,8 @@
  * Daniel Veillard <veillard@redhat.com>
  */
 
+#ifdef WITH_XEN
+
 #include <stdio.h>
 #include <string.h>
 /* required for uint8_t, uint32_t, etc ... */
@@ -1880,6 +1882,7 @@ xenHypervisorGetVcpuMax(virDomainPtr domain)
     return maxcpu;
 }
 
+#endif /* WITH_XEN */
 /*
  * Local variables:
  *  indent-tabs-mode: nil

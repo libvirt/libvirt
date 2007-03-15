@@ -14,7 +14,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#ifdef WITH_XEN
 #include <xs.h>
+#endif
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
@@ -1340,7 +1342,9 @@ virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref)
     xmlDocPtr xml = NULL;
     xmlNodePtr node, cur;
     xmlChar *attr = NULL;
+#ifdef WITH_XEN
     char *xref;
+#endif /* WITH_XEN */
     int ret = 0;
 
     xml = xmlReadDoc((const xmlChar *) xmldesc, "domain.xml", NULL,
@@ -1372,6 +1376,7 @@ virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref)
             if (attr == NULL)
                 goto error;
 
+#ifdef WITH_XEN
             xref = xenStoreDomainGetNetworkID(domain->conn, domain->id,
                                               (char *) attr);
             if (xref != NULL) {
@@ -1379,6 +1384,7 @@ virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref)
                 free(xref);
                 goto cleanup;
             }
+#endif /* WITH_XEN */
 
             goto error;
         }

@@ -3,7 +3,7 @@
 INCLUDES = -I$(top_builddir)/include -I@top_srcdir@/include \
            -I@top_srcdir@/proxy -I@top_srcdir@/src @LIBXML_CFLAGS@ \
 	   -DPROXY  -DLOCALEBASEDIR=\""$(datadir)/locale"\" \
-           -DGETTEXT_PACKAGE=\"$(PACKAGE)\" $(WARN_CFLAGS)
+           -DGETTEXT_PACKAGE=\"$(PACKAGE)\" $(WARN_CFLAGS) $(LIBVIRT_FEATURES)
 
 libexec_PROGRAMS = libvirt_proxy
 

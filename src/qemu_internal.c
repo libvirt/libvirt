@@ -21,6 +21,7 @@
  * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
+#ifdef WITH_QEMU
 #include <stdio.h>
 #include <string.h>
 #include <sys/time.h>
@@ -1230,6 +1231,7 @@ void qemuRegister(void) {
     virRegisterDriver(&qemuDriver);
     virRegisterNetworkDriver(&qemuNetworkDriver);
 }
+#endif /* WITH_QEMU */
 
 /*
  * Local variables:

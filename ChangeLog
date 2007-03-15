@@ -1,3 +1,15 @@
+Thu Mar 15 08:40:33 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in proxy/Makefile.am proxy/libvirt_proxy.c 
+	  src/Makefile.am src/libvirt.c src/qemu_internal.c src/test.c 
+	  src/xen_internal.c src/xen_internal.h src/xend_internal.c 
+	  src/xm_internal.c src/xml.c src/xs_internal.c 
+	  tests/Makefile.am tests/sexpr2xmltest.c tests/xmconfigtest.c:
+	  allow selective compilation of Xen,QEmu/KVM and test support
+	  in or out at configure time. Also allows to compile on a system
+	  without Xen development installed. All drivers are selected by
+	  default.
+
 Wed Mar 14 14:12:32 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: applied patch from Kazuki Mizushima, an

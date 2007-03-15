@@ -8,6 +8,7 @@
  * Daniel Veillard <veillard@redhat.com>
  */
 
+#ifdef WITH_XEN
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -836,3 +837,13 @@ xenStoreDomainGetNetworkID(virConnectPtr conn, int id, const char *mac) {
     free(list);
     return(ret);
 }
+
+#endif /* WITH_XEN */
+/*
+ * Local variables:
+ *  indent-tabs-mode: nil
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  tab-width: 4
+ * End:
+ */

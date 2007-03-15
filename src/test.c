@@ -21,6 +21,7 @@
  * Daniel Berrange <berrange@redhat.com>
  */
 
+#ifdef WITH_TEST
 #include <stdio.h>
 #include <string.h>
 #include <sys/time.h>
@@ -1375,6 +1376,7 @@ int testDomainUndefine(virDomainPtr domain) {
 
     return (0);
 }
+#endif /* WITH_TEST */
 
 /*
  * Local variables:

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef WITH_XEN
 #include "xml.h"
 #include "xend_internal.h"
 #include "testutils.h"
@@ -190,3 +191,19 @@ main(int argc, char **argv)
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
+#else /* WITHOUT_XEN */
+int
+main(void)
+{
+    fprintf(stderr, "libvirt compiled without Xen support\n");
+    exit(0);
+}
+#endif /* WITH_XEN */
+/*
+ * Local variables:
+ *  indent-tabs-mode: nil
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  tab-width: 4
+ * End:
+ */

@@ -11,9 +11,6 @@
 #ifndef __VIR_XEN_INTERNAL_H__
 #define __VIR_XEN_INTERNAL_H__
 
-/* required for dom0_getdomaininfo_t and DOM0_INTERFACE_VERSION */
-#include <xen/dom0_ops.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
