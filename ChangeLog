@@ -1,3 +1,10 @@
+Thu Mar 15 16:21:46 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* python/generator.py: fix the python binding generation for
+	  virNetworkLookup...() functions, which were clashing with
+	  equivalent virConnLookup...() equivalents, as reported by
+	  Tatsuro Enokura
+
 Thu Mar 15 15:26:20 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c src/xen_internal.c: applied patch from Atsushi SAKAI

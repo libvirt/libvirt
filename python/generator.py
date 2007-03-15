@@ -576,12 +576,16 @@ function_post = {
 }
 
 def nameFixup(name, classe, type, file):
+    # avoid a desastrous clash
     listname = classe + "List"
     ll = len(listname)
     l = len(classe)
     if name[0:l] == listname:
         func = name[l:]
         func = string.lower(func[0:1]) + func[1:]
+    elif name[0:16] == "virNetworkLookup":
+       func = name[3:]
+       func = string.lower(func[0:1]) + func[1:]
     elif name[0:12] == "virDomainGet":
         func = name[12:]
         func = string.lower(func[0:1]) + func[1:]
