@@ -1448,26 +1448,27 @@ xenHypervisorGetCapabilities (virConnectPtr conn)
 {
     struct utsname utsname;
     char line[1024], *str, *token;
-    regmatch_t subs[3];
+    regmatch_t subs[4];
     char *saveptr = NULL;
     FILE *fp;
     int i, r;
 
     char hvm_type[4] = ""; /* "vmx" or "svm" (or "" if not in CPU). */
     int host_pae = 0;
-    const int max_guest_archs = 32;
-    struct {
+    struct guest_arch {
         const char *token;
         const char *model;
         int bits;
         int hvm;
         int pae;
         int ia64_be;
-    } guest_archs[max_guest_archs];
+    } guest_archs[32];
     int nr_guest_archs = 0;
 
     virBufferPtr xml;
     char *xml_str;
+
+    memset(guest_archs, 0, sizeof(guest_archs));
 
     /* Really, this never fails - look at the man-page. */
     uname (&utsname);
@@ -1485,11 +1486,12 @@ xenHypervisorGetCapabilities (virConnectPtr conn)
     }
 
     while (fgets (line, sizeof line, fp)) {
-        if (regexec (&flags_hvm_rec, line, 1, subs, 0) == 0
-            && subs[0].rm_so != -1)
+        if (regexec (&flags_hvm_rec, line, sizeof(subs)/sizeof(regmatch_t), subs, 0) == 0
+            && subs[0].rm_so != -1) {
             strncpy (hvm_type,
-                     &line[subs[0].rm_so], subs[0].rm_eo-subs[0].rm_so+1);
-        else if (regexec (&flags_hvm_rec, line, 0, NULL, 0) == 0)
+                     &line[subs[1].rm_so], subs[1].rm_eo-subs[1].rm_so+1);
+            hvm_type[subs[1].rm_eo-subs[1].rm_so] = '\0';
+        } else if (regexec (&flags_hvm_rec, line, 0, NULL, 0) == 0)
             host_pae = 1;
     }
 
@@ -1539,22 +1541,22 @@ xenHypervisorGetCapabilities (virConnectPtr conn)
      * this buffer.  Parse out the features from each token.
      */
     for (str = line, nr_guest_archs = 0;
-         nr_guest_archs < max_guest_archs
+         nr_guest_archs < (sizeof(guest_archs)/sizeof(struct guest_arch))
              && (token = strtok_r (str, " ", &saveptr)) != NULL;
          str = NULL) {
-        if (regexec (&xen_cap_rec, token, 3, subs, 0) == 0) {
+        if (regexec (&xen_cap_rec, token, (sizeof(subs)/sizeof(regmatch_t)), subs, 0) == 0) {
             guest_archs[nr_guest_archs].token = token;
             guest_archs[nr_guest_archs].hvm =
-                strncmp (&token[subs[0].rm_so], "hvm", 3) == 0;
-            if (strncmp (&token[subs[1].rm_so], "x86_32", 6) == 0) {
+                strncmp (&token[subs[1].rm_so], "hvm", 3) == 0;
+            if (strncmp (&token[subs[2].rm_so], "x86_32", 6) == 0) {
                 guest_archs[nr_guest_archs].model = "i686";
                 guest_archs[nr_guest_archs].bits = 32;
             }
-            else if (strncmp (&token[subs[1].rm_so], "x86_64", 6) == 0) {
+            else if (strncmp (&token[subs[2].rm_so], "x86_64", 6) == 0) {
                 guest_archs[nr_guest_archs].model = "x86_64";
                 guest_archs[nr_guest_archs].bits = 64;
             }
-            else if (strncmp (&token[subs[1].rm_so], "ia64", 4) == 0) {
+            else if (strncmp (&token[subs[2].rm_so], "ia64", 4) == 0) {
                 guest_archs[nr_guest_archs].model = "ia64";
                 guest_archs[nr_guest_archs].bits = 64;
             }
@@ -1564,9 +1566,9 @@ xenHypervisorGetCapabilities (virConnectPtr conn)
             guest_archs[nr_guest_archs].pae =
                 guest_archs[nr_guest_archs].ia64_be = 0;
             if (subs[2].rm_so != -1) {
-                if (strncmp (&token[subs[2].rm_so], "p", 1) == 0)
+                if (strncmp (&token[subs[3].rm_so], "p", 1) == 0)
                     guest_archs[nr_guest_archs].pae = 1;
-                else if (strncmp (&token[subs[2].rm_so], "be", 2) == 0)
+                else if (strncmp (&token[subs[3].rm_so], "be", 2) == 0)
                     guest_archs[nr_guest_archs].ia64_be = 1;
             }
             nr_guest_archs++;
@@ -1638,19 +1640,19 @@ xenHypervisorGetCapabilities (virConnectPtr conn)
         r = virBufferAdd (xml,
                           "\
     </arch>\n\
-    <features>", -1);
+    <features>\n", -1);
         if (r == -1) goto vir_buffer_failed;
         if (guest_archs[i].pae) {
             r = virBufferAdd (xml,
                               "\
-        <pae/>\n\
-        <nonpae/>\n", -1);
+      <pae/>\n\
+      <nonpae/>\n", -1);
             if (r == -1) goto vir_buffer_failed;
         }
         if (guest_archs[i].ia64_be) {
             r = virBufferAdd (xml,
                               "\
-        <ia64_be/>\n", -1);
+      <ia64_be/>\n", -1);
             if (r == -1) goto vir_buffer_failed;
         }
         r = virBufferAdd (xml,

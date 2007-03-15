@@ -1,3 +1,11 @@
+Thu Mar 15 14:57:20 EST 2007 Daniel P Berrange <berrange@redhat.com>
+
+	* src/xen_internal.c: Fixed off by one error in extracting
+	the regex match data - the first match is the whole string.
+	So the substrings start at position 1. Fixed indentation of
+	<features> XML. Use memset to clear guest_archs and thus
+	ensure no uninitialized data for valgrind to complain about.
+
 Thu Mar 15 14:14:20 EST 2007 Daniel P Berrange <berrange@redhat.com>
 
 	* src/qemud_internal.c: Paranoia ensure the XML returned by
