@@ -1306,7 +1306,7 @@ char * testDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
                       uuid[8], uuid[9], uuid[10], uuid[11],
                       uuid[12], uuid[13], uuid[14], uuid[15]);
 
-    virBufferVSprintf(buf, "  <memory>%d</memory>\n", con->domains[domidx].info.maxMem);
+    virBufferVSprintf(buf, "  <memory>%lu</memory>\n", con->domains[domidx].info.maxMem);
     virBufferVSprintf(buf, "  <vcpu>%d</vcpu>\n", con->domains[domidx].info.nrVirtCpu);
     virBufferVSprintf(buf, "  <on_reboot>%s</on_reboot>\n", testRestartFlagToString(con->domains[domidx].onReboot));
     virBufferVSprintf(buf, "  <on_poweroff>%s</on_poweroff>\n", testRestartFlagToString(con->domains[domidx].onPoweroff));

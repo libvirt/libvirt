@@ -28,7 +28,8 @@
 #include "internal.h"
 
 void qemudReportError(struct qemud_server *server,
-                      int code, const char *fmt, ...);
+                      int code, const char *fmt, ...)
+    ATTRIBUTE_FORMAT(printf,3,4);
 
 int qemudGetCPUInfo(unsigned int *cpus, unsigned int *mhz,
                     unsigned int *nodes, unsigned int *sockets,

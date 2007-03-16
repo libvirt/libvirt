@@ -37,7 +37,7 @@
 #include <ansidecl.h>
 #endif
 #ifndef ATTRIBUTE_UNUSED
-#define ATTRIBUTE_UNUSED __attribute__((unused))
+#define ATTRIBUTE_UNUSED __attribute__((__unused__))
 #endif
 #ifndef ATTRIBUTE_FORMAT
 #define ATTRIBUTE_FORMAT(args...) __attribute__((__format__ (args)))
@@ -332,12 +332,13 @@ int qemudStartNetworkDaemon(struct qemud_server *server,
 int qemudShutdownNetworkDaemon(struct qemud_server *server,
                                struct qemud_network *network);
 
-void qemudLog(int priority, const char *fmt, ...);
+void qemudLog(int priority, const char *fmt, ...)
+    ATTRIBUTE_FORMAT(printf,2,3);
 
 #ifdef ENABLE_DEBUG
 #define qemudDebug(...) qemudLog(QEMUD_DEBUG, __VA_ARGS__)
 #else
-#define qemudDebug(fmt, ...) do { } while(0);
+#define qemudDebug(fmt, ...) do {} while(0)
 #endif
 
 static inline int

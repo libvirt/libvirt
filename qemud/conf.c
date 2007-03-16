@@ -1622,14 +1622,14 @@ static int qemudSaveNetworkConfig(struct qemud_server *server,
     towrite = strlen(xml);
     if (write(fd, xml, towrite) != towrite) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
-                         "cannot write config file %s",
+                         "cannot write config file %s: %s",
                          network->configFile, strerror(errno));
         goto cleanup;
     }
 
     if (close(fd) < 0) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
-                         "cannot save config file %s",
+                         "cannot save config file %s: %s",
                          network->configFile, strerror(errno));
         goto cleanup;
     }

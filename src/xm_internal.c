@@ -952,7 +952,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
 
     if (vnc) {
         virBufferVSprintf(buf,
-                          "    <graphics type='vnc' port='%d'",
+                          "    <graphics type='vnc' port='%ld'",
                           (vncunused ? -1 : 5900+vncdisplay));
         if (vnclisten) {
             virBufferVSprintf(buf, " listen='%s'", vnclisten);

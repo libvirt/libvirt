@@ -6,6 +6,7 @@
 #define __VIR_XML_H__
 
 #include "libvirt/libvirt.h"
+#include "internal.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,7 +28,8 @@ struct _virBuffer {
 virBufferPtr virBufferNew(unsigned int size);
 void virBufferFree(virBufferPtr buf);
 int virBufferAdd(virBufferPtr buf, const char *str, int len);
-int virBufferVSprintf(virBufferPtr buf, const char *format, ...);
+int virBufferVSprintf(virBufferPtr buf, const char *format, ...)
+  ATTRIBUTE_FORMAT(printf, 2, 3);
 int virBufferStrcat(virBufferPtr buf, ...);
 
 char *virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int xendConfigVersion);

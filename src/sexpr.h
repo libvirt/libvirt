@@ -13,6 +13,8 @@
 #ifndef _LIBVIR_SEXPR_H_
 #define _LIBVIR_SEXPR_H_
 
+#include "internal.h"
+
 #include <sys/types.h>
 
 enum sexpr_type {
@@ -45,6 +47,7 @@ void sexpr_free(struct sexpr *sexpr);
 
 /* lookup in S-Expressions */
 const char *sexpr_node(struct sexpr *sexpr, const char *node);
-const char *sexpr_fmt_node(struct sexpr *sexpr, const char *fmt, ...);
+const char *sexpr_fmt_node(struct sexpr *sexpr, const char *fmt, ...)
+  ATTRIBUTE_FORMAT(printf,2,3);
 struct sexpr *sexpr_lookup(struct sexpr *sexpr, const char *node);
 #endif

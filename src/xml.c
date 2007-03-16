@@ -254,7 +254,7 @@ static int virDomainParseXMLGraphicsDescImage(virConnectPtr conn ATTRIBUTE_UNUSE
                     if (port == -1)
                         virBufferAdd(buf, "(vncunused 1)", 13);
                     else if (port >= 5900)
-                        virBufferVSprintf(buf, "(vncdisplay %d)", port - 5900);
+                        virBufferVSprintf(buf, "(vncdisplay %ld)", port - 5900);
                     xmlFree(vncport);
                 }
                 if (vnclisten != NULL) {
@@ -318,7 +318,7 @@ static int virDomainParseXMLGraphicsDescVFB(virConnectPtr conn ATTRIBUTE_UNUSED,
                 if (port == -1)
                     virBufferAdd(buf, "(vncunused 1)", 13);
                 else if (port >= 5900)
-                    virBufferVSprintf(buf, "(vncdisplay %d)", port - 5900);
+                    virBufferVSprintf(buf, "(vncdisplay %ld)", port - 5900);
                 xmlFree(vncport);
             }
             if (vnclisten != NULL) {
@@ -418,11 +418,11 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf
 
     if (boot_dev) {
         if (xmlStrEqual(boot_dev, BAD_CAST "fd")) {
-            virBufferVSprintf(buf, "(boot a)", (const char *) boot_dev);
+            virBufferVSprintf(buf, "(boot a)" /*, (const char *) boot_dev*/);
         } else if (xmlStrEqual(boot_dev, BAD_CAST "cdrom")) {
-            virBufferVSprintf(buf, "(boot d)", (const char *) boot_dev);
+            virBufferVSprintf(buf, "(boot d)" /*, (const char *) boot_dev*/);
         } else if (xmlStrEqual(boot_dev, BAD_CAST "hd")) {
-            virBufferVSprintf(buf, "(boot c)", (const char *) boot_dev);
+            virBufferVSprintf(buf, "(boot c)" /*, (const char *) boot_dev*/);
         } else {
             /* Any other type of boot dev is unsupported right now */
             virXMLError(conn, VIR_ERR_XML_ERROR, NULL, 0);

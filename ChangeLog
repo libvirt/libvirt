@@ -1,3 +1,10 @@
+Fri Mar 16 16:01:54 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* qemud/conf.c qemud/driver.h qemud/internal.h src/internal.h
+	  src/sexpr.h src/test.c src/xm_internal.c src/xml.c src/xml.h:
+	  applied patch from Richard Jones adding check to printf-like
+	  functions and fixing the problems raised
+
 Fri Mar 16 15:55:01 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xml.c tests/sexpr2xmltest.c tests/xmconfigtest.c: avoid

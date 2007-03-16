@@ -26,33 +26,33 @@ extern "C" {
 #define _N(str) dgettext(GETTEXT_PACKAGE, (str))
 #define gettext_noop(str) (str)
 
+#ifdef __GNUC__
+#ifdef HAVE_ANSIDECL_H
+#include <ansidecl.h>
+#endif
+
 /**
  * ATTRIBUTE_UNUSED:
  *
  * Macro to flag conciously unused parameters to functions
  */
-#ifdef __GNUC__
-#ifdef HAVE_ANSIDECL_H
-#include <ansidecl.h>
-#endif
 #ifndef ATTRIBUTE_UNUSED
-#define ATTRIBUTE_UNUSED __attribute__((unused))
-#endif
-#else
-#define ATTRIBUTE_UNUSED
+#define ATTRIBUTE_UNUSED __attribute__((__unused__))
 #endif
 
-#ifndef __attribute__
-/* This feature is available in gcc versions 2.5 and later.  */
-# if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 5)
-#  define __attribute__(Spec) /* empty */
-# endif
-/* The __-protected variants of `format' and `printf' attributes
-   are accepted by gcc versions 2.6.4 (effectively 2.7) and later.  */
-# if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 7)
-#  define __format__ format
-#  define __printf__ printf
-# endif
+/**
+ * ATTRIBUTE_FORMAT
+ *
+ * Macro used to check printf/scanf-like functions, if compiling
+ * with gcc.
+ */
+#ifndef ATTRIBUTE_FORMAT
+#define ATTRIBUTE_FORMAT(args...) __attribute__((__format__ (args)))
+#endif
+
+#else
+#define ATTRIBUTE_UNUSED
+#define ATTRIBUTE_FORMAT(...)
 #endif
 
 /**
@@ -211,7 +211,8 @@ void __virRaiseError(virConnectPtr conn,
 		     const char *str1,
 		     const char *str2,
 		     const char *str3,
-		     int int1, int int2, const char *msg, ...);
+		     int int1, int int2, const char *msg, ...)
+  ATTRIBUTE_FORMAT(printf, 12, 13);
 const char *__virErrorMsg(virErrorNumber error, const char *info);
 
 /************************************************************************
