@@ -5,6 +5,27 @@
        http://libvirt.org/news.html
 
 Releases
+0.2.1: Mar 16 2007:
+   - Various internal cleanups (Richard Jones,Daniel Berrange,Mark McLoughlin)
+   - Bug fixes: libvirt_qemud daemon path (Daniel Berrange), libvirt
+      config directory (Daniel Berrange and Mark McLoughlin), memory leak in qemud (Mark), various fixes on network support (Mark), avoid Xen domain zombies on device hotplug errors (Daniel Berrange), various fixes on qemud (Mark), 
+    argsparsing (Richard Jones), virsh -t argument (Saori Fukuta), avoid virsh
+    crash on TAB key (Daniel Berrange), detect xend operation failures (Kazuki Mizushima), don't listen on null socket (Rich Jones), read-only socket cleanup (Rich Jones), use of vnc port 5900 (Nobuhiro Itou), assorted networking fixes
+(Daniel Berrange), shutoff and shutdown mismatches (Kazuki Mizushima), unlimited memory handling (Atsushi SAKAI), python binding fixes (Tatsuro Enokura)
+   - Build and portability fixes: IA64 fixes (Atsushi SAKAI), dependancies and build (Daniel Berrange), fix xend port detection (Daniel Berrange), icompile time warnings (Mark), avoid const related compiler warnings (Daniel Berrange), automated builds (Daniel Berrange), pointer/int mismatch (Richard Jones), configure time selection of drivers, libvirt spec hacking (Daniel Berrange)
+   - Add support for network autostart and init scripts (Mark McLoughlin)
+   - New API virConnectGetCapabilities() to detect the virtualization 
+    capabilities of a host (Richard Jones)
+   - Minor improvements: qemud signal handling (Mark), don't shutdown or reboot
+    domain0 (Kazuki Mizushima), QEmu version autodetection (Daniel Berrange),
+    network UUIDs (Mark), speed up UUID domain lookups (Tatsuro Enokura and
+    Daniel Berrange), support for paused QEmu CPU (Daniel Berrange), keymap
+    VNC attribute support (Takahashi Tomohiro and Daniel Berrange), maximum
+    number of virtual CPU (Masayuki Sunou), virtsh --readonly option (Rich
+    Jones), python bindings for new functions (Daniel Berrange)
+   - Documentation updates especially on the XML formats
+
+
 0.2.0: Feb 14 2007:
    - Various internal cleanups (Mark McLoughlin, Richard Jones,Daniel
     Berrange, Karel Zak)

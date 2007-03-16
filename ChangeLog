@@ -1,3 +1,8 @@
+Fri Mar 16 20:30:20 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* NEWS libvirt.spec.in docs/libvir.html docs/news.html: preparing
+	  release of libvirt-0.2.1
+
 Fri Mar 16 19:32:01 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* docs/*: updated the format section, augmented Networking with

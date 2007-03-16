@@ -3,7 +3,25 @@
 <html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>Releases</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Releases</h1><p>Here is the list of official releases, however since it is early on in
 thedevelopment of libvirt, it is preferable when possible to just use the <a href="downloads.html">CVS version or snapshot</a>, contact the mailing
 listand check the <a href="ChangeLog.html">ChangeLog</a>to gauge
-progresses.</p><h3>0.2.0: Feb 14 2007</h3><ul><li>Various internal cleanups (Mark McLoughlin, Richard Jones,Daniel
+progresses.</p><h3>0.2.1: Mar 16 2007</h3><ul><li>Various internal cleanups (Richard Jones,Daniel Berrange,Mark McLoughlin)</li>
+  <li>Bug fixes: libvirt_qemud daemon path (Daniel Berrange), libvirt
+      config directory (Daniel Berrange and Mark McLoughlin), memory leak in qemud (Mark), various fixes on network support (Mark), avoid Xen domain zombies on device hotplug errors (Daniel Berrange), various fixes on qemud (Mark), 
+    argsparsing (Richard Jones), virsh -t argument (Saori Fukuta), avoid virsh
+    crash on TAB key (Daniel Berrange), detect xend operation failures (Kazuki Mizushima), don't listen on null socket (Rich Jones), read-only socket cleanup (Rich Jones), use of vnc port 5900 (Nobuhiro Itou), assorted networking fixes
+(Daniel Berrange), shutoff and shutdown mismatches (Kazuki Mizushima), unlimited memory handling (Atsushi SAKAI), python binding fixes (Tatsuro Enokura)</li>
+  <li>Build and portability fixes: IA64 fixes (Atsushi SAKAI), dependancies and build (Daniel Berrange), fix xend port detection (Daniel Berrange), icompile time warnings (Mark), avoid const related compiler warnings (Daniel Berrange), automated builds (Daniel Berrange), pointer/int mismatch (Richard Jones), configure time selection of drivers, libvirt spec hacking (Daniel Berrange)</li>
+  <li>Add support for network autostart and init scripts (Mark McLoughlin)</li>
+  <li>New API virConnectGetCapabilities() to detect the virtualization 
+    capabilities of a host (Richard Jones)</li>
+  <li>Minor improvements: qemud signal handling (Mark), don't shutdown or reboot
+    domain0 (Kazuki Mizushima), QEmu version autodetection (Daniel Berrange),
+    network UUIDs (Mark), speed up UUID domain lookups (Tatsuro Enokura and
+    Daniel Berrange), support for paused QEmu CPU (Daniel Berrange), keymap
+    VNC attribute support (Takahashi Tomohiro and Daniel Berrange), maximum
+    number of virtual CPU (Masayuki Sunou), virtsh --readonly option (Rich
+    Jones), python bindings for new functions (Daniel Berrange)</li>
+  <li>Documentation updates especially on the XML formats</li>
+</ul><h3>0.2.0: Feb 14 2007</h3><ul><li>Various internal cleanups (Mark McLoughlin, Richard Jones,Daniel
     Berrange, Karel Zak)</li>
   <li>Bug fixes: avoid a crash in connect (Daniel Berrange), virsh
     argsparsing (Richard Jones)</li>

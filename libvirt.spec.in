@@ -9,7 +9,7 @@
 Summary: Library providing an API to use the Xen virtualization
 Name: libvirt
 Version: @VERSION@
-Release: 4%{?_extra_release}
+Release: 1%{?_extra_release}
 License: LGPL
 Group: Development/Libraries
 Source: libvirt-%{version}.tar.gz
@@ -163,6 +163,13 @@ fi
 %doc docs/examples/python
 
 %changelog
+* Fri Mar 16 2007 Daniel Veillard <veillard@redhat.com> - 2.0.1-1
+- Release of 0.2.1
+- lot of bug and portability fixes
+- Add support for network autostart and init scripts
+- New API to detect the virtualization capabilities of a host
+- Documentation updates
+
 * Fri Feb 23 2007 Daniel P. Berrange <berrange@redhat.com> - 0.2.0-4.fc7
 - Fix loading of guest & network configs
 
