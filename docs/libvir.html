@@ -447,20 +447,22 @@ colibvirt</code></p>
 <code>make</code>and <code>make install</code>, as usual. All normal cvs
 commands are nowavailable except commiting to the base.</p>
 
-<h2><a name="Format">XML Format</a></h2>
+<h2><a name="Format">XML Formats</a></h2>
 
-<p>This section describes the XML format used to represent domains, there
-arevariations on the format based on the kind of domains run and the
-optionsused to launch them:</p>
+<p>This section describes the XML formats used mostly to represent domains,
+there are variations on the format based on the kind of domains run and the
+options used to launch them:</p>
 <ul>
   <li><a href="#Normal1">Normal paravirtualized Xen domains</a></li>
   <li><a href="#Fully1">Fully virtualized Xen domains</a></li>
   <li><a href="#KVM1">KVM domains</a></li>
+  <li><a href="#Net1">Networking options for QEmu and KVM</a></li>
   <li><a href="#QEmu1">QEmu domains</a></li>
+  <li><a href="#Capa1">Discovering virtualization capabilities</a></li>
 </ul>
 
-<p>The formats try as much as possible to follow the same structure and
-reuseelements and attributes where it makes sense.</p>
+<p>The formats try as much as possible to follow the same structure and reuse
+elements and attributes where it makes sense.</p>
 
 <h3 id="Normal"><a name="Normal1" id="Normal1">Normal paravirtualized
 Xendomains</a>:</h3>
@@ -689,9 +691,10 @@ the variety of devices emulated and the graphic supportoptions offered.</p>
 
 <h3><a name="KVM1">KVM domain (added in 0.2.0)</a></h3>
 
-<p>Support for the KVM virtualization is provided in recent Linux kernels
-(2.6.20 and onward). This requires specific hardware with acceleration
-support and the availability of the special version of the <a
+<p>Support for the <a href="http://kvm.qumranet.com/">KVM virtualization</a>
+is provided in recent Linux kernels (2.6.20 and onward). This requires
+specific hardware with acceleration support and the availability of the
+special version of the <a
 href="http://fabrice.bellard.free.fr/qemu/">QEmu</a> binary. Since this
 relies on QEmu for the machine emulation like fully virtualized guests the
 XML description is quite similar, here is a simple example:</p>
@@ -722,15 +725,247 @@ XML description is quite similar, here is a simple example:</p>
   <li>the &lt;devices&gt; emulator points to the special qemu binary required
     for KVM</li>
   <li>networking interface definitions definitions are somewhat different due
-    to a different model from Xen (@@TODO)</li>
+    to a different model from Xen see below</li>
 </ul>
 
 <p>except those points the options should be quite similar to Xen HVM
 ones.</p>
 
-<h3><a name="QEmu1">QEmu domain (added in 0.2.0)</a></h3>
+<h3><a name="Net1">Networking options for QEmu and KVM (added in 0.2.0)</a></h3>
 
-<p></p>
+<p>The networking support in the QEmu and KVM case is more flexible, and
+support a variety of options:</p>
+<ol>
+  <li>Userspace SLIRP stack
+    <p>Provides a virtual LAN with NAT to the outside world. The virtual
+    network has DHCP &amp; DNS services and will give the guest VM addresses
+    starting from <code>10.0.2.15</code>. The default router will be
+    <code>10.0.2.2</code> and the DNS server will be <code>10.0.2.3</code>.
+    This networking is the only option for unprivileged users who need their
+    VMs to have outgoing access. Example configs are:</p>
+    <pre>&lt;interface type='user'/&gt;</pre>
+    <pre>
+&lt;interface type='user'&gt;                                                  
+  &lt;mac address="11:22:33:44:55:66:/&gt;                                     
+&lt;/interface&gt;
+    </pre>
+  </li>
+  <li>Virtual network
+    <p>Provides a virtual network using a bridge device in the host.
+    Depending on the virtual network configuration, the network may be
+    totally isolated,NAT'ing to aan explicit network device, or NAT'ing to
+    the default route. DHCP and DNS are provided on the virtual network in
+    all cases and the IP range can be determined by examining the virtual
+    network config with '<code>virsh net-dumpxml &lt;network
+    name&gt;</code>'. There is one virtual network called'default' setup out
+    of the box which does NAT'ing to the default route and has an IP range of
+    <code>192.168.22.0/255.255.255.0</code>. Each guest will have an
+    associated tun device created with a name of vnetN, which can also be
+    overriden with the &lt;target&gt; element. Example configs are:</p>
+    <pre>&lt;interface type='network'&gt;
+  &lt;source network='default'/&gt;
+&lt;/interface&gt;
+
+&lt;interface type='network'&gt;
+  &lt;source network='default'/&gt;
+  &lt;target dev='vnet7'/&gt;
+  &lt;mac address="11:22:33:44:55:66:/&gt;
+&lt;/interface&gt;
+    </pre>
+  </li>
+  <li>Bridge to to LAN
+    <p>Provides a bridge from the VM directly onto the LAN. This assumes
+    there is a bridge device on the host which has one or more of the hosts
+    physical NICs enslaved. The guest VM will have an associated tun device
+    created with a name of vnetN, which can also be overriden with the
+    &lt;target&gt; element. The tun device will be enslaved to the bridge.
+    The IP range / network configuration is whatever is used on the LAN. This
+    provides the guest VM full incoming &amp; outgoing net access just like a
+    physical machine. Examples include:</p>
+    <pre>&lt;interface type='bridge'&gt;
+ &lt;source dev='br0'/&gt;
+&lt;/interface&gt;
+
+&lt;interface type='bridge'&gt;
+  &lt;source dev='br0'/&gt;
+  &lt;target dev='vnet7'/&gt;
+  &lt;mac address="11:22:33:44:55:66:/&gt;
+&lt;/interface&gt;       &lt;interface type='bridge'&gt;
+         &lt;source dev='br0'/&gt;
+         &lt;target dev='vnet7'/&gt;
+         &lt;mac address="11:22:33:44:55:66:/&gt;
+       &lt;/interface&gt;</pre>
+  </li>
+  <li>Generic connection to LAN
+    <p>Provides a means for the administrator to execute an arbitrary script
+    to connect the guest's network to the LAN. The guest will have a tun
+    device created with a name of vnetN, which can also be overriden with the
+    &lt;target&gt; element. After creating the tun device a shell script will
+    be run which is expected to do whatever host network integration is
+    required. By default this script is called /etc/qemu-ifup but can be
+    overriden.</p>
+    <pre>&lt;interface type='ethernet'/&gt;
+
+&lt;interface type='ethernet'&gt;
+  &lt;target dev='vnet7'/&gt;
+  &lt;script path='/etc/qemu-ifup-mynet'/&gt;
+&lt;/interface&gt;</pre>
+  </li>
+  <li>Multicast tunnel
+    <p>A multicast group is setup to represent a virtual network. Any VMs
+    whose network devices are in the same multicast group can talk to each
+    other even across hosts. This mode is also available to unprivileged
+    users. There is no default DNS or DHCP support and no outgoing network
+    access. To provide outgoing network access, one of the VMs should have a
+    2nd NIC which is connected to one of the first 4 network types and do the
+    appropriate routing. The multicast protocol is compatible with that used
+    by user mode linux guests too. The source address used must be from the
+    multicast address block.</p>
+    <pre>&lt;interface type='mcast'&gt;
+  &lt;source address='230.0.0.1' port='5558'/&gt;
+&lt;/interface&gt;</pre>
+  </li>
+  <li>TCP tunnel
+    <p>A TCP client/server architecture provides a virtual network. One VM
+    provides the server end of the netowrk, all other VMS are configured as
+    clients. All network traffic is routed between the VMs via the server.
+    This mode is also available to unprivileged users. There is no default
+    DNS or DHCP support and no outgoing network access. To provide outgoing
+    network access, one of the VMs should have a 2nd NIC which is connected
+    to one of the first 4 network types and do the appropriate routing.</p>
+    <p>Example server config:</p>
+    <pre>&lt;interface type='server'&gt;
+  &lt;source address='192.168.0.1' port='5558'/&gt;
+&lt;/interface&gt;</pre>
+    <p>Example client config:</p>
+    <pre>&lt;interface type='client'&gt;
+  &lt;source address='192.168.0.1' port='5558'/&gt;
+&lt;/interface&gt;</pre>
+  </li>
+</ol>
+
+<p>To be noted, options 2, 3, 4 are also supported by Xen VMs, so it is
+possible to use these configs to have networking with both Xen &amp;
+QEMU/KVMs connected to each other.</p>
+
+<h3>Q<a name="QEmu1">Emu domain (added in 0.2.0)</a></h3>
+
+<p>Libvirt support for KVM and QEmu is the same code base with only minor
+changes. The configuration is as a result nearly identical, the only changes
+are related to QEmu ability to emulate <a
+href="http://www.qemu.org/status.html">various CPU type and hardware
+platforms</a>, and kqemu support (QEmu own kernel accelerator when the
+emulated CPU is i686 as well as the target machine):</p>
+<pre>&lt;domain <span style="color: #FF0000; background-color: #FFFFFF">type='qemu'</span>&gt;
+  &lt;name&gt;QEmu-fedora-i686&lt;/name&gt;
+  &lt;uuid&gt;c7a5fdbd-cdaf-9455-926a-d65c16db1809&lt;/uuid&gt;
+  &lt;memory&gt;219200&lt;/memory&gt;
+  &lt;currentMemory&gt;219200&lt;/currentMemory&gt;
+  &lt;vcpu&gt;2&lt;/vcpu&gt;
+  &lt;os&gt;
+    <span style="color: #FF0000; background-color: #FFFFFF">&lt;type arch='i686' machine='pc'&gt;hvm&lt;/type&gt;</span>
+    &lt;boot dev='cdrom'/&gt;
+  &lt;/os&gt;
+  &lt;devices&gt;
+    <span style="color: #FF0000; background-color: #FFFFFF">&lt;emulator&gt;/usr/bin/qemu&lt;/emulator&gt;</span>
+    &lt;disk type='file' device='cdrom'&gt;
+      &lt;source file='/home/user/boot.iso'/&gt;
+      &lt;target dev='hdc'/&gt;
+      &lt;readonly/&gt;
+    &lt;/disk&gt;
+    &lt;disk type='file' device='disk'&gt;
+      &lt;source file='/home/user/fedora.img'/&gt;
+      &lt;target dev='hda'/&gt;
+    &lt;/disk&gt;
+    &lt;interface type='network'&gt;
+      &lt;source name='default'/&gt;
+    &lt;/interface&gt;
+    &lt;graphics type='vnc' port='-1'/&gt;
+  &lt;/devices&gt;
+&lt;/domain&gt;</pre>
+
+<p>The difference here are:</p>
+<ul>
+  <li>the value of type on top-level domain, it's 'qemu' or kqemu if asking
+    for <a href="http://www.qemu.org/kqemu-tech.html">kernel assisted
+    acceleration</a></li>
+  <li>the os type block defines the architecture to be emulated, and
+    optionally the machine type, see the discovery API below</li>
+  <li>the emulator string must point to the right emulator for that
+    architecture</li>
+</ul>
+
+<h3><a name="Capa1">Discovering virtualization capabilities (Added in 0.2.1)</a></h3>
+
+<p>As new virtualization engine support gets added to libvirt, and to handle
+cases like QEmu supporting a variety of emulations, a query interface has
+been added in 0.2.1 allowing to list the set of supported virtualization
+capabilities on the host:</p>
+<pre>    char * virConnectGetCapabilities (virConnectPtr conn);</pre>
+
+<p>The value returned is an XML document listing the virtualization
+capabilities of the host and virtualization engine to which
+<code>@conn</code> is connected. One can test it using <code>virsh</code>
+command line tool command '<code>capabilities</code>', it dumps the XML
+associated to the current connection. For example in the case of a 64 bits
+machine with hardware virtualization capabilities enabled in the chip and
+BIOS you will see</p>
+<pre>&lt;capabilities&gt;
+  <span style="color: #E50000; background-color: #FFFFFF">&lt;host&gt;
+    &lt;cpu&gt;
+      &lt;arch&gt;x86_64&lt;/arch&gt;
+      &lt;features&gt;
+        &lt;vmx/&gt;
+      &lt;/features&gt;
+    &lt;/cpu&gt;
+  &lt;/host&gt;</span>
+
+  &lt;!-- xen-3.0-x86_64 --&gt;
+  <span style="color: #0000E5; background-color: #FFFFFF">&lt;guest&gt;
+    &lt;os_type&gt;xen&lt;/os_type&gt;
+    &lt;arch name="x86_64"&gt;
+      &lt;wordsize&gt;64&lt;/wordsize&gt;
+      &lt;domain type="xen"&gt;&lt;/domain&gt;
+      &lt;emulator&gt;/usr/lib64/xen/bin/qemu-dm&lt;/emulator&gt;
+    &lt;/arch&gt;
+    &lt;features&gt;
+    &lt;/features&gt;
+  &lt;/guest&gt;</span>
+
+  &lt;!-- hvm-3.0-x86_32 --&gt;
+  <span style="color: #00B200; background-color: #FFFFFF">&lt;guest&gt;
+    &lt;os_type&gt;hvm&lt;/os_type&gt;
+    &lt;arch name="i686"&gt;
+      &lt;wordsize&gt;32&lt;/wordsize&gt;
+      &lt;domain type="xen"&gt;&lt;/domain&gt;
+      &lt;emulator&gt;/usr/lib/xen/bin/qemu-dm&lt;/emulator&gt;
+      &lt;machine&gt;pc&lt;/machine&gt;
+      &lt;machine&gt;isapc&lt;/machine&gt;
+      &lt;loader&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
+    &lt;/arch&gt;
+    &lt;features&gt;
+    &lt;/features&gt;
+  &lt;/guest&gt;</span>
+  ...
+&lt;/capabilities&gt;</pre>
+
+<p>The fist block (in red) indicates the host hardware capbilities, currently
+it is limited to the CPU properties but other information may be available,
+it shows the CPU architecture, and the features of the chip (the feature
+block is similar to what you will find in a Xen fully virtualized domain
+description).</p>
+
+<p>The second block (in blue) indicates the paravirtualization support of the
+Xen support, you will see the os_type of xen to indicate a paravirtual
+kernel, then architecture informations and potential features.</p>
+
+<p>The third block (in green) gives similar informations but when running a
+32 bit OS fully virtualized with Xen using the hvm support.</p>
+
+<p>This section is likely to be updated and augmented in the future, see <a
+href="https://www.redhat.com/archives/libvir-list/2007-March/msg00215.html">the
+discussion</a> which led to the capabilities format in the mailing-list
+archives.</p>
 
 <h2><a name="Python" id="Python">Binding for Python</a></h2>
 

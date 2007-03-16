@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ko\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-03-13 16:15+0100\n"
+"POT-Creation-Date: 2007-03-16 18:45+0100\n"
 "PO-Revision-Date: 2006-12-15 11:06+1000\n"
 "Last-Translator: Eunju Kim <eukim@redhat.com>\n"
 "Language-Team: Korean <ko@li.org>\n"
@@ -16,11 +16,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libvirt.c:290 src/libvirt.c:365 src/hash.c:666
+#: src/libvirt.c:298 src/libvirt.c:373 src/hash.c:666
 msgid "allocating connection"
 msgstr "연결 할당 중"
 
-#: src/libvirt.c:387
+#: src/libvirt.c:395
 msgid "Xen Daemon or Xen Store"
 msgstr "Xen Daemon 또는 Xen Store"
 
@@ -348,6 +348,11 @@ msgstr "이미 도메인이 존재함"
 msgid "network %s exists already"
 msgstr "이미 도메인 %s가 존재함"
 
+#: src/virterror.c:609
+#, fuzzy
+msgid "system call error"
+msgstr "내부 오류"
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr "노드 내용 복사 중"
@@ -392,10 +397,10 @@ msgstr "서버 응답 분석 실패"
 msgid "allocate new context"
 msgstr "새 문맥 할당"
 
-#: src/hash.c:772 src/hash.c:778 src/test.c:863 src/test.c:892 src/test.c:915
-#: src/test.c:939 src/xend_internal.c:1815 src/xend_internal.c:2597
-#: src/xend_internal.c:2840 src/xs_internal.c:605 src/proxy_internal.c:797
-#: src/proxy_internal.c:844 src/proxy_internal.c:895
+#: src/hash.c:772 src/hash.c:778 src/test.c:906 src/test.c:935 src/test.c:958
+#: src/test.c:982 src/xend_internal.c:1820 src/xend_internal.c:2602
+#: src/xend_internal.c:2845 src/xs_internal.c:607 src/proxy_internal.c:798
+#: src/proxy_internal.c:845 src/proxy_internal.c:896
 msgid "allocating domain"
 msgstr "도메인 할당 중"
 
@@ -422,134 +427,134 @@ msgstr "해시 테이블을 연결하기 위한 도메인 추가 실패"
 msgid "network missing from connection hash table"
 msgstr "해시 테이블 연결에서 도메인 부재"
 
-#: src/test.c:267 src/test.c:478 src/test.c:1046 src/test.c:1077
-#: src/test.c:1128
+#: src/test.c:273 src/test.c:484 src/test.c:1089 src/test.c:1120
+#: src/test.c:1171
 msgid "getting time of day"
 msgstr "시간 읽어오는 중"
 
-#: src/test.c:273 src/test.c:433 src/test.c:458 src/test.c:1317
+#: src/test.c:279 src/test.c:439 src/test.c:464 src/test.c:1360
 msgid "domain"
 msgstr "도메인"
 
-#: src/test.c:279 src/test.c:558
+#: src/test.c:285 src/test.c:564
 msgid "creating xpath context"
 msgstr "xpath 문맥 생성하는 중"
 
-#: src/test.c:286
+#: src/test.c:292
 msgid "domain name"
 msgstr "도메인명"
 
-#: src/test.c:295 src/test.c:300
+#: src/test.c:301 src/test.c:306
 msgid "domain uuid"
 msgstr "도메인 uuid"
 
-#: src/test.c:308 src/test.c:313
+#: src/test.c:314 src/test.c:319
 msgid "domain memory"
 msgstr "도메인 메모리"
 
-#: src/test.c:326
+#: src/test.c:332
 #, fuzzy
 msgid "domain current memory"
 msgstr "도메인 메모리"
 
-#: src/test.c:343
+#: src/test.c:349
 msgid "domain vcpus"
 msgstr "도메인 vcpus"
 
-#: src/test.c:354
+#: src/test.c:360
 msgid "domain reboot behaviour"
 msgstr "도메인 재부팅 동작"
 
-#: src/test.c:365
+#: src/test.c:371
 msgid "domain poweroff behaviour"
 msgstr "도메인 종료 동작"
 
-#: src/test.c:376
+#: src/test.c:382
 msgid "domain crash behaviour"
 msgstr "도메인 충돌 동작"
 
-#: src/test.c:451
+#: src/test.c:457
 msgid "load domain definition file"
 msgstr "도메인 정의 파일 읽어오기"
 
-#: src/test.c:537
+#: src/test.c:543
 msgid "loading host definition file"
 msgstr "호스트 정의 파일을 읽어오는중"
 
-#: src/test.c:544
+#: src/test.c:550
 msgid "host"
 msgstr "호스트"
 
-#: src/test.c:552
+#: src/test.c:558
 msgid "node"
 msgstr "노드"
 
-#: src/test.c:574
+#: src/test.c:580
 msgid "node cpu numa nodes"
 msgstr "노드 cpu numa 노드"
 
-#: src/test.c:586
+#: src/test.c:592
 msgid "node cpu sockets"
 msgstr "노드 cpu 소켓"
 
-#: src/test.c:598
+#: src/test.c:604
 msgid "node cpu cores"
 msgstr "노드 cpu 코어"
 
-#: src/test.c:610
+#: src/test.c:616
 msgid "node cpu threads"
 msgstr "노드 cpu 스레드"
 
-#: src/test.c:622
+#: src/test.c:628
 msgid "node active cpu"
 msgstr "노드 활성화 cpu"
 
-#: src/test.c:636
+#: src/test.c:642
 msgid "node cpu mhz"
 msgstr "노드 cpu mhz"
 
-#: src/test.c:655
+#: src/test.c:661
 msgid "node memory"
 msgstr "노드 메모리"
 
-#: src/test.c:664
+#: src/test.c:670
 msgid "node domain list"
 msgstr "노드 도메인 목록"
 
-#: src/test.c:674
+#: src/test.c:680
 msgid "resolving domain filename"
 msgstr "도메인 파일명 해결 중"
 
-#: src/test.c:713
+#: src/test.c:719
 msgid "allocating node"
 msgstr "노드 할당 중"
 
-#: src/test.c:769
+#: src/test.c:775
 msgid "too many connections"
 msgstr "과도한 연결"
 
-#: src/test.c:848
+#: src/test.c:891
 msgid "too many domains"
 msgstr "과도한 도메인"
 
-#: src/test.c:1346
+#: src/test.c:1389
 #, fuzzy
 msgid "Domain is already running"
 msgstr "이미 도메인이 활성화됨"
 
-#: src/test.c:1370
+#: src/test.c:1413
 msgid "Domain is still running"
 msgstr ""
 
-#: src/xml.c:65
+#: src/xml.c:67
 msgid "growing buffer"
 msgstr "증가 중인 버퍼"
 
-#: src/xml.c:117 src/xend_internal.c:1469 src/xend_internal.c:1488
+#: src/xml.c:119 src/xend_internal.c:1474 src/xend_internal.c:1493
 msgid "allocate new buffer"
 msgstr "새 버퍼 할당"
 
-#: src/xml.c:121
+#: src/xml.c:123
 msgid "allocate buffer content"
 msgstr "버퍼 내용 할당"
 
@@ -561,60 +566,60 @@ msgstr "노드 할당 실패"
 msgid "failed to copy a string"
 msgstr "문자열 복사 실패"
 
-#: src/xend_internal.c:273 src/xend_internal.c:276
+#: src/xend_internal.c:278 src/xend_internal.c:281
 msgid "failed to read from Xen Daemon"
 msgstr "Xen 데몬에서 읽기 실패"
 
-#: src/xend_internal.c:993
+#: src/xend_internal.c:998
 msgid "failed to urlencode the create S-Expr"
 msgstr "생성된 S-Expr를 urlencode하기 실패"
 
-#: src/xend_internal.c:1034
+#: src/xend_internal.c:1039
 msgid "domain information incomplete, missing domid"
 msgstr "도메인 정보가 완료되지 않음, domid 부재"
 
-#: src/xend_internal.c:1040
+#: src/xend_internal.c:1045
 msgid "domain information incorrect domid not numeric"
 msgstr "도메인 정보가 수치가 아닌 잘못된 domid임"
 
-#: src/xend_internal.c:1048 src/xend_internal.c:1097
+#: src/xend_internal.c:1053 src/xend_internal.c:1102
 msgid "domain information incomplete, missing uuid"
 msgstr "도메인 정보가 완료되지 않음, uuid 부재"
 
-#: src/xend_internal.c:1088 src/xend_internal.c:1352
+#: src/xend_internal.c:1093 src/xend_internal.c:1357
 msgid "domain information incomplete, missing name"
 msgstr "도메인 정보가 완료되지 않음, 이름 부재"
 
-#: src/xend_internal.c:1259 src/xend_internal.c:1284
+#: src/xend_internal.c:1264 src/xend_internal.c:1289
 msgid "domain information incomplete, missing kernel"
 msgstr "도메인 정보가 완료되지 않음, 커널 부재"
 
-#: src/xend_internal.c:1340
+#: src/xend_internal.c:1345
 #, fuzzy
 msgid "domain information incomplete, missing id"
 msgstr "도메인 정보가 완료되지 않음, uuid 부재"
 
-#: src/xend_internal.c:1448
+#: src/xend_internal.c:1453
 msgid "domain information incomplete, vbd has no src"
 msgstr "도메인 정보가 완료되지 않음, vbd는 src가 없음"
 
-#: src/xend_internal.c:1454
+#: src/xend_internal.c:1459
 msgid "domain information incomplete, vbd has no dev"
 msgstr "도메인 정보가 완료되지 않음, vbd는 dev가 없음"
 
-#: src/xend_internal.c:1462
+#: src/xend_internal.c:1467
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd 파일명을 구문 분석할 수 없음, 드라이버명 부재"
 
-#: src/xend_internal.c:1481
+#: src/xend_internal.c:1486
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd 파일명을 구문 분석할 수 없음, 드라이버 유형 부재"
 
-#: src/xend_internal.c:1834
+#: src/xend_internal.c:1839
 msgid "failed to parse Xend domain information"
 msgstr "Xend 도메인 정보 분석 실패"
 
-#: src/xend_internal.c:3017
+#: src/xend_internal.c:3022
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "비활성화 도메인 %s 생성 실패\n"
@@ -646,13 +651,13 @@ msgstr ""
 
 #: src/virsh.c:309 src/virsh.c:403 src/virsh.c:589 src/virsh.c:627
 #: src/virsh.c:858 src/virsh.c:940 src/virsh.c:985 src/virsh.c:1024
-#: src/virsh.c:1063 src/virsh.c:1102 src/virsh.c:1141 src/virsh.c:1213
-#: src/virsh.c:1296 src/virsh.c:1382 src/virsh.c:1438 src/virsh.c:1481
-#: src/virsh.c:1558 src/virsh.c:2288
+#: src/virsh.c:1063 src/virsh.c:1102 src/virsh.c:1141 src/virsh.c:1218
+#: src/virsh.c:1301 src/virsh.c:1387 src/virsh.c:1443 src/virsh.c:1486
+#: src/virsh.c:1590 src/virsh.c:2320
 msgid "domain name, id or uuid"
 msgstr "도메인명, id 또는 uuid"
 
-#: src/virsh.c:310 src/virsh.c:1699
+#: src/virsh.c:310 src/virsh.c:1731
 msgid "disable autostarting"
 msgstr ""
 
@@ -731,15 +736,15 @@ msgstr "비활성화 도메인 목록만들기 실패"
 msgid "Id"
 msgstr "Id"
 
-#: src/virsh.c:527 src/virsh.c:1994
+#: src/virsh.c:527 src/virsh.c:2026
 msgid "Name"
 msgstr "이름"
 
-#: src/virsh.c:527 src/virsh.c:1994
+#: src/virsh.c:527 src/virsh.c:2026
 msgid "State"
 msgstr "상태"
 
-#: src/virsh.c:540 src/virsh.c:562 src/virsh.c:3012 src/virsh.c:3028
+#: src/virsh.c:540 src/virsh.c:562 src/virsh.c:3045 src/virsh.c:3061
 msgid "no state"
 msgstr "상태 없음"
 
@@ -782,7 +787,7 @@ msgid "file conatining an XML domain description"
 msgstr "XML 도메인 설명을 담고있는 파일"
 
 #: src/virsh.c:689 src/virsh.c:694 src/virsh.c:744 src/virsh.c:749
-#: src/virsh.c:1765 src/virsh.c:1770 src/virsh.c:1821 src/virsh.c:1826
+#: src/virsh.c:1797 src/virsh.c:1802 src/virsh.c:1853 src/virsh.c:1858
 #, c-format
 msgid "Failed to read description file %s"
 msgstr "설명 파일 %s 읽기 실패"
@@ -823,7 +828,7 @@ msgstr "비활성화 도메인을 정의하지 않음"
 msgid "Undefine the configuration for an inactive domain."
 msgstr "비활성화 도메인에 대한 설정을 정의하지 않음"
 
-#: src/virsh.c:776 src/virsh.c:1627
+#: src/virsh.c:776 src/virsh.c:1659
 msgid "domain name or uuid"
 msgstr "도메인명 또는 uuid"
 
@@ -1025,476 +1030,493 @@ msgstr "UUID:"
 msgid "OS Type:"
 msgstr "OS 유형:"
 
-#: src/virsh.c:1176 src/virsh.c:1257
+#: src/virsh.c:1176 src/virsh.c:1262
 msgid "State:"
 msgstr "상태:"
 
-#: src/virsh.c:1179 src/virsh.c:1536
+#: src/virsh.c:1179 src/virsh.c:1541
 msgid "CPU(s):"
 msgstr "CPU:"
 
-#: src/virsh.c:1186 src/virsh.c:1264
+#: src/virsh.c:1186 src/virsh.c:1269
 msgid "CPU time:"
 msgstr "CPU 시간:"
 
-#: src/virsh.c:1189
+#: src/virsh.c:1190 src/virsh.c:1193
 msgid "Max memory:"
 msgstr "최대 메모리:"
 
-#: src/virsh.c:1191
+#: src/virsh.c:1194
+msgid "no limit"
+msgstr ""
+
+#: src/virsh.c:1196
 msgid "Used memory:"
 msgstr "사용된 메모리:"
 
-#: src/virsh.c:1207
+#: src/virsh.c:1212
 msgid "domain vcpu information"
 msgstr "도메인 vcpu 정보"
 
-#: src/virsh.c:1208
+#: src/virsh.c:1213
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr "도메인 가상 CPU에 관한 기본 정보로 복귀."
 
-#: src/virsh.c:1255
+#: src/virsh.c:1260
 msgid "VCPU:"
 msgstr "VCPU:"
 
-#: src/virsh.c:1256
+#: src/virsh.c:1261
 msgid "CPU:"
 msgstr "CPU:"
 
-#: src/virsh.c:1266
+#: src/virsh.c:1271
 msgid "CPU Affinity:"
 msgstr "CPU 동질관계:"
 
-#: src/virsh.c:1290
+#: src/virsh.c:1295
 msgid "control domain vcpu affinity"
 msgstr "도메인 vcpu 동질 관계 제어"
 
-#: src/virsh.c:1291
+#: src/virsh.c:1296
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr "도메인 VCPU를 물리적 호스트 CPU에 고정."
 
-#: src/virsh.c:1297
+#: src/virsh.c:1302
 msgid "vcpu number"
 msgstr "vcpu 수"
 
-#: src/virsh.c:1298
+#: src/virsh.c:1303
 msgid "host cpu number(s) (comma separated)"
 msgstr "호스트 cpu 수 (콤마로 분리됨)"
 
-#: src/virsh.c:1376
+#: src/virsh.c:1381
 msgid "change number of virtual CPUs"
 msgstr "가상 CPU 수 변경"
 
-#: src/virsh.c:1377
+#: src/virsh.c:1382
 msgid "Change the number of virtual CPUs active in the guest domain."
 msgstr "게스트 도메인에서 활성화 상태인 가상 CPU 수 변경."
 
-#: src/virsh.c:1383
+#: src/virsh.c:1388
 msgid "number of virtual CPUs"
 msgstr "가상 CPU 수"
 
-#: src/virsh.c:1414
+#: src/virsh.c:1419
 #, fuzzy
 msgid "Too many virtual CPU's."
 msgstr "가상 CPU 수"
 
-#: src/virsh.c:1432
+#: src/virsh.c:1437
 msgid "change memory allocation"
 msgstr "메모리 할당 변경"
 
-#: src/virsh.c:1433
+#: src/virsh.c:1438
 msgid "Change the current memory allocation in the guest domain."
 msgstr "게스트 도메인에 있는 현재 메모리 할당을 변경."
 
-#: src/virsh.c:1439
+#: src/virsh.c:1444
 msgid "number of bytes of memory"
 msgstr "메모리의 바이트 수"
 
-#: src/virsh.c:1475
+#: src/virsh.c:1480
 msgid "change maximum memory limit"
 msgstr "최대 메모리 한계 변경"
 
-#: src/virsh.c:1476
+#: src/virsh.c:1481
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr "게스트 도메인에서 최대 메모리 할당 한계를 변경."
 
-#: src/virsh.c:1482
+#: src/virsh.c:1487
 msgid "maxmimum memory limit in bytes"
 msgstr "바이트에서 최대 메모리 한계"
 
-#: src/virsh.c:1518
+#: src/virsh.c:1523
 msgid "node information"
 msgstr "노드 정보"
 
-#: src/virsh.c:1519
+#: src/virsh.c:1524
 msgid "Returns basic information about the node."
 msgstr "노드에 관한 기본 정보로 복귀"
 
-#: src/virsh.c:1532
+#: src/virsh.c:1537
 msgid "failed to get node information"
 msgstr "노드 정보 가져오기 실패"
 
-#: src/virsh.c:1535
+#: src/virsh.c:1540
 msgid "CPU model:"
 msgstr "CPU 모델:"
 
-#: src/virsh.c:1537
+#: src/virsh.c:1542
 msgid "CPU frequency:"
 msgstr "CPU 주파수:"
 
-#: src/virsh.c:1538
+#: src/virsh.c:1543
 msgid "CPU socket(s):"
 msgstr "CPU 소켓:"
 
-#: src/virsh.c:1539
+#: src/virsh.c:1544
 msgid "Core(s) per socket:"
 msgstr "소켓당 코어:"
 
-#: src/virsh.c:1540
+#: src/virsh.c:1545
 msgid "Thread(s) per core:"
 msgstr "코어당 스레드:"
 
-#: src/virsh.c:1541
+#: src/virsh.c:1546
 msgid "NUMA cell(s):"
 msgstr "NUMA cell:"
 
-#: src/virsh.c:1542
+#: src/virsh.c:1547
 msgid "Memory size:"
 msgstr "메모리 용량:"
 
-#: src/virsh.c:1552
+#: src/virsh.c:1557
+msgid "capabilities"
+msgstr ""
+
+#: src/virsh.c:1558
+msgid "Returns capabilities of hypervisor/driver."
+msgstr ""
+
+#: src/virsh.c:1571
+#, fuzzy
+msgid "failed to get capabilities"
+msgstr "파일 열기 실패"
+
+#: src/virsh.c:1584
 msgid "domain information in XML"
 msgstr "XML에 있는 도메인 정보"
 
-#: src/virsh.c:1553
+#: src/virsh.c:1585
 msgid "Ouput the domain information as an XML dump to stdout."
 msgstr "XML 덤프로서의 도메인 정보를 표준 출력으로 출력함."
 
-#: src/virsh.c:1592
+#: src/virsh.c:1624
 msgid "convert a domain id or UUID to domain name"
 msgstr "도메인 id 또는 UUID를 도메인명으로 변환"
 
-#: src/virsh.c:1597
+#: src/virsh.c:1629
 msgid "domain id or uuid"
 msgstr "도메인 id 또는 uuid"
 
-#: src/virsh.c:1622
+#: src/virsh.c:1654
 msgid "convert a domain name or UUID to domain id"
 msgstr "도메인명 또는 UUID를 도메인 id로 변환"
 
-#: src/virsh.c:1657
+#: src/virsh.c:1689
 msgid "convert a domain name or id to domain UUID"
 msgstr "도메인명이나 id를 도메인 UUID로 변환"
 
-#: src/virsh.c:1662
+#: src/virsh.c:1694
 msgid "domain id or name"
 msgstr "도메인 id 또는 도메인명"
 
-#: src/virsh.c:1681
+#: src/virsh.c:1713
 msgid "failed to get domain UUID"
 msgstr "도메인 UUID 가져오기 실패"
 
-#: src/virsh.c:1691
+#: src/virsh.c:1723
 #, fuzzy
 msgid "autostart a network"
 msgstr "도메인 시작"
 
-#: src/virsh.c:1693
+#: src/virsh.c:1725
 msgid "Configure a network to be automatically started at boot."
 msgstr ""
 
-#: src/virsh.c:1698 src/virsh.c:2133
+#: src/virsh.c:1730 src/virsh.c:2165
 #, fuzzy
 msgid "network name or uuid"
 msgstr "도메인명 또는 uuid"
 
-#: src/virsh.c:1719
+#: src/virsh.c:1751
 #, fuzzy, c-format
 msgid "Failed to %smark network %s as autostarted"
 msgstr "도메인 %s 시작하기 실패"
 
-#: src/virsh.c:1725
+#: src/virsh.c:1757
 #, fuzzy, c-format
 msgid "Network %s %smarked as autostarted\n"
 msgstr "도메인 %s가 시작됨\n"
 
-#: src/virsh.c:1736
+#: src/virsh.c:1768
 #, fuzzy
 msgid "create a network from an XML file"
 msgstr "XML 파일에서 도메인 생성"
 
-#: src/virsh.c:1737
+#: src/virsh.c:1769
 #, fuzzy
 msgid "Create a network."
 msgstr "도메인 생성"
 
-#: src/virsh.c:1742
+#: src/virsh.c:1774
 #, fuzzy
 msgid "file containing an XML network description"
 msgstr "XML 도메인 설명을 담고있는 파일"
 
-#: src/virsh.c:1777
+#: src/virsh.c:1809
 #, fuzzy, c-format
 msgid "Network %s created from %s\n"
 msgstr "%s 에서 생성된 도메인 %s\n"
 
-#: src/virsh.c:1780
+#: src/virsh.c:1812
 #, fuzzy, c-format
 msgid "Failed to create network from %s"
 msgstr "%s에서 도메인 생성하기 실패"
 
-#: src/virsh.c:1792
+#: src/virsh.c:1824
 #, fuzzy
 msgid "define (but don't start) a network from an XML file"
 msgstr "XML 파일에서 도메인을 정의함 (시작하지는 않음)"
 
-#: src/virsh.c:1793
+#: src/virsh.c:1825
 #, fuzzy
 msgid "Define a network."
 msgstr "도메인 정의"
 
-#: src/virsh.c:1798
+#: src/virsh.c:1830
 #, fuzzy
 msgid "file conatining an XML network description"
 msgstr "XML 도메인 설명을 담고있는 파일"
 
-#: src/virsh.c:1833
+#: src/virsh.c:1865
 #, fuzzy, c-format
 msgid "Network %s defined from %s\n"
 msgstr "%s에서 정의된 도메인 %s\n"
 
-#: src/virsh.c:1836
+#: src/virsh.c:1868
 #, fuzzy, c-format
 msgid "Failed to define network from %s"
 msgstr "%s에서 도메인 정의하기 실패"
 
-#: src/virsh.c:1848
+#: src/virsh.c:1880
 #, fuzzy
 msgid "destroy a network"
 msgstr "도메인 삭제"
 
-#: src/virsh.c:1849
+#: src/virsh.c:1881
 #, fuzzy
 msgid "Destroy a given network."
 msgstr "주어진 도메인 삭제."
 
-#: src/virsh.c:1854 src/virsh.c:1894
+#: src/virsh.c:1886 src/virsh.c:1926
 #, fuzzy
 msgid "network name, id or uuid"
 msgstr "도메인명, id 또는 uuid"
 
-#: src/virsh.c:1872
+#: src/virsh.c:1904
 #, fuzzy, c-format
 msgid "Network %s destroyed\n"
 msgstr "도메인 %s가 삭제됨\n"
 
-#: src/virsh.c:1874
+#: src/virsh.c:1906
 #, fuzzy, c-format
 msgid "Failed to destroy network %s"
 msgstr "도메인 %s를 삭제하기 실패"
 
-#: src/virsh.c:1888
+#: src/virsh.c:1920
 #, fuzzy
 msgid "network information in XML"
 msgstr "XML에 있는 도메인 정보"
 
-#: src/virsh.c:1889
+#: src/virsh.c:1921
 #, fuzzy
 msgid "Ouput the network information as an XML dump to stdout."
 msgstr "XML 덤프로서의 도메인 정보를 표준 출력으로 출력함."
 
-#: src/virsh.c:1929
+#: src/virsh.c:1961
 msgid "list networks"
 msgstr ""
 
-#: src/virsh.c:1930
+#: src/virsh.c:1962
 #, fuzzy
 msgid "Returns list of networks."
 msgstr "도메인 목록으로 복귀"
 
-#: src/virsh.c:1935
+#: src/virsh.c:1967
 #, fuzzy
 msgid "list inactive networks"
 msgstr "비활성화 도메인 목록 만들기"
 
-#: src/virsh.c:1936
+#: src/virsh.c:1968
 #, fuzzy
 msgid "list inactive & active networks"
 msgstr "비활성화 & 활성화 도메인 목록만들기"
 
-#: src/virsh.c:1956 src/virsh.c:1964
+#: src/virsh.c:1988 src/virsh.c:1996
 #, fuzzy
 msgid "Failed to list active networks"
 msgstr "활성화 도메인 목록 만들기 실패"
 
-#: src/virsh.c:1975 src/virsh.c:1984
+#: src/virsh.c:2007 src/virsh.c:2016
 #, fuzzy
 msgid "Failed to list inactive networks"
 msgstr "비활성화 도메인 목록만들기 실패"
 
-#: src/virsh.c:1994
+#: src/virsh.c:2026
 msgid "Autostart"
 msgstr ""
 
-#: src/virsh.c:2009 src/virsh.c:2032
+#: src/virsh.c:2041 src/virsh.c:2064
 #, fuzzy
 msgid "no autostart"
 msgstr "상태 없음"
 
-#: src/virsh.c:2015
+#: src/virsh.c:2047
 msgid "active"
 msgstr ""
 
-#: src/virsh.c:2038
+#: src/virsh.c:2070
 #, fuzzy
 msgid "inactive"
 msgstr "노드 활성화 cpu"
 
-#: src/virsh.c:2057
+#: src/virsh.c:2089
 #, fuzzy
 msgid "convert a network UUID to network name"
 msgstr "도메인 id 또는 UUID를 도메인명으로 변환"
 
-#: src/virsh.c:2062
+#: src/virsh.c:2094
 msgid "network uuid"
 msgstr ""
 
-#: src/virsh.c:2088
+#: src/virsh.c:2120
 #, fuzzy
 msgid "start a (previously defined) inactive network"
 msgstr "(기존에 정의된) 비활성화 도메인 시작"
 
-#: src/virsh.c:2089
+#: src/virsh.c:2121
 #, fuzzy
 msgid "Start a network."
 msgstr "도메인 시작"
 
-#: src/virsh.c:2094
+#: src/virsh.c:2126
 #, fuzzy
 msgid "name of the inactive network"
 msgstr "비활성화 도메인명"
 
-#: src/virsh.c:2111
+#: src/virsh.c:2143
 #, fuzzy, c-format
 msgid "Network %s started\n"
 msgstr "도메인 %s가 시작됨\n"
 
-#: src/virsh.c:2114
+#: src/virsh.c:2146
 #, fuzzy, c-format
 msgid "Failed to start network %s"
 msgstr "도메인 %s 시작하기 실패"
 
-#: src/virsh.c:2127
+#: src/virsh.c:2159
 #, fuzzy
 msgid "undefine an inactive network"
 msgstr "비활성화 도메인을 정의하지 않음"
 
-#: src/virsh.c:2128
+#: src/virsh.c:2160
 #, fuzzy
 msgid "Undefine the configuration for an inactive network."
 msgstr "비활성화 도메인에 대한 설정을 정의하지 않음"
 
-#: src/virsh.c:2151
+#: src/virsh.c:2183
 #, fuzzy, c-format
 msgid "Network %s has been undefined\n"
 msgstr "도메인 %s는 정의되지 않음\n"
 
-#: src/virsh.c:2153
+#: src/virsh.c:2185
 #, fuzzy, c-format
 msgid "Failed to undefine network %s"
 msgstr "도메인 %s를 정의하지 않기 실패"
 
-#: src/virsh.c:2166
+#: src/virsh.c:2198
 #, fuzzy
 msgid "convert a network name to network UUID"
 msgstr "도메인명이나 id를 도메인 UUID로 변환"
 
-#: src/virsh.c:2171
+#: src/virsh.c:2203
 msgid "network name"
 msgstr ""
 
-#: src/virsh.c:2191
+#: src/virsh.c:2223
 #, fuzzy
 msgid "failed to get network UUID"
 msgstr "도메인 UUID 가져오기 실패"
 
-#: src/virsh.c:2202
+#: src/virsh.c:2234
 msgid "show version"
 msgstr "버전 보여주기"
 
-#: src/virsh.c:2203
+#: src/virsh.c:2235
 msgid "Display the system version information."
 msgstr "시스템 버전 정보 보여주기."
 
-#: src/virsh.c:2226
+#: src/virsh.c:2258
 msgid "failed to get hypervisor type"
 msgstr "하이퍼바이저 유형 가져오기 실패"
 
-#: src/virsh.c:2235
+#: src/virsh.c:2267
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr "라이브러리에 대해 컴파일됨: libvir %d.%d.%d\n"
 
-#: src/virsh.c:2240
+#: src/virsh.c:2272
 msgid "failed to get the library version"
 msgstr "라이브러리 버전 가져오기 실패"
 
-#: src/virsh.c:2247
+#: src/virsh.c:2279
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
 msgstr "사용중인 라이브러리: libvir %d.%d.%d\n"
 
-#: src/virsh.c:2254
+#: src/virsh.c:2286
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
 msgstr "사용중인 API: %s %d.%d.%d\n"
 
-#: src/virsh.c:2259
+#: src/virsh.c:2291
 msgid "failed to get the hypervisor version"
 msgstr "하이퍼바이저 버전 가져오기 실패"
 
-#: src/virsh.c:2264
+#: src/virsh.c:2296
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "실행중인 %s 하이퍼바이저 버전을 추출할 수 없음\n"
 
-#: src/virsh.c:2271
+#: src/virsh.c:2303
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "실행중인 하이퍼바이저: %s %d.%d.%d\n"
 
-#: src/virsh.c:2282
+#: src/virsh.c:2314
 msgid "vnc display"
 msgstr ""
 
-#: src/virsh.c:2283
+#: src/virsh.c:2315
 msgid "Ouput the IP address and port number for the VNC display."
 msgstr ""
 
-#: src/virsh.c:2362
+#: src/virsh.c:2394
 msgid "quit this interactive terminal"
 msgstr "대화식 터미널 종료"
 
-#: src/virsh.c:2488
+#: src/virsh.c:2521
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "'%s' 명령은 <%s> 옵션이 필요함"
 
-#: src/virsh.c:2489
+#: src/virsh.c:2522
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "'%s' 명령은 --%s 옵션이 필요함"
 
-#: src/virsh.c:2516
+#: src/virsh.c:2549
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "'%s' 명령이 존재하지 않음"
 
-#: src/virsh.c:2524
+#: src/virsh.c:2557
 msgid "  NAME\n"
 msgstr "  이름\n"
 
-#: src/virsh.c:2535
+#: src/virsh.c:2568
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -1502,7 +1524,7 @@ msgstr ""
 "\n"
 "  설명\n"
 
-#: src/virsh.c:2539
+#: src/virsh.c:2572
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -1510,36 +1532,36 @@ msgstr ""
 "\n"
 "  옵션\n"
 
-#: src/virsh.c:2546
+#: src/virsh.c:2579
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <number>"
 
-#: src/virsh.c:2548
+#: src/virsh.c:2581
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <string>"
 
-#: src/virsh.c:2661
+#: src/virsh.c:2694
 msgid "undefined domain name or id"
 msgstr "정의되지 않은 도메인명 또는 id"
 
-#: src/virsh.c:2694
+#: src/virsh.c:2727
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "도메인 '%s' 얻기 실패"
 
-#: src/virsh.c:2707
+#: src/virsh.c:2740
 #, fuzzy
 msgid "undefined network name"
 msgstr "정의되지 않은 도메인명 또는 id"
 
-#: src/virsh.c:2731
+#: src/virsh.c:2764
 #, fuzzy, c-format
 msgid "failed to get network '%s'"
 msgstr "도메인 '%s' 얻기 실패"
 
-#: src/virsh.c:2759
+#: src/virsh.c:2792
 #, c-format
 msgid ""
 "\n"
@@ -1550,102 +1572,102 @@ msgstr ""
 "(시간: %.3f ms)\n"
 "\n"
 
-#: src/virsh.c:2833
+#: src/virsh.c:2866
 msgid "missing \""
 msgstr "부재 \""
 
-#: src/virsh.c:2894
+#: src/virsh.c:2927
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "예상외의 토큰 (명령 이름): '%s'"
 
-#: src/virsh.c:2899
+#: src/virsh.c:2932
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "알려지지 않은 명령: '%s'"
 
-#: src/virsh.c:2906
+#: src/virsh.c:2939
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "명령 '%s'는 --%s 옵션을 지원하지 않음"
 
-#: src/virsh.c:2921
+#: src/virsh.c:2954
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "예상된 구문: --%s <%s>"
 
-#: src/virsh.c:2924
+#: src/virsh.c:2957
 msgid "number"
 msgstr "숫자"
 
-#: src/virsh.c:2924
+#: src/virsh.c:2957
 msgid "string"
 msgstr "문자열"
 
-#: src/virsh.c:2930
+#: src/virsh.c:2963
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "예상외의 데이터 '%s'"
 
-#: src/virsh.c:2952
+#: src/virsh.c:2985
 msgid "OPTION"
 msgstr "옵션"
 
-#: src/virsh.c:2952
+#: src/virsh.c:2985
 msgid "DATA"
 msgstr "데이터"
 
-#: src/virsh.c:3000 src/virsh.c:3026
+#: src/virsh.c:3033 src/virsh.c:3059
 msgid "running"
 msgstr "실행중"
 
-#: src/virsh.c:3002 src/virsh.c:3024
+#: src/virsh.c:3035 src/virsh.c:3057
 msgid "blocked"
 msgstr "차단됨"
 
-#: src/virsh.c:3004
+#: src/virsh.c:3037
 msgid "paused"
 msgstr "중지됨"
 
-#: src/virsh.c:3006
+#: src/virsh.c:3039
 msgid "in shutdown"
 msgstr "종료중"
 
-#: src/virsh.c:3008
+#: src/virsh.c:3041
 msgid "shut off"
 msgstr "종료"
 
-#: src/virsh.c:3010
+#: src/virsh.c:3043
 msgid "crashed"
 msgstr "충돌됨"
 
-#: src/virsh.c:3022
+#: src/virsh.c:3055
 msgid "offline"
 msgstr "오프라인"
 
-#: src/virsh.c:3041
+#: src/virsh.c:3074
 msgid "no valid connection"
 msgstr "유효하지 않은 연결"
 
-#: src/virsh.c:3080
+#: src/virsh.c:3113
 #, c-format
 msgid "%s: error: "
 msgstr "%s: 오류:"
 
-#: src/virsh.c:3082
+#: src/virsh.c:3115
 msgid "error: "
 msgstr "오류:"
 
-#: src/virsh.c:3104 src/virsh.c:3116 src/virsh.c:3128
+#: src/virsh.c:3137 src/virsh.c:3149 src/virsh.c:3161
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: %d 바이트 할당 실패"
 
-#: src/virsh.c:3158
+#: src/virsh.c:3191
 msgid "failed to connect to the hypervisor"
 msgstr "하이퍼바이저에 연결 실패"
 
-#: src/virsh.c:3306
+#: src/virsh.c:3339
 #, fuzzy, c-format
 msgid ""
 "\n"
@@ -1675,7 +1697,7 @@ msgstr ""
 "\n"
 "  명령 (비대화식 모드):\n"
 
-#: src/virsh.c:3323
+#: src/virsh.c:3356
 #, c-format
 msgid ""
 "\n"
@@ -1686,12 +1708,12 @@ msgstr ""
 "  (명령에 대한 정보를 보기 위해 --help <command>를 지정)\n"
 "\n"
 
-#: src/virsh.c:3415
+#: src/virsh.c:3448
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "지원되지 않는 옵션 '-%c'. --help 참조."
 
-#: src/virsh.c:3496
+#: src/virsh.c:3529
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -1700,7 +1722,7 @@ msgstr ""
 "%s, 가상화 대화식 터미널에 오신 것을 환영합니다.\n"
 "\n"
 
-#: src/virsh.c:3499
+#: src/virsh.c:3532
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
@@ -1755,56 +1777,56 @@ msgstr "파일 열기 실패"
 msgid "failed to save content"
 msgstr "내용 저장 실패"
 
-#: src/xs_internal.c:322
+#: src/xs_internal.c:324
 msgid "failed to connect to Xen Store"
 msgstr "Xen Store에 연결 실패"
 
-#: src/proxy_internal.c:196
+#: src/proxy_internal.c:197
 #, c-format
 msgid "failed to exec %s\n"
 msgstr "%s 실행 실패\n"
 
-#: src/proxy_internal.c:290
+#: src/proxy_internal.c:291
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr "소켓 %d를 닫기 실패\n"
 
-#: src/proxy_internal.c:323
+#: src/proxy_internal.c:324
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr "소켓 %d에 읽기 실패\n"
 
-#: src/proxy_internal.c:357
+#: src/proxy_internal.c:358
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr "소켓 %d에 쓰기 실패\n"
 
-#: src/proxy_internal.c:419 src/proxy_internal.c:440 src/proxy_internal.c:460
+#: src/proxy_internal.c:420 src/proxy_internal.c:441 src/proxy_internal.c:461
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr "proxy와의 통신 오류: %d의 %d바이트를 갖음\n"
 
-#: src/proxy_internal.c:427
+#: src/proxy_internal.c:428
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr "proxy와의 통신 오류: 예상했던 %d 바이트가 %d를 갖음\n"
 
-#: src/proxy_internal.c:449
+#: src/proxy_internal.c:450
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr "proxy와의 통신 오류: %d 바이트 패킷을 갖음\n"
 
-#: src/proxy_internal.c:473
+#: src/proxy_internal.c:474
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
 msgstr "proxy와의 통신 오류: 잘못된 패킷\n"
 
-#: src/proxy_internal.c:479
+#: src/proxy_internal.c:480
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr "비동기식 패킷 번호 %d를 갖음\n"
 
-#: src/xen_internal.c:1382
+#: src/xen_internal.c:1699
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d 도메인 정보 할당 중"
