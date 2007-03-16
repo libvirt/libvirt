@@ -583,9 +583,12 @@ def nameFixup(name, classe, type, file):
     if name[0:l] == listname:
         func = name[l:]
         func = string.lower(func[0:1]) + func[1:]
+    elif name[0:16] == "virNetworkDefine":
+        func = name[3:]
+        func = string.lower(func[0:1]) + func[1:]
     elif name[0:16] == "virNetworkLookup":
-       func = name[3:]
-       func = string.lower(func[0:1]) + func[1:]
+        func = name[3:]
+        func = string.lower(func[0:1]) + func[1:]
     elif name[0:12] == "virDomainGet":
         func = name[12:]
         func = string.lower(func[0:1]) + func[1:]

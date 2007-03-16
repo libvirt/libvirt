@@ -1,3 +1,8 @@
+Fri Mar 16 11:43:08 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* python/generator.py: patch from Tatsuro Enokura to fix 
+	  virNetworkDefine binding
+
 Thu Mar 15 14:57:20 EST 2007 Daniel P Berrange <berrange@redhat.com>
 
 	* src/xen_internal.c: Fixed off by one error in extracting
