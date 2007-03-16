@@ -196,7 +196,7 @@ int
 main(void)
 {
     fprintf(stderr, "libvirt compiled without Xen support\n");
-    exit(0);
+    return(0);
 }
 #endif /* WITH_XEN */
 /*

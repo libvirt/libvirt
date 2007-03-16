@@ -1384,6 +1384,10 @@ virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref)
                 free(xref);
                 goto cleanup;
             }
+#else /* without xen */
+            /* hack to avoid the warning that domain is unused */
+            if (domain->id < 0)
+	        ret = -1;
 #endif /* WITH_XEN */
 
             goto error;
