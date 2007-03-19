@@ -1459,7 +1459,7 @@ cmdSetmem(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     bytes = vshCommandOptInt(cmd, "bytes", &bytes);
-    if (!bytes) {
+    if (bytes <= 0) {
         virDomainFree(dom);
         return FALSE;
     }
@@ -1502,7 +1502,7 @@ cmdSetmaxmem(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     bytes = vshCommandOptInt(cmd, "bytes", &bytes);
-    if (!bytes) {
+    if (bytes <= 0) {
         virDomainFree(dom);
         return FALSE;
     }
