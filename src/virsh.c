@@ -179,8 +179,8 @@ typedef struct __vshControl {
 
 static vshCmdDef commands[];
 
-static void vshError(vshControl * ctl, int doexit, const char *format,
-                     ...);
+static void vshError(vshControl * ctl, int doexit, const char *format, ...)
+    ATTRIBUTE_FORMAT(printf, 3, 4);
 static int vshInit(vshControl * ctl);
 static int vshDeinit(vshControl * ctl);
 static void vshUsage(vshControl * ctl, const char *cmdname);
@@ -3158,8 +3158,8 @@ _vshStrdup(vshControl * ctl, const char *s, const char *filename, int line)
 
     if ((x = strdup(s)))
         return x;
-    vshError(ctl, TRUE, _("%s: %d: failed to allocate %d bytes"),
-             filename, line, strlen(s));
+    vshError(ctl, TRUE, _("%s: %d: failed to allocate %lu bytes"),
+             filename, line, (unsigned long)strlen(s));
     return NULL;
 }
 
