@@ -29,7 +29,7 @@
 #include <net/if.h> /* for IF_NAMESIZE */
 
 /* List of different packet types which can be sent */
-enum {
+enum qemud_packet_type {
     QEMUD_PKT_FAILURE = 0,
     QEMUD_PKT_GET_VERSION,
     QEMUD_PKT_GET_NODEINFO,
@@ -71,7 +71,7 @@ enum {
     QEMUD_PKT_GET_CAPABILITIES,
 
     QEMUD_PKT_MAX,
-} qemud_packet_type;
+};
 
 
 #define QEMUD_PROTOCOL_VERSION_MAJOR 1
@@ -86,11 +86,11 @@ enum {
 #define QEMUD_MAX_ERROR_LEN 1024
 
 /* Possible guest VM states */
-enum {
+enum qemud_domain_runstate {
     QEMUD_STATE_RUNNING = 1,
     QEMUD_STATE_PAUSED,
     QEMUD_STATE_STOPPED,
-} qemud_domain_runstate;
+};
 
 /* Each packets has at least a fixed size header.
  *

@@ -1,3 +1,8 @@
+Mon Mar 19 15:15:51 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* qemud/protocol.h src/internal.h: applied patch from Jim Meyering
+	  removing global variables (using named enum instead).
+
 Mon Mar 19 11:13:58 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt.c: patch from Atsushi SAKAI, fixing virsh access

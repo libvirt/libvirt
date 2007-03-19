@@ -155,10 +155,10 @@ struct _virConnect {
 * a set of special flag values associated to the domain
 */
 
-enum {
+enum virDomainFlags {
     DOMAIN_IS_SHUTDOWN = (1 << 0),  /* the domain is being shutdown */
     DOMAIN_IS_DEFINED  = (1 << 1)   /* the domain is defined not running */
-} virDomainFlags;
+};
 
 /**
 * _virDomain:
