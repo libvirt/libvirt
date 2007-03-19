@@ -322,7 +322,7 @@ virConnectOpen(const char *name)
         }
     }
 
-    if (ret->nb_drivers == 0 || ret->nb_network_drivers == 0) {
+    if ((ret->nb_drivers == 0) && (ret->nb_network_drivers == 0)) {
 	/* we failed to find an adequate driver */
 	virLibConnError(NULL, VIR_ERR_NO_SUPPORT, name);
 	goto failed;
@@ -389,7 +389,7 @@ virConnectOpenReadOnly(const char *name)
             ret->networkDrivers[ret->nb_network_drivers++] = virNetworkDriverTab[i];
         }
     }
-    if (ret->nb_drivers == 0) {
+    if ((ret->nb_drivers == 0) && (ret->nb_network_drivers == 0)) {
 	if (name == NULL)
 	    virLibConnError(NULL, VIR_ERR_NO_CONNECT,
 			    _("Xen Daemon or Xen Store"));

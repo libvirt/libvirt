@@ -1,41 +1,13 @@
 TODO:
-- libvirt-proxy dropping root priviledge after initialization.
-- check impact of HVM device rename
-  http://lists.xensource.com/archives/html/xen-devel/2006-08/msg00369.html
-- Finish integration of vCPU and affinity APIs
-  https://www.redhat.com/archives/libvir-list/2006-August/msg00017.html
+- libvirt_virDomainSetMemory should check memory is > 0
 - check how to better handle renaming of domains (xm rename and cache)
 
-- Create() API, how do we best keep flexibility and allow various
-  specific environment and space for evolution (VMX)
-- track change of xend API & XML-RPC
-- API for the Node: selecting scheduling policy
-- better resources allocation APIs (%CPU, set memory)
-- DTD/RNG/XSD schemas for the XML Domain descriptions
-- in python bindings raise an exception if a lookup or connection fails
-  to return a non-None object
-- add error handling hooks at the python level
-- object unicity for domains at the Python level
 - UUID lookup in hash.c
 
 Other environment:
-- support for QEmu
 - support for UML
   
-  + in both case raises the problem of listing the domains
   + UML control layer should be easy at least for one user but incomplete
-  + QEmu control is not easy to plug, c.f. discussion on-list
-
-virsh TODO:
-- decide where will be default directory for domains configurations (/etc/xen/domains/* ?)
-- new cmd: create new domain by config file (like "xm create")
-      create [--conf /path/file.conf | name]
-- new cmd: print info about domain configuration:
-      cinfo [--conf /path/file.conf | name] 
-- new cmd: print list of all domains configurations:
-      clist [--dir /path]
-- new cmd: print info about saved domain image:
-      sinfo /path/domain.img
 
 Probable TODOs:
 - event on big domain state change (create, crashed, paused, shutdown, destroy)
@@ -50,17 +22,3 @@ Cleanup:
 - now that libxml2 is linked in, drop hash.[ch] and get back to libxml2 ones ?
   same for the buffers 
 
-Done:
-- make dist and make rpm targets
-- set a no public by default policy for libvir symbols
-- fix the python bindings
-- renamed to libvirt
-- the CreateLinux() API is a first step toward a final Create()
-- documentation and examples on using the toolkit
-- UUID based lookup and naming
-- Error API similar to libxml2 structured API
-- extract error messages from the Xend rpc
-- API for the Node: extracting informations
-- docs for the principle in the error handling code
-- thread protection, reentrancy, refcounting, etc ...
-- Add uuid to XML format

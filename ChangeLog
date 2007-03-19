@@ -1,3 +1,9 @@
+Mon Mar 19 11:13:58 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c: patch from Atsushi SAKAI, fixing virsh access
+	  as root when libvirt_qemud is not running
+	* TODO: updated
+
 Mon Mar 19 10:44:25 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: patch from Masayuki Sunou, checking that byte
