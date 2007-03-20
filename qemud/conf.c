@@ -1301,13 +1301,14 @@ int qemudBuildCommandLine(struct qemud_server *server,
     } else {
         int vlan = 0;
         while (net) {
-            char nic[3+1+7+1+17+1];
+            char nic[100];
 
-            sprintf(nic, "nic,macaddr=%02x:%02x:%02x:%02x:%02x:%02x,vlan=%d",
-                    net->mac[0], net->mac[1],
-                    net->mac[2], net->mac[3],
-                    net->mac[4], net->mac[5],
-                    vlan);
+            if (snprintf(nic, sizeof(nic), "nic,macaddr=%02x:%02x:%02x:%02x:%02x:%02x,vlan=%d",
+                         net->mac[0], net->mac[1],
+                         net->mac[2], net->mac[3],
+                         net->mac[4], net->mac[5],
+                         vlan) >= sizeof(nic))
+                goto error;
 
             if (!((*argv)[++n] = strdup("-net")))
                 goto no_memory;

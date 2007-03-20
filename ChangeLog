@@ -1,3 +1,8 @@
+Tue Mar 20 10:00:06 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/conf.c: Fixed buffer overflow in code building up
+	command line args for qemu networking
+
 Tue Mar 20 16:40:06 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: add error messages for negative memory size as
