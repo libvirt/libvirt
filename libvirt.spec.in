@@ -126,6 +126,7 @@ fi
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/autostart
 %{_sysconfdir}/rc.d/init.d/libvirtd
 %dir %{_datadir}/libvirt/
 %dir %{_datadir}/libvirt/networks/

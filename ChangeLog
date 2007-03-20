@@ -1,3 +1,7 @@
+Tue Mar 20 15:58:10 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* libvirt.spec.in: missing /etc/libvirt/qemu/networks/autostart
+
 Mon Mar 19 15:19:06 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: applied patch from Jim Meyering to add printf-style
