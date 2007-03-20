@@ -1461,6 +1461,7 @@ cmdSetmem(vshControl * ctl, vshCmd * cmd)
     bytes = vshCommandOptInt(cmd, "bytes", &bytes);
     if (bytes <= 0) {
         virDomainFree(dom);
+	vshError(ctl, FALSE, _("Invalid value of %d for memory size"), bytes);
         return FALSE;
     }
 
@@ -1504,6 +1505,7 @@ cmdSetmaxmem(vshControl * ctl, vshCmd * cmd)
     bytes = vshCommandOptInt(cmd, "bytes", &bytes);
     if (bytes <= 0) {
         virDomainFree(dom);
+	vshError(ctl, FALSE, _("Invalid value of %d for memory size"), bytes);
         return FALSE;
     }
 

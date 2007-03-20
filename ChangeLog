@@ -1,3 +1,8 @@
+Tue Mar 20 16:40:06 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: add error messages for negative memory size as
+	  pointed out by Masayuki Sunou
+
 Tue Mar 20 16:30:29 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.c: applied patch from Atsushi SAKAI fixing 
