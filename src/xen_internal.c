@@ -655,7 +655,6 @@ xenHypervisorDoV2Sys(int handle, xen_op_v2_sys* op)
     return (0);
 }
 
-#ifndef PROXY
 /**
  * xenHypervisorDoV2Dom:
  * @handle: the handle to the Xen hypervisor
@@ -697,7 +696,6 @@ xenHypervisorDoV2Dom(int handle, xen_op_v2_dom* op)
 
     return (0);
 }
-#endif /* PROXY */
 
 /**
  * virXen_getdomaininfolist:
@@ -1057,6 +1055,8 @@ virXen_setvcpumap(int handle, int id, unsigned int vcpu,
     }
     return(ret);
 }
+#endif /* !PROXY*/
+
 /**
  * virXen_getvcpusinfo:
  * @handle: the hypervisor handle
@@ -1169,7 +1169,6 @@ virXen_getvcpusinfo(int handle, int id, unsigned int vcpu, virVcpuInfoPtr ipt,
     }
     return(ret);
 }
-#endif /* !PROXY*/
 
 /**
  * xenHypervisorInit:
@@ -1184,6 +1183,7 @@ xenHypervisorInit(void)
     hypercall_t hc;
     v0_hypercall_t v0_hc;
     xen_getdomaininfo info;
+    virVcpuInfoPtr ipt;
 
     if (initialized) {
         if (hypervisor_version == -1)
@@ -1291,15 +1291,47 @@ xenHypervisorInit(void)
      * or the old ones
      */
     hypervisor_version = 2;
-    /* TODO: one probably will need to autodetect thse subversions too */
-    sys_interface_version = 2; /* XEN_SYSCTL_INTERFACE_VERSION */
-    dom_interface_version = 3; /* XEN_DOMCTL_INTERFACE_VERSION */
-    if (virXen_getdomaininfo(fd, 0, &info) == 1) {
+
+    ipt = malloc(sizeof(virVcpuInfo));
+    if (ipt == NULL){
 #ifdef DEBUG
-        fprintf(stderr, "Using hypervisor call v2, sys version 2\n");
+        fprintf(stderr, "Memory allocation failed at xenHypervisorIniti()\n");
 #endif
-        goto done;
+        return(-1);
     }
+    /* Currently consider RHEL5.0 Fedora7 and xen-unstable */
+    sys_interface_version = 2; /* XEN_SYSCTL_INTERFACE_VERSION */
+    if (virXen_getdomaininfo(fd, 0, &info) == 1) {
+        /* RHEL 5.0 */
+        dom_interface_version = 3; /* XEN_DOMCTL_INTERFACE_VERSION */
+        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
+#ifdef DEBUG
+            fprintf(stderr, "Using hypervisor call v2, sys ver2 dom ver3\n");
+#endif
+            goto done;
+        }
+        /* Fedora 7 */
+        dom_interface_version = 4; /* XEN_DOMCTL_INTERFACE_VERSION */
+        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
+#ifdef DEBUG
+            fprintf(stderr, "Using hypervisor call v2, sys ver2 dom ver4\n");
+#endif
+            goto done;
+        }
+    }
+
+    sys_interface_version = 3; /* XEN_SYSCTL_INTERFACE_VERSION */
+    if (virXen_getdomaininfo(fd, 0, &info) == 1) {
+        /* xen-unstable */
+        dom_interface_version = 5; /* XEN_DOMCTL_INTERFACE_VERSION */
+        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
+#ifdef DEBUG
+            fprintf(stderr, "Using hypervisor call v2, sys ver3 dom ver5\n");
+#endif
+            goto done;
+        }
+    }
+
     hypervisor_version = 1;
     sys_interface_version = -1;
     if (virXen_getdomaininfo(fd, 0, &info) == 1) {
