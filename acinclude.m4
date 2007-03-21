@@ -30,7 +30,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     maximum|error)
 	try_compiler_flags="$try_compiler_flags -Wall -Wmissing-prototypes -Wnested-externs -Wpointer-arith"
         try_compiler_flags="$try_compiler_flags -Wextra -Wshadow -Wcast-align -Wwrite-strings -Waggregate-return"
-	try_compiler_falgs="$try_compiler_flags -Wstrict-prototypes -Winline -Wredundant-decls -Wno-sign-compare"
+	try_compiler_flags="$try_compiler_flags -Wstrict-prototypes -Winline -Wredundant-decls -Wno-sign-compare"
 	if test "$enable_compile_warnings" = "error" ; then
 	    try_compiler_flags="$try_compiler_flags -Werror"
 	fi
