@@ -1,3 +1,10 @@
+Wed Mar 21 10:52:06 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* acinclude.m4: Always use -Wp,-D_FORTIFY_SOURCE=2 -fexceptions
+	-fstack-protector --param=ssp-buffer-size=4
+	-fasynchronous-unwind-tables if supported by the compiler. Check
+	all warnings flags for compiler support
+
 Tue Mar 20 10:00:06 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/conf.c: Fixed buffer overflow in code building up
