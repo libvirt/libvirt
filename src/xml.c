@@ -43,9 +43,9 @@ virXMLError(virConnectPtr conn, virErrorNumber error, const char *info, int valu
 /**
  * virBufferGrow:
  * @buf:  the buffer
- * @len:  the minimum free size to allocate
+ * @len:  the minimum free size to allocate on top of existing used space
  *
- * Grow the available space of an XML buffer.
+ * Grow the available space of an XML buffer to at least @len bytes.
  *
  * Returns the new available space or -1 in case of error
  */
@@ -99,7 +99,7 @@ virBufferAdd(virBufferPtr buf, const char *str, int len)
 
     needSize = buf->use + len + 2;
     if (needSize > buf->size) {
-        if (!virBufferGrow(buf, needSize)) {
+        if (!virBufferGrow(buf, needSize - buf->use)) {
             return (-1);
         }
     }
@@ -200,7 +200,7 @@ virBufferStrcat(virBufferPtr buf, ...)
         unsigned int needSize = buf->use + len + 2;
 
         if (needSize > buf->size) {
-            if (!virBufferGrow(buf, needSize))
+            if (!virBufferGrow(buf, needSize - buf->use))
                 return -1;
         }
         memcpy(&buf->content[buf->use], str, len);

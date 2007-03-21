@@ -19,9 +19,9 @@
 /**
  * bufferGrow:
  * @buf:  the buffer
- * @len:  the minimum free size to allocate
+ * @len:  the minimum free size to allocate on top of existing used space
  *
- * Grow the available space of an XML buffer.
+ * Grow the available space of a buffer to at least @len bytes.
  *
  * Returns the new available space or -1 in case of error
  */
@@ -72,7 +72,7 @@ bufferAdd(bufferPtr buf, const char *str, int len)
 
     needSize = buf->use + len + 2;
     if (needSize > buf->size) {
-        if (!bufferGrow(buf, needSize)) {
+        if (!bufferGrow(buf, needSize - buf->use)) {
             return (-1);
         }
     }
@@ -195,7 +195,7 @@ bufferStrcat(bufferPtr buf, ...)
         unsigned int needSize = buf->use + len + 2;
 
         if (needSize > buf->size) {
-            if (!bufferGrow(buf, needSize))
+            if (!bufferGrow(buf, needSize - buf->use))
                 return -1;
         }
         memcpy(&buf->content[buf->use], str, len);

@@ -1,3 +1,9 @@
+Wed Mar 21 16:31:29 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* qemud/buf.c src/xml.c: clarified virBufferGrow (and bufferGrow)
+	  routines documentation and fixes a couple of places where this
+	  was misused as pointed by Daniel Berrange.
+
 Wed Mar 21 10:52:06 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* acinclude.m4: Always use -Wp,-D_FORTIFY_SOURCE=2 -fexceptions
