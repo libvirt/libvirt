@@ -118,18 +118,7 @@ bufferFree(bufferPtr buf)
 char *
 bufferContentAndFree (bufferPtr buf)
 {
-    char *content;
-
-    content = buf->content;
-
-    /* Try to reduce the size of the block, but if it fails, it doesn't
-     * matter.
-     */
-    if (buf->use < buf->size) {
-        char *old_content = content;
-        content = realloc (content, buf->use);
-        content = content ? content : old_content;
-    }
+    char *content = buf->content;
 
     free (buf);
     return content;

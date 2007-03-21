@@ -1,3 +1,8 @@
+Wed Mar 21 11:29:06 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/buf.c: Remove redundant (and broken) call to realloc()
+	which caused a buffer overflow
+
 Wed Mar 21 16:31:29 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/buf.c src/xml.c: clarified virBufferGrow (and bufferGrow)
