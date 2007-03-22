@@ -72,7 +72,7 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.a
-install -d -m 0755 $RPM_BUILD_ROOT%{_localstatedir}/run/libvirt/
+install -d -m 0755 $RPM_BUILD_ROOT%{_localstatedir}/run/libvirt/autostart
 
 # We don't want to install /etc/libvirt/qemu/networks in the main %files list
 # because if the admin wants to delete the default network completely, we don't

@@ -1,3 +1,8 @@
+Thu Mar 22 10:47:46 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* libvirt.spec.in: one more extra fix for autostart dir from
+	  Florian La Roche, should fix #233409
+
 Wed Mar 21 11:29:06 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/buf.c: Remove redundant (and broken) call to realloc()
