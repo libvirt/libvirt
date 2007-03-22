@@ -1358,6 +1358,11 @@ cmdVcpupin(vshControl * ctl, vshCmd * cmd)
 
         if (cpu < VIR_NODEINFO_MAXCPUS(nodeinfo)) {
             VIR_USE_CPU(cpumap, cpu);
+        } else {
+            vshError(ctl, FALSE, _("Physical CPU %d doesn't exist."), cpu);
+            free(cpumap);
+            virDomainFree(dom);
+            return FALSE;
         }
         cpulist = index(cpulist, ',');
         if (cpulist)

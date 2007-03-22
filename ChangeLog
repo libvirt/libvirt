@@ -1,3 +1,8 @@
+Thu Mar 22 11:35:05 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: applied patch from Masayuki Sunou to avoid a bug
+	  when using a wrong CPU number in vcpupin and report the error
+
 Thu Mar 22 10:47:46 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* libvirt.spec.in: one more extra fix for autostart dir from
