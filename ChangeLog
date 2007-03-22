@@ -1,3 +1,8 @@
+Thu Mar 22 16:25:10 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* docs/*.html: repair the damages made by Amaya on the content
+	  of documentation following feedback from Simon Hernandez
+
 Thu Mar 22 11:35:05 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: applied patch from Masayuki Sunou to avoid a bug
