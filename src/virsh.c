@@ -1247,9 +1247,9 @@ cmdVcpuinfo(vshControl * ctl, vshCmd * cmd)
         return FALSE;
     }
 
-    cpuinfo = malloc(sizeof(virVcpuInfo)*info.nrVirtCpu);
+    cpuinfo = vshMalloc(ctl, sizeof(virVcpuInfo)*info.nrVirtCpu);
     cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
-    cpumap = malloc(info.nrVirtCpu * cpumaplen);
+    cpumap = vshMalloc(ctl, info.nrVirtCpu * cpumaplen);
 
     if ((ncpus = virDomainGetVcpus(dom,
                                    cpuinfo, info.nrVirtCpu,
@@ -1350,8 +1350,7 @@ cmdVcpupin(vshControl * ctl, vshCmd * cmd)
     }
 
     cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
-    cpumap = malloc(cpumaplen);
-    memset(cpumap, 0, cpumaplen);
+    cpumap = vshCalloc(ctl, 1, cpumaplen);
 
     do {
         unsigned int cpu = atoi(cpulist);

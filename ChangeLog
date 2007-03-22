@@ -1,3 +1,9 @@
+Thu Mar 22 19:38:38 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* qemud/iptables.c qemud/qemud.c src/conf.c src/hash.c src/libvirt.c
+	  src/virsh.c src/xm_internal.c: change malloc/memset(0) pairs to 
+	  using calloc()
+
 Thu Mar 22 16:25:10 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* docs/*.html: repair the damages made by Amaya on the content

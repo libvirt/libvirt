@@ -1132,10 +1132,8 @@ qemudBuildDnsmasqArgv(struct qemud_server *server,
         (2 * network->def->nranges) + /* --dhcp-range 10.0.0.2,10.0.0.254 */
         1;  /* NULL */
 
-    if (!(*argv = malloc(len * sizeof(char *))))
+    if (!(*argv = calloc(len, sizeof(char *))))
         goto no_memory;
-
-    memset(*argv, 0, len * sizeof(char *));
 
 #define APPEND_ARG(v, n, s) do {     \
         if (!((v)[(n)] = strdup(s))) \

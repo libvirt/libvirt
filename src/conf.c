@@ -151,13 +151,11 @@ __virConfNew(void)
 {
     virConfPtr ret;
 
-    ret = (virConfPtr) malloc(sizeof(virConf));
+    ret = (virConfPtr) calloc(1, sizeof(virConf));
     if (ret == NULL) {
         virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"), 0);
         return(NULL);
     }
-    memset(ret, 0, sizeof(virConf));
-
     ret->filename = NULL;
 
     return(ret);
@@ -202,13 +200,12 @@ virConfAddEntry(virConfPtr conf, char *name, virConfValuePtr value, char *comm)
     if ((comm == NULL) && (name == NULL))
         return(NULL);
     
-    ret = (virConfEntryPtr) malloc(sizeof(virConfEntry));
+    ret = (virConfEntryPtr) calloc(1, sizeof(virConfEntry));
     if (ret == NULL) {
         virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"), 0);
         return(NULL);
     }
 
-    memset(ret, 0, sizeof(virConfEntry));
     ret->name = name;
     ret->value = value;
     ret->comment = comm;
@@ -486,14 +483,13 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
 	             ctxt->line);
 	return(NULL);
     }
-    ret = (virConfValuePtr) malloc(sizeof(virConfValue));
+    ret = (virConfValuePtr) calloc(1, sizeof(virConfValue));
     if (ret == NULL) {
         virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"), 0);
 	if (str != NULL)
 	    free(str);
         return(NULL);
     }
-    memset(ret, 0, sizeof(virConfValue));
     ret->type = type;
     ret->l = l;
     ret->str = str;

@@ -270,10 +270,8 @@ iptRulesNew(const char *table,
 {
     iptRules *rules;
 
-    if (!(rules = (iptRules *)malloc(sizeof (iptRules))))
+    if (!(rules = (iptRules *)calloc(1, sizeof (iptRules))))
         return NULL;
-
-    memset (rules, 0, sizeof (iptRules));
 
     if (!(rules->table = strdup(table)))
         goto error;
@@ -353,10 +351,8 @@ iptablesAddRemoveChain(iptRules *rules, int action)
         2 + /*   --table foo     */
         2;  /*   --new-chain bar */
 
-    if (!(argv = (char **)malloc(sizeof(char *) * (n+1))))
+    if (!(argv = (char **)calloc(n + 1, sizeof(char *))))
         goto error;
-
-    memset(argv, 0, sizeof(char *) * (n + 1));
 
     n = 0;
 
@@ -413,13 +409,11 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
 
     va_end(args);
 
-    if (!(argv = (char **)malloc(sizeof(char *) * (n + 1))))
+    if (!(argv = (char **)calloc(n + 1, sizeof(char *))))
         goto error;
 
     if (!(rule = (char *)malloc(rulelen)))
         goto error;
-
-    memset(argv, 0, sizeof(char *) * (n + 1));
 
     n = 0;
 

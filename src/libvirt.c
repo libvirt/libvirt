@@ -40,7 +40,6 @@
  * TODO:
  * - use lock to protect against concurrent accesses ?
  * - use reference counting to garantee coherent pointer state ?
- * - memory wrappers for malloc/free ?
  */
 
 static virDriverPtr virDriverTab[MAX_DRIVERS];

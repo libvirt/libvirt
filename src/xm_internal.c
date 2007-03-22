@@ -2113,11 +2113,10 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
         goto error;
     }
 
-    if (!(entry = malloc(sizeof(xenXMConfCache)))) {
+    if (!(entry = calloc(1, sizeof(xenXMConfCache)))) {
         xenXMError(conn, VIR_ERR_NO_MEMORY, "config");
         goto error;
     }
-    memset(entry, 0, sizeof(xenXMConfCache));
 
     if ((entry->refreshedAt = time(NULL)) == ((time_t)-1)) {
         xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "unable to get current time");

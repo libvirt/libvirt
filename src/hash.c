@@ -89,9 +89,8 @@ virHashCreate(int size)
     if (table) {
         table->size = size;
         table->nbElems = 0;
-        table->table = malloc(size * sizeof(virHashEntry));
+        table->table = calloc(1, size * sizeof(virHashEntry));
         if (table->table) {
-            memset(table->table, 0, size * sizeof(virHashEntry));
             return (table);
         }
         free(table);
@@ -132,12 +131,11 @@ virHashGrow(virHashTablePtr table, int size)
     if (oldtable == NULL)
         return (-1);
 
-    table->table = malloc(size * sizeof(virHashEntry));
+    table->table = calloc(1, size * sizeof(virHashEntry));
     if (table->table == NULL) {
         table->table = oldtable;
         return (-1);
     }
-    memset(table->table, 0, size * sizeof(virHashEntry));
     table->size = size;
 
     /*  If the two loops are merged, there would be situations where
@@ -661,12 +659,11 @@ virConnectPtr
 virGetConnect(void) {
     virConnectPtr ret;
 
-    ret = (virConnectPtr) malloc(sizeof(virConnect));
+    ret = (virConnectPtr) calloc(1, sizeof(virConnect));
     if (ret == NULL) {
         virHashError(NULL, VIR_ERR_NO_MEMORY, _("allocating connection"));
         goto failed;
     }
-    memset(ret, 0, sizeof(virConnect));
     ret->magic = VIR_CONNECT_MAGIC;
     ret->nb_drivers = 0;
     ret->handle = -1;
@@ -767,12 +764,11 @@ virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     /*
      * not found, allocate a new one
      */
-    ret = (virDomainPtr) malloc(sizeof(virDomain));
+    ret = (virDomainPtr) calloc(1, sizeof(virDomain));
     if (ret == NULL) {
         virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
 	goto error;
     }
-    memset(ret, 0, sizeof(virDomain));
     ret->name = strdup(name);
     if (ret->name == NULL) {
         virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
@@ -950,12 +946,11 @@ virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     /*
      * not found, allocate a new one
      */
-    ret = (virNetworkPtr) malloc(sizeof(virNetwork));
+    ret = (virNetworkPtr) calloc(1, sizeof(virNetwork));
     if (ret == NULL) {
         virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating network"));
 	goto error;
     }
-    memset(ret, 0, sizeof(virNetwork));
     ret->name = strdup(name);
     if (ret->name == NULL) {
         virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating network"));
