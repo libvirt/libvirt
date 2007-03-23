@@ -1,3 +1,9 @@
+Fri Mar 23 09:12:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/xen_internal.c: Fix detection of host PAE capabilities,
+	  nul-terminate the token in the output XML and a couple of
+	  cleanups for determining structure sizes.
+
 Thu Mar 22 19:38:38 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/iptables.c qemud/qemud.c src/conf.c src/hash.c src/libvirt.c

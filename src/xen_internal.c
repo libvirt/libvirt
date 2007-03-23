@@ -1523,7 +1523,7 @@ xenHypervisorGetCapabilities (virConnectPtr conn)
             strncpy (hvm_type,
                      &line[subs[1].rm_so], subs[1].rm_eo-subs[1].rm_so+1);
             hvm_type[subs[1].rm_eo-subs[1].rm_so] = '\0';
-        } else if (regexec (&flags_hvm_rec, line, 0, NULL, 0) == 0)
+        } else if (regexec (&flags_pae_rec, line, 0, NULL, 0) == 0)
             host_pae = 1;
     }
 
@@ -1573,10 +1573,12 @@ xenHypervisorGetCapabilities (virConnectPtr conn)
      * this buffer.  Parse out the features from each token.
      */
     for (str = line, nr_guest_archs = 0;
-         nr_guest_archs < (sizeof(guest_archs)/sizeof(struct guest_arch))
+         nr_guest_archs < sizeof guest_archs / sizeof guest_archs[0]
              && (token = strtok_r (str, " ", &saveptr)) != NULL;
          str = NULL) {
-        if (regexec (&xen_cap_rec, token, (sizeof(subs)/sizeof(regmatch_t)), subs, 0) == 0) {
+        if (regexec (&xen_cap_rec, token, sizeof subs / sizeof subs[0],
+                     subs, 0) == 0) {
+            token[subs[0].rm_eo] = '\0';
             guest_archs[nr_guest_archs].token = token;
             guest_archs[nr_guest_archs].hvm =
                 strncmp (&token[subs[1].rm_so], "hvm", 3) == 0;
