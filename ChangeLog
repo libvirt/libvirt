@@ -1,3 +1,8 @@
+Fri Mar 23 17:14:10 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* TODO qemud/conf.c src/virsh.c src/xend_internal.c src/xs_internal.c:
+	  replaced all sprintf instances by snprintf ones
+
 Fri Mar 23 09:12:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/xen_internal.c: Fix detection of host PAE capabilities,

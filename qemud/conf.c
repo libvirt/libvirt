@@ -1196,8 +1196,8 @@ int qemudBuildCommandLine(struct qemud_server *server,
         (vm->def->graphicsType == QEMUD_GRAPHICS_VNC ? 2 :
          (vm->def->graphicsType == QEMUD_GRAPHICS_SDL ? 0 : 1)); /* graphics */
 
-    sprintf(memory, "%d", vm->def->memory/1024);
-    sprintf(vcpus, "%d", vm->def->vcpus);
+    snprintf(memory, sizeof(memory), "%d", vm->def->memory/1024);
+    snprintf(vcpus, sizeof(vcpus), "%d", vm->def->vcpus);
 
     if (!(*argv = malloc(sizeof(char *) * (len+1))))
         goto no_memory;

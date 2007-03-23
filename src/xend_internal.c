@@ -799,7 +799,7 @@ urlencode(const char *string)
         switch (string[i]) {
             case ' ':
             case '\n':
-                sprintf(ptr, "%%%02x", string[i]);
+                snprintf(ptr, 4, "%%%02x", string[i]);
                 ptr += 3;
                 break;
             default:
@@ -2670,7 +2670,7 @@ xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
     /* from bit map, build character string of mapped CPU numbers */
     for (i = 0; i < maplen; i++) for (j = 0; j < 8; j++)
      if (cpumap[i] & (1 << j)) {
-        sprintf(buf, "%d,", (8 * i) + j);
+        snprintf(buf, sizeof(buf), "%d,", (8 * i) + j);
         strcat(mapstr, buf);
     }
     mapstr[strlen(mapstr) - 1] = ']';

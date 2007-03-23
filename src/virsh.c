@@ -3282,7 +3282,7 @@ vshReadlineOptionsGenerator(const char *text, int state)
                 continue;
         }
         res = vshMalloc(NULL, strlen(name) + 3);
-        sprintf(res, "--%s", name);
+        snprintf(res, strlen(name) + 3,  "--%s", name);
         return res;
     }
 

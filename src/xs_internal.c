@@ -818,12 +818,12 @@ xenStoreDomainGetNetworkID(virConnectPtr conn, int id, const char *mac) {
     if (maclen <= 0)
         return (NULL);
 
-    sprintf(dir, "/local/domain/0/backend/vif/%d", id);
+    snprintf(dir, sizeof(dir), "/local/domain/0/backend/vif/%d", id);
     list = xs_directory(conn->xshandle, 0, dir, &num);
     if (list == NULL)
 	return(NULL);
     for (i = 0; i < num; i++) {
-	sprintf(path, "%s/%s/%s", dir, list[i], "mac");
+	snprintf(path, sizeof(path), "%s/%s/%s", dir, list[i], "mac");
 	val = xs_read(conn->xshandle, 0, path, &len);
 	if (val == NULL)
 	    break;

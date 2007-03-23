@@ -1,6 +1,5 @@
 TODO:
 - libvirt_virDomainSetMemory should check memory is > 0
-- remove calls from sprintf and use snprintf
 - check how to better handle renaming of domains (xm rename and cache)
 
 - UUID lookup in hash.c
