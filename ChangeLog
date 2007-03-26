@@ -1,3 +1,8 @@
+Mon Mar 26 11:29:43 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* acinclude.m4: applied patch from Jim Meyering to avoid clobbering
+	  user specified CFLAGS
+
 Fri Mar 23 17:14:10 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* TODO qemud/conf.c src/virsh.c src/xend_internal.c src/xs_internal.c:

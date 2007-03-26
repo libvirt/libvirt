@@ -3,6 +3,9 @@ dnl Taken from gnome-common/macros2/gnome-compiler-flags.m4
 dnl
 dnl We've added:
 dnl   -Wextra -Wshadow -Wcast-align -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Winline -Wredundant-decls
+dnl We've removed
+dnl   CFLAGS="$realsave_CFLAGS"
+dnl   to avoid clobbering user-specified CFLAGS
 dnl
 AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     dnl ******************************
@@ -58,8 +61,6 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
     done
     unset option
     unset try_compiler_flags
-
-    CFLAGS="$realsave_CFLAGS"
 
     AC_ARG_ENABLE(iso-c,
                   AC_HELP_STRING([--enable-iso-c],
