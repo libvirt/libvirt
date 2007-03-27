@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = virshdata confdata sexpr2xmldata xml2sexprdata xmconfigdata
+SUBDIRS = virshdata confdata sexpr2xmldata xml2sexprdata xmconfigdata xencapsdata
 
 # Wierd libtool related juju...
 #
@@ -31,9 +31,9 @@ LDADDS = \
 EXTRA_DIST = xmlrpcserver.py test_conf.sh
 
 noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest conftest \
-	reconnect xmconfigtest
+	reconnect xmconfigtest xencapstest
 
-TESTS = xml2sexprtest sexpr2xmltest virshtest test_conf.sh xmconfigtest
+TESTS = xml2sexprtest sexpr2xmltest virshtest test_conf.sh xmconfigtest xencapstest
 if ENABLE_XEN_TESTS
   TESTS += reconnect
 endif
@@ -79,6 +79,11 @@ conftest_SOURCES = \
 	conftest.c
 conftest_LDFLAGS =
 conftest_LDADD = $(LDADDS)
+
+xencapstest_SOURCES = \
+	xencapstest.c testutils.h testutils.c
+xencapstest_LDFLAGS =
+xencapstest_LDADD = $(LDADDS)
 
 reconnect_SOURCES = \
 	reconnect.c

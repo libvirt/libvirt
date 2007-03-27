@@ -23,6 +23,11 @@ int	xenHypervisorClose		(virConnectPtr conn);
 int	xenHypervisorGetVersion		(virConnectPtr conn,
 				 	 unsigned long *hvVer);
 char *
+        xenHypervisorMakeCapabilitiesXML (virConnectPtr conn,
+					  const char *hostmachine,
+					  FILE *cpuinfo,
+					  FILE *capabilities);
+char *
         xenHypervisorGetCapabilities    (virConnectPtr conn);
 unsigned long
         xenHypervisorGetDomMaxMemory	(virConnectPtr conn,

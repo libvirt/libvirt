@@ -1,0 +1,29 @@
+processor  : 0
+vendor     : Xen/ia64
+arch       : IA-64
+family     : 32
+model      : 0
+revision   : 7
+archrev    : 0
+features   : branchlong, 16-byte atomic ops
+cpu number : 0
+cpu regs   : 4
+cpu MHz    : 1594.000670
+itc MHz    : 399.165930
+BogoMIPS   : 3186.68
+siblings   : 1
+
+processor  : 1
+vendor     : Xen/ia64
+arch       : IA-64
+family     : 32
+model      : 0
+revision   : 7
+archrev    : 0
+features   : branchlong, 16-byte atomic ops
+cpu number : 0
+cpu regs   : 4
+cpu MHz    : 1594.000670
+itc MHz    : 399.165930
+BogoMIPS   : 3186.68
+siblings   : 1

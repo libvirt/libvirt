@@ -85,7 +85,7 @@ static const char *flags_hvm_re = "^flags[[:blank:]]+:.* (vmx|svm)[[:space:]]";
 static regex_t flags_hvm_rec;
 static const char *flags_pae_re = "^flags[[:blank:]]+:.* pae[[:space:]]";
 static regex_t flags_pae_rec;
-static const char *xen_cap_re = "(xen|hvm)-[[:digit:]]+\\.[[:digit:]]+-(x86_32|x86_64|ia64)(p|be)?";
+static const char *xen_cap_re = "(xen|hvm)-[[:digit:]]+\\.[[:digit:]]+-(x86_32|x86_64|ia64|powerpc64)(p|be)?";
 static regex_t xen_cap_rec;
 
 /*
@@ -1472,27 +1472,29 @@ xenHypervisorGetVersion(virConnectPtr conn, unsigned long *hvVer)
 /**
  * xenHypervisorGetCapabilities:
  * @conn: pointer to the connection block
+ * @cpuinfo: file handle containing /proc/cpuinfo data, or NULL
+ * @capabilities: file handle containing /sys/hypervisor/properties/capabilities data, or NULL
  *
  * Return the capabilities of this hypervisor.
  */
 char *
-xenHypervisorGetCapabilities (virConnectPtr conn)
+xenHypervisorMakeCapabilitiesXML(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                 const char *hostmachine,
+                                 FILE *cpuinfo, FILE *capabilities)
 {
-    struct utsname utsname;
     char line[1024], *str, *token;
     regmatch_t subs[4];
     char *saveptr = NULL;
-    FILE *fp;
     int i, r;
 
     char hvm_type[4] = ""; /* "vmx" or "svm" (or "" if not in CPU). */
     int host_pae = 0;
     struct guest_arch {
-        const char *token;
         const char *model;
         int bits;
         int hvm;
         int pae;
+        int nonpae;
         int ia64_be;
     } guest_archs[32];
     int nr_guest_archs = 0;
@@ -1502,34 +1504,22 @@ xenHypervisorGetCapabilities (virConnectPtr conn)
 
     memset(guest_archs, 0, sizeof(guest_archs));
 
-    /* Really, this never fails - look at the man-page. */
-    uname (&utsname);
-
     /* /proc/cpuinfo: flags: Intel calls HVM "vmx", AMD calls it "svm".
      * It's not clear if this will work on IA64, let alone other
      * architectures and non-Linux. (XXX)
      */
-    fp = fopen ("/proc/cpuinfo", "r");
-    if (fp == NULL) {
-        if (errno == ENOENT)
-            goto nocpuinfo;
-        virXenPerror (conn, "/proc/cpuinfo");
-        return NULL;
+    if (cpuinfo) {
+        while (fgets (line, sizeof line, cpuinfo)) {
+            if (regexec (&flags_hvm_rec, line, sizeof(subs)/sizeof(regmatch_t), subs, 0) == 0
+                && subs[0].rm_so != -1) {
+                strncpy (hvm_type,
+                         &line[subs[1].rm_so], subs[1].rm_eo-subs[1].rm_so+1);
+                hvm_type[subs[1].rm_eo-subs[1].rm_so] = '\0';
+            } else if (regexec (&flags_pae_rec, line, 0, NULL, 0) == 0)
+                host_pae = 1;
+        }
     }
 
-    while (fgets (line, sizeof line, fp)) {
-        if (regexec (&flags_hvm_rec, line, sizeof(subs)/sizeof(regmatch_t), subs, 0) == 0
-            && subs[0].rm_so != -1) {
-            strncpy (hvm_type,
-                     &line[subs[1].rm_so], subs[1].rm_eo-subs[1].rm_so+1);
-            hvm_type[subs[1].rm_eo-subs[1].rm_so] = '\0';
-        } else if (regexec (&flags_pae_rec, line, 0, NULL, 0) == 0)
-            host_pae = 1;
-    }
-
-    fclose (fp);
-
- nocpuinfo:
     /* Most of the useful info is in /sys/hypervisor/properties/capabilities
      * which is documented in the code in xen-unstable.hg/xen/arch/.../setup.c.
      *
@@ -1553,63 +1543,81 @@ xenHypervisorGetCapabilities (virConnectPtr conn)
      *    |   +----------- the version of Xen, eg. "3.0"
      *    +--------------- "xen" or "hvm" for para or full virt respectively
      */
-    fp = fopen ("/sys/hypervisor/properties/capabilities", "r");
-    if (fp == NULL) {
-        if (errno == ENOENT)
-            goto noxencaps;
-        virXenPerror (conn, "/sys/hypervisor/properties/capabilities");
-        return NULL;
-    }
 
     /* Expecting one line in this file - ignore any more. */
-    if (!fgets (line, sizeof line, fp)) {
-        fclose (fp);
-        goto noxencaps;
-    }
+    if (fgets (line, sizeof line, capabilities)) {
+        /* Split the line into tokens.  strtok_r is OK here because we "own"
+         * this buffer.  Parse out the features from each token.
+         */
+        for (str = line, nr_guest_archs = 0;
+             nr_guest_archs < sizeof guest_archs / sizeof guest_archs[0]
+                 && (token = strtok_r (str, " ", &saveptr)) != NULL;
+             str = NULL) {
 
-    fclose (fp);
+            if (regexec (&xen_cap_rec, token, sizeof subs / sizeof subs[0],
+                         subs, 0) == 0) {
+                int hvm = strncmp (&token[subs[1].rm_so], "hvm", 3) == 0;
+                const char *model;
+                int bits, pae = 0, nonpae = 0, ia64_be = 0;
+                if (strncmp (&token[subs[2].rm_so], "x86_32", 6) == 0) {
+                    model = "i686";
+                    bits = 32;
+                    if (strncmp (&token[subs[3].rm_so], "p", 1) == 0)
+                        pae = 1;
+                    else
+                        nonpae = 1;
+                }
+                else if (strncmp (&token[subs[2].rm_so], "x86_64", 6) == 0) {
+                    model = "x86_64";
+                    bits = 64;
+                }
+                else if (strncmp (&token[subs[2].rm_so], "ia64", 4) == 0) {
+                    model = "ia64";
+                    bits = 64;
+                    if (strncmp (&token[subs[3].rm_so], "be", 2) == 0)
+                        ia64_be = 1;
+                }
+                else if (strncmp (&token[subs[2].rm_so], "powerpc64", 4) == 0) {
+                    model = "ppc64";
+                    bits = 64;
+                } else {
+                    /* XXX surely no other Xen archs exist  */
+                    continue;
+                }
 
-    /* Split the line into tokens.  strtok_r is OK here because we "own"
-     * this buffer.  Parse out the features from each token.
-     */
-    for (str = line, nr_guest_archs = 0;
-         nr_guest_archs < sizeof guest_archs / sizeof guest_archs[0]
-             && (token = strtok_r (str, " ", &saveptr)) != NULL;
-         str = NULL) {
-        if (regexec (&xen_cap_rec, token, sizeof subs / sizeof subs[0],
-                     subs, 0) == 0) {
-            token[subs[0].rm_eo] = '\0';
-            guest_archs[nr_guest_archs].token = token;
-            guest_archs[nr_guest_archs].hvm =
-                strncmp (&token[subs[1].rm_so], "hvm", 3) == 0;
-            if (strncmp (&token[subs[2].rm_so], "x86_32", 6) == 0) {
-                guest_archs[nr_guest_archs].model = "i686";
-                guest_archs[nr_guest_archs].bits = 32;
+                /* Search for existing matching (model,hvm) tuple */
+                for (i = 0 ; i < nr_guest_archs ; i++) {
+                    if (!strcmp(guest_archs[i].model, model) &&
+                        guest_archs[i].hvm == hvm) {
+                        break;
+                    }
+                }
+
+                /* Too many arch flavours - highly unlikely ! */
+                if (i >= sizeof(guest_archs)/sizeof(guest_archs[0]))
+                    continue;
+                /* Didn't find a match, so create a new one */
+                if (i == nr_guest_archs)
+                    nr_guest_archs++;
+
+                guest_archs[i].model = model;
+                guest_archs[i].bits = bits;
+                guest_archs[i].hvm = hvm;
+
+                /* Careful not to overwrite a previous positive
+                   setting with a negative one here - some archs
+                   can do both pae & non-pae, but Xen reports
+                   separately capabilities so we're merging archs */
+                if (pae)
+                    guest_archs[i].pae = pae;
+                if (nonpae)
+                    guest_archs[i].nonpae = nonpae;
+                if (ia64_be)
+                    guest_archs[i].ia64_be = ia64_be;
             }
-            else if (strncmp (&token[subs[2].rm_so], "x86_64", 6) == 0) {
-                guest_archs[nr_guest_archs].model = "x86_64";
-                guest_archs[nr_guest_archs].bits = 64;
-            }
-            else if (strncmp (&token[subs[2].rm_so], "ia64", 4) == 0) {
-                guest_archs[nr_guest_archs].model = "ia64";
-                guest_archs[nr_guest_archs].bits = 64;
-            }
-            else {
-                guest_archs[nr_guest_archs].model = ""; /* can never happen */
-            }
-            guest_archs[nr_guest_archs].pae =
-                guest_archs[nr_guest_archs].ia64_be = 0;
-            if (subs[2].rm_so != -1) {
-                if (strncmp (&token[subs[3].rm_so], "p", 1) == 0)
-                    guest_archs[nr_guest_archs].pae = 1;
-                else if (strncmp (&token[subs[3].rm_so], "be", 2) == 0)
-                    guest_archs[nr_guest_archs].ia64_be = 1;
-            }
-            nr_guest_archs++;
         }
     }
 
- noxencaps:
     /* Construct the final XML. */
     xml = virBufferNew (1024);
     if (!xml) return NULL;
@@ -1620,19 +1628,15 @@ xenHypervisorGetCapabilities (virConnectPtr conn)
     <cpu>\n\
       <arch>%s</arch>\n\
       <features>\n",
-                           utsname.machine);
-    if (r == -1) return NULL;
+                           hostmachine);
+    if (r == -1) goto vir_buffer_failed;
 
     if (strcmp (hvm_type, "") != 0) {
         r = virBufferVSprintf (xml,
                                "\
         <%s/>\n",
                                hvm_type);
-        if (r == -1) {
-        vir_buffer_failed:
-            virBufferFree (xml);
-            return NULL;
-        }
+        if (r == -1) goto vir_buffer_failed;
     }
     if (host_pae) {
         r = virBufferAdd (xml, "\
@@ -1650,25 +1654,23 @@ xenHypervisorGetCapabilities (virConnectPtr conn)
         r = virBufferVSprintf (xml,
                                "\
 \n\
-  <!-- %s -->\n\
   <guest>\n\
     <os_type>%s</os_type>\n\
     <arch name=\"%s\">\n\
       <wordsize>%d</wordsize>\n\
-      <domain type=\"xen\"></domain>\n\
-      <emulator>/usr/lib%s/xen/bin/qemu-dm</emulator>\n",
-                               guest_archs[i].token,
+      <domain type=\"xen\"></domain>\n",
                                guest_archs[i].hvm ? "hvm" : "xen",
                                guest_archs[i].model,
-                               guest_archs[i].bits,
-                               guest_archs[i].bits == 64 ? "64" : "");
+                               guest_archs[i].bits);
         if (r == -1) goto vir_buffer_failed;
         if (guest_archs[i].hvm) {
-            r = virBufferAdd (xml,
+            r = virBufferVSprintf (xml,
                               "\
+      <emulator>/usr/lib%s/xen/bin/qemu-dm</emulator>\n\
       <machine>pc</machine>\n\
       <machine>isapc</machine>\n\
-      <loader>/usr/lib/xen/boot/hvmloader</loader>\n", -1);
+      <loader>/usr/lib/xen/boot/hvmloader</loader>\n",
+                                   guest_archs[i].bits == 64 ? "64" : "");
             if (r == -1) goto vir_buffer_failed;
         }
         r = virBufferAdd (xml,
@@ -1679,7 +1681,12 @@ xenHypervisorGetCapabilities (virConnectPtr conn)
         if (guest_archs[i].pae) {
             r = virBufferAdd (xml,
                               "\
-      <pae/>\n\
+      <pae/>\n", -1);
+            if (r == -1) goto vir_buffer_failed;
+        }
+        if (guest_archs[i].nonpae) {
+            r = virBufferAdd (xml,
+                              "\
       <nonpae/>\n", -1);
             if (r == -1) goto vir_buffer_failed;
         }
@@ -1707,6 +1714,53 @@ xenHypervisorGetCapabilities (virConnectPtr conn)
     virBufferFree (xml);
 
     return xml_str;
+
+ vir_buffer_failed:
+    virBufferFree (xml);
+    return NULL;
+}
+
+/**
+ * xenHypervisorGetCapabilities:
+ * @conn: pointer to the connection block
+ *
+ * Return the capabilities of this hypervisor.
+ */
+char *
+xenHypervisorGetCapabilities (virConnectPtr conn)
+{
+    char *xml;
+    FILE *cpuinfo, *capabilities;
+    struct utsname utsname;
+
+    /* Really, this never fails - look at the man-page. */
+    uname (&utsname);
+
+    cpuinfo = fopen ("/proc/cpuinfo", "r");
+    if (cpuinfo == NULL) {
+        if (errno != ENOENT) {
+            virXenPerror (conn, "/proc/cpuinfo");
+            return NULL;
+        }
+    }
+
+    capabilities = fopen ("/sys/hypervisor/properties/capabilities", "r");
+    if (capabilities == NULL) {
+        if (errno != ENOENT) {
+            fclose(cpuinfo);
+            virXenPerror (conn, "/sys/hypervisor/properties/capabilities");
+            return NULL;
+        }
+    }
+
+    xml = xenHypervisorMakeCapabilitiesXML(conn, utsname.machine, cpuinfo, capabilities);
+
+    if (cpuinfo)
+        fclose(cpuinfo);
+    if (capabilities)
+        fclose(capabilities);
+
+    return xml;
 }
 
 /**
