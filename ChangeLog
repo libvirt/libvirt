@@ -1,3 +1,9 @@
+Tue Mar 27 11:26:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* qemud/qemud.c: If using FORTIFY_SOURCE, remove warning
+	  warn_unused_result by counting errors found in signal
+	  handler and logging them in the main loop.
+
 Mon Mar 26 11:29:43 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* acinclude.m4: applied patch from Jim Meyering to avoid clobbering

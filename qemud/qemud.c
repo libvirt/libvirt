@@ -57,15 +57,23 @@ static int godaemon = 0;
 static int verbose = 0;
 static int sigwrite = -1;
 
+static sig_atomic_t sig_errors = 0;
+static int sig_lasterrno = 0;
+
 static void sig_handler(int sig) {
     unsigned char sigc = sig;
     int origerrno;
+    int r;
 
     if (sig == SIGCHLD) /* We explicitly waitpid the child later */
         return;
 
     origerrno = errno;
-    write(sigwrite, &sigc, 1);
+    r = write(sigwrite, &sigc, 1);
+    if (r == -1) {
+        sig_errors++;
+        sig_lasterrno = errno;
+    }
     errno = origerrno;
 }
 
@@ -1655,6 +1663,7 @@ static int qemudOneLoop(struct qemud_server *server, int timeout) {
     struct pollfd fds[nfds];
     int thistimeout = -1;
     int ret;
+    sig_atomic_t errors;
 
     /* If we have no clients or vms, then timeout after
        30 seconds, letting daemon exit */
@@ -1679,6 +1688,16 @@ static int qemudOneLoop(struct qemud_server *server, int timeout) {
     /* Must have timed out */
     if (ret == 0) {
         qemudLog(QEMUD_INFO, "Timed out while polling on file descriptors");
+        return -1;
+    }
+
+    /* Check for any signal handling errors and log them. */
+    errors = sig_errors;
+    if (errors) {
+        sig_errors -= errors;
+        qemudLog (QEMUD_ERR,
+                  "Signal handler reported %d errors: last error: %s",
+                  errors, strerror (sig_lasterrno));
         return -1;
     }
 
