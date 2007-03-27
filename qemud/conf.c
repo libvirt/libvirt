@@ -508,7 +508,7 @@ static struct qemud_vm_net_def *qemudParseInterfaceXML(struct qemud_server *serv
             } else if ((network == NULL) &&
                        (net->type == QEMUD_NET_BRIDGE) &&
                        (xmlStrEqual(cur->name, BAD_CAST "source"))) {
-                bridge = xmlGetProp(cur, BAD_CAST "dev");
+                bridge = xmlGetProp(cur, BAD_CAST "bridge");
             } else if ((network == NULL) &&
                        ((net->type == QEMUD_NET_SERVER) ||
                         (net->type == QEMUD_NET_CLIENT) ||
@@ -2549,7 +2549,7 @@ char *qemudGenerateXML(struct qemud_server *server,
             break;
 
         case QEMUD_NET_BRIDGE:
-            if (bufferVSprintf(buf, "      <source dev='%s'/>\n", net->dst.bridge.brname) < 0)
+            if (bufferVSprintf(buf, "      <source bridge='%s'/>\n", net->dst.bridge.brname) < 0)
                 goto no_memory;
             if (net->dst.bridge.ifname[0] != '\0') {
                 if (bufferVSprintf(buf, "      <target dev='%s'/>\n", net->dst.bridge.ifname) < 0)

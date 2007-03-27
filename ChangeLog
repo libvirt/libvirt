@@ -1,3 +1,9 @@
+Tue Mar 27 10:46:00 EDT 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/conf.c: Fixed bridged config to refer to 'bridge' attribute
+	instead of 'dev' attribte on the <source> element, thus complying
+	with schema.
+
 Tue Mar 27 10:39:00 EDT 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xen_internal.c: Fix handling of PAE flags in capabilities XML
