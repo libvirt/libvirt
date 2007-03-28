@@ -1,3 +1,10 @@
+Wed Mar 28 10:47:16 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c: applied patch from Masayuki Sunou fixing the
+	  erroneous value of the hypercall XEN_V2_OP_SETMAXMEM
+	* libvirt.spec.in: applies changes from Jeremy Katz for libvirt
+	  spec and also another fix from Michael Schwendt fixing rhbz#233874
+
 Tue Mar 27 10:46:00 EDT 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/conf.c: Fixed bridged config to refer to 'bridge' attribute

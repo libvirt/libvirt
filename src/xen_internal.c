@@ -280,7 +280,7 @@ typedef struct xen_v0_domainop xen_v0_domainop;
  */
 #define XEN_V0_OP_SETMAXMEM	28
 #define XEN_V1_OP_SETMAXMEM	28
-#define XEN_V2_OP_SETMAXMEM	14
+#define XEN_V2_OP_SETMAXMEM	11
 
 struct xen_v0_setmaxmem {
     domid_t	domain;
