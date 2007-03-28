@@ -1,3 +1,9 @@
+Wed Mar 28 12:23:00 BST 2007 Richard W.M. Jones  <rjones@redhat.com>
+
+	* python/generator.py: Python bindings now throw exceptions
+	  in almost all cases where an error is encountered in the
+	  underlying libvirt code.
+
 Wed Mar 28 10:47:16 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.c: applied patch from Masayuki Sunou fixing the
@@ -20,6 +26,7 @@ Tue Mar 27 10:39:00 EDT 2007 Daniel P. Berrange <berrange@redhat.com>
 	* tests/xencapsdata/*: Added data files for Xen capabilities tests
 	* configure.ac, tests/Makefile.am: Added tests/xencapsdata/ directory
 
+>>>>>>> 1.489
 Tue Mar 27 11:26:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* qemud/qemud.c: If using FORTIFY_SOURCE, remove warning

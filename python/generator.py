@@ -9,6 +9,7 @@ enums = {} # { enumType: { enumConstant: enumValue } }
 import os
 import sys
 import string
+import re
 
 if __name__ == "__main__":
     # launched as a script
@@ -561,6 +562,8 @@ classes_references = {
 }
 
 functions_noexcept = {
+    'virDomainGetID': True,
+    'virDomainGetName': True,
 }
 
 reference_keepers = {
@@ -574,6 +577,25 @@ function_post = {
     'virDomainDestroy': "self._o = None",
     'virNetworkDestroy': "self._o = None",
 }
+
+# Functions returning an integral type which need special rules to
+# check for errors and raise exceptions.
+functions_int_exception_test = {
+    'virDomainGetMaxMemory': "%s == 0",
+}
+functions_int_default_test = "%s == -1"
+
+def is_integral_type (name):
+    return not re.search ("^(unsigned)? ?(int|long)$", name) is None
+
+# Functions returning lists which need special rules to check for errors
+# and raise exceptions.
+functions_list_exception_test = {
+}
+functions_list_default_test = "%s is None"
+
+def is_list_type (name):
+    return name[-1:] == "*"
 
 def nameFixup(name, classe, type, file):
     # avoid a desastrous clash
@@ -782,7 +804,8 @@ def buildWrappers():
 		    classes.write("__o");
 		n = n + 1
 	    classes.write(")\n");
-	    if ret[0] != "void":
+
+            if ret[0] != "void":
 		if classes_type.has_key(ret[0]):
 		    #
 		    # Raise an exception
@@ -797,8 +820,35 @@ def buildWrappers():
 		    classes.write("    return ");
 		    classes.write(classes_type[ret[0]][1] % ("ret"));
 		    classes.write("\n");
+
+                # For functions returning an integral type there are
+                # several things that we can do, depending on the
+                # contents of functions_int_*:
+                elif is_integral_type (ret[0]):
+                    if not functions_noexcept.has_key (name):
+                        if functions_int_exception_test.has_key (name):
+                            test = functions_int_exception_test[name]
+                        else:
+                            test = functions_int_default_test
+                        classes.write (("    if " + test +
+                                        ": raise libvirtError ('%s() failed')\n") %
+                                       ("ret", name))
+		    classes.write("    return ret\n")
+
+                elif is_list_type (ret[0]):
+                    if not functions_noexcept.has_key (name):
+                        if functions_list_exception_test.has_key (name):
+                            test = functions_list_exception_test[name]
+                        else:
+                            test = functions_list_default_test
+                        classes.write (("    if " + test +
+                                        ": raise libvirtError ('%s() failed')\n") %
+                                       ("ret", name))
+		    classes.write("    return ret\n")
+
 		else:
-		    classes.write("    return ret\n");
+		    classes.write("    return ret\n")
+
 	    classes.write("\n");
 
     txt.write("\n\n#\n# Set of classes of the module\n#\n\n")
@@ -896,9 +946,9 @@ def buildWrappers():
 			    classes.write(classes_type[arg[1]][0])
 		    n = n + 1
 		classes.write(")\n");
-		if function_post.has_key(name):
-		    classes.write("        %s\n" % (function_post[name]));
-		if ret[0] != "void":
+
+                # For functions returning object types:
+                if ret[0] != "void":
 		    if classes_type.has_key(ret[0]):
 			#
 			# Raise an exception
@@ -910,10 +960,6 @@ def buildWrappers():
                             if classname == "virConnect":
                                 classes.write(
 		     "        if ret is None:raise libvirtError('%s() failed', conn=self)\n" %
-                                              (name))
-                            elif classname == "virDomain":
-                                classes.write(
-		     "        if ret is None:raise libvirtError('%s() failed')\n" %
                                               (name))
                             else:
                                 classes.write(
@@ -945,6 +991,12 @@ def buildWrappers():
 				if pref[0] == classname:
 				    classes.write("        __tmp.%s = self\n" %
 						  pref[1])
+
+                        # Post-processing - just before we return.
+                        if function_post.has_key(name):
+                            classes.write("        %s\n" %
+                                          (function_post[name]));
+
 			#
 			# return the class
 			#
@@ -956,11 +1008,71 @@ def buildWrappers():
 			if functions_noexcept.has_key(name):
 			    classes.write(
 			        "        if ret is None:return None");
+
+                        # Post-processing - just before we return.
+                        if function_post.has_key(name):
+                            classes.write("        %s\n" %
+                                          (function_post[name]));
+
 			classes.write("        return ");
 			classes.write(converter_type[ret[0]] % ("ret"));
 			classes.write("\n");
+
+                    # For functions returning an integral type there
+                    # are several things that we can do, depending on
+                    # the contents of functions_int_*:
+                    elif is_integral_type (ret[0]):
+                        if not functions_noexcept.has_key (name):
+                            if functions_int_exception_test.has_key (name):
+                                test = functions_int_exception_test[name]
+                            else:
+                                test = functions_int_default_test
+                            if classname == "virConnect":
+                                classes.write (("        if " + test +
+                                                ": raise libvirtError ('%s() failed', conn=self)\n") %
+                                               ("ret", name))
+                            else:
+                                classes.write (("        if " + test +
+                                                ": raise libvirtError ('%s() failed')\n") %
+                                               ("ret", name))
+
+                        # Post-processing - just before we return.
+                        if function_post.has_key(name):
+                            classes.write("        %s\n" %
+                                          (function_post[name]));
+
+                        classes.write ("        return ret\n")
+
+                    elif is_list_type (ret[0]):
+                        if not functions_noexcept.has_key (name):
+                            if functions_list_exception_test.has_key (name):
+                                test = functions_list_exception_test[name]
+                            else:
+                                test = functions_list_default_test
+                            if classname == "virConnect":
+                                classes.write (("        if " + test +
+                                                ": raise libvirtError ('%s() failed', conn=self)\n") %
+                                               ("ret", name))
+                            else:
+                                classes.write (("        if " + test +
+                                                ": raise libvirtError ('%s() failed')\n") %
+                                               ("ret", name))
+
+                        # Post-processing - just before we return.
+                        if function_post.has_key(name):
+                            classes.write("        %s\n" %
+                                          (function_post[name]));
+
+                        classes.write ("        return ret\n")
+
 		    else:
+                        # Post-processing - just before we return.
+                        if function_post.has_key(name):
+                            classes.write("        %s\n" %
+                                          (function_post[name]));
+
 			classes.write("        return ret\n");
+
 		classes.write("\n");
 
     #
