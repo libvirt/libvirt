@@ -1,3 +1,9 @@
+Wed Mar 30 17:24:48 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/iptables.c: Re-factor things a little so that we
+	maintain the rules in memory even when we're not going
+	to write them to disk.
+	
 Wed Mar 30 17:21:08 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/iptables.c: Remove the target interface parameter

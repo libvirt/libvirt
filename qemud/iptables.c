@@ -51,13 +51,13 @@ typedef struct
     char  *table;
     char  *chain;
 
+    int    nrules;
+    char **rules;
+
 #ifdef IPTABLES_DIR
 
     char   dir[PATH_MAX];
     char   path[PATH_MAX];
-
-    int    nrules;
-    char **rules;
 
 #endif /* IPTABLES_DIR */
 
@@ -171,13 +171,13 @@ buildPath(const char *table,
     else
         return 0;
 }
+#endif /* IPTABLES_DIR */
 
 static int
 iptRulesAppend(iptRules *rules,
                const char *rule)
 {
     char **r;
-    int err;
 
     if (!(r = (char **)realloc(rules->rules, sizeof(char *) * (rules->nrules+1))))
         return ENOMEM;
@@ -189,24 +189,29 @@ iptRulesAppend(iptRules *rules,
 
     rules->nrules++;
 
-    if ((err = ensureDir(rules->dir)))
-        return err;
+#ifdef IPTABLES_DIR
+    {
+        int err;
 
-    if ((err = writeRules(rules->path, rules->rules, rules->nrules)))
-        return err;
+        if ((err = ensureDir(rules->dir)))
+            return err;
+
+        if ((err = writeRules(rules->path, rules->rules, rules->nrules)))
+            return err;
+    }
+#endif /* IPTABLES_DIR */
 
     return 0;
 }
 
 static int
 iptRulesRemove(iptRules *rules,
-               const char *rule)
+               char *rule)
 {
     int i;
-    int err;
 
     for (i = 0; i < rules->nrules; i++)
-        if (!strcmp(rules->rules[i], rule))
+        if (!strcmp(rules->rules[i], strdup(rule)))
             break;
 
     if (i >= rules->nrules)
@@ -220,16 +225,23 @@ iptRulesRemove(iptRules *rules,
 
     rules->nrules--;
 
-    if ((err = writeRules(rules->path, rules->rules, rules->nrules)))
-        return err;
+#ifdef IPTABLES_DIR
+    {
+        int err;
+
+        if ((err = writeRules(rules->path, rules->rules, rules->nrules)))
+            return err;
+    }
+#endif /* IPTABLES_DIR */
 
     return 0;
 }
-#endif /* IPTABLES_DIR */
 
 static void
 iptRulesFree(iptRules *rules)
 {
+    int i;
+
     if (rules->table) {
         free(rules->table);
         rules->table = NULL;
@@ -240,25 +252,22 @@ iptRulesFree(iptRules *rules)
         rules->chain = NULL;
     }
 
-#ifdef IPTABLES_DIR
-    {
-        int i;
 
-        rules->dir[0] = '\0';
-        rules->path[0] = '\0';
-
-        for (i = 0; i < rules->nrules; i++) {
-            free(rules->rules[i]);
-            rules->rules[i] = NULL;
-        }
-
-        rules->nrules = 0;
-
-        if (rules->rules) {
-            free(rules->rules);
-            rules->rules = NULL;
-        }
+    for (i = 0; i < rules->nrules; i++) {
+        free(rules->rules[i]);
+        rules->rules[i] = NULL;
     }
+
+    rules->nrules = 0;
+
+    if (rules->rules) {
+        free(rules->rules);
+        rules->rules = NULL;
+    }
+
+#ifdef IPTABLES_DIR
+    rules->dir[0] = '\0';
+    rules->path[0] = '\0';
 #endif /* IPTABLES_DIR */
 
     free(rules);
@@ -279,15 +288,15 @@ iptRulesNew(const char *table,
     if (!(rules->chain = strdup(chain)))
         goto error;
 
+    rules->rules = NULL;
+    rules->nrules = 0;
+
 #ifdef IPTABLES_DIR
     if (buildDir(table, rules->dir, sizeof(rules->dir)))
         goto error;
 
     if (buildPath(table, chain, rules->path, sizeof(rules->path)))
         goto error;
-
-    rules->rules = NULL;
-    rules->nrules = 0;
 #endif /* IPTABLES_DIR */
 
     return rules;
@@ -464,12 +473,10 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
         (retval = iptablesAddRemoveChain(rules, action)))
         goto error;
 
-#ifdef IPTABLES_DIR
     if (action == ADD)
         retval = iptRulesAppend(rules, rule);
     else
         retval = iptRulesRemove(rules, rule);
-#endif /* IPTABLES_DIR */
 
  error:
     if (rule)
