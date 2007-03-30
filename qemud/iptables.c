@@ -490,7 +490,7 @@ iptablesContextNew(void)
 {
     iptablesContext *ctx;
 
-    if (!(ctx = (iptablesContext *) malloc(sizeof (iptablesContext))))
+    if (!(ctx = (iptablesContext *) calloc(1, sizeof (iptablesContext))))
         return NULL;
 
     if (!(ctx->input_filter = iptRulesNew("filter", IPTABLES_PREFIX "INPUT")))
@@ -512,9 +512,12 @@ iptablesContextNew(void)
 void
 iptablesContextFree(iptablesContext *ctx)
 {
-    iptRulesFree(ctx->input_filter);
-    iptRulesFree(ctx->forward_filter);
-    iptRulesFree(ctx->nat_postrouting);
+    if (ctx->input_filter)
+        iptRulesFree(ctx->input_filter);
+    if (ctx->forward_filter)
+        iptRulesFree(ctx->forward_filter);
+    if (ctx->nat_postrouting)
+        iptRulesFree(ctx->nat_postrouting);
     free(ctx);
 }
 

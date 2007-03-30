@@ -1,3 +1,8 @@
+Wed Mar 30 17:17:15 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/iptables.c: ensure iptablesContext is zereod out
+	when allocating so we don't try and free an invalid pointer.
+	
 Wed Mar 28 12:23:00 BST 2007 Richard W.M. Jones  <rjones@redhat.com>
 
 	* python/generator.py: Python bindings now throw exceptions
