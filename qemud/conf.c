@@ -1128,7 +1128,7 @@ qemudNetworkIfaceConnect(struct qemud_server *server,
     }
 
     if (net->type == QEMUD_NET_NETWORK && network->def->forward) {
-        if ((err = iptablesAddPhysdevForward(server->iptables, ifname, network->def->forwardDev))) {
+        if ((err = iptablesAddPhysdevForward(server->iptables, ifname))) {
             qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
                              "Failed to add iptables rule to allow bridging from '%s' :%s",
                              ifname, strerror(err));
@@ -1152,7 +1152,7 @@ qemudNetworkIfaceConnect(struct qemud_server *server,
 
  no_memory:
     if (net->type == QEMUD_NET_NETWORK && network->def->forward)
-        iptablesRemovePhysdevForward(server->iptables, ifname, network->def->forwardDev);
+        iptablesRemovePhysdevForward(server->iptables, ifname);
     qemudReportError(server, VIR_ERR_NO_MEMORY, "tapfds");
  error:
     if (retval)

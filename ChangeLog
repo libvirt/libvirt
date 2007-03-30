@@ -1,3 +1,12 @@
+Wed Mar 30 17:21:08 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/iptables.c: Remove the target interface parameter
+	from iptablesPhysdevForward(). This rule is intended to
+	allow frames to be forwarded across the	bridge from the
+	supplied bridge port. In this context, the --out parameter
+	would match the outgoing bridge port, which will never
+	be network->def->forwardDev.
+	
 Wed Mar 30 17:17:15 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/iptables.c: ensure iptablesContext is zereod out

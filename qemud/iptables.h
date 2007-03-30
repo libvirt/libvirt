@@ -42,11 +42,9 @@ int              iptablesRemoveUdpInput          (iptablesContext *ctx,
                                                   int port);
 
 int              iptablesAddPhysdevForward       (iptablesContext *ctx,
-                                                  const char *iface,
-                                                  const char *target);
+                                                  const char *iface);
 int              iptablesRemovePhysdevForward    (iptablesContext *ctx,
-                                                  const char *iface,
-                                                  const char *target);
+                                                  const char *iface);
 
 int              iptablesAddInterfaceForward     (iptablesContext *ctx,
                                                   const char *iface,

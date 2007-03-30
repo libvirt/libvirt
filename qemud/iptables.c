@@ -577,41 +577,28 @@ iptablesRemoveUdpInput(iptablesContext *ctx,
 static int
 iptablesPhysdevForward(iptablesContext *ctx,
                        const char *iface,
-                       const char *target,
                        int action)
 {
-    if (target && target[0]) {
-        return iptablesAddRemoveRule(ctx->forward_filter,
-                                     action,
-                                     "--match", "physdev",
-                                     "--physdev-in", iface,
-                                     "--out", target,
-                                     "--jump", "ACCEPT",
-                                     NULL);
-    } else {
-        return iptablesAddRemoveRule(ctx->forward_filter,
-                                     action,
-                                     "--match", "physdev",
-                                     "--physdev-in", iface,
-                                     "--jump", "ACCEPT",
-                                     NULL);
-    }
+    return iptablesAddRemoveRule(ctx->forward_filter,
+                                 action,
+                                 "--match", "physdev",
+                                 "--physdev-in", iface,
+                                 "--jump", "ACCEPT",
+                                 NULL);
 }
 
 int
 iptablesAddPhysdevForward(iptablesContext *ctx,
-                          const char *iface,
-                          const char *target)
+                          const char *iface)
 {
-    return iptablesPhysdevForward(ctx, iface, target, ADD);
+    return iptablesPhysdevForward(ctx, iface, ADD);
 }
 
 int
 iptablesRemovePhysdevForward(iptablesContext *ctx,
-                             const char *iface,
-                             const char *target)
+                             const char *iface)
 {
-    return iptablesPhysdevForward(ctx, iface, target, REMOVE);
+    return iptablesPhysdevForward(ctx, iface, REMOVE);
 }
 
 static int
