@@ -96,6 +96,11 @@ static int qemudDispatchSignal(struct qemud_server *server)
     case SIGHUP:
         qemudLog(QEMUD_INFO, "Reloading configuration on SIGHUP");
         ret = qemudScanConfigs(server);
+
+        if (server->iptables) {
+            qemudLog(QEMUD_INFO, "Reloading iptables rules");
+            iptablesReloadRules(server->iptables);
+        }
         break;
 
     case SIGINT:

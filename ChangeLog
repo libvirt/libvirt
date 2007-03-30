@@ -1,3 +1,8 @@
+Wed Mar 30 17:25:33 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/iptables.c: As suggested by danpb, make libvirt_qemud
+	handle SIGHUP by re-loading the iptables rules.
+	
 Wed Mar 30 17:24:48 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/iptables.c: Re-factor things a little so that we

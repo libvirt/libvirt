@@ -36,6 +36,8 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 
+#include "internal.h"
+
 enum {
     ADD = 0,
     REMOVE
@@ -48,11 +50,18 @@ enum {
 
 typedef struct
 {
+    char  *rule;
+    char **argv;
+    int    flipflop;
+} iptRule;
+
+typedef struct
+{
     char  *table;
     char  *chain;
 
-    int    nrules;
-    char **rules;
+    int      nrules;
+    iptRule *rules;
 
 #ifdef IPTABLES_DIR
 
@@ -73,7 +82,7 @@ struct _iptablesContext
 #ifdef IPTABLES_DIR
 static int
 writeRules(const char *path,
-           char * const *rules,
+           const iptRules *rules,
            int nrules)
 {
     char tmp[PATH_MAX];
@@ -96,7 +105,7 @@ writeRules(const char *path,
     }
 
     for (i = 0; i < nrules; i++) {
-        if (fputs(rules[i], f) == EOF ||
+        if (fputs(rules[i].rule, f) == EOF ||
             fputc('\n', f) == EOF) {
             fclose(f);
             if (istmp)
@@ -173,19 +182,43 @@ buildPath(const char *table,
 }
 #endif /* IPTABLES_DIR */
 
+static void
+iptRuleFree(iptRule *rule)
+{
+    if (rule->rule)
+        free(rule->rule);
+    rule->rule = NULL;
+
+    if (rule->argv) {
+        int i = 0;
+        while (rule->argv[i])
+            free(rule->argv[i++]);
+        free(rule->argv);
+        rule->argv = NULL;
+    }
+}
+
 static int
 iptRulesAppend(iptRules *rules,
-               const char *rule)
+               char *rule,
+               char **argv,
+               int flipflop)
 {
-    char **r;
+    iptRule *r;
 
-    if (!(r = (char **)realloc(rules->rules, sizeof(char *) * (rules->nrules+1))))
+    if (!(r = (iptRule *)realloc(rules->rules, sizeof(iptRule) * (rules->nrules+1)))) {
+        int i = 0;
+        while (argv[i])
+            free(argv[i++]);
+        free(argv);
         return ENOMEM;
+    }
 
     rules->rules = r;
 
-    if (!(rules->rules[rules->nrules] = strdup(rule)))
-        return ENOMEM;
+    rules->rules[rules->nrules].rule     = rule;
+    rules->rules[rules->nrules].argv     = argv;
+    rules->rules[rules->nrules].flipflop = flipflop;
 
     rules->nrules++;
 
@@ -211,17 +244,17 @@ iptRulesRemove(iptRules *rules,
     int i;
 
     for (i = 0; i < rules->nrules; i++)
-        if (!strcmp(rules->rules[i], strdup(rule)))
+        if (!strcmp(rules->rules[i].rule, strdup(rule)))
             break;
 
     if (i >= rules->nrules)
         return EINVAL;
 
-    free(rules->rules[i]);
+    iptRuleFree(&rules->rules[i]);
 
     memmove(&rules->rules[i],
             &rules->rules[i+1],
-            (rules->nrules - i - 1) * sizeof (char *));
+            (rules->nrules - i - 1) * sizeof (iptRule));
 
     rules->nrules--;
 
@@ -253,16 +286,14 @@ iptRulesFree(iptRules *rules)
     }
 
 
-    for (i = 0; i < rules->nrules; i++) {
-        free(rules->rules[i]);
-        rules->rules[i] = NULL;
-    }
-
-    rules->nrules = 0;
-
     if (rules->rules) {
+        for (i = 0; i < rules->nrules; i++)
+            iptRuleFree(&rules->rules[i]);
+
         free(rules->rules);
         rules->rules = NULL;
+
+        rules->nrules = 0;
     }
 
 #ifdef IPTABLES_DIR
@@ -401,7 +432,7 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
     char **argv;
     char *rule = NULL, *p;
     const char *s;
-    int n, rulelen;
+    int n, rulelen, flipflop;
 
     n = 1 + /* /sbin/iptables  */
         2 + /*   --table foo   */
@@ -434,6 +465,8 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
 
     if (!(argv[n++] = strdup(rules->table)))
         goto error;
+
+    flipflop = n;
 
     if (!(argv[n++] = strdup(action == ADD ? "--insert" : "--delete")))
         goto error;
@@ -473,10 +506,13 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
         (retval = iptablesAddRemoveChain(rules, action)))
         goto error;
 
-    if (action == ADD)
-        retval = iptRulesAppend(rules, rule);
-    else
+    if (action == ADD) {
+        retval = iptRulesAppend(rules, rule, argv, flipflop);
+        rule = NULL;
+        argv = NULL;
+    } else {
         retval = iptRulesRemove(rules, rule);
+    }
 
  error:
     if (rule)
@@ -526,6 +562,45 @@ iptablesContextFree(iptablesContext *ctx)
     if (ctx->nat_postrouting)
         iptRulesFree(ctx->nat_postrouting);
     free(ctx);
+}
+
+static void
+iptRulesReload(iptRules *rules)
+{
+    int i;
+    int retval;
+
+    for (i = 0; i < rules->nrules; i++) {
+        iptRule *rule = &rules->rules[i];
+        char *orig;
+
+        orig = rule->argv[rule->flipflop];
+        rule->argv[rule->flipflop] = (char *) "--delete";
+
+        if ((retval = iptablesSpawn(WITH_ERRORS, rule->argv)))
+            qemudLog(QEMUD_WARN, "Failed to remove iptables rule '%s' from chain '%s' in table '%s': %s",
+                     rule->rule, rules->chain, rules->table, strerror(errno));
+
+        rule->argv[rule->flipflop] = orig;
+    }
+
+    if ((retval = iptablesAddRemoveChain(rules, REMOVE)) ||
+        (retval = iptablesAddRemoveChain(rules, ADD)))
+        qemudLog(QEMUD_WARN, "Failed to re-create chain '%s' in table '%s': %s",
+                 rules->chain, rules->table, strerror(retval));
+
+    for (i = 0; i < rules->nrules; i++)
+        if ((retval = iptablesSpawn(WITH_ERRORS, rules->rules[i].argv)))
+            qemudLog(QEMUD_WARN, "Failed to add iptables rule '%s' to chain '%s' in table '%s': %s",
+                     rules->rules[i].rule, rules->chain, rules->table, strerror(retval));
+}
+
+void
+iptablesReloadRules(iptablesContext *ctx)
+{
+    iptRulesReload(ctx->input_filter);
+    iptRulesReload(ctx->forward_filter);
+    iptRulesReload(ctx->nat_postrouting);
 }
 
 static int
