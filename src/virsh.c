@@ -1437,7 +1437,7 @@ cmdSetvcpus(vshControl * ctl, vshCmd * cmd)
  * "setmemory" command
  */
 static vshCmdInfo info_setmem[] = {
-    {"syntax", "setmem <domain> <bytes>"},
+    {"syntax", "setmem <domain> <kilobytes>"},
     {"help", gettext_noop("change memory allocation")},
     {"desc", gettext_noop("Change the current memory allocation in the guest domain.")},
     {NULL, NULL}
@@ -1445,7 +1445,7 @@ static vshCmdInfo info_setmem[] = {
 
 static vshCmdOptDef opts_setmem[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
-    {"bytes", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("number of bytes of memory")},
+    {"kilobytes", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("number of kilobytes of memory")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1453,7 +1453,7 @@ static int
 cmdSetmem(vshControl * ctl, vshCmd * cmd)
 {
     virDomainPtr dom;
-    int bytes;
+    int kilobytes;
     int ret = TRUE;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
@@ -1462,14 +1462,14 @@ cmdSetmem(vshControl * ctl, vshCmd * cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
         return FALSE;
 
-    bytes = vshCommandOptInt(cmd, "bytes", &bytes);
-    if (bytes <= 0) {
+    kilobytes = vshCommandOptInt(cmd, "kilobytes", &kilobytes);
+    if (kilobytes <= 0) {
         virDomainFree(dom);
-	vshError(ctl, FALSE, _("Invalid value of %d for memory size"), bytes);
+        vshError(ctl, FALSE, _("Invalid value of %d for memory size"), kilobytes);
         return FALSE;
     }
 
-    if (virDomainSetMemory(dom, bytes) != 0) {
+    if (virDomainSetMemory(dom, kilobytes) != 0) {
         ret = FALSE;
     }
 
@@ -1481,7 +1481,7 @@ cmdSetmem(vshControl * ctl, vshCmd * cmd)
  * "setmaxmem" command
  */
 static vshCmdInfo info_setmaxmem[] = {
-    {"syntax", "setmaxmem <domain> <bytes>"},
+    {"syntax", "setmaxmem <domain> <kilobytes>"},
     {"help", gettext_noop("change maximum memory limit")},
     {"desc", gettext_noop("Change the maximum memory allocation limit in the guest domain.")},
     {NULL, NULL}
@@ -1489,7 +1489,7 @@ static vshCmdInfo info_setmaxmem[] = {
 
 static vshCmdOptDef opts_setmaxmem[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
-    {"bytes", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("maxmimum memory limit in bytes")},
+    {"kilobytes", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("maxmimum memory limit in kilobytes")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1497,7 +1497,7 @@ static int
 cmdSetmaxmem(vshControl * ctl, vshCmd * cmd)
 {
     virDomainPtr dom;
-    int bytes;
+    int kilobytes;
     int ret = TRUE;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
@@ -1506,14 +1506,14 @@ cmdSetmaxmem(vshControl * ctl, vshCmd * cmd)
     if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
         return FALSE;
 
-    bytes = vshCommandOptInt(cmd, "bytes", &bytes);
-    if (bytes <= 0) {
+    kilobytes = vshCommandOptInt(cmd, "kilobytes", &kilobytes);
+    if (kilobytes <= 0) {
         virDomainFree(dom);
-	vshError(ctl, FALSE, _("Invalid value of %d for memory size"), bytes);
+        vshError(ctl, FALSE, _("Invalid value of %d for memory size"), kilobytes);
         return FALSE;
     }
 
-    if (virDomainSetMaxMemory(dom, bytes) != 0) {
+    if (virDomainSetMaxMemory(dom, kilobytes) != 0) {
         ret = FALSE;
     }
 
