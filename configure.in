@@ -105,7 +105,7 @@ elif test "x$with_qemud_pid_file" == "xnone" ; then
 else
    QEMUD_PID_FILE="$with_qemud_pid_file"
 fi
-AC_DEFINE_UNQUOTED(QEMUD_PID_FILE, "$QEMUD_PID_FILE", [PID file path for qemud])
+AC_SUBST(QEMUD_PID_FILE)
 AC_MSG_RESULT($QEMUD_PID_FILE)
 
 dnl

@@ -17,7 +17,8 @@ libvirt_qemud_SOURCES = qemud.c internal.h protocol.h \
 libvirt_qemud_CFLAGS = \
         -I$(top_srcdir)/include -I$(top_builddir)/include $(LIBXML_CFLAGS) \
         $(WARN_CFLAGS) -DLOCAL_STATE_DIR="\"$(localstatedir)\"" \
-        -DSYSCONF_DIR="\"$(sysconfdir)\""
+        -DSYSCONF_DIR="\"$(sysconfdir)\"" \
+	-DQEMUD_PID_FILE="\"$(QEMUD_PID_FILE)\""
 libvirt_qemud_LDFLAGS = $(LIBXML_LIBS) $(SYSFS_LIBS)
 libvirt_qemud_DEPENDENCIES =
 libvirt_qemud_LDADD =

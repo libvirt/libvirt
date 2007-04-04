@@ -1744,6 +1744,44 @@ static void qemudCleanup(struct qemud_server *server) {
     free(server);
 }
 
+/* Print command-line usage. */
+static void
+usage (const char *argv0)
+{
+    fprintf (stderr,
+             "\n"
+             "Usage:\n"
+             "  %s [options]\n"
+             "\n"
+             "Options:\n"
+             "  -v | --verbose         Verbose messages.\n"
+             "  -d | --daemon          Run as a daemon & write PID file.\n"
+             "  -s | --system          Run as system daemon.\n"
+             "  -t | --timeout <secs>  Exit after timeout period.\n"
+             "  -p | --pid-file <file> Change name of PID file.\n"
+             "\n"
+             "Notes:\n"
+             "\n"
+             "For '--system' option you must be running this daemon as root.\n"
+             "\n"
+             "The '--timeout' applies only when the daemon is not servicing\n"
+             "clients.\n"
+             "\n"
+             "Default paths:\n"
+             "\n"
+             "  Sockets (in system mode):\n"
+             "    " LOCAL_STATE_DIR "/run/libvirt/qemud-sock\n"
+             "    " LOCAL_STATE_DIR "/run/libvirt/qemud-sock-ro\n"
+             "\n"
+             "  Sockets (not in system mode):\n"
+             "    $HOME/.libvirt/qemud-sock (in Unix abstract namespace)\n"
+             "\n"
+             "  PID file (unless overridden by --pid-file):\n"
+             "    " QEMUD_PID_FILE "\n"
+             "\n",
+             argv0);
+}
+
 #define MAX_LISTEN 5
 int main(int argc, char **argv) {
     int sys = 0;
@@ -1758,8 +1796,9 @@ int main(int argc, char **argv) {
         { "verbose", no_argument, &verbose, 1},
         { "daemon", no_argument, &godaemon, 1},
         { "system", no_argument, &sys, 1},
-        { "timeout", required_argument, 0, 't'},
-        { "pid-file", required_argument, 0, 'p'},
+        { "timeout", required_argument, NULL, 't'},
+        { "pid-file", required_argument, NULL, 'p'},
+        { "help", no_argument, NULL, '?' },
         {0, 0, 0, 0}
     };
 
@@ -1801,8 +1840,8 @@ int main(int argc, char **argv) {
             break;
 
         case '?':
+            usage (argv[0]);
             return 2;
-            break;
 
         default:
             abort();
