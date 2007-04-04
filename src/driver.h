@@ -17,13 +17,9 @@ extern "C" {
  * List of registered drivers numbers
  */
 typedef enum {
-    VIR_DRV_XEN_HYPERVISOR = 1,
-    VIR_DRV_XEN_STORE = 2,
-    VIR_DRV_XEN_DAEMON = 3,
-    VIR_DRV_TEST = 4,
-    VIR_DRV_XEN_PROXY = 5,
-    VIR_DRV_XEN_XM = 6,
-    VIR_DRV_QEMU = 7
+    VIR_DRV_XEN_UNIFIED = 1,
+    VIR_DRV_TEST = 2,
+    VIR_DRV_QEMU = 3,
 } virDrvNo;
 
 
@@ -32,10 +28,24 @@ typedef enum {
     VIR_DRV_OPEN_RO = 2
 } virDrvOpenFlag;
 
-typedef int
-	(*virDrvOpen)			(virConnectPtr conn,
-					 const char *name,
-					 int flags);
+/* Status codes returned from driver open call. */
+typedef enum {
+    /* Opened successfully. */
+    VIR_DRV_OPEN_SUCCESS = 0,
+
+    /* 'name' is not for us. */
+    VIR_DRV_OPEN_DECLINED = -1,
+
+    /* 'name' is for us, but there was some error.  virConnectOpen will
+     * return an error rather than continue probing the other drivers.
+     */
+    VIR_DRV_OPEN_ERROR = -2,
+} virDrvOpenStatus;
+
+typedef virDrvOpenStatus
+    (*virDrvOpen)			(virConnectPtr conn,
+                             const char *name,
+                             int flags);
 typedef int
 	(*virDrvClose)			(virConnectPtr conn);
 typedef const char *
@@ -44,7 +54,7 @@ typedef int
 	(*virDrvGetVersion)		(virConnectPtr conn,
 					 unsigned long *hvVer);
 typedef int
-	(*virDrvGetMaxVcpus)		(virConnectPtr conn);
+    (*virDrvGetMaxVcpus)		(virConnectPtr conn, const char *type);
 typedef int
 	(*virDrvNodeGetInfo)		(virConnectPtr conn,
 					 virNodeInfoPtr info);
@@ -155,6 +165,12 @@ typedef virDriver *virDriverPtr;
  *
  * Structure associated to a virtualization driver, defining the various
  * entry points for it.
+ *
+ * All drivers must support the following fields/methods:
+ *  - no
+ *  - name
+ *  - open
+ *  - close
  */
 struct _virDriver {
 	int	       no;	/* the number virDrvNo */
@@ -252,6 +268,10 @@ typedef virNetworkDriver *virNetworkDriverPtr;
  *
  * Structure associated to a network virtualization driver, defining the various
  * entry points for it.
+ *
+ * All drivers must support the following fields/methods:
+ *  - open
+ *  - close
  */
 struct _virNetworkDriver {
 	virDrvOpen			open;

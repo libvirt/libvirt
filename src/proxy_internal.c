@@ -21,6 +21,7 @@
 #include "internal.h"
 #include "driver.h"
 #include "proxy_internal.h"
+#include "xen_unified.h"
 
 #define STANDALONE
 
@@ -42,8 +43,8 @@ static int xenProxyDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info);
 static char *xenProxyDomainDumpXML(virDomainPtr domain, int flags);
 static char *xenProxyDomainGetOSType(virDomainPtr domain);
 
-static virDriver xenProxyDriver = {
-    VIR_DRV_XEN_PROXY,
+virDriver xenProxyDriver = {
+    -1,
     "XenProxy",
     0,
     xenProxyOpen, /* open */
@@ -89,14 +90,16 @@ static virDriver xenProxyDriver = {
 };
 
 /**
- * xenProxyRegister:
+ * xenProxyInit:
  *
- * Registers the xenHypervisor driver
+ * Initialise the xen proxy driver.
  */
-void xenProxyRegister(void)
+int
+xenProxyInit (void)
 {
-    virRegisterDriver(&xenProxyDriver);
+    return 0;
 }
+
 /************************************************************************
  *									*
  *			Error handling					*
@@ -378,12 +381,29 @@ retry:
  * Shutdown the Xen proxy communication layer
  */
 static int
-xenProxyClose(virConnectPtr conn) {
-    if ((conn == NULL) || (conn->proxy < 0))
-        return(-1);
-    virProxyCloseClientSocket(conn->proxy);
-    conn->proxy = -1;
-    return (0);
+xenProxyClose(virConnectPtr conn)
+{
+    xenUnifiedPrivatePtr priv;
+
+    if (conn == NULL) {
+        virProxyError (NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return -1;
+    }
+
+    priv = (xenUnifiedPrivatePtr) conn->privateData;
+    if (!priv) {
+        virProxyError (NULL, VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
+        return -1;
+    }
+
+    /* Fail silently. */
+    if (priv->proxy == -1)
+        return -1;
+
+    virProxyCloseClientSocket (priv->proxy);
+    priv->proxy = -1;
+
+    return 0;
 }
 
 static int 
@@ -392,9 +412,22 @@ xenProxyCommand(virConnectPtr conn, virProxyPacketPtr request,
     static int serial = 0;
     int ret;
     virProxyPacketPtr res = NULL;
+    xenUnifiedPrivatePtr priv;
 
-    if ((conn == NULL) || (conn->proxy < 0))
-        return(-1);
+    if (conn == NULL) {
+        virProxyError (NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return -1;
+    }
+
+    priv = (xenUnifiedPrivatePtr) conn->privateData;
+    if (!priv) {
+        virProxyError (NULL, VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
+        return -1;
+    }
+
+    /* Fail silently. */
+    if (priv->proxy == -1)
+        return -1;
 
     /*
      * normal communication serial numbers are in 0..4095
@@ -404,14 +437,14 @@ xenProxyCommand(virConnectPtr conn, virProxyPacketPtr request,
         serial = 0;
     request->version = PROXY_PROTO_VERSION;
     request->serial = serial;
-    ret  = virProxyWriteClientSocket(conn->proxy, (const char *) request,
+    ret  = virProxyWriteClientSocket(priv->proxy, (const char *) request,
                                      request->len);
     if (ret < 0)
         return(-1);
 retry:
     if (answer == NULL) {
         /* read in situ */
-	ret  = virProxyReadClientSocket(conn->proxy, (char *) request,
+	ret  = virProxyReadClientSocket(priv->proxy, (char *) request,
 	                                sizeof(virProxyPacket), quiet);
 	if (ret < 0)
 	    return(-1);
@@ -432,7 +465,7 @@ retry:
 	}
     } else {
         /* read in packet provided */
-        ret  = virProxyReadClientSocket(conn->proxy, (char *) answer,
+        ret  = virProxyReadClientSocket(priv->proxy, (char *) answer,
 	                                sizeof(virProxyPacket), quiet);
 	if (ret < 0)
 	    return(-1);
@@ -453,7 +486,7 @@ retry:
 	    return(-1);
 	}
 	if (res->len > sizeof(virProxyPacket)) {
-	    ret  = virProxyReadClientSocket(conn->proxy,
+	    ret  = virProxyReadClientSocket(priv->proxy,
 	                           (char *) &(answer->extra.arg[0]),
 	                                    res->len - ret, quiet);
 	    if (ret != (int) (res->len - sizeof(virProxyPacket))) {
@@ -495,25 +528,26 @@ retry:
  * Returns 0 in case of success, and -1 in case of failure
  */
 int
-xenProxyOpen(virConnectPtr conn, const char *name, int flags)
+xenProxyOpen(virConnectPtr conn, const char *name ATTRIBUTE_UNUSED, int flags)
 {
     virProxyPacket req;
     int ret;
     int fd;
+    xenUnifiedPrivatePtr priv;
     
-    if ((name != NULL) && (strcasecmp(name, "xen")))
-        return(-1);
     if (!(flags & VIR_DRV_OPEN_RO))
         return(-1);
-        
-    conn->proxy = -1;
+
+    priv = (xenUnifiedPrivatePtr) conn->privateData;
+    priv->proxy = -1;
+
     fd = virProxyOpenClientSocket(PROXY_SOCKET_PATH);
     if (fd < 0) {
         if (!(flags & VIR_DRV_OPEN_QUIET))
 	    virProxyError(conn, VIR_ERR_NO_XEN, PROXY_SOCKET_PATH);
-	return(-1);
+        return(-1);
     }
-    conn->proxy = fd;
+    priv->proxy = fd;
 
     memset(&req, 0, sizeof(req));
     req.command = VIR_PROXY_NONE;

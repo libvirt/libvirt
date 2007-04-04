@@ -665,9 +665,10 @@ virGetConnect(void) {
         goto failed;
     }
     ret->magic = VIR_CONNECT_MAGIC;
-    ret->nb_drivers = 0;
-    ret->handle = -1;
-    ret->qemud_fd = -1;
+    ret->driver = NULL;
+    ret->networkDriver = NULL;
+    ret->privateData = NULL;
+    ret->networkPrivateData = NULL;
     ret->domains = virHashCreate(20);
     if (ret->domains == NULL)
         goto failed;

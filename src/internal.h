@@ -114,30 +114,19 @@ struct _virConnect {
     unsigned int magic;     /* specific value to check */
 
     int uses;               /* reference count */
-    /* the list of available drivers for that connection */
-    virDriverPtr      drivers[MAX_DRIVERS];
-    int               nb_drivers;
 
-    /* the list of available network drivers */
-    virNetworkDriverPtr networkDrivers[MAX_DRIVERS];
-    int                 nb_network_drivers;
+    /* The underlying hypervisor driver and network driver. */
+    virDriverPtr      driver;
+    virNetworkDriverPtr networkDriver;
 
-    /* extra data needed by drivers */
-    int handle;             /* internal handle used for hypercall */
-    struct xs_handle *xshandle;/* handle to talk to the xenstore */
-    int proxy;              /* file descriptor if using the proxy */
-    int xendConfigVersion;  /* XenD config version */
+    /* Private data pointer which can be used by driver and
+     * network driver as they wish.
+     * NB: 'private' is a reserved word in C++.
+     */
+    void *            privateData;
+    void *            networkPrivateData;
 
-    /* connection to xend */
-    int type;               /* PF_UNIX or PF_INET */
-    int len;                /* lenght of addr */
-    struct sockaddr *addr;  /* type of address used */
-    struct sockaddr_un addr_un;     /* the unix address */
-    struct sockaddr_in addr_in;     /* the inet address */
-
-    int qemud_fd;           /* connection to qemud */
-
-    /* error stuff */
+    /* Per-connection error. */
     virError err;           /* the last error */
     virErrorFunc handler;   /* associated handlet */
     void *userData;         /* the user data */

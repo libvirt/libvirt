@@ -21,6 +21,7 @@ libvirt_la_SOURCES =						\
 		hash.c hash.h					\
 		test.c test.h                                   \
 		xml.c xml.h					\
+		xen_unified.c xen_unified.h			\
 		xen_internal.c xen_internal.h			\
 		xs_internal.c xs_internal.h			\
 		xend_internal.c xend_internal.h			\

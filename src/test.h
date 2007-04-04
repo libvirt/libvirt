@@ -30,7 +30,7 @@
 extern "C" {
 #endif
 
-    void testRegister(void);
+int testRegister(void);
 
 #ifdef __cplusplus
 }

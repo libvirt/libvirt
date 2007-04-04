@@ -25,6 +25,7 @@
 #include <string.h>
 
 #ifdef WITH_XEN
+#include "xen_unified.h"
 #include "xm_internal.h"
 #include "testutils.h"
 #include "internal.h"
@@ -45,8 +46,12 @@ static int testCompareParseXML(const char *xmcfg, const char *xml, int xendConfi
     int ret = -1;
     virConnectPtr conn;
     int wrote = MAX_FILE;
+    void *old_priv;
+    struct _xenUnifiedPrivate priv;
 
     conn = virConnectOpen("test:///default");
+    if (!conn) goto fail;
+    old_priv = conn->privateData;
 
     if (virtTestLoadFile(xml, &xmlPtr, MAX_FILE) < 0)
         goto fail;
@@ -54,8 +59,9 @@ static int testCompareParseXML(const char *xmcfg, const char *xml, int xendConfi
     if (virtTestLoadFile(xmcfg, &xmcfgPtr, MAX_FILE) < 0)
         goto fail;
 
-    /* Yes, a nasty hack, but this is only a test suite */
-    conn->xendConfigVersion = xendConfigVersion;
+    /* Many puppies died to bring you this code. */
+    priv.xendConfigVersion = xendConfigVersion;
+    conn->privateData = &priv;
 
     if (!(conf = xenXMParseXMLToConfig(conn, xmlPtr)))
         goto fail;
@@ -77,7 +83,11 @@ static int testCompareParseXML(const char *xmcfg, const char *xml, int xendConfi
     if (conf)
         virConfFree(conf);
 
-    virConnectClose(conn);
+    if (conn) {
+        conn->privateData = old_priv;
+        virConnectClose(conn);
+    }
+
     return ret;
 }
 
@@ -90,8 +100,12 @@ static int testCompareFormatXML(const char *xmcfg, const char *xml, int xendConf
     virConfPtr conf = NULL;
     int ret = -1;
     virConnectPtr conn;
+    void *old_priv;
+    struct _xenUnifiedPrivate priv;
 
     conn = virConnectOpen("test:///default");
+    if (!conn) goto fail;
+    old_priv = conn->privateData;
 
     if (virtTestLoadFile(xml, &xmlPtr, MAX_FILE) < 0)
         goto fail;
@@ -99,8 +113,9 @@ static int testCompareFormatXML(const char *xmcfg, const char *xml, int xendConf
     if (virtTestLoadFile(xmcfg, &xmcfgPtr, MAX_FILE) < 0)
         goto fail;
 
-    /* Yes, a nasty hack, but this is only a test suite */
-    conn->xendConfigVersion = xendConfigVersion;
+    /* Many puppies died to bring you this code. */
+    priv.xendConfigVersion = xendConfigVersion;
+    conn->privateData = &priv;
 
     if (!(conf = virConfReadMem(xmcfgPtr, strlen(xmcfgPtr))))
         goto fail;
@@ -123,7 +138,11 @@ static int testCompareFormatXML(const char *xmcfg, const char *xml, int xendConf
     if (gotxml)
         free(gotxml);
 
-    virConnectClose(conn);
+    if (conn) {
+        conn->privateData = old_priv;
+        virConnectClose(conn);
+    }
+
     return ret;
 }
 

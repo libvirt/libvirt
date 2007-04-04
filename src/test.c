@@ -134,6 +134,12 @@ static virDriver testDriver = {
     NULL, /* domainSetAutostart */
 };
 
+/* Per-connection private data. */
+struct _testPrivate {
+    int handle;
+};
+typedef struct _testPrivate *testPrivatePtr;
+
 typedef struct _testDev {
     char name[20];
     virDeviceMode mode;
@@ -244,9 +250,10 @@ static const char *testRestartFlagToString(int flag) {
  *
  * Registers the test driver
  */
-void testRegister(void)
+int
+testRegister(void)
 {
-    virRegisterDriver(&testDriver);
+    return virRegisterDriver(&testDriver);
 }
 
 static int testLoadDomain(virConnectPtr conn,
@@ -268,6 +275,7 @@ static int testLoadDomain(virConnectPtr conn,
     virDomainRestart onReboot = VIR_DOMAIN_RESTART;
     virDomainRestart onPoweroff = VIR_DOMAIN_DESTROY;
     virDomainRestart onCrash = VIR_DOMAIN_RENAME_RESTART;
+    testPrivatePtr priv;
 
     if (gettimeofday(&tv, NULL) < 0) {
         testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, _("getting time of day"));
@@ -336,9 +344,6 @@ static int testLoadDomain(virConnectPtr conn,
     if (obj)
         xmlXPathFreeObject(obj);
 
-
-
-
     obj = xmlXPathEval(BAD_CAST "string(/domain/vcpu[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
@@ -386,7 +391,8 @@ static int testLoadDomain(virConnectPtr conn,
     if (obj)
         xmlXPathFreeObject(obj);
 
-    con = &node->connections[conn->handle];
+    priv = (testPrivatePtr) conn->privateData;
+    con = &node->connections[priv->handle];
 
     for (i = 0 ; i < MAX_DOMAINS ; i++) {
         if (!con->domains[i].active) {
@@ -479,13 +485,14 @@ static int testOpenDefault(virConnectPtr conn,
                            int connid) {
     int u;
     struct timeval tv;
+    testPrivatePtr priv = (testPrivatePtr) conn->privateData;
 
     if (gettimeofday(&tv, NULL) < 0) {
         testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("getting time of day"));
-        return (-1);
+        return VIR_DRV_OPEN_ERROR;
     }
 
-    conn->handle = connid;
+    priv->handle = connid;
     node->connections[connid].active = 1;
     memmove(&node->connections[connid].nodeInfo, &defaultNodeInfo, sizeof(defaultNodeInfo));
 
@@ -538,10 +545,11 @@ static int testOpenFromFile(virConnectPtr conn,
     xmlXPathContextPtr ctxt = NULL;
     xmlXPathObjectPtr obj = NULL;
     virNodeInfoPtr nodeInfo;
+    testPrivatePtr priv = (testPrivatePtr) conn->privateData;
 
     if ((fd = open(file, O_RDONLY)) < 0) {
         testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("loading host definition file"));
-        return (-1);
+        return VIR_DRV_OPEN_ERROR;
     }
 
     if (!(xml = xmlReadFd(fd, file, NULL,
@@ -565,7 +573,7 @@ static int testOpenFromFile(virConnectPtr conn,
         goto error;
     }
 
-    conn->handle = connid;
+    priv->handle = connid;
     node->connections[connid].active = 1;
     node->connections[connid].numDomains = 0;
     memmove(&node->connections[connid].nodeInfo, &defaultNodeInfo, sizeof(defaultNodeInfo));
@@ -707,7 +715,7 @@ static int testOpenFromFile(virConnectPtr conn,
         xmlFreeDoc(xml);
     if (fd != -1)
         close(fd);
-    return (-1);
+    return VIR_DRV_OPEN_ERROR;
 }
 
 static int getNextConnection(void) {
@@ -732,7 +740,9 @@ static int getNextConnection(void) {
 static int getDomainIndex(virDomainPtr domain) {
     int i;
     testCon *con;
-    con = &node->connections[domain->conn->handle];
+    testPrivatePtr priv = (testPrivatePtr) domain->conn->privateData;
+
+    con = &node->connections[priv->handle];
     for (i = 0 ; i < MAX_DOMAINS ; i++) {
         if (domain->id >= 0) {
             if (domain->id == con->domains[i].id)
@@ -751,30 +761,38 @@ int testOpen(virConnectPtr conn,
 {
     xmlURIPtr uri;
     int ret, connid;
+    testPrivatePtr priv;
 
-    if (!name) {
-        return (-1);
-    }
+    if (!name)
+        return VIR_DRV_OPEN_DECLINED;
 
     uri = xmlParseURI(name);
     if (uri == NULL) {
         if (!(flags & VIR_DRV_OPEN_QUIET))
             testError(conn, NULL, VIR_ERR_NO_SUPPORT, name);
-        return(-1);
+        return VIR_DRV_OPEN_DECLINED;
     }
 
     if (!uri->scheme ||
         strcmp(uri->scheme, "test") ||
         !uri->path) {
         xmlFreeURI(uri);
-        return (-1);
+        return VIR_DRV_OPEN_DECLINED;
     }
 
 
     if ((connid = getNextConnection()) < 0) {
         testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("too many connections"));
-        return (-1);
+        return VIR_DRV_OPEN_ERROR;
     }
+
+    /* Allocate per-connection private data. */
+    priv = conn->privateData = malloc (sizeof (struct _testPrivate));
+    if (!priv) {
+        testError(NULL, NULL, VIR_ERR_NO_MEMORY, "allocating private data");
+        return VIR_DRV_OPEN_ERROR;
+    }
+    priv->handle = -1;
 
     if (!strcmp(uri->path, "/default")) {
         ret = testOpenDefault(conn,
@@ -787,16 +805,34 @@ int testOpen(virConnectPtr conn,
 
     xmlFreeURI(uri);
 
+    if (ret < 0) free (conn->privateData);
+
     return (ret);
 }
 
 int testClose(virConnectPtr conn)
 {
-    testCon *con = &node->connections[conn->handle];
-    con->active = 0;
-    conn->handle = -1;
-    memset(con, 0, sizeof(testCon));
-    return (0);
+    testPrivatePtr priv;
+
+    if (!conn) {
+        testError (NULL, NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return -1;
+    }
+
+    priv = (testPrivatePtr) conn->privateData;
+    if (!priv) {
+        testError (NULL, NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return -1;
+    }
+
+    if (priv->handle >= 0) {
+        testCon *con = &node->connections[priv->handle];
+        con->active = 0;
+        memset (con, 0, sizeof *con); // RWMJ - why?
+    }
+
+    free (priv);
+    return 0;
 }
 
 int testGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED,
@@ -809,7 +845,8 @@ int testGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED,
 int testNodeGetInfo(virConnectPtr conn,
                     virNodeInfoPtr info)
 {
-    testCon *con = &node->connections[conn->handle];
+    testPrivatePtr priv = (testPrivatePtr) conn->privateData;
+    testCon *con = &node->connections[priv->handle];
     memcpy(info, &con->nodeInfo, sizeof(virNodeInfo));
     return (0);
 }
@@ -854,7 +891,8 @@ testGetCapabilities (virConnectPtr conn)
 int testNumOfDomains(virConnectPtr conn)
 {
     int numActive = 0, i;
-    testCon *con = &node->connections[conn->handle];
+    testPrivatePtr priv = (testPrivatePtr) conn->privateData;
+    testCon *con = &node->connections[priv->handle];
     for (i = 0 ; i < MAX_DOMAINS ; i++) {
         if (!con->domains[i].active ||
             con->domains[i].info.state == VIR_DOMAIN_SHUTOFF)
@@ -871,6 +909,7 @@ testDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
     testCon *con;
     int domid, handle = -1, i;
     virDomainPtr dom;
+    testPrivatePtr priv;
 
     if (!VIR_IS_CONNECT(conn)) {
         testError(conn, NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
@@ -884,8 +923,10 @@ testDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
         testError(conn, NULL, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
         return (NULL);
     }
+
+    priv = (testPrivatePtr) conn->privateData;
   
-    con = &node->connections[conn->handle];
+    con = &node->connections[priv->handle];
 
     if (con->numDomains == MAX_DOMAINS) {
         testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("too many domains"));
@@ -914,7 +955,8 @@ testDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
 virDomainPtr testLookupDomainByID(virConnectPtr conn,
                                   int id)
 {
-    testCon *con = &node->connections[conn->handle];
+    testPrivatePtr priv = (testPrivatePtr) conn->privateData;
+    testCon *con = &node->connections[priv->handle];
     virDomainPtr dom;
     int i, idx = -1;
 
@@ -942,7 +984,8 @@ virDomainPtr testLookupDomainByID(virConnectPtr conn,
 virDomainPtr testLookupDomainByUUID(virConnectPtr conn,
                                     const unsigned char *uuid)
 {
-    testCon *con = &node->connections[conn->handle];
+    testPrivatePtr priv = (testPrivatePtr) conn->privateData;
+    testCon *con = &node->connections[priv->handle];
     virDomainPtr dom = NULL;
     int i, idx = -1;
     for (i = 0 ; i < MAX_DOMAINS ; i++) {
@@ -966,7 +1009,8 @@ virDomainPtr testLookupDomainByUUID(virConnectPtr conn,
 virDomainPtr testLookupDomainByName(virConnectPtr conn,
                                     const char *name)
 {
-    testCon *con = &node->connections[conn->handle];
+    testPrivatePtr priv = (testPrivatePtr) conn->privateData;
+    testCon *con = &node->connections[priv->handle];
     virDomainPtr dom = NULL;
     int i, idx = -1;
     for (i = 0 ; i < MAX_DOMAINS ; i++) {
@@ -991,7 +1035,8 @@ int testListDomains (virConnectPtr conn,
                      int *ids,
                      int maxids)
 {
-    testCon *con = &node->connections[conn->handle];
+    testPrivatePtr priv = (testPrivatePtr) conn->privateData;
+    testCon *con = &node->connections[priv->handle];
     int n, i;
 
     for (i = 0, n = 0 ; i < MAX_DOMAINS && n < maxids ; i++) {
@@ -1007,6 +1052,8 @@ int testDestroyDomain (virDomainPtr domain)
 {
     testCon *con;
     int domidx;
+    testPrivatePtr priv;
+
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
         ((domidx = getDomainIndex(domain)) < 0)) {
         testError((domain ? domain->conn : NULL), domain, VIR_ERR_INVALID_ARG,
@@ -1018,7 +1065,9 @@ int testDestroyDomain (virDomainPtr domain)
         return (-1);
     }
 
-    con = &node->connections[domain->conn->handle];
+    priv = (testPrivatePtr) domain->conn->privateData;
+
+    con = &node->connections[priv->handle];
     con->domains[domidx].active = 0;
     return (0);
 }
@@ -1027,6 +1076,8 @@ int testResumeDomain (virDomainPtr domain)
 {
     testCon *con;
     int domidx;
+    testPrivatePtr priv;
+
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
         ((domidx = getDomainIndex(domain)) < 0)) {
         testError((domain ? domain->conn : NULL), domain, VIR_ERR_INVALID_ARG,
@@ -1038,7 +1089,9 @@ int testResumeDomain (virDomainPtr domain)
         return (-1);
     }
 
-    con = &node->connections[domain->conn->handle];
+    priv = (testPrivatePtr) domain->conn->privateData;
+
+    con = &node->connections[priv->handle];
     con->domains[domidx].info.state = VIR_DOMAIN_RUNNING;
     return (0);
 }
@@ -1047,6 +1100,8 @@ int testPauseDomain (virDomainPtr domain)
 {
     testCon *con;\
     int domidx;
+    testPrivatePtr priv;
+
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
         ((domidx = getDomainIndex(domain)) < 0)) {
         testError((domain ? domain->conn : NULL), domain, VIR_ERR_INVALID_ARG,
@@ -1058,7 +1113,9 @@ int testPauseDomain (virDomainPtr domain)
         return (-1);
     }
 
-    con = &node->connections[domain->conn->handle];
+    priv = (testPrivatePtr) domain->conn->privateData;
+
+    con = &node->connections[priv->handle];
     con->domains[domidx].info.state = VIR_DOMAIN_PAUSED;
     return (0);
 }
@@ -1072,6 +1129,8 @@ int testShutdownDomain (virDomainPtr domain)
     testCon *con;
     int domidx;
     struct timeval tv;
+    testPrivatePtr priv;
+
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
         ((domidx = getDomainIndex(domain)) < 0)) {
         testError((domain ? domain->conn : NULL), domain, VIR_ERR_INVALID_ARG,
@@ -1083,7 +1142,9 @@ int testShutdownDomain (virDomainPtr domain)
         return (-1);
     }
 
-    con = &node->connections[domain->conn->handle];
+    priv = (testPrivatePtr) domain->conn->privateData;
+
+    con = &node->connections[priv->handle];
 
     if (gettimeofday(&tv, NULL) < 0) {
         testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("getting time of day"));
@@ -1103,6 +1164,8 @@ int testRebootDomain (virDomainPtr domain, virDomainRestart action)
     testCon *con;
     int domidx;
     struct timeval tv;
+    testPrivatePtr priv;
+
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
         ((domidx = getDomainIndex(domain)) < 0)) {
         testError((domain ? domain->conn : NULL), domain, VIR_ERR_INVALID_ARG,
@@ -1114,7 +1177,8 @@ int testRebootDomain (virDomainPtr domain, virDomainRestart action)
         return (-1);
     }
 
-    con = &node->connections[domain->conn->handle];
+    priv = (testPrivatePtr) domain->conn->privateData;
+    con = &node->connections[priv->handle];
 
     if (gettimeofday(&tv, NULL) < 0) {
         testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("getting time of day"));
@@ -1158,6 +1222,8 @@ int testGetDomainInfo (virDomainPtr domain,
     struct timeval tv;
     testCon *con;
     int domidx;
+    testPrivatePtr priv;
+
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
         ((domidx = getDomainIndex(domain)) < 0)) {
         testError((domain ? domain->conn : NULL), domain, VIR_ERR_INVALID_ARG,
@@ -1165,7 +1231,8 @@ int testGetDomainInfo (virDomainPtr domain,
         return (-1);
     }
 
-    con = &node->connections[domain->conn->handle];
+    priv = (testPrivatePtr) domain->conn->privateData;
+    con = &node->connections[priv->handle];
 
     if (gettimeofday(&tv, NULL) < 0) {
         testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("getting time of day"));
@@ -1189,6 +1256,8 @@ char *testGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED) {
 unsigned long testGetMaxMemory(virDomainPtr domain) {
     testCon *con;
     int domidx;
+    testPrivatePtr priv;
+
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
         ((domidx = getDomainIndex(domain)) < 0)) {
         testError((domain ? domain->conn : NULL), domain, VIR_ERR_INVALID_ARG,
@@ -1196,7 +1265,8 @@ unsigned long testGetMaxMemory(virDomainPtr domain) {
         return (-1);
     }
 
-    con = &node->connections[domain->conn->handle];
+    priv = (testPrivatePtr) domain->conn->privateData;
+    con = &node->connections[priv->handle];
     return con->domains[domidx].info.maxMem;
 }
 
@@ -1205,6 +1275,8 @@ int testSetMaxMemory(virDomainPtr domain,
 {
     testCon *con;
     int domidx;
+    testPrivatePtr priv;
+
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
         ((domidx = getDomainIndex(domain)) < 0)) {
         testError((domain ? domain->conn : NULL), domain, VIR_ERR_INVALID_ARG,
@@ -1216,7 +1288,8 @@ int testSetMaxMemory(virDomainPtr domain,
         return (-1);
     }
 
-    con = &node->connections[domain->conn->handle];
+    priv = (testPrivatePtr) domain->conn->privateData;
+    con = &node->connections[priv->handle];
     /* XXX validate not over host memory wrt to other domains */
     con->domains[domidx].info.maxMem = memory;
     return (0);
@@ -1227,6 +1300,8 @@ int testSetMemory(virDomainPtr domain,
 {
     testCon *con;
     int domidx;
+    testPrivatePtr priv;
+
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
         ((domidx = getDomainIndex(domain)) < 0)) {
         testError((domain ? domain->conn : NULL), domain, VIR_ERR_INVALID_ARG,
@@ -1238,7 +1313,8 @@ int testSetMemory(virDomainPtr domain,
         return (-1);
     }
 
-    con = &node->connections[domain->conn->handle];
+    priv = (testPrivatePtr) domain->conn->privateData;
+    con = &node->connections[priv->handle];
 
     if (memory > con->domains[domidx].info.maxMem) {
         testError(domain->conn, domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
@@ -1253,6 +1329,8 @@ int testSetVcpus(virDomainPtr domain,
                  unsigned int nrCpus) {
     testCon *con;
     int domidx;
+    testPrivatePtr priv;
+
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
         ((domidx = getDomainIndex(domain)) < 0)) {
         testError((domain ? domain->conn : NULL), domain, VIR_ERR_INVALID_ARG,
@@ -1264,7 +1342,8 @@ int testSetVcpus(virDomainPtr domain,
         return (-1);
     }
 
-    con = &node->connections[domain->conn->handle];
+    priv = (testPrivatePtr) domain->conn->privateData;
+    con = &node->connections[priv->handle];
 
     /* We allow more cpus in guest than host */
     if (nrCpus > 32) {
@@ -1283,6 +1362,8 @@ char * testDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
     unsigned char *uuid;
     testCon *con;
     int domidx;
+    testPrivatePtr priv;
+
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
         ((domidx = getDomainIndex(domain)) < 0)) {
         testError((domain ? domain->conn : NULL), domain, VIR_ERR_INVALID_ARG,
@@ -1290,7 +1371,8 @@ char * testDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
         return (NULL);
     }
 
-    con = &node->connections[domain->conn->handle];
+    priv = (testPrivatePtr) domain->conn->privateData;
+    con = &node->connections[priv->handle];
 
     if (!(buf = virBufferNew(4000))) {
         return (NULL);
@@ -1323,7 +1405,8 @@ char * testDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
 
 int testNumOfDefinedDomains(virConnectPtr conn) {
     int numInactive = 0, i;
-    testCon *con = &node->connections[conn->handle];
+    testPrivatePtr priv = (testPrivatePtr) conn->privateData;
+    testCon *con = &node->connections[priv->handle];
     for (i = 0 ; i < MAX_DOMAINS ; i++) {
         if (!con->domains[i].active ||
             con->domains[i].info.state != VIR_DOMAIN_SHUTOFF)
@@ -1336,7 +1419,8 @@ int testNumOfDefinedDomains(virConnectPtr conn) {
 int testListDefinedDomains(virConnectPtr conn,
                            char **const names,
                            int maxnames) {
-    testCon *con = &node->connections[conn->handle];
+    testPrivatePtr priv = (testPrivatePtr) conn->privateData;
+    testCon *con = &node->connections[priv->handle];
     int n = 0, i;
 
     for (i = 0, n = 0 ; i < MAX_DOMAINS && n < maxnames ; i++) {
@@ -1375,6 +1459,8 @@ virDomainPtr testDomainDefineXML(virConnectPtr conn,
 int testDomainCreate(virDomainPtr domain) {
     testCon *con;
     int domidx;
+    testPrivatePtr priv;
+
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
         ((domidx = getDomainIndex(domain)) < 0)) {
         testError((domain ? domain->conn : NULL), domain, VIR_ERR_INVALID_ARG,
@@ -1382,7 +1468,8 @@ int testDomainCreate(virDomainPtr domain) {
         return (-1);
     }
 
-    con = &node->connections[domain->conn->handle];
+    priv = (testPrivatePtr) domain->conn->privateData;
+    con = &node->connections[priv->handle];
 
     if (con->domains[domidx].info.state != VIR_DOMAIN_SHUTOFF) {
         testError(domain->conn, domain, VIR_ERR_INTERNAL_ERROR,
@@ -1399,6 +1486,8 @@ int testDomainCreate(virDomainPtr domain) {
 int testDomainUndefine(virDomainPtr domain) {
     testCon *con;
     int domidx;
+    testPrivatePtr priv;
+
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
         ((domidx = getDomainIndex(domain)) < 0)) {
         testError((domain ? domain->conn : NULL), domain, VIR_ERR_INVALID_ARG,
@@ -1406,7 +1495,8 @@ int testDomainUndefine(virDomainPtr domain) {
         return (-1);
     }
 
-    con = &node->connections[domain->conn->handle];
+    priv = (testPrivatePtr) domain->conn->privateData;
+    con = &node->connections[priv->handle];
 
     if (con->domains[domidx].info.state != VIR_DOMAIN_SHUTOFF) {
         testError(domain->conn, domain, VIR_ERR_INTERNAL_ERROR,

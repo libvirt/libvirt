@@ -27,12 +27,15 @@
 
 #include "libvirt/libvirt.h"
 #include "conf.h"
+#include "internal.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void xenXMRegister(void);
+extern virDriver xenXMDriver;
+int xenXMInit (void);
+
 int xenXMOpen(virConnectPtr conn, const char *name, int flags);
 int xenXMClose(virConnectPtr conn);
 const char *xenXMGetType(virConnectPtr conn);

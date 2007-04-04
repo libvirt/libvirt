@@ -36,6 +36,7 @@
 #include <libxml/xpath.h>
 
 
+#include "xen_unified.h"
 #include "xm_internal.h"
 #include "xend_internal.h"
 #include "conf.h"
@@ -66,8 +67,8 @@ static time_t lastRefresh = 0;
 #define XEND_PCI_CONFIG_PREFIX "xend-pci-"
 #define QEMU_IF_SCRIPT "qemu-ifup"
 
-static virDriver xenXMDriver = {
-    VIR_DRV_XEN_XM,
+virDriver xenXMDriver = {
+    -1,
     "XenXM",
     (DOM0_INTERFACE_VERSION >> 24) * 1000000 +
     ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +
@@ -127,11 +128,11 @@ xenXMError(virConnectPtr conn, virErrorNumber error, const char *info)
                     errmsg, info, NULL, 0, 0, errmsg, info);
 }
 
-void xenXMRegister(void)
+int
+xenXMInit (void)
 {
     char *envConfigDir;
     int safeMode = 0;
-    virRegisterDriver(&xenXMDriver);
 
     /* Disable use of env variable if running setuid */
     if ((geteuid() != getuid()) ||
@@ -145,6 +146,8 @@ void xenXMRegister(void)
     } else {
         strcpy(configDir, XM_CONFIG_DIR);
     }
+
+    return 0;
 }
 
 
@@ -472,12 +475,10 @@ static int xenXMConfigCacheRefresh(void) {
  * We only support a single directory, so repeated calls
  * to open all end up using the same cache of files
  */
-int xenXMOpen(virConnectPtr conn ATTRIBUTE_UNUSED, const char *name, int flags ATTRIBUTE_UNUSED) {
-    if (name &&
-        strcasecmp(name, "xen")) {
-        return (-1);
-    }
-
+int
+xenXMOpen (virConnectPtr conn ATTRIBUTE_UNUSED,
+           const char *name ATTRIBUTE_UNUSED, int flags ATTRIBUTE_UNUSED)
+{
     if (nconnections == 0) {
         configCache = virHashCreate(50);
         if (!configCache)
@@ -584,6 +585,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
     const char *vnclisten = NULL;
     const char *vncpasswd = NULL;
     const char *keymap = NULL;
+    xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
 
     if (xenXMConfigGetString(conf, "name", &name) < 0)
         return (NULL);
@@ -798,7 +800,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
         }
     }
 
-    if (hvm && conn->xendConfigVersion == 1) {
+    if (hvm && priv->xendConfigVersion == 1) {
         if (xenXMConfigGetString(conf, "cdrom", &str) == 0) {
             virBufferAdd(buf, "    <disk type='file' device='cdrom'>\n", -1);
             virBufferAdd(buf, "      <driver name='file'/>\n", -1);
@@ -884,7 +886,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
     }
 
     /* HVM guests, or old PV guests use this config format */
-    if (hvm || conn->xendConfigVersion < 3) {
+    if (hvm || priv->xendConfigVersion < 3) {
         if (xenXMConfigGetInt(conf, "vnc", &val) == 0 && val) {
             vnc = 1;
             if (xenXMConfigGetInt(conf, "vncunused", &vncunused) < 0)
@@ -1282,6 +1284,7 @@ int xenXMDomainCreate(virDomainPtr domain) {
     char *sexpr;
     int ret;
     unsigned char uuid[VIR_UUID_BUFLEN];
+    xenUnifiedPrivatePtr priv;
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         xenXMError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
@@ -1297,7 +1300,9 @@ int xenXMDomainCreate(virDomainPtr domain) {
     if (!(xml = xenXMDomainDumpXML(domain, 0)))
         return (-1);
 
-    if (!(sexpr = virDomainParseXMLDesc(domain->conn, xml, NULL, domain->conn->xendConfigVersion))) {
+    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
+
+    if (!(sexpr = virDomainParseXMLDesc(domain->conn, xml, NULL, priv->xendConfigVersion))) {
         free(xml);
         return (-1);
     }
@@ -1714,6 +1719,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
     xmlChar *prop = NULL;
     virConfPtr conf = NULL;
     int hvm = 0, i;
+    xenUnifiedPrivatePtr priv;
 
     doc = xmlReadDoc((const xmlChar *) xml, "domain.xml", NULL,
                      XML_PARSE_NOENT | XML_PARSE_NONET |
@@ -1778,6 +1784,8 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
         hvm = 1;
     xmlXPathFreeObject(obj);
 
+    priv = (xenUnifiedPrivatePtr) conn->privateData;
+
     if (hvm) {
         const char *boot = "c";
         if (xenXMConfigSetString(conf, "builder", "hvm") < 0)
@@ -1813,7 +1821,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
                                        "cannot set the apic parameter") < 0)
             goto error;
 
-        if (conn->xendConfigVersion == 1) {
+        if (priv->xendConfigVersion == 1) {
             if (xenXMConfigSetStringFromXPath(conn, conf, ctxt, "cdrom", "string(/domain/devices/disk[@device='cdrom']/source/@file)", 1,
                                               "cannot set the cdrom parameter") < 0)
                 goto error;
@@ -1854,7 +1862,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
 
     }
 
-    if (hvm || conn->xendConfigVersion < 3) {
+    if (hvm || priv->xendConfigVersion < 3) {
         if (xenXMConfigSetIntFromXPath(conn, conf, ctxt, "sdl", "string(count(/domain/devices/graphics[@type='sdl']))", 0, 0,
                                        "cannot set the sdl parameter") < 0)
             goto error;
@@ -1977,7 +1985,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
         for (i = obj->nodesetval->nodeNr -1 ; i >= 0 ; i--) {
             virConfValuePtr thisDisk;
             char *disk = NULL;
-            if (xenXMParseXMLDisk(obj->nodesetval->nodeTab[i], hvm, conn->xendConfigVersion, &disk) < 0)
+            if (xenXMParseXMLDisk(obj->nodesetval->nodeTab[i], hvm, priv->xendConfigVersion, &disk) < 0)
                 goto error;
             if (disk) {
                 if (!(thisDisk = malloc(sizeof(virConfValue)))) {

@@ -25,6 +25,7 @@
 #include "xen_internal.h"
 #include "xend_internal.h"
 #include "xs_internal.h"
+#include "xen_unified.h"
 
 static int fdServer = -1;
 static int debug = 0;
@@ -58,6 +59,23 @@ static int
 proxyInitXen(void) {
     int ret;
     unsigned long xenVersion2;
+    xenUnifiedPrivatePtr priv;
+
+    /* Allocate per-connection private data. */
+    priv = malloc (sizeof *priv);
+    if (!priv) {
+        fprintf(stderr, "Failed to allocate private data\n");
+        return(-1);
+    }
+    conn->privateData = priv;
+
+    priv->handle = -1;
+    priv->xendConfigVersion = -1;
+    priv->type = -1;
+    priv->len = -1;
+    priv->addr = NULL;
+    priv->xshandle = NULL;
+    priv->proxy = -1;
 
     ret = xenHypervisorOpen(conn, NULL, VIR_DRV_OPEN_QUIET);
     if (ret < 0) {

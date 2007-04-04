@@ -84,10 +84,9 @@ struct _virProxyFullPacket {
 };
 typedef struct _virProxyFullPacket virProxyFullPacket;
 typedef  virProxyFullPacket *virProxyFullPacketPtr;
-/*
- * Functions callable from libvirt library
- */
-void xenProxyRegister(void);
+
+extern virDriver xenProxyDriver;
+int xenProxyInit (void);
 
 #ifdef __cplusplus
 }

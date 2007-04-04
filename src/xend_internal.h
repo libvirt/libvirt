@@ -177,8 +177,10 @@ char *xenDaemonDomainDumpXMLByName(virConnectPtr xend,
 
   char *xend_parse_domain_sexp(virConnectPtr conn,  char *root, int xendConfigVersion);
 
+extern virDriver xenDaemonDriver;
+int xenDaemonInit (void);
+
 /* refactored ones */
-void xenDaemonRegister(void);
 int xenDaemonOpen(virConnectPtr conn, const char *name, int flags);
 int xenDaemonClose(virConnectPtr conn);
 int xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer);

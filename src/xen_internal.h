@@ -15,7 +15,11 @@
 extern "C" {
 #endif
 
-void	xenHypervisorRegister		(void);
+extern virDriver xenHypervisorDriver;
+int	xenHypervisorInit		(void);
+
+/* The following calls are made directly by the Xen proxy: */
+
 int	xenHypervisorOpen		(virConnectPtr conn,
 					 const char *name,
 					 int flags);
@@ -36,7 +40,7 @@ int	xenHypervisorNumOfDomains	(virConnectPtr conn);
 int	xenHypervisorListDomains	(virConnectPtr conn,
 					 int *ids,
 					 int maxids);
-int	xenHypervisorNumOfMaxVcpus	(virConnectPtr conn);
+  int	xenHypervisorGetMaxVcpus	(virConnectPtr conn, const char *type);
 int	xenHypervisorDestroyDomain	(virDomainPtr domain);
 int	xenHypervisorResumeDomain	(virDomainPtr domain);
 int	xenHypervisorPauseDomain	(virDomainPtr domain);

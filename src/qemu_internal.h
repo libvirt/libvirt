@@ -30,7 +30,7 @@
 extern "C" {
 #endif
 
-    void qemuRegister(void);
+int qemuRegister(void);
 
 #ifdef __cplusplus
 }
