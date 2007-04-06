@@ -17,9 +17,6 @@
 #ifdef WITH_XEN
 #include <xs.h>
 #endif
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
 #include <math.h> /* for isnan() */
 #include "internal.h"
 #include "hash.h"
@@ -27,6 +24,15 @@
 #include "xml.h"
 #include "xs_internal.h" /* for xenStoreDomainGetNetworkID */
 
+/**
+ * virXMLError:
+ * @conn: a connection if any
+ * @error: the error number
+ * @info: information/format string
+ * @value: extra integer parameter for the error string
+ *
+ * Report an error coming from the XML module.
+ */
 static void
 virXMLError(virConnectPtr conn, virErrorNumber error, const char *info, int value)
 {
@@ -39,6 +45,227 @@ virXMLError(virConnectPtr conn, virErrorNumber error, const char *info, int valu
     __virRaiseError(conn, NULL, NULL, VIR_FROM_XML, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, value, 0, errmsg, info, value);
 }
+
+#ifndef PROXY
+/**
+ * virXPathString:
+ * @xpath: the XPath string to evaluate
+ * @ctxt: an XPath context
+ *
+ * Convenience function to evaluate an XPath string
+ *
+ * Returns a new string which must be deallocated by the caller or NULL
+ *         if the evaluation failed.
+ */
+char *
+virXPathString(const char *xpath, xmlXPathContextPtr ctxt) {
+    xmlXPathObjectPtr obj;
+    char *ret;
+
+    if ((ctxt == NULL) || (xpath == NULL)) {
+        virXMLError(NULL, VIR_ERR_INTERNAL_ERROR, 
+	            "Invalid parameter to virXPathString()", 0);
+        return(NULL);
+    }
+    obj = xmlXPathEval(BAD_CAST xpath, ctxt);
+    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
+        (obj->stringval == NULL) || (obj->stringval[0] == 0))
+        return(NULL);
+    ret = strdup((char *) obj->stringval);
+    xmlXPathFreeObject(obj);
+    if (ret == NULL) {
+        virXMLError(NULL, VIR_ERR_NO_MEMORY, "strdup", 0);
+    }
+    return(ret);
+}
+
+/**
+ * virXPathNumber:
+ * @xpath: the XPath string to evaluate
+ * @ctxt: an XPath context
+ * @value: the returned double value
+ *
+ * Convenience function to evaluate an XPath number
+ *
+ * Returns 0 in case of success in which case @value is set,
+ *         or -1 if the evaluation failed.
+ */
+int
+virXPathNumber(const char *xpath, xmlXPathContextPtr ctxt, double *value) {
+    xmlXPathObjectPtr obj;
+
+    if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
+        virXMLError(NULL, VIR_ERR_INTERNAL_ERROR, 
+	            "Invalid parameter to virXPathNumber()", 0);
+        return(-1);
+    }
+    obj = xmlXPathEval(BAD_CAST xpath, ctxt);
+    if ((obj == NULL) || (obj->type != XPATH_NUMBER) ||
+        (isnan(obj->floatval))) {
+	xmlXPathFreeObject(obj);
+	return(-1);
+    }
+    
+    *value = obj->floatval;
+    xmlXPathFreeObject(obj);
+    return(0);
+}
+
+/**
+ * virXPathLong:
+ * @xpath: the XPath string to evaluate
+ * @ctxt: an XPath context
+ * @value: the returned long value
+ *
+ * Convenience function to evaluate an XPath number
+ *
+ * Returns 0 in case of success in which case @value is set,
+ *         or -1 if the evaluation failed.
+ */
+int
+virXPathLong(const char *xpath, xmlXPathContextPtr ctxt, long *value) {
+    xmlXPathObjectPtr obj;
+    int ret = 0;
+
+    if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
+        virXMLError(NULL, VIR_ERR_INTERNAL_ERROR, 
+	            "Invalid parameter to virXPathNumber()", 0);
+        return(-1);
+    }
+    obj = xmlXPathEval(BAD_CAST xpath, ctxt);
+    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
+        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
+        char *conv = NULL;
+	long val;
+
+        val = strtol((const char*)obj->stringval, &conv, 10);
+        if (conv == (const char*)obj->stringval) {
+            ret = -2;
+        } else {
+	    *value = val;
+	}
+    } else if ((obj != NULL) && (obj->type == XPATH_NUMBER) &&
+               (!(isnan(obj->floatval)))) {
+	*value = (long) obj->floatval;
+	if (*value != obj->floatval) {
+	    ret = -2;
+	}
+    } else {
+	ret = -1;
+    }
+    
+    xmlXPathFreeObject(obj);
+    return(ret);
+}
+
+/**
+ * virXPathBoolean:
+ * @xpath: the XPath string to evaluate
+ * @ctxt: an XPath context
+ *
+ * Convenience function to evaluate an XPath boolean
+ *
+ * Returns 0 if false, 1 if true, or -1 if the evaluation failed.
+ */
+int
+virXPathBoolean(const char *xpath, xmlXPathContextPtr ctxt) {
+    xmlXPathObjectPtr obj;
+    int ret;
+
+    if ((ctxt == NULL) || (xpath == NULL)) {
+        virXMLError(NULL, VIR_ERR_INTERNAL_ERROR, 
+	            "Invalid parameter to virXPathBoolean()", 0);
+        return(-1);
+    }
+    obj = xmlXPathEval(BAD_CAST xpath, ctxt);
+    if ((obj == NULL) || (obj->type != XPATH_BOOLEAN) ||
+        (obj->boolval < 0) || (obj->boolval > 1)) {
+	xmlXPathFreeObject(obj);
+	return(-1);
+    }
+    ret = obj->boolval;
+    
+    xmlXPathFreeObject(obj);
+    return(ret);
+}
+
+/**
+ * virXPathNode:
+ * @xpath: the XPath string to evaluate
+ * @ctxt: an XPath context
+ *
+ * Convenience function to evaluate an XPath node set and returning
+ * only one node, the first one in the set if any
+ *
+ * Returns a pointer to the node or NULL if the evaluation failed.
+ */
+xmlNodePtr
+virXPathNode(const char *xpath, xmlXPathContextPtr ctxt) {
+    xmlXPathObjectPtr obj;
+    xmlNodePtr ret;
+
+    if ((ctxt == NULL) || (xpath == NULL)) {
+        virXMLError(NULL, VIR_ERR_INTERNAL_ERROR, 
+	            "Invalid parameter to virXPathNode()", 0);
+        return(NULL);
+    }
+    obj = xmlXPathEval(BAD_CAST xpath, ctxt);
+    if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
+        (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr <= 0) ||
+	(obj->nodesetval->nodeTab == NULL)) {
+	xmlXPathFreeObject(obj);
+	return(NULL);
+    }
+    
+    ret = obj->nodesetval->nodeTab[0];
+    xmlXPathFreeObject(obj);
+    return(ret);
+}
+/**
+ * virXPathNodeSet:
+ * @xpath: the XPath string to evaluate
+ * @ctxt: an XPath context
+ * @list: the returned list of nodes (or NULL if only count matters)
+ *
+ * Convenience function to evaluate an XPath node set
+ *
+ * Returns the number of nodes found in which case @list is set (and
+ *         must be freed) or -1 if the evaluation failed.
+ */
+int
+virXPathNodeSet(const char *xpath, xmlXPathContextPtr ctxt, xmlNodePtr **list) {
+    xmlXPathObjectPtr obj;
+    int ret;
+
+    if ((ctxt == NULL) || (xpath == NULL)) {
+        virXMLError(NULL, VIR_ERR_INTERNAL_ERROR, 
+	            "Invalid parameter to virXPathNodeSet()", 0);
+        return(-1);
+    }
+    obj = xmlXPathEval(BAD_CAST xpath, ctxt);
+    if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
+        (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr <= 0) ||
+	(obj->nodesetval->nodeTab == NULL)) {
+	xmlXPathFreeObject(obj);
+	if (list != NULL)
+	    *list = NULL;
+	return(-1);
+    }
+    
+    ret = obj->nodesetval->nodeNr;
+    if (list != NULL) {
+	*list = malloc(ret * sizeof(xmlNodePtr));
+	if (*list == NULL) {
+	    virXMLError(NULL, VIR_ERR_NO_MEMORY, 
+	                _("allocate string array"), ret * sizeof(xmlNodePtr));
+	} else {
+	    memcpy(*list, obj->nodesetval->nodeTab, ret * sizeof(xmlNodePtr));
+	}
+    }
+    xmlXPathFreeObject(obj);
+    return(ret);
+}
+#endif /* !PROXY */
 
 /**
  * virBufferGrow:
@@ -360,12 +587,12 @@ static int virDomainParseXMLGraphicsDescVFB(virConnectPtr conn ATTRIBUTE_UNUSED,
 static int
 virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr ctxt, int vcpus, int xendConfigVersion)
 {
-    xmlXPathObjectPtr obj = NULL;
     xmlNodePtr cur, txt;
     xmlChar *type = NULL;
     xmlChar *loader = NULL;
     xmlChar *boot_dev = NULL;
     int res;
+    char *str;
 
     cur = node->children;
     while (cur != NULL) {
@@ -403,16 +630,13 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf
     }
 
     /* get the device emulation model */
-    obj = xmlXPathEval(BAD_CAST "string(/domain/devices/emulator[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
-        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
+    str = virXPathString("string(/domain/devices/emulator[1])", ctxt);
+    if (str == NULL) {
         virXMLError(conn, VIR_ERR_NO_KERNEL, NULL, 0); /* TODO: error */
         goto error;
     }
-    virBufferVSprintf(buf, "(device_model '%s')",
-                      (const char *) obj->stringval);
-    xmlXPathFreeObject(obj);
-    obj = NULL;
+    virBufferVSprintf(buf, "(device_model '%s')", str);
+    xmlFree(str);
 
     virBufferVSprintf(buf, "(vcpus %d)", vcpus);
 
@@ -429,102 +653,78 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf
         }
 
         /* get the 1st floppy device file */
-        obj = xmlXPathEval(BAD_CAST "/domain/devices/disk[@device='floppy' and target/@dev='fda']/source", ctxt);
-        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
-            cur = obj->nodesetval->nodeTab[0];
-            virBufferVSprintf(buf, "(fda '%s')",
-                              (const char *) xmlGetProp(cur, BAD_CAST "file"));
-            cur = NULL;
-        }
-        if (obj) {
-            xmlXPathFreeObject(obj);
-            obj = NULL;
+	cur = virXPathNode(
+	  "/domain/devices/disk[@device='floppy' and target/@dev='fda']/source",
+			   ctxt);
+	if (cur != NULL) {
+            xmlChar *fdfile;
+
+            fdfile = xmlGetProp(cur, BAD_CAST "file");
+	    if (fdfile != NULL) {
+		virBufferVSprintf(buf, "(fda '%s')", fdfile);
+		free(fdfile);
+	    }
         }
 
         /* get the 2nd floppy device file */
-        obj = xmlXPathEval(BAD_CAST "/domain/devices/disk[@device='floppy' and target/@dev='fdb']/source", ctxt);
-        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
-            xmlChar *fdfile = NULL;
-            cur = obj->nodesetval->nodeTab[0];
+	cur = virXPathNode(
+	  "/domain/devices/disk[@device='floppy' and target/@dev='fdb']/source",
+			   ctxt);
+	if (cur != NULL) {
+            xmlChar *fdfile;
+
             fdfile = xmlGetProp(cur, BAD_CAST "file");
-            virBufferVSprintf(buf, "(fdb '%s')",
-                              (const char *) fdfile);
-            xmlFree(fdfile);
-            cur = NULL;
-        }
-        if (obj) {
-            xmlXPathFreeObject(obj);
-            obj = NULL;
+	    if (fdfile != NULL) {
+		virBufferVSprintf(buf, "(fdb '%s')", fdfile);
+		free(fdfile);
+	    }
         }
 
 
         /* get the cdrom device file */
         /* Only XenD <= 3.0.2 wants cdrom config here */
         if (xendConfigVersion == 1) {
-            obj = xmlXPathEval(BAD_CAST "/domain/devices/disk[@device='cdrom' and target/@dev='hdc']/source", ctxt);
-            if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-                (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
-                xmlChar *cdfile = NULL;
-                cur = obj->nodesetval->nodeTab[0];
+	    cur = virXPathNode(
+	"/domain/devices/disk[@device='cdrom' and target/@dev='hdc']/source",
+	                       ctxt);
+	    if (cur != NULL) {
+                xmlChar *cdfile;
+
                 cdfile = xmlGetProp(cur, BAD_CAST "file");
-                virBufferVSprintf(buf, "(cdrom '%s')",
-                                  (const char *)cdfile);
-                xmlFree(cdfile);
-                cur = NULL;
-            }
-            if (obj) {
-                xmlXPathFreeObject(obj);
-                obj = NULL;
+		if (cdfile != NULL) {
+		    virBufferVSprintf(buf, "(cdrom '%s')",
+				      (const char *)cdfile);
+		    xmlFree(cdfile);
+		}
             }
         }
 
-        obj = xmlXPathEval(BAD_CAST "/domain/features/acpi", ctxt);
-        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+        if (virXPathNode("/domain/features/acpi", ctxt) != NULL)
             virBufferAdd(buf, "(acpi 1)", 8);
-        }
-        if (obj)
-            xmlXPathFreeObject(obj);
-        obj = xmlXPathEval(BAD_CAST "/domain/features/apic", ctxt);
-        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+        if (virXPathNode("/domain/features/apic", ctxt) != NULL)
             virBufferAdd(buf, "(apic 1)", 8);
-        }
-        if (obj)
-            xmlXPathFreeObject(obj);
-        obj = xmlXPathEval(BAD_CAST "/domain/features/pae", ctxt);
-        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+        if (virXPathNode("/domain/features/pae", ctxt) != NULL)
             virBufferAdd(buf, "(pae 1)", 7);
-        }
-        if (obj)
-            xmlXPathFreeObject(obj);
-        obj = NULL;
     }
 
-    obj = xmlXPathEval(BAD_CAST "count(domain/devices/console) > 0", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_BOOLEAN)) {
+    res = virXPathBoolean("count(domain/devices/console) > 0", ctxt);
+    if (res < 0) {
         virXMLError(conn, VIR_ERR_XML_ERROR, NULL, 0);
         goto error;
     }
-    if (obj->boolval) {
+    if (res) {
         virBufferAdd(buf, "(serial pty)", 12);
     }
-    xmlXPathFreeObject(obj);
-    obj = NULL;
 
     /* Is a graphics device specified? */
-    obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics[1]", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-        (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr > 0)) {
-        res = virDomainParseXMLGraphicsDescImage(conn, obj->nodesetval->nodeTab[0], buf, xendConfigVersion);
+    cur = virXPathNode("/domain/devices/graphics[1]", ctxt);
+    if (cur != NULL) {
+        res = virDomainParseXMLGraphicsDescImage(conn, cur, buf,
+	                                         xendConfigVersion);
         if (res != 0) {
             goto error;
         }
     }
-    xmlXPathFreeObject(obj);
 
     virBufferAdd(buf, "))", 2);
 
@@ -535,8 +735,6 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf
  error:
     if (boot_dev)
         xmlFree(boot_dev);
-    if (obj != NULL)
-        xmlXPathFreeObject(obj);
     return(-1);
 }
 
@@ -559,7 +757,6 @@ static int
 virDomainParseXMLOSDescPV(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr ctxt, int xendConfigVersion)
 {
     xmlNodePtr cur, txt;
-    xmlXPathObjectPtr obj = NULL;
     const xmlChar *type = NULL;
     const xmlChar *root = NULL;
     const xmlChar *kernel = NULL;
@@ -626,15 +823,14 @@ virDomainParseXMLOSDescPV(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf,
     /* Is a graphics device specified? */
     /* Old style config before merge of PVFB */
     if (xendConfigVersion < 3) {
-        obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics[1]", ctxt);
-        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr > 0)) {
-            res = virDomainParseXMLGraphicsDescImage(conn, obj->nodesetval->nodeTab[0], buf, xendConfigVersion);
+        cur = virXPathNode("/domain/devices/graphics[1]", ctxt);
+        if (cur != NULL) {
+            res = virDomainParseXMLGraphicsDescImage(conn, cur, buf,
+	                                             xendConfigVersion);
             if (res != 0) {
                 goto error;
             }
         }
-        xmlXPathFreeObject(obj);
     }
 
  error:
@@ -958,14 +1154,16 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
     virBuffer buf;
     xmlChar *prop;
     xmlParserCtxtPtr pctxt;
-    xmlXPathObjectPtr obj = NULL;
-    xmlXPathObjectPtr tmpobj = NULL;
     xmlXPathContextPtr ctxt = NULL;
     int i, res;
     int bootloader = 0;
     int hvm = 0;
     unsigned int vcpus = 1;
     unsigned long mem = 0, max_mem = 0;
+    char *str;
+    double f;
+    xmlNodePtr *nodes;
+    int nb_nodes;
 
     if (name != NULL)
         *name = NULL;
@@ -1012,117 +1210,90 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
     /*
      * extract some of the basics, name, memory, cpus ...
      */
-    obj = xmlXPathEval(BAD_CAST "string(/domain/name[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
-        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
+    nam = virXPathString("string(/domain/name[1])", ctxt);
+    if (nam == NULL) {
         virXMLError(conn, VIR_ERR_NO_NAME, xmldesc, 0);
         goto error;
     }
-    virBufferVSprintf(&buf, "(name '%s')", obj->stringval);
-    nam = strdup((const char *) obj->stringval);
-    if (nam == NULL) {
-        virXMLError(conn, VIR_ERR_NO_MEMORY, "copying name", 0);
-        goto error;
-    }
-    xmlXPathFreeObject(obj);
+    virBufferVSprintf(&buf, "(name '%s')", nam);
 
-    obj = xmlXPathEval(BAD_CAST "number(/domain/memory[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_NUMBER) ||
-        (isnan(obj->floatval)) || (obj->floatval < MIN_XEN_GUEST_SIZE * 1024)) {
+    if ((virXPathNumber("number(/domain/memory[1])", ctxt, &f) < 0) ||
+        (f < MIN_XEN_GUEST_SIZE * 1024)) {
         max_mem = 128;
     } else {
-        max_mem = (obj->floatval / 1024);
+        max_mem = (f / 1024);
     }
-    xmlXPathFreeObject(obj);
-    obj = xmlXPathEval(BAD_CAST "number(/domain/currentMemory[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_NUMBER) ||
-        (isnan(obj->floatval)) || (obj->floatval < MIN_XEN_GUEST_SIZE * 1024)) {
+
+    if ((virXPathNumber("number(/domain/currentMemory[1])", ctxt, &f) < 0) ||
+        (f < MIN_XEN_GUEST_SIZE * 1024)) {
         mem = max_mem;
     } else {
-        mem = (obj->floatval / 1024);
+        mem = (f / 1024);
         if (mem > max_mem) {
             max_mem = mem;
         }
     }
-    xmlXPathFreeObject(obj);
     virBufferVSprintf(&buf, "(memory %lu)(maxmem %lu)", mem, max_mem);
 
-    obj = xmlXPathEval(BAD_CAST "number(/domain/vcpu[1])", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_NUMBER) &&
-        (!isnan(obj->floatval)) && (obj->floatval > 0)) {
-        vcpus = (unsigned int) obj->floatval;
+    if ((virXPathNumber("number(/domain/vcpu[1])", ctxt, &f) == 0) &&
+        (f > 0)) {
+        vcpus = (unsigned int) f;
     }
     virBufferVSprintf(&buf, "(vcpus %u)", vcpus);
-    xmlXPathFreeObject(obj);
 
-    obj = xmlXPathEval(BAD_CAST "string(/domain/uuid[1])", ctxt);
-    if ((obj == NULL) || ((obj->type == XPATH_STRING) &&
-                          (obj->stringval != NULL) && (obj->stringval[0] != 0))) {
-        virBufferVSprintf(&buf, "(uuid '%s')", obj->stringval);
+    str = virXPathString("string(/domain/uuid[1])", ctxt);
+    if (str != NULL) {
+        virBufferVSprintf(&buf, "(uuid '%s')", str);
+	free(str);
     }
-    xmlXPathFreeObject(obj);
 
-    obj = xmlXPathEval(BAD_CAST "string(/domain/bootloader[1])", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        virBufferVSprintf(&buf, "(bootloader '%s')", obj->stringval);
+    str = virXPathString("string(/domain/bootloader[1])", ctxt);
+    if (str != NULL) {
+        virBufferVSprintf(&buf, "(bootloader '%s')", str);
         /*
          * if using pygrub, the kernel and initrd strings are not
          * significant and should be discarded
          */
-        if (xmlStrstr(obj->stringval, BAD_CAST "pygrub"))
+        if (strstr(str, "pygrub"))
             bootloader = 2;
         else
             bootloader = 1;
+	free(str);
     }
-    xmlXPathFreeObject(obj);
 
-    obj = xmlXPathEval(BAD_CAST "string(/domain/on_poweroff[1])", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        virBufferVSprintf(&buf, "(on_poweroff '%s')", obj->stringval);
+    str = virXPathString("string(/domain/on_poweroff[1])", ctxt);
+    if (str != NULL) {
+        virBufferVSprintf(&buf, "(on_poweroff '%s')", str);
+	free(str);
     }
-    xmlXPathFreeObject(obj);
 
-    obj = xmlXPathEval(BAD_CAST "string(/domain/on_reboot[1])", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        virBufferVSprintf(&buf, "(on_reboot '%s')", obj->stringval);
+    str = virXPathString("string(/domain/on_reboot[1])", ctxt);
+    if (str != NULL) {
+        virBufferVSprintf(&buf, "(on_reboot '%s')", str);
+	free(str);
     }
-    xmlXPathFreeObject(obj);
 
-    obj = xmlXPathEval(BAD_CAST "string(/domain/on_crash[1])", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        virBufferVSprintf(&buf, "(on_crash '%s')", obj->stringval);
+    str = virXPathString("string(/domain/on_crash[1])", ctxt);
+    if (str != NULL) {
+        virBufferVSprintf(&buf, "(on_crash '%s')", str);
+	free(str);
     }
-    xmlXPathFreeObject(obj);
 
     if (bootloader != 2) {
-        obj = xmlXPathEval(BAD_CAST "/domain/os[1]", ctxt);
-        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr == 1)) {
+        if ((node = virXPathNode("/domain/os[1]", ctxt)) != NULL) {
             /* Analyze of the os description, based on HVM or PV. */
-            tmpobj = xmlXPathEval(BAD_CAST "string(/domain/os/type[1])", ctxt);
-            if ((tmpobj != NULL) &&
-                ((tmpobj->type != XPATH_STRING) || (tmpobj->stringval == NULL)
-                 || (tmpobj->stringval[0] == 0))) {
-                xmlXPathFreeObject(tmpobj);
-                virXMLError(conn, VIR_ERR_OS_TYPE, nam, 0);
-                goto error;
-            }
+	    str = virXPathString("string(/domain/os/type[1])", ctxt);
 
-            if ((tmpobj == NULL)
-                || !xmlStrEqual(tmpobj->stringval, BAD_CAST "hvm")) {
-                res = virDomainParseXMLOSDescPV(conn, obj->nodesetval->nodeTab[0],
+            if ((str == NULL) || (strcmp(str, "hvm"))) {
+                res = virDomainParseXMLOSDescPV(conn, node,
                                                 &buf, ctxt, xendConfigVersion);
             } else {
                 hvm = 1;
-                res = virDomainParseXMLOSDescHVM(conn, obj->nodesetval->nodeTab[0],
-                                                 &buf, ctxt, vcpus, xendConfigVersion);
+                res = virDomainParseXMLOSDescHVM(conn, node, &buf, ctxt,
+		                                 vcpus, xendConfigVersion);
             }
 
-            xmlXPathFreeObject(tmpobj);
+            if (str != NULL) free(str);
 
             if (res != 0)
                 goto error;
@@ -1130,49 +1301,49 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
             virXMLError(conn, VIR_ERR_NO_OS, nam, 0);
             goto error;
         }
-        xmlXPathFreeObject(obj);
     }
 
     /* analyze of the devices */
-    obj = xmlXPathEval(BAD_CAST "/domain/devices/disk", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-        (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
-        for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-            res = virDomainParseXMLDiskDesc(conn, obj->nodesetval->nodeTab[i], &buf, hvm, xendConfigVersion);
+    nb_nodes = virXPathNodeSet("/domain/devices/disk", ctxt, &nodes);
+    if (nb_nodes > 0) {
+        for (i = 0; i < nb_nodes; i++) {
+            res = virDomainParseXMLDiskDesc(conn, nodes[i], &buf,
+	                                    hvm, xendConfigVersion);
             if (res != 0) {
+	        free(nodes);
                 goto error;
             }
         }
+	free(nodes);
     }
-    xmlXPathFreeObject(obj);
 
-    obj = xmlXPathEval(BAD_CAST "/domain/devices/interface", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-        (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
-        for (i = 0; i < obj->nodesetval->nodeNr; i++) {
+    nb_nodes = virXPathNodeSet("/domain/devices/interface", ctxt, &nodes);
+    if (nb_nodes > 0) {
+        for (i = 0; i < nb_nodes; i++) {
             virBufferAdd(&buf, "(device ", 8);
-            res = virDomainParseXMLIfDesc(conn, obj->nodesetval->nodeTab[i], &buf, hvm);
+            res = virDomainParseXMLIfDesc(conn, nodes[i], &buf, hvm);
             if (res != 0) {
+	        free(nodes);
                 goto error;
             }
             virBufferAdd(&buf, ")", 1);
         }
+	free(nodes);
     }
-    xmlXPathFreeObject(obj);
 
     /* New style PVFB config  - 3.0.4 merge */
     if (xendConfigVersion >= 3 && !hvm) {
-        obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics", ctxt);
-        if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-            (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
-            for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-                res = virDomainParseXMLGraphicsDescVFB(conn, obj->nodesetval->nodeTab[i], &buf);
+        nb_nodes = virXPathNodeSet("/domain/devices/graphics", ctxt, &nodes);
+	if (nb_nodes > 0) {
+            for (i = 0; i < nb_nodes; i++) {
+                res = virDomainParseXMLGraphicsDescVFB(conn, nodes[i], &buf);
                 if (res != 0) {
+		    free(nodes);
                     goto error;
                 }
             }
+	    free(nodes);
         }
-        xmlXPathFreeObject(obj);
     }
 
 
@@ -1195,8 +1366,6 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
         free(nam);
     if (name != NULL)
         *name = NULL;
-    if (obj != NULL)
-        xmlXPathFreeObject(obj);
     if (ctxt != NULL)
         xmlXPathFreeContext(ctxt);
     if (xml != NULL)

@@ -1,3 +1,8 @@
+Fri Apr  6 14:27:13 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xml.[ch]: first patch to clean up XPath accesses with new 
+	  routines, only xml.c is cleaned up, other modules to follow.
+
 Wed Apr  4 15:18:00 BST 2007 Richard W.M. Jones  <rjones@redhat.com>
 
 	* src/xen_unified.c et al: Unified Xen driver.  Architecture
