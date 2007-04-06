@@ -1,3 +1,8 @@
+Fri Apr  6 17:33:13 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/test.c: converted to new XPath APIs
+	* src/xml.c: fixed a return comment
+
 Fri Apr  6 14:27:13 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xml.[ch]: first patch to clean up XPath accesses with new 

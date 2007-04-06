@@ -261,7 +261,6 @@ static int testLoadDomain(virConnectPtr conn,
                           xmlDocPtr xml) {
     xmlNodePtr root = NULL;
     xmlXPathContextPtr ctxt = NULL;
-    xmlXPathObjectPtr obj = NULL;
     char *name = NULL;
     unsigned char rawuuid[VIR_UUID_BUFLEN];
     char *dst_uuid;
@@ -270,8 +269,9 @@ static int testLoadDomain(virConnectPtr conn,
     unsigned long memory = 0;
     unsigned long maxMem = 0;
     int nrVirtCpu;
-    char *conv;
-    int handle = -1, i;
+    char *str;
+    int handle = -1, i, ret;
+    long l;
     virDomainRestart onReboot = VIR_DOMAIN_RESTART;
     virDomainRestart onPoweroff = VIR_DOMAIN_DESTROY;
     virDomainRestart onCrash = VIR_DOMAIN_RENAME_RESTART;
@@ -294,102 +294,81 @@ static int testLoadDomain(virConnectPtr conn,
         goto error;
     }
 
-    obj = xmlXPathEval(BAD_CAST "string(/domain/name[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
-        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
+    name = virXPathString("string(/domain/name[1])", ctxt);
+    if (name == NULL) {
         testError(conn, NULL, VIR_ERR_INTERNAL_ERROR, _("domain name"));
         goto error;
     }
-    name = strdup((const char *)obj->stringval);
-    xmlXPathFreeObject(obj);
 
-    obj = xmlXPathEval(BAD_CAST "string(/domain/uuid[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
-        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
+    str = virXPathString("string(/domain/uuid[1])", ctxt);
+    if (str == NULL) {
         testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain uuid"));
         goto error;
     }
     dst_uuid = (char *) &rawuuid[0];
-    if (!(virParseUUID((char **)&dst_uuid, (const char *)obj->stringval))) {
+    if (!(virParseUUID((char **)&dst_uuid, str))) {
         testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain uuid"));
         goto error;
     }
-    xmlXPathFreeObject(obj);
+    free(str);
 
-    obj = xmlXPathEval(BAD_CAST "string(/domain/memory[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
-        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
+
+    ret = virXPathLong("string(/domain/memory[1])", ctxt, &l);
+    if (ret != 0) {
         testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain memory"));
         goto error;
     }
-    maxMem = strtoll((const char*)obj->stringval, &conv, 10);
-    if (conv == (const char*)obj->stringval) {
-        testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain memory"));
-        goto error;
-    }
-    xmlXPathFreeObject(obj);
+    maxMem = l;
 
-
-    obj = xmlXPathEval(BAD_CAST "string(/domain/currentMemory[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
-        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
+    ret = virXPathLong("string(/domain/currentMemory[1])", ctxt, &l);
+    if (ret == -1) {
         memory = maxMem;
+    } else if (ret == -2) {
+	testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain current memory"));
+	goto error;
     } else {
-        memory = strtoll((const char*)obj->stringval, &conv, 10);
-        if (conv == (const char*)obj->stringval) {
-            testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain current memory"));
-            goto error;
-        }
+        memory = l;
     }
-    if (obj)
-        xmlXPathFreeObject(obj);
 
-    obj = xmlXPathEval(BAD_CAST "string(/domain/vcpu[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
-        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
+    ret = virXPathLong("string(/domain/vcpu[1])", ctxt, &l);
+    if (ret == -1) {
         nrVirtCpu = 1;
+    } else if (ret == -2) {
+	testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain vcpus"));
+	goto error;
     } else {
-        nrVirtCpu = strtoll((const char*)obj->stringval, &conv, 10);
-        if (conv == (const char*)obj->stringval) {
-            testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain vcpus"));
-            goto error;
-        }
+        nrVirtCpu = l;
     }
-    if (obj)
-        xmlXPathFreeObject(obj);
 
-    obj = xmlXPathEval(BAD_CAST "string(/domain/on_reboot[1])", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        if (!(onReboot = testRestartStringToFlag((const char *)obj->stringval))) {
+    str = virXPathString("string(/domain/on_reboot[1])", ctxt);
+    if (str != NULL) {
+        if (!(onReboot = testRestartStringToFlag(str))) {
             testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain reboot behaviour"));
+	    free(str);
             goto error;
         }
+	free(str);
     }
-    if (obj)
-        xmlXPathFreeObject(obj);
 
-    obj = xmlXPathEval(BAD_CAST "string(/domain/on_poweroff[1])", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        if (!(onReboot = testRestartStringToFlag((const char *)obj->stringval))) {
+    str = virXPathString("string(/domain/on_poweroff[1])", ctxt);
+    if (str != NULL) {
+        if (!(onReboot = testRestartStringToFlag(str))) {
             testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain poweroff behaviour"));
+	    free(str);
             goto error;
         }
+	free(str);
     }
-    if (obj)
-        xmlXPathFreeObject(obj);
 
-    obj = xmlXPathEval(BAD_CAST "string(/domain/on_crash[1])", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        if (!(onReboot = testRestartStringToFlag((const char *)obj->stringval))) {
+    str = virXPathString("string(/domain/on_crash[1])", ctxt);
+    if (str != NULL) {
+        if (!(onReboot = testRestartStringToFlag(str))) {
             testError(conn, NULL, VIR_ERR_XML_ERROR, _("domain crash behaviour"));
+	    free(str);
             goto error;
         }
+	free(str);
     }
-    if (obj)
-        xmlXPathFreeObject(obj);
 
     priv = (testPrivatePtr) conn->privateData;
     con = &node->connections[priv->handle];
@@ -427,8 +406,6 @@ static int testLoadDomain(virConnectPtr conn,
     return (0);
 
  error:
-    if (obj)
-        xmlXPathFreeObject(obj);
     if (name)
         free(name);
     return (-1);
@@ -539,11 +516,13 @@ static char *testBuildFilename(const char *relativeTo,
 static int testOpenFromFile(virConnectPtr conn,
                             int connid,
                             const char *file) {
-    int fd, i;
+    int fd, i, ret;
+    long l;
+    char *str;
     xmlDocPtr xml;
     xmlNodePtr root = NULL;
+    xmlNodePtr *domains;
     xmlXPathContextPtr ctxt = NULL;
-    xmlXPathObjectPtr obj = NULL;
     virNodeInfoPtr nodeInfo;
     testPrivatePtr priv = (testPrivatePtr) conn->privateData;
 
@@ -579,108 +558,79 @@ static int testOpenFromFile(virConnectPtr conn,
     memmove(&node->connections[connid].nodeInfo, &defaultNodeInfo, sizeof(defaultNodeInfo));
 
     nodeInfo = &node->connections[connid].nodeInfo;
-    obj = xmlXPathEval(BAD_CAST "string(/node/cpu/nodes[1])", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        char *conv = NULL;
-        nodeInfo->nodes = strtol((const char*)obj->stringval, &conv, 10);
-        if (conv == (const char*)obj->stringval) {
-            testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu numa nodes"));
-            goto error;
-        }
-        xmlXPathFreeObject(obj);
+    ret = virXPathLong("string(/node/cpu/nodes[1])", ctxt, &l);
+    if (ret == 0) {
+        nodeInfo->nodes = l;
+    } else if (ret == -2) {
+	testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu numa nodes"));
+	goto error;
     }
 
-    obj = xmlXPathEval(BAD_CAST "string(/node/cpu/sockets[1])", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        char *conv = NULL;
-        nodeInfo->sockets = strtol((const char*)obj->stringval, &conv, 10);
-        if (conv == (const char*)obj->stringval) {
-            testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu sockets"));
-            goto error;
-        }
-        xmlXPathFreeObject(obj);
+    ret = virXPathLong("string(/node/cpu/sockets[1])", ctxt, &l);
+    if (ret == 0) {
+        nodeInfo->sockets = l;
+    } else if (ret == -2) {
+	testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu sockets"));
+	goto error;
     }
 
-    obj = xmlXPathEval(BAD_CAST "string(/node/cpu/cores[1])", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        char *conv = NULL;
-        nodeInfo->cores = strtol((const char*)obj->stringval, &conv, 10);
-        if (conv == (const char*)obj->stringval) {
-            testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu cores"));
-            goto error;
-        }
-        xmlXPathFreeObject(obj);
+    ret = virXPathLong("string(/node/cpu/cores[1])", ctxt, &l);
+    if (ret == 0) {
+        nodeInfo->cores = l;
+    } else if (ret == -2) {
+	testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu cores"));
+	goto error;
     }
 
-    obj = xmlXPathEval(BAD_CAST "string(/node/cpu/threads[1])", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        char *conv = NULL;
-        nodeInfo->threads = strtol((const char*)obj->stringval, &conv, 10);
-        if (conv == (const char*)obj->stringval) {
-            testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu threads"));
-            goto error;
-        }
-        xmlXPathFreeObject(obj);
+    ret = virXPathLong("string(/node/cpu/threads[1])", ctxt, &l);
+    if (ret == 0) {
+        nodeInfo->threads = l;
+    } else if (ret == -2) {
+	testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu threads"));
+	goto error;
     }
+
     nodeInfo->cpus = nodeInfo->cores * nodeInfo->threads * nodeInfo->sockets * nodeInfo->nodes;
-    obj = xmlXPathEval(BAD_CAST "string(/node/cpu/active[1])", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        char *conv = NULL;
-        unsigned int active = strtol((const char*)obj->stringval, &conv, 10);    
-        if (conv == (const char*)obj->stringval) {
-            testError(conn, NULL, VIR_ERR_XML_ERROR, _("node active cpu"));
-            goto error;
-        }
-        if (active < nodeInfo->cpus) {
-            nodeInfo->cpus = active;
-        }
-        xmlXPathFreeObject(obj);
+    ret = virXPathLong("string(/node/cpu/active[1])", ctxt, &l);
+    if (ret == 0) {
+        if (l < nodeInfo->cpus) {
+	    nodeInfo->cpus = l;
+	}
+    } else if (ret == -2) {
+	testError(conn, NULL, VIR_ERR_XML_ERROR, _("node active cpu"));
+	goto error;
     }
-    obj = xmlXPathEval(BAD_CAST "string(/node/cpu/mhz[1])", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        char *conv = NULL;
-        nodeInfo->mhz = strtol((const char*)obj->stringval, &conv, 10);
-        if (conv == (const char*)obj->stringval) {
-            testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu mhz"));
-            goto error;
-        }
-        xmlXPathFreeObject(obj);
+    ret = virXPathLong("string(/node/cpu/mhz[1])", ctxt, &l);
+    if (ret == 0) {
+        nodeInfo->mhz = l;
+    } else if (ret == -2) {
+        testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu mhz"));
+	goto error;
     }
-    obj = xmlXPathEval(BAD_CAST "string(/node/cpu/model[1])", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        strncpy(nodeInfo->model, (const char *)obj->stringval, sizeof(nodeInfo->model)-1);
+
+    str = virXPathString("string(/node/cpu/model[1])", ctxt);
+    if (str != NULL) {
+        strncpy(nodeInfo->model, str, sizeof(nodeInfo->model)-1);
         nodeInfo->model[sizeof(nodeInfo->model)-1] = '\0';
-        xmlXPathFreeObject(obj);
+        free(str);
     }
 
-    obj = xmlXPathEval(BAD_CAST "string(/node/memory[1])", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_STRING) &&
-        (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
-        char *conv = NULL;
-        nodeInfo->memory = strtol((const char*)obj->stringval, &conv, 10);
-        if (conv == (const char*)obj->stringval) {
-            testError(conn, NULL, VIR_ERR_XML_ERROR, _("node memory"));
-            goto error;
-        }
-        xmlXPathFreeObject(obj);
+    ret = virXPathLong("string(/node/memory[1])", ctxt, &l);
+    if (ret == 0) {
+        nodeInfo->memory = l;
+    } else if (ret == -2) {
+        testError(conn, NULL, VIR_ERR_XML_ERROR, _("node memory"));
+	goto error;
     }
 
-    obj = xmlXPathEval(BAD_CAST "/node/domain", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
-        (obj->nodesetval == NULL)) {
+    ret = virXPathNodeSet("/node/domain", ctxt, &domains);
+    if (ret < 0) {
         testError(NULL, NULL, VIR_ERR_XML_ERROR, _("node domain list"));
         goto error;
     }
 
-    for (i = 0 ; i < obj->nodesetval->nodeNr ; i++) {
-        xmlChar *domFile = xmlGetProp(obj->nodesetval->nodeTab[i], BAD_CAST "file");
+    for (i = 0 ; i < ret ; i++) {
+        xmlChar *domFile = xmlGetProp(domains[i], BAD_CAST "file");
         char *absFile = testBuildFilename(file, (const char *)domFile);
         int domid = nextDomID++;
         free(domFile);
@@ -695,8 +645,9 @@ static int testOpenFromFile(virConnectPtr conn,
         free(absFile);
         node->connections[connid].numDomains++;
     }
+    if (domains != NULL)
+        free(domains);
 
-    xmlXPathFreeObject(obj);
     xmlFreeDoc(xml);
 
     return (0);
@@ -709,8 +660,6 @@ static int testOpenFromFile(virConnectPtr conn,
         node->connections[connid].numDomains = 0;
         node->connections[connid].active = 0;
     }
-    if (obj)
-        xmlXPathFreeObject(obj);
     if (xml)
         xmlFreeDoc(xml);
     if (fd != -1)

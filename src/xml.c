@@ -120,7 +120,8 @@ virXPathNumber(const char *xpath, xmlXPathContextPtr ctxt, double *value) {
  * Convenience function to evaluate an XPath number
  *
  * Returns 0 in case of success in which case @value is set,
- *         or -1 if the evaluation failed.
+ *         or -1 if the XPath evaluation failed or -2 if the
+ *         value doesn't have a long format.
  */
 int
 virXPathLong(const char *xpath, xmlXPathContextPtr ctxt, long *value) {
