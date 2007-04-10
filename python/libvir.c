@@ -570,6 +570,56 @@ libvirt_virNetworkLookupByUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) 
 }
 
 
+PyObject *
+libvirt_virDomainGetAutostart(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    PyObject *py_retval;
+    int c_retval, autostart;
+    virDomainPtr domain;
+    PyObject *pyobj_domain;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virDomainGetAutostart", &pyobj_domain))
+        return(NULL);
+
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virDomainGetAutostart(domain, &autostart);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (c_retval < 0) {
+        Py_INCREF(Py_None);
+	return Py_None;
+    }
+    py_retval = libvirt_intWrap(autostart);
+    return(py_retval);
+}
+
+
+PyObject *
+libvirt_virNetworkGetAutostart(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    PyObject *py_retval;
+    int c_retval, autostart;
+    virNetworkPtr network;
+    PyObject *pyobj_network;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virNetworkGetAutostart", &pyobj_network))
+        return(NULL);
+
+    network = (virNetworkPtr) PyvirNetwork_Get(pyobj_network);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virNetworkGetAutostart(network, &autostart);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (c_retval < 0) {
+        Py_INCREF(Py_None);
+	return Py_None;
+    }
+    py_retval = libvirt_intWrap(autostart);
+    return(py_retval);
+}
+
+
 
 /************************************************************************
  *									*
@@ -594,6 +644,8 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virConnectListDefinedNetworks", libvirt_virConnectListDefinedNetworks, METH_VARARGS, NULL},
     {(char *) "virNetworkGetUUID", libvirt_virNetworkGetUUID, METH_VARARGS, NULL},
     {(char *) "virNetworkLookupByUUID", libvirt_virNetworkLookupByUUID, METH_VARARGS, NULL},
+    {(char *) "virDomainGetAutostart", libvirt_virDomainGetAutostart, METH_VARARGS, NULL},
+    {(char *) "virNetworkGetAutostart", libvirt_virNetworkGetAutostart, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 

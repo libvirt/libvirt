@@ -53,5 +53,15 @@
       <return type='char *' info='the 16 bytes string or None in case of error'/>
       <arg name='domain' type='virNetworkPtr' info='a network object'/>
     </function>
+    <function name='virNetworkGetAutostart' file='python'>
+      <info>Extract the autostart flag for a network.</info>
+      <return type='int' info='the autostart flag, or None in case of error'/>
+      <arg name='domain' type='virNetworkPtr' info='a network object'/>
+    </function>
+    <function name='virDomainGetAutostart' file='python'>
+      <info>Extract the autostart flag for a domain</info>
+      <return type='int' info='the autostart flag, or None in case of error'/>
+      <arg name='domain' type='virDomainPtr' info='a network object'/>
+    </function>
   </symbols>
 </api>

@@ -1,3 +1,8 @@
+Tue Apr 10 19:15:29 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* python/libvir.c, python/libvirt-python-api.xml: Added manual
+	impl of the vir*GetAutoStart API methods since generator fails.
+
 Tue Apr 10 20:39:29 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: fixed some typos reported by translator
