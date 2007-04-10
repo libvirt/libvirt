@@ -718,7 +718,7 @@ static vshCmdInfo info_define[] = {
 };
 
 static vshCmdOptDef opts_define[] = {
-    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file conatining an XML domain description")},
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file containing an XML domain description")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1489,7 +1489,7 @@ static vshCmdInfo info_setmaxmem[] = {
 
 static vshCmdOptDef opts_setmaxmem[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
-    {"kilobytes", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("maxmimum memory limit in kilobytes")},
+    {"kilobytes", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("maximum memory limit in kilobytes")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1588,7 +1588,7 @@ cmdCapabilities (vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 static vshCmdInfo info_dumpxml[] = {
     {"syntax", "dumpxml <name>"},
     {"help", gettext_noop("domain information in XML")},
-    {"desc", gettext_noop("Ouput the domain information as an XML dump to stdout.")},
+    {"desc", gettext_noop("Output the domain information as an XML dump to stdout.")},
     {NULL, NULL}
 };
 
@@ -1833,7 +1833,7 @@ static vshCmdInfo info_network_define[] = {
 };
 
 static vshCmdOptDef opts_network_define[] = {
-    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file conatining an XML network description")},
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file containing an XML network description")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1924,7 +1924,7 @@ cmdNetworkDestroy(vshControl * ctl, vshCmd * cmd)
 static vshCmdInfo info_network_dumpxml[] = {
     {"syntax", "net-dumpxml <name>"},
     {"help", gettext_noop("network information in XML")},
-    {"desc", gettext_noop("Ouput the network information as an XML dump to stdout.")},
+    {"desc", gettext_noop("Output the network information as an XML dump to stdout.")},
     {NULL, NULL}
 };
 
@@ -2318,7 +2318,7 @@ cmdVersion(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 static vshCmdInfo info_vncdisplay[] = {
     {"syntax", "vncdisplay <domain>"},
     {"help", gettext_noop("vnc display")},
-    {"desc", gettext_noop("Ouput the IP address and port number for the VNC display.")},
+    {"desc", gettext_noop("Output the IP address and port number for the VNC display.")},
     {NULL, NULL}
 };
 
