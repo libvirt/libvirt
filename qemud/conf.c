@@ -32,6 +32,8 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <arpa/inet.h>
+
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -44,7 +46,6 @@
 #include "internal.h"
 #include "conf.h"
 #include "driver.h"
-#include "iptables.h"
 #include "uuid.h"
 #include "buf.h"
 
@@ -1127,15 +1128,6 @@ qemudNetworkIfaceConnect(struct qemud_server *server,
         goto error;
     }
 
-    if (net->type == QEMUD_NET_NETWORK && network->def->forward) {
-        if ((err = iptablesAddPhysdevForward(server->iptables, ifname))) {
-            qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
-                             "Failed to add iptables rule to allow bridging from '%s' :%s",
-                             ifname, strerror(err));
-            goto error;
-        }
-    }
-
     snprintf(tapfdstr, sizeof(tapfdstr), "tap,fd=%d,script=,vlan=%d", tapfd, vlan);
 
     if (!(retval = strdup(tapfdstr)))
@@ -1151,8 +1143,6 @@ qemudNetworkIfaceConnect(struct qemud_server *server,
     return retval;
 
  no_memory:
-    if (net->type == QEMUD_NET_NETWORK && network->def->forward)
-        iptablesRemovePhysdevForward(server->iptables, ifname);
     qemudReportError(server, VIR_ERR_NO_MEMORY, "tapfds");
  error:
     if (retval)
@@ -1765,6 +1755,21 @@ static int qemudParseInetXML(struct qemud_server *server ATTRIBUTE_UNUSED,
         netmask = NULL;
     }
 
+    if (def->ipAddress[0] && def->netmask[0]) {
+        struct in_addr inaddress, innetmask;
+        char *netaddr;
+
+        inet_aton((const char*)def->ipAddress, &inaddress);
+        inet_aton((const char*)def->netmask, &innetmask);
+
+        inaddress.s_addr &= innetmask.s_addr;
+
+        netaddr = inet_ntoa(inaddress);
+
+        snprintf(def->network,sizeof(def->network)-1,
+                 "%s/%s", netaddr, (const char *)def->netmask);
+    }
+
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE &&
@@ -1835,9 +1840,37 @@ static struct qemud_network_def *qemudParseNetworkXML(struct qemud_server *serve
     }
     xmlXPathFreeObject(obj);
 
+    /* Parse bridge information */
+    obj = xmlXPathEval(BAD_CAST "/network/bridge[1]", ctxt);
+    if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+        (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr > 0)) {
+        if (!qemudParseBridgeXML(server, def, obj->nodesetval->nodeTab[0])) {
+            goto error;
+        }
+    }
+    xmlXPathFreeObject(obj);
+
+    /* Parse IP information */
+    obj = xmlXPathEval(BAD_CAST "/network/ip[1]", ctxt);
+    if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
+        (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr > 0)) {
+        if (!qemudParseInetXML(server, def, obj->nodesetval->nodeTab[0])) {
+            goto error;
+        }
+    }
+    xmlXPathFreeObject(obj);
+
+    /* IPv4 forwarding setup */
     obj = xmlXPathEval(BAD_CAST "count(/network/forward) > 0", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_BOOLEAN) &&
         obj->boolval) {
+        if (!def->ipAddress[0] ||
+            !def->netmask[0]) {
+            qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                             "Forwarding requested, but no IPv4 address/netmask provided");
+            goto error;
+        }
+
         def->forward = 1;
         tmp = xmlXPathEval(BAD_CAST "string(/network/forward[1]/@dev)", ctxt);
         if ((tmp != NULL) && (tmp->type == XPATH_STRING) &&
@@ -1857,26 +1890,6 @@ static struct qemud_network_def *qemudParseNetworkXML(struct qemud_server *serve
         tmp = NULL;
     } else {
         def->forward = 0;
-    }
-    xmlXPathFreeObject(obj);
-
-    /* Parse bridge information */
-    obj = xmlXPathEval(BAD_CAST "/network/bridge[1]", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-        (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr > 0)) {
-        if (!qemudParseBridgeXML(server, def, obj->nodesetval->nodeTab[0])) {
-            goto error;
-        }
-    }
-    xmlXPathFreeObject(obj);
-
-    /* Parse IP information */
-    obj = xmlXPathEval(BAD_CAST "/network/ip[1]", ctxt);
-    if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
-        (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr > 0)) {
-        if (!qemudParseInetXML(server, def, obj->nodesetval->nodeTab[0])) {
-            goto error;
-        }
     }
     xmlXPathFreeObject(obj);
 
@@ -2622,7 +2635,7 @@ char *qemudGenerateXML(struct qemud_server *server,
 
 
 char *qemudGenerateNetworkXML(struct qemud_server *server,
-                              struct qemud_network *network ATTRIBUTE_UNUSED,
+                              struct qemud_network *network,
                               struct qemud_network_def *def) {
     bufferPtr buf = 0;
     unsigned char *uuid;
@@ -2654,11 +2667,17 @@ char *qemudGenerateNetworkXML(struct qemud_server *server,
         }
     }
 
-    if ((def->bridge != '\0' || def->disableSTP || def->forwardDelay) &&
-        bufferVSprintf(buf, "  <bridge name='%s' stp='%s' delay='%d' />\n",
-                          def->bridge,
-                          def->disableSTP ? "off" : "on",
-                          def->forwardDelay) < 0)
+    bufferAdd(buf, "  <bridge", -1);
+    if (qemudIsActiveNetwork(network)) {
+        if (bufferVSprintf(buf, " name='%s'", network->bridge) < 0)
+            goto no_memory;
+    } else if (def->bridge[0]) {
+        if (bufferVSprintf(buf, " name='%s'", def->bridge) < 0)
+            goto no_memory;
+    }
+    if (bufferVSprintf(buf, " stp='%s' forwardDelay='%d' />\n",
+                       def->disableSTP ? "off" : "on",
+                       def->forwardDelay) < 0)
         goto no_memory;
 
     if (def->ipAddress[0] || def->netmask[0]) {

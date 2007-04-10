@@ -43,29 +43,45 @@ int              iptablesRemoveUdpInput          (iptablesContext *ctx,
                                                   const char *iface,
                                                   int port);
 
-int              iptablesAddPhysdevForward       (iptablesContext *ctx,
+int              iptablesAddForwardAllowOut      (iptablesContext *ctx,
+                                                  const char *network,
+                                                  const char *iface,
+                                                  const char *physdev);
+int              iptablesRemoveForwardAllowOut   (iptablesContext *ctx,
+                                                  const char *network,
+                                                  const char *iface,
+                                                  const char *physdev);
+
+int              iptablesAddForwardAllowIn       (iptablesContext *ctx,
+                                                  const char *network,
+                                                  const char *iface,
+                                                  const char *physdev);
+int              iptablesRemoveForwardAllowIn    (iptablesContext *ctx,
+                                                  const char *network,
+                                                  const char *iface,
+                                                  const char *physdev);
+
+int              iptablesAddForwardAllowCross    (iptablesContext *ctx,
                                                   const char *iface);
-int              iptablesRemovePhysdevForward    (iptablesContext *ctx,
+int              iptablesRemoveForwardAllowCross (iptablesContext *ctx,
                                                   const char *iface);
 
-int              iptablesAddInterfaceForward     (iptablesContext *ctx,
-                                                  const char *iface,
-                                                  const char *target);
-int              iptablesRemoveInterfaceForward  (iptablesContext *ctx,
-                                                  const char *iface,
-                                                  const char *target);
+int              iptablesAddForwardRejectOut     (iptablesContext *ctx,
+                                                  const char *iface);
+int              iptablesRemoveForwardRejectOut  (iptablesContext *ctx,
+                                                  const char *iface);
 
-int              iptablesAddStateForward         (iptablesContext *ctx,
-                                                  const char *iface,
-                                                  const char *target);
-int              iptablesRemoveStateForward      (iptablesContext *ctx,
-                                                  const char *iface,
-                                                  const char *target);
+int              iptablesAddForwardRejectIn      (iptablesContext *ctx,
+                                                  const char *iface);
+int              iptablesRemoveForwardRejectIn   (iptablesContext *ctx,
+                                                  const char *iface);
 
-int              iptablesAddNonBridgedMasq       (iptablesContext *ctx,
-                                                  const char *target);
-int              iptablesRemoveNonBridgedMasq    (iptablesContext *ctx,
-                                                  const char *target);
+int              iptablesAddForwardMasquerade    (iptablesContext *ctx,
+                                                  const char *network,
+                                                  const char *physdev);
+int              iptablesRemoveForwardMasquerade (iptablesContext *ctx,
+                                                  const char *network,
+                                                  const char *physdev);
 
 #endif /* __QEMUD_IPTABLES_H__ */
 

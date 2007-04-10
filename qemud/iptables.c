@@ -656,148 +656,235 @@ iptablesRemoveUdpInput(iptablesContext *ctx,
     return iptablesInput(ctx, iface, port, REMOVE, 0);
 }
 
+
+/* Allow all traffic coming from the bridge, with a valid network address
+ * to proceed to WAN
+ */
 static int
-iptablesPhysdevForward(iptablesContext *ctx,
+iptablesForwardAllowOut(iptablesContext *ctx,
+                         const char *network,
+                         const char *iface,
+                         const char *physdev,
+                         int action)
+{
+    if (physdev && physdev[0]) {
+        return iptablesAddRemoveRule(ctx->forward_filter,
+                                     action,
+                                     "--source", network,
+                                     "--in-interface", iface,
+                                     "--out-interface", physdev,
+                                     "--jump", "ACCEPT",
+                                     NULL);
+    } else {
+        return iptablesAddRemoveRule(ctx->forward_filter,
+                                     action,
+                                     "--source", network,
+                                     "--in-interface", iface,
+                                     "--jump", "ACCEPT",
+                                     NULL);
+    }
+}
+
+int
+iptablesAddForwardAllowOut(iptablesContext *ctx,
+                            const char *network,
+                            const char *iface,
+                            const char *physdev)
+{
+    return iptablesForwardAllowOut(ctx, network, iface, physdev, ADD);
+}
+
+int
+iptablesRemoveForwardAllowOut(iptablesContext *ctx,
+                               const char *network,
+                               const char *iface,
+                               const char *physdev)
+{
+    return iptablesForwardAllowOut(ctx, network, iface, physdev, REMOVE);
+}
+
+
+/* Allow all traffic destined to the bridge, with a valid network address
+ * and associated with an existing connection
+ */
+static int
+iptablesForwardAllowIn(iptablesContext *ctx,
+                       const char *network,
                        const char *iface,
+                       const char *physdev,
                        int action)
+{
+    if (physdev && physdev[0]) {
+        return iptablesAddRemoveRule(ctx->forward_filter,
+                                     action,
+                                     "--destination", network,
+                                     "--in-interface", physdev,
+                                     "--out-interface", iface,
+                                     "--match", "state",
+                                     "--state", "ESTABLISHED,RELATED",
+                                     "--jump", "ACCEPT",
+                                     NULL);
+    } else {
+        return iptablesAddRemoveRule(ctx->forward_filter,
+                                     action,
+                                     "--destination", network,
+                                     "--out-interface", iface,
+                                     "--match", "state",
+                                     "--state", "ESTABLISHED,RELATED",
+                                     "--jump", "ACCEPT",
+                                     NULL);
+    }
+}
+
+int
+iptablesAddForwardAllowIn(iptablesContext *ctx,
+                          const char *network,
+                          const char *iface,
+                          const char *physdev)
+{
+    return iptablesForwardAllowIn(ctx, network, iface, physdev, ADD);
+}
+
+int
+iptablesRemoveForwardAllowIn(iptablesContext *ctx,
+                             const char *network,
+                             const char *iface,
+                             const char *physdev)
+{
+    return iptablesForwardAllowIn(ctx, network, iface, physdev, REMOVE);
+}
+
+
+/* Allow all traffic between guests on the same bridge,
+ * with a valid network address
+ */
+static int
+iptablesForwardAllowCross(iptablesContext *ctx,
+                          const char *iface,
+                          int action)
 {
     return iptablesAddRemoveRule(ctx->forward_filter,
                                  action,
-                                 "--match", "physdev",
-                                 "--physdev-in", iface,
+                                 "--in-interface", iface,
+                                 "--out-interface", iface,
                                  "--jump", "ACCEPT",
                                  NULL);
 }
 
 int
-iptablesAddPhysdevForward(iptablesContext *ctx,
-                          const char *iface)
-{
-    return iptablesPhysdevForward(ctx, iface, ADD);
+iptablesAddForwardAllowCross(iptablesContext *ctx,
+                             const char *iface) {
+    return iptablesForwardAllowCross(ctx, iface, ADD);
 }
 
 int
-iptablesRemovePhysdevForward(iptablesContext *ctx,
-                             const char *iface)
-{
-    return iptablesPhysdevForward(ctx, iface, REMOVE);
+iptablesRemoveForwardAllowCross(iptablesContext *ctx,
+                                const char *iface) {
+    return iptablesForwardAllowCross(ctx, iface, REMOVE);
 }
 
+
+/* Drop all traffic trying to forward from the bridge.
+ * ie the bridge is the in interface
+ */
 static int
-iptablesInterfaceForward(iptablesContext *ctx,
+iptablesForwardRejectOut(iptablesContext *ctx,
                          const char *iface,
-                         const char *target,
                          int action)
 {
-    if (target && target[0]) {
-        return iptablesAddRemoveRule(ctx->forward_filter,
+    return iptablesAddRemoveRule(ctx->forward_filter,
                                      action,
                                      "--in-interface", iface,
-                                     "--out-interface", target,
-                                     "--jump", "ACCEPT",
+                                     "--jump", "REJECT",
                                      NULL);
-    } else {
-        return iptablesAddRemoveRule(ctx->forward_filter,
-                                     action,
-                                     "--in-interface", iface,
-                                     "--jump", "ACCEPT",
-                                     NULL);
-    }
 }
 
 int
-iptablesAddInterfaceForward(iptablesContext *ctx,
-                            const char *iface,
-                            const char *target)
+iptablesAddForwardRejectOut(iptablesContext *ctx,
+                            const char *iface)
 {
-    return iptablesInterfaceForward(ctx, iface, target, ADD);
+    return iptablesForwardRejectOut(ctx, iface, ADD);
 }
 
 int
-iptablesRemoveInterfaceForward(iptablesContext *ctx,
-                               const char *iface,
-                               const char *target)
+iptablesRemoveForwardRejectOut(iptablesContext *ctx,
+                               const char *iface)
 {
-    return iptablesInterfaceForward(ctx, iface, target, REMOVE);
+    return iptablesForwardRejectOut(ctx, iface, REMOVE);
 }
 
+
+
+
+/* Drop all traffic trying to forward to the bridge.
+ * ie the bridge is the out interface
+ */
 static int
-iptablesStateForward(iptablesContext *ctx,
-                     const char *iface,
-                     const char *target,
-                     int action)
-{
-    if (target && target[0]) {
-        return iptablesAddRemoveRule(ctx->forward_filter,
-                                     action,
-                                     "--in-interface", target,
-                                     "--out-interface", iface,
-                                     "--match", "state",
-                                     "--state", "ESTABLISHED,RELATED",
-                                     "--jump", "ACCEPT",
-                                     NULL);
-    } else {
-        return iptablesAddRemoveRule(ctx->forward_filter,
-                                     action,
-                                     "--out-interface", iface,
-                                     "--match", "state",
-                                     "--state", "ESTABLISHED,RELATED",
-                                     "--jump", "ACCEPT",
-                                     NULL);
-    }
-}
-
-int
-iptablesAddStateForward(iptablesContext *ctx,
+iptablesForwardRejectIn(iptablesContext *ctx,
                         const char *iface,
-                        const char *target)
+                        int action)
 {
-    return iptablesStateForward(ctx, iface, target, ADD);
+    return iptablesAddRemoveRule(ctx->forward_filter,
+                                 action,
+                                 "--out-interface", iface,
+                                 "--jump", "REJECT",
+                                 NULL);
 }
 
 int
-iptablesRemoveStateForward(iptablesContext *ctx,
-                           const char *iface,
-                           const char *target)
+iptablesAddForwardRejectIn(iptablesContext *ctx,
+                           const char *iface)
 {
-    return iptablesStateForward(ctx, iface, target, REMOVE);
+    return iptablesForwardRejectIn(ctx, iface, ADD);
 }
 
+int
+iptablesRemoveForwardRejectIn(iptablesContext *ctx,
+                              const char *iface)
+{
+    return iptablesForwardRejectIn(ctx, iface, REMOVE);
+}
+
+
+/* Masquerade all traffic coming from the network associated
+ * with the bridge
+ */
 static int
-iptablesNonBridgedMasq(iptablesContext *ctx,
-                       const char *target,
+iptablesForwardMasquerade(iptablesContext *ctx,
+                       const char *network,
+                       const char *physdev,
                        int action)
 {
-    if (target && target[0]) {
+    if (physdev && physdev[0]) {
         return iptablesAddRemoveRule(ctx->nat_postrouting,
                                      action,
-                                     "--out-interface", target,
-                                     "--match", "physdev",
-                                     "!", "--physdev-is-bridged",
+                                     "--source", network,
+                                     "--out-interface", physdev,
                                      "--jump", "MASQUERADE",
                                      NULL);
     } else {
         return iptablesAddRemoveRule(ctx->nat_postrouting,
                                      action,
-                                     "--match", "physdev",
-                                     "!", "--physdev-is-bridged",
+                                     "--source", network,
                                      "--jump", "MASQUERADE",
                                      NULL);
     }
 }
 
 int
-iptablesAddNonBridgedMasq(iptablesContext *ctx,
-                          const char *target)
+iptablesAddForwardMasquerade(iptablesContext *ctx,
+                             const char *network,
+                             const char *physdev)
 {
-    return iptablesNonBridgedMasq(ctx, target, ADD);
+    return iptablesForwardMasquerade(ctx, network, physdev, ADD);
 }
 
 int
-iptablesRemoveNonBridgedMasq(iptablesContext *ctx,
-                             const char *target)
+iptablesRemoveForwardMasquerade(iptablesContext *ctx,
+                                const char *network,
+                                const char *physdev)
 {
-    return iptablesNonBridgedMasq(ctx, target, REMOVE);
+    return iptablesForwardMasquerade(ctx, network, physdev, REMOVE);
 }
 
 /*

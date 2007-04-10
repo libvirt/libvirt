@@ -1,3 +1,10 @@
+Tue Apr 10 19:17:29 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/conf.c, qemu/internal.h, qemud/iptables.c, qemud/iptables.h,
+	qemud/qemud.c: Some adjustment to IPTables rules to tighten up traffic
+	flow to/from virtual networks & avoid accidentally NAT'ing wrong packets.
+	Fixed XML dump when using auto-generated bridge device name.
+
 Tue Apr 10 19:15:29 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* python/libvir.c, python/libvirt-python-api.xml: Added manual

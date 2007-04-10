@@ -250,6 +250,7 @@ struct qemud_network_def {
 
     char ipAddress[BR_INET_ADDR_MAXLEN];
     char netmask[BR_INET_ADDR_MAXLEN];
+    char network[BR_INET_ADDR_MAXLEN+BR_INET_ADDR_MAXLEN+1];
 
     int nranges;
     struct qemud_dhcp_range_def *ranges;
