@@ -888,6 +888,7 @@ virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf,
     int shareable = 0;
     int typ = 0;
     int cdrom = 0;
+    int isNoSrcCdrom = 0;
 
     type = xmlGetProp(node, BAD_CAST "type");
     if (type != NULL) {
@@ -927,13 +928,23 @@ virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf,
     }
 
     if (source == NULL) {
-        virXMLError(conn, VIR_ERR_NO_SOURCE, (const char *) target, 0);
+        /* There is a case without the source
+         * to the CD-ROM device
+         */
+        if (hvm &&
+            device &&
+            !strcmp((const char *)device, "cdrom")) {
+            isNoSrcCdrom = 1;
+        }
+        if (!isNoSrcCdrom) {
+            virXMLError(conn, VIR_ERR_NO_SOURCE, (const char *) target, 0);
 
-        if (target != NULL)
-            xmlFree(target);
-        if (device != NULL)
-            xmlFree(device);
-        return (-1);
+            if (target != NULL)
+                xmlFree(target);
+            if (device != NULL)
+                xmlFree(device);
+            return (-1);
+        }
     }
     if (target == NULL) {
         virXMLError(conn, VIR_ERR_NO_TARGET, (const char *) source, 0);
@@ -988,7 +999,7 @@ virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf,
     } else
         virBufferVSprintf(buf, "(dev '%s')", (const char *)target);
 
-    if (drvName) {
+    if (drvName && !isNoSrcCdrom) {
         if (!strcmp((const char *)drvName, "tap")) {
             virBufferVSprintf(buf, "(uname '%s:%s:%s')",
                               (const char *)drvName,
@@ -999,7 +1010,7 @@ virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf,
                               (const char *)drvName,
                               (const char *)source);
         }
-    } else {
+    } else if (!isNoSrcCdrom) {
         if (typ == 0)
             virBufferVSprintf(buf, "(uname 'file:%s')", source);
         else if (typ == 1) {

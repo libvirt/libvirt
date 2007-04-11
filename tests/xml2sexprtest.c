@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <sys/types.h>
+#include <fcntl.h>
+
 #include "xml.h"
 #include "testutils.h"
 #include "internal.h"
@@ -31,11 +34,14 @@ static int testCompareFiles(const char *xml, const char *sexpr, const char *name
       printf("Expect %d '%s'\n", (int)strlen(sexprData), sexprData);
       printf("Actual %d '%s'\n", (int)strlen(gotsexpr), gotsexpr);
   }
-  if (strcmp(sexprData, gotsexpr))
-    goto fail;
+  if (strcmp(sexprData, gotsexpr)) {
+      goto fail;
+  }
 
-  if (strcmp(name, gotname))
-    goto fail;
+  if (strcmp(name, gotname)) {
+      printf("Got wrong name: expected %s, got %s\n", name, gotname);
+      goto fail;
+  }
 
   ret = 0;
 
@@ -167,6 +173,13 @@ static int testCompareNetBridged(void *data ATTRIBUTE_UNUSED) {
 			  2);
 }
 
+static int testCompareNoSourceCDRom(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("xml2sexprdata/xml2sexpr-no-source-cdrom.xml",
+			  "xml2sexprdata/xml2sexpr-no-source-cdrom.sexpr",
+			  "test",
+			  2);
+}
+
 
 int
 main(int argc, char **argv)
@@ -246,6 +259,10 @@ main(int argc, char **argv)
 
     if (virtTestRun("XML-2-SEXPR Net Bridged",
 		    1, testCompareNetBridged, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("XML-2-SEXPR No Source CDRom",
+		    1, testCompareNoSourceCDRom, NULL) != 0)
 	ret = -1;
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);

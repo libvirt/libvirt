@@ -124,6 +124,12 @@ static int testCompareNetBridged(void *data ATTRIBUTE_UNUSED) {
 			  1);
 }
 
+static int testCompareNoSourceCDRom(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("sexpr2xmldata/sexpr2xml-no-source-cdrom.xml",
+			  "sexpr2xmldata/sexpr2xml-no-source-cdrom.sexpr",
+			  1);
+}
+
 
 int
 main(int argc, char **argv)
@@ -187,6 +193,10 @@ main(int argc, char **argv)
 
     if (virtTestRun("SEXPR-2-XML net bridged",
 		    1, testCompareNetBridged, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("SEXPR-2-XML no source CDRom",
+		    1, testCompareNoSourceCDRom, NULL) != 0)
 	ret = -1;
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);

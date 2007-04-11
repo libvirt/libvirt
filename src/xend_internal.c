@@ -1441,6 +1441,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
             char *offset;
             int isBlock = 0;
             int cdrom = 0;
+            int isNoSrcCdrom = 0;
             char *drvName = NULL;
             char *drvType = NULL;
             const char *src = NULL;
@@ -1458,64 +1459,75 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
                 mode = sexpr_node(node, "device/tap/mode");
             }
 
-            if (src == NULL) {
-                virXendError(conn, VIR_ERR_INTERNAL_ERROR,
-                             _("domain information incomplete, vbd has no src"));
-                goto bad_parse;
-            }
-
             if (dst == NULL) {
                 virXendError(conn, VIR_ERR_INTERNAL_ERROR,
                              _("domain information incomplete, vbd has no dev"));
                 goto bad_parse;
             }
 
-
-            offset = strchr(src, ':');
-            if (!offset) {
-                virXendError(conn, VIR_ERR_INTERNAL_ERROR,
-                             _("cannot parse vbd filename, missing driver name"));
-                goto bad_parse;
+            if (src == NULL) {
+                /* There is a case without the uname to the CD-ROM device */
+                offset = strchr(dst, ':');
+                if (offset) {
+                    if (hvm && !strcmp( offset , ":cdrom")) {
+                        isNoSrcCdrom = 1;
+                    }
+                    offset[0] = '\0';
+                }
+                if (!isNoSrcCdrom) {
+                    virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                                 _("domain information incomplete, vbd has no src"));
+                    goto bad_parse;
+                }
             }
 
-            drvName = malloc((offset-src)+1);
-            if (!drvName) {
-                virXendError(conn, VIR_ERR_NO_MEMORY,
-                             _("allocate new buffer"));
-                goto bad_parse;
-            }
-            strncpy(drvName, src, (offset-src));
-            drvName[offset-src] = '\0';
-
-            src = offset + 1;
-
-            if (!strcmp(drvName, "tap")) {
+            if (!isNoSrcCdrom) {
                 offset = strchr(src, ':');
                 if (!offset) {
                     virXendError(conn, VIR_ERR_INTERNAL_ERROR,
-                                 _("cannot parse vbd filename, missing driver type"));
+                                 _("cannot parse vbd filename, missing driver name"));
                     goto bad_parse;
                 }
 
-                drvType = malloc((offset-src)+1);
-                if (!drvType) {
+                drvName = malloc((offset-src)+1);
+                if (!drvName) {
                     virXendError(conn, VIR_ERR_NO_MEMORY,
                                  _("allocate new buffer"));
                     goto bad_parse;
                 }
-                strncpy(drvType, src, (offset-src));
-                drvType[offset-src] = '\0';
+                strncpy(drvName, src, (offset-src));
+                drvName[offset-src] = '\0';
+
                 src = offset + 1;
-                /* Its possible to use blktap driver for block devs
-                   too, but kinda pointless because blkback is better,
-                   so we assume common case here. If blktap becomes
-                   omnipotent, we can revisit this, perhaps stat()'ing
-                   the src file in question */
-                isBlock = 0;
-            } else if (!strcmp(drvName, "phy")) {
-                isBlock = 1;
-            } else if (!strcmp(drvName, "file")) {
-                isBlock = 0;
+
+                if (!strcmp(drvName, "tap")) {
+                    offset = strchr(src, ':');
+                    if (!offset) {
+                        virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                                     _("cannot parse vbd filename, missing driver type"));
+                        goto bad_parse;
+                    }
+
+                    drvType = malloc((offset-src)+1);
+                    if (!drvType) {
+                        virXendError(conn, VIR_ERR_NO_MEMORY,
+                                     _("allocate new buffer"));
+                        goto bad_parse;
+                    }
+                    strncpy(drvType, src, (offset-src));
+                    drvType[offset-src] = '\0';
+                    src = offset + 1;
+                    /* Its possible to use blktap driver for block devs
+                       too, but kinda pointless because blkback is better,
+                       so we assume common case here. If blktap becomes
+                       omnipotent, we can revisit this, perhaps stat()'ing
+                       the src file in question */
+                    isBlock = 0;
+                } else if (!strcmp(drvName, "phy")) {
+                    isBlock = 1;
+                } else if (!strcmp(drvName, "file")) {
+                    isBlock = 0;
+                }
             }
 
             if (!strncmp(dst, "ioemu:", 6))
@@ -1536,18 +1548,23 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
                 }
             }
 
-            virBufferVSprintf(&buf, "    <disk type='%s' device='%s'>\n",
-                              isBlock ? "block" : "file",
-                              cdrom ? "cdrom" : "disk");
-            if (drvType) {
-                virBufferVSprintf(&buf, "      <driver name='%s' type='%s'/>\n", drvName, drvType);
+            if (!isNoSrcCdrom) {
+                virBufferVSprintf(&buf, "    <disk type='%s' device='%s'>\n",
+                                  isBlock ? "block" : "file",
+                                  cdrom ? "cdrom" : "disk");
+                if (drvType) {
+                    virBufferVSprintf(&buf, "      <driver name='%s' type='%s'/>\n", drvName, drvType);
+                } else {
+                    virBufferVSprintf(&buf, "      <driver name='%s'/>\n", drvName);
+                }
+                if (isBlock) {
+                    virBufferVSprintf(&buf, "      <source dev='%s'/>\n", src);
+                } else {
+                    virBufferVSprintf(&buf, "      <source file='%s'/>\n", src);
+                }
             } else {
-                virBufferVSprintf(&buf, "      <driver name='%s'/>\n", drvName);
-            }
-            if (isBlock) {
-                virBufferVSprintf(&buf, "      <source dev='%s'/>\n", src);
-            } else {
-                virBufferVSprintf(&buf, "      <source file='%s'/>\n", src);
+                /* This case is the cdrom device only */
+                virBufferVSprintf(&buf, "    <disk device='cdrom'>\n");
             }
             virBufferVSprintf(&buf, "      <target dev='%s'/>\n", dst);
 
