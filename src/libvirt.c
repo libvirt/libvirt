@@ -302,6 +302,10 @@ do_open (const char *name, int flags)
         }
     }
 
+    if (flags & VIR_DRV_OPEN_RO) {
+        ret->flags = VIR_CONNECT_RO;
+    }
+
     return ret;
 
 failed:

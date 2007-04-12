@@ -1,3 +1,8 @@
+Thu Apr 12 15:18:00 BST 2007 Richard Jones <rjones@redhat.com>
+
+	* src/libvirt.c: set VIR_CONNECT_RO on read-only connections.
+	  Patch by S.Sakamoto.
+
 Wed Apr 11 18:04:00 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c src/xml.c: applied patch from Nobuhiro Itou
