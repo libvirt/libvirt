@@ -1399,11 +1399,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
         virBufferVSprintf(&buf, "  <bootloader>%s</bootloader>\n", tmp);
     }
 
-    if (domid == 0) {
-        virBufferAdd(&buf, "  <os>\n", -1);
-        virBufferAdd(&buf, "    <type>linux</type>\n", -1);
-        virBufferAdd(&buf, "  </os>\n", -1);
-    } else {
+    if (domid != 0) {
         if (sexpr_lookup(root, "domain/image")) {
             hvm = sexpr_lookup(root, "domain/image/hvm") ? 1 : 0;
             xend_parse_sexp_desc_os(conn, root, &buf, hvm, bootloader);
