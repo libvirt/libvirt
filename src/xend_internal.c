@@ -54,6 +54,7 @@ static virDomainPtr xenDaemonLookupByUUID(virConnectPtr conn,
 static virDomainPtr xenDaemonCreateLinux(virConnectPtr conn,
                                          const char *xmlDesc,
 					 unsigned int flags);
+static char *xenDaemonDomainGetOSType(virDomainPtr domain);
 static int xenDaemonAttachDevice(virDomainPtr domain, char *xml);
 static int xenDaemonDetachDevice(virDomainPtr domain, char *xml);
 static int xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
@@ -85,7 +86,7 @@ virDriver xenDaemonDriver = {
     xenDaemonDomainShutdown, /* domainShutdown */
     xenDaemonDomainReboot, /* domainReboot */
     xenDaemonDomainDestroy, /* domainDestroy */
-    NULL, /* domainGetOSType */
+    xenDaemonDomainGetOSType, /* domainGetOSType */
     xenDaemonDomainGetMaxMemory, /* domainGetMaxMemory */
     xenDaemonDomainSetMaxMemory, /* domainSetMaxMemory */
     xenDaemonDomainSetMemory, /* domainMaxMemory */
@@ -1151,7 +1152,7 @@ xend_detect_config_version(virConnectPtr conn) {
         priv->xendConfigVersion = 1;
     }
     sexpr_free(root);
-    return priv->xendConfigVersion;
+    return (0);
 }
 
 /**
@@ -1251,13 +1252,14 @@ xend_log(virConnectPtr xend, char *buffer, size_t n_buffer)
  * @node: the root of the parsed S-Expression
  * @buf: output buffer object
  * @hvm: true or 1 if no contains HVM S-Expression 
+ * @bootloader: true or 1 if a bootloader is defined
  *
  * Parse the xend sexp for description of os and append it to buf.
  *
  * Returns 0 in case of success and -1 in case of error
  */
 static int
-xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf, int hvm)
+xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf, int hvm, int bootloader)
 {
     const char *tmp;
 
@@ -1269,37 +1271,44 @@ xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf
     if (hvm) {
         virBufferVSprintf(buf, "    <type>hvm</type>\n");
         tmp = sexpr_node(node, "domain/image/hvm/kernel");
-        if (tmp == NULL) {
+        if (tmp == NULL && !bootloader) {
             virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-                         _("domain information incomplete, missing kernel"));
+                         _("domain information incomplete, missing kernel & bootloader"));
             return(-1);
-	}
-        virBufferVSprintf(buf, "    <loader>%s</loader>\n", tmp);
+        }
+        if (tmp)
+            virBufferVSprintf(buf, "    <loader>%s</loader>\n", tmp);
         tmp = sexpr_node(node, "domain/image/hvm/boot");
         if ((tmp != NULL) && (tmp[0] != 0)) {
-           if (tmp[0] == 'a')
-               /* XXX no way to deal with boot from 2nd floppy */
-               virBufferAdd(buf, "    <boot dev='fd'/>\n", 21 );
-           else if (tmp[0] == 'c')
-	   /*
-            * Don't know what to put here.  Say the vm has been given 3
-            * disks - hda, hdb, hdc.  How does one identify the boot disk?
-                * We're going to assume that first disk is the boot disk since
-                * this is most common practice
-	    */
-               virBufferAdd(buf, "    <boot dev='hd'/>\n", 21 );
-           else if (strcmp(tmp, "d") == 0)
-               virBufferAdd(buf, "    <boot dev='cdrom'/>\n", 24 );
+            while (*tmp) {
+                if (*tmp == 'a')
+                    /* XXX no way to deal with boot from 2nd floppy */
+                    virBufferAdd(buf, "    <boot dev='fd'/>\n", 21 );
+                else if (*tmp == 'c')
+                    /*
+                     * Don't know what to put here.  Say the vm has been given 3
+                     * disks - hda, hdb, hdc.  How does one identify the boot disk?
+                     * We're going to assume that first disk is the boot disk since
+                     * this is most common practice
+                     */
+                    virBufferAdd(buf, "    <boot dev='hd'/>\n", 21 );
+                else if (*tmp == 'd')
+                    virBufferAdd(buf, "    <boot dev='cdrom'/>\n", 24 );
+                else if (*tmp == 'n')
+                    virBufferAdd(buf, "    <boot dev='network'/>\n", 26 );
+                tmp++;
+            }
         }
     } else {
         virBufferVSprintf(buf, "    <type>linux</type>\n");
         tmp = sexpr_node(node, "domain/image/linux/kernel");
-        if (tmp == NULL) {
+        if (tmp == NULL && !bootloader) {
             virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-                         _("domain information incomplete, missing kernel"));
+                         _("domain information incomplete, missing kernel & bootloader"));
             return(-1);
-	}
-        virBufferVSprintf(buf, "    <kernel>%s</kernel>\n", tmp);
+        }
+        if (tmp)
+            virBufferVSprintf(buf, "    <kernel>%s</kernel>\n", tmp);
         tmp = sexpr_node(node, "domain/image/linux/ramdisk");
         if ((tmp != NULL) && (tmp[0] != 0))
            virBufferVSprintf(buf, "    <initrd>%s</initrd>\n", tmp);
@@ -1334,7 +1343,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
     const char *tmp;
     char *tty;
     virBuffer buf;
-    int hvm = 0;
+    int hvm = 0, bootloader = 0;
     int domid = -1;
     int max_mem, cur_mem;
 
@@ -1385,12 +1394,20 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
 	    virBufferVSprintf(&buf, "  <uuid>%s</uuid>\n", compact);
     }
     tmp = sexpr_node(root, "domain/bootloader");
-    if (tmp != NULL)
+    if (tmp != NULL) {
+        bootloader = 1;
         virBufferVSprintf(&buf, "  <bootloader>%s</bootloader>\n", tmp);
+    }
 
-    if (sexpr_lookup(root, "domain/image")) {
-        hvm = sexpr_lookup(root, "domain/image/hvm") ? 1 : 0;
-        xend_parse_sexp_desc_os(conn, root, &buf, hvm);
+    if (domid == 0) {
+        virBufferAdd(&buf, "  <os>\n", -1);
+        virBufferAdd(&buf, "    <type>linux</type>\n", -1);
+        virBufferAdd(&buf, "  </os>\n", -1);
+    } else {
+        if (sexpr_lookup(root, "domain/image")) {
+            hvm = sexpr_lookup(root, "domain/image/hvm") ? 1 : 0;
+            xend_parse_sexp_desc_os(conn, root, &buf, hvm, bootloader);
+        }
     }
 
     max_mem = (int) (sexpr_u64(root, "domain/maxmem") << 10);
@@ -1585,9 +1602,9 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
         } else if (sexpr_lookup(node, "device/vif")) {
             const char *tmp2;
             tmp2 = sexpr_node(node, "device/vif/script");
-            if (tmp2 && strstr(tmp2, "bridge")) {
+            tmp = sexpr_node(node, "device/vif/bridge");
+            if ((tmp2 && strstr(tmp2, "bridge")) || tmp) {
                 virBufferVSprintf(&buf, "    <interface type='bridge'>\n");
-                tmp = sexpr_node(node, "device/vif/bridge");
                 if (tmp != NULL)
                     virBufferVSprintf(&buf, "      <source bridge='%s'/>\n",
                                       tmp);
@@ -1612,9 +1629,9 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
                                   tmp2);
 
             virBufferAdd(&buf, "    </interface>\n", 17);
-        } else if (!hvm &&
-                   sexpr_lookup(node, "device/vfb")) {
-            /* New style graphics config for PV guests only in 3.0.4 */
+        } else if (sexpr_lookup(node, "device/vfb")) {
+            /* New style graphics config for PV guests in >= 3.0.4,
+             * or for HVM guests in >= 3.0.5 */
             tmp = sexpr_node(node, "device/vfb/type");
 
             if (tmp && !strcmp(tmp, "sdl")) {
@@ -1663,7 +1680,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
         }
     }
 
-    /* Graphics device (HVM, or old (pre-3.0.4) style PV vnc config) */
+    /* Graphics device (HVM <= 3.0.4, or PV <= 3.0.4) vnc config */
     tmp = sexpr_fmt_node(root, "domain/image/%s/vnc", hvm ? "hvm" : "linux");
     if (tmp != NULL) {
         if (tmp[0] == '1') {
@@ -1901,7 +1918,6 @@ xenDaemonOpen(virConnectPtr conn, const char *name, int flags)
 {
     xmlURIPtr uri = NULL;
     int ret;
-    unsigned long version;
 
     /* If the name is just "xen" (it might originally have been NULL, see
      * xenUnifiedOpen) then try default paths and methods to get to the
@@ -1914,8 +1930,8 @@ xenDaemonOpen(virConnectPtr conn, const char *name, int flags)
         ret = xenDaemonOpen_unix(conn, "/var/lib/xend/xend-socket");
         if (ret < 0)
             goto try_http;
-        ret = xenDaemonGetVersion(conn, &version);
-        if (ret == 0)
+        ret = xend_detect_config_version(conn);
+        if (ret != -1)
             goto done;
 
     try_http:
@@ -1925,8 +1941,8 @@ xenDaemonOpen(virConnectPtr conn, const char *name, int flags)
         ret = xenDaemonOpen_tcp(conn, "localhost", 8000);
         if (ret < 0)
             goto failed;
-        ret = xenDaemonGetVersion(conn, &version);
-        if (ret < 0)
+        ret = xend_detect_config_version(conn);
+        if (ret == -1)
             goto failed;
     } else {
         /*
@@ -1950,15 +1966,15 @@ xenDaemonOpen(virConnectPtr conn, const char *name, int flags)
             if (ret < 0)
                 goto failed;
 
-            ret = xenDaemonGetVersion(conn, &version);
-            if (ret < 0)
+            ret = xend_detect_config_version(conn);
+            if (ret == -1)
                 goto failed;
         } else if (!strcasecmp(uri->scheme, "http")) {
             ret = xenDaemonOpen_tcp(conn, uri->server, uri->port);
             if (ret < 0)
                 goto failed;
-            ret = xenDaemonGetVersion(conn, &version);
-            if (ret < 0)
+            ret = xend_detect_config_version(conn);
+            if (ret == -1)
                 goto failed;
         } else {
             if (!(flags & VIR_DRV_OPEN_QUIET))
@@ -1967,17 +1983,7 @@ xenDaemonOpen(virConnectPtr conn, const char *name, int flags)
         }
     }
 
- done: 
-   /* The XenD config version is used to determine
-     * which APIs / features to activate. Lookup & cache
-     * it now to avoid repeated HTTP calls
-     */
-    if (xend_detect_config_version(conn) < 0) {
-        virXendError(conn, VIR_ERR_INTERNAL_ERROR,
-                     "cannot determine xend config version");
-        goto failed;
-    }
-
+ done:
     if (uri != NULL)
         xmlFreeURI(uri);
     return(ret);
@@ -2120,6 +2126,49 @@ xenDaemonDomainDestroy(virDomainPtr domain)
     if (domain->id < 0)
         return(-1);
     return xend_op(domain->conn, domain->name, "op", "destroy", NULL);
+}
+
+/**
+ * xenDaemonDomainGetOSType:
+ * @domain: a domain object
+ *
+ * Get the type of domain operation system.
+ *
+ * Returns the new string or NULL in case of error, the string must be
+ *         freed by the caller.
+ */
+static char *
+xenDaemonDomainGetOSType(virDomainPtr domain)
+{
+    char *type;
+    struct sexpr *root;
+    xenUnifiedPrivatePtr priv;
+
+    if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
+        virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
+	             __FUNCTION__);
+        return(NULL);
+    }
+
+    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
+
+    if (domain->id < 0 && priv->xendConfigVersion < 3)
+        return(NULL);
+
+    /* can we ask for a subset ? worth it ? */
+    root = sexpr_get(domain->conn, "/xend/domain/%s?detail=1", domain->name);
+    if (root == NULL)
+        return(NULL);
+
+    if (sexpr_lookup(root, "domain/image/hvm")) {
+        type = strdup("hvm");
+    } else {
+        type = strdup("linux");
+    }
+
+    sexpr_free(root);
+
+    return(type);
 }
 
 /**
@@ -2892,7 +2941,7 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
                  uuid[4], uuid[5], uuid[6], uuid[7],
                  uuid[8], uuid[9], uuid[10], uuid[11],
                  uuid[12], uuid[13], uuid[14], uuid[15]);
-        printf("Dpooing %s\n", uuidstr);
+
         root = sexpr_get(conn, "/xend/domain/%s?detail=1", uuidstr);
         if (root == NULL)
             return (NULL);

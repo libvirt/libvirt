@@ -591,7 +591,8 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf
     xmlNodePtr cur, txt;
     xmlChar *type = NULL;
     xmlChar *loader = NULL;
-    xmlChar *boot_dev = NULL;
+    char bootorder[5];
+    int nbootorder = 0;
     int res;
     char *str;
 
@@ -610,13 +611,32 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf
                 if ((txt != NULL) && (txt->type == XML_TEXT_NODE) &&
                     (txt->next == NULL))
                     loader = txt->content;
-            } else if ((boot_dev == NULL) &&
-                       (xmlStrEqual(cur->name, BAD_CAST "boot"))) {
-                boot_dev = xmlGetProp(cur, BAD_CAST "dev");
+            } else if ((xmlStrEqual(cur->name, BAD_CAST "boot"))) {
+                xmlChar *boot_dev = xmlGetProp(cur, BAD_CAST "dev");
+                if (nbootorder == ((sizeof(bootorder)/sizeof(bootorder[0]))-1)) {
+                    virXMLError(conn, VIR_ERR_XML_ERROR, "too many boot devices", 0);
+                    return (-1);
+                }
+                if (xmlStrEqual(boot_dev, BAD_CAST "fd")) {
+                    bootorder[nbootorder++] = 'a';
+                } else if (xmlStrEqual(boot_dev, BAD_CAST "cdrom")) {
+                    bootorder[nbootorder++] = 'd';
+                } else if (xmlStrEqual(boot_dev, BAD_CAST "network")) {
+                    bootorder[nbootorder++] = 'n';
+                } else if (xmlStrEqual(boot_dev, BAD_CAST "hd")) {
+                    bootorder[nbootorder++] = 'c';
+                } else {
+                    xmlFree(boot_dev);
+                    /* Any other type of boot dev is unsupported right now */
+                    virXMLError(conn, VIR_ERR_XML_ERROR, NULL, 0);
+                    return (-1);
+                }
+                xmlFree(boot_dev);
             }
         }
         cur = cur->next;
     }
+    bootorder[nbootorder] = '\0';
     if ((type == NULL) || (!xmlStrEqual(type, BAD_CAST "hvm"))) {
         /* VIR_ERR_OS_TYPE */
         virXMLError(conn, VIR_ERR_OS_TYPE, (const char *) type, 0);
@@ -641,72 +661,57 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf
 
     virBufferVSprintf(buf, "(vcpus %d)", vcpus);
 
-    if (boot_dev) {
-        if (xmlStrEqual(boot_dev, BAD_CAST "fd")) {
-            virBufferVSprintf(buf, "(boot a)" /*, (const char *) boot_dev*/);
-        } else if (xmlStrEqual(boot_dev, BAD_CAST "cdrom")) {
-            virBufferVSprintf(buf, "(boot d)" /*, (const char *) boot_dev*/);
-        } else if (xmlStrEqual(boot_dev, BAD_CAST "hd")) {
-            virBufferVSprintf(buf, "(boot c)" /*, (const char *) boot_dev*/);
-        } else {
-            /* Any other type of boot dev is unsupported right now */
-            virXMLError(conn, VIR_ERR_XML_ERROR, NULL, 0);
-        }
+    if (nbootorder)
+        virBufferVSprintf(buf, "(boot %s)", bootorder);
 
-        /* get the 1st floppy device file */
-	cur = virXPathNode(
-	  "/domain/devices/disk[@device='floppy' and target/@dev='fda']/source",
-			   ctxt);
+    /* get the 1st floppy device file */
+	cur = virXPathNode("/domain/devices/disk[@device='floppy' and target/@dev='fda']/source",
+                       ctxt);
 	if (cur != NULL) {
-            xmlChar *fdfile;
-
-            fdfile = xmlGetProp(cur, BAD_CAST "file");
+        xmlChar *fdfile;
+        fdfile = xmlGetProp(cur, BAD_CAST "file");
 	    if (fdfile != NULL) {
-		virBufferVSprintf(buf, "(fda '%s')", fdfile);
-		free(fdfile);
+            virBufferVSprintf(buf, "(fda '%s')", fdfile);
+            free(fdfile);
 	    }
-        }
+    }
 
-        /* get the 2nd floppy device file */
-	cur = virXPathNode(
-	  "/domain/devices/disk[@device='floppy' and target/@dev='fdb']/source",
-			   ctxt);
+    /* get the 2nd floppy device file */
+	cur = virXPathNode("/domain/devices/disk[@device='floppy' and target/@dev='fdb']/source",
+                       ctxt);
 	if (cur != NULL) {
-            xmlChar *fdfile;
-
-            fdfile = xmlGetProp(cur, BAD_CAST "file");
+        xmlChar *fdfile;
+        fdfile = xmlGetProp(cur, BAD_CAST "file");
 	    if (fdfile != NULL) {
-		virBufferVSprintf(buf, "(fdb '%s')", fdfile);
-		free(fdfile);
+            virBufferVSprintf(buf, "(fdb '%s')", fdfile);
+            free(fdfile);
 	    }
-        }
+    }
 
 
-        /* get the cdrom device file */
-        /* Only XenD <= 3.0.2 wants cdrom config here */
-        if (xendConfigVersion == 1) {
-	    cur = virXPathNode(
-	"/domain/devices/disk[@device='cdrom' and target/@dev='hdc']/source",
+    /* get the cdrom device file */
+    /* Only XenD <= 3.0.2 wants cdrom config here */
+    if (xendConfigVersion == 1) {
+	    cur = virXPathNode("/domain/devices/disk[@device='cdrom' and target/@dev='hdc']/source",
 	                       ctxt);
 	    if (cur != NULL) {
-                xmlChar *cdfile;
+            xmlChar *cdfile;
 
-                cdfile = xmlGetProp(cur, BAD_CAST "file");
-		if (cdfile != NULL) {
-		    virBufferVSprintf(buf, "(cdrom '%s')",
-				      (const char *)cdfile);
-		    xmlFree(cdfile);
-		}
+            cdfile = xmlGetProp(cur, BAD_CAST "file");
+            if (cdfile != NULL) {
+                virBufferVSprintf(buf, "(cdrom '%s')",
+                                  (const char *)cdfile);
+                xmlFree(cdfile);
             }
         }
-
-        if (virXPathNode("/domain/features/acpi", ctxt) != NULL)
-            virBufferAdd(buf, "(acpi 1)", 8);
-        if (virXPathNode("/domain/features/apic", ctxt) != NULL)
-            virBufferAdd(buf, "(apic 1)", 8);
-        if (virXPathNode("/domain/features/pae", ctxt) != NULL)
-            virBufferAdd(buf, "(pae 1)", 7);
     }
+
+    if (virXPathNode("/domain/features/acpi", ctxt) != NULL)
+        virBufferAdd(buf, "(acpi 1)", 8);
+    if (virXPathNode("/domain/features/apic", ctxt) != NULL)
+        virBufferAdd(buf, "(apic 1)", 8);
+    if (virXPathNode("/domain/features/pae", ctxt) != NULL)
+        virBufferAdd(buf, "(pae 1)", 7);
 
     res = virXPathBoolean("count(domain/devices/console) > 0", ctxt);
     if (res < 0) {
@@ -717,25 +722,24 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf
         virBufferAdd(buf, "(serial pty)", 12);
     }
 
-    /* Is a graphics device specified? */
-    cur = virXPathNode("/domain/devices/graphics[1]", ctxt);
-    if (cur != NULL) {
-        res = virDomainParseXMLGraphicsDescImage(conn, cur, buf,
-	                                         xendConfigVersion);
-        if (res != 0) {
-            goto error;
+    /* HVM graphics for xen <= 3.0.5 */
+    if (xendConfigVersion < 4) {
+        /* Is a graphics device specified? */
+        cur = virXPathNode("/domain/devices/graphics[1]", ctxt);
+        if (cur != NULL) {
+            res = virDomainParseXMLGraphicsDescImage(conn, cur, buf,
+                                                     xendConfigVersion);
+            if (res != 0) {
+                goto error;
+            }
         }
     }
 
     virBufferAdd(buf, "))", 2);
 
-    if (boot_dev)
-        xmlFree(boot_dev);
-
     return (0);
+
  error:
-    if (boot_dev)
-        xmlFree(boot_dev);
     return(-1);
 }
 
@@ -821,13 +825,12 @@ virDomainParseXMLOSDescPV(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf,
     if (cmdline != NULL)
         virBufferVSprintf(buf, "(args '%s')", (const char *) cmdline);
 
-    /* Is a graphics device specified? */
-    /* Old style config before merge of PVFB */
+    /* PV graphics for xen <= 3.0.4 */
     if (xendConfigVersion < 3) {
         cur = virXPathNode("/domain/devices/graphics[1]", ctxt);
         if (cur != NULL) {
             res = virDomainParseXMLGraphicsDescImage(conn, cur, buf,
-	                                             xendConfigVersion);
+                                                     xendConfigVersion);
             if (res != 0) {
                 goto error;
             }
@@ -1326,7 +1329,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
                 goto error;
             }
         }
-	free(nodes);
+        free(nodes);
     }
 
     nb_nodes = virXPathNodeSet("/domain/devices/interface", ctxt, &nodes);
@@ -1340,21 +1343,23 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
             }
             virBufferAdd(&buf, ")", 1);
         }
-	free(nodes);
+        free(nodes);
     }
 
-    /* New style PVFB config  - 3.0.4 merge */
-    if (xendConfigVersion >= 3 && !hvm) {
+    /* New style PV graphics config xen >= 3.0.4,
+     * or HVM graphics config xen >= 3.0.5 */
+    if ((xendConfigVersion >= 3 && !hvm) ||
+        (xendConfigVersion >= 4 && hvm)) {
         nb_nodes = virXPathNodeSet("/domain/devices/graphics", ctxt, &nodes);
-	if (nb_nodes > 0) {
+        if (nb_nodes > 0) {
             for (i = 0; i < nb_nodes; i++) {
                 res = virDomainParseXMLGraphicsDescVFB(conn, nodes[i], &buf);
                 if (res != 0) {
-		    free(nodes);
+                    free(nodes);
                     goto error;
                 }
             }
-	    free(nodes);
+            free(nodes);
         }
     }
 

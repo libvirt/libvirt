@@ -741,8 +741,6 @@ xenStoreDomainGetOSType(virDomainPtr domain) {
         str = virDomainGetVMInfo(domain, vm, "image/ostype");
         free(vm);
     }
-    if (str == NULL)
-        str = strdup("linux");
 
     return (str);
 }

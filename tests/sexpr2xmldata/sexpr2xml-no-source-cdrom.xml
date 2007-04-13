@@ -19,7 +19,8 @@
   </features>
   <devices>
     <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
-    <interface type='ethernet'>
+    <interface type='bridge'>
+      <source bridge='xenbr0'/>
       <mac address='00:16:3e:0a:7b:39'/>
     </interface>
     <disk type='block' device='disk'>

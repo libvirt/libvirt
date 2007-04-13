@@ -546,13 +546,14 @@ xenUnifiedDomainGetVcpus (virDomainPtr dom,
                           virVcpuInfoPtr info, int maxinfo,
                           unsigned char *cpumaps, int maplen)
 {
-    int i;
+    int i, ret;
 
     for (i = 0; i < nb_drivers; ++i)
-        if (drivers[i]->domainGetVcpus &&
-            drivers[i]->domainGetVcpus (dom, info, maxinfo, cpumaps, maplen) == 0)
-            return 0;
-
+        if (drivers[i]->domainGetVcpus) {
+            ret = drivers[i]->domainGetVcpus (dom, info, maxinfo, cpumaps, maplen);
+            if (ret > 0)
+                return ret;
+        }
     return -1;
 }
 
