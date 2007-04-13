@@ -1,3 +1,8 @@
+Fri Apr 13 10:00:04 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: fixed a bad messaging mechanism preventing localization
+	  and raised by Thomas Canniot
+
 Thu Apr 12 19:51:00 EST 2007 Daniel Berrange <berrange@redhat.com>
 
 	* src/xen_internal.c: Updated structs to work with new Xen 3.0.5

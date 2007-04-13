@@ -327,14 +327,20 @@ cmdAutostart(vshControl * ctl, vshCmd * cmd)
     autostart = !vshCommandOptBool(cmd, "disable");
 
     if (virDomainSetAutostart(dom, autostart) < 0) {
-        vshError(ctl, FALSE, _("Failed to %smark domain %s as autostarted"),
-                 autostart ? "" : "un", name);
+        if (autostart)
+	    vshError(ctl, FALSE, _("Failed to mark domain %s as autostarted"),
+                     name);
+	else
+	    vshError(ctl, FALSE, _("Failed to unmark domain %s as autostarted"),
+                     name);
         virDomainFree(dom);
         return FALSE;
     }
 
-    vshPrint(ctl, _("Domain %s %smarked as autostarted\n"),
-             name, autostart ? "" : "un");
+    if (autostart)
+	vshPrint(ctl, _("Domain %s marked as autostarted\n"), name);
+    else
+	vshPrint(ctl, _("Domain %s unmarked as autostarted\n"), name);
 
     return TRUE;
 }
@@ -1754,14 +1760,20 @@ cmdNetworkAutostart(vshControl * ctl, vshCmd * cmd)
     autostart = !vshCommandOptBool(cmd, "disable");
 
     if (virNetworkSetAutostart(network, autostart) < 0) {
-        vshError(ctl, FALSE, _("Failed to %smark network %s as autostarted"),
-                 autostart ? "" : "un", name);
+        if (autostart)
+	    vshError(ctl, FALSE, _("failed to mark network %s as autostarted"),
+                                   name);
+	else
+	    vshError(ctl, FALSE,_("failed to unmark network %s as autostarted"),
+                                   name);
         virNetworkFree(network);
         return FALSE;
     }
 
-    vshPrint(ctl, _("Network %s %smarked as autostarted\n"),
-             name, autostart ? "" : "un");
+    if (autostart)
+	vshPrint(ctl, _("Network %s marked as autostarted\n"), name);
+    else
+	vshPrint(ctl, _("Network %s unmarked as autostarted\n"), name);
 
     return TRUE;
 }
