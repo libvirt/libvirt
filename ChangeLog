@@ -1,3 +1,8 @@
+Sun Apr 15 15:57:04 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/driver.c: Fixed integer overflow in calculating CPU time
+	for qemu guests - use long long throughout.
+
 Fri Apr 13 10:07:04 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c: Back out accidental commit of code which

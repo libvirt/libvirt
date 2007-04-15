@@ -197,7 +197,7 @@ int qemudGetCPUInfo(unsigned int *cpus, unsigned int *mhz,
 static int qemudGetProcessInfo(unsigned long long *cpuTime, int pid) {
     char proc[PATH_MAX];
     FILE *pidinfo;
-    unsigned long usertime, systime;
+    unsigned long long usertime, systime;
 
     if (snprintf(proc, sizeof(proc), "/proc/%d/stat", pid) >= (int)sizeof(proc)) {
         return -1;
@@ -210,7 +210,7 @@ static int qemudGetProcessInfo(unsigned long long *cpuTime, int pid) {
         return 0;
     }
 
-    if (fscanf(pidinfo, "%*d %*s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %lu %lu", &usertime, &systime) != 2) {
+    if (fscanf(pidinfo, "%*d %*s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %llu %llu", &usertime, &systime) != 2) {
         qemudDebug("not enough arg");
         return -1;
     }
@@ -220,9 +220,9 @@ static int qemudGetProcessInfo(unsigned long long *cpuTime, int pid) {
      * _SC_CLK_TCK is jiffies per second
      * So calulate thus....
      */
-    *cpuTime = 1000 * 1000 * 1000 * (usertime + systime) / sysconf(_SC_CLK_TCK);
+    *cpuTime = 1000ull * 1000ull * 1000ull * (usertime + systime) / (unsigned long long)sysconf(_SC_CLK_TCK);
 
-    qemudDebug("Got %lu %lu %lld", usertime, systime, *cpuTime);
+    qemudDebug("Got %llu %llu %llu", usertime, systime, *cpuTime);
 
     fclose(pidinfo);
 
