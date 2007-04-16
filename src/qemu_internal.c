@@ -682,6 +682,17 @@ static int qemuDestroyDomain(virDomainPtr domain) {
     return 0;
 }
 
+static char *qemuDomainGetOSType(virDomainPtr domain ATTRIBUTE_UNUSED) {
+    char *type = strdup("hvm");
+
+    if (!type) {
+        qemuError (domain->conn, domain, VIR_ERR_NO_MEMORY, __FUNCTION__);
+        return NULL;
+    }
+
+    return type;
+}
+
 static int qemuShutdownDomain(virDomainPtr domain) {
     return qemuDestroyDomain(domain);
 }
@@ -1304,7 +1315,7 @@ static virDriver qemuDriver = {
     qemuShutdownDomain, /* domainShutdown */
     NULL, /* domainReboot */
     qemuDestroyDomain, /* domainDestroy */
-    NULL, /* domainGetOSType */
+    qemuDomainGetOSType, /* domainGetOSType */
     NULL, /* domainGetMaxMemory */
     NULL, /* domainSetMaxMemory */
     NULL, /* domainSetMemory */

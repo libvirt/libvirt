@@ -1,3 +1,8 @@
+Mon Apr 16 09:09:04 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_internal.c: Implement virDomainGetOSType driver method
+	for QEMU guests
+
 Mon Apr 16 08:30:04 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* python/generator.py, python/libvir.py: Ensure that connection
