@@ -33,7 +33,7 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <arpa/inet.h>
-
+#include <sys/utsname.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -299,12 +299,21 @@ static int qemudExtractVersionInfo(const char *qemu, int *version, int *flags) {
 
 int qemudExtractVersion(struct qemud_server *server) {
     char *binary = NULL;
+    struct stat sb;
 
     if (server->qemuVersion > 0)
         return 0;
 
     if (!(binary = qemudLocateBinaryForArch(server, QEMUD_VIRT_QEMU, "i686")))
         return -1;
+
+    if (stat(binary, &sb) < 0) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "Cannot find QEMU binary %s: %s", binary,
+                         strerror(errno));
+        free(binary);
+        return -1;
+    }
 
     if (qemudExtractVersionInfo(binary, &server->qemuVersion, &server->qemuCmdFlags) < 0) {
         free(binary);
@@ -1163,16 +1172,48 @@ int qemudBuildCommandLine(struct qemud_server *server,
     char memory[50];
     char vcpus[50];
     char boot[QEMUD_MAX_BOOT_DEVS+1];
+    struct stat sb;
     struct qemud_vm_disk_def *disk = vm->def->disks;
     struct qemud_vm_net_def *net = vm->def->nets;
+    struct utsname ut;
+    int disableKQEMU = 0;
 
     if (qemudExtractVersion(server) < 0)
         return -1;
 
+    uname(&ut);
+
+    /* Nasty hack make i?86 look like i386 to simplify next comparison */
+    if (ut.machine[0] == 'i' &&
+        ut.machine[2] == '8' &&
+        ut.machine[3] == '6' &&
+        !ut.machine[4])
+        ut.machine[1] = '3';
+
+    /* Need to explicitly disable KQEMU if
+     * 1. Arch matches host arch
+     * 2. Guest is 'qemu'
+     * 3. The qemu binary has the -no-kqemu flag
+     */
+    if ((server->qemuCmdFlags & QEMUD_CMD_FLAG_KQEMU) &&
+        !strcmp(ut.machine, vm->def->os.arch) &&
+        vm->def->virtType == QEMUD_VIRT_QEMU)
+        disableKQEMU = 1;
+
+    /* Make sure the binary we are about to try exec'ing exists.
+     * Technically we could catch the exec() failure, but that's
+     * in a sub-process so its hard to feed back a useful error
+     */
+    if (stat(vm->def->os.binary, &sb) < 0) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "Cannot find QEMU binary %s: %s", vm->def->os.binary,
+                         strerror(errno));
+        return -1;
+    }
+
     len = 1 + /* qemu */
         2 + /* machine type */
-        (((server->qemuCmdFlags & QEMUD_CMD_FLAG_KQEMU) &&
-          (vm->def->virtType == QEMUD_VIRT_QEMU)) ? 1 : 0) + /* Disable kqemu */
+        disableKQEMU + /* Disable kqemu */
         2 * vm->def->ndisks + /* disks*/
         (vm->def->nnets > 0 ? (4 * vm->def->nnets) : 2) + /* networks */
         2 + /* memory*/
@@ -1197,8 +1238,7 @@ int qemudBuildCommandLine(struct qemud_server *server,
         goto no_memory;
     if (!((*argv)[++n] = strdup(vm->def->os.machine)))
         goto no_memory;
-    if ((server->qemuCmdFlags & QEMUD_CMD_FLAG_KQEMU) && 
-        (vm->def->virtType == QEMUD_VIRT_QEMU)) {
+    if (disableKQEMU) {
         if (!((*argv)[++n] = strdup("-no-kqemu")))
             goto no_memory;
     }
