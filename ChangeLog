@@ -1,3 +1,9 @@
+Mon Apr 16 08:30:04 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* python/generator.py, python/libvir.py: Ensure that connection
+	info is passed into virError object when a virNetwork or virDomain
+	operation fails
+
 Sun Apr 15 15:57:04 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/driver.c: Fixed integer overflow in calculating CPU time

@@ -9,8 +9,13 @@ import types
 
 # The root of all libvirt errors.
 class libvirtError(Exception):
-    def __init__(self, msg, conn=None):
+    def __init__(self, msg, conn=None, dom=None, net=None):
         Exception.__init__(self, msg)
+
+        if dom is not None:
+            conn = dom._conn
+        elif net is not None:
+            conn = net._conn
 
         if conn is None:
             self.err = virGetLastError()

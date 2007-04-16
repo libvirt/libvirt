@@ -535,10 +535,10 @@ def buildStubs():
 # The type automatically remapped to generated classes
 #
 classes_type = {
-    "virDomainPtr": ("._o", "virDomain(_obj=%s)", "virDomain"),
-    "virDomain *": ("._o", "virDomain(_obj=%s)", "virDomain"),
-    "virNetworkPtr": ("._o", "virNetwork(_obj=%s)", "virNetwork"),
-    "virNetwork *": ("._o", "virNetwork(_obj=%s)", "virNetwork"),
+    "virDomainPtr": ("._o", "virDomain(self,_obj=%s)", "virDomain"),
+    "virDomain *": ("._o", "virDomain(self, _obj=%s)", "virDomain"),
+    "virNetworkPtr": ("._o", "virNetwork(self, _obj=%s)", "virNetwork"),
+    "virNetwork *": ("._o", "virNetwork(self, _obj=%s)", "virNetwork"),
     "virConnectPtr": ("._o", "virConnect(_obj=%s)", "virConnect"),
     "virConnect *": ("._o", "virConnect(_obj=%s)", "virConnect"),
 }
@@ -554,11 +554,6 @@ classes_destructors = {
     "virDomain": "virDomainFree",
     "virNetwork": "virNetworkFree",
     "virConnect": "virConnectClose",
-}
-
-classes_references = {
-    "virDomain": "virConnect",
-    "virNetwork": "virConnect",
 }
 
 functions_noexcept = {
@@ -872,11 +867,16 @@ def buildWrappers():
 	    else:
 		txt.write("Class %s()\n" % (classname))
 		classes.write("class %s:\n" % (classname))
-		classes.write("    def __init__(self, _obj=None):\n")
+                if classname == "virDomain" or classname == "virNetwork":
+                    classes.write("    def __init__(self, conn, _obj=None):\n")
+                else:
+                    classes.write("    def __init__(self, _obj=None):\n")
 		if reference_keepers.has_key(classname):
 		    list = reference_keepers[classname]
 		    for ref in list:
 		        classes.write("        self.%s = None\n" % ref[1])
+                if classname == "virDomain" or classname == "virNetwork":
+                    classes.write("        self._conn = conn\n")
 		classes.write("        if _obj != None:self._o = _obj;return\n")
 		classes.write("        self._o = None\n\n");
 	    destruct=None
@@ -961,6 +961,14 @@ def buildWrappers():
                                 classes.write(
 		     "        if ret is None:raise libvirtError('%s() failed', conn=self)\n" %
                                               (name))
+                            elif classname == "virDomain":
+                                classes.write(
+		     "        if ret is None:raise libvirtError('%s() failed', dom=self)\n" %
+                                              (name))
+                            elif classname == "virNetwork":
+                                classes.write(
+		     "        if ret is None:raise libvirtError('%s() failed', net=self)\n" %
+                                              (name))
                             else:
                                 classes.write(
 		     "        if ret is None:raise libvirtError('%s() failed')\n" %
@@ -972,12 +980,6 @@ def buildWrappers():
 			classes.write("        __tmp = ");
 			classes.write(classes_type[ret[0]][1] % ("ret"));
 			classes.write("\n");
-
-			#
-			# hook up a reference if needed
-			#
-			if classes_references.has_key(classes_type[ret[0]][2]):
-			    classes.write("        __tmp.ref = self\n");
 
                         #
 			# Sometime one need to keep references of the source
@@ -1031,6 +1033,14 @@ def buildWrappers():
                                 classes.write (("        if " + test +
                                                 ": raise libvirtError ('%s() failed', conn=self)\n") %
                                                ("ret", name))
+                            elif classname == "virDomain":
+                                classes.write (("        if " + test +
+                                                ": raise libvirtError ('%s() failed', dom=self)\n") %
+                                               ("ret", name))
+                            elif classname == "virNetwork":
+                                classes.write (("        if " + test +
+                                                ": raise libvirtError ('%s() failed', net=self)\n") %
+                                               ("ret", name))
                             else:
                                 classes.write (("        if " + test +
                                                 ": raise libvirtError ('%s() failed')\n") %
@@ -1052,6 +1062,14 @@ def buildWrappers():
                             if classname == "virConnect":
                                 classes.write (("        if " + test +
                                                 ": raise libvirtError ('%s() failed', conn=self)\n") %
+                                               ("ret", name))
+                            elif classname == "virDomain":
+                                classes.write (("        if " + test +
+                                                ": raise libvirtError ('%s() failed', dom=self)\n") %
+                                               ("ret", name))
+                            elif classname == "virNetwork":
+                                classes.write (("        if " + test +
+                                                ": raise libvirtError ('%s() failed', net=self)\n") %
                                                ("ret", name))
                             else:
                                 classes.write (("        if " + test +
