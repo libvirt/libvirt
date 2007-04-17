@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zh_CN\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-03-26 12:07+0200\n"
+"POT-Creation-Date: 2007-04-17 11:31+0200\n"
 "PO-Revision-Date: 2007-01-17 15:28+1000\n"
 "Last-Translator: Tony Fu <tfu@redhat.com>\n"
 "Language-Team:  <zh@li.org>\n"
@@ -21,13 +21,9 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libvirt.c:297 src/libvirt.c:372 src/hash.c:664
+#: src/libvirt.c:278 src/hash.c:664
 msgid "allocating connection"
 msgstr "正在分配连接"
-
-#: src/libvirt.c:394
-msgid "Xen Daemon or Xen Store"
-msgstr "Xen后台或者Xen存储"
 
 #: src/virterror.c:243
 msgid "warning"
@@ -391,7 +387,7 @@ msgstr "分配应答"
 msgid "read response"
 msgstr "读取应答"
 
-#: src/xmlrpc.c:484
+#: src/xmlrpc.c:484 src/xml.c:261
 msgid "allocate string array"
 msgstr "分配字符串数组"
 
@@ -403,164 +399,164 @@ msgstr "解析服务器应答失败"
 msgid "allocate new context"
 msgstr "分配新的上下文"
 
-#: src/hash.c:769 src/hash.c:774 src/test.c:906 src/test.c:935 src/test.c:958
-#: src/test.c:982 src/xend_internal.c:1820 src/xend_internal.c:2602
-#: src/xend_internal.c:2845 src/xs_internal.c:607 src/proxy_internal.c:798
-#: src/proxy_internal.c:845 src/proxy_internal.c:896
+#: src/hash.c:770 src/hash.c:775 src/test.c:896 src/test.c:926 src/test.c:950
+#: src/test.c:975 src/xend_internal.c:1863 src/xend_internal.c:2709
+#: src/xend_internal.c:2958 src/xs_internal.c:648 src/proxy_internal.c:832
+#: src/proxy_internal.c:879 src/proxy_internal.c:930
 msgid "allocating domain"
 msgstr "正在分配域名"
 
-#: src/hash.c:785
+#: src/hash.c:786
 msgid "failed to add domain to connection hash table"
 msgstr "添加域名到哈希链表失败"
 
-#: src/hash.c:837
+#: src/hash.c:838
 msgid "domain missing from connection hash table"
 msgstr "域名从哈希链表中丢失"
 
-#: src/hash.c:951 src/hash.c:956
+#: src/hash.c:952 src/hash.c:957
 #, fuzzy
 msgid "allocating network"
 msgstr "分配域"
 
-#: src/hash.c:966
+#: src/hash.c:967
 #, fuzzy
 msgid "failed to add network to connection hash table"
 msgstr "添加域名到哈希链表失败"
 
-#: src/hash.c:1018
+#: src/hash.c:1019
 #, fuzzy
 msgid "network missing from connection hash table"
 msgstr "域名从哈希链表中丢失"
 
-#: src/test.c:273 src/test.c:484 src/test.c:1089 src/test.c:1120
-#: src/test.c:1171
+#: src/test.c:281 src/test.c:468 src/test.c:1099 src/test.c:1133
+#: src/test.c:1187
 msgid "getting time of day"
 msgstr "正在获得一天当中的时间"
 
-#: src/test.c:279 src/test.c:439 src/test.c:464 src/test.c:1360
+#: src/test.c:287 src/test.c:422 src/test.c:447 src/test.c:1393
 msgid "domain"
 msgstr "域"
 
-#: src/test.c:285 src/test.c:564
+#: src/test.c:293 src/test.c:551
 msgid "creating xpath context"
 msgstr "正在创建xpath上下文"
 
-#: src/test.c:292
+#: src/test.c:299
 msgid "domain name"
 msgstr "域名"
 
-#: src/test.c:301 src/test.c:306
+#: src/test.c:305 src/test.c:310
 msgid "domain uuid"
 msgstr "域的唯一标识符"
 
-#: src/test.c:314 src/test.c:319
+#: src/test.c:318
 msgid "domain memory"
 msgstr "域内存"
 
-#: src/test.c:332
+#: src/test.c:327
 #, fuzzy
 msgid "domain current memory"
 msgstr "域内存"
 
-#: src/test.c:349
+#: src/test.c:337
 msgid "domain vcpus"
 msgstr "域 vcpus"
 
-#: src/test.c:360
+#: src/test.c:346
 msgid "domain reboot behaviour"
 msgstr "域重新启动行为"
 
-#: src/test.c:371
+#: src/test.c:356
 msgid "domain poweroff behaviour"
 msgstr "域关闭行为"
 
-#: src/test.c:382
+#: src/test.c:366
 msgid "domain crash behaviour"
 msgstr "域崩溃行为"
 
-#: src/test.c:457
+#: src/test.c:440
 msgid "load domain definition file"
 msgstr "读取域定义文件"
 
-#: src/test.c:543
+#: src/test.c:530
 msgid "loading host definition file"
 msgstr "读取主机定义文件"
 
-#: src/test.c:550
+#: src/test.c:537
 msgid "host"
 msgstr "主机"
 
-#: src/test.c:558
+#: src/test.c:545
 msgid "node"
 msgstr "节点"
 
-#: src/test.c:580
+#: src/test.c:565
 msgid "node cpu numa nodes"
 msgstr "节点 cpu 的 numa 节点"
 
-#: src/test.c:592
+#: src/test.c:573
 msgid "node cpu sockets"
 msgstr "节点 cpu socket"
 
-#: src/test.c:604
+#: src/test.c:581
 msgid "node cpu cores"
 msgstr "节点 cpu 核心"
 
-#: src/test.c:616
+#: src/test.c:589
 msgid "node cpu threads"
 msgstr "节点 cpu 线程"
 
-#: src/test.c:628
+#: src/test.c:600
 msgid "node active cpu"
 msgstr "节点活跃 cpu"
 
-#: src/test.c:642
+#: src/test.c:607
 msgid "node cpu mhz"
 msgstr "节点 cpu mhz"
 
-#: src/test.c:661
+#: src/test.c:622
 msgid "node memory"
 msgstr "节点内存"
 
-#: src/test.c:670
+#: src/test.c:628
 msgid "node domain list"
 msgstr "节点域列表"
 
-#: src/test.c:680
+#: src/test.c:638
 msgid "resolving domain filename"
 msgstr "解析域文件名"
 
-#: src/test.c:719
+#: src/test.c:676
 msgid "allocating node"
 msgstr "分配域"
 
-#: src/test.c:775
+#: src/test.c:734
 msgid "too many connections"
 msgstr "太多的连接"
 
-#: src/test.c:891
+#: src/test.c:881
 msgid "too many domains"
 msgstr "太多的域"
 
-#: src/test.c:1389
+#: src/test.c:1425
 #, fuzzy
 msgid "Domain is already running"
 msgstr "域已经活跃"
 
-#: src/test.c:1413
+#: src/test.c:1452
 msgid "Domain is still running"
 msgstr ""
 
-#: src/xml.c:67
+#: src/xml.c:295
 msgid "growing buffer"
 msgstr "增长的缓冲"
 
-#: src/xml.c:119 src/xend_internal.c:1474 src/xend_internal.c:1493
+#: src/xml.c:347 src/xend_internal.c:1508 src/xend_internal.c:1527
 msgid "allocate new buffer"
 msgstr "分配新缓冲"
 
-#: src/xml.c:123
+#: src/xml.c:351
 msgid "allocate buffer content"
 msgstr "分配缓冲内容"
 
@@ -572,60 +568,61 @@ msgstr "分配一个节点失败"
 msgid "failed to copy a string"
 msgstr "复制一个字符串失败"
 
-#: src/xend_internal.c:278 src/xend_internal.c:281
+#: src/xend_internal.c:282 src/xend_internal.c:285
 msgid "failed to read from Xen Daemon"
 msgstr "从 Xen 守护进程读失败"
 
-#: src/xend_internal.c:998
+#: src/xend_internal.c:1006
 msgid "failed to urlencode the create S-Expr"
 msgstr "urlencode 创建的 S-Expr 失败"
 
-#: src/xend_internal.c:1039
+#: src/xend_internal.c:1047
 msgid "domain information incomplete, missing domid"
 msgstr "域信息不完全，缺少 domid"
 
-#: src/xend_internal.c:1045
+#: src/xend_internal.c:1053
 msgid "domain information incorrect domid not numeric"
 msgstr "域信息不正确，domid 不是数字值"
 
-#: src/xend_internal.c:1053 src/xend_internal.c:1102
+#: src/xend_internal.c:1061 src/xend_internal.c:1110
 msgid "domain information incomplete, missing uuid"
 msgstr "域信息不完全，缺少 uuid"
 
-#: src/xend_internal.c:1093 src/xend_internal.c:1357
+#: src/xend_internal.c:1101 src/xend_internal.c:1376
 msgid "domain information incomplete, missing name"
 msgstr "域信息不完全，缺少名称"
 
-#: src/xend_internal.c:1264 src/xend_internal.c:1289
-msgid "domain information incomplete, missing kernel"
+#: src/xend_internal.c:1276 src/xend_internal.c:1307
+#, fuzzy
+msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "域信息不完全，缺少内核"
 
-#: src/xend_internal.c:1345
+#: src/xend_internal.c:1364
 #, fuzzy
 msgid "domain information incomplete, missing id"
 msgstr "域信息不完全，缺少 uuid"
 
-#: src/xend_internal.c:1453
-msgid "domain information incomplete, vbd has no src"
-msgstr "域信息不完全，vbd 没有 src"
-
-#: src/xend_internal.c:1459
+#: src/xend_internal.c:1477
 msgid "domain information incomplete, vbd has no dev"
 msgstr "域信息不完全，vbd 没有 dev"
 
-#: src/xend_internal.c:1467
+#: src/xend_internal.c:1492
+msgid "domain information incomplete, vbd has no src"
+msgstr "域信息不完全，vbd 没有 src"
+
+#: src/xend_internal.c:1501
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "缺少驱动名，无法解释 vbd 文件名"
 
-#: src/xend_internal.c:1486
+#: src/xend_internal.c:1520
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "缺少驱动类型，无法解释 vbd 文件名"
 
-#: src/xend_internal.c:1839
+#: src/xend_internal.c:1882
 msgid "failed to parse Xend domain information"
 msgstr "解释 Xend 域信息失败"
 
-#: src/xend_internal.c:3022
+#: src/xend_internal.c:3145
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "创建域 %s 失败\n"
@@ -655,884 +652,907 @@ msgstr "开始一个域"
 msgid "Configure a domain to be automatically started at boot."
 msgstr ""
 
-#: src/virsh.c:309 src/virsh.c:403 src/virsh.c:589 src/virsh.c:627
-#: src/virsh.c:858 src/virsh.c:940 src/virsh.c:985 src/virsh.c:1024
-#: src/virsh.c:1063 src/virsh.c:1102 src/virsh.c:1141 src/virsh.c:1218
-#: src/virsh.c:1301 src/virsh.c:1391 src/virsh.c:1447 src/virsh.c:1491
-#: src/virsh.c:1596 src/virsh.c:2326
+#: src/virsh.c:309 src/virsh.c:409 src/virsh.c:595 src/virsh.c:633
+#: src/virsh.c:864 src/virsh.c:946 src/virsh.c:991 src/virsh.c:1030
+#: src/virsh.c:1069 src/virsh.c:1108 src/virsh.c:1147 src/virsh.c:1224
+#: src/virsh.c:1307 src/virsh.c:1397 src/virsh.c:1453 src/virsh.c:1497
+#: src/virsh.c:1602 src/virsh.c:2338
 msgid "domain name, id or uuid"
 msgstr "域名，id 或 uuid"
 
-#: src/virsh.c:310 src/virsh.c:1737
+#: src/virsh.c:310 src/virsh.c:1743
 msgid "disable autostarting"
 msgstr ""
 
-#: src/virsh.c:330
+#: src/virsh.c:331
 #, fuzzy, c-format
-msgid "Failed to %smark domain %s as autostarted"
+msgid "Failed to mark domain %s as autostarted"
 msgstr "把域 %s 存到 %s 失败"
 
-#: src/virsh.c:336
+#: src/virsh.c:334
 #, fuzzy, c-format
-msgid "Domain %s %smarked as autostarted\n"
+msgid "Failed to unmark domain %s as autostarted"
+msgstr "把域 %s 存到 %s 失败"
+
+#: src/virsh.c:341
+#, fuzzy, c-format
+msgid "Domain %s marked as autostarted\n"
 msgstr "域 %s 已开始\n"
 
-#: src/virsh.c:347
+#: src/virsh.c:343
+#, fuzzy, c-format
+msgid "Domain %s unmarked as autostarted\n"
+msgstr "域 %s 已开始\n"
+
+#: src/virsh.c:353
 msgid "(re)connect to hypervisor"
 msgstr "连接（重新连接）到 hypervisor"
 
-#: src/virsh.c:349
+#: src/virsh.c:355
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr "连接到本地 hypervisor。这是在 shell 启动后内建的命令。"
 
-#: src/virsh.c:354
+#: src/virsh.c:360
 msgid "hypervisor connection URI"
 msgstr "hypervisor 连接 URI"
 
-#: src/virsh.c:355
+#: src/virsh.c:361
 msgid "read-only connection"
 msgstr "只读连接"
 
-#: src/virsh.c:367
+#: src/virsh.c:373
 msgid "Failed to disconnect from the hypervisor"
 msgstr "从 hypervisor 断开连接失败"
 
-#: src/virsh.c:386
+#: src/virsh.c:392
 msgid "Failed to connect to the hypervisor"
 msgstr "连接到 hypervisor 失败"
 
-#: src/virsh.c:396
+#: src/virsh.c:402
 msgid "connect to the guest console"
 msgstr ""
 
-#: src/virsh.c:398
+#: src/virsh.c:404
 msgid "Connect the virtual serial console for the guest"
 msgstr ""
 
-#: src/virsh.c:443
+#: src/virsh.c:449
 msgid "No console available for domain\n"
 msgstr ""
 
-#: src/virsh.c:461
+#: src/virsh.c:467
 msgid "list domains"
 msgstr "列出域"
 
-#: src/virsh.c:462
+#: src/virsh.c:468
 msgid "Returns list of domains."
 msgstr "返回域列表"
 
-#: src/virsh.c:467
+#: src/virsh.c:473
 msgid "list inactive domains"
 msgstr "列出不活跃的域"
 
-#: src/virsh.c:468
+#: src/virsh.c:474
 msgid "list inactive & active domains"
 msgstr "不活跃和活跃的域列表"
 
-#: src/virsh.c:490 src/virsh.c:497
+#: src/virsh.c:496 src/virsh.c:503
 msgid "Failed to list active domains"
 msgstr "列出活跃的域失败"
 
-#: src/virsh.c:508 src/virsh.c:517
+#: src/virsh.c:514 src/virsh.c:523
 msgid "Failed to list inactive domains"
 msgstr "列出不活跃的域失败"
 
-#: src/virsh.c:527
+#: src/virsh.c:533
 msgid "Id"
 msgstr "Id"
 
-#: src/virsh.c:527 src/virsh.c:2032
+#: src/virsh.c:533 src/virsh.c:2044
 msgid "Name"
 msgstr "名称"
 
-#: src/virsh.c:527 src/virsh.c:2032
+#: src/virsh.c:533 src/virsh.c:2044
 msgid "State"
 msgstr "状态"
 
-#: src/virsh.c:540 src/virsh.c:562 src/virsh.c:3051 src/virsh.c:3067
+#: src/virsh.c:546 src/virsh.c:568 src/virsh.c:3063 src/virsh.c:3079
 msgid "no state"
 msgstr "没有状态"
 
-#: src/virsh.c:583
+#: src/virsh.c:589
 msgid "domain state"
 msgstr "域状态"
 
-#: src/virsh.c:584
+#: src/virsh.c:590
 msgid "Returns state about a running domain."
 msgstr "返回一个运行域的状态。"
 
-#: src/virsh.c:621
+#: src/virsh.c:627
 msgid "suspend a domain"
 msgstr "挂起一个域"
 
-#: src/virsh.c:622
+#: src/virsh.c:628
 msgid "Suspend a running domain."
 msgstr "挂起一个运行的域。"
 
-#: src/virsh.c:645
+#: src/virsh.c:651
 #, c-format
 msgid "Domain %s suspended\n"
 msgstr "域 %s 被挂起\n"
 
-#: src/virsh.c:647
+#: src/virsh.c:653
 #, c-format
 msgid "Failed to suspend domain %s"
 msgstr "挂起 %s 域失败"
 
-#: src/virsh.c:660
+#: src/virsh.c:666
 msgid "create a domain from an XML file"
 msgstr "从一个 XML 文件创建一个域"
 
-#: src/virsh.c:661
+#: src/virsh.c:667
 msgid "Create a domain."
 msgstr "创建一个域"
 
-#: src/virsh.c:666 src/virsh.c:721
+#: src/virsh.c:672
 msgid "file conatining an XML domain description"
 msgstr "文件包括一个 XML 域描述"
 
-#: src/virsh.c:689 src/virsh.c:694 src/virsh.c:744 src/virsh.c:749
-#: src/virsh.c:1803 src/virsh.c:1808 src/virsh.c:1859 src/virsh.c:1864
+#: src/virsh.c:695 src/virsh.c:700 src/virsh.c:750 src/virsh.c:755
+#: src/virsh.c:1815 src/virsh.c:1820 src/virsh.c:1871 src/virsh.c:1876
 #, c-format
 msgid "Failed to read description file %s"
 msgstr "读描述文件 %s 失败"
 
-#: src/virsh.c:701
+#: src/virsh.c:707
 #, c-format
 msgid "Domain %s created from %s\n"
 msgstr "域 %s 被创建（从 %s）\n"
 
-#: src/virsh.c:704
+#: src/virsh.c:710
 #, c-format
 msgid "Failed to create domain from %s"
 msgstr "从 %s 创建域失败"
 
-#: src/virsh.c:715
+#: src/virsh.c:721
 msgid "define (but don't start) a domain from an XML file"
 msgstr "从一个 XML 文件定义（但不开始）一个域"
 
-#: src/virsh.c:716
+#: src/virsh.c:722
 msgid "Define a domain."
 msgstr "定义一个域。"
 
-#: src/virsh.c:756
+#: src/virsh.c:727
+#, fuzzy
+msgid "file containing an XML domain description"
+msgstr "文件包括一个 XML 域描述"
+
+#: src/virsh.c:762
 #, c-format
 msgid "Domain %s defined from %s\n"
 msgstr "定义域 %s（从 %s）\n"
 
-#: src/virsh.c:759
+#: src/virsh.c:765
 #, c-format
 msgid "Failed to define domain from %s"
 msgstr "从 %s 定义域失败"
 
-#: src/virsh.c:770
+#: src/virsh.c:776
 msgid "undefine an inactive domain"
 msgstr "取消定义一个非活跃的域"
 
-#: src/virsh.c:771
+#: src/virsh.c:777
 msgid "Undefine the configuration for an inactive domain."
 msgstr "取消定义一个非活跃域的配置。"
 
-#: src/virsh.c:776 src/virsh.c:1665
+#: src/virsh.c:782 src/virsh.c:1671
 msgid "domain name or uuid"
 msgstr "域名或 uuid"
 
-#: src/virsh.c:794
+#: src/virsh.c:800
 #, c-format
 msgid "Domain %s has been undefined\n"
 msgstr "域 %s 已经被取消定义\n"
 
-#: src/virsh.c:796
+#: src/virsh.c:802
 #, c-format
 msgid "Failed to undefine domain %s"
 msgstr "取消定义域 %s 失败"
 
-#: src/virsh.c:809
+#: src/virsh.c:815
 msgid "start a (previously defined) inactive domain"
 msgstr "开始一个（以前定义的）非活跃的域"
 
-#: src/virsh.c:810
+#: src/virsh.c:816
 msgid "Start a domain."
 msgstr "开始一个域"
 
-#: src/virsh.c:815
+#: src/virsh.c:821
 msgid "name of the inactive domain"
 msgstr "非活跃域的名称"
 
-#: src/virsh.c:832
+#: src/virsh.c:838
 msgid "Domain is already active"
 msgstr "域已经活跃"
 
-#: src/virsh.c:837
+#: src/virsh.c:843
 #, c-format
 msgid "Domain %s started\n"
 msgstr "域 %s 已开始\n"
 
-#: src/virsh.c:840
+#: src/virsh.c:846
 #, c-format
 msgid "Failed to start domain %s"
 msgstr "开始域 %s 失败"
 
-#: src/virsh.c:852
+#: src/virsh.c:858
 msgid "save a domain state to a file"
 msgstr "把一个域的状态保存到一个文件"
 
-#: src/virsh.c:853
+#: src/virsh.c:859
 msgid "Save a running domain."
 msgstr "保存一个运行的域。"
 
-#: src/virsh.c:859
+#: src/virsh.c:865
 msgid "where to save the data"
 msgstr "数据存到什么地方"
 
-#: src/virsh.c:881
+#: src/virsh.c:887
 #, c-format
 msgid "Domain %s saved to %s\n"
 msgstr "域 %s 被存到 %s\n"
 
-#: src/virsh.c:883
+#: src/virsh.c:889
 #, c-format
 msgid "Failed to save domain %s to %s"
 msgstr "把域 %s 存到 %s 失败"
 
-#: src/virsh.c:896
+#: src/virsh.c:902
 msgid "restore a domain from a saved state in a file"
 msgstr "从一个存在一个文件中的状态恢复一个域"
 
-#: src/virsh.c:897
+#: src/virsh.c:903
 msgid "Restore a domain."
 msgstr "恢复一个域。"
 
-#: src/virsh.c:902
+#: src/virsh.c:908
 msgid "the state to restore"
 msgstr "恢复的状态"
 
-#: src/virsh.c:921
+#: src/virsh.c:927
 #, c-format
 msgid "Domain restored from %s\n"
 msgstr "从 %s 恢复域\n"
 
-#: src/virsh.c:923
+#: src/virsh.c:929
 #, c-format
 msgid "Failed to restore domain from %s"
 msgstr "从 %s 恢复域失败"
 
-#: src/virsh.c:934
+#: src/virsh.c:940
 msgid "dump the core of a domain to a file for analysis"
 msgstr "把一个域的内核 dump 到一个文件中以方便分析"
 
-#: src/virsh.c:935
+#: src/virsh.c:941
 msgid "Core dump a domain."
 msgstr "内核 dump 一个域。"
 
-#: src/virsh.c:941
+#: src/virsh.c:947
 msgid "where to dump the core"
 msgstr "内核 dump 到什么地方"
 
-#: src/virsh.c:963
+#: src/virsh.c:969
 #, c-format
 msgid "Domain %s dumpd to %s\n"
 msgstr "域 %s 被 dump 到 %s\n"
 
-#: src/virsh.c:965
+#: src/virsh.c:971
 #, c-format
 msgid "Failed to core dump domain %s to %s"
 msgstr "内核 dump 域 %s 到 %s 失败"
 
-#: src/virsh.c:979
+#: src/virsh.c:985
 msgid "resume a domain"
 msgstr "重新恢复一个域"
 
-#: src/virsh.c:980
+#: src/virsh.c:986
 msgid "Resume a previously suspended domain."
 msgstr "重新恢复一个以前被挂起的域。"
 
-#: src/virsh.c:1003
+#: src/virsh.c:1009
 #, c-format
 msgid "Domain %s resumed\n"
 msgstr "域 %s 被重新恢复\n"
 
-#: src/virsh.c:1005
+#: src/virsh.c:1011
 #, c-format
 msgid "Failed to resume domain %s"
 msgstr "恢复域 %s 失败"
 
-#: src/virsh.c:1018
+#: src/virsh.c:1024
 msgid "gracefully shutdown a domain"
 msgstr "关闭一个域"
 
-#: src/virsh.c:1019
+#: src/virsh.c:1025
 msgid "Run shutdown in the target domain."
 msgstr "在目标域中执行关闭行为。"
 
-#: src/virsh.c:1042
+#: src/virsh.c:1048
 #, c-format
 msgid "Domain %s is being shutdown\n"
 msgstr "域 %s 被关闭\n"
 
-#: src/virsh.c:1044
+#: src/virsh.c:1050
 #, c-format
 msgid "Failed to shutdown domain %s"
 msgstr "关闭域 %s 失败"
 
-#: src/virsh.c:1057
+#: src/virsh.c:1063
 msgid "reboot a domain"
 msgstr "重新启动一个域"
 
-#: src/virsh.c:1058
+#: src/virsh.c:1064
 msgid "Run a reboot command in the target domain."
 msgstr "在目标域中执行重新启动命令。"
 
-#: src/virsh.c:1081
+#: src/virsh.c:1087
 #, c-format
 msgid "Domain %s is being rebooted\n"
 msgstr "域 %s 正在被重新启动\n"
 
-#: src/virsh.c:1083
+#: src/virsh.c:1089
 #, c-format
 msgid "Failed to reboot domain %s"
 msgstr "重新启动域 %s 失败"
 
-#: src/virsh.c:1096
+#: src/virsh.c:1102
 msgid "destroy a domain"
 msgstr "删除一个域"
 
-#: src/virsh.c:1097
+#: src/virsh.c:1103
 msgid "Destroy a given domain."
 msgstr "删除一个指定的域。"
 
-#: src/virsh.c:1120
+#: src/virsh.c:1126
 #, c-format
 msgid "Domain %s destroyed\n"
 msgstr "域 %s 被删除\n"
 
-#: src/virsh.c:1122
+#: src/virsh.c:1128
 #, c-format
 msgid "Failed to destroy domain %s"
 msgstr "删除域 %s 失败"
 
-#: src/virsh.c:1135
+#: src/virsh.c:1141
 msgid "domain information"
 msgstr "域信息"
 
-#: src/virsh.c:1136
+#: src/virsh.c:1142
 msgid "Returns basic information about the domain."
 msgstr "返回这个域的基本信息。"
 
-#: src/virsh.c:1162 src/virsh.c:1164
+#: src/virsh.c:1168 src/virsh.c:1170
 msgid "Id:"
 msgstr "Id:"
 
-#: src/virsh.c:1165
+#: src/virsh.c:1171
 msgid "Name:"
 msgstr "名称："
 
-#: src/virsh.c:1168
+#: src/virsh.c:1174
 msgid "UUID:"
 msgstr "UUID:"
 
-#: src/virsh.c:1171
+#: src/virsh.c:1177
 msgid "OS Type:"
 msgstr "OS 类型："
 
-#: src/virsh.c:1176 src/virsh.c:1262
+#: src/virsh.c:1182 src/virsh.c:1268
 msgid "State:"
 msgstr "状态："
 
-#: src/virsh.c:1179 src/virsh.c:1547
+#: src/virsh.c:1185 src/virsh.c:1553
 msgid "CPU(s):"
 msgstr "CPU："
 
-#: src/virsh.c:1186 src/virsh.c:1269
+#: src/virsh.c:1192 src/virsh.c:1275
 msgid "CPU time:"
 msgstr "CPU 时间："
 
-#: src/virsh.c:1190 src/virsh.c:1193
+#: src/virsh.c:1196 src/virsh.c:1199
 msgid "Max memory:"
 msgstr "最大内存："
 
-#: src/virsh.c:1194
+#: src/virsh.c:1200
 msgid "no limit"
 msgstr ""
 
-#: src/virsh.c:1196
+#: src/virsh.c:1202
 msgid "Used memory:"
 msgstr "使用的内存："
 
-#: src/virsh.c:1212
+#: src/virsh.c:1218
 msgid "domain vcpu information"
 msgstr "域 vcpu 的信息"
 
-#: src/virsh.c:1213
+#: src/virsh.c:1219
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr "恢复这个域虚拟 CPU 的基本信息。"
 
-#: src/virsh.c:1260
+#: src/virsh.c:1266
 msgid "VCPU:"
 msgstr "VCPU:"
 
-#: src/virsh.c:1261
+#: src/virsh.c:1267
 msgid "CPU:"
 msgstr "CPU:"
 
-#: src/virsh.c:1271
+#: src/virsh.c:1277
 msgid "CPU Affinity:"
 msgstr "CPU Affinity:"
 
-#: src/virsh.c:1295
+#: src/virsh.c:1301
 msgid "control domain vcpu affinity"
 msgstr "控制域 vcpu affinity"
 
-#: src/virsh.c:1296
+#: src/virsh.c:1302
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr "把域 VCPU 插入到主机的物理 CPU 中。"
 
-#: src/virsh.c:1302
+#: src/virsh.c:1308
 msgid "vcpu number"
 msgstr "vcpu 号"
 
-#: src/virsh.c:1303
+#: src/virsh.c:1309
 msgid "host cpu number(s) (comma separated)"
 msgstr "主机 cpu 号（以逗号分隔）"
 
-#: src/virsh.c:1361
+#: src/virsh.c:1367
 #, fuzzy, c-format
 msgid "Physical CPU %d doesn't exist."
 msgstr "命令 '%s' 不存在"
 
-#: src/virsh.c:1385
+#: src/virsh.c:1391
 msgid "change number of virtual CPUs"
 msgstr "改变虚拟 CPU 的号"
 
-#: src/virsh.c:1386
+#: src/virsh.c:1392
 msgid "Change the number of virtual CPUs active in the guest domain."
 msgstr "改变在 guest 域中活跃的虚拟 CPU 的号。"
 
-#: src/virsh.c:1392
+#: src/virsh.c:1398
 msgid "number of virtual CPUs"
 msgstr "虚拟 CPU 的号"
 
-#: src/virsh.c:1423
+#: src/virsh.c:1429
 #, fuzzy
 msgid "Too many virtual CPU's."
 msgstr "虚拟 CPU 的号"
 
-#: src/virsh.c:1441
+#: src/virsh.c:1447
 msgid "change memory allocation"
 msgstr "改变内存的分配"
 
-#: src/virsh.c:1442
+#: src/virsh.c:1448
 msgid "Change the current memory allocation in the guest domain."
 msgstr "改变当前在 guest 域中的内存分配。"
 
-#: src/virsh.c:1448
-msgid "number of bytes of memory"
+#: src/virsh.c:1454
+#, fuzzy
+msgid "number of kilobytes of memory"
 msgstr "内存的字节数"
 
-#: src/virsh.c:1468 src/virsh.c:1512
+#: src/virsh.c:1474 src/virsh.c:1518
 #, c-format
 msgid "Invalid value of %d for memory size"
 msgstr ""
 
-#: src/virsh.c:1485
+#: src/virsh.c:1491
 msgid "change maximum memory limit"
 msgstr "改变最大内存限制值"
 
-#: src/virsh.c:1486
+#: src/virsh.c:1492
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr "改变在 guest 域中的最大内存分配限制。"
 
-#: src/virsh.c:1492
-msgid "maxmimum memory limit in bytes"
+#: src/virsh.c:1498
+#, fuzzy
+msgid "maximum memory limit in kilobytes"
 msgstr "最大内存限制的字节数"
 
-#: src/virsh.c:1529
+#: src/virsh.c:1535
 msgid "node information"
 msgstr "节点信息"
 
-#: src/virsh.c:1530
+#: src/virsh.c:1536
 msgid "Returns basic information about the node."
 msgstr "返回关于这个节点的基本信息。"
 
-#: src/virsh.c:1543
+#: src/virsh.c:1549
 msgid "failed to get node information"
 msgstr "获得节点信息失败"
 
-#: src/virsh.c:1546
+#: src/virsh.c:1552
 msgid "CPU model:"
 msgstr "CPU 型号："
 
-#: src/virsh.c:1548
+#: src/virsh.c:1554
 msgid "CPU frequency:"
 msgstr "CPU 频率："
 
-#: src/virsh.c:1549
+#: src/virsh.c:1555
 msgid "CPU socket(s):"
 msgstr "CPU socket："
 
-#: src/virsh.c:1550
+#: src/virsh.c:1556
 msgid "Core(s) per socket:"
 msgstr "每个 socket 的内核数："
 
-#: src/virsh.c:1551
+#: src/virsh.c:1557
 msgid "Thread(s) per core:"
 msgstr "每个内核的线程数："
 
-#: src/virsh.c:1552
+#: src/virsh.c:1558
 msgid "NUMA cell(s):"
 msgstr "NUMA 单元："
 
-#: src/virsh.c:1553
+#: src/virsh.c:1559
 msgid "Memory size:"
 msgstr "内存大小："
 
-#: src/virsh.c:1563
+#: src/virsh.c:1569
 msgid "capabilities"
 msgstr ""
 
-#: src/virsh.c:1564
+#: src/virsh.c:1570
 msgid "Returns capabilities of hypervisor/driver."
 msgstr ""
 
-#: src/virsh.c:1577
+#: src/virsh.c:1583
 #, fuzzy
 msgid "failed to get capabilities"
 msgstr "打开文件失败"
 
-#: src/virsh.c:1590
+#: src/virsh.c:1596
 msgid "domain information in XML"
 msgstr "XML 中的域信息"
 
-#: src/virsh.c:1591
-msgid "Ouput the domain information as an XML dump to stdout."
+#: src/virsh.c:1597
+#, fuzzy
+msgid "Output the domain information as an XML dump to stdout."
 msgstr "把域信息作为一个 XML 输出到 stdout。"
 
-#: src/virsh.c:1630
+#: src/virsh.c:1636
 msgid "convert a domain id or UUID to domain name"
 msgstr "把一个域 id 或 UUID 转换为域名"
 
-#: src/virsh.c:1635
+#: src/virsh.c:1641
 msgid "domain id or uuid"
 msgstr "域 id 或 uuid"
 
-#: src/virsh.c:1660
+#: src/virsh.c:1666
 msgid "convert a domain name or UUID to domain id"
 msgstr "把一个域名或 UUID 转换为域 id"
 
-#: src/virsh.c:1695
+#: src/virsh.c:1701
 msgid "convert a domain name or id to domain UUID"
 msgstr "把一个域名或 id 转换为域 UUID"
 
-#: src/virsh.c:1700
+#: src/virsh.c:1706
 msgid "domain id or name"
 msgstr "域 id 或域名"
 
-#: src/virsh.c:1719
+#: src/virsh.c:1725
 msgid "failed to get domain UUID"
 msgstr "获得域 UUID 失败"
 
-#: src/virsh.c:1729
+#: src/virsh.c:1735
 #, fuzzy
 msgid "autostart a network"
 msgstr "开始一个域"
 
-#: src/virsh.c:1731
+#: src/virsh.c:1737
 msgid "Configure a network to be automatically started at boot."
 msgstr ""
 
-#: src/virsh.c:1736 src/virsh.c:2171
+#: src/virsh.c:1742 src/virsh.c:2183
 #, fuzzy
 msgid "network name or uuid"
 msgstr "域名或 uuid"
 
-#: src/virsh.c:1757
+#: src/virsh.c:1764
 #, fuzzy, c-format
-msgid "Failed to %smark network %s as autostarted"
+msgid "failed to mark network %s as autostarted"
 msgstr "开始域 %s 失败"
 
-#: src/virsh.c:1763
+#: src/virsh.c:1767
 #, fuzzy, c-format
-msgid "Network %s %smarked as autostarted\n"
-msgstr "域 %s 已开始\n"
+msgid "failed to unmark network %s as autostarted"
+msgstr "开始域 %s 失败"
 
 #: src/virsh.c:1774
+#, fuzzy, c-format
+msgid "Network %s marked as autostarted\n"
+msgstr "域 %s 已开始\n"
+
+#: src/virsh.c:1776
+#, fuzzy, c-format
+msgid "Network %s unmarked as autostarted\n"
+msgstr "域 %s 已开始\n"
+
+#: src/virsh.c:1786
 #, fuzzy
 msgid "create a network from an XML file"
 msgstr "从一个 XML 文件创建一个域"
 
-#: src/virsh.c:1775
+#: src/virsh.c:1787
 #, fuzzy
 msgid "Create a network."
 msgstr "创建一个域"
 
-#: src/virsh.c:1780
+#: src/virsh.c:1792 src/virsh.c:1848
 #, fuzzy
 msgid "file containing an XML network description"
 msgstr "文件包括一个 XML 域描述"
 
-#: src/virsh.c:1815
+#: src/virsh.c:1827
 #, fuzzy, c-format
 msgid "Network %s created from %s\n"
 msgstr "域 %s 被创建（从 %s）\n"
 
-#: src/virsh.c:1818
+#: src/virsh.c:1830
 #, fuzzy, c-format
 msgid "Failed to create network from %s"
 msgstr "从 %s 创建域失败"
 
-#: src/virsh.c:1830
+#: src/virsh.c:1842
 #, fuzzy
 msgid "define (but don't start) a network from an XML file"
 msgstr "从一个 XML 文件定义（但不开始）一个域"
 
-#: src/virsh.c:1831
+#: src/virsh.c:1843
 #, fuzzy
 msgid "Define a network."
 msgstr "定义一个域。"
 
-#: src/virsh.c:1836
-#, fuzzy
-msgid "file conatining an XML network description"
-msgstr "文件包括一个 XML 域描述"
-
-#: src/virsh.c:1871
+#: src/virsh.c:1883
 #, fuzzy, c-format
 msgid "Network %s defined from %s\n"
 msgstr "定义域 %s（从 %s）\n"
 
-#: src/virsh.c:1874
+#: src/virsh.c:1886
 #, fuzzy, c-format
 msgid "Failed to define network from %s"
 msgstr "从 %s 定义域失败"
 
-#: src/virsh.c:1886
+#: src/virsh.c:1898
 #, fuzzy
 msgid "destroy a network"
 msgstr "删除一个域"
 
-#: src/virsh.c:1887
+#: src/virsh.c:1899
 #, fuzzy
 msgid "Destroy a given network."
 msgstr "删除一个指定的域。"
 
-#: src/virsh.c:1892 src/virsh.c:1932
+#: src/virsh.c:1904 src/virsh.c:1944
 #, fuzzy
 msgid "network name, id or uuid"
 msgstr "域名，id 或 uuid"
 
-#: src/virsh.c:1910
+#: src/virsh.c:1922
 #, fuzzy, c-format
 msgid "Network %s destroyed\n"
 msgstr "域 %s 被删除\n"
 
-#: src/virsh.c:1912
+#: src/virsh.c:1924
 #, fuzzy, c-format
 msgid "Failed to destroy network %s"
 msgstr "删除域 %s 失败"
 
-#: src/virsh.c:1926
+#: src/virsh.c:1938
 #, fuzzy
 msgid "network information in XML"
 msgstr "XML 中的域信息"
 
-#: src/virsh.c:1927
+#: src/virsh.c:1939
 #, fuzzy
-msgid "Ouput the network information as an XML dump to stdout."
+msgid "Output the network information as an XML dump to stdout."
 msgstr "把域信息作为一个 XML 输出到 stdout。"
 
-#: src/virsh.c:1967
+#: src/virsh.c:1979
 msgid "list networks"
 msgstr ""
 
-#: src/virsh.c:1968
+#: src/virsh.c:1980
 #, fuzzy
 msgid "Returns list of networks."
 msgstr "返回域列表"
 
-#: src/virsh.c:1973
+#: src/virsh.c:1985
 #, fuzzy
 msgid "list inactive networks"
 msgstr "列出不活跃的域"
 
-#: src/virsh.c:1974
+#: src/virsh.c:1986
 #, fuzzy
 msgid "list inactive & active networks"
 msgstr "不活跃和活跃的域列表"
 
-#: src/virsh.c:1994 src/virsh.c:2002
+#: src/virsh.c:2006 src/virsh.c:2014
 #, fuzzy
 msgid "Failed to list active networks"
 msgstr "列出活跃的域失败"
 
-#: src/virsh.c:2013 src/virsh.c:2022
+#: src/virsh.c:2025 src/virsh.c:2034
 #, fuzzy
 msgid "Failed to list inactive networks"
 msgstr "列出不活跃的域失败"
 
-#: src/virsh.c:2032
+#: src/virsh.c:2044
 msgid "Autostart"
 msgstr ""
 
-#: src/virsh.c:2047 src/virsh.c:2070
+#: src/virsh.c:2059 src/virsh.c:2082
 #, fuzzy
 msgid "no autostart"
 msgstr "没有状态"
 
-#: src/virsh.c:2053
+#: src/virsh.c:2065
 msgid "active"
 msgstr ""
 
-#: src/virsh.c:2076
+#: src/virsh.c:2088
 #, fuzzy
 msgid "inactive"
 msgstr "节点活跃 cpu"
 
-#: src/virsh.c:2095
+#: src/virsh.c:2107
 #, fuzzy
 msgid "convert a network UUID to network name"
 msgstr "把一个域 id 或 UUID 转换为域名"
 
-#: src/virsh.c:2100
+#: src/virsh.c:2112
 msgid "network uuid"
 msgstr ""
 
-#: src/virsh.c:2126
+#: src/virsh.c:2138
 #, fuzzy
 msgid "start a (previously defined) inactive network"
 msgstr "开始一个（以前定义的）非活跃的域"
 
-#: src/virsh.c:2127
+#: src/virsh.c:2139
 #, fuzzy
 msgid "Start a network."
 msgstr "开始一个域"
 
-#: src/virsh.c:2132
+#: src/virsh.c:2144
 #, fuzzy
 msgid "name of the inactive network"
 msgstr "非活跃域的名称"
 
-#: src/virsh.c:2149
+#: src/virsh.c:2161
 #, fuzzy, c-format
 msgid "Network %s started\n"
 msgstr "域 %s 已开始\n"
 
-#: src/virsh.c:2152
+#: src/virsh.c:2164
 #, fuzzy, c-format
 msgid "Failed to start network %s"
 msgstr "开始域 %s 失败"
 
-#: src/virsh.c:2165
+#: src/virsh.c:2177
 #, fuzzy
 msgid "undefine an inactive network"
 msgstr "取消定义一个非活跃的域"
 
-#: src/virsh.c:2166
+#: src/virsh.c:2178
 #, fuzzy
 msgid "Undefine the configuration for an inactive network."
 msgstr "取消定义一个非活跃域的配置。"
 
-#: src/virsh.c:2189
+#: src/virsh.c:2201
 #, fuzzy, c-format
 msgid "Network %s has been undefined\n"
 msgstr "域 %s 已经被取消定义\n"
 
-#: src/virsh.c:2191
+#: src/virsh.c:2203
 #, fuzzy, c-format
 msgid "Failed to undefine network %s"
 msgstr "取消定义域 %s 失败"
 
-#: src/virsh.c:2204
+#: src/virsh.c:2216
 #, fuzzy
 msgid "convert a network name to network UUID"
 msgstr "把一个域名或 id 转换为域 UUID"
 
-#: src/virsh.c:2209
+#: src/virsh.c:2221
 msgid "network name"
 msgstr ""
 
-#: src/virsh.c:2229
+#: src/virsh.c:2241
 #, fuzzy
 msgid "failed to get network UUID"
 msgstr "获得域 UUID 失败"
 
-#: src/virsh.c:2240
+#: src/virsh.c:2252
 msgid "show version"
 msgstr "显示版本"
 
-#: src/virsh.c:2241
+#: src/virsh.c:2253
 msgid "Display the system version information."
 msgstr "显示系统版本信息。"
 
-#: src/virsh.c:2264
+#: src/virsh.c:2276
 msgid "failed to get hypervisor type"
 msgstr "获得 hypervisor 类型失败"
 
-#: src/virsh.c:2273
+#: src/virsh.c:2285
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr "编译使用的库：libvir %d.%d.%d\n"
 
-#: src/virsh.c:2278
+#: src/virsh.c:2290
 msgid "failed to get the library version"
 msgstr "获得库函数信息失败"
 
-#: src/virsh.c:2285
+#: src/virsh.c:2297
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
 msgstr "使用的库：libvir %d.%d.%d\n"
 
-#: src/virsh.c:2292
+#: src/virsh.c:2304
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
 msgstr "使用的 API: %s %d.%d.%d\n"
 
-#: src/virsh.c:2297
+#: src/virsh.c:2309
 msgid "failed to get the hypervisor version"
 msgstr "获得 hypervisor 版本失败"
 
-#: src/virsh.c:2302
+#: src/virsh.c:2314
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "无法提取运行的 %s hypervisor 版本\n"
 
-#: src/virsh.c:2309
+#: src/virsh.c:2321
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "运行 hypervisor: %s %d.%d.%d\n"
 
-#: src/virsh.c:2320
+#: src/virsh.c:2332
 msgid "vnc display"
 msgstr ""
 
-#: src/virsh.c:2321
-msgid "Ouput the IP address and port number for the VNC display."
+#: src/virsh.c:2333
+msgid "Output the IP address and port number for the VNC display."
 msgstr ""
 
-#: src/virsh.c:2400
+#: src/virsh.c:2412
 msgid "quit this interactive terminal"
 msgstr "退出这个非交互式终端"
 
-#: src/virsh.c:2527
+#: src/virsh.c:2539
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "命令 '%s' 需要 <%s> 选项"
 
-#: src/virsh.c:2528
+#: src/virsh.c:2540
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "命令 '%s' 需要 --%s 选项"
 
-#: src/virsh.c:2555
+#: src/virsh.c:2567
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "命令 '%s' 不存在"
 
-#: src/virsh.c:2563
+#: src/virsh.c:2575
 msgid "  NAME\n"
 msgstr "  NAME\n"
 
-#: src/virsh.c:2574
+#: src/virsh.c:2586
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -1540,7 +1560,7 @@ msgstr ""
 "\n"
 "  DESCRIPTION\n"
 
-#: src/virsh.c:2578
+#: src/virsh.c:2590
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -1548,36 +1568,36 @@ msgstr ""
 "\n"
 "  OPTIONS\n"
 
-#: src/virsh.c:2585
+#: src/virsh.c:2597
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <number>"
 
-#: src/virsh.c:2587
+#: src/virsh.c:2599
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <string>"
 
-#: src/virsh.c:2700
+#: src/virsh.c:2712
 msgid "undefined domain name or id"
 msgstr "取消定义域名或 id"
 
-#: src/virsh.c:2733
+#: src/virsh.c:2745
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "获得域 '%s' 失败"
 
-#: src/virsh.c:2746
+#: src/virsh.c:2758
 #, fuzzy
 msgid "undefined network name"
 msgstr "取消定义域名或 id"
 
-#: src/virsh.c:2770
+#: src/virsh.c:2782
 #, fuzzy, c-format
 msgid "failed to get network '%s'"
 msgstr "获得域 '%s' 失败"
 
-#: src/virsh.c:2798
+#: src/virsh.c:2810
 #, c-format
 msgid ""
 "\n"
@@ -1588,107 +1608,107 @@ msgstr ""
 "(Time: %.3f ms)\n"
 "\n"
 
-#: src/virsh.c:2872
+#: src/virsh.c:2884
 msgid "missing \""
 msgstr "缺少 \""
 
-#: src/virsh.c:2933
+#: src/virsh.c:2945
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "不期望的令牌（命令名）：'%s'"
 
-#: src/virsh.c:2938
+#: src/virsh.c:2950
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "未知的命令：'%s'"
 
-#: src/virsh.c:2945
+#: src/virsh.c:2957
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "命令 '%s' 不支持选项 --%s"
 
-#: src/virsh.c:2960
+#: src/virsh.c:2972
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "期望的使用方法：--%s <%s>"
 
-#: src/virsh.c:2963
+#: src/virsh.c:2975
 msgid "number"
 msgstr "数字"
 
-#: src/virsh.c:2963
+#: src/virsh.c:2975
 msgid "string"
 msgstr "字符串"
 
-#: src/virsh.c:2969
+#: src/virsh.c:2981
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "非期望的数据 '%s'"
 
-#: src/virsh.c:2991
+#: src/virsh.c:3003
 msgid "OPTION"
 msgstr "OPTION"
 
-#: src/virsh.c:2991
+#: src/virsh.c:3003
 msgid "DATA"
 msgstr "DATA"
 
-#: src/virsh.c:3039 src/virsh.c:3065
+#: src/virsh.c:3051 src/virsh.c:3077
 msgid "running"
 msgstr "运行"
 
-#: src/virsh.c:3041 src/virsh.c:3063
+#: src/virsh.c:3053 src/virsh.c:3075
 msgid "blocked"
 msgstr "阻塞"
 
-#: src/virsh.c:3043
+#: src/virsh.c:3055
 msgid "paused"
 msgstr "暂停"
 
-#: src/virsh.c:3045
+#: src/virsh.c:3057
 msgid "in shutdown"
 msgstr "关闭"
 
-#: src/virsh.c:3047
+#: src/virsh.c:3059
 msgid "shut off"
 msgstr "关闭"
 
-#: src/virsh.c:3049
+#: src/virsh.c:3061
 msgid "crashed"
 msgstr "崩溃"
 
-#: src/virsh.c:3061
+#: src/virsh.c:3073
 msgid "offline"
 msgstr "离线"
 
-#: src/virsh.c:3080
+#: src/virsh.c:3092
 msgid "no valid connection"
 msgstr "无效的连接"
 
-#: src/virsh.c:3119
+#: src/virsh.c:3131
 #, c-format
 msgid "%s: error: "
 msgstr "%s: 错误："
 
-#: src/virsh.c:3121
+#: src/virsh.c:3133
 msgid "error: "
 msgstr "错误："
 
-#: src/virsh.c:3143 src/virsh.c:3155
+#: src/virsh.c:3155 src/virsh.c:3167
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: 分配 %d 字节失败"
 
-#: src/virsh.c:3167
+#: src/virsh.c:3179
 #, fuzzy, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "%s: %d: 分配 %d 字节失败"
 
-#: src/virsh.c:3197
+#: src/virsh.c:3209
 msgid "failed to connect to the hypervisor"
 msgstr "连接到 hypervisor 失败"
 
-#: src/virsh.c:3345
+#: src/virsh.c:3357
 #, fuzzy, c-format
 msgid ""
 "\n"
@@ -1718,7 +1738,7 @@ msgstr ""
 "\n"
 "  commands (non interactive mode):\n"
 
-#: src/virsh.c:3362
+#: src/virsh.c:3374
 #, c-format
 msgid ""
 "\n"
@@ -1729,12 +1749,12 @@ msgstr ""
 "  (使用 --help <command> 来获得这个命令的详细信息)\n"
 "\n"
 
-#: src/virsh.c:3454
+#: src/virsh.c:3466
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "不支持选项 '-%c'。参阅 --help。"
 
-#: src/virsh.c:3535
+#: src/virsh.c:3547
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -1743,7 +1763,7 @@ msgstr ""
 "欢迎使用 %s，虚拟化的交互式终端。\n"
 "\n"
 
-#: src/virsh.c:3538
+#: src/virsh.c:3550
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
@@ -1798,59 +1818,66 @@ msgstr "打开文件失败"
 msgid "failed to save content"
 msgstr "保存内容失败"
 
-#: src/xs_internal.c:324
+#: src/xs_internal.c:344
 msgid "failed to connect to Xen Store"
 msgstr "连接到 Xen Store 失败"
 
-#: src/proxy_internal.c:197
+#: src/proxy_internal.c:200
 #, c-format
 msgid "failed to exec %s\n"
 msgstr "执行 %s 失败\n"
 
-#: src/proxy_internal.c:291
+#: src/proxy_internal.c:294
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr "关闭 socket %d 失败\n"
 
-#: src/proxy_internal.c:324
+#: src/proxy_internal.c:327
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr "读 socket %d 失败\n"
 
-#: src/proxy_internal.c:358
+#: src/proxy_internal.c:361
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr "写 socket %d 失败\n"
 
-#: src/proxy_internal.c:420 src/proxy_internal.c:441 src/proxy_internal.c:461
+#: src/proxy_internal.c:453 src/proxy_internal.c:474 src/proxy_internal.c:494
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr "与代理服务器通讯错误：获得了 %d 字节（共有 %d 字节）\n"
 
-#: src/proxy_internal.c:428
+#: src/proxy_internal.c:461
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr "与代理服务器通讯错误：需要 %d 字节，而获得了 %d 字节\n"
 
-#: src/proxy_internal.c:450
+#: src/proxy_internal.c:483
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr "与代理服务器通讯错误：获得了 %d 字节的数据包\n"
 
-#: src/proxy_internal.c:474
+#: src/proxy_internal.c:507
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
 msgstr "与代理服务器通讯错误：数据包格式不正确\n"
 
-#: src/proxy_internal.c:480
+#: src/proxy_internal.c:513
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr "获得了异步数据包号 %d\n"
 
-#: src/xen_internal.c:1733
+#: src/xen_internal.c:1937
 #, c-format
 msgid "allocating %d domain info"
 msgstr "分配 %d 域信息"
+
+#~ msgid "Xen Daemon or Xen Store"
+#~ msgstr "Xen后台或者Xen存储"
+
+#, fuzzy
+#~ msgid "file conatining an XML network description"
+#~ msgstr "文件包括一个 XML 域描述"
 
 #~ msgid "Failed to create domain %s\n"
 #~ msgstr "创建域 %s 失败\n"

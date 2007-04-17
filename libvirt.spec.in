@@ -72,7 +72,7 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.a
-install -d -m 0755 $RPM_BUILD_ROOT%{_localstatedir}/run/libvirt/autostart
+install -d -m 0755 $RPM_BUILD_ROOT%{_localstatedir}/run/libvirt/
 
 # We don't want to install /etc/libvirt/qemu/networks in the main %files list
 # because if the admin wants to delete the default network completely, we don't
@@ -169,12 +169,17 @@ fi
 %doc docs/examples/python
 
 %changelog
+* Tue Apr 17 2007 Daniel Veillard <veillard@redhat.com> - 0.2.2-1
+- Release of 0.2.2
+- lot of assorted bugfixes and cleanups
+- preparing for Xen-3.0.5
+
 * Thu Mar 22 2007 Jeremy Katz <katzj@redhat.com> - 0.2.1-2.fc7
 - don't require xen; we don't need the daemon and can control non-xen now
 - fix scriptlet error (need to own more directories)
 - update description text
 
-* Fri Mar 16 2007 Daniel Veillard <veillard@redhat.com> - 2.0.1-1
+* Fri Mar 16 2007 Daniel Veillard <veillard@redhat.com> - 0.2.1-1
 - Release of 0.2.1
 - lot of bug and portability fixes
 - Add support for network autostart and init scripts

@@ -2,7 +2,44 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>Releases</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Releases</h1><p>Here is the list of official releases, however since it is early on in the
 development of libvirt, it is preferable when possible to just use the <a href="downloads.html">CVS version or snapshot</a>, contact the mailing list
-and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3>0.2.1: Mar 16 2007</h3><ul><li>Various internal cleanups (Richard Jones,Daniel Berrange,Mark McLoughlin)</li>
+and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3>0.2.2: Apr 17 2007</h3><ul><li>Documentation: fix errors due to Amaya (with Simon Hernandez), 
+      virsh uses kB not bytes (Atsushi SAKAI), add command line help to
+      qemud (Richard Jones), xenUnifiedRegister docs (Atsushi SAKAI),
+      strings typos (Nikolay Sivov), ilocalization probalem raised by 
+      Thomas Canniot</li>
+  <li>Bug fixes: virsh memory values test (Masayuki Sunou), operations without
+      libvirt_qemud (Atsushi SAKAI), fix spec file (Florian La Roche, Jeremy
+      Katz, Michael Schwendt),
+      direct hypervisor call (Atsushi SAKAI), buffer overflow on qemu
+      networking command (Daniel Berrange), buffer overflow in quemud (Daniel
+      Berrange), virsh vcpupin bug (Masayuki Sunou), host PAE detections
+      and strcuctures size (Richard Jones), Xen PAE flag handling (Daniel
+      Berrange), bridged config configuration (Daniel Berrange), erroneous
+      XEN_V2_OP_SETMAXMEM value (Masayuki Sunou), memory free error (Mark
+      McLoughlin), set VIR_CONNECT_RO on read-only connections (S.Sakamoto),
+      avoid memory explosion bug (Daniel Berrange), integer overflow 
+      for qemu CPU time (Daniel Berrange), QEMU binary path check (Daniel
+      Berrange)</li>
+  <li>Cleanups: remove some global variables (Jim Meyering), printf-style
+      functions checks (Jim Meyering), better virsh error messages, increase
+      compiler checkings and security (Daniel Berrange), virBufferGrow usage
+      and docs, use calloc instead of malloc/memset, replace all sprintf by
+      snprintf, avoid configure clobbering user's CTAGS (Jim Meyering), 
+      signal handler error cleanup (Richard Jones), iptables internal code
+      claenup (Mark McLoughlin), unified Xen driver (Richard Jones),
+      cleanup XPath libxml2 calls, IPTables rules tightening (Daniel
+      Berrange), </li>
+  <li>Improvements: more regression tests on XML (Daniel Berrange), Python
+      bindings now generate exception in error cases (Richard Jones),
+      Python bindings for vir*GetAutoStart (Daniel Berrange),
+      handling of CD-Rom device without device name (Nobuhiro Itou),
+      fix hypervisor call to work with Xen 3.0.5 (Daniel Berrange),
+      DomainGetOSType for inactive domains (Daniel Berrange), multiple boot
+      devices for HVM (Daniel Berrange), 
+      </li>
+
+<h3>0.2.1: Mar 16 2007</h3>
+<ul><li>Various internal cleanups (Richard Jones,Daniel Berrange,Mark McLoughlin)</li>
   <li>Bug fixes: libvirt_qemud daemon path (Daniel Berrange), libvirt
       config directory (Daniel Berrange and Mark McLoughlin), memory leak
       in qemud (Mark), various fixes on network support (Mark), avoid Xen
@@ -31,7 +68,8 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3
     number of virtual CPU (Masayuki Sunou), virtsh --readonly option (Rich
     Jones), python bindings for new functions (Daniel Berrange)</li>
   <li>Documentation updates especially on the XML formats</li>
-</ul><h3>0.2.0: Feb 14 2007</h3><ul><li>Various internal cleanups (Mark McLoughlin, Richard Jones,
+</ul><h3>0.2.0: Feb 14 2007</h3>
+<ul><li>Various internal cleanups (Mark McLoughlin, Richard Jones,
       Daniel Berrange, Karel Zak)</li>
   <li>Bug fixes: avoid a crash in connect (Daniel Berrange), virsh args
       parsing (Richard Jones)</li>
@@ -39,14 +77,17 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3
   <li>Add support for network configuration (Mark McLoughlin)</li>
   <li>Minor improvements: regression testing (Daniel Berrange), 
       localization string updates</li>
-</ul><h3>0.1.11: Jan 22 2007</h3><ul><li>Finish XML &lt;-&gt; XM config files support</li>
+</ul><h3>0.1.11: Jan 22 2007</h3>
+<ul><li>Finish XML &lt;-&gt; XM config files support</li>
   <li>Remove memory leak when freeing virConf objects</li>
   <li>Finishing inactive domain support (Daniel Berrange)</li>
   <li>Added a Relax-NG schemas to check XML instances</li>
-</ul><h3>0.1.10: Dec 20 2006</h3><ul><li>more localizations</li>
+</ul><h3>0.1.10: Dec 20 2006</h3>
+<ul><li>more localizations</li>
   <li>bug fixes: VCPU info breakages on xen 3.0.3, xenDaemonListDomains buffer overflow (Daniel Berrange), reference count bug when creating Xen domains (Daniel Berrange).</li>
   <li>improvements: support graphic framebuffer for Xen paravirt (Daniel Berrange), VNC listen IP range support (Daniel Berrange), support for default Xen config files and inactive domains of 3.0.4 (Daniel Berrange).</li>
-</ul><h3>0.1.9: Nov 29 2006</h3><ul><li>python bindings: release interpeter lock when calling C (Daniel Berrange)</li>
+</ul><h3>0.1.9: Nov 29 2006</h3>
+<ul><li>python bindings: release interpeter lock when calling C (Daniel Berrange)</li>
   <li>don't raise HTTP error when looking informations for a domain</li>
   <li>some refactoring to use the driver for all entry points</li>
   <li>better error reporting (Daniel Berrange)</li>
@@ -67,7 +108,8 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3
   <li>add API to dump core of domains (but requires a patched xend)</li>
   <li>pygrub bootloader informations take over &lt;os&gt; informations</li>
   <li>updated the localization strings</li>
-</ul><h3>0.1.8: Oct 16 2006</h3><ul><li> Bug for system with page size != 4k</li>
+</ul><h3>0.1.8: Oct 16 2006</h3>
+<ul><li> Bug for system with page size != 4k</li>
   <li> vcpu number initialization (Philippe Berthault)</li>
   <li> don't label crashed domains as shut off (Peter Vetere)</li>
   <li> fix virsh man page (Noriko Mizumoto)</li>
@@ -76,16 +118,19 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3
   <li> compile fix</li>
   <li> mlock/munlock size fixes (Daniel Berrange)</li>
   <li> improve error reporting</li>
-</ul><h3>0.1.7: Sep 29 2006</h3><ul><li> fix a memory bug on getting vcpu informations from xend (Daniel Berrange)</li>
+</ul><h3>0.1.7: Sep 29 2006</h3>
+<ul><li> fix a memory bug on getting vcpu informations from xend (Daniel Berrange)</li>
   <li> fix another problem in the hypercalls change in Xen changeset
        86d26e6ec89b when getting domain informations (Daniel Berrange)</li>
-</ul><h3>0.1.6: Sep 22 2006</h3><ul><li>Support for localization of strings using gettext (Daniel Berrange)</li>
+</ul><h3>0.1.6: Sep 22 2006</h3>
+<ul><li>Support for localization of strings using gettext (Daniel Berrange)</li>
   <li>Support for new Xen-3.0.3 cdrom and disk configuration (Daniel Berrange)</li>
   <li>Support for setting VNC port when creating domains with new
       xend config files (Daniel Berrange) </li>
   <li>Fix bug when running against xen-3.0.2 hypercalls (Jim Fehlig)</li>
   <li>Fix reconnection problem when talking directly to http xend</li>
-</ul><h3>0.1.5: Sep 5 2006</h3><ul><li>Support for new hypercalls change in Xen changeset 86d26e6ec89b</li>
+</ul><h3>0.1.5: Sep 5 2006</h3>
+<ul><li>Support for new hypercalls change in Xen changeset 86d26e6ec89b</li>
   <li>bug fixes: virParseUUID() was wrong, netwoking for paravirt guestsi
       (Daniel Berrange), virsh on non-existent domains (Daniel Berrange),
       string cast bug when handling error in python (Pete Vetere), HTTP
@@ -97,7 +142,8 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3
       (Jeremy Katz), parsing of simple Xen config files (with Daniel Berrange),
       early work on defined (not running) domains (Daniel Berrange),
       virsh output improvement (Daniel Berrange</li>
-</ul><h3>0.1.4: Aug 16 2006</h3><ul><li>bug fixes: spec file fix (Mark McLoughlin), error report problem (with
+</ul><h3>0.1.4: Aug 16 2006</h3>
+<ul><li>bug fixes: spec file fix (Mark McLoughlin), error report problem (with
     Hugh Brock), long integer in Python bindings (with Daniel Berrange), XML
     generation bug for CDRom (Daniel Berrange), bug whem using number() XPath
     function (Mark McLoughlin), fix python detection code, remove duplicate
@@ -112,16 +158,19 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3
     operations when using read-only connection, large improvements to test
     driver (Daniel Berrange) </li>
   <li>documentation: spelling (Daniel Berrange), test driver examples.</li>
-</ul><h3>0.1.3: Jul 11 2006</h3><ul><li>bugfixes: build as non-root, fix xend access when root, handling of
+</ul><h3>0.1.3: Jul 11 2006</h3>
+<ul><li>bugfixes: build as non-root, fix xend access when root, handling of
     empty XML elements (Mark McLoughlin), XML serialization and parsing fixes
     (Mark McLoughlin), allow to create domains without disk (Mark
   McLoughlin),</li>
   <li>improvement: xenDaemonLookupByID from O(n^2) to O(n) (Daniel Berrange),
     support for fully virtualized guest (Jim Fehlig, DV, Mark McLoughlin)</li>
   <li>documentation: augmented to cover hvm domains</li>
-</ul><h3>0.1.2: Jul 3 2006</h3><ul><li>headers include paths fixup</li>
+</ul><h3>0.1.2: Jul 3 2006</h3>
+<ul><li>headers include paths fixup</li>
   <li>proxy mechanism for unpriviledged read-only access by httpu</li>
-</ul><h3>0.1.1: Jun 21 2006</h3><ul><li>building fixes: ncurses fallback (Jim Fehlig), VPATH builds (Daniel P.
+</ul><h3>0.1.1: Jun 21 2006</h3>
+<ul><li>building fixes: ncurses fallback (Jim Fehlig), VPATH builds (Daniel P.
     Berrange)</li>
   <li>driver cleanups: new entry points, cleanup of libvirt.c (with Daniel P.
     Berrange)</li>
@@ -134,7 +183,8 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3
     xs_internal.c</li>
   <li>documentation: Python examples (David Lutterkort), new Perl binding
     URL, man page update (Karel Zak)</li>
-</ul><h3>0.1.0: Apr 10 2006</h3><ul><li>building fixes: --with-xen-distdir option (Ronald Aigner), out of tree
+</ul><h3>0.1.0: Apr 10 2006</h3>
+<ul><li>building fixes: --with-xen-distdir option (Ronald Aigner), out of tree
     build and pkginfo cflag fix (Daniel Berrange)</li>
   <li>enhancement and fixes of the XML description format (David Lutterkort
     and Jim Fehlig)</li>
@@ -150,12 +200,14 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3
   <li>virsh: more options, create, nodeinfo (Karel Zak), renaming of some
     options (Karel Zak), use stderr only for errors (Karel Zak), man page
     (Andrew Puch)</li>
-</ul><h3>0.0.6: Feb 28 2006</h3><ul><li>add UUID lookup and extract API</li>
+</ul><h3>0.0.6: Feb 28 2006</h3>
+<ul><li>add UUID lookup and extract API</li>
   <li>add error handling APIs both synchronous and asynchronous</li>
   <li>added minimal hook for error handling at the python level, improved the
     python bindings</li>
   <li>augment the documentation and tests to cover error handling</li>
-</ul><h3>0.0.5: Feb 23 2006</h3><ul><li>Added XML description parsing, dependance to libxml2, implemented the
+</ul><h3>0.0.5: Feb 23 2006</h3>
+<ul><li>Added XML description parsing, dependance to libxml2, implemented the
     creation API virDomainCreateLinux()</li>
   <li>new APIs to lookup and name domain by UUID</li>
   <li>fixed the XML dump when using the Xend access</li>
@@ -164,18 +216,593 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p><h3
   <li>web site improvement, extended the documentation to cover the XML
     format and Python API</li>
   <li>Added devhelp help for Gnome/Gtk programmers</li>
-</ul><h3>0.0.4: Feb 10 2006</h3><ul><li>Fix various bugs introduced in the name change</li>
-</ul><h3>0.0.3: Feb 9 2006</h3><ul><li>Switch name from from 'libvir' to libvirt</li>
+</ul><h3>0.0.4: Feb 10 2006</h3>
+<ul><li>Fix various bugs introduced in the name change</li>
+</ul><h3>0.0.3: Feb 9 2006</h3>
+<ul><li>Switch name from from 'libvir' to libvirt</li>
   <li>Starting infrastructure to add code examples</li>
   <li>Update of python bindings for completeness</li>
-</ul><h3>0.0.2: Jan 29 2006</h3><ul><li>Update of the documentation, web site redesign (Diana Fong)</li>
+</ul><h3>0.0.2: Jan 29 2006</h3>
+<ul><li>Update of the documentation, web site redesign (Diana Fong)</li>
   <li>integration of HTTP xend RPC based on libxend by Anthony Liquori for
     most operations</li>
   <li>Adding Save and Restore APIs</li>
   <li>extended the virsh command line tool (Karel Zak)</li>
   <li>remove xenstore transactions (Anthony Liguori)</li>
   <li>fix the Python bindings bug when domain and connections where freed</li>
-</ul><h3>0.0.1: Dec 19 2005</h3><ul><li>First release</li>
+</ul><h3>0.0.1: Dec 19 2005</h3>
+<ul><li>First release</li>
   <li>Basic management of existing Xen domains</li>
   <li>Minimal autogenerated Python bindings</li>
-</ul></div></div><div class="linkList2"><div class="llinks2"><h3 class="links2"><span>main menu</span></h3><ul><li><a href="index.html">Home</a></li><li><a href="news.html">Releases</a></li><li><a href="intro.html">Introduction</a></li><li><a href="architecture.html">libvirt architecture</a></li><li><a href="downloads.html">Downloads</a></li><li><a href="format.html">XML Format</a></li><li><a href="python.html">Binding for Python</a></li><li><a href="errors.html">Handling of errors</a></li><li><a href="FAQ.html">FAQ</a></li><li><a href="bugs.html">Reporting bugs and getting help</a></li><li><a href="html/index.html">API Menu</a></li><li><a href="examples/index.html">C code examples</a></li><li><a href="ChangeLog.html">Recent Changes</a></li></ul></div><div class="llinks2"><h3 class="links2"><span>related links</span></h3><ul><li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li><li><a href="https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&amp;component=libvirt&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;bug_status=MODIFIED&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;long_desc_type=allwordssubstr">Open bugs</a></li><li><a href="http://virt-manager.et.redhat.com/">virt-manager</a></li><li><a href="http://search.cpan.org/~danberr/Sys-Virt-0.1.0/">Perl bindings</a></li><li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li><li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" /></form></li><li><a href="http://xmlsoft.org/"><img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li></ul><p class="credits">Graphics and design by <a href="mail:dfong@redhat.com">Diana Fong</a></p></div></div><div id="bottom"><p class="p1"></p></div></div></body></html>
+</ul>
+
+<p>Libvirt is a C toolkit to interact with the virtualization capabilities of
+recent versions of Linux (and other OSes), but libvirt won't try to provide
+all possible interfaces for interacting with the virtualization features.</p>
+
+<p>To avoid ambiguity about the terms used here here are the definitions for
+some of the specific concepts used in libvirt documentation:</p>
+<ul><li>a <strong>node</strong> is a single physical machine</li>
+  <li>an <strong>hypervisor</strong> is a layer of software allowing to
+    virtualize a node in a set of virtual machines with possibly different
+    configurations than the node itself</li>
+  <li>a <strong>domain</strong> is an instance of an operating system running
+    on a virtualized machine provided by the hypervisor</li>
+</ul><p style="text-align: center"><img alt="Hypervisor and domains running on a node" src="node.gif" /></p>
+
+<p>Now we can define the goal of libvirt: to provide the lowest possible
+generic and stable layer to manage domains on a node.</p>
+
+<p>This implies the following:</p>
+<ul><li>the API should not be targetted to a single virtualization environment
+    though Xen is the current default, which also means that some very
+    specific capabilities which are not generic enough may not be provided as
+    libvirt APIs</li>
+  <li>the API should allow to do efficiently and cleanly all the operations
+    needed to manage domains on a node</li>
+  <li>the API will not try to provide hight level multi-nodes management
+    features like load balancing, though they could be implemented on top of
+    libvirt</li>
+  <li>stability of the API is a big concern, libvirt should isolate
+    applications from the frequent changes expected at the lower level of the
+    virtualization framework</li>
+</ul><p>So libvirt should be a building block for higher level management tools
+and for applications focusing on virtualization of a single node (the only
+exception being domain migration between node capabilities which may need to
+be added at the libvirt level). Where possible libvirt should be extendable
+to be able to provide the same API for remote nodes, however this is not the
+case at the moment, the code currently handle only local node accesses
+(extension for remote access support is being worked on, see <a href="bugs.html">the mailing list</a> discussions about it).</p>
+
+
+
+<p>Currently libvirt supports 2 kind of virtualization, and its
+internal structure is based on a driver model which simplifies adding new
+engines:</p>
+
+<ul><li><a href="#Xen">Xen hypervisor</a></li>
+  <li><a href="#QEmu">QEmu and KVM based virtualization</a></li>
+  <li><a href="#drivers">the driver architecture</a></li>
+</ul><h3><a name="Xen" id="Xen">Libvirt Xen support</a></h3>
+
+<p>When running in a Xen environment, programs using libvirt have to execute
+in "Domain 0", which is the primary Linux OS loaded on the machine. That OS
+kernel provides most if not all of the actual drivers used by the set of
+domains. It also runs the Xen Store, a database of informations shared by the
+hypervisor, the kernels, the drivers and the xen daemon. Xend. The xen daemon
+supervise the control and execution of the sets of domains. The hypervisor,
+drivers, kernels and daemons communicate though a shared system bus
+implemented in the hypervisor. The figure below tries to provide a view of
+this environment:</p>
+<img src="architecture.gif" alt="The Xen architecture" /><p>The library can be initialized in 2 ways depending on the level of
+priviledge of the embedding program. If it runs with root access,
+virConnectOpen() can be used, it will use three different ways to connect to
+the Xen infrastructure:</p>
+<ul><li>a connection to the Xen Daemon though an HTTP RPC layer</li>
+  <li>a read/write connection to the Xen Store</li>
+  <li>use Xen Hypervisor calls</li>
+  <li>when used as non-root libvirt connect to a proxy daemon running
+      as root and providing read-only support</li>
+</ul><p>The library will usually interact with the Xen daemon for any operation
+changing the state of the system, but for performance and accuracy reasons
+may talk directly to the hypervisor when gathering state informations at
+least when possible (i.e. when the running program using libvirt has root
+priviledge access).</p>
+
+<p>If it runs without root access virConnectOpenReadOnly() should be used to
+connect to initialize the library. It will then fork a libvirt_proxy
+program running as root and providing read_only access to the API, this is
+then only useful for reporting and monitoring.</p>
+
+<h3><a name="QEmu" id="QEmu">Libvirt QEmu and KVM support</a></h3>
+
+<p>The model for QEmu and KVM is completely similar, basically KVM is based
+on QEmu for the process controlling a new domain, only small details differs
+between the two. In both case the libvirt API is provided by a controlling
+process forked by libvirt in the background and which launch and control the
+QEmu or KVM process. That program called libvirt_qemud talks though a specific
+protocol to the library, and connects to the console of the QEmu process in
+order to control and report on its status. Libvirt tries to expose all the
+emulations models of QEmu, the selection is done when creating the new
+domain, by specifying the architecture and machine type targetted.</p>
+
+<p>The code controlling the QEmu process is available in the
+<code>qemud/</code> directory.</p>
+
+<h3><a name="drivers" id="drivers">the driver based architecture</a></h3>
+
+<p>As the previous section explains, libvirt can communicate using different
+channels with the current hypervisor, and should also be able to use
+different kind of hypervisor. To simplify the internal design, code, ease
+maintainance and simplify the support of other virtualization engine the
+internals have been structured as one core component, the libvirt.c module
+acting as a front-end for the library API and a set of hypvisor drivers
+defining a common set of routines. That way the Xen Daemon accces, the Xen
+Store one, the Hypervisor hypercall are all isolated in separate C modules
+implementing at least a subset of the common operations defined by the
+drivers present in driver.h:</p>
+<ul><li>xend_internal: implements the driver functions though the Xen
+  Daemon</li>
+  <li>xs_internal: implements the subset of the driver availble though the
+    Xen Store</li>
+  <li>xen_internal: provide the implementation of the functions possible via
+    direct hypervisor access</li>
+  <li>proxy_internal: provide read-only Xen access via a proxy, the proxy code
+    is in the <code>proxy/</code>directory.</li>
+  <li>xm_internal: provide support for Xen defined but not running
+    domains.</li>
+  <li>qemu_internal: implement the driver functions for QEmu and
+    KVM virtualization engines. It also uses a qemud/ specific daemon
+    which interracts with the QEmu process to implement libvirt API.</li>
+  <li>test: this is a test driver useful for regression tests of the
+    front-end part of libvirt.</li>
+</ul><p>Note that a given driver may only implement a subset of those functions,
+(for example saving a Xen domain state to disk and restoring it is only
+possible though the Xen Daemon), in that case the driver entry points for
+unsupported functions are initialized to NULL.</p>
+
+<p></p>
+
+
+
+<p>The latest versions of libvirt can be found on the  <a href="ftp://libvirt.org/libvirt/">libvirt.org</a> server ( <a href="http://libvirt.org/sources/">HTTP</a>, <a href="ftp://libvirt.org/libvirt/">FTP</a>). You will find there the released
+versions as well as <a href="http://libvirt.org/sources/libvirt-cvs-snapshot.tar.gz">snapshot
+tarballs</a> updated from CVS head every hour</p>
+
+<p>Anonymous <a href="http://ximbiot.com/cvs/cvshome/docs/">CVS</a> is also
+available, first register onto the server:</p>
+
+<p><code>cvs -d :pserver:anoncvs@libvirt.org:2401/data/cvs login</code></p>
+
+<p>it will request a password, enter <strong>anoncvs</strong>. Then you can
+checkout the development tree with:</p>
+
+<p><code>cvs -d :pserver:anoncvs@libvirt.org:2401/data/cvs co
+libvirt</code></p>
+
+<p>Use ./autogen.sh to configure the local checkout, then <code>make</code>
+and <code>make install</code>, as usual. All normal cvs commands are now
+available except commiting to the base.</p>
+
+
+
+<p>This section describes the XML format used to represent domains, there are
+variations on the format based on the kind of domains run and the options
+used to launch them:</p>
+
+<ul><li><a href="#Normal1">Normal paravirtualized Xen domains</a></li>
+  <li><a href="#Fully1">Fully virtualized Xen domains</a></li>
+  <li><a href="#KVM1">KVM domains</a></li>
+  <li><a href="#Net1">Networking options for QEmu and KVM</a></li>
+  <li><a href="#QEmu1">QEmu domains</a></li>
+  <li><a href="#Capa1">Discovering virtualization capabilities</a></li>
+</ul><p>The formats try as much as possible to follow the same structure and reuse
+elements and attributes where it makes sense.</p>
+
+<h3 id="Normal"><a name="Normal1" id="Normal1">Normal paravirtualized Xen
+guests</a>:</h3>
+
+<p>The library use an XML format to describe domains, as input to <a href="html/libvirt-libvirt.html#virDomainCreateLinux">virDomainCreateLinux()</a>
+and as the output of <a href="html/libvirt-libvirt.html#virDomainGetXMLDesc">virDomainGetXMLDesc()</a>,
+the following is an example of the format as returned by the shell command
+<code>virsh xmldump fc4</code> , where fc4 was one of the running domains:</p>
+</ul><pre>&lt;domain type='xen' <span style="color: #0071FF; background-color: #FFFFFF">id='18'</span>&gt;
+  &lt;name&gt;fc4&lt;/name&gt;
+  <span style="color: #00B200; background-color: #FFFFFF">&lt;os&gt;
+    &lt;type&gt;linux&lt;/type&gt;
+    &lt;kernel&gt;/boot/vmlinuz-2.6.15-1.43_FC5guest&lt;/kernel&gt;
+    &lt;initrd&gt;/boot/initrd-2.6.15-1.43_FC5guest.img&lt;/initrd&gt;
+    &lt;root&gt;/dev/sda1&lt;/root&gt;
+    &lt;cmdline&gt; ro selinux=0 3&lt;/cmdline&gt;
+  &lt;/os&gt;</span>
+  &lt;memory&gt;131072&lt;/memory&gt;
+  &lt;vcpu&gt;1&lt;/vcpu&gt;
+  &lt;devices&gt;
+    <span style="color: #FF0080; background-color: #FFFFFF">&lt;disk type='file'&gt;
+      &lt;source file='/u/fc4.img'/&gt;
+      &lt;target dev='sda1'/&gt;
+    &lt;/disk&gt;</span>
+    <span style="color: #0000FF; background-color: #FFFFFF">&lt;interface type='bridge'&gt;
+      &lt;source bridge='xenbr0'/&gt;
+      &lt;mac address='</span><span style="color: #0000FF; background-color: #FFFFFF"></span><span style="color: #0000FF; background-color: #FFFFFF">aa:00:00:00:00:11'/&gt;
+      &lt;script path='/etc/xen/scripts/vif-bridge'/&gt;
+    &lt;/interface&gt;</span>
+    <span style="color: #FF8000; background-color: #FFFFFF">&lt;console tty='/dev/pts/5'/&gt;</span>
+  &lt;/devices&gt;
+&lt;/domain&gt;</pre><p>The root element must be called <code>domain</code> with no namespace, the
+<code>type</code> attribute indicates the kind of hypervisor used, 'xen' is
+the default value. The <code>id</code> attribute gives the domain id at
+runtime (not however that this may change, for example if the domain is saved
+to disk and restored). The domain has a few children whose order is not
+significant:</p><ul><li>name: the domain name, preferably ASCII based</li>
+  <li>memory: the maximum memory allocated to the domain in kilobytes</li>
+  <li>vcpu: the number of virtual cpu configured for the domain</li>
+  <li>os: a block describing the Operating System, its content will be
+    dependant on the OS type
+    <ul><li>type: indicate the OS type, always linux at this point</li>
+      <li>kernel: path to the kernel on the Domain 0 filesystem</li>
+      <li>initrd: an optional path for the init ramdisk on the Domain 0
+        filesystem</li>
+      <li>cmdline: optional command line to the kernel</li>
+      <li>root: the root filesystem from the guest viewpoint, it may be
+        passed as part of the cmdline content too</li>
+    </ul></li>
+  <li>devices: a list of <code>disk</code>, <code>interface</code> and
+    <code>console</code> descriptions in no special order</li>
+</ul><p>The format of the devices and their type may grow over time, but the
+following should be sufficient for basic use:</p><p>A <code>disk</code> device indicates a block device, it can have two
+values for the type attribute either 'file' or 'block' corresponding to the 2
+options availble at the Xen layer. It has two mandatory children, and one
+optional one in no specific order:</p><ul><li>source with a file attribute containing the path in Domain 0 to the
+    file or a dev attribute if using a block device, containing the device
+    name ('hda5' or '/dev/hda5')</li>
+  <li>target indicates in a dev attribute the device where it is mapped in
+    the guest</li>
+  <li>readonly an optional empty element indicating the device is
+  read-only</li>
+</ul><p>An <code>interface</code> element describes a network device mapped on the
+guest, it also has a type whose value is currently 'bridge', it also have a
+number of children in no specific order:</p><ul><li>source: indicating the bridge name</li>
+  <li>mac: the optional mac address provided in the address attribute</li>
+  <li>ip: the optional IP address provided in the address attribute</li>
+  <li>script: the script used to bridge the interfcae in the Domain 0</li>
+  <li>target: and optional target indicating the device name.</li>
+</ul><p>A <code>console</code> element describes a serial console connection to
+the guest. It has no children, and a single attribute <code>tty</code> which
+provides the path to the Pseudo TTY on which the guest console can be
+accessed</p><p>Life cycle actions for the domain can also be expressed in the XML format,
+they drive what should be happening if the domain crashes, is rebooted or is
+poweroff. There is various actions possible when this happen:</p><ul><li>destroy: The domain is cleaned up (that's the default normal processing
+    in Xen)</li>
+  <li>restart: A new domain is started in place of the old one with the same
+    configuration parameters</li>
+  <li>preserve: The domain will remain in memory until it is destroyed
+    manually, it won't be running but allows for post-mortem debugging</li>
+  <li>rename-restart: a variant of the previous one but where the old domain
+    is renamed before being saved to allow a restart</li>
+</ul><p>The following could be used for a Xen production system:</p><pre>&lt;domain&gt;
+  ...
+  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
+  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
+  &lt;on_crash&gt;rename-restart&lt;/on_crash&gt;
+  ...
+&lt;/domain&gt;</pre><p>While the format may be extended in various ways as support for more
+hypervisor types and features are added, it is expected that this core subset
+will remain functional in spite of the evolution of the library.</p><h3 id="Fully"><a name="Fully1" id="Fully1">Fully virtualized guests</a>
+(added in 0.1.3):</h3><p>Here is an example of a domain description used to start a fully
+virtualized (a.k.a. HVM) Xen domain. This requires hardware virtualization
+support at the processor level but allows to run unmodified operating
+systems:</p><pre>&lt;domain type='xen' id='3'&gt;
+  &lt;name&gt;fv0&lt;/name&gt;
+  &lt;uuid&gt;4dea22b31d52d8f32516782e98ab3fa0&lt;/uuid&gt;
+  &lt;os&gt;
+    <span style="color: #0000E5; background-color: #FFFFFF">&lt;type&gt;hvm&lt;/type&gt;</span>
+    <span style="color: #0000E5; background-color: #FFFFFF">&lt;loader&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;</span>
+    <span style="color: #0000E5; background-color: #FFFFFF">&lt;boot dev='hd'/&gt;</span>
+  &lt;/os&gt;
+  &lt;memory&gt;524288&lt;/memory&gt;
+  &lt;vcpu&gt;1&lt;/vcpu&gt;
+  &lt;on_poweroff&gt;destroy&lt;/on_poweroff&gt;
+  &lt;on_reboot&gt;restart&lt;/on_reboot&gt;
+  &lt;on_crash&gt;restart&lt;/on_crash&gt;
+  &lt;features&gt;
+     <span style="color: #E50000; background-color: #FFFFFF">&lt;pae/&gt;
+     &lt;acpi/&gt;
+     &lt;apic/&gt;</span>
+  &lt;/features&gt;
+  &lt;devices&gt;
+    <span style="color: #0000E5; background-color: #FFFFFF">&lt;emulator&gt;/usr/lib/xen/bin/qemu-dm&lt;/emulator&gt;</span>
+    &lt;interface type='bridge'&gt;
+      &lt;source bridge='xenbr0'/&gt;
+      &lt;mac address='00:16:3e:5d:c7:9e'/&gt;
+      &lt;script path='vif-bridge'/&gt;
+    &lt;/interface&gt;
+    &lt;disk type='file'&gt;
+      &lt;source file='/root/fv0'/&gt;
+      &lt;target <span style="color: #0000E5; background-color: #FFFFFF">dev='hda'</span>/&gt;
+    &lt;/disk&gt;
+    &lt;disk type='file' <span style="color: #0000E5; background-color: #FFFFFF">device='cdrom'</span>&gt;
+      &lt;source file='/root/fc5-x86_64-boot.iso'/&gt;
+      &lt;target <span style="color: #0000E5; background-color: #FFFFFF">dev='hdc'</span>/&gt;
+      &lt;readonly/&gt;
+    &lt;/disk&gt;
+    &lt;disk type='file' <span style="color: #0000E5; background-color: #FFFFFF">device='floppy'</span>&gt;
+      &lt;source file='/root/fd.img'/&gt;
+      &lt;target <span style="color: #0000E5; background-color: #FFFFFF">dev='fda'</span>/&gt;
+    &lt;/disk&gt;
+    <span style="color: #0000E5; background-color: #FFFFFF">&lt;graphics type='vnc' port='5904'/&gt;</span>
+  &lt;/devices&gt;
+&lt;/domain&gt;</pre><p>There is a few things to notice specifically for HVM domains:</p><ul><li>the optional <code>&lt;features&gt;</code> block is used to enable
+    certain guest CPU / system features. For HVM guests the following
+    features are defined:
+    <ul><li><code>pae</code> - enable PAE memory addressing</li>
+      <li><code>apic</code> - enable IO APIC</li>
+      <li><code>acpi</code> - enable ACPI bios</li>
+    </ul></li>
+  <li>the <code>&lt;os&gt;</code> block description is very different, first
+    it indicates that the type is 'hvm' for hardware virtualization, then
+    instead of a kernel, boot and command line arguments, it points to an os
+    boot loader which will extract the boot informations from the boot device
+    specified in a separate boot element. The <code>dev</code> attribute on
+    the <code>boot</code> tag can be one of:
+    <ul><li><code>fd</code> - boot from first floppy device</li>
+      <li><code>hd</code> - boot from first harddisk device</li>
+      <li><code>cdrom</code> - boot from first cdrom device</li>
+    </ul></li>
+  <li>the <code>&lt;devices&gt;</code> section includes an emulator entry
+    pointing to an additional program in charge of emulating the devices</li>
+  <li>the disk entry indicates in the dev target section that the emulation
+    for the drive is the first IDE disk device hda. The list of device names
+    supported is dependant on the Hypervisor, but for Xen it can be any IDE
+    device <code>hda</code>-<code>hdd</code>, or a floppy device
+    <code>fda</code>, <code>fdb</code>. The <code>&lt;disk&gt;</code> element
+    also supports a 'device' attribute to indicate what kinda of hardware to
+    emulate. The following values are supported:
+    <ul><li><code>floppy</code> - a floppy disk controller</li>
+      <li><code>disk</code> - a generic hard drive (the default it
+      omitted)</li>
+      <li><code>cdrom</code> - a CDROM device</li>
+    </ul>
+    For Xen 3.0.2 and earlier a CDROM device can only be emulated on the
+    <code>hdc</code> channel, while for 3.0.3 and later, it can be emulated
+    on any IDE channel.</li>
+  <li>the <code>&lt;devices&gt;</code> section also include at least one
+    entry for the graphic device used to render the os. Currently there is
+    just 2 types possible 'vnc' or 'sdl'. If the type is 'vnc', then an
+    additional <code>port</code> attribute will be present indicating the TCP
+    port on which the VNC server is accepting client connections.</li>
+</ul><p>It is likely that the HVM description gets additional optional elements
+and attributes as the support for fully virtualized domain expands,
+especially for the variety of devices emulated and the graphic support
+options offered.</p><h3><a name="KVM1" id="KVM1">KVM domain (added in 0.2.0)</a></h3><p>Support for the <a href="http://kvm.qumranet.com/">KVM virtualization</a>
+is provided in recent Linux kernels (2.6.20 and onward). This requires
+specific hardware with acceleration support and the availability of the
+special version of the <a href="http://fabrice.bellard.free.fr/qemu/">QEmu</a> binary. Since this
+relies on QEmu for the machine emulation like fully virtualized guests the
+XML description is quite similar, here is a simple example:</p><pre>&lt;domain <span style="color: #FF0000; background-color: #FFFFFF">type='kvm'</span>&gt;
+  &lt;name&gt;demo2&lt;/name&gt;
+  &lt;uuid&gt;4dea24b3-1d52-d8f3-2516-782e98a23fa0&lt;/uuid&gt;
+  &lt;memory&gt;131072&lt;/memory&gt;
+  &lt;vcpu&gt;1&lt;/vcpu&gt;
+  &lt;os&gt;
+    &lt;type&gt;hvm&lt;/type&gt;
+  &lt;/os&gt;
+  &lt;devices&gt;
+    <span style="color: #FF0000; background-color: #FFFFFF">&lt;emulator&gt;/home/user/usr/kvm-devel/bin/qemu-system-x86_64&lt;/emulator&gt;</span>
+    &lt;disk type='file' device='disk'&gt;
+      &lt;source file='/home/user/fedora/diskboot.img'/&gt;
+      &lt;target dev='hda'/&gt;
+    &lt;/disk&gt;
+    &lt;interface <span style="color: #FF0000; background-color: #FFFFFF">type='user'</span>&gt;
+      &lt;mac address='24:42:53:21:52:45'/&gt;
+    &lt;/interface&gt;
+    &lt;graphics type='vnc' port='-1'/&gt;
+  &lt;/devices&gt;
+&lt;/domain&gt;</pre><p>The specific points to note if using KVM are:</p><ul><li>the top level domain element carries a type of 'kvm'</li>
+  <li>the &lt;devices&gt; emulator points to the special qemu binary required
+    for KVM</li>
+  <li>networking interface definitions definitions are somewhat different due
+    to a different model from Xen see below</li>
+</ul><p>except those points the options should be quite similar to Xen HVM
+ones.</p><h3><a name="Net1" id="Net1">Networking options for QEmu and KVM (added in 0.2.0)</a></h3><p>The networking support in the QEmu and KVM case is more flexible, and
+support a variety of options:</p><ol><li>Userspace SLIRP stack
+    <p>Provides a virtual LAN with NAT to the outside world. The virtual
+    network has DHCP &amp; DNS services and will give the guest VM addresses
+    starting from <code>10.0.2.15</code>. The default router will be
+    <code>10.0.2.2</code> and the DNS server will be <code>10.0.2.3</code>.
+    This networking is the only option for unprivileged users who need their
+    VMs to have outgoing access. Example configs are:</p>
+    <pre>&lt;interface type='user'/&gt;</pre>
+    <pre>
+&lt;interface type='user'&gt;                                                  
+  &lt;mac address="11:22:33:44:55:66:/&gt;                                     
+&lt;/interface&gt;
+    </pre>
+  </li>
+  <li>Virtual network
+    <p>Provides a virtual network using a bridge device in the host.
+    Depending on the virtual network configuration, the network may be
+    totally isolated,NAT'ing to aan explicit network device, or NAT'ing to
+    the default route. DHCP and DNS are provided on the virtual network in
+    all cases and the IP range can be determined by examining the virtual
+    network config with '<code>virsh net-dumpxml &lt;network
+    name&gt;</code>'. There is one virtual network called'default' setup out
+    of the box which does NAT'ing to the default route and has an IP range of
+    <code>192.168.22.0/255.255.255.0</code>. Each guest will have an
+    associated tun device created with a name of vnetN, which can also be
+    overriden with the &lt;target&gt; element. Example configs are:</p>
+    <pre>&lt;interface type='network'&gt;
+  &lt;source network='default'/&gt;
+&lt;/interface&gt;
+
+&lt;interface type='network'&gt;
+  &lt;source network='default'/&gt;
+  &lt;target dev='vnet7'/&gt;
+  &lt;mac address="11:22:33:44:55:66:/&gt;
+&lt;/interface&gt;
+    </pre>
+  </li>
+  <li>Bridge to to LAN
+    <p>Provides a bridge from the VM directly onto the LAN. This assumes
+    there is a bridge device on the host which has one or more of the hosts
+    physical NICs enslaved. The guest VM will have an associated tun device
+    created with a name of vnetN, which can also be overriden with the
+    &lt;target&gt; element. The tun device will be enslaved to the bridge.
+    The IP range / network configuration is whatever is used on the LAN. This
+    provides the guest VM full incoming &amp; outgoing net access just like a
+    physical machine. Examples include:</p>
+    <pre>&lt;interface type='bridge'&gt;
+ &lt;source dev='br0'/&gt;
+&lt;/interface&gt;
+
+&lt;interface type='bridge'&gt;
+  &lt;source dev='br0'/&gt;
+  &lt;target dev='vnet7'/&gt;
+  &lt;mac address="11:22:33:44:55:66:/&gt;
+&lt;/interface&gt;       &lt;interface type='bridge'&gt;
+         &lt;source dev='br0'/&gt;
+         &lt;target dev='vnet7'/&gt;
+         &lt;mac address="11:22:33:44:55:66:/&gt;
+       &lt;/interface&gt;</pre>
+  </li>
+  <li>Generic connection to LAN
+    <p>Provides a means for the administrator to execute an arbitrary script
+    to connect the guest's network to the LAN. The guest will have a tun
+    device created with a name of vnetN, which can also be overriden with the
+    &lt;target&gt; element. After creating the tun device a shell script will
+    be run which is expected to do whatever host network integration is
+    required. By default this script is called /etc/qemu-ifup but can be
+    overriden.</p>
+    <pre>&lt;interface type='ethernet'/&gt;
+
+&lt;interface type='ethernet'&gt;
+  &lt;target dev='vnet7'/&gt;
+  &lt;script path='/etc/qemu-ifup-mynet'/&gt;
+&lt;/interface&gt;</pre>
+  </li>
+  <li>Multicast tunnel
+    <p>A multicast group is setup to represent a virtual network. Any VMs
+    whose network devices are in the same multicast group can talk to each
+    other even across hosts. This mode is also available to unprivileged
+    users. There is no default DNS or DHCP support and no outgoing network
+    access. To provide outgoing network access, one of the VMs should have a
+    2nd NIC which is connected to one of the first 4 network types and do the
+    appropriate routing. The multicast protocol is compatible with that used
+    by user mode linux guests too. The source address used must be from the
+    multicast address block.</p>
+    <pre>&lt;interface type='mcast'&gt;
+  &lt;source address='230.0.0.1' port='5558'/&gt;
+&lt;/interface&gt;</pre>
+  </li>
+  <li>TCP tunnel
+    <p>A TCP client/server architecture provides a virtual network. One VM
+    provides the server end of the netowrk, all other VMS are configured as
+    clients. All network traffic is routed between the VMs via the server.
+    This mode is also available to unprivileged users. There is no default
+    DNS or DHCP support and no outgoing network access. To provide outgoing
+    network access, one of the VMs should have a 2nd NIC which is connected
+    to one of the first 4 network types and do the appropriate routing.</p>
+    <p>Example server config:</p>
+    <pre>&lt;interface type='server'&gt;
+  &lt;source address='192.168.0.1' port='5558'/&gt;
+&lt;/interface&gt;</pre>
+    <p>Example client config:</p>
+    <pre>&lt;interface type='client'&gt;
+  &lt;source address='192.168.0.1' port='5558'/&gt;
+&lt;/interface&gt;</pre>
+  </li>
+</ol><p>To be noted, options 2, 3, 4 are also supported by Xen VMs, so it is
+possible to use these configs to have networking with both Xen &amp;
+QEMU/KVMs connected to each other.</p><h3>Q<a name="QEmu1" id="QEmu1">Emu domain (added in 0.2.0)</a></h3><p>Libvirt support for KVM and QEmu is the same code base with only minor
+changes. The configuration is as a result nearly identical, the only changes
+are related to QEmu ability to emulate <a href="http://www.qemu.org/status.html">various CPU type and hardware
+platforms</a>, and kqemu support (QEmu own kernel accelerator when the
+emulated CPU is i686 as well as the target machine):</p><pre>&lt;domain <span style="color: #FF0000; background-color: #FFFFFF">type='qemu'</span>&gt;
+  &lt;name&gt;QEmu-fedora-i686&lt;/name&gt;
+  &lt;uuid&gt;c7a5fdbd-cdaf-9455-926a-d65c16db1809&lt;/uuid&gt;
+  &lt;memory&gt;219200&lt;/memory&gt;
+  &lt;currentMemory&gt;219200&lt;/currentMemory&gt;
+  &lt;vcpu&gt;2&lt;/vcpu&gt;
+  &lt;os&gt;
+    <span style="color: #FF0000; background-color: #FFFFFF">&lt;type arch='i686' machine='pc'&gt;hvm&lt;/type&gt;</span>
+    &lt;boot dev='cdrom'/&gt;
+  &lt;/os&gt;
+  &lt;devices&gt;
+    <span style="color: #FF0000; background-color: #FFFFFF">&lt;emulator&gt;/usr/bin/qemu&lt;/emulator&gt;</span>
+    &lt;disk type='file' device='cdrom'&gt;
+      &lt;source file='/home/user/boot.iso'/&gt;
+      &lt;target dev='hdc'/&gt;
+      &lt;readonly/&gt;
+    &lt;/disk&gt;
+    &lt;disk type='file' device='disk'&gt;
+      &lt;source file='/home/user/fedora.img'/&gt;
+      &lt;target dev='hda'/&gt;
+    &lt;/disk&gt;
+    &lt;interface type='network'&gt;
+      &lt;source name='default'/&gt;
+    &lt;/interface&gt;
+    &lt;graphics type='vnc' port='-1'/&gt;
+  &lt;/devices&gt;
+&lt;/domain&gt;</pre><p>The difference here are:</p><ul><li>the value of type on top-level domain, it's 'qemu' or kqemu if asking
+    for <a href="http://www.qemu.org/kqemu-tech.html">kernel assisted
+    acceleration</a></li>
+  <li>the os type block defines the architecture to be emulated, and
+    optionally the machine type, see the discovery API below</li>
+  <li>the emulator string must point to the right emulator for that
+    architecture</li>
+</ul><h3><a name="Capa1" id="Capa1">Discovering virtualization capabilities (Added in 0.2.1)</a></h3><p>As new virtualization engine support gets added to libvirt, and to handle
+cases like QEmu supporting a variety of emulations, a query interface has
+been added in 0.2.1 allowing to list the set of supported virtualization
+capabilities on the host:</p><pre>    char * virConnectGetCapabilities (virConnectPtr conn);</pre><p>The value returned is an XML document listing the virtualization
+capabilities of the host and virtualization engine to which
+<code>@conn</code> is connected. One can test it using <code>virsh</code>
+command line tool command '<code>capabilities</code>', it dumps the XML
+associated to the current connection. For example in the case of a 64 bits
+machine with hardware virtualization capabilities enabled in the chip and
+BIOS you will see</p><pre>&lt;capabilities&gt;
+  <span style="color: #E50000; background-color: #FFFFFF">&lt;host&gt;
+    &lt;cpu&gt;
+      &lt;arch&gt;x86_64&lt;/arch&gt;
+      &lt;features&gt;
+        &lt;vmx/&gt;
+      &lt;/features&gt;
+    &lt;/cpu&gt;
+  &lt;/host&gt;</span>
+
+  &lt;!-- xen-3.0-x86_64 --&gt;
+  <span style="color: #0000E5; background-color: #FFFFFF">&lt;guest&gt;
+    &lt;os_type&gt;xen&lt;/os_type&gt;
+    &lt;arch name="x86_64"&gt;
+      &lt;wordsize&gt;64&lt;/wordsize&gt;
+      &lt;domain type="xen"&gt;&lt;/domain&gt;
+      &lt;emulator&gt;/usr/lib64/xen/bin/qemu-dm&lt;/emulator&gt;
+    &lt;/arch&gt;
+    &lt;features&gt;
+    &lt;/features&gt;
+  &lt;/guest&gt;</span>
+
+  &lt;!-- hvm-3.0-x86_32 --&gt;
+  <span style="color: #00B200; background-color: #FFFFFF">&lt;guest&gt;
+    &lt;os_type&gt;hvm&lt;/os_type&gt;
+    &lt;arch name="i686"&gt;
+      &lt;wordsize&gt;32&lt;/wordsize&gt;
+      &lt;domain type="xen"&gt;&lt;/domain&gt;
+      &lt;emulator&gt;/usr/lib/xen/bin/qemu-dm&lt;/emulator&gt;
+      &lt;machine&gt;pc&lt;/machine&gt;
+      &lt;machine&gt;isapc&lt;/machine&gt;
+      &lt;loader&gt;/usr/lib/xen/boot/hvmloader&lt;/loader&gt;
+    &lt;/arch&gt;
+    &lt;features&gt;
+    &lt;/features&gt;
+  &lt;/guest&gt;</span>
+  ...
+&lt;/capabilities&gt;</pre><p>The fist block (in red) indicates the host hardware capbilities, currently
+it is limited to the CPU properties but other information may be available,
+it shows the CPU architecture, and the features of the chip (the feature
+block is similar to what you will find in a Xen fully virtualized domain
+description).</p><p>The second block (in blue) indicates the paravirtualization support of the
+Xen support, you will see the os_type of xen to indicate a paravirtual
+kernel, then architecture informations and potential features.</p><p>The third block (in green) gives similar informations but when running a
+32 bit OS fully virtualized with Xen using the hvm support.</p><p>This section is likely to be updated and augmented in the future, see <a href="https://www.redhat.com/archives/libvir-list/2007-March/msg00215.html">the
+discussion</a> which led to the capabilities format in the mailing-list
+archives.</p></div></div><div class="linkList2"><div class="llinks2"><h3 class="links2"><span>main menu</span></h3><ul><li><a href="index.html">Home</a></li><li><a href="news.html">Releases</a></li><li><a href="python.html">Binding for Python</a></li><li><a href="errors.html">Handling of errors</a></li><li><a href="FAQ.html">FAQ</a></li><li><a href="bugs.html">Reporting bugs and getting help</a></li><li><a href="html/index.html">API Menu</a></li><li><a href="examples/index.html">C code examples</a></li><li><a href="ChangeLog.html">Recent Changes</a></li></ul></div><div class="llinks2"><h3 class="links2"><span>related links</span></h3><ul><li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li><li><a href="https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&amp;component=libvirt&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;bug_status=MODIFIED&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;long_desc_type=allwordssubstr">Open bugs</a></li><li><a href="http://virt-manager.et.redhat.com/">virt-manager</a></li><li><a href="http://search.cpan.org/~danberr/Sys-Virt-0.1.0/">Perl bindings</a></li><li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li><li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" /></form></li><li><a href="http://xmlsoft.org/"><img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li></ul><p class="credits">Graphics and design by <a href="mail:dfong@redhat.com">Diana Fong</a></p></div></div><div id="bottom"><p class="p1"></p></div></div></body></html>

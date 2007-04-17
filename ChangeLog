@@ -1,3 +1,8 @@
+Tue Apr 17 11:30:46 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* docs/* NEWS libvirt.spec.in: prepare release of 0.2.2
+	* docs/apibuild.py: do not scan xen_unified for APIs.
+
 Mon Apr 16 09:11:04 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/conf.c: Check for existance of QEMU binary path. Fix check

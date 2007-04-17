@@ -29,6 +29,8 @@ ignored_files = {
   "proxy_internal.c": "internal code",
   "xen_internal.h": "internal includes and defines",
   "xen_internal.c": "internal code",
+  "xen_unified.h": "internal includes and defines",
+  "xen_unified.c": "internal code",
   "xs_internal.h": "internal includes and defines",
   "xs_internal.c": "internal code",
   "xm_internal.h": "internal code",

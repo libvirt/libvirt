@@ -89,8 +89,8 @@ xenUnifiedOpen (virConnectPtr conn, const char *name, int flags)
 
     /* If name == NULL, name == "", or begins with "xen", then it's for us. */
     if (!name || name[0] == '\0')
-        name = "xen";
-    if (strncasecmp (name, "xen", 3) != 0)
+        name = "Xen";
+    if (strncasecmp (name, "Xen", 3) != 0)
         return VIR_DRV_OPEN_DECLINED;
 
     /* Allocate per-connection private data. */
@@ -719,7 +719,7 @@ xenUnifiedDomainSetAutostart (virDomainPtr dom, int autostart)
 /* The interface which we export upwards to libvirt.c. */
 static virDriver xenUnifiedDriver = {
     .no = VIR_DRV_XEN_UNIFIED,
-    .name = "xen",
+    .name = "Xen",
     .ver = VERSION,
     .open 			= xenUnifiedOpen,
     .close 			= xenUnifiedClose,
