@@ -1,3 +1,8 @@
+Wed Apr 18 11:57:28 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* docs/remote.html docs/site.html docs/*.html: added a stub for
+	  the remote page, added it to stylesheet and regenerated
+
 Tue Apr 17 11:30:46 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* docs/* NEWS libvirt.spec.in: prepare release of 0.2.2

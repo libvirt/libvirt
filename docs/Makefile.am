@@ -4,7 +4,7 @@ SUBDIRS= . examples devhelp
 # The directory containing the source code (if it contains documentation).
 DOC_SOURCE_DIR=../src
 
-PAGES= index.html bugs.html FAQ.html
+PAGES= index.html bugs.html FAQ.html remote.html
 APIPAGES=APIconstructors.html APIfiles.html APIfunctions.html \
     APIsymbols.html APIchunk0.html
 EXTRA_DIST=							\
