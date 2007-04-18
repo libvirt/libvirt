@@ -274,6 +274,9 @@ virDefaultErrorFunc(virErrorPtr err)
         case VIR_FROM_NET:
             dom = "Network ";
             break;
+        case VIR_FROM_TEST:
+            dom = "Test ";
+            break;
     }
     if ((err->dom != NULL) && (err->code != VIR_ERR_INVALID_DOMAIN)) {
         domain = err->dom->name;

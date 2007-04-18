@@ -49,6 +49,7 @@ typedef enum {
     VIR_FROM_CONF,	/* Error in the configuration file handling */
     VIR_FROM_QEMU,      /* Error at the QEMU daemon */
     VIR_FROM_NET,       /* Error when operating on a network */
+    VIR_FROM_TEST,	/* Error from test driver */
 } virErrorDomain;
 
 

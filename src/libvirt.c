@@ -64,14 +64,14 @@ virInitialize(void)
      * Note that the order is important: the first ones have a higher
      * priority when calling virConnectOpen.
      */
-#ifdef WITH_XEN
-    if (xenUnifiedRegister () == -1) return -1;
-#endif
 #ifdef WITH_TEST
     if (testRegister() == -1) return -1;
 #endif
 #ifdef WITH_QEMU
     if (qemuRegister() == -1) return -1;
+#endif
+#ifdef WITH_XEN
+    if (xenUnifiedRegister () == -1) return -1;
 #endif
 
     return(0);

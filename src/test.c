@@ -213,7 +213,7 @@ testError(virConnectPtr con,
         return;
 
     errmsg = __virErrorMsg(error, info);
-    __virRaiseError(con, dom, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
+    __virRaiseError(con, dom, NULL, VIR_FROM_TEST, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, 0, 0, errmsg, info, 0);
 }
 
@@ -722,13 +722,19 @@ int testOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_DECLINED;
     }
 
-    if (!uri->scheme ||
-        strcmp(uri->scheme, "test") ||
-        !uri->path) {
+    if (!uri->scheme || strcmp(uri->scheme, "test") != 0) {
         xmlFreeURI(uri);
         return VIR_DRV_OPEN_DECLINED;
     }
 
+    /* From this point on, the connection is for us. */
+    if (!uri->path
+        || uri->path[0] == '\0'
+        || (uri->path[0] == '/' && uri->path[1] == '\0')) {
+        testError (conn, NULL, VIR_ERR_INVALID_ARG,
+                   _("testOpen: supply a path or use test:///default"));
+        return VIR_DRV_OPEN_ERROR;
+    }
 
     if ((connid = getNextConnection()) < 0) {
         testError(NULL, NULL, VIR_ERR_INTERNAL_ERROR, _("too many connections"));
@@ -738,12 +744,12 @@ int testOpen(virConnectPtr conn,
     /* Allocate per-connection private data. */
     priv = conn->privateData = malloc (sizeof (struct _testPrivate));
     if (!priv) {
-        testError(NULL, NULL, VIR_ERR_NO_MEMORY, "allocating private data");
+        testError(conn, NULL, VIR_ERR_NO_MEMORY, _("allocating private data"));
         return VIR_DRV_OPEN_ERROR;
     }
     priv->handle = -1;
 
-    if (!strcmp(uri->path, "/default")) {
+    if (strcmp(uri->path, "/default") == 0) {
         ret = testOpenDefault(conn,
                               connid);
     } else {
