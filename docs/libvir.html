@@ -1339,9 +1339,373 @@ to post to the <a href="mailto:libvir-list@redhat.com">mailing-list</a>
 too if the issue looks serious, thanks !</p>
 
 <h2><a name="Remote">Remote support</a></h2>
-<p> The remote support means the capacity to connect to hosts which are
-not on the machine where the program using libvirt is running. But there
-is ongoing work to add that support. </p>
+
+<p>
+<b>NB. Remote support is available only as a <a
+href="https://www.redhat.com/archives/libvir-list/">series of
+patches posted on libvir-list</a> against <a
+href="http://libvirt.org/downloads.html">libvirt CVS</a>.  It is only
+for experimental use at the moment.</b>
+&mdash;&nbsp;Richard&nbsp;Jones,&nbsp;2007-04-18.
+</p>
+
+<p>
+Libvirt allows you to access hypervisors running on remote
+machines through authenticated and encrypted connections.
+</p>
+
+<h3><a name="Remote_basic_usage">Basic usage</a></h3>
+
+<p>
+On the remote machine, <code>libvirtd</code> should be running.
+See <a href="#Remote_libvirtd_configuration">the section
+on configuring libvirtd</a> for more information.
+</p>
+
+<p>
+To tell libvirt that you want to access a remote resource,
+you should supply a hostname in the normal URI that is passed
+to <code>virConnectOpen</code> (or <code>virsh -c ...</code>).
+For example, if you normally use <code>qemu:///system</code>
+to access the system-wide QEMU daemon, then to access
+the system-wide QEMU daemon on a remote machine called
+<code>oirase</code> you would use <code>qemu://oirase/system</code>.
+</p>
+
+<p>
+The <a href="#Remote_URI_reference">section on remote URIs</a>
+describes in more detail these remote URIs.
+</p>
+
+<p>
+From an API point of view, apart from the change in URI, the
+API should behave the same.  For example, ordinary calls
+are routed over the remote connection transparently, and
+values or errors from the remote side are returned to you
+as if they happened locally.  Some differences you may notice:
+</p>
+
+<ul>
+<li> Additional errors can be generated, specifically ones
+relating to failures in the remote transport itself. </li>
+<li> Remote calls are handled synchronously, so they will be
+much slower than, say, direct hypervisor calls. </li>
+</ul>
+
+<h3><a name="Remote_transports">Transports</a></h3>
+
+<p>
+Remote libvirt supports a range of transports:
+</p>
+
+<dl>
+<dt> tls </dt>
+<dd> <a href="http://en.wikipedia.org/wiki/Transport_Layer_Security"
+   title="Transport Layer Security">TLS</a>
+ 1.0 (SSL 3.1) authenticated and encrypted TCP/IP socket, usually
+ listening on a public port number.  To use this you will need to
+ <a href="#Remote_certificates"
+ title="Generating TLS certificates">generate client and
+ server certificates</a>.
+ The standard port is 16514.
+ </dd>
+
+<dt> unix </dt>
+<dd> Unix domain socket.  Since this is only accessible on the
+ local machine, it is not encrypted, and uses Unix permissions or
+ SELinux for authentication.
+ The standard socket names are
+ <code>/var/run/libvirt/libvirt-sock</code> and
+ <code>/var/run/libvirt/libvirt-sock-ro</code> (the latter
+ for read-only connections).
+ </dd>
+
+<dt> ssh </dt>
+<dd> Transported over an ordinary
+ <a href="http://www.openssh.com/" title="OpenSSH homepage">ssh
+ (secure shell)</a> connection.
+ Requires <a href="http://netcat.sourceforge.net/">Netcat (nc)</a>
+ installed on the remote machine, and the remote libvirtd should
+ be listening on the unix transport.  You should use some sort of
+ ssh key management (eg.
+ <a href="http://mah.everybody.org/docs/ssh"
+ title="Using ssh-agent with ssh">ssh-agent</a>)
+ otherwise programs which use
+ this transport will stop to ask for a password. </dd>
+
+<dt> ext </dt>
+<dd> Any external program which can make a connection to the
+ remote machine by means outside the scope of libvirt. </dd>
+
+<dt> tcp </dt>
+<dd> Unencrypted TCP/IP socket.  Not recommended for production
+ use, this is normally disabled, but an administrator can enable
+ it for testing or use over a trusted network.
+ The standard port is 16509.
+ </dd>
+</dl>
+
+<p>
+The default transport, if no other is specified, is <code>tls</code>.
+</p>
+
+<h3><a name="Remote_URI_reference">Remote URIs</a></h3>
+
+<p>
+Remote URIs have the general form ("[...]" meaning an optional part):
+</p>
+
+<p>
+<code>driver</code>[<code>+transport</code>]<code>://</code>[<code>username@</code>]<code>hostname</code>[<code>:port</code>]<code>/</code>[<code>path</code>][<code>?extraparameters</code>]
+</p>
+
+<p>
+Either the transport or the hostname must be given in order
+to distinguish this from a local URI.
+</p>
+
+<p>
+Some examples:
+</p>
+
+<ul>
+<li> <code>xen+ssh://rjones@towada/</code> <br/> &mdash; Connect to a
+remote Xen hypervisor on host <code>towada</code> using ssh transport and ssh
+username <code>rjones</code>.
+</li>
+
+<li> <code>xen://towada/</code> <br/> &mdash; Connect to a
+remote Xen hypervisor on host <code>towada</code> using TLS.
+</li>
+
+<li> <code>xen://towada/?no_verify=1</code> <br/> &mdash; Connect to a
+remote Xen hypervisor on host <code>towada</code> using TLS.  Do not verify
+the server's certificate.
+</li>
+
+<li> <code>qemu+unix:///system?socket=/opt/libvirt/run/libvirt/libvirt-sock</code> <br/> &mdash;
+Connect to the local qemu instances over a non-standard
+Unix socket (the full path to the Unix socket is
+supplied explicitly in this case).
+</li>
+
+<li> <code>test+tcp://localhost:5000/default</code> <br/> &mdash;
+Connect to a libvirtd daemon offering unencrypted TCP/IP connections
+on localhost port 5000 and use the test driver with default
+settings.
+</li>
+
+</ul>
+
+<h4><a name="Remote_URI_parameters">Extra parameters</a></h4>
+
+<p>
+Extra parameters can be added to remote URIs as part
+of the query string (the part following <q><code>?</code></q>).
+Remote URIs understand the extra parameters shown below.
+Any others are passed unmodified through to the back end.
+Note that parameter values must be
+<a href="http://xmlsoft.org/html/libxml-uri.html#xmlURIEscapeStr">URI-escaped</a>.
+</p>
+
+<table>
+<tr>
+<th> Name </th>
+<th> Transports </th>
+<th> Meaning </th>
+</tr>
+
+<tr>
+<td> <code>name</code> </td>
+<td> <i>any&nbsp;transport</i> </td>
+<td>
+  The name passed to the remote virConnectOpen function.  The
+  name is normally formed by removing transport, hostname, port
+  number, username and extra parameters from the remote URI, but in certain
+  very complex cases it may be better to supply the name explicitly.
+</td>
+</tr>
+<tr> <td colspan="2"></td>
+<td> Example: <code>name=qemu:///system</code> </td>
+</tr>
+
+<tr>
+<td> <code>command</code> </td>
+<td> ssh, ext </td>
+<td>
+  The external command.  For ext transport this is required.
+  For ssh the default is <code>ssh</code>.
+  The PATH is searched for the command.
+</td>
+</tr>
+<tr> <td colspan="2"></td>
+<td> Example: <code>command=/opt/openssh/bin/ssh</code> </td>
+</tr>
+
+<tr>
+<td> <code>socket</code> </td>
+<td> unix, ssh </td>
+<td>
+  The path to the Unix domain socket, which overrides the
+  compiled-in default.  For ssh transport, this is passed to
+  the remote netcat command (see next).
+</td>
+</tr>
+<tr> <td colspan="2"></td>
+<td> Example: <code>socket=/opt/libvirt/run/libvirt/libvirt-sock</code> </td>
+</tr>
+
+<tr>
+<td> <code>netcat</code> </td>
+<td> ssh </td>
+<td>
+  The name of the netcat command on the remote machine.
+  The default is <code>nc</code>.  For ssh transport, libvirt
+  constructs an ssh command which looks like:
+
+<pre>
+<i>command</i> -p <i>port</i> [-l <i>username</i>] <i>hostname</i> <i>netcat</i> -U <i>socket</i>
+</pre>
+
+  where <i>port</i>, <i>username</i>, <i>hostname</i> can be
+  specified as part of the remote URI, and <i>command</i>, <i>netcat</i>
+  and <i>socket</i> come from extra parameters (or
+  sensible defaults).
+
+</td>
+</tr>
+<tr> <td colspan="2"></td>
+<td> Example: <code>netcat=/opt/netcat/bin/nc</code> </td>
+</tr>
+
+<tr>
+<td> <code>no_verify</code> </td>
+<td> tls </td>
+<td>
+  If set to a non-zero value, this disables client checks of the
+  server's certificate.  Note that to disable server checks of
+  the client's certificate or IP address you must
+  <a href="#Remote_libvirtd_configuration">change the libvirtd
+  configuration</a>.
+</td>
+</tr>
+<tr> <td colspan="2"></td>
+<td> Example: <code>no_verify=1</code> </td>
+</tr>
+
+</table>
+
+<h3><a name="Remote_certificates">Generating TLS certificates</a></h3>
+
+<p>
+<i>This section to follow.</i>
+</p>
+
+
+
+
+
+
+<h3><a name="Remote_libvirtd_configuration">libvirtd configuration</a></h3>
+
+<p>
+<i>This section to follow.</i>
+</p>
+
+
+
+
+
+
+<h3><a name="Remote_IPv6">IPv6 support</a></h3>
+
+<p>
+IPv6 has received some limited testing and should work.  Problems with
+libvirt and IPv6 should be reported as <a href="bugs.html">bugs</a>.
+</p>
+
+<h3><a name="Remote_limitations">Limitations</a></h3>
+
+<ul>
+<li> Remote storage: To be fully useful, particularly for
+creating new domains, it should be possible to enumerate
+and provision storage on the remote machine.  This is currently
+in the design phase. </li>
+
+<li> Migration: We expect libvirt will support migration,
+and obviously remote support is what makes migration worthwhile.
+This is also in the design phase.  Issues <a
+href="https://www.redhat.com/mailman/listinfo/libvir-list"
+title="libvir-list mailing list">to discuss</a> include
+which path the migration data should follow (eg. client to
+client direct, or client to server to client) and security.
+</li>
+
+<li> Fine-grained authentication: libvirt in general,
+but in particular the remote case should support more
+fine-grained authentication for operations, rather than
+just read-write/read-only as at present.
+</li>
+</ul>
+
+<p>
+Please come and discuss these issues and more on <a
+href="https://www.redhat.com/mailman/listinfo/libvir-list"
+title="libvir-list mailing list">the mailing list</a>.
+</p>
+
+<h3><a name="Remote_implementation_notes">Implementation notes</a></h3>
+
+<p>
+The current implementation uses <a
+href="http://en.wikipedia.org/wiki/External_Data_Representation"
+title="External Data Representation">XDR</a>-encoded packets with a
+simple remote procedure call implementation which also supports
+asynchronous messaging and asynchronous and out-of-order replies,
+although these latter features are not used at the moment.
+</p>
+
+<p>
+The implementation should be considered <b>strictly internal</b> to
+libvirt and <b>subject to change at any time without notice</b>.  If
+you wish to talk to libvirtd, link to libvirt.  If there is a problem
+that means you think you need to use the protocol directly, please
+first discuss this on <a
+href="https://www.redhat.com/mailman/listinfo/libvir-list"
+title="libvir-list mailing list">the mailing list</a>.
+</p>
+
+<p>
+The messaging protocol is described in
+<code>qemud/remote_protocol.x</code>.
+</p>
+
+<p>
+Authentication and encryption (for TLS) is done using <a
+href="http://www.gnu.org/software/gnutls/" title="GnuTLS project
+page">GnuTLS</a> and the RPC protocol is unaware of this layer.
+</p>
+
+<p>
+Protocol messages are sent using a simple 32 bit length word (encoded
+XDR int) followed by the message header (XDR
+<code>remote_message_header</code>) followed by the message body.  The
+length count includes the length word itself, and is measured in
+bytes.  Maximum message size is <code>REMOTE_MESSAGE_MAX</code> and to
+avoid denial of services attacks on the XDR decoders strings are
+individually limited to <code>REMOTE_STRING_MAX</code> bytes.  In the
+TLS case, messages may be split over TLS records, but a TLS record
+cannot contain parts of more than one message.  In the common RPC case
+a single <code>REMOTE_CALL</code> message is sent from client to
+server, and the server then replies synchronously with a single
+<code>REMOTE_REPLY</code> message, but other forms of messaging are
+also possible.
+</p>
+
+<p>
+The protocol contains support for multiple program types and protocol
+versioning, modelled after SunRPC.
+</p>
 
 </body>
 </html>
