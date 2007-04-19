@@ -93,7 +93,7 @@
     <group>
       <attribute name='arch'>
 	<choice>
-	  <value>x86_64</value>
+	  <value>i686</value>
 	  <value>x86_64</value>
 	</choice>
       </attribute>
