@@ -587,7 +587,7 @@ static int
 xend_op_ext2(virConnectPtr xend, const char *path, char *error,
              size_t n_error, const char *key, va_list ap)
 {
-    char ops[1024];
+    char ops[VIR_XML_STRING_BUFLEN];
     const char *k = key, *v;
     int offset = 0;
 

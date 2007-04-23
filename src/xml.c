@@ -1165,7 +1165,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
 {
     xmlDocPtr xml = NULL;
     xmlNodePtr node;
-    char *ret = NULL, *nam = NULL;
+    char *nam = NULL;
     virBuffer buf;
     xmlChar *prop;
     xmlParserCtxtPtr pctxt;
@@ -1182,10 +1182,9 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
 
     if (name != NULL)
         *name = NULL;
-    ret = malloc(1000);
-    if (ret == NULL)
+    buf.content = malloc(1000);
+    if (buf.content == NULL)
         return (NULL);
-    buf.content = ret;
     buf.size = 1000;
     buf.use = 0;
 
@@ -1376,7 +1375,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
     else
         free(nam);
 
-    return (ret);
+    return (buf.content);
 
  error:
     if (nam != NULL)
@@ -1389,8 +1388,8 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
         xmlFreeDoc(xml);
     if (pctxt != NULL)
         xmlFreeParserCtxt(pctxt);
-    if (ret != NULL)
-        free(ret);
+    if (buf.content != NULL)
+        free(buf.content);
     return (NULL);
 }
 

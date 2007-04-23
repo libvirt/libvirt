@@ -106,6 +106,11 @@ extern "C" {
 #define VIR_CONNECT_RO 1
 
 /**
+ * buffer size for definition file
+ */
+#define VIR_XML_STRING_BUFLEN (1024 + PATH_MAX * 16 + FILENAME_MAX * 16)
+
+/**
  * _virConnect:
  *
  * Internal structure associated to a connection

@@ -1,3 +1,8 @@
+Mon Apr 23 09:38:16 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/internal.h src/xend_internal.c src/xml.c: applied 2 bug fixes
+	  from Shigeki Sakamoto about large buffers.
+
 Thu Apr 19 12:09:15 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* docs/libvirt.rng: fix duplicate x86_64 arch
