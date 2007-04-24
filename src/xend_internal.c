@@ -587,24 +587,35 @@ static int
 xend_op_ext2(virConnectPtr xend, const char *path, char *error,
              size_t n_error, const char *key, va_list ap)
 {
-    char ops[VIR_XML_STRING_BUFLEN];
     const char *k = key, *v;
-    int offset = 0;
+    virBuffer buf;
+    int ret;
+
+    buf.content = malloc(1000);
+    if (buf.content == NULL) {
+	virXendError(xend, VIR_ERR_NO_MEMORY, _("allocate new buffer"));
+        return -1;
+    }
+    buf.size = 1000;
+    buf.use = 0;
 
     while (k) {
         v = va_arg(ap, const char *);
 
-        offset += snprintf(ops + offset, sizeof(ops) - offset, "%s", k);
-        offset += snprintf(ops + offset, sizeof(ops) - offset, "%s", "=");
-        offset += snprintf(ops + offset, sizeof(ops) - offset, "%s", v);
+        virBufferVSprintf(&buf, "%s", k);
+        virBufferVSprintf(&buf, "%s", "=");
+        virBufferVSprintf(&buf, "%s", v);
         k = va_arg(ap, const char *);
 
         if (k)
-            offset += snprintf(ops + offset,
-                               sizeof(ops) - offset, "%s", "&");
+            virBufferVSprintf(&buf, "%s", "&");
     }
 
-    return http2unix(xend, xend_post(xend, path, ops, error, n_error));
+    ret = http2unix(xend, xend_post(xend, path, buf.content, error, n_error));
+    if (buf.content != NULL)
+        free(buf.content);
+
+    return ret;
 }
 
 
@@ -797,8 +808,10 @@ urlencode(const char *string)
     char *ptr = buffer;
     size_t i;
 
-    if (buffer == NULL)
+    if (buffer == NULL) {
+	virXendError(NULL, VIR_ERR_NO_MEMORY, _("allocate new buffer"));
         return (NULL);
+    }
     for (i = 0; i < len; i++) {
         switch (string[i]) {
             case ' ':
@@ -2184,13 +2197,18 @@ int
 xenDaemonDomainSave(virDomainPtr domain, const char *filename)
 {
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
-        (filename == NULL)) {
+        (filename == NULL) || (domain->id < 0)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
 	             __FUNCTION__);
         return(-1);
     }
-    if (domain->id < 0)
+    
+
+    /* We can't save the state of Domain-0, that would mean stopping it too */
+    if (domain->id == 0) {
         return(-1);
+    }
+
     return xend_op(domain->conn, domain->name, "op", "save", "file", filename, NULL);
 }
 

@@ -1,3 +1,8 @@
+Tue Apr 24 15:43:04 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/internal.h src/xend_internal.c: a better fix from Shigeki Sakamoto
+	  and raising errors on memory shortage.
+
 Mon Apr 23 09:38:16 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/internal.h src/xend_internal.c src/xml.c: applied 2 bug fixes
