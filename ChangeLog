@@ -1,3 +1,7 @@
+Thu Apr 26 12:20:35 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: fix virshStrdup to not crash if NULL is passed.
+
 Tue Apr 24 15:43:04 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/internal.h src/xend_internal.c: a better fix from Shigeki Sakamoto

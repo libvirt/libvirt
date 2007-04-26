@@ -3174,6 +3174,8 @@ _vshStrdup(vshControl * ctl, const char *s, const char *filename, int line)
 {
     char *x;
 
+    if (s == NULL)
+        return(NULL);
     if ((x = strdup(s)))
         return x;
     vshError(ctl, TRUE, _("%s: %d: failed to allocate %lu bytes"),
