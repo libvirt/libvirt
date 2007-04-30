@@ -19,6 +19,8 @@ extern "C" {
 
 extern int xenUnifiedRegister (void);
 
+#define XEN_UNIFIED_NR_DRIVERS 5
+
 /* xenUnifiedPrivatePtr:
  *
  * Per-connection private data, stored in conn->privateData.  All Xen
@@ -42,6 +44,12 @@ struct _xenUnifiedPrivate {
 #endif /* WITH_XEN */
 
     int proxy;                  /* fd of proxy. */
+
+    /* Keep track of the drivers which opened.  We keep a yes/no flag
+     * here for each driver, corresponding to the array drivers in
+     * xen_unified.c.
+     */
+    int opened[XEN_UNIFIED_NR_DRIVERS];
 };
 
 typedef struct _xenUnifiedPrivate *xenUnifiedPrivatePtr;
