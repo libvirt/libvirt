@@ -31,6 +31,7 @@ static int xenProxyClose(virConnectPtr conn);
 static int xenProxyOpen(virConnectPtr conn, const char *name, int flags);
 static int xenProxyGetVersion(virConnectPtr conn, unsigned long *hvVer);
 static int xenProxyNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
+static char *xenProxyGetCapabilities(virConnectPtr conn);
 static int xenProxyListDomains(virConnectPtr conn, int *ids, int maxids);
 static int xenProxyNumOfDomains(virConnectPtr conn);
 static virDomainPtr xenProxyLookupByID(virConnectPtr conn, int id);
@@ -53,7 +54,7 @@ virDriver xenProxyDriver = {
     xenProxyGetVersion, /* version */
     NULL, /* getMaxVcpus */
     xenProxyNodeGetInfo, /* nodeGetInfo */
-    NULL, /* getCapabilities */
+    xenProxyGetCapabilities, /* getCapabilities */
     xenProxyListDomains, /* listDomains */
     xenProxyNumOfDomains, /* numOfDomains */
     NULL, /* domainCreateLinux */
@@ -974,6 +975,55 @@ xenProxyNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info) {
     }
     memcpy(info, &ans.extra.ninfo, sizeof(virNodeInfo));
     return(0);
+}
+
+/**
+ * xenProxyGetCapabilities:
+ * @conn: pointer to the Xen Daemon block
+ * 
+ * Extract capabilities of the hypervisor.
+ *
+ * Returns capabilities in case of success (freed by caller)
+ * and NULL in case of failure.
+ */
+static char *
+xenProxyGetCapabilities (virConnectPtr conn)
+{
+    virProxyPacket req;
+    virProxyFullPacket ans;
+    int ret, xmllen;
+    char *xml;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virProxyError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return NULL;
+    }
+    memset(&req, 0, sizeof(req));
+    req.command = VIR_PROXY_GET_CAPABILITIES;
+    req.data.arg = 0;
+    req.len = sizeof(req);
+    ret = xenProxyCommand(conn, &req, &ans, 0);
+    if (ret < 0) {
+        xenProxyClose(conn);
+        return NULL;
+    }
+    if (ans.data.arg == -1)
+        return NULL;
+    if (ans.len <= sizeof(virProxyPacket)) {
+        virProxyError(conn, VIR_ERR_OPERATION_FAILED, __FUNCTION__);
+        return NULL;
+    }
+
+    xmllen = ans.len - sizeof (virProxyPacket);
+    xml = malloc (xmllen+1);
+    if (!xml) {
+        virProxyError (conn, VIR_ERR_NO_MEMORY, __FUNCTION__);
+        return NULL;
+    }
+    memmove (xml, ans.extra.str, xmllen);
+    xml[xmllen] = '\0';
+
+    return xml;
 }
 
 /**

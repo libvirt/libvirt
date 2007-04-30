@@ -587,6 +587,29 @@ retry2:
 		req->len = sizeof(virProxyPacket) + sizeof(virNodeInfo);
 	    }
 	    break;
+
+	case VIR_PROXY_GET_CAPABILITIES:
+	    if (req->len != sizeof(virProxyPacket))
+	        goto comm_error;
+
+        xml = xenHypervisorGetCapabilities (conn);
+        if (!xml) {
+            req->data.arg = -1;
+            req->len = sizeof (virProxyPacket);
+        } else {
+            int xmllen = strlen (xml);
+            if (xmllen > (int) sizeof (request.extra.str)) {
+                req->data.arg = -2;
+                req->len = sizeof (virProxyPacket);
+            } else {
+                req->data.arg = 0;
+                memmove (request.extra.str, xml, xmllen);
+                req->len = sizeof (virProxyPacket) + xmllen;
+            }
+            free (xml);
+        }
+        break;
+
 	case VIR_PROXY_DOMAIN_XML:
 	    if (req->len != sizeof(virProxyPacket))
 	        goto comm_error;
