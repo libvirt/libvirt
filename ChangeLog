@@ -1,3 +1,8 @@
+Mon Apr 30 17:58:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/libvirt.c (virConnectNumOfDefinedDomains): Documentation
+	  fix (thanks to Jan Michael).
+
 Thu Apr 26 12:20:35 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: fix virshStrdup to not crash if NULL is passed.

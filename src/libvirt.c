@@ -1497,7 +1497,7 @@ virDomainUndefine(virDomainPtr domain) {
  * virConnectNumOfDefinedDomains:
  * @conn: pointer to the hypervisor connection
  *
- * Provides the number of active domains.
+ * Provides the number of inactive domains.
  *
  * Returns the number of domain found or -1 in case of error
  */
