@@ -326,7 +326,7 @@ failed:
 virConnectPtr
 virConnectOpen (const char *name)
 {
-    return do_open (name, VIR_DRV_OPEN_QUIET);
+    return do_open (name, 0);
 }
 
 /**
@@ -342,7 +342,7 @@ virConnectOpen (const char *name)
 virConnectPtr
 virConnectOpenReadOnly(const char *name)
 {
-    return do_open (name, VIR_DRV_OPEN_QUIET | VIR_DRV_OPEN_RO);
+    return do_open (name, VIR_DRV_OPEN_RO);
 }
 
 /**

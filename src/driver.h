@@ -24,7 +24,7 @@ typedef enum {
 
 
 typedef enum {
-    VIR_DRV_OPEN_QUIET = 1,
+    /* VIR_DRV_OPEN_QUIET = 1 - removed by RWMJ */
     VIR_DRV_OPEN_RO = 2
 } virDrvOpenFlag;
 

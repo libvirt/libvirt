@@ -1516,8 +1516,9 @@ xenHypervisorInit(void)
  * Returns 0 or -1 in case of error.
  */
 int
-xenHypervisorOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
-                  const char *name ATTRIBUTE_UNUSED, int flags)
+xenHypervisorOpen(virConnectPtr conn,
+                  const char *name ATTRIBUTE_UNUSED,
+                  int flags ATTRIBUTE_UNUSED)
 {
     int ret;
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
@@ -1530,8 +1531,7 @@ xenHypervisorOpen(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     ret = open(XEN_HYPERVISOR_SOCKET, O_RDWR);
     if (ret < 0) {
-        if (!(flags & VIR_DRV_OPEN_QUIET))
-            virXenError(VIR_ERR_NO_XEN, XEN_HYPERVISOR_SOCKET, 0);
+        virXenError(VIR_ERR_NO_XEN, XEN_HYPERVISOR_SOCKET, 0);
         return (-1);
     }
 

@@ -325,7 +325,8 @@ virConnectCheckStoreID(virConnectPtr conn, int id)
  */
 int
 xenStoreOpen(virConnectPtr conn,
-             const char *name ATTRIBUTE_UNUSED, int flags)
+             const char *name ATTRIBUTE_UNUSED,
+             int flags ATTRIBUTE_UNUSED)
 {
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
 
@@ -339,8 +340,7 @@ xenStoreOpen(virConnectPtr conn,
 #endif /* ! PROXY */
 
     if (priv->xshandle == NULL) {
-        if (!(flags & VIR_DRV_OPEN_QUIET))
-            virXenStoreError(conn, VIR_ERR_NO_XEN, 
+        virXenStoreError(conn, VIR_ERR_NO_XEN, 
 	                     _("failed to connect to Xen Store"));
         return (-1);
     }

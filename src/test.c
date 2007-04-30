@@ -706,7 +706,7 @@ static int getDomainIndex(virDomainPtr domain) {
 
 int testOpen(virConnectPtr conn,
              const char *name,
-             int flags)
+             int flags ATTRIBUTE_UNUSED)
 {
     xmlURIPtr uri;
     int ret, connid;
@@ -717,8 +717,7 @@ int testOpen(virConnectPtr conn,
 
     uri = xmlParseURI(name);
     if (uri == NULL) {
-        if (!(flags & VIR_DRV_OPEN_QUIET))
-            testError(conn, NULL, VIR_ERR_NO_SUPPORT, name);
+        testError(conn, NULL, VIR_ERR_NO_SUPPORT, name);
         return VIR_DRV_OPEN_DECLINED;
     }
 

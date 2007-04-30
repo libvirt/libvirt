@@ -1923,7 +1923,8 @@ error:
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xenDaemonOpen(virConnectPtr conn, const char *name, int flags)
+xenDaemonOpen(virConnectPtr conn, const char *name,
+              int flags ATTRIBUTE_UNUSED)
 {
     xmlURIPtr uri = NULL;
     int ret;
@@ -1959,16 +1960,14 @@ xenDaemonOpen(virConnectPtr conn, const char *name, int flags)
          */
         uri = xmlParseURI(name);
         if (uri == NULL) {
-            if (!(flags & VIR_DRV_OPEN_QUIET))
-                virXendError(conn, VIR_ERR_NO_SUPPORT, name);
+            virXendError(conn, VIR_ERR_NO_SUPPORT, name);
             goto failed;
         }
 
         if (uri->scheme == NULL) {
             /* It should be a file access */
             if (uri->path == NULL) {
-                if (!(flags & VIR_DRV_OPEN_QUIET))
-                    virXendError(conn, VIR_ERR_NO_SUPPORT, name);
+                virXendError(conn, VIR_ERR_NO_SUPPORT, name);
                 goto failed;
             }
             ret = xenDaemonOpen_unix(conn, uri->path);
@@ -1986,8 +1985,7 @@ xenDaemonOpen(virConnectPtr conn, const char *name, int flags)
             if (ret == -1)
                 goto failed;
         } else {
-            if (!(flags & VIR_DRV_OPEN_QUIET))
-                virXendError(conn, VIR_ERR_NO_SUPPORT, name);
+            virXendError(conn, VIR_ERR_NO_SUPPORT, name);
             goto failed;
         }
     }
