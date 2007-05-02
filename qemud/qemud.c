@@ -1110,6 +1110,7 @@ qemudBuildDnsmasqArgv(struct qemud_server *server,
     len =
         1 + /* dnsmasq */
         1 + /* --keep-in-foreground */
+        1 + /* --strict-order */
         1 + /* --bind-interfaces */
         2 + /* --pid-file "" */
         2 + /* --conf-file "" */
@@ -1133,6 +1134,11 @@ qemudBuildDnsmasqArgv(struct qemud_server *server,
     APPEND_ARG(*argv, i++, "dnsmasq");
 
     APPEND_ARG(*argv, i++, "--keep-in-foreground");
+    /*
+     * Needed to ensure dnsmasq uses same algorithm for processing
+     * multiple nameserver entries in /etc/resolv.conf as GLibC.
+     */
+    APPEND_ARG(*argv, i++, "--strict-order");
     APPEND_ARG(*argv, i++, "--bind-interfaces");
 
     APPEND_ARG(*argv, i++, "--pid-file");
