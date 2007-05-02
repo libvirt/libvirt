@@ -34,7 +34,7 @@ start() {
 stop() {
     echo -n $"Stopping $SERVICE daemon: "
 
-    killproc $PROCESS -TERM
+    killproc $PROCESS
     RETVAL=$?
     echo
     if [ $RETVAL -eq 0 ]; then

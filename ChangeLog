@@ -1,3 +1,8 @@
+Wed May  2 17:55:12 IST 2007 Mark McLoughlin <markmc@redhat.com>
+
+	* qemud/libvirtd.in: synchronously restart the daemon in
+	order to avoid https://bugzilla.redhat.com/238492
+	
 Wed May  2 12:16:35 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xen_unified.c: Disable xm_internal.c driver on Xen
