@@ -1,3 +1,8 @@
+Wed May  2 12:16:35 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xen_unified.c: Disable xm_internal.c driver on Xen
+	newer than 3.0.3
+
 Wed May  2 11:50:35 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/qemud.c: Use --strict-order when running dnsmasq

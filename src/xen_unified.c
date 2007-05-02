@@ -111,6 +111,11 @@ xenUnifiedOpen (virConnectPtr conn, const char *name, int flags)
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i) {
         priv->opened[i] = 0;
 
+        /* Only use XM driver for Xen <= 3.0.3 (ie xendConfigVersion <= 2) */
+        if (drivers[i] == &xenXMDriver &&
+            priv->xendConfigVersion > 2)
+            continue;
+
         /* Ignore proxy for root */
         if (i == proxy_offset && getuid() == 0)
             continue;
