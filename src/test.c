@@ -562,7 +562,7 @@ static int testOpenFromFile(virConnectPtr conn,
     if (ret == 0) {
         nodeInfo->nodes = l;
     } else if (ret == -2) {
-	testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu numa nodes"));
+	testError(NULL, NULL, VIR_ERR_XML_ERROR, _("node cpu numa nodes"));
 	goto error;
     }
 
@@ -570,7 +570,7 @@ static int testOpenFromFile(virConnectPtr conn,
     if (ret == 0) {
         nodeInfo->sockets = l;
     } else if (ret == -2) {
-	testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu sockets"));
+	testError(NULL, NULL, VIR_ERR_XML_ERROR, _("node cpu sockets"));
 	goto error;
     }
 
@@ -578,7 +578,7 @@ static int testOpenFromFile(virConnectPtr conn,
     if (ret == 0) {
         nodeInfo->cores = l;
     } else if (ret == -2) {
-	testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu cores"));
+	testError(NULL, NULL, VIR_ERR_XML_ERROR, _("node cpu cores"));
 	goto error;
     }
 
@@ -586,7 +586,7 @@ static int testOpenFromFile(virConnectPtr conn,
     if (ret == 0) {
         nodeInfo->threads = l;
     } else if (ret == -2) {
-	testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu threads"));
+	testError(NULL, NULL, VIR_ERR_XML_ERROR, _("node cpu threads"));
 	goto error;
     }
 
@@ -597,14 +597,14 @@ static int testOpenFromFile(virConnectPtr conn,
 	    nodeInfo->cpus = l;
 	}
     } else if (ret == -2) {
-	testError(conn, NULL, VIR_ERR_XML_ERROR, _("node active cpu"));
+	testError(NULL, NULL, VIR_ERR_XML_ERROR, _("node active cpu"));
 	goto error;
     }
     ret = virXPathLong("string(/node/cpu/mhz[1])", ctxt, &l);
     if (ret == 0) {
         nodeInfo->mhz = l;
     } else if (ret == -2) {
-        testError(conn, NULL, VIR_ERR_XML_ERROR, _("node cpu mhz"));
+        testError(NULL, NULL, VIR_ERR_XML_ERROR, _("node cpu mhz"));
 	goto error;
     }
 
@@ -619,7 +619,7 @@ static int testOpenFromFile(virConnectPtr conn,
     if (ret == 0) {
         nodeInfo->memory = l;
     } else if (ret == -2) {
-        testError(conn, NULL, VIR_ERR_XML_ERROR, _("node memory"));
+        testError(NULL, NULL, VIR_ERR_XML_ERROR, _("node memory"));
 	goto error;
     }
 
@@ -717,7 +717,7 @@ int testOpen(virConnectPtr conn,
 
     uri = xmlParseURI(name);
     if (uri == NULL) {
-        testError(conn, NULL, VIR_ERR_NO_SUPPORT, name);
+        testError(NULL, NULL, VIR_ERR_NO_SUPPORT, name);
         return VIR_DRV_OPEN_DECLINED;
     }
 
@@ -730,7 +730,7 @@ int testOpen(virConnectPtr conn,
     if (!uri->path
         || uri->path[0] == '\0'
         || (uri->path[0] == '/' && uri->path[1] == '\0')) {
-        testError (conn, NULL, VIR_ERR_INVALID_ARG,
+        testError (NULL, NULL, VIR_ERR_INVALID_ARG,
                    _("testOpen: supply a path or use test:///default"));
         return VIR_DRV_OPEN_ERROR;
     }
@@ -743,7 +743,7 @@ int testOpen(virConnectPtr conn,
     /* Allocate per-connection private data. */
     priv = conn->privateData = malloc (sizeof (struct _testPrivate));
     if (!priv) {
-        testError(conn, NULL, VIR_ERR_NO_MEMORY, _("allocating private data"));
+        testError(NULL, NULL, VIR_ERR_NO_MEMORY, _("allocating private data"));
         return VIR_DRV_OPEN_ERROR;
     }
     priv->handle = -1;

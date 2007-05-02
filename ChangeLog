@@ -1,3 +1,11 @@
+Wed May  2 18:38:00 BST 2007 Richard Jones <rjones@redhat.com>
+
+	* src/proxy_internal.c, src/qemu_internal.c, src/test.c,
+	  src/xen_unified.c, src/xend_internal.c, src/xs_internal.c:
+	  During virConnectOpen, be careful to call __virRaiseError
+	  with conn = NULL so that the error message is not
+	  discarded.
+
 Wed May  2 17:55:12 IST 2007 Mark McLoughlin <markmc@redhat.com>
 
 	* qemud/libvirtd.in: synchronously restart the daemon in

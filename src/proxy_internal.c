@@ -544,7 +544,7 @@ xenProxyOpen(virConnectPtr conn, const char *name ATTRIBUTE_UNUSED, int flags)
 
     fd = virProxyOpenClientSocket(PROXY_SOCKET_PATH);
     if (fd < 0) {
-	    virProxyError(conn, VIR_ERR_NO_XEN, PROXY_SOCKET_PATH);
+	    virProxyError(NULL, VIR_ERR_NO_XEN, PROXY_SOCKET_PATH);
         return(-1);
     }
     priv->proxy = fd;
@@ -554,7 +554,7 @@ xenProxyOpen(virConnectPtr conn, const char *name ATTRIBUTE_UNUSED, int flags)
     req.len = sizeof(req);
     ret = xenProxyCommand(conn, &req, NULL, 1);
     if ((ret < 0) || (req.command != VIR_PROXY_NONE)) {
-	    virProxyError(conn, VIR_ERR_OPERATION_FAILED, __FUNCTION__);
+	    virProxyError(NULL, VIR_ERR_OPERATION_FAILED, __FUNCTION__);
         xenProxyClose(conn);
 	return(-1);
     }

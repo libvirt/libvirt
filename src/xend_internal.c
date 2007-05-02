@@ -894,7 +894,7 @@ xenDaemonOpen_tcp(virConnectPtr conn, const char *host, int port)
     pent = gethostbyname(host);
     if (pent == NULL) {
         if (inet_aton(host, &ip) == 0) {
-            virXendError(conn, VIR_ERR_UNKNOWN_HOST, host);
+            virXendError(NULL, VIR_ERR_UNKNOWN_HOST, host);
             errno = ESRCH;
             return (-1);
         }
@@ -1960,14 +1960,14 @@ xenDaemonOpen(virConnectPtr conn, const char *name,
          */
         uri = xmlParseURI(name);
         if (uri == NULL) {
-            virXendError(conn, VIR_ERR_NO_SUPPORT, name);
+            virXendError(NULL, VIR_ERR_NO_SUPPORT, name);
             goto failed;
         }
 
         if (uri->scheme == NULL) {
             /* It should be a file access */
             if (uri->path == NULL) {
-                virXendError(conn, VIR_ERR_NO_SUPPORT, name);
+                virXendError(NULL, VIR_ERR_NO_SUPPORT, name);
                 goto failed;
             }
             ret = xenDaemonOpen_unix(conn, uri->path);
@@ -1985,7 +1985,7 @@ xenDaemonOpen(virConnectPtr conn, const char *name,
             if (ret == -1)
                 goto failed;
         } else {
-            virXendError(conn, VIR_ERR_NO_SUPPORT, name);
+            virXendError(NULL, VIR_ERR_NO_SUPPORT, name);
             goto failed;
         }
     }

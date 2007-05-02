@@ -146,7 +146,7 @@ qemuForkServer(void)
     int ret, pid, status;
 
     if (!proxyPath) {
-        fprintf(stderr, "failed to find qemu\n");
+        qemuError (NULL, NULL, VIR_ERR_INVALID_ARG, "no proxyPath");
         return(-1);
     }
 
@@ -231,6 +231,7 @@ qemuOpenClientUNIX(virConnectPtr conn ATTRIBUTE_UNUSED,
  retry:
     fd = socket(PF_UNIX, SOCK_STREAM, 0);
     if (fd < 0) {
+        qemuError (NULL, NULL, VIR_ERR_SYSTEM_ERROR, "socket");
         return VIR_DRV_OPEN_ERROR;
     }
 
@@ -256,6 +257,10 @@ qemuOpenClientUNIX(virConnectPtr conn ATTRIBUTE_UNUSED,
             usleep(5000 * trials * trials);
             goto retry;
         }
+        __virRaiseError (NULL, NULL, NULL,
+                         VIR_FROM_QEMU, VIR_ERR_SYSTEM_ERROR, VIR_ERR_ERROR,
+                         "connect", NULL, NULL, errno, 0,
+                         "connect: %s: %s", path, strerror (errno));
         return VIR_DRV_OPEN_ERROR;
     }
 
@@ -346,34 +351,43 @@ static int qemuOpenConnection(virConnectPtr conn, xmlURIPtr uri, int readonly) {
     int autostart = 0;
 
     if (uri->server != NULL) {
+        qemuError (NULL, NULL, VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
         return VIR_DRV_OPEN_ERROR;
     }
 
-    if (!strcmp(uri->path, "/system")) {
+    if (strcmp(uri->path, "/system") == 0) {
         if (readonly) {
             if (snprintf(path, sizeof(path), "%s/run/libvirt/qemud-sock-ro", LOCAL_STATE_DIR) >= (int)sizeof(path)) {
+                qemuError (NULL, NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
                 return VIR_DRV_OPEN_ERROR;
             }
         } else {
             if (snprintf(path, sizeof(path), "%s/run/libvirt/qemud-sock", LOCAL_STATE_DIR) >= (int)sizeof(path)) {
+                qemuError (NULL, NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
                 return VIR_DRV_OPEN_ERROR;
             }
         }
-    } else if (!strcmp(uri->path, "/session")) {
+    } else if (strcmp(uri->path, "/session") == 0) {
         struct passwd *pw;
         int uid;
 
         if ((uid = geteuid()) < 0) {
+            qemuError (NULL, NULL, VIR_ERR_SYSTEM_ERROR, "geteuid");
             return VIR_DRV_OPEN_ERROR;
         }
 
-        if (!(pw = getpwuid(uid)))
+        if (!(pw = getpwuid(uid))) {
+            qemuError (NULL, NULL, VIR_ERR_SYSTEM_ERROR, "getpwuid");
             return VIR_DRV_OPEN_ERROR;
+        }
 
         if (snprintf(path, sizeof(path), "@%s/.libvirt/qemud-sock", pw->pw_dir) == sizeof(path)) {
             return VIR_DRV_OPEN_ERROR;
         }
         autostart = 1;
+    } else {
+        qemuError (NULL, NULL, VIR_ERR_INVALID_ARG, "path should be /system or /session - for example, qemu:///session");
+        return VIR_DRV_OPEN_ERROR;
     }
     return qemuOpenClientUNIX(conn, path, autostart);
 }
@@ -395,7 +409,7 @@ static int qemuOpen(virConnectPtr conn,
 
     uri = xmlParseURI(name);
     if (uri == NULL) {
-        qemuError(conn, NULL, VIR_ERR_NO_SUPPORT, name);
+        qemuError(NULL, NULL, VIR_ERR_NO_SUPPORT, name);
         return VIR_DRV_OPEN_DECLINED;
     }
 
@@ -409,7 +423,7 @@ static int qemuOpen(virConnectPtr conn,
     /* Create per-connection private data. */
     priv = conn->privateData = malloc (sizeof *priv);
     if (!priv) {
-        qemuError (conn, NULL, VIR_ERR_NO_MEMORY, __FUNCTION__);
+        qemuError (NULL, NULL, VIR_ERR_NO_MEMORY, __FUNCTION__);
         return VIR_DRV_OPEN_ERROR;
     }
 

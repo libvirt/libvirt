@@ -95,7 +95,7 @@ xenUnifiedOpen (virConnectPtr conn, const char *name, int flags)
     /* Allocate per-connection private data. */
     priv = malloc (sizeof *priv);
     if (!priv) {
-        xenUnifiedError (conn, VIR_ERR_NO_MEMORY, "allocating private data");
+        xenUnifiedError (NULL, VIR_ERR_NO_MEMORY, "allocating private data");
         return VIR_DRV_OPEN_ERROR;
     }
     conn->privateData = priv;

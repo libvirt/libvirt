@@ -340,7 +340,7 @@ xenStoreOpen(virConnectPtr conn,
 #endif /* ! PROXY */
 
     if (priv->xshandle == NULL) {
-        virXenStoreError(conn, VIR_ERR_NO_XEN, 
+        virXenStoreError(NULL, VIR_ERR_NO_XEN, 
 	                     _("failed to connect to Xen Store"));
         return (-1);
     }
