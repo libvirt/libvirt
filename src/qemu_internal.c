@@ -963,10 +963,10 @@ static int qemuNetworkOpen(virConnectPtr conn,
         netpriv->qemud_fd = priv->qemud_fd;
         netpriv->shared = 1;
         conn->networkPrivateData = netpriv;
-        return 0;
+        return VIR_DRV_OPEN_SUCCESS;
     } else {
         /* Non-QEMU driver is active - open a new connection */
-        const char *drvname = geteuid() == 0 ? "qemu:///system" : "qemu://session";
+        const char *drvname = geteuid() == 0 ? "qemu:///system" : "qemu:///session";
         xmlURIPtr uri = xmlParseURI(drvname);
         int ret = qemuOpenConnection(conn, uri, flags & VIR_DRV_OPEN_RO ? 1 : 0);
         xmlFreeURI(uri);
@@ -978,7 +978,7 @@ static int qemuNetworkOpen(virConnectPtr conn,
             netpriv->qemud_fd = ret;
             netpriv->shared = 0;
             conn->networkPrivateData = netpriv;
-            return 0;
+            return VIR_DRV_OPEN_SUCCESS;
         }
     }
 }

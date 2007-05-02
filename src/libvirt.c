@@ -295,8 +295,8 @@ do_open (const char *name, int flags)
 
     for (i = 0; i < virNetworkDriverTabCount; i++) {
         res = virNetworkDriverTab[i]->open (ret, name, flags);
-        if (res == -1) goto failed;
-        else if (res == 0) {
+        if (res == VIR_DRV_OPEN_ERROR) goto failed;
+        else if (res == VIR_DRV_OPEN_SUCCESS) {
             ret->networkDriver = virNetworkDriverTab[i];
             break;
         }

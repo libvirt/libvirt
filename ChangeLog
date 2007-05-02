@@ -1,3 +1,11 @@
+Wed May  2 18:42:00 BST 2007 Richard Jones <rjones@redhat.com>
+
+	* src/libvirt.c, src/qemu_internal.c: Allow network
+	  drivers to DECLINE to take accept a call.  Only fail
+	  outright if the network driver reports an error.
+	* src/qemu_internal.c (qemuNetworkOpen): Fix path to
+	  driver used in the non-root case.
+
 Wed May  2 18:38:00 BST 2007 Richard Jones <rjones@redhat.com>
 
 	* src/proxy_internal.c, src/qemu_internal.c, src/test.c,
