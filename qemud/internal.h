@@ -161,6 +161,7 @@ enum qemud_vm_grapics_type {
 enum qemud_cmd_flags {
     QEMUD_CMD_FLAG_KQEMU = 1,
     QEMUD_CMD_FLAG_VNC_COLON = 2,
+    QEMUD_CMD_FLAG_NO_REBOOT = 4,
 };
 
 
@@ -190,6 +191,8 @@ struct qemud_vm_def {
     int memory;
     int maxmem;
     int vcpus;
+
+    int noReboot;
 
     struct qemud_vm_os_def os;
 

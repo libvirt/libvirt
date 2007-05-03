@@ -1,4 +1,10 @@
-Thu May  3 18:00:41 CEST 2007 Daiel Veillard <veillard@redhat.com>
+Thu May  3 12:09:41 EST 2007 Daniel P. Berange <berrange@redhat.com>
+
+	* qemud/conf.c, qemud/internal.c: Read upto 8k from QEMU
+	help output. Support the <on_reboot> attribute to set the
+	-no-reboot flag in QEMU
+
+Thu May  3 18:00:41 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: fix help for dumpxml and net-dumpxml commands
 	  based on Chris Wright feedback

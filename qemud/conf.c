@@ -245,18 +245,23 @@ static int qemudExtractVersionInfo(const char *qemu, int *version, int *flags) {
     cleanup1:
         _exit(-1); /* Just in case */
     } else { /* Parent */
-        char help[4096]; /* Ought to be enough to hold QEMU help screen */
+        char help[8192]; /* Ought to be enough to hold QEMU help screen */
         int got, ret = -1;
         int major, minor, micro;
 
         if (close(newstdout[1]) < 0)
             goto cleanup2;
 
-    reread:
-        if ((got = read(newstdout[0], help, sizeof(help)-1)) < 0) {
-            if (errno == EINTR)
-                goto reread;
-            goto cleanup2;
+        while (got < (sizeof(help)-1)) {
+            int len;
+            if ((len = read(newstdout[0], help+got, sizeof(help)-got-1)) <= 0) {
+                if (!len)
+                    break;
+                if (errno == EINTR)
+                    continue;
+                goto cleanup2;
+            }
+            got += len;
         }
         help[got] = '\0';
 
@@ -267,6 +272,8 @@ static int qemudExtractVersionInfo(const char *qemu, int *version, int *flags) {
         *version = (major * 1000 * 1000) + (minor * 1000) + micro;
         if (strstr(help, "-no-kqemu"))
             *flags |= QEMUD_CMD_FLAG_KQEMU;
+        if (strstr(help, "-no-reboot"))
+            *flags |= QEMUD_CMD_FLAG_NO_REBOOT;
         if (*version >= 9000)
             *flags |= QEMUD_CMD_FLAG_VNC_COLON;
         ret = 0;
@@ -858,6 +865,22 @@ static struct qemud_vm_def *qemudParseXML(struct qemud_server *server,
     }
     xmlXPathFreeObject(obj);
 
+
+    /* See if we disable reboots */
+    obj = xmlXPathEval(BAD_CAST "string(/domain/on_reboot)", ctxt);
+    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
+        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
+        def->noReboot = 0;
+    } else {
+        if (!strcmp((char*)obj->stringval, "destroy"))
+            def->noReboot = 1;
+        else
+            def->noReboot = 0;
+    }
+    if (obj)
+        xmlXPathFreeObject(obj);
+
+
     /* Extract OS type info */
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/type[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
@@ -1220,6 +1243,8 @@ int qemudBuildCommandLine(struct qemud_server *server,
         2 + /* cpus */
         2 + /* boot device */
         2 + /* monitor */
+        (server->qemuCmdFlags & QEMUD_CMD_FLAG_NO_REBOOT &&
+         vm->def->noReboot ? 1 : 0) + /* no-reboot */
         (vm->def->features & QEMUD_FEATURE_ACPI ? 0 : 1) + /* acpi */
         (vm->def->os.kernel[0] ? 2 : 0) + /* kernel */
         (vm->def->os.initrd[0] ? 2 : 0) + /* initrd */
@@ -1255,6 +1280,12 @@ int qemudBuildCommandLine(struct qemud_server *server,
         goto no_memory;
     if (!((*argv)[++n] = strdup("pty")))
         goto no_memory;
+
+    if (server->qemuCmdFlags & QEMUD_CMD_FLAG_NO_REBOOT &&
+        vm->def->noReboot) {
+        if (!((*argv)[++n] = strdup("-no-reboot")))
+            goto no_memory;
+    }
 
     if (!(vm->def->features & QEMUD_FEATURE_ACPI)) {
         if (!((*argv)[++n] = strdup("-no-acpi")))
@@ -2517,6 +2548,17 @@ char *qemudGenerateXML(struct qemud_server *server,
             goto no_memory;
     }
 
+    if (bufferAdd(buf, "  <on_poweroff>destroy</on_poweroff>\n", -1) < 0)
+        goto no_memory;
+    if (def->noReboot) {
+        if (bufferAdd(buf, "  <on_reboot>destroy</on_reboot>\n", -1) < 0)
+            goto no_memory;
+    } else {
+        if (bufferAdd(buf, "  <on_reboot>restart</on_reboot>\n", -1) < 0)
+            goto no_memory;
+    }
+    if (bufferAdd(buf, "  <on_crash>destroy</on_crash>\n", -1) < 0)
+        goto no_memory;
 
     if (bufferAdd(buf, "  <devices>\n", -1) < 0)
         goto no_memory;
