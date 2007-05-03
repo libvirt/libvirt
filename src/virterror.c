@@ -277,6 +277,9 @@ virDefaultErrorFunc(virErrorPtr err)
         case VIR_FROM_TEST:
             dom = "Test ";
             break;
+        case VIR_FROM_REMOTE:
+            dom = "Remote ";
+            break;
     }
     if ((err->dom != NULL) && (err->code != VIR_ERR_INVALID_DOMAIN)) {
         domain = err->dom->name;
@@ -610,6 +613,18 @@ __virErrorMsg(virErrorNumber error, const char *info)
     case VIR_ERR_SYSTEM_ERROR:
         if (info == NULL)
             errmsg = _("system call error");
+        else
+            errmsg = "%s";
+        break;
+    case VIR_ERR_RPC:
+        if (info == NULL)
+            errmsg = _("RPC error");
+        else
+            errmsg = "%s";
+        break;
+    case VIR_ERR_GNUTLS_ERROR:
+        if (info == NULL)
+            errmsg = _("GNUTLS call error");
         else
             errmsg = "%s";
         break;

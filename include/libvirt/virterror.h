@@ -50,6 +50,7 @@ typedef enum {
     VIR_FROM_QEMU,      /* Error at the QEMU daemon */
     VIR_FROM_NET,       /* Error when operating on a network */
     VIR_FROM_TEST,	/* Error from test driver */
+    VIR_FROM_REMOTE,	/* Error from remote driver */
 } virErrorDomain;
 
 
@@ -121,6 +122,8 @@ typedef enum {
     VIR_ERR_INVALID_NETWORK, /* invalid network object */
     VIR_ERR_NETWORK_EXIST, /* the network already exist */
     VIR_ERR_SYSTEM_ERROR, /* general system call failure */
+    VIR_ERR_RPC, /* some sort of RPC error */
+    VIR_ERR_GNUTLS_ERROR, /* error from a GNUTLS call */
 } virErrorNumber;
 
 /**
