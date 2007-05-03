@@ -1592,7 +1592,7 @@ cmdCapabilities (vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
  * "dumpxml" command
  */
 static vshCmdInfo info_dumpxml[] = {
-    {"syntax", "dumpxml <name>"},
+    {"syntax", "dumpxml <domain>"},
     {"help", gettext_noop("domain information in XML")},
     {"desc", gettext_noop("Output the domain information as an XML dump to stdout.")},
     {NULL, NULL}
@@ -1934,7 +1934,7 @@ cmdNetworkDestroy(vshControl * ctl, vshCmd * cmd)
  * "net-dumpxml" command
  */
 static vshCmdInfo info_network_dumpxml[] = {
-    {"syntax", "net-dumpxml <name>"},
+    {"syntax", "net-dumpxml <network>"},
     {"help", gettext_noop("network information in XML")},
     {"desc", gettext_noop("Output the network information as an XML dump to stdout.")},
     {NULL, NULL}
