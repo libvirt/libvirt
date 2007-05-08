@@ -840,10 +840,6 @@ virFreeDomain(virConnectPtr conn, virDomainPtr domain) {
     }
     domain->magic = -1;
     domain->id = -1;
-    if (domain->path != NULL)
-        free(domain->path);
-    if (domain->xml)
-        free(domain->xml);
     if (domain->name)
         free(domain->name);
     free(domain);

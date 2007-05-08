@@ -651,7 +651,6 @@ xenStoreDomainLookupByName(virConnectPtr conn, const char *name)
 	goto done;
     }
     ret->id = id;
-    ret->path = path;
 
 done:
     if (xenddomain != NULL)

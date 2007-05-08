@@ -139,17 +139,6 @@ struct _virConnect {
 };
 
 /**
-* virDomainFlags:
-*
-* a set of special flag values associated to the domain
-*/
-
-enum virDomainFlags {
-    DOMAIN_IS_SHUTDOWN = (1 << 0),  /* the domain is being shutdown */
-    DOMAIN_IS_DEFINED  = (1 << 1)   /* the domain is defined not running */
-};
-
-/**
 * _virDomain:
 *
 * Internal structure associated to a domain
@@ -159,11 +148,8 @@ struct _virDomain {
     int uses;                            /* reference count */
     virConnectPtr conn;                  /* pointer back to the connection */
     char *name;                          /* the domain external name */
-    char *path;                          /* the domain internal path */
     int id;                              /* the domain ID */
-    int flags;                           /* extra flags */
     unsigned char uuid[VIR_UUID_BUFLEN]; /* the domain unique identifier */
-    char *xml;                           /* the XML description for defined domains */
 };
 
 /**
