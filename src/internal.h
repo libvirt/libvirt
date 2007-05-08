@@ -198,18 +198,21 @@ const char *__virErrorMsg(virErrorNumber error, const char *info);
 
 virConnectPtr	virGetConnect	(void);
 int		virFreeConnect	(virConnectPtr conn);
-virDomainPtr	virGetDomain	(virConnectPtr conn,
+virDomainPtr	__virGetDomain	(virConnectPtr conn,
 				 const char *name,
 				 const unsigned char *uuid);
 int		virFreeDomain	(virConnectPtr conn,
 				 virDomainPtr domain);
 virDomainPtr	virGetDomainByID(virConnectPtr conn,
 				 int id);
-virNetworkPtr	virGetNetwork	(virConnectPtr conn,
+virNetworkPtr	__virGetNetwork	(virConnectPtr conn,
 				 const char *name,
 				 const unsigned char *uuid);
 int		virFreeNetwork	(virConnectPtr conn,
 				 virNetworkPtr domain);
+
+#define virGetDomain(c,n,u) __virGetDomain((c),(n),(u))
+#define virGetNetwork(c,n,u) __virGetNetwork((c),(n),(u))
 
 #ifdef __cplusplus
 }

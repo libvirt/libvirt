@@ -93,5 +93,8 @@
 	__virConfWriteFile;
 	__virConfWriteMem;
 
+	__virGetDomain;
+	__virGetNetwork;
+
     local: *;
 };

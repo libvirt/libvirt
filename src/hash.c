@@ -744,7 +744,7 @@ virFreeConnect(virConnectPtr conn) {
  * Returns a pointer to the domain, or NULL in case of failure
  */
 virDomainPtr
-virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
+__virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     virDomainPtr ret = NULL;
 
     if ((!VIR_IS_CONNECT(conn)) || (name == NULL) || (uuid == NULL) ||
@@ -922,7 +922,7 @@ done:
  * Returns a pointer to the network, or NULL in case of failure
  */
 virNetworkPtr
-virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid) {
+__virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid) {
     virNetworkPtr ret = NULL;
 
     if ((!VIR_IS_CONNECT(conn)) || (name == NULL) || (uuid == NULL) ||
