@@ -169,3 +169,12 @@ pre.programlisting
     border-style:		double;
     background:		#F0F0F0;
     }
+
+table.top_table {
+  border-collapse: collapse;
+}
+
+table.top_table th, table.top_table td {
+  vertical-align: top;
+  border: 1px solid #f0f0f0;
+}
