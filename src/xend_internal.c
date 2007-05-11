@@ -1689,35 +1689,38 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
         }
     }
 
-    /* Graphics device (HVM <= 3.0.4, or PV <= 3.0.4) vnc config */
-    tmp = sexpr_fmt_node(root, "domain/image/%s/vnc", hvm ? "hvm" : "linux");
-    if (tmp != NULL) {
-        if (tmp[0] == '1') {
-            int port = xenStoreDomainGetVNCPort(conn, domid);
-            const char *listenAddr = sexpr_fmt_node(root, "domain/image/%s/vnclisten", hvm ? "hvm" : "linux");
-            const char *keymap = sexpr_fmt_node(root, "domain/image/%s/keymap", hvm ? "hvm" : "linux");
-            /* For Xen >= 3.0.3, don't generate a fixed port mapping
-             * because it will almost certainly be wrong ! Just leave
-             * it as -1 which lets caller see that the VNC server isn't
-             * present yet. Subsquent dumps of the XML will eventually
-             * find the port in XenStore once VNC server has started
-             */
-            if (port == -1 && xendConfigVersion < 2)
-                port = 5900 + domid;
-            virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'", port);
-            if (listenAddr)
-                virBufferVSprintf(&buf, " listen='%s'", listenAddr);
-            if (keymap)
-                virBufferVSprintf(&buf, " keymap='%s'", keymap);
-            virBufferAdd(&buf, "/>\n", 3);
+    /* Graphics device (HVM <= 3.0.4, or PV <= 3.0.3) vnc config */
+    if ((hvm && xendConfigVersion < 4) ||
+        (!hvm && xendConfigVersion < 3)) {
+        tmp = sexpr_fmt_node(root, "domain/image/%s/vnc", hvm ? "hvm" : "linux");
+        if (tmp != NULL) {
+            if (tmp[0] == '1') {
+                int port = xenStoreDomainGetVNCPort(conn, domid);
+                const char *listenAddr = sexpr_fmt_node(root, "domain/image/%s/vnclisten", hvm ? "hvm" : "linux");
+                const char *keymap = sexpr_fmt_node(root, "domain/image/%s/keymap", hvm ? "hvm" : "linux");
+                /* For Xen >= 3.0.3, don't generate a fixed port mapping
+                 * because it will almost certainly be wrong ! Just leave
+                 * it as -1 which lets caller see that the VNC server isn't
+                 * present yet. Subsquent dumps of the XML will eventually
+                 * find the port in XenStore once VNC server has started
+                 */
+                if (port == -1 && xendConfigVersion < 2)
+                    port = 5900 + domid;
+                virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'", port);
+                if (listenAddr)
+                    virBufferVSprintf(&buf, " listen='%s'", listenAddr);
+                if (keymap)
+                    virBufferVSprintf(&buf, " keymap='%s'", keymap);
+                virBufferAdd(&buf, "/>\n", 3);
+            }
         }
-    }
 
-    /* Graphics device (HVM, or old (pre-3.0.4) style PV sdl config) */
-    tmp = sexpr_fmt_node(root, "domain/image/%s/sdl", hvm ? "hvm" : "linux");
-    if (tmp != NULL) {
-        if (tmp[0] == '1')
-            virBufferAdd(&buf, "    <graphics type='sdl'/>\n", 27 );
+        /* Graphics device (HVM, or old (pre-3.0.4) style PV sdl config) */
+        tmp = sexpr_fmt_node(root, "domain/image/%s/sdl", hvm ? "hvm" : "linux");
+        if (tmp != NULL) {
+            if (tmp[0] == '1')
+                virBufferAdd(&buf, "    <graphics type='sdl'/>\n", 27 );
+        }
     }
 
     tty = xenStoreDomainGetConsolePath(conn, domid);
