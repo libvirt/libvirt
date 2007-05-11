@@ -1,3 +1,7 @@
+Thu May 11 09:34:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* libvirt.spec.in: Added dep on dnsmasq
+
 Thu May 11 13:23:00 BST 2007 Richard W.M. Jones  <rjones@redhat.com>
 
 	* .cvsignore, qemud/uuid.c: Add some generated files to .cvsignore.

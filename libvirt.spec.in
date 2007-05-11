@@ -9,7 +9,7 @@
 Summary: Library providing a simple API virtualization
 Name: libvirt
 Version: @VERSION@
-Release: 1%{?_extra_release}
+Release: 2%{?_extra_release}
 License: LGPL
 Group: Development/Libraries
 Source: libvirt-%{version}.tar.gz
@@ -19,6 +19,7 @@ BuildRequires: python python-devel
 Requires: libxml2
 Requires: readline
 Requires: ncurses
+Requires: dnsmasq
 BuildRequires: xen-devel
 BuildRequires: libxml2-devel
 BuildRequires: readline-devel
