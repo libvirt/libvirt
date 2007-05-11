@@ -32,7 +32,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "protocol.h"
 #include "internal.h"
 
 static int
