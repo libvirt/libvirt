@@ -1,5 +1,9 @@
 Thu May 11 10:20:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
+	* src/xm_internal.c: Fix boot device XML syntax
+
+Thu May 11 10:20:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
 	* src/xend_internal.c: Ignore old style VNC config for HVM
 	guests on Xen 3.0.5 or later
 

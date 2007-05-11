@@ -631,7 +631,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                 dev = "hd";
                 break;
             }
-            virBufferVSprintf(buf, "    <boot>%s</boot>\n", dev);
+            virBufferVSprintf(buf, "    <boot dev='%s'/>\n", dev);
             boot++;
         }
 
