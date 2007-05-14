@@ -1,3 +1,9 @@
+Mon May 14 11:00:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/conf.c: Fix initialization of var to prevent stack
+	overflow. Make sure we initialize the brCtl in case there
+	is no virtual network running
+
 Thu May 11 10:20:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xm_internal.c: Fix boot device XML syntax

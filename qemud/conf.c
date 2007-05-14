@@ -246,7 +246,7 @@ static int qemudExtractVersionInfo(const char *qemu, int *version, int *flags) {
         _exit(-1); /* Just in case */
     } else { /* Parent */
         char help[8192]; /* Ought to be enough to hold QEMU help screen */
-        int got, ret = -1;
+        int got = 0, ret = -1;
         int major, minor, micro;
 
         if (close(newstdout[1]) < 0)
@@ -1149,6 +1149,12 @@ qemudNetworkIfaceConnect(struct qemud_server *server,
     } else {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
                          "Network type %d is not supported", net->type);
+        goto error;
+    }
+
+    if (!server->brctl && (err = brInit(&server->brctl))) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "cannot initialize bridge support: %s", strerror(err));
         goto error;
     }
 
