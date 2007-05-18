@@ -439,6 +439,9 @@ static int qemudInitPaths(struct qemud_server *server,
             goto snprintf_error;
 
         unlink(roSockname);
+
+        if (snprintf(server->logDir, PATH_MAX, "%s/log/libvirt/qemu", LOCAL_STATE_DIR) >= PATH_MAX)
+            goto snprintf_error;
     } else {
         if (!(pw = getpwuid(uid))) {
             qemudLog(QEMUD_ERR, "Failed to find user record for uid '%d': %s",
@@ -450,6 +453,9 @@ static int qemudInitPaths(struct qemud_server *server,
             goto snprintf_error;
 
         if (snprintf(base, PATH_MAX, "%s/.", pw->pw_dir) >= PATH_MAX)
+            goto snprintf_error;
+
+        if (snprintf(server->logDir, PATH_MAX, "%s/.libvirt/qemu/log", pw->pw_dir) >= PATH_MAX)
             goto snprintf_error;
     }
 
@@ -647,6 +653,7 @@ qemudReadMonitorOutput(struct qemud_server *server,
 #define MONITOR_TIMEOUT 3000
 
     int got = 0;
+    buffer[0] = '\0';
 
    /* Consume & discard the initial greeting */
     while (got < (buflen-1)) {
@@ -655,13 +662,15 @@ qemudReadMonitorOutput(struct qemud_server *server,
         ret = read(fd, buffer+got, buflen-got-1);
         if (ret == 0) {
             qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
-                             "End-of-file while reading %s startup output", what);
+                             "QEMU quit during %s startup\n%s", what, buffer);
             return -1;
         }
         if (ret < 0) {
             struct pollfd pfd = { .fd = fd, .events = POLLIN };
-            if (errno != EAGAIN &&
-                errno != EINTR) {
+            if (errno == EINTR)
+                continue;
+
+            if (errno != EAGAIN) {
                 qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
                                  "Failure while reading %s startup output: %s",
                                  what, strerror(errno));
@@ -680,11 +689,12 @@ qemudReadMonitorOutput(struct qemud_server *server,
                                      what, strerror(errno));
                     return -1;
                 }
-            } else if (pfd.revents & POLLHUP) {
-                qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
-                                 "End-of-file while reading %s startup output", what);
-                return -1;
-            } else if (pfd.revents != POLLIN) {
+            } else {
+                /* Make sure we continue loop & read any further data
+                   available before dealing with EOF */
+                if (pfd.revents & (POLLIN | POLLHUP))
+                    continue;
+
                 qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
                                  "Failure while reading %s startup output", what);
                 return -1;
@@ -794,11 +804,22 @@ qemudOpenMonitorPath(struct qemud_server *server,
 
 static int qemudWaitForMonitor(struct qemud_server *server, struct qemud_vm *vm) {
     char buffer[1024]; /* Plenty of space to get startup greeting */
+    int ret = qemudReadMonitorOutput(server, vm, vm->stderr,
+                                     buffer, sizeof(buffer),
+                                     qemudOpenMonitorPath,
+                                     "console");
 
-    return qemudReadMonitorOutput(server, vm, vm->stderr,
-                                  buffer, sizeof(buffer),
-                                  qemudOpenMonitorPath,
-                                  "PTY");
+    buffer[sizeof(buffer)-1] = '\0';
+ retry:
+    if (write(vm->logfile, buffer, strlen(buffer)) < 0) {
+        /* Log, but ignore failures to write logfile for VM */
+        if (errno == EINTR)
+            goto retry;
+        qemudLog(QEMUD_WARN, "Unable to log VM console data: %s",
+                 strerror(errno));
+    }
+
+    return ret;
 }
 
 static int qemudNextFreeVNCPort(struct qemud_server *server ATTRIBUTE_UNUSED) {
@@ -839,8 +860,9 @@ static int qemudNextFreeVNCPort(struct qemud_server *server ATTRIBUTE_UNUSED) {
 
 int qemudStartVMDaemon(struct qemud_server *server,
                        struct qemud_vm *vm) {
-    char **argv = NULL;
+    char **argv = NULL, **tmp;
     int i, ret = -1;
+    char logfile[PATH_MAX];
 
     if (qemudIsActiveVM(vm)) {
         qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
@@ -859,8 +881,49 @@ int qemudStartVMDaemon(struct qemud_server *server,
     } else
         vm->def->vncActivePort = vm->def->vncPort;
 
-    if (qemudBuildCommandLine(server, vm, &argv) < 0)
+    if ((strlen(server->logDir) + /* path */
+         1 + /* Separator */
+         strlen(vm->def->name) + /* basename */
+         4 + /* suffix .log */
+         1 /* NULL */) > PATH_MAX) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "config file path too long: %s/%s.log",
+                         server->logDir, vm->def->name);
         return -1;
+    }
+    strcpy(logfile, server->logDir);
+    strcat(logfile, "/");
+    strcat(logfile, vm->def->name);
+    strcat(logfile, ".log");
+
+    if (qemudEnsureDir(server->logDir) < 0) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "cannot create log directory %s: %s",
+                         server->logDir, strerror(errno));
+        return -1;
+    }
+
+    if ((vm->logfile = open(logfile, O_CREAT | O_TRUNC | O_WRONLY,
+                            S_IRUSR | S_IWUSR)) < 0) {
+        qemudReportError(server, VIR_ERR_INTERNAL_ERROR,
+                         "failed to create logfile %s: %s",
+                         logfile, strerror(errno));
+        return -1;
+    }
+
+    if (qemudBuildCommandLine(server, vm, &argv) < 0) {
+        close(vm->logfile);
+        vm->logfile = -1;
+        return -1;
+    }
+
+    tmp = argv;
+    while (*tmp) {
+        write(vm->logfile, *tmp, strlen(*tmp));
+        write(vm->logfile, " ", 1);
+        tmp++;
+    }
+    write(vm->logfile, "\n", 1);
 
     if (qemudExec(server, argv, &vm->pid, &vm->stdout, &vm->stderr) == 0) {
         vm->id = server->nextvmid++;
@@ -1038,7 +1101,14 @@ static int qemudVMData(struct qemud_server *server ATTRIBUTE_UNUSED,
         }
         buf[ret] = '\0';
 
-        qemudDebug("[%s]", buf);
+    retry:
+        if (write(vm->logfile, buf, ret) < 0) {
+            /* Log, but ignore failures to write logfile for VM */
+            if (errno == EINTR)
+                goto retry;
+            qemudLog(QEMUD_WARN, "Unable to log VM console data: %s",
+                     strerror(errno));
+        }
     }
 }
 
@@ -1053,10 +1123,13 @@ int qemudShutdownVMDaemon(struct qemud_server *server, struct qemud_vm *vm) {
 
     qemudVMData(server, vm, vm->stdout);
     qemudVMData(server, vm, vm->stderr);
+    if (close(vm->logfile) < 0)
+        qemudLog(QEMUD_WARN, "Unable to close logfile %d: %s", errno, strerror(errno));
     close(vm->stdout);
     close(vm->stderr);
     if (vm->monitor != -1)
         close(vm->monitor);
+    vm->logfile = -1;
     vm->stdout = -1;
     vm->stderr = -1;
     vm->monitor = -1;

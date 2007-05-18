@@ -213,6 +213,7 @@ struct qemud_vm {
     int stdout;
     int stderr;
     int monitor;
+    int logfile;
     int pid;
     int id;
     int state;
@@ -319,6 +320,7 @@ struct qemud_server {
     char *autostartDir;
     char *networkConfigDir;
     char *networkAutostartDir;
+    char logDir[PATH_MAX];
     char errorMessage[QEMUD_MAX_ERROR_LEN];
     int errorCode;
     unsigned int shutdown : 1;

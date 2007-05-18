@@ -1,3 +1,9 @@
+Fri May 18 14:36:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/conf.c, qemud/internal.h, qemud/qemud.c: Save VM output
+	in a logfile
+	* libvirt.spec.in: added /var/log/libvirt/qemud directory
+
 Mon May 14 11:00:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/conf.c: Fix initialization of var to prevent stack

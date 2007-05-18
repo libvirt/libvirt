@@ -1212,12 +1212,12 @@ int qemudBuildCommandLine(struct qemud_server *server,
 
     uname(&ut);
 
-    /* Nasty hack make i?86 look like i386 to simplify next comparison */
+    /* Nasty hack make i?86 look like i686 to simplify next comparison */
     if (ut.machine[0] == 'i' &&
         ut.machine[2] == '8' &&
         ut.machine[3] == '6' &&
         !ut.machine[4])
-        ut.machine[1] = '3';
+        ut.machine[1] = '6';
 
     /* Need to explicitly disable KQEMU if
      * 1. Arch matches host arch
