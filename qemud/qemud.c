@@ -919,11 +919,17 @@ int qemudStartVMDaemon(struct qemud_server *server,
 
     tmp = argv;
     while (*tmp) {
-        write(vm->logfile, *tmp, strlen(*tmp));
-        write(vm->logfile, " ", 1);
+        if (write(vm->logfile, *tmp, strlen(*tmp)) < 0)
+            qemudLog(QEMUD_WARN, "Unable to write argv to logfile %d: %s",
+                     errno, strerror(errno));
+        if (write(vm->logfile, " ", 1) < 0)
+            qemudLog(QEMUD_WARN, "Unable to write argv to logfile %d: %s",
+                     errno, strerror(errno));
         tmp++;
     }
-    write(vm->logfile, "\n", 1);
+    if (write(vm->logfile, "\n", 1) < 0)
+        qemudLog(QEMUD_WARN, "Unable to write argv to logfile %d: %s",
+                 errno, strerror(errno));
 
     if (qemudExec(server, argv, &vm->pid, &vm->stdout, &vm->stderr) == 0) {
         vm->id = server->nextvmid++;
