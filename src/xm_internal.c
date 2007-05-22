@@ -2072,7 +2072,9 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
  */
 virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
     virDomainPtr ret;
+    virDomainPtr olddomain;
     char filename[PATH_MAX];
+    const char * oldfilename;
     unsigned char uuid[VIR_UUID_BUFLEN];
     virConfPtr conf = NULL;
     xenXMConfCachePtr entry = NULL;
@@ -2103,8 +2105,39 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
     }
 
     if (virHashLookup(nameConfigMap, value->str)) {
-        xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "domain with name already exists");
-        goto error;
+        /* domain exists, we will overwrite it */
+
+        if (!(oldfilename = (char *)virHashLookup(nameConfigMap, value->str))) {
+            xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "can't retrieve config filename for domain to overwrite");
+            goto error;
+        }
+
+        if (!(entry = virHashLookup(configCache, oldfilename))) {
+            xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "can't retrieve config entry for domain to overwrite");
+            goto error;
+        }
+
+        if (xenXMConfigGetUUID(entry->conf, "uuid", uuid) < 0) {
+            xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "uuid config parameter is missing");
+            goto error;
+        }
+        
+        if (!(olddomain = virGetDomain(conn, value->str, uuid)))
+            goto error;
+
+        /* Remove the name -> filename mapping */
+        if (virHashRemoveEntry(nameConfigMap, value->str, NULL) < 0) {
+            xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "failed to remove old domain from config map");
+            goto error;
+        }
+
+        /* Remove the config record itself */
+        if (virHashRemoveEntry(configCache, oldfilename, xenXMConfigFree) < 0) {
+            xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "failed to remove old domain from config map");
+            goto error;
+        }
+
+        entry = NULL;
     }
 
     if ((strlen(configDir) + 1 + strlen(value->str) + 1) > PATH_MAX) {
