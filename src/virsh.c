@@ -22,6 +22,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <unistd.h>
+#include <errno.h>
 #include <getopt.h>
 #include <sys/types.h>
 #include <sys/time.h>
@@ -673,6 +674,66 @@ static vshCmdOptDef opts_create[] = {
     {NULL, 0, 0, NULL}
 };
 
+/* Read in a whole file and return it as a string.
+ * If it fails, it logs an error and returns NULL.
+ * String must be freed by caller.
+ */
+static char *
+readFile (vshControl *ctl, const char *filename)
+{
+    char *retval;
+    int len = 0, fd;
+
+    if ((fd = open(filename, O_RDONLY)) == -1) {
+        vshError (ctl, FALSE, _("Failed to open '%s': %s"),
+                  filename, strerror (errno));
+        return NULL;
+    }
+
+    if (!(retval = malloc(len + 1)))
+        goto out_of_memory;
+
+    while (1) {
+        char buffer[1024];
+        char *new;
+        int ret;
+
+        if ((ret = read(fd, buffer, sizeof(buffer))) == 0)
+            break;
+
+        if (ret == -1) {
+            if (errno == EINTR)
+                continue;
+
+            vshError (ctl, FALSE, _("Failed to open '%s': read: %s"),
+                      filename, strerror (errno));
+            goto error;
+        }
+
+        if (!(new = realloc(retval, len + ret + 1)))
+            goto out_of_memory;
+
+        retval = new;
+
+        memcpy(retval + len, buffer, ret);
+        len += ret;
+   }
+
+   retval[len] = '\0';
+   return retval;
+
+ out_of_memory:
+   vshError (ctl, FALSE, _("Error allocating memory: %s"),
+             strerror(errno));
+
+ error:
+   if (retval)
+     free(retval);
+   close(fd);
+
+   return NULL;
+}
+
 static int
 cmdCreate(vshControl * ctl, vshCmd * cmd)
 {
@@ -680,8 +741,7 @@ cmdCreate(vshControl * ctl, vshCmd * cmd)
     char *from;
     int found;
     int ret = TRUE;
-    char buffer[BUFSIZ];
-    int fd, l;
+    char *buffer;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -690,19 +750,12 @@ cmdCreate(vshControl * ctl, vshCmd * cmd)
     if (!found)
         return FALSE;
 
-    fd = open(from, O_RDONLY);
-    if (fd < 0) {
-        vshError(ctl, FALSE, _("Failed to read description file %s"), from);
-        return(FALSE);
-    }
-    l = read(fd, &buffer[0], sizeof(buffer));
-    if ((l <= 0) || (l >= (int) sizeof(buffer))) {
-        vshError(ctl, FALSE, _("Failed to read description file %s"), from);
-        close(fd);
-        return(FALSE);
-    }
-    buffer[l] = 0;
-    dom = virDomainCreateLinux(ctl->conn, &buffer[0], 0);
+    buffer = readFile (ctl, from);
+    if (buffer == NULL) return FALSE;
+
+    dom = virDomainCreateLinux(ctl->conn, buffer, 0);
+    free (buffer);
+
     if (dom != NULL) {
         vshPrint(ctl, _("Domain %s created from %s\n"),
                  virDomainGetName(dom), from);
@@ -735,8 +788,7 @@ cmdDefine(vshControl * ctl, vshCmd * cmd)
     char *from;
     int found;
     int ret = TRUE;
-    char buffer[BUFSIZ];
-    int fd, l;
+    char *buffer;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -745,19 +797,12 @@ cmdDefine(vshControl * ctl, vshCmd * cmd)
     if (!found)
         return FALSE;
 
-    fd = open(from, O_RDONLY);
-    if (fd < 0) {
-        vshError(ctl, FALSE, _("Failed to read description file %s"), from);
-        return(FALSE);
-    }
-    l = read(fd, &buffer[0], sizeof(buffer));
-    if ((l <= 0) || (l >= (int) sizeof(buffer))) {
-        vshError(ctl, FALSE, _("Failed to read description file %s"), from);
-        close(fd);
-        return(FALSE);
-    }
-    buffer[l] = 0;
-    dom = virDomainDefineXML(ctl->conn, &buffer[0]);
+    buffer = readFile (ctl, from);
+    if (buffer == NULL) return FALSE;
+
+    dom = virDomainDefineXML(ctl->conn, buffer);
+    free (buffer);
+
     if (dom != NULL) {
         vshPrint(ctl, _("Domain %s defined from %s\n"),
                  virDomainGetName(dom), from);
@@ -1800,8 +1845,7 @@ cmdNetworkCreate(vshControl * ctl, vshCmd * cmd)
     char *from;
     int found;
     int ret = TRUE;
-    char buffer[BUFSIZ];
-    int fd, l;
+    char *buffer;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -1810,19 +1854,12 @@ cmdNetworkCreate(vshControl * ctl, vshCmd * cmd)
     if (!found)
         return FALSE;
 
-    fd = open(from, O_RDONLY);
-    if (fd < 0) {
-        vshError(ctl, FALSE, _("Failed to read description file %s"), from);
-        return(FALSE);
-    }
-    l = read(fd, &buffer[0], sizeof(buffer));
-    if ((l <= 0) || (l >= (int) sizeof(buffer))) {
-        vshError(ctl, FALSE, _("Failed to read description file %s"), from);
-        close(fd);
-        return(FALSE);
-    }
-    buffer[l] = 0;
-    network = virNetworkCreateXML(ctl->conn, &buffer[0]);
+    buffer = readFile (ctl, from);
+    if (buffer == NULL) return FALSE;
+
+    network = virNetworkCreateXML(ctl->conn, buffer);
+    free (buffer);
+
     if (network != NULL) {
         vshPrint(ctl, _("Network %s created from %s\n"),
                  virNetworkGetName(network), from);
@@ -1856,8 +1893,7 @@ cmdNetworkDefine(vshControl * ctl, vshCmd * cmd)
     char *from;
     int found;
     int ret = TRUE;
-    char buffer[BUFSIZ];
-    int fd, l;
+    char *buffer;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -1866,19 +1902,12 @@ cmdNetworkDefine(vshControl * ctl, vshCmd * cmd)
     if (!found)
         return FALSE;
 
-    fd = open(from, O_RDONLY);
-    if (fd < 0) {
-        vshError(ctl, FALSE, _("Failed to read description file %s"), from);
-        return(FALSE);
-    }
-    l = read(fd, &buffer[0], sizeof(buffer));
-    if ((l <= 0) || (l >= (int) sizeof(buffer))) {
-        vshError(ctl, FALSE, _("Failed to read description file %s"), from);
-        close(fd);
-        return(FALSE);
-    }
-    buffer[l] = 0;
-    network = virNetworkDefineXML(ctl->conn, &buffer[0]);
+    buffer = readFile (ctl, from);
+    if (buffer == NULL) return FALSE;
+
+    network = virNetworkDefineXML(ctl->conn, buffer);
+    free (buffer);
+
     if (network != NULL) {
         vshPrint(ctl, _("Network %s defined from %s\n"),
                  virNetworkGetName(network), from);
@@ -2403,6 +2432,113 @@ cmdVNCDisplay(vshControl * ctl, vshCmd * cmd)
     return ret;
 }
 
+/*
+ * "attach-device" command
+ */
+static vshCmdInfo info_attach_device[] = {
+    {"syntax", "attach-device <domain> <file> "},
+    {"help", gettext_noop("attach device from an XML file")},
+    {"desc", gettext_noop("Attach device from an XML <file>.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_attach_device[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {"file",   VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("XML file")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdAttachDevice(vshControl * ctl, vshCmd * cmd)
+{
+    virDomainPtr dom;
+    char *from;
+    char *buffer;
+    int ret = TRUE;
+    int found;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+        return FALSE;
+
+    from = vshCommandOptString(cmd, "file", &found);
+    if (!found) {
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    buffer = readFile (ctl, from);
+    if (buffer == NULL) return FALSE;
+
+    ret = virDomainAttachDevice(dom, buffer);
+    free (buffer);
+
+    if (ret < 0) {
+        vshError(ctl, FALSE, _("Failed to attach device from %s"), from);
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    virDomainFree(dom);
+    return TRUE;
+}
+
+
+/*
+ * "detach-device" command
+ */
+static vshCmdInfo info_detach_device[] = {
+    {"syntax", "detach-device <domain> <file> "},
+    {"help", gettext_noop("detach device from an XML file")},
+    {"desc", gettext_noop("Detach device from an XML <file>")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_detach_device[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {"file",   VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("XML file")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdDetachDevice(vshControl * ctl, vshCmd * cmd)
+{
+    virDomainPtr dom;
+    char *from;
+    char *buffer;
+    int ret = TRUE;
+    int found;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+        return FALSE;
+
+    from = vshCommandOptString(cmd, "file", &found);
+    if (!found) {
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    buffer = readFile (ctl, from);
+    if (buffer == NULL) return FALSE;
+
+    ret = virDomainDetachDevice(dom, buffer);
+    free (buffer);
+
+    if (ret < 0) {
+        vshError(ctl, FALSE, _("Failed to detach device from %s"), from);
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    virDomainFree(dom);
+    return TRUE;
+}
+
 
 /*
  * "quit" command
@@ -2467,6 +2603,8 @@ static vshCmdDef commands[] = {
     {"vcpupin", cmdVcpupin, opts_vcpupin, info_vcpupin},
     {"version", cmdVersion, NULL, info_version},
     {"vncdisplay", cmdVNCDisplay, opts_vncdisplay, info_vncdisplay},
+    {"attach-device", cmdAttachDevice, opts_attach_device, info_attach_device},
+    {"detach-device", cmdDetachDevice, opts_detach_device, info_detach_device},
     {NULL, NULL, NULL, NULL}
 };
 
