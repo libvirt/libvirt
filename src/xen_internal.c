@@ -1497,11 +1497,15 @@ xenHypervisorInit(void)
     virXenError(VIR_ERR_XEN_CALL, " ioctl ", IOCTL_PRIVCMD_HYPERCALL);
     close(fd);
     in_init = 0;
+    if (ipt)
+        free(ipt);
     return(-1);
 
  done:
     close(fd);
     in_init = 0;
+    if (ipt)
+        free(ipt);
     return(0);
 }
 

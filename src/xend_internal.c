@@ -3072,7 +3072,7 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
 static int
 xenDaemonAttachDevice(virDomainPtr domain, char *xml)
 {
-    char *sexpr, *conf;
+    char *sexpr, *conf, *str;
     int hvm = 0, ret;
     xenUnifiedPrivatePtr priv;
 
@@ -3084,8 +3084,11 @@ xenDaemonAttachDevice(virDomainPtr domain, char *xml)
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
-    if (strcmp(virDomainGetOSType(domain), "linux"))
+    str = virDomainGetOSType(domain);
+    if (strcmp(str, "linux"))
         hvm = 1;
+    if (str)
+        free(str);
     sexpr = virParseXMLDevice(domain->conn, xml, hvm, priv->xendConfigVersion);
     if (sexpr == NULL)
         return (-1);

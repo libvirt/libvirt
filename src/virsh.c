@@ -3153,8 +3153,10 @@ vshCommandParse(vshControl * ctl, char *cmdstr)
             c->def = cmd;
             c->next = NULL;
 
-            if (!vshCommandCheckOpts(ctl, c))
+            if (!vshCommandCheckOpts(ctl, c)) {
+                if(c) free(c);
                 goto syntaxError;
+            }
 
             if (!ctl->cmd)
                 ctl->cmd = c;
