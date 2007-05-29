@@ -1,3 +1,11 @@
+Tue May 29 15:56:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* python/generator.py, python/libvir.c, python/libvir.py:
+	  Wrap the virGetVersion call as Python libvirt.getVersion.
+
+	* src/libvirt.c: Change virGetVersion so that the driver name
+	  is case insensitive.
+
 Tue May 29 15:41:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* TODO: Added a note about requiring C++ compiler because of a

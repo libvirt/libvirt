@@ -249,7 +249,7 @@ virGetVersion(unsigned long *libVer, const char *type,
 	    type = "Xen";
 	for (i = 0;i < virDriverTabCount;i++) {
 	    if ((virDriverTab[i] != NULL) &&
-	        (!strcmp(virDriverTab[i]->name, type))) {
+	        (!strcasecmp(virDriverTab[i]->name, type))) {
 		*typeVer = virDriverTab[i]->ver;
 		break;
 	    }

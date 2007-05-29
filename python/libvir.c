@@ -179,6 +179,36 @@ libvirt_virRegisterErrorHandler(ATTRIBUTE_UNUSED PyObject * self,
  ************************************************************************/
 
 static PyObject *
+libvirt_virGetVersion (PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
+{
+    char *type = NULL;
+    unsigned long libVer, typeVer = 0;
+    int c_retval;
+
+    if (!PyArg_ParseTuple (args, (char *) "|s", &type))
+        return NULL;
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+
+    if (type == NULL)
+        c_retval = virGetVersion (&libVer, NULL, NULL);
+    else
+        c_retval = virGetVersion (&libVer, type, &typeVer);
+
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (c_retval == -1) {
+        Py_INCREF(Py_None);
+        return (Py_None);
+    }
+
+    if (type == NULL)
+        return PyInt_FromLong (libVer);
+    else
+        return Py_BuildValue ((char *) "kk", libVer, typeVer);
+}
+
+static PyObject *
 libvirt_virDomainFree(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     PyObject *py_retval;
     int c_retval;
@@ -628,6 +658,7 @@ libvirt_virNetworkGetAutostart(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) 
  ************************************************************************/
 static PyMethodDef libvirtMethods[] = {
 #include "libvirt-export.c"
+    {(char *) "virGetVersion", libvirt_virGetVersion, METH_VARARGS, NULL},
     {(char *) "virDomainFree", libvirt_virDomainFree, METH_VARARGS, NULL},
     {(char *) "virConnectClose", libvirt_virConnectClose, METH_VARARGS, NULL},
     {(char *) "virConnectListDomainsID", libvirt_virConnectListDomainsID, METH_VARARGS, NULL},
@@ -664,3 +695,17 @@ initlibvirtmod(void)
 
     initialized = 1;
 }
+
+/*
+ * vim: set tabstop=4:
+ * vim: set shiftwidth=4:
+ * vim: set expandtab:
+ */
+/*
+ * Local variables:
+ *  indent-tabs-mode: nil
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  tab-width: 4
+ * End:
+ */

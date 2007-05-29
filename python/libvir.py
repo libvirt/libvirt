@@ -83,6 +83,29 @@ def registerErrorHandler(f, ctx):
        Returns 1 in case of success."""
     return libvirtmod.virRegisterErrorHandler(f,ctx)
 
+#
+# Return library version.
+#
+def getVersion (name = None):
+    """If no name parameter is passed (or name is None) then the
+    version of the libvirt library is returned as an integer.
+
+    If a name is passed and it refers to a driver linked to the
+    libvirt library, then this returns a tuple of (library version,
+    driver version).
+
+    If the name passed refers to a non-existent driver, then you
+    will get the exception 'no support for hypervisor'.
+
+    Versions numbers are integers: 1000000*major + 1000*minor + release."""
+    if name is None:
+        ret = libvirtmod.virGetVersion ();
+    else:
+        ret = libvirtmod.virGetVersion (name);
+    if ret is None: raise libvirtError ("virGetVersion() failed")
+    return ret
+
+
 # WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
 #
 # Everything before this line comes from libvir.py

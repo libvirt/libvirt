@@ -287,6 +287,8 @@ def skip_function(name):
         return 1
     if name == "vshRunConsole":
         return 1
+    if name == "virGetVersion":
+        return 1
     return 0
 
 def print_function_wrapper(name, output, export, include):
