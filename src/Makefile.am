@@ -36,7 +36,7 @@ libvirt_la_SOURCES =						\
 bin_PROGRAMS = virsh
 
 virsh_SOURCES = virsh.c console.c console.h
-virsh_LDFLAGS = $(COVERAGE_LDFLAGS)
+virsh_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDFLAGS)
 virsh_DEPENDENCIES = $(DEPS)
 virsh_LDADD = $(LDADDS) $(VIRSH_LIBS)
 virsh_CFLAGS = $(COVERAGE_CFLAGS)

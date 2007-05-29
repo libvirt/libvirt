@@ -1,4 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
+
+#include "config.h"
+
+#ifdef WITH_XEN
+
 #include <string.h>
 
 #include "xml.h"
@@ -197,3 +203,13 @@ main(int argc, char **argv)
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
+
+#else /* !WITH_XEN */
+
+int
+main (void)
+{
+    exit (EXIT_SUCCESS);
+}
+
+#endif /* !WITH_XEN */

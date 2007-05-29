@@ -25,6 +25,7 @@ INCLUDES = \
 LDADDS = \
 	@STATIC_BINARIES@ \
 	@LIBXML_LIBS@ \
+        $(WARN_CFLAGS) \
 	$(LIBVIRT) \
         $(COVERAGE_LDFLAGS)
 
