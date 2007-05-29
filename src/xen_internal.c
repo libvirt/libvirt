@@ -1331,7 +1331,7 @@ xenHypervisorInit(void)
     hypercall_t hc;
     v0_hypercall_t v0_hc;
     xen_getdomaininfo info;
-    virVcpuInfoPtr ipt;
+    virVcpuInfoPtr ipt = NULL;
 
     if (initialized) {
         if (hypervisor_version == -1)
