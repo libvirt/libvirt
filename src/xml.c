@@ -1129,6 +1129,7 @@ virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED, xmlNodePtr node, vi
         virBufferVSprintf(buf, "(script '%s')", script);
     if (ip != NULL)
         virBufferVSprintf(buf, "(ip '%s')", ip);
+    /* apparently not needed any more for xen >= 3.1 but harmless */
     if (hvm)
         virBufferAdd(buf, "(type ioemu)", 12);
 
