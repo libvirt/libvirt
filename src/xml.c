@@ -1482,6 +1482,7 @@ virParseXMLDevice(virConnectPtr conn, char *xmldesc, int hvm, int xendConfigVers
         return (NULL);
     buf.size = 1000;
     buf.use = 0;
+    buf.content[0] = 0;
     xml = xmlReadDoc((const xmlChar *) xmldesc, "domain.xml", NULL,
                      XML_PARSE_NOENT | XML_PARSE_NONET |
                      XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
@@ -1493,6 +1494,9 @@ virParseXMLDevice(virConnectPtr conn, char *xmldesc, int hvm, int xendConfigVers
     if (xmlStrEqual(node->name, BAD_CAST "disk")) {
         if (virDomainParseXMLDiskDesc(conn, node, &buf, hvm, xendConfigVersion) != 0)
             goto error;
+        /* SXP is not created when device is "floppy". */
+       else if (buf.use == 0)
+           goto error;
     }
     else if (xmlStrEqual(node->name, BAD_CAST "interface")) {
         if (virDomainParseXMLIfDesc(conn, node, &buf, hvm) != 0)

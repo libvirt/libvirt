@@ -1,3 +1,8 @@
+Mon Jun  4 10:41:25 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xml.c: apply patch from Masayuki Sunou about an uninitialized
+	  string when attaching a device
+
 Fri Jun  1 16:02:12 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xml.c: added a comment about (type ioemu) not needed
