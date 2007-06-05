@@ -673,7 +673,7 @@ static void
 virXenErrorFunc(virErrorNumber error, const char *func, const char *info,
                 int value)
 {
-    char fullinfo[1000]
+    char fullinfo[1000];
     const char *errmsg;
 
     if ((error == VIR_ERR_OK) || (in_init != 0))
