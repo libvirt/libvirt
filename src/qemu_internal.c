@@ -1350,6 +1350,9 @@ static virDriver qemuDriver = {
     NULL, /* domainDetachDevice */
     qemuDomainGetAutostart, /* domainGetAutostart */
     qemuDomainSetAutostart, /* domainSetAutostart */
+    NULL, /* domainGetSchedulerType */
+    NULL, /* domainGetSchedulerParameters */
+    NULL, /* domainSetSchedulerParameters */
 };
 
 static virNetworkDriver qemuNetworkDriver = {

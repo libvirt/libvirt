@@ -775,6 +775,58 @@ xenUnifiedDomainSetAutostart (virDomainPtr dom, int autostart)
     return -1;
 }
 
+static char *
+xenUnifiedDomainGetSchedulerType (virDomainPtr dom, int *nparams)
+{
+    GET_PRIVATE(dom->conn);
+    int i;
+    char *schedulertype;
+
+    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; i++) {
+        if (priv->opened[i] && drivers[i]->domainGetSchedulerType) {
+            schedulertype = drivers[i]->domainGetSchedulerType (dom, nparams);
+	    if (schedulertype != NULL)
+		return(schedulertype); 
+        }
+    }
+    return(NULL);
+}
+
+static int
+xenUnifiedDomainGetSchedulerParameters (virDomainPtr dom,
+                    virSchedParameterPtr params, int *nparams)
+{
+    GET_PRIVATE(dom->conn);
+    int i, ret;
+
+    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i) {
+        if (priv->opened[i] && drivers[i]->domainGetSchedulerParameters) {
+           ret = drivers[i]->domainGetSchedulerParameters(dom, params, nparams);
+	   if (ret == 0)
+	       return(0);
+	}
+    }
+    return(-1);
+}
+
+static int
+xenUnifiedDomainSetSchedulerParameters (virDomainPtr dom,
+                    virSchedParameterPtr params, int nparams)
+{
+    GET_PRIVATE(dom->conn);
+    int i, ret;
+
+    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i) {
+        if (priv->opened[i] && drivers[i]->domainSetSchedulerParameters) {
+           ret = drivers[i]->domainSetSchedulerParameters(dom, params, nparams);
+	   if (ret == 0)
+	       return 0;
+	}
+    }
+
+    return(-1);
+}
+
 /*----- Register with libvirt.c, and initialise Xen drivers. -----*/
 
 #define VERSION ((DOM0_INTERFACE_VERSION >> 24) * 1000000 +         \
@@ -826,6 +878,9 @@ static virDriver xenUnifiedDriver = {
     .domainDetachDevice 		= xenUnifiedDomainDetachDevice,
     .domainGetAutostart 		= xenUnifiedDomainGetAutostart,
     .domainSetAutostart 		= xenUnifiedDomainSetAutostart,
+    .domainGetSchedulerType	= xenUnifiedDomainGetSchedulerType,
+    .domainGetSchedulerParameters	= xenUnifiedDomainGetSchedulerParameters,
+    .domainSetSchedulerParameters	= xenUnifiedDomainSetSchedulerParameters,
 };
 
 /**

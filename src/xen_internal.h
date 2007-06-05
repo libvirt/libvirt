@@ -66,6 +66,17 @@ int	xenHypervisorGetVcpus		(virDomainPtr domain,
 					 int maplen);
 int	xenHypervisorGetVcpuMax		(virDomainPtr domain);
 
+char *	xenHypervisorGetSchedulerType	(virDomainPtr domain,
+					 int *nparams);
+
+int	xenHypervisorGetSchedulerParameters		(virDomainPtr domain,
+					 virSchedParameterPtr params,
+					 int *nparams);
+
+int	xenHypervisorSetSchedulerParameters		(virDomainPtr domain,
+					 virSchedParameterPtr params,
+					 int nparams);
+
 #ifdef __cplusplus
 }
 #endif

@@ -169,6 +169,71 @@ struct _virNodeInfo {
 
 
 /**
+ * virDomainSchedParameterType:
+ *
+ * A scheduler parameter field type
+ */
+typedef enum {
+    VIR_DOMAIN_SCHED_FIELD_INT     = 1,	/* integer case */
+    VIR_DOMAIN_SCHED_FIELD_UINT    = 2,	/* unsigned integer case */
+    VIR_DOMAIN_SCHED_FIELD_LLONG   = 3,	/* long long case */
+    VIR_DOMAIN_SCHED_FIELD_ULLONG  = 4,	/* unsigned long long case */
+    VIR_DOMAIN_SCHED_FIELD_DOUBLE  = 5,	/* double case */
+    VIR_DOMAIN_SCHED_FIELD_BOOLEAN = 6	/* boolean(character) case */
+} virSchedParameterType;
+
+/**
+ * VIR_DOMAIN_SCHED_FIELD_LENGTH:
+ *
+ * Macro providing the field length of virSchedParameter
+ */
+
+#define VIR_DOMAIN_SCHED_FIELD_LENGTH 80
+
+/**
+ * virDomainSchedParameter:
+ *
+ * a virDomainSchedParameter is the set of scheduler parameters
+ */
+
+typedef struct _virSchedParameter virSchedParameter;
+
+struct _virSchedParameter {
+    char field[VIR_DOMAIN_SCHED_FIELD_LENGTH];	/* parameter name */
+    int type;	/* parameter type */
+    union {
+        int i;				/* data for integer case */
+        unsigned int ui;	/* data for unsigned integer case */
+        long long int l;	/* data for long long integer case */
+        unsigned long long int ul;	/* data for unsigned long long integer case */
+        double d;	/* data for double case */
+        char b;		/* data for char case */
+    } value; /* parameter value */
+};
+
+/**
+ * virSchedParameterPtr:
+ *
+ * a virSchedParameterPtr is a pointer to a virSchedParameter structure.
+ */
+
+typedef virSchedParameter *virSchedParameterPtr;
+
+/*
+ * Fetch scheduler parameters, caller allocates 'params' field of size 'nparams'
+ */
+int	virDomainGetSchedulerParameters	(virDomainPtr domain,
+					 virSchedParameterPtr params,
+					 int *nparams);
+
+/*
+ * Change scheduler parameters
+ */
+int	virDomainSetSchedulerParameters	(virDomainPtr domain,
+					 virSchedParameterPtr params,
+					 int nparams);
+
+/**
  * VIR_NODEINFO_MAXCPUS:
  * @nodeinfo: virNodeInfo instance
  *
@@ -302,6 +367,12 @@ int			virDomainCoreDump	(virDomainPtr domain,
 int			virDomainGetInfo	(virDomainPtr domain,
 						 virDomainInfoPtr info);
 						 
+/*
+ * Return scheduler type in effect 'sedf', 'credit', 'linux'
+ */
+char * 			virDomainGetSchedulerType(virDomainPtr domain,
+						 int *nparams);
+
 /*
  * Dynamic control of domains
  */

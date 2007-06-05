@@ -59,6 +59,9 @@
 	virDomainPinVcpu;
 	virDomainGetVcpus;
 	virDomainGetMaxVcpus;
+	virDomainGetSchedulerType;
+	virDomainGetSchedulerParameters;
+	virDomainSetSchedulerParameters;
 
 	virDomainAttachDevice;
 	virDomainDetachDevice;

@@ -1427,6 +1427,118 @@ virConnectGetCapabilities (virConnectPtr conn)
     return NULL;
 }
 
+/**
+ * virDomainGetSchedulerType:
+ * @domain: pointer to domain object
+ * @nparams: number of scheduler parameters(return value)
+ *
+ * Get the scheduler type.
+ *
+ * Returns NULL in case of error. The caller must free the returned string.
+ */
+char *
+virDomainGetSchedulerType(virDomainPtr domain, int *nparams)
+{
+    virConnectPtr conn;
+    char *schedtype;
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return NULL;
+    }
+    conn = domain->conn;
+
+    if (!VIR_IS_CONNECT (conn)) {
+        virLibConnError (conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return NULL;
+    }
+
+    if (conn->driver->domainGetSchedulerType){
+        schedtype = conn->driver->domainGetSchedulerType (domain, nparams);
+        return schedtype;
+    }
+
+    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    return NULL;
+}
+
+
+/**
+ * virDomainGetSchedulerParameters:
+ * @domain: pointer to domain object
+ * @params: pointer to scheduler parameter object
+ *          (return value)
+ * @nparams: pointer to number of scheduler parameter
+ *          (this value should be same than the returned value
+ *           nparams of virDomainGetSchedulerType)
+ *
+ * Get the scheduler parameters, the @params array will be filled with the
+ * values.
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ */
+int
+virDomainGetSchedulerParameters(virDomainPtr domain,
+				virSchedParameterPtr params, int *nparams)
+{
+    virConnectPtr conn;
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return -1;
+    }
+    conn = domain->conn;
+
+    if (!VIR_IS_CONNECT (conn)) {
+        virLibConnError (conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return -1;
+    }
+
+    if (conn->driver->domainGetSchedulerParameters)
+        return conn->driver->domainGetSchedulerParameters (domain, params, nparams);
+
+    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    return -1;
+}
+
+/**
+ * virDomainSetSchedulerParameters:
+ * @domain: pointer to domain object
+ * @params: pointer to scheduler parameter objects
+ * @nparams: number of scheduler parameter
+ *          (this value should be same or less than the returned value
+ *           nparams of virDomainGetSchedulerType)
+ *
+ * Change the scheduler parameters
+ *
+ * Returns -1 in case of error, 0 in case of success.
+ */
+int
+virDomainSetSchedulerParameters(virDomainPtr domain, 
+				virSchedParameterPtr params, int nparams)
+{
+    virConnectPtr conn;
+
+    if (!VIR_IS_CONNECTED_DOMAIN(domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return -1;
+    }
+    conn = domain->conn;
+
+    if (!VIR_IS_CONNECT (conn)) {
+        virLibConnError (conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return -1;
+    }
+
+    if (conn->driver->domainSetSchedulerParameters)
+        return conn->driver->domainSetSchedulerParameters (domain, params, nparams);
+
+    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    return -1;
+}
+
+
+
 /************************************************************************
  *									*
  *		Handling of defined but not running domains		*

@@ -180,6 +180,19 @@ union xen_getdomaininfolist {
 };
 typedef union xen_getdomaininfolist xen_getdomaininfolist;
 
+
+struct xen_v2_getschedulerid {
+    uint32_t sched_id; /* Get Scheduler ID from Xen */
+};
+typedef struct xen_v2_getschedulerid xen_v2_getschedulerid;
+
+
+union xen_getschedulerid {
+    struct xen_v2_getschedulerid *v2;
+};
+typedef union xen_getschedulerid xen_getschedulerid;
+
+
 #define XEN_GETDOMAININFOLIST_ALLOC(domlist, size)                      \
     (hypervisor_version < 2 ?                                           \
      ((domlist.v0 = malloc(sizeof(xen_v0_getdomaininfo)*(size))) != NULL) : \
@@ -469,6 +482,43 @@ typedef struct xen_v2_setvcpumap xen_v2_getvcpumap;
 typedef struct xen_v2d5_setvcpumap xen_v2d5_getvcpumap;
 
 /*
+ * from V2 we get the scheduler information
+ */
+#define XEN_V2_OP_GETSCHEDULERID	4
+
+/*
+ * from V2 we get the scheduler parameter
+ */
+#define XEN_V2_OP_SCHEDULER		16
+/* Scheduler types. */
+#define XEN_SCHEDULER_SEDF       4
+#define XEN_SCHEDULER_CREDIT     5
+/* get/set scheduler parameters */
+#define XEN_DOMCTL_SCHEDOP_putinfo 0
+#define XEN_DOMCTL_SCHEDOP_getinfo 1
+
+struct xen_v2_setschedinfo {
+    uint32_t sched_id;
+    uint32_t cmd;
+    union {
+        struct xen_domctl_sched_sedf {
+            uint64_t period ALIGN_64;
+            uint64_t slice  ALIGN_64;
+            uint64_t latency ALIGN_64;
+            uint32_t extratime;
+            uint32_t weight;
+        } sedf;
+        struct xen_domctl_sched_credit {
+            uint16_t weight;
+            uint16_t cap;
+        } credit;
+    } u;
+};
+typedef struct xen_v2_setschedinfo xen_v2_setschedinfo;
+typedef struct xen_v2_setschedinfo xen_v2_getschedinfo;
+
+
+/*
  * The hypercall operation structures also have changed on
  * changeset 86d26e6ec89b
  */
@@ -496,6 +546,7 @@ struct xen_op_v2_sys {
     union {
         xen_v2_getdomaininfolistop   getdomaininfolist;
         xen_v2s3_getdomaininfolistop getdomaininfolists3;
+        xen_v2_getschedulerid        getschedulerid;
         uint8_t padding[128];
     } u;
 };
@@ -516,6 +567,8 @@ struct xen_op_v2_dom {
         xen_v2d5_vcpuinfo        getvcpuinfod5;
         xen_v2_getvcpumap        getvcpumap;
         xen_v2d5_getvcpumap      getvcpumapd5;
+        xen_v2_setschedinfo      setschedinfo;
+        xen_v2_getschedinfo      getschedinfo;
         uint8_t padding[128];
     } u;
 };
@@ -580,6 +633,9 @@ virDriver xenHypervisorDriver = {
     NULL, /* domainDetachDevice */
     NULL, /* domainGetAutostart */
     NULL, /* domainSetAutostart */
+    xenHypervisorGetSchedulerType, /* domainGetSchedulerType */
+    xenHypervisorGetSchedulerParameters, /* domainGetSchedulerParameters */
+    xenHypervisorSetSchedulerParameters, /* domainSetSchedulerParameters */
 };
 #endif /* !PROXY */
 
@@ -602,6 +658,38 @@ virXenError(virErrorNumber error, const char *info, int value)
     errmsg = __virErrorMsg(error, info);
     __virRaiseError(NULL, NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, value, 0, errmsg, info);
+}
+
+/**
+ * virXenErrorFunc:
+ * @error: the error number
+ * @func: the function failing
+ * @info: extra information string
+ * @value: extra information number
+ *
+ * Handle an error at the xend daemon interface
+ */
+static void
+virXenErrorFunc(virErrorNumber error, const char *func, const char *info,
+                int value)
+{
+    char fullinfo[1000]
+    const char *errmsg;
+
+    if ((error == VIR_ERR_OK) || (in_init != 0))
+        return;
+
+
+    errmsg = __virErrorMsg(error, info);
+    if (func != NULL) {
+        snprintf(fullinfo, 999, "%s: %s", func, info);
+	fullinfo[999] = 0;
+	__virRaiseError(NULL, NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
+			errmsg, fullinfo, NULL, value, 0, errmsg, fullinfo);
+    } else {
+	__virRaiseError(NULL, NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
+			errmsg, info, NULL, value, 0, errmsg, info);
+    }
 }
 
 /**
@@ -739,7 +827,7 @@ xenHypervisorDoV2Sys(int handle, xen_op_v2_sys* op)
 
     ret = ioctl(handle, xen_ioctl_hypercall_cmd, (unsigned long) &hc);
     if (ret < 0) {
-        virXenError(VIR_ERR_XEN_CALL, " ioctl ", xen_ioctl_hypercall_cmd);
+        virXenError(VIR_ERR_XEN_CALL, " sys ioctl ", xen_ioctl_hypercall_cmd);
     }
 
     if (munlock(op, sizeof(dom0_op_t)) < 0) {
@@ -893,6 +981,278 @@ virXen_getdomaininfo(int handle, int first_domain,
 
 
 #ifndef PROXY
+/**
+ * xenHypervisorGetSchedulerType:
+ * @domain: pointer to the Xen Hypervisor block
+ * @nparams:give a number of scheduler parameters.
+ *
+ * Do a low level hypercall to get scheduler type
+ *
+ * Returns scheduler name or NULL in case of failure
+ */
+char *
+xenHypervisorGetSchedulerType(virDomainPtr domain, int *nparams)
+{
+    char *schedulertype = NULL;
+    xenUnifiedPrivatePtr priv;
+
+    if ((domain == NULL) || (domain->conn == NULL)) {
+        virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
+			"domain or conn is NULL", 0);
+        return NULL;
+    }
+
+    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
+    if (priv->handle < 0 || domain->id < 0) {
+        virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
+			"priv->handle or domain->id invalid", 0);
+        return NULL;
+    }
+
+    /*
+     * Support only dom_interface_version >=5
+     * (Xen3.1.0 or later)
+     */
+    if (dom_interface_version < 5) {
+        virXenErrorFunc(VIR_ERR_NO_XEN, __FUNCTION__,
+		        "unsupported in dom interface < 5", 0);
+        return NULL;
+    }
+
+    if (hypervisor_version > 1) {
+        xen_op_v2_sys op;
+        int ret;
+
+        memset(&op, 0, sizeof(op));
+        op.cmd = XEN_V2_OP_GETSCHEDULERID;
+        ret = xenHypervisorDoV2Sys(priv->handle, &op);
+        if (ret < 0)
+	    return(NULL);
+
+        switch (op.u.getschedulerid.sched_id){
+	    case XEN_SCHEDULER_SEDF:
+		schedulertype = strdup("sedf");
+		if (nparams)
+		    *nparams = 6;
+		break;
+	    case XEN_SCHEDULER_CREDIT:
+		schedulertype = strdup("credit");
+		if (nparams)
+		    *nparams = 2;
+		break;
+	    default:
+		break;
+        }
+    }
+
+    return schedulertype;
+}
+
+/**
+ * xenHypervisorGetSchedulerParameters:
+ * @domain: pointer to the Xen Hypervisor block
+ * @params: pointer to scheduler parameters.
+ *     This memory area should be allocated before calling.
+ * @nparams:this parameter should be same as
+ *     a given number of scheduler parameters.
+ *     from xenHypervisorGetSchedulerType().
+ *
+ * Do a low level hypercall to get scheduler parameters
+ *
+ * Returns 0 or -1 in case of failure
+ */
+int
+xenHypervisorGetSchedulerParameters(virDomainPtr domain,
+				 virSchedParameterPtr params, int *nparams)
+{
+    xenUnifiedPrivatePtr priv;
+    char str_weight[] ="weight";
+    char str_cap[]    ="cap";
+
+    if ((domain == NULL) || (domain->conn == NULL)) {
+        virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
+			"domain or conn is NULL", 0);
+        return -1;
+    }
+
+    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
+    if (priv->handle < 0 || domain->id < 0) {
+        virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
+			"priv->handle or domain->id invalid", 0);
+        return -1;
+    }
+
+    /*
+     * Support only dom_interface_version >=5
+     * (Xen3.1.0 or later)
+     * TODO: check on Xen 3.0.3
+     */
+    if (dom_interface_version < 5) {
+        virXenErrorFunc(VIR_ERR_NO_XEN, __FUNCTION__,
+			"unsupported in dom interface < 5", 0);
+        return -1;
+    }
+
+    if (hypervisor_version > 1) {
+        xen_op_v2_sys op_sys;
+        xen_op_v2_dom op_dom;
+        int ret;
+
+        memset(&op_sys, 0, sizeof(op_sys));
+        op_sys.cmd = XEN_V2_OP_GETSCHEDULERID;
+        ret = xenHypervisorDoV2Sys(priv->handle, &op_sys);
+        if (ret < 0)
+	    return -1;
+
+        switch (op_sys.u.getschedulerid.sched_id){
+	    case XEN_SCHEDULER_SEDF:
+		/* TODO: Implement for Xen/SEDF */
+		TODO
+		return(-1);
+	    case XEN_SCHEDULER_CREDIT:
+		if (*nparams < 2)
+		    return(-1);
+		memset(&op_dom, 0, sizeof(op_dom));
+		op_dom.cmd = XEN_V2_OP_SCHEDULER;
+		op_dom.domain = (domid_t) domain->id;
+		op_dom.u.getschedinfo.sched_id = XEN_SCHEDULER_CREDIT;
+		op_dom.u.getschedinfo.cmd = XEN_DOMCTL_SCHEDOP_getinfo;
+		ret = xenHypervisorDoV2Dom(priv->handle, &op_dom);
+		if (ret < 0)
+		    return(-1);
+
+		strncpy(params[0].field, str_weight, strlen(str_weight));
+		params[0].type = VIR_DOMAIN_SCHED_FIELD_UINT;
+		params[0].value.ui = op_dom.u.getschedinfo.u.credit.weight;
+
+		strncpy(params[1].field, str_cap, strlen(str_cap));
+		params[1].type = VIR_DOMAIN_SCHED_FIELD_UINT;
+		params[1].value.ui = op_dom.u.getschedinfo.u.credit.cap;
+
+		*nparams = 2;
+		break;
+	    default:
+		virXenErrorFunc(VIR_ERR_INVALID_ARG, __FUNCTION__,
+			"Unknown scheduler", op_sys.u.getschedulerid.sched_id);
+		return -1;
+        }
+    }
+
+    return 0;
+}
+
+/**
+ * xenHypervisorSetSchedulerParameters:
+ * @domain: pointer to the Xen Hypervisor block
+ * @nparams:give a number of scheduler setting parameters .
+ *
+ * Do a low level hypercall to set scheduler parameters
+ *
+ * Returns 0 or -1 in case of failure
+ */
+int
+xenHypervisorSetSchedulerParameters(virDomainPtr domain,
+				 virSchedParameterPtr params, int nparams)
+{
+    int i;
+    xenUnifiedPrivatePtr priv;
+    char str_weight[] ="weight";
+    char str_cap[]    ="cap";
+
+    if ((domain == NULL) || (domain->conn == NULL)) {
+        virXenErrorFunc (VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
+	                 "domain or conn is NULL", 0);
+        return -1;
+    }
+
+    if ((nparams == 0) || (params == NULL)) {
+	virXenErrorFunc (VIR_ERR_INVALID_ARG, __FUNCTION__,
+			 "Noparameters given", 0);
+	return(-1);
+    }
+
+    priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
+    if (priv->handle < 0 || domain->id < 0) {
+        virXenErrorFunc (VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
+	                 "priv->handle or domain->id invalid", 0);
+        return -1;
+    }
+
+    /*
+     * Support only dom_interface_version >=5
+     * (Xen3.1.0 or later)
+     * TODO: check on Xen 3.0.3
+     */
+    if (dom_interface_version < 5) {
+        virXenError(VIR_ERR_NO_XEN, __FUNCTION__,
+	            "unsupported in dom interface < 5", 0);
+        return -1;
+    }
+
+    if (hypervisor_version > 1) {
+        xen_op_v2_sys op_sys;
+        xen_op_v2_dom op_dom;
+        int ret;
+
+        memset(&op_sys, 0, sizeof(op_sys));
+        op_sys.cmd = XEN_V2_OP_GETSCHEDULERID;
+        ret = xenHypervisorDoV2Sys(priv->handle, &op_sys);
+        if (ret == -1) return -1;
+
+        switch (op_sys.u.getschedulerid.sched_id){
+        case XEN_SCHEDULER_SEDF:
+            /* TODO: Implement for Xen/SEDF */
+            TODO
+	    return(-1);
+        case XEN_SCHEDULER_CREDIT: {
+            int weight_set = 0;
+            int cap_set = 0;
+
+            memset(&op_dom, 0, sizeof(op_dom));
+            op_dom.cmd = XEN_V2_OP_SCHEDULER;
+            op_dom.domain = (domid_t) domain->id;
+            op_dom.u.getschedinfo.sched_id = XEN_SCHEDULER_CREDIT;
+            op_dom.u.getschedinfo.cmd = XEN_DOMCTL_SCHEDOP_putinfo;
+
+            /*
+	     * credit scheduler parameters 
+             * following values do not change the parameters 
+             */
+            op_dom.u.getschedinfo.u.credit.weight = 0;
+            op_dom.u.getschedinfo.u.credit.cap    = (uint16_t)~0U;
+
+            for (i = 0; i < nparams; i++) {
+                if (!strncmp(params[i].field,str_weight,strlen(str_weight)) &&
+                    params[i].type == VIR_DOMAIN_SCHED_FIELD_UINT) {
+                    op_dom.u.getschedinfo.u.credit.weight = params[i].value.ui;
+		    weight_set = 1;
+		} else if (!strncmp(params[i].field,str_cap,strlen(str_cap)) &&
+                    params[i].type == VIR_DOMAIN_SCHED_FIELD_UINT) {
+                    op_dom.u.getschedinfo.u.credit.cap = params[i].value.ui;
+		    cap_set = 1;
+	        } else {
+		    virXenErrorFunc (VIR_ERR_INVALID_ARG, __FUNCTION__,
+	     "Credit scheduler accepts 'cap' and 'weight' integer parameters",
+				     0);
+		    return(-1);
+		}
+            }
+
+            ret = xenHypervisorDoV2Dom(priv->handle, &op_dom);
+            if (ret < 0)
+	        return -1;
+            break;
+	}
+        default:
+            virXenErrorFunc(VIR_ERR_INVALID_ARG, __FUNCTION__,
+                        "Unknown scheduler", op_sys.u.getschedulerid.sched_id);
+            return -1;
+        }
+    }
+     
+    return 0;
+}
+
 /**
  * virXen_pausedomain:
  * @handle: the hypervisor handle

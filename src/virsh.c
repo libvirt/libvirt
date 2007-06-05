@@ -29,6 +29,7 @@
 #include <ctype.h>
 #include <fcntl.h>
 #include <locale.h>
+#include <assert.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -937,6 +938,129 @@ cmdSave(vshControl * ctl, vshCmd * cmd)
 
     virDomainFree(dom);
     return ret;
+}
+
+/*
+ * "schedinfo" command
+ */
+static vshCmdInfo info_schedinfo[] = {
+    {"syntax", "sched <domain>"},
+    {"help", gettext_noop("show/set scheduler parameters")},
+    {"desc", gettext_noop("Show/Set scheduler parameters.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_schedinfo[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {"weight", VSH_OT_INT, VSH_OFLAG_NONE, gettext_noop("weight for XEN_CREDIT")},
+    {"cap", VSH_OT_INT, VSH_OFLAG_NONE, gettext_noop("cap for XEN_CREDIT")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
+{
+    char *schedulertype;
+    virDomainPtr dom;
+    virSchedParameterPtr params;
+    int i, ret;
+    int nparams = 0;
+    int nr_inputparams = 0;
+    int inputparams = 0;
+    int weightfound = 0;
+    int weight;
+    int capfound = 0;
+    int cap;
+    char str_weight[] = "weight";
+    char str_cap[]    = "cap";
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+        return FALSE;
+
+    /* Currently supports Xen Credit only */
+    weight = vshCommandOptInt(cmd, "weight", &weightfound);
+    if (weightfound) nr_inputparams++;
+            
+    cap    = vshCommandOptInt(cmd, "cap", &capfound);
+    if (capfound) nr_inputparams++;
+
+    params = vshMalloc(ctl, sizeof (virSchedParameter) * nr_inputparams);
+    if (params == NULL) return FALSE;
+
+    if (weightfound) {
+         strncpy(params[inputparams].field,str_weight,sizeof(str_weight));
+         params[inputparams].type = VIR_DOMAIN_SCHED_FIELD_UINT;
+         params[inputparams].value.ui = weight;
+         inputparams++; 
+    }
+
+    if (capfound) {
+         strncpy(params[inputparams].field,str_cap,sizeof(str_cap));
+         params[inputparams].type = VIR_DOMAIN_SCHED_FIELD_UINT;
+         params[inputparams].value.ui = cap;
+         inputparams++;
+    }
+    /* End Currently supports Xen Credit only */
+
+    assert (inputparams == nr_inputparams);
+
+    /* Set SchedulerParameters */
+    if (inputparams > 0) {
+        ret = virDomainSetSchedulerParameters(dom, params, inputparams);
+        if (ret == -1) return FALSE;
+    }
+    free(params);
+
+    /* Print SchedulerType */
+    schedulertype = virDomainGetSchedulerType(dom, &nparams);
+    if (schedulertype!= NULL){
+        vshPrint(ctl, "%-15s %s\n", _("Scheduler:"),
+             schedulertype);
+        free(schedulertype);
+    } else {
+        vshPrint(ctl, "%-15s %s\n", _("Scheduler:"), _("Unknown"));
+        return FALSE;
+    }
+
+    /* Get SchedulerParameters */
+    params = vshMalloc(ctl, sizeof(virSchedParameter)* nparams);
+    for (i = 0; i < nparams; i++){
+        params[i].type = 0;
+        memset (params[i].field, 0, sizeof params[i].field);
+    }
+    ret = virDomainGetSchedulerParameters(dom, params, &nparams);
+    if (ret == -1) return FALSE;
+    if(nparams){
+        for (i = 0; i < nparams; i++){
+            switch (params[i].type) {
+            case VIR_DOMAIN_SCHED_FIELD_INT:
+                 printf("%-15s: %d\n",  params[i].field, params[i].value.i);
+                 break;
+            case VIR_DOMAIN_SCHED_FIELD_UINT:
+                 printf("%-15s: %u\n",  params[i].field, params[i].value.ui);
+                 break;
+            case VIR_DOMAIN_SCHED_FIELD_LLONG:
+                 printf("%-15s: %Ld\n",  params[i].field, params[i].value.l);
+                 break;
+            case VIR_DOMAIN_SCHED_FIELD_ULLONG:
+                 printf("%-15s: %Lu\n",  params[i].field, params[i].value.ul);
+                 break;
+            case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
+                 printf("%-15s: %f\n",  params[i].field, params[i].value.d);
+                 break;
+            case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
+                 printf("%-15s: %d\n",  params[i].field, params[i].value.b);
+                 break;
+            default:
+                 printf("not implemented scheduler parameter type\n");
+            }
+        }
+    }
+    free(params);
+    return TRUE;
 }
 
 /*
@@ -2592,6 +2716,7 @@ static vshCmdDef commands[] = {
     {"restore", cmdRestore, opts_restore, info_restore},
     {"resume", cmdResume, opts_resume, info_resume},
     {"save", cmdSave, opts_save, info_save},
+    {"schedinfo", cmdSchedinfo, opts_schedinfo, info_schedinfo},
     {"dump", cmdDump, opts_dump, info_dump},
     {"shutdown", cmdShutdown, opts_shutdown, info_shutdown},
     {"setmem", cmdSetmem, opts_setmem, info_setmem},

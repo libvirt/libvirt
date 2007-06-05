@@ -1,3 +1,14 @@
+Tue Jun  5 14:03:38 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvirt/libvirt.h include/libvirt/libvirt.h.in
+	  src/driver.h src/libvirt.c src/libvirt_sym.version
+	  src/proxy_internal.c src/qemu_internal.c src/test.c
+	  src/virsh.c src/xen_internal.c src/xen_internal.h src/xen_unified.c
+	  src/xend_internal.c src/xm_internal.c src/xs_internal.c:
+	  Applied patches from Atsushi SAKAI to add the scheduler API,
+	  with patch from Rich Jones for error handing, and a number 
+	  of cleanups and more error checking from me
+
 Mon Jun  4 10:41:25 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xml.c: apply patch from Masayuki Sunou about an uninitialized
