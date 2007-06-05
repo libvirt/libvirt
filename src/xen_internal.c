@@ -1184,8 +1184,8 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
      * TODO: check on Xen 3.0.3
      */
     if (dom_interface_version < 5) {
-        virXenError(VIR_ERR_NO_XEN, __FUNCTION__,
-	            "unsupported in dom interface < 5", 0);
+        virXenErrorFunc(VIR_ERR_NO_XEN, __FUNCTION__,
+			"unsupported in dom interface < 5", 0);
         return -1;
     }
 
