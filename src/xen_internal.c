@@ -660,6 +660,8 @@ virXenError(virErrorNumber error, const char *info, int value)
                     errmsg, info, NULL, value, 0, errmsg, info);
 }
 
+#ifndef PROXY
+
 /**
  * virXenErrorFunc:
  * @error: the error number
@@ -691,6 +693,8 @@ virXenErrorFunc(virErrorNumber error, const char *func, const char *info,
 			errmsg, info, NULL, value, 0, errmsg, info);
     }
 }
+
+#endif /* PROXY */
 
 /**
  * virXenPerror:
@@ -2830,7 +2834,7 @@ xenHypervisorGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
     }
     return nbinfo;
 }
-#endif
+#endif /* PROXY */
 
 /**
  * xenHypervisorGetVcpuMax:
