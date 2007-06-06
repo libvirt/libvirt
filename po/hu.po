@@ -1,1598 +1,1653 @@
-# English translations for libvirt package.
-# Copyright (C) 2006 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2007 Free Software Foundation, Inc.
 # This file is distributed under the same license as the libvirt package.
-# Automatically generated, 2006.
 #
+#
+# Gabor Egry <gaba@freemail.hu>, 2007.
+# Gábor Szentiványi <szenti@ulx.hu>, 2007.
+# Arpad Biro <biro_arpad@yahoo.com>, 2007.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-04-17 11:31+0200\n"
-"PO-Revision-Date: 2006-11-27 16:59+0100\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"POT-Creation-Date: 2007-06-06 09:19+0200\n"
+"PO-Revision-Date: 2007-05-03 21:23+0200\n"
+"Last-Translator: Arpad Biro <biro_arpad@yahoo.com>\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: KBabel 1.11.4\n"
 
 #: src/libvirt.c:278 src/hash.c:664
 msgid "allocating connection"
-msgstr "allocating connection"
+msgstr "csatlakozás lefoglalása"
 
 #: src/virterror.c:243
 msgid "warning"
-msgstr "warning"
+msgstr "figyelmeztetés"
 
 #: src/virterror.c:246
 msgid "error"
-msgstr "error"
+msgstr "hiba"
 
-#: src/virterror.c:344
+#: src/virterror.c:350
 msgid "No error message provided"
-msgstr "No error message provided"
+msgstr "Nincs megadva hibaüzenet"
 
-#: src/virterror.c:399
+#: src/virterror.c:405
 #, c-format
 msgid "internal error %s"
-msgstr "internal error %s"
+msgstr "belső hiba: %s"
 
-#: src/virterror.c:401
+#: src/virterror.c:407
 msgid "internal error"
-msgstr "internal error"
-
-#: src/virterror.c:404
-msgid "out of memory"
-msgstr "out of memory"
-
-#: src/virterror.c:408
-msgid "no support for hypervisor"
-msgstr "no support for hypervisor"
+msgstr "belső hiba"
 
 #: src/virterror.c:410
-#, c-format
-msgid "no support for hypervisor %s"
-msgstr "no support for hypervisor %s"
+msgid "out of memory"
+msgstr "nincs több memória"
 
 #: src/virterror.c:414
-msgid "could not connect to hypervisor"
-msgstr "could not connect to hypervisor"
+msgid "no support for hypervisor"
+msgstr "nincs támogatás a felügyelőhöz"
 
 #: src/virterror.c:416
 #, c-format
-msgid "could not connect to %s"
-msgstr "could not connect to %s"
+msgid "no support for hypervisor %s"
+msgstr "nincs támogatás a(z) %s felügyelőhöz"
 
 #: src/virterror.c:420
-msgid "invalid connection pointer in"
-msgstr "invalid connection pointer in"
+msgid "could not connect to hypervisor"
+msgstr "nem lehet csatlakozni a felügyelőhöz"
 
 #: src/virterror.c:422
 #, c-format
-msgid "invalid connection pointer in %s"
-msgstr "invalid connection pointer in %s"
+msgid "could not connect to %s"
+msgstr "nem lehet csatlakozni ehhez: %s"
 
 #: src/virterror.c:426
-msgid "invalid domain pointer in"
-msgstr "invalid domain pointer in"
+msgid "invalid connection pointer in"
+msgstr "érvénytelen csatlakozás-mutató itt:"
 
 #: src/virterror.c:428
 #, c-format
-msgid "invalid domain pointer in %s"
-msgstr "invalid domain pointer in %s"
+msgid "invalid connection pointer in %s"
+msgstr "érvénytelen csatlakozás-mutató itt: %s"
 
 #: src/virterror.c:432
-msgid "invalid argument in"
-msgstr "invalid argument in"
+msgid "invalid domain pointer in"
+msgstr "érvénytelen tartománymutató itt:"
 
 #: src/virterror.c:434
 #, c-format
-msgid "invalid argument in %s"
-msgstr "invalid argument in %s"
+msgid "invalid domain pointer in %s"
+msgstr "érvénytelen tartománymutató itt: %s"
 
 #: src/virterror.c:438
-#, c-format
-msgid "operation failed: %s"
-msgstr "operation failed: %s"
+msgid "invalid argument in"
+msgstr "érvénytelen argumentum ebben:"
 
 #: src/virterror.c:440
-msgid "operation failed"
-msgstr "operation failed"
+#, c-format
+msgid "invalid argument in %s"
+msgstr "érvénytelen argumentum ebben: %s"
 
 #: src/virterror.c:444
 #, c-format
-msgid "GET operation failed: %s"
-msgstr "GET operation failed: %s"
+msgid "operation failed: %s"
+msgstr "művelet nem sikerült: %s"
 
 #: src/virterror.c:446
-msgid "GET operation failed"
-msgstr "GET operation failed"
+msgid "operation failed"
+msgstr "művelet nem sikerült"
 
 #: src/virterror.c:450
 #, c-format
-msgid "POST operation failed: %s"
-msgstr "POST operation failed: %s"
+msgid "GET operation failed: %s"
+msgstr "GET művelet nem sikerült: %s"
 
 #: src/virterror.c:452
+msgid "GET operation failed"
+msgstr "GET művelet nem sikerült"
+
+#: src/virterror.c:456
+#, c-format
+msgid "POST operation failed: %s"
+msgstr "POST művelet nem sikerült: %s"
+
+#: src/virterror.c:458
 msgid "POST operation failed"
-msgstr "POST operation failed"
-
-#: src/virterror.c:455
-#, c-format
-msgid "got unknown HTTP error code %d"
-msgstr "got unknown HTTP error code %d"
-
-#: src/virterror.c:459
-#, c-format
-msgid "unknown host %s"
-msgstr "unknown host %s"
+msgstr "POST művelet nem sikerült"
 
 #: src/virterror.c:461
-msgid "unknown host"
-msgstr "unknown host"
+#, c-format
+msgid "got unknown HTTP error code %d"
+msgstr "ismeretlen HTTP-hibakód érkezett: %d"
 
 #: src/virterror.c:465
 #, c-format
-msgid "failed to serialize S-Expr: %s"
-msgstr "failed to serialize S-Expr: %s"
+msgid "unknown host %s"
+msgstr "ismeretlen gép: %s"
 
 #: src/virterror.c:467
-msgid "failed to serialize S-Expr"
-msgstr "failed to serialize S-Expr"
+msgid "unknown host"
+msgstr "ismeretlen gép"
 
 #: src/virterror.c:471
-msgid "could not use Xen hypervisor entry"
-msgstr "could not use Xen hypervisor entry"
+#, c-format
+msgid "failed to serialize S-Expr: %s"
+msgstr "S-kifejezés kibontása nem sikerült: %s"
 
 #: src/virterror.c:473
-#, c-format
-msgid "could not use Xen hypervisor entry %s"
-msgstr "could not use Xen hypervisor entry %s"
+msgid "failed to serialize S-Expr"
+msgstr "S-kifejezés kibontása nem sikerült"
 
 #: src/virterror.c:477
-msgid "could not connect to Xen Store"
-msgstr "could not connect to Xen Store"
+msgid "could not use Xen hypervisor entry"
+msgstr "a Xen-felügyelő-bejegyzés nem használható"
 
 #: src/virterror.c:479
 #, c-format
-msgid "could not connect to Xen Store %s"
-msgstr "could not connect to Xen Store %s"
+msgid "could not use Xen hypervisor entry %s"
+msgstr "%s Xen-felügyelő-bejegyzés nem használható"
 
-#: src/virterror.c:482
+#: src/virterror.c:483
+msgid "could not connect to Xen Store"
+msgstr "nem lehet csatlakozni a Xen-tárolóhoz"
+
+#: src/virterror.c:485
 #, c-format
-msgid "failed Xen syscall %s %d"
-msgstr "failed Xen syscall %s %d"
-
-#: src/virterror.c:486
-msgid "unknown OS type"
-msgstr "unknown OS type"
+msgid "could not connect to Xen Store %s"
+msgstr "nem lehet csatlakozni a(z) %s Xen-tárolóhoz"
 
 #: src/virterror.c:488
 #, c-format
+msgid "failed Xen syscall %s %d"
+msgstr "Xen-rendszerhívás nem sikerült: %s %d"
+
+#: src/virterror.c:492
+msgid "unknown OS type"
+msgstr "ismeretlen OS-típus"
+
+#: src/virterror.c:494
+#, c-format
 msgid "unknown OS type %s"
-msgstr "unknown OS type %s"
-
-#: src/virterror.c:491
-msgid "missing kernel information"
-msgstr "missing kernel information"
-
-#: src/virterror.c:495
-msgid "missing root device information"
-msgstr "missing root device information"
+msgstr "ismeretlen OS-típus: %s"
 
 #: src/virterror.c:497
-#, c-format
-msgid "missing root device information in %s"
-msgstr "missing root device information in %s"
+msgid "missing kernel information"
+msgstr "hiányzó rendszermag-információ"
 
 #: src/virterror.c:501
-msgid "missing source information for device"
-msgstr "missing source information for device"
+msgid "missing root device information"
+msgstr "hiányzó gyökéreszköz-információ"
 
 #: src/virterror.c:503
 #, c-format
-msgid "missing source information for device %s"
-msgstr "missing source information for device %s"
+msgid "missing root device information in %s"
+msgstr "hiányzó gyökéreszköz-információ itt: %s"
 
 #: src/virterror.c:507
-msgid "missing target information for device"
-msgstr "missing target information for device"
+msgid "missing source information for device"
+msgstr "hiányzó forrásinformáció az eszközhöz"
 
 #: src/virterror.c:509
 #, c-format
-msgid "missing target information for device %s"
-msgstr "missing target information for device %s"
+msgid "missing source information for device %s"
+msgstr "hiányzó forrásinformáció a(z) %s eszközhöz"
 
 #: src/virterror.c:513
-msgid "missing domain name information"
-msgstr "missing domain name information"
+msgid "missing target information for device"
+msgstr "hiányzó célinformáció az eszközhöz"
 
 #: src/virterror.c:515
 #, c-format
-msgid "missing domain name information in %s"
-msgstr "missing domain name information in %s"
+msgid "missing target information for device %s"
+msgstr "hiányzó célinformáció a(z) %s eszközhöz"
 
 #: src/virterror.c:519
-msgid "missing operating system information"
-msgstr "missing operating system information"
+msgid "missing domain name information"
+msgstr "hiányzó tartománynév-információ"
 
 #: src/virterror.c:521
 #, c-format
-msgid "missing operating system information for %s"
-msgstr "missing operating system information for %s"
+msgid "missing domain name information in %s"
+msgstr "hiányzó tartománynév-információ itt: %s"
 
 #: src/virterror.c:525
-msgid "missing devices information"
-msgstr "missing devices information"
+msgid "missing operating system information"
+msgstr "hiányzó operációsrendszer-információ"
 
 #: src/virterror.c:527
 #, c-format
-msgid "missing devices information for %s"
-msgstr "missing devices information for %s"
+msgid "missing operating system information for %s"
+msgstr "hiányzó operációsrendszer-információ ehhez: %s"
 
 #: src/virterror.c:531
-msgid "too many drivers registered"
-msgstr "too many drivers registered"
+msgid "missing devices information"
+msgstr "hiányzó eszközinformáció"
 
 #: src/virterror.c:533
 #, c-format
-msgid "too many drivers registered in %s"
-msgstr "too many drivers registered in %s"
+msgid "missing devices information for %s"
+msgstr "hiányzó eszközinformáció ehhez: %s"
 
 #: src/virterror.c:537
-msgid "library call failed, possibly not supported"
-msgstr "library call failed, possibly not supported"
+msgid "too many drivers registered"
+msgstr "túl sok meghajtóprogram van regisztrálva"
 
 #: src/virterror.c:539
 #, c-format
-msgid "library call %s failed, possibly not supported"
-msgstr "library call %s failed, possibly not supported"
+msgid "too many drivers registered in %s"
+msgstr "túl sok meghajtóprogram van regisztrálva itt: %s"
 
 #: src/virterror.c:543
-msgid "XML description not well formed or invalid"
-msgstr "XML description not well formed or invalid"
+msgid "library call failed, possibly not supported"
+msgstr "könyvtári hívás nem sikerült, valószínűleg nincs támogatva"
 
 #: src/virterror.c:545
 #, c-format
-msgid "XML description for %s is not well formed or invalid"
-msgstr "XML description for %s is not well formed or invalid"
+msgid "library call %s failed, possibly not supported"
+msgstr "%s könyvtári hívás nem sikerült, valószínűleg nincs támogatva"
 
 #: src/virterror.c:549
-msgid "this domain exists already"
-msgstr "this domain exists already"
+msgid "XML description not well formed or invalid"
+msgstr "az XML-leírás helytelenül formázott vagy érvénytelen"
 
 #: src/virterror.c:551
 #, c-format
-msgid "domain %s exists already"
-msgstr "domain %s exists already"
+msgid "XML description for %s is not well formed or invalid"
+msgstr "%s XML-leírása helytelenül formázott vagy érvénytelen"
 
 #: src/virterror.c:555
-msgid "operation forbidden for read only access"
-msgstr "operation forbidden for read only access"
+msgid "this domain exists already"
+msgstr "ez a tartomány már létezik"
 
 #: src/virterror.c:557
 #, c-format
-msgid "operation %s forbidden for read only access"
-msgstr "operation %s forbidden for read only access"
+msgid "domain %s exists already"
+msgstr "%s tartomány már létezik"
 
 #: src/virterror.c:561
-msgid "failed to open configuration file for reading"
-msgstr "failed to open configuration file for reading"
+msgid "operation forbidden for read only access"
+msgstr "művelet tiltott a csak olvasható hozzáférésnél"
 
 #: src/virterror.c:563
 #, c-format
-msgid "failed to open %s for reading"
-msgstr "failed to open %s for reading"
+msgid "operation %s forbidden for read only access"
+msgstr "a(z) %s művelet tiltott a csak olvasható hozzáférésnél"
 
 #: src/virterror.c:567
-msgid "failed to read configuration file"
-msgstr "failed to read configuration file"
+msgid "failed to open configuration file for reading"
+msgstr "nem sikerült olvasásra megnyitni a beállítási fájlt"
 
 #: src/virterror.c:569
 #, c-format
-msgid "failed to read configuration file %s"
-msgstr "failed to read configuration file %s"
+msgid "failed to open %s for reading"
+msgstr "nem sikerült olvasásra megnyitni ezt: %s"
 
 #: src/virterror.c:573
-msgid "failed to parse configuration file"
-msgstr "failed to parse configuration file"
+msgid "failed to read configuration file"
+msgstr "nem sikerült olvasni a beállítási fájlt"
 
 #: src/virterror.c:575
 #, c-format
-msgid "failed to parse configuration file %s"
-msgstr "failed to parse configuration file %s"
+msgid "failed to read configuration file %s"
+msgstr "nem sikerült olvasni a(z) %s beállítási fájlt"
 
 #: src/virterror.c:579
-msgid "configuration file syntax error"
-msgstr "configuration file syntax error"
+msgid "failed to parse configuration file"
+msgstr "nem sikerült értelmezni a beállítási fájlt"
 
 #: src/virterror.c:581
 #, c-format
-msgid "configuration file syntax error: %s"
-msgstr "configuration file syntax error: %s"
+msgid "failed to parse configuration file %s"
+msgstr "nem sikerült értelmezni a(z) %s beállítási fájlt"
 
 #: src/virterror.c:585
-msgid "failed to write configuration file"
-msgstr "failed to write configuration file"
+msgid "configuration file syntax error"
+msgstr "formai hiba a beállítási fájlban"
 
 #: src/virterror.c:587
 #, c-format
-msgid "failed to write configuration file: %s"
-msgstr "failed to write configuration file: %s"
+msgid "configuration file syntax error: %s"
+msgstr "formai hiba a beállítási fájlban: %s"
 
 #: src/virterror.c:591
-msgid "parser error"
-msgstr "parser error"
+msgid "failed to write configuration file"
+msgstr "a beállítási fájl írása nem sikerült"
+
+#: src/virterror.c:593
+#, c-format
+msgid "failed to write configuration file: %s"
+msgstr "a beállítási fájl írása nem sikerült: %s"
 
 #: src/virterror.c:597
-#, fuzzy
-msgid "invalid network pointer in"
-msgstr "invalid connection pointer in"
-
-#: src/virterror.c:599
-#, fuzzy, c-format
-msgid "invalid network pointer in %s"
-msgstr "invalid connection pointer in %s"
+msgid "parser error"
+msgstr "feldolgozási hiba"
 
 #: src/virterror.c:603
-#, fuzzy
-msgid "this network exists already"
-msgstr "this domain exists already"
+msgid "invalid network pointer in"
+msgstr "érvénytelen hálózati mutató ebben:"
 
 #: src/virterror.c:605
-#, fuzzy, c-format
-msgid "network %s exists already"
-msgstr "domain %s exists already"
+#, c-format
+msgid "invalid network pointer in %s"
+msgstr "érvénytelen hálózati mutató ebben: %s"
 
 #: src/virterror.c:609
-#, fuzzy
+msgid "this network exists already"
+msgstr "ez a hálózat már létezik"
+
+#: src/virterror.c:611
+#, c-format
+msgid "network %s exists already"
+msgstr "%s hálózat már létezik"
+
+#: src/virterror.c:615
 msgid "system call error"
-msgstr "internal error"
+msgstr "rendszerhívási hiba"
+
+#: src/virterror.c:621
+#, fuzzy
+msgid "RPC error"
+msgstr "hiba"
+
+#: src/virterror.c:627
+#, fuzzy
+msgid "GNUTLS call error"
+msgstr "rendszerhívási hiba"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
-msgstr "copying node content"
+msgstr "csomóponttartalom másolása"
 
 #: src/xmlrpc.c:163
 msgid "allocate value array"
-msgstr "allocate value array"
+msgstr "értéktömb lefoglalása"
 
 #: src/xmlrpc.c:196
 msgid "unexpected dict node"
-msgstr "unexpected dict node"
+msgstr "váratlan \"dict\" csomópont"
 
 #: src/xmlrpc.c:268
 msgid "unexpected value node"
-msgstr "unexpected value node"
+msgstr "váratlan érték-csomópont"
 
 #: src/xmlrpc.c:431
 msgid "send request"
-msgstr "send request"
+msgstr "kérés küldése"
 
 #: src/xmlrpc.c:437
 msgid "unexpected mime type"
-msgstr "unexpected mime type"
+msgstr "váratlan MIME-típus"
 
 #: src/xmlrpc.c:444
 msgid "allocate response"
-msgstr "allocate response"
+msgstr "válasz lefoglalása"
 
 #: src/xmlrpc.c:452 src/xmlrpc.c:514
 msgid "read response"
-msgstr "read response"
+msgstr "válasz olvasása"
 
 #: src/xmlrpc.c:484 src/xml.c:261
 msgid "allocate string array"
-msgstr "allocate string array"
+msgstr "szövegtömb lefoglalása"
 
 #: src/xmlrpc.c:606
 msgid "parse server response failed"
-msgstr "parse server response failed"
+msgstr "a kiszolgáló válasza nem értelmezhető"
 
 #: src/xmlrpc.c:670
 msgid "allocate new context"
-msgstr "allocate new context"
+msgstr "új környezet lefoglalása"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:896 src/test.c:926 src/test.c:950
-#: src/test.c:975 src/xend_internal.c:1863 src/xend_internal.c:2709
-#: src/xend_internal.c:2958 src/xs_internal.c:648 src/proxy_internal.c:832
-#: src/proxy_internal.c:879 src/proxy_internal.c:930
+#: src/hash.c:770 src/hash.c:775 src/test.c:904 src/test.c:934 src/test.c:958
+#: src/test.c:983 src/xend_internal.c:1882 src/xend_internal.c:2731
+#: src/xend_internal.c:2980 src/xs_internal.c:651 src/proxy_internal.c:834
+#: src/proxy_internal.c:881 src/proxy_internal.c:932
 msgid "allocating domain"
-msgstr "allocating domain"
+msgstr "tartomány lefoglalása"
 
 #: src/hash.c:786
 msgid "failed to add domain to connection hash table"
-msgstr "failed to add domain to connection hash table"
+msgstr "nem sikerült hozzáadni a tartományt a csatlakozások hasítótáblázatához"
 
 #: src/hash.c:838
 msgid "domain missing from connection hash table"
-msgstr "domain missing from connection hash table"
+msgstr "hiányzó tartomány a csatlakozások hasítótáblázatánál"
 
-#: src/hash.c:952 src/hash.c:957
-#, fuzzy
+#: src/hash.c:948 src/hash.c:953
 msgid "allocating network"
-msgstr "allocating node"
+msgstr "hálózat lefoglalása"
 
-#: src/hash.c:967
-#, fuzzy
+#: src/hash.c:963
 msgid "failed to add network to connection hash table"
-msgstr "failed to add domain to connection hash table"
+msgstr "hálózat hozzáadása a csatlakozások hasítótáblázatához nem sikerült"
 
-#: src/hash.c:1019
-#, fuzzy
+#: src/hash.c:1015
 msgid "network missing from connection hash table"
-msgstr "domain missing from connection hash table"
+msgstr "hiányzó hálózat a csatlakozások hasítótáblázatánál"
 
-#: src/test.c:281 src/test.c:468 src/test.c:1099 src/test.c:1133
-#: src/test.c:1187
+#: src/test.c:284 src/test.c:471 src/test.c:1107 src/test.c:1141
+#: src/test.c:1195
 msgid "getting time of day"
-msgstr "getting time of day"
+msgstr "aktuális idő beolvasása"
 
-#: src/test.c:287 src/test.c:422 src/test.c:447 src/test.c:1393
+#: src/test.c:290 src/test.c:425 src/test.c:450 src/test.c:1401
 msgid "domain"
-msgstr "domain"
+msgstr "tartomány"
 
-#: src/test.c:293 src/test.c:551
+#: src/test.c:296 src/test.c:554
 msgid "creating xpath context"
-msgstr "creating xpath context"
+msgstr "xpath-környezet létrehozása"
 
-#: src/test.c:299
+#: src/test.c:302
 msgid "domain name"
-msgstr "domain name"
+msgstr "tartománynév"
 
-#: src/test.c:305 src/test.c:310
+#: src/test.c:308 src/test.c:313
 msgid "domain uuid"
-msgstr "domain uuid"
+msgstr "tartomány - uuid"
 
-#: src/test.c:318
+#: src/test.c:321
 msgid "domain memory"
-msgstr "domain memory"
+msgstr "tartomány - memória"
 
-#: src/test.c:327
-#, fuzzy
+#: src/test.c:330
 msgid "domain current memory"
-msgstr "domain memory"
+msgstr "tartomány - jelenlegi memória"
 
-#: src/test.c:337
+#: src/test.c:340
 msgid "domain vcpus"
-msgstr "domain vcpus"
+msgstr "tartomány - VCPU-k"
 
-#: src/test.c:346
+#: src/test.c:349
 msgid "domain reboot behaviour"
-msgstr "domain reboot behaviour"
+msgstr "tartomány - újraindítási viselkedés"
 
-#: src/test.c:356
+#: src/test.c:359
 msgid "domain poweroff behaviour"
-msgstr "domain poweroff behaviour"
+msgstr "tartomány - kikapcsolási viselkedés"
 
-#: src/test.c:366
+#: src/test.c:369
 msgid "domain crash behaviour"
-msgstr "domain crash behaviour"
+msgstr "tartomány - összeomlási viselkedés"
 
-#: src/test.c:440
+#: src/test.c:443
 msgid "load domain definition file"
-msgstr "load domain definition file"
+msgstr "tartomány-definíciós fájl betöltése"
 
-#: src/test.c:530
+#: src/test.c:533
 msgid "loading host definition file"
-msgstr "loading host definition file"
+msgstr "gépdefiníciós fájl betöltése"
 
-#: src/test.c:537
+#: src/test.c:540
 msgid "host"
-msgstr "host"
+msgstr "gép"
 
-#: src/test.c:545
+#: src/test.c:548
 msgid "node"
-msgstr "node"
+msgstr "csomópont"
 
-#: src/test.c:565
+#: src/test.c:568
 msgid "node cpu numa nodes"
-msgstr "node cpu numa nodes"
+msgstr "csomópont - CPU - NUMA-csomópontok"
 
-#: src/test.c:573
+#: src/test.c:576
 msgid "node cpu sockets"
-msgstr "node cpu sockets"
+msgstr "csomópont - CPU-foglalatok"
 
-#: src/test.c:581
+#: src/test.c:584
 msgid "node cpu cores"
-msgstr "node cpu cores"
+msgstr "csomópont - CPU-magok"
 
-#: src/test.c:589
+#: src/test.c:592
 msgid "node cpu threads"
-msgstr "node cpu threads"
+msgstr "csomópont - CPU-szálak"
 
-#: src/test.c:600
+#: src/test.c:603
 msgid "node active cpu"
-msgstr "node active cpu"
+msgstr "csomópont - aktív CPU"
 
-#: src/test.c:607
+#: src/test.c:610
 msgid "node cpu mhz"
-msgstr "node cpu mhz"
+msgstr "csomópont - CPU-MHz"
 
-#: src/test.c:622
+#: src/test.c:625
 msgid "node memory"
-msgstr "node memory"
+msgstr "csomópont - memória"
 
-#: src/test.c:628
+#: src/test.c:631
 msgid "node domain list"
-msgstr "node domain list"
+msgstr "csomópont - tartománylista"
 
-#: src/test.c:638
+#: src/test.c:641
 msgid "resolving domain filename"
-msgstr "resolving domain filename"
+msgstr "tartomány-fájlnév feloldása"
 
-#: src/test.c:676
+#: src/test.c:679
 msgid "allocating node"
-msgstr "allocating node"
+msgstr "csomópont lefoglalása"
 
-#: src/test.c:734
-msgid "too many connections"
-msgstr "too many connections"
-
-#: src/test.c:881
-msgid "too many domains"
-msgstr "too many domains"
-
-#: src/test.c:1425
-#, fuzzy
-msgid "Domain is already running"
-msgstr "Domain is already active"
-
-#: src/test.c:1452
-msgid "Domain is still running"
+#: src/test.c:737
+msgid "testOpen: supply a path or use test:///default"
 msgstr ""
+
+#: src/test.c:742
+msgid "too many connections"
+msgstr "túl sok csatlakozás"
+
+#: src/test.c:749
+#, fuzzy
+msgid "allocating private data"
+msgstr "értéktömb lefoglalása"
+
+#: src/test.c:889
+msgid "too many domains"
+msgstr "túl sok tartomány"
+
+#: src/test.c:1433
+msgid "Domain is already running"
+msgstr "A tartomány már fut"
+
+#: src/test.c:1460
+msgid "Domain is still running"
+msgstr "A tartomány még fut"
 
 #: src/xml.c:295
 msgid "growing buffer"
-msgstr "growing buffer"
+msgstr "növekvő puffer"
 
-#: src/xml.c:347 src/xend_internal.c:1508 src/xend_internal.c:1527
+#: src/xml.c:347 src/xend_internal.c:599 src/xend_internal.c:815
+#: src/xend_internal.c:1524 src/xend_internal.c:1543
 msgid "allocate new buffer"
-msgstr "allocate new buffer"
+msgstr "új puffer lefoglalása"
 
 #: src/xml.c:351
 msgid "allocate buffer content"
-msgstr "allocate buffer content"
+msgstr "tartalom puffer lefoglalása"
 
 #: src/sexpr.c:59
 msgid "failed to allocate a node"
-msgstr "failed to allocate a node"
+msgstr "csomópont lefoglalása nem sikerült"
 
 #: src/sexpr.c:352 src/sexpr.c:367
 msgid "failed to copy a string"
-msgstr "failed to copy a string"
+msgstr "egy szöveg másolása nem sikerült"
 
-#: src/xend_internal.c:282 src/xend_internal.c:285
+#: src/xend_internal.c:285 src/xend_internal.c:288
 msgid "failed to read from Xen Daemon"
-msgstr "failed to read from Xen Daemon"
+msgstr "nem sikerült olvasni a Xen-szolgáltatásból"
 
-#: src/xend_internal.c:1006
+#: src/xend_internal.c:1022
 msgid "failed to urlencode the create S-Expr"
-msgstr "failed to urlencode the create S-Expr"
+msgstr "nem sikerült elvégezni az urlencode-t a létrehozott S-kifejezésen"
 
-#: src/xend_internal.c:1047
+#: src/xend_internal.c:1063
 msgid "domain information incomplete, missing domid"
-msgstr "domain information incomplete, missing domid"
+msgstr "a tartományinformáció nem teljes - hiányzik a domid"
 
-#: src/xend_internal.c:1053
+#: src/xend_internal.c:1069
 msgid "domain information incorrect domid not numeric"
-msgstr "domain information incorrect domid not numeric"
+msgstr "a tartományinformáció helytelen - a domid nem numerikus"
 
-#: src/xend_internal.c:1061 src/xend_internal.c:1110
+#: src/xend_internal.c:1077 src/xend_internal.c:1126
 msgid "domain information incomplete, missing uuid"
-msgstr "domain information incomplete, missing uuid"
+msgstr "a tartományinformáció nem teljes - hiányzik az uuid"
 
-#: src/xend_internal.c:1101 src/xend_internal.c:1376
+#: src/xend_internal.c:1117 src/xend_internal.c:1392
 msgid "domain information incomplete, missing name"
-msgstr "domain information incomplete, missing name"
+msgstr "a tartományinformáció nem teljes - hiányzik a név"
 
-#: src/xend_internal.c:1276 src/xend_internal.c:1307
-#, fuzzy
+#: src/xend_internal.c:1292 src/xend_internal.c:1323
 msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "domain information incomplete, missing kernel"
+msgstr ""
+"a tartományinformáció nem teljes - hiányzik a rendszermag és a rendszerindító"
 
-#: src/xend_internal.c:1364
-#, fuzzy
+#: src/xend_internal.c:1380
 msgid "domain information incomplete, missing id"
-msgstr "domain information incomplete, missing uuid"
+msgstr "a tartományinformáció nem teljes - hiányzik az id"
 
-#: src/xend_internal.c:1477
+#: src/xend_internal.c:1493
 msgid "domain information incomplete, vbd has no dev"
-msgstr "domain information incomplete, vbd has no dev"
+msgstr "a tartományinformáció nem teljes - vbd nem rendelkezik eszközzel (dev)"
 
-#: src/xend_internal.c:1492
+#: src/xend_internal.c:1508
 msgid "domain information incomplete, vbd has no src"
-msgstr "domain information incomplete, vbd has no src"
+msgstr "a tartományinformáció nem teljes - vbd nem rendelkezik forrással"
 
-#: src/xend_internal.c:1501
+#: src/xend_internal.c:1517
 msgid "cannot parse vbd filename, missing driver name"
-msgstr "cannot parse vbd filename, missing driver name"
+msgstr "nem értelmezhető a vbd-fájlnév, hiányzik a meghajtóprogram neve"
 
-#: src/xend_internal.c:1520
+#: src/xend_internal.c:1536
 msgid "cannot parse vbd filename, missing driver type"
-msgstr "cannot parse vbd filename, missing driver type"
+msgstr "nem értelmezhető a vbd-fájlnév, hiányzik a meghajtóprogram típusa"
 
-#: src/xend_internal.c:1882
+#: src/xend_internal.c:1901
 msgid "failed to parse Xend domain information"
-msgstr "failed to parse Xend domain information"
+msgstr "Xend-tartományinformáció értelmezése nem sikerült"
 
-#: src/xend_internal.c:3145
-#, fuzzy, c-format
+#: src/xend_internal.c:3170
+#, c-format
 msgid "Failed to create inactive domain %s\n"
-msgstr "Failed to create domain %s\n"
+msgstr "%s inaktív tartomány létrehozása nem sikerült\n"
 
-#: src/virsh.c:269
+#: src/virsh.c:271
 msgid "print help"
-msgstr "print help"
+msgstr "segítség kiírása"
 
-#: src/virsh.c:270
+#: src/virsh.c:272
 msgid "Prints global help or command specific help."
-msgstr "Prints global help or command specific help."
+msgstr "Globális segítség kiírása vagy parancs specifikus segítség."
 
-#: src/virsh.c:288
+#: src/virsh.c:290
 msgid ""
 "Commands:\n"
 "\n"
 msgstr ""
-"Commands:\n"
+"Parancsok:\n"
 "\n"
-
-#: src/virsh.c:302
-#, fuzzy
-msgid "autostart a domain"
-msgstr "Start a domain."
 
 #: src/virsh.c:304
+msgid "autostart a domain"
+msgstr "egy tartomány automatikus indítása"
+
+#: src/virsh.c:306
 msgid "Configure a domain to be automatically started at boot."
 msgstr ""
+"Beállít egy tartományt arra, hogy rendszerindításkor automatikusan "
+"elinduljon."
 
-#: src/virsh.c:309 src/virsh.c:409 src/virsh.c:595 src/virsh.c:633
-#: src/virsh.c:864 src/virsh.c:946 src/virsh.c:991 src/virsh.c:1030
-#: src/virsh.c:1069 src/virsh.c:1108 src/virsh.c:1147 src/virsh.c:1224
-#: src/virsh.c:1307 src/virsh.c:1397 src/virsh.c:1453 src/virsh.c:1497
-#: src/virsh.c:1602 src/virsh.c:2338
+#: src/virsh.c:311 src/virsh.c:411 src/virsh.c:597 src/virsh.c:635
+#: src/virsh.c:910 src/virsh.c:954 src/virsh.c:1115 src/virsh.c:1160
+#: src/virsh.c:1199 src/virsh.c:1238 src/virsh.c:1277 src/virsh.c:1316
+#: src/virsh.c:1393 src/virsh.c:1476 src/virsh.c:1566 src/virsh.c:1622
+#: src/virsh.c:1666 src/virsh.c:1771 src/virsh.c:2491 src/virsh.c:2570
+#: src/virsh.c:2624
 msgid "domain name, id or uuid"
-msgstr "domain name, id or uuid"
+msgstr "tartománynév, azonosító vagy uuid"
 
-#: src/virsh.c:310 src/virsh.c:1743
+#: src/virsh.c:312 src/virsh.c:1912
 msgid "disable autostarting"
-msgstr ""
+msgstr "automatikus indítás letiltása"
 
-#: src/virsh.c:331
-#, fuzzy, c-format
+#: src/virsh.c:333
+#, c-format
 msgid "Failed to mark domain %s as autostarted"
-msgstr "Failed to save domain %s to %s"
+msgstr "Nem sikerült megjelölni a(z) %s tartományt automatikus indításra"
 
-#: src/virsh.c:334
-#, fuzzy, c-format
+#: src/virsh.c:336
+#, c-format
 msgid "Failed to unmark domain %s as autostarted"
-msgstr "Failed to save domain %s to %s"
-
-#: src/virsh.c:341
-#, fuzzy, c-format
-msgid "Domain %s marked as autostarted\n"
-msgstr "Domain %s started\n"
+msgstr ""
+"Nem sikerült törölni a(z) %s tartomány automatikus indításra való jelölését"
 
 #: src/virsh.c:343
-#, fuzzy, c-format
-msgid "Domain %s unmarked as autostarted\n"
-msgstr "Domain %s started\n"
+#, c-format
+msgid "Domain %s marked as autostarted\n"
+msgstr "%s tartomány megjelölve automatikus indításra\n"
 
-#: src/virsh.c:353
-msgid "(re)connect to hypervisor"
-msgstr "(re)connect to hypervisor"
+#: src/virsh.c:345
+#, c-format
+msgid "Domain %s unmarked as autostarted\n"
+msgstr "%s tartomány automatikus indításra való jelölése törölve\n"
 
 #: src/virsh.c:355
+msgid "(re)connect to hypervisor"
+msgstr "(újra) csatlakozás a felügyelőhöz"
+
+#: src/virsh.c:357
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr ""
-"Connect to local hypervisor. This is built-in command after shell start up."
+"Csatlakozás a helyi felügyelőhöz. Ez egy beépített parancs a "
+"parancsértelmező indítása után."
 
-#: src/virsh.c:360
+#: src/virsh.c:362
 msgid "hypervisor connection URI"
-msgstr "hypervisor connection URI"
+msgstr "felügyelő csatlakozási URI"
 
-#: src/virsh.c:361
+#: src/virsh.c:363
 msgid "read-only connection"
-msgstr "read-only connection"
+msgstr "csak olvasható csatlakozás"
 
-#: src/virsh.c:373
+#: src/virsh.c:375
 msgid "Failed to disconnect from the hypervisor"
-msgstr "Failed to disconnect from the hypervisor"
+msgstr "Szétcsatlakozás a felügyelőtől nem sikerült"
 
-#: src/virsh.c:392
+#: src/virsh.c:394
 msgid "Failed to connect to the hypervisor"
-msgstr "Failed to connect to the hypervisor"
-
-#: src/virsh.c:402
-msgid "connect to the guest console"
-msgstr ""
+msgstr "Csatlakozás a felügyelőhöz nem sikerült"
 
 #: src/virsh.c:404
+msgid "connect to the guest console"
+msgstr "kapcsolódás a vendégrendszer konzoljához"
+
+#: src/virsh.c:406
 msgid "Connect the virtual serial console for the guest"
-msgstr ""
+msgstr "Csatlakozás a vendégrendszer virtuális soros konzoljához"
 
-#: src/virsh.c:449
+#: src/virsh.c:451
 msgid "No console available for domain\n"
-msgstr ""
+msgstr "Nincs elérhető konzol a tartományhoz\n"
 
-#: src/virsh.c:467
+#: src/virsh.c:469
 msgid "list domains"
-msgstr "list domains"
+msgstr "tartományok listázása"
 
-#: src/virsh.c:468
+#: src/virsh.c:470
 msgid "Returns list of domains."
-msgstr "Returns list of domains."
+msgstr "Megadja a tartományok listáját."
 
-#: src/virsh.c:473
+#: src/virsh.c:475
 msgid "list inactive domains"
-msgstr "list inactive domains"
+msgstr "inaktív tartományok listázása"
 
-#: src/virsh.c:474
+#: src/virsh.c:476
 msgid "list inactive & active domains"
-msgstr "list inactive & active domains"
+msgstr "inaktív és aktív tartományok listázása"
 
-#: src/virsh.c:496 src/virsh.c:503
+#: src/virsh.c:498 src/virsh.c:505
 msgid "Failed to list active domains"
-msgstr "Failed to list active domains"
+msgstr "Aktív tartományok listázása nem sikerült"
 
-#: src/virsh.c:514 src/virsh.c:523
+#: src/virsh.c:516 src/virsh.c:525
 msgid "Failed to list inactive domains"
-msgstr "Failed to list inactive domains"
+msgstr "Inaktív tartományok listázása nem sikerült"
 
-#: src/virsh.c:533
+#: src/virsh.c:535
 msgid "Id"
-msgstr "Id"
+msgstr "Azonosító"
 
-#: src/virsh.c:533 src/virsh.c:2044
+#: src/virsh.c:535 src/virsh.c:2197
 msgid "Name"
-msgstr "Name"
+msgstr "Név"
 
-#: src/virsh.c:533 src/virsh.c:2044
+#: src/virsh.c:535 src/virsh.c:2197
 msgid "State"
-msgstr "State"
+msgstr "Állapot"
 
-#: src/virsh.c:546 src/virsh.c:568 src/virsh.c:3063 src/virsh.c:3079
+#: src/virsh.c:548 src/virsh.c:570 src/virsh.c:3328 src/virsh.c:3344
 msgid "no state"
-msgstr "no state"
+msgstr "nincs állapot"
 
-#: src/virsh.c:589
+#: src/virsh.c:591
 msgid "domain state"
-msgstr "domain state"
+msgstr "tartományállapot"
 
-#: src/virsh.c:590
+#: src/virsh.c:592
 msgid "Returns state about a running domain."
-msgstr "Returns state about a running domain."
+msgstr "Megadja egy futó tartomány állapotát."
 
-#: src/virsh.c:627
+#: src/virsh.c:629
 msgid "suspend a domain"
-msgstr "suspend a domain"
+msgstr "tartomány felfüggesztése"
 
-#: src/virsh.c:628
+#: src/virsh.c:630
 msgid "Suspend a running domain."
-msgstr "Suspend a running domain."
-
-#: src/virsh.c:651
-#, c-format
-msgid "Domain %s suspended\n"
-msgstr "Domain %s suspended\n"
+msgstr "Egy futó tartomány felfüggesztése."
 
 #: src/virsh.c:653
 #, c-format
+msgid "Domain %s suspended\n"
+msgstr "%s tartomány felfüggesztve\n"
+
+#: src/virsh.c:655
+#, c-format
 msgid "Failed to suspend domain %s"
-msgstr "Failed to suspend domain %s"
+msgstr "%s tartomány felfüggesztése nem sikerült"
 
-#: src/virsh.c:666
+#: src/virsh.c:668
 msgid "create a domain from an XML file"
-msgstr "create a domain from an XML file"
+msgstr "egy tartomány létrehozása egy XML-fájlból"
 
-#: src/virsh.c:667
+#: src/virsh.c:669
 msgid "Create a domain."
-msgstr "Create a domain."
+msgstr "Egy tartomány létrehozása."
 
-#: src/virsh.c:672
+#: src/virsh.c:674
 msgid "file conatining an XML domain description"
-msgstr "file conatining an XML domain description"
+msgstr "egy XML-tartományleírást tartalmazó fájl"
 
-#: src/virsh.c:695 src/virsh.c:700 src/virsh.c:750 src/virsh.c:755
-#: src/virsh.c:1815 src/virsh.c:1820 src/virsh.c:1871 src/virsh.c:1876
-#, c-format
-msgid "Failed to read description file %s"
-msgstr "Failed to read description file %s"
+#: src/virsh.c:689
+#, fuzzy, c-format
+msgid "Failed to open '%s': %s"
+msgstr "%s tartomány felfüggesztése nem sikerült"
 
-#: src/virsh.c:707
-#, c-format
-msgid "Domain %s created from %s\n"
-msgstr "Domain %s created from %s\n"
-
-#: src/virsh.c:710
-#, c-format
-msgid "Failed to create domain from %s"
-msgstr "Failed to create domain from %s"
-
-#: src/virsh.c:721
-msgid "define (but don't start) a domain from an XML file"
-msgstr "define (but don't start) a domain from an XML file"
-
-#: src/virsh.c:722
-msgid "Define a domain."
-msgstr "Define a domain."
+#: src/virsh.c:709
+#, fuzzy, c-format
+msgid "Failed to open '%s': read: %s"
+msgstr "nem sikerült olvasásra megnyitni ezt: %s"
 
 #: src/virsh.c:727
-#, fuzzy
-msgid "file containing an XML domain description"
-msgstr "file conatining an XML domain description"
+#, fuzzy, c-format
+msgid "Error allocating memory: %s"
+msgstr "hálózat lefoglalása"
 
-#: src/virsh.c:762
+#: src/virsh.c:761
 #, c-format
-msgid "Domain %s defined from %s\n"
-msgstr "Domain %s defined from %s\n"
+msgid "Domain %s created from %s\n"
+msgstr "%s tartomány létrehozva ebből: %s\n"
 
-#: src/virsh.c:765
+#: src/virsh.c:764
 #, c-format
-msgid "Failed to define domain from %s"
-msgstr "Failed to define domain from %s"
+msgid "Failed to create domain from %s"
+msgstr "Nem sikerült létrehozni tartományt ebből: %s"
+
+#: src/virsh.c:775
+msgid "define (but don't start) a domain from an XML file"
+msgstr "egy tartomány definiálása (de el nem indítása) egy XML-fájlból"
 
 #: src/virsh.c:776
+msgid "Define a domain."
+msgstr "Egy tartomány megadása."
+
+#: src/virsh.c:781
+msgid "file containing an XML domain description"
+msgstr "egy XML-tartományleírást tartalmazó fájl"
+
+#: src/virsh.c:808
+#, c-format
+msgid "Domain %s defined from %s\n"
+msgstr "A(z) %s tartomány definiálva lett ebből: %s\n"
+
+#: src/virsh.c:811
+#, c-format
+msgid "Failed to define domain from %s"
+msgstr "Nem sikerült definiálni a tartományt ebből: %s"
+
+#: src/virsh.c:822
 msgid "undefine an inactive domain"
-msgstr "undefine an inactive domain"
+msgstr "egy inaktív tartomány definíciójának eltávolítása"
 
-#: src/virsh.c:777
+#: src/virsh.c:823
 msgid "Undefine the configuration for an inactive domain."
-msgstr "Undefine the configuration for an inactive domain."
+msgstr "A konfiguráció definíciójának eltávolítása egy inaktív tartománynál."
 
-#: src/virsh.c:782 src/virsh.c:1671
+#: src/virsh.c:828 src/virsh.c:1840
 msgid "domain name or uuid"
-msgstr "domain name or uuid"
-
-#: src/virsh.c:800
-#, c-format
-msgid "Domain %s has been undefined\n"
-msgstr "Domain %s has been undefined\n"
-
-#: src/virsh.c:802
-#, c-format
-msgid "Failed to undefine domain %s"
-msgstr "Failed to undefine domain %s"
-
-#: src/virsh.c:815
-msgid "start a (previously defined) inactive domain"
-msgstr "start a (previously defined) inactive domain"
-
-#: src/virsh.c:816
-msgid "Start a domain."
-msgstr "Start a domain."
-
-#: src/virsh.c:821
-msgid "name of the inactive domain"
-msgstr "name of the inactive domain"
-
-#: src/virsh.c:838
-msgid "Domain is already active"
-msgstr "Domain is already active"
-
-#: src/virsh.c:843
-#, c-format
-msgid "Domain %s started\n"
-msgstr "Domain %s started\n"
+msgstr "tartománynév vagy uuid"
 
 #: src/virsh.c:846
 #, c-format
-msgid "Failed to start domain %s"
-msgstr "Failed to start domain %s"
+msgid "Domain %s has been undefined\n"
+msgstr "A(z) %s tartomány definíciója el lett távolítva\n"
 
-#: src/virsh.c:858
-msgid "save a domain state to a file"
-msgstr "save a domain state to a file"
-
-#: src/virsh.c:859
-msgid "Save a running domain."
-msgstr "Save a running domain."
-
-#: src/virsh.c:865
-msgid "where to save the data"
-msgstr "where to save the data"
-
-#: src/virsh.c:887
+#: src/virsh.c:848
 #, c-format
-msgid "Domain %s saved to %s\n"
-msgstr "Domain %s saved to %s\n"
+msgid "Failed to undefine domain %s"
+msgstr "Nem sikerült eltávolítani a(z) %s tartomány definícióját"
+
+#: src/virsh.c:861
+msgid "start a (previously defined) inactive domain"
+msgstr "egy (előzőleg definiált) inaktív tartomány indítása"
+
+#: src/virsh.c:862
+msgid "Start a domain."
+msgstr "Egy tartomány indítása."
+
+#: src/virsh.c:867
+msgid "name of the inactive domain"
+msgstr "az inaktív tartomány neve"
+
+#: src/virsh.c:884
+msgid "Domain is already active"
+msgstr "A tartomány már aktív"
 
 #: src/virsh.c:889
 #, c-format
+msgid "Domain %s started\n"
+msgstr "%s tartomány elindítva\n"
+
+#: src/virsh.c:892
+#, c-format
+msgid "Failed to start domain %s"
+msgstr "%s tartomány indítása nem sikerült"
+
+#: src/virsh.c:904
+msgid "save a domain state to a file"
+msgstr "egy tartományállapot mentése egy fájlba"
+
+#: src/virsh.c:905
+msgid "Save a running domain."
+msgstr "Egy futó tartomány mentése."
+
+#: src/virsh.c:911
+msgid "where to save the data"
+msgstr "hova legyen mentve az adat"
+
+#: src/virsh.c:933
+#, c-format
+msgid "Domain %s saved to %s\n"
+msgstr "%s tartomány elmentve ide: %s\n"
+
+#: src/virsh.c:935
+#, c-format
 msgid "Failed to save domain %s to %s"
-msgstr "Failed to save domain %s to %s"
+msgstr "Nem sikerült menteni a(z) %s tartományt ide: %s"
 
-#: src/virsh.c:902
-msgid "restore a domain from a saved state in a file"
-msgstr "restore a domain from a saved state in a file"
+#: src/virsh.c:948
+msgid "show/set scheduler parameters"
+msgstr ""
 
-#: src/virsh.c:903
-msgid "Restore a domain."
-msgstr "Restore a domain."
+#: src/virsh.c:949
+msgid "Show/Set scheduler parameters."
+msgstr ""
 
-#: src/virsh.c:908
-msgid "the state to restore"
-msgstr "the state to restore"
+#: src/virsh.c:955
+msgid "weight for XEN_CREDIT"
+msgstr ""
 
-#: src/virsh.c:927
-#, c-format
-msgid "Domain restored from %s\n"
-msgstr "Domain restored from %s\n"
+#: src/virsh.c:956
+msgid "cap for XEN_CREDIT"
+msgstr ""
 
-#: src/virsh.c:929
-#, c-format
-msgid "Failed to restore domain from %s"
-msgstr "Failed to restore domain from %s"
-
-#: src/virsh.c:940
-msgid "dump the core of a domain to a file for analysis"
-msgstr "dump the core of a domain to a file for analysis"
-
-#: src/virsh.c:941
-msgid "Core dump a domain."
-msgstr "Core dump a domain."
-
-#: src/virsh.c:947
-msgid "where to dump the core"
-msgstr "where to dump the core"
-
-#: src/virsh.c:969
-#, c-format
-msgid "Domain %s dumpd to %s\n"
-msgstr "Domain %s dumpd to %s\n"
-
-#: src/virsh.c:971
-#, c-format
-msgid "Failed to core dump domain %s to %s"
-msgstr "Failed to core dump domain %s to %s"
-
-#: src/virsh.c:985
-msgid "resume a domain"
-msgstr "resume a domain"
-
-#: src/virsh.c:986
-msgid "Resume a previously suspended domain."
-msgstr "Resume a previously suspended domain."
-
-#: src/virsh.c:1009
-#, c-format
-msgid "Domain %s resumed\n"
-msgstr "Domain %s resumed\n"
-
-#: src/virsh.c:1011
-#, c-format
-msgid "Failed to resume domain %s"
-msgstr "Failed to resume domain %s"
+#: src/virsh.c:1020 src/virsh.c:1024
+msgid "Scheduler:"
+msgstr ""
 
 #: src/virsh.c:1024
+#, fuzzy
+msgid "Unknown"
+msgstr "ismeretlen gép"
+
+#: src/virsh.c:1071
+msgid "restore a domain from a saved state in a file"
+msgstr "egy tartomány visszaállítása egy fájlba mentett állapotból"
+
+#: src/virsh.c:1072
+msgid "Restore a domain."
+msgstr "Egy tartomány visszaállítása."
+
+#: src/virsh.c:1077
+msgid "the state to restore"
+msgstr "állapot visszaállítása"
+
+#: src/virsh.c:1096
+#, c-format
+msgid "Domain restored from %s\n"
+msgstr "A tartomány vissza lett állítva ebből: %s\n"
+
+#: src/virsh.c:1098
+#, c-format
+msgid "Failed to restore domain from %s"
+msgstr "Nem sikerült visszaállítani a tartományt ebből: %s"
+
+#: src/virsh.c:1109
+msgid "dump the core of a domain to a file for analysis"
+msgstr "egy tartomány magjának (core) kimentése fájlba elemzés céljából"
+
+#: src/virsh.c:1110
+msgid "Core dump a domain."
+msgstr "Egy tartomány magjának (core) kimentése."
+
+#: src/virsh.c:1116
+msgid "where to dump the core"
+msgstr "hova íródjon ki a mag-kivonat"
+
+#: src/virsh.c:1138
+#, c-format
+msgid "Domain %s dumpd to %s\n"
+msgstr "A(z) %s tartomány kivonata kimentve ide: %s\n"
+
+#: src/virsh.c:1140
+#, c-format
+msgid "Failed to core dump domain %s to %s"
+msgstr "Nem sikerült kimenteni a(z) %s tartomány mag-kivonatát ide: %s"
+
+#: src/virsh.c:1154
+msgid "resume a domain"
+msgstr "egy tartomány felélesztése"
+
+#: src/virsh.c:1155
+msgid "Resume a previously suspended domain."
+msgstr "Előzőleg felfüggesztett tartomány felélesztése."
+
+#: src/virsh.c:1178
+#, c-format
+msgid "Domain %s resumed\n"
+msgstr "%s tartomány felélesztve\n"
+
+#: src/virsh.c:1180
+#, c-format
+msgid "Failed to resume domain %s"
+msgstr "%s tartomány felélesztése nem sikerült"
+
+#: src/virsh.c:1193
 msgid "gracefully shutdown a domain"
-msgstr "gracefully shutdown a domain"
+msgstr "egy tartomány elegáns leállítása"
 
-#: src/virsh.c:1025
+#: src/virsh.c:1194
 msgid "Run shutdown in the target domain."
-msgstr "Run shutdown in the target domain."
+msgstr "Leállítás futtatása a céltartományban."
 
-#: src/virsh.c:1048
+#: src/virsh.c:1217
 #, c-format
 msgid "Domain %s is being shutdown\n"
-msgstr "Domain %s is being shutdown\n"
+msgstr "%s tartomány leállítása folyamatban\n"
 
-#: src/virsh.c:1050
+#: src/virsh.c:1219
 #, c-format
 msgid "Failed to shutdown domain %s"
-msgstr "Failed to shutdown domain %s"
+msgstr "%s tartomány leállítása nem sikerült"
 
-#: src/virsh.c:1063
+#: src/virsh.c:1232
 msgid "reboot a domain"
-msgstr "reboot a domain"
+msgstr "egy tartomány újraindítása"
 
-#: src/virsh.c:1064
+#: src/virsh.c:1233
 msgid "Run a reboot command in the target domain."
-msgstr "Run a reboot command in the target domain."
+msgstr "Egy újraindítás parancs futtatása a céltartományban."
 
-#: src/virsh.c:1087
+#: src/virsh.c:1256
 #, c-format
 msgid "Domain %s is being rebooted\n"
-msgstr "Domain %s is being rebooted\n"
+msgstr "%s tartomány újra lesz indítva\n"
 
-#: src/virsh.c:1089
+#: src/virsh.c:1258
 #, c-format
 msgid "Failed to reboot domain %s"
-msgstr "Failed to reboot domain %s"
+msgstr "%s tartomány újraindítása nem sikerült"
 
-#: src/virsh.c:1102
+#: src/virsh.c:1271
 msgid "destroy a domain"
-msgstr "destroy a domain"
+msgstr "egy tartomány megsemmisítése"
 
-#: src/virsh.c:1103
+#: src/virsh.c:1272
 msgid "Destroy a given domain."
-msgstr "Destroy a given domain."
+msgstr "Megadott tartomány megsemmisítése."
 
-#: src/virsh.c:1126
+#: src/virsh.c:1295
 #, c-format
 msgid "Domain %s destroyed\n"
-msgstr "Domain %s destroyed\n"
+msgstr "%s tartomány megsemmisítve\n"
 
-#: src/virsh.c:1128
+#: src/virsh.c:1297
 #, c-format
 msgid "Failed to destroy domain %s"
-msgstr "Failed to destroy domain %s"
+msgstr "%s tartomány megsemmisítése nem sikerült"
 
-#: src/virsh.c:1141
+#: src/virsh.c:1310
 msgid "domain information"
-msgstr "domain information"
+msgstr "tartományinformáció"
 
-#: src/virsh.c:1142
+#: src/virsh.c:1311
 msgid "Returns basic information about the domain."
-msgstr "Returns basic information about the domain."
+msgstr "Alapvető információkat ad a tartományról."
 
-#: src/virsh.c:1168 src/virsh.c:1170
+#: src/virsh.c:1337 src/virsh.c:1339
 msgid "Id:"
-msgstr "Id:"
+msgstr "Azonosító:"
 
-#: src/virsh.c:1171
+#: src/virsh.c:1340
 msgid "Name:"
-msgstr "Name:"
+msgstr "Név:"
 
-#: src/virsh.c:1174
+#: src/virsh.c:1343
 msgid "UUID:"
 msgstr "UUID:"
 
-#: src/virsh.c:1177
+#: src/virsh.c:1346
 msgid "OS Type:"
-msgstr "OS Type:"
+msgstr "OS-típus:"
 
-#: src/virsh.c:1182 src/virsh.c:1268
+#: src/virsh.c:1351 src/virsh.c:1437
 msgid "State:"
-msgstr "State:"
+msgstr "Állapot:"
 
-#: src/virsh.c:1185 src/virsh.c:1553
+#: src/virsh.c:1354 src/virsh.c:1722
 msgid "CPU(s):"
-msgstr "CPU(s):"
+msgstr "Processzor(ok):"
 
-#: src/virsh.c:1192 src/virsh.c:1275
+#: src/virsh.c:1361 src/virsh.c:1444
 msgid "CPU time:"
-msgstr "CPU time:"
+msgstr "Processzoridő:"
 
-#: src/virsh.c:1196 src/virsh.c:1199
+#: src/virsh.c:1365 src/virsh.c:1368
 msgid "Max memory:"
-msgstr "Max memory:"
+msgstr "Max. memória:"
 
-#: src/virsh.c:1200
+#: src/virsh.c:1369
 msgid "no limit"
-msgstr ""
+msgstr "nincs korlátozás"
 
-#: src/virsh.c:1202
+#: src/virsh.c:1371
 msgid "Used memory:"
-msgstr "Used memory:"
+msgstr "Felhasznált memória:"
 
-#: src/virsh.c:1218
+#: src/virsh.c:1387
 msgid "domain vcpu information"
-msgstr "domain vcpu information"
+msgstr "tartomány-VCPU-információ"
 
-#: src/virsh.c:1219
+#: src/virsh.c:1388
 msgid "Returns basic information about the domain virtual CPUs."
-msgstr "Returns basic information about the domain virtual CPUs."
+msgstr "Alapvető információkat ad a tartomány virtuális processzorairól."
 
-#: src/virsh.c:1266
+#: src/virsh.c:1435
 msgid "VCPU:"
 msgstr "VCPU:"
 
-#: src/virsh.c:1267
+#: src/virsh.c:1436
 msgid "CPU:"
-msgstr "CPU:"
+msgstr "Processzor:"
 
-#: src/virsh.c:1277
+#: src/virsh.c:1446
 msgid "CPU Affinity:"
-msgstr "CPU Affinity:"
+msgstr "Processzor-affinitás:"
 
-#: src/virsh.c:1301
+#: src/virsh.c:1470
 msgid "control domain vcpu affinity"
-msgstr "control domain vcpu affinity"
+msgstr "a tartomány VCPU-affinitásának vezérlése"
 
-#: src/virsh.c:1302
+#: src/virsh.c:1471
 msgid "Pin domain VCPUs to host physical CPUs."
-msgstr "Pin domain VCPUs to host physical CPUs."
+msgstr "Tartomány-VCPU-k hozzárendelése a gazdagép fizikai processzoraihoz."
 
-#: src/virsh.c:1308
+#: src/virsh.c:1477
 msgid "vcpu number"
-msgstr "vcpu number"
+msgstr "VCPU-szám"
 
-#: src/virsh.c:1309
+#: src/virsh.c:1478
 msgid "host cpu number(s) (comma separated)"
-msgstr "host cpu number(s) (comma separated)"
-
-#: src/virsh.c:1367
-#, fuzzy, c-format
-msgid "Physical CPU %d doesn't exist."
-msgstr "command '%s' doesn't exist"
-
-#: src/virsh.c:1391
-msgid "change number of virtual CPUs"
-msgstr "change number of virtual CPUs"
-
-#: src/virsh.c:1392
-msgid "Change the number of virtual CPUs active in the guest domain."
-msgstr "Change the number of virtual CPUs active in the guest domain."
-
-#: src/virsh.c:1398
-msgid "number of virtual CPUs"
-msgstr "number of virtual CPUs"
-
-#: src/virsh.c:1429
-#, fuzzy
-msgid "Too many virtual CPU's."
-msgstr "number of virtual CPUs"
-
-#: src/virsh.c:1447
-msgid "change memory allocation"
-msgstr "change memory allocation"
-
-#: src/virsh.c:1448
-msgid "Change the current memory allocation in the guest domain."
-msgstr "Change the current memory allocation in the guest domain."
-
-#: src/virsh.c:1454
-#, fuzzy
-msgid "number of kilobytes of memory"
-msgstr "number of bytes of memory"
-
-#: src/virsh.c:1474 src/virsh.c:1518
-#, c-format
-msgid "Invalid value of %d for memory size"
-msgstr ""
-
-#: src/virsh.c:1491
-msgid "change maximum memory limit"
-msgstr "change maximum memory limit"
-
-#: src/virsh.c:1492
-msgid "Change the maximum memory allocation limit in the guest domain."
-msgstr "Change the maximum memory allocation limit in the guest domain."
-
-#: src/virsh.c:1498
-#, fuzzy
-msgid "maximum memory limit in kilobytes"
-msgstr "maxmimum memory limit in bytes"
-
-#: src/virsh.c:1535
-msgid "node information"
-msgstr "node information"
+msgstr "gazdaprocesszor-szám(ok) (vesszővel elválasztva)"
 
 #: src/virsh.c:1536
+#, c-format
+msgid "Physical CPU %d doesn't exist."
+msgstr "A(z) \"%d\" fizikai CPU nem létezik."
+
+#: src/virsh.c:1560
+msgid "change number of virtual CPUs"
+msgstr "virtuális processzorok számának megváltoztatása"
+
+#: src/virsh.c:1561
+msgid "Change the number of virtual CPUs active in the guest domain."
+msgstr ""
+"Az aktív virtuális processzorok számának megváltoztatása a "
+"vendégtartományban."
+
+#: src/virsh.c:1567
+msgid "number of virtual CPUs"
+msgstr "virtuális processzorok száma"
+
+#: src/virsh.c:1598
+msgid "Too many virtual CPU's."
+msgstr "Túl sok virtuális processzor"
+
+#: src/virsh.c:1616
+msgid "change memory allocation"
+msgstr "memória-lefoglalás megváltoztatása"
+
+#: src/virsh.c:1617
+msgid "Change the current memory allocation in the guest domain."
+msgstr "Az aktuális memória-lefoglalás megváltoztatása a vendégtartományban."
+
+#: src/virsh.c:1623
+msgid "number of kilobytes of memory"
+msgstr "memóriaméret kilobájtban"
+
+#: src/virsh.c:1643 src/virsh.c:1687
+#, c-format
+msgid "Invalid value of %d for memory size"
+msgstr "Érvénytelen érték (%d) a memóriamérethez"
+
+#: src/virsh.c:1660
+msgid "change maximum memory limit"
+msgstr "maximális memóriakorlát megváltoztatása"
+
+#: src/virsh.c:1661
+msgid "Change the maximum memory allocation limit in the guest domain."
+msgstr ""
+"A maximális memória-lefoglalási korlát megváltoztatása a vendégtartományban."
+
+#: src/virsh.c:1667
+msgid "maximum memory limit in kilobytes"
+msgstr "maximális memóriakorlát kilobájtban"
+
+#: src/virsh.c:1704
+msgid "node information"
+msgstr "csomópont-információ"
+
+#: src/virsh.c:1705
 msgid "Returns basic information about the node."
-msgstr "Returns basic information about the node."
+msgstr "Alapvető információkat ad a csomópontról."
 
-#: src/virsh.c:1549
+#: src/virsh.c:1718
 msgid "failed to get node information"
-msgstr "failed to get node information"
+msgstr "csomópont-információ lekérdezése nem sikerült"
 
-#: src/virsh.c:1552
+#: src/virsh.c:1721
 msgid "CPU model:"
-msgstr "CPU model:"
+msgstr "Processzormodell:"
 
-#: src/virsh.c:1554
+#: src/virsh.c:1723
 msgid "CPU frequency:"
-msgstr "CPU frequency:"
+msgstr "Processzor-frekvencia:"
 
-#: src/virsh.c:1555
+#: src/virsh.c:1724
 msgid "CPU socket(s):"
-msgstr "CPU socket(s):"
-
-#: src/virsh.c:1556
-msgid "Core(s) per socket:"
-msgstr "Core(s) per socket:"
-
-#: src/virsh.c:1557
-msgid "Thread(s) per core:"
-msgstr "Thread(s) per core:"
-
-#: src/virsh.c:1558
-msgid "NUMA cell(s):"
-msgstr "NUMA cell(s):"
-
-#: src/virsh.c:1559
-msgid "Memory size:"
-msgstr "Memory size:"
-
-#: src/virsh.c:1569
-msgid "capabilities"
-msgstr ""
-
-#: src/virsh.c:1570
-msgid "Returns capabilities of hypervisor/driver."
-msgstr ""
-
-#: src/virsh.c:1583
-#, fuzzy
-msgid "failed to get capabilities"
-msgstr "failed to open file"
-
-#: src/virsh.c:1596
-msgid "domain information in XML"
-msgstr "domain information in XML"
-
-#: src/virsh.c:1597
-#, fuzzy
-msgid "Output the domain information as an XML dump to stdout."
-msgstr "Ouput the domain information as an XML dump to stdout."
-
-#: src/virsh.c:1636
-msgid "convert a domain id or UUID to domain name"
-msgstr "convert a domain id or UUID to domain name"
-
-#: src/virsh.c:1641
-msgid "domain id or uuid"
-msgstr "domain id or uuid"
-
-#: src/virsh.c:1666
-msgid "convert a domain name or UUID to domain id"
-msgstr "convert a domain name or UUID to domain id"
-
-#: src/virsh.c:1701
-msgid "convert a domain name or id to domain UUID"
-msgstr "convert a domain name or id to domain UUID"
-
-#: src/virsh.c:1706
-msgid "domain id or name"
-msgstr "domain id or name"
+msgstr "Processzor-foglalat(ok):"
 
 #: src/virsh.c:1725
+msgid "Core(s) per socket:"
+msgstr "Mag(ok) foglalatonként:"
+
+#: src/virsh.c:1726
+msgid "Thread(s) per core:"
+msgstr "Szál(ak) magonként:"
+
+#: src/virsh.c:1727
+msgid "NUMA cell(s):"
+msgstr "NUMA-cella:"
+
+#: src/virsh.c:1728
+msgid "Memory size:"
+msgstr "Memória mérete:"
+
+#: src/virsh.c:1738
+msgid "capabilities"
+msgstr "képességek"
+
+#: src/virsh.c:1739
+msgid "Returns capabilities of hypervisor/driver."
+msgstr "Megadja a felügyelő/meghajtóprogram képességeit."
+
+#: src/virsh.c:1752
+msgid "failed to get capabilities"
+msgstr "nem sikerült a képességek lekérdezése"
+
+#: src/virsh.c:1765
+msgid "domain information in XML"
+msgstr "tartományinformáció XML-ben"
+
+#: src/virsh.c:1766
+msgid "Output the domain information as an XML dump to stdout."
+msgstr "A tartományinformáció kiírása a szabványos kimenetre XML-kivonatként."
+
+#: src/virsh.c:1805
+msgid "convert a domain id or UUID to domain name"
+msgstr "tartományazonosító vagy -UUID átalakítása tartománynévvé"
+
+#: src/virsh.c:1810
+msgid "domain id or uuid"
+msgstr "tartományazonosító vagy -uuid"
+
+#: src/virsh.c:1835
+msgid "convert a domain name or UUID to domain id"
+msgstr "tartománynév vagy -UUID átalakítása tartományazonosítóvá"
+
+#: src/virsh.c:1870
+msgid "convert a domain name or id to domain UUID"
+msgstr "tartománynév vagy -azonosító átalakítása tartomány-UUID-vé"
+
+#: src/virsh.c:1875
+msgid "domain id or name"
+msgstr "tartományazonosító vagy -név"
+
+#: src/virsh.c:1894
 msgid "failed to get domain UUID"
-msgstr "failed to get domain UUID"
+msgstr "nem sikerült lekérdezni a tartomány-UUID-t"
 
-#: src/virsh.c:1735
-#, fuzzy
+#: src/virsh.c:1904
 msgid "autostart a network"
-msgstr "Start a domain."
+msgstr "hálózat automatikus indítása"
 
-#: src/virsh.c:1737
+#: src/virsh.c:1906
 msgid "Configure a network to be automatically started at boot."
-msgstr ""
+msgstr "Hálózat beállítása, hogy automatikusan induljon el rendszerindításkor."
 
-#: src/virsh.c:1742 src/virsh.c:2183
-#, fuzzy
+#: src/virsh.c:1911 src/virsh.c:2336
 msgid "network name or uuid"
-msgstr "domain name or uuid"
+msgstr "hálózatnév vagy -uuid"
 
-#: src/virsh.c:1764
-#, fuzzy, c-format
+#: src/virsh.c:1933
+#, c-format
 msgid "failed to mark network %s as autostarted"
-msgstr "Failed to start domain %s"
+msgstr "Nem sikerült megjelölni a(z) %s hálózatot automatikus indításra"
 
-#: src/virsh.c:1767
-#, fuzzy, c-format
+#: src/virsh.c:1936
+#, c-format
 msgid "failed to unmark network %s as autostarted"
-msgstr "Failed to start domain %s"
+msgstr ""
+"Nem sikerült törölni a(z) %s hálózat automatikus indításra való jelölését"
 
-#: src/virsh.c:1774
-#, fuzzy, c-format
+#: src/virsh.c:1943
+#, c-format
 msgid "Network %s marked as autostarted\n"
-msgstr "Domain %s started\n"
+msgstr "%s hálózat megjelölve automatikus indításra\n"
 
-#: src/virsh.c:1776
-#, fuzzy, c-format
+#: src/virsh.c:1945
+#, c-format
 msgid "Network %s unmarked as autostarted\n"
-msgstr "Domain %s started\n"
+msgstr "%s hálózat automatikus indításra való jelölése törölve\n"
 
-#: src/virsh.c:1786
-#, fuzzy
+#: src/virsh.c:1955
 msgid "create a network from an XML file"
-msgstr "create a domain from an XML file"
+msgstr "egy hálózat létrehozása egy XML-fájlból"
 
-#: src/virsh.c:1787
-#, fuzzy
+#: src/virsh.c:1956
 msgid "Create a network."
-msgstr "Create a domain."
+msgstr "Egy hálózat létrehozása."
 
-#: src/virsh.c:1792 src/virsh.c:1848
-#, fuzzy
+#: src/virsh.c:1961 src/virsh.c:2009
 msgid "file containing an XML network description"
-msgstr "file conatining an XML domain description"
+msgstr "egy XML-hálózatleírást tartalmazó fájl"
 
-#: src/virsh.c:1827
-#, fuzzy, c-format
+#: src/virsh.c:1988
+#, c-format
 msgid "Network %s created from %s\n"
-msgstr "Domain %s created from %s\n"
+msgstr "%s hálózat létrehozva ebből: %s\n"
 
-#: src/virsh.c:1830
-#, fuzzy, c-format
+#: src/virsh.c:1991
+#, c-format
 msgid "Failed to create network from %s"
-msgstr "Failed to create domain from %s"
+msgstr "Nem sikerült létrehozni hálózatot ebből: %s"
 
-#: src/virsh.c:1842
-#, fuzzy
+#: src/virsh.c:2003
 msgid "define (but don't start) a network from an XML file"
-msgstr "define (but don't start) a domain from an XML file"
+msgstr "egy hálózat definiálása (de el nem indítása) egy XML-fájlból"
 
-#: src/virsh.c:1843
-#, fuzzy
+#: src/virsh.c:2004
 msgid "Define a network."
-msgstr "Define a domain."
+msgstr "Egy hálózat megadása."
 
-#: src/virsh.c:1883
-#, fuzzy, c-format
+#: src/virsh.c:2036
+#, c-format
 msgid "Network %s defined from %s\n"
-msgstr "Domain %s defined from %s\n"
+msgstr "A(z) %s hálózat definiálva lett ebből: %s\n"
 
-#: src/virsh.c:1886
-#, fuzzy, c-format
+#: src/virsh.c:2039
+#, c-format
 msgid "Failed to define network from %s"
-msgstr "Failed to define domain from %s"
+msgstr "Nem sikerült definiálni a hálózatot ebből: %s"
 
-#: src/virsh.c:1898
-#, fuzzy
+#: src/virsh.c:2051
 msgid "destroy a network"
-msgstr "destroy a domain"
+msgstr "egy hálózat megsemmisítése"
 
-#: src/virsh.c:1899
-#, fuzzy
+#: src/virsh.c:2052
 msgid "Destroy a given network."
-msgstr "Destroy a given domain."
+msgstr "Megadott hálózat megsemmisítése."
 
-#: src/virsh.c:1904 src/virsh.c:1944
-#, fuzzy
+#: src/virsh.c:2057 src/virsh.c:2097
 msgid "network name, id or uuid"
-msgstr "domain name, id or uuid"
+msgstr "hálózatnév, -azonosító vagy -uuid"
 
-#: src/virsh.c:1922
-#, fuzzy, c-format
+#: src/virsh.c:2075
+#, c-format
 msgid "Network %s destroyed\n"
-msgstr "Domain %s destroyed\n"
+msgstr "%s hálózat megsemmisítve\n"
 
-#: src/virsh.c:1924
-#, fuzzy, c-format
+#: src/virsh.c:2077
+#, c-format
 msgid "Failed to destroy network %s"
-msgstr "Failed to destroy domain %s"
+msgstr "%s hálózat megsemmisítése nem sikerült"
 
-#: src/virsh.c:1938
-#, fuzzy
+#: src/virsh.c:2091
 msgid "network information in XML"
-msgstr "domain information in XML"
+msgstr "hálózatinformáció XML-ben"
 
-#: src/virsh.c:1939
-#, fuzzy
+#: src/virsh.c:2092
 msgid "Output the network information as an XML dump to stdout."
-msgstr "Ouput the domain information as an XML dump to stdout."
+msgstr "A hálózatinformáció kiírása a szabványos kimenetre XML-kivonatként."
 
-#: src/virsh.c:1979
+#: src/virsh.c:2132
 msgid "list networks"
-msgstr ""
+msgstr "hálózatok listázása"
 
-#: src/virsh.c:1980
-#, fuzzy
+#: src/virsh.c:2133
 msgid "Returns list of networks."
-msgstr "Returns list of domains."
-
-#: src/virsh.c:1985
-#, fuzzy
-msgid "list inactive networks"
-msgstr "list inactive domains"
-
-#: src/virsh.c:1986
-#, fuzzy
-msgid "list inactive & active networks"
-msgstr "list inactive & active domains"
-
-#: src/virsh.c:2006 src/virsh.c:2014
-#, fuzzy
-msgid "Failed to list active networks"
-msgstr "Failed to list active domains"
-
-#: src/virsh.c:2025 src/virsh.c:2034
-#, fuzzy
-msgid "Failed to list inactive networks"
-msgstr "Failed to list inactive domains"
-
-#: src/virsh.c:2044
-msgid "Autostart"
-msgstr ""
-
-#: src/virsh.c:2059 src/virsh.c:2082
-#, fuzzy
-msgid "no autostart"
-msgstr "no state"
-
-#: src/virsh.c:2065
-msgid "active"
-msgstr ""
-
-#: src/virsh.c:2088
-#, fuzzy
-msgid "inactive"
-msgstr "node active cpu"
-
-#: src/virsh.c:2107
-#, fuzzy
-msgid "convert a network UUID to network name"
-msgstr "convert a domain id or UUID to domain name"
-
-#: src/virsh.c:2112
-msgid "network uuid"
-msgstr ""
+msgstr "Megadja a hálózatok listáját."
 
 #: src/virsh.c:2138
-#, fuzzy
-msgid "start a (previously defined) inactive network"
-msgstr "start a (previously defined) inactive domain"
+msgid "list inactive networks"
+msgstr "inaktív hálózatok listázása"
 
 #: src/virsh.c:2139
-#, fuzzy
-msgid "Start a network."
-msgstr "Start a domain."
+msgid "list inactive & active networks"
+msgstr "inaktív és aktív hálózatok listázása"
 
-#: src/virsh.c:2144
-#, fuzzy
-msgid "name of the inactive network"
-msgstr "name of the inactive domain"
+#: src/virsh.c:2159 src/virsh.c:2167
+msgid "Failed to list active networks"
+msgstr "Aktív hálózatok listázása nem sikerült"
 
-#: src/virsh.c:2161
-#, fuzzy, c-format
-msgid "Network %s started\n"
-msgstr "Domain %s started\n"
+#: src/virsh.c:2178 src/virsh.c:2187
+msgid "Failed to list inactive networks"
+msgstr "Inaktív hálózatok listázása nem sikerült"
 
-#: src/virsh.c:2164
-#, fuzzy, c-format
-msgid "Failed to start network %s"
-msgstr "Failed to start domain %s"
+#: src/virsh.c:2197
+msgid "Autostart"
+msgstr "Automatikus indítás"
 
-#: src/virsh.c:2177
-#, fuzzy
-msgid "undefine an inactive network"
-msgstr "undefine an inactive domain"
+#: src/virsh.c:2212 src/virsh.c:2235
+msgid "no autostart"
+msgstr "nincs automatikus indítás"
 
-#: src/virsh.c:2178
-#, fuzzy
-msgid "Undefine the configuration for an inactive network."
-msgstr "Undefine the configuration for an inactive domain."
-
-#: src/virsh.c:2201
-#, fuzzy, c-format
-msgid "Network %s has been undefined\n"
-msgstr "Domain %s has been undefined\n"
-
-#: src/virsh.c:2203
-#, fuzzy, c-format
-msgid "Failed to undefine network %s"
-msgstr "Failed to undefine domain %s"
-
-#: src/virsh.c:2216
-#, fuzzy
-msgid "convert a network name to network UUID"
-msgstr "convert a domain name or id to domain UUID"
-
-#: src/virsh.c:2221
-msgid "network name"
-msgstr ""
+#: src/virsh.c:2218
+msgid "active"
+msgstr "aktív"
 
 #: src/virsh.c:2241
-#, fuzzy
-msgid "failed to get network UUID"
-msgstr "failed to get domain UUID"
+msgid "inactive"
+msgstr "inaktív"
 
-#: src/virsh.c:2252
-msgid "show version"
-msgstr "show version"
+#: src/virsh.c:2260
+msgid "convert a network UUID to network name"
+msgstr "hálózat-UUID átalakítása hálózatnévvé"
 
-#: src/virsh.c:2253
-msgid "Display the system version information."
-msgstr "Display the system version information."
+#: src/virsh.c:2265
+msgid "network uuid"
+msgstr "hálózat-uuid"
 
-#: src/virsh.c:2276
-msgid "failed to get hypervisor type"
-msgstr "failed to get hypervisor type"
+#: src/virsh.c:2291
+msgid "start a (previously defined) inactive network"
+msgstr "egy (előzőleg definiált) inaktív hálózat indítása"
 
-#: src/virsh.c:2285
-#, c-format
-msgid "Compiled against library: libvir %d.%d.%d\n"
-msgstr "Compiled against library: libvir %d.%d.%d\n"
-
-#: src/virsh.c:2290
-msgid "failed to get the library version"
-msgstr "failed to get the library version"
+#: src/virsh.c:2292
+msgid "Start a network."
+msgstr "Egy hálózat indítása."
 
 #: src/virsh.c:2297
-#, c-format
-msgid "Using library: libvir %d.%d.%d\n"
-msgstr "Using library: libvir %d.%d.%d\n"
-
-#: src/virsh.c:2304
-#, c-format
-msgid "Using API: %s %d.%d.%d\n"
-msgstr "Using API: %s %d.%d.%d\n"
-
-#: src/virsh.c:2309
-msgid "failed to get the hypervisor version"
-msgstr "failed to get the hypervisor version"
+msgid "name of the inactive network"
+msgstr "az inaktív hálózat neve"
 
 #: src/virsh.c:2314
 #, c-format
-msgid "Cannot extract running %s hypervisor version\n"
-msgstr "Cannot extract running %s hypervisor version\n"
+msgid "Network %s started\n"
+msgstr "%s hálózat elindítva\n"
 
-#: src/virsh.c:2321
+#: src/virsh.c:2317
+#, c-format
+msgid "Failed to start network %s"
+msgstr "%s hálózat indítása nem sikerült"
+
+#: src/virsh.c:2330
+msgid "undefine an inactive network"
+msgstr "egy inaktív hálózat definíciójának eltávolítása"
+
+#: src/virsh.c:2331
+msgid "Undefine the configuration for an inactive network."
+msgstr "A konfiguráció definíciójának eltávolítása egy inaktív hálózatnál."
+
+#: src/virsh.c:2354
+#, c-format
+msgid "Network %s has been undefined\n"
+msgstr "A(z) %s hálózat definíciója el lett távolítva\n"
+
+#: src/virsh.c:2356
+#, c-format
+msgid "Failed to undefine network %s"
+msgstr "Nem sikerült eltávolítani a(z) %s hálózat definícióját"
+
+#: src/virsh.c:2369
+msgid "convert a network name to network UUID"
+msgstr "hálózatnév átalakítása hálózat-UUID-vé"
+
+#: src/virsh.c:2374
+msgid "network name"
+msgstr "hálózatnév"
+
+#: src/virsh.c:2394
+msgid "failed to get network UUID"
+msgstr "nem sikerült lekérdezni a hálózat-UUID-t"
+
+#: src/virsh.c:2405
+msgid "show version"
+msgstr "verzió megjelenítése"
+
+#: src/virsh.c:2406
+msgid "Display the system version information."
+msgstr "Megjeleníti a rendszer verzióinformációját."
+
+#: src/virsh.c:2429
+msgid "failed to get hypervisor type"
+msgstr "nem sikerült lekérdezni a felügyelő típusát"
+
+#: src/virsh.c:2438
+#, c-format
+msgid "Compiled against library: libvir %d.%d.%d\n"
+msgstr "Lefordítva ezen programkönyvtárhoz: libvirt %d.%d.%d\n"
+
+#: src/virsh.c:2443
+msgid "failed to get the library version"
+msgstr "nem sikerült lekérdezni a programkönyvtár verzióját"
+
+#: src/virsh.c:2450
+#, c-format
+msgid "Using library: libvir %d.%d.%d\n"
+msgstr "Ezen könyvtár használata: libvirt %d.%d.%d\n"
+
+#: src/virsh.c:2457
+#, c-format
+msgid "Using API: %s %d.%d.%d\n"
+msgstr "Ezen API használata: %s %d.%d.%d\n"
+
+#: src/virsh.c:2462
+msgid "failed to get the hypervisor version"
+msgstr "nem sikerült lekérdezni a felügyelő verzióját"
+
+#: src/virsh.c:2467
+#, c-format
+msgid "Cannot extract running %s hypervisor version\n"
+msgstr "Nem lehet meghatározni a(z) %s futó felügyelő verzióját\n"
+
+#: src/virsh.c:2474
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
-msgstr "Running hypervisor: %s %d.%d.%d\n"
+msgstr "Futó felügyelő: %s %d.%d.%d\n"
 
-#: src/virsh.c:2332
+#: src/virsh.c:2485
 msgid "vnc display"
-msgstr ""
+msgstr "VNC-képernyő"
 
-#: src/virsh.c:2333
+#: src/virsh.c:2486
 msgid "Output the IP address and port number for the VNC display."
+msgstr "A VNC-képernyőhöz tartozó IP-cím és portszám kiírása."
+
+#: src/virsh.c:2564
+#, fuzzy
+msgid "attach device from an XML file"
+msgstr "egy tartomány létrehozása egy XML-fájlból"
+
+#: src/virsh.c:2565
+#, fuzzy
+msgid "Attach device from an XML <file>."
+msgstr "egy tartomány létrehozása egy XML-fájlból"
+
+#: src/virsh.c:2571 src/virsh.c:2625
+msgid "XML file"
 msgstr ""
 
-#: src/virsh.c:2412
-msgid "quit this interactive terminal"
-msgstr "quit this interactive terminal"
+#: src/virsh.c:2603
+#, fuzzy, c-format
+msgid "Failed to attach device from %s"
+msgstr "Nem sikerült létrehozni tartományt ebből: %s"
 
-#: src/virsh.c:2539
+#: src/virsh.c:2618
+#, fuzzy
+msgid "detach device from an XML file"
+msgstr "egy tartomány létrehozása egy XML-fájlból"
+
+#: src/virsh.c:2619
+#, fuzzy
+msgid "Detach device from an XML <file>"
+msgstr "egy tartomány létrehozása egy XML-fájlból"
+
+#: src/virsh.c:2657
+#, fuzzy, c-format
+msgid "Failed to detach device from %s"
+msgstr "Nem sikerült létrehozni tartományt ebből: %s"
+
+#: src/virsh.c:2672
+msgid "quit this interactive terminal"
+msgstr "kilépés ebből az interaktív terminálból"
+
+#: src/virsh.c:2802
 #, c-format
 msgid "command '%s' requires <%s> option"
-msgstr "command '%s' requires <%s> option"
+msgstr "'%s' parancs a(z) <%s> opciót igényli"
 
-#: src/virsh.c:2540
+#: src/virsh.c:2803
 #, c-format
 msgid "command '%s' requires --%s option"
-msgstr "command '%s' requires --%s option"
+msgstr "'%s' parancs a(z) --%s opciót igényli"
 
-#: src/virsh.c:2567
+#: src/virsh.c:2830
 #, c-format
 msgid "command '%s' doesn't exist"
-msgstr "command '%s' doesn't exist"
+msgstr "'%s' parancs nem létezik"
 
-#: src/virsh.c:2575
+#: src/virsh.c:2838
 msgid "  NAME\n"
-msgstr "  NAME\n"
+msgstr "  NÉV\n"
 
-#: src/virsh.c:2586
+#: src/virsh.c:2849
 msgid ""
 "\n"
 "  DESCRIPTION\n"
 msgstr ""
 "\n"
-"  DESCRIPTION\n"
+"  LEÍRÁS\n"
 
-#: src/virsh.c:2590
+#: src/virsh.c:2853
 msgid ""
 "\n"
 "  OPTIONS\n"
 msgstr ""
 "\n"
-"  OPTIONS\n"
+"  OPCIÓK\n"
 
-#: src/virsh.c:2597
+#: src/virsh.c:2860
 #, c-format
 msgid "--%s <number>"
-msgstr "--%s <number>"
+msgstr "--%s <szám>"
 
-#: src/virsh.c:2599
+#: src/virsh.c:2862
 #, c-format
 msgid "--%s <string>"
-msgstr "--%s <string>"
+msgstr "--%s <szöveg>"
 
-#: src/virsh.c:2712
+#: src/virsh.c:2975
 msgid "undefined domain name or id"
-msgstr "undefined domain name or id"
+msgstr "nem definiált tartománynév vagy -azonosító"
 
-#: src/virsh.c:2745
+#: src/virsh.c:3008
 #, c-format
 msgid "failed to get domain '%s'"
-msgstr "failed to get domain '%s'"
+msgstr "\"%s\" tartomány lekérdezése nem sikerült"
 
-#: src/virsh.c:2758
-#, fuzzy
+#: src/virsh.c:3021
 msgid "undefined network name"
-msgstr "undefined domain name or id"
+msgstr "nem definiált hálózatnév"
 
-#: src/virsh.c:2782
-#, fuzzy, c-format
+#: src/virsh.c:3045
+#, c-format
 msgid "failed to get network '%s'"
-msgstr "failed to get domain '%s'"
+msgstr "'%s' hálózat lekérdezése nem sikerült"
 
-#: src/virsh.c:2810
+#: src/virsh.c:3073
 #, c-format
 msgid ""
 "\n"
@@ -1600,111 +1655,111 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"(Time: %.3f ms)\n"
+"(Idő: %.3f ms)\n"
 "\n"
 
-#: src/virsh.c:2884
+#: src/virsh.c:3147
 msgid "missing \""
-msgstr "missing \""
+msgstr "hiányzó \""
 
-#: src/virsh.c:2945
+#: src/virsh.c:3208
 #, c-format
 msgid "unexpected token (command name): '%s'"
-msgstr "unexpected token (command name): '%s'"
+msgstr "váratlan jel (parancsnév): '%s'"
 
-#: src/virsh.c:2950
+#: src/virsh.c:3213
 #, c-format
 msgid "unknown command: '%s'"
-msgstr "unknown command: '%s'"
+msgstr "ismeretlen parancs: '%s'"
 
-#: src/virsh.c:2957
+#: src/virsh.c:3220
 #, c-format
 msgid "command '%s' doesn't support option --%s"
-msgstr "command '%s' doesn't support option --%s"
+msgstr "'%s' parancs nem támogatja a(z) --%s opciót"
 
-#: src/virsh.c:2972
+#: src/virsh.c:3235
 #, c-format
 msgid "expected syntax: --%s <%s>"
-msgstr "expected syntax: --%s <%s>"
+msgstr "várt forma: --%s <%s>"
 
-#: src/virsh.c:2975
+#: src/virsh.c:3238
 msgid "number"
-msgstr "number"
+msgstr "szám"
 
-#: src/virsh.c:2975
+#: src/virsh.c:3238
 msgid "string"
-msgstr "string"
+msgstr "szöveg"
 
-#: src/virsh.c:2981
+#: src/virsh.c:3244
 #, c-format
 msgid "unexpected data '%s'"
-msgstr "unexpected data '%s'"
+msgstr "váratlan adat: '%s'"
 
-#: src/virsh.c:3003
+#: src/virsh.c:3266
 msgid "OPTION"
-msgstr "OPTION"
+msgstr "OPCIÓ"
 
-#: src/virsh.c:3003
+#: src/virsh.c:3266
 msgid "DATA"
-msgstr "DATA"
+msgstr "ADAT"
 
-#: src/virsh.c:3051 src/virsh.c:3077
+#: src/virsh.c:3316 src/virsh.c:3342
 msgid "running"
-msgstr "running"
+msgstr "fut"
 
-#: src/virsh.c:3053 src/virsh.c:3075
+#: src/virsh.c:3318 src/virsh.c:3340
 msgid "blocked"
-msgstr "blocked"
+msgstr "blokkolt"
 
-#: src/virsh.c:3055
+#: src/virsh.c:3320
 msgid "paused"
-msgstr "paused"
+msgstr "megállítva"
 
-#: src/virsh.c:3057
+#: src/virsh.c:3322
 msgid "in shutdown"
-msgstr "in shutdown"
+msgstr "leállítás alatt"
 
-#: src/virsh.c:3059
+#: src/virsh.c:3324
 msgid "shut off"
-msgstr "shut off"
+msgstr "leállt"
 
-#: src/virsh.c:3061
+#: src/virsh.c:3326
 msgid "crashed"
-msgstr "crashed"
+msgstr "összeomlott"
 
-#: src/virsh.c:3073
+#: src/virsh.c:3338
 msgid "offline"
-msgstr "offline"
-
-#: src/virsh.c:3092
-msgid "no valid connection"
-msgstr "no valid connection"
-
-#: src/virsh.c:3131
-#, c-format
-msgid "%s: error: "
-msgstr "%s: error: "
-
-#: src/virsh.c:3133
-msgid "error: "
-msgstr "error: "
-
-#: src/virsh.c:3155 src/virsh.c:3167
-#, c-format
-msgid "%s: %d: failed to allocate %d bytes"
-msgstr "%s: %d: failed to allocate %d bytes"
-
-#: src/virsh.c:3179
-#, fuzzy, c-format
-msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: failed to allocate %d bytes"
-
-#: src/virsh.c:3209
-msgid "failed to connect to the hypervisor"
-msgstr "failed to connect to the hypervisor"
+msgstr "lekapcsolt"
 
 #: src/virsh.c:3357
-#, fuzzy, c-format
+msgid "no valid connection"
+msgstr "nem érvényes csatlakozás"
+
+#: src/virsh.c:3396
+#, c-format
+msgid "%s: error: "
+msgstr "%s: hiba: "
+
+#: src/virsh.c:3398
+msgid "error: "
+msgstr "hiba: "
+
+#: src/virsh.c:3420 src/virsh.c:3432
+#, c-format
+msgid "%s: %d: failed to allocate %d bytes"
+msgstr "%s: %d: nem sikerült lefoglalni %d bájtot"
+
+#: src/virsh.c:3446
+#, c-format
+msgid "%s: %d: failed to allocate %lu bytes"
+msgstr "%s: %d: nem sikerült lefoglalni %lu bájtot"
+
+#: src/virsh.c:3476
+msgid "failed to connect to the hypervisor"
+msgstr "nem sikerült csatlakozni a felügyelőhöz"
+
+#: src/virsh.c:3624
+#, c-format
 msgid ""
 "\n"
 "%s [options] [commands]\n"
@@ -1721,19 +1776,20 @@ msgid ""
 "  commands (non interactive mode):\n"
 msgstr ""
 "\n"
-"%s [options] [commands]\n"
+"%s [opciók] [parancsok]\n"
 "\n"
-"  options:\n"
-"    -c | --connect <uri>    hypervisor connection URI\n"
-"    -d | --debug <num>      debug level [0-5]\n"
-"    -h | --help             this help\n"
-"    -q | --quiet            quiet mode\n"
-"    -t | --timing           print timing information\n"
-"    -v | --version          program version\n"
+"  opciók:\n"
+"    -c | --connect <uri>    felügyelő-csatlakozási URI\n"
+"    -r | --readonly         kapcsolódás csak olvasható módban\n"
+"    -d | --debug <szám>     nyomkövetési szint [0-5]\n"
+"    -h | --help             ez a segítség\n"
+"    -q | --quiet            csendes mód\n"
+"    -t | --timing           időzítési információk kiírása\n"
+"    -v | --version          programverzió\n"
 "\n"
-"  commands (non interactive mode):\n"
+"  parancsok (nem interaktív módú):\n"
 
-#: src/virsh.c:3374
+#: src/virsh.c:3641
 #, c-format
 msgid ""
 "\n"
@@ -1741,144 +1797,131 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (adja meg a --help <parancs> utótagot a parancs részleteihez)\n"
 "\n"
 
-#: src/virsh.c:3466
+#: src/virsh.c:3733
 #, c-format
 msgid "unsupported option '-%c'. See --help."
-msgstr "unsupported option '-%c'. See --help."
+msgstr "nem támogatott '-%c' opció. Lásd --help."
 
-#: src/virsh.c:3547
+#: src/virsh.c:3814
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
 msgstr ""
-"Welcome to %s, the virtualization interactive terminal.\n"
+"Üdvözli a(z) %s, a virtualizációs interaktív terminál.\n"
 "\n"
 
-#: src/virsh.c:3550
+#: src/virsh.c:3817
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
 "\n"
 msgstr ""
-"Type:  'help' for help with commands\n"
-"       'quit' to quit\n"
+"Típus:  'help' segítség a parancsokkal együtt\n"
+"       'quit' a kilépéshez\n"
 "\n"
 
 #: src/conf.c:156 src/conf.c:205 src/conf.c:488 src/conf.c:525 src/conf.c:553
 #: src/conf.c:631
 msgid "allocating configuration"
-msgstr "allocating configuration"
+msgstr "konfiguráció lefoglalása"
 
 #: src/conf.c:340
 msgid "unterminated number"
-msgstr "unterminated number"
+msgstr "lezáratlan szám"
 
 #: src/conf.c:372 src/conf.c:389 src/conf.c:401
 msgid "unterminated string"
-msgstr "unterminated string"
+msgstr "lezáratlan szöveg"
 
 #: src/conf.c:429 src/conf.c:482
 msgid "expecting a value"
-msgstr "expecting a value"
+msgstr "egy érték várása"
 
 #: src/conf.c:449
 msgid "expecting a separator in list"
-msgstr "expecting a separator in list"
+msgstr "egy lista elválasztó várása"
 
 #: src/conf.c:472
 msgid "list is not closed with ] "
-msgstr "list is not closed with ] "
+msgstr "a lista nincs lezárva egy ] jellel"
 
 #: src/conf.c:518
 msgid "expecting a name"
-msgstr "expecting a name"
+msgstr "egy név várása"
 
 #: src/conf.c:581
 msgid "expecting a separator"
-msgstr "expecting a separator"
+msgstr "egy elválasztó várása"
 
 #: src/conf.c:613
 msgid "expecting an assignment"
-msgstr "expecting an assignment"
+msgstr "egy hozzárendelés várása"
 
 #: src/conf.c:897
 msgid "failed to open file"
-msgstr "failed to open file"
+msgstr "a fájl megnyitása nem sikerült"
 
 #: src/conf.c:905
 msgid "failed to save content"
-msgstr "failed to save content"
+msgstr "a tartalom mentése nem sikerült"
 
-#: src/xs_internal.c:344
+#: src/xs_internal.c:347
 msgid "failed to connect to Xen Store"
-msgstr "failed to connect to Xen Store"
+msgstr "nem sikerült csatlakozni a Xen-tárolóhoz"
 
-#: src/proxy_internal.c:200
+#: src/proxy_internal.c:204
 #, c-format
 msgid "failed to exec %s\n"
-msgstr "failed to exec %s\n"
+msgstr "%s végrehajtása nem sikerült\n"
 
-#: src/proxy_internal.c:294
+#: src/proxy_internal.c:298
 #, c-format
 msgid "Failed to close socket %d\n"
-msgstr "Failed to close socket %d\n"
+msgstr "%d aljazat bezárása nem sikerült\n"
 
-#: src/proxy_internal.c:327
+#: src/proxy_internal.c:331
 #, c-format
 msgid "Failed to read socket %d\n"
-msgstr "Failed to read socket %d\n"
+msgstr "%d aljazat olvasása nem sikerült\n"
 
-#: src/proxy_internal.c:361
+#: src/proxy_internal.c:365
 #, c-format
 msgid "Failed to write to socket %d\n"
-msgstr "Failed to write to socket %d\n"
+msgstr "%d aljazat írása nem sikerült\n"
 
-#: src/proxy_internal.c:453 src/proxy_internal.c:474 src/proxy_internal.c:494
+#: src/proxy_internal.c:457 src/proxy_internal.c:478 src/proxy_internal.c:498
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
-msgstr "Communication error with proxy: got %d bytes of %d\n"
+msgstr "Kommunikációs hiba a proxyval: %d bájt érkezett ennyiből: %d\n"
 
-#: src/proxy_internal.c:461
+#: src/proxy_internal.c:465
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
-msgstr "Communication error with proxy: expected %d bytes got %d\n"
+msgstr "Kommunikációs hiba a proxyval: %d bájt várva, de %d érkezett\n"
 
-#: src/proxy_internal.c:483
+#: src/proxy_internal.c:487
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
-msgstr "Communication error with proxy: got %d bytes packet\n"
+msgstr "Kommunikációs hiba a proxyval: %d bájtos csomag érkezett\n"
 
-#: src/proxy_internal.c:507
+#: src/proxy_internal.c:511
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
-msgstr "Communication error with proxy: malformed packet\n"
+msgstr "Kommunikációs hiba a proxyval: deformált csomag\n"
 
-#: src/proxy_internal.c:513
+#: src/proxy_internal.c:517
 #, c-format
 msgid "got asynchronous packet number %d\n"
-msgstr "got asynchronous packet number %d\n"
+msgstr "\"%d\" számú aszinkron csomag megérkezett\n"
 
-#: src/xen_internal.c:1937
+#: src/xen_internal.c:2305
 #, c-format
 msgid "allocating %d domain info"
-msgstr "allocating %d domain info"
+msgstr "%d tartományinfó lefoglalása"
 
-#~ msgid "Xen Daemon or Xen Store"
-#~ msgstr "Xen Daemon or Xen Store"
-
-#, fuzzy
-#~ msgid "file conatining an XML network description"
-#~ msgstr "file conatining an XML domain description"
-
-#~ msgid "Failed to create domain %s\n"
-#~ msgstr "Failed to create domain %s\n"
-
-#~ msgid "Failed to get devices for domain %s\n"
-#~ msgstr "Failed to get devices for domain %s\n"
-
-#~ msgid "Failed to resume new domain %s\n"
-#~ msgstr "Failed to resume new domain %s\n"
+#~ msgid "Failed to read description file %s"
+#~ msgstr "Olvasás a(z) %s leírófájlból nem sikerült"

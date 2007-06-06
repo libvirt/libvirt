@@ -1,16 +1,17 @@
 # translation of pa.po to Punjabi
-# Copyright (C) 2006 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2007 Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # A S Alam <apbrar@gmail.com>, 2006.
+# A S Alam <aalam@users.sf.net>, 2007.
 msgid ""
 msgstr ""
 "Project-Id-Version: pa\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-04-17 11:31+0200\n"
-"PO-Revision-Date: 2006-12-15 18:05+0530\n"
-"Last-Translator: A S Alam <apbrar@gmail.com>\n"
-"Language-Team: Punjabi <fedora-trans-pa@redhat.com>\n"
+"POT-Creation-Date: 2007-06-06 09:19+0200\n"
+"PO-Revision-Date: 2007-04-12 06:54+0530\n"
+"Last-Translator: A S Alam <aalam@users.sf.net>\n"
+"Language-Team: Punjabi <punjabi-l10n@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -29,327 +30,333 @@ msgstr "ਚੇਤਾਵਨੀ"
 msgid "error"
 msgstr "ਗਲਤੀ"
 
-#: src/virterror.c:344
+#: src/virterror.c:350
 msgid "No error message provided"
 msgstr "ਕੋਈ ਗਲਤੀ ਸੁਨੇਹਾ ਨਹੀਂ ਦਿੱਤਾ ਗਿਆ"
 
-#: src/virterror.c:399
+#: src/virterror.c:405
 #, c-format
 msgid "internal error %s"
 msgstr "ਅੰਦਰੂਨੀ ਗਲਤੀ %s"
 
-#: src/virterror.c:401
+#: src/virterror.c:407
 msgid "internal error"
 msgstr "ਅੰਦਰੂਨੀ ਗਲਤੀ"
 
-#: src/virterror.c:404
+#: src/virterror.c:410
 msgid "out of memory"
 msgstr "ਮੈਮੋਰੀ ਖਤਮ ਹੋ ਗਈ"
 
-#: src/virterror.c:408
+#: src/virterror.c:414
 msgid "no support for hypervisor"
 msgstr "ਹਾਈਪਰਵੀਜ਼ਰ ਲਈ ਸਹਾਇਕ ਨਹੀਂ"
 
-#: src/virterror.c:410
+#: src/virterror.c:416
 #, c-format
 msgid "no support for hypervisor %s"
 msgstr "ਹਾਈਪਰਵੀਜ਼ਰ %s ਲਈ ਸਹਾਇਕ ਨਹੀਂ"
 
-#: src/virterror.c:414
+#: src/virterror.c:420
 msgid "could not connect to hypervisor"
 msgstr "ਹਾਈਪਰਵੀਜ਼ਰ ਨਾਲ ਜੁੜ ਨਹੀਂ ਸਕਿਆ"
 
-#: src/virterror.c:416
+#: src/virterror.c:422
 #, c-format
 msgid "could not connect to %s"
 msgstr "%s ਨਾਲ ਜੁੜ ਨਹੀਂ ਸਕਿਆ"
 
-#: src/virterror.c:420
+#: src/virterror.c:426
 msgid "invalid connection pointer in"
 msgstr "ਇਸ ਵਿੱਚ ਗਲਤ ਕੁਨੈਕਸ਼ਨ ਇਸ਼ਾਰਾ"
 
-#: src/virterror.c:422
+#: src/virterror.c:428
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "%s ਵਿੱਚ ਗਲਤ ਕੁਨੈਕਸ਼ਨ ਇਸ਼ਾਰਾ"
 
-#: src/virterror.c:426
+#: src/virterror.c:432
 msgid "invalid domain pointer in"
 msgstr "ਇਸ ਵਿੱਚ ਗਲਤ ਡੋਮੇਨ ਇਸ਼ਾਰਾ"
 
-#: src/virterror.c:428
+#: src/virterror.c:434
 #, c-format
 msgid "invalid domain pointer in %s"
 msgstr "%s ਵਿੱਚ ਗਲਤ ਡੋਮੇਨ ਬਿੰਦੂ"
 
-#: src/virterror.c:432
+#: src/virterror.c:438
 msgid "invalid argument in"
 msgstr "ਇਸ ਵਿੱਚ ਗਲਤ ਮੁੱਲ"
 
-#: src/virterror.c:434
+#: src/virterror.c:440
 #, c-format
 msgid "invalid argument in %s"
 msgstr "%s ਵਿੱਚ ਗਲਤ ਮੁੱਲ"
 
-#: src/virterror.c:438
+#: src/virterror.c:444
 #, c-format
 msgid "operation failed: %s"
 msgstr "ਕਾਰਵਾਈ ਫੇਲ੍ਹ ਹੋਈ: %s"
 
-#: src/virterror.c:440
+#: src/virterror.c:446
 msgid "operation failed"
 msgstr "ਕਾਰਵਾਈ ਫੇਲ੍ਹ ਹੋਈ"
 
-#: src/virterror.c:444
+#: src/virterror.c:450
 #, c-format
 msgid "GET operation failed: %s"
 msgstr "GET ਕਾਰਵਾਈ ਫੇਲ੍ਹ: %s"
 
-#: src/virterror.c:446
+#: src/virterror.c:452
 msgid "GET operation failed"
 msgstr "GET ਕਾਰਵਾਈ ਫੇਲ੍ਹ ਹੋਈ"
 
-#: src/virterror.c:450
+#: src/virterror.c:456
 #, c-format
 msgid "POST operation failed: %s"
 msgstr "POST ਕਾਰਵਾਈ ਫੇਲ੍ਹ ਹੋਈ: %s"
 
-#: src/virterror.c:452
+#: src/virterror.c:458
 msgid "POST operation failed"
 msgstr "POST ਕਾਰਵਾਈ ਫੇਲ੍ਹ ਹੋਈ"
 
-#: src/virterror.c:455
+#: src/virterror.c:461
 #, c-format
 msgid "got unknown HTTP error code %d"
 msgstr "ਅਣਜਾਣ HTTP ਗਲਤੀ ਕੋਡ %d ਮਿਲਿਆ"
 
-#: src/virterror.c:459
+#: src/virterror.c:465
 #, c-format
 msgid "unknown host %s"
 msgstr "ਅਣਜਾਣ ਮੇਜ਼ਬਾਨ %s"
 
-#: src/virterror.c:461
+#: src/virterror.c:467
 msgid "unknown host"
 msgstr "ਅਣਜਾਣ ਮੇਜ਼ਬਾਨ"
 
-#: src/virterror.c:465
+#: src/virterror.c:471
 #, c-format
 msgid "failed to serialize S-Expr: %s"
 msgstr "S-Expr ਨੂੰ ਲੜੀਬੱਧ ਕਰਨ ਲਈ ਫੇਲ੍ਹ: %s"
 
-#: src/virterror.c:467
+#: src/virterror.c:473
 msgid "failed to serialize S-Expr"
 msgstr "S-Expr ਨੂੰ ਲੜੀਬੱਧ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virterror.c:471
+#: src/virterror.c:477
 msgid "could not use Xen hypervisor entry"
 msgstr "ਜ਼ੈੱਨ (Xen) ਹਾਈਪਰਵੀਜ਼ਰ ਇੰਦਰਾਜ਼ ਨਹੀਂ ਵਰਤਿਆ ਜਾ ਸਕਿਆ"
 
-#: src/virterror.c:473
+#: src/virterror.c:479
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "ਜ਼ੈੱਨ ਹਾਈਪਰਵੀਜ਼ਰ ਇੰਦਰਾਜ਼ %s ਨਹੀਂ ਵਰਤਿਆ ਜਾ ਸਕਿਆ"
 
-#: src/virterror.c:477
+#: src/virterror.c:483
 msgid "could not connect to Xen Store"
 msgstr "ਜ਼ੈੱਨ ਸਟੋਰ ਨਾਲ ਜੁੜਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ"
 
-#: src/virterror.c:479
+#: src/virterror.c:485
 #, c-format
 msgid "could not connect to Xen Store %s"
 msgstr "ਜ਼ੈੱਨ ਸਟੋਰ %s ਨਾਲ ਜੁੜਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ"
 
-#: src/virterror.c:482
+#: src/virterror.c:488
 #, c-format
 msgid "failed Xen syscall %s %d"
 msgstr "Xen syscall %s %d ਫੇਲ੍ਹ ਹੋਈ"
 
-#: src/virterror.c:486
+#: src/virterror.c:492
 msgid "unknown OS type"
 msgstr "ਅਣਜਾਣ OS ਕਿਸਮ"
 
-#: src/virterror.c:488
+#: src/virterror.c:494
 #, c-format
 msgid "unknown OS type %s"
 msgstr "ਅਣਜਾਣ OS ਕਿਸਮ %s"
 
-#: src/virterror.c:491
+#: src/virterror.c:497
 msgid "missing kernel information"
 msgstr "ਕਰਨਲ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/virterror.c:495
+#: src/virterror.c:501
 msgid "missing root device information"
 msgstr "ਰੂਟ (root) ਜੰਤਰ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/virterror.c:497
+#: src/virterror.c:503
 #, c-format
 msgid "missing root device information in %s"
 msgstr "%s ਵਿੱਚ ਰੂਟ (root) ਜੰਤਰ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/virterror.c:501
+#: src/virterror.c:507
 msgid "missing source information for device"
 msgstr "ਜੰਤਰ ਲਈ ਸਰੋਤ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/virterror.c:503
+#: src/virterror.c:509
 #, c-format
 msgid "missing source information for device %s"
 msgstr "%s ਜੰਤਰ ਲਈ ਸਰੋਤ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/virterror.c:507
+#: src/virterror.c:513
 msgid "missing target information for device"
 msgstr "ਜੰਤਰ ਲਈ ਨਿਯਤ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/virterror.c:509
+#: src/virterror.c:515
 #, c-format
 msgid "missing target information for device %s"
 msgstr "%s ਜੰਤਰ ਲਈ ਨਿਯਤ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/virterror.c:513
+#: src/virterror.c:519
 msgid "missing domain name information"
 msgstr "ਡੋਮੇਨ ਨਾਂ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/virterror.c:515
+#: src/virterror.c:521
 #, c-format
 msgid "missing domain name information in %s"
 msgstr "%s ਵਿੱਚ ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/virterror.c:519
+#: src/virterror.c:525
 msgid "missing operating system information"
 msgstr "ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/virterror.c:521
+#: src/virterror.c:527
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "%s ਵਿੱਚ ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/virterror.c:525
+#: src/virterror.c:531
 msgid "missing devices information"
 msgstr "ਜੰਤਰ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/virterror.c:527
+#: src/virterror.c:533
 #, c-format
 msgid "missing devices information for %s"
 msgstr "%s ਲਈ ਜੰਤਰ ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ"
 
-#: src/virterror.c:531
+#: src/virterror.c:537
 msgid "too many drivers registered"
 msgstr "ਬਹੁਤ ਜ਼ਿਆਦਾ ਡਰਾਇਵਰ ਰਜਿਸਟਰ ਹਨ"
 
-#: src/virterror.c:533
+#: src/virterror.c:539
 #, c-format
 msgid "too many drivers registered in %s"
 msgstr "%s ਵਿੱਚ ਬਹੁਤ ਜ਼ਿਆਦਾ ਡਰਾਇਵਰ ਰਜਿਸਟਰ ਹਨ"
 
-#: src/virterror.c:537
+#: src/virterror.c:543
 msgid "library call failed, possibly not supported"
 msgstr "ਲਾਇਬ੍ਰੇਰੀ ਕਾਲ ਅਸਫ਼ਲ ਹੈ, ਸੰਭਵ ਤੌਰ ਉੱਤੇ ਸਹਾਇਕ ਨਹੀਂ ਹੈ"
 
-#: src/virterror.c:539
+#: src/virterror.c:545
 #, c-format
 msgid "library call %s failed, possibly not supported"
 msgstr "ਲਾਇਬ੍ਰੇਰੀ ਕਾਲ %s ਅਸਫ਼ਲ ਹੈ, ਸੰਭਵ ਤੌਰ ਉੱਤੇ ਸਹਾਇਕ ਨਹੀਂ ਹੈ"
 
-#: src/virterror.c:543
+#: src/virterror.c:549
 msgid "XML description not well formed or invalid"
 msgstr "XML ਵੇਰਵਾ ਠੀਕ ਰੂਪ ਵਿੱਚ ਨਹੀਂ ਜਾਂ ਗਲਤ ਹੈ"
 
-#: src/virterror.c:545
+#: src/virterror.c:551
 #, c-format
 msgid "XML description for %s is not well formed or invalid"
 msgstr "%s ਲਈ XML ਵੇਰਵਾ ਠੀਕ ਰੂਪ ਵਿੱਚ ਨਹੀਂ ਜਾਂ ਗਲਤ ਹੈ"
 
-#: src/virterror.c:549
+#: src/virterror.c:555
 msgid "this domain exists already"
 msgstr "ਇਹ ਡੋਮੇਨ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
 
-#: src/virterror.c:551
+#: src/virterror.c:557
 #, c-format
 msgid "domain %s exists already"
 msgstr "ਡੋਮੇਨ %s ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
 
-#: src/virterror.c:555
+#: src/virterror.c:561
 msgid "operation forbidden for read only access"
 msgstr "ਕਾਰਵਾਈ ਸਿਰਫ਼ ਪੜ੍ਹਨ ਲਈ ਹੀ ਲੁਕਵੀਂ ਹੈ"
 
-#: src/virterror.c:557
+#: src/virterror.c:563
 #, c-format
 msgid "operation %s forbidden for read only access"
 msgstr "%s ਕਾਰਵਾਈ ਸਿਰਫ਼ ਪੜ੍ਹਨ ਲਈ ਹੀ ਲੁਕਵੀਂ ਹੈ"
 
-#: src/virterror.c:561
+#: src/virterror.c:567
 msgid "failed to open configuration file for reading"
 msgstr "ਪੜ੍ਹਨ ਵਾਸਤੇ ਸੰਰਚਨਾ ਫਾਇਲ ਖੋਲ੍ਹਣ ਲਈ ਅਸਫ਼ਲ ਹੈ"
 
-#: src/virterror.c:563
+#: src/virterror.c:569
 #, c-format
 msgid "failed to open %s for reading"
 msgstr "%s ਨੂੰ ਪੜ੍ਹਨ ਵਾਸਤੇ ਖੋਲ੍ਹਣ ਲਈ ਅਸਫ਼ਲ"
 
-#: src/virterror.c:567
+#: src/virterror.c:573
 msgid "failed to read configuration file"
 msgstr "ਸੰਰਚਨਾ ਫਾਇਲ ਪੜ੍ਹਨ ਲਈ ਅਸਫ਼ਲ"
 
-#: src/virterror.c:569
+#: src/virterror.c:575
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "ਸੰਰਚਨਾ ਫਾਇਲ %s ਪੜ੍ਹਨ ਲਈ ਅਸਫ਼ਲ"
 
-#: src/virterror.c:573
+#: src/virterror.c:579
 msgid "failed to parse configuration file"
 msgstr "ਸੰਰਚਨਾ ਫਾਇਲ ਪਾਰਸ ਕਰਨ ਲਈ ਅਸਫ਼ਲ"
 
-#: src/virterror.c:575
+#: src/virterror.c:581
 #, c-format
 msgid "failed to parse configuration file %s"
 msgstr "ਸੰਰਚਨਾ ਫਾਇਲ %s ਪਾਰਸ ਕਰਨ ਲਈ ਅਸਫ਼ਲ"
 
-#: src/virterror.c:579
+#: src/virterror.c:585
 msgid "configuration file syntax error"
 msgstr "ਸੰਰਚਨਾ ਫਾਇਲ ਸੰਟੈਕਸ ਗਲਤੀ"
 
-#: src/virterror.c:581
+#: src/virterror.c:587
 #, c-format
 msgid "configuration file syntax error: %s"
 msgstr "ਸੰਰਚਨਾ ਫਾਇਲ ਸੰਟੈਕਸ ਗਲਤੀ: %s"
 
-#: src/virterror.c:585
+#: src/virterror.c:591
 msgid "failed to write configuration file"
 msgstr "ਸੰਰਚਨਾ ਫਾਇਲ ਲਿਖਣ ਦੌਰਾਨ ਗਲਤੀ"
 
-#: src/virterror.c:587
+#: src/virterror.c:593
 #, c-format
 msgid "failed to write configuration file: %s"
 msgstr "ਸੰਰਚਨਾ ਫਾਇਲ ਲਿਖਣ ਲਈ ਅਸਫ਼ਲ: %s"
 
-#: src/virterror.c:591
-#, fuzzy
-msgid "parser error"
-msgstr "ਅੰਦਰੂਨੀ ਗਲਤੀ"
-
 #: src/virterror.c:597
-#, fuzzy
-msgid "invalid network pointer in"
-msgstr "ਇਸ ਵਿੱਚ ਗਲਤ ਕੁਨੈਕਸ਼ਨ ਇਸ਼ਾਰਾ"
-
-#: src/virterror.c:599
-#, fuzzy, c-format
-msgid "invalid network pointer in %s"
-msgstr "%s ਵਿੱਚ ਗਲਤ ਕੁਨੈਕਸ਼ਨ ਇਸ਼ਾਰਾ"
+msgid "parser error"
+msgstr "ਪਾਰਸਰ ਗਲਤੀ"
 
 #: src/virterror.c:603
-#, fuzzy
-msgid "this network exists already"
-msgstr "ਇਹ ਡੋਮੇਨ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
+msgid "invalid network pointer in"
+msgstr "ਗਲਤ ਨੈਟਵਰਕ ਪੁਆਇੰਟਰ ਹੈ"
 
 #: src/virterror.c:605
-#, fuzzy, c-format
-msgid "network %s exists already"
-msgstr "ਡੋਮੇਨ %s ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
+#, c-format
+msgid "invalid network pointer in %s"
+msgstr "%s ਵਿੱਚ ਗਲਤ ਨੈੱਟਵਰਕ ਪੁਆਇੰਟਰ ਹੈ"
 
 #: src/virterror.c:609
-#, fuzzy
+msgid "this network exists already"
+msgstr "ਇਹ ਨੈੱਟਵਰਕ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
+
+#: src/virterror.c:611
+#, c-format
+msgid "network %s exists already"
+msgstr "ਨੈੱਟਵਰਕ %s ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ"
+
+#: src/virterror.c:615
 msgid "system call error"
-msgstr "ਅੰਦਰੂਨੀ ਗਲਤੀ"
+msgstr "ਸਿਸਟਮ ਕਾਲ ਗਲਤੀ"
+
+#: src/virterror.c:621
+#, fuzzy
+msgid "RPC error"
+msgstr "ਗਲਤੀ"
+
+#: src/virterror.c:627
+#, fuzzy
+msgid "GNUTLS call error"
+msgstr "ਸਿਸਟਮ ਕਾਲ ਗਲਤੀ"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -395,10 +402,10 @@ msgstr "ਸਰਵਰ ਜਵਾਬ ਪਾਰਸ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 msgid "allocate new context"
 msgstr "ਨਵਾਂ ਪਰਸੰਗ ਜਾਰੀ"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:896 src/test.c:926 src/test.c:950
-#: src/test.c:975 src/xend_internal.c:1863 src/xend_internal.c:2709
-#: src/xend_internal.c:2958 src/xs_internal.c:648 src/proxy_internal.c:832
-#: src/proxy_internal.c:879 src/proxy_internal.c:930
+#: src/hash.c:770 src/hash.c:775 src/test.c:904 src/test.c:934 src/test.c:958
+#: src/test.c:983 src/xend_internal.c:1882 src/xend_internal.c:2731
+#: src/xend_internal.c:2980 src/xs_internal.c:651 src/proxy_internal.c:834
+#: src/proxy_internal.c:881 src/proxy_internal.c:932
 msgid "allocating domain"
 msgstr "ਡੋਮੇਨ ਜਾਰੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ"
 
@@ -410,145 +417,150 @@ msgstr "ਕੁਨੈਕਸ਼ਨ ਹੈਸ਼ ਸਾਰਣੀ ਵਿੱਚ ਡ�
 msgid "domain missing from connection hash table"
 msgstr "ਕੁਨੈਕਸ਼ਨ ਹੈਸ਼ ਸਾਰਣੀ ਵਿੱਚੋਂ ਡੋਮੇਨ ਗੁੰਮ ਹੈ"
 
-#: src/hash.c:952 src/hash.c:957
-#, fuzzy
+#: src/hash.c:948 src/hash.c:953
 msgid "allocating network"
-msgstr "ਨੋਡ ਜਾਰੀ ਕੀਤਾ ਰਿਹਾ ਹੈ"
+msgstr "ਨੈੱਟਵਰਕ ਜਾਰੀ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
 
-#: src/hash.c:967
-#, fuzzy
+#: src/hash.c:963
 msgid "failed to add network to connection hash table"
-msgstr "ਕੁਨੈਕਸ਼ਨ ਹੈਸ਼ ਸਾਰਣੀ ਵਿੱਚ ਡੋਮੇਨ ਜੋੜਨ ਲਈ ਫੇਲ੍ਹ ਹੈ"
+msgstr "ਨੈੱਟਵਰਕ ਨੂੰ ਕੁਨੈਕਸ਼ਨ ਹੈਸ਼ ਸਾਰਣੀ ਵਿੱਚ ਜੋੜਨ ਲਈ ਫੇਲ੍ਹ ਹੈ"
 
-#: src/hash.c:1019
-#, fuzzy
+#: src/hash.c:1015
 msgid "network missing from connection hash table"
-msgstr "ਕੁਨੈਕਸ਼ਨ ਹੈਸ਼ ਸਾਰਣੀ ਵਿੱਚੋਂ ਡੋਮੇਨ ਗੁੰਮ ਹੈ"
+msgstr "ਕੁਨੈਕਸ਼ਨ ਹੈਸ਼ ਸਾਰਣੀ ਵਿੱਚੋਂ ਨੈੱਟਵਰਕ ਗੁੰਮ ਹੈ"
 
-#: src/test.c:281 src/test.c:468 src/test.c:1099 src/test.c:1133
-#: src/test.c:1187
+#: src/test.c:284 src/test.c:471 src/test.c:1107 src/test.c:1141
+#: src/test.c:1195
 msgid "getting time of day"
-msgstr "ਦਿਨ ਦਾ ਸਮਾਂ ਪ੍ਰਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
+msgstr "ਦਿਨ ਦਾ ਸਮਾਂ ਲਿਆ ਜਾ ਰਿਹਾ ਹੈ"
 
-#: src/test.c:287 src/test.c:422 src/test.c:447 src/test.c:1393
+#: src/test.c:290 src/test.c:425 src/test.c:450 src/test.c:1401
 msgid "domain"
 msgstr "ਡੋਮੇਨ"
 
-#: src/test.c:293 src/test.c:551
+#: src/test.c:296 src/test.c:554
 msgid "creating xpath context"
 msgstr "xpath ਪ੍ਰਸੰਗ ਬਣਾਇਆ ਜਾ ਰਿਹਾ ਹੈ"
 
-#: src/test.c:299
+#: src/test.c:302
 msgid "domain name"
 msgstr "ਡੋਮੇਨ ਨਾਂ"
 
-#: src/test.c:305 src/test.c:310
+#: src/test.c:308 src/test.c:313
 msgid "domain uuid"
 msgstr "ਡੋਮੇਨ uuid"
 
-#: src/test.c:318
+#: src/test.c:321
 msgid "domain memory"
 msgstr "ਡੋਮੇਨ ਮੈਮੋਰੀ"
 
-#: src/test.c:327
-#, fuzzy
+#: src/test.c:330
 msgid "domain current memory"
-msgstr "ਡੋਮੇਨ ਮੈਮੋਰੀ"
+msgstr "ਡੋਮੇਨ ਮੌਜੂਦਾ ਮੈਮੋਰੀ"
 
-#: src/test.c:337
+#: src/test.c:340
 msgid "domain vcpus"
 msgstr "ਡੋਮੇਨ vcpu"
 
-#: src/test.c:346
+#: src/test.c:349
 msgid "domain reboot behaviour"
 msgstr "ਡੋਮੇਨ ਮੁੜ-ਚਾਲੂ ਰਵੱਈਆ"
 
-#: src/test.c:356
+#: src/test.c:359
 msgid "domain poweroff behaviour"
 msgstr "ਡੋਮੇਨ ਬੰਦ ਕਰਨ ਰਵੱਈਆ"
 
-#: src/test.c:366
+#: src/test.c:369
 msgid "domain crash behaviour"
 msgstr "ਡੋਮੇਨ ਨਸ਼ਟ ਹੋਣ ਰਵੱਈਆ"
 
-#: src/test.c:440
+#: src/test.c:443
 msgid "load domain definition file"
 msgstr "ਡੋਮੇਨ ਭਾਸ਼ਾ ਫਾਇਲ ਲੋਡ"
 
-#: src/test.c:530
+#: src/test.c:533
 msgid "loading host definition file"
 msgstr "ਮੇਜ਼ਬਾਨ ਪ੍ਰੀਭਾਸ਼ਾ ਫਾਇਲ ਲੋਡ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ"
 
-#: src/test.c:537
+#: src/test.c:540
 msgid "host"
 msgstr "ਮੇਜ਼ਬਾਨ"
 
-#: src/test.c:545
+#: src/test.c:548
 msgid "node"
 msgstr "ਨੋਡ"
 
-#: src/test.c:565
+#: src/test.c:568
 msgid "node cpu numa nodes"
 msgstr "node cpu numa nodes"
 
-#: src/test.c:573
+#: src/test.c:576
 msgid "node cpu sockets"
 msgstr "node cpu sockets"
 
-#: src/test.c:581
+#: src/test.c:584
 msgid "node cpu cores"
 msgstr "node cpu cores"
 
-#: src/test.c:589
+#: src/test.c:592
 msgid "node cpu threads"
 msgstr "node cpu threads"
 
-#: src/test.c:600
+#: src/test.c:603
 msgid "node active cpu"
 msgstr "node active cpu"
 
-#: src/test.c:607
+#: src/test.c:610
 msgid "node cpu mhz"
 msgstr "node cpu mhz"
 
-#: src/test.c:622
+#: src/test.c:625
 msgid "node memory"
 msgstr "node memory"
 
-#: src/test.c:628
+#: src/test.c:631
 msgid "node domain list"
 msgstr "node domain list"
 
-#: src/test.c:638
+#: src/test.c:641
 msgid "resolving domain filename"
 msgstr "ਡੋਮੇਨ ਫਾਇਲ ਨਾਂ ਹੱਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
 
-#: src/test.c:676
+#: src/test.c:679
 msgid "allocating node"
 msgstr "ਨੋਡ ਜਾਰੀ ਕੀਤਾ ਰਿਹਾ ਹੈ"
 
-#: src/test.c:734
+#: src/test.c:737
+msgid "testOpen: supply a path or use test:///default"
+msgstr ""
+
+#: src/test.c:742
 msgid "too many connections"
 msgstr "ਬਹੁਤ ਜ਼ਿਆਦਾ ਕੁਨੈਕਸ਼ਨ"
 
-#: src/test.c:881
+#: src/test.c:749
+#, fuzzy
+msgid "allocating private data"
+msgstr "ਮੁੱਲ ਲਰੀ ਜਾਰੀ"
+
+#: src/test.c:889
 msgid "too many domains"
 msgstr "ਬਹੁਤ ਜ਼ਿਆਦਾ ਡੋਮੇਨਾਂ"
 
-#: src/test.c:1425
-#, fuzzy
+#: src/test.c:1433
 msgid "Domain is already running"
-msgstr "ਡੋਮੇਨ ਪਹਿਲਾਂ ਹੀ ਸਰਗਰਮ ਹੈ"
+msgstr "ਡੋਮੇਨ ਪਹਿਲਾਂ ਹੀ ਚੱਲ ਰਹੀ ਹੈ"
 
-#: src/test.c:1452
+#: src/test.c:1460
 msgid "Domain is still running"
-msgstr ""
+msgstr "ਡੋਮੇਨ ਹਾਲੇ ਵੀ ਚੱਲ ਰਹੀ ਹੈ"
 
 #: src/xml.c:295
 msgid "growing buffer"
 msgstr "ਬਫ਼ਰ ਵੱਧ ਰਿਹਾ ਹੈ"
 
-#: src/xml.c:347 src/xend_internal.c:1508 src/xend_internal.c:1527
+#: src/xml.c:347 src/xend_internal.c:599 src/xend_internal.c:815
+#: src/xend_internal.c:1524 src/xend_internal.c:1543
 msgid "allocate new buffer"
 msgstr "ਨਵਾਂ ਬਫ਼ਰ ਜਾਰੀ"
 
@@ -564,74 +576,73 @@ msgstr "ਇੱਕ ਨੋਡ ਜਾਰੀ ਕਰਨ ਲਈ ਅਸਫ਼ਲ"
 msgid "failed to copy a string"
 msgstr "ਇੱਕ ਸਤਰ ਨਕਲ ਕਰਨ ਦੌਰਾਨ ਫੇਲ੍ਹ"
 
-#: src/xend_internal.c:282 src/xend_internal.c:285
+#: src/xend_internal.c:285 src/xend_internal.c:288
 msgid "failed to read from Xen Daemon"
 msgstr "ਜੈੱਨ ਡੈਮਨ ਤੋਂ ਪੜ੍ਹਨ ਲਈ ਅਸਫ਼ਲ"
 
-#: src/xend_internal.c:1006
+#: src/xend_internal.c:1022
 msgid "failed to urlencode the create S-Expr"
 msgstr "S-Expr ਬਣਾਉਣ ਵਾਸਤੇ urlencode ਲਈ ਫੇਲ੍ਹ"
 
-#: src/xend_internal.c:1047
+#: src/xend_internal.c:1063
 msgid "domain information incomplete, missing domid"
 msgstr "ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਅਧੂਰੀ ਹੈ, domid ਨਹੀਂ ਹੈ"
 
-#: src/xend_internal.c:1053
+#: src/xend_internal.c:1069
 msgid "domain information incorrect domid not numeric"
 msgstr "ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਗਲਤ ਹੈ, domid ਅੰਕੀ ਨਹੀਂ ਹੈ"
 
-#: src/xend_internal.c:1061 src/xend_internal.c:1110
+#: src/xend_internal.c:1077 src/xend_internal.c:1126
 msgid "domain information incomplete, missing uuid"
 msgstr "ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਅਧੂਰੀ ਹੈ, uuid ਗੁੰਮ ਹੈ"
 
-#: src/xend_internal.c:1101 src/xend_internal.c:1376
+#: src/xend_internal.c:1117 src/xend_internal.c:1392
 msgid "domain information incomplete, missing name"
 msgstr "ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਅਧੂਰੀ ਹੈ, ਨਾਂ ਨਹੀਂ ਹੈ"
 
-#: src/xend_internal.c:1276 src/xend_internal.c:1307
+#: src/xend_internal.c:1292 src/xend_internal.c:1323
 #, fuzzy
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਅਧੂਰੀ ਹੈ, ਕਰਨਲ ਗੁੰਮ ਹੈ"
 
-#: src/xend_internal.c:1364
-#, fuzzy
+#: src/xend_internal.c:1380
 msgid "domain information incomplete, missing id"
-msgstr "ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਅਧੂਰੀ ਹੈ, uuid ਗੁੰਮ ਹੈ"
+msgstr "ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਅਧੂਰੀ ਹੈ, id ਗੁੰਮ ਹੈ"
 
-#: src/xend_internal.c:1477
+#: src/xend_internal.c:1493
 msgid "domain information incomplete, vbd has no dev"
 msgstr "ਡੋਮੇਨ ਜਾਣਾਕਰੀ ਅਧੂਰੀ ਹੈ, vbd ਕੋਲ ਕੋਈ dev ਨਹੀਂ ਹੈ"
 
-#: src/xend_internal.c:1492
+#: src/xend_internal.c:1508
 msgid "domain information incomplete, vbd has no src"
 msgstr "ਡੋਮੇਨ ਜਾਣਾਕਰੀ ਅਧੂਰੀ ਹੈ, vbd ਕੋਲ ਕੋਈ ਸਰੋਤ ਨਹੀਂ ਹੈ"
 
-#: src/xend_internal.c:1501
+#: src/xend_internal.c:1517
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd ਫਾਇਲ ਨਾਂ ਪਾਰਸ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਡਰਾਇਵਰ ਕਿਸਮ ਨਹੀਂ ਹੈ"
 
-#: src/xend_internal.c:1520
+#: src/xend_internal.c:1536
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd ਫਾਇਲ ਨਾਂ ਪਾਰਸ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਡਰਾਇਵਰ ਕਿਸਮ ਨਹੀਂ ਹੈ"
 
-#: src/xend_internal.c:1882
+#: src/xend_internal.c:1901
 msgid "failed to parse Xend domain information"
 msgstr "Xend ਡੋਮੇਨ ਜਾਣਾਕਰੀ ਪਾਰਸ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/xend_internal.c:3145
-#, fuzzy, c-format
+#: src/xend_internal.c:3170
+#, c-format
 msgid "Failed to create inactive domain %s\n"
-msgstr "ਡੋਮੇਨ %s ਬਣਾਉਣ ਲਈ ਅਸਫ਼ਲ\n"
+msgstr "ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨ %s ਬਣਾਉਣ ਲਈ ਅਸਫ਼ਲ ਹੈ\n"
 
-#: src/virsh.c:269
+#: src/virsh.c:271
 msgid "print help"
 msgstr "ਸਹਾਇਤਾ ਛਾਪੋ"
 
-#: src/virsh.c:270
+#: src/virsh.c:272
 msgid "Prints global help or command specific help."
 msgstr "ਗਲੋਬਲ ਸਹਾਇਤਾ ਜਾਂ ਖਾਸ ਕਮਾਂਡ ਸਹਾਇਤਾ ਛਾਪੋ।"
 
-#: src/virsh.c:288
+#: src/virsh.c:290
 msgid ""
 "Commands:\n"
 "\n"
@@ -639,916 +650,957 @@ msgstr ""
 "ਕਮਾਂਡਾਂ:\n"
 "\n"
 
-#: src/virsh.c:302
-#, fuzzy
-msgid "autostart a domain"
-msgstr "ਇੱਕ ਡੋਮੇਨ ਸ਼ੁਰੂ ਕਰੋ।"
-
 #: src/virsh.c:304
-msgid "Configure a domain to be automatically started at boot."
-msgstr ""
+msgid "autostart a domain"
+msgstr "ਇੱਕ ਡੋਮੇਨ ਆਟੋ-ਸਟਾਰਟ ਕਰੋ"
 
-#: src/virsh.c:309 src/virsh.c:409 src/virsh.c:595 src/virsh.c:633
-#: src/virsh.c:864 src/virsh.c:946 src/virsh.c:991 src/virsh.c:1030
-#: src/virsh.c:1069 src/virsh.c:1108 src/virsh.c:1147 src/virsh.c:1224
-#: src/virsh.c:1307 src/virsh.c:1397 src/virsh.c:1453 src/virsh.c:1497
-#: src/virsh.c:1602 src/virsh.c:2338
+#: src/virsh.c:306
+msgid "Configure a domain to be automatically started at boot."
+msgstr "ਇੱਕ ਡੋਮੇਨ ਨੂੰ ਬੂਟ ਸਮੇਂ ਆਟੋਮੈਟਿਕ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਸੰਰਚਨਾ ਕਰੋ।"
+
+#: src/virsh.c:311 src/virsh.c:411 src/virsh.c:597 src/virsh.c:635
+#: src/virsh.c:910 src/virsh.c:954 src/virsh.c:1115 src/virsh.c:1160
+#: src/virsh.c:1199 src/virsh.c:1238 src/virsh.c:1277 src/virsh.c:1316
+#: src/virsh.c:1393 src/virsh.c:1476 src/virsh.c:1566 src/virsh.c:1622
+#: src/virsh.c:1666 src/virsh.c:1771 src/virsh.c:2491 src/virsh.c:2570
+#: src/virsh.c:2624
 msgid "domain name, id or uuid"
 msgstr "ਡੋਮੇਨ ਨਾਂ, id ਜਾਂ uuid"
 
-#: src/virsh.c:310 src/virsh.c:1743
+#: src/virsh.c:312 src/virsh.c:1912
 msgid "disable autostarting"
-msgstr ""
+msgstr "ਆਟੋ-ਸਟਾਰਟ ਕਰਨਾ ਆਯੋਗ"
 
-#: src/virsh.c:331
+#: src/virsh.c:333
 #, fuzzy, c-format
 msgid "Failed to mark domain %s as autostarted"
-msgstr "%s ਡੋਮੇਨ ਨੂੰ %s ਲਈ ਸੰਭਾਲਣ ਲਈ ਫੇਲ੍ਹ"
+msgstr "%s ਡੋਮੇਨ %s ਨੂੰ ਆਟੋ-ਸਟਾਰਟ ਕਰਨ ਲਈ ਫੇਲ੍ਹ ਹੋਇਆ"
 
-#: src/virsh.c:334
+#: src/virsh.c:336
 #, fuzzy, c-format
 msgid "Failed to unmark domain %s as autostarted"
-msgstr "%s ਡੋਮੇਨ ਨੂੰ %s ਲਈ ਸੰਭਾਲਣ ਲਈ ਫੇਲ੍ਹ"
-
-#: src/virsh.c:341
-#, fuzzy, c-format
-msgid "Domain %s marked as autostarted\n"
-msgstr "ਡੋਮੇਨ %s ਸ਼ੁਰੂ ਕੀਤੀ ਗਈ ਹੈ\n"
+msgstr "%s ਡੋਮੇਨ %s ਨੂੰ ਆਟੋ-ਸਟਾਰਟ ਕਰਨ ਲਈ ਫੇਲ੍ਹ ਹੋਇਆ"
 
 #: src/virsh.c:343
 #, fuzzy, c-format
-msgid "Domain %s unmarked as autostarted\n"
-msgstr "ਡੋਮੇਨ %s ਸ਼ੁਰੂ ਕੀਤੀ ਗਈ ਹੈ\n"
+msgid "Domain %s marked as autostarted\n"
+msgstr "ਡੋਮੇਨ %s %sਆਟੋਸਟਾਰਟ ਕਰਨ ਲਈ ਮਾਰਕ ਕੀਤੀ ਗਈ ਹੈ\n"
 
-#: src/virsh.c:353
+#: src/virsh.c:345
+#, fuzzy, c-format
+msgid "Domain %s unmarked as autostarted\n"
+msgstr "ਡੋਮੇਨ %s %sਆਟੋਸਟਾਰਟ ਕਰਨ ਲਈ ਮਾਰਕ ਕੀਤੀ ਗਈ ਹੈ\n"
+
+#: src/virsh.c:355
 msgid "(re)connect to hypervisor"
 msgstr "ਹਾਇਪਰਵੀਜ਼ਰ ਨਾਲ (ਮੁੜ-)ਜੁੜੋ"
 
-#: src/virsh.c:355
+#: src/virsh.c:357
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr "ਲੋਕਲ ਹਾਈਪਰਵੀਜ਼ਰ ਨਾਲ ਜੁੜੋ। ਇਹ ਸ਼ੈੱਲ ਮੁੜ-ਚਾਲੂ ਹੋਣ ਨਾਲ ਵਿਚੇ-ਸ਼ਾਮਿਲ ਕਮਾਂਡ ਬਣ ਜਾਵੇਗੀ।"
 
-#: src/virsh.c:360
+#: src/virsh.c:362
 msgid "hypervisor connection URI"
 msgstr "ਹਾਈਪਰਵੀਜ਼ਰ ਕੁਨੈਕਸ਼ਰ URI"
 
-#: src/virsh.c:361
+#: src/virsh.c:363
 msgid "read-only connection"
 msgstr "ਸਿਰਫ਼ ਪੜ੍ਹਨ ਲਈ ਕੁਨੈਕਸ਼ਨ"
 
-#: src/virsh.c:373
+#: src/virsh.c:375
 msgid "Failed to disconnect from the hypervisor"
 msgstr "ਹਾਈਪਰਵੀਜ਼ਰ ਨਾਲ ਕੁਨੈਕਸ਼ਨ ਬੰਦ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:392
+#: src/virsh.c:394
 msgid "Failed to connect to the hypervisor"
 msgstr "ਹਾਈਪਰਵੀਜ਼ਰ ਨਾਲ ਜੁੜਨ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:402
-msgid "connect to the guest console"
-msgstr ""
-
 #: src/virsh.c:404
+msgid "connect to the guest console"
+msgstr "ਗੈੱਸਟ ਕਨਸੋਂਲ ਨਾਲ ਜੁੜੋ"
+
+#: src/virsh.c:406
 msgid "Connect the virtual serial console for the guest"
-msgstr ""
+msgstr "ਗੈਸਟ ਲਈ ਵੁਰਚੁਅਲ ਸੀਰੀਅਲ ਕਨਸੋਲ ਜੁੜੋ"
 
-#: src/virsh.c:449
+#: src/virsh.c:451
 msgid "No console available for domain\n"
-msgstr ""
+msgstr "ਡੋਮੇਨ ਲਈ ਕੋਈ ਕਨਸੋਂਲ ਉਪਲੱਬਧ ਹੈ\n"
 
-#: src/virsh.c:467
+#: src/virsh.c:469
 msgid "list domains"
 msgstr "ਡੋਮੇਨ ਸੂਚੀ"
 
-#: src/virsh.c:468
+#: src/virsh.c:470
 msgid "Returns list of domains."
 msgstr "ਡੋਮੇਨਾਂ ਦੀ ਸੂਚੀ ਦਿੰਦੀ ਹੈ।"
 
-#: src/virsh.c:473
+#: src/virsh.c:475
 msgid "list inactive domains"
 msgstr "ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨ ਸੂਚੀ"
 
-#: src/virsh.c:474
+#: src/virsh.c:476
 msgid "list inactive & active domains"
 msgstr "ਨਾ-ਸਰਗਰਮ ਅਤੇ ਸਰਗਰਮ ਡੋਮੇਨਾਂ ਦੀ ਸੂਚੀ"
 
-#: src/virsh.c:496 src/virsh.c:503
+#: src/virsh.c:498 src/virsh.c:505
 msgid "Failed to list active domains"
 msgstr "ਸਰਗਰਮ ਡੋਮੇਨਾਂ ਦੀ ਸੂਚੀ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:514 src/virsh.c:523
+#: src/virsh.c:516 src/virsh.c:525
 msgid "Failed to list inactive domains"
 msgstr "ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨਾਂ ਦੀ ਸੂਚੀ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:533
+#: src/virsh.c:535
 msgid "Id"
 msgstr "Id"
 
-#: src/virsh.c:533 src/virsh.c:2044
+#: src/virsh.c:535 src/virsh.c:2197
 msgid "Name"
 msgstr "ਨਾਂ"
 
-#: src/virsh.c:533 src/virsh.c:2044
+#: src/virsh.c:535 src/virsh.c:2197
 msgid "State"
 msgstr "ਹਾਲਤ"
 
-#: src/virsh.c:546 src/virsh.c:568 src/virsh.c:3063 src/virsh.c:3079
+#: src/virsh.c:548 src/virsh.c:570 src/virsh.c:3328 src/virsh.c:3344
 msgid "no state"
 msgstr "ਕੋਈ ਹਾਲਤ ਨਹੀਂ"
 
-#: src/virsh.c:589
+#: src/virsh.c:591
 msgid "domain state"
 msgstr "ਡੋਮੇਨ ਹਾਲਤ"
 
-#: src/virsh.c:590
+#: src/virsh.c:592
 msgid "Returns state about a running domain."
 msgstr "ਇੱਕ ਚੱਲਦੀ ਡੋਮੇਨ ਬਾਰੇ ਹਾਲਤ ਦੱਸਦੀ ਹੈ।"
 
-#: src/virsh.c:627
+#: src/virsh.c:629
 msgid "suspend a domain"
 msgstr "ਇੱਕ ਡੋਮੇਨ ਮੁਅੱਤਲ ਕਰੋ"
 
-#: src/virsh.c:628
+#: src/virsh.c:630
 msgid "Suspend a running domain."
 msgstr "ਇੱਕ ਚੱਲਦੀ ਡੋਮੇਨ ਨੂੰ ਮੁਅੱਤਲ ਕਰਦੀ ਹੈ।"
 
-#: src/virsh.c:651
+#: src/virsh.c:653
 #, c-format
 msgid "Domain %s suspended\n"
 msgstr "ਡੋਮੇਨ %s ਮੁਅੱਤਲ ਕੀਤੀ ਗਈ ਹੈ\n"
 
-#: src/virsh.c:653
+#: src/virsh.c:655
 #, c-format
 msgid "Failed to suspend domain %s"
 msgstr "ਡੋਮੇਨ %s ਮੁਅੱਤਲ ਕਰਨ ਲਈ ਫੇਲ੍ਹ ਹੈ"
 
-#: src/virsh.c:666
+#: src/virsh.c:668
 msgid "create a domain from an XML file"
 msgstr "ਇੱਕ XML ਫਾਇਲ ਤੋਂ ਡੋਮੇਨ ਫਾਇਲ ਬਣਾਓ"
 
-#: src/virsh.c:667
+#: src/virsh.c:669
 msgid "Create a domain."
 msgstr "ਇੱਕ ਡੋਮੇਨ ਬਣਾਓ:"
 
-#: src/virsh.c:672
+#: src/virsh.c:674
 msgid "file conatining an XML domain description"
 msgstr "ਫਾਇਲ 'ਚ ਇੱਕ XML ਡੋਮੇਨ ਵੇਰਵਾ ਹੈ"
 
-#: src/virsh.c:695 src/virsh.c:700 src/virsh.c:750 src/virsh.c:755
-#: src/virsh.c:1815 src/virsh.c:1820 src/virsh.c:1871 src/virsh.c:1876
-#, c-format
-msgid "Failed to read description file %s"
-msgstr "ਵੇਰਵਾ ਫਾਇਲ %s ਪੜ੍ਹਨ ਲਈ ਫੇਲ੍ਹ"
+#: src/virsh.c:689
+#, fuzzy, c-format
+msgid "Failed to open '%s': %s"
+msgstr "ਡੋਮੇਨ %s ਮੁਅੱਤਲ ਕਰਨ ਲਈ ਫੇਲ੍ਹ ਹੈ"
 
-#: src/virsh.c:707
+#: src/virsh.c:709
+#, fuzzy, c-format
+msgid "Failed to open '%s': read: %s"
+msgstr "%s ਨੂੰ ਪੜ੍ਹਨ ਵਾਸਤੇ ਖੋਲ੍ਹਣ ਲਈ ਅਸਫ਼ਲ"
+
+#: src/virsh.c:727
+#, fuzzy, c-format
+msgid "Error allocating memory: %s"
+msgstr "ਨੈੱਟਵਰਕ ਜਾਰੀ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ"
+
+#: src/virsh.c:761
 #, c-format
 msgid "Domain %s created from %s\n"
 msgstr "ਡੋਮੇਨ %s %s ਤੋਂ ਬਣਾਈ ਗਈ ਹੈ\n"
 
-#: src/virsh.c:710
+#: src/virsh.c:764
 #, c-format
 msgid "Failed to create domain from %s"
 msgstr "%s ਤੋਂ ਡੋਮੇਨ ਬਣਾਉਣ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:721
+#: src/virsh.c:775
 msgid "define (but don't start) a domain from an XML file"
 msgstr "ਇੱਕ XML ਫਾਇਲ ਤੋਂ ਇੱਕ ਡੋਮੇਨ ਪ੍ਰੀਭਾਸ਼ਿਤ ਕਰੋ (ਪਰ ਸ਼ੁਰੂ ਨਹੀਂ)"
 
-#: src/virsh.c:722
+#: src/virsh.c:776
 msgid "Define a domain."
 msgstr "ਇੱਕ ਡੋਮੇਨ ਦਿਓ।"
 
-#: src/virsh.c:727
+#: src/virsh.c:781
 #, fuzzy
 msgid "file containing an XML domain description"
 msgstr "ਫਾਇਲ 'ਚ ਇੱਕ XML ਡੋਮੇਨ ਵੇਰਵਾ ਹੈ"
 
-#: src/virsh.c:762
+#: src/virsh.c:808
 #, c-format
 msgid "Domain %s defined from %s\n"
 msgstr "%s ਡੋਮੇਨ %s ਤੋਂ ਪ੍ਰਭਾਸ਼ਿਤ ਹੈ\n"
 
-#: src/virsh.c:765
+#: src/virsh.c:811
 #, c-format
 msgid "Failed to define domain from %s"
 msgstr "%s ਤੋਂ ਡੋਮੇਨ ਪ੍ਰਭਾਸ਼ਿਤ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:776
+#: src/virsh.c:822
 msgid "undefine an inactive domain"
 msgstr "ਇੱਕ ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨ ਨਾ-ਪਰਭਾਸ਼ਿਤ"
 
-#: src/virsh.c:777
+#: src/virsh.c:823
 msgid "Undefine the configuration for an inactive domain."
 msgstr "ਇੱਕ ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨ ਲਈ ਸੰਰਚਨਾ ਨਾ-ਪ੍ਰਭਾਸ਼ਿਤ ਹੈ।"
 
-#: src/virsh.c:782 src/virsh.c:1671
+#: src/virsh.c:828 src/virsh.c:1840
 msgid "domain name or uuid"
 msgstr "ਡੋਮੇਨ ਨਾਂ ਜਾਂ uuid"
 
-#: src/virsh.c:800
+#: src/virsh.c:846
 #, c-format
 msgid "Domain %s has been undefined\n"
 msgstr "ਡੋਮੇਨ %s ਨਾ-ਪਰਭਾਸ਼ਿਤ ਹੈ\n"
 
-#: src/virsh.c:802
+#: src/virsh.c:848
 #, c-format
 msgid "Failed to undefine domain %s"
 msgstr "ਡੋਮੇਨ %s ਨੂੰ ਨਾ-ਪਰਭਾਸ਼ਿਤ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:815
+#: src/virsh.c:861
 msgid "start a (previously defined) inactive domain"
 msgstr "ਇੱਕ ਨਾ-ਸਰਗਰਮ (ਪਹਿਲਾਂ ਪਰਭਾਸ਼ਿਤ) ਡੋਮੇਨ ਸ਼ੁਰੂ"
 
-#: src/virsh.c:816
+#: src/virsh.c:862
 msgid "Start a domain."
 msgstr "ਇੱਕ ਡੋਮੇਨ ਸ਼ੁਰੂ ਕਰੋ।"
 
-#: src/virsh.c:821
+#: src/virsh.c:867
 msgid "name of the inactive domain"
 msgstr "ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨ ਦਾ ਨਾਂ"
 
-#: src/virsh.c:838
+#: src/virsh.c:884
 msgid "Domain is already active"
 msgstr "ਡੋਮੇਨ ਪਹਿਲਾਂ ਹੀ ਸਰਗਰਮ ਹੈ"
 
-#: src/virsh.c:843
+#: src/virsh.c:889
 #, c-format
 msgid "Domain %s started\n"
 msgstr "ਡੋਮੇਨ %s ਸ਼ੁਰੂ ਕੀਤੀ ਗਈ ਹੈ\n"
 
-#: src/virsh.c:846
+#: src/virsh.c:892
 #, c-format
 msgid "Failed to start domain %s"
 msgstr "ਡੋਮੇਨ %s ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:858
+#: src/virsh.c:904
 msgid "save a domain state to a file"
 msgstr "ਇੱਕ ਡੋਮੇਨ ਹਾਲਤ ਇੱਕ ਫਾਇਲ ਵਿੱਚ ਸੰਭਾਲੋ"
 
-#: src/virsh.c:859
+#: src/virsh.c:905
 msgid "Save a running domain."
 msgstr "ਇੱਕ ਚੱਲਦੀ ਡੋਮੇਨ ਸੰਭਾਲੋ।"
 
-#: src/virsh.c:865
+#: src/virsh.c:911
 msgid "where to save the data"
 msgstr "ਡਾਟਾ ਕਿੱਥੇ ਸੰਭਾਲਣਾ ਹੈ"
 
-#: src/virsh.c:887
+#: src/virsh.c:933
 #, c-format
 msgid "Domain %s saved to %s\n"
 msgstr "ਡੋਮੇਨ %s %s ਉੱਤੇ ਸੰਭਾਲੀ ਗਈ ਹੈ\n"
 
-#: src/virsh.c:889
+#: src/virsh.c:935
 #, c-format
 msgid "Failed to save domain %s to %s"
 msgstr "%s ਡੋਮੇਨ ਨੂੰ %s ਲਈ ਸੰਭਾਲਣ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:902
+#: src/virsh.c:948
+msgid "show/set scheduler parameters"
+msgstr ""
+
+#: src/virsh.c:949
+msgid "Show/Set scheduler parameters."
+msgstr ""
+
+#: src/virsh.c:955
+msgid "weight for XEN_CREDIT"
+msgstr ""
+
+#: src/virsh.c:956
+msgid "cap for XEN_CREDIT"
+msgstr ""
+
+#: src/virsh.c:1020 src/virsh.c:1024
+msgid "Scheduler:"
+msgstr ""
+
+#: src/virsh.c:1024
+#, fuzzy
+msgid "Unknown"
+msgstr "ਅਣਜਾਣ ਮੇਜ਼ਬਾਨ"
+
+#: src/virsh.c:1071
 msgid "restore a domain from a saved state in a file"
 msgstr "ਇੱਕ ਫਾਇਲ ਵਿੱਚ ਇੱਕ ਸੰਭਾਲੀ ਹਾਲਤ ਤੋਂ ਇੱਕ ਡੋਮੇਨ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰੋ"
 
-#: src/virsh.c:903
+#: src/virsh.c:1072
 msgid "Restore a domain."
 msgstr "ਇੱਕ ਡੋਮੇਨ ਮੁੜ-ਪ੍ਰਾਪਤ"
 
-#: src/virsh.c:908
+#: src/virsh.c:1077
 msgid "the state to restore"
 msgstr "ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਹਾਲਤ"
 
-#: src/virsh.c:927
+#: src/virsh.c:1096
 #, c-format
 msgid "Domain restored from %s\n"
 msgstr "%s ਤੋਂ ਡੋਮੇਨ ਮੁੜ-ਪ੍ਰਾਪਤ ਕੀਤੀ ਗਈ\n"
 
-#: src/virsh.c:929
+#: src/virsh.c:1098
 #, c-format
 msgid "Failed to restore domain from %s"
 msgstr "%s ਤੋਂ ਡੋਮੇਨ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:940
+#: src/virsh.c:1109
 msgid "dump the core of a domain to a file for analysis"
 msgstr "ਕੋਰ ਨੂੰ ਇੱਕ ਡੋਮੇਨ 'ਚ ਫਾਇਲ ਸਿਸਟਮ ਜਾਂਚ ਲਈ ਸੰਭਾਲੋ"
 
-#: src/virsh.c:941
+#: src/virsh.c:1110
 msgid "Core dump a domain."
 msgstr "ਕੋਰ ਡੰਪ ਇੱਕ ਡੋਮੇਨ ਹੈ।"
 
-#: src/virsh.c:947
+#: src/virsh.c:1116
 msgid "where to dump the core"
 msgstr "ਜਿੱਥੇ ਡੰਪ ਕੋਰ ਹੈ"
 
-#: src/virsh.c:969
+#: src/virsh.c:1138
 #, c-format
 msgid "Domain %s dumpd to %s\n"
 msgstr "ਡੋਮੇਨ %s %s ਉੱਤੇ ਸੰਭਾਲੀ ਗਈ ਹੈ\n"
 
-#: src/virsh.c:971
+#: src/virsh.c:1140
 #, c-format
 msgid "Failed to core dump domain %s to %s"
 msgstr "%s ਡੋਮੇਨ ਨੂੰ %s ਲਈ ਸੰਭਾਲਣ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:985
+#: src/virsh.c:1154
 msgid "resume a domain"
 msgstr "ਇੱਕ ਡੋਮੇਨ ਮੁੜ-ਪ੍ਰਾਪਤ"
 
-#: src/virsh.c:986
+#: src/virsh.c:1155
 msgid "Resume a previously suspended domain."
 msgstr "ਇੱਕ ਪਹਿਲਾਂ ਮੁਅੱਤਲ ਡੋਮੇਨ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰੋ।"
 
-#: src/virsh.c:1009
+#: src/virsh.c:1178
 #, c-format
 msgid "Domain %s resumed\n"
 msgstr "ਡੋਮੇਨ %s ਮੁੜ-ਪ੍ਰਾਪਤ ਕੀਤੀ ਗਈ\n"
 
-#: src/virsh.c:1011
+#: src/virsh.c:1180
 #, c-format
 msgid "Failed to resume domain %s"
 msgstr "ਡੋਮੇਨ %s ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:1024
+#: src/virsh.c:1193
 msgid "gracefully shutdown a domain"
 msgstr "ਇੱਕ ਡੋਮੇਨ ਧਿਆਨ ਨਾਲ ਬੰਦ ਕਰੋ"
 
-#: src/virsh.c:1025
+#: src/virsh.c:1194
 msgid "Run shutdown in the target domain."
 msgstr "ਨਿਸ਼ਾਨਾ ਡੋਮੇਨ ਵਿੱਚ ਬੰਦ ਕਰਨਾ ਚਲਾਓ।"
 
-#: src/virsh.c:1048
+#: src/virsh.c:1217
 #, c-format
 msgid "Domain %s is being shutdown\n"
 msgstr "ਡੋਮੇਨ %s ਬੰਦ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ\n"
 
-#: src/virsh.c:1050
+#: src/virsh.c:1219
 #, c-format
 msgid "Failed to shutdown domain %s"
 msgstr "ਡੋਮੇਨ %s ਬੰਦ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:1063
+#: src/virsh.c:1232
 msgid "reboot a domain"
 msgstr "ਇੱਕ ਡੋਮੇਨ ਮੁੜ-ਚਾਲੂ"
 
-#: src/virsh.c:1064
+#: src/virsh.c:1233
 msgid "Run a reboot command in the target domain."
 msgstr "ਨਿਸ਼ਾਨਾ ਡੋਮੇਨ ਵਿੱਚ ਮੁੜ-ਚਾਲੂ ਕਮਾਂਡ ਚਲਾਓ।"
 
-#: src/virsh.c:1087
+#: src/virsh.c:1256
 #, c-format
 msgid "Domain %s is being rebooted\n"
 msgstr "ਡੋਮੇਨ %s ਮੁੜ-ਚਾਲੂ ਕੀਤੀ ਜਾਵੇਗੀ\n"
 
-#: src/virsh.c:1089
+#: src/virsh.c:1258
 #, c-format
 msgid "Failed to reboot domain %s"
 msgstr "ਡੋਮੇਨ %s ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:1102
+#: src/virsh.c:1271
 msgid "destroy a domain"
 msgstr "ਇੱਕ ਡੋਮੇਨ ਖਤਮ ਕਰੋ"
 
-#: src/virsh.c:1103
+#: src/virsh.c:1272
 msgid "Destroy a given domain."
 msgstr "ਇੱਕ ਦਿੱਤੀ ਡੋਮੇਨ ਖਤਮ ਕਰੋ।"
 
-#: src/virsh.c:1126
+#: src/virsh.c:1295
 #, c-format
 msgid "Domain %s destroyed\n"
 msgstr "ਡੋਮੇਨ %s ਖਤਮ ਕੀਤੀ ਗਈ ਹੈ\n"
 
-#: src/virsh.c:1128
+#: src/virsh.c:1297
 #, c-format
 msgid "Failed to destroy domain %s"
 msgstr "ਡੋਮੇਨ %s ਖਤਮ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:1141
+#: src/virsh.c:1310
 msgid "domain information"
 msgstr "ਡੋਮੇਨ ਜਾਣਕਾਰੀ"
 
-#: src/virsh.c:1142
+#: src/virsh.c:1311
 msgid "Returns basic information about the domain."
 msgstr "ਡੋਮੇਨ ਬਾਰੇ ਇੱਕ ਮੁੱਢਲੀ ਜਾਣਕਾਰੀ ਵਾਪਿਸ ਕੀਤੀ।"
 
-#: src/virsh.c:1168 src/virsh.c:1170
+#: src/virsh.c:1337 src/virsh.c:1339
 msgid "Id:"
 msgstr "Id:"
 
-#: src/virsh.c:1171
+#: src/virsh.c:1340
 msgid "Name:"
 msgstr "ਨਾਂ:"
 
-#: src/virsh.c:1174
+#: src/virsh.c:1343
 msgid "UUID:"
 msgstr "UUID:"
 
-#: src/virsh.c:1177
+#: src/virsh.c:1346
 msgid "OS Type:"
 msgstr "OS ਕਿਸਮ:"
 
-#: src/virsh.c:1182 src/virsh.c:1268
+#: src/virsh.c:1351 src/virsh.c:1437
 msgid "State:"
 msgstr "ਹਾਲਤ:"
 
-#: src/virsh.c:1185 src/virsh.c:1553
+#: src/virsh.c:1354 src/virsh.c:1722
 msgid "CPU(s):"
 msgstr "CPU(s):"
 
-#: src/virsh.c:1192 src/virsh.c:1275
+#: src/virsh.c:1361 src/virsh.c:1444
 msgid "CPU time:"
 msgstr "CPU ਸਮਾਂ:"
 
-#: src/virsh.c:1196 src/virsh.c:1199
+#: src/virsh.c:1365 src/virsh.c:1368
 msgid "Max memory:"
 msgstr "ਵੱਧੋ-ਵੱਧ ਮੈਮੋਰੀ:"
 
-#: src/virsh.c:1200
+#: src/virsh.c:1369
 msgid "no limit"
-msgstr ""
+msgstr "ਕੋਈ ਸੀਮਾ ਨਹੀਂ"
 
-#: src/virsh.c:1202
+#: src/virsh.c:1371
 msgid "Used memory:"
 msgstr "ਵਰਤੀ ਮੈਮੋਰੀ:"
 
-#: src/virsh.c:1218
+#: src/virsh.c:1387
 msgid "domain vcpu information"
 msgstr "ਡੋਮੇਨ vcpu ਜਾਣਕਾਰੀ"
 
-#: src/virsh.c:1219
+#: src/virsh.c:1388
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr "ਡੋਮੇਨ ਫ਼ਰਜ਼ੀ CPU ਬਾਰੇ ਮੁੱਢਲੀ ਜਾਣਕਾਰੀ ਵਾਪਿਸ ਕੀਤੀ ਗਈ ਹੈ।"
 
-#: src/virsh.c:1266
+#: src/virsh.c:1435
 msgid "VCPU:"
 msgstr "VCPU:"
 
-#: src/virsh.c:1267
+#: src/virsh.c:1436
 msgid "CPU:"
 msgstr "CPU:"
 
-#: src/virsh.c:1277
+#: src/virsh.c:1446
 msgid "CPU Affinity:"
 msgstr "CPU ਏਫੈਂਟੀ:"
 
-#: src/virsh.c:1301
+#: src/virsh.c:1470
 msgid "control domain vcpu affinity"
 msgstr "ਕੰਟਰੋਲ ਡੋਮੇਨ vcpu ਏਫੈਂਟੀ"
 
-#: src/virsh.c:1302
+#: src/virsh.c:1471
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr "ਮੇਜ਼ਬਾਨ ਭੌਤਿਕ CPU ਲਈ ਡੋਮੇਨ VCPU ਹਨ।"
 
-#: src/virsh.c:1308
+#: src/virsh.c:1477
 msgid "vcpu number"
 msgstr "vcpu ਗਿਣਤੀ"
 
-#: src/virsh.c:1309
+#: src/virsh.c:1478
 msgid "host cpu number(s) (comma separated)"
 msgstr "ਮੇਜ਼ਬਾਨ cpu ਗਿਣਤੀ (ਕਾਮਿਆਂ ਨਾਲ ਵੱਖ ਕੀਤੇ)"
 
-#: src/virsh.c:1367
-#, fuzzy, c-format
+#: src/virsh.c:1536
+#, c-format
 msgid "Physical CPU %d doesn't exist."
-msgstr "ਕਮਾਂਡ '%s' ਮੌਜੂਦ ਨਹੀਂ ਹੈ"
+msgstr "ਭੌਤਿਕ CPU %d ਮੌਜੂਦ ਨਹੀਂ ਹੈ।"
 
-#: src/virsh.c:1391
+#: src/virsh.c:1560
 msgid "change number of virtual CPUs"
 msgstr "ਵੁਰਚੁਅਲ CPU ਦੀ ਗਿਣਤੀ ਤਬਦੀਲ"
 
-#: src/virsh.c:1392
+#: src/virsh.c:1561
 msgid "Change the number of virtual CPUs active in the guest domain."
 msgstr "ਗੈਸਟ ਡੋਮੇਨ ਵਿੱਚ ਵੁਰਚੁਅਲ CPU ਦੀ ਗਿਣਤੀ ਤਬਦੀਲ ਕਰੋ।"
 
-#: src/virsh.c:1398
+#: src/virsh.c:1567
 msgid "number of virtual CPUs"
 msgstr "ਵੁਰਚੁਅਲ CPU ਦੀ ਗਿਣਤੀ"
 
-#: src/virsh.c:1429
-#, fuzzy
+#: src/virsh.c:1598
 msgid "Too many virtual CPU's."
-msgstr "ਵੁਰਚੁਅਲ CPU ਦੀ ਗਿਣਤੀ"
+msgstr "ਵੁਰਚੁਅਲ CPU ਦੀ ਗਿਣਤੀ ਬਹੁਤ ਵੱਧ ਹੈ।"
 
-#: src/virsh.c:1447
+#: src/virsh.c:1616
 msgid "change memory allocation"
 msgstr "ਜਾਰੀ ਮੈਮੋਰੀ ਬਦਲੋ"
 
-#: src/virsh.c:1448
+#: src/virsh.c:1617
 msgid "Change the current memory allocation in the guest domain."
 msgstr "ਗੈਸਟ ਡੋਮੇਨ ਵਿੱਚ ਮੌਜੂਦਾ ਜਾਰੀ ਮੈਮੋਰੀ ਬਦਲੋ।"
 
-#: src/virsh.c:1454
+#: src/virsh.c:1623
 #, fuzzy
 msgid "number of kilobytes of memory"
 msgstr "ਮੈਮੋਰੀ ਦੇ ਬਾਈਟਾਂ ਦੀ ਗਿਣਤੀ"
 
-#: src/virsh.c:1474 src/virsh.c:1518
+#: src/virsh.c:1643 src/virsh.c:1687
 #, c-format
 msgid "Invalid value of %d for memory size"
-msgstr ""
+msgstr "ਮੈਮੋਰੀ ਆਕਾਰ ਲਈ %d ਗਲਤ ਮੁੱਲ ਹੈ"
 
-#: src/virsh.c:1491
+#: src/virsh.c:1660
 msgid "change maximum memory limit"
 msgstr "ਵੱਧ ਤੋਂ ਵੱਧ ਮੈਮੋਰੀ ਸੀਮਾ ਤਬਦੀਲ"
 
-#: src/virsh.c:1492
+#: src/virsh.c:1661
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr "ਮਹਿਮਾਨ ਡੋਮੇਨ 'ਚ ਵੱਧ ਤੋਂ ਵੱਧ ਮੈਮੋਰੀ ਜਾਰੀ ਸੀਮਾ ਬਦਲੋ।"
 
-#: src/virsh.c:1498
+#: src/virsh.c:1667
 #, fuzzy
 msgid "maximum memory limit in kilobytes"
 msgstr "ਵੱਧ ਤੋਂ ਵੱਧ ਮੈਮੋਰੀ ਸੀਮਾ ਬਾਈਟ ਵਿੱਚ"
 
-#: src/virsh.c:1535
+#: src/virsh.c:1704
 msgid "node information"
 msgstr "ਨੋਡ ਜਾਣਕਾਰੀ"
 
-#: src/virsh.c:1536
+#: src/virsh.c:1705
 msgid "Returns basic information about the node."
 msgstr "ਨੋਡ ਬਾਰੇ ਮੁੱਢਲੀ ਜਾਣਕਾਰੀ ਵਾਪਿਸ ਕਰਦੀ ਹੈ।"
 
-#: src/virsh.c:1549
+#: src/virsh.c:1718
 msgid "failed to get node information"
 msgstr "ਨੋਡ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:1552
+#: src/virsh.c:1721
 msgid "CPU model:"
 msgstr "CPU ਮਾਡਲ:"
 
-#: src/virsh.c:1554
+#: src/virsh.c:1723
 msgid "CPU frequency:"
 msgstr "CPU ਫਰੀਕਿਊਂਸੀ:"
 
-#: src/virsh.c:1555
+#: src/virsh.c:1724
 msgid "CPU socket(s):"
 msgstr "CPU ਸਾਕਟ:"
 
-#: src/virsh.c:1556
+#: src/virsh.c:1725
 msgid "Core(s) per socket:"
 msgstr "ਕੋਰ ਪ੍ਰਤੀ ਸਾਕਟ:"
 
-#: src/virsh.c:1557
+#: src/virsh.c:1726
 msgid "Thread(s) per core:"
 msgstr "ਥਰਿੱਡ ਪ੍ਰਤੀ ਕੋਰ:"
 
-#: src/virsh.c:1558
+#: src/virsh.c:1727
 msgid "NUMA cell(s):"
 msgstr "NUMA ਸੈੱਲ:"
 
-#: src/virsh.c:1559
+#: src/virsh.c:1728
 msgid "Memory size:"
 msgstr "ਮੈਮੋਰੀ ਆਕਾਰ:"
 
-#: src/virsh.c:1569
+#: src/virsh.c:1738
 msgid "capabilities"
-msgstr ""
+msgstr "ਅਨੁਕੂਲਤਾ"
 
-#: src/virsh.c:1570
+#: src/virsh.c:1739
 msgid "Returns capabilities of hypervisor/driver."
-msgstr ""
+msgstr "ਹਾਈਪਰਵੀਜ਼ਿਰ/ਡਰਾਇਵਰ ਦੀ ਅਨੁਕੂਲਤਾ ਵਾਪਿਸ ਕਰਦੀ ਹੈ।"
 
-#: src/virsh.c:1583
-#, fuzzy
+#: src/virsh.c:1752
 msgid "failed to get capabilities"
-msgstr "ਫਾਇਲ ਖੋਲ੍ਹਣ ਲਈ ਅਸਫ਼ਲ ਹੈ"
+msgstr "ਅਨੁਕੂਲਤਾ ਲੈਣ ਲਈ ਫੇਲ੍ਹ ਹੈ"
 
-#: src/virsh.c:1596
+#: src/virsh.c:1765
 msgid "domain information in XML"
 msgstr "XML ਵਿੱਚ ਡੋਮੇਨ ਜਾਣਕਾਰੀ"
 
-#: src/virsh.c:1597
+#: src/virsh.c:1766
 #, fuzzy
 msgid "Output the domain information as an XML dump to stdout."
 msgstr "ਇੱਕ XML ਡੰਮ ਤੋਂ stdout ਵਾਂਗ ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਆਉਟਪੁੱਟ ਹੈ।"
 
-#: src/virsh.c:1636
+#: src/virsh.c:1805
 msgid "convert a domain id or UUID to domain name"
 msgstr "ਇੱਕ ਡੋਮੇਨ id ਜਾਂ UUID ਤੋਂ ਡੋਮੇਨ ਨਾਂ ਬਦਲੋ"
 
-#: src/virsh.c:1641
+#: src/virsh.c:1810
 msgid "domain id or uuid"
 msgstr "ਡੋਮੇਨ id ਜਾਂ uuid"
 
-#: src/virsh.c:1666
+#: src/virsh.c:1835
 msgid "convert a domain name or UUID to domain id"
 msgstr "ਇੱਕ ਡੋਮੇਨ ਨਾਂ ਜਾਂ UUID ਤੋਂ ਡੋਮੇਨ id ਬਦਲੋ"
 
-#: src/virsh.c:1701
+#: src/virsh.c:1870
 msgid "convert a domain name or id to domain UUID"
 msgstr "ਇੱਕ ਡੋਮੇਨ ਨਾਂ ਜਾਂ id ਤੋਂ ਡੋਮੇਨ UUID ਬਦਲੋ"
 
-#: src/virsh.c:1706
+#: src/virsh.c:1875
 msgid "domain id or name"
 msgstr "ਡੋਮੇਨ id ਜਾਂ ਨਾਂ"
 
-#: src/virsh.c:1725
+#: src/virsh.c:1894
 msgid "failed to get domain UUID"
 msgstr "ਡੋਮੇਨ UUID ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਅਸਫ਼ਲ"
 
-#: src/virsh.c:1735
-#, fuzzy
+#: src/virsh.c:1904
 msgid "autostart a network"
-msgstr "ਇੱਕ ਡੋਮੇਨ ਸ਼ੁਰੂ ਕਰੋ।"
+msgstr "ਇੱਕ ਨੈੱਟਵਰਕ ਆਟੋ-ਸਟਾਰਟ"
 
-#: src/virsh.c:1737
+#: src/virsh.c:1906
 msgid "Configure a network to be automatically started at boot."
-msgstr ""
+msgstr "ਬੂਟ ਸਮੇਂ ਆਟੋਮੈਟਿਕ ਇੱਕ ਨੈੱਟਵਰਕ ਸੰਰਚਨਾ ਸ਼ੁਰੂ ਕਰੋ।"
 
-#: src/virsh.c:1742 src/virsh.c:2183
-#, fuzzy
+#: src/virsh.c:1911 src/virsh.c:2336
 msgid "network name or uuid"
-msgstr "ਡੋਮੇਨ ਨਾਂ ਜਾਂ uuid"
+msgstr "ਨੈੱਟਵਰਕ ਨਾਂ ਜਾਂ uuid"
 
-#: src/virsh.c:1764
+#: src/virsh.c:1933
 #, fuzzy, c-format
 msgid "failed to mark network %s as autostarted"
-msgstr "ਡੋਮੇਨ %s ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
+msgstr "ਨੈੱਟਵਰਕ %2$s ਲਈ %1$s ਨੂੰ ਆਟੋ-ਸਟਾਰਟ ਕਰਨ ਲਈ ਫੇਲ੍ਹੋ"
 
-#: src/virsh.c:1767
+#: src/virsh.c:1936
 #, fuzzy, c-format
 msgid "failed to unmark network %s as autostarted"
-msgstr "ਡੋਮੇਨ %s ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
+msgstr "ਨੈੱਟਵਰਕ %2$s ਲਈ %1$s ਨੂੰ ਆਟੋ-ਸਟਾਰਟ ਕਰਨ ਲਈ ਫੇਲ੍ਹੋ"
 
-#: src/virsh.c:1774
+#: src/virsh.c:1943
 #, fuzzy, c-format
 msgid "Network %s marked as autostarted\n"
-msgstr "ਡੋਮੇਨ %s ਸ਼ੁਰੂ ਕੀਤੀ ਗਈ ਹੈ\n"
+msgstr "ਨੈੱਟਵਰਕ %s %sਆਟੋ-ਸਟਾਰਟ ਲਈ ਨਿਸ਼ਾਨਬੱਧ ਕੀਤਾ\n"
 
-#: src/virsh.c:1776
+#: src/virsh.c:1945
 #, fuzzy, c-format
 msgid "Network %s unmarked as autostarted\n"
-msgstr "ਡੋਮੇਨ %s ਸ਼ੁਰੂ ਕੀਤੀ ਗਈ ਹੈ\n"
+msgstr "ਨੈੱਟਵਰਕ %s %sਆਟੋ-ਸਟਾਰਟ ਲਈ ਨਿਸ਼ਾਨਬੱਧ ਕੀਤਾ\n"
 
-#: src/virsh.c:1786
-#, fuzzy
+#: src/virsh.c:1955
 msgid "create a network from an XML file"
-msgstr "ਇੱਕ XML ਫਾਇਲ ਤੋਂ ਡੋਮੇਨ ਫਾਇਲ ਬਣਾਓ"
+msgstr "ਇੱਕ XML ਫਾਇਲ ਤੋਂ ਇੱਕ ਨੈੱਟਵਰਕ ਬਣਾਓ"
 
-#: src/virsh.c:1787
-#, fuzzy
+#: src/virsh.c:1956
 msgid "Create a network."
-msgstr "ਇੱਕ ਡੋਮੇਨ ਬਣਾਓ:"
+msgstr "ਇੱਕ ਨੈੱਟਵਰਕ ਬਣਾਓ।"
 
-#: src/virsh.c:1792 src/virsh.c:1848
-#, fuzzy
+#: src/virsh.c:1961 src/virsh.c:2009
 msgid "file containing an XML network description"
-msgstr "ਫਾਇਲ 'ਚ ਇੱਕ XML ਡੋਮੇਨ ਵੇਰਵਾ ਹੈ"
+msgstr "ਫਾਇਲ 'ਚ ਇੱਕ XML ਨੈੱਟਵਰਕ ਵੇਰਵਾ ਹੈ"
 
-#: src/virsh.c:1827
-#, fuzzy, c-format
+#: src/virsh.c:1988
+#, c-format
 msgid "Network %s created from %s\n"
-msgstr "ਡੋਮੇਨ %s %s ਤੋਂ ਬਣਾਈ ਗਈ ਹੈ\n"
+msgstr "%2$s ਤੋਂ ਨੈੱਟਵਰਕ %1$s ਬਣਾਇਆ ਗਿਆ\n"
 
-#: src/virsh.c:1830
-#, fuzzy, c-format
+#: src/virsh.c:1991
+#, c-format
 msgid "Failed to create network from %s"
-msgstr "%s ਤੋਂ ਡੋਮੇਨ ਬਣਾਉਣ ਲਈ ਫੇਲ੍ਹ"
+msgstr "%s ਤੋਂ ਨੈੱਟਵਰਕ ਬਣਾਉਣ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:1842
-#, fuzzy
+#: src/virsh.c:2003
 msgid "define (but don't start) a network from an XML file"
-msgstr "ਇੱਕ XML ਫਾਇਲ ਤੋਂ ਇੱਕ ਡੋਮੇਨ ਪ੍ਰੀਭਾਸ਼ਿਤ ਕਰੋ (ਪਰ ਸ਼ੁਰੂ ਨਹੀਂ)"
+msgstr "ਇੱਕ XML ਫਾਇਲ ਤੋਂ ਇੱਕ ਨੈੱਟਵਰਕ ਪ੍ਰੀਭਾਸ਼ਿਤ ਕਰੋ (ਪਰ ਸ਼ੁਰੂ ਨਹੀਂ)"
 
-#: src/virsh.c:1843
-#, fuzzy
+#: src/virsh.c:2004
 msgid "Define a network."
-msgstr "ਇੱਕ ਡੋਮੇਨ ਦਿਓ।"
+msgstr "ਇੱਕ ਨੈੱਟਵਰਕ ਦਿਓ।"
 
-#: src/virsh.c:1883
-#, fuzzy, c-format
+#: src/virsh.c:2036
+#, c-format
 msgid "Network %s defined from %s\n"
-msgstr "%s ਡੋਮੇਨ %s ਤੋਂ ਪ੍ਰਭਾਸ਼ਿਤ ਹੈ\n"
+msgstr "%2$s ਤੋਂ ਨੈੱਟਵਰਕ %1$s ਪ੍ਰਭਾਸ਼ਿਤ ਹੈ\n"
 
-#: src/virsh.c:1886
-#, fuzzy, c-format
+#: src/virsh.c:2039
+#, c-format
 msgid "Failed to define network from %s"
-msgstr "%s ਤੋਂ ਡੋਮੇਨ ਪ੍ਰਭਾਸ਼ਿਤ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
+msgstr "%s ਤੋਂ ਨੈੱਟਵਰਕ ਪ੍ਰਭਾਸ਼ਿਤ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:1898
-#, fuzzy
+#: src/virsh.c:2051
 msgid "destroy a network"
-msgstr "ਇੱਕ ਡੋਮੇਨ ਖਤਮ ਕਰੋ"
+msgstr "ਇੱਕ ਨੈੱਟਵਰਕ ਖਤਮ ਕਰੋ"
 
-#: src/virsh.c:1899
-#, fuzzy
+#: src/virsh.c:2052
 msgid "Destroy a given network."
-msgstr "ਇੱਕ ਦਿੱਤੀ ਡੋਮੇਨ ਖਤਮ ਕਰੋ।"
+msgstr "ਇੱਕ ਦਿੱਤਾ ਨੈੱਟਵਰਕ ਖਤਮ ਕਰੋ।"
 
-#: src/virsh.c:1904 src/virsh.c:1944
-#, fuzzy
+#: src/virsh.c:2057 src/virsh.c:2097
 msgid "network name, id or uuid"
-msgstr "ਡੋਮੇਨ ਨਾਂ, id ਜਾਂ uuid"
+msgstr "ਨੈੱਟਵਰਕ ਨਾਂ, id ਜਾਂ uuid"
 
-#: src/virsh.c:1922
-#, fuzzy, c-format
+#: src/virsh.c:2075
+#, c-format
 msgid "Network %s destroyed\n"
-msgstr "ਡੋਮੇਨ %s ਖਤਮ ਕੀਤੀ ਗਈ ਹੈ\n"
+msgstr "ਨੈੱਟਵਰਕ %s ਖਤਮ ਕੀਤਾ ਗਿਆ\n"
 
-#: src/virsh.c:1924
-#, fuzzy, c-format
+#: src/virsh.c:2077
+#, c-format
 msgid "Failed to destroy network %s"
-msgstr "ਡੋਮੇਨ %s ਖਤਮ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
+msgstr "ਨੈੱਟਵਰਕ %s ਖਤਮ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:1938
-#, fuzzy
+#: src/virsh.c:2091
 msgid "network information in XML"
-msgstr "XML ਵਿੱਚ ਡੋਮੇਨ ਜਾਣਕਾਰੀ"
+msgstr "XML ਵਿੱਚ ਨੈੱਟਵਰਕ ਜਾਣਕਾਰੀ"
 
-#: src/virsh.c:1939
+#: src/virsh.c:2092
 #, fuzzy
 msgid "Output the network information as an XML dump to stdout."
-msgstr "ਇੱਕ XML ਡੰਮ ਤੋਂ stdout ਵਾਂਗ ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਆਉਟਪੁੱਟ ਹੈ।"
+msgstr "ਇੱਕ XML ਡੰਪ ਤੋਂ stdout ਵਾਂਗ ਨੈੱਟਵਰਕ ਜਾਣਕਾਰੀ ਆਉਟਪੁੱਟ ਹੈ।"
 
-#: src/virsh.c:1979
+#: src/virsh.c:2132
 msgid "list networks"
-msgstr ""
+msgstr "ਨੈੱਟਵਰਕ ਵੇਖਾਓ"
 
-#: src/virsh.c:1980
-#, fuzzy
+#: src/virsh.c:2133
 msgid "Returns list of networks."
-msgstr "ਡੋਮੇਨਾਂ ਦੀ ਸੂਚੀ ਦਿੰਦੀ ਹੈ।"
-
-#: src/virsh.c:1985
-#, fuzzy
-msgid "list inactive networks"
-msgstr "ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨ ਸੂਚੀ"
-
-#: src/virsh.c:1986
-#, fuzzy
-msgid "list inactive & active networks"
-msgstr "ਨਾ-ਸਰਗਰਮ ਅਤੇ ਸਰਗਰਮ ਡੋਮੇਨਾਂ ਦੀ ਸੂਚੀ"
-
-#: src/virsh.c:2006 src/virsh.c:2014
-#, fuzzy
-msgid "Failed to list active networks"
-msgstr "ਸਰਗਰਮ ਡੋਮੇਨਾਂ ਦੀ ਸੂਚੀ ਲਈ ਫੇਲ੍ਹ"
-
-#: src/virsh.c:2025 src/virsh.c:2034
-#, fuzzy
-msgid "Failed to list inactive networks"
-msgstr "ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨਾਂ ਦੀ ਸੂਚੀ ਲਈ ਫੇਲ੍ਹ"
-
-#: src/virsh.c:2044
-msgid "Autostart"
-msgstr ""
-
-#: src/virsh.c:2059 src/virsh.c:2082
-#, fuzzy
-msgid "no autostart"
-msgstr "ਕੋਈ ਹਾਲਤ ਨਹੀਂ"
-
-#: src/virsh.c:2065
-msgid "active"
-msgstr ""
-
-#: src/virsh.c:2088
-#, fuzzy
-msgid "inactive"
-msgstr "node active cpu"
-
-#: src/virsh.c:2107
-#, fuzzy
-msgid "convert a network UUID to network name"
-msgstr "ਇੱਕ ਡੋਮੇਨ id ਜਾਂ UUID ਤੋਂ ਡੋਮੇਨ ਨਾਂ ਬਦਲੋ"
-
-#: src/virsh.c:2112
-msgid "network uuid"
-msgstr ""
+msgstr "ਨੈੱਟਵਰਕ ਦੀ ਲਿਸਟਮ ਮਿਲਦੀ ਹੈ।"
 
 #: src/virsh.c:2138
-#, fuzzy
-msgid "start a (previously defined) inactive network"
-msgstr "ਇੱਕ ਨਾ-ਸਰਗਰਮ (ਪਹਿਲਾਂ ਪਰਭਾਸ਼ਿਤ) ਡੋਮੇਨ ਸ਼ੁਰੂ"
+msgid "list inactive networks"
+msgstr "ਨਾ-ਸਰਗਰਮ ਨੈੱਟਵਰਕਾਂ ਦੀ ਲਿਸਟ"
 
 #: src/virsh.c:2139
-#, fuzzy
-msgid "Start a network."
-msgstr "ਇੱਕ ਡੋਮੇਨ ਸ਼ੁਰੂ ਕਰੋ।"
+msgid "list inactive & active networks"
+msgstr "ਨਾ-ਸਰਗਰਮ ਅਤੇ ਸਰਗਰਮ ਨੈੱਟਵਰਕਾਂ ਦੀ ਲਿਸਟ"
 
-#: src/virsh.c:2144
-#, fuzzy
-msgid "name of the inactive network"
-msgstr "ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨ ਦਾ ਨਾਂ"
+#: src/virsh.c:2159 src/virsh.c:2167
+msgid "Failed to list active networks"
+msgstr "ਸਰਗਰਮ ਨੈੱਟਵਰਕ ਦੀ ਲਿਸਟ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:2161
-#, fuzzy, c-format
-msgid "Network %s started\n"
-msgstr "ਡੋਮੇਨ %s ਸ਼ੁਰੂ ਕੀਤੀ ਗਈ ਹੈ\n"
+#: src/virsh.c:2178 src/virsh.c:2187
+msgid "Failed to list inactive networks"
+msgstr "ਨਾ-ਸਰਗਰਮ ਨੈੱਟਵਰਕਾਂ ਦੀ ਲਿਸਟ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:2164
-#, fuzzy, c-format
-msgid "Failed to start network %s"
-msgstr "ਡੋਮੇਨ %s ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
+#: src/virsh.c:2197
+msgid "Autostart"
+msgstr "ਆਟੋ-ਸਟਾਰਟ"
 
-#: src/virsh.c:2177
-#, fuzzy
-msgid "undefine an inactive network"
-msgstr "ਇੱਕ ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨ ਨਾ-ਪਰਭਾਸ਼ਿਤ"
+#: src/virsh.c:2212 src/virsh.c:2235
+msgid "no autostart"
+msgstr "ਆਟੋ-ਸਟਾਰਟ ਨਹੀਂ"
 
-#: src/virsh.c:2178
-#, fuzzy
-msgid "Undefine the configuration for an inactive network."
-msgstr "ਇੱਕ ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨ ਲਈ ਸੰਰਚਨਾ ਨਾ-ਪ੍ਰਭਾਸ਼ਿਤ ਹੈ।"
-
-#: src/virsh.c:2201
-#, fuzzy, c-format
-msgid "Network %s has been undefined\n"
-msgstr "ਡੋਮੇਨ %s ਨਾ-ਪਰਭਾਸ਼ਿਤ ਹੈ\n"
-
-#: src/virsh.c:2203
-#, fuzzy, c-format
-msgid "Failed to undefine network %s"
-msgstr "ਡੋਮੇਨ %s ਨੂੰ ਨਾ-ਪਰਭਾਸ਼ਿਤ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
-
-#: src/virsh.c:2216
-#, fuzzy
-msgid "convert a network name to network UUID"
-msgstr "ਇੱਕ ਡੋਮੇਨ ਨਾਂ ਜਾਂ id ਤੋਂ ਡੋਮੇਨ UUID ਬਦਲੋ"
-
-#: src/virsh.c:2221
-msgid "network name"
-msgstr ""
+#: src/virsh.c:2218
+msgid "active"
+msgstr "ਸਰਗਰਮ"
 
 #: src/virsh.c:2241
-#, fuzzy
-msgid "failed to get network UUID"
-msgstr "ਡੋਮੇਨ UUID ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਅਸਫ਼ਲ"
+msgid "inactive"
+msgstr "ਨਾ-ਸਰਗਰਮ"
 
-#: src/virsh.c:2252
+#: src/virsh.c:2260
+msgid "convert a network UUID to network name"
+msgstr "ਇੱਕ ਡੋਮੇਨ id ਜਾਂ UUID ਤੋਂ ਨੈੱਟਵਰਕ ਨਾਂ ਬਦਲੋ"
+
+#: src/virsh.c:2265
+msgid "network uuid"
+msgstr "ਨੈੱਟਵਰਕ uuid"
+
+#: src/virsh.c:2291
+msgid "start a (previously defined) inactive network"
+msgstr "ਇੱਕ ਨਾ-ਸਰਗਰਮ (ਪਹਿਲਾਂ ਪਰਭਾਸ਼ਿਤ) ਨੈੱਟਵਰਕ ਸ਼ੁਰੂ ਕਰੋ"
+
+#: src/virsh.c:2292
+msgid "Start a network."
+msgstr "ਇੱਕ ਨੈੱਟਵਰਕ ਸ਼ੁਰੂ ਕਰੋ।"
+
+#: src/virsh.c:2297
+msgid "name of the inactive network"
+msgstr "ਨਾ-ਸਰਗਰਮ ਨੈੱਟਵਰਕ ਦਾ ਨਾਂ"
+
+#: src/virsh.c:2314
+#, c-format
+msgid "Network %s started\n"
+msgstr "ਨੈੱਟਵਰਕ %s ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ ਹੈ\n"
+
+#: src/virsh.c:2317
+#, c-format
+msgid "Failed to start network %s"
+msgstr "ਨੈੱਟਵਰਕ %s ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
+
+#: src/virsh.c:2330
+msgid "undefine an inactive network"
+msgstr "ਇੱਕ ਨਾ-ਸਰਗਰਮ ਨੈੱਟਵਰਕ ਨਾ-ਪਰਭਾਸ਼ਿਤ"
+
+#: src/virsh.c:2331
+msgid "Undefine the configuration for an inactive network."
+msgstr "ਇੱਕ ਨਾ-ਸਰਗਰਮ ਨੈੱਟਵਰਕ ਲਈ ਸੰਰਚਨਾ ਨਾ-ਪ੍ਰਭਾਸ਼ਿਤ ਹੈ।"
+
+#: src/virsh.c:2354
+#, c-format
+msgid "Network %s has been undefined\n"
+msgstr "ਨੈੱਟਵਰਕ %s ਨਾ-ਪਰਭਾਸ਼ਿਤ ਹੈ\n"
+
+#: src/virsh.c:2356
+#, c-format
+msgid "Failed to undefine network %s"
+msgstr "ਨੈੱਟਵਰਕ %s ਨੂੰ ਨਾ-ਪਰਭਾਸ਼ਿਤ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
+
+#: src/virsh.c:2369
+msgid "convert a network name to network UUID"
+msgstr "ਇੱਕ ਨੈੱਟਵਰਕ ਨਾਂ ਜਾਂ id ਤੋਂ ਨੈੱਟਵਰਕ UUID ਬਦਲੋ"
+
+#: src/virsh.c:2374
+msgid "network name"
+msgstr "ਨੈੱਟਵਰਕ ਨਾਂ"
+
+#: src/virsh.c:2394
+msgid "failed to get network UUID"
+msgstr "ਨੈੱਟਵਰਕ UUID ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਅਸਫ਼ਲ"
+
+#: src/virsh.c:2405
 msgid "show version"
 msgstr "ਵਰਜਨ ਵੇਖਾਓ"
 
-#: src/virsh.c:2253
+#: src/virsh.c:2406
 msgid "Display the system version information."
 msgstr "ਸਿਸਟਮ ਵਰਜਨ ਜਾਣਕਾਰੀ ਵੇਖਾਓ"
 
-#: src/virsh.c:2276
+#: src/virsh.c:2429
 msgid "failed to get hypervisor type"
 msgstr "ਹਾਈਪਰਵੀਜ਼ਰ ਕਿਸਮ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:2285
+#: src/virsh.c:2438
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr "ਲਾਈਬਰੇਰੀ ਵਰਜਨ ਨਾਲ ਕੰਪਾਇਲ: libvir %d.%d.%d\n"
 
-#: src/virsh.c:2290
+#: src/virsh.c:2443
 msgid "failed to get the library version"
 msgstr "ਲਾਇਬਰੇਰੀ ਵਰਜਨ ਲੈਣ ਲਈ ਅਸਫ਼ਲ"
 
-#: src/virsh.c:2297
+#: src/virsh.c:2450
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
 msgstr "ਲਾਇਬਰੇਰੀ ਰਾਹੀਂ: libvir %d.%d.%d\n"
 
-#: src/virsh.c:2304
+#: src/virsh.c:2457
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
 msgstr "API ਰਾਹੀਂ: %s %d.%d.%d\n"
 
-#: src/virsh.c:2309
+#: src/virsh.c:2462
 msgid "failed to get the hypervisor version"
 msgstr "ਹਾਈਪਰਵੀਜ਼ਰ ਵਰਜਨ ਲੈਣ ਲਈ ਅਸਫ਼ਲ"
 
-#: src/virsh.c:2314
+#: src/virsh.c:2467
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "ਚੱਲ ਰਿਹਾ %s ਹਾਈਪਰਵੀਜ਼ਰ ਵਰਜਨ ਖੋਲ੍ਹ ਨਹੀਂ ਸਕਦਾ\n"
 
-#: src/virsh.c:2321
+#: src/virsh.c:2474
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "ਚੱਲ ਰਿਹਾ ਹਾਈਪਰਵੀਜ਼ਰ: %s %d.%d.%d\n"
 
-#: src/virsh.c:2332
+#: src/virsh.c:2485
 msgid "vnc display"
-msgstr ""
+msgstr "vnc display"
 
-#: src/virsh.c:2333
+#: src/virsh.c:2486
+#, fuzzy
 msgid "Output the IP address and port number for the VNC display."
+msgstr "VNC ਡਿਸਪਲੇਅ ਲਈ IP ਸਿਰਨਾਵਾਂ ਅਤੇ ਪੋਰਟ ਨੰਬਰ ਆਉਟਪੁੱਟ ਹੈ।"
+
+#: src/virsh.c:2564
+#, fuzzy
+msgid "attach device from an XML file"
+msgstr "ਇੱਕ XML ਫਾਇਲ ਤੋਂ ਡੋਮੇਨ ਫਾਇਲ ਬਣਾਓ"
+
+#: src/virsh.c:2565
+#, fuzzy
+msgid "Attach device from an XML <file>."
+msgstr "ਇੱਕ XML ਫਾਇਲ ਤੋਂ ਡੋਮੇਨ ਫਾਇਲ ਬਣਾਓ"
+
+#: src/virsh.c:2571 src/virsh.c:2625
+msgid "XML file"
 msgstr ""
 
-#: src/virsh.c:2412
+#: src/virsh.c:2603
+#, fuzzy, c-format
+msgid "Failed to attach device from %s"
+msgstr "%s ਤੋਂ ਡੋਮੇਨ ਬਣਾਉਣ ਲਈ ਫੇਲ੍ਹ"
+
+#: src/virsh.c:2618
+#, fuzzy
+msgid "detach device from an XML file"
+msgstr "ਇੱਕ XML ਫਾਇਲ ਤੋਂ ਡੋਮੇਨ ਫਾਇਲ ਬਣਾਓ"
+
+#: src/virsh.c:2619
+#, fuzzy
+msgid "Detach device from an XML <file>"
+msgstr "ਇੱਕ XML ਫਾਇਲ ਤੋਂ ਡੋਮੇਨ ਫਾਇਲ ਬਣਾਓ"
+
+#: src/virsh.c:2657
+#, fuzzy, c-format
+msgid "Failed to detach device from %s"
+msgstr "%s ਤੋਂ ਡੋਮੇਨ ਬਣਾਉਣ ਲਈ ਫੇਲ੍ਹ"
+
+#: src/virsh.c:2672
 msgid "quit this interactive terminal"
 msgstr "ਇਹ ਇੰਟਰ-ਏਕਟਿਵ ਟਰਮੀਨਲ ਬੰਦ ਕਰੋ"
 
-#: src/virsh.c:2539
+#: src/virsh.c:2802
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "ਕਮਾਂਡ '%s' ਲਈ <%s> ਚੋਣ ਚਾਹੀਦੀ ਹੈ"
 
-#: src/virsh.c:2540
+#: src/virsh.c:2803
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "ਕਮਾਂਡ '%s' ਲਈ --%s ਚੋਣ ਚਾਹੀਦੀ ਹੈ"
 
-#: src/virsh.c:2567
+#: src/virsh.c:2830
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "ਕਮਾਂਡ '%s' ਮੌਜੂਦ ਨਹੀਂ ਹੈ"
 
-#: src/virsh.c:2575
+#: src/virsh.c:2838
 msgid "  NAME\n"
 msgstr "  ਵੇਰਵਾ\n"
 
-#: src/virsh.c:2586
+#: src/virsh.c:2849
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -1556,7 +1608,7 @@ msgstr ""
 "\n"
 "  ਵੇਰਵਾ\n"
 
-#: src/virsh.c:2590
+#: src/virsh.c:2853
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -1564,36 +1616,35 @@ msgstr ""
 "\n"
 "  ਚੋਣਾਂ\n"
 
-#: src/virsh.c:2597
+#: src/virsh.c:2860
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <number>"
 
-#: src/virsh.c:2599
+#: src/virsh.c:2862
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <string>"
 
-#: src/virsh.c:2712
+#: src/virsh.c:2975
 msgid "undefined domain name or id"
 msgstr "ਨਾ-ਪ੍ਰਭਾਸ਼ਿਤ ਡੋਮੇਨ ਨਾਂ ਜਾਂ id"
 
-#: src/virsh.c:2745
+#: src/virsh.c:3008
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "ਡੋਮੇਨ '%s' ਲੈਣ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:2758
-#, fuzzy
+#: src/virsh.c:3021
 msgid "undefined network name"
-msgstr "ਨਾ-ਪ੍ਰਭਾਸ਼ਿਤ ਡੋਮੇਨ ਨਾਂ ਜਾਂ id"
+msgstr "ਨਾ-ਪ੍ਰਭਾਸ਼ਿਤ ਨੈੱਟਵਰਕ ਨਾਂ ਜਾਂ id"
 
-#: src/virsh.c:2782
-#, fuzzy, c-format
+#: src/virsh.c:3045
+#, c-format
 msgid "failed to get network '%s'"
-msgstr "ਡੋਮੇਨ '%s' ਲੈਣ ਲਈ ਫੇਲ੍ਹ"
+msgstr "ਨੈੱਟਵਰਕ '%s' ਲੈਣ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/virsh.c:2810
+#: src/virsh.c:3073
 #, c-format
 msgid ""
 "\n"
@@ -1604,108 +1655,108 @@ msgstr ""
 "(ਸਮਾਂ: %.3f ms)\n"
 "\n"
 
-#: src/virsh.c:2884
+#: src/virsh.c:3147
 msgid "missing \""
 msgstr "ਗੁੰਮ \""
 
-#: src/virsh.c:2945
+#: src/virsh.c:3208
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "ਅਣਜਾਣ ਟੋਕਣ (ਕਮਾਂਡ ਨਾਂ): '%s'"
 
-#: src/virsh.c:2950
+#: src/virsh.c:3213
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "ਅਣਜਾਣ ਕਮਾਂਡ: '%s'"
 
-#: src/virsh.c:2957
+#: src/virsh.c:3220
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "ਕਮਾਂਡ '%s' ਚੋਣ --%s ਲਈ ਸਹਿਯੋਗੀ ਨਹੀਂ ਹੈ"
 
-#: src/virsh.c:2972
+#: src/virsh.c:3235
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "ਲੋੜੀਦਾ ਸੰਟੈਕਸ: --%s <%s>"
 
-#: src/virsh.c:2975
+#: src/virsh.c:3238
 msgid "number"
 msgstr "ਨੰਬਰ"
 
-#: src/virsh.c:2975
+#: src/virsh.c:3238
 msgid "string"
 msgstr "ਸਤਰ"
 
-#: src/virsh.c:2981
+#: src/virsh.c:3244
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "ਅਣਜਾਣ ਡਾਟਾ '%s'"
 
-#: src/virsh.c:3003
+#: src/virsh.c:3266
 msgid "OPTION"
 msgstr "ਚੋਣ"
 
-#: src/virsh.c:3003
+#: src/virsh.c:3266
 msgid "DATA"
 msgstr "ਡਾਟਾ"
 
-#: src/virsh.c:3051 src/virsh.c:3077
+#: src/virsh.c:3316 src/virsh.c:3342
 msgid "running"
 msgstr "ਚੱਲ ਰਿਹਾ ਹੈ"
 
-#: src/virsh.c:3053 src/virsh.c:3075
+#: src/virsh.c:3318 src/virsh.c:3340
 msgid "blocked"
 msgstr "ਬਲਾਕ ਹੈ"
 
-#: src/virsh.c:3055
+#: src/virsh.c:3320
 msgid "paused"
 msgstr "ਵਿਰਾਮ ਹੈ"
 
-#: src/virsh.c:3057
+#: src/virsh.c:3322
 msgid "in shutdown"
 msgstr "ਬੰਦ ਕਰਨ ਵਿੱਚ"
 
-#: src/virsh.c:3059
+#: src/virsh.c:3324
 msgid "shut off"
 msgstr "ਬੰਦ ਕਰੋ"
 
-#: src/virsh.c:3061
+#: src/virsh.c:3326
 msgid "crashed"
 msgstr "ਨਸ਼ਟ ਹੋਇਆ"
 
-#: src/virsh.c:3073
+#: src/virsh.c:3338
 msgid "offline"
 msgstr "ਆਫਲਾਇਨ"
 
-#: src/virsh.c:3092
+#: src/virsh.c:3357
 msgid "no valid connection"
 msgstr "ਕੋਈ ਠੀਕ ਕੁਨੈਕਸ਼ਨ ਨਹੀਂ ਹੈ"
 
-#: src/virsh.c:3131
+#: src/virsh.c:3396
 #, c-format
 msgid "%s: error: "
 msgstr "%s: ਗਲਤੀ: "
 
-#: src/virsh.c:3133
+#: src/virsh.c:3398
 msgid "error: "
 msgstr "ਗਲਤੀ: "
 
-#: src/virsh.c:3155 src/virsh.c:3167
+#: src/virsh.c:3420 src/virsh.c:3432
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: ਬਾਈਟ %d ਜਾਰੀ ਕਰਨ ਲਈ ਅਸਫ਼ਲ"
 
-#: src/virsh.c:3179
-#, fuzzy, c-format
+#: src/virsh.c:3446
+#, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: ਬਾਈਟ %d ਜਾਰੀ ਕਰਨ ਲਈ ਅਸਫ਼ਲ"
+msgstr "%s: %d: %lu ਬਾਈਟ ਜਾਰੀ ਕਰਨ ਲਈ ਅਸਫ਼ਲ"
 
-#: src/virsh.c:3209
+#: src/virsh.c:3476
 msgid "failed to connect to the hypervisor"
 msgstr "ਹਾਇਪਰਵੀਜ਼ਰ ਨਾਲ ਜੁੜਨ ਲਈ ਅਸਫ਼ਲ"
 
-#: src/virsh.c:3357
-#, fuzzy, c-format
+#: src/virsh.c:3624
+#, c-format
 msgid ""
 "\n"
 "%s [options] [commands]\n"
@@ -1726,6 +1777,7 @@ msgstr ""
 "\n"
 "  options:\n"
 "    -c | --connect <uri>    hypervisor connection URI\n"
+"    -r | --readonly         connect readonly\n"
 "    -d | --debug <num>      debug level [0-5]\n"
 "    -h | --help             this help\n"
 "    -q | --quiet            quiet mode\n"
@@ -1734,7 +1786,7 @@ msgstr ""
 "\n"
 "  commands (non interactive mode):\n"
 
-#: src/virsh.c:3374
+#: src/virsh.c:3641
 #, c-format
 msgid ""
 "\n"
@@ -1745,12 +1797,12 @@ msgstr ""
 "  (specify --help <command> for details about the command)\n"
 "\n"
 
-#: src/virsh.c:3466
+#: src/virsh.c:3733
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "ਨਾ-ਸਹਾਇਕ ਚੋਣਾਂ '-%c' ਹੈ। --help ਵੇਖੋ"
 
-#: src/virsh.c:3547
+#: src/virsh.c:3814
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -1759,7 +1811,7 @@ msgstr ""
 "%s, ਵੁਰਚੁਲਾਈਜ਼ੇਸ਼ਨ ਟਰਮੀਨਲ ਹੈ, ਵਲੋਂ ਜੀ ਆਇਆਂ ਨੂੰ।\n"
 "\n"
 
-#: src/virsh.c:3550
+#: src/virsh.c:3817
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
@@ -1814,72 +1866,65 @@ msgstr "ਫਾਇਲ ਖੋਲ੍ਹਣ ਲਈ ਅਸਫ਼ਲ ਹੈ"
 msgid "failed to save content"
 msgstr "ਭਾਗ ਸੰਭਾਲਣ ਲਈ ਅਸਫ਼ਲ ਹੈ"
 
-#: src/xs_internal.c:344
+#: src/xs_internal.c:347
 msgid "failed to connect to Xen Store"
 msgstr "Xen ਸਟੋਰ ਨਾਲ ਜੁੜਨ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/proxy_internal.c:200
+#: src/proxy_internal.c:204
 #, c-format
 msgid "failed to exec %s\n"
 msgstr "%s ਚਲਾਉਣ ਲਈ ਅਸਫ਼ਲ\n"
 
-#: src/proxy_internal.c:294
+#: src/proxy_internal.c:298
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr "ਸਾਕਟ %d ਬੰਦ ਕਰਨ ਲਈ ਫੇਲ੍ਹ\n"
 
-#: src/proxy_internal.c:327
+#: src/proxy_internal.c:331
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr "ਸਾਕਟ %d ਪੜ੍ਹਨ ਲਈ ਫੇਲ\n"
 
-#: src/proxy_internal.c:361
+#: src/proxy_internal.c:365
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr "ਸਾਕਟ %d ਲਿਖਣ ਲਈ ਅਸਫ਼ਲ\n"
 
-#: src/proxy_internal.c:453 src/proxy_internal.c:474 src/proxy_internal.c:494
+#: src/proxy_internal.c:457 src/proxy_internal.c:478 src/proxy_internal.c:498
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr "ਪਰਾਕਸੀ ਨਾਲ ਸੰਚਾਰ ਦੌਰਾਨ ਗਲਤੀ: %2$d ਦੇ %1$d ਬਾਈਟ ਮਿਲੇ\n"
 
-#: src/proxy_internal.c:461
+#: src/proxy_internal.c:465
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr "ਪਰਕਾਸੀ ਸੰਚਾਰ ਦੌਰਾਨ ਗਲਤੀ: ਮੰਗ ਸੀ %d ਬਾਈਟਾਂ ਦੀ, ਮਿਲੇ %d\n"
 
-#: src/proxy_internal.c:483
+#: src/proxy_internal.c:487
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr "ਪਰਾਕਸੀ ਸੰਚਾਰ ਦੌਰਾਨ ਗਲਤੀ: %d ਬਾਈਟ ਪੈਕਟ ਮਿਲੇ\n"
 
-#: src/proxy_internal.c:507
+#: src/proxy_internal.c:511
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
 msgstr "ਪਰਾਕਸੀ ਨਾਲ ਸੰਚਾਰ ਗਲਤੀ: ਨਿਕਾਰਾ ਪੈਕਟ\n"
 
-#: src/proxy_internal.c:513
+#: src/proxy_internal.c:517
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr "ਨਾ-ਸਮਕਾਲੀ ਪੈਕਟ ਨੰਬਰ %d ਮਿਲਿਆ\n"
 
-#: src/xen_internal.c:1937
+#: src/xen_internal.c:2305
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਦਿੱਤੀ ਜਾ ਰਹੀ ਹੈ"
 
+#~ msgid "Failed to read description file %s"
+#~ msgstr "ਵੇਰਵਾ ਫਾਇਲ %s ਪੜ੍ਹਨ ਲਈ ਫੇਲ੍ਹ"
+
 #~ msgid "Xen Daemon or Xen Store"
 #~ msgstr "Xen ਡੈਮਨ ਜਾਂ Xen ਸਟੋਰ"
 
-#, fuzzy
 #~ msgid "file conatining an XML network description"
-#~ msgstr "ਫਾਇਲ 'ਚ ਇੱਕ XML ਡੋਮੇਨ ਵੇਰਵਾ ਹੈ"
-
-#~ msgid "Failed to create domain %s\n"
-#~ msgstr "ਡੋਮੇਨ %s ਬਣਾਉਣ ਲਈ ਅਸਫ਼ਲ\n"
-
-#~ msgid "Failed to get devices for domain %s\n"
-#~ msgstr "ਡੋਮੇਨ %s ਵਾਸਤੇ ਜੰਤਰ ਜਾਣਕਾਰੀ ਲੈਣ ਲਈ ਫੇਲ੍ਹ\n"
-
-#~ msgid "Failed to resume new domain %s\n"
-#~ msgstr "ਨਵੀਂ ਡੋਮੇਨ %s ਮੁੜ-ਪ੍ਰਾਪਤ ਲਈ ਫੇਲ੍ਹ\n"
+#~ msgstr "ਫਾਇਲ 'ਚ ਇੱਕ XML ਨੈੱਟਵਰਕ ਵੇਰਵਾ ਹੈ"

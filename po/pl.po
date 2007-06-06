@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-04-17 11:31+0200\n"
-"PO-Revision-Date: 2006-12-15 15:58+0200\n"
+"POT-Creation-Date: 2007-06-06 09:19+0200\n"
+"PO-Revision-Date: 2007-04-18 18:00+0200\n"
 "Last-Translator: Piotr Drąg <raven@pmail.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -25,329 +25,335 @@ msgstr "ostrzeżenie"
 msgid "error"
 msgstr "błąd"
 
-#: src/virterror.c:344
+#: src/virterror.c:350
 msgid "No error message provided"
 msgstr "Nie dostarczono komunikatu błędu"
 
-#: src/virterror.c:399
+#: src/virterror.c:405
 #, c-format
 msgid "internal error %s"
 msgstr "wewnętrzny błąd %s"
 
-#: src/virterror.c:401
+#: src/virterror.c:407
 msgid "internal error"
 msgstr "wewnętrzny błąd"
 
-#: src/virterror.c:404
+#: src/virterror.c:410
 msgid "out of memory"
 msgstr "brak pamięci"
 
-#: src/virterror.c:408
+#: src/virterror.c:414
 msgid "no support for hypervisor"
 msgstr "brak obsługi hypervisiora"
 
-#: src/virterror.c:410
+#: src/virterror.c:416
 #, c-format
 msgid "no support for hypervisor %s"
 msgstr "brak obsługi hypervisiora %s"
 
-#: src/virterror.c:414
+#: src/virterror.c:420
 msgid "could not connect to hypervisor"
 msgstr "nie można połączyć się z hypervisiorem"
 
-#: src/virterror.c:416
+#: src/virterror.c:422
 #, c-format
 msgid "could not connect to %s"
 msgstr "nie można połączyć się z %s"
 
-#: src/virterror.c:420
+#: src/virterror.c:426
 msgid "invalid connection pointer in"
 msgstr "nieprawidłowy wskaźnik połączenia w"
 
-#: src/virterror.c:422
+#: src/virterror.c:428
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "nieprawidłowy wskaźnik połączenia w %s"
 
-#: src/virterror.c:426
+#: src/virterror.c:432
 msgid "invalid domain pointer in"
 msgstr "nieprawidłowy wskaźnik domeny w"
 
-#: src/virterror.c:428
+#: src/virterror.c:434
 #, c-format
 msgid "invalid domain pointer in %s"
 msgstr "nieprawidłowy wskaźnik domeny w %s"
 
-#: src/virterror.c:432
+#: src/virterror.c:438
 msgid "invalid argument in"
 msgstr "nieprawidłowy argument w"
 
-#: src/virterror.c:434
+#: src/virterror.c:440
 #, c-format
 msgid "invalid argument in %s"
 msgstr "nieprawidłowy argument w %s"
 
-#: src/virterror.c:438
+#: src/virterror.c:444
 #, c-format
 msgid "operation failed: %s"
 msgstr "operacja nie powiodła się: %s"
 
-#: src/virterror.c:440
+#: src/virterror.c:446
 msgid "operation failed"
 msgstr "operacja nie powiodła się"
 
-#: src/virterror.c:444
+#: src/virterror.c:450
 #, c-format
 msgid "GET operation failed: %s"
 msgstr "operacja GET nie powiodła się: %s"
 
-#: src/virterror.c:446
+#: src/virterror.c:452
 msgid "GET operation failed"
 msgstr "operacja GET nie powiodła się"
 
-#: src/virterror.c:450
+#: src/virterror.c:456
 #, c-format
 msgid "POST operation failed: %s"
 msgstr "operacja POST nie powiodła się: %s"
 
-#: src/virterror.c:452
+#: src/virterror.c:458
 msgid "POST operation failed"
 msgstr "operacja POST nie powiodła się"
 
-#: src/virterror.c:455
+#: src/virterror.c:461
 #, c-format
 msgid "got unknown HTTP error code %d"
 msgstr "otrzymano nieznany kod błędu HTTP %d"
 
-#: src/virterror.c:459
+#: src/virterror.c:465
 #, c-format
 msgid "unknown host %s"
 msgstr "nieznany host %s"
 
-#: src/virterror.c:461
+#: src/virterror.c:467
 msgid "unknown host"
 msgstr "nieznany host"
 
-#: src/virterror.c:465
+#: src/virterror.c:471
 #, c-format
 msgid "failed to serialize S-Expr: %s"
 msgstr "uszeregowanie S-Expr nie powiodło się: %s"
 
-#: src/virterror.c:467
+#: src/virterror.c:473
 msgid "failed to serialize S-Expr"
 msgstr "uszeregowanie S-Expr nie powiodło się"
 
-#: src/virterror.c:471
+#: src/virterror.c:477
 msgid "could not use Xen hypervisor entry"
 msgstr "nie można użyć wpisu hypervisora Xen"
 
-#: src/virterror.c:473
+#: src/virterror.c:479
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "nie można użyć wpisu hypervisora Xen %s"
 
-#: src/virterror.c:477
+#: src/virterror.c:483
 msgid "could not connect to Xen Store"
 msgstr "nie można połączyć się z Xen Store"
 
-#: src/virterror.c:479
+#: src/virterror.c:485
 #, c-format
 msgid "could not connect to Xen Store %s"
 msgstr "nie można połączyć się z Xen Store %s"
 
-#: src/virterror.c:482
+#: src/virterror.c:488
 #, c-format
 msgid "failed Xen syscall %s %d"
 msgstr "wywołanie systemowe Xen nie powiodło się %s %d"
 
-#: src/virterror.c:486
+#: src/virterror.c:492
 msgid "unknown OS type"
 msgstr "nieznany typ systemu operacyjnego"
 
-#: src/virterror.c:488
+#: src/virterror.c:494
 #, c-format
 msgid "unknown OS type %s"
 msgstr "nieznany typ systemu operacyjnego %s"
 
-#: src/virterror.c:491
+#: src/virterror.c:497
 msgid "missing kernel information"
 msgstr "brak informacji o jądrze"
 
-#: src/virterror.c:495
+#: src/virterror.c:501
 msgid "missing root device information"
 msgstr "brak informacji o urządzeniu root"
 
-#: src/virterror.c:497
+#: src/virterror.c:503
 #, c-format
 msgid "missing root device information in %s"
 msgstr "brak informacji o urządzeniu root w %s"
 
-#: src/virterror.c:501
+#: src/virterror.c:507
 msgid "missing source information for device"
 msgstr "brak informacji źródłowych dla urządzenia"
 
-#: src/virterror.c:503
+#: src/virterror.c:509
 #, c-format
 msgid "missing source information for device %s"
 msgstr "brak informacji źródłowych dla urządzenia %s"
 
-#: src/virterror.c:507
+#: src/virterror.c:513
 msgid "missing target information for device"
 msgstr "brak informacji docelowej dla urządzenia"
 
-#: src/virterror.c:509
+#: src/virterror.c:515
 #, c-format
 msgid "missing target information for device %s"
 msgstr "brak informacji docelowej dla urządzenia %s"
 
-#: src/virterror.c:513
+#: src/virterror.c:519
 msgid "missing domain name information"
 msgstr "brak informacji o nazwie domeny"
 
-#: src/virterror.c:515
+#: src/virterror.c:521
 #, c-format
 msgid "missing domain name information in %s"
 msgstr "brak informacji o nazwie domeny w %s"
 
-#: src/virterror.c:519
+#: src/virterror.c:525
 msgid "missing operating system information"
 msgstr "brak informacji o systemie operacyjnym"
 
-#: src/virterror.c:521
+#: src/virterror.c:527
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "brak informacji o systemie operacyjnym %s"
 
-#: src/virterror.c:525
+#: src/virterror.c:531
 msgid "missing devices information"
 msgstr "brak informacji o urządzeniach"
 
-#: src/virterror.c:527
+#: src/virterror.c:533
 #, c-format
 msgid "missing devices information for %s"
 msgstr "brak informacji o urządzeniach dla %s"
 
-#: src/virterror.c:531
+#: src/virterror.c:537
 msgid "too many drivers registered"
 msgstr "zarejestrowano za dużo sterowników"
 
-#: src/virterror.c:533
+#: src/virterror.c:539
 #, c-format
 msgid "too many drivers registered in %s"
 msgstr "zarejestrowano za dużo sterowników w %s"
 
-#: src/virterror.c:537
+#: src/virterror.c:543
 msgid "library call failed, possibly not supported"
 msgstr ""
 "wywołanie biblioteki nie powiodło się, prawdopodobnie nie jest obsługiwana"
 
-#: src/virterror.c:539
+#: src/virterror.c:545
 #, c-format
 msgid "library call %s failed, possibly not supported"
 msgstr ""
 "wywołanie biblioteki %s nie powiodło się, prawdopodobnie nie jest obsługiwana"
 
-#: src/virterror.c:543
+#: src/virterror.c:549
 msgid "XML description not well formed or invalid"
 msgstr "opis XML nie jest dobrze sformułowany lub jest nieprawidłowy"
 
-#: src/virterror.c:545
+#: src/virterror.c:551
 #, c-format
 msgid "XML description for %s is not well formed or invalid"
 msgstr "opis XML dla %s nie jest dobrze sformułowany lub jest nieprawidłowy"
 
-#: src/virterror.c:549
+#: src/virterror.c:555
 msgid "this domain exists already"
 msgstr "ta domena już istnieje"
 
-#: src/virterror.c:551
+#: src/virterror.c:557
 #, c-format
 msgid "domain %s exists already"
 msgstr "domena %s już istnieje"
 
-#: src/virterror.c:555
+#: src/virterror.c:561
 msgid "operation forbidden for read only access"
 msgstr "operacja jest zabroniona z powodu uprawnień tylko do odczytu"
 
-#: src/virterror.c:557
+#: src/virterror.c:563
 #, c-format
 msgid "operation %s forbidden for read only access"
 msgstr "operacja %s jest zabroniona z powodu uprawnień tylko do odczytu"
 
-#: src/virterror.c:561
+#: src/virterror.c:567
 msgid "failed to open configuration file for reading"
 msgstr "otwarcie pliku konfiguracji do odczytania nie powiodło się"
 
-#: src/virterror.c:563
+#: src/virterror.c:569
 #, c-format
 msgid "failed to open %s for reading"
 msgstr "otwarcie %s do odczytania nie powiodło się"
 
-#: src/virterror.c:567
+#: src/virterror.c:573
 msgid "failed to read configuration file"
 msgstr "odczytanie pliku konfiguracji nie powiodło się"
 
-#: src/virterror.c:569
+#: src/virterror.c:575
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "odczytanie pliku konfiguracji %s nie powiodło się"
 
-#: src/virterror.c:573
+#: src/virterror.c:579
 msgid "failed to parse configuration file"
 msgstr "przeanalizowanie pliku konfiguracji nie powiodło się"
 
-#: src/virterror.c:575
+#: src/virterror.c:581
 #, c-format
 msgid "failed to parse configuration file %s"
 msgstr "przeanalizowanie pliku konfiguracji %s nie powiodło się"
 
-#: src/virterror.c:579
+#: src/virterror.c:585
 msgid "configuration file syntax error"
 msgstr "błąd składni pliku konfiguracji"
 
-#: src/virterror.c:581
+#: src/virterror.c:587
 #, c-format
 msgid "configuration file syntax error: %s"
 msgstr "błąd składni pliku konfiguracji: %s"
 
-#: src/virterror.c:585
+#: src/virterror.c:591
 msgid "failed to write configuration file"
 msgstr "zapisanie pliku konfiguracji nie powiodło się"
 
-#: src/virterror.c:587
+#: src/virterror.c:593
 #, c-format
 msgid "failed to write configuration file: %s"
 msgstr "zapisanie pliku konfiguracji nie powiodło się: %s"
 
-#: src/virterror.c:591
-#, fuzzy
-msgid "parser error"
-msgstr "wewnętrzny błąd"
-
 #: src/virterror.c:597
-#, fuzzy
-msgid "invalid network pointer in"
-msgstr "nieprawidłowy wskaźnik połączenia w"
-
-#: src/virterror.c:599
-#, fuzzy, c-format
-msgid "invalid network pointer in %s"
-msgstr "nieprawidłowy wskaźnik połączenia w %s"
+msgid "parser error"
+msgstr "błąd parsera"
 
 #: src/virterror.c:603
-#, fuzzy
-msgid "this network exists already"
-msgstr "ta domena już istnieje"
+msgid "invalid network pointer in"
+msgstr "nieprawidłowy wskaźnik sieciowy w"
 
 #: src/virterror.c:605
-#, fuzzy, c-format
-msgid "network %s exists already"
-msgstr "domena %s już istnieje"
+#, c-format
+msgid "invalid network pointer in %s"
+msgstr "nieprawidłowy wskaźnik sieciowy w %s"
 
 #: src/virterror.c:609
-#, fuzzy
+msgid "this network exists already"
+msgstr "ta sieć już istnieje"
+
+#: src/virterror.c:611
+#, c-format
+msgid "network %s exists already"
+msgstr "sieć %s już istnieje"
+
+#: src/virterror.c:615
 msgid "system call error"
-msgstr "wewnętrzny błąd"
+msgstr "błąd wywołania systemowego"
+
+#: src/virterror.c:621
+#, fuzzy
+msgid "RPC error"
+msgstr "błąd"
+
+#: src/virterror.c:627
+#, fuzzy
+msgid "GNUTLS call error"
+msgstr "błąd wywołania systemowego"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -393,10 +399,10 @@ msgstr "przeanalizowanie odpowiedzi serwera nie powiodło się"
 msgid "allocate new context"
 msgstr "przydziel nowy kontekst"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:896 src/test.c:926 src/test.c:950
-#: src/test.c:975 src/xend_internal.c:1863 src/xend_internal.c:2709
-#: src/xend_internal.c:2958 src/xs_internal.c:648 src/proxy_internal.c:832
-#: src/proxy_internal.c:879 src/proxy_internal.c:930
+#: src/hash.c:770 src/hash.c:775 src/test.c:904 src/test.c:934 src/test.c:958
+#: src/test.c:983 src/xend_internal.c:1882 src/xend_internal.c:2731
+#: src/xend_internal.c:2980 src/xs_internal.c:651 src/proxy_internal.c:834
+#: src/proxy_internal.c:881 src/proxy_internal.c:932
 msgid "allocating domain"
 msgstr "przydzielanie domeny"
 
@@ -408,145 +414,150 @@ msgstr "dodanie domeny do tablicy hashów połączenia nie powiodło się"
 msgid "domain missing from connection hash table"
 msgstr "brak domeny w tablicy hashów połączenia"
 
-#: src/hash.c:952 src/hash.c:957
-#, fuzzy
+#: src/hash.c:948 src/hash.c:953
 msgid "allocating network"
-msgstr "przydzielanie węzła"
+msgstr "przydzielanie sieci"
 
-#: src/hash.c:967
-#, fuzzy
+#: src/hash.c:963
 msgid "failed to add network to connection hash table"
-msgstr "dodanie domeny do tablicy hashów połączenia nie powiodło się"
+msgstr "dodanie sieci do tablicy hashów połączenia nie powiodło się"
 
-#: src/hash.c:1019
-#, fuzzy
+#: src/hash.c:1015
 msgid "network missing from connection hash table"
-msgstr "brak domeny w tablicy hashów połączenia"
+msgstr "brak sieci w tablicy hashów połączenia"
 
-#: src/test.c:281 src/test.c:468 src/test.c:1099 src/test.c:1133
-#: src/test.c:1187
+#: src/test.c:284 src/test.c:471 src/test.c:1107 src/test.c:1141
+#: src/test.c:1195
 msgid "getting time of day"
 msgstr "uzyskiwanie obecnego czasu"
 
-#: src/test.c:287 src/test.c:422 src/test.c:447 src/test.c:1393
+#: src/test.c:290 src/test.c:425 src/test.c:450 src/test.c:1401
 msgid "domain"
 msgstr "domena"
 
-#: src/test.c:293 src/test.c:551
+#: src/test.c:296 src/test.c:554
 msgid "creating xpath context"
 msgstr "tworzenie kontekstu xpath"
 
-#: src/test.c:299
+#: src/test.c:302
 msgid "domain name"
 msgstr "nazwa domeny"
 
-#: src/test.c:305 src/test.c:310
+#: src/test.c:308 src/test.c:313
 msgid "domain uuid"
 msgstr "UUID domeny"
 
-#: src/test.c:318
+#: src/test.c:321
 msgid "domain memory"
 msgstr "pamięć domeny"
 
-#: src/test.c:327
-#, fuzzy
+#: src/test.c:330
 msgid "domain current memory"
-msgstr "pamięć domeny"
+msgstr "obecna pamięć domeny"
 
-#: src/test.c:337
+#: src/test.c:340
 msgid "domain vcpus"
 msgstr "wirtualne CPU domeny"
 
-#: src/test.c:346
+#: src/test.c:349
 msgid "domain reboot behaviour"
 msgstr "zachowanie domeny przy ponownym uruchomieniu"
 
-#: src/test.c:356
+#: src/test.c:359
 msgid "domain poweroff behaviour"
 msgstr "zachowanie domeny przy wyłączeniu systemu"
 
-#: src/test.c:366
+#: src/test.c:369
 msgid "domain crash behaviour"
 msgstr "zachowanie domeny w przypadku zawieszenia się systemu"
 
-#: src/test.c:440
+#: src/test.c:443
 msgid "load domain definition file"
 msgstr "wczytaj plik definicji domeny"
 
-#: src/test.c:530
+#: src/test.c:533
 msgid "loading host definition file"
 msgstr "wczytywanie pliku definicji hosta"
 
-#: src/test.c:537
+#: src/test.c:540
 msgid "host"
 msgstr "host"
 
-#: src/test.c:545
+#: src/test.c:548
 msgid "node"
 msgstr "węzeł"
 
-#: src/test.c:565
+#: src/test.c:568
 msgid "node cpu numa nodes"
 msgstr "węzeł CPU numa węzły"
 
-#: src/test.c:573
+#: src/test.c:576
 msgid "node cpu sockets"
 msgstr "węzeł CPU gniazda"
 
-#: src/test.c:581
+#: src/test.c:584
 msgid "node cpu cores"
 msgstr "węzeł CPU rdzenie"
 
-#: src/test.c:589
+#: src/test.c:592
 msgid "node cpu threads"
 msgstr "węzeł CPU wątki"
 
-#: src/test.c:600
+#: src/test.c:603
 msgid "node active cpu"
 msgstr "węzeł aktywność CPU"
 
-#: src/test.c:607
+#: src/test.c:610
 msgid "node cpu mhz"
 msgstr "węzeł CPU MHz"
 
-#: src/test.c:622
+#: src/test.c:625
 msgid "node memory"
 msgstr "węzeł pamięć"
 
-#: src/test.c:628
+#: src/test.c:631
 msgid "node domain list"
 msgstr "węzeł domena lista"
 
-#: src/test.c:638
+#: src/test.c:641
 msgid "resolving domain filename"
 msgstr "rozwiązywanie nazw plików domeny"
 
-#: src/test.c:676
+#: src/test.c:679
 msgid "allocating node"
 msgstr "przydzielanie węzła"
 
-#: src/test.c:734
+#: src/test.c:737
+msgid "testOpen: supply a path or use test:///default"
+msgstr ""
+
+#: src/test.c:742
 msgid "too many connections"
 msgstr "za dużo połączeń"
 
-#: src/test.c:881
+#: src/test.c:749
+#, fuzzy
+msgid "allocating private data"
+msgstr "przydziel tablicę wartości"
+
+#: src/test.c:889
 msgid "too many domains"
 msgstr "za dużo domen"
 
-#: src/test.c:1425
-#, fuzzy
+#: src/test.c:1433
 msgid "Domain is already running"
-msgstr "Domena jest już aktywna"
+msgstr "Domena jest już uruchomiona"
 
-#: src/test.c:1452
+#: src/test.c:1460
 msgid "Domain is still running"
-msgstr ""
+msgstr "Domena jest wciąż uruchomiona"
 
 #: src/xml.c:295
 msgid "growing buffer"
 msgstr "zwiększanie bufora"
 
-#: src/xml.c:347 src/xend_internal.c:1508 src/xend_internal.c:1527
+#: src/xml.c:347 src/xend_internal.c:599 src/xend_internal.c:815
+#: src/xend_internal.c:1524 src/xend_internal.c:1543
 msgid "allocate new buffer"
 msgstr "przydziel nowy bufor"
 
@@ -562,74 +573,72 @@ msgstr "przydzielenie węzła nie powiodło się"
 msgid "failed to copy a string"
 msgstr "skopiowanie łańcucha nie powiodło się"
 
-#: src/xend_internal.c:282 src/xend_internal.c:285
+#: src/xend_internal.c:285 src/xend_internal.c:288
 msgid "failed to read from Xen Daemon"
 msgstr "odczytanie z demona Xen nie powiodło się"
 
-#: src/xend_internal.c:1006
+#: src/xend_internal.c:1022
 msgid "failed to urlencode the create S-Expr"
 msgstr "zakodowanie opisu użytego do utworzenia domeny nie powiodło się"
 
-#: src/xend_internal.c:1047
+#: src/xend_internal.c:1063
 msgid "domain information incomplete, missing domid"
 msgstr "informacje o domenie są niekompletne, brak domid"
 
-#: src/xend_internal.c:1053
+#: src/xend_internal.c:1069
 msgid "domain information incorrect domid not numeric"
 msgstr "informacje o domenie są nieprawidłowe, domid nie jest numeryczne"
 
-#: src/xend_internal.c:1061 src/xend_internal.c:1110
+#: src/xend_internal.c:1077 src/xend_internal.c:1126
 msgid "domain information incomplete, missing uuid"
 msgstr "informacje o domenie są niekompletne, brak UUID"
 
-#: src/xend_internal.c:1101 src/xend_internal.c:1376
+#: src/xend_internal.c:1117 src/xend_internal.c:1392
 msgid "domain information incomplete, missing name"
 msgstr "informacje o domenie są niekompletne, brak nazwy"
 
-#: src/xend_internal.c:1276 src/xend_internal.c:1307
-#, fuzzy
+#: src/xend_internal.c:1292 src/xend_internal.c:1323
 msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "informacje o domenie są niekompletne, brak jądra"
+msgstr "informacje o domenie są niekompletne, brak jądra i programu startowego"
 
-#: src/xend_internal.c:1364
-#, fuzzy
+#: src/xend_internal.c:1380
 msgid "domain information incomplete, missing id"
-msgstr "informacje o domenie są niekompletne, brak UUID"
+msgstr "informacje o domenie są niekompletne, brak ID"
 
-#: src/xend_internal.c:1477
+#: src/xend_internal.c:1493
 msgid "domain information incomplete, vbd has no dev"
 msgstr "informacje o domenie są niekompletne, vbd nie ma dev"
 
-#: src/xend_internal.c:1492
+#: src/xend_internal.c:1508
 msgid "domain information incomplete, vbd has no src"
 msgstr "informacje o domenie są niekompletne, vbd nie ma src"
 
-#: src/xend_internal.c:1501
+#: src/xend_internal.c:1517
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "nie można przeanalizować nazwy pliku vbd, brak nazwy sterownika"
 
-#: src/xend_internal.c:1520
+#: src/xend_internal.c:1536
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "nie można przeanalizować nazwy pliku vbd, brak typu sterownika"
 
-#: src/xend_internal.c:1882
+#: src/xend_internal.c:1901
 msgid "failed to parse Xend domain information"
 msgstr "przeanalizowanie informacji o domenie Xend nie powiodło się"
 
-#: src/xend_internal.c:3145
-#, fuzzy, c-format
+#: src/xend_internal.c:3170
+#, c-format
 msgid "Failed to create inactive domain %s\n"
-msgstr "utworzenie domeny %s nie powiodło się\n"
+msgstr "Utworzenie nieaktywnej domeny %s nie powiodło się\n"
 
-#: src/virsh.c:269
+#: src/virsh.c:271
 msgid "print help"
 msgstr "wyświetl pomoc"
 
-#: src/virsh.c:270
+#: src/virsh.c:272
 msgid "Prints global help or command specific help."
 msgstr "Wyświetl pomoc globalną lub określoną dla polecenia."
 
-#: src/virsh.c:288
+#: src/virsh.c:290
 msgid ""
 "Commands:\n"
 "\n"
@@ -637,918 +646,955 @@ msgstr ""
 "Polecenia:\n"
 "\n"
 
-#: src/virsh.c:302
-#, fuzzy
-msgid "autostart a domain"
-msgstr "Uruchom domenę."
-
 #: src/virsh.c:304
+msgid "autostart a domain"
+msgstr "automatycznie uruchom domenę"
+
+#: src/virsh.c:306
 msgid "Configure a domain to be automatically started at boot."
 msgstr ""
+"Skonfiguruj domenę tak, aby była automatycznie startowana po uruchomieniu."
 
-#: src/virsh.c:309 src/virsh.c:409 src/virsh.c:595 src/virsh.c:633
-#: src/virsh.c:864 src/virsh.c:946 src/virsh.c:991 src/virsh.c:1030
-#: src/virsh.c:1069 src/virsh.c:1108 src/virsh.c:1147 src/virsh.c:1224
-#: src/virsh.c:1307 src/virsh.c:1397 src/virsh.c:1453 src/virsh.c:1497
-#: src/virsh.c:1602 src/virsh.c:2338
+#: src/virsh.c:311 src/virsh.c:411 src/virsh.c:597 src/virsh.c:635
+#: src/virsh.c:910 src/virsh.c:954 src/virsh.c:1115 src/virsh.c:1160
+#: src/virsh.c:1199 src/virsh.c:1238 src/virsh.c:1277 src/virsh.c:1316
+#: src/virsh.c:1393 src/virsh.c:1476 src/virsh.c:1566 src/virsh.c:1622
+#: src/virsh.c:1666 src/virsh.c:1771 src/virsh.c:2491 src/virsh.c:2570
+#: src/virsh.c:2624
 msgid "domain name, id or uuid"
 msgstr "nazwa domeny, ID lub UUID"
 
-#: src/virsh.c:310 src/virsh.c:1743
+#: src/virsh.c:312 src/virsh.c:1912
 msgid "disable autostarting"
-msgstr ""
+msgstr "wyłącz automatyczne uruchamianie"
 
-#: src/virsh.c:331
-#, fuzzy, c-format
+#: src/virsh.c:333
+#, c-format
 msgid "Failed to mark domain %s as autostarted"
-msgstr "Zapisanie domeny %s do %s nie powiodło się"
+msgstr "Oznaczenie domeny %s jako automatycznie uruchamianej nie powiodło się"
 
-#: src/virsh.c:334
-#, fuzzy, c-format
+#: src/virsh.c:336
+#, c-format
 msgid "Failed to unmark domain %s as autostarted"
-msgstr "Zapisanie domeny %s do %s nie powiodło się"
-
-#: src/virsh.c:341
-#, fuzzy, c-format
-msgid "Domain %s marked as autostarted\n"
-msgstr "Domena %s została uruchomiona\n"
+msgstr "Odznaczenie domeny %s jako automatycznie uruchamianej nie powiodło się"
 
 #: src/virsh.c:343
-#, fuzzy, c-format
-msgid "Domain %s unmarked as autostarted\n"
-msgstr "Domena %s została uruchomiona\n"
+#, c-format
+msgid "Domain %s marked as autostarted\n"
+msgstr "Domena %s została oznaczona jako automatycznie uruchomiona\n"
 
-#: src/virsh.c:353
+#: src/virsh.c:345
+#, c-format
+msgid "Domain %s unmarked as autostarted\n"
+msgstr "Domena %s została odznaczona jako automatycznie uruchomiona\n"
+
+#: src/virsh.c:355
 msgid "(re)connect to hypervisor"
 msgstr "ponownie połącz się z hypervisorem"
 
-#: src/virsh.c:355
+#: src/virsh.c:357
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr ""
 "Połącz się z lokalnym hypervisiorem. Jest to wbudowane polecenie po "
 "uruchomieniu powłoki."
 
-#: src/virsh.c:360
+#: src/virsh.c:362
 msgid "hypervisor connection URI"
 msgstr "URI połączenia hypervisiora"
 
-#: src/virsh.c:361
+#: src/virsh.c:363
 msgid "read-only connection"
 msgstr "połączenie tylko do odczytu"
 
-#: src/virsh.c:373
+#: src/virsh.c:375
 msgid "Failed to disconnect from the hypervisor"
 msgstr "Rozłączenie od hypervisiora nie powiodło się"
 
-#: src/virsh.c:392
+#: src/virsh.c:394
 msgid "Failed to connect to the hypervisor"
 msgstr "Połączenie z hypervisiorem nie powiodło się"
 
-#: src/virsh.c:402
-msgid "connect to the guest console"
-msgstr ""
-
 #: src/virsh.c:404
+msgid "connect to the guest console"
+msgstr "połącz się z konsolą gościa"
+
+#: src/virsh.c:406
 msgid "Connect the virtual serial console for the guest"
-msgstr ""
+msgstr "Połącz wirtualną konsolę szeregową dla gościa"
 
-#: src/virsh.c:449
+#: src/virsh.c:451
 msgid "No console available for domain\n"
-msgstr ""
+msgstr "Brak konsoli dostępnych dla domeny\n"
 
-#: src/virsh.c:467
+#: src/virsh.c:469
 msgid "list domains"
 msgstr "lista domen"
 
-#: src/virsh.c:468
+#: src/virsh.c:470
 msgid "Returns list of domains."
 msgstr "Zwraca listę domen."
 
-#: src/virsh.c:473
+#: src/virsh.c:475
 msgid "list inactive domains"
 msgstr "lista nieaktywnych domen"
 
-#: src/virsh.c:474
+#: src/virsh.c:476
 msgid "list inactive & active domains"
 msgstr "lista nieaktywnych i aktywnych domen"
 
-#: src/virsh.c:496 src/virsh.c:503
+#: src/virsh.c:498 src/virsh.c:505
 msgid "Failed to list active domains"
 msgstr "Wyświetlenie listy aktywnych domen nie powiodło się"
 
-#: src/virsh.c:514 src/virsh.c:523
+#: src/virsh.c:516 src/virsh.c:525
 msgid "Failed to list inactive domains"
 msgstr "Wyświetlenie listy aktywnych domen nie powiodło się"
 
-#: src/virsh.c:533
+#: src/virsh.c:535
 msgid "Id"
 msgstr "ID"
 
-#: src/virsh.c:533 src/virsh.c:2044
+#: src/virsh.c:535 src/virsh.c:2197
 msgid "Name"
 msgstr "Nazwa"
 
-#: src/virsh.c:533 src/virsh.c:2044
+#: src/virsh.c:535 src/virsh.c:2197
 msgid "State"
 msgstr "Stan"
 
-#: src/virsh.c:546 src/virsh.c:568 src/virsh.c:3063 src/virsh.c:3079
+#: src/virsh.c:548 src/virsh.c:570 src/virsh.c:3328 src/virsh.c:3344
 msgid "no state"
 msgstr "brak stanu"
 
-#: src/virsh.c:589
+#: src/virsh.c:591
 msgid "domain state"
 msgstr "stan domeny"
 
-#: src/virsh.c:590
+#: src/virsh.c:592
 msgid "Returns state about a running domain."
 msgstr "Zwraca stan uruchomionej domeny."
 
-#: src/virsh.c:627
+#: src/virsh.c:629
 msgid "suspend a domain"
 msgstr "uśpij domenę"
 
-#: src/virsh.c:628
+#: src/virsh.c:630
 msgid "Suspend a running domain."
 msgstr "Uśpij uruchomioną domenę."
 
-#: src/virsh.c:651
+#: src/virsh.c:653
 #, c-format
 msgid "Domain %s suspended\n"
 msgstr "Domena %s została uśpiona\n"
 
-#: src/virsh.c:653
+#: src/virsh.c:655
 #, c-format
 msgid "Failed to suspend domain %s"
 msgstr "Uśpienie domeny %s nie powiodło się"
 
-#: src/virsh.c:666
+#: src/virsh.c:668
 msgid "create a domain from an XML file"
 msgstr "utwórz domenę z pliku XML"
 
-#: src/virsh.c:667
+#: src/virsh.c:669
 msgid "Create a domain."
 msgstr "Utwórz domenę."
 
-#: src/virsh.c:672
+#: src/virsh.c:674
 msgid "file conatining an XML domain description"
 msgstr "plik zawierający opis XML domeny"
 
-#: src/virsh.c:695 src/virsh.c:700 src/virsh.c:750 src/virsh.c:755
-#: src/virsh.c:1815 src/virsh.c:1820 src/virsh.c:1871 src/virsh.c:1876
-#, c-format
-msgid "Failed to read description file %s"
-msgstr "Odczytanie pliku opisu %s nie powiodło się"
+#: src/virsh.c:689
+#, fuzzy, c-format
+msgid "Failed to open '%s': %s"
+msgstr "Uśpienie domeny %s nie powiodło się"
 
-#: src/virsh.c:707
+#: src/virsh.c:709
+#, fuzzy, c-format
+msgid "Failed to open '%s': read: %s"
+msgstr "otwarcie %s do odczytania nie powiodło się"
+
+#: src/virsh.c:727
+#, fuzzy, c-format
+msgid "Error allocating memory: %s"
+msgstr "przydzielanie sieci"
+
+#: src/virsh.c:761
 #, c-format
 msgid "Domain %s created from %s\n"
 msgstr "Domena %s została utworzona z %s\n"
 
-#: src/virsh.c:710
+#: src/virsh.c:764
 #, c-format
 msgid "Failed to create domain from %s"
 msgstr "Utworzenie domeny z %s nie powiodło się"
 
-#: src/virsh.c:721
+#: src/virsh.c:775
 msgid "define (but don't start) a domain from an XML file"
 msgstr "określ (ale nie uruchamiaj) domenę z pliku XML"
 
-#: src/virsh.c:722
+#: src/virsh.c:776
 msgid "Define a domain."
 msgstr "Określ domenę."
 
-#: src/virsh.c:727
-#, fuzzy
+#: src/virsh.c:781
 msgid "file containing an XML domain description"
 msgstr "plik zawierający opis XML domeny"
 
-#: src/virsh.c:762
+#: src/virsh.c:808
 #, c-format
 msgid "Domain %s defined from %s\n"
 msgstr "Domena %s została określona z %s\n"
 
-#: src/virsh.c:765
+#: src/virsh.c:811
 #, c-format
 msgid "Failed to define domain from %s"
 msgstr "Określenie domeny z %s nie powiodło się"
 
-#: src/virsh.c:776
+#: src/virsh.c:822
 msgid "undefine an inactive domain"
 msgstr "usuń określenie nieaktywnej domeny"
 
-#: src/virsh.c:777
+#: src/virsh.c:823
 msgid "Undefine the configuration for an inactive domain."
 msgstr "Usuń określenie konfiguracji dla nieaktywnej domeny."
 
-#: src/virsh.c:782 src/virsh.c:1671
+#: src/virsh.c:828 src/virsh.c:1840
 msgid "domain name or uuid"
 msgstr "nazwa domeny lub UUID"
 
-#: src/virsh.c:800
+#: src/virsh.c:846
 #, c-format
 msgid "Domain %s has been undefined\n"
 msgstr "Określenie domeny %s zostało usunięte\n"
 
-#: src/virsh.c:802
+#: src/virsh.c:848
 #, c-format
 msgid "Failed to undefine domain %s"
 msgstr "Usunięcie określenia domeny %s nie powiodło się"
 
-#: src/virsh.c:815
+#: src/virsh.c:861
 msgid "start a (previously defined) inactive domain"
 msgstr "uruchom (wcześniej określoną) nieaktywną domenę"
 
-#: src/virsh.c:816
+#: src/virsh.c:862
 msgid "Start a domain."
 msgstr "Uruchom domenę."
 
-#: src/virsh.c:821
+#: src/virsh.c:867
 msgid "name of the inactive domain"
 msgstr "nazwa nieaktywnej domeny"
 
-#: src/virsh.c:838
+#: src/virsh.c:884
 msgid "Domain is already active"
 msgstr "Domena jest już aktywna"
 
-#: src/virsh.c:843
+#: src/virsh.c:889
 #, c-format
 msgid "Domain %s started\n"
 msgstr "Domena %s została uruchomiona\n"
 
-#: src/virsh.c:846
+#: src/virsh.c:892
 #, c-format
 msgid "Failed to start domain %s"
 msgstr "Uruchomienie domeny %s nie powiodło się"
 
-#: src/virsh.c:858
+#: src/virsh.c:904
 msgid "save a domain state to a file"
 msgstr "zapisz stan domey do pliku"
 
-#: src/virsh.c:859
+#: src/virsh.c:905
 msgid "Save a running domain."
 msgstr "Zapisz uruchomioną domenę."
 
-#: src/virsh.c:865
+#: src/virsh.c:911
 msgid "where to save the data"
 msgstr "gdzie zapisać dane"
 
-#: src/virsh.c:887
+#: src/virsh.c:933
 #, c-format
 msgid "Domain %s saved to %s\n"
 msgstr "Domena %s została zapisana do %s\n"
 
-#: src/virsh.c:889
+#: src/virsh.c:935
 #, c-format
 msgid "Failed to save domain %s to %s"
 msgstr "Zapisanie domeny %s do %s nie powiodło się"
 
-#: src/virsh.c:902
+#: src/virsh.c:948
+msgid "show/set scheduler parameters"
+msgstr ""
+
+#: src/virsh.c:949
+msgid "Show/Set scheduler parameters."
+msgstr ""
+
+#: src/virsh.c:955
+msgid "weight for XEN_CREDIT"
+msgstr ""
+
+#: src/virsh.c:956
+msgid "cap for XEN_CREDIT"
+msgstr ""
+
+#: src/virsh.c:1020 src/virsh.c:1024
+msgid "Scheduler:"
+msgstr ""
+
+#: src/virsh.c:1024
+#, fuzzy
+msgid "Unknown"
+msgstr "nieznany host"
+
+#: src/virsh.c:1071
 msgid "restore a domain from a saved state in a file"
 msgstr "przywróć domenę z zapisanego stanu w pliku"
 
-#: src/virsh.c:903
+#: src/virsh.c:1072
 msgid "Restore a domain."
 msgstr "Przywróć domenę."
 
-#: src/virsh.c:908
+#: src/virsh.c:1077
 msgid "the state to restore"
 msgstr "stan do przywrócenia"
 
-#: src/virsh.c:927
+#: src/virsh.c:1096
 #, c-format
 msgid "Domain restored from %s\n"
 msgstr "Domena została przywrócona z %s\n"
 
-#: src/virsh.c:929
+#: src/virsh.c:1098
 #, c-format
 msgid "Failed to restore domain from %s"
 msgstr "Przywrócenie domeny z %s nie powiodło się"
 
-#: src/virsh.c:940
+#: src/virsh.c:1109
 msgid "dump the core of a domain to a file for analysis"
 msgstr "zrzuć core domeny do pliku do analiz"
 
-#: src/virsh.c:941
+#: src/virsh.c:1110
 msgid "Core dump a domain."
 msgstr "Zrzuć core domeny."
 
-#: src/virsh.c:947
+#: src/virsh.c:1116
 msgid "where to dump the core"
 msgstr "gdzie zrzucić core"
 
-#: src/virsh.c:969
+#: src/virsh.c:1138
 #, c-format
 msgid "Domain %s dumpd to %s\n"
 msgstr "Domena %s została zrzucona do %s\n"
 
-#: src/virsh.c:971
+#: src/virsh.c:1140
 #, c-format
 msgid "Failed to core dump domain %s to %s"
 msgstr "Zrzucanie core domeny %s do %s nie powiodło się"
 
-#: src/virsh.c:985
+#: src/virsh.c:1154
 msgid "resume a domain"
 msgstr "wznów domenę"
 
-#: src/virsh.c:986
+#: src/virsh.c:1155
 msgid "Resume a previously suspended domain."
 msgstr "Wznów wcześniej uśpioną domenę."
 
-#: src/virsh.c:1009
+#: src/virsh.c:1178
 #, c-format
 msgid "Domain %s resumed\n"
 msgstr "Domena %s została wznowiona\n"
 
-#: src/virsh.c:1011
+#: src/virsh.c:1180
 #, c-format
 msgid "Failed to resume domain %s"
 msgstr "Wznowienie domeny %s nie powiodło się"
 
-#: src/virsh.c:1024
+#: src/virsh.c:1193
 msgid "gracefully shutdown a domain"
 msgstr "stosownie wyłącz domenę"
 
-#: src/virsh.c:1025
+#: src/virsh.c:1194
 msgid "Run shutdown in the target domain."
 msgstr "Uruchom shutdown w docelowej domenie."
 
-#: src/virsh.c:1048
+#: src/virsh.c:1217
 #, c-format
 msgid "Domain %s is being shutdown\n"
 msgstr "Domena %s jest wyłączana\n"
 
-#: src/virsh.c:1050
+#: src/virsh.c:1219
 #, c-format
 msgid "Failed to shutdown domain %s"
 msgstr "Wyłączenie domeny %s nie powiodło się"
 
-#: src/virsh.c:1063
+#: src/virsh.c:1232
 msgid "reboot a domain"
 msgstr "uruchom ponownie domenę"
 
-#: src/virsh.c:1064
+#: src/virsh.c:1233
 msgid "Run a reboot command in the target domain."
 msgstr "Uruchom polecenie reboot w docelowej domenie."
 
-#: src/virsh.c:1087
+#: src/virsh.c:1256
 #, c-format
 msgid "Domain %s is being rebooted\n"
 msgstr "Domena %s jest ponownie uruchamiana\n"
 
-#: src/virsh.c:1089
+#: src/virsh.c:1258
 #, c-format
 msgid "Failed to reboot domain %s"
 msgstr "Ponowne uruchomienie domeny %s nie powiodło się"
 
-#: src/virsh.c:1102
+#: src/virsh.c:1271
 msgid "destroy a domain"
 msgstr "zniszcz domenę"
 
-#: src/virsh.c:1103
+#: src/virsh.c:1272
 msgid "Destroy a given domain."
 msgstr "Zniszcz podaną domenę."
 
-#: src/virsh.c:1126
+#: src/virsh.c:1295
 #, c-format
 msgid "Domain %s destroyed\n"
 msgstr "Domena %s została zniszczona\n"
 
-#: src/virsh.c:1128
+#: src/virsh.c:1297
 #, c-format
 msgid "Failed to destroy domain %s"
 msgstr "Zniszczenie domeny %s nie powiodło się"
 
-#: src/virsh.c:1141
+#: src/virsh.c:1310
 msgid "domain information"
 msgstr "informacje o domenie"
 
-#: src/virsh.c:1142
+#: src/virsh.c:1311
 msgid "Returns basic information about the domain."
 msgstr "Zwraca podstawowe informacje o domenie."
 
-#: src/virsh.c:1168 src/virsh.c:1170
+#: src/virsh.c:1337 src/virsh.c:1339
 msgid "Id:"
 msgstr "ID:"
 
-#: src/virsh.c:1171
+#: src/virsh.c:1340
 msgid "Name:"
 msgstr "Nazwa:"
 
-#: src/virsh.c:1174
+#: src/virsh.c:1343
 msgid "UUID:"
 msgstr "UUID:"
 
-#: src/virsh.c:1177
+#: src/virsh.c:1346
 msgid "OS Type:"
 msgstr "Typ systemu operacyjnego:"
 
-#: src/virsh.c:1182 src/virsh.c:1268
+#: src/virsh.c:1351 src/virsh.c:1437
 msgid "State:"
 msgstr "Stan:"
 
-#: src/virsh.c:1185 src/virsh.c:1553
+#: src/virsh.c:1354 src/virsh.c:1722
 msgid "CPU(s):"
 msgstr "CPU:"
 
-#: src/virsh.c:1192 src/virsh.c:1275
+#: src/virsh.c:1361 src/virsh.c:1444
 msgid "CPU time:"
 msgstr "Czas CPU:"
 
-#: src/virsh.c:1196 src/virsh.c:1199
+#: src/virsh.c:1365 src/virsh.c:1368
 msgid "Max memory:"
 msgstr "Maksymalna pamięć:"
 
-#: src/virsh.c:1200
+#: src/virsh.c:1369
 msgid "no limit"
-msgstr ""
+msgstr "brak limitu"
 
-#: src/virsh.c:1202
+#: src/virsh.c:1371
 msgid "Used memory:"
 msgstr "Użyta pamięć:"
 
-#: src/virsh.c:1218
+#: src/virsh.c:1387
 msgid "domain vcpu information"
 msgstr "domena VCPU informacja"
 
-#: src/virsh.c:1219
+#: src/virsh.c:1388
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr "Zwraca podstawowe informacje o wirtualnych CPU domeny."
 
-#: src/virsh.c:1266
+#: src/virsh.c:1435
 msgid "VCPU:"
 msgstr "VCPU:"
 
-#: src/virsh.c:1267
+#: src/virsh.c:1436
 msgid "CPU:"
 msgstr "CPU:"
 
-#: src/virsh.c:1277
+#: src/virsh.c:1446
 msgid "CPU Affinity:"
 msgstr "Pokrewieństwo CPU:"
 
-#: src/virsh.c:1301
+#: src/virsh.c:1470
 msgid "control domain vcpu affinity"
 msgstr "kontrola domena VCPU pokrewieństwo"
 
-#: src/virsh.c:1302
+#: src/virsh.c:1471
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr "Przypnij VCPU domeny do fizycznego CPU hosta."
 
-#: src/virsh.c:1308
+#: src/virsh.c:1477
 msgid "vcpu number"
 msgstr "VCPU liczba"
 
-#: src/virsh.c:1309
+#: src/virsh.c:1478
 msgid "host cpu number(s) (comma separated)"
 msgstr "host CPU liczny (oddzielne przecinkami)"
 
-#: src/virsh.c:1367
-#, fuzzy, c-format
+#: src/virsh.c:1536
+#, c-format
 msgid "Physical CPU %d doesn't exist."
-msgstr "polecenie \"%s\" nie istnieje"
+msgstr "Fizyczny CPU %d nie istnieje."
 
-#: src/virsh.c:1391
+#: src/virsh.c:1560
 msgid "change number of virtual CPUs"
 msgstr "zmień liczbę wirtualnych CPU"
 
-#: src/virsh.c:1392
+#: src/virsh.c:1561
 msgid "Change the number of virtual CPUs active in the guest domain."
 msgstr "Zmień liczbę wirtualnych CPU aktywnych w domenie gościa."
 
-#: src/virsh.c:1398
+#: src/virsh.c:1567
 msgid "number of virtual CPUs"
 msgstr "liczba wirtualnych CPU"
 
-#: src/virsh.c:1429
-#, fuzzy
+#: src/virsh.c:1598
 msgid "Too many virtual CPU's."
-msgstr "liczba wirtualnych CPU"
+msgstr "Za dużo wirtualnych CPU."
 
-#: src/virsh.c:1447
+#: src/virsh.c:1616
 msgid "change memory allocation"
 msgstr "zmień przydział pamięci"
 
-#: src/virsh.c:1448
+#: src/virsh.c:1617
 msgid "Change the current memory allocation in the guest domain."
 msgstr "Zmień obecny przydział pamięci w domenie gościa."
 
-#: src/virsh.c:1454
-#, fuzzy
+#: src/virsh.c:1623
 msgid "number of kilobytes of memory"
-msgstr "liczba bajtów pamięci"
+msgstr "liczba kilobajtów pamięci"
 
-#: src/virsh.c:1474 src/virsh.c:1518
+#: src/virsh.c:1643 src/virsh.c:1687
 #, c-format
 msgid "Invalid value of %d for memory size"
-msgstr ""
+msgstr "Nieprawidłowa wartość %d dla rozmiaru pamięci"
 
-#: src/virsh.c:1491
+#: src/virsh.c:1660
 msgid "change maximum memory limit"
 msgstr "zmień maksymalny limit pamięci"
 
-#: src/virsh.c:1492
+#: src/virsh.c:1661
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr "Zmień maksymalny limit przydziału pamięci w domenie gościa."
 
-#: src/virsh.c:1498
-#, fuzzy
+#: src/virsh.c:1667
 msgid "maximum memory limit in kilobytes"
-msgstr "maksymalny limit pamięci w bajtach"
+msgstr "maksymalny limit pamięci w kilobajtach"
 
-#: src/virsh.c:1535
+#: src/virsh.c:1704
 msgid "node information"
 msgstr "informacje o węźle"
 
-#: src/virsh.c:1536
+#: src/virsh.c:1705
 msgid "Returns basic information about the node."
 msgstr "Zwraca podstawowe informacje o węźle."
 
-#: src/virsh.c:1549
+#: src/virsh.c:1718
 msgid "failed to get node information"
 msgstr "uzyskanie informacji o węźle nie powiodło się"
 
-#: src/virsh.c:1552
+#: src/virsh.c:1721
 msgid "CPU model:"
 msgstr "Model CPU:"
 
-#: src/virsh.c:1554
+#: src/virsh.c:1723
 msgid "CPU frequency:"
 msgstr "Częstotliwość CPU:"
 
-#: src/virsh.c:1555
+#: src/virsh.c:1724
 msgid "CPU socket(s):"
 msgstr "Gniazda CPU:"
 
-#: src/virsh.c:1556
+#: src/virsh.c:1725
 msgid "Core(s) per socket:"
 msgstr "Rdzeni na gniazdo:"
 
-#: src/virsh.c:1557
+#: src/virsh.c:1726
 msgid "Thread(s) per core:"
 msgstr "Wątków na rdzeń:"
 
-#: src/virsh.c:1558
+#: src/virsh.c:1727
 msgid "NUMA cell(s):"
 msgstr "Wywołania NUMA:"
 
-#: src/virsh.c:1559
+#: src/virsh.c:1728
 msgid "Memory size:"
 msgstr "Rozmiar pamięci:"
 
-#: src/virsh.c:1569
+#: src/virsh.c:1738
 msgid "capabilities"
-msgstr ""
+msgstr "możliwości"
 
-#: src/virsh.c:1570
+#: src/virsh.c:1739
 msgid "Returns capabilities of hypervisor/driver."
-msgstr ""
+msgstr "Zwraca możliwości hypervisora/sterownika."
 
-#: src/virsh.c:1583
-#, fuzzy
+#: src/virsh.c:1752
 msgid "failed to get capabilities"
-msgstr "otwarcie pliku nie powiodło się"
+msgstr "uzyskanie możliwości nie powiodło się"
 
-#: src/virsh.c:1596
+#: src/virsh.c:1765
 msgid "domain information in XML"
 msgstr "informacje o domenie w XML-u"
 
-#: src/virsh.c:1597
-#, fuzzy
+#: src/virsh.c:1766
 msgid "Output the domain information as an XML dump to stdout."
-msgstr "Przekazuje informacje o domenie jako zrzut XML na standardowe wyjście."
+msgstr "Przekaż informacje o domenie jako zrzut XML na standardowe wyjście."
 
-#: src/virsh.c:1636
+#: src/virsh.c:1805
 msgid "convert a domain id or UUID to domain name"
 msgstr "przekonwertuj ID lub UUID domeny do nazwy domeny"
 
-#: src/virsh.c:1641
+#: src/virsh.c:1810
 msgid "domain id or uuid"
 msgstr "ID lub UUID domeny"
 
-#: src/virsh.c:1666
+#: src/virsh.c:1835
 msgid "convert a domain name or UUID to domain id"
 msgstr "przekonwertuj nazwę domeny lub UUID na ID domeny"
 
-#: src/virsh.c:1701
+#: src/virsh.c:1870
 msgid "convert a domain name or id to domain UUID"
 msgstr "przekonwertuj nazwę lub ID domeny na UUID domeny"
 
-#: src/virsh.c:1706
+#: src/virsh.c:1875
 msgid "domain id or name"
 msgstr "ID lub nazwa domeny"
 
-#: src/virsh.c:1725
+#: src/virsh.c:1894
 msgid "failed to get domain UUID"
 msgstr "uzyskanie UUID domeny nie powiodło się"
 
-#: src/virsh.c:1735
-#, fuzzy
+#: src/virsh.c:1904
 msgid "autostart a network"
-msgstr "Uruchom domenę."
+msgstr "automatycznie uruchom sieć"
 
-#: src/virsh.c:1737
+#: src/virsh.c:1906
 msgid "Configure a network to be automatically started at boot."
 msgstr ""
+"Skonfiguruj sieć tak, aby była automatycznie startowana po uruchomieniu."
 
-#: src/virsh.c:1742 src/virsh.c:2183
-#, fuzzy
+#: src/virsh.c:1911 src/virsh.c:2336
 msgid "network name or uuid"
-msgstr "nazwa domeny lub UUID"
+msgstr "nazwa sieci lub UUID"
 
-#: src/virsh.c:1764
-#, fuzzy, c-format
+#: src/virsh.c:1933
+#, c-format
 msgid "failed to mark network %s as autostarted"
-msgstr "Uruchomienie domeny %s nie powiodło się"
+msgstr "oznaczenie sieci %s jako automatycznie uruchamianej nie powiodło się"
 
-#: src/virsh.c:1767
-#, fuzzy, c-format
+#: src/virsh.c:1936
+#, c-format
 msgid "failed to unmark network %s as autostarted"
-msgstr "Uruchomienie domeny %s nie powiodło się"
+msgstr "odznaczenie sieci %s jako automatycznie uruchamianej nie powiodło się"
 
-#: src/virsh.c:1774
-#, fuzzy, c-format
+#: src/virsh.c:1943
+#, c-format
 msgid "Network %s marked as autostarted\n"
-msgstr "Domena %s została uruchomiona\n"
+msgstr "Sieć %s została oznaczona jako automatycznie uruchamiana\n"
 
-#: src/virsh.c:1776
-#, fuzzy, c-format
+#: src/virsh.c:1945
+#, c-format
 msgid "Network %s unmarked as autostarted\n"
-msgstr "Domena %s została uruchomiona\n"
+msgstr "Sieć %s została odznaczona jako automatycznie uruchamiana\n"
 
-#: src/virsh.c:1786
-#, fuzzy
+#: src/virsh.c:1955
 msgid "create a network from an XML file"
-msgstr "utwórz domenę z pliku XML"
+msgstr "utwórz sieć z pliku XML"
 
-#: src/virsh.c:1787
-#, fuzzy
+#: src/virsh.c:1956
 msgid "Create a network."
-msgstr "Utwórz domenę."
+msgstr "Utwórz sieć."
 
-#: src/virsh.c:1792 src/virsh.c:1848
-#, fuzzy
+#: src/virsh.c:1961 src/virsh.c:2009
 msgid "file containing an XML network description"
-msgstr "plik zawierający opis XML domeny"
+msgstr "plik zawierający opis XML sieci"
 
-#: src/virsh.c:1827
-#, fuzzy, c-format
+#: src/virsh.c:1988
+#, c-format
 msgid "Network %s created from %s\n"
-msgstr "Domena %s została utworzona z %s\n"
+msgstr "Sieć %s została utworzona z %s\n"
 
-#: src/virsh.c:1830
-#, fuzzy, c-format
+#: src/virsh.c:1991
+#, c-format
 msgid "Failed to create network from %s"
-msgstr "Utworzenie domeny z %s nie powiodło się"
+msgstr "Utworzenie sieci z %s nie powiodło się"
 
-#: src/virsh.c:1842
-#, fuzzy
+#: src/virsh.c:2003
 msgid "define (but don't start) a network from an XML file"
-msgstr "określ (ale nie uruchamiaj) domenę z pliku XML"
+msgstr "określ (ale nie uruchamiaj) sieć z pliku XML"
 
-#: src/virsh.c:1843
-#, fuzzy
+#: src/virsh.c:2004
 msgid "Define a network."
-msgstr "Określ domenę."
+msgstr "Określ sieć."
 
-#: src/virsh.c:1883
-#, fuzzy, c-format
+#: src/virsh.c:2036
+#, c-format
 msgid "Network %s defined from %s\n"
-msgstr "Domena %s została określona z %s\n"
+msgstr "Sieć %s została określona z %s\n"
 
-#: src/virsh.c:1886
-#, fuzzy, c-format
+#: src/virsh.c:2039
+#, c-format
 msgid "Failed to define network from %s"
-msgstr "Określenie domeny z %s nie powiodło się"
+msgstr "Określenie sieci z %s nie powiodło się"
 
-#: src/virsh.c:1898
-#, fuzzy
+#: src/virsh.c:2051
 msgid "destroy a network"
-msgstr "zniszcz domenę"
+msgstr "zniszcz sieć"
 
-#: src/virsh.c:1899
-#, fuzzy
+#: src/virsh.c:2052
 msgid "Destroy a given network."
-msgstr "Zniszcz podaną domenę."
+msgstr "Zniszcz podaną sieć."
 
-#: src/virsh.c:1904 src/virsh.c:1944
-#, fuzzy
+#: src/virsh.c:2057 src/virsh.c:2097
 msgid "network name, id or uuid"
-msgstr "nazwa domeny, ID lub UUID"
+msgstr "nazwa sieci, ID lub UUID"
 
-#: src/virsh.c:1922
-#, fuzzy, c-format
+#: src/virsh.c:2075
+#, c-format
 msgid "Network %s destroyed\n"
-msgstr "Domena %s została zniszczona\n"
+msgstr "Sieć %s została zniszczona\n"
 
-#: src/virsh.c:1924
-#, fuzzy, c-format
+#: src/virsh.c:2077
+#, c-format
 msgid "Failed to destroy network %s"
-msgstr "Zniszczenie domeny %s nie powiodło się"
+msgstr "Zniszczenie sieci %s nie powiodło się"
 
-#: src/virsh.c:1938
-#, fuzzy
+#: src/virsh.c:2091
 msgid "network information in XML"
-msgstr "informacje o domenie w XML-u"
+msgstr "informacje o sieci w XML-u"
 
-#: src/virsh.c:1939
-#, fuzzy
+#: src/virsh.c:2092
 msgid "Output the network information as an XML dump to stdout."
-msgstr "Przekazuje informacje o domenie jako zrzut XML na standardowe wyjście."
+msgstr "Przekaż informacje o sieci jako zrzut XML na standardowe wyjście."
 
-#: src/virsh.c:1979
+#: src/virsh.c:2132
 msgid "list networks"
-msgstr ""
+msgstr "lista sieci"
 
-#: src/virsh.c:1980
-#, fuzzy
+#: src/virsh.c:2133
 msgid "Returns list of networks."
-msgstr "Zwraca listę domen."
-
-#: src/virsh.c:1985
-#, fuzzy
-msgid "list inactive networks"
-msgstr "lista nieaktywnych domen"
-
-#: src/virsh.c:1986
-#, fuzzy
-msgid "list inactive & active networks"
-msgstr "lista nieaktywnych i aktywnych domen"
-
-#: src/virsh.c:2006 src/virsh.c:2014
-#, fuzzy
-msgid "Failed to list active networks"
-msgstr "Wyświetlenie listy aktywnych domen nie powiodło się"
-
-#: src/virsh.c:2025 src/virsh.c:2034
-#, fuzzy
-msgid "Failed to list inactive networks"
-msgstr "Wyświetlenie listy aktywnych domen nie powiodło się"
-
-#: src/virsh.c:2044
-msgid "Autostart"
-msgstr ""
-
-#: src/virsh.c:2059 src/virsh.c:2082
-#, fuzzy
-msgid "no autostart"
-msgstr "brak stanu"
-
-#: src/virsh.c:2065
-msgid "active"
-msgstr ""
-
-#: src/virsh.c:2088
-#, fuzzy
-msgid "inactive"
-msgstr "węzeł aktywność CPU"
-
-#: src/virsh.c:2107
-#, fuzzy
-msgid "convert a network UUID to network name"
-msgstr "przekonwertuj ID lub UUID domeny do nazwy domeny"
-
-#: src/virsh.c:2112
-msgid "network uuid"
-msgstr ""
+msgstr "Zwraca listę sieci."
 
 #: src/virsh.c:2138
-#, fuzzy
-msgid "start a (previously defined) inactive network"
-msgstr "uruchom (wcześniej określoną) nieaktywną domenę"
+msgid "list inactive networks"
+msgstr "lista nieaktywnych sieci"
 
 #: src/virsh.c:2139
-#, fuzzy
-msgid "Start a network."
-msgstr "Uruchom domenę."
+msgid "list inactive & active networks"
+msgstr "lista nieaktywnych i aktywnych sieci"
 
-#: src/virsh.c:2144
-#, fuzzy
-msgid "name of the inactive network"
-msgstr "nazwa nieaktywnej domeny"
+#: src/virsh.c:2159 src/virsh.c:2167
+msgid "Failed to list active networks"
+msgstr "Wyświetlenie listy aktywnych sieci nie powiodło się"
 
-#: src/virsh.c:2161
-#, fuzzy, c-format
-msgid "Network %s started\n"
-msgstr "Domena %s została uruchomiona\n"
+#: src/virsh.c:2178 src/virsh.c:2187
+msgid "Failed to list inactive networks"
+msgstr "Wyświetlenie listy nieaktywnych sieci nie powiodło się"
 
-#: src/virsh.c:2164
-#, fuzzy, c-format
-msgid "Failed to start network %s"
-msgstr "Uruchomienie domeny %s nie powiodło się"
+#: src/virsh.c:2197
+msgid "Autostart"
+msgstr "Automatyczne uruchamianie"
 
-#: src/virsh.c:2177
-#, fuzzy
-msgid "undefine an inactive network"
-msgstr "usuń określenie nieaktywnej domeny"
+#: src/virsh.c:2212 src/virsh.c:2235
+msgid "no autostart"
+msgstr "brak automatycznego uruchamiania"
 
-#: src/virsh.c:2178
-#, fuzzy
-msgid "Undefine the configuration for an inactive network."
-msgstr "Usuń określenie konfiguracji dla nieaktywnej domeny."
-
-#: src/virsh.c:2201
-#, fuzzy, c-format
-msgid "Network %s has been undefined\n"
-msgstr "Określenie domeny %s zostało usunięte\n"
-
-#: src/virsh.c:2203
-#, fuzzy, c-format
-msgid "Failed to undefine network %s"
-msgstr "Usunięcie określenia domeny %s nie powiodło się"
-
-#: src/virsh.c:2216
-#, fuzzy
-msgid "convert a network name to network UUID"
-msgstr "przekonwertuj nazwę lub ID domeny na UUID domeny"
-
-#: src/virsh.c:2221
-msgid "network name"
-msgstr ""
+#: src/virsh.c:2218
+msgid "active"
+msgstr "aktywne"
 
 #: src/virsh.c:2241
-#, fuzzy
-msgid "failed to get network UUID"
-msgstr "uzyskanie UUID domeny nie powiodło się"
+msgid "inactive"
+msgstr "nieaktywne"
 
-#: src/virsh.c:2252
+#: src/virsh.c:2260
+msgid "convert a network UUID to network name"
+msgstr "przekonwertuj ID lub UUID sieci do nazwy sieci"
+
+#: src/virsh.c:2265
+msgid "network uuid"
+msgstr "UUID sieci"
+
+#: src/virsh.c:2291
+msgid "start a (previously defined) inactive network"
+msgstr "uruchom (wcześniej określoną) nieaktywną sieć"
+
+#: src/virsh.c:2292
+msgid "Start a network."
+msgstr "Uruchom sieć."
+
+#: src/virsh.c:2297
+msgid "name of the inactive network"
+msgstr "nazwa nieaktywnej sieci"
+
+#: src/virsh.c:2314
+#, c-format
+msgid "Network %s started\n"
+msgstr "Sieć %s została uruchomiona\n"
+
+#: src/virsh.c:2317
+#, c-format
+msgid "Failed to start network %s"
+msgstr "Uruchomienie sieci %s nie powiodło się"
+
+#: src/virsh.c:2330
+msgid "undefine an inactive network"
+msgstr "usuń określenie nieaktywnej sieci"
+
+#: src/virsh.c:2331
+msgid "Undefine the configuration for an inactive network."
+msgstr "Usuń określenie konfiguracji dla nieaktywnej sieci."
+
+#: src/virsh.c:2354
+#, c-format
+msgid "Network %s has been undefined\n"
+msgstr "Określenie sieci %s zostało usunięte\n"
+
+#: src/virsh.c:2356
+#, c-format
+msgid "Failed to undefine network %s"
+msgstr "Usunięcie określenia sieci %s nie powiodło się"
+
+#: src/virsh.c:2369
+msgid "convert a network name to network UUID"
+msgstr "przekonwertuj nazwę sieci na UUID sieci"
+
+#: src/virsh.c:2374
+msgid "network name"
+msgstr "nazwa sieci"
+
+#: src/virsh.c:2394
+msgid "failed to get network UUID"
+msgstr "uzyskanie UUID sieci nie powiodło się"
+
+#: src/virsh.c:2405
 msgid "show version"
 msgstr "wyświetl wersję"
 
-#: src/virsh.c:2253
+#: src/virsh.c:2406
 msgid "Display the system version information."
 msgstr "Wyświetl informacje o wersji systemu."
 
-#: src/virsh.c:2276
+#: src/virsh.c:2429
 msgid "failed to get hypervisor type"
 msgstr "uzyskanie typu hypervisora nie powiodło się"
 
-#: src/virsh.c:2285
+#: src/virsh.c:2438
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr "Skompilowano z biblioteką: libvirt %d.%d.%d\n"
 
-#: src/virsh.c:2290
+#: src/virsh.c:2443
 msgid "failed to get the library version"
 msgstr "uzyskanie wersji biblioteki nie powiodło się"
 
-#: src/virsh.c:2297
+#: src/virsh.c:2450
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
 msgstr "Używa biblioteki: libvirt %d.%d.%d\n"
 
-#: src/virsh.c:2304
+#: src/virsh.c:2457
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
 msgstr "Używa API: %s %d.%d.%d\n"
 
-#: src/virsh.c:2309
+#: src/virsh.c:2462
 msgid "failed to get the hypervisor version"
 msgstr "uzyskanie wersji hypervisora nie powiodło się"
 
-#: src/virsh.c:2314
+#: src/virsh.c:2467
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "Nie można wydobyć wersji uruchomionego hypervisora %s\n"
 
-#: src/virsh.c:2321
+#: src/virsh.c:2474
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "Uruchamianie hypervisora: %s %d.%d.%d\n"
 
-#: src/virsh.c:2332
+#: src/virsh.c:2485
 msgid "vnc display"
-msgstr ""
+msgstr "ekran VNC"
 
-#: src/virsh.c:2333
+#: src/virsh.c:2486
 msgid "Output the IP address and port number for the VNC display."
+msgstr "Przekaż adres IP i numer portu do ekranu VNC."
+
+#: src/virsh.c:2564
+#, fuzzy
+msgid "attach device from an XML file"
+msgstr "utwórz domenę z pliku XML"
+
+#: src/virsh.c:2565
+#, fuzzy
+msgid "Attach device from an XML <file>."
+msgstr "utwórz domenę z pliku XML"
+
+#: src/virsh.c:2571 src/virsh.c:2625
+msgid "XML file"
 msgstr ""
 
-#: src/virsh.c:2412
+#: src/virsh.c:2603
+#, fuzzy, c-format
+msgid "Failed to attach device from %s"
+msgstr "Utworzenie domeny z %s nie powiodło się"
+
+#: src/virsh.c:2618
+#, fuzzy
+msgid "detach device from an XML file"
+msgstr "utwórz domenę z pliku XML"
+
+#: src/virsh.c:2619
+#, fuzzy
+msgid "Detach device from an XML <file>"
+msgstr "utwórz domenę z pliku XML"
+
+#: src/virsh.c:2657
+#, fuzzy, c-format
+msgid "Failed to detach device from %s"
+msgstr "Utworzenie domeny z %s nie powiodło się"
+
+#: src/virsh.c:2672
 msgid "quit this interactive terminal"
 msgstr "zakończ ten interaktywny terminal"
 
-#: src/virsh.c:2539
+#: src/virsh.c:2802
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "polecenie \"%s\" wymaga opcji <%s>"
 
-#: src/virsh.c:2540
+#: src/virsh.c:2803
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "polecenie \"%s\" wymaga opcji --%s"
 
-#: src/virsh.c:2567
+#: src/virsh.c:2830
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "polecenie \"%s\" nie istnieje"
 
-#: src/virsh.c:2575
+#: src/virsh.c:2838
 msgid "  NAME\n"
 msgstr "  NAZWA\n"
 
-#: src/virsh.c:2586
+#: src/virsh.c:2849
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -1556,7 +1602,7 @@ msgstr ""
 "\n"
 "  OPIS\n"
 
-#: src/virsh.c:2590
+#: src/virsh.c:2853
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -1564,36 +1610,35 @@ msgstr ""
 "\n"
 "  OPCJE\n"
 
-#: src/virsh.c:2597
+#: src/virsh.c:2860
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <liczba>"
 
-#: src/virsh.c:2599
+#: src/virsh.c:2862
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <łańcuch>"
 
-#: src/virsh.c:2712
+#: src/virsh.c:2975
 msgid "undefined domain name or id"
 msgstr "nieokreślona nazwa domeny lub ID"
 
-#: src/virsh.c:2745
+#: src/virsh.c:3008
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "uzyskanie domeny \"%s\" nie powiodło się"
 
-#: src/virsh.c:2758
-#, fuzzy
+#: src/virsh.c:3021
 msgid "undefined network name"
-msgstr "nieokreślona nazwa domeny lub ID"
+msgstr "nieokreślona nazwa sieci"
 
-#: src/virsh.c:2782
-#, fuzzy, c-format
+#: src/virsh.c:3045
+#, c-format
 msgid "failed to get network '%s'"
-msgstr "uzyskanie domeny \"%s\" nie powiodło się"
+msgstr "uzyskanie sieci \"%s\" nie powiodło się"
 
-#: src/virsh.c:2810
+#: src/virsh.c:3073
 #, c-format
 msgid ""
 "\n"
@@ -1604,108 +1649,108 @@ msgstr ""
 "(Czas: %.3f ms)\n"
 "\n"
 
-#: src/virsh.c:2884
+#: src/virsh.c:3147
 msgid "missing \""
 msgstr "brak \""
 
-#: src/virsh.c:2945
+#: src/virsh.c:3208
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "nieoczekiwany token (nazwa polecenia): \"%s\""
 
-#: src/virsh.c:2950
+#: src/virsh.c:3213
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "nieznane polecenie: \"%s\""
 
-#: src/virsh.c:2957
+#: src/virsh.c:3220
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "polecenie \"%s\" nie obsługuje opcji --%s"
 
-#: src/virsh.c:2972
+#: src/virsh.c:3235
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "nieoczekiwana składnia: --%s <%s>"
 
-#: src/virsh.c:2975
+#: src/virsh.c:3238
 msgid "number"
 msgstr "liczba"
 
-#: src/virsh.c:2975
+#: src/virsh.c:3238
 msgid "string"
 msgstr "łańcuch"
 
-#: src/virsh.c:2981
+#: src/virsh.c:3244
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "nieoczekiwane dane \"%s\""
 
-#: src/virsh.c:3003
+#: src/virsh.c:3266
 msgid "OPTION"
 msgstr "OPCJA"
 
-#: src/virsh.c:3003
+#: src/virsh.c:3266
 msgid "DATA"
 msgstr "DANE"
 
-#: src/virsh.c:3051 src/virsh.c:3077
+#: src/virsh.c:3316 src/virsh.c:3342
 msgid "running"
 msgstr "uruchomione"
 
-#: src/virsh.c:3053 src/virsh.c:3075
+#: src/virsh.c:3318 src/virsh.c:3340
 msgid "blocked"
 msgstr "zablokowane"
 
-#: src/virsh.c:3055
+#: src/virsh.c:3320
 msgid "paused"
 msgstr "wstrzymane"
 
-#: src/virsh.c:3057
+#: src/virsh.c:3322
 msgid "in shutdown"
 msgstr "wyłącza się"
 
-#: src/virsh.c:3059
+#: src/virsh.c:3324
 msgid "shut off"
 msgstr "wyłączone"
 
-#: src/virsh.c:3061
+#: src/virsh.c:3326
 msgid "crashed"
 msgstr "zawieszone"
 
-#: src/virsh.c:3073
+#: src/virsh.c:3338
 msgid "offline"
 msgstr "offline"
 
-#: src/virsh.c:3092
+#: src/virsh.c:3357
 msgid "no valid connection"
 msgstr "brak prawidłowego połączenia"
 
-#: src/virsh.c:3131
+#: src/virsh.c:3396
 #, c-format
 msgid "%s: error: "
 msgstr "%s: błąd: "
 
-#: src/virsh.c:3133
+#: src/virsh.c:3398
 msgid "error: "
 msgstr "błąd: "
 
-#: src/virsh.c:3155 src/virsh.c:3167
+#: src/virsh.c:3420 src/virsh.c:3432
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: przydzielenie %d bajtów nie powiodło się"
 
-#: src/virsh.c:3179
-#, fuzzy, c-format
+#: src/virsh.c:3446
+#, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: przydzielenie %d bajtów nie powiodło się"
+msgstr "%s: %d: przydzielenie %lu bajtów nie powiodło się"
 
-#: src/virsh.c:3209
+#: src/virsh.c:3476
 msgid "failed to connect to the hypervisor"
 msgstr "połączenie się z hypervisorem nie powiodło się"
 
-#: src/virsh.c:3357
-#, fuzzy, c-format
+#: src/virsh.c:3624
+#, c-format
 msgid ""
 "\n"
 "%s [options] [commands]\n"
@@ -1725,16 +1770,17 @@ msgstr ""
 "%s [opcje] [polecenia]\n"
 "\n"
 "  opcje:\n"
-"    -c | --connect <URI>    URI połączenia z hypervisiorem\n"
+"    -c | --connect <uri>    URI połączenia z hypervisiorem\n"
+"    -r | --readonly         łączy się w trybie tylko do odczytu\n"
 "    -d | --debug <liczba>   poziom debugowania [0-5]\n"
 "    -h | --help             ta pomoc\n"
-"    -q | --quiet            cichy tryb\n"
+"    -q | --quiet            tryb cichy\n"
 "    -t | --timing           wyświetla informacje o czasie\n"
 "    -v | --version          wersja programu\n"
 "\n"
 "  polecenia (tryb nieinteraktywny):\n"
 
-#: src/virsh.c:3374
+#: src/virsh.c:3641
 #, c-format
 msgid ""
 "\n"
@@ -1745,12 +1791,12 @@ msgstr ""
 "  (określ --help <polecenie>, aby uzyskać szczegóły o poleceniu)\n"
 "\n"
 
-#: src/virsh.c:3466
+#: src/virsh.c:3733
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "nieobsługiwana opcja \"-%c\". Zobacz --help."
 
-#: src/virsh.c:3547
+#: src/virsh.c:3814
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -1759,7 +1805,7 @@ msgstr ""
 "Witaj w %s, interaktywnym terminalu wirtualizacji.\n"
 "\n"
 
-#: src/virsh.c:3550
+#: src/virsh.c:3817
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
@@ -1814,72 +1860,59 @@ msgstr "otwarcie pliku nie powiodło się"
 msgid "failed to save content"
 msgstr "zapisanie zawartości nie powiodło się"
 
-#: src/xs_internal.c:344
+#: src/xs_internal.c:347
 msgid "failed to connect to Xen Store"
 msgstr "połączenie się z Xen Store nie powiodło się"
 
-#: src/proxy_internal.c:200
+#: src/proxy_internal.c:204
 #, c-format
 msgid "failed to exec %s\n"
 msgstr "wykonanie %s nie powiodło się\n"
 
-#: src/proxy_internal.c:294
+#: src/proxy_internal.c:298
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr "Zamknięcie gniazda %d nie powiodło się\n"
 
-#: src/proxy_internal.c:327
+#: src/proxy_internal.c:331
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr "Odczytanie z gniazda %d nie powiodło się\n"
 
-#: src/proxy_internal.c:361
+#: src/proxy_internal.c:365
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr "Zapisanie do gniazda nie powiodło się %d\n"
 
-#: src/proxy_internal.c:453 src/proxy_internal.c:474 src/proxy_internal.c:494
+#: src/proxy_internal.c:457 src/proxy_internal.c:478 src/proxy_internal.c:498
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr "Błąd komunikacji z pośrednikiem: uzyskano %d bajtów z %d\n"
 
-#: src/proxy_internal.c:461
+#: src/proxy_internal.c:465
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr "Błąd komunikacji z pośrednikiem: oczekiwano %d bajtów, otrzymano %d\n"
 
-#: src/proxy_internal.c:483
+#: src/proxy_internal.c:487
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr "Błąd komunikacji z pośrednikiem: otrzymano pakiet %d bajtów\n"
 
-#: src/proxy_internal.c:507
+#: src/proxy_internal.c:511
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
 msgstr "Błąd komunikacji z pośrednikiem: niesformowany pakiet\n"
 
-#: src/proxy_internal.c:513
+#: src/proxy_internal.c:517
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr "uzyskano niesynchroniczny pakiet o numerze %d\n"
 
-#: src/xen_internal.c:1937
+#: src/xen_internal.c:2305
 #, c-format
 msgid "allocating %d domain info"
 msgstr "przydzielanie %d informacji o domenie"
 
-#~ msgid "Xen Daemon or Xen Store"
-#~ msgstr "Demon Xen lub Xen Store"
-
-#, fuzzy
-#~ msgid "file conatining an XML network description"
-#~ msgstr "plik zawierający opis XML domeny"
-
-#~ msgid "Failed to create domain %s\n"
-#~ msgstr "utworzenie domeny %s nie powiodło się\n"
-
-#~ msgid "Failed to get devices for domain %s\n"
-#~ msgstr "Uzyskanie urządzeń dla domeny %s nie powiodło się\n"
-
-#~ msgid "Failed to resume new domain %s\n"
-#~ msgstr "Ponownie nowej domeny %s nie powiodło się\n"
+#~ msgid "Failed to read description file %s"
+#~ msgstr "Odczytanie pliku opisu %s nie powiodło się"

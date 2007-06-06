@@ -1,3 +1,8 @@
+Wed Jun  6 09:20:23 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* po/*: merge all po from Red Hat/Fedora translations, and 
+	  ran 'make update-po'
+
 Tue Jun  5 22:47:09 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.c: fix from Hugh Brock to allow compiling
