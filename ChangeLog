@@ -1,3 +1,9 @@
+Wed Jun  6 14:22:36 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: added a logging option to a file based on
+	  Nobuhiro Itou patch
+	* src/xen_internal.c: small TODO comment from Atsushi SAKAI
+
 Wed Jun  6 09:20:23 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* po/*: merge all po from Red Hat/Fedora translations, and 

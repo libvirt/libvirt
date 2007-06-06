@@ -30,6 +30,8 @@
 #include <fcntl.h>
 #include <locale.h>
 #include <assert.h>
+#include <errno.h>
+#include <sys/stat.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -56,6 +58,33 @@ static char *progname;
 #define DIFF_MSEC(T, U) \
         ((((int) ((T)->tv_sec - (U)->tv_sec)) * 1000000.0 + \
           ((int) ((T)->tv_usec - (U)->tv_usec))) / 1000.0)
+
+/**
+ * The log configuration
+ */
+#define MSG_BUFFER    4096
+#define SIGN_NAME     "virsh"
+#define DIR_MODE      (S_IWUSR | S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)  /* 0755 */
+#define FILE_MODE     (S_IWUSR | S_IRUSR | S_IRGRP | S_IROTH)                                /* 0644 */
+#define LOCK_MODE     (S_IWUSR | S_IRUSR)                                                    /* 0600 */
+#define LVL_DEBUG     "DEBUG"
+#define LVL_INFO      "INFO"
+#define LVL_NOTICE    "NOTICE"
+#define LVL_WARNING   "WARNING"
+#define LVL_ERROR     "ERROR"
+
+/**
+ * vshErrorLevel:
+ *
+ * Indicates the level of an log message
+ */
+typedef enum {
+    VSH_ERR_DEBUG = 0,
+    VSH_ERR_INFO,
+    VSH_ERR_NOTICE,
+    VSH_ERR_WARNING,
+    VSH_ERR_ERROR
+} vshErrorLevel;
 
 /*
  * The error handler for virtsh
@@ -176,6 +205,8 @@ typedef struct __vshControl {
     int readonly;               /* connect readonly (first time only, not
                                  * during explicit connect command)
                                  */
+    char *logfile;              /* log file name */
+    int log_fd;                 /* log file descriptor */
 } __vshControl;
 
 
@@ -186,6 +217,9 @@ static void vshError(vshControl * ctl, int doexit, const char *format, ...)
 static int vshInit(vshControl * ctl);
 static int vshDeinit(vshControl * ctl);
 static void vshUsage(vshControl * ctl, const char *cmdname);
+static void vshOpenLogFile(vshControl *ctl);
+static void vshOutputLogFile(vshControl *ctl, int log_level, const char *format, va_list ap);
+static void vshCloseLogFile(vshControl *ctl);
 
 static int vshParseArgv(vshControl * ctl, int argc, char **argv);
 
@@ -3365,6 +3399,10 @@ vshDebug(vshControl * ctl, int level, const char *format, ...)
 {
     va_list ap;
 
+    va_start(ap, format);
+    vshOutputLogFile(ctl, VSH_ERR_DEBUG, format, ap);
+    va_end(ap);
+
     if (level > ctl->debug)
         return;
 
@@ -3391,6 +3429,10 @@ static void
 vshError(vshControl * ctl, int doexit, const char *format, ...)
 {
     va_list ap;
+
+    va_start(ap, format);
+    vshOutputLogFile(ctl, VSH_ERR_ERROR, format, ap);
+    va_end(ap);
 
     if (doexit)
         fprintf(stderr, _("%s: error: "), progname);
@@ -3459,6 +3501,8 @@ vshInit(vshControl * ctl)
 
     ctl->uid = getuid();
 
+    vshOpenLogFile(ctl);
+
     /* set up the library error handler */
     virSetErrorFunc(NULL, virshErrorHandler);
 
@@ -3476,6 +3520,128 @@ vshInit(vshControl * ctl)
         vshError(ctl, TRUE, _("failed to connect to the hypervisor"));
 
     return TRUE;
+}
+
+/**
+ * vshOpenLogFile:
+ *
+ * Open log file.
+ */
+static void
+vshOpenLogFile(vshControl *ctl)
+{
+    struct stat st;
+
+    if (ctl->logfile == NULL)
+        return;
+
+    /* check log file */
+    if (stat(ctl->logfile, &st) == -1) {
+        switch (errno) {
+            case ENOENT:
+                break;
+            default:
+                vshError(ctl, TRUE, _("failed to get the log file information"));
+                break;
+        }
+    } else {
+        if (!S_ISREG(st.st_mode)) {
+            vshError(ctl, TRUE, _("the log path is not a file"));
+        }
+    }
+
+    /* log file open */
+    if ((ctl->log_fd = open(ctl->logfile, O_WRONLY | O_APPEND | O_CREAT | O_SYNC, FILE_MODE)) < 0) {
+        vshError(ctl, TRUE, _("failed to open the log file. check the log file path"));
+    }
+}
+
+/**
+ * vshOutputLogFile:
+ *
+ * Outputting an error to log file.
+ */
+static void
+vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format, va_list ap)
+{
+    char msg_buf[MSG_BUFFER];
+    const char *lvl = "";
+    struct timeval stTimeval;
+    struct tm *stTm;
+
+    if (ctl->log_fd == -1)
+        return;
+
+    /**
+     * create log format
+     *
+     * [YYYY.MM.DD HH:MM:SS SIGNATURE PID] LOG_LEVEL message
+    */
+    gettimeofday(&stTimeval, NULL);
+    stTm = localtime(&stTimeval.tv_sec);
+    snprintf(msg_buf, sizeof(msg_buf),
+             "[%d.%02d.%02d %02d:%02d:%02d ",
+             (1900 + stTm->tm_year),
+             (1 + stTm->tm_mon),
+             (stTm->tm_mday),
+             (stTm->tm_hour),
+             (stTm->tm_min),
+             (stTm->tm_sec));
+    snprintf(msg_buf + strlen(msg_buf), sizeof(msg_buf) - strlen(msg_buf),
+             "%s] ", SIGN_NAME);
+    switch (log_level) {
+        case VSH_ERR_DEBUG:
+            lvl = LVL_DEBUG;
+            break;
+        case VSH_ERR_INFO:
+            lvl = LVL_INFO;
+            break;
+        case VSH_ERR_NOTICE:
+            lvl = LVL_INFO;
+            break;
+        case VSH_ERR_WARNING:
+            lvl = LVL_WARNING;
+            break;
+        case VSH_ERR_ERROR:
+            lvl = LVL_ERROR;
+            break;
+        default:
+            lvl = LVL_DEBUG;
+            break;
+    }
+    snprintf(msg_buf + strlen(msg_buf), sizeof(msg_buf) - strlen(msg_buf),
+             "%s ", lvl);
+    vsnprintf(msg_buf + strlen(msg_buf), sizeof(msg_buf) - strlen(msg_buf),
+              msg_format, ap);
+
+    if (msg_buf[strlen(msg_buf) - 1] != '\n')
+        snprintf(msg_buf + strlen(msg_buf), sizeof(msg_buf) - strlen(msg_buf), "\n");
+
+    /* write log */
+    if (write(ctl->log_fd, msg_buf, strlen(msg_buf)) == -1) {
+        vshCloseLogFile(ctl);
+        vshError(ctl, FALSE, _("failed to write the log file"));
+    }
+}
+
+/**
+ * vshCloseLogFile:
+ *
+ * Close log file.
+ */
+static void
+vshCloseLogFile(vshControl *ctl)
+{
+    /* log file close */
+    if (ctl->log_fd >= 0) {
+        close(ctl->log_fd);
+        ctl->log_fd = -1;
+    }
+
+    if (ctl->logfile) {
+        free(ctl->logfile);
+        ctl->logfile = NULL;
+    }
 }
 
 /* -----------------
@@ -3601,6 +3767,8 @@ vshReadlineInit(void)
 static int
 vshDeinit(vshControl * ctl)
 {
+    vshCloseLogFile(ctl);
+
     if (ctl->conn) {
         if (virConnectClose(ctl->conn) != 0) {
             ctl->conn = NULL;   /* prevent recursive call from vshError() */
@@ -3629,6 +3797,7 @@ vshUsage(vshControl * ctl, const char *cmdname)
                           "    -h | --help             this help\n"
                           "    -q | --quiet            quiet mode\n"
                           "    -t | --timing           print timing information\n"
+                          "    -l | --log <file>       output logging to file\n"
                           "    -v | --version          program version\n\n"
                           "  commands (non interactive mode):\n"), progname);
 
@@ -3663,6 +3832,7 @@ vshParseArgv(vshControl * ctl, int argc, char **argv)
         {"version", 0, 0, 'v'},
         {"connect", 1, 0, 'c'},
         {"readonly", 0, 0, 'r'},
+        {"log", 1, 0, 'l'},
         {0, 0, 0, 0}
     };
 
@@ -3705,7 +3875,7 @@ vshParseArgv(vshControl * ctl, int argc, char **argv)
     end = end ? : argc;
 
     /* standard (non-command) options */
-    while ((arg = getopt_long(end, argv, "d:hqtc:vr", opt, &idx)) != -1) {
+    while ((arg = getopt_long(end, argv, "d:hqtc:vrl:", opt, &idx)) != -1) {
         switch (arg) {
         case 'd':
             ctl->debug = atoi(optarg);
@@ -3727,6 +3897,9 @@ vshParseArgv(vshControl * ctl, int argc, char **argv)
             exit(EXIT_SUCCESS);
         case 'r':
             ctl->readonly = TRUE;
+            break;
+        case 'l':
+            ctl->logfile = vshStrdup(ctl, optarg);
             break;
         default:
             vshError(ctl, TRUE,
@@ -3794,6 +3967,7 @@ main(int argc, char **argv)
 
     memset(ctl, 0, sizeof(vshControl));
     ctl->imode = TRUE;          /* default is interactive mode */
+    ctl->log_fd = -1;           /* Initialize log file descriptor */
 
     if ((defaultConn = getenv("VIRSH_DEFAULT_CONNECT_URI"))) {
         ctl->name = strdup(defaultConn);

@@ -1016,6 +1016,7 @@ xenHypervisorGetSchedulerType(virDomainPtr domain, int *nparams)
     /*
      * Support only dom_interface_version >=5
      * (Xen3.1.0 or later)
+     * TODO: check on Xen 3.0.3
      */
     if (dom_interface_version < 5) {
         virXenErrorFunc(VIR_ERR_NO_XEN, __FUNCTION__,
