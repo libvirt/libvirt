@@ -1,3 +1,9 @@
+Wed Jun  6 16:37:36 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xml.c: patch from Saori Fukuta to avoid (type ioemu)
+	  on Xen-3.1 and HVM guests devices to avoid breaking paravirt
+	  drivers there
+
 Wed Jun  6 14:22:36 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: added a logging option to a file based on

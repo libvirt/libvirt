@@ -1047,6 +1047,7 @@ virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf,
  * @conn: pointer to the hypervisor connection
  * @node: node containing the interface description
  * @buf: a buffer for the result S-Expr
+ * @xendConfigVersion: xend configuration file format
  *
  * Parse the one interface the XML description and add it to the S-Expr in buf
  * This is a temporary interface as the S-Expr interface
@@ -1056,7 +1057,7 @@ virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf,
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
-virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED, xmlNodePtr node, virBufferPtr buf, int hvm)
+virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED, xmlNodePtr node, virBufferPtr buf, int hvm, int xendConfigVersion)
 {
     xmlNodePtr cur;
     xmlChar *type = NULL;
@@ -1129,8 +1130,11 @@ virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED, xmlNodePtr node, vi
         virBufferVSprintf(buf, "(script '%s')", script);
     if (ip != NULL)
         virBufferVSprintf(buf, "(ip '%s')", ip);
-    /* apparently not needed any more for xen >= 3.1 but harmless */
-    if (hvm)
+    /*
+     * apparently (type ioemu) breaks paravirt drivers on HVM so skip this
+     * from Xen 3.1.0
+     */
+    if ((hvm) && (xendConfigVersion < 4))
         virBufferAdd(buf, "(type ioemu)", 12);
 
     virBufferAdd(buf, ")", 1);
@@ -1336,7 +1340,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
     if (nb_nodes > 0) {
         for (i = 0; i < nb_nodes; i++) {
             virBufferAdd(&buf, "(device ", 8);
-            res = virDomainParseXMLIfDesc(conn, nodes[i], &buf, hvm);
+            res = virDomainParseXMLIfDesc(conn, nodes[i], &buf, hvm, xendConfigVersion);
             if (res != 0) {
 	        free(nodes);
                 goto error;
@@ -1499,7 +1503,7 @@ virParseXMLDevice(virConnectPtr conn, char *xmldesc, int hvm, int xendConfigVers
            goto error;
     }
     else if (xmlStrEqual(node->name, BAD_CAST "interface")) {
-        if (virDomainParseXMLIfDesc(conn, node, &buf, hvm) != 0)
+        if (virDomainParseXMLIfDesc(conn, node, &buf, hvm, xendConfigVersion) != 0)
             goto error;
     }
  cleanup:
