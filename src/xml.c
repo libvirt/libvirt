@@ -1270,13 +1270,19 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
     if (str != NULL) {
         virBufferVSprintf(&buf, "(bootloader '%s')", str);
         /*
-         * if using pygrub, the kernel and initrd strings are not
+         * if using a bootloader, the kernel and initrd strings are not
          * significant and should be discarded
          */
-        if (strstr(str, "pygrub"))
-            bootloader = 2;
-        else
-            bootloader = 1;
+        bootloader = 1;
+	free(str);
+    }
+
+    str = virXPathString("string(/domain/bootloader_args[1])", ctxt);
+    if (str != NULL && bootloader) {
+        /*
+         * ignore the bootloader_args value unless a bootloader was specified
+         */
+        virBufferVSprintf(&buf, "(bootloader_args '%s')", str);
 	free(str);
     }
 
@@ -1298,10 +1304,10 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
 	free(str);
     }
 
-    if (bootloader != 2) {
+    if (!bootloader) {
         if ((node = virXPathNode("/domain/os[1]", ctxt)) != NULL) {
             /* Analyze of the os description, based on HVM or PV. */
-	    str = virXPathString("string(/domain/os/type[1])", ctxt);
+            str = virXPathString("string(/domain/os/type[1])", ctxt);
 
             if ((str == NULL) || (strcmp(str, "hvm"))) {
                 res = virDomainParseXMLOSDescPV(conn, node,
@@ -1316,7 +1322,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
 
             if (res != 0)
                 goto error;
-        } else if (bootloader == 0) {
+        } else {
             virXMLError(conn, VIR_ERR_NO_OS, nam, 0);
             goto error;
         }

@@ -1414,6 +1414,13 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
         bootloader = 1;
         virBufferVSprintf(&buf, "  <bootloader>%s</bootloader>\n", tmp);
     }
+    tmp = sexpr_node(root, "domain/bootloader_args");
+    if (tmp != NULL && bootloader) {
+        /*
+         * Only insert bootloader_args if there is also a bootloader param
+         */
+        virBufferVSprintf(&buf, "  <bootloader_args>%s</bootloader_args>\n", tmp);
+    }
 
     if (domid != 0) {
         if (sexpr_lookup(root, "domain/image")) {

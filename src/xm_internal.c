@@ -643,6 +643,8 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
 
         if (xenXMConfigGetString(conf, "bootloader", &str) == 0)
             virBufferVSprintf(buf, "  <bootloader>%s</bootloader>\n", str);
+        if (xenXMConfigGetString(conf, "bootargs", &str) == 0)
+            virBufferVSprintf(buf, "  <bootloader_args>%s</bootloader_args>\n", str);
         if (xenXMConfigGetString(conf, "kernel", &str) == 0) {
             virBufferAdd(buf, "  <os>\n", -1);
             virBufferAdd(buf, "    <type>linux</type>\n", -1);
@@ -1832,6 +1834,9 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
     } else {
         if (xenXMConfigSetStringFromXPath(conn, conf, ctxt, "bootloader", "string(/domain/bootloader)", 1,
                                           "cannot set the bootloader parameter") < 0)
+            goto error;
+        if (xenXMConfigSetStringFromXPath(conn, conf, ctxt, "bootargs", "string(/domain/bootloader_args)", 1,
+                                          "cannot set the bootloader_args parameter") < 0)
             goto error;
         if (xenXMConfigSetStringFromXPath(conn, conf, ctxt, "kernel", "string(/domain/os/kernel)", 1,
                                           "cannot set the kernel parameter") < 0)

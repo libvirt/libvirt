@@ -1,3 +1,14 @@
+Thu Jun  7 15:48:30 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c src/xm_internal.c src/xml.c: add support
+	  for arguments to bootloader, patch from Hugh Brock
+	* tests/sexpr2xmltest.c tests/xml2sexprtest.c
+	  tests/sexpr2xmldata/sexpr2xml-pv-bootloader.sexpr
+	  tests/sexpr2xmldata/sexpr2xml-pv-bootloader.xml
+	  tests/xml2sexprdata/xml2sexpr-pv-bootloader.sexpr
+	  tests/xml2sexprdata/xml2sexpr-pv-bootloader.xml: add specific
+	  regression tests
+
 Thu Jun  7 15:02:44 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt.c: do not die if the daemon is not running on a Xen

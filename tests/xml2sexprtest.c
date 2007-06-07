@@ -103,6 +103,13 @@ static int testComparePVNewVFB(void *data ATTRIBUTE_UNUSED) {
                           3);
 }
 
+static int testComparePVBootloader(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("xml2sexprdata/xml2sexpr-pv-bootloader.xml",
+			  "xml2sexprdata/xml2sexpr-pv-bootloader.sexpr",
+			  "pvtest",
+			  1);
+}
+
 static int testCompareDiskFile(void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("xml2sexprdata/xml2sexpr-disk-file.xml",
 			  "xml2sexprdata/xml2sexpr-disk-file.sexpr",
@@ -220,6 +227,10 @@ main(int argc, char **argv)
     if (virtTestRun("XML-2-SEXPR PV config (New VFB)",
                     1, testComparePVNewVFB, NULL) != 0)
         ret = -1;
+
+    if (virtTestRun("XML-2-SEXPR PV config with bootloader",
+		    1, testComparePVBootloader, NULL) != 0)
+	ret = -1;
 
     if (virtTestRun("XML-2-SEXPR Disk File",
 		    1, testCompareDiskFile, NULL) != 0)
