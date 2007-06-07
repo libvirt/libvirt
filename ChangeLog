@@ -1,4 +1,4 @@
-Thu Jun  7 15:48:30 CEST 2007 Daniel Veillard <veillard@redhat.com>
+Thu Jun  7 10:08:30 EST 2007 Daniel Berrange <berrange@redhat.com>
 
 	* src/xm_internal.c: Fix boot device XML -> config conversion
 	* test/xmconfigdata/test-fullvirt-new-cdrom.xml,
