@@ -824,8 +824,10 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             char script[PATH_MAX];
             char ip[16];
             char mac[18];
+            char bridge[50];
             char *key;
 
+            bridge[0] = '\0';
             mac[0] = '\0';
             script[0] = '\0';
             ip[0] = '\0';
@@ -849,7 +851,12 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                     strncpy(mac, data, len);
                     mac[len] = '\0';
                 } else if (!strncmp(key, "bridge=", 7)) {
+                    int len = nextkey ? (nextkey - data) : sizeof(bridge)-1;
                     type = 1;
+                    if (len > (sizeof(bridge)-1))
+                        len = sizeof(bridge)-1;
+                    strncpy(bridge, data, len);
+                    bridge[len] = '\0';
                 } else if (!strncmp(key, "script=", 7)) {
                     int len = nextkey ? (nextkey - data) : PATH_MAX-1;
                     if (len > (PATH_MAX-1))
@@ -879,6 +886,8 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             virBufferAdd(buf, "    <interface type='bridge'>\n", -1);
             if (mac[0])
                 virBufferVSprintf(buf, "      <mac address='%s'/>\n", mac);
+            if (type == 1 && bridge[0])
+                virBufferVSprintf(buf, "      <source bridge='%s'/>\n", bridge);
             if (script[0])
                 virBufferVSprintf(buf, "      <script path='%s'/>\n", script);
             if (ip[0])

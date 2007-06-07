@@ -1,3 +1,10 @@
+Thu Jun  7 14:20:30 EST 2007 Daniel Berrange <berrange@redhat.com>
+
+	* src/xm_internal.c: Fixed handling of bridge devices
+	when converting XM configs to XML
+	* tests/xmconfigdata/test-fullvirt-*: Added explicit
+	bridge device to test suite
+
 Thu Jun  7 10:47:30 EST 2007 Daniel Berrange <berrange@redhat.com>
 
 	* autobuild.sh: Ensure build fails if tests fail
