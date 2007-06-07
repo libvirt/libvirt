@@ -1800,7 +1800,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
                                           "cannot set the os loader parameter") < 0)
             goto error;
 
-        obj = xmlXPathEval(BAD_CAST "string(/domain/os/boot)", ctxt);
+        obj = xmlXPathEval(BAD_CAST "string(/domain/os/boot/@dev)", ctxt);
         if ((obj != NULL) && (obj->type == XPATH_STRING) &&
             (obj->stringval != NULL)) {
             if (!strcmp((const char*)obj->stringval, "fd"))

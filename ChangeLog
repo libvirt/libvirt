@@ -1,5 +1,12 @@
 Thu Jun  7 15:48:30 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
+	* src/xm_internal.c: Fix boot device XML -> config conversion
+	* test/xmconfigdata/test-fullvirt-new-cdrom.xml,
+	test/xmconfigdata/test-fullvirt-old-cdrom.xml fix syntax for
+	boot device
+
+Thu Jun  7 15:48:30 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
 	* src/xend_internal.c src/xm_internal.c src/xml.c: add support
 	  for arguments to bootloader, patch from Hugh Brock
 	* tests/sexpr2xmltest.c tests/xml2sexprtest.c
