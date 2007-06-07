@@ -1,3 +1,10 @@
+Thu Jun  7 15:02:44 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c: do not die if the daemon is not running on a Xen
+	  system (shows up as root only) and emit a warning instead
+	* src/virterror.c include/libvirt/virterror.h docs/*: add
+	  the new warning.
+
 Wed Jun  6 16:37:36 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xml.c: patch from Saori Fukuta to avoid (type ioemu)

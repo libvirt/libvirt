@@ -91,7 +91,9 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     <a name="VIR_FROM_PROXY">VIR_FROM_PROXY</a> = 8 /* Error in the proxy code */
     <a name="VIR_FROM_CONF">VIR_FROM_CONF</a> = 9 /* Error in the configuration file handling */
     <a name="VIR_FROM_QEMU">VIR_FROM_QEMU</a> = 10 /* Error at the QEMU daemon */
-    <a name="VIR_FROM_NET">VIR_FROM_NET</a> = 11 /*  Error when operating on a network */
+    <a name="VIR_FROM_NET">VIR_FROM_NET</a> = 11 /* Error when operating on a network */
+    <a name="VIR_FROM_TEST">VIR_FROM_TEST</a> = 12 /* Error from test driver */
+    <a name="VIR_FROM_REMOTE">VIR_FROM_REMOTE</a> = 13 /*  Error from remote driver */
 };
 </pre><p/>
 </div>
@@ -143,7 +145,10 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     <a name="VIR_ERR_XML_DETAIL">VIR_ERR_XML_DETAIL</a> = 35 /* detail of an XML error */
     <a name="VIR_ERR_INVALID_NETWORK">VIR_ERR_INVALID_NETWORK</a> = 36 /* invalid network object */
     <a name="VIR_ERR_NETWORK_EXIST">VIR_ERR_NETWORK_EXIST</a> = 37 /* the network already exist */
-    <a name="VIR_ERR_SYSTEM_ERROR">VIR_ERR_SYSTEM_ERROR</a> = 38 /*  general system call failure */
+    <a name="VIR_ERR_SYSTEM_ERROR">VIR_ERR_SYSTEM_ERROR</a> = 38 /* general system call failure */
+    <a name="VIR_ERR_RPC">VIR_ERR_RPC</a> = 39 /* some sort of RPC error */
+    <a name="VIR_ERR_GNUTLS_ERROR">VIR_ERR_GNUTLS_ERROR</a> = 40 /* error from a GNUTLS call */
+    <a name="VIR_WAR_NO_NETWORK">VIR_WAR_NO_NETWORK</a> = 41 /*  failed to start network */
 };
 </pre><p/>
 </div>

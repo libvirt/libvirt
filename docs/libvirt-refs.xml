@@ -19,6 +19,13 @@
     <reference name='VIR_DOMAIN_RENAME_RESTART' href='html/libvirt-libvirt.html#VIR_DOMAIN_RENAME_RESTART'/>
     <reference name='VIR_DOMAIN_RESTART' href='html/libvirt-libvirt.html#VIR_DOMAIN_RESTART'/>
     <reference name='VIR_DOMAIN_RUNNING' href='html/libvirt-libvirt.html#VIR_DOMAIN_RUNNING'/>
+    <reference name='VIR_DOMAIN_SCHED_FIELD_BOOLEAN' href='html/libvirt-libvirt.html#VIR_DOMAIN_SCHED_FIELD_BOOLEAN'/>
+    <reference name='VIR_DOMAIN_SCHED_FIELD_DOUBLE' href='html/libvirt-libvirt.html#VIR_DOMAIN_SCHED_FIELD_DOUBLE'/>
+    <reference name='VIR_DOMAIN_SCHED_FIELD_INT' href='html/libvirt-libvirt.html#VIR_DOMAIN_SCHED_FIELD_INT'/>
+    <reference name='VIR_DOMAIN_SCHED_FIELD_LENGTH' href='html/libvirt-libvirt.html#VIR_DOMAIN_SCHED_FIELD_LENGTH'/>
+    <reference name='VIR_DOMAIN_SCHED_FIELD_LLONG' href='html/libvirt-libvirt.html#VIR_DOMAIN_SCHED_FIELD_LLONG'/>
+    <reference name='VIR_DOMAIN_SCHED_FIELD_UINT' href='html/libvirt-libvirt.html#VIR_DOMAIN_SCHED_FIELD_UINT'/>
+    <reference name='VIR_DOMAIN_SCHED_FIELD_ULLONG' href='html/libvirt-libvirt.html#VIR_DOMAIN_SCHED_FIELD_ULLONG'/>
     <reference name='VIR_DOMAIN_SHUTDOWN' href='html/libvirt-libvirt.html#VIR_DOMAIN_SHUTDOWN'/>
     <reference name='VIR_DOMAIN_SHUTOFF' href='html/libvirt-libvirt.html#VIR_DOMAIN_SHUTOFF'/>
     <reference name='VIR_ERR_CALL_FAILED' href='html/libvirt-virterror.html#VIR_ERR_CALL_FAILED'/>
@@ -27,6 +34,7 @@
     <reference name='VIR_ERR_DRIVER_FULL' href='html/libvirt-virterror.html#VIR_ERR_DRIVER_FULL'/>
     <reference name='VIR_ERR_ERROR' href='html/libvirt-virterror.html#VIR_ERR_ERROR'/>
     <reference name='VIR_ERR_GET_FAILED' href='html/libvirt-virterror.html#VIR_ERR_GET_FAILED'/>
+    <reference name='VIR_ERR_GNUTLS_ERROR' href='html/libvirt-virterror.html#VIR_ERR_GNUTLS_ERROR'/>
     <reference name='VIR_ERR_HTTP_ERROR' href='html/libvirt-virterror.html#VIR_ERR_HTTP_ERROR'/>
     <reference name='VIR_ERR_INTERNAL_ERROR' href='html/libvirt-virterror.html#VIR_ERR_INTERNAL_ERROR'/>
     <reference name='VIR_ERR_INVALID_ARG' href='html/libvirt-virterror.html#VIR_ERR_INVALID_ARG'/>
@@ -55,6 +63,7 @@
     <reference name='VIR_ERR_PARSE_FAILED' href='html/libvirt-virterror.html#VIR_ERR_PARSE_FAILED'/>
     <reference name='VIR_ERR_POST_FAILED' href='html/libvirt-virterror.html#VIR_ERR_POST_FAILED'/>
     <reference name='VIR_ERR_READ_FAILED' href='html/libvirt-virterror.html#VIR_ERR_READ_FAILED'/>
+    <reference name='VIR_ERR_RPC' href='html/libvirt-virterror.html#VIR_ERR_RPC'/>
     <reference name='VIR_ERR_SEXPR_SERIAL' href='html/libvirt-virterror.html#VIR_ERR_SEXPR_SERIAL'/>
     <reference name='VIR_ERR_SYSTEM_ERROR' href='html/libvirt-virterror.html#VIR_ERR_SYSTEM_ERROR'/>
     <reference name='VIR_ERR_UNKNOWN_HOST' href='html/libvirt-virterror.html#VIR_ERR_UNKNOWN_HOST'/>
@@ -69,8 +78,10 @@
     <reference name='VIR_FROM_NONE' href='html/libvirt-virterror.html#VIR_FROM_NONE'/>
     <reference name='VIR_FROM_PROXY' href='html/libvirt-virterror.html#VIR_FROM_PROXY'/>
     <reference name='VIR_FROM_QEMU' href='html/libvirt-virterror.html#VIR_FROM_QEMU'/>
+    <reference name='VIR_FROM_REMOTE' href='html/libvirt-virterror.html#VIR_FROM_REMOTE'/>
     <reference name='VIR_FROM_RPC' href='html/libvirt-virterror.html#VIR_FROM_RPC'/>
     <reference name='VIR_FROM_SEXPR' href='html/libvirt-virterror.html#VIR_FROM_SEXPR'/>
+    <reference name='VIR_FROM_TEST' href='html/libvirt-virterror.html#VIR_FROM_TEST'/>
     <reference name='VIR_FROM_XEN' href='html/libvirt-virterror.html#VIR_FROM_XEN'/>
     <reference name='VIR_FROM_XEND' href='html/libvirt-virterror.html#VIR_FROM_XEND'/>
     <reference name='VIR_FROM_XENSTORE' href='html/libvirt-virterror.html#VIR_FROM_XENSTORE'/>
@@ -84,10 +95,12 @@
     <reference name='VIR_VCPU_BLOCKED' href='html/libvirt-libvirt.html#VIR_VCPU_BLOCKED'/>
     <reference name='VIR_VCPU_OFFLINE' href='html/libvirt-libvirt.html#VIR_VCPU_OFFLINE'/>
     <reference name='VIR_VCPU_RUNNING' href='html/libvirt-libvirt.html#VIR_VCPU_RUNNING'/>
+    <reference name='VIR_WAR_NO_NETWORK' href='html/libvirt-virterror.html#VIR_WAR_NO_NETWORK'/>
     <reference name='_virDomainInfo' href='html/libvirt-libvirt.html#_virDomainInfo'/>
     <reference name='_virDomainKernel' href='html/libvirt-libvirt.html#_virDomainKernel'/>
     <reference name='_virError' href='html/libvirt-virterror.html#_virError'/>
     <reference name='_virNodeInfo' href='html/libvirt-libvirt.html#_virNodeInfo'/>
+    <reference name='_virSchedParameter' href='html/libvirt-libvirt.html#_virSchedParameter'/>
     <reference name='_virVcpuInfo' href='html/libvirt-libvirt.html#_virVcpuInfo'/>
     <reference name='virConnCopyLastError' href='html/libvirt-virterror.html#virConnCopyLastError'/>
     <reference name='virConnGetLastError' href='html/libvirt-virterror.html#virConnGetLastError'/>
@@ -130,6 +143,8 @@
     <reference name='virDomainGetMaxVcpus' href='html/libvirt-libvirt.html#virDomainGetMaxVcpus'/>
     <reference name='virDomainGetName' href='html/libvirt-libvirt.html#virDomainGetName'/>
     <reference name='virDomainGetOSType' href='html/libvirt-libvirt.html#virDomainGetOSType'/>
+    <reference name='virDomainGetSchedulerParameters' href='html/libvirt-libvirt.html#virDomainGetSchedulerParameters'/>
+    <reference name='virDomainGetSchedulerType' href='html/libvirt-libvirt.html#virDomainGetSchedulerType'/>
     <reference name='virDomainGetUUID' href='html/libvirt-libvirt.html#virDomainGetUUID'/>
     <reference name='virDomainGetUUIDString' href='html/libvirt-libvirt.html#virDomainGetUUIDString'/>
     <reference name='virDomainGetVcpus' href='html/libvirt-libvirt.html#virDomainGetVcpus'/>
@@ -152,6 +167,7 @@
     <reference name='virDomainSetAutostart' href='html/libvirt-libvirt.html#virDomainSetAutostart'/>
     <reference name='virDomainSetMaxMemory' href='html/libvirt-libvirt.html#virDomainSetMaxMemory'/>
     <reference name='virDomainSetMemory' href='html/libvirt-libvirt.html#virDomainSetMemory'/>
+    <reference name='virDomainSetSchedulerParameters' href='html/libvirt-libvirt.html#virDomainSetSchedulerParameters'/>
     <reference name='virDomainSetVcpus' href='html/libvirt-libvirt.html#virDomainSetVcpus'/>
     <reference name='virDomainShutdown' href='html/libvirt-libvirt.html#virDomainShutdown'/>
     <reference name='virDomainState' href='html/libvirt-libvirt.html#virDomainState'/>
@@ -189,6 +205,9 @@
     <reference name='virNodeInfoPtr' href='html/libvirt-libvirt.html#virNodeInfoPtr'/>
     <reference name='virResetError' href='html/libvirt-virterror.html#virResetError'/>
     <reference name='virResetLastError' href='html/libvirt-virterror.html#virResetLastError'/>
+    <reference name='virSchedParameter' href='html/libvirt-libvirt.html#virSchedParameter'/>
+    <reference name='virSchedParameterPtr' href='html/libvirt-libvirt.html#virSchedParameterPtr'/>
+    <reference name='virSchedParameterType' href='html/libvirt-libvirt.html#virSchedParameterType'/>
     <reference name='virSetErrorFunc' href='html/libvirt-virterror.html#virSetErrorFunc'/>
     <reference name='virVcpuInfo' href='html/libvirt-libvirt.html#virVcpuInfo'/>
     <reference name='virVcpuInfoPtr' href='html/libvirt-libvirt.html#virVcpuInfoPtr'/>
@@ -216,6 +235,13 @@
       <ref name='VIR_DOMAIN_RENAME_RESTART'/>
       <ref name='VIR_DOMAIN_RESTART'/>
       <ref name='VIR_DOMAIN_RUNNING'/>
+      <ref name='VIR_DOMAIN_SCHED_FIELD_BOOLEAN'/>
+      <ref name='VIR_DOMAIN_SCHED_FIELD_DOUBLE'/>
+      <ref name='VIR_DOMAIN_SCHED_FIELD_INT'/>
+      <ref name='VIR_DOMAIN_SCHED_FIELD_LENGTH'/>
+      <ref name='VIR_DOMAIN_SCHED_FIELD_LLONG'/>
+      <ref name='VIR_DOMAIN_SCHED_FIELD_UINT'/>
+      <ref name='VIR_DOMAIN_SCHED_FIELD_ULLONG'/>
       <ref name='VIR_DOMAIN_SHUTDOWN'/>
       <ref name='VIR_DOMAIN_SHUTOFF'/>
       <ref name='VIR_ERR_CALL_FAILED'/>
@@ -224,6 +250,7 @@
       <ref name='VIR_ERR_DRIVER_FULL'/>
       <ref name='VIR_ERR_ERROR'/>
       <ref name='VIR_ERR_GET_FAILED'/>
+      <ref name='VIR_ERR_GNUTLS_ERROR'/>
       <ref name='VIR_ERR_HTTP_ERROR'/>
       <ref name='VIR_ERR_INTERNAL_ERROR'/>
       <ref name='VIR_ERR_INVALID_ARG'/>
@@ -252,6 +279,7 @@
       <ref name='VIR_ERR_PARSE_FAILED'/>
       <ref name='VIR_ERR_POST_FAILED'/>
       <ref name='VIR_ERR_READ_FAILED'/>
+      <ref name='VIR_ERR_RPC'/>
       <ref name='VIR_ERR_SEXPR_SERIAL'/>
       <ref name='VIR_ERR_SYSTEM_ERROR'/>
       <ref name='VIR_ERR_UNKNOWN_HOST'/>
@@ -266,8 +294,10 @@
       <ref name='VIR_FROM_NONE'/>
       <ref name='VIR_FROM_PROXY'/>
       <ref name='VIR_FROM_QEMU'/>
+      <ref name='VIR_FROM_REMOTE'/>
       <ref name='VIR_FROM_RPC'/>
       <ref name='VIR_FROM_SEXPR'/>
+      <ref name='VIR_FROM_TEST'/>
       <ref name='VIR_FROM_XEN'/>
       <ref name='VIR_FROM_XEND'/>
       <ref name='VIR_FROM_XENSTORE'/>
@@ -281,12 +311,14 @@
       <ref name='VIR_VCPU_BLOCKED'/>
       <ref name='VIR_VCPU_OFFLINE'/>
       <ref name='VIR_VCPU_RUNNING'/>
+      <ref name='VIR_WAR_NO_NETWORK'/>
     </letter>
     <letter name='_'>
       <ref name='_virDomainInfo'/>
       <ref name='_virDomainKernel'/>
       <ref name='_virError'/>
       <ref name='_virNodeInfo'/>
+      <ref name='_virSchedParameter'/>
       <ref name='_virVcpuInfo'/>
     </letter>
     <letter name='v'>
@@ -331,6 +363,8 @@
       <ref name='virDomainGetMaxVcpus'/>
       <ref name='virDomainGetName'/>
       <ref name='virDomainGetOSType'/>
+      <ref name='virDomainGetSchedulerParameters'/>
+      <ref name='virDomainGetSchedulerType'/>
       <ref name='virDomainGetUUID'/>
       <ref name='virDomainGetUUIDString'/>
       <ref name='virDomainGetVcpus'/>
@@ -353,6 +387,7 @@
       <ref name='virDomainSetAutostart'/>
       <ref name='virDomainSetMaxMemory'/>
       <ref name='virDomainSetMemory'/>
+      <ref name='virDomainSetSchedulerParameters'/>
       <ref name='virDomainSetVcpus'/>
       <ref name='virDomainShutdown'/>
       <ref name='virDomainState'/>
@@ -390,6 +425,9 @@
       <ref name='virNodeInfoPtr'/>
       <ref name='virResetError'/>
       <ref name='virResetLastError'/>
+      <ref name='virSchedParameter'/>
+      <ref name='virSchedParameterPtr'/>
+      <ref name='virSchedParameterType'/>
       <ref name='virSetErrorFunc'/>
       <ref name='virVcpuInfo'/>
       <ref name='virVcpuInfoPtr'/>
@@ -440,6 +478,8 @@
     <type name='int *'>
       <ref name='virConnectListDomains'/>
       <ref name='virDomainGetAutostart'/>
+      <ref name='virDomainGetSchedulerParameters'/>
+      <ref name='virDomainGetSchedulerType'/>
       <ref name='virNetworkGetAutostart'/>
     </type>
     <type name='unsigned char *'>
@@ -511,6 +551,8 @@
       <ref name='virDomainGetMaxVcpus'/>
       <ref name='virDomainGetName'/>
       <ref name='virDomainGetOSType'/>
+      <ref name='virDomainGetSchedulerParameters'/>
+      <ref name='virDomainGetSchedulerType'/>
       <ref name='virDomainGetUUID'/>
       <ref name='virDomainGetUUIDString'/>
       <ref name='virDomainGetVcpus'/>
@@ -522,6 +564,7 @@
       <ref name='virDomainSetAutostart'/>
       <ref name='virDomainSetMaxMemory'/>
       <ref name='virDomainSetMemory'/>
+      <ref name='virDomainSetSchedulerParameters'/>
       <ref name='virDomainSetVcpus'/>
       <ref name='virDomainShutdown'/>
       <ref name='virDomainSuspend'/>
@@ -554,6 +597,10 @@
     <type name='virNodeInfoPtr'>
       <ref name='virNodeGetInfo'/>
     </type>
+    <type name='virSchedParameterPtr'>
+      <ref name='virDomainGetSchedulerParameters'/>
+      <ref name='virDomainSetSchedulerParameters'/>
+    </type>
     <type name='virVcpuInfoPtr'>
       <ref name='virDomainGetVcpus'/>
     </type>
@@ -583,6 +630,13 @@
       <ref name='VIR_DOMAIN_RENAME_RESTART'/>
       <ref name='VIR_DOMAIN_RESTART'/>
       <ref name='VIR_DOMAIN_RUNNING'/>
+      <ref name='VIR_DOMAIN_SCHED_FIELD_BOOLEAN'/>
+      <ref name='VIR_DOMAIN_SCHED_FIELD_DOUBLE'/>
+      <ref name='VIR_DOMAIN_SCHED_FIELD_INT'/>
+      <ref name='VIR_DOMAIN_SCHED_FIELD_LENGTH'/>
+      <ref name='VIR_DOMAIN_SCHED_FIELD_LLONG'/>
+      <ref name='VIR_DOMAIN_SCHED_FIELD_UINT'/>
+      <ref name='VIR_DOMAIN_SCHED_FIELD_ULLONG'/>
       <ref name='VIR_DOMAIN_SHUTDOWN'/>
       <ref name='VIR_DOMAIN_SHUTOFF'/>
       <ref name='VIR_GET_CPUMAP'/>
@@ -597,6 +651,7 @@
       <ref name='_virDomainInfo'/>
       <ref name='_virDomainKernel'/>
       <ref name='_virNodeInfo'/>
+      <ref name='_virSchedParameter'/>
       <ref name='_virVcpuInfo'/>
       <ref name='virConnect'/>
       <ref name='virConnectClose'/>
@@ -633,6 +688,8 @@
       <ref name='virDomainGetMaxVcpus'/>
       <ref name='virDomainGetName'/>
       <ref name='virDomainGetOSType'/>
+      <ref name='virDomainGetSchedulerParameters'/>
+      <ref name='virDomainGetSchedulerType'/>
       <ref name='virDomainGetUUID'/>
       <ref name='virDomainGetUUIDString'/>
       <ref name='virDomainGetVcpus'/>
@@ -655,6 +712,7 @@
       <ref name='virDomainSetAutostart'/>
       <ref name='virDomainSetMaxMemory'/>
       <ref name='virDomainSetMemory'/>
+      <ref name='virDomainSetSchedulerParameters'/>
       <ref name='virDomainSetVcpus'/>
       <ref name='virDomainShutdown'/>
       <ref name='virDomainState'/>
@@ -683,6 +741,9 @@
       <ref name='virNodeGetInfo'/>
       <ref name='virNodeInfo'/>
       <ref name='virNodeInfoPtr'/>
+      <ref name='virSchedParameter'/>
+      <ref name='virSchedParameterPtr'/>
+      <ref name='virSchedParameterType'/>
       <ref name='virVcpuInfo'/>
       <ref name='virVcpuInfoPtr'/>
       <ref name='virVcpuState'/>
@@ -694,6 +755,7 @@
       <ref name='VIR_ERR_DRIVER_FULL'/>
       <ref name='VIR_ERR_ERROR'/>
       <ref name='VIR_ERR_GET_FAILED'/>
+      <ref name='VIR_ERR_GNUTLS_ERROR'/>
       <ref name='VIR_ERR_HTTP_ERROR'/>
       <ref name='VIR_ERR_INTERNAL_ERROR'/>
       <ref name='VIR_ERR_INVALID_ARG'/>
@@ -722,6 +784,7 @@
       <ref name='VIR_ERR_PARSE_FAILED'/>
       <ref name='VIR_ERR_POST_FAILED'/>
       <ref name='VIR_ERR_READ_FAILED'/>
+      <ref name='VIR_ERR_RPC'/>
       <ref name='VIR_ERR_SEXPR_SERIAL'/>
       <ref name='VIR_ERR_SYSTEM_ERROR'/>
       <ref name='VIR_ERR_UNKNOWN_HOST'/>
@@ -736,12 +799,15 @@
       <ref name='VIR_FROM_NONE'/>
       <ref name='VIR_FROM_PROXY'/>
       <ref name='VIR_FROM_QEMU'/>
+      <ref name='VIR_FROM_REMOTE'/>
       <ref name='VIR_FROM_RPC'/>
       <ref name='VIR_FROM_SEXPR'/>
+      <ref name='VIR_FROM_TEST'/>
       <ref name='VIR_FROM_XEN'/>
       <ref name='VIR_FROM_XEND'/>
       <ref name='VIR_FROM_XENSTORE'/>
       <ref name='VIR_FROM_XML'/>
+      <ref name='VIR_WAR_NO_NETWORK'/>
       <ref name='_virError'/>
       <ref name='virConnCopyLastError'/>
       <ref name='virConnGetLastError'/>
@@ -818,6 +884,9 @@
           <ref name='virDomainPinVcpu'/>
           <ref name='virDomainSetVcpus'/>
         </word>
+        <word name='Change'>
+          <ref name='virDomainSetSchedulerParameters'/>
+        </word>
         <word name='Collect'>
           <ref name='virConnectListDomains'/>
           <ref name='virConnectListNetworks'/>
@@ -893,6 +962,8 @@
           <ref name='virDomainGetID'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainGetOSType'/>
+          <ref name='virDomainGetSchedulerParameters'/>
+          <ref name='virDomainGetSchedulerType'/>
           <ref name='virDomainGetUUID'/>
           <ref name='virDomainGetUUIDString'/>
           <ref name='virNetworkGetName'/>
@@ -932,6 +1003,7 @@
       <letter name='M'>
         <word name='Macro'>
           <ref name='LIBVIR_VERSION_NUMBER'/>
+          <ref name='VIR_DOMAIN_SCHED_FIELD_LENGTH'/>
         </word>
       </letter>
       <letter name='N'>
@@ -1168,7 +1240,6 @@
           <ref name='_virNodeInfo'/>
           <ref name='virConnectListDomains'/>
           <ref name='virConnectListNetworks'/>
-          <ref name='virConnectNumOfDefinedDomains'/>
           <ref name='virConnectNumOfDomains'/>
           <ref name='virConnectNumOfNetworks'/>
           <ref name='virDomainSuspend'/>
@@ -1259,6 +1330,7 @@
           <ref name='virConnectListDefinedNetworks'/>
           <ref name='virConnectListDomains'/>
           <ref name='virConnectListNetworks'/>
+          <ref name='virDomainGetSchedulerParameters'/>
           <ref name='virDomainGetUUID'/>
           <ref name='virDomainGetUUIDString'/>
           <ref name='virDomainGetVcpus'/>
@@ -1417,6 +1489,7 @@
         <word name='caller'>
           <ref name='cpumap'/>
           <ref name='virDomainGetOSType'/>
+          <ref name='virDomainGetSchedulerType'/>
           <ref name='virDomainGetXMLDesc'/>
           <ref name='virNetworkGetBridgeName'/>
           <ref name='virNetworkGetXMLDesc'/>
@@ -1686,6 +1759,9 @@
         <word name='fail'>
           <ref name='virDomainSetVcpus'/>
         </word>
+        <word name='field'>
+          <ref name='VIR_DOMAIN_SCHED_FIELD_LENGTH'/>
+        </word>
         <word name='file'>
           <ref name='virDomainCoreDump'/>
           <ref name='virDomainSave'/>
@@ -1694,6 +1770,7 @@
           <ref name='_virDomainKernel'/>
         </word>
         <word name='filled'>
+          <ref name='virDomainGetSchedulerParameters'/>
           <ref name='virDomainGetVcpus'/>
         </word>
         <word name='find'>
@@ -1727,6 +1804,7 @@
           <ref name='virConnCopyLastError'/>
           <ref name='virConnectGetCapabilities'/>
           <ref name='virCopyLastError'/>
+          <ref name='virDomainGetSchedulerType'/>
           <ref name='virDomainGetXMLDesc'/>
           <ref name='virNetworkGetBridgeName'/>
           <ref name='virNetworkGetXMLDesc'/>
@@ -1868,6 +1946,7 @@
         </word>
         <word name='inactive'>
           <ref name='virConnectListDefinedNetworks'/>
+          <ref name='virConnectNumOfDefinedDomains'/>
           <ref name='virConnectNumOfDefinedNetworks'/>
           <ref name='virDomainGetMaxVcpus'/>
         </word>
@@ -1986,9 +2065,13 @@
         </word>
         <word name='length'>
           <ref name='VIR_CPU_MAPLEN'/>
+          <ref name='VIR_DOMAIN_SCHED_FIELD_LENGTH'/>
           <ref name='VIR_UUID_BUFLEN'/>
           <ref name='VIR_UUID_STRING_BUFLEN'/>
           <ref name='maplen'/>
+        </word>
+        <word name='less'>
+          <ref name='virDomainSetSchedulerParameters'/>
         </word>
         <word name='level'>
           <ref name='virConnectGetVersion'/>
@@ -2176,6 +2259,7 @@
           <ref name='cpumap'/>
           <ref name='virConnectGetCapabilities'/>
           <ref name='virDomainGetOSType'/>
+          <ref name='virDomainGetSchedulerType'/>
           <ref name='virDomainGetVcpus'/>
           <ref name='virDomainGetXMLDesc'/>
           <ref name='virNetworkGetBridgeName'/>
@@ -2184,6 +2268,7 @@
       </letter>
       <letter name='n'>
         <word name='name'>
+          <ref name='_virSchedParameter'/>
           <ref name='virConnectGetType'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainLookupByName'/>
@@ -2269,10 +2354,17 @@
           <ref name='virNetworkGetXMLDesc'/>
           <ref name='virNetworkUndefine'/>
         </word>
+        <word name='nparams'>
+          <ref name='virDomainGetSchedulerParameters'/>
+          <ref name='virDomainSetSchedulerParameters'/>
+        </word>
       </letter>
     </chunk>
     <chunk name='chunk4'>
       <letter name='o'>
+        <word name='objects'>
+          <ref name='virDomainSetSchedulerParameters'/>
+        </word>
         <word name='occured'>
           <ref name='virConnGetLastError'/>
           <ref name='virGetLastError'/>
@@ -2331,12 +2423,18 @@
       </letter>
       <letter name='p'>
         <word name='parameter'>
+          <ref name='_virSchedParameter'/>
           <ref name='virConnCopyLastError'/>
           <ref name='virConnectGetMaxVcpus'/>
           <ref name='virCopyLastError'/>
+          <ref name='virDomainGetSchedulerParameters'/>
+          <ref name='virDomainSetSchedulerParameters'/>
         </word>
         <word name='parameters'>
           <ref name='_virDomainKernel'/>
+          <ref name='virDomainGetSchedulerParameters'/>
+          <ref name='virDomainGetSchedulerType'/>
+          <ref name='virDomainSetSchedulerParameters'/>
         </word>
         <word name='part'>
           <ref name='_virError'/>
@@ -2423,6 +2521,7 @@
         </word>
         <word name='providing'>
           <ref name='LIBVIR_VERSION_NUMBER'/>
+          <ref name='VIR_DOMAIN_SCHED_FIELD_LENGTH'/>
         </word>
         <word name='public'>
           <ref name='virDomainGetName'/>
@@ -2538,6 +2637,8 @@
         <word name='return'>
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainDestroy'/>
+          <ref name='virDomainGetSchedulerParameters'/>
+          <ref name='virDomainGetSchedulerType'/>
           <ref name='virGetVersion'/>
           <ref name='virNetworkDestroy'/>
         </word>
@@ -2545,9 +2646,12 @@
           <ref name='virConnectGetCapabilities'/>
           <ref name='virDomainCreateLinux'/>
           <ref name='virDomainGetAutostart'/>
+          <ref name='virDomainGetSchedulerParameters'/>
+          <ref name='virDomainGetSchedulerType'/>
           <ref name='virDomainGetVcpus'/>
           <ref name='virDomainGetXMLDesc'/>
           <ref name='virDomainPinVcpu'/>
+          <ref name='virDomainSetSchedulerParameters'/>
           <ref name='virGetVersion'/>
           <ref name='virNetworkCreateXML'/>
           <ref name='virNetworkGetAutostart'/>
@@ -2596,6 +2700,8 @@
         <word name='same'>
           <ref name='virDomainGetMaxVcpus'/>
           <ref name='virDomainGetName'/>
+          <ref name='virDomainGetSchedulerParameters'/>
+          <ref name='virDomainSetSchedulerParameters'/>
           <ref name='virNetworkGetName'/>
         </word>
         <word name='save'>
@@ -2606,6 +2712,11 @@
         </word>
         <word name='saving'>
           <ref name='virDomainSave'/>
+        </word>
+        <word name='scheduler'>
+          <ref name='virDomainGetSchedulerParameters'/>
+          <ref name='virDomainGetSchedulerType'/>
+          <ref name='virDomainSetSchedulerParameters'/>
         </word>
         <word name='see'>
           <ref name='virDomainGetUUIDString'/>
@@ -2626,7 +2737,9 @@
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainFree'/>
+          <ref name='virDomainGetSchedulerParameters'/>
           <ref name='virDomainSetAutostart'/>
+          <ref name='virDomainSetSchedulerParameters'/>
           <ref name='virDomainShutdown'/>
           <ref name='virNetworkDestroy'/>
           <ref name='virNetworkFree'/>
@@ -2734,6 +2847,7 @@
           <ref name='virConnectGetType'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainGetOSType'/>
+          <ref name='virDomainGetSchedulerType'/>
           <ref name='virDomainGetUUIDString'/>
           <ref name='virDomainLookupByUUIDString'/>
           <ref name='virNetworkGetName'/>
@@ -2797,6 +2911,10 @@
           <ref name='virNetworkGetBridgeName'/>
           <ref name='virNetworkGetXMLDesc'/>
         </word>
+        <word name='than'>
+          <ref name='virDomainGetSchedulerParameters'/>
+          <ref name='virDomainSetSchedulerParameters'/>
+        </word>
         <word name='that'>
           <ref name='virConnCopyLastError'/>
           <ref name='virConnGetLastError'/>
@@ -2839,10 +2957,12 @@
           <ref name='_virError'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainGetMaxVcpus'/>
+          <ref name='virDomainGetSchedulerParameters'/>
           <ref name='virDomainGetVcpus'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainSetMaxMemory'/>
           <ref name='virDomainSetMemory'/>
+          <ref name='virDomainSetSchedulerParameters'/>
           <ref name='virDomainSetVcpus'/>
           <ref name='virInitialize'/>
         </word>
@@ -2866,8 +2986,10 @@
           <ref name='virGetVersion'/>
         </word>
         <word name='type'>
+          <ref name='_virSchedParameter'/>
           <ref name='virConnectGetMaxVcpus'/>
           <ref name='virDomainGetOSType'/>
+          <ref name='virDomainGetSchedulerType'/>
           <ref name='virGetVersion'/>
         </word>
       </letter>
@@ -2945,13 +3067,17 @@
           <ref name='virConnectGetMaxVcpus'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainGetAutostart'/>
+          <ref name='virDomainGetSchedulerParameters'/>
+          <ref name='virDomainGetSchedulerType'/>
           <ref name='virDomainGetXMLDesc'/>
+          <ref name='virDomainSetSchedulerParameters'/>
           <ref name='virGetVersion'/>
           <ref name='virNetworkGetAutostart'/>
           <ref name='virNetworkGetBridgeName'/>
           <ref name='virNetworkGetXMLDesc'/>
         </word>
         <word name='values'>
+          <ref name='virDomainGetSchedulerParameters'/>
           <ref name='virGetVersion'/>
         </word>
         <word name='vcpu'>
@@ -2988,6 +3114,10 @@
         <word name='virDomainFlags'>
           <ref name='_virDomainInfo'/>
           <ref name='virDomainCreateLinux'/>
+        </word>
+        <word name='virDomainGetSchedulerType'>
+          <ref name='virDomainGetSchedulerParameters'/>
+          <ref name='virDomainSetSchedulerParameters'/>
         </word>
         <word name='virDomainGetUUID'>
           <ref name='VIR_UUID_BUFLEN'/>
@@ -3042,6 +3172,9 @@
         <word name='virResetError'>
           <ref name='virConnCopyLastError'/>
           <ref name='virCopyLastError'/>
+        </word>
+        <word name='virSchedParameter'>
+          <ref name='VIR_DOMAIN_SCHED_FIELD_LENGTH'/>
         </word>
         <word name='virSuspendDomain'>
           <ref name='virDomainResume'/>
@@ -3120,6 +3253,7 @@
           <ref name='virDomainCoreDump'/>
           <ref name='virDomainGetMaxVcpus'/>
           <ref name='virDomainGetName'/>
+          <ref name='virDomainGetSchedulerParameters'/>
           <ref name='virDomainRestore'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainSuspend'/>
@@ -3139,6 +3273,7 @@
           <ref name='virConnectGetVersion'/>
           <ref name='virCopyLastError'/>
           <ref name='virDomainGetMaxVcpus'/>
+          <ref name='virDomainGetSchedulerParameters'/>
           <ref name='virDomainGetXMLDesc'/>
           <ref name='virNetworkGetXMLDesc'/>
         </word>

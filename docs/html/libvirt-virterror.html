@@ -45,6 +45,8 @@ void	<a href="#virErrorFunc">virErrorFunc</a>			(void * userData, <br />					 <a
     <a name="VIR_FROM_CONF" id="VIR_FROM_CONF">VIR_FROM_CONF</a> = 9 : Error in the configuration file handling
     <a name="VIR_FROM_QEMU" id="VIR_FROM_QEMU">VIR_FROM_QEMU</a> = 10 : Error at the QEMU daemon
     <a name="VIR_FROM_NET" id="VIR_FROM_NET">VIR_FROM_NET</a> = 11 : Error when operating on a network
+    <a name="VIR_FROM_TEST" id="VIR_FROM_TEST">VIR_FROM_TEST</a> = 12 : Error from test driver
+    <a name="VIR_FROM_REMOTE" id="VIR_FROM_REMOTE">VIR_FROM_REMOTE</a> = 13 : Error from remote driver
 }
 </pre><h3>Enum <a name="virErrorLevel" id="virErrorLevel">virErrorLevel</a></h3><pre class="programlisting">Enum virErrorLevel {
     <a name="VIR_ERR_NONE" id="VIR_ERR_NONE">VIR_ERR_NONE</a> = 0
@@ -91,6 +93,9 @@ void	<a href="#virErrorFunc">virErrorFunc</a>			(void * userData, <br />					 <a
     <a name="VIR_ERR_INVALID_NETWORK" id="VIR_ERR_INVALID_NETWORK">VIR_ERR_INVALID_NETWORK</a> = 36 : invalid network object
     <a name="VIR_ERR_NETWORK_EXIST" id="VIR_ERR_NETWORK_EXIST">VIR_ERR_NETWORK_EXIST</a> = 37 : the network already exist
     <a name="VIR_ERR_SYSTEM_ERROR" id="VIR_ERR_SYSTEM_ERROR">VIR_ERR_SYSTEM_ERROR</a> = 38 : general system call failure
+    <a name="VIR_ERR_RPC" id="VIR_ERR_RPC">VIR_ERR_RPC</a> = 39 : some sort of RPC error
+    <a name="VIR_ERR_GNUTLS_ERROR" id="VIR_ERR_GNUTLS_ERROR">VIR_ERR_GNUTLS_ERROR</a> = 40 : error from a GNUTLS call
+    <a name="VIR_WAR_NO_NETWORK" id="VIR_WAR_NO_NETWORK">VIR_WAR_NO_NETWORK</a> = 41 : failed to start network
 }
 </pre><h3><a name="virConnCopyLastError" id="virConnCopyLastError"></a>Function: virConnCopyLastError</h3><pre class="programlisting">int	virConnCopyLastError		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br />					 <a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a> to)<br />
 </pre><p>Copy the content of the last error caught on that connection One will need to free the result with virResetError()</p>

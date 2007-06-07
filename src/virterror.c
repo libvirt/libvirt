@@ -610,24 +610,30 @@ __virErrorMsg(virErrorNumber error, const char *info)
 	    else
 	        errmsg = _("network %s exists already");
             break;
-    case VIR_ERR_SYSTEM_ERROR:
-        if (info == NULL)
-            errmsg = _("system call error");
-        else
-            errmsg = "%s";
-        break;
-    case VIR_ERR_RPC:
-        if (info == NULL)
-            errmsg = _("RPC error");
-        else
-            errmsg = "%s";
-        break;
-    case VIR_ERR_GNUTLS_ERROR:
-        if (info == NULL)
-            errmsg = _("GNUTLS call error");
-        else
-            errmsg = "%s";
-        break;
+	case VIR_ERR_SYSTEM_ERROR:
+	    if (info == NULL)
+		errmsg = _("system call error");
+	    else
+		errmsg = "%s";
+	    break;
+	case VIR_ERR_RPC:
+	    if (info == NULL)
+		errmsg = _("RPC error");
+	    else
+		errmsg = "%s";
+	    break;
+	case VIR_ERR_GNUTLS_ERROR:
+	    if (info == NULL)
+		errmsg = _("GNUTLS call error");
+	    else
+		errmsg = "%s";
+	    break;
+	case VIR_WAR_NO_NETWORK:
+	    if (info == NULL)
+		errmsg = _("Failed to find the network");
+	    else
+		errmsg = _("Failed to find the network: %s");
+	    break;
     }
     return (errmsg);
 }

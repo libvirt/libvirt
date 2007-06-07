@@ -12,51 +12,62 @@
      <exports symbol='VIR_UUID_BUFLEN' type='macro'/>
      <exports symbol='VIR_CPU_USABLE' type='macro'/>
      <exports symbol='VIR_COPY_CPUMAP' type='macro'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_LENGTH' type='macro'/>
      <exports symbol='VIR_UUID_STRING_BUFLEN' type='macro'/>
      <exports symbol='VIR_GET_CPUMAP' type='macro'/>
      <exports symbol='VIR_UNUSE_CPU' type='macro'/>
-     <exports symbol='VIR_DOMAIN_SHUTOFF' type='enum'/>
-     <exports symbol='VIR_DOMAIN_DESTROY' type='enum'/>
      <exports symbol='VIR_DEVICE_DEFAULT' type='enum'/>
-     <exports symbol='VIR_DOMAIN_RENAME_RESTART' type='enum'/>
-     <exports symbol='VIR_DOMAIN_PRESERVE' type='enum'/>
-     <exports symbol='VIR_VCPU_BLOCKED' type='enum'/>
      <exports symbol='VIR_DOMAIN_SHUTDOWN' type='enum'/>
-     <exports symbol='VIR_VCPU_OFFLINE' type='enum'/>
-     <exports symbol='VIR_DEVICE_RO' type='enum'/>
-     <exports symbol='VIR_DEVICE_RW_FORCE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_UINT' type='enum'/>
      <exports symbol='VIR_VCPU_RUNNING' type='enum'/>
      <exports symbol='VIR_DOMAIN_CRASHED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_DOUBLE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_LLONG' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_ULLONG' type='enum'/>
+     <exports symbol='VIR_DOMAIN_DESTROY' type='enum'/>
+     <exports symbol='VIR_DOMAIN_RESTART' type='enum'/>
+     <exports symbol='VIR_DOMAIN_PRESERVE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_BOOLEAN' type='enum'/>
+     <exports symbol='VIR_VCPU_OFFLINE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_RUNNING' type='enum'/>
+     <exports symbol='VIR_DOMAIN_NOSTATE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SHUTOFF' type='enum'/>
+     <exports symbol='VIR_VCPU_BLOCKED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_INT' type='enum'/>
+     <exports symbol='VIR_DOMAIN_PAUSED' type='enum'/>
+     <exports symbol='VIR_DEVICE_RO' type='enum'/>
+     <exports symbol='VIR_DEVICE_RW_FORCE' type='enum'/>
      <exports symbol='VIR_DOMAIN_NONE' type='enum'/>
      <exports symbol='VIR_DEVICE_RW' type='enum'/>
      <exports symbol='VIR_DOMAIN_BLOCKED' type='enum'/>
-     <exports symbol='VIR_DOMAIN_PAUSED' type='enum'/>
-     <exports symbol='VIR_DOMAIN_RESTART' type='enum'/>
-     <exports symbol='VIR_DOMAIN_RUNNING' type='enum'/>
-     <exports symbol='VIR_DOMAIN_NOSTATE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_RENAME_RESTART' type='enum'/>
+     <exports symbol='virNodeInfo' type='typedef'/>
+     <exports symbol='virNetwork' type='typedef'/>
+     <exports symbol='virDeviceMode' type='typedef'/>
+     <exports symbol='virConnect' type='typedef'/>
+     <exports symbol='virVcpuInfo' type='typedef'/>
+     <exports symbol='virDomainInfo' type='typedef'/>
+     <exports symbol='virDomainCreateFlags' type='typedef'/>
+     <exports symbol='virDomainKernelPtr' type='typedef'/>
+     <exports symbol='virDomainState' type='typedef'/>
+     <exports symbol='virDomain' type='typedef'/>
+     <exports symbol='virSchedParameterType' type='typedef'/>
+     <exports symbol='virDomainRestart' type='typedef'/>
      <exports symbol='virNodeInfoPtr' type='typedef'/>
      <exports symbol='virNetworkPtr' type='typedef'/>
      <exports symbol='virDomainInfoPtr' type='typedef'/>
-     <exports symbol='virDomainKernelPtr' type='typedef'/>
      <exports symbol='virConnectPtr' type='typedef'/>
      <exports symbol='virDomainKernel' type='typedef'/>
-     <exports symbol='virNodeInfo' type='typedef'/>
-     <exports symbol='virNetwork' type='typedef'/>
-     <exports symbol='virDomainState' type='typedef'/>
-     <exports symbol='virDeviceMode' type='typedef'/>
-     <exports symbol='virDomain' type='typedef'/>
-     <exports symbol='virDomainPtr' type='typedef'/>
-     <exports symbol='virVcpuInfo' type='typedef'/>
      <exports symbol='virVcpuInfoPtr' type='typedef'/>
-     <exports symbol='virDomainRestart' type='typedef'/>
-     <exports symbol='virConnect' type='typedef'/>
-     <exports symbol='virDomainCreateFlags' type='typedef'/>
-     <exports symbol='virDomainInfo' type='typedef'/>
+     <exports symbol='virSchedParameterPtr' type='typedef'/>
      <exports symbol='virVcpuState' type='typedef'/>
+     <exports symbol='virDomainPtr' type='typedef'/>
+     <exports symbol='virSchedParameter' type='typedef'/>
      <exports symbol='_virDomainInfo' type='struct'/>
      <exports symbol='_virDomainKernel' type='struct'/>
      <exports symbol='_virNodeInfo' type='struct'/>
      <exports symbol='_virVcpuInfo' type='struct'/>
+     <exports symbol='_virSchedParameter' type='struct'/>
      <exports symbol='virDomainGetInfo' type='function'/>
      <exports symbol='virNetworkFree' type='function'/>
      <exports symbol='virNetworkGetName' type='function'/>
@@ -72,10 +83,11 @@
      <exports symbol='virDomainLookupByName' type='function'/>
      <exports symbol='virNetworkLookupByUUID' type='function'/>
      <exports symbol='virNetworkGetBridgeName' type='function'/>
+     <exports symbol='virNetworkGetXMLDesc' type='function'/>
      <exports symbol='virDomainPinVcpu' type='function'/>
      <exports symbol='virDomainRestore' type='function'/>
      <exports symbol='virConnectGetType' type='function'/>
-     <exports symbol='virDomainSave' type='function'/>
+     <exports symbol='virDomainGetSchedulerParameters' type='function'/>
      <exports symbol='virDomainCreate' type='function'/>
      <exports symbol='virConnectListDomains' type='function'/>
      <exports symbol='virNetworkLookupByUUIDString' type='function'/>
@@ -88,7 +100,7 @@
      <exports symbol='virConnectListDefinedNetworks' type='function'/>
      <exports symbol='virNodeGetInfo' type='function'/>
      <exports symbol='virDomainGetUUID' type='function'/>
-     <exports symbol='virNetworkCreateXML' type='function'/>
+     <exports symbol='virDomainSetMemory' type='function'/>
      <exports symbol='virNetworkSetAutostart' type='function'/>
      <exports symbol='virConnectNumOfDomains' type='function'/>
      <exports symbol='virDomainGetUUIDString' type='function'/>
@@ -103,17 +115,18 @@
      <exports symbol='virConnectNumOfDefinedDomains' type='function'/>
      <exports symbol='virNetworkDefineXML' type='function'/>
      <exports symbol='virNetworkCreate' type='function'/>
+     <exports symbol='virDomainSetSchedulerParameters' type='function'/>
      <exports symbol='virConnectClose' type='function'/>
      <exports symbol='virDomainReboot' type='function'/>
      <exports symbol='virInitialize' type='function'/>
      <exports symbol='virDomainSetVcpus' type='function'/>
      <exports symbol='virNetworkGetUUIDString' type='function'/>
      <exports symbol='virNetworkLookupByName' type='function'/>
-     <exports symbol='virNetworkGetXMLDesc' type='function'/>
+     <exports symbol='virNetworkCreateXML' type='function'/>
      <exports symbol='virDomainGetID' type='function'/>
      <exports symbol='virDomainResume' type='function'/>
      <exports symbol='virDomainCreateLinux' type='function'/>
-     <exports symbol='virDomainSetMemory' type='function'/>
+     <exports symbol='virDomainGetSchedulerType' type='function'/>
      <exports symbol='virNetworkDestroy' type='function'/>
      <exports symbol='virDomainDestroy' type='function'/>
      <exports symbol='virConnectNumOfNetworks' type='function'/>
@@ -125,6 +138,7 @@
      <exports symbol='virConnectGetVersion' type='function'/>
      <exports symbol='virConnectListNetworks' type='function'/>
      <exports symbol='virDomainLookupByID' type='function'/>
+     <exports symbol='virDomainSave' type='function'/>
      <exports symbol='virConnectOpenReadOnly' type='function'/>
     </file>
     <file name='virterror'>
@@ -134,6 +148,7 @@
      <exports symbol='VIR_FROM_XML' type='enum'/>
      <exports symbol='VIR_ERR_CALL_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_SYSTEM_ERROR' type='enum'/>
+     <exports symbol='VIR_FROM_TEST' type='enum'/>
      <exports symbol='VIR_ERR_WARNING' type='enum'/>
      <exports symbol='VIR_ERR_NO_XEN' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_ARG' type='enum'/>
@@ -153,8 +168,10 @@
      <exports symbol='VIR_ERR_INVALID_NETWORK' type='enum'/>
      <exports symbol='VIR_ERR_OPERATION_DENIED' type='enum'/>
      <exports symbol='VIR_ERR_NO_KERNEL' type='enum'/>
+     <exports symbol='VIR_ERR_GNUTLS_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_POST_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_OS_TYPE' type='enum'/>
+     <exports symbol='VIR_WAR_NO_NETWORK' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_CONN' type='enum'/>
      <exports symbol='VIR_ERR_NONE' type='enum'/>
      <exports symbol='VIR_ERR_OK' type='enum'/>
@@ -162,6 +179,7 @@
      <exports symbol='VIR_FROM_NET' type='enum'/>
      <exports symbol='VIR_ERR_NO_NAME' type='enum'/>
      <exports symbol='VIR_ERR_NO_ROOT' type='enum'/>
+     <exports symbol='VIR_ERR_RPC' type='enum'/>
      <exports symbol='VIR_ERR_OPERATION_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_GET_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_DRIVER_FULL' type='enum'/>
@@ -173,6 +191,7 @@
      <exports symbol='VIR_ERR_WRITE_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_INTERNAL_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_CONF_SYNTAX' type='enum'/>
+     <exports symbol='VIR_FROM_REMOTE' type='enum'/>
      <exports symbol='VIR_ERR_NO_SUPPORT' type='enum'/>
      <exports symbol='VIR_FROM_XEND' type='enum'/>
      <exports symbol='VIR_FROM_PROXY' type='enum'/>
@@ -226,6 +245,9 @@
       <arg name='vcpu' info='the virtual CPU number'/>
       <arg name='cpu' info='the physical CPU number'/>
     </macro>
+    <macro name='VIR_DOMAIN_SCHED_FIELD_LENGTH' file='libvirt'>
+      <info>Macro providing the field length of virSchedParameter</info>
+    </macro>
     <macro name='VIR_GET_CPUMAP' file='libvirt'>
       <info>This macro is to be used in conjonction with virDomainGetVcpus() and virDomainPinVcpu() APIs. VIR_GET_CPUMAP macro returns a pointer to the cpumap of the specified vcpu from cpumaps array.</info>
       <arg name='cpumaps' info='pointer to an array of cpumap (in 8-bit bytes) (IN)'/>
@@ -266,6 +288,12 @@
     <enum name='VIR_DOMAIN_RENAME_RESTART' file='libvirt' value='4' type='virDomainRestart' info=' restart under an new unique name'/>
     <enum name='VIR_DOMAIN_RESTART' file='libvirt' value='2' type='virDomainRestart' info='restart the domain'/>
     <enum name='VIR_DOMAIN_RUNNING' file='libvirt' value='1' type='virDomainState' info='the domain is running'/>
+    <enum name='VIR_DOMAIN_SCHED_FIELD_BOOLEAN' file='libvirt' value='6' type='virSchedParameterType' info=' boolean(character) case'/>
+    <enum name='VIR_DOMAIN_SCHED_FIELD_DOUBLE' file='libvirt' value='5' type='virSchedParameterType' info='double case'/>
+    <enum name='VIR_DOMAIN_SCHED_FIELD_INT' file='libvirt' value='1' type='virSchedParameterType' info='integer case'/>
+    <enum name='VIR_DOMAIN_SCHED_FIELD_LLONG' file='libvirt' value='3' type='virSchedParameterType' info='long long case'/>
+    <enum name='VIR_DOMAIN_SCHED_FIELD_UINT' file='libvirt' value='2' type='virSchedParameterType' info='unsigned integer case'/>
+    <enum name='VIR_DOMAIN_SCHED_FIELD_ULLONG' file='libvirt' value='4' type='virSchedParameterType' info='unsigned long long case'/>
     <enum name='VIR_DOMAIN_SHUTDOWN' file='libvirt' value='4' type='virDomainState' info='the domain is being shut down'/>
     <enum name='VIR_DOMAIN_SHUTOFF' file='libvirt' value='5' type='virDomainState' info='the domain is shut off'/>
     <enum name='VIR_ERR_CALL_FAILED' file='virterror' value='26' type='virErrorNumber' info='not supported by the drivers'/>
@@ -274,6 +302,7 @@
     <enum name='VIR_ERR_DRIVER_FULL' file='virterror' value='25' type='virErrorNumber' info='too many drivers registered'/>
     <enum name='VIR_ERR_ERROR' file='virterror' value='2' type='virErrorLevel' info=' An error'/>
     <enum name='VIR_ERR_GET_FAILED' file='virterror' value='10' type='virErrorNumber' info='a HTTP GET command to failed'/>
+    <enum name='VIR_ERR_GNUTLS_ERROR' file='virterror' value='40' type='virErrorNumber' info='error from a GNUTLS call'/>
     <enum name='VIR_ERR_HTTP_ERROR' file='virterror' value='12' type='virErrorNumber' info='unexpected HTTP error code'/>
     <enum name='VIR_ERR_INTERNAL_ERROR' file='virterror' value='1' type='virErrorNumber' info='internal error'/>
     <enum name='VIR_ERR_INVALID_ARG' file='virterror' value='8' type='virErrorNumber' info='invalid function argument'/>
@@ -302,8 +331,9 @@
     <enum name='VIR_ERR_PARSE_FAILED' file='virterror' value='32' type='virErrorNumber' info='failed to parse a conf file'/>
     <enum name='VIR_ERR_POST_FAILED' file='virterror' value='11' type='virErrorNumber' info='a HTTP POST command to failed'/>
     <enum name='VIR_ERR_READ_FAILED' file='virterror' value='31' type='virErrorNumber' info='failed to read a conf file'/>
+    <enum name='VIR_ERR_RPC' file='virterror' value='39' type='virErrorNumber' info='some sort of RPC error'/>
     <enum name='VIR_ERR_SEXPR_SERIAL' file='virterror' value='13' type='virErrorNumber' info='failure to serialize an S-Expr'/>
-    <enum name='VIR_ERR_SYSTEM_ERROR' file='virterror' value='38' type='virErrorNumber' info=' general system call failure'/>
+    <enum name='VIR_ERR_SYSTEM_ERROR' file='virterror' value='38' type='virErrorNumber' info='general system call failure'/>
     <enum name='VIR_ERR_UNKNOWN_HOST' file='virterror' value='4' type='virErrorNumber' info='could not resolve hostname'/>
     <enum name='VIR_ERR_WARNING' file='virterror' value='1' type='virErrorLevel' info='A simple warning'/>
     <enum name='VIR_ERR_WRITE_FAILED' file='virterror' value='34' type='virErrorNumber' info='failed to write a conf file'/>
@@ -312,12 +342,14 @@
     <enum name='VIR_ERR_XML_ERROR' file='virterror' value='27' type='virErrorNumber' info='an XML description is not well formed or broken'/>
     <enum name='VIR_FROM_CONF' file='virterror' value='9' type='virErrorDomain' info='Error in the configuration file handling'/>
     <enum name='VIR_FROM_DOM' file='virterror' value='6' type='virErrorDomain' info='Error when operating on a domain'/>
-    <enum name='VIR_FROM_NET' file='virterror' value='11' type='virErrorDomain' info=' Error when operating on a network'/>
+    <enum name='VIR_FROM_NET' file='virterror' value='11' type='virErrorDomain' info='Error when operating on a network'/>
     <enum name='VIR_FROM_NONE' file='virterror' value='0' type='virErrorDomain'/>
     <enum name='VIR_FROM_PROXY' file='virterror' value='8' type='virErrorDomain' info='Error in the proxy code'/>
     <enum name='VIR_FROM_QEMU' file='virterror' value='10' type='virErrorDomain' info='Error at the QEMU daemon'/>
+    <enum name='VIR_FROM_REMOTE' file='virterror' value='13' type='virErrorDomain' info=' Error from remote driver'/>
     <enum name='VIR_FROM_RPC' file='virterror' value='7' type='virErrorDomain' info='Error in the XML-RPC code'/>
     <enum name='VIR_FROM_SEXPR' file='virterror' value='4' type='virErrorDomain' info='Error in the S-Epression code'/>
+    <enum name='VIR_FROM_TEST' file='virterror' value='12' type='virErrorDomain' info='Error from test driver'/>
     <enum name='VIR_FROM_XEN' file='virterror' value='1' type='virErrorDomain' info='Error at Xen hypervisor layer'/>
     <enum name='VIR_FROM_XEND' file='virterror' value='2' type='virErrorDomain' info='Error at connection with xend daemon'/>
     <enum name='VIR_FROM_XENSTORE' file='virterror' value='3' type='virErrorDomain' info='Error at connection with xen store'/>
@@ -325,6 +357,7 @@
     <enum name='VIR_VCPU_BLOCKED' file='libvirt' value='2' type='virVcpuState' info=' the virtual CPU is blocked on resource'/>
     <enum name='VIR_VCPU_OFFLINE' file='libvirt' value='0' type='virVcpuState' info='the virtual CPU is offline'/>
     <enum name='VIR_VCPU_RUNNING' file='libvirt' value='1' type='virVcpuState' info='the virtual CPU is running'/>
+    <enum name='VIR_WAR_NO_NETWORK' file='virterror' value='41' type='virErrorNumber' info=' failed to start network'/>
     <struct name='virConnect' file='libvirt' type='struct _virConnect'/>
     <typedef name='virConnectPtr' file='libvirt' type='virConnect *'>
       <info>a virConnectPtr is pointer to a virConnect private structure, this is the type used to reference a connection to the Xen Hypervisor in the API.</info>
@@ -391,6 +424,14 @@
     <typedef name='virNodeInfoPtr' file='libvirt' type='virNodeInfo *'>
       <info>a virNodeInfoPtr is a pointer to a virNodeInfo structure.</info>
     </typedef>
+    <struct name='virSchedParameter' file='libvirt' type='struct _virSchedParameter'>
+      <field name='field' type='charfield[VIR_DOMAIN_SCHED_FIELD_LENGTH]' info=' parameter name'/>
+      <field name='type' type='int' info=' parameter type'/>
+    </struct>
+    <typedef name='virSchedParameterPtr' file='libvirt' type='virSchedParameter *'>
+      <info>a virSchedParameterPtr is a pointer to a virSchedParameter structure.</info>
+    </typedef>
+    <typedef name='virSchedParameterType' file='libvirt' type='enum'/>
     <struct name='virVcpuInfo' file='libvirt' type='struct _virVcpuInfo'>
       <field name='number' type='unsigned int' info=' virtual CPU number'/>
       <field name='state' type='int' info=' value from virVcpuState'/>
@@ -478,7 +519,7 @@
       <arg name='maxnames' type='int' info='size of @names'/>
     </function>
     <function name='virConnectNumOfDefinedDomains' file='libvirt' module='libvirt'>
-      <info>Provides the number of active domains.</info>
+      <info>Provides the number of inactive domains.</info>
       <return type='int' info='the number of domain found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
@@ -601,6 +642,19 @@
       <return type='char *' info='the new string or NULL in case of error, the string must be freed by the caller.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
+    <function name='virDomainGetSchedulerParameters' file='libvirt' module='libvirt'>
+      <info>Get the scheduler parameters, the @params array will be filled with the values.</info>
+      <return type='int' info='-1 in case of error, 0 in case of success.'/>
+      <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
+      <arg name='params' type='virSchedParameterPtr' info='pointer to scheduler parameter object (return value)'/>
+      <arg name='nparams' type='int *' info='pointer to number of scheduler parameter (this value should be same than the returned value nparams of virDomainGetSchedulerType)'/>
+    </function>
+    <function name='virDomainGetSchedulerType' file='libvirt' module='libvirt'>
+      <info>Get the scheduler type.</info>
+      <return type='char *' info='NULL in case of error. The caller must free the returned string.'/>
+      <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
+      <arg name='nparams' type='int *' info='number of scheduler parameters(return value)'/>
+    </function>
     <function name='virDomainGetUUID' file='libvirt' module='libvirt'>
       <info>Get the UUID for a domain</info>
       <return type='int' info='-1 in case of error, 0 in case of success'/>
@@ -700,6 +754,13 @@
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object or NULL'/>
       <arg name='memory' type='unsigned long' info='the memory size in kilobytes'/>
+    </function>
+    <function name='virDomainSetSchedulerParameters' file='libvirt' module='libvirt'>
+      <info>Change the scheduler parameters</info>
+      <return type='int' info='-1 in case of error, 0 in case of success.'/>
+      <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
+      <arg name='params' type='virSchedParameterPtr' info='pointer to scheduler parameter objects'/>
+      <arg name='nparams' type='int' info='number of scheduler parameter (this value should be same or less than the returned value nparams of virDomainGetSchedulerType)'/>
     </function>
     <function name='virDomainSetVcpus' file='libvirt' module='libvirt'>
       <info>Dynamically change the number of virtual CPUs used by the domain. Note that this call may fail if the underlying virtualization hypervisor does not support it or if growing the number is arbitrary limited. This function requires priviledged access to the hypervisor.</info>
