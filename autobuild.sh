@@ -21,6 +21,7 @@ rm -rf coverage
 make
 make install
 
+set -o pipefail
 make check 2>&1 | tee $RESULTS
 make cov
 
