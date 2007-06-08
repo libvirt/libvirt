@@ -35,6 +35,42 @@ development of libvirt, it is preferable when possible to just use the <a
 href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p>
 
+<h3>0.2.3: Jun 8 2007</h3>
+<ul>
+  <li>Documentation: documentation for upcoming remote access (Richard Jones),
+      virConnectNumOfDefinedDomains doc (Jan Michael), virsh help messages
+      for dumpxml and net-dumpxml (Chris Wright), </li>
+  <li>Bug fixes: RelaxNG schemas regexp fix (Robin Green), RelaxNG arch bug
+      (Mark McLoughlin), large buffers bug fixes (Shigeki Sakamoto), error
+      on out of memory condition (Shigeki Sakamoto), virshStrdup fix, non-root
+      driver when using Xen bug (Richard Jones), use --strict-order when
+      running dnsmasq (Daniel Berrange), virbr0 weirdness on restart (Mark
+      McLoughlin), keep connection error messages (Richard Jones), increase
+      QEmu read buffer on help (Daniel Berrange), rpm dependance on
+      dnsmasq (Daniel Berrange), fix XML boot device syntax (Daniel Berrange),
+      QEmu memory bug (Daniel Berrange), memory leak fix (Masayuki Sunou),
+      fix compiler flags (Richard Jones), remove type ioemu on recent Xen
+      HVM for paravirt drivers (Saori Fukuta), uninitialized string bug
+      (Masayuki Sunou), allow init even if the daemon is not running, 
+      XML to config fix (Daniel Berrange)</li>
+  <li>Improvements: add a special error class for the test module (Richard
+      Jones), virConnectGetCapabilities on proxy (Richard Jones), allow
+      network driver to decline usage (Richard Jones), extend error messages
+      for upcoming remote access (Richard Jones), on_reboot support for QEmu
+      (Daniel Berrange), save daemon output in a log file (Daniel Berrange),
+      xenXMDomainDefineXML can override guest config (Hugh Brock),
+      add attach-device and detach-device commands to virsh (Masayuki Sunou
+      and Mark McLoughlin and Richard Jones), make virGetVersion case
+      insensitive and Python bindings (Richard Jones), new scheduler API
+      (Atsushi SAKAI), localizations updates, add logging option for virsh
+      (Nobuhiro Itou), allow arguments to be passed to bootloader (Hugh Brock),
+      increase the test suite (Daniel Berrange and Hugh Brock)</li>
+  <li>Cleanups: Remove VIR_DRV_OPEN_QUIET (Richard Jones), disable xm_internal.c
+      for Xen &gt; 3.0.3 (Daniel Berrange), unused fields in _virDomain (Richard
+      Jones), export __virGetDomain and __virGetNetwork for libvirtd only
+      (Richard Jones), ignore old VNC config for HVM on recent Xen (Daniel
+      Berrange), various code cleanups, -Werror cleanup (Hugh Brock)</li>
+</ul>
 <h3>0.2.2: Apr 17 2007</h3>
 <ul>
   <li>Documentation: fix errors due to Amaya (with Simon Hernandez), 

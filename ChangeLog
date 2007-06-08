@@ -1,3 +1,8 @@
+Fri Jun  8 13:06:01 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in libvirt.spec.in include/libvirt/libvirt.h
+	  docs/*: prepared release of 0.2.3
+
 Fri Jun  8 11:35:55 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* po/*: new merge of localization strings

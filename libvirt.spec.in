@@ -9,7 +9,7 @@
 Summary: Library providing a simple API virtualization
 Name: libvirt
 Version: @VERSION@
-Release: 2%{?_extra_release}
+Release: 1%{?_extra_release}
 License: LGPL
 Group: Development/Libraries
 Source: libvirt-%{version}.tar.gz
@@ -171,6 +171,12 @@ fi
 %doc docs/examples/python
 
 %changelog
+* Tue Apr 17 2007 Daniel Veillard <veillard@redhat.com> - 0.2.3-1
+- Release of 0.2.3
+- lot of assorted bugfixes and cleanups
+- support for Xen-3.1
+- new scheduler API
+
 * Tue Apr 17 2007 Daniel Veillard <veillard@redhat.com> - 0.2.2-1
 - Release of 0.2.2
 - lot of assorted bugfixes and cleanups
