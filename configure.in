@@ -67,13 +67,15 @@ AC_ARG_WITH(html-subdir, AC_HELP_STRING([--with-html-subdir=path],
             [HTML_DIR="$HTML_DIR/\$(PACKAGE)-\$(VERSION)/html"])
 AC_SUBST(HTML_DIR)
 
-dnl Allow to build without Xen, QEMU/KVM or test driver
+dnl Allow to build without Xen, QEMU/KVM, test or remote driver
 AC_ARG_WITH(xen,
 [  --with-xen              add XEN support (on)])
 AC_ARG_WITH(qemu,
 [  --with-qemu             add QEMU/KVM support (on)])
 AC_ARG_WITH(test,
 [  --with-test             add test driver support (on)])
+AC_ARG_WITH(remote,
+[  --with-remote           add remote driver support (on)])
 
 dnl
 dnl specific tests to setup DV devel environments with debug etc ...
@@ -107,6 +109,18 @@ else
 fi
 AC_SUBST(QEMUD_PID_FILE)
 AC_MSG_RESULT($QEMUD_PID_FILE)
+
+AC_MSG_CHECKING([where to write libvirtd PID file])
+AC_ARG_WITH(remote-pid-file, AC_HELP_STRING([--with-remote-pid-file=[pidfile|none]], [PID file for libvirtd]))
+if test "x$with_remote_pid_file" == "x" ; then
+   REMOTE_PID_FILE="$localstatedir/run/libvirtd.pid"
+elif test "x$with_remote_pid_file" == "xnone" ; then
+   REMOTE_PID_FILE=""
+else
+   REMOTE_PID_FILE="$with_remote_pid_file"
+fi
+AC_SUBST(REMOTE_PID_FILE)
+AC_MSG_RESULT($REMOTE_PID_FILE)
 
 dnl
 dnl init script flavor
@@ -181,6 +195,12 @@ if test "$with_test" = "no" ; then
     echo "Disabling test driver support"
 else
     LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_TEST"
+fi
+
+if test "$with_remote" = "no" ; then
+    echo "Disabling remote driver support"
+else
+    LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_REMOTE"
 fi
 
 if test "$with_depends" != "no"
@@ -263,6 +283,22 @@ AC_SUBST(LIBXML_CFLAGS)
 AC_SUBST(LIBXML_LIBS)
 AC_SUBST(LIBXML_CONFIG)
 AC_SUBST(LIBXML_MIN_VERSION)
+
+dnl xmlURI structure has query_raw?
+old_cflags="$CFLAGS"
+CFLAGS="$CFLAGS $LIBXML_CFLAGS"
+AC_CHECK_MEMBER(struct _xmlURI.query_raw,
+		[AC_DEFINE(HAVE_XMLURI_QUERY_RAW, [], [Have query_raw field in libxml2 xmlURI structure])],,
+		[#include <libxml/uri.h>])
+CFLAGS="$old_cflags"
+
+dnl GnuTLS library
+AC_CHECK_HEADER([gnutls/gnutls.h],
+       [],
+       AC_MSG_ERROR([You must install the GnuTLS development package in order to compile libvirt]))
+AC_CHECK_LIB(gnutls, gnutls_handshake,
+       [],
+       [AC_MSG_ERROR([You must install the GnuTLS library in order to compile and run libvirt])])
 
 dnl virsh libraries
 AC_CHECK_LIB(curses, initscr, 
