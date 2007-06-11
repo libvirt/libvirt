@@ -20,6 +20,7 @@ typedef enum {
     VIR_DRV_XEN_UNIFIED = 1,
     VIR_DRV_TEST = 2,
     VIR_DRV_QEMU = 3,
+    VIR_DRV_REMOTE = 4,
 } virDrvNo;
 
 

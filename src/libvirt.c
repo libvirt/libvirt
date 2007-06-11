@@ -28,6 +28,7 @@
 #include "test.h"
 #include "xen_unified.h"
 #include "qemu_internal.h"
+#include "remote_internal.h"
 
 /*
  * TODO:
@@ -64,6 +65,9 @@ virInitialize(void)
      * Note that the order is important: the first ones have a higher
      * priority when calling virConnectOpen.
      */
+#ifdef WITH_REMOTE
+    if (remoteRegister () == -1) return -1;
+#endif
 #ifdef WITH_TEST
     if (testRegister() == -1) return -1;
 #endif
@@ -402,6 +406,9 @@ virConnectClose(virConnectPtr conn)
  * Get the name of the Hypervisor software used.
  *
  * Returns NULL in case of error, a static zero terminated string otherwise.
+ *
+ * See also:
+ * http://www.redhat.com/archives/libvir-list/2007-February/msg00096.html
  */
 const char *
 virConnectGetType(virConnectPtr conn)

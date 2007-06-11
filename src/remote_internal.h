@@ -1,0 +1,66 @@
+/*
+ * remote_internal.h: driver to provide access to libvirtd running
+ *   on a remote machine
+ *
+ * Copyright (C) 2006-2007 Red Hat, Inc.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ *
+ * Author: Richard Jones <rjones@redhat.com>
+ */
+
+#ifndef __VIR_REMOTE_INTERNAL_H__
+#define __VIR_REMOTE_INTERNAL_H__
+
+#include <libvirt/virterror.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int remoteRegister (void);
+
+#define LIBVIRTD_TLS_PORT "16514"
+#define LIBVIRTD_TCP_PORT "16509"
+#define LIBVIRTD_UNIX_SOCKET LOCAL_STATE_DIR "/run/libvirt/libvirt-sock"
+#define LIBVIRTD_UNIX_SOCKET_RO LOCAL_STATE_DIR "/run/libvirt/libvirt-sock-ro"
+#define LIBVIRTD_CONFIGURATION_FILE SYSCONF_DIR "/libvirtd.conf"
+
+/* Defaults for PKI directory. */
+#define LIBVIRT_PKI_DIR SYSCONF_DIR "/pki"
+#define LIBVIRT_CACERT LIBVIRT_PKI_DIR "/CA/cacert.pem"
+#define LIBVIRT_CLIENTKEY LIBVIRT_PKI_DIR "/libvirt/private/clientkey.pem"
+#define LIBVIRT_CLIENTCERT LIBVIRT_PKI_DIR "/libvirt/clientcert.pem"
+#define LIBVIRT_SERVERKEY LIBVIRT_PKI_DIR "/libvirt/private/serverkey.pem"
+#define LIBVIRT_SERVERCERT LIBVIRT_PKI_DIR "/libvirt/servercert.pem"
+
+#ifdef __cplusplus
+}
+#endif
+#endif /* __VIR_REMOTE_INTERNAL_H__ */
+
+/*
+ * vim: set tabstop=4:
+ * vim: set shiftwidth=4:
+ * vim: set expandtab:
+ */
+/*
+ * Local variables:
+ *  indent-tabs-mode: nil
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  tab-width: 4
+ * End:
+ */

@@ -1,9 +1,17 @@
 ## Process this file with automake to produce Makefile.in
 
-INCLUDES = -I$(top_builddir)/include -I@top_srcdir@/include @LIBXML_CFLAGS@ -I@top_srcdir@/qemud \
-	   -DBINDIR=\""$(libexecdir)"\" -DSBINDIR=\""$(sbindir)"\" -DLOCALEBASEDIR=\""$(datadir)/locale"\" \
+INCLUDES = -I$(top_builddir)/include \
+	   -I@top_srcdir@/include \
+	   -I@top_srcdir@/qemud \
+	   @LIBXML_CFLAGS@ \
+	   -DBINDIR=\""$(libexecdir)"\" \
+	   -DSBINDIR=\""$(sbindir)"\" \
+	   -DSYSCONF_DIR="\"$(sysconfdir)\"" \
+	   -DLOCALEBASEDIR=\""$(datadir)/locale"\" \
            -DLOCAL_STATE_DIR=\""$(localstatedir)"\" \
-           -DGETTEXT_PACKAGE=\"$(PACKAGE)\" $(WARN_CFLAGS) $(LIBVIRT_FEATURES)
+           -DGETTEXT_PACKAGE=\"$(PACKAGE)\" \
+	   $(WARN_CFLAGS) \
+	   $(LIBVIRT_FEATURES)
 DEPS = libvirt.la
 LDADDS = @STATIC_BINARIES@ libvirt.la
 VIRSH_LIBS = @VIRSH_LIBS@
@@ -31,7 +39,10 @@ libvirt_la_SOURCES =						\
 		proxy_internal.c proxy_internal.h		\
 		conf.c conf.h                                   \
 		xm_internal.c xm_internal.h                     \
-		qemu_internal.c qemu_internal.h
+		../qemud/protocol.h ../qemud/protocol.c		\
+		qemu_internal.c qemu_internal.h			\
+		../qemud/remote_protocol.c ../qemud/remote_protocol.h \
+		remote_internal.c remote_internal.h
 
 bin_PROGRAMS = virsh
 
