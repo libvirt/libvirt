@@ -224,7 +224,7 @@ def dump_Makefile():
 SUBDIRS=python
 INCLUDES = -I$(top_builddir)/include -I$(top_srcdir)/include -I@srcdir@/include
 DEPS = $(top_builddir)/src/libvirt.la
-LDADDS = @STATIC_BINARIES@ $(top_builddir)/src/libvirt.la 
+LDADDS = @STATIC_BINARIES@ $(WARN_CFLAGS) $(top_builddir)/src/libvirt.la 
 
 rebuild: examples.xml index.html
 
@@ -272,6 +272,8 @@ install-data-local:
     ignore = """.memdump
 Makefile.in
 Makefile
+.deps
+.libs
 """
     for example in examples:
         ignore = ignore + "%s\n" % (example)
