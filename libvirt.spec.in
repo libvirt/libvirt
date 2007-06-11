@@ -27,6 +27,7 @@ BuildRequires: ncurses-devel
 BuildRequires: gettext
 BuildRequires: libsysfs-devel
 BuildRequires: /sbin/iptables
+BuildRequires: gnutls-devel
 Obsoletes: libvir
 ExclusiveArch: i386 x86_64 ia64
 
@@ -61,7 +62,7 @@ of recent versions of Linux (and other OSes).
 %setup -q
 
 %build
-%configure --with-init-script=redhat --with-qemud-pid-file=%{_localstatedir}/run/libvirt_qemud.pid
+%configure --with-init-script=redhat --with-qemud-pid-file=%{_localstatedir}/run/libvirt_qemud.pid --with-remote-file=%{_localstatedir}/run/libvirtd.pid
 make
 
 %install

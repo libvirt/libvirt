@@ -52,6 +52,7 @@ EXTRA_DIST = libvirtd.in default-network.xml \
 	protocol.x remote_protocol.x \
 	protocol.c protocol.h \
 	remote_protocol.c remote_protocol.h \
+	remote_generate_stubs.pl rpcgen_fix.pl \
 	remote_dispatch_prototypes.h \
 	remote_dispatch_localvars.h \
 	remote_dispatch_proc_switch.h

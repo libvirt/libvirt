@@ -836,9 +836,11 @@ remoteCheckDN (gnutls_x509_crt_t cert)
         wildcards++;
     }
 
+#ifdef ENABLE_DEBUG
     /* Print the client's DN. */
     qemudLog (QEMUD_DEBUG,
               "remoteCheckDN: failed: client DN is %s", name);
+#endif
 
     return 0; // Not found.
 }
