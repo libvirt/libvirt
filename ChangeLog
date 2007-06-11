@@ -1,3 +1,17 @@
+Mon Jun 11 12:49:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* qemud/Makefile.am, qemud/dispatch.c, qemud/dispatch.h,
+	  qemud/internal.h, qemud/protocol.c,
+	  qemud/protocol.h, qemud/protocol.x, qemud/qemud.c:
+	  libvirt_qemud server-side modifications to use
+	  XDR-based protocol instead of homebrew (Dan Berrange).
+	  QEMUD server modified to dispatch calls from remote
+	  clients (Richard Jones).  Added TLS support (Richard Jones).
+	  Added TCP & IPv6 support (Richard Jones).
+	  Additional configuration file, command-line handling, and
+	  usage (Richard Jones).
+	* qemud/conf.c: Remove unnecessary header file.
+
 Mon Jun 11 12:48:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/qemu_internal.c: QEMU client-side modifications to

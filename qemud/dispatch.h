@@ -29,7 +29,7 @@
 
 
 int qemudDispatch(struct qemud_server *server, struct qemud_client *client,
-                  struct qemud_packet *in, struct qemud_packet *out);
+                  struct qemud_packet_client_data *in, struct qemud_packet_server_data *out);
 
 #endif
 

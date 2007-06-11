@@ -42,7 +42,6 @@
 
 #include <libvirt/virterror.h>
 
-#include "protocol.h"
 #include "internal.h"
 #include "conf.h"
 #include "driver.h"

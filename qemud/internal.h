@@ -27,8 +27,11 @@
 
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <gnutls/gnutls.h>
+#include <gnutls/x509.h>
 
 #include "protocol.h"
+#include "remote_protocol.h"
 #include "bridge.h"
 #include "iptables.h"
 
@@ -57,15 +60,6 @@ typedef enum {
     QEMUD_DEBUG
 #endif
 } qemudLogPriority;
-
-typedef enum {
-    QEMUD_DIR_CONFIG = 0,
-    QEMUD_DIR_AUTOSTART,
-    QEMUD_DIR_NETWORK_CONFIG,
-    QEMUD_DIR_NETWORK_AUTOSTART,
-
-    QEMUD_N_CONFIG_DIRS
-} qemudConfigDirType;
 
 /* Different types of QEMU acceleration possible */
 enum qemud_vm_virt_type {
@@ -277,22 +271,61 @@ struct qemud_network {
     struct qemud_network *next;
 };
 
+
+enum qemud_mode {
+    QEMUD_MODE_RX_HEADER,
+    QEMUD_MODE_RX_PAYLOAD,
+    QEMUD_MODE_TX_PACKET,
+    QEMUD_MODE_TLS_HANDSHAKE,
+};
+
+/* These have to remain compatible with gnutls_record_get_direction. */
+enum qemud_tls_direction {
+    QEMUD_TLS_DIRECTION_READ = 0,
+    QEMUD_TLS_DIRECTION_WRITE = 1,
+};
+
 /* Stores the per-client connection state */
 struct qemud_client {
+    int magic;
+
     int fd;
     int readonly;
-    struct qemud_packet incoming;
-    unsigned int incomingReceived;
-    struct qemud_packet outgoing;
-    unsigned int outgoingSent;
-    int tx;
+    enum qemud_mode mode;
+
+    struct sockaddr_storage addr;
+    socklen_t addrlen;
+
+    /* If set, TLS is required on this socket. */
+    int tls;
+    gnutls_session_t session;
+    enum qemud_tls_direction direction;
+
+    unsigned int incomingSerial;
+    unsigned int outgoingSerial;
+
+    char buffer [REMOTE_MESSAGE_MAX];
+    unsigned int bufferLength;
+    unsigned int bufferOffset;
+
+    /* This is only valid if a remote open call has been made on this
+     * connection, otherwise it will be NULL.  Also if remote close is
+     * called, it will be set back to NULL if that succeeds.
+     */
+    virConnectPtr conn;
+
     struct qemud_client *next;
 };
+
+#define QEMUD_CLIENT_MAGIC 0x7788aaee
 
 
 struct qemud_socket {
     int fd;
     int readonly;
+    /* If set, TLS is required on this socket. */
+    int tls;
+
     struct qemud_socket *next;
 };
 
@@ -315,7 +348,6 @@ struct qemud_server {
     struct qemud_network *networks;
     brControl *brctl;
     iptablesContext *iptables;
-    char configDirs[QEMUD_N_CONFIG_DIRS][PATH_MAX];
     char *configDir;
     char *autostartDir;
     char *networkConfigDir;
@@ -346,6 +378,9 @@ void qemudLog(int priority, const char *fmt, ...)
 #else
 #define qemudDebug(fmt, ...) do {} while(0)
 #endif
+
+void remoteDispatchClientRequest (struct qemud_server *server,
+                                  struct qemud_client *client);
 
 static inline int
 qemudIsActiveVM(struct qemud_vm *vm)
