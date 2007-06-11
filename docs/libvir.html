@@ -1683,10 +1683,8 @@ next section.
 <td> Installed on the client </td>
 <td> Client's certificate signed by the CA
   (<a href="#Remote_TLS_client_certificates">more info</a>) </td>
-<td> CommonName (CN) must be the client IP address as seen
-  by the server.  Take particular care with IPv4 and IPv6
-  addresses, and note that on some operating systems IPv4 addresses
-  may need to be encapsulated as <code>::ffff:<i>a.b.c.d</i></code>
+<td> Distinguished Name (DN) can be checked against an access
+  control list (<code>tls_allowed_dn_list</code>).
   </td>
 </tr>
 </table>
@@ -2011,17 +2009,14 @@ which can be installed on the server as
 <p>
 For each client (ie. any program linked with libvirt, such as
 <a href="http://virt-manager.et.redhat.com/">virt-manager</a>)
-you need to issue a certificate with the X.509 CommonName (CN)
-field set to the IP address of the client as seen from the
-server.
+you need to issue a certificate with the X.509 Distinguished Name (DN)
+set to a suitable name.  You can decide this on a company / organisation
+policy.  For example, I use:
 </p>
 
-<p>
-Normally then the CN will just be a string such as
-"<code>192.168.2.5</code>".  On machines with IPv6 enabled,
-IPv4 addresses may appear embedded, for example:
-"<code>::ffff:<i>a.b.c.d</i></code>".
-</p>
+<pre>
+C=GB,ST=London,L=London,O=Red Hat,CN=<i>name_of_client</i>
+</pre>
 
 <p>
 The process is the same as for
@@ -2036,8 +2031,7 @@ Make a private key and a request for a new certificate:
 <pre>
 ./CA.pl -newreq
 </pre>
-You <b>must</b> set the CommonName (CN) field to be the
-client's IP address as seen by the server.  See notes above.
+Set the DN fields as required.
 </li>
 
 <li>
@@ -2074,10 +2068,8 @@ cp clientcert.pem /etc/pki/libvirt/clientcert.pem
 <p>
 On the server side, run the libvirtd server with
 the '--remote' and '--verbose' options while the
-client is connecting.  The verbose messages will tell
-you the client's actual IP address versus what is
-in the client's certificate.  Also you will find out
-common problems such as expired certificates.
+client is connecting.  The verbose log messages should
+tell you enough to diagnose the problem.
 </p>
 </dd>
 </dl>
@@ -2189,18 +2181,41 @@ Blank lines and comments beginning with <code>#</code> are ignored.
 </tr>
 
 <tr>
-<td> tls_allowed_clients ["ip1", "ip2", "ip3"] </td>
-<td> (none - any client can connect) </td>
+<td> tls_allowed_dn_list ["DN1", "DN2"] </td>
+<td> (none - DNs are not checked) </td>
+<td>
+  <p>
+  Enable an access control list of client certificate Distinguished
+  Names (DNs) which can connect to the TLS port on this server.
+  </p>
+  <p>
+  The default is that DNs are not checked.
+  </p>
+  <p>
+  This list may contain wildcards such as <code>"C=GB,ST=London,L=London,O=Red Hat,CN=*"</code>
+  See the POSIX <code>fnmatch</code> function for the format
+  of the wildcards.
+  </p>
+  <p>
+  Note that if this is an empty list, <i>no client can connect</i>.
+  </p>
+  <p>
+  Note also that GnuTLS returns DNs without spaces
+  after commas between the fields (and this is what we check against),
+  but the <code>openssl x509</code> tool shows spaces.
+</td>
+</tr>
+
+<tr>
+<td> tls_allowed_ip_list ["ip1", "ip2", "ip3"] </td>
+<td> (none - clients can connect from anywhere) </td>
 <td>
   <p>
   Enable an access control list of the IP addresses of clients
   who can connect to the TLS or TCP ports on this server.
   </p>
   <p>
-  The default is that any client can connect, but their
-  certificate must match their IP address and must be
-  issued by the trusted CA.  If you use this option, then
-  in addition only the IP addresses listed may connect.
+  The default is that clients can connect from any IP address.
   </p>
   <p>
   This list may contain wildcards such as <code>192.168.*</code>
