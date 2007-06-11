@@ -1,0 +1,1575 @@
+/*
+ * remote.c: code handling remote requests (from remote_internal.c)
+ *
+ * Copyright (C) 2007 Red Hat, Inc.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ *
+ * Author: Richard W.M. Jones <rjones@redhat.com>
+ */
+
+#include <config.h>
+
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <paths.h>
+#include <limits.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <sys/poll.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <stdlib.h>
+#include <pwd.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <syslog.h>
+#include <string.h>
+#include <errno.h>
+#include <getopt.h>
+#include <ctype.h>
+#include <assert.h>
+
+#include <libvirt/virterror.h>
+
+#include "internal.h"
+#include "../src/internal.h"
+#include "dispatch.h"
+#include "driver.h"
+#include "conf.h"
+#include "iptables.h"
+
+#define DEBUG 0
+
+static void remoteDispatchError (struct qemud_client *client,
+                                 remote_message_header *req,
+                                 const char *fmt, ...);
+static virDomainPtr get_nonnull_domain (virConnectPtr conn, remote_nonnull_domain domain);
+static virNetworkPtr get_nonnull_network (virConnectPtr conn, remote_nonnull_network network);
+static void make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr dom_src);
+static void make_nonnull_network (remote_nonnull_network *net_dst, virNetworkPtr net_src);
+
+#include "remote_dispatch_prototypes.h"
+
+typedef int (*dispatch_fn) (struct qemud_client *client, remote_message_header *req, char *args, char *ret);
+
+/* This function gets called from qemud when it detects an incoming
+ * remote protocol message.  At this point, client->buffer contains
+ * the full call message (including length word which we skip).
+ */
+void
+remoteDispatchClientRequest (struct qemud_server *server ATTRIBUTE_UNUSED,
+                             struct qemud_client *client)
+{
+    XDR xdr;
+    remote_message_header req, rep;
+    dispatch_fn fn;
+    xdrproc_t args_filter = (xdrproc_t) xdr_void;
+    xdrproc_t ret_filter = (xdrproc_t) xdr_void;
+    char *args = NULL, *ret = NULL;
+    int rv, len;
+
+#include "remote_dispatch_localvars.h"
+
+    /* Parse the header. */
+    xdrmem_create (&xdr, client->buffer+4, client->bufferLength-4, XDR_DECODE);
+
+    if (!xdr_remote_message_header (&xdr, &req)) {
+        remoteDispatchError (client, NULL, "xdr_remote_message_header");
+        xdr_destroy (&xdr);
+        return;
+    }
+
+    /* Check version, etc. */
+    if (req.prog != REMOTE_PROGRAM) {
+        remoteDispatchError (client, &req, "program mismatch (actual %x, expected %x)",
+                             req.prog, REMOTE_PROGRAM);
+        xdr_destroy (&xdr);
+        return;
+    }
+    if (req.vers != REMOTE_PROTOCOL_VERSION) {
+        remoteDispatchError (client, &req, "version mismatch (actual %x, expected %x)",
+                             req.vers, REMOTE_PROTOCOL_VERSION);
+        xdr_destroy (&xdr);
+        return;
+    }
+    if (req.direction != REMOTE_CALL) {
+        remoteDispatchError (client, &req, "direction (%d) != REMOTE_CALL",
+                             (int) req.direction);
+        xdr_destroy (&xdr);
+        return;
+    }
+    if (req.status != REMOTE_OK) {
+        remoteDispatchError (client, &req, "status (%d) != REMOTE_OK",
+                             (int) req.status);
+        xdr_destroy (&xdr);
+        return;
+    }
+
+    /* Based on the procedure number, dispatch.  In future we may base
+     * this on the version number as well.
+     */
+    switch (req.proc) {
+#include "remote_dispatch_proc_switch.h"
+
+    default:
+        remoteDispatchError (client, &req, "unknown procedure: %d",
+                             req.proc);
+        xdr_destroy (&xdr);
+        return;
+    }
+
+    /* Parse args. */
+    if (!(*args_filter) (&xdr, args)) {
+        remoteDispatchError (client, &req, "parse args failed");
+        xdr_destroy (&xdr);
+        return;
+    }
+
+    xdr_destroy (&xdr);
+
+    /* Call function. */
+    rv = fn (client, &req, args, ret);
+    xdr_free (args_filter, args);
+
+    /* Dispatch function must return -2, -1 or 0.  Anything else is
+     * an internal error.
+     */
+    if (rv < -2 || rv > 0) {
+        remoteDispatchError (client, &req, "internal error - dispatch function returned invalid code %d", rv);
+        return;
+    }
+
+    /* Dispatch error?  If so then the function has already set up the
+     * return buffer, so just return immediately.
+     */
+    if (rv == -2) return;
+
+    /* Return header. */
+    rep.prog = req.prog;
+    rep.vers = req.vers;
+    rep.proc = req.proc;
+    rep.direction = REMOTE_REPLY;
+    rep.serial = req.serial;
+    rep.status = rv == 0 ? REMOTE_OK : REMOTE_ERROR;
+
+    /* Serialise the return header. */
+    xdrmem_create (&xdr, client->buffer, sizeof client->buffer, XDR_ENCODE);
+
+    len = 0; /* We'll come back and write this later. */
+    if (!xdr_int (&xdr, &len)) {
+        remoteDispatchError (client, &req, "dummy length");
+        xdr_destroy (&xdr);
+        if (rv == 0) xdr_free (ret_filter, ret);
+        return;
+    }
+
+    if (!xdr_remote_message_header (&xdr, &rep)) {
+        remoteDispatchError (client, &req, "serialise reply header");
+        xdr_destroy (&xdr);
+        if (rv == 0) xdr_free (ret_filter, ret);
+        return;
+    }
+
+    /* If OK, serialise return structure, if error serialise error. */
+    if (rv == 0) {
+        if (!(*ret_filter) (&xdr, ret)) {
+            remoteDispatchError (client, &req, "serialise return struct");
+            xdr_destroy (&xdr);
+            return;
+        }
+        xdr_free (ret_filter, ret);
+    } else /* error */ {
+        virErrorPtr verr;
+        remote_error error;
+        remote_nonnull_domain dom;
+        remote_nonnull_network net;
+
+        verr = client->conn
+            ? virConnGetLastError (client->conn)
+            : virGetLastError ();
+
+        if (verr) {
+            error.code = verr->code;
+            error.domain = verr->domain;
+            error.message = verr->message ? &verr->message : NULL;
+            error.level = verr->level;
+            if (verr->dom) {
+                dom.name = verr->dom->name;
+                memcpy (dom.uuid, verr->dom->uuid, VIR_UUID_BUFLEN);
+                dom.id = verr->dom->id;
+            }
+            error.dom = verr->dom ? &dom : NULL;
+            error.str1 = verr->str1 ? &verr->str1 : NULL;
+            error.str2 = verr->str2 ? &verr->str2 : NULL;
+            error.str3 = verr->str3 ? &verr->str3 : NULL;
+            error.int1 = verr->int1;
+            error.int2 = verr->int2;
+            if (verr->net) {
+                net.name = verr->net->name;
+                memcpy (net.uuid, verr->net->uuid, VIR_UUID_BUFLEN);
+            }
+            error.net = verr->net ? &net : NULL;
+        } else {
+            /* Error was NULL so synthesize an error. */
+            char msgbuf[] = "remoteDispatchClientRequest: internal error: library function returned error but did not set virterror";
+            char *msg = msgbuf;
+
+            error.code = VIR_ERR_RPC;
+            error.domain = VIR_FROM_REMOTE;
+            error.message = &msg;
+            error.level = VIR_ERR_ERROR;
+            error.dom = NULL;
+            error.str1 = &msg;
+            error.str2 = NULL;
+            error.str3 = NULL;
+            error.int1 = 0;
+            error.int2 = 0;
+            error.net = NULL;
+        }
+
+        if (!xdr_remote_error (&xdr, &error)) {
+            remoteDispatchError (client, &req, "serialise return error");
+            xdr_destroy (&xdr);
+            return;
+        }
+    }
+
+    /* Write the length word. */
+    len = xdr_getpos (&xdr);
+    if (xdr_setpos (&xdr, 0) == 0) {
+        remoteDispatchError (client, &req, "xdr_setpos");
+        xdr_destroy (&xdr);
+        return;
+    }
+
+    if (!xdr_int (&xdr, &len)) {
+        remoteDispatchError (client, &req, "serialise return length");
+        xdr_destroy (&xdr);
+        return;
+    }
+
+    xdr_destroy (&xdr);
+
+    /* Set up the output buffer. */
+    client->mode = QEMUD_MODE_TX_PACKET;
+    client->bufferLength = len;
+    client->bufferOffset = 0;
+    if (client->tls) client->direction = QEMUD_TLS_DIRECTION_WRITE;
+}
+
+/* An error occurred during the dispatching process itself (ie. not
+ * an error from the function being called).  We return an error
+ * reply.
+ */
+static void
+remoteDispatchError (struct qemud_client *client,
+                     remote_message_header *req,
+                     const char *fmt, ...)
+{
+    remote_message_header rep;
+    remote_error error;
+    va_list args;
+    char msgbuf[1024];
+    char *msg = msgbuf;
+    XDR xdr;
+    int len;
+
+    va_start (args, fmt);
+    vsnprintf (msgbuf, sizeof msgbuf, fmt, args);
+    va_end (args);
+
+    qemudDebug ("%s", msgbuf);
+
+    /* Future versions of the protocol may use different vers or prog.  Try
+     * our hardest to send back a message that such clients could see.
+     */
+    if (req) {
+        rep.prog = req->prog;
+        rep.vers = req->vers;
+        rep.proc = req->proc;
+        rep.direction = REMOTE_REPLY;
+        rep.serial = req->serial;
+        rep.status = REMOTE_ERROR;
+    } else {
+        rep.prog = REMOTE_PROGRAM;
+        rep.vers = REMOTE_PROTOCOL_VERSION;
+        rep.proc = REMOTE_PROC_OPEN;
+        rep.direction = REMOTE_REPLY;
+        rep.serial = 1;
+        rep.status = REMOTE_ERROR;
+    }
+
+    /* Construct the error. */
+    error.code = VIR_ERR_RPC;
+    error.domain = VIR_FROM_REMOTE;
+    error.message = &msg;
+    error.level = VIR_ERR_ERROR;
+    error.dom = NULL;
+    error.str1 = &msg;
+    error.str2 = NULL;
+    error.str3 = NULL;
+    error.int1 = 0;
+    error.int2 = 0;
+    error.net = NULL;
+
+    /* Serialise the return header and error. */
+    xdrmem_create (&xdr, client->buffer, sizeof client->buffer, XDR_ENCODE);
+
+    len = 0; /* We'll come back and write this later. */
+    if (!xdr_int (&xdr, &len)) {
+        xdr_destroy (&xdr);
+        return;
+    }
+
+    if (!xdr_remote_message_header (&xdr, &rep)) {
+        xdr_destroy (&xdr);
+        return;
+    }
+
+    if (!xdr_remote_error (&xdr, &error)) {
+        xdr_destroy (&xdr);
+        return;
+    }
+
+    len = xdr_getpos (&xdr);
+    if (xdr_setpos (&xdr, 0) == 0) {
+        xdr_destroy (&xdr);
+        return;
+    }
+
+    if (!xdr_int (&xdr, &len)) {
+        xdr_destroy (&xdr);
+        return;
+    }
+
+    xdr_destroy (&xdr);
+
+    /* Send it. */
+    client->mode = QEMUD_MODE_TX_PACKET;
+    client->bufferLength = len;
+    client->bufferOffset = 0;
+    if (client->tls) client->direction = QEMUD_TLS_DIRECTION_WRITE;
+}
+
+/*----- Functions. -----*/
+
+static int
+remoteDispatchOpen (struct qemud_client *client, remote_message_header *req,
+                    struct remote_open_args *args, void *ret ATTRIBUTE_UNUSED)
+{
+    const char *name;
+    int flags;
+
+    /* Already opened? */
+    if (client->conn) {
+        remoteDispatchError (client, req, "connection already open");
+        return -2;
+    }
+
+    name = args->name ? *args->name : NULL;
+
+#if DEBUG
+    fprintf (stderr, "remoteDispatchOpen: name = %s\n", name);
+#endif
+
+    /* If this connection arrived on a readonly socket, force
+     * the connection to be readonly.
+     */
+    flags = args->flags;
+    if (client->readonly) flags |= VIR_CONNECT_RO;
+
+    client->conn =
+        flags & VIR_CONNECT_RO
+        ? virConnectOpenReadOnly (name)
+        : virConnectOpen (name);
+
+    return client->conn ? 0 : -1;
+}
+
+#define CHECK_CONN(client)                      \
+    if (!client->conn) {                        \
+        remoteDispatchError (client, req, "connection not open");   \
+        return -2;                                                  \
+    }
+
+static int
+remoteDispatchClose (struct qemud_client *client, remote_message_header *req,
+                     void *args ATTRIBUTE_UNUSED, void *ret ATTRIBUTE_UNUSED)
+{
+    int rv;
+    CHECK_CONN(client);
+
+    rv = virConnectClose (client->conn);
+    if (rv == 0) client->conn = NULL;
+
+    return rv;
+}
+
+static int
+remoteDispatchGetType (struct qemud_client *client, remote_message_header *req,
+                       void *args ATTRIBUTE_UNUSED, remote_get_type_ret *ret)
+{
+    const char *type;
+    CHECK_CONN(client);
+
+    type = virConnectGetType (client->conn);
+    if (type == NULL) return -1;
+
+    /* We have to strdup because remoteDispatchClientRequest will
+     * free this string after it's been serialised.
+     */
+    ret->type = strdup (type);
+    if (!ret->type) {
+        remoteDispatchError (client, req, "out of memory in strdup");
+        return -2;
+    }
+
+    return 0;
+}
+
+static int
+remoteDispatchGetVersion (struct qemud_client *client,
+                          remote_message_header *req,
+                          void *args ATTRIBUTE_UNUSED,
+                          remote_get_version_ret *ret)
+{
+    unsigned long hvVer;
+    CHECK_CONN(client);
+
+    if (virConnectGetVersion (client->conn, &hvVer) == -1)
+        return -1;
+
+    ret->hv_ver = hvVer;
+    return 0;
+}
+
+static int
+remoteDispatchGetMaxVcpus (struct qemud_client *client,
+                           remote_message_header *req,
+                           remote_get_max_vcpus_args *args,
+                           remote_get_max_vcpus_ret *ret)
+{
+    char *type;
+    CHECK_CONN(client);
+
+    type = args->type ? *args->type : NULL;
+    ret->max_vcpus = virConnectGetMaxVcpus (client->conn, type);
+    if (ret->max_vcpus == -1) return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchNodeGetInfo (struct qemud_client *client,
+                           remote_message_header *req,
+                           void *args ATTRIBUTE_UNUSED,
+                           remote_node_get_info_ret *ret)
+{
+    virNodeInfo info;
+    CHECK_CONN(client);
+
+    if (virNodeGetInfo (client->conn, &info) == -1)
+        return -1;
+
+    memcpy (ret->model, info.model, sizeof ret->model);
+    ret->memory = info.memory;
+    ret->cpus = info.cpus;
+    ret->mhz = info.mhz;
+    ret->nodes = info.nodes;
+    ret->sockets = info.sockets;
+    ret->cores = info.cores;
+    ret->threads = info.threads;
+
+    return 0;
+}
+
+static int
+remoteDispatchGetCapabilities (struct qemud_client *client,
+                               remote_message_header *req,
+                               void *args ATTRIBUTE_UNUSED,
+                               remote_get_capabilities_ret *ret)
+{
+    char *caps;
+    CHECK_CONN(client);
+
+    caps = virConnectGetCapabilities (client->conn);
+    if (caps == NULL) return -1;
+
+    ret->capabilities = caps;
+    return 0;
+}
+
+static int
+remoteDispatchDomainAttachDevice (struct qemud_client *client,
+                                  remote_message_header *req,
+                                  remote_domain_attach_device_args *args,
+                                  void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    if (virDomainAttachDevice (dom, args->xml) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainCreate (struct qemud_client *client,
+                            remote_message_header *req,
+                            remote_domain_create_args *args,
+                            void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    if (virDomainCreate (dom) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainCreateLinux (struct qemud_client *client,
+                                 remote_message_header *req,
+                                 remote_domain_create_linux_args *args,
+                                 remote_domain_create_linux_ret *ret)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = virDomainCreateLinux (client->conn, args->xml_desc, args->flags);
+    if (dom == NULL) return -1;
+
+    make_nonnull_domain (&ret->dom, dom);
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainDefineXml (struct qemud_client *client,
+                               remote_message_header *req,
+                               remote_domain_define_xml_args *args,
+                               remote_domain_define_xml_ret *ret)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = virDomainDefineXML (client->conn, args->xml);
+    if (dom == NULL) return -1;
+
+    make_nonnull_domain (&ret->dom, dom);
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainDestroy (struct qemud_client *client,
+                             remote_message_header *req,
+                             remote_domain_destroy_args *args,
+                             void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    if (virDomainDestroy (dom) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainDetachDevice (struct qemud_client *client,
+                                  remote_message_header *req,
+                                  remote_domain_detach_device_args *args,
+                                  void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    if (virDomainDetachDevice (dom, args->xml) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainDumpXml (struct qemud_client *client,
+                             remote_message_header *req,
+                             remote_domain_dump_xml_args *args,
+                             remote_domain_dump_xml_ret *ret)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    /* remoteDispatchClientRequest will free this. */
+    ret->xml = virDomainGetXMLDesc (dom, args->flags);
+    if (!ret->xml) return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainGetAutostart (struct qemud_client *client,
+                                  remote_message_header *req,
+                                  remote_domain_get_autostart_args *args,
+                                  remote_domain_get_autostart_ret *ret)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    if (virDomainGetAutostart (dom, &ret->autostart) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainGetInfo (struct qemud_client *client,
+                             remote_message_header *req,
+                             remote_domain_get_info_args *args,
+                             remote_domain_get_info_ret *ret)
+{
+    virDomainPtr dom;
+    virDomainInfo info;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    if (virDomainGetInfo (dom, &info) == -1)
+        return -1;
+
+    ret->state = info.state;
+    ret->max_mem = info.maxMem;
+    ret->memory = info.memory;
+    ret->nr_virt_cpu = info.nrVirtCpu;
+    ret->cpu_time = info.cpuTime;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainGetMaxMemory (struct qemud_client *client,
+                                  remote_message_header *req,
+                                  remote_domain_get_max_memory_args *args,
+                                  remote_domain_get_max_memory_ret *ret)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    ret->memory = virDomainGetMaxMemory (dom);
+    if (ret->memory == 0) return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainGetMaxVcpus (struct qemud_client *client,
+                                 remote_message_header *req,
+                                 remote_domain_get_max_vcpus_args *args,
+                                 remote_domain_get_max_vcpus_ret *ret)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    ret->num = virDomainGetMaxVcpus (dom);
+    if (ret->num == -1) return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainGetOsType (struct qemud_client *client,
+                               remote_message_header *req,
+                               remote_domain_get_os_type_args *args,
+                               remote_domain_get_os_type_ret *ret)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    /* remoteDispatchClientRequest will free this */
+    ret->type = virDomainGetOSType (dom);
+    if (ret->type == NULL) return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainGetVcpus (struct qemud_client *client,
+                              remote_message_header *req,
+                              remote_domain_get_vcpus_args *args,
+                              remote_domain_get_vcpus_ret *ret)
+{
+    virDomainPtr dom;
+    virVcpuInfoPtr info;
+    unsigned char *cpumaps;
+    int info_len, i;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    if (args->maxinfo > REMOTE_VCPUINFO_MAX) {
+        remoteDispatchError (client, req, "maxinfo > REMOTE_VCPUINFO_MAX");
+        return -2;
+    }
+
+    if (args->maplen > REMOTE_CPUMAPS_MAX) {
+        remoteDispatchError (client, req, "maplen > REMOTE_CPUMAPS_MAX");
+        return -2;
+    }
+
+    /* Allocate buffers to take the results. */
+    info = calloc (args->maxinfo, sizeof (virVcpuInfo));
+    cpumaps = calloc (args->maplen, sizeof (unsigned char));
+
+    info_len = virDomainGetVcpus (dom,
+                                  info, args->maxinfo,
+                                  cpumaps, args->maplen);
+    if (info_len == -1) return -1;
+
+    /* Allocate the return buffer for info. */
+    ret->info.info_len = info_len;
+    ret->info.info_val = calloc (info_len, sizeof (remote_vcpu_info));
+
+    for (i = 0; i < info_len; ++i) {
+        ret->info.info_val[i].number = info[i].number;
+        ret->info.info_val[i].state = info[i].state;
+        ret->info.info_val[i].cpu_time = info[i].cpuTime;
+        ret->info.info_val[i].cpu = info[i].cpu;
+    }
+
+    /* Don't need to allocate/copy the cpumaps if we make the reasonable
+     * assumption that unsigned char and char are the same size.
+     * Note that remoteDispatchClientRequest will free.
+     */
+    ret->cpumaps.cpumaps_len = args->maplen;
+    ret->cpumaps.cpumaps_val = (char *) cpumaps;
+
+    return 0;
+}
+
+static int
+remoteDispatchListDefinedDomains (struct qemud_client *client,
+                                  remote_message_header *req,
+                                  remote_list_defined_domains_args *args,
+                                  remote_list_defined_domains_ret *ret)
+{
+    CHECK_CONN(client);
+
+    if (args->maxnames > REMOTE_DOMAIN_NAME_LIST_MAX) {
+        remoteDispatchError (client, req,
+                             "maxnames > REMOTE_DOMAIN_NAME_LIST_MAX");
+        return -2;
+    }
+
+    /* Allocate return buffer. */
+    ret->names.names_val = calloc (args->maxnames, sizeof (char *));
+
+    ret->names.names_len =
+        virConnectListDefinedDomains (client->conn,
+                                      ret->names.names_val, args->maxnames);
+    if (ret->names.names_len == -1) return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainLookupById (struct qemud_client *client,
+                                remote_message_header *req,
+                                remote_domain_lookup_by_id_args *args,
+                                remote_domain_lookup_by_id_ret *ret)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = virDomainLookupByID (client->conn, args->id);
+    if (dom == NULL) return -1;
+
+    make_nonnull_domain (&ret->dom, dom);
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainLookupByName (struct qemud_client *client,
+                                  remote_message_header *req,
+                                  remote_domain_lookup_by_name_args *args,
+                                  remote_domain_lookup_by_name_ret *ret)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = virDomainLookupByName (client->conn, args->name);
+    if (dom == NULL) return -1;
+
+    make_nonnull_domain (&ret->dom, dom);
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainLookupByUuid (struct qemud_client *client,
+                                  remote_message_header *req,
+                                  remote_domain_lookup_by_uuid_args *args,
+                                  remote_domain_lookup_by_uuid_ret *ret)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = virDomainLookupByUUID (client->conn, (unsigned char *) args->uuid);
+    if (dom == NULL) return -1;
+
+    make_nonnull_domain (&ret->dom, dom);
+
+    return 0;
+}
+
+static int
+remoteDispatchNumOfDefinedDomains (struct qemud_client *client,
+                                   remote_message_header *req,
+                                   void *args ATTRIBUTE_UNUSED,
+                                   remote_num_of_defined_domains_ret *ret)
+{
+    CHECK_CONN(client);
+
+    ret->num = virConnectNumOfDefinedDomains (client->conn);
+    if (ret->num == -1) return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainPinVcpu (struct qemud_client *client,
+                             remote_message_header *req,
+                             remote_domain_pin_vcpu_args *args,
+                             void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+    int rv;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    if (args->cpumap.cpumap_len > REMOTE_CPUMAP_MAX) {
+        remoteDispatchError (client, req, "cpumap_len > REMOTE_CPUMAP_MAX");
+        return -2;
+    }
+
+    rv = virDomainPinVcpu (dom, args->vcpu,
+                           (unsigned char *) args->cpumap.cpumap_val,
+                           args->cpumap.cpumap_len);
+    if (rv == -1) return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainReboot (struct qemud_client *client,
+                            remote_message_header *req,
+                            remote_domain_reboot_args *args,
+                            void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    if (virDomainReboot (dom, args->flags) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainRestore (struct qemud_client *client,
+                             remote_message_header *req,
+                             remote_domain_restore_args *args,
+                             void *ret ATTRIBUTE_UNUSED)
+{
+    CHECK_CONN(client);
+
+    if (virDomainRestore (client->conn, args->from) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainResume (struct qemud_client *client,
+                            remote_message_header *req,
+                            remote_domain_resume_args *args,
+                            void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    if (virDomainResume (dom) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainSave (struct qemud_client *client,
+                          remote_message_header *req,
+                          remote_domain_save_args *args,
+                          void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    if (virDomainSave (dom, args->to) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainCoreDump (struct qemud_client *client,
+                              remote_message_header *req,
+                              remote_domain_core_dump_args *args,
+                              void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    if (virDomainCoreDump (dom, args->to, args->flags) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainSetAutostart (struct qemud_client *client,
+                                  remote_message_header *req,
+                                  remote_domain_set_autostart_args *args,
+                                  void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    if (virDomainSetAutostart (dom, args->autostart) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainSetMaxMemory (struct qemud_client *client,
+                                  remote_message_header *req,
+                                  remote_domain_set_max_memory_args *args,
+                                  void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    if (virDomainSetMaxMemory (dom, args->memory) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainSetMemory (struct qemud_client *client,
+                               remote_message_header *req,
+                               remote_domain_set_memory_args *args,
+                               void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    if (virDomainSetMemory (dom, args->memory) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainSetVcpus (struct qemud_client *client,
+                              remote_message_header *req,
+                              remote_domain_set_vcpus_args *args,
+                              void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    if (virDomainSetVcpus (dom, args->nvcpus) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainShutdown (struct qemud_client *client,
+                              remote_message_header *req,
+                              remote_domain_shutdown_args *args,
+                              void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    if (virDomainShutdown (dom) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainSuspend (struct qemud_client *client,
+                             remote_message_header *req,
+                             remote_domain_suspend_args *args,
+                             void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    if (virDomainSuspend (dom) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainUndefine (struct qemud_client *client,
+                              remote_message_header *req,
+                              remote_domain_undefine_args *args,
+                              void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    if (virDomainUndefine (dom) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchListDefinedNetworks (struct qemud_client *client,
+                                   remote_message_header *req,
+                                   remote_list_defined_networks_args *args,
+                                   remote_list_defined_networks_ret *ret)
+{
+    CHECK_CONN(client);
+
+    if (args->maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
+        remoteDispatchError (client, req,
+                             "maxnames > REMOTE_NETWORK_NAME_LIST_MAX");
+        return -2;
+    }
+
+    /* Allocate return buffer. */
+    ret->names.names_val = calloc (args->maxnames, sizeof (char *));
+
+    ret->names.names_len =
+        virConnectListDefinedNetworks (client->conn,
+                                       ret->names.names_val, args->maxnames);
+    if (ret->names.names_len == -1) return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchListDomains (struct qemud_client *client,
+                           remote_message_header *req,
+                           remote_list_domains_args *args,
+                           remote_list_domains_ret *ret)
+{
+    CHECK_CONN(client);
+
+    if (args->maxids > REMOTE_DOMAIN_ID_LIST_MAX) {
+        remoteDispatchError (client, req,
+                             "maxids > REMOTE_DOMAIN_ID_LIST_MAX");
+        return -2;
+    }
+
+    /* Allocate return buffer. */
+    ret->ids.ids_val = calloc (args->maxids, sizeof (int));
+
+    ret->ids.ids_len = virConnectListDomains (client->conn,
+                                              ret->ids.ids_val, args->maxids);
+    if (ret->ids.ids_len == -1) return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchListNetworks (struct qemud_client *client,
+                            remote_message_header *req,
+                            remote_list_networks_args *args,
+                            remote_list_networks_ret *ret)
+{
+    CHECK_CONN(client);
+
+    if (args->maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
+        remoteDispatchError (client, req,
+                             "maxnames > REMOTE_NETWORK_NAME_LIST_MAX");
+        return -2;
+    }
+
+    /* Allocate return buffer. */
+    ret->names.names_val = calloc (args->maxnames, sizeof (char *));
+
+    ret->names.names_len =
+        virConnectListNetworks (client->conn,
+                                ret->names.names_val, args->maxnames);
+    if (ret->names.names_len == -1) return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchNetworkCreate (struct qemud_client *client,
+                             remote_message_header *req,
+                             remote_network_create_args *args,
+                             void *ret ATTRIBUTE_UNUSED)
+{
+    virNetworkPtr net;
+    CHECK_CONN(client);
+
+    net = get_nonnull_network (client->conn, args->net);
+    if (net == NULL) {
+        remoteDispatchError (client, req, "network not found");
+        return -2;
+    }
+
+    if (virNetworkCreate (net) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchNetworkCreateXml (struct qemud_client *client,
+                                remote_message_header *req,
+                                remote_network_create_xml_args *args,
+                                remote_network_create_xml_ret *ret)
+{
+    virNetworkPtr net;
+    CHECK_CONN(client);
+
+    net = virNetworkCreateXML (client->conn, args->xml);
+    if (net == NULL) return -1;
+
+    make_nonnull_network (&ret->net, net);
+
+    return 0;
+}
+
+static int
+remoteDispatchNetworkDefineXml (struct qemud_client *client,
+                                remote_message_header *req,
+                                remote_network_define_xml_args *args,
+                                remote_network_define_xml_ret *ret)
+{
+    virNetworkPtr net;
+    CHECK_CONN(client);
+
+    net = virNetworkDefineXML (client->conn, args->xml);
+    if (net == NULL) return -1;
+
+    make_nonnull_network (&ret->net, net);
+
+    return 0;
+}
+
+static int
+remoteDispatchNetworkDestroy (struct qemud_client *client,
+                              remote_message_header *req,
+                              remote_network_destroy_args *args,
+                              void *ret ATTRIBUTE_UNUSED)
+{
+    virNetworkPtr net;
+    CHECK_CONN(client);
+
+    net = get_nonnull_network (client->conn, args->net);
+    if (net == NULL) {
+        remoteDispatchError (client, req, "network not found");
+        return -2;
+    }
+
+    if (virNetworkDestroy (net) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchNetworkDumpXml (struct qemud_client *client,
+                              remote_message_header *req,
+                              remote_network_dump_xml_args *args,
+                              remote_network_dump_xml_ret *ret)
+{
+    virNetworkPtr net;
+    CHECK_CONN(client);
+
+    net = get_nonnull_network (client->conn, args->net);
+    if (net == NULL) {
+        remoteDispatchError (client, req, "network not found");
+        return -2;
+    }
+
+    /* remoteDispatchClientRequest will free this. */
+    ret->xml = virNetworkGetXMLDesc (net, args->flags);
+    if (!ret->xml) return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchNetworkGetAutostart (struct qemud_client *client,
+                                   remote_message_header *req,
+                                   remote_network_get_autostart_args *args,
+                                   remote_network_get_autostart_ret *ret)
+{
+    virNetworkPtr net;
+    CHECK_CONN(client);
+
+    net = get_nonnull_network (client->conn, args->net);
+    if (net == NULL) {
+        remoteDispatchError (client, req, "network not found");
+        return -2;
+    }
+
+    if (virNetworkGetAutostart (net, &ret->autostart) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchNetworkGetBridgeName (struct qemud_client *client,
+                                    remote_message_header *req,
+                                    remote_network_get_bridge_name_args *args,
+                                    remote_network_get_bridge_name_ret *ret)
+{
+    virNetworkPtr net;
+    CHECK_CONN(client);
+
+    net = get_nonnull_network (client->conn, args->net);
+    if (net == NULL) {
+        remoteDispatchError (client, req, "network not found");
+        return -2;
+    }
+
+    /* remoteDispatchClientRequest will free this. */
+    ret->name = virNetworkGetBridgeName (net);
+    if (!ret->name) return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchNetworkLookupByName (struct qemud_client *client,
+                                   remote_message_header *req,
+                                   remote_network_lookup_by_name_args *args,
+                                   remote_network_lookup_by_name_ret *ret)
+{
+    virNetworkPtr net;
+    CHECK_CONN(client);
+
+    net = virNetworkLookupByName (client->conn, args->name);
+    if (net == NULL) return -1;
+
+    make_nonnull_network (&ret->net, net);
+
+    return 0;
+}
+
+static int
+remoteDispatchNetworkLookupByUuid (struct qemud_client *client,
+                                   remote_message_header *req,
+                                   remote_network_lookup_by_uuid_args *args,
+                                   remote_network_lookup_by_uuid_ret *ret)
+{
+    virNetworkPtr net;
+    CHECK_CONN(client);
+
+    net = virNetworkLookupByUUID (client->conn, (unsigned char *) args->uuid);
+    if (net == NULL) return -1;
+
+    make_nonnull_network (&ret->net, net);
+
+    return 0;
+}
+
+static int
+remoteDispatchNetworkSetAutostart (struct qemud_client *client,
+                                   remote_message_header *req,
+                                   remote_network_set_autostart_args *args,
+                                   void *ret ATTRIBUTE_UNUSED)
+{
+    virNetworkPtr net;
+    CHECK_CONN(client);
+
+    net = get_nonnull_network (client->conn, args->net);
+    if (net == NULL) {
+        remoteDispatchError (client, req, "network not found");
+        return -2;
+    }
+
+    if (virNetworkSetAutostart (net, args->autostart) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchNetworkUndefine (struct qemud_client *client,
+                               remote_message_header *req,
+                               remote_network_undefine_args *args,
+                               void *ret ATTRIBUTE_UNUSED)
+{
+    virNetworkPtr net;
+    CHECK_CONN(client);
+
+    net = get_nonnull_network (client->conn, args->net);
+    if (net == NULL) {
+        remoteDispatchError (client, req, "network not found");
+        return -2;
+    }
+
+    if (virNetworkUndefine (net) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchNumOfDefinedNetworks (struct qemud_client *client,
+                                    remote_message_header *req,
+                                    void *args ATTRIBUTE_UNUSED,
+                                    remote_num_of_defined_networks_ret *ret)
+{
+    CHECK_CONN(client);
+
+    ret->num = virConnectNumOfDefinedNetworks (client->conn);
+    if (ret->num == -1) return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchNumOfDomains (struct qemud_client *client,
+                            remote_message_header *req,
+                            void *args ATTRIBUTE_UNUSED,
+                            remote_num_of_domains_ret *ret)
+{
+    CHECK_CONN(client);
+
+    ret->num = virConnectNumOfDomains (client->conn);
+    if (ret->num == -1) return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchNumOfNetworks (struct qemud_client *client,
+                             remote_message_header *req,
+                             void *args ATTRIBUTE_UNUSED,
+                             remote_num_of_networks_ret *ret)
+{
+    CHECK_CONN(client);
+
+    ret->num = virConnectNumOfNetworks (client->conn);
+    if (ret->num == -1) return -1;
+
+    return 0;
+}
+
+/*----- Helpers. -----*/
+
+/* get_nonnull_domain and get_nonnull_network turn an on-wire
+ * (name, uuid) pair into virDomainPtr or virNetworkPtr object.
+ * virDomainPtr or virNetworkPtr cannot be NULL.
+ *
+ * NB. If these return NULL then the caller must return an error.
+ */
+static virDomainPtr
+get_nonnull_domain (virConnectPtr conn, remote_nonnull_domain domain)
+{
+    virDomainPtr dom;
+    dom = virGetDomain (conn, domain.name, BAD_CAST domain.uuid);
+    /* Should we believe the domain.id sent by the client?  Maybe
+     * this should be a check rather than an assignment? XXX
+     */
+    if (dom) dom->id = domain.id;
+    return dom;
+}
+
+static virNetworkPtr
+get_nonnull_network (virConnectPtr conn, remote_nonnull_network network)
+{
+    return virGetNetwork (conn, network.name, BAD_CAST network.uuid);
+}
+
+/* Make remote_nonnull_domain and remote_nonnull_network. */
+static void
+make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr dom_src)
+{
+    dom_dst->id = dom_src->id;
+    dom_dst->name = strdup (dom_src->name);
+    memcpy (dom_dst->uuid, dom_src->uuid, VIR_UUID_BUFLEN);
+}
+
+static void
+make_nonnull_network (remote_nonnull_network *net_dst, virNetworkPtr net_src)
+{
+    net_dst->name = strdup (net_src->name);
+    memcpy (net_dst->uuid, net_src->uuid, VIR_UUID_BUFLEN);
+}
+
+/*
+ * Local variables:
+ *  indent-tabs-mode: nil
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  tab-width: 4
+ * End:
+ */

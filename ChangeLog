@@ -1,3 +1,11 @@
+Mon Jun 11 12:45:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* qemud/remote.c, qemud/remote_generate_stubs.pl,
+	  qemud/remote_dispatch_localvars.h,
+	  qemud/remote_dispatch_proc_switch.h,
+	  qemud/remote_dispatch_prototypes.h: Server side of
+	  the remote patch, deals with call dispatch.
+
 Mon Jun 11 12:41:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/remote_internal.c, src/remote_internal.h,
