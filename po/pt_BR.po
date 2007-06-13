@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pt_BR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-08 11:32+0200\n"
-"PO-Revision-Date: 2007-06-06 19:27-0300\n"
+"POT-Creation-Date: 2007-06-13 11:27+0200\n"
+"PO-Revision-Date: 2007-06-08 13:14-0300\n"
 "Last-Translator: Igor Pires Soares <igor@projetofedora.org>\n"
 "Language-Team: Brazilian Portuguese <fedora-trans-pt_br@redhat.com>\n"
 "MIME-Version: 1.0\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: src/libvirt.c:299 src/hash.c:664
+#: src/libvirt.c:303 src/hash.c:664
 msgid "allocating connection"
 msgstr "alocando a conexão"
 
@@ -357,14 +357,13 @@ msgid "GNUTLS call error"
 msgstr "Erro de chamada do GNUTLS"
 
 #: src/virterror.c:633
-#, fuzzy
 msgid "Failed to find the network"
-msgstr "Não foi possível remover a definição da rede %s"
+msgstr "Falha ao encontrar a rede"
 
 #: src/virterror.c:635
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find the network: %s"
-msgstr "Não foi possível remover a definição da rede %s"
+msgstr "Falha ao encontrar a rede: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -649,6 +648,11 @@ msgstr "imprimir ajuda"
 #: src/virsh.c:306
 msgid "Prints global help or command specific help."
 msgstr "Imprime ajuda global ou específica para cada comando."
+
+#: src/virsh.c:312
+#, fuzzy
+msgid "name of command"
+msgstr "nome do domínio inativo"
 
 #: src/virsh.c:324
 msgid ""
@@ -952,7 +956,8 @@ msgid "cap for XEN_CREDIT"
 msgstr "capitalização do XEN_CREDIT"
 
 #: src/virsh.c:1054 src/virsh.c:1058
-msgid "Scheduler:"
+#, fuzzy
+msgid "Scheduler"
 msgstr "Agendador:"
 
 #: src/virsh.c:1058
@@ -1604,6 +1609,15 @@ msgstr "o comando '%s' não existe"
 msgid "  NAME\n"
 msgstr "  NOME\n"
 
+#: src/virsh.c:2876
+#, fuzzy
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  OPÇÕES\n"
+
 #: src/virsh.c:2883
 msgid ""
 "\n"
@@ -1760,25 +1774,24 @@ msgid "failed to connect to the hypervisor"
 msgstr "não foi possível conectar ao hypervisor"
 
 #: src/virsh.c:3544
-#, fuzzy
 msgid "failed to get the log file information"
-msgstr "não foi possível obter informação sobre o nó"
+msgstr "falha ao obter a informação do arquivo de log"
 
 #: src/virsh.c:3549
 msgid "the log path is not a file"
-msgstr ""
+msgstr "o caminho do log não é um arquivo"
 
 #: src/virsh.c:3555
 msgid "failed to open the log file. check the log file path"
 msgstr ""
+"falha ao abrir o arquivo de log. Verifique o caminho do arquivo de log."
 
 #: src/virsh.c:3623
-#, fuzzy
 msgid "failed to write the log file"
-msgstr "não foi possível escrever o arquivo de configuração"
+msgstr "falha ao escrever o arquivo de log"
 
 #: src/virsh.c:3792
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "%s [options] [commands]\n"
@@ -1805,6 +1818,7 @@ msgstr ""
 "    -h | --help             this help\n"
 "    -q | --quiet            quiet mode\n"
 "    -t | --timing           print timing information\n"
+"    -l | --log <file>       output logging to file\n"
 "    -v | --version          program version\n"
 "\n"
 "  commands (non interactive mode):\n"

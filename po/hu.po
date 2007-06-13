@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-08 11:32+0200\n"
+"POT-Creation-Date: 2007-06-13 11:27+0200\n"
 "PO-Revision-Date: 2007-05-03 21:23+0200\n"
 "Last-Translator: Arpad Biro <biro_arpad@yahoo.com>\n"
 "Language-Team: \n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: src/libvirt.c:299 src/hash.c:664
+#: src/libvirt.c:303 src/hash.c:664
 msgid "allocating connection"
 msgstr "csatlakozás lefoglalása"
 
@@ -652,6 +652,11 @@ msgstr "segítség kiírása"
 msgid "Prints global help or command specific help."
 msgstr "Globális segítség kiírása vagy parancs specifikus segítség."
 
+#: src/virsh.c:312
+#, fuzzy
+msgid "name of command"
+msgstr "az inaktív tartomány neve"
+
 #: src/virsh.c:324
 msgid ""
 "Commands:\n"
@@ -955,7 +960,7 @@ msgid "cap for XEN_CREDIT"
 msgstr ""
 
 #: src/virsh.c:1054 src/virsh.c:1058
-msgid "Scheduler:"
+msgid "Scheduler"
 msgstr ""
 
 #: src/virsh.c:1058
@@ -1612,6 +1617,15 @@ msgstr "'%s' parancs nem létezik"
 #: src/virsh.c:2872
 msgid "  NAME\n"
 msgstr "  NÉV\n"
+
+#: src/virsh.c:2876
+#, fuzzy
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  OPCIÓK\n"
 
 #: src/virsh.c:2883
 msgid ""

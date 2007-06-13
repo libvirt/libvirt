@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-08 11:32+0200\n"
+"POT-Creation-Date: 2007-06-13 11:27+0200\n"
 "PO-Revision-Date: 2007-04-10 11:36+0530\n"
 "Last-Translator: Ankit Patel <ankit@redhat.com>\n"
 "Language-Team: Gujarati <fedora-trans-gu@redhat.com>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "\n"
 "\n"
 
-#: src/libvirt.c:299 src/hash.c:664
+#: src/libvirt.c:303 src/hash.c:664
 msgid "allocating connection"
 msgstr "જોડાણ ફાળવી રહ્યા છીએ"
 
@@ -654,6 +654,11 @@ msgstr "છાપન મદદ"
 msgid "Prints global help or command specific help."
 msgstr "વૈશ્વિક મદદ અથવા આદેશ લગતી મદદ છાપે છે."
 
+#: src/virsh.c:312
+#, fuzzy
+msgid "name of command"
+msgstr "અસક્રિય ડોમેઈનનું નામ"
+
 #: src/virsh.c:324
 msgid ""
 "Commands:\n"
@@ -953,7 +958,7 @@ msgid "cap for XEN_CREDIT"
 msgstr ""
 
 #: src/virsh.c:1054 src/virsh.c:1058
-msgid "Scheduler:"
+msgid "Scheduler"
 msgstr ""
 
 #: src/virsh.c:1058
@@ -1611,6 +1616,15 @@ msgstr "આદેશ '%s' અસ્તિત્વમાં નથી"
 #: src/virsh.c:2872
 msgid "  NAME\n"
 msgstr "  નામ\n"
+
+#: src/virsh.c:2876
+#, fuzzy
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  વિકલ્પો\n"
 
 #: src/virsh.c:2883
 msgid ""

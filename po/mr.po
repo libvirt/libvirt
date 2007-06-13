@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-08 11:32+0200\n"
+"POT-Creation-Date: 2007-06-13 11:27+0200\n"
 "PO-Revision-Date: 2007-01-17 10:24+0530\n"
 "Last-Translator: Rahul Bhalerao <rahul.bhalerao@redhat.com>\n"
 "Language-Team: Marathi\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Generator: KBabel 1.9.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/libvirt.c:299 src/hash.c:664
+#: src/libvirt.c:303 src/hash.c:664
 msgid "allocating connection"
 msgstr "जोडणी वाटत आहे"
 
@@ -662,6 +662,11 @@ msgstr "मुद्रण मदत"
 msgid "Prints global help or command specific help."
 msgstr "वैश्विक मदत किंवा आदेश संबंधित मदत छापा."
 
+#: src/virsh.c:312
+#, fuzzy
+msgid "name of command"
+msgstr "निष्क्रीय डोमेनचे नाव"
+
 #: src/virsh.c:324
 msgid ""
 "Commands:\n"
@@ -962,7 +967,7 @@ msgid "cap for XEN_CREDIT"
 msgstr ""
 
 #: src/virsh.c:1054 src/virsh.c:1058
-msgid "Scheduler:"
+msgid "Scheduler"
 msgstr ""
 
 #: src/virsh.c:1058
@@ -1646,6 +1651,15 @@ msgstr "आदेश '%s' अस्तित्वात नाही"
 #: src/virsh.c:2872
 msgid "  NAME\n"
 msgstr "  NAME\n"
+
+#: src/virsh.c:2876
+#, fuzzy
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  पर्याय\n"
 
 #: src/virsh.c:2883
 msgid ""

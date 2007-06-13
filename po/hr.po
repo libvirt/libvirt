@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-08 11:32+0200\n"
-"PO-Revision-Date: 2007-06-07 18:21+0100\n"
+"POT-Creation-Date: 2007-06-13 11:27+0200\n"
+"PO-Revision-Date: 2007-06-09 02:46+0100\n"
 "Last-Translator: Renato Pavicic <renato@translator-shop.org>\n"
 "Language-Team: CROATIAN <www.translator-shop.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/libvirt.c:299 src/hash.c:664
+#: src/libvirt.c:303 src/hash.c:664
 msgid "allocating connection"
 msgstr "dodjeljivanje veze"
 
@@ -349,14 +349,13 @@ msgid "GNUTLS call error"
 msgstr "GNUTLS pogreška poziva"
 
 #: src/virterror.c:633
-#, fuzzy
 msgid "Failed to find the network"
-msgstr "Uklanjanje definicije mreže %s nije uspjelo"
+msgstr "Pronalaženje mreže nije uspjelo"
 
 #: src/virterror.c:635
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find the network: %s"
-msgstr "Uklanjanje definicije mreže %s nije uspjelo"
+msgstr "Pronalaženje mreže nije uspjelo: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -643,6 +642,11 @@ msgstr "ispiši pomoć"
 #: src/virsh.c:306
 msgid "Prints global help or command specific help."
 msgstr "Ispisivanje opće pomoći ili pomoći specifične za naredbu."
+
+#: src/virsh.c:312
+#, fuzzy
+msgid "name of command"
+msgstr "naziv neaktivne domene"
 
 #: src/virsh.c:324
 msgid ""
@@ -945,7 +949,8 @@ msgid "cap for XEN_CREDIT"
 msgstr "veličina za XEN_CREDIT"
 
 #: src/virsh.c:1054 src/virsh.c:1058
-msgid "Scheduler:"
+#, fuzzy
+msgid "Scheduler"
 msgstr "Planer:"
 
 #: src/virsh.c:1058
@@ -1597,6 +1602,15 @@ msgstr "naredba '%s' ne postoji"
 msgid "  NAME\n"
 msgstr "  NAZIV\n"
 
+#: src/virsh.c:2876
+#, fuzzy
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  OPCIJE\n"
+
 #: src/virsh.c:2883
 msgid ""
 "\n"
@@ -1753,25 +1767,25 @@ msgid "failed to connect to the hypervisor"
 msgstr "uspostavljanje veze s hypervisorom nije uspjelo"
 
 #: src/virsh.c:3544
-#, fuzzy
 msgid "failed to get the log file information"
-msgstr "Dohvaćanje podataka o čvoru nije uspjelo"
+msgstr "Dohvaćanje podataka o datoteci zapisnika nije uspjelo"
 
 #: src/virsh.c:3549
 msgid "the log path is not a file"
-msgstr ""
+msgstr "Putanja zapisnika nije datoteka"
 
 #: src/virsh.c:3555
 msgid "failed to open the log file. check the log file path"
 msgstr ""
+"Otvaranje datoteke zapisnika nije uspjelo. Provjerite putanju datoteke "
+"zapisnika."
 
 #: src/virsh.c:3623
-#, fuzzy
 msgid "failed to write the log file"
-msgstr "zapisivanje konfiguracijske datoteke nije uspjelo"
+msgstr "Zapisivanje datoteke zapisnika nije uspjelo"
 
 #: src/virsh.c:3792
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "%s [options] [commands]\n"
@@ -1794,10 +1808,11 @@ msgstr ""
 "  opcije:\n"
 "    -c | --connect <uri>    URI povezivanja hipervizora\n"
 "    -r | --readonly         povezivanje samo s čitanjem\n"
-"    -d | --debug <num>      razina popravka [0-5]\n"
+"    -d | --debug <broj>      razina popravka [0-5]\n"
 "    -h | --help             prikazivanje ove pomoći\n"
 "    -q | --quiet            tihi način rada\n"
 "    -t | --timing           ispisivanje vremenskih podataka\n"
+"    -l | --log <datoteka>       ispis zapisnika u datoteku\n"
 "    -v | --version          verzija programa\n"
 "\n"
 "  neredbe (neinteraktivan način rada):\n"

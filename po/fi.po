@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-08 11:32+0200\n"
-"PO-Revision-Date: 2007-04-24 20:54+0200\n"
+"POT-Creation-Date: 2007-06-13 11:27+0200\n"
+"PO-Revision-Date: 2007-06-11 00:43+0200\n"
 "Last-Translator: Ville-Pekka Vainio <vpivaini@cs.helsinki.fi>\n"
 "Language-Team: Finnish <laatu@lokalisointi.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,7 +16,7 @@ msgstr ""
 "X-Generator: KBabel 1.11.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/libvirt.c:299 src/hash.c:664
+#: src/libvirt.c:303 src/hash.c:664
 msgid "allocating connection"
 msgstr "varataan yhteyttä"
 
@@ -350,24 +350,21 @@ msgid "system call error"
 msgstr "järjestelmäkutsuvirhe"
 
 #: src/virterror.c:621
-#, fuzzy
 msgid "RPC error"
-msgstr "virhe"
+msgstr "RPC-virhe"
 
 #: src/virterror.c:627
-#, fuzzy
 msgid "GNUTLS call error"
-msgstr "järjestelmäkutsuvirhe"
+msgstr "GNUTLS-kutsuvirhe"
 
 #: src/virterror.c:633
-#, fuzzy
 msgid "Failed to find the network"
-msgstr "Verkon %s määritysten poistaminen epäonnistui."
+msgstr "Verkkoa ei löytynyt"
 
 #: src/virterror.c:635
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find the network: %s"
-msgstr "Verkon %s määritysten poistaminen epäonnistui."
+msgstr "Verkkoa ei löytynyt: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -544,16 +541,15 @@ msgstr "varataan solmua"
 
 #: src/test.c:737
 msgid "testOpen: supply a path or use test:///default"
-msgstr ""
+msgstr "testOpen: anna polku tai käytä test:///default"
 
 #: src/test.c:742
 msgid "too many connections"
 msgstr "liian monta yhteyttä"
 
 #: src/test.c:749
-#, fuzzy
 msgid "allocating private data"
-msgstr "varaa arvotaulukko"
+msgstr "varataan yksityistä dataa"
 
 #: src/test.c:889
 msgid "too many domains"
@@ -653,6 +649,11 @@ msgstr "näytä ohje"
 #: src/virsh.c:306
 msgid "Prints global help or command specific help."
 msgstr "Tulostaa yleisen tai komentoon liittyvän ohjeen."
+
+#: src/virsh.c:312
+#, fuzzy
+msgid "name of command"
+msgstr "Epäaktiivisen toimialueen nimi"
 
 #: src/virsh.c:324
 msgid ""
@@ -825,19 +826,19 @@ msgid "file conatining an XML domain description"
 msgstr "tiedosto, joka sisältää XML-muotoisen toimialueen kuvauksen"
 
 #: src/virsh.c:723
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open '%s': %s"
-msgstr "Toimialueen %s asettaminen keskeytystilaan epäonnistui"
+msgstr "Kohteen ”%s” avaaminen epäonnistui: %s"
 
 #: src/virsh.c:743
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open '%s': read: %s"
-msgstr "tiedoston %s avaaminen luettavaksi epäonnistui"
+msgstr ""
 
 #: src/virsh.c:761
-#, fuzzy, c-format
+#, c-format
 msgid "Error allocating memory: %s"
-msgstr "varataan verkkoa"
+msgstr "Virhe varattaessa muistia: %s"
 
 #: src/virsh.c:795
 #, c-format
@@ -958,13 +959,12 @@ msgid "cap for XEN_CREDIT"
 msgstr ""
 
 #: src/virsh.c:1054 src/virsh.c:1058
-msgid "Scheduler:"
+msgid "Scheduler"
 msgstr ""
 
 #: src/virsh.c:1058
-#, fuzzy
 msgid "Unknown"
-msgstr "tuntematon kone"
+msgstr "Tuntematon"
 
 #: src/virsh.c:1105
 msgid "restore a domain from a saved state in a file"
@@ -1561,38 +1561,34 @@ msgid "Output the IP address and port number for the VNC display."
 msgstr "Tulosta VNC-näytön IP-osoite ja porttinumero"
 
 #: src/virsh.c:2598
-#, fuzzy
 msgid "attach device from an XML file"
-msgstr "luo toimialue XML-tiedostosta"
+msgstr "liitä laite XML-tiedostosta"
 
 #: src/virsh.c:2599
-#, fuzzy
 msgid "Attach device from an XML <file>."
-msgstr "luo toimialue XML-tiedostosta"
+msgstr "Liitä laite XML-tiedostosta <tiedosto>."
 
 #: src/virsh.c:2605 src/virsh.c:2659
 msgid "XML file"
-msgstr ""
+msgstr "XML-tiedosto"
 
 #: src/virsh.c:2637
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to attach device from %s"
-msgstr "Toimialueen %s laitteiden saaminen ei onnistunut\n"
+msgstr "Laitteen liittäminen tiedostosta %s epäonnistui"
 
 #: src/virsh.c:2652
-#, fuzzy
 msgid "detach device from an XML file"
-msgstr "luo toimialue XML-tiedostosta"
+msgstr "irrota laite XML-tiedostosta"
 
 #: src/virsh.c:2653
-#, fuzzy
 msgid "Detach device from an XML <file>"
-msgstr "luo toimialue XML-tiedostosta"
+msgstr "Irrota laite XML-tiedostosta <tiedosto>"
 
 #: src/virsh.c:2691
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to detach device from %s"
-msgstr "Toimialueen %s laitteiden saaminen ei onnistunut\n"
+msgstr "Laitteen irrottaminen tiedostosta %s epäonnistui"
 
 #: src/virsh.c:2706
 msgid "quit this interactive terminal"
@@ -1616,6 +1612,15 @@ msgstr "komentoa ”%s” ei ole olemassa"
 #: src/virsh.c:2872
 msgid "  NAME\n"
 msgstr "  NIMI\n"
+
+#: src/virsh.c:2876
+#, fuzzy
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  VALITSIMET\n"
 
 #: src/virsh.c:2883
 msgid ""
@@ -1773,25 +1778,23 @@ msgid "failed to connect to the hypervisor"
 msgstr "hypervisoriin ei saatu yhteyttä"
 
 #: src/virsh.c:3544
-#, fuzzy
 msgid "failed to get the log file information"
-msgstr "solmun tietojen saanti epäonnistui"
+msgstr "lokitiedoston tietojen saanti epäonnistui"
 
 #: src/virsh.c:3549
 msgid "the log path is not a file"
-msgstr ""
+msgstr "lokin polku ei ole tiedosto"
 
 #: src/virsh.c:3555
 msgid "failed to open the log file. check the log file path"
-msgstr ""
+msgstr "lokitiedoston avaaminen epäonnistui, tarkista polku"
 
 #: src/virsh.c:3623
-#, fuzzy
 msgid "failed to write the log file"
-msgstr "asetustiedoston kirjoitus epäonnistui"
+msgstr "lokitiedoston kirjoitus epäonnistui"
 
 #: src/virsh.c:3792
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "%s [options] [commands]\n"
@@ -1818,6 +1821,7 @@ msgstr ""
 "    -h | --help             tämä ohje\n"
 "    -q | --quiet            hiljainen tila\n"
 "    -t | --timing           tulosta ajoitustietoja\n"
+"    -l | --log <tiedosto>       tulosta loki tiedostoon\n"
 "    -v | --version          ohjelmaversio\n"
 "\n"
 "  komennot (vuorovaikutukseton tila):\n"

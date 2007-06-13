@@ -309,7 +309,7 @@ static vshCmdInfo info_help[] = {
 };
 
 static vshCmdOptDef opts_help[] = {
-    {"command", VSH_OT_DATA, 0, "name of command"},
+    {"command", VSH_OT_DATA, 0, gettext_noop("name of command")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1051,11 +1051,11 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
     /* Print SchedulerType */
     schedulertype = virDomainGetSchedulerType(dom, &nparams);
     if (schedulertype!= NULL){
-        vshPrint(ctl, "%-15s %s\n", _("Scheduler:"),
+        vshPrint(ctl, "%-15s: %s\n", _("Scheduler"),
              schedulertype);
         free(schedulertype);
     } else {
-        vshPrint(ctl, "%-15s %s\n", _("Scheduler:"), _("Unknown"));
+        vshPrint(ctl, "%-15s: %s\n", _("Scheduler"), _("Unknown"));
         return FALSE;
     }
 
@@ -2873,7 +2873,7 @@ vshCmddefHelp(vshControl * ctl, const char *cmdname, int withprog)
         fprintf(stdout, "    %s - %s\n", def->name, help);
 
         if (syntax) {
-            fputs(("\n  SYNOPSIS\n"), stdout);
+            fputs(_("\n  SYNOPSIS\n"), stdout);
             if (!withprog)
                 fprintf(stdout, "    %s\n", syntax);
             else
@@ -2897,7 +2897,7 @@ vshCmddefHelp(vshControl * ctl, const char *cmdname, int withprog)
                 else if (opt->type == VSH_OT_DATA)
                     snprintf(buf, sizeof(buf), "<%s>", opt->name);
 
-                fprintf(stdout, "    %-15s  %s\n", buf, opt->help);
+                fprintf(stdout, "    %-15s  %s\n", buf, _(opt->help));
             }
         }
         fputc('\n', stdout);

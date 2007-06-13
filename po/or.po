@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: or\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-08 11:32+0200\n"
-"PO-Revision-Date: 2007-06-07 16:36+0530\n"
+"POT-Creation-Date: 2007-06-13 11:27+0200\n"
+"PO-Revision-Date: 2007-06-11 11:08+0530\n"
 "Last-Translator: Subhransu Behera <arya_subhransu@yahoo.co.in>\n"
 "Language-Team: Oriya <oriya-group@lists.sarovar.org>\n"
 "MIME-Version: 1.0\n"
@@ -26,8 +26,9 @@ msgstr ""
 "\n"
 "\n"
 "\n"
+"\n"
 
-#: src/libvirt.c:299 src/hash.c:664
+#: src/libvirt.c:303 src/hash.c:664
 msgid "allocating connection"
 msgstr "ସଂଯୋଗ ବାଣ୍ଟୁଅଛି"
 
@@ -366,14 +367,13 @@ msgid "GNUTLS call error"
 msgstr "GNUTLS call ତୃଟି"
 
 #: src/virterror.c:633
-#, fuzzy
 msgid "Failed to find the network"
-msgstr "%s ନେଟୱାର୍କକୁ ସଜ୍ଞା ବିହୀନ କରିବାରେ ବିଫଳ"
+msgstr "ନେଟୱାର୍କକୁ ଖୋଜିବାରେ ବିଫଳ"
 
 #: src/virterror.c:635
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find the network: %s"
-msgstr "%s ନେଟୱାର୍କକୁ ସଜ୍ଞା ବିହୀନ କରିବାରେ ବିଫଳ"
+msgstr "ନେଟୱାର୍କକୁ ଖୋଜିବାରେ ବିଫଳ: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -656,6 +656,11 @@ msgstr "ସହାୟତା ମୂଦ୍ରଣ କରନ୍ତୁ"
 #: src/virsh.c:306
 msgid "Prints global help or command specific help."
 msgstr "ବୈଷୟିକ ସହାୟତା କିମ୍ବା ନିର୍ଦ୍ଦେଶ ବିଶେଷ ସହାୟତାକୁ ମୂଦ୍ରଣ କରିଥାଏ।"
+
+#: src/virsh.c:312
+#, fuzzy
+msgid "name of command"
+msgstr "ନିଷ୍କ୍ରିୟ ପରିସରର ନାମ"
 
 #: src/virsh.c:324
 msgid ""
@@ -957,7 +962,8 @@ msgid "cap for XEN_CREDIT"
 msgstr "XEN_CREDIT ପାଇଁ ଟୋପି"
 
 #: src/virsh.c:1054 src/virsh.c:1058
-msgid "Scheduler:"
+#, fuzzy
+msgid "Scheduler"
 msgstr "ନିୟୋଜକ:"
 
 #: src/virsh.c:1058
@@ -1606,6 +1612,15 @@ msgstr "'%s' ନିର୍ଦ୍ଦେଶ ଅବସ୍ଥିତ ନାହିଁ"
 msgid "  NAME\n"
 msgstr "  ନାମ\n"
 
+#: src/virsh.c:2876
+#, fuzzy
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  ବିକଲ୍ପ\n"
+
 #: src/virsh.c:2883
 msgid ""
 "\n"
@@ -1762,25 +1777,23 @@ msgid "failed to connect to the hypervisor"
 msgstr "hypervisor କୁ ସଂଯୋଗ କରିବାରେ ବିଫଳ"
 
 #: src/virsh.c:3544
-#, fuzzy
 msgid "failed to get the log file information"
-msgstr "ନୋଡ ସୂଚନା ପାଇବାରେ ବିଫଳ"
+msgstr "ଲଗ ଫାଇଲ ସୂଚନା ପାଇବାରେ ବିଫଳ"
 
 #: src/virsh.c:3549
 msgid "the log path is not a file"
-msgstr ""
+msgstr "ଲଗ ପଥଟି ଗୋଟିଏ ଫାଇଲ ନୁହେଁ"
 
 #: src/virsh.c:3555
 msgid "failed to open the log file. check the log file path"
-msgstr ""
+msgstr "ଲଗ ଫାଇଲକୁ ଖୋଲିବାରେ ବିଫଳ, ଲଗ ଫାଇଲର ପଥକୁ ଯାଞ୍ଚ କରନ୍ତୁ"
 
 #: src/virsh.c:3623
-#, fuzzy
 msgid "failed to write the log file"
-msgstr "ବିନ୍ଯାସ ଫାଇଲକୁ ଲେଖିବାରେ ବିଫଳ"
+msgstr "ଲଗ ଫାଇଲ ଲେଖିବାରେ ବିଫଳ"
 
 #: src/virsh.c:3792
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "%s [options] [commands]\n"
@@ -1807,6 +1820,7 @@ msgstr ""
 "    -h | --help             ସହାୟତା ପ୍ରଦାନ କରିଥାଏ\n"
 "    -q | --quiet            ନିରବ ଧାରା\n"
 "    -t | --timing           ସମୟ ଭିତ୍ତିକ ସୂଚନା ପ୍ରଦାନ କରିଥାଏ\n"
+"    -l | --log <file>       ଫାଇଲ ଲଗକୁ ନିର୍ଗମ କରନ୍ତୁ\n"
 "    -v | --version          ପ୍ରୋଗ୍ରାମ ସଂସ୍କରଣ\n"
 "\n"
 "  ନିର୍ଦ୍ଦେଶ ଗୁଡିକ (ପାରସ୍ପରିକ କ୍ରିୟାକ୍ଷମ ବିହୀନ ଧାରା):\n"

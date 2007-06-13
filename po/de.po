@@ -2,21 +2,20 @@
 # Copyright (C) 2006, 2007 Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
-# PGP-KeyID: 0x037FD3CF <ttrinks@redhat.com>, 2006, 2007.
 msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-08 11:32+0200\n"
-"PO-Revision-Date: 2007-06-07 11:37+1000\n"
-"Last-Translator: PGP-KeyID: 0x037FD3CF <ttrinks@redhat.com>\n"
+"POT-Creation-Date: 2007-06-13 11:27+0200\n"
+"PO-Revision-Date: 2007-06-11 10:57+1000\n"
+"Last-Translator: PGP-KeyID: 0x037FD3CF\n"
 "Language-Team:  <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: src/libvirt.c:299 src/hash.c:664
+#: src/libvirt.c:303 src/hash.c:664
 msgid "allocating connection"
 msgstr "Verbindung zuweisen"
 
@@ -355,14 +354,13 @@ msgid "GNUTLS call error"
 msgstr "GNUTLS Aufruffehler"
 
 #: src/virterror.c:633
-#, fuzzy
 msgid "Failed to find the network"
-msgstr "Netzwerk %s konnte nicht undefiniert werden"
+msgstr "Netzwerk wurde nicht gefunden"
 
 #: src/virterror.c:635
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find the network: %s"
-msgstr "Netzwerk %s konnte nicht undefiniert werden"
+msgstr "Netzwerk wurde nicht gefunden: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -645,6 +643,11 @@ msgstr "Hilfe ausgeben"
 #: src/virsh.c:306
 msgid "Prints global help or command specific help."
 msgstr "Gibt globale oder befehlsspezifische Hilfe aus."
+
+#: src/virsh.c:312
+#, fuzzy
+msgid "name of command"
+msgstr "Name der inaktiven Domain"
 
 #: src/virsh.c:324
 msgid ""
@@ -948,7 +951,8 @@ msgid "cap for XEN_CREDIT"
 msgstr "Cap für XEN_CREDIT"
 
 #: src/virsh.c:1054 src/virsh.c:1058
-msgid "Scheduler:"
+#, fuzzy
+msgid "Scheduler"
 msgstr "Scheduler:"
 
 #: src/virsh.c:1058
@@ -1600,6 +1604,15 @@ msgstr "Befehl '%s' existiert nicht"
 msgid "  NAME\n"
 msgstr "  NAME\n"
 
+#: src/virsh.c:2876
+#, fuzzy
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  OPTIONEN\n"
+
 #: src/virsh.c:2883
 msgid ""
 "\n"
@@ -1756,25 +1769,24 @@ msgid "failed to connect to the hypervisor"
 msgstr "Verbindung zum Hypervisor scheiterte"
 
 #: src/virsh.c:3544
-#, fuzzy
 msgid "failed to get the log file information"
-msgstr "Abruf der Knoteninformationen scheiterte"
+msgstr "Log-Datei Informationen konnten nicht abgerufen werden"
 
 #: src/virsh.c:3549
 msgid "the log path is not a file"
-msgstr ""
+msgstr "der Log-Pfad ist keine Datei"
 
 #: src/virsh.c:3555
 msgid "failed to open the log file. check the log file path"
 msgstr ""
+"Fehler beim Öffnen der Log-Datei. Überprüfen Sie den Pfad der Log-Datei"
 
 #: src/virsh.c:3623
-#, fuzzy
 msgid "failed to write the log file"
-msgstr "Schreiben der Konfigurationsdatei schlug fehl"
+msgstr "Fehler beim Schreiben der Log-Datei"
 
 #: src/virsh.c:3792
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "%s [options] [commands]\n"
@@ -1801,6 +1813,7 @@ msgstr ""
 "    -h | --help             this help\n"
 "    -q | --quiet            quiet mode\n"
 "    -t | --timing           print timing information\n"
+"    -l | --log <file>       output logging to file\n"
 "    -v | --version          program version\n"
 "\n"
 "  commands (non interactive mode):\n"

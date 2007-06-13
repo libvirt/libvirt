@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-08 11:32+0200\n"
+"POT-Creation-Date: 2007-06-13 11:27+0200\n"
 "PO-Revision-Date: 2007-04-21 10:20-0100\n"
 "Last-Translator: Xavier Conde Rueda <xavi.conde@gmail.com>\n"
 "Language-Team: Catalan <fedora@softcatala.net>\n"
@@ -28,7 +28,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/libvirt.c:299 src/hash.c:664
+#: src/libvirt.c:303 src/hash.c:664
 msgid "allocating connection"
 msgstr "s'està assignant la connexió"
 
@@ -665,6 +665,11 @@ msgstr "escriu l'ajuda"
 msgid "Prints global help or command specific help."
 msgstr "Escriu l'ajuda global o l'específica d'una ordre."
 
+#: src/virsh.c:312
+#, fuzzy
+msgid "name of command"
+msgstr "nom del domini inactiu"
+
 #: src/virsh.c:324
 msgid ""
 "Commands:\n"
@@ -965,7 +970,7 @@ msgid "cap for XEN_CREDIT"
 msgstr ""
 
 #: src/virsh.c:1054 src/virsh.c:1058
-msgid "Scheduler:"
+msgid "Scheduler"
 msgstr ""
 
 #: src/virsh.c:1058
@@ -1620,6 +1625,15 @@ msgstr "l'ordre '%s' no existeix"
 #: src/virsh.c:2872
 msgid "  NAME\n"
 msgstr "  NOM\n"
+
+#: src/virsh.c:2876
+#, fuzzy
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  OPCIONS\n"
 
 #: src/virsh.c:2883
 msgid ""

@@ -62,7 +62,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-08 11:32+0200\n"
+"POT-Creation-Date: 2007-06-13 11:27+0200\n"
 "PO-Revision-Date: 2007-05-02 21:03+0200\n"
 "Last-Translator: Francesco Tombolini <tombo@adamantio.net>\n"
 "Language-Team: Italiano <fedora-trans-it@redhat.com>\n"
@@ -72,7 +72,7 @@ msgstr ""
 "X-Generator: KBabel 1.11.4\n"
 "Plural-Forms:  nplurals=2; plural=(n != 1);\n"
 
-#: src/libvirt.c:299 src/hash.c:664
+#: src/libvirt.c:303 src/hash.c:664
 msgid "allocating connection"
 msgstr "assegnazione collegamento in corso"
 
@@ -707,6 +707,11 @@ msgstr "stampa aiuto"
 msgid "Prints global help or command specific help."
 msgstr "Stampa l'aiuto globale o l'aiuto specifico di un comando."
 
+#: src/virsh.c:312
+#, fuzzy
+msgid "name of command"
+msgstr "nome del dominio inattivo"
+
 #: src/virsh.c:324
 msgid ""
 "Commands:\n"
@@ -1010,7 +1015,7 @@ msgid "cap for XEN_CREDIT"
 msgstr ""
 
 #: src/virsh.c:1054 src/virsh.c:1058
-msgid "Scheduler:"
+msgid "Scheduler"
 msgstr ""
 
 #: src/virsh.c:1058
@@ -1666,6 +1671,15 @@ msgstr "il comando '%s' non esiste"
 #: src/virsh.c:2872
 msgid "  NAME\n"
 msgstr "  NOME\n"
+
+#: src/virsh.c:2876
+#, fuzzy
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  OPZIONI\n"
 
 #: src/virsh.c:2883
 msgid ""

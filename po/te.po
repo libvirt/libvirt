@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: te\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-08 11:32+0200\n"
+"POT-Creation-Date: 2007-06-13 11:27+0200\n"
 "PO-Revision-Date: 2006-12-15 17:13+0530\n"
 "Last-Translator: Sree Ganesh <sthottem@redhat.com>\n"
 "Language-Team: Telugu <en@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libvirt.c:299 src/hash.c:664
+#: src/libvirt.c:303 src/hash.c:664
 msgid "allocating connection"
 msgstr "అనుసంధానాన్ని కేటాయిస్తోంది"
 
@@ -660,6 +660,11 @@ msgstr "ముద్రణ సహాయం"
 msgid "Prints global help or command specific help."
 msgstr "సార్వజనిక సహాయం లేదా కమాండ్ ఆధారిత సహాయాన్ని ముద్రించు"
 
+#: src/virsh.c:312
+#, fuzzy
+msgid "name of command"
+msgstr "క్రియారహిత క్షేత్ర నామం"
+
 #: src/virsh.c:324
 msgid ""
 "Commands:\n"
@@ -960,7 +965,7 @@ msgid "cap for XEN_CREDIT"
 msgstr ""
 
 #: src/virsh.c:1054 src/virsh.c:1058
-msgid "Scheduler:"
+msgid "Scheduler"
 msgstr ""
 
 #: src/virsh.c:1058
@@ -1644,6 +1649,15 @@ msgstr "'%s' ఆదేశం లేదు"
 #: src/virsh.c:2872
 msgid "  NAME\n"
 msgstr "  నామం\n"
+
+#: src/virsh.c:2876
+#, fuzzy
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  ఐచ్ఛికాలు\n"
 
 #: src/virsh.c:2883
 msgid ""

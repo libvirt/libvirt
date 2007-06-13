@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es~\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-08 11:32+0200\n"
-"PO-Revision-Date: 2007-06-06 11:11-0300\n"
+"POT-Creation-Date: 2007-06-13 11:27+0200\n"
+"PO-Revision-Date: 2007-06-10 12:28-0300\n"
 "Last-Translator: Domingo Becker <beckerde@hotmail.com>\n"
 "Language-Team: Spanish <en@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libvirt.c:299 src/hash.c:664
+#: src/libvirt.c:303 src/hash.c:664
 msgid "allocating connection"
 msgstr "asignando conexión"
 
@@ -355,14 +355,13 @@ msgid "GNUTLS call error"
 msgstr "Error de llamada de GNUTLS"
 
 #: src/virterror.c:633
-#, fuzzy
 msgid "Failed to find the network"
-msgstr "Falló al eliminar definición de la red %s"
+msgstr "Falló al eliminar definición de la red"
 
 #: src/virterror.c:635
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find the network: %s"
-msgstr "Falló al eliminar definición de la red %s"
+msgstr "Falló al encontrar la red: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -649,6 +648,11 @@ msgstr "imprimir ayuda"
 #: src/virsh.c:306
 msgid "Prints global help or command specific help."
 msgstr "Imprime ayuda global o ayuda específica sobre un comando"
+
+#: src/virsh.c:312
+#, fuzzy
+msgid "name of command"
+msgstr "nombre del dominio inactivo"
 
 #: src/virsh.c:324
 msgid ""
@@ -951,7 +955,8 @@ msgid "cap for XEN_CREDIT"
 msgstr "cap para XEN_CREDIT"
 
 #: src/virsh.c:1054 src/virsh.c:1058
-msgid "Scheduler:"
+#, fuzzy
+msgid "Scheduler"
 msgstr "Planificador:"
 
 #: src/virsh.c:1058
@@ -1603,6 +1608,15 @@ msgstr "el comando '%s' no existe"
 msgid "  NAME\n"
 msgstr "  NOMBRE\n"
 
+#: src/virsh.c:2876
+#, fuzzy
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  OPCIONES\n"
+
 #: src/virsh.c:2883
 msgid ""
 "\n"
@@ -1759,25 +1773,23 @@ msgid "failed to connect to the hypervisor"
 msgstr "falló al conectar al hipervisor"
 
 #: src/virsh.c:3544
-#, fuzzy
 msgid "failed to get the log file information"
-msgstr "falló al obtener la información del nodo"
+msgstr "falló al obtener la información del archivo log"
 
 #: src/virsh.c:3549
 msgid "the log path is not a file"
-msgstr ""
+msgstr "el camino para el log no es un archivo"
 
 #: src/virsh.c:3555
 msgid "failed to open the log file. check the log file path"
-msgstr ""
+msgstr "falló al abrir el archivo log. Verifique el camino al archivo log"
 
 #: src/virsh.c:3623
-#, fuzzy
 msgid "failed to write the log file"
-msgstr "falló la escritura del archivo de configuración"
+msgstr "falló la escritura en el archivo log"
 
 #: src/virsh.c:3792
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "%s [options] [commands]\n"
@@ -1804,6 +1816,7 @@ msgstr ""
 "    -h | --help             esta ayuda\n"
 "    -q | --quiet            modo silencioso\n"
 "    -t | --timing           mostrar información de temporizado\n"
+"    -l | --log <archivo>    manda el log a un archivo\n"
 "    -v | --version          versión del programa\n"
 "\n"
 "  comandos (modo no interactivo):\n"

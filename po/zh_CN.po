@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zh_CN\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-08 11:32+0200\n"
+"POT-Creation-Date: 2007-06-13 11:27+0200\n"
 "PO-Revision-Date: 2007-01-17 15:28+1000\n"
 "Last-Translator: Tony Fu <tfu@redhat.com>\n"
 "Language-Team:  <zh@li.org>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libvirt.c:299 src/hash.c:664
+#: src/libvirt.c:303 src/hash.c:664
 msgid "allocating connection"
 msgstr "正在分配连接"
 
@@ -665,6 +665,11 @@ msgstr "打印帮助"
 msgid "Prints global help or command specific help."
 msgstr "打印全部帮助或特定命令的帮助。"
 
+#: src/virsh.c:312
+#, fuzzy
+msgid "name of command"
+msgstr "非活跃域的名称"
+
 #: src/virsh.c:324
 msgid ""
 "Commands:\n"
@@ -965,7 +970,7 @@ msgid "cap for XEN_CREDIT"
 msgstr ""
 
 #: src/virsh.c:1054 src/virsh.c:1058
-msgid "Scheduler:"
+msgid "Scheduler"
 msgstr ""
 
 #: src/virsh.c:1058
@@ -1649,6 +1654,15 @@ msgstr "命令 '%s' 不存在"
 #: src/virsh.c:2872
 msgid "  NAME\n"
 msgstr "  NAME\n"
+
+#: src/virsh.c:2876
+#, fuzzy
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  OPTIONS\n"
 
 #: src/virsh.c:2883
 msgid ""

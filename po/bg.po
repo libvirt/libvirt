@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-08 11:32+0200\n"
+"POT-Creation-Date: 2007-06-13 11:27+0200\n"
 "PO-Revision-Date: 2007-04-21 14:55+0300\n"
 "Last-Translator: Doncho N. Gunchev <gunchev@gmail.com>\n"
 "Language-Team: Bulgarian <dict@fsa-bg.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: src/libvirt.c:299 src/hash.c:664
+#: src/libvirt.c:303 src/hash.c:664
 msgid "allocating connection"
 msgstr "заделяне на връзки"
 
@@ -655,6 +655,11 @@ msgid "Prints global help or command specific help."
 msgstr ""
 "Печат на глобалната или специфична за дадена команда помощна информация."
 
+#: src/virsh.c:312
+#, fuzzy
+msgid "name of command"
+msgstr "име на неактивния домейн"
+
 #: src/virsh.c:324
 msgid ""
 "Commands:\n"
@@ -955,7 +960,7 @@ msgid "cap for XEN_CREDIT"
 msgstr ""
 
 #: src/virsh.c:1054 src/virsh.c:1058
-msgid "Scheduler:"
+msgid "Scheduler"
 msgstr ""
 
 #: src/virsh.c:1058
@@ -1610,6 +1615,15 @@ msgstr "команда '%s' не съществува"
 #: src/virsh.c:2872
 msgid "  NAME\n"
 msgstr "  ИМЕ\n"
+
+#: src/virsh.c:2876
+#, fuzzy
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  ОПЦИИ\n"
 
 #: src/virsh.c:2883
 msgid ""

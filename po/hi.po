@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hi\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-08 11:32+0200\n"
+"POT-Creation-Date: 2007-06-13 11:27+0200\n"
 "PO-Revision-Date: 2007-04-17 11:48+0530\n"
 "Last-Translator: hi <rranjan@redhat.com>\n"
 "Language-Team: Hindi <fedora-trans-hi@redhat.com>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "\n"
 "\n"
 
-#: src/libvirt.c:299 src/hash.c:664
+#: src/libvirt.c:303 src/hash.c:664
 msgid "allocating connection"
 msgstr "संबंधन दे रहा है"
 
@@ -655,6 +655,11 @@ msgstr "छपाई मदद"
 msgid "Prints global help or command specific help."
 msgstr "वैश्विक मदद या कमांड विशेष मदद छापें"
 
+#: src/virsh.c:312
+#, fuzzy
+msgid "name of command"
+msgstr "एक निष्क्रिय डोमेन का नाम"
+
 #: src/virsh.c:324
 msgid ""
 "Commands:\n"
@@ -954,7 +959,7 @@ msgid "cap for XEN_CREDIT"
 msgstr ""
 
 #: src/virsh.c:1054 src/virsh.c:1058
-msgid "Scheduler:"
+msgid "Scheduler"
 msgstr ""
 
 #: src/virsh.c:1058
@@ -1612,6 +1617,15 @@ msgstr "कमांड '%s' मौजूद नहीं है"
 #: src/virsh.c:2872
 msgid "  NAME\n"
 msgstr "  नाम\n"
+
+#: src/virsh.c:2876
+#, fuzzy
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  विकल्प\n"
 
 #: src/virsh.c:2883
 msgid ""

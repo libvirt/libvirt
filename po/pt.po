@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-08 11:32+0200\n"
-"PO-Revision-Date: 2007-05-02 21:46+0100\n"
+"POT-Creation-Date: 2007-06-13 11:27+0200\n"
+"PO-Revision-Date: 2007-06-08 18:34+0100\n"
 "Last-Translator: José Nuno Coelho Pires <jncp@netcabo.pt>\n"
 "Language-Team: pt <kde-i18n-pt@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -12,10 +12,11 @@ msgstr ""
 "X-POFile-SpellExtra: help stdout quiet libvir connect Xend id quit uuid\n"
 "X-POFile-SpellExtra: GET CPUs VCPUs version vCPU Expr timing POST UUID vbd\n"
 "X-POFile-SpellExtra: VCPU Xen vCPUs options SO ms máx Id domid smarcada\n"
-"X-POFile-SpellExtra: smarcar lu readonly smarcado\n"
+"X-POFile-SpellExtra: smarcar lu readonly smarcado GNUTLS RPC testOpen log\n"
 "X-POFile-IgnoreConsistency: warning\n"
+"X-POFile-SpellExtra: XENCREDIT\n"
 
-#: src/libvirt.c:299 src/hash.c:664
+#: src/libvirt.c:303 src/hash.c:664
 msgid "allocating connection"
 msgstr "a reservar a ligação"
 
@@ -346,24 +347,21 @@ msgid "system call error"
 msgstr "erro na chamada do sistema"
 
 #: src/virterror.c:621
-#, fuzzy
 msgid "RPC error"
-msgstr "erro"
+msgstr "erro de RPC"
 
 #: src/virterror.c:627
-#, fuzzy
 msgid "GNUTLS call error"
-msgstr "erro na chamada do sistema"
+msgstr "erro na chamada do GNUTLS"
 
 #: src/virterror.c:633
-#, fuzzy
 msgid "Failed to find the network"
-msgstr "Não foi possível remover a definição da rede %s"
+msgstr "Não foi possível encontrar a rede"
 
 #: src/virterror.c:635
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find the network: %s"
-msgstr "Não foi possível remover a definição da rede %s"
+msgstr "Não foi possível encontrar a rede: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -539,16 +537,15 @@ msgstr "a reservar o nó"
 
 #: src/test.c:737
 msgid "testOpen: supply a path or use test:///default"
-msgstr ""
+msgstr "testOpen: Indique uma localização ou use a 'test:///default'"
 
 #: src/test.c:742
 msgid "too many connections"
 msgstr "demasiadas ligações"
 
 #: src/test.c:749
-#, fuzzy
 msgid "allocating private data"
-msgstr "reservar uma lista de valores"
+msgstr "a reservar os dados privados"
 
 #: src/test.c:889
 msgid "too many domains"
@@ -652,6 +649,11 @@ msgstr "imprimir a ajuda"
 #: src/virsh.c:306
 msgid "Prints global help or command specific help."
 msgstr "Imprime a ajuda global ou uma específica por cada comando."
+
+#: src/virsh.c:312
+#, fuzzy
+msgid "name of command"
+msgstr "nome do domínio inactivo"
 
 #: src/virsh.c:324
 msgid ""
@@ -820,19 +822,19 @@ msgid "file conatining an XML domain description"
 msgstr "ficheiro que contém uma descrição em XML do domínio"
 
 #: src/virsh.c:723
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open '%s': %s"
-msgstr "Não foi possível suspender o domínio %s"
+msgstr "Não foi possível aceder ao '%s': %s"
 
 #: src/virsh.c:743
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open '%s': read: %s"
-msgstr "não foi possível aceder ao %s para leitura"
+msgstr "não foi possível aceder ao '%s': lidos: %s"
 
 #: src/virsh.c:761
-#, fuzzy, c-format
+#, c-format
 msgid "Error allocating memory: %s"
-msgstr "a reservar a rede"
+msgstr "Erro ao reservar memória: %s"
 
 #: src/virsh.c:795
 #, c-format
@@ -938,28 +940,28 @@ msgstr "Não foi possível gravar o domínio %s em %s"
 
 #: src/virsh.c:982
 msgid "show/set scheduler parameters"
-msgstr ""
+msgstr "mostrar/alterar os parâmetros de escalonamento"
 
 #: src/virsh.c:983
 msgid "Show/Set scheduler parameters."
-msgstr ""
+msgstr "Mostra/altera os parâmetros de escalonamento."
 
 #: src/virsh.c:989
 msgid "weight for XEN_CREDIT"
-msgstr ""
+msgstr "peso no XEN_CREDIT"
 
 #: src/virsh.c:990
 msgid "cap for XEN_CREDIT"
-msgstr ""
+msgstr "valor do XEN_CREDIT"
 
 #: src/virsh.c:1054 src/virsh.c:1058
-msgid "Scheduler:"
-msgstr ""
+#, fuzzy
+msgid "Scheduler"
+msgstr "Escalonamento:"
 
 #: src/virsh.c:1058
-#, fuzzy
 msgid "Unknown"
-msgstr "máquina desconhecida"
+msgstr "Desconhecido"
 
 #: src/virsh.c:1105
 msgid "restore a domain from a saved state in a file"
@@ -1551,38 +1553,34 @@ msgid "Output the IP address and port number for the VNC display."
 msgstr "Devolve o endereço IP e o número de porto da consola de VNC."
 
 #: src/virsh.c:2598
-#, fuzzy
 msgid "attach device from an XML file"
-msgstr "criar um domínio a partir de um ficheiro XML"
+msgstr "associar um dispositivo a partir de um ficheiro XML"
 
 #: src/virsh.c:2599
-#, fuzzy
 msgid "Attach device from an XML <file>."
-msgstr "criar um domínio a partir de um ficheiro XML"
+msgstr "Associa um dispositivo a partir de um <ficheiro> em XML."
 
 #: src/virsh.c:2605 src/virsh.c:2659
 msgid "XML file"
-msgstr ""
+msgstr "ficheiro XML"
 
 #: src/virsh.c:2637
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to attach device from %s"
-msgstr "Não foi possível obter os dispositivos do domínio %s\n"
+msgstr "Não foi possível associar o dispositivo a partir de %s"
 
 #: src/virsh.c:2652
-#, fuzzy
 msgid "detach device from an XML file"
-msgstr "criar um domínio a partir de um ficheiro XML"
+msgstr "remover a associação do dispositivo ao ficheiro XML"
 
 #: src/virsh.c:2653
-#, fuzzy
 msgid "Detach device from an XML <file>"
-msgstr "criar um domínio a partir de um ficheiro XML"
+msgstr "Remove a associação do dispositivo ao <ficheiro> XML"
 
 #: src/virsh.c:2691
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to detach device from %s"
-msgstr "Não foi possível obter os dispositivos do domínio %s\n"
+msgstr "Não foi possível remover a associação do dispositivo de %s"
 
 #: src/virsh.c:2706
 msgid "quit this interactive terminal"
@@ -1606,6 +1604,15 @@ msgstr "o comando '%s' não existe"
 #: src/virsh.c:2872
 msgid "  NAME\n"
 msgstr "  NOME\n"
+
+#: src/virsh.c:2876
+#, fuzzy
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  OPÇÕES\n"
 
 #: src/virsh.c:2883
 msgid ""
@@ -1763,25 +1770,25 @@ msgid "failed to connect to the hypervisor"
 msgstr "não foi possível ligar ao supervisor"
 
 #: src/virsh.c:3544
-#, fuzzy
 msgid "failed to get the log file information"
-msgstr "não foi possível obter a informação do nó"
+msgstr "não foi possível obter a informação do ficheiro de registo"
 
 #: src/virsh.c:3549
 msgid "the log path is not a file"
-msgstr ""
+msgstr "a localização do registo não é um ficheiro"
 
 #: src/virsh.c:3555
 msgid "failed to open the log file. check the log file path"
 msgstr ""
+"não é possível aceder ao ficheiro de registo. Verifique a localização do "
+"registo"
 
 #: src/virsh.c:3623
-#, fuzzy
 msgid "failed to write the log file"
-msgstr "não foi possível gravar o ficheiro de configuração"
+msgstr "não foi possível gravar o ficheiro de registo"
 
 #: src/virsh.c:3792
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "%s [options] [commands]\n"
@@ -1808,6 +1815,7 @@ msgstr ""
 "    -h | --help             esta ajuda\n"
 "    -q | --quiet            modo silencioso\n"
 "    -t | --timing           imprimir a informação de tempos\n"
+"    -l | --log <ficheiro>   regista os dados num ficheiro\n"
 "    -v | --version          versão do programa\n"
 "\n"
 "  comandos (modo não-interactivo):\n"

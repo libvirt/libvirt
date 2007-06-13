@@ -7,15 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-08 11:32+0200\n"
-"PO-Revision-Date: 2007-04-17 12:54-0500\n"
-"Last-Translator: Igor Miletic <grejigl-gnomeprevod@yahoo.ca>\n"
-"Language-Team: Serbian (sr) <fedora@prevod.org>\n"
+"POT-Creation-Date: 2007-06-13 11:27+0200\n"
+"PO-Revision-Date: 2007-06-09 02:55-0000\n"
+"Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
+"Language-Team: Serbian (sr) <fedora-trans-sr@redhat.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
+"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: src/libvirt.c:299 src/hash.c:664
+#: src/libvirt.c:303 src/hash.c:664
 msgid "allocating connection"
 msgstr "заузимам везу"
 
@@ -346,24 +348,21 @@ msgid "system call error"
 msgstr "грешка у системском позиву"
 
 #: src/virterror.c:621
-#, fuzzy
 msgid "RPC error"
-msgstr "грешка"
+msgstr "RPC грешка"
 
 #: src/virterror.c:627
-#, fuzzy
 msgid "GNUTLS call error"
-msgstr "грешка у системском позиву"
+msgstr "грешка у GNUTLS позиву"
 
 #: src/virterror.c:633
-#, fuzzy
 msgid "Failed to find the network"
-msgstr "Неуспело укидање дефиниције мреже %s"
+msgstr "Неуспело проналажење мреже"
 
 #: src/virterror.c:635
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find the network: %s"
-msgstr "Неуспело укидање дефиниције мреже %s"
+msgstr "Неуспело проналажење мреже: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -539,16 +538,15 @@ msgstr "заузимам чвор"
 
 #: src/test.c:737
 msgid "testOpen: supply a path or use test:///default"
-msgstr ""
+msgstr "testOpen: наведите путању или користите test:///default"
 
 #: src/test.c:742
 msgid "too many connections"
 msgstr "превише веза"
 
 #: src/test.c:749
-#, fuzzy
 msgid "allocating private data"
-msgstr "заузимам низ вредности"
+msgstr "заузимам приватне податке"
 
 #: src/test.c:889
 msgid "too many domains"
@@ -649,6 +647,11 @@ msgstr "штампај помоћ"
 #: src/virsh.c:306
 msgid "Prints global help or command specific help."
 msgstr "Штампа општу помоћ или помоћ за одређену наредбу."
+
+#: src/virsh.c:312
+#, fuzzy
+msgid "name of command"
+msgstr "име неактивног домена"
 
 #: src/virsh.c:324
 msgid ""
@@ -817,19 +820,19 @@ msgid "file conatining an XML domain description"
 msgstr "датотека која садржи XML опис домена"
 
 #: src/virsh.c:723
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open '%s': %s"
-msgstr "Неуспело обустављање домена %s"
+msgstr "Неуспело отварање „%s“: %s"
 
 #: src/virsh.c:743
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open '%s': read: %s"
-msgstr "неуспело отварање %s за читање"
+msgstr "Неуспело отварање „%s“: прочитано %s"
 
 #: src/virsh.c:761
-#, fuzzy, c-format
+#, c-format
 msgid "Error allocating memory: %s"
-msgstr "заузимам мрежу"
+msgstr "Грешка при заузимању меморије:: %s"
 
 #: src/virsh.c:795
 #, c-format
@@ -935,28 +938,28 @@ msgstr "Неуспело чување домена %s у %s"
 
 #: src/virsh.c:982
 msgid "show/set scheduler parameters"
-msgstr ""
+msgstr "прикажи/подеси параметре планера"
 
 #: src/virsh.c:983
 msgid "Show/Set scheduler parameters."
-msgstr ""
+msgstr "Прикажи/подеси параметре планера."
 
 #: src/virsh.c:989
 msgid "weight for XEN_CREDIT"
-msgstr ""
+msgstr "тежина за XEN_CREDIT"
 
 #: src/virsh.c:990
 msgid "cap for XEN_CREDIT"
-msgstr ""
+msgstr "граница за XEN_CREDIT"
 
 #: src/virsh.c:1054 src/virsh.c:1058
-msgid "Scheduler:"
-msgstr ""
+#, fuzzy
+msgid "Scheduler"
+msgstr "Планер:"
 
 #: src/virsh.c:1058
-#, fuzzy
 msgid "Unknown"
-msgstr "непознат домаћин"
+msgstr "Непознато"
 
 #: src/virsh.c:1105
 msgid "restore a domain from a saved state in a file"
@@ -1548,38 +1551,34 @@ msgid "Output the IP address and port number for the VNC display."
 msgstr "Испиши ИП адресу и број порта за VNC приказ."
 
 #: src/virsh.c:2598
-#, fuzzy
 msgid "attach device from an XML file"
-msgstr "направи домен из XML датотеке"
+msgstr "закачи уређај из XML датотеке"
 
 #: src/virsh.c:2599
-#, fuzzy
 msgid "Attach device from an XML <file>."
-msgstr "направи домен из XML датотеке"
+msgstr "Закачи уређај из XML <датотеке>."
 
 #: src/virsh.c:2605 src/virsh.c:2659
 msgid "XML file"
-msgstr ""
+msgstr "XML датотека"
 
 #: src/virsh.c:2637
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to attach device from %s"
-msgstr "Неуспело прибављање уређаја за домен %s\n"
+msgstr "Неуспело качење уређаја из %s"
 
 #: src/virsh.c:2652
-#, fuzzy
 msgid "detach device from an XML file"
-msgstr "направи домен из XML датотеке"
+msgstr "откачи уређај из XML датотеке"
 
 #: src/virsh.c:2653
-#, fuzzy
 msgid "Detach device from an XML <file>"
-msgstr "направи домен из XML датотеке"
+msgstr "Откачи уређај из XML <датотеке>."
 
 #: src/virsh.c:2691
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to detach device from %s"
-msgstr "Неуспело прибављање уређаја за домен %s\n"
+msgstr "Неуспело откачињање уређаја из %s"
 
 #: src/virsh.c:2706
 msgid "quit this interactive terminal"
@@ -1603,6 +1602,15 @@ msgstr "наредба „%s“ не постоји"
 #: src/virsh.c:2872
 msgid "  NAME\n"
 msgstr "  ИМЕ\n"
+
+#: src/virsh.c:2876
+#, fuzzy
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  ОПЦИЈЕ\n"
 
 #: src/virsh.c:2883
 msgid ""
@@ -1760,25 +1768,24 @@ msgid "failed to connect to the hypervisor"
 msgstr "неуспело повезивање са хипервизором"
 
 #: src/virsh.c:3544
-#, fuzzy
 msgid "failed to get the log file information"
-msgstr "неуспело добављање података о чвору"
+msgstr "неуспело добављање података о датотеци дневника"
 
 #: src/virsh.c:3549
 msgid "the log path is not a file"
-msgstr ""
+msgstr "путања дневника није датотека"
 
 #: src/virsh.c:3555
 msgid "failed to open the log file. check the log file path"
 msgstr ""
+"неуспело отварање датотеке дневника. проверите путању до датотеке дневника"
 
 #: src/virsh.c:3623
-#, fuzzy
 msgid "failed to write the log file"
-msgstr "неуспело уписивање датотеке подешавања"
+msgstr "неуспело уписивање датотеке дневника"
 
 #: src/virsh.c:3792
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "%s [options] [commands]\n"
@@ -1799,12 +1806,13 @@ msgstr ""
 "%s [опције] [наредбе]\n"
 "\n"
 "  опције:\n"
-"    -c | --connect <uri>    УРИ везе хипервизора\n"
+"    -c | --connect <ури>    УРИ везе хипервизора\n"
 "    -r | --readonly         повежи само за читање\n"
-"    -d | --debug <num>      ниво лова на грешке [0-5]\n"
+"    -d | --debug <бр>       ниво лова на грешке [0-5]\n"
 "    -h | --help             ова помоћ\n"
-"    -q | --quiet            тихи реим\n"
+"    -q | --quiet            тихи режим\n"
 "    -t | --timing           штампај временске податке\n"
+"    -l | --log <датотека>   записивање излаза у датотеку\n"
 "    -v | --version          верзија програма\n"
 "\n"
 "  наредбе (неитерактивни режим):\n"
@@ -1943,15 +1951,3 @@ msgstr "примљен асинхрони број пакета %d\n"
 #, c-format
 msgid "allocating %d domain info"
 msgstr "додељујем инфо %d домена"
-
-#~ msgid "Failed to read description file %s"
-#~ msgstr "Неуспело читање %s датотеке описа"
-
-#~ msgid "Xen Daemon or Xen Store"
-#~ msgstr "Xen демон или Xen складиште"
-
-#~ msgid "file conatining an XML network description"
-#~ msgstr "датотека која садржи XML опис мреже"
-
-#~ msgid "Failed to resume new domain %s\n"
-#~ msgstr "Неуспело настављање новог домена %s\n"

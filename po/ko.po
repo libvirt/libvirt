@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ko\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-08 11:32+0200\n"
+"POT-Creation-Date: 2007-06-13 11:27+0200\n"
 "PO-Revision-Date: 2006-12-15 11:06+1000\n"
 "Last-Translator: Eunju Kim <eukim@redhat.com>\n"
 "Language-Team: Korean <ko@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libvirt.c:299 src/hash.c:664
+#: src/libvirt.c:303 src/hash.c:664
 msgid "allocating connection"
 msgstr "연결 할당 중"
 
@@ -659,6 +659,11 @@ msgstr "도움말 프린트하기"
 msgid "Prints global help or command specific help."
 msgstr "전역적 도움말 또는 명령으로된 특정 도움말을 프린트함."
 
+#: src/virsh.c:312
+#, fuzzy
+msgid "name of command"
+msgstr "비활성화 도메인명"
+
 #: src/virsh.c:324
 msgid ""
 "Commands:\n"
@@ -959,7 +964,7 @@ msgid "cap for XEN_CREDIT"
 msgstr ""
 
 #: src/virsh.c:1054 src/virsh.c:1058
-msgid "Scheduler:"
+msgid "Scheduler"
 msgstr ""
 
 #: src/virsh.c:1058
@@ -1643,6 +1648,15 @@ msgstr "'%s' 명령이 존재하지 않음"
 #: src/virsh.c:2872
 msgid "  NAME\n"
 msgstr "  이름\n"
+
+#: src/virsh.c:2876
+#, fuzzy
+msgid ""
+"\n"
+"  SYNOPSIS\n"
+msgstr ""
+"\n"
+"  옵션\n"
 
 #: src/virsh.c:2883
 msgid ""
