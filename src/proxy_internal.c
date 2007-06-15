@@ -18,6 +18,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/wait.h>
+#include <string.h>
 #include "internal.h"
 #include "driver.h"
 #include "proxy_internal.h"

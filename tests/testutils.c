@@ -19,8 +19,15 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <limits.h>
-#include <paths.h>
 #include "testutils.h"
+
+#ifdef HAVE_PATHS_H
+#include <paths.h>
+#endif
+
+#ifndef _PATH_DEVNULL
+#define	_PATH_DEVNULL	"/dev/null"
+#endif
 
 #define GETTIMEOFDAY(T) gettimeofday(T, NULL)
 #define DIFF_MSEC(T, U)                                 \

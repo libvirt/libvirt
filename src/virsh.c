@@ -29,6 +29,7 @@
 #include <ctype.h>
 #include <fcntl.h>
 #include <locale.h>
+#include <limits.h>
 #include <assert.h>
 #include <errno.h>
 #include <sys/stat.h>

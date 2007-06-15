@@ -41,7 +41,14 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <limits.h>
+#ifdef HAVE_PATHS_H
 #include <paths.h>
+#endif
+
+#ifndef _PATH_DEVNULL
+#define	_PATH_DEVNULL	"/dev/null"
+#endif
+
 
 #include "internal.h"
 #include "qemu_internal.h"

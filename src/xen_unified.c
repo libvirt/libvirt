@@ -27,6 +27,7 @@
 
 #include <stdint.h>
 #include <unistd.h>
+#include <string.h>
 #include <sys/types.h>
 #include <xen/dom0_ops.h>
 

@@ -26,6 +26,7 @@
 #include <dirent.h>
 #include <time.h>
 #include <sys/stat.h>
+#include <limits.h>
 
 #include <unistd.h>
 #include <stdint.h>
@@ -35,6 +36,9 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
+#ifndef NAME_MAX
+#define	NAME_MAX	255
+#endif
 
 #include "xen_unified.h"
 #include "xm_internal.h"
