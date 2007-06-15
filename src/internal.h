@@ -23,7 +23,7 @@ extern "C" {
 #endif
 
 #define _(str) dgettext(GETTEXT_PACKAGE, (str))
-#define _N(str) dgettext(GETTEXT_PACKAGE, (str))
+#define N_(str) dgettext(GETTEXT_PACKAGE, (str))
 #define gettext_noop(str) (str)
 
 #ifdef __GNUC__

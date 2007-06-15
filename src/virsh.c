@@ -324,7 +324,7 @@ cmdHelp(vshControl * ctl, vshCmd * cmd)
         vshPrint(ctl, _("Commands:\n\n"));
         for (def = commands; def->name; def++)
             vshPrint(ctl, "    %-15s %s\n", def->name,
-                     _N(vshCmddefGetInfo(def, "help")));
+                     N_(vshCmddefGetInfo(def, "help")));
         return TRUE;
     }
     return vshCmddefHelp(ctl, cmdname, FALSE);
@@ -581,7 +581,7 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         if (virDomainGetInfo(dom, &info) < 0)
             state = _("no state");
         else
-            state = _N(vshDomainStateToString(info.state));
+            state = N_(vshDomainStateToString(info.state));
 
         vshPrint(ctl, "%3d %-20s %s\n",
                  virDomainGetID(dom),
@@ -603,7 +603,7 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         if (virDomainGetInfo(dom, &info) < 0)
             state = _("no state");
         else
-            state = _N(vshDomainStateToString(info.state));
+            state = N_(vshDomainStateToString(info.state));
 
         vshPrint(ctl, "%3s %-20s %s\n", "-", names[i], state);
 
@@ -647,7 +647,7 @@ cmdDomstate(vshControl * ctl, vshCmd * cmd)
 
     if (virDomainGetInfo(dom, &info) == 0)
         vshPrint(ctl, "%s\n",
-                 _N(vshDomainStateToString(info.state)));
+                 N_(vshDomainStateToString(info.state)));
     else
         ret = FALSE;
 
@@ -705,7 +705,7 @@ static vshCmdInfo info_create[] = {
 };
 
 static vshCmdOptDef opts_create[] = {
-    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file conatining an XML domain description")},
+    {"file", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("file containing an XML domain description")},
     {NULL, 0, 0, NULL}
 };
 
@@ -1383,7 +1383,7 @@ cmdDominfo(vshControl * ctl, vshCmd * cmd)
 
     if (virDomainGetInfo(dom, &info) == 0) {
         vshPrint(ctl, "%-15s %s\n", _("State:"),
-                 _N(vshDomainStateToString(info.state)));
+                 N_(vshDomainStateToString(info.state)));
 
         vshPrint(ctl, "%-15s %d\n", _("CPU(s):"), info.nrVirtCpu);
 
@@ -1469,7 +1469,7 @@ cmdVcpuinfo(vshControl * ctl, vshCmd * cmd)
             vshPrint(ctl, "%-15s %d\n", _("VCPU:"), n);
             vshPrint(ctl, "%-15s %d\n", _("CPU:"), cpuinfo[n].cpu);
             vshPrint(ctl, "%-15s %s\n", _("State:"),
-                     _N(vshDomainVcpuStateToString(cpuinfo[n].state)));
+                     N_(vshDomainVcpuStateToString(cpuinfo[n].state)));
             if (cpuinfo[n].cpuTime != 0) {
                 double cpuUsed = cpuinfo[n].cpuTime;
 
@@ -1487,6 +1487,10 @@ cmdVcpuinfo(vshControl * ctl, vshCmd * cmd)
             }
         }
     } else {
+        if (info.state == VIR_DOMAIN_SHUTOFF) {
+            vshError(ctl, FALSE,
+                 _("Domain shut off, virtual CPUs not present."));
+        }
         ret = FALSE;
     }
 
@@ -1618,6 +1622,7 @@ cmdSetvcpus(vshControl * ctl, vshCmd * cmd)
 
     count = vshCommandOptInt(cmd, "count", &count);
     if (!count) {
+        vshError(ctl, FALSE, _("Invalid number of virtual CPUs."));
         virDomainFree(dom);
         return FALSE;
     }
@@ -1629,7 +1634,7 @@ cmdSetvcpus(vshControl * ctl, vshCmd * cmd)
     }
 
     if (count > maxcpu) {
-        vshError(ctl, FALSE, _("Too many virtual CPU's."));
+        vshError(ctl, FALSE, _("Too many virtual CPUs."));
         virDomainFree(dom);
         return FALSE;
     }
@@ -2865,8 +2870,8 @@ vshCmddefHelp(vshControl * ctl, const char *cmdname, int withprog)
         return FALSE;
     } else {
         vshCmdOptDef *opt;
-        const char *desc = _N(vshCmddefGetInfo(def, "desc"));
-        const char *help = _N(vshCmddefGetInfo(def, "help"));
+        const char *desc = N_(vshCmddefGetInfo(def, "desc"));
+        const char *help = N_(vshCmddefGetInfo(def, "help"));
         const char *syntax = vshCmddefGetInfo(def, "syntax");
 
         fputs(_("  NAME\n"), stdout);
@@ -2897,7 +2902,7 @@ vshCmddefHelp(vshControl * ctl, const char *cmdname, int withprog)
                 else if (opt->type == VSH_OT_DATA)
                     snprintf(buf, sizeof(buf), "<%s>", opt->name);
 
-                fprintf(stdout, "    %-15s  %s\n", buf, _N(opt->help));
+                fprintf(stdout, "    %-15s  %s\n", buf, N_(opt->help));
             }
         }
         fputc('\n', stdout);
@@ -3803,7 +3808,7 @@ vshUsage(vshControl * ctl, const char *cmdname)
 
         for (cmd = commands; cmd->name; cmd++)
             fprintf(stdout,
-                    "    %-15s %s\n", cmd->name, _N(vshCmddefGetInfo(cmd,
+                    "    %-15s %s\n", cmd->name, N_(vshCmddefGetInfo(cmd,
                                                                      "help")));
 
         fprintf(stdout,

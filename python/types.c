@@ -62,13 +62,13 @@ libvirt_charPtrWrap(char *str)
 {
     PyObject *ret;
 
-#ifdef DEBUG
-    printf("libvirt_xmlcharPtrWrap: str = %s\n", str);
-#endif
     if (str == NULL) {
         Py_INCREF(Py_None);
         return (Py_None);
     }
+#ifdef DEBUG
+    printf("libvirt_xmlcharPtrWrap: str = %s\n", str);
+#endif
     ret = PyString_FromString(str);
     free(str);
     return (ret);
@@ -79,13 +79,13 @@ libvirt_constcharPtrWrap(const char *str)
 {
     PyObject *ret;
 
-#ifdef DEBUG
-    printf("libvirt_xmlcharPtrWrap: str = %s\n", str);
-#endif
     if (str == NULL) {
         Py_INCREF(Py_None);
         return (Py_None);
     }
+#ifdef DEBUG
+    printf("libvirt_xmlcharPtrWrap: str = %s\n", str);
+#endif
     ret = PyString_FromString(str);
     return (ret);
 }
@@ -95,13 +95,13 @@ libvirt_charPtrConstWrap(const char *str)
 {
     PyObject *ret;
 
-#ifdef DEBUG
-    printf("libvirt_xmlcharPtrWrap: str = %s\n", str);
-#endif
     if (str == NULL) {
         Py_INCREF(Py_None);
         return (Py_None);
     }
+#ifdef DEBUG
+    printf("libvirt_xmlcharPtrWrap: str = %s\n", str);
+#endif
     ret = PyString_FromString(str);
     return (ret);
 }
