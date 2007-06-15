@@ -1,3 +1,8 @@
+Thu Jun 14 21:15:28 EST 2007 Daniel Berrange <berrange@redhat.com>
+
+	* src/Makefile.am: Fix generation of coverage files by
+	excluding files for server protocol
+
 Wed Jun 13 11:30:28 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: patch from Saori Fukuta for messages

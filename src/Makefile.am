@@ -24,7 +24,8 @@ libvirt_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvirt_sym.version \
                     -version-info @LIBVIRT_VERSION_INFO@ \
                     $(COVERAGE_CFLAGS:-f%=-Wc,-f%)
 libvirt_la_CFLAGS = $(COVERAGE_CFLAGS)
-libvirt_la_SOURCES =						\
+
+CLIENT_SOURCES =						\
 		libvirt.c internal.h				\
 		hash.c hash.h					\
 		test.c test.h                                   \
@@ -39,10 +40,14 @@ libvirt_la_SOURCES =						\
 		proxy_internal.c proxy_internal.h		\
 		conf.c conf.h                                   \
 		xm_internal.c xm_internal.h                     \
-		../qemud/protocol.h ../qemud/protocol.c		\
 		qemu_internal.c qemu_internal.h			\
-		../qemud/remote_protocol.c ../qemud/remote_protocol.h \
 		remote_internal.c remote_internal.h
+
+SERVER_SOURCES = 						\
+		../qemud/protocol.h ../qemud/protocol.c		\
+		../qemud/remote_protocol.c ../qemud/remote_protocol.h
+
+libvirt_la_SOURCES = $(CLIENT_SOURCES) $(SERVER_SOURCES)
 
 bin_PROGRAMS = virsh
 
@@ -58,7 +63,7 @@ virsh_CFLAGS = $(COVERAGE_CFLAGS)
 tst: tst.c
 	$(CC) $(CFLAGS) -I../include -o tst tst.c .libs/libvirt.a -lxml2 -lxenstore -lpthread
 
-COVERAGE_FILES = $(libvirt_la_SOURCES:%.c=libvirt_la-%.cov)
+COVERAGE_FILES = $(CLIENT_SOURCES:%.c=libvirt_la-%.cov)
 
 cov: clean-cov $(COVERAGE_FILES)
 
