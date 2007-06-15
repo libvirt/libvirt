@@ -1571,7 +1571,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
 
             /* New style disk config from Xen >= 3.0.3 */
             if (xendConfigVersion > 1) {
-                offset = rindex(dst, ':');
+                offset = strrchr(dst, ':');
                 if (offset) {
                     if (!strcmp(offset, ":cdrom")) {
                         cdrom = 1;

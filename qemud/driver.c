@@ -158,7 +158,7 @@ int qemudGetCPUInfo(unsigned int *cpus, unsigned int *mhz,
         if (!strncmp(line, "processor\t", 10)) { /* aka a single logical CPU */
             (*cpus)++;
         } else if (!strncmp(line, "cpu MHz\t", 8)) {
-            char *offset = index(line, ':');
+            char *offset = strchr(line, ':');
             if (!offset)
                 continue;
             offset++;
@@ -167,7 +167,7 @@ int qemudGetCPUInfo(unsigned int *cpus, unsigned int *mhz,
             *mhz = (unsigned int)strtol(offset, NULL, 10);
         } else if (!strncmp(line, "physical id\t", 12)) { /* aka socket */
             unsigned int id;
-            char *offset = index(line, ':');
+            char *offset = strchr(line, ':');
             if (!offset)
                 continue;
             offset++;
@@ -178,7 +178,7 @@ int qemudGetCPUInfo(unsigned int *cpus, unsigned int *mhz,
                 *sockets = (id + 1);
         } else if (!strncmp(line, "cpu cores\t", 9)) { /* aka cores */
             unsigned int id;
-            char *offset = index(line, ':');
+            char *offset = strchr(line, ':');
             if (!offset)
                 continue;
             offset++;

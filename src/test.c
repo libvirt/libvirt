@@ -504,7 +504,7 @@ static char *testBuildFilename(const char *relativeTo,
     if (filename[0] == '/')
         return strdup(filename);
 
-    offset = rindex(relativeTo, '/');
+    offset = strrchr(relativeTo, '/');
     if ((baseLen = (offset-relativeTo+1))) {
         char *absFile = malloc(baseLen + strlen(filename) + 1);
         strncpy(absFile, relativeTo, baseLen);

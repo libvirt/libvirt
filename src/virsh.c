@@ -1576,7 +1576,7 @@ cmdVcpupin(vshControl * ctl, vshCmd * cmd)
             virDomainFree(dom);
             return FALSE;
         }
-        cpulist = index(cpulist, ',');
+        cpulist = strchr(cpulist, ',');
         if (cpulist)
             cpulist++;
     } while (cpulist);

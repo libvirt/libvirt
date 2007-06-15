@@ -734,7 +734,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
              */
 
             /* Extract the source */
-            if (!(offset = index(head, ',')) || offset[0] == '\0')
+            if (!(offset = strchr(head, ',')) || offset[0] == '\0')
                 goto skipdisk;
             if ((offset - head) >= (PATH_MAX-1))
                 goto skipdisk;
@@ -743,7 +743,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             head = offset + 1;
 
             /* Extract the dest */
-            if (!(offset = index(head, ',')) || offset[0] == '\0')
+            if (!(offset = strchr(head, ',')) || offset[0] == '\0')
                 goto skipdisk;
             if ((offset - head) >= (PATH_MAX-1))
                 goto skipdisk;
@@ -753,14 +753,14 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
 
 
             /* Extract source driver type */
-            if (!(tmp = index(src, ':')) || !tmp[0])
+            if (!(tmp = strchr(src, ':')) || !tmp[0])
                 goto skipdisk;
             strncpy(drvName, src, (tmp-src));
             drvName[tmp-src] = '\0';
 
             /* And the source driver sub-type */
             if (!strncmp(drvName, "tap", 3)) {
-                if (!(tmp1 = index(tmp+1, ':')) || !tmp1[0])
+                if (!(tmp1 = strchr(tmp+1, ':')) || !tmp1[0])
                     goto skipdisk;
                 strncpy(drvType, tmp+1, (tmp1-(tmp+1)));
                 memmove(src, src+(tmp1-src)+1, strlen(src)-(tmp1-src));
@@ -780,7 +780,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             }
 
             /* Check for a :cdrom/:disk postfix */
-            if ((tmp = index(dev, ':')) != NULL) {
+            if ((tmp = strchr(dev, ':')) != NULL) {
                 if (!strcmp(tmp, ":cdrom"))
                     cdrom = 1;
                 tmp[0] = '\0';
@@ -838,9 +838,9 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             key = list->str;
             while (key) {
                 char *data;
-                char *nextkey = index(key, ',');
+                char *nextkey = strchr(key, ',');
 
-                if (!(data = index(key, '=')) || (data[0] == '\0'))
+                if (!(data = strchr(key, '=')) || (data[0] == '\0'))
                     goto skipnic;
                 data++;
 
@@ -928,14 +928,14 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
 
             while (key) {
                 char *data;
-                char *nextkey = index(key, ',');
+                char *nextkey = strchr(key, ',');
                 char *end = nextkey;
                 if (nextkey) {
                     *end = '\0';
                     nextkey++;
                 }
 
-                if (!(data = index(key, '=')) || (data[0] == '\0'))
+                if (!(data = strchr(key, '=')) || (data[0] == '\0'))
                     break;
                 data++;
 
