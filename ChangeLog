@@ -1,3 +1,8 @@
+Thu Jun 14 21:30:28 EST 2007 Daniel Berrange <berrange@redhat.com>
+
+	* libvirt.spec.in: Change way extra_release is inserted to
+	work with Fedora 7 where %dist is always defined
+
 Thu Jun 14 21:15:28 EST 2007 Daniel Berrange <berrange@redhat.com>
 
 	* src/Makefile.am: Fix generation of coverage files by
