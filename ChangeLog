@@ -1,3 +1,7 @@
+Mon Jun 18 10:32:14 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: applied SetMem cleanup patch from Mark Johnson
+
 Fri Jun 15 16:21:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* configure.in: Solaris header file fixes (Mark Johnson).

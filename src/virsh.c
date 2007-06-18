@@ -1668,6 +1668,7 @@ static int
 cmdSetmem(vshControl * ctl, vshCmd * cmd)
 {
     virDomainPtr dom;
+    virDomainInfo info;
     int kilobytes;
     int ret = TRUE;
 
@@ -1679,6 +1680,18 @@ cmdSetmem(vshControl * ctl, vshCmd * cmd)
 
     kilobytes = vshCommandOptInt(cmd, "kilobytes", &kilobytes);
     if (kilobytes <= 0) {
+        virDomainFree(dom);
+        vshError(ctl, FALSE, _("Invalid value of %d for memory size"), kilobytes);
+        return FALSE;
+    }
+
+    if (virDomainGetInfo(dom, &info) != 0) {
+        virDomainFree(dom);
+        vshError(ctl, FALSE, _("Unable to verify MaxMemorySize"));
+        return FALSE;
+    }
+
+    if (kilobytes > info.maxMem) {
         virDomainFree(dom);
         vshError(ctl, FALSE, _("Invalid value of %d for memory size"), kilobytes);
         return FALSE;
@@ -1712,6 +1725,7 @@ static int
 cmdSetmaxmem(vshControl * ctl, vshCmd * cmd)
 {
     virDomainPtr dom;
+    virDomainInfo info;
     int kilobytes;
     int ret = TRUE;
 
@@ -1728,7 +1742,22 @@ cmdSetmaxmem(vshControl * ctl, vshCmd * cmd)
         return FALSE;
     }
 
+    if (virDomainGetInfo(dom, &info) != 0) {
+        virDomainFree(dom);
+        vshError(ctl, FALSE, _("Unable to verify current MemorySize"));
+        return FALSE;
+    }
+
+    if (kilobytes < info.memory) {
+        if (virDomainSetMemory(dom, kilobytes) != 0) {
+            virDomainFree(dom);
+            vshError(ctl, FALSE, _("Unable to shrink current MemorySize"));
+            return FALSE;
+        }
+    }
+
     if (virDomainSetMaxMemory(dom, kilobytes) != 0) {
+        vshError(ctl, FALSE, _("Unable to change MaxMemorySize"));
         ret = FALSE;
     }
 
