@@ -1508,7 +1508,7 @@ cmdVcpuinfo(vshControl * ctl, vshCmd * cmd)
  * "vcpupin" command
  */
 static vshCmdInfo info_vcpupin[] = {
-    {"syntax", "vcpupin <domain>"},
+    {"syntax", "vcpupin <domain> <vcpu> <cpulist>"},
     {"help", gettext_noop("control domain vcpu affinity")},
     {"desc", gettext_noop("Pin domain VCPUs to host physical CPUs.")},
     {NULL, NULL}
@@ -1533,6 +1533,8 @@ cmdVcpupin(vshControl * ctl, vshCmd * cmd)
     int vcpufound = 0;
     unsigned char *cpumap;
     int cpumaplen;
+    int i;
+    enum { expect_num, expect_num_or_comma } state;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -1563,6 +1565,42 @@ cmdVcpupin(vshControl * ctl, vshCmd * cmd)
 
     if (vcpu >= info.nrVirtCpu) {
         virDomainFree(dom);
+        return FALSE;
+    }
+
+    /* Check that the cpulist parameter is a comma-separated list of
+     * numbers and give an intelligent error message if not.
+     */
+    if (cpulist[0] == '\0') {
+        vshError(ctl, FALSE, _("cpulist: Invalid format. Empty string."));
+        virDomainFree (dom);
+        return FALSE;
+    }
+
+    state = expect_num;
+    for (i = 0; cpulist[i]; i++) {
+        switch (state) {
+        case expect_num:
+            if (!isdigit (cpulist[i])) {
+                vshError( ctl, FALSE, _("cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."), cpulist, i, cpulist[i]);
+                virDomainFree (dom);
+                return FALSE;
+            }
+            state = expect_num_or_comma;
+            break;
+        case expect_num_or_comma:
+            if (cpulist[i] == ',')
+                state = expect_num;
+            else if (!isdigit (cpulist[i])) {
+                vshError(ctl, FALSE, _("cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%c')."), cpulist, i, cpulist[i]);
+                virDomainFree (dom);
+                return FALSE;
+            }
+        }
+    }
+    if (state == expect_num) {
+        vshError(ctl, FALSE, _("cpulist: %s: Invalid format. Trailing comma at position %d."), cpulist, i);
+        virDomainFree (dom);
         return FALSE;
     }
 
