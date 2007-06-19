@@ -2601,8 +2601,7 @@ int
 xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer)
 {
     struct sexpr *root;
-    const char *extra;
-    int major, minor, release = 0;
+    int major, minor;
     unsigned long version;
     
     if (!VIR_IS_CONNECT(conn)) {
@@ -2619,16 +2618,8 @@ xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer)
 
     major = sexpr_int(root, "node/xen_major");
     minor = sexpr_int(root, "node/xen_minor");
-    extra = sexpr_node(root, "node/xen_extra");
-    if (extra != NULL) {
-	while (*extra != 0) {
-	    if ((*extra >= '0') && (*extra <= '9'))
-		release = release * 10 + (*extra - '0');
-	    extra++;
-	}
-    }
     sexpr_free(root);
-    version = major * 1000000 + minor * 1000 + release;
+    version = major * 1000000 + minor * 1000;
     *hvVer = version;
     return(0);
 }

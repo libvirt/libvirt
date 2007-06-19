@@ -271,6 +271,9 @@ static void *_vshMalloc(vshControl * ctl, size_t sz, const char *filename, int l
 static void *_vshCalloc(vshControl * ctl, size_t nmemb, size_t sz, const char *filename, int line);
 #define vshCalloc(_ctl, _nmemb, _sz)    _vshCalloc(_ctl, _nmemb, _sz, __FILE__, __LINE__)
 
+static void *_vshRealloc(vshControl * ctl, void *ptr, size_t sz, const char *filename, int line);
+#define vshRealloc(_ctl, _ptr, _sz)    _vshRealloc(_ctl, _ptr, _sz, __FILE__, __LINE__)
+
 static char *_vshStrdup(vshControl * ctl, const char *s, const char *filename, int line);
 #define vshStrdup(_ctl, _s)    _vshStrdup(_ctl, _s, __FILE__, __LINE__)
 
@@ -2734,6 +2737,521 @@ cmdDetachDevice(vshControl * ctl, vshCmd * cmd)
 
 
 /*
+ * "attach-interface" command
+ */
+static vshCmdInfo info_attach_interface[] = {
+    {"syntax", "attach-interface <domain> <type> <source> [--target <target>] [--mac <mac>] [--script <script>] "},
+    {"help", gettext_noop("attach network interface")},
+    {"desc", gettext_noop("Attach new network interface.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_attach_interface[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {"type",   VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network interface type")},
+    {"source", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("source of network interface")},
+    {"target", VSH_OT_DATA, 0, gettext_noop("target network name")},
+    {"mac",    VSH_OT_DATA, 0, gettext_noop("MAC adress")},
+    {"script", VSH_OT_DATA, 0, gettext_noop("script used to bridge network interface")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdAttachInterface(vshControl * ctl, vshCmd * cmd)
+{
+    virDomainPtr dom = NULL;
+    char *mac, *target, *script, *type, *source;
+    int typ, ret = FALSE;
+    char *buf = NULL, *tmp = NULL;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        goto cleanup;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+        goto cleanup;
+
+    if (!(type = vshCommandOptString(cmd, "type", NULL)))
+        goto cleanup;
+
+    source = vshCommandOptString(cmd, "source", NULL);
+    target = vshCommandOptString(cmd, "target", NULL);
+    mac = vshCommandOptString(cmd, "mac", NULL);
+    script = vshCommandOptString(cmd, "script", NULL);
+
+    /* check interface type */
+    if (strcmp(type, "network") == 0) {
+        typ = 1;
+    } else if (strcmp(type, "bridge") == 0) {
+        typ = 2;
+    } else {
+        vshError(ctl, FALSE, _("No support %s in command 'attach-interface'"), type);
+        goto cleanup;
+    }
+
+    /* Make XML of interface */
+    tmp = vshMalloc(ctl, 1);
+    if (!tmp) goto cleanup;
+    buf = vshMalloc(ctl, strlen(type) + 25);
+    if (!buf) goto cleanup;
+    sprintf(buf, "    <interface type='%s'>\n" , type);
+
+    tmp = vshRealloc(ctl, tmp, strlen(source) + 28);
+    if (!tmp) goto cleanup;
+    if (typ == 1) {
+        sprintf(tmp, "      <source network='%s'/>\n", source);
+    } else if (typ == 2) {
+        sprintf(tmp, "      <source bridge='%s'/>\n", source);
+    }
+    buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
+    if (!buf) goto cleanup;
+    strcat(buf, tmp);
+
+    if (target != NULL) {
+        tmp = vshRealloc(ctl, tmp, strlen(target) + 24);
+        if (!tmp) goto cleanup;
+        sprintf(tmp, "      <target dev='%s'/>\n", target);
+        buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
+        if (!buf) goto cleanup;
+        strcat(buf, tmp);
+    }
+
+    if (mac != NULL) {
+        tmp = vshRealloc(ctl, tmp, strlen(mac) + 25);
+        if (!tmp) goto cleanup;
+        sprintf(tmp, "      <mac address='%s'/>\n", mac);
+        buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
+        if (!buf) goto cleanup;
+        strcat(buf, tmp);
+    }
+
+    if (script != NULL) {
+        tmp = vshRealloc(ctl, tmp, strlen(script) + 25);
+        if (!tmp) goto cleanup;
+        sprintf(tmp, "      <script path='%s'/>\n", script);
+        buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
+        if (!buf) goto cleanup;
+        strcat(buf, tmp);
+    }
+
+    buf = vshRealloc(ctl, buf, strlen(buf) + 19);
+    if (!buf) goto cleanup;
+    strcat(buf, "    </interface>\n");
+
+    if (virDomainAttachDevice(dom, buf))
+        goto cleanup;
+
+    ret = TRUE;
+
+ cleanup:
+    if (dom)
+        virDomainFree(dom);
+    if (buf)
+        free(buf);
+    if (tmp)
+        free(tmp);
+    return ret;
+}
+
+/*
+ * "detach-interface" command
+ */
+static vshCmdInfo info_detach_interface[] = {
+    {"syntax", "detach-interface <domain> <type> [--mac <mac>] "},
+    {"help", gettext_noop("detach network interface")},
+    {"desc", gettext_noop("Detach network interface.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_detach_interface[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {"type",   VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network interface type")},
+    {"mac",    VSH_OT_DATA, 0, gettext_noop("MAC adress")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdDetachInterface(vshControl * ctl, vshCmd * cmd)
+{
+    virDomainPtr dom = NULL;
+    xmlDocPtr xml = NULL;
+    xmlXPathObjectPtr obj=NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    xmlNodePtr cur = NULL;
+    xmlChar *tmp_mac = NULL;
+    xmlBufferPtr xml_buf = NULL;
+    char *doc, *mac =NULL, *type;
+    char buf[64];
+    int i = 0, diff_mac, ret = FALSE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        goto cleanup;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+        goto cleanup;
+
+    if (!(type = vshCommandOptString(cmd, "type", NULL)))
+        goto cleanup;
+
+    mac = vshCommandOptString(cmd, "mac", NULL);
+
+    doc = virDomainGetXMLDesc(dom, 0);
+    if (!doc)
+        goto cleanup;
+
+    xml = xmlReadDoc((const xmlChar *) doc, "domain.xml", NULL,
+                     XML_PARSE_NOENT | XML_PARSE_NONET |
+                     XML_PARSE_NOWARNING);
+    free(doc);
+    if (!xml) {
+        vshError(ctl, FALSE, _("Failed to get interface information"));
+        goto cleanup;
+    }
+    ctxt = xmlXPathNewContext(xml);
+    if (!ctxt) {
+        vshError(ctl, FALSE, _("Failed to get interface information"));
+        goto cleanup;
+    }
+
+    sprintf(buf, "/domain/devices/interface[@type='%s']", type);
+    obj = xmlXPathEval(BAD_CAST buf, ctxt);
+    if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
+        (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr == 0)) {
+        vshError(ctl, FALSE, _("No found interface whose type is %s"), type);
+        goto cleanup;
+    }
+
+    if (!mac)
+        goto hit;
+
+    /* search mac */
+    for (; i < obj->nodesetval->nodeNr; i++) {
+        cur = obj->nodesetval->nodeTab[i]->children;
+        while (cur != NULL) {
+            if (cur->type == XML_ELEMENT_NODE && xmlStrEqual(cur->name, BAD_CAST "mac")) {
+                tmp_mac = xmlGetProp(cur, BAD_CAST "address");
+                diff_mac = xmlStrcasecmp(tmp_mac, BAD_CAST mac);
+                xmlFree(tmp_mac);
+                if (!diff_mac) {
+                    goto hit;
+                }
+            }
+            cur = cur->next;
+        }
+    }
+    vshError(ctl, FALSE, _("No found interface whose MAC address is %s"), mac);
+    goto cleanup;
+
+ hit:
+    xml_buf = xmlBufferCreate();
+    if (!xml_buf) {
+        vshError(ctl, FALSE, _("Failed to allocate memory"));
+        goto cleanup;
+    }
+
+    if(xmlNodeDump(xml_buf, xml, obj->nodesetval->nodeTab[i], 0, 0) < 0){
+        vshError(ctl, FALSE, _("Failed to create XML"));
+        goto cleanup;
+    }
+
+    ret = virDomainDetachDevice(dom, (char *)xmlBufferContent(xml_buf));
+    if (ret != 0)
+        ret = FALSE;
+    else
+        ret = TRUE;
+
+ cleanup:
+    if (dom)
+        virDomainFree(dom);
+    if (obj)
+        xmlXPathFreeObject(obj);
+    if (ctxt)
+        xmlXPathFreeContext(ctxt);
+    if (xml)
+        xmlFreeDoc(xml);
+    if (xml_buf)
+        xmlBufferFree(xml_buf);
+    return ret;
+}
+
+/*
+ * "attach-disk" command
+ */
+static vshCmdInfo info_attach_disk[] = {
+    {"syntax", "attach-disk <domain> <source> <target> [--driver <driver>] [--subdriver <subdriver>] [--type <type>] [--mode <mode>] "},
+    {"help", gettext_noop("attach disk device")},
+    {"desc", gettext_noop("Attach new disk device.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_attach_disk[] = {
+    {"domain",  VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {"source",  VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("source of disk device")},
+    {"target",  VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("target of disk device")},
+    {"driver",    VSH_OT_DATA, 0, gettext_noop("driver of disk device")},
+    {"subdriver", VSH_OT_DATA, 0, gettext_noop("subdriver of disk device")},
+    {"type",    VSH_OT_DATA, 0, gettext_noop("target device type")},
+    {"mode",    VSH_OT_DATA, 0, gettext_noop("mode of device reading and writing")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdAttachDisk(vshControl * ctl, vshCmd * cmd)
+{
+    virDomainPtr dom = NULL;
+    char *source, *target, *driver, *subdriver, *type, *mode;
+    int isFile = 0, ret = FALSE;
+    char *buf = NULL, *tmp = NULL;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        goto cleanup;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+        goto cleanup;
+
+    if (!(source = vshCommandOptString(cmd, "source", NULL)))
+        goto cleanup;
+
+    if (!(target = vshCommandOptString(cmd, "target", NULL)))
+        goto cleanup;
+
+    driver = vshCommandOptString(cmd, "driver", NULL);
+    subdriver = vshCommandOptString(cmd, "subdriver", NULL);
+    type = vshCommandOptString(cmd, "type", NULL);
+    mode = vshCommandOptString(cmd, "mode", NULL);
+
+    if (type) {
+        if (strcmp(type, "cdrom") && strcmp(type, "disk")) {
+            vshError(ctl, FALSE, _("No support %s in command 'attach-disk'"), type);
+            goto cleanup;
+        }
+    }
+
+    if (driver) {
+        if (!strcmp(driver, "file") || !strcmp(driver, "tap")) {
+            isFile = 1;
+        } else if (strcmp(driver, "phy")) {
+            vshError(ctl, FALSE, _("No support %s in command 'attach-disk'"), driver);
+            goto cleanup;
+        }
+    }
+
+    if (mode) {
+        if (strcmp(mode, "readonly") && strcmp(mode, "shareable")) {
+            vshError(ctl, FALSE, _("No support %s in command 'attach-disk'"), mode);
+            goto cleanup;
+        }
+    }
+
+    /* Make XML of disk */
+    tmp = vshMalloc(ctl, 1);
+    if (!tmp) goto cleanup;
+    buf = vshMalloc(ctl, 23);
+    if (!buf) goto cleanup;
+    if (isFile) {
+        sprintf(buf, "    <disk type='file'");
+    } else {
+        sprintf(buf, "    <disk type='block'");
+    }
+
+    if (type) {
+        tmp = vshRealloc(ctl, tmp, strlen(type) + 13);
+        if (!tmp) goto cleanup;
+        sprintf(tmp, " device='%s'>\n", type);
+    } else {
+        tmp = vshRealloc(ctl, tmp, 3);
+        if (!tmp) goto cleanup;
+        sprintf(tmp, ">\n");
+    }
+    buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
+    if (!buf) goto cleanup;
+    strcat(buf, tmp);
+
+    if (driver) {
+        tmp = vshRealloc(ctl, tmp, strlen(driver) + 22);
+        if (!tmp) goto cleanup;
+        sprintf(tmp, "      <driver name='%s'", driver);
+    } else {
+        tmp = vshRealloc(ctl, tmp, 25);
+        if (!tmp) goto cleanup;
+        sprintf(tmp, "      <driver name='phy'");
+    }
+    buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
+    if (!buf) goto cleanup;
+    strcat(buf, tmp);
+
+    if (subdriver) {
+        tmp = vshRealloc(ctl, tmp, strlen(subdriver) + 12);
+        if (!tmp) goto cleanup;
+        sprintf(tmp, " type='%s'/>\n", subdriver);
+    } else {
+        tmp = vshRealloc(ctl, tmp, 4);
+        if (!tmp) goto cleanup;
+        sprintf(tmp, "/>\n");
+    }
+    buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
+    if (!buf) goto cleanup;
+    strcat(buf, tmp);
+
+    tmp = vshRealloc(ctl, tmp, strlen(source) + 25);
+    if (!tmp) goto cleanup;
+    if (isFile) {
+        sprintf(tmp, "      <source file='%s'/>\n", source);
+    } else {
+        sprintf(tmp, "      <source dev='%s'/>\n", source);
+    }
+    buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
+    if (!buf) goto cleanup;
+    strcat(buf, tmp);
+
+    tmp = vshRealloc(ctl, tmp, strlen(target) + 24);
+    if (!tmp) goto cleanup;
+    sprintf(tmp, "      <target dev='%s'/>\n", target);
+    buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
+    if (!buf) goto cleanup;
+    strcat(buf, tmp);
+
+    if (mode != NULL) {
+        tmp = vshRealloc(ctl, tmp, strlen(mode) + 11);
+        if (!tmp) goto cleanup;
+        sprintf(tmp, "      <%s/>\n", mode);
+        buf = vshRealloc(ctl, buf, strlen(buf) + strlen(tmp) + 1);
+        if (!buf) goto cleanup;
+        strcat(buf, tmp);
+    }
+
+    buf = vshRealloc(ctl, buf, strlen(buf) + 13);
+    if (!buf) goto cleanup;
+    strcat(buf, "    </disk>\n");
+
+    if (virDomainAttachDevice(dom, buf))
+        goto cleanup;
+
+    ret = TRUE;
+
+ cleanup:
+    if (dom)
+        virDomainFree(dom);
+    if (buf)
+        free(buf);
+    if (tmp)
+        free(tmp);
+    return ret;
+}
+
+/*
+ * "detach-disk" command
+ */
+static vshCmdInfo info_detach_disk[] = {
+    {"syntax", "detach-disk <domain> <target> "},
+    {"help", gettext_noop("detach disk device")},
+    {"desc", gettext_noop("Detach disk device.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_detach_disk[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {"target", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("target of disk device")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdDetachDisk(vshControl * ctl, vshCmd * cmd)
+{
+    xmlDocPtr xml = NULL;
+    xmlXPathObjectPtr obj=NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    xmlNodePtr cur = NULL;
+    xmlChar *tmp_tgt = NULL;
+    xmlBufferPtr xml_buf = NULL;
+    virDomainPtr dom = NULL;
+    char *doc, *target;
+    int i = 0, diff_tgt, ret = FALSE;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        goto cleanup;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+        goto cleanup;
+
+    if (!(target = vshCommandOptString(cmd, "target", NULL)))
+        goto cleanup;
+
+    doc = virDomainGetXMLDesc(dom, 0);
+    if (!doc)
+        goto cleanup;
+
+    xml = xmlReadDoc((const xmlChar *) doc, "domain.xml", NULL,
+                     XML_PARSE_NOENT | XML_PARSE_NONET |
+                     XML_PARSE_NOWARNING);
+    free(doc);
+    if (!xml) {
+        vshError(ctl, FALSE, _("Failed to get disk information"));
+        goto cleanup;
+    }
+    ctxt = xmlXPathNewContext(xml);
+    if (!ctxt) {
+        vshError(ctl, FALSE, _("Failed to get disk information"));
+        goto cleanup;
+    }
+
+    obj = xmlXPathEval(BAD_CAST "/domain/devices/disk", ctxt);
+    if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
+        (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr == 0)) {
+        vshError(ctl, FALSE, _("Failed to get disk information"));
+        goto cleanup;
+    }
+
+    /* search target */
+    for (; i < obj->nodesetval->nodeNr; i++) {
+        cur = obj->nodesetval->nodeTab[i]->children;
+        while (cur != NULL) {
+            if (cur->type == XML_ELEMENT_NODE && xmlStrEqual(cur->name, BAD_CAST "target")) {
+                tmp_tgt = xmlGetProp(cur, BAD_CAST "dev");
+                diff_tgt = xmlStrEqual(tmp_tgt, BAD_CAST target);
+                xmlFree(tmp_tgt);
+                if (diff_tgt) {
+                    goto hit;
+                }
+            }
+            cur = cur->next;
+        }
+    }
+    vshError(ctl, FALSE, _("No found disk whose target is %s"), target);
+    goto cleanup;
+
+ hit:
+    xml_buf = xmlBufferCreate();
+    if (!xml_buf) {
+        vshError(ctl, FALSE, _("Failed to allocate memory"));
+        goto cleanup;
+    }
+
+    if(xmlNodeDump(xml_buf, xml, obj->nodesetval->nodeTab[i], 0, 0) < 0){
+        vshError(ctl, FALSE, _("Failed to create XML"));
+        goto cleanup;
+    }
+
+    ret = virDomainDetachDevice(dom, (char *)xmlBufferContent(xml_buf));
+    if (ret != 0)
+        ret = FALSE;
+    else
+        ret = TRUE;
+
+ cleanup:
+    if (obj)
+        xmlXPathFreeObject(obj);
+    if (ctxt)
+        xmlXPathFreeContext(ctxt);
+    if (xml)
+        xmlFreeDoc(xml);
+    if (xml_buf)
+        xmlBufferFree(xml_buf);
+    if (dom)
+        virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "quit" command
  */
 static vshCmdInfo info_quit[] = {
@@ -2799,6 +3317,10 @@ static vshCmdDef commands[] = {
     {"vncdisplay", cmdVNCDisplay, opts_vncdisplay, info_vncdisplay},
     {"attach-device", cmdAttachDevice, opts_attach_device, info_attach_device},
     {"detach-device", cmdDetachDevice, opts_detach_device, info_detach_device},
+    {"attach-interface", cmdAttachInterface, opts_attach_interface, info_attach_interface},
+    {"detach-interface", cmdDetachInterface, opts_detach_interface, info_detach_interface},
+    {"attach-disk", cmdAttachDisk, opts_attach_disk, info_attach_disk},
+    {"detach-disk", cmdDetachDisk, opts_detach_disk, info_detach_disk},
     {NULL, NULL, NULL, NULL}
 };
 
@@ -3508,6 +4030,19 @@ _vshCalloc(vshControl * ctl, size_t nmemb, size_t size, const char *filename, in
         return x;
     vshError(ctl, TRUE, _("%s: %d: failed to allocate %d bytes"),
              filename, line, (int) (size*nmemb));
+    return NULL;
+}
+
+static void *
+_vshRealloc(vshControl * ctl, void *ptr, size_t size, const char *filename, int line)
+{
+    void *x;
+
+    if ((x = realloc(ptr, size)))
+        return x;
+    free(ptr);
+    vshError(ctl, TRUE, _("%s: %d: failed to allocate %d bytes"),
+             filename, line, (int) size);
     return NULL;
 }
 
