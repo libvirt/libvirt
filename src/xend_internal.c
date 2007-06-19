@@ -1943,11 +1943,12 @@ xenDaemonOpen(virConnectPtr conn, const char *name,
     xmlURIPtr uri = NULL;
     int ret;
 
-    /* If the name is just "xen" (it might originally have been NULL, see
-     * xenUnifiedOpen) then try default paths and methods to get to the
-     * xend socket.
+    /* If the name is just "xen" (it might originally have been NULL,
+     * see xenUnifiedOpen) or any URI beginning with "xen:///" then
+     * try default paths and methods to get to the xend socket.
      */
-    if (strcasecmp (name, "xen") == 0) {
+    if (strcasecmp (name, "xen") == 0 ||
+        strncasecmp (name, "xen:///", 7) == 0) {
         /*
          * try first to open the unix socket
          */
