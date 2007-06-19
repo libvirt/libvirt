@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>Remote support</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Remote support</h1><p>
-<b>NB. Remote support is available only as a <a href="https://www.redhat.com/archives/libvir-list/">series of
-patches posted on libvir-list</a> against <a href="http://libvirt.org/downloads.html">libvirt CVS</a>.  It is only
-for experimental use at the moment.</b>
-&#8212; Richard Jones, 2007-04-18.
-</p><p>
 Libvirt allows you to access hypervisors running on remote
 machines through authenticated and encrypted connections.
 </p><h3><a name="Remote_basic_usage" id="Remote_basic_usage">Basic usage</a></h3><p>
@@ -242,65 +237,37 @@ they have a valid certificate issued by the CA for their own IP
 address.  You may want to change this to make it less (or more)
 permissive, depending on your needs.
 </p><h4><a name="Remote_TLS_CA" id="Remote_TLS_CA">Setting up a Certificate Authority (CA)</a></h4><p>
-You will need the <a href="http://www.openssl.org/docs/apps/CA.pl.html">OpenSSL CA.pl Perl
-script documented here</a>.  In Fedora, it is in the
-<code>openssl-perl</code> package.  In Debian and derivatives, it is
-in the base <code>openssl</code> package.
-</p><p>Notes:</p><ul><li>
-You may find it
-better to start with the basic <code>CA.pl</code> script from OpenSSL
-itself, as Linux distributors seem to supply a hacked/broken one.
+You will need the <a href="http://www.gnu.org/software/gnutls/manual/html_node/Invoking-certtool.html">GnuTLS
+certtool program documented here</a>.  In Fedora, it is in the
+<code>gnutls-utils</code> package.
+</p><p>
+Create a private key for your CA:
+</p><pre>
+certtool --generate-privkey &gt; cakey.pem
+</pre><p>
+and self-sign it by creating a file with the
+signature details called
+<code>ca.info</code> containing:
+</p><pre>
+cn = <i>Name of your organization</i>
+ca
+cert_signing_key
+</pre><pre>
+certtool --generate-self-signed --load-privkey cakey.pem \
+  --template ca.info --outfile cacert.pem
+</pre><p>
+(You can delete <code>ca.info</code> file now if you
+want).
+</p><p>
+Now you have two files which matter:
+</p><ul><li>
+<code>cakey.pem</code> - Your CA's private key (keep this very secret!)
 </li>
 <li>
-A second confounding factor may be the default
-<code>openssl.cnf</code> file supplied with your
-Linux distribution.  You can switch to a custom
-file by doing:
-<pre>
-export SSLEAY_CONFIG="-config your_config_file"
-</pre>
+<code>cacert.pem</code> - Your CA's certificate (this is public).
 </li>
 </ul><p>
-These instructions assume that <code>CA.pl</code> is in an empty
-directory (because you will probably need to edit this script).
-Please read the <a href="http://www.openssl.org/docs/apps/CA.pl.html">CA.pl manpage</a>
-carefully before starting.
-</p><p>
-Copy CA.pl into an empty directory and edit it.  Near the top you will
-find various variables:
-</p><p>
-<code>$DAYS</code> defaults to <code>"-days 365"</code>.  You may wish
-to increase this, otherwise your CA and certificates will expire after
-a year, suddenly leaving your systems unmanageable.
-</p><p>
-<code>$CATOP</code> may be set to <code>"./demoCA"</code> or some
-other directory.  If you want you can change the name to a suitable
-directory name for your organisation.
-</p><p>
-Now run:
-</p><pre>
-<b>./CA.pl -newca</b>
-CA certificate filename (or enter to create)
-<b>[press enter key]</b>
-Making CA certificate ...
-Generating a 1024 bit RSA private key
-...++++++
-.......................++++++
-writing new private key to './demoCA/private/cakey.pem'
-Enter PEM pass phrase: <b>[type a passphrase]</b>
-Verifying - Enter PEM pass phrase: <b>[type a passphrase]</b>
-</pre><p>
-It will ask some further questions about your organisation and then
-create a CA directory structure (usually called <code>demoCA</code>
-unless you changed it above).  Some highlights of this directory:
-</p><pre>
-demoCA/newcerts             Certificates issued by the CA
-demoCA/crl                  Certificates revoked by the CA
-demoCA/cacert.pem           The CA's own certificate (this is public)
-demoCA/private/cakey.pem    The CA's private key (keep this secret)
-</pre><p>
-The important file is <code>cacert.pem</code> which is your new CA's
-X.509 certificate.  This file has to be installed on clients and
+<code>cacert.pem</code> has to be installed on clients and
 server(s) to let them know that they can trust certificates issued by
 your CA.
 </p><p>
@@ -309,24 +276,23 @@ is <code>/etc/pki/CA/cacert.pem</code> on all clients and servers.
 </p><p>
 To see the contents of this file, do:
 </p><pre>
-<b>openssl x509 -in demoCA/cacert.pem -text</b>
-Certificate:
-    Data:
-        Version: 3 (0x2)
-        Serial Number:
-            dd:b4:0f:d0:58:0e:08:fa
-        Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C=GB, ST=London, L=London, O=Red Hat UK Ltd, OU=Emerging Technologies, CN=Red Hat/emailAddress=rjones@redhat.com
-        Validity
-            Not Before: May 10 10:26:47 2007 GMT
-            Not After : May  7 10:26:47 2017 GMT
-        Subject: C=GB, ST=London, L=London, O=Red Hat UK Ltd, OU=Emerging Technologies, CN=Red Hat/emailAddress=rjones@redhat.com
+<b>certtool -i --infile cacert.pem</b>
 
+X.509 certificate info:
+
+Version: 3
+Serial Number (hex): 00
+Subject: CN=Red Hat Emerging Technologies
+Issuer: CN=Red Hat Emerging Technologies
+Signature Algorithm: RSA-SHA
+Validity:
+        Not Before: Mon Jun 18 16:22:18 2007
+        Not After: Tue Jun 17 16:22:18 2008
 <i>[etc]</i>
 </pre><p>
-This is all that is required to set up your CA.  Keep this directory
-structure and the passphrase safe as you will require them later when
-issuing certificates.
+This is all that is required to set up your CA.  Keep the CA's private
+key carefully as you will need it when you come to issue certificates
+for your clients and servers.
 </p><h4><a name="Remote_TLS_server_certificates" id="Remote_TLS_server_certificates">Issuing server certificates</a></h4><p>
 For each server (libvirtd) you need to issue a certificate
 with the X.509 CommonName (CN) field set to the hostname
@@ -337,100 +303,52 @@ In the example below, clients will be connecting to the
 server using a <a href="#Remote_URI_reference">URI</a> of
 <code>xen://oirase/</code>, so the CN must be "<code>oirase</code>".
 </p><p>
-First move to the directory above the CA directory (from the example
-in the last section, <code>demoCA</code> would be a subdirectory).
+Make a private key for the server:
+</p><pre>
+certtool --generate-privkey &gt; serverkey.pem
+</pre><p>
+and sign that key with the CA's private key by first
+creating a template file called <code>server.info</code>
+(only the CN field matters, which as explained above must
+be the server's hostname):
+</p><pre>
+organization = <i>Name of your organization</i>
+cn = oirase
+tls_www_server
+encryption_key
+signing_key
+</pre><p>
+and sign:
+</p><pre>
+certtool --generate-certificate --load-privkey serverkey.pem \
+  --load-ca-certificate cacert.pem --load-ca-privkey cakey.pem \
+  --template server.info --outfile servercert.pem
+</pre><p>
+This gives two files:
+</p><ul><li>
+<code>serverkey.pem</code> - The server's private key.
+</li>
+<li>
+<code>servercert.pem</code> - The server's public key.
+</li>
+</ul><p>
+We can examine this certificate and its signature:
+</p><pre>
+<b>certtool -i --infile servercert.pem</b>
+X.509 certificate info:
+
+Version: 3
+Serial Number (hex): 00
+Subject: O=Red Hat Emerging Technologies,CN=oirase
+Issuer: CN=Red Hat Emerging Technologies
+Signature Algorithm: RSA-SHA
+Validity:
+        Not Before: Mon Jun 18 16:34:49 2007
+        Not After: Tue Jun 17 16:34:49 2008
+</pre><p>
+Note the "Issuer" CN is "Red Hat Emerging Technologies" (the CA) and
+the "Subject" CN is "oirase" (the server).
 </p><p>
-Make a private key and a request for a new certificate:
-</p><pre>
-<b>./CA.pl -newreq</b>
-Generating a 1024 bit RSA private key
-...++++++
-....................++++++
-writing new private key to 'newreq.pem'
-Enter PEM pass phrase: <b>[enter a passphrase]</b>
-Verifying - Enter PEM pass phrase: <b>[enter a passphrase]</b>
-</pre><p>
-You will be asked additional details about the certificate.
-The single important field is "Common Name" which as explained
-above <b>must</b> contain the server's hostname as clients
-see it.
-</p><p>
-The operation creates a request file called <code>newreq.pem</code>
-which has both the private key and the unsigned certificate.
-In the situation of a "real" CA, you would send the certificate
-part off to be signed (along with lots of $$$).  Instead we are
-going to act as CA and sign it ourselves:
-</p><pre>
-<b>./CA.pl -signreq</b>
-Enter pass phrase for demoCA/private/cakey.pem: <b>[enter CA passphrase]</b>
-Check that the request matches the signature
-Signature ok
-Certificate Details:
-        Serial Number:
-            dd:b4:0f:d0:58:0e:08:fb
-        Validity
-            Not Before: May 10 11:10:40 2007 GMT
-            Not After : May  9 11:10:40 2008 GMT
-        Subject:
-            countryName               = GB
-            stateOrProvinceName       = London
-            localityName              = London
-            organizationName          = Red Hat UK Ltd
-            organizationalUnitName    = Emerging Technologies
-            commonName                = oirase
-            emailAddress              = rjones@redhat.com
-        X509v3 extensions:
-            X509v3 Basic Constraints: 
-                CA:FALSE
-            Netscape Comment: 
-                OpenSSL Generated Certificate
-            X509v3 Subject Key Identifier: 
-                DE:08:0D:12:73:76:06:97:EC:57:EF:8D:1B:48:ED:53:9A:1A:FE:7F
-            X509v3 Authority Key Identifier: 
-                keyid:F6:84:4C:1B:2B:59:10:89:3F:0B:AB:05:7F:57:85:A6:33:C7:7A:60
-
-Certificate is to be certified until May  9 11:10:40 2008 GMT (365 days)
-Sign the certificate? [y/n]:<b>y</b>
-
-
-1 out of 1 certificate requests certified, commit? [y/n]<b>y</b>
-Write out database with 1 new entries
-Data Base Updated
-Signed certificate is in newcert.pem
-</pre><p>
-This step generates a server certificate signed by the CA
-for the server <code>oirase</code> (NB. the commonName field
-above).  We can examine this certificate and its signature:
-</p><pre>
-<b>openssl x509 -in newcert.pem -text</b>
-Certificate:
-    Data:
-        Version: 3 (0x2)
-        Serial Number:
-            dd:b4:0f:d0:58:0e:08:fb
-        Signature Algorithm: sha1WithRSAEncryption
-        Issuer: C=GB, ST=London, L=London, O=Red Hat UK Ltd, OU=Emerging Technologies, CN=Red Hat/emailAddress=rjones@redhat.com
-        Validity
-            Not Before: May 10 11:10:40 2007 GMT
-            Not After : May  9 11:10:40 2008 GMT
-        Subject: C=GB, ST=London, L=London, O=Red Hat UK Ltd, OU=Emerging Technologies, CN=oirase/emailAddress=rjones@redhat.com
-</pre><p>
-Note the "Issuer" CN is "Red Hat" (the CA) and the "Subject" CN is
-"oirase" (the server).
-</p><p>
-At this point we have <code>newreq.pem</code> which contains the
-private key and unsigned certificate and <code>newcert.pem</code>
-which contains the signed certificate.  For the server we need just
-the private key and signed certificate.  For the clients we need just
-the signed certificate.  So there is one final step which is to
-extract the private key from <code>newreq.pem</code>:
-</p><pre>
-<b>openssl rsa -in newreq.pem -out serverkey.pem</b>
-Enter pass phrase for newreq.pem:
-writing RSA key
-
-<b>mv newcert.pem servercert.pem</b>
-</pre><p>
 Finally we have two files to install:
 </p><ul><li>
 <code>serverkey.pem</code> is
@@ -458,26 +376,29 @@ The process is the same as for
 server certificate</a> so here we just briefly cover the
 steps.
 </p><ol><li>
-Make a private key and a request for a new certificate:
+Make a private key:
 <pre>
-./CA.pl -newreq
-</pre>
-Set the DN fields as required.
-</li>
-
-<li>
-Act as CA and sign the certificate:
-<pre>
-./CA.pl -signreq
+certtool --generate-privkey &gt; clientkey.pem
 </pre>
 </li>
 
 <li>
-Extract the private key for the client and rename the
-signed certificate:
+Act as CA and sign the certificate.  Create client.info containing:
 <pre>
-openssl rsa -in newreq.pem -out clientkey.pem
-mv newcert.pem clientcert.pem
+country = GB
+state = London
+locality = London
+organization = Red Hat
+cn = client1
+tls_www_client
+encryption_key
+signing_key
+</pre>
+and sign by doing:
+<pre>
+certtool --generate-certificate --load-privkey clientkey.pem \
+  --load-ca-certificate cacert.pem --load-ca-privkey cakey.pem \
+  --template client.info --outfile clientcert.pem
 </pre>
 </li>
 
