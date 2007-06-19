@@ -9,7 +9,7 @@ See <a href="#Remote_libvirtd_configuration">the section
 on configuring libvirtd</a> for more information.
 </p><p>
 To tell libvirt that you want to access a remote resource,
-you should supply a hostname in the normal URI that is passed
+you should supply a hostname in the normal <a href="uri.html">URI</a> that is passed
 to <code>virConnectOpen</code> (or <code>virsh -c ...</code>).
 For example, if you normally use <code>qemu:///system</code>
 to access the system-wide QEMU daemon, then to access
@@ -74,6 +74,8 @@ Remote libvirt supports a range of transports:
 </dl><p>
 The default transport, if no other is specified, is <code>tls</code>.
 </p><h3><a name="Remote_URI_reference" id="Remote_URI_reference">Remote URIs</a></h3><p>
+See also: <a href="uri.html">documentation on ordinary ("local") URIs</a>.
+</p><p>
 Remote URIs have the general form ("[...]" meaning an optional part):
 </p><p>
 <code>driver</code>[<code>+transport</code>]<code>://</code>[<code>username@</code>][<code>hostname</code>][<code>:port</code>]<code>/</code>[<code>path</code>][<code>?extraparameters</code>]
