@@ -54,6 +54,9 @@
       <xsl:when test="$name = '#Remote'">
         <xsl:text>remote.html</xsl:text>
       </xsl:when>
+      <xsl:when test="$name = '#uri'">
+        <xsl:text>uri.html</xsl:text>
+      </xsl:when>
       <xsl:when test="$name = ''">
         <xsl:text>unknown.html</xsl:text>
       </xsl:when>
