@@ -729,6 +729,12 @@ int testOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_DECLINED;
     }
 
+    /* Remote driver should handle these. */
+    if (uri->server) {
+        xmlFreeURI(uri);
+        return VIR_DRV_OPEN_DECLINED;
+    }
+
     /* From this point on, the connection is for us. */
     if (!uri->path
         || uri->path[0] == '\0'

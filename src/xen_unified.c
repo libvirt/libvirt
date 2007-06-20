@@ -30,6 +30,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <xen/dom0_ops.h>
+#include <libxml/uri.h>
 
 #include "internal.h"
 
@@ -86,12 +87,36 @@ xenUnifiedOpen (virConnectPtr conn, const char *name, int flags)
 {
     int i, j;
     xenUnifiedPrivatePtr priv;
+    xmlURIPtr uri;
 
-    /* If name == NULL, name == "", or begins with "xen", then it's for us. */
+    /* Convert NULL or "" to xen:/// for back compat */
     if (!name || name[0] == '\0')
-        name = "Xen";
-    if (strncasecmp (name, "Xen", 3) != 0)
+        name = "xen:///";
+
+    /* Convert xen -> xen:/// for back compat */
+    if (!strcasecmp(name, "xen"))
+        name = "xen:///";
+
+    uri = xmlParseURI(name);
+    if (uri == NULL) {
+        xenUnifiedError(NULL, VIR_ERR_NO_SUPPORT, name);
         return VIR_DRV_OPEN_DECLINED;
+    }
+
+    /* Refuse any URI which doesn't start xen:///, / or http:// */
+    if (uri->scheme &&
+        strcasecmp(uri->scheme, "xen") != 0 &&
+        strcasecmp(uri->scheme, "http")) {
+        xmlFreeURI(uri);
+        return VIR_DRV_OPEN_DECLINED;
+    }
+
+    /* Refuse any xen:// URI with a server specified - allow remote to do it */
+    if (uri->scheme && !strcasecmp(uri->scheme, "xen") && uri->server) {
+        xmlFreeURI(uri);
+        return VIR_DRV_OPEN_DECLINED;
+    }
+    xmlFreeURI(uri);
 
     /* Allocate per-connection private data. */
     priv = malloc (sizeof *priv);
