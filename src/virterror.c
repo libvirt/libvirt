@@ -410,10 +410,10 @@ __virErrorMsg(virErrorNumber error, const char *info)
             errmsg = _("out of memory");
             break;
         case VIR_ERR_NO_SUPPORT:
-            if (info != NULL)
-		errmsg = _("no support for hypervisor");
+            if (info == NULL)
+		errmsg = _("this function is not supported by the hypervisor");
 	    else
-		errmsg = _("no support for hypervisor %s");
+		errmsg = _("this function is not supported by the hypervisor: %s");
             break;
         case VIR_ERR_NO_CONNECT:
             if (info == NULL)
@@ -538,7 +538,7 @@ __virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("too many drivers registered in %s");
             break;
-        case VIR_ERR_CALL_FAILED:
+        case VIR_ERR_CALL_FAILED: /* DEPRECATED, use VIR_ERR_NO_SUPPORT */
             if (info == NULL)
                 errmsg = _("library call failed, possibly not supported");
             else

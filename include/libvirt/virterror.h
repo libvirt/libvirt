@@ -86,7 +86,7 @@ typedef enum {
     VIR_ERR_OK = 0,
     VIR_ERR_INTERNAL_ERROR, /* internal error */
     VIR_ERR_NO_MEMORY,  /* memory allocation failure */
-    VIR_ERR_NO_SUPPORT, /* no support for this connection */
+    VIR_ERR_NO_SUPPORT, /* no support for this function */
     VIR_ERR_UNKNOWN_HOST,/* could not resolve hostname */
     VIR_ERR_NO_CONNECT, /* can't connect to hypervisor */
     VIR_ERR_INVALID_CONN,/* invalid connection object */
@@ -109,7 +109,7 @@ typedef enum {
     VIR_ERR_NO_DEVICE, /* missing domain devices information */
     VIR_ERR_NO_XENSTORE,/* could not open Xen Store control */
     VIR_ERR_DRIVER_FULL, /* too many drivers registered */
-    VIR_ERR_CALL_FAILED, /* not supported by the drivers */
+    VIR_ERR_CALL_FAILED, /* not supported by the drivers (DEPRECATED) */
     VIR_ERR_XML_ERROR, /* an XML description is not well formed or broken */
     VIR_ERR_DOM_EXIST,/* the domain already exist */
     VIR_ERR_OPERATION_DENIED, /* operation forbidden on read-only connections */

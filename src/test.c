@@ -720,7 +720,6 @@ int testOpen(virConnectPtr conn,
 
     uri = xmlParseURI(name);
     if (uri == NULL) {
-        testError(NULL, NULL, VIR_ERR_NO_SUPPORT, name);
         return VIR_DRV_OPEN_DECLINED;
     }
 

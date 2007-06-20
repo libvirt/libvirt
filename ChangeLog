@@ -1,3 +1,14 @@
+Wed Jun 20 18:23:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/libvirt.c, src/qemu_internal.c, src/test.c,
+	  src/xen_unified.c, src/xend_internal.c,
+	  src/libvirt.c, include/libvirt/virterror.h:
+	  VIR_ERR_NO_SUPPORT means the function is not supported by
+	  the hypervisor.  VIR_ERR_NO_CONNECT means the connection
+	  failed.  VIR_ERR_CALL_FAILED is deprecated.  Drivers which
+	  decline a URI now no longer produce an error.  Make
+	  xen_unified.c ignore naked URI strings like "foo".
+
 Wed Jun 20 18:21:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/virsh.c: 'virsh help command' now works even if we could

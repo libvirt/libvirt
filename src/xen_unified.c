@@ -99,23 +99,33 @@ xenUnifiedOpen (virConnectPtr conn, const char *name, int flags)
 
     uri = xmlParseURI(name);
     if (uri == NULL) {
-        xenUnifiedError(NULL, VIR_ERR_NO_SUPPORT, name);
         return VIR_DRV_OPEN_DECLINED;
     }
 
-    /* Refuse any URI which doesn't start xen:///, / or http:// */
+    /* Refuse any scheme which isn't "xen://" or "http://". */
     if (uri->scheme &&
         strcasecmp(uri->scheme, "xen") != 0 &&
-        strcasecmp(uri->scheme, "http")) {
+        strcasecmp(uri->scheme, "http") != 0) {
+        xmlFreeURI(uri);
+        return VIR_DRV_OPEN_DECLINED;
+    }
+
+    /* xmlParseURI will parse a naked string like "foo" as a URI with
+     * a NULL scheme.  That's not useful for us because we want to only
+     * allow full pathnames (eg. ///var/lib/xen/xend-socket).  Decline
+     * anything else.
+     */
+    if (!uri->scheme && name[0] != '/') {
         xmlFreeURI(uri);
         return VIR_DRV_OPEN_DECLINED;
     }
 
     /* Refuse any xen:// URI with a server specified - allow remote to do it */
-    if (uri->scheme && !strcasecmp(uri->scheme, "xen") && uri->server) {
+    if (uri->scheme && strcasecmp(uri->scheme, "xen") == 0 && uri->server) {
         xmlFreeURI(uri);
         return VIR_DRV_OPEN_DECLINED;
     }
+
     xmlFreeURI(uri);
 
     /* Allocate per-connection private data. */

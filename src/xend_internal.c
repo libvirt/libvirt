@@ -1975,14 +1975,14 @@ xenDaemonOpen(virConnectPtr conn, const char *name,
          */
         uri = xmlParseURI(name);
         if (uri == NULL) {
-            virXendError(NULL, VIR_ERR_NO_SUPPORT, name);
+            virXendError(NULL, VIR_ERR_NO_CONNECT, name);
             goto failed;
         }
 
         if (uri->scheme == NULL) {
             /* It should be a file access */
             if (uri->path == NULL) {
-                virXendError(NULL, VIR_ERR_NO_SUPPORT, name);
+                virXendError(NULL, VIR_ERR_NO_CONNECT, name);
                 goto failed;
             }
             ret = xenDaemonOpen_unix(conn, uri->path);
@@ -2000,7 +2000,7 @@ xenDaemonOpen(virConnectPtr conn, const char *name,
             if (ret == -1)
                 goto failed;
         } else {
-            virXendError(NULL, VIR_ERR_NO_SUPPORT, name);
+            virXendError(NULL, VIR_ERR_NO_CONNECT, name);
             goto failed;
         }
     }

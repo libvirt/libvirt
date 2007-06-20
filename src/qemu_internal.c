@@ -473,7 +473,6 @@ static int qemuOpen(virConnectPtr conn,
 
     uri = xmlParseURI(name);
     if (uri == NULL) {
-        qemuError(NULL, NULL, VIR_ERR_NO_SUPPORT, name);
         return VIR_DRV_OPEN_DECLINED;
     }
 

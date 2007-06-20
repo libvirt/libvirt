@@ -314,7 +314,8 @@ do_open (const char *name, int flags)
     }
 
     if (!ret->driver) {
-        virLibConnError (NULL, VIR_ERR_NO_SUPPORT, name);
+        /* If we reach here, then all drivers declined the connection. */
+        virLibConnError (NULL, VIR_ERR_NO_CONNECT, name);
         goto failed;
     }
 
@@ -344,12 +345,14 @@ failed:
 
 /**
  * virConnectOpen:
- * @name: optional argument currently unused, pass NULL
+ * @name: URI of the hypervisor
  *
  * This function should be called first to get a connection to the 
  * Hypervisor and xen store
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
+ *
+ * URIs are documented at http://libvirt.org/uri.html
  */
 virConnectPtr
 virConnectOpen (const char *name)
@@ -359,13 +362,15 @@ virConnectOpen (const char *name)
 
 /**
  * virConnectOpenReadOnly:
- * @name: optional argument currently unused, pass NULL
+ * @name: URI of the hypervisor
  *
  * This function should be called first to get a restricted connection to the 
  * libbrary functionalities. The set of APIs usable are then restricted
  * on the available methods to control the domains.
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
+ *
+ * URIs are documented at http://libvirt.org/uri.html
  */
 virConnectPtr
 virConnectOpenReadOnly(const char *name)
@@ -889,7 +894,7 @@ virDomainSave(virDomainPtr domain, const char *to)
     if (conn->driver->domainSave)
         return conn->driver->domainSave (domain, to);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -942,7 +947,7 @@ virDomainRestore(virConnectPtr conn, const char *from)
     if (conn->driver->domainRestore)
         return conn->driver->domainRestore (conn, from);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1001,7 +1006,7 @@ virDomainCoreDump(virDomainPtr domain, const char *to, int flags)
     if (conn->driver->domainCoreDump)
         return conn->driver->domainCoreDump (domain, to, flags);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1037,7 +1042,7 @@ virDomainShutdown(virDomainPtr domain)
     if (conn->driver->domainShutdown)
         return conn->driver->domainShutdown (domain);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1071,7 +1076,7 @@ virDomainReboot(virDomainPtr domain, unsigned int flags)
     if (conn->driver->domainReboot)
         return conn->driver->domainReboot (domain, flags);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1217,7 +1222,7 @@ virDomainGetOSType(virDomainPtr domain)
     if (conn->driver->domainGetOSType)
         return conn->driver->domainGetOSType (domain);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
 }
 
@@ -1246,7 +1251,7 @@ virDomainGetMaxMemory(virDomainPtr domain)
     if (conn->driver->domainGetMaxMemory)
         return conn->driver->domainGetMaxMemory (domain);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return 0;
 }
 
@@ -1288,7 +1293,7 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
     if (conn->driver->domainSetMaxMemory)
         return conn->driver->domainSetMaxMemory (domain, memory);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1331,7 +1336,7 @@ virDomainSetMemory(virDomainPtr domain, unsigned long memory)
     if (conn->driver->domainSetMemory)
         return conn->driver->domainSetMemory (domain, memory);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1367,7 +1372,7 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     if (conn->driver->domainGetInfo)
         return conn->driver->domainGetInfo (domain, info);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1401,7 +1406,7 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
     if (conn->driver->domainDumpXML)
         return conn->driver->domainDumpXML (domain, flags);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
 }
 
@@ -1429,7 +1434,7 @@ virNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
     if (conn->driver->nodeGetInfo)
         return conn->driver->nodeGetInfo (conn, info);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1454,7 +1459,7 @@ virConnectGetCapabilities (virConnectPtr conn)
     if (conn->driver->getCapabilities)
         return conn->driver->getCapabilities (conn);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
 }
 
@@ -1489,7 +1494,7 @@ virDomainGetSchedulerType(virDomainPtr domain, int *nparams)
         return schedtype;
     }
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
 }
 
@@ -1528,7 +1533,7 @@ virDomainGetSchedulerParameters(virDomainPtr domain,
     if (conn->driver->domainGetSchedulerParameters)
         return conn->driver->domainGetSchedulerParameters (domain, params, nparams);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1564,7 +1569,7 @@ virDomainSetSchedulerParameters(virDomainPtr domain,
     if (conn->driver->domainSetSchedulerParameters)
         return conn->driver->domainSetSchedulerParameters (domain, params, nparams);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1603,7 +1608,7 @@ virDomainDefineXML(virConnectPtr conn, const char *xml) {
     if (conn->driver->domainDefineXML)
         return conn->driver->domainDefineXML (conn, xml);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
 }
 
@@ -1632,7 +1637,7 @@ virDomainUndefine(virDomainPtr domain) {
     if (conn->driver->domainUndefine)
         return conn->driver->domainUndefine (domain);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1655,7 +1660,7 @@ virConnectNumOfDefinedDomains(virConnectPtr conn)
     if (conn->driver->numOfDefinedDomains)
         return conn->driver->numOfDefinedDomains (conn);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1685,7 +1690,7 @@ virConnectListDefinedDomains(virConnectPtr conn, char **const names,
     if (conn->driver->listDefinedDomains)
         return conn->driver->listDefinedDomains (conn, names, maxnames);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1719,7 +1724,7 @@ virDomainCreate(virDomainPtr domain) {
     if (conn->driver->domainCreate)
         return conn->driver->domainCreate (domain);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1754,7 +1759,7 @@ virDomainGetAutostart(virDomainPtr domain,
     if (conn->driver->domainGetAutostart)
         return conn->driver->domainGetAutostart (domain, autostart);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1784,7 +1789,7 @@ virDomainSetAutostart(virDomainPtr domain,
     if (conn->driver->domainSetAutostart)
         return conn->driver->domainSetAutostart (domain, autostart);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1828,7 +1833,7 @@ virDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
     if (conn->driver->domainSetVcpus)
         return conn->driver->domainSetVcpus (domain, nvcpus);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1879,7 +1884,7 @@ virDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
     if (conn->driver->domainPinVcpu)
         return conn->driver->domainPinVcpu (domain, vcpu, cpumap, maplen);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1933,7 +1938,7 @@ virDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
         return conn->driver->domainGetVcpus (domain, info, maxinfo,
                                              cpumaps, maplen);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1964,7 +1969,7 @@ virDomainGetMaxVcpus(virDomainPtr domain)
     if (conn->driver->domainGetMaxVcpus)
         return conn->driver->domainGetMaxVcpus (domain);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -1996,7 +2001,7 @@ virDomainAttachDevice(virDomainPtr domain, char *xml)
     if (conn->driver->domainAttachDevice)
         return conn->driver->domainAttachDevice (domain, xml);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -2027,7 +2032,7 @@ virDomainDetachDevice(virDomainPtr domain, char *xml)
     if (conn->driver->domainDetachDevice)
         return conn->driver->domainDetachDevice (domain, xml);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -2050,7 +2055,7 @@ virConnectNumOfNetworks(virConnectPtr conn)
     if (conn->networkDriver && conn->networkDriver->numOfNetworks)
         return conn->networkDriver->numOfNetworks (conn);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -2080,7 +2085,7 @@ virConnectListNetworks(virConnectPtr conn, char **const names, int maxnames)
     if (conn->networkDriver && conn->networkDriver->listNetworks)
         return conn->networkDriver->listNetworks (conn, names, maxnames);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -2103,7 +2108,7 @@ virConnectNumOfDefinedNetworks(virConnectPtr conn)
     if (conn->networkDriver && conn->networkDriver->numOfDefinedNetworks)
         return conn->networkDriver->numOfDefinedNetworks (conn);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -2135,7 +2140,7 @@ virConnectListDefinedNetworks(virConnectPtr conn, char **const names,
         return conn->networkDriver->listDefinedNetworks (conn,
                                                          names, maxnames);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -2163,7 +2168,7 @@ virNetworkLookupByName(virConnectPtr conn, const char *name)
     if (conn->networkDriver && conn->networkDriver->networkLookupByName)
         return conn->networkDriver->networkLookupByName (conn, name);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
 }
 
@@ -2191,7 +2196,7 @@ virNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     if (conn->networkDriver && conn->networkDriver->networkLookupByUUID)
         return conn->networkDriver->networkLookupByUUID (conn, uuid);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
 }
 
@@ -2273,7 +2278,7 @@ virNetworkCreateXML(virConnectPtr conn, const char *xmlDesc)
     if (conn->networkDriver && conn->networkDriver->networkCreateXML)
         return conn->networkDriver->networkCreateXML (conn, xmlDesc);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
 }
 
@@ -2305,7 +2310,7 @@ virNetworkDefineXML(virConnectPtr conn, const char *xml)
     if (conn->networkDriver && conn->networkDriver->networkDefineXML)
         return conn->networkDriver->networkDefineXML (conn, xml);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
 }
 
@@ -2334,7 +2339,7 @@ virNetworkUndefine(virNetworkPtr network) {
     if (conn->networkDriver && conn->networkDriver->networkUndefine)
         return conn->networkDriver->networkUndefine (network);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -2368,7 +2373,7 @@ virNetworkCreate(virNetworkPtr network)
     if (conn->networkDriver && conn->networkDriver->networkCreate)
         return conn->networkDriver->networkCreate (network);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -2403,7 +2408,7 @@ virNetworkDestroy(virNetworkPtr network)
     if (conn->networkDriver && conn->networkDriver->networkDestroy)
         return conn->networkDriver->networkDestroy (network);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -2539,7 +2544,7 @@ virNetworkGetXMLDesc(virNetworkPtr network, int flags)
     if (conn->networkDriver && conn->networkDriver->networkDumpXML)
         return conn->networkDriver->networkDumpXML (network, flags);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
 }
 
@@ -2568,7 +2573,7 @@ virNetworkGetBridgeName(virNetworkPtr network)
     if (conn->networkDriver && conn->networkDriver->networkGetBridgeName)
         return conn->networkDriver->networkGetBridgeName (network);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
 }
 
@@ -2603,7 +2608,7 @@ virNetworkGetAutostart(virNetworkPtr network,
     if (conn->networkDriver && conn->networkDriver->networkGetAutostart)
         return conn->networkDriver->networkGetAutostart (network, autostart);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
@@ -2633,7 +2638,7 @@ virNetworkSetAutostart(virNetworkPtr network,
     if (conn->networkDriver && conn->networkDriver->networkSetAutostart)
         return conn->networkDriver->networkSetAutostart (network, autostart);
 
-    virLibConnError (conn, VIR_ERR_CALL_FAILED, __FUNCTION__);
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
 }
 
