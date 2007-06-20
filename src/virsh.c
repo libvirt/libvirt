@@ -195,7 +195,7 @@ typedef struct __vshCmd {
  */
 typedef struct __vshControl {
     char *name;                 /* connection name */
-    virConnectPtr conn;         /* connection to hypervisor */
+    virConnectPtr conn;         /* connection to hypervisor (MAY BE NULL) */
     vshCmd *cmd;                /* the current command */
     char *cmdstr;               /* string with command */
     uid_t uid;                  /* process owner */
@@ -3309,6 +3309,10 @@ cmdQuit(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
  * Commands
  */
 static vshCmdDef commands[] = {
+    {"help", cmdHelp, opts_help, info_help},
+    {"attach-device", cmdAttachDevice, opts_attach_device, info_attach_device},
+    {"attach-disk", cmdAttachDisk, opts_attach_disk, info_attach_disk},
+    {"attach-interface", cmdAttachInterface, opts_attach_interface, info_attach_interface},
     {"autostart", cmdAutostart, opts_autostart, info_autostart},
     {"capabilities", cmdCapabilities, NULL, info_capabilities},
     {"connect", cmdConnect, opts_connect, info_connect},
@@ -3316,6 +3320,9 @@ static vshCmdDef commands[] = {
     {"create", cmdCreate, opts_create, info_create},
     {"start", cmdStart, opts_start, info_start},
     {"destroy", cmdDestroy, opts_destroy, info_destroy},
+    {"detach-device", cmdDetachDevice, opts_detach_device, info_detach_device},
+    {"detach-disk", cmdDetachDisk, opts_detach_disk, info_detach_disk},
+    {"detach-interface", cmdDetachInterface, opts_detach_interface, info_detach_interface},
     {"define", cmdDefine, opts_define, info_define},
     {"domid", cmdDomid, opts_domid, info_domid},
     {"domuuid", cmdDomuuid, opts_domuuid, info_domuuid},
@@ -3323,7 +3330,6 @@ static vshCmdDef commands[] = {
     {"domname", cmdDomname, opts_domname, info_domname},
     {"domstate", cmdDomstate, opts_domstate, info_domstate},
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
-    {"help", cmdHelp, opts_help, info_help},
     {"list", cmdList, opts_list, info_list},
     {"net-autostart", cmdNetworkAutostart, opts_network_autostart, info_network_autostart},
     {"net-create", cmdNetworkCreate, opts_network_create, info_network_create},
@@ -3353,12 +3359,6 @@ static vshCmdDef commands[] = {
     {"vcpupin", cmdVcpupin, opts_vcpupin, info_vcpupin},
     {"version", cmdVersion, NULL, info_version},
     {"vncdisplay", cmdVNCDisplay, opts_vncdisplay, info_vncdisplay},
-    {"attach-device", cmdAttachDevice, opts_attach_device, info_attach_device},
-    {"detach-device", cmdDetachDevice, opts_detach_device, info_detach_device},
-    {"attach-interface", cmdAttachInterface, opts_attach_interface, info_attach_interface},
-    {"detach-interface", cmdDetachInterface, opts_detach_interface, info_detach_interface},
-    {"attach-disk", cmdAttachDisk, opts_attach_disk, info_attach_disk},
-    {"detach-disk", cmdDetachDisk, opts_detach_disk, info_detach_disk},
     {NULL, NULL, NULL, NULL}
 };
 
@@ -4099,7 +4099,7 @@ _vshStrdup(vshControl * ctl, const char *s, const char *filename, int line)
 }
 
 /*
- * Initialize vistsh
+ * Initialize connection.
  */
 static int
 vshInit(vshControl * ctl)
@@ -4124,8 +4124,12 @@ vshInit(vshControl * ctl)
     else
         ctl->conn = virConnectOpenReadOnly(ctl->name);
 
+    /* This is not necessarily fatal.  All the individual commands check
+     * vshConnectionUsability, except ones which don't need a connection
+     * such as "help".
+     */
     if (!ctl->conn)
-        vshError(ctl, TRUE, _("failed to connect to the hypervisor"));
+        vshError(ctl, FALSE, _("failed to connect to the hypervisor"));
 
     return TRUE;
 }
