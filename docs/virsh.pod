@@ -87,7 +87,7 @@ Running hypervisor: Xen 3.0.0
 (Re)-Connect to the hypervisor. This is a build-in command after shell
 start up, and usually get an I<URI> parameter specifying how to connect
 to the hypervisor. The documentation page at L<http://libvirt.org/uri.html>
-list the values supported but the most commons are:
+list the values supported but the most common are:
 
 =over 4
 
@@ -119,7 +119,7 @@ Print an XML document describing the capabilities of the hypervisor
 we are currently connected to. This includes a section on the host
 capabilities in terms of CPU and features, and a set of description
 for each kind of guest which can be virtualized. For a more complete
-description see the description at:
+description see:
   L<http://libvirt.org/format.html#Capa1>
 
 =item B<list>  
@@ -148,7 +148,6 @@ B<STATES>
 
 The State field lists 6 states for a Xen Domain, and which ones the
 current Domain is in.
-=back
 
 =item B<r - running>
 
@@ -472,4 +471,4 @@ L<https://bugzilla.redhat.com/>
 
 L<https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&component=libvirt&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&bug_status=MODIFIED&short_desc_type=allwordssubstr&short_desc=&long_desc_type=allwordssubstr>
  
-=
+=end
