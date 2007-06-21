@@ -10,94 +10,125 @@ virsh <subcommand> [args]
 
 The B<virsh> program is the main interface for managing virsh guest
 domains. The program can be used to create, pause, and shutdown
-domains. It can also be used to list current domains. Libvirt is a C toolkit to interract with the virtualization capabilities of recent versions of Linux (and other OSes). It is free software available under the GNU Lesser General Public License. Virtualization of the Linux Operating System means the ability to run multiple instances of Operating Systems concurently on a single hardware system where the basic resources are driven by a Linux instance. The library aim at providing long term stable C API initially for the Xen paravirtualization but should be able to integrate other virtualization mechanisms if needed.
+domains. It can also be used to list current domains. Libvirt is a C toolkit to interract with the virtualization capabilities of recent versions of Linux (and other OSes). It is free software available under the GNU Lesser General Public License. Virtualization of the Linux Operating System means the ability to run multiple instances of Operating Systems concurently on a single hardware system where the basic resources are driven by a Linux instance. The library aim at providing long term stable C API initially for the Xen paravirtualization but should be able to integrate other virtualization mechanisms, it currently also support QEmu and KVM.
 
-The basic structure of every virsh command is almost always:
+The basic structure of most virsh usage is:
 
-  virsh <subcommand> <domain-id> [OPTIONS]
+  virsh <command> <domain-id> [OPTIONS]
 
-Where I<subcommand> is one of the sub commands listed below, I<domain-id>
+Where I<command> is one of the commands listed below, I<domain-id>
 is the numeric domain id, or the domain name (which will be internally
-translated to domain id), and I<OPTIONS> are sub command specific
+translated to domain id), and I<OPTIONS> are command specific
 options.  There are a few exceptions to this rule in the cases where
-the sub command in question acts on all domains, the entire machine,
+the command in question acts on all domains, the entire machine,
 or directly on the xen hypervisor.  Those exceptions will be clear for
-each of those sub commands.
+each of those commands.
+
+The B<virsh> program can be used either to run one command at a time
+by giving the command as an argument on the command line, or as a shell
+if no command is given in the command line, it will then start a minimal
+interpreter waiting for your commands and the B<quit> command will then exit
+the program.
 
 =head1 NOTES
 
-All B<virsh> opperations rely upon the libvirt library.
-For any virsh commands to run xend/qemu, or what ever virtual library that libvirt suports.  For this reason you should start xend/qemu as a service when your system first boots using xen/qemu.
+All B<virsh> operations rely upon the libvirt library.
+For any virsh commands to run xend/qemu, or what ever virtual library that libvirt suports.  For this reason you should start xend/qemu as a service when your system first boots using xen/qemu. This can usually be done using the command
+B<service start libvirtd> .
 
 Most B<virsh> commands require root privledges to run due to the
 communications channels used to talk to the hypervisor.  Running as
 non root will return an error.
 
 Most B<virsh> commands act asynchronously, so just because the B<virsh>
-command returned, doesn't mean the action is complete.  This is
+program returned, doesn't mean the action is complete.  This is
 important, as many operations on domains, like create and shutdown,
 can take considerable time (30 seconds or more) to bring the machine
 into a fully compliant state.  If you want to know when one of these
 actions has finished you must poll through virsh list periodically.
 
-=head1 DOMAIN SUBCOMMANDS
+=head1 GENERIC COMMANDS
 
-The following sub commands manipulate domains directly, as stated
-previously most commands take domain-id as the first parameter.
+The following commands are generic i.e. not specific to a domain.
 
 =over 4
 
-=item B<connect> optional I<--readonly>
+=item B<help> optional I<command>
 
-Connect to local hypervisor. This is build-in command after shell start up.
+This prints a small synoposis about all commands available for B<virsh>
+B<help> I<command> will print out a detailed help message on that command.
 
-The I<--readonly> option read-only connection
+=item B<quit> 
 
-=item B<create> I<FILE> 
+quit this interactive terminal
 
-Create a domain from an XML <file> an easy way to create one if you have a pre-existing xen guest created via B<xm> create <XMLFILE>. 
+=item B<version> 
 
-B<Example>
+Will print out the major version info about what this built from. 
 
-virsh dumpxml <domain-name or id> to a file. 
+=over 4
 
-=item B<dinfo> I<domain-name or id> 
+B<Example> 
 
-Returns basic information about the domain.
+B<virsh> version 
 
-=item B<dumpxml> I<domain-name or id>
+Compiled against library: libvir 0.0.6 
 
-Ouput the domain informations as an XML dump to stdout, this format can be used by the create sub command. 
+Using library: libvir 0.0.6
 
+Using API: Xen 3.0.0
 
-=item B<destroy> I<domain-name or id>
+Running hypervisor: Xen 3.0.0
 
-Immediately terminate the domain domain-id.  This doesn't give the domain
-OS any chance to react, and it the equivalent of ripping the power
-cord out on a physical machine.  In most cases you will want to use
-the B<shutdown> command instead.
+=back
 
-=item B<domid> I<domain-name>
+=item B<connect> I<URI> optional I<--readonly>
 
-Converts a domain name to a domain id using xend's internal mapping.
+(Re)-Connect to the hypervisor. This is a build-in command after shell
+start up, and usually get an I<URI> parameter specifying how to connect
+to the hypervisor. The documentation page at L<http://libvirt.org/uri.html>
+list the values supported but the most commons are:
 
-=item B<dominfo> I<domain-name or id>
+=over 4
 
-Returns basic information about the domain.
+=item xen///
 
-=item B<domname> I<domain-id>
+this is used to connect to the local Xen hypervisor, this is the default
 
-convert a domain Id to domain name
+=item qemu:///system
 
-=item B<domstate> I<domain-name or id>
+allow to connect locally as root to the daemon supervizing QEmu domains
 
-Returns state about a running domain.
+=item qemu:///session
 
-=item B<help> optional I<subcommand>   
+allow to connect locally as a normal user to the his own set of QEmu domain 
 
-Displays the short help message (i.e. common commands).
+=item kvm:///system
 
-B<help> I<subcommand> will print out a detailed help message on that sub command
+allow to connect locally as root to the daemon supervizing KVM domains
+
+=item kvm:///session
+
+allow to connect locally as a normal user to the his own set of KVM domain 
+
+=back
+
+For remote access see the documetnation page on how to make URIs.
+The I<--readonly> option allows for read-only connection
+
+=item B<nodeinfo>
+
+Returns basic information about the node, like number and type of CPU,
+and size of the physical memory.
+
+=item B<capabilities>  
+
+Print an XML document describing the capabilities of the hypervisor
+we are currently connected to. This includes a section on the host
+capabilities in terms of CPU and features, and a set of description
+for each kind of guest which can be virtualized. For a more complete
+description see the description at:
+  L<http://libvirt.org/format.html#Capa1>
 
 =item B<list>  
 
@@ -146,7 +177,9 @@ scheduling by the Xen hypervisor.
 
 =item B<s - shutdown>
 
-FIXME: Why would you ever see this state?
+The domain is in the process of shutting down, i.e. the guest operating system
+has been notified and should be in the process of stopping its operations 
+gracefully.
 
 =item B<c - crashed>
 
@@ -159,17 +192,74 @@ restart on crash.  See L<xmdomain.cfg> for more info.
 The domain is in process of dying, but hasn't completely shutdown or
 crashed.
 
-FIXME: Is this right?
-
 =back
 
-=item B<nodeinfo> I<domain-name or id>
+=head1 DOMAIN COMMANDS
 
-Returns basic information about the node.
+The following commands manipulate domains directly, as stated
+previously most commands take domain-id as the first parameter. The
+I<domain-id> can be specified as an short integer, a name or a full UUID.
 
-=item B<quit> 
+=over 4
 
-quit this interactive terminal
+=item B<autostart> optional I<----disable> I<domain-id>
+
+Configure a domain to be automatically started at boot.
+
+The option I<----disable> disable autostarting.
+
+=item B<console> I<domain-id>
+
+Connect the virtual serial console for the guest.
+
+=item B<create> I<FILE> 
+
+Create a domain from an XML <file> an easy way to create one if you have a pre-existing xen guest created via B<xm> create <XMLFILE>. 
+
+B<Example>
+
+virsh dumpxml <domain-id> > file. 
+
+=item B<define> I<FILE>
+
+Define a domain from an XML <file>. The domain definitions is registered
+but not started.
+
+=item B<destroy> I<domain-id>
+
+Immediately terminate the domain domain-id.  This doesn't give the domain
+OS any chance to react, and it the equivalent of ripping the power
+cord out on a physical machine.  In most cases you will want to use
+the B<shutdown> command instead.
+
+=item B<dominfo> I<domain-id> 
+
+Returns basic information about the domain.
+
+=item B<domuuid> I<domain-name-or-id>
+
+Convert a domain name or id to domain UUID
+
+=item B<domid> I<domain-name>
+
+Converts a domain name to a domain id using xend's internal mapping.
+
+=item B<dominfo> I<domain-id>
+
+Returns basic information about the domain.
+
+=item B<domname> I<domain-id>
+
+convert a domain Id to domain name
+
+=item B<domstate> I<domain-id>
+
+Returns state about a running domain.
+
+=item B<dumpxml> I<domain-id>
+
+Ouput the domain informations as an XML dump to stdout, this format can be used by the B<create> command. 
+
 
 =item B<reboot> I<domain-id>
 
@@ -197,6 +287,24 @@ This is roughly equivalent to doing a hibernate on a running computer,
 with all the same limitations.  Open network connections may be
 severed upon restore, as TCP timeouts may have expired.
 
+=item B<setmem> I<domain-id> B<kilobytes>
+
+Change the current memory allocation in the guest domain. This should take
+effect immediately. The memory limit is specified in
+kilobytes.
+
+=item B<setmaxmem> I<domain-id> B<kilobytes>
+
+Change the maximum memory allocation limit in the guest domain. This should
+not change the current memory use. The memory limit is specified in 
+kilobytes.
+
+=item B<setvcpus> I<domain-id> I<count>
+
+Change the number of virtual CPUs active in the guest domain. Note that
+I<count> may be limited by host, hypervisor or limit coming from the 
+original description of domain.
+
 =item B<shutdown> I<domain-id>
 
 Gracefully shuts down a domain.  This coordinates with the domain OS
@@ -208,31 +316,147 @@ For a xen guest vm the behavior of what happens to a domain when it reboots is s
 I<on_shutdown> parameter of the xmdomain.cfg file when the domain was
 created.
 
+=item B<suspend> I<domain-id>
+
+Suspend a running domain. It is kept in memory but won't be scheduled
+anymore.
 
 =item B<resume> I<domain-id>
 
-Moves a domain out of the paused state.  This will allow a previously
-paused domain to now be eligible for scheduling by the the under lying hypervisor.
+Moves a domain out of the suspended state.  This will allow a previously
+suspended domain to now be eligible for scheduling by the the underlying
+hypervisor.
 
-=item B<version> 
+=item B<undefine> I<domain-id>
 
-Will print out the major version info about what this built from. 
+Undefine the configuration for an inactive domain. Since it's not running
+the domain name or UUId must be used as the I<domain-id>.
 
-=over 8
+=item B<vcpuinfo> I<domain-id>
 
-B<Example> 
+Returns basic information about the domain virtual CPUs, like the number of
+vCPUs, the running time, the affinity to physical processors.
 
-B<virsh> version 
+=item B<vcpupin> I<domain-id> I<vcpu> I<cpulist>
 
-Compiled against library: libvir 0.0.6 
+Pin domain VCPUs to host physical CPUs. The I<vcpu> number must be provided
+and I<cpulist> is a comma separated list of physical CPU numbers.
 
-Using library: libvir 0.0.6
+=item B<vncdisplay> I<domain-id>
 
-Using API: Xen 3.0.0
-
-Running hypervisor: Xen 3.0.0
+Output the IP address and port number for the VNC display.
 
 =back
+
+=head1 DEVICES COMMANDS
+
+The following commands manipulate devices associated to domains.
+The domain-id can be specified as an short integer, a name or a full UUID.
+To better understand the values allowed as options for the command
+reading the documentation at L<http://libvirt.org/format.html> on the
+format of the device sections to get the most accurate set of accepted values.
+
+=over 4
+
+=item B<attach-device> I<domain-id> I<FILE>
+
+Attach a device to the domain, using a device definition in an XML file.
+See the documentation to learn about libvirt XML format for a device.
+
+=item B<attach-disk> I<domain-id> I<source> I<target> optional I<--driver driver> I<--subdriver subdriver> I<--type type> I<--mode mode>
+
+Attach a new disk device to the domain.
+I<source> and I<target> are paths for the files and devices.
+I<driver> can be I<file>, I<tap> or I<phy> depending on the kind of access.
+I<type> can indicate I<cdrom> or I<floppy> as alternative to the disk default.
+I<mode> can specify the two specific mode I<readonly> or I<shareable>.
+
+=item B<attach-interface> I<domain-id> I<type> I<source> optional I<--target target> I<--mac mac> I<--script script>
+
+Attach a new network interface to the domain.
+I<type> can be either I<network> to indicate a physical network device or I<bridge> to indicate a bridge to a device.
+I<source> indicates the source device.
+I<target> allows to indicate the target device in the guest.
+I<mac> allows to specify the MAC address of the network interface.
+I<script> allows to specify a path to a script handling a bridge instead of
+the default one.
+
+=item B<detach-device> I<domain-id> I<FILE>
+
+Detach a device from the domain, takes the same kind of XML descriptions
+as command B<attach-device>.
+
+=item B<detach-disk> I<domain-id> I<target>
+
+Detach a disk device from a domain. The I<target> is the device as seen
+from the domain.
+
+=item B<detach-interface> I<domain-id> I<type> optional I<--mac mac>
+
+Detatch a network interface from a domain.
+I<type> can be either I<network> to indicate a physical network device or I<bridge> to indicate a bridge to a device.
+It is recommended to use the I<mac> option to distinguish between the interfaces
+if more than one are present on the domain.
+
+=back
+
+=head1 VIRTUAL NETWORKS COMMANDS
+
+The following commands manipulate networks. Libvirt has the capability to
+define virtual networks which can then be used by domains and linked to
+actual network dvices. For more detailed informations about this feature
+see the documentation at L<http://libvirt.org/format.html#Net1> . A lot
+of the command for virtual networks are similar to the one used for domains,
+but the way to name a virtual network is either by its name or UUID.
+
+=over 4
+
+=item B<net-autostart> I<network> optional I<--disable>
+
+Configure a virtual network to be automatically started at boot.
+The I<--disable> option disable autostarting.
+
+=item B<net-create> I<file>
+
+Create a virtual network from an XML I<file>, see the documentation to get
+a description of the XML network format used by libvirt. 
+
+=item B<net-define> I<file>
+
+Define a virtual network from an XML I<file>, the network is just defined but
+not instanciated.
+
+=item B<net-destroy> I<network>
+
+Destroy a given virtual network specified by its name or UUID. This takes
+effect immediately.
+
+=item B<net-dumpxml> I<network>
+
+Output the virtual network information as an XML dump to stdout.
+
+=item B<net-list> optional I<--inactive> or I<--all>
+
+Returns the list of active networks, if I<--all> is specified this will also
+include defined but inactive networks, if I<--inactive> is specified only the
+inactive ones will be listed.
+
+=item B<net-name> I<network-UUID>
+
+Convert a network UUID to network name.
+
+=item B<net-start> I<network>
+
+Start a (previously defined) inactive network.
+
+=item B<net-undefine> I<network>
+
+Undefine the configuration for an inactive network.
+
+=item B<net-uuid> I<network-name>
+
+Convert a network name to network UUID.
+
 =back
 
 =head1 SEE ALSO

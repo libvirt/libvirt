@@ -1,3 +1,9 @@
+Thu Jun 21 16:59:02 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* virsh.1 docs/virsh.pod docs/Makefile.am: updated the pod file
+	  to reflect the current set of commands, added a rule in the Makefile
+	  to regenerate the man page, and regenerated.
+
 Thu Jun 21 09:38:12 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* docs/virsh.pod: commit of original POD file for virsh man page

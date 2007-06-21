@@ -17,6 +17,9 @@ man_MANS=
 
 all: web $(top_builddir)/NEWS $(man_MANS)
 
+virsh.1: virsh.pod
+	pod2man -c "Virtualization Support" virsh.pod > virsh.1 && cp virsh.1 $(top_builddir)
+
 api: libvirt-api.xml libvirt-refs.xml $(APIPAGES) $(srcdir)/html/index.html
 
 web: $(PAGES)
