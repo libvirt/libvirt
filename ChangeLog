@@ -1,3 +1,8 @@
+Thu Jun 21 11:35:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/remote_interal.c: fix marshalling of 'id' field for
+	virDomainPtr objects on the wire
+
 Thu Jun 21 16:59:02 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* virsh.1 docs/virsh.pod docs/Makefile.am: updated the pod file

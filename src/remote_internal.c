@@ -1357,6 +1357,7 @@ remoteDomainGetInfo (virDomainPtr domain, virDomainInfoPtr info)
     info->memory = ret.memory;
     info->nrVirtCpu = ret.nr_virt_cpu;
     info->cpuTime = ret.cpu_time;
+
     return 0;
 }
 
@@ -2440,6 +2441,7 @@ get_nonnull_network (virConnectPtr conn, remote_nonnull_network network)
 static void
 make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr dom_src)
 {
+    dom_dst->id = dom_src->id;
     dom_dst->name = dom_src->name;
     memcpy (dom_dst->uuid, dom_src->uuid, VIR_UUID_BUFLEN);
 }
