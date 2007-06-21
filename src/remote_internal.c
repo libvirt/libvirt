@@ -985,7 +985,7 @@ remoteGetMaxVcpus (virConnectPtr conn, const char *type)
     GET_PRIVATE (conn, -1);
 
     memset (&ret, 0, sizeof ret);
-    args.type = (char **) &type;
+    args.type = type == NULL ? NULL : (char **) &type;
     if (call (conn, priv, 0, REMOTE_PROC_GET_MAX_VCPUS,
               (xdrproc_t) xdr_remote_get_max_vcpus_args, (char *) &args,
               (xdrproc_t) xdr_remote_get_max_vcpus_ret, (char *) &ret) == -1)

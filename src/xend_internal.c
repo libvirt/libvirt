@@ -2398,8 +2398,11 @@ xenDaemonDomainDumpXMLByID(virConnectPtr conn, int domid)
     xenUnifiedPrivatePtr priv;
 
     root = sexpr_get(conn, "/xend/domain/%d?detail=1", domid);
-    if (root == NULL)
+    if (root == NULL) {
+        virXendError (conn, VIR_ERR_XEN_CALL,
+                      "xenDaemonDomainDumpXMLByID failed to find this domain");
         return (NULL);
+    }
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
 
@@ -2417,8 +2420,11 @@ xenDaemonDomainDumpXMLByName(virConnectPtr conn, const char *name)
     xenUnifiedPrivatePtr priv;
 
     root = sexpr_get(conn, "/xend/domain/%s?detail=1", name);
-    if (root == NULL)
+    if (root == NULL) {
+        virXendError (conn, VIR_ERR_XEN_CALL,
+                      "xenDaemonDomainDumpXMLByName failed to find this domain");
         return (NULL);
+    }
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
 
@@ -2451,8 +2457,12 @@ xenDaemonDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
     }
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
-    if (domain->id < 0 && priv->xendConfigVersion < 3)
+    if (domain->id < 0 && priv->xendConfigVersion < 3) {
+        virXendError (domain->conn, VIR_ERR_XEN_CALL,
+                      "xenDaemonDomainDumpXML domain ID < 0 and xendConfigVersion < 3");
         return(NULL);
+    }
+
     if (domain->id < 0)
         return xenDaemonDomainDumpXMLByName(domain->conn, domain->name);
     else
