@@ -214,21 +214,15 @@ start up, and usually get an \fI\s-1URI\s0\fR parameter specifying how to connec
 to the hypervisor. The documentation page at <http://libvirt.org/uri.html>
 list the values supported but the most commons are:
 .RS 4
-.IP "xen///" 4
-.IX Item "xen///"
+.IP "xen:///" 4
+.IX Item "xen:///"
 this is used to connect to the local Xen hypervisor, this is the default
 .IP "qemu:///system" 4
 .IX Item "qemu:///system"
-allow to connect locally as root to the daemon supervizing QEmu domains
+allow to connect locally as root to the daemon supervizing QEmu and \s-1KVM\s0 domains
 .IP "qemu:///session" 4
 .IX Item "qemu:///session"
-allow to connect locally as a normal user to the his own set of QEmu domain 
-.IP "kvm:///system" 4
-.IX Item "kvm:///system"
-allow to connect locally as root to the daemon supervizing \s-1KVM\s0 domains
-.IP "kvm:///session" 4
-.IX Item "kvm:///session"
-allow to connect locally as a normal user to the his own set of \s-1KVM\s0 domain 
+allow to connect locally as a normal user to the his own set of QEmu and \s-1KVM\s0 domains
 .RE
 .RS 4
 .Sp
@@ -310,11 +304,11 @@ crashed.
 The following commands manipulate domains directly, as stated
 previously most commands take domain-id as the first parameter. The
 \&\fIdomain-id\fR can be specified as an short integer, a name or a full \s-1UUID\s0.
-.IP "\fBautostart\fR optional \fI\-\-\-\-disable\fR \fIdomain-id\fR" 4
-.IX Item "autostart optional ----disable domain-id"
+.IP "\fBautostart\fR optional \fI\-\-disable\fR \fIdomain-id\fR" 4
+.IX Item "autostart optional --disable domain-id"
 Configure a domain to be automatically started at boot.
 .Sp
-The option \fI\-\-\-\-disable\fR disable autostarting.
+The option \fI\-\-disable\fR disable autostarting.
 .IP "\fBconsole\fR \fIdomain-id\fR" 4
 .IX Item "console domain-id"
 Connect the virtual serial console for the guest.
