@@ -1,0 +1,259 @@
+=head1 NAME
+
+virsh - management user interface
+
+=head1 SYNOPSIS
+
+virsh <subcommand> [args]
+
+=head1 DESCRIPTION
+
+The B<virsh> program is the main interface for managing virsh guest
+domains. The program can be used to create, pause, and shutdown
+domains. It can also be used to list current domains. Libvirt is a C toolkit to interract with the virtualization capabilities of recent versions of Linux (and other OSes). It is free software available under the GNU Lesser General Public License. Virtualization of the Linux Operating System means the ability to run multiple instances of Operating Systems concurently on a single hardware system where the basic resources are driven by a Linux instance. The library aim at providing long term stable C API initially for the Xen paravirtualization but should be able to integrate other virtualization mechanisms if needed.
+
+The basic structure of every virsh command is almost always:
+
+  virsh <subcommand> <domain-id> [OPTIONS]
+
+Where I<subcommand> is one of the sub commands listed below, I<domain-id>
+is the numeric domain id, or the domain name (which will be internally
+translated to domain id), and I<OPTIONS> are sub command specific
+options.  There are a few exceptions to this rule in the cases where
+the sub command in question acts on all domains, the entire machine,
+or directly on the xen hypervisor.  Those exceptions will be clear for
+each of those sub commands.
+
+=head1 NOTES
+
+All B<virsh> opperations rely upon the libvirt library.
+For any virsh commands to run xend/qemu, or what ever virtual library that libvirt suports.  For this reason you should start xend/qemu as a service when your system first boots using xen/qemu.
+
+Most B<virsh> commands require root privledges to run due to the
+communications channels used to talk to the hypervisor.  Running as
+non root will return an error.
+
+Most B<virsh> commands act asynchronously, so just because the B<virsh>
+command returned, doesn't mean the action is complete.  This is
+important, as many operations on domains, like create and shutdown,
+can take considerable time (30 seconds or more) to bring the machine
+into a fully compliant state.  If you want to know when one of these
+actions has finished you must poll through virsh list periodically.
+
+=head1 DOMAIN SUBCOMMANDS
+
+The following sub commands manipulate domains directly, as stated
+previously most commands take domain-id as the first parameter.
+
+=over 4
+
+=item B<connect> optional I<--readonly>
+
+Connect to local hypervisor. This is build-in command after shell start up.
+
+The I<--readonly> option read-only connection
+
+=item B<create> I<FILE> 
+
+Create a domain from an XML <file> an easy way to create one if you have a pre-existing xen guest created via B<xm> create <XMLFILE>. 
+
+B<Example>
+
+virsh dumpxml <domain-name or id> to a file. 
+
+=item B<dinfo> I<domain-name or id> 
+
+Returns basic information about the domain.
+
+=item B<dumpxml> I<domain-name or id>
+
+Ouput the domain informations as an XML dump to stdout, this format can be used by the create sub command. 
+
+
+=item B<destroy> I<domain-name or id>
+
+Immediately terminate the domain domain-id.  This doesn't give the domain
+OS any chance to react, and it the equivalent of ripping the power
+cord out on a physical machine.  In most cases you will want to use
+the B<shutdown> command instead.
+
+=item B<domid> I<domain-name>
+
+Converts a domain name to a domain id using xend's internal mapping.
+
+=item B<dominfo> I<domain-name or id>
+
+Returns basic information about the domain.
+
+=item B<domname> I<domain-id>
+
+convert a domain Id to domain name
+
+=item B<domstate> I<domain-name or id>
+
+Returns state about a running domain.
+
+=item B<help> optional I<subcommand>   
+
+Displays the short help message (i.e. common commands).
+
+B<help> I<subcommand> will print out a detailed help message on that sub command
+
+=item B<list>  
+
+Prints information about one or more domains.  If no domains are
+specified it prints out information about all domains.
+
+An example format for the list is as follows:
+
+B<virsh> list
+ Id Name                 State 
+
+---------------------------------- 
+
+  0 Domain-0             running 
+  2 fedora               paused 
+
+
+Name is the name of the domain.  ID the domain numeric id.  
+ State is the run state (see below).  
+
+=over 4
+
+B<STATES>
+
+
+The State field lists 6 states for a Xen Domain, and which ones the
+current Domain is in.
+=back
+
+=item B<r - running>
+
+The domain is currently running on a CPU
+
+=item B<b - blocked>
+
+The domain is blocked, and not running or runable.  This can be caused
+because the domain is waiting on IO (a traditional wait state) or has
+gone to sleep because there was nothing else for it to do.
+
+=item B<p - paused>
+
+The domain has been paused, usually occurring through the administrator
+running B<xm pause>.  When in a paused state the domain will still
+consume allocated resources like memory, but will not be eligible for
+scheduling by the Xen hypervisor.
+
+=item B<s - shutdown>
+
+FIXME: Why would you ever see this state?
+
+=item B<c - crashed>
+
+The domain has crashed, which is always a violent ending.  Usually
+this state can only occur if the domain has been configured not to
+restart on crash.  See L<xmdomain.cfg> for more info.
+
+=item B<d - dying>
+
+The domain is in process of dying, but hasn't completely shutdown or
+crashed.
+
+FIXME: Is this right?
+
+=back
+
+=item B<nodeinfo> I<domain-name or id>
+
+Returns basic information about the node.
+
+=item B<quit> 
+
+quit this interactive terminal
+
+=item B<reboot> I<domain-id>
+
+Reboot a domain.  This acts just as if the domain had the B<reboot>
+command run from the console.  The command returns as soon as it has
+executed the reboot action, which may be significantly before the
+domain actually reboots.
+
+For xen vm the behavior of what happens to a domain when it reboots is set by the
+I<on_reboot> parameter of the xmdomain.cfg file when the domain was
+created.
+
+=item B<restore> I<state-file>
+
+Restores a domain from an B<virsh save> state file.  See I<save> for more info.
+
+=item B<save> I<domain-id> I<state-file>
+
+Saves a running domain to a state file so that it can be restored
+later.  Once saved, the domain will no longer be running on the
+system, thus the memory allocated for the domain will be free for
+other domains to use.  B<virsh restore> restores from this state file.
+
+This is roughly equivalent to doing a hibernate on a running computer,
+with all the same limitations.  Open network connections may be
+severed upon restore, as TCP timeouts may have expired.
+
+=item B<shutdown> I<domain-id>
+
+Gracefully shuts down a domain.  This coordinates with the domain OS
+to perform graceful shutdown, so there is no guaruntee that it will
+succeed, and may take a variable length of time depending on what
+services must be shutdown in the domain.  
+
+For a xen guest vm the behavior of what happens to a domain when it reboots is set by the
+I<on_shutdown> parameter of the xmdomain.cfg file when the domain was
+created.
+
+
+=item B<resume> I<domain-id>
+
+Moves a domain out of the paused state.  This will allow a previously
+paused domain to now be eligible for scheduling by the the under lying hypervisor.
+
+=item B<version> 
+
+Will print out the major version info about what this built from. 
+
+=over 8
+
+B<Example> 
+
+B<virsh> version 
+
+Compiled against library: libvir 0.0.6 
+
+Using library: libvir 0.0.6
+
+Using API: Xen 3.0.0
+
+Running hypervisor: Xen 3.0.0
+
+=back
+=back
+
+=head1 SEE ALSO
+
+L<xm(1)>, L<xmdomain.cfg(5)>, L<xentop(1)> , L<http://www.libvirt.org/>
+
+=head1 AUTHOR
+
+  Andrew Puch <apuch @ redhat.com> 
+  Daniel Veillard <veillard @ redhat.com>
+
+  Based on the xm man paged by 
+  Sean Dague <sean at dague dot net>
+  Daniel Stekloff <dsteklof at us dot ibm dot com>
+
+
+=head1 BUGS
+
+Bugs can be view on the RedHat buzilla page under the libvirt 
+L<https://bugzilla.redhat.com/>
+
+L<https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&component=libvirt&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&bug_status=MODIFIED&short_desc_type=allwordssubstr&short_desc=&long_desc_type=allwordssubstr>
+ 
+=
