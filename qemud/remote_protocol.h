@@ -26,6 +26,7 @@ typedef remote_nonnull_string *remote_string;
 #define REMOTE_VCPUINFO_MAX 2048
 #define REMOTE_CPUMAPS_MAX 16384
 #define REMOTE_NETWORK_NAME_LIST_MAX 256
+#define REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX 16
 
 typedef char remote_uuid[VIR_UUID_BUFLEN];
 
@@ -69,6 +70,25 @@ struct remote_vcpu_info {
 };
 typedef struct remote_vcpu_info remote_vcpu_info;
 
+struct remote_sched_param_value {
+	int type;
+	union {
+		int i;
+		u_int ui;
+		quad_t l;
+		u_quad_t ul;
+		double d;
+		int b;
+	} remote_sched_param_value_u;
+};
+typedef struct remote_sched_param_value remote_sched_param_value;
+
+struct remote_sched_param {
+	remote_nonnull_string field;
+	remote_sched_param_value value;
+};
+typedef struct remote_sched_param remote_sched_param;
+
 struct remote_open_args {
 	remote_string name;
 	int flags;
@@ -111,6 +131,40 @@ struct remote_get_capabilities_ret {
 	remote_nonnull_string capabilities;
 };
 typedef struct remote_get_capabilities_ret remote_get_capabilities_ret;
+
+struct remote_domain_get_scheduler_type_args {
+	remote_nonnull_domain dom;
+};
+typedef struct remote_domain_get_scheduler_type_args remote_domain_get_scheduler_type_args;
+
+struct remote_domain_get_scheduler_type_ret {
+	remote_nonnull_string type;
+	int nparams;
+};
+typedef struct remote_domain_get_scheduler_type_ret remote_domain_get_scheduler_type_ret;
+
+struct remote_domain_get_scheduler_parameters_args {
+	remote_nonnull_domain dom;
+	int nparams;
+};
+typedef struct remote_domain_get_scheduler_parameters_args remote_domain_get_scheduler_parameters_args;
+
+struct remote_domain_get_scheduler_parameters_ret {
+	struct {
+		u_int params_len;
+		remote_sched_param *params_val;
+	} params;
+};
+typedef struct remote_domain_get_scheduler_parameters_ret remote_domain_get_scheduler_parameters_ret;
+
+struct remote_domain_set_scheduler_parameters_args {
+	remote_nonnull_domain dom;
+	struct {
+		u_int params_len;
+		remote_sched_param *params_val;
+	} params;
+};
+typedef struct remote_domain_set_scheduler_parameters_args remote_domain_set_scheduler_parameters_args;
 
 struct remote_list_domains_args {
 	int maxids;
@@ -569,6 +623,9 @@ enum remote_procedure {
 	REMOTE_PROC_DOMAIN_CORE_DUMP = 53,
 	REMOTE_PROC_DOMAIN_RESTORE = 54,
 	REMOTE_PROC_DOMAIN_SAVE = 55,
+	REMOTE_PROC_DOMAIN_GET_SCHEDULER_TYPE = 56,
+	REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS = 57,
+	REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS = 58,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -607,6 +664,8 @@ extern  bool_t xdr_remote_domain (XDR *, remote_domain*);
 extern  bool_t xdr_remote_network (XDR *, remote_network*);
 extern  bool_t xdr_remote_error (XDR *, remote_error*);
 extern  bool_t xdr_remote_vcpu_info (XDR *, remote_vcpu_info*);
+extern  bool_t xdr_remote_sched_param_value (XDR *, remote_sched_param_value*);
+extern  bool_t xdr_remote_sched_param (XDR *, remote_sched_param*);
 extern  bool_t xdr_remote_open_args (XDR *, remote_open_args*);
 extern  bool_t xdr_remote_get_type_ret (XDR *, remote_get_type_ret*);
 extern  bool_t xdr_remote_get_version_ret (XDR *, remote_get_version_ret*);
@@ -614,6 +673,11 @@ extern  bool_t xdr_remote_get_max_vcpus_args (XDR *, remote_get_max_vcpus_args*)
 extern  bool_t xdr_remote_get_max_vcpus_ret (XDR *, remote_get_max_vcpus_ret*);
 extern  bool_t xdr_remote_node_get_info_ret (XDR *, remote_node_get_info_ret*);
 extern  bool_t xdr_remote_get_capabilities_ret (XDR *, remote_get_capabilities_ret*);
+extern  bool_t xdr_remote_domain_get_scheduler_type_args (XDR *, remote_domain_get_scheduler_type_args*);
+extern  bool_t xdr_remote_domain_get_scheduler_type_ret (XDR *, remote_domain_get_scheduler_type_ret*);
+extern  bool_t xdr_remote_domain_get_scheduler_parameters_args (XDR *, remote_domain_get_scheduler_parameters_args*);
+extern  bool_t xdr_remote_domain_get_scheduler_parameters_ret (XDR *, remote_domain_get_scheduler_parameters_ret*);
+extern  bool_t xdr_remote_domain_set_scheduler_parameters_args (XDR *, remote_domain_set_scheduler_parameters_args*);
 extern  bool_t xdr_remote_list_domains_args (XDR *, remote_list_domains_args*);
 extern  bool_t xdr_remote_list_domains_ret (XDR *, remote_list_domains_ret*);
 extern  bool_t xdr_remote_num_of_domains_ret (XDR *, remote_num_of_domains_ret*);
@@ -700,6 +764,8 @@ extern bool_t xdr_remote_domain ();
 extern bool_t xdr_remote_network ();
 extern bool_t xdr_remote_error ();
 extern bool_t xdr_remote_vcpu_info ();
+extern bool_t xdr_remote_sched_param_value ();
+extern bool_t xdr_remote_sched_param ();
 extern bool_t xdr_remote_open_args ();
 extern bool_t xdr_remote_get_type_ret ();
 extern bool_t xdr_remote_get_version_ret ();
@@ -707,6 +773,11 @@ extern bool_t xdr_remote_get_max_vcpus_args ();
 extern bool_t xdr_remote_get_max_vcpus_ret ();
 extern bool_t xdr_remote_node_get_info_ret ();
 extern bool_t xdr_remote_get_capabilities_ret ();
+extern bool_t xdr_remote_domain_get_scheduler_type_args ();
+extern bool_t xdr_remote_domain_get_scheduler_type_ret ();
+extern bool_t xdr_remote_domain_get_scheduler_parameters_args ();
+extern bool_t xdr_remote_domain_get_scheduler_parameters_ret ();
+extern bool_t xdr_remote_domain_set_scheduler_parameters_args ();
 extern bool_t xdr_remote_list_domains_args ();
 extern bool_t xdr_remote_list_domains_ret ();
 extern bool_t xdr_remote_num_of_domains_ret ();

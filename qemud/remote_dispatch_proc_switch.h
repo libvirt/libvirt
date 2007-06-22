@@ -107,6 +107,24 @@ case REMOTE_PROC_DOMAIN_GET_OS_TYPE:
 	ret = (char *) &lv_remote_domain_get_os_type_ret;
 	memset (&lv_remote_domain_get_os_type_ret, 0, sizeof lv_remote_domain_get_os_type_ret);
 	break;
+case REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS:
+	fn = (dispatch_fn) remoteDispatchDomainGetSchedulerParameters;
+	args_filter = (xdrproc_t) xdr_remote_domain_get_scheduler_parameters_args;
+	args = (char *) &lv_remote_domain_get_scheduler_parameters_args;
+	memset (&lv_remote_domain_get_scheduler_parameters_args, 0, sizeof lv_remote_domain_get_scheduler_parameters_args);
+	ret_filter = (xdrproc_t) xdr_remote_domain_get_scheduler_parameters_ret;
+	ret = (char *) &lv_remote_domain_get_scheduler_parameters_ret;
+	memset (&lv_remote_domain_get_scheduler_parameters_ret, 0, sizeof lv_remote_domain_get_scheduler_parameters_ret);
+	break;
+case REMOTE_PROC_DOMAIN_GET_SCHEDULER_TYPE:
+	fn = (dispatch_fn) remoteDispatchDomainGetSchedulerType;
+	args_filter = (xdrproc_t) xdr_remote_domain_get_scheduler_type_args;
+	args = (char *) &lv_remote_domain_get_scheduler_type_args;
+	memset (&lv_remote_domain_get_scheduler_type_args, 0, sizeof lv_remote_domain_get_scheduler_type_args);
+	ret_filter = (xdrproc_t) xdr_remote_domain_get_scheduler_type_ret;
+	ret = (char *) &lv_remote_domain_get_scheduler_type_ret;
+	memset (&lv_remote_domain_get_scheduler_type_ret, 0, sizeof lv_remote_domain_get_scheduler_type_ret);
+	break;
 case REMOTE_PROC_DOMAIN_GET_VCPUS:
 	fn = (dispatch_fn) remoteDispatchDomainGetVcpus;
 	args_filter = (xdrproc_t) xdr_remote_domain_get_vcpus_args;
@@ -190,6 +208,12 @@ case REMOTE_PROC_DOMAIN_SET_MEMORY:
 	args_filter = (xdrproc_t) xdr_remote_domain_set_memory_args;
 	args = (char *) &lv_remote_domain_set_memory_args;
 	memset (&lv_remote_domain_set_memory_args, 0, sizeof lv_remote_domain_set_memory_args);
+	break;
+case REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS:
+	fn = (dispatch_fn) remoteDispatchDomainSetSchedulerParameters;
+	args_filter = (xdrproc_t) xdr_remote_domain_set_scheduler_parameters_args;
+	args = (char *) &lv_remote_domain_set_scheduler_parameters_args;
+	memset (&lv_remote_domain_set_scheduler_parameters_args, 0, sizeof lv_remote_domain_set_scheduler_parameters_args);
 	break;
 case REMOTE_PROC_DOMAIN_SET_VCPUS:
 	fn = (dispatch_fn) remoteDispatchDomainSetVcpus;

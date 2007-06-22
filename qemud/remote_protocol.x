@@ -75,6 +75,9 @@ const REMOTE_CPUMAPS_MAX = 16384;
 /* Upper limit on lists of network names. */
 const REMOTE_NETWORK_NAME_LIST_MAX = 256;
 
+/* Upper limit on list of scheduler parameters. */
+const REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX = 16;
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -123,6 +126,29 @@ struct remote_vcpu_info {
     int state;
     unsigned hyper cpu_time;
     int cpu;
+};
+
+/* Wire encoding of virDomainSchedParameter.
+ * Note the enum (type) which must remain binary compatible.
+ */
+union remote_sched_param_value switch (int type) {
+ case VIR_DOMAIN_SCHED_FIELD_INT:
+     int i;
+ case VIR_DOMAIN_SCHED_FIELD_UINT:
+     unsigned int ui;
+ case VIR_DOMAIN_SCHED_FIELD_LLONG:
+     hyper l;
+ case VIR_DOMAIN_SCHED_FIELD_ULLONG:
+     unsigned hyper ul;
+ case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
+     double d;
+ case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
+     int b;
+};
+
+struct remote_sched_param {
+    remote_nonnull_string field;
+    remote_sched_param_value value;
 };
 
 /*----- Calls. -----*/
@@ -176,6 +202,29 @@ struct remote_node_get_info_ret {
 
 struct remote_get_capabilities_ret {
     remote_nonnull_string capabilities;
+};
+
+struct remote_domain_get_scheduler_type_args {
+    remote_nonnull_domain dom;
+};
+
+struct remote_domain_get_scheduler_type_ret {
+    remote_nonnull_string type;
+    int nparams;
+};
+
+struct remote_domain_get_scheduler_parameters_args {
+    remote_nonnull_domain dom;
+    int nparams;
+};
+
+struct remote_domain_get_scheduler_parameters_ret {
+    remote_sched_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>;
+};
+
+struct remote_domain_set_scheduler_parameters_args {
+    remote_nonnull_domain dom;
+    remote_sched_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>;
 };
 
 struct remote_list_domains_args {
@@ -553,7 +602,10 @@ enum remote_procedure {
     REMOTE_PROC_NUM_OF_NETWORKS = 52,
     REMOTE_PROC_DOMAIN_CORE_DUMP = 53,
     REMOTE_PROC_DOMAIN_RESTORE = 54,
-    REMOTE_PROC_DOMAIN_SAVE = 55
+    REMOTE_PROC_DOMAIN_SAVE = 55,
+    REMOTE_PROC_DOMAIN_GET_SCHEDULER_TYPE = 56,
+    REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS = 57,
+    REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS = 58
 };
 
 /* Custom RPC structure. */

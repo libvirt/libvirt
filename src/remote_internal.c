@@ -1731,6 +1731,144 @@ remoteDomainSetAutostart (virDomainPtr domain, int autostart)
     return 0;
 }
 
+static char *
+remoteDomainGetSchedulerType (virDomainPtr domain, int *nparams)
+{
+    remote_domain_get_scheduler_type_args args;
+    remote_domain_get_scheduler_type_ret ret;
+    GET_PRIVATE (domain->conn, NULL);
+
+    make_nonnull_domain (&args.dom, domain);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_SCHEDULER_TYPE,
+              (xdrproc_t) xdr_remote_domain_get_scheduler_type_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_get_scheduler_type_ret, (char *) &ret) == -1)
+        return NULL;
+
+    if (nparams) *nparams = ret.nparams;
+
+    /* Caller frees this. */
+    return ret.type;
+}
+
+static int
+remoteDomainGetSchedulerParameters (virDomainPtr domain,
+                                    virSchedParameterPtr params, int *nparams)
+{
+    remote_domain_get_scheduler_parameters_args args;
+    remote_domain_get_scheduler_parameters_ret ret;
+    int i;
+    GET_PRIVATE (domain->conn, -1);
+
+    make_nonnull_domain (&args.dom, domain);
+    args.nparams = *nparams;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS,
+              (xdrproc_t) xdr_remote_domain_get_scheduler_parameters_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_get_scheduler_parameters_ret, (char *) &ret) == -1)
+        return -1;
+
+    /* Check the length of the returned list carefully. */
+    if (ret.params.params_len > REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX ||
+        ret.params.params_len > *nparams) {
+        xdr_free ((xdrproc_t) xdr_remote_domain_get_scheduler_parameters_ret, (char *) &ret);
+        error (domain->conn, VIR_ERR_RPC, "remoteDomainGetSchedulerParameters: returned number of parameters exceeds limit");
+        return -1;
+    }
+    *nparams = ret.params.params_len;
+
+    /* Deserialise the result. */
+    for (i = 0; i < *nparams; ++i) {
+        strncpy (params[i].field, ret.params.params_val[i].field,
+                 VIR_DOMAIN_SCHED_FIELD_LENGTH);
+        params[i].field[VIR_DOMAIN_SCHED_FIELD_LENGTH-1] = '\0';
+        params[i].type = ret.params.params_val[i].value.type;
+        switch (params[i].type) {
+        case VIR_DOMAIN_SCHED_FIELD_INT:
+            params[i].value.i = ret.params.params_val[i].value.remote_sched_param_value_u.i; break;
+        case VIR_DOMAIN_SCHED_FIELD_UINT:
+            params[i].value.ui = ret.params.params_val[i].value.remote_sched_param_value_u.ui; break;
+        case VIR_DOMAIN_SCHED_FIELD_LLONG:
+            params[i].value.l = ret.params.params_val[i].value.remote_sched_param_value_u.l; break;
+        case VIR_DOMAIN_SCHED_FIELD_ULLONG:
+            params[i].value.ul = ret.params.params_val[i].value.remote_sched_param_value_u.ul; break;
+        case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
+            params[i].value.d = ret.params.params_val[i].value.remote_sched_param_value_u.d; break;
+        case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
+            params[i].value.b = ret.params.params_val[i].value.remote_sched_param_value_u.b; break;
+        default:
+            xdr_free ((xdrproc_t) xdr_remote_domain_get_scheduler_parameters_ret, (char *) &ret);
+            error (domain->conn, VIR_ERR_RPC, "remoteDomainGetSchedulerParameters: unknown parameter type");
+            return -1;
+        }
+    }
+
+    xdr_free ((xdrproc_t) xdr_remote_domain_get_scheduler_parameters_ret, (char *) &ret);
+    return 0;
+}
+
+static int
+remoteDomainSetSchedulerParameters (virDomainPtr domain,
+                                    virSchedParameterPtr params, int nparams)
+{
+    remote_domain_set_scheduler_parameters_args args;
+    int i, do_error;
+    GET_PRIVATE (domain->conn, -1);
+
+    make_nonnull_domain (&args.dom, domain);
+
+    /* Serialise the scheduler parameters. */
+    args.params.params_len = nparams;
+    args.params.params_val = malloc (sizeof (struct remote_sched_param)
+                                     * nparams);
+    if (args.params.params_val == NULL) {
+        error (domain->conn, VIR_ERR_RPC, "out of memory allocating array");
+        return -1;
+    }
+
+    do_error = 0;
+    for (i = 0; i < nparams; ++i) {
+        // call() will free this:
+        args.params.params_val[i].field = strdup (params[i].field);
+        if (args.params.params_val[i].field == NULL) {
+            error (domain->conn, VIR_ERR_NO_MEMORY, "out of memory");
+            do_error = 1;
+        }
+        args.params.params_val[i].value.type = params[i].type;
+        switch (params[i].type) {
+        case VIR_DOMAIN_SCHED_FIELD_INT:
+            args.params.params_val[i].value.remote_sched_param_value_u.i = params[i].value.i; break;
+        case VIR_DOMAIN_SCHED_FIELD_UINT:
+            args.params.params_val[i].value.remote_sched_param_value_u.ui = params[i].value.ui; break;
+        case VIR_DOMAIN_SCHED_FIELD_LLONG:
+            args.params.params_val[i].value.remote_sched_param_value_u.l = params[i].value.l; break;
+        case VIR_DOMAIN_SCHED_FIELD_ULLONG:
+            args.params.params_val[i].value.remote_sched_param_value_u.ul = params[i].value.ul; break;
+        case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
+            args.params.params_val[i].value.remote_sched_param_value_u.d = params[i].value.d; break;
+        case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
+            args.params.params_val[i].value.remote_sched_param_value_u.b = params[i].value.b; break;
+        default:
+            error (domain->conn, VIR_ERR_RPC, "unknown parameter type");
+            do_error = 1;
+        }
+    }
+
+    if (do_error) {
+        xdr_free ((xdrproc_t) xdr_remote_domain_set_scheduler_parameters_args, (char *) &args);
+        return -1;
+    }
+
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS,
+              (xdrproc_t) xdr_remote_domain_set_scheduler_parameters_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        return -1;
+
+    return 0;
+}
+
 /*----------------------------------------------------------------------*/
 
 static int
@@ -2499,6 +2637,9 @@ static virDriver driver = {
     .domainDetachDevice = remoteDomainDetachDevice,
     .domainGetAutostart = remoteDomainGetAutostart,
     .domainSetAutostart = remoteDomainSetAutostart,
+    .domainGetSchedulerType = remoteDomainGetSchedulerType,
+    .domainGetSchedulerParameters = remoteDomainGetSchedulerParameters,
+    .domainSetSchedulerParameters = remoteDomainSetSchedulerParameters,
 };
 
 static virNetworkDriver network_driver = {

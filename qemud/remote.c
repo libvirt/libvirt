@@ -516,6 +516,171 @@ remoteDispatchGetCapabilities (struct qemud_client *client,
 }
 
 static int
+remoteDispatchDomainGetSchedulerType (struct qemud_client *client,
+                                      remote_message_header *req,
+                                      remote_domain_get_scheduler_type_args *args,
+                                      remote_domain_get_scheduler_type_ret *ret)
+{
+    virDomainPtr dom;
+    char *type;
+    int nparams;
+    CHECK_CONN(client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    type = virDomainGetSchedulerType (dom, &nparams);
+    if (type == NULL) return -1;
+
+    ret->type = type;
+    ret->nparams = nparams;
+    return 0;
+}
+
+static int
+remoteDispatchDomainGetSchedulerParameters (struct qemud_client *client,
+                                            remote_message_header *req,
+                                            remote_domain_get_scheduler_parameters_args *args,
+                                            remote_domain_get_scheduler_parameters_ret *ret)
+{
+    virDomainPtr dom;
+    virSchedParameterPtr params;
+    int i, r, nparams;
+    CHECK_CONN(client);
+
+    nparams = args->nparams;
+
+    if (nparams > REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX) {
+        remoteDispatchError (client, req, "nparams too large");
+        return -2;
+    }
+    params = malloc (sizeof (virSchedParameter) * nparams);
+    if (params == NULL) {
+        remoteDispatchError (client, req, "out of memory allocating array");
+        return -2;
+    }
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        free (params);
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    r = virDomainGetSchedulerParameters (dom, params, &nparams);
+    if (r == -1) {
+        free (params);
+        return -1;
+    }
+
+    /* Serialise the scheduler parameters. */
+    ret->params.params_len = nparams;
+    ret->params.params_val = malloc (sizeof (struct remote_sched_param)
+                                     * nparams);
+    if (ret->params.params_val == NULL) {
+        free (params);
+        remoteDispatchError (client, req,
+                             "out of memory allocating return array");
+        return -2;
+    }
+
+    for (i = 0; i < nparams; ++i) {
+        // remoteDispatchClientRequest will free this:
+        ret->params.params_val[i].field = strdup (params[i].field);
+        if (ret->params.params_val[i].field == NULL) {
+            free (params);
+            remoteDispatchError (client, req,
+                                 "out of memory allocating return array");
+            return -2;
+        }
+        ret->params.params_val[i].value.type = params[i].type;
+        switch (params[i].type) {
+        case VIR_DOMAIN_SCHED_FIELD_INT:
+            ret->params.params_val[i].value.remote_sched_param_value_u.i = params[i].value.i; break;
+        case VIR_DOMAIN_SCHED_FIELD_UINT:
+            ret->params.params_val[i].value.remote_sched_param_value_u.ui = params[i].value.ui; break;
+        case VIR_DOMAIN_SCHED_FIELD_LLONG:
+            ret->params.params_val[i].value.remote_sched_param_value_u.l = params[i].value.l; break;
+        case VIR_DOMAIN_SCHED_FIELD_ULLONG:
+            ret->params.params_val[i].value.remote_sched_param_value_u.ul = params[i].value.ul; break;
+        case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
+            ret->params.params_val[i].value.remote_sched_param_value_u.d = params[i].value.d; break;
+        case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
+            ret->params.params_val[i].value.remote_sched_param_value_u.b = params[i].value.b; break;
+        default:
+            free (params);
+            remoteDispatchError (client, req, "unknown type");
+            return -2;
+        }
+    }
+    free (params);
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainSetSchedulerParameters (struct qemud_client *client,
+                                            remote_message_header *req,
+                                            remote_domain_set_scheduler_parameters_args *args,
+                                            void *ret ATTRIBUTE_UNUSED)
+{
+    virDomainPtr dom;
+    int i, r, nparams;
+    virSchedParameterPtr params;
+    CHECK_CONN(client);
+
+    nparams = args->params.params_len;
+
+    if (nparams > REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX) {
+        remoteDispatchError (client, req, "nparams too large");
+        return -2;
+    }
+    params = malloc (sizeof (virSchedParameter) * nparams);
+    if (params == NULL) {
+        remoteDispatchError (client, req, "out of memory allocating array");
+        return -2;
+    }
+
+    /* Deserialise parameters. */
+    for (i = 0; i < nparams; ++i) {
+        strncpy (params[i].field, args->params.params_val[i].field,
+                 VIR_DOMAIN_SCHED_FIELD_LENGTH);
+        params[i].field[VIR_DOMAIN_SCHED_FIELD_LENGTH-1] = '\0';
+        params[i].type = args->params.params_val[i].value.type;
+        switch (params[i].type) {
+        case VIR_DOMAIN_SCHED_FIELD_INT:
+            params[i].value.i = args->params.params_val[i].value.remote_sched_param_value_u.i; break;
+        case VIR_DOMAIN_SCHED_FIELD_UINT:
+            params[i].value.ui = args->params.params_val[i].value.remote_sched_param_value_u.ui; break;
+        case VIR_DOMAIN_SCHED_FIELD_LLONG:
+            params[i].value.l = args->params.params_val[i].value.remote_sched_param_value_u.l; break;
+        case VIR_DOMAIN_SCHED_FIELD_ULLONG:
+            params[i].value.ul = args->params.params_val[i].value.remote_sched_param_value_u.ul; break;
+        case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
+            params[i].value.d = args->params.params_val[i].value.remote_sched_param_value_u.d; break;
+        case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
+            params[i].value.b = args->params.params_val[i].value.remote_sched_param_value_u.b; break;
+        }
+    }
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        free (params);
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    r = virDomainSetSchedulerParameters (dom, params, nparams);
+    free (params);
+    if (r == -1) return -1;
+
+    return 0;
+}
+
+static int
 remoteDispatchDomainAttachDevice (struct qemud_client *client,
                                   remote_message_header *req,
                                   remote_domain_attach_device_args *args,

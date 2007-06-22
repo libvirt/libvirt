@@ -16,6 +16,8 @@ static int remoteDispatchDomainGetInfo (struct qemud_client *client, remote_mess
 static int remoteDispatchDomainGetMaxMemory (struct qemud_client *client, remote_message_header *req, remote_domain_get_max_memory_args *args, remote_domain_get_max_memory_ret *ret);
 static int remoteDispatchDomainGetMaxVcpus (struct qemud_client *client, remote_message_header *req, remote_domain_get_max_vcpus_args *args, remote_domain_get_max_vcpus_ret *ret);
 static int remoteDispatchDomainGetOsType (struct qemud_client *client, remote_message_header *req, remote_domain_get_os_type_args *args, remote_domain_get_os_type_ret *ret);
+static int remoteDispatchDomainGetSchedulerParameters (struct qemud_client *client, remote_message_header *req, remote_domain_get_scheduler_parameters_args *args, remote_domain_get_scheduler_parameters_ret *ret);
+static int remoteDispatchDomainGetSchedulerType (struct qemud_client *client, remote_message_header *req, remote_domain_get_scheduler_type_args *args, remote_domain_get_scheduler_type_ret *ret);
 static int remoteDispatchDomainGetVcpus (struct qemud_client *client, remote_message_header *req, remote_domain_get_vcpus_args *args, remote_domain_get_vcpus_ret *ret);
 static int remoteDispatchDomainLookupById (struct qemud_client *client, remote_message_header *req, remote_domain_lookup_by_id_args *args, remote_domain_lookup_by_id_ret *ret);
 static int remoteDispatchDomainLookupByName (struct qemud_client *client, remote_message_header *req, remote_domain_lookup_by_name_args *args, remote_domain_lookup_by_name_ret *ret);
@@ -28,6 +30,7 @@ static int remoteDispatchDomainSave (struct qemud_client *client, remote_message
 static int remoteDispatchDomainSetAutostart (struct qemud_client *client, remote_message_header *req, remote_domain_set_autostart_args *args, void *ret);
 static int remoteDispatchDomainSetMaxMemory (struct qemud_client *client, remote_message_header *req, remote_domain_set_max_memory_args *args, void *ret);
 static int remoteDispatchDomainSetMemory (struct qemud_client *client, remote_message_header *req, remote_domain_set_memory_args *args, void *ret);
+static int remoteDispatchDomainSetSchedulerParameters (struct qemud_client *client, remote_message_header *req, remote_domain_set_scheduler_parameters_args *args, void *ret);
 static int remoteDispatchDomainSetVcpus (struct qemud_client *client, remote_message_header *req, remote_domain_set_vcpus_args *args, void *ret);
 static int remoteDispatchDomainShutdown (struct qemud_client *client, remote_message_header *req, remote_domain_shutdown_args *args, void *ret);
 static int remoteDispatchDomainSuspend (struct qemud_client *client, remote_message_header *req, remote_domain_suspend_args *args, void *ret);
