@@ -75,6 +75,7 @@ int qemudMonitorCommand(struct qemud_server *server ATTRIBUTE_UNUSED,
         for (;;) {
             char data[1024];
             int got = read(vm->monitor, data, sizeof(data));
+            char *b;
 
             if (got == 0) {
                 if (buf)
@@ -91,8 +92,11 @@ int qemudMonitorCommand(struct qemud_server *server ATTRIBUTE_UNUSED,
                     free(buf);
                 return -1;
             }
-            if (!(buf = realloc(buf, size+got+1)))
+            if (!(b = realloc(buf, size+got+1))) {
+                free(buf);
                 return -1;
+            }
+            buf = b;
             memmove(buf+size, data, got);
             buf[size+got] = '\0';
             size += got;
