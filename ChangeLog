@@ -1,3 +1,11 @@
+Fri Jun 22 12:40:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/internal.h: Added STREQ and STRCASEEQ macros for clearer
+	  equality testing of strings.
+	* src/xen_internal.c: Fix handling of the scheduler parameters
+	  field string so that the field doesn't contain garbage
+	  after the string.
+
 Fri Jun 22 12:14:40 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/driver.c: apply patch from Jim Meyering to handle realloc

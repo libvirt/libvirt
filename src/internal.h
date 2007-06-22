@@ -31,6 +31,10 @@ extern "C" {
 #include <ansidecl.h>
 #endif
 
+/* String equality tests, suggested by Jim Meyering. */
+#define STREQ(a,b) (strcmp((a),(b)) == 0)
+#define STRCASEEQ(a,b) (strcasecmp((a),(b)) == 0)
+
 /**
  * ATTRIBUTE_UNUSED:
  *

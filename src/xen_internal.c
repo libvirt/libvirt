@@ -1053,6 +1053,9 @@ xenHypervisorGetSchedulerType(virDomainPtr domain, int *nparams)
     return schedulertype;
 }
 
+static const char *str_weight = "weight";
+static const char *str_cap = "cap";
+
 /**
  * xenHypervisorGetSchedulerParameters:
  * @domain: pointer to the Xen Hypervisor block
@@ -1071,8 +1074,6 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
 				 virSchedParameterPtr params, int *nparams)
 {
     xenUnifiedPrivatePtr priv;
-    char str_weight[] ="weight";
-    char str_cap[]    ="cap";
 
     if ((domain == NULL) || (domain->conn == NULL)) {
         virXenErrorFunc(VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
@@ -1126,11 +1127,13 @@ xenHypervisorGetSchedulerParameters(virDomainPtr domain,
 		if (ret < 0)
 		    return(-1);
 
-		strncpy(params[0].field, str_weight, strlen(str_weight));
+		strncpy (params[0].field, str_weight, VIR_DOMAIN_SCHED_FIELD_LENGTH);
+        params[0].field[VIR_DOMAIN_SCHED_FIELD_LENGTH-1] = '\0';
 		params[0].type = VIR_DOMAIN_SCHED_FIELD_UINT;
 		params[0].value.ui = op_dom.u.getschedinfo.u.credit.weight;
 
-		strncpy(params[1].field, str_cap, strlen(str_cap));
+		strncpy (params[1].field, str_cap, VIR_DOMAIN_SCHED_FIELD_LENGTH);
+        params[1].field[VIR_DOMAIN_SCHED_FIELD_LENGTH-1] = '\0';
 		params[1].type = VIR_DOMAIN_SCHED_FIELD_UINT;
 		params[1].value.ui = op_dom.u.getschedinfo.u.credit.cap;
 
@@ -1161,8 +1164,6 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
 {
     int i;
     xenUnifiedPrivatePtr priv;
-    char str_weight[] ="weight";
-    char str_cap[]    ="cap";
 
     if ((domain == NULL) || (domain->conn == NULL)) {
         virXenErrorFunc (VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
@@ -1220,18 +1221,18 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
             op_dom.u.getschedinfo.cmd = XEN_DOMCTL_SCHEDOP_putinfo;
 
             /*
-	     * credit scheduler parameters 
-             * following values do not change the parameters 
+             * credit scheduler parameters
+             * following values do not change the parameters
              */
             op_dom.u.getschedinfo.u.credit.weight = 0;
             op_dom.u.getschedinfo.u.credit.cap    = (uint16_t)~0U;
 
             for (i = 0; i < nparams; i++) {
-                if (!strncmp(params[i].field,str_weight,strlen(str_weight)) &&
+                if (STREQ (params[i].field, str_weight) &&
                     params[i].type == VIR_DOMAIN_SCHED_FIELD_UINT) {
                     op_dom.u.getschedinfo.u.credit.weight = params[i].value.ui;
 		    weight_set = 1;
-		} else if (!strncmp(params[i].field,str_cap,strlen(str_cap)) &&
+		} else if (STREQ (params[i].field, str_cap) &&
                     params[i].type == VIR_DOMAIN_SCHED_FIELD_UINT) {
                     op_dom.u.getschedinfo.u.credit.cap = params[i].value.ui;
 		    cap_set = 1;
