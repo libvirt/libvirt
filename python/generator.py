@@ -870,6 +870,10 @@ def buildWrappers():
 		txt.write("Class %s()\n" % (classname))
 		classes.write("class %s:\n" % (classname))
                 if classname == "virDomain" or classname == "virNetwork":
+                    # NB: Earlier versions of libvirt did not provide
+                    # vir{Domain,Network}GetConnect, so we had to explicitly
+                    # store the connection object in _conn.  In future
+                    # we won't need to do this.
                     classes.write("    def __init__(self, conn, _obj=None):\n")
                 else:
                     classes.write("    def __init__(self, _obj=None):\n")

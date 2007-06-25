@@ -296,6 +296,11 @@ int			virConnectNumOfDomains	(virConnectPtr conn);
 
 
 /*
+ * Get connection from domain.
+ */
+virConnectPtr		virDomainGetConnect     (virDomainPtr domain);
+
+/*
  * Domain creation and destruction
  */
 virDomainPtr		virDomainCreateLinux	(virConnectPtr conn,
@@ -522,6 +527,11 @@ typedef struct _virNetwork virNetwork;
  * type used to reference a virtual network in the API.
  */
 typedef virNetwork *virNetworkPtr;
+
+/*
+ * Get connection from network.
+ */
+virConnectPtr		virNetworkGetConnect    (virNetworkPtr network);
 
 /*
  * List active networks

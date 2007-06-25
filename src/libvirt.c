@@ -546,6 +546,26 @@ virConnectNumOfDomains(virConnectPtr conn)
 }
 
 /**
+ * virDomainGetConnect:
+ * @dom: pointer to a domain
+ *
+ * Returns the connection pointer associated with a domain.  The
+ * reference counter on the connection is not increased by this
+ * call.
+ *
+ * Returns the virConnectPtr or NULL in case of failure.
+ */
+virConnectPtr
+virDomainGetConnect (virDomainPtr dom)
+{
+    if (!VIR_IS_DOMAIN (dom)) {
+        virLibDomainError (dom, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return NULL;
+    }
+    return dom->conn;
+}
+
+/**
  * virDomainCreateLinux:
  * @conn: pointer to the hypervisor connection
  * @xmlDesc: an XML description of the domain
@@ -2034,6 +2054,26 @@ virDomainDetachDevice(virDomainPtr domain, char *xml)
 
     virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return -1;
+}
+
+/**
+ * virNetworkGetConnect:
+ * @net: pointer to a network
+ *
+ * Returns the connection pointer associated with a network.  The
+ * reference counter on the connection is not increased by this
+ * call.
+ *
+ * Returns the virConnectPtr or NULL in case of failure.
+ */
+virConnectPtr
+virNetworkGetConnect (virNetworkPtr net)
+{
+    if (!VIR_IS_NETWORK (net)) {
+        virLibNetworkError (net, VIR_ERR_INVALID_NETWORK, __FUNCTION__);
+        return NULL;
+    }
+    return net->conn;
 }
 
 /**

@@ -1,13 +1,14 @@
 {
     global:
         virInitialize;
+        virConnectOpen;
+        virConnectOpenReadOnly;
 	virConnectClose;
 	virConnectGetType;
 	virConnectGetVersion;
+	virDomainGetConnect;
 	virConnectListDomains;
 	virConnectNumOfDomains;
-        virConnectOpen;
-        virConnectOpenReadOnly;
         virDomainCreate;
 	virDomainCreateLinux;
         virDomainDefineXML;
@@ -66,6 +67,7 @@
 	virDomainAttachDevice;
 	virDomainDetachDevice;
 
+	virNetworkGetConnect;
 	virConnectNumOfNetworks;
 	virConnectListNetworks;
 	virConnectNumOfDefinedNetworks;
