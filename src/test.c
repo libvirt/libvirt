@@ -155,7 +155,6 @@ typedef struct _testDom {
     int id;
     char name[20];
     unsigned char uuid[VIR_UUID_BUFLEN];
-    virDomainKernel kernel;
     virDomainInfo info;
     unsigned int maxVCPUs;
     virDomainRestart onRestart; /* What to do at end of current shutdown procedure */

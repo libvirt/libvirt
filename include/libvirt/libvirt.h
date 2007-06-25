@@ -114,30 +114,6 @@ struct _virDomainInfo {
 typedef virDomainInfo *virDomainInfoPtr;
 
 /**
- * virDomainKernel:
- *
- * a virDomainImage is the set of kernel related informations associated
- * to a domain
- */
-
-typedef struct _virDomainKernel virDomainKernel;
-
-struct _virDomainKernel {
-    const char *kernel;		/* filename pointing to the kernel image */
-    const char *ramdisk;	/* an optional init ramdisk */
-    const char *root;		/* an optional root block device */
-    const char *extra;		/* optional kernel command line parameters */
-};
-
-/**
- * virDomainKernelPtr:
- *
- * a virDomainKernelPtr is a pointer to a virDomainKernel structure.
- */
-
-typedef virDomainKernel *virDomainKernelPtr;
-
-/**
  * virDomainCreateFlags:
  *
  * Flags OR'ed together to provide specific behaviour when creating a
