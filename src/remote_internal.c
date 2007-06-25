@@ -104,13 +104,13 @@ static int initialise_gnutls (virConnectPtr conn);
 static gnutls_session_t negotiate_gnutls_on_connection (virConnectPtr conn, int sock, int no_verify, const char *hostname);
 
 /* Supported transports. */
-typedef enum {
+enum transport {
     trans_tls,
     trans_unix,
     trans_ssh,
     trans_ext,
     trans_tcp,
-} transport;
+};
 
 static int
 remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
@@ -130,7 +130,7 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
         return VIR_DRV_OPEN_DECLINED; /* Decline - not a remote URL. */
 
     /* What transport? */
-    transport transport;
+    enum transport transport;
     if (!transport_str || strcasecmp (transport_str, "tls") == 0)
         transport = trans_tls;
     else if (strcasecmp (transport_str, "unix") == 0)
