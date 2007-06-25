@@ -110,7 +110,7 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     <a name="VIR_ERR_OK">VIR_ERR_OK</a> = 0
     <a name="VIR_ERR_INTERNAL_ERROR">VIR_ERR_INTERNAL_ERROR</a> = 1 /* internal error */
     <a name="VIR_ERR_NO_MEMORY">VIR_ERR_NO_MEMORY</a> = 2 /* memory allocation failure */
-    <a name="VIR_ERR_NO_SUPPORT">VIR_ERR_NO_SUPPORT</a> = 3 /* no support for this connection */
+    <a name="VIR_ERR_NO_SUPPORT">VIR_ERR_NO_SUPPORT</a> = 3 /* no support for this function */
     <a name="VIR_ERR_UNKNOWN_HOST">VIR_ERR_UNKNOWN_HOST</a> = 4 /* could not resolve hostname */
     <a name="VIR_ERR_NO_CONNECT">VIR_ERR_NO_CONNECT</a> = 5 /* can't connect to hypervisor */
     <a name="VIR_ERR_INVALID_CONN">VIR_ERR_INVALID_CONN</a> = 6 /* invalid connection object */
@@ -133,7 +133,7 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     <a name="VIR_ERR_NO_DEVICE">VIR_ERR_NO_DEVICE</a> = 23 /* missing domain devices information */
     <a name="VIR_ERR_NO_XENSTORE">VIR_ERR_NO_XENSTORE</a> = 24 /* could not open Xen Store control */
     <a name="VIR_ERR_DRIVER_FULL">VIR_ERR_DRIVER_FULL</a> = 25 /* too many drivers registered */
-    <a name="VIR_ERR_CALL_FAILED">VIR_ERR_CALL_FAILED</a> = 26 /* not supported by the drivers */
+    <a name="VIR_ERR_CALL_FAILED">VIR_ERR_CALL_FAILED</a> = 26 /* not supported by the drivers (DEPRECATED) */
     <a name="VIR_ERR_XML_ERROR">VIR_ERR_XML_ERROR</a> = 27 /* an XML description is not well formed or broken */
     <a name="VIR_ERR_DOM_EXIST">VIR_ERR_DOM_EXIST</a> = 28 /* the domain already exist */
     <a name="VIR_ERR_OPERATION_DENIED">VIR_ERR_OPERATION_DENIED</a> = 29 /* operation forbidden on read-only connections */

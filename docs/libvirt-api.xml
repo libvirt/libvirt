@@ -296,7 +296,7 @@
     <enum name='VIR_DOMAIN_SCHED_FIELD_ULLONG' file='libvirt' value='4' type='virSchedParameterType' info='unsigned long long case'/>
     <enum name='VIR_DOMAIN_SHUTDOWN' file='libvirt' value='4' type='virDomainState' info='the domain is being shut down'/>
     <enum name='VIR_DOMAIN_SHUTOFF' file='libvirt' value='5' type='virDomainState' info='the domain is shut off'/>
-    <enum name='VIR_ERR_CALL_FAILED' file='virterror' value='26' type='virErrorNumber' info='not supported by the drivers'/>
+    <enum name='VIR_ERR_CALL_FAILED' file='virterror' value='26' type='virErrorNumber' info='not supported by the drivers (DEPRECATED)'/>
     <enum name='VIR_ERR_CONF_SYNTAX' file='virterror' value='33' type='virErrorNumber' info='failed to parse the syntax of a conf file'/>
     <enum name='VIR_ERR_DOM_EXIST' file='virterror' value='28' type='virErrorNumber' info='the domain already exist'/>
     <enum name='VIR_ERR_DRIVER_FULL' file='virterror' value='25' type='virErrorNumber' info='too many drivers registered'/>
@@ -319,7 +319,7 @@
     <enum name='VIR_ERR_NO_OS' file='virterror' value='22' type='virErrorNumber' info='missing domain OS information'/>
     <enum name='VIR_ERR_NO_ROOT' file='virterror' value='18' type='virErrorNumber' info='missing root device information'/>
     <enum name='VIR_ERR_NO_SOURCE' file='virterror' value='19' type='virErrorNumber' info='missing source device information'/>
-    <enum name='VIR_ERR_NO_SUPPORT' file='virterror' value='3' type='virErrorNumber' info='no support for this connection'/>
+    <enum name='VIR_ERR_NO_SUPPORT' file='virterror' value='3' type='virErrorNumber' info='no support for this function'/>
     <enum name='VIR_ERR_NO_TARGET' file='virterror' value='20' type='virErrorNumber' info='missing target device information'/>
     <enum name='VIR_ERR_NO_XEN' file='virterror' value='14' type='virErrorNumber' info='could not open Xen hypervisor control'/>
     <enum name='VIR_ERR_NO_XENSTORE' file='virterror' value='24' type='virErrorNumber' info='could not open Xen Store control'/>
@@ -481,7 +481,7 @@
     </function>
     <function name='virConnectGetType' file='libvirt' module='libvirt'>
       <info>Get the name of the Hypervisor software used.</info>
-      <return type='const char *' info='NULL in case of error, a static zero terminated string otherwise.'/>
+      <return type='const char *' info='NULL in case of error, a static zero terminated string otherwise.  See also: http://www.redhat.com/archives/libvir-list/2007-February/msg00096.html'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virConnectGetVersion' file='libvirt' module='libvirt'>
@@ -540,13 +540,13 @@
     </function>
     <function name='virConnectOpen' file='libvirt' module='libvirt'>
       <info>This function should be called first to get a connection to the Hypervisor and xen store</info>
-      <return type='virConnectPtr' info='a pointer to the hypervisor connection or NULL in case of error'/>
-      <arg name='name' type='const char *' info='optional argument currently unused, pass NULL'/>
+      <return type='virConnectPtr' info='a pointer to the hypervisor connection or NULL in case of error  URIs are documented at http://libvirt.org/uri.html'/>
+      <arg name='name' type='const char *' info='URI of the hypervisor'/>
     </function>
     <function name='virConnectOpenReadOnly' file='libvirt' module='libvirt'>
       <info>This function should be called first to get a restricted connection to the libbrary functionalities. The set of APIs usable are then restricted on the available methods to control the domains.</info>
-      <return type='virConnectPtr' info='a pointer to the hypervisor connection or NULL in case of error'/>
-      <arg name='name' type='const char *' info='optional argument currently unused, pass NULL'/>
+      <return type='virConnectPtr' info='a pointer to the hypervisor connection or NULL in case of error  URIs are documented at http://libvirt.org/uri.html'/>
+      <arg name='name' type='const char *' info='URI of the hypervisor'/>
     </function>
     <function name='virCopyLastError' file='virterror' module='virterror'>
       <info>Copy the content of the last error caught at the library level One will need to free the result with virResetError()</info>

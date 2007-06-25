@@ -1076,6 +1076,9 @@
         </word>
       </letter>
       <letter name='S'>
+        <word name='See'>
+          <ref name='virConnectGetType'/>
+        </word>
         <word name='Set'>
           <ref name='virConnSetErrorFunc'/>
           <ref name='virSetErrorFunc'/>
@@ -1137,6 +1140,14 @@
         </word>
       </letter>
       <letter name='U'>
+        <word name='URI'>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
+        <word name='URIs'>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
         <word name='USE_CPU'>
           <ref name='VIR_UNUSE_CPU'/>
           <ref name='VIR_USE_CPU'/>
@@ -1189,6 +1200,8 @@
           <ref name='_virError'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk1'>
       <letter name='X'>
         <word name='XML'>
           <ref name='virConnectGetMaxVcpus'/>
@@ -1208,8 +1221,6 @@
           <ref name='virGetVersion'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk1'>
       <letter name='a'>
         <word name='about'>
           <ref name='virDomainGetInfo'/>
@@ -1287,6 +1298,9 @@
         <word name='also'>
           <ref name='virDomainGetVcpus'/>
         </word>
+        <word name='also:'>
+          <ref name='virConnectGetType'/>
+        </word>
         <word name='amount'>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainSetMaxMemory'/>
@@ -1310,17 +1324,17 @@
         <word name='arbitrary'>
           <ref name='virDomainSetVcpus'/>
         </word>
+        <word name='archives'>
+          <ref name='virConnectGetType'/>
+        </word>
         <word name='are'>
           <ref name='virConnectClose'/>
+          <ref name='virConnectOpen'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainPinVcpu'/>
           <ref name='virNetworkDestroy'/>
           <ref name='virSetErrorFunc'/>
-        </word>
-        <word name='argument'>
-          <ref name='virConnectOpen'/>
-          <ref name='virConnectOpenReadOnly'/>
         </word>
         <word name='array'>
           <ref name='VIR_COPY_CPUMAP'/>
@@ -1549,6 +1563,9 @@
           <ref name='virConnectListDomains'/>
           <ref name='virConnectListNetworks'/>
         </word>
+        <word name='com'>
+          <ref name='virConnectGetType'/>
+        </word>
         <word name='command'>
           <ref name='_virDomainKernel'/>
         </word>
@@ -1632,8 +1649,6 @@
           <ref name='virDomainGetVcpus'/>
         </word>
         <word name='currently'>
-          <ref name='virConnectOpen'/>
-          <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainCoreDump'/>
         </word>
       </letter>
@@ -1691,6 +1706,10 @@
         </word>
         <word name='doable'>
           <ref name='virDomainShutdown'/>
+        </word>
+        <word name='documented'>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
         </word>
         <word name='does'>
           <ref name='virDomainDefineXML'/>
@@ -1928,6 +1947,16 @@
         <word name='how'>
           <ref name='_virError'/>
         </word>
+        <word name='html'>
+          <ref name='virConnectGetType'/>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
+        <word name='http:'>
+          <ref name='virConnectGetType'/>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
         <word name='human-readable'>
           <ref name='_virError'/>
         </word>
@@ -2096,6 +2125,13 @@
           <ref name='virResetLastError'/>
           <ref name='virSetErrorFunc'/>
         </word>
+        <word name='libvir-list'>
+          <ref name='virConnectGetType'/>
+        </word>
+        <word name='libvirt'>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
+        </word>
         <word name='lifetime'>
           <ref name='virDomainGetName'/>
           <ref name='virNetworkGetName'/>
@@ -2250,6 +2286,9 @@
           <ref name='virDomainCreate'/>
           <ref name='virNetworkCreate'/>
         </word>
+        <word name='msg00096'>
+          <ref name='virConnectGetType'/>
+        </word>
         <word name='multithreaded'>
           <ref name='virConnGetLastError'/>
           <ref name='virGetLastError'/>
@@ -2397,8 +2436,6 @@
         </word>
         <word name='optional'>
           <ref name='_virDomainKernel'/>
-          <ref name='virConnectOpen'/>
-          <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainCreateLinux'/>
         </word>
         <word name='order'>
@@ -2406,6 +2443,10 @@
         </word>
         <word name='order:'>
           <ref name='virDomainPinVcpu'/>
+        </word>
+        <word name='org'>
+          <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenReadOnly'/>
         </word>
         <word name='otherwise'>
           <ref name='VIR_CPU_USABLE'/>
@@ -2444,8 +2485,6 @@
         </word>
         <word name='pass'>
           <ref name='virConnSetErrorFunc'/>
-          <ref name='virConnectOpen'/>
-          <ref name='virConnectOpenReadOnly'/>
         </word>
         <word name='path'>
           <ref name='virDomainCoreDump'/>
@@ -2560,6 +2599,9 @@
         <word name='receive'>
           <ref name='virConnCopyLastError'/>
           <ref name='virCopyLastError'/>
+        </word>
+        <word name='redhat'>
+          <ref name='virConnectGetType'/>
         </word>
         <word name='reflect'>
           <ref name='virDomainGetMaxVcpus'/>
@@ -3012,9 +3054,11 @@
           <ref name='virDomainGetID'/>
         </word>
         <word name='unused'>
+          <ref name='virDomainCoreDump'/>
+        </word>
+        <word name='uri'>
           <ref name='virConnectOpen'/>
           <ref name='virConnectOpenReadOnly'/>
-          <ref name='virDomainCoreDump'/>
         </word>
         <word name='usable'>
           <ref name='VIR_CPU_USABLE'/>
@@ -3283,6 +3327,9 @@
         <word name='work'>
           <ref name='virConnectGetVersion'/>
         </word>
+        <word name='www'>
+          <ref name='virConnectGetType'/>
+        </word>
       </letter>
     </chunk>
     <chunk name='chunk6'>
@@ -3307,8 +3354,8 @@
       </letter>
     </chunk>
     <chunks>
-      <chunk name='chunk0' start='A' end='X'/>
-      <chunk name='chunk1' start='a' end='c'/>
+      <chunk name='chunk0' start='A' end='W'/>
+      <chunk name='chunk1' start='X' end='c'/>
       <chunk name='chunk2' start='d' end='i'/>
       <chunk name='chunk3' start='j' end='n'/>
       <chunk name='chunk4' start='o' end='s'/>

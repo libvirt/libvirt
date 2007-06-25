@@ -1,5 +1,9 @@
 Mon Jun 25 09:19:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
 
+	* docs/site.xsl: Added link to OCaml bindings.
+
+Mon Jun 25 09:19:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
+
 	* qemud/remote.c, src/remote_internal.c: Fix virDomainGetVcpus
 	  in the remote case.
 	* src/libvirt.c: Allow virConnectListDomains,
