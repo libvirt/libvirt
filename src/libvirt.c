@@ -510,7 +510,7 @@ virConnectListDomains(virConnectPtr conn, int *ids, int maxids)
         return (-1);
     }
 
-    if ((ids == NULL) || (maxids <= 0)) {
+    if ((ids == NULL) || (maxids < 0)) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
     }
@@ -1682,7 +1682,7 @@ virConnectListDefinedDomains(virConnectPtr conn, char **const names,
         return (-1);
     }
 
-    if ((names == NULL) || (maxnames <= 0)) {
+    if ((names == NULL) || (maxnames < 0)) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
     }
@@ -2077,7 +2077,7 @@ virConnectListNetworks(virConnectPtr conn, char **const names, int maxnames)
         return (-1);
     }
 
-    if ((names == NULL) || (maxnames <= 0)) {
+    if ((names == NULL) || (maxnames < 0)) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
     }
@@ -2131,7 +2131,7 @@ virConnectListDefinedNetworks(virConnectPtr conn, char **const names,
         return (-1);
     }
 
-    if ((names == NULL) || (maxnames <= 0)) {
+    if ((names == NULL) || (maxnames < 0)) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
     }

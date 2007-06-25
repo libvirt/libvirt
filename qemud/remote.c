@@ -956,14 +956,14 @@ remoteDispatchDomainGetVcpus (struct qemud_client *client,
         return -2;
     }
 
-    if (args->maplen > REMOTE_CPUMAPS_MAX) {
-        remoteDispatchError (client, req, "maplen > REMOTE_CPUMAPS_MAX");
+    if (args->maxinfo * args->maplen > REMOTE_CPUMAPS_MAX) {
+        remoteDispatchError (client, req, "maxinfo * maplen > REMOTE_CPUMAPS_MAX");
         return -2;
     }
 
     /* Allocate buffers to take the results. */
     info = calloc (args->maxinfo, sizeof (virVcpuInfo));
-    cpumaps = calloc (args->maplen, sizeof (unsigned char));
+    cpumaps = calloc (args->maxinfo * args->maplen, sizeof (unsigned char));
 
     info_len = virDomainGetVcpus (dom,
                                   info, args->maxinfo,
@@ -985,7 +985,7 @@ remoteDispatchDomainGetVcpus (struct qemud_client *client,
      * assumption that unsigned char and char are the same size.
      * Note that remoteDispatchClientRequest will free.
      */
-    ret->cpumaps.cpumaps_len = args->maplen;
+    ret->cpumaps.cpumaps_len = args->maxinfo * args->maplen;
     ret->cpumaps.cpumaps_val = (char *) cpumaps;
 
     return 0;

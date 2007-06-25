@@ -1472,8 +1472,8 @@ remoteDomainGetVcpus (virDomainPtr domain,
         error (domain->conn, VIR_ERR_RPC, "maxinfo > REMOTE_VCPUINFO_MAX");
         return -1;
     }
-    if (maplen > REMOTE_CPUMAPS_MAX) {
-        error (domain->conn, VIR_ERR_RPC, "maplen > REMOTE_CPUMAPS_MAX");
+    if (maxinfo * maplen > REMOTE_CPUMAPS_MAX) {
+        error (domain->conn, VIR_ERR_RPC, "maxinfo * maplen > REMOTE_CPUMAPS_MAX");
         return -1;
     }
 
@@ -1492,11 +1492,14 @@ remoteDomainGetVcpus (virDomainPtr domain,
         xdr_free ((xdrproc_t) xdr_remote_domain_get_vcpus_ret, (char *) &ret);
         return -1;
     }
-    if (ret.cpumaps.cpumaps_len > maplen) {
-        error (domain->conn, VIR_ERR_RPC, "ret.cpumaps.cpumaps_len > maplen");
+    if (ret.cpumaps.cpumaps_len > maxinfo * maplen) {
+        error (domain->conn, VIR_ERR_RPC, "ret.cpumaps.cpumaps_len > maxinfo * maplen");
         xdr_free ((xdrproc_t) xdr_remote_domain_get_vcpus_ret, (char *) &ret);
         return -1;
     }
+
+    memset (info, 0, sizeof (virVcpuInfo) * maxinfo);
+    memset (cpumaps, 0, maxinfo * maplen);
 
     for (i = 0; i < ret.info.info_len; ++i) {
         info[i].number = ret.info.info_val[i].number;
@@ -1522,7 +1525,7 @@ remoteDomainGetMaxVcpus (virDomainPtr domain)
     make_nonnull_domain (&args.dom, domain);
 
     memset (&ret, 0, sizeof ret);
-    if (call (domain->conn, priv, 0, REMOTE_PROC_GET_MAX_VCPUS,
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_GET_MAX_VCPUS,
               (xdrproc_t) xdr_remote_domain_get_max_vcpus_args, (char *) &args,
               (xdrproc_t) xdr_remote_domain_get_max_vcpus_ret, (char *) &ret) == -1)
         return -1;
