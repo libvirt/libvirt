@@ -93,7 +93,7 @@ struct query_fields {
 
 static int query_parse (const char *query,
                         const char *separator,
-                        struct query_fields **fields_out);
+                        struct query_fields * *fields_out);
 static int query_create (const struct query_fields *fields,
                          const char *separator,
                          char **query_out);
@@ -104,13 +104,13 @@ static int initialise_gnutls (virConnectPtr conn);
 static gnutls_session_t negotiate_gnutls_on_connection (virConnectPtr conn, int sock, int no_verify, const char *hostname);
 
 /* Supported transports. */
-enum transport {
+typedef enum {
     trans_tls,
     trans_unix,
     trans_ssh,
     trans_ext,
     trans_tcp,
-};
+} transport;
 
 static int
 remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
@@ -130,7 +130,7 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
         return VIR_DRV_OPEN_DECLINED; /* Decline - not a remote URL. */
 
     /* What transport? */
-    enum transport transport;
+    transport transport;
     if (!transport_str || strcasecmp (transport_str, "tls") == 0)
         transport = trans_tls;
     else if (strcasecmp (transport_str, "unix") == 0)
@@ -573,7 +573,7 @@ query_create (const struct query_fields *fields,
 static int
 query_parse (const char *query_,
              const char *separator,
-             struct query_fields **fields_out)
+             struct query_fields * *fields_out)
 {
     struct query_fields *fields, *field, **prev;
     int sep_len;
@@ -2665,9 +2665,11 @@ static virNetworkDriver network_driver = {
     .networkSetAutostart = remoteNetworkSetAutostart,
 };
 
-/* remoteRegister:
+/** remoteRegister:
  *
  * Register driver with libvirt driver system.
+ *
+ * Returns -1 on error.
  */
 int
 remoteRegister (void)
