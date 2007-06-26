@@ -1,3 +1,9 @@
+Tue Jun 26 15:11:00 EST 2007 Daniel P. Berrange <berrange@rdhat.com>
+
+	* qemud/dispatch.c, qemud/driver.c, qemud/driver.h: Move
+	code for generating capabilities XML into driver.c file
+	alongside other driver APIs
+
 Tue Jun 26 14:52:00 EST 2007 Daniel P. Berrange <berrange@rdhat.com>
 
 	* qemud/event.c, qemud/event.h, qemud/Makefile.am: Generic

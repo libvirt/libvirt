@@ -31,10 +31,13 @@ void qemudReportError(struct qemud_server *server,
                       int code, const char *fmt, ...)
     ATTRIBUTE_FORMAT(printf,3,4);
 
-int qemudGetCPUInfo(unsigned int *cpus, unsigned int *mhz,
-                    unsigned int *nodes, unsigned int *sockets,
-                    unsigned int *cores, unsigned int *threads);
-int qemudGetMemInfo(unsigned int *memory);
+int qemudGetNodeInfo(unsigned int *memory,
+                     char *cpuModel, int cpuModelLength,
+                     unsigned int *cpus, unsigned int *mhz,
+                     unsigned int *nodes, unsigned int *sockets,
+                     unsigned int *cores, unsigned int *threads);
+
+char *qemudGetCapabilities(struct qemud_server *server);
 int qemudMonitorCommand(struct qemud_server *server,
                         struct qemud_vm *vm,
                         const char *cmd,

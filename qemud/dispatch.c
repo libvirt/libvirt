@@ -28,14 +28,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <sys/utsname.h>
 #include <libvirt/virterror.h>
 
 #include "internal.h"
 #include "driver.h"
 #include "dispatch.h"
 #include "conf.h"
-#include "buf.h"
 
 
 static int qemudDispatchFailure(struct qemud_server *server ATTRIBUTE_UNUSED,
@@ -63,32 +61,21 @@ static int qemudDispatchGetVersion(struct qemud_server *server, struct qemud_cli
 
 static int qemudDispatchGetNodeInfo(struct qemud_server *server, struct qemud_client *client,
                                     struct qemud_packet_client_data *in ATTRIBUTE_UNUSED, struct qemud_packet_server_data *out) {
-    struct utsname info;
-
-    if (uname(&info) < 0) {
-        if (qemudDispatchFailure(server, client, out) < 0)
-            return -1;
-        return 0;
-    }
-
-    if (qemudGetCPUInfo(&out->qemud_packet_server_data_u.getNodeInfoReply.cpus,
-                        &out->qemud_packet_server_data_u.getNodeInfoReply.mhz,
-                        &out->qemud_packet_server_data_u.getNodeInfoReply.nodes,
-                        &out->qemud_packet_server_data_u.getNodeInfoReply.sockets,
-                        &out->qemud_packet_server_data_u.getNodeInfoReply.cores,
-                        &out->qemud_packet_server_data_u.getNodeInfoReply.threads) < 0) {
-        if (qemudDispatchFailure(server, client, out) < 0)
-            return -1;
-        return 0;
-    }
-    if (qemudGetMemInfo(&out->qemud_packet_server_data_u.getNodeInfoReply.memory) < 0) {
+    if (qemudGetNodeInfo(&out->qemud_packet_server_data_u.getNodeInfoReply.memory,
+                         out->qemud_packet_server_data_u.getNodeInfoReply.model,
+                         sizeof(out->qemud_packet_server_data_u.getNodeInfoReply.model),
+                         &out->qemud_packet_server_data_u.getNodeInfoReply.cpus,
+                         &out->qemud_packet_server_data_u.getNodeInfoReply.mhz,
+                         &out->qemud_packet_server_data_u.getNodeInfoReply.nodes,
+                         &out->qemud_packet_server_data_u.getNodeInfoReply.sockets,
+                         &out->qemud_packet_server_data_u.getNodeInfoReply.cores,
+                         &out->qemud_packet_server_data_u.getNodeInfoReply.threads) < 0) {
         if (qemudDispatchFailure(server, client, out) < 0)
             return -1;
         return 0;
     }
 
     out->type = QEMUD_SERVER_PKT_GET_NODEINFO;
-    strncpy(out->qemud_packet_server_data_u.getNodeInfoReply.model, info.machine, sizeof(out->qemud_packet_server_data_u.getNodeInfoReply.model));
     out->qemud_packet_server_data_u.getNodeInfoReply.model[sizeof(out->qemud_packet_server_data_u.getNodeInfoReply.model)-1] = '\0';
 
     return 0;
@@ -100,166 +87,18 @@ qemudDispatchGetCapabilities (struct qemud_server *server,
                               struct qemud_packet_client_data *in ATTRIBUTE_UNUSED,
                               struct qemud_packet_server_data *out)
 {
-    struct utsname utsname;
-    int i, j, r;
-    int have_kqemu = 0;
-    int have_kvm = 0;
-    bufferPtr xml;
-    int len;
+    char *xml = qemudGetCapabilities(server);
 
-    /* Really, this never fails - look at the man-page. */
-    uname (&utsname);
-
-    have_kqemu = access ("/dev/kqemu", F_OK) == 0;
-    have_kvm = access ("/dev/kvm", F_OK) == 0;
-
-    /* Construct the XML. */
-    xml = bufferNew (1024);
-    if (!xml) {
-        qemudReportError (server, VIR_ERR_NO_MEMORY, NULL);
-        qemudDispatchFailure (server, client, out);
-        return 0;
-    }
-
-    r = bufferVSprintf (xml,
-                        "\
-<capabilities>\n\
-  <host>\n\
-    <cpu>\n\
-      <arch>%s</arch>\n\
-    </cpu>\n\
-  </host>\n",
-                        utsname.machine);
-    if (r == -1) {
-    vir_buffer_failed:
-        bufferFree (xml);
-        qemudReportError (server, VIR_ERR_NO_MEMORY, NULL);
-        qemudDispatchFailure (server, client, out);
-        return 0;
-    }
-
-    i = -1;
-    if (strcmp (utsname.machine, "i686") == 0) i = 0;
-    else if (strcmp (utsname.machine, "x86_64") == 0) i = 1;
-    if (i >= 0) {
-        /* For the default (PC-like) guest, qemudArchs[0] or [1]. */
-        r = bufferVSprintf (xml,
-                            "\
-\n\
-  <guest>\n\
-    <os_type>hvm</os_type>\n\
-    <arch name=\"%s\">\n\
-      <wordsize>%d</wordsize>\n\
-      <emulator>/usr/bin/%s</emulator>\n\
-      <domain type=\"qemu\"/>\n",
-                            qemudArchs[i].arch,
-                            qemudArchs[i].wordsize,
-                            qemudArchs[i].binary);
-        if (r == -1) goto vir_buffer_failed;
-
-        for (j = 0; qemudArchs[i].machines[j]; ++j) {
-            r = bufferVSprintf (xml,
-                                "\
-      <machine>%s</machine>\n",
-                                qemudArchs[i].machines[j]);
-            if (r == -1) goto vir_buffer_failed;
-        }
-
-        if (have_kqemu) {
-            r = bufferAdd (xml,
-                           "\
-      <domain type=\"kqemu\"/>\n", -1);
-            if (r == -1) goto vir_buffer_failed;
-        }
-        if (have_kvm) {
-            r = bufferAdd (xml,
-                           "\
-      <domain type=\"kvm\">\n\
-        <emulator>/usr/bin/qemu-kvm</emulator>\n\
-      </domain>\n", -1);
-            if (r == -1) goto vir_buffer_failed;
-        }
-        r = bufferAdd (xml,
-                       "\
-    </arch>\n\
-  </guest>\n", -1);
-        if (r == -1) goto vir_buffer_failed;
-
-        /* The "other" PC architecture needs emulation. */
-        i = i ^ 1;
-        r = bufferVSprintf (xml,
-                            "\
-\n\
-  <guest>\n\
-    <os_type>hvm</os_type>\n\
-    <arch name=\"%s\">\n\
-      <wordsize>%d</wordsize>\n\
-      <emulator>/usr/bin/%s</emulator>\n\
-      <domain type=\"qemu\"/>\n",
-                            qemudArchs[i].arch,
-                            qemudArchs[i].wordsize,
-                            qemudArchs[i].binary);
-        if (r == -1) goto vir_buffer_failed;
-        for (j = 0; qemudArchs[i].machines[j]; ++j) {
-            r = bufferVSprintf (xml,
-                                "\
-      <machine>%s</machine>\n",
-                                qemudArchs[i].machines[j]);
-            if (r == -1) goto vir_buffer_failed;
-        }
-        r = bufferAdd (xml,
-                       "\
-    </arch>\n\
-  </guest>\n", -1);
-        if (r == -1) goto vir_buffer_failed;
-    }
-
-    /* The non-PC architectures, qemudArchs[>=2]. */
-    for (i = 2; qemudArchs[i].arch; ++i) {
-        r = bufferVSprintf (xml,
-                            "\
-\n\
-  <guest>\n\
-    <os_type>hvm</os_type>\n\
-    <arch name=\"%s\">\n\
-      <wordsize>%d</wordsize>\n\
-      <emulator>/usr/bin/%s</emulator>\n\
-      <domain type=\"qemu\"/>\n",
-                            qemudArchs[i].arch,
-                            qemudArchs[i].wordsize,
-                            qemudArchs[i].binary);
-        if (r == -1) goto vir_buffer_failed;
-        for (j = 0; qemudArchs[i].machines[j]; ++j) {
-            r = bufferVSprintf (xml,
-                                "\
-      <machine>%s</machine>\n",
-                                qemudArchs[i].machines[j]);
-            if (r == -1) goto vir_buffer_failed;
-        }
-        r = bufferAdd (xml,
-                       "\
-    </arch>\n\
-  </guest>\n", -1);
-        if (r == -1) goto vir_buffer_failed;
-    }
-
-    /* Finish off. */
-    r = bufferAdd (xml,
-                      "\
-</capabilities>\n", -1);
-    if (r == -1) goto vir_buffer_failed;
-
-    /* Copy the XML into the outgoing packet, assuming it's not too large. */
-    len = strlen (xml->content);
-    if (len > QEMUD_MAX_XML_LEN) {
-        bufferFree (xml);
+    if (strlen(xml) > QEMUD_MAX_XML_LEN) {
         qemudReportError (server, VIR_ERR_XML_ERROR, NULL);
         qemudDispatchFailure (server, client, out);
+        free(xml);
         return 0;
     }
+
     out->type = QEMUD_SERVER_PKT_GET_CAPABILITIES;
-    strcpy (out->qemud_packet_server_data_u.getCapabilitiesReply.xml, xml->content);
-    bufferFree (xml);
+    strcpy (out->qemud_packet_server_data_u.getCapabilitiesReply.xml, xml);
+    free(xml);
     return 0;
 }
 

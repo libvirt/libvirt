@@ -34,9 +34,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/utsname.h>
 
 #include <libvirt/virterror.h>
 
+#include "buf.h"
 #include "internal.h"
 #include "driver.h"
 #include "conf.h"
@@ -123,7 +125,8 @@ int qemudMonitorCommand(struct qemud_server *server ATTRIBUTE_UNUSED,
     return 0;
 }
 
-int qemudGetMemInfo(unsigned int *memory) {
+
+static int qemudGetMemInfo(unsigned int *memory) {
     FILE *meminfo = fopen("/proc/meminfo", "r");
     char line[1024];
 
@@ -143,9 +146,9 @@ int qemudGetMemInfo(unsigned int *memory) {
     return 0;
 }
 
-int qemudGetCPUInfo(unsigned int *cpus, unsigned int *mhz,
-                    unsigned int *nodes, unsigned int *sockets,
-                    unsigned int *cores, unsigned int *threads) {
+static int qemudGetCPUInfo(unsigned int *cpus, unsigned int *mhz,
+                           unsigned int *nodes, unsigned int *sockets,
+                           unsigned int *cores, unsigned int *threads) {
     FILE *cpuinfo = fopen("/proc/cpuinfo", "r");
     char line[1024];
 
@@ -197,6 +200,179 @@ int qemudGetCPUInfo(unsigned int *cpus, unsigned int *mhz,
 
     return 0;
 }
+
+int qemudGetNodeInfo(unsigned int *memory,
+                     char *cpuModel, int cpuModelLength,
+                     unsigned int *cpus, unsigned int *mhz,
+                     unsigned int *nodes, unsigned int *sockets,
+                     unsigned int *cores, unsigned int *threads) {
+    struct utsname info;
+
+    if (uname(&info) < 0)
+        return -1;
+
+    strncpy(cpuModel, info.machine, cpuModelLength-1);
+    cpuModel[cpuModelLength-1] = '\0';
+
+    if (qemudGetMemInfo(memory) < 0)
+        return -1;
+
+    if (qemudGetCPUInfo(cpus, mhz, nodes, sockets, cores, threads) < 0)
+        return -1;
+    return 0;
+}
+
+char *qemudGetCapabilities(struct qemud_server *server) {
+    struct utsname utsname;
+    int i, j, r;
+    int have_kqemu = 0;
+    int have_kvm = 0;
+    bufferPtr xml;
+
+    /* Really, this never fails - look at the man-page. */
+    uname (&utsname);
+
+    have_kqemu = access ("/dev/kqemu", F_OK) == 0;
+    have_kvm = access ("/dev/kvm", F_OK) == 0;
+
+    /* Construct the XML. */
+    xml = bufferNew (1024);
+    if (!xml) {
+        qemudReportError (server, VIR_ERR_NO_MEMORY, NULL);
+        return NULL;
+    }
+
+    r = bufferVSprintf (xml,
+                        "\
+<capabilities>\n\
+  <host>\n\
+    <cpu>\n\
+      <arch>%s</arch>\n\
+    </cpu>\n\
+  </host>\n",
+                        utsname.machine);
+    if (r == -1) {
+    vir_buffer_failed:
+        bufferFree (xml);
+        qemudReportError (server, VIR_ERR_NO_MEMORY, NULL);
+        return NULL;
+    }
+
+    i = -1;
+    if (strcmp (utsname.machine, "i686") == 0) i = 0;
+    else if (strcmp (utsname.machine, "x86_64") == 0) i = 1;
+    if (i >= 0) {
+        /* For the default (PC-like) guest, qemudArchs[0] or [1]. */
+        r = bufferVSprintf (xml,
+                            "\
+\n\
+  <guest>\n\
+    <os_type>hvm</os_type>\n\
+    <arch name=\"%s\">\n\
+      <wordsize>%d</wordsize>\n\
+      <emulator>/usr/bin/%s</emulator>\n\
+      <domain type=\"qemu\"/>\n",
+                            qemudArchs[i].arch,
+                            qemudArchs[i].wordsize,
+                            qemudArchs[i].binary);
+        if (r == -1) goto vir_buffer_failed;
+
+        for (j = 0; qemudArchs[i].machines[j]; ++j) {
+            r = bufferVSprintf (xml,
+                                "\
+      <machine>%s</machine>\n",
+                                qemudArchs[i].machines[j]);
+            if (r == -1) goto vir_buffer_failed;
+        }
+
+        if (have_kqemu) {
+            r = bufferAdd (xml,
+                           "\
+      <domain type=\"kqemu\"/>\n", -1);
+            if (r == -1) goto vir_buffer_failed;
+        }
+        if (have_kvm) {
+            r = bufferAdd (xml,
+                           "\
+      <domain type=\"kvm\">\n\
+        <emulator>/usr/bin/qemu-kvm</emulator>\n\
+      </domain>\n", -1);
+            if (r == -1) goto vir_buffer_failed;
+        }
+        r = bufferAdd (xml,
+                       "\
+    </arch>\n\
+  </guest>\n", -1);
+        if (r == -1) goto vir_buffer_failed;
+
+        /* The "other" PC architecture needs emulation. */
+        i = i ^ 1;
+        r = bufferVSprintf (xml,
+                            "\
+\n\
+  <guest>\n\
+    <os_type>hvm</os_type>\n\
+    <arch name=\"%s\">\n\
+      <wordsize>%d</wordsize>\n\
+      <emulator>/usr/bin/%s</emulator>\n\
+      <domain type=\"qemu\"/>\n",
+                            qemudArchs[i].arch,
+                            qemudArchs[i].wordsize,
+                            qemudArchs[i].binary);
+        if (r == -1) goto vir_buffer_failed;
+        for (j = 0; qemudArchs[i].machines[j]; ++j) {
+            r = bufferVSprintf (xml,
+                                "\
+      <machine>%s</machine>\n",
+                                qemudArchs[i].machines[j]);
+            if (r == -1) goto vir_buffer_failed;
+        }
+        r = bufferAdd (xml,
+                       "\
+    </arch>\n\
+  </guest>\n", -1);
+        if (r == -1) goto vir_buffer_failed;
+    }
+
+    /* The non-PC architectures, qemudArchs[>=2]. */
+    for (i = 2; qemudArchs[i].arch; ++i) {
+        r = bufferVSprintf (xml,
+                            "\
+\n\
+  <guest>\n\
+    <os_type>hvm</os_type>\n\
+    <arch name=\"%s\">\n\
+      <wordsize>%d</wordsize>\n\
+      <emulator>/usr/bin/%s</emulator>\n\
+      <domain type=\"qemu\"/>\n",
+                            qemudArchs[i].arch,
+                            qemudArchs[i].wordsize,
+                            qemudArchs[i].binary);
+        if (r == -1) goto vir_buffer_failed;
+        for (j = 0; qemudArchs[i].machines[j]; ++j) {
+            r = bufferVSprintf (xml,
+                                "\
+      <machine>%s</machine>\n",
+                                qemudArchs[i].machines[j]);
+            if (r == -1) goto vir_buffer_failed;
+        }
+        r = bufferAdd (xml,
+                       "\
+    </arch>\n\
+  </guest>\n", -1);
+        if (r == -1) goto vir_buffer_failed;
+    }
+
+    /* Finish off. */
+    r = bufferAdd (xml,
+                      "\
+</capabilities>\n", -1);
+    if (r == -1) goto vir_buffer_failed;
+
+    return bufferContentAndFree(xml);
+}
+
+
 
 static int qemudGetProcessInfo(unsigned long long *cpuTime, int pid) {
     char proc[PATH_MAX];
