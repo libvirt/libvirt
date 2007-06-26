@@ -29,8 +29,9 @@
 #include "../src/internal.h"
 
 int qemudStartup(void);
-void qemudReload(void);
-void qemudShutdown(void);
+int qemudReload(void);
+int qemudShutdown(void);
+int qemudActive(void);
 
 
 virDrvOpenStatus qemudOpen(virConnectPtr conn,

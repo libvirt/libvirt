@@ -40,6 +40,8 @@ static virDriverPtr virDriverTab[MAX_DRIVERS];
 static int virDriverTabCount = 0;
 static virNetworkDriverPtr virNetworkDriverTab[MAX_DRIVERS];
 static int virNetworkDriverTabCount = 0;
+static virStateDriverPtr virStateDriverTab[MAX_DRIVERS];
+static int virStateDriverTabCount = 0;
 static int initialized = 0;
 
 /**
@@ -239,6 +241,79 @@ virRegisterDriver(virDriverPtr driver)
     virDriverTab[virDriverTabCount] = driver;
     return virDriverTabCount++;
 }
+
+/**
+ * virRegisterStateDriver:
+ * @driver: pointer to a driver block
+ *
+ * Register a virtualization driver
+ *
+ * Returns the driver priority or -1 in case of error.
+ */
+int
+virRegisterStateDriver(virStateDriverPtr driver)
+{
+    if (virInitialize() < 0)
+      return -1;
+
+    if (driver == NULL) {
+        virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(-1);
+    }
+
+    if (virStateDriverTabCount >= MAX_DRIVERS) {
+    	virLibConnError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return(-1);
+    }
+
+    virStateDriverTab[virStateDriverTabCount] = driver;
+    return virStateDriverTabCount++;
+}
+
+int __virStateInitialize(void) {
+    int i, ret = 0;
+
+    if (virInitialize() < 0)
+        return -1;
+
+    for (i = 0 ; i < virStateDriverTabCount ; i++) {
+        if (virStateDriverTab[i]->initialize() < 0)
+            ret = -1;
+    }
+    return ret;
+}
+
+int __virStateCleanup(void) {
+    int i, ret = 0;
+
+    for (i = 0 ; i < virStateDriverTabCount ; i++) {
+        if (virStateDriverTab[i]->cleanup() < 0)
+            ret = -1;
+    }
+    return ret;
+}
+
+int __virStateReload(void) {
+    int i, ret = 0;
+
+    for (i = 0 ; i < virStateDriverTabCount ; i++) {
+        if (virStateDriverTab[i]->reload() < 0)
+            ret = -1;
+    }
+    return ret;
+}
+
+int __virStateActive(void) {
+    int i, ret = 0;
+
+    for (i = 0 ; i < virStateDriverTabCount ; i++) {
+        if (virStateDriverTab[i]->active())
+            ret = 1;
+    }
+    return ret;
+}
+
+
 
 /**
  * virGetVersion:

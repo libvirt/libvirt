@@ -111,5 +111,10 @@
 
 	__virEventRegisterImpl;
 
+ 	__virStateInitialize;
+ 	__virStateCleanup;
+ 	__virStateReload;
+ 	__virStateActive;
+
     local: *;
 };

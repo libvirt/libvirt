@@ -205,7 +205,7 @@ int qemudStartup(void) {
     return -1;
 }
 
-void qemudReload(void) {
+int qemudReload(void) {
     qemudScanConfigs(qemu_driver);
 
      if (qemu_driver->iptables) {
@@ -214,14 +214,28 @@ void qemudReload(void) {
     }
 
     qemudAutostartConfigs(qemu_driver);
+
+    return 0;
 }
 
-void qemudShutdown() {
+int qemudActive(void) {
+    /* If we've any active networks or guests, then we
+     * mark this driver as active
+     */
+    if (qemu_driver->nactivenetworks &&
+        qemu_driver->nactivevms)
+        return 1;
+
+    /* Otherwise we're happy to deal with a shutdown */
+    return 0;
+}
+
+int qemudShutdown() {
     struct qemud_vm *vm;
     struct qemud_network *network;
 
     if (!qemu_driver)
-        return;
+        return -1;
 
     /* shutdown active VMs */
     vm = qemu_driver->vms;
@@ -279,6 +293,8 @@ void qemudShutdown() {
 
     free(qemu_driver);
     qemu_driver = NULL;
+
+    return 0;
 }
 
 static int
@@ -2516,6 +2532,12 @@ static virNetworkDriver qemuNetworkDriver = {
     qemudNetworkSetAutostart, /* networkSetAutostart */
 };
 
+static virStateDriver qemuStateDriver = {
+    qemudStartup,
+    qemudShutdown,
+    qemudReload,
+    qemudActive,
+};
 
 /*
  * Local variables:

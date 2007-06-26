@@ -1,3 +1,10 @@
+Tue Jun 26 18:53:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/internal.h, src/libvirt.c, src/driver.h, src/libvirt_sym.version
+	Added internal driver API hooks for global shutdown/startup/reload
+	* qemud/driver.c, qemud/driver.h, qemud/internal.h, qemud/qemud.c
+	Adapt to make use of new driver API for startup/shutdown
+
 Tue Jun 26 18:47:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/event.h, src/event.c, src/Makefile.am, src/libvirt_sym.version:

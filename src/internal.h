@@ -220,6 +220,15 @@ int		virFreeNetwork	(virConnectPtr conn,
 #define virGetDomain(c,n,u) __virGetDomain((c),(n),(u))
 #define virGetNetwork(c,n,u) __virGetNetwork((c),(n),(u))
 
+int __virStateInitialize(void);
+int __virStateCleanup(void);
+int __virStateReload(void);
+int __virStateActive(void);
+#define virStateInitialize() __virStateInitialize()
+#define virStateCleanup() __virStateCleanup()
+#define virStateReload() __virStateReload()
+#define virStateActive() __virStateActive()
+
 #ifdef __cplusplus
 }
 #endif                          /* __cplusplus */

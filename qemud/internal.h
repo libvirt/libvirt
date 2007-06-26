@@ -34,6 +34,7 @@
 #include "remote_protocol.h"
 #include "bridge.h"
 #include "iptables.h"
+#include "../config.h"
 
 #ifdef __GNUC__
 #ifdef HAVE_ANSIDECL_H

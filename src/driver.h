@@ -322,6 +322,20 @@ struct _virNetworkDriver {
 	virDrvNetworkSetAutostart	networkSetAutostart;
 };
 
+typedef int (*virDrvStateInitialize) (void);
+typedef int (*virDrvStateCleanup) (void);
+typedef int (*virDrvStateReload) (void);
+typedef int (*virDrvStateActive) (void);
+
+typedef struct _virStateDriver virStateDriver;
+typedef virStateDriver *virStateDriverPtr;
+
+struct _virStateDriver {
+    virDrvStateInitialize  initialize;
+    virDrvStateCleanup     cleanup;
+    virDrvStateReload      reload;
+    virDrvStateActive      active;
+};
 
 /*
  * Registration
@@ -330,6 +344,7 @@ struct _virNetworkDriver {
  */
 int virRegisterDriver(virDriverPtr);
 int virRegisterNetworkDriver(virNetworkDriverPtr);
+int virRegisterStateDriver(virStateDriverPtr);
 
 #ifdef __cplusplus
 }

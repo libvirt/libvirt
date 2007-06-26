@@ -54,6 +54,7 @@
 #include <libvirt/virterror.h>
 
 #include "internal.h"
+#include "../src/internal.h"
 #include "../src/remote_internal.h"
 #include "../src/conf.h"
 #include "dispatch.h"
@@ -206,6 +207,9 @@ static void qemudDispatchSignalEvent(int fd ATTRIBUTE_UNUSED,
     switch (sigc) {
     case SIGHUP:
         qemudLog(QEMUD_INFO, "Reloading configuration on SIGHUP");
+        if (virStateReload() < 0)
+            qemudLog(QEMUD_WARN, "Error while reloading drivers");
+
         if (!remote) {
             qemudReload();
         }
@@ -703,6 +707,8 @@ static struct qemud_server *qemudInitialize(int sigread) {
 
     if (roSockname[0] != '\0' && qemudListenUnix(server, roSockname, 1) < 0)
         goto cleanup;
+
+    virStateInitialize();
 
     if (!remote) /* qemud only */ {
         if (qemudStartup() < 0) {
@@ -1478,13 +1484,45 @@ static int qemudOneLoop(void) {
     return 0;
 }
 
+static void qemudInactiveTimer(int timer ATTRIBUTE_UNUSED, void *data) {
+    struct qemud_server *server = (struct qemud_server *)data;
+    qemudDebug("Got inactive timer expiry");
+    if (!virStateActive()) {
+        qemudDebug("No state active, shutting down");
+        server->shutdown = 1;
+    }
+}
+
 static int qemudRunLoop(struct qemud_server *server) {
-    int ret;
+    int timerid = -1;
 
-    while ((ret = qemudOneLoop()) == 0 && !server->shutdown)
-        ;
+    for (;;) {
+        /* A shutdown timeout is specified, so check
+         * if any drivers have active state, if not
+         * shutdown after timeout seconds
+         */
+        if (timeout > 0 && !virStateActive() && !server->clients) {
+            timerid = virEventAddTimeoutImpl(timeout*1000, qemudInactiveTimer, server);
+            qemudDebug("Scheduling shutdown timer %d", timerid);
+        }
 
-    return ret == -1 ? -1 : 0;
+        if (qemudOneLoop() < 0)
+            break;
+
+        /* Unregister any timeout that's active, since we
+         * just had an event processed
+         */
+        if (timerid != -1) {
+            qemudDebug("Removing shutdown timer %d", timerid);
+            virEventRemoveTimeoutImpl(timerid);
+            timerid = -1;
+        }
+
+        if (server->shutdown)
+            return 0;
+    }
+
+    return -1;
 }
 
 static void qemudCleanup(struct qemud_server *server) {
@@ -1502,6 +1540,7 @@ static void qemudCleanup(struct qemud_server *server) {
 
 
     qemudShutdown();
+    virStateCleanup();
 
     free(server);
 }
