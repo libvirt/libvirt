@@ -1,3 +1,11 @@
+Tue Jun 26 14:40:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/remote_internal.c, python/Makefile.am: Python bindings
+	  fixed, and now building virConnect.getHostname and
+	  virConnect.getURI.  Fixed a problem which stopped
+	  libvirt.py from being (re-)built.  Rearranged
+	  python/Makefile.am to make it cleaner and clearer.
+
 Tue Jun 26 12:40:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* include/libvirt/libvirt.h.in, src/libvirt.c: (and numerous

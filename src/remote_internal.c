@@ -104,15 +104,6 @@ static void query_free (struct query_fields *fields);
 static int initialise_gnutls (virConnectPtr conn);
 static gnutls_session_t negotiate_gnutls_on_connection (virConnectPtr conn, int sock, int no_verify, const char *hostname);
 
-/* Supported transports. */
-enum transport {
-    trans_tls,
-    trans_unix,
-    trans_ssh,
-    trans_ext,
-    trans_tcp,
-};
-
 static int
 remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
 {
@@ -131,7 +122,14 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
         return VIR_DRV_OPEN_DECLINED; /* Decline - not a remote URL. */
 
     /* What transport? */
-    enum transport transport;
+    enum {
+        trans_tls,
+        trans_unix,
+        trans_ssh,
+        trans_ext,
+        trans_tcp,
+    } transport;
+
     if (!transport_str || strcasecmp (transport_str, "tls") == 0)
         transport = trans_tls;
     else if (strcasecmp (transport_str, "unix") == 0)

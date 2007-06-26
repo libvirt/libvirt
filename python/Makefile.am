@@ -37,8 +37,21 @@ libvirtmod_la_LIBADD = $(mylibs)
 # Python header files contain a redundant decl, hence:
 libvirtmod_la_CFLAGS = -Wno-redundant-decls
 
+GENERATE = generator.py
+API_DESC = $(top_srcdir)/docs/libvirt-api.xml $(srcdir)/libvirt-python-api.xml
+GENERATED= libvirt-export.c \
+           libvirtclass.txt \
+	   libvirt-py.c \
+	   libvirt-py.h \
+	   libvirtclass.py
+
+$(GENERATED): $(srcdir)/$(GENERATE) $(API_DESC)
+	$(PYTHON) $(srcdir)/$(GENERATE) $(srcdir)
+
 libvirt.py: $(srcdir)/libvir.py libvirtclass.py
 	cat $(srcdir)/libvir.py libvirtclass.py > libvirt.py
+
+$(libvirtmod_la_OBJECTS): $(GENERATED)
 
 install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(pythondir)
@@ -47,24 +60,7 @@ install-data-local:
 	@(for doc in $(DOCS) ; \
 	   do @INSTALL@ -m 0644 $$doc $(DESTDIR)$(DOCS_DIR) ; done)
 
-GENERATE = generator.py
-API_DESC = $(top_srcdir)/docs/libvirt-api.xml $(srcdir)/libvirt-python-api.xml
-GENERATED= libvirt.py \
-           libvirt-export.c \
-           libvirtclass.txt \
-	   libvirt-py.c \
-	   libvirt-py.h \
-	   libvirtclass.py
-
-CLEANFILES= $(GENERATED) gen_prog libvirt.py
-
-$(GENERATED): gen_prog
-
-gen_prog: $(srcdir)/$(GENERATE) $(API_DESC)
-	$(PYTHON) $(srcdir)/$(GENERATE) $(srcdir)
-	touch gen_prog
-
-$(libvirtmod_la_OBJECTS): $(GENERATED)
+CLEANFILES= $(GENERATED) libvirt.py
 
 else
 all: 
