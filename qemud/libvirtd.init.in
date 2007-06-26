@@ -12,13 +12,13 @@
 #
 
 # Sanity checks.
-[ -x @sbindir@/libvirt_qemud ] || exit 0
+[ -x @sbindir@/libvirtd ] || exit 0
 
 # Source function library.
 . @sysconfdir@/rc.d/init.d/functions
 
 SERVICE=libvirtd
-PROCESS=libvirt_qemud
+PROCESS=libvirtd
 
 
 RETVAL=0

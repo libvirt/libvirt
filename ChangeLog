@@ -1,3 +1,8 @@
+Tue Jun 26 19:04:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/libvirtd.init.in, qemud/Makefile.am, libvirt.spec.in
+	Rename the daemon from libvirt_qemud to libvirtd
+
 Tue Jun 26 19:02:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/libvirtd.in, qemud/libvirtd.init.in, qemud/Makefile.am

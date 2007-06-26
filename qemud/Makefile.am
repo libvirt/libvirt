@@ -3,9 +3,9 @@
 INCLUDES = @LIBXML_CFLAGS@
 UUID=$(shell uuidgen)
 
-sbin_PROGRAMS = libvirt_qemud
+sbin_PROGRAMS = libvirtd
 
-libvirt_qemud_SOURCES = \
+libvirtd_SOURCES = \
 		qemud.c internal.h \
                 driver.c driver.h \
                 dispatch.c dispatch.h \
@@ -20,7 +20,7 @@ libvirt_qemud_SOURCES = \
                 ../src/virterror.c \
                 event.c event.h
 #-D_XOPEN_SOURCE=600 -D_XOPEN_SOURCE_EXTENDED=1 -D_POSIX_C_SOURCE=199506L
-libvirt_qemud_CFLAGS = \
+libvirtd_CFLAGS = \
         -I$(top_srcdir)/include -I$(top_builddir)/include $(LIBXML_CFLAGS) \
         $(WARN_CFLAGS) -DLOCAL_STATE_DIR="\"$(localstatedir)\"" \
         -DSYSCONF_DIR="\"$(sysconfdir)\"" \
@@ -28,9 +28,9 @@ libvirt_qemud_CFLAGS = \
 	-DREMOTE_PID_FILE="\"$(REMOTE_PID_FILE)\"" \
         -DGETTEXT_PACKAGE=\"$(PACKAGE)\"
 
-libvirt_qemud_LDFLAGS = $(WARN_CFLAGS) $(LIBXML_LIBS)
-libvirt_qemud_DEPENDENCIES = ../src/libvirt.la
-libvirt_qemud_LDADD = ../src/libvirt.la
+libvirtd_LDFLAGS = $(WARN_CFLAGS) $(LIBXML_LIBS)
+libvirtd_DEPENDENCIES = ../src/libvirt.la
+libvirtd_LDADD = ../src/libvirt.la
 
 install-data-local: install-init
 	mkdir -p $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart
