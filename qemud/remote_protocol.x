@@ -178,6 +178,10 @@ struct remote_get_version_ret {
     hyper hv_ver;
 };
 
+struct remote_get_hostname_ret {
+    remote_nonnull_string hostname;
+};
+
 struct remote_get_max_vcpus_args {
     /* The only backend which supports this call is Xen HV, and
      * there the type is ignored so it could be NULL.
@@ -605,7 +609,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_SAVE = 55,
     REMOTE_PROC_DOMAIN_GET_SCHEDULER_TYPE = 56,
     REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS = 57,
-    REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS = 58
+    REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS = 58,
+    REMOTE_PROC_GET_HOSTNAME = 59
 };
 
 /* Custom RPC structure. */

@@ -460,6 +460,22 @@ remoteDispatchGetVersion (struct qemud_client *client,
 }
 
 static int
+remoteDispatchGetHostname (struct qemud_client *client,
+                           remote_message_header *req,
+                           void *args ATTRIBUTE_UNUSED,
+                           remote_get_hostname_ret *ret)
+{
+    char *hostname;
+    CHECK_CONN(client);
+
+    hostname = virConnectGetHostname (client->conn);
+    if (hostname == NULL) return -1;
+
+    ret->hostname = hostname;
+    return 0;
+}
+
+static int
 remoteDispatchGetMaxVcpus (struct qemud_client *client,
                            remote_message_header *req,
                            remote_get_max_vcpus_args *args,

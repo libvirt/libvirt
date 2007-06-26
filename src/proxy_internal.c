@@ -53,6 +53,8 @@ virDriver xenProxyDriver = {
     xenProxyClose, /* close */
     NULL, /* type */
     xenProxyGetVersion, /* version */
+    NULL, /* hostname */
+    NULL, /* URI */
     NULL, /* getMaxVcpus */
     xenProxyNodeGetInfo, /* nodeGetInfo */
     xenProxyGetCapabilities, /* getCapabilities */

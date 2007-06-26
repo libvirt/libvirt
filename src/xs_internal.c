@@ -46,6 +46,8 @@ virDriver xenStoreDriver = {
     xenStoreClose, /* close */
     NULL, /* type */
     NULL, /* version */
+    NULL, /* hostname */
+    NULL, /* URI */
     NULL, /* getMaxVcpus */
     NULL, /* nodeGetInfo */
     NULL, /* getCapabilities */

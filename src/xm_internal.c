@@ -81,6 +81,8 @@ virDriver xenXMDriver = {
     xenXMClose, /* close */
     xenXMGetType, /* type */
     NULL, /* version */
+    NULL, /* hostname */
+    NULL, /* URI */
     NULL, /* getMaxVcpus */
     NULL, /* nodeGetInfo */
     NULL, /* getCapabilities */

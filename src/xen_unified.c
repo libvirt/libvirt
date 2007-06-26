@@ -28,6 +28,7 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
 #include <sys/types.h>
 #include <xen/dom0_ops.h>
 #include <libxml/uri.h>
@@ -129,12 +130,19 @@ xenUnifiedOpen (virConnectPtr conn, const char *name, int flags)
     xmlFreeURI(uri);
 
     /* Allocate per-connection private data. */
-    priv = malloc (sizeof *priv);
+    priv = calloc (1, sizeof *priv);
     if (!priv) {
         xenUnifiedError (NULL, VIR_ERR_NO_MEMORY, "allocating private data");
         return VIR_DRV_OPEN_ERROR;
     }
     conn->privateData = priv;
+
+    priv->name = strdup (name);
+    if (!priv->name) {
+        xenUnifiedError (NULL, VIR_ERR_NO_MEMORY, "allocating priv->name");
+        free (priv);
+        return VIR_DRV_OPEN_ERROR;
+    }
 
     priv->handle = -1;
     priv->xendConfigVersion = -1;
@@ -165,6 +173,11 @@ xenUnifiedOpen (virConnectPtr conn, const char *name, int flags)
         if (!priv->opened[i] && (getuid() == 0 || i == proxy_offset)) {
             for (j = 0; j < i; ++j)
                 if (priv->opened[j]) drivers[j]->close (conn);
+            free (priv->name);
+            free (priv);
+            /* The assumption is that one of the underlying drivers
+             * has set virterror already.
+             */
             return VIR_DRV_OPEN_ERROR;
         }
     }
@@ -185,6 +198,7 @@ xenUnifiedClose (virConnectPtr conn)
         if (priv->opened[i] && drivers[i]->close)
             (void) drivers[i]->close (conn);
 
+    free (priv->name);
     free (conn->privateData);
     conn->privateData = NULL;
 
@@ -220,6 +234,43 @@ xenUnifiedVersion (virConnectPtr conn, unsigned long *hvVer)
             return 0;
 
     return -1;
+}
+
+/* NB: Even if connected to the proxy, we're still on the
+ * same machine.
+ */
+static char *
+xenUnifiedGetHostname (virConnectPtr conn)
+{
+    int r;
+    char hostname [HOST_NAME_MAX+1], *str;
+
+    r = gethostname (hostname, HOST_NAME_MAX+1);
+    if (r == -1) {
+        xenUnifiedError (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        return NULL;
+    }
+    str = strdup (hostname);
+    if (str == NULL) {
+        xenUnifiedError (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        return NULL;
+    }
+    return str;
+}
+
+/* The name is recorded (canonicalised) in xenUnifiedOpen. */
+static char *
+xenUnifiedGetURI (virConnectPtr conn)
+{
+    GET_PRIVATE(conn);
+    char *str;
+
+    str = strdup (priv->name);
+    if (str == NULL) {
+        xenUnifiedError (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        return NULL;
+    }
+    return str;
 }
 
 static int
@@ -850,6 +901,8 @@ static virDriver xenUnifiedDriver = {
     .close 			= xenUnifiedClose,
     .type 			= xenUnifiedType,
     .version 			= xenUnifiedVersion,
+    .getHostname    = xenUnifiedGetHostname,
+    .getURI         = xenUnifiedGetURI,
     .getMaxVcpus 			= xenUnifiedGetMaxVcpus,
     .nodeGetInfo 			= xenUnifiedNodeGetInfo,
     .getCapabilities 		= xenUnifiedGetCapabilities,

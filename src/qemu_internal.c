@@ -1023,12 +1023,15 @@ static int qemuNetworkOpen(virConnectPtr conn,
         return VIR_DRV_OPEN_ERROR;
     }
 
-    if (!strcmp(conn->driver->name, "QEMU")) {
+    if (STREQ (conn->driver->name, "QEMU")) {
         /* QEMU driver is active - just re-use existing connection */
         qemuPrivatePtr priv = (qemuPrivatePtr) conn->privateData;
         netpriv->qemud_fd = priv->qemud_fd;
         netpriv->shared = 1;
         conn->networkPrivateData = netpriv;
+        return VIR_DRV_OPEN_SUCCESS;
+    } else if (STREQ (conn->driver->name, "remote")) {
+        /* Remote has its own network driver. */
         return VIR_DRV_OPEN_SUCCESS;
     } else {
         /* Non-QEMU driver is active - open a new connection */
@@ -1052,12 +1055,15 @@ static int qemuNetworkOpen(virConnectPtr conn,
 static int
 qemuNetworkClose (virConnectPtr conn)
 {
-    qemuNetworkPrivatePtr netpriv = (qemuNetworkPrivatePtr) conn->networkPrivateData;
+    if (STRNEQ (conn->driver->name, "remote")) {
+        qemuNetworkPrivatePtr netpriv =
+            (qemuNetworkPrivatePtr) conn->networkPrivateData;
 
-    if (!netpriv->shared)
-        close(netpriv->qemud_fd);
-    free(netpriv);
-    conn->networkPrivateData = NULL;
+        if (!netpriv->shared)
+            close(netpriv->qemud_fd);
+        free(netpriv);
+        conn->networkPrivateData = NULL;
+    }
 
     return 0;
 }
@@ -1380,6 +1386,8 @@ static virDriver qemuDriver = {
     qemuClose, /* close */
     NULL, /* type */
     qemuGetVersion, /* version */
+    NULL, /* hostname */
+    NULL, /* URI */
     NULL, /* getMaxVcpus */
     qemuNodeGetInfo, /* nodeGetInfo */
     qemuGetCapabilities, /* getCapabilities */

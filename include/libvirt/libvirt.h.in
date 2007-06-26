@@ -272,6 +272,10 @@ int			virConnectClose		(virConnectPtr conn);
 const char *		virConnectGetType	(virConnectPtr conn);
 int			virConnectGetVersion	(virConnectPtr conn,
 						 unsigned long *hvVer);
+char *                  virConnectGetHostname   (virConnectPtr conn);
+char *                  virConnectGetURI        (virConnectPtr conn);
+
+
 /*
  * Capabilities of the connection / driver.
  */

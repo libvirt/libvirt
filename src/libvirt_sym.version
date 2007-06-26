@@ -6,6 +6,8 @@
 	virConnectClose;
 	virConnectGetType;
 	virConnectGetVersion;
+	virConnectGetHostname;
+	virConnectGetURI;
 	virDomainGetConnect;
 	virConnectListDomains;
 	virConnectNumOfDomains;

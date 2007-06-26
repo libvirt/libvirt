@@ -245,6 +245,12 @@ case REMOTE_PROC_GET_CAPABILITIES:
 	ret = (char *) &lv_remote_get_capabilities_ret;
 	memset (&lv_remote_get_capabilities_ret, 0, sizeof lv_remote_get_capabilities_ret);
 	break;
+case REMOTE_PROC_GET_HOSTNAME:
+	fn = (dispatch_fn) remoteDispatchGetHostname;
+	ret_filter = (xdrproc_t) xdr_remote_get_hostname_ret;
+	ret = (char *) &lv_remote_get_hostname_ret;
+	memset (&lv_remote_get_hostname_ret, 0, sizeof lv_remote_get_hostname_ret);
+	break;
 case REMOTE_PROC_GET_MAX_VCPUS:
 	fn = (dispatch_fn) remoteDispatchGetMaxVcpus;
 	args_filter = (xdrproc_t) xdr_remote_get_max_vcpus_args;

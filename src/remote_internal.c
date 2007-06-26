@@ -58,6 +58,7 @@ struct private_data {
     gnutls_session_t session;   /* GnuTLS session (if uses_tls != 0). */
     char *type;                 /* Cached return from remoteType. */
     int counter;                /* Generates serial numbers for RPC. */
+    char *uri;                  /* Original (remote) URI. */
 };
 
 #define GET_PRIVATE(conn,retcode)                                       \
@@ -148,19 +149,23 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
         return VIR_DRV_OPEN_ERROR;
     }
 
+    /* Local variables which we will initialise. These can
+     * get freed in the failed: path.
+     */
+    char *name = 0, *command = 0, *sockname = 0, *netcat = 0, *username = 0;
+    char *server = 0, *port = 0;
+    int no_verify = 0;
+    char **cmd_argv = 0;
+
     /* Return code from this function, and the private data. */
     int retcode = VIR_DRV_OPEN_ERROR;
     struct private_data priv = { .magic = DEAD, .sock = -1 };
-    char *name = 0, *command = 0, *sockname = 0, *netcat = 0, *username = 0;
-    char *server, *port;
-    int no_verify = 0;
-    char **cmd_argv = 0;
 
     /* Remote server defaults to "localhost" if not specified. */
     server = strdup (uri->server ? uri->server : "localhost");
     if (!server) {
     out_of_memory:
-        error (NULL, VIR_ERR_NO_MEMORY, "remote_open");
+        error (NULL, VIR_ERR_NO_MEMORY, "duplicating server name");
         goto failed;
     }
     if (uri->port != 0) {
@@ -456,6 +461,14 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
         error (NULL, VIR_ERR_NO_MEMORY, "malloc");
         goto failed;
     }
+    /* Duplicate and save the uri_str. */
+    priv.uri = strdup (uri_str);
+    if (!priv.uri) {
+        error (NULL, VIR_ERR_NO_MEMORY, "allocating priv->uri");
+        free (conn->privateData);
+        goto failed;
+    }
+
     priv.magic = MAGIC;
     memcpy (conn->privateData, &priv, sizeof priv);
 
@@ -931,6 +944,13 @@ remoteClose (virConnectPtr conn)
     /* See comment for remoteType. */
     if (priv->type) free (priv->type);
 
+    /* Free URI copy. */
+    if (priv->uri) free (priv->uri);
+
+    /* Free private data. */
+    priv->magic = DEAD;
+    free (conn->privateData);
+
     return 0;
 }
 
@@ -975,6 +995,39 @@ remoteVersion (virConnectPtr conn, unsigned long *hvVer)
 
     if (hvVer) *hvVer = ret.hv_ver;
     return 0;
+}
+
+static char *
+remoteGetHostname (virConnectPtr conn)
+{
+    remote_get_hostname_ret ret;
+    GET_PRIVATE (conn, NULL);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_GET_HOSTNAME,
+              (xdrproc_t) xdr_void, (char *) NULL,
+              (xdrproc_t) xdr_remote_get_hostname_ret, (char *) &ret) == -1)
+        return NULL;
+
+    /* Caller frees this. */
+    return ret.hostname;
+}
+
+/* This call is unusual because it doesn't go over RPC.  The
+ * full URI is known (only) at the client end of the connection.
+ */
+static char *
+remoteGetURI (virConnectPtr conn)
+{
+    GET_PRIVATE (conn, NULL);
+    char *str;
+
+    str = strdup (priv->uri);
+    if (str == NULL) {
+        error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        return NULL;
+    }
+    return str;
 }
 
 static int
@@ -2604,6 +2657,8 @@ static virDriver driver = {
     .close = remoteClose,
 	.type = remoteType,
 	.version = remoteVersion,
+    .getHostname = remoteGetHostname,
+    .getURI = remoteGetURI,
 	.getMaxVcpus = remoteGetMaxVcpus,
 	.nodeGetInfo = remoteNodeGetInfo,
     .getCapabilities = remoteGetCapabilities,

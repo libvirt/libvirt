@@ -73,6 +73,8 @@ virDriver xenDaemonDriver = {
     xenDaemonClose, /* close */
     xenDaemonGetType, /* type */
     xenDaemonGetVersion, /* version */
+    NULL, /* hostname */
+    NULL, /* URI */
     NULL, /* getMaxVcpus */
     xenDaemonNodeGetInfo, /* nodeGetInfo */
     NULL, /* getCapabilities */

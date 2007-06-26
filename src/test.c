@@ -22,9 +22,13 @@
  */
 
 #ifdef WITH_TEST
+
+#define _GNU_SOURCE /* for asprintf */
+
 #include <stdio.h>
 #include <string.h>
 #include <sys/time.h>
+#include <errno.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
@@ -42,6 +46,8 @@ int testOpen(virConnectPtr conn,
 int testClose  (virConnectPtr conn);
 int testGetVersion(virConnectPtr conn,
                    unsigned long *hvVer);
+char *testGetHostname (virConnectPtr conn);
+char *testGetURI (virConnectPtr conn);
 int testNodeGetInfo(virConnectPtr conn,
                     virNodeInfoPtr info);
 char *testGetCapabilities (virConnectPtr conn);
@@ -96,6 +102,8 @@ static virDriver testDriver = {
     testClose, /* close */
     NULL, /* type */
     testGetVersion, /* version */
+    testGetHostname, /* hostname */
+    testGetURI, /* URI */
     NULL, /* getMaxVcpus */
     testNodeGetInfo, /* nodeGetInfo */
     testGetCapabilities, /* getCapabilities */
@@ -140,6 +148,7 @@ static virDriver testDriver = {
 /* Per-connection private data. */
 struct _testPrivate {
     int handle;
+    char *path;
 };
 typedef struct _testPrivate *testPrivatePtr;
 
@@ -748,12 +757,17 @@ int testOpen(virConnectPtr conn,
     }
 
     /* Allocate per-connection private data. */
-    priv = conn->privateData = malloc (sizeof (struct _testPrivate));
+    priv = conn->privateData = calloc (1, sizeof (struct _testPrivate));
     if (!priv) {
         testError(NULL, NULL, VIR_ERR_NO_MEMORY, _("allocating private data"));
         return VIR_DRV_OPEN_ERROR;
     }
     priv->handle = -1;
+    priv->path = strdup (uri->path);
+    if (!priv->path) {
+        testError (NULL, NULL, VIR_ERR_NO_MEMORY, _("allocating path"));
+        return VIR_DRV_OPEN_ERROR;
+    }
 
     if (strcmp(uri->path, "/default") == 0) {
         ret = testOpenDefault(conn,
@@ -792,6 +806,7 @@ int testClose(virConnectPtr conn)
         memset (con, 0, sizeof *con); // RWMJ - why?
     }
 
+    free (priv->path);
     free (priv);
     return 0;
 }
@@ -801,6 +816,38 @@ int testGetVersion(virConnectPtr conn ATTRIBUTE_UNUSED,
 {
     *hvVer = 2;
     return (0);
+}
+
+char *
+testGetHostname (virConnectPtr conn)
+{
+    int r;
+    char hostname [HOST_NAME_MAX+1], *str;
+
+    r = gethostname (hostname, HOST_NAME_MAX+1);
+    if (r == -1) {
+        testError (conn, NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        return NULL;
+    }
+    str = strdup (hostname);
+    if (str == NULL) {
+        testError (conn, NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        return NULL;
+    }
+    return str;
+}
+
+char *
+testGetURI (virConnectPtr conn)
+{
+    testPrivatePtr priv = (testPrivatePtr) conn->privateData;
+    char *uri;
+
+    if (asprintf (&uri, "test://%s", priv->path) == -1) {
+        testError (conn, NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        return NULL;
+    }
+    return uri;
 }
 
 int testNodeGetInfo(virConnectPtr conn,

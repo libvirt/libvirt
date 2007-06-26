@@ -2588,7 +2588,65 @@ cmdVersion(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 }
 
 /*
- * "dumpxml" command
+ * "hostname" command
+ */
+static vshCmdInfo info_hostname[] = {
+    {"syntax", "hostname"},
+    {"help", gettext_noop("print the hypervisor hostname")},
+    {NULL, NULL}
+};
+
+static int
+cmdHostname (vshControl *ctl, vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    char *hostname;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    hostname = virConnectGetHostname (ctl->conn);
+    if (hostname == NULL) {
+        vshError(ctl, FALSE, _("failed to get hostname"));
+        return FALSE;
+    }
+
+    vshPrint (ctl, "%s\n", hostname);
+    free (hostname);
+
+    return TRUE;
+}
+
+/*
+ * "uri" command
+ */
+static vshCmdInfo info_uri[] = {
+    {"syntax", "uri"},
+    {"help", gettext_noop("print the hypervisor canonical URI")},
+    {NULL, NULL}
+};
+
+static int
+cmdURI (vshControl *ctl, vshCmd *cmd ATTRIBUTE_UNUSED)
+{
+    char *uri;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    uri = virConnectGetURI (ctl->conn);
+    if (uri == NULL) {
+        vshError(ctl, FALSE, _("failed to get URI"));
+        return FALSE;
+    }
+
+    vshPrint (ctl, "%s\n", uri);
+    free (uri);
+
+    return TRUE;
+}
+
+/*
+ * "vncdisplay" command
  */
 static vshCmdInfo info_vncdisplay[] = {
     {"syntax", "vncdisplay <domain>"},
@@ -3330,6 +3388,7 @@ static vshCmdDef commands[] = {
     {"domname", cmdDomname, opts_domname, info_domname},
     {"domstate", cmdDomstate, opts_domstate, info_domstate},
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
+    {"hostname", cmdHostname, NULL, info_hostname},
     {"list", cmdList, opts_list, info_list},
     {"net-autostart", cmdNetworkAutostart, opts_network_autostart, info_network_autostart},
     {"net-create", cmdNetworkCreate, opts_network_create, info_network_create},
@@ -3355,6 +3414,7 @@ static vshCmdDef commands[] = {
     {"setvcpus", cmdSetvcpus, opts_setvcpus, info_setvcpus},
     {"suspend", cmdSuspend, opts_suspend, info_suspend},
     {"undefine", cmdUndefine, opts_undefine, info_undefine},
+    {"uri", cmdURI, NULL, info_uri},
     {"vcpuinfo", cmdVcpuinfo, opts_vcpuinfo, info_vcpuinfo},
     {"vcpupin", cmdVcpupin, opts_vcpupin, info_vcpupin},
     {"version", cmdVersion, NULL, info_version},

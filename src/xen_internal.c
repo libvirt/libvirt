@@ -597,6 +597,8 @@ virDriver xenHypervisorDriver = {
     xenHypervisorClose, /* close */
     xenHypervisorGetType, /* type */
     xenHypervisorGetVersion, /* version */
+    NULL, /* hostname */
+    NULL, /* URI */
     xenHypervisorGetMaxVcpus, /* getMaxVcpus */
     NULL, /* nodeGetInfo */
     xenHypervisorGetCapabilities, /* getCapabilities */

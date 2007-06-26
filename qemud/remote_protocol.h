@@ -105,6 +105,11 @@ struct remote_get_version_ret {
 };
 typedef struct remote_get_version_ret remote_get_version_ret;
 
+struct remote_get_hostname_ret {
+	remote_nonnull_string hostname;
+};
+typedef struct remote_get_hostname_ret remote_get_hostname_ret;
+
 struct remote_get_max_vcpus_args {
 	remote_string type;
 };
@@ -626,6 +631,7 @@ enum remote_procedure {
 	REMOTE_PROC_DOMAIN_GET_SCHEDULER_TYPE = 56,
 	REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS = 57,
 	REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS = 58,
+	REMOTE_PROC_GET_HOSTNAME = 59,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -669,6 +675,7 @@ extern  bool_t xdr_remote_sched_param (XDR *, remote_sched_param*);
 extern  bool_t xdr_remote_open_args (XDR *, remote_open_args*);
 extern  bool_t xdr_remote_get_type_ret (XDR *, remote_get_type_ret*);
 extern  bool_t xdr_remote_get_version_ret (XDR *, remote_get_version_ret*);
+extern  bool_t xdr_remote_get_hostname_ret (XDR *, remote_get_hostname_ret*);
 extern  bool_t xdr_remote_get_max_vcpus_args (XDR *, remote_get_max_vcpus_args*);
 extern  bool_t xdr_remote_get_max_vcpus_ret (XDR *, remote_get_max_vcpus_ret*);
 extern  bool_t xdr_remote_node_get_info_ret (XDR *, remote_node_get_info_ret*);
@@ -769,6 +776,7 @@ extern bool_t xdr_remote_sched_param ();
 extern bool_t xdr_remote_open_args ();
 extern bool_t xdr_remote_get_type_ret ();
 extern bool_t xdr_remote_get_version_ret ();
+extern bool_t xdr_remote_get_hostname_ret ();
 extern bool_t xdr_remote_get_max_vcpus_args ();
 extern bool_t xdr_remote_get_max_vcpus_ret ();
 extern bool_t xdr_remote_node_get_info_ret ();

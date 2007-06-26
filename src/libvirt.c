@@ -466,6 +466,63 @@ virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer)
 }
 
 /**
+ * virConnectGetHostname:
+ * @conn: pointer to a hypervisor connection
+ *
+ * This returns the system hostname on which the hypervisor is
+ * running (the result of the gethostname(2) system call).  If
+ * we are connected to a remote system, then this returns the
+ * hostname of the remote system.
+ *
+ * Returns the hostname which must be freed by the caller, or
+ * NULL if there was an error.
+ */
+char *
+virConnectGetHostname (virConnectPtr conn)
+{
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return NULL;
+    }
+
+    if (conn->driver->getHostname)
+        return conn->driver->getHostname (conn);
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return NULL;
+}
+
+/**
+ * virConnectGetURI:
+ * @conn: pointer to a hypervisor connection
+ *
+ * This returns the URI (name) of the hypervisor connection.
+ * Normally this is the same as or similar to the string passed
+ * to the virConnectOpen/virConnectOpenReadOnly call, but
+ * the driver may make the URI canonical.  If name == NULL
+ * was passed to virConnectOpen, then the driver will return
+ * a non-NULL URI which can be used to connect to the same
+ * hypervisor later.
+ *
+ * Returns the URI string which must be freed by the caller, or
+ * NULL if there was an error.
+ */
+char *
+virConnectGetURI (virConnectPtr conn)
+{
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return NULL;
+    }
+
+    if (conn->driver->getURI)
+        return conn->driver->getURI (conn);
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return NULL;
+}
+
+/**
  * virConnectGetMaxVcpus:
  * @conn: pointer to the hypervisor connection
  * @type: value of the 'type' attribute in the <domain> element
