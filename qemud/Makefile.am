@@ -28,7 +28,7 @@ libvirt_qemud_CFLAGS = \
 	-DREMOTE_PID_FILE="\"$(REMOTE_PID_FILE)\"" \
         -DGETTEXT_PACKAGE=\"$(PACKAGE)\"
 
-libvirt_qemud_LDFLAGS = $(WARN_CFLAGS) $(LIBXML_LIBS) $(SYSFS_LIBS)
+libvirt_qemud_LDFLAGS = $(WARN_CFLAGS) $(LIBXML_LIBS)
 libvirt_qemud_DEPENDENCIES = ../src/libvirt.la
 libvirt_qemud_LDADD = ../src/libvirt.la
 

@@ -1154,6 +1154,22 @@ int qemudStartNetworkDaemon(struct qemud_driver *driver,
         return -1;
     }
 
+
+    if (network->def->forwardDelay &&
+        (err = brSetForwardDelay(driver->brctl, network->bridge, network->def->forwardDelay))) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "failed to set bridge forward delay to %d\n",
+                         network->def->forwardDelay);
+        goto err_delbr;
+    }
+
+    if ((err = brSetForwardDelay(driver->brctl, network->bridge, network->def->disableSTP ? 0 : 1))) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "failed to set bridge STP to %s\n",
+                         network->def->disableSTP ? "off" : "on");
+        goto err_delbr;
+    }
+
     if (network->def->ipAddress[0] &&
         (err = brSetInetAddress(driver->brctl, network->bridge, network->def->ipAddress))) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,

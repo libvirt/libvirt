@@ -33,6 +33,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
+#include <paths.h>
+#include <sys/wait.h>
 
 #include <linux/param.h>     /* HZ                 */
 #include <linux/sockios.h>   /* SIOCBRADDBR etc.   */
@@ -43,6 +45,7 @@
 
 #define MAX_BRIDGE_ID 256
 
+#define BRCTL_PATH "/usr/sbin/brctl"
 #define JIFFIES_TO_MS(j) (((j)*1000)/HZ)
 #define MS_TO_JIFFIES(ms) (((ms)*HZ)/1000)
 
@@ -423,184 +426,137 @@ brGetInetNetmask(brControl *ctl,
     return brGetInetAddr(ctl, ifname, SIOCGIFNETMASK, addr, maxlen);
 }
 
-#ifdef ENABLE_BRIDGE_PARAMS
-
-#include <sysfs/libsysfs.h>
-
 static int
-brSysfsPrep(struct sysfs_class_device **dev,
-            struct sysfs_attribute **attr,
-            const char *bridge,
-            const char *attrname)
+brctlSpawn(char * const *argv)
 {
-    *dev = NULL;
-    *attr = NULL;
+    pid_t pid, ret;
+    int status;
+    int null = -1;
 
-    if (!(*dev = sysfs_open_class_device("net", bridge)))
+    if ((null = open(_PATH_DEVNULL, O_RDONLY)) < 0)
         return errno;
 
-    if (!(*attr = sysfs_get_classdev_attr(*dev, attrname))) {
-        int err = errno;
-
-        sysfs_close_class_device(*dev);
-        *dev = NULL;
-
-        return err;
+    pid = fork();
+    if (pid == -1) {
+        int saved_errno = errno;
+        close(null);
+        return saved_errno;
     }
 
-    return 0;
-}
+    if (pid == 0) { /* child */
+        dup2(null, STDIN_FILENO);
+        dup2(null, STDOUT_FILENO);
+        dup2(null, STDERR_FILENO);
+        close(null);
 
-static int
-brSysfsWriteInt(struct sysfs_attribute *attr,
-                int value)
-{
-    char buf[32];
-    int len;
+        execvp(argv[0], argv);
 
-    len = snprintf(buf, sizeof(buf), "%d\n", value);
-
-    if (len > (int)sizeof(buf))
-        len = sizeof(buf); /* paranoia, shouldn't happen */
-
-    return sysfs_write_attribute(attr, buf, len) == 0 ? 0 : errno;
-}
-
-int
-brSetForwardDelay(brControl *ctl,
-                  const char *bridge,
-                  int delay)
-{
-    struct sysfs_class_device *dev;
-    struct sysfs_attribute *attr;
-    int err = 0;
-
-    if (!ctl || !bridge)
-        return EINVAL;
-
-    if ((err = brSysfsPrep(&dev, &attr, bridge, SYSFS_BRIDGE_ATTR "/forward_delay")))
-        return err;
-
-    err = brSysfsWriteInt(attr, MS_TO_JIFFIES(delay));
-
-    sysfs_close_class_device(dev);
-
-    return err;
-}
-
-int
-brGetForwardDelay(brControl *ctl,
-                  const char *bridge,
-                  int *delayp)
-{
-    struct sysfs_class_device *dev;
-    struct sysfs_attribute *attr;
-    int err = 0;
-
-    if (!ctl || !bridge || !delayp)
-        return EINVAL;
-
-    if ((err = brSysfsPrep(&dev, &attr, bridge, SYSFS_BRIDGE_ATTR "/forward_delay")))
-        return err;
-
-    *delayp = strtoul(attr->value, NULL, 0);
-
-    if (errno != ERANGE) {
-        *delayp = JIFFIES_TO_MS(*delayp);
-    } else {
-        err = errno;
+        _exit (1);
     }
 
-    sysfs_close_class_device(dev);
+    close(null);
 
-    return err;
+    while ((ret = waitpid(pid, &status, 0) == -1) && errno == EINTR);
+    if (ret == -1)
+        return errno;
+
+    return (WIFEXITED(status) && WEXITSTATUS(status) == 0) ? 0 : EINVAL;
 }
-
-int
-brSetEnableSTP(brControl *ctl,
-               const char *bridge,
-               int enable)
-{
-    struct sysfs_class_device *dev;
-    struct sysfs_attribute *attr;
-    int err = 0;
-
-    if (!ctl || !bridge)
-        return EINVAL;
-
-    if ((err = brSysfsPrep(&dev, &attr, bridge, SYSFS_BRIDGE_ATTR "/stp_state")))
-        return err;
-
-    err = brSysfsWriteInt(attr, (enable == 0) ? 0 : 1);
-
-    sysfs_close_class_device(dev);
-
-    return err;
-}
-
-int
-brGetEnableSTP(brControl *ctl,
-               const char *bridge,
-               int *enablep)
-{
-    struct sysfs_class_device *dev;
-    struct sysfs_attribute *attr;
-    int err = 0;
-
-    if (!ctl || !bridge || !enablep)
-        return EINVAL;
-
-    if ((err = brSysfsPrep(&dev, &attr, bridge, SYSFS_BRIDGE_ATTR "/stp_state")))
-        return err;
-
-    *enablep = strtoul(attr->value, NULL, 0);
-
-    if (errno != ERANGE) {
-        *enablep = (*enablep == 0) ? 0 : 1;
-    } else {
-        err = errno;
-    }
-
-    sysfs_close_class_device(dev);
-
-    return err;
-}
-
-#else /* ENABLE_BRIDGE_PARAMS */
 
 int
 brSetForwardDelay(brControl *ctl ATTRIBUTE_UNUSED,
-                  const char *bridge ATTRIBUTE_UNUSED,
-                  int delay ATTRIBUTE_UNUSED)
+                  const char *bridge,
+                  int delay)
 {
-    return 0;
-}
+    char **argv;
+    int retval = ENOMEM;
+    int n;
+    char delayStr[30];
 
-int
-brGetForwardDelay(brControl *ctl ATTRIBUTE_UNUSED,
-                  const char *bridge ATTRIBUTE_UNUSED,
-                  int *delay ATTRIBUTE_UNUSED)
-{
-    return 0;
+    n = 1 + /* brctl */
+        1 + /* setfd */
+        1 + /* brige name */
+        1; /* value */
+
+    snprintf(delayStr, sizeof(delayStr), "%d", delay);
+
+    if (!(argv = (char **)calloc(n + 1, sizeof(char *))))
+        goto error;
+
+    n = 0;
+
+    if (!(argv[n++] = strdup(BRCTL_PATH)))
+        goto error;
+
+    if (!(argv[n++] = strdup("setfd")))
+        goto error;
+
+    if (!(argv[n++] = strdup(bridge)))
+        goto error;
+
+    if (!(argv[n++] = strdup(delayStr)))
+        goto error;
+
+    argv[n++] = NULL;
+
+    retval = brctlSpawn(argv);
+
+ error:
+    if (argv) {
+        n = 0;
+        while (argv[n])
+            free(argv[n++]);
+        free(argv);
+    }
+
+    return retval;
 }
 
 int
 brSetEnableSTP(brControl *ctl ATTRIBUTE_UNUSED,
-               const char *bridge ATTRIBUTE_UNUSED,
-               int enable ATTRIBUTE_UNUSED)
+               const char *bridge,
+               int enable)
 {
-    return 0;
-}
+    char **argv;
+    int retval = ENOMEM;
+    int n;
 
-int
-brGetEnableSTP(brControl *ctl ATTRIBUTE_UNUSED,
-               const char *bridge ATTRIBUTE_UNUSED,
-               int *enable ATTRIBUTE_UNUSED)
-{
-    return 0;
-}
+    n = 1 + /* brctl */
+        1 + /* setfd */
+        1 + /* brige name */
+        1;  /* value */
 
-#endif /* ENABLE_BRIDGE_PARAMS */
+    if (!(argv = (char **)calloc(n + 1, sizeof(char *))))
+        goto error;
+
+    n = 0;
+
+    if (!(argv[n++] = strdup(BRCTL_PATH)))
+        goto error;
+
+    if (!(argv[n++] = strdup("setfd")))
+        goto error;
+
+    if (!(argv[n++] = strdup(bridge)))
+        goto error;
+
+    if (!(argv[n++] = strdup(enable ? "on" : "off")))
+        goto error;
+
+    argv[n++] = NULL;
+
+    retval = brctlSpawn(argv);
+
+ error:
+    if (argv) {
+        n = 0;
+        while (argv[n])
+            free(argv[n++]);
+        free(argv);
+    }
+
+    return retval;
+}
 
 /*
  * Local variables:

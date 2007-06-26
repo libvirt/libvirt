@@ -14,13 +14,13 @@ Requires: libxml2
 Requires: readline
 Requires: ncurses
 Requires: dnsmasq
+Requires: bridge-utils
+Requires: iptables
 BuildRequires: xen-devel
 BuildRequires: libxml2-devel
 BuildRequires: readline-devel
 BuildRequires: ncurses-devel
 BuildRequires: gettext
-BuildRequires: libsysfs-devel
-BuildRequires: /sbin/iptables
 BuildRequires: gnutls-devel
 Obsoletes: libvir
 ExclusiveArch: i386 x86_64 ia64

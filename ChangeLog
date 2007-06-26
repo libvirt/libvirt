@@ -1,3 +1,9 @@
+Tue Jun 26 18:57:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/Makefile.am, qemud/bridge.c, configure.in, libvirt.spec.in
+	Don't use libsysfs for bridge APIs, call brctl directly.
+	* qemud/driver.c: Set the STP and forward-delay params if provided
+
 Tue Jun 26 18:56:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/test.c: Don't try to handle URIs with a hostname
