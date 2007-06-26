@@ -1,3 +1,7 @@
+Tue Jun 26 18:56:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/test.c: Don't try to handle URIs with a hostname
+
 Tue Jun 26 18:53:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/internal.h, src/libvirt.c, src/driver.h, src/libvirt_sym.version
