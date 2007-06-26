@@ -1,5 +1,10 @@
 Tue Jun 26 16:41:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
+	* qemud/driver.c, qemud/driver.h, qemud/qemud.c: Move code
+	handling global startup, shutdown & reload into driver.c
+
+Tue Jun 26 16:41:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
 	* qemud/driver.c, qemud/driver.h, qemud/internal.h,
 	qemud/qemud.c: Move VM & network process lifecycle management
 	out of qemud.c and into the main driver.c

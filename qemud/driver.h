@@ -39,6 +39,8 @@ int qemudStartNetworkDaemon(struct qemud_server *server,
 int qemudShutdownNetworkDaemon(struct qemud_server *server,
                                struct qemud_network *network);
 
+int qemudStartup(struct qemud_server *server);
+void qemudReload(struct qemud_server *server);
 void qemudShutdown(struct qemud_server *server);
 
 void qemudReportError(struct qemud_server *server,

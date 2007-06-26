@@ -57,8 +57,6 @@
 #include "../src/remote_internal.h"
 #include "../src/conf.h"
 #include "dispatch.h"
-#include "conf.h"
-#include "iptables.h"
 #include "driver.h"
 #include "event.h"
 
@@ -209,12 +207,7 @@ static void qemudDispatchSignalEvent(int fd ATTRIBUTE_UNUSED,
     case SIGHUP:
         qemudLog(QEMUD_INFO, "Reloading configuration on SIGHUP");
         if (!remote) {
-            ret = qemudScanConfigs(server);
-
-            if (server->iptables) {
-                qemudLog(QEMUD_INFO, "Reloading iptables rules");
-                iptablesReloadRules(server->iptables);
-            }
+            qemudReload(server);
         }
         break;
 
@@ -733,7 +726,7 @@ static struct qemud_server *qemudInitialize(int sigread) {
         goto cleanup;
 
     if (!remote) /* qemud only */ {
-        if (qemudScanConfigs(server) < 0) {
+        if (qemudStartup(server) < 0) {
             goto cleanup;
         }
     } else /* remote only */ {
@@ -1491,37 +1484,7 @@ static void qemudDispatchServerEvent(int fd, int events, void *opaque) {
 }
 
 
-static void qemudCleanupInactive(struct qemud_server *server) {
-    struct qemud_vm *vm = server->vms;
-    struct qemud_network *network = server->networks;
-
-    /* Cleanup any VMs which shutdown & dont have an associated
-       config file */
-    while (vm) {
-        struct qemud_vm *next = vm->next;
-
-        if (!qemudIsActiveVM(vm) && !vm->configFile[0])
-            qemudRemoveInactiveVM(server, vm);
-
-        vm = next;
-    }
-
-    /* Cleanup any networks too */
-    while (network) {
-        struct qemud_network *next = network->next;
-
-        if (!qemudIsActiveNetwork(network) && !network->configFile[0])
-            qemudRemoveInactiveNetwork(server, network);
-
-        network = next;
-    }
-
-    return;
-}
-
-
-
-static int qemudOneLoop(struct qemud_server *server) {
+static int qemudOneLoop(struct qemud_server *server ATTRIBUTE_UNUSED) {
     sig_atomic_t errors;
 
     if (virEventRunOnce() < 0)
@@ -1536,8 +1499,6 @@ static int qemudOneLoop(struct qemud_server *server) {
                   errors, strerror (sig_lasterrno));
         return -1;
     }
-
-    qemudCleanupInactive(server);
 
     return 0;
 }

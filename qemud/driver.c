@@ -93,6 +93,19 @@ static int qemudSetNonBlock(int fd) {
 }
 
 
+int qemudStartup(struct qemud_server *server) {
+    return qemudScanConfigs(server);
+}
+
+void qemudReload(struct qemud_server *server) {
+    qemudScanConfigs(server);
+
+    if (server->iptables) {
+        qemudLog(QEMUD_INFO, "Reloading iptables rules");
+        iptablesReloadRules(server->iptables);
+    }
+}
+
 void qemudShutdown(struct qemud_server *server) {
     struct qemud_vm *vm;
     struct qemud_network *network;
@@ -448,7 +461,7 @@ static int qemudNextFreeVNCPort(struct qemud_server *server ATTRIBUTE_UNUSED) {
 int qemudStartVMDaemon(struct qemud_server *server,
                        struct qemud_vm *vm) {
     char **argv = NULL, **tmp;
-    int i, ret = -1;
+    int i;
     char logfile[PATH_MAX];
 
     if (qemudIsActiveVM(vm)) {
@@ -524,23 +537,11 @@ int qemudStartVMDaemon(struct qemud_server *server,
 
         server->ninactivevms--;
         server->nactivevms++;
-
-        virEventAddHandle(vm->stdout,
-                          POLLIN | POLLERR | POLLHUP,
-                          qemudDispatchVMEvent,
-                          server);
-        virEventAddHandle(vm->stderr,
-                          POLLIN | POLLERR | POLLHUP,
-                          qemudDispatchVMEvent,
-                          server);
-
-        ret = 0;
-
-        if (qemudWaitForMonitor(server, vm) < 0) {
-            qemudShutdownVMDaemon(server, vm);
-            ret = -1;
-        }
     }
+
+    for (i = 0 ; argv[i] ; i++)
+        free(argv[i]);
+    free(argv);
 
     if (vm->tapfds) {
         for (i = 0; vm->tapfds[i] != -1; i++) {
@@ -551,12 +552,30 @@ int qemudStartVMDaemon(struct qemud_server *server,
         vm->tapfds = NULL;
         vm->ntapfds = 0;
     }
-  
-    for (i = 0 ; argv[i] ; i++)
-        free(argv[i]);
-    free(argv);
 
-    return ret;
+    if (virEventAddHandle(vm->stdout,
+                          POLLIN | POLLERR | POLLHUP,
+                          qemudDispatchVMEvent,
+                          server) < 0) {
+        qemudShutdownVMDaemon(server, vm);
+        return -1;
+    }
+
+    if (virEventAddHandle(vm->stderr,
+                          POLLIN | POLLERR | POLLHUP,
+                          qemudDispatchVMEvent,
+                          server) < 0) {
+        qemudShutdownVMDaemon(server, vm);
+        return -1;
+    }
+
+
+    if (qemudWaitForMonitor(server, vm) < 0) {
+        qemudShutdownVMDaemon(server, vm);
+        return -1;
+    }
+
+    return 0;
 }
 
 static int qemudVMData(struct qemud_server *server ATTRIBUTE_UNUSED,
@@ -633,6 +652,9 @@ int qemudShutdownVMDaemon(struct qemud_server *server, struct qemud_vm *vm) {
 
     server->nactivevms--;
     server->ninactivevms++;
+
+    if (!vm->configFile[0])
+        qemudRemoveInactiveVM(server, vm);
 
     return 0;
 }
@@ -1096,6 +1118,9 @@ int qemudShutdownNetworkDaemon(struct qemud_server *server,
     server->nactivenetworks--;
     server->ninactivenetworks++;
 
+    if (!network->configFile[0])
+        qemudRemoveInactiveNetwork(server, network);
+
     return 0;
 }
 
@@ -1116,11 +1141,10 @@ static void qemudDispatchVMEvent(int fd, int events, void *opaque) {
     if (!vm)
         return;
 
-    if (events == POLLIN &&
-        qemudDispatchVMLog(server, vm, fd) == 0)
-        return;
-
-    qemudDispatchVMFailure(server, vm, fd);
+    if (events == POLLIN)
+        qemudDispatchVMLog(server, vm, fd);
+    else
+        qemudDispatchVMFailure(server, vm, fd);
 }
 
 int qemudMonitorCommand(struct qemud_server *server ATTRIBUTE_UNUSED,
