@@ -32,7 +32,7 @@ libvirt_qemud_LDFLAGS = $(WARN_CFLAGS) $(LIBXML_LIBS)
 libvirt_qemud_DEPENDENCIES = ../src/libvirt.la
 libvirt_qemud_LDADD = ../src/libvirt.la
 
-install-data-local:
+install-data-local: install-init
 	mkdir -p $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart
 	$(INSTALL_DATA) $(srcdir)/default-network.xml $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml
 	sed -i -e "s,</name>,</name>\n  <uuid>$(UUID)</uuid>," $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml
@@ -42,7 +42,7 @@ install-data-local:
 	mkdir -p $(DESTDIR)$(localstatedir)/run/libvirt
 	mkdir -p $(DESTDIR)$(localstatedir)/lib/libvirt
 
-uninstall-local:
+uninstall-local: uninstall-init
 	rm -f $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
 	rm -f $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml
 	rmdir $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart || :
@@ -52,7 +52,7 @@ uninstall-local:
 
 # Distribute the generated files so that rpcgen isn't required on the
 # target machine (although almost any Unix machine will have it).
-EXTRA_DIST = libvirtd.in default-network.xml \
+EXTRA_DIST = libvirtd.init.in default-network.xml \
 	protocol.x remote_protocol.x \
 	protocol.c protocol.h \
 	remote_protocol.c remote_protocol.h \
@@ -88,16 +88,25 @@ remote_dispatch_proc_switch.h: remote_generate_stubs.pl remote_protocol.x
 	perl -w remote_generate_stubs.pl -w remote_protocol.x > $@
 
 if LIBVIRT_INIT_SCRIPTS_RED_HAT
-initdir = $(sysconfdir)/rc.d/init.d
-init_SCRIPTS = libvirtd
+install-init: libvirtd.init
+	mkdir -p $(DESTDIR)$(sysconfdir)/rc.d/init.d
+	$(INSTALL_SCRIPT) $(srcdir)/libvirtd.init $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
 
-libvirtd: libvirtd.in
+uninstall-init:
+	rm -f $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
+
+libvirtd.init: libvirtd.init.in
 	sed						\
 	    -e s!\@localstatedir\@!@localstatedir@!	\
 	    -e s!\@sbindir\@!@sbindir@!			\
 	    -e s!\@sysconfdir\@!@sysconfdir@!		\
 	    < $< > $@
-	chmod a+x libvirtd
+	chmod a+x libvirtd.init
 
-CLEANFILES = libvirtd
+CLEANFILES = libvirtd.init
+else
+
+install-init:
+uninstall-init:
+
 endif # DBUS_INIT_SCRIPTS_RED_HAT

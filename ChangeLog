@@ -1,3 +1,9 @@
+Tue Jun 26 19:02:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/libvirtd.in, qemud/libvirtd.init.in, qemud/Makefile.am
+	rename the init script to not clash with forthcoming daemon
+	name change.
+
 Tue Jun 26 18:57:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/Makefile.am, qemud/bridge.c, configure.in, libvirt.spec.in
