@@ -1431,7 +1431,7 @@ char *qemudGetCapabilities(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
     int i, j, r;
     int have_kqemu = 0;
     int have_kvm = 0;
-    bufferPtr xml;
+    virBufferPtr xml;
 
     /* Really, this never fails - look at the man-page. */
     uname (&utsname);
@@ -1440,13 +1440,13 @@ char *qemudGetCapabilities(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
     have_kvm = access ("/dev/kvm", F_OK) == 0;
 
     /* Construct the XML. */
-    xml = bufferNew (1024);
+    xml = virBufferNew (1024);
     if (!xml) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
         return NULL;
     }
 
-    r = bufferVSprintf (xml,
+    r = virBufferVSprintf (xml,
                         "\
 <capabilities>\n\
   <host>\n\
@@ -1457,7 +1457,7 @@ char *qemudGetCapabilities(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
                         utsname.machine);
     if (r == -1) {
     vir_buffer_failed:
-        bufferFree (xml);
+        virBufferFree (xml);
         qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
         return NULL;
     }
@@ -1467,7 +1467,7 @@ char *qemudGetCapabilities(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
     else if (strcmp (utsname.machine, "x86_64") == 0) i = 1;
     if (i >= 0) {
         /* For the default (PC-like) guest, qemudArchs[0] or [1]. */
-        r = bufferVSprintf (xml,
+        r = virBufferVSprintf (xml,
                             "\
 \n\
   <guest>\n\
@@ -1482,7 +1482,7 @@ char *qemudGetCapabilities(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
         if (r == -1) goto vir_buffer_failed;
 
         for (j = 0; qemudArchs[i].machines[j]; ++j) {
-            r = bufferVSprintf (xml,
+            r = virBufferVSprintf (xml,
                                 "\
       <machine>%s</machine>\n",
                                 qemudArchs[i].machines[j]);
@@ -1490,20 +1490,20 @@ char *qemudGetCapabilities(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
         }
 
         if (have_kqemu) {
-            r = bufferAdd (xml,
+            r = virBufferAdd (xml,
                            "\
       <domain type=\"kqemu\"/>\n", -1);
             if (r == -1) goto vir_buffer_failed;
         }
         if (have_kvm) {
-            r = bufferAdd (xml,
+            r = virBufferAdd (xml,
                            "\
       <domain type=\"kvm\">\n\
         <emulator>/usr/bin/qemu-kvm</emulator>\n\
       </domain>\n", -1);
             if (r == -1) goto vir_buffer_failed;
         }
-        r = bufferAdd (xml,
+        r = virBufferAdd (xml,
                        "\
     </arch>\n\
   </guest>\n", -1);
@@ -1511,7 +1511,7 @@ char *qemudGetCapabilities(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
 
         /* The "other" PC architecture needs emulation. */
         i = i ^ 1;
-        r = bufferVSprintf (xml,
+        r = virBufferVSprintf (xml,
                             "\
 \n\
   <guest>\n\
@@ -1525,13 +1525,13 @@ char *qemudGetCapabilities(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
                             qemudArchs[i].binary);
         if (r == -1) goto vir_buffer_failed;
         for (j = 0; qemudArchs[i].machines[j]; ++j) {
-            r = bufferVSprintf (xml,
+            r = virBufferVSprintf (xml,
                                 "\
       <machine>%s</machine>\n",
                                 qemudArchs[i].machines[j]);
             if (r == -1) goto vir_buffer_failed;
         }
-        r = bufferAdd (xml,
+        r = virBufferAdd (xml,
                        "\
     </arch>\n\
   </guest>\n", -1);
@@ -1540,7 +1540,7 @@ char *qemudGetCapabilities(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
 
     /* The non-PC architectures, qemudArchs[>=2]. */
     for (i = 2; qemudArchs[i].arch; ++i) {
-        r = bufferVSprintf (xml,
+        r = virBufferVSprintf (xml,
                             "\
 \n\
   <guest>\n\
@@ -1554,13 +1554,13 @@ char *qemudGetCapabilities(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
                             qemudArchs[i].binary);
         if (r == -1) goto vir_buffer_failed;
         for (j = 0; qemudArchs[i].machines[j]; ++j) {
-            r = bufferVSprintf (xml,
+            r = virBufferVSprintf (xml,
                                 "\
       <machine>%s</machine>\n",
                                 qemudArchs[i].machines[j]);
             if (r == -1) goto vir_buffer_failed;
         }
-        r = bufferAdd (xml,
+        r = virBufferAdd (xml,
                        "\
     </arch>\n\
   </guest>\n", -1);
@@ -1568,12 +1568,12 @@ char *qemudGetCapabilities(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
     }
 
     /* Finish off. */
-    r = bufferAdd (xml,
+    r = virBufferAdd (xml,
                       "\
 </capabilities>\n", -1);
     if (r == -1) goto vir_buffer_failed;
 
-    return bufferContentAndFree(xml);
+    return virBufferContentAndFree(xml);
 }
 
 

@@ -1,7 +1,7 @@
 /*
- * buf.c: buffers for qemud
+ * buf.c: buffers for libvirt
  *
- * Copyright (C) 2005 Red Hat, Inc.
+ * Copyright (C) 2005-2007 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -17,7 +17,7 @@
 #include "buf.h"
 
 /**
- * bufferGrow:
+ * virBufferGrow:
  * @buf:  the buffer
  * @len:  the minimum free size to allocate on top of existing used space
  *
@@ -26,7 +26,7 @@
  * Returns the new available space or -1 in case of error
  */
 static int
-bufferGrow(bufferPtr buf, unsigned int len)
+virBufferGrow(virBufferPtr buf, unsigned int len)
 {
     int size;
     char *newbuf;
@@ -46,7 +46,7 @@ bufferGrow(bufferPtr buf, unsigned int len)
 }
 
 /**
- * bufferAdd:
+ * virBufferAdd:
  * @buf:  the buffer to dump
  * @str:  the string
  * @len:  the number of bytes to add
@@ -57,7 +57,7 @@ bufferGrow(bufferPtr buf, unsigned int len)
  * Returns 0 successful, -1 in case of internal or API error.
  */
 int
-bufferAdd(bufferPtr buf, const char *str, int len)
+virBufferAdd(virBufferPtr buf, const char *str, int len)
 {
     unsigned int needSize;
 
@@ -72,7 +72,7 @@ bufferAdd(bufferPtr buf, const char *str, int len)
 
     needSize = buf->use + len + 2;
     if (needSize > buf->size) {
-        if (!bufferGrow(buf, needSize - buf->use)) {
+        if (!virBufferGrow(buf, needSize - buf->use)) {
             return (-1);
         }
     }
@@ -83,10 +83,10 @@ bufferAdd(bufferPtr buf, const char *str, int len)
     return (0);
 }
 
-bufferPtr
-bufferNew(unsigned int size)
+virBufferPtr
+virBufferNew(unsigned int size)
 {
-    bufferPtr buf;
+    virBufferPtr buf;
 
     if (!(buf = malloc(sizeof(*buf)))) return NULL;
     if (size && (buf->content = malloc(size))==NULL) {
@@ -100,7 +100,7 @@ bufferNew(unsigned int size)
 }
 
 void
-bufferFree(bufferPtr buf)
+virBufferFree(virBufferPtr buf)
 {
     if (buf) {
         if (buf->content)
@@ -110,13 +110,13 @@ bufferFree(bufferPtr buf)
 }
 
 /**
- * bufferContentAndFree:
+ * virBufferContentAndFree:
  * @buf: Buffer
  *
  * Return the content from the buffer and free (only) the buffer structure.
  */
 char *
-bufferContentAndFree (bufferPtr buf)
+virBufferContentAndFree (virBufferPtr buf)
 {
     char *content = buf->content;
 
@@ -125,7 +125,7 @@ bufferContentAndFree (bufferPtr buf)
 }
 
 /**
- * bufferVSprintf:
+ * virBufferVSprintf:
  * @buf:  the buffer to dump
  * @format:  the format
  * @argptr:  the variable list of arguments
@@ -135,7 +135,7 @@ bufferContentAndFree (bufferPtr buf)
  * Returns 0 successful, -1 in case of internal or API error.
  */
 int
-bufferVSprintf(bufferPtr buf, const char *format, ...)
+virBufferVSprintf(virBufferPtr buf, const char *format, ...)
 {
     int size, count;
     va_list locarg, argptr;
@@ -150,7 +150,7 @@ bufferVSprintf(bufferPtr buf, const char *format, ...)
                                locarg)) < 0) || (count >= size - 1)) {
         buf->content[buf->use] = 0;
         va_end(locarg);
-        if (bufferGrow(buf, 1000) < 0) {
+        if (virBufferGrow(buf, 1000) < 0) {
             return (-1);
         }
         size = buf->size - buf->use - 1;
@@ -163,7 +163,7 @@ bufferVSprintf(bufferPtr buf, const char *format, ...)
 }
 
 /**
- * bufferStrcat:
+ * virBufferStrcat:
  * @buf:  the buffer to dump
  * @argptr:  the variable list of strings, the last argument must be NULL
  *
@@ -172,7 +172,7 @@ bufferVSprintf(bufferPtr buf, const char *format, ...)
  * Returns 0 successful, -1 in case of internal or API error.
  */
 int
-bufferStrcat(bufferPtr buf, ...)
+virBufferStrcat(virBufferPtr buf, ...)
 {
     va_list ap;
     char *str;
@@ -184,7 +184,7 @@ bufferStrcat(bufferPtr buf, ...)
         unsigned int needSize = buf->use + len + 2;
 
         if (needSize > buf->size) {
-            if (!bufferGrow(buf, needSize - buf->use))
+            if (!virBufferGrow(buf, needSize - buf->use))
                 return -1;
         }
         memcpy(&buf->content[buf->use], str, len);

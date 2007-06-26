@@ -1,37 +1,37 @@
 /*
- * buf.h: buffers for qemud
+ * buf.h: buffers for libvirt
  *
- * Copyright (C) 2005 Red Hat, Inc.
+ * Copyright (C) 2005-2007 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
  * Daniel Veillard <veillard@redhat.com>
  */
 
-#ifndef __QEMUD_BUF_H__
-#define __QEMUD_BUF_H__
+#ifndef __VIR_BUFFER_H__
+#define __VIR_BUFFER_H__
 
 #include "internal.h"
 
 /**
- * buffer:
+ * virBuffer:
  *
  * A buffer structure.
  */
-typedef struct _buffer buffer;
-typedef buffer *bufferPtr;
-struct _buffer {
+typedef struct _virBuffer virBuffer;
+typedef virBuffer *virBufferPtr;
+struct _virBuffer {
     char *content;          /* The buffer content UTF8 */
     unsigned int use;       /* The buffer size used */
     unsigned int size;      /* The buffer size */
 };
 
-bufferPtr bufferNew(unsigned int size);
-void bufferFree(bufferPtr buf);
-char *bufferContentAndFree(bufferPtr buf);
-int bufferAdd(bufferPtr buf, const char *str, int len);
-int bufferVSprintf(bufferPtr buf, const char *format, ...)
+virBufferPtr virBufferNew(unsigned int size);
+void virBufferFree(virBufferPtr buf);
+char *virBufferContentAndFree(virBufferPtr buf);
+int virBufferAdd(virBufferPtr buf, const char *str, int len);
+int virBufferVSprintf(virBufferPtr buf, const char *format, ...)
   ATTRIBUTE_FORMAT(printf, 2, 3);
-int bufferStrcat(bufferPtr buf, ...);
+int virBufferStrcat(virBufferPtr buf, ...);
 
-#endif                          /* __QEMUD_BUF_H__ */
+#endif /* __VIR_BUFFER_H__ */

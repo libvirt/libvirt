@@ -1,4 +1,9 @@
-Tue Jun 26 18:10:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+Tue Jun 26 18:21:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/conf.c, qemud/driver.c, qemud/buf.c, qemud/buf.h:
+	Rename the buffer functions to match those in src/ directory.
+
+Tue Jun 26 18:18:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/conf.c, qemud/uuid.c, qemud/uuid.h: Rename the
 	UUID functions to not include QEMU in name.
