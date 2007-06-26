@@ -1,4 +1,11 @@
-Tue Jun 26 16:41:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+Tue Jun 26 16:50:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/Makefile.am, qemud/conf.c, qemud/dispatch.c, qemud/driver.c,
+	qemud/driver.h, qemud/internal.h, qemud/qemud.c: Switch over to
+	use regular libvirt virError objects & APIs for QEMU error
+	reporting purposes
+
+Tue Jun 26 16:43:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/driver.c, qemud/driver.h, qemud/qemud.c: Move code
 	handling global startup, shutdown & reload into driver.c

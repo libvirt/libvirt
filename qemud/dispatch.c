@@ -39,9 +39,14 @@
 static int qemudDispatchFailure(struct qemud_server *server ATTRIBUTE_UNUSED,
                                 struct qemud_client *client ATTRIBUTE_UNUSED,
                                 struct qemud_packet_server_data *out) {
+    virErrorPtr err = virGetLastError();
+
     out->type = QEMUD_SERVER_PKT_FAILURE;
-    out->qemud_packet_server_data_u.failureReply.code = server->errorCode;
-    strcpy(out->qemud_packet_server_data_u.failureReply.message, server->errorMessage);
+
+    out->qemud_packet_server_data_u.failureReply.code = err->code;
+    strncpy(out->qemud_packet_server_data_u.failureReply.message,
+            err->message, QEMUD_MAX_ERROR_LEN-1);
+    out->qemud_packet_server_data_u.failureReply.message[QEMUD_MAX_ERROR_LEN-1] = '\0';
     return 0;
 }
 
@@ -90,7 +95,7 @@ qemudDispatchGetCapabilities (struct qemud_server *server,
     char *xml = qemudGetCapabilities(server);
 
     if (strlen(xml) > QEMUD_MAX_XML_LEN) {
-        qemudReportError (server, VIR_ERR_XML_ERROR, NULL);
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_XML_ERROR, NULL);
         qemudDispatchFailure (server, client, out);
         free(xml);
         return 0;
@@ -784,8 +789,7 @@ int qemudDispatch(struct qemud_server *server, struct qemud_client *client,
     qemudDebug("> Dispatching request type %d, readonly ? %d",
                in->type, client->readonly);
 
-    server->errorCode = 0;
-    server->errorMessage[0] = '\0';
+    virResetLastError();
 
     memset(out, 0, sizeof(*out));
 
@@ -801,7 +805,7 @@ int qemudDispatch(struct qemud_server *server, struct qemud_client *client,
 
     if (!funcs[type]) {
         qemudDebug("Illegal operation requested");
-        qemudReportError(server, VIR_ERR_OPERATION_DENIED, NULL);
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_DENIED, NULL);
         qemudDispatchFailure(server, client, out);
     } else {
         if ((funcs[type])(server, client, in, out) < 0) {

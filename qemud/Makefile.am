@@ -17,6 +17,7 @@ libvirt_qemud_SOURCES = \
 		protocol.h protocol.c \
 		remote_protocol.h remote_protocol.c \
 		remote.c \
+                ../src/virterror.c \
                 event.c event.h
 #-D_XOPEN_SOURCE=600 -D_XOPEN_SOURCE_EXTENDED=1 -D_POSIX_C_SOURCE=199506L
 libvirt_qemud_CFLAGS = \
@@ -24,7 +25,9 @@ libvirt_qemud_CFLAGS = \
         $(WARN_CFLAGS) -DLOCAL_STATE_DIR="\"$(localstatedir)\"" \
         -DSYSCONF_DIR="\"$(sysconfdir)\"" \
 	-DQEMUD_PID_FILE="\"$(QEMUD_PID_FILE)\"" \
-	-DREMOTE_PID_FILE="\"$(REMOTE_PID_FILE)\""
+	-DREMOTE_PID_FILE="\"$(REMOTE_PID_FILE)\"" \
+        -DGETTEXT_PACKAGE=\"$(PACKAGE)\"
+
 libvirt_qemud_LDFLAGS = $(WARN_CFLAGS) $(LIBXML_LIBS) $(SYSFS_LIBS)
 libvirt_qemud_DEPENDENCIES = ../src/libvirt.la
 libvirt_qemud_LDADD = ../src/libvirt.la

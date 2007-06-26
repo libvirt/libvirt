@@ -43,9 +43,11 @@ int qemudStartup(struct qemud_server *server);
 void qemudReload(struct qemud_server *server);
 void qemudShutdown(struct qemud_server *server);
 
-void qemudReportError(struct qemud_server *server,
+void qemudReportError(virConnectPtr conn,
+                      virDomainPtr dom,
+                      virNetworkPtr net,
                       int code, const char *fmt, ...)
-    ATTRIBUTE_FORMAT(printf,3,4);
+    ATTRIBUTE_FORMAT(printf,5,6);
 
 int qemudGetNodeInfo(unsigned int *memory,
                      char *cpuModel, int cpuModelLength,

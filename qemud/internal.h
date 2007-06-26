@@ -352,8 +352,6 @@ struct qemud_server {
     char *networkConfigDir;
     char *networkAutostartDir;
     char logDir[PATH_MAX];
-    char errorMessage[QEMUD_MAX_ERROR_LEN];
-    int errorCode;
     unsigned int shutdown : 1;
 };
 

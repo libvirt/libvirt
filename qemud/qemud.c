@@ -1484,7 +1484,7 @@ static void qemudDispatchServerEvent(int fd, int events, void *opaque) {
 }
 
 
-static int qemudOneLoop(struct qemud_server *server ATTRIBUTE_UNUSED) {
+static int qemudOneLoop(void) {
     sig_atomic_t errors;
 
     if (virEventRunOnce() < 0)
@@ -1506,7 +1506,7 @@ static int qemudOneLoop(struct qemud_server *server ATTRIBUTE_UNUSED) {
 static int qemudRunLoop(struct qemud_server *server) {
     int ret;
 
-    while ((ret = qemudOneLoop(server)) == 0 && !server->shutdown)
+    while ((ret = qemudOneLoop()) == 0 && !server->shutdown)
         ;
 
     return ret == -1 ? -1 : 0;
