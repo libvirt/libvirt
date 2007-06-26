@@ -97,7 +97,6 @@
     <reference name='VIR_VCPU_RUNNING' href='html/libvirt-libvirt.html#VIR_VCPU_RUNNING'/>
     <reference name='VIR_WAR_NO_NETWORK' href='html/libvirt-virterror.html#VIR_WAR_NO_NETWORK'/>
     <reference name='_virDomainInfo' href='html/libvirt-libvirt.html#_virDomainInfo'/>
-    <reference name='_virDomainKernel' href='html/libvirt-libvirt.html#_virDomainKernel'/>
     <reference name='_virError' href='html/libvirt-virterror.html#_virError'/>
     <reference name='_virNodeInfo' href='html/libvirt-libvirt.html#_virNodeInfo'/>
     <reference name='_virSchedParameter' href='html/libvirt-libvirt.html#_virSchedParameter'/>
@@ -109,8 +108,10 @@
     <reference name='virConnect' href='html/libvirt-libvirt.html#virConnect'/>
     <reference name='virConnectClose' href='html/libvirt-libvirt.html#virConnectClose'/>
     <reference name='virConnectGetCapabilities' href='html/libvirt-libvirt.html#virConnectGetCapabilities'/>
+    <reference name='virConnectGetHostname' href='html/libvirt-libvirt.html#virConnectGetHostname'/>
     <reference name='virConnectGetMaxVcpus' href='html/libvirt-libvirt.html#virConnectGetMaxVcpus'/>
     <reference name='virConnectGetType' href='html/libvirt-libvirt.html#virConnectGetType'/>
+    <reference name='virConnectGetURI' href='html/libvirt-libvirt.html#virConnectGetURI'/>
     <reference name='virConnectGetVersion' href='html/libvirt-libvirt.html#virConnectGetVersion'/>
     <reference name='virConnectListDefinedDomains' href='html/libvirt-libvirt.html#virConnectListDefinedDomains'/>
     <reference name='virConnectListDefinedNetworks' href='html/libvirt-libvirt.html#virConnectListDefinedNetworks'/>
@@ -137,6 +138,7 @@
     <reference name='virDomainDetachDevice' href='html/libvirt-libvirt.html#virDomainDetachDevice'/>
     <reference name='virDomainFree' href='html/libvirt-libvirt.html#virDomainFree'/>
     <reference name='virDomainGetAutostart' href='html/libvirt-libvirt.html#virDomainGetAutostart'/>
+    <reference name='virDomainGetConnect' href='html/libvirt-libvirt.html#virDomainGetConnect'/>
     <reference name='virDomainGetID' href='html/libvirt-libvirt.html#virDomainGetID'/>
     <reference name='virDomainGetInfo' href='html/libvirt-libvirt.html#virDomainGetInfo'/>
     <reference name='virDomainGetMaxMemory' href='html/libvirt-libvirt.html#virDomainGetMaxMemory'/>
@@ -151,8 +153,6 @@
     <reference name='virDomainGetXMLDesc' href='html/libvirt-libvirt.html#virDomainGetXMLDesc'/>
     <reference name='virDomainInfo' href='html/libvirt-libvirt.html#virDomainInfo'/>
     <reference name='virDomainInfoPtr' href='html/libvirt-libvirt.html#virDomainInfoPtr'/>
-    <reference name='virDomainKernel' href='html/libvirt-libvirt.html#virDomainKernel'/>
-    <reference name='virDomainKernelPtr' href='html/libvirt-libvirt.html#virDomainKernelPtr'/>
     <reference name='virDomainLookupByID' href='html/libvirt-libvirt.html#virDomainLookupByID'/>
     <reference name='virDomainLookupByName' href='html/libvirt-libvirt.html#virDomainLookupByName'/>
     <reference name='virDomainLookupByUUID' href='html/libvirt-libvirt.html#virDomainLookupByUUID'/>
@@ -190,6 +190,7 @@
     <reference name='virNetworkFree' href='html/libvirt-libvirt.html#virNetworkFree'/>
     <reference name='virNetworkGetAutostart' href='html/libvirt-libvirt.html#virNetworkGetAutostart'/>
     <reference name='virNetworkGetBridgeName' href='html/libvirt-libvirt.html#virNetworkGetBridgeName'/>
+    <reference name='virNetworkGetConnect' href='html/libvirt-libvirt.html#virNetworkGetConnect'/>
     <reference name='virNetworkGetName' href='html/libvirt-libvirt.html#virNetworkGetName'/>
     <reference name='virNetworkGetUUID' href='html/libvirt-libvirt.html#virNetworkGetUUID'/>
     <reference name='virNetworkGetUUIDString' href='html/libvirt-libvirt.html#virNetworkGetUUIDString'/>
@@ -315,7 +316,6 @@
     </letter>
     <letter name='_'>
       <ref name='_virDomainInfo'/>
-      <ref name='_virDomainKernel'/>
       <ref name='_virError'/>
       <ref name='_virNodeInfo'/>
       <ref name='_virSchedParameter'/>
@@ -329,8 +329,10 @@
       <ref name='virConnect'/>
       <ref name='virConnectClose'/>
       <ref name='virConnectGetCapabilities'/>
+      <ref name='virConnectGetHostname'/>
       <ref name='virConnectGetMaxVcpus'/>
       <ref name='virConnectGetType'/>
+      <ref name='virConnectGetURI'/>
       <ref name='virConnectGetVersion'/>
       <ref name='virConnectListDefinedDomains'/>
       <ref name='virConnectListDefinedNetworks'/>
@@ -357,6 +359,7 @@
       <ref name='virDomainDetachDevice'/>
       <ref name='virDomainFree'/>
       <ref name='virDomainGetAutostart'/>
+      <ref name='virDomainGetConnect'/>
       <ref name='virDomainGetID'/>
       <ref name='virDomainGetInfo'/>
       <ref name='virDomainGetMaxMemory'/>
@@ -371,8 +374,6 @@
       <ref name='virDomainGetXMLDesc'/>
       <ref name='virDomainInfo'/>
       <ref name='virDomainInfoPtr'/>
-      <ref name='virDomainKernel'/>
-      <ref name='virDomainKernelPtr'/>
       <ref name='virDomainLookupByID'/>
       <ref name='virDomainLookupByName'/>
       <ref name='virDomainLookupByUUID'/>
@@ -410,6 +411,7 @@
       <ref name='virNetworkFree'/>
       <ref name='virNetworkGetAutostart'/>
       <ref name='virNetworkGetBridgeName'/>
+      <ref name='virNetworkGetConnect'/>
       <ref name='virNetworkGetName'/>
       <ref name='virNetworkGetUUID'/>
       <ref name='virNetworkGetUUIDString'/>
@@ -444,6 +446,8 @@
     <type name='virConnectPtr'>
       <ref name='virConnectOpen'/>
       <ref name='virConnectOpenReadOnly'/>
+      <ref name='virDomainGetConnect'/>
+      <ref name='virNetworkGetConnect'/>
     </type>
     <type name='virDomainPtr'>
       <ref name='virDomainCreateLinux'/>
@@ -509,8 +513,10 @@
       <ref name='virConnSetErrorFunc'/>
       <ref name='virConnectClose'/>
       <ref name='virConnectGetCapabilities'/>
+      <ref name='virConnectGetHostname'/>
       <ref name='virConnectGetMaxVcpus'/>
       <ref name='virConnectGetType'/>
+      <ref name='virConnectGetURI'/>
       <ref name='virConnectGetVersion'/>
       <ref name='virConnectListDefinedDomains'/>
       <ref name='virConnectListDefinedNetworks'/>
@@ -545,6 +551,7 @@
       <ref name='virDomainDetachDevice'/>
       <ref name='virDomainFree'/>
       <ref name='virDomainGetAutostart'/>
+      <ref name='virDomainGetConnect'/>
       <ref name='virDomainGetID'/>
       <ref name='virDomainGetInfo'/>
       <ref name='virDomainGetMaxMemory'/>
@@ -587,6 +594,7 @@
       <ref name='virNetworkFree'/>
       <ref name='virNetworkGetAutostart'/>
       <ref name='virNetworkGetBridgeName'/>
+      <ref name='virNetworkGetConnect'/>
       <ref name='virNetworkGetName'/>
       <ref name='virNetworkGetUUID'/>
       <ref name='virNetworkGetUUIDString'/>
@@ -649,15 +657,16 @@
       <ref name='VIR_VCPU_OFFLINE'/>
       <ref name='VIR_VCPU_RUNNING'/>
       <ref name='_virDomainInfo'/>
-      <ref name='_virDomainKernel'/>
       <ref name='_virNodeInfo'/>
       <ref name='_virSchedParameter'/>
       <ref name='_virVcpuInfo'/>
       <ref name='virConnect'/>
       <ref name='virConnectClose'/>
       <ref name='virConnectGetCapabilities'/>
+      <ref name='virConnectGetHostname'/>
       <ref name='virConnectGetMaxVcpus'/>
       <ref name='virConnectGetType'/>
+      <ref name='virConnectGetURI'/>
       <ref name='virConnectGetVersion'/>
       <ref name='virConnectListDefinedDomains'/>
       <ref name='virConnectListDefinedNetworks'/>
@@ -682,6 +691,7 @@
       <ref name='virDomainDetachDevice'/>
       <ref name='virDomainFree'/>
       <ref name='virDomainGetAutostart'/>
+      <ref name='virDomainGetConnect'/>
       <ref name='virDomainGetID'/>
       <ref name='virDomainGetInfo'/>
       <ref name='virDomainGetMaxMemory'/>
@@ -696,8 +706,6 @@
       <ref name='virDomainGetXMLDesc'/>
       <ref name='virDomainInfo'/>
       <ref name='virDomainInfoPtr'/>
-      <ref name='virDomainKernel'/>
-      <ref name='virDomainKernelPtr'/>
       <ref name='virDomainLookupByID'/>
       <ref name='virDomainLookupByName'/>
       <ref name='virDomainLookupByUUID'/>
@@ -728,6 +736,7 @@
       <ref name='virNetworkFree'/>
       <ref name='virNetworkGetAutostart'/>
       <ref name='virNetworkGetBridgeName'/>
+      <ref name='virNetworkGetConnect'/>
       <ref name='virNetworkGetName'/>
       <ref name='virNetworkGetUUID'/>
       <ref name='virNetworkGetUUIDString'/>
@@ -1010,6 +1019,9 @@
         <word name='NUMA'>
           <ref name='_virNodeInfo'/>
         </word>
+        <word name='Normally'>
+          <ref name='virConnectGetURI'/>
+        </word>
         <word name='Note'>
           <ref name='virDomainCoreDump'/>
           <ref name='virDomainGetInfo'/>
@@ -1074,6 +1086,10 @@
         <word name='Retrieve'>
           <ref name='virDomainGetMaxMemory'/>
         </word>
+        <word name='Returns'>
+          <ref name='virDomainGetConnect'/>
+          <ref name='virNetworkGetConnect'/>
+        </word>
       </letter>
       <letter name='S'>
         <word name='See'>
@@ -1113,6 +1129,8 @@
           <ref name='VIR_UUID_STRING_BUFLEN'/>
           <ref name='cpumap'/>
           <ref name='virConnectClose'/>
+          <ref name='virConnectGetHostname'/>
+          <ref name='virConnectGetURI'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virConnectOpen'/>
           <ref name='virConnectOpenReadOnly'/>
@@ -1141,6 +1159,7 @@
       </letter>
       <letter name='U'>
         <word name='URI'>
+          <ref name='virConnectGetURI'/>
           <ref name='virConnectOpen'/>
           <ref name='virConnectOpenReadOnly'/>
         </word>
@@ -1195,13 +1214,13 @@
           <ref name='virNetworkGetUUIDString'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk1'>
       <letter name='W'>
         <word name='What'>
           <ref name='_virError'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk1'>
       <letter name='X'>
         <word name='XML'>
           <ref name='virConnectGetMaxVcpus'/>
@@ -1329,6 +1348,7 @@
         </word>
         <word name='are'>
           <ref name='virConnectClose'/>
+          <ref name='virConnectGetHostname'/>
           <ref name='virConnectOpen'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainDestroy'/>
@@ -1350,6 +1370,10 @@
           <ref name='virDomainGetVcpus'/>
           <ref name='virNetworkGetUUID'/>
           <ref name='virNetworkGetUUIDString'/>
+        </word>
+        <word name='associated'>
+          <ref name='virDomainGetConnect'/>
+          <ref name='virNetworkGetConnect'/>
         </word>
         <word name='assumed'>
           <ref name='virDomainGetVcpus'/>
@@ -1423,9 +1447,6 @@
           <ref name='virDomainGetVcpus'/>
           <ref name='virDomainPinVcpu'/>
         </word>
-        <word name='block'>
-          <ref name='_virDomainKernel'/>
-        </word>
         <word name='boolean'>
           <ref name='virDomainGetAutostart'/>
           <ref name='virNetworkGetAutostart'/>
@@ -1449,6 +1470,7 @@
         <word name='but'>
           <ref name='VIR_NODEINFO_MAXCPUS'/>
           <ref name='virConnGetLastError'/>
+          <ref name='virConnectGetURI'/>
           <ref name='virDomainDefineXML'/>
           <ref name='virDomainReboot'/>
           <ref name='virDomainShutdown'/>
@@ -1479,14 +1501,18 @@
           <ref name='VIR_NODEINFO_MAXCPUS'/>
         </word>
         <word name='call'>
+          <ref name='virConnectGetHostname'/>
+          <ref name='virConnectGetURI'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainCreate'/>
           <ref name='virDomainDestroy'/>
+          <ref name='virDomainGetConnect'/>
           <ref name='virDomainSave'/>
           <ref name='virDomainSetVcpus'/>
           <ref name='virInitialize'/>
           <ref name='virNetworkCreate'/>
           <ref name='virNetworkDestroy'/>
+          <ref name='virNetworkGetConnect'/>
         </word>
         <word name='callback'>
           <ref name='virConnSetErrorFunc'/>
@@ -1502,6 +1528,8 @@
         </word>
         <word name='caller'>
           <ref name='cpumap'/>
+          <ref name='virConnectGetHostname'/>
+          <ref name='virConnectGetURI'/>
           <ref name='virDomainGetOSType'/>
           <ref name='virDomainGetSchedulerType'/>
           <ref name='virDomainGetXMLDesc'/>
@@ -1515,9 +1543,13 @@
           <ref name='virDomainGetVcpus'/>
         </word>
         <word name='can'>
+          <ref name='virConnectGetURI'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainGetInfo'/>
           <ref name='virDomainPinVcpu'/>
+        </word>
+        <word name='canonical'>
+          <ref name='virConnectGetURI'/>
         </word>
         <word name='capabilities'>
           <ref name='virConnectGetCapabilities'/>
@@ -1566,9 +1598,6 @@
         <word name='com'>
           <ref name='virConnectGetType'/>
         </word>
-        <word name='command'>
-          <ref name='_virDomainKernel'/>
-        </word>
         <word name='compiled'>
           <ref name='virGetVersion'/>
         </word>
@@ -1588,7 +1617,11 @@
           <ref name='VIR_USE_CPU'/>
         </word>
         <word name='connect'>
+          <ref name='virConnectGetURI'/>
           <ref name='virNetworkGetBridgeName'/>
+        </word>
+        <word name='connected'>
+          <ref name='virConnectGetHostname'/>
         </word>
         <word name='consequent'>
           <ref name='_virError'/>
@@ -1620,6 +1653,10 @@
         </word>
         <word name='could'>
           <ref name='virSetErrorFunc'/>
+        </word>
+        <word name='counter'>
+          <ref name='virDomainGetConnect'/>
+          <ref name='virNetworkGetConnect'/>
         </word>
         <word name='cpu'>
           <ref name='VIR_CPU_USABLE'/>
@@ -1696,7 +1733,6 @@
           <ref name='virNetworkGetXMLDesc'/>
         </word>
         <word name='device'>
-          <ref name='_virDomainKernel'/>
           <ref name='virDomainAttachDevice'/>
           <ref name='virDomainDetachDevice'/>
         </word>
@@ -1734,6 +1770,7 @@
         </word>
         <word name='driver'>
           <ref name='virConnectGetCapabilities'/>
+          <ref name='virConnectGetURI'/>
           <ref name='virGetVersion'/>
         </word>
         <word name='dump'>
@@ -1785,9 +1822,6 @@
           <ref name='virDomainCoreDump'/>
           <ref name='virDomainSave'/>
         </word>
-        <word name='filename'>
-          <ref name='_virDomainKernel'/>
-        </word>
         <word name='filled'>
           <ref name='virDomainGetSchedulerParameters'/>
           <ref name='virDomainGetVcpus'/>
@@ -1829,6 +1863,8 @@
           <ref name='virNetworkGetXMLDesc'/>
         </word>
         <word name='freed'>
+          <ref name='virConnectGetHostname'/>
+          <ref name='virConnectGetURI'/>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainFree'/>
           <ref name='virDomainGetOSType'/>
@@ -1889,6 +1925,9 @@
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virSetErrorFunc'/>
         </word>
+        <word name='gethostname'>
+          <ref name='virConnectGetHostname'/>
+        </word>
         <word name='given'>
           <ref name='virDomainCoreDump'/>
           <ref name='virDomainDestroy'/>
@@ -1944,6 +1983,9 @@
           <ref name='virNetworkGetAutostart'/>
           <ref name='virNetworkSetAutostart'/>
         </word>
+        <word name='hostname'>
+          <ref name='virConnectGetHostname'/>
+        </word>
         <word name='how'>
           <ref name='_virError'/>
         </word>
@@ -1970,14 +2012,15 @@
           <ref name='virDomainReboot'/>
           <ref name='virDomainShutdown'/>
         </word>
-        <word name='image'>
-          <ref name='_virDomainKernel'/>
-        </word>
         <word name='inactive'>
           <ref name='virConnectListDefinedNetworks'/>
           <ref name='virConnectNumOfDefinedDomains'/>
           <ref name='virConnectNumOfDefinedNetworks'/>
           <ref name='virDomainGetMaxVcpus'/>
+        </word>
+        <word name='increased'>
+          <ref name='virDomainGetConnect'/>
+          <ref name='virNetworkGetConnect'/>
         </word>
         <word name='indicating'>
           <ref name='_virNodeInfo'/>
@@ -1998,9 +2041,6 @@
         </word>
         <word name='informative'>
           <ref name='_virError'/>
-        </word>
-        <word name='init'>
-          <ref name='_virDomainKernel'/>
         </word>
         <word name='initializing'>
           <ref name='virInitialize'/>
@@ -2056,9 +2096,6 @@
           <ref name='virDomainFree'/>
           <ref name='virNetworkFree'/>
         </word>
-        <word name='kernel'>
-          <ref name='_virDomainKernel'/>
-        </word>
         <word name='kilobytes'>
           <ref name='_virNodeInfo'/>
           <ref name='virDomainGetMaxMemory'/>
@@ -2083,6 +2120,7 @@
         </word>
         <word name='later'>
           <ref name='VIR_COPY_CPUMAP'/>
+          <ref name='virConnectGetURI'/>
           <ref name='virDomainGetXMLDesc'/>
           <ref name='virNetworkGetXMLDesc'/>
         </word>
@@ -2140,9 +2178,6 @@
           <ref name='virDomainGetInfo'/>
           <ref name='virDomainSetVcpus'/>
         </word>
-        <word name='line'>
-          <ref name='_virDomainKernel'/>
-        </word>
         <word name='list'>
           <ref name='virConnectListDefinedDomains'/>
           <ref name='virConnectListDefinedNetworks'/>
@@ -2192,6 +2227,9 @@
           <ref name='virConnectGetVersion'/>
           <ref name='virGetVersion'/>
         </word>
+        <word name='make'>
+          <ref name='virConnectGetURI'/>
+        </word>
         <word name='malloc'>
           <ref name='cpumap'/>
         </word>
@@ -2218,6 +2256,7 @@
         </word>
         <word name='may'>
           <ref name='virConnGetLastError'/>
+          <ref name='virConnectGetURI'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainCreateLinux'/>
           <ref name='virDomainDestroy'/>
@@ -2297,6 +2336,8 @@
         <word name='must'>
           <ref name='cpumap'/>
           <ref name='virConnectGetCapabilities'/>
+          <ref name='virConnectGetHostname'/>
+          <ref name='virConnectGetURI'/>
           <ref name='virDomainGetOSType'/>
           <ref name='virDomainGetSchedulerType'/>
           <ref name='virDomainGetVcpus'/>
@@ -2309,6 +2350,7 @@
         <word name='name'>
           <ref name='_virSchedParameter'/>
           <ref name='virConnectGetType'/>
+          <ref name='virConnectGetURI'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainLookupByName'/>
           <ref name='virNetworkGetBridgeName'/>
@@ -2364,6 +2406,9 @@
         <word name='non'>
           <ref name='VIR_CPU_USABLE'/>
         </word>
+        <word name='non-NULL'>
+          <ref name='virConnectGetURI'/>
+        </word>
         <word name='none'>
           <ref name='virConnGetLastError'/>
           <ref name='virGetLastError'/>
@@ -2377,6 +2422,7 @@
           <ref name='virDomainDefineXML'/>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainFree'/>
+          <ref name='virDomainGetConnect'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainGetXMLDesc'/>
           <ref name='virDomainReboot'/>
@@ -2389,6 +2435,7 @@
           <ref name='virNetworkDefineXML'/>
           <ref name='virNetworkDestroy'/>
           <ref name='virNetworkFree'/>
+          <ref name='virNetworkGetConnect'/>
           <ref name='virNetworkGetName'/>
           <ref name='virNetworkGetXMLDesc'/>
           <ref name='virNetworkUndefine'/>
@@ -2435,7 +2482,6 @@
           <ref name='virDomainShutdown'/>
         </word>
         <word name='optional'>
-          <ref name='_virDomainKernel'/>
           <ref name='virDomainCreateLinux'/>
         </word>
         <word name='order'>
@@ -2472,7 +2518,6 @@
           <ref name='virDomainSetSchedulerParameters'/>
         </word>
         <word name='parameters'>
-          <ref name='_virDomainKernel'/>
           <ref name='virDomainGetSchedulerParameters'/>
           <ref name='virDomainGetSchedulerType'/>
           <ref name='virDomainSetSchedulerParameters'/>
@@ -2485,6 +2530,9 @@
         </word>
         <word name='pass'>
           <ref name='virConnSetErrorFunc'/>
+        </word>
+        <word name='passed'>
+          <ref name='virConnectGetURI'/>
         </word>
         <word name='path'>
           <ref name='virDomainCoreDump'/>
@@ -2507,9 +2555,6 @@
         <word name='pointers'>
           <ref name='virConnectListDefinedDomains'/>
           <ref name='virConnectListDefinedNetworks'/>
-        </word>
-        <word name='pointing'>
-          <ref name='_virDomainKernel'/>
         </word>
         <word name='pools'>
           <ref name='virDomainCreate'/>
@@ -2576,9 +2621,6 @@
           <ref name='virErrorFunc'/>
           <ref name='virSetErrorFunc'/>
         </word>
-        <word name='ramdisk'>
-          <ref name='_virDomainKernel'/>
-        </word>
         <word name='raw'>
           <ref name='virDomainLookupByUUID'/>
           <ref name='virNetworkLookupByUUID'/>
@@ -2603,6 +2645,10 @@
         <word name='redhat'>
           <ref name='virConnectGetType'/>
         </word>
+        <word name='reference'>
+          <ref name='virDomainGetConnect'/>
+          <ref name='virNetworkGetConnect'/>
+        </word>
         <word name='reflect'>
           <ref name='virDomainGetMaxVcpus'/>
         </word>
@@ -2619,6 +2665,7 @@
           <ref name='virGetVersion'/>
         </word>
         <word name='remote'>
+          <ref name='virConnectGetHostname'/>
           <ref name='virDomainCoreDump'/>
         </word>
         <word name='reporting'>
@@ -2674,9 +2721,11 @@
         </word>
         <word name='result'>
           <ref name='virConnCopyLastError'/>
+          <ref name='virConnectGetHostname'/>
           <ref name='virCopyLastError'/>
         </word>
         <word name='return'>
+          <ref name='virConnectGetURI'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainGetSchedulerParameters'/>
@@ -2704,14 +2753,13 @@
           <ref name='VIR_CPU_MAPLEN'/>
           <ref name='VIR_CPU_USABLE'/>
           <ref name='VIR_GET_CPUMAP'/>
+          <ref name='virConnectGetHostname'/>
+          <ref name='virConnectGetURI'/>
           <ref name='virConnectGetVersion'/>
         </word>
         <word name='reused'>
           <ref name='virDomainGetXMLDesc'/>
           <ref name='virNetworkGetXMLDesc'/>
-        </word>
-        <word name='root'>
-          <ref name='_virDomainKernel'/>
         </word>
         <word name='routine'>
           <ref name='virDefaultErrorFunc'/>
@@ -2720,6 +2768,7 @@
         <word name='running'>
           <ref name='_virDomainInfo'/>
           <ref name='virConnectClose'/>
+          <ref name='virConnectGetHostname'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainCreate'/>
           <ref name='virDomainDestroy'/>
@@ -2740,6 +2789,7 @@
       </letter>
       <letter name='s'>
         <word name='same'>
+          <ref name='virConnectGetURI'/>
           <ref name='virDomainGetMaxVcpus'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainGetSchedulerParameters'/>
@@ -2795,6 +2845,7 @@
           <ref name='virDomainPinVcpu'/>
         </word>
         <word name='similar'>
+          <ref name='virConnectGetURI'/>
           <ref name='virDomainCreateLinux'/>
           <ref name='virNetworkCreateXML'/>
         </word>
@@ -2887,6 +2938,7 @@
           <ref name='_virNodeInfo'/>
           <ref name='virConnectGetCapabilities'/>
           <ref name='virConnectGetType'/>
+          <ref name='virConnectGetURI'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainGetOSType'/>
           <ref name='virDomainGetSchedulerType'/>
@@ -2934,6 +2986,7 @@
           <ref name='virDomainResume'/>
         </word>
         <word name='system'>
+          <ref name='virConnectGetHostname'/>
           <ref name='virDomainGetOSType'/>
           <ref name='virDomainGetVcpus'/>
           <ref name='virDomainPinVcpu'/>
@@ -2975,6 +3028,8 @@
           <ref name='virConnectListNetworks'/>
         </word>
         <word name='then'>
+          <ref name='virConnectGetHostname'/>
+          <ref name='virConnectGetURI'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainGetVcpus'/>
@@ -2983,6 +3038,8 @@
         </word>
         <word name='there'>
           <ref name='virConnectClose'/>
+          <ref name='virConnectGetHostname'/>
+          <ref name='virConnectGetURI'/>
           <ref name='virDomainGetVcpus'/>
           <ref name='virDomainReboot'/>
           <ref name='virDomainShutdown'/>
@@ -2997,6 +3054,9 @@
         </word>
         <word name='this'>
           <ref name='_virError'/>
+          <ref name='virConnectGetHostname'/>
+          <ref name='virConnectGetURI'/>
+          <ref name='virDomainGetConnect'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainGetMaxVcpus'/>
           <ref name='virDomainGetSchedulerParameters'/>
@@ -3007,6 +3067,7 @@
           <ref name='virDomainSetSchedulerParameters'/>
           <ref name='virDomainSetVcpus'/>
           <ref name='virInitialize'/>
+          <ref name='virNetworkGetConnect'/>
         </word>
         <word name='those'>
           <ref name='virSetErrorFunc'/>
@@ -3085,6 +3146,7 @@
           <ref name='_virDomainInfo'/>
           <ref name='_virVcpuInfo'/>
           <ref name='virConnectGetType'/>
+          <ref name='virConnectGetURI'/>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainFree'/>
           <ref name='virDomainGetInfo'/>
@@ -3148,6 +3210,16 @@
         </word>
         <word name='virConnectGetMaxVcpus'>
           <ref name='virDomainGetMaxVcpus'/>
+        </word>
+        <word name='virConnectOpen'>
+          <ref name='virConnectGetURI'/>
+        </word>
+        <word name='virConnectOpenReadOnly'>
+          <ref name='virConnectGetURI'/>
+        </word>
+        <word name='virConnectPtr'>
+          <ref name='virDomainGetConnect'/>
+          <ref name='virNetworkGetConnect'/>
         </word>
         <word name='virCopyLastError'>
           <ref name='virGetLastError'/>
@@ -3252,6 +3324,8 @@
       <letter name='w'>
         <word name='was'>
           <ref name='virConnCopyLastError'/>
+          <ref name='virConnectGetHostname'/>
+          <ref name='virConnectGetURI'/>
           <ref name='virCopyLastError'/>
           <ref name='virDomainGetMaxVcpus'/>
           <ref name='virDomainResume'/>
@@ -3281,6 +3355,8 @@
           <ref name='virConnGetLastError'/>
           <ref name='virConnSetErrorFunc'/>
           <ref name='virConnectClose'/>
+          <ref name='virConnectGetHostname'/>
+          <ref name='virConnectGetURI'/>
           <ref name='virDomainPinVcpu'/>
           <ref name='virGetLastError'/>
           <ref name='virGetVersion'/>
@@ -3293,6 +3369,7 @@
         <word name='will'>
           <ref name='virConnCopyLastError'/>
           <ref name='virConnSetErrorFunc'/>
+          <ref name='virConnectGetURI'/>
           <ref name='virCopyLastError'/>
           <ref name='virDomainCoreDump'/>
           <ref name='virDomainGetMaxVcpus'/>
@@ -3316,9 +3393,11 @@
           <ref name='virConnectClose'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virCopyLastError'/>
+          <ref name='virDomainGetConnect'/>
           <ref name='virDomainGetMaxVcpus'/>
           <ref name='virDomainGetSchedulerParameters'/>
           <ref name='virDomainGetXMLDesc'/>
+          <ref name='virNetworkGetConnect'/>
           <ref name='virNetworkGetXMLDesc'/>
         </word>
         <word name='without'>
@@ -3354,8 +3433,8 @@
       </letter>
     </chunk>
     <chunks>
-      <chunk name='chunk0' start='A' end='W'/>
-      <chunk name='chunk1' start='X' end='c'/>
+      <chunk name='chunk0' start='A' end='V'/>
+      <chunk name='chunk1' start='W' end='c'/>
       <chunk name='chunk2' start='d' end='i'/>
       <chunk name='chunk3' start='j' end='n'/>
       <chunk name='chunk4' start='o' end='s'/>

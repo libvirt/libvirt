@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>API Alphabetic Index A-W for libvirt</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">API Alphabetic Index A-W for libvirt</h1><h2 align="center"><a href="APIchunk0.html">A-W</a>
-<a href="APIchunk1.html">X-c</a>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>API Alphabetic Index A-V for libvirt</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">API Alphabetic Index A-V for libvirt</h1><h2 align="center"><a href="APIchunk0.html">A-V</a>
+<a href="APIchunk1.html">W-c</a>
 <a href="APIchunk2.html">d-i</a>
 <a href="APIchunk3.html">j-n</a>
 <a href="APIchunk4.html">o-s</a>
@@ -101,6 +101,7 @@
 </dd></dl><h2>Letter M:</h2><dl><dt>Macro</dt><dd><a href="html/libvirt-libvirt.html#LIBVIR_VERSION_NUMBER">LIBVIR_VERSION_NUMBER</a><br />
 <a href="html/libvirt-libvirt.html#VIR_DOMAIN_SCHED_FIELD_LENGTH">VIR_DOMAIN_SCHED_FIELD_LENGTH</a><br />
 </dd></dl><h2>Letter N:</h2><dl><dt>NUMA</dt><dd><a href="html/libvirt-libvirt.html#_virNodeInfo">_virNodeInfo</a><br />
+</dd><dt>Normally</dt><dd><a href="html/libvirt-libvirt.html#virConnectGetURI">virConnectGetURI</a><br />
 </dd><dt>Note</dt><dd><a href="html/libvirt-libvirt.html#virDomainCoreDump">virDomainCoreDump</a><br />
 <a href="html/libvirt-libvirt.html#virDomainGetInfo">virDomainGetInfo</a><br />
 <a href="html/libvirt-libvirt.html#virDomainReboot">virDomainReboot</a><br />
@@ -137,6 +138,8 @@
 <a href="html/libvirt-virterror.html#virResetLastError">virResetLastError</a><br />
 </dd><dt>Resume</dt><dd><a href="html/libvirt-libvirt.html#virDomainResume">virDomainResume</a><br />
 </dd><dt>Retrieve</dt><dd><a href="html/libvirt-libvirt.html#virDomainGetMaxMemory">virDomainGetMaxMemory</a><br />
+</dd><dt>Returns</dt><dd><a href="html/libvirt-libvirt.html#virDomainGetConnect">virDomainGetConnect</a><br />
+<a href="html/libvirt-libvirt.html#virNetworkGetConnect">virNetworkGetConnect</a><br />
 </dd></dl><h2>Letter S:</h2><dl><dt>See</dt><dd><a href="html/libvirt-libvirt.html#virConnectGetType">virConnectGetType</a><br />
 </dd><dt>Set</dt><dd><a href="html/libvirt-virterror.html#virConnSetErrorFunc">virConnSetErrorFunc</a><br />
 <a href="html/libvirt-virterror.html#virSetErrorFunc">virSetErrorFunc</a><br />
@@ -157,6 +160,8 @@
 <a href="html/libvirt-libvirt.html#VIR_UUID_STRING_BUFLEN">VIR_UUID_STRING_BUFLEN</a><br />
 <a href="">cpumap</a><br />
 <a href="html/libvirt-libvirt.html#virConnectClose">virConnectClose</a><br />
+<a href="html/libvirt-libvirt.html#virConnectGetHostname">virConnectGetHostname</a><br />
+<a href="html/libvirt-libvirt.html#virConnectGetURI">virConnectGetURI</a><br />
 <a href="html/libvirt-libvirt.html#virConnectGetVersion">virConnectGetVersion</a><br />
 <a href="html/libvirt-libvirt.html#virConnectOpen">virConnectOpen</a><br />
 <a href="html/libvirt-libvirt.html#virConnectOpenReadOnly">virConnectOpenReadOnly</a><br />
@@ -179,7 +184,8 @@
 <a href="html/libvirt-libvirt.html#virNetworkLookupByName">virNetworkLookupByName</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkLookupByUUID">virNetworkLookupByUUID</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkLookupByUUIDString">virNetworkLookupByUUIDString</a><br />
-</dd></dl><h2>Letter U:</h2><dl><dt>URI</dt><dd><a href="html/libvirt-libvirt.html#virConnectOpen">virConnectOpen</a><br />
+</dd></dl><h2>Letter U:</h2><dl><dt>URI</dt><dd><a href="html/libvirt-libvirt.html#virConnectGetURI">virConnectGetURI</a><br />
+<a href="html/libvirt-libvirt.html#virConnectOpen">virConnectOpen</a><br />
 <a href="html/libvirt-libvirt.html#virConnectOpenReadOnly">virConnectOpenReadOnly</a><br />
 </dd><dt>URIs</dt><dd><a href="html/libvirt-libvirt.html#virConnectOpen">virConnectOpen</a><br />
 <a href="html/libvirt-libvirt.html#virConnectOpenReadOnly">virConnectOpenReadOnly</a><br />
@@ -207,9 +213,8 @@
 <a href="html/libvirt-libvirt.html#virNetworkGetUUID">virNetworkGetUUID</a><br />
 </dd><dt>VIR_UUID_STRING_BUFLEN</dt><dd><a href="html/libvirt-libvirt.html#virDomainGetUUIDString">virDomainGetUUIDString</a><br />
 <a href="html/libvirt-libvirt.html#virNetworkGetUUIDString">virNetworkGetUUIDString</a><br />
-</dd></dl><h2>Letter W:</h2><dl><dt>What</dt><dd><a href="html/libvirt-virterror.html#_virError">_virError</a><br />
-</dd></dl><h2 align="center"><a href="APIchunk0.html">A-W</a>
-<a href="APIchunk1.html">X-c</a>
+</dd></dl><h2 align="center"><a href="APIchunk0.html">A-V</a>
+<a href="APIchunk1.html">W-c</a>
 <a href="APIchunk2.html">d-i</a>
 <a href="APIchunk3.html">j-n</a>
 <a href="APIchunk4.html">o-s</a>
