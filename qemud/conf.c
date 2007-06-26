@@ -823,12 +823,12 @@ static struct qemud_vm_def *qemudParseXML(struct qemud_driver *driver,
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
         int err;
-        if ((err = qemudGenerateUUID(def->uuid))) {
+        if ((err = virUUIDGenerate(def->uuid))) {
             qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              "Failed to generate UUID: %s", strerror(err));
             goto error;
         }
-    } else if (qemudParseUUID((const char *)obj->stringval, def->uuid) < 0) {
+    } else if (virUUIDParse((const char *)obj->stringval, def->uuid) < 0) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "malformed uuid element");
         goto error;
     }
@@ -1936,12 +1936,12 @@ static struct qemud_network_def *qemudParseNetworkXML(struct qemud_driver *drive
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
         int err;
-        if ((err = qemudGenerateUUID(def->uuid))) {
+        if ((err = virUUIDGenerate(def->uuid))) {
             qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              "Failed to generate UUID: %s", strerror(err));
             goto error;
         }
-    } else if (qemudParseUUID((const char *)obj->stringval, def->uuid) < 0) {
+    } else if (virUUIDParse((const char *)obj->stringval, def->uuid) < 0) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "malformed uuid element");
         goto error;
     }

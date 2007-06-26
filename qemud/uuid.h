@@ -19,12 +19,14 @@
  *     Mark McLoughlin <markmc@redhat.com>
  */
 
-#ifndef __QEMUD_UUID_H__
-#define __QEMUD_UUID_H__
+#ifndef __VIR_UUID_H__
+#define __VIR_UUID_H__
 
-int qemudGenerateUUID(unsigned char *uuid);
+#define VIR_UUID_RAW_LEN 16
 
-int qemudParseUUID   (const char *uuid,
-		      unsigned char *rawuuid);
+int virUUIDGenerate(unsigned char *uuid);
 
-#endif /* __QEMUD_UUID_H__ */
+int virUUIDParse(const char *uuid,
+		 unsigned char *rawuuid);
+
+#endif /* __VIR_UUID_H__ */

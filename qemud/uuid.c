@@ -35,8 +35,8 @@
 #include "internal.h"
 
 static int
-qemudGenerateRandomBytes(unsigned char *buf,
-                         int buflen)
+virUUIDGenerateRandomBytes(unsigned char *buf,
+                           int buflen)
 {
     int fd;
 
@@ -63,8 +63,8 @@ qemudGenerateRandomBytes(unsigned char *buf,
 }
 
 static int
-qemudGeneratePseudoRandomBytes(unsigned char *buf,
-                               int buflen)
+virUUIDGeneratePseudoRandomBytes(unsigned char *buf,
+                                 int buflen)
 {
     srand(time(NULL));
     while (buflen > 0) {
@@ -76,20 +76,20 @@ qemudGeneratePseudoRandomBytes(unsigned char *buf,
 }
 
 int
-qemudGenerateUUID(unsigned char *uuid)
+virUUIDGenerate(unsigned char *uuid)
 {
     int err;
 
-    if ((err = qemudGenerateRandomBytes(uuid, QEMUD_UUID_RAW_LEN)))
+    if ((err = virUUIDGenerateRandomBytes(uuid, VIR_UUID_RAW_LEN)))
         qemudLog(QEMUD_WARN,
                  "Falling back to pseudorandom UUID, "
                  "failed to generate random bytes: %s", strerror(err));
 
-    return qemudGeneratePseudoRandomBytes(uuid, QEMUD_UUID_RAW_LEN);
+    return virUUIDGeneratePseudoRandomBytes(uuid, VIR_UUID_RAW_LEN);
 }
 
 int
-qemudParseUUID(const char *uuid, unsigned char *rawuuid) {
+virUUIDParse(const char *uuid, unsigned char *rawuuid) {
     const char *cur;
     int i;
 

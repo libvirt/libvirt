@@ -1,5 +1,10 @@
 Tue Jun 26 18:10:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
+	* qemud/conf.c, qemud/uuid.c, qemud/uuid.h: Rename the
+	UUID functions to not include QEMU in name.
+
+Tue Jun 26 18:10:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
 	* qemud/conf.c, qemud/conf.h, qemud/dispatch.c, qemud/driver.c,
 	qemud/driver.h, qemud/internal.h, qemud/qemud.c: Split the
 	struct qemud_server into two parts, moving QEMU stuff out into
