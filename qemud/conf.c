@@ -42,10 +42,11 @@
 
 #include <libvirt/virterror.h>
 
-#include "internal.h"
 #include "conf.h"
 #include "uuid.h"
 #include "../src/buf.h"
+
+#define qemudLog(level, msg...) fprintf(stderr, msg)
 
 void qemudReportError(virConnectPtr conn,
                       virDomainPtr dom,
@@ -61,7 +62,6 @@ void qemudReportError(virConnectPtr conn,
     } else {
         errorMessage[0] = '\0';
     }
-
     __virRaiseError(conn, dom, net, VIR_FROM_QEMU, code, VIR_ERR_ERROR,
                     NULL, NULL, NULL, -1, -1, errorMessage);
 }
@@ -266,7 +266,7 @@ static const char *qemudDefaultBinaryForArch(const char *arch) {
 }
 
 /* Find the fully qualified path to the binary for an architecture */
-static char *qemudLocateBinaryForArch(struct qemud_driver *driver,
+static char *qemudLocateBinaryForArch(struct qemud_driver *driver ATTRIBUTE_UNUSED,
                                       int virtType, const char *arch) {
     const char *name;
     char *path;
@@ -415,7 +415,7 @@ int qemudExtractVersion(struct qemud_driver *driver) {
 
 
 /* Parse the XML definition for a disk */
-static struct qemud_vm_disk_def *qemudParseDiskXML(struct qemud_driver *driver,
+static struct qemud_vm_disk_def *qemudParseDiskXML(struct qemud_driver *driver ATTRIBUTE_UNUSED,
                                                    xmlNodePtr node) {
     struct qemud_vm_disk_def *disk = calloc(1, sizeof(struct qemud_vm_disk_def));
     xmlNodePtr cur;
@@ -552,7 +552,7 @@ static void qemudRandomMAC(struct qemud_vm_net_def *net) {
 
 
 /* Parse the XML definition for a network interface */
-static struct qemud_vm_net_def *qemudParseInterfaceXML(struct qemud_driver *driver,
+static struct qemud_vm_net_def *qemudParseInterfaceXML(struct qemud_driver *driver ATTRIBUTE_UNUSED,
                                                        xmlNodePtr node) {
     struct qemud_vm_net_def *net = calloc(1, sizeof(struct qemud_vm_net_def));
     xmlNodePtr cur;
@@ -1842,7 +1842,7 @@ static int qemudParseBridgeXML(struct qemud_driver *driver ATTRIBUTE_UNUSED,
     return 1;
 }
 
-static int qemudParseDhcpRangesXML(struct qemud_driver *driver,
+static int qemudParseDhcpRangesXML(struct qemud_driver *driver ATTRIBUTE_UNUSED,
                                    struct qemud_network_def *def,
                                    xmlNodePtr node) {
 
@@ -2494,7 +2494,7 @@ int qemudScanConfigs(struct qemud_driver *driver) {
 }
 
 /* Generate an XML document describing the guest's configuration */
-char *qemudGenerateXML(struct qemud_driver *driver,
+char *qemudGenerateXML(struct qemud_driver *driver ATTRIBUTE_UNUSED,
                        struct qemud_vm *vm,
                        struct qemud_vm_def *def,
                        int live) {
@@ -2772,7 +2772,7 @@ char *qemudGenerateXML(struct qemud_driver *driver,
 }
 
 
-char *qemudGenerateNetworkXML(struct qemud_driver *driver,
+char *qemudGenerateNetworkXML(struct qemud_driver *driver ATTRIBUTE_UNUSED,
                               struct qemud_network *network,
                               struct qemud_network_def *def) {
     virBufferPtr buf = 0;
@@ -2863,7 +2863,7 @@ char *qemudGenerateNetworkXML(struct qemud_driver *driver,
 }
 
 
-int qemudDeleteConfig(struct qemud_driver *driver,
+int qemudDeleteConfig(struct qemud_driver *driver ATTRIBUTE_UNUSED,
                       const char *configFile,
                       const char *name) {
     if (!configFile[0]) {

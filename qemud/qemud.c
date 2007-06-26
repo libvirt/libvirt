@@ -57,18 +57,15 @@
 #include "../src/internal.h"
 #include "../src/remote_internal.h"
 #include "../src/conf.h"
-#include "dispatch.h"
-#include "driver.h"
 #include "event.h"
 
 static int godaemon = 0;        /* -d: Be a daemon */
 static int verbose = 0;         /* -v: Verbose mode */
-static int remote = 0;          /* -r: Remote mode */
-static int sys = 0;             /* -s: (QEMUD only) system mode */
-static int timeout = -1;        /* -t: (QEMUD only) timeout */
+static int timeout = -1;        /* -t: Shutdown timeout */
 static int sigwrite = -1;       /* Signal handler pipe */
+static int ipsock = 0;          /* -l  Listen for TCP/IP */
 
-/* Defaults for configuration file elements (remote only). */
+/* Defaults for configuration file elements */
 static int listen_tls = 1;
 static int listen_tcp = 0;
 static const char *tls_port = LIBVIRTD_TLS_PORT;
@@ -209,21 +206,12 @@ static void qemudDispatchSignalEvent(int fd ATTRIBUTE_UNUSED,
         qemudLog(QEMUD_INFO, "Reloading configuration on SIGHUP");
         if (virStateReload() < 0)
             qemudLog(QEMUD_WARN, "Error while reloading drivers");
-
-        if (!remote) {
-            qemudReload();
-        }
         break;
 
     case SIGINT:
     case SIGQUIT:
     case SIGTERM:
         qemudLog(QEMUD_WARN, "Shutting down on signal %d", sigc);
-
-        if (!remote) {
-            qemudShutdown();
-        }
-
         server->shutdown = 1;
         break;
 
@@ -606,12 +594,10 @@ static int qemudInitPaths(struct qemud_server *server,
                           char *roSockname,
                           int maxlen) {
     char *base = 0;
+    uid_t uid = geteuid();
 
-    if (remote) {               /* Remote daemon */
-        /* I'm not sure if it's meaningful to have a "session remote daemon"
-         * so currently this code ignores the --system flag. - RWMJ.
-         */
-
+    
+    if (!uid) {
         if (snprintf (sockname, maxlen, "%s/run/libvirt/libvirt-sock",
                       LOCAL_STATE_DIR) >= maxlen)
             goto snprintf_error;
@@ -624,48 +610,26 @@ static int qemudInitPaths(struct qemud_server *server,
 
         unlink(roSockname);
 
-        if (snprintf(server->logDir, PATH_MAX, "%s/log/libvirt/qemu", LOCAL_STATE_DIR) >= PATH_MAX)
+        if (snprintf(server->logDir, PATH_MAX, "%s/log/libvirt/", LOCAL_STATE_DIR) >= PATH_MAX)
             goto snprintf_error;
     } else {
-        uid_t uid = geteuid();
         struct passwd *pw;
 
-        if (sys) {              /* QEMUD, system */
-            if (uid != 0) {
-                qemudLog (QEMUD_ERR,
-                      "You must run the daemon as root to use system mode");
-                return -1;
-            }
+        if (!(pw = getpwuid(uid))) {
+            qemudLog(QEMUD_ERR, "Failed to find user record for uid '%d': %s",
+                     uid, strerror(errno));
+            return -1;
+        }
 
-            if (snprintf(sockname, maxlen, "%s/run/libvirt/qemud-sock", LOCAL_STATE_DIR) >= maxlen)
-                goto snprintf_error;
+        if (snprintf(sockname, maxlen, "@%s/.libvirt/libvirt-sock", pw->pw_dir) >= maxlen)
+            goto snprintf_error;
 
-            unlink(sockname);
+        if (snprintf(server->logDir, PATH_MAX, "%s/.libvirt/log", pw->pw_dir) >= PATH_MAX)
+            goto snprintf_error;
 
-            if (snprintf(roSockname, maxlen, "%s/run/libvirt/qemud-sock-ro", LOCAL_STATE_DIR) >= maxlen)
-                goto snprintf_error;
-
-            unlink(roSockname);
-
-            if ((base = strdup (SYSCONF_DIR "/libvirt/qemu")) == NULL)
-                goto out_of_memory;
-        } else {                /* QEMUD, session */
-            if (!(pw = getpwuid(uid))) {
-                qemudLog(QEMUD_ERR, "Failed to find user record for uid '%d': %s",
-                         uid, strerror(errno));
-                return -1;
-            }
-
-            if (snprintf(sockname, maxlen, "@%s/.libvirt/qemud-sock", pw->pw_dir) >= maxlen)
-                goto snprintf_error;
-
-            if (snprintf(server->logDir, PATH_MAX, "%s/.libvirt/qemu/log", pw->pw_dir) >= PATH_MAX)
-                goto snprintf_error;
-
-            if (asprintf (&base, "%s/.libvirt/qemu", pw->pw_dir) == -1) {
-                qemudLog (QEMUD_ERR, "out of memory in asprintf");
-                return -1;
-            }
+        if (asprintf (&base, "%s/.libvirt", pw->pw_dir) == -1) {
+            qemudLog (QEMUD_ERR, "out of memory in asprintf");
+            return -1;
         }
 
     } /* !remote */
@@ -676,11 +640,6 @@ static int qemudInitPaths(struct qemud_server *server,
 
  snprintf_error:
     qemudLog(QEMUD_ERR, "Resulting path to long for buffer in qemudInitPaths()");
-    return -1;
-
- out_of_memory:
-    qemudLog (QEMUD_ERR, "qemudInitPaths: out of memory");
-    if (base) free (base);
     return -1;
 }
 
@@ -708,13 +667,14 @@ static struct qemud_server *qemudInitialize(int sigread) {
     if (roSockname[0] != '\0' && qemudListenUnix(server, roSockname, 1) < 0)
         goto cleanup;
 
+    __virEventRegisterImpl(virEventAddHandleImpl,
+                           virEventRemoveHandleImpl,
+                           virEventAddTimeoutImpl,
+                           virEventRemoveTimeoutImpl);
+
     virStateInitialize();
 
-    if (!remote) /* qemud only */ {
-        if (qemudStartup() < 0) {
-            goto cleanup;
-        }
-    } else /* remote only */ {
+    if (ipsock) {
         if (listen_tcp && remoteListenTCP (server, tcp_port, 0) < 0)
             goto cleanup;
 
@@ -730,7 +690,6 @@ static struct qemud_server *qemudInitialize(int sigread) {
     return server;
 
  cleanup:
-    qemudShutdown();
     if (server) {
         struct qemud_socket *sock = server->sockets;
         while (sock) {
@@ -1070,70 +1029,6 @@ static void qemudDispatchClientFailure(struct qemud_server *server, struct qemud
 }
 
 
-static void qemudDispatchClientRequest(struct qemud_server *server,
-                                       struct qemud_client *client,
-                                       qemud_packet_client *req) {
-    qemud_packet_server res;
-    qemud_packet_header h;
-    XDR x;
-
-    assert (client->magic == QEMUD_CLIENT_MAGIC);
-
-    if (req->serial != ++client->incomingSerial) {
-        qemudDebug("Invalid serial number. Got %d expect %d",
-                   req->serial, client->incomingSerial);
-        qemudDispatchClientFailure(server, client);
-        return;
-    }
-
-    if (qemudDispatch(server,
-                      client,
-                      &req->data,
-                      &res.data) < 0) {
-        qemudDispatchClientFailure(server, client);
-        return;
-    }
-
-    res.serial = ++client->outgoingSerial;
-    res.inReplyTo = req->serial;
-
-    xdrmem_create(&x, client->buffer, sizeof client->buffer,
-                  XDR_ENCODE);
-
-    /* Encode a dummy header.  We'll come back to encode the real header. */
-    if (!xdr_qemud_packet_header (&x, &h)) {
-        qemudDebug ("failed to encode dummy header");
-        qemudDispatchClientFailure (server, client);
-        return;
-    }
-
-    /* Real payload. */
-    if (!xdr_qemud_packet_server(&x, &res)) {
-        qemudDebug("Failed to XDR encode reply payload");
-        qemudDispatchClientFailure(server, client);
-        return;
-    }
-
-    /* Go back and encode the real header. */
-    h.length = xdr_getpos (&x);
-    h.prog = QEMUD_PROGRAM;
-
-    if (xdr_setpos (&x, 0) == 0) {
-        qemudDebug("xdr_setpos failed");
-        qemudDispatchClientFailure(server, client);
-        return;
-    }
-
-    if (!xdr_qemud_packet_header(&x, &h)) {
-        qemudDebug("Failed to XDR encode reply header");
-        qemudDispatchClientFailure(server, client);
-        return;
-    }
-
-    client->mode = QEMUD_MODE_TX_PACKET;
-    client->bufferLength = h.length;
-    client->bufferOffset = 0;
-}
 
 static int qemudClientRead(struct qemud_server *server,
                            struct qemud_client *client) {
@@ -1198,11 +1093,7 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
             return;
         }
 
-        /* We're expecting either QEMUD_PROGRAM or REMOTE_PROGRAM,
-         * corresponding to qemud or remote calls respectively.
-         */
-        if ((!remote && h.prog != QEMUD_PROGRAM)
-            || (remote && h.prog != REMOTE_PROGRAM)) {
+        if (h.prog != REMOTE_PROGRAM) {
             qemudDebug("Header magic %x mismatch", h.prog);
             qemudDispatchClientFailure(server, client);
             return;
@@ -1251,26 +1142,13 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
             return;
         }
 
-        if (remote && h.prog == REMOTE_PROGRAM) {
+        if (h.prog == REMOTE_PROGRAM) {
             remoteDispatchClientRequest (server, client);
-            if (qemudRegisterClientEvent(server, client, 1) < 0)
-                qemudDispatchClientFailure(server, client);
-        } else if (!remote && h.prog == QEMUD_PROGRAM) {
-            qemud_packet_client p;
-
-            if (!xdr_qemud_packet_client(&x, &p)) {
-                qemudDebug("Failed to decode client packet");
-                qemudDispatchClientFailure(server, client);
-                return;
-            }
-
-            qemudDispatchClientRequest(server, client, &p);
-
             if (qemudRegisterClientEvent(server, client, 1) < 0)
                 qemudDispatchClientFailure(server, client);
         } else {
             /* An internal error. */
-            qemudDebug ("Not REMOTE_PROGRAM or QEMUD_PROGRAM");
+            qemudDebug ("Not REMOTE_PROGRAM");
             qemudDispatchClientFailure(server, client);
         }
 
@@ -1539,7 +1417,6 @@ static void qemudCleanup(struct qemud_server *server) {
     }
 
 
-    qemudShutdown();
     virStateCleanup();
 
     free(server);
@@ -1692,32 +1569,24 @@ Usage:\n\
 Options:\n\
   -v | --verbose         Verbose messages.\n\
   -d | --daemon          Run as a daemon & write PID file.\n\
-  -r | --remote          Act as remote server.\n\
-  -s | --system          Run as system daemon (QEMUD only).\n\
-  -t | --timeout <secs>  Exit after timeout period (QEMUD only).\n\
-  -f | --config <file>   Configuration file (remote only).\n\
+  -l | --listen          Listen for TCP/IP connections.\n\
+  -t | --timeout <secs>  Exit after timeout period.\n\
+  -c | --config <file>   Configuration file.\n\
   -p | --pid-file <file> Change name of PID file.\n\
 \n\
-Remote and QEMU/network management:\n\
-\n\
-The '--remote' flag selects between running as a remote server\n\
-for remote libvirt requests, versus running as a QEMU\n\
-and network management daemon.\n\
-\n\
-Normally you need to have one daemon of each type.\n\
-\n\
-See also http://libvirt.org/remote.html\n\
-\n\
-For remote daemon:\n\
+libvirt management daemon:\n\
 \n\
   Default paths:\n\
 \n\
-    Configuration file (unless overridden by -f):\n\
+    Configuration file (unless overridden by -c):\n\
       " SYSCONF_DIR "/libvirt/libvirtd.conf\n\
 \n\
-    Sockets:\n\
+    Sockets (as root):\n\
       " LOCAL_STATE_DIR "/run/libvirt/libvirt-sock\n\
       " LOCAL_STATE_DIR "/run/libvirt/libvirt-sock-ro\n\
+\n\
+    Sockets (as non-root):\n\
+      $HOME/.libvirt/libvirt-sock (in UNIX abstract namespace)\n\
 \n\
     TLS:\n\
       CA certificate:     " LIBVIRT_CACERT "\n\
@@ -1726,44 +1595,10 @@ For remote daemon:\n\
 \n\
     PID file (unless overridden by --pid-file):\n\
       %s\n\
-\n\
-For QEMU and network management daemon:\n\
-\n\
-  For '--system' option you must be running this daemon as root.\n\
-\n\
-  The '--timeout' applies only when the daemon is not servicing\n\
-  clients.\n\
-\n\
-  Default paths:\n\
-\n\
-    Configuration files (in system mode):\n\
-      " SYSCONF_DIR "/libvirt/qemu\n\
-      " SYSCONF_DIR "/libvirt/qemu/autostart\n\
-      " SYSCONF_DIR "/libvirt/qemu/networkd\n\
-      " SYSCONF_DIR "/libvirt/qemu/networks/autostart\n\
-\n\
-    Configuration files (not in system mode):\n\
-      $HOME/.libvirt/qemu\n\
-      $HOME/.libvirt/qemu/autostart\n\
-      $HOME/.libvirt/qemu/networks\n\
-      $HOME/.libvirt/qemu/networks/autostart\n\
-\n\
-    Sockets (in system mode):\n\
-      " LOCAL_STATE_DIR "/run/libvirt/qemud-sock\n\
-      " LOCAL_STATE_DIR "/run/libvirt/qemud-sock-ro\n\
-\n\
-    Sockets (not in system mode):\n\
-      $HOME/.libvirt/qemud-sock (in Unix abstract namespace)\n\
-\n\
-    PID file (unless overridden by --pid-file):\n\
-      %s\n\
 \n",
              argv0,
              REMOTE_PID_FILE[0] != '\0'
                ? REMOTE_PID_FILE
-               : "(disabled in ./configure)",
-             QEMUD_PID_FILE[0] != '\0'
-               ? QEMUD_PID_FILE
                : "(disabled in ./configure)");
 }
 
@@ -1779,9 +1614,8 @@ int main(int argc, char **argv) {
     struct option opts[] = {
         { "verbose", no_argument, &verbose, 1},
         { "daemon", no_argument, &godaemon, 1},
-        { "remote", no_argument, &remote, 1},
-        { "config", required_argument, NULL, 'f'},
-        { "system", no_argument, &sys, 1},
+        { "listen", no_argument, &ipsock, 1},
+        { "config", required_argument, NULL, 'c'},
         { "timeout", required_argument, NULL, 't'},
         { "pid-file", required_argument, NULL, 'p'},
         { "help", no_argument, NULL, '?' },
@@ -1793,7 +1627,7 @@ int main(int argc, char **argv) {
         int c;
         char *tmp;
 
-        c = getopt_long(argc, argv, "dfp:s:t:v", opts, &optidx);
+        c = getopt_long(argc, argv, "ldfp:t:v", opts, &optidx);
 
         if (c == -1) {
             break;
@@ -1809,11 +1643,8 @@ int main(int argc, char **argv) {
         case 'd':
             godaemon = 1;
             break;
-        case 'r':
-            remote = 1;
-            break;
-        case 's':
-            sys = 1;
+        case 'l':
+            ipsock = 1;
             break;
 
         case 't':
@@ -1841,14 +1672,12 @@ int main(int argc, char **argv) {
         }
     }
 
-    /* In remote mode only, now read the config file (if it exists). */
-    if (remote) {
-        if (remoteReadConfigFile (remote_config_file) < 0)
-            goto error1;
-    }
+    /* Read the config file (if it exists). */
+    if (remoteReadConfigFile (remote_config_file) < 0)
+        goto error1;
 
     if (godaemon)
-        openlog("libvirt-qemud", 0, 0);
+        openlog("libvirtd", 0, 0);
 
     if (pipe(sigpipe) < 0 ||
         qemudSetNonBlock(sigpipe[0]) < 0 ||
@@ -1885,13 +1714,8 @@ int main(int argc, char **argv) {
 
         /* Choose the name of the PID file. */
         if (!pid_file) {
-            if (remote) {
-                if (REMOTE_PID_FILE[0] != '\0')
-                    pid_file = REMOTE_PID_FILE;
-            } else {
-                if (QEMUD_PID_FILE[0] != '\0')
-                    pid_file = QEMUD_PID_FILE;
-            }
+            if (REMOTE_PID_FILE[0] != '\0')
+                pid_file = REMOTE_PID_FILE;
         }
 
         if (pid_file && qemudWritePidFile (pid_file) < 0)

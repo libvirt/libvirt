@@ -7,17 +7,9 @@ sbin_PROGRAMS = libvirtd
 
 libvirtd_SOURCES = \
 		qemud.c internal.h \
-                driver.c driver.h \
-                dispatch.c dispatch.h \
-                conf.c conf.h \
-                bridge.c bridge.h \
-                iptables.c iptables.h \
-                uuid.c uuid.h \
-		../src/buf.c \
 		protocol.h protocol.c \
 		remote_protocol.h remote_protocol.c \
 		remote.c \
-                ../src/virterror.c \
                 event.c event.h
 #-D_XOPEN_SOURCE=600 -D_XOPEN_SOURCE_EXTENDED=1 -D_POSIX_C_SOURCE=199506L
 libvirtd_CFLAGS = \
@@ -52,14 +44,19 @@ uninstall-local: uninstall-init
 
 # Distribute the generated files so that rpcgen isn't required on the
 # target machine (although almost any Unix machine will have it).
-EXTRA_DIST = libvirtd.init.in default-network.xml \
+EXTRA_DIST = libvirtd.init.in libvirtd.sysconf default-network.xml \
 	protocol.x remote_protocol.x \
 	protocol.c protocol.h \
 	remote_protocol.c remote_protocol.h \
 	remote_generate_stubs.pl rpcgen_fix.pl \
 	remote_dispatch_prototypes.h \
 	remote_dispatch_localvars.h \
-	remote_dispatch_proc_switch.h
+	remote_dispatch_proc_switch.h \
+        driver.c driver.h \
+        conf.c conf.h \
+        iptables.c iptables.h \
+        bridge.c bridge.h \
+        uuid.c uuid.h
 
 .x.c:
 	rm -f $@
@@ -91,6 +88,8 @@ if LIBVIRT_INIT_SCRIPTS_RED_HAT
 install-init: libvirtd.init
 	mkdir -p $(DESTDIR)$(sysconfdir)/rc.d/init.d
 	$(INSTALL_SCRIPT) $(srcdir)/libvirtd.init $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
+	mkdir -p $(DESTDIR)$(sysconfdir)/sysconfig
+	$(INSTALL_SCRIPT) $(srcdir)/libvirtd.sysconf $(DESTDIR)$(sysconfdir)/sysconfig/libvirtd
 
 uninstall-init:
 	rm -f $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd

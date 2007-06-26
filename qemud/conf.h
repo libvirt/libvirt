@@ -25,6 +25,11 @@
 #define __QEMUD_CONF_H
 
 #include "../src/internal.h"
+#include "bridge.h"
+#include "iptables.h"
+#include <netinet/in.h>
+
+#define qemudDebug(fmt, ...) do {} while(0)
 
 /* Different types of QEMU acceleration possible */
 enum qemud_vm_virt_type {
@@ -32,7 +37,6 @@ enum qemud_vm_virt_type {
     QEMUD_VIRT_KQEMU,
     QEMUD_VIRT_KVM,
 };
-
 
 /* Two types of disk backends */
 enum qemud_vm_disk_type {
@@ -73,6 +77,11 @@ enum qemud_vm_net_type {
     QEMUD_NET_NETWORK,
     QEMUD_NET_BRIDGE,
 };
+
+#define QEMUD_UUID_RAW_LEN 16
+#define QEMUD_MAX_NAME_LEN 50
+#define QEMUD_MAX_XML_LEN 4096
+#define QEMUD_MAX_ERROR_LEN 1024
 
 /* Stores the virtual network interface configuration */
 struct qemud_vm_net_def {

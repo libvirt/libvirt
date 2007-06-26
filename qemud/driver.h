@@ -25,14 +25,13 @@
 #ifndef QEMUD_DRIVER_H
 #define QEMUD_DRIVER_H
 
-#include "internal.h"
 #include "../src/internal.h"
 
 int qemudStartup(void);
 int qemudReload(void);
 int qemudShutdown(void);
 int qemudActive(void);
-
+int qemudRegister(void);
 
 virDrvOpenStatus qemudOpen(virConnectPtr conn,
                            const char *name,

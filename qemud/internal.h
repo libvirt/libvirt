@@ -25,8 +25,6 @@
 #ifndef QEMUD_INTERNAL_H__
 #define QEMUD_INTERNAL_H__
 
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
 

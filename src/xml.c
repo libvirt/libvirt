@@ -25,6 +25,7 @@
 #include "buf.h"
 #include "xs_internal.h" /* for xenStoreDomainGetNetworkID */
 
+#ifndef PROXY
 /**
  * virXMLError:
  * @conn: a connection if any
@@ -47,7 +48,6 @@ virXMLError(virConnectPtr conn, virErrorNumber error, const char *info, int valu
                     errmsg, info, NULL, value, 0, errmsg, info, value);
 }
 
-#ifndef PROXY
 /**
  * virXPathString:
  * @xpath: the XPath string to evaluate

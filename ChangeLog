@@ -1,3 +1,14 @@
+Tue Jun 26 19:35:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/libvirtd.sysconf, qemud/libvirtd.init.in: Added config
+	to turn on/off remote support in daemon
+	* qemud/conf.c, qemud/conf.h, qemud/driver.c, qemud/driver.h
+	Finally switch over to be an internal driver.
+	* qemud/dispatch.c, qemud/dispatch.h: Remove obsolete files
+	* qemud/protocol.*: Remove all except packet header.
+	* src/xml.c: Don't compile virXMLError for libvirt_proxy
+	* src/remote_internal.c: Pick up QEMU uris too
+
 Tue Jun 26 19:05:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/remote_internal.c: Fix typo in checking for read only

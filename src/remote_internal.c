@@ -34,6 +34,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+#include <pwd.h>
 
 #include <rpc/xdr.h>
 #include <gnutls/gnutls.h>
@@ -118,8 +119,6 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
         return VIR_DRV_OPEN_DECLINED; /* Decline - not a URL. */
 
     char *transport_str = get_transport_from_scheme (uri->scheme);
-    if (!uri->server && !transport_str)
-        return VIR_DRV_OPEN_DECLINED; /* Decline - not a remote URL. */
 
     /* What transport? */
     enum {
@@ -146,6 +145,12 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
                "(should be tls|unix|ssh|ext|tcp)");
         return VIR_DRV_OPEN_ERROR;
     }
+
+    if (!strcmp(uri_str, "qemu:///system") ||
+        !strcmp(uri_str, "qemu:///session"))
+        transport = trans_unix;
+    else if (!uri->server && !transport_str)
+        return VIR_DRV_OPEN_DECLINED; /* Decline - not a remote URL. */
 
     /* Local variables which we will initialise. These can
      * get freed in the failed: path.
@@ -350,10 +355,27 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
 
     case trans_unix: {
         if (!sockname) {
-            if (flags & VIR_DRV_OPEN_RO)
-                sockname = strdup (LIBVIRTD_UNIX_SOCKET_RO);
-            else
-                sockname = strdup (LIBVIRTD_UNIX_SOCKET);
+            if (!strcmp(uri->scheme, "qemu") &&
+                uri->path &&
+                !strcmp(uri->path, "/session")) {
+                struct passwd *pw;
+                uid_t uid = getuid();
+ 
+                if (!(pw = getpwuid(uid))) {
+                    error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+                    goto failed;
+                }
+ 
+                if (asprintf (&sockname, "@%s" LIBVIRTD_USER_UNIX_SOCKET, pw->pw_dir) < 0) {
+                    error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+                    goto failed;
+                }
+            } else {
+                if (flags & VIR_DRV_OPEN_RO)
+                    sockname = strdup (LIBVIRTD_PRIV_UNIX_SOCKET_RO);
+                else
+                    sockname = strdup (LIBVIRTD_PRIV_UNIX_SOCKET);
+            }
         }
 
 #ifndef UNIX_PATH_MAX
@@ -363,6 +385,8 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
         memset (&addr, 0, sizeof addr);
         addr.sun_family = AF_UNIX;
         strncpy (addr.sun_path, sockname, UNIX_PATH_MAX (addr));
+        if (addr.sun_path[0] == '@')
+            addr.sun_path[0] = '\0';
 
         priv.sock = socket (AF_UNIX, SOCK_STREAM, 0);
         if (priv.sock == -1) {
@@ -396,7 +420,7 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
         cmd_argv[j++] = strdup (server);
         cmd_argv[j++] = strdup (netcat ? netcat : "nc");
         cmd_argv[j++] = strdup ("-U");
-        cmd_argv[j++] = strdup (sockname ? sockname : LIBVIRTD_UNIX_SOCKET);
+        cmd_argv[j++] = strdup (sockname ? sockname : LIBVIRTD_PRIV_UNIX_SOCKET);
         cmd_argv[j++] = 0;
         assert (j == nr_args);
     }

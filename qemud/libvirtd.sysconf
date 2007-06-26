@@ -1,0 +1,6 @@
+# Override the default config file
+#LIBVIRTD_CONFIG=/etc/libvirt/libvirtd.conf
+
+# Listen for TCP/IP connections
+# NB. must setup TLS/SSL keys prior to using this
+#LIBVIRTD_ARGS="--listen"

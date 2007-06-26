@@ -27,8 +27,8 @@
 #include "xml.h"
 #include "test.h"
 #include "xen_unified.h"
-#include "qemu_internal.h"
 #include "remote_internal.h"
+#include "../qemud/driver.h"
 
 /*
  * TODO:
@@ -71,7 +71,7 @@ virInitialize(void)
     if (testRegister() == -1) return -1;
 #endif
 #ifdef WITH_QEMU
-    if (qemuRegister() == -1) return -1;
+    if (qemudRegister() == -1) return -1;
 #endif
 #ifdef WITH_XEN
     if (xenUnifiedRegister () == -1) return -1;
@@ -276,6 +276,9 @@ int __virStateInitialize(void) {
     if (virInitialize() < 0)
         return -1;
 
+    if (virInitialize() < 0)
+        return -1;
+
     for (i = 0 ; i < virStateDriverTabCount ; i++) {
         if (virStateDriverTab[i]->initialize() < 0)
             ret = -1;
@@ -470,9 +473,9 @@ virConnectClose(virConnectPtr conn)
     if (!VIR_IS_CONNECT(conn))
         return (-1);
 
-    conn->driver->close (conn);
     if (conn->networkDriver)
         conn->networkDriver->close (conn);
+    conn->driver->close (conn);
 
     if (virFreeConnect(conn) < 0)
         return (-1);

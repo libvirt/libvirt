@@ -34,6 +34,8 @@
 
 #include "internal.h"
 
+#define qemudLog(level, msg...) fprintf(stderr, msg)
+
 static int
 virUUIDGenerateRandomBytes(unsigned char *buf,
                            int buflen)

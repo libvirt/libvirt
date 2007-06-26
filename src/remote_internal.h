@@ -34,8 +34,9 @@ int remoteRegister (void);
 
 #define LIBVIRTD_TLS_PORT "16514"
 #define LIBVIRTD_TCP_PORT "16509"
-#define LIBVIRTD_UNIX_SOCKET LOCAL_STATE_DIR "/run/libvirt/libvirt-sock"
-#define LIBVIRTD_UNIX_SOCKET_RO LOCAL_STATE_DIR "/run/libvirt/libvirt-sock-ro"
+#define LIBVIRTD_PRIV_UNIX_SOCKET LOCAL_STATE_DIR "/run/libvirt/libvirt-sock"
+#define LIBVIRTD_PRIV_UNIX_SOCKET_RO LOCAL_STATE_DIR "/run/libvirt/libvirt-sock-ro"
+#define LIBVIRTD_USER_UNIX_SOCKET "/.libvirt/libvirt-sock"
 #define LIBVIRTD_CONFIGURATION_FILE SYSCONF_DIR "/libvirtd.conf"
 
 /* Defaults for PKI directory. */

@@ -49,10 +49,6 @@
 
 #include "internal.h"
 #include "../src/internal.h"
-#include "dispatch.h"
-#include "driver.h"
-#include "conf.h"
-#include "iptables.h"
 
 #define DEBUG 0
 

@@ -53,6 +53,8 @@
 #include "driver.h"
 #include "conf.h"
 
+#define qemudLog(level, msg...) fprintf(stderr, msg)
+
 static int qemudSetCloseExec(int fd) {
     int flags;
     if ((flags = fcntl(fd, F_GETFD)) < 0)
@@ -79,10 +81,6 @@ static int qemudSetNonBlock(int fd) {
     qemudLog(QEMUD_ERR, "Failed to set non-blocking file descriptor flag");
     return -1;
 }
-
-
-#define virEventAddHandle(fd, events, cb, opaque) virEventAddHandleImpl(fd, events, cb, opaque)
-#define virEventRemoveHandle(fd) virEventRemoveHandleImpl(fd)
 
 
 static void qemudDispatchVMEvent(int fd, int events, void *opaque);
@@ -1712,7 +1710,7 @@ static int qemudGetProcessInfo(unsigned long long *cpuTime, int pid) {
 }
 
 
-virDomainPtr qemudDomainLookupByID(virConnectPtr conn ATTRIBUTE_UNUSED,
+virDomainPtr qemudDomainLookupByID(virConnectPtr conn,
                                    int id) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
     struct qemud_vm *vm = qemudFindVMByID(driver, id);
@@ -1723,19 +1721,16 @@ virDomainPtr qemudDomainLookupByID(virConnectPtr conn ATTRIBUTE_UNUSED,
         return NULL;
     }
 
-    dom = calloc(1, sizeof(struct _virDomain));
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (!dom) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "virDomainPtr");
         return NULL;
     }
 
-    dom->conn = conn;
     dom->id = vm->id;
-    dom->name = vm->def->name;
-    memcpy(dom->uuid, vm->def->uuid, sizeof(dom->uuid));
     return dom;
 }
-virDomainPtr qemudDomainLookupByUUID(virConnectPtr conn ATTRIBUTE_UNUSED,
+virDomainPtr qemudDomainLookupByUUID(virConnectPtr conn,
                                      const unsigned char *uuid) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
     struct qemud_vm *vm = qemudFindVMByUUID(driver, uuid);
@@ -1746,19 +1741,16 @@ virDomainPtr qemudDomainLookupByUUID(virConnectPtr conn ATTRIBUTE_UNUSED,
         return NULL;
     }
 
-    dom = calloc(1, sizeof(struct _virDomain));
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (!dom) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "virDomainPtr");
         return NULL;
     }
 
-    dom->conn = conn;
     dom->id = vm->id;
-    dom->name = vm->def->name;
-    memcpy(dom->uuid, vm->def->uuid, sizeof(dom->uuid));
     return dom;
 }
-virDomainPtr qemudDomainLookupByName(virConnectPtr conn ATTRIBUTE_UNUSED,
+virDomainPtr qemudDomainLookupByName(virConnectPtr conn,
                                      const char *name) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
     struct qemud_vm *vm = qemudFindVMByName(driver, name);
@@ -1769,16 +1761,13 @@ virDomainPtr qemudDomainLookupByName(virConnectPtr conn ATTRIBUTE_UNUSED,
         return NULL;
     }
 
-    dom = calloc(1, sizeof(struct _virDomain));
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (!dom) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "virDomainPtr");
         return NULL;
     }
 
-    dom->conn = conn;
     dom->id = vm->id;
-    dom->name = vm->def->name;
-    memcpy(dom->uuid, vm->def->uuid, sizeof(dom->uuid));
     return dom;
 }
 
@@ -1828,17 +1817,13 @@ virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
         return NULL;
     }
 
-    dom = calloc(1, sizeof(struct _virDomain));
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (!dom) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "virDomainPtr");
         return NULL;
     }
 
-    dom->conn = conn;
     dom->id = vm->id;
-    dom->name = vm->def->name;
-    memcpy(dom->uuid, vm->def->uuid, sizeof(dom->uuid));
-
     return dom;
 }
 
@@ -2057,16 +2042,13 @@ virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
         return NULL;
     }
 
-    dom = calloc(1, sizeof(struct _virDomain));
+    dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
     if (!dom) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "virDomainPtr");
         return NULL;
     }
 
-    dom->conn = conn;
     dom->id = vm->id;
-    dom->name = vm->def->name;
-    memcpy(dom->uuid, vm->def->uuid, sizeof(dom->uuid));
     return dom;
 }
 
@@ -2170,15 +2152,11 @@ virNetworkPtr qemudNetworkLookupByUUID(virConnectPtr conn ATTRIBUTE_UNUSED,
         return NULL;
     }
 
-    net = calloc(1, sizeof(struct _virNetwork));
+    net = virGetNetwork(conn, network->def->name, network->def->uuid);
     if (!net) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "virNetworkPtr");
         return NULL;
     }
-
-    net->conn = conn;
-    net->name = network->def->name;
-    memcpy(net->uuid, network->def->uuid, sizeof(net->uuid));
     return net;
 }
 virNetworkPtr qemudNetworkLookupByName(virConnectPtr conn ATTRIBUTE_UNUSED,
@@ -2192,15 +2170,11 @@ virNetworkPtr qemudNetworkLookupByName(virConnectPtr conn ATTRIBUTE_UNUSED,
         return NULL;
     }
 
-    net = calloc(1, sizeof(struct _virNetwork));
+    net = virGetNetwork(conn, network->def->name, network->def->uuid);
     if (!net) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "virNetworkPtr");
         return NULL;
     }
-
-    net->conn = conn;
-    net->name = network->def->name;
-    memcpy(net->uuid, network->def->uuid, sizeof(net->uuid));
     return net;
 }
 
@@ -2292,16 +2266,11 @@ virNetworkPtr qemudNetworkCreate(virConnectPtr conn, const char *xml) {
         return NULL;
     }
 
-    net = calloc(1, sizeof(struct _virNetwork));
+    net = virGetNetwork(conn, network->def->name, network->def->uuid);
     if (!net) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "virNetworkPtr");
         return NULL;
     }
-
-    net->conn = conn;
-    net->name = network->def->name;
-    memcpy(net->uuid, network->def->uuid, sizeof(net->uuid));
-
     return net;
 }
 
@@ -2324,16 +2293,11 @@ virNetworkPtr qemudNetworkDefine(virConnectPtr conn, const char *xml) {
         return NULL;
     }
 
-    net = calloc(1, sizeof(struct _virNetwork));
+    net = virGetNetwork(conn, network->def->name, network->def->uuid);
     if (!net) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "virNetworkPtr");
         return NULL;
     }
-
-    net->conn = conn;
-    net->name = network->def->name;
-    memcpy(net->uuid, network->def->uuid, sizeof(net->uuid));
-
     return net;
 }
 
@@ -2554,6 +2518,13 @@ static virStateDriver qemuStateDriver = {
     qemudReload,
     qemudActive,
 };
+
+int qemudRegister(void) {
+    virRegisterDriver(&qemuDriver);
+    virRegisterNetworkDriver(&qemuNetworkDriver);
+    virRegisterStateDriver(&qemuStateDriver);
+    return 0;
+}
 
 /*
  * Local variables:

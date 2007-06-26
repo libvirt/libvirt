@@ -38,6 +38,8 @@
 
 #include "internal.h"
 
+#define qemudLog(level, msg...) fprintf(stderr, msg)
+
 enum {
     ADD = 0,
     REMOVE
