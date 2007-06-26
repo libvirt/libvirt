@@ -49,6 +49,8 @@ ignored_files = {
   "conf.c": "internal code",
   "console.h": "internal code",
   "console.c": "internal code",
+  "event.h": "internal code",
+  "event.c": "internal code",
 }
 
 ignored_words = {

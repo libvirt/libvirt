@@ -91,6 +91,12 @@
 	virNetworkGetAutostart;
 	virNetworkSetAutostart;
 
+        /* Symbols with __ are private only
+           for use by the libvirtd daemon.
+           They are not part of stable ABI
+           guarentee provided for the public
+           symbols above */
+
 	__virConfNew;
 	__virConfReadFile;
 	__virConfReadMem;
@@ -102,6 +108,8 @@
 
 	__virGetDomain;
 	__virGetNetwork;
+
+	__virEventRegisterImpl;
 
     local: *;
 };

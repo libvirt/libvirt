@@ -31,6 +31,7 @@ CLIENT_SOURCES =						\
 		test.c test.h                                   \
                 buf.c buf.h					\
 		xml.c xml.h					\
+		event.c event.h					\
 		xen_unified.c xen_unified.h			\
 		xen_internal.c xen_internal.h			\
 		xs_internal.c xs_internal.h			\

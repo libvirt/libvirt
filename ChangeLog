@@ -1,3 +1,11 @@
+Tue Jun 26 18:47:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/event.h, src/event.c, src/Makefile.am, src/libvirt_sym.version:
+	Provide an internal API for drivers to register callbacks for
+	monitoring file handles & generating timer notifications.
+	* qemud/driver.c, qemud/event.c, qemud/event.h, qemud/qemud.c:
+	Adapt to make use of internal driver API for events.
+
 Tue Jun 26 18:41:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/conf.c, qemud/conf.h, qemud/dispatch.c, qemud/driver.c,

@@ -76,7 +76,7 @@ static int nextTimer = 0;
  * NB, it *must* be safe to call this from within a callback
  * For this reason we only ever append to existing list.
  */
-int virEventAddHandle(int fd, int events, virEventHandleCallback cb, void *opaque) {
+int virEventAddHandleImpl(int fd, int events, virEventHandleCallback cb, void *opaque) {
     qemudDebug("Add handle %d %d %p %p\n", fd, events, cb, opaque);
     if (eventLoop.handlesCount == eventLoop.handlesAlloc) {
         struct virEventHandle *tmp;
@@ -109,7 +109,7 @@ int virEventAddHandle(int fd, int events, virEventHandleCallback cb, void *opaqu
  * For this reason we only ever set a flag in the existing list.
  * Actual deletion will be done out-of-band
  */
-int virEventRemoveHandle(int fd) {
+int virEventRemoveHandleImpl(int fd) {
     int i;
     qemudDebug("Remove handle %d\n", fd);
     for (i = 0 ; i < eventLoop.handlesCount ; i++) {
@@ -131,7 +131,7 @@ int virEventRemoveHandle(int fd) {
  * NB, it *must* be safe to call this from within a callback
  * For this reason we only ever append to existing list.
  */
-int virEventAddTimeout(int timeout, virEventTimeoutCallback cb, void *opaque) {
+int virEventAddTimeoutImpl(int timeout, virEventTimeoutCallback cb, void *opaque) {
     struct timeval tv;
     qemudDebug("Adding timeout with %d ms period", timeout);
     if (gettimeofday(&tv, NULL) < 0) {
@@ -173,7 +173,7 @@ int virEventAddTimeout(int timeout, virEventTimeoutCallback cb, void *opaque) {
  * For this reason we only ever set a flag in the existing list.
  * Actual deletion will be done out-of-band
  */
-int virEventRemoveTimeout(int timer) {
+int virEventRemoveTimeoutImpl(int timer) {
     int i;
     for (i = 0 ; i < eventLoop.timeoutsCount ; i++) {
         if (eventLoop.timeouts[i].deleted)

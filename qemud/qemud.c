@@ -471,10 +471,10 @@ static int qemudListenUnix(struct qemud_server *server,
         goto cleanup;
     }
 
-    if (virEventAddHandle(sock->fd,
-                          POLLIN| POLLERR | POLLHUP,
-                          qemudDispatchServerEvent,
-                          server) < 0) {
+    if (virEventAddHandleImpl(sock->fd,
+                              POLLIN| POLLERR | POLLHUP,
+                              qemudDispatchServerEvent,
+                              server) < 0) {
         qemudLog(QEMUD_ERR, "Failed to add server event callback");
         goto cleanup;
     }
@@ -584,10 +584,10 @@ remoteListenTCP (struct qemud_server *server,
             return -1;
         }
 
-        if (virEventAddHandle(sock->fd,
-                              POLLIN| POLLERR | POLLHUP,
-                              qemudDispatchServerEvent,
-                              server) < 0) {
+        if (virEventAddHandleImpl(sock->fd,
+                                  POLLIN| POLLERR | POLLHUP,
+                                  qemudDispatchServerEvent,
+                                  server) < 0) {
             qemudLog(QEMUD_ERR, "Failed to add server event callback");
             return -1;
         }
@@ -1056,7 +1056,7 @@ static void qemudDispatchClientFailure(struct qemud_server *server, struct qemud
         tmp = tmp->next;
     }
 
-    virEventRemoveHandle(client->fd);
+    virEventRemoveHandleImpl(client->fd);
 
     if (client->tls && client->session) gnutls_deinit (client->session);
     close(client->fd);
@@ -1418,22 +1418,22 @@ static int qemudRegisterClientEvent(struct qemud_server *server,
                                     struct qemud_client *client,
                                     int removeFirst) {
     if (removeFirst)
-        if (virEventRemoveHandle(client->fd) < 0)
+        if (virEventRemoveHandleImpl(client->fd) < 0)
             return -1;
 
     if (client->tls) {
-        if (virEventAddHandle(client->fd,
-                              (client->direction ?
-                               POLLOUT : POLLIN) | POLLERR | POLLHUP,
-                              qemudDispatchClientEvent,
-                              server) < 0)
+        if (virEventAddHandleImpl(client->fd,
+                                  (client->direction ?
+                                   POLLOUT : POLLIN) | POLLERR | POLLHUP,
+                                  qemudDispatchClientEvent,
+                                  server) < 0)
             return -1;
     } else {
-        if (virEventAddHandle(client->fd,
-                              (client->mode == QEMUD_MODE_TX_PACKET ?
-                               POLLOUT : POLLIN) | POLLERR | POLLHUP,
-                              qemudDispatchClientEvent,
-                              server) < 0)
+        if (virEventAddHandleImpl(client->fd,
+                                  (client->mode == QEMUD_MODE_TX_PACKET ?
+                                   POLLOUT : POLLIN) | POLLERR | POLLHUP,
+                                  qemudDispatchClientEvent,
+                                  server) < 0)
             return -1;
     }
 
@@ -1864,10 +1864,10 @@ int main(int argc, char **argv) {
         goto error2;
     }
 
-    if (virEventAddHandle(sigpipe[0],
-                          POLLIN,
-                          qemudDispatchSignalEvent,
-                          server) < 0) {
+    if (virEventAddHandleImpl(sigpipe[0],
+                              POLLIN,
+                              qemudDispatchSignalEvent,
+                              server) < 0) {
         qemudLog(QEMUD_ERR, "Failed to register callback for signal pipe");
         ret = 3;
         goto error2;

@@ -81,6 +81,9 @@ static int qemudSetNonBlock(int fd) {
 }
 
 
+#define virEventAddHandle(fd, events, cb, opaque) virEventAddHandleImpl(fd, events, cb, opaque)
+#define virEventRemoveHandle(fd) virEventRemoveHandleImpl(fd)
+
 
 static void qemudDispatchVMEvent(int fd, int events, void *opaque);
 int qemudStartVMDaemon(struct qemud_driver *driver,

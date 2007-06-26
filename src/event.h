@@ -21,13 +21,21 @@
  * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#ifndef __VIRTD_EVENT_H__
-#define __VIRTD_EVENT_H__
+#ifndef __VIR_EVENT_H__
+#define __VIR_EVENT_H__
 
-#include "../src/event.h"
 
 /**
- * virEventAddHandleImpl: register a callback for monitoring file handle events
+ * virEventHandleCallback: callback for receiving file handle events
+ *
+ * @fd: file handle on which the event occured
+ * @events: bitset of events from POLLnnn constants
+ * @opaque: user data registered with handle
+ */
+typedef void (*virEventHandleCallback)(int fd, int events, void *opaque);
+
+/**
+ * virEventAddHandle: register a callback for monitoring file handle events
  *
  * @fd: file handle to monitor for events
  * @events: bitset of events to wach from POLLnnn constants
@@ -36,19 +44,27 @@
  *
  * returns -1 if the file handle cannot be registered, 0 upon success
  */
-int virEventAddHandleImpl(int fd, int events, virEventHandleCallback cb, void *opaque);
+int virEventAddHandle(int fd, int events, virEventHandleCallback cb, void *opaque);
 
 /**
- * virEventRemoveHandleImpl: unregister a callback from a file handle
+ * virEventRemoveHandle: unregister a callback from a file handle
  *
  * @fd: file handle to stop monitoring for events
  *
  * returns -1 if the file handle was not registered, 0 upon success
  */
-int virEventRemoveHandleImpl(int fd);
+int virEventRemoveHandle(int fd);
 
 /**
- * virEventAddTimeoutImpl: register a callback for a timer event
+ * virEventTimeoutCallback: callback for receiving timer events
+ *
+ * @timer: timer id emitting the event
+ * @opaque: user data registered with handle
+ */
+typedef void (*virEventTimeoutCallback)(int timer, void *opaque);
+
+/**
+ * virEventAddTimeout: register a callback for a timer event
  *
  * @timeout: timeout between events in milliseconds
  * @cb: callback to invoke when an event occurrs
@@ -57,25 +73,28 @@ int virEventRemoveHandleImpl(int fd);
  * returns -1 if the file handle cannot be registered, a positive
  * integer timer id upon success
  */
-int virEventAddTimeoutImpl(int timeout, virEventTimeoutCallback cb, void *opaque);
+int virEventAddTimeout(int timeout, virEventTimeoutCallback cb, void *opaque);
 
 /**
- * virEventRemoveTimeoutImpl: unregister a callback for a timer
+ * virEventRemoveTimeout: unregister a callback for a timer
  *
  * @timer: the timer id to remove
  *
  * returns -1 if the timer was not registered, 0 upon success
  */
-int virEventRemoveTimeoutImpl(int timer);
+int virEventRemoveTimeout(int timer);
 
-/**
- * virEventRunOnce: run a single iteration of the event loop.
- *
- * Blocks the caller until at least one file handle has an
- * event or the first timer expires.
- *
- * returns -1 if the event monitoring failed
- */
-int virEventRunOnce(void);
+typedef int (*virEventAddHandleFunc)(int, int, virEventHandleCallback, void *);
+typedef int (*virEventRemoveHandleFunc)(int);
 
-#endif /* __VIRTD_EVENT_H__ */
+typedef int (*virEventAddTimeoutFunc)(int, virEventTimeoutCallback, void *);
+typedef int (*virEventRemoveTimeoutFunc)(int);
+
+void __virEventRegisterImpl(virEventAddHandleFunc addHandle,
+			    virEventRemoveHandleFunc removeHandle,
+			    virEventAddTimeoutFunc addTimeout,
+			    virEventRemoveTimeoutFunc removeTimeout);
+
+#define virEventRegisterImpl(ah,rh,at,rt) __virEventRegisterImpl(ah,rh,at,rt)
+
+#endif /* __VIR_EVENT_H__ */
