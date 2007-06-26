@@ -27,6 +27,20 @@
 
 #include "internal.h"
 
+int qemudStartVMDaemon(struct qemud_server *server,
+                       struct qemud_vm *vm);
+
+int qemudShutdownVMDaemon(struct qemud_server *server,
+                          struct qemud_vm *vm);
+
+int qemudStartNetworkDaemon(struct qemud_server *server,
+                            struct qemud_network *network);
+
+int qemudShutdownNetworkDaemon(struct qemud_server *server,
+                               struct qemud_network *network);
+
+void qemudShutdown(struct qemud_server *server);
+
 void qemudReportError(struct qemud_server *server,
                       int code, const char *fmt, ...)
     ATTRIBUTE_FORMAT(printf,3,4);

@@ -357,18 +357,6 @@ struct qemud_server {
     unsigned int shutdown : 1;
 };
 
-int qemudStartVMDaemon(struct qemud_server *server,
-                       struct qemud_vm *vm);
-
-int qemudShutdownVMDaemon(struct qemud_server *server,
-                          struct qemud_vm *vm);
-
-int qemudStartNetworkDaemon(struct qemud_server *server,
-                            struct qemud_network *network);
-
-int qemudShutdownNetworkDaemon(struct qemud_server *server,
-                               struct qemud_network *network);
-
 void qemudLog(int priority, const char *fmt, ...)
     ATTRIBUTE_FORMAT(printf,2,3);
 
