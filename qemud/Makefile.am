@@ -16,7 +16,8 @@ libvirt_qemud_SOURCES = \
 		buf.c buf.h \
 		protocol.h protocol.c \
 		remote_protocol.h remote_protocol.c \
-		remote.c
+		remote.c \
+                event.c event.h
 #-D_XOPEN_SOURCE=600 -D_XOPEN_SOURCE_EXTENDED=1 -D_POSIX_C_SOURCE=199506L
 libvirt_qemud_CFLAGS = \
         -I$(top_srcdir)/include -I$(top_builddir)/include $(LIBXML_CFLAGS) \

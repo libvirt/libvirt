@@ -338,7 +338,6 @@ struct qemud_server {
     int nclients;
     struct qemud_client *clients;
     int sigread;
-    int nvmfds;
     int nactivevms;
     int ninactivevms;
     struct qemud_vm *vms;

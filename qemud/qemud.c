@@ -61,6 +61,7 @@
 #include "driver.h"
 #include "conf.h"
 #include "iptables.h"
+#include "event.h"
 
 static int godaemon = 0;        /* -d: Be a daemon */
 static int verbose = 0;         /* -v: Verbose mode */
@@ -109,6 +110,13 @@ static void sig_handler(int sig) {
     }
     errno = origerrno;
 }
+
+static void qemudDispatchVMEvent(int fd, int events, void *opaque);
+static void qemudDispatchClientEvent(int fd, int events, void *opaque);
+static void qemudDispatchServerEvent(int fd, int events, void *opaque);
+static int qemudRegisterClientEvent(struct qemud_server *server,
+                                    struct qemud_client *client,
+                                    int remove);
 
 static int
 remoteInitializeGnuTLS (void)
@@ -184,8 +192,10 @@ remoteInitializeGnuTLS (void)
     return 0;
 }
 
-static int qemudDispatchSignal(struct qemud_server *server)
-{
+static void qemudDispatchSignalEvent(int fd ATTRIBUTE_UNUSED,
+                                     int events ATTRIBUTE_UNUSED,
+                                     void *opaque) {
+    struct qemud_server *server = (struct qemud_server *)opaque;
     unsigned char sigc;
     struct qemud_vm *vm;
     struct qemud_network *network;
@@ -194,7 +204,7 @@ static int qemudDispatchSignal(struct qemud_server *server)
     if (read(server->sigread, &sigc, 1) != 1) {
         qemudLog(QEMUD_ERR, "Failed to read from signal pipe: %s",
                  strerror(errno));
-        return -1;
+        return;
     }
 
     ret = 0;
@@ -266,7 +276,8 @@ static int qemudDispatchSignal(struct qemud_server *server)
         break;
     }
 
-    return ret;
+    if (ret != 0)
+        server->shutdown = 1;
 }
 
 static int qemudSetCloseExec(int fd) {
@@ -474,19 +485,16 @@ static int qemudListenUnix(struct qemud_server *server,
     }
 
     sock->readonly = readonly;
-    sock->next = server->sockets;
-    server->sockets = sock;
-    server->nsockets++;
 
     if ((sock->fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
         qemudLog(QEMUD_ERR, "Failed to create socket: %s",
                  strerror(errno));
-        return -1;
+        goto cleanup;
     }
 
     if (qemudSetCloseExec(sock->fd) < 0 ||
         qemudSetNonBlock(sock->fd) < 0)
-        return -1;
+        goto cleanup;
 
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
@@ -502,17 +510,35 @@ static int qemudListenUnix(struct qemud_server *server,
     if (bind(sock->fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
         qemudLog(QEMUD_ERR, "Failed to bind socket to '%s': %s",
                  path, strerror(errno));
-        return -1;
+        goto cleanup;
     }
     umask(oldmask);
 
     if (listen(sock->fd, 30) < 0) {
         qemudLog(QEMUD_ERR, "Failed to listen for connections on '%s': %s",
                  path, strerror(errno));
-        return -1;
+        goto cleanup;
     }
 
+    if (virEventAddHandle(sock->fd,
+                          POLLIN| POLLERR | POLLHUP,
+                          qemudDispatchServerEvent,
+                          server) < 0) {
+        qemudLog(QEMUD_ERR, "Failed to add server event callback");
+        goto cleanup;
+    }
+
+    sock->next = server->sockets;
+    server->sockets = sock;
+    server->nsockets++;
+
     return 0;
+
+ cleanup:
+    if (sock->fd)
+        close(sock->fd);
+    free(sock);
+    return -1;
 }
 
 // See: http://people.redhat.com/drepper/userapi-ipv6.html
@@ -606,6 +632,15 @@ remoteListenTCP (struct qemud_server *server,
                       "remoteListenTCP: listen: %s", strerror (errno));
             return -1;
         }
+
+        if (virEventAddHandle(sock->fd,
+                              POLLIN| POLLERR | POLLHUP,
+                              qemudDispatchServerEvent,
+                              server) < 0) {
+            qemudLog(QEMUD_ERR, "Failed to add server event callback");
+            return -1;
+        }
+
     }
 
     return 0;
@@ -1026,11 +1061,15 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
     if (!client->tls) {
         client->mode = QEMUD_MODE_RX_HEADER;
         client->bufferLength = QEMUD_PKT_HEADER_XDR_LEN;
+
+        if (qemudRegisterClientEvent (server, client, 0) < 0)
+            goto cleanup;
     } else {
         int ret;
 
         client->session = remoteInitializeTLSSession ();
-        if (client->session == NULL) goto tls_failed;
+        if (client->session == NULL)
+            goto cleanup;
 
         gnutls_transport_set_ptr (client->session,
                                   (gnutls_transport_ptr_t) (long) fd);
@@ -1040,16 +1079,22 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
         if (ret == 0) {
             /* Unlikely, but ...  Next step is to check the certificate. */
             if (remoteCheckAccess (client) == -1)
-                goto tls_failed;
+                goto cleanup;
+
+            if (qemudRegisterClientEvent(server, client, 0) < 0)
+                goto cleanup;
         } else if (ret == GNUTLS_E_INTERRUPTED || ret == GNUTLS_E_AGAIN) {
             /* Most likely. */
             client->mode = QEMUD_MODE_TLS_HANDSHAKE;
             client->bufferLength = -1;
             client->direction = gnutls_record_get_direction (client->session);
+
+            if (qemudRegisterClientEvent (server, client, 0) < 0)
+                goto cleanup;
         } else {
             qemudLog (QEMUD_ERR, "TLS handshake failed: %s",
                       gnutls_strerror (ret));
-            goto tls_failed;
+            goto cleanup;
         }
     }
 
@@ -1059,7 +1104,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
 
     return 0;
 
- tls_failed:
+ cleanup:
     if (client->session) gnutls_deinit (client->session);
     close (fd);
     free (client);
@@ -1453,7 +1498,15 @@ int qemudStartVMDaemon(struct qemud_server *server,
 
         server->ninactivevms--;
         server->nactivevms++;
-        server->nvmfds += 2;
+
+        virEventAddHandle(vm->stdout,
+                          POLLIN | POLLERR | POLLHUP,
+                          qemudDispatchVMEvent,
+                          server);
+        virEventAddHandle(vm->stderr,
+                          POLLIN | POLLERR | POLLHUP,
+                          qemudDispatchVMEvent,
+                          server);
 
         ret = 0;
 
@@ -1496,6 +1549,8 @@ static void qemudDispatchClientFailure(struct qemud_server *server, struct qemud
         prev = tmp;
         tmp = tmp->next;
     }
+
+    virEventRemoveHandle(client->fd);
 
     if (client->tls && client->session) gnutls_deinit (client->session);
     close(client->fd);
@@ -1590,6 +1645,8 @@ static int qemudClientRead(struct qemud_server *server,
     } else {
         ret = gnutls_record_recv (client->session, data, len);
         client->direction = gnutls_record_get_direction (client->session);
+        if (qemudRegisterClientEvent (server, client, 1) < 0)
+            qemudDispatchClientFailure (server, client);
         if (ret <= 0) {
             if (ret == 0 || (ret != GNUTLS_E_AGAIN &&
                              ret != GNUTLS_E_INTERRUPTED)) {
@@ -1655,6 +1712,11 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
 
         xdr_destroy (&x);
 
+        if (qemudRegisterClientEvent(server, client, 1) < 0) {
+            qemudDispatchClientFailure(server, client);
+            return;
+        }
+
         /* Fall through */
     }
 
@@ -1679,6 +1741,8 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
 
         if (remote && h.prog == REMOTE_PROGRAM) {
             remoteDispatchClientRequest (server, client);
+            if (qemudRegisterClientEvent(server, client, 1) < 0)
+                qemudDispatchClientFailure(server, client);
         } else if (!remote && h.prog == QEMUD_PROGRAM) {
             qemud_packet_client p;
 
@@ -1689,6 +1753,9 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
             }
 
             qemudDispatchClientRequest(server, client, &p);
+
+            if (qemudRegisterClientEvent(server, client, 1) < 0)
+                qemudDispatchClientFailure(server, client);
         } else {
             /* An internal error. */
             qemudDebug ("Not REMOTE_PROGRAM or QEMUD_PROGRAM");
@@ -1709,12 +1776,17 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
             /* Finished.  Next step is to check the certificate. */
             if (remoteCheckAccess (client) == -1)
                 qemudDispatchClientFailure (server, client);
+            if (qemudRegisterClientEvent (server, client, 1) < 0)
+                qemudDispatchClientFailure (server, client);
         } else if (ret != GNUTLS_E_AGAIN && ret != GNUTLS_E_INTERRUPTED) {
             qemudLog (QEMUD_ERR, "TLS handshake failed: %s",
                       gnutls_strerror (ret));
             qemudDispatchClientFailure (server, client);
-        } else
+        } else {
             client->direction = gnutls_record_get_direction (client->session);
+            if (qemudRegisterClientEvent (server ,client, 1) < 0)
+                qemudDispatchClientFailure (server, client);
+        }
 
         break;
     }
@@ -1745,6 +1817,8 @@ static int qemudClientWrite(struct qemud_server *server,
     } else {
         ret = gnutls_record_send (client->session, data, len);
         client->direction = gnutls_record_get_direction (client->session);
+        if (qemudRegisterClientEvent (server, client, 1) < 0)
+            qemudDispatchClientFailure (server, client);
         if (ret < 0) {
             if (ret != GNUTLS_E_INTERRUPTED && ret != GNUTLS_E_AGAIN) {
                 qemudLog (QEMUD_ERR, "gnutls_record_send: %s",
@@ -1772,6 +1846,9 @@ static void qemudDispatchClientWrite(struct qemud_server *server, struct qemud_c
             client->bufferLength = QEMUD_PKT_HEADER_XDR_LEN;
             client->bufferOffset = 0;
             if (client->tls) client->direction = QEMUD_TLS_DIRECTION_READ;
+
+            if (qemudRegisterClientEvent (server, client, 1) < 0)
+                qemudDispatchClientFailure (server, client);
         }
         /* Still writing */
         break;
@@ -1786,12 +1863,18 @@ static void qemudDispatchClientWrite(struct qemud_server *server, struct qemud_c
             /* Finished.  Next step is to check the certificate. */
             if (remoteCheckAccess (client) == -1)
                 qemudDispatchClientFailure (server, client);
+
+            if (qemudRegisterClientEvent (server, client, 1))
+                qemudDispatchClientFailure (server, client);
         } else if (ret != GNUTLS_E_AGAIN && ret != GNUTLS_E_INTERRUPTED) {
             qemudLog (QEMUD_ERR, "TLS handshake failed: %s",
                       gnutls_strerror (ret));
             qemudDispatchClientFailure (server, client);
-        } else
+        } else {
             client->direction = gnutls_record_get_direction (client->session);
+            if (qemudRegisterClientEvent (server, client, 1))
+                qemudDispatchClientFailure (server, client);
+        }
 
         break;
     }
@@ -1842,6 +1925,10 @@ int qemudShutdownVMDaemon(struct qemud_server *server, struct qemud_vm *vm) {
 
     qemudVMData(server, vm, vm->stdout);
     qemudVMData(server, vm, vm->stderr);
+
+    virEventRemoveHandle(vm->stdout);
+    virEventRemoveHandle(vm->stderr);
+
     if (close(vm->logfile) < 0)
         qemudLog(QEMUD_WARN, "Unable to close logfile %d: %s", errno, strerror(errno));
     close(vm->stdout);
@@ -1852,7 +1939,6 @@ int qemudShutdownVMDaemon(struct qemud_server *server, struct qemud_vm *vm) {
     vm->stdout = -1;
     vm->stderr = -1;
     vm->monitor = -1;
-    server->nvmfds -= 2;
 
     if (waitpid(vm->pid, NULL, WNOHANG) != vm->pid) {
         kill(vm->pid, SIGKILL);
@@ -2340,92 +2426,102 @@ int qemudShutdownNetworkDaemon(struct qemud_server *server,
 }
 
 
-static int qemudDispatchPoll(struct qemud_server *server, struct pollfd *fds) {
-    struct qemud_socket *sock = server->sockets;
-    struct qemud_client *client = server->clients;
-    struct qemud_vm *vm;
-    struct qemud_network *network;
-    int ret = 0;
-    int fd = 0;
+static void qemudDispatchVMEvent(int fd, int events, void *opaque) {
+    struct qemud_server *server = (struct qemud_server *)opaque;
+    struct qemud_vm *vm = server->vms;
 
-    if (fds[fd++].revents && qemudDispatchSignal(server) < 0)
-        return -1;
-
-    if (server->shutdown)
-        return 0;
-
-    vm = server->vms;
     while (vm) {
-        struct qemud_vm *next = vm->next;
-        int failed = 0,
-            stdoutfd = vm->stdout,
-            stderrfd = vm->stderr;
+        if (qemudIsActiveVM(vm) &&
+            (vm->stdout == fd ||
+             vm->stderr == fd))
+            break;
 
-        if (!qemudIsActiveVM(vm)) {
-            vm = next;
-            continue;
-        }
-
-        if (stdoutfd != -1) {
-            if (fds[fd].revents) {
-                if (fds[fd].revents == POLLIN) {
-                    if (qemudDispatchVMLog(server, vm, fds[fd].fd) < 0)
-                        failed = 1;
-                } else {
-                    if (qemudDispatchVMFailure(server, vm, fds[fd].fd) < 0)
-                        failed = 1;
-                }
-            }
-            fd++;
-        }
-        if (stderrfd != -1) {
-            if (!failed) {
-                if (fds[fd].revents) {
-                    if (fds[fd].revents == POLLIN) {
-                        if (qemudDispatchVMLog(server, vm, fds[fd].fd) < 0)
-                            failed = 1;
-                    } else {
-                        if (qemudDispatchVMFailure(server, vm, fds[fd].fd) < 0)
-                            failed = 1;
-                    }
-                }
-            }
-            fd++;
-        }
-        vm = next;
-        if (failed)
-            ret = -1; /* FIXME: the daemon shouldn't exit on failure here */
+        vm = vm->next;
     }
+
+    if (!vm)
+        return;
+
+    if (events == POLLIN &&
+        qemudDispatchVMLog(server, vm, fd) == 0)
+        return;
+
+    qemudDispatchVMFailure(server, vm, fd);
+}
+
+static void qemudDispatchClientEvent(int fd, int events, void *opaque) {
+    struct qemud_server *server = (struct qemud_server *)opaque;
+    struct qemud_client *client = server->clients;
+
     while (client) {
-        struct qemud_client *next = client->next;
+        if (client->fd == fd)
+            break;
 
-        assert (client->magic == QEMUD_CLIENT_MAGIC);
-
-        if (fds[fd].revents) {
-            qemudDebug("Poll data normal");
-            if (fds[fd].revents == POLLOUT)
-                qemudDispatchClientWrite(server, client);
-            else if (fds[fd].revents == POLLIN)
-                qemudDispatchClientRead(server, client);
-            else
-                qemudDispatchClientFailure(server, client);
-        }
-        fd++;
-        client = next;
+        client = client->next;
     }
+
+    if (!client)
+        return;
+
+    if (events == POLLOUT)
+        qemudDispatchClientWrite(server, client);
+    else if (events == POLLIN)
+        qemudDispatchClientRead(server, client);
+    else
+        qemudDispatchClientFailure(server, client);
+}
+
+static int qemudRegisterClientEvent(struct qemud_server *server,
+                                    struct qemud_client *client,
+                                    int removeFirst) {
+    if (removeFirst)
+        if (virEventRemoveHandle(client->fd) < 0)
+            return -1;
+
+    if (client->tls) {
+        if (virEventAddHandle(client->fd,
+                              (client->direction ?
+                               POLLOUT : POLLIN) | POLLERR | POLLHUP,
+                              qemudDispatchClientEvent,
+                              server) < 0)
+            return -1;
+    } else {
+        if (virEventAddHandle(client->fd,
+                              (client->mode == QEMUD_MODE_TX_PACKET ?
+                               POLLOUT : POLLIN) | POLLERR | POLLHUP,
+                              qemudDispatchClientEvent,
+                              server) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+static void qemudDispatchServerEvent(int fd, int events, void *opaque) {
+    struct qemud_server *server = (struct qemud_server *)opaque;
+    struct qemud_socket *sock = server->sockets;
+
     while (sock) {
-        struct qemud_socket *next = sock->next;
-        /* FIXME: the daemon shouldn't exit on error here */
-        if (fds[fd].revents)
-            if (qemudDispatchServer(server, sock) < 0)
-                return -1;
-        fd++;
-        sock = next;
+        if (sock->fd == fd)
+            break;
+
+        sock = sock->next;
     }
+
+    if (!sock)
+        return;
+
+    if (events)
+        qemudDispatchServer(server, sock);
+}
+
+
+static void qemudCleanupInactive(struct qemud_server *server) {
+    struct qemud_vm *vm = server->vms;
+    struct qemud_network *network = server->networks;
 
     /* Cleanup any VMs which shutdown & dont have an associated
        config file */
-    vm = server->vms;
     while (vm) {
         struct qemud_vm *next = vm->next;
 
@@ -2436,7 +2532,6 @@ static int qemudDispatchPoll(struct qemud_server *server, struct pollfd *fds) {
     }
 
     /* Cleanup any networks too */
-    network = server->networks;
     while (network) {
         struct qemud_network *next = network->next;
 
@@ -2446,91 +2541,16 @@ static int qemudDispatchPoll(struct qemud_server *server, struct pollfd *fds) {
         network = next;
     }
 
-    return ret;
-}
-
-static void qemudPreparePoll(struct qemud_server *server, struct pollfd *fds) {
-    int  fd = 0;
-    struct qemud_socket *sock;
-    struct qemud_client *client;
-    struct qemud_vm *vm;
-
-    fds[fd].fd = server->sigread;
-    fds[fd].events = POLLIN;
-    fd++;
-
-    for (vm = server->vms ; vm ; vm = vm->next) {
-        if (!qemudIsActiveVM(vm))
-            continue;
-        if (vm->stdout != -1) {
-            fds[fd].fd = vm->stdout;
-            fds[fd].events = POLLIN | POLLERR | POLLHUP;
-            fd++;
-        }
-        if (vm->stderr != -1) {
-            fds[fd].fd = vm->stderr;
-            fds[fd].events = POLLIN | POLLERR | POLLHUP;
-            fd++;
-        }
-    }
-    for (client = server->clients ; client ; client = client->next) {
-        fds[fd].fd = client->fd;
-        if (!client->tls) {
-            /* Refuse to read more from client if tx is pending to
-               rate limit */
-            if (client->mode == QEMUD_MODE_TX_PACKET)
-                fds[fd].events = POLLOUT | POLLERR | POLLHUP;
-            else
-                fds[fd].events = POLLIN | POLLERR | POLLHUP;
-        } else {
-            qemudDebug ("direction = %s",
-                        client->direction ? "WRITE" : "READ");
-            fds[fd].events = client->direction ? POLLOUT : POLLIN;
-            fds[fd].events |= POLLERR | POLLHUP;
-        }
-        fd++;
-    }
-    for (sock = server->sockets ; sock ; sock = sock->next) {
-        fds[fd].fd = sock->fd;
-        fds[fd].events = POLLIN;
-        fd++;
-    }
+    return;
 }
 
 
 
 static int qemudOneLoop(struct qemud_server *server) {
-    int nfds = server->nsockets + server->nclients + server->nvmfds + 1; /* server->sigread */
-    struct pollfd fds[nfds];
-    int thistimeout = -1;
-    int ret;
     sig_atomic_t errors;
 
-    /* If we have no clients or vms, then timeout after
-       30 seconds, letting daemon exit */
-    if (timeout > 0 &&
-        !server->nclients &&
-        !server->nactivevms)
-        thistimeout = timeout;
-
-    qemudPreparePoll(server, fds);
-
- retry:
-
-    if ((ret = poll(fds, nfds, thistimeout * 1000)) < 0) {
-        if (errno == EINTR) {
-            goto retry;
-        }
-        qemudLog(QEMUD_ERR, "Error polling on file descriptors: %s",
-                 strerror(errno));
+    if (virEventRunOnce() < 0)
         return -1;
-    }
-
-    /* Must have timed out */
-    if (ret == 0) {
-        qemudLog(QEMUD_INFO, "Timed out while polling on file descriptors");
-        return -1;
-    }
 
     /* Check for any signal handling errors and log them. */
     errors = sig_errors;
@@ -2542,8 +2562,7 @@ static int qemudOneLoop(struct qemud_server *server) {
         return -1;
     }
 
-    if (qemudDispatchPoll(server, fds) < 0)
-        return -1;
+    qemudCleanupInactive(server);
 
     return 0;
 }
@@ -2938,6 +2957,15 @@ int main(int argc, char **argv) {
 
     if (!(server = qemudInitialize(sigpipe[0]))) {
         ret = 2;
+        goto error2;
+    }
+
+    if (virEventAddHandle(sigpipe[0],
+                          POLLIN,
+                          qemudDispatchSignalEvent,
+                          server) < 0) {
+        qemudLog(QEMUD_ERR, "Failed to register callback for signal pipe");
+        ret = 3;
         goto error2;
     }
 
