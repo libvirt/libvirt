@@ -350,7 +350,7 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
 
     case trans_unix: {
         if (!sockname) {
-            if (flags & VIR_CONNECT_RO)
+            if (flags & VIR_DRV_OPEN_RO)
                 sockname = strdup (LIBVIRTD_UNIX_SOCKET_RO);
             else
                 sockname = strdup (LIBVIRTD_UNIX_SOCKET);

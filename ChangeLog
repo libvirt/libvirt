@@ -1,3 +1,8 @@
+Tue Jun 26 19:05:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/remote_internal.c: Fix typo in checking for read only
+	connection request
+
 Tue Jun 26 19:04:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/libvirtd.init.in, qemud/Makefile.am, libvirt.spec.in
