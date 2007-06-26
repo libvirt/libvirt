@@ -13,7 +13,7 @@ libvirt_qemud_SOURCES = \
                 bridge.c bridge.h \
                 iptables.c iptables.h \
                 uuid.c uuid.h \
-		buf.c buf.h \
+		../src/buf.c \
 		protocol.h protocol.c \
 		remote_protocol.h remote_protocol.c \
 		remote.c \

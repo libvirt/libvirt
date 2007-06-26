@@ -35,7 +35,7 @@
 /* required for shutdown flags */
 #include <xen/sched.h>
 
-#include "xml.h"
+#include "buf.h"
 
 /* #define DEBUG */
 /*

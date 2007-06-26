@@ -19,7 +19,7 @@
 #include <time.h>
 #include <stdarg.h>
 
-#include "xml.h"
+#include "buf.h"
 
 typedef enum _xmlRpcValueType xmlRpcValueType;
 

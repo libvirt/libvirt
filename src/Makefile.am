@@ -29,6 +29,7 @@ CLIENT_SOURCES =						\
 		libvirt.c internal.h				\
 		hash.c hash.h					\
 		test.c test.h                                   \
+                buf.c buf.h					\
 		xml.c xml.h					\
 		xen_unified.c xen_unified.h			\
 		xen_internal.c xen_internal.h			\

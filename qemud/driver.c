@@ -49,7 +49,7 @@
 #include <libvirt/virterror.h>
 
 #include "event.h"
-#include "buf.h"
+#include "../src/buf.h"
 #include "driver.h"
 
 static int qemudSetCloseExec(int fd) {

@@ -20,7 +20,7 @@
 #include <libxml/xpath.h>
 
 #include "libvirt/libvirt.h"
-#include "xml.h"
+#include "buf.h"
 #include "xmlrpc.h"
 
 #include "testutils.h"

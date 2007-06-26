@@ -45,19 +45,7 @@
 #include "internal.h"
 #include "conf.h"
 #include "uuid.h"
-#include "buf.h"
-
-extern void __virRaiseError(virConnectPtr conn,
-                            virDomainPtr dom,
-                            virNetworkPtr net,
-                            int domain,
-                            int code,
-                            virErrorLevel level,
-                            const char *str1,
-                            const char *str2,
-                            const char *str3,
-                            int int1, int int2, const char *msg, ...)
-  ATTRIBUTE_FORMAT(printf, 12, 13);
+#include "../src/buf.h"
 
 void qemudReportError(virConnectPtr conn,
                       virDomainPtr dom,

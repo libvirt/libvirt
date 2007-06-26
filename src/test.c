@@ -39,6 +39,7 @@
 #include "internal.h"
 #include "test.h"
 #include "xml.h"
+#include "buf.h"
 
 int testOpen(virConnectPtr conn,
              const char *name,

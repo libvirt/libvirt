@@ -47,6 +47,7 @@
 #include "hash.h"
 #include "internal.h"
 #include "xml.h"
+#include "buf.h"
 
 typedef struct xenXMConfCache *xenXMConfCachePtr;
 typedef struct xenXMConfCache {

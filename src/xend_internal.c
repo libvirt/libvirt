@@ -35,6 +35,7 @@
 #include "internal.h"
 #include "sexpr.h"
 #include "xml.h"
+#include "buf.h"
 #include "xen_unified.h"
 #include "xend_internal.h"
 #include "xen_internal.h" /* for DOM0_INTERFACE_VERSION */

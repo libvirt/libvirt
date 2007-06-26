@@ -1,3 +1,14 @@
+Tue Jun 26 18:30:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/buf.c, qemud/buf.h: Remove obsolete files
+	* src/xml.c: remove virBuffer functions
+	* src/buf.c, src/buf.c, src/Makefile.am: Re-add virBuffer functions
+	* proxy/Makefile.am, qemud/Makefile.am, qemud/conf.c,
+	qemud/driver.c, src/conf.c, src/test.c, src/xen_internal.c,
+	src/xend_internal.c, src/xm_internal.c, src/xmlrpc.h,
+	tests/xmlrpc.test: Adapt to deal with new location of headers
+	for virBuffer functions.
+
 Tue Jun 26 18:21:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/conf.c, qemud/driver.c, qemud/buf.c, qemud/buf.h:

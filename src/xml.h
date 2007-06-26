@@ -15,26 +15,6 @@
 extern "C" {
 #endif
 
-/**
- * virBuffer:
- *
- * A buffer structure.
- */
-typedef struct _virBuffer virBuffer;
-typedef virBuffer *virBufferPtr;
-struct _virBuffer {
-    char *content;          /* The buffer content UTF8 */
-    unsigned int use;       /* The buffer size used */
-    unsigned int size;      /* The buffer size */
-};
-
-virBufferPtr virBufferNew(unsigned int size);
-void virBufferFree(virBufferPtr buf);
-int virBufferAdd(virBufferPtr buf, const char *str, int len);
-int virBufferVSprintf(virBufferPtr buf, const char *format, ...)
-  ATTRIBUTE_FORMAT(printf, 2, 3);
-int virBufferStrcat(virBufferPtr buf, ...);
-
 int		virXPathBoolean	(const char *xpath,
 				 xmlXPathContextPtr ctxt);
 char *		virXPathString	(const char *xpath,

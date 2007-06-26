@@ -18,7 +18,7 @@
 #include <fcntl.h>
 
 #include "internal.h"
-#include "xml.h"
+#include "buf.h"
 #include "conf.h"
 
 /************************************************************************
