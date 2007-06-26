@@ -37,22 +37,34 @@
 extern struct qemud_driver *qemu_driver;
 
 
+static virConnect conn;
+
 static int qemudDispatchFailure(struct qemud_packet_server_data *out) {
     virErrorPtr err = virGetLastError();
+    if (!err)
+        err = virConnGetLastError(&conn);
 
     out->type = QEMUD_SERVER_PKT_FAILURE;
 
-    out->qemud_packet_server_data_u.failureReply.code = err->code;
-    strncpy(out->qemud_packet_server_data_u.failureReply.message,
-            err->message, QEMUD_MAX_ERROR_LEN-1);
-    out->qemud_packet_server_data_u.failureReply.message[QEMUD_MAX_ERROR_LEN-1] = '\0';
+    if (err) {
+        out->qemud_packet_server_data_u.failureReply.code = err->code;
+        strncpy(out->qemud_packet_server_data_u.failureReply.message,
+                err->message, QEMUD_MAX_ERROR_LEN-1);
+        out->qemud_packet_server_data_u.failureReply.message[QEMUD_MAX_ERROR_LEN-1] = '\0';
+    } else {
+        out->qemud_packet_server_data_u.failureReply.code = VIR_ERR_INTERNAL_ERROR;
+        strcpy(out->qemud_packet_server_data_u.failureReply.message,
+               "Unknown error");
+    }
     return 0;
 }
 
 
 static int qemudDispatchGetVersion(struct qemud_packet_client_data *in ATTRIBUTE_UNUSED, struct qemud_packet_server_data *out) {
-    int version = qemudGetVersion(qemu_driver);
-    if (version < 0) {
+    int ret;
+    unsigned long version;
+    ret = qemudGetVersion(&conn, &version);
+    if (ret < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
     } else {
@@ -63,21 +75,25 @@ static int qemudDispatchGetVersion(struct qemud_packet_client_data *in ATTRIBUTE
 }
 
 static int qemudDispatchGetNodeInfo(struct qemud_packet_client_data *in ATTRIBUTE_UNUSED, struct qemud_packet_server_data *out) {
-    if (qemudGetNodeInfo(&out->qemud_packet_server_data_u.getNodeInfoReply.memory,
-                         out->qemud_packet_server_data_u.getNodeInfoReply.model,
-                         sizeof(out->qemud_packet_server_data_u.getNodeInfoReply.model),
-                         &out->qemud_packet_server_data_u.getNodeInfoReply.cpus,
-                         &out->qemud_packet_server_data_u.getNodeInfoReply.mhz,
-                         &out->qemud_packet_server_data_u.getNodeInfoReply.nodes,
-                         &out->qemud_packet_server_data_u.getNodeInfoReply.sockets,
-                         &out->qemud_packet_server_data_u.getNodeInfoReply.cores,
-                         &out->qemud_packet_server_data_u.getNodeInfoReply.threads) < 0) {
+    virNodeInfo info;
+    if (qemudGetNodeInfo(&conn,
+                         &info) < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
         return 0;
     }
 
+    out->qemud_packet_server_data_u.getNodeInfoReply.memory = info.memory;
+    out->qemud_packet_server_data_u.getNodeInfoReply.cpus = info.cpus;
+    out->qemud_packet_server_data_u.getNodeInfoReply.mhz = info.mhz;
+    out->qemud_packet_server_data_u.getNodeInfoReply.nodes = info.nodes;
+    out->qemud_packet_server_data_u.getNodeInfoReply.sockets = info.sockets;
+    out->qemud_packet_server_data_u.getNodeInfoReply.cores = info.cores;
+    out->qemud_packet_server_data_u.getNodeInfoReply.threads = info.threads;
+
     out->type = QEMUD_SERVER_PKT_GET_NODEINFO;
+    strncpy(out->qemud_packet_server_data_u.getNodeInfoReply.model, info.model,
+            sizeof(out->qemud_packet_server_data_u.getNodeInfoReply.model)-1);
     out->qemud_packet_server_data_u.getNodeInfoReply.model[sizeof(out->qemud_packet_server_data_u.getNodeInfoReply.model)-1] = '\0';
 
     return 0;
@@ -87,10 +103,10 @@ static int
 qemudDispatchGetCapabilities (struct qemud_packet_client_data *in ATTRIBUTE_UNUSED,
                               struct qemud_packet_server_data *out)
 {
-    char *xml = qemudGetCapabilities(qemu_driver);
+    char *xml = qemudGetCapabilities(&conn);
 
     if (strlen(xml) > QEMUD_MAX_XML_LEN) {
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_XML_ERROR, NULL);
+        qemudReportError(&conn, NULL, NULL, VIR_ERR_XML_ERROR, NULL);
         qemudDispatchFailure(out);
         free(xml);
         return 0;
@@ -105,7 +121,7 @@ qemudDispatchGetCapabilities (struct qemud_packet_client_data *in ATTRIBUTE_UNUS
 static int qemudDispatchListDomains(struct qemud_packet_client_data *in ATTRIBUTE_UNUSED, struct qemud_packet_server_data *out) {
     int i, ndomains, domains[QEMUD_MAX_NUM_DOMAINS];
 
-    ndomains = qemudListDomains(qemu_driver,
+    ndomains = qemudListDomains(&conn,
                                 domains,
                                 QEMUD_MAX_NUM_DOMAINS);
     if (ndomains < 0) {
@@ -122,7 +138,7 @@ static int qemudDispatchListDomains(struct qemud_packet_client_data *in ATTRIBUT
 }
 
 static int qemudDispatchNumDomains(struct qemud_packet_client_data *in ATTRIBUTE_UNUSED, struct qemud_packet_server_data *out) {
-    int ndomains = qemudNumDomains(qemu_driver);
+    int ndomains = qemudNumDomains(&conn);
     if (ndomains < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
@@ -136,44 +152,47 @@ static int qemudDispatchNumDomains(struct qemud_packet_client_data *in ATTRIBUTE
 static int qemudDispatchDomainCreate(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
     in->qemud_packet_client_data_u.domainCreateRequest.xml[QEMUD_MAX_XML_LEN-1] ='\0';
 
-    struct qemud_vm *vm = qemudDomainCreate(qemu_driver, in->qemud_packet_client_data_u.domainCreateRequest.xml);
-    if (!vm) {
+    virDomainPtr dom = qemudDomainCreate(&conn, in->qemud_packet_client_data_u.domainCreateRequest.xml, 0);
+    if (!dom) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
     } else {
         out->type = QEMUD_SERVER_PKT_DOMAIN_CREATE;
-        out->qemud_packet_server_data_u.domainCreateReply.id = vm->id;
-        memcpy(out->qemud_packet_server_data_u.domainCreateReply.uuid, vm->def->uuid, QEMUD_UUID_RAW_LEN);
-        strncpy(out->qemud_packet_server_data_u.domainCreateReply.name, vm->def->name, QEMUD_MAX_NAME_LEN-1);
+        out->qemud_packet_server_data_u.domainCreateReply.id = dom->id;
+        memcpy(out->qemud_packet_server_data_u.domainCreateReply.uuid, dom->uuid, QEMUD_UUID_RAW_LEN);
+        strncpy(out->qemud_packet_server_data_u.domainCreateReply.name, dom->name, QEMUD_MAX_NAME_LEN-1);
         out->qemud_packet_server_data_u.domainCreateReply.name[QEMUD_MAX_NAME_LEN-1] = '\0';
+        free(dom);
     }
     return 0;
 }
 
 static int qemudDispatchDomainLookupByID(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
-    struct qemud_vm *vm = qemudFindVMByID(qemu_driver, in->qemud_packet_client_data_u.domainLookupByIDRequest.id);
-    if (!vm) {
+    virDomainPtr dom = qemudDomainLookupByID(&conn, in->qemud_packet_client_data_u.domainLookupByIDRequest.id);
+    if (!dom) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
     } else {
         out->type = QEMUD_SERVER_PKT_DOMAIN_LOOKUP_BY_ID;
-        memcpy(out->qemud_packet_server_data_u.domainLookupByIDReply.uuid, vm->def->uuid, QEMUD_UUID_RAW_LEN);
-        strncpy(out->qemud_packet_server_data_u.domainLookupByIDReply.name, vm->def->name, QEMUD_MAX_NAME_LEN-1);
+        memcpy(out->qemud_packet_server_data_u.domainLookupByIDReply.uuid, dom->uuid, QEMUD_UUID_RAW_LEN);
+        strncpy(out->qemud_packet_server_data_u.domainLookupByIDReply.name, dom->name, QEMUD_MAX_NAME_LEN-1);
         out->qemud_packet_server_data_u.domainLookupByIDReply.name[QEMUD_MAX_NAME_LEN-1] = '\0';
+        free(dom);
     }
     return 0;
 }
 
 static int qemudDispatchDomainLookupByUUID(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
-    struct qemud_vm *vm = qemudFindVMByUUID(qemu_driver, in->qemud_packet_client_data_u.domainLookupByUUIDRequest.uuid);
-    if (!vm) {
+    virDomainPtr dom = qemudDomainLookupByUUID(&conn, in->qemud_packet_client_data_u.domainLookupByUUIDRequest.uuid);
+    if (!dom) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
     } else {
         out->type = QEMUD_SERVER_PKT_DOMAIN_LOOKUP_BY_UUID;
-        out->qemud_packet_server_data_u.domainLookupByUUIDReply.id = vm->id;
-        strncpy(out->qemud_packet_server_data_u.domainLookupByUUIDReply.name, vm->def->name, QEMUD_MAX_NAME_LEN-1);
+        out->qemud_packet_server_data_u.domainLookupByUUIDReply.id = dom->id;
+        strncpy(out->qemud_packet_server_data_u.domainLookupByUUIDReply.name, dom->name, QEMUD_MAX_NAME_LEN-1);
         out->qemud_packet_server_data_u.domainLookupByUUIDReply.name[QEMUD_MAX_NAME_LEN-1] = '\0';
+        free(dom);
     }
     return 0;
 }
@@ -181,20 +200,30 @@ static int qemudDispatchDomainLookupByUUID(struct qemud_packet_client_data *in, 
 static int qemudDispatchDomainLookupByName(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
     /* Paranoia NULL termination */
     in->qemud_packet_client_data_u.domainLookupByNameRequest.name[QEMUD_MAX_NAME_LEN-1] = '\0';
-    struct qemud_vm *vm = qemudFindVMByName(qemu_driver, in->qemud_packet_client_data_u.domainLookupByNameRequest.name);
-    if (!vm) {
+    virDomainPtr dom = qemudDomainLookupByName(&conn, in->qemud_packet_client_data_u.domainLookupByNameRequest.name);
+    if (!dom) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
     } else {
         out->type = QEMUD_SERVER_PKT_DOMAIN_LOOKUP_BY_NAME;
-        out->qemud_packet_server_data_u.domainLookupByNameReply.id = vm->id;
-        memcpy(out->qemud_packet_server_data_u.domainLookupByNameReply.uuid, vm->def->uuid, QEMUD_UUID_RAW_LEN);
+        out->qemud_packet_server_data_u.domainLookupByNameReply.id = dom->id;
+        memcpy(out->qemud_packet_server_data_u.domainLookupByNameReply.uuid, dom->uuid, QEMUD_UUID_RAW_LEN);
+        free(dom);
     }
     return 0;
 }
 
 static int qemudDispatchDomainSuspend(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
-    int ret = qemudDomainSuspend(qemu_driver, in->qemud_packet_client_data_u.domainSuspendRequest.id);
+    virDomainPtr dom = qemudDomainLookupByID(&conn, in->qemud_packet_client_data_u.domainSuspendRequest.id);
+    int ret;
+    if (!dom) {
+        if (qemudDispatchFailure(out) < 0)
+            return -1;
+        return 0;
+    }
+
+    ret = qemudDomainSuspend(dom);
+    free(dom);
     if (ret < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
@@ -205,7 +234,16 @@ static int qemudDispatchDomainSuspend(struct qemud_packet_client_data *in, struc
 }
 
 static int qemudDispatchDomainResume(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
-    int ret = qemudDomainResume(qemu_driver, in->qemud_packet_client_data_u.domainResumeRequest.id);
+    virDomainPtr dom = qemudDomainLookupByID(&conn, in->qemud_packet_client_data_u.domainResumeRequest.id);
+    int ret;
+    if (!dom) {
+        if (qemudDispatchFailure(out) < 0)
+            return -1;
+        return 0;
+    }
+
+    ret = qemudDomainResume(dom);
+    free(dom);
     if (ret < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
@@ -216,7 +254,17 @@ static int qemudDispatchDomainResume(struct qemud_packet_client_data *in, struct
 }
 
 static int qemudDispatchDomainDestroy(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
-    if (qemudDomainDestroy(qemu_driver, in->qemud_packet_client_data_u.domainDestroyRequest.id) < 0) {
+    virDomainPtr dom = qemudDomainLookupByID(&conn, in->qemud_packet_client_data_u.domainDestroyRequest.id);
+    int ret;
+    if (!dom) {
+        if (qemudDispatchFailure(out) < 0)
+            return -1;
+        return 0;
+    }
+
+    ret = qemudDomainDestroy(dom);
+    free(dom);
+    if (ret < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
     } else {
@@ -226,39 +274,44 @@ static int qemudDispatchDomainDestroy(struct qemud_packet_client_data *in, struc
 }
 
 static int qemudDispatchDomainGetInfo(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
-    int runstate;
-    unsigned long long cpuTime;
-    unsigned long memory;
-    unsigned long maxmem;
-    unsigned int nrVirtCpu;
+    virDomainInfo info;
+    virDomainPtr dom = qemudDomainLookupByUUID(&conn, in->qemud_packet_client_data_u.domainGetInfoRequest.uuid);
 
-    int ret = qemudDomainGetInfo(qemu_driver, in->qemud_packet_client_data_u.domainGetInfoRequest.uuid,
-                                 &runstate,
-                                 &cpuTime,
-                                 &maxmem,
-                                 &memory,
-                                 &nrVirtCpu);
-    if (ret < 0) {
+    if (!dom) {
+        if (qemudDispatchFailure(out) < 0)
+            return -1;
+        return 0;
+    }
+
+    if (qemudDomainGetInfo(dom, &info) < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
     } else {
         out->type = QEMUD_SERVER_PKT_DOMAIN_GET_INFO;
-        out->qemud_packet_server_data_u.domainGetInfoReply.runstate = runstate;
-        out->qemud_packet_server_data_u.domainGetInfoReply.cpuTime = cpuTime;
-        out->qemud_packet_server_data_u.domainGetInfoReply.maxmem = maxmem;
-        out->qemud_packet_server_data_u.domainGetInfoReply.memory = memory;
-        out->qemud_packet_server_data_u.domainGetInfoReply.nrVirtCpu = nrVirtCpu;
+        out->qemud_packet_server_data_u.domainGetInfoReply.runstate = info.state;
+        out->qemud_packet_server_data_u.domainGetInfoReply.cpuTime = info.cpuTime;
+        out->qemud_packet_server_data_u.domainGetInfoReply.maxmem = info.maxMem;
+        out->qemud_packet_server_data_u.domainGetInfoReply.memory = info.memory;
+        out->qemud_packet_server_data_u.domainGetInfoReply.nrVirtCpu = info.nrVirtCpu;
     }
     return 0;
 }
 
 static int qemudDispatchDomainSave(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
+    virDomainPtr dom = qemudDomainLookupByID(&conn, in->qemud_packet_client_data_u.domainSaveRequest.id);
+    int ret;
+    if (!dom) {
+        if (qemudDispatchFailure(out) < 0)
+            return -1;
+        return 0;
+    }
+
     /* Paranoia NULL termination */
     in->qemud_packet_client_data_u.domainSaveRequest.file[PATH_MAX-1] ='\0';
 
-    int ret = qemudDomainSave(qemu_driver,
-                              in->qemud_packet_client_data_u.domainSaveRequest.id,
-                              in->qemud_packet_client_data_u.domainSaveRequest.file);
+    ret = qemudDomainSave(dom,
+                          in->qemud_packet_client_data_u.domainSaveRequest.file);
+    free(dom);
     if (ret < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
@@ -269,33 +322,42 @@ static int qemudDispatchDomainSave(struct qemud_packet_client_data *in, struct q
 }
 
 static int qemudDispatchDomainRestore(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
-    int id;
+    int ret;
 
     /* Paranoia null termination */
     in->qemud_packet_client_data_u.domainRestoreRequest.file[PATH_MAX-1] ='\0';
 
-    id = qemudDomainRestore(qemu_driver, in->qemud_packet_client_data_u.domainRestoreRequest.file);
-    if (id < 0) {
+    ret = qemudDomainRestore(&conn, in->qemud_packet_client_data_u.domainRestoreRequest.file);
+    if (ret < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
     } else {
         out->type = QEMUD_SERVER_PKT_DOMAIN_RESTORE;
-        out->qemud_packet_server_data_u.domainRestoreReply.id = id;
+        out->qemud_packet_server_data_u.domainRestoreReply.id = ret;
     }
     return 0;
 }
 
 static int qemudDispatchDumpXML(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
-    int ret;
-    ret = qemudDomainDumpXML(qemu_driver,
-                             in->qemud_packet_client_data_u.domainDumpXMLRequest.uuid,
-                             out->qemud_packet_server_data_u.domainDumpXMLReply.xml,
-                             QEMUD_MAX_XML_LEN);
-    if (ret < 0) {
+    virDomainPtr dom = qemudDomainLookupByUUID(&conn, in->qemud_packet_client_data_u.domainDumpXMLRequest.uuid);
+    char *ret;
+    if (!dom) {
+        if (qemudDispatchFailure(out) < 0)
+            return -1;
+        return 0;
+    }
+
+    ret = qemudDomainDumpXML(dom, 0);
+    free(dom);
+    if (!ret) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
     } else {
         out->type = QEMUD_SERVER_PKT_DUMP_XML;
+        strncpy(out->qemud_packet_server_data_u.domainDumpXMLReply.xml,
+                ret, QEMUD_MAX_XML_LEN-1);
+        out->qemud_packet_server_data_u.domainDumpXMLReply.xml[QEMUD_MAX_XML_LEN-1] = '\0';
+        free(ret);
     }
     return 0;
 }
@@ -307,13 +369,16 @@ static int qemudDispatchListDefinedDomains(struct qemud_packet_client_data *in A
     if (!(names = malloc(sizeof(char *)*QEMUD_MAX_NUM_DOMAINS)))
         return -1;
 
-    for (i = 0 ; i < QEMUD_MAX_NUM_DOMAINS ; i++) {
-        names[i] = &out->qemud_packet_server_data_u.listDefinedDomainsReply.domains[i*QEMUD_MAX_NAME_LEN];
-    }
-
-    ndomains = qemudListDefinedDomains(qemu_driver,
+    ndomains = qemudListDefinedDomains(&conn,
                                        names,
                                        QEMUD_MAX_NUM_DOMAINS);
+    for (i = 0 ; i < ndomains ; i++) {
+        strncpy(&out->qemud_packet_server_data_u.listDefinedDomainsReply.domains[i*QEMUD_MAX_NAME_LEN],
+                names[i],
+                QEMUD_MAX_NAME_LEN);
+        free(names[i]);
+    }
+
     free(names);
     if (ndomains < 0) {
         if (qemudDispatchFailure(out) < 0)
@@ -322,15 +387,11 @@ static int qemudDispatchListDefinedDomains(struct qemud_packet_client_data *in A
         out->type = QEMUD_SERVER_PKT_LIST_DEFINED_DOMAINS;
         out->qemud_packet_server_data_u.listDefinedDomainsReply.numDomains = ndomains;
     }
-    printf("%d %d\n", out->type, out->qemud_packet_server_data_u.listDefinedDomainsReply.numDomains);
-    for (i = 0 ; i < ndomains;i++) {
-        printf("[%s]\n", &out->qemud_packet_server_data_u.listDefinedDomainsReply.domains[i*QEMUD_MAX_NAME_LEN]);
-    }
     return 0;
 }
 
 static int qemudDispatchNumDefinedDomains(struct qemud_packet_client_data *in ATTRIBUTE_UNUSED, struct qemud_packet_server_data *out) {
-    int ndomains = qemudNumDefinedDomains(qemu_driver);
+    int ndomains = qemudNumDefinedDomains(&conn);
     if (ndomains < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
@@ -342,14 +403,22 @@ static int qemudDispatchNumDefinedDomains(struct qemud_packet_client_data *in AT
 }
 
 static int qemudDispatchDomainStart(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
-    struct qemud_vm *vm;
+    virDomainPtr dom = qemudDomainLookupByUUID(&conn, in->qemud_packet_client_data_u.domainStartRequest.uuid);
+    int ret;
+    if (!dom) {
+        if (qemudDispatchFailure(out) < 0)
+            return -1;
+        return 0;
+    }
 
-    if (!(vm = qemudDomainStart(qemu_driver, in->qemud_packet_client_data_u.domainStartRequest.uuid))) {
+    ret = qemudDomainStart(dom);
+    free(dom);
+    if (ret < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
     } else {
         out->type = QEMUD_SERVER_PKT_DOMAIN_START;
-        out->qemud_packet_server_data_u.domainStartReply.id = vm->id;
+        out->qemud_packet_server_data_u.domainStartReply.id = dom->id;
     }
     return 0;
 }
@@ -357,21 +426,29 @@ static int qemudDispatchDomainStart(struct qemud_packet_client_data *in, struct 
 static int qemudDispatchDomainDefine(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
     in->qemud_packet_client_data_u.domainDefineRequest.xml[QEMUD_MAX_XML_LEN-1] ='\0';
 
-    struct qemud_vm *vm = qemudDomainDefine(qemu_driver, in->qemud_packet_client_data_u.domainDefineRequest.xml);
-    if (!vm) {
+    virDomainPtr dom = qemudDomainDefine(&conn, in->qemud_packet_client_data_u.domainDefineRequest.xml);
+    if (!dom) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
     } else {
         out->type = QEMUD_SERVER_PKT_DOMAIN_DEFINE;
-        memcpy(out->qemud_packet_server_data_u.domainDefineReply.uuid, vm->def->uuid, QEMUD_UUID_RAW_LEN);
-        strncpy(out->qemud_packet_server_data_u.domainDefineReply.name, vm->def->name, QEMUD_MAX_NAME_LEN-1);
+        memcpy(out->qemud_packet_server_data_u.domainDefineReply.uuid, dom->uuid, QEMUD_UUID_RAW_LEN);
+        strncpy(out->qemud_packet_server_data_u.domainDefineReply.name, dom->name, QEMUD_MAX_NAME_LEN-1);
         out->qemud_packet_server_data_u.domainDefineReply.name[QEMUD_MAX_NAME_LEN-1] = '\0';
     }
     return 0;
 }
 
 static int qemudDispatchDomainUndefine(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
-    int ret = qemudDomainUndefine(qemu_driver, in->qemud_packet_client_data_u.domainUndefineRequest.uuid);
+    virDomainPtr dom = qemudDomainLookupByUUID(&conn, in->qemud_packet_client_data_u.domainUndefineRequest.uuid);
+    int ret;
+    if (!dom) {
+        if (qemudDispatchFailure(out) < 0)
+            return -1;
+        return 0;
+    }
+    ret = qemudDomainUndefine(dom);
+    free(dom);
     if (ret < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
@@ -382,7 +459,7 @@ static int qemudDispatchDomainUndefine(struct qemud_packet_client_data *in, stru
 }
 
 static int qemudDispatchNumNetworks(struct qemud_packet_client_data *in ATTRIBUTE_UNUSED, struct qemud_packet_server_data *out) {
-    int nnetworks = qemudNumNetworks(qemu_driver);
+    int nnetworks = qemudNumNetworks(&conn);
     if (nnetworks < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
@@ -400,13 +477,15 @@ static int qemudDispatchListNetworks(struct qemud_packet_client_data *in ATTRIBU
     if (!(names = malloc(sizeof(char *)*QEMUD_MAX_NUM_NETWORKS)))
         return -1;
 
-    for (i = 0 ; i < QEMUD_MAX_NUM_NETWORKS ; i++) {
-        names[i] = &out->qemud_packet_server_data_u.listNetworksReply.networks[i*QEMUD_MAX_NAME_LEN];
-    }
-
-    int nnetworks = qemudListNetworks(qemu_driver,
+    int nnetworks = qemudListNetworks(&conn,
                                       names,
                                       QEMUD_MAX_NUM_NETWORKS);
+    for (i = 0 ; i < nnetworks ; i++) {
+        strncpy(&out->qemud_packet_server_data_u.listNetworksReply.networks[i*QEMUD_MAX_NAME_LEN],
+                names[i],
+                QEMUD_MAX_NAME_LEN);
+        free(names[i]);
+    }
     free(names);
     if (nnetworks < 0) {
         if (qemudDispatchFailure(out) < 0)
@@ -419,7 +498,7 @@ static int qemudDispatchListNetworks(struct qemud_packet_client_data *in ATTRIBU
 }
 
 static int qemudDispatchNumDefinedNetworks(struct qemud_packet_client_data *in ATTRIBUTE_UNUSED, struct qemud_packet_server_data *out) {
-    int nnetworks = qemudNumDefinedNetworks(qemu_driver);
+    int nnetworks = qemudNumDefinedNetworks(&conn);
     if (nnetworks < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
@@ -437,13 +516,16 @@ static int qemudDispatchListDefinedNetworks(struct qemud_packet_client_data *in 
     if (!(names = malloc(sizeof(char *)*QEMUD_MAX_NUM_NETWORKS)))
         return -1;
 
-    for (i = 0 ; i < QEMUD_MAX_NUM_NETWORKS ; i++) {
-        names[i] = &out->qemud_packet_server_data_u.listDefinedNetworksReply.networks[i*QEMUD_MAX_NAME_LEN];
-    }
-
-    int nnetworks = qemudListDefinedNetworks(qemu_driver,
+    int nnetworks = qemudListDefinedNetworks(&conn,
                                              names,
                                              QEMUD_MAX_NUM_NETWORKS);
+
+    for (i = 0 ; i < nnetworks ; i++) {
+        strncpy(&out->qemud_packet_server_data_u.listDefinedNetworksReply.networks[i*QEMUD_MAX_NAME_LEN],
+                names[i],
+                QEMUD_MAX_NAME_LEN);
+        free(names[i]);
+    }
     free(names);
     if (nnetworks < 0) {
         if (qemudDispatchFailure(out) < 0)
@@ -485,15 +567,16 @@ static int qemudDispatchNetworkLookupByUUID(struct qemud_packet_client_data *in,
 static int qemudDispatchNetworkCreate(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
     in->qemud_packet_client_data_u.networkCreateRequest.xml[QEMUD_MAX_XML_LEN-1] ='\0';
 
-    struct qemud_network *network = qemudNetworkCreate(qemu_driver, in->qemud_packet_client_data_u.networkCreateRequest.xml);
-    if (!network) {
+    virNetworkPtr net = qemudNetworkCreate(&conn, in->qemud_packet_client_data_u.networkCreateRequest.xml);
+    if (!net) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
     } else {
         out->type = QEMUD_SERVER_PKT_NETWORK_CREATE;
-        memcpy(out->qemud_packet_server_data_u.networkCreateReply.uuid, network->def->uuid, QEMUD_UUID_RAW_LEN);
-        strncpy(out->qemud_packet_server_data_u.networkCreateReply.name, network->def->name, QEMUD_MAX_NAME_LEN-1);
+        memcpy(out->qemud_packet_server_data_u.networkCreateReply.uuid, net->uuid, QEMUD_UUID_RAW_LEN);
+        strncpy(out->qemud_packet_server_data_u.networkCreateReply.name, net->name, QEMUD_MAX_NAME_LEN-1);
         out->qemud_packet_server_data_u.networkCreateReply.name[QEMUD_MAX_NAME_LEN-1] = '\0';
+        free(net);
     }
     return 0;
 }
@@ -501,21 +584,30 @@ static int qemudDispatchNetworkCreate(struct qemud_packet_client_data *in, struc
 static int qemudDispatchNetworkDefine(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
     in->qemud_packet_client_data_u.networkDefineRequest.xml[QEMUD_MAX_XML_LEN-1] ='\0';
 
-    struct qemud_network *network = qemudNetworkDefine(qemu_driver, in->qemud_packet_client_data_u.networkDefineRequest.xml);
-    if (!network) {
+    virNetworkPtr net = qemudNetworkDefine(&conn, in->qemud_packet_client_data_u.networkDefineRequest.xml);
+    if (!net) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
     } else {
         out->type = QEMUD_SERVER_PKT_NETWORK_DEFINE;
-        memcpy(out->qemud_packet_server_data_u.networkDefineReply.uuid, network->def->uuid, QEMUD_UUID_RAW_LEN);
-        strncpy(out->qemud_packet_server_data_u.networkDefineReply.name, network->def->name, QEMUD_MAX_NAME_LEN-1);
+        memcpy(out->qemud_packet_server_data_u.networkDefineReply.uuid, net->uuid, QEMUD_UUID_RAW_LEN);
+        strncpy(out->qemud_packet_server_data_u.networkDefineReply.name, net->name, QEMUD_MAX_NAME_LEN-1);
         out->qemud_packet_server_data_u.networkDefineReply.name[QEMUD_MAX_NAME_LEN-1] = '\0';
+        free(net);
     }
     return 0;
 }
 
 static int qemudDispatchNetworkUndefine(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
-    int ret = qemudNetworkUndefine(qemu_driver, in->qemud_packet_client_data_u.networkUndefineRequest.uuid);
+    virNetworkPtr net = qemudNetworkLookupByUUID(&conn, in->qemud_packet_client_data_u.networkUndefineRequest.uuid);
+    int ret;
+    if (!net) {
+        if (qemudDispatchFailure(out) < 0)
+            return -1;
+    }
+
+    ret = qemudNetworkUndefine(net);
+    free(net);
     if (ret < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
@@ -526,9 +618,16 @@ static int qemudDispatchNetworkUndefine(struct qemud_packet_client_data *in, str
 }
 
 static int qemudDispatchNetworkStart(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
-    struct qemud_network *network;
+    virNetworkPtr net = qemudNetworkLookupByUUID(&conn, in->qemud_packet_client_data_u.networkStartRequest.uuid);
+    int ret;
+    if (!net) {
+        if (qemudDispatchFailure(out) < 0)
+            return -1;
+    }
 
-    if (!(network = qemudNetworkStart(qemu_driver, in->qemud_packet_client_data_u.networkStartRequest.uuid))) {
+    ret = qemudNetworkStart(net);
+    free(net);
+    if (ret < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
     } else {
@@ -538,7 +637,16 @@ static int qemudDispatchNetworkStart(struct qemud_packet_client_data *in, struct
 }
 
 static int qemudDispatchNetworkDestroy(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
-    if (qemudNetworkDestroy(qemu_driver, in->qemud_packet_client_data_u.networkDestroyRequest.uuid) < 0) {
+    virNetworkPtr net = qemudNetworkLookupByUUID(&conn, in->qemud_packet_client_data_u.networkDestroyRequest.uuid);
+    int ret;
+    if (!net) {
+        if (qemudDispatchFailure(out) < 0)
+            return -1;
+    }
+
+    ret = qemudNetworkDestroy(net);
+    free(net);
+    if (ret < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
     } else {
@@ -548,41 +656,64 @@ static int qemudDispatchNetworkDestroy(struct qemud_packet_client_data *in, stru
 }
 
 static int qemudDispatchNetworkDumpXML(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
-    int ret = qemudNetworkDumpXML(qemu_driver,
-                                  in->qemud_packet_client_data_u.networkDumpXMLRequest.uuid,
-                                  out->qemud_packet_server_data_u.networkDumpXMLReply.xml, QEMUD_MAX_XML_LEN);
-    if (ret < 0) {
+    virNetworkPtr net = qemudNetworkLookupByUUID(&conn, in->qemud_packet_client_data_u.networkDumpXMLRequest.uuid);
+    char *ret;
+    if (!net) {
+        if (qemudDispatchFailure(out) < 0)
+            return -1;
+    }
+
+    ret = qemudNetworkDumpXML(net, 0);
+    free(net);
+    if (!ret) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
     } else {
         out->type = QEMUD_SERVER_PKT_NETWORK_DUMP_XML;
+        strncpy(out->qemud_packet_server_data_u.networkDumpXMLReply.xml, ret, QEMUD_MAX_XML_LEN-1);
+        out->qemud_packet_server_data_u.networkDumpXMLReply.xml[QEMUD_MAX_XML_LEN-1] = '\0';
+        free(ret);
     }
     return 0;
 }
 
 static int qemudDispatchNetworkGetBridgeName(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
-    int ret = qemudNetworkGetBridgeName(qemu_driver,
-                                        in->qemud_packet_client_data_u.networkDumpXMLRequest.uuid,
-                                        out->qemud_packet_server_data_u.networkGetBridgeNameReply.ifname, QEMUD_MAX_IFNAME_LEN);
-    if (ret < 0) {
+    virNetworkPtr net = qemudNetworkLookupByUUID(&conn, in->qemud_packet_client_data_u.networkDumpXMLRequest.uuid);
+    char *ret;
+    if (!net) {
+        if (qemudDispatchFailure(out) < 0)
+            return -1;
+    }
+
+    ret = qemudNetworkGetBridgeName(net);
+    free(net);
+    if (!ret) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
     } else {
         out->type = QEMUD_SERVER_PKT_NETWORK_GET_BRIDGE_NAME;
+        strncpy(out->qemud_packet_server_data_u.networkGetBridgeNameReply.ifname, ret, QEMUD_MAX_IFNAME_LEN-1);
+        out->qemud_packet_server_data_u.networkGetBridgeNameReply.ifname[QEMUD_MAX_IFNAME_LEN-1] = '\0';
+        free(ret);
     }
     return 0;
 }
 
-static int qemudDispatchDomainGetAutostart(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out)
-{
+static int qemudDispatchDomainGetAutostart(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
+    virDomainPtr dom = qemudDomainLookupByUUID(&conn, in->qemud_packet_client_data_u.domainGetAutostartRequest.uuid);
     int ret;
     int autostart;
+    if (!dom) {
+        if (qemudDispatchFailure(out) < 0)
+            return -1;
+        return 0;
+    }
 
     autostart = 0;
 
-    ret = qemudDomainGetAutostart(qemu_driver,
-                                  in->qemud_packet_client_data_u.domainGetAutostartRequest.uuid,
+    ret = qemudDomainGetAutostart(dom,
                                   &autostart);
+    free(dom);
     if (ret < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
@@ -593,13 +724,18 @@ static int qemudDispatchDomainGetAutostart(struct qemud_packet_client_data *in, 
     return 0;
 }
 
-static int qemudDispatchDomainSetAutostart(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out)
-{
+static int qemudDispatchDomainSetAutostart(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
+    virDomainPtr dom = qemudDomainLookupByUUID(&conn, in->qemud_packet_client_data_u.domainSetAutostartRequest.uuid);
     int ret;
+    if (!dom) {
+        if (qemudDispatchFailure(out) < 0)
+            return -1;
+        return 0;
+    }
 
-    ret = qemudDomainSetAutostart(qemu_driver,
-                                  in->qemud_packet_client_data_u.domainGetAutostartRequest.uuid,
+    ret = qemudDomainSetAutostart(dom,
                                   in->qemud_packet_client_data_u.domainSetAutostartRequest.autostart);
+    free(dom);
     if (ret < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
@@ -609,16 +745,20 @@ static int qemudDispatchDomainSetAutostart(struct qemud_packet_client_data *in, 
     return 0;
 }
 
-static int qemudDispatchNetworkGetAutostart(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out)
-{
+static int qemudDispatchNetworkGetAutostart(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
+    virNetworkPtr net = qemudNetworkLookupByUUID(&conn, in->qemud_packet_client_data_u.networkGetAutostartRequest.uuid);
     int ret;
     int autostart;
+    if (!net) {
+        if (qemudDispatchFailure(out) < 0)
+            return -1;
+    }
 
     autostart = 0;
 
-    ret = qemudNetworkGetAutostart(qemu_driver,
-                                   in->qemud_packet_client_data_u.networkGetAutostartRequest.uuid,
+    ret = qemudNetworkGetAutostart(net,
                                    &autostart);
+    free(net);
     if (ret < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
@@ -629,13 +769,17 @@ static int qemudDispatchNetworkGetAutostart(struct qemud_packet_client_data *in,
     return 0;
 }
 
-static int qemudDispatchNetworkSetAutostart(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out)
-{
+static int qemudDispatchNetworkSetAutostart(struct qemud_packet_client_data *in, struct qemud_packet_server_data *out) {
+    virNetworkPtr net = qemudNetworkLookupByUUID(&conn, in->qemud_packet_client_data_u.networkGetAutostartRequest.uuid);
     int ret;
+    if (!net) {
+        if (qemudDispatchFailure(out) < 0)
+            return -1;
+    }
 
-    ret = qemudNetworkSetAutostart(qemu_driver,
-                                   in->qemud_packet_client_data_u.networkGetAutostartRequest.uuid,
+    ret = qemudNetworkSetAutostart(net,
                                    in->qemud_packet_client_data_u.networkSetAutostartRequest.autostart);
+    free(net);
     if (ret < 0) {
         if (qemudDispatchFailure(out) < 0)
             return -1;
@@ -750,7 +894,12 @@ int qemudDispatch(struct qemud_server *server ATTRIBUTE_UNUSED,
     qemudDebug("> Dispatching request type %d, readonly ? %d",
                in->type, client->readonly);
 
+    if (!conn.magic) {
+        qemudOpen(&conn, "qemu:///session", 0);
+        conn.magic = 1;
+    }
     virResetLastError();
+    virConnResetLastError(&conn);
 
     memset(out, 0, sizeof(*out));
 

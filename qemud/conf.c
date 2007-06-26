@@ -1610,7 +1610,7 @@ qemudAssignVMDef(struct qemud_driver *driver,
     vm->monitor = -1;
     vm->pid = -1;
     vm->id = -1;
-    vm->state = QEMUD_STATE_STOPPED;
+    vm->state = VIR_DOMAIN_SHUTOFF;
     vm->def = def;
     vm->next = driver->vms;
 

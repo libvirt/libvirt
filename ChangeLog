@@ -1,3 +1,9 @@
+Tue Jun 26 18:35:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/conf.c, qemud/dispatch.c, qemud/driver.c, qemud/driver.h
+	Change API contract of all driver methods to make official
+	internal driver API.
+
 Tue Jun 26 18:30:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/buf.c, qemud/buf.h: Remove obsolete files
