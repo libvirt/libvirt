@@ -24,6 +24,8 @@
 #ifndef __QEMUD_CONF_H
 #define __QEMUD_CONF_H
 
+#include "../src/internal.h"
+
 /* Different types of QEMU acceleration possible */
 enum qemud_vm_virt_type {
     QEMUD_VIRT_QEMU,

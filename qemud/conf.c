@@ -66,6 +66,70 @@ void qemudReportError(virConnectPtr conn,
                     NULL, NULL, NULL, -1, -1, errorMessage);
 }
 
+struct qemud_vm *qemudFindVMByID(const struct qemud_driver *driver, int id) {
+    struct qemud_vm *vm = driver->vms;
+
+    while (vm) {
+        if (qemudIsActiveVM(vm) && vm->id == id)
+            return vm;
+        vm = vm->next;
+    }
+
+    return NULL;
+}
+
+struct qemud_vm *qemudFindVMByUUID(const struct qemud_driver *driver,
+                                   const unsigned char *uuid) {
+    struct qemud_vm *vm = driver->vms;
+
+    while (vm) {
+        if (!memcmp(vm->def->uuid, uuid, QEMUD_UUID_RAW_LEN))
+            return vm;
+        vm = vm->next;
+    }
+
+    return NULL;
+}
+
+struct qemud_vm *qemudFindVMByName(const struct qemud_driver *driver,
+                                   const char *name) {
+    struct qemud_vm *vm = driver->vms;
+
+    while (vm) {
+        if (!strcmp(vm->def->name, name))
+            return vm;
+        vm = vm->next;
+    }
+
+    return NULL;
+}
+
+struct qemud_network *qemudFindNetworkByUUID(const struct qemud_driver *driver,
+                                             const unsigned char *uuid) {
+    struct qemud_network *network = driver->networks;
+
+    while (network) {
+        if (!memcmp(network->def->uuid, uuid, QEMUD_UUID_RAW_LEN))
+            return network;
+        network = network->next;
+    }
+
+    return NULL;
+}
+
+struct qemud_network *qemudFindNetworkByName(const struct qemud_driver *driver,
+                                             const char *name) {
+    struct qemud_network *network = driver->networks;
+
+    while (network) {
+        if (!strcmp(network->def->name, name))
+            return network;
+        network = network->next;
+    }
+
+    return NULL;
+}
+
 
 /* Free all memory associated with a struct qemud_vm object */
 void qemudFreeVMDef(struct qemud_vm_def *def) {

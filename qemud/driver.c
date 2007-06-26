@@ -51,6 +51,7 @@
 #include "event.h"
 #include "../src/buf.h"
 #include "driver.h"
+#include "conf.h"
 
 static int qemudSetCloseExec(int fd) {
     int flags;
@@ -82,6 +83,19 @@ static int qemudSetNonBlock(int fd) {
 
 
 static void qemudDispatchVMEvent(int fd, int events, void *opaque);
+int qemudStartVMDaemon(struct qemud_driver *driver,
+                       struct qemud_vm *vm);
+
+int qemudShutdownVMDaemon(struct qemud_driver *driver,
+                          struct qemud_vm *vm);
+
+int qemudStartNetworkDaemon(struct qemud_driver *driver,
+                            struct qemud_network *network);
+
+int qemudShutdownNetworkDaemon(struct qemud_driver *driver,
+                               struct qemud_network *network);
+
+struct qemud_driver *qemu_driver = NULL;
 
 
 static
@@ -119,8 +133,6 @@ void qemudAutostartConfigs(struct qemud_driver *driver) {
         vm = next;
     }
 }
-
-struct qemud_driver *qemu_driver = NULL;
 
 int qemudStartup(void) {
     uid_t uid = geteuid();
@@ -720,6 +732,8 @@ static int qemudVMData(struct qemud_driver *driver ATTRIBUTE_UNUSED,
                      strerror(errno));
         }
     }
+
+    qemudAutostartConfigs(qemu_driver);
 }
 
 
@@ -1662,43 +1676,6 @@ static int qemudGetProcessInfo(unsigned long long *cpuTime, int pid) {
     return 0;
 }
 
-struct qemud_vm *qemudFindVMByID(const struct qemud_driver *driver, int id) {
-    struct qemud_vm *vm = driver->vms;
-
-    while (vm) {
-        if (qemudIsActiveVM(vm) && vm->id == id)
-            return vm;
-        vm = vm->next;
-    }
-
-    return NULL;
-}
-
-struct qemud_vm *qemudFindVMByUUID(const struct qemud_driver *driver,
-                                   const unsigned char *uuid) {
-    struct qemud_vm *vm = driver->vms;
-
-    while (vm) {
-        if (!memcmp(vm->def->uuid, uuid, QEMUD_UUID_RAW_LEN))
-            return vm;
-        vm = vm->next;
-    }
-
-    return NULL;
-}
-
-struct qemud_vm *qemudFindVMByName(const struct qemud_driver *driver,
-                                   const char *name) {
-    struct qemud_vm *vm = driver->vms;
-
-    while (vm) {
-        if (!strcmp(vm->def->name, name))
-            return vm;
-        vm = vm->next;
-    }
-
-    return NULL;
-}
 
 virDomainPtr qemudDomainLookupByID(virConnectPtr conn ATTRIBUTE_UNUSED,
                                    int id) {
@@ -2145,32 +2122,6 @@ int qemudDomainSetAutostart(virDomainPtr dom,
     vm->autostart = autostart;
 
     return 0;
-}
-
-struct qemud_network *qemudFindNetworkByUUID(const struct qemud_driver *driver,
-                                             const unsigned char *uuid) {
-    struct qemud_network *network = driver->networks;
-
-    while (network) {
-        if (!memcmp(network->def->uuid, uuid, QEMUD_UUID_RAW_LEN))
-            return network;
-        network = network->next;
-    }
-
-    return NULL;
-}
-
-struct qemud_network *qemudFindNetworkByName(const struct qemud_driver *driver,
-                                             const char *name) {
-    struct qemud_network *network = driver->networks;
-
-    while (network) {
-        if (!strcmp(network->def->name, name))
-            return network;
-        network = network->next;
-    }
-
-    return NULL;
 }
 
 virNetworkPtr qemudNetworkLookupByUUID(virConnectPtr conn ATTRIBUTE_UNUSED,

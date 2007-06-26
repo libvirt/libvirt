@@ -1,3 +1,9 @@
+Tue Jun 26 18:41:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/conf.c, qemud/conf.h, qemud/dispatch.c, qemud/driver.c,
+	qemud/driver.h: Move code related to looking up VMs/networks
+	into the conf.c
+
 Tue Jun 26 18:35:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/conf.c, qemud/dispatch.c, qemud/driver.c, qemud/driver.h

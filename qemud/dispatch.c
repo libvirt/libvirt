@@ -31,6 +31,7 @@
 #include <libvirt/virterror.h>
 
 #include "internal.h"
+#include "../src/internal.h"
 #include "driver.h"
 #include "dispatch.h"
 #include "conf.h"
@@ -105,15 +106,10 @@ qemudDispatchGetCapabilities (struct qemud_packet_client_data *in ATTRIBUTE_UNUS
 {
     char *xml = qemudGetCapabilities(&conn);
 
-    if (strlen(xml) > QEMUD_MAX_XML_LEN) {
-        qemudReportError(&conn, NULL, NULL, VIR_ERR_XML_ERROR, NULL);
-        qemudDispatchFailure(out);
-        free(xml);
-        return 0;
-    }
-
     out->type = QEMUD_SERVER_PKT_GET_CAPABILITIES;
-    strcpy (out->qemud_packet_server_data_u.getCapabilitiesReply.xml, xml);
+    strncpy (out->qemud_packet_server_data_u.getCapabilitiesReply.xml, xml,
+             QEMUD_MAX_XML_LEN-1);
+    out->qemud_packet_server_data_u.getCapabilitiesReply.xml[QEMUD_MAX_XML_LEN-1] = '\0';
     free(xml);
     return 0;
 }
@@ -915,7 +911,8 @@ int qemudDispatch(struct qemud_server *server ATTRIBUTE_UNUSED,
 
     if (!funcs[type]) {
         qemudDebug("Illegal operation requested");
-        qemudReportError(NULL, NULL, NULL, VIR_ERR_OPERATION_DENIED, NULL);
+        __virRaiseError(&conn, NULL, NULL, VIR_FROM_QEMU, VIR_ERR_OPERATION_DENIED, VIR_ERR_ERROR,
+                        NULL, NULL, NULL, -1, -1, "Illegal operation requested");
         qemudDispatchFailure(out);
     } else {
         if ((funcs[type])(in, out) < 0) {

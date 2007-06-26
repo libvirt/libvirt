@@ -27,19 +27,6 @@
 
 #include "internal.h"
 #include "../src/internal.h"
-#include "conf.h"
-
-int qemudStartVMDaemon(struct qemud_driver *driver,
-                       struct qemud_vm *vm);
-
-int qemudShutdownVMDaemon(struct qemud_driver *driver,
-                          struct qemud_vm *vm);
-
-int qemudStartNetworkDaemon(struct qemud_driver *driver,
-                            struct qemud_network *network);
-
-int qemudShutdownNetworkDaemon(struct qemud_driver *driver,
-                               struct qemud_network *network);
 
 int qemudStartup(void);
 void qemudReload(void);
