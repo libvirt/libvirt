@@ -207,7 +207,7 @@ static void qemudDispatchSignalEvent(int fd ATTRIBUTE_UNUSED,
     case SIGHUP:
         qemudLog(QEMUD_INFO, "Reloading configuration on SIGHUP");
         if (!remote) {
-            qemudReload(server);
+            qemudReload();
         }
         break;
 
@@ -217,7 +217,7 @@ static void qemudDispatchSignalEvent(int fd ATTRIBUTE_UNUSED,
         qemudLog(QEMUD_WARN, "Shutting down on signal %d", sigc);
 
         if (!remote) {
-            qemudShutdown(server);
+            qemudShutdown();
         }
 
         server->shutdown = 1;
@@ -620,11 +620,6 @@ static int qemudInitPaths(struct qemud_server *server,
 
         unlink(roSockname);
 
-        server->configDir =
-            server->autostartDir =
-            server->networkConfigDir =
-            server->networkAutostartDir = NULL;
-
         if (snprintf(server->logDir, PATH_MAX, "%s/log/libvirt/qemu", LOCAL_STATE_DIR) >= PATH_MAX)
             goto snprintf_error;
     } else {
@@ -660,30 +655,15 @@ static int qemudInitPaths(struct qemud_server *server,
             if (snprintf(sockname, maxlen, "@%s/.libvirt/qemud-sock", pw->pw_dir) >= maxlen)
                 goto snprintf_error;
 
+            if (snprintf(server->logDir, PATH_MAX, "%s/.libvirt/qemu/log", pw->pw_dir) >= PATH_MAX)
+                goto snprintf_error;
+
             if (asprintf (&base, "%s/.libvirt/qemu", pw->pw_dir) == -1) {
                 qemudLog (QEMUD_ERR, "out of memory in asprintf");
                 return -1;
             }
         }
 
-        /* Configuration paths are either ~/.libvirt/qemu/... (session) or
-         * /etc/libvirt/qemu/... (system).
-         */
-        if (asprintf (&server->configDir, "%s", base) == -1)
-            goto out_of_memory;
-
-        if (asprintf (&server->autostartDir, "%s/autostart", base) == -1)
-            goto out_of_memory;
-
-        if (asprintf (&server->networkConfigDir, "%s/networks", base) == -1)
-            goto out_of_memory;
-
-        if (asprintf (&server->networkAutostartDir, "%s/networks/autostart",
-                      base) == -1)
-            goto out_of_memory;
-
-        if (snprintf(server->logDir, PATH_MAX, "%s/log", base) >= PATH_MAX)
-            goto snprintf_error;
     } /* !remote */
 
     if (base) free (base);
@@ -711,7 +691,6 @@ static struct qemud_server *qemudInitialize(int sigread) {
     }
 
     /* We don't have a dom-0, so start from 1 */
-    server->nextvmid = 1;
     server->sigread = sigread;
 
     roSockname[0] = '\0';
@@ -726,7 +705,7 @@ static struct qemud_server *qemudInitialize(int sigread) {
         goto cleanup;
 
     if (!remote) /* qemud only */ {
-        if (qemudStartup(server) < 0) {
+        if (qemudStartup() < 0) {
             goto cleanup;
         }
     } else /* remote only */ {
@@ -745,17 +724,13 @@ static struct qemud_server *qemudInitialize(int sigread) {
     return server;
 
  cleanup:
+    qemudShutdown();
     if (server) {
         struct qemud_socket *sock = server->sockets;
         while (sock) {
             close(sock->fd);
             sock = sock->next;
         }
-
-        if (server->configDir) free (server->configDir);
-        if (server->autostartDir) free (server->autostartDir);
-        if (server->networkConfigDir) free (server->networkConfigDir);
-        if (server->networkAutostartDir) free (server->networkAutostartDir);
 
         free(server);
     }
@@ -1525,15 +1500,8 @@ static void qemudCleanup(struct qemud_server *server) {
         sock = next;
     }
 
-    if (server->brctl)
-        brShutdown(server->brctl);
-    if (server->iptables)
-        iptablesContextFree(server->iptables);
 
-    if (server->configDir) free (server->configDir);
-    if (server->autostartDir) free (server->autostartDir);
-    if (server->networkConfigDir) free (server->networkConfigDir);
-    if (server->networkAutostartDir) free (server->networkAutostartDir);
+    qemudShutdown();
 
     free(server);
 }

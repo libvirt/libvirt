@@ -26,28 +26,23 @@
 #define QEMUD_DRIVER_H
 
 #include "internal.h"
+#include "conf.h"
 
-int qemudStartVMDaemon(struct qemud_server *server,
+int qemudStartVMDaemon(struct qemud_driver *driver,
                        struct qemud_vm *vm);
 
-int qemudShutdownVMDaemon(struct qemud_server *server,
+int qemudShutdownVMDaemon(struct qemud_driver *driver,
                           struct qemud_vm *vm);
 
-int qemudStartNetworkDaemon(struct qemud_server *server,
+int qemudStartNetworkDaemon(struct qemud_driver *driver,
                             struct qemud_network *network);
 
-int qemudShutdownNetworkDaemon(struct qemud_server *server,
+int qemudShutdownNetworkDaemon(struct qemud_driver *driver,
                                struct qemud_network *network);
 
-int qemudStartup(struct qemud_server *server);
-void qemudReload(struct qemud_server *server);
-void qemudShutdown(struct qemud_server *server);
-
-void qemudReportError(virConnectPtr conn,
-                      virDomainPtr dom,
-                      virNetworkPtr net,
-                      int code, const char *fmt, ...)
-    ATTRIBUTE_FORMAT(printf,5,6);
+int qemudStartup(void);
+void qemudReload(void);
+void qemudShutdown(void);
 
 int qemudGetNodeInfo(unsigned int *memory,
                      char *cpuModel, int cpuModelLength,
@@ -55,100 +50,89 @@ int qemudGetNodeInfo(unsigned int *memory,
                      unsigned int *nodes, unsigned int *sockets,
                      unsigned int *cores, unsigned int *threads);
 
-char *qemudGetCapabilities(struct qemud_server *server);
-int qemudMonitorCommand(struct qemud_server *server,
+char *qemudGetCapabilities(struct qemud_driver *driver);
+int qemudMonitorCommand(struct qemud_driver *driver,
                         struct qemud_vm *vm,
                         const char *cmd,
                         char **reply);
 
-struct qemud_vm *qemudFindVMByID(const struct qemud_server *server,
-                                 int id);
-struct qemud_vm *qemudFindVMByUUID(const struct qemud_server *server,
-                                   const unsigned char *uuid);
-struct qemud_vm *qemudFindVMByName(const struct qemud_server *server,
-                                   const char *name);
-
-int qemudGetVersion(struct qemud_server *server);
-int qemudListDomains(struct qemud_server *server,
+int qemudGetVersion(struct qemud_driver *driver);
+int qemudListDomains(struct qemud_driver *driver,
                      int *ids,
                      int nids);
-int qemudNumDomains(struct qemud_server *server);
-struct qemud_vm *qemudDomainCreate(struct qemud_server *server,
+int qemudNumDomains(struct qemud_driver *driver);
+struct qemud_vm *qemudDomainCreate(struct qemud_driver *driver,
                                    const char *xml);
-int qemudDomainSuspend(struct qemud_server *server,
+int qemudDomainSuspend(struct qemud_driver *driver,
                        int id);
-int qemudDomainResume(struct qemud_server *server,
+int qemudDomainResume(struct qemud_driver *driver,
                       int id);
-int qemudDomainDestroy(struct qemud_server *server,
+int qemudDomainDestroy(struct qemud_driver *driver,
                        int id);
-int qemudDomainGetInfo(struct qemud_server *server,
+int qemudDomainGetInfo(struct qemud_driver *driver,
                        const unsigned char *uuid,
                        int *runstate,
                        unsigned long long *cputime,
                        unsigned long *maxmem,
                        unsigned long *memory,
                        unsigned int *nrVirtCpu);
-int qemudDomainSave(struct qemud_server *server,
+int qemudDomainSave(struct qemud_driver *driver,
                     int id,
                     const char *path);
-int qemudDomainRestore(struct qemud_server *server,
+int qemudDomainRestore(struct qemud_driver *driver,
                        const char *path);
-int qemudDomainDumpXML(struct qemud_server *server,
+int qemudDomainDumpXML(struct qemud_driver *driver,
                        const unsigned char *uuid,
                        char *xml,
                        int xmllen);
-int qemudListDefinedDomains(struct qemud_server *server,
+int qemudListDefinedDomains(struct qemud_driver *driver,
                             char *const*names,
                             int nnames);
-int qemudNumDefinedDomains(struct qemud_server *server);
-struct qemud_vm *qemudDomainStart(struct qemud_server *server,
+int qemudNumDefinedDomains(struct qemud_driver *driver);
+struct qemud_vm *qemudDomainStart(struct qemud_driver *driver,
                                   const unsigned char *uuid);
-struct qemud_vm *qemudDomainDefine(struct qemud_server *server,
+struct qemud_vm *qemudDomainDefine(struct qemud_driver *driver,
                                    const char *xml);
-int qemudDomainUndefine(struct qemud_server *server,
+int qemudDomainUndefine(struct qemud_driver *driver,
                         const unsigned char *uuid);
-int qemudDomainGetAutostart(struct qemud_server *server,
+int qemudDomainGetAutostart(struct qemud_driver *driver,
                             const unsigned char *uuid,
                             int *autostart);
-int qemudDomainSetAutostart(struct qemud_server *server,
+int qemudDomainSetAutostart(struct qemud_driver *driver,
                             const unsigned char *uuid,
                             int autostart);
 
-struct qemud_network *qemudFindNetworkByUUID(const struct qemud_server *server,
-                                             const unsigned char *uuid);
-struct qemud_network *qemudFindNetworkByName(const struct qemud_server *server,
-                                             const char *name);
 
-int qemudNumNetworks(struct qemud_server *server);
-int qemudListNetworks(struct qemud_server *server,
+int qemudNumNetworks(struct qemud_driver *driver);
+int qemudListNetworks(struct qemud_driver *driver,
                       char *const*names,
                       int nnames);
-int qemudNumDefinedNetworks(struct qemud_server *server);
-int qemudListDefinedNetworks(struct qemud_server *server,
+int qemudNumDefinedNetworks(struct qemud_driver *driver);
+int qemudListDefinedNetworks(struct qemud_driver *driver,
                              char *const*names,
                              int nnames);
-struct qemud_network *qemudNetworkCreate(struct qemud_server *server,
+struct qemud_network *qemudNetworkCreate(struct qemud_driver *driver,
                                          const char *xml);
-struct qemud_network *qemudNetworkDefine(struct qemud_server *server,
+struct qemud_network *qemudNetworkDefine(struct qemud_driver *driver,
                                          const char *xml);
-struct qemud_network *qemudNetworkStart(struct qemud_server *server,
+struct qemud_network *qemudNetworkStart(struct qemud_driver *driver,
                                         const unsigned char *uuid);
-int qemudNetworkUndefine(struct qemud_server *server,
+int qemudNetworkUndefine(struct qemud_driver *driver,
                          const unsigned char *uuid);
-int qemudNetworkDestroy(struct qemud_server *server,
+int qemudNetworkDestroy(struct qemud_driver *driver,
                         const unsigned char *uuid);
-int qemudNetworkDumpXML(struct qemud_server *server,
+int qemudNetworkDumpXML(struct qemud_driver *driver,
                         const unsigned char *uuid,
                         char *xml,
                         int xmllen);
-int qemudNetworkGetBridgeName(struct qemud_server *server,
+int qemudNetworkGetBridgeName(struct qemud_driver *driver,
                               const unsigned char *uuid,
                               char *ifname,
                               int ifnamelen);
-int qemudNetworkGetAutostart(struct qemud_server *server,
+int qemudNetworkGetAutostart(struct qemud_driver *driver,
                              const unsigned char *uuid,
                              int *autostart);
-int qemudNetworkSetAutostart(struct qemud_server *server,
+int qemudNetworkSetAutostart(struct qemud_driver *driver,
                              const unsigned char *uuid,
                              int autostart);
 
