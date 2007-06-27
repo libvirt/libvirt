@@ -30,8 +30,6 @@
 
 #include "protocol.h"
 #include "remote_protocol.h"
-#include "bridge.h"
-#include "iptables.h"
 #include "../config.h"
 
 #ifdef __GNUC__

@@ -1,3 +1,16 @@
+Tue Jun 26 19:56:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/driver.c, qemud/driver.h, qemud/conf.c, qemud/conf.h,
+	qemud/bridge.c, qemud/bridge.h, qemud/uuid.c, qemud/uuid.h,
+	qemud/iptables.c, qemud/iptables.h: Removed files now in
+	the main library
+	* src/qemu_driver.c, src/qemu_driver.h, src/qemu_conf.c, src/qemu_conf.h,
+	src/bridge.c, src/bridge.h, src/uuid.c, src/uuid.h,
+	src/iptables.c, src/iptables.h: Add files previously in
+	the daemon
+	* src/qemu_internal.c, src/qemu_internal.h: Remove obsolete
+	QEMU driver code
+
 Tue Jun 26 19:35:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/libvirtd.sysconf, qemud/libvirtd.init.in: Added config

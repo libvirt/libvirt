@@ -25,7 +25,7 @@
 #ifndef QEMUD_DRIVER_H
 #define QEMUD_DRIVER_H
 
-#include "../src/internal.h"
+#include "internal.h"
 
 int qemudStartup(void);
 int qemudReload(void);

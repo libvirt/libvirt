@@ -16,8 +16,7 @@ DEPS = libvirt.la
 LDADDS = @STATIC_BINARIES@ libvirt.la
 VIRSH_LIBS = @VIRSH_LIBS@
 
-EXTRA_DIST = libvirt_sym.version \
-		qemu_internal.c qemu_internal.h
+EXTRA_DIST = libvirt_sym.version
 
 lib_LTLIBRARIES = libvirt.la
 libvirt_la_LIBADD = @LIBXML_LIBS@
@@ -43,14 +42,14 @@ CLIENT_SOURCES =						\
 		proxy_internal.c proxy_internal.h		\
 		conf.c conf.h                                   \
 		xm_internal.c xm_internal.h                     \
-		remote_internal.c remote_internal.h
+		remote_internal.c remote_internal.h		\
+		bridge.c bridge.h 				\
+		iptables.c iptables.h 				\
+		uuid.c uuid.h 					\
+		qemu_driver.c qemu_driver.h 			\
+		qemu_conf.c qemu_conf.h
 
 SERVER_SOURCES = 						\
-		../qemud/bridge.c ../qemud/bridge.h 		\
-		../qemud/iptables.c ../qemud/iptables.h 	\
-		../qemud/uuid.c ../qemud/uuid.h 		\
-		../qemud/driver.c ../qemud/driver.h 		\
-		../qemud/qemu_conf.c ../qemud/conf.h		\
 		../qemud/protocol.h ../qemud/protocol.c		\
 		../qemud/remote_protocol.c ../qemud/remote_protocol.h
 
@@ -63,9 +62,6 @@ virsh_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDFLAGS)
 virsh_DEPENDENCIES = $(DEPS)
 virsh_LDADD = $(LDADDS) $(VIRSH_LIBS)
 virsh_CFLAGS = $(COVERAGE_CFLAGS)
-
-../qemud/qemu_conf.c:
-	ln -s conf.c $@
 
 #
 # target to ease building test programs

@@ -49,9 +49,9 @@
 #include <libvirt/virterror.h>
 
 #include "event.h"
-#include "../src/buf.h"
-#include "driver.h"
-#include "conf.h"
+#include "buf.h"
+#include "qemu_driver.h"
+#include "qemu_conf.h"
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
 

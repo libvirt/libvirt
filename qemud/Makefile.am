@@ -51,12 +51,7 @@ EXTRA_DIST = libvirtd.init.in libvirtd.sysconf default-network.xml \
 	remote_generate_stubs.pl rpcgen_fix.pl \
 	remote_dispatch_prototypes.h \
 	remote_dispatch_localvars.h \
-	remote_dispatch_proc_switch.h \
-        driver.c driver.h \
-        conf.c conf.h \
-        iptables.c iptables.h \
-        bridge.c bridge.h \
-        uuid.c uuid.h
+	remote_dispatch_proc_switch.h
 
 .x.c:
 	rm -f $@
@@ -96,9 +91,9 @@ uninstall-init:
 
 libvirtd.init: libvirtd.init.in
 	sed						\
-	    -e s!\@localstatedir\@!@localstatedir@!	\
-	    -e s!\@sbindir\@!@sbindir@!			\
-	    -e s!\@sysconfdir\@!@sysconfdir@!		\
+	    -e s!\@localstatedir\@!@localstatedir@!g	\
+	    -e s!\@sbindir\@!@sbindir@!g		\
+	    -e s!\@sysconfdir\@!@sysconfdir@!g		\
 	    < $< > $@
 	chmod a+x libvirtd.init
 

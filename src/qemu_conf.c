@@ -42,9 +42,9 @@
 
 #include <libvirt/virterror.h>
 
-#include "conf.h"
+#include "qemu_conf.h"
 #include "uuid.h"
-#include "../src/buf.h"
+#include "buf.h"
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
 

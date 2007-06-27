@@ -28,7 +28,7 @@
 #include "test.h"
 #include "xen_unified.h"
 #include "remote_internal.h"
-#include "../qemud/driver.h"
+#include "qemu_driver.h"
 
 /*
  * TODO:

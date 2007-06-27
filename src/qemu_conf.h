@@ -24,7 +24,7 @@
 #ifndef __QEMUD_CONF_H
 #define __QEMUD_CONF_H
 
-#include "../src/internal.h"
+#include "internal.h"
 #include "bridge.h"
 #include "iptables.h"
 #include <netinet/in.h>
