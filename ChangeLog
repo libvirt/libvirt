@@ -1,3 +1,8 @@
+Tue Jun 27 18:32:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* libvirt.spec.in: Remove Makefile & Makefile.in from -devel
+	packages to avoid multilib conflicts
+
 Tue Jun 26 19:56:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/driver.c, qemud/driver.h, qemud/conf.c, qemud/conf.h,

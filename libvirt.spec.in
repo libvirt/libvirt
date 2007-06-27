@@ -63,7 +63,8 @@ make
 rm -fr %{buildroot}
 
 %makeinstall
-(cd docs/examples ; make clean ; rm -rf .deps)
+(cd docs/examples ; make clean ; rm -rf .deps Makefile Makefile.in)
+(cd docs/examples/python ; rm -f Makefile Makefile.in)
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
 rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
 rm -f $RPM_BUILD_ROOT%{_libdir}/python*/site-packages/*.la
