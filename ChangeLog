@@ -1,3 +1,9 @@
+Tue Jun 29 13:44:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* docs/site.xsl, docs/libvir.html, docs/hvsupport.html:
+	  Document which libvirt versions supported various
+	  hypervisor calls.
+
 Tue Jun 27 18:32:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* libvirt.spec.in: Remove Makefile & Makefile.in from -devel

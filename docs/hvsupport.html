@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>Hypervisor support</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Hypervisor support</h1><p>
+This page documents which <a href="html/">libvirt calls</a> work on
+which hypervisors.
+</p><p>
+This information changes frequently.  This page was last checked or
+updated on <i>2007-06-28</i>.
+</p><h3>Domain functions</h3><p> x = not supported; empty cell means no information </p><table class="top_table"><tr><th> Function </th>
+  <th> Since </th>
+  <th> Xen </th>
+  <th> QEMU </th>
+  <th> KVM </th>
+  <th> <a href="remote.html">Remote</a> </th>
+</tr><tr><td> virConnectClose </td>
+  <td> All </td>
+  <td> All </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virConnectGetCapabilities </td>
+  <td> 0.2.1 </td>
+  <td> &#8805; 0.2.1 </td>
+  <td> &#8805; 0.2.1 </td>
+  <td> &#8805; 0.2.1 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virConnectGetHostname </td>
+  <td> 0.3.0 </td>
+  <td> &#8805; 0.3.0 </td>
+  <td>  </td>
+  <td>  </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virConnectGetMaxVcpus </td>
+  <td> 0.2.1 </td>
+  <td> &#8805; 0.2.1 </td>
+  <td> x </td>
+  <td> x </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virConnectGetType </td>
+  <td> All </td>
+  <td> All </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virConnectGetURI </td>
+  <td> 0.3.0 </td>
+  <td> &#8805; 0.3.0 </td>
+  <td>  </td>
+  <td>  </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virConnectGetVersion </td>
+  <td> All </td>
+  <td> All </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virConnectListDefinedDomains </td>
+  <td> 0.1.5 </td>
+  <td> &#8805; 0.1.9 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virConnectListDomains </td>
+  <td> All </td>
+  <td> All </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virConnectNumOfDefinedDomains </td>
+  <td> 0.1.5 </td>
+  <td> &#8805; 0.1.9 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virConnectNumOfDomains </td>
+  <td> All </td>
+  <td> All </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virConnectOpen </td>
+  <td> All </td>
+  <td> All </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virConnectOpenReadOnly </td>
+  <td> All </td>
+  <td> All </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainAttachDevice </td>
+  <td> 0.1.9 </td>
+  <td> &#8805; 0.1.9 </td>
+  <td> x </td>
+  <td> x </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainCoreDump </td>
+  <td> 0.1.9 </td>
+  <td> &#8805; 0.1.9 </td>
+  <td> x </td>
+  <td> x </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainCreate </td>
+  <td> 0.1.5 </td>
+  <td> &#8805; 0.1.9 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainCreateLinux </td>
+  <td> All </td>
+  <td> &#8805; 0.0.5 </td>
+  <td> x </td>
+  <td> x </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainDefineXML </td>
+  <td> 0.1.5 </td>
+  <td> &#8805; 0.1.9 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainDestroy </td>
+  <td> All </td>
+  <td> All </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainDetachDevice </td>
+  <td> 0.1.9 </td>
+  <td> &#8805; 0.1.9 </td>
+  <td> x </td>
+  <td> x </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainFree </td>
+  <td> All </td>
+  <td> All </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainGetAutostart </td>
+  <td> 0.2.1 </td>
+  <td> x </td>
+  <td> &#8805; 0.2.1 </td>
+  <td> &#8805; 0.2.1 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainGetConnect </td>
+  <td> 0.3.0 </td>
+  <td colspan="4"> not a HV function </td>
+</tr><tr><td> virDomainGetID </td>
+  <td> All </td>
+  <td> All </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainGetInfo </td>
+  <td> All </td>
+  <td> All </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainGetMaxMemory </td>
+  <td> All </td>
+  <td> All </td>
+  <td> x </td>
+  <td> x </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainGetMaxVcpus </td>
+  <td> 0.2.1 </td>
+  <td> &#8805; 0.2.1 </td>
+  <td> x </td>
+  <td> x </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainGetName </td>
+  <td> All </td>
+  <td> All </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainGetOSType </td>
+  <td> All </td>
+  <td> All </td>
+  <td> x </td>
+  <td> x </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainGetSchedulerParameters </td>
+  <td> 0.2.3 </td>
+  <td> &#8805; 0.2.3 </td>
+  <td> x </td>
+  <td> x </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainGetSchedulerType </td>
+  <td> 0.2.3 </td>
+  <td> &#8805; 0.2.3 </td>
+  <td> x </td>
+  <td> x </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainGetUUID </td>
+  <td> 0.1.10 </td>
+  <td> &#8805; 0.1.10 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainGetUUIDString </td>
+  <td> 0.1.10 </td>
+  <td> &#8805; 0.1.10 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainGetVcpus </td>
+  <td> 0.1.4 </td>
+  <td> &#8805; 0.1.4 </td>
+  <td> x </td>
+  <td> x </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainGetXMLDesc </td>
+  <td> All </td>
+  <td> All </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainLookupByID </td>
+  <td> All </td>
+  <td> All </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainLookupByName </td>
+  <td> All </td>
+  <td> All </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainLookupByUUID </td>
+  <td> 0.1.10 </td>
+  <td> &#8805; 0.1.10 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainLookupByUUIDString </td>
+  <td> 0.1.10 </td>
+  <td> &#8805; 0.1.10 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainPinVcpu </td>
+  <td> 0.1.4 </td>
+  <td> &#8805; 0.1.4 </td>
+  <td> x </td>
+  <td> x </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainReboot </td>
+  <td> 0.1.0 </td>
+  <td> &#8805; 0.1.0 </td>
+  <td> x </td>
+  <td> x </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainRestore </td>
+  <td> All </td>
+  <td> All </td>
+  <td> x </td>
+  <td> x </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainResume </td>
+  <td> All </td>
+  <td> All </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainSave </td>
+  <td> All </td>
+  <td> All </td>
+  <td> x </td>
+  <td> x </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainSetAutostart </td>
+  <td> 0.2.1 </td>
+  <td> x </td>
+  <td> &#8805; 0.2.1 </td>
+  <td> &#8805; 0.2.1 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainSetMaxMemory </td>
+  <td> All </td>
+  <td> All </td>
+  <td> x </td>
+  <td> x </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainSetMemory </td>
+  <td> 0.1.1 </td>
+  <td> &#8805; 0.1.1 </td>
+  <td> x </td>
+  <td> x </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainSetSchedulerParameters </td>
+  <td> 0.2.3 </td>
+  <td> &#8805; 0.2.3 </td>
+  <td> x </td>
+  <td> x </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainSetVcpus </td>
+  <td> 0.1.4 </td>
+  <td> &#8805; 0.1.4 </td>
+  <td> x </td>
+  <td> x </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainShutdown </td>
+  <td> All </td>
+  <td> All </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainSuspend </td>
+  <td> All </td>
+  <td> All </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virDomainUndefine </td>
+  <td> 0.1.5 </td>
+  <td> &#8805; 0.1.9 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr><tr><td> virGetVersion </td>
+  <td> All </td>
+  <td> All </td>
+  <td colspan="3"> Returns -1 if HV unsupported. </td>
+</tr><tr><td> virInitialize </td>
+  <td> 0.1.0 </td>
+  <td colspan="4"> not a HV function </td>
+</tr><tr><td> virNodeGetInfo </td>
+  <td> 0.1.0 </td>
+  <td> &#8805; 0.1.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.2.0 </td>
+  <td> &#8805; 0.3.0 </td>
+</tr></table><h3>Network functions</h3><p>
+Network functions are not hypervisor-specific.  For historical
+reasons they require the QEMU daemon to be running (this
+restriction may be lifted in future).  Most network functions
+first appeared in libvirt 0.2.0.
+</p><table class="top_table"><tr><th> Function </th>
+<th> Since </th>
+</tr><tr><td> virConnectNumOfNetworks </td> <td> 0.2.0 </td>
+</tr><tr><td> virConnectListNetworks </td> <td> 0.2.0 </td>
+</tr><tr><td> virConnectNumOfDefinedNetworks </td> <td> 0.2.0 </td>
+</tr><tr><td> virConnectListDefinedNetworks </td> <td> 0.2.0 </td>
+</tr><tr><td> virNetworkCreate </td> <td> 0.2.0 </td>
+</tr><tr><td> virNetworkCreateXML </td> <td> 0.2.0 </td>
+</tr><tr><td> virNetworkDefineXML </td> <td> 0.2.0 </td>
+</tr><tr><td> virNetworkDestroy </td> <td> 0.2.0 </td>
+</tr><tr><td> virNetworkFree </td> <td> 0.2.0 </td>
+</tr><tr><td> virNetworkGetAutostart </td> <td> 0.2.1 </td>
+</tr><tr><td> virNetworkGetConnect </td> <td> 0.3.0 </td>
+</tr><tr><td> virNetworkGetBridgeName </td> <td> 0.2.0 </td>
+</tr><tr><td> virNetworkGetName </td> <td> 0.2.0 </td>
+</tr><tr><td> virNetworkGetUUID </td> <td> 0.2.0 </td>
+</tr><tr><td> virNetworkGetUUIDString </td> <td> 0.2.0 </td>
+</tr><tr><td> virNetworkGetXMLDesc </td> <td> 0.2.0 </td>
+</tr><tr><td> virNetworkLookupByName </td> <td> 0.2.0 </td>
+</tr><tr><td> virNetworkLookupByUUID </td> <td> 0.2.0 </td>
+</tr><tr><td> virNetworkLookupByUUIDString </td> <td> 0.2.0 </td>
+</tr><tr><td> virNetworkSetAutostart </td> <td> 0.2.1 </td>
+</tr><tr><td> virNetworkUndefine </td> <td> 0.2.0 </td>
+</tr></table></div></div><div class="linkList2"><div class="llinks2"><h3 class="links2"><span>main menu</span></h3><ul><li><a href="index.html">Home</a></li><li><a href="news.html">Releases</a></li><li><a href="intro.html">Introduction</a></li><li><a href="architecture.html">libvirt architecture</a></li><li><a href="downloads.html">Downloads</a></li><li><a href="format.html">XML Format</a></li><li><a href="python.html">Binding for Python</a></li><li><a href="errors.html">Handling of errors</a></li><li><a href="FAQ.html">FAQ</a></li><li><a href="bugs.html">Reporting bugs and getting help</a></li><li><a href="remote.html">Remote support</a></li><li><a href="uri.html">Connection URIs</a></li><li><a href="hvsupport.html">Hypervisor support</a></li><li><a href="html/index.html">API Menu</a></li><li><a href="examples/index.html">C code examples</a></li><li><a href="ChangeLog.html">Recent Changes</a></li></ul></div><div class="llinks2"><h3 class="links2"><span>related links</span></h3><ul><li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li><li><a href="https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&amp;component=libvirt&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;bug_status=MODIFIED&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;long_desc_type=allwordssubstr">Open bugs</a></li><li><a href="http://virt-manager.et.redhat.com/">virt-manager</a></li><li><a href="http://search.cpan.org/~danberr/Sys-Virt-0.1.0/">Perl bindings</a></li><li><a href="http://et.redhat.com/~rjones/ocaml-libvirt/">OCaml bindings</a></li><li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li><li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" /></form></li><li><a href="http://xmlsoft.org/"><img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li></ul><p class="credits">Graphics and design by <a href="mail:dfong@redhat.com">Diana Fong</a></p></div></div><div id="bottom"><p class="p1"></p></div></div></body></html>

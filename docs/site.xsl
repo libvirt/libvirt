@@ -57,6 +57,9 @@
       <xsl:when test="$name = '#uri'">
         <xsl:text>uri.html</xsl:text>
       </xsl:when>
+      <xsl:when test="$name = '#HVSupport'">
+        <xsl:text>hvsupport.html</xsl:text>
+      </xsl:when>
       <xsl:when test="$name = ''">
         <xsl:text>unknown.html</xsl:text>
       </xsl:when>
