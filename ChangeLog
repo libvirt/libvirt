@@ -1,3 +1,8 @@
+Fri Jun 29 15:46:34 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: applied patch from Masayuki Sunou to remove leaks
+	  of domains references in some commands.
+
 Fri Jun 29 15:18:36 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* docs/apibuild.py docs/newapi.xsl: fix generation of XML and

@@ -382,6 +382,7 @@ cmdAutostart(vshControl * ctl, vshCmd * cmd)
     else
 	vshPrint(ctl, _("Domain %s unmarked as autostarted\n"), name);
 
+    virDomainFree(dom);
     return TRUE;
 }
 
@@ -798,6 +799,7 @@ cmdCreate(vshControl * ctl, vshCmd * cmd)
     if (dom != NULL) {
         vshPrint(ctl, _("Domain %s created from %s\n"),
                  virDomainGetName(dom), from);
+	virDomainFree(dom);
     } else {
         vshError(ctl, FALSE, _("Failed to create domain from %s"), from);
         ret = FALSE;
@@ -845,6 +847,7 @@ cmdDefine(vshControl * ctl, vshCmd * cmd)
     if (dom != NULL) {
         vshPrint(ctl, _("Domain %s defined from %s\n"),
                  virDomainGetName(dom), from);
+        virDomainFree(dom);
     } else {
         vshError(ctl, FALSE, _("Failed to define domain from %s"), from);
         ret = FALSE;
@@ -887,6 +890,7 @@ cmdUndefine(vshControl * ctl, vshCmd * cmd)
         ret = FALSE;
     }
 
+    virDomainFree(dom);
     return ret;
 }
 
@@ -920,6 +924,7 @@ cmdStart(vshControl * ctl, vshCmd * cmd)
 
     if (virDomainGetID(dom) != (unsigned int)-1) {
         vshError(ctl, FALSE, _("Domain is already active"));
+	virDomainFree(dom);
         return FALSE;
     }
 
@@ -931,6 +936,7 @@ cmdStart(vshControl * ctl, vshCmd * cmd)
                  virDomainGetName(dom));
         ret = FALSE;
     }
+    virDomainFree(dom);
     return ret;
 }
 
@@ -1026,7 +1032,10 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
     if (capfound) nr_inputparams++;
 
     params = vshMalloc(ctl, sizeof (virSchedParameter) * nr_inputparams);
-    if (params == NULL) return FALSE;
+    if (params == NULL) {
+	virDomainFree(dom);
+        return FALSE;
+    }
 
     if (weightfound) {
          strncpy(params[inputparams].field,str_weight,sizeof(str_weight));
@@ -1048,7 +1057,10 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
     /* Set SchedulerParameters */
     if (inputparams > 0) {
         ret = virDomainSetSchedulerParameters(dom, params, inputparams);
-        if (ret == -1) return FALSE;
+        if (ret == -1) {
+	    virDomainFree(dom);
+	    return FALSE;
+	}
     }
     free(params);
 
@@ -1060,6 +1072,7 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
         free(schedulertype);
     } else {
         vshPrint(ctl, "%-15s: %s\n", _("Scheduler"), _("Unknown"));
+	virDomainFree(dom);
         return FALSE;
     }
 
@@ -1070,7 +1083,10 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
         memset (params[i].field, 0, sizeof params[i].field);
     }
     ret = virDomainGetSchedulerParameters(dom, params, &nparams);
-    if (ret == -1) return FALSE;
+    if (ret == -1) {
+        virDomainFree(dom);
+        return FALSE;
+    }
     if(nparams){
         for (i = 0; i < nparams; i++){
             switch (params[i].type) {
@@ -1098,6 +1114,7 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
         }
     }
     free(params);
+    virDomainFree(dom);
     return TRUE;
 }
 
