@@ -684,7 +684,7 @@ virConnectNumOfDomains(virConnectPtr conn)
  * virDomainGetConnect:
  * @dom: pointer to a domain
  *
- * Returns the connection pointer associated with a domain.  The
+ * Provides the connection pointer associated with a domain.  The
  * reference counter on the connection is not increased by this
  * call.
  *
@@ -2195,7 +2195,7 @@ virDomainDetachDevice(virDomainPtr domain, char *xml)
  * virNetworkGetConnect:
  * @net: pointer to a network
  *
- * Returns the connection pointer associated with a network.  The
+ * Provides the connection pointer associated with a network.  The
  * reference counter on the connection is not increased by this
  * call.
  *

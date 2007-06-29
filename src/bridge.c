@@ -53,6 +53,15 @@ struct _brControl {
     int fd;
 };
 
+/**
+ * brInit:
+ * @ctlp: pointer to bridge control return value
+ *
+ * Initialize a new bridge layer. In case of success
+ * @ctlp will contain a pointer to the new bridge structure.
+ *
+ * Returns 0 in case of success, an error code otherwise.
+ */
 int
 brInit(brControl **ctlp)
 {
@@ -74,14 +83,22 @@ brInit(brControl **ctlp)
     }
 
     *ctlp = (brControl *)malloc(sizeof(struct _brControl));
-    if (!*ctlp)
+    if (!*ctlp) {
+        close(fd);
         return ENOMEM;
+    }
 
     (*ctlp)->fd = fd;
 
     return 0;
 }
 
+/**
+ * brShutdown:
+ * @ctl: pointer to a bridge control
+ *
+ * Shutdown the bridge layer and deallocate the associated structures
+ */
 void
 brShutdown(brControl *ctl)
 {
@@ -94,6 +111,19 @@ brShutdown(brControl *ctl)
     free(ctl);
 }
 
+/**
+ * brAddBridge:
+ * @ctl: bridge control pointer
+ * @nameOrFmt: the bridge name (or name template)
+ * @name: pointer to @maxlen bytes to store the bridge name
+ * @maxlen: size of @name array
+ *
+ * This function register a new bridge, @nameOrFmt can be either
+ * a fixed name or a name template with '%d' for dynamic name allocation.
+ * in either case the final name for the bridge will be stored in @name.
+ *
+ * Returns 0 in case of success or an errno code in case of failure.
+ */
 int
 brAddBridge(brControl *ctl,
             const char *nameOrFmt,
@@ -141,6 +171,15 @@ brAddBridge(brControl *ctl,
     return errno;
 }
 
+/**
+ * brDeleteBridge:
+ * @ctl: bridge control pointer
+ * @name: the bridge name
+ *
+ * Remove a bridge from the layer.
+ *
+ * Returns 0 in case of success or an errno code in case of failure.
+ */
 int
 brDeleteBridge(brControl *ctl,
                const char *name)
@@ -177,6 +216,16 @@ brAddDelInterface(brControl *ctl,
     return ioctl(ctl->fd, cmd, &ifr) == 0 ? 0 : errno;
 }
 
+/**
+ * brAddInterface:
+ * @ctl: bridge control pointer
+ * @bridge: the bridge name
+ * @iface: the network interface name
+ * 
+ * Adds an interface to a bridge
+ *
+ * Returns 0 in case of success or an errno code in case of failure.
+ */
 int
 brAddInterface(brControl *ctl,
                const char *bridge,
@@ -185,6 +234,16 @@ brAddInterface(brControl *ctl,
     return brAddDelInterface(ctl, SIOCBRADDIF, bridge, iface);
 }
 
+/**
+ * brDeleteInterface:
+ * @ctl: bridge control pointer
+ * @bridge: the bridge name
+ * @iface: the network interface name
+ * 
+ * Removes an interface from a bridge
+ *
+ * Returns 0 in case of success or an errno code in case of failure.
+ */
 int
 brDeleteInterface(brControl *ctl,
                   const char *bridge,
@@ -194,6 +253,21 @@ brDeleteInterface(brControl *ctl,
 }
 
 
+/**
+ * brAddTap:
+ * @ctl: bridge control pointer
+ * @bridge: the bridge name
+ * @ifname: the interface name (or name template)
+ * @maxlen: size of @ifname array
+ * @tapfd: file descriptor return value for the new tap device
+ *
+ * This function reates a new tap device on a bridge. @ifname can be either
+ * a fixed name or a name template with '%d' for dynamic name allocation.
+ * in either case the final name for the bridge will be stored in @ifname
+ * and the associated file descriptor in @tapfd.
+ *
+ * Returns 0 in case of success or an errno code in case of failure.
+ */
 int
 brAddTap(brControl *ctl,
          const char *bridge,
@@ -259,6 +333,16 @@ brAddTap(brControl *ctl,
     return errno;
 }
 
+/**
+ * brSetInterfaceUp:
+ * @ctl: bridge control pointer
+ * @ifname: the interface name
+ * @up: 1 for up, 0 for down
+ *
+ * Function to control if an interface is activated (up, 1) or not (down, 0)
+ *
+ * Returns 0 in case of success or an errno code in case of failure.
+ */
 int
 brSetInterfaceUp(brControl *ctl,
                  const char *ifname,
@@ -294,6 +378,16 @@ brSetInterfaceUp(brControl *ctl,
     return 0;
 }
 
+/**
+ * brGetInterfaceUp:
+ * @ctl: bridge control pointer
+ * @ifname: the interface name
+ * @up: where to store the status
+ *
+ * Function to query if an interface is activated (1) or not (0)
+ *
+ * Returns 0 in case of success or an errno code in case of failure.
+ */
 int
 brGetInterfaceUp(brControl *ctl,
                  const char *ifname,
@@ -302,7 +396,7 @@ brGetInterfaceUp(brControl *ctl,
     struct ifreq ifr;
     int len;
 
-    if (!ctl || !ifname)
+    if (!ctl || !ifname || !up)
         return EINVAL;
 
     if ((len = strlen(ifname)) >= BR_IFNAME_MAXLEN)
@@ -392,6 +486,19 @@ brGetInetAddr(brControl *ctl,
     return 0;
 }
 
+/**
+ * brSetInetAddress:
+ * @ctl: bridge control pointer
+ * @ifname: the interface name
+ * @addr: the string representation of the IP adress
+ *
+ * Function to bind the interface to an IP address, it should handle
+ * IPV4 and IPv6. The string for addr would be of the form
+ * "ddd.ddd.ddd.ddd" assuming the common IPv4 format.
+ *
+ * Returns 0 in case of success or an errno code in case of failure.
+ */
+
 int
 brSetInetAddress(brControl *ctl,
                  const char *ifname,
@@ -399,6 +506,20 @@ brSetInetAddress(brControl *ctl,
 {
     return brSetInetAddr(ctl, ifname, SIOCSIFADDR, addr);
 }
+
+/**
+ * brGetInetAddress:
+ * @ctl: bridge control pointer
+ * @ifname: the interface name
+ * @addr: the array for the string representation of the IP adress
+ * @maxlen: size of @addr in bytes
+ *
+ * Function to get the IP address of an interface, it should handle
+ * IPV4 and IPv6. The returned string for addr would be of the form
+ * "ddd.ddd.ddd.ddd" assuming the common IPv4 format.
+ *
+ * Returns 0 in case of success or an errno code in case of failure.
+ */
 
 int
 brGetInetAddress(brControl *ctl,
@@ -409,6 +530,19 @@ brGetInetAddress(brControl *ctl,
     return brGetInetAddr(ctl, ifname, SIOCGIFADDR, addr, maxlen);
 }
 
+/**
+ * brSetInetNetmask:
+ * @ctl: bridge control pointer
+ * @ifname: the interface name
+ * @addr: the string representation of the netmask
+ *
+ * Function to set the netmask of an interface, it should handle
+ * IPV4 and IPv6 forms. The string for addr would be of the form
+ * "ddd.ddd.ddd.ddd" assuming the common IPv4 format.
+ *
+ * Returns 0 in case of success or an errno code in case of failure.
+ */
+
 int
 brSetInetNetmask(brControl *ctl,
                  const char *ifname,
@@ -416,6 +550,20 @@ brSetInetNetmask(brControl *ctl,
 {
     return brSetInetAddr(ctl, ifname, SIOCSIFNETMASK, addr);
 }
+
+/**
+ * brGetInetNetmask:
+ * @ctl: bridge control pointer
+ * @ifname: the interface name
+ * @addr: the array for the string representation of the netmask
+ * @maxlen: size of @addr in bytes
+ *
+ * Function to get the netmask of an interface, it should handle
+ * IPV4 and IPv6. The returned string for addr would be of the form
+ * "ddd.ddd.ddd.ddd" assuming the common IPv4 format.
+ *
+ * Returns 0 in case of success or an errno code in case of failure.
+ */
 
 int
 brGetInetNetmask(brControl *ctl,
@@ -463,6 +611,17 @@ brctlSpawn(char * const *argv)
     return (WIFEXITED(status) && WEXITSTATUS(status) == 0) ? 0 : EINVAL;
 }
 
+/**
+ * brSetForwardDelay:
+ * @ctl: bridge control pointer
+ * @bridge: the bridge name
+ * @delay: delay in seconds
+ *
+ * Set the bridge forward delay
+ *
+ * Returns 0 in case of success or an errno code in case of failure.
+ */
+ 
 int
 brSetForwardDelay(brControl *ctl ATTRIBUTE_UNUSED,
                   const char *bridge,
@@ -512,6 +671,17 @@ brSetForwardDelay(brControl *ctl ATTRIBUTE_UNUSED,
     return retval;
 }
 
+/**
+ * brSetEnableSTP:
+ * @ctl: bridge control pointer
+ * @bridge: the bridge name
+ * @enable: 1 to enable, 0 to disable
+ *
+ * Control whether the bridge participates in the spanning tree protocol,
+ * in general don't disable it without good reasons.
+ *
+ * Returns 0 in case of success or an errno code in case of failure.
+ */
 int
 brSetEnableSTP(brControl *ctl ATTRIBUTE_UNUSED,
                const char *bridge,
@@ -534,7 +704,7 @@ brSetEnableSTP(brControl *ctl ATTRIBUTE_UNUSED,
     if (!(argv[n++] = strdup(BRCTL_PATH)))
         goto error;
 
-    if (!(argv[n++] = strdup("setfd")))
+    if (!(argv[n++] = strdup("stp")))
         goto error;
 
     if (!(argv[n++] = strdup(bridge)))

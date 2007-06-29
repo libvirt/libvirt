@@ -476,20 +476,19 @@
   </xsl:template>
 
   <xsl:template name="docomponents">
-    <xsl:param name="mode"/>
-    <xsl:apply-templates select="exports[@type='macro']" mode="$mode">
+    <xsl:apply-templates select="exports[@type='macro']">
       <xsl:sort select='@symbol'/>
     </xsl:apply-templates>
-    <xsl:apply-templates select="exports[@type='enum']" mode="$mode">
+    <xsl:apply-templates select="exports[@type='enum']">
       <xsl:sort select='@symbol'/>
     </xsl:apply-templates>
-    <xsl:apply-templates select="exports[@type='typedef']" mode="$mode">
+    <xsl:apply-templates select="exports[@type='typedef']">
       <xsl:sort select='@symbol'/>
     </xsl:apply-templates>
-    <xsl:apply-templates select="exports[@type='struct']" mode="$mode">
+    <xsl:apply-templates select="exports[@type='struct']">
       <xsl:sort select='@symbol'/>
     </xsl:apply-templates>
-    <xsl:apply-templates select="exports[@type='function']" mode="$mode">
+    <xsl:apply-templates select="exports[@type='function']">
       <xsl:sort select='@symbol'/>
     </xsl:apply-templates>
   </xsl:template>

@@ -51,6 +51,17 @@ ignored_files = {
   "console.c": "internal code",
   "event.h": "internal code",
   "event.c": "internal code",
+  "iptables.h": "internal code",
+  "iptables.c": "internal code",
+  "buf.h": "internal code",
+  "buf.c": "internal code",
+  "qemu_driver.c": "internal code",
+  "remote_internal.c": "internal code",
+  "bridge.h": "internal code",
+  "bridge.c": "internal code",
+  "uuid.h": "internal code",
+  "uuid.c": "internal code",
+
 }
 
 ignored_words = {

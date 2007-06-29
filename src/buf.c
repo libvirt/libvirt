@@ -83,6 +83,14 @@ virBufferAdd(virBufferPtr buf, const char *str, int len)
     return (0);
 }
 
+/**
+ * virBufferNew:
+ * @size:  creation size in bytes
+ *
+ * Creates a new buffer
+ *
+ * Returns a pointer to the buffer or NULL in case of error
+ */
 virBufferPtr
 virBufferNew(unsigned int size)
 {
@@ -99,6 +107,13 @@ virBufferNew(unsigned int size)
     return buf;
 }
 
+/**
+ * virBufferFree:
+ * @buf: the buffer to deallocate
+ *
+ * Free the set of resources used by a buffer.
+ */
+
 void
 virBufferFree(virBufferPtr buf)
 {
@@ -113,12 +128,19 @@ virBufferFree(virBufferPtr buf)
  * virBufferContentAndFree:
  * @buf: Buffer
  *
- * Return the content from the buffer and free (only) the buffer structure.
+ * Get the content from the buffer and free (only) the buffer structure.
+ *
+ * Returns the buffer content or NULL in case of error.
  */
 char *
 virBufferContentAndFree (virBufferPtr buf)
 {
-    char *content = buf->content;
+    char *content;
+    
+    if (buf == NULL)
+        return(NULL);
+
+    content = buf->content;
 
     free (buf);
     return content;
@@ -128,7 +150,7 @@ virBufferContentAndFree (virBufferPtr buf)
  * virBufferVSprintf:
  * @buf:  the buffer to dump
  * @format:  the format
- * @argptr:  the variable list of arguments
+ * @...:  the variable list of arguments
  *
  * Do a formatted print to an XML buffer.
  *
@@ -165,7 +187,7 @@ virBufferVSprintf(virBufferPtr buf, const char *format, ...)
 /**
  * virBufferStrcat:
  * @buf:  the buffer to dump
- * @argptr:  the variable list of strings, the last argument must be NULL
+ * @...:  the variable list of strings, the last argument must be NULL
  *
  * Concatenate strings to an XML buffer.
  *

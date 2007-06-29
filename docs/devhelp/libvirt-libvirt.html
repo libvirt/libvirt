@@ -442,8 +442,8 @@ The content of this structure is not made public by the API.
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>domain</tt></i>:</span></td><td>a domain object</td></tr><tr><td><span class="term"><i><tt>autostart</tt></i>:</span></td><td>the value returned</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>-1 in case of error, 0 in case of success</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virDomainGetConnect"/>virDomainGetConnect ()</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	virDomainGetConnect	(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom)<br/>
-</pre><p/>
-<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>dom</tt></i>:</span></td><td>pointer to a domain</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the connection pointer associated with a domain. The reference counter on the connection is not increased by this call. Returns the <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> or NULL in case of failure.</td></tr></tbody></table></div></div>
+</pre><p>Provides the connection pointer associated with a domain. The reference counter on the connection is not increased by this call.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>dom</tt></i>:</span></td><td>pointer to a domain</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> or NULL in case of failure.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virDomainGetID"/>virDomainGetID ()</h3><pre class="programlisting">unsigned int	virDomainGetID		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain)<br/>
 </pre><p>Get the hypervisor ID number for the domain</p>
@@ -598,8 +598,8 @@ The content of this structure is not made public by the API.
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>network</tt></i>:</span></td><td>a network object</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a 0 terminated interface name, or NULL in case of error. the caller must free() the returned value.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virNetworkGetConnect"/>virNetworkGetConnect ()</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	virNetworkGetConnect	(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> net)<br/>
-</pre><p/>
-<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>net</tt></i>:</span></td><td>pointer to a network</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the connection pointer associated with a network. The reference counter on the connection is not increased by this call. Returns the <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> or NULL in case of failure.</td></tr></tbody></table></div></div>
+</pre><p>Provides the connection pointer associated with a network. The reference counter on the connection is not increased by this call.</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>net</tt></i>:</span></td><td>pointer to a network</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> or NULL in case of failure.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virNetworkGetName"/>virNetworkGetName ()</h3><pre class="programlisting">const char *	virNetworkGetName	(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network)<br/>
 </pre><p>Get the public name for that network</p>

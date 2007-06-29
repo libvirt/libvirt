@@ -530,6 +530,13 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
     return retval;
 }
 
+/**
+ * iptablesContextNew:
+ *
+ * Create a new IPtable context
+ *
+ * Returns a pointer to the new structure or NULL in case of error
+ */
 iptablesContext *
 iptablesContextNew(void)
 {
@@ -554,6 +561,12 @@ iptablesContextNew(void)
     return NULL;
 }
 
+/**
+ * iptablesContextFree:
+ * @ctx: pointer to the IP table context
+ *
+ * Free the ressources associated with an IP table context
+ */
 void
 iptablesContextFree(iptablesContext *ctx)
 {
@@ -597,6 +610,12 @@ iptRulesReload(iptRules *rules)
                      rules->rules[i].rule, rules->chain, rules->table, strerror(retval));
 }
 
+/**
+ * iptablesReloadRules:
+ * @ctx: pointer to the IP table context
+ *
+ * Reloads all the IP table rules associated to a context
+ */
 void
 iptablesReloadRules(iptablesContext *ctx)
 {
@@ -626,6 +645,18 @@ iptablesInput(iptablesContext *ctx,
                                  NULL);
 }
 
+/**
+ * iptablesAddTcpInput:
+ * @ctx: pointer to the IP table context
+ * @iface: the interface name
+ * @port: the TCP port to add
+ *
+ * Add an input to the IP table allowing access to the given @port on
+ * the given @iface interface for TCP packets
+ *
+ * Returns 0 in case of success or an error code in case of error
+ */
+
 int
 iptablesAddTcpInput(iptablesContext *ctx,
                     const char *iface,
@@ -634,6 +665,17 @@ iptablesAddTcpInput(iptablesContext *ctx,
     return iptablesInput(ctx, iface, port, ADD, 1);
 }
 
+/**
+ * iptablesRemoveTcpInput:
+ * @ctx: pointer to the IP table context
+ * @iface: the interface name
+ * @port: the TCP port to remove
+ *
+ * Removes an input from the IP table, hence forbiding access to the given
+ * @port on the given @iface interface for TCP packets
+ *
+ * Returns 0 in case of success or an error code in case of error
+ */
 int
 iptablesRemoveTcpInput(iptablesContext *ctx,
                        const char *iface,
@@ -641,6 +683,18 @@ iptablesRemoveTcpInput(iptablesContext *ctx,
 {
     return iptablesInput(ctx, iface, port, REMOVE, 1);
 }
+
+/**
+ * iptablesAddUdpInput:
+ * @ctx: pointer to the IP table context
+ * @iface: the interface name
+ * @port: the UDP port to add
+ *
+ * Add an input to the IP table allowing access to the given @port on
+ * the given @iface interface for UDP packets
+ *
+ * Returns 0 in case of success or an error code in case of error
+ */
 
 int
 iptablesAddUdpInput(iptablesContext *ctx,
@@ -650,6 +704,17 @@ iptablesAddUdpInput(iptablesContext *ctx,
     return iptablesInput(ctx, iface, port, ADD, 0);
 }
 
+/**
+ * iptablesRemoveUdpInput:
+ * @ctx: pointer to the IP table context
+ * @iface: the interface name
+ * @port: the UDP port to remove
+ *
+ * Removes an input from the IP table, hence forbiding access to the given
+ * @port on the given @iface interface for UDP packets
+ *
+ * Returns 0 in case of success or an error code in case of error
+ */
 int
 iptablesRemoveUdpInput(iptablesContext *ctx,
                        const char *iface,
@@ -687,6 +752,19 @@ iptablesForwardAllowOut(iptablesContext *ctx,
     }
 }
 
+/**
+ * iptablesAddForwardAllowOut:
+ * @ctx: pointer to the IP table context
+ * @network: the source network name
+ * @iface: the source interface name
+ * @physdev: the physical output device
+ * 
+ * Add a rule to the IP table context to allow the traffic for the
+ * network @network via interface @iface to be forwarded to
+ * @physdev device. This allow the outbound traffic on a bridge.
+ *
+ * Returns 0 in case of success or an error code otherwise
+ */
 int
 iptablesAddForwardAllowOut(iptablesContext *ctx,
                             const char *network,
@@ -696,6 +774,19 @@ iptablesAddForwardAllowOut(iptablesContext *ctx,
     return iptablesForwardAllowOut(ctx, network, iface, physdev, ADD);
 }
 
+/**
+ * iptablesRemoveForwardAllowOut:
+ * @ctx: pointer to the IP table context
+ * @network: the source network name
+ * @iface: the source interface name
+ * @physdev: the physical output device
+ * 
+ * Remove a rule from the IP table context hence forbidding forwarding
+ * of the traffic for the network @network via interface @iface
+ * to the @physdev device output. This stops the outbound traffic on a bridge.
+ *
+ * Returns 0 in case of success or an error code otherwise
+ */
 int
 iptablesRemoveForwardAllowOut(iptablesContext *ctx,
                                const char *network,
@@ -738,6 +829,19 @@ iptablesForwardAllowIn(iptablesContext *ctx,
     }
 }
 
+/**
+ * iptablesAddForwardAllowIn:
+ * @ctx: pointer to the IP table context
+ * @network: the source network name
+ * @iface: the output interface name
+ * @physdev: the physical input device or NULL
+ * 
+ * Add rules to the IP table context to allow the traffic for the
+ * network @network on @physdev device to be forwarded to
+ * interface @iface. This allow the inbound traffic on a bridge.
+ *
+ * Returns 0 in case of success or an error code otherwise
+ */
 int
 iptablesAddForwardAllowIn(iptablesContext *ctx,
                           const char *network,
@@ -747,6 +851,19 @@ iptablesAddForwardAllowIn(iptablesContext *ctx,
     return iptablesForwardAllowIn(ctx, network, iface, physdev, ADD);
 }
 
+/**
+ * iptablesRemoveForwardAllowIn:
+ * @ctx: pointer to the IP table context
+ * @network: the source network name
+ * @iface: the output interface name
+ * @physdev: the physical input device or NULL
+ * 
+ * Remove rules from the IP table context hence forbidding the traffic for
+ * network @network on @physdev device to be forwarded to
+ * interface @iface. This stops the inbound traffic on a bridge.
+ *
+ * Returns 0 in case of success or an error code otherwise
+ */
 int
 iptablesRemoveForwardAllowIn(iptablesContext *ctx,
                              const char *network,
@@ -773,12 +890,34 @@ iptablesForwardAllowCross(iptablesContext *ctx,
                                  NULL);
 }
 
+/**
+ * iptablesAddForwardAllowCross:
+ * @ctx: pointer to the IP table context
+ * @iface: the input/output interface name
+ *
+ * Add rules to the IP table context to allow traffic to cross that
+ * interface. It allows all traffic between guests on the same bridge
+ * represented by that interface.
+ *
+ * Returns 0 in case of success or an error code otherwise
+ */
 int
 iptablesAddForwardAllowCross(iptablesContext *ctx,
                              const char *iface) {
     return iptablesForwardAllowCross(ctx, iface, ADD);
 }
 
+/**
+ * iptablesRemoveForwardAllowCross:
+ * @ctx: pointer to the IP table context
+ * @iface: the input/output interface name
+ *
+ * Remove rules to the IP table context to block traffic to cross that
+ * interface. It forbids traffic between guests on the same bridge
+ * represented by that interface.
+ *
+ * Returns 0 in case of success or an error code otherwise
+ */
 int
 iptablesRemoveForwardAllowCross(iptablesContext *ctx,
                                 const char *iface) {
@@ -801,6 +940,16 @@ iptablesForwardRejectOut(iptablesContext *ctx,
                                      NULL);
 }
 
+/**
+ * iptablesAddForwardRejectOut:
+ * @ctx: pointer to the IP table context
+ * @iface: the output interface name
+ *
+ * Add rules to the IP table context to forbid all traffic to that
+ * interface. It forbids forwarding from the bridge to that interface.
+ *
+ * Returns 0 in case of success or an error code otherwise
+ */
 int
 iptablesAddForwardRejectOut(iptablesContext *ctx,
                             const char *iface)
@@ -808,6 +957,16 @@ iptablesAddForwardRejectOut(iptablesContext *ctx,
     return iptablesForwardRejectOut(ctx, iface, ADD);
 }
 
+/**
+ * iptablesRemoveForwardRejectOut:
+ * @ctx: pointer to the IP table context
+ * @iface: the output interface name
+ *
+ * Remove rules from the IP table context forbidding all traffic to that
+ * interface. It reallow forwarding from the bridge to that interface.
+ *
+ * Returns 0 in case of success or an error code otherwise
+ */
 int
 iptablesRemoveForwardRejectOut(iptablesContext *ctx,
                                const char *iface)
@@ -833,6 +992,16 @@ iptablesForwardRejectIn(iptablesContext *ctx,
                                  NULL);
 }
 
+/**
+ * iptablesAddForwardRejectIn:
+ * @ctx: pointer to the IP table context
+ * @iface: the input interface name
+ *
+ * Add rules to the IP table context to forbid all traffic from that
+ * interface. It forbids forwarding from that interface to the bridge.
+ *
+ * Returns 0 in case of success or an error code otherwise
+ */
 int
 iptablesAddForwardRejectIn(iptablesContext *ctx,
                            const char *iface)
@@ -840,6 +1009,16 @@ iptablesAddForwardRejectIn(iptablesContext *ctx,
     return iptablesForwardRejectIn(ctx, iface, ADD);
 }
 
+/**
+ * iptablesRemoveForwardRejectIn:
+ * @ctx: pointer to the IP table context
+ * @iface: the input interface name
+ *
+ * Remove rules from the IP table context forbidding all traffic from that
+ * interface. It allows forwarding from that interface to the bridge.
+ *
+ * Returns 0 in case of success or an error code otherwise
+ */
 int
 iptablesRemoveForwardRejectIn(iptablesContext *ctx,
                               const char *iface)
@@ -873,6 +1052,18 @@ iptablesForwardMasquerade(iptablesContext *ctx,
     }
 }
 
+/**
+ * iptablesAddForwardMasquerade:
+ * @ctx: pointer to the IP table context
+ * @network: the source network name
+ * @physdev: the physical input device or NULL
+ * 
+ * Add rules to the IP table context to allow masquerading
+ * network @network on @physdev. This allow the bridge to
+ * masquerade for that network (on @physdev).
+ *
+ * Returns 0 in case of success or an error code otherwise
+ */
 int
 iptablesAddForwardMasquerade(iptablesContext *ctx,
                              const char *network,
@@ -881,6 +1072,18 @@ iptablesAddForwardMasquerade(iptablesContext *ctx,
     return iptablesForwardMasquerade(ctx, network, physdev, ADD);
 }
 
+/**
+ * iptablesRemoveForwardMasquerade:
+ * @ctx: pointer to the IP table context
+ * @network: the source network name
+ * @physdev: the physical input device or NULL
+ * 
+ * Remove rules from the IP table context to stop masquerading
+ * network @network on @physdev. This stops the bridge from
+ * masquerading for that network (on @physdev).
+ *
+ * Returns 0 in case of success or an error code otherwise
+ */
 int
 iptablesRemoveForwardMasquerade(iptablesContext *ctx,
                                 const char *network,

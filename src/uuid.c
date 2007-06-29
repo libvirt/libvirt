@@ -77,10 +77,21 @@ virUUIDGeneratePseudoRandomBytes(unsigned char *buf,
     return 0;
 }
 
+/**
+ * virUUIDGenerate:
+ * @uuid: array of VIR_UUID_RAW_LEN bytes to store the new UUID
+ *
+ * Generates a randomized unique identifier.
+ *
+ * Returns 0 in case of success and -1 in case of failure
+ */
 int
 virUUIDGenerate(unsigned char *uuid)
 {
     int err;
+
+    if (uuid == NULL)
+        return(-1);
 
     if ((err = virUUIDGenerateRandomBytes(uuid, VIR_UUID_RAW_LEN)))
         qemudLog(QEMUD_WARN,
@@ -90,10 +101,23 @@ virUUIDGenerate(unsigned char *uuid)
     return virUUIDGeneratePseudoRandomBytes(uuid, VIR_UUID_RAW_LEN);
 }
 
+/**
+ * virUUIDParse:
+ * @uuid: zero terminated string representation of the UUID
+ * @rawuuid: array of VIR_UUID_RAW_LEN bytes to store the raw UUID
+ *
+ * Parses the external string representation, allowing spaces and '-'
+ * character in the sequence, and storing the result as a raw UUID
+ *
+ * Returns 0 in case of success and -1 in case of error.
+ */
 int
 virUUIDParse(const char *uuid, unsigned char *rawuuid) {
     const char *cur;
     int i;
+
+    if ((uuid == NULL) || (rawuuid == NULL))
+        return(-1);
 
     /*
      * do a liberal scan allowing '-' and ' ' anywhere between character

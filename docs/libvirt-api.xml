@@ -614,8 +614,8 @@
       <arg name='autostart' type='int *' info='the value returned'/>
     </function>
     <function name='virDomainGetConnect' file='libvirt' module='libvirt'>
-      <info></info>
-      <return type='virConnectPtr' info='the connection pointer associated with a domain.  The reference counter on the connection is not increased by this call.  Returns the virConnectPtr or NULL in case of failure.'/>
+      <info>Provides the connection pointer associated with a domain.  The reference counter on the connection is not increased by this call.</info>
+      <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
       <arg name='dom' type='virDomainPtr' info='pointer to a domain'/>
     </function>
     <function name='virDomainGetID' file='libvirt' module='libvirt'>
@@ -850,8 +850,8 @@
       <arg name='network' type='virNetworkPtr' info='a network object'/>
     </function>
     <function name='virNetworkGetConnect' file='libvirt' module='libvirt'>
-      <info></info>
-      <return type='virConnectPtr' info='the connection pointer associated with a network.  The reference counter on the connection is not increased by this call.  Returns the virConnectPtr or NULL in case of failure.'/>
+      <info>Provides the connection pointer associated with a network.  The reference counter on the connection is not increased by this call.</info>
+      <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
       <arg name='net' type='virNetworkPtr' info='pointer to a network'/>
     </function>
     <function name='virNetworkGetName' file='libvirt' module='libvirt'>

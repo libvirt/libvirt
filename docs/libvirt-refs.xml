@@ -1058,10 +1058,12 @@
           <ref name='virConnectNumOfDomains'/>
           <ref name='virConnectNumOfNetworks'/>
           <ref name='virDomainGetAutostart'/>
+          <ref name='virDomainGetConnect'/>
           <ref name='virDomainGetMaxVcpus'/>
           <ref name='virGetVersion'/>
           <ref name='virNetworkGetAutostart'/>
           <ref name='virNetworkGetBridgeName'/>
+          <ref name='virNetworkGetConnect'/>
         </word>
       </letter>
       <letter name='R'>
@@ -1085,10 +1087,6 @@
         </word>
         <word name='Retrieve'>
           <ref name='virDomainGetMaxMemory'/>
-        </word>
-        <word name='Returns'>
-          <ref name='virDomainGetConnect'/>
-          <ref name='virNetworkGetConnect'/>
         </word>
       </letter>
       <letter name='S'>

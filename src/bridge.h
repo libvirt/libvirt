@@ -25,7 +25,16 @@
 #include <net/if.h>
 #include <netinet/in.h>
 
+/**
+ * BR_IFNAME_MAXLEN:
+ * maximum size in byte of the name for an interface
+ */
 #define BR_IFNAME_MAXLEN    IF_NAMESIZE
+
+/**
+ * BR_INET_ADDR_MAXLEN:
+ * maximum size in bytes for an inet addess name
+ */
 #define BR_INET_ADDR_MAXLEN INET_ADDRSTRLEN
 
 typedef struct _brControl brControl;

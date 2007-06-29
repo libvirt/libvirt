@@ -22,6 +22,10 @@
 #ifndef __VIR_UUID_H__
 #define __VIR_UUID_H__
 
+/**
+ * VIR_UUID_RAW_LEN:
+ * number of bytes used by an UUID in raw form
+ */
 #define VIR_UUID_RAW_LEN 16
 
 int virUUIDGenerate(unsigned char *uuid);

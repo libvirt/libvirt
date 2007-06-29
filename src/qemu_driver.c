@@ -53,6 +53,9 @@
 #include "qemu_driver.h"
 #include "qemu_conf.h"
 
+static int qemudShutdown(void);
+
+
 #define qemudLog(level, msg...) fprintf(stderr, msg)
 
 static int qemudSetCloseExec(int fd) {
@@ -84,16 +87,16 @@ static int qemudSetNonBlock(int fd) {
 
 
 static void qemudDispatchVMEvent(int fd, int events, void *opaque);
-int qemudStartVMDaemon(struct qemud_driver *driver,
+static int qemudStartVMDaemon(struct qemud_driver *driver,
                        struct qemud_vm *vm);
 
-int qemudShutdownVMDaemon(struct qemud_driver *driver,
+static int qemudShutdownVMDaemon(struct qemud_driver *driver,
                           struct qemud_vm *vm);
 
-int qemudStartNetworkDaemon(struct qemud_driver *driver,
+static int qemudStartNetworkDaemon(struct qemud_driver *driver,
                             struct qemud_network *network);
 
-int qemudShutdownNetworkDaemon(struct qemud_driver *driver,
+static int qemudShutdownNetworkDaemon(struct qemud_driver *driver,
                                struct qemud_network *network);
 
 struct qemud_driver *qemu_driver = NULL;
@@ -135,7 +138,13 @@ void qemudAutostartConfigs(struct qemud_driver *driver) {
     }
 }
 
-int qemudStartup(void) {
+/**
+ * qemudStartup:
+ *
+ * Initialization function for the QEmu daemon
+ */
+static int
+qemudStartup(void) {
     uid_t uid = geteuid();
     struct passwd *pw;
     char *base = NULL;
@@ -203,7 +212,14 @@ int qemudStartup(void) {
     return -1;
 }
 
-int qemudReload(void) {
+/**
+ * qemudReload:
+ *
+ * Function to restart the QEmu daemon, it will recheck the configuration
+ * files and update its state and the networking
+ */
+static int
+qemudReload(void) {
     qemudScanConfigs(qemu_driver);
 
      if (qemu_driver->iptables) {
@@ -216,7 +232,16 @@ int qemudReload(void) {
     return 0;
 }
 
-int qemudActive(void) {
+/**
+ * qemudActive:
+ *
+ * Checks if the QEmu daemon is active, i.e. has an active domain or
+ * an active network
+ *
+ * Returns 1 if active, 0 otherwise
+ */
+static int
+qemudActive(void) {
     /* If we've any active networks or guests, then we
      * mark this driver as active
      */
@@ -228,7 +253,13 @@ int qemudActive(void) {
     return 0;
 }
 
-int qemudShutdown() {
+/**
+ * qemudShutdown:
+ *
+ * Shutdown the QEmu daemon, it will stop all active domains and networks
+ */
+static int
+qemudShutdown(void) {
     struct qemud_vm *vm;
     struct qemud_network *network;
 
@@ -602,7 +633,7 @@ static int qemudNextFreeVNCPort(struct qemud_driver *driver ATTRIBUTE_UNUSED) {
     return -1;
 }
 
-int qemudStartVMDaemon(struct qemud_driver *driver,
+static int qemudStartVMDaemon(struct qemud_driver *driver,
                        struct qemud_vm *vm) {
     char **argv = NULL, **tmp;
     int i;
@@ -754,7 +785,7 @@ static int qemudVMData(struct qemud_driver *driver ATTRIBUTE_UNUSED,
 }
 
 
-int qemudShutdownVMDaemon(struct qemud_driver *driver, struct qemud_vm *vm) {
+static int qemudShutdownVMDaemon(struct qemud_driver *driver, struct qemud_vm *vm) {
     if (!qemudIsActiveVM(vm))
         return 0;
 
@@ -1122,7 +1153,7 @@ qemudEnableIpForwarding(void)
 #undef PROC_IP_FORWARD
 }
 
-int qemudStartNetworkDaemon(struct qemud_driver *driver,
+static int qemudStartNetworkDaemon(struct qemud_driver *driver,
                             struct qemud_network *network) {
     const char *name;
     int err;
@@ -1233,7 +1264,7 @@ int qemudStartNetworkDaemon(struct qemud_driver *driver,
 }
 
 
-int qemudShutdownNetworkDaemon(struct qemud_driver *driver,
+static int qemudShutdownNetworkDaemon(struct qemud_driver *driver,
                                struct qemud_network *network) {
     int err;
 
@@ -1452,7 +1483,7 @@ static int qemudGetCPUInfo(unsigned int *cpus, unsigned int *mhz,
     return 0;
 }
 
-virDrvOpenStatus qemudOpen(virConnectPtr conn,
+static virDrvOpenStatus qemudOpen(virConnectPtr conn,
                            const char *name,
                            int flags ATTRIBUTE_UNUSED) {
     uid_t uid = getuid();
@@ -1503,7 +1534,7 @@ static int qemudGetMaxVCPUs(virConnectPtr conn ATTRIBUTE_UNUSED,
     return -1;
 }
 
-int qemudGetNodeInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
+static int qemudGetNodeInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
                      virNodeInfoPtr node) {
     struct utsname info;
 
@@ -1522,7 +1553,7 @@ int qemudGetNodeInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
     return 0;
 }
 
-char *qemudGetCapabilities(virConnectPtr conn ATTRIBUTE_UNUSED) {
+static char *qemudGetCapabilities(virConnectPtr conn ATTRIBUTE_UNUSED) {
     struct utsname utsname;
     int i, j, r;
     int have_kqemu = 0;
@@ -1710,7 +1741,7 @@ static int qemudGetProcessInfo(unsigned long long *cpuTime, int pid) {
 }
 
 
-virDomainPtr qemudDomainLookupByID(virConnectPtr conn,
+static virDomainPtr qemudDomainLookupByID(virConnectPtr conn,
                                    int id) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
     struct qemud_vm *vm = qemudFindVMByID(driver, id);
@@ -1730,7 +1761,7 @@ virDomainPtr qemudDomainLookupByID(virConnectPtr conn,
     dom->id = vm->id;
     return dom;
 }
-virDomainPtr qemudDomainLookupByUUID(virConnectPtr conn,
+static virDomainPtr qemudDomainLookupByUUID(virConnectPtr conn,
                                      const unsigned char *uuid) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
     struct qemud_vm *vm = qemudFindVMByUUID(driver, uuid);
@@ -1750,7 +1781,7 @@ virDomainPtr qemudDomainLookupByUUID(virConnectPtr conn,
     dom->id = vm->id;
     return dom;
 }
-virDomainPtr qemudDomainLookupByName(virConnectPtr conn,
+static virDomainPtr qemudDomainLookupByName(virConnectPtr conn,
                                      const char *name) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
     struct qemud_vm *vm = qemudFindVMByName(driver, name);
@@ -1771,7 +1802,7 @@ virDomainPtr qemudDomainLookupByName(virConnectPtr conn,
     return dom;
 }
 
-int qemudGetVersion(virConnectPtr conn, unsigned long *version) {
+static int qemudGetVersion(virConnectPtr conn, unsigned long *version) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
     if (qemudExtractVersion(driver) < 0)
         return -1;
@@ -1780,7 +1811,7 @@ int qemudGetVersion(virConnectPtr conn, unsigned long *version) {
     return 0;
 }
 
-int qemudListDomains(virConnectPtr conn, int *ids, int nids) {
+static int qemudListDomains(virConnectPtr conn, int *ids, int nids) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
     struct qemud_vm *vm = driver->vms;
     int got = 0;
@@ -1793,11 +1824,11 @@ int qemudListDomains(virConnectPtr conn, int *ids, int nids) {
     }
     return got;
 }
-int qemudNumDomains(virConnectPtr conn) {
+static int qemudNumDomains(virConnectPtr conn) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
     return driver->nactivevms;
 }
-virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
+static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
                                unsigned int flags ATTRIBUTE_UNUSED) {
     struct qemud_vm_def *def;
     struct qemud_vm *vm;
@@ -1828,7 +1859,7 @@ virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
 }
 
 
-int qemudDomainSuspend(virDomainPtr dom) {
+static int qemudDomainSuspend(virDomainPtr dom) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     char *info;
     struct qemud_vm *vm = qemudFindVMByID(driver, dom->id);
@@ -1854,7 +1885,7 @@ int qemudDomainSuspend(virDomainPtr dom) {
 }
 
 
-int qemudDomainResume(virDomainPtr dom) {
+static int qemudDomainResume(virDomainPtr dom) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     char *info;
     struct qemud_vm *vm = qemudFindVMByID(driver, dom->id);
@@ -1879,7 +1910,7 @@ int qemudDomainResume(virDomainPtr dom) {
 }
 
 
-int qemudDomainDestroy(virDomainPtr dom) {
+static int qemudDomainDestroy(virDomainPtr dom) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     struct qemud_vm *vm = qemudFindVMByID(driver, dom->id);
     int ret;
@@ -1914,7 +1945,7 @@ static char *qemudDomainGetOSType(virDomainPtr dom) {
     return type;
 }
 
-int qemudDomainGetInfo(virDomainPtr dom,
+static int qemudDomainGetInfo(virDomainPtr dom,
                        virDomainInfoPtr info) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
@@ -1941,7 +1972,7 @@ int qemudDomainGetInfo(virDomainPtr dom,
 }
 
 
-int qemudDomainSave(virDomainPtr dom,
+static int qemudDomainSave(virDomainPtr dom,
                     const char *path ATTRIBUTE_UNUSED) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     struct qemud_vm *vm = qemudFindVMByID(driver, dom->id);
@@ -1958,7 +1989,7 @@ int qemudDomainSave(virDomainPtr dom,
 }
 
 
-int qemudDomainRestore(virConnectPtr conn,
+static int qemudDomainRestore(virConnectPtr conn,
                        const char *path ATTRIBUTE_UNUSED) {
     /*struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;*/
     qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED, "restore is not supported");
@@ -1966,7 +1997,7 @@ int qemudDomainRestore(virConnectPtr conn,
 }
 
 
-char *qemudDomainDumpXML(virDomainPtr dom,
+static char *qemudDomainDumpXML(virDomainPtr dom,
                          int flags ATTRIBUTE_UNUSED) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
@@ -1979,7 +2010,7 @@ char *qemudDomainDumpXML(virDomainPtr dom,
 }
 
 
-int qemudListDefinedDomains(virConnectPtr conn,
+static int qemudListDefinedDomains(virConnectPtr conn,
                             char **const names, int nnames) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
     struct qemud_vm *vm = driver->vms;
@@ -2003,13 +2034,13 @@ int qemudListDefinedDomains(virConnectPtr conn,
 }
 
 
-int qemudNumDefinedDomains(virConnectPtr conn) {
+static int qemudNumDefinedDomains(virConnectPtr conn) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
     return driver->ninactivevms;
 }
 
 
-int qemudDomainStart(virDomainPtr dom) {
+static int qemudDomainStart(virDomainPtr dom) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
 
@@ -2023,7 +2054,7 @@ int qemudDomainStart(virDomainPtr dom) {
 }
 
 
-virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
+static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
     struct qemud_vm_def *def;
     struct qemud_vm *vm;
@@ -2052,7 +2083,7 @@ virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
     return dom;
 }
 
-int qemudDomainUndefine(virDomainPtr dom) {
+static int qemudDomainUndefine(virDomainPtr dom) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
 
@@ -2081,7 +2112,7 @@ int qemudDomainUndefine(virDomainPtr dom) {
     return 0;
 }
 
-int qemudDomainGetAutostart(virDomainPtr dom,
+static int qemudDomainGetAutostart(virDomainPtr dom,
                             int *autostart) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
@@ -2096,7 +2127,7 @@ int qemudDomainGetAutostart(virDomainPtr dom,
     return 0;
 }
 
-int qemudDomainSetAutostart(virDomainPtr dom,
+static int qemudDomainSetAutostart(virDomainPtr dom,
                             int autostart) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
@@ -2141,7 +2172,7 @@ int qemudDomainSetAutostart(virDomainPtr dom,
     return 0;
 }
 
-virNetworkPtr qemudNetworkLookupByUUID(virConnectPtr conn ATTRIBUTE_UNUSED,
+static virNetworkPtr qemudNetworkLookupByUUID(virConnectPtr conn ATTRIBUTE_UNUSED,
                                      const unsigned char *uuid) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
     struct qemud_network *network = qemudFindNetworkByUUID(driver, uuid);
@@ -2159,7 +2190,7 @@ virNetworkPtr qemudNetworkLookupByUUID(virConnectPtr conn ATTRIBUTE_UNUSED,
     }
     return net;
 }
-virNetworkPtr qemudNetworkLookupByName(virConnectPtr conn ATTRIBUTE_UNUSED,
+static virNetworkPtr qemudNetworkLookupByName(virConnectPtr conn ATTRIBUTE_UNUSED,
                                      const char *name) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
     struct qemud_network *network = qemudFindNetworkByName(driver, name);
@@ -2193,12 +2224,12 @@ static int qemudCloseNetwork(virConnectPtr conn) {
     return 0;
 }
 
-int qemudNumNetworks(virConnectPtr conn) {
+static int qemudNumNetworks(virConnectPtr conn) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->networkPrivateData;
     return driver->nactivenetworks;
 }
 
-int qemudListNetworks(virConnectPtr conn, char **const names, int nnames) {
+static int qemudListNetworks(virConnectPtr conn, char **const names, int nnames) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->networkPrivateData;
     struct qemud_network *network = driver->networks;
     int got = 0, i;
@@ -2220,12 +2251,12 @@ int qemudListNetworks(virConnectPtr conn, char **const names, int nnames) {
     return -1;
 }
 
-int qemudNumDefinedNetworks(virConnectPtr conn) {
+static int qemudNumDefinedNetworks(virConnectPtr conn) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->networkPrivateData;
     return driver->ninactivenetworks;
 }
 
-int qemudListDefinedNetworks(virConnectPtr conn, char **const names, int nnames) {
+static int qemudListDefinedNetworks(virConnectPtr conn, char **const names, int nnames) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->networkPrivateData;
     struct qemud_network *network = driver->networks;
     int got = 0, i;
@@ -2247,7 +2278,7 @@ int qemudListDefinedNetworks(virConnectPtr conn, char **const names, int nnames)
     return -1;
 }
 
-virNetworkPtr qemudNetworkCreate(virConnectPtr conn, const char *xml) {
+static virNetworkPtr qemudNetworkCreate(virConnectPtr conn, const char *xml) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->networkPrivateData;
     struct qemud_network_def *def;
     struct qemud_network *network;
@@ -2274,7 +2305,7 @@ virNetworkPtr qemudNetworkCreate(virConnectPtr conn, const char *xml) {
     return net;
 }
 
-virNetworkPtr qemudNetworkDefine(virConnectPtr conn, const char *xml) {
+static virNetworkPtr qemudNetworkDefine(virConnectPtr conn, const char *xml) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->networkPrivateData;
     struct qemud_network_def *def;
     struct qemud_network *network;
@@ -2301,7 +2332,7 @@ virNetworkPtr qemudNetworkDefine(virConnectPtr conn, const char *xml) {
     return net;
 }
 
-int qemudNetworkUndefine(virNetworkPtr net) {
+static int qemudNetworkUndefine(virNetworkPtr net) {
     struct qemud_driver *driver = (struct qemud_driver *)net->conn->networkPrivateData;
     struct qemud_network *network = qemudFindNetworkByUUID(driver, net->uuid);
 
@@ -2325,7 +2356,7 @@ int qemudNetworkUndefine(virNetworkPtr net) {
     return 0;
 }
 
-int qemudNetworkStart(virNetworkPtr net) {
+static int qemudNetworkStart(virNetworkPtr net) {
     struct qemud_driver *driver = (struct qemud_driver *)net->conn->networkPrivateData;
     struct qemud_network *network = qemudFindNetworkByUUID(driver, net->uuid);
 
@@ -2338,7 +2369,7 @@ int qemudNetworkStart(virNetworkPtr net) {
     return qemudStartNetworkDaemon(driver, network);
 }
 
-int qemudNetworkDestroy(virNetworkPtr net) {
+static int qemudNetworkDestroy(virNetworkPtr net) {
     struct qemud_driver *driver = (struct qemud_driver *)net->conn->networkPrivateData;
     struct qemud_network *network = qemudFindNetworkByUUID(driver, net->uuid);
 
@@ -2351,7 +2382,7 @@ int qemudNetworkDestroy(virNetworkPtr net) {
     return qemudShutdownNetworkDaemon(driver, network);
 }
 
-char *qemudNetworkDumpXML(virNetworkPtr net, int flags ATTRIBUTE_UNUSED) {
+static char *qemudNetworkDumpXML(virNetworkPtr net, int flags ATTRIBUTE_UNUSED) {
     struct qemud_driver *driver = (struct qemud_driver *)net->conn->networkPrivateData;
     struct qemud_network *network = qemudFindNetworkByUUID(driver, net->uuid);
 
@@ -2364,7 +2395,7 @@ char *qemudNetworkDumpXML(virNetworkPtr net, int flags ATTRIBUTE_UNUSED) {
     return qemudGenerateNetworkXML(driver, network, network->def);
 }
 
-char *qemudNetworkGetBridgeName(virNetworkPtr net) {
+static char *qemudNetworkGetBridgeName(virNetworkPtr net) {
     struct qemud_driver *driver = (struct qemud_driver *)net->conn->networkPrivateData;
     struct qemud_network *network = qemudFindNetworkByUUID(driver, net->uuid);
     char *bridge;
@@ -2381,7 +2412,7 @@ char *qemudNetworkGetBridgeName(virNetworkPtr net) {
     return bridge;
 }
 
-int qemudNetworkGetAutostart(virNetworkPtr net,
+static int qemudNetworkGetAutostart(virNetworkPtr net,
                              int *autostart) {
     struct qemud_driver *driver = (struct qemud_driver *)net->conn->networkPrivateData;
     struct qemud_network *network = qemudFindNetworkByUUID(driver, net->uuid);
@@ -2396,7 +2427,7 @@ int qemudNetworkGetAutostart(virNetworkPtr net,
     return 0;
 }
 
-int qemudNetworkSetAutostart(virNetworkPtr net,
+static int qemudNetworkSetAutostart(virNetworkPtr net,
                              int autostart) {
     struct qemud_driver *driver = (struct qemud_driver *)net->conn->networkPrivateData;
     struct qemud_network *network = qemudFindNetworkByUUID(driver, net->uuid);
