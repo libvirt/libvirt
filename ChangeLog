@@ -1,3 +1,11 @@
+Wed Jul  4 10:14:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/conf.c, src/test.c, src/xen_internal.c: Readd checking
+	  of errors from virBuffer functions.
+	* src/sexpr.c: Add comment about use of _GNU_SOURCE.
+	* src/virsh.c: Remove use of _GNU_SOURCE / isblank.
+	* src/xml.c, tests/Makefile.am: Minor cleanup.
+
 Mon Jul  2 09:35:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c: Change 'qemu' to 'QEMU' to get compatability

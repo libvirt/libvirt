@@ -2138,7 +2138,10 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     /* Construct the final XML. */
     xml = virBufferNew (1024);
-    if (!xml) return NULL;
+    if (!xml) {
+        virXenError(VIR_ERR_NO_MEMORY, __FUNCTION__, 0);
+        return NULL;
+    }
     r = virBufferVSprintf (xml,
                            "\
 <capabilities>\n\
@@ -2225,15 +2228,13 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn ATTRIBUTE_UNUSED,
 </capabilities>\n", -1);
     if (r == -1) goto vir_buffer_failed;
     xml_str = strdup (xml->content);
-    if (!xml_str) {
-        virXenError(VIR_ERR_NO_MEMORY, "strdup", 0);
-        goto vir_buffer_failed;
-    }
+    if (!xml_str) goto vir_buffer_failed;
     virBufferFree (xml);
 
     return xml_str;
 
  vir_buffer_failed:
+    virXenError(VIR_ERR_NO_MEMORY, __FUNCTION__, 0);
     virBufferFree (xml);
     return NULL;
 }

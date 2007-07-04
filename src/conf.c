@@ -883,8 +883,10 @@ __virConfWriteFile(const char *filename, virConfPtr conf)
         return(-1);
 
     buf = virBufferNew(500);
-    if (buf == NULL)
+    if (buf == NULL) {
+        virConfError(NULL, VIR_ERR_NO_MEMORY, _("failed to allocate buffer"), 0);
         return(-1);
+    }
 
     cur = conf->entries;
     while (cur != NULL) {
@@ -935,8 +937,10 @@ __virConfWriteMem(char *memory, int *len, virConfPtr conf)
         return(-1);
 
     buf = virBufferNew(500);
-    if (buf == NULL)
+    if (buf == NULL) {
+        virConfError(NULL, VIR_ERR_NO_MEMORY, _("failed to allocate buffer"), 0);
         return(-1);
+    }
 
     cur = conf->entries;
     while (cur != NULL) {

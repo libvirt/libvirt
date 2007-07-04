@@ -1389,6 +1389,7 @@ char * testDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
     con = &node->connections[priv->handle];
 
     if (!(buf = virBufferNew(4000))) {
+        testError(domain->conn, domain, VIR_ERR_NO_MEMORY, __FUNCTION__);
         return (NULL);
     }
 

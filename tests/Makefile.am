@@ -46,8 +46,8 @@ valgrind:
 xmlrpctest_SOURCES = \
 	xmlrpctest.c \
 	testutils.c testutils.h \
-	$(top_builddir)/src/xmlrpc.c \
-	$(top_builddir)/src/xmlrpc.h
+	@top_srcdir@/src/xmlrpc.c \
+	@top_srcdir@/src/xmlrpc.h
 
 xmlrpctest_LDFLAGS =
 xmlrpctest_LDADD = $(LDADDS)

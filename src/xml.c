@@ -267,10 +267,7 @@ virXPathNodeSet(const char *xpath, xmlXPathContextPtr ctxt, xmlNodePtr **list) {
     xmlXPathFreeObject(obj);
     return(ret);
 }
-#endif /* !PROXY */
 
-
-#ifndef PROXY
 /**
  * virtDomainParseXMLGraphicsDescImage:
  * @conn: pointer to the hypervisor connection

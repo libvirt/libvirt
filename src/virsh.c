@@ -13,8 +13,6 @@
  * $Id$
  */
 
-#define _GNU_SOURCE             /* isblank() */
-
 #include "libvirt/libvirt.h"
 #include "libvirt/virterror.h"
 #include <stdio.h>
@@ -3806,7 +3804,7 @@ vshCommandGetToken(vshControl * ctl, char *str, char **end, char **res)
 
     *end = NULL;
 
-    while (p && *p && isblank((unsigned char) *p))
+    while (p && *p && (*p == ' ' || *p == '\t'))
         p++;
 
     if (p == NULL || *p == '\0')
@@ -3817,7 +3815,7 @@ vshCommandGetToken(vshControl * ctl, char *str, char **end, char **res)
     }
     while (*p) {
         /* end of token is blank space or ';' */
-        if ((quote == FALSE && isblank((unsigned char) *p)) || *p == ';')
+        if ((quote == FALSE && (*p == ' ' || *p == '\t')) || *p == ';')
             break;
 
         /* end of option name could be '=' */
