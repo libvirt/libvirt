@@ -27,6 +27,8 @@
 #include <time.h>
 #include <sys/stat.h>
 #include <limits.h>
+#include <string.h>
+#include <errno.h>
 
 #include <unistd.h>
 #include <stdint.h>
@@ -326,13 +328,14 @@ static int xenXMConfigReaper(const void *payload, const char *key ATTRIBUTE_UNUS
    environment variable) and process any domain configs. It
    has rate-limited so never rescans more frequently than
    once every X seconds */
-static int xenXMConfigCacheRefresh(void) {
+static int xenXMConfigCacheRefresh (virConnectPtr conn) {
     DIR *dh;
     struct dirent *ent;
     time_t now = time(NULL);
     int ret = -1;
 
     if (now == ((time_t)-1)) {
+        xenXMError (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
         return (-1);
     }
 
@@ -344,6 +347,7 @@ static int xenXMConfigCacheRefresh(void) {
 
     /* Process the files in the config dir */
     if (!(dh = opendir(configDir))) {
+        xenXMError (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
         return (-1);
     }
 
@@ -418,6 +422,7 @@ static int xenXMConfigCacheRefresh(void) {
         } else { /* Completely new entry */
             newborn = 1;
             if (!(entry = malloc(sizeof(xenXMConfCache)))) {
+                xenXMError (conn, VIR_ERR_NO_MEMORY, strerror (errno));
                 goto cleanup;
             }
             memcpy(entry->filename, path, PATH_MAX);
@@ -439,6 +444,7 @@ static int xenXMConfigCacheRefresh(void) {
                 virHashRemoveEntry(configCache, path, NULL);
             }
             free(entry);
+            xenXMError (conn, VIR_ERR_INTERNAL_ERROR, "xenXMConfigCacheRefresh: name");
             goto cleanup;
         }
 
@@ -448,6 +454,7 @@ static int xenXMConfigCacheRefresh(void) {
             if (virHashAddEntry(configCache, entry->filename, entry) < 0) {
                 virConfFree(entry->conf);
                 free(entry);
+                xenXMError (conn, VIR_ERR_INTERNAL_ERROR, "xenXMConfigCacheRefresh: virHashAddEntry");
                 goto cleanup;
             }
         }
@@ -489,7 +496,7 @@ int
 xenXMOpen (virConnectPtr conn ATTRIBUTE_UNUSED,
            const char *name ATTRIBUTE_UNUSED, int flags ATTRIBUTE_UNUSED)
 {
-    if (nconnections == 0) {
+    if (configCache == NULL) {
         configCache = virHashCreate(50);
         if (!configCache)
             return (-1);
@@ -499,6 +506,10 @@ xenXMOpen (virConnectPtr conn ATTRIBUTE_UNUSED,
             configCache = NULL;
             return (-1);
         }
+        /* Force the cache to be reloaded next time that
+         * xenXMConfigCacheRefresh is called.
+         */
+        lastRefresh = 0;
     }
     nconnections++;
 
@@ -510,7 +521,8 @@ xenXMOpen (virConnectPtr conn ATTRIBUTE_UNUSED,
  * last connection
  */
 int xenXMClose(virConnectPtr conn ATTRIBUTE_UNUSED) {
-    if (!nconnections--) {
+    nconnections--;
+    if (nconnections <= 0) {
         virHashFree(nameConfigMap, NULL);
         nameConfigMap = NULL;
         virHashFree(configCache, xenXMConfigFree);
@@ -1211,7 +1223,7 @@ virDomainPtr xenXMDomainLookupByName(virConnectPtr conn, const char *domname) {
         return (NULL);
     }
 
-    if (xenXMConfigCacheRefresh() < 0)
+    if (xenXMConfigCacheRefresh (conn) < 0)
         return (NULL);
 
     if (!(filename = virHashLookup(nameConfigMap, domname)))
@@ -1274,7 +1286,7 @@ virDomainPtr xenXMDomainLookupByUUID(virConnectPtr conn,
         return (NULL);
     }
 
-    if (xenXMConfigCacheRefresh() < 0)
+    if (xenXMConfigCacheRefresh (conn) < 0)
         return (NULL);
 
     if (!(entry = virHashSearch(configCache, xenXMDomainSearchForUUID, (const void *)uuid))) {
@@ -2115,7 +2127,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
     if (conn->flags & VIR_CONNECT_RO)
         return (NULL);
 
-    if (xenXMConfigCacheRefresh() < 0)
+    if (xenXMConfigCacheRefresh (conn) < 0)
         return (NULL);
 
     if (!(conf = xenXMParseXMLToConfig(conn, xml)))
@@ -2296,7 +2308,7 @@ int xenXMListDefinedDomains(virConnectPtr conn, char **const names, int maxnames
         return (-1);
     }
 
-    if (xenXMConfigCacheRefresh() < 0)
+    if (xenXMConfigCacheRefresh (conn) < 0)
         return (-1);
 
     if (maxnames > virHashSize(configCache))
@@ -2321,7 +2333,7 @@ int xenXMNumOfDefinedDomains(virConnectPtr conn) {
         return (-1);
     }
 
-    if (xenXMConfigCacheRefresh() < 0)
+    if (xenXMConfigCacheRefresh (conn) < 0)
         return (-1);
 
     return virHashSize(nameConfigMap);
