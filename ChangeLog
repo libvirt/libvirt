@@ -1,3 +1,13 @@
+Mon Jul  2 09:35:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_driver.c: Change 'qemu' to 'QEMU' to get compatability
+	with previous releases reporting of driver type. Allow QEMU to
+	handle qemu:///session for root users too. Fix network lookup
+	functions to use networkPrivateData instead of privateData
+	* src/remote_internal.c: Add auto-spawn of daemons for networking.
+	Make network activate for Xen / Test drivers. Make the network
+	functions use networkPrivateData instead of privateData
+
 Fri Jun 29 15:46:34 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: applied patch from Masayuki Sunou to remove leaks

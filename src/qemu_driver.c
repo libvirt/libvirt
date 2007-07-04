@@ -1495,7 +1495,8 @@ static virDrvOpenStatus qemudOpen(virConnectPtr conn,
         if (strcmp(name, "qemu:///session"))
             return VIR_DRV_OPEN_DECLINED;
     } else {
-        if (strcmp(name, "qemu:///system"))
+        if (strcmp(name, "qemu:///system") &&
+            strcmp(name, "qemu:///session"))
             return VIR_DRV_OPEN_DECLINED;
     }
 
@@ -1513,7 +1514,7 @@ static int qemudClose(virConnectPtr conn) {
 }
 
 static const char *qemudGetType(virConnectPtr conn ATTRIBUTE_UNUSED) {
-    return "qemu";
+    return "QEMU";
 }
 
 static int qemudGetMaxVCPUs(virConnectPtr conn ATTRIBUTE_UNUSED,
@@ -2174,7 +2175,7 @@ static int qemudDomainSetAutostart(virDomainPtr dom,
 
 static virNetworkPtr qemudNetworkLookupByUUID(virConnectPtr conn ATTRIBUTE_UNUSED,
                                      const unsigned char *uuid) {
-    struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
+    struct qemud_driver *driver = (struct qemud_driver *)conn->networkPrivateData;
     struct qemud_network *network = qemudFindNetworkByUUID(driver, uuid);
     virNetworkPtr net;
 
@@ -2192,7 +2193,7 @@ static virNetworkPtr qemudNetworkLookupByUUID(virConnectPtr conn ATTRIBUTE_UNUSE
 }
 static virNetworkPtr qemudNetworkLookupByName(virConnectPtr conn ATTRIBUTE_UNUSED,
                                      const char *name) {
-    struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
+    struct qemud_driver *driver = (struct qemud_driver *)conn->networkPrivateData;
     struct qemud_network *network = qemudFindNetworkByName(driver, name);
     virNetworkPtr net;
 

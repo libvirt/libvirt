@@ -31,6 +31,10 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <fcntl.h>
+#include <paths.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
@@ -60,17 +64,24 @@ struct private_data {
     char *type;                 /* Cached return from remoteType. */
     int counter;                /* Generates serial numbers for RPC. */
     char *uri;                  /* Original (remote) URI. */
+    int networkOnly;            /* Only used for network API */
 };
 
 #define GET_PRIVATE(conn,retcode)                                       \
     struct private_data *priv = (struct private_data *) (conn)->privateData; \
-    assert (priv);                                                      \
-    if (priv->magic == DEAD) {                                          \
+    if (!priv || priv->magic != MAGIC) {                                \
         error (conn, VIR_ERR_INVALID_ARG,                               \
                "tried to use a closed or uninitialised handle");        \
         return (retcode);                                               \
-    }                                                                   \
-    assert (priv->magic == MAGIC)
+    }
+
+#define GET_NETWORK_PRIVATE(conn,retcode)                               \
+    struct private_data *priv = (struct private_data *) (conn)->networkPrivateData; \
+    if (!priv || priv->magic != MAGIC) {                                \
+        error (conn, VIR_ERR_INVALID_ARG,                               \
+               "tried to use a closed or uninitialised handle");        \
+        return (retcode);                                               \
+    }
 
 static int call (virConnectPtr conn, struct private_data *priv, int in_open, int proc_nr, xdrproc_t args_filter, char *args, xdrproc_t ret_filter, char *ret);
 static void error (virConnectPtr conn, virErrorNumber code, const char *info);
@@ -105,8 +116,126 @@ static void query_free (struct query_fields *fields);
 static int initialise_gnutls (virConnectPtr conn);
 static gnutls_session_t negotiate_gnutls_on_connection (virConnectPtr conn, int sock, int no_verify, const char *hostname);
 
+/**
+ * remoteFindServerPath:
+ *
+ * Tries to find the path to the libvirtd binary.
+ * 
+ * Returns path on success or NULL in case of error.
+ */
+static const char *
+remoteFindDaemonPath(void)
+{
+    static const char *serverPaths[] = {
+        SBINDIR "/libvirtd",
+        SBINDIR "/libvirtd_dbg",
+        NULL
+    };
+    int i;
+    const char *customDaemon = getenv("LIBVIRTD_PATH");
+
+    if (customDaemon)
+        return(customDaemon);
+
+    for (i = 0; serverPaths[i]; i++) {
+        if (access(serverPaths[i], X_OK | R_OK) == 0) {
+            return serverPaths[i];
+        }
+    }
+    return NULL;
+}
+
+/**
+ * qemuForkDaemon:
+ *
+ * Forks and try to launch the libvirtd daemon
+ *
+ * Returns 0 in case of success or -1 in case of detected error.
+ */
 static int
-remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
+remoteForkDaemon(virConnectPtr conn)
+{
+    const char *daemonPath = remoteFindDaemonPath();
+    int ret, pid, status;
+
+    if (!daemonPath) {
+        error(conn, VIR_ERR_INTERNAL_ERROR, "failed to find libvirtd binary");
+        return(-1);
+    }
+
+    /* Become a daemon */
+    pid = fork();
+    if (pid == 0) {
+        int stdinfd = -1;
+        int stdoutfd = -1;
+        int i, open_max;
+        if ((stdinfd = open(_PATH_DEVNULL, O_RDONLY)) < 0)
+            goto cleanup;
+        if ((stdoutfd = open(_PATH_DEVNULL, O_WRONLY)) < 0)
+            goto cleanup;
+        if (dup2(stdinfd, STDIN_FILENO) != STDIN_FILENO)
+            goto cleanup;
+        if (dup2(stdoutfd, STDOUT_FILENO) != STDOUT_FILENO)
+            goto cleanup;
+        if (dup2(stdoutfd, STDERR_FILENO) != STDERR_FILENO)
+            goto cleanup;
+        if (close(stdinfd) < 0)
+            goto cleanup;
+        stdinfd = -1;
+        if (close(stdoutfd) < 0)
+            goto cleanup;
+        stdoutfd = -1;
+
+        open_max = sysconf (_SC_OPEN_MAX);
+        for (i = 0; i < open_max; i++)
+            if (i != STDIN_FILENO &&
+                i != STDOUT_FILENO &&
+                i != STDERR_FILENO)
+                close(i);
+
+        setsid();
+        if (fork() == 0) {
+            /* Run daemon in auto-shutdown mode, so it goes away when
+               no longer needed by an active guest, or client */
+            execl(daemonPath, daemonPath, "--timeout", "30", NULL);
+        }
+        /*
+         * calling exit() generate troubles for termination handlers
+         */
+        _exit(0);
+
+    cleanup:
+        if (stdoutfd != -1)
+            close(stdoutfd);
+        if (stdinfd != -1)
+            close(stdinfd);
+        _exit(-1);
+    }
+
+    /*
+     * do a waitpid on the intermediate process to avoid zombies.
+     */
+ retry_wait:
+    ret = waitpid(pid, &status, 0);
+    if (ret < 0) {
+        if (errno == EINTR)
+            goto retry_wait;
+    }
+
+    return (0);
+}
+
+
+/* Must not overlap with virDrvOpenFlags */
+enum {
+    VIR_DRV_OPEN_REMOTE_RO = (1 << 0),
+    VIR_DRV_OPEN_REMOTE_UNIX = (1 << 1),
+    VIR_DRV_OPEN_REMOTE_USER = (1 << 2),
+    VIR_DRV_OPEN_REMOTE_AUTOSTART = (1 << 3),
+} virDrvOpenRemoteFlags;
+
+static int
+doRemoteOpen (virConnectPtr conn, struct private_data *priv, const char *uri_str, int flags)
 {
     if (!uri_str) return VIR_DRV_OPEN_DECLINED;
 
@@ -146,11 +275,12 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
         return VIR_DRV_OPEN_ERROR;
     }
 
-    if (!strcmp(uri_str, "qemu:///system") ||
-        !strcmp(uri_str, "qemu:///session"))
-        transport = trans_unix;
-    else if (!uri->server && !transport_str)
-        return VIR_DRV_OPEN_DECLINED; /* Decline - not a remote URL. */
+    if (!uri->server && !transport_str) {
+        if (flags & VIR_DRV_OPEN_REMOTE_UNIX)
+            transport = trans_unix;
+        else
+            return VIR_DRV_OPEN_DECLINED; /* Decline - not a remote URL. */
+    }
 
     /* Local variables which we will initialise. These can
      * get freed in the failed: path.
@@ -162,7 +292,6 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
 
     /* Return code from this function, and the private data. */
     int retcode = VIR_DRV_OPEN_ERROR;
-    struct private_data priv = { .magic = DEAD, .sock = -1 };
 
     /* Remote server defaults to "localhost" if not specified. */
     server = strdup (uri->server ? uri->server : "localhost");
@@ -282,7 +411,7 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
     switch (transport) {
     case trans_tls:
         if (initialise_gnutls (conn) == -1) goto failed;
-        priv.uses_tls = 1;
+        priv->uses_tls = 1;
 
         /*FALLTHROUGH*/
     case trans_tcp: {
@@ -312,30 +441,30 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
         for (r = res; r; r = r->ai_next) {
             int no_slow_start = 1;
 
-            priv.sock = socket (r->ai_family, SOCK_STREAM, 0);
-            if (priv.sock == -1) {
+            priv->sock = socket (r->ai_family, SOCK_STREAM, 0);
+            if (priv->sock == -1) {
                 error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
                 continue;
             }
 
             /* Disable Nagle - Dan Berrange. */
-            setsockopt (priv.sock,
+            setsockopt (priv->sock,
                         IPPROTO_TCP, TCP_NODELAY, (void *)&no_slow_start,
                         sizeof no_slow_start);
 
-            if (connect (priv.sock, r->ai_addr, r->ai_addrlen) == -1) {
+            if (connect (priv->sock, r->ai_addr, r->ai_addrlen) == -1) {
                 error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
-                close (priv.sock);
+                close (priv->sock);
                 continue;
             }
 
-            if (priv.uses_tls) {
-                priv.session =
+            if (priv->uses_tls) {
+                priv->session =
                     negotiate_gnutls_on_connection
-                      (conn, priv.sock, no_verify, server);
-                if (!priv.session) {
-                    close (priv.sock);
-                    priv.sock = -1;
+                      (conn, priv->sock, no_verify, server);
+                if (!priv->session) {
+                    close (priv->sock);
+                    priv->sock = -1;
                     continue;
                 }
             }
@@ -355,9 +484,7 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
 
     case trans_unix: {
         if (!sockname) {
-            if (!strcmp(uri->scheme, "qemu") &&
-                uri->path &&
-                !strcmp(uri->path, "/session")) {
+            if (flags & VIR_DRV_OPEN_REMOTE_USER) {
                 struct passwd *pw;
                 uid_t uid = getuid();
  
@@ -371,7 +498,7 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
                     goto failed;
                 }
             } else {
-                if (flags & VIR_DRV_OPEN_RO)
+                if (flags & VIR_DRV_OPEN_REMOTE_RO)
                     sockname = strdup (LIBVIRTD_PRIV_UNIX_SOCKET_RO);
                 else
                     sockname = strdup (LIBVIRTD_PRIV_UNIX_SOCKET);
@@ -382,18 +509,39 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
 #define UNIX_PATH_MAX(addr) (sizeof (addr).sun_path)
 #endif
         struct sockaddr_un addr;
+        int trials = 0;
+
         memset (&addr, 0, sizeof addr);
         addr.sun_family = AF_UNIX;
         strncpy (addr.sun_path, sockname, UNIX_PATH_MAX (addr));
         if (addr.sun_path[0] == '@')
             addr.sun_path[0] = '\0';
 
-        priv.sock = socket (AF_UNIX, SOCK_STREAM, 0);
-        if (priv.sock == -1) {
+      autostart_retry:
+        priv->sock = socket (AF_UNIX, SOCK_STREAM, 0);
+        if (priv->sock == -1) {
             error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
             goto failed;
         }
-        if (connect (priv.sock, (struct sockaddr *) &addr, sizeof addr) == -1){
+        if (connect (priv->sock, (struct sockaddr *) &addr, sizeof addr) == -1) {
+            /* We might have to autostart the daemon in some cases....
+             * It takes a short while for the daemon to startup, hence we
+             * have a number of retries, with a small sleep. This will
+             * sometimes cause multiple daemons to be started - this is
+             * ok because the duplicates will fail to bind to the socket
+             * and immediately exit, leaving just one daemon.
+             */
+            if (errno == ECONNREFUSED &&
+                flags & VIR_DRV_OPEN_REMOTE_AUTOSTART &&
+                trials < 5) {
+                close(priv->sock);
+                priv->sock = -1;
+                if (remoteForkDaemon(conn) == 0) {
+                    trials++;
+                    usleep(5000 * trials * trials);
+                    goto autostart_retry;
+                }
+            }
             error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
             goto failed;
         }
@@ -465,34 +613,24 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
 
         /* Parent continues here. */
         close (sv[1]);
-        priv.sock = sv[0];
+        priv->sock = sv[0];
     }
     } /* switch (transport) */
 
     /* Finally we can call the remote side's open function. */
     remote_open_args args = { &name, flags };
 
-    if (call (conn, &priv, 1, REMOTE_PROC_OPEN,
+    if (call (conn, priv, 1, REMOTE_PROC_OPEN,
               (xdrproc_t) xdr_remote_open_args, (char *) &args,
               (xdrproc_t) xdr_void, (char *) NULL) == -1)
         goto failed;
 
-    /* Finally allocate private data. */
-    conn->privateData = malloc (sizeof priv);
-    if (!conn->privateData) {
-        error (NULL, VIR_ERR_NO_MEMORY, "malloc");
-        goto failed;
-    }
     /* Duplicate and save the uri_str. */
-    priv.uri = strdup (uri_str);
-    if (!priv.uri) {
+    priv->uri = strdup (uri_str);
+    if (!priv->uri) {
         error (NULL, VIR_ERR_NO_MEMORY, "allocating priv->uri");
-        free (conn->privateData);
         goto failed;
     }
-
-    priv.magic = MAGIC;
-    memcpy (conn->privateData, &priv, sizeof priv);
 
     /* Successful. */
     retcode = VIR_DRV_OPEN_SUCCESS;
@@ -500,10 +638,10 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
     /*FALLTHROUGH*/
  failed:
     /* Close the socket if we failed. */
-    if (retcode != VIR_DRV_OPEN_SUCCESS && priv.sock >= 0) {
-        if (priv.uses_tls && priv.session)
-            gnutls_bye (priv.session, GNUTLS_SHUT_RDWR);
-        close (priv.sock);
+    if (retcode != VIR_DRV_OPEN_SUCCESS && priv->sock >= 0) {
+        if (priv->uses_tls && priv->session)
+            gnutls_bye (priv->session, GNUTLS_SHUT_RDWR);
+        close (priv->sock);
     }
 
     /* Free up the URL and strings. */
@@ -526,6 +664,47 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
 
     return retcode;
 }
+
+static int
+remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
+{
+    struct private_data *priv = malloc (sizeof(struct private_data));
+    int ret, rflags = 0;
+
+    if (!priv) {
+        error (NULL, VIR_ERR_NO_MEMORY, "struct private_data");
+        return VIR_DRV_OPEN_ERROR;
+    }
+
+    if (flags & VIR_DRV_OPEN_RO)
+        rflags |= VIR_DRV_OPEN_REMOTE_RO;
+
+    if (uri_str) {
+        if (!strcmp(uri_str, "qemu:///system")) {
+            rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
+        } else if (!strcmp(uri_str, "qemu:///session")) {
+            rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
+            if (getuid() > 0) {
+                rflags |= VIR_DRV_OPEN_REMOTE_USER;
+                rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
+            }
+        }
+    }
+
+    memset(priv, 0, sizeof(struct private_data));
+    priv->magic = DEAD;
+    priv->sock = -1;
+    ret = doRemoteOpen(conn, priv, uri_str, rflags);
+    if (ret != VIR_DRV_OPEN_SUCCESS) {
+        conn->privateData = NULL;
+        free(priv);
+    } else {
+        priv->magic = MAGIC;
+        conn->privateData = priv;
+    }
+    return ret;
+}
+
 
 /* In a string "driver+transport" return a pointer to "transport". */
 static char *
@@ -948,11 +1127,10 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
 
 /*----------------------------------------------------------------------*/
 
-static int
-remoteClose (virConnectPtr conn)
-{
-    GET_PRIVATE (conn, -1);
 
+static int
+doRemoteClose (virConnectPtr conn, struct private_data *priv)
+{
     if (call (conn, priv, 0, REMOTE_PROC_CLOSE,
               (xdrproc_t) xdr_void, (char *) NULL,
               (xdrproc_t) xdr_void, (char *) NULL) == -1)
@@ -971,9 +1149,21 @@ remoteClose (virConnectPtr conn)
 
     /* Free private data. */
     priv->magic = DEAD;
-    free (conn->privateData);
 
     return 0;
+}
+
+static int
+remoteClose (virConnectPtr conn)
+{
+    int ret;
+    GET_PRIVATE (conn, -1);
+
+    ret = doRemoteClose(conn, priv);
+    free (priv);
+    conn->privateData = NULL;
+
+    return ret;
 }
 
 /* Unfortunately this function is defined to return a static string.
@@ -1951,36 +2141,80 @@ remoteDomainSetSchedulerParameters (virDomainPtr domain,
 
 static int
 remoteNetworkOpen (virConnectPtr conn,
-                   const char *uri_str ATTRIBUTE_UNUSED,
-                   int flags ATTRIBUTE_UNUSED)
+                   const char *uri_str,
+                   int flags)
 {
-    /* If the main connection is a remote, then just catch the
-     * network open too.  Nothing is forwarded because the
-     * main remoteOpen call above will have already opened
-     * network on the remote side.
-     */
     if (conn &&
         conn->driver &&
-        strcmp (conn->driver->name, "remote") == 0)
+        strcmp (conn->driver->name, "remote") == 0) {
+        /* If we're here, the remote driver is already
+         * in use due to a) a QEMU uri, or b) a remote
+         * URI. So we can re-use existing connection
+         */
+        conn->networkPrivateData = conn->privateData;
         return VIR_DRV_OPEN_SUCCESS;
-    else
-        return VIR_DRV_OPEN_DECLINED;
+    } else {
+        /* Using a non-remote driver, so we need to open a
+         * new connection for network APIs, forcing it to
+         * use the UNIX transport. This handles Xen / Test
+         * drivers which don't have their own impl of the
+         * network APIs.
+         */
+        struct private_data *priv = malloc (sizeof(struct private_data));
+        int ret, rflags = 0;
+        if (!priv) {
+            error (NULL, VIR_ERR_NO_MEMORY, "struct private_data");
+            return VIR_DRV_OPEN_ERROR;
+        }
+
+        if (flags & VIR_DRV_OPEN_RO)
+            rflags |= VIR_DRV_OPEN_REMOTE_RO;
+        /* Xen driver is a single system-wide driver, so
+         * we need the main daemon. Test driver is per
+         * user, so use the per-user daemon, potentially
+         * autostarting
+         */
+        flags |= VIR_DRV_OPEN_REMOTE_UNIX;
+        if (getuid() > 0 &&
+            !strcmp(conn->driver->name, "test")) {
+            flags |= VIR_DRV_OPEN_REMOTE_USER;
+            flags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
+        }
+
+        memset(priv, 0, sizeof(struct private_data));
+        priv->magic = DEAD;
+        priv->sock = -1;
+        ret = doRemoteOpen(conn, priv, uri_str, rflags);
+        if (ret != VIR_DRV_OPEN_SUCCESS) {
+            conn->networkPrivateData = NULL;
+            free(priv);
+        } else {
+            priv->magic = MAGIC;
+            priv->networkOnly = 1;
+            conn->networkPrivateData = priv;
+        }
+        return ret;
+    }
 }
 
 static int
-remoteNetworkClose (virConnectPtr conn ATTRIBUTE_UNUSED)
+remoteNetworkClose (virConnectPtr conn)
 {
-    /* No need to pass this to the remote side, because
-     * libvirt.c will soon call remoteClose.
-     */
-    return 0;
+    int ret = 0;
+    GET_NETWORK_PRIVATE (conn, -1);
+    if (priv->networkOnly) {
+        ret = doRemoteClose(conn, priv);
+        free(priv);
+        conn->networkPrivateData = NULL;
+    }
+    return ret;
 }
 
 static int
 remoteNumOfNetworks (virConnectPtr conn)
 {
     remote_num_of_networks_ret ret;
-    GET_PRIVATE (conn, -1);
+    GET_NETWORK_PRIVATE (conn, -1);
 
     memset (&ret, 0, sizeof ret);
     if (call (conn, priv, 0, REMOTE_PROC_NUM_OF_NETWORKS,
@@ -1997,7 +2231,7 @@ remoteListNetworks (virConnectPtr conn, char **const names, int maxnames)
     int i;
     remote_list_networks_args args;
     remote_list_networks_ret ret;
-    GET_PRIVATE (conn, -1);
+    GET_NETWORK_PRIVATE (conn, -1);
 
     if (maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
         error (conn, VIR_ERR_RPC, "maxnames > REMOTE_NETWORK_NAME_LIST_MAX");
@@ -2034,7 +2268,7 @@ static int
 remoteNumOfDefinedNetworks (virConnectPtr conn)
 {
     remote_num_of_defined_networks_ret ret;
-    GET_PRIVATE (conn, -1);
+    GET_NETWORK_PRIVATE (conn, -1);
 
     memset (&ret, 0, sizeof ret);
     if (call (conn, priv, 0, REMOTE_PROC_NUM_OF_DEFINED_NETWORKS,
@@ -2052,7 +2286,7 @@ remoteListDefinedNetworks (virConnectPtr conn,
     int i;
     remote_list_defined_networks_args args;
     remote_list_defined_networks_ret ret;
-    GET_PRIVATE (conn, -1);
+    GET_NETWORK_PRIVATE (conn, -1);
 
     if (maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
         error (conn, VIR_ERR_RPC, "maxnames > REMOTE_NETWORK_NAME_LIST_MAX");
@@ -2092,7 +2326,7 @@ remoteNetworkLookupByUUID (virConnectPtr conn,
     virNetworkPtr net;
     remote_network_lookup_by_uuid_args args;
     remote_network_lookup_by_uuid_ret ret;
-    GET_PRIVATE (conn, NULL);
+    GET_NETWORK_PRIVATE (conn, NULL);
 
     memcpy (args.uuid, uuid, VIR_UUID_BUFLEN);
 
@@ -2118,7 +2352,7 @@ remoteNetworkLookupByName (virConnectPtr conn,
     virNetworkPtr net;
     remote_network_lookup_by_name_args args;
     remote_network_lookup_by_name_ret ret;
-    GET_PRIVATE (conn, NULL);
+    GET_NETWORK_PRIVATE (conn, NULL);
 
     args.name = (char *) name;
 
@@ -2143,7 +2377,7 @@ remoteNetworkCreateXML (virConnectPtr conn, const char *xmlDesc)
     virNetworkPtr net;
     remote_network_create_xml_args args;
     remote_network_create_xml_ret ret;
-    GET_PRIVATE (conn, NULL);
+    GET_NETWORK_PRIVATE (conn, NULL);
 
     args.xml = (char *) xmlDesc;
 
@@ -2168,7 +2402,7 @@ remoteNetworkDefineXML (virConnectPtr conn, const char *xml)
     virNetworkPtr net;
     remote_network_define_xml_args args;
     remote_network_define_xml_ret ret;
-    GET_PRIVATE (conn, NULL);
+    GET_NETWORK_PRIVATE (conn, NULL);
 
     args.xml = (char *) xml;
 
@@ -2191,7 +2425,7 @@ static int
 remoteNetworkUndefine (virNetworkPtr network)
 {
     remote_network_undefine_args args;
-    GET_PRIVATE (network->conn, -1);
+    GET_NETWORK_PRIVATE (network->conn, -1);
 
     make_nonnull_network (&args.net, network);
 
@@ -2207,7 +2441,7 @@ static int
 remoteNetworkCreate (virNetworkPtr network)
 {
     remote_network_create_args args;
-    GET_PRIVATE (network->conn, -1);
+    GET_NETWORK_PRIVATE (network->conn, -1);
 
     make_nonnull_network (&args.net, network);
 
@@ -2223,7 +2457,7 @@ static int
 remoteNetworkDestroy (virNetworkPtr network)
 {
     remote_network_destroy_args args;
-    GET_PRIVATE (network->conn, -1);
+    GET_NETWORK_PRIVATE (network->conn, -1);
 
     make_nonnull_network (&args.net, network);
 
@@ -2240,7 +2474,7 @@ remoteNetworkDumpXML (virNetworkPtr network, int flags)
 {
     remote_network_dump_xml_args args;
     remote_network_dump_xml_ret ret;
-    GET_PRIVATE (network->conn, NULL);
+    GET_NETWORK_PRIVATE (network->conn, NULL);
 
     make_nonnull_network (&args.net, network);
     args.flags = flags;
@@ -2260,7 +2494,7 @@ remoteNetworkGetBridgeName (virNetworkPtr network)
 {
     remote_network_get_bridge_name_args args;
     remote_network_get_bridge_name_ret ret;
-    GET_PRIVATE (network->conn, NULL);
+    GET_NETWORK_PRIVATE (network->conn, NULL);
 
     make_nonnull_network (&args.net, network);
 
@@ -2279,7 +2513,7 @@ remoteNetworkGetAutostart (virNetworkPtr network, int *autostart)
 {
     remote_network_get_autostart_args args;
     remote_network_get_autostart_ret ret;
-    GET_PRIVATE (network->conn, -1);
+    GET_NETWORK_PRIVATE (network->conn, -1);
 
     make_nonnull_network (&args.net, network);
 
@@ -2298,7 +2532,7 @@ static int
 remoteNetworkSetAutostart (virNetworkPtr network, int autostart)
 {
     remote_network_set_autostart_args args;
-    GET_PRIVATE (network->conn, -1);
+    GET_NETWORK_PRIVATE (network->conn, -1);
 
     make_nonnull_network (&args.net, network);
     args.autostart = autostart;
