@@ -90,14 +90,6 @@ xenUnifiedOpen (virConnectPtr conn, const char *name, int flags)
     xenUnifiedPrivatePtr priv;
     xmlURIPtr uri;
 
-    /* Convert NULL or "" to xen:/// for back compat */
-    if (!name || name[0] == '\0')
-        name = "xen:///";
-
-    /* Convert xen -> xen:/// for back compat */
-    if (!strcasecmp(name, "xen"))
-        name = "xen:///";
-
     uri = xmlParseURI(name);
     if (uri == NULL) {
         return VIR_DRV_OPEN_DECLINED;

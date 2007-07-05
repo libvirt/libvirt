@@ -1,3 +1,10 @@
+Thu Jul  5 09:47:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/libvirt.c, src/xen_unified.c: Move code converting NULL
+	and 'xen' into 'xen://' from the Xen driver into the main libvirt.c
+	entry point. We need this conversion done at the top level, so that
+	the network driver open func gets a valid URI in Xen case
+
 Thu Jul  5 09:46:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/remote_internal.c: Fixed typo in setting flags for network

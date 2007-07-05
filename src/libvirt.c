@@ -372,6 +372,14 @@ do_open (const char *name, int flags)
     int i, res;
     virConnectPtr ret = NULL;
 
+    /* Convert NULL or "" to xen:/// for back compat */
+    if (!name || name[0] == '\0')
+        name = "xen:///";
+
+    /* Convert xen -> xen:/// for back compat */
+    if (!strcasecmp(name, "xen"))
+        name = "xen:///";
+
     if (!initialized)
         if (virInitialize() < 0)
 	    return NULL;
