@@ -653,7 +653,7 @@ xend_node_op(virConnectPtr xend, const char *path, const char *key, ...)
 
 
 /**
- * xend_node_op:
+ * xend_op_ext:
  * @xend: pointer to the Xen Daemon structure
  * @name: the domain name target of this operation
  * @error: buffer for the error output

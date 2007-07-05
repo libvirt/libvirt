@@ -1,3 +1,10 @@
+Thu Jul  5 18:02:28 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: fix typo in function comment
+	* po/*: updated the localizations
+	* qemud/libvirtd.init.in: LSB'ization of the init script and
+	  couple of fixups
+
 Thu Jul  5 09:47:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/libvirt.c, src/xen_unified.c: Move code converting NULL

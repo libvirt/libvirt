@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ml\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-06-26 19:38-0400\n"
-"PO-Revision-Date: 2007-06-07 10:19+0530\n"
+"POT-Creation-Date: 2007-07-05 17:00+0200\n"
+"PO-Revision-Date: 2007-06-15 11:11+0530\n"
 "Last-Translator: Ani Peter <apeter@redhat.com>\n"
 "Language-Team: Malayalam <en@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -358,14 +358,13 @@ msgid "GNUTLS call error"
 msgstr "GNUTLS കോളില്‍ പിശക് "
 
 #: src/virterror.c:633
-#, fuzzy
 msgid "Failed to find the network"
-msgstr "നെറ്റ്‌വറ്‍ക്ക് %s അവ്യക്തമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
+msgstr "നെറ്റ്‌വറ്‍ക്ക് ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
 #: src/virterror.c:635
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find the network: %s"
-msgstr "നെറ്റ്‌വറ്‍ക്ക് %s അവ്യക്തമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
+msgstr "നെറ്റ്‌വറ്‍ക്ക് ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -443,7 +442,7 @@ msgstr "ഹാഷ് ടേബിളിലില്‍ നെറ്റ്‌വ�
 msgid "getting time of day"
 msgstr "ഇന്നത്തെ സമയം ലഭ്യമാക്കുന്നു"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1458
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
 msgid "domain"
 msgstr "ഡൊമെയിന്‍"
 
@@ -560,11 +559,11 @@ msgstr "‍ഡൊമെയിന്‍ അനുവദിക്കുന്ന�
 msgid "too many domains"
 msgstr "അനവധി ഡൊമെയിനുകള്‍"
 
-#: src/test.c:1490
+#: src/test.c:1491
 msgid "Domain is already running"
 msgstr "ഡൊമെയിന്‍ നിലിവില്‍ പ്രവര്‍ത്തനത്തിലാണ് "
 
-#: src/test.c:1517
+#: src/test.c:1518
 msgid "Domain is still running"
 msgstr "ഡൊമെയിന്‍ ഇപ്പോഴും പ്റവറ്‍ത്തനത്തിലാണ്"
 
@@ -638,20 +637,19 @@ msgstr "Xend ഡൊമെയിന്‍ വിവരം പാര്‍സ് �
 msgid "Failed to create inactive domain %s\n"
 msgstr "നിഷ്ക്റിയമായ ഡൊമെയിന്‍ %s ഉണ്ടാക്കുന്നതില്‍ പരാജയം\n"
 
-#: src/virsh.c:309
+#: src/virsh.c:307
 msgid "print help"
 msgstr "സഹായം പ്രിന്‍റ് ചെയ്യുക"
 
-#: src/virsh.c:310
+#: src/virsh.c:308
 msgid "Prints global help or command specific help."
 msgstr "ഗ്ലോബല്‍ സഹായം അല്ലെങ്കില്‍ കമാന്‍ഡ് വ്യക്തമാക്കുന്ന സഹായം പ്രിന്‍റ് ചെയ്യുന്നു."
 
-#: src/virsh.c:316
-#, fuzzy
+#: src/virsh.c:314
 msgid "name of command"
-msgstr "നിഷ്ക്രിയമായ ഡൊമെയിന്‍റെ പേര്"
+msgstr "കമാന്‍ഡിന്‍റെ പേര്"
 
-#: src/virsh.c:328
+#: src/virsh.c:326
 msgid ""
 "Commands:\n"
 "\n"
@@ -659,181 +657,181 @@ msgstr ""
 "കമാന്‍ഡുകള്‍:\n"
 "\n"
 
-#: src/virsh.c:342
+#: src/virsh.c:340
 msgid "autostart a domain"
 msgstr "ഒരു ഡൊമെയിന്‍ ഓട്ടോമാറ്റിക്കായി തുടങ്ങുക"
 
-#: src/virsh.c:344
+#: src/virsh.c:342
 msgid "Configure a domain to be automatically started at boot."
 msgstr "ബൂട്ട് ചെയ്യുന്പോള്‍ ഓട്ടോമാറ്റിക്കായി ആരംഭിക്കുന്നതിനായി ഒരു ഡൊമെയിന്‍ ക്റമികരിക്കുക."
 
-#: src/virsh.c:349 src/virsh.c:449 src/virsh.c:635 src/virsh.c:673
-#: src/virsh.c:948 src/virsh.c:992 src/virsh.c:1153 src/virsh.c:1198
-#: src/virsh.c:1237 src/virsh.c:1276 src/virsh.c:1315 src/virsh.c:1354
-#: src/virsh.c:1431 src/virsh.c:1518 src/virsh.c:1646 src/virsh.c:1703
-#: src/virsh.c:1760 src/virsh.c:1881 src/virsh.c:2659 src/virsh.c:2738
-#: src/virsh.c:2792 src/virsh.c:2846 src/virsh.c:2962 src/virsh.c:3083
-#: src/virsh.c:3248
+#: src/virsh.c:347 src/virsh.c:448 src/virsh.c:634 src/virsh.c:672
+#: src/virsh.c:952 src/virsh.c:996 src/virsh.c:1168 src/virsh.c:1213
+#: src/virsh.c:1252 src/virsh.c:1291 src/virsh.c:1330 src/virsh.c:1369
+#: src/virsh.c:1446 src/virsh.c:1533 src/virsh.c:1661 src/virsh.c:1718
+#: src/virsh.c:1775 src/virsh.c:1896 src/virsh.c:2674 src/virsh.c:2753
+#: src/virsh.c:2807 src/virsh.c:2861 src/virsh.c:2977 src/virsh.c:3098
+#: src/virsh.c:3263
 msgid "domain name, id or uuid"
 msgstr "ഡൊമെയിന്‍ പേര്, id അല്ലെങ്കില്‍ uuid"
 
-#: src/virsh.c:350 src/virsh.c:2022
+#: src/virsh.c:348 src/virsh.c:2037
 msgid "disable autostarting"
 msgstr "ഓട്ടോസ്റ്റാറ്‍ട്ടിങ് നിഷ്ക്റിയമാക്കുക"
 
-#: src/virsh.c:371
+#: src/virsh.c:369
 #, c-format
 msgid "Failed to mark domain %s as autostarted"
 msgstr "ഡൊമെയിന്‍ %s ഓട്ടോമാറ്റിക്കായി സ്റ്റാറ്‍ട്ട് ചെയ്യുന്നു എന്ന് അടയാളപ്പെടുത്തുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:374
+#: src/virsh.c:372
 #, c-format
 msgid "Failed to unmark domain %s as autostarted"
 msgstr ""
 "ഡൊമെയിന്‍ %s ഓട്ടോമാറ്റിക്കായി സ്റ്റാറ്‍ട്ട് ചെയ്യുന്നു എന്ന് അടയാളപ്പെടുത്തല്‍ മാറ്റുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:381
+#: src/virsh.c:379
 #, c-format
 msgid "Domain %s marked as autostarted\n"
 msgstr "ഡൊമെയിന്‍ %s ഓട്ടോമാറ്റിക്കായി തുടങ്ങുന്നു എന്ന് അടയാളപ്പെടുത്തിയിരിക്കുന്നു\n"
 
-#: src/virsh.c:383
+#: src/virsh.c:381
 #, c-format
 msgid "Domain %s unmarked as autostarted\n"
 msgstr "ഡൊമെയിന്‍ %s ഓട്ടോമാറ്റിക്കായി തുടങ്ങുന്നു എന്ന് അടയാളപ്പെടുത്തല്‍ മാറ്റിയിരിക്കുന്നു\n"
 
-#: src/virsh.c:393
+#: src/virsh.c:392
 msgid "(re)connect to hypervisor"
 msgstr "വീണ്ടും ഹൈപ്പര്‍‍വൈസറിലേക്ക് കണക്ട് ചെയ്യുക"
 
-#: src/virsh.c:395
+#: src/virsh.c:394
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr ""
 "ലോക്കല്‍ ഹൈപ്പര്‍‍വൈസറിലേക്ക് കണക്ട് ചെയ്യുക. ഷെല്‍ ആരംഭിച്ച ശേഷമുളള ബിള്‍ട്ട്-ഇന്‍ കമാന്‍ഡ് ആണിത്."
 
-#: src/virsh.c:400
+#: src/virsh.c:399
 msgid "hypervisor connection URI"
 msgstr "ഹൈപ്പര്‍‍വൈസര്‍ കണക്ഷനുളള URI"
 
-#: src/virsh.c:401
+#: src/virsh.c:400
 msgid "read-only connection"
 msgstr "റീഡ്-ഒണ്‍ലി കണക്ഷന്‍"
 
-#: src/virsh.c:413
+#: src/virsh.c:412
 msgid "Failed to disconnect from the hypervisor"
 msgstr "ഹൈപ്പര്‍‍വൈസറില്‍ നിന്നും കണക്ഷന്‍ ഛേദിക്കുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:432
+#: src/virsh.c:431
 msgid "Failed to connect to the hypervisor"
 msgstr "ഹൈപ്പര്‍‍വൈസറിലേക്ക് കണക്ട് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:442
+#: src/virsh.c:441
 msgid "connect to the guest console"
 msgstr "ഗസ്റ്റ് കണ്‍സോളിലേക്ക് കണക്ട് ചെയ്യുക"
 
-#: src/virsh.c:444
+#: src/virsh.c:443
 msgid "Connect the virtual serial console for the guest"
 msgstr "ഗസ്റ്റിനുളള വിറ്‍ച്ച്വല്‍ സീരിയല്‍ കണ്‍സോള്‍ കണക്ട് ചെയ്യുക"
 
-#: src/virsh.c:489
+#: src/virsh.c:488
 msgid "No console available for domain\n"
 msgstr "ഡൊമെയിനിന് കണ്‍സോള്‍ ലഭ്യമല്ല\n"
 
-#: src/virsh.c:507
+#: src/virsh.c:506
 msgid "list domains"
 msgstr "ഡൊമെയിനുകള്‍ ലിസ്റ്റ് ചെയ്യുക"
 
-#: src/virsh.c:508
+#: src/virsh.c:507
 msgid "Returns list of domains."
 msgstr "ഡൊമെയിന്‍റെ ലിസ്റ്റ് നല്‍കുന്നു."
 
-#: src/virsh.c:513
+#: src/virsh.c:512
 msgid "list inactive domains"
 msgstr "സജീവമല്ലാത്ത ഡൊമെയിനുകള്‍ ലിസ്റ്റ് ചെയ്യുക"
 
-#: src/virsh.c:514
+#: src/virsh.c:513
 msgid "list inactive & active domains"
 msgstr "സജീവമായതും അല്ലാത്തതുമായ ഡൊമെയിനുകള്‍ ലിസ്റ്റ് ചെയ്യുക"
 
-#: src/virsh.c:536 src/virsh.c:543
+#: src/virsh.c:535 src/virsh.c:542
 msgid "Failed to list active domains"
 msgstr "സജീവമായ ഡൊമെയിനുകള്‍ ലിസ്റ്റ് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:554 src/virsh.c:563
+#: src/virsh.c:553 src/virsh.c:562
 msgid "Failed to list inactive domains"
 msgstr "സജീവമല്ലാത്ത ഡൊമെയിനുകള്‍ ലിസ്റ്റ് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:573
+#: src/virsh.c:572
 msgid "Id"
 msgstr "Id"
 
-#: src/virsh.c:573 src/virsh.c:2307
+#: src/virsh.c:572 src/virsh.c:2322
 msgid "Name"
 msgstr "പേര്"
 
-#: src/virsh.c:573 src/virsh.c:2307
+#: src/virsh.c:572 src/virsh.c:2322
 msgid "State"
 msgstr "അവസ്ഥ"
 
-#: src/virsh.c:586 src/virsh.c:608 src/virsh.c:4017 src/virsh.c:4033
+#: src/virsh.c:585 src/virsh.c:607 src/virsh.c:4032 src/virsh.c:4048
 msgid "no state"
 msgstr "അവസ്ഥയില്ല"
 
-#: src/virsh.c:629
+#: src/virsh.c:628
 msgid "domain state"
 msgstr "ഡൊമെയിന്‍റെ അവസ്ഥ"
 
-#: src/virsh.c:630
+#: src/virsh.c:629
 msgid "Returns state about a running domain."
 msgstr "പ്രവര്‍ത്തിക്കുന്ന ഒരു ഡൊമെയിനിന്‍റെ അവസ്ഥ നല്‍കുന്നു."
 
-#: src/virsh.c:667
+#: src/virsh.c:666
 msgid "suspend a domain"
 msgstr "ഒരു ഡൊമെയിന്‍ താല്‍ക്കാലികമായി നിര്‍ത്തുക"
 
-#: src/virsh.c:668
+#: src/virsh.c:667
 msgid "Suspend a running domain."
 msgstr "പ്രവര്‍ത്തനത്തിലുളള ഒരു ഡൊമെയിന്‍ താല്‍ക്കാലികമായി നിര്‍ത്തുക."
 
-#: src/virsh.c:691
+#: src/virsh.c:690
 #, c-format
 msgid "Domain %s suspended\n"
 msgstr "%s ഡൊമെയിന്‍ താല്‍ക്കാലികമായി നിര്‍ത്തിയിരിക്കുന്നു\n"
 
-#: src/virsh.c:693
+#: src/virsh.c:692
 #, c-format
 msgid "Failed to suspend domain %s"
 msgstr "ഡൊമെയിന്‍ %s താല്‍ക്കാലികമായി നിര്‍ത്തുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/virsh.c:706
+#: src/virsh.c:705
 msgid "create a domain from an XML file"
 msgstr "ഒരു XML ഫയലില്‍ നിന്നും ഒരു ഡൊമെയിന്‍ ഉണ്ടാക്കുക"
 
-#: src/virsh.c:707
+#: src/virsh.c:706
 msgid "Create a domain."
 msgstr "ഒരു ഡൊമെയിന്‍ ഉണ്ടാക്കുക."
 
-#: src/virsh.c:712 src/virsh.c:819
+#: src/virsh.c:711 src/virsh.c:819
 msgid "file containing an XML domain description"
 msgstr "ഒരു XML ഡൊമെയിന്‍ വിവരണം ലഭ്യമാകുന്ന ഫയല്‍"
 
-#: src/virsh.c:727
-#, fuzzy, c-format
+#: src/virsh.c:726
+#, c-format
 msgid "Failed to open '%s': %s"
-msgstr "'%s' തുറക്കുന്നതില്‍ പരാജയം: കാണുക: %s"
+msgstr "'%s' തുറക്കുന്നതില്‍ പരാജയം: %s"
 
-#: src/virsh.c:747
-#, fuzzy, c-format
+#: src/virsh.c:746
+#, c-format
 msgid "Failed to open '%s': read: %s"
-msgstr "'%s' തുറക്കുന്നതില്‍ പരാജയം: കാണുക: %s"
+msgstr "'%s' തുറക്കുന്നതില്‍ പരാജയം: കാണുക: %s "
 
-#: src/virsh.c:765
-#, fuzzy, c-format
+#: src/virsh.c:764
+#, c-format
 msgid "Error allocating memory: %s"
-msgstr "മെമ്മറി അനുവദിക്കുന്നതില്‍ പിശക്: %s"
+msgstr "മെമ്മറി അനുവദിക്കുന്നതില്‍ പിശക്: %s "
 
-#: src/virsh.c:799
+#: src/virsh.c:798
 #, c-format
 msgid "Domain %s created from %s\n"
 msgstr "%s-ല്‍ നിന്നും ഡൊമെയിന്‍ %s ഉണ്ടാക്കിയിരിക്കുന്നു\n"
@@ -856,958 +854,951 @@ msgstr "ഒരു ഡൊമെയിന്‍ നിര്‍ഷ്കര്‍�
 msgid "Domain %s defined from %s\n"
 msgstr "%s-ല്‍ നിന്നും ഡൊമെയിന്‍ %s നിര്‍ഷ്കര്‍ശിച്ചിരിക്കുന്നു\n"
 
-#: src/virsh.c:849
+#: src/virsh.c:850
 #, c-format
 msgid "Failed to define domain from %s"
 msgstr "%s-ല്‍ നിന്നും ഡൊമെയിന്‍ വ്യക്തമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:860
+#: src/virsh.c:861
 msgid "undefine an inactive domain"
 msgstr "സജീവമല്ലാത്ത ഒരു ഡൊമെയിന്‍ വ്യക്തമാക്കേണ്ടതില്ല"
 
-#: src/virsh.c:861
+#: src/virsh.c:862
 msgid "Undefine the configuration for an inactive domain."
 msgstr "സജീവമല്ലാത്ത ഒരു ഡൊമെയിന്‍റെ കോണ്‍ഫിഗറേഷന്‍ വ്യക്തമാക്കേണ്ടതില്ല."
 
-#: src/virsh.c:866 src/virsh.c:1950
+#: src/virsh.c:867 src/virsh.c:1965
 msgid "domain name or uuid"
 msgstr "ഡൊമെയിന്‍ പേര് അല്ലെങ്കില്‍ uuid"
 
-#: src/virsh.c:884
+#: src/virsh.c:885
 #, c-format
 msgid "Domain %s has been undefined\n"
 msgstr "ഡൊമെയിന്‍ %s അവ്യക്തമാക്കിയിരിക്കുന്നു\n"
 
-#: src/virsh.c:886
+#: src/virsh.c:887
 #, c-format
 msgid "Failed to undefine domain %s"
 msgstr "ഡൊമെയിന്‍ %s അവ്യക്തമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/virsh.c:899
+#: src/virsh.c:901
 msgid "start a (previously defined) inactive domain"
 msgstr "സജീവമല്ലാത്ത ഒരു ഡൊമെയിന്‍ ആരംഭിക്കുക"
 
-#: src/virsh.c:900
+#: src/virsh.c:902
 msgid "Start a domain."
 msgstr "ഒരു ഡൊമെയിന്‍ തുടങ്ങുക."
 
-#: src/virsh.c:905
+#: src/virsh.c:907
 msgid "name of the inactive domain"
 msgstr "നിഷ്ക്രിയമായ ഡൊമെയിന്‍റെ പേര്"
 
-#: src/virsh.c:922
+#: src/virsh.c:924
 msgid "Domain is already active"
 msgstr "ഡൊമെയിന്‍ നിലിവില്‍ പ്രവര്‍ത്തനത്തിലാണ്"
 
-#: src/virsh.c:927
+#: src/virsh.c:930
 #, c-format
 msgid "Domain %s started\n"
 msgstr "ഡൊമെയിന്‍ %s തുടങ്ങിയിരിക്കുന്നു\n"
 
-#: src/virsh.c:930
+#: src/virsh.c:933
 #, c-format
 msgid "Failed to start domain %s"
 msgstr "ഡൊമെയിന്‍ %s തുടങ്ങുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:942
+#: src/virsh.c:946
 msgid "save a domain state to a file"
 msgstr "ഒരു ഡൊമെയിന്‍റെ അവസ്ഥ ഒരു ഫയലിലേക്ക് സൂക്ഷിക്കുക"
 
-#: src/virsh.c:943
+#: src/virsh.c:947
 msgid "Save a running domain."
 msgstr "പ്രവര്‍ത്തനത്തിലുളള ഒരു ഡൊമെയില്‍ സൂക്ഷിക്കുക."
 
-#: src/virsh.c:949
+#: src/virsh.c:953
 msgid "where to save the data"
 msgstr "ഡേറ്റാ സൂക്ഷിക്കേണ്ടത് എവിടെ എന്ന്"
 
-#: src/virsh.c:971
+#: src/virsh.c:975
 #, c-format
 msgid "Domain %s saved to %s\n"
 msgstr "ഡൊമെയിന്‍ %s-നെ %s ആയി സൂക്ഷിച്ചിരിക്കുന്നു\n"
 
-#: src/virsh.c:973
+#: src/virsh.c:977
 #, c-format
 msgid "Failed to save domain %s to %s"
 msgstr "ഡൊമെയിന്‍ %s-നെ %s ആയി സൂക്ഷിക്കുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:986
+#: src/virsh.c:990
 msgid "show/set scheduler parameters"
 msgstr "ഷെഡ്യൂളറ്‍ പാരമീറ്ററുകള്‍ കാണിക്കുക/ക്റമികരിക്കുക."
 
-#: src/virsh.c:987
+#: src/virsh.c:991
 msgid "Show/Set scheduler parameters."
 msgstr "ഷെഡ്യൂളറ്‍ പാരമീറ്ററുകള്‍ കാണിക്കുക/ക്റമികരിക്കുക."
 
-#: src/virsh.c:993
+#: src/virsh.c:997
 msgid "weight for XEN_CREDIT"
 msgstr "XEN_CREDIT-നുളള വെയിറ്റ്"
 
-#: src/virsh.c:994
+#: src/virsh.c:998
 msgid "cap for XEN_CREDIT"
 msgstr "XEN_CREDIT-നുളള കാപ്പ്"
 
-#: src/virsh.c:1058 src/virsh.c:1062
-#, fuzzy
+#: src/virsh.c:1068 src/virsh.c:1072
 msgid "Scheduler"
-msgstr "ഷെഡ്യൂളറ്‍:"
+msgstr "ഷെഡ്യൂളറ്‍"
 
-#: src/virsh.c:1062
-#, fuzzy
+#: src/virsh.c:1072
 msgid "Unknown"
-msgstr "അപരിചിതമായ"
+msgstr "അപരിചിതം"
 
-#: src/virsh.c:1109
+#: src/virsh.c:1124
 msgid "restore a domain from a saved state in a file"
 msgstr "ഒരു ഫയലില്‍ സൂക്ഷിച്ച അവസ്ഥയില്‍ നിന്നും ഒരു ഡൊമെയിന്‍ വീണ്ടെടുക്കുക"
 
-#: src/virsh.c:1110
+#: src/virsh.c:1125
 msgid "Restore a domain."
 msgstr "ഒരു ഡൊമെയിന്‍ വീണ്ടെടുക്കുക."
 
-#: src/virsh.c:1115
+#: src/virsh.c:1130
 msgid "the state to restore"
 msgstr "വീണ്ടെടുക്കേണ്ട അവസ്ഥ"
 
-#: src/virsh.c:1134
+#: src/virsh.c:1149
 #, c-format
 msgid "Domain restored from %s\n"
 msgstr "%s-ല്‍ നിന്നും ഡൊമെയിന്‍ വീണ്ടെടുത്തിരിക്കുന്നു\n"
 
-#: src/virsh.c:1136
+#: src/virsh.c:1151
 #, c-format
 msgid "Failed to restore domain from %s"
 msgstr "%s-ല്‍ നിന്നും ഡൊമെയിന്‍ വീണ്ടെടുക്കുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:1147
+#: src/virsh.c:1162
 msgid "dump the core of a domain to a file for analysis"
 msgstr "ഫയല്‍ നിരീക്ഷിക്കുന്നതിനായി ഒരു ഡൊമെയിന്‍ കോറ്‍ ഡന്പ് ചെയ്യുക"
 
-#: src/virsh.c:1148
+#: src/virsh.c:1163
 msgid "Core dump a domain."
 msgstr "ഒരു ഡൊമെയിന്‍ കോറ്‍ ഡന്പ് ചെയ്യുക"
 
-#: src/virsh.c:1154
+#: src/virsh.c:1169
 msgid "where to dump the core"
 msgstr "കോറ്‍ ഡംന്പ് ചെയ്യേണ്ടത് എവിടെ എന്ന്"
 
-#: src/virsh.c:1176
+#: src/virsh.c:1191
 #, c-format
 msgid "Domain %s dumpd to %s\n"
 msgstr "ഡൊമെയിന്‍ %s-നെ %s-ലേക്ക് ഡംന്പ് ചെയ്യുന്നു\n"
 
-#: src/virsh.c:1178
+#: src/virsh.c:1193
 #, c-format
 msgid "Failed to core dump domain %s to %s"
 msgstr "ഡൊമെയിന്‍ %s-നെ %s-ലേക്ക് ഡംന്പ് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:1192
+#: src/virsh.c:1207
 msgid "resume a domain"
 msgstr "ഒരു ഡൊമെയിന്‍ വീണ്ടും ആരംഭിക്കുക"
 
-#: src/virsh.c:1193
+#: src/virsh.c:1208
 msgid "Resume a previously suspended domain."
 msgstr "മുന്പ് നിര്‍ത്തിയിരുന്ന ഒരു ഡൊമെയിന്‍ വീണ്ടും ആരംഭിക്കുക."
 
-#: src/virsh.c:1216
+#: src/virsh.c:1231
 #, c-format
 msgid "Domain %s resumed\n"
 msgstr "ഡൊമെയിന്‍ %s വീണ്ടും ആരംഭിക്കുന്നു\n"
 
-#: src/virsh.c:1218
+#: src/virsh.c:1233
 #, c-format
 msgid "Failed to resume domain %s"
 msgstr "ഡൊമെയിന്‍ %s വീണ്ടും ആരംഭിക്കുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:1231
+#: src/virsh.c:1246
 msgid "gracefully shutdown a domain"
 msgstr "ഒരു ഡൊമെയിന്‍ അടച്ചു പൂട്ടുക"
 
-#: src/virsh.c:1232
+#: src/virsh.c:1247
 msgid "Run shutdown in the target domain."
 msgstr "ടാര്‍ഗെറ്റ് ഡൊമെയിനില്‍ shutdown കമാന്‍ഡ് പ്രവര്‍ത്തിപ്പിക്കുക."
 
-#: src/virsh.c:1255
+#: src/virsh.c:1270
 #, c-format
 msgid "Domain %s is being shutdown\n"
 msgstr "ഡൊമെയിന്‍ %s അടച്ചു പൂട്ടുന്നു\n"
 
-#: src/virsh.c:1257
+#: src/virsh.c:1272
 #, c-format
 msgid "Failed to shutdown domain %s"
 msgstr "ഡൊമെയിന്‍ %s അടച്ചു പൂട്ടുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:1270
+#: src/virsh.c:1285
 msgid "reboot a domain"
 msgstr "ഒരു ഡൊമെയിന്‍ റീബൂട്ട് ചെയ്യുക"
 
-#: src/virsh.c:1271
+#: src/virsh.c:1286
 msgid "Run a reboot command in the target domain."
 msgstr "ടാര്‍ഗെറ്റ് ഡൊമെയിനില്‍ reboot കമാന്‍ഡ് പ്രവര്‍ത്തിപ്പിക്കുക."
 
-#: src/virsh.c:1294
+#: src/virsh.c:1309
 #, c-format
 msgid "Domain %s is being rebooted\n"
 msgstr "ഡൊമെയിന്‍ %s റീബൂട്ട് ചെയ്യപ്പെടുന്നു\n"
 
-#: src/virsh.c:1296
+#: src/virsh.c:1311
 #, c-format
 msgid "Failed to reboot domain %s"
 msgstr "ഡൊമെയിന്‍ %s റീബൂട്ട് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:1309
+#: src/virsh.c:1324
 msgid "destroy a domain"
 msgstr "ഒരു ഡൊമെയിന്‍ ഇല്ലാതാക്കുക"
 
-#: src/virsh.c:1310
+#: src/virsh.c:1325
 msgid "Destroy a given domain."
 msgstr "തന്നിരിക്കുന്ന ഡൊമെയിന്‍ ഇല്ലാതാക്കുക."
 
-#: src/virsh.c:1333
+#: src/virsh.c:1348
 #, c-format
 msgid "Domain %s destroyed\n"
 msgstr "ഡൊമെയിന്‍ %s ഇല്ലാതാക്കിയിരിക്കുന്നു\n"
 
-#: src/virsh.c:1335
+#: src/virsh.c:1350
 #, c-format
 msgid "Failed to destroy domain %s"
 msgstr "ഡൊമെയിന്‍ %s നശിപ്പിക്കുന്നതിന്‍ പരാജയം"
 
-#: src/virsh.c:1348
+#: src/virsh.c:1363
 msgid "domain information"
 msgstr "ഡൊമെയിന്‍ വിവരങ്ങള്‍"
 
-#: src/virsh.c:1349
+#: src/virsh.c:1364
 msgid "Returns basic information about the domain."
 msgstr "ഡൊമെയിന്‍ സംബന്ധിച്ചുളള അടിസ്ഥാന വിവരങ്ങള്‍ ലഭ്യമാക്കുന്നു."
 
-#: src/virsh.c:1375 src/virsh.c:1377
+#: src/virsh.c:1390 src/virsh.c:1392
 msgid "Id:"
 msgstr "Id:"
 
-#: src/virsh.c:1378
+#: src/virsh.c:1393
 msgid "Name:"
 msgstr "പേര്:"
 
-#: src/virsh.c:1381
+#: src/virsh.c:1396
 msgid "UUID:"
 msgstr "UUID:"
 
-#: src/virsh.c:1384
+#: src/virsh.c:1399
 msgid "OS Type:"
 msgstr "ഏത് തരം OS:"
 
-#: src/virsh.c:1389 src/virsh.c:1475
+#: src/virsh.c:1404 src/virsh.c:1490
 msgid "State:"
 msgstr "അവസ്ഥ:"
 
-#: src/virsh.c:1392 src/virsh.c:1832
+#: src/virsh.c:1407 src/virsh.c:1847
 msgid "CPU(s):"
 msgstr "CPU:"
 
-#: src/virsh.c:1399 src/virsh.c:1482
+#: src/virsh.c:1414 src/virsh.c:1497
 msgid "CPU time:"
 msgstr "CPU സമയം:"
 
-#: src/virsh.c:1403 src/virsh.c:1406
+#: src/virsh.c:1418 src/virsh.c:1421
 msgid "Max memory:"
 msgstr "ഏറ്റവും കൂടുതല്‍ മെമ്മറി:"
 
-#: src/virsh.c:1407
+#: src/virsh.c:1422
 msgid "no limit"
 msgstr "പരിധിയില്ല"
 
-#: src/virsh.c:1409
+#: src/virsh.c:1424
 msgid "Used memory:"
 msgstr "ഉപയോഗത്തിലുളള മെമ്മറി:"
 
-#: src/virsh.c:1425
+#: src/virsh.c:1440
 msgid "domain vcpu information"
 msgstr "ഡൊമെയിന്‍ vcpu വിവരം"
 
-#: src/virsh.c:1426
+#: src/virsh.c:1441
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr "ഡൊമെയിന്‍ വിര്‍ച്ച്വല്‍ CPU സംബന്ധിച്ചുളള അടിസ്ഥാന വിവരങ്ങള്‍ ലഭ്യമാക്കുന്നു."
 
-#: src/virsh.c:1473
+#: src/virsh.c:1488
 msgid "VCPU:"
 msgstr "VCPU:"
 
-#: src/virsh.c:1474
+#: src/virsh.c:1489
 msgid "CPU:"
 msgstr "CPU:"
 
-#: src/virsh.c:1484
+#: src/virsh.c:1499
 msgid "CPU Affinity:"
 msgstr "CPU അഫിനിറ്റി:"
 
-#: src/virsh.c:1496
+#: src/virsh.c:1511
 msgid "Domain shut off, virtual CPUs not present."
 msgstr ""
 
-#: src/virsh.c:1512
+#: src/virsh.c:1527
 msgid "control domain vcpu affinity"
 msgstr "ഡൊമെയിന്‍ vcpu അഫിനിറ്റി നിയന്ത്രിക്കുന്നു"
 
-#: src/virsh.c:1513
+#: src/virsh.c:1528
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr "ഫിസിക്കല്‍ CPU-കള്‍ ഹോസ്റ്റ് ചെയ്യുന്നതിനായി ഡൊമെയിന്‍ VCPU-കള്‍ പിന്‍ ചെയ്യുക."
 
-#: src/virsh.c:1519
+#: src/virsh.c:1534
 msgid "vcpu number"
 msgstr "vcpu നംബര്‍"
 
-#: src/virsh.c:1520
+#: src/virsh.c:1535
 msgid "host cpu number(s) (comma separated)"
 msgstr "ഹോസ്റ്റ് cpu നംബര്‍ (കോമാ ഉപയോഗിച്ച് വേര്‍തിരിച്ചിരിക്കുന്നു)"
 
-#: src/virsh.c:1575
+#: src/virsh.c:1590
 msgid "cpulist: Invalid format. Empty string."
 msgstr ""
 
-#: src/virsh.c:1585
+#: src/virsh.c:1600
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
 
-#: src/virsh.c:1595
+#: src/virsh.c:1610
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
 "c')."
 msgstr ""
 
-#: src/virsh.c:1602
+#: src/virsh.c:1617
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
 msgstr ""
 
-#: src/virsh.c:1616
+#: src/virsh.c:1631
 #, c-format
 msgid "Physical CPU %d doesn't exist."
 msgstr "ഫിസിക്കല്‍ CPU %d നിലവിലില്ല."
 
-#: src/virsh.c:1640
+#: src/virsh.c:1655
 msgid "change number of virtual CPUs"
 msgstr "വിര്‍ച്ച്വല്‍ CPU-കളുടെ എണ്ണം മാറ്റുക"
 
-#: src/virsh.c:1641
+#: src/virsh.c:1656
 msgid "Change the number of virtual CPUs active in the guest domain."
 msgstr "ഗസ്റ്റ് ഡൊമെയിനില്‍ സജീവമായ വിര്‍ച്ച്വല്‍ CPU-കളുടെ എണ്ണം മാറ്റുക."
 
-#: src/virsh.c:1647
+#: src/virsh.c:1662
 msgid "number of virtual CPUs"
 msgstr "വിര്‍ച്ച്വല്‍ CPU-കളുടെ എണ്ണം"
 
-#: src/virsh.c:1667
+#: src/virsh.c:1682
 #, fuzzy
 msgid "Invalid number of virtual CPUs."
 msgstr "വിര്‍ച്ച്വല്‍ CPU-കളുടെ എണ്ണം"
 
-#: src/virsh.c:1679
+#: src/virsh.c:1694
 #, fuzzy
 msgid "Too many virtual CPUs."
 msgstr "വളരെ അധികം വിര്‍ച്ച്വല്‍ CPU-കള്‍."
 
-#: src/virsh.c:1697
+#: src/virsh.c:1712
 msgid "change memory allocation"
 msgstr "മെമ്മറി അലോക്കേഷന്‍ മാറ്റുക"
 
-#: src/virsh.c:1698
+#: src/virsh.c:1713
 msgid "Change the current memory allocation in the guest domain."
 msgstr "ഗസ്റ്റ് ഡൊമെയിനില്‍ നിലവില്‍ ലഭ്യമായ മെമ്മറി മാറ്റുക."
 
-#: src/virsh.c:1704
+#: src/virsh.c:1719
 msgid "number of kilobytes of memory"
 msgstr "മെമ്മറിയുടെ അളവ് കിലോബൈറ്റില്‍"
 
-#: src/virsh.c:1725 src/virsh.c:1737 src/virsh.c:1782
+#: src/virsh.c:1740 src/virsh.c:1752 src/virsh.c:1797
 #, c-format
 msgid "Invalid value of %d for memory size"
 msgstr "മെമ്മറിയുടെ വ്യാപ്തിയുടെ മൂല്ല്യം %d തെറ്റാണ്"
 
-#: src/virsh.c:1731
+#: src/virsh.c:1746
 msgid "Unable to verify MaxMemorySize"
 msgstr ""
 
-#: src/virsh.c:1754
+#: src/virsh.c:1769
 msgid "change maximum memory limit"
 msgstr "മെമ്മറിയുടെ ഏറ്റവും കൂടുതലായ ലിമിറ്റ് മാറ്റുക"
 
-#: src/virsh.c:1755
+#: src/virsh.c:1770
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr "ഗസ്റ്റ് ഡൊമെയിനിലുളള മെമ്മറിയുടെ ഏറ്റവും കൂടുതലായ ലിമിറ്റ് മാറ്റുക"
 
-#: src/virsh.c:1761
+#: src/virsh.c:1776
 msgid "maximum memory limit in kilobytes"
 msgstr "പരമാവധി മെമ്മറി (കിലോബൈറ്റ്സില്‍)"
 
-#: src/virsh.c:1788
+#: src/virsh.c:1803
 msgid "Unable to verify current MemorySize"
 msgstr ""
 
-#: src/virsh.c:1795
+#: src/virsh.c:1810
 #, fuzzy
 msgid "Unable to shrink current MemorySize"
 msgstr "ഡൊമെയിനില്‍ നിലവിലുളള മെമ്മറി"
 
-#: src/virsh.c:1801
+#: src/virsh.c:1816
 msgid "Unable to change MaxMemorySize"
 msgstr ""
 
-#: src/virsh.c:1814
+#: src/virsh.c:1829
 msgid "node information"
 msgstr "നോഡിന്‍റെ വിവരം"
 
-#: src/virsh.c:1815
+#: src/virsh.c:1830
 msgid "Returns basic information about the node."
 msgstr "നോഡിന്‍റെ അടിസ്ഥാന വിവരങ്ങള്‍ നല്‍കുന്നു."
 
-#: src/virsh.c:1828
+#: src/virsh.c:1843
 msgid "failed to get node information"
 msgstr "നോഡിന്‍റെ വിവരം ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:1831
+#: src/virsh.c:1846
 msgid "CPU model:"
 msgstr "CPU മോഡല്‍:"
 
-#: src/virsh.c:1833
+#: src/virsh.c:1848
 msgid "CPU frequency:"
 msgstr "CPU ഫ്രീക്വന്‍സി:"
 
-#: src/virsh.c:1834
+#: src/virsh.c:1849
 msgid "CPU socket(s):"
 msgstr "CPU സോക്കറ്റ്:"
 
-#: src/virsh.c:1835
+#: src/virsh.c:1850
 msgid "Core(s) per socket:"
 msgstr "ഓരോ സോക്കറ്റിലും ഉളള കോര്‍:"
 
-#: src/virsh.c:1836
+#: src/virsh.c:1851
 msgid "Thread(s) per core:"
 msgstr "ഓരോ കോറിലും ഉളള ത്രെഡ്:"
 
-#: src/virsh.c:1837
+#: src/virsh.c:1852
 msgid "NUMA cell(s):"
 msgstr "NUMA സെല്ല്:"
 
-#: src/virsh.c:1838
+#: src/virsh.c:1853
 msgid "Memory size:"
 msgstr "മെമ്മറിയുടെ വലിപ്പം:"
 
-#: src/virsh.c:1848
+#: src/virsh.c:1863
 msgid "capabilities"
 msgstr "സവിശേഷതകള്‍"
 
-#: src/virsh.c:1849
+#: src/virsh.c:1864
 msgid "Returns capabilities of hypervisor/driver."
 msgstr "ഹൈപ്പറ്‍വൈസറ്‍/ഡ്റൈവറിന്‍റെ വിശേഷതകള്‍ നല്‍കുക."
 
-#: src/virsh.c:1862
+#: src/virsh.c:1877
 msgid "failed to get capabilities"
 msgstr "സവിശേഷതകള്‍ ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
 
-#: src/virsh.c:1875
+#: src/virsh.c:1890
 msgid "domain information in XML"
 msgstr "XML-ലുളള ഡൊമെയിന്‍ വിവരം"
 
-#: src/virsh.c:1876
+#: src/virsh.c:1891
 msgid "Output the domain information as an XML dump to stdout."
 msgstr "ഒരു XML ഡന്പായി stdout-ലേക്ക് ഡൊമെയിന്‍ വിവരങ്ങള്‍ ലഭ്യമാക്കുക. "
 
-#: src/virsh.c:1915
+#: src/virsh.c:1930
 msgid "convert a domain id or UUID to domain name"
 msgstr "ഒരു ഡൊമെയിന്‍ id അല്ലെങ്കില്‍ UUID ഡൊമെയിന്‍ പേര് ആയി വേര്‍തിരിക്കുക"
 
-#: src/virsh.c:1920
+#: src/virsh.c:1935
 msgid "domain id or uuid"
 msgstr "ഡൊമെയിന്‍ id അല്ലെങ്കില്‍ uuid"
 
-#: src/virsh.c:1945
+#: src/virsh.c:1960
 msgid "convert a domain name or UUID to domain id"
 msgstr "ഒരു ഡൊമെയിന്‍ പേര് അല്ലെങ്കില്‍ UUID ഡൊമെയിന്‍ id ആയി വേര്‍തിരിക്കുക"
 
-#: src/virsh.c:1980
+#: src/virsh.c:1995
 msgid "convert a domain name or id to domain UUID"
 msgstr "ഒരു ഡൊമെയിന്‍ പേര് അല്ലെങ്കില്‍ id ഡൊമെയിന്‍ UUID ആയി വേര്‍തിരിക്കുക"
 
-#: src/virsh.c:1985
+#: src/virsh.c:2000
 msgid "domain id or name"
 msgstr "ഡൊമെയിന്‍ id അല്ലെങ്കില്‍ പേര്"
 
-#: src/virsh.c:2004
+#: src/virsh.c:2019
 msgid "failed to get domain UUID"
 msgstr "ഡൊമെയിന്‍ UUID ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:2014
+#: src/virsh.c:2029
 msgid "autostart a network"
 msgstr "ഒരു നെറ്റ്‌വറ്‍ക്ക് ഓട്ടോസ്റ്റാറ്‍ട്ട് ചെയ്യുക"
 
-#: src/virsh.c:2016
+#: src/virsh.c:2031
 msgid "Configure a network to be automatically started at boot."
 msgstr "ബൂട്ട് ചെയ്യുന്പോള്‍ ഓട്ടോമാറ്റിക്കായി ആരംഭിക്കുന്നതിനായി ഒരു നെറ്റ്‌വറ്‍ക്ക് ക്റമികരിക്കുക."
 
-#: src/virsh.c:2021 src/virsh.c:2446
+#: src/virsh.c:2036 src/virsh.c:2461
 msgid "network name or uuid"
 msgstr "നെറ്റ്‌വറ്‍ക്കിന്‍റെ പേര് അല്ലെങ്കില്‍ uuid"
 
-#: src/virsh.c:2043
+#: src/virsh.c:2058
 #, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "നെറ്റ്‌വറ്‍ക്ക് %s ഓട്ടോസ്റ്റാറ്‍ട്ട് ആയി അടയാളപ്പെടുത്തുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/virsh.c:2046
+#: src/virsh.c:2061
 #, c-format
 msgid "failed to unmark network %s as autostarted"
 msgstr "നെറ്റ്‌വറ്‍ക്ക് %s ഓട്ടോസ്റ്റാറ്‍ട്ട് ആയി അടയാളപ്പെടുത്തുന്നത് നീക്കം ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/virsh.c:2053
+#: src/virsh.c:2068
 #, c-format
 msgid "Network %s marked as autostarted\n"
 msgstr "നെറ്റ്‌വറ്‍ക്ക് %s ഓട്ടോമാറ്റിക്കായി തുടങ്ങുന്നു എന്ന് അടയാളപ്പെടുത്തിയിരിക്കുന്നു\n"
 
-#: src/virsh.c:2055
+#: src/virsh.c:2070
 #, c-format
 msgid "Network %s unmarked as autostarted\n"
 msgstr "നെറ്റ്‌വറ്‍ക്ക് %s ഓട്ടോമാറ്റിക്കായി തുടങ്ങുന്നു എന്ന് അടയാളപ്പെടുത്തിയത് നീക്കിയിരിക്കുന്നു\n"
 
-#: src/virsh.c:2065
+#: src/virsh.c:2080
 msgid "create a network from an XML file"
 msgstr "ഒരു XML ഫയലില്‍ നിന്നും ഒരു നെറ്റ്‌വറ്‍ക്ക് ഉണ്ടാക്കുക"
 
-#: src/virsh.c:2066
+#: src/virsh.c:2081
 msgid "Create a network."
 msgstr "ഒരു നെറ്റ്‌വറ്‍ക്ക് ഉണ്ടാക്കുക."
 
-#: src/virsh.c:2071 src/virsh.c:2119
+#: src/virsh.c:2086 src/virsh.c:2134
 msgid "file containing an XML network description"
 msgstr "XML നെറ്റ്‌വറ്‍ക്ക് വിവരണം ലഭ്യമാക്കുന്ന ഫയല്‍"
 
-#: src/virsh.c:2098
+#: src/virsh.c:2113
 #, c-format
 msgid "Network %s created from %s\n"
 msgstr "%s-ല്‍ നിന്നും നെറ്റ്‌വറ്‍ക്ക് %s ഉണ്ടാക്കിയിരിക്കുന്നു\n"
 
-#: src/virsh.c:2101
+#: src/virsh.c:2116
 #, c-format
 msgid "Failed to create network from %s"
 msgstr "%s-ല്‍ നിന്നും നെറ്റ്‌വറ്‍ക്ക് ഉണ്ടാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/virsh.c:2113
+#: src/virsh.c:2128
 msgid "define (but don't start) a network from an XML file"
 msgstr "ഒരു XML ഫയലില്‍ നിന്നും ഒരു നെറ്റ്‌വറ്‍ക്ക് നിഷ്കര്‍ശിക്കുക (ആരംഭിക്കേണ്ടതില്ല)"
 
-#: src/virsh.c:2114
+#: src/virsh.c:2129
 msgid "Define a network."
 msgstr "ഒരു നെറ്റ്‌വറ്‍ക്ക് നിര്‍ഷ്കര്‍ഷിക്കുക."
 
-#: src/virsh.c:2146
+#: src/virsh.c:2161
 #, c-format
 msgid "Network %s defined from %s\n"
 msgstr "%s-ല്‍ നിന്നും നെറ്റ്‌വറ്‍ക്ക് %s നിര്‍ഷ്കര്‍ശിച്ചിരിക്കുന്നു\n"
 
-#: src/virsh.c:2149
+#: src/virsh.c:2164
 #, c-format
 msgid "Failed to define network from %s"
 msgstr "%s-ല്‍ നിന്നും നെറ്റ്‌വറ്‍ക്ക് വ്യക്തമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:2161
+#: src/virsh.c:2176
 msgid "destroy a network"
 msgstr "ഒരു നെറ്റ്‌വറ്‍ക്ക് ഇല്ലാതാക്കുക"
 
-#: src/virsh.c:2162
+#: src/virsh.c:2177
 msgid "Destroy a given network."
 msgstr "തന്നിരിക്കുന്ന നെറ്റ്‌വറ്‍ക്ക് ഇല്ലാതാക്കുക."
 
-#: src/virsh.c:2167 src/virsh.c:2207
+#: src/virsh.c:2182 src/virsh.c:2222
 msgid "network name, id or uuid"
 msgstr "നെറ്റ്‌വറ്‍ക്ക് നാമം , id അല്ലെങ്കില്‍ uuid"
 
-#: src/virsh.c:2185
+#: src/virsh.c:2200
 #, c-format
 msgid "Network %s destroyed\n"
 msgstr "നെറ്റ്‌വറ്‍ക്ക് %s ഇല്ലാതാക്കിയിരിക്കുന്നു\n"
 
-#: src/virsh.c:2187
+#: src/virsh.c:2202
 #, c-format
 msgid "Failed to destroy network %s"
 msgstr "നെറ്റ്‌വറ്‍ക്ക് %s നശിപ്പിക്കുന്നതിന്‍ പരാജയം"
 
-#: src/virsh.c:2201
+#: src/virsh.c:2216
 msgid "network information in XML"
 msgstr "XML-ലുളള നെറ്റ്‌വറ്‍ക്കിന്‍റെ വിവരം"
 
-#: src/virsh.c:2202
+#: src/virsh.c:2217
 msgid "Output the network information as an XML dump to stdout."
 msgstr "ഒരു XML ഡന്പായി stdout-ലേക്ക് നെറ്റ്‌വറ്‍ക്കിന്‍റെ വിവരങ്ങള്‍ ലഭ്യമാക്കുക."
 
-#: src/virsh.c:2242
+#: src/virsh.c:2257
 msgid "list networks"
 msgstr "നെറ്റ്‌വറ്‍ക്കുകള്‍ ലിസ്റ്റ് ചെയ്യുക"
 
-#: src/virsh.c:2243
+#: src/virsh.c:2258
 msgid "Returns list of networks."
 msgstr "നെറ്റ്‌വറ്‍ക്കുകളുടെ ലിസ്റ്റ് നല്‍കുന്നു."
 
-#: src/virsh.c:2248
+#: src/virsh.c:2263
 msgid "list inactive networks"
 msgstr "സജീവമല്ലാത്ത നെറ്റ്‌വറ്‍ക്കുകള്‍ ലിസ്റ്റ് ചെയ്യുക"
 
-#: src/virsh.c:2249
+#: src/virsh.c:2264
 msgid "list inactive & active networks"
 msgstr "സജീവമായതും അല്ലാത്തതുമായ നെറ്റ്‌വറ്‍ക്കുകള്‍ ലിസ്റ്റ് ചെയ്യുക"
 
-#: src/virsh.c:2269 src/virsh.c:2277
+#: src/virsh.c:2284 src/virsh.c:2292
 msgid "Failed to list active networks"
 msgstr "സജീവമായ നെറ്റ്‌വറ്‍ക്കുകള്‍ ലിസ്റ്റ് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:2288 src/virsh.c:2297
+#: src/virsh.c:2303 src/virsh.c:2312
 msgid "Failed to list inactive networks"
 msgstr "സജീവമല്ലാത്ത നെറ്റ്‌വറ്‍ക്കുകള്‍ ലിസ്റ്റ് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:2307
+#: src/virsh.c:2322
 msgid "Autostart"
 msgstr "ഓട്ടോസ്റ്റാറ്‍ട്ട് "
 
-#: src/virsh.c:2322 src/virsh.c:2345
+#: src/virsh.c:2337 src/virsh.c:2360
 msgid "no autostart"
 msgstr "ഓട്ടോസ്റ്റാറ്‍ട്ട് ലഭ്യമല്ല"
 
-#: src/virsh.c:2328
+#: src/virsh.c:2343
 msgid "active"
 msgstr "സജീവം"
 
-#: src/virsh.c:2351
+#: src/virsh.c:2366
 msgid "inactive"
 msgstr "നിറ്‍ജ്ജീവം"
 
-#: src/virsh.c:2370
+#: src/virsh.c:2385
 msgid "convert a network UUID to network name"
 msgstr "ഒരു നെറ്റ്‌വറ്‍ക്ക് UUID നെറ്റ്‌വറ്‍ക്ക് പേര് ആയി വേര്‍തിരിക്കുക"
 
-#: src/virsh.c:2375
+#: src/virsh.c:2390
 msgid "network uuid"
 msgstr "നെറ്റ്‌വറ്‍ക്കിന്‍റെ uuid"
 
-#: src/virsh.c:2401
+#: src/virsh.c:2416
 msgid "start a (previously defined) inactive network"
 msgstr "സജീവമല്ലാത്ത ഒരു നെറ്റ്‌വറ്‍ക്ക് ആരംഭിക്കുക"
 
-#: src/virsh.c:2402
+#: src/virsh.c:2417
 msgid "Start a network."
 msgstr "ഒരു നെറ്റ്‌വറ്‍ക്ക് തുടങ്ങുക."
 
-#: src/virsh.c:2407
+#: src/virsh.c:2422
 msgid "name of the inactive network"
 msgstr "നിഷ്ക്രിയമായ നെറ്റ്‌വറ്‍ക്കിന്‍റെ പേര്"
 
-#: src/virsh.c:2424
+#: src/virsh.c:2439
 #, c-format
 msgid "Network %s started\n"
 msgstr "നെറ്റ്‌വറ്‍ക്ക് %s തുടങ്ങിയിരിക്കുന്നു\n"
 
-#: src/virsh.c:2427
+#: src/virsh.c:2442
 #, c-format
 msgid "Failed to start network %s"
 msgstr "നെറ്റ്‌വറ്‍ക്ക് %s തുടങ്ങുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:2440
+#: src/virsh.c:2455
 msgid "undefine an inactive network"
 msgstr "സജീവമല്ലാത്ത ഒരു നെറ്റ്‌വറ്‍ക്ക് വ്യക്തമാക്കേണ്ടതില്ല"
 
-#: src/virsh.c:2441
+#: src/virsh.c:2456
 msgid "Undefine the configuration for an inactive network."
 msgstr "സജീവമല്ലാത്ത ഒരു നെറ്റ്‌വറ്‍ക്ക് കോണ്‍ഫിഗറേഷന്‍ വ്യക്തമാക്കേണ്ടതില്ല."
 
-#: src/virsh.c:2464
+#: src/virsh.c:2479
 #, c-format
 msgid "Network %s has been undefined\n"
 msgstr "നെറ്റ്‌വറ്‍ക്ക് %s അവ്യക്തമാക്കിയിരിക്കുന്നു\n"
 
-#: src/virsh.c:2466
+#: src/virsh.c:2481
 #, c-format
 msgid "Failed to undefine network %s"
 msgstr "നെറ്റ്‌വറ്‍ക്ക് %s അവ്യക്തമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/virsh.c:2479
+#: src/virsh.c:2494
 msgid "convert a network name to network UUID"
 msgstr "ഒരു നെറ്റ്‌വറ്‍ക്ക് നാമം നെറ്റ്‌വറ്‍ക്ക് UUID ആയി വേര്‍തിരിക്കുക"
 
-#: src/virsh.c:2484
+#: src/virsh.c:2499
 msgid "network name"
 msgstr "നെറ്റ്‌വറ്‍ക്കിന്‍റെ പേര്"
 
-#: src/virsh.c:2504
+#: src/virsh.c:2519
 msgid "failed to get network UUID"
 msgstr "നെറ്റ്‌വറ്‍ക്കിന്‍റെ UUID ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:2515
+#: src/virsh.c:2530
 msgid "show version"
 msgstr "വേര്‍ഷന്‍ കാണിക്കുക"
 
-#: src/virsh.c:2516
+#: src/virsh.c:2531
 msgid "Display the system version information."
 msgstr "സിസ്റ്റത്തിന്‍റെ വേര്‍ഷന്‍ സംബന്ധിച്ചുള്ള വിവരം പ്രദര്‍ശിപ്പിക്കുക."
 
-#: src/virsh.c:2539
+#: src/virsh.c:2554
 msgid "failed to get hypervisor type"
 msgstr "ഏത് തരം ഹൈപ്പര്‍‍വൈസര്‍ എന്ന് ലഭ്യമാകുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:2548
+#: src/virsh.c:2563
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr "ലൈബ്രറിയ്ക് എതിരെ കംപൈല്‍ ചെയ്തു: libvir %d.%d.%d\n"
 
-#: src/virsh.c:2553
+#: src/virsh.c:2568
 msgid "failed to get the library version"
 msgstr "ലൈബ്രറിയുടെ വേര്‍ഷന്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:2560
+#: src/virsh.c:2575
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
 msgstr "ലൈബ്രറി ഉപയോഗിക്കുന്നു: libvir %d.%d.%d\n"
 
-#: src/virsh.c:2567
+#: src/virsh.c:2582
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
 msgstr "API ഉപയോഗിക്കുന്നു: %s %d.%d.%d\n"
 
-#: src/virsh.c:2572
+#: src/virsh.c:2587
 msgid "failed to get the hypervisor version"
 msgstr "ഹൈപ്പര്‍‍വൈസറിന്‍റെ വേര്‍ഷന്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:2577
+#: src/virsh.c:2592
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "പ്രവര്‍ത്തനത്തിലുളള %s ഹൈപ്പര്‍‍വൈസറിന്‍റെ വേര്‍ഷന്‍ ലഭ്യമാക്കുവാന്‍ സാധ്യാമല്ല\n"
 
-#: src/virsh.c:2584
+#: src/virsh.c:2599
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "ഹൈപ്പര്‍വൈസറ്‍ പ്രവര്‍ത്തിപ്പിക്കുന്നു: %s %d.%d.%d\n"
 
-#: src/virsh.c:2595
+#: src/virsh.c:2610
 #, fuzzy
 msgid "print the hypervisor hostname"
 msgstr "ഏത് തരം ഹൈപ്പര്‍‍വൈസര്‍ എന്ന് ലഭ്യമാകുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:2609
+#: src/virsh.c:2624
 #, fuzzy
 msgid "failed to get hostname"
 msgstr "ഏത് തരം ഹൈപ്പര്‍‍വൈസര്‍ എന്ന് ലഭ്യമാകുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:2624
+#: src/virsh.c:2639
 #, fuzzy
 msgid "print the hypervisor canonical URI"
 msgstr "ഹൈപ്പര്‍‍വൈസര്‍ കണക്ഷനുളള URI"
 
-#: src/virsh.c:2638
+#: src/virsh.c:2653
 #, fuzzy
 msgid "failed to get URI"
 msgstr "ഡൊമെയിന്‍ UUID ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:2653
+#: src/virsh.c:2668
 msgid "vnc display"
 msgstr "vnc display"
 
-#: src/virsh.c:2654
+#: src/virsh.c:2669
 msgid "Output the IP address and port number for the VNC display."
 msgstr "VNC ഡിസ്പ്ളെയ്ക്ക് ആവശ്യമുളള IP വിലാസവും പോറ്‍ട്ട് നന്പറും നല്‍കുന്നു."
 
-#: src/virsh.c:2732
-#, fuzzy
+#: src/virsh.c:2747
 msgid "attach device from an XML file"
-msgstr "ഒരു XML <file>-ലില്‍ നിന്നും ഡിവൈസ് ചേറ്‍ക്കുക."
+msgstr "ഒരു XML ഫയലില്‍ നിന്നും ഡിവൈസ് ചേറ്‍ക്കുക"
 
-#: src/virsh.c:2733
-#, fuzzy
+#: src/virsh.c:2748
 msgid "Attach device from an XML <file>."
-msgstr "ഒരു XML <file>-ലില്‍ നിന്നും ഡിവൈസ് ചേറ്‍ക്കുക."
+msgstr "ഒരു XML <file>-ലില്‍ നിന്നും ഡിവൈസ് ചേറ്‍ക്കുക. "
 
-#: src/virsh.c:2739 src/virsh.c:2793
+#: src/virsh.c:2754 src/virsh.c:2808
 msgid "XML file"
 msgstr "XML ഫയല്‍"
 
-#: src/virsh.c:2771
-#, fuzzy, c-format
-msgid "Failed to attach device from %s"
-msgstr "%s-ല്‍ നിന്നും ഡിവൈസ് ചേറ്‍ക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
-
 #: src/virsh.c:2786
-#, fuzzy
+#, c-format
+msgid "Failed to attach device from %s"
+msgstr "%s-ല്‍ നിന്നും ഡിവൈസ് ചേറ്‍ക്കുന്നതില്‍ പരാജയപ്പെട്ടു "
+
+#: src/virsh.c:2801
 msgid "detach device from an XML file"
-msgstr "ഒരു XML <file>-ലില്‍ നിന്നും ഡിവൈസ് നീക്കുക"
+msgstr "ഒരു XML ഫയലില്‍ നിന്നും ഡിവൈസ് നീക്കുക"
 
-#: src/virsh.c:2787
-#, fuzzy
+#: src/virsh.c:2802
 msgid "Detach device from an XML <file>"
-msgstr "ഒരു XML <file>-ലില്‍ നിന്നും ഡിവൈസ് നീക്കുക"
-
-#: src/virsh.c:2825
-#, fuzzy, c-format
-msgid "Failed to detach device from %s"
-msgstr "%s-ല്‍ നിന്നും ഡിവൈസ് നീക്കുന്നതില്‍ പരാജയം"
+msgstr "ഒരു XML <file>-ലില്‍ നിന്നും ഡിവൈസ് നീക്കുക "
 
 #: src/virsh.c:2840
+#, c-format
+msgid "Failed to detach device from %s"
+msgstr "%s-ല്‍ നിന്നും ഡിവൈസ് നീക്കുന്നതില്‍ പരാജയം "
+
+#: src/virsh.c:2855
 #, fuzzy
 msgid "attach network interface"
 msgstr "നെറ്റ്‌വറ്‍ക്കിന്‍റെ പേര്"
 
-#: src/virsh.c:2841
+#: src/virsh.c:2856
 msgid "Attach new network interface."
 msgstr ""
 
-#: src/virsh.c:2847 src/virsh.c:2963
+#: src/virsh.c:2862 src/virsh.c:2978
 #, fuzzy
 msgid "network interface type"
 msgstr "നെറ്റ്‌വറ്‍ക്കിന്‍റെ പേര്"
 
-#: src/virsh.c:2848
+#: src/virsh.c:2863
 #, fuzzy
 msgid "source of network interface"
 msgstr "അവ്യക്തമായ നെറ്റ്‌വറ്‍ക്ക് നാമം"
 
-#: src/virsh.c:2849
+#: src/virsh.c:2864
 #, fuzzy
 msgid "target network name"
 msgstr "നെറ്റ്‌വറ്‍ക്കിന്‍റെ പേര്"
 
-#: src/virsh.c:2850 src/virsh.c:2964
+#: src/virsh.c:2865 src/virsh.c:2979
 msgid "MAC adress"
 msgstr ""
 
-#: src/virsh.c:2851
+#: src/virsh.c:2866
 msgid "script used to bridge network interface"
 msgstr ""
 
-#: src/virsh.c:2883
+#: src/virsh.c:2898
 #, c-format
 msgid "No support %s in command 'attach-interface'"
 msgstr ""
 
-#: src/virsh.c:2956
+#: src/virsh.c:2971
 #, fuzzy
 msgid "detach network interface"
 msgstr "നെറ്റ്‌വറ്‍ക്കിന്‍റെ പേര്"
 
-#: src/virsh.c:2957
+#: src/virsh.c:2972
 msgid "Detach network interface."
 msgstr ""
 
-#: src/virsh.c:3002 src/virsh.c:3007
+#: src/virsh.c:3017 src/virsh.c:3022
 #, fuzzy
 msgid "Failed to get interface information"
 msgstr "നോഡിന്‍റെ വിവരം ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:3015
+#: src/virsh.c:3030
 #, c-format
 msgid "No found interface whose type is %s"
 msgstr ""
 
-#: src/virsh.c:3037
+#: src/virsh.c:3052
 #, c-format
 msgid "No found interface whose MAC address is %s"
 msgstr ""
 
-#: src/virsh.c:3043 src/virsh.c:3321
+#: src/virsh.c:3058 src/virsh.c:3336
 #, fuzzy
 msgid "Failed to allocate memory"
 msgstr "ഒരു നോഡ് ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:3048 src/virsh.c:3326
+#: src/virsh.c:3063 src/virsh.c:3341
 #, fuzzy
 msgid "Failed to create XML"
 msgstr "സോക്കറ്റ് %d വായിക്കുന്നതില്‍ പരാജയം\n"
 
-#: src/virsh.c:3077
+#: src/virsh.c:3092
 msgid "attach disk device"
 msgstr ""
 
-#: src/virsh.c:3078
+#: src/virsh.c:3093
 msgid "Attach new disk device."
 msgstr ""
 
-#: src/virsh.c:3084
+#: src/virsh.c:3099
 msgid "source of disk device"
 msgstr ""
 
-#: src/virsh.c:3085 src/virsh.c:3249
+#: src/virsh.c:3100 src/virsh.c:3264
 msgid "target of disk device"
 msgstr ""
 
-#: src/virsh.c:3086
+#: src/virsh.c:3101
 msgid "driver of disk device"
 msgstr ""
 
-#: src/virsh.c:3087
+#: src/virsh.c:3102
 msgid "subdriver of disk device"
 msgstr ""
 
-#: src/virsh.c:3088
+#: src/virsh.c:3103
 msgid "target device type"
 msgstr ""
 
-#: src/virsh.c:3089
+#: src/virsh.c:3104
 msgid "mode of device reading and writing"
 msgstr ""
 
-#: src/virsh.c:3120 src/virsh.c:3129 src/virsh.c:3136
+#: src/virsh.c:3135 src/virsh.c:3144 src/virsh.c:3151
 #, c-format
 msgid "No support %s in command 'attach-disk'"
 msgstr ""
 
-#: src/virsh.c:3242
+#: src/virsh.c:3257
 msgid "detach disk device"
 msgstr ""
 
-#: src/virsh.c:3243
+#: src/virsh.c:3258
 msgid "Detach disk device."
 msgstr ""
 
-#: src/virsh.c:3284 src/virsh.c:3289 src/virsh.c:3296
+#: src/virsh.c:3299 src/virsh.c:3304 src/virsh.c:3311
 #, fuzzy
 msgid "Failed to get disk information"
 msgstr "നോഡിന്‍റെ വിവരം ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:3315
+#: src/virsh.c:3330
 #, c-format
 msgid "No found disk whose target is %s"
 msgstr ""
 
-#: src/virsh.c:3355
+#: src/virsh.c:3370
 msgid "quit this interactive terminal"
 msgstr "ഈ ഇന്‍ററാക്റ്റീവ് ടെര്‍മിനലില്‍ നിന്നും പുറത്ത് കടക്കുക"
 
-#: src/virsh.c:3491
+#: src/virsh.c:3506
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "കമാന്‍ഡ് '%s'-ന് ഉപാധി <%s> ആവശ്യമുണ്ട്"
 
-#: src/virsh.c:3492
+#: src/virsh.c:3507
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "കമാന്‍ഡ് '%s'-ന് ഉപാധി --%s ആവശ്യമുണ്ട്"
 
-#: src/virsh.c:3519
+#: src/virsh.c:3534
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "കമാന്‍ഡ് '%s' നിലവിലില്ല"
 
-#: src/virsh.c:3527
+#: src/virsh.c:3542
 msgid "  NAME\n"
 msgstr "  പേര്\n"
 
-#: src/virsh.c:3531
-#, fuzzy
+#: src/virsh.c:3546
 msgid ""
 "\n"
 "  SYNOPSIS\n"
 msgstr ""
 "\n"
-"  ഉപാധികള്‍\n"
+"  SYNOPSIS\n"
 
-#: src/virsh.c:3538
+#: src/virsh.c:3553
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -1815,7 +1806,7 @@ msgstr ""
 "\n"
 "  വിവരണം\n"
 
-#: src/virsh.c:3542
+#: src/virsh.c:3557
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -1823,35 +1814,35 @@ msgstr ""
 "\n"
 "  ഉപാധികള്‍\n"
 
-#: src/virsh.c:3549
+#: src/virsh.c:3564
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <number>"
 
-#: src/virsh.c:3551
+#: src/virsh.c:3566
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <string>"
 
-#: src/virsh.c:3664
+#: src/virsh.c:3679
 msgid "undefined domain name or id"
 msgstr "അവ്യക്തമായ ഡൊമെയിന്‍ പേര് അല്ലെങ്കില്‍ id"
 
-#: src/virsh.c:3697
+#: src/virsh.c:3712
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "ഡൊമെയിന്‍ '%s' ലഭ്യമാകുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:3710
+#: src/virsh.c:3725
 msgid "undefined network name"
 msgstr "അവ്യക്തമായ നെറ്റ്‌വറ്‍ക്ക് നാമം"
 
-#: src/virsh.c:3734
+#: src/virsh.c:3749
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "നെറ്റ്‌വറ്‍ക്ക് '%s' ലഭ്യമാകുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:3762
+#: src/virsh.c:3777
 #, c-format
 msgid ""
 "\n"
@@ -1862,126 +1853,124 @@ msgstr ""
 "(സമയം: %.3f ms)\n"
 "\n"
 
-#: src/virsh.c:3836
+#: src/virsh.c:3851
 msgid "missing \""
 msgstr "\" ലഭ്യമല്ല"
 
-#: src/virsh.c:3897
+#: src/virsh.c:3912
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "അപ്രതീക്ഷിതമായ ടോക്കന്‍ (കമാന്‍ഡിന്‍റെ പേര്): '%s'"
 
-#: src/virsh.c:3902
+#: src/virsh.c:3917
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "അപരിചിതമായ കമാന്‍ഡ്: '%s'"
 
-#: src/virsh.c:3909
+#: src/virsh.c:3924
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "കമാന്‍ഡ് '%s' ഉപാധി --%s-നെ പിന്തുണയ്ക്കുന്നില്ല"
 
-#: src/virsh.c:3924
+#: src/virsh.c:3939
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "ശരിയായ സിന്‍റ്റാക്സ്: --%s <%s>"
 
-#: src/virsh.c:3927
+#: src/virsh.c:3942
 msgid "number"
 msgstr "നംബര്‍"
 
-#: src/virsh.c:3927
+#: src/virsh.c:3942
 msgid "string"
 msgstr "സ്ട്രിങ്"
 
-#: src/virsh.c:3933
+#: src/virsh.c:3948
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "അപ്രതീക്ഷിതമായ ഡേറ്റാ '%s'"
 
-#: src/virsh.c:3955
+#: src/virsh.c:3970
 msgid "OPTION"
 msgstr "OPTION"
 
-#: src/virsh.c:3955
+#: src/virsh.c:3970
 msgid "DATA"
 msgstr "DATA"
 
-#: src/virsh.c:4005 src/virsh.c:4031
+#: src/virsh.c:4020 src/virsh.c:4046
 msgid "running"
 msgstr "പ്രവര്‍ത്തിക്കുന്നു"
 
-#: src/virsh.c:4007 src/virsh.c:4029
+#: src/virsh.c:4022 src/virsh.c:4044
 msgid "blocked"
 msgstr "തടസ്സപ്പെടുത്തിയിരിക്കുന്നു"
 
-#: src/virsh.c:4009
+#: src/virsh.c:4024
 msgid "paused"
 msgstr "താല്‍കാലികമായി നിര്‍ത്തിരിക്കുന്നു"
 
-#: src/virsh.c:4011
+#: src/virsh.c:4026
 msgid "in shutdown"
 msgstr "അടച്ചു പൂട്ടുന്നു"
 
-#: src/virsh.c:4013
+#: src/virsh.c:4028
 msgid "shut off"
 msgstr "അടച്ചു പൂട്ടുക"
 
-#: src/virsh.c:4015
+#: src/virsh.c:4030
 msgid "crashed"
 msgstr "തകര്‍ന്നു"
 
-#: src/virsh.c:4027
+#: src/virsh.c:4042
 msgid "offline"
 msgstr "ഓഫ്‍ലൈന്‍"
 
-#: src/virsh.c:4046
+#: src/virsh.c:4061
 msgid "no valid connection"
 msgstr "ശരിയായ കണക്ഷന്‍ ലഭ്യമല്ല"
 
-#: src/virsh.c:4093
+#: src/virsh.c:4108
 #, c-format
 msgid "%s: error: "
 msgstr "%s: പിശക്: "
 
-#: src/virsh.c:4095
+#: src/virsh.c:4110
 msgid "error: "
 msgstr "പിശക്: "
 
-#: src/virsh.c:4117 src/virsh.c:4129 src/virsh.c:4142
+#: src/virsh.c:4132 src/virsh.c:4144 src/virsh.c:4157
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: %d ബൈറ്റുകള്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:4156
+#: src/virsh.c:4171
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "%s: %d: %lu ബൈറ്റുകള്‍ അനുവദിക്കുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:4192
+#: src/virsh.c:4207
 msgid "failed to connect to the hypervisor"
 msgstr "ഹൈപ്പര്‍‍വൈസറിലേക്ക് കണക്ട് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:4216
-#, fuzzy
+#: src/virsh.c:4231
 msgid "failed to get the log file information"
-msgstr "നോഡിന്‍റെ വിവരം ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
+msgstr "ലോഗ് ഫയലിന്‍റെ വിവരം ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:4221
+#: src/virsh.c:4236
 msgid "the log path is not a file"
-msgstr ""
+msgstr "ലോഗ് പാഥ് ഒരു ഫയല്‍ അല്ല"
 
-#: src/virsh.c:4227
+#: src/virsh.c:4242
 msgid "failed to open the log file. check the log file path"
-msgstr ""
+msgstr "ലോഗ് ഫയല്‍ തുറക്കുന്നതില്‍ പരാജയം. ലോഗ് ഫയലിന്‍റെ പാഥ് പരിശോധിക്കുക"
 
-#: src/virsh.c:4295
-#, fuzzy
+#: src/virsh.c:4310
 msgid "failed to write the log file"
-msgstr "കോണ്‍ഫിഗറേഷന്‍ ഫയല്‍ എഴുതുന്നതില്‍ പരാജയം"
+msgstr "ലോഗ് ഫയല്‍ എഴുതുന്നതില്‍ പരാജയം"
 
-#: src/virsh.c:4464
-#, fuzzy, c-format
+#: src/virsh.c:4479
+#, c-format
 msgid ""
 "\n"
 "%s [options] [commands]\n"
@@ -2008,11 +1997,12 @@ msgstr ""
 "    -h | --help             സഹായം\n"
 "    -q | --quiet            നിശബ്ദം\n"
 "    -t | --timing           സമയം സംബന്ധിച്ചുളള വിവരം പ്രിന്‍റ് ചെയ്യുക\n"
+"    -l | --log <file>       ലോഗിഗ് ഫയലിലേക്ക് നല്‍കുന്നു\n"
 "    -v | --version          പ്രോഗ്രാമിന്‍റെ വേര്‍ഷന്‍\n"
 "\n"
 "  കമാന്‍ഡുകള്‍ (നോണ്‍-ഇന്‍ററാക്റ്റീവ് മോഡ്):\n"
 
-#: src/virsh.c:4482
+#: src/virsh.c:4497
 #, c-format
 msgid ""
 "\n"
@@ -2023,12 +2013,12 @@ msgstr ""
 "  (കമാന്‍ഡ് സംബന്ധിച്ചുളള വിശദവിവരങ്ങള്‍ക്ക് --help <command> എന്ന് നല്‍കുക)\n"
 "\n"
 
-#: src/virsh.c:4578
+#: src/virsh.c:4593
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "പിന്തുണയില്ലാത്ത ഉപാധി '-%c'. --help കാണുക."
 
-#: src/virsh.c:4660
+#: src/virsh.c:4675
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -2037,7 +2027,7 @@ msgstr ""
 "വിര്‍ച്ച്വലൈസേഷന്‍ ഇന്‍ററാക്റ്റീവ് ടെര്‍മിനല്‍ ആയ %s-ലേക്ക് സ്വാഗതം.\n"
 "\n"
 
-#: src/virsh.c:4663
+#: src/virsh.c:4678
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
@@ -2084,11 +2074,16 @@ msgstr "ഒരു സെപ്പറേറ്റര്‍ പ്രതീക്�
 msgid "expecting an assignment"
 msgstr "ഒരു അസ്സൈന്‍മെന്‍റ് പ്രതീക്ഷിക്കുന്നു"
 
-#: src/conf.c:897
+#: src/conf.c:887 src/conf.c:941
+#, fuzzy
+msgid "failed to allocate buffer"
+msgstr "ഒരു നോഡ് ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
+
+#: src/conf.c:899
 msgid "failed to open file"
 msgstr "ഫയല്‍ തുറക്കുന്നതില്‍ പരാജയം"
 
-#: src/conf.c:905
+#: src/conf.c:907
 msgid "failed to save content"
 msgstr "ഉള്ളടക്കം സൂക്ഷിക്കുന്നതില്‍ പരാജയം"
 
@@ -2141,7 +2136,7 @@ msgstr "പ്രോക്സിയുമായുളള ആശയവിനി�
 msgid "got asynchronous packet number %d\n"
 msgstr "അസിന്‍ക്രൊണസ് പാക്കറ്റ് നംബര്‍ %d ലഭിച്ചിരിക്കുന്നു\n"
 
-#: src/xen_internal.c:2309
+#: src/xen_internal.c:2310
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d ഡൊമെയിന്‍ വിവരം ലഭ്യമാക്കുന്നു"
