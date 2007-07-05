@@ -2166,7 +2166,6 @@ remoteNetworkOpen (virConnectPtr conn,
             error (NULL, VIR_ERR_NO_MEMORY, "struct private_data");
             return VIR_DRV_OPEN_ERROR;
         }
-
         if (flags & VIR_DRV_OPEN_RO)
             rflags |= VIR_DRV_OPEN_REMOTE_RO;
         /* Xen driver is a single system-wide driver, so
@@ -2174,11 +2173,11 @@ remoteNetworkOpen (virConnectPtr conn,
          * user, so use the per-user daemon, potentially
          * autostarting
          */
-        flags |= VIR_DRV_OPEN_REMOTE_UNIX;
+        rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
         if (getuid() > 0 &&
             !strcmp(conn->driver->name, "test")) {
-            flags |= VIR_DRV_OPEN_REMOTE_USER;
-            flags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
+            rflags |= VIR_DRV_OPEN_REMOTE_USER;
+            rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
         }
 
         memset(priv, 0, sizeof(struct private_data));
