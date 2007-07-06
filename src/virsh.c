@@ -4494,7 +4494,7 @@ vshUsage(vshControl * ctl, const char *cmdname)
                                                                      "help")));
 
         fprintf(stdout,
-                _("\n  (specify --help <command> for details about the command)\n\n"));
+                _("\n  (specify help <command> for details about the command)\n\n"));
         return;
     }
     if (!vshCmddefHelp(ctl, cmdname, TRUE))
