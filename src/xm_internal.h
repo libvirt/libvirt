@@ -33,7 +33,7 @@
 extern "C" {
 #endif
 
-extern virDriver xenXMDriver;
+extern struct xenUnifiedDriver xenXMDriver;
 int xenXMInit (void);
 
 int xenXMOpen(virConnectPtr conn, const char *name, int flags);

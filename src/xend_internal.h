@@ -177,9 +177,6 @@ char *xenDaemonDomainDumpXMLByName(virConnectPtr xend,
 
   char *xend_parse_domain_sexp(virConnectPtr conn,  char *root, int xendConfigVersion);
 
-extern virDriver xenDaemonDriver;
-int xenDaemonInit (void);
-
 /* refactored ones */
 int xenDaemonOpen(virConnectPtr conn, const char *name, int flags);
 int xenDaemonClose(virConnectPtr conn);
@@ -196,7 +193,6 @@ int xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory);
 int xenDaemonDomainSetMaxMemory(virDomainPtr domain, unsigned long memory);
 int xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info);
 char *xenDaemonDomainDumpXML(virDomainPtr domain, int flags);
-virDomainPtr xenDaemonDomainLookupByName(virConnectPtr conn, const char *domname);
 unsigned long xenDaemonDomainGetMaxMemory(virDomainPtr domain);
 char **xenDaemonListDomainsOld(virConnectPtr xend);
 
@@ -215,6 +211,14 @@ int	xenDaemonDomainGetVcpus		(virDomainPtr domain,
 					 int maxinfo,
 					 unsigned char *cpumaps,
 					 int maplen);
+
+/* xen_unified calls through here. */
+extern struct xenUnifiedDriver xenDaemonDriver;
+int xenDaemonInit (void);
+
+virDomainPtr xenDaemonLookupByID(virConnectPtr conn, int id);
+virDomainPtr xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid);
+virDomainPtr xenDaemonLookupByName(virConnectPtr conn, const char *domname);
 
 #ifdef __cplusplus
 }

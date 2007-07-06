@@ -587,27 +587,18 @@ static unsigned long xenHypervisorGetMaxMemory(virDomainPtr domain);
 #endif
 
 #ifndef PROXY
-virDriver xenHypervisorDriver = {
-    -1,
-    "Xen",
-    (DOM0_INTERFACE_VERSION >> 24) * 1000000 +
-    ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +
-    (DOM0_INTERFACE_VERSION & 0xFFFF),
+struct xenUnifiedDriver xenHypervisorDriver = {
     xenHypervisorOpen, /* open */
     xenHypervisorClose, /* close */
     xenHypervisorGetType, /* type */
     xenHypervisorGetVersion, /* version */
     NULL, /* hostname */
     NULL, /* URI */
-    xenHypervisorGetMaxVcpus, /* getMaxVcpus */
     NULL, /* nodeGetInfo */
     xenHypervisorGetCapabilities, /* getCapabilities */
     xenHypervisorListDomains, /* listDomains */
     xenHypervisorNumOfDomains, /* numOfDomains */
     NULL, /* domainCreateLinux */
-    NULL, /* domainLookupByID */
-    NULL, /* domainLookupByUUID */
-    NULL, /* domainLookupByName */
     xenHypervisorPauseDomain, /* domainSuspend */
     xenHypervisorResumeDomain, /* domainResume */
     NULL, /* domainShutdown */

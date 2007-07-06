@@ -19,7 +19,66 @@ extern "C" {
 
 extern int xenUnifiedRegister (void);
 
+#define XEN_UNIFIED_HYPERVISOR_OFFSET 0
+#define XEN_UNIFIED_PROXY_OFFSET 1
+#define XEN_UNIFIED_XEND_OFFSET 2
+#define XEN_UNIFIED_XS_OFFSET 3
+#define XEN_UNIFIED_XM_OFFSET 4
 #define XEN_UNIFIED_NR_DRIVERS 5
+
+/* _xenUnifiedDriver:
+ *
+ * Entry points into the underlying Xen drivers.  This structure
+ * will eventually go away and instead xen unified will make direct
+ * calls to the underlying Xen drivers.
+ *
+ * To reiterate - the goal is to remove elements from this structure
+ * until it is empty, replacing indirect calls through this
+ * structure with direct calls in xen_unified.c.
+ */
+struct xenUnifiedDriver {
+	virDrvOpen			open;
+	virDrvClose			close;
+	virDrvGetType			type;
+	virDrvGetVersion		version;
+    virDrvGetHostname       getHostname;
+    virDrvGetURI            getURI;
+	virDrvNodeGetInfo		nodeGetInfo;
+	virDrvGetCapabilities		getCapabilities;
+	virDrvListDomains		listDomains;
+	virDrvNumOfDomains		numOfDomains;
+	virDrvDomainCreateLinux		domainCreateLinux;
+	virDrvDomainSuspend		domainSuspend;
+	virDrvDomainResume		domainResume;
+	virDrvDomainShutdown		domainShutdown;
+	virDrvDomainReboot		domainReboot;
+	virDrvDomainDestroy		domainDestroy;
+	virDrvDomainGetOSType		domainGetOSType;
+	virDrvDomainGetMaxMemory	domainGetMaxMemory;
+	virDrvDomainSetMaxMemory	domainSetMaxMemory;
+	virDrvDomainSetMemory		domainSetMemory;
+	virDrvDomainGetInfo		domainGetInfo;
+	virDrvDomainSave		domainSave;
+	virDrvDomainRestore		domainRestore;
+	virDrvDomainCoreDump		domainCoreDump;
+	virDrvDomainSetVcpus		domainSetVcpus;
+	virDrvDomainPinVcpu		domainPinVcpu;
+	virDrvDomainGetVcpus		domainGetVcpus;
+	virDrvDomainGetMaxVcpus		domainGetMaxVcpus;
+	virDrvDomainDumpXML		domainDumpXML;
+	virDrvListDefinedDomains	listDefinedDomains;
+	virDrvNumOfDefinedDomains	numOfDefinedDomains;
+	virDrvDomainCreate		domainCreate;
+	virDrvDomainDefineXML           domainDefineXML;
+	virDrvDomainUndefine            domainUndefine;
+	virDrvDomainAttachDevice	domainAttachDevice;
+	virDrvDomainDetachDevice	domainDetachDevice;
+	virDrvDomainGetAutostart	domainGetAutostart;
+	virDrvDomainSetAutostart	domainSetAutostart;
+	virDrvDomainGetSchedulerType	domainGetSchedulerType;
+	virDrvDomainGetSchedulerParameters domainGetSchedulerParameters;
+	virDrvDomainSetSchedulerParameters domainSetSchedulerParameters;
+};
 
 /* xenUnifiedPrivatePtr:
  *

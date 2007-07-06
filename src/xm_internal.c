@@ -74,27 +74,18 @@ static time_t lastRefresh = 0;
 #define XEND_PCI_CONFIG_PREFIX "xend-pci-"
 #define QEMU_IF_SCRIPT "qemu-ifup"
 
-virDriver xenXMDriver = {
-    -1,
-    "XenXM",
-    (DOM0_INTERFACE_VERSION >> 24) * 1000000 +
-    ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +
-    (DOM0_INTERFACE_VERSION & 0xFFFF),
+struct xenUnifiedDriver xenXMDriver = {
     xenXMOpen, /* open */
     xenXMClose, /* close */
     xenXMGetType, /* type */
     NULL, /* version */
     NULL, /* hostname */
     NULL, /* URI */
-    NULL, /* getMaxVcpus */
     NULL, /* nodeGetInfo */
     NULL, /* getCapabilities */
     NULL, /* listDomains */
     NULL, /* numOfDomains */
     NULL, /* domainCreateLinux */
-    NULL, /* domainLookupByID */
-    xenXMDomainLookupByUUID, /* domainLookupByUUID */
-    xenXMDomainLookupByName, /* domainLookupByName */
     NULL, /* domainSuspend */
     NULL, /* domainResume */
     NULL, /* domainShutdown */
@@ -2286,7 +2277,7 @@ static void xenXMListIterator(const void *payload ATTRIBUTE_UNUSED, const char *
     if (ctx->count == ctx->max)
         return;
 
-    dom = xenDaemonDomainLookupByName(ctx->conn, name);
+    dom = xenDaemonLookupByName(ctx->conn, name);
     if (!dom) {
         ctx->names[ctx->count] = strdup(name);
         ctx->count++;

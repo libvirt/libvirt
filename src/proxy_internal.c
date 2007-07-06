@@ -35,35 +35,23 @@ static int xenProxyNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
 static char *xenProxyGetCapabilities(virConnectPtr conn);
 static int xenProxyListDomains(virConnectPtr conn, int *ids, int maxids);
 static int xenProxyNumOfDomains(virConnectPtr conn);
-static virDomainPtr xenProxyLookupByID(virConnectPtr conn, int id);
-static virDomainPtr xenProxyLookupByUUID(virConnectPtr conn,
-					 const unsigned char *uuid);
-static virDomainPtr xenProxyDomainLookupByName(virConnectPtr conn,
-					       const char *domname);
 static unsigned long xenProxyDomainGetMaxMemory(virDomainPtr domain);
 static int xenProxyDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info);
 static char *xenProxyDomainDumpXML(virDomainPtr domain, int flags);
 static char *xenProxyDomainGetOSType(virDomainPtr domain);
 
-virDriver xenProxyDriver = {
-    -1,
-    "XenProxy",
-    0,
+struct xenUnifiedDriver xenProxyDriver = {
     xenProxyOpen, /* open */
     xenProxyClose, /* close */
     NULL, /* type */
     xenProxyGetVersion, /* version */
     NULL, /* hostname */
     NULL, /* URI */
-    NULL, /* getMaxVcpus */
     xenProxyNodeGetInfo, /* nodeGetInfo */
     xenProxyGetCapabilities, /* getCapabilities */
     xenProxyListDomains, /* listDomains */
     xenProxyNumOfDomains, /* numOfDomains */
     NULL, /* domainCreateLinux */
-    xenProxyLookupByID, /* domainLookupByID */
-    xenProxyLookupByUUID, /* domainLookupByUUID */
-    xenProxyDomainLookupByName, /* domainLookupByName */
     NULL, /* domainSuspend */
     NULL, /* domainResume */
     NULL, /* domainShutdown */
@@ -799,7 +787,7 @@ xenProxyDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
  *
  * Returns a new domain object or NULL in case of failure
  */
-static virDomainPtr
+virDomainPtr
 xenProxyLookupByID(virConnectPtr conn, int id)
 {
     virProxyPacket req;
@@ -845,7 +833,7 @@ xenProxyLookupByID(virConnectPtr conn, int id)
  *
  * Returns a new domain object or NULL in case of failure
  */
-static virDomainPtr
+virDomainPtr
 xenProxyLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
     virProxyFullPacket req;
@@ -879,7 +867,7 @@ xenProxyLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 }
 
 /**
- * xenProxyDomainLookupByName:
+ * xenProxyLookupByName:
  * @conn: A xend instance
  * @name: The name of the domain
  *
@@ -887,8 +875,8 @@ xenProxyLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
  *
  * Returns a new domain object or NULL in case of failure
  */
-static virDomainPtr
-xenProxyDomainLookupByName(virConnectPtr conn, const char *name)
+virDomainPtr
+xenProxyLookupByName(virConnectPtr conn, const char *name)
 {
     virProxyFullPacket req;
     int ret, len;

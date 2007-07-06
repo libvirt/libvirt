@@ -17,12 +17,6 @@
  * xend_internal, xs_internal and xm_internal).  Historically
  * the body of libvirt.c handled the five Xen drivers,
  * and contained Xen-specific code.
- *
- * The interface between Xen drivers and xen_unified is
- * the same as for "ordinary" libvirt drivers (ie. virDriverPtr),
- * however this is just for convenience and may be changed
- * in future.  Libvirt.c should no longer call directly
- * to the five underlying Xen drivers.
  */
 
 #include <stdint.h>
@@ -44,15 +38,13 @@
 #include "xm_internal.h"
 
 /* The five Xen drivers below us. */
-static virDriverPtr drivers[XEN_UNIFIED_NR_DRIVERS] = {
-    &xenHypervisorDriver,
-    &xenProxyDriver,
-    &xenDaemonDriver,
-    &xenStoreDriver,
-    &xenXMDriver
+static struct xenUnifiedDriver *drivers[XEN_UNIFIED_NR_DRIVERS] = {
+    [XEN_UNIFIED_HYPERVISOR_OFFSET] = &xenHypervisorDriver,
+    [XEN_UNIFIED_PROXY_OFFSET] = &xenProxyDriver,
+    [XEN_UNIFIED_XEND_OFFSET] = &xenDaemonDriver,
+    [XEN_UNIFIED_XS_OFFSET] = &xenStoreDriver,
+    [XEN_UNIFIED_XM_OFFSET] = &xenXMDriver,
 };
-static const int hypervisor_offset = 0;
-static const int proxy_offset = 1;
 
 /**
  * xenUnifiedError:
@@ -153,7 +145,7 @@ xenUnifiedOpen (virConnectPtr conn, const char *name, int flags)
             continue;
 
         /* Ignore proxy for root */
-        if (i == proxy_offset && getuid() == 0)
+        if (i == XEN_UNIFIED_PROXY_OFFSET && getuid() == 0)
             continue;
 
         if (drivers[i]->open &&
@@ -162,7 +154,8 @@ xenUnifiedOpen (virConnectPtr conn, const char *name, int flags)
 
         /* If as root, then all drivers must succeed.
            If non-root, then only proxy must succeed */
-        if (!priv->opened[i] && (getuid() == 0 || i == proxy_offset)) {
+        if (!priv->opened[i] &&
+            (getuid() == 0 || i == XEN_UNIFIED_PROXY_OFFSET)) {
             for (j = 0; j < i; ++j)
                 if (priv->opened[j]) drivers[j]->close (conn);
             free (priv->name);
@@ -269,16 +262,18 @@ static int
 xenUnifiedGetMaxVcpus (virConnectPtr conn, const char *type)
 {
     GET_PRIVATE(conn);
-    int i;
 
-    if (!type)
-        type = "Xen";
+    if (type && STRCASENEQ (type, "Xen")) {
+        xenUnifiedError (conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return -1;
+    }
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && strcmp (drivers[i]->name, type) == 0)
-            return drivers[i]->getMaxVcpus (conn, type);
-
-    return -1;
+    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET])
+        return xenHypervisorGetMaxVcpus (conn, type);
+    else {
+        xenUnifiedError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+        return -1;
+    }
 }
 
 static int
@@ -359,19 +354,37 @@ xenUnifiedDomainCreateLinux (virConnectPtr conn,
     return NULL;
 }
 
+/* Assumption made in underlying drivers:
+ * If the domain is "not found" and there is no other error, then
+ * the Lookup* functions return a NULL but do not set virterror.
+ */
 static virDomainPtr
 xenUnifiedDomainLookupByID (virConnectPtr conn, int id)
 {
     GET_PRIVATE(conn);
-    int i;
     virDomainPtr ret;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainLookupByID) {
-            ret = drivers[i]->domainLookupByID (conn, id);
-            if (ret) return ret;
-        }
+    /* Reset any connection-level errors in virterror first, in case
+     * there is one hanging around from a previous call.
+     */
+    virConnResetLastError (conn);
 
+    /* Try proxy. */
+    if (priv->opened[XEN_UNIFIED_PROXY_OFFSET]) {
+        ret = xenProxyLookupByID (conn, id);
+        if (ret || conn->err.code != VIR_ERR_OK)
+            return ret;
+    }
+
+    /* Try xend. */
+    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
+        ret = xenDaemonLookupByID (conn, id);
+        if (ret || conn->err.code != VIR_ERR_OK)
+            return ret;
+    }
+
+    /* Not found. */
+    xenUnifiedError (conn, VIR_ERR_NO_DOMAIN, __FUNCTION__);
     return NULL;
 }
 
@@ -380,15 +393,36 @@ xenUnifiedDomainLookupByUUID (virConnectPtr conn,
                               const unsigned char *uuid)
 {
     GET_PRIVATE(conn);
-    int i;
     virDomainPtr ret;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainLookupByUUID) {
-            ret = drivers[i]->domainLookupByUUID (conn, uuid);
-            if (ret) return ret;
-        }
+    /* Reset any connection-level errors in virterror first, in case
+     * there is one hanging around from a previous call.
+     */
+    virConnResetLastError (conn);
 
+    /* Try proxy. */
+    if (priv->opened[XEN_UNIFIED_PROXY_OFFSET]) {
+        ret = xenProxyLookupByUUID (conn, uuid);
+        if (ret || conn->err.code != VIR_ERR_OK)
+            return ret;
+    }
+
+    /* Try xend. */
+    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
+        ret = xenDaemonLookupByUUID (conn, uuid);
+        if (ret || conn->err.code != VIR_ERR_OK)
+            return ret;
+    }
+
+    /* Try XM for inactive domains. */
+    if (priv->opened[XEN_UNIFIED_XM_OFFSET]) {
+        ret = xenXMDomainLookupByUUID (conn, uuid);
+        if (ret || conn->err.code != VIR_ERR_OK)
+            return ret;
+    }
+
+    /* Not found. */
+    xenUnifiedError (conn, VIR_ERR_NO_DOMAIN, __FUNCTION__);
     return NULL;
 }
 
@@ -397,15 +431,43 @@ xenUnifiedDomainLookupByName (virConnectPtr conn,
                               const char *name)
 {
     GET_PRIVATE(conn);
-    int i;
     virDomainPtr ret;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainLookupByName) {
-            ret = drivers[i]->domainLookupByName (conn, name);
-            if (ret) return ret;
-        }
+    /* Reset any connection-level errors in virterror first, in case
+     * there is one hanging around from a previous call.
+     */
+    virConnResetLastError (conn);
 
+    /* Try proxy. */
+    if (priv->opened[XEN_UNIFIED_PROXY_OFFSET]) {
+        ret = xenProxyLookupByName (conn, name);
+        if (ret || conn->err.code != VIR_ERR_OK)
+            return ret;
+    }
+
+    /* Try xend. */
+    if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
+        ret = xenDaemonLookupByName (conn, name);
+        if (ret || conn->err.code != VIR_ERR_OK)
+            return ret;
+    }
+
+    /* Try xenstore for inactive domains. */
+    if (priv->opened[XEN_UNIFIED_XS_OFFSET]) {
+        ret = xenStoreLookupByName (conn, name);
+        if (ret || conn->err.code != VIR_ERR_OK)
+            return ret;
+    }
+
+    /* Try XM for inactive domains. */
+    if (priv->opened[XEN_UNIFIED_XM_OFFSET]) {
+        ret = xenXMDomainLookupByName (conn, name);
+        if (ret || conn->err.code != VIR_ERR_OK)
+            return ret;
+    }
+
+    /* Not found. */
+    xenUnifiedError (conn, VIR_ERR_NO_DOMAIN, __FUNCTION__);
     return NULL;
 }
 
@@ -419,15 +481,15 @@ xenUnifiedDomainSuspend (virDomainPtr dom)
      * as a last resort.
      */
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (i != hypervisor_offset &&
+        if (i != XEN_UNIFIED_HYPERVISOR_OFFSET &&
             priv->opened[i] &&
             drivers[i]->domainSuspend &&
             drivers[i]->domainSuspend (dom) == 0)
             return 0;
 
-    if (priv->opened[hypervisor_offset] &&
-        drivers[hypervisor_offset]->domainSuspend &&
-        drivers[hypervisor_offset]->domainSuspend (dom) == 0)
+    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] &&
+        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainSuspend &&
+        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainSuspend (dom) == 0)
         return 0;
 
     return -1;
@@ -443,15 +505,15 @@ xenUnifiedDomainResume (virDomainPtr dom)
      * as a last resort.
      */
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (i != hypervisor_offset &&
+        if (i != XEN_UNIFIED_HYPERVISOR_OFFSET &&
             priv->opened[i] &&
             drivers[i]->domainResume &&
             drivers[i]->domainResume (dom) == 0)
             return 0;
 
-    if (priv->opened[hypervisor_offset] &&
-        drivers[hypervisor_offset]->domainResume &&
-        drivers[hypervisor_offset]->domainResume (dom) == 0)
+    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] &&
+        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainResume &&
+        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainResume (dom) == 0)
         return 0;
 
     return -1;
@@ -497,15 +559,15 @@ xenUnifiedDomainDestroy (virDomainPtr dom)
      * as a last resort.
      */
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (i != hypervisor_offset &&
+        if (i != XEN_UNIFIED_HYPERVISOR_OFFSET &&
             priv->opened[i] &&
             drivers[i]->domainDestroy &&
             drivers[i]->domainDestroy (dom) == 0)
             return 0;
 
     if (priv->opened[i] &&
-        drivers[hypervisor_offset]->domainDestroy &&
-        drivers[hypervisor_offset]->domainDestroy (dom) == 0)
+        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainDestroy &&
+        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainDestroy (dom) == 0)
         return 0;
 
     return -1;
@@ -643,15 +705,15 @@ xenUnifiedDomainSetVcpus (virDomainPtr dom, unsigned int nvcpus)
      * as a last resort.
      */
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (i != hypervisor_offset &&
+        if (i != XEN_UNIFIED_HYPERVISOR_OFFSET &&
             priv->opened[i] &&
             drivers[i]->domainSetVcpus &&
             drivers[i]->domainSetVcpus (dom, nvcpus) == 0)
             return 0;
 
-    if (priv->opened[hypervisor_offset] &&
-        drivers[hypervisor_offset]->domainSetVcpus &&
-        drivers[hypervisor_offset]->domainSetVcpus (dom, nvcpus) == 0)
+    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] &&
+        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainSetVcpus &&
+        drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainSetVcpus (dom, nvcpus) == 0)
         return 0;
 
     return -1;

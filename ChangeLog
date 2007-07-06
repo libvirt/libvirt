@@ -1,3 +1,18 @@
+Fri Jul  6 16:08:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/proxy_internal.c, src/proxy_internal.h,
+	  src.xen_internal.c, src/xen_internal.h,
+	  src/xen_unified.c, src/xen_unified.h,
+	  src/xend_internal.c, src/xend_internal.h,
+	  src/xm_internal.c, src/xm_internal.h,
+	  src/xs_internal.c, src/xs_internal.h: The interface
+	  between xen_unified.c and its underlying driver now uses
+	  a custom structure (struct xenUnifiedDriver) instead
+	  of reusing virDriver.
+	* src/xen_unified.c: virDomainLookup* functions in Xen
+	  now throw VIR_ERR_NO_DOMAIN if the domain does not exist.
+	* src/xs_internal.c: Fix indentation.
+
 Fri Jul  6 17:06:52 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: fix an error in the default help string, bug #247197

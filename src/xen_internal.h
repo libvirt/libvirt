@@ -15,7 +15,7 @@
 extern "C" {
 #endif
 
-extern virDriver xenHypervisorDriver;
+extern struct xenUnifiedDriver xenHypervisorDriver;
 int	xenHypervisorInit		(void);
 
 /* The following calls are made directly by the Xen proxy: */

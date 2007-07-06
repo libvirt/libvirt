@@ -50,9 +50,6 @@ static int xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids);
 static int xenDaemonNumOfDomains(virConnectPtr conn);
 static int xenDaemonListDefinedDomains(virConnectPtr conn, char **const names, int maxnames);
 static int xenDaemonNumOfDefinedDomains(virConnectPtr conn);
-static virDomainPtr xenDaemonLookupByID(virConnectPtr conn, int id);
-static virDomainPtr xenDaemonLookupByUUID(virConnectPtr conn,
-                                          const unsigned char *uuid);
 static virDomainPtr xenDaemonCreateLinux(virConnectPtr conn,
                                          const char *xmlDesc,
 					 unsigned int flags);
@@ -64,27 +61,18 @@ static int xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
 #endif /* PROXY */
 
 #ifndef PROXY
-virDriver xenDaemonDriver = {
-    -1,
-    "XenDaemon",
-    (DOM0_INTERFACE_VERSION >> 24) * 1000000 +
-    ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +
-    (DOM0_INTERFACE_VERSION & 0xFFFF),
+struct xenUnifiedDriver xenDaemonDriver = {
     xenDaemonOpen, /* open */
     xenDaemonClose, /* close */
     xenDaemonGetType, /* type */
     xenDaemonGetVersion, /* version */
     NULL, /* hostname */
     NULL, /* URI */
-    NULL, /* getMaxVcpus */
     xenDaemonNodeGetInfo, /* nodeGetInfo */
     NULL, /* getCapabilities */
     xenDaemonListDomains, /* listDomains */
     xenDaemonNumOfDomains, /* numOfDomains */
     xenDaemonCreateLinux, /* domainCreateLinux */
-    xenDaemonLookupByID, /* domainLookupByID */
-    xenDaemonLookupByUUID, /* domainLookupByUUID */
-    xenDaemonDomainLookupByName, /* domainLookupByName */
     xenDaemonDomainSuspend, /* domainSuspend */
     xenDaemonDomainResume, /* domainResume */
     xenDaemonDomainShutdown, /* domainShutdown */
@@ -2511,7 +2499,7 @@ xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 
 #ifndef PROXY
 /**
- * xenDaemonDomainLookupByName:
+ * xenDaemonLookupByName:
  * @conn: A xend instance
  * @name: The name of the domain
  *
@@ -2522,7 +2510,7 @@ xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
  * Returns domain info on success; NULL (with errno) on error
  */
 virDomainPtr
-xenDaemonDomainLookupByName(virConnectPtr conn, const char *domname)
+xenDaemonLookupByName(virConnectPtr conn, const char *domname)
 {
     struct sexpr *root;
     virDomainPtr ret = NULL;
@@ -2727,7 +2715,7 @@ error:
  *
  * Returns a new domain object or NULL in case of failure
  */
-static virDomainPtr
+virDomainPtr
 xenDaemonLookupByID(virConnectPtr conn, int id) {
     char *name = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];
@@ -2926,7 +2914,7 @@ xenDaemonDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
  *
  * Returns a new domain object or NULL in case of failure
  */
-static virDomainPtr
+virDomainPtr
 xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
 {
     virDomainPtr ret;

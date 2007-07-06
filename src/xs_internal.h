@@ -15,7 +15,7 @@
 extern "C" {
 #endif
 
-extern virDriver xenStoreDriver;
+extern struct xenUnifiedDriver xenStoreDriver;
 int xenStoreInit (void);
 
 int		xenStoreOpen		(virConnectPtr conn,
@@ -28,7 +28,7 @@ int		xenStoreNumOfDomains	(virConnectPtr conn);
 int     	xenStoreListDomains	(virConnectPtr conn,
 					 int *ids,
 					 int maxids);
-virDomainPtr 	xenStoreDomainLookupByName(virConnectPtr conn,
+virDomainPtr 	xenStoreLookupByName(virConnectPtr conn,
 					 const char *name);
 unsigned long 	xenStoreGetMaxMemory	(virDomainPtr domain);
 int		xenStoreDomainSetMemory	(virDomainPtr domain,

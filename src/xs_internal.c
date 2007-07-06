@@ -36,27 +36,18 @@
 #ifndef PROXY
 static char *xenStoreDomainGetOSType(virDomainPtr domain);
 
-virDriver xenStoreDriver = {
-    -1,
-    "XenStore",
-    (DOM0_INTERFACE_VERSION >> 24) * 1000000 +
-    ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +
-    (DOM0_INTERFACE_VERSION & 0xFFFF),
+struct xenUnifiedDriver xenStoreDriver = {
     xenStoreOpen, /* open */
     xenStoreClose, /* close */
     NULL, /* type */
     NULL, /* version */
     NULL, /* hostname */
     NULL, /* URI */
-    NULL, /* getMaxVcpus */
     NULL, /* nodeGetInfo */
     NULL, /* getCapabilities */
     xenStoreListDomains, /* listDomains */
     NULL, /* numOfDomains */
     NULL, /* domainCreateLinux */
-    NULL, /* domainLookupByID */
-    NULL, /* domainLookupByUUID */
-    xenStoreDomainLookupByName, /* domainLookupByName */
     NULL, /* domainSuspend */
     NULL, /* domainResume */
     xenStoreDomainShutdown, /* domainShutdown */
@@ -591,7 +582,7 @@ xenStoreListDomains(virConnectPtr conn, int *ids, int maxids)
 }
 
 /**
- * xenStoreDomainLookupByName:
+ * xenStoreLookupByName:
  * @conn: A xend instance
  * @name: The name of the domain
  *
@@ -600,7 +591,7 @@ xenStoreListDomains(virConnectPtr conn, int *ids, int maxids)
  * Returns a new domain object or NULL in case of failure
  */
 virDomainPtr
-xenStoreDomainLookupByName(virConnectPtr conn, const char *name)
+xenStoreLookupByName(virConnectPtr conn, const char *name)
 {
     virDomainPtr ret = NULL;
     unsigned int num, i, len;
@@ -625,23 +616,23 @@ xenStoreDomainLookupByName(virConnectPtr conn, const char *name)
 	goto done;
 
     for (i = 0; i < num; i++) {
-	id = strtol(idlist[i], &endptr, 10);
-	if ((endptr == idlist[i]) || (*endptr != 0)) {
-	    goto done;
-	}
+        id = strtol(idlist[i], &endptr, 10);
+        if ((endptr == idlist[i]) || (*endptr != 0)) {
+            goto done;
+        }
 #if 0
-	if (virConnectCheckStoreID(conn, (int) id) < 0)
-	    continue;
+        if (virConnectCheckStoreID(conn, (int) id) < 0)
+            continue;
 #endif
-	snprintf(prop, 199, "/local/domain/%s/name", idlist[i]);
-	prop[199] = 0;
-	tmp = xs_read(priv->xshandle, 0, prop, &len);
-	if (tmp != NULL) {
-	    found = !strcmp(name, tmp);
-	    free(tmp);
-	    if (found)
-		break;
-	}
+        snprintf(prop, 199, "/local/domain/%s/name", idlist[i]);
+        prop[199] = 0;
+        tmp = xs_read(priv->xshandle, 0, prop, &len);
+        if (tmp != NULL) {
+            found = STREQ (name, tmp);
+            free(tmp);
+            if (found)
+                break;
+        }
     }
     path = xs_get_domain_path(priv->xshandle, (unsigned int) id);
 
