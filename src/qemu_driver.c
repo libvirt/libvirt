@@ -1903,7 +1903,7 @@ static int qemudDomainDestroy(virDomainPtr dom) {
     }
 
     ret = qemudShutdownVMDaemon(driver, vm);
-    free(dom);
+    virFreeDomain(dom->conn, dom);
     return ret;
 }
 
@@ -2332,6 +2332,7 @@ static int qemudNetworkStart(virNetworkPtr net) {
 static int qemudNetworkDestroy(virNetworkPtr net) {
     struct qemud_driver *driver = (struct qemud_driver *)net->conn->networkPrivateData;
     struct qemud_network *network = qemudFindNetworkByUUID(driver, net->uuid);
+    int ret;
 
     if (!network) {
         qemudReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
@@ -2339,7 +2340,11 @@ static int qemudNetworkDestroy(virNetworkPtr net) {
         return -1;
     }
 
-    return qemudShutdownNetworkDaemon(driver, network);
+    ret = qemudShutdownNetworkDaemon(driver, network);
+
+    virFreeNetwork(net->conn, net);
+
+    return ret;
 }
 
 static char *qemudNetworkDumpXML(virNetworkPtr net, int flags ATTRIBUTE_UNUSED) {
