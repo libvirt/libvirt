@@ -2155,7 +2155,7 @@ static virNetworkPtr qemudNetworkLookupByUUID(virConnectPtr conn ATTRIBUTE_UNUSE
     virNetworkPtr net;
 
     if (!network) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "no network with matching uuid");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_NETWORK, "no network with matching uuid");
         return NULL;
     }
 
@@ -2169,7 +2169,7 @@ static virNetworkPtr qemudNetworkLookupByName(virConnectPtr conn ATTRIBUTE_UNUSE
     virNetworkPtr net;
 
     if (!network) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "no network with matching name");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_NETWORK, "no network with matching name");
         return NULL;
     }
 

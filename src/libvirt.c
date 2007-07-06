@@ -2338,7 +2338,8 @@ virConnectListDefinedNetworks(virConnectPtr conn, char **const names,
  *
  * Try to lookup a network on the given hypervisor based on its name.
  *
- * Returns a new network object or NULL in case of failure
+ * Returns a new network object or NULL in case of failure.  If the
+ * network cannot be found, then VIR_ERR_NO_NETWORK error is raised.
  */
 virNetworkPtr
 virNetworkLookupByName(virConnectPtr conn, const char *name)
@@ -2366,7 +2367,8 @@ virNetworkLookupByName(virConnectPtr conn, const char *name)
  *
  * Try to lookup a network on the given hypervisor based on its UUID.
  *
- * Returns a new network object or NULL in case of failure
+ * Returns a new network object or NULL in case of failure.  If the
+ * network cannot be found, then VIR_ERR_NO_NETWORK error is raised.
  */
 virNetworkPtr
 virNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
@@ -2394,7 +2396,8 @@ virNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
  *
  * Try to lookup a network on the given hypervisor based on its UUID.
  *
- * Returns a new network object or NULL in case of failure
+ * Returns a new network object or NULL in case of failure.  If the
+ * network cannot be found, then VIR_ERR_NO_NETWORK error is raised.
  */
 virNetworkPtr
 virNetworkLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
