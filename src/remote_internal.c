@@ -1368,9 +1368,6 @@ remoteDomainCreateLinux (virConnectPtr conn,
         return NULL;
 
     dom = get_nonnull_domain (conn, ret.dom);
-    if (dom == NULL)
-        error (conn, VIR_ERR_RPC, "remoteDomainCreateLinux: domain not found");
-
     xdr_free ((xdrproc_t) &xdr_remote_domain_create_linux_ret, (char *) &ret);
 
     return dom;
@@ -1393,9 +1390,6 @@ remoteDomainLookupByID (virConnectPtr conn, int id)
         return NULL;
 
     dom = get_nonnull_domain (conn, ret.dom);
-    if (dom == NULL)
-        error (conn, VIR_ERR_RPC, "remoteDomainLookupByID: domain not found");
-
     xdr_free ((xdrproc_t) &xdr_remote_domain_lookup_by_id_ret, (char *) &ret);
 
     return dom;
@@ -1418,9 +1412,6 @@ remoteDomainLookupByUUID (virConnectPtr conn, const unsigned char *uuid)
         return NULL;
 
     dom = get_nonnull_domain (conn, ret.dom);
-    if (dom == NULL)
-        error (conn, VIR_ERR_RPC, "remoteDomainLookupByUUID: domain not found");
-
     xdr_free ((xdrproc_t) &xdr_remote_domain_lookup_by_uuid_ret, (char *) &ret);
     return dom;
 }
@@ -1442,9 +1433,6 @@ remoteDomainLookupByName (virConnectPtr conn, const char *name)
         return NULL;
 
     dom = get_nonnull_domain (conn, ret.dom);
-    if (dom == NULL)
-        error (conn, VIR_ERR_RPC, "remoteDomainLookupByName: domain not found");
-
     xdr_free ((xdrproc_t) &xdr_remote_domain_lookup_by_name_ret, (char *) &ret);
 
     return dom;
@@ -1905,9 +1893,6 @@ remoteDomainDefineXML (virConnectPtr conn, const char *xml)
         return NULL;
 
     dom = get_nonnull_domain (conn, ret.dom);
-    if (dom == NULL)
-        error (conn, VIR_ERR_RPC, "remoteDomainDefineXML: domain not found");
-
     xdr_free ((xdrproc_t) xdr_remote_domain_define_xml_ret, (char *) &ret);
 
     return dom;
@@ -2336,9 +2321,6 @@ remoteNetworkLookupByUUID (virConnectPtr conn,
         return NULL;
 
     net = get_nonnull_network (conn, ret.net);
-    if (net == NULL)
-        error (conn, VIR_ERR_RPC, "remoteNetworkLookupByUUID: network not found");
-
     xdr_free ((xdrproc_t) &xdr_remote_network_lookup_by_uuid_ret, (char *) &ret);
 
     return net;
@@ -2362,9 +2344,6 @@ remoteNetworkLookupByName (virConnectPtr conn,
         return NULL;
 
     net = get_nonnull_network (conn, ret.net);
-    if (net == NULL)
-        error (conn, VIR_ERR_RPC, "remoteNetworkLookupByName: network not found");
-
     xdr_free ((xdrproc_t) &xdr_remote_network_lookup_by_name_ret, (char *) &ret);
 
     return net;
@@ -2387,9 +2366,6 @@ remoteNetworkCreateXML (virConnectPtr conn, const char *xmlDesc)
         return NULL;
 
     net = get_nonnull_network (conn, ret.net);
-    if (net == NULL)
-        error (conn, VIR_ERR_RPC, "remoteNetworkCreateXML: network not found");
-
     xdr_free ((xdrproc_t) &xdr_remote_network_create_xml_ret, (char *) &ret);
 
     return net;
@@ -2412,9 +2388,6 @@ remoteNetworkDefineXML (virConnectPtr conn, const char *xml)
         return NULL;
 
     net = get_nonnull_network (conn, ret.net);
-    if (net == NULL)
-        error (conn, VIR_ERR_RPC, "remoteNetworkDefineXML: network not found");
-
     xdr_free ((xdrproc_t) &xdr_remote_network_define_xml_ret, (char *) &ret);
 
     return net;
@@ -2843,9 +2816,7 @@ server_error (virConnectPtr conn, remote_error *err)
     virDomainPtr dom;
     virNetworkPtr net;
 
-    /* Get the domain and network, if set.  OK to ignore the return
-     * value of get_nonnull_* since these are informational.
-     */
+    /* Get the domain and network, if set. */
     dom = err->dom ? get_nonnull_domain (conn, *err->dom) : NULL;
     net = err->net ? get_nonnull_network (conn, *err->net) : NULL;
 
@@ -2867,9 +2838,8 @@ server_error (virConnectPtr conn, remote_error *err)
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
  * (name, uuid) pair into virDomainPtr or virNetworkPtr object.
- * virDomainPtr or virNetworkPtr cannot be NULL.
- *
- * NB. If these return NULL then the caller must return an error.
+ * These can return NULL if underlying memory allocations fail,
+ * but if they do then virterror has been set.
  */
 static virDomainPtr
 get_nonnull_domain (virConnectPtr conn, remote_nonnull_domain domain)

@@ -1889,10 +1889,8 @@ sexpr_to_domain(virConnectPtr conn, struct sexpr *root)
         goto error;
 
     ret = virGetDomain(conn, name, (const unsigned char *) &uuid[0]);
-    if (ret == NULL) {
-        virXendError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
-        return(NULL);
-    }
+    if (ret == NULL) return NULL;
+
     tmp = sexpr_node(root, "domain/domid");
     /* New 3.0.4 XenD will not report a domid for inactive domains,
      * so only error out for old XenD
@@ -2740,10 +2738,8 @@ xenDaemonLookupByID(virConnectPtr conn, int id) {
     }
 
     ret = virGetDomain(conn, name, uuid);
-    if (ret == NULL) {
-        virXendError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
-        goto error;
-    }
+    if (ret == NULL) return NULL;
+
     ret->id = id;
     free(name);
     return (ret);
@@ -2989,11 +2985,8 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         return (NULL);
 
     ret = virGetDomain(conn, name, uuid);
-    if (ret == NULL) {
-        virXendError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
-        free(name);
-        return (NULL);
-    }
+    if (ret == NULL) return NULL;
+
     ret->id = id;
     free(name);
     return (ret);

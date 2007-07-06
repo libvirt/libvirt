@@ -209,8 +209,6 @@ virDomainPtr	__virGetDomain	(virConnectPtr conn,
 				 const unsigned char *uuid);
 int		virFreeDomain	(virConnectPtr conn,
 				 virDomainPtr domain);
-virDomainPtr	virGetDomainByID(virConnectPtr conn,
-				 int id);
 virNetworkPtr	__virGetNetwork	(virConnectPtr conn,
 				 const char *name,
 				 const unsigned char *uuid);

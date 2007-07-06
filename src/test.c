@@ -957,10 +957,7 @@ testDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
         }
     }
     dom = virGetDomain(conn, con->domains[handle].name, con->domains[handle].uuid);
-    if (dom == NULL) {
-        testError(conn, NULL, VIR_ERR_NO_MEMORY, _("allocating domain"));
-        return (NULL);
-    }
+    if (dom == NULL) return NULL;
     con->numDomains++;
     return (dom);
 }
@@ -988,10 +985,7 @@ virDomainPtr testLookupDomainByID(virConnectPtr conn,
     }
 
     dom = virGetDomain(conn, con->domains[idx].name, con->domains[idx].uuid);
-    if (dom == NULL) {
-        testError(conn, NULL, VIR_ERR_NO_MEMORY, _("allocating domain"));
-        return(NULL);
-    }
+    if (dom == NULL) return NULL;
     dom->id = id;
     return (dom);
 }
@@ -1018,10 +1012,7 @@ virDomainPtr testLookupDomainByUUID(virConnectPtr conn,
     }
 
     dom = virGetDomain(conn, con->domains[idx].name, con->domains[idx].uuid);
-    if (dom == NULL) {
-        testError(conn, NULL, VIR_ERR_NO_MEMORY, _("allocating domain"));
-        return NULL;
-    }
+    if (dom == NULL) return NULL;
     dom->id = con->domains[idx].id;
 
     return dom;
@@ -1049,10 +1040,7 @@ virDomainPtr testLookupDomainByName(virConnectPtr conn,
     }
 
     dom = virGetDomain(conn, con->domains[idx].name, con->domains[idx].uuid);
-    if (dom == NULL) {
-        testError(conn, NULL, VIR_ERR_NO_MEMORY, _("allocating domain"));
-        return NULL;
-    }
+    if (dom == NULL) return NULL;
     dom->id = con->domains[idx].id;
 
     return dom;

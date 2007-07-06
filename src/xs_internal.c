@@ -650,10 +650,8 @@ xenStoreDomainLookupByName(virConnectPtr conn, const char *name)
 
     ret = virGetDomain(conn, name, NULL);
     if (ret == NULL) {
-        virXenStoreError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
-	if (path != NULL)
-	    free(path);
-	goto done;
+        if (path != NULL) free(path);
+        goto done;
     }
     ret->id = id;
 

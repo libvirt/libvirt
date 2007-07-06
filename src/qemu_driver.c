@@ -1754,12 +1754,7 @@ static virDomainPtr qemudDomainLookupByID(virConnectPtr conn,
     }
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
-    if (!dom) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "virDomainPtr");
-        return NULL;
-    }
-
-    dom->id = vm->id;
+    if (dom) dom->id = vm->id;
     return dom;
 }
 static virDomainPtr qemudDomainLookupByUUID(virConnectPtr conn,
@@ -1774,12 +1769,7 @@ static virDomainPtr qemudDomainLookupByUUID(virConnectPtr conn,
     }
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
-    if (!dom) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "virDomainPtr");
-        return NULL;
-    }
-
-    dom->id = vm->id;
+    if (dom) dom->id = vm->id;
     return dom;
 }
 static virDomainPtr qemudDomainLookupByName(virConnectPtr conn,
@@ -1794,12 +1784,7 @@ static virDomainPtr qemudDomainLookupByName(virConnectPtr conn,
     }
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
-    if (!dom) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "virDomainPtr");
-        return NULL;
-    }
-
-    dom->id = vm->id;
+    if (dom) dom->id = vm->id;
     return dom;
 }
 
@@ -1850,12 +1835,7 @@ static virDomainPtr qemudDomainCreate(virConnectPtr conn, const char *xml,
     }
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
-    if (!dom) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "virDomainPtr");
-        return NULL;
-    }
-
-    dom->id = vm->id;
+    if (dom) dom->id = vm->id;
     return dom;
 }
 
@@ -2075,12 +2055,7 @@ static virDomainPtr qemudDomainDefine(virConnectPtr conn, const char *xml) {
     }
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid);
-    if (!dom) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "virDomainPtr");
-        return NULL;
-    }
-
-    dom->id = vm->id;
+    if (dom) dom->id = vm->id;
     return dom;
 }
 
@@ -2185,10 +2160,6 @@ static virNetworkPtr qemudNetworkLookupByUUID(virConnectPtr conn ATTRIBUTE_UNUSE
     }
 
     net = virGetNetwork(conn, network->def->name, network->def->uuid);
-    if (!net) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "virNetworkPtr");
-        return NULL;
-    }
     return net;
 }
 static virNetworkPtr qemudNetworkLookupByName(virConnectPtr conn ATTRIBUTE_UNUSED,
@@ -2203,10 +2174,6 @@ static virNetworkPtr qemudNetworkLookupByName(virConnectPtr conn ATTRIBUTE_UNUSE
     }
 
     net = virGetNetwork(conn, network->def->name, network->def->uuid);
-    if (!net) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "virNetworkPtr");
-        return NULL;
-    }
     return net;
 }
 
@@ -2299,10 +2266,6 @@ static virNetworkPtr qemudNetworkCreate(virConnectPtr conn, const char *xml) {
     }
 
     net = virGetNetwork(conn, network->def->name, network->def->uuid);
-    if (!net) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "virNetworkPtr");
-        return NULL;
-    }
     return net;
 }
 
@@ -2326,10 +2289,6 @@ static virNetworkPtr qemudNetworkDefine(virConnectPtr conn, const char *xml) {
     }
 
     net = virGetNetwork(conn, network->def->name, network->def->uuid);
-    if (!net) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "virNetworkPtr");
-        return NULL;
-    }
     return net;
 }
 

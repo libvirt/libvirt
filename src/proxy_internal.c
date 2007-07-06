@@ -832,12 +832,7 @@ xenProxyLookupByID(virConnectPtr conn, int id)
     memcpy(uuid, &ans.extra.str[0], VIR_UUID_BUFLEN);
     name = &ans.extra.str[VIR_UUID_BUFLEN];
     res = virGetDomain(conn, name, uuid);
-
-    if (res == NULL)
-        virProxyError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
-    else
-	res->id = id;
-    
+	if (res) res->id = id;
     return(res);
 }
 
@@ -879,12 +874,7 @@ xenProxyLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     }
     name = &req.extra.str[0];
     res = virGetDomain(conn, name, uuid);
-
-    if (res == NULL)
-        virProxyError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
-    else
-	res->id = req.data.arg;
-    
+	if (res) res->id = req.data.arg;
     return(res);
 }
 
@@ -930,12 +920,7 @@ xenProxyDomainLookupByName(virConnectPtr conn, const char *name)
 	return(NULL);
     }
     res = virGetDomain(conn, name, (const unsigned char *)&req.extra.str[0]);
-
-    if (res == NULL)
-        virProxyError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
-    else
-	res->id = req.data.arg;
-    
+	if (res) res->id = req.data.arg;
     return(res);
 }
 
