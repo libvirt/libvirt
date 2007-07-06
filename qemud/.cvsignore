@@ -6,3 +6,4 @@ Makefile.in
 *.la
 libvirt_qemud
 libvirtd
+libvirtd.init
