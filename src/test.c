@@ -983,6 +983,7 @@ virDomainPtr testLookupDomainByID(virConnectPtr conn,
     }
 
     if (idx < 0) {
+        testError (conn, NULL, VIR_ERR_NO_DOMAIN, NULL);
         return(NULL);
     }
 
@@ -1000,8 +1001,9 @@ virDomainPtr testLookupDomainByUUID(virConnectPtr conn,
 {
     testPrivatePtr priv = (testPrivatePtr) conn->privateData;
     testCon *con = &node->connections[priv->handle];
-    virDomainPtr dom = NULL;
+    virDomainPtr dom;
     int i, idx = -1;
+
     for (i = 0 ; i < MAX_DOMAINS ; i++) {
         if (con->domains[i].active &&
             memcmp(uuid, con->domains[i].uuid, VIR_UUID_BUFLEN) == 0) {
@@ -1009,15 +1011,20 @@ virDomainPtr testLookupDomainByUUID(virConnectPtr conn,
             break;
         }
     }
-    if (idx >= 0) {
-        dom = virGetDomain(conn, con->domains[idx].name, con->domains[idx].uuid);
-        if (dom == NULL) {
-            testError(conn, NULL, VIR_ERR_NO_MEMORY, _("allocating domain"));
-            return(NULL);
-        }
-        dom->id = con->domains[idx].id;
+
+    if (idx < 0) {
+        testError (conn, NULL, VIR_ERR_NO_DOMAIN, NULL);
+        return NULL;
     }
-    return (dom);
+
+    dom = virGetDomain(conn, con->domains[idx].name, con->domains[idx].uuid);
+    if (dom == NULL) {
+        testError(conn, NULL, VIR_ERR_NO_MEMORY, _("allocating domain"));
+        return NULL;
+    }
+    dom->id = con->domains[idx].id;
+
+    return dom;
 }
 
 virDomainPtr testLookupDomainByName(virConnectPtr conn,
@@ -1025,8 +1032,9 @@ virDomainPtr testLookupDomainByName(virConnectPtr conn,
 {
     testPrivatePtr priv = (testPrivatePtr) conn->privateData;
     testCon *con = &node->connections[priv->handle];
-    virDomainPtr dom = NULL;
+    virDomainPtr dom;
     int i, idx = -1;
+
     for (i = 0 ; i < MAX_DOMAINS ; i++) {
         if (con->domains[i].active &&
             strcmp(name, con->domains[i].name) == 0) {
@@ -1034,15 +1042,20 @@ virDomainPtr testLookupDomainByName(virConnectPtr conn,
             break;
         }
     }
-    if (idx >= 0) {
-        dom = virGetDomain(conn, con->domains[idx].name, con->domains[idx].uuid);
-        if (dom == NULL) {
-            testError(conn, NULL, VIR_ERR_NO_MEMORY, _("allocating domain"));
-            return(NULL);
-        }
-        dom->id = con->domains[idx].id;
+
+    if (idx < 0) {
+        testError (conn, NULL, VIR_ERR_NO_DOMAIN, NULL);
+        return NULL;
     }
-    return (dom);
+
+    dom = virGetDomain(conn, con->domains[idx].name, con->domains[idx].uuid);
+    if (dom == NULL) {
+        testError(conn, NULL, VIR_ERR_NO_MEMORY, _("allocating domain"));
+        return NULL;
+    }
+    dom->id = con->domains[idx].id;
+
+    return dom;
 }
 
 int testListDomains (virConnectPtr conn,

@@ -125,6 +125,8 @@ typedef enum {
     VIR_ERR_RPC, /* some sort of RPC error */
     VIR_ERR_GNUTLS_ERROR, /* error from a GNUTLS call */
     VIR_WAR_NO_NETWORK, /* failed to start network */
+    VIR_ERR_NO_DOMAIN, /* domain not found or unexpectedly disappeared */
+    VIR_ERR_NO_NETWORK, /* network not found */
 } virErrorNumber;
 
 /**

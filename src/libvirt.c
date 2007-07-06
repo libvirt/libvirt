@@ -752,7 +752,8 @@ virDomainCreateLinux(virConnectPtr conn, const char *xmlDesc,
  *
  * Try to find a domain based on the hypervisor ID number
  *
- * Returns a new domain object or NULL in case of failure
+ * Returns a new domain object or NULL in case of failure.  If the
+ * domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.
  */
 virDomainPtr
 virDomainLookupByID(virConnectPtr conn, int id)
@@ -780,7 +781,8 @@ virDomainLookupByID(virConnectPtr conn, int id)
  *
  * Try to lookup a domain on the given hypervisor based on its UUID.
  *
- * Returns a new domain object or NULL in case of failure
+ * Returns a new domain object or NULL in case of failure.  If the
+ * domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.
  */
 virDomainPtr
 virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
@@ -808,7 +810,8 @@ virDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
  *
  * Try to lookup a domain on the given hypervisor based on its UUID.
  *
- * Returns a new domain object or NULL in case of failure
+ * Returns a new domain object or NULL in case of failure.  If the
+ * domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.
  */
 virDomainPtr
 virDomainLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
@@ -857,7 +860,8 @@ virDomainLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
  *
  * Try to lookup a domain on the given hypervisor based on its name.
  *
- * Returns a new domain object or NULL in case of failure
+ * Returns a new domain object or NULL in case of failure.  If the
+ * domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.
  */
 virDomainPtr
 virDomainLookupByName(virConnectPtr conn, const char *name)

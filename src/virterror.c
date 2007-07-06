@@ -634,6 +634,18 @@ __virErrorMsg(virErrorNumber error, const char *info)
 	    else
 		errmsg = _("Failed to find the network: %s");
 	    break;
+	case VIR_ERR_NO_DOMAIN:
+	    if (info == NULL)
+		errmsg = _("Domain not found");
+	    else
+		errmsg = _("Domain not found: %s");
+	    break;
+	case VIR_ERR_NO_NETWORK:
+	    if (info == NULL)
+		errmsg = _("Network not found");
+	    else
+		errmsg = _("Network not found: %s");
+	    break;
     }
     return (errmsg);
 }

@@ -1749,7 +1749,7 @@ static virDomainPtr qemudDomainLookupByID(virConnectPtr conn,
     virDomainPtr dom;
 
     if (!vm) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "no domain with matching id");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_DOMAIN, NULL);
         return NULL;
     }
 
@@ -1769,7 +1769,7 @@ static virDomainPtr qemudDomainLookupByUUID(virConnectPtr conn,
     virDomainPtr dom;
 
     if (!vm) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "no domain with matching uuid");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_DOMAIN, NULL);
         return NULL;
     }
 
@@ -1789,7 +1789,7 @@ static virDomainPtr qemudDomainLookupByName(virConnectPtr conn,
     virDomainPtr dom;
 
     if (!vm) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "no domain with matching name");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_DOMAIN, NULL);
         return NULL;
     }
 
