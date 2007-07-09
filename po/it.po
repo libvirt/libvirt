@@ -1,3 +1,11 @@
+# translation of it.po to 
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
+# translation of it.po to
 # translation of it.po to italiano
 # translation of it.po to
 # translation of it.po to
@@ -56,23 +64,23 @@
 # translation of it.po to
 # Copyright (C) 2006, 2007 Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
-#
 # Francesco Tombolini <tombo@adamantio.net>, 2007.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
-"PO-Revision-Date: 2007-06-18 06:39+0200\n"
-"Last-Translator: Francesco Tombolini <tombo@adamantio.net>\n"
-"Language-Team: italiano <fedora-trans-it@redhat.com>\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
+"PO-Revision-Date: 2007-07-09 07:09+0200\n"
+"Last-Translator: \n"
+"Language-Team:  <it@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.11.4\n"
+"X-Generator: KBabel 1.9.1\n"
 "Plural-Forms:  nplurals=2; plural=(n != 1);\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "assegnazione collegamento in corso"
 
@@ -102,14 +110,13 @@ msgid "out of memory"
 msgstr "memoria esaurita"
 
 #: src/virterror.c:414
-#, fuzzy
 msgid "this function is not supported by the hypervisor"
-msgstr "nessun supporto per hypervisor"
+msgstr "questa funzione non è supportata dall'hypervisor"
 
 #: src/virterror.c:416
-#, fuzzy, c-format
+#, c-format
 msgid "this function is not supported by the hypervisor: %s"
-msgstr "nessun supporto per hypervisor %s"
+msgstr "questa funzione non è supportata dall'hypervisor: %s"
 
 #: src/virterror.c:420
 msgid "could not connect to hypervisor"
@@ -422,6 +429,26 @@ msgstr "Impossibile trovare la rete"
 msgid "Failed to find the network: %s"
 msgstr "Impossibile trovare la rete: %s"
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "informazioni del dominio"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "Dominio ripristinato da %s\n"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "nome della rete o uuid"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "Rete %s creata da %s\n"
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr "copiatura contenuto nodo in corso"
@@ -466,10 +493,7 @@ msgstr "analizzazione risposta server fallita"
 msgid "allocate new context"
 msgstr "assegna nuovo contenuto"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "assegnazione dominio in corso"
 
@@ -481,24 +505,24 @@ msgstr "impossibile aggiungere il dominio alla tabella hash di collegamento"
 msgid "domain missing from connection hash table"
 msgstr "dominio mancante dalla tabella hash di collegamento"
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 msgid "allocating network"
 msgstr "allocazione rete"
 
-#: src/hash.c:963
+#: src/hash.c:918
 msgid "failed to add network to connection hash table"
 msgstr "impossibile aggiungere la rete alla tabella hash di connessione"
 
-#: src/hash.c:1015
+#: src/hash.c:970
 msgid "network missing from connection hash table"
 msgstr "rete mancante dalla tabella hash di connessione"
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr "acquisizione ora del giorno in corso"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "dominio"
 
@@ -607,19 +631,18 @@ msgid "allocating private data"
 msgstr "allocazione dati privati"
 
 #: src/test.c:774
-#, fuzzy
 msgid "allocating path"
-msgstr "assegnazione dominio in corso"
+msgstr "assegnazione percorso"
 
 #: src/test.c:946
 msgid "too many domains"
 msgstr "troppi domini"
 
-#: src/test.c:1491
+#: src/test.c:1492
 msgid "Domain is already running"
 msgstr "Il dominio è già in esecuzione"
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr "Il dominio è ancora in esecuzione"
 
@@ -684,11 +707,11 @@ msgstr "impossibile analizzare il filename vbd, nome del driver mancante"
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "impossibile analizzare il filename vbd, tipo di driver mancante"
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr "impossibile analizzare le informazioni del dominio Xend"
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Impossibile creare il dominio inattivo %s\n"
@@ -1198,7 +1221,7 @@ msgstr "Affinità CPU:"
 
 #: src/virsh.c:1511
 msgid "Domain shut off, virtual CPUs not present."
-msgstr ""
+msgstr "Interruzione dominio, CPU virtuali non presenti."
 
 #: src/virsh.c:1527
 msgid "control domain vcpu affinity"
@@ -1218,13 +1241,15 @@ msgstr "numeri cpu host (separati da una virgola)"
 
 #: src/virsh.c:1590
 msgid "cpulist: Invalid format. Empty string."
-msgstr ""
+msgstr "cpulist: Formato invalido. Stringa vuota."
 
 #: src/virsh.c:1600
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
+"cpulist: %s: Formato invalido. È necessaria una cifra nella posizione %d "
+"(vicino '%c')."
 
 #: src/virsh.c:1610
 #, c-format
@@ -1232,11 +1257,13 @@ msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
 "c')."
 msgstr ""
+"cpulist: %s: Formato invalido. È necessaria una cifra o una virgola nella "
+"posizione %d (vicino '%c')."
 
 #: src/virsh.c:1617
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
-msgstr ""
+msgstr "cpulist: %s: Formato invalido. Virgola finale nella posizione %d."
 
 #: src/virsh.c:1631
 #, c-format
@@ -1256,12 +1283,10 @@ msgid "number of virtual CPUs"
 msgstr "numero di CPU virtuali"
 
 #: src/virsh.c:1682
-#, fuzzy
 msgid "Invalid number of virtual CPUs."
-msgstr "numero di CPU virtuali"
+msgstr "Numero invalido di CPU virtuali."
 
 #: src/virsh.c:1694
-#, fuzzy
 msgid "Too many virtual CPUs."
 msgstr "Troppe CPU virtuali."
 
@@ -1284,7 +1309,7 @@ msgstr "Il valore %d per la grandezza della memoria non è valido"
 
 #: src/virsh.c:1746
 msgid "Unable to verify MaxMemorySize"
-msgstr ""
+msgstr "Impossibile verificare DimensioneMemoriaMassima"
 
 #: src/virsh.c:1769
 msgid "change maximum memory limit"
@@ -1301,16 +1326,15 @@ msgstr "limite massimo della memoria in kilobyte"
 
 #: src/virsh.c:1803
 msgid "Unable to verify current MemorySize"
-msgstr ""
+msgstr "Impossibile verificare DimensioneMemoria corrente"
 
 #: src/virsh.c:1810
-#, fuzzy
 msgid "Unable to shrink current MemorySize"
-msgstr "memoria corrente del dominio"
+msgstr "Impossibile diminuire la DimensioneMemoria corrente"
 
 #: src/virsh.c:1816
 msgid "Unable to change MaxMemorySize"
-msgstr ""
+msgstr "Impossibile modificare la DimensioneMemoriaMassima"
 
 #: src/virsh.c:1829
 msgid "node information"
@@ -1646,24 +1670,20 @@ msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "Esecuzione hypervisor: %s %d.%d.%d\n"
 
 #: src/virsh.c:2610
-#, fuzzy
 msgid "print the hypervisor hostname"
-msgstr "impossibile ottenere il tipo di hypervisor"
+msgstr "stampa il nome host di hypervisor"
 
 #: src/virsh.c:2624
-#, fuzzy
 msgid "failed to get hostname"
-msgstr "impossibile ottenere il tipo di hypervisor"
+msgstr "impossibile ottenere il nome host"
 
 #: src/virsh.c:2639
-#, fuzzy
 msgid "print the hypervisor canonical URI"
-msgstr "URI di connessione dell'hypervisor"
+msgstr "stampa l'URI canonico di hypervisor"
 
 #: src/virsh.c:2653
-#, fuzzy
 msgid "failed to get URI"
-msgstr "impossibile ottenere l'UUID del dominio"
+msgstr "impossibile ottenere l'URI"
 
 #: src/virsh.c:2668
 msgid "vnc display"
@@ -1704,130 +1724,121 @@ msgid "Failed to detach device from %s"
 msgstr "Impossibile staccare il dispositivo da %s"
 
 #: src/virsh.c:2855
-#, fuzzy
 msgid "attach network interface"
-msgstr "nome rete"
+msgstr "collegare interfaccia di rete"
 
 #: src/virsh.c:2856
 msgid "Attach new network interface."
-msgstr ""
+msgstr "Collegamento di una nuova interfaccia di rete."
 
 #: src/virsh.c:2862 src/virsh.c:2978
-#, fuzzy
 msgid "network interface type"
-msgstr "nome rete"
+msgstr "tipo di interfaccia di rete"
 
 #: src/virsh.c:2863
-#, fuzzy
 msgid "source of network interface"
-msgstr "nome della rete non definito"
+msgstr "sorgente dell'interfaccia di rete"
 
 #: src/virsh.c:2864
-#, fuzzy
 msgid "target network name"
-msgstr "nome rete"
+msgstr "nome della rete target"
 
 #: src/virsh.c:2865 src/virsh.c:2979
 msgid "MAC adress"
-msgstr ""
+msgstr "Indirizzo MAC"
 
 #: src/virsh.c:2866
 msgid "script used to bridge network interface"
-msgstr ""
+msgstr "script utilizzato per l'interfaccia di rete bridge"
 
 #: src/virsh.c:2898
 #, c-format
 msgid "No support %s in command 'attach-interface'"
-msgstr ""
+msgstr "Nessun supporto %s nel comando 'attach-interface'"
 
 #: src/virsh.c:2971
-#, fuzzy
 msgid "detach network interface"
-msgstr "nome rete"
+msgstr "scollegamento interfaccia di rete"
 
 #: src/virsh.c:2972
 msgid "Detach network interface."
-msgstr ""
+msgstr "Scollegamento dell'interfaccia di rete."
 
 #: src/virsh.c:3017 src/virsh.c:3022
-#, fuzzy
 msgid "Failed to get interface information"
-msgstr "impossibile ottenere informazioni sul nodo"
+msgstr "Impossibile ottenere informazioni sull'interfaccia"
 
 #: src/virsh.c:3030
 #, c-format
 msgid "No found interface whose type is %s"
-msgstr ""
+msgstr "Non è stata trovata alcuna interfaccia di tipo %s"
 
 #: src/virsh.c:3052
 #, c-format
 msgid "No found interface whose MAC address is %s"
-msgstr ""
+msgstr "Non è stata trovata alcuna interfaccia con un indirizzo MAC %s"
 
 #: src/virsh.c:3058 src/virsh.c:3336
-#, fuzzy
 msgid "Failed to allocate memory"
-msgstr "impossibile assegnare un nodo"
+msgstr "Impossibile assegnare memoria"
 
 #: src/virsh.c:3063 src/virsh.c:3341
-#, fuzzy
 msgid "Failed to create XML"
-msgstr "Impossibile leggere il socket %d\n"
+msgstr "Impossibile creare XML"
 
 #: src/virsh.c:3092
 msgid "attach disk device"
-msgstr ""
+msgstr "colleganto dispositivo del disco"
 
 #: src/virsh.c:3093
 msgid "Attach new disk device."
-msgstr ""
+msgstr "Colegamento di un nuovo dispositivo del disco."
 
 #: src/virsh.c:3099
 msgid "source of disk device"
-msgstr ""
+msgstr "sorgente dispositivo del disco"
 
 #: src/virsh.c:3100 src/virsh.c:3264
 msgid "target of disk device"
-msgstr ""
+msgstr "target del dispositivo del disco"
 
 #: src/virsh.c:3101
 msgid "driver of disk device"
-msgstr ""
+msgstr "driver del dispositivo del disco"
 
 #: src/virsh.c:3102
 msgid "subdriver of disk device"
-msgstr ""
+msgstr "subdriver del dispositivo del disco"
 
 #: src/virsh.c:3103
 msgid "target device type"
-msgstr ""
+msgstr "tipo di dispositivo target"
 
 #: src/virsh.c:3104
 msgid "mode of device reading and writing"
-msgstr ""
+msgstr "modalità di lettura e scrittura del dispositivo"
 
 #: src/virsh.c:3135 src/virsh.c:3144 src/virsh.c:3151
 #, c-format
 msgid "No support %s in command 'attach-disk'"
-msgstr ""
+msgstr "Nessun supporto %s nel comando 'attach-disk'"
 
 #: src/virsh.c:3257
 msgid "detach disk device"
-msgstr ""
+msgstr "scollegamento dispositivo del disco"
 
 #: src/virsh.c:3258
 msgid "Detach disk device."
-msgstr ""
+msgstr "Scollegamento dispositivo del disco."
 
 #: src/virsh.c:3299 src/virsh.c:3304 src/virsh.c:3311
-#, fuzzy
 msgid "Failed to get disk information"
-msgstr "impossibile ottenere informazioni sul nodo"
+msgstr "Impossibile ottenere informazioni sul disco"
 
 #: src/virsh.c:3330
 #, c-format
 msgid "No found disk whose target is %s"
-msgstr ""
+msgstr "Nessun disco trovato con target %s"
 
 #: src/virsh.c:3370
 msgid "quit this interactive terminal"
@@ -2066,10 +2077,10 @@ msgstr ""
 "  comandi (modalità non interattiva):\n"
 
 #: src/virsh.c:4497
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"
@@ -2138,9 +2149,8 @@ msgid "expecting an assignment"
 msgstr "in attesa di un incarico"
 
 #: src/conf.c:887 src/conf.c:941
-#, fuzzy
 msgid "failed to allocate buffer"
-msgstr "impossibile assegnare un nodo"
+msgstr "impossibile assegnare un buffer"
 
 #: src/conf.c:899
 msgid "failed to open file"
@@ -2204,12 +2214,3 @@ msgstr "presente un numero %d asincrono del pacchetto \n"
 #, c-format
 msgid "allocating %d domain info"
 msgstr "allocazione informazioni del dominio %d"
-
-#~ msgid "growing buffer"
-#~ msgstr "aumento del buffer"
-
-#~ msgid "allocate buffer content"
-#~ msgstr "assegnazione contenuto buffer"
-
-#~ msgid "file conatining an XML domain description"
-#~ msgstr "il file contiene una descrizione del dominio XML"

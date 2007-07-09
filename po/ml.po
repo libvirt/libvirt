@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ml\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
 "PO-Revision-Date: 2007-06-15 11:11+0530\n"
 "Last-Translator: Ani Peter <apeter@redhat.com>\n"
 "Language-Team: Malayalam <en@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "കണക്ഷന്‍ അനുവദിക്കുന്നു"
 
@@ -366,6 +366,26 @@ msgstr "നെറ്റ്‌വറ്‍ക്ക് ലഭ്യമാക്�
 msgid "Failed to find the network: %s"
 msgstr "നെറ്റ്‌വറ്‍ക്ക് ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "ഡൊമെയിന്‍ വിവരങ്ങള്‍"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "%s-ല്‍ നിന്നും ഡൊമെയിന്‍ വീണ്ടെടുത്തിരിക്കുന്നു\n"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "നെറ്റ്‌വറ്‍ക്കിന്‍റെ പേര് അല്ലെങ്കില്‍ uuid"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "%s-ല്‍ നിന്നും നെറ്റ്‌വറ്‍ക്ക് %s ഉണ്ടാക്കിയിരിക്കുന്നു\n"
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr "നോഡിന്‍റെ ഉളളടക്കം പകര്‍ത്തുന്നു"
@@ -410,10 +430,7 @@ msgstr "പാര്‍സ് സര്‍വറിന്‍റെ മറുപ�
 msgid "allocate new context"
 msgstr "പുതിയ കോണ്‍ടോക്സ്റ്റ് വ്യക്തമാക്കുക"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "‍ഡൊമെയിന്‍ അനുവദിക്കുന്നു"
 
@@ -425,24 +442,24 @@ msgstr "കണക്ഷന്‍ ഹാഷ് ടേബിളിലേക്ക�
 msgid "domain missing from connection hash table"
 msgstr "ഹാഷ് ടേബിളിലില്‍ ഡൊമെയിന്‍ ലഭ്യമല്ല"
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 msgid "allocating network"
 msgstr "നോഡ് അനുവദിക്കുന്നു"
 
-#: src/hash.c:963
+#: src/hash.c:918
 msgid "failed to add network to connection hash table"
 msgstr "കണക്ഷന്‍ ഹാഷ് ടേബിളിലേക്ക് നെറ്റ്‌വറ്‍ക്ക് ചേര്‍ക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/hash.c:1015
+#: src/hash.c:970
 msgid "network missing from connection hash table"
 msgstr "ഹാഷ് ടേബിളിലില്‍ നെറ്റ്‌വറ്‍ക്ക് ലഭ്യമല്ല"
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr "ഇന്നത്തെ സമയം ലഭ്യമാക്കുന്നു"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "ഡൊമെയിന്‍"
 
@@ -559,11 +576,11 @@ msgstr "‍ഡൊമെയിന്‍ അനുവദിക്കുന്ന�
 msgid "too many domains"
 msgstr "അനവധി ഡൊമെയിനുകള്‍"
 
-#: src/test.c:1491
+#: src/test.c:1492
 msgid "Domain is already running"
 msgstr "ഡൊമെയിന്‍ നിലിവില്‍ പ്രവര്‍ത്തനത്തിലാണ് "
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr "ഡൊമെയിന്‍ ഇപ്പോഴും പ്റവറ്‍ത്തനത്തിലാണ്"
 
@@ -628,11 +645,11 @@ msgstr "vbd ഫയല്‍ നെയിം പാഴ്സ് ചെയ്യ�
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd ഫയല്‍ നെയിം പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല, ഡ്റൈവറിന്‍റെ ടൈപ്പ് ലഭ്യമല്ല"
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr "Xend ഡൊമെയിന്‍ വിവരം പാര്‍സ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "നിഷ്ക്റിയമായ ഡൊമെയിന്‍ %s ഉണ്ടാക്കുന്നതില്‍ പരാജയം\n"
@@ -2003,10 +2020,10 @@ msgstr ""
 "  കമാന്‍ഡുകള്‍ (നോണ്‍-ഇന്‍ററാക്റ്റീവ് മോഡ്):\n"
 
 #: src/virsh.c:4497
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"

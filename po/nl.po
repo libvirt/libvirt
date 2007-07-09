@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
 "PO-Revision-Date: 2007-07-04 21:41+0200\n"
 "Last-Translator: Peter van Egdom <p.van.egdom@gmail.com>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "toewijzen van verbinding"
 
@@ -363,6 +363,26 @@ msgstr ""
 msgid "Failed to find the network: %s"
 msgstr ""
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "domein informatie"
+
+#: src/virterror.c:641
+#, c-format
+msgid "Domain not found: %s"
+msgstr ""
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "netwerknaam of uuid"
+
+#: src/virterror.c:647
+#, c-format
+msgid "Network not found: %s"
+msgstr ""
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr ""
@@ -407,10 +427,7 @@ msgstr ""
 msgid "allocate new context"
 msgstr "nieuwe context toewijzen"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "toewijzen van domein"
 
@@ -422,24 +439,24 @@ msgstr ""
 msgid "domain missing from connection hash table"
 msgstr ""
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 msgid "allocating network"
 msgstr "toewijzen van netwerk"
 
-#: src/hash.c:963
+#: src/hash.c:918
 msgid "failed to add network to connection hash table"
 msgstr ""
 
-#: src/hash.c:1015
+#: src/hash.c:970
 msgid "network missing from connection hash table"
 msgstr ""
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr ""
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "domein"
 
@@ -555,11 +572,11 @@ msgstr "toewijzen van pad"
 msgid "too many domains"
 msgstr "te veel domeinen"
 
-#: src/test.c:1491
+#: src/test.c:1492
 msgid "Domain is already running"
 msgstr ""
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr ""
 
@@ -624,11 +641,11 @@ msgstr ""
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr ""
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr ""
@@ -1968,7 +1985,7 @@ msgstr ""
 #, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 

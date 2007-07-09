@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zh_TW\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
 "PO-Revision-Date: 2007-04-10 16:18+1000\n"
 "Last-Translator: Chester Cheng <ccheng@redhat.com>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "正在分配連線"
 
@@ -368,6 +368,26 @@ msgstr "無法為網路 %s 取消定義"
 msgid "Failed to find the network: %s"
 msgstr "無法為網路 %s 取消定義"
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "區域資訊"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "從 %s 回復區域\n"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "網路名稱或 uuid"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "網路 %s 建立自 %s\n"
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr "複製節點內容"
@@ -412,10 +432,7 @@ msgstr "無法解析伺服器的回應"
 msgid "allocate new context"
 msgstr "分配新的內文"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "分配區域"
 
@@ -427,24 +444,24 @@ msgstr "無法為連線雜湊表新增區域"
 msgid "domain missing from connection hash table"
 msgstr "連線雜湊表中找不到區域"
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 msgid "allocating network"
 msgstr "分配網路"
 
-#: src/hash.c:963
+#: src/hash.c:918
 msgid "failed to add network to connection hash table"
 msgstr "無法將網路加入至連線雜湊表"
 
-#: src/hash.c:1015
+#: src/hash.c:970
 msgid "network missing from connection hash table"
 msgstr "連線雜湊表中找不到網路"
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr "讀取當天的時間"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "區域"
 
@@ -562,11 +579,11 @@ msgstr "分配區域"
 msgid "too many domains"
 msgstr "過多區域"
 
-#: src/test.c:1491
+#: src/test.c:1492
 msgid "Domain is already running"
 msgstr "區域已經啟動"
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr "區域還在執行中"
 
@@ -632,11 +649,11 @@ msgstr "無法解析 vbd 檔名，找不到驅動程式名稱"
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "無法解析 vbd 檔名，找不到驅動程式類型"
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr "無法解析 Xend 的區域資訊"
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "無法建立非運作中的區域 %s\n"
@@ -2019,10 +2036,10 @@ msgstr ""
 "  命令（非互動式模式）：\n"
 
 #: src/virsh.c:4497
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"

@@ -1,3 +1,11 @@
+Mon Jul  9 13:23:26 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xm_internal.c src/xend_internal.c src/buf.[ch]: add
+	  new function virBufferEscapeString() to format a string while
+	  escaping its content for XML, and apply it to a couple of
+	  obvious places, should fix bug #206653
+	* po/*: updated strings, and added new bosnian localization.
+
 Fri Jul  6 17:50:00 EST 2007 Daniel P.Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c: Use virFreeDomain and virFreeNetwork

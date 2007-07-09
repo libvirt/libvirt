@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bn_IN\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
 "PO-Revision-Date: 2007-04-10 18:48+0530\n"
 "Last-Translator: Runa Bhattacharjee <runab@redhat.com>\n"
 "Language-Team: Bengali <en@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "\n"
 "\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "সংযোগ বরাদ্দকরণ"
 
@@ -370,6 +370,26 @@ msgstr "নেটওয়ার্ক %s-র ব্যাখ্যা মুছে
 msgid "Failed to find the network: %s"
 msgstr "নেটওয়ার্ক %s-র ব্যাখ্যা মুছে ফেলতে ব্যর্থ"
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "ডোমেইন সংক্রান্ত তথ্য"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "%s থেকে ডোমেইন পুনরুদ্ধার করা হয়েছে\n"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "নেটওয়ার্কের নাম অথবা uuid"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "%s নেটওয়ার্ক %s থেকে নির্মিত\n"
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr "নোডের তথ্য কপি করা হচ্ছে"
@@ -414,10 +434,7 @@ msgstr "সার্ভার থেকে প্রাপ্ত প্রত্
 msgid "allocate new context"
 msgstr "নতুন কনটেক্সট বরাদ্দকরণ"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "ডোমেইন বরাদ্দকরণ"
 
@@ -429,24 +446,24 @@ msgstr "সংযোগ সংক্রান্ত হ্যাশ টেবি
 msgid "domain missing from connection hash table"
 msgstr "সংযোগ সংক্রান্ত হ্যাশ টেবিলের মধ্যে ডোমেইন অনুপস্থিত"
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 msgid "allocating network"
 msgstr "নেটওয়ার্ক বরাদ্দকরণ"
 
-#: src/hash.c:963
+#: src/hash.c:918
 msgid "failed to add network to connection hash table"
 msgstr "সংযোগ সংক্রান্ত হ্যাশ টেবিলের মধ্যে নেটওয়ার্ক যোগ করতে ব্যর্থ"
 
-#: src/hash.c:1015
+#: src/hash.c:970
 msgid "network missing from connection hash table"
 msgstr "সংযোগ সংক্রান্ত হ্যাশ টেবিলের মধ্যে নেটওয়ার্ক অনুপস্থিত"
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr "দিনের বর্তমান সময় সংগ্রহ"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "ডোমেইম"
 
@@ -564,11 +581,11 @@ msgstr "ডোমেইন বরাদ্দকরণ"
 msgid "too many domains"
 msgstr "অত্যাধিক সংখ্যক ডোমেইন"
 
-#: src/test.c:1491
+#: src/test.c:1492
 msgid "Domain is already running"
 msgstr "ডোমেইন বর্তমানে সক্রিয়"
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr "ডোমেইন বর্তমানে সক্রিয়"
 
@@ -634,11 +651,11 @@ msgstr "vbd ফাইলের নাম পার্স করতে ব্য�
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd ফাইলের নাম পার্স করতে ব্যর্থ, ড্রাইভারের ধরন অনুপস্থিত"
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr "Xend ডোমেইন সংক্রান্ত তথ্য পার্স করতে ব্যর্থ"
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "নিষ্ক্রিয় ডোমেইন %s নির্মাণ করতে ব্যর্থ\n"
@@ -2023,10 +2040,10 @@ msgstr ""
 "  কমান্ড (নন ইন্টারেক্টিভ মোড):\n"
 
 #: src/virsh.c:4497
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"

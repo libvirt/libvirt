@@ -33,5 +33,6 @@ int virBufferAdd(virBufferPtr buf, const char *str, int len);
 int virBufferVSprintf(virBufferPtr buf, const char *format, ...)
   ATTRIBUTE_FORMAT(printf, 2, 3);
 int virBufferStrcat(virBufferPtr buf, ...);
+int virBufferEscapeString(virBufferPtr buf, const char *format, const char *str);
 
 #endif /* __VIR_BUFFER_H__ */

@@ -185,6 +185,82 @@ virBufferVSprintf(virBufferPtr buf, const char *format, ...)
 }
 
 /**
+ * virBufferEscapeString:
+ * @buf:  the buffer to dump
+ * @format: a printf like format string but with only one %s parameter
+ * @str:  the string argument which need to be escaped
+ *
+ * Do a formatted print with a single string to an XML buffer. The string
+ * is escaped to avoid generating a not well-formed XML instance.
+ *
+ * Returns 0 successful, -1 in case of internal or API error.
+ */
+int
+virBufferEscapeString(virBufferPtr buf, const char *format, const char *str)
+{
+    int size, count, len;
+    char *escaped, *out;
+    const char *cur;
+
+    if ((format == NULL) || (buf == NULL) || (str == NULL)) {
+        return (-1);
+    }
+
+    len = strlen(str);
+    escaped = malloc(5 * len + 1);
+    if (escaped == NULL) {
+        return (-1);
+    }
+    cur = str;
+    out = escaped;
+    while (*cur != 0) {
+        if (*cur == '<') {
+	    *out++ = '&';
+	    *out++ = 'l';
+	    *out++ = 'l';
+	    *out++ = ';';
+	} else if (*cur == '>') {
+	    *out++ = '&';
+	    *out++ = 'g';
+	    *out++ = 't';
+	    *out++ = ';';
+	} else if (*cur == '&') {
+	    *out++ = '&';
+	    *out++ = 'a';
+	    *out++ = 'm';
+	    *out++ = 'p';
+	    *out++ = ';';
+	} else if ((*cur >= 0x20) || (*cur == '\n') || (*cur == '\t') ||
+	           (*cur == '\r')) {
+	    /*
+	     * default case, just copy !
+	     * Note that character over 0x80 are likely to give problem
+	     * with UTF-8 XML, but since our string don't have an encoding
+	     * it's hard to handle properly we have to assume it's UTF-8 too
+	     */
+	    *out++ = *cur;
+	}
+	cur++;
+    }
+    *out = 0;
+
+    size = buf->size - buf->use - 1;
+    while (((count = snprintf(&buf->content[buf->use], size, format,
+                              (char *)escaped)) < 0) || (count >= size - 1)) {
+        buf->content[buf->use] = 0;
+        if (virBufferGrow(buf, 1000) < 0) {
+	    free(escaped);
+            return (-1);
+        }
+        size = buf->size - buf->use - 1;
+    }
+    buf->use += count;
+    buf->content[buf->use] = 0;
+    free(escaped);
+    return (0);
+}
+
+/**
  * virBufferStrcat:
  * @buf:  the buffer to dump
  * @...:  the variable list of strings, the last argument must be NULL

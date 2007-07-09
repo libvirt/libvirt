@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
 "PO-Revision-Date: 2007-06-11 13:51+0000\n"
 "Last-Translator: Abigail Brady <morwen@evilmagic.org>\n"
 "Language-Team: \n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "allocating connection"
 
@@ -363,6 +363,26 @@ msgstr "Failed to find the network"
 msgid "Failed to find the network: %s"
 msgstr "Failed to find the network: %s"
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "domain information"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "Domain restored from %s\n"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "network name or uuid"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "Network %s created from %s\n"
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr "copying node content"
@@ -407,10 +427,7 @@ msgstr "parse server response failed"
 msgid "allocate new context"
 msgstr "allocate new context"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "allocating domain"
 
@@ -422,24 +439,24 @@ msgstr "failed to add domain to connection hash table"
 msgid "domain missing from connection hash table"
 msgstr "domain missing from connection hash table"
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 msgid "allocating network"
 msgstr "allocating network"
 
-#: src/hash.c:963
+#: src/hash.c:918
 msgid "failed to add network to connection hash table"
 msgstr "failed to add network to connection hash table"
 
-#: src/hash.c:1015
+#: src/hash.c:970
 msgid "network missing from connection hash table"
 msgstr "network missing from connection hash table"
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr "getting time of day"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "domain"
 
@@ -556,11 +573,11 @@ msgstr "allocating domain"
 msgid "too many domains"
 msgstr "too many domains"
 
-#: src/test.c:1491
+#: src/test.c:1492
 msgid "Domain is already running"
 msgstr "Domain is already running"
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr "Domain is still running"
 
@@ -625,11 +642,11 @@ msgstr "cannot parse vbd filename, missing driver name"
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "cannot parse vbd filename, missing driver type"
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr "failed to parse Xend domain information"
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Failed to create inactive domain %s\n"
@@ -2002,10 +2019,10 @@ msgstr ""
 "  commands (non interactive mode):\n"
 
 #: src/virsh.c:4497
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"

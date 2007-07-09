@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zh_CN\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
 "PO-Revision-Date: 2007-01-17 15:28+1000\n"
 "Last-Translator: Tony Fu <tfu@redhat.com>\n"
 "Language-Team:  <zh@li.org>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "正在分配连接"
 
@@ -376,6 +376,26 @@ msgstr "取消定义域 %s 失败"
 msgid "Failed to find the network: %s"
 msgstr "取消定义域 %s 失败"
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "域信息"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "从 %s 恢复域\n"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "域名或 uuid"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "域 %s 被创建（从 %s）\n"
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr "正在拷贝节点内容"
@@ -420,10 +440,7 @@ msgstr "解析服务器应答失败"
 msgid "allocate new context"
 msgstr "分配新的上下文"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "正在分配域名"
 
@@ -435,27 +452,27 @@ msgstr "添加域名到哈希链表失败"
 msgid "domain missing from connection hash table"
 msgstr "域名从哈希链表中丢失"
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 #, fuzzy
 msgid "allocating network"
 msgstr "分配域"
 
-#: src/hash.c:963
+#: src/hash.c:918
 #, fuzzy
 msgid "failed to add network to connection hash table"
 msgstr "添加域名到哈希链表失败"
 
-#: src/hash.c:1015
+#: src/hash.c:970
 #, fuzzy
 msgid "network missing from connection hash table"
 msgstr "域名从哈希链表中丢失"
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr "正在获得一天当中的时间"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "域"
 
@@ -574,12 +591,12 @@ msgstr "正在分配域名"
 msgid "too many domains"
 msgstr "太多的域"
 
-#: src/test.c:1491
+#: src/test.c:1492
 #, fuzzy
 msgid "Domain is already running"
 msgstr "域已经活跃"
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr ""
 
@@ -646,11 +663,11 @@ msgstr "缺少驱动名，无法解释 vbd 文件名"
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "缺少驱动类型，无法解释 vbd 文件名"
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr "解释 Xend 域信息失败"
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "创建域 %s 失败\n"
@@ -2058,10 +2075,10 @@ msgstr ""
 "  commands (non interactive mode):\n"
 
 #: src/virsh.c:4497
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"

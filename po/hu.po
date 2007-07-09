@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
 "PO-Revision-Date: 2007-05-03 21:23+0200\n"
 "Last-Translator: Arpad Biro <biro_arpad@yahoo.com>\n"
 "Language-Team: \n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "csatlakozás lefoglalása"
 
@@ -369,6 +369,26 @@ msgstr "Nem sikerült eltávolítani a(z) %s hálózat definícióját"
 msgid "Failed to find the network: %s"
 msgstr "Nem sikerült eltávolítani a(z) %s hálózat definícióját"
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "tartományinformáció"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "A tartomány vissza lett állítva ebből: %s\n"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "hálózatnév vagy -uuid"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "%s hálózat létrehozva ebből: %s\n"
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr "csomóponttartalom másolása"
@@ -413,10 +433,7 @@ msgstr "a kiszolgáló válasza nem értelmezhető"
 msgid "allocate new context"
 msgstr "új környezet lefoglalása"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "tartomány lefoglalása"
 
@@ -428,24 +445,24 @@ msgstr "nem sikerült hozzáadni a tartományt a csatlakozások hasítótábláz
 msgid "domain missing from connection hash table"
 msgstr "hiányzó tartomány a csatlakozások hasítótáblázatánál"
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 msgid "allocating network"
 msgstr "hálózat lefoglalása"
 
-#: src/hash.c:963
+#: src/hash.c:918
 msgid "failed to add network to connection hash table"
 msgstr "hálózat hozzáadása a csatlakozások hasítótáblázatához nem sikerült"
 
-#: src/hash.c:1015
+#: src/hash.c:970
 msgid "network missing from connection hash table"
 msgstr "hiányzó hálózat a csatlakozások hasítótáblázatánál"
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr "aktuális idő beolvasása"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "tartomány"
 
@@ -563,11 +580,11 @@ msgstr "tartomány lefoglalása"
 msgid "too many domains"
 msgstr "túl sok tartomány"
 
-#: src/test.c:1491
+#: src/test.c:1492
 msgid "Domain is already running"
 msgstr "A tartomány már fut"
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr "A tartomány még fut"
 
@@ -633,11 +650,11 @@ msgstr "nem értelmezhető a vbd-fájlnév, hiányzik a meghajtóprogram neve"
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "nem értelmezhető a vbd-fájlnév, hiányzik a meghajtóprogram típusa"
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr "Xend-tartományinformáció értelmezése nem sikerült"
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "%s inaktív tartomány létrehozása nem sikerült\n"
@@ -2023,10 +2040,10 @@ msgstr ""
 "  parancsok (nem interaktív módú):\n"
 
 #: src/virsh.c:4497
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"

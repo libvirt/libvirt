@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
 "PO-Revision-Date: 2007-04-10 11:36+0530\n"
 "Last-Translator: Ankit Patel <ankit@redhat.com>\n"
 "Language-Team: Gujarati <fedora-trans-gu@redhat.com>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "\n"
 "\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "જોડાણ ફાળવી રહ્યા છીએ"
 
@@ -371,6 +371,26 @@ msgstr "નેટવર્ક %s અવ્યાખ્યાયિત કરવ�
 msgid "Failed to find the network: %s"
 msgstr "નેટવર્ક %s અવ્યાખ્યાયિત કરવામાં નિષ્ફળ"
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "ડોમેઈન જાણકારી"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "%s માંથી ડોમેઈન પુનઃસંગ્રહાયું\n"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "નેટવર્ક નામ અથવા uuid"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "નેટવર્ક %s એ %s માંથી બન્યું\n"
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr "નોડ સમાવિષ્ટોની નકલ કરી રહ્યા છીએ"
@@ -415,10 +435,7 @@ msgstr "સર્વર પ્રત્યુત્તર પદચ્છેદ�
 msgid "allocate new context"
 msgstr "નવો સંદર્ભ ફાળવો"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "ડોમેઈન ફાળવી રહ્યા છીએ"
 
@@ -430,24 +447,24 @@ msgstr "જોડાણ હેશ કોષ્ટકમાં ડોમેઈન
 msgid "domain missing from connection hash table"
 msgstr "જોડાણ હેશ કોષ્ટકમાંથી ગુમ થયેલ ડોમેઈન"
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 msgid "allocating network"
 msgstr "નેટવર્ક ફાળવી રહ્યા છીએ"
 
-#: src/hash.c:963
+#: src/hash.c:918
 msgid "failed to add network to connection hash table"
 msgstr "જોડાણ હેશ કોષ્ટકમાં નેટવર્ક ઉમેરવામાં નિષ્ફળ"
 
-#: src/hash.c:1015
+#: src/hash.c:970
 msgid "network missing from connection hash table"
 msgstr "જોડાણ હેશ કોષ્ટકમાંથી ગુમ થયેલ નેટવર્ક"
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr "દિવસનો સમય મેળવી રહ્યા છીએ"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "ડોમેઈન"
 
@@ -565,11 +582,11 @@ msgstr "ડોમેઈન ફાળવી રહ્યા છીએ"
 msgid "too many domains"
 msgstr "ઘણા બધા ડોમેઈનો"
 
-#: src/test.c:1491
+#: src/test.c:1492
 msgid "Domain is already running"
 msgstr "ડોમેઈન પહેલાથી જ ચાલી રહ્યું છે"
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr "ડોમેઈન હજુ પણ ચાલી રહ્યું છે"
 
@@ -635,11 +652,11 @@ msgstr "vbd ફાઈલનામ પદચ્છેદન કરી શકત�
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd ફાઈલનામ પદચ્છેદન કરી શકતા નથી, ગુમ થયેલ ડ્રાઈવર પ્રકાર"
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr "Xend ડોમેઈન જાણકારીનું પદચ્છેદન કરવામાં નિષ્ફળ"
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "અસક્રિય ડોમેઈન %s બનાવવામાં નિષ્ફળ\n"
@@ -2022,10 +2039,10 @@ msgstr ""
 "  આદેશો (બિન પૂછપરછ સ્થિતિ):\n"
 
 #: src/virsh.c:4497
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"

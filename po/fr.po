@@ -2,26 +2,25 @@
 # Copyright (C) 2006, 2007 Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Guillaume <guillaume.chardin@gmail.com>, 2006.
 # Guillaume CHARDIN <guillaume.chardin@gmail.com>, 2006.
 # Decroux Fabien <fdecroux@redhat.com>, 2006.
 # Alain PORTAL <aportal@univ-montp2.fr>, 2006, 2007.
-# Canniot Thomas <thomas.canniot@laposte.net>, 2007.
 # Thomas Canniot <thomas.canniot@laposte.net>, 2007.
+# Gauthier Ancelin <gauthier.ancelin@laposte.net>, 2007.
 msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
-"PO-Revision-Date: 2007-05-04 10:45+0200\n"
-"Last-Translator: Alain PORTAL <aportal@univ-montp2.fr>\n"
-"Language-Team: Français <traduc@traduc.org>\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
+"PO-Revision-Date: 2007-07-06 20:15+0200\n"
+"Last-Translator: Gauthier Ancelin <gauthier.ancelin@laposte.net>\n"
+"Language-Team: Français <fedora-trans-fr@redhat.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "allocation de connexion"
 
@@ -51,14 +50,13 @@ msgid "out of memory"
 msgstr "plus de mémoire disponible"
 
 #: src/virterror.c:414
-#, fuzzy
 msgid "this function is not supported by the hypervisor"
-msgstr "pas de support pour l'hyperviseur"
+msgstr "cette fonction n'est pas prise en charge par l'hyperviseur"
 
 #: src/virterror.c:416
-#, fuzzy, c-format
+#, c-format
 msgid "this function is not supported by the hypervisor: %s"
-msgstr "pas de support pour l'hyperviseur %s"
+msgstr "cette fonction n'est pas prise en charge par l'hyperviseur : %s"
 
 #: src/virterror.c:420
 msgid "could not connect to hypervisor"
@@ -180,61 +178,61 @@ msgstr "type de SE inconnu %s"
 
 #: src/virterror.c:497
 msgid "missing kernel information"
-msgstr "informations du noyau manquantes"
+msgstr "noyau non spécifié"
 
 #: src/virterror.c:501
 msgid "missing root device information"
-msgstr "information de périphérique racine manquante"
+msgstr "périphérique racine non spécifié"
 
 #: src/virterror.c:503
 #, c-format
 msgid "missing root device information in %s"
-msgstr "information de périphérique racine manquante dans %s"
+msgstr "périphérique racine non spécifié dans %s"
 
 #: src/virterror.c:507
 msgid "missing source information for device"
-msgstr "source d'information de périphérique manquante"
+msgstr "source non spécifiée pour le périphérique"
 
 #: src/virterror.c:509
 #, c-format
 msgid "missing source information for device %s"
-msgstr "source d'information de périphérique manquante dans %s"
+msgstr "source non spécifiée pour le périphérique %s"
 
 #: src/virterror.c:513
 msgid "missing target information for device"
-msgstr "information de cible manquante pour le périphérique"
+msgstr "cible non spécifiée pour le périphérique"
 
 #: src/virterror.c:515
 #, c-format
 msgid "missing target information for device %s"
-msgstr "information de cible manquante pour le périphérique %s"
+msgstr "cible non spécifiée pour le périphérique %s"
 
 #: src/virterror.c:519
 msgid "missing domain name information"
-msgstr "information de nom de domaine manquante"
+msgstr "nom de domaine non spécifié"
 
 #: src/virterror.c:521
 #, c-format
 msgid "missing domain name information in %s"
-msgstr "information de nom de domaine manquante %s"
+msgstr "nom de domaine non spécifié dans %s"
 
 #: src/virterror.c:525
 msgid "missing operating system information"
-msgstr "information du système d'exploitation manquante"
+msgstr "système d'exploitation non spécifié"
 
 #: src/virterror.c:527
 #, c-format
 msgid "missing operating system information for %s"
-msgstr "information du système d'exploitation manquante pour %s"
+msgstr "système d'exploitation non spécifié pour %s"
 
 #: src/virterror.c:531
 msgid "missing devices information"
-msgstr "information de périphériques manquante"
+msgstr "périphériques non spécifiés"
 
 #: src/virterror.c:533
 #, c-format
 msgid "missing devices information for %s"
-msgstr "information de périphériques manquante %s"
+msgstr "périphériques non spécifiés pour %s"
 
 #: src/virterror.c:537
 msgid "too many drivers registered"
@@ -353,24 +351,41 @@ msgid "system call error"
 msgstr "erreur lors de l'appel système"
 
 #: src/virterror.c:621
-#, fuzzy
 msgid "RPC error"
-msgstr "erreur"
+msgstr "erreur RPC"
 
 #: src/virterror.c:627
-#, fuzzy
 msgid "GNUTLS call error"
-msgstr "erreur lors de l'appel système"
+msgstr "erreur lors de l'appel système GNUTLS"
 
 #: src/virterror.c:633
-#, fuzzy
 msgid "Failed to find the network"
-msgstr "Impossible de supprimer la définition du réseau %s"
+msgstr "Impossible d'accéder au réseau"
 
 #: src/virterror.c:635
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find the network: %s"
-msgstr "Impossible de supprimer la définition du réseau %s"
+msgstr "Impossible d'accéder au réseau : %s"
+
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "informations du domaine"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "Domaine restauré depuis %s\n"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "nom du domaine ou UUID"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "Réseau %s créé depuis %s\n"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -416,10 +431,7 @@ msgstr "impossible d'analyser la réponse du serveur"
 msgid "allocate new context"
 msgstr "allouer un nouveau contexte"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "allocation d'un nouveau domaine"
 
@@ -431,24 +443,24 @@ msgstr "Impossible d'ajouter le domaine à la table de hachage de connexion"
 msgid "domain missing from connection hash table"
 msgstr "domaine manquant dans la table de hachage"
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 msgid "allocating network"
 msgstr "allocation du réseau"
 
-#: src/hash.c:963
+#: src/hash.c:918
 msgid "failed to add network to connection hash table"
 msgstr "Impossible d'ajouter le réseau à la table de hachage de connexion"
 
-#: src/hash.c:1015
+#: src/hash.c:970
 msgid "network missing from connection hash table"
 msgstr "réseau manquant dans la table de hachage"
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr "récupération de l'heure du jour"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "domaine"
 
@@ -474,7 +486,7 @@ msgstr "mémoire actuelle du domaine"
 
 #: src/test.c:349
 msgid "domain vcpus"
-msgstr "vcpus du domaine"
+msgstr "VCPU du domaine"
 
 #: src/test.c:358
 msgid "domain reboot behaviour"
@@ -510,23 +522,23 @@ msgstr "CPU noeud, noeud NUMA (Non Uniform Memory Access)"
 
 #: src/test.c:585
 msgid "node cpu sockets"
-msgstr "sockets cpu noeud"
+msgstr "sockets CPU noeud"
 
 #: src/test.c:593
 msgid "node cpu cores"
-msgstr "coeurs cpu noeud"
+msgstr "coeurs CPU noeud"
 
 #: src/test.c:601
 msgid "node cpu threads"
-msgstr "threads cpu noeud"
+msgstr "threads CPU noeud"
 
 #: src/test.c:612
 msgid "node active cpu"
-msgstr "cpu actif noeud"
+msgstr "CPU actif noeud"
 
 #: src/test.c:619
 msgid "node cpu mhz"
-msgstr "mhz cpu noeud"
+msgstr "MHz CPU noeud"
 
 #: src/test.c:634
 msgid "node memory"
@@ -546,31 +558,29 @@ msgstr "noeud d'allocation"
 
 #: src/test.c:756
 msgid "testOpen: supply a path or use test:///default"
-msgstr ""
+msgstr "testOpen : donnez un chemin d'accès ou utilisez test:///default"
 
 #: src/test.c:761
 msgid "too many connections"
 msgstr "trop de connexions"
 
 #: src/test.c:768
-#, fuzzy
 msgid "allocating private data"
-msgstr "allouer une valeur de grappe"
+msgstr "allocation de données privées"
 
 #: src/test.c:774
-#, fuzzy
 msgid "allocating path"
-msgstr "allocation d'un nouveau domaine"
+msgstr "allocation d'un chemin d'accès"
 
 #: src/test.c:946
 msgid "too many domains"
 msgstr "trop de domaines"
 
-#: src/test.c:1491
+#: src/test.c:1492
 msgid "Domain is already running"
 msgstr "Le domaine est déjà actif"
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr "Le domaine est toujours actif"
 
@@ -597,36 +607,36 @@ msgstr "échec de l'urlencode du S-Expr créé"
 
 #: src/xend_internal.c:1067
 msgid "domain information incomplete, missing domid"
-msgstr "information de domaine incomplète, domid manquant"
+msgstr "informations de domaine incomplètes, domid manquant"
 
 #: src/xend_internal.c:1073
 msgid "domain information incorrect domid not numeric"
-msgstr "information de domaine incorrecte, domid non numérique"
+msgstr "informations de domaine incorrectes, domid non numérique"
 
 #: src/xend_internal.c:1081 src/xend_internal.c:1130
 msgid "domain information incomplete, missing uuid"
-msgstr "information de domaine incomplète, UUID manquant"
+msgstr "informations de domaine incomplètes, UUID manquant"
 
 #: src/xend_internal.c:1121 src/xend_internal.c:1396
 msgid "domain information incomplete, missing name"
-msgstr "information de domaine incomplète, nom manquant"
+msgstr "informations de domaine incomplètes, nom manquant"
 
 #: src/xend_internal.c:1296 src/xend_internal.c:1327
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr ""
-"information de domaine incomplète, noyau et chargeur de démarrage manquants"
+"informations de domaine incomplètes, noyau et chargeur de démarrage manquants"
 
 #: src/xend_internal.c:1384
 msgid "domain information incomplete, missing id"
-msgstr "information de domaine incomplète, ID manquant"
+msgstr "informations de domaine incomplètes, ID manquant"
 
 #: src/xend_internal.c:1504
 msgid "domain information incomplete, vbd has no dev"
-msgstr "information de domaine incomplète, vbd n'a pas de dev"
+msgstr "informations de domaine incomplètes, vbd n'a pas de dev"
 
 #: src/xend_internal.c:1519
 msgid "domain information incomplete, vbd has no src"
-msgstr "information de domaine incomplète, vbd n'a pas de src"
+msgstr "informations de domaine incomplètes, vbd n'a pas de src"
 
 #: src/xend_internal.c:1528
 msgid "cannot parse vbd filename, missing driver name"
@@ -637,11 +647,11 @@ msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 "impossible d'analyser le nom de fichier de vdb, type du pilote manquant"
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr "impossible d'analyser les informations du domaine Xen"
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Impossible de créer le domaine inactif %s\n"
@@ -652,12 +662,11 @@ msgstr "imprimer l'aide"
 
 #: src/virsh.c:308
 msgid "Prints global help or command specific help."
-msgstr "Imprime l'aide globale ou l'aide d'une commande spécifique."
+msgstr "Imprimer l'aide globale ou l'aide d'une commande spécifique."
 
 #: src/virsh.c:314
-#, fuzzy
 msgid "name of command"
-msgstr "nom du domaine inactif"
+msgstr "nom de la commande"
 
 #: src/virsh.c:326
 msgid ""
@@ -669,7 +678,7 @@ msgstr ""
 
 #: src/virsh.c:340
 msgid "autostart a domain"
-msgstr "Démarrer automatiquement un domaine"
+msgstr "démarrer automatiquement un domaine"
 
 #: src/virsh.c:342
 msgid "Configure a domain to be automatically started at boot."
@@ -717,7 +726,7 @@ msgstr "(re)connecter à l'hyperviseur"
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr ""
-"Connecter un hyperviseur local. Ceci est une commande intégrée après le "
+"Se connecte à l'hyperviseur local. Ceci est une commande interne après le "
 "démarrage du shell."
 
 #: src/virsh.c:399
@@ -750,11 +759,11 @@ msgstr "Aucune console disponible pour le domaine\n"
 
 #: src/virsh.c:506
 msgid "list domains"
-msgstr "affiche les domaines"
+msgstr "afficher les domaines"
 
 #: src/virsh.c:507
 msgid "Returns list of domains."
-msgstr "Renvoie la liste des domaines"
+msgstr "Renvoyer la liste des domaines"
 
 #: src/virsh.c:512
 msgid "list inactive domains"
@@ -794,7 +803,7 @@ msgstr "état du domaine"
 
 #: src/virsh.c:629
 msgid "Returns state about a running domain."
-msgstr "Retourne l'état d'un domaine en cours d'exécution"
+msgstr "Retourner l'état d'un domaine en cours d'exécution"
 
 #: src/virsh.c:666
 msgid "suspend a domain"
@@ -816,30 +825,30 @@ msgstr "Impossible de suspendre le domaine %s"
 
 #: src/virsh.c:705
 msgid "create a domain from an XML file"
-msgstr "créez un domaine depuis un fichier XML"
+msgstr "créer un domaine depuis un fichier XML"
 
 #: src/virsh.c:706
 msgid "Create a domain."
-msgstr "Créez un domaine"
+msgstr "Créer un domaine"
 
 #: src/virsh.c:711 src/virsh.c:819
 msgid "file containing an XML domain description"
 msgstr "fichier contenant la description XML d'un domaine"
 
 #: src/virsh.c:726
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open '%s': %s"
-msgstr "Impossible de suspendre le domaine %s"
+msgstr "Impossible d'ouvrir « %s » : %s"
 
 #: src/virsh.c:746
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open '%s': read: %s"
-msgstr "impossible d'ouvrir %s en lecture"
+msgstr "Impossible d'ouvrir « %s » : %s lu"
 
 #: src/virsh.c:764
-#, fuzzy, c-format
+#, c-format
 msgid "Error allocating memory: %s"
-msgstr "allocation du réseau"
+msgstr "Erreur d'allocation mémoire : %s"
 
 #: src/virsh.c:798
 #, c-format
@@ -941,32 +950,31 @@ msgstr "Impossible d'enregistrer le domaine %s dans %s"
 
 #: src/virsh.c:990
 msgid "show/set scheduler parameters"
-msgstr ""
+msgstr "montrer/définir les paramètres du planificateur"
 
 #: src/virsh.c:991
 msgid "Show/Set scheduler parameters."
-msgstr ""
+msgstr "Montrer/Définir les paramètres du planificateur."
 
 #: src/virsh.c:997
 msgid "weight for XEN_CREDIT"
-msgstr ""
+msgstr "poids pour XEN_CREDIT"
 
 #: src/virsh.c:998
 msgid "cap for XEN_CREDIT"
-msgstr ""
+msgstr "plafond pour XEN_CREDIT"
 
 #: src/virsh.c:1068 src/virsh.c:1072
 msgid "Scheduler"
-msgstr ""
+msgstr "Planificateur"
 
 #: src/virsh.c:1072
-#, fuzzy
 msgid "Unknown"
-msgstr "hôte inconnu"
+msgstr "Inconnu"
 
 #: src/virsh.c:1124
 msgid "restore a domain from a saved state in a file"
-msgstr "restaurer un domaine à partir d'un fichier d'état"
+msgstr "restaurer un domaine à partir d'un état sauvé dans un fichier"
 
 #: src/virsh.c:1125
 msgid "Restore a domain."
@@ -988,43 +996,43 @@ msgstr "Impossible de restaurer le domaine depuis %s"
 
 #: src/virsh.c:1162
 msgid "dump the core of a domain to a file for analysis"
-msgstr "déplacer le coeur d'un domaine dans un fichier pour l'analyser"
+msgstr "vider l'espace mémoire d'un domaine dans un fichier pour analyse"
 
 #: src/virsh.c:1163
 msgid "Core dump a domain."
-msgstr "déplacer le coeur d'un domaine."
+msgstr "Vider l'espace mémoire d'un domaine."
 
 #: src/virsh.c:1169
 msgid "where to dump the core"
-msgstr "où déplacer le coeur"
+msgstr "emplacement où vider l'espace mémoire"
 
 #: src/virsh.c:1191
 #, c-format
 msgid "Domain %s dumpd to %s\n"
-msgstr "Domaine %s déplacé dans %s\n"
+msgstr "Espace mémoire du domaine %s vidé dans %s\n"
 
 #: src/virsh.c:1193
 #, c-format
 msgid "Failed to core dump domain %s to %s"
-msgstr "Impossible de déplacer le coeur du domaine %s dans %s"
+msgstr "Impossible de vider l'espace mémoire du domaine %s dans %s"
 
 #: src/virsh.c:1207
 msgid "resume a domain"
-msgstr "reprendre un domaine"
+msgstr "réactiver un domaine"
 
 #: src/virsh.c:1208
 msgid "Resume a previously suspended domain."
-msgstr "Reprendre un domaine précédemment suspendu"
+msgstr "Réactiver un domaine précédemment suspendu"
 
 #: src/virsh.c:1231
 #, c-format
 msgid "Domain %s resumed\n"
-msgstr "Domaine %s résumé\n"
+msgstr "Domaine %s réactivé\n"
 
 #: src/virsh.c:1233
 #, c-format
 msgid "Failed to resume domain %s"
-msgstr "Impossible de reprendre le domaine %s"
+msgstr "Impossible de réactiver le domaine %s"
 
 #: src/virsh.c:1246
 msgid "gracefully shutdown a domain"
@@ -1032,12 +1040,12 @@ msgstr "arrêter un domaine proprement"
 
 #: src/virsh.c:1247
 msgid "Run shutdown in the target domain."
-msgstr "Exécuter l'arrêt dans le domaine spécifié"
+msgstr "Exécuter la commande shutdown dans le domaine cible"
 
 #: src/virsh.c:1270
 #, c-format
 msgid "Domain %s is being shutdown\n"
-msgstr "Domaine %s est en cours d'arrêt\n"
+msgstr "Le domaine %s est en cours d'arrêt\n"
 
 #: src/virsh.c:1272
 #, c-format
@@ -1055,7 +1063,7 @@ msgstr "Exécuter une commande de redémarrage dans le domaine cible"
 #: src/virsh.c:1309
 #, c-format
 msgid "Domain %s is being rebooted\n"
-msgstr "Domaine %s en cours de redémarrage\n"
+msgstr "Le domaine %s est en cours de redémarrage\n"
 
 #: src/virsh.c:1311
 #, c-format
@@ -1082,11 +1090,11 @@ msgstr "Impossible de détruire le domaine %s"
 
 #: src/virsh.c:1363
 msgid "domain information"
-msgstr "information du domaine"
+msgstr "informations du domaine"
 
 #: src/virsh.c:1364
 msgid "Returns basic information about the domain."
-msgstr "Renvoie des informations basiques sur le domaine"
+msgstr "Renvoyer des informations sommaires sur le domaine."
 
 #: src/virsh.c:1390 src/virsh.c:1392
 msgid "Id:"
@@ -1110,7 +1118,7 @@ msgstr "État :"
 
 #: src/virsh.c:1407 src/virsh.c:1847
 msgid "CPU(s):"
-msgstr "CPU(s)"
+msgstr "CPU :"
 
 #: src/virsh.c:1414 src/virsh.c:1497
 msgid "CPU time:"
@@ -1130,12 +1138,12 @@ msgstr "Mémoire utilisée :"
 
 #: src/virsh.c:1440
 msgid "domain vcpu information"
-msgstr "informations vcpu du domaine"
+msgstr "informations sur les VCPU du domaine"
 
 #: src/virsh.c:1441
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr ""
-"Renvoie des informations basiques sur les processeurs virtuels du domaine"
+"Renvoyer des informations sommaires sur les processeurs virtuels du domaine."
 
 #: src/virsh.c:1488
 msgid "VCPU:"
@@ -1151,33 +1159,35 @@ msgstr "Affinité CPU :"
 
 #: src/virsh.c:1511
 msgid "Domain shut off, virtual CPUs not present."
-msgstr ""
+msgstr "Domaine à l'arrêt, pas de CPU virtuelle."
 
 #: src/virsh.c:1527
 msgid "control domain vcpu affinity"
-msgstr "contrôler l'affinité vcpu du domaine"
+msgstr "contrôler l'affinité des VCPU du domaine"
 
 #: src/virsh.c:1528
 msgid "Pin domain VCPUs to host physical CPUs."
-msgstr "Épingler le domaine VCPU pour héberger des CPU physiques."
+msgstr "Épingler les VCPU d'un domaine pour héberger des CPU physiques."
 
 #: src/virsh.c:1534
 msgid "vcpu number"
-msgstr "nombre de vcpu"
+msgstr "numéro de VCPU"
 
 #: src/virsh.c:1535
 msgid "host cpu number(s) (comma separated)"
-msgstr "nombre(s) de CPU hôte (séparés par des virgules)"
+msgstr "numéro(s) de CPU hôte(s) (séparés par des virgules)"
 
 #: src/virsh.c:1590
 msgid "cpulist: Invalid format. Empty string."
-msgstr ""
+msgstr "cpulist : format invalide. Chaîne vide."
 
 #: src/virsh.c:1600
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
+"cpulist : %s : format invalide. Chiffre attendu à la position %d (à côté de "
+"« %c »)."
 
 #: src/virsh.c:1610
 #, c-format
@@ -1185,11 +1195,13 @@ msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
 "c')."
 msgstr ""
+"cpulist : %s : format invalide. Chiffre ou virgule attendu à la position %d "
+"(à côté de « %c »)."
 
 #: src/virsh.c:1617
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
-msgstr ""
+msgstr "cpulist : %s : format invalide. Virgule finale à la position %d."
 
 #: src/virsh.c:1631
 #, c-format
@@ -1206,15 +1218,13 @@ msgstr "Changer le nombre de CPU virtuelles actives dans le domaine invité"
 
 #: src/virsh.c:1662
 msgid "number of virtual CPUs"
-msgstr "nombre de CPU virtuels"
+msgstr "nombre de CPU virtuelles"
 
 #: src/virsh.c:1682
-#, fuzzy
 msgid "Invalid number of virtual CPUs."
-msgstr "nombre de CPU virtuels"
+msgstr "Nombre de CPU virtuelles invalide."
 
 #: src/virsh.c:1694
-#, fuzzy
 msgid "Too many virtual CPUs."
 msgstr "Nombre de CPU virtuelles trop important."
 
@@ -1237,7 +1247,7 @@ msgstr "Valeur invalide de %d pour la taille de la mémoire"
 
 #: src/virsh.c:1746
 msgid "Unable to verify MaxMemorySize"
-msgstr ""
+msgstr "Impossible de vérifier MaxMemorySize"
 
 #: src/virsh.c:1769
 msgid "change maximum memory limit"
@@ -1253,28 +1263,27 @@ msgstr "limite mémoire maximum en kilooctets"
 
 #: src/virsh.c:1803
 msgid "Unable to verify current MemorySize"
-msgstr ""
+msgstr "Impossible de vérifier la valeur actuelle de MemorySize"
 
 #: src/virsh.c:1810
-#, fuzzy
 msgid "Unable to shrink current MemorySize"
-msgstr "mémoire actuelle du domaine"
+msgstr "Impossible de diminuer la valeur actuelle de MemorySize"
 
 #: src/virsh.c:1816
 msgid "Unable to change MaxMemorySize"
-msgstr ""
+msgstr "Impossible de modifier MaxMemorySize"
 
 #: src/virsh.c:1829
 msgid "node information"
-msgstr "information du noeud"
+msgstr "informations du noeud"
 
 #: src/virsh.c:1830
 msgid "Returns basic information about the node."
-msgstr "Renvoie des informations basiques sur le noeud"
+msgstr "Renvoyer des informations sommaires à propos du noeud."
 
 #: src/virsh.c:1843
 msgid "failed to get node information"
-msgstr "Impossible de récupérer le noeud"
+msgstr "impossible de récupérer les informations relatives au noeud"
 
 #: src/virsh.c:1846
 msgid "CPU model:"
@@ -1310,7 +1319,7 @@ msgstr "capacités"
 
 #: src/virsh.c:1864
 msgid "Returns capabilities of hypervisor/driver."
-msgstr "Retourne les capacités de l'hyperviseur / du pilote."
+msgstr "Retourner les capacités de l'hyperviseur / du pilote."
 
 #: src/virsh.c:1877
 msgid "failed to get capabilities"
@@ -1318,7 +1327,7 @@ msgstr "impossible d'obtenir les capacités"
 
 #: src/virsh.c:1890
 msgid "domain information in XML"
-msgstr "information du domaine en XML"
+msgstr "informations du domaine en XML"
 
 #: src/virsh.c:1891
 msgid "Output the domain information as an XML dump to stdout."
@@ -1346,7 +1355,7 @@ msgstr "nom ou ID de domaine"
 
 #: src/virsh.c:2019
 msgid "failed to get domain UUID"
-msgstr "Impossible de récupérer l'UUID du domaine"
+msgstr "impossible de récupérer l'UUID du domaine"
 
 #: src/virsh.c:2029
 msgid "autostart a network"
@@ -1444,11 +1453,11 @@ msgstr "Impossible de détruire le réseau %s"
 
 #: src/virsh.c:2216
 msgid "network information in XML"
-msgstr "information du réseau en XML"
+msgstr "informations du réseau en XML"
 
 #: src/virsh.c:2217
 msgid "Output the network information as an XML dump to stdout."
-msgstr "Affiche les informations du réseau comme flux XML vers stdout."
+msgstr "Afficher les informations du réseau comme flux XML vers stdout."
 
 #: src/virsh.c:2257
 msgid "list networks"
@@ -1456,7 +1465,7 @@ msgstr "afficher les réseaux"
 
 #: src/virsh.c:2258
 msgid "Returns list of networks."
-msgstr "Renvoie la liste des réseaux."
+msgstr "Renvoyer la liste des réseaux."
 
 #: src/virsh.c:2263
 msgid "list inactive networks"
@@ -1526,7 +1535,7 @@ msgstr "supprimer la définition d'un réseau inactif"
 
 #: src/virsh.c:2456
 msgid "Undefine the configuration for an inactive network."
-msgstr "Ne pas définir de configuration pour un réseau inactif."
+msgstr "Supprimer la configuration pour un réseau inactif."
 
 #: src/virsh.c:2479
 #, c-format
@@ -1548,11 +1557,11 @@ msgstr "nom du réseau"
 
 #: src/virsh.c:2519
 msgid "failed to get network UUID"
-msgstr "Impossible de récupérer l'UUID du réseau"
+msgstr "impossible de récupérer l'UUID du réseau"
 
 #: src/virsh.c:2530
 msgid "show version"
-msgstr "affiche la version"
+msgstr "afficher la version"
 
 #: src/virsh.c:2531
 msgid "Display the system version information."
@@ -1560,7 +1569,7 @@ msgstr "Afficher la version du système."
 
 #: src/virsh.c:2554
 msgid "failed to get hypervisor type"
-msgstr "Impossible de récupérer le type d'hyperviseur"
+msgstr "impossible de récupérer le type d'hyperviseur"
 
 #: src/virsh.c:2563
 #, c-format
@@ -1569,7 +1578,7 @@ msgstr "Compilé avec la bibliothèque libvir %d.%d.%d\n"
 
 #: src/virsh.c:2568
 msgid "failed to get the library version"
-msgstr "Impossible de récupérer la version de la bibliothèque"
+msgstr "impossible de récupérer la version de la bibliothèque"
 
 #: src/virsh.c:2575
 #, c-format
@@ -1583,7 +1592,7 @@ msgstr "Utilisation de l'API : %s %d.%d.%d\n"
 
 #: src/virsh.c:2587
 msgid "failed to get the hypervisor version"
-msgstr "Impossible de récupérer la version de l'hyperviseur"
+msgstr "impossible de récupérer la version de l'hyperviseur"
 
 #: src/virsh.c:2592
 #, c-format
@@ -1597,24 +1606,20 @@ msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "Exécution de l'hyperviseur : %s %d.%d.%d\n"
 
 #: src/virsh.c:2610
-#, fuzzy
 msgid "print the hypervisor hostname"
-msgstr "Impossible de récupérer le type d'hyperviseur"
+msgstr "afficher le nom d'hôte de l'hyperviseur"
 
 #: src/virsh.c:2624
-#, fuzzy
 msgid "failed to get hostname"
-msgstr "Impossible de récupérer le type d'hyperviseur"
+msgstr "impossible de récupérer le nom de l'hôte"
 
 #: src/virsh.c:2639
-#, fuzzy
 msgid "print the hypervisor canonical URI"
-msgstr "URI de connexion à l'hyperviseur"
+msgstr "afficher l'URI canonique de l'hyperviseur"
 
 #: src/virsh.c:2653
-#, fuzzy
 msgid "failed to get URI"
-msgstr "Impossible de récupérer l'UUID du domaine"
+msgstr "impossible de récupérer l'URI"
 
 #: src/virsh.c:2668
 msgid "vnc display"
@@ -1625,164 +1630,151 @@ msgid "Output the IP address and port number for the VNC display."
 msgstr "Afficher l'adresse IP et le numéro de port pour l'affichage de VNC."
 
 #: src/virsh.c:2747
-#, fuzzy
 msgid "attach device from an XML file"
-msgstr "créez un domaine depuis un fichier XML"
+msgstr "attacher un périphérique depuis un fichier XML"
 
 #: src/virsh.c:2748
-#, fuzzy
 msgid "Attach device from an XML <file>."
-msgstr "créez un domaine depuis un fichier XML"
+msgstr "Attacher un périphérique depuis un fichier XML <file>."
 
 #: src/virsh.c:2754 src/virsh.c:2808
 msgid "XML file"
-msgstr ""
+msgstr "fichier XML"
 
 #: src/virsh.c:2786
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to attach device from %s"
-msgstr "Impossible de créer le domaine depuis %s"
+msgstr "Impossible d'attacher le périphérique depuis %s"
 
 #: src/virsh.c:2801
-#, fuzzy
 msgid "detach device from an XML file"
-msgstr "créez un domaine depuis un fichier XML"
+msgstr "détacher un périphérique depuis un fichier XML"
 
 #: src/virsh.c:2802
-#, fuzzy
 msgid "Detach device from an XML <file>"
-msgstr "créez un domaine depuis un fichier XML"
+msgstr "Détacher un périphérique depuis un fichier XML <file>"
 
 #: src/virsh.c:2840
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to detach device from %s"
-msgstr "Impossible de créer le domaine depuis %s"
+msgstr "Impossible de détacher le périphérique depuis %s"
 
 #: src/virsh.c:2855
-#, fuzzy
 msgid "attach network interface"
-msgstr "nom du réseau"
+msgstr "attacher une interface réseau"
 
 #: src/virsh.c:2856
 msgid "Attach new network interface."
-msgstr ""
+msgstr "Attacher une nouvelle interface réseau."
 
 #: src/virsh.c:2862 src/virsh.c:2978
-#, fuzzy
 msgid "network interface type"
-msgstr "nom du réseau"
+msgstr "type d'interface réseau"
 
 #: src/virsh.c:2863
-#, fuzzy
 msgid "source of network interface"
-msgstr "nom de réseau non défini"
+msgstr "source d'interface réseau"
 
 #: src/virsh.c:2864
-#, fuzzy
 msgid "target network name"
-msgstr "nom du réseau"
+msgstr "nom du réseau cible"
 
 #: src/virsh.c:2865 src/virsh.c:2979
 msgid "MAC adress"
-msgstr ""
+msgstr "adresse MAC"
 
 #: src/virsh.c:2866
 msgid "script used to bridge network interface"
-msgstr ""
+msgstr "script utilisé pour relier une interface réseau"
 
 #: src/virsh.c:2898
 #, c-format
 msgid "No support %s in command 'attach-interface'"
-msgstr ""
+msgstr "%s n'est pas pris en charge par la commande « attach-interface »"
 
 #: src/virsh.c:2971
-#, fuzzy
 msgid "detach network interface"
-msgstr "nom du réseau"
+msgstr "détacher une interface réseau"
 
 #: src/virsh.c:2972
 msgid "Detach network interface."
-msgstr ""
+msgstr "Détacher une interface réseau."
 
 #: src/virsh.c:3017 src/virsh.c:3022
-#, fuzzy
 msgid "Failed to get interface information"
-msgstr "Impossible de récupérer le noeud"
+msgstr "impossible de récupérer les informations relatives à l'interface"
 
 #: src/virsh.c:3030
 #, c-format
 msgid "No found interface whose type is %s"
-msgstr ""
+msgstr "Interface de type %s introuvable"
 
 #: src/virsh.c:3052
 #, c-format
 msgid "No found interface whose MAC address is %s"
-msgstr ""
+msgstr "Interface d'adresse MAC %s introuvable"
 
 #: src/virsh.c:3058 src/virsh.c:3336
-#, fuzzy
 msgid "Failed to allocate memory"
-msgstr "impossible d'attribuer un noeud"
+msgstr "Impossible d'allouer de la mémoire"
 
 #: src/virsh.c:3063 src/virsh.c:3341
-#, fuzzy
 msgid "Failed to create XML"
-msgstr "Impossible de lire la socket %d\n"
+msgstr "Impossible de créer XML"
 
 #: src/virsh.c:3092
 msgid "attach disk device"
-msgstr ""
+msgstr "attacher un périphérique disque"
 
 #: src/virsh.c:3093
 msgid "Attach new disk device."
-msgstr ""
+msgstr "Attacher un nouveau périphérique disque."
 
 #: src/virsh.c:3099
 msgid "source of disk device"
-msgstr ""
+msgstr "source du périphérique disque"
 
 #: src/virsh.c:3100 src/virsh.c:3264
 msgid "target of disk device"
-msgstr ""
+msgstr "cible du périphérique disque"
 
 #: src/virsh.c:3101
 msgid "driver of disk device"
-msgstr ""
+msgstr "pilote du périphérique disque"
 
 #: src/virsh.c:3102
 msgid "subdriver of disk device"
-msgstr ""
+msgstr "pilote secondaire du périphérique disque"
 
 #: src/virsh.c:3103
 msgid "target device type"
-msgstr ""
+msgstr "type de périphérique cible"
 
 #: src/virsh.c:3104
 msgid "mode of device reading and writing"
-msgstr ""
+msgstr "mode de lecture et d'écriture du périphérique"
 
 #: src/virsh.c:3135 src/virsh.c:3144 src/virsh.c:3151
 #, c-format
 msgid "No support %s in command 'attach-disk'"
-msgstr ""
+msgstr "%s n'est pas pris en charge par la commande « attach-disk »"
 
 #: src/virsh.c:3257
 msgid "detach disk device"
-msgstr ""
+msgstr "détacher un périphérique disque"
 
 #: src/virsh.c:3258
 msgid "Detach disk device."
-msgstr ""
+msgstr "Détacher un périphérique disque."
 
 #: src/virsh.c:3299 src/virsh.c:3304 src/virsh.c:3311
-#, fuzzy
 msgid "Failed to get disk information"
-msgstr "Impossible de récupérer le noeud"
+msgstr "Impossible de récupérer les informations relatives au disque"
 
 #: src/virsh.c:3330
 #, c-format
 msgid "No found disk whose target is %s"
-msgstr ""
+msgstr "Disque dont la cible est %s introuvable"
 
 #: src/virsh.c:3370
 msgid "quit this interactive terminal"
@@ -1808,13 +1800,12 @@ msgid "  NAME\n"
 msgstr "  NOM\n"
 
 #: src/virsh.c:3546
-#, fuzzy
 msgid ""
 "\n"
 "  SYNOPSIS\n"
 msgstr ""
 "\n"
-"  OPTIONS\n"
+"  SYNOPSIS\n"
 
 #: src/virsh.c:3553
 msgid ""
@@ -1849,7 +1840,7 @@ msgstr "nom de domaine ou ID non défini"
 #: src/virsh.c:3712
 #, c-format
 msgid "failed to get domain '%s'"
-msgstr "Impossible de récupérer le domaine « %s »"
+msgstr "impossible de récupérer le domaine « %s »"
 
 #: src/virsh.c:3725
 msgid "undefined network name"
@@ -1858,7 +1849,7 @@ msgstr "nom de réseau non défini"
 #: src/virsh.c:3749
 #, c-format
 msgid "failed to get network '%s'"
-msgstr "Impossible de récupérer le réseau « %s »"
+msgstr "impossible de récupérer le réseau « %s »"
 
 #: src/virsh.c:3777
 #, c-format
@@ -1955,12 +1946,12 @@ msgstr "%s : erreur : "
 
 #: src/virsh.c:4110
 msgid "error: "
-msgstr "erreur :"
+msgstr "erreur : "
 
 #: src/virsh.c:4132 src/virsh.c:4144 src/virsh.c:4157
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
-msgstr "%s : %d : impossible d'allouer de %d octets"
+msgstr "%s : %d : impossible d'allouer %d octets"
 
 #: src/virsh.c:4171
 #, c-format
@@ -1972,25 +1963,25 @@ msgid "failed to connect to the hypervisor"
 msgstr "Impossible de se connecter à l'hyperviseur"
 
 #: src/virsh.c:4231
-#, fuzzy
 msgid "failed to get the log file information"
-msgstr "Impossible de récupérer le noeud"
+msgstr "impossible de récupérer les informations du fichier de journalisation"
 
 #: src/virsh.c:4236
 msgid "the log path is not a file"
 msgstr ""
+"le chemin d'accès au fichier de journalisation ne correspond pas à un fichier"
 
 #: src/virsh.c:4242
 msgid "failed to open the log file. check the log file path"
 msgstr ""
+"impossible d'ouvrir le fichier de journalisation. Vérifiez son chemin d'accès"
 
 #: src/virsh.c:4310
-#, fuzzy
 msgid "failed to write the log file"
-msgstr "impossible d'écrire le fichier de configuration"
+msgstr "impossible d'écrire dans le fichier de journalisation"
 
 #: src/virsh.c:4479
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "%s [options] [commands]\n"
@@ -2011,21 +2002,23 @@ msgstr ""
 "%s [options] [commandes]\n"
 "\n"
 "  options :\n"
-"    -c | --connect <uri>     URI de connexion à l'hyperviseur\n"
-"    -r | --readonly         connexion en lecture seule\n"
-"    -d | --debug <num>      niveau de debogage [0-5]\n"
-"    -h | --help             cette aide\n"
+"    -c | --connect <uri>    URI de connexion à l'hyperviseur\n"
+"    -r | --readonly         se connecter en lecture seule\n"
+"    -d | --debug <num>      niveau de débogage [0-5]\n"
+"    -h | --help             afficher cette aide\n"
 "    -q | --quiet            mode silencieux\n"
-"    -t | --timing           affiche les informations de timing\n"
-"    -v | --version          version du programme\n"
+"    -t | --timing           afficher les informations d'horodatage\n"
+"    -l | --log <fichier>    envoyer les informations de journalisation dans "
+"le fichier\n"
+"    -v | --version          afficher la version du programme\n"
 "\n"
 "  commandes (mode non interactif) :\n"
 
 #: src/virsh.c:4497
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"
@@ -2035,7 +2028,7 @@ msgstr ""
 #: src/virsh.c:4593
 #, c-format
 msgid "unsupported option '-%c'. See --help."
-msgstr "option non supportée « -%c ». Voir --help."
+msgstr "option « -%c » non prise en charge. Voir --help."
 
 #: src/virsh.c:4675
 #, c-format
@@ -2043,7 +2036,7 @@ msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
 msgstr ""
-"Bienvenue dans%s, le terminal de virtualisation interactif.\n"
+"Bienvenue dans %s, le terminal de virtualisation interactif.\n"
 "\n"
 
 #: src/virsh.c:4678
@@ -2052,8 +2045,8 @@ msgid ""
 "       'quit' to quit\n"
 "\n"
 msgstr ""
-"Taper :  'help' ou help avec la commande\n"
-"       'quit' pour quitter\n"
+"Taper :  « help » pour l'aide ou « help » avec la commande\n"
+"         « quit » pour quitter\n"
 "\n"
 
 #: src/conf.c:156 src/conf.c:205 src/conf.c:488 src/conf.c:525 src/conf.c:553
@@ -2094,9 +2087,8 @@ msgid "expecting an assignment"
 msgstr "affectation attendue"
 
 #: src/conf.c:887 src/conf.c:941
-#, fuzzy
 msgid "failed to allocate buffer"
-msgstr "impossible d'attribuer un noeud"
+msgstr "impossible d'allouer un tampon"
 
 #: src/conf.c:899
 msgid "failed to open file"
@@ -2153,21 +2145,9 @@ msgstr "Erreur de communication avec le proxy : paquet malformé\n"
 #: src/proxy_internal.c:520
 #, c-format
 msgid "got asynchronous packet number %d\n"
-msgstr "nombre de paquets asynchrones reçus : %d\n"
+msgstr "paquet asynchrone numéro %d reçu\n"
 
 #: src/xen_internal.c:2310
 #, c-format
 msgid "allocating %d domain info"
 msgstr "attribution des informations de domaine %d"
-
-#~ msgid "growing buffer"
-#~ msgstr "augmentation de la mémoire tampon"
-
-#~ msgid "allocate buffer content"
-#~ msgstr "allouer une nouvelle mémoire tampon de contenu"
-
-#~ msgid "file conatining an XML domain description"
-#~ msgstr "fichier contenant la description XML d'un domaine"
-
-#~ msgid "Failed to read description file %s"
-#~ msgstr "Impossible de lire le fichier de description %s"

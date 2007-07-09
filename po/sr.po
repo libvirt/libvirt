@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
-"PO-Revision-Date: 2007-06-16 12:39-0000\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
+"PO-Revision-Date: 2007-07-05 23:23-0000\n"
 "Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
 "Language-Team: Serbian (sr) <fedora-trans-sr@redhat.com>\n"
 "MIME-Version: 1.0\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
 "10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "заузимам везу"
 
@@ -47,14 +47,13 @@ msgid "out of memory"
 msgstr "нестало меморије"
 
 #: src/virterror.c:414
-#, fuzzy
 msgid "this function is not supported by the hypervisor"
-msgstr "нема подршке за хипервизора"
+msgstr "хипервизор не подржава ову функцију"
 
 #: src/virterror.c:416
-#, fuzzy, c-format
+#, c-format
 msgid "this function is not supported by the hypervisor: %s"
-msgstr "нема подршке за %s хипервизора"
+msgstr "хипервизор не подржава ову функцију: %s"
 
 #: src/virterror.c:420
 msgid "could not connect to hypervisor"
@@ -365,6 +364,26 @@ msgstr "Неуспело проналажење мреже"
 msgid "Failed to find the network: %s"
 msgstr "Неуспело проналажење мреже: %s"
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "подаци о домену"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "Домен је повраћен из %s\n"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "име мреже или uuid"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "Мрежа %s је направљена из %s\n"
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr "умножавам садржај чвора"
@@ -409,10 +428,7 @@ msgstr "неуспео одговор сервера тумачења"
 msgid "allocate new context"
 msgstr "заузми нови контекст"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "заузимам домен"
 
@@ -424,24 +440,24 @@ msgstr "неуспело додавање домена у хеш табелу в
 msgid "domain missing from connection hash table"
 msgstr "домен недостаје у хеш табели веза"
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 msgid "allocating network"
 msgstr "заузимам мрежу"
 
-#: src/hash.c:963
+#: src/hash.c:918
 msgid "failed to add network to connection hash table"
 msgstr "неуспело додавање мреже у хаш табелу веза"
 
-#: src/hash.c:1015
+#: src/hash.c:970
 msgid "network missing from connection hash table"
 msgstr "мрежа недостаје у хаш табели веза"
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr "добављам време дана"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "домен"
 
@@ -550,19 +566,18 @@ msgid "allocating private data"
 msgstr "заузимам приватне податке"
 
 #: src/test.c:774
-#, fuzzy
 msgid "allocating path"
-msgstr "заузимам домен"
+msgstr "заузимам путању"
 
 #: src/test.c:946
 msgid "too many domains"
 msgstr "превише домена"
 
-#: src/test.c:1491
+#: src/test.c:1492
 msgid "Domain is already running"
 msgstr "Домен је већ покренут"
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr "Домен још увек ради"
 
@@ -572,7 +587,7 @@ msgstr "неуспело заузимање чвора"
 
 #: src/sexpr.c:352 src/sexpr.c:367
 msgid "failed to copy a string"
-msgstr "неуспело умножавање низа"
+msgstr "неуспело умножавање ниске"
 
 #: src/xend_internal.c:289 src/xend_internal.c:292
 msgid "failed to read from Xen Daemon"
@@ -629,11 +644,11 @@ msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 "не могу протумачити vbd име датотеке, недостаје врста управљачког програма"
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr "неуспело тумачење података о Xend домену"
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Неуспело прављење не активираног домена %s\n"
@@ -1140,7 +1155,7 @@ msgstr "CPU склоност:"
 
 #: src/virsh.c:1511
 msgid "Domain shut off, virtual CPUs not present."
-msgstr ""
+msgstr "Домен је угашен, нема присутних виртуелних CPU-а."
 
 #: src/virsh.c:1527
 msgid "control domain vcpu affinity"
@@ -1160,13 +1175,14 @@ msgstr "cpu број(еви) домаћина (раздвојени зарезо
 
 #: src/virsh.c:1590
 msgid "cpulist: Invalid format. Empty string."
-msgstr ""
+msgstr "cpulist: Неисправан формат. Празна ниска."
 
 #: src/virsh.c:1600
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
+"cpulist: %s: Неисправан формат. Очекује се бројка на месту %d (близу „%c“)."
 
 #: src/virsh.c:1610
 #, c-format
@@ -1174,11 +1190,13 @@ msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
 "c')."
 msgstr ""
+"cpulist: %s: Неисправан формат. Очекује се бројка или зарез на месту %d "
+"(близу „%c“)."
 
 #: src/virsh.c:1617
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
-msgstr ""
+msgstr "cpulist: %s: Неисправан формат. Пратећи зарез на месту %d."
 
 #: src/virsh.c:1631
 #, c-format
@@ -1198,14 +1216,12 @@ msgid "number of virtual CPUs"
 msgstr "број виртуелних CPU-а"
 
 #: src/virsh.c:1682
-#, fuzzy
 msgid "Invalid number of virtual CPUs."
-msgstr "број виртуелних CPU-а"
+msgstr "Неисправан број виртуелних CPU-а."
 
 #: src/virsh.c:1694
-#, fuzzy
 msgid "Too many virtual CPUs."
-msgstr "Превелик број виртуелних процесора."
+msgstr "Превише виртуелних CPU-а."
 
 #: src/virsh.c:1712
 msgid "change memory allocation"
@@ -1226,7 +1242,7 @@ msgstr "Неисправна вредност %d за величину мемо�
 
 #: src/virsh.c:1746
 msgid "Unable to verify MaxMemorySize"
-msgstr ""
+msgstr "Не могу да потврдим највећу количину меморије"
 
 #: src/virsh.c:1769
 msgid "change maximum memory limit"
@@ -1242,16 +1258,15 @@ msgstr "највиша граница меморије у килобајтови
 
 #: src/virsh.c:1803
 msgid "Unable to verify current MemorySize"
-msgstr ""
+msgstr "Не могу да потврдим текућу количину меморије"
 
 #: src/virsh.c:1810
-#, fuzzy
 msgid "Unable to shrink current MemorySize"
-msgstr "тренутна меморија домена"
+msgstr "Не могу да умањим текућу количину меморије"
 
 #: src/virsh.c:1816
 msgid "Unable to change MaxMemorySize"
-msgstr ""
+msgstr "Не могу да изменим највећу количину меморије"
 
 #: src/virsh.c:1829
 msgid "node information"
@@ -1585,24 +1600,20 @@ msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "Текући хипервизор: %s %d.%d.%d\n"
 
 #: src/virsh.c:2610
-#, fuzzy
 msgid "print the hypervisor hostname"
-msgstr "неуспело добављање врсте хипервизора"
+msgstr "испиши име домаћина хипервизора"
 
 #: src/virsh.c:2624
-#, fuzzy
 msgid "failed to get hostname"
-msgstr "неуспело добављање врсте хипервизора"
+msgstr "неуспело добављање имена домаћина"
 
 #: src/virsh.c:2639
-#, fuzzy
 msgid "print the hypervisor canonical URI"
-msgstr "УРИ хипервизорске везе"
+msgstr "испиши канонски УРИ хипервизора"
 
 #: src/virsh.c:2653
-#, fuzzy
 msgid "failed to get URI"
-msgstr "неуспело добављање UUID домена"
+msgstr "неуспело добављање УРИ-а"
 
 #: src/virsh.c:2668
 msgid "vnc display"
@@ -1643,130 +1654,121 @@ msgid "Failed to detach device from %s"
 msgstr "Неуспело откачињање уређаја из %s"
 
 #: src/virsh.c:2855
-#, fuzzy
 msgid "attach network interface"
-msgstr "име мреже"
+msgstr "прикачи мрежну спрегу"
 
 #: src/virsh.c:2856
 msgid "Attach new network interface."
-msgstr ""
+msgstr "Прикачи нову мрежну спрегу."
 
 #: src/virsh.c:2862 src/virsh.c:2978
-#, fuzzy
 msgid "network interface type"
-msgstr "име мреже"
+msgstr "врста мрежне спреге"
 
 #: src/virsh.c:2863
-#, fuzzy
 msgid "source of network interface"
-msgstr "недефинисано име мреже"
+msgstr "извор мрежне спреге"
 
 #: src/virsh.c:2864
-#, fuzzy
 msgid "target network name"
-msgstr "име мреже"
+msgstr "име циљне мреже"
 
 #: src/virsh.c:2865 src/virsh.c:2979
 msgid "MAC adress"
-msgstr ""
+msgstr "MAC адреса"
 
 #: src/virsh.c:2866
 msgid "script used to bridge network interface"
-msgstr ""
+msgstr "скрипта употребљена за премошћавање мрежне спреге"
 
 #: src/virsh.c:2898
 #, c-format
 msgid "No support %s in command 'attach-interface'"
-msgstr ""
+msgstr "Нема подршке за %s у наредби „attach-interface“"
 
 #: src/virsh.c:2971
-#, fuzzy
 msgid "detach network interface"
-msgstr "име мреже"
+msgstr "откачи мрежну спрегу"
 
 #: src/virsh.c:2972
 msgid "Detach network interface."
-msgstr ""
+msgstr "Откачи мрежну спрегу."
 
 #: src/virsh.c:3017 src/virsh.c:3022
-#, fuzzy
 msgid "Failed to get interface information"
-msgstr "неуспело добављање података о чвору"
+msgstr "Неуспело добављање података о спрези"
 
 #: src/virsh.c:3030
 #, c-format
 msgid "No found interface whose type is %s"
-msgstr ""
+msgstr "Није пронађена спрега врсте %s"
 
 #: src/virsh.c:3052
 #, c-format
 msgid "No found interface whose MAC address is %s"
-msgstr ""
+msgstr "Није пронађена спрега чија је MAC адреса %s"
 
 #: src/virsh.c:3058 src/virsh.c:3336
-#, fuzzy
 msgid "Failed to allocate memory"
-msgstr "неуспело заузимање чвора"
+msgstr "Неуспело заузимање меморије"
 
 #: src/virsh.c:3063 src/virsh.c:3341
-#, fuzzy
 msgid "Failed to create XML"
-msgstr "Неуспело читање прикључка %d\n"
+msgstr "Неуспело прављење XML-а"
 
 #: src/virsh.c:3092
 msgid "attach disk device"
-msgstr ""
+msgstr "прикачи уређај диска"
 
 #: src/virsh.c:3093
 msgid "Attach new disk device."
-msgstr ""
+msgstr "Прикачи нови уређај диска."
 
 #: src/virsh.c:3099
 msgid "source of disk device"
-msgstr ""
+msgstr "извор уређаја диска"
 
 #: src/virsh.c:3100 src/virsh.c:3264
 msgid "target of disk device"
-msgstr ""
+msgstr "циљ уређаја диска"
 
 #: src/virsh.c:3101
 msgid "driver of disk device"
-msgstr ""
+msgstr "управљачки програм уређаја диска"
 
 #: src/virsh.c:3102
 msgid "subdriver of disk device"
-msgstr ""
+msgstr "управљачки подпрограм уређаја диска"
 
 #: src/virsh.c:3103
 msgid "target device type"
-msgstr ""
+msgstr "врста циљног уређаја"
 
 #: src/virsh.c:3104
 msgid "mode of device reading and writing"
-msgstr ""
+msgstr "режим читања и уписивања уређаја"
 
 #: src/virsh.c:3135 src/virsh.c:3144 src/virsh.c:3151
 #, c-format
 msgid "No support %s in command 'attach-disk'"
-msgstr ""
+msgstr "Нема подршке за %s у наредби „attach-disk“"
 
 #: src/virsh.c:3257
 msgid "detach disk device"
-msgstr ""
+msgstr "откачи уређај диска"
 
 #: src/virsh.c:3258
 msgid "Detach disk device."
-msgstr ""
+msgstr "Откачи уређај диска."
 
 #: src/virsh.c:3299 src/virsh.c:3304 src/virsh.c:3311
-#, fuzzy
 msgid "Failed to get disk information"
-msgstr "неуспело добављање података о чвору"
+msgstr "Неуспело добављање података о диску"
 
 #: src/virsh.c:3330
 #, c-format
 msgid "No found disk whose target is %s"
-msgstr ""
+msgstr "Није пронађен диск чији је циљ %s"
 
 #: src/virsh.c:3370
 msgid "quit this interactive terminal"
@@ -2005,10 +2007,10 @@ msgstr ""
 "  наредбе (неитерактивни режим):\n"
 
 #: src/virsh.c:4497
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"
@@ -2077,9 +2079,8 @@ msgid "expecting an assignment"
 msgstr "очекујем доделу"
 
 #: src/conf.c:887 src/conf.c:941
-#, fuzzy
 msgid "failed to allocate buffer"
-msgstr "неуспело заузимање чвора"
+msgstr "неуспело заузимање бафера"
 
 #: src/conf.c:899
 msgid "failed to open file"
@@ -2143,12 +2144,3 @@ msgstr "примљен асинхрони број пакета %d\n"
 #, c-format
 msgid "allocating %d domain info"
 msgstr "додељујем инфо %d домена"
-
-#~ msgid "growing buffer"
-#~ msgstr "растући бафер"
-
-#~ msgid "allocate buffer content"
-#~ msgstr "заузми садржај бафера"
-
-#~ msgid "file conatining an XML domain description"
-#~ msgstr "датотека која садржи XML опис домена"

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
 "PO-Revision-Date: 2007-06-11 00:43+0200\n"
 "Last-Translator: Ville-Pekka Vainio <vpivaini@cs.helsinki.fi>\n"
 "Language-Team: Finnish <laatu@lokalisointi.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "X-Generator: KBabel 1.11.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "varataan yhteyttä"
 
@@ -367,6 +367,26 @@ msgstr "Verkkoa ei löytynyt"
 msgid "Failed to find the network: %s"
 msgstr "Verkkoa ei löytynyt: %s"
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "toimialueen tiedot"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "Toimialue palautettu tiedostosta %s\n"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "verkon nimi tai uuid"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "Verkko %s luotu tiedostosta %s\n"
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr "kopioidaan solmun sisältöä"
@@ -412,10 +432,7 @@ msgstr "palvelimen vastauksen jäsentäminen epäonnistui"
 msgid "allocate new context"
 msgstr "varaa uusi konteksti"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "varataan toimialue"
 
@@ -427,24 +444,24 @@ msgstr "toimialueen lisääminen yhteyksien hajautustauluun epäonnistui"
 msgid "domain missing from connection hash table"
 msgstr "toimialue puuttuu yhteyksien hajautustaulusta"
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 msgid "allocating network"
 msgstr "varataan verkkoa"
 
-#: src/hash.c:963
+#: src/hash.c:918
 msgid "failed to add network to connection hash table"
 msgstr "verkon lisääminen yhteyksien hajautustauluun epäonnistui"
 
-#: src/hash.c:1015
+#: src/hash.c:970
 msgid "network missing from connection hash table"
 msgstr "verkko puuttuu yhteyksien hajautustaulusta"
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr "haetaan kellonaika"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "toimialue"
 
@@ -561,11 +578,11 @@ msgstr "varataan toimialue"
 msgid "too many domains"
 msgstr "liian monta toimialuetta"
 
-#: src/test.c:1491
+#: src/test.c:1492
 msgid "Domain is already running"
 msgstr "toimialue on jo käynnissä"
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr "toimialue on edelleen käynnissä"
 
@@ -631,11 +648,11 @@ msgstr ""
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr "Xend-toimialueen tietojen jäsentäminen epäonnistui"
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Epäaktiivisen toimialueen %s luominen epäonnistui\n"
@@ -2017,10 +2034,10 @@ msgstr ""
 "  komennot (vuorovaikutukseton tila):\n"
 
 #: src/virsh.c:4497
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"

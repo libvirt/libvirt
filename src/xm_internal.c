@@ -654,7 +654,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
         if (xenXMConfigGetString(conf, "bootloader", &str) == 0)
             virBufferVSprintf(buf, "  <bootloader>%s</bootloader>\n", str);
         if (xenXMConfigGetString(conf, "bootargs", &str) == 0)
-            virBufferVSprintf(buf, "  <bootloader_args>%s</bootloader_args>\n", str);
+            virBufferEscapeString(buf, "  <bootloader_args>%s</bootloader_args>\n", str);
         if (xenXMConfigGetString(conf, "kernel", &str) == 0) {
             virBufferAdd(buf, "  <os>\n", -1);
             virBufferAdd(buf, "    <type>linux</type>\n", -1);
@@ -662,7 +662,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             if (xenXMConfigGetString(conf, "ramdisk", &str) == 0)
                 virBufferVSprintf(buf, "    <initrd>%s</initrd>\n", str);
             if (xenXMConfigGetString(conf, "extra", &str) == 0)
-                virBufferVSprintf(buf, "    <cmdline>%s</cmdline>\n", str);
+                virBufferEscapeString(buf, "    <cmdline>%s</cmdline>\n", str);
             virBufferAdd(buf, "  </os>\n", -1);
         }
     }

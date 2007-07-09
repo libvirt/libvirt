@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pt_BR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
-"PO-Revision-Date: 2007-06-28 23:44-0300\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
+"PO-Revision-Date: 2007-07-05 17:43-0300\n"
 "Last-Translator: Igor Pires Soares <igor@projetofedora.org>\n"
 "Language-Team: Brazilian Portuguese <fedora-trans-pt_br@redhat.com>\n"
 "MIME-Version: 1.0\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "alocando a conexão"
 
@@ -365,6 +365,26 @@ msgstr "Falha ao encontrar a rede"
 msgid "Failed to find the network: %s"
 msgstr "Falha ao encontrar a rede: %s"
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "informação do domínio"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "O domínio foi restaurado a partir do %s\n"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "nome ou uuid da rede"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "Rede %s criada a partir de %s\n"
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr "copiando conteúdo do nó"
@@ -409,10 +429,7 @@ msgstr "falha ao analisar resposta do servidor"
 msgid "allocate new context"
 msgstr "alocar novo contexto"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "alocando domínio"
 
@@ -424,24 +441,24 @@ msgstr "não foi possível adicionar domínio à tabela hash de conexões"
 msgid "domain missing from connection hash table"
 msgstr "domínio não disponível na tabela hash de conexões"
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 msgid "allocating network"
 msgstr "alocando rede"
 
-#: src/hash.c:963
+#: src/hash.c:918
 msgid "failed to add network to connection hash table"
 msgstr "não foi possível adicionar a rede à tabela hash de conexões"
 
-#: src/hash.c:1015
+#: src/hash.c:970
 msgid "network missing from connection hash table"
 msgstr "rede não disponível na tabela hash de conexões"
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr "obtendo horário"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "domínio"
 
@@ -557,11 +574,11 @@ msgstr "alocando caminho"
 msgid "too many domains"
 msgstr "domínios excessivos"
 
-#: src/test.c:1491
+#: src/test.c:1492
 msgid "Domain is already running"
 msgstr "O domínio já está em execução"
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr "O domínio ainda está em execução"
 
@@ -628,11 +645,11 @@ msgstr "impossível analisar nome de arquivo vbd, nome do driver faltando"
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "impossível analisar nome de arquivo vbd, tipo de driver faltando"
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr "não foi possível analisar a informação do domínio do Xend"
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Não foi possível criar o domínio inativo %s\n"
@@ -1998,10 +2015,10 @@ msgstr ""
 "  commands (non interactive mode):\n"
 
 #: src/virsh.c:4497
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"
@@ -2070,9 +2087,8 @@ msgid "expecting an assignment"
 msgstr "esperando uma atribuição"
 
 #: src/conf.c:887 src/conf.c:941
-#, fuzzy
 msgid "failed to allocate buffer"
-msgstr "não foi possível alocar um nó"
+msgstr "não foi possível o buffer"
 
 #: src/conf.c:899
 msgid "failed to open file"

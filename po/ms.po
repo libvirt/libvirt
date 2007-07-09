@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
 "PO-Revision-Date: 2007-05-17 22:28+0800\n"
 "Last-Translator: Sharuzzaman Ahmat Raslan <sharuzzaman@myrealbox.com>\n"
 "Language-Team: ms <ms@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 #, fuzzy
 msgid "allocating connection"
 msgstr "Sambungan Masatamat:"
@@ -397,6 +397,28 @@ msgstr "akses ke alatan rangkaian"
 msgid "Failed to find the network: %s"
 msgstr "akses ke alatan rangkaian"
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "Maklumat tidak sah"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "Benarkan hos dari:"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr ""
+"Pengunaan: %s FAIL\n"
+"    atau: %s OPSYEN\n"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "Benarkan hos dari:"
+
 #: src/xmlrpc.c:63
 #, fuzzy
 msgid "copying node content"
@@ -452,10 +474,7 @@ msgstr "SSLv23_server_method() gagal."
 msgid "allocate new context"
 msgstr "Konteks pengguna tidak diketahui"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 #, fuzzy
 msgid "allocating domain"
 msgstr "mengumpukkan maklumat domain %d"
@@ -468,27 +487,27 @@ msgstr ""
 msgid "domain missing from connection hash table"
 msgstr ""
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 #, fuzzy
 msgid "allocating network"
 msgstr "Konfigurasi Rangkaian"
 
-#: src/hash.c:963
+#: src/hash.c:918
 #, fuzzy
 msgid "failed to add network to connection hash table"
 msgstr "Ralat bila cuba menulis ke fail konfigurasi."
 
-#: src/hash.c:1015
+#: src/hash.c:970
 msgid "network missing from connection hash table"
 msgstr ""
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 #, fuzzy
 msgid "getting time of day"
 msgstr "Tak dapat perolehi masa bagi hari"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "domain"
 
@@ -629,12 +648,12 @@ msgstr "mengumpukkan maklumat domain %d"
 msgid "too many domains"
 msgstr "Terlalu banyak gantian"
 
-#: src/test.c:1491
+#: src/test.c:1492
 #, fuzzy
 msgid "Domain is already running"
 msgstr "autorun sedang berjalan!\n"
 
-#: src/test.c:1518
+#: src/test.c:1519
 #, fuzzy
 msgid "Domain is still running"
 msgstr "autorun sedang berjalan!\n"
@@ -706,11 +725,11 @@ msgstr ""
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr ""
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Gagal mencipta direktori %s"
@@ -2164,7 +2183,7 @@ msgstr ""
 #, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 

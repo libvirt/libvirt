@@ -1325,7 +1325,7 @@ xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf
            virBufferVSprintf(buf, "    <root>%s</root>\n", tmp);
         tmp = sexpr_node(node, "domain/image/linux/args");
         if ((tmp != NULL) && (tmp[0] != 0))
-           virBufferVSprintf(buf, "    <cmdline>%s</cmdline>\n", tmp);
+           virBufferEscapeString(buf, "    <cmdline>%s</cmdline>\n", tmp);
     }
 
     virBufferAdd(buf, "  </os>\n", 8);
@@ -1411,7 +1411,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
         /*
          * Only insert bootloader_args if there is also a bootloader param
          */
-        virBufferVSprintf(&buf, "  <bootloader_args>%s</bootloader_args>\n", tmp);
+        virBufferEscapeString(&buf, "  <bootloader_args>%s</bootloader_args>\n", tmp);
     }
 
     if (domid != 0) {

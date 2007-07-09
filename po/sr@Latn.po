@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
-"PO-Revision-Date: 2007-06-16 12:39-0000\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
+"PO-Revision-Date: 2007-07-05 23:23-0000\n"
 "Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
 "Language-Team: Serbian (sr) <fedora-trans-sr@redhat.com>\n"
 "MIME-Version: 1.0\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
 "10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "zauzimam vezu"
 
@@ -47,14 +47,13 @@ msgid "out of memory"
 msgstr "nestalo memorije"
 
 #: src/virterror.c:414
-#, fuzzy
 msgid "this function is not supported by the hypervisor"
-msgstr "nema podrške za hipervizora"
+msgstr "hipervizor ne podržava ovu funkciju"
 
 #: src/virterror.c:416
-#, fuzzy, c-format
+#, c-format
 msgid "this function is not supported by the hypervisor: %s"
-msgstr "nema podrške za %s hipervizora"
+msgstr "hipervizor ne podržava ovu funkciju: %s"
 
 #: src/virterror.c:420
 msgid "could not connect to hypervisor"
@@ -365,6 +364,26 @@ msgstr "Neuspelo pronalaženje mreže"
 msgid "Failed to find the network: %s"
 msgstr "Neuspelo pronalaženje mreže: %s"
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "podaci o domenu"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "Domen je povraćen iz %s\n"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "ime mreže ili uuid"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "Mreža %s je napravljena iz %s\n"
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr "umnožavam sadržaj čvora"
@@ -409,10 +428,7 @@ msgstr "neuspeo odgovor servera tumačenja"
 msgid "allocate new context"
 msgstr "zauzmi novi kontekst"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "zauzimam domen"
 
@@ -424,24 +440,24 @@ msgstr "neuspelo dodavanje domena u heš tabelu veza"
 msgid "domain missing from connection hash table"
 msgstr "domen nedostaje u heš tabeli veza"
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 msgid "allocating network"
 msgstr "zauzimam mrežu"
 
-#: src/hash.c:963
+#: src/hash.c:918
 msgid "failed to add network to connection hash table"
 msgstr "neuspelo dodavanje mreže u haš tabelu veza"
 
-#: src/hash.c:1015
+#: src/hash.c:970
 msgid "network missing from connection hash table"
 msgstr "mreža nedostaje u haš tabeli veza"
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr "dobavljam vreme dana"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "domen"
 
@@ -550,19 +566,18 @@ msgid "allocating private data"
 msgstr "zauzimam privatne podatke"
 
 #: src/test.c:774
-#, fuzzy
 msgid "allocating path"
-msgstr "zauzimam domen"
+msgstr "zauzimam putanju"
 
 #: src/test.c:946
 msgid "too many domains"
 msgstr "previše domena"
 
-#: src/test.c:1491
+#: src/test.c:1492
 msgid "Domain is already running"
 msgstr "Domen je već pokrenut"
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr "Domen još uvek radi"
 
@@ -572,7 +587,7 @@ msgstr "neuspelo zauzimanje čvora"
 
 #: src/sexpr.c:352 src/sexpr.c:367
 msgid "failed to copy a string"
-msgstr "neuspelo umnožavanje niza"
+msgstr "neuspelo umnožavanje niske"
 
 #: src/xend_internal.c:289 src/xend_internal.c:292
 msgid "failed to read from Xen Daemon"
@@ -629,11 +644,11 @@ msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 "ne mogu protumačiti vbd ime datoteke, nedostaje vrsta upravljačkog programa"
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr "neuspelo tumačenje podataka o Xend domenu"
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Neuspelo pravljenje ne aktiviranog domena %s\n"
@@ -1140,7 +1155,7 @@ msgstr "CPU sklonost:"
 
 #: src/virsh.c:1511
 msgid "Domain shut off, virtual CPUs not present."
-msgstr ""
+msgstr "Domen je ugašen, nema prisutnih virtuelnih CPU-a."
 
 #: src/virsh.c:1527
 msgid "control domain vcpu affinity"
@@ -1160,13 +1175,14 @@ msgstr "cpu broj(evi) domaćina (razdvojeni zarezom)"
 
 #: src/virsh.c:1590
 msgid "cpulist: Invalid format. Empty string."
-msgstr ""
+msgstr "cpulist: Neispravan format. Prazna niska."
 
 #: src/virsh.c:1600
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
+"cpulist: %s: Neispravan format. Očekuje se brojka na mestu %d (blizu „%c“)."
 
 #: src/virsh.c:1610
 #, c-format
@@ -1174,11 +1190,13 @@ msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
 "c')."
 msgstr ""
+"cpulist: %s: Neispravan format. Očekuje se brojka ili zarez na mestu %d "
+"(blizu „%c“)."
 
 #: src/virsh.c:1617
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
-msgstr ""
+msgstr "cpulist: %s: Neispravan format. Prateći zarez na mestu %d."
 
 #: src/virsh.c:1631
 #, c-format
@@ -1198,14 +1216,12 @@ msgid "number of virtual CPUs"
 msgstr "broj virtuelnih CPU-a"
 
 #: src/virsh.c:1682
-#, fuzzy
 msgid "Invalid number of virtual CPUs."
-msgstr "broj virtuelnih CPU-a"
+msgstr "Neispravan broj virtuelnih CPU-a."
 
 #: src/virsh.c:1694
-#, fuzzy
 msgid "Too many virtual CPUs."
-msgstr "Prevelik broj virtuelnih procesora."
+msgstr "Previše virtuelnih CPU-a."
 
 #: src/virsh.c:1712
 msgid "change memory allocation"
@@ -1226,7 +1242,7 @@ msgstr "Neispravna vrednost %d za veličinu memorije"
 
 #: src/virsh.c:1746
 msgid "Unable to verify MaxMemorySize"
-msgstr ""
+msgstr "Ne mogu da potvrdim najveću količinu memorije"
 
 #: src/virsh.c:1769
 msgid "change maximum memory limit"
@@ -1242,16 +1258,15 @@ msgstr "najviša granica memorije u kilobajtovima"
 
 #: src/virsh.c:1803
 msgid "Unable to verify current MemorySize"
-msgstr ""
+msgstr "Ne mogu da potvrdim tekuću količinu memorije"
 
 #: src/virsh.c:1810
-#, fuzzy
 msgid "Unable to shrink current MemorySize"
-msgstr "trenutna memorija domena"
+msgstr "Ne mogu da umanjim tekuću količinu memorije"
 
 #: src/virsh.c:1816
 msgid "Unable to change MaxMemorySize"
-msgstr ""
+msgstr "Ne mogu da izmenim najveću količinu memorije"
 
 #: src/virsh.c:1829
 msgid "node information"
@@ -1585,24 +1600,20 @@ msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "Tekući hipervizor: %s %d.%d.%d\n"
 
 #: src/virsh.c:2610
-#, fuzzy
 msgid "print the hypervisor hostname"
-msgstr "neuspelo dobavljanje vrste hipervizora"
+msgstr "ispiši ime domaćina hipervizora"
 
 #: src/virsh.c:2624
-#, fuzzy
 msgid "failed to get hostname"
-msgstr "neuspelo dobavljanje vrste hipervizora"
+msgstr "neuspelo dobavljanje imena domaćina"
 
 #: src/virsh.c:2639
-#, fuzzy
 msgid "print the hypervisor canonical URI"
-msgstr "URI hipervizorske veze"
+msgstr "ispiši kanonski URI hipervizora"
 
 #: src/virsh.c:2653
-#, fuzzy
 msgid "failed to get URI"
-msgstr "neuspelo dobavljanje UUID domena"
+msgstr "neuspelo dobavljanje URI-a"
 
 #: src/virsh.c:2668
 msgid "vnc display"
@@ -1643,130 +1654,121 @@ msgid "Failed to detach device from %s"
 msgstr "Neuspelo otkačinjanje uređaja iz %s"
 
 #: src/virsh.c:2855
-#, fuzzy
 msgid "attach network interface"
-msgstr "ime mreže"
+msgstr "prikači mrežnu spregu"
 
 #: src/virsh.c:2856
 msgid "Attach new network interface."
-msgstr ""
+msgstr "Prikači novu mrežnu spregu."
 
 #: src/virsh.c:2862 src/virsh.c:2978
-#, fuzzy
 msgid "network interface type"
-msgstr "ime mreže"
+msgstr "vrsta mrežne sprege"
 
 #: src/virsh.c:2863
-#, fuzzy
 msgid "source of network interface"
-msgstr "nedefinisano ime mreže"
+msgstr "izvor mrežne sprege"
 
 #: src/virsh.c:2864
-#, fuzzy
 msgid "target network name"
-msgstr "ime mreže"
+msgstr "ime ciljne mreže"
 
 #: src/virsh.c:2865 src/virsh.c:2979
 msgid "MAC adress"
-msgstr ""
+msgstr "MAC adresa"
 
 #: src/virsh.c:2866
 msgid "script used to bridge network interface"
-msgstr ""
+msgstr "skripta upotrebljena za premošćavanje mrežne sprege"
 
 #: src/virsh.c:2898
 #, c-format
 msgid "No support %s in command 'attach-interface'"
-msgstr ""
+msgstr "Nema podrške za %s u naredbi „attach-interface“"
 
 #: src/virsh.c:2971
-#, fuzzy
 msgid "detach network interface"
-msgstr "ime mreže"
+msgstr "otkači mrežnu spregu"
 
 #: src/virsh.c:2972
 msgid "Detach network interface."
-msgstr ""
+msgstr "Otkači mrežnu spregu."
 
 #: src/virsh.c:3017 src/virsh.c:3022
-#, fuzzy
 msgid "Failed to get interface information"
-msgstr "neuspelo dobavljanje podataka o čvoru"
+msgstr "Neuspelo dobavljanje podataka o sprezi"
 
 #: src/virsh.c:3030
 #, c-format
 msgid "No found interface whose type is %s"
-msgstr ""
+msgstr "Nije pronađena sprega vrste %s"
 
 #: src/virsh.c:3052
 #, c-format
 msgid "No found interface whose MAC address is %s"
-msgstr ""
+msgstr "Nije pronađena sprega čija je MAC adresa %s"
 
 #: src/virsh.c:3058 src/virsh.c:3336
-#, fuzzy
 msgid "Failed to allocate memory"
-msgstr "neuspelo zauzimanje čvora"
+msgstr "Neuspelo zauzimanje memorije"
 
 #: src/virsh.c:3063 src/virsh.c:3341
-#, fuzzy
 msgid "Failed to create XML"
-msgstr "Neuspelo čitanje priključka %d\n"
+msgstr "Neuspelo pravljenje XML-a"
 
 #: src/virsh.c:3092
 msgid "attach disk device"
-msgstr ""
+msgstr "prikači uređaj diska"
 
 #: src/virsh.c:3093
 msgid "Attach new disk device."
-msgstr ""
+msgstr "Prikači novi uređaj diska."
 
 #: src/virsh.c:3099
 msgid "source of disk device"
-msgstr ""
+msgstr "izvor uređaja diska"
 
 #: src/virsh.c:3100 src/virsh.c:3264
 msgid "target of disk device"
-msgstr ""
+msgstr "cilj uređaja diska"
 
 #: src/virsh.c:3101
 msgid "driver of disk device"
-msgstr ""
+msgstr "upravljački program uređaja diska"
 
 #: src/virsh.c:3102
 msgid "subdriver of disk device"
-msgstr ""
+msgstr "upravljački podprogram uređaja diska"
 
 #: src/virsh.c:3103
 msgid "target device type"
-msgstr ""
+msgstr "vrsta ciljnog uređaja"
 
 #: src/virsh.c:3104
 msgid "mode of device reading and writing"
-msgstr ""
+msgstr "režim čitanja i upisivanja uređaja"
 
 #: src/virsh.c:3135 src/virsh.c:3144 src/virsh.c:3151
 #, c-format
 msgid "No support %s in command 'attach-disk'"
-msgstr ""
+msgstr "Nema podrške za %s u naredbi „attach-disk“"
 
 #: src/virsh.c:3257
 msgid "detach disk device"
-msgstr ""
+msgstr "otkači uređaj diska"
 
 #: src/virsh.c:3258
 msgid "Detach disk device."
-msgstr ""
+msgstr "Otkači uređaj diska."
 
 #: src/virsh.c:3299 src/virsh.c:3304 src/virsh.c:3311
-#, fuzzy
 msgid "Failed to get disk information"
-msgstr "neuspelo dobavljanje podataka o čvoru"
+msgstr "Neuspelo dobavljanje podataka o disku"
 
 #: src/virsh.c:3330
 #, c-format
 msgid "No found disk whose target is %s"
-msgstr ""
+msgstr "Nije pronađen disk čiji je cilj %s"
 
 #: src/virsh.c:3370
 msgid "quit this interactive terminal"
@@ -2005,10 +2007,10 @@ msgstr ""
 "  naredbe (neiteraktivni režim):\n"
 
 #: src/virsh.c:4497
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"
@@ -2077,9 +2079,8 @@ msgid "expecting an assignment"
 msgstr "očekujem dodelu"
 
 #: src/conf.c:887 src/conf.c:941
-#, fuzzy
 msgid "failed to allocate buffer"
-msgstr "neuspelo zauzimanje čvora"
+msgstr "neuspelo zauzimanje bafera"
 
 #: src/conf.c:899
 msgid "failed to open file"
@@ -2143,12 +2144,3 @@ msgstr "primljen asinhroni broj paketa %d\n"
 #, c-format
 msgid "allocating %d domain info"
 msgstr "dodeljujem info %d domena"
-
-#~ msgid "growing buffer"
-#~ msgstr "rastući bafer"
-
-#~ msgid "allocate buffer content"
-#~ msgstr "zauzmi sadržaj bafera"
-
-#~ msgid "file conatining an XML domain description"
-#~ msgstr "datoteka koja sadrži XML opis domena"

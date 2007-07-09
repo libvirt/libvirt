@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hi\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
 "PO-Revision-Date: 2007-04-17 11:48+0530\n"
 "Last-Translator: hi <rranjan@redhat.com>\n"
 "Language-Team: Hindi <fedora-trans-hi@redhat.com>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "\n"
 "\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "संबंधन दे रहा है"
 
@@ -372,6 +372,26 @@ msgstr "अपरिभाषित संजाल %s में विफल"
 msgid "Failed to find the network: %s"
 msgstr "अपरिभाषित संजाल %s में विफल"
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "डोमेन सूचना"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "%s से डोमेन फिर पुनर्भंडारित\n"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "संजाल नाम या uuid"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "%s संजाल को %s बनाया गया\n"
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr "नोड सामग्री कॉपी कर रहा है"
@@ -416,10 +436,7 @@ msgstr "विश्लेषण सर्वर अनुक्रिया व
 msgid "allocate new context"
 msgstr "नया संदर्भ दें"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "डोमेन संभाजित कर रहा है"
 
@@ -431,24 +448,24 @@ msgstr "संबंधन हैश तालिका में डोमे�
 msgid "domain missing from connection hash table"
 msgstr "संबंधन हैश तालिका से डोमेन गुम"
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 msgid "allocating network"
 msgstr "संजाल संभाजित कर रहा है"
 
-#: src/hash.c:963
+#: src/hash.c:918
 msgid "failed to add network to connection hash table"
 msgstr "संबंधन हैश तालिका में संजाल जोड़ने में विफल"
 
-#: src/hash.c:1015
+#: src/hash.c:970
 msgid "network missing from connection hash table"
 msgstr "संबंधन हैश तालिका से संजाल गुम"
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr "दिन का समय ले रहा है"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "डोमेन"
 
@@ -566,11 +583,11 @@ msgstr "डोमेन संभाजित कर रहा है"
 msgid "too many domains"
 msgstr "कई डोमेन"
 
-#: src/test.c:1491
+#: src/test.c:1492
 msgid "Domain is already running"
 msgstr "डोमेन पहले से चल रहा है"
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr "डोमेन अभी भी चल रहा है"
 
@@ -636,11 +653,11 @@ msgstr "vbd फाइलनाम विश्लेषित नहीं क�
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd फाइलनाम विश्लेषित नहीं कर सकता है, ड्राइवर प्रकार नहीं मिल रहा है"
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr "Xend डोमेन सूचना विश्लेषण में विफल"
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "निष्क्रिय डोमेन %s बनाने में विफल\n"
@@ -2023,10 +2040,10 @@ msgstr ""
 "  commands (non interactive mode):\n"
 
 #: src/virsh.c:4497
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"

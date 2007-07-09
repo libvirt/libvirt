@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ja\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
 "PO-Revision-Date: 2007-06-30 15:24+0900\n"
 "Last-Translator: Hyu_gabaru Ryu_ichi <hyu_gabaru@yahoo.co.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "接続を割り当て中"
 
@@ -367,6 +367,26 @@ msgstr "ネットワークを見つけられませんでした"
 msgid "Failed to find the network: %s"
 msgstr "ネットワーク %s を見つけられませんでした"
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "ドメインの情報"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "ドメインは %s から復元されました\n"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "ネットワーク名または uuid"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "ネットワーク %s が %s から作成されました\n"
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr "ノードの内容をコピー中"
@@ -411,10 +431,7 @@ msgstr "サーバー応答の解析に失敗しました"
 msgid "allocate new context"
 msgstr "新しいコンテキストの割り当て"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "ドメインを割り当て中"
 
@@ -426,24 +443,24 @@ msgstr "接続ハッシュテーブルへのドメインの追加に失敗しま
 msgid "domain missing from connection hash table"
 msgstr "接続ハッシュテーブルにないドメインです"
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 msgid "allocating network"
 msgstr "ネットワークの割り当て中"
 
-#: src/hash.c:963
+#: src/hash.c:918
 msgid "failed to add network to connection hash table"
 msgstr "接続ハッシュテーブルへのネットワークの追加に失敗しました"
 
-#: src/hash.c:1015
+#: src/hash.c:970
 msgid "network missing from connection hash table"
 msgstr "接続ハッシュテーブルにないネットワークです"
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr "現在の時刻を取得中"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "ドメイン"
 
@@ -559,11 +576,11 @@ msgstr "パスを割り当て中"
 msgid "too many domains"
 msgstr "ドメインが多すぎます"
 
-#: src/test.c:1491
+#: src/test.c:1492
 msgid "Domain is already running"
 msgstr "ドメインはすでに実行中です"
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr "ドメインはまだ実行中です"
 
@@ -628,11 +645,11 @@ msgstr "vbd のファイル名を構文解析できません。ドライバー�
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd のファイル名を構文解析できません。ドライバータイプ欠如"
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr "Xend ドメイン情報の解析に失敗しました"
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "停止中のドメイン %s の作成に失敗しました\n"
@@ -1987,10 +2004,10 @@ msgstr ""
 "  コマンド (非対話式モード):\n"
 
 #: src/virsh.c:4497
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"

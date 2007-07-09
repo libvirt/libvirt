@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
 "PO-Revision-Date: 2007-04-21 14:55+0300\n"
 "Last-Translator: Doncho N. Gunchev <gunchev@gmail.com>\n"
 "Language-Team: Bulgarian <dict@fsa-bg.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "заделяне на връзки"
 
@@ -370,6 +370,26 @@ msgstr "Неуспешно премахване дефиницията на мр
 msgid "Failed to find the network: %s"
 msgstr "Неуспешно премахване дефиницията на мрежа %s"
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "информация за домейн"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "Домейна бе възстановен от %s\n"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "име на мрежата или uuid"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "Мрежа %s бе създадена от %s\n"
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr "копиране съдържанието на възел"
@@ -414,10 +434,7 @@ msgstr "неуспешен разбор на отговора на сървър�
 msgid "allocate new context"
 msgstr "заделяне на нов контекст"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "заделяне на домейн"
 
@@ -429,24 +446,24 @@ msgstr "грешка при добавяне на домейна към хеш-�
 msgid "domain missing from connection hash table"
 msgstr "домейна липсва от хеш-таблицата с връзки"
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 msgid "allocating network"
 msgstr "заделяне на мрежа"
 
-#: src/hash.c:963
+#: src/hash.c:918
 msgid "failed to add network to connection hash table"
 msgstr "грешка при добавяне на мрежата към хеш-таблицата"
 
-#: src/hash.c:1015
+#: src/hash.c:970
 msgid "network missing from connection hash table"
 msgstr "мрежата липсва от хеш-таблицата"
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr "получаване на времето"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "домейн"
 
@@ -564,11 +581,11 @@ msgstr "заделяне на домейн"
 msgid "too many domains"
 msgstr "твърде много домейни"
 
-#: src/test.c:1491
+#: src/test.c:1492
 msgid "Domain is already running"
 msgstr "Домейнът вече е активен"
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr "Домейнът е все още активен"
 
@@ -635,11 +652,11 @@ msgstr "грешка при разбор името на файла на vbd, л
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "грешка при разбор името на файла на vbd, липсва тип на драйвер"
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr "неуспешен разбор на информацията за Xend домейн"
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Грешка при създаване на неактивен домейн %s\n"
@@ -2021,10 +2038,10 @@ msgstr ""
 "  команди (в не интерактивен режим):\n"
 
 #: src/virsh.c:4497
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"

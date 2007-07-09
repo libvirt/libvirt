@@ -5,15 +5,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
-"PO-Revision-Date: 2007-06-30 22:46+0200\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
+"PO-Revision-Date: 2007-07-06 12:22+0200\n"
 "Last-Translator: Piotr Drąg <raven@pmail.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "przydzielanie połączenia"
 
@@ -362,6 +362,26 @@ msgstr "Znalezienie sieci nie powiodło się"
 msgid "Failed to find the network: %s"
 msgstr "Znalezienie sieci nie powiodło się: %s"
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "informacje o domenie"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "Domena została przywrócona z %s\n"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "nazwa sieci lub UUID"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "Sieć %s została utworzona z %s\n"
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr "kopiowanie zawartości węzła"
@@ -406,10 +426,7 @@ msgstr "przeanalizowanie odpowiedzi serwera nie powiodło się"
 msgid "allocate new context"
 msgstr "przydziel nowy kontekst"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "przydzielanie domeny"
 
@@ -421,24 +438,24 @@ msgstr "dodanie domeny do tablicy hashów połączenia nie powiodło się"
 msgid "domain missing from connection hash table"
 msgstr "brak domeny w tablicy hashów połączenia"
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 msgid "allocating network"
 msgstr "przydzielanie sieci"
 
-#: src/hash.c:963
+#: src/hash.c:918
 msgid "failed to add network to connection hash table"
 msgstr "dodanie sieci do tablicy hashów połączenia nie powiodło się"
 
-#: src/hash.c:1015
+#: src/hash.c:970
 msgid "network missing from connection hash table"
 msgstr "brak sieci w tablicy hashów połączenia"
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr "uzyskiwanie obecnego czasu"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "domena"
 
@@ -554,11 +571,11 @@ msgstr "przydzielanie ścieżki"
 msgid "too many domains"
 msgstr "za dużo domen"
 
-#: src/test.c:1491
+#: src/test.c:1492
 msgid "Domain is already running"
 msgstr "Domena jest już uruchomiona"
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr "Domena jest wciąż uruchomiona"
 
@@ -623,11 +640,11 @@ msgstr "nie można przeanalizować nazwy pliku vbd, brak nazwy sterownika"
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "nie można przeanalizować nazwy pliku vbd, brak typu sterownika"
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr "przeanalizowanie informacji o domenie Xend nie powiodło się"
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Utworzenie nieaktywnej domeny %s nie powiodło się\n"
@@ -1990,10 +2007,10 @@ msgstr ""
 "  polecenia (tryb nieinteraktywny):\n"
 
 #: src/virsh.c:4497
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"
@@ -2062,9 +2079,8 @@ msgid "expecting an assignment"
 msgstr "oczekiwane wyznaczenie"
 
 #: src/conf.c:887 src/conf.c:941
-#, fuzzy
 msgid "failed to allocate buffer"
-msgstr "przydzielenie węzła nie powiodło się"
+msgstr "przydzielenie bufora nie powiodło się"
 
 #: src/conf.c:899
 msgid "failed to open file"

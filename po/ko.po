@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ko\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
 "PO-Revision-Date: 2006-12-15 11:06+1000\n"
 "Last-Translator: Eunju Kim <eukim@redhat.com>\n"
 "Language-Team: Korean <ko@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "연결 할당 중"
 
@@ -370,6 +370,26 @@ msgstr "도메인 %s를 정의하지 않기 실패"
 msgid "Failed to find the network: %s"
 msgstr "도메인 %s를 정의하지 않기 실패"
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "도메인 정보"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "%s에서 도메인이 복구됨\n"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "도메인명 또는 uuid"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "%s 에서 생성된 도메인 %s\n"
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr "노드 내용 복사 중"
@@ -414,10 +434,7 @@ msgstr "서버 응답 분석 실패"
 msgid "allocate new context"
 msgstr "새 문맥 할당"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "도메인 할당 중"
 
@@ -429,27 +446,27 @@ msgstr "해시 테이블을 연결하기 위한 도메인 추가 실패"
 msgid "domain missing from connection hash table"
 msgstr "해시 테이블 연결에서 도메인 부재"
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 #, fuzzy
 msgid "allocating network"
 msgstr "노드 할당 중"
 
-#: src/hash.c:963
+#: src/hash.c:918
 #, fuzzy
 msgid "failed to add network to connection hash table"
 msgstr "해시 테이블을 연결하기 위한 도메인 추가 실패"
 
-#: src/hash.c:1015
+#: src/hash.c:970
 #, fuzzy
 msgid "network missing from connection hash table"
 msgstr "해시 테이블 연결에서 도메인 부재"
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr "시간 읽어오는 중"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "도메인"
 
@@ -568,12 +585,12 @@ msgstr "도메인 할당 중"
 msgid "too many domains"
 msgstr "과도한 도메인"
 
-#: src/test.c:1491
+#: src/test.c:1492
 #, fuzzy
 msgid "Domain is already running"
 msgstr "이미 도메인이 활성화됨"
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr ""
 
@@ -640,11 +657,11 @@ msgstr "vbd 파일명을 구문 분석할 수 없음, 드라이버명 부재"
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd 파일명을 구문 분석할 수 없음, 드라이버 유형 부재"
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr "Xend 도메인 정보 분석 실패"
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "비활성화 도메인 %s 생성 실패\n"
@@ -2052,10 +2069,10 @@ msgstr ""
 "  명령 (비대화식 모드):\n"
 
 #: src/virsh.c:4497
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-05 17:00+0200\n"
+"POT-Creation-Date: 2007-07-06 17:11+0200\n"
 "PO-Revision-Date: 2007-07-02 07:38+0100\n"
 "Last-Translator: Renato Pavicic <renato<-at->translator-shop.org>\n"
 "Language-Team: CROATIAN <www.translator-shop.org>\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/libvirt.c:381 src/hash.c:664
+#: src/libvirt.c:389 src/hash.c:664
 msgid "allocating connection"
 msgstr "dodjeljivanje veze"
 
@@ -357,6 +357,26 @@ msgstr "Pronalaženje mreže nije uspjelo"
 msgid "Failed to find the network: %s"
 msgstr "Pronalaženje mreže nije uspjelo: %s"
 
+#: src/virterror.c:639
+#, fuzzy
+msgid "Domain not found"
+msgstr "podaci domene"
+
+#: src/virterror.c:641
+#, fuzzy, c-format
+msgid "Domain not found: %s"
+msgstr "Domena je obnovljena iz %s\n"
+
+#: src/virterror.c:645
+#, fuzzy
+msgid "Network not found"
+msgstr "naziv mreže ili uuid"
+
+#: src/virterror.c:647
+#, fuzzy, c-format
+msgid "Network not found: %s"
+msgstr "Mreža %s izrađena je iz %s\n"
+
 #: src/xmlrpc.c:63
 msgid "copying node content"
 msgstr "kopiranje sadržaja čvora"
@@ -401,10 +421,7 @@ msgstr "raščlanjivanje odgovora poslužitelja nije uspjelo"
 msgid "allocate new context"
 msgstr "dodijeli novi kontekst"
 
-#: src/hash.c:770 src/hash.c:775 src/test.c:961 src/test.c:991 src/test.c:1015
-#: src/test.c:1040 src/xend_internal.c:1893 src/xend_internal.c:2744
-#: src/xend_internal.c:2993 src/xs_internal.c:653 src/proxy_internal.c:837
-#: src/proxy_internal.c:884 src/proxy_internal.c:935
+#: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
 msgstr "dodjeljivanje domene"
 
@@ -416,24 +433,24 @@ msgstr "dodavanje domene u tablica presjeka veza nije uspjelo"
 msgid "domain missing from connection hash table"
 msgstr "nedostaje domena u tablici presjeka veza"
 
-#: src/hash.c:948 src/hash.c:953
+#: src/hash.c:903 src/hash.c:908
 msgid "allocating network"
 msgstr "dodjeljivanje mreže"
 
-#: src/hash.c:963
+#: src/hash.c:918
 msgid "failed to add network to connection hash table"
 msgstr "dodavanje mreže u tablica presjeka veza nije uspjelo"
 
-#: src/hash.c:1015
+#: src/hash.c:970
 msgid "network missing from connection hash table"
 msgstr "nedostaje mreža u tablici presjeka veza"
 
-#: src/test.c:293 src/test.c:480 src/test.c:1164 src/test.c:1198
-#: src/test.c:1252
+#: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
+#: src/test.c:1253
 msgid "getting time of day"
 msgstr "dohvaćanje vremena dana"
 
-#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1459
+#: src/test.c:299 src/test.c:434 src/test.c:459 src/test.c:1460
 msgid "domain"
 msgstr "domena"
 
@@ -549,11 +566,11 @@ msgstr "Putanja dodjeljivanja"
 msgid "too many domains"
 msgstr "previše domena"
 
-#: src/test.c:1491
+#: src/test.c:1492
 msgid "Domain is already running"
 msgstr "Domena je već pokrenuta"
 
-#: src/test.c:1518
+#: src/test.c:1519
 msgid "Domain is still running"
 msgstr "Domena je još pokrenuta"
 
@@ -622,11 +639,11 @@ msgstr ""
 "raščlanjivanje naziva datoteke vbd nije moguće, nedostaje vrsta upravljačkog "
 "programa"
 
-#: src/xend_internal.c:1912
+#: src/xend_internal.c:1910
 msgid "failed to parse Xend domain information"
 msgstr "raščlanjivanje podataka Xend domene nije uspjelo"
 
-#: src/xend_internal.c:3183
+#: src/xend_internal.c:3176
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Izrada neaktivne domene %s nije uspjela\n"
@@ -1991,10 +2008,10 @@ msgstr ""
 "  neredbe (neinteraktivan način rada):\n"
 
 #: src/virsh.c:4497
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "\n"
-"  (specify --help <command> for details about the command)\n"
+"  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"
