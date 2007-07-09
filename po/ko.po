@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ko\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-06 17:11+0200\n"
+"POT-Creation-Date: 2007-07-09 14:14+0200\n"
 "PO-Revision-Date: 2006-12-15 11:06+1000\n"
 "Last-Translator: Eunju Kim <eukim@redhat.com>\n"
 "Language-Team: Korean <ko@li.org>\n"
@@ -602,66 +602,66 @@ msgstr "노드 할당 실패"
 msgid "failed to copy a string"
 msgstr "문자열 복사 실패"
 
-#: src/xend_internal.c:289 src/xend_internal.c:292
+#: src/xend_internal.c:277 src/xend_internal.c:280
 msgid "failed to read from Xen Daemon"
 msgstr "Xen 데몬에서 읽기 실패"
 
-#: src/xend_internal.c:603 src/xend_internal.c:819 src/xend_internal.c:1535
-#: src/xend_internal.c:1554
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
+#: src/xend_internal.c:1542
 msgid "allocate new buffer"
 msgstr "새 버퍼 할당"
 
-#: src/xend_internal.c:1026
+#: src/xend_internal.c:1014
 msgid "failed to urlencode the create S-Expr"
 msgstr "생성된 S-Expr를 urlencode하기 실패"
 
-#: src/xend_internal.c:1067
+#: src/xend_internal.c:1055
 msgid "domain information incomplete, missing domid"
 msgstr "도메인 정보가 완료되지 않음, domid 부재"
 
-#: src/xend_internal.c:1073
+#: src/xend_internal.c:1061
 msgid "domain information incorrect domid not numeric"
 msgstr "도메인 정보가 수치가 아닌 잘못된 domid임"
 
-#: src/xend_internal.c:1081 src/xend_internal.c:1130
+#: src/xend_internal.c:1069 src/xend_internal.c:1118
 msgid "domain information incomplete, missing uuid"
 msgstr "도메인 정보가 완료되지 않음, uuid 부재"
 
-#: src/xend_internal.c:1121 src/xend_internal.c:1396
+#: src/xend_internal.c:1109 src/xend_internal.c:1384
 msgid "domain information incomplete, missing name"
 msgstr "도메인 정보가 완료되지 않음, 이름 부재"
 
-#: src/xend_internal.c:1296 src/xend_internal.c:1327
+#: src/xend_internal.c:1284 src/xend_internal.c:1315
 #, fuzzy
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "도메인 정보가 완료되지 않음, 커널 부재"
 
-#: src/xend_internal.c:1384
+#: src/xend_internal.c:1372
 #, fuzzy
 msgid "domain information incomplete, missing id"
 msgstr "도메인 정보가 완료되지 않음, uuid 부재"
 
-#: src/xend_internal.c:1504
+#: src/xend_internal.c:1492
 msgid "domain information incomplete, vbd has no dev"
 msgstr "도메인 정보가 완료되지 않음, vbd는 dev가 없음"
 
-#: src/xend_internal.c:1519
+#: src/xend_internal.c:1507
 msgid "domain information incomplete, vbd has no src"
 msgstr "도메인 정보가 완료되지 않음, vbd는 src가 없음"
 
-#: src/xend_internal.c:1528
+#: src/xend_internal.c:1516
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd 파일명을 구문 분석할 수 없음, 드라이버명 부재"
 
-#: src/xend_internal.c:1547
+#: src/xend_internal.c:1535
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd 파일명을 구문 분석할 수 없음, 드라이버 유형 부재"
 
-#: src/xend_internal.c:1910
+#: src/xend_internal.c:1898
 msgid "failed to parse Xend domain information"
 msgstr "Xend 도메인 정보 분석 실패"
 
-#: src/xend_internal.c:3176
+#: src/xend_internal.c:3164
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "비활성화 도메인 %s 생성 실패\n"
@@ -2153,56 +2153,56 @@ msgstr "파일 열기 실패"
 msgid "failed to save content"
 msgstr "내용 저장 실패"
 
-#: src/xs_internal.c:349
+#: src/xs_internal.c:340
 msgid "failed to connect to Xen Store"
 msgstr "Xen Store에 연결 실패"
 
-#: src/proxy_internal.c:207
+#: src/proxy_internal.c:195
 #, c-format
 msgid "failed to exec %s\n"
 msgstr "%s 실행 실패\n"
 
-#: src/proxy_internal.c:301
+#: src/proxy_internal.c:289
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr "소켓 %d를 닫기 실패\n"
 
-#: src/proxy_internal.c:334
+#: src/proxy_internal.c:322
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr "소켓 %d에 읽기 실패\n"
 
-#: src/proxy_internal.c:368
+#: src/proxy_internal.c:356
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr "소켓 %d에 쓰기 실패\n"
 
-#: src/proxy_internal.c:460 src/proxy_internal.c:481 src/proxy_internal.c:501
+#: src/proxy_internal.c:448 src/proxy_internal.c:469 src/proxy_internal.c:489
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr "proxy와의 통신 오류: %d의 %d바이트를 갖음\n"
 
-#: src/proxy_internal.c:468
+#: src/proxy_internal.c:456
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr "proxy와의 통신 오류: 예상했던 %d 바이트가 %d를 갖음\n"
 
-#: src/proxy_internal.c:490
+#: src/proxy_internal.c:478
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr "proxy와의 통신 오류: %d 바이트 패킷을 갖음\n"
 
-#: src/proxy_internal.c:514
+#: src/proxy_internal.c:502
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
 msgstr "proxy와의 통신 오류: 잘못된 패킷\n"
 
-#: src/proxy_internal.c:520
+#: src/proxy_internal.c:508
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr "비동기식 패킷 번호 %d를 갖음\n"
 
-#: src/xen_internal.c:2310
+#: src/xen_internal.c:2301
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d 도메인 정보 할당 중"

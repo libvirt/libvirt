@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-06 17:11+0200\n"
+"POT-Creation-Date: 2007-07-09 14:14+0200\n"
 "PO-Revision-Date: 2007-04-17 16:23+0530\n"
 "Last-Translator: I felix <ifelix@redhat.com>\n"
 "Language-Team: Tamil <fedora-trans-ta@redhat.com>\n"
@@ -601,65 +601,65 @@ msgstr "ஒரு முனையை ஒதுக்க முடியவில
 msgid "failed to copy a string"
 msgstr "ஒரு சரத்தை நகலெடுக்க முடியவில்லை"
 
-#: src/xend_internal.c:289 src/xend_internal.c:292
+#: src/xend_internal.c:277 src/xend_internal.c:280
 msgid "failed to read from Xen Daemon"
 msgstr "Xen  டீமானிலிருந்து வாசிக்க முடியவில்லை"
 
-#: src/xend_internal.c:603 src/xend_internal.c:819 src/xend_internal.c:1535
-#: src/xend_internal.c:1554
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
+#: src/xend_internal.c:1542
 msgid "allocate new buffer"
 msgstr "புதிய இடையகத்தை ஒதுக்கவும்"
 
-#: src/xend_internal.c:1026
+#: src/xend_internal.c:1014
 msgid "failed to urlencode the create S-Expr"
 msgstr "S-Exprக்கு urlencode செய்ய முடியவில்லை"
 
-#: src/xend_internal.c:1067
+#: src/xend_internal.c:1055
 msgid "domain information incomplete, missing domid"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, விடுபட்ட domid"
 
-#: src/xend_internal.c:1073
+#: src/xend_internal.c:1061
 msgid "domain information incorrect domid not numeric"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, domid எண்ணல்ல"
 
-#: src/xend_internal.c:1081 src/xend_internal.c:1130
+#: src/xend_internal.c:1069 src/xend_internal.c:1118
 msgid "domain information incomplete, missing uuid"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, விடுபட்ட uuid"
 
-#: src/xend_internal.c:1121 src/xend_internal.c:1396
+#: src/xend_internal.c:1109 src/xend_internal.c:1384
 msgid "domain information incomplete, missing name"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, விடுபட்ட பெயர்"
 
-#: src/xend_internal.c:1296 src/xend_internal.c:1327
+#: src/xend_internal.c:1284 src/xend_internal.c:1315
 #, fuzzy
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, விடுபட்ட கர்னல்"
 
-#: src/xend_internal.c:1384
+#: src/xend_internal.c:1372
 msgid "domain information incomplete, missing id"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, விடுபட்ட id"
 
-#: src/xend_internal.c:1504
+#: src/xend_internal.c:1492
 msgid "domain information incomplete, vbd has no dev"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, vbd  dev எதுவும் கொண்டிருக்கவில்லை"
 
-#: src/xend_internal.c:1519
+#: src/xend_internal.c:1507
 msgid "domain information incomplete, vbd has no src"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, vbd ஆனது src ஐ கொண்டிருக்கவில்லை"
 
-#: src/xend_internal.c:1528
+#: src/xend_internal.c:1516
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd கோப்பு பெயரை பிரிக்க முடியவில்லை, இயக்கி பெயர் விடுபட்டுள்ளது"
 
-#: src/xend_internal.c:1547
+#: src/xend_internal.c:1535
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd கோப்பு பெயரை பிரிக்க முடியவில்லை, இயக்கி வகை விடுபட்டுள்ளது"
 
-#: src/xend_internal.c:1910
+#: src/xend_internal.c:1898
 msgid "failed to parse Xend domain information"
 msgstr "Xend செயற்கள தகவலை இலக்கணப்படுத்த முடியவில்லை"
 
-#: src/xend_internal.c:3176
+#: src/xend_internal.c:3164
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "செயற்களம் %s ஐ உருவாக்க முடியவில்லை\n"
@@ -2127,56 +2127,56 @@ msgstr "கோப்பினை திறக்க முடியவில்�
 msgid "failed to save content"
 msgstr "உள்ளடக்கத்தை சேமிக்க முடியவில்லை"
 
-#: src/xs_internal.c:349
+#: src/xs_internal.c:340
 msgid "failed to connect to Xen Store"
 msgstr "Xen Store உடன் இணைக்க முடியவில்லை"
 
-#: src/proxy_internal.c:207
+#: src/proxy_internal.c:195
 #, c-format
 msgid "failed to exec %s\n"
 msgstr "%s ஐ இயக்க முடியவில்லை\n"
 
-#: src/proxy_internal.c:301
+#: src/proxy_internal.c:289
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr "சாக்கெட் %dஐ மூட முடியவில்லை\n"
 
-#: src/proxy_internal.c:334
+#: src/proxy_internal.c:322
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr "சாக்கெட் %dஐ வாசிக்க முடியவில்லை\n"
 
-#: src/proxy_internal.c:368
+#: src/proxy_internal.c:356
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr "சாக்கெட் %dஐ எழுத முடியவில்லை\n"
 
-#: src/proxy_internal.c:460 src/proxy_internal.c:481 src/proxy_internal.c:501
+#: src/proxy_internal.c:448 src/proxy_internal.c:469 src/proxy_internal.c:489
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr "பதிலாளுடன் தொடர்பு பிழை: %d பைட்டில் %d பெறப்பட்டது\n"
 
-#: src/proxy_internal.c:468
+#: src/proxy_internal.c:456
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr "பதிலாளுடன் தொடர்பு பிழை: எதிர்பார்த்த %d பைட்டுகள் %dஐ பெற்றன\n"
 
-#: src/proxy_internal.c:490
+#: src/proxy_internal.c:478
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr "பதிலாளுடன் தொடர்பு பிழை: %d பைட்டுகள் பாக்கெட் பெறப்பட்டது\n"
 
-#: src/proxy_internal.c:514
+#: src/proxy_internal.c:502
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
 msgstr "பதிலாளுடன் தொடர்பு பிழை: தவறான பாக்கெட்\n"
 
-#: src/proxy_internal.c:520
+#: src/proxy_internal.c:508
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr "ஒருங்கிணைக்கப்படாத பாக்கெட் எண் %d பெறப்பட்டது\n"
 
-#: src/xen_internal.c:2310
+#: src/xen_internal.c:2301
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d செயற்களத் தகவல் ஒதுக்கப்படுகிறது"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-06 17:11+0200\n"
+"POT-Creation-Date: 2007-07-09 14:14+0200\n"
 "PO-Revision-Date: 2007-07-05 23:23-0000\n"
 "Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
 "Language-Team: Serbian (sr) <fedora-trans-sr@redhat.com>\n"
@@ -589,66 +589,66 @@ msgstr "neuspelo zauzimanje čvora"
 msgid "failed to copy a string"
 msgstr "neuspelo umnožavanje niske"
 
-#: src/xend_internal.c:289 src/xend_internal.c:292
+#: src/xend_internal.c:277 src/xend_internal.c:280
 msgid "failed to read from Xen Daemon"
 msgstr "neuspelo čitanje iz Xen demona"
 
-#: src/xend_internal.c:603 src/xend_internal.c:819 src/xend_internal.c:1535
-#: src/xend_internal.c:1554
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
+#: src/xend_internal.c:1542
 msgid "allocate new buffer"
 msgstr "zauzmi novi bafer"
 
-#: src/xend_internal.c:1026
+#: src/xend_internal.c:1014
 msgid "failed to urlencode the create S-Expr"
 msgstr "neuspeh pri urlencode S-izraza create"
 
-#: src/xend_internal.c:1067
+#: src/xend_internal.c:1055
 msgid "domain information incomplete, missing domid"
 msgstr "nepotpuni podaci o domenu, nedostaje domid"
 
-#: src/xend_internal.c:1073
+#: src/xend_internal.c:1061
 msgid "domain information incorrect domid not numeric"
 msgstr "podaci o domenu su netačni ili domid nije brojčan"
 
-#: src/xend_internal.c:1081 src/xend_internal.c:1130
+#: src/xend_internal.c:1069 src/xend_internal.c:1118
 msgid "domain information incomplete, missing uuid"
 msgstr "nepotpuni podaci o domenu, nedostaje uuid"
 
-#: src/xend_internal.c:1121 src/xend_internal.c:1396
+#: src/xend_internal.c:1109 src/xend_internal.c:1384
 msgid "domain information incomplete, missing name"
 msgstr "nepotpuni podaci o domenu, nedostaje ime"
 
-#: src/xend_internal.c:1296 src/xend_internal.c:1327
+#: src/xend_internal.c:1284 src/xend_internal.c:1315
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "nepotpuni podaci o domenu, nedostaje jezgro i pokretački program"
 
-#: src/xend_internal.c:1384
+#: src/xend_internal.c:1372
 msgid "domain information incomplete, missing id"
 msgstr "nepotpuni podaci o domenu, nedostaje id"
 
-#: src/xend_internal.c:1504
+#: src/xend_internal.c:1492
 msgid "domain information incomplete, vbd has no dev"
 msgstr "nepotpuni podaci o domenu, vbd nema dev"
 
-#: src/xend_internal.c:1519
+#: src/xend_internal.c:1507
 msgid "domain information incomplete, vbd has no src"
 msgstr "nepotpuni podaci o domenu, vbd nema src"
 
-#: src/xend_internal.c:1528
+#: src/xend_internal.c:1516
 msgid "cannot parse vbd filename, missing driver name"
 msgstr ""
 "ne mogu protumačiti vbd ime datoteke, nedostaje ime upravljačkog programa"
 
-#: src/xend_internal.c:1547
+#: src/xend_internal.c:1535
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 "ne mogu protumačiti vbd ime datoteke, nedostaje vrsta upravljačkog programa"
 
-#: src/xend_internal.c:1910
+#: src/xend_internal.c:1898
 msgid "failed to parse Xend domain information"
 msgstr "neuspelo tumačenje podataka o Xend domenu"
 
-#: src/xend_internal.c:3176
+#: src/xend_internal.c:3164
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Neuspelo pravljenje ne aktiviranog domena %s\n"
@@ -2090,57 +2090,57 @@ msgstr "neuspelo otvaranje datoteke"
 msgid "failed to save content"
 msgstr "neuspelo čuvanje sadržaja"
 
-#: src/xs_internal.c:349
+#: src/xs_internal.c:340
 msgid "failed to connect to Xen Store"
 msgstr "neuspelo povezivanje sa Xen skladištem"
 
-#: src/proxy_internal.c:207
+#: src/proxy_internal.c:195
 #, c-format
 msgid "failed to exec %s\n"
 msgstr "neuspelo izvršavanje %s\n"
 
-#: src/proxy_internal.c:301
+#: src/proxy_internal.c:289
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr "Neuspelo zatvaranje priključka %d\n"
 
-#: src/proxy_internal.c:334
+#: src/proxy_internal.c:322
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr "Neuspelo čitanje priključka %d\n"
 
-#: src/proxy_internal.c:368
+#: src/proxy_internal.c:356
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr "Neuspelo pisanje na priključak %d\n"
 
-#: src/proxy_internal.c:460 src/proxy_internal.c:481 src/proxy_internal.c:501
+#: src/proxy_internal.c:448 src/proxy_internal.c:469 src/proxy_internal.c:489
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr "Greška u komunikaciji sa proksijem: primljeno %d bajtova od %d\n"
 
-#: src/proxy_internal.c:468
+#: src/proxy_internal.c:456
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr ""
 "Greška u komunikaciji sa proksijem: očekivano %d bajtova a primljeno %d\n"
 
-#: src/proxy_internal.c:490
+#: src/proxy_internal.c:478
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr "Greška u komunikaciji sa proksijem: primljen paket od %d bajtova\n"
 
-#: src/proxy_internal.c:514
+#: src/proxy_internal.c:502
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
 msgstr "Greška u komunikaciji sa proksijem: pogrešno oblikovan paket\n"
 
-#: src/proxy_internal.c:520
+#: src/proxy_internal.c:508
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr "primljen asinhroni broj paketa %d\n"
 
-#: src/xen_internal.c:2310
+#: src/xen_internal.c:2301
 #, c-format
 msgid "allocating %d domain info"
 msgstr "dodeljujem info %d domena"

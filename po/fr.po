@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-06 17:11+0200\n"
+"POT-Creation-Date: 2007-07-09 14:14+0200\n"
 "PO-Revision-Date: 2007-07-06 20:15+0200\n"
 "Last-Translator: Gauthier Ancelin <gauthier.ancelin@laposte.net>\n"
 "Language-Team: Français <fedora-trans-fr@redhat.com>\n"
@@ -592,66 +592,66 @@ msgstr "impossible d'attribuer un noeud"
 msgid "failed to copy a string"
 msgstr "impossible de copier la valeur"
 
-#: src/xend_internal.c:289 src/xend_internal.c:292
+#: src/xend_internal.c:277 src/xend_internal.c:280
 msgid "failed to read from Xen Daemon"
 msgstr "impossible de lire depuis le démon Xen"
 
-#: src/xend_internal.c:603 src/xend_internal.c:819 src/xend_internal.c:1535
-#: src/xend_internal.c:1554
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
+#: src/xend_internal.c:1542
 msgid "allocate new buffer"
 msgstr "allouer une nouvelle mémoire tampon"
 
-#: src/xend_internal.c:1026
+#: src/xend_internal.c:1014
 msgid "failed to urlencode the create S-Expr"
 msgstr "échec de l'urlencode du S-Expr créé"
 
-#: src/xend_internal.c:1067
+#: src/xend_internal.c:1055
 msgid "domain information incomplete, missing domid"
 msgstr "informations de domaine incomplètes, domid manquant"
 
-#: src/xend_internal.c:1073
+#: src/xend_internal.c:1061
 msgid "domain information incorrect domid not numeric"
 msgstr "informations de domaine incorrectes, domid non numérique"
 
-#: src/xend_internal.c:1081 src/xend_internal.c:1130
+#: src/xend_internal.c:1069 src/xend_internal.c:1118
 msgid "domain information incomplete, missing uuid"
 msgstr "informations de domaine incomplètes, UUID manquant"
 
-#: src/xend_internal.c:1121 src/xend_internal.c:1396
+#: src/xend_internal.c:1109 src/xend_internal.c:1384
 msgid "domain information incomplete, missing name"
 msgstr "informations de domaine incomplètes, nom manquant"
 
-#: src/xend_internal.c:1296 src/xend_internal.c:1327
+#: src/xend_internal.c:1284 src/xend_internal.c:1315
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr ""
 "informations de domaine incomplètes, noyau et chargeur de démarrage manquants"
 
-#: src/xend_internal.c:1384
+#: src/xend_internal.c:1372
 msgid "domain information incomplete, missing id"
 msgstr "informations de domaine incomplètes, ID manquant"
 
-#: src/xend_internal.c:1504
+#: src/xend_internal.c:1492
 msgid "domain information incomplete, vbd has no dev"
 msgstr "informations de domaine incomplètes, vbd n'a pas de dev"
 
-#: src/xend_internal.c:1519
+#: src/xend_internal.c:1507
 msgid "domain information incomplete, vbd has no src"
 msgstr "informations de domaine incomplètes, vbd n'a pas de src"
 
-#: src/xend_internal.c:1528
+#: src/xend_internal.c:1516
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "impossible d'analyser le nom de fichier de vdb, nom de pilote manquant"
 
-#: src/xend_internal.c:1547
+#: src/xend_internal.c:1535
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 "impossible d'analyser le nom de fichier de vdb, type du pilote manquant"
 
-#: src/xend_internal.c:1910
+#: src/xend_internal.c:1898
 msgid "failed to parse Xend domain information"
 msgstr "impossible d'analyser les informations du domaine Xen"
 
-#: src/xend_internal.c:3176
+#: src/xend_internal.c:3164
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Impossible de créer le domaine inactif %s\n"
@@ -2098,56 +2098,56 @@ msgstr "Impossible d'ouvrir le fichier"
 msgid "failed to save content"
 msgstr "Impossible d'enregistrer le contenu"
 
-#: src/xs_internal.c:349
+#: src/xs_internal.c:340
 msgid "failed to connect to Xen Store"
 msgstr "Impossible de se connecter au magasin Xen"
 
-#: src/proxy_internal.c:207
+#: src/proxy_internal.c:195
 #, c-format
 msgid "failed to exec %s\n"
 msgstr "Impossible d'exécuter %s\n"
 
-#: src/proxy_internal.c:301
+#: src/proxy_internal.c:289
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr "Impossible de fermer la socket %d\n"
 
-#: src/proxy_internal.c:334
+#: src/proxy_internal.c:322
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr "Impossible de lire la socket %d\n"
 
-#: src/proxy_internal.c:368
+#: src/proxy_internal.c:356
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr "Impossible d'écrire sur la socket %d\n"
 
-#: src/proxy_internal.c:460 src/proxy_internal.c:481 src/proxy_internal.c:501
+#: src/proxy_internal.c:448 src/proxy_internal.c:469 src/proxy_internal.c:489
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr "Erreur de communication avec le proxy : %d octets reçus sur %d\n"
 
-#: src/proxy_internal.c:468
+#: src/proxy_internal.c:456
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr "Erreur de communication avec le proxy : %d octets attendus, %d reçus\n"
 
-#: src/proxy_internal.c:490
+#: src/proxy_internal.c:478
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr "Erreur de communication avec le proxy : %d paquets d'octets reçus\n"
 
-#: src/proxy_internal.c:514
+#: src/proxy_internal.c:502
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
 msgstr "Erreur de communication avec le proxy : paquet malformé\n"
 
-#: src/proxy_internal.c:520
+#: src/proxy_internal.c:508
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr "paquet asynchrone numéro %d reçu\n"
 
-#: src/xen_internal.c:2310
+#: src/xen_internal.c:2301
 #, c-format
 msgid "allocating %d domain info"
 msgstr "attribution des informations de domaine %d"

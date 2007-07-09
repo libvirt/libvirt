@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-06 17:11+0200\n"
+"POT-Creation-Date: 2007-07-09 14:14+0200\n"
 "PO-Revision-Date: 2007-04-21 10:20-0100\n"
 "Last-Translator: Xavier Conde Rueda <xavi.conde@gmail.com>\n"
 "Language-Team: Catalan <fedora@softcatala.net>\n"
@@ -607,67 +607,67 @@ msgstr "no s'ha pogut assignar un node"
 msgid "failed to copy a string"
 msgstr "no s'ha pogut copiar una cadena"
 
-#: src/xend_internal.c:289 src/xend_internal.c:292
+#: src/xend_internal.c:277 src/xend_internal.c:280
 msgid "failed to read from Xen Daemon"
 msgstr "no s'ha pogut llegir el dimoni Xen"
 
-#: src/xend_internal.c:603 src/xend_internal.c:819 src/xend_internal.c:1535
-#: src/xend_internal.c:1554
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
+#: src/xend_internal.c:1542
 msgid "allocate new buffer"
 msgstr "assigna memòria intermèdia nova"
 
-#: src/xend_internal.c:1026
+#: src/xend_internal.c:1014
 msgid "failed to urlencode the create S-Expr"
 msgstr "no s'ha pogut codificar la url de creació de l'S-Expr"
 
-#: src/xend_internal.c:1067
+#: src/xend_internal.c:1055
 msgid "domain information incomplete, missing domid"
 msgstr "la informació del domini és incompleta, manca el domid"
 
-#: src/xend_internal.c:1073
+#: src/xend_internal.c:1061
 msgid "domain information incorrect domid not numeric"
 msgstr "la informació del domini és incorrecta, domid no és numèric"
 
-#: src/xend_internal.c:1081 src/xend_internal.c:1130
+#: src/xend_internal.c:1069 src/xend_internal.c:1118
 msgid "domain information incomplete, missing uuid"
 msgstr "la informació del domini és incompleta, manca l'uuid"
 
-#: src/xend_internal.c:1121 src/xend_internal.c:1396
+#: src/xend_internal.c:1109 src/xend_internal.c:1384
 msgid "domain information incomplete, missing name"
 msgstr "la informació del domini és incompleta, manca el nom"
 
-#: src/xend_internal.c:1296 src/xend_internal.c:1327
+#: src/xend_internal.c:1284 src/xend_internal.c:1315
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr ""
 "la informació del domini és incompleta, manca el nucli i el carregador "
 "d'arrencada"
 
-#: src/xend_internal.c:1384
+#: src/xend_internal.c:1372
 msgid "domain information incomplete, missing id"
 msgstr "la informació del domini és incompleta, manca l'id"
 
-#: src/xend_internal.c:1504
+#: src/xend_internal.c:1492
 msgid "domain information incomplete, vbd has no dev"
 msgstr "la informació del domini és incompleta, vbd no té dev"
 
-#: src/xend_internal.c:1519
+#: src/xend_internal.c:1507
 msgid "domain information incomplete, vbd has no src"
 msgstr "la informació del domini és incompleta, vbd no té src"
 
-#: src/xend_internal.c:1528
+#: src/xend_internal.c:1516
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "no es pot analitzar el nom de fitxer vbd, manca el nom del controlador"
 
-#: src/xend_internal.c:1547
+#: src/xend_internal.c:1535
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 "no es pot analitzar el nom de fitxer vbd, manca el tipus de controlador"
 
-#: src/xend_internal.c:1910
+#: src/xend_internal.c:1898
 msgid "failed to parse Xend domain information"
 msgstr "no s'ha pogut analitzar la informació del domini Xend"
 
-#: src/xend_internal.c:3176
+#: src/xend_internal.c:3164
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "No s'ha pogut crear el domini inactiu %s\n"
@@ -2131,59 +2131,59 @@ msgstr "no s'ha pogut obrir el fitxer"
 msgid "failed to save content"
 msgstr "no s'ha pogut desar el contingut"
 
-#: src/xs_internal.c:349
+#: src/xs_internal.c:340
 msgid "failed to connect to Xen Store"
 msgstr "no s'ha pogut connectar al magatzem Xen"
 
-#: src/proxy_internal.c:207
+#: src/proxy_internal.c:195
 #, c-format
 msgid "failed to exec %s\n"
 msgstr "no s'ha pogut executar %s\n"
 
-#: src/proxy_internal.c:301
+#: src/proxy_internal.c:289
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr "No s'ha pogut tancar el sòcol %d\n"
 
-#: src/proxy_internal.c:334
+#: src/proxy_internal.c:322
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr "No s'ha pogut llegir el sòcol %d\n"
 
-#: src/proxy_internal.c:368
+#: src/proxy_internal.c:356
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr "No s'ha pogut escriure el sòcol %d\n"
 
-#: src/proxy_internal.c:460 src/proxy_internal.c:481 src/proxy_internal.c:501
+#: src/proxy_internal.c:448 src/proxy_internal.c:469 src/proxy_internal.c:489
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr "Error de comunicació amb l'intermediari: s'han rebut %d bytes de %d\n"
 
-#: src/proxy_internal.c:468
+#: src/proxy_internal.c:456
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr ""
 "Error de comunicació amb l'intermediari: s'esperaven %d bytes, se n'han "
 "rebut %d\n"
 
-#: src/proxy_internal.c:490
+#: src/proxy_internal.c:478
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr ""
 "Error de comunicació amb l'intermediari: s'ha rebut un paquet de %d bytes\n"
 
-#: src/proxy_internal.c:514
+#: src/proxy_internal.c:502
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
 msgstr "Error de comunicació amb l'intermediari: paquet mal format\n"
 
-#: src/proxy_internal.c:520
+#: src/proxy_internal.c:508
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr "s'ha rebut un número de paquet asíncron %d\n"
 
-#: src/xen_internal.c:2310
+#: src/xen_internal.c:2301
 #, c-format
 msgid "allocating %d domain info"
 msgstr "s'està assignant %d informació de domini"

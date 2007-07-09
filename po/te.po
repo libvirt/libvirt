@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: te\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-06 17:11+0200\n"
+"POT-Creation-Date: 2007-07-09 14:14+0200\n"
 "PO-Revision-Date: 2006-12-15 17:13+0530\n"
 "Last-Translator: Sree Ganesh <sthottem@redhat.com>\n"
 "Language-Team: Telugu <en@li.org>\n"
@@ -603,66 +603,66 @@ msgstr "నోడును కేటాయించటంలో విఫలమ�
 msgid "failed to copy a string"
 msgstr "స్ట్రింగుకి కాపీ చేయటంలో విఫలమైంది"
 
-#: src/xend_internal.c:289 src/xend_internal.c:292
+#: src/xend_internal.c:277 src/xend_internal.c:280
 msgid "failed to read from Xen Daemon"
 msgstr "Xen డెమోనునుండీ చదవటంలో విఫలమైంది"
 
-#: src/xend_internal.c:603 src/xend_internal.c:819 src/xend_internal.c:1535
-#: src/xend_internal.c:1554
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
+#: src/xend_internal.c:1542
 msgid "allocate new buffer"
 msgstr "కొత్త బఫ్ఫరు కేటాయించు"
 
-#: src/xend_internal.c:1026
+#: src/xend_internal.c:1014
 msgid "failed to urlencode the create S-Expr"
 msgstr "urlencodeను S-Exprకి చేయటంలో విఫలమైంది"
 
-#: src/xend_internal.c:1067
+#: src/xend_internal.c:1055
 msgid "domain information incomplete, missing domid"
 msgstr "క్షేత్ర సమాచారం అసంపూర్తిగా ఉంది, క్షేత్రం తప్పిపోయింది"
 
-#: src/xend_internal.c:1073
+#: src/xend_internal.c:1061
 msgid "domain information incorrect domid not numeric"
 msgstr "క్షేత్ర సమాచారం సరైనదికాదు క్షేత్రం సంఖ్యాపరమైంది కాదు"
 
-#: src/xend_internal.c:1081 src/xend_internal.c:1130
+#: src/xend_internal.c:1069 src/xend_internal.c:1118
 msgid "domain information incomplete, missing uuid"
 msgstr "క్షేత్ర సమాచారం అసంపూర్తిగా ఉంది, uuid తప్పిపోయింది"
 
-#: src/xend_internal.c:1121 src/xend_internal.c:1396
+#: src/xend_internal.c:1109 src/xend_internal.c:1384
 msgid "domain information incomplete, missing name"
 msgstr "క్షేత్ర సమాచారం అసంపూర్తిగా ఉంది, పేరు తప్పిపోయింది"
 
-#: src/xend_internal.c:1296 src/xend_internal.c:1327
+#: src/xend_internal.c:1284 src/xend_internal.c:1315
 #, fuzzy
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "క్షేత్ర సమాచారం అసంపూర్తిగా ఉంది, కెర్నలు తప్పిపోయింది"
 
-#: src/xend_internal.c:1384
+#: src/xend_internal.c:1372
 #, fuzzy
 msgid "domain information incomplete, missing id"
 msgstr "క్షేత్ర సమాచారం అసంపూర్తిగా ఉంది, uuid తప్పిపోయింది"
 
-#: src/xend_internal.c:1504
+#: src/xend_internal.c:1492
 msgid "domain information incomplete, vbd has no dev"
 msgstr "క్షేత్ర సమాచారం అసంపూర్తిగా ఉంది, vbd devని కలిగిలేదు"
 
-#: src/xend_internal.c:1519
+#: src/xend_internal.c:1507
 msgid "domain information incomplete, vbd has no src"
 msgstr "క్షేత్ర సమాచారం అసంపూర్తిగా ఉంది, vbd srcని కలిగిలేదు"
 
-#: src/xend_internal.c:1528
+#: src/xend_internal.c:1516
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd ఫైలు పేరు విశ్లేషించటానికి కుదరదు, డ్రైవరు పేరు తప్పిపోయింది"
 
-#: src/xend_internal.c:1547
+#: src/xend_internal.c:1535
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd ఫైలు పేరు విశ్లేషించటానికి కుదరదు, డ్రైవరు రకం తప్పిపోయింది"
 
-#: src/xend_internal.c:1910
+#: src/xend_internal.c:1898
 msgid "failed to parse Xend domain information"
 msgstr "Xend క్షేత్ర సమాచరాన్ని విశ్లేషించటంలో విఫలమైంది"
 
-#: src/xend_internal.c:3176
+#: src/xend_internal.c:3164
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "%s క్షేత్రాన్ని సృష్టించటంలో విఫలమైంది\n"
@@ -2154,56 +2154,56 @@ msgstr "ఫైలును తెరవటంలో విఫలమైంది"
 msgid "failed to save content"
 msgstr "విషయాన్ని భధ్రపరవటంలో విఫలమైంది"
 
-#: src/xs_internal.c:349
+#: src/xs_internal.c:340
 msgid "failed to connect to Xen Store"
 msgstr "Xen స్టోరుకి అనుసంధించటంలో విఫలమైంది"
 
-#: src/proxy_internal.c:207
+#: src/proxy_internal.c:195
 #, c-format
 msgid "failed to exec %s\n"
 msgstr "exec %sకి విఫలమైంది\n"
 
-#: src/proxy_internal.c:301
+#: src/proxy_internal.c:289
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr "%d సాకెట్టును మూయటంలో విఫలమైంది\n"
 
-#: src/proxy_internal.c:334
+#: src/proxy_internal.c:322
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr "%d సాకెట్టును చదవటంలో విఫలమైంది\n"
 
-#: src/proxy_internal.c:368
+#: src/proxy_internal.c:356
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr "%d సాకెట్టుకు రాయటంలో విఫలమైంది\n"
 
-#: src/proxy_internal.c:460 src/proxy_internal.c:481 src/proxy_internal.c:501
+#: src/proxy_internal.c:448 src/proxy_internal.c:469 src/proxy_internal.c:489
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr "proxyతో సమాచార సంబంధాల దోషం: %d బైట్లలో %d పొందింది\n"
 
-#: src/proxy_internal.c:468
+#: src/proxy_internal.c:456
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr "proxyతో సమాచార సంబంధాల దోషం: %d బైట్లను ఆశించాము %d పొందాము\n"
 
-#: src/proxy_internal.c:490
+#: src/proxy_internal.c:478
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr "proxyతో సమాచార సంబంధాల దోషం: %d బైట్ల పాకెట్టును పొందాము\n"
 
-#: src/proxy_internal.c:514
+#: src/proxy_internal.c:502
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
 msgstr "proxyతో సమాచార సంబంధాల దోషం: malformed పాకెట్\n"
 
-#: src/proxy_internal.c:520
+#: src/proxy_internal.c:508
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr "asynchronous పాకెత్ సంఖ్య %dను పొందాము\n"
 
-#: src/xen_internal.c:2310
+#: src/xen_internal.c:2301
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d క్షేత్ర సమాచారాన్ని కేటాయిస్తోంది"

@@ -1,3 +1,8 @@
+Mon Jul  9 14:24:12 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in libvirt.spec.in include/libvirt/libvirt.h
+	  docs/* po/*: prepared release of 0.3.0
+
 Mon Jul  9 13:23:26 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xm_internal.c src/xend_internal.c src/buf.[ch]: add

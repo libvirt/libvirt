@@ -45,9 +45,11 @@
     <reference name='VIR_ERR_NONE' href='html/libvirt-virterror.html#VIR_ERR_NONE'/>
     <reference name='VIR_ERR_NO_CONNECT' href='html/libvirt-virterror.html#VIR_ERR_NO_CONNECT'/>
     <reference name='VIR_ERR_NO_DEVICE' href='html/libvirt-virterror.html#VIR_ERR_NO_DEVICE'/>
+    <reference name='VIR_ERR_NO_DOMAIN' href='html/libvirt-virterror.html#VIR_ERR_NO_DOMAIN'/>
     <reference name='VIR_ERR_NO_KERNEL' href='html/libvirt-virterror.html#VIR_ERR_NO_KERNEL'/>
     <reference name='VIR_ERR_NO_MEMORY' href='html/libvirt-virterror.html#VIR_ERR_NO_MEMORY'/>
     <reference name='VIR_ERR_NO_NAME' href='html/libvirt-virterror.html#VIR_ERR_NO_NAME'/>
+    <reference name='VIR_ERR_NO_NETWORK' href='html/libvirt-virterror.html#VIR_ERR_NO_NETWORK'/>
     <reference name='VIR_ERR_NO_OS' href='html/libvirt-virterror.html#VIR_ERR_NO_OS'/>
     <reference name='VIR_ERR_NO_ROOT' href='html/libvirt-virterror.html#VIR_ERR_NO_ROOT'/>
     <reference name='VIR_ERR_NO_SOURCE' href='html/libvirt-virterror.html#VIR_ERR_NO_SOURCE'/>
@@ -262,9 +264,11 @@
       <ref name='VIR_ERR_NONE'/>
       <ref name='VIR_ERR_NO_CONNECT'/>
       <ref name='VIR_ERR_NO_DEVICE'/>
+      <ref name='VIR_ERR_NO_DOMAIN'/>
       <ref name='VIR_ERR_NO_KERNEL'/>
       <ref name='VIR_ERR_NO_MEMORY'/>
       <ref name='VIR_ERR_NO_NAME'/>
+      <ref name='VIR_ERR_NO_NETWORK'/>
       <ref name='VIR_ERR_NO_OS'/>
       <ref name='VIR_ERR_NO_ROOT'/>
       <ref name='VIR_ERR_NO_SOURCE'/>
@@ -775,9 +779,11 @@
       <ref name='VIR_ERR_NONE'/>
       <ref name='VIR_ERR_NO_CONNECT'/>
       <ref name='VIR_ERR_NO_DEVICE'/>
+      <ref name='VIR_ERR_NO_DOMAIN'/>
       <ref name='VIR_ERR_NO_KERNEL'/>
       <ref name='VIR_ERR_NO_MEMORY'/>
       <ref name='VIR_ERR_NO_NAME'/>
+      <ref name='VIR_ERR_NO_NETWORK'/>
       <ref name='VIR_ERR_NO_OS'/>
       <ref name='VIR_ERR_NO_ROOT'/>
       <ref name='VIR_ERR_NO_SOURCE'/>
@@ -1200,6 +1206,17 @@
         <word name='VIR_CPU_USABLE'>
           <ref name='VIR_CPU_USABLE'/>
         </word>
+        <word name='VIR_ERR_NO_DOMAIN'>
+          <ref name='virDomainLookupByID'/>
+          <ref name='virDomainLookupByName'/>
+          <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainLookupByUUIDString'/>
+        </word>
+        <word name='VIR_ERR_NO_NETWORK'>
+          <ref name='virNetworkLookupByName'/>
+          <ref name='virNetworkLookupByUUID'/>
+          <ref name='virNetworkLookupByUUIDString'/>
+        </word>
         <word name='VIR_GET_CPUMAP'>
           <ref name='VIR_GET_CPUMAP'/>
         </word>
@@ -1546,6 +1563,15 @@
           <ref name='virDomainGetInfo'/>
           <ref name='virDomainPinVcpu'/>
         </word>
+        <word name='cannot'>
+          <ref name='virDomainLookupByID'/>
+          <ref name='virDomainLookupByName'/>
+          <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainLookupByUUIDString'/>
+          <ref name='virNetworkLookupByName'/>
+          <ref name='virNetworkLookupByUUID'/>
+          <ref name='virNetworkLookupByUUIDString'/>
+        </word>
         <word name='canonical'>
           <ref name='virConnectGetURI'/>
         </word>
@@ -1850,6 +1876,13 @@
           <ref name='virConnectNumOfDomains'/>
           <ref name='virConnectNumOfNetworks'/>
           <ref name='virCopyLastError'/>
+          <ref name='virDomainLookupByID'/>
+          <ref name='virDomainLookupByName'/>
+          <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainLookupByUUIDString'/>
+          <ref name='virNetworkLookupByName'/>
+          <ref name='virNetworkLookupByUUID'/>
+          <ref name='virNetworkLookupByUUIDString'/>
         </word>
         <word name='free'>
           <ref name='virConnCopyLastError'/>
@@ -2616,7 +2649,14 @@
         </word>
         <word name='raised'>
           <ref name='_virError'/>
+          <ref name='virDomainLookupByID'/>
+          <ref name='virDomainLookupByName'/>
+          <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainLookupByUUIDString'/>
           <ref name='virErrorFunc'/>
+          <ref name='virNetworkLookupByName'/>
+          <ref name='virNetworkLookupByUUID'/>
+          <ref name='virNetworkLookupByUUIDString'/>
           <ref name='virSetErrorFunc'/>
         </word>
         <word name='raw'>
@@ -2785,6 +2825,8 @@
           <ref name='virDomainSetMemory'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk5'>
       <letter name='s'>
         <word name='same'>
           <ref name='virConnectGetURI'/>
@@ -2990,8 +3032,6 @@
           <ref name='virDomainPinVcpu'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk5'>
       <letter name='t'>
         <word name='target'>
           <ref name='virConnCopyLastError'/>
@@ -3031,8 +3071,15 @@
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainGetMaxMemory'/>
           <ref name='virDomainGetVcpus'/>
+          <ref name='virDomainLookupByID'/>
+          <ref name='virDomainLookupByName'/>
+          <ref name='virDomainLookupByUUID'/>
+          <ref name='virDomainLookupByUUIDString'/>
           <ref name='virDomainSetMaxMemory'/>
           <ref name='virDomainSetMemory'/>
+          <ref name='virNetworkLookupByName'/>
+          <ref name='virNetworkLookupByUUID'/>
+          <ref name='virNetworkLookupByUUIDString'/>
         </word>
         <word name='there'>
           <ref name='virConnectClose'/>
@@ -3164,6 +3211,8 @@
           <ref name='virSetErrorFunc'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk6'>
       <letter name='v'>
         <word name='value'>
           <ref name='VIR_CPU_USABLE'/>
@@ -3408,8 +3457,6 @@
           <ref name='virConnectGetType'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk6'>
       <letter name='x'>
         <word name='xen'>
           <ref name='virConnectOpen'/>
@@ -3435,9 +3482,9 @@
       <chunk name='chunk1' start='W' end='c'/>
       <chunk name='chunk2' start='d' end='i'/>
       <chunk name='chunk3' start='j' end='n'/>
-      <chunk name='chunk4' start='o' end='s'/>
-      <chunk name='chunk5' start='t' end='w'/>
-      <chunk name='chunk6' start='x' end='z'/>
+      <chunk name='chunk4' start='o' end='r'/>
+      <chunk name='chunk5' start='s' end='u'/>
+      <chunk name='chunk6' start='v' end='z'/>
     </chunks>
   </index>
 </apirefs>

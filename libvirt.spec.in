@@ -164,7 +164,14 @@ fi
 %doc docs/examples/python
 
 %changelog
-* Tue Apr 17 2007 Daniel Veillard <veillard@redhat.com> - 0.2.3-1
+* Mon Jul  9 2007 Daniel Veillard <veillard@redhat.com> - 0.3.0-1
+- Release of 0.3.0
+- Secure remote access support
+- unification of daemons
+- lots of assorted bugfixes and cleanups
+- documentation and localization improvements
+
+* Fri Jun  8 2007 Daniel Veillard <veillard@redhat.com> - 0.2.3-1
 - Release of 0.2.3
 - lot of assorted bugfixes and cleanups
 - support for Xen-3.1

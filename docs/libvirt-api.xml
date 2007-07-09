@@ -147,13 +147,14 @@
      <description>Provides the interfaces of the libvirt library to handle errors raised while using the library. </description>
      <author>Daniel Veillard &lt;veillard@redhat.com&gt; </author>
      <exports symbol='VIR_FROM_XML' type='enum'/>
-     <exports symbol='VIR_ERR_CALL_FAILED' type='enum'/>
+     <exports symbol='VIR_ERR_RPC' type='enum'/>
      <exports symbol='VIR_ERR_SYSTEM_ERROR' type='enum'/>
      <exports symbol='VIR_FROM_TEST' type='enum'/>
      <exports symbol='VIR_ERR_WARNING' type='enum'/>
      <exports symbol='VIR_ERR_NO_XEN' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_ARG' type='enum'/>
      <exports symbol='VIR_ERR_ERROR' type='enum'/>
+     <exports symbol='VIR_ERR_NO_OS' type='enum'/>
      <exports symbol='VIR_ERR_NO_DEVICE' type='enum'/>
      <exports symbol='VIR_ERR_NO_MEMORY' type='enum'/>
      <exports symbol='VIR_FROM_SEXPR' type='enum'/>
@@ -180,7 +181,6 @@
      <exports symbol='VIR_FROM_NET' type='enum'/>
      <exports symbol='VIR_ERR_NO_NAME' type='enum'/>
      <exports symbol='VIR_ERR_NO_ROOT' type='enum'/>
-     <exports symbol='VIR_ERR_RPC' type='enum'/>
      <exports symbol='VIR_ERR_OPERATION_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_GET_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_DRIVER_FULL' type='enum'/>
@@ -196,6 +196,8 @@
      <exports symbol='VIR_ERR_NO_SUPPORT' type='enum'/>
      <exports symbol='VIR_FROM_XEND' type='enum'/>
      <exports symbol='VIR_FROM_PROXY' type='enum'/>
+     <exports symbol='VIR_ERR_NO_NETWORK' type='enum'/>
+     <exports symbol='VIR_ERR_NO_DOMAIN' type='enum'/>
      <exports symbol='VIR_ERR_READ_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_SEXPR_SERIAL' type='enum'/>
      <exports symbol='VIR_FROM_XENSTORE' type='enum'/>
@@ -204,7 +206,7 @@
      <exports symbol='VIR_ERR_XEN_CALL' type='enum'/>
      <exports symbol='VIR_ERR_UNKNOWN_HOST' type='enum'/>
      <exports symbol='VIR_ERR_NO_CONNECT' type='enum'/>
-     <exports symbol='VIR_ERR_NO_OS' type='enum'/>
+     <exports symbol='VIR_ERR_CALL_FAILED' type='enum'/>
      <exports symbol='virErrorPtr' type='typedef'/>
      <exports symbol='virErrorLevel' type='typedef'/>
      <exports symbol='virErrorDomain' type='typedef'/>
@@ -314,9 +316,11 @@
     <enum name='VIR_ERR_NONE' file='virterror' value='0' type='virErrorLevel'/>
     <enum name='VIR_ERR_NO_CONNECT' file='virterror' value='5' type='virErrorNumber' info='can&apos;t connect to hypervisor'/>
     <enum name='VIR_ERR_NO_DEVICE' file='virterror' value='23' type='virErrorNumber' info='missing domain devices information'/>
+    <enum name='VIR_ERR_NO_DOMAIN' file='virterror' value='42' type='virErrorNumber' info='domain not found or unexpectedly disappeared'/>
     <enum name='VIR_ERR_NO_KERNEL' file='virterror' value='17' type='virErrorNumber' info='missing kernel information'/>
     <enum name='VIR_ERR_NO_MEMORY' file='virterror' value='2' type='virErrorNumber' info='memory allocation failure'/>
     <enum name='VIR_ERR_NO_NAME' file='virterror' value='21' type='virErrorNumber' info='missing domain name information'/>
+    <enum name='VIR_ERR_NO_NETWORK' file='virterror' value='43' type='virErrorNumber' info=' network not found'/>
     <enum name='VIR_ERR_NO_OS' file='virterror' value='22' type='virErrorNumber' info='missing domain OS information'/>
     <enum name='VIR_ERR_NO_ROOT' file='virterror' value='18' type='virErrorNumber' info='missing root device information'/>
     <enum name='VIR_ERR_NO_SOURCE' file='virterror' value='19' type='virErrorNumber' info='missing source device information'/>
@@ -358,7 +362,7 @@
     <enum name='VIR_VCPU_BLOCKED' file='libvirt' value='2' type='virVcpuState' info=' the virtual CPU is blocked on resource'/>
     <enum name='VIR_VCPU_OFFLINE' file='libvirt' value='0' type='virVcpuState' info='the virtual CPU is offline'/>
     <enum name='VIR_VCPU_RUNNING' file='libvirt' value='1' type='virVcpuState' info='the virtual CPU is running'/>
-    <enum name='VIR_WAR_NO_NETWORK' file='virterror' value='41' type='virErrorNumber' info=' failed to start network'/>
+    <enum name='VIR_WAR_NO_NETWORK' file='virterror' value='41' type='virErrorNumber' info='failed to start network'/>
     <struct name='virConnect' file='libvirt' type='struct _virConnect'/>
     <typedef name='virConnectPtr' file='libvirt' type='virConnect *'>
       <info>a virConnectPtr is pointer to a virConnect private structure, this is the type used to reference a connection to the Xen Hypervisor in the API.</info>
@@ -691,25 +695,25 @@
     </function>
     <function name='virDomainLookupByID' file='libvirt' module='libvirt'>
       <info>Try to find a domain based on the hypervisor ID number</info>
-      <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
+      <return type='virDomainPtr' info='a new domain object or NULL in case of failure.  If the domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='id' type='int' info='the domain ID number'/>
     </function>
     <function name='virDomainLookupByName' file='libvirt' module='libvirt'>
       <info>Try to lookup a domain on the given hypervisor based on its name.</info>
-      <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
+      <return type='virDomainPtr' info='a new domain object or NULL in case of failure.  If the domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='name' type='const char *' info='name for the domain'/>
     </function>
     <function name='virDomainLookupByUUID' file='libvirt' module='libvirt'>
       <info>Try to lookup a domain on the given hypervisor based on its UUID.</info>
-      <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
+      <return type='virDomainPtr' info='a new domain object or NULL in case of failure.  If the domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='uuid' type='const unsigned char *' info='the raw UUID for the domain'/>
     </function>
     <function name='virDomainLookupByUUIDString' file='libvirt' module='libvirt'>
       <info>Try to lookup a domain on the given hypervisor based on its UUID.</info>
-      <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
+      <return type='virDomainPtr' info='a new domain object or NULL in case of failure.  If the domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='uuidstr' type='const char *' info='the string UUID for the domain'/>
     </function>
@@ -879,19 +883,19 @@
     </function>
     <function name='virNetworkLookupByName' file='libvirt' module='libvirt'>
       <info>Try to lookup a network on the given hypervisor based on its name.</info>
-      <return type='virNetworkPtr' info='a new network object or NULL in case of failure'/>
+      <return type='virNetworkPtr' info='a new network object or NULL in case of failure.  If the network cannot be found, then VIR_ERR_NO_NETWORK error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='name' type='const char *' info='name for the network'/>
     </function>
     <function name='virNetworkLookupByUUID' file='libvirt' module='libvirt'>
       <info>Try to lookup a network on the given hypervisor based on its UUID.</info>
-      <return type='virNetworkPtr' info='a new network object or NULL in case of failure'/>
+      <return type='virNetworkPtr' info='a new network object or NULL in case of failure.  If the network cannot be found, then VIR_ERR_NO_NETWORK error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='uuid' type='const unsigned char *' info='the raw UUID for the network'/>
     </function>
     <function name='virNetworkLookupByUUIDString' file='libvirt' module='libvirt'>
       <info>Try to lookup a network on the given hypervisor based on its UUID.</info>
-      <return type='virNetworkPtr' info='a new network object or NULL in case of failure'/>
+      <return type='virNetworkPtr' info='a new network object or NULL in case of failure.  If the network cannot be found, then VIR_ERR_NO_NETWORK error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='uuidstr' type='const char *' info='the string UUID for the network'/>
     </function>

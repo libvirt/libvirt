@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ml\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-06 17:11+0200\n"
+"POT-Creation-Date: 2007-07-09 14:14+0200\n"
 "PO-Revision-Date: 2007-06-15 11:11+0530\n"
 "Last-Translator: Ani Peter <apeter@redhat.com>\n"
 "Language-Team: Malayalam <en@li.org>\n"
@@ -592,64 +592,64 @@ msgstr "ഒരു നോഡ് ലഭ്യമാക്കുന്നതില�
 msgid "failed to copy a string"
 msgstr "ഒരു സ്ട്രിങ് പകര്‍ത്തുന്നതില്‍ പരാജയം"
 
-#: src/xend_internal.c:289 src/xend_internal.c:292
+#: src/xend_internal.c:277 src/xend_internal.c:280
 msgid "failed to read from Xen Daemon"
 msgstr "Xen ഡെമണില്‍ നിന്നും വായിക്കുന്നതില്‍ പരാജയം"
 
-#: src/xend_internal.c:603 src/xend_internal.c:819 src/xend_internal.c:1535
-#: src/xend_internal.c:1554
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
+#: src/xend_internal.c:1542
 msgid "allocate new buffer"
 msgstr "പുതിയ ബഫര്‍ ലഭ്യമാക്കുക"
 
-#: src/xend_internal.c:1026
+#: src/xend_internal.c:1014
 msgid "failed to urlencode the create S-Expr"
 msgstr "failed to urlencode the create S-Expr"
 
-#: src/xend_internal.c:1067
+#: src/xend_internal.c:1055
 msgid "domain information incomplete, missing domid"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, domid ലഭ്യമല്ല"
 
-#: src/xend_internal.c:1073
+#: src/xend_internal.c:1061
 msgid "domain information incorrect domid not numeric"
 msgstr "ഡൊമെയിന്‍ വിവരം തെറ്റാണ്, domid അക്കത്തിലല്ല"
 
-#: src/xend_internal.c:1081 src/xend_internal.c:1130
+#: src/xend_internal.c:1069 src/xend_internal.c:1118
 msgid "domain information incomplete, missing uuid"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, uuid ലഭ്യമല്ല"
 
-#: src/xend_internal.c:1121 src/xend_internal.c:1396
+#: src/xend_internal.c:1109 src/xend_internal.c:1384
 msgid "domain information incomplete, missing name"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, പേര് ലഭ്യമല്ല"
 
-#: src/xend_internal.c:1296 src/xend_internal.c:1327
+#: src/xend_internal.c:1284 src/xend_internal.c:1315
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, കേര്‍ണലും ബൂട്ട് ലോഡറും ലഭ്യമല്ല"
 
-#: src/xend_internal.c:1384
+#: src/xend_internal.c:1372
 msgid "domain information incomplete, missing id"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, id ലഭ്യമല്ല"
 
-#: src/xend_internal.c:1504
+#: src/xend_internal.c:1492
 msgid "domain information incomplete, vbd has no dev"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, vbd-യ്ക്ക് dev ലഭ്യമല്ല"
 
-#: src/xend_internal.c:1519
+#: src/xend_internal.c:1507
 msgid "domain information incomplete, vbd has no src"
 msgstr "ഡൊമെയിന്‍ വിവരം പൂര്‍ണ്ണമല്ല, vbd-യ്ക്ക് src ലഭ്യമല്ല"
 
-#: src/xend_internal.c:1528
+#: src/xend_internal.c:1516
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd ഫയല്‍ നെയിം പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല, ഡ്റൈവറിന്‍റെ പേര് ലഭ്യമല്ല"
 
-#: src/xend_internal.c:1547
+#: src/xend_internal.c:1535
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd ഫയല്‍ നെയിം പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല, ഡ്റൈവറിന്‍റെ ടൈപ്പ് ലഭ്യമല്ല"
 
-#: src/xend_internal.c:1910
+#: src/xend_internal.c:1898
 msgid "failed to parse Xend domain information"
 msgstr "Xend ഡൊമെയിന്‍ വിവരം പാര്‍സ് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#: src/xend_internal.c:3176
+#: src/xend_internal.c:3164
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "നിഷ്ക്റിയമായ ഡൊമെയിന്‍ %s ഉണ്ടാക്കുന്നതില്‍ പരാജയം\n"
@@ -2104,56 +2104,56 @@ msgstr "ഫയല്‍ തുറക്കുന്നതില്‍ പരാ�
 msgid "failed to save content"
 msgstr "ഉള്ളടക്കം സൂക്ഷിക്കുന്നതില്‍ പരാജയം"
 
-#: src/xs_internal.c:349
+#: src/xs_internal.c:340
 msgid "failed to connect to Xen Store"
 msgstr "Xen സ്റ്റോറിലേക്ക് കണക്ട് ചെയ്യുന്നതില്‍ പരാജയം"
 
-#: src/proxy_internal.c:207
+#: src/proxy_internal.c:195
 #, c-format
 msgid "failed to exec %s\n"
 msgstr "%s പ്രവര്‍ത്തിപ്പിക്കുന്നതില്‍ പരാജയം\n"
 
-#: src/proxy_internal.c:301
+#: src/proxy_internal.c:289
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr "സോക്കറ്റ് %d അടയ്ക്കുന്നതില്‍ പരാജയം\n"
 
-#: src/proxy_internal.c:334
+#: src/proxy_internal.c:322
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr "സോക്കറ്റ് %d വായിക്കുന്നതില്‍ പരാജയം\n"
 
-#: src/proxy_internal.c:368
+#: src/proxy_internal.c:356
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr "സോക്കറ്റ് %d-ലേക്ക് എഴുതുന്നതില്‍ പരാജയം\n"
 
-#: src/proxy_internal.c:460 src/proxy_internal.c:481 src/proxy_internal.c:501
+#: src/proxy_internal.c:448 src/proxy_internal.c:469 src/proxy_internal.c:489
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr "പ്രോക്സിയുമായുളള ആശയവിനിമയത്തില്‍ പിശക്: %d-ല്‍ %d ബൈറ്റ്സ് ലഭ്യമായി\n"
 
-#: src/proxy_internal.c:468
+#: src/proxy_internal.c:456
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr "പ്രോക്സിയുമായുളള ആശയവിനിമയത്തില്‍ പിശക്: %d ബൈറ്റ്സ് പ്രതീക്ഷിച്ചു, ലഭ്യമായത് %d\n"
 
-#: src/proxy_internal.c:490
+#: src/proxy_internal.c:478
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr "പ്രോക്സിയുമായുളള ആശയവിനിമയത്തില്‍ പിശക്: %d ബൈറ്റ്സ് പാക്കറ്റ് ലഭ്യമായി\n"
 
-#: src/proxy_internal.c:514
+#: src/proxy_internal.c:502
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
 msgstr "പ്രോക്സിയുമായുളള ആശയവിനിമയത്തില്‍ പിശക്: തെറ്റായ പാക്കറ്റ്\n"
 
-#: src/proxy_internal.c:520
+#: src/proxy_internal.c:508
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr "അസിന്‍ക്രൊണസ് പാക്കറ്റ് നംബര്‍ %d ലഭിച്ചിരിക്കുന്നു\n"
 
-#: src/xen_internal.c:2310
+#: src/xen_internal.c:2301
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d ഡൊമെയിന്‍ വിവരം ലഭ്യമാക്കുന്നു"
