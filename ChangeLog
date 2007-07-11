@@ -1,3 +1,8 @@
+Wed Jul 11 10:43:25 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xml.c: patch from Masayuki Sunou fixing leaks in
+	  virDomainParseXMLDiskDesc
+
 Mon Jul  9 14:24:12 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in libvirt.spec.in include/libvirt/libvirt.h

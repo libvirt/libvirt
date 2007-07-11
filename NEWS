@@ -5,6 +5,48 @@
        http://libvirt.org/news.html
 
 Releases
+0.3.0: Jul 9 2007:
+   - Secure Remote support (Richard Jones).
+      See the remote page
+      of the documentation
+  
+   - Documentation: remote support (Richard Jones), description of
+      the URI connection strings (Richard Jones), update of virsh man
+      page, matrix of libvirt API/hypervisor support with version
+      informations (Richard Jones)
+   - Bug fixes: examples Makefile.am generation (Richard Jones), 
+      SetMem fix (Mark Johnson), URI handling and ordering of 
+      drivers (Daniel Berrange), fix virsh help without hypervisor (Richard
+      Jones), id marshalling fix (Daniel Berrange), fix virConnectGetMaxVcpus
+      on remote (Richard Jones), avoid a realloc leak (Jim Meyering), scheduler
+      parameters handling for Xen (Richard Jones), various early remote
+      bug fixes (Richard Jones), remove virsh leaks of domains references
+      (Masayuki Sunou), configCache refill bug (Richard Jones), fix
+      XML serialization bugs
+   - Improvements: QEmu switch to XDR-based protocol (Dan Berrange),
+      device attach/detach commands (Masayuki Sunou), OCaml bindings
+      (Richard Jones), new entry points virDomainGetConnect and 
+      virNetworkGetConnect useful for bindings (Richard Jones), 
+      reunitifaction of remote and qemu daemon under a single libvirtd
+      with a config file (Daniel Berrange)
+   - Cleanups: parsing of connection URIs (Richard Jones), messages
+      from virsh (Saori Fukuta), Coverage files (Daniel Berrange), 
+      Solaris fixes (Mark Johnson), avoid [r]index calls (Richard Jones),
+      release information in Xen backend, virsh cpupin command cleanups
+      (Masayuki Sunou), xen:/// suppport as standard Xen URI (Richard Jones and
+      Daniel Berrange), improve driver selection/decline mechanism (Richard
+      Jones), error reporting on XML dump (Richard Jones), Remove unused
+      virDomainKernel structure (Richard Jones), daemon event loop event
+      handling (Daniel Berrange), various unifications cleanup in the daemon
+      merging (Daniel Berrange), internal file and timer monitoring API
+      (Daniel Berrange), remove libsysfs dependancy, call brctl program
+      directly (Daniel Berrange), virBuffer functions cleanups (Richard Jones),
+      make init script LSB compliant, error handling on lookup functions
+      (Richard Jones), remove internal virGetDomainByID (Richard Jones),
+      revamp of xen subdrivers interfaces (Richard Jones)
+   - Localization updates
+
+
 0.2.3: Jun 8 2007:
    - Documentation: documentation for upcoming remote access (Richard Jones),
       virConnectNumOfDefinedDomains doc (Jan Michael), virsh help messages

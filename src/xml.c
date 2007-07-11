@@ -719,6 +719,7 @@ virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf,
     int typ = 0;
     int cdrom = 0;
     int isNoSrcCdrom = 0;
+    int ret = 0;
 
     type = xmlGetProp(node, BAD_CAST "type");
     if (type != NULL) {
@@ -768,21 +769,14 @@ virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf,
         }
         if (!isNoSrcCdrom) {
             virXMLError(conn, VIR_ERR_NO_SOURCE, (const char *) target, 0);
-
-            if (target != NULL)
-                xmlFree(target);
-            if (device != NULL)
-                xmlFree(device);
-            return (-1);
+            ret = -1;
+            goto cleanup;
         }
     }
     if (target == NULL) {
         virXMLError(conn, VIR_ERR_NO_TARGET, (const char *) source, 0);
-        if (source != NULL)
-            xmlFree(source);
-        if (device != NULL)
-            xmlFree(device);
-        return (-1);
+        ret = -1;
+        goto cleanup;
     }
 
     /* Xend (all versions) put the floppy device config
@@ -861,12 +855,17 @@ virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf,
     virBufferAdd(buf, ")", 1);
 
  cleanup:
-    xmlFree(drvType);
-    xmlFree(drvName);
-    xmlFree(device);
-    xmlFree(target);
-    xmlFree(source);
-    return (0);
+    if(drvType)
+        xmlFree(drvType);
+    if(drvName)
+        xmlFree(drvName);
+    if(device)
+        xmlFree(device);
+    if(target)
+        xmlFree(target);
+    if(source)
+        xmlFree(source);
+    return (ret);
 }
 
 /**
