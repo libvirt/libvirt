@@ -1,5 +1,11 @@
 Thu Jul 12 11:02:17 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
+	* src/qemu_conf.c, src/qemu_conf.h, src/qemu_driver.c: Pass
+	around the virConnectPtr when available so errors get reported
+	against that rather than the global error location.
+
+Thu Jul 12 11:02:17 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
 	* qemud/qemud.c: Fix cleanup when client access checks fail
 	so we don't accidentally register a dead client with the
 	event loop. Force close the virConnectPtr object if it is
