@@ -1432,6 +1432,27 @@ use the mailing-list if you don't get an answer there.</p>
 Libvirt allows you to access hypervisors running on remote
 machines through authenticated and encrypted connections.
 </p>
+<ul>
+ <li><a href="#Remote_basic_usage">Basic usage</a></li>
+ <li><a href="#Remote_transports">Transports</a></li>
+ <li><a href="#Remote_URI_reference">Remote URIs</a>
+ <ul>
+   <li><a href="#Remote_URI_parameters">Extra parameters</a></li>
+ </ul></li>
+ <li><a href="#Remote_certificates">Generating TLS certificates</a>
+ <ul>
+   <li><a href="#Remote_PKI">Public Key Infrastructure set up</a></li>
+   <li><a href="#Remote_TLS_background">Background to TLS certificates</a></li>
+   <li><a href="#Remote_TLS_CA">Setting up a Certificate Authority (CA)</a></li>
+   <li><a href="#Remote_TLS_server_certificates">Issuing server certificates</a></li>
+   <li><a href="#Remote_TLS_client_certificates">Issuing client certificates</a></li>
+   <li><a href="#Remote_TLS_troubleshooting">Troubleshooting TLS certificate problems</a></li>
+ </ul></li>
+ <li><a href="#Remote_libvirtd_configuration">libvirtd configuration file</a></li>
+ <li><a href="#Remote_IPv6">IPv6 support</a></li>
+ <li><a href="#Remote_limitations">Limitations</a></li>
+ <li><a href="#Remote_implementation_notes">Implementation notes</a></li>
+</ul>
 
 <h3><a name="Remote_basic_usage">Basic usage</a></h3>
 
@@ -1680,7 +1701,7 @@ Note that parameter values must be
 
 <h3><a name="Remote_certificates">Generating TLS certificates</a></h3>
 
-<h4>Public Key Infrastructure set up</h4>
+<h4><a name="Remote_PKI">Public Key Infrastructure set up</a></h4>
 
 <p>
 If you are unsure how to create TLS certificates, skip to the
@@ -2038,15 +2059,19 @@ cp clientcert.pem /etc/pki/libvirt/clientcert.pem
 <dd>
 <p>
 On the server side, run the libvirtd server with
-the '--remote' and '--verbose' options while the
+the '--listen' and '--verbose' options while the
 client is connecting.  The verbose log messages should
 tell you enough to diagnose the problem.
 </p>
 </dd>
 </dl>
+<p> You can use the <a href="pki_check.sh">pki_check.sh</a> shell script
+to analyze the setup on the client or server machines, preferably as root.
+It will try to point out the possible problems and provide solutions to
+fix the set up up to a point where you have secure remote access.</p>
 
 
-<h3><a name="Remote_libvirtd_configuration">libvirtd configuration</a></h3>
+<h3><a name="Remote_libvirtd_configuration">libvirtd configuration file</a></h3>
 
 <p>
 Libvirtd (the remote daemon) is configured from a file called
@@ -2059,6 +2084,8 @@ the command line using <code>-f filename</code> or
 This file should contain lines of the form below.
 Blank lines and comments beginning with <code>#</code> are ignored.
 </p>
+<pre>setting = value</pre>
+<p>The following settings, values and default are:</p>
 
 <table class="top_table">
 <tr>

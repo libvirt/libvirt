@@ -1,3 +1,10 @@
+Thu Jul 12 17:48:40 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* docs/libvir.html docs/remote.html: update the remote page,
+	  add an index
+	* docs/pki_check.sh: shell script to check the PKI and client/server
+	  environment.
+
 Thu Jul 12 11:15:17 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/remote_internal.c: Explicitly check certificate/key files
