@@ -1045,6 +1045,9 @@ static void qemudDispatchClientFailure(struct qemud_server *server, struct qemud
 
     virEventRemoveHandleImpl(client->fd);
 
+    if (client->conn)
+        virConnectClose(client->conn);
+
     if (client->tls && client->session) gnutls_deinit (client->session);
     close(client->fd);
     free(client);
@@ -1076,7 +1079,7 @@ static int qemudClientRead(struct qemud_server *server,
         client->direction = gnutls_record_get_direction (client->session);
         if (qemudRegisterClientEvent (server, client, 1) < 0)
             qemudDispatchClientFailure (server, client);
-        if (ret <= 0) {
+        else if (ret <= 0) {
             if (ret == 0 || (ret != GNUTLS_E_AGAIN &&
                              ret != GNUTLS_E_INTERRUPTED)) {
                 if (ret != 0)
@@ -1188,7 +1191,7 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
             /* Finished.  Next step is to check the certificate. */
             if (remoteCheckAccess (client) == -1)
                 qemudDispatchClientFailure (server, client);
-            if (qemudRegisterClientEvent (server, client, 1) < 0)
+            else if (qemudRegisterClientEvent (server, client, 1) < 0)
                 qemudDispatchClientFailure (server, client);
         } else if (ret != GNUTLS_E_AGAIN && ret != GNUTLS_E_INTERRUPTED) {
             qemudLog (QEMUD_ERR, "TLS handshake failed: %s",
@@ -1231,7 +1234,7 @@ static int qemudClientWrite(struct qemud_server *server,
         client->direction = gnutls_record_get_direction (client->session);
         if (qemudRegisterClientEvent (server, client, 1) < 0)
             qemudDispatchClientFailure (server, client);
-        if (ret < 0) {
+        else if (ret < 0) {
             if (ret != GNUTLS_E_INTERRUPTED && ret != GNUTLS_E_AGAIN) {
                 qemudLog (QEMUD_ERR, "gnutls_record_send: %s",
                           gnutls_strerror (ret));
@@ -1275,8 +1278,7 @@ static void qemudDispatchClientWrite(struct qemud_server *server, struct qemud_c
             /* Finished.  Next step is to check the certificate. */
             if (remoteCheckAccess (client) == -1)
                 qemudDispatchClientFailure (server, client);
-
-            if (qemudRegisterClientEvent (server, client, 1))
+            else if (qemudRegisterClientEvent (server, client, 1))
                 qemudDispatchClientFailure (server, client);
         } else if (ret != GNUTLS_E_AGAIN && ret != GNUTLS_E_INTERRUPTED) {
             qemudLog (QEMUD_ERR, "TLS handshake failed: %s",

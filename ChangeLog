@@ -1,4 +1,11 @@
-Thu Jul 12 10:57:17 CEST 2007 Daniel Veillard <veillard@redhat.com>
+Thu Jul 12 11:02:17 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/qemud.c: Fix cleanup when client access checks fail
+	so we don't accidentally register a dead client with the
+	event loop. Force close the virConnectPtr object if it is
+	still open when a client connection goes away
+
+Thu Jul 12 11:00:17 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/qemud.c: Add explicit checks for existance of x509
 	certificate & key files to get better error reporting than
