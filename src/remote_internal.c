@@ -890,6 +890,22 @@ query_free (struct query_fields *fields)
 /* GnuTLS functions used by remoteOpen. */
 static gnutls_certificate_credentials_t x509_cred;
 
+
+static int
+check_cert_file (const char *type, const char *file)
+{
+    struct stat sb;
+    if (stat(file, &sb) < 0) {
+        __virRaiseError (NULL, NULL, NULL, VIR_FROM_REMOTE, VIR_ERR_RPC,
+                         VIR_ERR_ERROR, LIBVIRT_CACERT, NULL, NULL, 0, 0,
+                         "Cannot access %s '%s': %s (%d)",
+                         type, file, strerror(errno), errno);
+        return -1;
+    }
+    return 0;
+}
+
+
 static int
 initialise_gnutls (virConnectPtr conn ATTRIBUTE_UNUSED)
 {
@@ -906,6 +922,14 @@ initialise_gnutls (virConnectPtr conn ATTRIBUTE_UNUSED)
         error (NULL, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
         return -1;
     }
+
+
+    if (check_cert_file("CA certificate", LIBVIRT_CACERT) < 0)
+        return -1;
+    if (check_cert_file("client key", LIBVIRT_CLIENTKEY) < 0)
+        return -1;
+    if (check_cert_file("client certificate", LIBVIRT_CLIENTCERT) < 0)
+        return -1;
 
     /* Set the trusted CA cert. */
 #if DEBUG

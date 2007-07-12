@@ -1,3 +1,9 @@
+Thu Jul 12 11:15:17 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/remote_internal.c: Explicitly check certificate/key files
+	before trying to load them so we can get improved error reports
+	back.
+
 Thu Jul 12 11:02:17 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c, src/qemu_conf.h, src/qemu_driver.c: Pass
