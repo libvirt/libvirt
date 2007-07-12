@@ -1,3 +1,9 @@
+Thu Jul 12 10:57:17 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c: applied patch from Christian Ehrhardt to
+	  fix Xen hypervisor alignment problems on PPC64
+	* AUTHORS: added Christian
+
 Thu Jul 12 09:34:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* configure.in: Removed --with-qemud-pid-file option since

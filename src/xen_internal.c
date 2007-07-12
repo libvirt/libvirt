@@ -314,10 +314,17 @@ typedef struct xen_v2_getdomaininfolistop xen_v2_getdomaininfolistop;
 struct xen_v2s3_getdomaininfolistop {
     domid_t   first_domain;
     uint32_t  max_domains;
+#ifdef __BIG_ENDIAN__
+    struct {
+        int __pad[(sizeof (long long) - sizeof (struct xen_v2d5_getdomaininfo *)) / sizeof (int)];
+        struct xen_v2d5_getdomaininfo *v;
+    } buffer;
+#else
     union {
         struct xen_v2d5_getdomaininfo *v;
         uint64_t pad ALIGN_64;
     } buffer;
+#endif
     uint32_t  num_domains;
 };
 typedef struct xen_v2s3_getdomaininfolistop xen_v2s3_getdomaininfolistop;
@@ -422,10 +429,17 @@ typedef struct xen_v2_setvcpumap xen_v2_setvcpumap;
 
 /* HV version 2, Dom version 5 requires 64-bit alignment */
 struct xen_v2d5_cpumap {
+#ifdef __BIG_ENDIAN__
+    struct {
+        int __pad[(sizeof (long long) - sizeof (uint8_t *)) / sizeof (int)];
+        uint8_t *v;
+    } bitmap;
+#else
     union {
         uint8_t    *v;
         uint64_t   pad ALIGN_64;
     } bitmap;
+#endif
     uint32_t    nr_cpus;
 };
 struct xen_v2d5_setvcpumap {
