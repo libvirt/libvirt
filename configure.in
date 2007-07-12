@@ -98,21 +98,6 @@ if test x"$enable_debug" = x"yes"; then
    AC_DEFINE(ENABLE_DEBUG, [], [whether debugging is enabled])
 fi
 
-dnl
-dnl PID file
-dnl
-AC_MSG_CHECKING([where to write libvirt_qemud PID file])
-AC_ARG_WITH(qemud-pid-file, AC_HELP_STRING([--with-qemud-pid-file=[pidfile|none]], [PID file for libvirt_qemud]))
-if test "x$with_qemud_pid_file" == "x" ; then
-   QEMUD_PID_FILE="$localstatedir/run/libvirt_qemud.pid"
-elif test "x$with_qemud_pid_file" == "xnone" ; then
-   QEMUD_PID_FILE=""
-else
-   QEMUD_PID_FILE="$with_qemud_pid_file"
-fi
-AC_SUBST(QEMUD_PID_FILE)
-AC_MSG_RESULT($QEMUD_PID_FILE)
-
 AC_MSG_CHECKING([where to write libvirtd PID file])
 AC_ARG_WITH(remote-pid-file, AC_HELP_STRING([--with-remote-pid-file=[pidfile|none]], [PID file for libvirtd]))
 if test "x$with_remote_pid_file" == "x" ; then
