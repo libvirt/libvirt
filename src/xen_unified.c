@@ -148,9 +148,17 @@ xenUnifiedOpen (virConnectPtr conn, const char *name, int flags)
         if (i == XEN_UNIFIED_PROXY_OFFSET && getuid() == 0)
             continue;
 
-        if (drivers[i]->open &&
-            drivers[i]->open (conn, name, flags) == VIR_DRV_OPEN_SUCCESS)
-            priv->opened[i] = 1;
+        if (drivers[i]->open) {
+#ifdef ENABLE_DEBUG
+            fprintf (stderr, "libvirt: xenUnifiedOpen: trying Xen sub-driver %d\n", i);
+#endif
+            if (drivers[i]->open (conn, name, flags) == VIR_DRV_OPEN_SUCCESS)
+                priv->opened[i] = 1;
+#ifdef ENABLE_DEBUG
+            fprintf (stderr, "libvirt: xenUnifiedOpen: Xen sub-driver %d open %s\n",
+                     i, priv->opened[i] ? "ok" : "failed");
+#endif
+        }
 
         /* If as root, then all drivers must succeed.
            If non-root, then only proxy must succeed */
