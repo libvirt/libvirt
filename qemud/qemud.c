@@ -113,6 +113,18 @@ static int qemudRegisterClientEvent(struct qemud_server *server,
                                     int remove);
 
 static int
+remoteCheckCertFile(const char *type, const char *file)
+{
+    struct stat sb;
+    if (stat(file, &sb) < 0) {
+        qemudLog (QEMUD_ERR, "Cannot access %s '%s': %s (%d)",
+                  type, file, strerror(errno), errno);
+        return -1;
+    }
+    return 0;
+}
+
+static int
 remoteInitializeGnuTLS (void)
 {
     int err;
@@ -128,6 +140,9 @@ remoteInitializeGnuTLS (void)
     }
 
     if (ca_file && ca_file[0] != '\0') {
+        if (remoteCheckCertFile("CA certificate", ca_file) < 0)
+            return -1;
+
         qemudDebug ("loading CA cert from %s", ca_file);
         err = gnutls_certificate_set_x509_trust_file (x509_cred, ca_file,
                                                       GNUTLS_X509_FMT_PEM);
@@ -139,6 +154,9 @@ remoteInitializeGnuTLS (void)
     }
 
     if (crl_file && crl_file[0] != '\0') {
+        if (remoteCheckCertFile("CA revocation list", ca_file) < 0)
+            return -1;
+
         qemudDebug ("loading CRL from %s", crl_file);
         err = gnutls_certificate_set_x509_crl_file (x509_cred, crl_file,
                                                     GNUTLS_X509_FMT_PEM);
@@ -150,6 +168,10 @@ remoteInitializeGnuTLS (void)
     }
 
     if (cert_file && cert_file[0] != '\0' && key_file && key_file[0] != '\0') {
+        if (remoteCheckCertFile("server certificate", cert_file) < 0)
+            return -1;
+        if (remoteCheckCertFile("server key", key_file) < 0)
+            return -1;
         qemudDebug ("loading cert and key from %s and %s",
                     cert_file, key_file);
         err =

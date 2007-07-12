@@ -1,5 +1,11 @@
 Thu Jul 12 10:57:17 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
+	* qemud/qemud.c: Add explicit checks for existance of x509
+	certificate & key files to get better error reporting than
+	GNU TLS offers when it can't load a file
+
+Thu Jul 12 10:57:17 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
 	* src/xen_internal.c: applied patch from Christian Ehrhardt to
 	  fix Xen hypervisor alignment problems on PPC64
 	* AUTHORS: added Christian
