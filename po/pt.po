@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
 "PO-Revision-Date: 2007-06-14 15:18+0100\n"
 "Last-Translator: José Nuno Coelho Pires <jncp@netcabo.pt>\n"
 "Language-Team: pt <kde-i18n-pt@kde.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "X-POFile-IgnoreConsistency: warning\n"
 "X-POFile-SpellExtra: XENCREDIT\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "a reservar a ligação"
 
@@ -383,6 +383,15 @@ msgstr "nome ou UUID da rede"
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "A rede %s foi criada a partir do %s\n"
+
+#: src/virterror.c:651
+msgid "invalid MAC adress"
+msgstr ""
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "argumento inválido em %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2160,7 +2169,7 @@ msgstr "Erro de comunicação com o 'proxy': pacote inválido\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "foi obtido um número de pacote assíncrono %d\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "a reservar a informação de %d domínios"

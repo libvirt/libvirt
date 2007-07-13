@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
 "PO-Revision-Date: 2007-07-05 23:23-0000\n"
 "Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
 "Language-Team: Serbian (sr) <fedora-trans-sr@redhat.com>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
 "10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "zauzimam vezu"
 
@@ -383,6 +383,16 @@ msgstr "ime mreže ili uuid"
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "Mreža %s je napravljena iz %s\n"
+
+#: src/virterror.c:651
+#, fuzzy
+msgid "invalid MAC adress"
+msgstr "MAC adresa"
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "neispravan argument u %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2140,7 +2150,7 @@ msgstr "Greška u komunikaciji sa proksijem: pogrešno oblikovan paket\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "primljen asinhroni broj paketa %d\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "dodeljujem info %d domena"

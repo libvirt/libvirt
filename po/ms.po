@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
 "PO-Revision-Date: 2007-05-17 22:28+0800\n"
 "Last-Translator: Sharuzzaman Ahmat Raslan <sharuzzaman@myrealbox.com>\n"
 "Language-Team: ms <ms@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 #, fuzzy
 msgid "allocating connection"
 msgstr "Sambungan Masatamat:"
@@ -418,6 +418,15 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "Benarkan hos dari:"
+
+#: src/virterror.c:651
+msgid "invalid MAC adress"
+msgstr ""
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "hujah tidak sah %s untuk %s"
 
 #: src/xmlrpc.c:63
 #, fuzzy
@@ -2305,7 +2314,7 @@ msgstr ""
 msgid "got asynchronous packet number %d\n"
 msgstr ""
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "mengumpukkan maklumat domain %d"

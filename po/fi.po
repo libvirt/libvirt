@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
 "PO-Revision-Date: 2007-06-11 00:43+0200\n"
 "Last-Translator: Ville-Pekka Vainio <vpivaini@cs.helsinki.fi>\n"
 "Language-Team: Finnish <laatu@lokalisointi.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "X-Generator: KBabel 1.11.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "varataan yhteyttä"
 
@@ -386,6 +386,15 @@ msgstr "verkon nimi tai uuid"
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "Verkko %s luotu tiedostosta %s\n"
+
+#: src/virterror.c:651
+msgid "invalid MAC adress"
+msgstr ""
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "virheellinen argumentti kohteessa %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2168,7 +2177,7 @@ msgstr "Yhteysvirhe välityspalvelimen kanssa: epämuodostunut paketti\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "saatiin asynkroninen paketti numero %d\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "varataan %d toimialuetietoja"

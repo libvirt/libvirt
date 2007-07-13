@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ru\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
 "PO-Revision-Date: 2007-05-02 08:00+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "выделение соединения"
 
@@ -394,6 +394,15 @@ msgstr "имя сети или uuid"
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "Сеть %s создана из %s\n"
+
+#: src/virterror.c:651
+msgid "invalid MAC adress"
+msgstr ""
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "неверный аргумент %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2172,7 +2181,7 @@ msgstr "Ошибка связи с прокси: плохо сформирова
 msgid "got asynchronous packet number %d\n"
 msgstr "получен асинхронный номер пакета - %d\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "выделение %d данных домена"

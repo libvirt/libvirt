@@ -934,8 +934,22 @@ virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED, xmlNodePtr node, vi
     }
 
     virBufferAdd(buf, "(vif ", 5);
-    if (mac != NULL)
+    if (mac != NULL) {
+        unsigned int addr[12];
+        int tmp = sscanf((const char *)mac,
+	        "%01x%01x:%01x%01x:%01x%01x:%01x%01x:%01x%01x:%01x%01x",
+                (unsigned int*)&addr[0], (unsigned int*)&addr[1],
+		(unsigned int*)&addr[2], (unsigned int*)&addr[3],
+		(unsigned int*)&addr[4], (unsigned int*)&addr[5],
+                (unsigned int*)&addr[6], (unsigned int*)&addr[7],
+		(unsigned int*)&addr[8], (unsigned int*)&addr[9],
+		(unsigned int*)&addr[10], (unsigned int*)&addr[11]);
+        if (tmp != 12 || strlen((const char *) mac) != 17) {
+            virXMLError(conn, VIR_ERR_INVALID_MAC, (const char *) mac, 0);
+            goto error;
+        }
         virBufferVSprintf(buf, "(mac '%s')", (const char *) mac);
+    }
     if (source != NULL) {
         if (typ == 0)
             virBufferVSprintf(buf, "(bridge '%s')", (const char *) source);

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: da\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
 "PO-Revision-Date: 2007-05-10 15:48+0200\n"
 "Last-Translator: Keld Simonsen <keld@rap.dk>\n"
 "Language-Team:  <da@li.org>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.10.2\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "allokerer forbindelse"
 
@@ -390,6 +390,15 @@ msgstr "netværksnavn eller uuid"
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "Netværk %s oprettet fra %s\n"
+
+#: src/virterror.c:651
+msgid "invalid MAC adress"
+msgstr ""
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "ugyldigt argument i %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2167,7 +2176,7 @@ msgstr "Kommunikationsfejl med proxy: fejlformateret pakke\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "fik asynkront pakkenummer %d\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "allokerer %d domæne-info"

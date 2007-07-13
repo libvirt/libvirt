@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
-"PO-Revision-Date: 2007-07-06 20:15+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
+"PO-Revision-Date: 2007-07-09 22:33+0200\n"
 "Last-Translator: Gauthier Ancelin <gauthier.ancelin@laposte.net>\n"
 "Language-Team: Français <fedora-trans-fr@redhat.com>\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "allocation de connexion"
 
@@ -368,24 +368,32 @@ msgid "Failed to find the network: %s"
 msgstr "Impossible d'accéder au réseau : %s"
 
 #: src/virterror.c:639
-#, fuzzy
 msgid "Domain not found"
-msgstr "informations du domaine"
+msgstr "Domaine non trouvé"
 
 #: src/virterror.c:641
-#, fuzzy, c-format
+#, c-format
 msgid "Domain not found: %s"
-msgstr "Domaine restauré depuis %s\n"
+msgstr "Domaine non trouvé : %s"
 
 #: src/virterror.c:645
-#, fuzzy
 msgid "Network not found"
-msgstr "nom du domaine ou UUID"
+msgstr "Réseau non trouvé"
 
 #: src/virterror.c:647
-#, fuzzy, c-format
+#, c-format
 msgid "Network not found: %s"
-msgstr "Réseau %s créé depuis %s\n"
+msgstr "Réseau non trouvé : %s"
+
+#: src/virterror.c:651
+#, fuzzy
+msgid "invalid MAC adress"
+msgstr "adresse MAC"
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "argument invalide dans %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2015,14 +2023,14 @@ msgstr ""
 "  commandes (mode non interactif) :\n"
 
 #: src/virsh.c:4497
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"
-"  (spécifier --help <commande> pour plus de détails sur la commande)\n"
+"  (spécifier help <commande> pour plus de détails sur la commande)\n"
 "\n"
 
 #: src/virsh.c:4593
@@ -2147,7 +2155,7 @@ msgstr "Erreur de communication avec le proxy : paquet malformé\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "paquet asynchrone numéro %d reçu\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "attribution des informations de domaine %d"

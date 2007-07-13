@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pt_BR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
-"PO-Revision-Date: 2007-07-05 17:43-0300\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
+"PO-Revision-Date: 2007-07-09 11:50-0300\n"
 "Last-Translator: Igor Pires Soares <igor@projetofedora.org>\n"
 "Language-Team: Brazilian Portuguese <fedora-trans-pt_br@redhat.com>\n"
 "MIME-Version: 1.0\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "alocando a conexão"
 
@@ -366,24 +366,32 @@ msgid "Failed to find the network: %s"
 msgstr "Falha ao encontrar a rede: %s"
 
 #: src/virterror.c:639
-#, fuzzy
 msgid "Domain not found"
-msgstr "informação do domínio"
+msgstr "Domínio não encontrado"
 
 #: src/virterror.c:641
-#, fuzzy, c-format
+#, c-format
 msgid "Domain not found: %s"
-msgstr "O domínio foi restaurado a partir do %s\n"
+msgstr "Domínio não encontrado: %s"
 
 #: src/virterror.c:645
-#, fuzzy
 msgid "Network not found"
-msgstr "nome ou uuid da rede"
+msgstr "Rede não encontrada"
 
 #: src/virterror.c:647
-#, fuzzy, c-format
+#, c-format
 msgid "Network not found: %s"
-msgstr "Rede %s criada a partir de %s\n"
+msgstr "Rede não encontrada: %s"
+
+#: src/virterror.c:651
+#, fuzzy
+msgid "invalid MAC adress"
+msgstr "Endereço MAC"
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "argumento inválido em %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2015,14 +2023,14 @@ msgstr ""
 "  commands (non interactive mode):\n"
 
 #: src/virsh.c:4497
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"
-"  (especifique --help <comando> para saber mais detalhes sobre comando)\n"
+"  (especifique help <comando> para saber mais detalhes sobre o comando)\n"
 "\n"
 
 #: src/virsh.c:4593
@@ -2148,7 +2156,7 @@ msgstr "Erro de comunicação com o proxy: pacote mal formado\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "foi obtido um número de pacote assíncrono %d\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "alocando informação de domínio de %d"

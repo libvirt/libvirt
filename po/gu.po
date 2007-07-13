@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
 "PO-Revision-Date: 2007-04-10 11:36+0530\n"
 "Last-Translator: Ankit Patel <ankit@redhat.com>\n"
 "Language-Team: Gujarati <fedora-trans-gu@redhat.com>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "\n"
 "\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "જોડાણ ફાળવી રહ્યા છીએ"
 
@@ -390,6 +390,15 @@ msgstr "નેટવર્ક નામ અથવા uuid"
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "નેટવર્ક %s એ %s માંથી બન્યું\n"
+
+#: src/virterror.c:651
+msgid "invalid MAC adress"
+msgstr ""
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "%s આમાં અયોગ્ય દલીલ"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2172,7 +2181,7 @@ msgstr "પ્રોક્સી સાથે સંપર્કવ્યવહ�
 msgid "got asynchronous packet number %d\n"
 msgstr "અસુમેળ પેકેટ નંબર %d મળ્યું\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d ડોમેઈન જાણકારી ફાળવી રહ્યા છીએ"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
 "PO-Revision-Date: 2007-04-11 14:58+0300\n"
 "Last-Translator: Maxim V. Dziumanenko <dziumanenko@softprom.kiev.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "виділення з'єднання"
 
@@ -387,6 +387,15 @@ msgstr "назва мережі або uuid"
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "Мережа %s створена з %s\n"
+
+#: src/virterror.c:651
+msgid "invalid MAC adress"
+msgstr ""
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "неправильний аргумент у %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2173,7 +2182,7 @@ msgstr "Помилка зв'язку з проксі: погано сформо�
 msgid "got asynchronous packet number %d\n"
 msgstr "отримано асинхронний номер пакету - %d\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "виділення %d даних домену"

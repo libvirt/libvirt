@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
 "PO-Revision-Date: 2007-04-17 16:23+0530\n"
 "Last-Translator: I felix <ifelix@redhat.com>\n"
 "Language-Team: Tamil <fedora-trans-ta@redhat.com>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "\n"
 "\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "இணைப்புகள் ஒதுக்கப்படுகிறது"
 
@@ -393,6 +393,15 @@ msgstr "பிணைய பெயர் அல்லது uuid"
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "பிணைய %s %sலிருந்து உருவாக்கப்பட்டது\n"
+
+#: src/virterror.c:651
+msgid "invalid MAC adress"
+msgstr ""
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "%sஇல் தவறான அளவுரு"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2176,7 +2185,7 @@ msgstr "பதிலாளுடன் தொடர்பு பிழை: த�
 msgid "got asynchronous packet number %d\n"
 msgstr "ஒருங்கிணைக்கப்படாத பாக்கெட் எண் %d பெறப்பட்டது\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d செயற்களத் தகவல் ஒதுக்கப்படுகிறது"

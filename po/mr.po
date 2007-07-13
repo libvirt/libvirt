@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
 "PO-Revision-Date: 2007-01-17 10:24+0530\n"
 "Last-Translator: Rahul Bhalerao <rahul.bhalerao@redhat.com>\n"
 "Language-Team: Marathi\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Generator: KBabel 1.9.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "जोडणी वाटत आहे"
 
@@ -392,6 +392,15 @@ msgstr "डोमेन नाव किंवा uuid"
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "%s डोमेन %s पासून निर्माण केली\n"
+
+#: src/virterror.c:651
+msgid "invalid MAC adress"
+msgstr ""
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "अवैध आर्ग्यूमेंट %s मध्ये"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2205,7 +2214,7 @@ msgstr "प्रॉक्झीसह संवादात चूक: बि�
 msgid "got asynchronous packet number %d\n"
 msgstr "असिंक्रोनस पॅकेट संख्या %d मिळाली\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d डोमेन माहिती वाटत आहे"

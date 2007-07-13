@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ja\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
-"PO-Revision-Date: 2007-06-30 15:24+0900\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
+"PO-Revision-Date: 2007-07-10 11:44+0900\n"
 "Last-Translator: Hyu_gabaru Ryu_ichi <hyu_gabaru@yahoo.co.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "接続を割り当て中"
 
@@ -368,24 +368,32 @@ msgid "Failed to find the network: %s"
 msgstr "ネットワーク %s を見つけられませんでした"
 
 #: src/virterror.c:639
-#, fuzzy
 msgid "Domain not found"
-msgstr "ドメインの情報"
+msgstr "ドメインが見つかりません"
 
 #: src/virterror.c:641
-#, fuzzy, c-format
+#, c-format
 msgid "Domain not found: %s"
-msgstr "ドメインは %s から復元されました\n"
+msgstr "ドメインは見つかりませんでした: %s "
 
 #: src/virterror.c:645
-#, fuzzy
 msgid "Network not found"
-msgstr "ネットワーク名または uuid"
+msgstr "ネットワークが見つかりません"
 
 #: src/virterror.c:647
-#, fuzzy, c-format
+#, c-format
 msgid "Network not found: %s"
-msgstr "ネットワーク %s が %s から作成されました\n"
+msgstr "ネットワークが見つかりませんでした: %s "
+
+#: src/virterror.c:651
+#, fuzzy
+msgid "invalid MAC adress"
+msgstr "MAC アドレス"
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "%s で無効な引数です"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2004,14 +2012,14 @@ msgstr ""
 "  コマンド (非対話式モード):\n"
 
 #: src/virsh.c:4497
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"
-"  (コマンドに関する詳細は、 --help <command> を指定します)\n"
+"  (コマンドに関する詳細は、 help <command> を指定します)\n"
 "\n"
 
 #: src/virsh.c:4593
@@ -2076,9 +2084,8 @@ msgid "expecting an assignment"
 msgstr "割り当てを予期しています"
 
 #: src/conf.c:887 src/conf.c:941
-#, fuzzy
 msgid "failed to allocate buffer"
-msgstr "ノードの割り当てに失敗しました"
+msgstr "バッファの割り当てに失敗しました"
 
 #: src/conf.c:899
 msgid "failed to open file"
@@ -2137,7 +2144,7 @@ msgstr "プロキシで通信エラー: 不良パケット\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "非同期パケット番号 %d を取得しました\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d ドメイン情報を割り当て中"

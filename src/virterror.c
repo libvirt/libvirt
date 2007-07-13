@@ -646,6 +646,12 @@ __virErrorMsg(virErrorNumber error, const char *info)
 	    else
 		errmsg = _("Network not found: %s");
 	    break;
+    case VIR_ERR_INVALID_MAC:
+	    if (info == NULL)
+		errmsg = _("invalid MAC adress");
+	    else
+		errmsg = _("invalid MAC adress: %s");
+	    break;
     }
     return (errmsg);
 }

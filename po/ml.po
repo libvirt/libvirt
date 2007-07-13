@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ml\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
 "PO-Revision-Date: 2007-06-15 11:11+0530\n"
 "Last-Translator: Ani Peter <apeter@redhat.com>\n"
 "Language-Team: Malayalam <en@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "കണക്ഷന്‍ അനുവദിക്കുന്നു"
 
@@ -385,6 +385,15 @@ msgstr "നെറ്റ്‌വറ്‍ക്കിന്‍റെ പേര�
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "%s-ല്‍ നിന്നും നെറ്റ്‌വറ്‍ക്ക് %s ഉണ്ടാക്കിയിരിക്കുന്നു\n"
+
+#: src/virterror.c:651
+msgid "invalid MAC adress"
+msgstr ""
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "%s-ല്‍ തെറ്റായ ആര്‍ഗ്യുമെന്‍റ്"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2153,7 +2162,7 @@ msgstr "പ്രോക്സിയുമായുളള ആശയവിനി�
 msgid "got asynchronous packet number %d\n"
 msgstr "അസിന്‍ക്രൊണസ് പാക്കറ്റ് നംബര്‍ %d ലഭിച്ചിരിക്കുന്നു\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d ഡൊമെയിന്‍ വിവരം ലഭ്യമാക്കുന്നു"

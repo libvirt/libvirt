@@ -2,21 +2,21 @@
 # Copyright (C) 2006 Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 # Manuel Ospina <mospina@redhat.com>, 2006.
+# Eduardo Villagrán Morales <evillagr@fedoraproject.org>, 2007
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: es~\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
-"PO-Revision-Date: 2007-07-05 23:22-0300\n"
-"Last-Translator: Domingo Becker <domingobecker@gmail.com>\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
+"PO-Revision-Date: 2007-07-09 14:46-0400\n"
+"Last-Translator: Eduardo Villagrán Morales <evillagr@fedoraproject.org>\n"
 "Language-Team: Spanish <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.9.1\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "asignando conexión"
 
@@ -364,24 +364,32 @@ msgid "Failed to find the network: %s"
 msgstr "Falló al encontrar la red: %s"
 
 #: src/virterror.c:639
-#, fuzzy
 msgid "Domain not found"
-msgstr "información del dominio"
+msgstr "Dominio no encontrado"
 
 #: src/virterror.c:641
-#, fuzzy, c-format
+#, c-format
 msgid "Domain not found: %s"
-msgstr "Dominio restaurado desde %s\n"
+msgstr "Dominio no encontrado: %s"
 
 #: src/virterror.c:645
-#, fuzzy
 msgid "Network not found"
-msgstr "nombre de red o uuid"
+msgstr "Red no encontrada"
 
 #: src/virterror.c:647
-#, fuzzy, c-format
+#, c-format
 msgid "Network not found: %s"
-msgstr "La red %s fue creada desde %s\n"
+msgstr "Red no encontrada: %s"
+
+#: src/virterror.c:651
+#, fuzzy
+msgid "invalid MAC adress"
+msgstr "Dirección MAC"
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "argumento inválido en %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2012,14 +2020,14 @@ msgstr ""
 "  comandos (modo no interactivo):\n"
 
 #: src/virsh.c:4497
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"
-"  (especifique --help <comando> para detalles acerca del comando)\n"
+"  (especifique --help <comando> para detalles sobre el comando)\n"
 "\n"
 
 #: src/virsh.c:4593
@@ -2146,7 +2154,7 @@ msgstr "Error de comunicación con el proxy: paquete mal formado\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "se obtuvo un número de paquete %d sin sincronía\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "asignando info de dominio %d"

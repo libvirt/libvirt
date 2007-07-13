@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
 "PO-Revision-Date: 2007-04-21 10:20-0100\n"
 "Last-Translator: Xavier Conde Rueda <xavi.conde@gmail.com>\n"
 "Language-Team: Catalan <fedora@softcatala.net>\n"
@@ -28,7 +28,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "s'està assignant la connexió"
 
@@ -398,6 +398,15 @@ msgstr "nom de xarxa o uuid"
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "S'ha creat la xarxa %s des de %s\n"
+
+#: src/virterror.c:651
+msgid "invalid MAC adress"
+msgstr ""
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "argument invàlid a %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2183,7 +2192,7 @@ msgstr "Error de comunicació amb l'intermediari: paquet mal format\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "s'ha rebut un número de paquet asíncron %d\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "s'està assignant %d informació de domini"

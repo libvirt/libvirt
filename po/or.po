@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: or\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
 "PO-Revision-Date: 2007-07-03 15:11+0530\n"
 "Last-Translator: Subhransu Behera <arya_subhransu@yahoo.co.in>\n"
 "Language-Team: Oriya <oriya-group@lists.sarovar.org>\n"
@@ -31,7 +31,7 @@ msgstr ""
 "\n"
 "\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "ସଂଯୋଗ ବାଣ୍ଟୁଅଛି"
 
@@ -397,6 +397,16 @@ msgstr "ନେଟୱାର୍କ ନାମ କିମ୍ବା uuid"
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "%s ନେଟୱାର୍କ %s ରୁ ସୃଷ୍ଟ\n"
+
+#: src/virterror.c:651
+#, fuzzy
+msgid "invalid MAC adress"
+msgstr "MAC ଠିକଣା"
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "%s ରେ ଅବୈଧ ସ୍ବତନ୍ତ୍ରଚର"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2147,7 +2157,7 @@ msgstr "ପ୍ରୋକ୍ସି ସହିତ ସମ୍ବାଦ ବିନିମ
 msgid "got asynchronous packet number %d\n"
 msgstr "ତାଳହୀନ ପ୍ଯାକେଟ ସଂଖ୍ଯା %d ମିଳିଲା\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d ପରିସର ସୂଚନା ବାଣ୍ଟୁଅଛି"

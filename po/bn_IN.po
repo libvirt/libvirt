@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bn_IN\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
 "PO-Revision-Date: 2007-04-10 18:48+0530\n"
 "Last-Translator: Runa Bhattacharjee <runab@redhat.com>\n"
 "Language-Team: Bengali <en@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "\n"
 "\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "সংযোগ বরাদ্দকরণ"
 
@@ -389,6 +389,15 @@ msgstr "নেটওয়ার্কের নাম অথবা uuid"
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "%s নেটওয়ার্ক %s থেকে নির্মিত\n"
+
+#: src/virterror.c:651
+msgid "invalid MAC adress"
+msgstr ""
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "%s-র মধ্যে অবৈধ আর্গুমেন্ট"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2173,7 +2182,7 @@ msgstr "প্রক্সি সহযোগে সংযোগে সমস্
 msgid "got asynchronous packet number %d\n"
 msgstr "অ্যাসিঙ্ক্রোনাস প্যাকেট সংখ্যা %d প্রাপ্ত\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d ডোমেইন সংক্রান্ত তথ্য বরাদ্দ করা হয়েছে"

@@ -5,15 +5,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
-"PO-Revision-Date: 2007-07-06 12:22+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
+"PO-Revision-Date: 2007-07-09 17:19+0200\n"
 "Last-Translator: Piotr Drąg <raven@pmail.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "przydzielanie połączenia"
 
@@ -363,24 +363,32 @@ msgid "Failed to find the network: %s"
 msgstr "Znalezienie sieci nie powiodło się: %s"
 
 #: src/virterror.c:639
-#, fuzzy
 msgid "Domain not found"
-msgstr "informacje o domenie"
+msgstr "Nie znaleziono domeny"
 
 #: src/virterror.c:641
-#, fuzzy, c-format
+#, c-format
 msgid "Domain not found: %s"
-msgstr "Domena została przywrócona z %s\n"
+msgstr "Nie znaleziono domeny: %s"
 
 #: src/virterror.c:645
-#, fuzzy
 msgid "Network not found"
-msgstr "nazwa sieci lub UUID"
+msgstr "Nie znaleziono sieci"
 
 #: src/virterror.c:647
-#, fuzzy, c-format
+#, c-format
 msgid "Network not found: %s"
-msgstr "Sieć %s została utworzona z %s\n"
+msgstr "Nie znaleziono sieci: %s"
+
+#: src/virterror.c:651
+#, fuzzy
+msgid "invalid MAC adress"
+msgstr "Adres MAC"
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "nieprawidłowy argument w %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2007,14 +2015,14 @@ msgstr ""
 "  polecenia (tryb nieinteraktywny):\n"
 
 #: src/virsh.c:4497
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"
-"  (określ --help <polecenie>, aby uzyskać szczegóły o poleceniu)\n"
+"  (określ help <polecenie>, aby uzyskać szczegóły o poleceniu)\n"
 "\n"
 
 #: src/virsh.c:4593
@@ -2139,7 +2147,7 @@ msgstr "Błąd komunikacji z pośrednikiem: niesformowany pakiet\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "uzyskano niesynchroniczny pakiet o numerze %d\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "przydzielanie %d informacji o domenie"

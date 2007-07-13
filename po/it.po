@@ -70,7 +70,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
 "PO-Revision-Date: 2007-07-09 07:09+0200\n"
 "Last-Translator: \n"
 "Language-Team:  <it@li.org>\n"
@@ -80,7 +80,7 @@ msgstr ""
 "X-Generator: KBabel 1.9.1\n"
 "Plural-Forms:  nplurals=2; plural=(n != 1);\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "assegnazione collegamento in corso"
 
@@ -448,6 +448,16 @@ msgstr "nome della rete o uuid"
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "Rete %s creata da %s\n"
+
+#: src/virterror.c:651
+#, fuzzy
+msgid "invalid MAC adress"
+msgstr "Indirizzo MAC"
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "argomento non valido in %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2210,7 +2220,7 @@ msgstr "Errore di comunicazione con il proxy: pacchetto malformato\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "presente un numero %d asincrono del pacchetto \n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "allocazione informazioni del dominio %d"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zh_TW\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
 "PO-Revision-Date: 2007-04-10 16:18+1000\n"
 "Last-Translator: Chester Cheng <ccheng@redhat.com>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "正在分配連線"
 
@@ -387,6 +387,15 @@ msgstr "網路名稱或 uuid"
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "網路 %s 建立自 %s\n"
+
+#: src/virterror.c:651
+msgid "invalid MAC adress"
+msgstr ""
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "無效的參數，於 %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2169,7 +2178,7 @@ msgstr "使用代理伺服器時通訊錯誤：封包格式錯誤\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "取得非同步的封包號碼 %d\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "分配 %d 區域資訊"

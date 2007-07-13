@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: te\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
 "PO-Revision-Date: 2006-12-15 17:13+0530\n"
 "Last-Translator: Sree Ganesh <sthottem@redhat.com>\n"
 "Language-Team: Telugu <en@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "అనుసంధానాన్ని కేటాయిస్తోంది"
 
@@ -390,6 +390,15 @@ msgstr "క్షేత్ర నామం లేదా uuid"
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "క్షేత్రం %s %s నుండీ సృష్టించబడింది\n"
+
+#: src/virterror.c:651
+msgid "invalid MAC adress"
+msgstr ""
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "%s యందు సరికాని వాదం"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2203,7 +2212,7 @@ msgstr "proxyతో సమాచార సంబంధాల దోషం: malfo
 msgid "got asynchronous packet number %d\n"
 msgstr "asynchronous పాకెత్ సంఖ్య %dను పొందాము\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d క్షేత్ర సమాచారాన్ని కేటాయిస్తోంది"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
 "PO-Revision-Date: 2006-11-27 16:59+0100\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "allocating connection"
 
@@ -389,6 +389,15 @@ msgstr "domain name or uuid"
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "Domain %s created from %s\n"
+
+#: src/virterror.c:651
+msgid "invalid MAC adress"
+msgstr ""
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "invalid argument in %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2204,7 +2213,7 @@ msgstr "Communication error with proxy: malformed packet\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "got asynchronous packet number %d\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "allocating %d domain info"

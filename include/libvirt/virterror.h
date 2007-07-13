@@ -127,6 +127,7 @@ typedef enum {
     VIR_WAR_NO_NETWORK, /* failed to start network */
     VIR_ERR_NO_DOMAIN, /* domain not found or unexpectedly disappeared */
     VIR_ERR_NO_NETWORK, /* network not found */
+    VIR_ERR_INVALID_MAC, /* invalid MAC adress */
 } virErrorNumber;
 
 /**

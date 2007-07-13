@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
 "PO-Revision-Date: 2007-07-02 07:38+0100\n"
 "Last-Translator: Renato Pavicic <renato<-at->translator-shop.org>\n"
 "Language-Team: CROATIAN <www.translator-shop.org>\n"
@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "dodjeljivanje veze"
 
@@ -376,6 +376,16 @@ msgstr "naziv mreže ili uuid"
 #, fuzzy, c-format
 msgid "Network not found: %s"
 msgstr "Mreža %s izrađena je iz %s\n"
+
+#: src/virterror.c:651
+#, fuzzy
+msgid "invalid MAC adress"
+msgstr "MAC adresa"
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "neispravan argument pri %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2142,7 +2152,7 @@ msgstr "Pogreška u komunikaciji s proxyjem. Paket je neispravno oblikovan.\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "dobiven asinkroni broj paketa %d\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "dodjeljivanje podataka domene: %d"

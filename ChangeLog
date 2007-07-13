@@ -1,3 +1,10 @@
+Fri Jul 13 10:28:53 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/virterror.c src/xml.c include/libvirt/virterror.h:
+	  patch from Masayuki Sunou to check Ethernet MAC addresses
+	  in XML configs
+	* po/*: string update and merge
+
 Thu Jul 12 17:48:40 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* docs/libvir.html docs/remote.html: update the remote page,

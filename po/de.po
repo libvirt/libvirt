@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-09 14:14+0200\n"
-"PO-Revision-Date: 2007-07-06 09:24+1000\n"
+"POT-Creation-Date: 2007-07-13 10:22+0200\n"
+"PO-Revision-Date: 2007-07-10 09:58+1000\n"
 "Last-Translator: PGP-KeyID: 0x037FD3CF <ttrinks@redhat.com>\n"
 "Language-Team:  <de@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: src/libvirt.c:389 src/hash.c:664
+#: src/libvirt.c:405 src/hash.c:664
 msgid "allocating connection"
 msgstr "Verbindung zuweisen"
 
@@ -364,24 +364,32 @@ msgid "Failed to find the network: %s"
 msgstr "Netzwerk wurde nicht gefunden: %s"
 
 #: src/virterror.c:639
-#, fuzzy
 msgid "Domain not found"
-msgstr "Domain-Informationen"
+msgstr "Domain nicht gefunden"
 
 #: src/virterror.c:641
-#, fuzzy, c-format
+#, c-format
 msgid "Domain not found: %s"
-msgstr "Domain aus %s wiederhergestellt\n"
+msgstr "Domain nicht gefunden: %s"
 
 #: src/virterror.c:645
-#, fuzzy
 msgid "Network not found"
-msgstr "Netzwerk-Name oder UUID"
+msgstr "Netzwerk nicht gefunden"
 
 #: src/virterror.c:647
-#, fuzzy, c-format
+#, c-format
 msgid "Network not found: %s"
-msgstr "Netzwerk %s von %s erstellt\n"
+msgstr "Netzwerk nicht gefunden: %s"
+
+#: src/virterror.c:651
+#, fuzzy
+msgid "invalid MAC adress"
+msgstr "MAC-Adresse"
+
+#: src/virterror.c:653
+#, fuzzy, c-format
+msgid "invalid MAC adress: %s"
+msgstr "ungültiger Parameter in %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -2009,14 +2017,14 @@ msgstr ""
 "  commands (non interactive mode):\n"
 
 #: src/virsh.c:4497
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"
-"  (geben Sie --help <command> an, um Details zum Befehl zu erhalten)\n"
+"  (geben Sie help <command> an, um Details zum Befehl zu erhalten)\n"
 "\n"
 
 #: src/virsh.c:4593
@@ -2141,7 +2149,7 @@ msgstr "Kommunikationsfehler mit dem Proxy: fehlerhaftes Paket\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "erhielt asynchrone Paketnummer %d\n"
 
-#: src/xen_internal.c:2301
+#: src/xen_internal.c:2315
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d Domain-Info zuweisen"
