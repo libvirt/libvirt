@@ -1,3 +1,8 @@
+Fri Jul 13 14:25:16 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xml.c: applied modified patch from Masayuki Sunou for
+	  device hot plug description with a wrong root element.
+
 Fri Jul 13 10:28:53 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virterror.c src/xml.c include/libvirt/virterror.h:

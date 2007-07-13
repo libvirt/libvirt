@@ -1351,6 +1351,9 @@ virParseXMLDevice(virConnectPtr conn, char *xmldesc, int hvm, int xendConfigVers
     else if (xmlStrEqual(node->name, BAD_CAST "interface")) {
         if (virDomainParseXMLIfDesc(conn, node, &buf, hvm, xendConfigVersion) != 0)
             goto error;
+    } else {
+        virXMLError(conn, VIR_ERR_XML_ERROR, (const char *) node->name, 0);
+	goto error;
     }
  cleanup:
     if (xml != NULL)
