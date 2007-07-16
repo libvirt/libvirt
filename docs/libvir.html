@@ -2239,8 +2239,14 @@ Blank lines and comments beginning with <code>#</code> are ignored.
 <h3><a name="Remote_IPv6">IPv6 support</a></h3>
 
 <p>
-IPv6 has received some limited testing and should work.  Problems with
-libvirt and IPv6 should be reported as <a href="bugs.html">bugs</a>.
+The libvirtd service and libvirt remote client driver both use the
+<code>getaddrinfo()</code> functions for name resolution and are
+thus fully IPv6 enabled. ie, if a server has IPv6 address configured
+the daemon will listen for incoming connections on both IPv4 and IPv6
+protocols. If a client has an IPv6 address configured and the DNS
+address resolved for a service is reachable over IPv6, then an IPv6
+connection will be made, otherwise IPv4 will be used. In summary it
+should just 'do the right thing(tm)'.
 </p>
 
 <h3><a name="Remote_limitations">Limitations</a></h3>
