@@ -967,6 +967,20 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     if (obj)
         xmlXPathFreeObject(obj);
 
+    /* See if we set clock to localtime */
+    obj = xmlXPathEval(BAD_CAST "string(/domain/clock/@offset)", ctxt);
+    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
+        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
+        def->localtime = 0;
+    } else {
+        if (!strcmp((char*)obj->stringval, "localtime"))
+            def->localtime = 1;
+        else
+            def->localtime = 0;
+    }
+    if (obj)
+        xmlXPathFreeObject(obj);
+
 
     /* Extract OS type info */
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/type[1])", ctxt);
@@ -1338,6 +1352,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
         2 + /* cpus */
         2 + /* boot device */
         2 + /* monitor */
+        (vm->def->localtime ? 1 : 0) + /* localtime */
         (driver->qemuCmdFlags & QEMUD_CMD_FLAG_NO_REBOOT &&
          vm->def->noReboot ? 1 : 0) + /* no-reboot */
         (vm->def->features & QEMUD_FEATURE_ACPI ? 0 : 1) + /* acpi */
@@ -1375,6 +1390,11 @@ int qemudBuildCommandLine(virConnectPtr conn,
         goto no_memory;
     if (!((*argv)[++n] = strdup("pty")))
         goto no_memory;
+
+    if (vm->def->localtime) {
+        if (!((*argv)[++n] = strdup("-localtime")))
+            goto no_memory;
+    }
 
     if (driver->qemuCmdFlags & QEMUD_CMD_FLAG_NO_REBOOT &&
         vm->def->noReboot) {
@@ -2622,6 +2642,8 @@ char *qemudGenerateXML(virConnectPtr conn,
         if (virBufferAdd(buf, "  </features>\n", -1) < 0)
             goto no_memory;
     }
+
+    virBufferVSprintf(buf, "  <clock offset='%s'/>\n", def->localtime ? "localtime" : "utc");
 
     if (virBufferAdd(buf, "  <on_poweroff>destroy</on_poweroff>\n", -1) < 0)
         goto no_memory;

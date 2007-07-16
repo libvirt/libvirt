@@ -117,6 +117,7 @@ systems:</p><pre>&lt;domain type='xen' id='3'&gt;
      &lt;acpi/&gt;
      &lt;apic/&gt;</span>
   &lt;/features&gt;
+  <span style="color: #0000E5; background-color: #FFFFFF">&lt;clock sync="localtime"/&gt;</span>
   &lt;devices&gt;
     <span style="color: #0000E5; background-color: #FFFFFF">&lt;emulator&gt;/usr/lib/xen/bin/qemu-dm&lt;/emulator&gt;</span>
     &lt;interface type='bridge'&gt;
@@ -146,6 +147,11 @@ systems:</p><pre>&lt;domain type='xen' id='3'&gt;
       <li><code>apic</code> - enable IO APIC</li>
       <li><code>acpi</code> - enable ACPI bios</li>
     </ul></li>
+  <li>the optional <code>&lt;clock&gt;</code> element is used to specify
+     whether the emulated BIOS clock in the guest is synced to either
+     <code>localtime</code> or <code>utc</code>. In general Windows will
+     want <code>localtime</code> while all other operating systems will
+     want <code>utc</code>. The default is thus <code>utc</code></li>
   <li>the <code>&lt;os&gt;</code> block description is very different, first
     it indicates that the type is 'hvm' for hardware virtualization, then
     instead of a kernel, boot and command line arguments, it points to an os
@@ -194,6 +200,7 @@ XML description is quite similar, here is a simple example:</p><pre>&lt;domain <
   &lt;os&gt;
     &lt;type&gt;hvm&lt;/type&gt;
   &lt;/os&gt;
+  <span style="color: #0000E5; background-color: #FFFFFF">&lt;clock sync="localtime"/&gt;</span>
   &lt;devices&gt;
     <span style="color: #FF0000; background-color: #FFFFFF">&lt;emulator&gt;/home/user/usr/kvm-devel/bin/qemu-system-x86_64&lt;/emulator&gt;</span>
     &lt;disk type='file' device='disk'&gt;
@@ -206,6 +213,7 @@ XML description is quite similar, here is a simple example:</p><pre>&lt;domain <
     &lt;graphics type='vnc' port='-1'/&gt;
   &lt;/devices&gt;
 &lt;/domain&gt;</pre><p>The specific points to note if using KVM are:</p><ul><li>the top level domain element carries a type of 'kvm'</li>
+  <li>the &lt;clock&gt; optional is supported as with Xen HVM</li>
   <li>the &lt;devices&gt; emulator points to the special qemu binary required
     for KVM</li>
   <li>networking interface definitions definitions are somewhat different due

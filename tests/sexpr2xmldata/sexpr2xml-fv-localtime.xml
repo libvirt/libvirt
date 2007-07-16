@@ -14,15 +14,9 @@
   <features>
     <acpi/>
   </features>
-  <clock offset='utc'/>
+  <clock offset='localtime'/>
   <devices>
     <emulator>/usr/lib64/xen/bin/qemu-dm</emulator>
-    <disk type='file' device='cdrom'>
-      <driver name='file'/>
-      <source file='/root/boot.iso'/>
-      <target dev='hdc'/>
-      <readonly/>
-    </disk>
     <disk type='file' device='disk'>
       <driver name='file'/>
       <source file='/root/foo.img'/>
@@ -33,6 +27,12 @@
       <mac address='00:16:3e:1b:b1:47'/>
       <script path='vif-bridge'/>
     </interface>
-    <graphics type='vnc' port='-1' keymap='ja'/>
+    <disk type='file' device='cdrom'>
+      <driver name='file'/>
+      <source file='/root/boot.iso'/>
+      <target dev='hdc'/>
+      <readonly/>
+    </disk>
+    <graphics type='vnc' port='5903' keymap='ja'/>
   </devices>
 </domain>

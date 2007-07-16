@@ -562,6 +562,11 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf
         }
     }
 
+    str = virXPathString("string(/domain/clock/@offset)", ctxt);
+    if (str != NULL && !strcmp(str, "localtime")) {
+        virBufferAdd(buf, "(localtime 1)", 13);
+    }
+
     virBufferAdd(buf, "))", 2);
 
     return (0);

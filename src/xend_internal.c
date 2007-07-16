@@ -1442,6 +1442,8 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
         virBufferVSprintf(&buf, "  <on_crash>%s</on_crash>\n", tmp);
 
     if (hvm) {
+        int clockLocal;
+
         virBufferAdd(&buf, "  <features>\n", 13);
         if (sexpr_int(root, "domain/image/hvm/acpi"))
             virBufferAdd(&buf, "    <acpi/>\n", 12);
@@ -1450,6 +1452,9 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
         if (sexpr_int(root, "domain/image/hvm/pae"))
             virBufferAdd(&buf, "    <pae/>\n", 11);
         virBufferAdd(&buf, "  </features>\n", 14);
+
+        clockLocal = sexpr_int(root, "domain/image/hvm/localtime");
+        virBufferVSprintf(&buf, "  <clock offset='%s'/>\n", clockLocal ? "localtime" : "utc");
     }
 
     virBufferAdd(&buf, "  <devices>\n", 12);

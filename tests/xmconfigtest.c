@@ -49,7 +49,7 @@ static int testCompareParseXML(const char *xmcfg, const char *xml, int xendConfi
     void *old_priv;
     struct _xenUnifiedPrivate priv;
 
-    conn = virConnectOpen("test:///default");
+    conn = virConnectOpenReadOnly("test:///default");
     if (!conn) goto fail;
     old_priv = conn->privateData;
 
@@ -70,12 +70,13 @@ static int testCompareParseXML(const char *xmcfg, const char *xml, int xendConfi
         goto fail;
     gotxmcfgPtr[wrote] = '\0';
 
-    if (getenv("DEBUG_TESTS")) {
-        printf("Expect %d '%s'\n", (int)strlen(xmcfgData), xmcfgData);
-        printf("Actual %d '%s'\n", (int)strlen(gotxmcfgData), gotxmcfgData);
-    }
-    if (strcmp(xmcfgData, gotxmcfgData))
+    if (strcmp(xmcfgData, gotxmcfgData)) {
+        if (getenv("DEBUG_TESTS")) {
+            printf("Expect %d '%s'\n", (int)strlen(xmcfgData), xmcfgData);
+            printf("Actual %d '%s'\n", (int)strlen(gotxmcfgData), gotxmcfgData);
+        }
         goto fail;
+    }
 
     ret = 0;
 
@@ -103,7 +104,7 @@ static int testCompareFormatXML(const char *xmcfg, const char *xml, int xendConf
     void *old_priv;
     struct _xenUnifiedPrivate priv;
 
-    conn = virConnectOpen("test:///default");
+    conn = virConnectOpenReadOnly("test:///default");
     if (!conn) goto fail;
     old_priv = conn->privateData;
 
@@ -123,12 +124,13 @@ static int testCompareFormatXML(const char *xmcfg, const char *xml, int xendConf
     if (!(gotxml = xenXMDomainFormatXML(conn, conf)))
         goto fail;
 
-    if (getenv("DEBUG_TESTS")) {
-        printf("Expect %d '%s'\n", (int)strlen(xmlData), xmlData);
-        printf("Actual %d '%s'\n", (int)strlen(gotxml), gotxml);
-    }
-    if (strcmp(xmlData, gotxml))
+    if (strcmp(xmlData, gotxml)) {
+        if (getenv("DEBUG_TESTS")) {
+            printf("Expect %d '%s'\n", (int)strlen(xmlData), xmlData);
+            printf("Actual %d '%s'\n", (int)strlen(gotxml), gotxml);
+        }
         goto fail;
+    }
 
     ret = 0;
 
@@ -190,6 +192,29 @@ static int testCompareFullvirtNewCDROMParse(void *data ATTRIBUTE_UNUSED) {
                                2);
 }
 
+static int testCompareFullvirtClockUTCFormat(void *data ATTRIBUTE_UNUSED) {
+    return testCompareFormatXML("xmconfigdata/test-fullvirt-utc.cfg",
+                                "xmconfigdata/test-fullvirt-utc.xml",
+                                2);
+}
+
+static int testCompareFullvirtClockUTCParse(void *data ATTRIBUTE_UNUSED) {
+    return testCompareParseXML("xmconfigdata/test-fullvirt-utc.cfg",
+                               "xmconfigdata/test-fullvirt-utc.xml",
+                               2);
+}
+
+static int testCompareFullvirtClockLocaltimeFormat(void *data ATTRIBUTE_UNUSED) {
+    return testCompareFormatXML("xmconfigdata/test-fullvirt-localtime.cfg",
+                                "xmconfigdata/test-fullvirt-localtime.xml",
+                                2);
+}
+static int testCompareFullvirtClockLocaltimeParse(void *data ATTRIBUTE_UNUSED) {
+    return testCompareParseXML("xmconfigdata/test-fullvirt-localtime.cfg",
+                               "xmconfigdata/test-fullvirt-localtime.xml",
+                               2);
+}
+
 
 int
 main(int argc, char **argv)
@@ -203,22 +228,27 @@ main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
+    /* Config -> XML */
     if (virtTestRun("Paravirt old PVFB (Format)",
                     1, testCompareParavirtOldPVFBFormat, NULL) != 0)
         ret = -1;
-
     if (virtTestRun("Paravirt new PVFB (Format)",
                     1, testCompareParavirtNewPVFBFormat, NULL) != 0)
         ret = -1;
-
     if (virtTestRun("Fullvirt old PVFB (Format)",
                     1, testCompareFullvirtOldCDROMFormat, NULL) != 0)
         ret = -1;
-
     if (virtTestRun("Fullvirt new PVFB (Format)",
                     1, testCompareFullvirtNewCDROMFormat, NULL) != 0)
         ret = -1;
+    if (virtTestRun("Fullvirt clock Localtime (Format)",
+                    1, testCompareFullvirtClockLocaltimeFormat, NULL) != 0)
+        ret = -1;
+    if (virtTestRun("Fullvirt clock UTC (Format)",
+                    1, testCompareFullvirtClockUTCFormat, NULL) != 0)
+        ret = -1;
 
+    /* XML -> Config */
     if (virtTestRun("Paravirt old PVFB (Parse)",
                     1, testCompareParavirtOldPVFBParse, NULL) != 0)
         ret = -1;
@@ -230,6 +260,12 @@ main(int argc, char **argv)
         ret = -1;
     if (virtTestRun("Fullvirt new PVFB (Parse)",
                     1, testCompareFullvirtNewCDROMParse, NULL) != 0)
+        ret = -1;
+    if (virtTestRun("Fullvirt clock Localtime (Parse)",
+                    1, testCompareFullvirtClockLocaltimeParse, NULL) != 0)
+        ret = -1;
+    if (virtTestRun("Fullvirt clock UTC (Parse)",
+                    1, testCompareFullvirtClockUTCParse, NULL) != 0)
         ret = -1;
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);

@@ -17,6 +17,7 @@
     <apic/>
     <pae/>
   </features>
+  <clock offset='utc'/>
   <devices>
     <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
     <interface type='bridge'>

@@ -1,3 +1,16 @@
+Mon Jul 16 16:59:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c, src/qemu_conf.h, src/xend_internal.c,
+	src/xm_internal.c, src/xml.c: Added support for the <clock/>
+	element to switch between UTC and localtime in guests
+	* tests/sexpr2xmltest.c, tests/xmconfigtest.c,
+	tests/xml2sexprtest.c, tests/sexpr2xmldata/*,
+	tests/xml2sexprdata/*, tests/xmconfigdata/*: Added test
+	cases for new <clock/> element, and adapted existing expected
+	data files where needed.
+	* docs/libvir.html, docs/format.html: Added docs about the
+	new <clock/> element
+
 Fri Jul 13 14:25:16 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xml.c: applied modified patch from Masayuki Sunou for

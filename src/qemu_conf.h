@@ -164,6 +164,7 @@ struct qemud_vm_def {
 
     struct qemud_vm_os_def os;
 
+    int localtime;
     int features;
     int graphicsType;
     int vncPort;

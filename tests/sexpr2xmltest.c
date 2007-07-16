@@ -28,12 +28,13 @@ static int testCompareFiles(const char *xml, const char *sexpr, int xendConfigVe
   if (!(gotxml = xend_parse_domain_sexp(NULL, sexprData, xendConfigVersion)))
     goto fail;
 
-  if (getenv("DEBUG_TESTS")) {
-      printf("Expect %d '%s'\n", (int)strlen(xmlData), xmlData);
-      printf("Actual %d '%s'\n", (int)strlen(gotxml), gotxml);
-  }
-  if (strcmp(xmlData, gotxml))
+  if (strcmp(xmlData, gotxml)) {
+    if (getenv("DEBUG_TESTS")) {
+        printf("Expect %d '%s'\n", (int)strlen(xmlData), xmlData);
+        printf("Actual %d '%s'\n", (int)strlen(gotxml), gotxml);
+    }
     goto fail;
+  }
 
   ret = 0;
 
@@ -136,6 +137,19 @@ static int testCompareNoSourceCDRom(void *data ATTRIBUTE_UNUSED) {
 			  1);
 }
 
+static int testCompareFVclockUTC(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("sexpr2xmldata/sexpr2xml-fv-utc.xml",
+			  "sexpr2xmldata/sexpr2xml-fv-utc.sexpr",
+			  1);
+}
+
+static int testCompareFVclockLocaltime(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("sexpr2xmldata/sexpr2xml-fv-localtime.xml",
+			  "sexpr2xmldata/sexpr2xml-fv-localtime.sexpr",
+			  1);
+}
+
+
 
 int
 main(int argc, char **argv)
@@ -207,6 +221,14 @@ main(int argc, char **argv)
 
     if (virtTestRun("SEXPR-2-XML no source CDRom",
 		    1, testCompareNoSourceCDRom, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("SEXPR-2-XML clock UTC",
+		    1, testCompareFVclockUTC, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("SEXPR-2-XML clock Localtime",
+		    1, testCompareFVclockLocaltime, NULL) != 0)
 	ret = -1;
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);

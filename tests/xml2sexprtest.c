@@ -187,6 +187,20 @@ static int testCompareNoSourceCDRom(void *data ATTRIBUTE_UNUSED) {
 			  2);
 }
 
+static int testCompareFVclockUTC(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("xml2sexprdata/xml2sexpr-fv-utc.xml",
+			  "xml2sexprdata/xml2sexpr-fv-utc.sexpr",
+			  "fvtest",
+			  1);
+}
+
+static int testCompareFVclockLocaltime(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("xml2sexprdata/xml2sexpr-fv-localtime.xml",
+			  "xml2sexprdata/xml2sexpr-fv-localtime.sexpr",
+			  "fvtest",
+			  1);
+}
+
 
 int
 main(int argc, char **argv)
@@ -274,6 +288,14 @@ main(int argc, char **argv)
 
     if (virtTestRun("XML-2-SEXPR No Source CDRom",
 		    1, testCompareNoSourceCDRom, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("XML-2-SEXPR clock UTC",
+		    1, testCompareFVclockUTC, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("XML-2-SEXPR clock Localtime",
+		    1, testCompareFVclockLocaltime, NULL) != 0)
 	ret = -1;
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);

@@ -708,6 +708,10 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             val)
             virBufferAdd(buf, "    <apic/>\n", -1);
         virBufferAdd(buf, "  </features>\n", -1);
+
+        if (xenXMConfigGetInt(conf, "localtime", &val) < 0)
+            val = 0;
+        virBufferVSprintf(buf, "  <clock offset='%s'/>\n", val ? "localtime" : "utc");
     }
 
     virBufferAdd(buf, "  <devices>\n", -1);
@@ -1812,6 +1816,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
 
     if (hvm) {
         const char *boot = "c";
+        int clockLocal = 0;
         if (xenXMConfigSetString(conf, "builder", "hvm") < 0)
             goto error;
 
@@ -1843,6 +1848,16 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
 
         if (xenXMConfigSetIntFromXPath(conn, conf, ctxt, "apic", "string(count(/domain/features/apic))", 0, 0,
                                        "cannot set the apic parameter") < 0)
+            goto error;
+
+        obj = xmlXPathEval(BAD_CAST "string(/domain/clock/@offset)", ctxt);
+        if ((obj != NULL) && (obj->type == XPATH_STRING) &&
+            (obj->stringval != NULL)) {
+            if (!strcmp((const char*)obj->stringval, "localtime"))
+                clockLocal = 1;
+        }
+        xmlXPathFreeObject(obj);
+        if (xenXMConfigSetInt(conf, "localtime", clockLocal) < 0)
             goto error;
 
         if (priv->xendConfigVersion == 1) {
