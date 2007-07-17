@@ -85,11 +85,14 @@ virInitialize(void)
 #ifdef WITH_TEST
     if (testRegister() == -1) return -1;
 #endif
-#ifdef WITH_QEMU
+#ifdef WITH_QEMU 
     if (qemudRegister() == -1) return -1;
 #endif
 #ifdef WITH_XEN
     if (xenUnifiedRegister () == -1) return -1;
+#endif
+#ifdef WITH_OPENVZ
+    if (openvzRegister() == -1) return -1;
 #endif
 #ifdef WITH_REMOTE
     if (remoteRegister () == -1) return -1;

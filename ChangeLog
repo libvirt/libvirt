@@ -1,3 +1,11 @@
+Tue Jul 17 15:24:27 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in src/Makefile.am src/driver.h src/libvirt.c:
+	  applied patch from Shuveb Hussain to plug the developping
+	  OpenVZ support. Disabled by default.
+	* src/openvz_conf.[ch] src/openvz_driver.[ch]: added new
+	  OpenVZ driver files. Avoid a redefinition of readline().
+
 Mon Jul 16 17:36:24 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* docs/libvir.html, docs/remote.html: Re-write notes on IPV6

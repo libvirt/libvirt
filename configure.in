@@ -75,6 +75,8 @@ AC_ARG_WITH(xen,
 [  --with-xen              add XEN support (on)])
 AC_ARG_WITH(qemu,
 [  --with-qemu             add QEMU/KVM support (on)])
+AC_ARG_WITH(openvz,
+[  --with-openvz           add OpenVZ support (off)])
 AC_ARG_WITH(test,
 [  --with-test             add test driver support (on)])
 AC_ARG_WITH(remote,
@@ -173,6 +175,12 @@ AC_ARG_WITH(depends,
 LIBVIRT_FEATURES=
 WITH_XEN=0
 
+if test "$with_openvz" = "yes" ; then
+    echo "Enabling OpenVZ support"
+    LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_OPENVZ"
+else
+    echo "Disabling OpenVZ support"
+fi
 if test "$with_qemu" = "no" ; then
     echo "Disabling QEMU/KVM support"
 else
