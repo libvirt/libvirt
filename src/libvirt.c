@@ -30,6 +30,9 @@
 #include "xen_unified.h"
 #include "remote_internal.h"
 #include "qemu_driver.h"
+#ifdef WITH_OPENVZ
+#include "openvz_driver.h"
+#endif
 
 /*
  * TODO:

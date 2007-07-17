@@ -331,6 +331,7 @@ char *openvzLocateConfDir(void)
 
 /* Richard Steven's classic readline() function */
 
+static
 int openvz_readline(int fd, char *ptr, int maxlen)
 {
     int n, rc;
@@ -353,27 +354,6 @@ int openvz_readline(int fd, char *ptr, int maxlen)
     }
     *ptr = 0;
     return n;
-}
-
-void openvzGenerateUUID(unsigned char *uuid)
-{
-    unsigned int i;
-    int fd;
-    
-    /* seed rand() with kernel entrophy */
-    fd =  open("/dev/urandom", O_RDONLY);
-    if(fd != -1) {
-        read(fd, &i, sizeof(int));
-        srand(i);
-        close(fd);
-    }
-    else {
-        srand((int) time(NULL));
-    }
-
-    for (i = 0 ; i < VIR_UUID_BUFLEN ; i++) {
-        uuid[i] = (unsigned char)(1 + (int) (256.0 * (rand() / (RAND_MAX + 1.0))));
-    }
 }
 
 int openvzGetVPSUUID(int vpsid, char *uuidbuf)
@@ -437,7 +417,7 @@ int openvzSetUUID(int vpsid)
         return -1;
 
     if(uuid[0] == (int)NULL) {
-        openvzGenerateUUID(new_uuid);
+        virUUIDGenerate(new_uuid);
         bzero(uuid, (VIR_UUID_BUFLEN * 2) + 1);
         for(i = 0; i < VIR_UUID_BUFLEN; i ++)
             sprintf(uuid + (i * 2), "%02x", (unsigned char)new_uuid[i]);

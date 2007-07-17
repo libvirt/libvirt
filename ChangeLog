@@ -1,3 +1,8 @@
+Tue Jul 17 16:39:18 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/openvz_conf.c src/libvirt.c: cleanup, avoid some warnings,
+	  and reuse the existing uuid generation function.
+
 Tue Jul 17 15:24:27 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in src/Makefile.am src/driver.h src/libvirt.c:
