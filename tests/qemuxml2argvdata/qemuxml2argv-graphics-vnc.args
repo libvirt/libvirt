@@ -1,0 +1,1 @@
+/usr/bin/qemu -M pc -m 214 -smp 1 -monitor pty -no-acpi -boot c -hda /dev/HostVG/QEMUGuest1 -net none -usb -vnc 127.0.0.1:3

@@ -1,0 +1,1 @@
+/usr/bin/qemu -M pc -m 214 -smp 1 -monitor pty -no-acpi -boot d -cdrom /dev/cdrom -net none -usb -nographic

@@ -1,3 +1,10 @@
+Wed Jul 18 17:15:08 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* tests/Makefile.am: Added QEMU tests
+	* tests/qemuxml2argvdata/*: Data files for QEMU tests
+	* tests/qemuxml2argvtest.c: Test XML -> argv conversion
+	* tests/qemuxml2xmltest.c: Test XML -> XML roundtrip
+
 Wed Jul 18 17:11:08 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xmlrpctest.c, src/xml2sexprtest.c: More void * to

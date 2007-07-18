@@ -1,0 +1,1 @@
+/usr/bin/qemu -M pc -m 214 -smp 1 -monitor pty -no-acpi -boot c -hda /dev/HostVG/QEMUGuest1 -fda /dev/fd0 -fdb /tmp/firmware.img -net none -usb -nographic

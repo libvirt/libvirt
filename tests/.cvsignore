@@ -10,6 +10,8 @@ conftest
 reconnect
 xmconfigtest
 xencapstest
+qemuxml2xmltest
+qemuxml2argvtest
 *.gcda
 *.gcno
 
