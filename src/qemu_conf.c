@@ -1159,7 +1159,6 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
             } else if (!strcmp((char *)prop, "net")) {
                 def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_NET;
             } else {
-                xmlFree(prop);
                 goto error;
             }
             xmlFree(prop);

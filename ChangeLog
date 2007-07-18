@@ -1,3 +1,8 @@
+Wed Jul 18 17:45:08 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c: Remove double free of XML property upon
+	error cleanup
+
 Wed Jul 18 17:15:08 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* tests/Makefile.am: Added QEMU tests
