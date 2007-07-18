@@ -14,7 +14,7 @@
   <features>
     <acpi/>
   </features>
-  <clock offset='localtime'/>
+  <clock offset='utc'/>
   <devices>
     <emulator>/usr/lib64/xen/bin/qemu-dm</emulator>
     <disk type='file' device='disk'>
@@ -33,6 +33,7 @@
       <target dev='hdc'/>
       <readonly/>
     </disk>
+    <input type='tablet' bus='usb'/>
     <input type='mouse' bus='ps2'/>
     <graphics type='vnc' port='5903' keymap='ja'/>
   </devices>

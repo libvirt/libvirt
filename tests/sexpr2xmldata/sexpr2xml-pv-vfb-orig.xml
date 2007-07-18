@@ -18,6 +18,7 @@
       <source file='/root/some.img'/>
       <target dev='xvda'/>
     </disk>
+    <input type='mouse' bus='xen'/>
     <graphics type='vnc' port='-1' listen='0.0.0.0' keymap='ja'/>
   </devices>
 </domain>

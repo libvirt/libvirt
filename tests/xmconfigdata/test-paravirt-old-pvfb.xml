@@ -18,6 +18,7 @@
       <mac address='00:16:3E:66:94:9C'/>
       <ip address='192.168.0.9'/>
     </interface>
+    <input type='mouse' bus='xen'/>
     <graphics type='vnc' port='-1' listen='127.0.0.1' passwd='123poi'/>
     <console/>
   </devices>

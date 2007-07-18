@@ -44,111 +44,122 @@ static int testCompareFiles(const char *xml, const char *sexpr, int xendConfigVe
   return ret;
 }
 
-static int testComparePVversion1(void *data ATTRIBUTE_UNUSED) {
+static int testComparePVversion1(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-pv.xml",
 			  "sexpr2xmldata/sexpr2xml-pv.sexpr",
 			  1);
 }
 
-static int testCompareFVversion1(void *data ATTRIBUTE_UNUSED) {
+static int testCompareFVversion1(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-fv.xml",
 			  "sexpr2xmldata/sexpr2xml-fv.sexpr",
 			  1);
 }
 
-static int testComparePVversion2(void *data ATTRIBUTE_UNUSED) {
+static int testComparePVversion2(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-pv.xml",
 			  "sexpr2xmldata/sexpr2xml-pv.sexpr",
 			  2);
 }
 
-static int testComparePVOrigVFB(void *data ATTRIBUTE_UNUSED) {
+static int testComparePVOrigVFB(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-pv-vfb-orig.xml",
                           "sexpr2xmldata/sexpr2xml-pv-vfb-orig.sexpr",
                           2);
 }
 
 
-static int testComparePVNewVFB(void *data ATTRIBUTE_UNUSED) {
+static int testComparePVNewVFB(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-pv-vfb-new.xml",
                           "sexpr2xmldata/sexpr2xml-pv-vfb-new.sexpr",
                           3);
 }
 
 
-static int testCompareFVversion2(void *data ATTRIBUTE_UNUSED) {
+static int testCompareFVversion2(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-fv-v2.xml",
 			  "sexpr2xmldata/sexpr2xml-fv-v2.sexpr",
 			  2);
 }
 
-static int testComparePVBootloader(void *data ATTRIBUTE_UNUSED) {
+static int testComparePVBootloader(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-pv-bootloader.xml",
 			  "sexpr2xmldata/sexpr2xml-pv-bootloader.sexpr",
 			  2);
 }
 
-static int testCompareDiskFile(void *data ATTRIBUTE_UNUSED) {
+static int testCompareDiskFile(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-disk-file.xml",
 			  "sexpr2xmldata/sexpr2xml-disk-file.sexpr",
 			  1);
 }
 
-static int testCompareDiskBlock(void *data ATTRIBUTE_UNUSED) {
+static int testCompareDiskBlock(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-disk-block.xml",
 			  "sexpr2xmldata/sexpr2xml-disk-block.sexpr",
 			  1);
 }
 
-static int testCompareDiskDrvBlktapQcow(void *data ATTRIBUTE_UNUSED) {
+static int testCompareDiskDrvBlktapQcow(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-disk-drv-blktap-qcow.xml",
 			  "sexpr2xmldata/sexpr2xml-disk-drv-blktap-qcow.sexpr",
 			  1);
 }
 
-static int testCompareDiskDrvBlktapRaw(void *data ATTRIBUTE_UNUSED) {
+static int testCompareDiskDrvBlktapRaw(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-disk-drv-blktap-raw.xml",
 			  "sexpr2xmldata/sexpr2xml-disk-drv-blktap-raw.sexpr",
 			  1);
 }
 
-static int testCompareResizedMemory(void *data ATTRIBUTE_UNUSED) {
+static int testCompareResizedMemory(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-curmem.xml",
 			  "sexpr2xmldata/sexpr2xml-curmem.sexpr",
 			  1);
 }
 
 
-static int testCompareNetRouted(void *data ATTRIBUTE_UNUSED) {
+static int testCompareNetRouted(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-net-routed.xml",
 			  "sexpr2xmldata/sexpr2xml-net-routed.sexpr",
 			  1);
 }
 
-static int testCompareNetBridged(void *data ATTRIBUTE_UNUSED) {
+static int testCompareNetBridged(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-net-bridged.xml",
 			  "sexpr2xmldata/sexpr2xml-net-bridged.sexpr",
 			  1);
 }
 
-static int testCompareNoSourceCDRom(void *data ATTRIBUTE_UNUSED) {
+static int testCompareNoSourceCDRom(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-no-source-cdrom.xml",
 			  "sexpr2xmldata/sexpr2xml-no-source-cdrom.sexpr",
 			  1);
 }
 
-static int testCompareFVclockUTC(void *data ATTRIBUTE_UNUSED) {
+static int testCompareFVInputUSBMouse(const void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("sexpr2xmldata/sexpr2xml-fv-usbmouse.xml",
+			  "sexpr2xmldata/sexpr2xml-fv-usbmouse.sexpr",
+			  1);
+}
+
+static int testCompareFVInputUSBTablet(const void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("sexpr2xmldata/sexpr2xml-fv-usbtablet.xml",
+			  "sexpr2xmldata/sexpr2xml-fv-usbtablet.sexpr",
+			  1);
+}
+
+static int testCompareFVclockUTC(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-fv-utc.xml",
 			  "sexpr2xmldata/sexpr2xml-fv-utc.sexpr",
 			  1);
 }
 
-static int testCompareFVclockLocaltime(void *data ATTRIBUTE_UNUSED) {
+static int testCompareFVclockLocaltime(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-fv-localtime.xml",
 			  "sexpr2xmldata/sexpr2xml-fv-localtime.sexpr",
 			  1);
 }
-
 
 
 int
@@ -221,6 +232,13 @@ main(int argc, char **argv)
 
     if (virtTestRun("SEXPR-2-XML no source CDRom",
 		    1, testCompareNoSourceCDRom, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("SEXPR-2-XML USB Mouse",
+		    1, testCompareFVInputUSBMouse, NULL) != 0)
+	ret = -1;
+    if (virtTestRun("SEXPR-2-XML USB Tablet",
+		    1, testCompareFVInputUSBTablet, NULL) != 0)
 	ret = -1;
 
     if (virtTestRun("SEXPR-2-XML clock UTC",

@@ -416,11 +416,12 @@ static int
 virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf, xmlXPathContextPtr ctxt, int vcpus, int xendConfigVersion)
 {
     xmlNodePtr cur, txt;
+    xmlNodePtr *nodes = NULL;
     xmlChar *type = NULL;
     xmlChar *loader = NULL;
     char bootorder[5];
     int nbootorder = 0;
-    int res;
+    int res, nb_nodes;
     char *str;
 
     cur = node->children;
@@ -540,6 +541,57 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf
     if (virXPathNode("/domain/features/pae", ctxt) != NULL)
         virBufferAdd(buf, "(pae 1)", 7);
 
+    virBufferAdd(buf, "(usb 1)", 7);
+    nb_nodes = virXPathNodeSet("/domain/devices/input", ctxt, &nodes);
+    if (nb_nodes > 0) {
+        int i;
+        for (i = 0; i < nb_nodes; i++) {
+            xmlChar *itype = NULL, *bus = NULL;
+            int isMouse = 1;
+
+            itype = xmlGetProp(nodes[i], (xmlChar *)"type");
+
+            if (!itype) {
+                goto error;
+            }
+            if (!strcmp((const char *)itype, "tablet"))
+                isMouse = 0;
+            else if (strcmp((const char*)itype, "mouse")) {
+                xmlFree(itype);
+                virXMLError(conn, VIR_ERR_XML_ERROR, "input", 0);
+                goto error;
+            }
+            xmlFree(itype);
+
+            bus = xmlGetProp(nodes[i], (xmlChar *)"bus");
+            if (!bus) {
+                if (!isMouse) {
+                    /* Nothing - implicit ps2 */
+                } else {
+                    virBufferAdd(buf, "(usbdevice tablet)", 13);
+                }
+            } else {
+                if (!strcmp((const char*)bus, "ps2")) {
+                    if (!isMouse) {
+                        xmlFree(bus);
+                        virXMLError(conn, VIR_ERR_XML_ERROR, "input", 0);
+                        goto error;
+                    }
+                    /* Nothing - implicit ps2 */
+                } else if (!strcmp((const char*)bus, "usb")) {
+                    if (isMouse)
+                        virBufferAdd(buf, "(usbdevice mouse)", 17);
+                    else
+                        virBufferAdd(buf, "(usbdevice tablet)", 18);
+                }
+            }
+            xmlFree(bus);
+        }
+        free(nodes);
+        nodes = NULL;
+    }
+
+
     res = virXPathBoolean("count(domain/devices/console) > 0", ctxt);
     if (res < 0) {
         virXMLError(conn, VIR_ERR_XML_ERROR, NULL, 0);
@@ -572,6 +624,8 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf
     return (0);
 
  error:
+    if (nodes)
+        free(nodes);
     return(-1);
 }
 

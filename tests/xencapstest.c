@@ -60,21 +60,21 @@ static int testCompareFiles(const char *hostmachine,
   return ret;
 }
 
-static int testXeni686(void *data ATTRIBUTE_UNUSED) {
+static int testXeni686(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("i686",
 			  "xencapsdata/xen-i686.xml",
 			  "xencapsdata/xen-i686.cpuinfo",
 			  "xencapsdata/xen-i686.caps");
 }
 
-static int testXeni686PAE(void *data ATTRIBUTE_UNUSED) {
+static int testXeni686PAE(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("i686",
 			  "xencapsdata/xen-i686-pae.xml",
 			  "xencapsdata/xen-i686-pae.cpuinfo",
 			  "xencapsdata/xen-i686-pae.caps");
 }
 
-static int testXeni686PAEHVM(void *data ATTRIBUTE_UNUSED) {
+static int testXeni686PAEHVM(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("i686",
 			  "xencapsdata/xen-i686-pae-hvm.xml",
 			  "xencapsdata/xen-i686-pae-hvm.cpuinfo",
@@ -84,7 +84,7 @@ static int testXeni686PAEHVM(void *data ATTRIBUTE_UNUSED) {
 /* No PAE + HVM is non-sensical - all VMX capable
    CPUs have PAE */
 /*
-static int testXeni686HVM(void *data ATTRIBUTE_UNUSED) {
+static int testXeni686HVM(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("i686",
 			  "xencapsdata/xen-i686-hvm.xml",
 			  "xencapsdata/xen-i686.cpuinfo",
@@ -92,46 +92,46 @@ static int testXeni686HVM(void *data ATTRIBUTE_UNUSED) {
 }
 */
 
-static int testXenx86_64(void *data ATTRIBUTE_UNUSED) {
+static int testXenx86_64(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("x86_64",
 			  "xencapsdata/xen-x86_64.xml",
 			  "xencapsdata/xen-x86_64.cpuinfo",
 			  "xencapsdata/xen-x86_64.caps");
 }
-static int testXenx86_64HVM(void *data ATTRIBUTE_UNUSED) {
+static int testXenx86_64HVM(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("x86_64",
 			  "xencapsdata/xen-x86_64-hvm.xml",
 			  "xencapsdata/xen-x86_64-hvm.cpuinfo",
 			  "xencapsdata/xen-x86_64-hvm.caps");
 }
 
-static int testXenia64(void *data ATTRIBUTE_UNUSED) {
+static int testXenia64(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("ia64",
 			  "xencapsdata/xen-ia64.xml",
 			  "xencapsdata/xen-ia64.cpuinfo",
 			  "xencapsdata/xen-ia64.caps");
 }
-static int testXenia64BE(void *data ATTRIBUTE_UNUSED) {
+static int testXenia64BE(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("ia64",
 			  "xencapsdata/xen-ia64-be.xml",
 			  "xencapsdata/xen-ia64-be.cpuinfo",
 			  "xencapsdata/xen-ia64-be.caps");
 }
 
-static int testXenia64HVM(void *data ATTRIBUTE_UNUSED) {
+static int testXenia64HVM(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("ia64",
 			  "xencapsdata/xen-ia64-hvm.xml",
 			  "xencapsdata/xen-ia64-hvm.cpuinfo",
 			  "xencapsdata/xen-ia64-hvm.caps");
 }
-static int testXenia64BEHVM(void *data ATTRIBUTE_UNUSED) {
+static int testXenia64BEHVM(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("ia64",
 			  "xencapsdata/xen-ia64-be-hvm.xml",
 			  "xencapsdata/xen-ia64-be-hvm.cpuinfo",
 			  "xencapsdata/xen-ia64-be-hvm.caps");
 }
 
-static int testXenppc64(void *data ATTRIBUTE_UNUSED) {
+static int testXenppc64(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("ppc64",
 			  "xencapsdata/xen-ppc64.xml",
 			  "xencapsdata/xen-ppc64.cpuinfo",

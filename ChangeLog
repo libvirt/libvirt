@@ -1,3 +1,16 @@
+Wed Jul 18 16:42:08 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c, src/qemu_conf.h, src/xm_internal.c,
+	src/xend_internal.c, src/xml.c: Added support for input devices
+	using <input type='mouse|pointer' bus='ps2|xen|usb'/> element.
+	* tests/sexpr2xmltest.c, tests/xmconfigtest.c,
+	tests/xml2sexprtest.c: Add new tests for input devices
+	* tests/test_utils.c, src/test_utils.h: the virTestRun callback
+	uses a const void * instead of void *
+	* tests/virshtest.c, tests/xencaptest.c: Switch to const void *
+	* tests/sexpr2xmldata/*, tests/xmconfigdata/*, tests/xml2sexprdata/*
+	Updated data files to take account of new input device syntax
+
 Wed Jul 18 12:10:08 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/test.c include/libvirt/libvirt.h include/libvirt/libvirt.h.in:

@@ -109,6 +109,23 @@ struct qemud_vm_net_def {
     struct qemud_vm_net_def *next;
 };
 
+
+enum qemu_vm_input_type {
+    QEMU_INPUT_TYPE_MOUSE,
+    QEMU_INPUT_TYPE_TABLET,
+};
+
+enum qemu_vm_input_bus {
+    QEMU_INPUT_BUS_PS2,
+    QEMU_INPUT_BUS_USB,
+};
+
+struct qemud_vm_input_def {
+    int type;
+    int bus;
+    struct qemud_vm_input_def *next;
+};
+
 #define QEMUD_MAX_BOOT_DEVS 4
 
 /* 3 possible boot devices */
@@ -119,7 +136,7 @@ enum qemud_vm_boot_order {
     QEMUD_BOOT_NET,
 };
 /* 3 possible graphics console modes */
-enum qemud_vm_grapics_type {
+enum qemud_vm_graphics_type {
     QEMUD_GRAPHICS_NONE,
     QEMUD_GRAPHICS_SDL,
     QEMUD_GRAPHICS_VNC,
@@ -175,6 +192,9 @@ struct qemud_vm_def {
 
     int nnets;
     struct qemud_vm_net_def *nets;
+
+    int ninputs;
+    struct qemud_vm_input_def *inputs;
 };
 
 /* Guest VM runtime state */

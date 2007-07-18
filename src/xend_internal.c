@@ -1651,11 +1651,13 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
             tmp = sexpr_node(node, "device/vfb/type");
 
             if (tmp && !strcmp(tmp, "sdl")) {
+                virBufferVSprintf(&buf, "    <input type='mouse' bus='%s'/>\n", hvm ? "ps2": "xen");
                 virBufferAdd(&buf, "    <graphics type='sdl'/>\n", 27);
             } else if (tmp && !strcmp(tmp, "vnc")) {
                 int port = xenStoreDomainGetVNCPort(conn, domid);
                 const char *listenAddr = sexpr_node(node, "device/vfb/vnclisten");
                 const char *keymap = sexpr_node(node, "device/vfb/keymap");
+                virBufferVSprintf(&buf, "    <input type='mouse' bus='%s'/>\n", hvm ? "ps2": "xen");
                 virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'", port);
                 if (listenAddr)
                     virBufferVSprintf(&buf, " listen='%s'", listenAddr);
@@ -1696,6 +1698,22 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
         }
     }
 
+    /* in case of HVM we have devices emulation */
+    if (hvm) {
+        for (cur = sexpr_lookup(root, "domain/image/hvm"); cur && cur->kind == SEXPR_CONS; cur = cur->cdr) {
+            node = cur->car;
+            if (sexpr_lookup(node, "usbdevice")) {
+                tmp = sexpr_node(node, "usbdevice");
+                if (tmp && *tmp) {
+                    if (!strcmp(tmp, "usbtablet"))
+                        virBufferAdd(&buf, "    <input type='tablet' bus='usb'/>\n", 37);
+                    else if (!strcmp(tmp, "usbmouse"))
+                        virBufferAdd(&buf, "    <input type='mouse' bus='usb'/>\n", 36);
+                }
+            }
+        }
+    }
+
     /* Graphics device (HVM <= 3.0.4, or PV <= 3.0.3) vnc config */
     if ((hvm && xendConfigVersion < 4) ||
         (!hvm && xendConfigVersion < 3)) {
@@ -1713,6 +1731,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
                  */
                 if (port == -1 && xendConfigVersion < 2)
                     port = 5900 + domid;
+                virBufferVSprintf(&buf, "    <input type='mouse' bus='%s'/>\n", hvm ? "ps2" : "xen");
                 virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'", port);
                 if (listenAddr)
                     virBufferVSprintf(&buf, " listen='%s'", listenAddr);
@@ -1725,8 +1744,10 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
         /* Graphics device (HVM, or old (pre-3.0.4) style PV sdl config) */
         tmp = sexpr_fmt_node(root, "domain/image/%s/sdl", hvm ? "hvm" : "linux");
         if (tmp != NULL) {
-            if (tmp[0] == '1')
+            if (tmp[0] == '1') {
+                virBufferVSprintf(&buf, "    <input type='mouse' bus='%s'/>\n", hvm ? "ps2" : "xen");
                 virBufferAdd(&buf, "    <graphics type='sdl'/>\n", 27 );
+            }
         }
     }
 

@@ -52,7 +52,7 @@ virtTestCountAverage(double *items, int nitems)
  * returns: -1 = error, 0 = success
  */
 int
-virtTestRun(const char *title, int nloops, int (*body)(void *data), void *data)
+virtTestRun(const char *title, int nloops, int (*body)(const void *data), const void *data)
 {
     int i, ret = 0;
     double *ts = NULL;

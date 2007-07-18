@@ -25,6 +25,7 @@
       <source file='/xen/rhel5.img'/>
       <target dev='xvda:disk'/>
     </disk>
+    <input type='mouse' bus='xen'/>
     <graphics type='vnc' port='5905'/>
   </devices>
 </domain>

@@ -30,11 +30,11 @@ static int testCompareFiles(const char *xml, const char *sexpr, const char *name
   if (!(gotsexpr = virDomainParseXMLDesc(NULL, xmlData, &gotname, xendConfigVersion)))
     goto fail;
 
-  if (getenv("DEBUG_TESTS")) {
-      printf("Expect %d '%s'\n", (int)strlen(sexprData), sexprData);
-      printf("Actual %d '%s'\n", (int)strlen(gotsexpr), gotsexpr);
-  }
   if (strcmp(sexprData, gotsexpr)) {
+      if (getenv("DEBUG_TESTS")) {
+	printf("Expect %d '%s'\n", (int)strlen(sexprData), sexprData);
+	printf("Actual %d '%s'\n", (int)strlen(gotsexpr), gotsexpr);
+      }
       goto fail;
   }
 
@@ -202,6 +202,22 @@ static int testCompareFVclockLocaltime(void *data ATTRIBUTE_UNUSED) {
 }
 
 
+static int testCompareFVInputUSBMouse(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("xml2sexprdata/xml2sexpr-fv-usbmouse.xml",
+			  "xml2sexprdata/xml2sexpr-fv-usbmouse.sexpr",
+			  "fvtest",
+			  1);
+}
+
+static int testCompareFVInputUSBTablet(void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("xml2sexprdata/xml2sexpr-fv-usbtablet.xml",
+			  "xml2sexprdata/xml2sexpr-fv-usbtablet.sexpr",
+			  "fvtest",
+			  1);
+}
+
+
+
 int
 main(int argc, char **argv)
 {
@@ -288,6 +304,13 @@ main(int argc, char **argv)
 
     if (virtTestRun("XML-2-SEXPR No Source CDRom",
 		    1, testCompareNoSourceCDRom, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("XML-2-SEXPR FV usb mouse)",
+		    1, testCompareFVInputUSBMouse, NULL) != 0)
+	ret = -1;
+    if (virtTestRun("XML-2-SEXPR FV usb tablet)",
+		    1, testCompareFVInputUSBTablet, NULL) != 0)
 	ret = -1;
 
     if (virtTestRun("XML-2-SEXPR clock UTC",

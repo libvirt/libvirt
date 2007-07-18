@@ -35,6 +35,7 @@
       <mac address='00:16:3E:66:92:9C'/>
       <source bridge='xenbr0'/>
     </interface>
+    <input type='mouse' bus='ps2'/>
     <graphics type='vnc' port='-1' listen='127.0.0.1' passwd='123poi'/>
   </devices>
 </domain>

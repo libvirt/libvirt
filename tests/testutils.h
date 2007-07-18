@@ -17,23 +17,31 @@
 extern "C" {
 #endif
 
+  
+    double virtTestCountAverage(double *items,
+                                int nitems);
 
-double	virtTestCountAverage	(double *items, 
-				 int nitems);
-
-int	virtTestRun		(const char *title, 
-				 int nloops, 
-				 int (*body)(void *data), 
-				 void *data);
-int virtTestLoadFile(const char *name,
-		     char **buf,
-		     int buflen);
-int virtTestCaptureProgramOutput(const char *const argv[],
-				 char **buf,
-				 int buflen);
+    int	virtTestRun(const char *title,
+                    int nloops,
+                    int (*body)(const void *data),
+                    const void *data);
+    int virtTestLoadFile(const char *name,
+                         char **buf,
+                         int buflen);
+    int virtTestCaptureProgramOutput(const char *const argv[],
+                                     char **buf,
+                                     int buflen);
 
 #ifdef __cplusplus
 }
 #endif
 #endif /* __VIT_TEST_UTILS_H__ */
 
+/*
+ * Local variables:
+ *  indent-tabs-mode: nil
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  tab-width: 4
+ * End:
+ */

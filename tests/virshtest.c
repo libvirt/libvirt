@@ -66,7 +66,7 @@ static char *custom_uri;
 
 
 
-static int testCompareListDefault(void *data ATTRIBUTE_UNUSED) {
+static int testCompareListDefault(const void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_DEFAULT,
     "list",
@@ -77,7 +77,7 @@ static int testCompareListDefault(void *data ATTRIBUTE_UNUSED) {
 			   argv);
 }
 
-static int testCompareListCustom(void *data ATTRIBUTE_UNUSED) {
+static int testCompareListCustom(const void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_CUSTOM,
     "list",
@@ -89,7 +89,7 @@ static int testCompareListCustom(void *data ATTRIBUTE_UNUSED) {
 }
 
 
-static int testCompareNodeinfoDefault(void *data ATTRIBUTE_UNUSED) {
+static int testCompareNodeinfoDefault(const void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_DEFAULT,
     "nodeinfo",
@@ -100,7 +100,7 @@ static int testCompareNodeinfoDefault(void *data ATTRIBUTE_UNUSED) {
 			   argv);
 }
 
-static int testCompareNodeinfoCustom(void *data ATTRIBUTE_UNUSED) {
+static int testCompareNodeinfoCustom(const void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_CUSTOM,
     "nodeinfo",
@@ -111,7 +111,7 @@ static int testCompareNodeinfoCustom(void *data ATTRIBUTE_UNUSED) {
 			   argv);
 }
 
-static int testCompareDominfoByID(void *data ATTRIBUTE_UNUSED) {
+static int testCompareDominfoByID(const void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_CUSTOM,
     "dominfo",
@@ -124,7 +124,7 @@ static int testCompareDominfoByID(void *data ATTRIBUTE_UNUSED) {
 }
 
 
-static int testCompareDominfoByUUID(void *data ATTRIBUTE_UNUSED) {
+static int testCompareDominfoByUUID(const void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_CUSTOM,
     "dominfo",
@@ -137,7 +137,7 @@ static int testCompareDominfoByUUID(void *data ATTRIBUTE_UNUSED) {
 }
 
 
-static int testCompareDominfoByName(void *data ATTRIBUTE_UNUSED) {
+static int testCompareDominfoByName(const void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_CUSTOM,
     "dominfo",
@@ -150,7 +150,7 @@ static int testCompareDominfoByName(void *data ATTRIBUTE_UNUSED) {
 }
 
 
-static int testCompareDomuuidByID(void *data ATTRIBUTE_UNUSED) {
+static int testCompareDomuuidByID(const void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_CUSTOM,
     "domuuid",
@@ -162,7 +162,7 @@ static int testCompareDomuuidByID(void *data ATTRIBUTE_UNUSED) {
 			   argv);
 }
 
-static int testCompareDomuuidByName(void *data ATTRIBUTE_UNUSED) {
+static int testCompareDomuuidByName(const void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_CUSTOM,
     "domuuid",
@@ -174,7 +174,7 @@ static int testCompareDomuuidByName(void *data ATTRIBUTE_UNUSED) {
 			   argv);
 }
 
-static int testCompareDomidByName(void *data ATTRIBUTE_UNUSED) {
+static int testCompareDomidByName(const void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_CUSTOM,
     "domid",
@@ -187,7 +187,7 @@ static int testCompareDomidByName(void *data ATTRIBUTE_UNUSED) {
 }
 
 
-static int testCompareDomidByUUID(void *data ATTRIBUTE_UNUSED) {
+static int testCompareDomidByUUID(const void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_CUSTOM,
     "domid",
@@ -200,7 +200,7 @@ static int testCompareDomidByUUID(void *data ATTRIBUTE_UNUSED) {
 }
 
 
-static int testCompareDomnameByID(void *data ATTRIBUTE_UNUSED) {
+static int testCompareDomnameByID(const void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_CUSTOM,
     "domname",
@@ -213,7 +213,7 @@ static int testCompareDomnameByID(void *data ATTRIBUTE_UNUSED) {
 }
 
 
-static int testCompareDomnameByUUID(void *data ATTRIBUTE_UNUSED) {
+static int testCompareDomnameByUUID(const void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_CUSTOM,
     "domname",
@@ -225,7 +225,7 @@ static int testCompareDomnameByUUID(void *data ATTRIBUTE_UNUSED) {
 			   argv);
 }
 
-static int testCompareDomstateByID(void *data ATTRIBUTE_UNUSED) {
+static int testCompareDomstateByID(const void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_CUSTOM,
     "domstate",
@@ -238,7 +238,7 @@ static int testCompareDomstateByID(void *data ATTRIBUTE_UNUSED) {
 }
 
 
-static int testCompareDomstateByUUID(void *data ATTRIBUTE_UNUSED) {
+static int testCompareDomstateByUUID(const void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_CUSTOM,
     "domstate",
@@ -250,7 +250,7 @@ static int testCompareDomstateByUUID(void *data ATTRIBUTE_UNUSED) {
 			   argv);
 }
 
-static int testCompareDomstateByName(void *data ATTRIBUTE_UNUSED) {
+static int testCompareDomstateByName(const void *data ATTRIBUTE_UNUSED) {
   const char *const argv[] = {
     VIRSH_CUSTOM,
     "domstate",

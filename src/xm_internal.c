@@ -913,6 +913,17 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
         }
     }
 
+    if (hvm) {
+        if (xenXMConfigGetString(conf, "usbdevice", &str) == 0 && str) {
+            if (!strcmp(str, "tablet"))
+                virBufferAdd(buf, "    <input type='tablet' bus='usb'/>\n", 37);
+            else if (!strcmp(str, "mouse"))
+                virBufferAdd(buf, "    <input type='mouse' bus='usb'/>\n", 36);
+            /* Ignore else branch - probably some other non-input device we don't
+               support in libvirt yet */
+        }
+    }
+
     /* HVM guests, or old PV guests use this config format */
     if (hvm || priv->xendConfigVersion < 3) {
         if (xenXMConfigGetInt(conf, "vnc", &val) == 0 && val) {
@@ -980,6 +991,9 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
         }
     }
 
+    if (vnc || sdl) {
+        virBufferVSprintf(buf, "    <input type='mouse' bus='%s'/>\n", hvm ? "ps2":"xen");
+    }
     if (vnc) {
         virBufferVSprintf(buf,
                           "    <graphics type='vnc' port='%ld'",
@@ -1902,6 +1916,9 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
                                           "cannot set the device_model parameter") < 0)
             goto error;
 
+        if (xenXMConfigSetStringFromXPath(conn, conf, ctxt, "usbdevice", "string(/domain/devices/input[@bus='usb' or (not(@bus) and @type='tablet')]/@type)", 1,
+                                          "cannot set the usbdevice parameter") < 0)
+            goto error;
     }
 
     if (hvm || priv->xendConfigVersion < 3) {
