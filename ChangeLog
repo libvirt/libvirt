@@ -1,3 +1,8 @@
+Wed Jul 18 17:11:08 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xmlrpctest.c, src/xml2sexprtest.c: More void * to
+	const void * conversions
+
 Wed Jul 18 16:42:08 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c, src/qemu_conf.h, src/xm_internal.c,

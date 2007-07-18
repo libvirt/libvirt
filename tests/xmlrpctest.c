@@ -32,7 +32,7 @@ static char *progname;
 
 
 static int
-testMethodPlusINT(void *data)
+testMethodPlusINT(const void *data)
 {
     int retval = 0;
     xmlRpcContextPtr cxt = (xmlRpcContextPtr) data;
@@ -45,7 +45,7 @@ testMethodPlusINT(void *data)
 }
 
 static int
-testMethodPlusDOUBLE(void *data)
+testMethodPlusDOUBLE(const void *data)
 {
     double retval = 0;
     xmlRpcContextPtr cxt = (xmlRpcContextPtr) data;
@@ -127,7 +127,7 @@ error:
 }
 
 static int
-testMarshalRequestINT(void *data)
+testMarshalRequestINT(const void *data)
 {
     int num = INT_MAX;
     int ret = 0;
@@ -144,7 +144,7 @@ testMarshalRequestINT(void *data)
 }
 
 static int
-testMarshalRequestSTRING(void *data ATTRIBUTE_UNUSED)
+testMarshalRequestSTRING(const void *data ATTRIBUTE_UNUSED)
 {
     const char *str = "This library will be really sexy.";
     int ret = 0;
@@ -160,7 +160,7 @@ testMarshalRequestSTRING(void *data ATTRIBUTE_UNUSED)
 }
 
 static int
-testMarshalRequestDOUBLE(void *data)
+testMarshalRequestDOUBLE(const void *data)
 {
     double num = 123456789.123;
     int ret = 0;
@@ -177,7 +177,7 @@ testMarshalRequestDOUBLE(void *data)
 }
 
 static int
-testBufferStrcat(void *data ATTRIBUTE_UNUSED)
+testBufferStrcat(const void *data ATTRIBUTE_UNUSED)
 {
     virBufferPtr buf = virBufferNew(1000*32);  /* don't waste time with realloc */
     int i;
@@ -190,7 +190,7 @@ testBufferStrcat(void *data ATTRIBUTE_UNUSED)
 }
 
 static int
-testBufferVSprintf(void *data ATTRIBUTE_UNUSED)
+testBufferVSprintf(const void *data ATTRIBUTE_UNUSED)
 {
     virBufferPtr buf = virBufferNew(1000*32);  /* don't waste time with realloc */
     int i;
@@ -230,11 +230,11 @@ main(int argc, char **argv)
 	}
 
        if (virtTestRun("XML-RPC methodCall INT+INT", 
-                NLOOPS, testMethodPlusINT, (void *) cxt) != 0)
+                NLOOPS, testMethodPlusINT, (const void *) cxt) != 0)
         ret = -1;
     
     if (virtTestRun("XML-RPC methodCall DOUBLE+DOUBLE", 
-                NLOOPS, testMethodPlusDOUBLE, (void *) cxt) != 0)
+                NLOOPS, testMethodPlusDOUBLE, (const void *) cxt) != 0)
         ret = -1;
     
  	xmlRpcContextFree(cxt);
@@ -243,14 +243,14 @@ main(int argc, char **argv)
      * regression / performance tests 
      */
     if (virtTestRun("XML-RPC request marshalling: INT (check)", 
-                1, testMarshalRequestINT, (void *) &check) != 0)
+                1, testMarshalRequestINT, (const void *) &check) != 0)
         ret = -1;
     if (virtTestRun("XML-RPC request marshalling: INT", 
                 NLOOPS, testMarshalRequestINT, NULL) != 0)
         ret = -1;
     
     if (virtTestRun("XML-RPC request marshalling: DOUBLE (check)", 
-                1, testMarshalRequestDOUBLE, (void *) &check) != 0)
+                1, testMarshalRequestDOUBLE, (const void *) &check) != 0)
         ret = -1;
     if (virtTestRun("XML-RPC request marshalling: DOUBLE", 
                 NLOOPS, testMarshalRequestDOUBLE, NULL) != 0)
