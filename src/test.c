@@ -155,7 +155,7 @@ typedef struct _testPrivate *testPrivatePtr;
 
 typedef struct _testDev {
     char name[20];
-    virDeviceMode mode;
+    int mode;
 } testDev;
 
 #define MAX_DEVICES 10

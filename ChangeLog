@@ -1,3 +1,8 @@
+Wed Jul 18 12:10:08 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/test.c include/libvirt/libvirt.h include/libvirt/libvirt.h.in:
+	  cleanup of unused virDeviceMode
+
 Tue Jul 17 16:39:18 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/openvz_conf.c src/libvirt.c: cleanup, avoid some warnings,

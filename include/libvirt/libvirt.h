@@ -77,18 +77,6 @@ typedef enum {
 } virDomainRestart;
 
 /**
- * virDeviceMode:
- *
- * Flags that determine permission to expose a device to the guest
- */
-typedef enum {
-     VIR_DEVICE_DEFAULT	= 0, /* Default mode */
-     VIR_DEVICE_RO	= 1, /* Access read-only */
-     VIR_DEVICE_RW	= 2, /* Access read-write */
-     VIR_DEVICE_RW_FORCE= 3  /* Forced read-write even if already used */
-} virDeviceMode;
-
-/**
  * virDomainInfoPtr:
  *
  * a virDomainInfo is a structure filled by virDomainGetInfo() and extracting
