@@ -1,3 +1,10 @@
+Thu Jul 19 18:21:47 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/Makefile.am src/openvz_conf.c src/openvz_conf.h
+	  src/openvz_driver.c src/qemu_driver.c src/util.c src/util.h:
+	  cleanup patches from Shuveb Hussain, with new util module for
+	  common code shared between drivers.
+
 Thu Jul 19 16:35:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* configure.in, src/xen_internal.c: Newer Xen uses

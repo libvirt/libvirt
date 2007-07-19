@@ -50,6 +50,7 @@
 
 #include "event.h"
 #include "buf.h"
+#include "util.h"
 #include "qemu_driver.h"
 #include "qemu_conf.h"
 
@@ -328,91 +329,6 @@ qemudShutdown(void) {
     qemu_driver = NULL;
 
     return 0;
-}
-
-static int
-qemudExec(virConnectPtr conn,
-          char **argv,
-          int *retpid, int *outfd, int *errfd) {
-    int pid, null;
-    int pipeout[2] = {-1,-1};
-    int pipeerr[2] = {-1,-1};
-
-    if ((null = open(_PATH_DEVNULL, O_RDONLY)) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot open %s : %s",
-                         _PATH_DEVNULL, strerror(errno));
-        goto cleanup;
-    }
-
-    if ((outfd != NULL && pipe(pipeout) < 0) ||
-        (errfd != NULL && pipe(pipeerr) < 0)) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot create pipe : %s",
-                         strerror(errno));
-        goto cleanup;
-    }
-
-    if ((pid = fork()) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot fork child process : %s",
-                         strerror(errno));
-        goto cleanup;
-    }
-
-    if (pid) { /* parent */
-        close(null);
-        if (outfd) {
-            close(pipeout[1]);
-            qemudSetNonBlock(pipeout[0]);
-            qemudSetCloseExec(pipeout[0]);
-            *outfd = pipeout[0];
-        }
-        if (errfd) {
-            close(pipeerr[1]);
-            qemudSetNonBlock(pipeerr[0]);
-            qemudSetCloseExec(pipeerr[0]);
-            *errfd = pipeerr[0];
-        }
-        *retpid = pid;
-        return 0;
-    }
-
-    /* child */
-
-    if (pipeout[0] > 0 && close(pipeout[0]) < 0)
-        _exit(1);
-    if (pipeerr[0] > 0 && close(pipeerr[0]) < 0)
-        _exit(1);
-
-    if (dup2(null, STDIN_FILENO) < 0)
-        _exit(1);
-    if (dup2(pipeout[1] > 0 ? pipeout[1] : null, STDOUT_FILENO) < 0)
-        _exit(1);
-    if (dup2(pipeerr[1] > 0 ? pipeerr[1] : null, STDERR_FILENO) < 0)
-        _exit(1);
-
-    close(null);
-    if (pipeout[1] > 0)
-        close(pipeout[1]);
-    if (pipeerr[1] > 0)
-        close(pipeerr[1]);
-
-    execvp(argv[0], argv);
-
-    _exit(1);
-
-    return 0;
-
- cleanup:
-    if (pipeerr[0] > 0)
-        close(pipeerr[0]);
-    if (pipeerr[1] > 0)
-        close(pipeerr[1]);
-    if (pipeout[0] > 0)
-        close(pipeout[0]);
-    if (pipeout[1] > 0)
-        close(pipeout[1]);
-    if (null > 0)
-        close(null);
-    return -1;
 }
 
 /* Return -1 for error, 1 to continue reading and 0 for success */
@@ -722,7 +638,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         qemudLog(QEMUD_WARN, "Unable to write argv to logfile %d: %s",
                  errno, strerror(errno));
 
-    if (qemudExec(conn, argv, &vm->pid, &vm->stdout, &vm->stderr) == 0) {
+    if (virExecNonBlock(conn, argv, &vm->pid, &vm->stdout, &vm->stderr) == 0) {
         vm->id = driver->nextvmid++;
         vm->state = VIR_DOMAIN_RUNNING;
 
@@ -981,7 +897,7 @@ dhcpStartDhcpDaemon(virConnectPtr conn,
     if (qemudBuildDnsmasqArgv(conn, network, &argv) < 0)
         return -1;
 
-    ret = qemudExec(conn, argv, &network->dnsmasqPid, NULL, NULL);
+    ret = virExecNonBlock(conn, argv, &network->dnsmasqPid, NULL, NULL);
 
     for (i = 0; argv[i]; i++)
         free(argv[i]);

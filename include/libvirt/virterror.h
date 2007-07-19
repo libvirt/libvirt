@@ -51,6 +51,7 @@ typedef enum {
     VIR_FROM_NET,       /* Error when operating on a network */
     VIR_FROM_TEST,	/* Error from test driver */
     VIR_FROM_REMOTE,	/* Error from remote driver */
+    VIR_FROM_OPENVZ,    /* Error from OpenVZ driver */
 } virErrorDomain;
 
 

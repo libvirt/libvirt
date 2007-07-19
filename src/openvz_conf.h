@@ -94,8 +94,8 @@ struct openvz_vm {
     struct openvz_vm *next;
 };
 
-char *openvzLocateConfDir(void);
-int readline(int fd, char *ptr, int maxlen);
+static char *openvzLocateConfDir(void);
+int openvz_readline(int fd, char *ptr, int maxlen);
 static void error (virConnectPtr conn, virErrorNumber code, const char *info);
 struct openvz_vm *openvzFindVMByID(const struct openvz_driver *driver, int id); 
 struct openvz_vm *openvzFindVMByUUID(const struct openvz_driver *driver, 
@@ -108,7 +108,7 @@ struct openvz_vm_def *openvzParseVMDef(virConnectPtr conn, const char *xmlStr,
                                             const char *displayName);
 struct openvz_vm *openvzGetVPSInfo(virConnectPtr conn);
 void openvzGenerateUUID(unsigned char *uuid);
-int openvzGetVPSUUID(int vpsid, char *uuidbuf);
-int openvzSetUUID(int vpsid);
+static int openvzGetVPSUUID(int vpsid, char *uuidbuf);
+static int openvzSetUUID(int vpsid);
 int openvzAssignUUIDs(void);
 #endif /* OPENVZ_CONF_H */

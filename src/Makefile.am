@@ -49,7 +49,8 @@ CLIENT_SOURCES =						\
 		qemu_driver.c qemu_driver.h 			\
 		qemu_conf.c qemu_conf.h					\
 		openvz_conf.c openvz_conf.h				\
-		openvz_driver.c openvz_driver.h 			
+		openvz_driver.c openvz_driver.h 		\
+		util.c util.h
 
 SERVER_SOURCES = 						\
 		../qemud/protocol.h ../qemud/protocol.c		\

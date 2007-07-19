@@ -52,6 +52,7 @@
 
 #include "event.h"
 #include "buf.h"
+#include "util.h"
 #include "openvz_driver.h"
 #include "openvz_conf.h"
 
@@ -284,6 +285,11 @@ static virDrvOpenStatus openvzOpen(virConnectPtr conn,
         if (strcmp(name, "openvz:///system")) 
             return VIR_DRV_OPEN_DECLINED;
     }
+    /* See if we are running an OpenVZ enabled kernel */
+    if(access("/proc/vz/veinfo", F_OK) == -1 || 
+                access("/proc/user_beancounters", F_OK) == -1) {
+        return VIR_DRV_OPEN_DECLINED;
+    }
 
     conn->privateData = &ovz_driver;
 
@@ -323,19 +329,25 @@ static const char *openvzGetType(virConnectPtr conn ATTRIBUTE_UNUSED) {
 
 static int openvzListDomains(virConnectPtr conn, int *ids, int nids) {
     int got = 0;
-    int veid;
-    FILE *fp;
+    int veid, pid, outfd, errfd;
+    int ret;
+    char buf[32];
+    const char *cmd[] = {VZLIST, "-ovpsid", "-H" , NULL};
 
-    if((fp = popen(VZLIST " -o vpsid -H 2> /dev/null", "r")) == NULL){
-        error(conn, VIR_ERR_INTERNAL_ERROR, "Could not popen " VZLIST);
+    ret = virExec(conn, (char **)cmd, &pid, &outfd, &errfd);
+    if(ret == -1) {
+        error(conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
         return (int)NULL;
     }
 
-    while(!(feof(fp)) && got < nids){
-        fscanf(fp, "%d\n", &veid);
+    while(got < nids){
+        ret = openvz_readline(outfd, buf, 32);
+        if(!ret) break;
+        sscanf(buf, "%d", &veid);
         ids[got] = veid;
         got ++;
     }
+    waitpid(pid, NULL, 0);
 
     return got;
 }
@@ -347,23 +359,27 @@ static int openvzNumDomains(virConnectPtr conn) {
 static int openvzListDefinedDomains(virConnectPtr conn,
                             char **const names, int nnames) {
     int got = 0;
-    FILE *fp;
-    int veid;
+    int veid, pid, outfd, errfd, ret;
     char vpsname[OPENVZ_NAME_MAX];
+    char buf[32];
+    const char *cmd[] = {VZLIST, "-ovpsid", "-H", NULL};
 
     /* the -S options lists only stopped domains */
-    if((fp = popen(VZLIST " -S -o vpsid -H 2> /dev/null", "r")) == NULL){
-        error(conn, VIR_ERR_INTERNAL_ERROR, "Could not popen " VZLIST);
+    ret = virExec(conn, (char **)cmd, &pid, &outfd, &errfd);
+    if(ret == -1) {
+        error(conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
         return (int)NULL;
     }
 
-    while(!(feof(fp)) && got < nnames){
-        fscanf(fp, "%d\n", &veid);
+    while(got < nnames){
+        ret = openvz_readline(outfd, buf, 32);
+        if(!ret) break;
+        sscanf(buf, "%d\n", &veid);
         sprintf(vpsname, "%d", veid);
         names[got] = strdup(vpsname);
         got ++;
     }
-
+    waitpid(pid, NULL, 0);
     return got;
 }
 

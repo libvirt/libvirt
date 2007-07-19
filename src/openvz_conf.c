@@ -57,7 +57,8 @@ error (virConnectPtr conn, virErrorNumber code, const char *info)
                      errmsg, info);
 }
 
-struct openvz_vm *openvzFindVMByID(const struct openvz_driver *driver, int id) {
+struct openvz_vm 
+*openvzFindVMByID(const struct openvz_driver *driver, int id) {
     struct openvz_vm *vm = driver->vms;
 
     while (vm) {
@@ -69,7 +70,8 @@ struct openvz_vm *openvzFindVMByID(const struct openvz_driver *driver, int id) {
     return NULL;
 }
 
-struct openvz_vm *openvzFindVMByUUID(const struct openvz_driver *driver,
+struct openvz_vm 
+*openvzFindVMByUUID(const struct openvz_driver *driver,
                                    const unsigned char *uuid) {
     struct openvz_vm *vm = driver->vms;
 
@@ -82,7 +84,8 @@ struct openvz_vm *openvzFindVMByUUID(const struct openvz_driver *driver,
     return NULL;
 }
 
-struct openvz_vm *openvzFindVMByName(const struct openvz_driver *driver,
+struct openvz_vm 
+*openvzFindVMByName(const struct openvz_driver *driver,
                                    const char *name) {
     struct  openvz_vm *vm = driver->vms;
 
@@ -96,7 +99,8 @@ struct openvz_vm *openvzFindVMByName(const struct openvz_driver *driver,
 }
 
 /* Free all memory associated with a struct openvz_vm object */
-void openvzFreeVMDef(struct openvz_vm_def *def) {
+void 
+openvzFreeVMDef(struct openvz_vm_def *def) {
     struct ovz_quota *quota = def->fs.quota;
     struct ovz_ip *ip = def->net.ips;
     struct ovz_ns *ns = def->net.ns;
@@ -124,8 +128,9 @@ void openvzFreeVMDef(struct openvz_vm_def *def) {
  * Parses a libvirt XML definition of a guest, and populates the
  * the openvz_vm struct with matching data about the guests config
  */
-static struct openvz_vm_def *openvzParseXML(virConnectPtr conn,
-                                                xmlDocPtr xml) {
+static struct openvz_vm_def 
+*openvzParseXML(virConnectPtr conn,
+                        xmlDocPtr xml) {
     xmlNodePtr root = NULL;
     xmlChar *prop = NULL;
     xmlXPathContextPtr ctxt = NULL;
@@ -249,7 +254,7 @@ openvzGetVPSInfo(virConnectPtr conn) {
     FILE *fp;
     int veid, ret;
     char status[16];
-    char uuidstr[(VIR_UUID_BUFLEN * 2) + 1];
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
     struct openvz_vm *vm;
     struct openvz_vm  **pnext;
     struct openvz_driver *driver;
@@ -296,15 +301,9 @@ openvzGetVPSInfo(virConnectPtr conn) {
         
         snprintf(vmdef->name, OPENVZ_NAME_MAX,  "%i", veid);
         openvzGetVPSUUID(veid, uuidstr);
-        ret = sscanf(uuidstr, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-                    (unsigned int *)&vmdef->uuid[0], (unsigned int *)&vmdef->uuid[1], (unsigned int *)&vmdef->uuid[2], 
-                    (unsigned int *)&vmdef->uuid[3], (unsigned int *)&vmdef->uuid[4], (unsigned int *)&vmdef->uuid[5], 
-                    (unsigned int *)&vmdef->uuid[6], (unsigned int *)&vmdef->uuid[7], (unsigned int *)&vmdef->uuid[8], 
-                    (unsigned int *)&vmdef->uuid[9], (unsigned int *)&vmdef->uuid[10], (unsigned int *)&vmdef->uuid[11], 
-                    (unsigned int *)&vmdef->uuid[12], (unsigned int *)&vmdef->uuid[13], (unsigned int *)&vmdef->uuid[14],
-                    (unsigned int *)&vmdef->uuid[15]);
+        ret = virUUIDParse(uuidstr, vmdef->uuid);
 
-        if(ret != 16) {
+        if(ret == -1) {
             error(conn, VIR_ERR_INTERNAL_ERROR, "UUID in config file malformed");
             return NULL;
         }
@@ -315,7 +314,8 @@ openvzGetVPSInfo(virConnectPtr conn) {
     return vm;
 }
 
-char *openvzLocateConfDir(void)
+static char 
+*openvzLocateConfDir(void)
 {
     const char *conf_dir_list[] = {"/etc/vz/conf", "/usr/local/etc/conf", NULL};
     int i=0;
@@ -330,9 +330,8 @@ char *openvzLocateConfDir(void)
 }
 
 /* Richard Steven's classic readline() function */
-
-static
-int openvz_readline(int fd, char *ptr, int maxlen)
+int 
+openvz_readline(int fd, char *ptr, int maxlen)
 {
     int n, rc;
     char c;
@@ -356,7 +355,8 @@ int openvz_readline(int fd, char *ptr, int maxlen)
     return n;
 }
 
-int openvzGetVPSUUID(int vpsid, char *uuidbuf)
+static int 
+openvzGetVPSUUID(int vpsid, char *uuidbuf)
 {
     char conf_file[PATH_MAX];
     char line[1024];
@@ -385,7 +385,7 @@ int openvzGetVPSUUID(int vpsid, char *uuidbuf)
 
         sscanf(line, "%s %s\n", iden, uuid);
         if(!strcmp(iden, "#UUID:")) {
-            strncpy(uuidbuf, uuid, (VIR_UUID_BUFLEN * 2) +1);
+            strncpy(uuidbuf, uuid, VIR_UUID_STRING_BUFLEN);
             break;
         }
     }
@@ -396,10 +396,11 @@ int openvzGetVPSUUID(int vpsid, char *uuidbuf)
  * assign if not present.
  */
 
-int openvzSetUUID(int vpsid)
+static int 
+openvzSetUUID(int vpsid)
 {
     char conf_file[PATH_MAX];
-    char uuid[(VIR_UUID_BUFLEN * 2) + 1];
+    char uuid[VIR_UUID_STRING_BUFLEN];
     unsigned char new_uuid[VIR_UUID_BUFLEN];
     char *conf_dir;
     int fd, ret, i;
@@ -418,7 +419,7 @@ int openvzSetUUID(int vpsid)
 
     if(uuid[0] == (int)NULL) {
         virUUIDGenerate(new_uuid);
-        bzero(uuid, (VIR_UUID_BUFLEN * 2) + 1);
+        bzero(uuid, VIR_UUID_STRING_BUFLEN);
         for(i = 0; i < VIR_UUID_BUFLEN; i ++)
             sprintf(uuid + (i * 2), "%02x", (unsigned char)new_uuid[i]);
     
