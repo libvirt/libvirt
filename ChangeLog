@@ -1,3 +1,8 @@
+Thu Jul 19 15:38:44 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c: rewrite of range check in credit scheduler
+	  initially suggested by Atsushi SAKAI
+
 Wed Jul 18 17:45:08 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c: Remove double free of XML property upon
