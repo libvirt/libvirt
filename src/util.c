@@ -33,6 +33,7 @@
 #include <libvirt/virterror.h>
 #include "event.h"
 #include "buf.h"
+#include "util.h"
 
 #define MAX_ERROR_LEN   1024
 
