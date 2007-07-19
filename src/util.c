@@ -178,8 +178,7 @@ virExec(virConnectPtr conn,
           char **argv,
           int *retpid, int *outfd, int *errfd) {
 
-    _virExec(conn, argv, retpid, outfd, errfd, 0);
-
+    return(_virExec(conn, argv, retpid, outfd, errfd, 0));
 }
 
 int
@@ -187,7 +186,6 @@ virExecNonBlock(virConnectPtr conn,
           char **argv,
           int *retpid, int *outfd, int *errfd) {
 
-    _virExec(conn, argv, retpid, outfd, errfd, 1);
-
+    return(_virExec(conn, argv, retpid, outfd, errfd, 1));
 }
 
