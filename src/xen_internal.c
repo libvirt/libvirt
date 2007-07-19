@@ -10,6 +10,8 @@
 
 #ifdef WITH_XEN
 
+#include "config.h"
+
 #include <stdio.h>
 #include <string.h>
 /* required for uint8_t, uint32_t, etc ... */
@@ -30,7 +32,13 @@
 #include <xen/dom0_ops.h>
 #include <xen/version.h>
 #include <xen/xen.h>
+#ifdef HAVE_XEN_LINUX_PRIVCMD_H
 #include <xen/linux/privcmd.h>
+#else
+#ifdef HAVE_XEN_SYS_PRIVCMD_H
+#include <xen/sys/privcmd.h>
+#endif
+#endif
 
 /* required for shutdown flags */
 #include <xen/sched.h>

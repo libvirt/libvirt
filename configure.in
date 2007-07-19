@@ -212,6 +212,28 @@ else
     if test "$WITH_XEN" != "0" ; then
         LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_XEN"
     fi
+
+    AC_CHECK_HEADERS(xen/xen.h xen/version.h xen/dom0_ops.h,,[
+	AC_MSG_ERROR([Cannot find standard Xen headers. Is xen-devel installed?])
+    ],
+[#include <stdio.h>
+#include <stdint.h>
+])
+
+    dnl Search for the location of <xen/{linux,sys}/privcmd.h>.
+    AC_CHECK_HEADERS(xen/sys/privcmd.h,,[
+	AC_CHECK_HEADERS(xen/linux/privcmd.h,,[
+	    AC_MSG_ERROR([Cannot find header file <xen/linux/privcmd.h> or <xen/sys/privcmd.h>.  Is xen-devel installed?])
+	],
+[#include <stdio.h>
+#include <stdint.h>
+#include <xen/xen.h>
+])
+    ],
+[#include <stdio.h>
+#include <stdint.h>
+#include <xen/xen.h>
+])
 fi
 
 dnl
