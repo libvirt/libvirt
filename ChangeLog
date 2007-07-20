@@ -1,3 +1,7 @@
+Fri Jul 20 12:53:35 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c: and nother one again from Saori Fukuta
+
 Fri Jul 20 11:02:28 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.c: some error handling improvements from Saori Fukuta

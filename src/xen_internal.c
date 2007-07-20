@@ -1182,6 +1182,7 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
     int i;
     unsigned int val;
     xenUnifiedPrivatePtr priv;
+    char buf[256];
 
     if ((domain == NULL) || (domain->conn == NULL)) {
         virXenErrorFunc (VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
@@ -1246,13 +1247,13 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
             op_dom.u.getschedinfo.u.credit.cap    = (uint16_t)~0U;
 
             for (i = 0; i < nparams; i++) {
+                memset(&buf, 0, sizeof(buf));
                 if (STREQ (params[i].field, str_weight) &&
                     params[i].type == VIR_DOMAIN_SCHED_FIELD_UINT) {
 		    val = params[i].value.ui;
 		    if ((val < 1) || (val > USHRT_MAX)) {
-		        virXenErrorFunc (VIR_ERR_INVALID_ARG, __FUNCTION__,
-       _("Credit scheduler weight parameter (%d) is out of range (1-65535)"),
-                                         val);
+                        snprintf(buf, sizeof(buf), _("Credit scheduler weight parameter (%d) is out of range (1-65535)"), val);
+                        virXenErrorFunc (VIR_ERR_INVALID_ARG, __FUNCTION__, buf, val);
 			return(-1);
 		    }
                     op_dom.u.getschedinfo.u.credit.weight = val;
@@ -1261,9 +1262,8 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
                     params[i].type == VIR_DOMAIN_SCHED_FIELD_UINT) {
 		    val = params[i].value.ui;
 		    if (val > USHRT_MAX) {
-		        virXenErrorFunc (VIR_ERR_INVALID_ARG, __FUNCTION__,
-       _("Credit scheduler cap parameter (%d) is out of range (0-65535)"),
-                                         val);
+                        snprintf(buf, sizeof(buf), _("Credit scheduler cap parameter (%d) is out of range (0-65535)"), val);
+		        virXenErrorFunc (VIR_ERR_INVALID_ARG, __FUNCTION__, buf, val);
 			return(-1);
 		    }
                     op_dom.u.getschedinfo.u.credit.cap = val;
