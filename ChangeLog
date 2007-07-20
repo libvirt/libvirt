@@ -1,3 +1,7 @@
+Fri Jul 20 11:02:28 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c: some error handling improvements from Saori Fukuta
+
 Thu Jul 19 18:21:47 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/Makefile.am src/openvz_conf.c src/openvz_conf.h

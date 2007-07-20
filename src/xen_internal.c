@@ -672,7 +672,7 @@ virXenError(virErrorNumber error, const char *info, int value)
 
     errmsg = __virErrorMsg(error, info);
     __virRaiseError(NULL, NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
-                    errmsg, info, NULL, value, 0, errmsg, info);
+                    errmsg, info, NULL, value, 0, errmsg, info, value);
 }
 
 #ifndef PROXY
@@ -702,10 +702,12 @@ virXenErrorFunc(virErrorNumber error, const char *func, const char *info,
         snprintf(fullinfo, 999, "%s: %s", func, info);
 	fullinfo[999] = 0;
 	__virRaiseError(NULL, NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
-			errmsg, fullinfo, NULL, value, 0, errmsg, fullinfo);
+			errmsg, fullinfo, NULL, value, 0, errmsg, fullinfo,
+			value);
     } else {
 	__virRaiseError(NULL, NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
-			errmsg, info, NULL, value, 0, errmsg, info);
+			errmsg, info, NULL, value, 0, errmsg, info,
+			value);
     }
 }
 
