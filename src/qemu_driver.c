@@ -456,6 +456,11 @@ static int qemudOpenMonitor(virConnectPtr conn,
                                  buf, sizeof(buf),
                                  qemudCheckMonitorPrompt,
                                  "monitor");
+
+    /* Keep monitor open upon success */
+    if (ret == 0)
+        return ret;
+
  error:
     close(monfd);
     return ret;
@@ -615,6 +620,14 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "failed to create logfile %s: %s",
                          logfile, strerror(errno));
+        return -1;
+    }
+    if (qemudSetCloseExec(vm->logfile) < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "Unable to set VM logfile close-on-exec flag %s",
+                         strerror(errno));
+        close(vm->logfile);
+        vm->logfile = -1;
         return -1;
     }
 
