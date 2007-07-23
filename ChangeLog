@@ -1,3 +1,8 @@
+Mon Jul 23 11:36:12 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* docs/virsh.pod virsh.1: update to document VIRSH_DEFAULT_CONNECT_URI
+	  environment variable as suggested by David Lutterkort
+
 Fri Jul 20 12:53:35 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.c: and nother one again from Saori Fukuta

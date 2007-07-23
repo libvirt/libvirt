@@ -450,6 +450,17 @@ Convert a network name to network UUID.
 
 =back
 
+=head1 ENVIRONMENT
+
+=over 4
+
+=item VIRSH_DEFAULT_CONNECT_URI
+
+The hypervisor to connect to by default. Set this to a URI, in the same
+format as accepted by the B<connect> option.
+
+=back
+
 =head1 SEE ALSO
 
 L<xm(1)>, L<xmdomain.cfg(5)>, L<xentop(1)> , L<http://www.libvirt.org/>

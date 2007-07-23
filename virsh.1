@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "VIRSH 1"
-.TH VIRSH 1 "2007-06-21" "perl v5.8.8" "Virtualization Support"
+.TH VIRSH 1 "2007-07-23" "perl v5.8.8" "Virtualization Support"
 .SH "NAME"
 virsh \- management user interface
 .SH "SYNOPSIS"
@@ -212,7 +212,7 @@ Running hypervisor: Xen 3.0.0
 (Re)\-Connect to the hypervisor. This is a build-in command after shell
 start up, and usually get an \fI\s-1URI\s0\fR parameter specifying how to connect
 to the hypervisor. The documentation page at <http://libvirt.org/uri.html>
-list the values supported but the most commons are:
+list the values supported but the most common are:
 .RS 4
 .IP "xen:///" 4
 .IX Item "xen:///"
@@ -239,7 +239,7 @@ Print an \s-1XML\s0 document describing the capabilities of the hypervisor
 we are currently connected to. This includes a section on the host
 capabilities in terms of \s-1CPU\s0 and features, and a set of description
 for each kind of guest which can be virtualized. For a more complete
-description see the description at:
+description see:
   <http://libvirt.org/format.html#Capa1>
 .IP "\fBlist\fR" 4
 .IX Item "list"
@@ -267,7 +267,6 @@ Name is the name of the domain.  \s-1ID\s0 the domain numeric id.
 .Sp
 The State field lists 6 states for a Xen Domain, and which ones the
 current Domain is in.
-=back
 .RE
 .IP "\fBr \- running\fR" 4
 .IX Item "r - running"
@@ -513,6 +512,14 @@ Undefine the configuration for an inactive network.
 Convert a network name to network \s-1UUID\s0.
 .RE
 .RS 4
+.SH "ENVIRONMENT"
+.IX Header "ENVIRONMENT"
+.IP "\s-1VIRSH_DEFAULT_CONNECT_URI\s0" 4
+.IX Item "VIRSH_DEFAULT_CONNECT_URI"
+The hypervisor to connect to by default. Set this to a \s-1URI\s0, in the same
+format as accepted by the \fBconnect\fR option.
+.RE
+.RS 4
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"
 \&\fIxm\fR\|(1), \fIxmdomain.cfg\fR\|(5), \fIxentop\fR\|(1) , <http://www.libvirt.org/>
@@ -534,5 +541,3 @@ Bugs can be view on the RedHat buzilla page under the libvirt
 <https://bugzilla.redhat.com/>
 .Sp
 <https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&component=libvirt&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&bug_status=MODIFIED&short_desc_type=allwordssubstr&short_desc=&long_desc_type=allwordssubstr>
-.Sp
-=
