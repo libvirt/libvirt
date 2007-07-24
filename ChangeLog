@@ -1,3 +1,8 @@
+Tue Jul 24 10:20:11 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/remote.c: Always immediately free virDomainPtr objects
+	to avoid them hanging around cached until client exits
+
 Tue Jul 24 11:18:11 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* docs/network.rng docs/Makefile.am libvirt.spec.in: added Relax-NG

@@ -545,10 +545,14 @@ remoteDispatchDomainGetSchedulerType (struct qemud_client *client,
     }
 
     type = virDomainGetSchedulerType (dom, &nparams);
-    if (type == NULL) return -1;
+    if (type == NULL) {
+        virDomainFree(dom);
+        return -1;
+    }
 
     ret->type = type;
     ret->nparams = nparams;
+    virDomainFree(dom);
     return 0;
 }
 
@@ -584,6 +588,7 @@ remoteDispatchDomainGetSchedulerParameters (struct qemud_client *client,
 
     r = virDomainGetSchedulerParameters (dom, params, &nparams);
     if (r == -1) {
+        virDomainFree(dom);
         free (params);
         return -1;
     }
@@ -593,6 +598,7 @@ remoteDispatchDomainGetSchedulerParameters (struct qemud_client *client,
     ret->params.params_val = malloc (sizeof (struct remote_sched_param)
                                      * nparams);
     if (ret->params.params_val == NULL) {
+        virDomainFree(dom);
         free (params);
         remoteDispatchError (client, req,
                              "out of memory allocating return array");
@@ -603,6 +609,7 @@ remoteDispatchDomainGetSchedulerParameters (struct qemud_client *client,
         // remoteDispatchClientRequest will free this:
         ret->params.params_val[i].field = strdup (params[i].field);
         if (ret->params.params_val[i].field == NULL) {
+            virDomainFree(dom);
             free (params);
             remoteDispatchError (client, req,
                                  "out of memory allocating return array");
@@ -623,11 +630,13 @@ remoteDispatchDomainGetSchedulerParameters (struct qemud_client *client,
         case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
             ret->params.params_val[i].value.remote_sched_param_value_u.b = params[i].value.b; break;
         default:
+            virDomainFree(dom);
             free (params);
             remoteDispatchError (client, req, "unknown type");
             return -2;
         }
     }
+    virDomainFree(dom);
     free (params);
 
     return 0;
@@ -686,6 +695,7 @@ remoteDispatchDomainSetSchedulerParameters (struct qemud_client *client,
     }
 
     r = virDomainSetSchedulerParameters (dom, params, nparams);
+    virDomainFree(dom);
     free (params);
     if (r == -1) return -1;
 
@@ -707,9 +717,11 @@ remoteDispatchDomainAttachDevice (struct qemud_client *client,
         return -2;
     }
 
-    if (virDomainAttachDevice (dom, args->xml) == -1)
+    if (virDomainAttachDevice (dom, args->xml) == -1) {
+        virDomainFree(dom);
         return -1;
-
+    }
+    virDomainFree(dom);
     return 0;
 }
 
@@ -728,9 +740,11 @@ remoteDispatchDomainCreate (struct qemud_client *client,
         return -2;
     }
 
-    if (virDomainCreate (dom) == -1)
+    if (virDomainCreate (dom) == -1) {
+        virDomainFree(dom);
         return -1;
-
+    }
+    virDomainFree(dom);
     return 0;
 }
 
@@ -747,6 +761,7 @@ remoteDispatchDomainCreateLinux (struct qemud_client *client,
     if (dom == NULL) return -1;
 
     make_nonnull_domain (&ret->dom, dom);
+    virDomainFree(dom);
 
     return 0;
 }
@@ -764,6 +779,7 @@ remoteDispatchDomainDefineXml (struct qemud_client *client,
     if (dom == NULL) return -1;
 
     make_nonnull_domain (&ret->dom, dom);
+    virDomainFree(dom);
 
     return 0;
 }
@@ -785,7 +801,7 @@ remoteDispatchDomainDestroy (struct qemud_client *client,
 
     if (virDomainDestroy (dom) == -1)
         return -1;
-
+    /* No need to free dom - destroy does it for us */
     return 0;
 }
 
@@ -804,9 +820,12 @@ remoteDispatchDomainDetachDevice (struct qemud_client *client,
         return -2;
     }
 
-    if (virDomainDetachDevice (dom, args->xml) == -1)
+    if (virDomainDetachDevice (dom, args->xml) == -1) {
+        virDomainFree(dom);
         return -1;
+    }
 
+    virDomainFree(dom);
     return 0;
 }
 
@@ -827,8 +846,11 @@ remoteDispatchDomainDumpXml (struct qemud_client *client,
 
     /* remoteDispatchClientRequest will free this. */
     ret->xml = virDomainGetXMLDesc (dom, args->flags);
-    if (!ret->xml) return -1;
-
+    if (!ret->xml) {
+            virDomainFree(dom);
+            return -1;
+    }
+    virDomainFree(dom);
     return 0;
 }
 
@@ -847,9 +869,11 @@ remoteDispatchDomainGetAutostart (struct qemud_client *client,
         return -2;
     }
 
-    if (virDomainGetAutostart (dom, &ret->autostart) == -1)
+    if (virDomainGetAutostart (dom, &ret->autostart) == -1) {
+        virDomainFree(dom);
         return -1;
-
+    }
+    virDomainFree(dom);
     return 0;
 }
 
@@ -869,14 +893,18 @@ remoteDispatchDomainGetInfo (struct qemud_client *client,
         return -2;
     }
 
-    if (virDomainGetInfo (dom, &info) == -1)
+    if (virDomainGetInfo (dom, &info) == -1) {
+        virDomainFree(dom);
         return -1;
+    }
 
     ret->state = info.state;
     ret->max_mem = info.maxMem;
     ret->memory = info.memory;
     ret->nr_virt_cpu = info.nrVirtCpu;
     ret->cpu_time = info.cpuTime;
+
+    virDomainFree(dom);
 
     return 0;
 }
@@ -897,8 +925,11 @@ remoteDispatchDomainGetMaxMemory (struct qemud_client *client,
     }
 
     ret->memory = virDomainGetMaxMemory (dom);
-    if (ret->memory == 0) return -1;
-
+    if (ret->memory == 0) {
+        virDomainFree(dom);
+        return -1;
+    }
+    virDomainFree(dom);
     return 0;
 }
 
@@ -918,8 +949,11 @@ remoteDispatchDomainGetMaxVcpus (struct qemud_client *client,
     }
 
     ret->num = virDomainGetMaxVcpus (dom);
-    if (ret->num == -1) return -1;
-
+    if (ret->num == -1) {
+        virDomainFree(dom);
+        return -1;
+    }
+    virDomainFree(dom);
     return 0;
 }
 
@@ -940,8 +974,11 @@ remoteDispatchDomainGetOsType (struct qemud_client *client,
 
     /* remoteDispatchClientRequest will free this */
     ret->type = virDomainGetOSType (dom);
-    if (ret->type == NULL) return -1;
-
+    if (ret->type == NULL) {
+            virDomainFree(dom);
+            return -1;
+    }
+    virDomainFree(dom);
     return 0;
 }
 
@@ -964,11 +1001,13 @@ remoteDispatchDomainGetVcpus (struct qemud_client *client,
     }
 
     if (args->maxinfo > REMOTE_VCPUINFO_MAX) {
+        virDomainFree(dom);
         remoteDispatchError (client, req, "maxinfo > REMOTE_VCPUINFO_MAX");
         return -2;
     }
 
     if (args->maxinfo * args->maplen > REMOTE_CPUMAPS_MAX) {
+        virDomainFree(dom);
         remoteDispatchError (client, req, "maxinfo * maplen > REMOTE_CPUMAPS_MAX");
         return -2;
     }
@@ -980,7 +1019,10 @@ remoteDispatchDomainGetVcpus (struct qemud_client *client,
     info_len = virDomainGetVcpus (dom,
                                   info, args->maxinfo,
                                   cpumaps, args->maplen);
-    if (info_len == -1) return -1;
+    if (info_len == -1) {
+        virDomainFree(dom);
+        return -1;
+    }
 
     /* Allocate the return buffer for info. */
     ret->info.info_len = info_len;
@@ -1000,6 +1042,7 @@ remoteDispatchDomainGetVcpus (struct qemud_client *client,
     ret->cpumaps.cpumaps_len = args->maxinfo * args->maplen;
     ret->cpumaps.cpumaps_val = (char *) cpumaps;
 
+    virDomainFree(dom);
     return 0;
 }
 
@@ -1041,7 +1084,7 @@ remoteDispatchDomainLookupById (struct qemud_client *client,
     if (dom == NULL) return -1;
 
     make_nonnull_domain (&ret->dom, dom);
-
+    virDomainFree(dom);
     return 0;
 }
 
@@ -1058,7 +1101,7 @@ remoteDispatchDomainLookupByName (struct qemud_client *client,
     if (dom == NULL) return -1;
 
     make_nonnull_domain (&ret->dom, dom);
-
+    virDomainFree(dom);
     return 0;
 }
 
@@ -1075,7 +1118,7 @@ remoteDispatchDomainLookupByUuid (struct qemud_client *client,
     if (dom == NULL) return -1;
 
     make_nonnull_domain (&ret->dom, dom);
-
+    virDomainFree(dom);
     return 0;
 }
 
@@ -1110,6 +1153,7 @@ remoteDispatchDomainPinVcpu (struct qemud_client *client,
     }
 
     if (args->cpumap.cpumap_len > REMOTE_CPUMAP_MAX) {
+        virDomainFree(dom);
         remoteDispatchError (client, req, "cpumap_len > REMOTE_CPUMAP_MAX");
         return -2;
     }
@@ -1117,8 +1161,11 @@ remoteDispatchDomainPinVcpu (struct qemud_client *client,
     rv = virDomainPinVcpu (dom, args->vcpu,
                            (unsigned char *) args->cpumap.cpumap_val,
                            args->cpumap.cpumap_len);
-    if (rv == -1) return -1;
-
+    if (rv == -1) {
+        virDomainFree(dom);
+        return -1;
+    }
+    virDomainFree(dom);
     return 0;
 }
 
@@ -1137,9 +1184,11 @@ remoteDispatchDomainReboot (struct qemud_client *client,
         return -2;
     }
 
-    if (virDomainReboot (dom, args->flags) == -1)
+    if (virDomainReboot (dom, args->flags) == -1) {
+        virDomainFree(dom);
         return -1;
-
+    }
+    virDomainFree(dom);
     return 0;
 }
 
@@ -1172,9 +1221,11 @@ remoteDispatchDomainResume (struct qemud_client *client,
         return -2;
     }
 
-    if (virDomainResume (dom) == -1)
+    if (virDomainResume (dom) == -1) {
+        virDomainFree(dom);
         return -1;
-
+    }
+    virDomainFree(dom);
     return 0;
 }
 
@@ -1193,9 +1244,11 @@ remoteDispatchDomainSave (struct qemud_client *client,
         return -2;
     }
 
-    if (virDomainSave (dom, args->to) == -1)
+    if (virDomainSave (dom, args->to) == -1) {
+        virDomainFree(dom);
         return -1;
-
+    }
+    virDomainFree(dom);
     return 0;
 }
 
@@ -1214,9 +1267,11 @@ remoteDispatchDomainCoreDump (struct qemud_client *client,
         return -2;
     }
 
-    if (virDomainCoreDump (dom, args->to, args->flags) == -1)
+    if (virDomainCoreDump (dom, args->to, args->flags) == -1) {
+        virDomainFree(dom);
         return -1;
-
+    }
+    virDomainFree(dom);
     return 0;
 }
 
@@ -1235,9 +1290,11 @@ remoteDispatchDomainSetAutostart (struct qemud_client *client,
         return -2;
     }
 
-    if (virDomainSetAutostart (dom, args->autostart) == -1)
+    if (virDomainSetAutostart (dom, args->autostart) == -1) {
+        virDomainFree(dom);
         return -1;
-
+    }
+    virDomainFree(dom);
     return 0;
 }
 
@@ -1256,9 +1313,11 @@ remoteDispatchDomainSetMaxMemory (struct qemud_client *client,
         return -2;
     }
 
-    if (virDomainSetMaxMemory (dom, args->memory) == -1)
+    if (virDomainSetMaxMemory (dom, args->memory) == -1) {
+        virDomainFree(dom);
         return -1;
-
+    }
+    virDomainFree(dom);
     return 0;
 }
 
@@ -1277,9 +1336,11 @@ remoteDispatchDomainSetMemory (struct qemud_client *client,
         return -2;
     }
 
-    if (virDomainSetMemory (dom, args->memory) == -1)
+    if (virDomainSetMemory (dom, args->memory) == -1) {
+        virDomainFree(dom);
         return -1;
-
+    }
+    virDomainFree(dom);
     return 0;
 }
 
@@ -1298,9 +1359,11 @@ remoteDispatchDomainSetVcpus (struct qemud_client *client,
         return -2;
     }
 
-    if (virDomainSetVcpus (dom, args->nvcpus) == -1)
+    if (virDomainSetVcpus (dom, args->nvcpus) == -1) {
+        virDomainFree(dom);
         return -1;
-
+    }
+    virDomainFree(dom);
     return 0;
 }
 
@@ -1319,9 +1382,11 @@ remoteDispatchDomainShutdown (struct qemud_client *client,
         return -2;
     }
 
-    if (virDomainShutdown (dom) == -1)
+    if (virDomainShutdown (dom) == -1) {
+        virDomainFree(dom);
         return -1;
-
+    }
+    virDomainFree(dom);
     return 0;
 }
 
@@ -1340,9 +1405,11 @@ remoteDispatchDomainSuspend (struct qemud_client *client,
         return -2;
     }
 
-    if (virDomainSuspend (dom) == -1)
+    if (virDomainSuspend (dom) == -1) {
+        virDomainFree(dom);
         return -1;
-
+    }
+    virDomainFree(dom);
     return 0;
 }
 
@@ -1361,9 +1428,11 @@ remoteDispatchDomainUndefine (struct qemud_client *client,
         return -2;
     }
 
-    if (virDomainUndefine (dom) == -1)
+    if (virDomainUndefine (dom) == -1) {
+        virDomainFree(dom);
         return -1;
-
+    }
+    virDomainFree(dom);
     return 0;
 }
 
@@ -1456,9 +1525,11 @@ remoteDispatchNetworkCreate (struct qemud_client *client,
         return -2;
     }
 
-    if (virNetworkCreate (net) == -1)
+    if (virNetworkCreate (net) == -1) {
+        virNetworkFree(net);
         return -1;
-
+    }
+    virNetworkFree(net);
     return 0;
 }
 
@@ -1475,7 +1546,7 @@ remoteDispatchNetworkCreateXml (struct qemud_client *client,
     if (net == NULL) return -1;
 
     make_nonnull_network (&ret->net, net);
-
+    virNetworkFree(net);
     return 0;
 }
 
@@ -1492,7 +1563,7 @@ remoteDispatchNetworkDefineXml (struct qemud_client *client,
     if (net == NULL) return -1;
 
     make_nonnull_network (&ret->net, net);
-
+    virNetworkFree(net);
     return 0;
 }
 
@@ -1511,9 +1582,11 @@ remoteDispatchNetworkDestroy (struct qemud_client *client,
         return -2;
     }
 
-    if (virNetworkDestroy (net) == -1)
+    if (virNetworkDestroy (net) == -1) {
+        virNetworkFree(net);
         return -1;
-
+    }
+    virNetworkFree(net);
     return 0;
 }
 
@@ -1534,8 +1607,11 @@ remoteDispatchNetworkDumpXml (struct qemud_client *client,
 
     /* remoteDispatchClientRequest will free this. */
     ret->xml = virNetworkGetXMLDesc (net, args->flags);
-    if (!ret->xml) return -1;
-
+    if (!ret->xml) {
+        virNetworkFree(net);
+        return -1;
+    }
+    virNetworkFree(net);
     return 0;
 }
 
@@ -1554,9 +1630,11 @@ remoteDispatchNetworkGetAutostart (struct qemud_client *client,
         return -2;
     }
 
-    if (virNetworkGetAutostart (net, &ret->autostart) == -1)
+    if (virNetworkGetAutostart (net, &ret->autostart) == -1) {
+        virNetworkFree(net);
         return -1;
-
+    }
+    virNetworkFree(net);
     return 0;
 }
 
@@ -1577,8 +1655,11 @@ remoteDispatchNetworkGetBridgeName (struct qemud_client *client,
 
     /* remoteDispatchClientRequest will free this. */
     ret->name = virNetworkGetBridgeName (net);
-    if (!ret->name) return -1;
-
+    if (!ret->name) {
+        virNetworkFree(net);
+        return -1;
+    }
+    virNetworkFree(net);
     return 0;
 }
 
@@ -1595,7 +1676,7 @@ remoteDispatchNetworkLookupByName (struct qemud_client *client,
     if (net == NULL) return -1;
 
     make_nonnull_network (&ret->net, net);
-
+    virNetworkFree(net);
     return 0;
 }
 
@@ -1612,7 +1693,7 @@ remoteDispatchNetworkLookupByUuid (struct qemud_client *client,
     if (net == NULL) return -1;
 
     make_nonnull_network (&ret->net, net);
-
+    virNetworkFree(net);
     return 0;
 }
 
@@ -1631,9 +1712,11 @@ remoteDispatchNetworkSetAutostart (struct qemud_client *client,
         return -2;
     }
 
-    if (virNetworkSetAutostart (net, args->autostart) == -1)
+    if (virNetworkSetAutostart (net, args->autostart) == -1) {
+        virNetworkFree(net);
         return -1;
-
+    }
+    virNetworkFree(net);
     return 0;
 }
 
@@ -1652,9 +1735,11 @@ remoteDispatchNetworkUndefine (struct qemud_client *client,
         return -2;
     }
 
-    if (virNetworkUndefine (net) == -1)
+    if (virNetworkUndefine (net) == -1) {
+        virNetworkFree(net);
         return -1;
-
+    }
+    virNetworkFree(net);
     return 0;
 }
 
