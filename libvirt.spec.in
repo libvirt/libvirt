@@ -3,7 +3,7 @@
 Summary: Library providing a simple API virtualization
 Name: libvirt
 Version: @VERSION@
-Release: 1%{?dist}%{?extra_release}
+Release: 1%{?dist}%{?extra_release}migr5
 License: LGPL
 Group: Development/Libraries
 Source: libvirt-%{version}.tar.gz
@@ -135,6 +135,7 @@ fi
 %attr(4755, root, root) %{_libexecdir}/libvirt_proxy
 %attr(0755, root, root) %{_sbindir}/libvirtd
 %doc docs/libvirt.rng
+%doc docs/network.rng
 
 %files devel
 %defattr(-, root, root)

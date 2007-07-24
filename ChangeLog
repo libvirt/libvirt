@@ -1,3 +1,9 @@
+Tue Jul 24 11:18:11 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* docs/network.rng docs/Makefile.am libvirt.spec.in: added Relax-NG
+	  grammar for network descriptions that David Lutterkort posted in
+	  April, it needs an update though
+
 Tue Jul 24 10:15:33 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* po/*: update translations and regenerate .pot

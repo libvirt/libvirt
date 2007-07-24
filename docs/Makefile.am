@@ -10,7 +10,7 @@ APIPAGES=APIconstructors.html APIfiles.html APIfunctions.html \
 EXTRA_DIST=							\
 	   libvirt-api.xml libvirt-refs.xml apibuild.py		\
 	   *.xsl *.html *.gif html/*.html html/*.png \
-	   test*.xml libvirt.rng
+	   test*.xml libvirt.rng network.rng
 
 
 man_MANS=
