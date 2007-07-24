@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-13 10:22+0200\n"
+"POT-Creation-Date: 2007-07-24 10:14+0200\n"
 "PO-Revision-Date: 2007-04-26 23:43+0100\n"
 "Last-Translator: Espen A. Stefansen <espenas@gmail.com>\n"
 "Language-Team: Norwegian/Bokmaal <i18n-nb@lister.ping.uio.no>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/libvirt.c:405 src/hash.c:664
+#: src/libvirt.c:411 src/hash.c:664
 msgid "allocating connection"
 msgstr "allokerer tilkobling"
 
@@ -393,8 +393,9 @@ msgid "Network not found: %s"
 msgstr "Domene %s opprettet fra %s\n"
 
 #: src/virterror.c:651
+#, fuzzy
 msgid "invalid MAC adress"
-msgstr ""
+msgstr "ugyldig argument i %s"
 
 #: src/virterror.c:653
 #, fuzzy, c-format
@@ -615,8 +616,8 @@ msgstr ""
 msgid "failed to read from Xen Daemon"
 msgstr ""
 
-#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
-#: src/xend_internal.c:1542
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1528
+#: src/xend_internal.c:1547
 msgid "allocate new buffer"
 msgstr ""
 
@@ -650,27 +651,27 @@ msgstr "domeneinformasjon i XML"
 msgid "domain information incomplete, missing id"
 msgstr "domeneinformasjon i XML"
 
-#: src/xend_internal.c:1492
+#: src/xend_internal.c:1497
 msgid "domain information incomplete, vbd has no dev"
 msgstr ""
 
-#: src/xend_internal.c:1507
+#: src/xend_internal.c:1512
 msgid "domain information incomplete, vbd has no src"
 msgstr ""
 
-#: src/xend_internal.c:1516
+#: src/xend_internal.c:1521
 msgid "cannot parse vbd filename, missing driver name"
 msgstr ""
 
-#: src/xend_internal.c:1535
+#: src/xend_internal.c:1540
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 
-#: src/xend_internal.c:1898
+#: src/xend_internal.c:1924
 msgid "failed to parse Xend domain information"
 msgstr ""
 
-#: src/xend_internal.c:3164
+#: src/xend_internal.c:3190
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Kunne ikke vise inaktive domener"
@@ -2187,7 +2188,17 @@ msgstr ""
 msgid "got asynchronous packet number %d\n"
 msgstr ""
 
-#: src/xen_internal.c:2315
+#: src/xen_internal.c:1255
+#, c-format
+msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
+msgstr ""
+
+#: src/xen_internal.c:1265
+#, c-format
+msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
+msgstr ""
+
+#: src/xen_internal.c:2340
 #, c-format
 msgid "allocating %d domain info"
 msgstr ""

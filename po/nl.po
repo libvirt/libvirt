@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-13 10:22+0200\n"
-"PO-Revision-Date: 2007-07-04 21:41+0200\n"
+"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"PO-Revision-Date: 2007-07-16 22:59+0200\n"
 "Last-Translator: Peter van Egdom <p.van.egdom@gmail.com>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: src/libvirt.c:405 src/hash.c:664
+#: src/libvirt.c:411 src/hash.c:664
 msgid "allocating connection"
 msgstr "toewijzen van verbinding"
 
@@ -161,7 +161,7 @@ msgstr ""
 #: src/virterror.c:488
 #, c-format
 msgid "failed Xen syscall %s %d"
-msgstr ""
+msgstr "Xen systeemaanroep %s %d is mislukt"
 
 #: src/virterror.c:492
 msgid "unknown OS type"
@@ -364,34 +364,31 @@ msgid "Failed to find the network: %s"
 msgstr ""
 
 #: src/virterror.c:639
-#, fuzzy
 msgid "Domain not found"
-msgstr "domein informatie"
+msgstr "Domein niet gevonden"
 
 #: src/virterror.c:641
 #, c-format
 msgid "Domain not found: %s"
-msgstr ""
+msgstr "Domein niet gevonden: %s"
 
 #: src/virterror.c:645
-#, fuzzy
 msgid "Network not found"
-msgstr "netwerknaam of uuid"
+msgstr "Netwerk niet gevonden"
 
 #: src/virterror.c:647
 #, c-format
 msgid "Network not found: %s"
-msgstr ""
+msgstr "Netwerk niet gevonden: %s"
 
 #: src/virterror.c:651
-#, fuzzy
 msgid "invalid MAC adress"
-msgstr "MAC-adres"
+msgstr "ongeldig MAC-adres"
 
 #: src/virterror.c:653
-#, fuzzy, c-format
+#, c-format
 msgid "invalid MAC adress: %s"
-msgstr "MAC-adres"
+msgstr "ongeldig MAC-adres: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -602,8 +599,8 @@ msgstr ""
 msgid "failed to read from Xen Daemon"
 msgstr ""
 
-#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
-#: src/xend_internal.c:1542
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1528
+#: src/xend_internal.c:1547
 msgid "allocate new buffer"
 msgstr "nieuwe buffer toewijzen"
 
@@ -635,27 +632,27 @@ msgstr ""
 msgid "domain information incomplete, missing id"
 msgstr ""
 
-#: src/xend_internal.c:1492
+#: src/xend_internal.c:1497
 msgid "domain information incomplete, vbd has no dev"
 msgstr ""
 
-#: src/xend_internal.c:1507
+#: src/xend_internal.c:1512
 msgid "domain information incomplete, vbd has no src"
 msgstr ""
 
-#: src/xend_internal.c:1516
+#: src/xend_internal.c:1521
 msgid "cannot parse vbd filename, missing driver name"
 msgstr ""
 
-#: src/xend_internal.c:1535
+#: src/xend_internal.c:1540
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 
-#: src/xend_internal.c:1898
+#: src/xend_internal.c:1924
 msgid "failed to parse Xend domain information"
 msgstr ""
 
-#: src/xend_internal.c:3164
+#: src/xend_internal.c:3190
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr ""
@@ -916,17 +913,17 @@ msgstr ""
 
 #: src/virsh.c:924
 msgid "Domain is already active"
-msgstr ""
+msgstr "Domein is reeds actief"
 
 #: src/virsh.c:930
 #, c-format
 msgid "Domain %s started\n"
-msgstr ""
+msgstr "Domein %s is gestart\n"
 
 #: src/virsh.c:933
 #, c-format
 msgid "Failed to start domain %s"
-msgstr ""
+msgstr "Starten van het domein %s is mislukt"
 
 #: src/virsh.c:946
 msgid "save a domain state to a file"
@@ -972,7 +969,7 @@ msgstr ""
 
 #: src/virsh.c:1072
 msgid "Unknown"
-msgstr ""
+msgstr "Onbekend"
 
 #: src/virsh.c:1124
 msgid "restore a domain from a saved state in a file"
@@ -1092,7 +1089,7 @@ msgstr ""
 
 #: src/virsh.c:1363
 msgid "domain information"
-msgstr "domein informatie"
+msgstr "domein-informatie"
 
 #: src/virsh.c:1364
 msgid "Returns basic information about the domain."
@@ -1525,7 +1522,7 @@ msgstr ""
 #: src/virsh.c:2442
 #, c-format
 msgid "Failed to start network %s"
-msgstr ""
+msgstr "Starten van het netwerk %s is mislukt"
 
 #: src/virsh.c:2455
 msgid "undefine an inactive network"
@@ -1572,7 +1569,7 @@ msgstr ""
 #: src/virsh.c:2563
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
-msgstr ""
+msgstr "Gecompileerd tegen bibliotheek: libvir %d.%d.%d\n"
 
 #: src/virsh.c:2568
 msgid "failed to get the library version"
@@ -1713,7 +1710,7 @@ msgstr ""
 
 #: src/virsh.c:3058 src/virsh.c:3336
 msgid "Failed to allocate memory"
-msgstr ""
+msgstr "Toewijzen van geheugen is mislukt"
 
 #: src/virsh.c:3063 src/virsh.c:3341
 msgid "Failed to create XML"
@@ -1903,7 +1900,7 @@ msgstr "GEGEVENS"
 
 #: src/virsh.c:4020 src/virsh.c:4046
 msgid "running"
-msgstr ""
+msgstr "wordt uitgevoerd"
 
 #: src/virsh.c:4022 src/virsh.c:4044
 msgid "blocked"
@@ -1911,7 +1908,7 @@ msgstr "geblokkeerd"
 
 #: src/virsh.c:4024
 msgid "paused"
-msgstr ""
+msgstr "gepauzeerd"
 
 #: src/virsh.c:4026
 msgid "in shutdown"
@@ -1931,7 +1928,7 @@ msgstr ""
 
 #: src/virsh.c:4061
 msgid "no valid connection"
-msgstr ""
+msgstr "geen geldige connectie"
 
 #: src/virsh.c:4108
 #, c-format
@@ -2056,13 +2053,12 @@ msgid "expecting an assignment"
 msgstr ""
 
 #: src/conf.c:887 src/conf.c:941
-#, fuzzy
 msgid "failed to allocate buffer"
-msgstr "nieuwe buffer toewijzen"
+msgstr "toewijzen van buffer is mislukt"
 
 #: src/conf.c:899
 msgid "failed to open file"
-msgstr ""
+msgstr "openen van bestand is mislukt"
 
 #: src/conf.c:907
 msgid "failed to save content"
@@ -2117,7 +2113,17 @@ msgstr ""
 msgid "got asynchronous packet number %d\n"
 msgstr ""
 
-#: src/xen_internal.c:2315
+#: src/xen_internal.c:1255
+#, c-format
+msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
+msgstr ""
+
+#: src/xen_internal.c:1265
+#, c-format
+msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
+msgstr ""
+
+#: src/xen_internal.c:2340
 #, c-format
 msgid "allocating %d domain info"
-msgstr "toewijzen van %d domein informatie"
+msgstr "toewijzen van %d domein-informatie"

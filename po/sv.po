@@ -1,23 +1,22 @@
 # Swedish translation of libvirt.
 # Copyright (C) 2006 Free Software Foundation, Inc.
-# This file is distributed under the same license as the libvirt package.
-# Magnus Larsson <fedoratrans@gmail.com>, 2006.
-# , fuzzy
+# Magnus Larsson <fedoratrans@gmail.com>, 2006, 2007.
+# 
 # 
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-13 10:22+0200\n"
-"PO-Revision-Date: 2007-04-17 15:16-0400\n"
+"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"PO-Revision-Date: 2007-07-19 12:53-0400\n"
 "Last-Translator: Magnus Larsson <fedoratrans@gmail.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/libvirt.c:405 src/hash.c:664
+#: src/libvirt.c:411 src/hash.c:664
 msgid "allocating connection"
 msgstr "allokerar anslutning"
 
@@ -47,14 +46,13 @@ msgid "out of memory"
 msgstr "slut på minne"
 
 #: src/virterror.c:414
-#, fuzzy
 msgid "this function is not supported by the hypervisor"
-msgstr "inget stöd för hypervisor"
+msgstr "denna funktion stöds inte av hypervisor"
 
 #: src/virterror.c:416
-#, fuzzy, c-format
+#, c-format
 msgid "this function is not supported by the hypervisor: %s"
-msgstr "inget stöd fär hypervisor %s"
+msgstr "denna funktion stöds inte av hypervisor: %s"
 
 #: src/virterror.c:420
 msgid "could not connect to hypervisor"
@@ -279,12 +277,12 @@ msgstr "operation %s otillåten vid skrivskyddad åtkomst"
 
 #: src/virterror.c:567
 msgid "failed to open configuration file for reading"
-msgstr "kunde inte öpnna konfigurationsfilen för läsning"
+msgstr "kunde inte öppna konfigurationsfilen för läsning"
 
 #: src/virterror.c:569
 #, c-format
 msgid "failed to open %s for reading"
-msgstr "kunde inte öpnna %s för läsning"
+msgstr "kunde inte öppna %s för läsning"
 
 #: src/virterror.c:573
 msgid "failed to read configuration file"
@@ -349,53 +347,48 @@ msgid "system call error"
 msgstr "systemanropsfel"
 
 #: src/virterror.c:621
-#, fuzzy
 msgid "RPC error"
-msgstr "fel"
+msgstr "RPC-fel"
 
 #: src/virterror.c:627
-#, fuzzy
 msgid "GNUTLS call error"
-msgstr "systemanropsfel"
+msgstr "GNUTLS-anropsfel"
 
 #: src/virterror.c:633
-#, fuzzy
 msgid "Failed to find the network"
-msgstr "Misslyckades att avdefiniera nätverk %s"
+msgstr "Misslyckades att hitta nätverk"
 
 #: src/virterror.c:635
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find the network: %s"
-msgstr "Misslyckades att avdefiniera nätverk %s"
+msgstr "Misslyckades att hitta nätverket: %s"
 
 #: src/virterror.c:639
-#, fuzzy
 msgid "Domain not found"
-msgstr "domäninformation"
+msgstr "Domän hittades inte"
 
 #: src/virterror.c:641
-#, fuzzy, c-format
+#, c-format
 msgid "Domain not found: %s"
-msgstr "Domän återställd från %s\n"
+msgstr "Domän hittades inte: %s"
 
 #: src/virterror.c:645
-#, fuzzy
 msgid "Network not found"
-msgstr "nätverksnamn eller uuid"
+msgstr "Nätverk hittades inte"
 
 #: src/virterror.c:647
-#, fuzzy, c-format
+#, c-format
 msgid "Network not found: %s"
-msgstr "Nätverk %s skapat från %s\n"
+msgstr "Nätverk hittades inte: %s"
 
 #: src/virterror.c:651
 msgid "invalid MAC adress"
-msgstr ""
+msgstr "ogiltig MAC-adress"
 
 #: src/virterror.c:653
-#, fuzzy, c-format
+#, c-format
 msgid "invalid MAC adress: %s"
-msgstr "ogiltigt argument i %s"
+msgstr "ogiltigt MAC-adress: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -568,21 +561,19 @@ msgstr "allokerar nod"
 
 #: src/test.c:756
 msgid "testOpen: supply a path or use test:///default"
-msgstr ""
+msgstr "testOpen: ange en sökväg eller använd test:///default"
 
 #: src/test.c:761
 msgid "too many connections"
 msgstr "för många anslutningar"
 
 #: src/test.c:768
-#, fuzzy
 msgid "allocating private data"
-msgstr "allokera värdelista"
+msgstr "allokera privat data"
 
 #: src/test.c:774
-#, fuzzy
 msgid "allocating path"
-msgstr "allokerar domän"
+msgstr "allokerar sökväg"
 
 #: src/test.c:946
 msgid "too many domains"
@@ -608,8 +599,8 @@ msgstr "misslyckades att kopiera en sträng"
 msgid "failed to read from Xen Daemon"
 msgstr "misslyckades att läsa från Xen-demonen"
 
-#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
-#: src/xend_internal.c:1542
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1528
+#: src/xend_internal.c:1547
 msgid "allocate new buffer"
 msgstr "allokera ny buffer"
 
@@ -641,27 +632,27 @@ msgstr "domäninformation ej komplett, saknar kärna & startprogram"
 msgid "domain information incomplete, missing id"
 msgstr "domäninformation ej komplett, saknar uuid"
 
-#: src/xend_internal.c:1492
+#: src/xend_internal.c:1497
 msgid "domain information incomplete, vbd has no dev"
 msgstr "domäninformation inkomplett, vbd har ingen dev"
 
-#: src/xend_internal.c:1507
+#: src/xend_internal.c:1512
 msgid "domain information incomplete, vbd has no src"
 msgstr "domäninformation inkomplett, vbd har ingen src"
 
-#: src/xend_internal.c:1516
+#: src/xend_internal.c:1521
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "kan inte analysera vbd-filnamn, saknar drivrutinsnamn"
 
-#: src/xend_internal.c:1535
+#: src/xend_internal.c:1540
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "kan inte analysera vbd-filnamn, saknar drivrutinstyp"
 
-#: src/xend_internal.c:1898
+#: src/xend_internal.c:1924
 msgid "failed to parse Xend domain information"
 msgstr "misslyckades att analysera domäninformation för Xend"
 
-#: src/xend_internal.c:3164
+#: src/xend_internal.c:3190
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Misslyckades att skapa inaktiv domän %s\n"
@@ -675,9 +666,8 @@ msgid "Prints global help or command specific help."
 msgstr "Skriv ut global hjälp eller beordra speficik hjälp."
 
 #: src/virsh.c:314
-#, fuzzy
 msgid "name of command"
-msgstr "namn för den inaktiva domänen"
+msgstr "namn på kommando"
 
 #: src/virsh.c:326
 msgid ""
@@ -847,19 +837,19 @@ msgid "file containing an XML domain description"
 msgstr "fil som innehåller XML-domänbeskrivningen"
 
 #: src/virsh.c:726
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open '%s': %s"
-msgstr "Misslyckades att suspendera domän %s"
+msgstr "Misslyckades att öppna \"%s\": %s"
 
 #: src/virsh.c:746
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open '%s': read: %s"
-msgstr "kunde inte öpnna %s för läsning"
+msgstr "Misslyckades att öppna %s för läsning:%s"
 
 #: src/virsh.c:764
-#, fuzzy, c-format
+#, c-format
 msgid "Error allocating memory: %s"
-msgstr "allokerar nätverk"
+msgstr "Fel allokering av minne: %s"
 
 #: src/virsh.c:798
 #, c-format
@@ -961,28 +951,27 @@ msgstr "Misslyckades att spara domän %s till %s"
 
 #: src/virsh.c:990
 msgid "show/set scheduler parameters"
-msgstr ""
+msgstr "visa/sätt parametrar för schemaläggare"
 
 #: src/virsh.c:991
 msgid "Show/Set scheduler parameters."
-msgstr ""
+msgstr "Visa/sätt parametrar för schemaläggare."
 
 #: src/virsh.c:997
 msgid "weight for XEN_CREDIT"
-msgstr ""
+msgstr "vikt för XEN_CREDIT"
 
 #: src/virsh.c:998
 msgid "cap for XEN_CREDIT"
-msgstr ""
+msgstr "gräns för XEN_CREDIT"
 
 #: src/virsh.c:1068 src/virsh.c:1072
 msgid "Scheduler"
-msgstr ""
+msgstr "Schemaläggare"
 
 #: src/virsh.c:1072
-#, fuzzy
 msgid "Unknown"
-msgstr "okänd värd"
+msgstr "Okänd"
 
 #: src/virsh.c:1124
 msgid "restore a domain from a saved state in a file"
@@ -1170,7 +1159,7 @@ msgstr "CPU-släktskap:"
 
 #: src/virsh.c:1511
 msgid "Domain shut off, virtual CPUs not present."
-msgstr ""
+msgstr "Domän avstängd, virtuella CPU:er ej närvarande."
 
 #: src/virsh.c:1527
 msgid "control domain vcpu affinity"
@@ -1190,13 +1179,14 @@ msgstr "värdens cpu-nummmer (komma-separerade)"
 
 #: src/virsh.c:1590
 msgid "cpulist: Invalid format. Empty string."
-msgstr ""
+msgstr "cpulist: Ogiltigt format. Tom sträng."
 
 #: src/virsh.c:1600
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
+"cpulist: %s: Ogiltigt format. Förväntade siffra på position %d (nära '%c')."
 
 #: src/virsh.c:1610
 #, c-format
@@ -1204,11 +1194,13 @@ msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
 "c')."
 msgstr ""
+"cpulist: %s: Ogiltigt format. Förväntade siffra eller komma på position %d "
+"(nära '%c')."
 
 #: src/virsh.c:1617
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
-msgstr ""
+msgstr "cpulist: %s: Ogiltigt format. Komma på slutet vid position %d."
 
 #: src/virsh.c:1631
 #, c-format
@@ -1228,12 +1220,10 @@ msgid "number of virtual CPUs"
 msgstr "antal virtuella CPU:er"
 
 #: src/virsh.c:1682
-#, fuzzy
 msgid "Invalid number of virtual CPUs."
-msgstr "antal virtuella CPU:er"
+msgstr "Ogiltigt antal virtuella CPU:er."
 
 #: src/virsh.c:1694
-#, fuzzy
 msgid "Too many virtual CPUs."
 msgstr "För många virtuella CPU:er."
 
@@ -1256,7 +1246,7 @@ msgstr "Ogiltigt värde %d för minnesstorlek"
 
 #: src/virsh.c:1746
 msgid "Unable to verify MaxMemorySize"
-msgstr ""
+msgstr "Kan inte verifiera MaxMemorySize"
 
 #: src/virsh.c:1769
 msgid "change maximum memory limit"
@@ -1272,16 +1262,15 @@ msgstr "maximal minnesgräns i kilobytes"
 
 #: src/virsh.c:1803
 msgid "Unable to verify current MemorySize"
-msgstr ""
+msgstr "Kan inte verifiera aktuell MemorySize"
 
 #: src/virsh.c:1810
-#, fuzzy
 msgid "Unable to shrink current MemorySize"
-msgstr "domänminne för närvarande"
+msgstr "Kan inte krympa aktuell MemorySize"
 
 #: src/virsh.c:1816
 msgid "Unable to change MaxMemorySize"
-msgstr ""
+msgstr "Kan inte ändra MaxMemorySize"
 
 #: src/virsh.c:1829
 msgid "node information"
@@ -1615,24 +1604,20 @@ msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "Kör hypervisor: %s %d.%d.%d\n"
 
 #: src/virsh.c:2610
-#, fuzzy
 msgid "print the hypervisor hostname"
-msgstr "misslyckades att hämta typ av hypervisor"
+msgstr "skriv ut värdnamnet för hypervisor"
 
 #: src/virsh.c:2624
-#, fuzzy
 msgid "failed to get hostname"
-msgstr "misslyckades att hämta typ av hypervisor"
+msgstr "misslyckades att få värdnamn"
 
 #: src/virsh.c:2639
-#, fuzzy
 msgid "print the hypervisor canonical URI"
-msgstr "anslutnings-URI för hypervisor"
+msgstr "skriv ut de canonical-URI för hypervisor"
 
 #: src/virsh.c:2653
-#, fuzzy
 msgid "failed to get URI"
-msgstr "misslyckades att hämta domän-UUID"
+msgstr "misslyckades att hämta URI"
 
 #: src/virsh.c:2668
 msgid "vnc display"
@@ -1643,164 +1628,151 @@ msgid "Output the IP address and port number for the VNC display."
 msgstr "Skriv ut IP-adress och portnummer för VNC-skärmen."
 
 #: src/virsh.c:2747
-#, fuzzy
 msgid "attach device from an XML file"
-msgstr "skapa en domän från en XML-fil"
+msgstr "anslut enhet från en XML-fil"
 
 #: src/virsh.c:2748
-#, fuzzy
 msgid "Attach device from an XML <file>."
-msgstr "skapa en domän från en XML-fil"
+msgstr "Anslut enhet från en XML <fil>."
 
 #: src/virsh.c:2754 src/virsh.c:2808
 msgid "XML file"
-msgstr ""
+msgstr "XML-fil"
 
 #: src/virsh.c:2786
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to attach device from %s"
-msgstr "Misslyckades att hämta enheter för domän %s\n"
+msgstr "Misslyckades att ansluta enhet från %s"
 
 #: src/virsh.c:2801
-#, fuzzy
 msgid "detach device from an XML file"
-msgstr "skapa en domän från en XML-fil"
+msgstr "avmontera enhet från en XML-fil"
 
 #: src/virsh.c:2802
-#, fuzzy
 msgid "Detach device from an XML <file>"
-msgstr "skapa en domän från en XML-fil"
+msgstr "Avmontera enhet från en XML-fil"
 
 #: src/virsh.c:2840
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to detach device from %s"
-msgstr "Misslyckades att hämta enheter för domän %s\n"
+msgstr "Misslyckades att avmontera enheten från %s"
 
 #: src/virsh.c:2855
-#, fuzzy
 msgid "attach network interface"
-msgstr "nätverksnamn"
+msgstr "anslut nätverksgränssnitt"
 
 #: src/virsh.c:2856
 msgid "Attach new network interface."
-msgstr ""
+msgstr "Anslut nytt nätverksgränssnitt."
 
 #: src/virsh.c:2862 src/virsh.c:2978
-#, fuzzy
 msgid "network interface type"
-msgstr "nätverksnamn"
+msgstr "nätverksgränssnittstyp"
 
 #: src/virsh.c:2863
-#, fuzzy
 msgid "source of network interface"
-msgstr "odefinierat nätverksnamn"
+msgstr "källa för nätverksgränssnitt"
 
 #: src/virsh.c:2864
-#, fuzzy
 msgid "target network name"
-msgstr "nätverksnamn"
+msgstr "målets nätverksnamn"
 
 #: src/virsh.c:2865 src/virsh.c:2979
 msgid "MAC adress"
-msgstr ""
+msgstr "MAC-adress"
 
 #: src/virsh.c:2866
 msgid "script used to bridge network interface"
-msgstr ""
+msgstr "skript som används för brygga nätverksgränssnitt"
 
 #: src/virsh.c:2898
 #, c-format
 msgid "No support %s in command 'attach-interface'"
-msgstr ""
+msgstr "Inget stöd för %s i kommando 'attach-interface'"
 
 #: src/virsh.c:2971
-#, fuzzy
 msgid "detach network interface"
-msgstr "nätverksnamn"
+msgstr "anslut nätverksgränssnitt"
 
 #: src/virsh.c:2972
 msgid "Detach network interface."
-msgstr ""
+msgstr "Avmontera nätverksgränssnitt."
 
 #: src/virsh.c:3017 src/virsh.c:3022
-#, fuzzy
 msgid "Failed to get interface information"
-msgstr "misslyckades att få nodinformation"
+msgstr "misslyckades att få gränssnittsinformation"
 
 #: src/virsh.c:3030
 #, c-format
 msgid "No found interface whose type is %s"
-msgstr ""
+msgstr "Hittade inget gränssnitt vars typ är %s"
 
 #: src/virsh.c:3052
 #, c-format
 msgid "No found interface whose MAC address is %s"
-msgstr ""
+msgstr "Hittade inget gränssnitt vars MAC-adress är %s"
 
 #: src/virsh.c:3058 src/virsh.c:3336
-#, fuzzy
 msgid "Failed to allocate memory"
-msgstr "misslyckades att allokera en nod"
+msgstr "Misslyckades att allokera minne"
 
 #: src/virsh.c:3063 src/virsh.c:3341
-#, fuzzy
 msgid "Failed to create XML"
-msgstr "Misslyckades att skapa domän %s\n"
+msgstr "Misslyckades att skapa XML"
 
 #: src/virsh.c:3092
 msgid "attach disk device"
-msgstr ""
+msgstr "anslut diskenhet"
 
 #: src/virsh.c:3093
 msgid "Attach new disk device."
-msgstr ""
+msgstr "Anslut ny diskenhet."
 
 #: src/virsh.c:3099
 msgid "source of disk device"
-msgstr ""
+msgstr "källa för skivenhet"
 
 #: src/virsh.c:3100 src/virsh.c:3264
 msgid "target of disk device"
-msgstr ""
+msgstr "mål för diskenhet"
 
 #: src/virsh.c:3101
 msgid "driver of disk device"
-msgstr ""
+msgstr "drivrutin för diskenhet"
 
 #: src/virsh.c:3102
 msgid "subdriver of disk device"
-msgstr ""
+msgstr "underdrivrutin till diskenhet"
 
 #: src/virsh.c:3103
 msgid "target device type"
-msgstr ""
+msgstr "målenhetstyp"
 
 #: src/virsh.c:3104
 msgid "mode of device reading and writing"
-msgstr ""
+msgstr "läge för enhetsläsning och skrivning"
 
 #: src/virsh.c:3135 src/virsh.c:3144 src/virsh.c:3151
 #, c-format
 msgid "No support %s in command 'attach-disk'"
-msgstr ""
+msgstr "Inget stöd för %s i kommando 'attach-disk'"
 
 #: src/virsh.c:3257
 msgid "detach disk device"
-msgstr ""
+msgstr "avmontera diskenhet"
 
 #: src/virsh.c:3258
 msgid "Detach disk device."
-msgstr ""
+msgstr "Avmontera diskenhet."
 
 #: src/virsh.c:3299 src/virsh.c:3304 src/virsh.c:3311
-#, fuzzy
 msgid "Failed to get disk information"
-msgstr "misslyckades att få nodinformation"
+msgstr "Misslyckades att få diskinformation"
 
 #: src/virsh.c:3330
 #, c-format
 msgid "No found disk whose target is %s"
-msgstr ""
+msgstr "Hittade ingen disk som hade målet %s"
 
 #: src/virsh.c:3370
 msgid "quit this interactive terminal"
@@ -1826,13 +1798,12 @@ msgid "  NAME\n"
 msgstr "  NAMN\n"
 
 #: src/virsh.c:3546
-#, fuzzy
 msgid ""
 "\n"
 "  SYNOPSIS\n"
 msgstr ""
 "\n"
-"  FLAGGOR\n"
+"  SYNOPSIS\n"
 
 #: src/virsh.c:3553
 msgid ""
@@ -1990,25 +1961,23 @@ msgid "failed to connect to the hypervisor"
 msgstr "misslyckades att ansluta till hypervisor"
 
 #: src/virsh.c:4231
-#, fuzzy
 msgid "failed to get the log file information"
-msgstr "misslyckades att få nodinformation"
+msgstr "misslyckades att få loggfilsinformation"
 
 #: src/virsh.c:4236
 msgid "the log path is not a file"
-msgstr ""
+msgstr "sökvägen till loggen är inte en fil"
 
 #: src/virsh.c:4242
 msgid "failed to open the log file. check the log file path"
-msgstr ""
+msgstr "misslyckades att öppna loggfil. kontrollera sökvägen till loggfilen"
 
 #: src/virsh.c:4310
-#, fuzzy
 msgid "failed to write the log file"
-msgstr "misslyckades att skriva konfigurationsfilen"
+msgstr "misslyckades att skriva loggfilen"
 
 #: src/virsh.c:4479
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "%s [options] [commands]\n"
@@ -2035,12 +2004,13 @@ msgstr ""
 "    -h | --help             denna hjälp\n"
 "    -q | --quiet            tyst läge\n"
 "    -t | --timing           skriv ut tidsinformation\n"
+"    -l | --log <fil>       skriv loginformation till fil\n"
 "    -v | --version          programversion\n"
 "\n"
 "  kommandon (icke-interaktivt läge):\n"
 
 #: src/virsh.c:4497
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
@@ -2112,9 +2082,8 @@ msgid "expecting an assignment"
 msgstr "förväntar mig en tilldelning"
 
 #: src/conf.c:887 src/conf.c:941
-#, fuzzy
 msgid "failed to allocate buffer"
-msgstr "misslyckades att allokera en nod"
+msgstr "misslyckades att allokera buffer"
 
 #: src/conf.c:899
 msgid "failed to open file"
@@ -2173,7 +2142,17 @@ msgstr "Kommunikationsfel med proxy: felformaterat paket\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "fick asynkront paketnummer %d\n"
 
-#: src/xen_internal.c:2315
+#: src/xen_internal.c:1255
+#, c-format
+msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
+msgstr ""
+
+#: src/xen_internal.c:1265
+#, c-format
+msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
+msgstr ""
+
+#: src/xen_internal.c:2340
 #, c-format
 msgid "allocating %d domain info"
 msgstr "allokerar %d domän-info"

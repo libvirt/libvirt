@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bn_IN\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-13 10:22+0200\n"
+"POT-Creation-Date: 2007-07-24 10:14+0200\n"
 "PO-Revision-Date: 2007-04-10 18:48+0530\n"
 "Last-Translator: Runa Bhattacharjee <runab@redhat.com>\n"
 "Language-Team: Bengali <en@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "\n"
 "\n"
 
-#: src/libvirt.c:405 src/hash.c:664
+#: src/libvirt.c:411 src/hash.c:664
 msgid "allocating connection"
 msgstr "সংযোগ বরাদ্দকরণ"
 
@@ -391,8 +391,9 @@ msgid "Network not found: %s"
 msgstr "%s নেটওয়ার্ক %s থেকে নির্মিত\n"
 
 #: src/virterror.c:651
+#, fuzzy
 msgid "invalid MAC adress"
-msgstr ""
+msgstr "%s-র মধ্যে অবৈধ আর্গুমেন্ট"
 
 #: src/virterror.c:653
 #, fuzzy, c-format
@@ -610,8 +611,8 @@ msgstr "পংক্তি কপি করতে ব্যর্থ"
 msgid "failed to read from Xen Daemon"
 msgstr "Xen Daemon থেকে পড়তে ব্যর্থ"
 
-#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
-#: src/xend_internal.c:1542
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1528
+#: src/xend_internal.c:1547
 msgid "allocate new buffer"
 msgstr "নতুন বাফার বরাদ্দকরণ"
 
@@ -644,27 +645,27 @@ msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্
 msgid "domain information incomplete, missing id"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, id অনুপস্থিত"
 
-#: src/xend_internal.c:1492
+#: src/xend_internal.c:1497
 msgid "domain information incomplete, vbd has no dev"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, vbd-র মধ্যে dev অনুপস্থিত"
 
-#: src/xend_internal.c:1507
+#: src/xend_internal.c:1512
 msgid "domain information incomplete, vbd has no src"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, vbd-র মধ্যে src অনুপস্থিত"
 
-#: src/xend_internal.c:1516
+#: src/xend_internal.c:1521
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd ফাইলের নাম পার্স করতে ব্যর্থ, ড্রাইভারের নাম অনুপস্থিত"
 
-#: src/xend_internal.c:1535
+#: src/xend_internal.c:1540
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd ফাইলের নাম পার্স করতে ব্যর্থ, ড্রাইভারের ধরন অনুপস্থিত"
 
-#: src/xend_internal.c:1898
+#: src/xend_internal.c:1924
 msgid "failed to parse Xend domain information"
 msgstr "Xend ডোমেইন সংক্রান্ত তথ্য পার্স করতে ব্যর্থ"
 
-#: src/xend_internal.c:3164
+#: src/xend_internal.c:3190
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "নিষ্ক্রিয় ডোমেইন %s নির্মাণ করতে ব্যর্থ\n"
@@ -2182,7 +2183,17 @@ msgstr "প্রক্সি সহযোগে সংযোগে সমস্
 msgid "got asynchronous packet number %d\n"
 msgstr "অ্যাসিঙ্ক্রোনাস প্যাকেট সংখ্যা %d প্রাপ্ত\n"
 
-#: src/xen_internal.c:2315
+#: src/xen_internal.c:1255
+#, c-format
+msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
+msgstr ""
+
+#: src/xen_internal.c:1265
+#, c-format
+msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
+msgstr ""
+
+#: src/xen_internal.c:2340
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d ডোমেইন সংক্রান্ত তথ্য বরাদ্দ করা হয়েছে"

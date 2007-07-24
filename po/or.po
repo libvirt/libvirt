@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: or\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-13 10:22+0200\n"
+"POT-Creation-Date: 2007-07-24 10:14+0200\n"
 "PO-Revision-Date: 2007-07-03 15:11+0530\n"
 "Last-Translator: Subhransu Behera <arya_subhransu@yahoo.co.in>\n"
 "Language-Team: Oriya <oriya-group@lists.sarovar.org>\n"
@@ -31,7 +31,7 @@ msgstr ""
 "\n"
 "\n"
 
-#: src/libvirt.c:405 src/hash.c:664
+#: src/libvirt.c:411 src/hash.c:664
 msgid "allocating connection"
 msgstr "ସଂଯୋଗ ବାଣ୍ଟୁଅଛି"
 
@@ -617,8 +617,8 @@ msgstr "ଗୋଟିଏ ବାକ୍ଯଖଣ୍ଡ ନକଲ କରିବାର
 msgid "failed to read from Xen Daemon"
 msgstr "ଜେନ ଡେମନରୁ ପଢିବାରେ ବିଫଳ"
 
-#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
-#: src/xend_internal.c:1542
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1528
+#: src/xend_internal.c:1547
 msgid "allocate new buffer"
 msgstr "ନୂତନ ବଫର ବାଣ୍ଟନ୍ତୁ"
 
@@ -650,27 +650,27 @@ msgstr "ପରିସର ସୂଚନା ଅସମ୍ପୂର୍ଣ୍ଣ, କ�
 msgid "domain information incomplete, missing id"
 msgstr "ପରିସର ସୂଚନା ଅସମ୍ପୂର୍ଣ୍ଣ ଅଟେ, ପରିଚୟ ଅନୁପସ୍ଥିତ"
 
-#: src/xend_internal.c:1492
+#: src/xend_internal.c:1497
 msgid "domain information incomplete, vbd has no dev"
 msgstr "ପରିସର ସୂଚନା ଅସମ୍ପୂର୍ଣ୍ଣ, vbd ର କୌଣସି dev ନାହିଁ"
 
-#: src/xend_internal.c:1507
+#: src/xend_internal.c:1512
 msgid "domain information incomplete, vbd has no src"
 msgstr "ପରିସର ସୂଚନା ଅସମ୍ପୂର୍ଣ୍ଣ, vbd ର କୌଣସି src ନାହିଁ"
 
-#: src/xend_internal.c:1516
+#: src/xend_internal.c:1521
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd ଫାଇଲ ନାମକୁ ବିଶ୍ଳେଷଣ କରିପାରିବ ନାହିଁ, ଡ୍ରାଇଭର ନାମ ଅନୁପସ୍ଥିତ"
 
-#: src/xend_internal.c:1535
+#: src/xend_internal.c:1540
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd ଫାଇଲ ନାମକୁ ବିଶ୍ଳେଷଣ କରିପାରିବ ନାହିଁ, ଡ୍ରାଇଭର ପ୍ରକାର ଅନୁପସ୍ଥିତ"
 
-#: src/xend_internal.c:1898
+#: src/xend_internal.c:1924
 msgid "failed to parse Xend domain information"
 msgstr "Xend ପରିସର ସୂଚନାକୁ ବିଶ୍ଳେଷଣ କରିବାରେ ବିଫଳ"
 
-#: src/xend_internal.c:3164
+#: src/xend_internal.c:3190
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "%s ନିଷ୍କ୍ରିୟ ପରିସରକୁ ସୃଷ୍ଟି କରିବାରେ ବିଫଳ\n"
@@ -2157,7 +2157,17 @@ msgstr "ପ୍ରୋକ୍ସି ସହିତ ସମ୍ବାଦ ବିନିମ
 msgid "got asynchronous packet number %d\n"
 msgstr "ତାଳହୀନ ପ୍ଯାକେଟ ସଂଖ୍ଯା %d ମିଳିଲା\n"
 
-#: src/xen_internal.c:2315
+#: src/xen_internal.c:1255
+#, c-format
+msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
+msgstr ""
+
+#: src/xen_internal.c:1265
+#, c-format
+msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
+msgstr ""
+
+#: src/xen_internal.c:2340
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d ପରିସର ସୂଚନା ବାଣ୍ଟୁଅଛି"

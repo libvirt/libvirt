@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-13 10:22+0200\n"
+"POT-Creation-Date: 2007-07-24 10:14+0200\n"
 "PO-Revision-Date: 2007-04-10 11:36+0530\n"
 "Last-Translator: Ankit Patel <ankit@redhat.com>\n"
 "Language-Team: Gujarati <fedora-trans-gu@redhat.com>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "\n"
 "\n"
 
-#: src/libvirt.c:405 src/hash.c:664
+#: src/libvirt.c:411 src/hash.c:664
 msgid "allocating connection"
 msgstr "જોડાણ ફાળવી રહ્યા છીએ"
 
@@ -392,8 +392,9 @@ msgid "Network not found: %s"
 msgstr "નેટવર્ક %s એ %s માંથી બન્યું\n"
 
 #: src/virterror.c:651
+#, fuzzy
 msgid "invalid MAC adress"
-msgstr ""
+msgstr "%s આમાં અયોગ્ય દલીલ"
 
 #: src/virterror.c:653
 #, fuzzy, c-format
@@ -611,8 +612,8 @@ msgstr "શબ્દમાળાની નકલ કરવામાં નિષ
 msgid "failed to read from Xen Daemon"
 msgstr "Xen ડિમનમાંથી વાંચવામાં નિષ્ફળ"
 
-#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
-#: src/xend_internal.c:1542
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1528
+#: src/xend_internal.c:1547
 msgid "allocate new buffer"
 msgstr "નવો બફર ફાળવો"
 
@@ -645,27 +646,27 @@ msgstr "ડોમેઈન જાણકારી અપૂર્ણ, ગુમ �
 msgid "domain information incomplete, missing id"
 msgstr "ડોમેઈન જાણકારી અપૂર્ણ, ગુમ થયેલ id"
 
-#: src/xend_internal.c:1492
+#: src/xend_internal.c:1497
 msgid "domain information incomplete, vbd has no dev"
 msgstr "ડોમેઈન જાણકારી અપૂર્ણ, vbd ને કોઈ dev નથી"
 
-#: src/xend_internal.c:1507
+#: src/xend_internal.c:1512
 msgid "domain information incomplete, vbd has no src"
 msgstr "ડોમેઈન જાણકારી અપૂર્ણ, vbd ને કોઈ src નથી"
 
-#: src/xend_internal.c:1516
+#: src/xend_internal.c:1521
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd ફાઈલનામ પદચ્છેદન કરી શકતા નથી, ગુમ થયેલ ડ્રાઈવર નામ"
 
-#: src/xend_internal.c:1535
+#: src/xend_internal.c:1540
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd ફાઈલનામ પદચ્છેદન કરી શકતા નથી, ગુમ થયેલ ડ્રાઈવર પ્રકાર"
 
-#: src/xend_internal.c:1898
+#: src/xend_internal.c:1924
 msgid "failed to parse Xend domain information"
 msgstr "Xend ડોમેઈન જાણકારીનું પદચ્છેદન કરવામાં નિષ્ફળ"
 
-#: src/xend_internal.c:3164
+#: src/xend_internal.c:3190
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "અસક્રિય ડોમેઈન %s બનાવવામાં નિષ્ફળ\n"
@@ -2181,7 +2182,17 @@ msgstr "પ્રોક્સી સાથે સંપર્કવ્યવહ�
 msgid "got asynchronous packet number %d\n"
 msgstr "અસુમેળ પેકેટ નંબર %d મળ્યું\n"
 
-#: src/xen_internal.c:2315
+#: src/xen_internal.c:1255
+#, c-format
+msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
+msgstr ""
+
+#: src/xen_internal.c:1265
+#, c-format
+msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
+msgstr ""
+
+#: src/xen_internal.c:2340
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d ડોમેઈન જાણકારી ફાળવી રહ્યા છીએ"

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-13 10:22+0200\n"
-"PO-Revision-Date: 2007-07-05 23:23-0000\n"
+"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"PO-Revision-Date: 2007-07-15 13:58-0000\n"
 "Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
 "Language-Team: Serbian (sr) <fedora-trans-sr@redhat.com>\n"
 "MIME-Version: 1.0\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
 "10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: src/libvirt.c:405 src/hash.c:664
+#: src/libvirt.c:411 src/hash.c:664
 msgid "allocating connection"
 msgstr "zauzimam vezu"
 
@@ -365,34 +365,31 @@ msgid "Failed to find the network: %s"
 msgstr "Neuspelo pronalaženje mreže: %s"
 
 #: src/virterror.c:639
-#, fuzzy
 msgid "Domain not found"
-msgstr "podaci o domenu"
+msgstr "Domen nije pronađen"
 
 #: src/virterror.c:641
-#, fuzzy, c-format
+#, c-format
 msgid "Domain not found: %s"
-msgstr "Domen je povraćen iz %s\n"
+msgstr "Domen nije pronađen: %s"
 
 #: src/virterror.c:645
-#, fuzzy
 msgid "Network not found"
-msgstr "ime mreže ili uuid"
+msgstr "Mreža nije pronađena"
 
 #: src/virterror.c:647
-#, fuzzy, c-format
+#, c-format
 msgid "Network not found: %s"
-msgstr "Mreža %s je napravljena iz %s\n"
+msgstr "Mreža nije pronađena: %s"
 
 #: src/virterror.c:651
-#, fuzzy
 msgid "invalid MAC adress"
-msgstr "MAC adresa"
+msgstr "neispravna MAC adresa"
 
 #: src/virterror.c:653
-#, fuzzy, c-format
+#, c-format
 msgid "invalid MAC adress: %s"
-msgstr "neispravan argument u %s"
+msgstr "neispravna MAC adresa: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -603,8 +600,8 @@ msgstr "neuspelo umnožavanje niske"
 msgid "failed to read from Xen Daemon"
 msgstr "neuspelo čitanje iz Xen demona"
 
-#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
-#: src/xend_internal.c:1542
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1528
+#: src/xend_internal.c:1547
 msgid "allocate new buffer"
 msgstr "zauzmi novi bafer"
 
@@ -636,29 +633,29 @@ msgstr "nepotpuni podaci o domenu, nedostaje jezgro i pokretački program"
 msgid "domain information incomplete, missing id"
 msgstr "nepotpuni podaci o domenu, nedostaje id"
 
-#: src/xend_internal.c:1492
+#: src/xend_internal.c:1497
 msgid "domain information incomplete, vbd has no dev"
 msgstr "nepotpuni podaci o domenu, vbd nema dev"
 
-#: src/xend_internal.c:1507
+#: src/xend_internal.c:1512
 msgid "domain information incomplete, vbd has no src"
 msgstr "nepotpuni podaci o domenu, vbd nema src"
 
-#: src/xend_internal.c:1516
+#: src/xend_internal.c:1521
 msgid "cannot parse vbd filename, missing driver name"
 msgstr ""
 "ne mogu protumačiti vbd ime datoteke, nedostaje ime upravljačkog programa"
 
-#: src/xend_internal.c:1535
+#: src/xend_internal.c:1540
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 "ne mogu protumačiti vbd ime datoteke, nedostaje vrsta upravljačkog programa"
 
-#: src/xend_internal.c:1898
+#: src/xend_internal.c:1924
 msgid "failed to parse Xend domain information"
 msgstr "neuspelo tumačenje podataka o Xend domenu"
 
-#: src/xend_internal.c:3164
+#: src/xend_internal.c:3190
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Neuspelo pravljenje ne aktiviranog domena %s\n"
@@ -2017,14 +2014,14 @@ msgstr ""
 "  naredbe (neiteraktivni režim):\n"
 
 #: src/virsh.c:4497
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"
-"  (navedite --help <naredba> za detalje o naredbi)\n"
+"  (navedite help <naredba> za detalje o naredbi)\n"
 "\n"
 
 #: src/virsh.c:4593
@@ -2150,7 +2147,17 @@ msgstr "Greška u komunikaciji sa proksijem: pogrešno oblikovan paket\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "primljen asinhroni broj paketa %d\n"
 
-#: src/xen_internal.c:2315
+#: src/xen_internal.c:1255
+#, c-format
+msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
+msgstr ""
+
+#: src/xen_internal.c:1265
+#, c-format
+msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
+msgstr ""
+
+#: src/xen_internal.c:2340
 #, c-format
 msgid "allocating %d domain info"
 msgstr "dodeljujem info %d domena"

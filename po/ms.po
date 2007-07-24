@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-13 10:22+0200\n"
-"PO-Revision-Date: 2007-05-17 22:28+0800\n"
+"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"PO-Revision-Date: 2007-07-15 15:36+0800\n"
 "Last-Translator: Sharuzzaman Ahmat Raslan <sharuzzaman@myrealbox.com>\n"
 "Language-Team: ms <ms@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/libvirt.c:405 src/hash.c:664
+#: src/libvirt.c:411 src/hash.c:664
 #, fuzzy
 msgid "allocating connection"
 msgstr "Sambungan Masatamat:"
@@ -380,53 +380,52 @@ msgstr "Ralat sistem tidak diketahui"
 #: src/virterror.c:621
 #, fuzzy
 msgid "RPC error"
-msgstr "ralat"
+msgstr "Ralat Tidak Diketahui"
 
 #: src/virterror.c:627
 #, fuzzy
 msgid "GNUTLS call error"
-msgstr "Ralat sistem tidak diketahui"
+msgstr "Ralat Menyimpan Cekupanskrin"
 
 #: src/virterror.c:633
 #, fuzzy
 msgid "Failed to find the network"
-msgstr "akses ke alatan rangkaian"
+msgstr "Gagal menjumpai program dipilih."
 
 #: src/virterror.c:635
 #, fuzzy, c-format
 msgid "Failed to find the network: %s"
-msgstr "akses ke alatan rangkaian"
+msgstr "Gagal menjumpai program dipilih."
 
 #: src/virterror.c:639
 #, fuzzy
 msgid "Domain not found"
-msgstr "Maklumat tidak sah"
+msgstr "CD Tidak Dijumpai"
 
 #: src/virterror.c:641
 #, fuzzy, c-format
 msgid "Domain not found: %s"
-msgstr "Benarkan hos dari:"
+msgstr "CD Tidak Dijumpai"
 
 #: src/virterror.c:645
 #, fuzzy
 msgid "Network not found"
-msgstr ""
-"Pengunaan: %s FAIL\n"
-"    atau: %s OPSYEN\n"
+msgstr "CD Tidak Dijumpai"
 
 #: src/virterror.c:647
 #, fuzzy, c-format
 msgid "Network not found: %s"
-msgstr "Benarkan hos dari:"
+msgstr "CD Tidak Dijumpai"
 
 #: src/virterror.c:651
+#, fuzzy
 msgid "invalid MAC adress"
-msgstr ""
+msgstr "Alamat MAC dibenarkan"
 
 #: src/virterror.c:653
 #, fuzzy, c-format
 msgid "invalid MAC adress: %s"
-msgstr "hujah tidak sah %s untuk %s"
+msgstr "Alamat MAC dibenarkan"
 
 #: src/xmlrpc.c:63
 #, fuzzy
@@ -645,12 +644,12 @@ msgstr "Terlalu banyak gantian"
 #: src/test.c:768
 #, fuzzy
 msgid "allocating private data"
-msgstr "Mesti nyatakan nilai"
+msgstr "Ralat Dengan Data"
 
 #: src/test.c:774
 #, fuzzy
 msgid "allocating path"
-msgstr "mengumpukkan maklumat domain %d"
+msgstr "Laluan SFS"
 
 #: src/test.c:946
 #, fuzzy
@@ -681,8 +680,8 @@ msgstr "salinan [%s] gagal (md5sum tidak sepadan)"
 msgid "failed to read from Xen Daemon"
 msgstr ""
 
-#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
-#: src/xend_internal.c:1542
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1528
+#: src/xend_internal.c:1547
 #, fuzzy
 msgid "allocate new buffer"
 msgstr "Selit ke dalam buffer baru"
@@ -717,28 +716,28 @@ msgstr "Sila isikan maklumat pengesahan"
 msgid "domain information incomplete, missing id"
 msgstr "Sila isikan maklumat pengesahan"
 
-#: src/xend_internal.c:1492
+#: src/xend_internal.c:1497
 msgid "domain information incomplete, vbd has no dev"
 msgstr ""
 
-#: src/xend_internal.c:1507
+#: src/xend_internal.c:1512
 #, fuzzy
 msgid "domain information incomplete, vbd has no src"
 msgstr "Sila isikan maklumat pengesahan"
 
-#: src/xend_internal.c:1516
+#: src/xend_internal.c:1521
 msgid "cannot parse vbd filename, missing driver name"
 msgstr ""
 
-#: src/xend_internal.c:1535
+#: src/xend_internal.c:1540
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 
-#: src/xend_internal.c:1898
+#: src/xend_internal.c:1924
 msgid "failed to parse Xend domain information"
 msgstr ""
 
-#: src/xend_internal.c:3164
+#: src/xend_internal.c:3190
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Gagal mencipta direktori %s"
@@ -755,7 +754,7 @@ msgstr ""
 #: src/virsh.c:314
 #, fuzzy
 msgid "name of command"
-msgstr "Sistem Nama Domain"
+msgstr "  Pilihan    Arahan\n"
 
 #: src/virsh.c:326
 #, fuzzy
@@ -941,17 +940,17 @@ msgstr ""
 #: src/virsh.c:726
 #, fuzzy, c-format
 msgid "Failed to open '%s': %s"
-msgstr "Mengikat ke domain NIS: "
+msgstr "Gagal untuk membuka %s: %s\n"
 
 #: src/virsh.c:746
 #, fuzzy, c-format
 msgid "Failed to open '%s': read: %s"
-msgstr "xinetd gagal untuk mengulangmuat untuk"
+msgstr "Gagal membaca direktori %s: %s"
 
 #: src/virsh.c:764
 #, fuzzy, c-format
 msgid "Error allocating memory: %s"
-msgstr "Konfigurasi Rangkaian"
+msgstr "Ralat membaca maklumat memori sistem:"
 
 #: src/virsh.c:798
 #, fuzzy, c-format
@@ -1063,12 +1062,14 @@ msgid "Failed to save domain %s to %s"
 msgstr "gagal untuk menyimpan kandungan"
 
 #: src/virsh.c:990
+#, fuzzy
 msgid "show/set scheduler parameters"
-msgstr ""
+msgstr "Menetapkan parameter cakera keras"
 
 #: src/virsh.c:991
+#, fuzzy
 msgid "Show/Set scheduler parameters."
-msgstr ""
+msgstr "Menetapkan parameter cakera keras"
 
 #: src/virsh.c:997
 msgid "weight for XEN_CREDIT"
@@ -1085,7 +1086,7 @@ msgstr ""
 #: src/virsh.c:1072
 #, fuzzy
 msgid "Unknown"
-msgstr "Hos tidak diketahui"
+msgstr "Entah"
 
 #: src/virsh.c:1124
 msgid "restore a domain from a saved state in a file"
@@ -1353,7 +1354,7 @@ msgstr "Hos maya default"
 #: src/virsh.c:1682
 #, fuzzy
 msgid "Invalid number of virtual CPUs."
-msgstr "Hos maya default"
+msgstr "nombor peranti major tidak sah %s"
 
 #: src/virsh.c:1694
 #, fuzzy
@@ -1380,8 +1381,9 @@ msgid "Invalid value of %d for memory size"
 msgstr "Nilai tidak sah bagi record_size"
 
 #: src/virsh.c:1746
+#, fuzzy
 msgid "Unable to verify MaxMemorySize"
-msgstr ""
+msgstr "Tidak boleh untuk akses ke CDROM"
 
 #: src/virsh.c:1769
 msgid "change maximum memory limit"
@@ -1405,8 +1407,9 @@ msgid "Unable to shrink current MemorySize"
 msgstr "Saiz _memori tersendiri"
 
 #: src/virsh.c:1816
+#, fuzzy
 msgid "Unable to change MaxMemorySize"
-msgstr ""
+msgstr "Tidak dapat menukar ke uid %d."
 
 #: src/virsh.c:1829
 #, fuzzy
@@ -1783,13 +1786,14 @@ msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "%s terlaksana.\n"
 
 #: src/virsh.c:2610
+#, fuzzy
 msgid "print the hypervisor hostname"
-msgstr ""
+msgstr "tak dapat menentukan namahos"
 
 #: src/virsh.c:2624
 #, fuzzy
 msgid "failed to get hostname"
-msgstr "gagal untuk menyimpan kandungan"
+msgstr "gagal mendapatkan atribut bagi %s"
 
 #: src/virsh.c:2639
 #, fuzzy
@@ -1799,7 +1803,7 @@ msgstr "Permintaan per Sambungan"
 #: src/virsh.c:2653
 #, fuzzy
 msgid "failed to get URI"
-msgstr "Gagal menukar maklumat usia untuk %s: %s\n"
+msgstr "gagal mendapatkan atribut bagi %s"
 
 #: src/virsh.c:2668
 #, fuzzy
@@ -1819,13 +1823,14 @@ msgid "Attach device from an XML <file>."
 msgstr ""
 
 #: src/virsh.c:2754 src/virsh.c:2808
+#, fuzzy
 msgid "XML file"
-msgstr ""
+msgstr "Menyalin Fail"
 
 #: src/virsh.c:2786
 #, fuzzy, c-format
 msgid "Failed to attach device from %s"
-msgstr "Gagal untuk memuatkan cakera pemandu daripada fail."
+msgstr "Gagal menaikkan ${DEVICE}."
 
 #: src/virsh.c:2801
 msgid "detach device from an XML file"
@@ -1838,35 +1843,37 @@ msgstr ""
 #: src/virsh.c:2840
 #, fuzzy, c-format
 msgid "Failed to detach device from %s"
-msgstr "Gagal untuk memuatkan cakera pemandu daripada fail."
+msgstr "Gagal menaikkan ${DEVICE}."
 
 #: src/virsh.c:2855
 #, fuzzy
 msgid "attach network interface"
-msgstr "Nama Pengguna"
+msgstr "Ulangtetap antaramuka rangkaian"
 
 #: src/virsh.c:2856
+#, fuzzy
 msgid "Attach new network interface."
-msgstr ""
+msgstr "Mengesan melalui antaramuka rangkaian:"
 
 #: src/virsh.c:2862 src/virsh.c:2978
 #, fuzzy
 msgid "network interface type"
-msgstr "Nama Pengguna"
+msgstr "Ulangtetap antaramuka rangkaian"
 
 #: src/virsh.c:2863
 #, fuzzy
 msgid "source of network interface"
-msgstr "Nama Volum _Logikal:"
+msgstr "Ulangtetap antaramuka rangkaian"
 
 #: src/virsh.c:2864
 #, fuzzy
 msgid "target network name"
-msgstr "Nama Pengguna"
+msgstr "Nama Volum _Logikal:"
 
 #: src/virsh.c:2865 src/virsh.c:2979
+#, fuzzy
 msgid "MAC adress"
-msgstr ""
+msgstr "Alamat MAC"
 
 #: src/virsh.c:2866
 msgid "script used to bridge network interface"
@@ -1880,11 +1887,12 @@ msgstr ""
 #: src/virsh.c:2971
 #, fuzzy
 msgid "detach network interface"
-msgstr "Nama Pengguna"
+msgstr "Ulangtetap antaramuka rangkaian"
 
 #: src/virsh.c:2972
+#, fuzzy
 msgid "Detach network interface."
-msgstr ""
+msgstr "Ulangtetap antaramuka rangkaian"
 
 #: src/virsh.c:3017 src/virsh.c:3022
 #, fuzzy
@@ -1904,40 +1912,47 @@ msgstr ""
 #: src/virsh.c:3058 src/virsh.c:3336
 #, fuzzy
 msgid "Failed to allocate memory"
-msgstr "Tiada nod utk buang"
+msgstr "malloc() gagal. Tidak dapat memperuntukkan memori yang cukup."
 
 #: src/virsh.c:3063 src/virsh.c:3341
 #, fuzzy
 msgid "Failed to create XML"
-msgstr "Gagal untuk membaca soket %d\n"
+msgstr "Gagal mencipta direktori %s"
 
 #: src/virsh.c:3092
+#, fuzzy
 msgid "attach disk device"
-msgstr ""
+msgstr "Jadikan Peranti RAID."
 
 #: src/virsh.c:3093
+#, fuzzy
 msgid "Attach new disk device."
-msgstr ""
+msgstr "Tambah Jenis Peranti baru"
 
 #: src/virsh.c:3099
+#, fuzzy
 msgid "source of disk device"
-msgstr ""
+msgstr "Sumber Cekera Jurupacu"
 
 #: src/virsh.c:3100 src/virsh.c:3264
+#, fuzzy
 msgid "target of disk device"
-msgstr ""
+msgstr "Jadikan Peranti RAID."
 
 #: src/virsh.c:3101
+#, fuzzy
 msgid "driver of disk device"
-msgstr ""
+msgstr "Membaca cakera jurupacu..."
 
 #: src/virsh.c:3102
+#, fuzzy
 msgid "subdriver of disk device"
-msgstr ""
+msgstr "Jadikan Peranti RAID."
 
 #: src/virsh.c:3103
+#, fuzzy
 msgid "target device type"
-msgstr ""
+msgstr "Pilih Jenis Peranti"
 
 #: src/virsh.c:3104
 msgid "mode of device reading and writing"
@@ -1949,17 +1964,19 @@ msgid "No support %s in command 'attach-disk'"
 msgstr ""
 
 #: src/virsh.c:3257
+#, fuzzy
 msgid "detach disk device"
-msgstr ""
+msgstr "Jadikan Peranti RAID."
 
 #: src/virsh.c:3258
+#, fuzzy
 msgid "Detach disk device."
-msgstr ""
+msgstr "Jadikan Peranti RAID."
 
 #: src/virsh.c:3299 src/virsh.c:3304 src/virsh.c:3311
 #, fuzzy
 msgid "Failed to get disk information"
-msgstr "Gagal menukar maklumat usia untuk %s: %s\n"
+msgstr "Gagal untuk melekapkan cakera jurupacu"
 
 #: src/virsh.c:3330
 #, c-format
@@ -2158,16 +2175,15 @@ msgstr "Gagal menukar maklumat usia untuk %s: %s\n"
 
 #: src/virsh.c:4236
 msgid "the log path is not a file"
-msgstr ""
+msgstr "laluan log adalah bukan fail"
 
 #: src/virsh.c:4242
 msgid "failed to open the log file. check the log file path"
 msgstr ""
 
 #: src/virsh.c:4310
-#, fuzzy
 msgid "failed to write the log file"
-msgstr "Ralat bila cuba menulis ke fail konfigurasi."
+msgstr "gagal untuk menulis ke fail log"
 
 #: src/virsh.c:4479
 #, c-format
@@ -2253,9 +2269,8 @@ msgid "expecting an assignment"
 msgstr "menjangka umpukan"
 
 #: src/conf.c:887 src/conf.c:941
-#, fuzzy
 msgid "failed to allocate buffer"
-msgstr "Tiada nod utk buang"
+msgstr "gagal untuk memperuntukkan penimbal"
 
 #: src/conf.c:899
 msgid "failed to open file"
@@ -2314,19 +2329,17 @@ msgstr ""
 msgid "got asynchronous packet number %d\n"
 msgstr ""
 
-#: src/xen_internal.c:2315
+#: src/xen_internal.c:1255
+#, c-format
+msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
+msgstr ""
+
+#: src/xen_internal.c:1265
+#, c-format
+msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
+msgstr ""
+
+#: src/xen_internal.c:2340
 #, c-format
 msgid "allocating %d domain info"
 msgstr "mengumpukkan maklumat domain %d"
-
-#, fuzzy
-#~ msgid "growing buffer"
-#~ msgstr "Buffer Baru"
-
-#, fuzzy
-#~ msgid "allocate buffer content"
-#~ msgstr "Tak dapat memperuntukkan ruang penimbal"
-
-#, fuzzy
-#~ msgid "Failed to read description file %s"
-#~ msgstr "fail untuk maklumat perkakasan dibaca"

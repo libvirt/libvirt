@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-13 10:22+0200\n"
+"POT-Creation-Date: 2007-07-24 10:14+0200\n"
 "PO-Revision-Date: 2007-04-17 16:23+0530\n"
 "Last-Translator: I felix <ifelix@redhat.com>\n"
 "Language-Team: Tamil <fedora-trans-ta@redhat.com>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "\n"
 "\n"
 
-#: src/libvirt.c:405 src/hash.c:664
+#: src/libvirt.c:411 src/hash.c:664
 msgid "allocating connection"
 msgstr "இணைப்புகள் ஒதுக்கப்படுகிறது"
 
@@ -395,8 +395,9 @@ msgid "Network not found: %s"
 msgstr "பிணைய %s %sலிருந்து உருவாக்கப்பட்டது\n"
 
 #: src/virterror.c:651
+#, fuzzy
 msgid "invalid MAC adress"
-msgstr ""
+msgstr "%sஇல் தவறான அளவுரு"
 
 #: src/virterror.c:653
 #, fuzzy, c-format
@@ -614,8 +615,8 @@ msgstr "ஒரு சரத்தை நகலெடுக்க முடிய
 msgid "failed to read from Xen Daemon"
 msgstr "Xen  டீமானிலிருந்து வாசிக்க முடியவில்லை"
 
-#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
-#: src/xend_internal.c:1542
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1528
+#: src/xend_internal.c:1547
 msgid "allocate new buffer"
 msgstr "புதிய இடையகத்தை ஒதுக்கவும்"
 
@@ -648,27 +649,27 @@ msgstr "செயற்களம் தகவல் நிறைவு பெற
 msgid "domain information incomplete, missing id"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, விடுபட்ட id"
 
-#: src/xend_internal.c:1492
+#: src/xend_internal.c:1497
 msgid "domain information incomplete, vbd has no dev"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, vbd  dev எதுவும் கொண்டிருக்கவில்லை"
 
-#: src/xend_internal.c:1507
+#: src/xend_internal.c:1512
 msgid "domain information incomplete, vbd has no src"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, vbd ஆனது src ஐ கொண்டிருக்கவில்லை"
 
-#: src/xend_internal.c:1516
+#: src/xend_internal.c:1521
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd கோப்பு பெயரை பிரிக்க முடியவில்லை, இயக்கி பெயர் விடுபட்டுள்ளது"
 
-#: src/xend_internal.c:1535
+#: src/xend_internal.c:1540
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd கோப்பு பெயரை பிரிக்க முடியவில்லை, இயக்கி வகை விடுபட்டுள்ளது"
 
-#: src/xend_internal.c:1898
+#: src/xend_internal.c:1924
 msgid "failed to parse Xend domain information"
 msgstr "Xend செயற்கள தகவலை இலக்கணப்படுத்த முடியவில்லை"
 
-#: src/xend_internal.c:3164
+#: src/xend_internal.c:3190
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "செயற்களம் %s ஐ உருவாக்க முடியவில்லை\n"
@@ -2185,7 +2186,17 @@ msgstr "பதிலாளுடன் தொடர்பு பிழை: த�
 msgid "got asynchronous packet number %d\n"
 msgstr "ஒருங்கிணைக்கப்படாத பாக்கெட் எண் %d பெறப்பட்டது\n"
 
-#: src/xen_internal.c:2315
+#: src/xen_internal.c:1255
+#, c-format
+msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
+msgstr ""
+
+#: src/xen_internal.c:1265
+#, c-format
+msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
+msgstr ""
+
+#: src/xen_internal.c:2340
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d செயற்களத் தகவல் ஒதுக்கப்படுகிறது"

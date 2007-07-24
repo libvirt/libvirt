@@ -12,16 +12,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zh_CN\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-13 10:22+0200\n"
-"PO-Revision-Date: 2007-01-17 15:28+1000\n"
-"Last-Translator: Tony Fu <tfu@redhat.com>\n"
+"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"PO-Revision-Date: 2007-07-20 10:36+0800\n"
+"Last-Translator: zhangnan <znflint@126.com>\n"
 "Language-Team:  <zh@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=GB2312\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libvirt.c:405 src/hash.c:664
+#: src/libvirt.c:411 src/hash.c:664
 msgid "allocating connection"
 msgstr "正在分配连接"
 
@@ -35,7 +35,7 @@ msgstr "错误"
 
 #: src/virterror.c:350
 msgid "No error message provided"
-msgstr "No error message provided"
+msgstr "没有错误讯息提供"
 
 #: src/virterror.c:405
 #, c-format
@@ -51,14 +51,13 @@ msgid "out of memory"
 msgstr "内存溢出"
 
 #: src/virterror.c:414
-#, fuzzy
 msgid "this function is not supported by the hypervisor"
-msgstr "不备管理程序支持"
+msgstr "此功能不被管理程序支持"
 
 #: src/virterror.c:416
-#, fuzzy, c-format
+#, c-format
 msgid "this function is not supported by the hypervisor: %s"
-msgstr "不备管理程序支持 %s"
+msgstr "此功能不被管理程序支持 %s"
 
 #: src/virterror.c:420
 msgid "could not connect to hypervisor"
@@ -327,83 +326,74 @@ msgid "failed to write configuration file: %s"
 msgstr "写入配置文件失败: %s"
 
 #: src/virterror.c:597
-#, fuzzy
 msgid "parser error"
-msgstr "内部错误"
+msgstr "语法错误"
 
 #: src/virterror.c:603
-#, fuzzy
 msgid "invalid network pointer in"
-msgstr "无效的连接指向"
+msgstr "无效的网络指针"
 
 #: src/virterror.c:605
-#, fuzzy, c-format
+#, c-format
 msgid "invalid network pointer in %s"
-msgstr "无效的连接指向 %s"
+msgstr "无效的网络指针 %s"
 
 #: src/virterror.c:609
-#, fuzzy
 msgid "this network exists already"
-msgstr "这个域名已经存在"
+msgstr "这个网络已存在"
 
 #: src/virterror.c:611
-#, fuzzy, c-format
+#, c-format
 msgid "network %s exists already"
-msgstr "域名 %s 已经存在"
+msgstr "网络%s 已经存在"
 
 #: src/virterror.c:615
-#, fuzzy
 msgid "system call error"
-msgstr "内部错误"
+msgstr "系统调用错误"
 
 #: src/virterror.c:621
-#, fuzzy
 msgid "RPC error"
-msgstr "错误"
+msgstr "RPC错误"
 
 #: src/virterror.c:627
-#, fuzzy
 msgid "GNUTLS call error"
-msgstr "内部错误"
+msgstr "GNUTLS调用错误"
 
 #: src/virterror.c:633
-#, fuzzy
 msgid "Failed to find the network"
-msgstr "取消定义域 %s 失败"
+msgstr "查找网络失败"
 
 #: src/virterror.c:635
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find the network: %s"
-msgstr "取消定义域 %s 失败"
+msgstr "查找网络失败: %s"
 
 #: src/virterror.c:639
-#, fuzzy
 msgid "Domain not found"
-msgstr "域信息"
+msgstr "未找到域"
 
 #: src/virterror.c:641
-#, fuzzy, c-format
+#, c-format
 msgid "Domain not found: %s"
-msgstr "从 %s 恢复域\n"
+msgstr "未找到域: %s"
 
 #: src/virterror.c:645
-#, fuzzy
 msgid "Network not found"
-msgstr "域名或 uuid"
+msgstr "未找到网络"
 
 #: src/virterror.c:647
-#, fuzzy, c-format
+#, c-format
 msgid "Network not found: %s"
-msgstr "域 %s 被创建（从 %s）\n"
+msgstr "未找到网络: %s"
 
 #: src/virterror.c:651
 msgid "invalid MAC adress"
-msgstr ""
+msgstr "无效的MAC地址"
 
 #: src/virterror.c:653
-#, fuzzy, c-format
+#, c-format
 msgid "invalid MAC adress: %s"
-msgstr "无效的参数 %s"
+msgstr "无效的MAC地址: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -462,19 +452,16 @@ msgid "domain missing from connection hash table"
 msgstr "域名从哈希链表中丢失"
 
 #: src/hash.c:903 src/hash.c:908
-#, fuzzy
 msgid "allocating network"
-msgstr "分配域"
+msgstr "分配网络"
 
 #: src/hash.c:918
-#, fuzzy
 msgid "failed to add network to connection hash table"
-msgstr "添加域名到哈希链表失败"
+msgstr "添加网络到连接哈希表失败"
 
 #: src/hash.c:970
-#, fuzzy
 msgid "network missing from connection hash table"
-msgstr "域名从哈希链表中丢失"
+msgstr "网络从连接哈希表中丢失"
 
 #: src/test.c:293 src/test.c:480 src/test.c:1165 src/test.c:1199
 #: src/test.c:1253
@@ -502,9 +489,8 @@ msgid "domain memory"
 msgstr "域内存"
 
 #: src/test.c:339
-#, fuzzy
 msgid "domain current memory"
-msgstr "域内存"
+msgstr "域当前内存"
 
 #: src/test.c:349
 msgid "domain vcpus"
@@ -580,34 +566,31 @@ msgstr "分配域"
 
 #: src/test.c:756
 msgid "testOpen: supply a path or use test:///default"
-msgstr ""
+msgstr "测试开始:提供一个路径或使用默认"
 
 #: src/test.c:761
 msgid "too many connections"
 msgstr "太多的连接"
 
 #: src/test.c:768
-#, fuzzy
 msgid "allocating private data"
-msgstr "分配值数组"
+msgstr "分配个人数据"
 
 #: src/test.c:774
-#, fuzzy
 msgid "allocating path"
-msgstr "正在分配域名"
+msgstr "正在分配路径"
 
 #: src/test.c:946
 msgid "too many domains"
 msgstr "太多的域"
 
 #: src/test.c:1492
-#, fuzzy
 msgid "Domain is already running"
 msgstr "域已经活跃"
 
 #: src/test.c:1519
 msgid "Domain is still running"
-msgstr ""
+msgstr "域仍在运行"
 
 #: src/sexpr.c:59
 msgid "failed to allocate a node"
@@ -621,8 +604,8 @@ msgstr "复制一个字符串失败"
 msgid "failed to read from Xen Daemon"
 msgstr "从 Xen 守护进程读失败"
 
-#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
-#: src/xend_internal.c:1542
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1528
+#: src/xend_internal.c:1547
 msgid "allocate new buffer"
 msgstr "分配新缓冲"
 
@@ -647,39 +630,37 @@ msgid "domain information incomplete, missing name"
 msgstr "域信息不完全，缺少名称"
 
 #: src/xend_internal.c:1284 src/xend_internal.c:1315
-#, fuzzy
 msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "域信息不完全，缺少内核"
+msgstr "域信息不完全,缺少内核和启动器"
 
 #: src/xend_internal.c:1372
-#, fuzzy
 msgid "domain information incomplete, missing id"
-msgstr "域信息不完全，缺少 uuid"
+msgstr "域信息不完全,缺少id"
 
-#: src/xend_internal.c:1492
+#: src/xend_internal.c:1497
 msgid "domain information incomplete, vbd has no dev"
 msgstr "域信息不完全，vbd 没有 dev"
 
-#: src/xend_internal.c:1507
+#: src/xend_internal.c:1512
 msgid "domain information incomplete, vbd has no src"
 msgstr "域信息不完全，vbd 没有 src"
 
-#: src/xend_internal.c:1516
+#: src/xend_internal.c:1521
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "缺少驱动名，无法解释 vbd 文件名"
 
-#: src/xend_internal.c:1535
+#: src/xend_internal.c:1540
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "缺少驱动类型，无法解释 vbd 文件名"
 
-#: src/xend_internal.c:1898
+#: src/xend_internal.c:1924
 msgid "failed to parse Xend domain information"
 msgstr "解释 Xend 域信息失败"
 
-#: src/xend_internal.c:3164
-#, fuzzy, c-format
+#: src/xend_internal.c:3190
+#, c-format
 msgid "Failed to create inactive domain %s\n"
-msgstr "创建域 %s 失败\n"
+msgstr "创建不活动域 %s 失败\n"
 
 #: src/virsh.c:307
 msgid "print help"
@@ -690,9 +671,8 @@ msgid "Prints global help or command specific help."
 msgstr "打印全部帮助或特定命令的帮助。"
 
 #: src/virsh.c:314
-#, fuzzy
 msgid "name of command"
-msgstr "非活跃域的名称"
+msgstr "命令名"
 
 #: src/virsh.c:326
 msgid ""
@@ -703,13 +683,12 @@ msgstr ""
 "\n"
 
 #: src/virsh.c:340
-#, fuzzy
 msgid "autostart a domain"
-msgstr "开始一个域"
+msgstr "自动开始一个域"
 
 #: src/virsh.c:342
 msgid "Configure a domain to be automatically started at boot."
-msgstr ""
+msgstr "设置一个域在启动时自动开始."
 
 #: src/virsh.c:347 src/virsh.c:448 src/virsh.c:634 src/virsh.c:672
 #: src/virsh.c:952 src/virsh.c:996 src/virsh.c:1168 src/virsh.c:1213
@@ -723,27 +702,27 @@ msgstr "域名，id 或 uuid"
 
 #: src/virsh.c:348 src/virsh.c:2037
 msgid "disable autostarting"
-msgstr ""
+msgstr "禁止自动启动"
 
 #: src/virsh.c:369
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to mark domain %s as autostarted"
-msgstr "把域 %s 存到 %s 失败"
+msgstr "把域 %s标记为自动开始失败"
 
 #: src/virsh.c:372
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to unmark domain %s as autostarted"
-msgstr "把域 %s 存到 %s 失败"
+msgstr "把域 %s取消标记为自动开始失败"
 
 #: src/virsh.c:379
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s marked as autostarted\n"
-msgstr "域 %s 已开始\n"
+msgstr "域 %s标记为自动开始\n"
 
 #: src/virsh.c:381
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s unmarked as autostarted\n"
-msgstr "域 %s 已开始\n"
+msgstr "域 %s取消标记为自动开始\n"
 
 #: src/virsh.c:392
 msgid "(re)connect to hypervisor"
@@ -752,11 +731,11 @@ msgstr "连接（重新连接）到 hypervisor"
 #: src/virsh.c:394
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
-msgstr "连接到本地 hypervisor。这是在 shell 启动后内建的命令。"
+msgstr "连接到本地管理程序。这是在 shell 启动后内建的命令。"
 
 #: src/virsh.c:399
 msgid "hypervisor connection URI"
-msgstr "hypervisor 连接 URI"
+msgstr "管理程序连接 URI"
 
 #: src/virsh.c:400
 msgid "read-only connection"
@@ -764,23 +743,23 @@ msgstr "只读连接"
 
 #: src/virsh.c:412
 msgid "Failed to disconnect from the hypervisor"
-msgstr "从 hypervisor 断开连接失败"
+msgstr "从管理程序断开连接失败"
 
 #: src/virsh.c:431
 msgid "Failed to connect to the hypervisor"
-msgstr "连接到 hypervisor 失败"
+msgstr "连接到管理程序失败"
 
 #: src/virsh.c:441
 msgid "connect to the guest console"
-msgstr ""
+msgstr "连接到客户会话"
 
 #: src/virsh.c:443
 msgid "Connect the virtual serial console for the guest"
-msgstr ""
+msgstr "连接客户真实串行控制台"
 
 #: src/virsh.c:488
 msgid "No console available for domain\n"
-msgstr ""
+msgstr "域控制台不可用\n"
 
 #: src/virsh.c:506
 msgid "list domains"
@@ -857,24 +836,23 @@ msgid "Create a domain."
 msgstr "创建一个域"
 
 #: src/virsh.c:711 src/virsh.c:819
-#, fuzzy
 msgid "file containing an XML domain description"
 msgstr "文件包括一个 XML 域描述"
 
 #: src/virsh.c:726
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open '%s': %s"
-msgstr "挂起 %s 域失败"
+msgstr "打开 '%s': %s失败"
 
 #: src/virsh.c:746
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open '%s': read: %s"
-msgstr "打开并读取 %s 文件失败"
+msgstr "打开'%s': 读取: %s失败"
 
 #: src/virsh.c:764
-#, fuzzy, c-format
+#, c-format
 msgid "Error allocating memory: %s"
-msgstr "分配域"
+msgstr "分配内存失败: %s"
 
 #: src/virsh.c:798
 #, c-format
@@ -976,28 +954,27 @@ msgstr "把域 %s 存到 %s 失败"
 
 #: src/virsh.c:990
 msgid "show/set scheduler parameters"
-msgstr ""
+msgstr "显示/设置日程安排变量"
 
 #: src/virsh.c:991
 msgid "Show/Set scheduler parameters."
-msgstr ""
+msgstr "显示/设置日程安排变量"
 
 #: src/virsh.c:997
 msgid "weight for XEN_CREDIT"
-msgstr ""
+msgstr "XEN_CREDIT 重量"
 
 #: src/virsh.c:998
 msgid "cap for XEN_CREDIT"
-msgstr ""
+msgstr "XEN_CREDIT的cap"
 
 #: src/virsh.c:1068 src/virsh.c:1072
 msgid "Scheduler"
-msgstr ""
+msgstr "日程安排"
 
 #: src/virsh.c:1072
-#, fuzzy
 msgid "Unknown"
-msgstr "未知的主机"
+msgstr "未知"
 
 #: src/virsh.c:1124
 msgid "restore a domain from a saved state in a file"
@@ -1157,7 +1134,7 @@ msgstr "最大内存："
 
 #: src/virsh.c:1422
 msgid "no limit"
-msgstr ""
+msgstr "没有限制"
 
 #: src/virsh.c:1424
 msgid "Used memory:"
@@ -1181,11 +1158,11 @@ msgstr "CPU:"
 
 #: src/virsh.c:1499
 msgid "CPU Affinity:"
-msgstr "CPU Affinity:"
+msgstr "CPU关系:"
 
 #: src/virsh.c:1511
 msgid "Domain shut off, virtual CPUs not present."
-msgstr ""
+msgstr "关闭域,虚拟CPU不存在."
 
 #: src/virsh.c:1527
 msgid "control domain vcpu affinity"
@@ -1201,34 +1178,34 @@ msgstr "vcpu 号"
 
 #: src/virsh.c:1535
 msgid "host cpu number(s) (comma separated)"
-msgstr "主机 cpu 号（以逗号分隔）"
+msgstr "主机 cpu 号(以逗号分隔)"
 
 #: src/virsh.c:1590
 msgid "cpulist: Invalid format. Empty string."
-msgstr ""
+msgstr "cpu列表:不可用格式.空字符串."
 
 #: src/virsh.c:1600
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
-msgstr ""
+msgstr "cpu列表:%s:不可用格式.在%d位置期望数字('%c'附近)."
 
 #: src/virsh.c:1610
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
 "c')."
-msgstr ""
+msgstr "cpu列表:%s:不可用格式.在%d位置期望数字或逗号('%c'附近)."
 
 #: src/virsh.c:1617
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
-msgstr ""
+msgstr "cpu列表:%s:不可用格式.在%d位置结尾逗号."
 
 #: src/virsh.c:1631
-#, fuzzy, c-format
+#, c-format
 msgid "Physical CPU %d doesn't exist."
-msgstr "命令 '%s' 不存在"
+msgstr "物理 CPU %d 不存在."
 
 #: src/virsh.c:1655
 msgid "change number of virtual CPUs"
@@ -1243,14 +1220,12 @@ msgid "number of virtual CPUs"
 msgstr "虚拟 CPU 的号"
 
 #: src/virsh.c:1682
-#, fuzzy
 msgid "Invalid number of virtual CPUs."
-msgstr "虚拟 CPU 的号"
+msgstr "虚拟 CPU 的数无效"
 
 #: src/virsh.c:1694
-#, fuzzy
 msgid "Too many virtual CPUs."
-msgstr "虚拟 CPU 的号"
+msgstr "虚拟 CPU太多"
 
 #: src/virsh.c:1712
 msgid "change memory allocation"
@@ -1261,18 +1236,17 @@ msgid "Change the current memory allocation in the guest domain."
 msgstr "改变当前在 guest 域中的内存分配。"
 
 #: src/virsh.c:1719
-#, fuzzy
 msgid "number of kilobytes of memory"
-msgstr "内存的字节数"
+msgstr "内存的千字节数"
 
 #: src/virsh.c:1740 src/virsh.c:1752 src/virsh.c:1797
 #, c-format
 msgid "Invalid value of %d for memory size"
-msgstr ""
+msgstr "内存大小 %d 值不可用"
 
 #: src/virsh.c:1746
 msgid "Unable to verify MaxMemorySize"
-msgstr ""
+msgstr "不能查证最大内存大小"
 
 #: src/virsh.c:1769
 msgid "change maximum memory limit"
@@ -1280,25 +1254,23 @@ msgstr "改变最大内存限制值"
 
 #: src/virsh.c:1770
 msgid "Change the maximum memory allocation limit in the guest domain."
-msgstr "改变在 guest 域中的最大内存分配限制。"
+msgstr "改变在客户域中的最大内存分配限制。"
 
 #: src/virsh.c:1776
-#, fuzzy
 msgid "maximum memory limit in kilobytes"
-msgstr "最大内存限制的字节数"
+msgstr "最大内存限制的千字节数"
 
 #: src/virsh.c:1803
 msgid "Unable to verify current MemorySize"
-msgstr ""
+msgstr "不能查证当前内存大小"
 
 #: src/virsh.c:1810
-#, fuzzy
 msgid "Unable to shrink current MemorySize"
-msgstr "域内存"
+msgstr "无法减少当前内存大小"
 
 #: src/virsh.c:1816
 msgid "Unable to change MaxMemorySize"
-msgstr ""
+msgstr "不能改变最大内存大小"
 
 #: src/virsh.c:1829
 msgid "node information"
@@ -1342,23 +1314,21 @@ msgstr "内存大小："
 
 #: src/virsh.c:1863
 msgid "capabilities"
-msgstr ""
+msgstr "性能"
 
 #: src/virsh.c:1864
 msgid "Returns capabilities of hypervisor/driver."
-msgstr ""
+msgstr "返回 管理程序/驱动器性能."
 
 #: src/virsh.c:1877
-#, fuzzy
 msgid "failed to get capabilities"
-msgstr "打开文件失败"
+msgstr "获得性能失败"
 
 #: src/virsh.c:1890
 msgid "domain information in XML"
 msgstr "XML 中的域信息"
 
 #: src/virsh.c:1891
-#, fuzzy
 msgid "Output the domain information as an XML dump to stdout."
 msgstr "把域信息作为一个 XML 输出到 stdout。"
 
@@ -1388,231 +1358,205 @@ msgstr "获得域 UUID 失败"
 
 #: src/virsh.c:2029
 msgid "autostart a network"
-msgstr ""
+msgstr "自动开始网络"
 
 #: src/virsh.c:2031
 msgid "Configure a network to be automatically started at boot."
-msgstr ""
+msgstr "设置一个网络在启动时自动开始."
 
 #: src/virsh.c:2036 src/virsh.c:2461
-#, fuzzy
 msgid "network name or uuid"
-msgstr "域名或 uuid"
+msgstr "网络名或 uuid"
 
 #: src/virsh.c:2058
-#, fuzzy, c-format
+#, c-format
 msgid "failed to mark network %s as autostarted"
-msgstr "把域 %s 存到 %s 失败"
+msgstr "把网络%s标记为自动启动失败"
 
 #: src/virsh.c:2061
-#, fuzzy, c-format
+#, c-format
 msgid "failed to unmark network %s as autostarted"
-msgstr "把域 %s 存到 %s 失败"
+msgstr "把网络%s取消标记为自动启动失败"
 
 #: src/virsh.c:2068
-#, fuzzy, c-format
+#, c-format
 msgid "Network %s marked as autostarted\n"
-msgstr "域 %s 已开始\n"
+msgstr "网络%s标记为自动启动\n"
 
 #: src/virsh.c:2070
-#, fuzzy, c-format
+#, c-format
 msgid "Network %s unmarked as autostarted\n"
-msgstr "域 %s 已开始\n"
+msgstr "网络%s取消标记为自动启动\n"
 
 #: src/virsh.c:2080
-#, fuzzy
 msgid "create a network from an XML file"
-msgstr "从一个 XML 文件创建一个域"
+msgstr "从一个 XML 文件创建一个网络"
 
 #: src/virsh.c:2081
-#, fuzzy
 msgid "Create a network."
-msgstr "创建一个域"
+msgstr "创建一个网络"
 
 #: src/virsh.c:2086 src/virsh.c:2134
-#, fuzzy
 msgid "file containing an XML network description"
-msgstr "文件包括一个 XML 域描述"
+msgstr "文件包括一个 XML网络描述"
 
 #: src/virsh.c:2113
-#, fuzzy, c-format
+#, c-format
 msgid "Network %s created from %s\n"
-msgstr "域 %s 被创建（从 %s）\n"
+msgstr "从%s创建网络%s \n"
 
 #: src/virsh.c:2116
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create network from %s"
-msgstr "从 %s 创建域失败"
+msgstr "从 %s 创建网络失败"
 
 #: src/virsh.c:2128
-#, fuzzy
 msgid "define (but don't start) a network from an XML file"
-msgstr "从一个 XML 文件定义（但不开始）一个域"
+msgstr "从一个 XML 文件定义(但不开始)一个网络"
 
 #: src/virsh.c:2129
-#, fuzzy
 msgid "Define a network."
-msgstr "定义一个域。"
+msgstr "定义一个网络."
 
 #: src/virsh.c:2161
-#, fuzzy, c-format
+#, c-format
 msgid "Network %s defined from %s\n"
-msgstr "定义域 %s（从 %s）\n"
+msgstr "从 %s定义网络%s\n"
 
 #: src/virsh.c:2164
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to define network from %s"
-msgstr "从 %s 定义域失败"
+msgstr "从 %s 定义网络失败"
 
 #: src/virsh.c:2176
-#, fuzzy
 msgid "destroy a network"
-msgstr "删除一个域"
+msgstr "删除一个网络"
 
 #: src/virsh.c:2177
-#, fuzzy
 msgid "Destroy a given network."
-msgstr "删除一个指定的域。"
+msgstr "删除一个指定网络."
 
 #: src/virsh.c:2182 src/virsh.c:2222
-#, fuzzy
 msgid "network name, id or uuid"
-msgstr "域名，id 或 uuid"
+msgstr "网络名,id 或 uuid"
 
 #: src/virsh.c:2200
-#, fuzzy, c-format
+#, c-format
 msgid "Network %s destroyed\n"
-msgstr "域 %s 被删除\n"
+msgstr "网络 %s 被删除\n"
 
 #: src/virsh.c:2202
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to destroy network %s"
-msgstr "删除域 %s 失败"
+msgstr "删除网络 %s 失败"
 
 #: src/virsh.c:2216
-#, fuzzy
 msgid "network information in XML"
-msgstr "XML 中的域信息"
+msgstr "XML 中的网络信息"
 
 #: src/virsh.c:2217
-#, fuzzy
 msgid "Output the network information as an XML dump to stdout."
-msgstr "把域信息作为一个 XML 输出到 stdout。"
+msgstr "把网络信息作为一个 XML 输出到 stdout。"
 
 #: src/virsh.c:2257
 msgid "list networks"
-msgstr ""
+msgstr "列出网络"
 
 #: src/virsh.c:2258
-#, fuzzy
 msgid "Returns list of networks."
-msgstr "返回域列表"
+msgstr "返回网络列表"
 
 #: src/virsh.c:2263
-#, fuzzy
 msgid "list inactive networks"
-msgstr "列出不活跃的域"
+msgstr "列出不活跃的网络"
 
 #: src/virsh.c:2264
-#, fuzzy
 msgid "list inactive & active networks"
-msgstr "不活跃和活跃的域列表"
+msgstr "列出不活跃和活跃的网络"
 
 #: src/virsh.c:2284 src/virsh.c:2292
-#, fuzzy
 msgid "Failed to list active networks"
-msgstr "列出活跃的域失败"
+msgstr "列出活跃的网络失败"
 
 #: src/virsh.c:2303 src/virsh.c:2312
-#, fuzzy
 msgid "Failed to list inactive networks"
-msgstr "列出不活跃的域失败"
+msgstr "列出不活跃的网络失败"
 
 #: src/virsh.c:2322
 msgid "Autostart"
-msgstr ""
+msgstr "自动开始"
 
 #: src/virsh.c:2337 src/virsh.c:2360
-#, fuzzy
 msgid "no autostart"
-msgstr "没有状态"
+msgstr "不自动开始"
 
 #: src/virsh.c:2343
 msgid "active"
-msgstr ""
+msgstr "活动"
 
 #: src/virsh.c:2366
-#, fuzzy
 msgid "inactive"
-msgstr "节点活跃 cpu"
+msgstr "不活跃"
 
 #: src/virsh.c:2385
-#, fuzzy
 msgid "convert a network UUID to network name"
-msgstr "把一个域 id 或 UUID 转换为域名"
+msgstr "把一个网络UUID 转换为网络名"
 
 #: src/virsh.c:2390
 msgid "network uuid"
-msgstr ""
+msgstr "网络uuid"
 
 #: src/virsh.c:2416
-#, fuzzy
 msgid "start a (previously defined) inactive network"
-msgstr "开始一个（以前定义的）非活跃的域"
+msgstr "开始一个(以前定义的)不活跃的网络"
 
 #: src/virsh.c:2417
-#, fuzzy
 msgid "Start a network."
-msgstr "开始一个域"
+msgstr "开始一个网络."
 
 #: src/virsh.c:2422
-#, fuzzy
 msgid "name of the inactive network"
-msgstr "非活跃域的名称"
+msgstr "非活跃网络的名称"
 
 #: src/virsh.c:2439
-#, fuzzy, c-format
+#, c-format
 msgid "Network %s started\n"
-msgstr "域 %s 已开始\n"
+msgstr "网络 %s 已开始\n"
 
 #: src/virsh.c:2442
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to start network %s"
-msgstr "开始域 %s 失败"
+msgstr "开始网络 %s 失败"
 
 #: src/virsh.c:2455
-#, fuzzy
 msgid "undefine an inactive network"
-msgstr "取消定义一个非活跃的域"
+msgstr "取消定义一个非活跃的网络"
 
 #: src/virsh.c:2456
-#, fuzzy
 msgid "Undefine the configuration for an inactive network."
-msgstr "取消定义一个非活跃域的配置。"
+msgstr "取消定义一个非活跃网络配置。"
 
 #: src/virsh.c:2479
-#, fuzzy, c-format
+#, c-format
 msgid "Network %s has been undefined\n"
-msgstr "域 %s 已经被取消定义\n"
+msgstr "网络 %s 已经被取消定义\n"
 
 #: src/virsh.c:2481
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to undefine network %s"
-msgstr "取消定义域 %s 失败"
+msgstr "取消定义网络 %s 失败"
 
 #: src/virsh.c:2494
-#, fuzzy
 msgid "convert a network name to network UUID"
-msgstr "把一个域名或 id 转换为域 UUID"
+msgstr "把一个网络名转换为网络UUID"
 
 #: src/virsh.c:2499
 msgid "network name"
-msgstr ""
+msgstr "网络名"
 
 #: src/virsh.c:2519
-#, fuzzy
 msgid "failed to get network UUID"
-msgstr "获得域 UUID 失败"
+msgstr "获得网络UUID 失败"
 
 #: src/virsh.c:2530
 msgid "show version"
@@ -1624,7 +1568,7 @@ msgstr "显示系统版本信息。"
 
 #: src/virsh.c:2554
 msgid "failed to get hypervisor type"
-msgstr "获得 hypervisor 类型失败"
+msgstr "获得管理程序类型失败"
 
 #: src/virsh.c:2563
 #, c-format
@@ -1647,204 +1591,188 @@ msgstr "使用的 API: %s %d.%d.%d\n"
 
 #: src/virsh.c:2587
 msgid "failed to get the hypervisor version"
-msgstr "获得 hypervisor 版本失败"
+msgstr "获得管理程序版本失败"
 
 #: src/virsh.c:2592
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
-msgstr "无法提取运行的 %s hypervisor 版本\n"
+msgstr "无法提取运行的 %s管理程序版本\n"
 
 #: src/virsh.c:2599
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
-msgstr "运行 hypervisor: %s %d.%d.%d\n"
+msgstr "运行管理程序: %s %d.%d.%d\n"
 
 #: src/virsh.c:2610
-#, fuzzy
 msgid "print the hypervisor hostname"
-msgstr "获得 hypervisor 类型失败"
+msgstr "打印管理程序主机名"
 
 #: src/virsh.c:2624
-#, fuzzy
 msgid "failed to get hostname"
-msgstr "获得 hypervisor 类型失败"
+msgstr "获得主机名失败"
 
 #: src/virsh.c:2639
-#, fuzzy
 msgid "print the hypervisor canonical URI"
-msgstr "hypervisor 连接 URI"
+msgstr "打印管理程序典型的URI"
 
 #: src/virsh.c:2653
-#, fuzzy
 msgid "failed to get URI"
-msgstr "获得域 UUID 失败"
+msgstr "获得URI失败"
 
 #: src/virsh.c:2668
 msgid "vnc display"
-msgstr ""
+msgstr "vnc 显示"
 
 #: src/virsh.c:2669
 msgid "Output the IP address and port number for the VNC display."
-msgstr ""
+msgstr "为VNC 显示输出IP地址和端口号."
 
 #: src/virsh.c:2747
-#, fuzzy
 msgid "attach device from an XML file"
-msgstr "从一个 XML 文件创建一个域"
+msgstr "从一个XML文件附加装置"
 
 #: src/virsh.c:2748
-#, fuzzy
 msgid "Attach device from an XML <file>."
-msgstr "从一个 XML 文件创建一个域"
+msgstr "从一个XML文件附加装置."
 
 #: src/virsh.c:2754 src/virsh.c:2808
 msgid "XML file"
-msgstr ""
+msgstr "XML 文件"
 
 #: src/virsh.c:2786
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to attach device from %s"
-msgstr "为域 %s 获得设备失败\n"
+msgstr "从 %s 获得设备失败"
 
 #: src/virsh.c:2801
-#, fuzzy
 msgid "detach device from an XML file"
-msgstr "从一个 XML 文件创建一个域"
+msgstr "从一个 XML 文件分离设备"
 
 #: src/virsh.c:2802
-#, fuzzy
 msgid "Detach device from an XML <file>"
-msgstr "从一个 XML 文件创建一个域"
+msgstr "从一个 XML 文件分离设备"
 
 #: src/virsh.c:2840
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to detach device from %s"
-msgstr "为域 %s 获得设备失败\n"
+msgstr "为域 %s 分离设备失败"
 
 #: src/virsh.c:2855
-#, fuzzy
 msgid "attach network interface"
-msgstr "无效的连接指向"
+msgstr "获得网络界面"
 
 #: src/virsh.c:2856
 msgid "Attach new network interface."
-msgstr ""
+msgstr "附加新网络界面."
 
 #: src/virsh.c:2862 src/virsh.c:2978
 msgid "network interface type"
-msgstr ""
+msgstr "网络界面类型"
 
 #: src/virsh.c:2863
-#, fuzzy
 msgid "source of network interface"
-msgstr "取消定义域名或 id"
+msgstr "网络界面源"
 
 #: src/virsh.c:2864
-#, fuzzy
 msgid "target network name"
-msgstr "开始一个域"
+msgstr "目标网络名称"
 
 #: src/virsh.c:2865 src/virsh.c:2979
 msgid "MAC adress"
-msgstr ""
+msgstr "MAC 地址"
 
 #: src/virsh.c:2866
 msgid "script used to bridge network interface"
-msgstr ""
+msgstr "构建网络界面用脚本"
 
 #: src/virsh.c:2898
 #, c-format
 msgid "No support %s in command 'attach-interface'"
-msgstr ""
+msgstr "%s在'attach-interface'命令中不支持"
 
 #: src/virsh.c:2971
-#, fuzzy
 msgid "detach network interface"
-msgstr "取消定义域名或 id"
+msgstr "分离网络界面"
 
 #: src/virsh.c:2972
 msgid "Detach network interface."
-msgstr ""
+msgstr "分离网络界面."
 
 #: src/virsh.c:3017 src/virsh.c:3022
-#, fuzzy
 msgid "Failed to get interface information"
-msgstr "获得节点信息失败"
+msgstr "获得界面信息失败"
 
 #: src/virsh.c:3030
 #, c-format
 msgid "No found interface whose type is %s"
-msgstr ""
+msgstr "未找到类型为%s的界面"
 
 #: src/virsh.c:3052
 #, c-format
 msgid "No found interface whose MAC address is %s"
-msgstr ""
+msgstr "未找到MAC地址为%s的界面"
 
 #: src/virsh.c:3058 src/virsh.c:3336
-#, fuzzy
 msgid "Failed to allocate memory"
-msgstr "分配一个节点失败"
+msgstr "分配内存失败"
 
 #: src/virsh.c:3063 src/virsh.c:3341
-#, fuzzy
 msgid "Failed to create XML"
-msgstr "读 socket %d 失败\n"
+msgstr "创建XML失败"
 
 #: src/virsh.c:3092
 msgid "attach disk device"
-msgstr ""
+msgstr "附加磁盘设备"
 
 #: src/virsh.c:3093
 msgid "Attach new disk device."
-msgstr ""
+msgstr "附加新磁盘设备."
 
 #: src/virsh.c:3099
 msgid "source of disk device"
-msgstr ""
+msgstr "磁盘设备源"
 
 #: src/virsh.c:3100 src/virsh.c:3264
 msgid "target of disk device"
-msgstr ""
+msgstr "磁盘设备目标"
 
 #: src/virsh.c:3101
 msgid "driver of disk device"
-msgstr ""
+msgstr "磁盘设备驱动"
 
 #: src/virsh.c:3102
 msgid "subdriver of disk device"
-msgstr ""
+msgstr "磁盘设备副驱动"
 
 #: src/virsh.c:3103
 msgid "target device type"
-msgstr ""
+msgstr "目标设备类型"
 
 #: src/virsh.c:3104
 msgid "mode of device reading and writing"
-msgstr ""
+msgstr "设备读写模式"
 
 #: src/virsh.c:3135 src/virsh.c:3144 src/virsh.c:3151
 #, c-format
 msgid "No support %s in command 'attach-disk'"
-msgstr ""
+msgstr "%s在'attach-disk'命令中不支持"
 
 #: src/virsh.c:3257
 msgid "detach disk device"
-msgstr ""
+msgstr "分离磁盘设备"
 
 #: src/virsh.c:3258
 msgid "Detach disk device."
-msgstr ""
+msgstr "分离磁盘设备."
 
 #: src/virsh.c:3299 src/virsh.c:3304 src/virsh.c:3311
-#, fuzzy
 msgid "Failed to get disk information"
-msgstr "获得节点信息失败"
+msgstr "获得磁盘信息失败"
 
 #: src/virsh.c:3330
 #, c-format
 msgid "No found disk whose target is %s"
-msgstr ""
+msgstr "目标为 %s的磁盘未找到"
 
 #: src/virsh.c:3370
 msgid "quit this interactive terminal"
@@ -1870,13 +1798,12 @@ msgid "  NAME\n"
 msgstr "  NAME\n"
 
 #: src/virsh.c:3546
-#, fuzzy
 msgid ""
 "\n"
 "  SYNOPSIS\n"
 msgstr ""
 "\n"
-"  OPTIONS\n"
+"  SYNOPSIS\n"
 
 #: src/virsh.c:3553
 msgid ""
@@ -1914,14 +1841,13 @@ msgid "failed to get domain '%s'"
 msgstr "获得域 '%s' 失败"
 
 #: src/virsh.c:3725
-#, fuzzy
 msgid "undefined network name"
-msgstr "取消定义域名或 id"
+msgstr "未指定网络名称"
 
 #: src/virsh.c:3749
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get network '%s'"
-msgstr "获得域 '%s' 失败"
+msgstr "获得网络 '%s' 失败"
 
 #: src/virsh.c:3777
 #, c-format
@@ -1973,11 +1899,11 @@ msgstr "非期望的数据 '%s'"
 
 #: src/virsh.c:3970
 msgid "OPTION"
-msgstr "OPTION"
+msgstr "选项"
 
 #: src/virsh.c:3970
 msgid "DATA"
-msgstr "DATA"
+msgstr "数据"
 
 #: src/virsh.c:4020 src/virsh.c:4046
 msgid "running"
@@ -2026,34 +1952,32 @@ msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: 分配 %d 字节失败"
 
 #: src/virsh.c:4171
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
-msgstr "%s: %d: 分配 %d 字节失败"
+msgstr "%s: %d: 分配 %lu字节失败"
 
 #: src/virsh.c:4207
 msgid "failed to connect to the hypervisor"
-msgstr "连接到 hypervisor 失败"
+msgstr "连接到管理程序失败"
 
 #: src/virsh.c:4231
-#, fuzzy
 msgid "failed to get the log file information"
-msgstr "获得节点信息失败"
+msgstr "获得日志文件信息失败"
 
 #: src/virsh.c:4236
 msgid "the log path is not a file"
-msgstr ""
+msgstr "日志路径不是一个文件"
 
 #: src/virsh.c:4242
 msgid "failed to open the log file. check the log file path"
-msgstr ""
+msgstr "打开日志文件失败,检查日志文件路径"
 
 #: src/virsh.c:4310
-#, fuzzy
 msgid "failed to write the log file"
-msgstr "写入配置文件失败"
+msgstr "写入日志文件失败"
 
 #: src/virsh.c:4479
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "%s [options] [commands]\n"
@@ -2075,16 +1999,18 @@ msgstr ""
 "\n"
 "  options:\n"
 "    -c | --connect <uri>    hypervisor 连接 URI\n"
+"    -r | --readonly         只读连接\n"
 "    -d | --debug <num>      debug 级别 [0-5]\n"
 "    -h | --help             帮助\n"
 "    -q | --quiet            安静模式\n"
 "    -t | --timing           输出时间信息\n"
+"    -l | --log <file>       输出日志到文件\n"
 "    -v | --version          程序版本\n"
 "\n"
 "  commands (non interactive mode):\n"
 
 #: src/virsh.c:4497
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
@@ -2156,9 +2082,8 @@ msgid "expecting an assignment"
 msgstr "需要一个参数"
 
 #: src/conf.c:887 src/conf.c:941
-#, fuzzy
 msgid "failed to allocate buffer"
-msgstr "分配一个节点失败"
+msgstr "分配缓冲失败"
 
 #: src/conf.c:899
 msgid "failed to open file"
@@ -2217,7 +2142,17 @@ msgstr "与代理服务器通讯错误：数据包格式不正确\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "获得了异步数据包号 %d\n"
 
-#: src/xen_internal.c:2315
+#: src/xen_internal.c:1255
+#, c-format
+msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
+msgstr ""
+
+#: src/xen_internal.c:1265
+#, c-format
+msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
+msgstr ""
+
+#: src/xen_internal.c:2340
 #, c-format
 msgid "allocating %d domain info"
 msgstr "分配 %d 域信息"

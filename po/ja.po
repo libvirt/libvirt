@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ja\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-13 10:22+0200\n"
-"PO-Revision-Date: 2007-07-10 11:44+0900\n"
+"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"PO-Revision-Date: 2007-07-14 15:52+0900\n"
 "Last-Translator: Hyu_gabaru Ryu_ichi <hyu_gabaru@yahoo.co.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libvirt.c:405 src/hash.c:664
+#: src/libvirt.c:411 src/hash.c:664
 msgid "allocating connection"
 msgstr "接続を割り当て中"
 
@@ -386,14 +386,13 @@ msgid "Network not found: %s"
 msgstr "ネットワークが見つかりませんでした: %s "
 
 #: src/virterror.c:651
-#, fuzzy
 msgid "invalid MAC adress"
-msgstr "MAC アドレス"
+msgstr "無効な MAC アドレス"
 
 #: src/virterror.c:653
-#, fuzzy, c-format
+#, c-format
 msgid "invalid MAC adress: %s"
-msgstr "%s で無効な引数です"
+msgstr "無効な MAC アドレス: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -604,8 +603,8 @@ msgstr "文字列のコピーに失敗しました"
 msgid "failed to read from Xen Daemon"
 msgstr "Xen デーモンからの読み込みに失敗しました"
 
-#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
-#: src/xend_internal.c:1542
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1528
+#: src/xend_internal.c:1547
 msgid "allocate new buffer"
 msgstr "新しいバッファを割り当て"
 
@@ -631,33 +630,33 @@ msgstr "ドメイン情報が不完全です、name が不足しています"
 
 #: src/xend_internal.c:1284 src/xend_internal.c:1315
 msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "ドメイン情報が不完全です、カーネルとブートローダーが不足してます"
+msgstr "ドメイン情報が不完全です、カーネルとブートローダーが不足しています"
 
 #: src/xend_internal.c:1372
 msgid "domain information incomplete, missing id"
 msgstr "ドメイン情報が不完全です、id が不足しています"
 
-#: src/xend_internal.c:1492
+#: src/xend_internal.c:1497
 msgid "domain information incomplete, vbd has no dev"
 msgstr "ドメイン情報が不完全です、vbd に dev がありません"
 
-#: src/xend_internal.c:1507
+#: src/xend_internal.c:1512
 msgid "domain information incomplete, vbd has no src"
 msgstr "ドメイン情報が不完全です、vbd に src がありません"
 
-#: src/xend_internal.c:1516
+#: src/xend_internal.c:1521
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd のファイル名を構文解析できません。ドライバー名欠如"
 
-#: src/xend_internal.c:1535
+#: src/xend_internal.c:1540
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd のファイル名を構文解析できません。ドライバータイプ欠如"
 
-#: src/xend_internal.c:1898
+#: src/xend_internal.c:1924
 msgid "failed to parse Xend domain information"
 msgstr "Xend ドメイン情報の解析に失敗しました"
 
-#: src/xend_internal.c:3164
+#: src/xend_internal.c:3190
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "停止中のドメイン %s の作成に失敗しました\n"
@@ -761,7 +760,7 @@ msgstr "ゲストのシリアルコンソールに接続します。"
 
 #: src/virsh.c:488
 msgid "No console available for domain\n"
-msgstr "ドメインで利用可能なコンソールがない\n"
+msgstr "ドメインに使用できるコンソールがありません\n"
 
 #: src/virsh.c:506
 msgid "list domains"
@@ -1244,7 +1243,7 @@ msgstr "メモリサイズ(キロバイト指定)"
 #: src/virsh.c:1740 src/virsh.c:1752 src/virsh.c:1797
 #, c-format
 msgid "Invalid value of %d for memory size"
-msgstr "%d はメモリサイズとしては不当な値"
+msgstr "%d はメモリサイズとしては不適切な値"
 
 #: src/virsh.c:1746
 msgid "Unable to verify MaxMemorySize"
@@ -1917,7 +1916,7 @@ msgstr "ブロックされています"
 
 #: src/virsh.c:4024
 msgid "paused"
-msgstr "中断中"
+msgstr "一時停止中"
 
 #: src/virsh.c:4026
 msgid "in shutdown"
@@ -2144,7 +2143,17 @@ msgstr "プロキシで通信エラー: 不良パケット\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "非同期パケット番号 %d を取得しました\n"
 
-#: src/xen_internal.c:2315
+#: src/xen_internal.c:1255
+#, c-format
+msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
+msgstr ""
+
+#: src/xen_internal.c:1265
+#, c-format
+msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
+msgstr ""
+
+#: src/xen_internal.c:2340
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d ドメイン情報を割り当て中"

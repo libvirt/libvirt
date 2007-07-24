@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-13 10:22+0200\n"
-"PO-Revision-Date: 2007-06-14 15:18+0100\n"
+"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"PO-Revision-Date: 2007-07-18 20:09+0100\n"
 "Last-Translator: José Nuno Coelho Pires <jncp@netcabo.pt>\n"
 "Language-Team: pt <kde-i18n-pt@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -14,9 +14,9 @@ msgstr ""
 "X-POFile-SpellExtra: VCPU Xen vCPUs options SO ms máx Id domid smarcada\n"
 "X-POFile-SpellExtra: smarcar lu readonly smarcado GNUTLS RPC testOpen log\n"
 "X-POFile-IgnoreConsistency: warning\n"
-"X-POFile-SpellExtra: XENCREDIT\n"
+"X-POFile-SpellExtra: XENCREDIT attach MAC disk cpulist\n"
 
-#: src/libvirt.c:405 src/hash.c:664
+#: src/libvirt.c:411 src/hash.c:664
 msgid "allocating connection"
 msgstr "a reservar a ligação"
 
@@ -46,14 +46,13 @@ msgid "out of memory"
 msgstr "sem memória"
 
 #: src/virterror.c:414
-#, fuzzy
 msgid "this function is not supported by the hypervisor"
-msgstr "não existe suporte para o supervisor"
+msgstr "esta função não é suportada pelo supervisor"
 
 #: src/virterror.c:416
-#, fuzzy, c-format
+#, c-format
 msgid "this function is not supported by the hypervisor: %s"
-msgstr "não existe suporte para o supervisor %s"
+msgstr "esta função não é suportada pelo supervisor: %s"
 
 #: src/virterror.c:420
 msgid "could not connect to hypervisor"
@@ -365,33 +364,31 @@ msgid "Failed to find the network: %s"
 msgstr "Não foi possível encontrar a rede: %s"
 
 #: src/virterror.c:639
-#, fuzzy
 msgid "Domain not found"
-msgstr "informação do domínio"
+msgstr "O domínio não foi encontrado"
 
 #: src/virterror.c:641
-#, fuzzy, c-format
+#, c-format
 msgid "Domain not found: %s"
-msgstr "O domínio foi reposto a partir do %s\n"
+msgstr "O domínio não foi encontrado: %s"
 
 #: src/virterror.c:645
-#, fuzzy
 msgid "Network not found"
-msgstr "nome ou UUID da rede"
+msgstr "A rede não foi encontrada"
 
 #: src/virterror.c:647
-#, fuzzy, c-format
+#, c-format
 msgid "Network not found: %s"
-msgstr "A rede %s foi criada a partir do %s\n"
+msgstr "A rede não foi encontrada: %s"
 
 #: src/virterror.c:651
 msgid "invalid MAC adress"
-msgstr ""
+msgstr "endereço MAC inválido"
 
 #: src/virterror.c:653
-#, fuzzy, c-format
+#, c-format
 msgid "invalid MAC adress: %s"
-msgstr "argumento inválido em %s"
+msgstr "endereço MAC inválido: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -575,9 +572,8 @@ msgid "allocating private data"
 msgstr "a reservar os dados privados"
 
 #: src/test.c:774
-#, fuzzy
 msgid "allocating path"
-msgstr "a reservar o domínio"
+msgstr "a reservar o local"
 
 #: src/test.c:946
 msgid "too many domains"
@@ -603,8 +599,8 @@ msgstr "não foi possível copiar a cadeia de caracteres"
 msgid "failed to read from Xen Daemon"
 msgstr "não foi possível ler do Servidor do Xen"
 
-#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
-#: src/xend_internal.c:1542
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1528
+#: src/xend_internal.c:1547
 msgid "allocate new buffer"
 msgstr "reservar um novo 'buffer'"
 
@@ -637,31 +633,31 @@ msgstr ""
 msgid "domain information incomplete, missing id"
 msgstr "informação do domínio incompleta, falta o ID"
 
-#: src/xend_internal.c:1492
+#: src/xend_internal.c:1497
 msgid "domain information incomplete, vbd has no dev"
 msgstr "informação do domínio incompleta, o 'vbd' não tem dispositivo"
 
-#: src/xend_internal.c:1507
+#: src/xend_internal.c:1512
 msgid "domain information incomplete, vbd has no src"
 msgstr "informação do domínio incompleta, o 'vbd' não tem origem"
 
-#: src/xend_internal.c:1516
+#: src/xend_internal.c:1521
 msgid "cannot parse vbd filename, missing driver name"
 msgstr ""
 "não é possível processar o nome do ficheiro 'vbd', falta o nome do "
 "controlador"
 
-#: src/xend_internal.c:1535
+#: src/xend_internal.c:1540
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 "não é possível processar o nome do ficheiro 'vbd', falta o tipo do "
 "controlador"
 
-#: src/xend_internal.c:1898
+#: src/xend_internal.c:1924
 msgid "failed to parse Xend domain information"
 msgstr "não foi possível processar a informação do domínio do Xend"
 
-#: src/xend_internal.c:3164
+#: src/xend_internal.c:3190
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Não foi possível criar o domínio inactivo %s\n"
@@ -1168,7 +1164,7 @@ msgstr "Afinidade do CPU:"
 
 #: src/virsh.c:1511
 msgid "Domain shut off, virtual CPUs not present."
-msgstr ""
+msgstr "Domínio desligado, os CPUs virtuais não estão presentes."
 
 #: src/virsh.c:1527
 msgid "control domain vcpu affinity"
@@ -1188,13 +1184,15 @@ msgstr "números de CPU do anfitrião (separados por vírgulas)"
 
 #: src/virsh.c:1590
 msgid "cpulist: Invalid format. Empty string."
-msgstr ""
+msgstr "cpulist: Formato inválido. Texto em branco."
 
 #: src/virsh.c:1600
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
+"cpulist: %s: Formato inválido. Espera-se um algarismo na posição %d (perto "
+"do '%c')."
 
 #: src/virsh.c:1610
 #, c-format
@@ -1202,11 +1200,13 @@ msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
 "c')."
 msgstr ""
+"cpulist: %s: Formato inválido. Espera-se um algarismo ou uma vírgula na "
+"posição %d (perto do '%c')."
 
 #: src/virsh.c:1617
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
-msgstr ""
+msgstr "cpulist: %s: Formato inválido. Apareceu uma vírgula na posição %d."
 
 #: src/virsh.c:1631
 #, c-format
@@ -1226,12 +1226,10 @@ msgid "number of virtual CPUs"
 msgstr "número de CPUs virtuais"
 
 #: src/virsh.c:1682
-#, fuzzy
 msgid "Invalid number of virtual CPUs."
-msgstr "número de CPUs virtuais"
+msgstr "Número de CPUs virtuais inválido."
 
 #: src/virsh.c:1694
-#, fuzzy
 msgid "Too many virtual CPUs."
 msgstr "Existem demasiados CPU's virtuais."
 
@@ -1254,7 +1252,7 @@ msgstr "Foi usado um valor inválido %d no tamanho da memória"
 
 #: src/virsh.c:1746
 msgid "Unable to verify MaxMemorySize"
-msgstr ""
+msgstr "Não é possível verificar o Tamanho Máximo de Memória"
 
 #: src/virsh.c:1769
 msgid "change maximum memory limit"
@@ -1270,16 +1268,15 @@ msgstr "limite máximo de memória em quilobytes"
 
 #: src/virsh.c:1803
 msgid "Unable to verify current MemorySize"
-msgstr ""
+msgstr "Não é possível verificar o Tamanho de Memória actual"
 
 #: src/virsh.c:1810
-#, fuzzy
 msgid "Unable to shrink current MemorySize"
-msgstr "memória actual do domínio"
+msgstr "Não é possível encolher a memória actual"
 
 #: src/virsh.c:1816
 msgid "Unable to change MaxMemorySize"
-msgstr ""
+msgstr "Não é possível alterar o Tamanho Máximo de Memória"
 
 #: src/virsh.c:1829
 msgid "node information"
@@ -1613,24 +1610,20 @@ msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "A executar o supervisor: %s %d.%d.%d\n"
 
 #: src/virsh.c:2610
-#, fuzzy
 msgid "print the hypervisor hostname"
-msgstr "não foi possível obter o tipo de supervisor"
+msgstr "imprimir o nome da máquina supervisora"
 
 #: src/virsh.c:2624
-#, fuzzy
 msgid "failed to get hostname"
-msgstr "não foi possível obter o tipo de supervisor"
+msgstr "não foi possível obter o nome da máquina"
 
 #: src/virsh.c:2639
-#, fuzzy
 msgid "print the hypervisor canonical URI"
-msgstr "URI de ligação ao supervisor"
+msgstr "imprimir o URI canónico do supervisor"
 
 #: src/virsh.c:2653
-#, fuzzy
 msgid "failed to get URI"
-msgstr "não foi possível obter o UUID do domínio"
+msgstr "não foi possível obter o URI"
 
 #: src/virsh.c:2668
 msgid "vnc display"
@@ -1671,130 +1664,121 @@ msgid "Failed to detach device from %s"
 msgstr "Não foi possível remover a associação do dispositivo de %s"
 
 #: src/virsh.c:2855
-#, fuzzy
 msgid "attach network interface"
-msgstr "nome da rede"
+msgstr "anexar a interface de rede"
 
 #: src/virsh.c:2856
 msgid "Attach new network interface."
-msgstr ""
+msgstr "Anexar uma interface de rede nova."
 
 #: src/virsh.c:2862 src/virsh.c:2978
-#, fuzzy
 msgid "network interface type"
-msgstr "nome da rede"
+msgstr "tipo da interface de rede"
 
 #: src/virsh.c:2863
-#, fuzzy
 msgid "source of network interface"
-msgstr "nome da rede indefinido"
+msgstr "origem da interface de rede"
 
 #: src/virsh.c:2864
-#, fuzzy
 msgid "target network name"
-msgstr "nome da rede"
+msgstr "nome da rede de destino"
 
 #: src/virsh.c:2865 src/virsh.c:2979
 msgid "MAC adress"
-msgstr ""
+msgstr "Endereço MAC"
 
 #: src/virsh.c:2866
 msgid "script used to bridge network interface"
-msgstr ""
+msgstr "programa usado para interligar a interface de rede"
 
 #: src/virsh.c:2898
 #, c-format
 msgid "No support %s in command 'attach-interface'"
-msgstr ""
+msgstr "Não existe o %s de suporte no comando 'attach-interface'"
 
 #: src/virsh.c:2971
-#, fuzzy
 msgid "detach network interface"
-msgstr "nome da rede"
+msgstr "desligar a interface de rede"
 
 #: src/virsh.c:2972
 msgid "Detach network interface."
-msgstr ""
+msgstr "Desligar a interface de rede."
 
 #: src/virsh.c:3017 src/virsh.c:3022
-#, fuzzy
 msgid "Failed to get interface information"
-msgstr "não foi possível obter a informação do nó"
+msgstr "Não foi possível obter a informação da interface"
 
 #: src/virsh.c:3030
 #, c-format
 msgid "No found interface whose type is %s"
-msgstr ""
+msgstr "Não foi encontrada nenhuma interface com o tipo %s"
 
 #: src/virsh.c:3052
 #, c-format
 msgid "No found interface whose MAC address is %s"
-msgstr ""
+msgstr "Não foi encontrada nenhuma interface com o endereço MAC %s"
 
 #: src/virsh.c:3058 src/virsh.c:3336
-#, fuzzy
 msgid "Failed to allocate memory"
-msgstr "não foi possível reservar um nó"
+msgstr "Não foi possível reservar memória"
 
 #: src/virsh.c:3063 src/virsh.c:3341
-#, fuzzy
 msgid "Failed to create XML"
-msgstr "Não foi possível criar o domínio %s\n"
+msgstr "Não foi possível criar o XML"
 
 #: src/virsh.c:3092
 msgid "attach disk device"
-msgstr ""
+msgstr "anexar um dispositivo em disco"
 
 #: src/virsh.c:3093
 msgid "Attach new disk device."
-msgstr ""
+msgstr "Anexar um dispositivo em disco novo."
 
 #: src/virsh.c:3099
 msgid "source of disk device"
-msgstr ""
+msgstr "origem do dispositivo de disco"
 
 #: src/virsh.c:3100 src/virsh.c:3264
 msgid "target of disk device"
-msgstr ""
+msgstr "destino do dispositivo de disco"
 
 #: src/virsh.c:3101
 msgid "driver of disk device"
-msgstr ""
+msgstr "controlador do dispositivo de disco"
 
 #: src/virsh.c:3102
 msgid "subdriver of disk device"
-msgstr ""
+msgstr "sub-controlador do dispositivo de disco"
 
 #: src/virsh.c:3103
 msgid "target device type"
-msgstr ""
+msgstr "tipo do dispositivo de destino"
 
 #: src/virsh.c:3104
 msgid "mode of device reading and writing"
-msgstr ""
+msgstr "modo de leitura e escrita do dispositivo"
 
 #: src/virsh.c:3135 src/virsh.c:3144 src/virsh.c:3151
 #, c-format
 msgid "No support %s in command 'attach-disk'"
-msgstr ""
+msgstr "Não existe o %s como suporte no comando 'attach-disk'"
 
 #: src/virsh.c:3257
 msgid "detach disk device"
-msgstr ""
+msgstr "desligar o dispositivo de disco"
 
 #: src/virsh.c:3258
 msgid "Detach disk device."
-msgstr ""
+msgstr "Desligar o dispositivo de disco."
 
 #: src/virsh.c:3299 src/virsh.c:3304 src/virsh.c:3311
-#, fuzzy
 msgid "Failed to get disk information"
-msgstr "não foi possível obter a informação do nó"
+msgstr "Não foi possível obter a informação do disco"
 
 #: src/virsh.c:3330
 #, c-format
 msgid "No found disk whose target is %s"
-msgstr ""
+msgstr "Não foi encontrado o disco com o destino %s"
 
 #: src/virsh.c:3370
 msgid "quit this interactive terminal"
@@ -2034,14 +2018,14 @@ msgstr ""
 "  comandos (modo não-interactivo):\n"
 
 #: src/virsh.c:4497
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"
-"  (indique --help <comando> para saber mais detalhes do comando)\n"
+"  (indique help <comando> para saber mais detalhes do comando)\n"
 "\n"
 
 #: src/virsh.c:4593
@@ -2106,9 +2090,8 @@ msgid "expecting an assignment"
 msgstr "era esperada uma atribuição"
 
 #: src/conf.c:887 src/conf.c:941
-#, fuzzy
 msgid "failed to allocate buffer"
-msgstr "não foi possível reservar um nó"
+msgstr "não foi possível reservar o 'buffer'"
 
 #: src/conf.c:899
 msgid "failed to open file"
@@ -2169,7 +2152,17 @@ msgstr "Erro de comunicação com o 'proxy': pacote inválido\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "foi obtido um número de pacote assíncrono %d\n"
 
-#: src/xen_internal.c:2315
+#: src/xen_internal.c:1255
+#, c-format
+msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
+msgstr ""
+
+#: src/xen_internal.c:1265
+#, c-format
+msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
+msgstr ""
+
+#: src/xen_internal.c:2340
 #, c-format
 msgid "allocating %d domain info"
 msgstr "a reservar a informação de %d domínios"

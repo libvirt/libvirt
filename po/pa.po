@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pa\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-13 10:22+0200\n"
+"POT-Creation-Date: 2007-07-24 10:14+0200\n"
 "PO-Revision-Date: 2007-04-12 06:54+0530\n"
 "Last-Translator: A S Alam <aalam@users.sf.net>\n"
 "Language-Team: Punjabi <punjabi-l10n@lists.sf.net>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Generator: KBabel 1.11.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/libvirt.c:405 src/hash.c:664
+#: src/libvirt.c:411 src/hash.c:664
 msgid "allocating connection"
 msgstr "ਕੁਨੈਕਸ਼ਨ ਦਿੱਤੀ ਜਾ ਰਿਹਾ ਹੈ"
 
@@ -390,8 +390,9 @@ msgid "Network not found: %s"
 msgstr "%2$s ਤੋਂ ਨੈੱਟਵਰਕ %1$s ਬਣਾਇਆ ਗਿਆ\n"
 
 #: src/virterror.c:651
+#, fuzzy
 msgid "invalid MAC adress"
-msgstr ""
+msgstr "%s ਵਿੱਚ ਗਲਤ ਮੁੱਲ"
 
 #: src/virterror.c:653
 #, fuzzy, c-format
@@ -609,8 +610,8 @@ msgstr "ਇੱਕ ਸਤਰ ਨਕਲ ਕਰਨ ਦੌਰਾਨ ਫੇਲ੍ਹ"
 msgid "failed to read from Xen Daemon"
 msgstr "ਜੈੱਨ ਡੈਮਨ ਤੋਂ ਪੜ੍ਹਨ ਲਈ ਅਸਫ਼ਲ"
 
-#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
-#: src/xend_internal.c:1542
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1528
+#: src/xend_internal.c:1547
 msgid "allocate new buffer"
 msgstr "ਨਵਾਂ ਬਫ਼ਰ ਜਾਰੀ"
 
@@ -643,27 +644,27 @@ msgstr "ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਅਧੂਰੀ ਹੈ, ਕਰਨ�
 msgid "domain information incomplete, missing id"
 msgstr "ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਅਧੂਰੀ ਹੈ, id ਗੁੰਮ ਹੈ"
 
-#: src/xend_internal.c:1492
+#: src/xend_internal.c:1497
 msgid "domain information incomplete, vbd has no dev"
 msgstr "ਡੋਮੇਨ ਜਾਣਾਕਰੀ ਅਧੂਰੀ ਹੈ, vbd ਕੋਲ ਕੋਈ dev ਨਹੀਂ ਹੈ"
 
-#: src/xend_internal.c:1507
+#: src/xend_internal.c:1512
 msgid "domain information incomplete, vbd has no src"
 msgstr "ਡੋਮੇਨ ਜਾਣਾਕਰੀ ਅਧੂਰੀ ਹੈ, vbd ਕੋਲ ਕੋਈ ਸਰੋਤ ਨਹੀਂ ਹੈ"
 
-#: src/xend_internal.c:1516
+#: src/xend_internal.c:1521
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd ਫਾਇਲ ਨਾਂ ਪਾਰਸ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਡਰਾਇਵਰ ਕਿਸਮ ਨਹੀਂ ਹੈ"
 
-#: src/xend_internal.c:1535
+#: src/xend_internal.c:1540
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd ਫਾਇਲ ਨਾਂ ਪਾਰਸ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਡਰਾਇਵਰ ਕਿਸਮ ਨਹੀਂ ਹੈ"
 
-#: src/xend_internal.c:1898
+#: src/xend_internal.c:1924
 msgid "failed to parse Xend domain information"
 msgstr "Xend ਡੋਮੇਨ ਜਾਣਾਕਰੀ ਪਾਰਸ ਕਰਨ ਲਈ ਫੇਲ੍ਹ"
 
-#: src/xend_internal.c:3164
+#: src/xend_internal.c:3190
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "ਨਾ-ਸਰਗਰਮ ਡੋਮੇਨ %s ਬਣਾਉਣ ਲਈ ਅਸਫ਼ਲ ਹੈ\n"
@@ -2179,7 +2180,17 @@ msgstr "ਪਰਾਕਸੀ ਨਾਲ ਸੰਚਾਰ ਗਲਤੀ: ਨਿਕਾ�
 msgid "got asynchronous packet number %d\n"
 msgstr "ਨਾ-ਸਮਕਾਲੀ ਪੈਕਟ ਨੰਬਰ %d ਮਿਲਿਆ\n"
 
-#: src/xen_internal.c:2315
+#: src/xen_internal.c:1255
+#, c-format
+msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
+msgstr ""
+
+#: src/xen_internal.c:1265
+#, c-format
+msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
+msgstr ""
+
+#: src/xen_internal.c:2340
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d ਡੋਮੇਨ ਜਾਣਕਾਰੀ ਦਿੱਤੀ ਜਾ ਰਹੀ ਹੈ"

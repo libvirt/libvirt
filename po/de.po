@@ -1,22 +1,25 @@
+# translation of de.po to Deutsch
 # translation of de.po to
 # Copyright (C) 2006, 2007 Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
 # PGP-KeyID: 0x037FD3CF <ttrinks@redhat.com>, 2007.
+# Michael Schönitzer <michael@schoenitzer.de>, 2007.
 msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-13 10:22+0200\n"
-"PO-Revision-Date: 2007-07-10 09:58+1000\n"
-"Last-Translator: PGP-KeyID: 0x037FD3CF <ttrinks@redhat.com>\n"
-"Language-Team:  <de@li.org>\n"
+"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"PO-Revision-Date: 2007-07-15 12:12+0200\n"
+"Last-Translator: Michael Schönitzer <michael@schoenitzer.de>\n"
+"Language-Team: Deutsch\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
+"Plural-Forms:  nplurals=2; plural=(n != 1);\n"
 
-#: src/libvirt.c:405 src/hash.c:664
+#: src/libvirt.c:411 src/hash.c:664
 msgid "allocating connection"
 msgstr "Verbindung zuweisen"
 
@@ -382,14 +385,13 @@ msgid "Network not found: %s"
 msgstr "Netzwerk nicht gefunden: %s"
 
 #: src/virterror.c:651
-#, fuzzy
 msgid "invalid MAC adress"
-msgstr "MAC-Adresse"
+msgstr "ungültige MAC-Adresse"
 
 #: src/virterror.c:653
-#, fuzzy, c-format
+#, c-format
 msgid "invalid MAC adress: %s"
-msgstr "ungültiger Parameter in %s"
+msgstr "ungültige MAC-Adresse: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -600,8 +602,8 @@ msgstr "Stringkopie schlug fehl"
 msgid "failed to read from Xen Daemon"
 msgstr "Lesen vom Xen-Daemon scheiterte"
 
-#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
-#: src/xend_internal.c:1542
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1528
+#: src/xend_internal.c:1547
 msgid "allocate new buffer"
 msgstr "Neuen Puffer zuweisen"
 
@@ -633,27 +635,27 @@ msgstr "Domaininformation unvollständig, fehlender Kernel & Bootloader"
 msgid "domain information incomplete, missing id"
 msgstr "Domaininformation unvollständig, fehlende id"
 
-#: src/xend_internal.c:1492
+#: src/xend_internal.c:1497
 msgid "domain information incomplete, vbd has no dev"
 msgstr "Domaininformation unvollständig, vbd besitzt kein dev"
 
-#: src/xend_internal.c:1507
+#: src/xend_internal.c:1512
 msgid "domain information incomplete, vbd has no src"
 msgstr "Domaininformation unvollständig, vbd besitzt kein src"
 
-#: src/xend_internal.c:1516
+#: src/xend_internal.c:1521
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd Dateiname kann nicht analysiert werden, fehlender Treibername"
 
-#: src/xend_internal.c:1535
+#: src/xend_internal.c:1540
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd Dateiname kann nicht analysiert werden, fehlender Treibertyp"
 
-#: src/xend_internal.c:1898
+#: src/xend_internal.c:1924
 msgid "failed to parse Xend domain information"
 msgstr "Analyse der Xend-Domaininformation schlug fehl"
 
-#: src/xend_internal.c:3164
+#: src/xend_internal.c:3190
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Fehler beim Erstellen einer inaktiven Domain %s\n"
@@ -2149,7 +2151,17 @@ msgstr "Kommunikationsfehler mit dem Proxy: fehlerhaftes Paket\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "erhielt asynchrone Paketnummer %d\n"
 
-#: src/xen_internal.c:2315
+#: src/xen_internal.c:1255
+#, c-format
+msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
+msgstr ""
+
+#: src/xen_internal.c:1265
+#, c-format
+msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
+msgstr ""
+
+#: src/xen_internal.c:2340
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d Domain-Info zuweisen"

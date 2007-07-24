@@ -1,3 +1,7 @@
+Tue Jul 24 10:15:33 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* po/*: update translations and regenerate .pot
+
 Mon Jul 23 13:59:12 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c: keep monitor filehandle open, and set

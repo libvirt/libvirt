@@ -5,15 +5,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-13 10:22+0200\n"
-"PO-Revision-Date: 2007-07-09 17:19+0200\n"
+"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"PO-Revision-Date: 2007-07-13 21:02+0200\n"
 "Last-Translator: Piotr Drąg <raven@pmail.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/libvirt.c:405 src/hash.c:664
+#: src/libvirt.c:411 src/hash.c:664
 msgid "allocating connection"
 msgstr "przydzielanie połączenia"
 
@@ -381,14 +381,13 @@ msgid "Network not found: %s"
 msgstr "Nie znaleziono sieci: %s"
 
 #: src/virterror.c:651
-#, fuzzy
 msgid "invalid MAC adress"
-msgstr "Adres MAC"
+msgstr "nieprawidłowy adres MAC"
 
 #: src/virterror.c:653
-#, fuzzy, c-format
+#, c-format
 msgid "invalid MAC adress: %s"
-msgstr "nieprawidłowy argument w %s"
+msgstr "nieprawidłowy adres MAC: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -599,8 +598,8 @@ msgstr "skopiowanie łańcucha nie powiodło się"
 msgid "failed to read from Xen Daemon"
 msgstr "odczytanie z demona Xen nie powiodło się"
 
-#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1523
-#: src/xend_internal.c:1542
+#: src/xend_internal.c:591 src/xend_internal.c:807 src/xend_internal.c:1528
+#: src/xend_internal.c:1547
 msgid "allocate new buffer"
 msgstr "przydziel nowy bufor"
 
@@ -632,27 +631,27 @@ msgstr "informacje o domenie są niekompletne, brak jądra i programu startowego
 msgid "domain information incomplete, missing id"
 msgstr "informacje o domenie są niekompletne, brak ID"
 
-#: src/xend_internal.c:1492
+#: src/xend_internal.c:1497
 msgid "domain information incomplete, vbd has no dev"
 msgstr "informacje o domenie są niekompletne, vbd nie ma dev"
 
-#: src/xend_internal.c:1507
+#: src/xend_internal.c:1512
 msgid "domain information incomplete, vbd has no src"
 msgstr "informacje o domenie są niekompletne, vbd nie ma src"
 
-#: src/xend_internal.c:1516
+#: src/xend_internal.c:1521
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "nie można przeanalizować nazwy pliku vbd, brak nazwy sterownika"
 
-#: src/xend_internal.c:1535
+#: src/xend_internal.c:1540
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "nie można przeanalizować nazwy pliku vbd, brak typu sterownika"
 
-#: src/xend_internal.c:1898
+#: src/xend_internal.c:1924
 msgid "failed to parse Xend domain information"
 msgstr "przeanalizowanie informacji o domenie Xend nie powiodło się"
 
-#: src/xend_internal.c:3164
+#: src/xend_internal.c:3190
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Utworzenie nieaktywnej domeny %s nie powiodło się\n"
@@ -2147,7 +2146,17 @@ msgstr "Błąd komunikacji z pośrednikiem: niesformowany pakiet\n"
 msgid "got asynchronous packet number %d\n"
 msgstr "uzyskano niesynchroniczny pakiet o numerze %d\n"
 
-#: src/xen_internal.c:2315
+#: src/xen_internal.c:1255
+#, c-format
+msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
+msgstr ""
+
+#: src/xen_internal.c:1265
+#, c-format
+msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
+msgstr ""
+
+#: src/xen_internal.c:2340
 #, c-format
 msgid "allocating %d domain info"
 msgstr "przydzielanie %d informacji o domenie"
