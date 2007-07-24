@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"POT-Creation-Date: 2007-07-24 17:16+0200\n"
 "PO-Revision-Date: 2007-04-21 14:55+0300\n"
 "Last-Translator: Doncho N. Gunchev <gunchev@gmail.com>\n"
 "Language-Team: Bulgarian <dict@fsa-bg.org>\n"
@@ -2195,6 +2195,10 @@ msgstr ""
 #, c-format
 msgid "allocating %d domain info"
 msgstr "заделяне информация за домейн %d"
+
+#, fuzzy
+#~ msgid "connection URI of the destination host"
+#~ msgstr "закачане към конзолата за гости"
 
 #~ msgid "growing buffer"
 #~ msgstr "нарастващ буфер"

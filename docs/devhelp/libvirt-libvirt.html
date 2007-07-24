@@ -57,7 +57,6 @@ typedef <a href="libvirt-libvirt.html#virVcpuInfo">virVcpuInfo</a> * <a href="#v
 typedef struct _virNodeInfo <a href="#virNodeInfo">virNodeInfo</a>;
 typedef struct _virNetwork <a href="#virNetwork">virNetwork</a>;
 typedef enum <a href="#virDomainState">virDomainState</a>;
-typedef enum <a href="#virDeviceMode">virDeviceMode</a>;
 typedef struct _virDomain <a href="#virDomain">virDomain</a>;
 typedef <a href="libvirt-libvirt.html#virDomain">virDomain</a> * <a href="#virDomainPtr">virDomainPtr</a>;
 typedef struct _virSchedParameter <a href="#virSchedParameter">virSchedParameter</a>;
@@ -205,15 +204,6 @@ The content of this structure is not made public by the API.
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnectPtr">Typedef </a>virConnectPtr</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnect">virConnect</a> * virConnectPtr;
 </pre><p>a <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> is pointer to a <a href="libvirt-libvirt.html#virConnect">virConnect</a> private structure, this is the type used to reference a connection to the Xen Hypervisor in the API.</p>
-</div>
-        <hr/>
-        <div class="refsect2" lang="en"><h3><a name="virDeviceMode">Enum </a>virDeviceMode</h3><pre class="programlisting">enum <a href="#virDeviceMode">virDeviceMode</a> {
-    <a name="VIR_DEVICE_DEFAULT">VIR_DEVICE_DEFAULT</a> = 0 /* Default mode */
-    <a name="VIR_DEVICE_RO">VIR_DEVICE_RO</a> = 1 /* Access read-only */
-    <a name="VIR_DEVICE_RW">VIR_DEVICE_RW</a> = 2 /* Access read-write */
-    <a name="VIR_DEVICE_RW_FORCE">VIR_DEVICE_RW_FORCE</a> = 3 /*  Forced read-write even if already used */
-};
-</pre><p/>
 </div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virDomain">Structure </a>virDomain</h3><pre class="programlisting">struct _virDomain {
@@ -442,7 +432,7 @@ The content of this structure is not made public by the API.
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>domain</tt></i>:</span></td><td>a domain object</td></tr><tr><td><span class="term"><i><tt>autostart</tt></i>:</span></td><td>the value returned</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>-1 in case of error, 0 in case of success</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virDomainGetConnect"/>virDomainGetConnect ()</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	virDomainGetConnect	(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom)<br/>
-</pre><p>Provides the connection pointer associated with a domain. The reference counter on the connection is not increased by this call.</p>
+</pre><p>Provides the connection pointer associated with a domain. The reference counter on the connection is not increased by this call. WARNING: When writing libvirt bindings in other languages, do not use this function. Instead, store the connection and the domain object together.</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>dom</tt></i>:</span></td><td>pointer to a domain</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> or NULL in case of failure.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virDomainGetID"/>virDomainGetID ()</h3><pre class="programlisting">unsigned int	virDomainGetID		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain)<br/>
@@ -598,7 +588,7 @@ The content of this structure is not made public by the API.
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>network</tt></i>:</span></td><td>a network object</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a 0 terminated interface name, or NULL in case of error. the caller must free() the returned value.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virNetworkGetConnect"/>virNetworkGetConnect ()</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	virNetworkGetConnect	(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> net)<br/>
-</pre><p>Provides the connection pointer associated with a network. The reference counter on the connection is not increased by this call.</p>
+</pre><p>Provides the connection pointer associated with a network. The reference counter on the connection is not increased by this call. WARNING: When writing libvirt bindings in other languages, do not use this function. Instead, store the connection and the network object together.</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>net</tt></i>:</span></td><td>pointer to a network</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> or NULL in case of failure.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virNetworkGetName"/>virNetworkGetName ()</h3><pre class="programlisting">const char *	virNetworkGetName	(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network)<br/>

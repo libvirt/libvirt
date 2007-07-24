@@ -3,7 +3,7 @@
 Summary: Library providing a simple API virtualization
 Name: libvirt
 Version: @VERSION@
-Release: 1%{?dist}%{?extra_release}migr5
+Release: 1%{?dist}%{?extra_release}
 License: LGPL
 Group: Development/Libraries
 Source: libvirt-%{version}.tar.gz
@@ -165,6 +165,13 @@ fi
 %doc docs/examples/python
 
 %changelog
+* Tue Jul 24 2007 Daniel Veillard <veillard@redhat.com> - 0.3.1-1
+- Release of 0.3.1
+- localtime clock support
+- PS/2 and USB input devices
+- lots of assorted bugfixes and cleanups
+- documentation and localization improvements
+
 * Mon Jul  9 2007 Daniel Veillard <veillard@redhat.com> - 0.3.0-1
 - Release of 0.3.0
 - Secure remote access support

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"POT-Creation-Date: 2007-07-24 17:16+0200\n"
 "PO-Revision-Date: 2007-07-18 20:09+0100\n"
 "Last-Translator: José Nuno Coelho Pires <jncp@netcabo.pt>\n"
 "Language-Team: pt <kde-i18n-pt@kde.org>\n"
@@ -2166,6 +2166,10 @@ msgstr ""
 #, c-format
 msgid "allocating %d domain info"
 msgstr "a reservar a informação de %d domínios"
+
+#, fuzzy
+#~ msgid "connection URI of the destination host"
+#~ msgstr "ligar à consola-convidada"
 
 #~ msgid "growing buffer"
 #~ msgstr "a aumentar o 'buffer'"

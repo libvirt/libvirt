@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"POT-Creation-Date: 2007-07-24 17:16+0200\n"
 "PO-Revision-Date: 2007-07-13 21:02+0200\n"
 "Last-Translator: Piotr Drąg <raven@pmail.pl>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -2160,3 +2160,7 @@ msgstr ""
 #, c-format
 msgid "allocating %d domain info"
 msgstr "przydzielanie %d informacji o domenie"
+
+#, fuzzy
+#~ msgid "connection URI of the destination host"
+#~ msgstr "połącz się z konsolą gościa"

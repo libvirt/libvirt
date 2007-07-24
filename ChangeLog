@@ -1,3 +1,9 @@
+Tue Jul 24 17:32:23 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* libvirt.spec.in NEWS docs/* po/*: preparing release 0.3.1
+	* src/libvirt.c python/generator.py: some cleanup and warnings
+	  from Richard W.M. Jones
+
 Tue Jul 24 10:29:11 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c, src/qemu_conf.h: Added support for the VNC

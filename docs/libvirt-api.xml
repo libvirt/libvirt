@@ -16,31 +16,27 @@
      <exports symbol='VIR_UUID_STRING_BUFLEN' type='macro'/>
      <exports symbol='VIR_GET_CPUMAP' type='macro'/>
      <exports symbol='VIR_UNUSE_CPU' type='macro'/>
-     <exports symbol='VIR_DEVICE_DEFAULT' type='enum'/>
-     <exports symbol='VIR_DOMAIN_SHUTDOWN' type='enum'/>
-     <exports symbol='VIR_DOMAIN_SCHED_FIELD_UINT' type='enum'/>
-     <exports symbol='VIR_VCPU_RUNNING' type='enum'/>
-     <exports symbol='VIR_DOMAIN_CRASHED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SHUTOFF' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_DOUBLE' type='enum'/>
-     <exports symbol='VIR_DOMAIN_SCHED_FIELD_LLONG' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_ULLONG' type='enum'/>
      <exports symbol='VIR_DOMAIN_DESTROY' type='enum'/>
      <exports symbol='VIR_DOMAIN_RESTART' type='enum'/>
-     <exports symbol='VIR_DOMAIN_PRESERVE' type='enum'/>
-     <exports symbol='VIR_DOMAIN_SCHED_FIELD_BOOLEAN' type='enum'/>
-     <exports symbol='VIR_VCPU_OFFLINE' type='enum'/>
-     <exports symbol='VIR_DOMAIN_RUNNING' type='enum'/>
-     <exports symbol='VIR_DOMAIN_NOSTATE' type='enum'/>
-     <exports symbol='VIR_DOMAIN_SHUTOFF' type='enum'/>
-     <exports symbol='VIR_VCPU_BLOCKED' type='enum'/>
-     <exports symbol='VIR_DOMAIN_SCHED_FIELD_INT' type='enum'/>
-     <exports symbol='VIR_DOMAIN_PAUSED' type='enum'/>
-     <exports symbol='VIR_DEVICE_RO' type='enum'/>
-     <exports symbol='VIR_DEVICE_RW_FORCE' type='enum'/>
-     <exports symbol='VIR_DOMAIN_NONE' type='enum'/>
-     <exports symbol='VIR_DEVICE_RW' type='enum'/>
-     <exports symbol='VIR_DOMAIN_BLOCKED' type='enum'/>
      <exports symbol='VIR_DOMAIN_RENAME_RESTART' type='enum'/>
+     <exports symbol='VIR_DOMAIN_PRESERVE' type='enum'/>
+     <exports symbol='VIR_VCPU_BLOCKED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_BOOLEAN' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_UINT' type='enum'/>
+     <exports symbol='VIR_VCPU_OFFLINE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_INT' type='enum'/>
+     <exports symbol='VIR_VCPU_RUNNING' type='enum'/>
+     <exports symbol='VIR_DOMAIN_CRASHED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_NONE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SHUTDOWN' type='enum'/>
+     <exports symbol='VIR_DOMAIN_NOSTATE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_PAUSED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_LLONG' type='enum'/>
+     <exports symbol='VIR_DOMAIN_RUNNING' type='enum'/>
+     <exports symbol='VIR_DOMAIN_BLOCKED' type='enum'/>
      <exports symbol='virNodeInfoPtr' type='typedef'/>
      <exports symbol='virNetworkPtr' type='typedef'/>
      <exports symbol='virDomainInfoPtr' type='typedef'/>
@@ -49,7 +45,6 @@
      <exports symbol='virNodeInfo' type='typedef'/>
      <exports symbol='virNetwork' type='typedef'/>
      <exports symbol='virDomainState' type='typedef'/>
-     <exports symbol='virDeviceMode' type='typedef'/>
      <exports symbol='virDomain' type='typedef'/>
      <exports symbol='virDomainPtr' type='typedef'/>
      <exports symbol='virSchedParameter' type='typedef'/>
@@ -151,6 +146,7 @@
      <exports symbol='VIR_ERR_SYSTEM_ERROR' type='enum'/>
      <exports symbol='VIR_FROM_TEST' type='enum'/>
      <exports symbol='VIR_ERR_WARNING' type='enum'/>
+     <exports symbol='VIR_FROM_OPENVZ' type='enum'/>
      <exports symbol='VIR_ERR_NO_XEN' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_ARG' type='enum'/>
      <exports symbol='VIR_ERR_ERROR' type='enum'/>
@@ -159,6 +155,7 @@
      <exports symbol='VIR_ERR_NO_MEMORY' type='enum'/>
      <exports symbol='VIR_FROM_SEXPR' type='enum'/>
      <exports symbol='VIR_FROM_RPC' type='enum'/>
+     <exports symbol='VIR_ERR_INVALID_MAC' type='enum'/>
      <exports symbol='VIR_ERR_XML_ERROR' type='enum'/>
      <exports symbol='VIR_FROM_NONE' type='enum'/>
      <exports symbol='VIR_ERR_DOM_EXIST' type='enum'/>
@@ -277,10 +274,6 @@
     <macro name='VIR_UUID_STRING_BUFLEN' file='libvirt'>
       <info>This macro provides the length of the buffer required for virDomainGetUUIDString()</info>
     </macro>
-    <enum name='VIR_DEVICE_DEFAULT' file='libvirt' value='0' type='virDeviceMode' info='Default mode'/>
-    <enum name='VIR_DEVICE_RO' file='libvirt' value='1' type='virDeviceMode' info='Access read-only'/>
-    <enum name='VIR_DEVICE_RW' file='libvirt' value='2' type='virDeviceMode' info='Access read-write'/>
-    <enum name='VIR_DEVICE_RW_FORCE' file='libvirt' value='3' type='virDeviceMode' info=' Forced read-write even if already used'/>
     <enum name='VIR_DOMAIN_BLOCKED' file='libvirt' value='2' type='virDomainState' info='the domain is blocked on resource'/>
     <enum name='VIR_DOMAIN_CRASHED' file='libvirt' value='6' type='virDomainState' info=' the domain is crashed'/>
     <enum name='VIR_DOMAIN_DESTROY' file='libvirt' value='1' type='virDomainRestart' info='destroy the domain'/>
@@ -311,6 +304,7 @@
     <enum name='VIR_ERR_INVALID_ARG' file='virterror' value='8' type='virErrorNumber' info='invalid function argument'/>
     <enum name='VIR_ERR_INVALID_CONN' file='virterror' value='6' type='virErrorNumber' info='invalid connection object'/>
     <enum name='VIR_ERR_INVALID_DOMAIN' file='virterror' value='7' type='virErrorNumber' info='invalid domain object'/>
+    <enum name='VIR_ERR_INVALID_MAC' file='virterror' value='44' type='virErrorNumber' info=' invalid MAC adress'/>
     <enum name='VIR_ERR_INVALID_NETWORK' file='virterror' value='36' type='virErrorNumber' info='invalid network object'/>
     <enum name='VIR_ERR_NETWORK_EXIST' file='virterror' value='37' type='virErrorNumber' info='the network already exist'/>
     <enum name='VIR_ERR_NONE' file='virterror' value='0' type='virErrorLevel'/>
@@ -320,7 +314,7 @@
     <enum name='VIR_ERR_NO_KERNEL' file='virterror' value='17' type='virErrorNumber' info='missing kernel information'/>
     <enum name='VIR_ERR_NO_MEMORY' file='virterror' value='2' type='virErrorNumber' info='memory allocation failure'/>
     <enum name='VIR_ERR_NO_NAME' file='virterror' value='21' type='virErrorNumber' info='missing domain name information'/>
-    <enum name='VIR_ERR_NO_NETWORK' file='virterror' value='43' type='virErrorNumber' info=' network not found'/>
+    <enum name='VIR_ERR_NO_NETWORK' file='virterror' value='43' type='virErrorNumber' info='network not found'/>
     <enum name='VIR_ERR_NO_OS' file='virterror' value='22' type='virErrorNumber' info='missing domain OS information'/>
     <enum name='VIR_ERR_NO_ROOT' file='virterror' value='18' type='virErrorNumber' info='missing root device information'/>
     <enum name='VIR_ERR_NO_SOURCE' file='virterror' value='19' type='virErrorNumber' info='missing source device information'/>
@@ -349,9 +343,10 @@
     <enum name='VIR_FROM_DOM' file='virterror' value='6' type='virErrorDomain' info='Error when operating on a domain'/>
     <enum name='VIR_FROM_NET' file='virterror' value='11' type='virErrorDomain' info='Error when operating on a network'/>
     <enum name='VIR_FROM_NONE' file='virterror' value='0' type='virErrorDomain'/>
+    <enum name='VIR_FROM_OPENVZ' file='virterror' value='14' type='virErrorDomain' info=' Error from OpenVZ driver'/>
     <enum name='VIR_FROM_PROXY' file='virterror' value='8' type='virErrorDomain' info='Error in the proxy code'/>
     <enum name='VIR_FROM_QEMU' file='virterror' value='10' type='virErrorDomain' info='Error at the QEMU daemon'/>
-    <enum name='VIR_FROM_REMOTE' file='virterror' value='13' type='virErrorDomain' info=' Error from remote driver'/>
+    <enum name='VIR_FROM_REMOTE' file='virterror' value='13' type='virErrorDomain' info='Error from remote driver'/>
     <enum name='VIR_FROM_RPC' file='virterror' value='7' type='virErrorDomain' info='Error in the XML-RPC code'/>
     <enum name='VIR_FROM_SEXPR' file='virterror' value='4' type='virErrorDomain' info='Error in the S-Epression code'/>
     <enum name='VIR_FROM_TEST' file='virterror' value='12' type='virErrorDomain' info='Error from test driver'/>
@@ -367,7 +362,6 @@
     <typedef name='virConnectPtr' file='libvirt' type='virConnect *'>
       <info>a virConnectPtr is pointer to a virConnect private structure, this is the type used to reference a connection to the Xen Hypervisor in the API.</info>
     </typedef>
-    <typedef name='virDeviceMode' file='libvirt' type='enum'/>
     <struct name='virDomain' file='libvirt' type='struct _virDomain'/>
     <typedef name='virDomainCreateFlags' file='libvirt' type='enum'/>
     <struct name='virDomainInfo' file='libvirt' type='struct _virDomainInfo'>
@@ -618,7 +612,7 @@
       <arg name='autostart' type='int *' info='the value returned'/>
     </function>
     <function name='virDomainGetConnect' file='libvirt' module='libvirt'>
-      <info>Provides the connection pointer associated with a domain.  The reference counter on the connection is not increased by this call.</info>
+      <info>Provides the connection pointer associated with a domain.  The reference counter on the connection is not increased by this call.  WARNING: When writing libvirt bindings in other languages, do not use this function.  Instead, store the connection and the domain object together.</info>
       <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
       <arg name='dom' type='virDomainPtr' info='pointer to a domain'/>
     </function>
@@ -854,7 +848,7 @@
       <arg name='network' type='virNetworkPtr' info='a network object'/>
     </function>
     <function name='virNetworkGetConnect' file='libvirt' module='libvirt'>
-      <info>Provides the connection pointer associated with a network.  The reference counter on the connection is not increased by this call.</info>
+      <info>Provides the connection pointer associated with a network.  The reference counter on the connection is not increased by this call.  WARNING: When writing libvirt bindings in other languages, do not use this function.  Instead, store the connection and the network object together.</info>
       <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
       <arg name='net' type='virNetworkPtr' info='pointer to a network'/>
     </function>

@@ -750,6 +750,10 @@ virConnectNumOfDomains(virConnectPtr conn)
  * reference counter on the connection is not increased by this
  * call.
  *
+ * WARNING: When writing libvirt bindings in other languages, do
+ * not use this function.  Instead, store the connection and
+ * the domain object together.
+ *
  * Returns the virConnectPtr or NULL in case of failure.
  */
 virConnectPtr
@@ -2323,6 +2327,10 @@ virDomainDetachDevice(virDomainPtr domain, char *xml)
  * Provides the connection pointer associated with a network.  The
  * reference counter on the connection is not increased by this
  * call.
+ *
+ * WARNING: When writing libvirt bindings in other languages, do
+ * not use this function.  Instead, store the connection and
+ * the network object together.
  *
  * Returns the virConnectPtr or NULL in case of failure.
  */

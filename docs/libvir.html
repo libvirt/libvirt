@@ -20,7 +20,7 @@ under the <a href="http://www.opensource.org/licenses/lgpl-license.html">GNU
 Lesser General Public License</a>. Virtualization of the Linux Operating
 System means the ability to run multiple instances of Operating Systems
 concurently on a single hardware system where the basic resources are driven
-by a Linux instance. The library aim at providing long term stable C API
+by a Linux (or Solaris) instance. The library aim at providing long term stable C API
 initially for the <a
 href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen
 paravirtualization</a> but should be able to integrate other
@@ -35,6 +35,33 @@ development of libvirt, it is preferable when possible to just use the <a
 href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p>
 
+<h3>0.3.1: Jul 24 2007</h3>
+<ul>
+  <li>Documentation: index to remote page, script to test certificates,
+      IPv6 remote support docs (Daniel Berrange), document
+      VIRSH_DEFAULT_CONNECT_URI in virsh man page (David Lutterkort),
+      Relax-NG early grammar for the network XML (David Lutterkort)</li>
+  <li>Bug fixes: leaks in disk XML parsing (Masayuki Sunou), hypervisor
+      alignment call problems on PPC64 (Christian Ehrhardt), dead client
+      registration in daemon event loop (Daniel Berrange), double free
+      in error handling (Daniel Berrange), close on exec for log file
+      descriptors in the daemon (Daniel Berrange), avoid caching problem
+      in remote daemon (Daniel Berrange), avoid crash after QEmu domain
+      failure (Daniel Berrange)</li>
+  <li>Improvements: checks of x509 certificates and keys (Daniel Berrange),
+      error reports in the daemon (Daniel Berrange), checking of Ethernet MAC
+      addresses in XML configs (Masayuki Sunou), support for a new
+      clock switch between UTC and localtime (Daniel Berrange), early
+      version of OpenVZ support (Shuveb Hussain), support for input devices
+      on PS/2 and USB buses (Daniel Berrange), more tests especially
+      the QEmu support (Daniel Berrange), range check in credit scheduler
+      (with Saori Fukuta and Atsushi Sakai), add support for listen VNC
+      parameter un QEmu and fix command line arg (Daniel Berrange)</li>
+  <li>Cleanups: debug tracing (Richard Jones), removal of --with-qemud-pid-file
+      (Richard Jones), remove unused virDeviceMode, new util module for
+      code shared between drivers (Shuveb Hussain), xen header location
+      detection (Richard Jones)</li>
+</ul>
 <h3>0.3.0: Jul 9 2007</h3>
 <ul>
   <li>Secure Remote support (Richard Jones).

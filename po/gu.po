@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"POT-Creation-Date: 2007-07-24 17:16+0200\n"
 "PO-Revision-Date: 2007-04-10 11:36+0530\n"
 "Last-Translator: Ankit Patel <ankit@redhat.com>\n"
 "Language-Team: Gujarati <fedora-trans-gu@redhat.com>\n"
@@ -2196,6 +2196,10 @@ msgstr ""
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d ડોમેઈન જાણકારી ફાળવી રહ્યા છીએ"
+
+#, fuzzy
+#~ msgid "connection URI of the destination host"
+#~ msgstr "મહેમાન કન્સોલ સાથે જોડાવ"
 
 #~ msgid "growing buffer"
 #~ msgstr "બફર વધારી રહ્યા છીએ"

@@ -47,6 +47,7 @@ void	<a href="#virErrorFunc">virErrorFunc</a>			(void * userData, <br />					 <a
     <a name="VIR_FROM_NET" id="VIR_FROM_NET">VIR_FROM_NET</a> = 11 : Error when operating on a network
     <a name="VIR_FROM_TEST" id="VIR_FROM_TEST">VIR_FROM_TEST</a> = 12 : Error from test driver
     <a name="VIR_FROM_REMOTE" id="VIR_FROM_REMOTE">VIR_FROM_REMOTE</a> = 13 : Error from remote driver
+    <a name="VIR_FROM_OPENVZ" id="VIR_FROM_OPENVZ">VIR_FROM_OPENVZ</a> = 14 : Error from OpenVZ driver
 }
 </pre><h3>Enum <a name="virErrorLevel" id="virErrorLevel">virErrorLevel</a></h3><pre class="programlisting">Enum virErrorLevel {
     <a name="VIR_ERR_NONE" id="VIR_ERR_NONE">VIR_ERR_NONE</a> = 0
@@ -98,6 +99,7 @@ void	<a href="#virErrorFunc">virErrorFunc</a>			(void * userData, <br />					 <a
     <a name="VIR_WAR_NO_NETWORK" id="VIR_WAR_NO_NETWORK">VIR_WAR_NO_NETWORK</a> = 41 : failed to start network
     <a name="VIR_ERR_NO_DOMAIN" id="VIR_ERR_NO_DOMAIN">VIR_ERR_NO_DOMAIN</a> = 42 : domain not found or unexpectedly disappeared
     <a name="VIR_ERR_NO_NETWORK" id="VIR_ERR_NO_NETWORK">VIR_ERR_NO_NETWORK</a> = 43 : network not found
+    <a name="VIR_ERR_INVALID_MAC" id="VIR_ERR_INVALID_MAC">VIR_ERR_INVALID_MAC</a> = 44 : invalid MAC adress
 }
 </pre><h3><a name="virConnCopyLastError" id="virConnCopyLastError"></a>Function: virConnCopyLastError</h3><pre class="programlisting">int	virConnCopyLastError		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br />					 <a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a> to)<br />
 </pre><p>Copy the content of the last error caught on that connection One will need to free the result with virResetError()</p>

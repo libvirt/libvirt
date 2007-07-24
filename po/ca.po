@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"POT-Creation-Date: 2007-07-24 17:16+0200\n"
 "PO-Revision-Date: 2007-04-21 10:20-0100\n"
 "Last-Translator: Xavier Conde Rueda <xavi.conde@gmail.com>\n"
 "Language-Team: Catalan <fedora@softcatala.net>\n"
@@ -2207,6 +2207,10 @@ msgstr ""
 #, c-format
 msgid "allocating %d domain info"
 msgstr "s'està assignant %d informació de domini"
+
+#, fuzzy
+#~ msgid "connection URI of the destination host"
+#~ msgstr "connecta a la consola de l'allotjat"
 
 #~ msgid "growing buffer"
 #~ msgstr "memòria intermèdia creixent"

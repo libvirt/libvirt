@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es~\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"POT-Creation-Date: 2007-07-24 17:16+0200\n"
 "PO-Revision-Date: 2007-07-13 10:45-0300\n"
 "Last-Translator: Domingo Becker <domingobecker@gmail.com>\n"
 "Language-Team: Spanish <en@li.org>\n"
@@ -2167,6 +2167,10 @@ msgstr ""
 #, c-format
 msgid "allocating %d domain info"
 msgstr "asignando info de dominio %d"
+
+#, fuzzy
+#~ msgid "connection URI of the destination host"
+#~ msgstr "conectar a la consola cliente"
 
 #~ msgid "growing buffer"
 #~ msgstr "agrandando el buffer"

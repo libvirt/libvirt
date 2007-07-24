@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bn_IN\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"POT-Creation-Date: 2007-07-24 17:16+0200\n"
 "PO-Revision-Date: 2007-04-10 18:48+0530\n"
 "Last-Translator: Runa Bhattacharjee <runab@redhat.com>\n"
 "Language-Team: Bengali <en@li.org>\n"
@@ -2197,6 +2197,10 @@ msgstr ""
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d ডোমেইন সংক্রান্ত তথ্য বরাদ্দ করা হয়েছে"
+
+#, fuzzy
+#~ msgid "connection URI of the destination host"
+#~ msgstr "গেস্ট কনসোলের সাথে সংযোগ স্থাপন করুন"
 
 #~ msgid "growing buffer"
 #~ msgstr "বাফার প্রসারণ"

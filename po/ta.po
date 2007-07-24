@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"POT-Creation-Date: 2007-07-24 17:16+0200\n"
 "PO-Revision-Date: 2007-04-17 16:23+0530\n"
 "Last-Translator: I felix <ifelix@redhat.com>\n"
 "Language-Team: Tamil <fedora-trans-ta@redhat.com>\n"
@@ -2200,6 +2200,10 @@ msgstr ""
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d செயற்களத் தகவல் ஒதுக்கப்படுகிறது"
+
+#, fuzzy
+#~ msgid "connection URI of the destination host"
+#~ msgstr "விருந்தினர் பணியகத்துடன் இணைக்கவும்"
 
 #~ msgid "growing buffer"
 #~ msgstr "வளரும் இடையகம்"

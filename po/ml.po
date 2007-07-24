@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ml\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"POT-Creation-Date: 2007-07-24 17:16+0200\n"
 "PO-Revision-Date: 2007-06-15 11:11+0530\n"
 "Last-Translator: Ani Peter <apeter@redhat.com>\n"
 "Language-Team: Malayalam <en@li.org>\n"
@@ -2177,6 +2177,10 @@ msgstr ""
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d ഡൊമെയിന്‍ വിവരം ലഭ്യമാക്കുന്നു"
+
+#, fuzzy
+#~ msgid "connection URI of the destination host"
+#~ msgstr "ഗസ്റ്റ് കണ്‍സോളിലേക്ക് കണക്ട് ചെയ്യുക"
 
 #~ msgid "growing buffer"
 #~ msgstr "വലുതാകുന്ന ബഫര്‍"

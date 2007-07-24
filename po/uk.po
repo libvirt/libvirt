@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"POT-Creation-Date: 2007-07-24 17:16+0200\n"
 "PO-Revision-Date: 2007-04-11 14:58+0300\n"
 "Last-Translator: Maxim V. Dziumanenko <dziumanenko@softprom.kiev.ua>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
@@ -2197,6 +2197,10 @@ msgstr ""
 #, c-format
 msgid "allocating %d domain info"
 msgstr "виділення %d даних домену"
+
+#, fuzzy
+#~ msgid "connection URI of the destination host"
+#~ msgstr "з'єднатись з консоллю гостьової системи"
 
 #~ msgid "growing buffer"
 #~ msgstr "зростаючий буфер"

@@ -61,7 +61,8 @@ ignored_files = {
   "bridge.c": "internal code",
   "uuid.h": "internal code",
   "uuid.c": "internal code",
-
+  "util.h": "internal code",
+  "util.c": "internal code",
 }
 
 ignored_words = {

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ja\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-07-24 10:14+0200\n"
+"POT-Creation-Date: 2007-07-24 17:16+0200\n"
 "PO-Revision-Date: 2007-07-14 15:52+0900\n"
 "Last-Translator: Hyu_gabaru Ryu_ichi <hyu_gabaru@yahoo.co.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
@@ -2157,6 +2157,10 @@ msgstr ""
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d ドメイン情報を割り当て中"
+
+#, fuzzy
+#~ msgid "connection URI of the destination host"
+#~ msgstr "ゲストのコンソールに接続"
 
 #~ msgid "growing buffer"
 #~ msgstr "バッファを増大中"
