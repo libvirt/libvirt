@@ -146,11 +146,11 @@ main(int argc, char **argv)
                     1, testCompareXMLToArgvHelper, "disk-many") < 0)
         ret = -1;
 
-    if (0 && virtTestRun("QEMU XML-2-ARGV Graphics VNC",
+    if (virtTestRun("QEMU XML-2-ARGV Graphics VNC",
                     1, testCompareXMLToArgvHelper, "graphics-vnc") < 0)
         ret = -1;
 
-    if (0 && virtTestRun("QEMU XML-2-ARGV Graphics SDL",
+    if (virtTestRun("QEMU XML-2-ARGV Graphics SDL",
                     1, testCompareXMLToArgvHelper, "graphics-sdl") < 0)
         ret = -1;
 

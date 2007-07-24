@@ -1197,14 +1197,23 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         def->graphicsType = QEMUD_GRAPHICS_NONE;
     } else if ((prop = xmlGetProp(obj->nodesetval->nodeTab[0], BAD_CAST "type"))) {
         if (!strcmp((char *)prop, "vnc")) {
+            xmlChar *vncport, *vnclisten;
             def->graphicsType = QEMUD_GRAPHICS_VNC;
-            prop = xmlGetProp(obj->nodesetval->nodeTab[0], BAD_CAST "port");
-            if (prop) {
+            vncport = xmlGetProp(obj->nodesetval->nodeTab[0], BAD_CAST "port");
+            if (vncport) {
                 conv = NULL;
-                def->vncPort = strtoll((const char*)prop, &conv, 10);
+                def->vncPort = strtoll((const char*)vncport, &conv, 10);
             } else {
                 def->vncPort = -1;
             }
+            vnclisten = xmlGetProp(obj->nodesetval->nodeTab[0], BAD_CAST "listen");
+            if (vnclisten && *vnclisten)
+                strncpy(def->vncListen, (char *)vnclisten, BR_INET_ADDR_MAXLEN-1);
+            else
+                strcpy(def->vncListen, "127.0.0.1");
+            def->vncListen[BR_INET_ADDR_MAXLEN-1] = '\0';
+            xmlFree(vncport);
+            xmlFree(vnclisten);
         } else if (!strcmp((char *)prop, "sdl")) {
             def->graphicsType = QEMUD_GRAPHICS_SDL;
         } else {
@@ -1511,6 +1520,18 @@ int qemudBuildCommandLine(virConnectPtr conn,
     if (!((*argv)[++n] = strdup(vcpus)))
         goto no_memory;
 
+    /*
+     * NB, -nographic *MUST* come before any serial, or monitor
+     * or parallel port flags due to QEMU craziness, where it
+     * decides to change the serial port & monitor to be on stdout
+     * if you ask for nographic. So we have to make sure we override
+     * these defaults ourselves...
+     */
+    if (vm->def->graphicsType == QEMUD_GRAPHICS_NONE) {
+        if (!((*argv)[++n] = strdup("-nographic")))
+            goto no_memory;
+    }
+
     if (!((*argv)[++n] = strdup("-monitor")))
         goto no_memory;
     if (!((*argv)[++n] = strdup("pty")))
@@ -1700,22 +1721,24 @@ int qemudBuildCommandLine(virConnectPtr conn,
     }
 
     if (vm->def->graphicsType == QEMUD_GRAPHICS_VNC) {
-        char port[10];
+        char vncdisplay[BR_INET_ADDR_MAXLEN+20];
         int ret;
-        ret = snprintf(port, sizeof(port),
-                       ((driver->qemuCmdFlags & QEMUD_CMD_FLAG_VNC_COLON) ?
-                        ":%d" : "%d"),
-                       vm->def->vncActivePort - 5900);
-        if (ret < 0 || ret >= (int)sizeof(port))
+        if (driver->qemuCmdFlags & QEMUD_CMD_FLAG_VNC_COLON)
+            ret = snprintf(vncdisplay, sizeof(vncdisplay), "%s:%d",
+                           vm->def->vncListen,
+                           vm->def->vncActivePort - 5900);
+        else
+            ret = snprintf(vncdisplay, sizeof(vncdisplay), "%d",
+                           vm->def->vncActivePort - 5900);
+        if (ret < 0 || ret >= (int)sizeof(vncdisplay))
             goto error;
 
         if (!((*argv)[++n] = strdup("-vnc")))
             goto no_memory;
-        if (!((*argv)[++n] = strdup(port)))
+        if (!((*argv)[++n] = strdup(vncdisplay)))
             goto no_memory;
     } else if (vm->def->graphicsType == QEMUD_GRAPHICS_NONE) {
-        if (!((*argv)[++n] = strdup("-nographic")))
-            goto no_memory;
+        /* Nada - we added -nographic earlier in this function */
     } else {
         /* SDL is the default. no args needed */
     }
@@ -2929,6 +2952,11 @@ char *qemudGenerateXML(virConnectPtr conn,
         if (def->vncPort &&
             virBufferVSprintf(buf, " port='%d'",
                               qemudIsActiveVM(vm) && live ? def->vncActivePort : def->vncPort) < 0)
+            goto no_memory;
+
+        if (def->vncListen[0] &&
+            virBufferVSprintf(buf, " listen='%s'",
+                              def->vncListen) < 0)
             goto no_memory;
 
         if (virBufferAdd(buf, "/>\n", -1) < 0)

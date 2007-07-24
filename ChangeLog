@@ -1,3 +1,13 @@
+Tue Jul 24 10:29:11 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c, src/qemu_conf.h: Added support for the VNC
+	'listen' parameter in XML. Move -nographics flag to start of
+	command line to avoid issues with QEMU default monitor settings.
+	* tests/qemuxml2argvtest.c, tests/qemuxml2xmltest.c: Re-enable
+	VNC & SDL tests now they are working correctly
+	* tests/qemudxml2argvdata/*.args: Move -nographics arg to new
+	location due to qemu_conf.c changes
+
 Tue Jul 24 10:24:11 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c: Fixed crash when cleaning up after failed

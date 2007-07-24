@@ -111,7 +111,7 @@ main(int argc, char **argv)
                     1, testCompareXMLToXMLHelper, "disk-many") < 0)
         ret = -1;
 
-    if (0 && virtTestRun("QEMU XML-2-ARGV Graphics VNC",
+    if (virtTestRun("QEMU XML-2-ARGV Graphics VNC",
                     1, testCompareXMLToXMLHelper, "graphics-vnc") < 0)
         ret = -1;
 

@@ -186,6 +186,7 @@ struct qemud_vm_def {
     int graphicsType;
     int vncPort;
     int vncActivePort;
+    char vncListen[BR_INET_ADDR_MAXLEN];
 
     int ndisks;
     struct qemud_vm_disk_def *disks;
