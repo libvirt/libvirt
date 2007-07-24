@@ -92,9 +92,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                               struct qemud_driver *driver,
                               struct qemud_vm *vm);
 
-static int qemudShutdownVMDaemon(virConnectPtr conn,
-                                 struct qemud_driver *driver,
-                                 struct qemud_vm *vm);
+static void qemudShutdownVMDaemon(virConnectPtr conn,
+                                  struct qemud_driver *driver,
+                                  struct qemud_vm *vm);
 
 static int qemudStartNetworkDaemon(virConnectPtr conn,
                                    struct qemud_driver *driver,
@@ -277,6 +277,8 @@ qemudShutdown(void) {
         struct qemud_vm *next = vm->next;
         if (qemudIsActiveVM(vm))
             qemudShutdownVMDaemon(NULL, qemu_driver, vm);
+        if (!vm->configFile[0])
+            qemudRemoveInactiveVM(qemu_driver, vm);
         vm = next;
     }
     
@@ -729,10 +731,10 @@ static int qemudVMData(struct qemud_driver *driver ATTRIBUTE_UNUSED,
 }
 
 
-static int qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                 struct qemud_driver *driver, struct qemud_vm *vm) {
+static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
+                                  struct qemud_driver *driver, struct qemud_vm *vm) {
     if (!qemudIsActiveVM(vm))
-        return 0;
+        return;
 
     qemudLog(QEMUD_INFO, "Shutting down VM '%s'", vm->def->name);
 
@@ -774,24 +776,22 @@ static int qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     driver->nactivevms--;
     driver->ninactivevms++;
-
-    if (!vm->configFile[0])
-        qemudRemoveInactiveVM(driver, vm);
-
-    return 0;
 }
 
 static int qemudDispatchVMLog(struct qemud_driver *driver, struct qemud_vm *vm, int fd) {
-    if (qemudVMData(driver, vm, fd) < 0)
-        if (qemudShutdownVMDaemon(NULL, driver, vm) < 0)
-            return -1;
+    if (qemudVMData(driver, vm, fd) < 0) {
+        qemudShutdownVMDaemon(NULL, driver, vm);
+        if (!vm->configFile[0])
+            qemudRemoveInactiveVM(driver, vm);
+    }
     return 0;
 }
 
 static int qemudDispatchVMFailure(struct qemud_driver *driver, struct qemud_vm *vm,
                                   int fd ATTRIBUTE_UNUSED) {
-    if (qemudShutdownVMDaemon(NULL, driver, vm) < 0)
-        return -1;
+    qemudShutdownVMDaemon(NULL, driver, vm);
+    if (!vm->configFile[0])
+        qemudRemoveInactiveVM(driver, vm);
     return 0;
 }
 
@@ -1844,7 +1844,6 @@ static int qemudDomainResume(virDomainPtr dom) {
 static int qemudDomainDestroy(virDomainPtr dom) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     struct qemud_vm *vm = qemudFindVMByID(driver, dom->id);
-    int ret;
 
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
@@ -1852,9 +1851,11 @@ static int qemudDomainDestroy(virDomainPtr dom) {
         return -1;
     }
 
-    ret = qemudShutdownVMDaemon(dom->conn, driver, vm);
+    qemudShutdownVMDaemon(dom->conn, driver, vm);
+    if (!vm->configFile[0])
+        qemudRemoveInactiveVM(driver, vm);
     virFreeDomain(dom->conn, dom);
-    return ret;
+    return 0;
 }
 
 
