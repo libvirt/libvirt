@@ -27,7 +27,18 @@
 use warnings;
 use strict;
 
-my %coverage = ( functions => {}, files => {} );
+my %coverage = ( function => {}, file => {} );
+
+my @functionBlackList = (
+			 "__memcpy",
+			 "__memmove",
+			 "__memset",
+			 "__strcat",
+			 "__strcpy",
+			 "__strncpy",
+			 "__strsep",
+			 "__strtok"
+		      );
 
 my %filemap;
 
@@ -88,6 +99,12 @@ foreach my $type ("function", "file") {
 	my $totalMiss = 0;
 	my $count = 0;
 	foreach my $func (keys %{$coverage{function}}) {
+	    my $blacklisted = 0;
+	    foreach my $blackName (@functionBlackList) {
+		$blacklisted = 1 if $func =~ /^$blackName/;
+	    }
+	    next if $blacklisted;
+
 	    $count++;
 	    my $got = $coverage{function}->{$func}->{$m};
 	    $totalGot += $got;
@@ -110,6 +127,16 @@ print "<coverage>\n";
 foreach my $type ("function", "file") {
     printf "<%ss>\n", $type;
     foreach my $name (sort { $a cmp $b } keys %{$coverage{$type}}) {
+	if ($type eq "file") {
+	    next if $name =~ m,^/usr,;
+	} else {
+	    my $blacklisted = 0;
+	    foreach my $blackName (@functionBlackList) {
+		$blacklisted = 1 if $name =~ /^$blackName/;
+	    }
+	    next if $blacklisted;
+	}
+
 	my $rec = $coverage{$type}->{$name};
 	printf "  <entry name=\"%s\" details=\"%s\">\n", $name, ($type eq "file" ? $filemap{$name} : $filemap{$rec->{file}});
 	printf "    <lines count=\"%s\" coverage=\"%s\"/>\n", $rec->{lines}, $rec->{linesCoverage};

@@ -1,4 +1,9 @@
-Tue Jul 25 19:13:43 EST 2007 Daniel P. berrange <berrange@redhat.com>
+Wed Jul 25 19:16:43 EST 2007 Daniel P. berrange <berrange@redhat.com>
+
+	* scripts/coverage-report.pl: Ignore data from inlined macros
+	in /usr/include files
+
+Wed Jul 25 19:13:43 EST 2007 Daniel P. berrange <berrange@redhat.com>
 
 	* src/nodeinfo.h, src/nodeinfo.c: Generic impl of virNodeGetInfo
 	* src/qemu_driver.c, src/openvz_driver: Switch to generic impl
