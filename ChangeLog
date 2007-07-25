@@ -1,3 +1,15 @@
+Tue Jul 25 19:13:43 EST 2007 Daniel P. berrange <berrange@redhat.com>
+
+	* src/nodeinfo.h, src/nodeinfo.c: Generic impl of virNodeGetInfo
+	* src/qemu_driver.c, src/openvz_driver: Switch to generic impl
+	of virNodeGetInfo
+	* src/internal.h: Add STREQLEN STRNEQLEN
+	* src/Makefile.am: Add nodeinfo.{c,h}
+	* docs/apibuild.py: Ignore nodeinfo files
+	* tests/nodeinfotest.c, tests/Makefile.am: Test case for the
+	nodeinfo.c APIs
+	* tests/nodeinfodata/*: Data files for the test suite
+
 Tue Jul 24 17:32:23 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* libvirt.spec.in NEWS docs/* po/*: preparing release 0.3.1

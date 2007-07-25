@@ -63,6 +63,8 @@ ignored_files = {
   "uuid.c": "internal code",
   "util.h": "internal code",
   "util.c": "internal code",
+  "nodeinfo.h": "internal code",
+  "nodeinfo.c": "internal code",
 }
 
 ignored_words = {

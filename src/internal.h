@@ -36,6 +36,8 @@ extern "C" {
 #define STRCASEEQ(a,b) (strcasecmp((a),(b)) == 0)
 #define STRNEQ(a,b) (strcmp((a),(b)) != 0)
 #define STRCASENEQ(a,b) (strcasecmp((a),(b)) != 0)
+#define STREQLEN(a,b,n) (strncmp((a),(b),(n)) == 0)
+#define STRNEQLEN(a,b,n) (strncmp((a),(b),(n)) != 0)
 
 /**
  * ATTRIBUTE_UNUSED:

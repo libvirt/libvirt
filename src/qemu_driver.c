@@ -53,6 +53,7 @@
 #include "util.h"
 #include "qemu_driver.h"
 #include "qemu_conf.h"
+#include "nodeinfo.h"
 
 static int qemudShutdown(void);
 
@@ -1358,81 +1359,6 @@ static int qemudMonitorCommand(struct qemud_driver *driver ATTRIBUTE_UNUSED,
 }
 
 
-static int qemudGetMemInfo(unsigned long *memory) {
-    FILE *meminfo = fopen("/proc/meminfo", "r");
-    char line[1024];
-
-    *memory = 0;
-
-    if (!meminfo) {
-        return -1;
-    }
-
-    /* XXX NUMA and hyperthreads ? */
-    while (fgets(line, sizeof(line), meminfo) != NULL) {
-        if (!strncmp(line, "MemTotal:", 9)) {
-            *memory = (unsigned int)strtol(line + 10, NULL, 10);
-        }
-    }
-    fclose(meminfo);
-    return 0;
-}
-
-static int qemudGetCPUInfo(unsigned int *cpus, unsigned int *mhz,
-                           unsigned int *nodes, unsigned int *sockets,
-                           unsigned int *cores, unsigned int *threads) {
-    FILE *cpuinfo = fopen("/proc/cpuinfo", "r");
-    char line[1024];
-
-    *cpus = 0;
-    *mhz = 0;
-    *nodes = *sockets = *cores = *threads = 1;
-
-    if (!cpuinfo) {
-        return -1;
-    }
-
-    /* XXX NUMA and hyperthreads ? */
-    while (fgets(line, sizeof(line), cpuinfo) != NULL) {
-        if (!strncmp(line, "processor\t", 10)) { /* aka a single logical CPU */
-            (*cpus)++;
-        } else if (!strncmp(line, "cpu MHz\t", 8)) {
-            char *offset = strchr(line, ':');
-            if (!offset)
-                continue;
-            offset++;
-            if (!*offset)
-                continue;
-            *mhz = (unsigned int)strtol(offset, NULL, 10);
-        } else if (!strncmp(line, "physical id\t", 12)) { /* aka socket */
-            unsigned int id;
-            char *offset = strchr(line, ':');
-            if (!offset)
-                continue;
-            offset++;
-            if (!*offset)
-                continue;
-            id = (unsigned int)strtol(offset, NULL, 10);
-            if ((id+1) > *sockets)
-                *sockets = (id + 1);
-        } else if (!strncmp(line, "cpu cores\t", 9)) { /* aka cores */
-            unsigned int id;
-            char *offset = strchr(line, ':');
-            if (!offset)
-                continue;
-            offset++;
-            if (!*offset)
-                continue;
-            id = (unsigned int)strtol(offset, NULL, 10);
-            if (id > *cores)
-                *cores = id;
-        }
-    }
-    fclose(cpuinfo);
-
-    return 0;
-}
-
 static virDrvOpenStatus qemudOpen(virConnectPtr conn,
                            const char *name,
                            int flags ATTRIBUTE_UNUSED) {
@@ -1485,23 +1411,9 @@ static int qemudGetMaxVCPUs(virConnectPtr conn ATTRIBUTE_UNUSED,
     return -1;
 }
 
-static int qemudGetNodeInfo(virConnectPtr conn ATTRIBUTE_UNUSED,
-                     virNodeInfoPtr node) {
-    struct utsname info;
-
-    if (uname(&info) < 0)
-        return -1;
-
-    strncpy(node->model, info.machine, sizeof(node->model)-1);
-    node->model[sizeof(node->model)-1] = '\0';
-
-    if (qemudGetMemInfo(&(node->memory)) < 0)
-        return -1;
-
-    if (qemudGetCPUInfo(&(node->cpus), &(node->mhz), &(node->nodes),
-                        &(node->sockets), &(node->cores), &(node->threads)) < 0)
-        return -1;
-    return 0;
+static int qemudGetNodeInfo(virConnectPtr conn,
+                            virNodeInfoPtr nodeinfo) {
+    return virNodeInfoPopulate(conn, nodeinfo);
 }
 
 static char *qemudGetCapabilities(virConnectPtr conn ATTRIBUTE_UNUSED) {

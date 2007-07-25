@@ -50,6 +50,7 @@ CLIENT_SOURCES =						\
 		qemu_conf.c qemu_conf.h					\
 		openvz_conf.c openvz_conf.h				\
 		openvz_driver.c openvz_driver.h 		\
+                nodeinfo.h nodeinfo.c                           \
 		util.c util.h
 
 SERVER_SOURCES = 						\

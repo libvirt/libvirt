@@ -32,10 +32,11 @@ LDADDS = \
 EXTRA_DIST = xmlrpcserver.py test_conf.sh
 
 noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest conftest \
-	reconnect xmconfigtest xencapstest qemuxml2argvtest qemuxml2xmltest
+	reconnect xmconfigtest xencapstest qemuxml2argvtest qemuxml2xmltest \
+        nodeinfotest
 
 TESTS = xml2sexprtest sexpr2xmltest virshtest test_conf.sh xmconfigtest \
-        xencapstest qemuxml2argvtest qemuxml2xmltest
+        xencapstest qemuxml2argvtest qemuxml2xmltest nodeinfotest
 if ENABLE_XEN_TESTS
   TESTS += reconnect
 endif
@@ -98,6 +99,11 @@ xencapstest_SOURCES = \
 	xencapstest.c testutils.h testutils.c
 xencapstest_LDFLAGS =
 xencapstest_LDADD = $(LDADDS)
+
+nodeinfotest_SOURCES = \
+	nodeinfotest.c testutils.h testutils.c
+nodeinfotest_LDFLAGS =
+nodeinfotest_LDADD = $(LDADDS)
 
 reconnect_SOURCES = \
 	reconnect.c

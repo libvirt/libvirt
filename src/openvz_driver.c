@@ -55,12 +55,14 @@
 #include "util.h"
 #include "openvz_driver.h"
 #include "openvz_conf.h"
+#include "nodeinfo.h"
 
 
 #define openvzLog(level, msg...) fprintf(stderr, msg)
 
 static virDomainPtr openvzDomainLookupByID(virConnectPtr conn, int id);
 static char *openvzGetOSType(virDomainPtr dom);
+static int openvzGetNodeInfo(virConnectPtr conn, virNodeInfoPtr nodeinfo);
 static virDomainPtr openvzDomainLookupByUUID(virConnectPtr conn, const unsigned char *uuid);
 static virDomainPtr openvzDomainLookupByName(virConnectPtr conn, const char *name);
 static int openvzDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info);
@@ -327,6 +329,12 @@ static const char *openvzGetType(virConnectPtr conn ATTRIBUTE_UNUSED) {
 }
 
 
+static int openvzGetNodeInfo(virConnectPtr conn,
+                             virNodeInfoPtr nodeinfo) {
+    return virNodeInfoPopulate(conn, nodeinfo);
+}
+
+
 static int openvzListDomains(virConnectPtr conn, int *ids, int nids) {
     int got = 0;
     int veid, pid, outfd, errfd;
@@ -431,7 +439,7 @@ static virDriver openvzDriver = {
     NULL, /* hostname */
     NULL, /* uri */
     NULL, /* getMaxVcpus */
-    NULL, /* nodeGetInfo */
+    openvzGetNodeInfo, /* nodeGetInfo */
     NULL, /* getCapabilities */
     openvzListDomains, /* listDomains */
     openvzNumDomains, /* numOfDomains */
