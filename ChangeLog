@@ -1,3 +1,8 @@
+Thu Jul 26 10:37:31 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c docs/virsh.pod virsh.1: added a ttyconsole command,
+	  this should fix bug #239687
+
 Wed Jul 25 19:16:43 EST 2007 Daniel P. berrange <berrange@redhat.com>
 
 	* scripts/coverage-report.pl: Ignore data from inlined macros

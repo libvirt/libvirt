@@ -2740,6 +2740,69 @@ cmdVNCDisplay(vshControl * ctl, vshCmd * cmd)
 }
 
 /*
+ * "ttyconsole" command
+ */
+static vshCmdInfo info_ttyconsole[] = {
+    {"syntax", "ttyconsole <domain>"},
+    {"help", gettext_noop("tty console")},
+    {"desc", gettext_noop("Output the device for the TTY console.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_ttyconsole[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdTTYConsole(vshControl * ctl, vshCmd * cmd)
+{
+    xmlDocPtr xml = NULL;
+    xmlXPathObjectPtr obj = NULL;
+    xmlXPathContextPtr ctxt = NULL;
+    virDomainPtr dom;
+    int ret = FALSE;
+    char *doc;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain(ctl, cmd, "domain", NULL)))
+        return FALSE;
+
+    doc = virDomainGetXMLDesc(dom, 0);
+    if (!doc)
+        goto cleanup;
+
+    xml = xmlReadDoc((const xmlChar *) doc, "domain.xml", NULL,
+                     XML_PARSE_NOENT | XML_PARSE_NONET |
+                     XML_PARSE_NOWARNING);
+    free(doc);
+    if (!xml)
+        goto cleanup;
+    ctxt = xmlXPathNewContext(xml);
+    if (!ctxt)
+        goto cleanup;
+
+    obj = xmlXPathEval(BAD_CAST "string(/domain/devices/console/@tty)", ctxt);
+    if ((obj == NULL) || (obj->type != XPATH_STRING) ||
+        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
+        goto cleanup;
+    }
+    vshPrint(ctl, "%s\n", (const char *)obj->stringval);
+
+ cleanup:
+    if (obj)
+        xmlXPathFreeObject(obj);
+    if (ctxt)
+        xmlXPathFreeContext(ctxt);
+    if (xml)
+        xmlFreeDoc(xml);
+    virDomainFree(dom);
+    return ret;
+}
+
+/*
  * "attach-device" command
  */
 static vshCmdInfo info_attach_device[] = {
@@ -3428,6 +3491,7 @@ static vshCmdDef commands[] = {
     {"setmaxmem", cmdSetmaxmem, opts_setmaxmem, info_setmaxmem},
     {"setvcpus", cmdSetvcpus, opts_setvcpus, info_setvcpus},
     {"suspend", cmdSuspend, opts_suspend, info_suspend},
+    {"ttyconsole", cmdTTYConsole, opts_ttyconsole, info_ttyconsole},
     {"undefine", cmdUndefine, opts_undefine, info_undefine},
     {"uri", cmdURI, NULL, info_uri},
     {"vcpuinfo", cmdVcpuinfo, opts_vcpuinfo, info_vcpuinfo},

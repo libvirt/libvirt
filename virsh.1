@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "VIRSH 1"
-.TH VIRSH 1 "2007-07-23" "perl v5.8.8" "Virtualization Support"
+.TH VIRSH 1 "2007-07-26" "perl v5.8.8" "Virtualization Support"
 .SH "NAME"
 virsh \- management user interface
 .SH "SYNOPSIS"
@@ -406,6 +406,10 @@ anymore.
 Moves a domain out of the suspended state.  This will allow a previously
 suspended domain to now be eligible for scheduling by the the underlying
 hypervisor.
+.IP "\fBttyconsole\fR \fIdomain-id\fR" 4
+.IX Item "ttyconsole domain-id"
+Output the device used for the \s-1TTY\s0 console of the domain. If the information
+is not available the processus will provide an exit code of 1.
 .IP "\fBundefine\fR \fIdomain-id\fR" 4
 .IX Item "undefine domain-id"
 Undefine the configuration for an inactive domain. Since it's not running
@@ -420,7 +424,8 @@ Pin domain VCPUs to host physical CPUs. The \fIvcpu\fR number must be provided
 and \fIcpulist\fR is a comma separated list of physical \s-1CPU\s0 numbers.
 .IP "\fBvncdisplay\fR \fIdomain-id\fR" 4
 .IX Item "vncdisplay domain-id"
-Output the \s-1IP\s0 address and port number for the \s-1VNC\s0 display.
+Output the \s-1IP\s0 address and port number for the \s-1VNC\s0 display. If the information
+is not available the processus will provide an exit code of 1.
 .RE
 .RS 4
 .SH "DEVICES COMMANDS"

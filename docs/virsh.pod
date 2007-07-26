@@ -318,6 +318,11 @@ Moves a domain out of the suspended state.  This will allow a previously
 suspended domain to now be eligible for scheduling by the the underlying
 hypervisor.
 
+=item B<ttyconsole> I<domain-id>
+
+Output the device used for the TTY console of the domain. If the information
+is not available the processus will provide an exit code of 1.
+
 =item B<undefine> I<domain-id>
 
 Undefine the configuration for an inactive domain. Since it's not running
@@ -335,7 +340,8 @@ and I<cpulist> is a comma separated list of physical CPU numbers.
 
 =item B<vncdisplay> I<domain-id>
 
-Output the IP address and port number for the VNC display.
+Output the IP address and port number for the VNC display. If the information
+is not available the processus will provide an exit code of 1.
 
 =back
 
