@@ -423,8 +423,8 @@ do_open (const char *name, int flags)
 #endif
         res = virDriverTab[i]->open (ret, name, flags);
 #ifdef ENABLE_DEBUG
-        fprintf (stderr, "libvirt: do_open: driver %d returned %s\n",
-                 i,
+        fprintf (stderr, "libvirt: do_open: driver %d %s returned %s\n",
+                 i, virDriverTab[i]->name,
                  res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
                  (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
                   (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
@@ -444,9 +444,18 @@ do_open (const char *name, int flags)
 
     for (i = 0; i < virNetworkDriverTabCount; i++) {
         res = virNetworkDriverTab[i]->open (ret, name, flags);
+#ifdef ENABLE_DEBUG
+        fprintf (stderr, "libvirt: do_open: network driver %d %s returned %s\n",
+                 i, virNetworkDriverTab[i]->name,
+                 res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
+                 (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
+                  (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
+#endif
         if (res == VIR_DRV_OPEN_ERROR) {
-	    virLibConnWarning (NULL, VIR_WAR_NO_NETWORK, 
-	                       "Is the daemon running ?");
+            if (STREQ(virNetworkDriverTab[i]->name, "remote")) {
+                virLibConnWarning (NULL, VIR_WAR_NO_NETWORK, 
+                                   "Is the daemon running ?");
+            }
             break;
         } else if (res == VIR_DRV_OPEN_SUCCESS) {
             ret->networkDriver = virNetworkDriverTab[i];

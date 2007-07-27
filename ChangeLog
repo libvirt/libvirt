@@ -1,3 +1,14 @@
+Fri Jul 27 19:19:31 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/test.c: Added impl of networking APIs. Cleanup all other
+	existing APIs. Add missing domain APIs.
+	* src/remote_internal.c: Remove hack for network APIs + test
+	driver now it has its own impl
+	* src/libvirt.c, src/driver.h, src/qemu_driver.c: Added a
+	'name' field to network driver
+	* docs/testnode.xml, docs/testnetdef.xml, docs/testnetpriv.xml:
+	Added example XML for network APIs
+
 Thu Jul 26 10:37:31 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c docs/virsh.pod virsh.1: added a ttyconsole command,

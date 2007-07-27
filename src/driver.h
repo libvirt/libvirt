@@ -304,6 +304,7 @@ typedef virNetworkDriver *virNetworkDriverPtr;
  *  - close
  */
 struct _virNetworkDriver {
+	const char * name;	/* the name of the driver */
 	virDrvOpen			open;
 	virDrvClose			close;
 	virDrvNumOfNetworks		numOfNetworks;

@@ -9,6 +9,8 @@
      -->
   <domain file="testdomfv0.xml"/>
   <domain file="testdomfc4.xml"/>
+  <network file="testnetpriv.xml"/>
+  <network file="testnetdef.xml"/>
 
   <cpu>
     <mhz>6000</mhz>

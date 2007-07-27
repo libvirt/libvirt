@@ -2352,6 +2352,7 @@ static virDriver qemuDriver = {
 };
 
 static virNetworkDriver qemuNetworkDriver = {
+    "QEMU",
     qemudOpenNetwork, /* open */
     qemudCloseNetwork, /* close */
     qemudNumNetworks, /* numOfNetworks */

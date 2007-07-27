@@ -2165,9 +2165,8 @@ remoteNetworkOpen (virConnectPtr conn,
     } else {
         /* Using a non-remote driver, so we need to open a
          * new connection for network APIs, forcing it to
-         * use the UNIX transport. This handles Xen / Test
-         * drivers which don't have their own impl of the
-         * network APIs.
+         * use the UNIX transport. This handles Xen driver
+         * which doesn't have its own impl of the network APIs.
          */
         struct private_data *priv = malloc (sizeof(struct private_data));
         int ret, rflags = 0;
@@ -2177,17 +2176,7 @@ remoteNetworkOpen (virConnectPtr conn,
         }
         if (flags & VIR_DRV_OPEN_RO)
             rflags |= VIR_DRV_OPEN_REMOTE_RO;
-        /* Xen driver is a single system-wide driver, so
-         * we need the main daemon. Test driver is per
-         * user, so use the per-user daemon, potentially
-         * autostarting
-         */
         rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
-        if (getuid() > 0 &&
-            !strcmp(conn->driver->name, "test")) {
-            rflags |= VIR_DRV_OPEN_REMOTE_USER;
-            rflags |= VIR_DRV_OPEN_REMOTE_AUTOSTART;
-        }
 
         memset(priv, 0, sizeof(struct private_data));
         priv->magic = DEAD;
@@ -2950,6 +2939,7 @@ static virDriver driver = {
 };
 
 static virNetworkDriver network_driver = {
+    .name = "remote",
     .open = remoteNetworkOpen,
     .close = remoteNetworkClose,
     .numOfNetworks = remoteNumOfNetworks,

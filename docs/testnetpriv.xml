@@ -1,0 +1,11 @@
+<network>
+  <name>private</name>
+  <uuid>004b22212d78c30f5aa5f03c87d21e69</uuid>
+  <bridge name='brpriv'/>
+  <ip address='192.168.124.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.124.128' end='192.168.124.253'/>
+    </dhcp>
+  </ip>
+</network>
+
