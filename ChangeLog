@@ -1,3 +1,8 @@
+Mon Jul 30 11:59:51 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_conf.[ch] src/qemu_driver.c: add qemu/kvm drivers report
+	  features for i686 and x86_64, patch from David Lutterkort
+
 Fri Jul 27 19:19:31 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/test.c: Added impl of networking APIs. Cleanup all other

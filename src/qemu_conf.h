@@ -384,11 +384,18 @@ char *      qemudGenerateNetworkXML     (virConnectPtr conn,
                                          struct qemud_network *network,
                                          struct qemud_network_def *def);
 
+struct qemu_feature_flags {
+    const char *name;
+    const int default_on;
+    const int toggle;
+};
+
 struct qemu_arch_info {
     const char *arch;
     int wordsize;
     const char **machines;
     const char *binary;
+    const struct qemu_feature_flags *fflags;
 };
 extern struct qemu_arch_info qemudArchs[];
 

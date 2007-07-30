@@ -1416,6 +1416,40 @@ static int qemudGetNodeInfo(virConnectPtr conn,
     return virNodeInfoPopulate(conn, nodeinfo);
 }
 
+static int qemudGetFeatures(virBufferPtr xml,
+                            const struct qemu_feature_flags *flags) {
+    int i, r;
+
+    if (flags == NULL)
+        return 0;
+
+    r = virBufferAdd(xml, "\
+    <features>\n", -1);
+    if (r == -1) return r;
+    for (i = 0; flags[i].name; ++i) {
+        if (STREQ(flags[i].name, "pae")) {
+            int pae = flags[i].default_on || flags[i].toggle;
+            int nonpae = flags[i].toggle;
+            if (pae) {
+                r = virBufferAdd(xml, "      <pae/>\n", -1);
+                if (r == -1) return r;
+            }
+            if (nonpae) {
+                r = virBufferAdd(xml, "      <nonpae/>\n", -1);
+                if (r == -1) return r;
+            }
+        } else {
+            r = virBufferVSprintf(xml, "      <%s default='%s' toggle='%s'/>\n",
+                                  flags[i].name,
+                                  flags[i].default_on ? "on" : "off",
+                                  flags[i].toggle ? "yes" : "no");
+            if (r == -1) return r;
+        }
+    }
+    r = virBufferAdd(xml, "    </features>\n", -1);
+    return r;
+}
+
 static char *qemudGetCapabilities(virConnectPtr conn ATTRIBUTE_UNUSED) {
     struct utsname utsname;
     int i, j, r;
@@ -1493,10 +1527,13 @@ static char *qemudGetCapabilities(virConnectPtr conn ATTRIBUTE_UNUSED) {
       </domain>\n", -1);
             if (r == -1) goto vir_buffer_failed;
         }
-        r = virBufferAdd (xml,
-                       "\
-    </arch>\n\
-  </guest>\n", -1);
+        r = virBufferAdd (xml, "    </arch>\n", -1);
+        if (r == -1) goto vir_buffer_failed;
+
+        r = qemudGetFeatures(xml, qemudArchs[i].fflags);
+        if (r == -1) goto vir_buffer_failed;
+
+        r = virBufferAdd (xml, "  </guest>\n", -1);
         if (r == -1) goto vir_buffer_failed;
 
         /* The "other" PC architecture needs emulation. */
@@ -1521,10 +1558,7 @@ static char *qemudGetCapabilities(virConnectPtr conn ATTRIBUTE_UNUSED) {
                                 qemudArchs[i].machines[j]);
             if (r == -1) goto vir_buffer_failed;
         }
-        r = virBufferAdd (xml,
-                       "\
-    </arch>\n\
-  </guest>\n", -1);
+        r = virBufferAdd (xml, "    </arch>\n  </guest>\n", -1);
         if (r == -1) goto vir_buffer_failed;
     }
 
@@ -1550,10 +1584,13 @@ static char *qemudGetCapabilities(virConnectPtr conn ATTRIBUTE_UNUSED) {
                                 qemudArchs[i].machines[j]);
             if (r == -1) goto vir_buffer_failed;
         }
-        r = virBufferAdd (xml,
-                       "\
-    </arch>\n\
-  </guest>\n", -1);
+        r = virBufferAdd (xml, "    </arch>\n", -1);
+        if (r == -1) goto vir_buffer_failed;
+
+        r = qemudGetFeatures(xml, qemudArchs[i].fflags);
+        if (r == -1) goto vir_buffer_failed;
+
+        r = virBufferAdd (xml, "  </guest>\n", -1);
         if (r == -1) goto vir_buffer_failed;
     }
 
