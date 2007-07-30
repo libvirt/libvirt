@@ -30,6 +30,8 @@
     </arch>
     <features>
       <ia64_be/>
+      <acpi default='on' toggle='yes'/>
+      <apic default='on' toggle='yes'/>
     </features>
   </guest>
 </capabilities>

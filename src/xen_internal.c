@@ -2050,6 +2050,9 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn ATTRIBUTE_UNUSED,
     virBufferPtr xml;
     char *xml_str;
 
+    int hv_major = hv_version >> 16;
+    int hv_minor = hv_version & 0xFFFF;
+
     memset(guest_archs, 0, sizeof(guest_archs));
 
     /* /proc/cpuinfo: flags: Intel calls HVM "vmx", AMD calls it "svm".
@@ -2236,19 +2239,28 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn ATTRIBUTE_UNUSED,
             if (r == -1) goto vir_buffer_failed;
         }
         if (guest_archs[i].nonpae) {
-            r = virBufferAdd (xml,
-                              "\
-      <nonpae/>\n", -1);
+            r = virBufferAdd (xml, "      <nonpae/>\n", -1);
             if (r == -1) goto vir_buffer_failed;
         }
         if (guest_archs[i].ia64_be) {
-            r = virBufferAdd (xml,
-                              "\
-      <ia64_be/>\n", -1);
+            r = virBufferAdd (xml, "      <ia64_be/>\n", -1);
             if (r == -1) goto vir_buffer_failed;
         }
-        r = virBufferAdd (xml,
-                          "\
+        if (guest_archs[i].hvm) {
+            r = virBufferAdd (xml, "      <acpi default='on' toggle='yes'/>\n",
+	                      -1);
+            if (r == -1) goto vir_buffer_failed;
+            // In Xen 3.1.0, APIC is always on and can't be toggled
+            if (hv_major >= 3 && hv_minor > 0) {
+                r = virBufferAdd (xml,
+		              "      <apic default='off' toggle='no'/>\n", -1);
+            } else {
+                r = virBufferAdd (xml,
+		              "      <apic default='on' toggle='yes'/>\n", -1);
+            }
+            if (r == -1) goto vir_buffer_failed;
+        }
+        r = virBufferAdd (xml, "\
     </features>\n\
   </guest>\n", -1);
         if (r == -1) goto vir_buffer_failed;

@@ -1,7 +1,16 @@
+Mon Jul 30 12:15:43 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c: add report of ACPI/APIC for Xen fully virt,
+	  patch from David Lutterkort
+	* tests/xencapsdata/xen-i686-pae-hvm.xml 
+	  tests/xencapsdata/xen-ia64-be-hvm.xml
+	  tests/xencapsdata/xen-ia64-hvm.xml
+	  tests/xencapsdata/xen-x86_64-hvm.xml: this also affects a few tests
+
 Mon Jul 30 11:59:51 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_conf.[ch] src/qemu_driver.c: add qemu/kvm drivers report
-	  features for i686 and x86_64, patch from David Lutterkort
+	  ACPI/APIC features for i686 and x86_64, patch from David Lutterkort
 
 Fri Jul 27 19:19:31 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 

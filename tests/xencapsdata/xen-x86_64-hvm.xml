@@ -31,6 +31,8 @@
     <features>
       <pae/>
       <nonpae/>
+      <acpi default='on' toggle='yes'/>
+      <apic default='on' toggle='yes'/>
     </features>
   </guest>
 
@@ -45,6 +47,8 @@
       <loader>/usr/lib/xen/boot/hvmloader</loader>
     </arch>
     <features>
+      <acpi default='on' toggle='yes'/>
+      <apic default='on' toggle='yes'/>
     </features>
   </guest>
 </capabilities>
