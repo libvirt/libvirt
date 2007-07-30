@@ -1102,6 +1102,10 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
         const char *defaultMachine = qemudDefaultMachineForArch(def->os.arch);
+        if (!defaultMachine) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "unsupported arch %s", def->os.arch);
+            goto error;
+        }
         if (strlen(defaultMachine) >= (QEMUD_OS_MACHINE_MAX_LEN-1)) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "machine type too long");
             goto error;
