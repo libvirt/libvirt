@@ -135,6 +135,7 @@ struct qemud_network *qemudFindNetworkByName(const struct qemud_driver *driver,
 void qemudFreeVMDef(struct qemud_vm_def *def) {
     struct qemud_vm_disk_def *disk = def->disks;
     struct qemud_vm_net_def *net = def->nets;
+    struct qemud_vm_input_def *input = def->inputs;
 
     while (disk) {
         struct qemud_vm_disk_def *prev = disk;
@@ -144,6 +145,11 @@ void qemudFreeVMDef(struct qemud_vm_def *def) {
     while (net) {
         struct qemud_vm_net_def *prev = net;
         net = net->next;
+        free(prev);
+    }
+    while (input) {
+        struct qemud_vm_input_def *prev = input;
+        input = input->next;
         free(prev);
     }
     free(def);

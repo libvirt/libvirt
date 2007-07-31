@@ -19,7 +19,7 @@ static int testCompareXMLToXMLFiles(const char *xml) {
     char *xmlPtr = &(xmlData[0]);
     char *actual = NULL;
     int ret = -1;
-    struct qemud_vm_def *vmdef;
+    struct qemud_vm_def *vmdef = NULL;
     struct qemud_vm vm;
 
     if (virtTestLoadFile(xml, &xmlPtr, MAX_FILE) < 0)
@@ -48,7 +48,7 @@ static int testCompareXMLToXMLFiles(const char *xml) {
 
  fail:
     free(actual);
-
+    qemudFreeVMDef(vmdef);
     return ret;
 }
 

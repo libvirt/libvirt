@@ -70,8 +70,11 @@ virXPathString(const char *xpath, xmlXPathContextPtr ctxt) {
     }
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
-        (obj->stringval == NULL) || (obj->stringval[0] == 0))
+        (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
+        if (obj)
+            xmlXPathFreeObject(obj);
         return(NULL);
+    }
     ret = strdup((char *) obj->stringval);
     xmlXPathFreeObject(obj);
     if (ret == NULL) {
@@ -618,6 +621,8 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node, virBufferPtr buf
     if (str != NULL && !strcmp(str, "localtime")) {
         virBufferAdd(buf, "(localtime 1)", 13);
     }
+    if (str)
+        free(str);
 
     virBufferAdd(buf, "))", 2);
 

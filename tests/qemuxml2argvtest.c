@@ -22,7 +22,7 @@ static int testCompareXMLToArgvFiles(const char *xml, const char *cmd) {
     char **argv = NULL;
     char **tmp = NULL;
     int ret = -1, len;
-    struct qemud_vm_def *vmdef;
+    struct qemud_vm_def *vmdef = NULL;
     struct qemud_vm vm;
 
     if (virtTestLoadFile(xml, &xmlPtr, MAX_FILE) < 0)
@@ -80,6 +80,7 @@ static int testCompareXMLToArgvFiles(const char *xml, const char *cmd) {
         free(argv);
     }
 
+    qemudFreeVMDef(vmdef);
     return ret;
 }
 

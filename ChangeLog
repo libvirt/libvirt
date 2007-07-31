@@ -1,3 +1,8 @@
+Tue Jul 31 10:24:23 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c, src/xml.c, tests/qemuxml2argvtest.c,
+	tests/qemuxml2xmltest.c: Fix a couple of memory leaks
+
 Mon Jul 30 14:40:23 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c: Validate requested architecture and reject
