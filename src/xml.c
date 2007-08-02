@@ -1397,11 +1397,13 @@ virParseXMLDevice(virConnectPtr conn, char *xmldesc, int hvm, int xendConfigVers
     buf.size = 1000;
     buf.use = 0;
     buf.content[0] = 0;
-    xml = xmlReadDoc((const xmlChar *) xmldesc, "domain.xml", NULL,
+    xml = xmlReadDoc((const xmlChar *) xmldesc, "device.xml", NULL,
                      XML_PARSE_NOENT | XML_PARSE_NONET |
                      XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
-    if (xml == NULL)
+    if (xml == NULL) {
+        virXMLError(conn, VIR_ERR_XML_ERROR, NULL, 0);
         goto error;
+    }
     node = xmlDocGetRootElement(xml);
     if (node == NULL)
         goto error;
@@ -1454,11 +1456,13 @@ virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref)
 #endif /* WITH_XEN */
     int ret = 0;
 
-    xml = xmlReadDoc((const xmlChar *) xmldesc, "domain.xml", NULL,
+    xml = xmlReadDoc((const xmlChar *) xmldesc, "device.xml", NULL,
                      XML_PARSE_NOENT | XML_PARSE_NONET |
                      XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
-    if (xml == NULL)
+    if (xml == NULL) {
+        virXMLError(NULL, VIR_ERR_XML_ERROR, NULL, 0);
         goto error;
+    }
     node = xmlDocGetRootElement(xml);
     if (node == NULL)
         goto error;
@@ -1499,6 +1503,8 @@ virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref)
 
             goto error;
         }
+    } else {
+        virXMLError(NULL, VIR_ERR_XML_ERROR, (const char *) node->name, 0);
     }
  error:
     ret = -1;
