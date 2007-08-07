@@ -48,8 +48,6 @@
 #include <getopt.h>
 #include <assert.h>
 #include <fnmatch.h>
-#include <gnutls/gnutls.h>
-#include <gnutls/x509.h>
 
 #include <libvirt/virterror.h>
 
@@ -110,7 +108,7 @@ static void qemudDispatchClientEvent(int fd, int events, void *opaque);
 static void qemudDispatchServerEvent(int fd, int events, void *opaque);
 static int qemudRegisterClientEvent(struct qemud_server *server,
                                     struct qemud_client *client,
-                                    int remove);
+                                    int removeFirst);
 
 static int
 remoteCheckCertFile(const char *type, const char *file)
@@ -818,8 +816,10 @@ remoteCheckCertificate (gnutls_session_t session)
         if (status & GNUTLS_CERT_REVOKED)
             qemudLog (QEMUD_ERR, "remoteCheckCertificate: the client certificate has been revoked.");
 
+#ifndef GNUTLS_1_0_COMPAT
         if (status & GNUTLS_CERT_INSECURE_ALGORITHM)
             qemudLog (QEMUD_ERR, "remoteCheckCertificate: the client certificate uses an insecure algorithm.");
+#endif
 
         return -1;
     }

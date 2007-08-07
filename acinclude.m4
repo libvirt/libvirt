@@ -19,7 +19,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
 
     warnCFLAGS=
 
-    try_compiler_flags="-Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -fasynchronous-unwind-tables"
+    try_compiler_flags="-Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fasynchronous-unwind-tables"
 
     case "$enable_compile_warnings" in
     no)

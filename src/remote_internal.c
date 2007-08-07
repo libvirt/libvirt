@@ -43,6 +43,7 @@
 #include <rpc/xdr.h>
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
+#include "gnutls_1_0_compat.h"
 #include <libxml/uri.h>
 
 #include "internal.h"
@@ -1085,9 +1086,11 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
     
         if (status & GNUTLS_CERT_REVOKED)
             reason = "The certificate has been revoked.";
-    
+
+#ifndef GNUTLS_1_0_COMPAT
         if (status & GNUTLS_CERT_INSECURE_ALGORITHM)
             reason = "The certificate uses an insecure algorithm";
+#endif
     
         error (NULL, VIR_ERR_RPC, reason);
         return -1;

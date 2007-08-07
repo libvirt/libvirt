@@ -768,7 +768,7 @@ static struct qemud_vm_net_def *qemudParseInterfaceXML(virConnectPtr conn,
     } else if (net->type == QEMUD_NET_CLIENT ||
                net->type == QEMUD_NET_SERVER ||
                net->type == QEMUD_NET_MCAST) {
-        int len;
+        int len = 0;
         char *ret;
 
         if (port == NULL) {

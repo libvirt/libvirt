@@ -100,6 +100,17 @@ if test x"$enable_debug" = x"yes"; then
    AC_DEFINE(ENABLE_DEBUG, [], [whether debugging is enabled])
 fi
 
+dnl --disable-stack-protector
+AC_ARG_ENABLE(stack-protector,
+	      AC_HELP_STRING([--disable-stack-protector],
+			     [disable stack protector]),
+			     [],
+			     [enable_stack_protector=yes])
+if test x"$enable_stack_protector" = x"yes"; then
+    CFLAGS="$CFLAGS -fstack-protector --param=ssp-buffer-size=4"
+fi
+
+
 AC_MSG_CHECKING([where to write libvirtd PID file])
 AC_ARG_WITH(remote-pid-file, AC_HELP_STRING([--with-remote-pid-file=[pidfile|none]], [PID file for libvirtd]))
 if test "x$with_remote_pid_file" == "x" ; then
@@ -301,6 +312,14 @@ AC_CHECK_HEADER([gnutls/gnutls.h],
 AC_CHECK_LIB(gnutls, gnutls_handshake,
        [],
        [AC_MSG_ERROR([You must install the GnuTLS library in order to compile and run libvirt])])
+
+dnl Old versions of GnuTLS uses types like 'gnutls_session' instead
+dnl of 'gnutls_session_t'.  Try to detect this type if defined so
+dnl that we can offer backwards compatibility.
+AC_CHECK_TYPE(gnutls_session,
+	AC_DEFINE(GNUTLS_1_0_COMPAT,[],
+		[enable GnuTLS 1.0 compatibility macros]),,
+	[#include <gnutls/gnutls.h>])
 
 dnl virsh libraries
 AC_CHECK_LIB(curses, initscr, 
