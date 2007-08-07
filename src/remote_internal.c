@@ -23,6 +23,8 @@
 
 #define _GNU_SOURCE /* for asprintf */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -326,7 +328,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv, const char *uri_str
      */
     struct query_fields *vars, *var;
     char *query;
-#if HAVE_XMLURI_QUERY_RAW
+#ifdef HAVE_XMLURI_QUERY_RAW
     query = uri->query_raw;
 #else
     query = uri->query;
@@ -363,14 +365,14 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv, const char *uri_str
 #endif
     }
 
-#if HAVE_XMLURI_QUERY_RAW
+#ifdef HAVE_XMLURI_QUERY_RAW
     if (uri->query_raw) xmlFree (uri->query_raw);
 #else
     if (uri->query) xmlFree (uri->query);
 #endif
 
     if (query_create (vars, NULL,
-#if HAVE_XMLURI_QUERY_RAW
+#ifdef HAVE_XMLURI_QUERY_RAW
                       &uri->query_raw
 #else
                       &uri->query
