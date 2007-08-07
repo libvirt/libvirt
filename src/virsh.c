@@ -31,6 +31,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <test.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
