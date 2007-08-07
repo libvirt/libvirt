@@ -1595,7 +1595,7 @@ Options:\n\
   -d | --daemon          Run as a daemon & write PID file.\n\
   -l | --listen          Listen for TCP/IP connections.\n\
   -t | --timeout <secs>  Exit after timeout period.\n\
-  -c | --config <file>   Configuration file.\n\
+  -f | --config <file>   Configuration file.\n\
   -p | --pid-file <file> Change name of PID file.\n\
 \n\
 libvirt management daemon:\n\
@@ -1639,7 +1639,7 @@ int main(int argc, char **argv) {
         { "verbose", no_argument, &verbose, 1},
         { "daemon", no_argument, &godaemon, 1},
         { "listen", no_argument, &ipsock, 1},
-        { "config", required_argument, NULL, 'c'},
+        { "config", required_argument, NULL, 'f'},
         { "timeout", required_argument, NULL, 't'},
         { "pid-file", required_argument, NULL, 'p'},
         { "help", no_argument, NULL, '?' },
@@ -1651,7 +1651,7 @@ int main(int argc, char **argv) {
         int c;
         char *tmp;
 
-        c = getopt_long(argc, argv, "ldfp:t:v", opts, &optidx);
+        c = getopt_long(argc, argv, "ldf:p:t:v", opts, &optidx);
 
         if (c == -1) {
             break;
@@ -1692,7 +1692,9 @@ int main(int argc, char **argv) {
             return 2;
 
         default:
-            abort();
+            fprintf (stderr, "libvirtd: internal error: unknown flag: %c\n",
+                     c);
+            exit (1);
         }
     }
 
