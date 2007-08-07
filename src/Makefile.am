@@ -27,6 +27,7 @@ libvirt_la_CFLAGS = $(COVERAGE_CFLAGS)
 
 CLIENT_SOURCES =						\
 		libvirt.c internal.h				\
+		gnutls_1_0_compat.h				\
 		hash.c hash.h					\
 		test.c test.h                                   \
                 buf.c buf.h					\
