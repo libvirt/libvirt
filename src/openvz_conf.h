@@ -27,7 +27,6 @@
 #include "openvz_driver.h"
 
 #define OPENVZ_NAME_MAX 8
-#define OPENVZ_UUID_MAX 16
 #define OPENVZ_TMPL_MAX 256
 #define OPENVZ_UNAME_MAX    32
 #define OPENVZ_IP_MAX   16
@@ -74,7 +73,7 @@ struct openvz_net_def {
 
 struct openvz_vm_def {
     char name[OPENVZ_NAME_MAX];
-    unsigned char uuid[OPENVZ_UUID_MAX];
+    unsigned char uuid[VIR_UUID_BUFLEN];
     char profile[OPENVZ_PROFILE_MAX];
     struct openvz_fs_def fs;
     struct openvz_net_def net;

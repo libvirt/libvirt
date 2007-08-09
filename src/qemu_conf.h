@@ -78,7 +78,6 @@ enum qemud_vm_net_type {
     QEMUD_NET_BRIDGE,
 };
 
-#define QEMUD_UUID_RAW_LEN 16
 #define QEMUD_MAX_NAME_LEN 50
 #define QEMUD_MAX_XML_LEN 4096
 #define QEMUD_MAX_ERROR_LEN 1024
@@ -170,7 +169,7 @@ struct qemud_vm_os_def {
 /* Guest VM main configuration */
 struct qemud_vm_def {
     int virtType;
-    unsigned char uuid[QEMUD_UUID_RAW_LEN];
+    unsigned char uuid[VIR_UUID_BUFLEN];
     char name[QEMUD_MAX_NAME_LEN];
 
     int memory;
@@ -232,7 +231,7 @@ struct qemud_dhcp_range_def {
 
 /* Virtual Network main configuration */
 struct qemud_network_def {
-    unsigned char uuid[QEMUD_UUID_RAW_LEN];
+    unsigned char uuid[VIR_UUID_BUFLEN];
     char name[QEMUD_MAX_NAME_LEN];
 
     char bridge[BR_IFNAME_MAXLEN];

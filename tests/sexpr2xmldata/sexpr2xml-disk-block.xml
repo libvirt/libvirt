@@ -1,6 +1,6 @@
 <domain type='xen' id='6'>
   <name>pvtest</name>
-  <uuid>596a5d2171f48fb2e068e2386a5c413e</uuid>
+  <uuid>596a5d21-71f4-8fb2-e068-e2386a5c413e</uuid>
   <os>
     <type>linux</type>
     <kernel>/var/lib/xen/vmlinuz.2Dn2YT</kernel>

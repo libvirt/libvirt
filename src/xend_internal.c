@@ -36,6 +36,7 @@
 #include "sexpr.h"
 #include "xml.h"
 #include "buf.h"
+#include "uuid.h"
 #include "xen_unified.h"
 #include "xend_internal.h"
 #include "xen_internal.h" /* for DOM0_INTERFACE_VERSION */
@@ -776,13 +777,15 @@ sexpr_u64(struct sexpr *sexpr, const char *name)
  *
  * convenience function to lookup an UUID value from the S-Expression
  *
- * Returns a pointer to the stored UUID or NULL in case of error.
+ * Returns a -1 on error, 0 on success
  */
-static unsigned char *
-sexpr_uuid(char **ptr, struct sexpr *node, const char *path)
+static int
+sexpr_uuid(unsigned char *ptr, struct sexpr *node, const char *path)
 {
     const char *r = sexpr_node(node, path);
-    return virParseUUID(ptr, r);
+    if (!r)
+        return -1;
+    return virUUIDParse(r, ptr);
 }
 
 
@@ -1061,10 +1064,7 @@ xenDaemonDomainLookupByName_ids(virConnectPtr xend, const char *domname,
                      _("domain information incorrect domid not numeric"));
         ret = -1;
     } else if (uuid != NULL) {
-        char *uuid_c = (char *) uuid;
-        char **ptr = &uuid_c;
-
-        if (sexpr_uuid(ptr, root, "domain/uuid") == NULL) {
+        if (sexpr_uuid(uuid, root, "domain/uuid") < 0) {
             virXendError(xend, VIR_ERR_INTERNAL_ERROR,
                          _("domain information incomplete, missing uuid"));
         }
@@ -1094,7 +1094,6 @@ xenDaemonDomainLookupByID(virConnectPtr xend,
 			  unsigned char *uuid)
 {
     const char *name = NULL;
-    char *dst_uuid;
     struct sexpr *root;
 
     memset(uuid, 0, VIR_UUID_BUFLEN);
@@ -1112,8 +1111,7 @@ xenDaemonDomainLookupByID(virConnectPtr xend,
     if (domname)
       *domname = strdup(name);
 
-    dst_uuid = (char *)&uuid[0];
-    if (sexpr_uuid(&dst_uuid, root, "domain/uuid") == NULL) {
+    if (sexpr_uuid(uuid, root, "domain/uuid") < 0) {
       virXendError(xend, VIR_ERR_INTERNAL_ERROR,
                    _("domain information incomplete, missing uuid"));
       goto error;
@@ -1354,6 +1352,8 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
     int hvm = 0, bootloader = 0;
     int domid = -1;
     int max_mem, cur_mem;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (root == NULL) {
         /* ERROR */
@@ -1386,21 +1386,15 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
     }
     virBufferVSprintf(&buf, "  <name>%s</name>\n", tmp);
     tmp = sexpr_node(root, "domain/uuid");
-    if (tmp != NULL) {
-        char compact[33];
-	int i, j;
-	for (i = 0, j = 0;(i < 32) && (tmp[j] != 0);j++) {
-	    if (((tmp[j] >= '0') && (tmp[j] <= '9')) ||
-	        ((tmp[j] >= 'a') && (tmp[j] <= 'f'))) {
-            compact[i++] = tmp[j];
-        } else if ((tmp[j] >= 'A') && (tmp[j] <= 'F')) {
-	        compact[i++] = tmp[j] + 'a' - 'A';
-        }
-	}
-	compact[i] = 0;
-	if (i > 0)
-	    virBufferVSprintf(&buf, "  <uuid>%s</uuid>\n", compact);
+    if (tmp == NULL) {
+        virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                     _("domain information incomplete, missing name"));
+        goto error;
     }
+    virUUIDParse(tmp, uuid);
+    virUUIDFormat(uuid, uuidstr);
+    virBufferVSprintf(&buf, "  <uuid>%s</uuid>\n", uuidstr);
+
     tmp = sexpr_node(root, "domain/bootloader");
     if (tmp != NULL) {
         bootloader = 1;
@@ -1884,8 +1878,7 @@ static virDomainPtr
 sexpr_to_domain(virConnectPtr conn, struct sexpr *root)
 {
     virDomainPtr ret = NULL;
-    char *dst_uuid = NULL;
-    char uuid[VIR_UUID_BUFLEN];
+    unsigned char uuid[VIR_UUID_BUFLEN];
     const char *name;
     const char *tmp;
     xenUnifiedPrivatePtr priv;
@@ -1895,14 +1888,13 @@ sexpr_to_domain(virConnectPtr conn, struct sexpr *root)
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
 
-    dst_uuid = (char *) &uuid[0];
-    if (sexpr_uuid(&dst_uuid, root, "domain/uuid") == NULL)
+    if (sexpr_uuid(uuid, root, "domain/uuid") < 0)
         goto error;
     name = sexpr_node(root, "domain/name");
     if (name == NULL)
         goto error;
 
-    ret = virGetDomain(conn, name, (const unsigned char *) &uuid[0]);
+    ret = virGetDomain(conn, name, uuid);
     if (ret == NULL) return NULL;
 
     tmp = sexpr_node(root, "domain/domid");
@@ -2974,15 +2966,7 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
         char uuidstr[VIR_UUID_STRING_BUFLEN];
         struct sexpr *root = NULL;
 
-        memset(uuidstr, '\0', VIR_UUID_STRING_BUFLEN);
-
-        snprintf(uuidstr, VIR_UUID_STRING_BUFLEN,
-                 "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
-                 uuid[0], uuid[1], uuid[2], uuid[3],
-                 uuid[4], uuid[5], uuid[6], uuid[7],
-                 uuid[8], uuid[9], uuid[10], uuid[11],
-                 uuid[12], uuid[13], uuid[14], uuid[15]);
-
+        virUUIDFormat(uuid, uuidstr);
         root = sexpr_get(conn, "/xend/domain/%s?detail=1", uuidstr);
         if (root == NULL)
             return (NULL);

@@ -48,8 +48,6 @@
 #define ATTRIBUTE_FORMAT(...)
 #endif
 
-#define UUID_LEN 16
-
 typedef enum {
     QEMUD_ERR,
     QEMUD_WARN,

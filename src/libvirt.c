@@ -25,7 +25,7 @@
 #include "internal.h"
 #include "driver.h"
 
-#include "xml.h"
+#include "uuid.h"
 #include "test.h"
 #include "xen_unified.h"
 #include "remote_internal.h"
@@ -1384,22 +1384,6 @@ virDomainGetUUID(virDomainPtr domain, unsigned char *uuid)
     if (domain->id == 0) {
         memset(uuid, 0, VIR_UUID_BUFLEN);
     } else {
-#if 0
-        /* Probably legacy code: It appears that we always fill in
-         * the UUID when creating the virDomain structure, so this
-         * shouldn't be necessary.
-         */
-        if ((domain->uuid[0] == 0) && (domain->uuid[1] == 0) &&
-            (domain->uuid[2] == 0) && (domain->uuid[3] == 0) &&
-            (domain->uuid[4] == 0) && (domain->uuid[5] == 0) &&
-            (domain->uuid[6] == 0) && (domain->uuid[7] == 0) &&
-            (domain->uuid[8] == 0) && (domain->uuid[9] == 0) &&
-            (domain->uuid[10] == 0) && (domain->uuid[11] == 0) &&
-            (domain->uuid[12] == 0) && (domain->uuid[13] == 0) &&
-            (domain->uuid[14] == 0) && (domain->uuid[15] == 0))
-            xenDaemonDomainLookupByName_ids(domain->conn, domain->name,
-                                &domain->uuid[0]);
-#endif
         memcpy(uuid, &domain->uuid[0], VIR_UUID_BUFLEN);
     }
     return (0);
@@ -1433,12 +1417,7 @@ virDomainGetUUIDString(virDomainPtr domain, char *buf)
     if (virDomainGetUUID(domain, &uuid[0]))
         return (-1);
 
-    snprintf(buf, VIR_UUID_STRING_BUFLEN,
-	"%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
-                      uuid[0], uuid[1], uuid[2], uuid[3],
-                      uuid[4], uuid[5], uuid[6], uuid[7],
-                      uuid[8], uuid[9], uuid[10], uuid[11],
-                      uuid[12], uuid[13], uuid[14], uuid[15]);
+    virUUIDFormat(uuid, buf);
     return (0);
 }
 
@@ -2853,14 +2832,9 @@ virNetworkGetUUIDString(virNetworkPtr network, char *buf)
     }
 
     if (virNetworkGetUUID(network, &uuid[0]))
-	return (-1);
+        return (-1);
 
-    snprintf(buf, VIR_UUID_STRING_BUFLEN,
-	"%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
-                      uuid[0], uuid[1], uuid[2], uuid[3],
-                      uuid[4], uuid[5], uuid[6], uuid[7],
-                      uuid[8], uuid[9], uuid[10], uuid[11],
-                      uuid[12], uuid[13], uuid[14], uuid[15]);
+    virUUIDFormat(uuid, buf);
     return (0);
 }
 

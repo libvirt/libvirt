@@ -1,6 +1,6 @@
 <domain type='xen' id='5'>
   <name>rhel5</name>
-  <uuid>4f77abd2301958e83bab6fbf2118f880</uuid>
+  <uuid>4f77abd2-3019-58e8-3bab-6fbf2118f880</uuid>
   <bootloader>/usr/bin/pygrub</bootloader>
   <os>
     <type>linux</type>

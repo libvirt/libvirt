@@ -83,7 +83,7 @@ struct qemud_vm *qemudFindVMByUUID(const struct qemud_driver *driver,
     struct qemud_vm *vm = driver->vms;
 
     while (vm) {
-        if (!memcmp(vm->def->uuid, uuid, QEMUD_UUID_RAW_LEN))
+        if (!memcmp(vm->def->uuid, uuid, VIR_UUID_BUFLEN))
             return vm;
         vm = vm->next;
     }
@@ -109,7 +109,7 @@ struct qemud_network *qemudFindNetworkByUUID(const struct qemud_driver *driver,
     struct qemud_network *network = driver->networks;
 
     while (network) {
-        if (!memcmp(network->def->uuid, uuid, QEMUD_UUID_RAW_LEN))
+        if (!memcmp(network->def->uuid, uuid, VIR_UUID_BUFLEN))
             return network;
         network = network->next;
     }
@@ -2724,6 +2724,7 @@ char *qemudGenerateXML(virConnectPtr conn,
                        int live) {
     virBufferPtr buf = 0;
     unsigned char *uuid;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
     struct qemud_vm_disk_def *disk;
     struct qemud_vm_net_def *net;
     struct qemud_vm_input_def *input;
@@ -2762,11 +2763,8 @@ char *qemudGenerateXML(virConnectPtr conn,
         goto no_memory;
 
     uuid = def->uuid;
-    if (virBufferVSprintf(buf, "  <uuid>%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x</uuid>\n",
-                          uuid[0], uuid[1], uuid[2], uuid[3],
-                          uuid[4], uuid[5], uuid[6], uuid[7],
-                          uuid[8], uuid[9], uuid[10], uuid[11],
-                          uuid[12], uuid[13], uuid[14], uuid[15]) < 0)
+    virUUIDFormat(uuid, uuidstr);
+    if (virBufferVSprintf(buf, "  <uuid>%s</uuid>\n", uuidstr) < 0)
         goto no_memory;
     if (virBufferVSprintf(buf, "  <memory>%d</memory>\n", def->maxmem) < 0)
         goto no_memory;
@@ -3023,6 +3021,7 @@ char *qemudGenerateNetworkXML(virConnectPtr conn,
                               struct qemud_network_def *def) {
     virBufferPtr buf = 0;
     unsigned char *uuid;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     buf = virBufferNew (QEMUD_MAX_XML_LEN);
     if (!buf)
@@ -3035,11 +3034,8 @@ char *qemudGenerateNetworkXML(virConnectPtr conn,
         goto no_memory;
 
     uuid = def->uuid;
-    if (virBufferVSprintf(buf, "  <uuid>%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x</uuid>\n",
-                          uuid[0], uuid[1], uuid[2], uuid[3],
-                          uuid[4], uuid[5], uuid[6], uuid[7],
-                          uuid[8], uuid[9], uuid[10], uuid[11],
-                          uuid[12], uuid[13], uuid[14], uuid[15]) < 0)
+    virUUIDFormat(uuid, uuidstr);
+    if (virBufferVSprintf(buf, "  <uuid>%s</uuid>\n", uuidstr) < 0)
         goto no_memory;
 
     if (def->forward) {

@@ -1,6 +1,6 @@
 <domain type='xen'>
   <name>XenGuest1</name>
-  <uuid>c7a5fdb0cdaf9455926ad65c16db1809</uuid>
+  <uuid>c7a5fdb0-cdaf-9455-926a-d65c16db1809</uuid>
   <bootloader>/usr/bin/pygrub</bootloader>
   <currentMemory>403456</currentMemory>
   <memory>592896</memory>

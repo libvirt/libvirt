@@ -1,6 +1,6 @@
 <domain type='xen' id='3'>
   <name>fvtest</name>
-  <uuid>b5d70dd275cdaca517769660b059d8bc</uuid>
+  <uuid>b5d70dd2-75cd-aca5-1776-9660b059d8bc</uuid>
   <os>
     <type>hvm</type>
     <loader>/usr/lib/xen/boot/hvmloader</loader>

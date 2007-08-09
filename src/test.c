@@ -42,7 +42,7 @@
 #include "test.h"
 #include "xml.h"
 #include "buf.h"
-
+#include "uuid.h"
 
 struct _testDev {
     char name[20];
@@ -206,8 +206,7 @@ static int testLoadDomain(virConnectPtr conn,
     xmlNodePtr root = NULL;
     xmlXPathContextPtr ctxt = NULL;
     char *name = NULL;
-    unsigned char rawuuid[VIR_UUID_BUFLEN];
-    char *dst_uuid;
+    unsigned char uuid[VIR_UUID_BUFLEN];
     struct timeval tv;
     unsigned long memory = 0;
     unsigned long maxMem = 0;
@@ -248,8 +247,7 @@ static int testLoadDomain(virConnectPtr conn,
         testError(conn, NULL, NULL, VIR_ERR_XML_ERROR, _("domain uuid"));
         goto error;
     }
-    dst_uuid = (char *) &rawuuid[0];
-    if (!(virParseUUID((char **)&dst_uuid, str))) {
+    if (virUUIDParse(str, uuid) < 0) {
         testError(conn, NULL, NULL, VIR_ERR_XML_ERROR, _("domain uuid"));
         goto error;
     }
@@ -332,7 +330,7 @@ static int testLoadDomain(virConnectPtr conn,
     if (memory > maxMem)
         memory = maxMem;
 
-    memmove(privconn->domains[handle].uuid, rawuuid, VIR_UUID_BUFLEN);
+    memmove(privconn->domains[handle].uuid, uuid, VIR_UUID_BUFLEN);
     privconn->domains[handle].info.maxMem = maxMem;
     privconn->domains[handle].info.memory = memory;
     privconn->domains[handle].info.state = domid < 0 ? VIR_DOMAIN_SHUTOFF : VIR_DOMAIN_RUNNING;
@@ -404,8 +402,7 @@ static int testLoadNetwork(virConnectPtr conn,
     xmlNodePtr root = NULL;
     xmlXPathContextPtr ctxt = NULL;
     char *name = NULL, *bridge = NULL;
-    unsigned char rawuuid[VIR_UUID_BUFLEN];
-    char *dst_uuid;
+    unsigned char uuid[VIR_UUID_BUFLEN];
     char *str;
     char *ipaddress = NULL, *ipnetmask = NULL, *dhcpstart = NULL, *dhcpend = NULL;
     int forward;
@@ -438,8 +435,7 @@ static int testLoadNetwork(virConnectPtr conn,
         testError(conn, NULL, NULL, VIR_ERR_XML_ERROR, _("network uuid"));
         goto error;
     }
-    dst_uuid = (char *) &rawuuid[0];
-    if (!(virParseUUID((char **)&dst_uuid, str))) {
+    if (virUUIDParse(str, uuid) < 0) {
         testError(conn, NULL, NULL, VIR_ERR_XML_ERROR, _("network uuid"));
         goto error;
     }
@@ -498,7 +494,7 @@ static int testLoadNetwork(virConnectPtr conn,
         bridge = NULL;
     }
 
-    memmove(privconn->networks[handle].uuid, rawuuid, VIR_UUID_BUFLEN);
+    memmove(privconn->networks[handle].uuid, uuid, VIR_UUID_BUFLEN);
     privconn->networks[handle].forward = forward;
     if (forwardDev) {
         strncpy(privconn->networks[handle].forwardDev, forwardDev, sizeof(privconn->networks[handle].forwardDev)-1);
@@ -664,7 +660,7 @@ static int testOpenFromFile(virConnectPtr conn,
     char *str;
     xmlDocPtr xml = NULL;
     xmlNodePtr root = NULL;
-    xmlNodePtr *domains, *networks;
+    xmlNodePtr *domains, *networks = NULL;
     xmlXPathContextPtr ctxt = NULL;
     virNodeInfoPtr nodeInfo;
     testConnPtr privconn = malloc(sizeof(testConn));
@@ -1474,6 +1470,7 @@ static char *testDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
     virBufferPtr buf;
     char *xml;
     unsigned char *uuid;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
     GET_DOMAIN(domain, NULL);
 
     if (!(buf = virBufferNew(4000))) {
@@ -1484,13 +1481,8 @@ static char *testDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
     virBufferVSprintf(buf, "<domain type='test' id='%d'>\n", domain->id);
     virBufferVSprintf(buf, "  <name>%s</name>\n", domain->name);
     uuid = domain->uuid;
-    virBufferVSprintf(buf,
-                      "  <uuid>%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x</uuid>\n",
-                      uuid[0], uuid[1], uuid[2], uuid[3],
-                      uuid[4], uuid[5], uuid[6], uuid[7],
-                      uuid[8], uuid[9], uuid[10], uuid[11],
-                      uuid[12], uuid[13], uuid[14], uuid[15]);
-
+    virUUIDFormat(uuid, uuidstr);
+    virBufferVSprintf(buf, "  <uuid>%s</uuid>\n", uuidstr);
     virBufferVSprintf(buf, "  <memory>%lu</memory>\n", privdom->info.maxMem);
     virBufferVSprintf(buf, "  <vcpu>%d</vcpu>\n", privdom->info.nrVirtCpu);
     virBufferVSprintf(buf, "  <on_reboot>%s</on_reboot>\n", testRestartFlagToString(privdom->onReboot));
@@ -1859,6 +1851,7 @@ static char *testNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
     virBufferPtr buf;
     char *xml;
     unsigned char *uuid;
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
     GET_NETWORK(network, NULL);
 
     if (!(buf = virBufferNew(4000))) {
@@ -1869,13 +1862,8 @@ static char *testNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
     virBufferAdd(buf, "<network>\n", -1);
     virBufferVSprintf(buf, "  <name>%s</name>\n", network->name);
     uuid = network->uuid;
-    virBufferVSprintf(buf,
-                      "  <uuid>%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x</uuid>\n",
-                      uuid[0], uuid[1], uuid[2], uuid[3],
-                      uuid[4], uuid[5], uuid[6], uuid[7],
-                      uuid[8], uuid[9], uuid[10], uuid[11],
-                      uuid[12], uuid[13], uuid[14], uuid[15]);
-
+    virUUIDFormat(uuid, uuidstr);
+    virBufferVSprintf(buf, "  <uuid>%s</uuid>\n", uuidstr);
     virBufferVSprintf(buf, "  <bridge name='%s'/>\n", privnet->bridge);
     if (privnet->forward) {
         if (privnet->forwardDev[0])

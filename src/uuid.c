@@ -79,7 +79,7 @@ virUUIDGeneratePseudoRandomBytes(unsigned char *buf,
 
 /**
  * virUUIDGenerate:
- * @uuid: array of VIR_UUID_RAW_LEN bytes to store the new UUID
+ * @uuid: array of VIR_UUID_BUFLEN bytes to store the new UUID
  *
  * Generates a randomized unique identifier.
  *
@@ -93,18 +93,18 @@ virUUIDGenerate(unsigned char *uuid)
     if (uuid == NULL)
         return(-1);
 
-    if ((err = virUUIDGenerateRandomBytes(uuid, VIR_UUID_RAW_LEN)))
+    if ((err = virUUIDGenerateRandomBytes(uuid, VIR_UUID_BUFLEN)))
         qemudLog(QEMUD_WARN,
                  "Falling back to pseudorandom UUID, "
                  "failed to generate random bytes: %s", strerror(err));
 
-    return virUUIDGeneratePseudoRandomBytes(uuid, VIR_UUID_RAW_LEN);
+    return virUUIDGeneratePseudoRandomBytes(uuid, VIR_UUID_BUFLEN);
 }
 
 /**
  * virUUIDParse:
- * @uuid: zero terminated string representation of the UUID
- * @rawuuid: array of VIR_UUID_RAW_LEN bytes to store the raw UUID
+ * @uuidstr: zero terminated string representation of the UUID
+ * @uuid: array of VIR_UUID_BUFLEN bytes to store the raw UUID
  *
  * Parses the external string representation, allowing spaces and '-'
  * character in the sequence, and storing the result as a raw UUID
@@ -112,20 +112,20 @@ virUUIDGenerate(unsigned char *uuid)
  * Returns 0 in case of success and -1 in case of error.
  */
 int
-virUUIDParse(const char *uuid, unsigned char *rawuuid) {
+virUUIDParse(const char *uuidstr, unsigned char *uuid) {
     const char *cur;
     int i;
 
-    if ((uuid == NULL) || (rawuuid == NULL))
+    if ((uuidstr == NULL) || (uuid == NULL))
         return(-1);
 
     /*
      * do a liberal scan allowing '-' and ' ' anywhere between character
      * pairs as long as there is 32 of them in the end.
      */
-    cur = uuid;
-    for (i = 0;i < 16;) {
-        rawuuid[i] = 0;
+    cur = uuidstr;
+    for (i = 0;i < VIR_UUID_BUFLEN;) {
+        uuid[i] = 0;
         if (*cur == 0)
             goto error;
         if ((*cur == '-') || (*cur == ' ')) {
@@ -133,23 +133,23 @@ virUUIDParse(const char *uuid, unsigned char *rawuuid) {
             continue;
         }
         if ((*cur >= '0') && (*cur <= '9'))
-            rawuuid[i] = *cur - '0';
+            uuid[i] = *cur - '0';
         else if ((*cur >= 'a') && (*cur <= 'f'))
-            rawuuid[i] = *cur - 'a' + 10;
+            uuid[i] = *cur - 'a' + 10;
         else if ((*cur >= 'A') && (*cur <= 'F'))
-            rawuuid[i] = *cur - 'A' + 10;
+            uuid[i] = *cur - 'A' + 10;
         else
             goto error;
-        rawuuid[i] *= 16;
+        uuid[i] *= 16;
         cur++;
         if (*cur == 0)
             goto error;
         if ((*cur >= '0') && (*cur <= '9'))
-            rawuuid[i] += *cur - '0';
+            uuid[i] += *cur - '0';
         else if ((*cur >= 'a') && (*cur <= 'f'))
-            rawuuid[i] += *cur - 'a' + 10;
+            uuid[i] += *cur - 'a' + 10;
         else if ((*cur >= 'A') && (*cur <= 'F'))
-            rawuuid[i] += *cur - 'A' + 10;
+            uuid[i] += *cur - 'A' + 10;
         else
             goto error;
         i++;
@@ -161,6 +161,29 @@ virUUIDParse(const char *uuid, unsigned char *rawuuid) {
  error:
     return -1;
 }
+
+/**
+ * virUUIDFormat:
+ * @uuid: array of VIR_UUID_RAW_LEN bytes to store the raw UUID
+ * @uuidstr: array of VIR_UUID_STRING_BUFLEN bytes to store the
+ * string representation of the UUID in. The resulting string
+ * will be NULL terminated.
+ *
+ * Converts the raw UUID into printable format, with embedded '-'
+ *
+ * Returns 0 in case of success and -1 in case of error.
+ */
+void virUUIDFormat(const unsigned char *uuid, char *uuidstr)
+{
+    snprintf(uuidstr, VIR_UUID_STRING_BUFLEN,
+             "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+             uuid[0], uuid[1], uuid[2], uuid[3],
+             uuid[4], uuid[5], uuid[6], uuid[7],
+             uuid[8], uuid[9], uuid[10], uuid[11],
+             uuid[12], uuid[13], uuid[14], uuid[15]);
+    uuidstr[VIR_UUID_STRING_BUFLEN-1] = '\0';
+}
+
 
 /*
  * Local variables:

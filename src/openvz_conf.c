@@ -76,7 +76,7 @@ struct openvz_vm
     struct openvz_vm *vm = driver->vms;
 
     while (vm) {
-        if (!memcmp(vm->vmdef->uuid, uuid, OPENVZ_UUID_MAX))
+        if (!memcmp(vm->vmdef->uuid, uuid, VIR_UUID_BUFLEN))
             return vm;
         vm = vm->next;
     }
@@ -400,8 +400,8 @@ static int
 openvzSetUUID(int vpsid)
 {
     char conf_file[PATH_MAX];
-    char uuid[VIR_UUID_STRING_BUFLEN];
-    unsigned char new_uuid[VIR_UUID_BUFLEN];
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+    unsigned char uuid[VIR_UUID_BUFLEN];
     char *conf_dir;
     int fd, ret, i;
 
@@ -418,11 +418,9 @@ openvzSetUUID(int vpsid)
         return -1;
 
     if(uuid[0] == (int)NULL) {
-        virUUIDGenerate(new_uuid);
-        bzero(uuid, VIR_UUID_STRING_BUFLEN);
-        for(i = 0; i < VIR_UUID_BUFLEN; i ++)
-            sprintf(uuid + (i * 2), "%02x", (unsigned char)new_uuid[i]);
-    
+        virUUIDGenerate(uuid);
+        virUUIDFormat(uuid, uuidstr);
+
         lseek(fd, 0, SEEK_END);
         write(fd, "\n#UUID: ", 8);
         write(fd, uuid, strlen(uuid));

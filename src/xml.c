@@ -1308,67 +1308,6 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
     return (NULL);
 }
 
-#endif /* !PROXY */
-
-
-
-unsigned char *virParseUUID(char **ptr, const char *uuid) {
-    int rawuuid[VIR_UUID_BUFLEN];
-    const char *cur;
-    unsigned char *dst_uuid = NULL;
-    int i;
-
-    if (uuid == NULL)
-        goto error;
-
-    /*
-     * do a liberal scan allowing '-' and ' ' anywhere between character
-     * pairs as long as there is 32 of them in the end.
-     */
-    cur = uuid;
-    for (i = 0;i < VIR_UUID_BUFLEN;) {
-        rawuuid[i] = 0;
-        if (*cur == 0)
-            goto error;
-        if ((*cur == '-') || (*cur == ' ')) {
-            cur++;
-            continue;
-        }
-        if ((*cur >= '0') && (*cur <= '9'))
-            rawuuid[i] = *cur - '0';
-        else if ((*cur >= 'a') && (*cur <= 'f'))
-            rawuuid[i] = *cur - 'a' + 10;
-        else if ((*cur >= 'A') && (*cur <= 'F'))
-            rawuuid[i] = *cur - 'A' + 10;
-        else
-            goto error;
-        rawuuid[i] *= 16;
-        cur++;
-        if (*cur == 0)
-            goto error;
-        if ((*cur >= '0') && (*cur <= '9'))
-            rawuuid[i] += *cur - '0';
-        else if ((*cur >= 'a') && (*cur <= 'f'))
-            rawuuid[i] += *cur - 'a' + 10;
-        else if ((*cur >= 'A') && (*cur <= 'F'))
-            rawuuid[i] += *cur - 'A' + 10;
-        else
-            goto error;
-        i++;
-        cur++;
-    }
-
-    dst_uuid = (unsigned char *) *ptr;
-    *ptr += 16;
-
-    for (i = 0; i < VIR_UUID_BUFLEN; i++)
-        dst_uuid[i] = rawuuid[i] & 0xFF;
-
- error:
-    return(dst_uuid);
-}
-
-#ifndef PROXY
 /**
  * virParseXMLDevice:
  * @conn: pointer to the hypervisor connection
