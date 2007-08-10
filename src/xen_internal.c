@@ -27,6 +27,7 @@
 #include <regex.h>
 #include <errno.h>
 #include <sys/utsname.h>
+#include "xs_internal.h"
 
 /* required for dom0_getdomaininfo_t */
 #include <xen/dom0_ops.h>
@@ -229,6 +230,13 @@ typedef union xen_getschedulerid xen_getschedulerid;
       domlist.v2[n].domain :                        \
       domlist.v2d5[n].domain))
 
+#define XEN_GETDOMAININFOLIST_UUID(domlist, n)      \
+    (hypervisor_version < 2 ?                       \
+     domlist.v0[n].handle :                         \
+     (dom_interface_version < 5 ?                   \
+      domlist.v2[n].handle :                        \
+      domlist.v2d5[n].handle))
+
 #define XEN_GETDOMAININFOLIST_DATA(domlist)        \
     (hypervisor_version < 2 ?                      \
      (void*)(domlist->v0) :                        \
@@ -298,6 +306,13 @@ typedef union xen_getschedulerid xen_getschedulerid;
      (dom_interface_version < 5 ?               \
       dominfo.v2.max_pages :                    \
       dominfo.v2d5.max_pages))
+
+#define XEN_GETDOMAININFO_UUID(dominfo)         \
+    (hypervisor_version < 2 ?                   \
+     dominfo.v0.handle :                        \
+     (dom_interface_version < 5 ?               \
+      dominfo.v2.handle :                       \
+      dominfo.v2d5.handle))
 
 
 
@@ -626,7 +641,7 @@ struct xenUnifiedDriver xenHypervisorDriver = {
     NULL, /* domainShutdown */
     NULL, /* domainReboot */
     xenHypervisorDestroyDomain, /* domainDestroy */
-    NULL, /* domainGetOSType */
+    xenHypervisorDomainGetOSType, /* domainGetOSType */
     xenHypervisorGetMaxMemory, /* domainGetMaxMemory */
     xenHypervisorSetMaxMemory, /* domainSetMaxMemory */
     NULL, /* domainSetMemory */
@@ -2436,6 +2451,136 @@ xenHypervisorListDomains(virConnectPtr conn, int *ids, int maxids)
     XEN_GETDOMAININFOLIST_FREE(dominfos);
     return (nbids);
 }
+
+
+#ifndef PROXY
+char *
+xenHypervisorDomainGetOSType (virDomainPtr dom)
+{
+    xenUnifiedPrivatePtr priv;
+    xen_getdomaininfo dominfo;
+
+    priv = (xenUnifiedPrivatePtr) dom->conn->privateData;
+    if (priv->handle < 0)
+        return (NULL);
+
+    /* HV's earlier than 3.1.0 don't include the HVM flags in guests status*/
+    if (hypervisor_version < 2 ||
+        dom_interface_version < 4)
+        return (NULL);
+
+    XEN_GETDOMAININFO_CLEAR(dominfo);
+
+    if (virXen_getdomaininfo(priv->handle, dom->id, &dominfo) < 0)
+        return (NULL);
+
+    if (XEN_GETDOMAININFO_DOMAIN(dominfo) != dom->id)
+        return (NULL);
+
+    if (XEN_GETDOMAININFO_FLAGS(dominfo) & DOMFLAGS_HVM)
+        return strdup("hvm");
+    return strdup("linux");
+}
+
+virDomainPtr
+xenHypervisorLookupDomainByID(virConnectPtr conn,
+                              int id)
+{
+    xenUnifiedPrivatePtr priv;
+    xen_getdomaininfo dominfo;
+    virDomainPtr ret;
+    char *name;
+
+    priv = (xenUnifiedPrivatePtr) conn->privateData;
+    if (priv->handle < 0)
+        return (NULL);
+
+    XEN_GETDOMAININFO_CLEAR(dominfo);
+
+    if (virXen_getdomaininfo(priv->handle, id, &dominfo) < 0)
+        return (NULL);
+
+    if (XEN_GETDOMAININFO_DOMAIN(dominfo) != id)
+        return (NULL);
+
+
+    if (!(name = xenStoreDomainGetName(conn, id)))
+        return (NULL);
+
+    ret = virGetDomain(conn, name, XEN_GETDOMAININFO_UUID(dominfo));
+    if (ret)
+        ret->id = id;
+    free(name);
+    return ret;
+}
+
+
+virDomainPtr
+xenHypervisorLookupDomainByUUID(virConnectPtr conn,
+                                const unsigned char *uuid)
+{
+    xen_getdomaininfolist dominfos;
+    xenUnifiedPrivatePtr priv;
+    virDomainPtr ret;
+    char *name;
+    int maxids = 100, nids, i, id;
+
+    priv = (xenUnifiedPrivatePtr) conn->privateData;
+    if (priv->handle < 0)
+        return (NULL);
+
+ retry:
+    if (!(XEN_GETDOMAININFOLIST_ALLOC(dominfos, maxids))) {
+        virXenError(VIR_ERR_NO_MEMORY, "allocating %d domain info",
+                    maxids);
+        return(NULL);
+    }
+
+    XEN_GETDOMAININFOLIST_CLEAR(dominfos, maxids);
+
+    nids = virXen_getdomaininfolist(priv->handle, 0, maxids, &dominfos);
+
+    if (nids < 0) {
+        XEN_GETDOMAININFOLIST_FREE(dominfos);
+        return (NULL);
+    }
+
+    /* Can't possibly have more than 65,000 concurrent guests
+     * so limit how many times we try, to avoid increasing
+     * without bound & thus allocating all of system memory !
+     * XXX I'll regret this comment in a few years time ;-)
+     */
+    if (nids == maxids) {
+        XEN_GETDOMAININFOLIST_FREE(dominfos);
+        if (maxids < 65000) {
+            maxids *= 2;
+            goto retry;
+        }
+        return (NULL);
+    }
+
+    id = -1;
+    for (i = 0 ; i < nids ; i++) {
+        if (memcmp(XEN_GETDOMAININFOLIST_UUID(dominfos, i), uuid, VIR_UUID_BUFLEN) == 0) {
+            id = XEN_GETDOMAININFOLIST_DOMAIN(dominfos, i);
+            break;
+        }
+    }
+    XEN_GETDOMAININFOLIST_FREE(dominfos);
+
+    if (id == -1)
+        return (NULL);
+
+    if (!(name = xenStoreDomainGetName(conn, id)))
+        return (NULL);
+
+    ret = virGetDomain(conn, name, uuid);
+    if (ret)
+        ret->id = id;
+    free(name);
+    return ret;
+}
+#endif
 
 /**
  * xenHypervisorGetMaxVcpus:

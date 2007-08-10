@@ -20,6 +20,15 @@ int	xenHypervisorInit		(void);
 
 /* The following calls are made directly by the Xen proxy: */
 
+virDomainPtr
+        xenHypervisorLookupDomainByID   (virConnectPtr conn,
+					 int id);
+virDomainPtr
+xenHypervisorLookupDomainByUUID(virConnectPtr conn,
+                                const unsigned char *uuid);
+char *
+        xenHypervisorDomainGetOSType (virDomainPtr dom);
+
 int	xenHypervisorOpen		(virConnectPtr conn,
 					 const char *name,
 					 int flags);

@@ -15,6 +15,8 @@
 extern "C" {
 #endif
 
+#include "internal.h"
+
 extern struct xenUnifiedDriver xenStoreDriver;
 int xenStoreInit (void);
 
@@ -48,6 +50,8 @@ char *		xenStoreDomainGetOSTypeID(virConnectPtr conn,
 char *		xenStoreDomainGetNetworkID(virConnectPtr conn,
 					 int id,
 					 const char *mac);
+char *          xenStoreDomainGetName(virConnectPtr conn,
+				      int id);
 
 #ifdef __cplusplus
 }

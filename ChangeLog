@@ -1,3 +1,11 @@
+Fri Aug 10 14:25:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xen_internal.c, src/xen_internal.h, src/xen_unified.c:
+	Add impls of the DomainGetOSType, DomainLookupByID and
+	DomainLookupByName drivers using the HV for speed
+	* src/xs_internal.c, src/xs_internal.h: Add helper method to
+	lookup a domain name based on its ID
+
 Thu Aug  9 14:27:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/libvirt.c, src/openvz_conf.c, src/qemu_conf.c,

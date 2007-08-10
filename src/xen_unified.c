@@ -377,6 +377,13 @@ xenUnifiedDomainLookupByID (virConnectPtr conn, int id)
      */
     virConnResetLastError (conn);
 
+    /* Try hypervisor/xenstore combo. */
+    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET]) {
+        ret = xenHypervisorLookupDomainByID (conn, id);
+        if (ret || conn->err.code != VIR_ERR_OK)
+            return ret;
+    }
+
     /* Try proxy. */
     if (priv->opened[XEN_UNIFIED_PROXY_OFFSET]) {
         ret = xenProxyLookupByID (conn, id);
@@ -407,6 +414,13 @@ xenUnifiedDomainLookupByUUID (virConnectPtr conn,
      * there is one hanging around from a previous call.
      */
     virConnResetLastError (conn);
+
+    /* Try hypervisor/xenstore combo. */
+    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET]) {
+        ret = xenHypervisorLookupDomainByUUID (conn, uuid);
+        if (ret || conn->err.code != VIR_ERR_OK)
+            return ret;
+    }
 
     /* Try proxy. */
     if (priv->opened[XEN_UNIFIED_PROXY_OFFSET]) {

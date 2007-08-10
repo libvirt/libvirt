@@ -875,6 +875,22 @@ xenStoreDomainGetNetworkID(virConnectPtr conn, int id, const char *mac) {
     return(ret);
 }
 
+char *xenStoreDomainGetName(virConnectPtr conn,
+                            int id) {
+    char prop[200];
+    xenUnifiedPrivatePtr priv;
+    unsigned int len;
+
+    priv = (xenUnifiedPrivatePtr) conn->privateData;
+    if (priv->xshandle == NULL)
+        return(NULL);
+
+    snprintf(prop, 199, "/local/domain/%d/name", id);
+    prop[199] = 0;
+    return xs_read(priv->xshandle, 0, prop, &len);
+}
+
+
 #endif /* WITH_XEN */
 /*
  * Local variables:
