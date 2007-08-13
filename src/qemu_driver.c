@@ -204,6 +204,7 @@ qemudStartup(void) {
         qemudShutdown();
     qemudAutostartConfigs(qemu_driver);
 
+    free(base);
     return 0;
 
  snprintf_error:
