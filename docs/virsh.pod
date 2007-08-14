@@ -10,7 +10,7 @@ virsh <subcommand> [args]
 
 The B<virsh> program is the main interface for managing virsh guest
 domains. The program can be used to create, pause, and shutdown
-domains. It can also be used to list current domains. Libvirt is a C toolkit to interract with the virtualization capabilities of recent versions of Linux (and other OSes). It is free software available under the GNU Lesser General Public License. Virtualization of the Linux Operating System means the ability to run multiple instances of Operating Systems concurently on a single hardware system where the basic resources are driven by a Linux instance. The library aim at providing long term stable C API initially for the Xen paravirtualization but should be able to integrate other virtualization mechanisms, it currently also support QEmu and KVM.
+domains. It can also be used to list current domains. Libvirt is a C toolkit to interact with the virtualization capabilities of recent versions of Linux (and other OSes). It is free software available under the GNU Lesser General Public License. Virtualization of the Linux Operating System means the ability to run multiple instances of Operating Systems concurrently on a single hardware system where the basic resources are driven by a Linux instance. The library aim at providing long term stable C API initially for the Xen paravirtualization but should be able to integrate other virtualization mechanisms, it currently also support QEmu and KVM.
 
 The basic structure of most virsh usage is:
 
@@ -33,10 +33,10 @@ the program.
 =head1 NOTES
 
 All B<virsh> operations rely upon the libvirt library.
-For any virsh commands to run xend/qemu, or what ever virtual library that libvirt suports.  For this reason you should start xend/qemu as a service when your system first boots using xen/qemu. This can usually be done using the command
+For any virsh commands to run xend/qemu, or what ever virtual library that libvirt supports.  For this reason you should start xend/qemu as a service when your system first boots using xen/qemu. This can usually be done using the command
 B<service start libvirtd> .
 
-Most B<virsh> commands require root privledges to run due to the
+Most B<virsh> commands require root privileges to run due to the
 communications channels used to talk to the hypervisor.  Running as
 non root will return an error.
 
@@ -55,7 +55,7 @@ The following commands are generic i.e. not specific to a domain.
 
 =item B<help> optional I<command>
 
-This prints a small synoposis about all commands available for B<virsh>
+This prints a small synopsis about all commands available for B<virsh>
 B<help> I<command> will print out a detailed help message on that command.
 
 =item B<quit> 
@@ -105,7 +105,7 @@ allow to connect locally as a normal user to the his own set of QEmu and KVM dom
 
 =back
 
-For remote access see the documetnation page on how to make URIs.
+For remote access see the documentation page on how to make URIs.
 The I<--readonly> option allows for read-only connection
 
 =item B<nodeinfo>
@@ -155,7 +155,7 @@ The domain is currently running on a CPU
 
 =item B<b - blocked>
 
-The domain is blocked, and not running or runable.  This can be caused
+The domain is blocked, and not running or runnable.  This can be caused
 because the domain is waiting on IO (a traditional wait state) or has
 gone to sleep because there was nothing else for it to do.
 
@@ -249,7 +249,7 @@ Returns state about a running domain.
 
 =item B<dumpxml> I<domain-id>
 
-Ouput the domain informations as an XML dump to stdout, this format can be used by the B<create> command. 
+Output the domain informations as an XML dump to stdout, this format can be used by the B<create> command. 
 
 
 =item B<reboot> I<domain-id>
@@ -299,7 +299,7 @@ original description of domain.
 =item B<shutdown> I<domain-id>
 
 Gracefully shuts down a domain.  This coordinates with the domain OS
-to perform graceful shutdown, so there is no guaruntee that it will
+to perform graceful shutdown, so there is no guarantee that it will
 succeed, and may take a variable length of time depending on what
 services must be shutdown in the domain.  
 
@@ -321,7 +321,7 @@ hypervisor.
 =item B<ttyconsole> I<domain-id>
 
 Output the device used for the TTY console of the domain. If the information
-is not available the processus will provide an exit code of 1.
+is not available the processes will provide an exit code of 1.
 
 =item B<undefine> I<domain-id>
 
@@ -341,7 +341,7 @@ and I<cpulist> is a comma separated list of physical CPU numbers.
 =item B<vncdisplay> I<domain-id>
 
 Output the IP address and port number for the VNC display. If the information
-is not available the processus will provide an exit code of 1.
+is not available the processes will provide an exit code of 1.
 
 =back
 
@@ -390,7 +390,7 @@ from the domain.
 
 =item B<detach-interface> I<domain-id> I<type> optional I<--mac mac>
 
-Detatch a network interface from a domain.
+Detach a network interface from a domain.
 I<type> can be either I<network> to indicate a physical network device or I<bridge> to indicate a bridge to a device.
 It is recommended to use the I<mac> option to distinguish between the interfaces
 if more than one are present on the domain.
@@ -401,7 +401,7 @@ if more than one are present on the domain.
 
 The following commands manipulate networks. Libvirt has the capability to
 define virtual networks which can then be used by domains and linked to
-actual network dvices. For more detailed informations about this feature
+actual network devices. For more detailed informations about this feature
 see the documentation at L<http://libvirt.org/format.html#Net1> . A lot
 of the command for virtual networks are similar to the one used for domains,
 but the way to name a virtual network is either by its name or UUID.
@@ -421,7 +421,7 @@ a description of the XML network format used by libvirt.
 =item B<net-define> I<file>
 
 Define a virtual network from an XML I<file>, the network is just defined but
-not instanciated.
+not instantiated.
 
 =item B<net-destroy> I<network>
 

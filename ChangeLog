@@ -1,3 +1,7 @@
+Tue Aug 14 09:04:41 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* virsh.1 docs/virsh.pod: typo fixes from Atsushi SAKAI
+
 Tue Aug 14 07:59:21 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* docs/apibuild.py: fix the API generator to work out of a
