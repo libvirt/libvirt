@@ -17,54 +17,11 @@ debugsym=None
 #
 # C parser analysis code
 #
-ignored_files = {
-  "virsh.c": "testing tool",
-  "hash.c": "internal hash table stuff",
-  "hash.h": "internal hash table stuff",
-  "internal.h": "internal includes and defines",
-  "driver.h": "internal driver interfaces",
-  "xend_internal.h": "internal includes and defines",
-  "xend_internal.c": "internal code",
-  "proxy_internal.h": "internal includes and defines",
-  "proxy_internal.c": "internal code",
-  "xen_internal.h": "internal includes and defines",
-  "xen_internal.c": "internal code",
-  "xen_unified.h": "internal includes and defines",
-  "xen_unified.c": "internal code",
-  "xs_internal.h": "internal includes and defines",
-  "xs_internal.c": "internal code",
-  "xm_internal.h": "internal code",
-  "xm_internal.c": "internal code",
-  "qemu_internal.h": "internal code",
-  "qemu_internal.c": "internal code",
-  "sexpr.h": "internal includes and defines",
-  "sexpr.c": "internal code",
-  "xml.h": "internal includes and defines",
-  "xml.c": "internal code",
-  "xmlrpc.h": "internal include",
-  "xmlrpc.c": "internal code",
-  "test.h": "test driver",
-  "test.c": "test driver",
-  "conf.h": "internal code",
-  "conf.c": "internal code",
-  "console.h": "internal code",
-  "console.c": "internal code",
-  "event.h": "internal code",
-  "event.c": "internal code",
-  "iptables.h": "internal code",
-  "iptables.c": "internal code",
-  "buf.h": "internal code",
-  "buf.c": "internal code",
-  "qemu_driver.c": "internal code",
-  "remote_internal.c": "internal code",
-  "bridge.h": "internal code",
-  "bridge.c": "internal code",
-  "uuid.h": "internal code",
-  "uuid.c": "internal code",
-  "util.h": "internal code",
-  "util.c": "internal code",
-  "nodeinfo.h": "internal code",
-  "nodeinfo.c": "internal code",
+included_files = {
+  "libvirt.h": "header with general libvirt API definitions",
+  "virterror.h": "header with error specific API definitions",
+  "libvirt.c": "Main interfaces for the libvirt library",
+  "virterror.c": "implements error handling and reporting code for libvirt",
 }
 
 ignored_words = {
@@ -1616,10 +1573,10 @@ class CParser:
 
 class docBuilder:
     """A documentation builder"""
-    def __init__(self, name, directories=['.'], excludes=[]):
+    def __init__(self, name, directories=['.'], includes=[]):
         self.name = name
         self.directories = directories
-	self.excludes = excludes + ignored_files.keys()
+	self.includes = includes + included_files.keys()
 	self.modules = {}
 	self.headers = {}
 	self.idx = index()
@@ -1688,19 +1645,19 @@ class docBuilder:
         for directory in self.directories:
 	    files = glob.glob(directory + "/*.c")
 	    for file in files:
-	        skip = 0
-		for excl in self.excludes:
-		    if string.find(file, excl) != -1:
-		        skip = 1;
+	        skip = 1
+		for incl in self.includes:
+		    if string.find(file, incl) != -1:
+		        skip = 0;
 			break
 		if skip == 0:
 		    self.modules[file] = None;
 	    files = glob.glob(directory + "/*.h")
 	    for file in files:
-	        skip = 0
-		for excl in self.excludes:
-		    if string.find(file, excl) != -1:
-		        skip = 1;
+	        skip = 1
+		for incl in self.includes:
+		    if string.find(file, incl) != -1:
+		        skip = 0;
 			break
 		if skip == 0:
 		    self.headers[file] = None;

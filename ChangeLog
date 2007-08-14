@@ -1,3 +1,9 @@
+Tue Aug 14 07:59:21 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* docs/apibuild.py: fix the API generator to work out of a
+	  include list instead of an exclude list
+	* po/*: updated localization strings
+
 Mon Aug 13 21:46:48 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c: Implement save & restore APIs for KVM
@@ -30,6 +36,7 @@ Mon Aug 13 20:13:48 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 	avoid bug where QEMU \n gets translated to \r\n,then causing QEMU
 	to process the command twice. Patch from Jim Paris.
 
+>>>>>>> 1.700
 Mon Aug 13 11:55:48 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: patch from Jim Paris removing memory leak
