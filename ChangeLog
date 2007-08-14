@@ -1,3 +1,9 @@
+Mon Aug 13 20:13:48 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_driver.c: Use \r instead of \n for monitor commands to
+	avoid bug where QEMU \n gets translated to \r\n,then causing QEMU
+	to process the command twice. Patch from Jim Paris.
+
 Mon Aug 13 11:55:48 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: patch from Jim Paris removing memory leak

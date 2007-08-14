@@ -1755,7 +1755,7 @@ static int qemudDomainSuspend(virDomainPtr dom) {
     if (vm->state == VIR_DOMAIN_PAUSED)
         return 0;
 
-    if (qemudMonitorCommand(driver, vm, "stop\n", &info) < 0) {
+    if (qemudMonitorCommand(driver, vm, "stop\r", &info) < 0) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED, "suspend operation failed");
         return -1;
     }
@@ -1780,7 +1780,7 @@ static int qemudDomainResume(virDomainPtr dom) {
     }
     if (vm->state == VIR_DOMAIN_RUNNING)
         return 0;
-    if (qemudMonitorCommand(driver, vm, "cont\n", &info) < 0) {
+    if (qemudMonitorCommand(driver, vm, "cont\r", &info) < 0) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED, "resume operation failed");
         return -1;
     }
