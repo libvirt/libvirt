@@ -655,7 +655,8 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         qemudLog(QEMUD_WARN, "Unable to write argv to logfile %d: %s",
                  errno, strerror(errno));
 
-    if (virExecNonBlock(conn, argv, &vm->pid, &vm->stdout, &vm->stderr) == 0) {
+    if (virExecNonBlock(conn, argv, &vm->pid,
+                        -1, &vm->stdout, &vm->stderr) == 0) {
         vm->id = driver->nextvmid++;
         vm->state = VIR_DOMAIN_RUNNING;
 
@@ -912,7 +913,7 @@ dhcpStartDhcpDaemon(virConnectPtr conn,
     if (qemudBuildDnsmasqArgv(conn, network, &argv) < 0)
         return -1;
 
-    ret = virExecNonBlock(conn, argv, &network->dnsmasqPid, NULL, NULL);
+    ret = virExecNonBlock(conn, argv, &network->dnsmasqPid, -1, NULL, NULL);
 
     for (i = 0; argv[i]; i++)
         free(argv[i]);

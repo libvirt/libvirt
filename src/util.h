@@ -21,6 +21,6 @@
  * File created Jul 18, 2007 - Shuveb Hussain <shuveb@binarykarma.com>
  */
 
-int virExec(virConnectPtr conn, char **argv, int *retpid, int *outfd, int *errfd);
-int virExecNonBlock(virConnectPtr conn, char **argv, int *retpid, int *outfd, int *errfd);
+int virExec(virConnectPtr conn, char **argv, int *retpid, int infd, int *outfd, int *errfd);
+int virExecNonBlock(virConnectPtr conn, char **argv, int *retpid, int infd, int *outfd, int *errfd);
 

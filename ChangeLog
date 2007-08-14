@@ -1,3 +1,10 @@
+Mon Aug 13 21:18:48 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/util.h, src/util.c: Allow a file descriptor to be supplied
+	for STDIN when calling virExec(), or if -1, redirect from /dev/null
+	* src/qemu_driver.c, src/openvz_driver.c: Pass in -1 for new stdin
+	parameter above where neccessary
+
 Mon Aug 13 20:13:48 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c: Use \r instead of \n for monitor commands to
