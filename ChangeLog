@@ -1,3 +1,8 @@
+Mon Aug 13 21:46:48 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_driver.c: Implement save & restore APIs for KVM
+	guests using the migrate protocol. Patch from Jim Paris
+
 Mon Aug 13 21:33:48 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c: added qemudEscapeShellArg() helper function

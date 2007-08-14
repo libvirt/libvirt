@@ -1921,28 +1921,235 @@ static char *qemudEscapeShellArg(const char *in)
 }
 
 
+#define QEMUD_SAVE_MAGIC "LibvirtQemudSave"
+#define QEMUD_SAVE_VERSION 1
+
+struct qemud_save_header {
+    char magic[sizeof(QEMUD_SAVE_MAGIC)-1];
+    int version;
+    int xml_len;
+    int was_running;
+    int unused[16];
+};
+
 static int qemudDomainSave(virDomainPtr dom,
-                    const char *path ATTRIBUTE_UNUSED) {
+                           const char *path) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     struct qemud_vm *vm = qemudFindVMByID(driver, dom->id);
+    char *command, *info;
+    int fd;
+    char *safe_path;
+    char *xml;
+    struct qemud_save_header header;
+
+    memset(&header, 0, sizeof(header));
+    memcpy(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic));
+    header.version = QEMUD_SAVE_VERSION;
+
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN, "no domain with matching id %d", dom->id);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         "no domain with matching id %d", dom->id);
         return -1;
     }
+
     if (!qemudIsActiveVM(vm)) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED, "domain is not running");
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "domain is not running");
         return -1;
     }
-    qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED, "save is not supported");
-    return -1;
+
+    /* Pause */
+    if (vm->state == VIR_DOMAIN_RUNNING) {
+        header.was_running = 1;
+        if (qemudDomainSuspend(dom) != 0) {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                             "failed to pause domain");
+            return -1;
+        }
+    }
+
+    /* Get XML for the domain */
+    xml = qemudGenerateXML(dom->conn, driver, vm, vm->def, 0);
+    if (!xml) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "failed to get domain xml");
+        return -1;
+    }
+    header.xml_len = strlen(xml) + 1;
+
+    /* Write header to file, followed by XML */
+    if ((fd = open(path, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "failed to create '%s'", path);
+        free(xml);
+        return -1;
+    }
+
+    if (safewrite(fd, &header, sizeof(header)) != sizeof(header)) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "failed to write save header");
+        close(fd);
+        free(xml);
+        return -1;
+    }
+
+    if (safewrite(fd, xml, header.xml_len) != header.xml_len) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "failed to write xml");
+        close(fd);
+        free(xml);
+        return -1;
+    }
+
+    close(fd);
+    free(xml);
+
+    /* Migrate to file */
+    safe_path = qemudEscapeShellArg(path);
+    if (!safe_path) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "out of memory");
+        return -1;
+    }
+    if (asprintf (&command, "migrate \"exec:"
+                  "dd of='%s' oflag=append conv=notrunc 2>/dev/null"
+                  "\"\r", safe_path) == -1) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "out of memory");
+        free(safe_path);
+        return -1;
+    }
+    free(safe_path);
+
+    if (qemudMonitorCommand(driver, vm, command, &info) < 0) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "migrate operation failed");
+        free(command);
+        return -1;
+    }
+
+    free(info);
+    free(command);
+
+    /* Shut it down */
+    qemudShutdownVMDaemon(dom->conn, driver, vm);
+    if (!vm->configFile[0])
+        qemudRemoveInactiveVM(driver, vm);
+
+    return 0;
 }
 
 
 static int qemudDomainRestore(virConnectPtr conn,
-                       const char *path ATTRIBUTE_UNUSED) {
-    /*struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;*/
-    qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED, "restore is not supported");
-    return -1;
+                       const char *path) {
+    struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
+    struct qemud_vm_def *def;
+    struct qemud_vm *vm;
+    int fd;
+    char *xml;
+    struct qemud_save_header header;
+
+    /* Verify the header and read the XML */
+    if ((fd = open(path, O_RDONLY)) < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "cannot read domain image");
+        return -1;
+    }
+
+    if (saferead(fd, &header, sizeof(header)) != sizeof(header)) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "failed to read qemu header");
+        close(fd);
+        return -1;
+    }
+
+    if (memcmp(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic)) != 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "image magic is incorrect");
+        close(fd);
+        return -1;
+    }
+
+    if (header.version > QEMUD_SAVE_VERSION) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "image version is not supported (%d > %d)", 
+                         header.version, QEMUD_SAVE_VERSION);
+        close(fd);
+        return -1;
+    }
+
+    if ((xml = (char *)malloc(header.xml_len)) == NULL) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "out of memory");
+        close(fd);
+        return -1;
+    }
+
+    if (saferead(fd, xml, header.xml_len) != header.xml_len) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "failed to read XML");
+        close(fd);
+        free(xml);
+        return -1;
+    }
+
+    /* Create a domain from this XML */
+    if (!(def = qemudParseVMDef(conn, driver, xml, NULL))) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "failed to parse XML");
+        close(fd);
+        free(xml);
+        return -1;
+    }
+    free(xml);
+
+    /* Ensure the name and UUID don't already exist in an active VM */
+    vm = qemudFindVMByUUID(driver, def->uuid);
+    if (!vm) vm = qemudFindVMByName(driver, def->name);
+    if (vm && qemudIsActiveVM(vm)) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "domain is already active as '%s'", vm->def->name);
+        close(fd);
+        return -1;
+    }
+
+    if (!(vm = qemudAssignVMDef(conn, driver, def))) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "failed to assign new VM");
+        qemudFreeVMDef(def);
+        close(fd);
+        return -1;
+    }
+
+    /* Set the migration source and start it up. */
+    snprintf(vm->migrateFrom, sizeof(vm->migrateFrom), "stdio");
+    vm->stdin = fd;
+
+    if (qemudStartVMDaemon(conn, driver, vm) < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                         "failed to start VM");
+        if (!vm->configFile[0])
+            qemudRemoveInactiveVM(driver, vm);
+        close(fd);
+        return -1;
+    }
+    close(fd);
+    vm->migrateFrom[0] = '\0';
+    vm->stdin = -1;
+
+    /* If it was running before, resume it now. */
+    if (header.was_running) {
+        char *info;
+        if (qemudMonitorCommand(driver, vm, "cont\r", &info) < 0) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
+                             "failed to resume domain");
+            return -1;
+        }
+        free(info);
+        vm->state = VIR_DOMAIN_RUNNING;
+    }
+
+    return 0;
 }
 
 
