@@ -1518,7 +1518,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
         (vm->def->os.initrd[0] ? 2 : 0) + /* initrd */
         (vm->def->os.cmdline[0] ? 2 : 0) + /* cmdline */
         (vm->def->graphicsType == QEMUD_GRAPHICS_VNC ? 2 :
-         (vm->def->graphicsType == QEMUD_GRAPHICS_SDL ? 0 : 1)); /* graphics */
+         (vm->def->graphicsType == QEMUD_GRAPHICS_SDL ? 0 : 1)) + /* graphics */
+        (vm->migrateFrom[0] ? 3 : 0); /* migrateFrom */
 
     snprintf(memory, sizeof(memory), "%d", vm->def->memory/1024);
     snprintf(vcpus, sizeof(vcpus), "%d", vm->def->vcpus);
@@ -1767,6 +1768,15 @@ int qemudBuildCommandLine(virConnectPtr conn,
         /* SDL is the default. no args needed */
     }
 
+    if (vm->migrateFrom[0]) {
+        if (!((*argv)[++n] = strdup("-S")))
+            goto no_memory;
+        if (!((*argv)[++n] = strdup("-incoming")))
+            goto no_memory;
+        if (!((*argv)[++n] = strdup(vm->migrateFrom)))
+            goto no_memory;
+    }
+
     (*argv)[++n] = NULL;
 
     return 0;
@@ -1884,6 +1894,7 @@ qemudAssignVMDef(virConnectPtr conn,
         return NULL;
     }
 
+    vm->stdin = -1;
     vm->stdout = -1;
     vm->stderr = -1;
     vm->monitor = -1;

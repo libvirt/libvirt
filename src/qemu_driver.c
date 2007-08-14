@@ -656,9 +656,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                  errno, strerror(errno));
 
     if (virExecNonBlock(conn, argv, &vm->pid,
-                        -1, &vm->stdout, &vm->stderr) == 0) {
+                        vm->stdin, &vm->stdout, &vm->stderr) == 0) {
         vm->id = driver->nextvmid++;
-        vm->state = VIR_DOMAIN_RUNNING;
+        vm->state = vm->migrateFrom[0] ? VIR_DOMAIN_PAUSED : VIR_DOMAIN_RUNNING;
 
         driver->ninactivevms--;
         driver->nactivevms++;

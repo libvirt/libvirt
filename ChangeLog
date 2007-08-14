@@ -1,3 +1,8 @@
+Mon Aug 13 21:26:48 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c, src/qemu_conf.h, src/qemu_driver.c: Add support
+	for passing -incoming option to QEMU for migration/restore.
+
 Mon Aug 13 21:18:48 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/util.h, src/util.c: Allow a file descriptor to be supplied

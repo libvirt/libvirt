@@ -199,6 +199,7 @@ struct qemud_vm_def {
 
 /* Guest VM runtime state */
 struct qemud_vm {
+    int stdin;
     int stdout;
     int stderr;
     int monitor;
@@ -212,6 +213,7 @@ struct qemud_vm {
 
     char configFile[PATH_MAX];
     char autostartLink[PATH_MAX];
+    char migrateFrom[PATH_MAX];
 
     struct qemud_vm_def *def; /* The current definition */
     struct qemud_vm_def *newDef; /* New definition to activate at shutdown */
