@@ -987,7 +987,7 @@ cmdSave(vshControl * ctl, vshCmd * cmd)
  * "schedinfo" command
  */
 static vshCmdInfo info_schedinfo[] = {
-    {"syntax", "sched <domain>"},
+    {"syntax", "schedinfo <domain>"},
     {"help", gettext_noop("show/set scheduler parameters")},
     {"desc", gettext_noop("Show/Set scheduler parameters.")},
     {NULL, NULL}
