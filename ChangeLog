@@ -1,14 +1,23 @@
+Mon Aug 13 21:33:48 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_driver.c: added qemudEscapeShellArg() helper function
+	for future save impl. Patch from Jim Paris
+	* src/util.c, src/util.h: Added saferead/safewrite convenience
+	functions for doing read/write safe from signals. Patch from
+	Jim Paris
+
 Mon Aug 13 21:26:48 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c, src/qemu_conf.h, src/qemu_driver.c: Add support
-	for passing -incoming option to QEMU for migration/restore.
+	for passing -incoming option to QEMU for migration/restore. Patch
+	from Jim Paris
 
 Mon Aug 13 21:18:48 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/util.h, src/util.c: Allow a file descriptor to be supplied
 	for STDIN when calling virExec(), or if -1, redirect from /dev/null
 	* src/qemu_driver.c, src/openvz_driver.c: Pass in -1 for new stdin
-	parameter above where neccessary
+	parameter above where neccessary. Patch from Jim Paris
 
 Mon Aug 13 20:13:48 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 

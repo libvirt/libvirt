@@ -1855,6 +1855,72 @@ static int qemudDomainGetInfo(virDomainPtr dom,
 }
 
 
+static char *qemudEscapeShellArg(const char *in)
+{
+    int len = 0;
+    int i, j;
+    char *out;
+
+    /* To pass through the QEMU monitor, we need to use escape
+       sequences: \r, \n, \", \\
+
+       To pass through both QEMU + the shell, we need to escape
+       the single character ' as the five characters '\\''
+    */
+
+    for (i = 0; in[i] != '\0'; i++) {
+        switch(in[i]) {
+        case '\r':
+        case '\n':
+        case '"':
+        case '\\':
+            len += 2;
+            break;
+        case '\'':
+            len += 5;
+            break;
+        default:
+            len += 1;
+            break;
+        }
+    }
+
+    if ((out = (char *)malloc(len + 1)) == NULL)
+        return NULL;
+
+    for (i = j = 0; in[i] != '\0'; i++) {
+        switch(in[i]) {
+        case '\r':
+            out[j++] = '\\';
+            out[j++] = 'r';
+            break;
+        case '\n':
+            out[j++] = '\\';
+            out[j++] = 'n';
+            break;
+        case '"':
+        case '\\':
+            out[j++] = '\\';
+            out[j++] = in[i];
+            break;
+        case '\'':
+            out[j++] = '\'';
+            out[j++] = '\\';
+            out[j++] = '\\';
+            out[j++] = '\'';
+            out[j++] = '\'';
+            break;
+        default:
+            out[j++] = in[i];
+            break;
+        }
+    }
+    out[j] = '\0';
+
+    return out;
+}
+
+
 static int qemudDomainSave(virDomainPtr dom,
                     const char *path ATTRIBUTE_UNUSED) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
