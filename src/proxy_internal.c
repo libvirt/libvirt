@@ -852,6 +852,8 @@ xenProxyLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
     memset(&req, 0, sizeof(virProxyPacket));
     req.command = VIR_PROXY_LOOKUP_UUID;
     req.len = sizeof(virProxyPacket) + VIR_UUID_BUFLEN;
+    memcpy(&req.extra.str[0], uuid, VIR_UUID_BUFLEN);
+
     ret = xenProxyCommand(conn, (virProxyPacketPtr) &req, &req, 0);
     if (ret < 0) {
         xenProxyClose(conn);
