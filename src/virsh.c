@@ -1679,14 +1679,14 @@ cmdSetvcpus(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     count = vshCommandOptInt(cmd, "count", &count);
-    if (!count) {
+    if (count <= 0) {
         vshError(ctl, FALSE, _("Invalid number of virtual CPUs."));
         virDomainFree(dom);
         return FALSE;
     }
 
     maxcpu = virDomainGetMaxVcpus(dom);
-    if (!maxcpu) {
+    if (maxcpu <= 0) {
         virDomainFree(dom);
         return FALSE;
     }
