@@ -1,3 +1,8 @@
+Thu Aug 16 15:24:30 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: vshCommandOptInt was broken as it would not
+	  detect non-int inputs, problem raised by Masayuki Sunou
+
 Wed Aug 15 12:21:13 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: fixed 2 small bugs in setvcpus command, after

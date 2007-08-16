@@ -3699,12 +3699,18 @@ static int
 vshCommandOptInt(vshCmd * cmd, const char *name, int *found)
 {
     vshCmdOpt *arg = vshCommandOpt(cmd, name);
-    int res = 0;
+    int res = 0, num_found = FALSE;
+    char *end_p = NULL;
 
-    if (arg)
-        res = atoi(arg->data);
+    if ((arg != NULL) && (arg->data != NULL)) {
+        res = strtol(arg->data, &end_p, 10);
+	if ((arg->data == end_p) || (*end_p!= 0))
+	    num_found = FALSE;
+	else
+	    num_found = TRUE;
+    }
     if (found)
-        *found = arg ? TRUE : FALSE;
+        *found = num_found;
     return res;
 }
 
