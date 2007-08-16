@@ -3091,6 +3091,13 @@ xenDaemonAttachDevice(virDomainPtr domain, char *xml)
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
+    /*
+     * on older Xen without the inactive guests management
+     * avoid doing this on inactive guests
+     */
+    if ((domain->id < 0) && (priv->xendConfigVersion < 3))
+        return (-1);
+
     str = virDomainGetOSType(domain);
     if (strcmp(str, "linux"))
         hvm = 1;

@@ -1,3 +1,8 @@
+Thu Aug 16 17:41:22 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: patch from Masayuki Sunou to avoid
+	  attach-disk/attach-interface when < Xen 3.0.4
+
 Thu Aug 16 15:24:30 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: vshCommandOptInt was broken as it would not
