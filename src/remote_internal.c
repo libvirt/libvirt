@@ -1195,6 +1195,27 @@ remoteClose (virConnectPtr conn)
     return ret;
 }
 
+static int
+remoteSupportsFeature (virConnectPtr conn, int feature)
+{
+    remote_supports_feature_args args;
+    remote_supports_feature_ret ret;
+    GET_PRIVATE (conn, -1);
+
+    /* VIR_DRV_FEATURE_REMOTE* features are handled directly. */
+    if (feature == VIR_DRV_FEATURE_REMOTE) return 1;
+
+    args.feature = feature;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_SUPPORTS_FEATURE,
+              (xdrproc_t) xdr_remote_supports_feature_args, (char *) &args,
+              (xdrproc_t) xdr_remote_supports_feature_ret, (char *) &ret) == -1)
+        return -1;
+
+    return ret.supported;
+}
+
 /* Unfortunately this function is defined to return a static string.
  * Since the remote end always answers with the same type (for a
  * single connection anyway) we cache the type in the connection's
@@ -2898,6 +2919,7 @@ static virDriver driver = {
     .ver = REMOTE_PROTOCOL_VERSION,
     .open = remoteOpen,
     .close = remoteClose,
+    .supports_feature = remoteSupportsFeature,
 	.type = remoteType,
 	.version = remoteVersion,
     .getHostname = remoteGetHostname,

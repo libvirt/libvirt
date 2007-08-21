@@ -178,6 +178,24 @@ xdr_remote_open_args (XDR *xdrs, remote_open_args *objp)
 }
 
 bool_t
+xdr_remote_supports_feature_args (XDR *xdrs, remote_supports_feature_args *objp)
+{
+
+	 if (!xdr_int (xdrs, &objp->feature))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_supports_feature_ret (XDR *xdrs, remote_supports_feature_ret *objp)
+{
+
+	 if (!xdr_int (xdrs, &objp->supported))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_remote_get_type_ret (XDR *xdrs, remote_get_type_ret *objp)
 {
 

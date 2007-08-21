@@ -95,6 +95,16 @@ struct remote_open_args {
 };
 typedef struct remote_open_args remote_open_args;
 
+struct remote_supports_feature_args {
+	int feature;
+};
+typedef struct remote_supports_feature_args remote_supports_feature_args;
+
+struct remote_supports_feature_ret {
+	int supported;
+};
+typedef struct remote_supports_feature_ret remote_supports_feature_ret;
+
 struct remote_get_type_ret {
 	remote_nonnull_string type;
 };
@@ -632,6 +642,7 @@ enum remote_procedure {
 	REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS = 57,
 	REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS = 58,
 	REMOTE_PROC_GET_HOSTNAME = 59,
+	REMOTE_PROC_SUPPORTS_FEATURE = 60,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -673,6 +684,8 @@ extern  bool_t xdr_remote_vcpu_info (XDR *, remote_vcpu_info*);
 extern  bool_t xdr_remote_sched_param_value (XDR *, remote_sched_param_value*);
 extern  bool_t xdr_remote_sched_param (XDR *, remote_sched_param*);
 extern  bool_t xdr_remote_open_args (XDR *, remote_open_args*);
+extern  bool_t xdr_remote_supports_feature_args (XDR *, remote_supports_feature_args*);
+extern  bool_t xdr_remote_supports_feature_ret (XDR *, remote_supports_feature_ret*);
 extern  bool_t xdr_remote_get_type_ret (XDR *, remote_get_type_ret*);
 extern  bool_t xdr_remote_get_version_ret (XDR *, remote_get_version_ret*);
 extern  bool_t xdr_remote_get_hostname_ret (XDR *, remote_get_hostname_ret*);
@@ -774,6 +787,8 @@ extern bool_t xdr_remote_vcpu_info ();
 extern bool_t xdr_remote_sched_param_value ();
 extern bool_t xdr_remote_sched_param ();
 extern bool_t xdr_remote_open_args ();
+extern bool_t xdr_remote_supports_feature_args ();
+extern bool_t xdr_remote_supports_feature_ret ();
 extern bool_t xdr_remote_get_type_ret ();
 extern bool_t xdr_remote_get_version_ret ();
 extern bool_t xdr_remote_get_hostname_ret ();

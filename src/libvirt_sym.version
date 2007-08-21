@@ -116,5 +116,7 @@
  	__virStateReload;
  	__virStateActive;
 
+	__virDrvSupportsFeature;
+
     local: *;
 };

@@ -1920,6 +1920,7 @@ static virDriver testDriver = {
     LIBVIR_VERSION_NUMBER,
     testOpen, /* open */
     testClose, /* close */
+    NULL, /* supports_feature */
     NULL, /* type */
     testGetVersion, /* version */
     testGetHostname, /* hostname */

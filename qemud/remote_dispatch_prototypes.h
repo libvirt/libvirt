@@ -61,3 +61,4 @@ static int remoteDispatchNumOfDefinedNetworks (struct qemud_client *client, remo
 static int remoteDispatchNumOfDomains (struct qemud_client *client, remote_message_header *req, void *args, remote_num_of_domains_ret *ret);
 static int remoteDispatchNumOfNetworks (struct qemud_client *client, remote_message_header *req, void *args, remote_num_of_networks_ret *ret);
 static int remoteDispatchOpen (struct qemud_client *client, remote_message_header *req, remote_open_args *args, void *ret);
+static int remoteDispatchSupportsFeature (struct qemud_client *client, remote_message_header *req, remote_supports_feature_args *args, remote_supports_feature_ret *ret);

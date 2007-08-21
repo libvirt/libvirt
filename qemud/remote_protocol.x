@@ -170,6 +170,14 @@ struct remote_open_args {
     int flags;
 };
 
+struct remote_supports_feature_args {
+    int feature;
+};
+
+struct remote_supports_feature_ret {
+    int supported;
+};
+
 struct remote_get_type_ret {
     remote_nonnull_string type;
 };
@@ -610,7 +618,8 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_GET_SCHEDULER_TYPE = 56,
     REMOTE_PROC_DOMAIN_GET_SCHEDULER_PARAMETERS = 57,
     REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS = 58,
-    REMOTE_PROC_GET_HOSTNAME = 59
+    REMOTE_PROC_GET_HOSTNAME = 59,
+    REMOTE_PROC_SUPPORTS_FEATURE = 60
 };
 
 /* Custom RPC structure. */

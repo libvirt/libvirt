@@ -540,6 +540,20 @@ virConnectClose(virConnectPtr conn)
     return (0);
 }
 
+/* Not for public use.  This function is part of the internal
+ * implementation of driver features in the remote case.
+ */
+int
+__virDrvSupportsFeature (virConnectPtr conn, int feature)
+{
+    DEBUG("conn=%p, feature=%d", conn, feature);
+
+    if (!VIR_IS_CONNECT(conn))
+        return (-1);
+
+    return VIR_DRV_SUPPORTS_FEATURE (conn->driver, conn, feature);
+}
+
 /**
  * virConnectGetType:
  * @conn: pointer to the hypervisor connection

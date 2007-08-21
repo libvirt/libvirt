@@ -418,6 +418,18 @@ remoteDispatchClose (struct qemud_client *client, remote_message_header *req,
 }
 
 static int
+remoteDispatchSupportsFeature (struct qemud_client *client, remote_message_header *req,
+                               remote_supports_feature_args *args, remote_supports_feature_ret *ret)
+{
+    CHECK_CONN(client);
+
+    ret->supported = __virDrvSupportsFeature (client->conn, args->feature);
+    if (ret->supported == -1) return -1;
+
+    return 0;
+}
+
+static int
 remoteDispatchGetType (struct qemud_client *client, remote_message_header *req,
                        void *args ATTRIBUTE_UNUSED, remote_get_type_ret *ret)
 {

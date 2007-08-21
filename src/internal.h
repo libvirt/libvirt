@@ -229,6 +229,8 @@ int __virStateActive(void);
 #define virStateReload() __virStateReload()
 #define virStateActive() __virStateActive()
 
+int __virDrvSupportsFeature (virConnectPtr conn, int feature);
+
 #ifdef __cplusplus
 }
 #endif                          /* __cplusplus */

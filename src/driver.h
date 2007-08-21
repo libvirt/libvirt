@@ -44,12 +44,42 @@ typedef enum {
     VIR_DRV_OPEN_ERROR = -2,
 } virDrvOpenStatus;
 
+/* Feature detection.  This is a libvirt-private interface for determining
+ * what features are supported by the driver.
+ *
+ * The remote driver passes features through to the real driver at the
+ * remote end unmodified, except if you query a VIR_DRV_FEATURE_REMOTE*
+ * feature.
+ */
+    /* Driver supports V1-style virDomainMigrate, ie. domainMigratePrepare/
+     * domainMigratePerform/domainMigrateFinish.
+     */
+#define VIR_DRV_FEATURE_MIGRATION_V1 1
+
+    /* Driver is not local. */
+#define VIR_DRV_FEATURE_REMOTE 2
+
+/* Internal feature-detection macro.  Don't call drv->supports_feature
+ * directly, because it may be NULL, use this macro instead.
+ *
+ * Note that you must check for errors.
+ *
+ * Returns:
+ *   >= 1  Feature is supported.
+ *   0     Feature is not supported.
+ *   -1    Error.
+ */
+#define VIR_DRV_SUPPORTS_FEATURE(drv,conn,feature)                      \
+    ((drv)->supports_feature ? (drv)->supports_feature((conn),(feature)) : 0)
+
 typedef virDrvOpenStatus
 	(*virDrvOpen)			(virConnectPtr conn,
 					 const char *name,
 					 int flags);
 typedef int
 	(*virDrvClose)			(virConnectPtr conn);
+typedef int
+    (*virDrvSupportsFeature) (virConnectPtr conn, int feature);
 typedef const char *
 	(*virDrvGetType)		(virConnectPtr conn);
 typedef int
@@ -202,6 +232,7 @@ struct _virDriver {
 	unsigned long ver;	/* the version of the backend */
 	virDrvOpen			open;
 	virDrvClose			close;
+    virDrvSupportsFeature   supports_feature;
 	virDrvGetType			type;
 	virDrvGetVersion		version;
     virDrvGetHostname       getHostname;

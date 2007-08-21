@@ -2618,6 +2618,7 @@ static virDriver qemuDriver = {
     LIBVIR_VERSION_NUMBER,
     qemudOpen, /* open */
     qemudClose, /* close */
+    NULL, /* supports_feature */
     qemudGetType, /* type */
     qemudGetVersion, /* version */
     NULL, /* hostname */

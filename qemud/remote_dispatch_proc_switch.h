@@ -431,3 +431,12 @@ case REMOTE_PROC_OPEN:
 	args = (char *) &lv_remote_open_args;
 	memset (&lv_remote_open_args, 0, sizeof lv_remote_open_args);
 	break;
+case REMOTE_PROC_SUPPORTS_FEATURE:
+	fn = (dispatch_fn) remoteDispatchSupportsFeature;
+	args_filter = (xdrproc_t) xdr_remote_supports_feature_args;
+	args = (char *) &lv_remote_supports_feature_args;
+	memset (&lv_remote_supports_feature_args, 0, sizeof lv_remote_supports_feature_args);
+	ret_filter = (xdrproc_t) xdr_remote_supports_feature_ret;
+	ret = (char *) &lv_remote_supports_feature_ret;
+	memset (&lv_remote_supports_feature_ret, 0, sizeof lv_remote_supports_feature_ret);
+	break;
