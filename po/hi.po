@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: hi\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-13 13:30+0200\n"
+"POT-Creation-Date: 2007-08-17 09:28+0200\n"
 "PO-Revision-Date: 2007-04-17 11:48+0530\n"
 "Last-Translator: hi <rranjan@redhat.com>\n"
 "Language-Team: Hindi <fedora-trans-hi@redhat.com>\n"
@@ -699,7 +699,7 @@ msgstr "vbd फाइलनाम विश्लेषित नहीं क�
 msgid "failed to parse Xend domain information"
 msgstr "Xend डोमेन सूचना विश्लेषण में विफल"
 
-#: src/xend_internal.c:3174
+#: src/xend_internal.c:3181
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "निष्क्रिय डोमेन %s बनाने में विफल\n"
@@ -840,7 +840,7 @@ msgstr "नाम"
 msgid "State"
 msgstr "स्थिति"
 
-#: src/virsh.c:586 src/virsh.c:608 src/virsh.c:4097 src/virsh.c:4113
+#: src/virsh.c:586 src/virsh.c:608 src/virsh.c:4103 src/virsh.c:4119
 msgid "no state"
 msgstr "कोई स्थिति नहीं"
 
@@ -1902,25 +1902,25 @@ msgstr "--%s <number>"
 msgid "--%s <string>"
 msgstr "--%s <string>"
 
-#: src/virsh.c:3744
+#: src/virsh.c:3750
 msgid "undefined domain name or id"
 msgstr "अपरिभाषित डोमेन नाम या id"
 
-#: src/virsh.c:3777
+#: src/virsh.c:3783
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "'%s' डोमेन पाने में विफल"
 
-#: src/virsh.c:3790
+#: src/virsh.c:3796
 msgid "undefined network name"
 msgstr "अपरिभाषित संजाल नाम"
 
-#: src/virsh.c:3814
+#: src/virsh.c:3820
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "'%s' संजाल पाने में विफल"
 
-#: src/virsh.c:3842
+#: src/virsh.c:3848
 #, c-format
 msgid ""
 "\n"
@@ -1931,125 +1931,125 @@ msgstr ""
 "(समय: %.3f ms)\n"
 "\n"
 
-#: src/virsh.c:3916
+#: src/virsh.c:3922
 msgid "missing \""
 msgstr "गुम \""
 
-#: src/virsh.c:3977
+#: src/virsh.c:3983
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "अप्रत्याशित टोकेन (कमांड नाम): '%s'"
 
-#: src/virsh.c:3982
+#: src/virsh.c:3988
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "अज्ञात कमांड: '%s'"
 
-#: src/virsh.c:3989
+#: src/virsh.c:3995
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "कमांड '%s' विकल्प का समर्थन नहीं करता है --%s"
 
-#: src/virsh.c:4004
+#: src/virsh.c:4010
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "प्रत्याशित वाक्य रचना: --%s <%s>"
 
-#: src/virsh.c:4007
+#: src/virsh.c:4013
 msgid "number"
 msgstr "संख्या"
 
-#: src/virsh.c:4007
+#: src/virsh.c:4013
 msgid "string"
 msgstr "स्ट्रिंग"
 
-#: src/virsh.c:4013
+#: src/virsh.c:4019
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "अप्रत्याशित आंकड़ा '%s'"
 
-#: src/virsh.c:4035
+#: src/virsh.c:4041
 msgid "OPTION"
 msgstr "विकल्प"
 
-#: src/virsh.c:4035
+#: src/virsh.c:4041
 msgid "DATA"
 msgstr "आंकड़ा"
 
-#: src/virsh.c:4085 src/virsh.c:4111
+#: src/virsh.c:4091 src/virsh.c:4117
 msgid "running"
 msgstr "कार्यशील"
 
-#: src/virsh.c:4087 src/virsh.c:4109
+#: src/virsh.c:4093 src/virsh.c:4115
 msgid "blocked"
 msgstr "ब्लॉक किया"
 
-#: src/virsh.c:4089
+#: src/virsh.c:4095
 msgid "paused"
 msgstr "ठहराया गया"
 
-#: src/virsh.c:4091
+#: src/virsh.c:4097
 msgid "in shutdown"
 msgstr "बंद स्थिति में"
 
-#: src/virsh.c:4093
+#: src/virsh.c:4099
 msgid "shut off"
 msgstr "बंद करें"
 
-#: src/virsh.c:4095
+#: src/virsh.c:4101
 msgid "crashed"
 msgstr "क्रेश"
 
-#: src/virsh.c:4107
+#: src/virsh.c:4113
 msgid "offline"
 msgstr "ऑफलाइन"
 
-#: src/virsh.c:4126
+#: src/virsh.c:4132
 msgid "no valid connection"
 msgstr "कोई विधिक संबंधन नहीं"
 
-#: src/virsh.c:4173
+#: src/virsh.c:4179
 #, c-format
 msgid "%s: error: "
 msgstr "%s: त्रुटि: "
 
-#: src/virsh.c:4175
+#: src/virsh.c:4181
 msgid "error: "
 msgstr "त्रुटि: "
 
-#: src/virsh.c:4197 src/virsh.c:4209 src/virsh.c:4222
+#: src/virsh.c:4203 src/virsh.c:4215 src/virsh.c:4228
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: %d बाइट देने में विफल"
 
-#: src/virsh.c:4236
+#: src/virsh.c:4242
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "%s: %d: %lu बाइट आबंटन में विफल"
 
-#: src/virsh.c:4272
+#: src/virsh.c:4278
 msgid "failed to connect to the hypervisor"
 msgstr "हाइपरविजर में जुडने में विफल"
 
-#: src/virsh.c:4296
+#: src/virsh.c:4302
 #, fuzzy
 msgid "failed to get the log file information"
 msgstr "नोड सूचना पाने में विफल"
 
-#: src/virsh.c:4301
+#: src/virsh.c:4307
 msgid "the log path is not a file"
 msgstr ""
 
-#: src/virsh.c:4307
+#: src/virsh.c:4313
 msgid "failed to open the log file. check the log file path"
 msgstr ""
 
-#: src/virsh.c:4375
+#: src/virsh.c:4381
 #, fuzzy
 msgid "failed to write the log file"
 msgstr "विन्यास फाइल लिखने में विफल"
 
-#: src/virsh.c:4544
+#: src/virsh.c:4550
 #, fuzzy, c-format
 msgid ""
 "\n"
@@ -2081,7 +2081,7 @@ msgstr ""
 "\n"
 "  commands (non interactive mode):\n"
 
-#: src/virsh.c:4562
+#: src/virsh.c:4568
 #, fuzzy, c-format
 msgid ""
 "\n"
@@ -2092,12 +2092,12 @@ msgstr ""
 "  (कमांड के बारे में विस्तार से जानने के लिये --help <command> निर्दिष्ट करें)\n"
 "\n"
 
-#: src/virsh.c:4658
+#: src/virsh.c:4664
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "असमर्थित विकल्प '-%c'. See --help."
 
-#: src/virsh.c:4740
+#: src/virsh.c:4746
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -2106,7 +2106,7 @@ msgstr ""
 "%s में आपका स्वागत है, वर्चुअलाइजेशन का अंतःक्रियात्मक टर्मिनल.\n"
 "\n"
 
-#: src/virsh.c:4743
+#: src/virsh.c:4749
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"

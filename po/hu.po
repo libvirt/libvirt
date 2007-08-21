@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-13 13:30+0200\n"
+"POT-Creation-Date: 2007-08-17 09:28+0200\n"
 "PO-Revision-Date: 2007-05-03 21:23+0200\n"
 "Last-Translator: Arpad Biro <biro_arpad@yahoo.com>\n"
 "Language-Team: \n"
@@ -696,7 +696,7 @@ msgstr "nem értelmezhető a vbd-fájlnév, hiányzik a meghajtóprogram típusa
 msgid "failed to parse Xend domain information"
 msgstr "Xend-tartományinformáció értelmezése nem sikerült"
 
-#: src/xend_internal.c:3174
+#: src/xend_internal.c:3181
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "%s inaktív tartomány létrehozása nem sikerült\n"
@@ -842,7 +842,7 @@ msgstr "Név"
 msgid "State"
 msgstr "Állapot"
 
-#: src/virsh.c:586 src/virsh.c:608 src/virsh.c:4097 src/virsh.c:4113
+#: src/virsh.c:586 src/virsh.c:608 src/virsh.c:4103 src/virsh.c:4119
 msgid "no state"
 msgstr "nincs állapot"
 
@@ -1902,25 +1902,25 @@ msgstr "--%s <szám>"
 msgid "--%s <string>"
 msgstr "--%s <szöveg>"
 
-#: src/virsh.c:3744
+#: src/virsh.c:3750
 msgid "undefined domain name or id"
 msgstr "nem definiált tartománynév vagy -azonosító"
 
-#: src/virsh.c:3777
+#: src/virsh.c:3783
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "\"%s\" tartomány lekérdezése nem sikerült"
 
-#: src/virsh.c:3790
+#: src/virsh.c:3796
 msgid "undefined network name"
 msgstr "nem definiált hálózatnév"
 
-#: src/virsh.c:3814
+#: src/virsh.c:3820
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "'%s' hálózat lekérdezése nem sikerült"
 
-#: src/virsh.c:3842
+#: src/virsh.c:3848
 #, c-format
 msgid ""
 "\n"
@@ -1931,125 +1931,125 @@ msgstr ""
 "(Idő: %.3f ms)\n"
 "\n"
 
-#: src/virsh.c:3916
+#: src/virsh.c:3922
 msgid "missing \""
 msgstr "hiányzó \""
 
-#: src/virsh.c:3977
+#: src/virsh.c:3983
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "váratlan jel (parancsnév): '%s'"
 
-#: src/virsh.c:3982
+#: src/virsh.c:3988
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "ismeretlen parancs: '%s'"
 
-#: src/virsh.c:3989
+#: src/virsh.c:3995
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "'%s' parancs nem támogatja a(z) --%s opciót"
 
-#: src/virsh.c:4004
+#: src/virsh.c:4010
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "várt forma: --%s <%s>"
 
-#: src/virsh.c:4007
+#: src/virsh.c:4013
 msgid "number"
 msgstr "szám"
 
-#: src/virsh.c:4007
+#: src/virsh.c:4013
 msgid "string"
 msgstr "szöveg"
 
-#: src/virsh.c:4013
+#: src/virsh.c:4019
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "váratlan adat: '%s'"
 
-#: src/virsh.c:4035
+#: src/virsh.c:4041
 msgid "OPTION"
 msgstr "OPCIÓ"
 
-#: src/virsh.c:4035
+#: src/virsh.c:4041
 msgid "DATA"
 msgstr "ADAT"
 
-#: src/virsh.c:4085 src/virsh.c:4111
+#: src/virsh.c:4091 src/virsh.c:4117
 msgid "running"
 msgstr "fut"
 
-#: src/virsh.c:4087 src/virsh.c:4109
+#: src/virsh.c:4093 src/virsh.c:4115
 msgid "blocked"
 msgstr "blokkolt"
 
-#: src/virsh.c:4089
+#: src/virsh.c:4095
 msgid "paused"
 msgstr "megállítva"
 
-#: src/virsh.c:4091
+#: src/virsh.c:4097
 msgid "in shutdown"
 msgstr "leállítás alatt"
 
-#: src/virsh.c:4093
+#: src/virsh.c:4099
 msgid "shut off"
 msgstr "leállt"
 
-#: src/virsh.c:4095
+#: src/virsh.c:4101
 msgid "crashed"
 msgstr "összeomlott"
 
-#: src/virsh.c:4107
+#: src/virsh.c:4113
 msgid "offline"
 msgstr "lekapcsolt"
 
-#: src/virsh.c:4126
+#: src/virsh.c:4132
 msgid "no valid connection"
 msgstr "nem érvényes csatlakozás"
 
-#: src/virsh.c:4173
+#: src/virsh.c:4179
 #, c-format
 msgid "%s: error: "
 msgstr "%s: hiba: "
 
-#: src/virsh.c:4175
+#: src/virsh.c:4181
 msgid "error: "
 msgstr "hiba: "
 
-#: src/virsh.c:4197 src/virsh.c:4209 src/virsh.c:4222
+#: src/virsh.c:4203 src/virsh.c:4215 src/virsh.c:4228
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: nem sikerült lefoglalni %d bájtot"
 
-#: src/virsh.c:4236
+#: src/virsh.c:4242
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "%s: %d: nem sikerült lefoglalni %lu bájtot"
 
-#: src/virsh.c:4272
+#: src/virsh.c:4278
 msgid "failed to connect to the hypervisor"
 msgstr "nem sikerült csatlakozni a felügyelőhöz"
 
-#: src/virsh.c:4296
+#: src/virsh.c:4302
 #, fuzzy
 msgid "failed to get the log file information"
 msgstr "csomópont-információ lekérdezése nem sikerült"
 
-#: src/virsh.c:4301
+#: src/virsh.c:4307
 msgid "the log path is not a file"
 msgstr ""
 
-#: src/virsh.c:4307
+#: src/virsh.c:4313
 msgid "failed to open the log file. check the log file path"
 msgstr ""
 
-#: src/virsh.c:4375
+#: src/virsh.c:4381
 #, fuzzy
 msgid "failed to write the log file"
 msgstr "a beállítási fájl írása nem sikerült"
 
-#: src/virsh.c:4544
+#: src/virsh.c:4550
 #, fuzzy, c-format
 msgid ""
 "\n"
@@ -2081,7 +2081,7 @@ msgstr ""
 "\n"
 "  parancsok (nem interaktív módú):\n"
 
-#: src/virsh.c:4562
+#: src/virsh.c:4568
 #, fuzzy, c-format
 msgid ""
 "\n"
@@ -2092,12 +2092,12 @@ msgstr ""
 "  (adja meg a --help <parancs> utótagot a parancs részleteihez)\n"
 "\n"
 
-#: src/virsh.c:4658
+#: src/virsh.c:4664
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "nem támogatott '-%c' opció. Lásd --help."
 
-#: src/virsh.c:4740
+#: src/virsh.c:4746
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -2106,7 +2106,7 @@ msgstr ""
 "Üdvözli a(z) %s, a virtualizációs interaktív terminál.\n"
 "\n"
 
-#: src/virsh.c:4743
+#: src/virsh.c:4749
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"

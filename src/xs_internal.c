@@ -578,6 +578,7 @@ xenStoreListDomains(virConnectPtr conn, int *ids, int maxids)
 #endif
 	ids[ret++] = (int) id;
     }
+    free(idlist);
     return(ret);
 }
 
@@ -597,7 +598,7 @@ xenStoreLookupByName(virConnectPtr conn, const char *name)
     unsigned int num, i, len;
     long id = -1;
     char **idlist = NULL, *endptr;
-    char prop[200], *tmp, *path = NULL;
+    char prop[200], *tmp;
     int found = 0;
     struct xend_domain *xenddomain = NULL;
     xenUnifiedPrivatePtr priv;
@@ -634,16 +635,13 @@ xenStoreLookupByName(virConnectPtr conn, const char *name)
                 break;
         }
     }
-    path = xs_get_domain_path(priv->xshandle, (unsigned int) id);
-
     if (!found)
-        return(NULL);
+        goto done;
 
     ret = virGetDomain(conn, name, NULL);
-    if (ret == NULL) {
-        if (path != NULL) free(path);
+    if (ret == NULL)
         goto done;
-    }
+
     ret->id = id;
 
 done:

@@ -1129,7 +1129,7 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
 {
     char *schedulertype;
     virDomainPtr dom;
-    virSchedParameterPtr params;
+    virSchedParameterPtr params = NULL;
     int i, ret;
     int nparams = 0;
     int nr_inputparams = 0;
@@ -1140,6 +1140,7 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
     int cap;
     char str_weight[] = "weight";
     char str_cap[]    = "cap";
+    int ret_val = FALSE;
 
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
@@ -1156,8 +1157,7 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
 
     params = vshMalloc(ctl, sizeof (virSchedParameter) * nr_inputparams);
     if (params == NULL) {
-	virDomainFree(dom);
-        return FALSE;
+        goto cleanup;
     }
 
     if (weightfound) {
@@ -1181,11 +1181,11 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
     if (inputparams > 0) {
         ret = virDomainSetSchedulerParameters(dom, params, inputparams);
         if (ret == -1) {
-	    virDomainFree(dom);
-	    return FALSE;
+            goto cleanup;
 	}
     }
     free(params);
+    params = NULL;
 
     /* Print SchedulerType */
     schedulertype = virDomainGetSchedulerType(dom, &nparams);
@@ -1195,21 +1195,23 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
         free(schedulertype);
     } else {
         vshPrint(ctl, "%-15s: %s\n", _("Scheduler"), _("Unknown"));
-	virDomainFree(dom);
-        return FALSE;
+        goto cleanup;
     }
 
     /* Get SchedulerParameters */
     params = vshMalloc(ctl, sizeof(virSchedParameter)* nparams);
+    if (params == NULL) {
+        goto cleanup;
+    }
     for (i = 0; i < nparams; i++){
         params[i].type = 0;
         memset (params[i].field, 0, sizeof params[i].field);
     }
     ret = virDomainGetSchedulerParameters(dom, params, &nparams);
     if (ret == -1) {
-        virDomainFree(dom);
-        return FALSE;
+        goto cleanup;
     }
+    ret_val = TRUE;
     if(nparams){
         for (i = 0; i < nparams; i++){
             switch (params[i].type) {
@@ -1236,9 +1238,11 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
             }
         }
     }
-    free(params);
+ cleanup:
+    if (params)
+        free(params);
     virDomainFree(dom);
-    return TRUE;
+    return ret_val;
 }
 
 /*

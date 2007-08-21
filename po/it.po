@@ -74,7 +74,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-13 13:30+0200\n"
+"POT-Creation-Date: 2007-08-17 09:28+0200\n"
 "PO-Revision-Date: 2007-08-01 02:38+0200\n"
 "Last-Translator: \n"
 "Language-Team:  <it@li.org>\n"
@@ -757,7 +757,7 @@ msgstr "impossibile analizzare il filename vbd, tipo di driver mancante"
 msgid "failed to parse Xend domain information"
 msgstr "impossibile analizzare le informazioni del dominio Xend"
 
-#: src/xend_internal.c:3174
+#: src/xend_internal.c:3181
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Impossibile creare il dominio inattivo %s\n"
@@ -902,7 +902,7 @@ msgstr "Nome"
 msgid "State"
 msgstr "Stato"
 
-#: src/virsh.c:586 src/virsh.c:608 src/virsh.c:4097 src/virsh.c:4113
+#: src/virsh.c:586 src/virsh.c:608 src/virsh.c:4103 src/virsh.c:4119
 msgid "no state"
 msgstr "nessuno stato"
 
@@ -1943,25 +1943,25 @@ msgstr "--%s <number>"
 msgid "--%s <string>"
 msgstr "--%s <string>"
 
-#: src/virsh.c:3744
+#: src/virsh.c:3750
 msgid "undefined domain name or id"
 msgstr "id o nome del dominio non definito"
 
-#: src/virsh.c:3777
+#: src/virsh.c:3783
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "impossibile ottenere il dominio '%s'"
 
-#: src/virsh.c:3790
+#: src/virsh.c:3796
 msgid "undefined network name"
 msgstr "nome della rete non definito"
 
-#: src/virsh.c:3814
+#: src/virsh.c:3820
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "impossibile ottenere la rete '%s'"
 
-#: src/virsh.c:3842
+#: src/virsh.c:3848
 #, c-format
 msgid ""
 "\n"
@@ -1972,124 +1972,124 @@ msgstr ""
 "(Tempo: %.3f ms)\n"
 "\n"
 
-#: src/virsh.c:3916
+#: src/virsh.c:3922
 msgid "missing \""
 msgstr "mancante \""
 
-#: src/virsh.c:3977
+#: src/virsh.c:3983
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "token inaspettato (nome del comando): '%s'"
 
-#: src/virsh.c:3982
+#: src/virsh.c:3988
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "comando sconosciuto: '%s'"
 
-#: src/virsh.c:3989
+#: src/virsh.c:3995
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "il comando '%s' non supporta l'opzione --%s"
 
-#: src/virsh.c:4004
+#: src/virsh.c:4010
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "sintassi prevista: --%s <%s>"
 
-#: src/virsh.c:4007
+#: src/virsh.c:4013
 msgid "number"
 msgstr "numero"
 
-#: src/virsh.c:4007
+#: src/virsh.c:4013
 msgid "string"
 msgstr "stringa"
 
-#: src/virsh.c:4013
+#: src/virsh.c:4019
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "dato inaspettato '%s'"
 
-#: src/virsh.c:4035
+#: src/virsh.c:4041
 msgid "OPTION"
 msgstr "OPZIONE"
 
-#: src/virsh.c:4035
+#: src/virsh.c:4041
 msgid "DATA"
 msgstr "DATI"
 
-#: src/virsh.c:4085 src/virsh.c:4111
+#: src/virsh.c:4091 src/virsh.c:4117
 msgid "running"
 msgstr "in esecuzione"
 
-#: src/virsh.c:4087 src/virsh.c:4109
+#: src/virsh.c:4093 src/virsh.c:4115
 msgid "blocked"
 msgstr "bloccato"
 
-#: src/virsh.c:4089
+#: src/virsh.c:4095
 msgid "paused"
 msgstr "in pausa"
 
-#: src/virsh.c:4091
+#: src/virsh.c:4097
 msgid "in shutdown"
 msgstr "in arresto"
 
-#: src/virsh.c:4093
+#: src/virsh.c:4099
 msgid "shut off"
 msgstr "disabilitato"
 
-#: src/virsh.c:4095
+#: src/virsh.c:4101
 msgid "crashed"
 msgstr "crashed"
 
-#: src/virsh.c:4107
+#: src/virsh.c:4113
 msgid "offline"
 msgstr "scollegato"
 
-#: src/virsh.c:4126
+#: src/virsh.c:4132
 msgid "no valid connection"
 msgstr "collegamento non valido"
 
-#: src/virsh.c:4173
+#: src/virsh.c:4179
 #, c-format
 msgid "%s: error: "
 msgstr "%s: errore: "
 
-#: src/virsh.c:4175
+#: src/virsh.c:4181
 msgid "error: "
 msgstr "errore: "
 
-#: src/virsh.c:4197 src/virsh.c:4209 src/virsh.c:4222
+#: src/virsh.c:4203 src/virsh.c:4215 src/virsh.c:4228
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: impossibile allocare %d byte"
 
-#: src/virsh.c:4236
+#: src/virsh.c:4242
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "%s: %d: impossibile allocare %lu bytes"
 
-#: src/virsh.c:4272
+#: src/virsh.c:4278
 msgid "failed to connect to the hypervisor"
 msgstr "impossibile collegarsi all'hypervisor"
 
-#: src/virsh.c:4296
+#: src/virsh.c:4302
 msgid "failed to get the log file information"
 msgstr "impossibile ottenere informazioni sul file di log"
 
-#: src/virsh.c:4301
+#: src/virsh.c:4307
 msgid "the log path is not a file"
 msgstr "il percorso del log non è un file"
 
-#: src/virsh.c:4307
+#: src/virsh.c:4313
 msgid "failed to open the log file. check the log file path"
 msgstr ""
 "impossibile aprire il file di log. controllare il percorso del file di log"
 
-#: src/virsh.c:4375
+#: src/virsh.c:4381
 msgid "failed to write the log file"
 msgstr "impossibile scrivere il file di log"
 
-#: src/virsh.c:4544
+#: src/virsh.c:4550
 #, c-format
 msgid ""
 "\n"
@@ -2122,7 +2122,7 @@ msgstr ""
 "\n"
 "  comandi (modalità non interattiva):\n"
 
-#: src/virsh.c:4562
+#: src/virsh.c:4568
 #, c-format
 msgid ""
 "\n"
@@ -2133,12 +2133,12 @@ msgstr ""
 "  (specifica help <command> per informazioni sul comando)\n"
 "\n"
 
-#: src/virsh.c:4658
+#: src/virsh.c:4664
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "opzione non supportata '-%c'. Consultare --help."
 
-#: src/virsh.c:4740
+#: src/virsh.c:4746
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -2147,7 +2147,7 @@ msgstr ""
 "Benvenuti a %s, il termiale interattivo per la virtualizzazione.\n"
 "\n"
 
-#: src/virsh.c:4743
+#: src/virsh.c:4749
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"

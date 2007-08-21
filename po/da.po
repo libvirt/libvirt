@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: da\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-13 13:30+0200\n"
+"POT-Creation-Date: 2007-08-17 09:28+0200\n"
 "PO-Revision-Date: 2007-05-10 15:48+0200\n"
 "Last-Translator: Keld Simonsen <keld@rap.dk>\n"
 "Language-Team:  <da@li.org>\n"
@@ -697,7 +697,7 @@ msgstr "Kan ikke fortolke vbd-filnavn, mangler drivertype"
 msgid "failed to parse Xend domain information"
 msgstr "kunne ikke analysere domæneinformation for Xend"
 
-#: src/xend_internal.c:3174
+#: src/xend_internal.c:3181
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Kunne ikke oprette inaktivt domæne %s\n"
@@ -840,7 +840,7 @@ msgstr "Navn"
 msgid "State"
 msgstr "Tilstand"
 
-#: src/virsh.c:586 src/virsh.c:608 src/virsh.c:4097 src/virsh.c:4113
+#: src/virsh.c:586 src/virsh.c:608 src/virsh.c:4103 src/virsh.c:4119
 msgid "no state"
 msgstr "ingen tilstand"
 
@@ -1896,25 +1896,25 @@ msgstr "--%s <nummer>"
 msgid "--%s <string>"
 msgstr "--%s <streng>"
 
-#: src/virsh.c:3744
+#: src/virsh.c:3750
 msgid "undefined domain name or id"
 msgstr "udefineret domænenavn eller id"
 
-#: src/virsh.c:3777
+#: src/virsh.c:3783
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "kunne ikke hente domæne '%s'"
 
-#: src/virsh.c:3790
+#: src/virsh.c:3796
 msgid "undefined network name"
 msgstr "udefineret netværksnavn"
 
-#: src/virsh.c:3814
+#: src/virsh.c:3820
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "kunne ikke hente netværk '%s'"
 
-#: src/virsh.c:3842
+#: src/virsh.c:3848
 #, c-format
 msgid ""
 "\n"
@@ -1925,125 +1925,125 @@ msgstr ""
 "(Tid: %.3f ms)\n"
 "\n"
 
-#: src/virsh.c:3916
+#: src/virsh.c:3922
 msgid "missing \""
 msgstr "mangler \""
 
-#: src/virsh.c:3977
+#: src/virsh.c:3983
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "uventet token (kommandonavn): '%s'"
 
-#: src/virsh.c:3982
+#: src/virsh.c:3988
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "ukendt kommando: '%s'"
 
-#: src/virsh.c:3989
+#: src/virsh.c:3995
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "kommandoen '%s' understøtter ikke flaget --%s"
 
-#: src/virsh.c:4004
+#: src/virsh.c:4010
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "forventet syntaks: --%s <%s>"
 
-#: src/virsh.c:4007
+#: src/virsh.c:4013
 msgid "number"
 msgstr "nummer"
 
-#: src/virsh.c:4007
+#: src/virsh.c:4013
 msgid "string"
 msgstr "streng"
 
-#: src/virsh.c:4013
+#: src/virsh.c:4019
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "uventet data '%s'"
 
-#: src/virsh.c:4035
+#: src/virsh.c:4041
 msgid "OPTION"
 msgstr "FLAG"
 
-#: src/virsh.c:4035
+#: src/virsh.c:4041
 msgid "DATA"
 msgstr "DATA"
 
-#: src/virsh.c:4085 src/virsh.c:4111
+#: src/virsh.c:4091 src/virsh.c:4117
 msgid "running"
 msgstr "kører"
 
-#: src/virsh.c:4087 src/virsh.c:4109
+#: src/virsh.c:4093 src/virsh.c:4115
 msgid "blocked"
 msgstr "blokeret"
 
-#: src/virsh.c:4089
+#: src/virsh.c:4095
 msgid "paused"
 msgstr "stoppet"
 
-#: src/virsh.c:4091
+#: src/virsh.c:4097
 msgid "in shutdown"
 msgstr "lukker ned"
 
-#: src/virsh.c:4093
+#: src/virsh.c:4099
 msgid "shut off"
 msgstr "nedlukket"
 
-#: src/virsh.c:4095
+#: src/virsh.c:4101
 msgid "crashed"
 msgstr "brudt ned"
 
-#: src/virsh.c:4107
+#: src/virsh.c:4113
 msgid "offline"
 msgstr "ikke tilsluttet"
 
-#: src/virsh.c:4126
+#: src/virsh.c:4132
 msgid "no valid connection"
 msgstr "ingen gyldig forbindelse"
 
-#: src/virsh.c:4173
+#: src/virsh.c:4179
 #, c-format
 msgid "%s: error: "
 msgstr "%s: fejl: "
 
-#: src/virsh.c:4175
+#: src/virsh.c:4181
 msgid "error: "
 msgstr "fejl: "
 
-#: src/virsh.c:4197 src/virsh.c:4209 src/virsh.c:4222
+#: src/virsh.c:4203 src/virsh.c:4215 src/virsh.c:4228
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: kunne ikke allokere %d byte"
 
-#: src/virsh.c:4236
+#: src/virsh.c:4242
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "%s: %d: kunne ikke allokere %lu byte"
 
-#: src/virsh.c:4272
+#: src/virsh.c:4278
 msgid "failed to connect to the hypervisor"
 msgstr "kunne ikke forbinde til hypervisor"
 
-#: src/virsh.c:4296
+#: src/virsh.c:4302
 #, fuzzy
 msgid "failed to get the log file information"
 msgstr "kunne ikke få knudeinformation"
 
-#: src/virsh.c:4301
+#: src/virsh.c:4307
 msgid "the log path is not a file"
 msgstr ""
 
-#: src/virsh.c:4307
+#: src/virsh.c:4313
 msgid "failed to open the log file. check the log file path"
 msgstr ""
 
-#: src/virsh.c:4375
+#: src/virsh.c:4381
 #, fuzzy
 msgid "failed to write the log file"
 msgstr "kunne ikke skrive konfigurationsfilen"
 
-#: src/virsh.c:4544
+#: src/virsh.c:4550
 #, fuzzy, c-format
 msgid ""
 "\n"
@@ -2075,7 +2075,7 @@ msgstr ""
 "\n"
 "  kommandoer (ikke-interaktiv tilstand):\n"
 
-#: src/virsh.c:4562
+#: src/virsh.c:4568
 #, fuzzy, c-format
 msgid ""
 "\n"
@@ -2086,12 +2086,12 @@ msgstr ""
 "  (angiv --help <kommando> for detaljer om kommandoen)\n"
 "\n"
 
-#: src/virsh.c:4658
+#: src/virsh.c:4664
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "flaget '-%c' understøttes ikke. Se --help."
 
-#: src/virsh.c:4740
+#: src/virsh.c:4746
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -2100,7 +2100,7 @@ msgstr ""
 "Velkommen til %s, den interaktive terminal for virtualisering.\n"
 "\n"
 
-#: src/virsh.c:4743
+#: src/virsh.c:4749
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
