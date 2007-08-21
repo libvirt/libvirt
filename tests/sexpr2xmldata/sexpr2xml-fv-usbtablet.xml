@@ -24,6 +24,7 @@
     </disk>
     <interface type='bridge'>
       <source bridge='xenbr0'/>
+      <target dev='vif3.0'/>
       <mac address='00:16:3e:1b:b1:47'/>
       <script path='vif-bridge'/>
     </interface>

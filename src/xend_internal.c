@@ -1354,6 +1354,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
     int max_mem, cur_mem;
     unsigned char uuid[VIR_UUID_BUFLEN];
     char uuidstr[VIR_UUID_STRING_BUFLEN];
+    int vif_index = 0;
 
     if (root == NULL) {
         /* ERROR */
@@ -1626,6 +1627,9 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
             if (tmp)
                 virBufferVSprintf(&buf, "      <target dev='%s'/>\n",
                                   tmp);
+            else
+                virBufferVSprintf(&buf, "      <target dev='vif%d.%d'/>\n",
+                                  domid, vif_index);
             tmp = sexpr_node(node, "device/vif/mac");
             if (tmp)
                 virBufferVSprintf(&buf, "      <mac address='%s'/>\n",
@@ -1639,6 +1643,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
                                   tmp2);
 
             virBufferAdd(&buf, "    </interface>\n", 17);
+            vif_index++;
         } else if (sexpr_lookup(node, "device/vfb")) {
             /* New style graphics config for PV guests in >= 3.0.4,
              * or for HVM guests in >= 3.0.5 */

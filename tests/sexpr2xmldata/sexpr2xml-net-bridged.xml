@@ -20,6 +20,7 @@
     </disk>
     <interface type='bridge'>
       <source bridge='xenbr2'/>
+      <target dev='vif6.0'/>
       <mac address='00:11:22:33:44:55'/>
       <script path='vif-bridge'/>
     </interface>

@@ -17,6 +17,7 @@
   <devices>
     <interface type='bridge'>
       <source bridge='xenbr0'/>
+      <target dev='vif5.0'/>
       <mac address='00:16:3e:1d:06:15'/>
       <script path='vif-bridge'/>
     </interface>

@@ -22,6 +22,7 @@
     <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
     <interface type='bridge'>
       <source bridge='xenbr0'/>
+      <target dev='vif6.0'/>
       <mac address='00:16:3e:0a:7b:39'/>
     </interface>
     <disk type='block' device='disk'>
