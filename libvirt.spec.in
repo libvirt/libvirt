@@ -165,6 +165,13 @@ fi
 %doc docs/examples/python
 
 %changelog
+* Tue Aug 21 2007 Daniel Veillard <veillard@redhat.com> - 0.3.2-1
+- Release of 0.3.2
+- API for domains migration
+- APIs for collecting statistics on disks and interfaces
+- lots of assorted bugfixes and cleanups
+- documentation and localization improvements
+
 * Tue Jul 24 2007 Daniel Veillard <veillard@redhat.com> - 0.3.1-1
 - Release of 0.3.1
 - localtime clock support
