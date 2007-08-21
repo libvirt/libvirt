@@ -1967,6 +1967,8 @@ static virDriver testDriver = {
     NULL, /* domainMigratePrepare */
     NULL, /* domainMigratePerform */
     NULL, /* domainMigrateFinish */
+    NULL, /* domainBlockStats */
+    NULL, /* domainInterfaceStats */
 };
 
 static virNetworkDriver testNetworkDriver = {

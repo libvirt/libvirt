@@ -1023,6 +1023,32 @@ xenUnifiedDomainSetSchedulerParameters (virDomainPtr dom,
     return(-1);
 }
 
+static int
+xenUnifiedDomainBlockStats (virDomainPtr dom, const char *path,
+                            struct _virDomainBlockStats *stats)
+{
+    GET_PRIVATE (dom->conn);
+
+    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET])
+        return xenHypervisorDomainBlockStats (dom, path, stats);
+
+    xenUnifiedError (dom->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
+static int
+xenUnifiedDomainInterfaceStats (virDomainPtr dom, const char *path,
+                                struct _virDomainInterfaceStats *stats)
+{
+    GET_PRIVATE (dom->conn);
+
+    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET])
+        return xenHypervisorDomainInterfaceStats (dom, path, stats);
+
+    xenUnifiedError (dom->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
 /*----- Register with libvirt.c, and initialise Xen drivers. -----*/
 
 #define VERSION ((DOM0_INTERFACE_VERSION >> 24) * 1000000 +         \
@@ -1081,6 +1107,8 @@ static virDriver xenUnifiedDriver = {
     .domainMigratePrepare		= xenUnifiedDomainMigratePrepare,
     .domainMigratePerform		= xenUnifiedDomainMigratePerform,
     .domainMigrateFinish		= xenUnifiedDomainMigrateFinish,
+    .domainBlockStats	= xenUnifiedDomainBlockStats,
+    .domainInterfaceStats = xenUnifiedDomainInterfaceStats,
 };
 
 /**

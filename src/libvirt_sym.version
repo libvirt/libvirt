@@ -65,7 +65,8 @@
 	virDomainGetSchedulerType;
 	virDomainGetSchedulerParameters;
 	virDomainSetSchedulerParameters;
-
+	virDomainBlockStats;
+	virDomainInterfaceStats;
 	virDomainAttachDevice;
 	virDomainDetachDevice;
 

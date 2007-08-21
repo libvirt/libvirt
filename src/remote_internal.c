@@ -2263,6 +2263,64 @@ remoteDomainSetSchedulerParameters (virDomainPtr domain,
     return 0;
 }
 
+static int
+remoteDomainBlockStats (virDomainPtr domain, const char *path,
+                        struct _virDomainBlockStats *stats)
+{
+    remote_domain_block_stats_args args;
+    remote_domain_block_stats_ret ret;
+    GET_PRIVATE (domain->conn, -1);
+
+    make_nonnull_domain (&args.dom, domain);
+    args.path = (char *) path;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_BLOCK_STATS,
+              (xdrproc_t) xdr_remote_domain_block_stats_args, (char *) &args,
+              (xdrproc_t) xdr_remote_domain_block_stats_ret, (char *) &ret)
+        == -1)
+        return -1;
+
+    stats->rd_req = ret.rd_req;
+    stats->rd_bytes = ret.rd_bytes;
+    stats->wr_req = ret.wr_req;
+    stats->wr_bytes = ret.wr_bytes;
+    stats->errs = ret.errs;
+
+    return 0;
+}
+
+static int
+remoteDomainInterfaceStats (virDomainPtr domain, const char *path,
+                            struct _virDomainInterfaceStats *stats)
+{
+    remote_domain_interface_stats_args args;
+    remote_domain_interface_stats_ret ret;
+    GET_PRIVATE (domain->conn, -1);
+
+    make_nonnull_domain (&args.dom, domain);
+    args.path = (char *) path;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_INTERFACE_STATS,
+              (xdrproc_t) xdr_remote_domain_interface_stats_args,
+                (char *) &args,
+              (xdrproc_t) xdr_remote_domain_interface_stats_ret,
+                (char *) &ret) == -1)
+        return -1;
+
+    stats->rx_bytes = ret.rx_bytes;
+    stats->rx_packets = ret.rx_packets;
+    stats->rx_errs = ret.rx_errs;
+    stats->rx_drop = ret.rx_drop;
+    stats->tx_bytes = ret.tx_bytes;
+    stats->tx_packets = ret.tx_packets;
+    stats->tx_errs = ret.tx_errs;
+    stats->tx_drop = ret.tx_drop;
+
+    return 0;
+}
+
 /*----------------------------------------------------------------------*/
 
 static int
@@ -3057,6 +3115,8 @@ static virDriver driver = {
     .domainMigratePrepare = remoteDomainMigratePrepare,
     .domainMigratePerform = remoteDomainMigratePerform,
     .domainMigrateFinish = remoteDomainMigrateFinish,
+    .domainBlockStats = remoteDomainBlockStats,
+    .domainInterfaceStats = remoteDomainInterfaceStats,
 };
 
 static virNetworkDriver network_driver = {

@@ -31,6 +31,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <inttypes.h>
 #include <test.h>
 
 #include <libxml/parser.h>
@@ -657,6 +658,129 @@ cmdDomstate(vshControl * ctl, vshCmd * cmd)
 
     virDomainFree(dom);
     return ret;
+}
+
+/* "domblkstat" command
+ */
+static vshCmdInfo info_domblkstat[] = {
+    {"syntax", "domblkstat <domain> <dev>"},
+    {"help", gettext_noop("get device block stats for a domain")},
+    {"desc", gettext_noop("Get device block stats for a running domain.")},
+    {NULL,NULL}
+};
+
+static vshCmdOptDef opts_domblkstat[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {"device", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("block device")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdDomblkstat (vshControl *ctl, vshCmd *cmd)
+{
+    virDomainPtr dom;
+    char *name, *device;
+    struct _virDomainBlockStats stats;
+
+    if (!vshConnectionUsability (ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain (ctl, cmd, "domain", &name)))
+        return FALSE;
+
+    if (!(device = vshCommandOptString (cmd, "device", NULL)))
+        return FALSE;
+
+    if (virDomainBlockStats (dom, device, &stats, sizeof stats) == -1) {
+        vshError (ctl, FALSE, _("Failed to get block stats %s %s"),
+                  name, device);
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    if (stats.rd_req >= 0)
+        vshPrint (ctl, "%s rd_req %lld\n", device, stats.rd_req);
+
+    if (stats.rd_bytes >= 0)
+        vshPrint (ctl, "%s rd_bytes %lld\n", device, stats.rd_bytes);
+
+    if (stats.wr_req >= 0)
+        vshPrint (ctl, "%s wr_req %lld\n", device, stats.wr_req);
+
+    if (stats.wr_bytes >= 0)
+        vshPrint (ctl, "%s wr_bytes %lld\n", device, stats.wr_bytes);
+
+    if (stats.errs >= 0)
+        vshPrint (ctl, "%s errs %lld\n", device, stats.errs);
+
+    virDomainFree(dom);
+    return TRUE;
+}
+
+/* "domifstat" command
+ */
+static vshCmdInfo info_domifstat[] = {
+    {"syntax", "domifstat <domain> <dev>"},
+    {"help", gettext_noop("get network interface stats for a domain")},
+    {"desc", gettext_noop("Get network interface stats for a running domain.")},
+    {NULL,NULL}
+};
+
+static vshCmdOptDef opts_domifstat[] = {
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {"interface", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("interface device")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdDomIfstat (vshControl *ctl, vshCmd *cmd)
+{
+    virDomainPtr dom;
+    char *name, *device;
+    struct _virDomainInterfaceStats stats;
+
+    if (!vshConnectionUsability (ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain (ctl, cmd, "domain", &name)))
+        return FALSE;
+
+    if (!(device = vshCommandOptString (cmd, "interface", NULL)))
+        return FALSE;
+
+    if (virDomainInterfaceStats (dom, device, &stats, sizeof stats) == -1) {
+        vshError (ctl, FALSE, _("Failed to get interface stats %s %s"),
+                  name, device);
+        virDomainFree(dom);
+        return FALSE;
+    }
+
+    if (stats.rx_bytes >= 0)
+        vshPrint (ctl, "%s rx_bytes %lld\n", device, stats.rx_bytes);
+
+    if (stats.rx_packets >= 0)
+        vshPrint (ctl, "%s rx_packets %lld\n", device, stats.rx_packets);
+
+    if (stats.rx_errs >= 0)
+        vshPrint (ctl, "%s rx_errs %lld\n", device, stats.rx_errs);
+
+    if (stats.rx_drop >= 0)
+        vshPrint (ctl, "%s rx_drop %lld\n", device, stats.rx_drop);
+
+    if (stats.tx_bytes >= 0)
+        vshPrint (ctl, "%s tx_bytes %lld\n", device, stats.tx_bytes);
+
+    if (stats.tx_packets >= 0)
+        vshPrint (ctl, "%s tx_packets %lld\n", device, stats.tx_packets);
+
+    if (stats.tx_errs >= 0)
+        vshPrint (ctl, "%s tx_errs %lld\n", device, stats.tx_errs);
+
+    if (stats.tx_drop >= 0)
+        vshPrint (ctl, "%s tx_drop %lld\n", device, stats.tx_drop);
+
+    virDomainFree(dom);
+    return TRUE;
 }
 
 /*
@@ -3529,6 +3653,8 @@ static vshCmdDef commands[] = {
     {"dominfo", cmdDominfo, opts_dominfo, info_dominfo},
     {"domname", cmdDomname, opts_domname, info_domname},
     {"domstate", cmdDomstate, opts_domstate, info_domstate},
+    {"domblkstat", cmdDomblkstat, opts_domblkstat, info_domblkstat},
+    {"domifstat", cmdDomIfstat, opts_domifstat, info_domifstat},
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
     {"hostname", cmdHostname, NULL, info_hostname},
     {"list", cmdList, opts_list, info_list},

@@ -1306,6 +1306,152 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
     return 0;
 }
 
+static int64_t
+read_stat (const char *path)
+{
+    char str[64];
+    int64_t r;
+    int i;
+    FILE *fp;
+
+    fp = fopen (path, "r");
+    if (!fp) return -1;
+    /* stupid GCC warning */ i = fread (str, sizeof str, 1, fp);
+    r = strtoll (str, NULL, 10);
+    fclose (fp);
+    return r;
+}
+
+static int64_t
+read_bd_stat (int device, int domid, const char *str)
+{
+    char path[PATH_MAX];
+    int64_t r;
+
+    snprintf (path, sizeof path,
+              "/sys/devices/xen-backend/vbd-%d-%d/statistics/%s_req",
+              domid, device, str);
+    r = read_stat (path);
+    if (r >= 0) return r;
+
+    snprintf (path, sizeof path,
+              "/sys/devices/xen-backend/tap-%d-%d/statistics/%s_req",
+              domid, device, str);
+    r = read_stat (path);
+    return r;
+}
+
+/* Paths have the form "xvd[a-]" and map to paths /sys/devices/xen-backend/
+ * (vbd|tap)-domid-major:minor/statistics/(rd|wr|oo)_req.  The major:minor
+ * is in this case fixed as 202*256 + 16*minor where minor is 0 for xvda,
+ * 1 for xvdb and so on.
+ */
+int
+xenHypervisorDomainBlockStats (virDomainPtr dom,
+                               const char *path,
+                               struct _virDomainBlockStats *stats)
+{
+    int minor, device;
+
+    if (strlen (path) != 4 ||
+        STRNEQLEN (path, "xvd", 3) ||
+        (minor = path[3] - 'a') < 0 ||
+        minor > 26) {
+        virXenErrorFunc (VIR_ERR_INVALID_ARG, __FUNCTION__,
+                         "invalid path, should be xvda, xvdb, etc.", 0);
+        return -1;
+    }
+    device = 202 * 256 + minor;
+
+    stats->rd_req = read_bd_stat (device, dom->id, "rd");
+    stats->wr_req = read_bd_stat (device, dom->id, "wr");
+    stats->errs =   read_bd_stat (device, dom->id, "oo");
+
+    if (stats->rd_req == -1 && stats->wr_req == -1 && stats->errs == -1) {
+        virXenErrorFunc (VIR_ERR_NO_SUPPORT, __FUNCTION__,
+                         "Failed to read any block statistics", dom->id);
+        return -1;
+    }
+
+    return 0;
+}
+
+/* Paths have the form vif<domid>.<n> (this interface checks that
+ * <domid> is the real domain ID and returns an error if not).
+ *
+ * In future we may allow you to query bridge stats (virbrX or
+ * xenbrX), but that will probably be through a separate
+ * virNetwork interface, as yet not decided.
+ *
+ * On Linux we open /proc/net/dev and look for the device
+ * called vif<domid>.<n>.
+ */
+int
+xenHypervisorDomainInterfaceStats (virDomainPtr dom,
+                                   const char *path,
+                                   struct _virDomainInterfaceStats *stats)
+{
+    int rqdomid, device;
+    FILE *fp;
+    char line[256];
+
+    if (sscanf (path, "vif%d.%d", &rqdomid, &device) != 2) {
+        virXenErrorFunc (VIR_ERR_INVALID_ARG, __FUNCTION__,
+                         "invalid path, should be vif<domid>.<n>.", 0);
+        return -1;
+    }
+    if (rqdomid != dom->id) {
+        virXenErrorFunc (VIR_ERR_INVALID_ARG, __FUNCTION__,
+                         "invalid path, vif<domid> should match this domain ID", 0);
+        return -1;
+    }
+
+    fp = fopen ("/proc/net/dev", "r");
+    if (!fp) {
+        virXenErrorFunc (VIR_ERR_NO_SUPPORT, __FUNCTION__,
+                         "/proc/net/dev", errno);
+        return -1;
+    }
+    while (fgets (line, sizeof line, fp)) {
+        int domid, port;
+        long long dummy;
+        long long rx_bytes;
+        long long rx_packets;
+        long long rx_errs;
+        long long rx_drop;
+        long long tx_bytes;
+        long long tx_packets;
+        long long tx_errs;
+        long long tx_drop;
+
+        if (sscanf (line, "vif%d.%d: %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld",
+                    &domid, &port,
+                    &rx_bytes, &rx_packets, &rx_errs, &rx_drop,
+                    &dummy, &dummy, &dummy, &dummy,
+                    &tx_bytes, &tx_packets, &tx_errs, &tx_drop,
+                    &dummy, &dummy, &dummy, &dummy) != 18)
+            continue;
+
+        if (domid == dom->id && port == device) {
+            stats->rx_bytes = rx_bytes;
+            stats->rx_packets = rx_packets;
+            stats->rx_errs = rx_errs;
+            stats->rx_drop = rx_drop;
+            stats->tx_bytes = tx_bytes;
+            stats->tx_packets = tx_packets;
+            stats->tx_errs = tx_errs;
+            stats->tx_drop = tx_drop;
+            fclose (fp);
+            return 0;
+        }
+    }
+    fclose (fp);
+
+    virXenErrorFunc (VIR_ERR_NO_SUPPORT, __FUNCTION__,
+                     "/proc/net/dev: Interface not found", 0);
+    return -1;
+}
+
 /**
  * virXen_pausedomain:
  * @handle: the hypervisor handle

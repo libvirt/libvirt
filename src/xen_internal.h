@@ -86,6 +86,13 @@ int	xenHypervisorSetSchedulerParameters		(virDomainPtr domain,
 					 virSchedParameterPtr params,
 					 int nparams);
 
+int     xenHypervisorDomainBlockStats   (virDomainPtr domain,
+					 const char *path,
+					 struct _virDomainBlockStats *stats);
+int     xenHypervisorDomainInterfaceStats (virDomainPtr domain,
+					 const char *path,
+					 struct _virDomainInterfaceStats *stats);
+
 #ifdef __cplusplus
 }
 #endif

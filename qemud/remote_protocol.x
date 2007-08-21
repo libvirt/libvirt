@@ -242,6 +242,35 @@ struct remote_domain_set_scheduler_parameters_args {
     remote_sched_param params<REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX>;
 };
 
+struct remote_domain_block_stats_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string path;
+};
+
+struct remote_domain_block_stats_ret {
+    hyper rd_req;
+    hyper rd_bytes;
+    hyper wr_req;
+    hyper wr_bytes;
+    hyper errs;
+};
+
+struct remote_domain_interface_stats_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string path;
+};
+
+struct remote_domain_interface_stats_ret {
+    hyper rx_bytes;
+    hyper rx_packets;
+    hyper rx_errs;
+    hyper rx_drop;
+    hyper tx_bytes;
+    hyper tx_packets;
+    hyper tx_errs;
+    hyper tx_drop;
+};
+
 struct remote_list_domains_args {
     int maxids;
 };
@@ -652,7 +681,9 @@ enum remote_procedure {
     REMOTE_PROC_SUPPORTS_FEATURE = 60,
     REMOTE_PROC_DOMAIN_MIGRATE_PREPARE = 61,
     REMOTE_PROC_DOMAIN_MIGRATE_PERFORM = 62,
-    REMOTE_PROC_DOMAIN_MIGRATE_FINISH = 63
+    REMOTE_PROC_DOMAIN_MIGRATE_FINISH = 63,
+    REMOTE_PROC_DOMAIN_BLOCK_STATS = 64,
+    REMOTE_PROC_DOMAIN_INTERFACE_STATS = 65
 };
 
 /* Custom RPC structure. */

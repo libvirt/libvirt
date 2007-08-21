@@ -2063,6 +2063,113 @@ virDomainSetSchedulerParameters(virDomainPtr domain,
 }
 
 
+/**
+ * virDomainBlockStats
+ * @dom: pointer to the domain object
+ * @path: path to the block device
+ * @stats: block device stats (returned)
+ * @size: size of stats structure
+ *
+ * This function returns block device (disk) stats for block
+ * devices attached to the domain.
+ *
+ * The path parameter is the name of the block device.  Get this
+ * by calling virDomainGetXMLDesc and finding the <target dev='...'>
+ * attribute within //domain/devices/disk.  (For example, "xvda").
+ *
+ * Domains may have more than one block device.  To get stats for
+ * each you should make multiple calls to this function.
+ *
+ * Individual fields within the stats structure may be returned
+ * as -1, which indicates that the hypervisor does not support
+ * that particular statistic.
+ *
+ * Returns: 0 in case of success or -1 in case of failure.
+ */
+int
+virDomainBlockStats (virDomainPtr dom, const char *path,
+                     virDomainBlockStatsPtr stats, size_t size)
+{
+    virConnectPtr conn;
+    struct _virDomainBlockStats stats2 = { -1, -1, -1, -1, -1 };
+    DEBUG("domain=%p, path=%s, stats=%p, size=%zi", dom, path, stats, size);
+
+    if (!stats || size > sizeof stats2) {
+        virLibDomainError (dom, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return -1;
+    }
+    if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
+        virLibDomainError (dom, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return -1;
+    }
+    conn = dom->conn;
+
+    if (conn->driver->domainBlockStats) {
+        if (conn->driver->domainBlockStats (dom, path, &stats2) == -1)
+            return -1;
+
+        memcpy (stats, &stats2, size);
+        return 0;
+    }
+
+    virLibDomainError (dom, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
+/**
+ * virDomainInterfaceStats
+ * @dom: pointer to the domain object
+ * @path: path to the interface
+ * @stats: network interface stats (returned)
+ * @size: size of stats structure
+ *
+ * This function returns network interface stats for interfaces
+ * attached to the domain.
+ *
+ * The path parameter is the name of the network interface.
+ *
+ * Domains may have more than network interface.  To get stats for
+ * each you should make multiple calls to this function.
+ *
+ * Individual fields within the stats structure may be returned
+ * as -1, which indicates that the hypervisor does not support
+ * that particular statistic.
+ *
+ * Returns: 0 in case of success or -1 in case of failure.
+ */
+int
+virDomainInterfaceStats (virDomainPtr dom, const char *path,
+                         virDomainInterfaceStatsPtr stats, size_t size)
+{
+    virConnectPtr conn;
+    struct _virDomainInterfaceStats stats2 = { -1, -1, -1, -1,
+                                               -1, -1, -1, -1 };
+    DEBUG("domain=%p, path=%s, stats=%p, size=%zi", dom, path, stats, size);
+
+    if (!stats || size > sizeof stats2) {
+        virLibDomainError (dom, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return -1;
+    }
+    if (!VIR_IS_CONNECTED_DOMAIN (dom)) {
+        virLibDomainError (dom, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return -1;
+    }
+    conn = dom->conn;
+
+    if (conn->driver->domainInterfaceStats) {
+        if (conn->driver->domainInterfaceStats (dom, path, &stats2) == -1)
+            return -1;
+
+        memcpy (stats, &stats2, size);
+        return 0;
+    }
+
+    virLibDomainError (dom, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
+
+
 
 /************************************************************************
  *									*

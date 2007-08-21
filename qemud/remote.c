@@ -715,6 +715,69 @@ remoteDispatchDomainSetSchedulerParameters (struct qemud_client *client,
 }
 
 static int
+remoteDispatchDomainBlockStats (struct qemud_client *client,
+                                remote_message_header *req,
+                                remote_domain_block_stats_args *args,
+                                remote_domain_block_stats_ret *ret)
+{
+    virDomainPtr dom;
+    char *path;
+    struct _virDomainBlockStats stats;
+    CHECK_CONN (client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+    path = args->path;
+
+    if (virDomainBlockStats (dom, path, &stats, sizeof stats) == -1)
+        return -1;
+
+    ret->rd_req = stats.rd_req;
+    ret->rd_bytes = stats.rd_bytes;
+    ret->wr_req = stats.wr_req;
+    ret->wr_bytes = stats.wr_bytes;
+    ret->errs = stats.errs;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainInterfaceStats (struct qemud_client *client,
+                                    remote_message_header *req,
+                                    remote_domain_interface_stats_args *args,
+                                    remote_domain_interface_stats_ret *ret)
+{
+    virDomainPtr dom;
+    char *path;
+    struct _virDomainInterfaceStats stats;
+    CHECK_CONN (client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+    path = args->path;
+
+    if (virDomainInterfaceStats (dom, path, &stats, sizeof stats) == -1)
+        return -1;
+
+    ret->rx_bytes = stats.rx_bytes;
+    ret->rx_packets = stats.rx_packets;
+    ret->rx_errs = stats.rx_errs;
+    ret->rx_drop = stats.rx_drop;
+    ret->tx_bytes = stats.tx_bytes;
+    ret->tx_packets = stats.tx_packets;
+    ret->tx_errs = stats.tx_errs;
+    ret->tx_drop = stats.tx_drop;
+
+    return 0;
+}
+
+static int
 remoteDispatchDomainAttachDevice (struct qemud_client *client,
                                   remote_message_header *req,
                                   remote_domain_attach_device_args *args,

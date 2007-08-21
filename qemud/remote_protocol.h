@@ -182,6 +182,39 @@ struct remote_domain_set_scheduler_parameters_args {
 };
 typedef struct remote_domain_set_scheduler_parameters_args remote_domain_set_scheduler_parameters_args;
 
+struct remote_domain_block_stats_args {
+	remote_nonnull_domain dom;
+	remote_nonnull_string path;
+};
+typedef struct remote_domain_block_stats_args remote_domain_block_stats_args;
+
+struct remote_domain_block_stats_ret {
+	quad_t rd_req;
+	quad_t rd_bytes;
+	quad_t wr_req;
+	quad_t wr_bytes;
+	quad_t errs;
+};
+typedef struct remote_domain_block_stats_ret remote_domain_block_stats_ret;
+
+struct remote_domain_interface_stats_args {
+	remote_nonnull_domain dom;
+	remote_nonnull_string path;
+};
+typedef struct remote_domain_interface_stats_args remote_domain_interface_stats_args;
+
+struct remote_domain_interface_stats_ret {
+	quad_t rx_bytes;
+	quad_t rx_packets;
+	quad_t rx_errs;
+	quad_t rx_drop;
+	quad_t tx_bytes;
+	quad_t tx_packets;
+	quad_t tx_errs;
+	quad_t tx_drop;
+};
+typedef struct remote_domain_interface_stats_ret remote_domain_interface_stats_ret;
+
 struct remote_list_domains_args {
 	int maxids;
 };
@@ -693,6 +726,8 @@ enum remote_procedure {
 	REMOTE_PROC_DOMAIN_MIGRATE_PREPARE = 61,
 	REMOTE_PROC_DOMAIN_MIGRATE_PERFORM = 62,
 	REMOTE_PROC_DOMAIN_MIGRATE_FINISH = 63,
+	REMOTE_PROC_DOMAIN_BLOCK_STATS = 64,
+	REMOTE_PROC_DOMAIN_INTERFACE_STATS = 65,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -748,6 +783,10 @@ extern  bool_t xdr_remote_domain_get_scheduler_type_ret (XDR *, remote_domain_ge
 extern  bool_t xdr_remote_domain_get_scheduler_parameters_args (XDR *, remote_domain_get_scheduler_parameters_args*);
 extern  bool_t xdr_remote_domain_get_scheduler_parameters_ret (XDR *, remote_domain_get_scheduler_parameters_ret*);
 extern  bool_t xdr_remote_domain_set_scheduler_parameters_args (XDR *, remote_domain_set_scheduler_parameters_args*);
+extern  bool_t xdr_remote_domain_block_stats_args (XDR *, remote_domain_block_stats_args*);
+extern  bool_t xdr_remote_domain_block_stats_ret (XDR *, remote_domain_block_stats_ret*);
+extern  bool_t xdr_remote_domain_interface_stats_args (XDR *, remote_domain_interface_stats_args*);
+extern  bool_t xdr_remote_domain_interface_stats_ret (XDR *, remote_domain_interface_stats_ret*);
 extern  bool_t xdr_remote_list_domains_args (XDR *, remote_list_domains_args*);
 extern  bool_t xdr_remote_list_domains_ret (XDR *, remote_list_domains_ret*);
 extern  bool_t xdr_remote_num_of_domains_ret (XDR *, remote_num_of_domains_ret*);
@@ -856,6 +895,10 @@ extern bool_t xdr_remote_domain_get_scheduler_type_ret ();
 extern bool_t xdr_remote_domain_get_scheduler_parameters_args ();
 extern bool_t xdr_remote_domain_get_scheduler_parameters_ret ();
 extern bool_t xdr_remote_domain_set_scheduler_parameters_args ();
+extern bool_t xdr_remote_domain_block_stats_args ();
+extern bool_t xdr_remote_domain_block_stats_ret ();
+extern bool_t xdr_remote_domain_interface_stats_args ();
+extern bool_t xdr_remote_domain_interface_stats_ret ();
 extern bool_t xdr_remote_list_domains_args ();
 extern bool_t xdr_remote_list_domains_ret ();
 extern bool_t xdr_remote_num_of_domains_ret ();

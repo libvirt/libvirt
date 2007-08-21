@@ -212,6 +212,17 @@ typedef int
 					 int nparams);
 
 typedef int
+    (*virDrvDomainBlockStats)
+                    (virDomainPtr domain,
+                     const char *path,
+                     struct _virDomainBlockStats *stats);
+typedef int
+    (*virDrvDomainInterfaceStats)
+                    (virDomainPtr domain,
+                     const char *path,
+                     struct _virDomainInterfaceStats *stats);
+
+typedef int
     (*virDrvDomainMigratePrepare)
                     (virConnectPtr dconn,
                      char **cookie,
@@ -309,6 +320,8 @@ struct _virDriver {
     virDrvDomainMigratePrepare	domainMigratePrepare;
     virDrvDomainMigratePerform	domainMigratePerform;
     virDrvDomainMigrateFinish	domainMigrateFinish;
+    virDrvDomainBlockStats      domainBlockStats;
+    virDrvDomainInterfaceStats  domainInterfaceStats;
 };
 
 typedef int

@@ -14,6 +14,8 @@
 #ifndef __VIR_VIRLIB_H__
 #define __VIR_VIRLIB_H__
 
+#include <sys/types.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -197,6 +199,41 @@ int	virDomainSetSchedulerParameters	(virDomainPtr domain,
 					 virSchedParameterPtr params,
 					 int nparams);
 
+/* Block device stats for virDomainBlockStats.
+ *
+ * Hypervisors may return a field set to ((long long)-1) which indicates
+ * that the hypervisor does not support that statistic.
+ *
+ * NB. Here 'long long' means 64 bit integer.
+ */
+struct _virDomainBlockStats {
+  long long rd_req;
+  long long rd_bytes;
+  long long wr_req;
+  long long wr_bytes;
+  long long errs;   // In Xen this returns the mysterious 'oo_req'.
+};
+typedef struct _virDomainBlockStats *virDomainBlockStatsPtr;
+
+/* Network interface stats for virDomainInterfaceStats.
+ *
+ * Hypervisors may return a field set to ((long long)-1) which indicates
+ * that the hypervisor does not support that statistic.
+ *
+ * NB. Here 'long long' means 64 bit integer.
+ */
+struct _virDomainInterfaceStats {
+  long long rx_bytes;
+  long long rx_packets;
+  long long rx_errs;
+  long long rx_drop;
+  long long tx_bytes;
+  long long tx_packets;
+  long long tx_errs;
+  long long tx_drop;
+};
+typedef struct _virDomainInterfaceStats *virDomainInterfaceStatsPtr;
+
 /* Domain migration flags. */
 typedef enum {
   VIR_MIGRATE_LIVE              = 1, /* live migration */
@@ -378,6 +415,16 @@ int			virDomainGetMaxVcpus	(virDomainPtr domain);
  */
 char *			virDomainGetXMLDesc	(virDomainPtr domain,
 						 int flags);
+
+int                     virDomainBlockStats     (virDomainPtr dom,
+						 const char *path,
+						 virDomainBlockStatsPtr stats,
+						 size_t size);
+int                     virDomainInterfaceStats (virDomainPtr dom,
+						 const char *path,
+						 virDomainInterfaceStatsPtr stats,
+						 size_t size);
+
 
 /*
  * defined but not running domains

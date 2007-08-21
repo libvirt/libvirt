@@ -11,6 +11,15 @@ case REMOTE_PROC_DOMAIN_ATTACH_DEVICE:
 	args = (char *) &lv_remote_domain_attach_device_args;
 	memset (&lv_remote_domain_attach_device_args, 0, sizeof lv_remote_domain_attach_device_args);
 	break;
+case REMOTE_PROC_DOMAIN_BLOCK_STATS:
+	fn = (dispatch_fn) remoteDispatchDomainBlockStats;
+	args_filter = (xdrproc_t) xdr_remote_domain_block_stats_args;
+	args = (char *) &lv_remote_domain_block_stats_args;
+	memset (&lv_remote_domain_block_stats_args, 0, sizeof lv_remote_domain_block_stats_args);
+	ret_filter = (xdrproc_t) xdr_remote_domain_block_stats_ret;
+	ret = (char *) &lv_remote_domain_block_stats_ret;
+	memset (&lv_remote_domain_block_stats_ret, 0, sizeof lv_remote_domain_block_stats_ret);
+	break;
 case REMOTE_PROC_DOMAIN_CORE_DUMP:
 	fn = (dispatch_fn) remoteDispatchDomainCoreDump;
 	args_filter = (xdrproc_t) xdr_remote_domain_core_dump_args;
@@ -133,6 +142,15 @@ case REMOTE_PROC_DOMAIN_GET_VCPUS:
 	ret_filter = (xdrproc_t) xdr_remote_domain_get_vcpus_ret;
 	ret = (char *) &lv_remote_domain_get_vcpus_ret;
 	memset (&lv_remote_domain_get_vcpus_ret, 0, sizeof lv_remote_domain_get_vcpus_ret);
+	break;
+case REMOTE_PROC_DOMAIN_INTERFACE_STATS:
+	fn = (dispatch_fn) remoteDispatchDomainInterfaceStats;
+	args_filter = (xdrproc_t) xdr_remote_domain_interface_stats_args;
+	args = (char *) &lv_remote_domain_interface_stats_args;
+	memset (&lv_remote_domain_interface_stats_args, 0, sizeof lv_remote_domain_interface_stats_args);
+	ret_filter = (xdrproc_t) xdr_remote_domain_interface_stats_ret;
+	ret = (char *) &lv_remote_domain_interface_stats_ret;
+	memset (&lv_remote_domain_interface_stats_ret, 0, sizeof lv_remote_domain_interface_stats_ret);
 	break;
 case REMOTE_PROC_DOMAIN_LOOKUP_BY_ID:
 	fn = (dispatch_fn) remoteDispatchDomainLookupById;
