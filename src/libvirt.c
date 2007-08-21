@@ -2064,7 +2064,7 @@ virDomainSetSchedulerParameters(virDomainPtr domain,
 
 
 /**
- * virDomainBlockStats
+ * virDomainBlockStats:
  * @dom: pointer to the domain object
  * @path: path to the block device
  * @stats: block device stats (returned)
@@ -2117,7 +2117,7 @@ virDomainBlockStats (virDomainPtr dom, const char *path,
 }
 
 /**
- * virDomainInterfaceStats
+ * virDomainInterfaceStats:
  * @dom: pointer to the domain object
  * @path: path to the interface
  * @stats: network interface stats (returned)

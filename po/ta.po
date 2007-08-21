@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-17 09:28+0200\n"
+"POT-Creation-Date: 2007-08-21 13:55+0200\n"
 "PO-Revision-Date: 2007-08-10 17:35+0530\n"
 "Last-Translator: I felix <ifelix@redhat.com>\n"
 "Language-Team: Tamil <fedora-trans-ta@redhat.com>\n"
@@ -25,7 +25,7 @@ msgstr ""
 "\n"
 "\n"
 
-#: src/libvirt.c:411 src/hash.c:664
+#: src/libvirt.c:412 src/hash.c:664
 msgid "allocating connection"
 msgstr "இணைப்புகள் ஒதுக்கப்படுகிறது"
 
@@ -525,20 +525,20 @@ msgstr "செயற்கள விளக்க கோப்பினை ஏற
 #: src/test.c:415 src/test.c:539 src/test.c:564
 #, fuzzy
 msgid "network"
-msgstr "பிணைய uuid"
+msgstr "பிணைய பெயர்"
 
-#: src/test.c:427 src/virsh.c:2500
+#: src/test.c:427 src/virsh.c:2691
 msgid "network name"
 msgstr "பிணைய பெயர்"
 
-#: src/test.c:435 src/test.c:439 src/virsh.c:2391
+#: src/test.c:435 src/test.c:439 src/virsh.c:2582
 msgid "network uuid"
 msgstr "பிணைய uuid"
 
 #: src/test.c:447
 #, fuzzy
 msgid "network forward"
-msgstr "பிணைய uuid"
+msgstr "பிணைய பெயர்"
 
 #: src/test.c:456 src/test.c:466 src/test.c:471
 #, fuzzy
@@ -646,83 +646,83 @@ msgstr "ஒரு முனையை ஒதுக்க முடியவில
 msgid "failed to copy a string"
 msgstr "ஒரு சரத்தை நகலெடுக்க முடியவில்லை"
 
-#: src/xend_internal.c:278 src/xend_internal.c:281
+#: src/xend_internal.c:280 src/xend_internal.c:283
 msgid "failed to read from Xen Daemon"
 msgstr "Xen  டீமானிலிருந்து வாசிக்க முடியவில்லை"
 
-#: src/xend_internal.c:592 src/xend_internal.c:810 src/xend_internal.c:1522
-#: src/xend_internal.c:1541
+#: src/xend_internal.c:594 src/xend_internal.c:812 src/xend_internal.c:1525
+#: src/xend_internal.c:1544
 msgid "allocate new buffer"
 msgstr "புதிய இடையகத்தை ஒதுக்கவும்"
 
-#: src/xend_internal.c:1017
+#: src/xend_internal.c:1019
 msgid "failed to urlencode the create S-Expr"
 msgstr "S-Exprக்கு urlencode செய்ய முடியவில்லை"
 
-#: src/xend_internal.c:1058
+#: src/xend_internal.c:1060
 msgid "domain information incomplete, missing domid"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, விடுபட்ட domid"
 
-#: src/xend_internal.c:1064
+#: src/xend_internal.c:1066
 msgid "domain information incorrect domid not numeric"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, domid எண்ணல்ல"
 
-#: src/xend_internal.c:1069 src/xend_internal.c:1116
+#: src/xend_internal.c:1071 src/xend_internal.c:1118
 msgid "domain information incomplete, missing uuid"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, விடுபட்ட uuid"
 
-#: src/xend_internal.c:1108 src/xend_internal.c:1384 src/xend_internal.c:1391
+#: src/xend_internal.c:1110 src/xend_internal.c:1387 src/xend_internal.c:1394
 msgid "domain information incomplete, missing name"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, விடுபட்ட பெயர்"
 
-#: src/xend_internal.c:1282 src/xend_internal.c:1313
+#: src/xend_internal.c:1284 src/xend_internal.c:1315
 #, fuzzy
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, விடுபட்ட கர்னல்"
 
-#: src/xend_internal.c:1372
+#: src/xend_internal.c:1375
 msgid "domain information incomplete, missing id"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, விடுபட்ட id"
 
-#: src/xend_internal.c:1491
+#: src/xend_internal.c:1494
 msgid "domain information incomplete, vbd has no dev"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, vbd  dev எதுவும் கொண்டிருக்கவில்லை"
 
-#: src/xend_internal.c:1506
+#: src/xend_internal.c:1509
 msgid "domain information incomplete, vbd has no src"
 msgstr "செயற்களம் தகவல் நிறைவு பெறாமல் உள்ளது, vbd ஆனது src ஐ கொண்டிருக்கவில்லை"
 
-#: src/xend_internal.c:1515
+#: src/xend_internal.c:1518
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd கோப்பு பெயரை பிரிக்க முடியவில்லை, இயக்கி பெயர் விடுபட்டுள்ளது"
 
-#: src/xend_internal.c:1534
+#: src/xend_internal.c:1537
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd கோப்பு பெயரை பிரிக்க முடியவில்லை, இயக்கி வகை விடுபட்டுள்ளது"
 
-#: src/xend_internal.c:1916
+#: src/xend_internal.c:1923
 msgid "failed to parse Xend domain information"
 msgstr "Xend செயற்கள தகவலை இலக்கணப்படுத்த முடியவில்லை"
 
-#: src/xend_internal.c:3181
+#: src/xend_internal.c:3350
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "செயற்களம் %s ஐ உருவாக்க முடியவில்லை\n"
 
-#: src/virsh.c:308
+#: src/virsh.c:309
 msgid "print help"
 msgstr "அச்சு உதவி"
 
-#: src/virsh.c:309
+#: src/virsh.c:310
 msgid "Prints global help or command specific help."
 msgstr "முழுமையான உதவி அல்லது கட்டளை குறிப்பிட்ட உதவியை அச்சிடுகிறது."
 
-#: src/virsh.c:315
+#: src/virsh.c:316
 #, fuzzy
 msgid "name of command"
 msgstr "செயலற்ற செயற்களப் பெயர்"
 
-#: src/virsh.c:327
+#: src/virsh.c:328
 msgid ""
 "Commands:\n"
 "\n"
@@ -730,1149 +730,1213 @@ msgstr ""
 "கட்டளைகள்:\n"
 "\n"
 
-#: src/virsh.c:341
+#: src/virsh.c:342
 msgid "autostart a domain"
 msgstr "ஒரு செயற்களத்தை தானாக துவக்கவும்."
 
-#: src/virsh.c:343
+#: src/virsh.c:344
 msgid "Configure a domain to be automatically started at boot."
 msgstr "தானாக துவங்க ஒரு செயற்களத்தை கட்டமைக்கவும்."
 
-#: src/virsh.c:348 src/virsh.c:449 src/virsh.c:635 src/virsh.c:673
-#: src/virsh.c:953 src/virsh.c:997 src/virsh.c:1169 src/virsh.c:1214
-#: src/virsh.c:1253 src/virsh.c:1292 src/virsh.c:1331 src/virsh.c:1370
-#: src/virsh.c:1447 src/virsh.c:1534 src/virsh.c:1662 src/virsh.c:1719
-#: src/virsh.c:1776 src/virsh.c:1897 src/virsh.c:2675 src/virsh.c:2754
-#: src/virsh.c:2817 src/virsh.c:2871 src/virsh.c:2925 src/virsh.c:3041
-#: src/virsh.c:3162 src/virsh.c:3327
+#: src/virsh.c:349 src/virsh.c:450 src/virsh.c:636 src/virsh.c:673
+#: src/virsh.c:730 src/virsh.c:797 src/virsh.c:1077 src/virsh.c:1121
+#: src/virsh.c:1297 src/virsh.c:1342 src/virsh.c:1381 src/virsh.c:1420
+#: src/virsh.c:1459 src/virsh.c:1498 src/virsh.c:1575 src/virsh.c:1662
+#: src/virsh.c:1790 src/virsh.c:1847 src/virsh.c:1904 src/virsh.c:2025
+#: src/virsh.c:2165 src/virsh.c:2866 src/virsh.c:2945 src/virsh.c:3008
+#: src/virsh.c:3062 src/virsh.c:3116 src/virsh.c:3232 src/virsh.c:3353
+#: src/virsh.c:3518
 msgid "domain name, id or uuid"
 msgstr "செயற்களத்தின் பெயர், id or uuid"
 
-#: src/virsh.c:349 src/virsh.c:2038
+#: src/virsh.c:350 src/virsh.c:2229
 msgid "disable autostarting"
 msgstr "தானாக துவக்குதலை செயல்நீக்கவும்"
 
-#: src/virsh.c:370
+#: src/virsh.c:371
 #, fuzzy, c-format
 msgid "Failed to mark domain %s as autostarted"
 msgstr "%smark லிருந்து %s க்கு செயற்களத்தை தானாக துவக்க முடியவில்லை"
 
-#: src/virsh.c:373
+#: src/virsh.c:374
 #, fuzzy, c-format
 msgid "Failed to unmark domain %s as autostarted"
 msgstr "%smark லிருந்து %s க்கு செயற்களத்தை தானாக துவக்க முடியவில்லை"
 
-#: src/virsh.c:380
+#: src/virsh.c:381
 #, fuzzy, c-format
 msgid "Domain %s marked as autostarted\n"
 msgstr "செயற்களம் %s %s தானாக துவக்க குறிக்கப்பட்டுள்ளது\n"
 
-#: src/virsh.c:382
+#: src/virsh.c:383
 #, fuzzy, c-format
 msgid "Domain %s unmarked as autostarted\n"
 msgstr "செயற்களம் %s %s தானாக துவக்க குறிக்கப்பட்டுள்ளது\n"
 
-#: src/virsh.c:393
+#: src/virsh.c:394
 msgid "(re)connect to hypervisor"
 msgstr "hypervisor உடன் (மறு)இணைப்பு செய்யப்படுகிறது"
 
-#: src/virsh.c:395
+#: src/virsh.c:396
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr ""
 "உள்ளமை hypervisor உடன் இணைக்கிறது. இது ஷெல் துவக்கத்தில் உள் கட்டப்பட்ட கட்டளையாகும்."
 
-#: src/virsh.c:400
+#: src/virsh.c:401
 msgid "hypervisor connection URI"
 msgstr "hypervisor இணைப்பு URI"
 
-#: src/virsh.c:401
+#: src/virsh.c:402
 msgid "read-only connection"
 msgstr "வாசிப்பு மட்டும் இணைப்புகள்"
 
-#: src/virsh.c:413
+#: src/virsh.c:414
 msgid "Failed to disconnect from the hypervisor"
 msgstr "hypervisor இலிருந்து துண்டிக்க முடியவில்லை"
 
-#: src/virsh.c:432
+#: src/virsh.c:433
 msgid "Failed to connect to the hypervisor"
 msgstr "hypervisor உடன் இணைக்க முடியவில்லை"
 
-#: src/virsh.c:442
+#: src/virsh.c:443
 msgid "connect to the guest console"
 msgstr "விருந்தினர் பணியகத்துடன் இணைக்கவும்"
 
-#: src/virsh.c:444
+#: src/virsh.c:445
 msgid "Connect the virtual serial console for the guest"
 msgstr "விருந்தினருக்கு மெய்நிகர் தொடர் பணியகத்தை இணைக்கவும்"
 
-#: src/virsh.c:489
+#: src/virsh.c:490
 msgid "No console available for domain\n"
 msgstr "செயற்களத்திற்கு பணியகம் எதுவும் இல்லை\n"
 
-#: src/virsh.c:507
+#: src/virsh.c:508
 msgid "list domains"
 msgstr "செயற்கள பட்டியல்"
 
-#: src/virsh.c:508
+#: src/virsh.c:509
 msgid "Returns list of domains."
 msgstr "செயற்களங்களின் பட்டியலை கொடுக்கிறது."
 
-#: src/virsh.c:513
+#: src/virsh.c:514
 msgid "list inactive domains"
 msgstr "செயலிலில்லாத செயற்களங்களை பட்டியலிடவும்"
 
-#: src/virsh.c:514
+#: src/virsh.c:515
 msgid "list inactive & active domains"
 msgstr "செயலற்ற & செயலிலுள்ள செயற்களங்களை பட்டியலிடவும்"
 
-#: src/virsh.c:536 src/virsh.c:543
+#: src/virsh.c:537 src/virsh.c:544
 msgid "Failed to list active domains"
 msgstr "செயலிலுள்ள செயற்களங்களை பட்டியலிட முடியவில்லை"
 
-#: src/virsh.c:554 src/virsh.c:563
+#: src/virsh.c:555 src/virsh.c:564
 msgid "Failed to list inactive domains"
 msgstr "செயலற்ற செயற்களங்களை பட்டியலிட முடியவில்லை"
 
-#: src/virsh.c:573
+#: src/virsh.c:574
 msgid "Id"
 msgstr "Id"
 
-#: src/virsh.c:573 src/virsh.c:2323
+#: src/virsh.c:574 src/virsh.c:2514
 msgid "Name"
 msgstr "பெயர்"
 
-#: src/virsh.c:573 src/virsh.c:2323
+#: src/virsh.c:574 src/virsh.c:2514
 msgid "State"
 msgstr "நிலை"
 
-#: src/virsh.c:586 src/virsh.c:608 src/virsh.c:4103 src/virsh.c:4119
+#: src/virsh.c:587 src/virsh.c:609 src/virsh.c:4297 src/virsh.c:4313
 msgid "no state"
 msgstr "நிலையில்லை"
 
-#: src/virsh.c:629
+#: src/virsh.c:630
 msgid "domain state"
 msgstr "செயற்கள நிலை"
 
-#: src/virsh.c:630
+#: src/virsh.c:631
 msgid "Returns state about a running domain."
 msgstr "இயங்கும் செயற்களத்தின் நிலையை கொடுக்கிறது"
 
 #: src/virsh.c:667
+msgid "get device block stats for a domain"
+msgstr ""
+
+#: src/virsh.c:668
+#, fuzzy
+msgid "Get device block stats for a running domain."
+msgstr "இயங்கும் செயற்களத்தின் நிலையை கொடுக்கிறது"
+
+#: src/virsh.c:674
+#, fuzzy
+msgid "block device"
+msgstr "தடுக்கப்பட்டது"
+
+#: src/virsh.c:695
+#, fuzzy, c-format
+msgid "Failed to get block stats %s %s"
+msgstr "%s லிருந்து %s க்கு செயற்களத்தை சேமிக்க முடியவில்லை"
+
+#: src/virsh.c:724
+#, fuzzy
+msgid "get network interface stats for a domain"
+msgstr "பிணைய பெயர்"
+
+#: src/virsh.c:725
+#, fuzzy
+msgid "Get network interface stats for a running domain."
+msgstr "இயங்கும் செயற்களத்தின் நிலையை கொடுக்கிறது"
+
+#: src/virsh.c:731
+msgid "interface device"
+msgstr ""
+
+#: src/virsh.c:752
+#, fuzzy, c-format
+msgid "Failed to get interface stats %s %s"
+msgstr "முனை தகவலை பெறுவதில் தோல்வி"
+
+#: src/virsh.c:791
 msgid "suspend a domain"
 msgstr "செயற்களத்தின் தற்காலிக நிறுத்தம்"
 
-#: src/virsh.c:668
+#: src/virsh.c:792
 msgid "Suspend a running domain."
 msgstr "இயக்கத்திலுள்ள செயற்களத்தின் தற்காலிக நீக்கம்."
 
-#: src/virsh.c:691
+#: src/virsh.c:815
 #, c-format
 msgid "Domain %s suspended\n"
 msgstr "செயற்களம் %s தற்காலிகமாக நிறுத்தப்பட்டது\n"
 
-#: src/virsh.c:693
+#: src/virsh.c:817
 #, c-format
 msgid "Failed to suspend domain %s"
 msgstr "செயற்களம் %sஐ தற்காலிகமாக நிறுத்த முடியவில்லை"
 
-#: src/virsh.c:706
+#: src/virsh.c:830
 msgid "create a domain from an XML file"
 msgstr "XML கோப்பிலிருந்து செயற்களத்தை உருவாக்கவும்"
 
-#: src/virsh.c:707
+#: src/virsh.c:831
 msgid "Create a domain."
 msgstr "செயற்களத்தை உருவாக்கவும்."
 
-#: src/virsh.c:712 src/virsh.c:820
+#: src/virsh.c:836 src/virsh.c:944
 #, fuzzy
 msgid "file containing an XML domain description"
 msgstr "XML செயற்கள விளக்கத்தை கொண்டுள்ள கோப்பு"
 
-#: src/virsh.c:727
+#: src/virsh.c:851
 #, fuzzy, c-format
 msgid "Failed to open '%s': %s"
 msgstr "செயற்களம் %sஐ தற்காலிகமாக நிறுத்த முடியவில்லை"
 
-#: src/virsh.c:747
+#: src/virsh.c:871
 #, c-format
 msgid "Failed to open '%s': read: %s"
 msgstr "'%s'ஐ திறக்க முடியவில்லை: வாசித்தல்: %s"
 
-#: src/virsh.c:765
+#: src/virsh.c:889
 #, c-format
 msgid "Error allocating memory: %s"
 msgstr "நினைவகத்தை ஒதுக்குவதில் பிழை: %s"
 
-#: src/virsh.c:799
+#: src/virsh.c:923
 #, c-format
 msgid "Domain %s created from %s\n"
 msgstr "செயற்களம் %s %sலிருந்து உருவாக்கப்பட்டது\n"
 
-#: src/virsh.c:803
+#: src/virsh.c:927
 #, c-format
 msgid "Failed to create domain from %s"
 msgstr " %s லிருந்து செயற்களத்தை உருவாக்க முடியவில்லை"
 
-#: src/virsh.c:814
+#: src/virsh.c:938
 msgid "define (but don't start) a domain from an XML file"
 msgstr "ஒரு XML கோப்பிலிருந்து ஒரு செயற்களத்தை வரையறுக்கவும் (ஆனால் ஆரம்பிக்க வேண்டாம்)"
 
-#: src/virsh.c:815
+#: src/virsh.c:939
 msgid "Define a domain."
 msgstr "செயற்களத்தை வரையறுக்கவும்"
 
-#: src/virsh.c:847
+#: src/virsh.c:971
 #, c-format
 msgid "Domain %s defined from %s\n"
 msgstr "செயற்களம் %s %sலிருந்து வரையறுக்கவும்\n"
 
-#: src/virsh.c:851
+#: src/virsh.c:975
 #, c-format
 msgid "Failed to define domain from %s"
 msgstr " %s லிருந்து செயற்களத்தை வரையறுக்க முடியவில்லை"
 
-#: src/virsh.c:862
+#: src/virsh.c:986
 msgid "undefine an inactive domain"
 msgstr "வரையறுக்கப்படாத ஒரு செயலற்ற செயற்களம்"
 
-#: src/virsh.c:863
+#: src/virsh.c:987
 msgid "Undefine the configuration for an inactive domain."
 msgstr "ஒரு செயலற்ற செயற்களத்திற்கு வரையறுக்கப்படாத கட்டமைப்பு."
 
-#: src/virsh.c:868 src/virsh.c:1966
+#: src/virsh.c:992 src/virsh.c:2094
 msgid "domain name or uuid"
 msgstr "செயற்களப் பெயர் அல்லது uuid"
 
-#: src/virsh.c:886
+#: src/virsh.c:1010
 #, c-format
 msgid "Domain %s has been undefined\n"
 msgstr "செயற்களம் %s வரையறுக்கப்படவில்லை\n"
 
-#: src/virsh.c:888
+#: src/virsh.c:1012
 #, c-format
 msgid "Failed to undefine domain %s"
 msgstr "செயற்களம் %sஐ வரையறுக்கப்படாதது முடியவில்லை"
 
-#: src/virsh.c:902
+#: src/virsh.c:1026
 msgid "start a (previously defined) inactive domain"
 msgstr "ஒரு செயலற்ற செயற்களத்தை ஆரம்பிக்கவும் (முன்பு வரையறுக்கப்பட்டது)"
 
-#: src/virsh.c:903
+#: src/virsh.c:1027
 msgid "Start a domain."
 msgstr "ஒரு செயற்களத்தை துவக்கவும்."
 
-#: src/virsh.c:908
+#: src/virsh.c:1032
 msgid "name of the inactive domain"
 msgstr "செயலற்ற செயற்களப் பெயர்"
 
-#: src/virsh.c:925
+#: src/virsh.c:1049
 msgid "Domain is already active"
 msgstr "செயற்களம் ஏற்கனவே செயலில் உள்ளது"
 
-#: src/virsh.c:931
+#: src/virsh.c:1055
 #, c-format
 msgid "Domain %s started\n"
 msgstr "செயற்களம் %s தொடங்கப்பட்டது\n"
 
-#: src/virsh.c:934
+#: src/virsh.c:1058
 #, c-format
 msgid "Failed to start domain %s"
 msgstr "செயற்களம் %s ஐ துவக்க முடியவில்லை"
 
-#: src/virsh.c:947
+#: src/virsh.c:1071
 msgid "save a domain state to a file"
 msgstr "செயற்களத்தின் நிலையை கோப்பாக சேமிக்கவும்"
 
-#: src/virsh.c:948
+#: src/virsh.c:1072
 msgid "Save a running domain."
 msgstr "இயங்கும் செயற்களத்தை சேமிக்கவும்."
 
-#: src/virsh.c:954
+#: src/virsh.c:1078
 msgid "where to save the data"
 msgstr "தரவினை எங்கே சேமிக்க வேண்டும்"
 
-#: src/virsh.c:976
+#: src/virsh.c:1100
 #, c-format
 msgid "Domain %s saved to %s\n"
 msgstr "செயற்களம் %s %s இல் சேமிக்கப்பட்டது\n"
 
-#: src/virsh.c:978
+#: src/virsh.c:1102
 #, c-format
 msgid "Failed to save domain %s to %s"
 msgstr "%s லிருந்து %s க்கு செயற்களத்தை சேமிக்க முடியவில்லை"
 
-#: src/virsh.c:991
+#: src/virsh.c:1115
 msgid "show/set scheduler parameters"
 msgstr ""
 
-#: src/virsh.c:992
+#: src/virsh.c:1116
 msgid "Show/Set scheduler parameters."
 msgstr ""
 
-#: src/virsh.c:998
+#: src/virsh.c:1122
 msgid "weight for XEN_CREDIT"
 msgstr "XEN_CREDIT இன் எடை"
 
-#: src/virsh.c:999
+#: src/virsh.c:1123
 msgid "cap for XEN_CREDIT"
 msgstr "XEN_CREDIT க்கு cap"
 
-#: src/virsh.c:1069 src/virsh.c:1073
+#: src/virsh.c:1193 src/virsh.c:1197
 msgid "Scheduler"
 msgstr "திட்ட மேலாளர்"
 
-#: src/virsh.c:1073
+#: src/virsh.c:1197
 msgid "Unknown"
 msgstr "தெரியாதது"
 
-#: src/virsh.c:1125
+#: src/virsh.c:1253
 msgid "restore a domain from a saved state in a file"
 msgstr "ஒரு கோப்பில் சேமிக்கப்பட்ட நிலையிலிருந்து ஒரு செயற்களத்தை மீட்டெடுக்கவும்"
 
-#: src/virsh.c:1126
+#: src/virsh.c:1254
 msgid "Restore a domain."
 msgstr "செயற்களத்தை மீட்டெடுக்கவும்."
 
-#: src/virsh.c:1131
+#: src/virsh.c:1259
 msgid "the state to restore"
 msgstr "நிலையினை மீட்டெடுக்கவும்"
 
-#: src/virsh.c:1150
+#: src/virsh.c:1278
 #, c-format
 msgid "Domain restored from %s\n"
 msgstr "%sலிருந்து செயற்களம் மீட்டெடுக்கப்பட்டது\n"
 
-#: src/virsh.c:1152
+#: src/virsh.c:1280
 #, c-format
 msgid "Failed to restore domain from %s"
 msgstr "%s லிருந்து செயற்களத்தை மீட்டெடுக்க முடியவில்லை"
 
-#: src/virsh.c:1163
+#: src/virsh.c:1291
 msgid "dump the core of a domain to a file for analysis"
 msgstr "செயற்களத்தை ஆய்வு செய்ய ஒரு கோப்பில் கோர் சேமிக்கவும்"
 
-#: src/virsh.c:1164
+#: src/virsh.c:1292
 msgid "Core dump a domain."
 msgstr "ஒரு செயற்களத்தை கோரில் சேமிக்கவும்"
 
-#: src/virsh.c:1170
+#: src/virsh.c:1298
 msgid "where to dump the core"
 msgstr "கோரை எங்கு சேமிக்க வேண்டும்"
 
-#: src/virsh.c:1192
+#: src/virsh.c:1320
 #, c-format
 msgid "Domain %s dumpd to %s\n"
 msgstr "செயற்களம் %s %s இல் சேமிக்கப்பட்டது\n"
 
-#: src/virsh.c:1194
+#: src/virsh.c:1322
 #, c-format
 msgid "Failed to core dump domain %s to %s"
 msgstr "%s லிருந்து %s க்கு செயற்களத்தை கோர் சேமிக்க முடியவில்லை"
 
-#: src/virsh.c:1208
+#: src/virsh.c:1336
 msgid "resume a domain"
 msgstr "ஒரு செயற்களத்தை மீண்டும் தொடங்குகிறது"
 
-#: src/virsh.c:1209
+#: src/virsh.c:1337
 msgid "Resume a previously suspended domain."
 msgstr "முன்பு தற்காலிகமாக நிறுத்தப்பட்ட செயற்களும் மீண்டும் தொடரப்படுகிறது."
 
-#: src/virsh.c:1232
+#: src/virsh.c:1360
 #, c-format
 msgid "Domain %s resumed\n"
 msgstr "செயற்களம் %s மீண்டும் தொடரப்படுகிறது\n"
 
-#: src/virsh.c:1234
+#: src/virsh.c:1362
 #, c-format
 msgid "Failed to resume domain %s"
 msgstr "செயற்களம் %sஐ மீண்டும் தொடர செய்ய முடியவில்லை"
 
-#: src/virsh.c:1247
+#: src/virsh.c:1375
 msgid "gracefully shutdown a domain"
 msgstr "ஒரு செயற்களத்தை பணிநிறுத்தம் செய்யவும்"
 
-#: src/virsh.c:1248
+#: src/virsh.c:1376
 msgid "Run shutdown in the target domain."
 msgstr "இலக்கு செயற்களத்தில் பணிநிறுத்தத்தை இயக்கவும்"
 
-#: src/virsh.c:1271
+#: src/virsh.c:1399
 #, c-format
 msgid "Domain %s is being shutdown\n"
 msgstr "செயற்களம் %s பணி நிறுத்தம் செய்யப்படுகிறது\n"
 
-#: src/virsh.c:1273
+#: src/virsh.c:1401
 #, c-format
 msgid "Failed to shutdown domain %s"
 msgstr "செயற்களம் %sஐ பணி நிறுத்தம் செய்ய முடியவில்லை"
 
-#: src/virsh.c:1286
+#: src/virsh.c:1414
 msgid "reboot a domain"
 msgstr "ஒரு செயற்களத்தை மறு துவக்கம் செய்கிறது"
 
-#: src/virsh.c:1287
+#: src/virsh.c:1415
 msgid "Run a reboot command in the target domain."
 msgstr "இலக்கு செயற்களத்தில் மறு துவக்க கட்டளையை இயக்கவும்."
 
-#: src/virsh.c:1310
+#: src/virsh.c:1438
 #, c-format
 msgid "Domain %s is being rebooted\n"
 msgstr "செயற்களம் %s மறு துவக்கப்படுகிறது\n"
 
-#: src/virsh.c:1312
+#: src/virsh.c:1440
 #, c-format
 msgid "Failed to reboot domain %s"
 msgstr "செயற்களம் %sஐ மறு துவக்க முடியவில்லை"
 
-#: src/virsh.c:1325
+#: src/virsh.c:1453
 msgid "destroy a domain"
 msgstr "ஒரு செயற்களத்தை சேதப்படுத்தவும்"
 
-#: src/virsh.c:1326
+#: src/virsh.c:1454
 msgid "Destroy a given domain."
 msgstr "கொடுக்கப்பட்ட செயற்களத்தை சேதப்படுத்தவும்."
 
-#: src/virsh.c:1349
+#: src/virsh.c:1477
 #, c-format
 msgid "Domain %s destroyed\n"
 msgstr "செயற்களம் %s சேதப்படுத்தப்பட்டது\n"
 
-#: src/virsh.c:1351
+#: src/virsh.c:1479
 #, c-format
 msgid "Failed to destroy domain %s"
 msgstr "செயற்களம் %sஐ சேதப்படுத்த முடியவில்லை"
 
-#: src/virsh.c:1364
+#: src/virsh.c:1492
 msgid "domain information"
 msgstr "செயற்கள தகவல்"
 
-#: src/virsh.c:1365
+#: src/virsh.c:1493
 msgid "Returns basic information about the domain."
 msgstr "செயற்களம் பற்றிய அடிப்படை தகவலை கொடுக்கிறது."
 
-#: src/virsh.c:1391 src/virsh.c:1393
+#: src/virsh.c:1519 src/virsh.c:1521
 msgid "Id:"
 msgstr "Id:"
 
-#: src/virsh.c:1394
+#: src/virsh.c:1522
 msgid "Name:"
 msgstr "பெயர்:"
 
-#: src/virsh.c:1397
+#: src/virsh.c:1525
 msgid "UUID:"
 msgstr "UUID:"
 
-#: src/virsh.c:1400
+#: src/virsh.c:1528
 msgid "OS Type:"
 msgstr "OS வகை:"
 
-#: src/virsh.c:1405 src/virsh.c:1491
+#: src/virsh.c:1533 src/virsh.c:1619
 msgid "State:"
 msgstr "நிலை:"
 
-#: src/virsh.c:1408 src/virsh.c:1848
+#: src/virsh.c:1536 src/virsh.c:1976
 msgid "CPU(s):"
 msgstr "CPU(s):"
 
-#: src/virsh.c:1415 src/virsh.c:1498
+#: src/virsh.c:1543 src/virsh.c:1626
 msgid "CPU time:"
 msgstr "CPU நேரம்:"
 
-#: src/virsh.c:1419 src/virsh.c:1422
+#: src/virsh.c:1547 src/virsh.c:1550
 msgid "Max memory:"
 msgstr "அதிகபட்ச நினைவகம்:"
 
-#: src/virsh.c:1423
+#: src/virsh.c:1551
 msgid "no limit"
 msgstr "வரையறை இல்லை"
 
-#: src/virsh.c:1425
+#: src/virsh.c:1553
 msgid "Used memory:"
 msgstr "பயன்படுத்தப்பட்ட நினைவகம்:"
 
-#: src/virsh.c:1441
+#: src/virsh.c:1569
 msgid "domain vcpu information"
 msgstr "vcpu செயற்கள தகவல்"
 
-#: src/virsh.c:1442
+#: src/virsh.c:1570
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr "செயற்களம் மெய்நிகர் CPUகள் பற்றிய அடிப்படை தகவலை கொடுக்கிறது."
 
-#: src/virsh.c:1489
+#: src/virsh.c:1617
 msgid "VCPU:"
 msgstr "VCPU :"
 
-#: src/virsh.c:1490
+#: src/virsh.c:1618
 msgid "CPU:"
 msgstr "CPU :"
 
-#: src/virsh.c:1500
+#: src/virsh.c:1628
 msgid "CPU Affinity:"
 msgstr "CPU Affinity:"
 
-#: src/virsh.c:1512
+#: src/virsh.c:1640
 msgid "Domain shut off, virtual CPUs not present."
 msgstr ""
 
-#: src/virsh.c:1528
+#: src/virsh.c:1656
 msgid "control domain vcpu affinity"
 msgstr "செயற்கள vcpu உறவினை கட்டுப்படுத்தவும்"
 
-#: src/virsh.c:1529
+#: src/virsh.c:1657
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr "Pin செயற்கள VCPUகள் பருநிலை CPUகளை நிறுவுகிறது."
 
-#: src/virsh.c:1535
+#: src/virsh.c:1663
 msgid "vcpu number"
 msgstr "vcpu எண்"
 
-#: src/virsh.c:1536
+#: src/virsh.c:1664
 msgid "host cpu number(s) (comma separated)"
 msgstr "புரவலன் cpu எண்(கள்) (அரைப்புள்ளியால் பிரிக்கப்பட்டுள்ளது)"
 
-#: src/virsh.c:1591
+#: src/virsh.c:1719
 msgid "cpulist: Invalid format. Empty string."
 msgstr ""
 
-#: src/virsh.c:1601
+#: src/virsh.c:1729
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
 
-#: src/virsh.c:1611
+#: src/virsh.c:1739
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
 "c')."
 msgstr ""
 
-#: src/virsh.c:1618
+#: src/virsh.c:1746
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
 msgstr ""
 
-#: src/virsh.c:1632
+#: src/virsh.c:1760
 #, c-format
 msgid "Physical CPU %d doesn't exist."
 msgstr "பருநிலை CPU %d இல்லை."
 
-#: src/virsh.c:1656
+#: src/virsh.c:1784
 msgid "change number of virtual CPUs"
 msgstr " CPUகள் மெய்நிகர் எண்ணிக்கையை மாற்றவும்"
 
-#: src/virsh.c:1657
+#: src/virsh.c:1785
 msgid "Change the number of virtual CPUs active in the guest domain."
 msgstr "விருந்தினர் செயற்களத்தில் செயலிலுள்ள மெய்நிகர் CPUக்களின் எண்ணிக்கையை மாற்றவும்"
 
-#: src/virsh.c:1663
+#: src/virsh.c:1791
 msgid "number of virtual CPUs"
 msgstr "மெய்நிகர் CPUகளின் எண்ணிக்கை"
 
-#: src/virsh.c:1683
+#: src/virsh.c:1811
 #, fuzzy
 msgid "Invalid number of virtual CPUs."
 msgstr "மெய்நிகர் CPUகளின் எண்ணிக்கை"
 
-#: src/virsh.c:1695
+#: src/virsh.c:1823
 #, fuzzy
 msgid "Too many virtual CPUs."
 msgstr "நிறைய மெய்நிகர் CPUகள் உள்ளன."
 
-#: src/virsh.c:1713
+#: src/virsh.c:1841
 msgid "change memory allocation"
 msgstr "நினைவக ஒதுக்கீட்டை மாற்றவும்"
 
-#: src/virsh.c:1714
+#: src/virsh.c:1842
 msgid "Change the current memory allocation in the guest domain."
 msgstr "விருந்தினர் செயற்களத்தில் நடப்பு நினைவக ஒதுக்கீட்டை மாற்றவும்."
 
-#: src/virsh.c:1720
+#: src/virsh.c:1848
 #, fuzzy
 msgid "number of kilobytes of memory"
 msgstr "நினைவகத்தின் பைட்டுகளின் எண்ணிக்கை"
 
-#: src/virsh.c:1741 src/virsh.c:1753 src/virsh.c:1798
+#: src/virsh.c:1869 src/virsh.c:1881 src/virsh.c:1926
 #, c-format
 msgid "Invalid value of %d for memory size"
 msgstr "தவறான %dஇன் நினைவக அளவு "
 
-#: src/virsh.c:1747
+#: src/virsh.c:1875
 msgid "Unable to verify MaxMemorySize"
 msgstr ""
 
-#: src/virsh.c:1770
+#: src/virsh.c:1898
 msgid "change maximum memory limit"
 msgstr "அதிகபட்ச நினைவக வரையறையை மாற்றவும்"
 
-#: src/virsh.c:1771
+#: src/virsh.c:1899
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr "விருந்தினர் செயற்களத்தில் அதிகபட்ச நினைவக ஒதுக்கீட்டை மாற்றவும்."
 
-#: src/virsh.c:1777
+#: src/virsh.c:1905
 #, fuzzy
 msgid "maximum memory limit in kilobytes"
 msgstr "அதிகபட்ச நினைவக வரையறை பைட்டுகளில்"
 
-#: src/virsh.c:1804
+#: src/virsh.c:1932
 msgid "Unable to verify current MemorySize"
 msgstr ""
 
-#: src/virsh.c:1811
+#: src/virsh.c:1939
 #, fuzzy
 msgid "Unable to shrink current MemorySize"
 msgstr "செயற்களத்தின் நடப்பு நினைவகம்"
 
-#: src/virsh.c:1817
+#: src/virsh.c:1945
 msgid "Unable to change MaxMemorySize"
 msgstr ""
 
-#: src/virsh.c:1830
+#: src/virsh.c:1958
 msgid "node information"
 msgstr "முனை தகவல்"
 
-#: src/virsh.c:1831
+#: src/virsh.c:1959
 msgid "Returns basic information about the node."
 msgstr "முனை பற்றிய அடிப்படை தகவலை கொடுக்கிறது"
 
-#: src/virsh.c:1844
+#: src/virsh.c:1972
 msgid "failed to get node information"
 msgstr "முனை தகவலை பெறுவதில் தோல்வி"
 
-#: src/virsh.c:1847
+#: src/virsh.c:1975
 msgid "CPU model:"
 msgstr "CPU மாதிர:"
 
-#: src/virsh.c:1849
+#: src/virsh.c:1977
 msgid "CPU frequency:"
 msgstr "CPU அலைவரிசை:"
 
-#: src/virsh.c:1850
+#: src/virsh.c:1978
 msgid "CPU socket(s):"
 msgstr "CPU சாக்கெட்(கள்):"
 
-#: src/virsh.c:1851
+#: src/virsh.c:1979
 msgid "Core(s) per socket:"
 msgstr "சாக்கெட்டுக்கான கோர்கள்:"
 
-#: src/virsh.c:1852
+#: src/virsh.c:1980
 msgid "Thread(s) per core:"
 msgstr "கோருக்கான த்ரட்(கள்):"
 
-#: src/virsh.c:1853
+#: src/virsh.c:1981
 msgid "NUMA cell(s):"
 msgstr "NUMA கலங்கள்:"
 
-#: src/virsh.c:1854
+#: src/virsh.c:1982
 msgid "Memory size:"
 msgstr "நினைவக அளவு:"
 
-#: src/virsh.c:1864
+#: src/virsh.c:1992
 msgid "capabilities"
 msgstr "செயல்திறன்கள்"
 
-#: src/virsh.c:1865
+#: src/virsh.c:1993
 msgid "Returns capabilities of hypervisor/driver."
 msgstr "hypervisor/இயக்கியின் செயல்திறனை கொடுக்கிறது."
 
-#: src/virsh.c:1878
+#: src/virsh.c:2006
 msgid "failed to get capabilities"
 msgstr "செயல்திறனை பெற முடியவில்லை"
 
-#: src/virsh.c:1891
+#: src/virsh.c:2019
 msgid "domain information in XML"
 msgstr " XML பற்றிய செயற்கள தகவல்"
 
-#: src/virsh.c:1892
+#: src/virsh.c:2020
 #, fuzzy
 msgid "Output the domain information as an XML dump to stdout."
 msgstr "XML dump லிருந்து stdoutக்கு செயற்கள தகவலின் வெளியீடு."
 
-#: src/virsh.c:1931
+#: src/virsh.c:2059
 msgid "convert a domain id or UUID to domain name"
 msgstr "செயற்கள ஐடி அல்லது UUIDஐ செயற்கள பெயருக்கு மாற்றவும்"
 
-#: src/virsh.c:1936
+#: src/virsh.c:2064
 msgid "domain id or uuid"
 msgstr "செயற்களம் id அல்லது uuid"
 
-#: src/virsh.c:1961
+#: src/virsh.c:2089
 msgid "convert a domain name or UUID to domain id"
 msgstr "செயற்கள பெயரை மாற்றவும் அல்லது UUID ஐ செயற்களம் ஐடிக்கு மாற்றவும்"
 
-#: src/virsh.c:1996
+#: src/virsh.c:2124
 msgid "convert a domain name or id to domain UUID"
 msgstr "செயற்கள பெயர் அல்லது idஐ செயற்களம் UUIDக்கு மாற்றவும்"
 
-#: src/virsh.c:2001
+#: src/virsh.c:2129
 msgid "domain id or name"
 msgstr "செயற்களம் ஐடி அல்லது பெயர்"
 
-#: src/virsh.c:2020
+#: src/virsh.c:2148
 msgid "failed to get domain UUID"
 msgstr "UUID செயற்களத்தை பெற முடியவில்லை"
 
-#: src/virsh.c:2030
+#: src/virsh.c:2158
+msgid "migrate domain to another host"
+msgstr ""
+
+#: src/virsh.c:2159
+msgid "Migrate domain to another host.  Add --live for live migration."
+msgstr ""
+
+#: src/virsh.c:2164
+msgid "live migration"
+msgstr ""
+
+#: src/virsh.c:2166
+#, fuzzy
+msgid "connection URI of the destination host"
+msgstr "விருந்தினர் பணியகத்துடன் இணைக்கவும்"
+
+#: src/virsh.c:2167
+msgid "migration URI, usually can be omitted"
+msgstr ""
+
+#: src/virsh.c:2189
+msgid "migrate: Missing desturi"
+msgstr ""
+
+#: src/virsh.c:2221
 msgid "autostart a network"
 msgstr "ஒரு பிணையத்தை தானாக துவக்கவும்"
 
-#: src/virsh.c:2032
+#: src/virsh.c:2223
 msgid "Configure a network to be automatically started at boot."
 msgstr "தானாக துவங்க ஒரு பிணையத்தைக் கட்டமைக்கவும்"
 
-#: src/virsh.c:2037 src/virsh.c:2462
+#: src/virsh.c:2228 src/virsh.c:2653
 msgid "network name or uuid"
 msgstr "பிணைய பெயர் அல்லது uuid"
 
-#: src/virsh.c:2059
+#: src/virsh.c:2250
 #, fuzzy, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "%s ஐ குறிக்க பிணையம் %sஐ தானாக துவக்க முடியவில்லை"
 
-#: src/virsh.c:2062
+#: src/virsh.c:2253
 #, fuzzy, c-format
 msgid "failed to unmark network %s as autostarted"
 msgstr "%s ஐ குறிக்க பிணையம் %sஐ தானாக துவக்க முடியவில்லை"
 
-#: src/virsh.c:2069
+#: src/virsh.c:2260
 #, fuzzy, c-format
 msgid "Network %s marked as autostarted\n"
 msgstr "பிணையம் %s %s தானாக துவக்குவதாக குறிக்கப்பட்டுள்ளது\n"
 
-#: src/virsh.c:2071
+#: src/virsh.c:2262
 #, fuzzy, c-format
 msgid "Network %s unmarked as autostarted\n"
 msgstr "பிணையம் %s %s தானாக துவக்குவதாக குறிக்கப்பட்டுள்ளது\n"
 
-#: src/virsh.c:2081
+#: src/virsh.c:2272
 msgid "create a network from an XML file"
 msgstr "XML கோப்பிலிருந்து ஒரு பிணையத்தை உருவாக்கவும்"
 
-#: src/virsh.c:2082
+#: src/virsh.c:2273
 msgid "Create a network."
 msgstr "பிணையத்தை உருவாக்கவும்."
 
-#: src/virsh.c:2087 src/virsh.c:2135
+#: src/virsh.c:2278 src/virsh.c:2326
 msgid "file containing an XML network description"
 msgstr "XML பிணைய விளக்கத்தை கொண்டுள்ள கோப்பு"
 
-#: src/virsh.c:2114
+#: src/virsh.c:2305
 #, c-format
 msgid "Network %s created from %s\n"
 msgstr "பிணைய %s %sலிருந்து உருவாக்கப்பட்டது\n"
 
-#: src/virsh.c:2117
+#: src/virsh.c:2308
 #, c-format
 msgid "Failed to create network from %s"
 msgstr " %s லிருந்து பிணையத்தை உருவாக்க முடியவில்லை"
 
-#: src/virsh.c:2129
+#: src/virsh.c:2320
 msgid "define (but don't start) a network from an XML file"
 msgstr "ஒரு XML கோப்பிலிருந்து ஒரு பிணையத்தை வரையறுக்கவும் (ஆனால் ஆரம்பிக்க வேண்டாம்)"
 
-#: src/virsh.c:2130
+#: src/virsh.c:2321
 msgid "Define a network."
 msgstr "பிணையத்தை வரையறுக்கவும்."
 
-#: src/virsh.c:2162
+#: src/virsh.c:2353
 #, c-format
 msgid "Network %s defined from %s\n"
 msgstr "பிணையம் %s %sலிருந்து வரையறுக்கவும்\n"
 
-#: src/virsh.c:2165
+#: src/virsh.c:2356
 #, c-format
 msgid "Failed to define network from %s"
 msgstr " %s லிருந்து பிணையத்தை வரையறுக்க முடியவில்லை"
 
-#: src/virsh.c:2177
+#: src/virsh.c:2368
 msgid "destroy a network"
 msgstr "ஒரு பிணையத்தை அழிக்கவும்"
 
-#: src/virsh.c:2178
+#: src/virsh.c:2369
 msgid "Destroy a given network."
 msgstr "கொடுக்கப்பட்ட பிணையத்தை அழிக்கவும்."
 
-#: src/virsh.c:2183 src/virsh.c:2223
+#: src/virsh.c:2374 src/virsh.c:2414
 msgid "network name, id or uuid"
 msgstr "பிணையத்தின் பெயர், id அல்லது uuid"
 
-#: src/virsh.c:2201
+#: src/virsh.c:2392
 #, c-format
 msgid "Network %s destroyed\n"
 msgstr "பிணையம் %s அழிக்கப்பட்டது\n"
 
-#: src/virsh.c:2203
+#: src/virsh.c:2394
 #, c-format
 msgid "Failed to destroy network %s"
 msgstr "பிணையம் %sஐ சேதப்படுத்த முடியவில்லை"
 
-#: src/virsh.c:2217
+#: src/virsh.c:2408
 msgid "network information in XML"
 msgstr " XML பற்றிய பிணைய தகவல்"
 
-#: src/virsh.c:2218
+#: src/virsh.c:2409
 #, fuzzy
 msgid "Output the network information as an XML dump to stdout."
 msgstr "XML dump லிருந்து stdoutக்கு பிணைய தகவலின் வெளிப்பாடு."
 
-#: src/virsh.c:2258
+#: src/virsh.c:2449
 msgid "list networks"
 msgstr "பட்டியல் பிணையங்கள்"
 
-#: src/virsh.c:2259
+#: src/virsh.c:2450
 msgid "Returns list of networks."
 msgstr "பிணையங்களின் பட்டியலை கொடுக்கிறது."
 
-#: src/virsh.c:2264
+#: src/virsh.c:2455
 msgid "list inactive networks"
 msgstr "செயலிலில்லாத பிணையங்களை பட்டியலிடவும்"
 
-#: src/virsh.c:2265
+#: src/virsh.c:2456
 msgid "list inactive & active networks"
 msgstr "செயலற்ற & செயலிலுள்ள பிணையங்களை பட்டியலிடவும்"
 
-#: src/virsh.c:2285 src/virsh.c:2293
+#: src/virsh.c:2476 src/virsh.c:2484
 msgid "Failed to list active networks"
 msgstr "செயலிலுள்ள பிணையங்களை பட்டியலிட முடியவில்லை"
 
-#: src/virsh.c:2304 src/virsh.c:2313
+#: src/virsh.c:2495 src/virsh.c:2504
 msgid "Failed to list inactive networks"
 msgstr "செயலற்ற பிணையங்களை பட்டியலிட முடியவில்லை"
 
-#: src/virsh.c:2323
+#: src/virsh.c:2514
 msgid "Autostart"
 msgstr "தானாக துவக்கம்"
 
-#: src/virsh.c:2338 src/virsh.c:2361
+#: src/virsh.c:2529 src/virsh.c:2552
 msgid "no autostart"
 msgstr "தானாக துவக்கம் இல்லை"
 
-#: src/virsh.c:2344
+#: src/virsh.c:2535
 msgid "active"
 msgstr "செயலிலுள்ளது"
 
-#: src/virsh.c:2367
+#: src/virsh.c:2558
 msgid "inactive"
 msgstr "செயலில்லாதது"
 
-#: src/virsh.c:2386
+#: src/virsh.c:2577
 msgid "convert a network UUID to network name"
 msgstr "பிணைய ஐடி அல்லது UUIDஐ பிணைய பெயருக்கு மாற்றவும்"
 
-#: src/virsh.c:2417
+#: src/virsh.c:2608
 msgid "start a (previously defined) inactive network"
 msgstr "ஒரு செயலற்ற பிணையத்தை ஆரம்பிக்கவும் (முன்பு வரையறுக்கப்பட்டது)"
 
-#: src/virsh.c:2418
+#: src/virsh.c:2609
 msgid "Start a network."
 msgstr "ஒரு பிணையத்தை துவக்கவும்."
 
-#: src/virsh.c:2423
+#: src/virsh.c:2614
 msgid "name of the inactive network"
 msgstr "செயலற்ற பிணைய பெயர்"
 
-#: src/virsh.c:2440
+#: src/virsh.c:2631
 #, c-format
 msgid "Network %s started\n"
 msgstr "பிணைய %s தொடங்கப்பட்டது\n"
 
-#: src/virsh.c:2443
+#: src/virsh.c:2634
 #, c-format
 msgid "Failed to start network %s"
 msgstr "பிணைய %s ஐ துவக்க முடியவில்லை"
 
-#: src/virsh.c:2456
+#: src/virsh.c:2647
 msgid "undefine an inactive network"
 msgstr "வரையறுக்கப்படாத ஒரு செயலற்ற பிணையமக"
 
-#: src/virsh.c:2457
+#: src/virsh.c:2648
 msgid "Undefine the configuration for an inactive network."
 msgstr "ஒரு செயலற்ற பிணையத்திற்கு வரையறுக்கப்படாத கட்டமைப்பு."
 
-#: src/virsh.c:2480
+#: src/virsh.c:2671
 #, c-format
 msgid "Network %s has been undefined\n"
 msgstr "பிணையம் %s வரையறுக்கப்படவில்லை\n"
 
-#: src/virsh.c:2482
+#: src/virsh.c:2673
 #, c-format
 msgid "Failed to undefine network %s"
 msgstr "பிணையம் %sஐ வரையறுக்கப்படாதது முடியவில்லை"
 
-#: src/virsh.c:2495
+#: src/virsh.c:2686
 msgid "convert a network name to network UUID"
 msgstr "பிணையப் பெயர் அல்லது idஐ பிணையம் UUIDக்கு மாற்றவும்"
 
-#: src/virsh.c:2520
+#: src/virsh.c:2711
 msgid "failed to get network UUID"
 msgstr "UUID பிணையத்தைப் பெற முடியவில்லை"
 
-#: src/virsh.c:2531
+#: src/virsh.c:2722
 msgid "show version"
 msgstr "பதிப்பை காட்டவும்"
 
-#: src/virsh.c:2532
+#: src/virsh.c:2723
 msgid "Display the system version information."
 msgstr "கணினி பதிப்பு தகவலை காட்டவும்"
 
-#: src/virsh.c:2555
+#: src/virsh.c:2746
 msgid "failed to get hypervisor type"
 msgstr "hypervisor வகையை பெற முடியவில்லை"
 
-#: src/virsh.c:2564
+#: src/virsh.c:2755
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr "நூலகத்திற்கு எதிரான மொழிமாற்றம்: libvir %d.%d.%d\n"
 
-#: src/virsh.c:2569
+#: src/virsh.c:2760
 msgid "failed to get the library version"
 msgstr "நூலக பதிப்பை பெற முடியவில்லை"
 
-#: src/virsh.c:2576
+#: src/virsh.c:2767
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
 msgstr "நூலகத்தை பயன்படுத்துதல்: libvir %d.%d.%d\n"
 
-#: src/virsh.c:2583
+#: src/virsh.c:2774
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
 msgstr "API பயன்படுத்துதல்: %s %d.%d.%d\n"
 
-#: src/virsh.c:2588
+#: src/virsh.c:2779
 msgid "failed to get the hypervisor version"
 msgstr "hypervisor பதிப்பை பெற முடியவில்லை"
 
-#: src/virsh.c:2593
+#: src/virsh.c:2784
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "இயங்கும் %s hypervisor பதிப்பினை பிரித்தெடுக்க முடியாது\n"
 
-#: src/virsh.c:2600
+#: src/virsh.c:2791
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "இயங்கும் hypervisor: %s %d.%d.%d\n"
 
-#: src/virsh.c:2611
+#: src/virsh.c:2802
 #, fuzzy
 msgid "print the hypervisor hostname"
 msgstr "hypervisor வகையை பெற முடியவில்லை"
 
-#: src/virsh.c:2625
+#: src/virsh.c:2816
 #, fuzzy
 msgid "failed to get hostname"
 msgstr "hypervisor வகையை பெற முடியவில்லை"
 
-#: src/virsh.c:2640
+#: src/virsh.c:2831
 #, fuzzy
 msgid "print the hypervisor canonical URI"
 msgstr "hypervisor இணைப்பு URI"
 
-#: src/virsh.c:2654
+#: src/virsh.c:2845
 #, fuzzy
 msgid "failed to get URI"
 msgstr "UUID செயற்களத்தை பெற முடியவில்லை"
 
-#: src/virsh.c:2669
+#: src/virsh.c:2860
 msgid "vnc display"
 msgstr "vnc காட்சி"
 
-#: src/virsh.c:2670
+#: src/virsh.c:2861
 #, fuzzy
 msgid "Output the IP address and port number for the VNC display."
 msgstr "VNC காட்சிக்கு IP முகவரி மற்றும் துறை எண்ணின் வெளிப்பாடு."
 
-#: src/virsh.c:2748
+#: src/virsh.c:2939
 msgid "tty console"
 msgstr ""
 
-#: src/virsh.c:2749
+#: src/virsh.c:2940
 msgid "Output the device for the TTY console."
 msgstr ""
 
-#: src/virsh.c:2811
+#: src/virsh.c:3002
 #, fuzzy
 msgid "attach device from an XML file"
 msgstr "XML கோப்பிலிருந்து செயற்களத்தை உருவாக்கவும்"
 
-#: src/virsh.c:2812
+#: src/virsh.c:3003
 #, fuzzy
 msgid "Attach device from an XML <file>."
 msgstr "XML கோப்பிலிருந்து செயற்களத்தை உருவாக்கவும்"
 
-#: src/virsh.c:2818 src/virsh.c:2872
+#: src/virsh.c:3009 src/virsh.c:3063
 msgid "XML file"
 msgstr "XML கோப்பு"
 
-#: src/virsh.c:2850
+#: src/virsh.c:3041
 #, fuzzy, c-format
 msgid "Failed to attach device from %s"
 msgstr " %s லிருந்து செயற்களத்தை உருவாக்க முடியவில்லை"
 
-#: src/virsh.c:2865
+#: src/virsh.c:3056
 #, fuzzy
 msgid "detach device from an XML file"
 msgstr "XML கோப்பிலிருந்து செயற்களத்தை உருவாக்கவும்"
 
-#: src/virsh.c:2866
+#: src/virsh.c:3057
 #, fuzzy
 msgid "Detach device from an XML <file>"
 msgstr "XML கோப்பிலிருந்து செயற்களத்தை உருவாக்கவும்"
 
-#: src/virsh.c:2904
+#: src/virsh.c:3095
 #, fuzzy, c-format
 msgid "Failed to detach device from %s"
 msgstr " %s லிருந்து செயற்களத்தை உருவாக்க முடியவில்லை"
 
-#: src/virsh.c:2919
+#: src/virsh.c:3110
 #, fuzzy
 msgid "attach network interface"
 msgstr "பிணைய பெயர்"
 
-#: src/virsh.c:2920
+#: src/virsh.c:3111
 msgid "Attach new network interface."
 msgstr "புதிய பிணைய முகப்பை இணைக்கவும்"
 
-#: src/virsh.c:2926 src/virsh.c:3042
+#: src/virsh.c:3117 src/virsh.c:3233
 #, fuzzy
 msgid "network interface type"
 msgstr "பிணைய பெயர்"
 
-#: src/virsh.c:2927
+#: src/virsh.c:3118
 #, fuzzy
 msgid "source of network interface"
 msgstr "வரையறுக்கப்படாத பிணைய பெயர் அல்லது id"
 
-#: src/virsh.c:2928
+#: src/virsh.c:3119
 #, fuzzy
 msgid "target network name"
 msgstr "பிணைய பெயர்"
 
-#: src/virsh.c:2929 src/virsh.c:3043
+#: src/virsh.c:3120 src/virsh.c:3234
 msgid "MAC adress"
 msgstr "MAC முகவரி"
 
-#: src/virsh.c:2930
+#: src/virsh.c:3121
 msgid "script used to bridge network interface"
 msgstr ""
 
-#: src/virsh.c:2962
+#: src/virsh.c:3153
 #, c-format
 msgid "No support %s in command 'attach-interface'"
 msgstr "%s 'attach-interface' கட்டளையில் சேவையில்லை"
 
-#: src/virsh.c:3035
+#: src/virsh.c:3226
 #, fuzzy
 msgid "detach network interface"
 msgstr "பிணைய பெயர்"
 
-#: src/virsh.c:3036
+#: src/virsh.c:3227
 msgid "Detach network interface."
 msgstr "பிணைய முகப்பை துண்டிக்கவும்"
 
-#: src/virsh.c:3081 src/virsh.c:3086
+#: src/virsh.c:3272 src/virsh.c:3277
 #, fuzzy
 msgid "Failed to get interface information"
 msgstr "முனை தகவலை பெறுவதில் தோல்வி"
 
-#: src/virsh.c:3094
+#: src/virsh.c:3285
 #, c-format
 msgid "No found interface whose type is %s"
 msgstr "%s வகையிலுள்ள முகப்பு இல்லை"
 
-#: src/virsh.c:3116
+#: src/virsh.c:3307
 #, c-format
 msgid "No found interface whose MAC address is %s"
 msgstr ""
 
-#: src/virsh.c:3122 src/virsh.c:3400
+#: src/virsh.c:3313 src/virsh.c:3591
 #, fuzzy
 msgid "Failed to allocate memory"
 msgstr "ஒரு முனையை ஒதுக்க முடியவில்லை"
 
-#: src/virsh.c:3127 src/virsh.c:3405
+#: src/virsh.c:3318 src/virsh.c:3596
 #, fuzzy
 msgid "Failed to create XML"
 msgstr "சாக்கெட் %dஐ வாசிக்க முடியவில்லை\n"
 
-#: src/virsh.c:3156
+#: src/virsh.c:3347
 msgid "attach disk device"
 msgstr ""
 
-#: src/virsh.c:3157
+#: src/virsh.c:3348
 msgid "Attach new disk device."
 msgstr ""
 
-#: src/virsh.c:3163
+#: src/virsh.c:3354
 msgid "source of disk device"
 msgstr ""
 
-#: src/virsh.c:3164 src/virsh.c:3328
+#: src/virsh.c:3355 src/virsh.c:3519
 msgid "target of disk device"
 msgstr ""
 
-#: src/virsh.c:3165
+#: src/virsh.c:3356
 msgid "driver of disk device"
 msgstr ""
 
-#: src/virsh.c:3166
+#: src/virsh.c:3357
 msgid "subdriver of disk device"
 msgstr ""
 
-#: src/virsh.c:3167
+#: src/virsh.c:3358
 msgid "target device type"
 msgstr ""
 
-#: src/virsh.c:3168
+#: src/virsh.c:3359
 msgid "mode of device reading and writing"
 msgstr ""
 
-#: src/virsh.c:3199 src/virsh.c:3208 src/virsh.c:3215
+#: src/virsh.c:3390 src/virsh.c:3399 src/virsh.c:3406
 #, c-format
 msgid "No support %s in command 'attach-disk'"
 msgstr ""
 
-#: src/virsh.c:3321
+#: src/virsh.c:3512
 msgid "detach disk device"
 msgstr ""
 
-#: src/virsh.c:3322
+#: src/virsh.c:3513
 msgid "Detach disk device."
 msgstr ""
 
-#: src/virsh.c:3363 src/virsh.c:3368 src/virsh.c:3375
+#: src/virsh.c:3554 src/virsh.c:3559 src/virsh.c:3566
 #, fuzzy
 msgid "Failed to get disk information"
 msgstr "முனை தகவலை பெறுவதில் தோல்வி"
 
-#: src/virsh.c:3394
+#: src/virsh.c:3585
 #, c-format
 msgid "No found disk whose target is %s"
 msgstr ""
 
-#: src/virsh.c:3434
+#: src/virsh.c:3625
 msgid "quit this interactive terminal"
 msgstr "இந்த இடைச்செயல் முனையத்தை விட்டு வெளயேறவும்"
 
-#: src/virsh.c:3571
+#: src/virsh.c:3765
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "கட்டளை '%s' க்கு <%s> விருப்பம் தேவைப்படுகிறது"
 
-#: src/virsh.c:3572
+#: src/virsh.c:3766
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "கட்டளை '%s' க்கு --%s விருப்பம் தேவைப்படுகிறது"
 
-#: src/virsh.c:3599
+#: src/virsh.c:3793
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "கட்டளை '%s' இல்லை"
 
-#: src/virsh.c:3607
+#: src/virsh.c:3801
 msgid "  NAME\n"
 msgstr "  பெயர்\n"
 
-#: src/virsh.c:3611
+#: src/virsh.c:3805
 msgid ""
 "\n"
 "  SYNOPSIS\n"
@@ -1880,7 +1944,7 @@ msgstr ""
 "\n"
 "  SYNOPSIS\n"
 
-#: src/virsh.c:3618
+#: src/virsh.c:3812
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -1888,7 +1952,7 @@ msgstr ""
 "\n"
 "  விளக்கம்\n"
 
-#: src/virsh.c:3622
+#: src/virsh.c:3816
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -1896,35 +1960,35 @@ msgstr ""
 "\n"
 " விருப்பங்கள்\n"
 
-#: src/virsh.c:3629
+#: src/virsh.c:3823
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <number>"
 
-#: src/virsh.c:3631
+#: src/virsh.c:3825
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <string>"
 
-#: src/virsh.c:3750
+#: src/virsh.c:3944
 msgid "undefined domain name or id"
 msgstr "வரையறுக்கப்படாத செயற்கள பெயர் அல்லது id"
 
-#: src/virsh.c:3783
+#: src/virsh.c:3977
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "செயற்களம் '%s'ஐ பெற முடியவில்லை"
 
-#: src/virsh.c:3796
+#: src/virsh.c:3990
 msgid "undefined network name"
 msgstr "வரையறுக்கப்படாத பிணைய பெயர் அல்லது id"
 
-#: src/virsh.c:3820
+#: src/virsh.c:4014
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "பிணையம் '%s'ஐ பெற முடியவில்லை"
 
-#: src/virsh.c:3848
+#: src/virsh.c:4042
 #, c-format
 msgid ""
 "\n"
@@ -1935,125 +1999,125 @@ msgstr ""
 "(நேரம்: %.3f ms)\n"
 "\n"
 
-#: src/virsh.c:3922
+#: src/virsh.c:4116
 msgid "missing \""
 msgstr "விடுபட்ட \""
 
-#: src/virsh.c:3983
+#: src/virsh.c:4177
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "எதிர்பாராத டோக்கன் (கட்டளை பெயர்): '%s'"
 
-#: src/virsh.c:3988
+#: src/virsh.c:4182
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "தெரியாத கட்டளை: '%s'"
 
-#: src/virsh.c:3995
+#: src/virsh.c:4189
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "கட்டளை '%s'  --%sவிருப்பத்திற்கு துணை புரியாது"
 
-#: src/virsh.c:4010
+#: src/virsh.c:4204
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "எதிர்பார்த்த இலக்கணம்: --%s <%s>"
 
-#: src/virsh.c:4013
+#: src/virsh.c:4207
 msgid "number"
 msgstr "எண்"
 
-#: src/virsh.c:4013
+#: src/virsh.c:4207
 msgid "string"
 msgstr "சரம்"
 
-#: src/virsh.c:4019
+#: src/virsh.c:4213
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "எதிர்பாராத தரவு '%s'"
 
-#: src/virsh.c:4041
+#: src/virsh.c:4235
 msgid "OPTION"
 msgstr "விருப்பம்"
 
-#: src/virsh.c:4041
+#: src/virsh.c:4235
 msgid "DATA"
 msgstr "தகவல்"
 
-#: src/virsh.c:4091 src/virsh.c:4117
+#: src/virsh.c:4285 src/virsh.c:4311
 msgid "running"
 msgstr "இயங்குகிறது"
 
-#: src/virsh.c:4093 src/virsh.c:4115
+#: src/virsh.c:4287 src/virsh.c:4309
 msgid "blocked"
 msgstr "தடுக்கப்பட்டது"
 
-#: src/virsh.c:4095
+#: src/virsh.c:4289
 msgid "paused"
 msgstr "இடை நிறுத்தப்பட்டது"
 
-#: src/virsh.c:4097
+#: src/virsh.c:4291
 msgid "in shutdown"
 msgstr "பணி நிறுத்தத்தில்"
 
-#: src/virsh.c:4099
+#: src/virsh.c:4293
 msgid "shut off"
 msgstr "பணி நிறுத்தம்"
 
-#: src/virsh.c:4101
+#: src/virsh.c:4295
 msgid "crashed"
 msgstr "முறிவுற்றது"
 
-#: src/virsh.c:4113
+#: src/virsh.c:4307
 msgid "offline"
 msgstr "இணைப்பில் இல்லாமல்"
 
-#: src/virsh.c:4132
+#: src/virsh.c:4326
 msgid "no valid connection"
 msgstr "சரியான இணைப்பு இல்லை"
 
-#: src/virsh.c:4179
+#: src/virsh.c:4373
 #, c-format
 msgid "%s: error: "
 msgstr "%s: பிழை: "
 
-#: src/virsh.c:4181
+#: src/virsh.c:4375
 msgid "error: "
 msgstr "பிழை: "
 
-#: src/virsh.c:4203 src/virsh.c:4215 src/virsh.c:4228
+#: src/virsh.c:4397 src/virsh.c:4409 src/virsh.c:4422
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: %d பைட்டுகளை ஒதுக்க முடியவில்லை"
 
-#: src/virsh.c:4242
+#: src/virsh.c:4436
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "%s: %d: %lu பைட்டுகளை ஒதுக்க முடியவில்லை"
 
-#: src/virsh.c:4278
+#: src/virsh.c:4472
 msgid "failed to connect to the hypervisor"
 msgstr "hypervisor உடன் இணைக்க முடியவில்லை"
 
-#: src/virsh.c:4302
+#: src/virsh.c:4496
 #, fuzzy
 msgid "failed to get the log file information"
 msgstr "முனை தகவலை பெறுவதில் தோல்வி"
 
-#: src/virsh.c:4307
+#: src/virsh.c:4501
 msgid "the log path is not a file"
 msgstr ""
 
-#: src/virsh.c:4313
+#: src/virsh.c:4507
 msgid "failed to open the log file. check the log file path"
 msgstr ""
 
-#: src/virsh.c:4381
+#: src/virsh.c:4575
 #, fuzzy
 msgid "failed to write the log file"
 msgstr "கட்டமைப்பு கோப்பினை எழுத முடியவில்லை"
 
-#: src/virsh.c:4550
+#: src/virsh.c:4744
 #, c-format
 msgid ""
 "\n"
@@ -2086,7 +2150,7 @@ msgstr ""
 "\n"
 "  commands (non interactive mode):\n"
 
-#: src/virsh.c:4568
+#: src/virsh.c:4762
 #, c-format
 msgid ""
 "\n"
@@ -2097,12 +2161,12 @@ msgstr ""
 "  (specify help <command> for details about the command)\n"
 "\n"
 
-#: src/virsh.c:4664
+#: src/virsh.c:4858
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "துணையில்லாத விருப்பம் '-%c'. --help ஐ பார்க்கவும்."
 
-#: src/virsh.c:4746
+#: src/virsh.c:4940
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -2111,7 +2175,7 @@ msgstr ""
 "%sக்கு வரவேற்கப்படுகிறீர்கள், மெய்நிகராக்க இடைச்செயல் முனையம்.\n"
 "\n"
 
-#: src/virsh.c:4749
+#: src/virsh.c:4943
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
@@ -2230,7 +2294,7 @@ msgstr ""
 msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
 msgstr ""
 
-#: src/xen_internal.c:2367
+#: src/xen_internal.c:2519
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d செயற்களத் தகவல் ஒதுக்கப்படுகிறது"

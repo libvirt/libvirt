@@ -134,8 +134,8 @@ fi
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/qemu/
 %attr(4755, root, root) %{_libexecdir}/libvirt_proxy
 %attr(0755, root, root) %{_sbindir}/libvirtd
-%doc docs/libvirt.rng
-%doc docs/network.rng
+%doc docs/*.rng
+%doc docs/*.xml
 
 %files devel
 %defattr(-, root, root)

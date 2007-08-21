@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ru\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-17 09:28+0200\n"
+"POT-Creation-Date: 2007-08-21 13:55+0200\n"
 "PO-Revision-Date: 2007-05-02 08:00+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: src/libvirt.c:411 src/hash.c:664
+#: src/libvirt.c:412 src/hash.c:664
 msgid "allocating connection"
 msgstr "выделение соединения"
 
@@ -524,20 +524,20 @@ msgstr "загрузить файл определений домена"
 #: src/test.c:415 src/test.c:539 src/test.c:564
 #, fuzzy
 msgid "network"
-msgstr "uuid сети"
+msgstr "имя сети"
 
-#: src/test.c:427 src/virsh.c:2500
+#: src/test.c:427 src/virsh.c:2691
 msgid "network name"
 msgstr "имя сети"
 
-#: src/test.c:435 src/test.c:439 src/virsh.c:2391
+#: src/test.c:435 src/test.c:439 src/virsh.c:2582
 msgid "network uuid"
 msgstr "uuid сети"
 
 #: src/test.c:447
 #, fuzzy
 msgid "network forward"
-msgstr "uuid сети"
+msgstr "имя сети"
 
 #: src/test.c:456 src/test.c:466 src/test.c:471
 msgid "ip address"
@@ -644,82 +644,82 @@ msgstr "ошибка выделения узла"
 msgid "failed to copy a string"
 msgstr "ошибка копирования строки"
 
-#: src/xend_internal.c:278 src/xend_internal.c:281
+#: src/xend_internal.c:280 src/xend_internal.c:283
 msgid "failed to read from Xen Daemon"
 msgstr "ошибка чтения из демона Xen"
 
-#: src/xend_internal.c:592 src/xend_internal.c:810 src/xend_internal.c:1522
-#: src/xend_internal.c:1541
+#: src/xend_internal.c:594 src/xend_internal.c:812 src/xend_internal.c:1525
+#: src/xend_internal.c:1544
 msgid "allocate new buffer"
 msgstr "выделить новый буфер"
 
-#: src/xend_internal.c:1017
+#: src/xend_internal.c:1019
 msgid "failed to urlencode the create S-Expr"
 msgstr "ошибка urlencode при создании S-Expr"
 
-#: src/xend_internal.c:1058
+#: src/xend_internal.c:1060
 msgid "domain information incomplete, missing domid"
 msgstr "неполная информация домена, отсутствует domid"
 
-#: src/xend_internal.c:1064
+#: src/xend_internal.c:1066
 msgid "domain information incorrect domid not numeric"
 msgstr "неверная информация домена, domid должен быть числом"
 
-#: src/xend_internal.c:1069 src/xend_internal.c:1116
+#: src/xend_internal.c:1071 src/xend_internal.c:1118
 msgid "domain information incomplete, missing uuid"
 msgstr "неполная информация домена, отсутствует uuid"
 
-#: src/xend_internal.c:1108 src/xend_internal.c:1384 src/xend_internal.c:1391
+#: src/xend_internal.c:1110 src/xend_internal.c:1387 src/xend_internal.c:1394
 msgid "domain information incomplete, missing name"
 msgstr "неполная информация домена, отсутствует имя"
 
-#: src/xend_internal.c:1282 src/xend_internal.c:1313
+#: src/xend_internal.c:1284 src/xend_internal.c:1315
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "неполная информация домена, отсутствует ядро и загрузчик"
 
-#: src/xend_internal.c:1372
+#: src/xend_internal.c:1375
 msgid "domain information incomplete, missing id"
 msgstr "неполная информация домена, отсутствует id"
 
-#: src/xend_internal.c:1491
+#: src/xend_internal.c:1494
 msgid "domain information incomplete, vbd has no dev"
 msgstr "неполная информация домена, нет dev для vbd"
 
-#: src/xend_internal.c:1506
+#: src/xend_internal.c:1509
 msgid "domain information incomplete, vbd has no src"
 msgstr "неполная информация домена, нет src для vbd"
 
-#: src/xend_internal.c:1515
+#: src/xend_internal.c:1518
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "ошибка разбора имени файла vbd, отсутствует имя драйвера"
 
-#: src/xend_internal.c:1534
+#: src/xend_internal.c:1537
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "ошибка разбора имени файла vbd, отсутствует тип драйвера"
 
-#: src/xend_internal.c:1916
+#: src/xend_internal.c:1923
 msgid "failed to parse Xend domain information"
 msgstr "ошибка разбора информации домена Xend"
 
-#: src/xend_internal.c:3181
+#: src/xend_internal.c:3350
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Ошибка создания неактивного домена %s\n"
 
-#: src/virsh.c:308
+#: src/virsh.c:309
 msgid "print help"
 msgstr "помощь печати"
 
-#: src/virsh.c:309
+#: src/virsh.c:310
 msgid "Prints global help or command specific help."
 msgstr "Распечатывает общую информацию помощи или помощь для отдельных команд."
 
-#: src/virsh.c:315
+#: src/virsh.c:316
 #, fuzzy
 msgid "name of command"
 msgstr "имя неактивного домена"
 
-#: src/virsh.c:327
+#: src/virsh.c:328
 msgid ""
 "Commands:\n"
 "\n"
@@ -727,1146 +727,1210 @@ msgstr ""
 "Команды:\n"
 "\n"
 
-#: src/virsh.c:341
+#: src/virsh.c:342
 msgid "autostart a domain"
 msgstr "автозапуск домена"
 
-#: src/virsh.c:343
+#: src/virsh.c:344
 msgid "Configure a domain to be automatically started at boot."
 msgstr "Настроить домен на автоматический запуск при загрузке."
 
-#: src/virsh.c:348 src/virsh.c:449 src/virsh.c:635 src/virsh.c:673
-#: src/virsh.c:953 src/virsh.c:997 src/virsh.c:1169 src/virsh.c:1214
-#: src/virsh.c:1253 src/virsh.c:1292 src/virsh.c:1331 src/virsh.c:1370
-#: src/virsh.c:1447 src/virsh.c:1534 src/virsh.c:1662 src/virsh.c:1719
-#: src/virsh.c:1776 src/virsh.c:1897 src/virsh.c:2675 src/virsh.c:2754
-#: src/virsh.c:2817 src/virsh.c:2871 src/virsh.c:2925 src/virsh.c:3041
-#: src/virsh.c:3162 src/virsh.c:3327
+#: src/virsh.c:349 src/virsh.c:450 src/virsh.c:636 src/virsh.c:673
+#: src/virsh.c:730 src/virsh.c:797 src/virsh.c:1077 src/virsh.c:1121
+#: src/virsh.c:1297 src/virsh.c:1342 src/virsh.c:1381 src/virsh.c:1420
+#: src/virsh.c:1459 src/virsh.c:1498 src/virsh.c:1575 src/virsh.c:1662
+#: src/virsh.c:1790 src/virsh.c:1847 src/virsh.c:1904 src/virsh.c:2025
+#: src/virsh.c:2165 src/virsh.c:2866 src/virsh.c:2945 src/virsh.c:3008
+#: src/virsh.c:3062 src/virsh.c:3116 src/virsh.c:3232 src/virsh.c:3353
+#: src/virsh.c:3518
 msgid "domain name, id or uuid"
 msgstr "имя домена, id или uuid"
 
-#: src/virsh.c:349 src/virsh.c:2038
+#: src/virsh.c:350 src/virsh.c:2229
 msgid "disable autostarting"
 msgstr "отключить автозапуск"
 
-#: src/virsh.c:370
+#: src/virsh.c:371
 #, c-format
 msgid "Failed to mark domain %s as autostarted"
 msgstr "Ошибка отметки домена %s как автозапускаемого"
 
-#: src/virsh.c:373
+#: src/virsh.c:374
 #, c-format
 msgid "Failed to unmark domain %s as autostarted"
 msgstr "Ошибка отметки домена %s как автозапускаемого"
 
-#: src/virsh.c:380
+#: src/virsh.c:381
 #, c-format
 msgid "Domain %s marked as autostarted\n"
 msgstr "Домен %s помечен как автозапускаемый\n"
 
-#: src/virsh.c:382
+#: src/virsh.c:383
 #, c-format
 msgid "Domain %s unmarked as autostarted\n"
 msgstr "Домен %s отмечен как не запускаемый автоматически\n"
 
-#: src/virsh.c:393
+#: src/virsh.c:394
 msgid "(re)connect to hypervisor"
 msgstr "(пере)подключиться к гипервизору"
 
-#: src/virsh.c:395
+#: src/virsh.c:396
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr ""
 "Подключиться к локальному гипервизору. Эта встроенная команда активна после "
 "старта оболочки."
 
-#: src/virsh.c:400
+#: src/virsh.c:401
 msgid "hypervisor connection URI"
 msgstr "URI соединения гипервизора"
 
-#: src/virsh.c:401
+#: src/virsh.c:402
 msgid "read-only connection"
 msgstr "соединение только для чтения"
 
-#: src/virsh.c:413
+#: src/virsh.c:414
 msgid "Failed to disconnect from the hypervisor"
 msgstr "Ошибка отключения от гипервизора"
 
-#: src/virsh.c:432
+#: src/virsh.c:433
 msgid "Failed to connect to the hypervisor"
 msgstr "Ошибка подключения к гипервизору"
 
-#: src/virsh.c:442
+#: src/virsh.c:443
 msgid "connect to the guest console"
 msgstr "подключиться к гостевой консоли"
 
-#: src/virsh.c:444
+#: src/virsh.c:445
 msgid "Connect the virtual serial console for the guest"
 msgstr "Подключиться к последовательной фиртуальной консоли в качестве гостя"
 
-#: src/virsh.c:489
+#: src/virsh.c:490
 msgid "No console available for domain\n"
 msgstr "Консоль недоступна для домена\n"
 
-#: src/virsh.c:507
+#: src/virsh.c:508
 msgid "list domains"
 msgstr "просмотр доменов"
 
-#: src/virsh.c:508
+#: src/virsh.c:509
 msgid "Returns list of domains."
 msgstr "Возвращает список доменов."
 
-#: src/virsh.c:513
+#: src/virsh.c:514
 msgid "list inactive domains"
 msgstr "просмотр неактивных доменов"
 
-#: src/virsh.c:514
+#: src/virsh.c:515
 msgid "list inactive & active domains"
 msgstr "просмотр неактивных и активных доменов"
 
-#: src/virsh.c:536 src/virsh.c:543
+#: src/virsh.c:537 src/virsh.c:544
 msgid "Failed to list active domains"
 msgstr "Ошибка отображения списка активных доменов"
 
-#: src/virsh.c:554 src/virsh.c:563
+#: src/virsh.c:555 src/virsh.c:564
 msgid "Failed to list inactive domains"
 msgstr "Ошибка отображения списка неактивных доменов"
 
-#: src/virsh.c:573
+#: src/virsh.c:574
 msgid "Id"
 msgstr "ID"
 
-#: src/virsh.c:573 src/virsh.c:2323
+#: src/virsh.c:574 src/virsh.c:2514
 msgid "Name"
 msgstr "Имя"
 
-#: src/virsh.c:573 src/virsh.c:2323
+#: src/virsh.c:574 src/virsh.c:2514
 msgid "State"
 msgstr "Статус"
 
-#: src/virsh.c:586 src/virsh.c:608 src/virsh.c:4103 src/virsh.c:4119
+#: src/virsh.c:587 src/virsh.c:609 src/virsh.c:4297 src/virsh.c:4313
 msgid "no state"
 msgstr "нет статуса"
 
-#: src/virsh.c:629
+#: src/virsh.c:630
 msgid "domain state"
 msgstr "статус домена"
 
-#: src/virsh.c:630
+#: src/virsh.c:631
 msgid "Returns state about a running domain."
 msgstr "Возвращает состояние выполняющегося домена."
 
 #: src/virsh.c:667
+msgid "get device block stats for a domain"
+msgstr ""
+
+#: src/virsh.c:668
+#, fuzzy
+msgid "Get device block stats for a running domain."
+msgstr "Возвращает состояние выполняющегося домена."
+
+#: src/virsh.c:674
+#, fuzzy
+msgid "block device"
+msgstr "заблокирован"
+
+#: src/virsh.c:695
+#, fuzzy, c-format
+msgid "Failed to get block stats %s %s"
+msgstr "Ошибка сохранения домена %s в %s"
+
+#: src/virsh.c:724
+#, fuzzy
+msgid "get network interface stats for a domain"
+msgstr "имя сети"
+
+#: src/virsh.c:725
+#, fuzzy
+msgid "Get network interface stats for a running domain."
+msgstr "Возвращает состояние выполняющегося домена."
+
+#: src/virsh.c:731
+msgid "interface device"
+msgstr ""
+
+#: src/virsh.c:752
+#, fuzzy, c-format
+msgid "Failed to get interface stats %s %s"
+msgstr "ошибка получения данных узла"
+
+#: src/virsh.c:791
 msgid "suspend a domain"
 msgstr "перевести домен в состояние ожидания"
 
-#: src/virsh.c:668
+#: src/virsh.c:792
 msgid "Suspend a running domain."
 msgstr "Перевести выполняющийся домен в состояние ожидания."
 
-#: src/virsh.c:691
+#: src/virsh.c:815
 #, c-format
 msgid "Domain %s suspended\n"
 msgstr "Домен %s переведен в состояние ожидания \n"
 
-#: src/virsh.c:693
+#: src/virsh.c:817
 #, c-format
 msgid "Failed to suspend domain %s"
 msgstr "Ошибка при переведении домена %s в состояние ожидания"
 
-#: src/virsh.c:706
+#: src/virsh.c:830
 msgid "create a domain from an XML file"
 msgstr "создать домен из файла XML"
 
-#: src/virsh.c:707
+#: src/virsh.c:831
 msgid "Create a domain."
 msgstr "Создать домен."
 
-#: src/virsh.c:712 src/virsh.c:820
+#: src/virsh.c:836 src/virsh.c:944
 msgid "file containing an XML domain description"
 msgstr "файл, содержащий XML описание домена"
 
-#: src/virsh.c:727
+#: src/virsh.c:851
 #, fuzzy, c-format
 msgid "Failed to open '%s': %s"
 msgstr "Ошибка при переведении домена %s в состояние ожидания"
 
-#: src/virsh.c:747
+#: src/virsh.c:871
 #, fuzzy, c-format
 msgid "Failed to open '%s': read: %s"
 msgstr "ошибка при попытке открыть %s для чтения"
 
-#: src/virsh.c:765
+#: src/virsh.c:889
 #, fuzzy, c-format
 msgid "Error allocating memory: %s"
 msgstr "выделение сети"
 
-#: src/virsh.c:799
+#: src/virsh.c:923
 #, c-format
 msgid "Domain %s created from %s\n"
 msgstr "Домен %s создан из %s\n"
 
-#: src/virsh.c:803
+#: src/virsh.c:927
 #, c-format
 msgid "Failed to create domain from %s"
 msgstr "Ошибка создания домена из %s"
 
-#: src/virsh.c:814
+#: src/virsh.c:938
 msgid "define (but don't start) a domain from an XML file"
 msgstr "определить (но не запускать) домен из файла XML"
 
-#: src/virsh.c:815
+#: src/virsh.c:939
 msgid "Define a domain."
 msgstr "Определить домен."
 
-#: src/virsh.c:847
+#: src/virsh.c:971
 #, c-format
 msgid "Domain %s defined from %s\n"
 msgstr "Домен %s определен на основе %s\n"
 
-#: src/virsh.c:851
+#: src/virsh.c:975
 #, c-format
 msgid "Failed to define domain from %s"
 msgstr "Ошибка определения домена на основе %s"
 
-#: src/virsh.c:862
+#: src/virsh.c:986
 msgid "undefine an inactive domain"
 msgstr "отменить определение неактивного домена"
 
-#: src/virsh.c:863
+#: src/virsh.c:987
 msgid "Undefine the configuration for an inactive domain."
 msgstr "Отменить назначение конфигурации для неактивного домена."
 
-#: src/virsh.c:868 src/virsh.c:1966
+#: src/virsh.c:992 src/virsh.c:2094
 msgid "domain name or uuid"
 msgstr "имя домена или uuid"
 
-#: src/virsh.c:886
+#: src/virsh.c:1010
 #, c-format
 msgid "Domain %s has been undefined\n"
 msgstr "Конфигурация домена %s отменена\n"
 
-#: src/virsh.c:888
+#: src/virsh.c:1012
 #, c-format
 msgid "Failed to undefine domain %s"
 msgstr "Ошибка отмены конфигурации домена %s"
 
-#: src/virsh.c:902
+#: src/virsh.c:1026
 msgid "start a (previously defined) inactive domain"
 msgstr "запустить ранее определенный неактивный домен"
 
-#: src/virsh.c:903
+#: src/virsh.c:1027
 msgid "Start a domain."
 msgstr "Запуск домена."
 
-#: src/virsh.c:908
+#: src/virsh.c:1032
 msgid "name of the inactive domain"
 msgstr "имя неактивного домена"
 
-#: src/virsh.c:925
+#: src/virsh.c:1049
 msgid "Domain is already active"
 msgstr "Домен уже активен"
 
-#: src/virsh.c:931
+#: src/virsh.c:1055
 #, c-format
 msgid "Domain %s started\n"
 msgstr "Домен %s запущен\n"
 
-#: src/virsh.c:934
+#: src/virsh.c:1058
 #, c-format
 msgid "Failed to start domain %s"
 msgstr "Ошибка запуска домена %s"
 
-#: src/virsh.c:947
+#: src/virsh.c:1071
 msgid "save a domain state to a file"
 msgstr "сохранить статус домена в файл"
 
-#: src/virsh.c:948
+#: src/virsh.c:1072
 msgid "Save a running domain."
 msgstr "Сохранить выполняющийся домен."
 
-#: src/virsh.c:954
+#: src/virsh.c:1078
 msgid "where to save the data"
 msgstr "где сохранить"
 
-#: src/virsh.c:976
+#: src/virsh.c:1100
 #, c-format
 msgid "Domain %s saved to %s\n"
 msgstr "Домен %s сохранен в %s\n"
 
-#: src/virsh.c:978
+#: src/virsh.c:1102
 #, c-format
 msgid "Failed to save domain %s to %s"
 msgstr "Ошибка сохранения домена %s в %s"
 
-#: src/virsh.c:991
+#: src/virsh.c:1115
 msgid "show/set scheduler parameters"
 msgstr ""
 
-#: src/virsh.c:992
+#: src/virsh.c:1116
 msgid "Show/Set scheduler parameters."
 msgstr ""
 
-#: src/virsh.c:998
+#: src/virsh.c:1122
 msgid "weight for XEN_CREDIT"
 msgstr ""
 
-#: src/virsh.c:999
+#: src/virsh.c:1123
 msgid "cap for XEN_CREDIT"
 msgstr ""
 
-#: src/virsh.c:1069 src/virsh.c:1073
+#: src/virsh.c:1193 src/virsh.c:1197
 msgid "Scheduler"
 msgstr ""
 
-#: src/virsh.c:1073
+#: src/virsh.c:1197
 #, fuzzy
 msgid "Unknown"
 msgstr "неизвестный узел"
 
-#: src/virsh.c:1125
+#: src/virsh.c:1253
 msgid "restore a domain from a saved state in a file"
 msgstr "восстановить домен из сохраненного файла статуса"
 
-#: src/virsh.c:1126
+#: src/virsh.c:1254
 msgid "Restore a domain."
 msgstr "Восстановить домен."
 
-#: src/virsh.c:1131
+#: src/virsh.c:1259
 msgid "the state to restore"
 msgstr "восстанавливаемый статус"
 
-#: src/virsh.c:1150
+#: src/virsh.c:1278
 #, c-format
 msgid "Domain restored from %s\n"
 msgstr "Домен восстановлен из %s\n"
 
-#: src/virsh.c:1152
+#: src/virsh.c:1280
 #, c-format
 msgid "Failed to restore domain from %s"
 msgstr "Ошибка восстановления домена из %s"
 
-#: src/virsh.c:1163
+#: src/virsh.c:1291
 msgid "dump the core of a domain to a file for analysis"
 msgstr "выполнить дамп ядра домена в файл для анализа"
 
-#: src/virsh.c:1164
+#: src/virsh.c:1292
 msgid "Core dump a domain."
 msgstr "Дамп ядра домена."
 
-#: src/virsh.c:1170
+#: src/virsh.c:1298
 msgid "where to dump the core"
 msgstr "где сохранить дамп ядра"
 
-#: src/virsh.c:1192
+#: src/virsh.c:1320
 #, c-format
 msgid "Domain %s dumpd to %s\n"
 msgstr "Дамп домена %s сохранен в %s\n"
 
-#: src/virsh.c:1194
+#: src/virsh.c:1322
 #, c-format
 msgid "Failed to core dump domain %s to %s"
 msgstr "Ошибка сохранения дампа домена %s в %s"
 
-#: src/virsh.c:1208
+#: src/virsh.c:1336
 msgid "resume a domain"
 msgstr "возобновить домен"
 
-#: src/virsh.c:1209
+#: src/virsh.c:1337
 msgid "Resume a previously suspended domain."
 msgstr "Возобновить работу ранее приостановленного домена."
 
-#: src/virsh.c:1232
+#: src/virsh.c:1360
 #, c-format
 msgid "Domain %s resumed\n"
 msgstr "Выполнение домена %s возобновлено\n"
 
-#: src/virsh.c:1234
+#: src/virsh.c:1362
 #, c-format
 msgid "Failed to resume domain %s"
 msgstr "Ошибка возобновления работы домена %s"
 
-#: src/virsh.c:1247
+#: src/virsh.c:1375
 msgid "gracefully shutdown a domain"
 msgstr "коректно отключить домен"
 
-#: src/virsh.c:1248
+#: src/virsh.c:1376
 msgid "Run shutdown in the target domain."
 msgstr "Выполнить отключение целевого домена."
 
-#: src/virsh.c:1271
+#: src/virsh.c:1399
 #, c-format
 msgid "Domain %s is being shutdown\n"
 msgstr "Отключение домена %s\n"
 
-#: src/virsh.c:1273
+#: src/virsh.c:1401
 #, c-format
 msgid "Failed to shutdown domain %s"
 msgstr "Ошибка отключения домена %s"
 
-#: src/virsh.c:1286
+#: src/virsh.c:1414
 msgid "reboot a domain"
 msgstr "перезагрузить домен"
 
-#: src/virsh.c:1287
+#: src/virsh.c:1415
 msgid "Run a reboot command in the target domain."
 msgstr "Выполнить команду reboot целевого домена."
 
-#: src/virsh.c:1310
+#: src/virsh.c:1438
 #, c-format
 msgid "Domain %s is being rebooted\n"
 msgstr "Перезагрузка домена %s\n"
 
-#: src/virsh.c:1312
+#: src/virsh.c:1440
 #, c-format
 msgid "Failed to reboot domain %s"
 msgstr "Ошибка перезагрузки домена %s"
 
-#: src/virsh.c:1325
+#: src/virsh.c:1453
 msgid "destroy a domain"
 msgstr "разрушить домен"
 
-#: src/virsh.c:1326
+#: src/virsh.c:1454
 msgid "Destroy a given domain."
 msgstr "Разрушить заданный домен."
 
-#: src/virsh.c:1349
+#: src/virsh.c:1477
 #, c-format
 msgid "Domain %s destroyed\n"
 msgstr "Домен %s разрушен\n"
 
-#: src/virsh.c:1351
+#: src/virsh.c:1479
 #, c-format
 msgid "Failed to destroy domain %s"
 msgstr "Ошибка разрушения домена %s"
 
-#: src/virsh.c:1364
+#: src/virsh.c:1492
 msgid "domain information"
 msgstr "информация о домене"
 
-#: src/virsh.c:1365
+#: src/virsh.c:1493
 msgid "Returns basic information about the domain."
 msgstr "Возвращает основную информацию о домене."
 
-#: src/virsh.c:1391 src/virsh.c:1393
+#: src/virsh.c:1519 src/virsh.c:1521
 msgid "Id:"
 msgstr "ID:"
 
-#: src/virsh.c:1394
+#: src/virsh.c:1522
 msgid "Name:"
 msgstr "Имя:"
 
-#: src/virsh.c:1397
+#: src/virsh.c:1525
 msgid "UUID:"
 msgstr "UUID:"
 
-#: src/virsh.c:1400
+#: src/virsh.c:1528
 msgid "OS Type:"
 msgstr "Тип ОС:"
 
-#: src/virsh.c:1405 src/virsh.c:1491
+#: src/virsh.c:1533 src/virsh.c:1619
 msgid "State:"
 msgstr "Статус:"
 
-#: src/virsh.c:1408 src/virsh.c:1848
+#: src/virsh.c:1536 src/virsh.c:1976
 msgid "CPU(s):"
 msgstr "CPU:"
 
-#: src/virsh.c:1415 src/virsh.c:1498
+#: src/virsh.c:1543 src/virsh.c:1626
 msgid "CPU time:"
 msgstr "Время CPU:"
 
-#: src/virsh.c:1419 src/virsh.c:1422
+#: src/virsh.c:1547 src/virsh.c:1550
 msgid "Max memory:"
 msgstr "Макс.память:"
 
-#: src/virsh.c:1423
+#: src/virsh.c:1551
 msgid "no limit"
 msgstr "без ограничений"
 
-#: src/virsh.c:1425
+#: src/virsh.c:1553
 msgid "Used memory:"
 msgstr "Занято памяти:"
 
-#: src/virsh.c:1441
+#: src/virsh.c:1569
 msgid "domain vcpu information"
 msgstr "данные vcpu домена"
 
-#: src/virsh.c:1442
+#: src/virsh.c:1570
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr "Возвращает основную информацию о виртуальных процессорах домена."
 
-#: src/virsh.c:1489
+#: src/virsh.c:1617
 msgid "VCPU:"
 msgstr "VCPU:"
 
-#: src/virsh.c:1490
+#: src/virsh.c:1618
 msgid "CPU:"
 msgstr "CPU:"
 
-#: src/virsh.c:1500
+#: src/virsh.c:1628
 msgid "CPU Affinity:"
 msgstr "Привязка CPU:"
 
-#: src/virsh.c:1512
+#: src/virsh.c:1640
 msgid "Domain shut off, virtual CPUs not present."
 msgstr ""
 
-#: src/virsh.c:1528
+#: src/virsh.c:1656
 msgid "control domain vcpu affinity"
 msgstr "контролирует принадлежность задач виртуальным процессорам домена"
 
-#: src/virsh.c:1529
+#: src/virsh.c:1657
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr "Сопоставить VCPU домена физическим CPU."
 
-#: src/virsh.c:1535
+#: src/virsh.c:1663
 msgid "vcpu number"
 msgstr "число vcpu"
 
-#: src/virsh.c:1536
+#: src/virsh.c:1664
 msgid "host cpu number(s) (comma separated)"
 msgstr "номера cpu хоста (разделенные запятой)"
 
-#: src/virsh.c:1591
+#: src/virsh.c:1719
 msgid "cpulist: Invalid format. Empty string."
 msgstr ""
 
-#: src/virsh.c:1601
+#: src/virsh.c:1729
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
 
-#: src/virsh.c:1611
+#: src/virsh.c:1739
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
 "c')."
 msgstr ""
 
-#: src/virsh.c:1618
+#: src/virsh.c:1746
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
 msgstr ""
 
-#: src/virsh.c:1632
+#: src/virsh.c:1760
 #, c-format
 msgid "Physical CPU %d doesn't exist."
 msgstr "Физический процессор %d не существует."
 
-#: src/virsh.c:1656
+#: src/virsh.c:1784
 msgid "change number of virtual CPUs"
 msgstr "изменить число виртуальных процессоров"
 
-#: src/virsh.c:1657
+#: src/virsh.c:1785
 msgid "Change the number of virtual CPUs active in the guest domain."
 msgstr "Изменить число виртуальных процессоров, активных в гостевом домене."
 
-#: src/virsh.c:1663
+#: src/virsh.c:1791
 msgid "number of virtual CPUs"
 msgstr "число виртуальных процессоров"
 
-#: src/virsh.c:1683
+#: src/virsh.c:1811
 #, fuzzy
 msgid "Invalid number of virtual CPUs."
 msgstr "число виртуальных процессоров"
 
-#: src/virsh.c:1695
+#: src/virsh.c:1823
 #, fuzzy
 msgid "Too many virtual CPUs."
 msgstr "Слишком много виртуальных процессоров."
 
-#: src/virsh.c:1713
+#: src/virsh.c:1841
 msgid "change memory allocation"
 msgstr "изменить выделение памяти"
 
-#: src/virsh.c:1714
+#: src/virsh.c:1842
 msgid "Change the current memory allocation in the guest domain."
 msgstr "Изменить распределение памяти в гостевом домене."
 
-#: src/virsh.c:1720
+#: src/virsh.c:1848
 msgid "number of kilobytes of memory"
 msgstr "количество килобайт памяти"
 
-#: src/virsh.c:1741 src/virsh.c:1753 src/virsh.c:1798
+#: src/virsh.c:1869 src/virsh.c:1881 src/virsh.c:1926
 #, c-format
 msgid "Invalid value of %d for memory size"
 msgstr "Некорректное значение для объема памяти (%d)"
 
-#: src/virsh.c:1747
+#: src/virsh.c:1875
 msgid "Unable to verify MaxMemorySize"
 msgstr ""
 
-#: src/virsh.c:1770
+#: src/virsh.c:1898
 msgid "change maximum memory limit"
 msgstr "изменить максимальный лимит памяти"
 
-#: src/virsh.c:1771
+#: src/virsh.c:1899
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr ""
 "Изменить максимально допустимый лимит выделяемой памяти в гостевом домене."
 
-#: src/virsh.c:1777
+#: src/virsh.c:1905
 msgid "maximum memory limit in kilobytes"
 msgstr "максимальный лимит памяти в килобайтах"
 
-#: src/virsh.c:1804
+#: src/virsh.c:1932
 msgid "Unable to verify current MemorySize"
 msgstr ""
 
-#: src/virsh.c:1811
+#: src/virsh.c:1939
 #, fuzzy
 msgid "Unable to shrink current MemorySize"
 msgstr "текущая память домена"
 
-#: src/virsh.c:1817
+#: src/virsh.c:1945
 msgid "Unable to change MaxMemorySize"
 msgstr ""
 
-#: src/virsh.c:1830
+#: src/virsh.c:1958
 msgid "node information"
 msgstr "информация об узле"
 
-#: src/virsh.c:1831
+#: src/virsh.c:1959
 msgid "Returns basic information about the node."
 msgstr "Возвращает общую информацию об узле."
 
-#: src/virsh.c:1844
+#: src/virsh.c:1972
 msgid "failed to get node information"
 msgstr "ошибка получения данных узла"
 
-#: src/virsh.c:1847
+#: src/virsh.c:1975
 msgid "CPU model:"
 msgstr "Модель CPU:"
 
-#: src/virsh.c:1849
+#: src/virsh.c:1977
 msgid "CPU frequency:"
 msgstr "Частота CPU:"
 
-#: src/virsh.c:1850
+#: src/virsh.c:1978
 msgid "CPU socket(s):"
 msgstr "Сокет(ы) CPU:"
 
-#: src/virsh.c:1851
+#: src/virsh.c:1979
 msgid "Core(s) per socket:"
 msgstr "Ядер на сокет:"
 
-#: src/virsh.c:1852
+#: src/virsh.c:1980
 msgid "Thread(s) per core:"
 msgstr "Потоков на ядро:"
 
-#: src/virsh.c:1853
+#: src/virsh.c:1981
 msgid "NUMA cell(s):"
 msgstr "Ячейки NUMA:"
 
-#: src/virsh.c:1854
+#: src/virsh.c:1982
 msgid "Memory size:"
 msgstr "Объем памяти:"
 
-#: src/virsh.c:1864
+#: src/virsh.c:1992
 msgid "capabilities"
 msgstr "возможности"
 
-#: src/virsh.c:1865
+#: src/virsh.c:1993
 msgid "Returns capabilities of hypervisor/driver."
 msgstr "Возвращает возможности гипервизора/драйвера."
 
-#: src/virsh.c:1878
+#: src/virsh.c:2006
 msgid "failed to get capabilities"
 msgstr "ошибка запроса возможностей"
 
-#: src/virsh.c:1891
+#: src/virsh.c:2019
 msgid "domain information in XML"
 msgstr "информация о домене в XML"
 
-#: src/virsh.c:1892
+#: src/virsh.c:2020
 msgid "Output the domain information as an XML dump to stdout."
 msgstr "Вывод информации о домене в виде XML или на stdout."
 
-#: src/virsh.c:1931
+#: src/virsh.c:2059
 msgid "convert a domain id or UUID to domain name"
 msgstr "преобразовать ID домена или UUID в имя домена"
 
-#: src/virsh.c:1936
+#: src/virsh.c:2064
 msgid "domain id or uuid"
 msgstr "ID домена или UUID"
 
-#: src/virsh.c:1961
+#: src/virsh.c:2089
 msgid "convert a domain name or UUID to domain id"
 msgstr "преобразовать имя домена или UUID в ID домена"
 
-#: src/virsh.c:1996
+#: src/virsh.c:2124
 msgid "convert a domain name or id to domain UUID"
 msgstr "преобразовать имя домена или ID в UUID домена"
 
-#: src/virsh.c:2001
+#: src/virsh.c:2129
 msgid "domain id or name"
 msgstr "ID домена или имя"
 
-#: src/virsh.c:2020
+#: src/virsh.c:2148
 msgid "failed to get domain UUID"
 msgstr "ошибка получения UUID домена"
 
-#: src/virsh.c:2030
+#: src/virsh.c:2158
+msgid "migrate domain to another host"
+msgstr ""
+
+#: src/virsh.c:2159
+msgid "Migrate domain to another host.  Add --live for live migration."
+msgstr ""
+
+#: src/virsh.c:2164
+msgid "live migration"
+msgstr ""
+
+#: src/virsh.c:2166
+#, fuzzy
+msgid "connection URI of the destination host"
+msgstr "подключиться к гостевой консоли"
+
+#: src/virsh.c:2167
+msgid "migration URI, usually can be omitted"
+msgstr ""
+
+#: src/virsh.c:2189
+msgid "migrate: Missing desturi"
+msgstr ""
+
+#: src/virsh.c:2221
 msgid "autostart a network"
 msgstr "автозапуск сети"
 
-#: src/virsh.c:2032
+#: src/virsh.c:2223
 msgid "Configure a network to be automatically started at boot."
 msgstr "Настроить сеть на автоматический запуск при загрузке."
 
-#: src/virsh.c:2037 src/virsh.c:2462
+#: src/virsh.c:2228 src/virsh.c:2653
 msgid "network name or uuid"
 msgstr "имя сети или uuid"
 
-#: src/virsh.c:2059
+#: src/virsh.c:2250
 #, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "ошибка отметки сети %s как автозапускаемой"
 
-#: src/virsh.c:2062
+#: src/virsh.c:2253
 #, c-format
 msgid "failed to unmark network %s as autostarted"
 msgstr "ошибка отметки сети %s как не запускаемой автоматически"
 
-#: src/virsh.c:2069
+#: src/virsh.c:2260
 #, c-format
 msgid "Network %s marked as autostarted\n"
 msgstr "Сеть %s помечена как автозапускаемая\n"
 
-#: src/virsh.c:2071
+#: src/virsh.c:2262
 #, c-format
 msgid "Network %s unmarked as autostarted\n"
 msgstr "Сеть %s помечена как не запускаемая автоматически\n"
 
-#: src/virsh.c:2081
+#: src/virsh.c:2272
 msgid "create a network from an XML file"
 msgstr "создать сеть из файла XML"
 
-#: src/virsh.c:2082
+#: src/virsh.c:2273
 msgid "Create a network."
 msgstr "Создать сеть."
 
-#: src/virsh.c:2087 src/virsh.c:2135
+#: src/virsh.c:2278 src/virsh.c:2326
 msgid "file containing an XML network description"
 msgstr "файл, содержащий XML описание сети"
 
-#: src/virsh.c:2114
+#: src/virsh.c:2305
 #, c-format
 msgid "Network %s created from %s\n"
 msgstr "Сеть %s создана из %s\n"
 
-#: src/virsh.c:2117
+#: src/virsh.c:2308
 #, c-format
 msgid "Failed to create network from %s"
 msgstr "Ошибка создания сети из %s"
 
-#: src/virsh.c:2129
+#: src/virsh.c:2320
 msgid "define (but don't start) a network from an XML file"
 msgstr "определить (но не запускать) сеть из файла XML"
 
-#: src/virsh.c:2130
+#: src/virsh.c:2321
 msgid "Define a network."
 msgstr "Определить сеть."
 
-#: src/virsh.c:2162
+#: src/virsh.c:2353
 #, c-format
 msgid "Network %s defined from %s\n"
 msgstr "Сеть %s определена на основе %s\n"
 
-#: src/virsh.c:2165
+#: src/virsh.c:2356
 #, c-format
 msgid "Failed to define network from %s"
 msgstr "Ошибка определения сети на основе %s"
 
-#: src/virsh.c:2177
+#: src/virsh.c:2368
 msgid "destroy a network"
 msgstr "разрушить сеть"
 
-#: src/virsh.c:2178
+#: src/virsh.c:2369
 msgid "Destroy a given network."
 msgstr "Разрушить данную сеть."
 
-#: src/virsh.c:2183 src/virsh.c:2223
+#: src/virsh.c:2374 src/virsh.c:2414
 msgid "network name, id or uuid"
 msgstr "имя сети, id или uuid"
 
-#: src/virsh.c:2201
+#: src/virsh.c:2392
 #, c-format
 msgid "Network %s destroyed\n"
 msgstr "Сеть %s разрушена\n"
 
-#: src/virsh.c:2203
+#: src/virsh.c:2394
 #, c-format
 msgid "Failed to destroy network %s"
 msgstr "Ошибка разрушения сети %s"
 
-#: src/virsh.c:2217
+#: src/virsh.c:2408
 msgid "network information in XML"
 msgstr "информация о сети в XML"
 
-#: src/virsh.c:2218
+#: src/virsh.c:2409
 msgid "Output the network information as an XML dump to stdout."
 msgstr "Вывод информации о сети в виде XML на stdout."
 
-#: src/virsh.c:2258
+#: src/virsh.c:2449
 msgid "list networks"
 msgstr "просмотр сетей"
 
-#: src/virsh.c:2259
+#: src/virsh.c:2450
 msgid "Returns list of networks."
 msgstr "Возвращает список сетей."
 
-#: src/virsh.c:2264
+#: src/virsh.c:2455
 msgid "list inactive networks"
 msgstr "просмотр неактивных сетей"
 
-#: src/virsh.c:2265
+#: src/virsh.c:2456
 msgid "list inactive & active networks"
 msgstr "просмотр неактивных и активных сетей"
 
-#: src/virsh.c:2285 src/virsh.c:2293
+#: src/virsh.c:2476 src/virsh.c:2484
 msgid "Failed to list active networks"
 msgstr "Ошибка отображения списка активных сетей"
 
-#: src/virsh.c:2304 src/virsh.c:2313
+#: src/virsh.c:2495 src/virsh.c:2504
 msgid "Failed to list inactive networks"
 msgstr "Ошибка отображения списка неактивных сетей"
 
-#: src/virsh.c:2323
+#: src/virsh.c:2514
 msgid "Autostart"
 msgstr "Автозапуск"
 
-#: src/virsh.c:2338 src/virsh.c:2361
+#: src/virsh.c:2529 src/virsh.c:2552
 msgid "no autostart"
 msgstr "без автозапуска"
 
-#: src/virsh.c:2344
+#: src/virsh.c:2535
 msgid "active"
 msgstr "активно"
 
-#: src/virsh.c:2367
+#: src/virsh.c:2558
 msgid "inactive"
 msgstr "неактивен(-на)"
 
-#: src/virsh.c:2386
+#: src/virsh.c:2577
 msgid "convert a network UUID to network name"
 msgstr "преобразовать UUID в сетевое имя"
 
-#: src/virsh.c:2417
+#: src/virsh.c:2608
 msgid "start a (previously defined) inactive network"
 msgstr "запустить ранее определенную неактивную сеть"
 
-#: src/virsh.c:2418
+#: src/virsh.c:2609
 msgid "Start a network."
 msgstr "Запуск сети."
 
-#: src/virsh.c:2423
+#: src/virsh.c:2614
 msgid "name of the inactive network"
 msgstr "имя неактивной сети"
 
-#: src/virsh.c:2440
+#: src/virsh.c:2631
 #, c-format
 msgid "Network %s started\n"
 msgstr "Сеть %s запущена\n"
 
-#: src/virsh.c:2443
+#: src/virsh.c:2634
 #, c-format
 msgid "Failed to start network %s"
 msgstr "Ошибка запуска сети %s"
 
-#: src/virsh.c:2456
+#: src/virsh.c:2647
 msgid "undefine an inactive network"
 msgstr "отменить определение неактивной сети"
 
-#: src/virsh.c:2457
+#: src/virsh.c:2648
 msgid "Undefine the configuration for an inactive network."
 msgstr "Отменить назначение конфигурации для неактивной сети."
 
-#: src/virsh.c:2480
+#: src/virsh.c:2671
 #, c-format
 msgid "Network %s has been undefined\n"
 msgstr "Конфигурация сети %s отменена\n"
 
-#: src/virsh.c:2482
+#: src/virsh.c:2673
 #, c-format
 msgid "Failed to undefine network %s"
 msgstr "Ошибка отмены конфигурации сети %s"
 
-#: src/virsh.c:2495
+#: src/virsh.c:2686
 msgid "convert a network name to network UUID"
 msgstr "преобразовать имя сети в UUID сети"
 
-#: src/virsh.c:2520
+#: src/virsh.c:2711
 msgid "failed to get network UUID"
 msgstr "ошибка получения UUID сети"
 
-#: src/virsh.c:2531
+#: src/virsh.c:2722
 msgid "show version"
 msgstr "показать версию"
 
-#: src/virsh.c:2532
+#: src/virsh.c:2723
 msgid "Display the system version information."
 msgstr "Отобразить информацию о версии системы"
 
-#: src/virsh.c:2555
+#: src/virsh.c:2746
 msgid "failed to get hypervisor type"
 msgstr "ошибка получения типа гипервизора"
 
-#: src/virsh.c:2564
+#: src/virsh.c:2755
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr "Выполнена компиляция на базе библиотеки: libvir %d.%d.%d\n"
 
-#: src/virsh.c:2569
+#: src/virsh.c:2760
 msgid "failed to get the library version"
 msgstr "ошибка получения версии библиотеки"
 
-#: src/virsh.c:2576
+#: src/virsh.c:2767
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
 msgstr "Используется библиотека: libvir %d.%d.%d\n"
 
-#: src/virsh.c:2583
+#: src/virsh.c:2774
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
 msgstr "Используется API: %s %d.%d.%d\n"
 
-#: src/virsh.c:2588
+#: src/virsh.c:2779
 msgid "failed to get the hypervisor version"
 msgstr "ошибка получения версии гипервизора"
 
-#: src/virsh.c:2593
+#: src/virsh.c:2784
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "Невозможно извлечь версию гипервизора, выполняющего %s\n"
 
-#: src/virsh.c:2600
+#: src/virsh.c:2791
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "Выполняется гипервизор: %s %d.%d.%d\n"
 
-#: src/virsh.c:2611
+#: src/virsh.c:2802
 #, fuzzy
 msgid "print the hypervisor hostname"
 msgstr "ошибка получения типа гипервизора"
 
-#: src/virsh.c:2625
+#: src/virsh.c:2816
 #, fuzzy
 msgid "failed to get hostname"
 msgstr "ошибка получения типа гипервизора"
 
-#: src/virsh.c:2640
+#: src/virsh.c:2831
 #, fuzzy
 msgid "print the hypervisor canonical URI"
 msgstr "URI соединения гипервизора"
 
-#: src/virsh.c:2654
+#: src/virsh.c:2845
 #, fuzzy
 msgid "failed to get URI"
 msgstr "ошибка получения UUID домена"
 
-#: src/virsh.c:2669
+#: src/virsh.c:2860
 msgid "vnc display"
 msgstr "дисплей vnc"
 
-#: src/virsh.c:2670
+#: src/virsh.c:2861
 msgid "Output the IP address and port number for the VNC display."
 msgstr "Вывод IP адреса и номера порта на дисплей VNC."
 
-#: src/virsh.c:2748
+#: src/virsh.c:2939
 msgid "tty console"
 msgstr ""
 
-#: src/virsh.c:2749
+#: src/virsh.c:2940
 msgid "Output the device for the TTY console."
 msgstr ""
 
-#: src/virsh.c:2811
+#: src/virsh.c:3002
 #, fuzzy
 msgid "attach device from an XML file"
 msgstr "создать домен из файла XML"
 
-#: src/virsh.c:2812
+#: src/virsh.c:3003
 #, fuzzy
 msgid "Attach device from an XML <file>."
 msgstr "создать домен из файла XML"
 
-#: src/virsh.c:2818 src/virsh.c:2872
+#: src/virsh.c:3009 src/virsh.c:3063
 msgid "XML file"
 msgstr ""
 
-#: src/virsh.c:2850
+#: src/virsh.c:3041
 #, fuzzy, c-format
 msgid "Failed to attach device from %s"
 msgstr "Ошибка создания домена из %s"
 
-#: src/virsh.c:2865
+#: src/virsh.c:3056
 #, fuzzy
 msgid "detach device from an XML file"
 msgstr "создать домен из файла XML"
 
-#: src/virsh.c:2866
+#: src/virsh.c:3057
 #, fuzzy
 msgid "Detach device from an XML <file>"
 msgstr "создать домен из файла XML"
 
-#: src/virsh.c:2904
+#: src/virsh.c:3095
 #, fuzzy, c-format
 msgid "Failed to detach device from %s"
 msgstr "Ошибка создания домена из %s"
 
-#: src/virsh.c:2919
+#: src/virsh.c:3110
 #, fuzzy
 msgid "attach network interface"
 msgstr "имя сети"
 
-#: src/virsh.c:2920
+#: src/virsh.c:3111
 msgid "Attach new network interface."
 msgstr ""
 
-#: src/virsh.c:2926 src/virsh.c:3042
+#: src/virsh.c:3117 src/virsh.c:3233
 #, fuzzy
 msgid "network interface type"
 msgstr "имя сети"
 
-#: src/virsh.c:2927
+#: src/virsh.c:3118
 #, fuzzy
 msgid "source of network interface"
 msgstr "неопределенное имя сети"
 
-#: src/virsh.c:2928
+#: src/virsh.c:3119
 #, fuzzy
 msgid "target network name"
 msgstr "имя сети"
 
-#: src/virsh.c:2929 src/virsh.c:3043
+#: src/virsh.c:3120 src/virsh.c:3234
 msgid "MAC adress"
 msgstr ""
 
-#: src/virsh.c:2930
+#: src/virsh.c:3121
 msgid "script used to bridge network interface"
 msgstr ""
 
-#: src/virsh.c:2962
+#: src/virsh.c:3153
 #, c-format
 msgid "No support %s in command 'attach-interface'"
 msgstr ""
 
-#: src/virsh.c:3035
+#: src/virsh.c:3226
 #, fuzzy
 msgid "detach network interface"
 msgstr "имя сети"
 
-#: src/virsh.c:3036
+#: src/virsh.c:3227
 msgid "Detach network interface."
 msgstr ""
 
-#: src/virsh.c:3081 src/virsh.c:3086
+#: src/virsh.c:3272 src/virsh.c:3277
 #, fuzzy
 msgid "Failed to get interface information"
 msgstr "ошибка получения данных узла"
 
-#: src/virsh.c:3094
+#: src/virsh.c:3285
 #, c-format
 msgid "No found interface whose type is %s"
 msgstr ""
 
-#: src/virsh.c:3116
+#: src/virsh.c:3307
 #, c-format
 msgid "No found interface whose MAC address is %s"
 msgstr ""
 
-#: src/virsh.c:3122 src/virsh.c:3400
+#: src/virsh.c:3313 src/virsh.c:3591
 #, fuzzy
 msgid "Failed to allocate memory"
 msgstr "ошибка выделения узла"
 
-#: src/virsh.c:3127 src/virsh.c:3405
+#: src/virsh.c:3318 src/virsh.c:3596
 #, fuzzy
 msgid "Failed to create XML"
 msgstr "Ошибка чтения сокета %d\n"
 
-#: src/virsh.c:3156
+#: src/virsh.c:3347
 msgid "attach disk device"
 msgstr ""
 
-#: src/virsh.c:3157
+#: src/virsh.c:3348
 msgid "Attach new disk device."
 msgstr ""
 
-#: src/virsh.c:3163
+#: src/virsh.c:3354
 msgid "source of disk device"
 msgstr ""
 
-#: src/virsh.c:3164 src/virsh.c:3328
+#: src/virsh.c:3355 src/virsh.c:3519
 msgid "target of disk device"
 msgstr ""
 
-#: src/virsh.c:3165
+#: src/virsh.c:3356
 msgid "driver of disk device"
 msgstr ""
 
-#: src/virsh.c:3166
+#: src/virsh.c:3357
 msgid "subdriver of disk device"
 msgstr ""
 
-#: src/virsh.c:3167
+#: src/virsh.c:3358
 msgid "target device type"
 msgstr ""
 
-#: src/virsh.c:3168
+#: src/virsh.c:3359
 msgid "mode of device reading and writing"
 msgstr ""
 
-#: src/virsh.c:3199 src/virsh.c:3208 src/virsh.c:3215
+#: src/virsh.c:3390 src/virsh.c:3399 src/virsh.c:3406
 #, c-format
 msgid "No support %s in command 'attach-disk'"
 msgstr ""
 
-#: src/virsh.c:3321
+#: src/virsh.c:3512
 msgid "detach disk device"
 msgstr ""
 
-#: src/virsh.c:3322
+#: src/virsh.c:3513
 msgid "Detach disk device."
 msgstr ""
 
-#: src/virsh.c:3363 src/virsh.c:3368 src/virsh.c:3375
+#: src/virsh.c:3554 src/virsh.c:3559 src/virsh.c:3566
 #, fuzzy
 msgid "Failed to get disk information"
 msgstr "ошибка получения данных узла"
 
-#: src/virsh.c:3394
+#: src/virsh.c:3585
 #, c-format
 msgid "No found disk whose target is %s"
 msgstr ""
 
-#: src/virsh.c:3434
+#: src/virsh.c:3625
 msgid "quit this interactive terminal"
 msgstr "выйти из интерактивного терминала"
 
-#: src/virsh.c:3571
+#: src/virsh.c:3765
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "формат команды '%s' требует указания опции <%s>"
 
-#: src/virsh.c:3572
+#: src/virsh.c:3766
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "формат команды '%s' требует указания опции --%s"
 
-#: src/virsh.c:3599
+#: src/virsh.c:3793
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "команда '%s' не существует"
 
-#: src/virsh.c:3607
+#: src/virsh.c:3801
 msgid "  NAME\n"
 msgstr "  ИМЯ\n"
 
-#: src/virsh.c:3611
+#: src/virsh.c:3805
 #, fuzzy
 msgid ""
 "\n"
@@ -1875,7 +1939,7 @@ msgstr ""
 "\n"
 "  ПАРАМЕТРЫ\n"
 
-#: src/virsh.c:3618
+#: src/virsh.c:3812
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -1883,7 +1947,7 @@ msgstr ""
 "\n"
 "  ОПИСАНИЕ\n"
 
-#: src/virsh.c:3622
+#: src/virsh.c:3816
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -1891,35 +1955,35 @@ msgstr ""
 "\n"
 "  ПАРАМЕТРЫ\n"
 
-#: src/virsh.c:3629
+#: src/virsh.c:3823
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <число>"
 
-#: src/virsh.c:3631
+#: src/virsh.c:3825
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <строка>"
 
-#: src/virsh.c:3750
+#: src/virsh.c:3944
 msgid "undefined domain name or id"
 msgstr "неопределенное имя домена или ID"
 
-#: src/virsh.c:3783
+#: src/virsh.c:3977
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "ошибка при получении домена '%s'"
 
-#: src/virsh.c:3796
+#: src/virsh.c:3990
 msgid "undefined network name"
 msgstr "неопределенное имя сети"
 
-#: src/virsh.c:3820
+#: src/virsh.c:4014
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "ошибка при получении сети '%s'"
 
-#: src/virsh.c:3848
+#: src/virsh.c:4042
 #, c-format
 msgid ""
 "\n"
@@ -1930,125 +1994,125 @@ msgstr ""
 "(Время: %.3f мс)\n"
 "\n"
 
-#: src/virsh.c:3922
+#: src/virsh.c:4116
 msgid "missing \""
 msgstr "отсутствует \""
 
-#: src/virsh.c:3983
+#: src/virsh.c:4177
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "непредвиденный признак (имя команды): '%s'"
 
-#: src/virsh.c:3988
+#: src/virsh.c:4182
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "неизвестная команда: '%s'"
 
-#: src/virsh.c:3995
+#: src/virsh.c:4189
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "команда '%s' не поддерживает опции --%s"
 
-#: src/virsh.c:4010
+#: src/virsh.c:4204
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "ожидаемый формат: --%s <%s>"
 
-#: src/virsh.c:4013
+#: src/virsh.c:4207
 msgid "number"
 msgstr "число"
 
-#: src/virsh.c:4013
+#: src/virsh.c:4207
 msgid "string"
 msgstr "строка"
 
-#: src/virsh.c:4019
+#: src/virsh.c:4213
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "неожидаемые данные '%s'"
 
-#: src/virsh.c:4041
+#: src/virsh.c:4235
 msgid "OPTION"
 msgstr "ПАРАМЕТР"
 
-#: src/virsh.c:4041
+#: src/virsh.c:4235
 msgid "DATA"
 msgstr "ДАННЫЕ"
 
-#: src/virsh.c:4091 src/virsh.c:4117
+#: src/virsh.c:4285 src/virsh.c:4311
 msgid "running"
 msgstr "выполнение"
 
-#: src/virsh.c:4093 src/virsh.c:4115
+#: src/virsh.c:4287 src/virsh.c:4309
 msgid "blocked"
 msgstr "заблокирован"
 
-#: src/virsh.c:4095
+#: src/virsh.c:4289
 msgid "paused"
 msgstr "приостановлен"
 
-#: src/virsh.c:4097
+#: src/virsh.c:4291
 msgid "in shutdown"
 msgstr "отключается"
 
-#: src/virsh.c:4099
+#: src/virsh.c:4293
 msgid "shut off"
 msgstr "отключить"
 
-#: src/virsh.c:4101
+#: src/virsh.c:4295
 msgid "crashed"
 msgstr "аварийный сбой"
 
-#: src/virsh.c:4113
+#: src/virsh.c:4307
 msgid "offline"
 msgstr "автономный режим"
 
-#: src/virsh.c:4132
+#: src/virsh.c:4326
 msgid "no valid connection"
 msgstr "нет действительного соединения"
 
-#: src/virsh.c:4179
+#: src/virsh.c:4373
 #, c-format
 msgid "%s: error: "
 msgstr "%s: ошибка: "
 
-#: src/virsh.c:4181
+#: src/virsh.c:4375
 msgid "error: "
 msgstr "ошибка: "
 
-#: src/virsh.c:4203 src/virsh.c:4215 src/virsh.c:4228
+#: src/virsh.c:4397 src/virsh.c:4409 src/virsh.c:4422
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "Сбой %s: %d: при попытке выделения %d байт"
 
-#: src/virsh.c:4242
+#: src/virsh.c:4436
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "Сбой %s: %d: при попытке выделения %lu байт"
 
-#: src/virsh.c:4278
+#: src/virsh.c:4472
 msgid "failed to connect to the hypervisor"
 msgstr "ошибка подключения к гипервизору"
 
-#: src/virsh.c:4302
+#: src/virsh.c:4496
 #, fuzzy
 msgid "failed to get the log file information"
 msgstr "ошибка получения данных узла"
 
-#: src/virsh.c:4307
+#: src/virsh.c:4501
 msgid "the log path is not a file"
 msgstr ""
 
-#: src/virsh.c:4313
+#: src/virsh.c:4507
 msgid "failed to open the log file. check the log file path"
 msgstr ""
 
-#: src/virsh.c:4381
+#: src/virsh.c:4575
 #, fuzzy
 msgid "failed to write the log file"
 msgstr "ошибка записи файла конфигурации"
 
-#: src/virsh.c:4550
+#: src/virsh.c:4744
 #, fuzzy, c-format
 msgid ""
 "\n"
@@ -2080,7 +2144,7 @@ msgstr ""
 "\n"
 "  команды (текстовый режим):\n"
 
-#: src/virsh.c:4568
+#: src/virsh.c:4762
 #, fuzzy, c-format
 msgid ""
 "\n"
@@ -2091,12 +2155,12 @@ msgstr ""
 "  (наберите --help <команда> для подробной информации о команде)\n"
 "\n"
 
-#: src/virsh.c:4664
+#: src/virsh.c:4858
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "неподдерживаемая опция '-%c'. Обратитесь к --help."
 
-#: src/virsh.c:4746
+#: src/virsh.c:4940
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -2105,7 +2169,7 @@ msgstr ""
 "Добро пожаловать в %s - интерактивный терминал виртуализации.\n"
 "\n"
 
-#: src/virsh.c:4749
+#: src/virsh.c:4943
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
@@ -2224,7 +2288,7 @@ msgstr ""
 msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
 msgstr ""
 
-#: src/xen_internal.c:2367
+#: src/xen_internal.c:2519
 #, c-format
 msgid "allocating %d domain info"
 msgstr "выделение %d данных домена"

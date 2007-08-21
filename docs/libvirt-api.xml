@@ -16,50 +16,56 @@
      <exports symbol='VIR_UUID_STRING_BUFLEN' type='macro'/>
      <exports symbol='VIR_GET_CPUMAP' type='macro'/>
      <exports symbol='VIR_UNUSE_CPU' type='macro'/>
-     <exports symbol='VIR_DOMAIN_SHUTOFF' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SHUTDOWN' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_UINT' type='enum'/>
+     <exports symbol='VIR_VCPU_RUNNING' type='enum'/>
+     <exports symbol='VIR_DOMAIN_CRASHED' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_DOUBLE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_LLONG' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_ULLONG' type='enum'/>
      <exports symbol='VIR_DOMAIN_DESTROY' type='enum'/>
      <exports symbol='VIR_DOMAIN_RESTART' type='enum'/>
-     <exports symbol='VIR_DOMAIN_RENAME_RESTART' type='enum'/>
      <exports symbol='VIR_DOMAIN_PRESERVE' type='enum'/>
-     <exports symbol='VIR_VCPU_BLOCKED' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_BOOLEAN' type='enum'/>
-     <exports symbol='VIR_DOMAIN_SCHED_FIELD_UINT' type='enum'/>
+     <exports symbol='VIR_MIGRATE_LIVE' type='enum'/>
      <exports symbol='VIR_VCPU_OFFLINE' type='enum'/>
-     <exports symbol='VIR_DOMAIN_SCHED_FIELD_INT' type='enum'/>
-     <exports symbol='VIR_VCPU_RUNNING' type='enum'/>
-     <exports symbol='VIR_DOMAIN_CRASHED' type='enum'/>
-     <exports symbol='VIR_DOMAIN_NONE' type='enum'/>
-     <exports symbol='VIR_DOMAIN_SHUTDOWN' type='enum'/>
-     <exports symbol='VIR_DOMAIN_NOSTATE' type='enum'/>
-     <exports symbol='VIR_DOMAIN_PAUSED' type='enum'/>
-     <exports symbol='VIR_DOMAIN_SCHED_FIELD_LLONG' type='enum'/>
      <exports symbol='VIR_DOMAIN_RUNNING' type='enum'/>
      <exports symbol='VIR_DOMAIN_BLOCKED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SHUTOFF' type='enum'/>
+     <exports symbol='VIR_VCPU_BLOCKED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_INT' type='enum'/>
+     <exports symbol='VIR_DOMAIN_PAUSED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_NONE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_NOSTATE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_RENAME_RESTART' type='enum'/>
+     <exports symbol='virDomainMigrateFlags' type='typedef'/>
+     <exports symbol='virNodeInfo' type='typedef'/>
+     <exports symbol='virNetwork' type='typedef'/>
+     <exports symbol='virDomainBlockStatsPtr' type='typedef'/>
+     <exports symbol='virConnect' type='typedef'/>
+     <exports symbol='virVcpuInfo' type='typedef'/>
+     <exports symbol='virDomainInfo' type='typedef'/>
+     <exports symbol='virSchedParameter' type='typedef'/>
+     <exports symbol='virDomainState' type='typedef'/>
+     <exports symbol='virDomain' type='typedef'/>
+     <exports symbol='virDomainInterfaceStatsPtr' type='typedef'/>
+     <exports symbol='virSchedParameterType' type='typedef'/>
+     <exports symbol='virDomainRestart' type='typedef'/>
      <exports symbol='virNodeInfoPtr' type='typedef'/>
      <exports symbol='virNetworkPtr' type='typedef'/>
      <exports symbol='virDomainInfoPtr' type='typedef'/>
      <exports symbol='virConnectPtr' type='typedef'/>
      <exports symbol='virVcpuInfoPtr' type='typedef'/>
-     <exports symbol='virNodeInfo' type='typedef'/>
-     <exports symbol='virNetwork' type='typedef'/>
-     <exports symbol='virDomainState' type='typedef'/>
-     <exports symbol='virDomain' type='typedef'/>
-     <exports symbol='virDomainPtr' type='typedef'/>
-     <exports symbol='virSchedParameter' type='typedef'/>
-     <exports symbol='virSchedParameterType' type='typedef'/>
-     <exports symbol='virDomainRestart' type='typedef'/>
-     <exports symbol='virConnect' type='typedef'/>
-     <exports symbol='virDomainCreateFlags' type='typedef'/>
      <exports symbol='virSchedParameterPtr' type='typedef'/>
-     <exports symbol='virDomainInfo' type='typedef'/>
      <exports symbol='virVcpuState' type='typedef'/>
-     <exports symbol='virVcpuInfo' type='typedef'/>
+     <exports symbol='virDomainPtr' type='typedef'/>
+     <exports symbol='virDomainCreateFlags' type='typedef'/>
      <exports symbol='_virDomainInfo' type='struct'/>
-     <exports symbol='_virNodeInfo' type='struct'/>
+     <exports symbol='_virDomainInterfaceStats' type='struct'/>
      <exports symbol='_virVcpuInfo' type='struct'/>
      <exports symbol='_virSchedParameter' type='struct'/>
+     <exports symbol='_virDomainBlockStats' type='struct'/>
+     <exports symbol='_virNodeInfo' type='struct'/>
      <exports symbol='virDomainGetInfo' type='function'/>
      <exports symbol='virNetworkFree' type='function'/>
      <exports symbol='virNetworkGetName' type='function'/>
@@ -71,7 +77,7 @@
      <exports symbol='virGetVersion' type='function'/>
      <exports symbol='virConnectListDefinedDomains' type='function'/>
      <exports symbol='virConnectGetCapabilities' type='function'/>
-     <exports symbol='virNetworkGetConnect' type='function'/>
+     <exports symbol='virInitialize' type='function'/>
      <exports symbol='virDomainLookupByName' type='function'/>
      <exports symbol='virNetworkLookupByUUID' type='function'/>
      <exports symbol='virNetworkGetBridgeName' type='function'/>
@@ -79,6 +85,7 @@
      <exports symbol='virDomainPinVcpu' type='function'/>
      <exports symbol='virDomainRestore' type='function'/>
      <exports symbol='virConnectGetType' type='function'/>
+     <exports symbol='virNetworkLookupByName' type='function'/>
      <exports symbol='virDomainGetSchedulerParameters' type='function'/>
      <exports symbol='virDomainCreate' type='function'/>
      <exports symbol='virConnectListDomains' type='function'/>
@@ -106,16 +113,17 @@
      <exports symbol='virDomainSuspend' type='function'/>
      <exports symbol='virConnectGetMaxVcpus' type='function'/>
      <exports symbol='virConnectNumOfDefinedDomains' type='function'/>
+     <exports symbol='virNetworkGetConnect' type='function'/>
      <exports symbol='virNetworkDefineXML' type='function'/>
      <exports symbol='virNetworkCreate' type='function'/>
      <exports symbol='virDomainSetSchedulerParameters' type='function'/>
      <exports symbol='virConnectClose' type='function'/>
      <exports symbol='virDomainReboot' type='function'/>
-     <exports symbol='virInitialize' type='function'/>
+     <exports symbol='virDomainBlockStats' type='function'/>
      <exports symbol='virDomainSetVcpus' type='function'/>
      <exports symbol='virDomainLookupByID' type='function'/>
      <exports symbol='virNetworkGetUUIDString' type='function'/>
-     <exports symbol='virNetworkLookupByName' type='function'/>
+     <exports symbol='virDomainMigrate' type='function'/>
      <exports symbol='virNetworkCreateXML' type='function'/>
      <exports symbol='virDomainGetID' type='function'/>
      <exports symbol='virDomainResume' type='function'/>
@@ -131,6 +139,7 @@
      <exports symbol='virConnectGetHostname' type='function'/>
      <exports symbol='virDomainGetXMLDesc' type='function'/>
      <exports symbol='virDomainSetMaxMemory' type='function'/>
+     <exports symbol='virDomainInterfaceStats' type='function'/>
      <exports symbol='virConnectGetVersion' type='function'/>
      <exports symbol='virConnectListNetworks' type='function'/>
      <exports symbol='virConnectGetURI' type='function'/>
@@ -354,6 +363,7 @@
     <enum name='VIR_FROM_XEND' file='virterror' value='2' type='virErrorDomain' info='Error at connection with xend daemon'/>
     <enum name='VIR_FROM_XENSTORE' file='virterror' value='3' type='virErrorDomain' info='Error at connection with xen store'/>
     <enum name='VIR_FROM_XML' file='virterror' value='5' type='virErrorDomain' info='Error in the XML code'/>
+    <enum name='VIR_MIGRATE_LIVE' file='libvirt' value='1' type='virDomainMigrateFlags' info=' live migration'/>
     <enum name='VIR_VCPU_BLOCKED' file='libvirt' value='2' type='virVcpuState' info=' the virtual CPU is blocked on resource'/>
     <enum name='VIR_VCPU_OFFLINE' file='libvirt' value='0' type='virVcpuState' info='the virtual CPU is offline'/>
     <enum name='VIR_VCPU_RUNNING' file='libvirt' value='1' type='virVcpuState' info='the virtual CPU is running'/>
@@ -363,6 +373,7 @@
       <info>a virConnectPtr is pointer to a virConnect private structure, this is the type used to reference a connection to the Xen Hypervisor in the API.</info>
     </typedef>
     <struct name='virDomain' file='libvirt' type='struct _virDomain'/>
+    <struct name='virDomainBlockStatsPtr' file='libvirt' type='struct _virDomainBlockStats *'/>
     <typedef name='virDomainCreateFlags' file='libvirt' type='enum'/>
     <struct name='virDomainInfo' file='libvirt' type='struct _virDomainInfo'>
       <field name='state' type='unsigned char' info=' the running state, one of virDomainFlags'/>
@@ -374,6 +385,8 @@
     <typedef name='virDomainInfoPtr' file='libvirt' type='virDomainInfo *'>
       <info>a virDomainInfoPtr is a pointer to a virDomainInfo structure.</info>
     </typedef>
+    <struct name='virDomainInterfaceStatsPtr' file='libvirt' type='struct _virDomainInterfaceStats *'/>
+    <typedef name='virDomainMigrateFlags' file='libvirt' type='enum'/>
     <typedef name='virDomainPtr' file='libvirt' type='virDomain *'>
       <info>a virDomainPtr is pointer to a virDomain private structure, this is the type used to reference a Xen domain in the API.</info>
     </typedef>
@@ -564,6 +577,14 @@
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
       <arg name='xml' type='char *' info='pointer to XML description of one device'/>
     </function>
+    <function name='virDomainBlockStats' file='libvirt' module='libvirt'>
+      <info>This function returns block device (disk) stats for block devices attached to the domain.  The path parameter is the name of the block device.  Get this by calling virDomainGetXMLDesc and finding the &lt;target dev=&apos;...&apos;&gt; attribute within //domain/devices/disk.  (For example, &quot;xvda&quot;).  Domains may have more than one block device.  To get stats for each you should make multiple calls to this function.  Individual fields within the stats structure may be returned as -1, which indicates that the hypervisor does not support that particular statistic.</info>
+      <return type='int' info='0 in case of success or -1 in case of failure.'/>
+      <arg name='dom' type='virDomainPtr' info='pointer to the domain object'/>
+      <arg name='path' type='const char *' info='path to the block device'/>
+      <arg name='stats' type='virDomainBlockStatsPtr' info='block device stats (returned)'/>
+      <arg name='size' type='size_t' info='size of stats structure'/>
+    </function>
     <function name='virDomainCoreDump' file='libvirt' module='libvirt'>
       <info>This method will dump the core of a domain on a given file for analysis. Note that for remote Xen Daemon the file path will be interpreted in the remote host.</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
@@ -687,6 +708,14 @@
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='flags' type='int' info='and OR&apos;ed set of extraction flags, not used yet'/>
     </function>
+    <function name='virDomainInterfaceStats' file='libvirt' module='libvirt'>
+      <info>This function returns network interface stats for interfaces attached to the domain.  The path parameter is the name of the network interface.  Domains may have more than network interface.  To get stats for each you should make multiple calls to this function.  Individual fields within the stats structure may be returned as -1, which indicates that the hypervisor does not support that particular statistic.</info>
+      <return type='int' info='0 in case of success or -1 in case of failure.'/>
+      <arg name='dom' type='virDomainPtr' info='pointer to the domain object'/>
+      <arg name='path' type='const char *' info='path to the interface'/>
+      <arg name='stats' type='virDomainInterfaceStatsPtr' info='network interface stats (returned)'/>
+      <arg name='size' type='size_t' info='size of stats structure'/>
+    </function>
     <function name='virDomainLookupByID' file='libvirt' module='libvirt'>
       <info>Try to find a domain based on the hypervisor ID number</info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure.  If the domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.'/>
@@ -710,6 +739,16 @@
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure.  If the domain cannot be found, then VIR_ERR_NO_DOMAIN error is raised.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='uuidstr' type='const char *' info='the string UUID for the domain'/>
+    </function>
+    <function name='virDomainMigrate' file='libvirt' module='libvirt'>
+      <info>Migrate the domain object from its current host to the destination host given by dconn (a connection to the destination host).  Flags may be one of more of the following: VIR_MIGRATE_LIVE   Attempt a live migration.  If a hypervisor supports renaming domains during migration, then you may set the dname parameter to the new name (otherwise it keeps the same name).  If this is not supported by the hypervisor, dname must be NULL or else you will get an error.  Since typically the two hypervisors connect directly to each other in order to perform the migration, you may need to specify a path from the source to the destination.  This is the purpose of the uri parameter.  If uri is NULL, then libvirt will try to find the best method.  Uri may specify the hostname or IP address of the destination host as seen from the source.  Or uri may be a URI giving transport, hostname, user, port, etc. in the usual form.  Refer to driver documentation for the particular URIs supported.  The maximum bandwidth (in Mbps) that will be used to do migration can be specified with the bandwidth parameter.  If set to 0, libvirt will choose a suitable default.  Some hypervisors do not support this feature and will return an error if bandwidth is not 0.  To see which features are supported by the current hypervisor, see virConnectGetCapabilities, /capabilities/host/migration_features.  There are many limitations on migration imposed by the underlying technology - for example it may not be possible to migrate between different processors even with the same architecture, or between different types of hypervisor.</info>
+      <return type='virDomainPtr' info='the new domain object if the migration was successful, or NULL in case of error.  Note that the new domain object exists in the scope of the destination connection (dconn).'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+      <arg name='dconn' type='virConnectPtr' info='destination host (a connection object)'/>
+      <arg name='flags' type='unsigned long' info='flags'/>
+      <arg name='dname' type='const char *' info='(optional) rename domain to this at destination'/>
+      <arg name='uri' type='const char *' info='(optional) dest hostname/URI as seen from the source host'/>
+      <arg name='bandwidth' type='unsigned long' info='(optional) specify migration bandwidth limit in Mbps'/>
     </function>
     <function name='virDomainPinVcpu' file='libvirt' module='libvirt'>
       <info>Dynamically change the real CPUs which can be allocated to a virtual CPU. This function requires priviledged access to the hypervisor.</info>

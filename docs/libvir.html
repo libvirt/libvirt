@@ -35,6 +35,36 @@ development of libvirt, it is preferable when possible to just use the <a
 href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p>
 
+
+<h3>0.3.2: Aug 21 2007</h3>
+<ul>
+  <li>New features: KVM migration and save/restore (Jim Paris), 
+      added API for migration (Richard Jones), added APIs for block device and
+      interface statistic (Richard Jones).</li>
+  <li>Documentation: examples for XML network APIs,
+      fix typo and schedinfo synopsis in man page (Atsushi SAKAI),
+      hypervisor support page update (Richard Jones).</li>
+  <li>Bug fixes: remove a couple of leaks in QEmu/KVM backend(Daniel berrange),
+      fix GnuTLS 1.0 compatibility (Richard Jones), --config/-f option
+      mistake for libvirtd (Richard Jones), remove leak in QEmu backend
+      (Jim Paris), fix some QEmu communication bugs (Jim Paris), UUID
+      lookup though proxy fix, setvcpus checking bugs (with Atsushi SAKAI),
+      int checking in virsh parameters (with Masayuki Sunou), deny devices
+      attach/detach for &lt; Xen 3.0.4 (Masayuki Sunou), XenStore query
+      memory leak (Masayuki Sunou), virsh schedinfo cleanup (Saori Fukuta).</li>
+  <li>Improvement: virsh new ttyconsole command, networking API implementation
+      for test driver (Daniel berrange), qemu/kvm feature reporting of
+      ACPI/APIC (David Lutterkort), checking of QEmu architectures (Daniel
+      berrange), improve devices XML errors reporting (Masayuki Sunou),
+      speedup of domain queries on Xen (Daniel berrange), augment XML dumps
+      with interface devices names (Richard Jones), internal API to query
+      drivers for features (Richard Jones).
+      </li>
+  <li>Cleanups: Improve virNodeGetInfo implentation (Daniel berrange),
+      general UUID code cleanup (Daniel berrange), fix API generator
+      file selection. </li>
+</ul>
+
 <h3>0.3.1: Jul 24 2007</h3>
 <ul>
   <li>Documentation: index to remote page, script to test certificates,

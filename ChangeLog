@@ -1,3 +1,10 @@
+Tue Aug 21 16:48:41 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in libvirt.spec.in include/libvirt/libvirt.h docs/*:
+	  preparing release of 0.3.2
+	* src/libvirt.c: fix a couple of comments
+	* po/*: string localization merge/update
+
 Tue Aug 21 13:52:29 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xs_internal.c: cleanup of memory leaks from Masayuki Sunou
@@ -80,7 +87,7 @@ Tue Aug 14 14:32:51 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 Tue Aug 14 09:10:51 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
-	* src/virsh.c: patch from Atsushi SAKAI fixing schedinfo synopsys
+	* src/virsh.c: patch from Atsushi SAKAI fixing schedinfo synopsis
 
 Tue Aug 14 09:04:41 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
