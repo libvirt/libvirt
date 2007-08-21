@@ -13,7 +13,7 @@ INCLUDES = -I$(top_builddir)/include \
 	   $(WARN_CFLAGS) \
 	   $(LIBVIRT_FEATURES)
 DEPS = libvirt.la
-LDADDS = @STATIC_BINARIES@ libvirt.la
+LDADDS = @STATIC_BINARIES@ $(WARN_CFLAGS) libvirt.la
 VIRSH_LIBS = @VIRSH_LIBS@
 
 EXTRA_DIST = libvirt_sym.version

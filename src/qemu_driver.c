@@ -2662,6 +2662,9 @@ static virDriver qemuDriver = {
     NULL, /* domainGetSchedulerType */
     NULL, /* domainGetSchedulerParameters */
     NULL, /* domainSetSchedulerParameters */
+    NULL, /* domainMigratePrepare */
+    NULL, /* domainMigratePerform */
+    NULL, /* domainMigrateFinish */
 };
 
 static virNetworkDriver qemuNetworkDriver = {

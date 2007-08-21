@@ -161,6 +161,30 @@ case REMOTE_PROC_DOMAIN_LOOKUP_BY_UUID:
 	ret = (char *) &lv_remote_domain_lookup_by_uuid_ret;
 	memset (&lv_remote_domain_lookup_by_uuid_ret, 0, sizeof lv_remote_domain_lookup_by_uuid_ret);
 	break;
+case REMOTE_PROC_DOMAIN_MIGRATE_FINISH:
+	fn = (dispatch_fn) remoteDispatchDomainMigrateFinish;
+	args_filter = (xdrproc_t) xdr_remote_domain_migrate_finish_args;
+	args = (char *) &lv_remote_domain_migrate_finish_args;
+	memset (&lv_remote_domain_migrate_finish_args, 0, sizeof lv_remote_domain_migrate_finish_args);
+	ret_filter = (xdrproc_t) xdr_remote_domain_migrate_finish_ret;
+	ret = (char *) &lv_remote_domain_migrate_finish_ret;
+	memset (&lv_remote_domain_migrate_finish_ret, 0, sizeof lv_remote_domain_migrate_finish_ret);
+	break;
+case REMOTE_PROC_DOMAIN_MIGRATE_PERFORM:
+	fn = (dispatch_fn) remoteDispatchDomainMigratePerform;
+	args_filter = (xdrproc_t) xdr_remote_domain_migrate_perform_args;
+	args = (char *) &lv_remote_domain_migrate_perform_args;
+	memset (&lv_remote_domain_migrate_perform_args, 0, sizeof lv_remote_domain_migrate_perform_args);
+	break;
+case REMOTE_PROC_DOMAIN_MIGRATE_PREPARE:
+	fn = (dispatch_fn) remoteDispatchDomainMigratePrepare;
+	args_filter = (xdrproc_t) xdr_remote_domain_migrate_prepare_args;
+	args = (char *) &lv_remote_domain_migrate_prepare_args;
+	memset (&lv_remote_domain_migrate_prepare_args, 0, sizeof lv_remote_domain_migrate_prepare_args);
+	ret_filter = (xdrproc_t) xdr_remote_domain_migrate_prepare_ret;
+	ret = (char *) &lv_remote_domain_migrate_prepare_ret;
+	memset (&lv_remote_domain_migrate_prepare_ret, 0, sizeof lv_remote_domain_migrate_prepare_ret);
+	break;
 case REMOTE_PROC_DOMAIN_PIN_VCPU:
 	fn = (dispatch_fn) remoteDispatchDomainPinVcpu;
 	args_filter = (xdrproc_t) xdr_remote_domain_pin_vcpu_args;

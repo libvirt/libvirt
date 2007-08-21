@@ -25,6 +25,7 @@ typedef remote_nonnull_string *remote_string;
 #define REMOTE_CPUMAP_MAX 256
 #define REMOTE_VCPUINFO_MAX 2048
 #define REMOTE_CPUMAPS_MAX 16384
+#define REMOTE_MIGRATE_COOKIE_MAX 256
 #define REMOTE_NETWORK_NAME_LIST_MAX 256
 #define REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX 16
 
@@ -341,6 +342,52 @@ struct remote_domain_dump_xml_ret {
 };
 typedef struct remote_domain_dump_xml_ret remote_domain_dump_xml_ret;
 
+struct remote_domain_migrate_prepare_args {
+	remote_string uri_in;
+	u_quad_t flags;
+	remote_string dname;
+	u_quad_t resource;
+};
+typedef struct remote_domain_migrate_prepare_args remote_domain_migrate_prepare_args;
+
+struct remote_domain_migrate_prepare_ret {
+	struct {
+		u_int cookie_len;
+		char *cookie_val;
+	} cookie;
+	remote_string uri_out;
+};
+typedef struct remote_domain_migrate_prepare_ret remote_domain_migrate_prepare_ret;
+
+struct remote_domain_migrate_perform_args {
+	remote_nonnull_domain dom;
+	struct {
+		u_int cookie_len;
+		char *cookie_val;
+	} cookie;
+	remote_nonnull_string uri;
+	u_quad_t flags;
+	remote_string dname;
+	u_quad_t resource;
+};
+typedef struct remote_domain_migrate_perform_args remote_domain_migrate_perform_args;
+
+struct remote_domain_migrate_finish_args {
+	remote_nonnull_string dname;
+	struct {
+		u_int cookie_len;
+		char *cookie_val;
+	} cookie;
+	remote_nonnull_string uri;
+	u_quad_t flags;
+};
+typedef struct remote_domain_migrate_finish_args remote_domain_migrate_finish_args;
+
+struct remote_domain_migrate_finish_ret {
+	remote_nonnull_domain ddom;
+};
+typedef struct remote_domain_migrate_finish_ret remote_domain_migrate_finish_ret;
+
 struct remote_list_defined_domains_args {
 	int maxnames;
 };
@@ -643,6 +690,9 @@ enum remote_procedure {
 	REMOTE_PROC_DOMAIN_SET_SCHEDULER_PARAMETERS = 58,
 	REMOTE_PROC_GET_HOSTNAME = 59,
 	REMOTE_PROC_SUPPORTS_FEATURE = 60,
+	REMOTE_PROC_DOMAIN_MIGRATE_PREPARE = 61,
+	REMOTE_PROC_DOMAIN_MIGRATE_PERFORM = 62,
+	REMOTE_PROC_DOMAIN_MIGRATE_FINISH = 63,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -727,6 +777,11 @@ extern  bool_t xdr_remote_domain_restore_args (XDR *, remote_domain_restore_args
 extern  bool_t xdr_remote_domain_core_dump_args (XDR *, remote_domain_core_dump_args*);
 extern  bool_t xdr_remote_domain_dump_xml_args (XDR *, remote_domain_dump_xml_args*);
 extern  bool_t xdr_remote_domain_dump_xml_ret (XDR *, remote_domain_dump_xml_ret*);
+extern  bool_t xdr_remote_domain_migrate_prepare_args (XDR *, remote_domain_migrate_prepare_args*);
+extern  bool_t xdr_remote_domain_migrate_prepare_ret (XDR *, remote_domain_migrate_prepare_ret*);
+extern  bool_t xdr_remote_domain_migrate_perform_args (XDR *, remote_domain_migrate_perform_args*);
+extern  bool_t xdr_remote_domain_migrate_finish_args (XDR *, remote_domain_migrate_finish_args*);
+extern  bool_t xdr_remote_domain_migrate_finish_ret (XDR *, remote_domain_migrate_finish_ret*);
 extern  bool_t xdr_remote_list_defined_domains_args (XDR *, remote_list_defined_domains_args*);
 extern  bool_t xdr_remote_list_defined_domains_ret (XDR *, remote_list_defined_domains_ret*);
 extern  bool_t xdr_remote_num_of_defined_domains_ret (XDR *, remote_num_of_defined_domains_ret*);
@@ -830,6 +885,11 @@ extern bool_t xdr_remote_domain_restore_args ();
 extern bool_t xdr_remote_domain_core_dump_args ();
 extern bool_t xdr_remote_domain_dump_xml_args ();
 extern bool_t xdr_remote_domain_dump_xml_ret ();
+extern bool_t xdr_remote_domain_migrate_prepare_args ();
+extern bool_t xdr_remote_domain_migrate_prepare_ret ();
+extern bool_t xdr_remote_domain_migrate_perform_args ();
+extern bool_t xdr_remote_domain_migrate_finish_args ();
+extern bool_t xdr_remote_domain_migrate_finish_ret ();
 extern bool_t xdr_remote_list_defined_domains_args ();
 extern bool_t xdr_remote_list_defined_domains_ret ();
 extern bool_t xdr_remote_num_of_defined_domains_ret ();

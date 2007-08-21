@@ -2023,6 +2023,69 @@ cmdDomuuid(vshControl * ctl, vshCmd * cmd)
 }
 
 /*
+ * "migrate" command
+ */
+static vshCmdInfo info_migrate[] = {
+    {"syntax", "migrate [--live] <domain> <desturi> [<migrateuri>]"},
+    {"help", gettext_noop("migrate domain to another host")},
+    {"desc", gettext_noop("Migrate domain to another host.  Add --live for live migration.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_migrate[] = {
+    {"live", VSH_OT_BOOL, 0, gettext_noop("live migration")},
+    {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
+    {"desturi", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("connection URI of the destination host")},
+    {"migrateuri", VSH_OT_DATA, 0, gettext_noop("migration URI, usually can be omitted")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdMigrate (vshControl *ctl, vshCmd *cmd)
+{
+    virDomainPtr dom = NULL;
+    const char *desturi;
+    const char *migrateuri;
+    int flags = 0, found, ret = FALSE;
+    virConnectPtr dconn = NULL;
+    virDomainPtr ddom = NULL;
+
+    if (!vshConnectionUsability (ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    if (!(dom = vshCommandOptDomain (ctl, cmd, "domain", NULL)))
+        return FALSE;
+
+    desturi = vshCommandOptString (cmd, "desturi", &found);
+    if (!found) {
+        vshError (ctl, FALSE, _("migrate: Missing desturi"));
+        goto done;
+    }
+
+    migrateuri = vshCommandOptString (cmd, "migrateuri", &found);
+    if (!found) migrateuri = NULL;
+
+    if (vshCommandOptBool (cmd, "live"))
+        flags |= VIR_MIGRATE_LIVE;
+
+    /* Temporarily connect to the destination host. */
+    dconn = virConnectOpen (desturi);
+    if (!dconn) goto done;
+
+    /* Migrate. */
+    ddom = virDomainMigrate (dom, dconn, flags, NULL, migrateuri, 0);
+    if (!ddom) goto done;
+
+    ret = TRUE;
+
+ done:
+    if (dom) virDomainFree (dom);
+    if (ddom) virDomainFree (ddom);
+    if (dconn) virConnectClose (dconn);
+    return ret;
+}
+
+/*
  * "net-autostart" command
  */
 static vshCmdInfo info_network_autostart[] = {
@@ -3469,6 +3532,7 @@ static vshCmdDef commands[] = {
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
     {"hostname", cmdHostname, NULL, info_hostname},
     {"list", cmdList, opts_list, info_list},
+    {"migrate", cmdMigrate, opts_migrate, info_migrate},
     {"net-autostart", cmdNetworkAutostart, opts_network_autostart, info_network_autostart},
     {"net-create", cmdNetworkCreate, opts_network_create, info_network_create},
     {"net-define", cmdNetworkDefine, opts_network_define, info_network_define},

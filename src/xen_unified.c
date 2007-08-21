@@ -214,6 +214,16 @@ xenUnifiedType (virConnectPtr conn)
     return NULL;
 }
 
+/* Which features are supported by this driver? */
+static int
+xenUnifiedSupportsFeature (virConnectPtr conn ATTRIBUTE_UNUSED, int feature)
+{
+    switch (feature) {
+    case VIR_DRV_FEATURE_MIGRATION_V1: return 1;
+    default: return 0;
+    }
+}
+
 static int
 xenUnifiedVersion (virConnectPtr conn, unsigned long *hvVer)
 {
@@ -806,6 +816,57 @@ xenUnifiedDomainDumpXML (virDomainPtr dom, int flags)
 }
 
 static int
+xenUnifiedDomainMigratePrepare (virConnectPtr dconn,
+                                char **cookie,
+                                int *cookielen,
+                                const char *uri_in,
+                                char **uri_out,
+                                unsigned long flags,
+                                const char *dname,
+                                unsigned long resource)
+{
+    GET_PRIVATE(dconn);
+
+    if (priv->opened[XEN_UNIFIED_XEND_OFFSET])
+        return xenDaemonDomainMigratePrepare (dconn, cookie, cookielen,
+                                              uri_in, uri_out,
+                                              flags, dname, resource);
+
+    xenUnifiedError (dconn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
+static int
+xenUnifiedDomainMigratePerform (virDomainPtr dom,
+                                const char *cookie,
+                                int cookielen,
+                                const char *uri,
+                                unsigned long flags,
+                                const char *dname,
+                                unsigned long resource)
+{
+    GET_PRIVATE(dom->conn);
+
+    if (priv->opened[XEN_UNIFIED_XEND_OFFSET])
+        return xenDaemonDomainMigratePerform (dom, cookie, cookielen, uri,
+                                              flags, dname, resource);
+
+    xenUnifiedError (dom->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
+static virDomainPtr
+xenUnifiedDomainMigrateFinish (virConnectPtr dconn,
+                               const char *dname,
+                               const char *cookie ATTRIBUTE_UNUSED,
+                               int cookielen ATTRIBUTE_UNUSED,
+                               const char *uri ATTRIBUTE_UNUSED,
+                               unsigned long flags ATTRIBUTE_UNUSED)
+{
+    return xenUnifiedDomainLookupByName (dconn, dname);
+}
+
+static int
 xenUnifiedListDefinedDomains (virConnectPtr conn, char **const names,
                               int maxnames)
 {
@@ -975,6 +1036,7 @@ static virDriver xenUnifiedDriver = {
     .ver = VERSION,
     .open 			= xenUnifiedOpen,
     .close 			= xenUnifiedClose,
+    .supports_feature   = xenUnifiedSupportsFeature,
     .type 			= xenUnifiedType,
     .version 			= xenUnifiedVersion,
     .getHostname    = xenUnifiedGetHostname,
@@ -1016,6 +1078,9 @@ static virDriver xenUnifiedDriver = {
     .domainGetSchedulerType	= xenUnifiedDomainGetSchedulerType,
     .domainGetSchedulerParameters	= xenUnifiedDomainGetSchedulerParameters,
     .domainSetSchedulerParameters	= xenUnifiedDomainSetSchedulerParameters,
+    .domainMigratePrepare		= xenUnifiedDomainMigratePrepare,
+    .domainMigratePerform		= xenUnifiedDomainMigratePerform,
+    .domainMigrateFinish		= xenUnifiedDomainMigrateFinish,
 };
 
 /**

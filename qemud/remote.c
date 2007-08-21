@@ -1059,6 +1059,91 @@ remoteDispatchDomainGetVcpus (struct qemud_client *client,
 }
 
 static int
+remoteDispatchDomainMigratePrepare (struct qemud_client *client,
+                                    remote_message_header *req,
+                                    remote_domain_migrate_prepare_args *args,
+                                    remote_domain_migrate_prepare_ret *ret)
+{
+    int r;
+    char *cookie = NULL;
+    int cookielen = 0;
+    char *uri_in;
+    char **uri_out;
+    char *dname;
+    CHECK_CONN (client);
+
+    uri_in = args->uri_in == NULL ? NULL : *args->uri_in;
+    dname = args->dname == NULL ? NULL : *args->dname;
+
+    /* Wacky world of XDR ... */
+    uri_out = calloc (1, sizeof (char *));
+
+    r = __virDomainMigratePrepare (client->conn, &cookie, &cookielen,
+                                   uri_in, uri_out,
+                                   args->flags, dname, args->resource);
+    if (r == -1) return -1;
+
+    /* remoteDispatchClientRequest will free cookie, uri_out and
+     * the string if there is one.
+     */
+    ret->cookie.cookie_len = cookielen;
+    ret->cookie.cookie_val = cookie;
+    ret->uri_out = *uri_out == NULL ? NULL : uri_out;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainMigratePerform (struct qemud_client *client,
+                                    remote_message_header *req,
+                                    remote_domain_migrate_perform_args *args,
+                                    void *ret ATTRIBUTE_UNUSED)
+{
+    int r;
+    virDomainPtr dom;
+    char *dname;
+    CHECK_CONN (client);
+
+    dom = get_nonnull_domain (client->conn, args->dom);
+    if (dom == NULL) {
+        remoteDispatchError (client, req, "domain not found");
+        return -2;
+    }
+
+    dname = args->dname == NULL ? NULL : *args->dname;
+
+    r = __virDomainMigratePerform (dom,
+                                   args->cookie.cookie_val,
+                                   args->cookie.cookie_len,
+                                   args->uri,
+                                   args->flags, dname, args->resource);
+    if (r == -1) return -1;
+
+    return 0;
+}
+
+static int
+remoteDispatchDomainMigrateFinish (struct qemud_client *client,
+                                   remote_message_header *req,
+                                   remote_domain_migrate_finish_args *args,
+                                   remote_domain_migrate_finish_ret *ret)
+{
+    virDomainPtr ddom;
+    CHECK_CONN (client);
+
+    ddom = __virDomainMigrateFinish (client->conn, args->dname,
+                                     args->cookie.cookie_val,
+                                     args->cookie.cookie_len,
+                                     args->uri,
+                                     args->flags);
+    if (ddom == NULL) return -1;
+
+    make_nonnull_domain (&ret->ddom, ddom);
+
+    return 0;
+}
+
+static int
 remoteDispatchListDefinedDomains (struct qemud_client *client,
                                   remote_message_header *req,
                                   remote_list_defined_domains_args *args,

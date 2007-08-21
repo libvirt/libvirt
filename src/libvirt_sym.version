@@ -69,6 +69,8 @@
 	virDomainAttachDevice;
 	virDomainDetachDevice;
 
+	virDomainMigrate;
+
 	virNetworkGetConnect;
 	virConnectNumOfNetworks;
 	virConnectListNetworks;
@@ -117,6 +119,10 @@
  	__virStateActive;
 
 	__virDrvSupportsFeature;
+
+	__virDomainMigratePrepare;
+	__virDomainMigratePerform;
+	__virDomainMigrateFinish;
 
     local: *;
 };

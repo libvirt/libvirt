@@ -18,6 +18,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <assert.h>
 
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
@@ -1672,6 +1673,224 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
     virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
 }
+
+/**
+ * virDomainMigrate:
+ * @domain: a domain object
+ * @dconn: destination host (a connection object)
+ * @flags: flags
+ * @dname: (optional) rename domain to this at destination
+ * @uri: (optional) dest hostname/URI as seen from the source host
+ * @bandwidth: (optional) specify migration bandwidth limit in Mbps
+ *
+ * Migrate the domain object from its current host to the destination
+ * host given by dconn (a connection to the destination host).
+ *
+ * Flags may be one of more of the following:
+ *   VIR_MIGRATE_LIVE   Attempt a live migration.
+ *
+ * If a hypervisor supports renaming domains during migration,
+ * then you may set the dname parameter to the new name (otherwise
+ * it keeps the same name).  If this is not supported by the
+ * hypervisor, dname must be NULL or else you will get an error.
+ *
+ * Since typically the two hypervisors connect directly to each
+ * other in order to perform the migration, you may need to specify
+ * a path from the source to the destination.  This is the purpose
+ * of the uri parameter.  If uri is NULL, then libvirt will try to
+ * find the best method.  Uri may specify the hostname or IP address
+ * of the destination host as seen from the source.  Or uri may be
+ * a URI giving transport, hostname, user, port, etc. in the usual
+ * form.  Refer to driver documentation for the particular URIs
+ * supported.
+ *
+ * The maximum bandwidth (in Mbps) that will be used to do migration
+ * can be specified with the bandwidth parameter.  If set to 0,
+ * libvirt will choose a suitable default.  Some hypervisors do
+ * not support this feature and will return an error if bandwidth
+ * is not 0.
+ *
+ * To see which features are supported by the current hypervisor,
+ * see virConnectGetCapabilities, /capabilities/host/migration_features.
+ *
+ * There are many limitations on migration imposed by the underlying
+ * technology - for example it may not be possible to migrate between
+ * different processors even with the same architecture, or between
+ * different types of hypervisor.
+ *
+ * Returns the new domain object if the migration was successful,
+ *   or NULL in case of error.  Note that the new domain object
+ *   exists in the scope of the destination connection (dconn).
+ */
+virDomainPtr
+virDomainMigrate (virDomainPtr domain,
+                  virConnectPtr dconn,
+                  unsigned long flags,
+                  const char *dname,
+                  const char *uri,
+                  unsigned long bandwidth)
+{
+    virConnectPtr conn;
+    virDomainPtr ddomain = NULL;
+    char *uri_out = NULL;
+    char *cookie = NULL;
+    int cookielen = 0, ret;
+    DEBUG("domain=%p, dconn=%p, flags=%lu, dname=%s, uri=%s, bandwidth=%lu",
+          domain, dconn, flags, dname, uri, bandwidth);
+
+    if (!VIR_IS_DOMAIN (domain)) {
+        virLibDomainError(domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return NULL;
+    }
+    conn = domain->conn;        /* Source connection. */
+    if (!VIR_IS_CONNECT (dconn)) {
+        virLibConnError (conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return NULL;
+    }
+
+    /* Check that migration is supported by both drivers. */
+    if (!VIR_DRV_SUPPORTS_FEATURE (conn->driver, conn,
+                                   VIR_DRV_FEATURE_MIGRATION_V1) ||
+        !VIR_DRV_SUPPORTS_FEATURE (dconn->driver, dconn,
+                                   VIR_DRV_FEATURE_MIGRATION_V1)) {
+        virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+        return NULL;
+    }
+
+    /* Prepare the migration.
+     *
+     * The destination host may return a cookie, or leave cookie as
+     * NULL.
+     *
+     * The destination host MUST set uri_out if uri_in is NULL.
+     *
+     * If uri_in is non-NULL, then the destination host may modify
+     * the URI by setting uri_out.  If it does not wish to modify
+     * the URI, it should leave uri_out as NULL.
+     */
+    ret = dconn->driver->domainMigratePrepare
+        (dconn, &cookie, &cookielen, uri, &uri_out, flags, dname, bandwidth);
+    if (ret == -1) goto done;
+    if (uri == NULL && uri_out == NULL) {
+        virLibConnError (conn, VIR_ERR_INTERNAL_ERROR,
+                         "domainMigratePrepare did not set uri");
+        goto done;
+    }
+    if (uri_out) uri = uri_out; /* Did domainMigratePrepare change URI? */
+
+    assert (uri != NULL);
+
+    /* Perform the migration.  The driver isn't supposed to return
+     * until the migration is complete.
+     */
+    ret = conn->driver->domainMigratePerform
+        (domain, cookie, cookielen, uri, flags, dname, bandwidth);
+
+    if (ret == -1) goto done;
+
+    /* Get the destination domain and return it or error.
+     * 'domain' no longer actually exists at this point (or so we hope), but
+     * we still use the object in memory in order to get the name.
+     */
+    dname = dname ? dname : domain->name;
+    if (dconn->driver->domainMigrateFinish)
+        ddomain = dconn->driver->domainMigrateFinish
+            (dconn, dname, cookie, cookielen, uri, flags);
+    else
+        ddomain = virDomainLookupByName (dconn, dname);
+
+ done:
+    if (uri_out) free (uri_out);
+    if (cookie) free (cookie);
+    return ddomain;
+}
+
+/* Not for public use.  This function is part of the internal
+ * implementation of migration in the remote case.
+ */
+int
+__virDomainMigratePrepare (virConnectPtr dconn,
+                           char **cookie,
+                           int *cookielen,
+                           const char *uri_in,
+                           char **uri_out,
+                           unsigned long flags,
+                           const char *dname,
+                           unsigned long bandwidth)
+{
+    DEBUG("dconn=%p, cookie=%p, cookielen=%p, uri_in=%s, uri_out=%p, flags=%lu, dname=%s, bandwidth=%lu", dconn, cookie, cookielen, uri_in, uri_out, flags, dname, bandwidth);
+
+    if (!VIR_IS_CONNECT (dconn)) {
+        virLibConnError (dconn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return -1;
+    }
+
+    if (dconn->driver->domainMigratePrepare)
+        return dconn->driver->domainMigratePrepare (dconn, cookie, cookielen,
+                                                    uri_in, uri_out,
+                                                    flags, dname, bandwidth);
+
+    virLibConnError (dconn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
+/* Not for public use.  This function is part of the internal
+ * implementation of migration in the remote case.
+ */
+int
+__virDomainMigratePerform (virDomainPtr domain,
+                           const char *cookie,
+                           int cookielen,
+                           const char *uri,
+                           unsigned long flags,
+                           const char *dname,
+                           unsigned long bandwidth)
+{
+    virConnectPtr conn;
+    DEBUG("domain=%p, cookie=%p, cookielen=%d, uri=%s, flags=%lu, dname=%s, bandwidth=%lu", domain, cookie, cookielen, uri, flags, dname, bandwidth);
+
+    if (!VIR_IS_DOMAIN (domain)) {
+        virLibDomainError (domain, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
+        return -1;
+    }
+    conn = domain->conn;
+
+    if (conn->driver->domainMigratePerform)
+        return conn->driver->domainMigratePerform (domain, cookie, cookielen,
+                                                   uri,
+                                                   flags, dname, bandwidth);
+
+    virLibDomainError (domain, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
+/* Not for public use.  This function is part of the internal
+ * implementation of migration in the remote case.
+ */
+virDomainPtr
+__virDomainMigrateFinish (virConnectPtr dconn,
+                          const char *dname,
+                          const char *cookie,
+                          int cookielen,
+                          const char *uri,
+                          unsigned long flags)
+{
+    DEBUG("dconn=%p, dname=%s, cookie=%p, cookielen=%d, uri=%s, flags=%lu", dconn, dname, cookie, cookielen, uri, flags);
+
+    if (!VIR_IS_CONNECT (dconn)) {
+        virLibConnError (dconn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return NULL;
+    }
+
+    if (dconn->driver->domainMigrateFinish)
+        return dconn->driver->domainMigrateFinish (dconn, dname,
+                                                   cookie, cookielen,
+                                                   uri, flags);
+
+    virLibConnError (dconn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return NULL;
+}
+
 
 /**
  * virNodeGetInfo:

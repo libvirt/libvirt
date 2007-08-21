@@ -1964,6 +1964,9 @@ static virDriver testDriver = {
     testDomainGetSchedulerType, /* domainGetSchedulerType */
     testDomainGetSchedulerParams, /* domainGetSchedulerParameters */
     testDomainSetSchedulerParams, /* domainSetSchedulerParameters */
+    NULL, /* domainMigratePrepare */
+    NULL, /* domainMigratePerform */
+    NULL, /* domainMigrateFinish */
 };
 
 static virNetworkDriver testNetworkDriver = {

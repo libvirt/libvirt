@@ -11,6 +11,8 @@
  */
 
 #ifdef WITH_XEN
+#include "config.h"
+
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -3147,6 +3149,168 @@ xenDaemonDetachDevice(virDomainPtr domain, char *xml)
         "type", class, "dev", ref, NULL));
 }
 
+
+int
+xenDaemonDomainMigratePrepare (virConnectPtr dconn,
+                               char **cookie ATTRIBUTE_UNUSED,
+                               int *cookielen ATTRIBUTE_UNUSED,
+                               const char *uri_in,
+                               char **uri_out,
+                               unsigned long flags ATTRIBUTE_UNUSED,
+                               const char *dname ATTRIBUTE_UNUSED,
+                               unsigned long resource ATTRIBUTE_UNUSED)
+{
+    int r;
+    char hostname [HOST_NAME_MAX+1];
+
+    /* If uri_in is NULL, get the current hostname as a best guess
+     * of how the source host should connect to us.  Note that caller
+     * deallocates this string.
+     */
+    if (uri_in == NULL) {
+        r = gethostname (hostname, HOST_NAME_MAX+1);
+        if (r == -1) {
+            virXendError (dconn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+            return -1;
+        }
+        *uri_out = strdup (hostname);
+        if (*uri_out == NULL) {
+            virXendError (dconn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+int
+xenDaemonDomainMigratePerform (virDomainPtr domain,
+                               const char *cookie ATTRIBUTE_UNUSED,
+                               int cookielen ATTRIBUTE_UNUSED,
+                               const char *uri,
+                               unsigned long flags,
+                               const char *dname,
+                               unsigned long bandwidth)
+{
+    /* Upper layers have already checked domain. */
+    virConnectPtr conn = domain->conn;
+    /* NB: Passing port=0 to xend means it ignores
+     * the port.  However this is somewhat specific to
+     * the internals of the xend Python code. (XXX).
+     */
+    char port[16] = "0";
+    char live[2] = "0";
+    int ret;
+    char *p, *hostname = NULL;
+
+    /* Xen doesn't support renaming domains during migration. */
+    if (dname) {
+        virXendError (conn, VIR_ERR_NO_SUPPORT,
+                      "xenDaemonDomainMigrate: Xen does not support renaming domains during migration");
+        return -1;
+    }
+
+    /* Xen (at least up to 3.1.0) takes a resource parameter but
+     * ignores it.
+     */
+    if (bandwidth) {
+        virXendError (conn, VIR_ERR_NO_SUPPORT,
+                      "xenDaemonDomainMigrate: Xen does not support bandwidth limits during migration");
+        return -1;
+    }
+
+    /* Check the flags. */
+    if ((flags & VIR_MIGRATE_LIVE)) {
+        strcpy (live, "1");
+        flags &= ~VIR_MIGRATE_LIVE;
+    }
+    if (flags != 0) {
+        virXendError (conn, VIR_ERR_NO_SUPPORT,
+                      "xenDaemonDomainMigrate: unsupported flag");
+        return -1;
+    }
+
+    /* Set hostname and port.
+     *
+     * URI is non-NULL (guaranteed by caller).  We expect either
+     * "hostname", "hostname:port" or "xenmigr://hostname[:port]/".
+     */
+    if (strstr (uri, "//")) {   /* Full URI. */
+        xmlURIPtr uriptr = xmlParseURI (uri);
+        if (!uriptr) {
+            virXendError (conn, VIR_ERR_INVALID_ARG,
+                          "xenDaemonDomainMigrate: invalid URI");
+            return -1;
+        }
+        if (uriptr->scheme && STRCASENEQ (uriptr->scheme, "xenmigr")) {
+            virXendError (conn, VIR_ERR_INVALID_ARG,
+                          "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen");
+            xmlFreeURI (uriptr);
+            return -1;
+        }
+        if (!uriptr->server) {
+            virXendError (conn, VIR_ERR_INVALID_ARG,
+                          "xenDaemonDomainMigrate: a hostname must be specified in the URI");
+            xmlFreeURI (uriptr);
+            return -1;
+        }
+        hostname = strdup (uriptr->server);
+        if (!hostname) {
+            virXendError (conn, VIR_ERR_NO_MEMORY, "strdup");
+            xmlFreeURI (uriptr);
+            return -1;
+        }
+        if (uriptr->port)
+            snprintf (port, sizeof port, "%d", uriptr->port);
+        xmlFreeURI (uriptr);
+    }
+    else if ((p = strrchr (uri, ':')) != NULL) { /* "hostname:port" */
+        int port_nr, n;
+
+        if (sscanf (p+1, "%d", &port_nr) != 1) {
+            virXendError (conn, VIR_ERR_INVALID_ARG,
+                          "xenDaemonDomainMigrate: invalid port number");
+            return -1;
+        }
+        snprintf (port, sizeof port, "%d", port_nr);
+
+        /* Get the hostname. */
+        n = p - uri; /* n = Length of hostname in bytes. */
+        hostname = strdup (uri);
+        if (!hostname) {
+            virXendError (conn, VIR_ERR_NO_MEMORY, "strdup");
+            return -1;
+        }
+        hostname[n] = '\0';
+    }
+    else {                      /* "hostname" (or IP address) */
+        hostname = strdup (uri);
+        if (!hostname) {
+            virXendError (conn, VIR_ERR_NO_MEMORY, "strdup");
+            return -1;
+        }
+    }
+
+#ifdef ENABLE_DEBUG
+    fprintf (stderr, "hostname = %s, port = %s\n", hostname, port);
+#endif
+
+    /* Make the call. */
+    ret = xend_op (domain->conn, domain->name,
+                   "op", "migrate",
+                   "destination", hostname,
+                   "live", live,
+                   "port", port,
+                   "resource", "0", /* required, xend ignores it */
+                   NULL);
+    free (hostname);
+
+#ifdef ENABLE_DEBUG
+    fprintf (stderr, "migration done\n");
+#endif
+
+    return ret;
+}
 
 virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
     int ret;

@@ -231,6 +231,10 @@ int __virStateActive(void);
 
 int __virDrvSupportsFeature (virConnectPtr conn, int feature);
 
+int __virDomainMigratePrepare (virConnectPtr dconn, char **cookie, int *cookielen, const char *uri_in, char **uri_out, unsigned long flags, const char *dname, unsigned long bandwidth);
+int __virDomainMigratePerform (virDomainPtr domain, const char *cookie, int cookielen, const char *uri, unsigned long flags, const char *dname, unsigned long bandwidth);
+virDomainPtr __virDomainMigrateFinish (virConnectPtr dconn, const char *dname, const char *cookie, int cookielen, const char *uri, unsigned long flags);
+
 #ifdef __cplusplus
 }
 #endif                          /* __cplusplus */

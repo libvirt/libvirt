@@ -197,6 +197,16 @@ int	virDomainSetSchedulerParameters	(virDomainPtr domain,
 					 virSchedParameterPtr params,
 					 int nparams);
 
+/* Domain migration flags. */
+typedef enum {
+  VIR_MIGRATE_LIVE              = 1, /* live migration */
+} virDomainMigrateFlags;
+
+/* Domain migration. */
+virDomainPtr virDomainMigrate (virDomainPtr domain, virConnectPtr dconn,
+			       unsigned long flags, const char *dname,
+			       const char *uri, unsigned long bandwidth);
+
 /**
  * VIR_NODEINFO_MAXCPUS:
  * @nodeinfo: virNodeInfo instance

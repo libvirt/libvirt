@@ -219,6 +219,8 @@ int xenDaemonInit (void);
 virDomainPtr xenDaemonLookupByID(virConnectPtr conn, int id);
 virDomainPtr xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid);
 virDomainPtr xenDaemonLookupByName(virConnectPtr conn, const char *domname);
+int xenDaemonDomainMigratePrepare (virConnectPtr dconn, char **cookie, int *cookielen, const char *uri_in, char **uri_out, unsigned long flags, const char *dname, unsigned long resource);
+int xenDaemonDomainMigratePerform (virDomainPtr domain, const char *cookie, int cookielen, const char *uri, unsigned long flags, const char *dname, unsigned long resource);
 
 #ifdef __cplusplus
 }

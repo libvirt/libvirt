@@ -2216,6 +2216,12 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn ATTRIBUTE_UNUSED,
                       "\
       </features>\n\
     </cpu>\n\
+    <migration_features>\n\
+      <live/>\n\
+      <uri_transports>\n\
+        <uri_transport>xenmigr</uri_transport>\n\
+      </uri_transports>\n\
+    </migration_features>\n\
   </host>\n", -1);
     if (r == -1) goto vir_buffer_failed;
 

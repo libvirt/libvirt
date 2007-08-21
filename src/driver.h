@@ -211,6 +211,36 @@ typedef int
 					 virSchedParameterPtr params,
 					 int nparams);
 
+typedef int
+    (*virDrvDomainMigratePrepare)
+                    (virConnectPtr dconn,
+                     char **cookie,
+                     int *cookielen,
+                     const char *uri_in,
+                     char **uri_out,
+                     unsigned long flags,
+                     const char *dname,
+                     unsigned long resource);
+
+typedef int
+    (*virDrvDomainMigratePerform)
+                    (virDomainPtr domain,
+                     const char *cookie,
+                     int cookielen,
+                     const char *uri,
+                     unsigned long flags,
+                     const char *dname,
+                     unsigned long resource);
+
+typedef virDomainPtr
+    (*virDrvDomainMigrateFinish)
+                    (virConnectPtr dconn,
+                     const char *dname,
+                     const char *cookie,
+                     int cookielen,
+                     const char *uri,
+                     unsigned long flags);
+
 typedef struct _virDriver virDriver;
 typedef virDriver *virDriverPtr;
 
@@ -276,6 +306,9 @@ struct _virDriver {
 	virDrvDomainGetSchedulerType	domainGetSchedulerType;
 	virDrvDomainGetSchedulerParameters domainGetSchedulerParameters;
 	virDrvDomainSetSchedulerParameters domainSetSchedulerParameters;
+    virDrvDomainMigratePrepare	domainMigratePrepare;
+    virDrvDomainMigratePerform	domainMigratePerform;
+    virDrvDomainMigrateFinish	domainMigrateFinish;
 };
 
 typedef int
