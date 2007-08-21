@@ -1,3 +1,8 @@
+Tue Aug 21 10:36:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* tests/xencapsdata/*.xml: Fixed tests to include new
+	  <migration_features> element in capabilities XML.
+
 Tue Aug 21 10:21:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/libvirt.c (virDomainMigrate): Added virDomainMigrate

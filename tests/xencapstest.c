@@ -40,6 +40,7 @@ static int testCompareFiles(const char *hostmachine,
     goto fail;
 
   if (getenv("DEBUG_TESTS")) {
+    printf("In test file %s:\n", capabilities);
     printf("Expect %d '%s'\n", (int)strlen(expectxml), expectxml);
     printf("Actual %d '%s'\n", (int)strlen(actualxml), actualxml);
   }
