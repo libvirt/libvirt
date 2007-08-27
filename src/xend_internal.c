@@ -1346,7 +1346,6 @@ xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf
 static char *
 xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersion)
 {
-    char *ret;
     struct sexpr *cur, *node;
     const char *tmp;
     char *tty;
@@ -1362,10 +1361,9 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
         /* ERROR */
         return (NULL);
     }
-    ret = malloc(4000);
-    if (ret == NULL)
+    buf.content = malloc(4000);
+    if (buf.content == NULL)
         return (NULL);
-    buf.content = ret;
     buf.size = 4000;
     buf.use = 0;
 
@@ -1762,11 +1760,11 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
     virBufferAdd(&buf, "</domain>\n", 10);
 
     buf.content[buf.use] = 0;
-    return (ret);
+    return (buf.content);
 
   error:
-    if (ret != NULL)
-        free(ret);
+    if (buf.content != NULL)
+        free(buf.content);
     return (NULL);
 }
 

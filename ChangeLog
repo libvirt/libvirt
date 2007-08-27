@@ -1,3 +1,8 @@
+Mon Aug 27 11:16:48 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: applied patch from Masayuki Sunou to avoid
+	  memory corruption on very large XML dumps.
+
 Tue Aug 21 16:48:41 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in libvirt.spec.in include/libvirt/libvirt.h docs/*:
