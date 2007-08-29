@@ -2919,6 +2919,7 @@ cmdVNCDisplay(vshControl * ctl, vshCmd * cmd)
     }
     xmlXPathFreeObject(obj);
     obj = NULL;
+    ret = TRUE;
 
  cleanup:
     if (obj)

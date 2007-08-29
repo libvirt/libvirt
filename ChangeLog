@@ -1,3 +1,8 @@
+Wed Aug 29 09:46:17 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: apply patch from Masayuki Sunou to fix the exit value
+	  of vncdisplay command.
+
 Mon Aug 27 11:16:48 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: applied patch from Masayuki Sunou to avoid
