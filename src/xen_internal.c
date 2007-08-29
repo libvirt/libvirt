@@ -1424,11 +1424,17 @@ xenHypervisorDomainInterfaceStats (virDomainPtr dom,
         long long tx_errs;
         long long tx_drop;
 
+        /* IMPORTANT NOTE!
+         * /proc/net/dev vif<domid>.nn sees the network from the point
+         * of view of dom0 / hypervisor.  So bytes TRANSMITTED by dom0
+         * are bytes RECEIVED by the domain.  That's why the TX/RX fields
+         * appear to be swapped here.
+         */
         if (sscanf (line, "vif%d.%d: %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld",
                     &domid, &port,
-                    &rx_bytes, &rx_packets, &rx_errs, &rx_drop,
-                    &dummy, &dummy, &dummy, &dummy,
                     &tx_bytes, &tx_packets, &tx_errs, &tx_drop,
+                    &dummy, &dummy, &dummy, &dummy,
+                    &rx_bytes, &rx_packets, &rx_errs, &rx_drop,
                     &dummy, &dummy, &dummy, &dummy) != 18)
             continue;
 
