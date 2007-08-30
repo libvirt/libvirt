@@ -159,7 +159,7 @@ virBufferContentAndFree (virBufferPtr buf)
 int
 virBufferVSprintf(virBufferPtr buf, const char *format, ...)
 {
-    int size, count;
+    int size, count, grow_size;
     va_list locarg, argptr;
 
     if ((format == NULL) || (buf == NULL)) {
@@ -172,7 +172,8 @@ virBufferVSprintf(virBufferPtr buf, const char *format, ...)
                                locarg)) < 0) || (count >= size - 1)) {
         buf->content[buf->use] = 0;
         va_end(locarg);
-        if (virBufferGrow(buf, 1000) < 0) {
+        grow_size = (count > 1000) ? count : 1000;
+        if (virBufferGrow(buf, grow_size) < 0) {
             return (-1);
         }
         size = buf->size - buf->use - 1;
@@ -198,7 +199,7 @@ virBufferVSprintf(virBufferPtr buf, const char *format, ...)
 int
 virBufferEscapeString(virBufferPtr buf, const char *format, const char *str)
 {
-    int size, count, len;
+    int size, count, len, grow_size;
     char *escaped, *out;
     const char *cur;
 
@@ -248,7 +249,8 @@ virBufferEscapeString(virBufferPtr buf, const char *format, const char *str)
     while (((count = snprintf(&buf->content[buf->use], size, format,
                               (char *)escaped)) < 0) || (count >= size - 1)) {
         buf->content[buf->use] = 0;
-        if (virBufferGrow(buf, 1000) < 0) {
+        grow_size = (count > 1000) ? count : 1000;
+        if (virBufferGrow(buf, grow_size) < 0) {
 	    free(escaped);
             return (-1);
         }
