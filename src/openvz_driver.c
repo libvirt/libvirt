@@ -164,7 +164,7 @@ static virDomainPtr openvzDomainLookupByID(virConnectPtr conn,
     return dom;
 }
 
-static char *openvzGetOSType(virDomainPtr dom)
+static char *openvzGetOSType(virDomainPtr dom ATTRIBUTE_UNUSED)
 {
     /* OpenVZ runs on Linux and runs only Linux */
     return strdup("linux");
@@ -275,7 +275,8 @@ bail_out:
     return ret;
 }
 
-static int openvzDomainReboot(virDomainPtr dom, unsigned int flags) {
+static int openvzDomainReboot(virDomainPtr dom,
+                              unsigned int flags ATTRIBUTE_UNUSED) {
     char cmdbuf[CMDBUF_LEN];
     int ret;
     char *cmdExec[OPENVZ_MAX_ARG];
@@ -631,7 +632,7 @@ static int openvzListDomains(virConnectPtr conn, int *ids, int nids) {
     return got;
 }
 
-static int openvzNumDomains(virConnectPtr conn) {
+static int openvzNumDomains(virConnectPtr conn ATTRIBUTE_UNUSED) {
     return ovz_driver.num_active;
 }
 
@@ -662,7 +663,7 @@ static int openvzListDefinedDomains(virConnectPtr conn,
     return got;
 }
 
-static int openvzNumDefinedDomains(virConnectPtr conn) {
+static int openvzNumDefinedDomains(virConnectPtr conn ATTRIBUTE_UNUSED) {
     return ovz_driver.num_inactive; 
 }
 
@@ -687,11 +688,11 @@ static int openvzActive(void) {
     return 1;
 }
 
-static int openvzCloseNetwork(virConnectPtr conn) {
+static int openvzCloseNetwork(virConnectPtr conn ATTRIBUTE_UNUSED) {
     return 0;
 }
 
-static virDrvOpenStatus openvzOpenNetwork(virConnectPtr conn,
+static virDrvOpenStatus openvzOpenNetwork(virConnectPtr conn ATTRIBUTE_UNUSED,
                                          const char *name ATTRIBUTE_UNUSED,
                                          int flags ATTRIBUTE_UNUSED) {
     return VIR_DRV_OPEN_SUCCESS;
@@ -747,6 +748,11 @@ static virDriver openvzDriver = {
     NULL, /* domainGetSchedulerType */
     NULL, /* domainGetSchedulerParameters */
     NULL, /* domainSetSchedulerParameters */
+    NULL, /* domainMigratePrepare */
+    NULL, /* domainMigratePerform */
+    NULL, /* domainMigrateFinish */
+    NULL, /* domainBlockStats */
+    NULL, /* domainInterfaceStats */
 };
 
 static virNetworkDriver openvzNetworkDriver = {

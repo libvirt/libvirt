@@ -59,9 +59,6 @@ static void error (virConnectPtr conn, virErrorNumber code, const char *info);
 static struct openvz_vm_def *openvzParseXML(virConnectPtr conn, xmlDocPtr xml);
 static int openvzGetVPSUUID(int vpsid, char *uuidstr);
 static int openvzSetUUID(int vpsid);
-static struct openvz_vm *openvzLoadConfig(struct openvz_driver *driver,
-                                          const char *path,
-                                          const char *xmlStr);
 
 /* For errors internal to this library. */
 static void
@@ -117,7 +114,7 @@ struct openvz_vm
 }
 
 int
-strtoI(char *str)
+strtoI(const char *str)
 {
     int base = 10;
     char *endptr;
@@ -340,7 +337,7 @@ static struct openvz_vm_def
     }
     
     /* rejecting VPS ID <= OPENVZ_RSRV_VM_LIMIT for they are reserved */
-    if (strtoI(BAD_CAST obj->stringval) <= OPENVZ_RSRV_VM_LIMIT) {
+    if (strtoI((const char *) obj->stringval) <= OPENVZ_RSRV_VM_LIMIT) {
         error(conn, VIR_ERR_INTERNAL_ERROR, 
                 "VPS ID Error (must be an integer greater than 100");
         goto bail_out;
@@ -531,13 +528,18 @@ openvzGetVPSInfo(virConnectPtr conn) {
         *pnext = calloc(1, sizeof(struct openvz_vm));
         if(!*pnext) {
             error(conn, VIR_ERR_INTERNAL_ERROR, "calloc failed");
-            return NULL;
+            goto error;
         }
         
         if(!vm)
             vm = *pnext;
 
-        fscanf(fp, "%d %s\n", &veid, status);
+        if (fscanf(fp, "%d %s\n", &veid, status) != 2) {
+	    error(conn, VIR_ERR_INTERNAL_ERROR,
+	          "Failed to parse vzlist output");
+            free(*pnext);
+	    goto error;
+	}
         if(strcmp(status, "stopped")) { 
             (*pnext)->status = VIR_DOMAIN_RUNNING;
             driver->num_active ++;
@@ -546,14 +548,18 @@ openvzGetVPSInfo(virConnectPtr conn) {
         else {
             (*pnext)->status = VIR_DOMAIN_SHUTOFF;
             driver->num_inactive ++;
-            (*pnext)->vpsid = -1;    /* inactive domains don't have their ID set in libvirt,
-                                        thought this doesn't make sense for OpenVZ */
+	    /*
+	     * inactive domains don't have their ID set in libvirt,
+	     * thought this doesn't make sense for OpenVZ
+	     */
+            (*pnext)->vpsid = -1; 
         }
 
         vmdef = calloc(1, sizeof(struct openvz_vm_def));
         if(!vmdef) {
             error(conn, VIR_ERR_INTERNAL_ERROR, "calloc failed");
-            return NULL;
+            free(*pnext);
+	    goto error;
         }
         
         snprintf(vmdef->name, OPENVZ_NAME_MAX,  "%i", veid);
@@ -561,14 +567,27 @@ openvzGetVPSInfo(virConnectPtr conn) {
         ret = virUUIDParse(uuidstr, vmdef->uuid);
 
         if(ret == -1) {
-            error(conn, VIR_ERR_INTERNAL_ERROR, "UUID in config file malformed");
-            return NULL;
+            error(conn, VIR_ERR_INTERNAL_ERROR,
+	          "UUID in config file malformed");
+            free(*pnext);
+	    free(vmdef);
+            goto error;
         }
 
         (*pnext)->vmdef = vmdef;
         pnext = &(*pnext)->next;
     }
     return vm;
+error:
+    while (vm != NULL) {
+        struct openvz_vm *next;
+
+	next = vm->next;
+	free(vm->vmdef);
+	free(vm);
+	vm = next;
+    }
+    return NULL;
 }
 
 static char 
@@ -579,7 +598,7 @@ static char
 
     while(conf_dir_list[i]) {
         if(!access(conf_dir_list[i], F_OK))
-                return strdup(conf_dir_list[i]);
+	    return strdup(conf_dir_list[i]);
         i ++;
     }
 
@@ -660,7 +679,7 @@ openvzSetUUID(int vpsid)
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     unsigned char uuid[VIR_UUID_BUFLEN];
     char *conf_dir;
-    int fd, ret, i;
+    int fd, ret;
 
     conf_dir = openvzLocateConfDir();
     sprintf(conf_file, "%s/%d.conf", conf_dir, vpsid);

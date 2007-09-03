@@ -129,5 +129,5 @@ void openvzRemoveInactiveVM(struct openvz_driver *driver, struct openvz_vm *vm);
 void openvzFreeDriver(struct openvz_driver *driver);
 void openvzFreeVM(struct openvz_driver *driver, struct openvz_vm *vm, int checkCallee);
 void openvzFreeVMDef(struct openvz_vm_def *def);
-int strtoI(char *str);
+int strtoI(const char *str);
 #endif /* OPENVZ_CONF_H */

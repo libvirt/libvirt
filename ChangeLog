@@ -1,3 +1,8 @@
+Mon Sep  3 18:29:05 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/openvz_conf.c src/openvz_conf.h src/openvz_driver.c: a bit
+	  of cleanup on top of previous patches.
+
 Mon Sep  3 17:35:15 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/openvz_conf.c src/openvz_conf.h src/openvz_driver.c
