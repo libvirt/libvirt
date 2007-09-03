@@ -1,3 +1,9 @@
+Mon Sep  3 17:35:15 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/openvz_conf.c src/openvz_conf.h src/openvz_driver.c
+	  src/openvz_driver.h: Applied patch from Shuveb Hussain and Anoop
+	  Cyriac to extent OpenVZ driver capabilities, especially Create().
+
 Thu Aug 30 15:11:44 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/buf.c: applied patch from Masayuki Sunou fixing a loop

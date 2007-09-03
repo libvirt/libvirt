@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2006, 2007 Binary Karma.
  * Copyright (C) 2006 Shuveb Hussain
+ * Copyright (C) 2007 Anoop Joe Cyriac
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,7 +19,10 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * Author: Shuveb Hussain <shuveb@binarykarma.com>
+ * Authors: 
+ * Shuveb Hussain <shuveb@binarykarma.com>
+ * Anoop Joe Cyriac <anoop@binarykarma.com>
+ *
  */
 
 #ifndef OPENVZ_CONF_H
@@ -26,12 +30,19 @@
 
 #include "openvz_driver.h"
 
+enum { OPENVZ_WARN, OPENVZ_ERR };
+
 #define OPENVZ_NAME_MAX 8
 #define OPENVZ_TMPL_MAX 256
 #define OPENVZ_UNAME_MAX    32
 #define OPENVZ_IP_MAX   16
 #define OPENVZ_HOSTNAME_MAX 256
 #define OPENVZ_PROFILE_MAX  256
+#define OPENVZ_MAX_ERROR_LEN	 1024
+#define OPENVZ_MAX_XML_LEN	 4096
+#define OPENVZ_MAX_QUOTA	 8
+#define OPENVZ_MAX_XPathEval_LEN 256
+#define OPENVZ_RSRV_VM_LIMIT 100
 
 enum openvz_quota{
     VM_LEVEL = 0,
@@ -93,21 +104,30 @@ struct openvz_vm {
     struct openvz_vm *next;
 };
 
-static char *openvzLocateConfDir(void);
+static inline int
+openvzIsActiveVM(struct openvz_vm *vm)
+{
+    return vm->vpsid != -1;
+}
+
 int openvz_readline(int fd, char *ptr, int maxlen);
-static void error (virConnectPtr conn, virErrorNumber code, const char *info);
 struct openvz_vm *openvzFindVMByID(const struct openvz_driver *driver, int id); 
 struct openvz_vm *openvzFindVMByUUID(const struct openvz_driver *driver, 
                                             const unsigned char *uuid);
-struct openvz_vm *openvzFindVMByName(const struct openvz_driver *driver,
-                                   const char *name);
-void openvzFreeVMDef(struct openvz_vm_def *def);
-static struct openvz_vm_def *openvzParseXML(virConnectPtr conn, xmlDocPtr xml);
+
+struct openvz_vm *openvzFindVMByName(const struct openvz_driver *driver, const char *name);
 struct openvz_vm_def *openvzParseVMDef(virConnectPtr conn, const char *xmlStr,
                                             const char *displayName);
+
+struct openvz_vm *openvzAssignVMDef(virConnectPtr conn, struct openvz_driver *driver,
+                                    struct openvz_vm_def *def);
+
 struct openvz_vm *openvzGetVPSInfo(virConnectPtr conn);
 void openvzGenerateUUID(unsigned char *uuid);
-static int openvzGetVPSUUID(int vpsid, char *uuidbuf);
-static int openvzSetUUID(int vpsid);
 int openvzAssignUUIDs(void);
+void openvzRemoveInactiveVM(struct openvz_driver *driver, struct openvz_vm *vm);
+void openvzFreeDriver(struct openvz_driver *driver);
+void openvzFreeVM(struct openvz_driver *driver, struct openvz_vm *vm, int checkCallee);
+void openvzFreeVMDef(struct openvz_vm_def *def);
+int strtoI(char *str);
 #endif /* OPENVZ_CONF_H */

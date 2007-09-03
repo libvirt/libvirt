@@ -1,8 +1,9 @@
 /*
  * openvz_driver.h: core driver methods for managing OpenVZ VPSs
  *
- * Copyright (C) 2006, 2007 Binary Karma.
+ * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
+ * Copyright (C) 2007 Anoop Joe Cyriac
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,7 +19,10 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * Author: Shuveb Hussain <shuveb@binarykarma.com>
+ * Authors: 
+ * Shuveb Hussain <shuveb@binarykarma.com>
+ * Anoop Joe Cyriac <anoop@binarykarma.com>
+ *
  */
 
 
@@ -38,6 +42,14 @@ struct openvz_driver {
 };
 
 int openvzRegister(void);
+
+#define openvzLog(level, msg...) { if(level == OPENVZ_WARN) \
+					fprintf(stderr, "\nWARNING: ");\
+				else \
+					fprintf(stderr, "\nERROR: ");\
+				fprintf(stderr, "\n\t");\
+				fprintf(stderr, msg);\
+				fprintf(stderr, "\n"); }
 
 #endif
 
