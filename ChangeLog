@@ -1,3 +1,8 @@
+Wed Sep  5 16:31:00 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* docs/libvir.html docs/uri.html: remove references to libvirt_qemud
+	  and replace them with libvirtd
+
 Mon Sep  3 18:29:05 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/openvz_conf.c src/openvz_conf.h src/openvz_driver.c: a bit

@@ -2478,18 +2478,19 @@ use the URI <code>xen:///</code>.
 
 <p>
 To use QEMU support in libvirt you must be running the
-<code>libvirt_qemud</code> daemon.  The purpose of this
+<code>libvirtd</code> daemon (named <code>libvirt_qemud</code>
+in releases prior to 0.3.0).  The purpose of this
 daemon is to manage qemu instances.
 </p>
 
 <p>
-The <code>libvirt_qemud</code> daemon can be run in two ways.  It may
+The <code>libvirtd</code> daemon can be run in two ways.  It may
 be started by init scripts when the machine boots and run in "system
-mode" (<code>libvirt_qemud --system</code>), in which case it manages
+mode" (<code>libvirtd --system</code>), in which case it manages
 qemu instances on behalf of all users of the machine.  It may be also
 be started by the local user in what is known as "session mode"
-(<code>libvirt_qemud --session</code>), to manage qemu instances for
-just the current user.  If no <code>libvirt_qemud</code> is running at
+(<code>libvirtd --session</code>), to manage qemu instances for
+just the current user.  If no <code>libvirtd</code> is running at
 all, then the qemu driver starts one running in session mode.
 </p>
 
@@ -2503,7 +2504,7 @@ So to connect to the daemon, one of two different URIs is used:
 </ul>
 
 <p>
-(If you do <code>libvirt_qemud --help</code>, the daemon will print
+(If you do <code>libvirtd --help</code>, the daemon will print
 out the paths of the Unix domain socket(s) that it listens on in
 the various different modes).
 </p>
