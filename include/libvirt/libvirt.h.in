@@ -199,29 +199,45 @@ int	virDomainSetSchedulerParameters	(virDomainPtr domain,
 					 virSchedParameterPtr params,
 					 int nparams);
 
-/* Block device stats for virDomainBlockStats.
+/**
+ * virDomainBlockStats:
+ *
+ * Block device stats for virDomainBlockStats.
  *
  * Hypervisors may return a field set to ((long long)-1) which indicates
  * that the hypervisor does not support that statistic.
  *
  * NB. Here 'long long' means 64 bit integer.
  */
+typedef struct _virDomainBlockStats virDomainBlockStatsStruct;
+
 struct _virDomainBlockStats {
   long long rd_req;
   long long rd_bytes;
   long long wr_req;
   long long wr_bytes;
-  long long errs;   // In Xen this returns the mysterious 'oo_req'.
+  long long errs;   /* In Xen this returns the mysterious 'oo_req'. */
 };
-typedef struct _virDomainBlockStats *virDomainBlockStatsPtr;
 
-/* Network interface stats for virDomainInterfaceStats.
+/**
+ * virDomainBlockStatsPtr:
+ *
+ * A pointer to a virDomainBlockStats structure
+ */
+typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
+
+/**
+ * virDomainInterfaceStats:
+ *
+ * Network interface stats for virDomainInterfaceStats.
  *
  * Hypervisors may return a field set to ((long long)-1) which indicates
  * that the hypervisor does not support that statistic.
  *
  * NB. Here 'long long' means 64 bit integer.
  */
+typedef struct _virDomainInterfaceStats virDomainInterfaceStatsStruct;
+
 struct _virDomainInterfaceStats {
   long long rx_bytes;
   long long rx_packets;
@@ -232,7 +248,14 @@ struct _virDomainInterfaceStats {
   long long tx_errs;
   long long tx_drop;
 };
-typedef struct _virDomainInterfaceStats *virDomainInterfaceStatsPtr;
+
+/**
+ * virDomainInterfaceStatsPtr:
+ *
+ * A pointe to a virDomainInterfaceStats structure
+ */
+typedef virDomainInterfaceStatsStruct *virDomainInterfaceStatsPtr;
+
 
 /* Domain migration flags. */
 typedef enum {

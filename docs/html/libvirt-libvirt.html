@@ -5,13 +5,13 @@ The content of this structure is not made public by the API.
 </pre><pre class="programlisting">Typedef <a href="libvirt-libvirt.html#virConnect">virConnect</a> * <a name="virConnectPtr" id="virConnectPtr">virConnectPtr</a>
 </pre><pre class="programlisting">Structure <a href="#virDomain">virDomain</a><br />struct _virDomain
 The content of this structure is not made public by the API.
-</pre><pre class="programlisting">Structure <a href="#virDomainBlockStatsPtr">virDomainBlockStatsPtr</a><br />struct _virDomainBlockStats *
-The content of this structure is not made public by the API.
+</pre><pre class="programlisting">Typedef <a href="libvirt-libvirt.html#virDomainBlockStatsStruct">virDomainBlockStatsStruct</a> * <a name="virDomainBlockStatsPtr" id="virDomainBlockStatsPtr">virDomainBlockStatsPtr</a>
+</pre><pre class="programlisting">Structure <a href="#virDomainBlockStatsStruct">virDomainBlockStatsStruct</a><br />struct _virDomainBlockStats
 </pre><pre class="programlisting">Enum <a href="#virDomainCreateFlags">virDomainCreateFlags</a>
 </pre><pre class="programlisting">Structure <a href="#virDomainInfo">virDomainInfo</a><br />struct _virDomainInfo
 </pre><pre class="programlisting">Typedef <a href="libvirt-libvirt.html#virDomainInfo">virDomainInfo</a> * <a name="virDomainInfoPtr" id="virDomainInfoPtr">virDomainInfoPtr</a>
-</pre><pre class="programlisting">Structure <a href="#virDomainInterfaceStatsPtr">virDomainInterfaceStatsPtr</a><br />struct _virDomainInterfaceStats *
-The content of this structure is not made public by the API.
+</pre><pre class="programlisting">Typedef <a href="libvirt-libvirt.html#virDomainInterfaceStatsStruct">virDomainInterfaceStatsStruct</a> * <a name="virDomainInterfaceStatsPtr" id="virDomainInterfaceStatsPtr">virDomainInterfaceStatsPtr</a>
+</pre><pre class="programlisting">Structure <a href="#virDomainInterfaceStatsStruct">virDomainInterfaceStatsStruct</a><br />struct _virDomainInterfaceStats
 </pre><pre class="programlisting">Enum <a href="#virDomainMigrateFlags">virDomainMigrateFlags</a>
 </pre><pre class="programlisting">Typedef <a href="libvirt-libvirt.html#virDomain">virDomain</a> * <a name="virDomainPtr" id="virDomainPtr">virDomainPtr</a>
 </pre><pre class="programlisting">Enum <a href="#virDomainRestart">virDomainRestart</a>
@@ -124,8 +124,14 @@ The content of this structure is not made public by the API.
       a virConnectPtr is pointer to a virConnect private structure, this is the type used to reference a connection to the Xen Hypervisor in the API.
     <h3><a name="virDomain" id="virDomain">Structure virDomain</a></h3><pre class="programlisting">Structure virDomain<br />struct _virDomain {
 The content of this structure is not made public by the API.
-}</pre><h3><a name="virDomainBlockStatsPtr" id="virDomainBlockStatsPtr">Structure virDomainBlockStatsPtr</a></h3><pre class="programlisting">Structure virDomainBlockStatsPtr<br />struct _virDomainBlockStats * {
-The content of this structure is not made public by the API.
+}</pre>
+      A pointer to a virDomainBlockStats structure
+    <h3><a name="virDomainBlockStatsStruct" id="virDomainBlockStatsStruct">Structure virDomainBlockStatsStruct</a></h3><pre class="programlisting">Structure virDomainBlockStatsStruct<br />struct _virDomainBlockStats {
+    long long	rd_req
+    long long	rd_bytes
+    long long	wr_req
+    long long	wr_bytes
+    long long	errs	: In Xen this returns the mysterious 'oo_
 }</pre><h3>Enum <a name="virDomainCreateFlags" id="virDomainCreateFlags">virDomainCreateFlags</a></h3><pre class="programlisting">Enum virDomainCreateFlags {
     <a name="VIR_DOMAIN_NONE" id="VIR_DOMAIN_NONE">VIR_DOMAIN_NONE</a> = 0
 }
@@ -137,8 +143,17 @@ The content of this structure is not made public by the API.
     unsigned long long	cpuTime	: the CPU time used in nanoseconds
 }</pre>
       a virDomainInfoPtr is a pointer to a virDomainInfo structure.
-    <h3><a name="virDomainInterfaceStatsPtr" id="virDomainInterfaceStatsPtr">Structure virDomainInterfaceStatsPtr</a></h3><pre class="programlisting">Structure virDomainInterfaceStatsPtr<br />struct _virDomainInterfaceStats * {
-The content of this structure is not made public by the API.
+    
+      A pointe to a virDomainInterfaceStats structure
+    <h3><a name="virDomainInterfaceStatsStruct" id="virDomainInterfaceStatsStruct">Structure virDomainInterfaceStatsStruct</a></h3><pre class="programlisting">Structure virDomainInterfaceStatsStruct<br />struct _virDomainInterfaceStats {
+    long long	rx_bytes
+    long long	rx_packets
+    long long	rx_errs
+    long long	rx_drop
+    long long	tx_bytes
+    long long	tx_packets
+    long long	tx_errs
+    long long	tx_drop
 }</pre><h3>Enum <a name="virDomainMigrateFlags" id="virDomainMigrateFlags">virDomainMigrateFlags</a></h3><pre class="programlisting">Enum virDomainMigrateFlags {
     <a name="VIR_MIGRATE_LIVE" id="VIR_MIGRATE_LIVE">VIR_MIGRATE_LIVE</a> = 1 : live migration
 }
@@ -201,7 +216,7 @@ The content of this structure is not made public by the API.
 </pre><p>This function closes the connection to the Hypervisor. This should not be called if further interaction with the Hypervisor are needed especially if there is running domain which need further monitoring by the application.</p>
 <div class="variablelist"><table border="0"><col align="left" /><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 in case of success or -1 in case of error.</td></tr></tbody></table></div><h3><a name="virConnectGetCapabilities" id="virConnectGetCapabilities"></a>Function: virConnectGetCapabilities</h3><pre class="programlisting">char *	virConnectGetCapabilities	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br />
 </pre><p>Provides capabilities of the hypervisor / driver.</p>
-<div class="variablelist"><table border="0"><col align="left" /><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>NULL in case of error, or a pointer to an opaque virCapabilities structure (virCapabilitiesPtr). The client must free the returned string after use.</td></tr></tbody></table></div><h3><a name="virConnectGetHostname" id="virConnectGetHostname"></a>Function: virConnectGetHostname</h3><pre class="programlisting">char *	virConnectGetHostname		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br />
+<div class="variablelist"><table border="0"><col align="left" /><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>NULL in case of error, or an XML string defining the capabilities. The client must free the returned string after use.</td></tr></tbody></table></div><h3><a name="virConnectGetHostname" id="virConnectGetHostname"></a>Function: virConnectGetHostname</h3><pre class="programlisting">char *	virConnectGetHostname		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br />
 </pre><p>This returns the system hostname on which the hypervisor is running (the result of the gethostname(2) system call). If we are connected to a remote system, then this returns the hostname of the remote system.</p>
 <div class="variablelist"><table border="0"><col align="left" /><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to a hypervisor connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the hostname which must be freed by the caller, or NULL if there was an error.</td></tr></tbody></table></div><h3><a name="virConnectGetMaxVcpus" id="virConnectGetMaxVcpus"></a>Function: virConnectGetMaxVcpus</h3><pre class="programlisting">int	virConnectGetMaxVcpus		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br />					 const char * type)<br />
 </pre><p>Provides the maximum number of virtual CPUs supported for a guest VM of a specific type. The 'type' parameter here corresponds to the 'type' attribute in the &lt;domain&gt; element of the XML.</p>

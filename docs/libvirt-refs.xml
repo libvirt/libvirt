@@ -133,6 +133,7 @@
     <reference name='virDomainAttachDevice' href='html/libvirt-libvirt.html#virDomainAttachDevice'/>
     <reference name='virDomainBlockStats' href='html/libvirt-libvirt.html#virDomainBlockStats'/>
     <reference name='virDomainBlockStatsPtr' href='html/libvirt-libvirt.html#virDomainBlockStatsPtr'/>
+    <reference name='virDomainBlockStatsStruct' href='html/libvirt-libvirt.html#virDomainBlockStatsStruct'/>
     <reference name='virDomainCoreDump' href='html/libvirt-libvirt.html#virDomainCoreDump'/>
     <reference name='virDomainCreate' href='html/libvirt-libvirt.html#virDomainCreate'/>
     <reference name='virDomainCreateFlags' href='html/libvirt-libvirt.html#virDomainCreateFlags'/>
@@ -159,6 +160,7 @@
     <reference name='virDomainInfoPtr' href='html/libvirt-libvirt.html#virDomainInfoPtr'/>
     <reference name='virDomainInterfaceStats' href='html/libvirt-libvirt.html#virDomainInterfaceStats'/>
     <reference name='virDomainInterfaceStatsPtr' href='html/libvirt-libvirt.html#virDomainInterfaceStatsPtr'/>
+    <reference name='virDomainInterfaceStatsStruct' href='html/libvirt-libvirt.html#virDomainInterfaceStatsStruct'/>
     <reference name='virDomainLookupByID' href='html/libvirt-libvirt.html#virDomainLookupByID'/>
     <reference name='virDomainLookupByName' href='html/libvirt-libvirt.html#virDomainLookupByName'/>
     <reference name='virDomainLookupByUUID' href='html/libvirt-libvirt.html#virDomainLookupByUUID'/>
@@ -362,6 +364,7 @@
       <ref name='virDomainAttachDevice'/>
       <ref name='virDomainBlockStats'/>
       <ref name='virDomainBlockStatsPtr'/>
+      <ref name='virDomainBlockStatsStruct'/>
       <ref name='virDomainCoreDump'/>
       <ref name='virDomainCreate'/>
       <ref name='virDomainCreateFlags'/>
@@ -388,6 +391,7 @@
       <ref name='virDomainInfoPtr'/>
       <ref name='virDomainInterfaceStats'/>
       <ref name='virDomainInterfaceStatsPtr'/>
+      <ref name='virDomainInterfaceStatsStruct'/>
       <ref name='virDomainLookupByID'/>
       <ref name='virDomainLookupByName'/>
       <ref name='virDomainLookupByUUID'/>
@@ -714,6 +718,7 @@
       <ref name='virDomainAttachDevice'/>
       <ref name='virDomainBlockStats'/>
       <ref name='virDomainBlockStatsPtr'/>
+      <ref name='virDomainBlockStatsStruct'/>
       <ref name='virDomainCoreDump'/>
       <ref name='virDomainCreate'/>
       <ref name='virDomainCreateFlags'/>
@@ -740,6 +745,7 @@
       <ref name='virDomainInfoPtr'/>
       <ref name='virDomainInterfaceStats'/>
       <ref name='virDomainInterfaceStatsPtr'/>
+      <ref name='virDomainInterfaceStatsStruct'/>
       <ref name='virDomainLookupByID'/>
       <ref name='virDomainLookupByName'/>
       <ref name='virDomainLookupByUUID'/>
@@ -1297,6 +1303,7 @@
       </letter>
       <letter name='X'>
         <word name='XML'>
+          <ref name='virConnectGetCapabilities'/>
           <ref name='virConnectGetMaxVcpus'/>
           <ref name='virDomainAttachDevice'/>
           <ref name='virDomainCreateLinux'/>
@@ -1308,6 +1315,7 @@
           <ref name='virNetworkGetXMLDesc'/>
         </word>
         <word name='Xen'>
+          <ref name='_virDomainBlockStats'/>
           <ref name='virDomainCoreDump'/>
           <ref name='virDomainGetVcpus'/>
           <ref name='virDomainPinVcpu'/>
@@ -1845,6 +1853,9 @@
           <ref name='virDomainUndefine'/>
           <ref name='virNetworkCreate'/>
           <ref name='virNetworkUndefine'/>
+        </word>
+        <word name='defining'>
+          <ref name='virConnectGetCapabilities'/>
         </word>
         <word name='described'>
           <ref name='virDomainGetVcpus'/>
@@ -2629,6 +2640,9 @@
           <ref name='virNetworkGetBridgeName'/>
           <ref name='virNetworkGetXMLDesc'/>
         </word>
+        <word name='mysterious'>
+          <ref name='_virDomainBlockStats'/>
+        </word>
       </letter>
     </chunk>
     <chunk name='chunk4'>
@@ -2735,8 +2749,8 @@
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainGetInfo'/>
         </word>
-        <word name='opaque'>
-          <ref name='virConnectGetCapabilities'/>
+        <word name='oo_req'>
+          <ref name='_virDomainBlockStats'/>
         </word>
         <word name='operation'>
           <ref name='virDomainGetOSType'/>
@@ -3067,6 +3081,7 @@
           <ref name='VIR_CPU_MAPLEN'/>
           <ref name='VIR_CPU_USABLE'/>
           <ref name='VIR_GET_CPUMAP'/>
+          <ref name='_virDomainBlockStats'/>
           <ref name='virConnectGetHostname'/>
           <ref name='virConnectGetURI'/>
           <ref name='virConnectGetVersion'/>
@@ -3297,7 +3312,6 @@
           <ref name='virNetworkLookupByUUIDString'/>
         </word>
         <word name='structure'>
-          <ref name='virConnectGetCapabilities'/>
           <ref name='virDomainBlockStats'/>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainFree'/>
@@ -3427,6 +3441,7 @@
           <ref name='virNetworkFree'/>
         </word>
         <word name='this'>
+          <ref name='_virDomainBlockStats'/>
           <ref name='_virError'/>
           <ref name='virConnectGetHostname'/>
           <ref name='virConnectGetURI'/>
@@ -3603,12 +3618,6 @@
           <ref name='LIBVIR_VERSION_NUMBER'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virGetVersion'/>
-        </word>
-        <word name='virCapabilities'>
-          <ref name='virConnectGetCapabilities'/>
-        </word>
-        <word name='virCapabilitiesPtr'>
-          <ref name='virConnectGetCapabilities'/>
         </word>
         <word name='virConnCopyLastError'>
           <ref name='virConnGetLastError'/>

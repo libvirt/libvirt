@@ -38,26 +38,28 @@
      <exports symbol='VIR_DOMAIN_NONE' type='enum'/>
      <exports symbol='VIR_DOMAIN_NOSTATE' type='enum'/>
      <exports symbol='VIR_DOMAIN_RENAME_RESTART' type='enum'/>
+     <exports symbol='virDomainBlockStatsStruct' type='typedef'/>
      <exports symbol='virDomainMigrateFlags' type='typedef'/>
      <exports symbol='virNodeInfo' type='typedef'/>
      <exports symbol='virNetwork' type='typedef'/>
      <exports symbol='virDomainBlockStatsPtr' type='typedef'/>
+     <exports symbol='virSchedParameterType' type='typedef'/>
      <exports symbol='virConnect' type='typedef'/>
      <exports symbol='virVcpuInfo' type='typedef'/>
      <exports symbol='virDomainInfo' type='typedef'/>
-     <exports symbol='virSchedParameter' type='typedef'/>
+     <exports symbol='virDomainInterfaceStatsStruct' type='typedef'/>
      <exports symbol='virDomainState' type='typedef'/>
      <exports symbol='virDomain' type='typedef'/>
      <exports symbol='virDomainInterfaceStatsPtr' type='typedef'/>
-     <exports symbol='virSchedParameterType' type='typedef'/>
      <exports symbol='virDomainRestart' type='typedef'/>
+     <exports symbol='virSchedParameterPtr' type='typedef'/>
      <exports symbol='virNodeInfoPtr' type='typedef'/>
      <exports symbol='virNetworkPtr' type='typedef'/>
      <exports symbol='virDomainInfoPtr' type='typedef'/>
      <exports symbol='virConnectPtr' type='typedef'/>
-     <exports symbol='virVcpuInfoPtr' type='typedef'/>
-     <exports symbol='virSchedParameterPtr' type='typedef'/>
+     <exports symbol='virSchedParameter' type='typedef'/>
      <exports symbol='virVcpuState' type='typedef'/>
+     <exports symbol='virVcpuInfoPtr' type='typedef'/>
      <exports symbol='virDomainPtr' type='typedef'/>
      <exports symbol='virDomainCreateFlags' type='typedef'/>
      <exports symbol='_virDomainInfo' type='struct'/>
@@ -81,7 +83,6 @@
      <exports symbol='virDomainLookupByName' type='function'/>
      <exports symbol='virNetworkLookupByUUID' type='function'/>
      <exports symbol='virNetworkGetBridgeName' type='function'/>
-     <exports symbol='virNetworkGetXMLDesc' type='function'/>
      <exports symbol='virDomainPinVcpu' type='function'/>
      <exports symbol='virDomainRestore' type='function'/>
      <exports symbol='virConnectGetType' type='function'/>
@@ -112,8 +113,9 @@
      <exports symbol='virDomainSetAutostart' type='function'/>
      <exports symbol='virDomainSuspend' type='function'/>
      <exports symbol='virConnectGetMaxVcpus' type='function'/>
-     <exports symbol='virConnectNumOfDefinedDomains' type='function'/>
      <exports symbol='virNetworkGetConnect' type='function'/>
+     <exports symbol='virConnectNumOfDefinedDomains' type='function'/>
+     <exports symbol='virNetworkCreateXML' type='function'/>
      <exports symbol='virNetworkDefineXML' type='function'/>
      <exports symbol='virNetworkCreate' type='function'/>
      <exports symbol='virDomainSetSchedulerParameters' type='function'/>
@@ -124,7 +126,7 @@
      <exports symbol='virDomainLookupByID' type='function'/>
      <exports symbol='virNetworkGetUUIDString' type='function'/>
      <exports symbol='virDomainMigrate' type='function'/>
-     <exports symbol='virNetworkCreateXML' type='function'/>
+     <exports symbol='virNetworkGetXMLDesc' type='function'/>
      <exports symbol='virDomainGetID' type='function'/>
      <exports symbol='virDomainResume' type='function'/>
      <exports symbol='virDomainCreateLinux' type='function'/>
@@ -373,7 +375,16 @@
       <info>a virConnectPtr is pointer to a virConnect private structure, this is the type used to reference a connection to the Xen Hypervisor in the API.</info>
     </typedef>
     <struct name='virDomain' file='libvirt' type='struct _virDomain'/>
-    <struct name='virDomainBlockStatsPtr' file='libvirt' type='struct _virDomainBlockStats *'/>
+    <typedef name='virDomainBlockStatsPtr' file='libvirt' type='virDomainBlockStatsStruct *'>
+      <info>A pointer to a virDomainBlockStats structure</info>
+    </typedef>
+    <struct name='virDomainBlockStatsStruct' file='libvirt' type='struct _virDomainBlockStats'>
+      <field name='rd_req' type='long long' info=''/>
+      <field name='rd_bytes' type='long long' info=''/>
+      <field name='wr_req' type='long long' info=''/>
+      <field name='wr_bytes' type='long long' info=''/>
+      <field name='errs' type='long long' info=' In Xen this returns the mysterious &apos;oo_req&apos;.'/>
+    </struct>
     <typedef name='virDomainCreateFlags' file='libvirt' type='enum'/>
     <struct name='virDomainInfo' file='libvirt' type='struct _virDomainInfo'>
       <field name='state' type='unsigned char' info=' the running state, one of virDomainFlags'/>
@@ -385,7 +396,19 @@
     <typedef name='virDomainInfoPtr' file='libvirt' type='virDomainInfo *'>
       <info>a virDomainInfoPtr is a pointer to a virDomainInfo structure.</info>
     </typedef>
-    <struct name='virDomainInterfaceStatsPtr' file='libvirt' type='struct _virDomainInterfaceStats *'/>
+    <typedef name='virDomainInterfaceStatsPtr' file='libvirt' type='virDomainInterfaceStatsStruct *'>
+      <info>A pointe to a virDomainInterfaceStats structure</info>
+    </typedef>
+    <struct name='virDomainInterfaceStatsStruct' file='libvirt' type='struct _virDomainInterfaceStats'>
+      <field name='rx_bytes' type='long long' info=''/>
+      <field name='rx_packets' type='long long' info=''/>
+      <field name='rx_errs' type='long long' info=''/>
+      <field name='rx_drop' type='long long' info=''/>
+      <field name='tx_bytes' type='long long' info=''/>
+      <field name='tx_packets' type='long long' info=''/>
+      <field name='tx_errs' type='long long' info=''/>
+      <field name='tx_drop' type='long long' info=''/>
+    </struct>
     <typedef name='virDomainMigrateFlags' file='libvirt' type='enum'/>
     <typedef name='virDomainPtr' file='libvirt' type='virDomain *'>
       <info>a virDomainPtr is pointer to a virDomain private structure, this is the type used to reference a Xen domain in the API.</info>
@@ -473,7 +496,7 @@
     </function>
     <function name='virConnectGetCapabilities' file='libvirt' module='libvirt'>
       <info>Provides capabilities of the hypervisor / driver.</info>
-      <return type='char *' info='NULL in case of error, or a pointer to an opaque virCapabilities structure (virCapabilitiesPtr). The client must free the returned string after use.'/>
+      <return type='char *' info='NULL in case of error, or an XML string defining the capabilities. The client must free the returned string after use.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virConnectGetHostname' file='libvirt' module='libvirt'>

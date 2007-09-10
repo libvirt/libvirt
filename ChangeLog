@@ -1,3 +1,10 @@
+Mon Sep 10 11:35:06 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvirt/libvirt.h include/libvirt/libvirt.h.in
+	  src/libvirt.c: fixes a few problems in the documentation
+	  pointed out by Toth Istvan.
+	* docs/*: regenerated the docs
+
 Wed Sep  5 16:31:00 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* docs/libvir.html docs/uri.html: remove references to libvirt_qemud

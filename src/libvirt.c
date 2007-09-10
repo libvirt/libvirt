@@ -1928,8 +1928,8 @@ virNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
  *
  * Provides capabilities of the hypervisor / driver.
  *
- * Returns NULL in case of error, or a pointer to an opaque
- * virCapabilities structure (virCapabilitiesPtr).
+ * Returns NULL in case of error, or an XML string
+ * defining the capabilities.
  * The client must free the returned string after use.
  */
 char *
