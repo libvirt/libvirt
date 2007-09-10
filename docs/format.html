@@ -59,7 +59,7 @@ significant:</p><ul><li>name: the domain name, preferably ASCII based</li>
 </ul><p>The format of the devices and their type may grow over time, but the
 following should be sufficient for basic use:</p><p>A <code>disk</code> device indicates a block device, it can have two
 values for the type attribute either 'file' or 'block' corresponding to the 2
-options availble at the Xen layer. It has two mandatory children, and one
+options available at the Xen layer. It has two mandatory children, and one
 optional one in no specific order:</p><ul><li>source with a file attribute containing the path in Domain 0 to the
     file or a dev attribute if using a block device, containing the device
     name ('hda5' or '/dev/hda5')</li>
@@ -72,7 +72,7 @@ guest, it also has a type whose value is currently 'bridge', it also have a
 number of children in no specific order:</p><ul><li>source: indicating the bridge name</li>
   <li>mac: the optional mac address provided in the address attribute</li>
   <li>ip: the optional IP address provided in the address attribute</li>
-  <li>script: the script used to bridge the interfcae in the Domain 0</li>
+  <li>script: the script used to bridge the interface in the Domain 0</li>
   <li>target: and optional target indicating the device name.</li>
 </ul><p>A <code>console</code> element describes a serial console connection to
 the guest. It has no children, and a single attribute <code>tty</code> which
@@ -237,11 +237,11 @@ support a variety of options:</p><ol><li>Userspace SLIRP stack
   <li>Virtual network
     <p>Provides a virtual network using a bridge device in the host.
     Depending on the virtual network configuration, the network may be
-    totally isolated,NAT'ing to aan explicit network device, or NAT'ing to
+    totally isolated, NAT'ing to an explicit network device, or NAT'ing to
     the default route. DHCP and DNS are provided on the virtual network in
     all cases and the IP range can be determined by examining the virtual
     network config with '<code>virsh net-dumpxml &lt;network
-    name&gt;</code>'. There is one virtual network called'default' setup out
+    name&gt;</code>'. There is one virtual network called 'default' setup out
     of the box which does NAT'ing to the default route and has an IP range of
     <code>192.168.22.0/255.255.255.0</code>. Each guest will have an
     associated tun device created with a name of vnetN, which can also be
@@ -311,7 +311,7 @@ support a variety of options:</p><ol><li>Userspace SLIRP stack
   </li>
   <li>TCP tunnel
     <p>A TCP client/server architecture provides a virtual network. One VM
-    provides the server end of the netowrk, all other VMS are configured as
+    provides the server end of the network, all other VMS are configured as
     clients. All network traffic is routed between the VMs via the server.
     This mode is also available to unprivileged users. There is no default
     DNS or DHCP support and no outgoing network access. To provide outgoing
@@ -411,7 +411,7 @@ BIOS you will see</p><pre>&lt;capabilities&gt;
     &lt;/features&gt;
   &lt;/guest&gt;</span>
   ...
-&lt;/capabilities&gt;</pre><p>The fist block (in red) indicates the host hardware capbilities, currently
+&lt;/capabilities&gt;</pre><p>The first block (in red) indicates the host hardware capbilities, currently
 it is limited to the CPU properties but other information may be available,
 it shows the CPU architecture, and the features of the chip (the feature
 block is similar to what you will find in a Xen fully virtualized domain

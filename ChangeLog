@@ -1,3 +1,8 @@
+Mon Sep 10 17:15:29 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* docs/architecture.html docs/errors.html docs/format.html
+	  docs/libvir.html: fixing typos spotted by Eduardo Pereira
+
 Mon Sep 10 13:46:05 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: applied patch from Hugh Brock to allow
