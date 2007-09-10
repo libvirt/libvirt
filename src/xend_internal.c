@@ -3087,6 +3087,7 @@ xenDaemonAttachDevice(virDomainPtr domain, char *xml)
     char *sexpr, *conf, *str;
     int hvm = 0, ret;
     xenUnifiedPrivatePtr priv;
+    char class[8], ref[80];
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
@@ -3116,8 +3117,16 @@ xenDaemonAttachDevice(virDomainPtr domain, char *xml)
         *(conf + strlen(conf) -1) = 0; /* suppress final ) */
     }
     else conf = sexpr;
-    ret = xend_op(domain->conn, domain->name, "op", "device_create",
-        "config", conf, NULL);
+    if (virDomainXMLDevID(domain, xml, class, ref)) {
+        /* device doesn't exist, define it */
+        ret = xend_op(domain->conn, domain->name, "op", "device_create",
+                      "config", conf, NULL);
+    } 
+    else {
+        /* device exists, attempt to modify it */
+        ret = xend_op(domain->conn, domain->name, "op", "device_configure", 
+                      "config", conf, "dev", ref, NULL);
+    }
     free(sexpr);
     return ret;
 }

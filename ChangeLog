@@ -1,3 +1,9 @@
+Mon Sep 10 13:46:05 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: applied patch from Hugh Brock to allow
+	  CD Rom device reload by reusing virDomainAttachDevice() with
+	  a new definition
+
 Mon Sep 10 11:35:06 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvirt/libvirt.h include/libvirt/libvirt.h.in
