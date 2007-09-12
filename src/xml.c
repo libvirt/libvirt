@@ -1385,7 +1385,7 @@ virParseXMLDevice(virConnectPtr conn, char *xmldesc, int hvm, int xendConfigVers
  * Returns 0 in case of success, -1 in case of failure.
  */
 int
-virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref)
+virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref, int ref_len)
 {
     xmlDocPtr xml = NULL;
     xmlNodePtr node, cur;
@@ -1413,7 +1413,8 @@ virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref)
             attr = xmlGetProp(cur, BAD_CAST "dev");
             if (attr == NULL)
                 goto error;
-            strcpy(ref, (char *)attr);
+            strncpy(ref, (char *)attr, ref_len);
+               ref[ref_len -1] = '\0';
             goto cleanup;
         }
     }
@@ -1430,8 +1431,9 @@ virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref)
             xref = xenStoreDomainGetNetworkID(domain->conn, domain->id,
                                               (char *) attr);
             if (xref != NULL) {
-                strcpy(ref, xref);
+                strncpy(ref, xref, ref_len);
                 free(xref);
+                ref[ref_len - 1] = '\0';
                 goto cleanup;
             }
 #else /* without xen */

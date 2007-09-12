@@ -3116,7 +3116,7 @@ xenDaemonAttachDevice(virDomainPtr domain, char *xml)
         *(conf + strlen(conf) -1) = 0; /* suppress final ) */
     }
     else conf = sexpr;
-    if (virDomainXMLDevID(domain, xml, class, ref)) {
+    if (virDomainXMLDevID(domain, xml, class, ref, sizeof(ref))) {
         /* device doesn't exist, define it */
         ret = xend_op(domain->conn, domain->name, "op", "device_create",
                       "config", conf, NULL);
@@ -3149,7 +3149,7 @@ xenDaemonDetachDevice(virDomainPtr domain, char *xml)
 	             __FUNCTION__);
         return (-1);
     }
-    if (virDomainXMLDevID(domain, xml, class, ref))
+    if (virDomainXMLDevID(domain, xml, class, ref, sizeof(ref)))
         return (-1);
     return(xend_op(domain->conn, domain->name, "op", "device_destroy",
         "type", class, "dev", ref, NULL));
