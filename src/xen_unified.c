@@ -812,6 +812,10 @@ xenUnifiedDomainDumpXML (virDomainPtr dom, int flags)
             if (ret) return ret;
         }
 
+    /* XXX May need to return an error here if sub-drivers didn't
+     * set one.  We really should change these to direct calls to
+     * the sub-drivers at a later date.
+     */
     return NULL;
 }
 

@@ -2470,8 +2470,7 @@ xenDaemonDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
     if (domain->id < 0 && priv->xendConfigVersion < 3) {
-        virXendError (domain->conn, VIR_ERR_XEN_CALL,
-                      "xenDaemonDomainDumpXML domain ID < 0 and xendConfigVersion < 3");
+	// fall-through to the next driver to handle
         return(NULL);
     }
 
