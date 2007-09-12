@@ -230,12 +230,12 @@ remoteForkDaemon(virConnectPtr conn)
 
 
 /* Must not overlap with virDrvOpenFlags */
-enum {
+enum virDrvOpenRemoteFlags {
     VIR_DRV_OPEN_REMOTE_RO = (1 << 0),
     VIR_DRV_OPEN_REMOTE_UNIX = (1 << 1),
     VIR_DRV_OPEN_REMOTE_USER = (1 << 2),
     VIR_DRV_OPEN_REMOTE_AUTOSTART = (1 << 3),
-} virDrvOpenRemoteFlags;
+};
 
 static int
 doRemoteOpen (virConnectPtr conn, struct private_data *priv, const char *uri_str, int flags)
