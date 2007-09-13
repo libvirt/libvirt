@@ -1180,7 +1180,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
                 def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_FLOPPY;
             } else if (!strcmp((char *)prop, "cdrom")) {
                 def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_CDROM;
-            } else if (!strcmp((char *)prop, "net")) {
+            } else if (!strcmp((char *)prop, "network")) {
                 def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_NET;
             } else {
                 goto error;
@@ -2819,7 +2819,7 @@ char *qemudGenerateXML(virConnectPtr conn,
             boottype = "cdrom";
             break;
         case QEMUD_BOOT_NET:
-            boottype = "net";
+            boottype = "network";
             break;
         }
         if (virBufferVSprintf(buf, "    <boot dev='%s'/>\n", boottype) < 0)

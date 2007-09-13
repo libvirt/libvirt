@@ -48,7 +48,8 @@ static int testCompareXMLToXMLFiles(const char *xml) {
 
  fail:
     free(actual);
-    qemudFreeVMDef(vmdef);
+    if (vmdef)
+        qemudFreeVMDef(vmdef);
     return ret;
 }
 

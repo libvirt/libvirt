@@ -79,8 +79,8 @@ static int testCompareXMLToArgvFiles(const char *xml, const char *cmd) {
         }
         free(argv);
     }
-
-    qemudFreeVMDef(vmdef);
+    if (vmdef)
+        qemudFreeVMDef(vmdef);
     return ret;
 }
 
