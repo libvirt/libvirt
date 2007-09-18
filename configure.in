@@ -72,15 +72,15 @@ AC_SUBST(HTML_DIR)
 
 dnl Allow to build without Xen, QEMU/KVM, test or remote driver
 AC_ARG_WITH(xen,
-[  --with-xen              add XEN support (on)])
+[  --with-xen              add XEN support (on)],[],[with_xen=yes])
 AC_ARG_WITH(qemu,
-[  --with-qemu             add QEMU/KVM support (on)])
+[  --with-qemu             add QEMU/KVM support (on)],[],[with_qemu=yes])
 AC_ARG_WITH(openvz,
-[  --with-openvz           add OpenVZ support (off)])
+[  --with-openvz           add OpenVZ support (off)],[],[with_openvz=no])
 AC_ARG_WITH(test,
-[  --with-test             add test driver support (on)])
+[  --with-test             add test driver support (on)],[],[with_test=yes])
 AC_ARG_WITH(remote,
-[  --with-remote           add remote driver support (on)])
+[  --with-remote           add remote driver support (on)],[],[with_remote=yes])
 
 dnl
 dnl specific tests to setup DV devel environments with debug etc ...
@@ -95,7 +95,7 @@ AC_SUBST(STATIC_BINARIES)
 dnl --enable-debug=(yes|no)
 AC_ARG_ENABLE(debug,
               AC_HELP_STRING([--enable-debug=no/yes],
-                             [enable debugging output]))
+                             [enable debugging output]),[],[enable_debug=no])
 if test x"$enable_debug" = x"yes"; then
    AC_DEFINE(ENABLE_DEBUG, [], [whether debugging is enabled])
 fi
@@ -187,35 +187,24 @@ LIBVIRT_FEATURES=
 WITH_XEN=0
 
 if test "$with_openvz" = "yes" ; then
-    echo "Enabling OpenVZ support"
     LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_OPENVZ"
-else
-    echo "Disabling OpenVZ support"
 fi
-if test "$with_qemu" = "no" ; then
-    echo "Disabling QEMU/KVM support"
-else
+if test "$with_qemu" = "yes" ; then
     LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_QEMU"
 fi
 
-if test "$with_test" = "no" ; then
-    echo "Disabling test driver support"
-else
+if test "$with_test" = "yes" ; then
     LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_TEST"
 fi
 
-if test "$with_remote" = "no" ; then
-    echo "Disabling remote driver support"
-else
+if test "$with_remote" = "yes" ; then
     LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_REMOTE"
 fi
 
 if test "$with_depends" != "no"
 then
 
-if test "$with_xen" = "no" ; then
-    echo Disabling XEN support
-else
+if test "$with_xen" = "yes" ; then
     dnl search for the Xen store library
     AC_SEARCH_LIBS(xs_read, [xenstore],
                    [WITH_XEN=1],
@@ -490,3 +479,24 @@ AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           tests/xmconfigdata/Makefile \
           tests/xencapsdata/Makefile \
           tests/virshdata/Makefile tests/confdata/Makefile)
+
+AC_MSG_NOTICE([])
+AC_MSG_NOTICE([Configuration summary])
+AC_MSG_NOTICE([=====================])
+AC_MSG_NOTICE([])
+AC_MSG_NOTICE([Drivers])
+AC_MSG_NOTICE([])
+AC_MSG_NOTICE([     Xen: $with_xen])
+AC_MSG_NOTICE([    QEMU: $with_qemu])
+AC_MSG_NOTICE([  OpenVZ: $with_openvz])
+AC_MSG_NOTICE([    Test: $with_test])
+AC_MSG_NOTICE([  Remote: $with_remote])
+AC_MSG_NOTICE([])
+AC_MSG_NOTICE([Libraries])
+AC_MSG_NOTICE([])
+AC_MSG_NOTICE([  libxml: $LIBXML_CFLAGS $LIBXML_LIBS])
+AC_MSG_NOTICE([])
+AC_MSG_NOTICE([Miscellaneous])
+AC_MSG_NOTICE([])
+AC_MSG_NOTICE([  Debug: $enable_debug])
+AC_MSG_NOTICE([])
