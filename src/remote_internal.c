@@ -62,6 +62,7 @@
 struct private_data {
     int magic;                  /* Should be MAGIC or DEAD. */
     int sock;                   /* Socket. */
+    pid_t pid;                  /* PID of tunnel process */
     int uses_tls;               /* TLS enabled on socket? */
     gnutls_session_t session;   /* GnuTLS session (if uses_tls != 0). */
     char *type;                 /* Cached return from remoteType. */
@@ -578,7 +579,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv, const char *uri_str
 
         /*FALLTHROUGH*/
     case trans_ext: {
-        int pid;
+        pid_t pid;
         int sv[2];
 
         /* Fork off the external process.  Use socketpair to create a private
@@ -617,6 +618,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv, const char *uri_str
         /* Parent continues here. */
         close (sv[1]);
         priv->sock = sv[0];
+        priv->pid = pid;
     }
     } /* switch (transport) */
 
@@ -645,6 +647,14 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv, const char *uri_str
         if (priv->uses_tls && priv->session)
             gnutls_bye (priv->session, GNUTLS_SHUT_RDWR);
         close (priv->sock);
+    }
+    if (priv->pid > 0) {
+        pid_t reap;
+        do {
+            reap = waitpid(priv->pid, NULL, 0);
+            if (reap == -1 && errno == EINTR)
+                continue;
+        } while (reap != -1 && reap != priv->pid);
     }
 
     /* Free up the URL and strings. */
@@ -1169,6 +1179,15 @@ doRemoteClose (virConnectPtr conn, struct private_data *priv)
     if (priv->uses_tls && priv->session)
         gnutls_bye (priv->session, GNUTLS_SHUT_RDWR);
     close (priv->sock);
+
+    if (priv->pid > 0) {
+        pid_t reap;
+        do {
+            reap = waitpid(priv->pid, NULL, 0);
+            if (reap == -1 && errno == EINTR)
+                continue;
+        } while (reap != -1 && reap != priv->pid);
+    }
 
     /* See comment for remoteType. */
     if (priv->type) free (priv->type);
