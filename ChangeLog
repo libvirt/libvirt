@@ -1,3 +1,8 @@
+Tue Sep 18 19:36:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.in: Don't check for Linux bridge headers if QEMU
+	driver is disabled
+
 Tue Sep 18 19:32:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in: Print out summary of configuration options
