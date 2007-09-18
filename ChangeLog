@@ -1,3 +1,9 @@
+Tue Sep 18 19:42:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.in: Re-arrange to use new style AC_INIT/AM_INIT_AUTOMAKE
+	style calls. Pass -Wno-portability flag to automake to keep quiet about
+	GNUmake-isms
+
 Tue Sep 18 19:36:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in: Don't check for Linux bridge headers if QEMU
