@@ -15,7 +15,8 @@ INCLUDES = \
 	-I$(top_builddir)/src \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/src \
-	@LIBXML_CFLAGS@ \
+	$(LIBXML_CFLAGS) \
+	$(GNUTLS_CFLAGS) \
         -D_XOPEN_SOURCE=600 -D_POSIX_C_SOURCE=199506L \
         -DGETTEXT_PACKAGE=\"$(PACKAGE)\" \
          $(COVERAGE_CFLAGS) \
@@ -24,7 +25,8 @@ INCLUDES = \
 
 LDADDS = \
 	@STATIC_BINARIES@ \
-	@LIBXML_LIBS@ \
+	$(LIBXML_LIBS) \
+        $(GNUTLS_LIBS) \
         $(WARN_CFLAGS) \
 	$(LIBVIRT) \
         $(COVERAGE_LDFLAGS)

@@ -3,7 +3,8 @@
 INCLUDES = -I$(top_builddir)/include \
 	   -I@top_srcdir@/include \
 	   -I@top_srcdir@/qemud \
-	   @LIBXML_CFLAGS@ \
+	   $(LIBXML_CFLAGS) \
+	   $(GNUTLS_CFLAGS) \
 	   -DBINDIR=\""$(libexecdir)"\" \
 	   -DSBINDIR=\""$(sbindir)"\" \
 	   -DSYSCONF_DIR="\"$(sysconfdir)\"" \
@@ -19,7 +20,7 @@ VIRSH_LIBS = @VIRSH_LIBS@
 EXTRA_DIST = libvirt_sym.version
 
 lib_LTLIBRARIES = libvirt.la
-libvirt_la_LIBADD = @LIBXML_LIBS@
+libvirt_la_LIBADD = $(LIBXML_LIBS) $(GNUTLS_LIBS)
 libvirt_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvirt_sym.version \
                     -version-info @LIBVIRT_VERSION_INFO@ \
                     $(COVERAGE_CFLAGS:-f%=-Wc,-f%)
