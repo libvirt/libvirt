@@ -1,3 +1,14 @@
+Tue Sep 18 21:34:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.in: Added checks for locating Avahi.
+	* qemud/mdns.c, qemud/mdns.h, qemud/Makefile.am: Convenience API to 
+	bridge between state machine provided by Avahi APIs, and the libvirt
+	daemon.
+	* qemud/qemud.c, qemud/internal.h: Register the daemon as an mDNS
+	service under _libvirt._tcp.
+	* docs/libvir.html: Added notes on mdns config params.
+	* libvirt.spec.in: Added avahi-devel as a BuildRequires
+
 Tue Sep 18 20:42:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/event.h, src/event.c: Added new APIs definitions for updating

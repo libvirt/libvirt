@@ -5,12 +5,25 @@ UUID=$(shell uuidgen)
 
 sbin_PROGRAMS = libvirtd
 
+# Distribute the generated files so that rpcgen isn't required on the
+# target machine (although almost any Unix machine will have it).
+EXTRA_DIST = libvirtd.init.in libvirtd.sysconf default-network.xml \
+	protocol.x remote_protocol.x \
+	protocol.c protocol.h \
+	remote_protocol.c remote_protocol.h \
+	remote_generate_stubs.pl rpcgen_fix.pl \
+	remote_dispatch_prototypes.h \
+	remote_dispatch_localvars.h \
+	remote_dispatch_proc_switch.h \
+	mdns.c mdns.h
+
 libvirtd_SOURCES = \
 		qemud.c internal.h \
 		protocol.h protocol.c \
 		remote_protocol.h remote_protocol.c \
 		remote.c \
-                event.c event.h
+		event.c event.h
+
 #-D_XOPEN_SOURCE=600 -D_XOPEN_SOURCE_EXTENDED=1 -D_POSIX_C_SOURCE=199506L
 libvirtd_CFLAGS = \
         -I$(top_srcdir)/include -I$(top_builddir)/include $(LIBXML_CFLAGS) \
@@ -23,6 +36,12 @@ libvirtd_CFLAGS = \
 libvirtd_LDFLAGS = $(WARN_CFLAGS) $(LIBXML_LIBS)
 libvirtd_DEPENDENCIES = ../src/libvirt.la
 libvirtd_LDADD = ../src/libvirt.la
+
+if HAVE_AVAHI
+libvirtd_SOURCES += mdns.c mdns.h
+libvirtd_CFLAGS += $(AVAHI_CFLAGS)
+libvirtd_LDADD += $(AVAHI_LIBS)
+endif
 
 install-data-local: install-init
 	mkdir -p $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart
@@ -42,16 +61,6 @@ uninstall-local: uninstall-init
 	rmdir $(DESTDIR)$(localstatedir)/run/libvirt || :
 	rmdir $(DESTDIR)$(localstatedir)/lib/libvirt || :
 
-# Distribute the generated files so that rpcgen isn't required on the
-# target machine (although almost any Unix machine will have it).
-EXTRA_DIST = libvirtd.init.in libvirtd.sysconf default-network.xml \
-	protocol.x remote_protocol.x \
-	protocol.c protocol.h \
-	remote_protocol.c remote_protocol.h \
-	remote_generate_stubs.pl rpcgen_fix.pl \
-	remote_dispatch_prototypes.h \
-	remote_dispatch_localvars.h \
-	remote_dispatch_proc_switch.h
 
 .x.c:
 	rm -f $@

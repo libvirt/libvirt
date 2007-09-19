@@ -56,6 +56,9 @@
 #include "../src/remote_internal.h"
 #include "../src/conf.h"
 #include "event.h"
+#ifdef HAVE_AVAHI
+#include "mdns.h"
+#endif
 
 static int godaemon = 0;        /* -d: Be a daemon */
 static int verbose = 0;         /* -v: Verbose mode */
@@ -68,6 +71,11 @@ static int listen_tls = 1;
 static int listen_tcp = 0;
 static const char *tls_port = LIBVIRTD_TLS_PORT;
 static const char *tcp_port = LIBVIRTD_TCP_PORT;
+
+#ifdef HAVE_AVAHI
+static int mdns_adv = 1;
+static const char *mdns_name = NULL;
+#endif
 
 static int tls_no_verify_certificate = 0;
 static int tls_no_verify_address = 0;
@@ -448,6 +456,7 @@ static int qemudListenUnix(struct qemud_server *server,
     }
 
     sock->readonly = readonly;
+    sock->port = -1;
 
     if ((sock->fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
         qemudLog(QEMUD_ERR, "Failed to create socket: %s",
@@ -570,6 +579,9 @@ remoteListenTCP (struct qemud_server *server,
         return -1;
 
     for (i = 0; i < nfds; ++i) {
+        struct sockaddr_storage sa;
+        socklen_t salen = sizeof(sa);
+
         sock = calloc (1, sizeof *sock);
 
         if (!sock) {
@@ -585,6 +597,16 @@ remoteListenTCP (struct qemud_server *server,
 
         sock->fd = fds[i];
         sock->tls = tls;
+
+        if (getsockname(sock->fd, (struct sockaddr *)(&sa), &salen) < 0)
+            return -1;
+
+        if (sa.ss_family == AF_INET)
+            sock->port = htons(((struct sockaddr_in*)&sa)->sin_port);
+        else if (sa.ss_family == AF_INET6)
+            sock->port = htons(((struct sockaddr_in6*)&sa)->sin6_port);
+        else
+            sock->port = -1;
 
         if (qemudSetCloseExec(sock->fd) < 0 ||
             qemudSetNonBlock(sock->fd) < 0)
@@ -665,6 +687,7 @@ static int qemudInitPaths(struct qemud_server *server,
 
 static struct qemud_server *qemudInitialize(int sigread) {
     struct qemud_server *server;
+    struct qemud_socket *sock;
     char sockname[PATH_MAX];
     char roSockname[PATH_MAX];
 
@@ -709,11 +732,55 @@ static struct qemud_server *qemudInitialize(int sigread) {
         }
     }
 
+#ifdef HAVE_AVAHI
+    if (getuid() == 0 && mdns_adv) {
+        struct libvirtd_mdns_group *group;
+        int port = 0;
+
+        server->mdns = libvirtd_mdns_new();
+
+        if (!mdns_name) {
+            char groupname[64], localhost[HOST_NAME_MAX+1], *tmp;
+            /* Extract the host part of the potentially FQDN */
+            gethostname(localhost, HOST_NAME_MAX);
+            localhost[HOST_NAME_MAX] = '\0';
+            if ((tmp = strchr(localhost, '.')))
+                *tmp = '\0';
+            snprintf(groupname, sizeof(groupname)-1, "Virtualization Host %s", localhost);
+            groupname[sizeof(groupname)-1] = '\0';
+            group = libvirtd_mdns_add_group(server->mdns, groupname);
+        } else {
+            group = libvirtd_mdns_add_group(server->mdns, mdns_name);
+        }
+
+        /* 
+         * See if there's a TLS enabled port we can advertise. Cowardly
+         * don't bother to advertise TCP since we don't want people using
+         * them for real world apps
+         */
+        sock = server->sockets;
+        while (sock) {
+            if (sock->port != -1 && sock->tls) {
+                port = sock->port;
+                break;
+            }
+            sock = sock->next;
+        }
+    
+        /*
+         * Add the primary entry - we choose SSH because its most likely to always
+         * be available
+         */
+        libvirtd_mdns_add_entry(group, "_libvirt._tcp", port);
+        libvirtd_mdns_start(server->mdns);
+    }
+#endif
+
     return server;
 
  cleanup:
     if (server) {
-        struct qemud_socket *sock = server->sockets;
+        sock = server->sockets;
         while (sock) {
             close(sock->fd);
             sock = sock->next;
@@ -1488,6 +1555,16 @@ remoteReadConfigFile (const char *filename)
     p = virConfGetValue (conf, "tcp_port");
     CHECK_TYPE ("tcp_port", VIR_CONF_STRING);
     tcp_port = p ? strdup (p->str) : tcp_port;
+
+#ifdef HAVE_AVAHI
+    p = virConfGetValue (conf, "mdns_adv");
+    CHECK_TYPE ("mdns_adv", VIR_CONF_LONG);
+    mdns_adv = p ? p->l : mdns_adv;
+
+    p = virConfGetValue (conf, "mdns_name");
+    CHECK_TYPE ("mdns_name", VIR_CONF_STRING);
+    mdns_name = p ? strdup (p->str) : NULL;
+#endif
 
     p = virConfGetValue (conf, "tls_no_verify_certificate");
     CHECK_TYPE ("tls_no_verify_certificate", VIR_CONF_LONG);

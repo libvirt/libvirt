@@ -22,6 +22,7 @@ BuildRequires: readline-devel
 BuildRequires: ncurses-devel
 BuildRequires: gettext
 BuildRequires: gnutls-devel
+BuildRequires: avahi-devel
 Obsoletes: libvir
 ExclusiveArch: i386 x86_64 ia64
 

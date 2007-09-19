@@ -111,7 +111,7 @@ struct qemud_socket {
     int readonly;
     /* If set, TLS is required on this socket. */
     int tls;
-
+    int port;
     struct qemud_socket *next;
 };
 
@@ -124,6 +124,9 @@ struct qemud_server {
     int sigread;
     char logDir[PATH_MAX];
     unsigned int shutdown : 1;
+#ifdef HAVE_AVAHI
+    struct libvirtd_mdns *mdns;
+#endif
 };
 
 void qemudLog(int priority, const char *fmt, ...)
