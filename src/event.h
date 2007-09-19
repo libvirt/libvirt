@@ -47,6 +47,16 @@ typedef void (*virEventHandleCallback)(int fd, int events, void *opaque);
 int virEventAddHandle(int fd, int events, virEventHandleCallback cb, void *opaque);
 
 /**
+ * virEventUpdateHandle: change event set for a monitored file handle
+ *
+ * @fd: file handle to monitor for events
+ * @events: bitset of events to wach from POLLnnn constants
+ *
+ * Will not fail if fd exists
+ */
+void virEventUpdateHandle(int fd, int events);
+
+/**
  * virEventRemoveHandle: unregister a callback from a file handle
  *
  * @fd: file handle to stop monitoring for events
@@ -66,14 +76,30 @@ typedef void (*virEventTimeoutCallback)(int timer, void *opaque);
 /**
  * virEventAddTimeout: register a callback for a timer event
  *
- * @timeout: timeout between events in milliseconds
+ * @frequency: time between events in milliseconds
  * @cb: callback to invoke when an event occurrs
  * @opaque: user data to pass to callback
+ *
+ * Setting frequency to -1 will disable the timer. Setting the frequency
+ * to zero will cause it to fire on every event loop iteration.
  *
  * returns -1 if the file handle cannot be registered, a positive
  * integer timer id upon success
  */
-int virEventAddTimeout(int timeout, virEventTimeoutCallback cb, void *opaque);
+int virEventAddTimeout(int frequency, virEventTimeoutCallback cb, void *opaque);
+
+/**
+ * virEventUpdateTimeoutImpl: change frequency for a timer
+ *
+ * @timer: timer id to change
+ * @frequency: time between events in milliseconds
+ *
+ * Setting frequency to -1 will disable the timer. Setting the frequency
+ * to zero will cause it to fire on every event loop iteration.
+ *
+ * Will not fail if timer exists
+ */
+void virEventUpdateTimeout(int timer, int frequency);
 
 /**
  * virEventRemoveTimeout: unregister a callback for a timer
@@ -85,14 +111,18 @@ int virEventAddTimeout(int timeout, virEventTimeoutCallback cb, void *opaque);
 int virEventRemoveTimeout(int timer);
 
 typedef int (*virEventAddHandleFunc)(int, int, virEventHandleCallback, void *);
+typedef void (*virEventUpdateHandleFunc)(int, int);
 typedef int (*virEventRemoveHandleFunc)(int);
 
 typedef int (*virEventAddTimeoutFunc)(int, virEventTimeoutCallback, void *);
+typedef void (*virEventUpdateTimeoutFunc)(int, int);
 typedef int (*virEventRemoveTimeoutFunc)(int);
 
 void __virEventRegisterImpl(virEventAddHandleFunc addHandle,
+			    virEventUpdateHandleFunc updateHandle,
 			    virEventRemoveHandleFunc removeHandle,
 			    virEventAddTimeoutFunc addTimeout,
+			    virEventUpdateTimeoutFunc updateTimeout,
 			    virEventRemoveTimeoutFunc removeTimeout);
 
 #define virEventRegisterImpl(ah,rh,at,rt) __virEventRegisterImpl(ah,rh,at,rt)

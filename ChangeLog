@@ -1,3 +1,12 @@
+Tue Sep 18 20:42:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/event.h, src/event.c: Added new APIs definitions for updating
+	of existing timers and file handlers
+	* qemud/event.h, qemud/event.c, qemud/qemud.c: Added implementation
+	of APIs for updating existing timers and file handlers. Allow a
+	timeout frequency of 0. Allow frequency of -1 to indicate a disabled
+	timer. Prefix all log messages with EVENT:
+
 Tue Sep 18 19:42:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in: Re-arrange to use new style AC_INIT/AM_INIT_AUTOMAKE

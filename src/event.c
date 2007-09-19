@@ -27,8 +27,10 @@
 #include <stdlib.h>
 
 static virEventAddHandleFunc addHandleImpl = NULL;
+static virEventUpdateHandleFunc updateHandleImpl = NULL;
 static virEventRemoveHandleFunc removeHandleImpl = NULL;
 static virEventAddTimeoutFunc addTimeoutImpl = NULL;
+static virEventUpdateTimeoutFunc updateTimeoutImpl = NULL;
 static virEventRemoveTimeoutFunc removeTimeoutImpl = NULL;
 
 int virEventAddHandle(int fd, int events, virEventHandleCallback cb, void *opaque) {
@@ -36,6 +38,10 @@ int virEventAddHandle(int fd, int events, virEventHandleCallback cb, void *opaqu
         return -1;
 
     return addHandleImpl(fd, events, cb, opaque);
+}
+
+void virEventUpdateHandle(int fd, int events) {
+    updateHandleImpl(fd, events);
 }
 
 int virEventRemoveHandle(int fd) {
@@ -52,6 +58,10 @@ int virEventAddTimeout(int timeout, virEventTimeoutCallback cb, void *opaque) {
     return addTimeoutImpl(timeout, cb, opaque);
 }
 
+void virEventUpdateTimeout(int timer, int timeout) {
+    updateTimeoutImpl(timer, timeout);
+}
+
 int virEventRemoveTimeout(int timer) {
     if (!removeTimeoutImpl)
         return -1;
@@ -60,12 +70,16 @@ int virEventRemoveTimeout(int timer) {
 }
 
 void __virEventRegisterImpl(virEventAddHandleFunc addHandle,
-                           virEventRemoveHandleFunc removeHandle,
-                           virEventAddTimeoutFunc addTimeout,
-                           virEventRemoveTimeoutFunc removeTimeout) {
+                            virEventUpdateHandleFunc updateHandle,
+                            virEventRemoveHandleFunc removeHandle,
+                            virEventAddTimeoutFunc addTimeout,
+                            virEventUpdateTimeoutFunc updateTimeout,
+                            virEventRemoveTimeoutFunc removeTimeout) {
     addHandleImpl = addHandle;
+    updateHandleImpl = updateHandle;
     removeHandleImpl = removeHandle;
     addTimeoutImpl = addTimeout;
+    updateTimeoutImpl = updateTimeout;
     removeTimeoutImpl = removeTimeout;
 }
 

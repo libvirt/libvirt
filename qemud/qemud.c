@@ -688,8 +688,10 @@ static struct qemud_server *qemudInitialize(int sigread) {
         goto cleanup;
 
     __virEventRegisterImpl(virEventAddHandleImpl,
+                           virEventUpdateHandleImpl,
                            virEventRemoveHandleImpl,
                            virEventAddTimeoutImpl,
+                           virEventUpdateTimeoutImpl,
                            virEventRemoveTimeoutImpl);
 
     virStateInitialize();

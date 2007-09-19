@@ -39,6 +39,16 @@
 int virEventAddHandleImpl(int fd, int events, virEventHandleCallback cb, void *opaque);
 
 /**
+ * virEventUpdateHandleImpl: change event set for a monitored file handle
+ *
+ * @fd: file handle to monitor for events
+ * @events: bitset of events to wach from POLLnnn constants
+ *
+ * Will not fail if fd exists
+ */
+void virEventUpdateHandleImpl(int fd, int events);
+
+/**
  * virEventRemoveHandleImpl: unregister a callback from a file handle
  *
  * @fd: file handle to stop monitoring for events
@@ -50,14 +60,30 @@ int virEventRemoveHandleImpl(int fd);
 /**
  * virEventAddTimeoutImpl: register a callback for a timer event
  *
- * @timeout: timeout between events in milliseconds
+ * @frequency: time between events in milliseconds
  * @cb: callback to invoke when an event occurrs
  * @opaque: user data to pass to callback
+ *
+ * Setting frequency to -1 will disable the timer. Setting the frequency
+ * to zero will cause it to fire on every event loop iteration.
  *
  * returns -1 if the file handle cannot be registered, a positive
  * integer timer id upon success
  */
-int virEventAddTimeoutImpl(int timeout, virEventTimeoutCallback cb, void *opaque);
+int virEventAddTimeoutImpl(int frequency, virEventTimeoutCallback cb, void *opaque);
+
+/**
+ * virEventUpdateTimeoutImpl: change frequency for a timer
+ *
+ * @timer: timer id to change
+ * @frequency: time between events in milliseconds
+ *
+ * Setting frequency to -1 will disable the timer. Setting the frequency
+ * to zero will cause it to fire on every event loop iteration.
+ *
+ * Will not fail if timer exists
+ */
+void virEventUpdateTimeoutImpl(int timer, int frequency);
 
 /**
  * virEventRemoveTimeoutImpl: unregister a callback for a timer

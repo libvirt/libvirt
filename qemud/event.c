@@ -31,6 +31,8 @@
 #include "internal.h"
 #include "event.h"
 
+#define EVENT_DEBUG(fmt, ...) qemudDebug("EVENT: " fmt, __VA_ARGS__)
+
 /* State for a single file handle being monitored */
 struct virEventHandle {
     int fd;
@@ -43,7 +45,7 @@ struct virEventHandle {
 /* State for a single timer being generated */
 struct virEventTimeout {
     int timer;
-    int timeout;
+    int frequency;
     unsigned long long expiresAt;
     virEventTimeoutCallback cb;
     void *opaque;
@@ -77,11 +79,11 @@ static int nextTimer = 0;
  * For this reason we only ever append to existing list.
  */
 int virEventAddHandleImpl(int fd, int events, virEventHandleCallback cb, void *opaque) {
-    qemudDebug("Add handle %d %d %p %p\n", fd, events, cb, opaque);
+    EVENT_DEBUG("Add handle %d %d %p %p", fd, events, cb, opaque);
     if (eventLoop.handlesCount == eventLoop.handlesAlloc) {
         struct virEventHandle *tmp;
-        qemudDebug("Used %d handle slots, adding %d more\n",
-                   eventLoop.handlesAlloc, EVENT_ALLOC_EXTENT);
+        EVENT_DEBUG("Used %d handle slots, adding %d more",
+                    eventLoop.handlesAlloc, EVENT_ALLOC_EXTENT);
         tmp = realloc(eventLoop.handles,
                       sizeof(struct virEventHandle) *
                       (eventLoop.handlesAlloc + EVENT_ALLOC_EXTENT));
@@ -103,6 +105,16 @@ int virEventAddHandleImpl(int fd, int events, virEventHandleCallback cb, void *o
     return 0;
 }
 
+void virEventUpdateHandleImpl(int fd, int events) {
+    int i;
+    for (i = 0 ; i < eventLoop.handlesCount ; i++) {
+        if (eventLoop.handles[i].fd == fd) {
+            eventLoop.handles[i].events = events;
+            break;
+        }
+    }
+}
+
 /*
  * Unregister a callback from a file handle
  * NB, it *must* be safe to call this from within a callback
@@ -111,13 +123,13 @@ int virEventAddHandleImpl(int fd, int events, virEventHandleCallback cb, void *o
  */
 int virEventRemoveHandleImpl(int fd) {
     int i;
-    qemudDebug("Remove handle %d\n", fd);
+    EVENT_DEBUG("Remove handle %d", fd);
     for (i = 0 ; i < eventLoop.handlesCount ; i++) {
         if (eventLoop.handles[i].deleted)
             continue;
 
         if (eventLoop.handles[i].fd == fd) {
-            qemudDebug("mark delete %d\n", i);
+            EVENT_DEBUG("mark delete %d", i);
             eventLoop.handles[i].deleted = 1;
             return 0;
         }
@@ -131,17 +143,17 @@ int virEventRemoveHandleImpl(int fd) {
  * NB, it *must* be safe to call this from within a callback
  * For this reason we only ever append to existing list.
  */
-int virEventAddTimeoutImpl(int timeout, virEventTimeoutCallback cb, void *opaque) {
-    struct timeval tv;
-    qemudDebug("Adding timeout with %d ms period", timeout);
-    if (gettimeofday(&tv, NULL) < 0) {
+int virEventAddTimeoutImpl(int frequency, virEventTimeoutCallback cb, void *opaque) {
+    struct timeval now;
+    EVENT_DEBUG("Adding timer %d with %d ms freq", nextTimer, frequency);
+    if (gettimeofday(&now, NULL) < 0) {
         return -1;
     }
 
     if (eventLoop.timeoutsCount == eventLoop.timeoutsAlloc) {
         struct virEventTimeout *tmp;
-        qemudDebug("Used %d timeout slots, adding %d more\n",
-                   eventLoop.timeoutsAlloc, EVENT_ALLOC_EXTENT);
+        EVENT_DEBUG("Used %d timeout slots, adding %d more",
+                    eventLoop.timeoutsAlloc, EVENT_ALLOC_EXTENT);
         tmp = realloc(eventLoop.timeouts,
                       sizeof(struct virEventTimeout) *
                       (eventLoop.timeoutsAlloc + EVENT_ALLOC_EXTENT));
@@ -153,18 +165,38 @@ int virEventAddTimeoutImpl(int timeout, virEventTimeoutCallback cb, void *opaque
     }
 
     eventLoop.timeouts[eventLoop.timeoutsCount].timer = nextTimer++;
-    eventLoop.timeouts[eventLoop.timeoutsCount].timeout = timeout;
+    eventLoop.timeouts[eventLoop.timeoutsCount].frequency = frequency;
     eventLoop.timeouts[eventLoop.timeoutsCount].cb = cb;
     eventLoop.timeouts[eventLoop.timeoutsCount].opaque = opaque;
     eventLoop.timeouts[eventLoop.timeoutsCount].deleted = 0;
     eventLoop.timeouts[eventLoop.timeoutsCount].expiresAt =
-        timeout +
-        (((unsigned long long)tv.tv_sec)*1000) +
-        (((unsigned long long)tv.tv_usec)/1000);
+        frequency >= 0 ? frequency +
+        (((unsigned long long)now.tv_sec)*1000) +
+        (((unsigned long long)now.tv_usec)/1000) : 0;
 
     eventLoop.timeoutsCount++;
 
     return nextTimer-1;
+}
+
+void virEventUpdateTimeoutImpl(int timer, int frequency) {
+    struct timeval tv;
+    int i;
+    EVENT_DEBUG("Updating timer %d timeout with %d ms freq", timer, frequency);
+    if (gettimeofday(&tv, NULL) < 0) {
+        return;
+    }
+
+    for (i = 0 ; i < eventLoop.timeoutsCount ; i++) {
+        if (eventLoop.timeouts[i].timer == timer) {
+            eventLoop.timeouts[i].frequency = frequency;
+            eventLoop.timeouts[i].expiresAt =
+                frequency >= 0 ? frequency +
+                (((unsigned long long)tv.tv_sec)*1000) +
+                (((unsigned long long)tv.tv_usec)/1000) : 0;
+            break;
+        }
+    }
 }
 
 /*
@@ -175,6 +207,7 @@ int virEventAddTimeoutImpl(int timeout, virEventTimeoutCallback cb, void *opaque
  */
 int virEventRemoveTimeoutImpl(int timer) {
     int i;
+    EVENT_DEBUG("Remove timer %d", timer);
     for (i = 0 ; i < eventLoop.timeoutsCount ; i++) {
         if (eventLoop.timeouts[i].deleted)
             continue;
@@ -196,13 +229,13 @@ int virEventRemoveTimeoutImpl(int timer) {
 static int virEventCalculateTimeout(int *timeout) {
     unsigned long long then = 0;
     int i;
-
+    EVENT_DEBUG("Calculate expiry of %d timers", eventLoop.timeoutsCount);
     /* Figure out if we need a timeout */
     for (i = 0 ; i < eventLoop.timeoutsCount ; i++) {
-        if (eventLoop.timeouts[i].deleted)
+        if (eventLoop.timeouts[i].deleted || eventLoop.timeouts[i].frequency < 0)
             continue;
 
-        qemudDebug("Got a timeout scheduled for %llu", eventLoop.timeouts[i].expiresAt);
+        EVENT_DEBUG("Got a timeout scheduled for %llu", eventLoop.timeouts[i].expiresAt);
         if (then == 0 ||
             eventLoop.timeouts[i].expiresAt < then)
             then = eventLoop.timeouts[i].expiresAt;
@@ -220,13 +253,13 @@ static int virEventCalculateTimeout(int *timeout) {
             ((((unsigned long long)tv.tv_sec)*1000) +
              (((unsigned long long)tv.tv_usec)/1000));
 
-        qemudDebug("Timeout at %llu due in %d ms", then, *timeout);
         if (*timeout < 0)
-            *timeout = 1;
+            *timeout = 0;
     } else {
-        qemudDebug("No timeout due");
         *timeout = -1;
     }
+
+    EVENT_DEBUG("Timeout at %llu due in %d ms", then, *timeout);
 
     return 0;
 }
@@ -256,7 +289,7 @@ static int virEventMakePollFDs(struct pollfd **retfds) {
         fds[nfds].fd = eventLoop.handles[i].fd;
         fds[nfds].events = eventLoop.handles[i].events;
         fds[nfds].revents = 0;
-        qemudDebug("Wait for %d %d\n", eventLoop.handles[i].fd, eventLoop.handles[i].events);
+        //EVENT_DEBUG("Wait for %d %d", eventLoop.handles[i].fd, eventLoop.handles[i].events);
         nfds++;
     }
 
@@ -291,14 +324,14 @@ static int virEventDispatchTimeouts(void) {
         (((unsigned long long)tv.tv_usec)/1000);
 
     for (i = 0 ; i < ntimeouts ; i++) {
-        if (eventLoop.timeouts[i].deleted)
+        if (eventLoop.timeouts[i].deleted || eventLoop.timeouts[i].frequency < 0)
             continue;
 
         if (eventLoop.timeouts[i].expiresAt <= now) {
             (eventLoop.timeouts[i].cb)(eventLoop.timeouts[i].timer,
                                        eventLoop.timeouts[i].opaque);
             eventLoop.timeouts[i].expiresAt =
-                now + eventLoop.timeouts[i].timeout;
+                now + eventLoop.timeouts[i].frequency;
         }
     }
     return 0;
@@ -322,12 +355,12 @@ static int virEventDispatchHandles(struct pollfd *fds) {
 
     for (i = 0 ; i < nhandles ; i++) {
         if (eventLoop.handles[i].deleted) {
-            qemudDebug("Skip deleted %d\n", eventLoop.handles[i].fd);
+            EVENT_DEBUG("Skip deleted %d", eventLoop.handles[i].fd);
             continue;
         }
 
         if (fds[i].revents) {
-            qemudDebug("Dispatch %d %d %p\n", fds[i].fd, fds[i].revents, eventLoop.handles[i].opaque);
+            EVENT_DEBUG("Dispatch %d %d %p", fds[i].fd, fds[i].revents, eventLoop.handles[i].opaque);
             (eventLoop.handles[i].cb)(fds[i].fd, fds[i].revents,
                                       eventLoop.handles[i].opaque);
         }
@@ -353,7 +386,7 @@ static int virEventCleanupTimeouts(void) {
             continue;
         }
 
-        qemudDebug("Purging timeout %d with id %d", i, eventLoop.timeouts[i].timer);
+        EVENT_DEBUG("Purging timeout %d with id %d", i, eventLoop.timeouts[i].timer);
         if ((i+1) < eventLoop.timeoutsCount) {
             memmove(eventLoop.timeouts+i,
                     eventLoop.timeouts+i+1,
@@ -365,7 +398,7 @@ static int virEventCleanupTimeouts(void) {
     /* Release some memory if we've got a big chunk free */
     if ((eventLoop.timeoutsAlloc - EVENT_ALLOC_EXTENT) > eventLoop.timeoutsCount) {
         struct virEventTimeout *tmp;
-        qemudDebug("Releasing %d out of %d timeout slots used, releasing %d\n",
+        EVENT_DEBUG("Releasing %d out of %d timeout slots used, releasing %d",
                    eventLoop.timeoutsCount, eventLoop.timeoutsAlloc, EVENT_ALLOC_EXTENT);
         tmp = realloc(eventLoop.timeouts,
                       sizeof(struct virEventTimeout) *
@@ -406,7 +439,7 @@ static int virEventCleanupHandles(void) {
     /* Release some memory if we've got a big chunk free */
     if ((eventLoop.handlesAlloc - EVENT_ALLOC_EXTENT) > eventLoop.handlesCount) {
         struct virEventHandle *tmp;
-        qemudDebug("Releasing %d out of %d handles slots used, releasing %d\n",
+        EVENT_DEBUG("Releasing %d out of %d handles slots used, releasing %d",
                    eventLoop.handlesCount, eventLoop.handlesAlloc, EVENT_ALLOC_EXTENT);
         tmp = realloc(eventLoop.handles,
                       sizeof(struct virEventHandle) *
@@ -437,9 +470,9 @@ int virEventRunOnce(void) {
     }
 
  retry:
-    qemudDebug("Poll on %d handles %p timeout %d\n", nfds, fds, timeout);
+    EVENT_DEBUG("Poll on %d handles %p timeout %d", nfds, fds, timeout);
     ret = poll(fds, nfds, timeout);
-    qemudDebug("Poll got %d event\n", ret);
+    EVENT_DEBUG("Poll got %d event", ret);
     if (ret < 0) {
         if (errno == EINTR) {
             goto retry;
