@@ -1,3 +1,8 @@
+Wed Sep 19 17:42:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/remote_internal.c: Fix waitpid() call to only be done
+	in doRemoteOpen error case (merge error from previous commit)
+
 Wed Sep 19 13:39:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in: Use pkg-config to locate gnutls if pkg-config

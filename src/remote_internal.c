@@ -647,14 +647,14 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv, const char *uri_str
         if (priv->uses_tls && priv->session)
             gnutls_bye (priv->session, GNUTLS_SHUT_RDWR);
         close (priv->sock);
-    }
-    if (priv->pid > 0) {
-        pid_t reap;
-        do {
-            reap = waitpid(priv->pid, NULL, 0);
-            if (reap == -1 && errno == EINTR)
-                continue;
-        } while (reap != -1 && reap != priv->pid);
+        if (priv->pid > 0) {
+            pid_t reap;
+            do {
+                reap = waitpid(priv->pid, NULL, 0);
+                if (reap == -1 && errno == EINTR)
+                    continue;
+            } while (reap != -1 && reap != priv->pid);
+        }
     }
 
     /* Free up the URL and strings. */
