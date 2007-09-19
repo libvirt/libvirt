@@ -1,3 +1,9 @@
+Wed Sep 19 09:48:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.in: Make sure we use pkg-config for libxml, where
+	available. Fix newline termination for messages printed with
+	xml-config checks
+
 Tue Sep 18 22:22:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/qemud.c: Allow customization of UNIX socket permissions

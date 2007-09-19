@@ -21,6 +21,8 @@ AC_SUBST(LIBVIRT_VERSION)
 AC_SUBST(LIBVIRT_VERSION_INFO)
 AC_SUBST(LIBVIRT_VERSION_NUMBER)
 
+dnl Required minimum versions of all libs we depend on
+LIBXML_REQUIRED="2.5.0"
 AVAHI_REQUIRED="0.6.0"
 
 dnl Checks for programs.
@@ -240,54 +242,54 @@ PKG_PROG_PKG_CONFIG
 dnl ==========================================================================
 dnl find libxml2 library, borrowed from xmlsec
 dnl ==========================================================================
-LIBXML_MIN_VERSION="2.5.0"
 LIBXML_CONFIG="xml2-config"
 LIBXML_CFLAGS=""
 LIBXML_LIBS=""
 LIBXML_FOUND="no"
+
 AC_ARG_WITH(libxml, [  --with-libxml=[PFX]       libxml2 location])
 if test "z$with_libxml" = "zno" ; then 
-    AC_MSG_CHECKING(for libxml2 libraries >= $LIBXML_MIN_VERSION) 
-    AC_MSG_ERROR(libxml2 >= $LIBXML_MIN_VERSION is required for $XMLSEC_PACKAGE)
-elif test "z$with_libxml" = "z" -a "z$PKG_CONFIG_ENABLED" = "zyes" ; then
-    PKG_CHECK_MODULES(LIBXML, libxml-2.0 >= $LIBXML_MIN_VERSION,
-	[LIBXML_FOUND=yes],
-	[LIBXML_FOUND=no])
+    AC_MSG_CHECKING(for libxml2 libraries >= $LIBXML_REQUIRED) 
+    AC_MSG_ERROR(libxml2 >= $LIBXML_REQUIRED is required for libvirt)
+elif test "z$with_libxml" = "z" -a "x$PKG_CONFIG" != "x" ; then
+    PKG_CHECK_EXISTS(libxml-2.0,[LIBXML_FOUND=yes])
+    if test "$LIBXML_FOUND" != "no" ; then
+        PKG_CHECK_MODULES(LIBXML, libxml-2.0 >= $LIBXML_REQUIRED)
+    fi
 fi
-AC_MSG_CHECKING(libxml2 $with_libxml  $LIBXML_FOUND  )
 if test "z$LIBXML_FOUND" = "zno" ; then
-    AC_MSG_CHECKING(for libxml2 libraries >= $LIBXML_MIN_VERSION) 
     if test "z$with_libxml" != "z" ; then 
 	LIBXML_CONFIG=$with_libxml/bin/$LIBXML_CONFIG
     fi
-    AC_MSG_CHECKING(libxml2 $with_libxml  $LIBXML_CONFIG  )
+    AC_MSG_CHECKING(libxml2 $LIBXML_CONFIG >= $LIBXML_REQUIRED )
     if ! $LIBXML_CONFIG --version > /dev/null 2>&1 ; then
 	AC_MSG_ERROR(Could not find libxml2 anywhere (see config.log for details).)
     fi
     vers=`$LIBXML_CONFIG --version | awk -F. '{ printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-    minvers=`echo $LIBXML_MIN_VERSION | awk -F. '{ printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
+    minvers=`echo $LIBXML_REQUIRED | awk -F. '{ printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
     if test "$vers" -ge "$minvers" ; then
         LIBXML_LIBS="`$LIBXML_CONFIG --libs`"
         LIBXML_CFLAGS="`$LIBXML_CONFIG --cflags`"
 	LIBXML_FOUND="yes"
-        AC_MSG_RESULT(yes ('$LIBXML_VERSION'))
+        AC_MSG_RESULT(yes)
     else
-        AC_MSG_ERROR(You need at least libxml2 $LIBXML_MIN_VERSION for this version of $XMLSEC_PACKAGE)
+        AC_MSG_ERROR(You need at least libxml2 $LIBXML_REQUIRED for this version of libvirt)
     fi
 fi
 
 AC_SUBST(LIBXML_CFLAGS)
 AC_SUBST(LIBXML_LIBS)
-AC_SUBST(LIBXML_CONFIG)
-AC_SUBST(LIBXML_MIN_VERSION)
 
 dnl xmlURI structure has query_raw?
 old_cflags="$CFLAGS"
+old_ldflags="$LDFLAGS"
 CFLAGS="$CFLAGS $LIBXML_CFLAGS"
+LDFLAGS="$LDFLAGS $LIBXML_LIBS"
 AC_CHECK_MEMBER(struct _xmlURI.query_raw,
 		[AC_DEFINE(HAVE_XMLURI_QUERY_RAW, [], [Have query_raw field in libxml2 xmlURI structure])],,
 		[#include <libxml/uri.h>])
 CFLAGS="$old_cflags"
+LDFLAGS="$old_ldflags"
 
 dnl GnuTLS library
 AC_CHECK_HEADER([gnutls/gnutls.h],
