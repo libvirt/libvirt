@@ -2211,6 +2211,34 @@ Blank lines and comments beginning with <code>#</code> are ignored.
 </tr>
 
 <tr>
+<td> unix_sock_group <i>"groupname"</i> </td>
+<td> "root" </td>
+<td>
+  The UNIX group to own the UNIX domain socket. If the socket permissions allow
+  group access, then applications running under matching group can access the
+  socket. Only valid if running as root
+</td>
+</tr>
+
+<tr>
+<td> unix_sock_ro_perms <i>"octal-perms"</i> </td>
+<td> "0777" </td>
+<td>
+  The permissions for the UNIX domain socket for read-only client connections.
+  The default allows any user to monitor domains.
+</td>
+</tr>
+
+<tr>
+<td> unix_sock_rw_perms <i>"octal-perms"</i> </td>
+<td> "0700" </td>
+<td>
+  The permissions for the UNIX domain socket for read-write client connections.
+  The default allows only root to manage domains.
+</td>
+</tr>
+
+<tr>
 <td> tls_no_verify_certificate <i>[0|1]</i> </td>
 <td> 0 (certificates are verified) </td>
 <td>

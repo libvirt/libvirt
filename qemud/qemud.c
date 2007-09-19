@@ -48,6 +48,7 @@
 #include <getopt.h>
 #include <assert.h>
 #include <fnmatch.h>
+#include <grp.h>
 
 #include <libvirt/virterror.h>
 
@@ -71,6 +72,10 @@ static int listen_tls = 1;
 static int listen_tcp = 0;
 static const char *tls_port = LIBVIRTD_TLS_PORT;
 static const char *tcp_port = LIBVIRTD_TCP_PORT;
+
+static gid_t unix_sock_gid = 0; /* Only root by default */
+static int unix_sock_rw_perms = 0700; /* Allow user only */
+static int unix_sock_ro_perms = 0777; /* Allow world */
 
 #ifdef HAVE_AVAHI
 static int mdns_adv = 1;
@@ -449,6 +454,7 @@ static int qemudListenUnix(struct qemud_server *server,
     struct qemud_socket *sock = calloc(1, sizeof(struct qemud_socket));
     struct sockaddr_un addr;
     mode_t oldmask;
+    gid_t oldgrp;
 
     if (!sock) {
         qemudLog(QEMUD_ERR, "Failed to allocate memory for struct qemud_socket");
@@ -475,16 +481,19 @@ static int qemudListenUnix(struct qemud_server *server,
         addr.sun_path[0] = '\0';
 
 
-    if (readonly)
-        oldmask = umask(~(S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH));
-    else
-        oldmask = umask(~(S_IRUSR | S_IWUSR));
+    oldgrp = getgid();
+    oldmask = umask(readonly ? ~unix_sock_ro_perms : ~unix_sock_rw_perms);
+    if (getuid() == 0)
+        setgid(unix_sock_gid);
+
     if (bind(sock->fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
         qemudLog(QEMUD_ERR, "Failed to bind socket to '%s': %s",
                  path, strerror(errno));
         goto cleanup;
     }
     umask(oldmask);
+    if (getuid() == 0)
+        setgid(oldgrp);
 
     if (listen(sock->fd, 30) < 0) {
         qemudLog(QEMUD_ERR, "Failed to listen for connections on '%s': %s",
@@ -1555,6 +1564,43 @@ remoteReadConfigFile (const char *filename)
     p = virConfGetValue (conf, "tcp_port");
     CHECK_TYPE ("tcp_port", VIR_CONF_STRING);
     tcp_port = p ? strdup (p->str) : tcp_port;
+
+    p = virConfGetValue (conf, "unix_sock_group");
+    CHECK_TYPE ("unix_sock_group", VIR_CONF_STRING);
+    if (p && p->str) {
+        if (getuid() != 0) {
+            qemudLog (QEMUD_WARN, "Cannot set group when not running as root");
+        } else {
+            struct group *grp = getgrnam(p->str);
+            if (!grp) {
+                qemudLog (QEMUD_ERR, "Failed to lookup group '%s'", p->str);
+                return -1;
+            }
+            unix_sock_gid = grp->gr_gid;
+        }
+    }
+
+    p = virConfGetValue (conf, "unix_sock_ro_perms");
+    CHECK_TYPE ("unix_sock_ro_perms", VIR_CONF_STRING);
+    if (p && p->str) {
+        char *tmp = NULL;
+        unix_sock_ro_perms = strtol(p->str, &tmp, 8);
+        if (*tmp) {
+            qemudLog (QEMUD_ERR, "Failed to parse mode '%s'", p->str);
+            return -1;
+        }
+    }
+
+    p = virConfGetValue (conf, "unix_sock_rw_perms");
+    CHECK_TYPE ("unix_sock_rw_perms", VIR_CONF_STRING);
+    if (p && p->str) {
+        char *tmp = NULL;
+        unix_sock_rw_perms = strtol(p->str, &tmp, 8);
+        if (*tmp) {
+            qemudLog (QEMUD_ERR, "Failed to parse mode '%s'", p->str);
+            return -1;
+        }
+    }
 
 #ifdef HAVE_AVAHI
     p = virConfGetValue (conf, "mdns_adv");

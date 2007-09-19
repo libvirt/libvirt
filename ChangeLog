@@ -1,3 +1,10 @@
+Tue Sep 18 22:22:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/qemud.c: Allow customization of UNIX socket permissions
+	and group ownership from config file
+	* docs/libvir.html: Added docs on UNIX socket perms & group owner
+	config parameters
+
 Tue Sep 18 21:34:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in: Added checks for locating Avahi.
