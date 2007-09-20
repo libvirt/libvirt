@@ -232,6 +232,8 @@ do_connect(virConnectPtr xend)
         close(s);
         errno = serrno;
         s = -1;
+        virXendError(xend, VIR_ERR_INTERNAL_ERROR,
+                     "failed to connect to xend");
     }
 
     return s;
@@ -3420,6 +3422,9 @@ xenDaemonNumOfDefinedDomains(virConnectPtr conn)
     struct sexpr *_for_i, *node;
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
 
+    /* xm_internal.c (the support for defined domains from /etc/xen
+     * config files used by old Xen) will handle this.
+     */
     if (priv->xendConfigVersion < 3)
         return(-1);
 
