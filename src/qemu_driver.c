@@ -830,7 +830,7 @@ qemudBuildDnsmasqArgv(virConnectPtr conn,
 
     i = 0;
 
-    APPEND_ARG(*argv, i++, "dnsmasq");
+    APPEND_ARG(*argv, i++, DNSMASQ);
 
     APPEND_ARG(*argv, i++, "--keep-in-foreground");
     /*

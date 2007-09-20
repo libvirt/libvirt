@@ -23,6 +23,8 @@ BuildRequires: ncurses-devel
 BuildRequires: gettext
 BuildRequires: gnutls-devel
 BuildRequires: avahi-devel
+BuildRequires: dnsmasq
+BuildRequires: bridge-utils
 Obsoletes: libvir
 ExclusiveArch: i386 x86_64 ia64
 

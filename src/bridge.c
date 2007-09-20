@@ -45,7 +45,6 @@
 
 #define MAX_BRIDGE_ID 256
 
-#define BRCTL_PATH "/usr/sbin/brctl"
 #define JIFFIES_TO_MS(j) (((j)*1000)/HZ)
 #define MS_TO_JIFFIES(ms) (((ms)*HZ)/1000)
 
@@ -684,7 +683,7 @@ brSetForwardDelay(brControl *ctl ATTRIBUTE_UNUSED,
 
     n = 0;
 
-    if (!(argv[n++] = strdup(BRCTL_PATH)))
+    if (!(argv[n++] = strdup(BRCTL)))
         goto error;
 
     if (!(argv[n++] = strdup("setfd")))
@@ -741,7 +740,7 @@ brSetEnableSTP(brControl *ctl ATTRIBUTE_UNUSED,
 
     n = 0;
 
-    if (!(argv[n++] = strdup(BRCTL_PATH)))
+    if (!(argv[n++] = strdup(BRCTL)))
         goto error;
 
     if (!(argv[n++] = strdup("stp")))
