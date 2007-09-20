@@ -1,3 +1,8 @@
+Thu Sep 20 18:10:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/qemu_driver.c, docs/libvir.html: Support virConnectGetHostname
+	and virConnectGetURI for qemu driver.
+
 Thu Sep 20 13:02:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/libvirt.c: Don't try to generate an error message with

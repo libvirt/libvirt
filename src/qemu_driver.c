@@ -1369,12 +1369,12 @@ static virDrvOpenStatus qemudOpen(virConnectPtr conn,
     if (qemu_driver == NULL)
         return VIR_DRV_OPEN_DECLINED;
 
-    if (uid) {
-        if (strcmp(name, "qemu:///session"))
+    if (uid != 0) {
+        if (STRNEQ (name, "qemu:///session"))
             return VIR_DRV_OPEN_DECLINED;
-    } else {
-        if (strcmp(name, "qemu:///system") &&
-            strcmp(name, "qemu:///session"))
+    } else { /* root */
+        if (STRNEQ (name, "qemu:///system") &&
+            STRNEQ (name, "qemu:///session"))
             return VIR_DRV_OPEN_DECLINED;
     }
 
@@ -1696,6 +1696,28 @@ static int qemudGetVersion(virConnectPtr conn, unsigned long *version) {
 
     *version = qemu_driver->qemuVersion;
     return 0;
+}
+
+static char *
+qemudGetHostname (virConnectPtr conn)
+{
+    int r;
+    char hostname[HOST_NAME_MAX+1], *str;
+
+    r = gethostname (hostname, HOST_NAME_MAX+1);
+    if (r == -1) {
+        qemudReportError (conn, NULL, NULL, VIR_ERR_SYSTEM_ERROR,
+                          "%s", strerror (errno));
+        return NULL;
+    }
+    /* Caller frees this string. */
+    str = strdup (hostname);
+    if (str == NULL) {
+        qemudReportError (conn, NULL, NULL, VIR_ERR_SYSTEM_ERROR,
+                         "%s", strerror (errno));
+        return NULL;
+    }
+    return str;
 }
 
 static int qemudListDomains(virConnectPtr conn, int *ids, int nids) {
@@ -2621,8 +2643,8 @@ static virDriver qemuDriver = {
     NULL, /* supports_feature */
     qemudGetType, /* type */
     qemudGetVersion, /* version */
-    NULL, /* hostname */
-    NULL, /* uri */
+    qemudGetHostname, /* hostname */
+    NULL, /* URI - never called because remote_internal.c answers this */
     qemudGetMaxVCPUs, /* getMaxVcpus */
     qemudGetNodeInfo, /* nodeGetInfo */
     qemudGetCapabilities, /* getCapabilities */

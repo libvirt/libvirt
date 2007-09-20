@@ -693,9 +693,9 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
         rflags |= VIR_DRV_OPEN_REMOTE_RO;
 
     if (uri_str) {
-        if (!strcmp(uri_str, "qemu:///system")) {
+        if (STREQ (uri_str, "qemu:///system")) {
             rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
-        } else if (!strcmp(uri_str, "qemu:///session")) {
+        } else if (STREQ (uri_str, "qemu:///session")) {
             rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
             if (getuid() > 0) {
                 rflags |= VIR_DRV_OPEN_REMOTE_USER;
