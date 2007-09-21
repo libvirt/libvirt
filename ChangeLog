@@ -1,3 +1,9 @@
+Fri Sep 21 16:22:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/remote_internal.c: Add a no_tty flag to stop SSH prompting
+	for passwords on console
+	* docs/libvir.html, docs/remote.html: Document no_tty flag
+
 Fri Sep 21 15:06:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* acinclude.m4: Check all compiler flags link successfully 

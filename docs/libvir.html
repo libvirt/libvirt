@@ -1762,6 +1762,20 @@ Note that parameter values must be
 <td> Example: <code>no_verify=1</code> </td>
 </tr>
 
+<tr>
+<td> <code>no_tty</code> </td>
+<td> ssh </td>
+<td>
+  If set to a non-zero value, this stops ssh from asking for
+  a password if it cannot log in to the remote machine automatically
+  (eg. using ssh-agent etc.).  Use this when you don't have access
+  to a terminal - for example in graphical programs which use libvirt.
+</td>
+</tr>
+<tr> <td colspan="2"></td>
+<td> Example: <code>no_tty=1</code> </td>
+</tr>
+
 </table>
 
 <h3><a name="Remote_certificates">Generating TLS certificates</a></h3>

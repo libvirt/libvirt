@@ -291,7 +291,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv, const char *uri_str
      */
     char *name = 0, *command = 0, *sockname = 0, *netcat = 0, *username = 0;
     char *server = 0, *port = 0;
-    int no_verify = 0;
+    int no_verify = 0, no_tty = 0;
     char **cmd_argv = 0;
 
     /* Return code from this function, and the private data. */
@@ -355,6 +355,9 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv, const char *uri_str
             var->ignore = 1;
         } else if (strcasecmp (var->name, "no_verify") == 0) {
             no_verify = atoi (var->value);
+            var->ignore = 1;
+        } else if (strcasecmp (var->name, "no_tty") == 0) {
+            no_tty = atoi (var->value);
             var->ignore = 1;
         }
 #if DEBUG
@@ -554,7 +557,10 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv, const char *uri_str
     }
 
     case trans_ssh: {
-        int j, nr_args = username ? 10 : 8;
+        int j, nr_args = 8;
+
+        if (username) nr_args += 2; /* For -l username */
+        if (no_tty) nr_args += 5;   /* For -T -o BatchMode=yes -e none */
 
         command = command ? : strdup ("ssh");
 
@@ -568,6 +574,13 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv, const char *uri_str
         if (username) {
             cmd_argv[j++] = strdup ("-l");
             cmd_argv[j++] = strdup (username);
+        }
+        if (no_tty) {
+            cmd_argv[j++] = strdup ("-T");
+            cmd_argv[j++] = strdup ("-o");
+            cmd_argv[j++] = strdup ("BatchMode=yes");
+            cmd_argv[j++] = strdup ("-e");
+            cmd_argv[j++] = strdup ("none");
         }
         cmd_argv[j++] = strdup (server);
         cmd_argv[j++] = strdup (netcat ? netcat : "nc");
