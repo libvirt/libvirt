@@ -45,6 +45,7 @@
 #include <pwd.h>
 #include <stdio.h>
 #include <sys/wait.h>
+#include <libxml/uri.h>
 
 #include <libvirt/virterror.h>
 
@@ -1362,25 +1363,39 @@ static int qemudMonitorCommand(struct qemud_driver *driver ATTRIBUTE_UNUSED,
 
 
 static virDrvOpenStatus qemudOpen(virConnectPtr conn,
-                           const char *name,
-                           int flags ATTRIBUTE_UNUSED) {
+                                  const char *name,
+                                  int flags ATTRIBUTE_UNUSED) {
+    xmlURIPtr uri = NULL;
     uid_t uid = getuid();
 
     if (qemu_driver == NULL)
         return VIR_DRV_OPEN_DECLINED;
 
+    uri = xmlParseURI(name);
+    if (uri == NULL || uri->scheme == NULL || uri->path == NULL)
+        goto decline;
+
+    if (STRNEQ (uri->scheme, "qemu"))
+        goto decline;
+
     if (uid != 0) {
-        if (STRNEQ (name, "qemu:///session"))
-            return VIR_DRV_OPEN_DECLINED;
+        if (STRNEQ (uri->path, "/session"))
+            goto decline;
     } else { /* root */
-        if (STRNEQ (name, "qemu:///system") &&
-            STRNEQ (name, "qemu:///session"))
-            return VIR_DRV_OPEN_DECLINED;
+        if (STRNEQ (uri->path, "/system") &&
+            STRNEQ (uri->path, "/session"))
+            goto decline; 
     }
 
     conn->privateData = qemu_driver;
 
+    xmlFreeURI(uri);
     return VIR_DRV_OPEN_SUCCESS;
+
+ decline:
+    if (uri != NULL)
+        xmlFreeURI(uri);
+    return VIR_DRV_OPEN_DECLINED;    
 }
 
 static int qemudClose(virConnectPtr conn) {
