@@ -19,21 +19,23 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
 
     warnCFLAGS=
 
-    try_compiler_flags="-Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fasynchronous-unwind-tables"
+    common_flags="-Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fasynchronous-unwind-tables"
 
     case "$enable_compile_warnings" in
     no)
+        try_compiler_flags=""
 	;;
     minimum)
-	try_compiler_flags="$try_compiler_flags -Wall"
+	try_compiler_flags="-Wall $common_flags"
 	;;
     yes)
-	try_compiler_flags="$try_compiler_flags -Wall -Wmissing-prototypes"
+	try_compiler_flags="-Wall -Wmissing-prototypes $common_flags"
 	;;
     maximum|error)
-	try_compiler_flags="$try_compiler_flags -Wall -Wmissing-prototypes -Wnested-externs -Wpointer-arith"
-        try_compiler_flags="$try_compiler_flags -Wextra -Wshadow -Wcast-align -Wwrite-strings -Waggregate-return"
+	try_compiler_flags="-Wall -Wmissing-prototypes -Wnested-externs -Wpointer-arith"
+	try_compiler_flags="$try_compiler_flags -Wextra -Wshadow -Wcast-align -Wwrite-strings -Waggregate-return"
 	try_compiler_flags="$try_compiler_flags -Wstrict-prototypes -Winline -Wredundant-decls -Wno-sign-compare"
+	try_compiler_flags="$try_compiler_flags $common_flags"
 	if test "$enable_compile_warnings" = "error" ; then
 	    try_compiler_flags="$try_compiler_flags -Werror"
 	fi
@@ -48,7 +50,7 @@ AC_DEFUN([LIBVIRT_COMPILE_WARNINGS],[
 	SAVE_CFLAGS="$CFLAGS"
 	CFLAGS="$CFLAGS $option"
 	AC_MSG_CHECKING([whether gcc understands $option])
-	AC_TRY_COMPILE([], [],
+	AC_TRY_LINK([], [],
 		has_option=yes,
 		has_option=no,)
 	CFLAGS="$SAVE_CFLAGS"
