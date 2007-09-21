@@ -31,6 +31,10 @@ static int testCompareXMLToXMLFiles(const char *xml) {
     vm.def = vmdef;
     vm.pid = -1;
     vm.id = -1;
+    vm.qemuVersion = 0 * 1000 * 100 + (8 * 1000) + 1;
+    vm.qemuCmdFlags = QEMUD_CMD_FLAG_VNC_COLON |
+        QEMUD_CMD_FLAG_NO_REBOOT;
+
     vmdef->vncActivePort = vmdef->vncPort;
 
     if (!(actual = qemudGenerateXML(NULL, &driver, &vm, vmdef, 0)))
@@ -71,10 +75,6 @@ main(int argc, char **argv)
         fprintf(stderr, "Usage: %s\n", progname);
         exit(EXIT_FAILURE);
     }
-
-    driver.qemuVersion = 0 * 1000 * 100 + (8 * 1000) + 1;
-    driver.qemuCmdFlags = QEMUD_CMD_FLAG_VNC_COLON | 
-        QEMUD_CMD_FLAG_NO_REBOOT;
 
     if (virtTestRun("QEMU XML-2-ARGV minimal",
                     1, testCompareXMLToXMLHelper, "minimal") < 0)

@@ -211,6 +211,9 @@ struct qemud_vm {
     int *tapfds;
     int ntapfds;
 
+    int qemuVersion;
+    int qemuCmdFlags; /* values from enum qemud_cmd_flags */
+
     char configFile[PATH_MAX];
     char autostartLink[PATH_MAX];
     char migrateFrom[PATH_MAX];
@@ -272,7 +275,6 @@ struct qemud_network {
 /* Main driver state */
 struct qemud_driver {
     int qemuVersion;
-    int qemuCmdFlags; /* values from enum qemud_cmd_flags */
     int nactivevms;
     int ninactivevms;
     struct qemud_vm *vms;

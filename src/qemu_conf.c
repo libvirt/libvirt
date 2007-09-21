@@ -287,7 +287,6 @@ static const char *qemudDefaultBinaryForArch(const char *arch) {
 
 /* Find the fully qualified path to the binary for an architecture */
 static char *qemudLocateBinaryForArch(virConnectPtr conn,
-                                      struct qemud_driver *driver ATTRIBUTE_UNUSED,
                                       int virtType, const char *arch) {
     const char *name;
     char *path;
@@ -408,14 +407,15 @@ static int qemudExtractVersionInfo(const char *qemu, int *version, int *flags) {
 }
 
 int qemudExtractVersion(virConnectPtr conn,
-                        struct qemud_driver *driver) {
+                        struct qemud_driver *driver ATTRIBUTE_UNUSED) {
     char *binary = NULL;
     struct stat sb;
+    int ignored;
 
     if (driver->qemuVersion > 0)
         return 0;
 
-    if (!(binary = qemudLocateBinaryForArch(conn, driver, QEMUD_VIRT_QEMU, "i686")))
+    if (!(binary = qemudLocateBinaryForArch(conn, QEMUD_VIRT_QEMU, "i686")))
         return -1;
 
     if (stat(binary, &sb) < 0) {
@@ -426,7 +426,7 @@ int qemudExtractVersion(virConnectPtr conn,
         return -1;
     }
 
-    if (qemudExtractVersionInfo(binary, &driver->qemuVersion, &driver->qemuCmdFlags) < 0) {
+    if (qemudExtractVersionInfo(binary, &driver->qemuVersion, &ignored) < 0) {
         free(binary);
         return -1;
     }
@@ -1199,7 +1199,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     obj = xmlXPathEval(BAD_CAST "string(/domain/devices/emulator[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        char *tmp = qemudLocateBinaryForArch(conn, driver, def->virtType, def->os.arch);
+        char *tmp = qemudLocateBinaryForArch(conn, def->virtType, def->os.arch);
         if (!tmp) {
             goto error;
         }
@@ -1466,8 +1466,23 @@ int qemudBuildCommandLine(virConnectPtr conn,
     struct utsname ut;
     int disableKQEMU = 0;
 
-    if (qemudExtractVersion(conn, driver) < 0)
+    /* Make sure the binary we are about to try exec'ing exists.
+     * Technically we could catch the exec() failure, but that's
+     * in a sub-process so its hard to feed back a useful error
+     */
+    if (stat(vm->def->os.binary, &sb) < 0) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "Cannot find QEMU binary %s: %s", vm->def->os.binary,
+                         strerror(errno));
         return -1;
+    }
+
+    if (vm->qemuVersion == 0) {
+        if (qemudExtractVersionInfo(vm->def->os.binary,
+                                    &(vm->qemuVersion),
+                                    &(vm->qemuCmdFlags)) < 0)
+            return -1;
+    }
 
     uname(&ut);
 
@@ -1483,21 +1498,10 @@ int qemudBuildCommandLine(virConnectPtr conn,
      * 2. Guest is 'qemu'
      * 3. The qemu binary has the -no-kqemu flag
      */
-    if ((driver->qemuCmdFlags & QEMUD_CMD_FLAG_KQEMU) &&
+    if ((vm->qemuCmdFlags & QEMUD_CMD_FLAG_KQEMU) &&
         !strcmp(ut.machine, vm->def->os.arch) &&
         vm->def->virtType == QEMUD_VIRT_QEMU)
         disableKQEMU = 1;
-
-    /* Make sure the binary we are about to try exec'ing exists.
-     * Technically we could catch the exec() failure, but that's
-     * in a sub-process so its hard to feed back a useful error
-     */
-    if (stat(vm->def->os.binary, &sb) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "Cannot find QEMU binary %s: %s", vm->def->os.binary,
-                         strerror(errno));
-        return -1;
-    }
 
     len = 1 + /* qemu */
         2 + /* machine type */
@@ -1511,7 +1515,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
         2 + /* boot device */
         2 + /* monitor */
         (vm->def->localtime ? 1 : 0) + /* localtime */
-        (driver->qemuCmdFlags & QEMUD_CMD_FLAG_NO_REBOOT &&
+        (vm->qemuCmdFlags & QEMUD_CMD_FLAG_NO_REBOOT &&
          vm->def->noReboot ? 1 : 0) + /* no-reboot */
         (vm->def->features & QEMUD_FEATURE_ACPI ? 0 : 1) + /* acpi */
         (vm->def->os.kernel[0] ? 2 : 0) + /* kernel */
@@ -1567,7 +1571,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
             goto no_memory;
     }
 
-    if (driver->qemuCmdFlags & QEMUD_CMD_FLAG_NO_REBOOT &&
+    if (vm->qemuCmdFlags & QEMUD_CMD_FLAG_NO_REBOOT &&
         vm->def->noReboot) {
         if (!((*argv)[++n] = strdup("-no-reboot")))
             goto no_memory;
@@ -1748,7 +1752,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     if (vm->def->graphicsType == QEMUD_GRAPHICS_VNC) {
         char vncdisplay[BR_INET_ADDR_MAXLEN+20];
         int ret;
-        if (driver->qemuCmdFlags & QEMUD_CMD_FLAG_VNC_COLON)
+        if (vm->qemuCmdFlags & QEMUD_CMD_FLAG_VNC_COLON)
             ret = snprintf(vncdisplay, sizeof(vncdisplay), "%s:%d",
                            vm->def->vncListen,
                            vm->def->vncActivePort - 5900);
@@ -1885,7 +1889,9 @@ qemudAssignVMDef(virConnectPtr conn,
                 qemudFreeVMDef(vm->newDef);
             vm->newDef = def;
         }
-
+        /* Reset version, because the emulator path might have changed */
+        vm->qemuVersion = 0;
+        vm->qemuCmdFlags = 0;
         return vm;
     }
 

@@ -1,3 +1,11 @@
+Fri Sep 21 17:14:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c, src/qemu_conf.h: Detect QEMU flags per-VM,
+	not per driver, since different QEMU binaries have their own
+	requirements.
+	* tests/qemuxml2xmltest.c, tests/qemuxml2argvtets.c: Update
+	to changed internal QEMU api/structs.
+
 Fri Sep 21 16:22:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/remote_internal.c: Add a no_tty flag to stop SSH prompting
@@ -6,11 +14,11 @@ Fri Sep 21 16:22:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 Fri Sep 21 15:06:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
-	* acinclude.m4: Check all compiler flags link successfully 
+	* acinclude.m4: Check all compiler flags link successfully
 	instead of just compiling, to deal with broken debian linker
 	with stack protector
 	* configure.in: Remove redundant -fno-stack-protector workaround
-	
+
 Fri Sep 21 15:06:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c: Use libxml for parsing & checking URIs
