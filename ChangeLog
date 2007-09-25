@@ -1,3 +1,8 @@
+Tue Sep 25 14:45:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/remote_internal.c: Fix handling of usernames (thanks to
+	Fabian Deutsch for finding and fixing this).
+
 Fri Sep 21 17:14:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c, src/qemu_conf.h: Detect QEMU flags per-VM,

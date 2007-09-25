@@ -315,12 +315,13 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv, const char *uri_str
     } else if (transport == trans_ssh) {
         port = strdup ("22");
         if (!port) goto out_of_memory;
-        if (uri->user) {
-            username = strdup (uri->user);
-            if (!username) goto out_of_memory;
-        }
     } else
         port = NULL;           /* Port not used for unix, ext. */
+
+    if (uri->user) {
+        username = strdup (uri->user);
+        if (!username) goto out_of_memory;
+    }
 
     /* Get the variables from the query string.
      * Then we need to reconstruct the query string (because
