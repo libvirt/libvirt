@@ -3150,6 +3150,7 @@ static virDriver driver = {
     .domainMigrateFinish = remoteDomainMigrateFinish,
     .domainBlockStats = remoteDomainBlockStats,
     .domainInterfaceStats = remoteDomainInterfaceStats,
+    .nodeGetCellsFreeMemory = NULL,
 };
 
 static virNetworkDriver network_driver = {

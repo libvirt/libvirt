@@ -30,6 +30,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <libxml/uri.h>
+#include <ctype.h>
 #include <errno.h>
 
 #include "libvirt/libvirt.h"
@@ -1871,6 +1872,198 @@ sexpr_to_xend_node_info(struct sexpr *root, virNodeInfoPtr info)
     return (0);
 }
 
+/**
+ * getNumber:
+ * @pointer: pointer to string beginning with  numerical characters
+ * @result: pointer to integer for storing the numerical result
+ *
+ * Internal routine extracting a number from the beginning of a string
+ *
+ * Returns the number of characters that were extracted as digits
+ * or -1 if no digits were found.
+ */
+static int
+getNumber (const char * pointer, int * result) {
+    int len = 0;
+    while (isdigit(*(pointer + len)))
+        len++;
+    if (len == 0)
+        return -1;
+    *(result) = atoi(pointer);
+    return (len);
+}
+
+/**
+ * sexpr_to_xend_topology_xml:
+ * @root: an S-Expression describing a node
+ *
+ * Internal routine creating an XML string with the values from
+ * the node root provided.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+static int 
+sexpr_to_xend_topology_xml(virConnectPtr conn, struct sexpr *root, virBufferPtr xml)
+{
+    const char *nodeToCpu;
+    const char *offset;
+    int cellNum;
+    int numCells = 0;
+    int numCpus;
+    int cellCpuCount = 0; 
+    int nodeCpuCount = 0; 
+    int start; 
+    int finish;
+    int r;
+    int i;
+    int len; 
+    int cpuNum; 
+    int *cpuIdsPtr = NULL; 
+    int *iCpuIdsPtr = NULL;
+    char next;
+
+    nodeToCpu = sexpr_node(root, "node/node_to_cpu");
+    if (nodeToCpu == NULL) {
+        virXendError(conn, VIR_ERR_INTERNAL_ERROR,
+                     _("failed to parse topology information"));
+        goto error;
+    }
+
+    numCells = sexpr_int(root, "node/nr_nodes");
+    numCpus = sexpr_int(root, "node/nr_cpus");
+
+    /* array for holding all cpu numbers associated with a single cell. 
+     * Should never need more than numCpus (which is total number of 
+     * cpus for the node) 
+     */
+    cpuIdsPtr = iCpuIdsPtr = malloc(numCpus * sizeof(int));
+    if (cpuIdsPtr == NULL) {
+        goto vir_buffer_failed;
+    }
+
+    /* start filling in xml */
+    r = virBufferVSprintf (xml,
+                               "\
+  <topology>\n\
+    <cells num='%d'>\n",
+                           numCells);
+    if (r == -1) goto vir_buffer_failed;
+
+    offset = nodeToCpu;
+    /* now iterate through all cells and find associated cpu ids */
+    /* example of string being parsed: "node0:0-3,7,9-10\n   node1:11-14\n" */
+    while ((offset = strstr(offset, "node")) != NULL) {
+        cpuIdsPtr = iCpuIdsPtr;
+        cellCpuCount = 0;
+        offset +=4;
+        if ((len = getNumber(offset, &cellNum)) < 0) {
+            virXendError(conn, VIR_ERR_XEN_CALL, " topology string syntax error");
+            goto error;
+        }
+        offset += len;
+        if (*(offset) != ':') {
+            virXendError(conn, VIR_ERR_XEN_CALL, " topology string syntax error");
+            goto error;
+        }
+        offset++;
+        /* get list of cpus associated w/ single cell */
+        while (1) {
+            if ((len = getNumber(offset, &cpuNum)) < 0) {
+                virXendError(conn, VIR_ERR_XEN_CALL, " topology string syntax error");
+                goto error;
+            }
+            offset += len;
+            next = *(offset);
+            if (next == '-') {
+                offset++;
+                start = cpuNum;
+                if ((len = getNumber(offset, &finish)) < 0) {
+                    virXendError(conn, VIR_ERR_XEN_CALL, " topology string syntax error");
+                    goto error;
+                }
+                if (start > finish) {
+                    virXendError(conn, VIR_ERR_XEN_CALL, " topology string syntax error");
+                    goto error;
+
+                }
+                for (i=start; i<=finish && nodeCpuCount<numCpus; i++) {
+                    *(cpuIdsPtr++) = i;
+                    cellCpuCount++;
+                    nodeCpuCount++;
+                }
+                if (nodeCpuCount > numCpus) {
+                    virXendError(conn, VIR_ERR_XEN_CALL, 
+                                 "conflicting cpu counts");
+                    goto error;
+                }
+                offset += len;
+                next = *(offset);
+                offset++;
+                if (next == ',') {
+                    continue;
+                } else if ((next == '\\') || (next =='\0')) {
+                    break;
+                } else {
+                    virXendError(conn, VIR_ERR_XEN_CALL, 
+                                 " topology string syntax error");
+                    goto error;
+                }
+            } else {
+                /* add the single number */
+                if (nodeCpuCount >= numCpus) {
+                    virXendError(conn, VIR_ERR_XEN_CALL, 
+                                 "conflicting cpu counts");
+                    goto error;
+                }
+                *(cpuIdsPtr++) = cpuNum;
+                cellCpuCount++;
+                nodeCpuCount++;
+                if (next == ',') {
+                    offset++;
+                    continue;
+                } else if ((next == '\\') || (next =='\0')) {
+                    break;
+                } else {
+                    virXendError(conn, VIR_ERR_XEN_CALL, 
+                                 " topology string syntax error");
+                    goto error;
+                }
+            }
+        }    
+
+        /* add xml for all cpus associated with one cell */
+        r = virBufferVSprintf (xml, "\
+      <cell id='%d'>\n\
+        <cpus num='%d'>\n", cellNum, cellCpuCount);
+        if (r == -1) goto vir_buffer_failed;
+
+        for (i = 0; i < cellCpuCount; i++) {
+            r = virBufferVSprintf (xml, "\
+           <cpu id='%d'/>\n", *(iCpuIdsPtr + i));
+        if (r == -1) goto vir_buffer_failed;
+        }
+        r = virBufferAdd (xml, "\
+        </cpus>\n\
+      </cell>\n", -1);
+        if (r == -1) goto vir_buffer_failed;
+    }            
+    r = virBufferAdd (xml, "\
+    </cells>\n\
+  </topology>\n", -1);
+    if (r == -1) goto vir_buffer_failed;
+    free(iCpuIdsPtr);
+    return (0);
+    
+
+vir_buffer_failed:
+    virXendError(conn, VIR_ERR_NO_MEMORY, _("allocate new buffer"));
+        
+error:
+    if (iCpuIdsPtr)
+        free(iCpuIdsPtr);
+    return (-1);
+}
+
 #ifndef PROXY
 /**
  * sexpr_to_domain:
@@ -1956,7 +2149,7 @@ xenDaemonOpen(virConnectPtr conn, const char *name,
 {
     xmlURIPtr uri = NULL;
     int ret;
-
+     
     /* If the name is just "xen" (it might originally have been NULL,
      * see xenUnifiedOpen) or any URI beginning with "xen:///" then
      * try default paths and methods to get to the xend socket.
@@ -2584,6 +2777,39 @@ xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info) {
         return (-1);
 
     ret = sexpr_to_xend_node_info(root, info);
+    sexpr_free(root);
+    return (ret);
+}
+
+/**
+ * xenDaemonNodeGetTopology:
+ * @conn: pointer to the Xen Daemon block
+ *
+ * This method retrieves a node's topology information.
+ *
+ * Returns -1 in case of error, 0 otherwise.
+ */
+int
+xenDaemonNodeGetTopology(virConnectPtr conn, virBufferPtr xml) {
+    int ret = -1;
+    struct sexpr *root;
+
+    if (!VIR_IS_CONNECT(conn)) {
+        virXendError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+
+    if (xml == NULL) {
+        virXendError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+        }
+
+    root = sexpr_get(conn, "/xend/node/");
+    if (root == NULL) {
+        return (-1);
+    }
+
+    ret = sexpr_to_xend_topology_xml(conn, root, xml);
     sexpr_free(root);
     return (ret);
 }

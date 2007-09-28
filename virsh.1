@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "VIRSH 1"
-.TH VIRSH 1 "2007-08-14" "perl v5.8.8" "Virtualization Support"
+.TH VIRSH 1 "2007-09-28" "perl v5.8.8" "Virtualization Support"
 .SH "NAME"
 virsh \- management user interface
 .SH "SYNOPSIS"
@@ -241,6 +241,7 @@ capabilities in terms of \s-1CPU\s0 and features, and a set of description
 for each kind of guest which can be virtualized. For a more complete
 description see:
   <http://libvirt.org/format.html#Capa1>
+The \s-1XML\s0 also show the \s-1NUMA\s0 topology informations if available.
 .IP "\fBlist\fR" 4
 .IX Item "list"
 Prints information about one or more domains.  If no domains are
@@ -260,6 +261,10 @@ An example format for the list is as follows:
 .Sp
 Name is the name of the domain.  \s-1ID\s0 the domain numeric id.  
  State is the run state (see below).  
+.IP "\fBfreecell\fR optional \fIcellno\fR" 4
+.IX Item "freecell optional cellno"
+Prints the available amount of memory on the machine or within a 
+\&\s-1NUMA\s0 cell if \fIcellno\fR is provided.
 .RS 4
 .Sp
 .RS 4

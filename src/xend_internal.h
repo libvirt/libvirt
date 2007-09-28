@@ -19,6 +19,7 @@
 #include <stdbool.h>
 
 #include "libvirt/libvirt.h"
+#include "buf.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -182,6 +183,7 @@ int xenDaemonOpen(virConnectPtr conn, const char *name, int flags);
 int xenDaemonClose(virConnectPtr conn);
 int xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer);
 int xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
+int xenDaemonNodeGetTopology(virConnectPtr conn, virBufferPtr xml);
 int xenDaemonDomainSuspend(virDomainPtr domain);
 int xenDaemonDomainResume(virDomainPtr domain);
 int xenDaemonDomainShutdown(virDomainPtr domain);

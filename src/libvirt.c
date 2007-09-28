@@ -2634,6 +2634,45 @@ virDomainDetachDevice(virDomainPtr domain, char *xml)
 }
 
 /**
+ * virNodeGetCellsFreeMemory:
+ * @conn: pointer to the hypervisor connection
+ * @freeMems: pointer to the array of unsigned long long
+ * @startCell: index of first cell to return freeMems info on.
+ * @maxCells: Maximum number of cells for which freeMems information can
+ *            be returned.
+ *
+ * This call returns the amount of free memory in one or more NUMA cells.
+ * The @freeMems array must be allocated by the caller and will be filled
+ * with the amount of free memory in kilobytes for each cell requested,
+ * starting with startCell (in freeMems[0]), up to either
+ * (startCell + maxCells), or the number of additional cells in the node,
+ * whichever is smaller.
+ *
+ * Returns the number of entries filled in freeMems, or -1 in case of error.
+ */
+
+int
+virNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *freeMems,
+                          int startCell, int maxCells)
+{
+    if (!VIR_IS_CONNECT(conn)) {
+        virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return (-1);
+    }
+
+    if ((freeMems == NULL) || (maxCells <= 0)) {
+        virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
+        return (-1);
+    }
+
+    if (conn->driver->nodeGetCellsFreeMemory)
+        return conn->driver->nodeGetCellsFreeMemory (conn, freeMems, startCell, maxCells);
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
+/**
  * virNetworkGetConnect:
  * @net: pointer to a network
  *

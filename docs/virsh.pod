@@ -121,6 +121,7 @@ capabilities in terms of CPU and features, and a set of description
 for each kind of guest which can be virtualized. For a more complete
 description see:
   L<http://libvirt.org/format.html#Capa1>
+The XML also show the NUMA topology informations if available.
 
 =item B<list>  
 
@@ -140,6 +141,11 @@ B<virsh> list
 
 Name is the name of the domain.  ID the domain numeric id.  
  State is the run state (see below).  
+
+=item B<freecell> optional I<cellno>
+
+Prints the available amount of memory on the machine or within a 
+NUMA cell if I<cellno> is provided.
 
 =over 4
 

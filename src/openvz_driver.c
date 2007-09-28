@@ -753,6 +753,7 @@ static virDriver openvzDriver = {
     NULL, /* domainMigrateFinish */
     NULL, /* domainBlockStats */
     NULL, /* domainInterfaceStats */
+    NULL, /* nodeGetCellsFreeMemory */
 };
 
 static virNetworkDriver openvzNetworkDriver = {

@@ -255,6 +255,13 @@ typedef virDomainPtr
 typedef struct _virDriver virDriver;
 typedef virDriver *virDriverPtr;
 
+typedef int
+    (*virDrvNodeGetCellsFreeMemory)
+                    (virConnectPtr conn,
+                     unsigned long long *freeMems,
+                     int startCell,
+                     int maxCells);
+
 /**
  * _virDriver:
  *
@@ -322,6 +329,7 @@ struct _virDriver {
     virDrvDomainMigrateFinish	domainMigrateFinish;
     virDrvDomainBlockStats      domainBlockStats;
     virDrvDomainInterfaceStats  domainInterfaceStats;
+	virDrvNodeGetCellsFreeMemory	nodeGetCellsFreeMemory;
 };
 
 typedef int

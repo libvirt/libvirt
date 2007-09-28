@@ -1053,6 +1053,20 @@ xenUnifiedDomainInterfaceStats (virDomainPtr dom, const char *path,
     return -1;
 }
 
+static int
+xenUnifiedNodeGetCellsFreeMemory (virConnectPtr conn, unsigned long long *freeMems,
+                                  int startCell, int maxCells)
+{
+    GET_PRIVATE (conn);
+
+    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET])
+        return xenHypervisorNodeGetCellsFreeMemory (conn, freeMems, 
+                                                    startCell, maxCells);
+
+    xenUnifiedError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return -1;
+}
+
 /*----- Register with libvirt.c, and initialise Xen drivers. -----*/
 
 #define VERSION ((DOM0_INTERFACE_VERSION >> 24) * 1000000 +         \
@@ -1113,6 +1127,7 @@ static virDriver xenUnifiedDriver = {
     .domainMigrateFinish		= xenUnifiedDomainMigrateFinish,
     .domainBlockStats	= xenUnifiedDomainBlockStats,
     .domainInterfaceStats = xenUnifiedDomainInterfaceStats,
+    .nodeGetCellsFreeMemory = xenUnifiedNodeGetCellsFreeMemory,
 };
 
 /**

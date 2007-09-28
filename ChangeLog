@@ -1,3 +1,16 @@
+Fri Sep 28 16:17:41 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvirt/libvirt.h[.in] src/driver.h src/openvz_driver.c
+	  src/qemu_driver.c src/remote_internal.c src/test.c
+	  src/xen_internal.[ch] src/xen_unified.c src/xend_internal.[ch]
+	  src/libvirt.c src/libvirt_sym.version: adding NUMA support patches
+	  from Beth Kon adding new virNodeGetCellsFreeMemory entry point
+	  and extending the virConnectGetCapabilities one. Fix a couple of
+	  issues in the patch and add to exported symbols from shared lib.
+	* docs/virsh.pod docs/virsh.1 src/virsh.c: added new command
+	  freecell to get the available memory on the node or in a NUMA cell.
+	* docs/*: updated and regenerated the documentation
+
 Fri Sep 28 11:20:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* docs/libvir.html: Clarified configuration required for

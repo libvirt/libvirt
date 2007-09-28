@@ -28,6 +28,7 @@
 #include <errno.h>
 #include <sys/utsname.h>
 #include "xs_internal.h"
+#include "xend_internal.h"
 
 /* required for dom0_getdomaininfo_t */
 #include <xen/dom0_ops.h>
@@ -200,6 +201,15 @@ union xen_getschedulerid {
     struct xen_v2_getschedulerid *v2;
 };
 typedef union xen_getschedulerid xen_getschedulerid;
+
+struct xen_v2s4_availheap {
+    uint32_t min_bitwidth;  /* Smallest address width (zero if don't care). */
+    uint32_t max_bitwidth;  /* Largest address width (zero if don't care). */
+    int32_t  node;          /* NUMA node (-1 for sum across all nodes). */
+    uint64_t avail_bytes;   /* Bytes available in the specified region. */
+};
+
+typedef struct xen_v2s4_availheap  xen_v2s4_availheap;
 
 
 #define XEN_GETDOMAININFOLIST_ALLOC(domlist, size)                      \
@@ -524,6 +534,11 @@ typedef struct xen_v2d5_setvcpumap xen_v2d5_getvcpumap;
 #define XEN_V2_OP_GETSCHEDULERID	4
 
 /*
+ * from V2 we get the available heap information
+ */
+#define XEN_V2_OP_GETAVAILHEAP  	9
+
+/*
  * from V2 we get the scheduler parameter
  */
 #define XEN_V2_OP_SCHEDULER		16
@@ -584,6 +599,7 @@ struct xen_op_v2_sys {
         xen_v2_getdomaininfolistop   getdomaininfolist;
         xen_v2s3_getdomaininfolistop getdomaininfolists3;
         xen_v2_getschedulerid        getschedulerid;
+        xen_v2s4_availheap           availheap;
         uint8_t padding[128];
     } u;
 };
@@ -2012,7 +2028,7 @@ xenHypervisorInit(void)
 #endif
         return(-1);
     }
-    /* Currently consider RHEL5.0 Fedora7 and xen-unstable */
+    /* Currently consider RHEL5.0 Fedora7, xen-3.1, and xen-unstable */
     sys_interface_version = 2; /* XEN_SYSCTL_INTERFACE_VERSION */
     if (virXen_getdomaininfo(fd, 0, &info) == 1) {
         /* RHEL 5.0 */
@@ -2035,11 +2051,23 @@ xenHypervisorInit(void)
 
     sys_interface_version = 3; /* XEN_SYSCTL_INTERFACE_VERSION */
     if (virXen_getdomaininfo(fd, 0, &info) == 1) {
-        /* xen-unstable */
+        /* xen-3.1 */
         dom_interface_version = 5; /* XEN_DOMCTL_INTERFACE_VERSION */
         if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
 #ifdef DEBUG
             fprintf(stderr, "Using hypervisor call v2, sys ver3 dom ver5\n");
+#endif
+            goto done;
+        }
+    }
+
+    sys_interface_version = 4; /* XEN_SYSCTL_INTERFACE_VERSION */
+    if (virXen_getdomaininfo(fd, 0, &info) == 1) {
+        /* xen-unstable */
+        dom_interface_version = 5; /* XEN_DOMCTL_INTERFACE_VERSION */
+        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
+#ifdef DEBUG
+            fprintf(stderr, "Using hypervisor call v2, sys ver4 dom ver5\n");
 #endif
             goto done;
         }
@@ -2200,7 +2228,7 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn ATTRIBUTE_UNUSED,
     char line[1024], *str, *token;
     regmatch_t subs[4];
     char *saveptr = NULL;
-    int i, r;
+    int i, r, topology;
 
     char hvm_type[4] = ""; /* "vmx" or "svm" (or "" if not in CPU). */
     int host_pae = 0;
@@ -2377,6 +2405,12 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn ATTRIBUTE_UNUSED,
   </host>\n", -1);
     if (r == -1) goto vir_buffer_failed;
 
+    if (sys_interface_version >= 4) {
+        topology = xenDaemonNodeGetTopology(conn, xml);
+        if (topology != 0)
+            goto topology_failed;
+    }
+
     for (i = 0; i < nr_guest_archs; ++i) {
         r = virBufferVSprintf (xml,
                                "\
@@ -2438,6 +2472,7 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn ATTRIBUTE_UNUSED,
   </guest>\n", -1);
         if (r == -1) goto vir_buffer_failed;
     }
+
     r = virBufferAdd (xml,
                       "\
 </capabilities>\n", -1);
@@ -2450,6 +2485,7 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn ATTRIBUTE_UNUSED,
 
  vir_buffer_failed:
     virXenError(VIR_ERR_NO_MEMORY, __FUNCTION__, 0);
+ topology_failed:
     virBufferFree (xml);
     return NULL;
 }
@@ -2938,6 +2974,79 @@ xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
 }
 
 #ifndef PROXY
+/**
+ * xenHypervisorNodeGetCellsFreeMemory:
+ * @conn: pointer to the hypervisor connection
+ * @freeMems: pointer to the array of unsigned long long
+ * @startCell: index of first cell to return freeMems info on. 
+ * @maxCells: Maximum number of cells for which freeMems information can 
+ *            be returned.
+ *
+ * This call returns the amount of free memory in one or more NUMA cells.
+ * The @freeMems array must be allocated by the caller and will be filled
+ * with the amount of free memory in kilobytes for each cell requested, 
+ * starting with startCell (in freeMems[0]), up to either 
+ * (startCell + maxCells), or the number of additional cells in the node, 
+ * whichever is smaller.
+ *
+ * Returns the number of entries filled in freeMems, or -1 in case of error.
+ */
+int
+xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *freeMems,
+                                    int startCell, int maxCells)
+{
+    xen_op_v2_sys op_sys;
+    int i, j, ret;
+    xenUnifiedPrivatePtr priv;
+    static int nbNodeCells = -1;
+    virNodeInfo nodeInfo;
+    
+
+    if (nbNodeCells == -1) {
+        if (xenDaemonNodeGetInfo(conn, &nodeInfo)) {
+            virXenErrorFunc (VIR_ERR_XEN_CALL, __FUNCTION__,
+                             "cannot determine actual number of cells",0);
+            return -1;
+        }
+        nbNodeCells = nodeInfo.nodes;
+    }
+
+    if ((conn == NULL) || (maxCells < 1) || (startCell >= nbNodeCells)) {
+        virXenErrorFunc (VIR_ERR_INVALID_ARG, __FUNCTION__,
+                        "invalid argument", 0);
+        return -1;
+    }
+    /*
+     * Support only sys_interface_version >=4
+     */
+    if (sys_interface_version < 4) {
+        virXenErrorFunc (VIR_ERR_XEN_CALL, __FUNCTION__,
+                        "unsupported in sys interface < 4", 0);
+        return -1;
+    }
+
+    priv = (xenUnifiedPrivatePtr) conn->privateData;
+    if (priv->handle < 0) {
+        virXenErrorFunc (VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
+                        "priv->handle invalid", 0);
+        return -1;
+    }
+
+    memset(&op_sys, 0, sizeof(op_sys));
+    op_sys.cmd = XEN_V2_OP_GETAVAILHEAP;
+
+    for (i = startCell, j = 0;(i < nbNodeCells) && (j < maxCells);i++,j++) {
+        op_sys.u.availheap.node = i;
+        ret = xenHypervisorDoV2Sys(priv->handle, &op_sys);
+        if (ret < 0) {
+            return(-1);
+        }
+        freeMems[j] = op_sys.u.availheap.avail_bytes;
+    }
+    return (j);
+}
+
+
 /**
  * xenHypervisorPauseDomain:
  * @domain: pointer to the domain block

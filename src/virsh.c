@@ -1562,6 +1562,48 @@ cmdDominfo(vshControl * ctl, vshCmd * cmd)
 }
 
 /*
+ * "freecell" command
+ */
+static vshCmdInfo info_freecell[] = {
+    {"syntax", "freecell [<cellno>]"},
+    {"help", gettext_noop("NUMA free memory")},
+    {"desc", gettext_noop("display available free memory for the NUMA cell.")},
+    {NULL, NULL}
+};
+
+static vshCmdOptDef opts_freecell[] = {
+    {"cellno", VSH_OT_DATA, 0, gettext_noop("NUMA cell number")},
+    {NULL, 0, 0, NULL}
+};
+
+static int
+cmdFreecell(vshControl * ctl, vshCmd * cmd)
+{
+    int ret;
+    int cell, cell_given;
+    unsigned long long memory;
+
+    if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
+        return FALSE;
+
+    cell = vshCommandOptInt(cmd, "cellno", &cell_given);
+    if (!cell_given) {
+        cell = -1;
+    }
+
+    ret = virNodeGetCellsFreeMemory(ctl->conn, &memory, cell, 1);
+    if (ret != 1)
+        return FALSE;
+    
+    if (cell == -1)
+	vshPrint(ctl, "%s: %llu kB\n", _("Total"), memory);
+    else
+	vshPrint(ctl, "%d: %llu kB\n", cell, memory);
+
+    return TRUE;
+}
+
+/*
  * "vcpuinfo" command
  */
 static vshCmdInfo info_vcpuinfo[] = {
@@ -3661,6 +3703,7 @@ static vshCmdDef commands[] = {
     {"domblkstat", cmdDomblkstat, opts_domblkstat, info_domblkstat},
     {"domifstat", cmdDomIfstat, opts_domifstat, info_domifstat},
     {"dumpxml", cmdDumpXML, opts_dumpxml, info_dumpxml},
+    {"freecell", cmdFreecell, opts_freecell, info_freecell},
     {"hostname", cmdHostname, NULL, info_hostname},
     {"list", cmdList, opts_list, info_list},
     {"migrate", cmdMigrate, opts_migrate, info_migrate},

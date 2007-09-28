@@ -93,6 +93,10 @@ int     xenHypervisorDomainInterfaceStats (virDomainPtr domain,
 					 const char *path,
 					 struct _virDomainInterfaceStats *stats);
 
+int	xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn,
+					  unsigned long long *freeMems,
+					  int startCell,
+					  int maxCells);
 #ifdef __cplusplus
 }
 #endif

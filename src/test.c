@@ -1969,6 +1969,7 @@ static virDriver testDriver = {
     NULL, /* domainMigrateFinish */
     NULL, /* domainBlockStats */
     NULL, /* domainInterfaceStats */
+    NULL, /* nodeGetCellsFreeMemory */
 };
 
 static virNetworkDriver testNetworkDriver = {

@@ -582,6 +582,15 @@ int virDomainAttachDevice(virDomainPtr domain, char *xml);
 int virDomainDetachDevice(virDomainPtr domain, char *xml);
 
 /*
+ * NUMA support
+ */
+
+int			 virNodeGetCellsFreeMemory(virConnectPtr conn,
+						   unsigned long long *freeMems,
+						   int startCell,
+						   int maxCells);
+
+/*
  * Virtual Networks API
  */
 

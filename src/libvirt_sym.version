@@ -20,6 +20,7 @@
 	virDomainGetUUID;
 	virDomainGetUUIDString;
 	virDomainGetInfo;
+	virNodeGetCellsFreeMemory;
 	virDomainGetMaxMemory;
 	virDomainGetName;
 	virDomainGetOSType;
@@ -57,6 +58,7 @@
 	virDefaultErrorFunc;
 	virNodeGetInfo;
 	virConnectGetCapabilities;
+	virNodeGetCellsFreeMemory;
 
 	virDomainSetVcpus;
 	virDomainPinVcpu;
