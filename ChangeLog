@@ -1,3 +1,7 @@
+Fri Sep 28 16:41:41 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c: Fix crash processing multiple <input> tags
+
 Fri Sep 28 16:17:41 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvirt/libvirt.h[.in] src/driver.h src/openvz_driver.c

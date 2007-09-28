@@ -1312,7 +1312,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
             }
             def->ninputs++;
             input->next = NULL;
-            if (i == 0) {
+            if (def->inputs == NULL) {
                 def->inputs = input;
             } else {
                 prev->next = input;
