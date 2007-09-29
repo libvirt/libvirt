@@ -31,7 +31,13 @@
 #include "xs_internal.h"
 #include "xen_internal.h" /* for xenHypervisorCheckID */
 
+#ifdef __linux__
 #define XEN_HYPERVISOR_SOCKET "/proc/xen/privcmd"
+#elif define(__sun__)
+#define XEN_HYPERVISOR_SOCKET "/dev/xen/privcmd"
+#else
+#error "unsupported platform"
+#endif
 
 #ifndef PROXY
 static char *xenStoreDomainGetOSType(virDomainPtr domain);

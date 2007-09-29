@@ -57,9 +57,10 @@ typedef struct v0_hypercall_struct {
     unsigned long op;
     unsigned long arg[5];
 } v0_hypercall_t;
+
+#ifdef __linux__
 #define XEN_V0_IOCTL_HYPERCALL_CMD \
         _IOC(_IOC_NONE, 'P', 0, sizeof(v0_hypercall_t))
-
 /* the new one */
 typedef struct v1_hypercall_struct
 {
@@ -68,8 +69,12 @@ typedef struct v1_hypercall_struct
 } v1_hypercall_t;
 #define XEN_V1_IOCTL_HYPERCALL_CMD                  \
     _IOC(_IOC_NONE, 'P', 0, sizeof(v1_hypercall_t))
-
 typedef v1_hypercall_t hypercall_t;
+#elif define(__sun__)
+typedef privcmd_hypercall_t hypercall_t;
+#else
+#error "unsupported platform"
+#endif
 
 #ifndef __HYPERVISOR_sysctl
 #define __HYPERVISOR_sysctl 35
@@ -324,6 +329,26 @@ typedef struct xen_v2s4_availheap  xen_v2s4_availheap;
       dominfo.v2.handle :                       \
       dominfo.v2d5.handle))
 
+
+static int
+lock_pages(void *addr, size_t len)
+{
+#ifdef __linux__
+	return (mlock(addr, len));
+#elif define(__sun)
+	return (0);
+#endif
+}
+
+static int
+unlock_pages(void *addr, size_t len)
+{
+#ifdef __linux__
+	return (munlock(addr, len));
+#elif define(__sun)
+	return (0);
+#endif
+}
 
 
 struct xen_v0_getdomaininfolistop {
@@ -632,7 +657,17 @@ typedef struct xen_op_v2_dom xen_op_v2_dom;
 #include "xen_unified.h"
 #include "xen_internal.h"
 
-#define XEN_HYPERVISOR_SOCKET "/proc/xen/privcmd"
+#ifdef __linux__
+#define XEN_HYPERVISOR_SOCKET	"/proc/xen/privcmd"
+#define HYPERVISOR_CAPABILITIES	"/sys/hypervisor/properties/capabilities"
+#define CPUINFO			"/proc/cpuinfo"
+#elif define(__sun__)
+#define XEN_HYPERVISOR_SOCKET	"/dev/xen/privcmd"
+#define HYPERVISOR_CAPABILITIES	""
+#define CPUINFO			"/dev/cpu/self/cpuid"
+#else
+#error "unsupported platform"
+#endif
 
 #ifndef PROXY
 static const char * xenHypervisorGetType(virConnectPtr conn);
@@ -789,7 +824,7 @@ xenHypervisorDoV0Op(int handle, xen_op_v0 * op)
     hc.op = __HYPERVISOR_dom0_op;
     hc.arg[0] = (unsigned long) op;
 
-    if (mlock(op, sizeof(dom0_op_t)) < 0) {
+    if (lock_pages(op, sizeof(dom0_op_t)) < 0) {
         virXenError(VIR_ERR_XEN_CALL, " locking", sizeof(*op));
         return (-1);
     }
@@ -799,7 +834,7 @@ xenHypervisorDoV0Op(int handle, xen_op_v0 * op)
         virXenError(VIR_ERR_XEN_CALL, " ioctl ", xen_ioctl_hypercall_cmd);
     }
 
-    if (munlock(op, sizeof(dom0_op_t)) < 0) {
+    if (unlock_pages(op, sizeof(dom0_op_t)) < 0) {
         virXenError(VIR_ERR_XEN_CALL, " releasing", sizeof(*op));
         ret = -1;
     }
@@ -830,7 +865,7 @@ xenHypervisorDoV1Op(int handle, xen_op_v1* op)
     hc.op = __HYPERVISOR_dom0_op;
     hc.arg[0] = (unsigned long) op;
 
-    if (mlock(op, sizeof(dom0_op_t)) < 0) {
+    if (lock_pages(op, sizeof(dom0_op_t)) < 0) {
         virXenError(VIR_ERR_XEN_CALL, " locking", sizeof(*op));
         return (-1);
     }
@@ -840,7 +875,7 @@ xenHypervisorDoV1Op(int handle, xen_op_v1* op)
         virXenError(VIR_ERR_XEN_CALL, " ioctl ", xen_ioctl_hypercall_cmd);
     }
 
-    if (munlock(op, sizeof(dom0_op_t)) < 0) {
+    if (unlock_pages(op, sizeof(dom0_op_t)) < 0) {
         virXenError(VIR_ERR_XEN_CALL, " releasing", sizeof(*op));
         ret = -1;
     }
@@ -872,7 +907,7 @@ xenHypervisorDoV2Sys(int handle, xen_op_v2_sys* op)
     hc.op = __HYPERVISOR_sysctl;
     hc.arg[0] = (unsigned long) op;
 
-    if (mlock(op, sizeof(dom0_op_t)) < 0) {
+    if (lock_pages(op, sizeof(dom0_op_t)) < 0) {
         virXenError(VIR_ERR_XEN_CALL, " locking", sizeof(*op));
         return (-1);
     }
@@ -882,7 +917,7 @@ xenHypervisorDoV2Sys(int handle, xen_op_v2_sys* op)
         virXenError(VIR_ERR_XEN_CALL, " sys ioctl ", xen_ioctl_hypercall_cmd);
     }
 
-    if (munlock(op, sizeof(dom0_op_t)) < 0) {
+    if (unlock_pages(op, sizeof(dom0_op_t)) < 0) {
         virXenError(VIR_ERR_XEN_CALL, " releasing", sizeof(*op));
         ret = -1;
     }
@@ -914,7 +949,7 @@ xenHypervisorDoV2Dom(int handle, xen_op_v2_dom* op)
     hc.op = __HYPERVISOR_domctl;
     hc.arg[0] = (unsigned long) op;
 
-    if (mlock(op, sizeof(dom0_op_t)) < 0) {
+    if (lock_pages(op, sizeof(dom0_op_t)) < 0) {
         virXenError(VIR_ERR_XEN_CALL, " locking", sizeof(*op));
         return (-1);
     }
@@ -924,7 +959,7 @@ xenHypervisorDoV2Dom(int handle, xen_op_v2_dom* op)
         virXenError(VIR_ERR_XEN_CALL, " ioctl ", xen_ioctl_hypercall_cmd);
     }
 
-    if (munlock(op, sizeof(dom0_op_t)) < 0) {
+    if (unlock_pages(op, sizeof(dom0_op_t)) < 0) {
         virXenError(VIR_ERR_XEN_CALL, " releasing", sizeof(*op));
         ret = -1;
     }
@@ -952,7 +987,7 @@ virXen_getdomaininfolist(int handle, int first_domain, int maxids,
 {
     int ret = -1;
 
-    if (mlock(XEN_GETDOMAININFOLIST_DATA(dominfos),
+    if (lock_pages(XEN_GETDOMAININFOLIST_DATA(dominfos),
               XEN_GETDOMAININFO_SIZE * maxids) < 0) {
         virXenError(VIR_ERR_XEN_CALL, " locking",
                     XEN_GETDOMAININFO_SIZE * maxids);
@@ -1008,7 +1043,7 @@ virXen_getdomaininfolist(int handle, int first_domain, int maxids,
         if (ret == 0)
             ret = op.u.getdomaininfolist.num_domains;
     }
-    if (munlock(XEN_GETDOMAININFOLIST_DATA(dominfos),
+    if (unlock_pages(XEN_GETDOMAININFOLIST_DATA(dominfos),
                 XEN_GETDOMAININFO_SIZE * maxids) < 0) {
         virXenError(VIR_ERR_XEN_CALL, " release",
                     XEN_GETDOMAININFO_SIZE * maxids);
@@ -1701,7 +1736,7 @@ virXen_setvcpumap(int handle, int id, unsigned int vcpu,
     if (hypervisor_version > 1) {
         xen_op_v2_dom op;
 
-        if (mlock(cpumap, maplen) < 0) {
+        if (lock_pages(cpumap, maplen) < 0) {
             virXenError(VIR_ERR_XEN_CALL, " locking", maplen);
             return (-1);
         }
@@ -1719,7 +1754,7 @@ virXen_setvcpumap(int handle, int id, unsigned int vcpu,
         }
         ret = xenHypervisorDoV2Dom(handle, &op);
 
-        if (munlock(cpumap, maplen) < 0) {
+        if (unlock_pages(cpumap, maplen) < 0) {
             virXenError(VIR_ERR_XEN_CALL, " release", maplen);
             ret = -1;
         }
@@ -1816,7 +1851,7 @@ virXen_getvcpusinfo(int handle, int id, unsigned int vcpu, virVcpuInfoPtr ipt,
             ipt->cpu = op.u.getvcpuinfod5.online ? (int)op.u.getvcpuinfod5.cpu : -1;
         }
         if ((cpumap != NULL) && (maplen > 0)) {
-            if (mlock(cpumap, maplen) < 0) {
+            if (lock_pages(cpumap, maplen) < 0) {
                 virXenError(VIR_ERR_XEN_CALL, " locking", maplen);
                 return (-1);
             }
@@ -1834,7 +1869,7 @@ virXen_getvcpusinfo(int handle, int id, unsigned int vcpu, virVcpuInfoPtr ipt,
                 op.u.getvcpumapd5.cpumap.nr_cpus = maplen * 8;
             }
             ret = xenHypervisorDoV2Dom(handle, &op);
-            if (munlock(cpumap, maplen) < 0) {
+            if (unlock_pages(cpumap, maplen) < 0) {
                 virXenError(VIR_ERR_XEN_CALL, " release", maplen);
                 ret = -1;
             }
@@ -1985,6 +2020,7 @@ xenHypervisorInit(void)
         goto detect_v2;
     }
 
+#ifndef __sun__
     /*
      * check if the old hypercall are actually working
      */
@@ -2002,6 +2038,7 @@ xenHypervisorInit(void)
         hypervisor_version = 0;
         goto done;
     }
+#endif
 
     /*
      * we faild to make any hypercall
