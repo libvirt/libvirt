@@ -190,9 +190,9 @@ virXendErrorInt(virConnectPtr conn, virErrorNumber error, int val)
 
 
 #define foreach(iterator, start) \
-       	for (_for_i = (start), *iterator = (start)->car; \
+       	for (_for_i = (start), *iterator = (start)->u.s.car; \
              _for_i->kind == SEXPR_CONS; \
-             _for_i = _for_i->cdr, iterator = _for_i->car)
+             _for_i = _for_i->u.s.cdr, iterator = _for_i->u.s.car)
 
 #define foreach_node(iterator, start, path) \
         foreach(iterator, start) \
@@ -662,23 +662,22 @@ xend_node_op(virConnectPtr xend, const char *path, const char *key, ...)
  * Returns 0 in case of success, -1 in case of failure.
  */
 static int
-xend_op_ext(virConnectPtr xend, const char *name, char *error,
-            size_t n_error, const char *key, ...)
+xend_op(virConnectPtr xend, const char *name, const char *key, ...)
 {
     char buffer[1024];
+    char error[1024];
     va_list ap;
     int ret;
 
     snprintf(buffer, sizeof(buffer), "/xend/domain/%s", name);
 
     va_start(ap, key);
-    ret = xend_op_ext2(xend, buffer, error, n_error, key, ap);
+    ret = xend_op_ext2(xend, buffer, error, sizeof(error), key, ap);
     va_end(ap);
 
     return ret;
 }
 
-#define xend_op(xend, name, key, ...) ({char error[1024]; xend_op_ext(xend, name, error, sizeof(error), key, __VA_ARGS__);})
 #endif /* ! PROXY */
 
 /**
@@ -961,11 +960,11 @@ xenDaemonListDomainsOld(virConnectPtr xend)
     if (root == NULL)
         goto error;
 
-    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
-         _for_i = _for_i->cdr, node = _for_i->car) {
+    for (_for_i = root, node = root->u.s.car; _for_i->kind == SEXPR_CONS;
+         _for_i = _for_i->u.s.cdr, node = _for_i->u.s.car) {
         if (node->kind != SEXPR_VALUE)
             continue;
-        extra += strlen(node->value) + 1;
+        extra += strlen(node->u.value) + 1;
         count++;
     }
 
@@ -977,13 +976,13 @@ xenDaemonListDomainsOld(virConnectPtr xend)
     ptr += sizeof(char *) * (count + 1);
 
     i = 0;
-    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
-         _for_i = _for_i->cdr, node = _for_i->car) {
+    for (_for_i = root, node = root->u.s.car; _for_i->kind == SEXPR_CONS;
+         _for_i = _for_i->u.s.cdr, node = _for_i->u.s.car) {
         if (node->kind != SEXPR_VALUE)
             continue;
         ret[i] = ptr;
-        strcpy(ptr, node->value);
-        ptr += strlen(node->value) + 1;
+        strcpy(ptr, node->u.value);
+        ptr += strlen(node->u.value) + 1;
         i++;
     }
 
@@ -1462,8 +1461,8 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
     if ((tmp != NULL) && (tmp[0] != 0))
         virBufferVSprintf(&buf, "    <emulator>%s</emulator>\n", tmp);
 
-    for (cur = root; cur->kind == SEXPR_CONS; cur = cur->cdr) {
-        node = cur->car;
+    for (cur = root; cur->kind == SEXPR_CONS; cur = cur->u.s.cdr) {
+        node = cur->u.s.car;
         /* Normally disks are in a (device (vbd ...)) block
            but blktap disks ended up in a differently named
            (device (tap ....)) block.... */
@@ -1702,8 +1701,8 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
 
     /* in case of HVM we have devices emulation */
     if (hvm) {
-        for (cur = sexpr_lookup(root, "domain/image/hvm"); cur && cur->kind == SEXPR_CONS; cur = cur->cdr) {
-            node = cur->car;
+        for (cur = sexpr_lookup(root, "domain/image/hvm"); cur && cur->kind == SEXPR_CONS; cur = cur->u.s.cdr) {
+            node = cur->u.s.car;
             if (sexpr_lookup(node, "usbdevice")) {
                 tmp = sexpr_node(node, "usbdevice");
                 if (tmp && *tmp) {
@@ -2903,11 +2902,11 @@ xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids)
 
     ret = 0;
 
-    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
-         _for_i = _for_i->cdr, node = _for_i->car) {
+    for (_for_i = root, node = root->u.s.car; _for_i->kind == SEXPR_CONS;
+         _for_i = _for_i->u.s.cdr, node = _for_i->u.s.car) {
         if (node->kind != SEXPR_VALUE)
             continue;
-        id = xenDaemonDomainLookupByName_ids(conn, node->value, NULL);
+        id = xenDaemonDomainLookupByName_ids(conn, node->u.value, NULL);
         if (id >= 0)
             ids[ret++] = (int) id;
         if (ret >= maxids)
@@ -2941,8 +2940,8 @@ xenDaemonNumOfDomains(virConnectPtr conn)
 
     ret = 0;
 
-    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
-         _for_i = _for_i->cdr, node = _for_i->car) {
+    for (_for_i = root, node = root->u.s.car; _for_i->kind == SEXPR_CONS;
+         _for_i = _for_i->u.s.cdr, node = _for_i->u.s.car) {
         if (node->kind != SEXPR_VALUE)
             continue;
 	ret++;
@@ -3110,11 +3109,11 @@ xenDaemonDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
         memset(cpumaps, 0, maxinfo * maplen);
 
     /* scan the sexprs from "(vcpu (number x)...)" and get parameter values */
-    for (s = root; s->kind == SEXPR_CONS; s = s->cdr) {
-        if ((s->car->kind == SEXPR_CONS) &&
-            (s->car->car->kind == SEXPR_VALUE) &&
-            !strcmp(s->car->car->value, "vcpu")) {
-            t = s->car;
+    for (s = root; s->kind == SEXPR_CONS; s = s->u.s.cdr) {
+        if ((s->u.s.car->kind == SEXPR_CONS) &&
+            (s->u.s.car->u.s.car->kind == SEXPR_VALUE) &&
+            !strcmp(s->u.s.car->u.s.car->u.value, "vcpu")) {
+            t = s->u.s.car;
             vcpu = ipt->number = sexpr_int(t, "vcpu/number");
             if ((oln = sexpr_int(t, "vcpu/online")) != 0) {
                 if (sexpr_int(t, "vcpu/running")) ipt->state = VIR_VCPU_RUNNING;
@@ -3131,14 +3130,14 @@ xenDaemonDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
                  * get sexpr from "(cpumap (x y z...))" and convert values
                  * to bitmap
                  */
-                for (t = t->cdr; t->kind == SEXPR_CONS; t = t->cdr)
-                    if ((t->car->kind == SEXPR_CONS) &&
-                        (t->car->car->kind == SEXPR_VALUE) &&
-                        !strcmp(t->car->car->value, "cpumap") &&
-                        (t->car->cdr->kind == SEXPR_CONS)) {
-                        for (t = t->car->cdr->car; t->kind == SEXPR_CONS; t = t->cdr)
-                            if (t->car->kind == SEXPR_VALUE) {
-                                cpu = strtol(t->car->value, NULL, 0);
+                for (t = t->u.s.cdr; t->kind == SEXPR_CONS; t = t->u.s.cdr)
+                    if ((t->u.s.car->kind == SEXPR_CONS) &&
+                        (t->u.s.car->u.s.car->kind == SEXPR_VALUE) &&
+                        !strcmp(t->u.s.car->u.s.car->u.value, "cpumap") &&
+                        (t->u.s.car->u.s.cdr->kind == SEXPR_CONS)) {
+                        for (t = t->u.s.car->u.s.cdr->u.s.car; t->kind == SEXPR_CONS; t = t->u.s.cdr)
+                            if (t->u.s.car->kind == SEXPR_VALUE) {
+                                cpu = strtol(t->u.s.car->u.value, NULL, 0);
                                 if (cpu >= 0 && (VIR_CPU_MAPLEN(cpu+1) <= maplen)) {
                                     VIR_USE_CPU(cpumap, cpu);
                                 }
@@ -3660,8 +3659,8 @@ xenDaemonNumOfDefinedDomains(virConnectPtr conn)
 
     ret = 0;
 
-    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
-         _for_i = _for_i->cdr, node = _for_i->car) {
+    for (_for_i = root, node = root->u.s.car; _for_i->kind == SEXPR_CONS;
+         _for_i = _for_i->u.s.cdr, node = _for_i->u.s.car) {
         if (node->kind != SEXPR_VALUE)
             continue;
         ret++;
@@ -3690,12 +3689,12 @@ int xenDaemonListDefinedDomains(virConnectPtr conn, char **const names, int maxn
 
     ret = 0;
 
-    for (_for_i = root, node = root->car; _for_i->kind == SEXPR_CONS;
-         _for_i = _for_i->cdr, node = _for_i->car) {
+    for (_for_i = root, node = root->u.s.car; _for_i->kind == SEXPR_CONS;
+         _for_i = _for_i->u.s.cdr, node = _for_i->u.s.car) {
         if (node->kind != SEXPR_VALUE)
             continue;
 
-        names[ret++] = strdup(node->value);
+        names[ret++] = strdup(node->u.value);
         if (ret >= maxnames)
             break;
     }

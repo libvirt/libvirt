@@ -1,3 +1,9 @@
+Sat Sep 29 14:05:41 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/sexpr.h, src/sexpr.c, src/virsh.c, src/xend_internal.c:
+	Remove use of anonymous union members in sexpr code.
+	* src/internal.h: Solaris portability fix (Mark Johnson)
+
 Fri Sep 28 16:41:41 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c: Fix crash processing multiple <input> tags

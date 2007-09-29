@@ -29,9 +29,9 @@ struct sexpr {
         struct {
             struct sexpr *car;
             struct sexpr *cdr;
-        };
+        } s;
         char *value;
-    };
+    } u;
 };
 
 /* conversion to/from strings */

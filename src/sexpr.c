@@ -80,11 +80,11 @@ sexpr_free(struct sexpr *sexpr)
 
     switch (sexpr->kind) {
         case SEXPR_CONS:
-            sexpr_free(sexpr->car);
-            sexpr_free(sexpr->cdr);
+            sexpr_free(sexpr->u.s.car);
+            sexpr_free(sexpr->u.s.cdr);
             break;
         case SEXPR_VALUE:
-            free(sexpr->value);
+            free(sexpr->u.value);
             break;
         case SEXPR_NIL:
             break;
@@ -127,12 +127,12 @@ sexpr_string(const char *str, ssize_t len)
         return ret;
     ret->kind = SEXPR_VALUE;
     if (len > 0) {
-        ret->value = strndup(str, len);
+        ret->u.value = strndup(str, len);
     } else {
-        ret->value = strdup(str);
+        ret->u.value = strdup(str);
     }
 
-    if (ret->value == NULL) {
+    if (ret->u.value == NULL) {
         return NULL;
     }
 
@@ -157,8 +157,8 @@ sexpr_cons(struct sexpr *car, struct sexpr *cdr)
     if (ret == NULL)
         return ret;
     ret->kind = SEXPR_CONS;
-    ret->car = car;
-    ret->cdr = cdr;
+    ret->u.s.car = car;
+    ret->u.s.cdr = cdr;
 
     return ret;
 }
@@ -174,12 +174,12 @@ static void
 append(struct sexpr *lst, struct sexpr *value)
 {
     while (lst->kind != SEXPR_NIL) {
-        lst = lst->cdr;
+        lst = lst->u.s.cdr;
     }
 
     lst->kind = SEXPR_CONS;
-    lst->car = value;
-    lst->cdr = sexpr_nil();
+    lst->u.s.car = value;
+    lst->u.s.cdr = sexpr_nil();
 }
 
 /**
@@ -228,18 +228,18 @@ sexpr2string(struct sexpr * sexpr, char *buffer, size_t n_buffer)
             if (tmp == 0)
                 goto error;
             ret += tmp;
-            tmp = sexpr2string(sexpr->car, buffer + ret, n_buffer - ret);
+            tmp = sexpr2string(sexpr->u.s.car, buffer + ret, n_buffer - ret);
             if (tmp == 0)
                 goto error;
             ret += tmp;
-            while (sexpr->cdr->kind != SEXPR_NIL) {
-                sexpr = sexpr->cdr;
+            while (sexpr->u.s.cdr->kind != SEXPR_NIL) {
+                sexpr = sexpr->u.s.cdr;
                 tmp = snprintf(buffer + ret, n_buffer - ret, " ");
                 if (tmp == 0)
                     goto error;
                 ret += tmp;
                 tmp =
-                    sexpr2string(sexpr->car, buffer + ret, n_buffer - ret);
+                    sexpr2string(sexpr->u.s.car, buffer + ret, n_buffer - ret);
                 if (tmp == 0)
                     goto error;
                 ret += tmp;
@@ -250,12 +250,12 @@ sexpr2string(struct sexpr * sexpr, char *buffer, size_t n_buffer)
             ret += tmp;
             break;
         case SEXPR_VALUE:
-            if (strchr(sexpr->value, ' '))
+            if (strchr(sexpr->u.value, ' '))
                 tmp = snprintf(buffer + ret, n_buffer - ret, "'%s'",
-                               sexpr->value);
+                               sexpr->u.value);
             else
                 tmp = snprintf(buffer + ret, n_buffer - ret, "%s",
-                               sexpr->value);
+                               sexpr->u.value);
             if (tmp == 0)
                 goto error;
             ret += tmp;
@@ -346,8 +346,8 @@ _string2sexpr(const char *buffer, size_t * end)
                 ptr++;
             }
 
-            ret->value = strndup(start, ptr - start);
-            if (ret->value == NULL) {
+            ret->u.value = strndup(start, ptr - start);
+            if (ret->u.value == NULL) {
                 virSexprError(VIR_ERR_NO_MEMORY,
                               _("failed to copy a string"));
             }
@@ -361,15 +361,15 @@ _string2sexpr(const char *buffer, size_t * end)
                 ptr++;
             }
 
-            ret->value = strndup(start, ptr - start);
-            if (ret->value == NULL) {
+            ret->u.value = strndup(start, ptr - start);
+            if (ret->u.value == NULL) {
                 virSexprError(VIR_ERR_NO_MEMORY,
                               _("failed to copy a string"));
             }
         }
 
         ret->kind = SEXPR_VALUE;
-        if (ret->value == NULL)
+        if (ret->u.value == NULL)
             goto error;
     }
 
@@ -426,11 +426,11 @@ sexpr_lookup(struct sexpr *sexpr, const char *node)
     ptr = buffer;
     token = strsep(&ptr, "/");
 
-    if (sexpr->kind != SEXPR_CONS || sexpr->car->kind != SEXPR_VALUE) {
+    if (sexpr->kind != SEXPR_CONS || sexpr->u.s.car->kind != SEXPR_VALUE) {
         return NULL;
     }
 
-    if (strcmp(sexpr->car->value, token) != 0) {
+    if (strcmp(sexpr->u.s.car->u.value, token) != 0) {
         return NULL;
     }
 
@@ -440,16 +440,16 @@ sexpr_lookup(struct sexpr *sexpr, const char *node)
         if (token == NULL)
             continue;
 
-        sexpr = sexpr->cdr;
-        for (i = sexpr; i->kind != SEXPR_NIL; i = i->cdr) {
+        sexpr = sexpr->u.s.cdr;
+        for (i = sexpr; i->kind != SEXPR_NIL; i = i->u.s.cdr) {
             if (i->kind != SEXPR_CONS ||
-                i->car->kind != SEXPR_CONS ||
-                i->car->car->kind != SEXPR_VALUE) {
+                i->u.s.car->kind != SEXPR_CONS ||
+                i->u.s.car->u.s.car->kind != SEXPR_VALUE) {
                 continue;
             }
 
-            if (strcmp(i->car->car->value, token) == 0) {
-                sexpr = i->car;
+            if (strcmp(i->u.s.car->u.s.car->u.value, token) == 0) {
+                sexpr = i->u.s.car;
                 break;
             }
         }
@@ -463,10 +463,10 @@ sexpr_lookup(struct sexpr *sexpr, const char *node)
         return NULL;
     }
 
-    if (sexpr->kind != SEXPR_CONS || sexpr->cdr->kind != SEXPR_CONS)
+    if (sexpr->kind != SEXPR_CONS || sexpr->u.s.cdr->kind != SEXPR_CONS)
         return NULL;
 
-    return sexpr->cdr;
+    return sexpr->u.s.cdr;
 }
 
 /**
@@ -484,7 +484,7 @@ sexpr_node(struct sexpr *sexpr, const char *node)
 {
     struct sexpr *n = sexpr_lookup(sexpr, node);
 
-    return (n && n->car->kind == SEXPR_VALUE) ? n->car->value : NULL;
+    return (n && n->u.s.car->kind == SEXPR_VALUE) ? n->u.s.car->u.value : NULL;
 }
 
 /**

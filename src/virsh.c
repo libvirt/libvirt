@@ -4338,9 +4338,9 @@ vshDomainStateToString(int state)
     case VIR_DOMAIN_CRASHED:
         return gettext_noop("crashed");
     default:
-        return gettext_noop("no state");  /* = dom0 state */
+        ;/*FALLTHROUGH*/
     }
-    return NULL;
+    return gettext_noop("no state");  /* = dom0 state */
 }
 
 static const char *
@@ -4354,9 +4354,9 @@ vshDomainVcpuStateToString(int state)
     case VIR_VCPU_RUNNING:
         return gettext_noop("running");
     default:
-        return gettext_noop("no state");
+        ;/*FALLTHROUGH*/
     }
-    return NULL;
+    return gettext_noop("no state");
 }
 
 static int
@@ -4868,7 +4868,7 @@ vshParseArgv(vshControl * ctl, int argc, char **argv)
         }
         last = argv[i];
     }
-    end = end ? : argc;
+    end = end ? end : argc;
 
     /* standard (non-command) options */
     while ((arg = getopt_long(end, argv, "d:hqtc:vrl:", opt, &idx)) != -1) {
