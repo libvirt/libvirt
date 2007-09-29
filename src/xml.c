@@ -1179,6 +1179,14 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
          */
         bootloader = 1;
 	free(str);
+    } else if (virXPathNumber("count(/domain/bootloader)", ctxt, &f) == 0 &&
+               (f > 0)) {
+        virBufferVSprintf(&buf, "(bootloader)");
+        /*
+         * if using a bootloader, the kernel and initrd strings are not
+         * significant and should be discarded
+         */
+        bootloader = 1;        
     }
 
     str = virXPathString("string(/domain/bootloader_args[1])", ctxt);

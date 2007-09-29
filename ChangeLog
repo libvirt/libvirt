@@ -1,3 +1,9 @@
+Sat Sep 29 14:23:41 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/sexpr.h, src/sexpr.c, src/xml.c, src/xend_internal.c: Allow
+	bootloader tag to be empty, to indicate use of default configured
+	bootloader path.
+
 Sat Sep 29 14:05:41 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/sexpr.h, src/sexpr.c, src/virsh.c, src/xend_internal.c:

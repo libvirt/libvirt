@@ -50,4 +50,5 @@ const char *sexpr_node(struct sexpr *sexpr, const char *node);
 const char *sexpr_fmt_node(struct sexpr *sexpr, const char *fmt, ...)
   ATTRIBUTE_FORMAT(printf,2,3);
 struct sexpr *sexpr_lookup(struct sexpr *sexpr, const char *node);
+int sexpr_has(struct sexpr *sexpr, const char *node);
 #endif

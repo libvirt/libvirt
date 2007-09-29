@@ -404,17 +404,18 @@ string2sexpr(const char *buffer)
 
 
 /**
- * sexpr_lookup:
+ * sexpr_lookup_key:
  * @sexpr: a pointer to a parsed S-Expression
  * @node: a path for the sub expression to lookup in the S-Expression
  *
  * Search a sub expression in the S-Expression based on its path
+ * Returns the key node, rather than the data node.
  * NOTE: path are limited to 4096 bytes.
  *
  * Returns the pointer to the sub expression or NULL if not found.
  */
-struct sexpr *
-sexpr_lookup(struct sexpr *sexpr, const char *node)
+static struct sexpr *
+sexpr_lookup_key(struct sexpr *sexpr, const char *node)
 {
     char buffer[4096], *ptr, *token;
 
@@ -463,10 +464,57 @@ sexpr_lookup(struct sexpr *sexpr, const char *node)
         return NULL;
     }
 
-    if (sexpr->kind != SEXPR_CONS || sexpr->u.s.cdr->kind != SEXPR_CONS)
+    return sexpr;
+}
+
+/**
+ * sexpr_lookup:
+ * @sexpr: a pointer to a parsed S-Expression
+ * @node: a path for the sub expression to lookup in the S-Expression
+ *
+ * Search a sub expression in the S-Expression based on its path.
+ * NOTE: path are limited to 4096 bytes.
+ *
+ * Returns the pointer to the sub expression or NULL if not found.
+ */
+struct sexpr *
+sexpr_lookup(struct sexpr *sexpr, const char *node)
+{
+    struct sexpr *s = sexpr_lookup_key(sexpr, node);
+
+    if (s == NULL)
+	return NULL;
+
+    if (s->kind != SEXPR_CONS || s->u.s.cdr->kind != SEXPR_CONS)
         return NULL;
 
-    return sexpr->u.s.cdr;
+    return s->u.s.cdr;
+}
+
+/**
+ * sexpr_has:
+ * @sexpr: a pointer to a parsed S-Expression
+ * @node: a path for the sub expression to lookup in the S-Expression
+ *
+ * Search a sub expression in the S-Expression based on its path.
+ * NOTE: path are limited to 4096 bytes.
+ * NB, even if the key was found sexpr_lookup may return NULL if
+ * the corresponding value was empty
+ *
+ * Returns true if the key was found, false otherwise 
+ */
+int
+sexpr_has(struct sexpr *sexpr, const char *node)
+{
+    struct sexpr *s = sexpr_lookup_key(sexpr, node);
+
+    if (s == NULL)
+	return 0;
+
+    if (s->kind != SEXPR_CONS)
+        return 0;
+
+    return 1;
 }
 
 /**

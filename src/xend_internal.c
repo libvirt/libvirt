@@ -1402,6 +1402,9 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
     if (tmp != NULL) {
         bootloader = 1;
         virBufferVSprintf(&buf, "  <bootloader>%s</bootloader>\n", tmp);
+    } else if (sexpr_has(root, "domain/bootloader")) {
+        bootloader = 1;
+        virBufferVSprintf(&buf, "  <bootloader/>\n");
     }
     tmp = sexpr_node(root, "domain/bootloader_args");
     if (tmp != NULL && bootloader) {
@@ -1414,7 +1417,8 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
     if (domid != 0) {
         if (sexpr_lookup(root, "domain/image")) {
             hvm = sexpr_lookup(root, "domain/image/hvm") ? 1 : 0;
-            xend_parse_sexp_desc_os(conn, root, &buf, hvm, bootloader);
+            if (xend_parse_sexp_desc_os(conn, root, &buf, hvm, bootloader) < 0)
+                goto error;
         }
     }
 
