@@ -21,8 +21,77 @@ PyObject *libvirt_virDomainGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *ar
 PyObject *libvirt_virNetworkGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
 PyObject *libvirt_virGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
 PyObject *libvirt_virConnGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
+PyObject * libvirt_virDomainBlockStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
+PyObject * libvirt_virDomainInterfaceStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
 
+/************************************************************************
+ *									*
+ *		Statistics						*
+ *									*
+ ************************************************************************/
 
+PyObject *
+libvirt_virDomainBlockStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    virDomainPtr domain;
+    PyObject *pyobj_domain;
+    char * path;
+    int c_retval;
+    virDomainBlockStatsStruct stats;
+    PyObject *info;
+
+    if (!PyArg_ParseTuple(args, (char *)"Oz:virDomainBlockStats",
+        &pyobj_domain,&path))
+	return(NULL);
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    c_retval = virDomainBlockStats(domain, path, &stats, sizeof(stats));
+    if (c_retval < 0) {
+        Py_INCREF(Py_None);
+	return(Py_None);
+    }
+
+    /* convert to a Python tupple of long objects */
+    info = PyTuple_New(5);
+    PyTuple_SetItem(info, 0, PyLong_FromLongLong(stats.rd_req));
+    PyTuple_SetItem(info, 1, PyLong_FromLongLong(stats.rd_bytes));
+    PyTuple_SetItem(info, 2, PyLong_FromLongLong(stats.wr_req));
+    PyTuple_SetItem(info, 3, PyLong_FromLongLong(stats.wr_bytes));
+    PyTuple_SetItem(info, 4, PyLong_FromLongLong(stats.errs));
+    return(info);
+}
+
+PyObject *
+libvirt_virDomainInterfaceStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    virDomainPtr domain;
+    PyObject *pyobj_domain;
+    char * path;
+    int c_retval;
+    virDomainInterfaceStatsStruct stats;
+    PyObject *info;
+
+    if (!PyArg_ParseTuple(args, (char *)"Oz:virDomainInterfaceStats",
+        &pyobj_domain,&path))
+	return(NULL);
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    c_retval = virDomainInterfaceStats(domain, path, &stats, sizeof(stats));
+    if (c_retval < 0) {
+        Py_INCREF(Py_None);
+	return(Py_None);
+    }
+
+    /* convert to a Python tupple of long objects */
+    info = PyTuple_New(8);
+    PyTuple_SetItem(info, 0, PyLong_FromLongLong(stats.rx_bytes));
+    PyTuple_SetItem(info, 1, PyLong_FromLongLong(stats.rx_packets));
+    PyTuple_SetItem(info, 2, PyLong_FromLongLong(stats.rx_errs));
+    PyTuple_SetItem(info, 3, PyLong_FromLongLong(stats.rx_drop));
+    PyTuple_SetItem(info, 4, PyLong_FromLongLong(stats.tx_bytes));
+    PyTuple_SetItem(info, 5, PyLong_FromLongLong(stats.tx_packets));
+    PyTuple_SetItem(info, 6, PyLong_FromLongLong(stats.tx_errs));
+    PyTuple_SetItem(info, 7, PyLong_FromLongLong(stats.tx_drop));
+    return(info);
+}
 /************************************************************************
  *									*
  *		Global error handler at the Python level		*
@@ -677,6 +746,8 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virNetworkLookupByUUID", libvirt_virNetworkLookupByUUID, METH_VARARGS, NULL},
     {(char *) "virDomainGetAutostart", libvirt_virDomainGetAutostart, METH_VARARGS, NULL},
     {(char *) "virNetworkGetAutostart", libvirt_virNetworkGetAutostart, METH_VARARGS, NULL},
+    {(char *) "virDomainBlockStats", libvirt_virDomainBlockStats, METH_VARARGS, NULL},
+    {(char *) "virDomainInterfaceStats", libvirt_virDomainInterfaceStats, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 

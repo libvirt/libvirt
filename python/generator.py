@@ -276,6 +276,8 @@ skip_impl = (
     'virDomainLookupByUUID',
     'virNetworkGetUUID',
     'virNetworkLookupByUUID',
+    'virDomainBlockStats',
+    'virDomainInterfaceStats',
 )
 
 def skip_function(name):

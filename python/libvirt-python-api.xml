@@ -63,5 +63,17 @@
       <return type='int' info='the autostart flag, or None in case of error'/>
       <arg name='domain' type='virDomainPtr' info='a network object'/>
     </function>
+    <function name='virDomainBlockStats' file='python'>
+      <info>Extracts block device statistics for a domain</info>
+      <return type='virDomainBlockStats' info='a tuple of statistics'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+      <arg name='path' type='char *' info='the path for the block device'/>
+    </function>
+    <function name='virDomainInterfaceStats' file='python'>
+      <info>Extracts interface device statistics for a domain</info>
+      <return type='virDomainInterfaceStats' info='a tuple of statistics'/>
+      <arg name='domain' type='virDomainPtr' info='a domain object'/>
+      <arg name='path' type='char *' info='the path for the interface device'/>
+    </function>
   </symbols>
 </api>

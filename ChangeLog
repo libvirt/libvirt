@@ -1,3 +1,8 @@
+Sun Sep 30 22:51:11 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* python/generator.py python/libvir.c python/libvirt-python-api.xml:
+	  provide bindings for block and interface statistics
+
 Sun Sep 30 12:27:36 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c: Don't include <bootloader/> for HVM guests
