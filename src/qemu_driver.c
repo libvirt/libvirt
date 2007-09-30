@@ -2705,6 +2705,7 @@ static virDriver qemuDriver = {
     NULL, /* domainBlockStats */
     NULL, /* domainInterfaceStats */
     NULL, /* nodeGetCellsFreeMemory */
+    NULL, /* getFreeMemory */
 };
 
 static virNetworkDriver qemuNetworkDriver = {

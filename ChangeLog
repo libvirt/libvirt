@@ -1,3 +1,20 @@
+Sun Sep 30 14:49:27 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvirt/libvirt.h include/libvirt/libvirt.h.in
+	  src/driver.h src/libvirt.c src/openvz_driver.c src/qemu_driver.c
+	  src/test.c src/xen_unified.c src/xend_internal.c: add new API
+	  virNodeGetFreeMemory(), extends the driver. Lacks remote and
+	  QEmu support though.
+	* src/libvirt.c: allows to fix virNodeGetCellsFreeMemory() adding
+	  parameter check for startCell.
+	* proxy/libvirt_proxy.c src/xend_internal.[ch]
+	  include/libvirt/libvirt.h include/libvirt/libvirt.h.in: applied
+	  vncpasswd dump patch from Mark Johnson but with the
+	  virDomainXMLFlags extension as suggested by Daniel Berrange
+	  this changed a couple of internal APIs too
+	* tests/sexpr2xmldata/sexpr2xml-no-source-cdrom.xml: fix one of the
+	  tests affected by bootloader dump change.
+
 Sat Sep 29 14:30:41 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xen_internal.c, src/xs_internal.c: Solaris hypercall compat

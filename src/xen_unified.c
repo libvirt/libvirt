@@ -1067,6 +1067,25 @@ xenUnifiedNodeGetCellsFreeMemory (virConnectPtr conn, unsigned long long *freeMe
     return -1;
 }
 
+static unsigned long long
+xenUnifiedNodeGetFreeMemory (virConnectPtr conn)
+{
+    unsigned long long freeMem = 0;
+    int ret;
+    GET_PRIVATE (conn);
+
+    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET]) {
+        ret = xenHypervisorNodeGetCellsFreeMemory (conn, &freeMem, 
+                                                    -1, 1);
+	if (ret != 1)
+	    return (0);
+	return(freeMem);
+    }
+
+    xenUnifiedError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return(0);
+}
+
 /*----- Register with libvirt.c, and initialise Xen drivers. -----*/
 
 #define VERSION ((DOM0_INTERFACE_VERSION >> 24) * 1000000 +         \
@@ -1128,6 +1147,7 @@ static virDriver xenUnifiedDriver = {
     .domainBlockStats	= xenUnifiedDomainBlockStats,
     .domainInterfaceStats = xenUnifiedDomainInterfaceStats,
     .nodeGetCellsFreeMemory = xenUnifiedNodeGetCellsFreeMemory,
+    .getFreeMemory = xenUnifiedNodeGetFreeMemory,
 };
 
 /**

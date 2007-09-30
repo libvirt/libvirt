@@ -1338,6 +1338,8 @@ xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf
  * xend_parse_sexp_desc:
  * @conn: the connection associated with the XML
  * @root: the root of the parsed S-Expression
+ * @xendConfigVersion: version of xend
+ * @flags: a combination of virDomainXMLFlags
  *
  * Parse the xend sexp description and turn it into the XML format similar
  * to the one unsed for creation.
@@ -1346,7 +1348,8 @@ xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf
  *         the caller must free() the returned value.
  */
 static char *
-xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersion)
+xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
+                     int xendConfigVersion, int flags)
 {
     struct sexpr *cur, *node;
     const char *tmp;
@@ -1661,11 +1664,17 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
             } else if (tmp && !strcmp(tmp, "vnc")) {
                 int port = xenStoreDomainGetVNCPort(conn, domid);
                 const char *listenAddr = sexpr_node(node, "device/vfb/vnclisten");
+                const char *vncPasswd = NULL;
                 const char *keymap = sexpr_node(node, "device/vfb/keymap");
                 virBufferVSprintf(&buf, "    <input type='mouse' bus='%s'/>\n", hvm ? "ps2": "xen");
                 virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'", port);
                 if (listenAddr)
                     virBufferVSprintf(&buf, " listen='%s'", listenAddr);
+		if (flags & VIR_DOMAIN_XML_SECURE) {
+                    vncPasswd = sexpr_node(node, "device/vfb/vncpasswd");
+		    if (vncPasswd)
+			virBufferVSprintf(&buf, " passwd='%s'", vncPasswd);
+		}
                 if (keymap)
                     virBufferVSprintf(&buf, " keymap='%s'", keymap);
                 virBufferAdd(&buf, "/>\n", 3);
@@ -1727,6 +1736,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
             if (tmp[0] == '1') {
                 int port = xenStoreDomainGetVNCPort(conn, domid);
                 const char *listenAddr = sexpr_fmt_node(root, "domain/image/%s/vnclisten", hvm ? "hvm" : "linux");
+                const char *vncPasswd = NULL;
                 const char *keymap = sexpr_fmt_node(root, "domain/image/%s/keymap", hvm ? "hvm" : "linux");
                 /* For Xen >= 3.0.3, don't generate a fixed port mapping
                  * because it will almost certainly be wrong ! Just leave
@@ -1740,6 +1750,11 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root, int xendConfigVersi
                 virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'", port);
                 if (listenAddr)
                     virBufferVSprintf(&buf, " listen='%s'", listenAddr);
+		if (flags & VIR_DOMAIN_XML_SECURE) {
+		    vncPasswd = sexpr_fmt_node(root, "domain/image/%s/vncpasswd", hvm ? "hvm" : "linux");
+		    if (vncPasswd)
+			virBufferVSprintf(&buf, " passwd='%s'", vncPasswd);
+		}
                 if (keymap)
                     virBufferVSprintf(&buf, " keymap='%s'", keymap);
                 virBufferAdd(&buf, "/>\n", 3);
@@ -1782,7 +1797,7 @@ xend_parse_domain_sexp(virConnectPtr conn, char *sexpr, int xendConfigVersion) {
   if (!root)
       return NULL;
 
-  data = xend_parse_sexp_desc(conn, root, xendConfigVersion);
+  data = xend_parse_sexp_desc(conn, root, xendConfigVersion, 0);
 
   sexpr_free(root);
 
@@ -2601,7 +2616,7 @@ xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory)
    dumpxml will work over proxy for inactive domains
    and this can be removed */
 char *
-xenDaemonDomainDumpXMLByID(virConnectPtr conn, int domid)
+xenDaemonDomainDumpXMLByID(virConnectPtr conn, int domid, int flags)
 {
     char *ret = NULL;
     struct sexpr *root;
@@ -2616,14 +2631,14 @@ xenDaemonDomainDumpXMLByID(virConnectPtr conn, int domid)
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
 
-    ret = xend_parse_sexp_desc(conn, root, priv->xendConfigVersion);
+    ret = xend_parse_sexp_desc(conn, root, priv->xendConfigVersion, flags);
     sexpr_free(root);
 
     return (ret);
 }
 
 char *
-xenDaemonDomainDumpXMLByName(virConnectPtr conn, const char *name)
+xenDaemonDomainDumpXMLByName(virConnectPtr conn, const char *name, int flags)
 {
     char *ret = NULL;
     struct sexpr *root;
@@ -2638,7 +2653,7 @@ xenDaemonDomainDumpXMLByName(virConnectPtr conn, const char *name)
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
 
-    ret = xend_parse_sexp_desc(conn, root, priv->xendConfigVersion);
+    ret = xend_parse_sexp_desc(conn, root, priv->xendConfigVersion, flags);
     sexpr_free(root);
 
     return (ret);
@@ -2656,7 +2671,7 @@ xenDaemonDomainDumpXMLByName(virConnectPtr conn, const char *name)
  *         the caller must free() the returned value.
  */
 char *
-xenDaemonDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
+xenDaemonDomainDumpXML(virDomainPtr domain, int flags)
 {
     xenUnifiedPrivatePtr priv;
 
@@ -2673,9 +2688,9 @@ xenDaemonDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
     }
 
     if (domain->id < 0)
-        return xenDaemonDomainDumpXMLByName(domain->conn, domain->name);
+        return xenDaemonDomainDumpXMLByName(domain->conn, domain->name, flags);
     else
-        return xenDaemonDomainDumpXMLByID(domain->conn, domain->id);
+        return xenDaemonDomainDumpXMLByID(domain->conn, domain->id, flags);
 }
 #endif /* !PROXY */
 

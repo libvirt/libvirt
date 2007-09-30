@@ -109,10 +109,12 @@ int xenDaemonDomainLookupByID(virConnectPtr xend,
 
 
 char *xenDaemonDomainDumpXMLByID(virConnectPtr xend,
-				 int domid);
+				 int domid,
+				 int flags);
 
 char *xenDaemonDomainDumpXMLByName(virConnectPtr xend,
-				   const char *name);
+				   const char *name,
+				   int flags);
 
 /**
  * \brief Lookup information about the host machine

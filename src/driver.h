@@ -262,6 +262,10 @@ typedef int
                      int startCell,
                      int maxCells);
 
+typedef unsigned long long
+    (*virDrvNodeGetFreeMemory)
+		    (virConnectPtr conn);
+
 /**
  * _virDriver:
  *
@@ -330,6 +334,7 @@ struct _virDriver {
     virDrvDomainBlockStats      domainBlockStats;
     virDrvDomainInterfaceStats  domainInterfaceStats;
 	virDrvNodeGetCellsFreeMemory	nodeGetCellsFreeMemory;
+	virDrvNodeGetFreeMemory		getFreeMemory;
 };
 
 typedef int

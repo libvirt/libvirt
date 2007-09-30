@@ -344,6 +344,8 @@ int			virNodeGetInfo		(virConnectPtr conn,
 						 virNodeInfoPtr info);
 char *                  virConnectGetCapabilities (virConnectPtr conn);
 
+unsigned long long	virNodeGetFreeMemory	(virConnectPtr conn);
+
 /*
  * Gather list of running domains
  */
@@ -436,6 +438,17 @@ int			virDomainGetMaxVcpus	(virDomainPtr domain);
 /*
  * XML domain description
  */
+/**
+ * virDomainXMLFlags:
+ *
+ * Flags available for virDomainGetXMLDesc
+ */
+
+typedef enum {
+    VIR_DOMAIN_XML_SECURE = 1, /* dump security sensitive informations too */
+    VIR_DOMAIN_XML_INACTIVE = 2/* dump inactive domain informations */
+} virDomainXMLFlags;
+
 char *			virDomainGetXMLDesc	(virDomainPtr domain,
 						 int flags);
 

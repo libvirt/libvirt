@@ -1642,7 +1642,7 @@ virDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
 /**
  * virDomainGetXMLDesc:
  * @domain: a domain object
- * @flags: and OR'ed set of extraction flags, not used yet
+ * @flags: an OR'ed set of virDomainXMLFlags
  *
  * Provide an XML description of the domain. The description may be reused
  * later to relaunch the domain with virDomainCreateLinux().
@@ -1947,6 +1947,29 @@ virConnectGetCapabilities (virConnectPtr conn)
 
     virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
+}
+
+/**
+ * virNodeGetFreeMemory:
+ * @conn: pointer to the hypervisor connection
+ * 
+ * provides the free memory availble on the Node
+ *
+ * Returns the available free memory in kilobytes or 0 in case of error
+ */
+unsigned long long
+virNodeGetFreeMemory(virConnectPtr conn)
+{
+    if (!VIR_IS_CONNECT (conn)) {
+        virLibConnError (NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
+        return 0;
+    }
+
+    if (conn->driver->getFreeMemory)
+        return conn->driver->getFreeMemory (conn);
+
+    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
+    return 0;
 }
 
 /**

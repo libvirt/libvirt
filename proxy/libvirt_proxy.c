@@ -614,7 +614,7 @@ retry2:
 	    if (req->len != sizeof(virProxyPacket))
 	        goto comm_error;
 
-	    xml = xenDaemonDomainDumpXMLByID(conn, request.data.arg);
+	    xml = xenDaemonDomainDumpXMLByID(conn, request.data.arg, 0);
             if (!xml) {
                 req->data.arg = -1;
                 req->len = sizeof(virProxyPacket);
