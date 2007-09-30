@@ -1401,25 +1401,27 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
     virUUIDFormat(uuid, uuidstr);
     virBufferVSprintf(&buf, "  <uuid>%s</uuid>\n", uuidstr);
 
-    tmp = sexpr_node(root, "domain/bootloader");
-    if (tmp != NULL) {
-        bootloader = 1;
-        virBufferVSprintf(&buf, "  <bootloader>%s</bootloader>\n", tmp);
-    } else if (sexpr_has(root, "domain/bootloader")) {
-        bootloader = 1;
-        virBufferVSprintf(&buf, "  <bootloader/>\n");
-    }
-    tmp = sexpr_node(root, "domain/bootloader_args");
-    if (tmp != NULL && bootloader) {
-        /*
-         * Only insert bootloader_args if there is also a bootloader param
-         */
-        virBufferEscapeString(&buf, "  <bootloader_args>%s</bootloader_args>\n", tmp);
+    hvm = sexpr_lookup(root, "domain/image/hvm") ? 1 : 0;
+    if (!hvm) {
+        tmp = sexpr_node(root, "domain/bootloader");
+        if (tmp != NULL) {
+            bootloader = 1;
+            virBufferVSprintf(&buf, "  <bootloader>%s</bootloader>\n", tmp);
+        } else if (sexpr_has(root, "domain/bootloader")) {
+            bootloader = 1;
+            virBufferVSprintf(&buf, "  <bootloader/>\n");
+        }
+        tmp = sexpr_node(root, "domain/bootloader_args");
+        if (tmp != NULL && bootloader) {
+            /*
+             * Only insert bootloader_args if there is also a bootloader param
+             */
+            virBufferEscapeString(&buf, "  <bootloader_args>%s</bootloader_args>\n", tmp);
+        }
     }
 
     if (domid != 0) {
         if (sexpr_lookup(root, "domain/image")) {
-            hvm = sexpr_lookup(root, "domain/image/hvm") ? 1 : 0;
             if (xend_parse_sexp_desc_os(conn, root, &buf, hvm, bootloader) < 0)
                 goto error;
         }

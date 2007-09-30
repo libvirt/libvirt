@@ -1,3 +1,9 @@
+Sun Sep 30 12:27:36 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Don't include <bootloader/> for HVM guests
+	* tests/sexpr2xmldata/sexpr2xml-no-source-cdrom.xml: revert previous
+	change since HVM doesn't use bootloaders
+
 Sun Sep 30 15:20:36 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: use virNodeGetFreeMemory() for freecell without
