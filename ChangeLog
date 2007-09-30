@@ -1,3 +1,9 @@
+Sun Sep 30 15:20:36 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: use virNodeGetFreeMemory() for freecell without
+	  argument
+	* src/libvirt_sym.version: export virNodeGetFreeMemory()
+
 Sun Sep 30 14:49:27 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvirt/libvirt.h include/libvirt/libvirt.h.in

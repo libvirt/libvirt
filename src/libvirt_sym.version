@@ -59,6 +59,7 @@
 	virNodeGetInfo;
 	virConnectGetCapabilities;
 	virNodeGetCellsFreeMemory;
+	virNodeGetFreeMemory;
 
 	virDomainSetVcpus;
 	virDomainPinVcpu;
