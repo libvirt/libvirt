@@ -168,6 +168,13 @@ fi
 %doc docs/examples/python
 
 %changelog
+* Sun Sep 30 2007 Daniel Veillard <veillard@redhat.com> - 0.3.3-1
+- Release of 0.3.3
+- Avahi support
+- NUMA support
+- lots of assorted improvements, bugfixes and cleanups
+- documentation and localization improvements
+
 * Tue Aug 21 2007 Daniel Veillard <veillard@redhat.com> - 0.3.2-1
 - Release of 0.3.2
 - API for domains migration

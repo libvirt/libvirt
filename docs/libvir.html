@@ -36,6 +36,33 @@ href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progresses.</p>
 
 
+<h3>0.3.3: Sep 30 2007</h3>
+<ul>
+  <li>New features: Avahi mDNS daemon export (Daniel Berrange),
+      NUMA support (Beth Kan) </li>
+  <li>Documentation: cleanups (Toth Istvan), typos (Eduardo Pereira), </li>
+  <li>Bug fixes: memory corruption on large dumps (Masayuki Sunou), fix
+      virsh vncdisplay command exit (Masayuki Sunou), Fix network stats
+      TX/RX result (Richard Jones), warning on Xen 3.0.3 (Richard Jones),
+      missing buffer check in virDomainXMLDevID (Hugh Brock), avoid zombies
+      when using remote (Daniel Berrange), xend connection error message
+      (Richard Jones), avoid ssh tty prompt (Daniel Berrange), username
+      handling for remote URIs (Fabian Deutsch), fix potential crash 
+      on multiple input XML tags (Daniel Berrange), Solaris Xen hypercalls
+      fixup (Mark Johnson)</li>
+  <li>Improvements: OpenVZ support (Shuveb Hussain and Anoop Cyriac),
+      CD-Rom reload on XEn (Hugh Brock), PXE boot got QEmu/KVM (Daniel
+      Berrange), QEmu socket permissions customization (Daniel Berrange),
+      more QEmu support (Richard Jones), better path detection for qemu and
+      dnsmasq (Richard Jones), QEmu flags are per-Domain (Daniel Berrange),
+      virsh freecell command, Solaris portability fixes (Mark Johnson),
+      default bootloader support (Daniel Berrange), new virNodeGetFreeMemory
+      API, vncpasswd extraction in configuration files if secure (Mark
+      Johnson and Daniel Berrange), Python bindings for block and interface
+      statistics</li>
+  <li>Code cleanups: virDrvOpenRemoteFlags definition (Richard Jones),
+      configure tests and output (Daniel Berrange)</li>
+</ul>
 <h3>0.3.2: Aug 21 2007</h3>
 <ul>
   <li>New features: KVM migration and save/restore (Jim Paris), 

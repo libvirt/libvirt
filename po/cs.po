@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: cs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-21 13:55+0200\n"
-"PO-Revision-Date: 2007-01-28 13:55+0100\n"
-"Last-Translator: Milan Kerslager <kerslage@linux.cz>\n"
+"POT-Creation-Date: 2007-09-30 23:00+0200\n"
+"PO-Revision-Date: 2007-09-19 19:45+0100\n"
+"Last-Translator: Vojtěch Horký <vojta.horky@seznam.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -17,2035 +17,2076 @@ msgstr ""
 
 #: src/libvirt.c:412 src/hash.c:664
 msgid "allocating connection"
-msgstr ""
+msgstr "alokuji spojení"
 
 #: src/virterror.c:243
 msgid "warning"
-msgstr ""
+msgstr "varování"
 
 #: src/virterror.c:246
 msgid "error"
-msgstr ""
+msgstr "chyba"
 
 #: src/virterror.c:350
 msgid "No error message provided"
-msgstr ""
+msgstr "Chybová zpráva nebyla zadána"
 
 #: src/virterror.c:405
 #, c-format
 msgid "internal error %s"
-msgstr ""
+msgstr "vnitřní chyba %s"
 
 #: src/virterror.c:407
 msgid "internal error"
-msgstr ""
+msgstr "vnitřní chyba"
 
 #: src/virterror.c:410
 msgid "out of memory"
-msgstr ""
+msgstr "nedostatek paměti"
 
 #: src/virterror.c:414
 msgid "this function is not supported by the hypervisor"
-msgstr ""
+msgstr "tato funkce není hypervizorem podporována"
 
 #: src/virterror.c:416
 #, c-format
 msgid "this function is not supported by the hypervisor: %s"
-msgstr ""
+msgstr "tato funkce - %s - není hypervizorem podporována"
 
 #: src/virterror.c:420
 msgid "could not connect to hypervisor"
-msgstr ""
+msgstr "nepodařilo se spojit s hypervizorem"
 
 #: src/virterror.c:422
 #, c-format
 msgid "could not connect to %s"
-msgstr ""
+msgstr "nepodařilo se připojit k %s"
 
 #: src/virterror.c:426
 msgid "invalid connection pointer in"
-msgstr ""
+msgstr "neplatný ukazatel spojení v"
 
 #: src/virterror.c:428
 #, c-format
 msgid "invalid connection pointer in %s"
-msgstr ""
+msgstr "neplatný ukazatel spojení v %s"
 
 #: src/virterror.c:432
 msgid "invalid domain pointer in"
-msgstr ""
+msgstr "neplatný doménový ukazatel v"
 
 #: src/virterror.c:434
 #, c-format
 msgid "invalid domain pointer in %s"
-msgstr ""
+msgstr "neplatný doménový ukazatel v %s"
 
 #: src/virterror.c:438
 msgid "invalid argument in"
-msgstr ""
+msgstr "neplatný parametr v"
 
 #: src/virterror.c:440
 #, c-format
 msgid "invalid argument in %s"
-msgstr ""
+msgstr "neplatný parametr v %s"
 
 #: src/virterror.c:444
 #, c-format
 msgid "operation failed: %s"
-msgstr ""
+msgstr "selhala operace %s"
 
 #: src/virterror.c:446
 msgid "operation failed"
-msgstr ""
+msgstr "selhala operace"
 
 #: src/virterror.c:450
 #, c-format
 msgid "GET operation failed: %s"
-msgstr ""
+msgstr "operace GET selhala: %s"
 
 #: src/virterror.c:452
 msgid "GET operation failed"
-msgstr ""
+msgstr "operace GET selhala"
 
 #: src/virterror.c:456
 #, c-format
 msgid "POST operation failed: %s"
-msgstr ""
+msgstr "operace POST selhala: %s"
 
 #: src/virterror.c:458
 msgid "POST operation failed"
-msgstr ""
+msgstr "operace POST selhala"
 
 #: src/virterror.c:461
 #, c-format
 msgid "got unknown HTTP error code %d"
-msgstr ""
+msgstr "obdržel jsem neznámý chybový kód HTTP %d"
 
 #: src/virterror.c:465
 #, c-format
 msgid "unknown host %s"
-msgstr ""
+msgstr "neznámý hostitel %s"
 
 #: src/virterror.c:467
 msgid "unknown host"
-msgstr ""
+msgstr "neznámý hostitel"
 
 #: src/virterror.c:471
 #, c-format
 msgid "failed to serialize S-Expr: %s"
-msgstr ""
+msgstr "selhala serializace S-Expr: %s"
 
 #: src/virterror.c:473
 msgid "failed to serialize S-Expr"
-msgstr ""
+msgstr "selhala serializace S-Expr"
 
 #: src/virterror.c:477
 msgid "could not use Xen hypervisor entry"
-msgstr ""
+msgstr "nelze použít položku Xen hypervizoru"
 
 #: src/virterror.c:479
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
-msgstr ""
+msgstr "nelze použít položku Xen hypervizoru %s"
 
 #: src/virterror.c:483
 msgid "could not connect to Xen Store"
-msgstr ""
+msgstr "nelze se připojit ke Xen Store"
 
 #: src/virterror.c:485
 #, c-format
 msgid "could not connect to Xen Store %s"
-msgstr ""
+msgstr "nelze se připojit ke Xen Store %s"
 
 #: src/virterror.c:488
 #, c-format
 msgid "failed Xen syscall %s %d"
-msgstr ""
+msgstr "selhalo systémové volání Xenu %s %d"
 
 #: src/virterror.c:492
 msgid "unknown OS type"
-msgstr ""
+msgstr "neznámý druh OS"
 
 #: src/virterror.c:494
 #, c-format
 msgid "unknown OS type %s"
-msgstr ""
+msgstr "neznámý druh OS %s"
 
 #: src/virterror.c:497
 msgid "missing kernel information"
-msgstr ""
+msgstr "schází informace o kernelu"
 
 #: src/virterror.c:501
 msgid "missing root device information"
-msgstr ""
+msgstr "chybí informace o kořenovém zařízení"
 
 #: src/virterror.c:503
 #, c-format
 msgid "missing root device information in %s"
-msgstr ""
+msgstr "chybí informace o kořenovém zařízení v %s"
 
 #: src/virterror.c:507
 msgid "missing source information for device"
-msgstr ""
+msgstr "chybí zdrojové informace pro zařízení"
 
 #: src/virterror.c:509
 #, c-format
 msgid "missing source information for device %s"
-msgstr ""
+msgstr "chybí zdrojové informace pro zařízení %s"
 
 #: src/virterror.c:513
 msgid "missing target information for device"
-msgstr ""
+msgstr "chybí cílové informace pro zařízení"
 
 #: src/virterror.c:515
 #, c-format
 msgid "missing target information for device %s"
-msgstr ""
+msgstr "chybí cílové informace pro zařízení %s"
 
 #: src/virterror.c:519
 msgid "missing domain name information"
-msgstr ""
+msgstr "chybí informace o doménovém jménu"
 
 #: src/virterror.c:521
 #, c-format
 msgid "missing domain name information in %s"
-msgstr ""
+msgstr "chybí informace o doménovém jménu v %s"
 
 #: src/virterror.c:525
 msgid "missing operating system information"
-msgstr ""
+msgstr "chybí informace o operačním systému"
 
 #: src/virterror.c:527
 #, c-format
 msgid "missing operating system information for %s"
-msgstr ""
+msgstr "chybí informace o operačním systému pro %s"
 
 #: src/virterror.c:531
 msgid "missing devices information"
-msgstr ""
+msgstr "chybí informace o zařízení"
 
 #: src/virterror.c:533
 #, c-format
 msgid "missing devices information for %s"
-msgstr ""
+msgstr "chybí informace o zařízení pro %s"
 
 #: src/virterror.c:537
 msgid "too many drivers registered"
-msgstr ""
+msgstr "registrováno příliš mnoho ovladačů"
 
 #: src/virterror.c:539
 #, c-format
 msgid "too many drivers registered in %s"
-msgstr ""
+msgstr "registrováno příliš mnoho ovladačů v %s"
 
 #: src/virterror.c:543
 msgid "library call failed, possibly not supported"
-msgstr ""
+msgstr "volání knihovny selhalo, pravděpodobně není podporováno"
 
 #: src/virterror.c:545
 #, c-format
 msgid "library call %s failed, possibly not supported"
-msgstr ""
+msgstr "volání knihovny %s selhalo, pravděpodobně není podporováno"
 
 #: src/virterror.c:549
 msgid "XML description not well formed or invalid"
-msgstr ""
+msgstr "XML popis není správně strukturován nebo je  neplatný"
 
 #: src/virterror.c:551
 #, c-format
 msgid "XML description for %s is not well formed or invalid"
-msgstr ""
+msgstr "XML popis pro %s není správně strukturován nebo je neplatný"
 
 #: src/virterror.c:555
 msgid "this domain exists already"
-msgstr ""
+msgstr "tato doména již existuje"
 
 #: src/virterror.c:557
 #, c-format
 msgid "domain %s exists already"
-msgstr ""
+msgstr "doména %s již existuje"
 
 #: src/virterror.c:561
 msgid "operation forbidden for read only access"
-msgstr ""
+msgstr "operace není v režimu pouze pro čtení povolena"
 
 #: src/virterror.c:563
 #, c-format
 msgid "operation %s forbidden for read only access"
-msgstr ""
+msgstr "operace %s není v režimu pouze pro čtení povolena"
 
 #: src/virterror.c:567
 msgid "failed to open configuration file for reading"
-msgstr ""
+msgstr "nepodařilo se otevřít konfigurační soubor pro čtení"
 
 #: src/virterror.c:569
 #, c-format
 msgid "failed to open %s for reading"
-msgstr ""
+msgstr "nepodařilo se otevřít %s pro čtení"
 
 #: src/virterror.c:573
 msgid "failed to read configuration file"
-msgstr ""
+msgstr "nepodařilo se načíst konfigurační soubor"
 
 #: src/virterror.c:575
 #, c-format
 msgid "failed to read configuration file %s"
-msgstr ""
+msgstr "nepodařilo se načíst konfigurační soubor %s"
 
 #: src/virterror.c:579
 msgid "failed to parse configuration file"
-msgstr ""
+msgstr "chyba při parsování konfigurační souboru"
 
 #: src/virterror.c:581
 #, c-format
 msgid "failed to parse configuration file %s"
-msgstr ""
+msgstr "chyba při parsování konfigurační souboru %s"
 
 #: src/virterror.c:585
 msgid "configuration file syntax error"
-msgstr ""
+msgstr "chybná syntaxe konfiguračního souboru"
 
 #: src/virterror.c:587
 #, c-format
 msgid "configuration file syntax error: %s"
-msgstr ""
+msgstr "chybná syntaxe konfiguračního souboru: %s"
 
 #: src/virterror.c:591
 msgid "failed to write configuration file"
-msgstr ""
+msgstr "nepodařilo se zapsat konfigurační soubor"
 
 #: src/virterror.c:593
 #, c-format
 msgid "failed to write configuration file: %s"
-msgstr ""
+msgstr "nepodařilo se zapsat konfigurační soubor: %s"
 
 #: src/virterror.c:597
 msgid "parser error"
-msgstr ""
+msgstr "chyba parseru"
 
 #: src/virterror.c:603
 msgid "invalid network pointer in"
-msgstr ""
+msgstr "neplatný síťový ukazatel v"
 
 #: src/virterror.c:605
 #, c-format
 msgid "invalid network pointer in %s"
-msgstr ""
+msgstr "neplatný síťový ukazatel v %s"
 
 #: src/virterror.c:609
 msgid "this network exists already"
-msgstr ""
+msgstr "tato síť již existuje"
 
 #: src/virterror.c:611
 #, c-format
 msgid "network %s exists already"
-msgstr ""
+msgstr "síť %s již existuje"
 
 #: src/virterror.c:615
 msgid "system call error"
-msgstr ""
+msgstr "chyba systémového volání"
 
 #: src/virterror.c:621
 msgid "RPC error"
-msgstr ""
+msgstr "chyba RPC"
 
 #: src/virterror.c:627
 msgid "GNUTLS call error"
-msgstr ""
+msgstr "chyba volání GNUTLS"
 
 #: src/virterror.c:633
 msgid "Failed to find the network"
-msgstr ""
+msgstr "Nepodařilo se najít síť"
 
 #: src/virterror.c:635
 #, c-format
 msgid "Failed to find the network: %s"
-msgstr ""
+msgstr "Nepodařilo se najít síť: %s"
 
 #: src/virterror.c:639
 msgid "Domain not found"
-msgstr ""
+msgstr "Doména nebyla nalezena"
 
 #: src/virterror.c:641
 #, c-format
 msgid "Domain not found: %s"
-msgstr ""
+msgstr "Doména nebyla nalezena: %s"
 
 #: src/virterror.c:645
 msgid "Network not found"
-msgstr ""
+msgstr "Síť nebyla nalezena"
 
 #: src/virterror.c:647
 #, c-format
 msgid "Network not found: %s"
-msgstr ""
+msgstr "Síť nebyla nalezena: %s"
 
 #: src/virterror.c:651
 msgid "invalid MAC adress"
-msgstr ""
+msgstr "neplatná MAC adresa"
 
 #: src/virterror.c:653
 #, c-format
 msgid "invalid MAC adress: %s"
-msgstr ""
+msgstr "neplatná MAC adresa: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
-msgstr ""
+msgstr "kopíruji obsah uzlu"
 
 #: src/xmlrpc.c:163
 msgid "allocate value array"
-msgstr ""
+msgstr "alokuji pole hodnot"
 
 #: src/xmlrpc.c:196
 msgid "unexpected dict node"
-msgstr ""
+msgstr "neočekávaný příkazový (dict) uzel"
 
 #: src/xmlrpc.c:268
 msgid "unexpected value node"
-msgstr ""
+msgstr "neočekávaná hodnota uzlu"
 
 #: src/xmlrpc.c:431
 msgid "send request"
-msgstr ""
+msgstr "odeslat žádost"
 
 #: src/xmlrpc.c:437
 msgid "unexpected mime type"
-msgstr ""
+msgstr "neočekávaný typ MIME"
 
 #: src/xmlrpc.c:444
 msgid "allocate response"
-msgstr ""
+msgstr "alokovat odpověď"
 
 #: src/xmlrpc.c:452 src/xmlrpc.c:514
 msgid "read response"
-msgstr ""
+msgstr "načíst odpověď"
 
 #: src/xmlrpc.c:484 src/xml.c:265
 msgid "allocate string array"
-msgstr ""
+msgstr "alokovat pole řetězců"
 
 #: src/xmlrpc.c:606
 msgid "parse server response failed"
-msgstr ""
+msgstr "selhalo parsování odpovědi serveru"
 
 #: src/xmlrpc.c:670
 msgid "allocate new context"
-msgstr ""
+msgstr "alokovat nový kontext"
 
 #: src/hash.c:770 src/hash.c:775
 msgid "allocating domain"
-msgstr ""
+msgstr "alokuji doménu"
 
 #: src/hash.c:786
 msgid "failed to add domain to connection hash table"
-msgstr ""
+msgstr "nepodařilo se přidat doménu do tabulky spojení"
 
 #: src/hash.c:838
 msgid "domain missing from connection hash table"
-msgstr ""
+msgstr "doména chybí v tabulce spojení"
 
 #: src/hash.c:903 src/hash.c:908
 msgid "allocating network"
-msgstr ""
+msgstr "alokuji síť"
 
 #: src/hash.c:918
 msgid "failed to add network to connection hash table"
-msgstr ""
+msgstr "nepodařilo se přidat síť do tabulky spojení"
 
 #: src/hash.c:970
 msgid "network missing from connection hash table"
-msgstr ""
+msgstr "síť chybí v tabulce spojení"
 
 #: src/test.c:223 src/test.c:588 src/test.c:1262
 msgid "getting time of day"
-msgstr ""
+msgstr "zjišťuji čas"
 
 #: src/test.c:229 src/test.c:361 src/test.c:387 src/test.c:1537
 msgid "domain"
-msgstr ""
+msgstr "doména"
 
 #: src/test.c:235 src/test.c:421 src/test.c:694
 msgid "creating xpath context"
-msgstr ""
+msgstr "vytvářím kontext XPath"
 
 #: src/test.c:241
 msgid "domain name"
-msgstr ""
+msgstr "doménové jméno"
 
 #: src/test.c:247 src/test.c:251
 msgid "domain uuid"
-msgstr ""
+msgstr "UUID domény"
 
 #: src/test.c:259
 msgid "domain memory"
-msgstr ""
+msgstr "paměť domény"
 
 #: src/test.c:268
 msgid "domain current memory"
-msgstr ""
+msgstr "současná paměť domény"
 
 #: src/test.c:278
 msgid "domain vcpus"
-msgstr ""
+msgstr "VCPU domény"
 
 #: src/test.c:287
 msgid "domain reboot behaviour"
-msgstr ""
+msgstr "chování domény při restartu"
 
 #: src/test.c:297
 msgid "domain poweroff behaviour"
-msgstr ""
+msgstr "chování domény při vypnutní"
 
 #: src/test.c:307
 msgid "domain crash behaviour"
-msgstr ""
+msgstr "chování domény při pádu"
 
 #: src/test.c:380
 msgid "load domain definition file"
-msgstr ""
+msgstr "načíst definiční soubor domény"
 
 #: src/test.c:415 src/test.c:539 src/test.c:564
 msgid "network"
-msgstr ""
+msgstr "síť"
 
-#: src/test.c:427 src/virsh.c:2691
+#: src/test.c:427 src/virsh.c:2733
 msgid "network name"
-msgstr ""
+msgstr "název sítě"
 
-#: src/test.c:435 src/test.c:439 src/virsh.c:2582
+#: src/test.c:435 src/test.c:439 src/virsh.c:2624
 msgid "network uuid"
-msgstr ""
+msgstr "UUID sítě"
 
 #: src/test.c:447
 msgid "network forward"
-msgstr ""
+msgstr "síťové přeposílání"
 
 #: src/test.c:456 src/test.c:466 src/test.c:471
 msgid "ip address"
-msgstr ""
+msgstr "IP adresa"
 
 #: src/test.c:461
 msgid "ip netmask"
-msgstr ""
+msgstr "síťová maska IP"
 
 #: src/test.c:557
 msgid "load network definition file"
-msgstr ""
+msgstr "načíst definiční soubor sítě"
 
 #: src/test.c:673
 msgid "loading host definition file"
-msgstr ""
+msgstr "načíst definiční soubor hostitele"
 
 #: src/test.c:680
 msgid "host"
-msgstr ""
+msgstr "hostitel"
 
 #: src/test.c:688
 msgid "node"
-msgstr ""
+msgstr "uzel"
 
 #: src/test.c:712
 msgid "node cpu numa nodes"
-msgstr ""
+msgstr "uzly CPU NUMA"
 
 #: src/test.c:720
 msgid "node cpu sockets"
-msgstr ""
+msgstr "uzel soketů CPU"
 
 #: src/test.c:728
 msgid "node cpu cores"
-msgstr ""
+msgstr "uzel jader CPU"
 
 #: src/test.c:736
 msgid "node cpu threads"
-msgstr ""
+msgstr "uzel vláken CPU"
 
 #: src/test.c:747
 msgid "node active cpu"
-msgstr ""
+msgstr "uzel aktivních CPU"
 
 #: src/test.c:754
 msgid "node cpu mhz"
-msgstr ""
+msgstr "uzel CPU mhz"
 
 #: src/test.c:769
 msgid "node memory"
-msgstr ""
+msgstr "uzel paměti"
 
 #: src/test.c:775
 msgid "node domain list"
-msgstr ""
+msgstr "uzel seznamu domén"
 
 #: src/test.c:785
 msgid "resolving domain filename"
-msgstr ""
+msgstr "zjišťuji název soubor domény"
 
 #: src/test.c:810
 msgid "resolving network filename"
-msgstr ""
+msgstr "zjišťuji název soubor sítě"
 
 #: src/test.c:908
 msgid "testOpen: supply a path or use test:///default"
-msgstr ""
+msgstr "testOpen: zadejte cestu nebo test:///default"
 
 #: src/test.c:1046
 msgid "too many domains"
-msgstr ""
+msgstr "příliš mnoho domén"
 
 #: src/test.c:1557
 msgid "Domain is already running"
-msgstr ""
+msgstr "Doména již běží"
 
 #: src/test.c:1572
 msgid "Domain is still running"
-msgstr ""
+msgstr "Doména stále běží"
 
 #: src/test.c:1772 src/test.c:1797
 msgid "too many networks"
-msgstr ""
+msgstr "příliš mnoho sítí"
 
 #: src/test.c:1816
 msgid "Network is still running"
-msgstr ""
+msgstr "Síť stále běží"
 
 #: src/test.c:1830
 msgid "Network is already running"
-msgstr ""
+msgstr "Síť již běží"
 
 #: src/sexpr.c:59
 msgid "failed to allocate a node"
-msgstr ""
+msgstr "nepodařilo se alokovat uzel"
 
 #: src/sexpr.c:352 src/sexpr.c:367
 msgid "failed to copy a string"
-msgstr ""
+msgstr "nepodařilo se zkopírovat řetězec"
 
-#: src/xend_internal.c:280 src/xend_internal.c:283
+#: src/xend_internal.c:283 src/xend_internal.c:286
 msgid "failed to read from Xen Daemon"
-msgstr ""
+msgstr "nepodařilo se číst z démona Xen"
 
-#: src/xend_internal.c:594 src/xend_internal.c:812 src/xend_internal.c:1525
-#: src/xend_internal.c:1544
+#: src/xend_internal.c:597 src/xend_internal.c:814 src/xend_internal.c:1534
+#: src/xend_internal.c:1553 src/xend_internal.c:2079
 msgid "allocate new buffer"
-msgstr ""
+msgstr "alokovat nový buffer"
 
-#: src/xend_internal.c:1019
+#: src/xend_internal.c:1021
 msgid "failed to urlencode the create S-Expr"
-msgstr ""
+msgstr "nepodařilo se URL-zakódovat vytvořený S-Expr"
 
-#: src/xend_internal.c:1060
+#: src/xend_internal.c:1062
 msgid "domain information incomplete, missing domid"
-msgstr ""
+msgstr "neúplná informace o doméně, chybí domid"
 
-#: src/xend_internal.c:1066
+#: src/xend_internal.c:1068
 msgid "domain information incorrect domid not numeric"
-msgstr ""
+msgstr "nesprávná informace o doméně, domid není číslo"
 
-#: src/xend_internal.c:1071 src/xend_internal.c:1118
+#: src/xend_internal.c:1073 src/xend_internal.c:1120
 msgid "domain information incomplete, missing uuid"
-msgstr ""
+msgstr "neúplná informace o doméně, chybí UUID"
 
-#: src/xend_internal.c:1110 src/xend_internal.c:1387 src/xend_internal.c:1394
+#: src/xend_internal.c:1112 src/xend_internal.c:1390 src/xend_internal.c:1397
 msgid "domain information incomplete, missing name"
-msgstr ""
+msgstr "neúplná informace o doméně, chybí jméno"
 
-#: src/xend_internal.c:1284 src/xend_internal.c:1315
+#: src/xend_internal.c:1286 src/xend_internal.c:1317
 msgid "domain information incomplete, missing kernel & bootloader"
-msgstr ""
+msgstr "neúplná informace o doméně, chybí jádro a zavaděč"
 
-#: src/xend_internal.c:1375
+#: src/xend_internal.c:1378
 msgid "domain information incomplete, missing id"
-msgstr ""
+msgstr "neúplná informace o doméně, chybí ID"
 
-#: src/xend_internal.c:1494
+#: src/xend_internal.c:1503
 msgid "domain information incomplete, vbd has no dev"
-msgstr ""
-
-#: src/xend_internal.c:1509
-msgid "domain information incomplete, vbd has no src"
-msgstr ""
+msgstr "neúplná informace o doméně, vbd nemá žádné zařízení"
 
 #: src/xend_internal.c:1518
+msgid "domain information incomplete, vbd has no src"
+msgstr "neúplná informace o doméně, vbd nemá žádný zdroj"
+
+#: src/xend_internal.c:1527
 msgid "cannot parse vbd filename, missing driver name"
-msgstr ""
+msgstr "nelze parsovat název souboru vbd, chybí jméno ovladače"
 
-#: src/xend_internal.c:1537
+#: src/xend_internal.c:1546
 msgid "cannot parse vbd filename, missing driver type"
-msgstr ""
+msgstr "nelze parsovat název souboru vbd, chybí druh ovladače"
 
-#: src/xend_internal.c:1923
+#: src/xend_internal.c:1948
+#, fuzzy
+msgid "failed to parse topology information"
+msgstr "nepodařilo se parsovat doménové informace o Xend"
+
+#: src/xend_internal.c:2136
 msgid "failed to parse Xend domain information"
-msgstr ""
+msgstr "nepodařilo se parsovat doménové informace o Xend"
 
-#: src/xend_internal.c:3350
+#: src/xend_internal.c:3604
 #, c-format
 msgid "Failed to create inactive domain %s\n"
-msgstr ""
+msgstr "Nepodařilo se vytvořit neaktivní doménu %s\n"
 
 #: src/virsh.c:309
 msgid "print help"
-msgstr ""
+msgstr "vypsat nápovědu"
 
 #: src/virsh.c:310
 msgid "Prints global help or command specific help."
-msgstr ""
+msgstr "Vypíše souhrnnou nápovědu nebo nápovědu k určenému příkazu."
 
 #: src/virsh.c:316
 msgid "name of command"
-msgstr ""
+msgstr "název příkazu"
 
 #: src/virsh.c:328
 msgid ""
 "Commands:\n"
 "\n"
 msgstr ""
+"Příkazy:\n"
+"\n"
 
 #: src/virsh.c:342
 msgid "autostart a domain"
-msgstr ""
+msgstr "automaticky spustit doménu"
 
 #: src/virsh.c:344
 msgid "Configure a domain to be automatically started at boot."
-msgstr ""
+msgstr "Nastaví doménu, aby byla automaticky spuštěna při startu."
 
 #: src/virsh.c:349 src/virsh.c:450 src/virsh.c:636 src/virsh.c:673
 #: src/virsh.c:730 src/virsh.c:797 src/virsh.c:1077 src/virsh.c:1121
 #: src/virsh.c:1297 src/virsh.c:1342 src/virsh.c:1381 src/virsh.c:1420
-#: src/virsh.c:1459 src/virsh.c:1498 src/virsh.c:1575 src/virsh.c:1662
-#: src/virsh.c:1790 src/virsh.c:1847 src/virsh.c:1904 src/virsh.c:2025
-#: src/virsh.c:2165 src/virsh.c:2866 src/virsh.c:2945 src/virsh.c:3008
-#: src/virsh.c:3062 src/virsh.c:3116 src/virsh.c:3232 src/virsh.c:3353
-#: src/virsh.c:3518
+#: src/virsh.c:1459 src/virsh.c:1498 src/virsh.c:1617 src/virsh.c:1704
+#: src/virsh.c:1832 src/virsh.c:1889 src/virsh.c:1946 src/virsh.c:2067
+#: src/virsh.c:2207 src/virsh.c:2908 src/virsh.c:2988 src/virsh.c:3051
+#: src/virsh.c:3105 src/virsh.c:3159 src/virsh.c:3275 src/virsh.c:3396
+#: src/virsh.c:3561
 msgid "domain name, id or uuid"
-msgstr ""
+msgstr "jméno, id nebo uuid domény"
 
-#: src/virsh.c:350 src/virsh.c:2229
+#: src/virsh.c:350 src/virsh.c:2271
 msgid "disable autostarting"
-msgstr ""
+msgstr "zakázat automatické spuštění"
 
 #: src/virsh.c:371
 #, c-format
 msgid "Failed to mark domain %s as autostarted"
-msgstr ""
+msgstr "Nepodařilo se označit doménu %s jako automaticky spouštěnou"
 
 #: src/virsh.c:374
 #, c-format
 msgid "Failed to unmark domain %s as autostarted"
-msgstr ""
+msgstr "Nepodařilo se odoznačit doménu %s jako automaticky spouštěnou"
 
 #: src/virsh.c:381
 #, c-format
 msgid "Domain %s marked as autostarted\n"
-msgstr ""
+msgstr "Doména %s označena jako automaticky spouštěná\n"
 
 #: src/virsh.c:383
 #, c-format
 msgid "Domain %s unmarked as autostarted\n"
-msgstr ""
+msgstr "Doména %s odoznačena jako automaticky spouštěná\n"
 
 #: src/virsh.c:394
 msgid "(re)connect to hypervisor"
-msgstr ""
+msgstr "(znovu)připojit se k hypervizoru"
 
 #: src/virsh.c:396
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr ""
+"Připojit se k místnímu hypervizoru. Toto je zabudovaný příkaz po spuštění "
+"shellu."
 
 #: src/virsh.c:401
 msgid "hypervisor connection URI"
-msgstr ""
+msgstr "URI spojení hypervizoru"
 
 #: src/virsh.c:402
 msgid "read-only connection"
-msgstr ""
+msgstr "spojení pouze pro čtení"
 
 #: src/virsh.c:414
 msgid "Failed to disconnect from the hypervisor"
-msgstr ""
+msgstr "Nepodařilo se odpojit od hypervizora"
 
 #: src/virsh.c:433
 msgid "Failed to connect to the hypervisor"
-msgstr ""
+msgstr "Nepodařilo se připojit se k hypervizoru"
 
 #: src/virsh.c:443
 msgid "connect to the guest console"
-msgstr ""
+msgstr "připojit se k hostované konzoli"
 
 #: src/virsh.c:445
 msgid "Connect the virtual serial console for the guest"
-msgstr ""
+msgstr "Připojit virtuální sériovou konzoli pro hosta"
 
 #: src/virsh.c:490
 msgid "No console available for domain\n"
-msgstr ""
+msgstr "Žádná konzole není pro doménu dostupná\n"
 
 #: src/virsh.c:508
 msgid "list domains"
-msgstr ""
+msgstr "vypsat domény"
 
 #: src/virsh.c:509
 msgid "Returns list of domains."
-msgstr ""
+msgstr "Vrátí seznam domén."
 
 #: src/virsh.c:514
 msgid "list inactive domains"
-msgstr ""
+msgstr "vypsat neaktivní domény"
 
 #: src/virsh.c:515
 msgid "list inactive & active domains"
-msgstr ""
+msgstr "vypsat neaktivní a aktivní domény"
 
 #: src/virsh.c:537 src/virsh.c:544
 msgid "Failed to list active domains"
-msgstr ""
+msgstr "Nepodařilo se vypsat aktivní domény"
 
 #: src/virsh.c:555 src/virsh.c:564
 msgid "Failed to list inactive domains"
-msgstr ""
+msgstr "Nepodařilo se vypsat neaktivní domény"
 
 #: src/virsh.c:574
 msgid "Id"
-msgstr ""
+msgstr "Id"
 
-#: src/virsh.c:574 src/virsh.c:2514
+#: src/virsh.c:574 src/virsh.c:2556
 msgid "Name"
-msgstr ""
+msgstr "Jméno"
 
-#: src/virsh.c:574 src/virsh.c:2514
+#: src/virsh.c:574 src/virsh.c:2556
 msgid "State"
-msgstr ""
+msgstr "Stav"
 
-#: src/virsh.c:587 src/virsh.c:609 src/virsh.c:4297 src/virsh.c:4313
+#: src/virsh.c:587 src/virsh.c:609 src/virsh.c:4343 src/virsh.c:4359
 msgid "no state"
-msgstr ""
+msgstr "bez stavu"
 
 #: src/virsh.c:630
 msgid "domain state"
-msgstr ""
+msgstr "stav domény"
 
 #: src/virsh.c:631
 msgid "Returns state about a running domain."
-msgstr ""
+msgstr "Vrátí stav běžící domény"
 
 #: src/virsh.c:667
 msgid "get device block stats for a domain"
-msgstr ""
+msgstr "získat stav bloku zařízení domény"
 
 #: src/virsh.c:668
 msgid "Get device block stats for a running domain."
-msgstr ""
+msgstr "Získat stav bloku zařízení běžící domény."
 
 #: src/virsh.c:674
 msgid "block device"
-msgstr ""
+msgstr "blokové zařízení"
 
 #: src/virsh.c:695
 #, c-format
 msgid "Failed to get block stats %s %s"
-msgstr ""
+msgstr "Nepodařilo se získat stav bloků %s %s"
 
 #: src/virsh.c:724
 msgid "get network interface stats for a domain"
-msgstr ""
+msgstr "získat stav síťového rozhraní pro doménu"
 
 #: src/virsh.c:725
 msgid "Get network interface stats for a running domain."
-msgstr ""
+msgstr "Získat stav síťového rozhraní pro běžící doménu."
 
 #: src/virsh.c:731
 msgid "interface device"
-msgstr ""
+msgstr "rozhraní zařízení"
 
 #: src/virsh.c:752
 #, c-format
 msgid "Failed to get interface stats %s %s"
-msgstr ""
+msgstr "Nepodařilo se získat stav rozhraní %s %s"
 
 #: src/virsh.c:791
 msgid "suspend a domain"
-msgstr ""
+msgstr "uspat doménu"
 
 #: src/virsh.c:792
 msgid "Suspend a running domain."
-msgstr ""
+msgstr "Uspat běžící doménu."
 
 #: src/virsh.c:815
 #, c-format
 msgid "Domain %s suspended\n"
-msgstr ""
+msgstr "Doména %s uspána\n"
 
 #: src/virsh.c:817
 #, c-format
 msgid "Failed to suspend domain %s"
-msgstr ""
+msgstr "Nepodařilo se uspat doménu %s"
 
 #: src/virsh.c:830
 msgid "create a domain from an XML file"
-msgstr ""
+msgstr "vytvořit doménu z XML souboru"
 
 #: src/virsh.c:831
 msgid "Create a domain."
-msgstr ""
+msgstr "Vytvořit doménu."
 
 #: src/virsh.c:836 src/virsh.c:944
 msgid "file containing an XML domain description"
-msgstr ""
+msgstr "soubor obsahující XML popis domény"
 
 #: src/virsh.c:851
 #, c-format
 msgid "Failed to open '%s': %s"
-msgstr ""
+msgstr "Nepodařilo se otevřít '%s': %s"
 
 #: src/virsh.c:871
 #, c-format
 msgid "Failed to open '%s': read: %s"
-msgstr ""
+msgstr "Nepodařilo se otevřít '%s': čteno: %s"
 
 #: src/virsh.c:889
 #, c-format
 msgid "Error allocating memory: %s"
-msgstr ""
+msgstr "Chyba při alokaci paměti: %s"
 
 #: src/virsh.c:923
 #, c-format
 msgid "Domain %s created from %s\n"
-msgstr ""
+msgstr "Doména %s vytvořena z %s\n"
 
 #: src/virsh.c:927
 #, c-format
 msgid "Failed to create domain from %s"
-msgstr ""
+msgstr "Nepodařilo se vytvořit doménu z %s"
 
 #: src/virsh.c:938
 msgid "define (but don't start) a domain from an XML file"
-msgstr ""
+msgstr "definovat (ale nespouštět) doménu ze souboru XML"
 
 #: src/virsh.c:939
 msgid "Define a domain."
-msgstr ""
+msgstr "Definovat doménu."
 
 #: src/virsh.c:971
 #, c-format
 msgid "Domain %s defined from %s\n"
-msgstr ""
+msgstr "Doména %s definována z %s\n"
 
 #: src/virsh.c:975
 #, c-format
 msgid "Failed to define domain from %s"
-msgstr ""
+msgstr "Nepodařilo se definovat doménu z %s "
 
 #: src/virsh.c:986
 msgid "undefine an inactive domain"
-msgstr ""
+msgstr "oddefinovat neaktivní doménu"
 
 #: src/virsh.c:987
 msgid "Undefine the configuration for an inactive domain."
-msgstr ""
+msgstr "Oddefinovat nastavení neaktivní domény."
 
-#: src/virsh.c:992 src/virsh.c:2094
+#: src/virsh.c:992 src/virsh.c:2136
 msgid "domain name or uuid"
-msgstr ""
+msgstr "uuid nebo jméno domény"
 
 #: src/virsh.c:1010
 #, c-format
 msgid "Domain %s has been undefined\n"
-msgstr ""
+msgstr "Doména %s byla oddefinována\n"
 
 #: src/virsh.c:1012
 #, c-format
 msgid "Failed to undefine domain %s"
-msgstr ""
+msgstr "Nepodařilo se oddefinovat doménu %s"
 
 #: src/virsh.c:1026
 msgid "start a (previously defined) inactive domain"
-msgstr ""
+msgstr "spustit (dříve definovanou) neaktivní doménu"
 
 #: src/virsh.c:1027
 msgid "Start a domain."
-msgstr ""
+msgstr "Spustit doménu."
 
 #: src/virsh.c:1032
 msgid "name of the inactive domain"
-msgstr ""
+msgstr "Jméno neaktivní domény"
 
 #: src/virsh.c:1049
 msgid "Domain is already active"
-msgstr ""
+msgstr "Doména je již aktivní"
 
 #: src/virsh.c:1055
 #, c-format
 msgid "Domain %s started\n"
-msgstr ""
+msgstr "Doména %s spuštěna\n"
 
 #: src/virsh.c:1058
 #, c-format
 msgid "Failed to start domain %s"
-msgstr ""
+msgstr "Nepodařilo se spustit doménu %s"
 
 #: src/virsh.c:1071
 msgid "save a domain state to a file"
-msgstr ""
+msgstr "uložit stav domény do souboru"
 
 #: src/virsh.c:1072
 msgid "Save a running domain."
-msgstr ""
+msgstr "Uložit běžící doménu."
 
 #: src/virsh.c:1078
 msgid "where to save the data"
-msgstr ""
+msgstr "kam uložit data"
 
 #: src/virsh.c:1100
 #, c-format
 msgid "Domain %s saved to %s\n"
-msgstr ""
+msgstr "Doména %s uložena do %s\n"
 
 #: src/virsh.c:1102
 #, c-format
 msgid "Failed to save domain %s to %s"
-msgstr ""
+msgstr "Nepodařilo se uložit doménu %s do %s"
 
 #: src/virsh.c:1115
 msgid "show/set scheduler parameters"
-msgstr ""
+msgstr "zobrazit/nastavit parametry plánovače"
 
 #: src/virsh.c:1116
 msgid "Show/Set scheduler parameters."
-msgstr ""
+msgstr "Zobrazit/Nastavit parametry plánovače"
 
 #: src/virsh.c:1122
 msgid "weight for XEN_CREDIT"
-msgstr ""
+msgstr "váha pro XEN_CREDIT"
 
 #: src/virsh.c:1123
 msgid "cap for XEN_CREDIT"
-msgstr ""
+msgstr "hlavička (cap) XEN_CREDIT"
 
 #: src/virsh.c:1193 src/virsh.c:1197
 msgid "Scheduler"
-msgstr ""
+msgstr "Plánovač"
 
 #: src/virsh.c:1197
 msgid "Unknown"
-msgstr ""
+msgstr "Neznámý"
 
 #: src/virsh.c:1253
 msgid "restore a domain from a saved state in a file"
-msgstr ""
+msgstr "obnovit doménu z uloženého stavu v souboru"
 
 #: src/virsh.c:1254
 msgid "Restore a domain."
-msgstr ""
+msgstr "Obnovit doménu."
 
 #: src/virsh.c:1259
 msgid "the state to restore"
-msgstr ""
+msgstr "stav k obnovení"
 
 #: src/virsh.c:1278
 #, c-format
 msgid "Domain restored from %s\n"
-msgstr ""
+msgstr "Doména obnovena z %s\n"
 
 #: src/virsh.c:1280
 #, c-format
 msgid "Failed to restore domain from %s"
-msgstr ""
+msgstr "Nepodařilo se obnovit doménu z %s"
 
 #: src/virsh.c:1291
 msgid "dump the core of a domain to a file for analysis"
-msgstr ""
+msgstr "uložit obraz paměti domény do souboru pro analýzu"
 
 #: src/virsh.c:1292
 msgid "Core dump a domain."
-msgstr ""
+msgstr "Uložil jsem obraz paměti (core-dump) domény."
 
 #: src/virsh.c:1298
 msgid "where to dump the core"
-msgstr ""
+msgstr "kam uložit obraz paměti"
 
 #: src/virsh.c:1320
 #, c-format
 msgid "Domain %s dumpd to %s\n"
-msgstr ""
+msgstr "Paměť domény %s uložena do %s\n"
 
 #: src/virsh.c:1322
 #, c-format
 msgid "Failed to core dump domain %s to %s"
-msgstr ""
+msgstr "Nepodařilo se uložit paměť domény %s do %s"
 
 #: src/virsh.c:1336
 msgid "resume a domain"
-msgstr ""
+msgstr "probudit doménu"
 
 #: src/virsh.c:1337
 msgid "Resume a previously suspended domain."
-msgstr ""
+msgstr "Probudit dříve uspanou doménu."
 
 #: src/virsh.c:1360
 #, c-format
 msgid "Domain %s resumed\n"
-msgstr ""
+msgstr "Doména %s probuzena\n"
 
 #: src/virsh.c:1362
 #, c-format
 msgid "Failed to resume domain %s"
-msgstr ""
+msgstr "Nepodařilo se probudit doménu %s"
 
 #: src/virsh.c:1375
 msgid "gracefully shutdown a domain"
-msgstr ""
+msgstr "elegantně vypnout doménu"
 
 #: src/virsh.c:1376
 msgid "Run shutdown in the target domain."
-msgstr ""
+msgstr "Vypnout v cílové doméně."
 
 #: src/virsh.c:1399
 #, c-format
 msgid "Domain %s is being shutdown\n"
-msgstr ""
+msgstr "Doména %s je právě vypínána\n"
 
 #: src/virsh.c:1401
 #, c-format
 msgid "Failed to shutdown domain %s"
-msgstr ""
+msgstr "Nepodařilo se vypnout doménu %s"
 
 #: src/virsh.c:1414
 msgid "reboot a domain"
-msgstr ""
+msgstr "restartovat doménu"
 
 #: src/virsh.c:1415
 msgid "Run a reboot command in the target domain."
-msgstr ""
+msgstr "Restartovat v cílové doméně."
 
 #: src/virsh.c:1438
 #, c-format
 msgid "Domain %s is being rebooted\n"
-msgstr ""
+msgstr "Doména %s se restartuje\n"
 
 #: src/virsh.c:1440
 #, c-format
 msgid "Failed to reboot domain %s"
-msgstr ""
+msgstr "Nepodařilo se restartovat doménu %s"
 
 #: src/virsh.c:1453
 msgid "destroy a domain"
-msgstr ""
+msgstr "zničit doménu"
 
 #: src/virsh.c:1454
 msgid "Destroy a given domain."
-msgstr ""
+msgstr "Zničit danou doménu."
 
 #: src/virsh.c:1477
 #, c-format
 msgid "Domain %s destroyed\n"
-msgstr ""
+msgstr "Doména %s zničena\n"
 
 #: src/virsh.c:1479
 #, c-format
 msgid "Failed to destroy domain %s"
-msgstr ""
+msgstr "Nepodařilo se zničit doménu %s"
 
 #: src/virsh.c:1492
 msgid "domain information"
-msgstr ""
+msgstr "informace o doméně"
 
 #: src/virsh.c:1493
 msgid "Returns basic information about the domain."
-msgstr ""
+msgstr "Vypíše základní informace o doméně."
 
 #: src/virsh.c:1519 src/virsh.c:1521
 msgid "Id:"
-msgstr ""
+msgstr "Id:"
 
 #: src/virsh.c:1522
 msgid "Name:"
-msgstr ""
+msgstr "Jméno:"
 
 #: src/virsh.c:1525
 msgid "UUID:"
-msgstr ""
+msgstr "UUID:"
 
 #: src/virsh.c:1528
 msgid "OS Type:"
-msgstr ""
+msgstr "Druh OS:"
 
-#: src/virsh.c:1533 src/virsh.c:1619
+#: src/virsh.c:1533 src/virsh.c:1661
 msgid "State:"
-msgstr ""
+msgstr "Stav:"
 
-#: src/virsh.c:1536 src/virsh.c:1976
+#: src/virsh.c:1536 src/virsh.c:2018
 msgid "CPU(s):"
-msgstr ""
+msgstr "CPU:"
 
-#: src/virsh.c:1543 src/virsh.c:1626
+#: src/virsh.c:1543 src/virsh.c:1668
 msgid "CPU time:"
-msgstr ""
+msgstr "CPU čas:"
 
 #: src/virsh.c:1547 src/virsh.c:1550
 msgid "Max memory:"
-msgstr ""
+msgstr "Max. paměti:"
 
 #: src/virsh.c:1551
 msgid "no limit"
-msgstr ""
+msgstr "bez limitu"
 
 #: src/virsh.c:1553
 msgid "Used memory:"
-msgstr ""
+msgstr "Použité paměti:"
 
 #: src/virsh.c:1569
-msgid "domain vcpu information"
-msgstr ""
+#, fuzzy
+msgid "NUMA free memory"
+msgstr "Použité paměti:"
 
 #: src/virsh.c:1570
+msgid "display available free memory for the NUMA cell."
+msgstr ""
+
+#: src/virsh.c:1575
+#, fuzzy
+msgid "NUMA cell number"
+msgstr "Buňky NUMA:"
+
+#: src/virsh.c:1599
+msgid "Total"
+msgstr ""
+
+#: src/virsh.c:1611
+msgid "domain vcpu information"
+msgstr "informace o VCPU domény"
+
+#: src/virsh.c:1612
 msgid "Returns basic information about the domain virtual CPUs."
-msgstr ""
+msgstr "Vypíše základní informace o virtuálních CPU domény."
 
-#: src/virsh.c:1617
+#: src/virsh.c:1659
 msgid "VCPU:"
-msgstr ""
+msgstr "VCPU:"
 
-#: src/virsh.c:1618
+#: src/virsh.c:1660
 msgid "CPU:"
-msgstr ""
+msgstr "CPU:"
 
-#: src/virsh.c:1628
+#: src/virsh.c:1670
 msgid "CPU Affinity:"
-msgstr ""
+msgstr "Afinita CPU:"
 
-#: src/virsh.c:1640
+#: src/virsh.c:1682
 msgid "Domain shut off, virtual CPUs not present."
-msgstr ""
+msgstr "Doména vypnuta, nejsou přítomna žádná virtuální CPU."
 
-#: src/virsh.c:1656
+#: src/virsh.c:1698
 msgid "control domain vcpu affinity"
-msgstr ""
+msgstr "řídit afinitu VCPU domény"
 
-#: src/virsh.c:1657
+#: src/virsh.c:1699
 msgid "Pin domain VCPUs to host physical CPUs."
-msgstr ""
+msgstr "Spřáhnout virtuální CPU domény k fyzickým CPU hostitele."
 
-#: src/virsh.c:1663
+#: src/virsh.c:1705
 msgid "vcpu number"
-msgstr ""
+msgstr "počet VCPU"
 
-#: src/virsh.c:1664
+#: src/virsh.c:1706
 msgid "host cpu number(s) (comma separated)"
-msgstr ""
+msgstr "počet CPU hostitele (oddělené čárkami)"
 
-#: src/virsh.c:1719
+#: src/virsh.c:1761
 msgid "cpulist: Invalid format. Empty string."
-msgstr ""
+msgstr "cpu-seznam: Neplatný formát. Prázdný řetězec."
 
-#: src/virsh.c:1729
+#: src/virsh.c:1771
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
+"cpu-seznam: %s: Neplatný formát. Očekávám číslici na pozici %d (poblíž '%c')."
 
-#: src/virsh.c:1739
+#: src/virsh.c:1781
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
 "c')."
 msgstr ""
+"cpu-seznam: %s: Neplatný formát. Očekávám číslici nebo čárku na pozici %d "
+"(poblíž '%c')."
 
-#: src/virsh.c:1746
+#: src/virsh.c:1788
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
-msgstr ""
+msgstr "cpu-seznam: %s: Neplatný formát. Koncová čárka na pozici %d."
 
-#: src/virsh.c:1760
+#: src/virsh.c:1802
 #, c-format
 msgid "Physical CPU %d doesn't exist."
-msgstr ""
+msgstr "Fyzické CPU %d neexistuje."
 
-#: src/virsh.c:1784
+#: src/virsh.c:1826
 msgid "change number of virtual CPUs"
-msgstr ""
+msgstr "změnit počet virtuálních CPU"
 
-#: src/virsh.c:1785
+#: src/virsh.c:1827
 msgid "Change the number of virtual CPUs active in the guest domain."
-msgstr ""
+msgstr "Změnit počet aktivních virtuálních CPU v hostované doméně."
 
-#: src/virsh.c:1791
+#: src/virsh.c:1833
 msgid "number of virtual CPUs"
-msgstr ""
+msgstr "počet virtuálních CPU"
 
-#: src/virsh.c:1811
+#: src/virsh.c:1853
 msgid "Invalid number of virtual CPUs."
-msgstr ""
+msgstr "Neplatný počet virtuálních CPU."
 
-#: src/virsh.c:1823
+#: src/virsh.c:1865
 msgid "Too many virtual CPUs."
-msgstr ""
+msgstr "Příliš mnoho virtuálních CPU."
 
-#: src/virsh.c:1841
+#: src/virsh.c:1883
 msgid "change memory allocation"
-msgstr ""
+msgstr "změnit paměťovou alokaci"
 
-#: src/virsh.c:1842
+#: src/virsh.c:1884
 msgid "Change the current memory allocation in the guest domain."
-msgstr ""
+msgstr "Změnit současnou paměťovou alokaci v hostované doméně."
 
-#: src/virsh.c:1848
+#: src/virsh.c:1890
 msgid "number of kilobytes of memory"
-msgstr ""
+msgstr "počet kilobajtů paměti"
 
-#: src/virsh.c:1869 src/virsh.c:1881 src/virsh.c:1926
+#: src/virsh.c:1911 src/virsh.c:1923 src/virsh.c:1968
 #, c-format
 msgid "Invalid value of %d for memory size"
-msgstr ""
+msgstr "neplatná hodnota %d pro velikost paměti"
 
-#: src/virsh.c:1875
+#: src/virsh.c:1917
 msgid "Unable to verify MaxMemorySize"
-msgstr ""
+msgstr "Nemohu ověřit maximální velikost paměti"
 
-#: src/virsh.c:1898
+#: src/virsh.c:1940
 msgid "change maximum memory limit"
-msgstr ""
+msgstr "změní limit maximální velikosti paměti"
 
-#: src/virsh.c:1899
+#: src/virsh.c:1941
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr ""
+"Změnit limit maximální velikosti alokovatelné paměti v hostované doméně."
 
-#: src/virsh.c:1905
+#: src/virsh.c:1947
 msgid "maximum memory limit in kilobytes"
-msgstr ""
+msgstr "maximální velikost paměti v kilobajtech"
 
-#: src/virsh.c:1932
+#: src/virsh.c:1974
 msgid "Unable to verify current MemorySize"
-msgstr ""
-
-#: src/virsh.c:1939
-msgid "Unable to shrink current MemorySize"
-msgstr ""
-
-#: src/virsh.c:1945
-msgid "Unable to change MaxMemorySize"
-msgstr ""
-
-#: src/virsh.c:1958
-msgid "node information"
-msgstr ""
-
-#: src/virsh.c:1959
-msgid "Returns basic information about the node."
-msgstr ""
-
-#: src/virsh.c:1972
-msgid "failed to get node information"
-msgstr ""
-
-#: src/virsh.c:1975
-msgid "CPU model:"
-msgstr ""
-
-#: src/virsh.c:1977
-msgid "CPU frequency:"
-msgstr ""
-
-#: src/virsh.c:1978
-msgid "CPU socket(s):"
-msgstr ""
-
-#: src/virsh.c:1979
-msgid "Core(s) per socket:"
-msgstr ""
-
-#: src/virsh.c:1980
-msgid "Thread(s) per core:"
-msgstr ""
+msgstr "Nemohu ověřit současnou velikost paměti"
 
 #: src/virsh.c:1981
-msgid "NUMA cell(s):"
-msgstr ""
+msgid "Unable to shrink current MemorySize"
+msgstr "Nemohu zmenšit současnou velikost paměti"
 
-#: src/virsh.c:1982
-msgid "Memory size:"
-msgstr ""
+#: src/virsh.c:1987
+msgid "Unable to change MaxMemorySize"
+msgstr "Nemohu změnit maximální velikost paměti"
 
-#: src/virsh.c:1992
-msgid "capabilities"
-msgstr ""
+#: src/virsh.c:2000
+msgid "node information"
+msgstr "informace o uzlu"
 
-#: src/virsh.c:1993
-msgid "Returns capabilities of hypervisor/driver."
-msgstr ""
+#: src/virsh.c:2001
+msgid "Returns basic information about the node."
+msgstr "Vypíše základní informace o uzlu"
 
-#: src/virsh.c:2006
-msgid "failed to get capabilities"
-msgstr ""
+#: src/virsh.c:2014
+msgid "failed to get node information"
+msgstr "nepodařilo se získat informace o uzlu"
+
+#: src/virsh.c:2017
+msgid "CPU model:"
+msgstr "CPU model:"
 
 #: src/virsh.c:2019
-msgid "domain information in XML"
-msgstr ""
+msgid "CPU frequency:"
+msgstr "Frekvence CPU:"
 
 #: src/virsh.c:2020
+msgid "CPU socket(s):"
+msgstr "CPU soket(y):"
+
+#: src/virsh.c:2021
+msgid "Core(s) per socket:"
+msgstr "Jader na soket:"
+
+#: src/virsh.c:2022
+msgid "Thread(s) per core:"
+msgstr "Vláken na jádro:"
+
+#: src/virsh.c:2023
+msgid "NUMA cell(s):"
+msgstr "Buňky NUMA:"
+
+#: src/virsh.c:2024
+msgid "Memory size:"
+msgstr "Velikost paměti:"
+
+#: src/virsh.c:2034
+msgid "capabilities"
+msgstr "schopnosti"
+
+#: src/virsh.c:2035
+msgid "Returns capabilities of hypervisor/driver."
+msgstr "Vypíše schopnosti hypervizoru/ovladače."
+
+#: src/virsh.c:2048
+msgid "failed to get capabilities"
+msgstr "nepodařilo se zjistit schopnosti"
+
+#: src/virsh.c:2061
+msgid "domain information in XML"
+msgstr "informace o doméně v XML"
+
+#: src/virsh.c:2062
 msgid "Output the domain information as an XML dump to stdout."
-msgstr ""
+msgstr "Vypsat informace o doméně jako XML na standardní výstup."
 
-#: src/virsh.c:2059
+#: src/virsh.c:2101
 msgid "convert a domain id or UUID to domain name"
-msgstr ""
+msgstr "převést ID nebo UUID doména na jméno domény"
 
-#: src/virsh.c:2064
+#: src/virsh.c:2106
 msgid "domain id or uuid"
-msgstr ""
+msgstr "ID nebo UUID domény"
 
-#: src/virsh.c:2089
+#: src/virsh.c:2131
 msgid "convert a domain name or UUID to domain id"
-msgstr ""
-
-#: src/virsh.c:2124
-msgid "convert a domain name or id to domain UUID"
-msgstr ""
-
-#: src/virsh.c:2129
-msgid "domain id or name"
-msgstr ""
-
-#: src/virsh.c:2148
-msgid "failed to get domain UUID"
-msgstr ""
-
-#: src/virsh.c:2158
-msgid "migrate domain to another host"
-msgstr ""
-
-#: src/virsh.c:2159
-msgid "Migrate domain to another host.  Add --live for live migration."
-msgstr ""
-
-#: src/virsh.c:2164
-msgid "live migration"
-msgstr ""
+msgstr "převést jméno nebo UUID domény na ID domény"
 
 #: src/virsh.c:2166
+msgid "convert a domain name or id to domain UUID"
+msgstr "převést jméno nebo ID domény na UUID domény"
+
+#: src/virsh.c:2171
+msgid "domain id or name"
+msgstr "ID nebo jméno domény"
+
+#: src/virsh.c:2190
+msgid "failed to get domain UUID"
+msgstr "nepodařilo se získat UUID domény"
+
+#: src/virsh.c:2200
+msgid "migrate domain to another host"
+msgstr "přenést doménu na jiného hostitele"
+
+#: src/virsh.c:2201
+msgid "Migrate domain to another host.  Add --live for live migration."
+msgstr "Přenést doménu na jiného hostitele. Přidejte --live pro živý přenos."
+
+#: src/virsh.c:2206
+msgid "live migration"
+msgstr "živý přenos"
+
+#: src/virsh.c:2208
 msgid "connection URI of the destination host"
-msgstr ""
+msgstr "URI spojení cílového hostitele"
 
-#: src/virsh.c:2167
+#: src/virsh.c:2209
 msgid "migration URI, usually can be omitted"
-msgstr ""
+msgstr "URI přenosu, obvykle může být vynecháno"
 
-#: src/virsh.c:2189
+#: src/virsh.c:2231
 msgid "migrate: Missing desturi"
-msgstr ""
+msgstr "přenos: Chybí cílové URI"
 
-#: src/virsh.c:2221
+#: src/virsh.c:2263
 msgid "autostart a network"
-msgstr ""
+msgstr "automaticky spustit síť "
 
-#: src/virsh.c:2223
+#: src/virsh.c:2265
 msgid "Configure a network to be automatically started at boot."
-msgstr ""
+msgstr "Nastavit síť, aby byla automaticky spuštěna při startu."
 
-#: src/virsh.c:2228 src/virsh.c:2653
+#: src/virsh.c:2270 src/virsh.c:2695
 msgid "network name or uuid"
-msgstr ""
+msgstr "název nebo UUID sítě"
 
-#: src/virsh.c:2250
+#: src/virsh.c:2292
 #, c-format
 msgid "failed to mark network %s as autostarted"
-msgstr ""
+msgstr "Nepodařilo se označit síť %s jako automaticky spouštěnou"
 
-#: src/virsh.c:2253
+#: src/virsh.c:2295
 #, c-format
 msgid "failed to unmark network %s as autostarted"
-msgstr ""
+msgstr "Nepodařilo se odoznačit síť %s jako automaticky spouštěnou"
 
-#: src/virsh.c:2260
+#: src/virsh.c:2302
 #, c-format
 msgid "Network %s marked as autostarted\n"
-msgstr ""
+msgstr "Síť %s označena jako automaticky spouštěná\n"
 
-#: src/virsh.c:2262
+#: src/virsh.c:2304
 #, c-format
 msgid "Network %s unmarked as autostarted\n"
-msgstr ""
+msgstr "Síť %s odznačena jako automaticky spuštěná\n"
 
-#: src/virsh.c:2272
+#: src/virsh.c:2314
 msgid "create a network from an XML file"
-msgstr ""
+msgstr "vytvořit síť z XML souboru"
 
-#: src/virsh.c:2273
+#: src/virsh.c:2315
 msgid "Create a network."
-msgstr ""
+msgstr "Vytvořit síť."
 
-#: src/virsh.c:2278 src/virsh.c:2326
+#: src/virsh.c:2320 src/virsh.c:2368
 msgid "file containing an XML network description"
-msgstr ""
+msgstr "soubor obsahující XML popis sítě"
 
-#: src/virsh.c:2305
+#: src/virsh.c:2347
 #, c-format
 msgid "Network %s created from %s\n"
-msgstr ""
+msgstr "Síť %s vytvořena z %s\n"
 
-#: src/virsh.c:2308
+#: src/virsh.c:2350
 #, c-format
 msgid "Failed to create network from %s"
-msgstr ""
+msgstr "Nepodařilo se vytvořit síť z %s"
 
-#: src/virsh.c:2320
+#: src/virsh.c:2362
 msgid "define (but don't start) a network from an XML file"
-msgstr ""
+msgstr "definovat (ale nespouštět) síť z XML souboru"
 
-#: src/virsh.c:2321
+#: src/virsh.c:2363
 msgid "Define a network."
-msgstr ""
+msgstr "Definovat síť."
 
-#: src/virsh.c:2353
+#: src/virsh.c:2395
 #, c-format
 msgid "Network %s defined from %s\n"
-msgstr ""
+msgstr "Síť %s definována z %s\n"
 
-#: src/virsh.c:2356
+#: src/virsh.c:2398
 #, c-format
 msgid "Failed to define network from %s"
-msgstr ""
+msgstr "Nepodařilo se definovat síť z %s"
 
-#: src/virsh.c:2368
+#: src/virsh.c:2410
 msgid "destroy a network"
-msgstr ""
+msgstr "zničit síť"
 
-#: src/virsh.c:2369
+#: src/virsh.c:2411
 msgid "Destroy a given network."
-msgstr ""
+msgstr "Zničit zadanou síť."
 
-#: src/virsh.c:2374 src/virsh.c:2414
+#: src/virsh.c:2416 src/virsh.c:2456
 msgid "network name, id or uuid"
-msgstr ""
+msgstr "název, ID nebo UUID sítě"
 
-#: src/virsh.c:2392
+#: src/virsh.c:2434
 #, c-format
 msgid "Network %s destroyed\n"
-msgstr ""
+msgstr "Síť %s zničena\n"
 
-#: src/virsh.c:2394
+#: src/virsh.c:2436
 #, c-format
 msgid "Failed to destroy network %s"
-msgstr ""
-
-#: src/virsh.c:2408
-msgid "network information in XML"
-msgstr ""
-
-#: src/virsh.c:2409
-msgid "Output the network information as an XML dump to stdout."
-msgstr ""
-
-#: src/virsh.c:2449
-msgid "list networks"
-msgstr ""
+msgstr "Nepodařilo se zničit síť %s"
 
 #: src/virsh.c:2450
+msgid "network information in XML"
+msgstr "informace o síti v XML"
+
+#: src/virsh.c:2451
+msgid "Output the network information as an XML dump to stdout."
+msgstr "Vypsat informace o síti jako XML na standardní výstup."
+
+#: src/virsh.c:2491
+msgid "list networks"
+msgstr "vypsat sítě"
+
+#: src/virsh.c:2492
 msgid "Returns list of networks."
-msgstr ""
+msgstr "Vypíše seznam sítí."
 
-#: src/virsh.c:2455
+#: src/virsh.c:2497
 msgid "list inactive networks"
-msgstr ""
+msgstr "vypsat neaktivní sítě"
 
-#: src/virsh.c:2456
+#: src/virsh.c:2498
 msgid "list inactive & active networks"
-msgstr ""
+msgstr "vypsat neaktivní a aktivní sítě"
 
-#: src/virsh.c:2476 src/virsh.c:2484
+#: src/virsh.c:2518 src/virsh.c:2526
 msgid "Failed to list active networks"
-msgstr ""
+msgstr "Nepodařilo se vypsat aktivní sítě"
 
-#: src/virsh.c:2495 src/virsh.c:2504
+#: src/virsh.c:2537 src/virsh.c:2546
 msgid "Failed to list inactive networks"
-msgstr ""
+msgstr "Nepodařilo se vypsat neaktivní sítě"
 
-#: src/virsh.c:2514
+#: src/virsh.c:2556
 msgid "Autostart"
-msgstr ""
+msgstr "Automatické spuštění"
 
-#: src/virsh.c:2529 src/virsh.c:2552
+#: src/virsh.c:2571 src/virsh.c:2594
 msgid "no autostart"
-msgstr ""
-
-#: src/virsh.c:2535
-msgid "active"
-msgstr ""
-
-#: src/virsh.c:2558
-msgid "inactive"
-msgstr ""
+msgstr "bez automatického spuštění"
 
 #: src/virsh.c:2577
+msgid "active"
+msgstr "aktivní"
+
+#: src/virsh.c:2600
+msgid "inactive"
+msgstr "neaktivní"
+
+#: src/virsh.c:2619
 msgid "convert a network UUID to network name"
-msgstr ""
+msgstr "převést UUID sítě na název sítě"
 
-#: src/virsh.c:2608
+#: src/virsh.c:2650
 msgid "start a (previously defined) inactive network"
-msgstr ""
+msgstr "spustit (dříve definovanou) neaktivní síť"
 
-#: src/virsh.c:2609
+#: src/virsh.c:2651
 msgid "Start a network."
-msgstr ""
+msgstr "Spustit síť."
 
-#: src/virsh.c:2614
+#: src/virsh.c:2656
 msgid "name of the inactive network"
-msgstr ""
-
-#: src/virsh.c:2631
-#, c-format
-msgid "Network %s started\n"
-msgstr ""
-
-#: src/virsh.c:2634
-#, c-format
-msgid "Failed to start network %s"
-msgstr ""
-
-#: src/virsh.c:2647
-msgid "undefine an inactive network"
-msgstr ""
-
-#: src/virsh.c:2648
-msgid "Undefine the configuration for an inactive network."
-msgstr ""
-
-#: src/virsh.c:2671
-#, c-format
-msgid "Network %s has been undefined\n"
-msgstr ""
+msgstr "název neaktivní sítě"
 
 #: src/virsh.c:2673
 #, c-format
+msgid "Network %s started\n"
+msgstr "Spuštěna síť %s\n"
+
+#: src/virsh.c:2676
+#, c-format
+msgid "Failed to start network %s"
+msgstr "Selhalo spuštění sítě %s"
+
+#: src/virsh.c:2689
+msgid "undefine an inactive network"
+msgstr "oddefinovat neaktivní síť"
+
+#: src/virsh.c:2690
+msgid "Undefine the configuration for an inactive network."
+msgstr "Oddefinovat nastavení neaktivní sítě."
+
+#: src/virsh.c:2713
+#, c-format
+msgid "Network %s has been undefined\n"
+msgstr "Síť %s byla oddefinována\n"
+
+#: src/virsh.c:2715
+#, c-format
 msgid "Failed to undefine network %s"
-msgstr ""
+msgstr "Nepodařilo se oddefinovat síť %s"
 
-#: src/virsh.c:2686
+#: src/virsh.c:2728
 msgid "convert a network name to network UUID"
-msgstr ""
+msgstr "převést název sítě na UUID sítě"
 
-#: src/virsh.c:2711
+#: src/virsh.c:2753
 msgid "failed to get network UUID"
-msgstr ""
+msgstr "nepodařilo se získat UUID sítě"
 
-#: src/virsh.c:2722
+#: src/virsh.c:2764
 msgid "show version"
-msgstr ""
+msgstr "ukázat verzi"
 
-#: src/virsh.c:2723
+#: src/virsh.c:2765
 msgid "Display the system version information."
-msgstr ""
+msgstr "Zobrazit informace o verzi systému."
 
-#: src/virsh.c:2746
+#: src/virsh.c:2788
 msgid "failed to get hypervisor type"
-msgstr ""
+msgstr "nepodařilo se získat druh hypervizoru"
 
-#: src/virsh.c:2755
+#: src/virsh.c:2797
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
-msgstr ""
-
-#: src/virsh.c:2760
-msgid "failed to get the library version"
-msgstr ""
-
-#: src/virsh.c:2767
-#, c-format
-msgid "Using library: libvir %d.%d.%d\n"
-msgstr ""
-
-#: src/virsh.c:2774
-#, c-format
-msgid "Using API: %s %d.%d.%d\n"
-msgstr ""
-
-#: src/virsh.c:2779
-msgid "failed to get the hypervisor version"
-msgstr ""
-
-#: src/virsh.c:2784
-#, c-format
-msgid "Cannot extract running %s hypervisor version\n"
-msgstr ""
-
-#: src/virsh.c:2791
-#, c-format
-msgid "Running hypervisor: %s %d.%d.%d\n"
-msgstr ""
+msgstr "Kompilováno s knihovnou: libvir %d.%d.%d\n"
 
 #: src/virsh.c:2802
-msgid "print the hypervisor hostname"
-msgstr ""
+msgid "failed to get the library version"
+msgstr "nepodařilo se zjistit verzi knihovny"
+
+#: src/virsh.c:2809
+#, c-format
+msgid "Using library: libvir %d.%d.%d\n"
+msgstr "Používám knihovnu: libvir %d.%d.%d\n"
 
 #: src/virsh.c:2816
+#, c-format
+msgid "Using API: %s %d.%d.%d\n"
+msgstr "Používám API: %s %d.%d.%d\n"
+
+#: src/virsh.c:2821
+msgid "failed to get the hypervisor version"
+msgstr "nepodařilo se získat verzi hypervizora"
+
+#: src/virsh.c:2826
+#, c-format
+msgid "Cannot extract running %s hypervisor version\n"
+msgstr "Nelze získat verzi běžícího %s hypervizora\n"
+
+#: src/virsh.c:2833
+#, c-format
+msgid "Running hypervisor: %s %d.%d.%d\n"
+msgstr "Běžící hypervizor: %s %d.%d.%d\n"
+
+#: src/virsh.c:2844
+msgid "print the hypervisor hostname"
+msgstr "vypsat hostitelské jméno hypervizora"
+
+#: src/virsh.c:2858
 msgid "failed to get hostname"
-msgstr ""
+msgstr "nepodařilo se získat hostitelské jméno"
 
-#: src/virsh.c:2831
+#: src/virsh.c:2873
 msgid "print the hypervisor canonical URI"
-msgstr ""
+msgstr "vypsat kanonické URI hypervizora"
 
-#: src/virsh.c:2845
+#: src/virsh.c:2887
 msgid "failed to get URI"
-msgstr ""
+msgstr "nepodařilo se získat URI"
 
-#: src/virsh.c:2860
+#: src/virsh.c:2902
 msgid "vnc display"
-msgstr ""
+msgstr "VNC display"
 
-#: src/virsh.c:2861
+#: src/virsh.c:2903
 msgid "Output the IP address and port number for the VNC display."
-msgstr ""
+msgstr "Vypíše IP adresu a číslo portu pro VNC display."
 
-#: src/virsh.c:2939
+#: src/virsh.c:2982
 msgid "tty console"
-msgstr ""
+msgstr "TTY konzole"
 
-#: src/virsh.c:2940
+#: src/virsh.c:2983
 msgid "Output the device for the TTY console."
-msgstr ""
+msgstr "Vypsat zařízení pro TTY konzolu."
 
-#: src/virsh.c:3002
+#: src/virsh.c:3045
 msgid "attach device from an XML file"
-msgstr ""
+msgstr "připojit zařízení z XML souboru"
 
-#: src/virsh.c:3003
+#: src/virsh.c:3046
 msgid "Attach device from an XML <file>."
-msgstr ""
+msgstr "Připojit zařízení z XML <souboru>."
 
-#: src/virsh.c:3009 src/virsh.c:3063
+#: src/virsh.c:3052 src/virsh.c:3106
 msgid "XML file"
-msgstr ""
+msgstr "XML soubor"
 
-#: src/virsh.c:3041
+#: src/virsh.c:3084
 #, c-format
 msgid "Failed to attach device from %s"
-msgstr ""
+msgstr "Nepodařilo se připojit zařízení z %s"
 
-#: src/virsh.c:3056
+#: src/virsh.c:3099
 msgid "detach device from an XML file"
-msgstr ""
+msgstr "odpojit zařízení z XML souboru"
 
-#: src/virsh.c:3057
+#: src/virsh.c:3100
 msgid "Detach device from an XML <file>"
-msgstr ""
+msgstr "Odpojit zařízení z XML <souboru>."
 
-#: src/virsh.c:3095
+#: src/virsh.c:3138
 #, c-format
 msgid "Failed to detach device from %s"
-msgstr ""
-
-#: src/virsh.c:3110
-msgid "attach network interface"
-msgstr ""
-
-#: src/virsh.c:3111
-msgid "Attach new network interface."
-msgstr ""
-
-#: src/virsh.c:3117 src/virsh.c:3233
-msgid "network interface type"
-msgstr ""
-
-#: src/virsh.c:3118
-msgid "source of network interface"
-msgstr ""
-
-#: src/virsh.c:3119
-msgid "target network name"
-msgstr ""
-
-#: src/virsh.c:3120 src/virsh.c:3234
-msgid "MAC adress"
-msgstr ""
-
-#: src/virsh.c:3121
-msgid "script used to bridge network interface"
-msgstr ""
+msgstr "Nepodařilo se odpojit zařízení z %s"
 
 #: src/virsh.c:3153
+msgid "attach network interface"
+msgstr "připojit síťové rozhraní"
+
+#: src/virsh.c:3154
+msgid "Attach new network interface."
+msgstr "Připojit nové síťové rozhraní."
+
+#: src/virsh.c:3160 src/virsh.c:3276
+msgid "network interface type"
+msgstr "Druh síťového rozhraní"
+
+#: src/virsh.c:3161
+msgid "source of network interface"
+msgstr "zdroj síťového rozhraní"
+
+#: src/virsh.c:3162
+msgid "target network name"
+msgstr "název cílové sítě"
+
+#: src/virsh.c:3163 src/virsh.c:3277
+msgid "MAC adress"
+msgstr "MAC adresar"
+
+#: src/virsh.c:3164
+msgid "script used to bridge network interface"
+msgstr "skript použitý k přemostění síťového rozhraní"
+
+#: src/virsh.c:3196
 #, c-format
 msgid "No support %s in command 'attach-interface'"
-msgstr ""
+msgstr "Nepodporovaný %s v příkazu 'attach-interface'"
 
-#: src/virsh.c:3226
+#: src/virsh.c:3269
 msgid "detach network interface"
-msgstr ""
+msgstr "odpojit síťové rozhraní"
 
-#: src/virsh.c:3227
+#: src/virsh.c:3270
 msgid "Detach network interface."
-msgstr ""
+msgstr "Odpojit síťové rozhraní."
 
-#: src/virsh.c:3272 src/virsh.c:3277
+#: src/virsh.c:3315 src/virsh.c:3320
 msgid "Failed to get interface information"
-msgstr ""
+msgstr "Nepodařilo se získat informace o rozhraní"
 
-#: src/virsh.c:3285
+#: src/virsh.c:3328
 #, c-format
 msgid "No found interface whose type is %s"
-msgstr ""
+msgstr "Nenalezeno žádné rozhraní typu %s"
 
-#: src/virsh.c:3307
+#: src/virsh.c:3350
 #, c-format
 msgid "No found interface whose MAC address is %s"
-msgstr ""
+msgstr "Nenalezeno žádné rozhraní s MAC adresou %s"
 
-#: src/virsh.c:3313 src/virsh.c:3591
+#: src/virsh.c:3356 src/virsh.c:3634
 msgid "Failed to allocate memory"
-msgstr ""
+msgstr "Nepodařilo se alokovat paměť"
 
-#: src/virsh.c:3318 src/virsh.c:3596
+#: src/virsh.c:3361 src/virsh.c:3639
 msgid "Failed to create XML"
-msgstr ""
+msgstr "Nepodařilo se vytvořit XML"
 
-#: src/virsh.c:3347
+#: src/virsh.c:3390
 msgid "attach disk device"
-msgstr ""
+msgstr "připojit diskové zařízení"
 
-#: src/virsh.c:3348
+#: src/virsh.c:3391
 msgid "Attach new disk device."
-msgstr ""
+msgstr "Připojit nové diskové zařízení"
 
-#: src/virsh.c:3354
+#: src/virsh.c:3397
 msgid "source of disk device"
-msgstr ""
+msgstr "zdroj diskového zařízení"
 
-#: src/virsh.c:3355 src/virsh.c:3519
+#: src/virsh.c:3398 src/virsh.c:3562
 msgid "target of disk device"
-msgstr ""
+msgstr "cíl diskového zařízení"
 
-#: src/virsh.c:3356
+#: src/virsh.c:3399
 msgid "driver of disk device"
-msgstr ""
+msgstr "ovladač diskového zařízení"
 
-#: src/virsh.c:3357
+#: src/virsh.c:3400
 msgid "subdriver of disk device"
-msgstr ""
+msgstr "sub-ovladač diskového zařízení"
 
-#: src/virsh.c:3358
+#: src/virsh.c:3401
 msgid "target device type"
-msgstr ""
+msgstr "druh cílového zařízení"
 
-#: src/virsh.c:3359
+#: src/virsh.c:3402
 msgid "mode of device reading and writing"
-msgstr ""
+msgstr "režim čtení a zápisu na zařízení"
 
-#: src/virsh.c:3390 src/virsh.c:3399 src/virsh.c:3406
+#: src/virsh.c:3433 src/virsh.c:3442 src/virsh.c:3449
 #, c-format
 msgid "No support %s in command 'attach-disk'"
-msgstr ""
+msgstr "Nepodporovaný %s v příkazu 'attach-disk'"
 
-#: src/virsh.c:3512
+#: src/virsh.c:3555
 msgid "detach disk device"
-msgstr ""
+msgstr "odpojit diskové zařízení"
 
-#: src/virsh.c:3513
+#: src/virsh.c:3556
 msgid "Detach disk device."
-msgstr ""
+msgstr "Odpojit diskové zařízení."
 
-#: src/virsh.c:3554 src/virsh.c:3559 src/virsh.c:3566
+#: src/virsh.c:3597 src/virsh.c:3602 src/virsh.c:3609
 msgid "Failed to get disk information"
-msgstr ""
+msgstr "Nepodařilo se získat informace o disku"
 
-#: src/virsh.c:3585
+#: src/virsh.c:3628
 #, c-format
 msgid "No found disk whose target is %s"
-msgstr ""
+msgstr "Nenalezen disk s cílem %s"
 
-#: src/virsh.c:3625
+#: src/virsh.c:3668
 msgid "quit this interactive terminal"
-msgstr ""
+msgstr "ukončit tento interaktivní terminál"
 
-#: src/virsh.c:3765
+#: src/virsh.c:3809
 #, c-format
 msgid "command '%s' requires <%s> option"
-msgstr ""
+msgstr "příkaz '%s' vyžaduje volbu <%s>"
 
-#: src/virsh.c:3766
+#: src/virsh.c:3810
 #, c-format
 msgid "command '%s' requires --%s option"
-msgstr ""
+msgstr "příkaz '%s' vyžaduje volbu --%s"
 
-#: src/virsh.c:3793
+#: src/virsh.c:3837
 #, c-format
 msgid "command '%s' doesn't exist"
-msgstr ""
+msgstr "příkaz '%s' neexistuje"
 
-#: src/virsh.c:3801
+#: src/virsh.c:3845
 msgid "  NAME\n"
-msgstr ""
+msgstr "  JMÉNO\n"
 
-#: src/virsh.c:3805
+#: src/virsh.c:3849
 msgid ""
 "\n"
 "  SYNOPSIS\n"
 msgstr ""
+"\n"
+"  SOUHRN\n"
 
-#: src/virsh.c:3812
+#: src/virsh.c:3856
 msgid ""
 "\n"
 "  DESCRIPTION\n"
 msgstr ""
+"\n"
+"  POPIS\n"
 
-#: src/virsh.c:3816
+#: src/virsh.c:3860
 msgid ""
 "\n"
 "  OPTIONS\n"
 msgstr ""
+"\n"
+"  VOLBY\n"
 
-#: src/virsh.c:3823
+#: src/virsh.c:3867
 #, c-format
 msgid "--%s <number>"
-msgstr ""
+msgstr "--%s <číslo>"
 
-#: src/virsh.c:3825
+#: src/virsh.c:3869
 #, c-format
 msgid "--%s <string>"
-msgstr ""
+msgstr "--%s <řetězec>"
 
-#: src/virsh.c:3944
+#: src/virsh.c:3988
 msgid "undefined domain name or id"
-msgstr ""
+msgstr "nedefinované jméno nebo id domény"
 
-#: src/virsh.c:3977
+#: src/virsh.c:4021
 #, c-format
 msgid "failed to get domain '%s'"
-msgstr ""
+msgstr "nepodařilo se získat doménu '%s'"
 
-#: src/virsh.c:3990
+#: src/virsh.c:4034
 msgid "undefined network name"
-msgstr ""
+msgstr "nedefinovaný název sítě"
 
-#: src/virsh.c:4014
+#: src/virsh.c:4058
 #, c-format
 msgid "failed to get network '%s'"
-msgstr ""
+msgstr "nepodařilo se získat síť '%s'"
 
-#: src/virsh.c:4042
+#: src/virsh.c:4086
 #, c-format
 msgid ""
 "\n"
 "(Time: %.3f ms)\n"
 "\n"
 msgstr ""
+"\n"
+"(Čas: %.3f ms)\n"
+"\n"
 
-#: src/virsh.c:4116
+#: src/virsh.c:4160
 msgid "missing \""
-msgstr ""
+msgstr "chybí \""
 
-#: src/virsh.c:4177
+#: src/virsh.c:4221
 #, c-format
 msgid "unexpected token (command name): '%s'"
-msgstr ""
+msgstr "neočekávaný symbol (příkaz): '%s'"
 
-#: src/virsh.c:4182
+#: src/virsh.c:4226
 #, c-format
 msgid "unknown command: '%s'"
-msgstr ""
+msgstr "neznámý příkaz '%s'"
 
-#: src/virsh.c:4189
+#: src/virsh.c:4233
 #, c-format
 msgid "command '%s' doesn't support option --%s"
-msgstr ""
+msgstr "příkaz '%s' nepodporuje volbu --%s"
 
-#: src/virsh.c:4204
+#: src/virsh.c:4248
 #, c-format
 msgid "expected syntax: --%s <%s>"
-msgstr ""
+msgstr "očekávaná syntaxe: --%s <%s>"
 
-#: src/virsh.c:4207
+#: src/virsh.c:4251
 msgid "number"
-msgstr ""
+msgstr "číslo"
 
-#: src/virsh.c:4207
+#: src/virsh.c:4251
 msgid "string"
-msgstr ""
+msgstr "řetězec"
 
-#: src/virsh.c:4213
+#: src/virsh.c:4257
 #, c-format
 msgid "unexpected data '%s'"
-msgstr ""
+msgstr "neočekávaná data '%s'"
 
-#: src/virsh.c:4235
+#: src/virsh.c:4279
 msgid "OPTION"
-msgstr ""
+msgstr "VOLBA"
 
-#: src/virsh.c:4235
+#: src/virsh.c:4279
 msgid "DATA"
-msgstr ""
+msgstr "DATA"
 
-#: src/virsh.c:4285 src/virsh.c:4311
+#: src/virsh.c:4329 src/virsh.c:4355
 msgid "running"
-msgstr ""
+msgstr "běží"
 
-#: src/virsh.c:4287 src/virsh.c:4309
+#: src/virsh.c:4331 src/virsh.c:4353
 msgid "blocked"
-msgstr ""
+msgstr "blokováno"
 
-#: src/virsh.c:4289
+#: src/virsh.c:4333
 msgid "paused"
-msgstr ""
+msgstr "pozastaveno"
 
-#: src/virsh.c:4291
+#: src/virsh.c:4335
 msgid "in shutdown"
-msgstr ""
+msgstr "vypíná se"
 
-#: src/virsh.c:4293
+#: src/virsh.c:4337
 msgid "shut off"
-msgstr ""
+msgstr "vypnuto"
 
-#: src/virsh.c:4295
+#: src/virsh.c:4339
 msgid "crashed"
-msgstr ""
+msgstr "pád"
 
-#: src/virsh.c:4307
+#: src/virsh.c:4351
 msgid "offline"
-msgstr ""
+msgstr "offline"
 
-#: src/virsh.c:4326
+#: src/virsh.c:4370
 msgid "no valid connection"
-msgstr ""
+msgstr "žádné platné spojení"
 
-#: src/virsh.c:4373
+#: src/virsh.c:4417
 #, c-format
 msgid "%s: error: "
-msgstr ""
+msgstr "%s: chyba:"
 
-#: src/virsh.c:4375
+#: src/virsh.c:4419
 msgid "error: "
-msgstr ""
+msgstr "chyba:"
 
-#: src/virsh.c:4397 src/virsh.c:4409 src/virsh.c:4422
+#: src/virsh.c:4441 src/virsh.c:4453 src/virsh.c:4466
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
-msgstr ""
+msgstr "%s: %d: nepodařilo se alokovat %d bajtů"
 
-#: src/virsh.c:4436
+#: src/virsh.c:4480
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
-msgstr ""
+msgstr "%s: %d: nepodařilo se alokovat %lu bajtů"
 
-#: src/virsh.c:4472
+#: src/virsh.c:4516
 msgid "failed to connect to the hypervisor"
-msgstr ""
+msgstr "nepodařilo se připojit se k hypervizoru"
 
-#: src/virsh.c:4496
+#: src/virsh.c:4540
 msgid "failed to get the log file information"
-msgstr ""
+msgstr "nepodařilo se získat informace z log souboru"
 
-#: src/virsh.c:4501
+#: src/virsh.c:4545
 msgid "the log path is not a file"
-msgstr ""
+msgstr "cesta k log souboru není souborem"
 
-#: src/virsh.c:4507
+#: src/virsh.c:4551
 msgid "failed to open the log file. check the log file path"
 msgstr ""
+"Nepodařilo se otevřít logovací soubor. Zkontrolujte cestu k log souboru"
 
-#: src/virsh.c:4575
+#: src/virsh.c:4619
 msgid "failed to write the log file"
-msgstr ""
+msgstr "nepodařilo se zapsat do log souboru"
 
-#: src/virsh.c:4744
+#: src/virsh.c:4788
 #, c-format
 msgid ""
 "\n"
@@ -2063,143 +2104,165 @@ msgid ""
 "\n"
 "  commands (non interactive mode):\n"
 msgstr ""
+"\n"
+"%s [volby] [příkazy]\n"
+"\n"
+"  volby:\n"
+"    -c | --connect <uri>    URI spojení hypervizora\n"
+"    -r | --readonly         připojit se pouze pro čtení\n"
+"    -d | --debug <num>      úroveň ladících výpisů [0-5]\n"
+"    -h | --help             tato nápověda\n"
+"    -q | --quiet            tichý režim\n"
+"    -t | --timing           vypsat časové informace\n"
+"    -l | --log <file>       zapsat log do souboru\n"
+"    -v | --version          verze programu\n"
+"\n"
+"  příkazy (neinteraktivní režim):\n"
 
-#: src/virsh.c:4762
+#: src/virsh.c:4806
 #, c-format
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
+"\n"
+"  (napište help <příkaz> pro detaily o daném příkazu)\n"
+"\n"
 
-#: src/virsh.c:4858
+#: src/virsh.c:4902
 #, c-format
 msgid "unsupported option '-%c'. See --help."
-msgstr ""
+msgstr "neznámá volba '-%c'. Podívejte se na --help."
 
-#: src/virsh.c:4940
+#: src/virsh.c:4984
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
 msgstr ""
+"Vítejte na %s, interaktivním virtualizačním terminálu.\n"
+"\n"
 
-#: src/virsh.c:4943
+#: src/virsh.c:4987
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
 "\n"
 msgstr ""
+"Napište: 'help' pro nápovědu k příkazům\n"
+"       'quit' pro skončení\n"
+"\n"
 
 #: src/conf.c:156 src/conf.c:205 src/conf.c:488 src/conf.c:525 src/conf.c:553
 #: src/conf.c:631
 msgid "allocating configuration"
-msgstr ""
+msgstr "alokuji nastavení"
 
 #: src/conf.c:340
 msgid "unterminated number"
-msgstr ""
+msgstr "neukončené číslo"
 
 #: src/conf.c:372 src/conf.c:389 src/conf.c:401
 msgid "unterminated string"
-msgstr ""
+msgstr "neukončený řetězec"
 
 #: src/conf.c:429 src/conf.c:482
 msgid "expecting a value"
-msgstr ""
+msgstr "očekávám hodnotu"
 
 #: src/conf.c:449
 msgid "expecting a separator in list"
-msgstr ""
+msgstr "očekávám v seznamu oddělovač"
 
 #: src/conf.c:472
 msgid "list is not closed with ] "
-msgstr ""
+msgstr "seznam není ukončen ]"
 
 #: src/conf.c:518
 msgid "expecting a name"
-msgstr ""
+msgstr "očekávám jméno"
 
 #: src/conf.c:581
 msgid "expecting a separator"
-msgstr ""
+msgstr "očekávám oddělovač"
 
 #: src/conf.c:613
 msgid "expecting an assignment"
-msgstr ""
+msgstr "očekávám přiřazení"
 
 #: src/conf.c:887 src/conf.c:941
 msgid "failed to allocate buffer"
-msgstr ""
+msgstr "nepodařilo se alokovat buffer"
 
 #: src/conf.c:899
 msgid "failed to open file"
-msgstr ""
+msgstr "nepodařilo se otevřít soubor"
 
 #: src/conf.c:907
 msgid "failed to save content"
-msgstr ""
+msgstr "nepodařilo se uložit obsah"
 
-#: src/xs_internal.c:340
+#: src/xs_internal.c:346
 msgid "failed to connect to Xen Store"
-msgstr ""
+msgstr "nepodařilo se připojit ke Xen Store"
 
 #: src/proxy_internal.c:195
 #, c-format
 msgid "failed to exec %s\n"
-msgstr ""
+msgstr "nepodařilo se spustit %s\n"
 
 #: src/proxy_internal.c:289
 #, c-format
 msgid "Failed to close socket %d\n"
-msgstr ""
+msgstr "Nepodařilo se zavřít soket %d\n"
 
 #: src/proxy_internal.c:322
 #, c-format
 msgid "Failed to read socket %d\n"
-msgstr ""
+msgstr "Nepodařilo se číst ze soketu %d\n"
 
 #: src/proxy_internal.c:356
 #, c-format
 msgid "Failed to write to socket %d\n"
-msgstr ""
+msgstr "Nepodařilo se zapsat do soketu %d\n"
 
 #: src/proxy_internal.c:448 src/proxy_internal.c:469 src/proxy_internal.c:489
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
-msgstr ""
+msgstr "Chyba při komunikací s proxy: získal jsem %d bajtů z %d\n"
 
 #: src/proxy_internal.c:456
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
-msgstr ""
+msgstr "Chyba při komunikací s proxy: očekáváno %d bajtů, získáno %d\n"
 
 #: src/proxy_internal.c:478
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
-msgstr ""
+msgstr "Chyba při komunikací s proxy: získal jsem %d bajtů z paketu\n"
 
 #: src/proxy_internal.c:502
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
-msgstr ""
+msgstr "Chyba při komunikací s proxy: poškozený paket\n"
 
 #: src/proxy_internal.c:508
 #, c-format
 msgid "got asynchronous packet number %d\n"
-msgstr ""
+msgstr "získal jsem asynchronní číslo paketu %d\n"
 
-#: src/xen_internal.c:1270
+#: src/xen_internal.c:1321
 #, c-format
 msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
-msgstr ""
+msgstr "Váhový parametr plánovače (%d) je mimo rozsah (1-65535)."
 
-#: src/xen_internal.c:1280
+#: src/xen_internal.c:1331
 #, c-format
 msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
-msgstr ""
+msgstr "Hlavičkový parametr plánovače (%d) je mimo rozsah (1-65535)."
 
-#: src/xen_internal.c:2519
+#: src/xen_internal.c:2598
 #, c-format
 msgid "allocating %d domain info"
-msgstr ""
+msgstr "alokuji %d informace o doméně"

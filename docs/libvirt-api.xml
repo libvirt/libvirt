@@ -35,9 +35,11 @@
      <exports symbol='VIR_VCPU_BLOCKED' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_INT' type='enum'/>
      <exports symbol='VIR_DOMAIN_PAUSED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_XML_INACTIVE' type='enum'/>
      <exports symbol='VIR_DOMAIN_NONE' type='enum'/>
      <exports symbol='VIR_DOMAIN_NOSTATE' type='enum'/>
      <exports symbol='VIR_DOMAIN_RENAME_RESTART' type='enum'/>
+     <exports symbol='VIR_DOMAIN_XML_SECURE' type='enum'/>
      <exports symbol='virDomainBlockStatsStruct' type='typedef'/>
      <exports symbol='virDomainMigrateFlags' type='typedef'/>
      <exports symbol='virNodeInfo' type='typedef'/>
@@ -60,6 +62,7 @@
      <exports symbol='virSchedParameter' type='typedef'/>
      <exports symbol='virVcpuState' type='typedef'/>
      <exports symbol='virVcpuInfoPtr' type='typedef'/>
+     <exports symbol='virDomainXMLFlags' type='typedef'/>
      <exports symbol='virDomainPtr' type='typedef'/>
      <exports symbol='virDomainCreateFlags' type='typedef'/>
      <exports symbol='_virDomainInfo' type='struct'/>
@@ -87,6 +90,7 @@
      <exports symbol='virDomainRestore' type='function'/>
      <exports symbol='virConnectGetType' type='function'/>
      <exports symbol='virNetworkLookupByName' type='function'/>
+     <exports symbol='virNodeGetFreeMemory' type='function'/>
      <exports symbol='virDomainGetSchedulerParameters' type='function'/>
      <exports symbol='virDomainCreate' type='function'/>
      <exports symbol='virConnectListDomains' type='function'/>
@@ -304,6 +308,8 @@
     <enum name='VIR_DOMAIN_SCHED_FIELD_ULLONG' file='libvirt' value='4' type='virSchedParameterType' info='unsigned long long case'/>
     <enum name='VIR_DOMAIN_SHUTDOWN' file='libvirt' value='4' type='virDomainState' info='the domain is being shut down'/>
     <enum name='VIR_DOMAIN_SHUTOFF' file='libvirt' value='5' type='virDomainState' info='the domain is shut off'/>
+    <enum name='VIR_DOMAIN_XML_INACTIVE' file='libvirt' value='2' type='virDomainXMLFlags' info=' dump inactive domain informations'/>
+    <enum name='VIR_DOMAIN_XML_SECURE' file='libvirt' value='1' type='virDomainXMLFlags' info='dump security sensitive informations too'/>
     <enum name='VIR_ERR_CALL_FAILED' file='virterror' value='26' type='virErrorNumber' info='not supported by the drivers (DEPRECATED)'/>
     <enum name='VIR_ERR_CONF_SYNTAX' file='virterror' value='33' type='virErrorNumber' info='failed to parse the syntax of a conf file'/>
     <enum name='VIR_ERR_DOM_EXIST' file='virterror' value='28' type='virErrorNumber' info='the domain already exist'/>
@@ -416,6 +422,7 @@
     </typedef>
     <typedef name='virDomainRestart' file='libvirt' type='enum'/>
     <typedef name='virDomainState' file='libvirt' type='enum'/>
+    <typedef name='virDomainXMLFlags' file='libvirt' type='enum'/>
     <struct name='virError' file='virterror' type='struct _virError'>
       <field name='code' type='int' info=' The error code, a virErrorNumber'/>
       <field name='domain' type='int' info=' What part of the library raised this error'/>
@@ -730,7 +737,7 @@
       <info>Provide an XML description of the domain. The description may be reused later to relaunch the domain with virDomainCreateLinux().</info>
       <return type='char *' info='a 0 terminated UTF-8 encoded XML instance, or NULL in case of error. the caller must free() the returned value.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
-      <arg name='flags' type='int' info='and OR&apos;ed set of extraction flags, not used yet'/>
+      <arg name='flags' type='int' info='an OR&apos;ed set of virDomainXMLFlags'/>
     </function>
     <function name='virDomainInterfaceStats' file='libvirt' module='libvirt'>
       <info>This function returns network interface stats for interfaces attached to the domain.  The path parameter is the name of the network interface.  Domains may have more than network interface.  To get stats for each you should make multiple calls to this function.  Individual fields within the stats structure may be returned as -1, which indicates that the hypervisor does not support that particular statistic.</info>
@@ -974,6 +981,11 @@
       <arg name='freeMems' type='unsigned long long *' info='pointer to the array of unsigned long long'/>
       <arg name='startCell' type='int' info='index of first cell to return freeMems info on.'/>
       <arg name='maxCells' type='int' info='Maximum number of cells for which freeMems information can be returned.'/>
+    </function>
+    <function name='virNodeGetFreeMemory' file='libvirt' module='libvirt'>
+      <info>provides the free memory availble on the Node</info>
+      <return type='unsigned long long' info='the available free memory in kilobytes or 0 in case of error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virNodeGetInfo' file='libvirt' module='libvirt'>
       <info>Extract hardware information about the node.</info>

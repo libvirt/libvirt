@@ -24,6 +24,8 @@
     <reference name='VIR_DOMAIN_SCHED_FIELD_ULLONG' href='html/libvirt-libvirt.html#VIR_DOMAIN_SCHED_FIELD_ULLONG'/>
     <reference name='VIR_DOMAIN_SHUTDOWN' href='html/libvirt-libvirt.html#VIR_DOMAIN_SHUTDOWN'/>
     <reference name='VIR_DOMAIN_SHUTOFF' href='html/libvirt-libvirt.html#VIR_DOMAIN_SHUTOFF'/>
+    <reference name='VIR_DOMAIN_XML_INACTIVE' href='html/libvirt-libvirt.html#VIR_DOMAIN_XML_INACTIVE'/>
+    <reference name='VIR_DOMAIN_XML_SECURE' href='html/libvirt-libvirt.html#VIR_DOMAIN_XML_SECURE'/>
     <reference name='VIR_ERR_CALL_FAILED' href='html/libvirt-virterror.html#VIR_ERR_CALL_FAILED'/>
     <reference name='VIR_ERR_CONF_SYNTAX' href='html/libvirt-virterror.html#VIR_ERR_CONF_SYNTAX'/>
     <reference name='VIR_ERR_DOM_EXIST' href='html/libvirt-virterror.html#VIR_ERR_DOM_EXIST'/>
@@ -183,6 +185,7 @@
     <reference name='virDomainState' href='html/libvirt-libvirt.html#virDomainState'/>
     <reference name='virDomainSuspend' href='html/libvirt-libvirt.html#virDomainSuspend'/>
     <reference name='virDomainUndefine' href='html/libvirt-libvirt.html#virDomainUndefine'/>
+    <reference name='virDomainXMLFlags' href='html/libvirt-libvirt.html#virDomainXMLFlags'/>
     <reference name='virError' href='html/libvirt-virterror.html#virError'/>
     <reference name='virErrorDomain' href='html/libvirt-virterror.html#virErrorDomain'/>
     <reference name='virErrorFunc' href='html/libvirt-virterror.html#virErrorFunc'/>
@@ -212,6 +215,7 @@
     <reference name='virNetworkSetAutostart' href='html/libvirt-libvirt.html#virNetworkSetAutostart'/>
     <reference name='virNetworkUndefine' href='html/libvirt-libvirt.html#virNetworkUndefine'/>
     <reference name='virNodeGetCellsFreeMemory' href='html/libvirt-libvirt.html#virNodeGetCellsFreeMemory'/>
+    <reference name='virNodeGetFreeMemory' href='html/libvirt-libvirt.html#virNodeGetFreeMemory'/>
     <reference name='virNodeGetInfo' href='html/libvirt-libvirt.html#virNodeGetInfo'/>
     <reference name='virNodeInfo' href='html/libvirt-libvirt.html#virNodeInfo'/>
     <reference name='virNodeInfoPtr' href='html/libvirt-libvirt.html#virNodeInfoPtr'/>
@@ -252,6 +256,8 @@
       <ref name='VIR_DOMAIN_SCHED_FIELD_ULLONG'/>
       <ref name='VIR_DOMAIN_SHUTDOWN'/>
       <ref name='VIR_DOMAIN_SHUTOFF'/>
+      <ref name='VIR_DOMAIN_XML_INACTIVE'/>
+      <ref name='VIR_DOMAIN_XML_SECURE'/>
       <ref name='VIR_ERR_CALL_FAILED'/>
       <ref name='VIR_ERR_CONF_SYNTAX'/>
       <ref name='VIR_ERR_DOM_EXIST'/>
@@ -415,6 +421,7 @@
       <ref name='virDomainState'/>
       <ref name='virDomainSuspend'/>
       <ref name='virDomainUndefine'/>
+      <ref name='virDomainXMLFlags'/>
       <ref name='virError'/>
       <ref name='virErrorDomain'/>
       <ref name='virErrorFunc'/>
@@ -444,6 +451,7 @@
       <ref name='virNetworkSetAutostart'/>
       <ref name='virNetworkUndefine'/>
       <ref name='virNodeGetCellsFreeMemory'/>
+      <ref name='virNodeGetFreeMemory'/>
       <ref name='virNodeGetInfo'/>
       <ref name='virNodeInfo'/>
       <ref name='virNodeInfoPtr'/>
@@ -464,6 +472,9 @@
     </type>
     <type name='unsigned long'>
       <ref name='virDomainGetMaxMemory'/>
+    </type>
+    <type name='unsigned long long'>
+      <ref name='virNodeGetFreeMemory'/>
     </type>
     <type name='virConnectPtr'>
       <ref name='virConnectOpen'/>
@@ -571,6 +582,7 @@
       <ref name='virNetworkLookupByUUID'/>
       <ref name='virNetworkLookupByUUIDString'/>
       <ref name='virNodeGetCellsFreeMemory'/>
+      <ref name='virNodeGetFreeMemory'/>
       <ref name='virNodeGetInfo'/>
     </type>
     <type name='virDomainBlockStatsPtr'>
@@ -685,6 +697,8 @@
       <ref name='VIR_DOMAIN_SCHED_FIELD_ULLONG'/>
       <ref name='VIR_DOMAIN_SHUTDOWN'/>
       <ref name='VIR_DOMAIN_SHUTOFF'/>
+      <ref name='VIR_DOMAIN_XML_INACTIVE'/>
+      <ref name='VIR_DOMAIN_XML_SECURE'/>
       <ref name='VIR_GET_CPUMAP'/>
       <ref name='VIR_MIGRATE_LIVE'/>
       <ref name='VIR_NODEINFO_MAXCPUS'/>
@@ -774,6 +788,7 @@
       <ref name='virDomainState'/>
       <ref name='virDomainSuspend'/>
       <ref name='virDomainUndefine'/>
+      <ref name='virDomainXMLFlags'/>
       <ref name='virGetVersion'/>
       <ref name='virInitialize'/>
       <ref name='virNetwork'/>
@@ -796,6 +811,7 @@
       <ref name='virNetworkSetAutostart'/>
       <ref name='virNetworkUndefine'/>
       <ref name='virNodeGetCellsFreeMemory'/>
+      <ref name='virNodeGetFreeMemory'/>
       <ref name='virNodeGetInfo'/>
       <ref name='virNodeInfo'/>
       <ref name='virNodeInfoPtr'/>
@@ -1101,6 +1117,9 @@
         <word name='NUMA'>
           <ref name='_virNodeInfo'/>
           <ref name='virNodeGetCellsFreeMemory'/>
+        </word>
+        <word name='Node'>
+          <ref name='virNodeGetFreeMemory'/>
         </word>
         <word name='Normally'>
           <ref name='virConnectGetURI'/>
@@ -1506,9 +1525,11 @@
         <word name='available'>
           <ref name='_virError'/>
           <ref name='virConnectOpenReadOnly'/>
+          <ref name='virNodeGetFreeMemory'/>
         </word>
         <word name='availble'>
           <ref name='virGetVersion'/>
+          <ref name='virNodeGetFreeMemory'/>
         </word>
         <word name='avoid'>
           <ref name='virInitialize'/>
@@ -2028,7 +2049,6 @@
           <ref name='virDomainGetInfo'/>
         </word>
         <word name='extraction'>
-          <ref name='virDomainGetXMLDesc'/>
           <ref name='virNetworkGetXMLDesc'/>
         </word>
       </letter>
@@ -2072,7 +2092,6 @@
         </word>
         <word name='flags'>
           <ref name='virDomainCoreDump'/>
-          <ref name='virDomainGetXMLDesc'/>
           <ref name='virDomainMigrate'/>
           <ref name='virDomainReboot'/>
           <ref name='virNetworkGetXMLDesc'/>
@@ -2113,6 +2132,7 @@
           <ref name='virNetworkGetBridgeName'/>
           <ref name='virNetworkGetXMLDesc'/>
           <ref name='virNodeGetCellsFreeMemory'/>
+          <ref name='virNodeGetFreeMemory'/>
         </word>
         <word name='freeMems'>
           <ref name='virNodeGetCellsFreeMemory'/>
@@ -2396,6 +2416,7 @@
           <ref name='virDomainSetMaxMemory'/>
           <ref name='virDomainSetMemory'/>
           <ref name='virNodeGetCellsFreeMemory'/>
+          <ref name='virNodeGetFreeMemory'/>
         </word>
         <word name='knowing'>
           <ref name='virDomainShutdown'/>
@@ -2615,6 +2636,7 @@
           <ref name='virDomainSetMemory'/>
           <ref name='virDomainSuspend'/>
           <ref name='virNodeGetCellsFreeMemory'/>
+          <ref name='virNodeGetFreeMemory'/>
         </word>
         <word name='message'>
           <ref name='_virError'/>
@@ -2965,6 +2987,7 @@
         <word name='provides'>
           <ref name='VIR_UUID_BUFLEN'/>
           <ref name='VIR_UUID_STRING_BUFLEN'/>
+          <ref name='virNodeGetFreeMemory'/>
         </word>
         <word name='providing'>
           <ref name='LIBVIR_VERSION_NUMBER'/>
@@ -3635,7 +3658,6 @@
           <ref name='virDomainDestroy'/>
           <ref name='virDomainFree'/>
           <ref name='virDomainGetInfo'/>
-          <ref name='virDomainGetXMLDesc'/>
           <ref name='virDomainMigrate'/>
           <ref name='virDomainReboot'/>
           <ref name='virDomainSetVcpus'/>
@@ -3756,6 +3778,9 @@
         </word>
         <word name='virDomainSave'>
           <ref name='virDomainRestore'/>
+        </word>
+        <word name='virDomainXMLFlags'>
+          <ref name='virDomainGetXMLDesc'/>
         </word>
         <word name='virError'>
           <ref name='virResetError'/>
@@ -3930,7 +3955,6 @@
       </letter>
       <letter name='y'>
         <word name='yet'>
-          <ref name='virDomainGetXMLDesc'/>
           <ref name='virDomainReboot'/>
           <ref name='virNetworkGetXMLDesc'/>
         </word>

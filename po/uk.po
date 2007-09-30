@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-08-21 13:55+0200\n"
-"PO-Revision-Date: 2007-04-11 14:58+0300\n"
-"Last-Translator: Maxim V. Dziumanenko <dziumanenko@softprom.kiev.ua>\n"
+"POT-Creation-Date: 2007-09-30 23:00+0200\n"
+"PO-Revision-Date: 2007-08-22 14:58+0300\n"
+"Last-Translator: Maxim V. Dziumanenko <dziumanenko@gmail.com>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -45,14 +45,13 @@ msgid "out of memory"
 msgstr "недостатньо пам'яті"
 
 #: src/virterror.c:414
-#, fuzzy
 msgid "this function is not supported by the hypervisor"
-msgstr "немає підтримки гіпервізора"
+msgstr "функція не підтримується гіпервізором"
 
 #: src/virterror.c:416
-#, fuzzy, c-format
+#, c-format
 msgid "this function is not supported by the hypervisor: %s"
-msgstr "немає підтримки гіпервізора %s"
+msgstr "функція не підтримується гіпервізором: %s"
 
 #: src/virterror.c:420
 msgid "could not connect to hypervisor"
@@ -349,54 +348,48 @@ msgid "system call error"
 msgstr "помилка системного виклику"
 
 #: src/virterror.c:621
-#, fuzzy
 msgid "RPC error"
-msgstr "помилка"
+msgstr "помилка RPC"
 
 #: src/virterror.c:627
-#, fuzzy
 msgid "GNUTLS call error"
-msgstr "помилка системного виклику"
+msgstr "помилка виклику GNUTLS"
 
 #: src/virterror.c:633
-#, fuzzy
 msgid "Failed to find the network"
-msgstr "Помилка скасування конфігурації мережі %s"
+msgstr "Не вдається знайти мережу"
 
 #: src/virterror.c:635
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find the network: %s"
-msgstr "Помилка скасування конфігурації мережі %s"
+msgstr "Не вдається знайти мережу: %s"
 
 #: src/virterror.c:639
-#, fuzzy
 msgid "Domain not found"
-msgstr "інформація про домен"
+msgstr "Домен не знайдено"
 
 #: src/virterror.c:641
-#, fuzzy, c-format
+#, c-format
 msgid "Domain not found: %s"
-msgstr "Домен відновлено з %s\n"
+msgstr "Домен не знайдено: %s"
 
 #: src/virterror.c:645
-#, fuzzy
 msgid "Network not found"
-msgstr "назва мережі або uuid"
+msgstr "Мережа не існує"
 
 #: src/virterror.c:647
-#, fuzzy, c-format
+#, c-format
 msgid "Network not found: %s"
-msgstr "Мережа %s створена з %s\n"
+msgstr "Мережа не існує: %s"
 
 #: src/virterror.c:651
-#, fuzzy
 msgid "invalid MAC adress"
-msgstr "неправильний аргумент у %s"
+msgstr "неправильна MAC-адреса"
 
 #: src/virterror.c:653
-#, fuzzy, c-format
+#, c-format
 msgid "invalid MAC adress: %s"
-msgstr "неправильний аргумент у %s"
+msgstr "неправильна MAC-адреса: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -515,35 +508,32 @@ msgid "load domain definition file"
 msgstr "завантажити файл визначення домену"
 
 #: src/test.c:415 src/test.c:539 src/test.c:564
-#, fuzzy
 msgid "network"
-msgstr "назва мережі"
+msgstr "мережа"
 
-#: src/test.c:427 src/virsh.c:2691
+#: src/test.c:427 src/virsh.c:2733
 msgid "network name"
 msgstr "назва мережі"
 
-#: src/test.c:435 src/test.c:439 src/virsh.c:2582
+#: src/test.c:435 src/test.c:439 src/virsh.c:2624
 msgid "network uuid"
 msgstr "uuid мережі"
 
 #: src/test.c:447
-#, fuzzy
 msgid "network forward"
-msgstr "назва мережі"
+msgstr "мережне перенаправлення"
 
 #: src/test.c:456 src/test.c:466 src/test.c:471
 msgid "ip address"
-msgstr ""
+msgstr "адреса ip"
 
 #: src/test.c:461
 msgid "ip netmask"
-msgstr ""
+msgstr "маска ip"
 
 #: src/test.c:557
-#, fuzzy
 msgid "load network definition file"
-msgstr "завантажити файл визначення домену"
+msgstr "завантажити файл визначення мережі"
 
 #: src/test.c:673
 msgid "loading host definition file"
@@ -594,13 +584,12 @@ msgid "resolving domain filename"
 msgstr "розв'язання назви файла домену"
 
 #: src/test.c:810
-#, fuzzy
 msgid "resolving network filename"
-msgstr "розв'язання назви файла домену"
+msgstr "розв'язання назви файлу мережі"
 
 #: src/test.c:908
 msgid "testOpen: supply a path or use test:///default"
-msgstr ""
+msgstr "testOpen: вкажіть шлях або використовуйте test:///default"
 
 #: src/test.c:1046
 msgid "too many domains"
@@ -615,19 +604,16 @@ msgid "Domain is still running"
 msgstr "Домен досі працює"
 
 #: src/test.c:1772 src/test.c:1797
-#, fuzzy
 msgid "too many networks"
-msgstr "надто багато підключень"
+msgstr "надто багато мереж"
 
 #: src/test.c:1816
-#, fuzzy
 msgid "Network is still running"
-msgstr "Домен досі працює"
+msgstr "Мережа досі запущена"
 
 #: src/test.c:1830
-#, fuzzy
 msgid "Network is already running"
-msgstr "Домен вже працює"
+msgstr "Мережа вже запущена"
 
 #: src/sexpr.c:59
 msgid "failed to allocate a node"
@@ -637,65 +623,69 @@ msgstr "помилка виділення вузла"
 msgid "failed to copy a string"
 msgstr "помилка копіювання рядка"
 
-#: src/xend_internal.c:280 src/xend_internal.c:283
+#: src/xend_internal.c:283 src/xend_internal.c:286
 msgid "failed to read from Xen Daemon"
 msgstr "помилка читання з демона Xen"
 
-#: src/xend_internal.c:594 src/xend_internal.c:812 src/xend_internal.c:1525
-#: src/xend_internal.c:1544
+#: src/xend_internal.c:597 src/xend_internal.c:814 src/xend_internal.c:1534
+#: src/xend_internal.c:1553 src/xend_internal.c:2079
 msgid "allocate new buffer"
 msgstr "виділити новий буфер"
 
-#: src/xend_internal.c:1019
+#: src/xend_internal.c:1021
 msgid "failed to urlencode the create S-Expr"
 msgstr "помилка urlencode при створенні S-Expr"
 
-#: src/xend_internal.c:1060
+#: src/xend_internal.c:1062
 msgid "domain information incomplete, missing domid"
 msgstr "неповна інформація домену, відсутній domid"
 
-#: src/xend_internal.c:1066
+#: src/xend_internal.c:1068
 msgid "domain information incorrect domid not numeric"
 msgstr "неправильна інформація домену, domid має бути числом"
 
-#: src/xend_internal.c:1071 src/xend_internal.c:1118
+#: src/xend_internal.c:1073 src/xend_internal.c:1120
 msgid "domain information incomplete, missing uuid"
 msgstr "неповна інформація домену, відсутній uuid"
 
-#: src/xend_internal.c:1110 src/xend_internal.c:1387 src/xend_internal.c:1394
+#: src/xend_internal.c:1112 src/xend_internal.c:1390 src/xend_internal.c:1397
 msgid "domain information incomplete, missing name"
 msgstr "неповна інформація домену, відсутня назва"
 
-#: src/xend_internal.c:1284 src/xend_internal.c:1315
-#, fuzzy
+#: src/xend_internal.c:1286 src/xend_internal.c:1317
 msgid "domain information incomplete, missing kernel & bootloader"
-msgstr "неповна інформація домену, відсутнє ядро"
+msgstr "неповна інформація домену, відсутнє ядро та завантажувач"
 
-#: src/xend_internal.c:1375
+#: src/xend_internal.c:1378
 msgid "domain information incomplete, missing id"
 msgstr "неповна інформація домену, відсутній id"
 
-#: src/xend_internal.c:1494
+#: src/xend_internal.c:1503
 msgid "domain information incomplete, vbd has no dev"
 msgstr "неповна інформація домену, немає dev для vbd"
 
-#: src/xend_internal.c:1509
+#: src/xend_internal.c:1518
 msgid "domain information incomplete, vbd has no src"
 msgstr "неповна інформація домену, немає src для vbd"
 
-#: src/xend_internal.c:1518
+#: src/xend_internal.c:1527
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "помилка розбору назви файла vbd, відсутня назва драйвера"
 
-#: src/xend_internal.c:1537
+#: src/xend_internal.c:1546
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "помилка розбору назви файла vbd, відсутній тип драйвера"
 
-#: src/xend_internal.c:1923
+#: src/xend_internal.c:1948
+#, fuzzy
+msgid "failed to parse topology information"
+msgstr "помилка розбору інформації домену Xend"
+
+#: src/xend_internal.c:2136
 msgid "failed to parse Xend domain information"
 msgstr "помилка розбору інформації домену Xend"
 
-#: src/xend_internal.c:3350
+#: src/xend_internal.c:3604
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Помилка створення неактивного домену %s\n"
@@ -709,9 +699,8 @@ msgid "Prints global help or command specific help."
 msgstr "Виводить загальну інформацію довідки або довідку для окремих команд."
 
 #: src/virsh.c:316
-#, fuzzy
 msgid "name of command"
-msgstr "назва неактивного домену"
+msgstr "назва команди"
 
 #: src/virsh.c:328
 msgid ""
@@ -732,37 +721,37 @@ msgstr "Налаштувати домен на автоматичний запу
 #: src/virsh.c:349 src/virsh.c:450 src/virsh.c:636 src/virsh.c:673
 #: src/virsh.c:730 src/virsh.c:797 src/virsh.c:1077 src/virsh.c:1121
 #: src/virsh.c:1297 src/virsh.c:1342 src/virsh.c:1381 src/virsh.c:1420
-#: src/virsh.c:1459 src/virsh.c:1498 src/virsh.c:1575 src/virsh.c:1662
-#: src/virsh.c:1790 src/virsh.c:1847 src/virsh.c:1904 src/virsh.c:2025
-#: src/virsh.c:2165 src/virsh.c:2866 src/virsh.c:2945 src/virsh.c:3008
-#: src/virsh.c:3062 src/virsh.c:3116 src/virsh.c:3232 src/virsh.c:3353
-#: src/virsh.c:3518
+#: src/virsh.c:1459 src/virsh.c:1498 src/virsh.c:1617 src/virsh.c:1704
+#: src/virsh.c:1832 src/virsh.c:1889 src/virsh.c:1946 src/virsh.c:2067
+#: src/virsh.c:2207 src/virsh.c:2908 src/virsh.c:2988 src/virsh.c:3051
+#: src/virsh.c:3105 src/virsh.c:3159 src/virsh.c:3275 src/virsh.c:3396
+#: src/virsh.c:3561
 msgid "domain name, id or uuid"
 msgstr "назва домену, id або uuid"
 
-#: src/virsh.c:350 src/virsh.c:2229
+#: src/virsh.c:350 src/virsh.c:2271
 msgid "disable autostarting"
 msgstr "вимкнути автозапуск"
 
 #: src/virsh.c:371
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to mark domain %s as autostarted"
-msgstr "Помилка %sпозначення домену %s як домену з автозапуском"
+msgstr "Помилка позначення домену %s як домену з автозапуском"
 
 #: src/virsh.c:374
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to unmark domain %s as autostarted"
-msgstr "Помилка %sпозначення домену %s як домену з автозапуском"
+msgstr "Помилка зняття позначки домену %s як домену з автозапуском"
 
 #: src/virsh.c:381
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s marked as autostarted\n"
-msgstr "Домен %s %sпозначений як домен з автозапуском\n"
+msgstr "Домен %s позначений як домен з автозапуском\n"
 
 #: src/virsh.c:383
-#, fuzzy, c-format
+#, c-format
 msgid "Domain %s unmarked as autostarted\n"
-msgstr "Домен %s %sпозначений як домен з автозапуском\n"
+msgstr "Домен %s не позначений як домен з автозапуском\n"
 
 #: src/virsh.c:394
 msgid "(re)connect to hypervisor"
@@ -831,15 +820,15 @@ msgstr "Помилка відображення списку неактивни�
 msgid "Id"
 msgstr "ID"
 
-#: src/virsh.c:574 src/virsh.c:2514
+#: src/virsh.c:574 src/virsh.c:2556
 msgid "Name"
 msgstr "Назва"
 
-#: src/virsh.c:574 src/virsh.c:2514
+#: src/virsh.c:574 src/virsh.c:2556
 msgid "State"
 msgstr "Статус"
 
-#: src/virsh.c:587 src/virsh.c:609 src/virsh.c:4297 src/virsh.c:4313
+#: src/virsh.c:587 src/virsh.c:609 src/virsh.c:4343 src/virsh.c:4359
 msgid "no state"
 msgstr "немає статусу"
 
@@ -853,41 +842,37 @@ msgstr "Повертає стан запущеного домену."
 
 #: src/virsh.c:667
 msgid "get device block stats for a domain"
-msgstr ""
+msgstr "отримати блочну статистику пристроїв для домену"
 
 #: src/virsh.c:668
-#, fuzzy
 msgid "Get device block stats for a running domain."
-msgstr "Повертає стан запущеного домену."
+msgstr "Отримати блочну статистику пристроїв для запущеного домену"
 
 #: src/virsh.c:674
-#, fuzzy
 msgid "block device"
-msgstr "заблоковано"
+msgstr "блочний пристрій"
 
 #: src/virsh.c:695
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get block stats %s %s"
-msgstr "Помилка збереження домену %s в %s"
+msgstr "Не вдається відкрити блочну статистику %s %s"
 
 #: src/virsh.c:724
-#, fuzzy
 msgid "get network interface stats for a domain"
-msgstr "назва мережі"
+msgstr "отримати статистику інтерфейсу для домену"
 
 #: src/virsh.c:725
-#, fuzzy
 msgid "Get network interface stats for a running domain."
-msgstr "Повертає стан запущеного домену."
+msgstr "Отримати статистику інтерфейсу для запущеного домену"
 
 #: src/virsh.c:731
 msgid "interface device"
-msgstr ""
+msgstr "пристрій інтерфейсу"
 
 #: src/virsh.c:752
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get interface stats %s %s"
-msgstr "помилка отримання даних вузла"
+msgstr "Не вдається отримати статистику інтерфейсу %s %s"
 
 #: src/virsh.c:791
 msgid "suspend a domain"
@@ -916,24 +901,23 @@ msgid "Create a domain."
 msgstr "Створити домен."
 
 #: src/virsh.c:836 src/virsh.c:944
-#, fuzzy
 msgid "file containing an XML domain description"
 msgstr "файл, що містить XML опис домену"
 
 #: src/virsh.c:851
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open '%s': %s"
-msgstr "Помилка при переведенні домену %s в стан очікування"
+msgstr "Не вдається відрити '%s': %s"
 
 #: src/virsh.c:871
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open '%s': read: %s"
-msgstr "помилка при спробі відкрити %s для читання"
+msgstr "Помилка при відкриванні '%s': читання: %s"
 
 #: src/virsh.c:889
-#, fuzzy, c-format
+#, c-format
 msgid "Error allocating memory: %s"
-msgstr "виділення мережі"
+msgstr "Помилка виділення пам'яті: %s"
 
 #: src/virsh.c:923
 #, c-format
@@ -971,7 +955,7 @@ msgstr "скасувати визначення неактивного доме�
 msgid "Undefine the configuration for an inactive domain."
 msgstr "Скасувати призначення конфігурації для неактивного домену."
 
-#: src/virsh.c:992 src/virsh.c:2094
+#: src/virsh.c:992 src/virsh.c:2136
 msgid "domain name or uuid"
 msgstr "назва домену або uuid"
 
@@ -1035,28 +1019,27 @@ msgstr "Помилка збереження домену %s в %s"
 
 #: src/virsh.c:1115
 msgid "show/set scheduler parameters"
-msgstr ""
+msgstr "показати/встановити параметри планування"
 
 #: src/virsh.c:1116
 msgid "Show/Set scheduler parameters."
-msgstr ""
+msgstr "Показати/встановити параметри планування."
 
 #: src/virsh.c:1122
 msgid "weight for XEN_CREDIT"
-msgstr ""
+msgstr "вага XEN_CREDIT"
 
 #: src/virsh.c:1123
 msgid "cap for XEN_CREDIT"
-msgstr ""
+msgstr "cap для XEN_CREDIT"
 
 #: src/virsh.c:1193 src/virsh.c:1197
 msgid "Scheduler"
-msgstr ""
+msgstr "Планування"
 
 #: src/virsh.c:1197
-#, fuzzy
 msgid "Unknown"
-msgstr "невідомий вузол"
+msgstr "Невідомо"
 
 #: src/virsh.c:1253
 msgid "restore a domain from a saved state in a file"
@@ -1198,15 +1181,15 @@ msgstr "UUID:"
 msgid "OS Type:"
 msgstr "Тип ОС:"
 
-#: src/virsh.c:1533 src/virsh.c:1619
+#: src/virsh.c:1533 src/virsh.c:1661
 msgid "State:"
 msgstr "Статус:"
 
-#: src/virsh.c:1536 src/virsh.c:1976
+#: src/virsh.c:1536 src/virsh.c:2018
 msgid "CPU(s):"
 msgstr "CPU:"
 
-#: src/virsh.c:1543 src/virsh.c:1626
+#: src/virsh.c:1543 src/virsh.c:1668
 msgid "CPU time:"
 msgstr "Час CPU:"
 
@@ -1223,724 +1206,719 @@ msgid "Used memory:"
 msgstr "Зайнято пам'яті:"
 
 #: src/virsh.c:1569
+#, fuzzy
+msgid "NUMA free memory"
+msgstr "Зайнято пам'яті:"
+
+#: src/virsh.c:1570
+msgid "display available free memory for the NUMA cell."
+msgstr ""
+
+#: src/virsh.c:1575
+#, fuzzy
+msgid "NUMA cell number"
+msgstr "Комірки NUMA:"
+
+#: src/virsh.c:1599
+msgid "Total"
+msgstr ""
+
+#: src/virsh.c:1611
 msgid "domain vcpu information"
 msgstr "дані vcpu домену"
 
-#: src/virsh.c:1570
+#: src/virsh.c:1612
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr "Повертає основну інформацію про віртуальні процесори домену."
 
-#: src/virsh.c:1617
+#: src/virsh.c:1659
 msgid "VCPU:"
 msgstr "VCPU:"
 
-#: src/virsh.c:1618
+#: src/virsh.c:1660
 msgid "CPU:"
 msgstr "CPU:"
 
-#: src/virsh.c:1628
+#: src/virsh.c:1670
 msgid "CPU Affinity:"
 msgstr "Прив'язка CPU:"
 
-#: src/virsh.c:1640
+#: src/virsh.c:1682
 msgid "Domain shut off, virtual CPUs not present."
-msgstr ""
+msgstr "Домен вимкнено, віртуальні процесори не встановленію."
 
-#: src/virsh.c:1656
+#: src/virsh.c:1698
 msgid "control domain vcpu affinity"
 msgstr "контролює приналежність задач віртуальним процесорам домену"
 
-#: src/virsh.c:1657
+#: src/virsh.c:1699
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr "Співставлення VCPU домену фізичним CPU."
 
-#: src/virsh.c:1663
+#: src/virsh.c:1705
 msgid "vcpu number"
 msgstr "число vcpu"
 
-#: src/virsh.c:1664
+#: src/virsh.c:1706
 msgid "host cpu number(s) (comma separated)"
 msgstr "номери cpu хоста (розділені комою)"
 
-#: src/virsh.c:1719
+#: src/virsh.c:1761
 msgid "cpulist: Invalid format. Empty string."
-msgstr ""
+msgstr "cpulist: Некоректний формат. Порожній рядок."
 
-#: src/virsh.c:1729
+#: src/virsh.c:1771
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
+"cpulist: %s: Некоректний формат. Очікувалась цифра у позиції %d (поруч з '%"
+"c')."
 
-#: src/virsh.c:1739
+#: src/virsh.c:1781
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
 "c')."
 msgstr ""
+"cpulist: %s: Некоректний формат. Очікувалась цифра або кома у позиції %d "
+"(поруч з '%c')."
 
-#: src/virsh.c:1746
+#: src/virsh.c:1788
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
-msgstr ""
+msgstr "cpulist: %s: Некоректний формат. Завершальна кома у позиції %d."
 
-#: src/virsh.c:1760
+#: src/virsh.c:1802
 #, c-format
 msgid "Physical CPU %d doesn't exist."
 msgstr "Фізичний процесор '%d' не існує"
 
-#: src/virsh.c:1784
+#: src/virsh.c:1826
 msgid "change number of virtual CPUs"
 msgstr "змінити кількість віртуальних процесорів"
 
-#: src/virsh.c:1785
+#: src/virsh.c:1827
 msgid "Change the number of virtual CPUs active in the guest domain."
 msgstr "Змінити число віртуальних процесорів, активних в гостьовому домені."
 
-#: src/virsh.c:1791
+#: src/virsh.c:1833
 msgid "number of virtual CPUs"
 msgstr "число віртуальних процесорів"
 
-#: src/virsh.c:1811
-#, fuzzy
+#: src/virsh.c:1853
 msgid "Invalid number of virtual CPUs."
-msgstr "число віртуальних процесорів"
+msgstr "Неправильна кількість віртуальних процесорів."
 
-#: src/virsh.c:1823
-#, fuzzy
+#: src/virsh.c:1865
 msgid "Too many virtual CPUs."
 msgstr "Надто багато віртуальних процесорів."
 
-#: src/virsh.c:1841
+#: src/virsh.c:1883
 msgid "change memory allocation"
 msgstr "змінити виділення пам'яті"
 
-#: src/virsh.c:1842
+#: src/virsh.c:1884
 msgid "Change the current memory allocation in the guest domain."
 msgstr "Змінити розподіл пам'яті у гостьовому домені."
 
-#: src/virsh.c:1848
-#, fuzzy
+#: src/virsh.c:1890
 msgid "number of kilobytes of memory"
-msgstr "байти пам'яті"
+msgstr "кількість пам'яті у кілобайтах"
 
-#: src/virsh.c:1869 src/virsh.c:1881 src/virsh.c:1926
+#: src/virsh.c:1911 src/virsh.c:1923 src/virsh.c:1968
 #, c-format
 msgid "Invalid value of %d for memory size"
 msgstr "Некоректне значення обсягу пам'яті (%d)"
 
-#: src/virsh.c:1875
+#: src/virsh.c:1917
 msgid "Unable to verify MaxMemorySize"
-msgstr ""
+msgstr "Не вдається перевірити MaxMemorySize"
 
-#: src/virsh.c:1898
+#: src/virsh.c:1940
 msgid "change maximum memory limit"
 msgstr "змінити максимальний ліміт пам'яті"
 
-#: src/virsh.c:1899
+#: src/virsh.c:1941
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr ""
 "Змінити максимально допустимий ліміт пам'яті, що виділяється у гостьовому "
 "домені."
 
-#: src/virsh.c:1905
-#, fuzzy
+#: src/virsh.c:1947
 msgid "maximum memory limit in kilobytes"
-msgstr "максимальний ліміт пам'яті в байтах"
+msgstr "максимальний ліміт пам'яті у кілобайтах"
 
-#: src/virsh.c:1932
+#: src/virsh.c:1974
 msgid "Unable to verify current MemorySize"
-msgstr ""
+msgstr "Не вдається перевірити поточне значення MemorySize"
 
-#: src/virsh.c:1939
-#, fuzzy
+#: src/virsh.c:1981
 msgid "Unable to shrink current MemorySize"
-msgstr "поточні пам'ять домену"
+msgstr "Не вдається обрізати поточне значення MemorySize"
 
-#: src/virsh.c:1945
+#: src/virsh.c:1987
 msgid "Unable to change MaxMemorySize"
-msgstr ""
+msgstr "Не вдається змінити поточне значення MaxMemorySize"
 
-#: src/virsh.c:1958
+#: src/virsh.c:2000
 msgid "node information"
 msgstr "інформація про вузол"
 
-#: src/virsh.c:1959
+#: src/virsh.c:2001
 msgid "Returns basic information about the node."
 msgstr "Повертає загальну інформацію про вузол."
 
-#: src/virsh.c:1972
+#: src/virsh.c:2014
 msgid "failed to get node information"
 msgstr "помилка отримання даних вузла"
 
-#: src/virsh.c:1975
+#: src/virsh.c:2017
 msgid "CPU model:"
 msgstr "Модель CPU:"
 
-#: src/virsh.c:1977
+#: src/virsh.c:2019
 msgid "CPU frequency:"
 msgstr "Частота CPU:"
 
-#: src/virsh.c:1978
+#: src/virsh.c:2020
 msgid "CPU socket(s):"
 msgstr "Сокет(и) CPU:"
 
-#: src/virsh.c:1979
+#: src/virsh.c:2021
 msgid "Core(s) per socket:"
 msgstr "Ядер на сокет:"
 
-#: src/virsh.c:1980
+#: src/virsh.c:2022
 msgid "Thread(s) per core:"
 msgstr "Потоків на ядро:"
 
-#: src/virsh.c:1981
+#: src/virsh.c:2023
 msgid "NUMA cell(s):"
 msgstr "Комірки NUMA:"
 
-#: src/virsh.c:1982
+#: src/virsh.c:2024
 msgid "Memory size:"
-msgstr "Обсяг пам'яти:"
+msgstr "Обсяг пам'яті:"
 
-#: src/virsh.c:1992
+#: src/virsh.c:2034
 msgid "capabilities"
 msgstr "можливості"
 
-#: src/virsh.c:1993
+#: src/virsh.c:2035
 msgid "Returns capabilities of hypervisor/driver."
 msgstr "Повертає можливості гіпервізора/драйвера."
 
-#: src/virsh.c:2006
+#: src/virsh.c:2048
 msgid "failed to get capabilities"
 msgstr "помилка запиту можливостей"
 
-#: src/virsh.c:2019
+#: src/virsh.c:2061
 msgid "domain information in XML"
 msgstr "інформація про домені у XML"
 
-#: src/virsh.c:2020
-#, fuzzy
+#: src/virsh.c:2062
 msgid "Output the domain information as an XML dump to stdout."
-msgstr "Вивід інформації про домен у вигляді XML або на stdout."
+msgstr "Вивід інформації про домен у вигляді дампу XML на stdout."
 
-#: src/virsh.c:2059
+#: src/virsh.c:2101
 msgid "convert a domain id or UUID to domain name"
 msgstr "перетворити ID домену або UUID на назву домену"
 
-#: src/virsh.c:2064
+#: src/virsh.c:2106
 msgid "domain id or uuid"
 msgstr "ID домену або UUID"
 
-#: src/virsh.c:2089
+#: src/virsh.c:2131
 msgid "convert a domain name or UUID to domain id"
 msgstr "перетворити назва домену або UUID на ID домену"
 
-#: src/virsh.c:2124
+#: src/virsh.c:2166
 msgid "convert a domain name or id to domain UUID"
 msgstr "перетворити назва домену або ID на UUID домену"
 
-#: src/virsh.c:2129
+#: src/virsh.c:2171
 msgid "domain id or name"
 msgstr "ID домену або назва"
 
-#: src/virsh.c:2148
+#: src/virsh.c:2190
 msgid "failed to get domain UUID"
 msgstr "помилка отримання UUID домену"
 
-#: src/virsh.c:2158
+#: src/virsh.c:2200
 msgid "migrate domain to another host"
-msgstr ""
+msgstr "міграція домену на інший вузол"
 
-#: src/virsh.c:2159
+#: src/virsh.c:2201
 msgid "Migrate domain to another host.  Add --live for live migration."
-msgstr ""
+msgstr "Міграція домену на інший вузол.  Додати --live до живої міграції."
 
-#: src/virsh.c:2164
+#: src/virsh.c:2206
 msgid "live migration"
-msgstr ""
+msgstr "жива міграція"
 
-#: src/virsh.c:2166
-#, fuzzy
+#: src/virsh.c:2208
 msgid "connection URI of the destination host"
-msgstr "з'єднатись з консоллю гостьової системи"
+msgstr "URI з'єднання 'з цільовою системою"
 
-#: src/virsh.c:2167
+#: src/virsh.c:2209
 msgid "migration URI, usually can be omitted"
-msgstr ""
+msgstr "URI міграції, зазвичай може бути пропущене"
 
-#: src/virsh.c:2189
+#: src/virsh.c:2231
 msgid "migrate: Missing desturi"
-msgstr ""
+msgstr "migrate: відсутній параметр desturi"
 
-#: src/virsh.c:2221
+#: src/virsh.c:2263
 msgid "autostart a network"
 msgstr "автозапуск мережі"
 
-#: src/virsh.c:2223
+#: src/virsh.c:2265
 msgid "Configure a network to be automatically started at boot."
 msgstr "Налаштувати мережу на автоматичний запуск при завантаженні."
 
-#: src/virsh.c:2228 src/virsh.c:2653
+#: src/virsh.c:2270 src/virsh.c:2695
 msgid "network name or uuid"
 msgstr "назва мережі або uuid"
 
-#: src/virsh.c:2250
-#, fuzzy, c-format
+#: src/virsh.c:2292
+#, c-format
 msgid "failed to mark network %s as autostarted"
-msgstr "Помилка %sпозначення мережі %s для автозапуску"
+msgstr "не вдається позначити мережу %s для автозапуску"
 
-#: src/virsh.c:2253
-#, fuzzy, c-format
+#: src/virsh.c:2295
+#, c-format
 msgid "failed to unmark network %s as autostarted"
-msgstr "Помилка %sпозначення мережі %s для автозапуску"
+msgstr "Помилка зняти автозапуск з мережі %s"
 
-#: src/virsh.c:2260
-#, fuzzy, c-format
+#: src/virsh.c:2302
+#, c-format
 msgid "Network %s marked as autostarted\n"
-msgstr "Мережа %s %sпозначена для автозапуску\n"
+msgstr "Мережа %s позначена для автозапуску\n"
 
-#: src/virsh.c:2262
-#, fuzzy, c-format
+#: src/virsh.c:2304
+#, c-format
 msgid "Network %s unmarked as autostarted\n"
-msgstr "Мережа %s %sпозначена для автозапуску\n"
+msgstr "Мережа %s знята з автозапуску\n"
 
-#: src/virsh.c:2272
+#: src/virsh.c:2314
 msgid "create a network from an XML file"
 msgstr "створити мережу з файлу XML"
 
-#: src/virsh.c:2273
+#: src/virsh.c:2315
 msgid "Create a network."
 msgstr "Створити мережу."
 
-#: src/virsh.c:2278 src/virsh.c:2326
+#: src/virsh.c:2320 src/virsh.c:2368
 msgid "file containing an XML network description"
 msgstr "файл, що містить XML опис мережі"
 
-#: src/virsh.c:2305
+#: src/virsh.c:2347
 #, c-format
 msgid "Network %s created from %s\n"
 msgstr "Мережа %s створена з %s\n"
 
-#: src/virsh.c:2308
+#: src/virsh.c:2350
 #, c-format
 msgid "Failed to create network from %s"
 msgstr "Помилка створення мережі з %s"
 
-#: src/virsh.c:2320
+#: src/virsh.c:2362
 msgid "define (but don't start) a network from an XML file"
 msgstr "визначити (але не запускати) мережу з файлу XML"
 
-#: src/virsh.c:2321
+#: src/virsh.c:2363
 msgid "Define a network."
 msgstr "Визначити мережу."
 
-#: src/virsh.c:2353
+#: src/virsh.c:2395
 #, c-format
 msgid "Network %s defined from %s\n"
 msgstr "Мережа %s визначена на основі %s\n"
 
-#: src/virsh.c:2356
+#: src/virsh.c:2398
 #, c-format
 msgid "Failed to define network from %s"
 msgstr "Помилка визначення мережі на основі %s"
 
-#: src/virsh.c:2368
+#: src/virsh.c:2410
 msgid "destroy a network"
 msgstr "знищити мережу"
 
-#: src/virsh.c:2369
+#: src/virsh.c:2411
 msgid "Destroy a given network."
 msgstr "Знищити вказану мережу."
 
-#: src/virsh.c:2374 src/virsh.c:2414
+#: src/virsh.c:2416 src/virsh.c:2456
 msgid "network name, id or uuid"
 msgstr "назва мережі, id або uuid"
 
-#: src/virsh.c:2392
+#: src/virsh.c:2434
 #, c-format
 msgid "Network %s destroyed\n"
 msgstr "Мережу %s знищено\n"
 
-#: src/virsh.c:2394
+#: src/virsh.c:2436
 #, c-format
 msgid "Failed to destroy network %s"
 msgstr "Помилка знищення мережі %s"
 
-#: src/virsh.c:2408
+#: src/virsh.c:2450
 msgid "network information in XML"
 msgstr "інформація про мережу у XML"
 
-#: src/virsh.c:2409
-#, fuzzy
+#: src/virsh.c:2451
 msgid "Output the network information as an XML dump to stdout."
 msgstr "Вивід інформації про мережу у вигляді XML або на stdout."
 
-#: src/virsh.c:2449
+#: src/virsh.c:2491
 msgid "list networks"
-msgstr "перегляд переж"
+msgstr "список мереж"
 
-#: src/virsh.c:2450
+#: src/virsh.c:2492
 msgid "Returns list of networks."
 msgstr "Повертає список мереж."
 
-#: src/virsh.c:2455
+#: src/virsh.c:2497
 msgid "list inactive networks"
 msgstr "перегляд неактивних мереж"
 
-#: src/virsh.c:2456
+#: src/virsh.c:2498
 msgid "list inactive & active networks"
 msgstr "перегляд неактивних та активних мереж"
 
-#: src/virsh.c:2476 src/virsh.c:2484
+#: src/virsh.c:2518 src/virsh.c:2526
 msgid "Failed to list active networks"
 msgstr "Помилка відображення списку активних мереж"
 
-#: src/virsh.c:2495 src/virsh.c:2504
+#: src/virsh.c:2537 src/virsh.c:2546
 msgid "Failed to list inactive networks"
 msgstr "Помилка відображення списку неактивних мереж"
 
-#: src/virsh.c:2514
+#: src/virsh.c:2556
 msgid "Autostart"
 msgstr "Автозапуск"
 
-#: src/virsh.c:2529 src/virsh.c:2552
+#: src/virsh.c:2571 src/virsh.c:2594
 msgid "no autostart"
 msgstr "без автозапуску"
 
-#: src/virsh.c:2535
+#: src/virsh.c:2577
 msgid "active"
 msgstr "активна"
 
-#: src/virsh.c:2558
+#: src/virsh.c:2600
 msgid "inactive"
 msgstr "неактивна"
 
-#: src/virsh.c:2577
+#: src/virsh.c:2619
 msgid "convert a network UUID to network name"
 msgstr "перетворити UUID на назву мережі"
 
-#: src/virsh.c:2608
+#: src/virsh.c:2650
 msgid "start a (previously defined) inactive network"
 msgstr "запустити раніше визначену неактивну мережа"
 
-#: src/virsh.c:2609
+#: src/virsh.c:2651
 msgid "Start a network."
 msgstr "Запуск мережі."
 
-#: src/virsh.c:2614
+#: src/virsh.c:2656
 msgid "name of the inactive network"
 msgstr "назва неактивної мережі"
 
-#: src/virsh.c:2631
+#: src/virsh.c:2673
 #, c-format
 msgid "Network %s started\n"
 msgstr "Мережа %s запущена\n"
 
-#: src/virsh.c:2634
+#: src/virsh.c:2676
 #, c-format
 msgid "Failed to start network %s"
 msgstr "Помилка запуску мережі %s"
 
-#: src/virsh.c:2647
+#: src/virsh.c:2689
 msgid "undefine an inactive network"
 msgstr "скасувати визначення неактивної мережі"
 
-#: src/virsh.c:2648
+#: src/virsh.c:2690
 msgid "Undefine the configuration for an inactive network."
 msgstr "Скасувати призначення конфігурації для неактивної мережі."
 
-#: src/virsh.c:2671
+#: src/virsh.c:2713
 #, c-format
 msgid "Network %s has been undefined\n"
 msgstr "Конфігурація мережі %s скасована\n"
 
-#: src/virsh.c:2673
+#: src/virsh.c:2715
 #, c-format
 msgid "Failed to undefine network %s"
 msgstr "Помилка скасування конфігурації мережі %s"
 
-#: src/virsh.c:2686
+#: src/virsh.c:2728
 msgid "convert a network name to network UUID"
 msgstr "перетворити назву мережі на UUID мережі"
 
-#: src/virsh.c:2711
+#: src/virsh.c:2753
 msgid "failed to get network UUID"
 msgstr "помилка отримання UUID мережі"
 
-#: src/virsh.c:2722
+#: src/virsh.c:2764
 msgid "show version"
 msgstr "показати версію"
 
-#: src/virsh.c:2723
+#: src/virsh.c:2765
 msgid "Display the system version information."
 msgstr "Показати інформацію про версію системи"
 
-#: src/virsh.c:2746
+#: src/virsh.c:2788
 msgid "failed to get hypervisor type"
 msgstr "помилка отримання типа гіпервізора"
 
-#: src/virsh.c:2755
+#: src/virsh.c:2797
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr "Виконана компіляція на базі бібліотеки: libvir %d.%d.%d\n"
 
-#: src/virsh.c:2760
+#: src/virsh.c:2802
 msgid "failed to get the library version"
 msgstr "помилка отримання версії бібліотеки"
 
-#: src/virsh.c:2767
+#: src/virsh.c:2809
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
 msgstr "Використовується бібліотека: libvir %d.%d.%d\n"
 
-#: src/virsh.c:2774
+#: src/virsh.c:2816
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
 msgstr "Використовується API: %s %d.%d.%d\n"
 
-#: src/virsh.c:2779
+#: src/virsh.c:2821
 msgid "failed to get the hypervisor version"
 msgstr "помилка отримання версії гіпервізора"
 
-#: src/virsh.c:2784
+#: src/virsh.c:2826
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "Неможливо отримати версію гіпервізора, що виконується на %s\n"
 
-#: src/virsh.c:2791
+#: src/virsh.c:2833
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "Виконується гіпервізор: %s %d.%d.%d\n"
 
-#: src/virsh.c:2802
-#, fuzzy
+#: src/virsh.c:2844
 msgid "print the hypervisor hostname"
-msgstr "помилка отримання типа гіпервізора"
+msgstr "вивести назву вузлі гіпервізора"
 
-#: src/virsh.c:2816
-#, fuzzy
+#: src/virsh.c:2858
 msgid "failed to get hostname"
-msgstr "помилка отримання типа гіпервізора"
+msgstr "помилка отримання назви вузла гіпервізора"
 
-#: src/virsh.c:2831
-#, fuzzy
+#: src/virsh.c:2873
 msgid "print the hypervisor canonical URI"
-msgstr "URI з'єднання гіпервізора"
+msgstr "вивести канонічний URI гіпервізора"
 
-#: src/virsh.c:2845
-#, fuzzy
+#: src/virsh.c:2887
 msgid "failed to get URI"
-msgstr "помилка отримання UUID домену"
+msgstr "помилка при отриманні URI"
 
-#: src/virsh.c:2860
+#: src/virsh.c:2902
 msgid "vnc display"
 msgstr "дисплей vnc"
 
-#: src/virsh.c:2861
-#, fuzzy
+#: src/virsh.c:2903
 msgid "Output the IP address and port number for the VNC display."
-msgstr "Вивід IP адреси и номеру порту на дисплей VNC."
+msgstr "Вивід IP адреси и номеру порту для дисплею VNC."
 
-#: src/virsh.c:2939
+#: src/virsh.c:2982
 msgid "tty console"
-msgstr ""
+msgstr "консоль tty"
 
-#: src/virsh.c:2940
+#: src/virsh.c:2983
 msgid "Output the device for the TTY console."
-msgstr ""
+msgstr "Вивід пристрою для консолі TTY."
 
-#: src/virsh.c:3002
-#, fuzzy
+#: src/virsh.c:3045
 msgid "attach device from an XML file"
-msgstr "створити домен з файлу XML"
+msgstr "приєднати пристрій з файлу XML"
 
-#: src/virsh.c:3003
-#, fuzzy
+#: src/virsh.c:3046
 msgid "Attach device from an XML <file>."
-msgstr "створити домен з файлу XML"
+msgstr "Приєднати пристрій з файлу XML <файл>."
 
-#: src/virsh.c:3009 src/virsh.c:3063
+#: src/virsh.c:3052 src/virsh.c:3106
 msgid "XML file"
-msgstr ""
+msgstr "Файл XML"
 
-#: src/virsh.c:3041
-#, fuzzy, c-format
+#: src/virsh.c:3084
+#, c-format
 msgid "Failed to attach device from %s"
-msgstr "Помилка створення домену з %s"
+msgstr "Не вдається приєднати пристрій з %s"
 
-#: src/virsh.c:3056
-#, fuzzy
+#: src/virsh.c:3099
 msgid "detach device from an XML file"
-msgstr "створити домен з файлу XML"
+msgstr "від'єднати пристрій з файлу XML"
 
-#: src/virsh.c:3057
-#, fuzzy
+#: src/virsh.c:3100
 msgid "Detach device from an XML <file>"
-msgstr "створити домен з файлу XML"
+msgstr "Від'єднати пристрій з файлу XML <файл>"
 
-#: src/virsh.c:3095
-#, fuzzy, c-format
+#: src/virsh.c:3138
+#, c-format
 msgid "Failed to detach device from %s"
-msgstr "Помилка створення домену з %s"
-
-#: src/virsh.c:3110
-#, fuzzy
-msgid "attach network interface"
-msgstr "назва мережі"
-
-#: src/virsh.c:3111
-msgid "Attach new network interface."
-msgstr ""
-
-#: src/virsh.c:3117 src/virsh.c:3233
-#, fuzzy
-msgid "network interface type"
-msgstr "назва мережі"
-
-#: src/virsh.c:3118
-#, fuzzy
-msgid "source of network interface"
-msgstr "невизначена назва мережі"
-
-#: src/virsh.c:3119
-#, fuzzy
-msgid "target network name"
-msgstr "назва мережі"
-
-#: src/virsh.c:3120 src/virsh.c:3234
-msgid "MAC adress"
-msgstr ""
-
-#: src/virsh.c:3121
-msgid "script used to bridge network interface"
-msgstr ""
+msgstr "Не вдається від'єднати пристрій з %s"
 
 #: src/virsh.c:3153
+msgid "attach network interface"
+msgstr "приєднати мережний пристрій"
+
+#: src/virsh.c:3154
+msgid "Attach new network interface."
+msgstr "Приєднати новий мережний пристрій."
+
+#: src/virsh.c:3160 src/virsh.c:3276
+msgid "network interface type"
+msgstr "тип мережного інтерфейсу"
+
+#: src/virsh.c:3161
+msgid "source of network interface"
+msgstr "джерело мережного інтерфейсу"
+
+#: src/virsh.c:3162
+msgid "target network name"
+msgstr "назва цільової мережі"
+
+#: src/virsh.c:3163 src/virsh.c:3277
+msgid "MAC adress"
+msgstr "MAC-адреса"
+
+#: src/virsh.c:3164
+msgid "script used to bridge network interface"
+msgstr "сценарій, що використовується для мосту мережного інтерфейсу"
+
+#: src/virsh.c:3196
 #, c-format
 msgid "No support %s in command 'attach-interface'"
-msgstr ""
+msgstr "У команді 'attach-interface' відсутня підтримка %s "
 
-#: src/virsh.c:3226
-#, fuzzy
+#: src/virsh.c:3269
 msgid "detach network interface"
-msgstr "назва мережі"
+msgstr "від'єднати мережний пристрій"
 
-#: src/virsh.c:3227
+#: src/virsh.c:3270
 msgid "Detach network interface."
-msgstr ""
+msgstr "Від'єднати мережний пристрій"
 
-#: src/virsh.c:3272 src/virsh.c:3277
-#, fuzzy
+#: src/virsh.c:3315 src/virsh.c:3320
 msgid "Failed to get interface information"
-msgstr "помилка отримання даних вузла"
+msgstr "Не вдається отримати інформацію про пристрій"
 
-#: src/virsh.c:3285
+#: src/virsh.c:3328
 #, c-format
 msgid "No found interface whose type is %s"
-msgstr ""
+msgstr "Відсутній пристрій, чий тип - %s"
 
-#: src/virsh.c:3307
+#: src/virsh.c:3350
 #, c-format
 msgid "No found interface whose MAC address is %s"
-msgstr ""
+msgstr "Відсутній пристрій з MAC-адресою %s"
 
-#: src/virsh.c:3313 src/virsh.c:3591
-#, fuzzy
+#: src/virsh.c:3356 src/virsh.c:3634
 msgid "Failed to allocate memory"
-msgstr "помилка виділення вузла"
+msgstr "Не вдається виділити пам'ять"
 
-#: src/virsh.c:3318 src/virsh.c:3596
-#, fuzzy
+#: src/virsh.c:3361 src/virsh.c:3639
 msgid "Failed to create XML"
-msgstr "Помилка читання сокету %d\n"
+msgstr "Не вдається створити XML"
 
-#: src/virsh.c:3347
+#: src/virsh.c:3390
 msgid "attach disk device"
-msgstr ""
+msgstr "приєднати дисковий пристрій"
 
-#: src/virsh.c:3348
+#: src/virsh.c:3391
 msgid "Attach new disk device."
-msgstr ""
+msgstr "Приєднати дисковий пристрій"
 
-#: src/virsh.c:3354
+#: src/virsh.c:3397
 msgid "source of disk device"
-msgstr ""
+msgstr "джерело для дискового пристрою"
 
-#: src/virsh.c:3355 src/virsh.c:3519
+#: src/virsh.c:3398 src/virsh.c:3562
 msgid "target of disk device"
-msgstr ""
+msgstr "ціль для дискового пристрою"
 
-#: src/virsh.c:3356
+#: src/virsh.c:3399
 msgid "driver of disk device"
-msgstr ""
+msgstr "драйвер для дискового пристрою"
 
-#: src/virsh.c:3357
+#: src/virsh.c:3400
 msgid "subdriver of disk device"
-msgstr ""
+msgstr "піддрайвер для дискового пристрою"
 
-#: src/virsh.c:3358
+#: src/virsh.c:3401
 msgid "target device type"
-msgstr ""
+msgstr "тип цільового пристрою"
 
-#: src/virsh.c:3359
+#: src/virsh.c:3402
 msgid "mode of device reading and writing"
-msgstr ""
+msgstr "режим читання та запису для пристрою"
 
-#: src/virsh.c:3390 src/virsh.c:3399 src/virsh.c:3406
+#: src/virsh.c:3433 src/virsh.c:3442 src/virsh.c:3449
 #, c-format
 msgid "No support %s in command 'attach-disk'"
-msgstr ""
+msgstr "У команді 'attach-disk' відсутня підтримка %s"
 
-#: src/virsh.c:3512
+#: src/virsh.c:3555
 msgid "detach disk device"
-msgstr ""
+msgstr "від'єднати дисковий пристрій"
 
-#: src/virsh.c:3513
+#: src/virsh.c:3556
 msgid "Detach disk device."
-msgstr ""
+msgstr "Від'єднати дисковий пристрій"
 
-#: src/virsh.c:3554 src/virsh.c:3559 src/virsh.c:3566
-#, fuzzy
+#: src/virsh.c:3597 src/virsh.c:3602 src/virsh.c:3609
 msgid "Failed to get disk information"
-msgstr "помилка отримання даних вузла"
+msgstr "Не вдається отримати інформацію про диск"
 
-#: src/virsh.c:3585
+#: src/virsh.c:3628
 #, c-format
 msgid "No found disk whose target is %s"
-msgstr ""
+msgstr "Відсутній диск, ціль якого - %s"
 
-#: src/virsh.c:3625
+#: src/virsh.c:3668
 msgid "quit this interactive terminal"
 msgstr "вийти з інтерактивного терміналу"
 
-#: src/virsh.c:3765
+#: src/virsh.c:3809
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "для команди '%s' потрібно вказати параметр <%s>"
 
-#: src/virsh.c:3766
+#: src/virsh.c:3810
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "для команди '%s' потрібно вказати параметр --%s"
 
-#: src/virsh.c:3793
+#: src/virsh.c:3837
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "команда '%s' не існує"
 
-#: src/virsh.c:3801
+#: src/virsh.c:3845
 msgid "  NAME\n"
 msgstr "  НАЗВА\n"
 
-#: src/virsh.c:3805
-#, fuzzy
+#: src/virsh.c:3849
 msgid ""
 "\n"
 "  SYNOPSIS\n"
 msgstr ""
 "\n"
-"  ПАРАМЕТРИ\n"
+"  АНОТАЦІЯ\n"
 
-#: src/virsh.c:3812
+#: src/virsh.c:3856
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -1948,7 +1926,7 @@ msgstr ""
 "\n"
 "  ОПИС\n"
 
-#: src/virsh.c:3816
+#: src/virsh.c:3860
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -1956,35 +1934,35 @@ msgstr ""
 "\n"
 "  ПАРАМЕТРИ\n"
 
-#: src/virsh.c:3823
+#: src/virsh.c:3867
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <число>"
 
-#: src/virsh.c:3825
+#: src/virsh.c:3869
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <рядок>"
 
-#: src/virsh.c:3944
+#: src/virsh.c:3988
 msgid "undefined domain name or id"
 msgstr "невизначена назва домену або ID"
 
-#: src/virsh.c:3977
+#: src/virsh.c:4021
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "помилка при отриманні домену '%s'"
 
-#: src/virsh.c:3990
+#: src/virsh.c:4034
 msgid "undefined network name"
 msgstr "невизначена назва мережі"
 
-#: src/virsh.c:4014
+#: src/virsh.c:4058
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "помилка при отриманні мережі '%s'"
 
-#: src/virsh.c:4042
+#: src/virsh.c:4086
 #, c-format
 msgid ""
 "\n"
@@ -1995,126 +1973,124 @@ msgstr ""
 "(Час: %.3f мс)\n"
 "\n"
 
-#: src/virsh.c:4116
+#: src/virsh.c:4160
 msgid "missing \""
 msgstr "відсутній \""
 
-#: src/virsh.c:4177
+#: src/virsh.c:4221
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "непередбачена ознака (назва команди): '%s'"
 
-#: src/virsh.c:4182
+#: src/virsh.c:4226
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "невідома команда: '%s'"
 
-#: src/virsh.c:4189
+#: src/virsh.c:4233
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "команда '%s' не підтримує параметр --%s"
 
-#: src/virsh.c:4204
+#: src/virsh.c:4248
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "очікуваний формат: --%s <%s>"
 
-#: src/virsh.c:4207
+#: src/virsh.c:4251
 msgid "number"
 msgstr "число"
 
-#: src/virsh.c:4207
+#: src/virsh.c:4251
 msgid "string"
 msgstr "рядок"
 
-#: src/virsh.c:4213
+#: src/virsh.c:4257
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "неочікувані дані '%s'"
 
-#: src/virsh.c:4235
+#: src/virsh.c:4279
 msgid "OPTION"
 msgstr "ПАРАМЕТР"
 
-#: src/virsh.c:4235
+#: src/virsh.c:4279
 msgid "DATA"
 msgstr "ДАНІ"
 
-#: src/virsh.c:4285 src/virsh.c:4311
+#: src/virsh.c:4329 src/virsh.c:4355
 msgid "running"
 msgstr "виконання"
 
-#: src/virsh.c:4287 src/virsh.c:4309
+#: src/virsh.c:4331 src/virsh.c:4353
 msgid "blocked"
 msgstr "заблоковано"
 
-#: src/virsh.c:4289
+#: src/virsh.c:4333
 msgid "paused"
 msgstr "призупинено"
 
-#: src/virsh.c:4291
+#: src/virsh.c:4335
 msgid "in shutdown"
 msgstr "вимикається"
 
-#: src/virsh.c:4293
+#: src/virsh.c:4337
 msgid "shut off"
 msgstr "вимкнути"
 
-#: src/virsh.c:4295
+#: src/virsh.c:4339
 msgid "crashed"
 msgstr "аварійна помилка"
 
-#: src/virsh.c:4307
+#: src/virsh.c:4351
 msgid "offline"
 msgstr "автономний режим"
 
-#: src/virsh.c:4326
+#: src/virsh.c:4370
 msgid "no valid connection"
 msgstr "немає діючого з'єднання"
 
-#: src/virsh.c:4373
+#: src/virsh.c:4417
 #, c-format
 msgid "%s: error: "
 msgstr "%s: помилка: "
 
-#: src/virsh.c:4375
+#: src/virsh.c:4419
 msgid "error: "
 msgstr "помилка: "
 
-#: src/virsh.c:4397 src/virsh.c:4409 src/virsh.c:4422
+#: src/virsh.c:4441 src/virsh.c:4453 src/virsh.c:4466
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "Помилка %s: %d: при спробі виділення %d байт"
 
-#: src/virsh.c:4436
+#: src/virsh.c:4480
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "Помилка %s: %d: при спробі виділення %lu байт"
 
-#: src/virsh.c:4472
+#: src/virsh.c:4516
 msgid "failed to connect to the hypervisor"
 msgstr "помилка з'єднання з гіпервізором"
 
-#: src/virsh.c:4496
-#, fuzzy
+#: src/virsh.c:4540
 msgid "failed to get the log file information"
-msgstr "помилка отримання даних вузла"
+msgstr "не вдається отримати інформацію про файл журналу"
 
-#: src/virsh.c:4501
+#: src/virsh.c:4545
 msgid "the log path is not a file"
-msgstr ""
+msgstr "шлях до файлу журналу вказує не на файл"
 
-#: src/virsh.c:4507
+#: src/virsh.c:4551
 msgid "failed to open the log file. check the log file path"
-msgstr ""
+msgstr "не вдається відрити файл журналу. перевірте шлях до файлу журналу"
 
-#: src/virsh.c:4575
-#, fuzzy
+#: src/virsh.c:4619
 msgid "failed to write the log file"
-msgstr "помилка запису конфігураційного файлу"
+msgstr "не вдається записати у файл журналу"
 
-#: src/virsh.c:4744
-#, fuzzy, c-format
+#: src/virsh.c:4788
+#, c-format
 msgid ""
 "\n"
 "%s [options] [commands]\n"
@@ -2141,27 +2117,28 @@ msgstr ""
 "    -h | --help             екран з довідкою\n"
 "    -q | --quiet            режим без виводу повідомлень\n"
 "    -t | --timing           вивід інформації про час\n"
+"    -l | --log <файл>       вивід журналу у файл\n"
 "    -v | --version          версія програми\n"
 "\n"
 "  команди (текстовий режим):\n"
 
-#: src/virsh.c:4762
-#, fuzzy, c-format
+#: src/virsh.c:4806
+#, c-format
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"
-"  (наберіть --help <команда> для докладної інформації про команду)\n"
+"  (наберіть help <команда> для виводу докладної інформації про команду)\n"
 "\n"
 
-#: src/virsh.c:4858
+#: src/virsh.c:4902
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "непідтримуваний параметр '-%c'. Зверніться до --help."
 
-#: src/virsh.c:4940
+#: src/virsh.c:4984
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -2170,7 +2147,7 @@ msgstr ""
 "Ласкаво просимо до %s - інтерактивного терміналу віртуализації.\n"
 "\n"
 
-#: src/virsh.c:4943
+#: src/virsh.c:4987
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
@@ -2218,9 +2195,8 @@ msgid "expecting an assignment"
 msgstr "очікується призначення значення"
 
 #: src/conf.c:887 src/conf.c:941
-#, fuzzy
 msgid "failed to allocate buffer"
-msgstr "помилка виділення вузла"
+msgstr "не вдається виділити буфер"
 
 #: src/conf.c:899
 msgid "failed to open file"
@@ -2230,7 +2206,7 @@ msgstr "помилка відкривання файлу"
 msgid "failed to save content"
 msgstr "помилка збереження вмісту"
 
-#: src/xs_internal.c:340
+#: src/xs_internal.c:346
 msgid "failed to connect to Xen Store"
 msgstr "помилка з'єднання з Xen Store"
 
@@ -2279,46 +2255,17 @@ msgstr "Помилка зв'язку з проксі: погано сформо�
 msgid "got asynchronous packet number %d\n"
 msgstr "отримано асинхронний номер пакету - %d\n"
 
-#: src/xen_internal.c:1270
+#: src/xen_internal.c:1321
 #, c-format
 msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
-msgstr ""
+msgstr "Параметр ваги планування (%d) за межами діапазону (1-65535)"
 
-#: src/xen_internal.c:1280
+#: src/xen_internal.c:1331
 #, c-format
 msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
-msgstr ""
+msgstr "Параметр cap планування (%d) за межами діапазону (1-65535)"
 
-#: src/xen_internal.c:2519
+#: src/xen_internal.c:2598
 #, c-format
 msgid "allocating %d domain info"
 msgstr "виділення %d даних домену"
-
-#~ msgid "allocating node"
-#~ msgstr "виділення вузла"
-
-#, fuzzy
-#~ msgid "allocating private data"
-#~ msgstr "виділити масив значень"
-
-#, fuzzy
-#~ msgid "allocating path"
-#~ msgstr "виділення домену"
-
-#~ msgid "growing buffer"
-#~ msgstr "зростаючий буфер"
-
-#~ msgid "allocate buffer content"
-#~ msgstr "призначити зміст буфера"
-
-#~ msgid "file conatining an XML domain description"
-#~ msgstr "файл, що містить XML опис домену"
-
-#~ msgid "Failed to read description file %s"
-#~ msgstr "Помилка читання файлу опису %s"
-
-#~ msgid "Xen Daemon or Xen Store"
-#~ msgstr "Демон Xen та сховище Xen"
-
-#~ msgid "file conatining an XML network description"
-#~ msgstr "файл, що містить XML опис мережі"
