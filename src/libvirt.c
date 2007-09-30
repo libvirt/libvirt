@@ -2683,7 +2683,7 @@ virNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *freeMems,
         return (-1);
     }
 
-    if ((freeMems == NULL) || (maxCells <= 0)) {
+    if ((freeMems == NULL) || (maxCells <= 0) || (startCell < 0)) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
     }
