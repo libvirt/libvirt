@@ -1,3 +1,7 @@
+Wed Oct  3 10:13:59 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* po/id.po: Remove bogus Project-Id-Version field from merge error
+
 Sun Sep 30 23:07:59 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in libvirt.spec.in include/libvirt/libvirt.h docs/*:
