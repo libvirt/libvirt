@@ -1,3 +1,8 @@
+Thu Oct  4 21:05:59 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Fix error handling for NUMA topology
+	(patch from Beth Kon)
+
 Wed Oct  3 10:13:59 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* po/id.po: Remove bogus Project-Id-Version field from merge error

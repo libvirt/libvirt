@@ -2006,15 +2006,15 @@ sexpr_to_xend_topology_xml(virConnectPtr conn, struct sexpr *root, virBufferPtr 
                     goto error;
 
                 }
-                for (i=start; i<=finish && nodeCpuCount<numCpus; i++) {
+                for (i=start; i<=finish; i++) {
+                    nodeCpuCount++;
+                    if (nodeCpuCount > numCpus) {
+                        virXendError(conn, VIR_ERR_XEN_CALL, 
+                                     "conflicting cpu counts");
+                        goto error;
+                    }
                     *(cpuIdsPtr++) = i;
                     cellCpuCount++;
-                    nodeCpuCount++;
-                }
-                if (nodeCpuCount > numCpus) {
-                    virXendError(conn, VIR_ERR_XEN_CALL, 
-                                 "conflicting cpu counts");
-                    goto error;
                 }
                 offset += len;
                 next = *(offset);
