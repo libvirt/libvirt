@@ -1988,9 +1988,15 @@ sexpr_to_xend_topology_xml(virConnectPtr conn, struct sexpr *root, virBufferPtr 
         offset++;
         /* get list of cpus associated w/ single cell */
         while (1) {
-            if ((len = getNumber(offset, &cpuNum)) < 0) {
-                virXendError(conn, VIR_ERR_XEN_CALL, " topology string syntax error");
-                goto error;
+            len = getNumber(offset, &cpuNum);
+            if (len < 0) {
+                if (!strncmp (offset, "no cpus", 7)){
+                    *(cpuIdsPtr++) = -1;
+                    break;
+                } else {
+                    virXendError(conn, VIR_ERR_XEN_CALL, "topology string syntax error");
+                    goto error;
+                }
             }
             offset += len;
             next = *(offset);
@@ -2058,6 +2064,8 @@ sexpr_to_xend_topology_xml(virConnectPtr conn, struct sexpr *root, virBufferPtr 
         if (r == -1) goto vir_buffer_failed;
 
         for (i = 0; i < cellCpuCount; i++) {
+            if (*(iCpuIdsPtr + i) == -1)
+                break;
             r = virBufferVSprintf (xml, "\
            <cpu id='%d'/>\n", *(iCpuIdsPtr + i));
         if (r == -1) goto vir_buffer_failed;

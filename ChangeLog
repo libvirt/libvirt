@@ -1,3 +1,8 @@
+Mon Oct  8 17:01:53 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: applied patch from Beth Kon to fix 
+	  NUMA topology for cells without CPUs
+
 Thu Oct  4 21:05:59 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c: Fix error handling for NUMA topology
