@@ -1,3 +1,8 @@
+Wed Oct 10 13:48:53 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xm_internal.c: Fixed procesing of vncunused, and vncdisplay
+	parameters in XM style config files for framebuffer config.
+
 Wed Oct 10 13:13:53 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xm_internal.c: Fix XML -> XM config file conversion to

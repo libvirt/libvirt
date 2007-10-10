@@ -924,7 +924,8 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
         }
         if (xenXMConfigGetInt(conf, "sdl", &val) == 0 && val)
             sdl = 1;
-    } else { /* New PV guests use this format */
+    }
+    if (!hvm && !sdl && !vnc) { /* New PV guests use this format */
         list = virConfGetValue(conf, "vfb");
         if (list && list->type == VIR_CONF_LIST &&
             list->list && list->list->type == VIR_CONF_STRING &&
@@ -951,6 +952,8 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                     sdl = 1;
                 } else if (!strncmp(key, "type=vnc", 8)) {
                     vnc = 1;
+                } else if (!strncmp(key, "vncunused=", 10)) {
+                    vncunused = strtol(key+10, NULL, 10);
                 } else if (!strncmp(key, "vnclisten=", 10)) {
                     vnclisten = key + 10;
                 } else if (!strncmp(key, "vncpasswd=", 10)) {
@@ -958,11 +961,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                 } else if (!strncmp(key, "keymap=", 7)) {
                     keymap = key + 7;
                 } else if (!strncmp(key, "vncdisplay=", 11)) {
-                    int port = strtol(key+11, NULL, 10);
-                    if (port == -1)
-                        vncunused = 1;
-                    else
-                        port = port - 5900;
+                    vncdisplay = strtol(key+11, NULL, 10);
                 }
 
                 while (nextkey && (nextkey[0] == ',' ||
@@ -1943,11 +1942,18 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
                                           "cannot set the keymap parameter") < 0)
             goto error;
 
-        /* XXX vncdisplay */
-        /*
-          if (xenXMConfigSetIntFromXPath(conn, conf, ctxt, "vncdisplay", "string(int(/domain/devices/graphics[@type='vnc']/@vncport) - 5900))", 0, 0) < 0)
-          goto error;
-        */
+        obj = xmlXPathEval(BAD_CAST "string(/domain/devices/graphics[@type='vnc']/@port)", ctxt);
+        if ((obj != NULL) && (obj->type == XPATH_STRING) &&
+            (obj->stringval != NULL)) {
+            int port = strtol((const char *)obj->stringval, NULL, 10);
+            if (port != -1) {
+                char portstr[50];
+                snprintf(portstr, sizeof(portstr), "%d", port-5900);
+                if (xenXMConfigSetString(conf, "vncdisplay", portstr) < 0)
+                    goto error;
+            }
+        }
+        xmlXPathFreeObject(obj);
     } else {
         virConfValuePtr vfb;
         obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics", ctxt);
@@ -1990,8 +1996,11 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
                         if (vncunused) {
                             strcat(val, ",vncunused=1");
                         } else {
+                            char portstr[50];
+                            int port = atoi((const char*)vncport);
+                            snprintf(portstr, sizeof(portstr), "%d", port-5900);
                             strcat(val, ",vncdisplay=");
-                            strcat(val, (const char*)vncport);
+                            strcat(val, portstr);
                         }
                         if (vncport)
                             xmlFree(vncport);
