@@ -2083,6 +2083,7 @@ static int qemudDomainRestore(virConnectPtr conn,
     struct qemud_vm_def *def;
     struct qemud_vm *vm;
     int fd;
+    int ret;
     char *xml;
     struct qemud_save_header header;
 
@@ -2161,18 +2162,17 @@ static int qemudDomainRestore(virConnectPtr conn,
     /* Set the migration source and start it up. */
     snprintf(vm->migrateFrom, sizeof(vm->migrateFrom), "stdio");
     vm->stdin = fd;
-
-    if (qemudStartVMDaemon(conn, driver, vm) < 0) {
+    ret = qemudStartVMDaemon(conn, driver, vm);
+    close(fd);
+    vm->migrateFrom[0] = '\0';
+    vm->stdin = -1;
+    if (ret < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                          "failed to start VM");
         if (!vm->configFile[0])
             qemudRemoveInactiveVM(driver, vm);
-        close(fd);
         return -1;
     }
-    close(fd);
-    vm->migrateFrom[0] = '\0';
-    vm->stdin = -1;
 
     /* If it was running before, resume it now. */
     if (header.was_running) {

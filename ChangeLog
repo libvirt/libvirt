@@ -1,3 +1,8 @@
+Wed Oct 10 15:44:53 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_driver.c: Reset migration source after failed attempt
+	to start a VM. (Jim Paris)
+
 Wed Oct 10 13:48:53 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xm_internal.c: Fixed procesing of vncunused, and vncdisplay
