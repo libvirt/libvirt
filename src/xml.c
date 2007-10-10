@@ -1023,9 +1023,12 @@ virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED, xmlNodePtr node, vi
             virNetworkPtr network = virNetworkLookupByName(conn, (const char *) source);
             char *bridge;
             if (!network || !(bridge = virNetworkGetBridgeName(network))) {
+                if (network)
+                    virNetworkFree(network);
                 virXMLError(conn, VIR_ERR_NO_SOURCE, (const char *) source, 0);
                 goto error;
             }
+            virNetworkFree(network);
             virBufferVSprintf(buf, "(bridge '%s')", bridge);
             free(bridge);
         }

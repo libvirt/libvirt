@@ -1635,7 +1635,7 @@ static int xenXMParseXMLDisk(xmlNodePtr node, int hvm, int xendConfigVersion, ch
 
     return (ret);
 }
-static char *xenXMParseXMLVif(xmlNodePtr node, int hvm) {
+static char *xenXMParseXMLVif(virConnectPtr conn, xmlNodePtr node, int hvm) {
     xmlNodePtr cur;
     xmlChar *type = NULL;
     xmlChar *source = NULL;
@@ -1645,6 +1645,7 @@ static char *xenXMParseXMLVif(xmlNodePtr node, int hvm) {
     int typ = 0;
     char *buf = NULL;
     int buflen = 0;
+    char *bridge = NULL;
 
     type = xmlGetProp(node, BAD_CAST "type");
     if (type != NULL) {
@@ -1652,6 +1653,8 @@ static char *xenXMParseXMLVif(xmlNodePtr node, int hvm) {
             typ = 0;
         else if (xmlStrEqual(type, BAD_CAST "ethernet"))
             typ = 1;
+        else if (xmlStrEqual(type, BAD_CAST "network"))
+            typ = 2;
         xmlFree(type);
     }
     cur = node->children;
@@ -1662,8 +1665,10 @@ static char *xenXMParseXMLVif(xmlNodePtr node, int hvm) {
 
                 if (typ == 0)
                     source = xmlGetProp(cur, BAD_CAST "bridge");
-                else
+                else if (typ == 1)
                     source = xmlGetProp(cur, BAD_CAST "dev");
+                else
+                    source = xmlGetProp(cur, BAD_CAST "network");
             } else if ((mac == NULL) &&
                        (xmlStrEqual(cur->name, BAD_CAST "mac"))) {
                 mac = xmlGetProp(cur, BAD_CAST "address");
@@ -1685,8 +1690,17 @@ static char *xenXMParseXMLVif(xmlNodePtr node, int hvm) {
     if (source) {
         if (typ == 0) {
             buflen += 8 + strlen((const char *)source);
-        } else {
+        } else if (typ == 1) {
             buflen += 5 + strlen((const char *)source);
+        } else {
+            virNetworkPtr network = virNetworkLookupByName(conn, (const char *) source);
+            if (!network || !(bridge = virNetworkGetBridgeName(network))) {
+                if (network)
+                    virNetworkFree(network);
+                goto cleanup;
+            }
+            virNetworkFree(network);
+            buflen += 8 + strlen(bridge);
         }
     }
     if (hvm)
@@ -1705,9 +1719,12 @@ static char *xenXMParseXMLVif(xmlNodePtr node, int hvm) {
         if (typ == 0) {
             strcat(buf, ",bridge=");
             strcat(buf, (const char*)source);
-        } else {
-            strcat(buf, ",mac=");
+        } else if (typ == 1) {
+            strcat(buf, ",dev=");
             strcat(buf, (const char*)source);
+        } else {
+            strcat(buf, ",bridge=");
+            strcat(buf, bridge);
         }
     }
     if (hvm) {
@@ -1723,6 +1740,8 @@ static char *xenXMParseXMLVif(xmlNodePtr node, int hvm) {
     }
 
  cleanup:
+    if (bridge != NULL)
+        free(bridge);
     if (mac != NULL)
         xmlFree(mac);
     if (source != NULL)
@@ -2058,7 +2077,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
         vifs->list = NULL;
         for (i = 0; i < obj->nodesetval->nodeNr; i++) {
             virConfValuePtr thisVif;
-            char *vif = xenXMParseXMLVif(obj->nodesetval->nodeTab[i], hvm);
+            char *vif = xenXMParseXMLVif(conn, obj->nodesetval->nodeTab[i], hvm);
             if (!vif)
                 goto error;
             if (!(thisVif = malloc(sizeof(virConfValue)))) {

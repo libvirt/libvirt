@@ -1,3 +1,10 @@
+Wed Oct 10 13:13:53 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xm_internal.c: Fix XML -> XM config file conversion to
+	include bridge name for virtual networks
+	* src/xml.c: Fix memory leak handling XML -> SEXPR conversion
+	of virtual network bridge devices
+
 Mon Oct  8 17:01:53 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: applied patch from Beth Kon to fix 
