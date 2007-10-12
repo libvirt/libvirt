@@ -4,6 +4,9 @@ UUID=$(shell uuidgen)
 
 sbin_PROGRAMS = libvirtd
 
+confdir = $(sysconfdir)/libvirt/
+conf_DATA = libvirtd.conf
+
 # Distribute the generated files so that rpcgen isn't required on the
 # target machine (although almost any Unix machine will have it).
 EXTRA_DIST = libvirtd.init.in libvirtd.sysconf default-network.xml \
@@ -14,7 +17,8 @@ EXTRA_DIST = libvirtd.init.in libvirtd.sysconf default-network.xml \
 	remote_dispatch_prototypes.h \
 	remote_dispatch_localvars.h \
 	remote_dispatch_proc_switch.h \
-	mdns.c mdns.h
+	mdns.c mdns.h \
+        $(conf_DATA)
 
 libvirtd_SOURCES = \
 		qemud.c internal.h \

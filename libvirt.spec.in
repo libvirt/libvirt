@@ -129,6 +129,8 @@ fi
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/networks/autostart
 %{_sysconfdir}/rc.d/init.d/libvirtd
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
+%config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf
+%config(noreplace) %{_sysconfdir}/libvirt/qemu.conf
 %dir %{_datadir}/libvirt/
 %dir %{_datadir}/libvirt/networks/
 %{_datadir}/libvirt/networks/default.xml

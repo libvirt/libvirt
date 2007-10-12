@@ -17,7 +17,11 @@ DEPS = libvirt.la
 LDADDS = @STATIC_BINARIES@ $(WARN_CFLAGS) libvirt.la
 VIRSH_LIBS = @VIRSH_LIBS@
 
-EXTRA_DIST = libvirt_sym.version
+confdir = $(sysconfdir)/libvirt/
+conf_DATA = qemu.conf
+
+
+EXTRA_DIST = libvirt_sym.version $(conf_DATA)
 
 lib_LTLIBRARIES = libvirt.la
 libvirt_la_LIBADD = $(LIBXML_LIBS) $(GNUTLS_LIBS)
