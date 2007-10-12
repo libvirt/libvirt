@@ -45,6 +45,7 @@
 #include "qemu_conf.h"
 #include "uuid.h"
 #include "buf.h"
+#include "conf.h"
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
 
@@ -65,6 +66,68 @@ void qemudReportError(virConnectPtr conn,
     __virRaiseError(conn, dom, net, VIR_FROM_QEMU, code, VIR_ERR_ERROR,
                     NULL, NULL, NULL, -1, -1, errorMessage);
 }
+
+int qemudLoadDriverConfig(struct qemud_driver *driver,
+                          const char *filename) {
+    virConfPtr conf;
+    virConfValuePtr p;
+
+    /* Setup 2 critical defaults */
+    strcpy(driver->vncListen, "127.0.0.1");
+    if (!(driver->vncTLSx509certdir = strdup(SYSCONF_DIR "/pki/libvirt-vnc"))) {
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_MEMORY,
+                         "vncTLSx509certdir");
+        return -1;
+    }
+
+    /* Just check the file is readable before opening it, otherwise
+     * libvirt emits an error.
+     */
+    if (access (filename, R_OK) == -1) return 0;
+
+    conf = virConfReadFile (filename);
+    if (!conf) return 0;
+
+
+#define CHECK_TYPE(name,typ) if (p && p->type != (typ)) {               \
+        qemudReportError(NULL, NULL, NULL, VIR_ERR_INTERNAL_ERROR,      \
+                         "remoteReadConfigFile: %s: %s: expected type " #typ "\n", \
+                         filename, (name));                             \
+        virConfFree(conf);                                              \
+        return -1;                                                      \
+    }
+
+    p = virConfGetValue (conf, "vnc_tls");
+    CHECK_TYPE ("vnc_tls", VIR_CONF_LONG);
+    if (p) driver->vncTLS = p->l;
+
+    p = virConfGetValue (conf, "vnc_tls_x509_verify");
+    CHECK_TYPE ("vnc_tls_x509_verify", VIR_CONF_LONG);
+    if (p) driver->vncTLSx509verify = p->l;
+
+    p = virConfGetValue (conf, "vnc_tls_x509_cert_dir");
+    CHECK_TYPE ("vnc_tls_x509_cert_dir", VIR_CONF_STRING);
+    if (p && p->str) {
+        free(driver->vncTLSx509certdir);
+        if (!(driver->vncTLSx509certdir = strdup(p->str))) {
+            qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_MEMORY,
+                             "vncTLSx509certdir");
+            virConfFree(conf);
+            return -1;
+        }
+    }
+
+    p = virConfGetValue (conf, "vnc_listen");
+    CHECK_TYPE ("vnc_listen", VIR_CONF_STRING);
+    if (p && p->str) {
+        strncpy(driver->vncListen, p->str, sizeof(driver->vncListen));
+        driver->vncListen[sizeof(driver->vncListen)-1] = '\0';
+    }
+
+    virConfFree (conf);
+    return 0;
+}
+
 
 struct qemud_vm *qemudFindVMByID(const struct qemud_driver *driver, int id) {
     struct qemud_vm *vm = driver->vms;
@@ -1234,7 +1297,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
             if (vnclisten && *vnclisten)
                 strncpy(def->vncListen, (char *)vnclisten, BR_INET_ADDR_MAXLEN-1);
             else
-                strcpy(def->vncListen, "127.0.0.1");
+                strcpy(def->vncListen, driver->vncListen);
             def->vncListen[BR_INET_ADDR_MAXLEN-1] = '\0';
             xmlFree(vncport);
             xmlFree(vnclisten);
@@ -1750,15 +1813,30 @@ int qemudBuildCommandLine(virConnectPtr conn,
     }
 
     if (vm->def->graphicsType == QEMUD_GRAPHICS_VNC) {
-        char vncdisplay[BR_INET_ADDR_MAXLEN+20];
+        char vncdisplay[PATH_MAX];
         int ret;
-        if (vm->qemuCmdFlags & QEMUD_CMD_FLAG_VNC_COLON)
-            ret = snprintf(vncdisplay, sizeof(vncdisplay), "%s:%d",
+
+        if (vm->qemuCmdFlags & QEMUD_CMD_FLAG_VNC_COLON) {
+            char options[PATH_MAX] = "";
+            if (driver->vncTLS) {
+                strcat(options, ",tls");
+                if (driver->vncTLSx509verify) {
+                    strcat(options, ",x509verify=");
+                } else {
+                    strcat(options, ",x509=");
+                }
+                strncat(options, driver->vncTLSx509certdir,
+                        sizeof(options) - (strlen(driver->vncTLSx509certdir)-1));
+                options[sizeof(options)-1] = '\0';
+            }
+            ret = snprintf(vncdisplay, sizeof(vncdisplay), "%s:%d%s",
                            vm->def->vncListen,
-                           vm->def->vncActivePort - 5900);
-        else
+                           vm->def->vncActivePort - 5900,
+                           options);
+        } else {
             ret = snprintf(vncdisplay, sizeof(vncdisplay), "%d",
                            vm->def->vncActivePort - 5900);
+        }
         if (ret < 0 || ret >= (int)sizeof(vncdisplay))
             goto error;
 

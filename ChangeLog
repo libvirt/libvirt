@@ -1,3 +1,9 @@
+Fri Oct 12 12:05:53 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_driver.c, src/qemu_conf.c, src/qemu_conf.h: Add a
+	/etc/libvirt/qemu.conf for storing system wide QEMU driver
+	default settings, such as VNC server options.
+
 Wed Oct 10 15:44:53 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c: Reset migration source after failed attempt

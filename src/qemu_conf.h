@@ -289,6 +289,10 @@ struct qemud_driver {
     char *networkConfigDir;
     char *networkAutostartDir;
     char logDir[PATH_MAX];
+    int vncTLS : 1;
+    int vncTLSx509verify : 1;
+    char *vncTLSx509certdir;
+    char vncListen[BR_INET_ADDR_MAXLEN];
 };
 
 
@@ -311,6 +315,8 @@ void qemudReportError(virConnectPtr conn,
     ATTRIBUTE_FORMAT(printf,5,6);
 
 
+int qemudLoadDriverConfig(struct qemud_driver *driver,
+                          const char *filename);
 
 struct qemud_vm *qemudFindVMByID(const struct qemud_driver *driver,
                                  int id);

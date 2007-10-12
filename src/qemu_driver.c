@@ -155,6 +155,7 @@ qemudStartup(void) {
     uid_t uid = geteuid();
     struct passwd *pw;
     char *base = NULL;
+    char driverConf[PATH_MAX];
 
     if (!(qemu_driver = calloc(1, sizeof(struct qemud_driver)))) {
         return -1;
@@ -167,7 +168,7 @@ qemudStartup(void) {
         if (snprintf(qemu_driver->logDir, PATH_MAX, "%s/log/libvirt/qemu", LOCAL_STATE_DIR) >= PATH_MAX)
             goto snprintf_error;
 
-        if ((base = strdup (SYSCONF_DIR "/libvirt/qemu")) == NULL)
+        if ((base = strdup (SYSCONF_DIR "/libvirt")) == NULL)
             goto out_of_memory;
     } else {
         if (!(pw = getpwuid(uid))) {
@@ -179,7 +180,7 @@ qemudStartup(void) {
         if (snprintf(qemu_driver->logDir, PATH_MAX, "%s/.libvirt/qemu/log", pw->pw_dir) >= PATH_MAX)
             goto snprintf_error;
 
-        if (asprintf (&base, "%s/.libvirt/qemu", pw->pw_dir) == -1) {
+        if (asprintf (&base, "%s/.libvirt", pw->pw_dir) == -1) {
             qemudLog (QEMUD_ERR, "out of memory in asprintf");
             goto out_of_memory;
         }
@@ -188,24 +189,36 @@ qemudStartup(void) {
     /* Configuration paths are either ~/.libvirt/qemu/... (session) or
      * /etc/libvirt/qemu/... (system).
      */
-    if (asprintf (&qemu_driver->configDir, "%s", base) == -1)
+    if (snprintf (driverConf, sizeof(driverConf), "%s/qemu.conf", base) == -1)
+        goto out_of_memory;
+    driverConf[sizeof(driverConf)-1] = '\0';
+
+    if (asprintf (&qemu_driver->configDir, "%s/qemu", base) == -1)
         goto out_of_memory;
 
-    if (asprintf (&qemu_driver->autostartDir, "%s/autostart", base) == -1)
+    if (asprintf (&qemu_driver->autostartDir, "%s/qemu/autostart", base) == -1)
         goto out_of_memory;
 
-    if (asprintf (&qemu_driver->networkConfigDir, "%s/networks", base) == -1)
+    if (asprintf (&qemu_driver->networkConfigDir, "%s/qemu/networks", base) == -1)
         goto out_of_memory;
 
-    if (asprintf (&qemu_driver->networkAutostartDir, "%s/networks/autostart",
+    if (asprintf (&qemu_driver->networkAutostartDir, "%s/qemu/networks/autostart",
                   base) == -1)
         goto out_of_memory;
 
-    if (qemudScanConfigs(qemu_driver) < 0)
+    free(base);
+
+    if (qemudLoadDriverConfig(qemu_driver, driverConf) < 0) {
         qemudShutdown();
+        return -1;
+    }
+
+    if (qemudScanConfigs(qemu_driver) < 0) {
+        qemudShutdown();
+        return -1;
+    }
     qemudAutostartConfigs(qemu_driver);
 
-    free(base);
     return 0;
 
  snprintf_error:
