@@ -44,6 +44,15 @@
 #include "buf.h"
 #include "uuid.h"
 
+/* Flags that determine the action to take on a shutdown or crash of a domain
+ */
+typedef enum {
+     VIR_DOMAIN_DESTROY	= 1, /* destroy the domain */
+     VIR_DOMAIN_RESTART	= 2, /* restart the domain */
+     VIR_DOMAIN_PRESERVE= 3, /* keep as is, need manual destroy, for debug */
+     VIR_DOMAIN_RENAME_RESTART= 4/* restart under an new unique name */
+} virDomainRestart;
+
 struct _testDev {
     char name[20];
     int mode;

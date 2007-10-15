@@ -1,3 +1,9 @@
+Mon Oct 15 15:31:00 BST 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/test.c, include/libvirt/libvirt.h.in: Remove virDomainRestart
+	from the public API (it was not used), and move it into the test
+	driver where it is used for purely internal purposes.
+
 Fri Oct 12 12:05:53 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c, src/qemu_conf.c, src/qemu_conf.h: Add a
