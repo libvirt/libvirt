@@ -2089,13 +2089,13 @@ remoteDomainUndefine (virDomainPtr domain)
 }
 
 static int
-remoteDomainAttachDevice (virDomainPtr domain, char *xml)
+remoteDomainAttachDevice (virDomainPtr domain, const char *xml)
 {
     remote_domain_attach_device_args args;
     GET_PRIVATE (domain->conn, -1);
 
     make_nonnull_domain (&args.dom, domain);
-    args.xml = xml;
+    args.xml = (char *) xml;
 
     if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_ATTACH_DEVICE,
               (xdrproc_t) xdr_remote_domain_attach_device_args, (char *) &args,
@@ -2106,13 +2106,13 @@ remoteDomainAttachDevice (virDomainPtr domain, char *xml)
 }
 
 static int
-remoteDomainDetachDevice (virDomainPtr domain, char *xml)
+remoteDomainDetachDevice (virDomainPtr domain, const char *xml)
 {
     remote_domain_detach_device_args args;
     GET_PRIVATE (domain->conn, -1);
 
     make_nonnull_domain (&args.dom, domain);
-    args.xml = xml;
+    args.xml = (char *) xml;
 
     if (call (domain->conn, priv, 0, REMOTE_PROC_DOMAIN_DETACH_DEVICE,
               (xdrproc_t) xdr_remote_domain_detach_device_args, (char *) &args,

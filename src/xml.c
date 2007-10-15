@@ -1335,7 +1335,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
  *         the caller must free() the returned value.
  */
 char *
-virParseXMLDevice(virConnectPtr conn, char *xmldesc, int hvm, int xendConfigVersion)
+virParseXMLDevice(virConnectPtr conn, const char *xmldesc, int hvm, int xendConfigVersion)
 {
     xmlDocPtr xml = NULL;
     xmlNodePtr node;
@@ -1396,7 +1396,7 @@ virParseXMLDevice(virConnectPtr conn, char *xmldesc, int hvm, int xendConfigVers
  * Returns 0 in case of success, -1 in case of failure.
  */
 int
-virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref, int ref_len)
+virDomainXMLDevID(virDomainPtr domain, const char *xmldesc, char *class, char *ref, int ref_len)
 {
     xmlDocPtr xml = NULL;
     xmlNodePtr node, cur;

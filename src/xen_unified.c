@@ -948,7 +948,7 @@ xenUnifiedDomainUndefine (virDomainPtr dom)
 }
 
 static int
-xenUnifiedDomainAttachDevice (virDomainPtr dom, char *xml)
+xenUnifiedDomainAttachDevice (virDomainPtr dom, const char *xml)
 {
     GET_PRIVATE(dom->conn);
     int i;
@@ -962,7 +962,7 @@ xenUnifiedDomainAttachDevice (virDomainPtr dom, char *xml)
 }
 
 static int
-xenUnifiedDomainDetachDevice (virDomainPtr dom, char *xml)
+xenUnifiedDomainDetachDevice (virDomainPtr dom, const char *xml)
 {
     GET_PRIVATE(dom->conn);
     int i;

@@ -2602,7 +2602,7 @@ virDomainGetMaxVcpus(virDomainPtr domain)
  * Returns 0 in case of success, -1 in case of failure.
  */
 int
-virDomainAttachDevice(virDomainPtr domain, char *xml)
+virDomainAttachDevice(virDomainPtr domain, const char *xml)
 {
     virConnectPtr conn;
     DEBUG("domain=%p, xml=%s", domain, xml);
@@ -2634,7 +2634,7 @@ virDomainAttachDevice(virDomainPtr domain, char *xml)
  * Returns 0 in case of success, -1 in case of failure.
  */
 int
-virDomainDetachDevice(virDomainPtr domain, char *xml)
+virDomainDetachDevice(virDomainPtr domain, const char *xml)
 {
     virConnectPtr conn;
     DEBUG("domain=%p, xml=%s", domain, xml);

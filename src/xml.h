@@ -32,8 +32,8 @@ int		virXPathNodeSet	(const char *xpath,
 				 xmlNodePtr **list);
 
 char *virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int xendConfigVersion);
-char *virParseXMLDevice(virConnectPtr conn, char *xmldesc, int hvm, int xendConfigVersion);
-  int virDomainXMLDevID(virDomainPtr domain, char *xmldesc, char *class, char *ref, int ref_len);
+char *virParseXMLDevice(virConnectPtr conn, const char *xmldesc, int hvm, int xendConfigVersion);
+  int virDomainXMLDevID(virDomainPtr domain, const char *xmldesc, char *class, char *ref, int ref_len);
 
 #ifdef __cplusplus
 }

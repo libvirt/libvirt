@@ -58,8 +58,8 @@ static virDomainPtr xenDaemonCreateLinux(virConnectPtr conn,
                                          const char *xmlDesc,
 					 unsigned int flags);
 static char *xenDaemonDomainGetOSType(virDomainPtr domain);
-static int xenDaemonAttachDevice(virDomainPtr domain, char *xml);
-static int xenDaemonDetachDevice(virDomainPtr domain, char *xml);
+static int xenDaemonAttachDevice(virDomainPtr domain, const char *xml);
+static int xenDaemonDetachDevice(virDomainPtr domain, const char *xml);
 static int xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
                                    int flags);
 #endif /* PROXY */
@@ -3337,7 +3337,7 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
  * Returns 0 in case of success, -1 in case of failure.
  */
 static int
-xenDaemonAttachDevice(virDomainPtr domain, char *xml)
+xenDaemonAttachDevice(virDomainPtr domain, const char *xml)
 {
     char *sexpr, *conf, *str;
     int hvm = 0, ret;
@@ -3396,7 +3396,7 @@ xenDaemonAttachDevice(virDomainPtr domain, char *xml)
  * Returns 0 in case of success, -1 in case of failure.
  */
 static int
-xenDaemonDetachDevice(virDomainPtr domain, char *xml)
+xenDaemonDetachDevice(virDomainPtr domain, const char *xml)
 {
     char class[8], ref[80];
 

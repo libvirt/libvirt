@@ -184,10 +184,10 @@ typedef int
 	(*virDrvDomainGetMaxVcpus)	(virDomainPtr domain);
 typedef int
 	(*virDrvDomainAttachDevice)	(virDomainPtr domain,
-					 char *xml);
+					 const char *xml);
 typedef int
 	(*virDrvDomainDetachDevice)	(virDomainPtr domain,
-					 char *xml);
+					 const char *xml);
 typedef int
 	(*virDrvDomainGetAutostart)	(virDomainPtr domain,
 					 int *autostart);
