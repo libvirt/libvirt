@@ -690,6 +690,9 @@ xend_op(virConnectPtr xend, const char *name, const char *key, ...)
  *
  * Returns a parsed S-Expression in case of success, NULL in case of failure
  */
+static struct sexpr *sexpr_get(virConnectPtr xend, const char *fmt, ...)
+  ATTRIBUTE_FORMAT(printf,2,3);
+
 static struct sexpr *
 sexpr_get(virConnectPtr xend, const char *fmt, ...)
 {
