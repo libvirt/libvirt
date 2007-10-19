@@ -77,7 +77,7 @@ virsh_CFLAGS = $(COVERAGE_CFLAGS)
 # target to ease building test programs
 #
 tst: tst.c
-	$(CC) $(CFLAGS) -I../include -o tst tst.c .libs/libvirt.a -lxml2 -lxenstore -lpthread
+	$(CC) $(CFLAGS) $(INCLUDES) -I../include -o tst tst.c .libs/libvirt.a -lxml2 -lxenstore -lpthread
 
 COVERAGE_FILES = $(CLIENT_SOURCES:%.c=libvirt_la-%.cov)
 

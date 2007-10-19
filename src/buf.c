@@ -141,9 +141,11 @@ virBufferContentAndFree (virBufferPtr buf)
         return(NULL);
 
     content = buf->content;
+    if (content != NULL)
+        content[buf->use] = 0;
 
     free (buf);
-    return content;
+    return(content);
 }
 
 /**

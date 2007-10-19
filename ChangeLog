@@ -1,3 +1,9 @@
+Fri Oct 19 17:08:08 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/Makefile.am: fix tst build rule
+	* src/buf.c: fix virBufferContentAndFree to make sure the string is
+	  always 0 terminated.
+
 Fri Oct 19 11:59:39 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/conf.c: fix bug on negative values in virConfParseLong()
