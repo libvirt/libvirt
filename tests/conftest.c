@@ -24,7 +24,10 @@ int main(int argc, char **argv) {
         fprintf(stderr, "Failed to serialize %s back\n", argv[1]);
 	exit(3);
     }
-    printf("%s", buffer);
     virConfFree(conf);
+    if (fwrite(buffer, len, 1, stdout) != len) {
+        fprintf(stderr, "Write failed\n");
+	exit(1);
+    }
     exit(0);
 }

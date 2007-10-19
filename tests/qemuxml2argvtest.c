@@ -40,6 +40,7 @@ static int testCompareXMLToArgvFiles(const char *xml, const char *cmd) {
     vm.qemuVersion = 0 * 1000 * 100 + (8 * 1000) + 1;
     vm.qemuCmdFlags = QEMUD_CMD_FLAG_VNC_COLON |
         QEMUD_CMD_FLAG_NO_REBOOT;
+    vm.migrateFrom[0] = '\0';
 
     vmdef->vncActivePort = vmdef->vncPort;
 

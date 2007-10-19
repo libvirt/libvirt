@@ -1,7 +1,7 @@
 /**
  * conf.c: parser for a subset of the Python encoded Xen configuration files
  *
- * Copyright (C) 2006 Red Hat, Inc.
+ * Copyright (C) 2006, 2007 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -916,7 +916,7 @@ error:
 /**
  * __virConfWriteMem:
  * @memory: pointer to the memory to store the config file
- * @len: pointer to the lenght in byte of the store, on output the size
+ * @len: pointer to the length in bytes of the store, on output the size
  * @conf: the conf
  *
  * Writes a configuration file back to a memory area. @len is an IN/OUT
