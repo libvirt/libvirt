@@ -345,6 +345,8 @@ virConfParseLong(virConfParserCtxtPtr ctxt, long *val)
         l = l * 10 + (CUR - '0');
 	NEXT;
     }
+    if (neg)
+        l = -l;
     *val = l;
     return(0);
 }
