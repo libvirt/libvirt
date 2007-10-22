@@ -116,6 +116,9 @@ struct _xenUnifiedPrivate {
 
 typedef struct _xenUnifiedPrivate *xenUnifiedPrivatePtr;
 
+
+int xenNbCells(virConnectPtr conn);
+int xenNbCpus(virConnectPtr conn);
 #ifdef __cplusplus
 }
 #endif

@@ -1,3 +1,8 @@
+Mon Oct 22 22:27:40 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* docs/format.html docs/libvir.html: documentation cleaups
+	  from Jim Paris
+
 Mon Oct 22 15:05:30 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: update to cpuset parsing code for NUMA

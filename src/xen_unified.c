@@ -37,6 +37,9 @@
 #include "xs_internal.h"
 #include "xm_internal.h"
 
+static int
+xenUnifiedNodeGetInfo (virConnectPtr conn, virNodeInfoPtr info);
+
 /* The five Xen drivers below us. */
 static struct xenUnifiedDriver *drivers[XEN_UNIFIED_NR_DRIVERS] = {
     [XEN_UNIFIED_HYPERVISOR_OFFSET] = &xenHypervisorDriver,
@@ -62,6 +65,62 @@ xenUnifiedError (virConnectPtr conn, virErrorNumber error, const char *info)
     errmsg = __virErrorMsg (error, info);
     __virRaiseError (conn, NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
                      errmsg, info, NULL, 0, 0, errmsg, info);
+}
+
+/*
+ * Helper functions currently used in the NUMA code
+ * Those variables should not be accessed directly but through helper 
+ * functions xenNbCells() and xenNbCpu() available to all Xen backends 
+ */
+static int nbNodeCells = -1;
+static int nbNodeCpus = -1;
+
+/**
+ * xenNumaInit:
+ * @conn: pointer to the hypervisor connection
+ *
+ * Initializer for previous variables. We currently assume that
+ * the number of physical CPU and the numebr of NUMA cell is fixed
+ * until reboot which might be false in future Xen implementations.
+ */
+static void
+xenNumaInit(virConnectPtr conn) {
+    virNodeInfo nodeInfo;
+    int ret;
+
+    ret = xenUnifiedNodeGetInfo(conn, &nodeInfo);
+    if (ret < 0)
+        return;
+    nbNodeCells = nodeInfo.nodes;
+    nbNodeCpus = nodeInfo.cpus;
+}
+
+/**
+ * xenNbCells:
+ * @conn: pointer to the hypervisor connection
+ *
+ * Number of NUMa cells present in the actual Node
+ *
+ * Returns the number of NUMA cells available on that Node
+ */
+int xenNbCells(virConnectPtr conn) {
+    if (nbNodeCells < 0)
+        xenNumaInit(conn);
+    return(nbNodeCells);
+}
+
+/**
+ * xenNbCpus:
+ * @conn: pointer to the hypervisor connection
+ *
+ * Number of NUMa cells present in the actual Node
+ *
+ * Returns the number of NUMA cells available on that Node
+ */
+int xenNbCpus(virConnectPtr conn) {
+    if (nbNodeCpus < 0)
+        xenNumaInit(conn);
+    return(nbNodeCpus);
 }
 
 /*----- Dispatch functions. -----*/

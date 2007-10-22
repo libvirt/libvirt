@@ -7,6 +7,7 @@
 
 #include "libvirt/libvirt.h"
 #include "internal.h"
+#include "buf.h"
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -31,9 +32,28 @@ int		virXPathNodeSet	(const char *xpath,
 				 xmlXPathContextPtr ctxt,
 				 xmlNodePtr **list);
 
-char *virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int xendConfigVersion);
-char *virParseXMLDevice(virConnectPtr conn, const char *xmldesc, int hvm, int xendConfigVersion);
-  int virDomainXMLDevID(virDomainPtr domain, const char *xmldesc, char *class, char *ref, int ref_len);
+int		virParseXenCpuTopology(virConnectPtr conn,
+				 virBufferPtr xml,
+				 const char *str,
+				 int maxcpu);
+int		virParseCpuSet	(virConnectPtr conn,
+				 const char **str,
+				 char sep,
+				 char *cpuset,
+				 int maxcpu);
+char *		virDomainParseXMLDesc(virConnectPtr conn,
+				 const char *xmldesc,
+				 char **name,
+				 int xendConfigVersion);
+char *		virParseXMLDevice(virConnectPtr conn,
+				 const char *xmldesc,
+				 int hvm,
+				 int xendConfigVersion);
+int		virDomainXMLDevID(virDomainPtr domain,
+				 const char *xmldesc,
+				 char *class,
+				 char *ref,
+				 int ref_len);
 
 #ifdef __cplusplus
 }

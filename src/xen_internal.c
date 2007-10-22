@@ -3035,24 +3035,27 @@ xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *free
     xen_op_v2_sys op_sys;
     int i, j, ret;
     xenUnifiedPrivatePtr priv;
-    static int nbNodeCells = -1;
-    virNodeInfo nodeInfo;
+    int nbNodeCells;
     
-
-    if (nbNodeCells == -1) {
-        if (xenDaemonNodeGetInfo(conn, &nodeInfo)) {
-            virXenErrorFunc (VIR_ERR_XEN_CALL, __FUNCTION__,
-                             "cannot determine actual number of cells",0);
-            return -1;
-        }
-        nbNodeCells = nodeInfo.nodes;
-    }
-
-    if ((conn == NULL) || (maxCells < 1) || (startCell >= nbNodeCells)) {
+    if (conn == NULL) {
         virXenErrorFunc (VIR_ERR_INVALID_ARG, __FUNCTION__,
                         "invalid argument", 0);
         return -1;
     }
+
+    nbNodeCells = xenNbCells(conn);
+    if (nbNodeCells < 0) {
+	virXenErrorFunc (VIR_ERR_XEN_CALL, __FUNCTION__,
+			 "cannot determine actual number of cells",0);
+	return(-1);
+    }
+
+    if ((maxCells < 1) || (startCell >= nbNodeCells)) {
+        virXenErrorFunc (VIR_ERR_INVALID_ARG, __FUNCTION__,
+                        "invalid argument", 0);
+        return -1;
+    }
+
     /*
      * Support only sys_interface_version >=4
      */

@@ -24,6 +24,7 @@
 #include "xml.h"
 #include "buf.h"
 #include "xs_internal.h" /* for xenStoreDomainGetNetworkID */
+#include "xen_unified.h"
 
 #ifndef PROXY
 /**
@@ -47,6 +48,362 @@ virXMLError(virConnectPtr conn, virErrorNumber error, const char *info, int valu
     __virRaiseError(conn, NULL, NULL, VIR_FROM_XML, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, value, 0, errmsg, info, value);
 }
+
+/************************************************************************
+ *									*
+ * Parser and converter for the CPUset strings used in libvirt		*
+ *									*
+ ************************************************************************/
+
+/**
+ * skipSpaces:
+ * @str: pointer to the char pointer used
+ *
+ * Skip potential blanks, this includes space tabs, line feed,
+ * carriage returns and also '\\' which can be erronously emitted
+ * by xend
+ */
+static void
+skipSpaces(const char **str) {
+    const char *cur = *str;
+
+    while ((*cur == ' ') || (*cur == '\t') || (*cur == '\n') ||
+           (*cur == '\r') || (*cur == '\\')) cur++;
+    *str = cur;
+}
+
+/**
+ * parseNumber:
+ * @str: pointer to the char pointer used
+ *
+ * Parse a number
+ *
+ * Returns the CPU number or -1 in case of error. @str will be
+ *         updated to skip the number.
+ */
+static int
+parseNumber(const char **str) {
+    int ret = 0;
+    const char *cur = *str;
+
+    if ((*cur < '0') || (*cur > '9'))
+        return(-1);
+
+    while ((*cur >= '0') && (*cur <= '9')) {
+        ret = ret * 10 + (*cur - '0');
+	cur++;
+    }
+    *str = cur;
+    return(ret);
+}
+
+/**
+ * parseCpuNumber:
+ * @str: pointer to the char pointer used
+ * @maxcpu: maximum CPU number allowed
+ *
+ * Parse a CPU number
+ *
+ * Returns the CPU number or -1 in case of error. @str will be
+ *         updated to skip the number.
+ */
+static int
+parseCpuNumber(const char **str, int maxcpu) {
+    int ret = 0;
+    const char *cur = *str;
+
+    if ((*cur < '0') || (*cur > '9'))
+        return(-1);
+
+    while ((*cur >= '0') && (*cur <= '9')) {
+        ret = ret * 10 + (*cur - '0');
+	if (ret > maxcpu)
+	    return(-1);
+	cur++;
+    }
+    *str = cur;
+    return(ret);
+}
+
+/**
+ * saveCpuSet:
+ * @conn: connection
+ * @cpuset: pointer to a char array for the CPU set
+ * @maxcpu: number of elements available in @cpuset
+ *
+ * Serialize the cpuset to a string
+ *
+ * Returns the new string NULL in case of error. The string need to be
+ *         freed by the caller.
+ */
+static char *
+saveCpuSet(virConnectPtr conn, char *cpuset, int maxcpu) 
+{
+    virBufferPtr buf;
+    char *ret;
+    int start, cur;
+    int first = 1;
+
+    if ((cpuset == NULL) || (maxcpu <= 0) || (maxcpu >100000))
+        return(NULL);
+
+    buf = virBufferNew(1000);
+    if (buf == NULL) {
+	virXMLError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"), 1000);
+	return(NULL);
+    }
+    cur = 0;
+    start = -1;
+    while (cur < maxcpu) {
+        if (cpuset[cur]) {
+	    if (start == -1)
+	        start = cur;
+	} else if (start != -1) {
+	    if (!first)
+	        virBufferAdd(buf, ",", -1);
+            else
+	        first = 0;
+	    if (cur == start + 1) 
+	        virBufferVSprintf(buf, "%d", start);
+	    else if (cur == start + 2)
+	        virBufferVSprintf(buf, "%d,%d", start, cur - 1);
+	    else 
+	        virBufferVSprintf(buf, "%d-%d", start, cur - 1);
+	    start = -1;
+	}
+	cur++;
+    }
+    if (start != -1) {
+	if (!first)
+	    virBufferAdd(buf, ",", -1);
+	if (maxcpu == start + 1) 
+	    virBufferVSprintf(buf, "%d", start);
+	else if (maxcpu == start + 2)
+	    virBufferVSprintf(buf, "%d,%d", start, maxcpu - 1);
+	else 
+	    virBufferVSprintf(buf, "%d-%d", start, maxcpu - 1);
+    }
+    ret = virBufferContentAndFree(buf);
+    return(ret);
+}
+
+/**
+ * virParseCpuSet:
+ * @str: pointer to a CPU set string pointer
+ * @sep: potential character used to mark the end of string if not 0
+ * @cpuset: pointer to a char array for the CPU set
+ * @maxcpu: number of elements available in @cpuset
+ *
+ * Parse the cpu set, it will set the value for enabled CPUs in the @cpuset
+ * to 1, and 0 otherwise. The syntax allows coma separated entries each
+ * can be either a CPU number, ^N to unset that CPU or N-M for ranges.
+ *
+ * Returns the number of CPU found in that set, or -1 in case of error.
+ *         @cpuset is modified accordingly to the value parsed.
+ *         @str is updated to the end of the part parsed
+ */
+int
+virParseCpuSet(virConnectPtr conn, const char **str, char sep, char *cpuset,
+            int maxcpu)
+{
+    const char *cur;
+    int ret = 0;
+    int i, start, last;
+    int neg = 0;
+
+    if ((str == NULL) || (cpuset == NULL) || (maxcpu <= 0) || (maxcpu >100000))
+        return(-1);
+
+    cur = *str;
+    skipSpaces(&cur);
+    if (*cur == 0)
+        goto parse_error;
+
+    /* initialize cpumap to all 0s */
+    for (i = 0;i < maxcpu;i++)
+	cpuset[i] = 0;
+    ret = 0;
+
+    while ((*cur != 0) && (*cur != sep)) {
+	/*
+	 * 3 constructs are allowed:
+	 *     - N   : a single CPU number
+	 *     - N-M : a range of CPU numbers with N < M
+	 *     - ^N  : remove a single CPU number from the current set
+	 */
+	if (*cur == '^') {
+	    cur++;
+	    neg = 1;
+	}
+	    
+	if ((*cur < '0') || (*cur > '9'))
+	   goto parse_error;
+	start = parseCpuNumber(&cur, maxcpu);
+	if (start < 0)
+	   goto parse_error;
+	skipSpaces(&cur);
+	if ((*cur == ',') || (*cur == 0) || (*cur == sep)) {
+	    if (neg) {
+		if (cpuset[start] == 1) {
+		    cpuset[start] = 0;
+		    ret--;
+		}
+	    } else {
+		if (cpuset[start] == 0) {
+		    cpuset[start] = 1;
+		    ret++;
+		}
+	    }
+	} else if (*cur == '-') {
+	    if (neg)
+	        goto parse_error;
+	    cur++;
+	    skipSpaces(&cur);
+	    last = parseCpuNumber(&cur, maxcpu);
+	    if (last < start)
+	        goto parse_error;
+            for (i = start;i <= last;i++) {
+	        if (cpuset[i] == 0) {
+		    cpuset[i] = 1;
+		    ret++;
+		}
+	    }
+	    skipSpaces(&cur);
+	}
+	if (*cur == ',') {
+	    cur++;
+	    skipSpaces(&cur);
+	    neg = 0;
+	} else if ((*cur == 0) || (*cur == sep)) {
+	    break;
+	} else
+	    goto parse_error;
+    }
+    *str = cur;
+    return(ret);
+
+parse_error:
+    virXMLError(conn, VIR_ERR_XEN_CALL,
+                 _("topology cpuset syntax error"), 0);
+    return(-1);
+}
+
+/**
+ * virParseXenCpuTopology:
+ * @xml: XML output buffer
+ * @str: the topology string 
+ * @maxcpu: number of elements available in @cpuset
+ *
+ * Parse a Xend CPU topology string and build the associated XML
+ * format.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+int
+virParseXenCpuTopology(virConnectPtr conn, virBufferPtr xml, const char *str,
+              int maxcpu)
+{
+    const char *cur;
+    char *cpuset = NULL;
+    int cell, cpu, nb_cpus;
+    int ret;
+
+    if ((str == NULL) || (xml == NULL) || (maxcpu <= 0) || (maxcpu >100000))
+        return(-1);
+
+    cpuset = malloc(maxcpu * sizeof(char));
+    if (cpuset == NULL)
+        goto memory_error;
+
+    cur = str;
+    while (*cur != 0) {
+        /*
+	 * Find the next NUMA cell described in the xend output
+	 */
+        cur = strstr(cur, "node");
+	if (cur == NULL)
+	    break;
+	cur += 4;
+        cell = parseNumber(&cur);
+	if (cell < 0)
+	    goto parse_error;
+	skipSpaces(&cur);
+	if (*cur != ':')
+	    goto parse_error;
+	cur++;
+	skipSpaces(&cur);
+	if (!strncmp (cur, "no cpus", 7)) {
+	    nb_cpus = 0;
+	    for (cpu = 0;cpu < maxcpu;cpu++)
+	        cpuset[cpu] = 0;
+	} else {
+	    nb_cpus = virParseCpuSet(conn, &cur, 'n', cpuset, maxcpu);
+	    if (nb_cpus < 0)
+	        goto error;
+	}
+
+	/*
+	 * add xml for all cpus associated with that cell
+	 */
+        ret = virBufferVSprintf (xml, "\
+      <cell id='%d'>\n\
+        <cpus num='%d'>\n", cell, nb_cpus);
+#ifdef STANDALONE
+        {
+	    char *dump;
+
+	    dump = saveCpuSet(conn, cpuset, maxcpu);
+	    if (dump != NULL) {
+	        virBufferVSprintf (xml, "           <dump>%s</dump>\n", dump);
+	        free(dump);
+	    } else {
+	        virBufferVSprintf (xml, "           <error>%s</error>\n",
+		                   "Failed to dump CPU set");
+	    }
+        }
+#endif
+	if (ret < 0)
+	    goto memory_error;
+	for (cpu = 0;cpu < maxcpu;cpu++) {
+	    if (cpuset[cpu] == 1) {
+	        ret = virBufferVSprintf (xml, "\
+           <cpu id='%d'/>\n", cpu);
+	        if (ret < 0)
+		    goto memory_error;
+	    }
+	}
+	ret = virBufferAdd (xml, "\
+        </cpus>\n\
+      </cell>\n", -1);
+        if (ret < 0)
+	    goto memory_error;
+        
+    }
+    free(cpuset);
+    return(0);
+
+parse_error:
+    virXMLError(conn, VIR_ERR_XEN_CALL,
+                 _("topology syntax error"), 0);
+error:
+    if (cpuset != NULL)
+        free(cpuset);
+
+    return(-1);
+
+memory_error:
+    if (cpuset != NULL)
+        free(cpuset);
+    virXMLError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"), 0);
+    return(-1);
+}
+
+
+/************************************************************************
+ *									*
+ * Wrappers around libxml2 XPath specific functions			*
+ *									*
+ ************************************************************************/
 
 /**
  * virXPathString:
@@ -270,6 +627,12 @@ virXPathNodeSet(const char *xpath, xmlXPathContextPtr ctxt, xmlNodePtr **list) {
     xmlXPathFreeObject(obj);
     return(ret);
 }
+
+/************************************************************************
+ *									*
+ * Converter functions to go from the XML tree to an S-Expr for Xen	*
+ *									*
+ ************************************************************************/
 
 /**
  * virtDomainParseXMLGraphicsDescImage:
@@ -1166,6 +1529,36 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name, int 
         vcpus = (unsigned int) f;
     }
     virBufferVSprintf(&buf, "(vcpus %u)", vcpus);
+
+    str = virXPathString("string(/domain/vcpu/@cpuset)", ctxt);
+    if (str != NULL) {
+        int maxcpu = xenNbCpus(conn);
+	char *cpuset = NULL;
+	char *ranges = NULL;
+	const char *cur = str;
+
+	/*
+	 * Parse the CPUset attribute given in libvirt format and reserialize
+	 * it in a range format guaranteed to be understood by Xen.
+	 */
+	if (maxcpu > 0) {
+	    cpuset = malloc(maxcpu * sizeof(char));
+	    if (cpuset != NULL) {
+		res = virParseCpuSet(conn, &cur, 0, cpuset, maxcpu);
+		if (res > 0) {
+		    ranges = saveCpuSet(conn, cpuset, maxcpu);
+		    if (ranges != NULL) {
+		        virBufferVSprintf(&buf, "(cpus '%s')", ranges);
+			free(ranges);
+		    }
+		}
+		free(cpuset);
+	    } else {
+		virXMLError(conn, VIR_ERR_NO_MEMORY, xmldesc, 0);
+	    }
+	}
+        free(str);
+    }
 
     str = virXPathString("string(/domain/uuid[1])", ctxt);
     if (str != NULL) {

@@ -230,7 +230,7 @@ support a variety of options:</p><ol><li>Userspace SLIRP stack
     <pre>&lt;interface type='user'/&gt;</pre>
     <pre>
 &lt;interface type='user'&gt;                                                  
-  &lt;mac address="11:22:33:44:55:66:/&gt;                                     
+  &lt;mac address="11:22:33:44:55:66"/&gt;                                     
 &lt;/interface&gt;
     </pre>
   </li>
@@ -253,7 +253,7 @@ support a variety of options:</p><ol><li>Userspace SLIRP stack
 &lt;interface type='network'&gt;
   &lt;source network='default'/&gt;
   &lt;target dev='vnet7'/&gt;
-  &lt;mac address="11:22:33:44:55:66:/&gt;
+  &lt;mac address="11:22:33:44:55:66"/&gt;
 &lt;/interface&gt;
     </pre>
   </li>
@@ -273,12 +273,8 @@ support a variety of options:</p><ol><li>Userspace SLIRP stack
 &lt;interface type='bridge'&gt;
   &lt;source dev='br0'/&gt;
   &lt;target dev='vnet7'/&gt;
-  &lt;mac address="11:22:33:44:55:66:/&gt;
-&lt;/interface&gt;       &lt;interface type='bridge'&gt;
-         &lt;source dev='br0'/&gt;
-         &lt;target dev='vnet7'/&gt;
-         &lt;mac address="11:22:33:44:55:66:/&gt;
-       &lt;/interface&gt;</pre>
+  &lt;mac address="11:22:33:44:55:66"/&gt;
+&lt;/interface&gt;</pre> 
   </li>
   <li>Generic connection to LAN
     <p>Provides a means for the administrator to execute an arbitrary script
