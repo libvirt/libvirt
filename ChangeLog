@@ -1,3 +1,11 @@
+Mon Oct 22 22:33:59 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c src/xen_unified.c src/xen_unified.h
+	  src/xend_internal.c src/xml.c src/xml.h: commited erronously
+	  the NUMA patches sent for review on the list in last commit.
+	  But that should not affect non NUMA users so early push should
+	  not be a problem.
+
 Mon Oct 22 22:27:40 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* docs/format.html docs/libvir.html: documentation cleaups
