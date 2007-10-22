@@ -1,3 +1,7 @@
+Mon Oct 22 15:05:30 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: update to cpuset parsing code for NUMA
+
 Fri Oct 19 17:08:08 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/Makefile.am: fix tst build rule
