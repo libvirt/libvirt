@@ -16,36 +16,31 @@
      <exports symbol='VIR_UUID_STRING_BUFLEN' type='macro'/>
      <exports symbol='VIR_GET_CPUMAP' type='macro'/>
      <exports symbol='VIR_UNUSE_CPU' type='macro'/>
-     <exports symbol='VIR_DOMAIN_SHUTDOWN' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SHUTOFF' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_DOUBLE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_ULLONG' type='enum'/>
+     <exports symbol='VIR_VCPU_OFFLINE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_XML_INACTIVE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_BOOLEAN' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_UINT' type='enum'/>
+     <exports symbol='VIR_MIGRATE_LIVE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_INT' type='enum'/>
      <exports symbol='VIR_VCPU_RUNNING' type='enum'/>
      <exports symbol='VIR_DOMAIN_CRASHED' type='enum'/>
-     <exports symbol='VIR_DOMAIN_SCHED_FIELD_DOUBLE' type='enum'/>
-     <exports symbol='VIR_DOMAIN_SCHED_FIELD_LLONG' type='enum'/>
-     <exports symbol='VIR_DOMAIN_SCHED_FIELD_ULLONG' type='enum'/>
-     <exports symbol='VIR_DOMAIN_DESTROY' type='enum'/>
-     <exports symbol='VIR_DOMAIN_RESTART' type='enum'/>
-     <exports symbol='VIR_DOMAIN_PRESERVE' type='enum'/>
-     <exports symbol='VIR_DOMAIN_SCHED_FIELD_BOOLEAN' type='enum'/>
-     <exports symbol='VIR_MIGRATE_LIVE' type='enum'/>
-     <exports symbol='VIR_VCPU_OFFLINE' type='enum'/>
-     <exports symbol='VIR_DOMAIN_RUNNING' type='enum'/>
-     <exports symbol='VIR_DOMAIN_BLOCKED' type='enum'/>
-     <exports symbol='VIR_DOMAIN_SHUTOFF' type='enum'/>
-     <exports symbol='VIR_VCPU_BLOCKED' type='enum'/>
-     <exports symbol='VIR_DOMAIN_SCHED_FIELD_INT' type='enum'/>
-     <exports symbol='VIR_DOMAIN_PAUSED' type='enum'/>
-     <exports symbol='VIR_DOMAIN_XML_INACTIVE' type='enum'/>
      <exports symbol='VIR_DOMAIN_NONE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SHUTDOWN' type='enum'/>
+     <exports symbol='VIR_VCPU_BLOCKED' type='enum'/>
      <exports symbol='VIR_DOMAIN_NOSTATE' type='enum'/>
-     <exports symbol='VIR_DOMAIN_RENAME_RESTART' type='enum'/>
+     <exports symbol='VIR_DOMAIN_PAUSED' type='enum'/>
+     <exports symbol='VIR_DOMAIN_SCHED_FIELD_LLONG' type='enum'/>
+     <exports symbol='VIR_DOMAIN_RUNNING' type='enum'/>
      <exports symbol='VIR_DOMAIN_XML_SECURE' type='enum'/>
+     <exports symbol='VIR_DOMAIN_BLOCKED' type='enum'/>
      <exports symbol='virDomainBlockStatsStruct' type='typedef'/>
      <exports symbol='virDomainMigrateFlags' type='typedef'/>
      <exports symbol='virNodeInfo' type='typedef'/>
      <exports symbol='virNetwork' type='typedef'/>
      <exports symbol='virDomainBlockStatsPtr' type='typedef'/>
-     <exports symbol='virSchedParameterType' type='typedef'/>
      <exports symbol='virConnect' type='typedef'/>
      <exports symbol='virVcpuInfo' type='typedef'/>
      <exports symbol='virDomainInfo' type='typedef'/>
@@ -53,7 +48,7 @@
      <exports symbol='virDomainState' type='typedef'/>
      <exports symbol='virDomain' type='typedef'/>
      <exports symbol='virDomainInterfaceStatsPtr' type='typedef'/>
-     <exports symbol='virDomainRestart' type='typedef'/>
+     <exports symbol='virSchedParameterType' type='typedef'/>
      <exports symbol='virSchedParameterPtr' type='typedef'/>
      <exports symbol='virNodeInfoPtr' type='typedef'/>
      <exports symbol='virNetworkPtr' type='typedef'/>
@@ -292,13 +287,9 @@
     </macro>
     <enum name='VIR_DOMAIN_BLOCKED' file='libvirt' value='2' type='virDomainState' info='the domain is blocked on resource'/>
     <enum name='VIR_DOMAIN_CRASHED' file='libvirt' value='6' type='virDomainState' info=' the domain is crashed'/>
-    <enum name='VIR_DOMAIN_DESTROY' file='libvirt' value='1' type='virDomainRestart' info='destroy the domain'/>
     <enum name='VIR_DOMAIN_NONE' file='libvirt' value='0' type='virDomainCreateFlags'/>
     <enum name='VIR_DOMAIN_NOSTATE' file='libvirt' value='0' type='virDomainState' info='no state'/>
     <enum name='VIR_DOMAIN_PAUSED' file='libvirt' value='3' type='virDomainState' info='the domain is paused by user'/>
-    <enum name='VIR_DOMAIN_PRESERVE' file='libvirt' value='3' type='virDomainRestart' info='keep as is, need manual destroy, for debug'/>
-    <enum name='VIR_DOMAIN_RENAME_RESTART' file='libvirt' value='4' type='virDomainRestart' info=' restart under an new unique name'/>
-    <enum name='VIR_DOMAIN_RESTART' file='libvirt' value='2' type='virDomainRestart' info='restart the domain'/>
     <enum name='VIR_DOMAIN_RUNNING' file='libvirt' value='1' type='virDomainState' info='the domain is running'/>
     <enum name='VIR_DOMAIN_SCHED_FIELD_BOOLEAN' file='libvirt' value='6' type='virSchedParameterType' info=' boolean(character) case'/>
     <enum name='VIR_DOMAIN_SCHED_FIELD_DOUBLE' file='libvirt' value='5' type='virSchedParameterType' info='double case'/>
@@ -420,7 +411,6 @@
     <typedef name='virDomainPtr' file='libvirt' type='virDomain *'>
       <info>a virDomainPtr is pointer to a virDomain private structure, this is the type used to reference a Xen domain in the API.</info>
     </typedef>
-    <typedef name='virDomainRestart' file='libvirt' type='enum'/>
     <typedef name='virDomainState' file='libvirt' type='enum'/>
     <typedef name='virDomainXMLFlags' file='libvirt' type='enum'/>
     <struct name='virError' file='virterror' type='struct _virError'>
@@ -606,7 +596,7 @@
       <info>Create a virtual device attachment to backend.</info>
       <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
-      <arg name='xml' type='char *' info='pointer to XML description of one device'/>
+      <arg name='xml' type='const char *' info='pointer to XML description of one device'/>
     </function>
     <function name='virDomainBlockStats' file='libvirt' module='libvirt'>
       <info>This function returns block device (disk) stats for block devices attached to the domain.  The path parameter is the name of the block device.  Get this by calling virDomainGetXMLDesc and finding the &lt;target dev=&apos;...&apos;&gt; attribute within //domain/devices/disk.  (For example, &quot;xvda&quot;).  Domains may have more than one block device.  To get stats for each you should make multiple calls to this function.  Individual fields within the stats structure may be returned as -1, which indicates that the hypervisor does not support that particular statistic.</info>
@@ -650,7 +640,7 @@
       <info>Destroy a virtual device attachment to backend.</info>
       <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object'/>
-      <arg name='xml' type='char *' info='pointer to XML description of one device'/>
+      <arg name='xml' type='const char *' info='pointer to XML description of one device'/>
     </function>
     <function name='virDomainFree' file='libvirt' module='libvirt'>
       <info>Free the domain object. The running instance is kept alive. The data structure is freed and should not be used thereafter.</info>

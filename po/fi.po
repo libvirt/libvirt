@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-09-30 23:00+0200\n"
-"PO-Revision-Date: 2007-06-11 00:43+0200\n"
+"POT-Creation-Date: 2007-10-23 17:38+0200\n"
+"PO-Revision-Date: 2007-10-06 23:45+0300\n"
 "Last-Translator: Ville-Pekka Vainio <vpivaini@cs.helsinki.fi>\n"
 "Language-Team: Finnish <laatu@lokalisointi.org>\n"
 "MIME-Version: 1.0\n"
@@ -46,14 +46,13 @@ msgid "out of memory"
 msgstr "muisti lopussa"
 
 #: src/virterror.c:414
-#, fuzzy
 msgid "this function is not supported by the hypervisor"
-msgstr "hypervisor ei ole tuettu"
+msgstr "hypervisor ei tue tätä toimintoa"
 
 #: src/virterror.c:416
-#, fuzzy, c-format
+#, c-format
 msgid "this function is not supported by the hypervisor: %s"
-msgstr "hypervisor %s ei ole tuettu"
+msgstr "hypervisor ei tue tätä toimintoa: %s"
 
 #: src/virterror.c:420
 msgid "could not connect to hypervisor"
@@ -144,12 +143,12 @@ msgstr "Komennon ”%s” ajaminen epäonnistui: %s\n"
 
 #: src/virterror.c:477
 msgid "could not use Xen hypervisor entry"
-msgstr ""
+msgstr "Xen-hypervisoria ei voitu käyttää"
 
 #: src/virterror.c:479
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
-msgstr ""
+msgstr "Xen-hypervisoria %s ei voitu käyttää"
 
 #: src/virterror.c:483
 msgid "could not connect to Xen Store"
@@ -368,34 +367,31 @@ msgid "Failed to find the network: %s"
 msgstr "Verkkoa ei löytynyt: %s"
 
 #: src/virterror.c:639
-#, fuzzy
 msgid "Domain not found"
-msgstr "toimialueen tiedot"
+msgstr "Toimialuetta ei löytynyt"
 
 #: src/virterror.c:641
-#, fuzzy, c-format
+#, c-format
 msgid "Domain not found: %s"
-msgstr "Toimialue palautettu tiedostosta %s\n"
+msgstr "Toimialuetta ei löytynyt: %s"
 
 #: src/virterror.c:645
-#, fuzzy
 msgid "Network not found"
-msgstr "verkon nimi tai uuid"
+msgstr "Verkkoa ei löytynyt"
 
 #: src/virterror.c:647
-#, fuzzy, c-format
+#, c-format
 msgid "Network not found: %s"
-msgstr "Verkko %s luotu tiedostosta %s\n"
+msgstr "Verkkoa ei löytynyt %s"
 
 #: src/virterror.c:651
-#, fuzzy
 msgid "invalid MAC adress"
-msgstr "virheellinen argumentti kohteessa %s"
+msgstr "virheellinen MAC-osoite"
 
 #: src/virterror.c:653
-#, fuzzy, c-format
+#, c-format
 msgid "invalid MAC adress: %s"
-msgstr "virheellinen argumentti kohteessa %s"
+msgstr "virheellinen MAC-osoite: %s"
 
 #: src/xmlrpc.c:63
 msgid "copying node content"
@@ -430,7 +426,7 @@ msgstr "varaa vastaus"
 msgid "read response"
 msgstr "lue vastaus"
 
-#: src/xmlrpc.c:484 src/xml.c:265
+#: src/xmlrpc.c:484 src/xml.c:622
 msgid "allocate string array"
 msgstr "varaa merkkijonotaulukko"
 
@@ -466,168 +462,176 @@ msgstr "verkon lisääminen yhteyksien hajautustauluun epäonnistui"
 msgid "network missing from connection hash table"
 msgstr "verkko puuttuu yhteyksien hajautustaulusta"
 
-#: src/test.c:223 src/test.c:588 src/test.c:1262
+#: src/test.c:232 src/test.c:597 src/test.c:1271
 msgid "getting time of day"
 msgstr "haetaan kellonaika"
 
-#: src/test.c:229 src/test.c:361 src/test.c:387 src/test.c:1537
+#: src/test.c:238 src/test.c:370 src/test.c:396 src/test.c:1546
 msgid "domain"
 msgstr "toimialue"
 
-#: src/test.c:235 src/test.c:421 src/test.c:694
+#: src/test.c:244 src/test.c:430 src/test.c:703
 msgid "creating xpath context"
 msgstr "luodaan xpath-konteksti"
 
-#: src/test.c:241
+#: src/test.c:250
 msgid "domain name"
 msgstr "toimialueen nimi"
 
-#: src/test.c:247 src/test.c:251
+#: src/test.c:256 src/test.c:260
 msgid "domain uuid"
 msgstr "toimialueen UUID"
 
-#: src/test.c:259
+#: src/test.c:268
 msgid "domain memory"
 msgstr "toimialueen muisti"
 
-#: src/test.c:268
+#: src/test.c:277
 msgid "domain current memory"
 msgstr "toimialueen nykyinen muisti"
 
-#: src/test.c:278
+#: src/test.c:287
 msgid "domain vcpus"
 msgstr "toimialueen virtuaaliprosessorit"
 
-#: src/test.c:287
+#: src/test.c:296
 msgid "domain reboot behaviour"
 msgstr "toimialueen uudelleenkäynnistyskäytös"
 
-#: src/test.c:297
+#: src/test.c:306
 msgid "domain poweroff behaviour"
 msgstr "toimialueen virrankatkaisukäytös"
 
-#: src/test.c:307
+#: src/test.c:316
 msgid "domain crash behaviour"
 msgstr "toimialueen kaatumiskäytös"
 
-#: src/test.c:380
+#: src/test.c:389
 msgid "load domain definition file"
 msgstr "lataa toimialueen määritystiedosto"
 
-#: src/test.c:415 src/test.c:539 src/test.c:564
-#, fuzzy
+#: src/test.c:424 src/test.c:548 src/test.c:573
 msgid "network"
-msgstr "Verkon nimi"
+msgstr "verkko"
 
-#: src/test.c:427 src/virsh.c:2733
+#: src/test.c:436 src/virsh.c:2733
 msgid "network name"
-msgstr "Verkon nimi"
+msgstr "verkon nimi"
 
-#: src/test.c:435 src/test.c:439 src/virsh.c:2624
+#: src/test.c:444 src/test.c:448 src/virsh.c:2624
 msgid "network uuid"
 msgstr "verkko-UUID"
 
-#: src/test.c:447
+#: src/test.c:456
 #, fuzzy
 msgid "network forward"
-msgstr "Verkon nimi"
+msgstr "Selaa eteenpäin"
 
-#: src/test.c:456 src/test.c:466 src/test.c:471
+#: src/test.c:465 src/test.c:475 src/test.c:480
 msgid "ip address"
-msgstr ""
+msgstr "IP-osoite"
 
-#: src/test.c:461
+#: src/test.c:470
 msgid "ip netmask"
-msgstr ""
+msgstr "aliverkon peite"
 
-#: src/test.c:557
-#, fuzzy
+#: src/test.c:566
 msgid "load network definition file"
-msgstr "lataa toimialueen määritystiedosto"
+msgstr "lataa verkonmääritystiedosto"
 
-#: src/test.c:673
+#: src/test.c:682
 msgid "loading host definition file"
 msgstr "lataa koneen määritystiedostoa"
 
-#: src/test.c:680
+#: src/test.c:689
 msgid "host"
 msgstr "kone"
 
-#: src/test.c:688
+#: src/test.c:697
 msgid "node"
 msgstr "solmu"
 
-#: src/test.c:712
+#: src/test.c:721
 msgid "node cpu numa nodes"
 msgstr ""
 
-#: src/test.c:720
+#: src/test.c:729
 msgid "node cpu sockets"
 msgstr "solmun prosessoripaikat"
 
-#: src/test.c:728
+#: src/test.c:737
 msgid "node cpu cores"
 msgstr "solmun prosessoriytimet"
 
-#: src/test.c:736
+#: src/test.c:745
 msgid "node cpu threads"
 msgstr "solmun prosessorisäikeet"
 
-#: src/test.c:747
+#: src/test.c:756
 msgid "node active cpu"
 msgstr "solmun aktiivinen prosessori"
 
-#: src/test.c:754
+#: src/test.c:763
 msgid "node cpu mhz"
 msgstr "solmun prosessorin kellotaajuus"
 
-#: src/test.c:769
+#: src/test.c:778
 msgid "node memory"
 msgstr "solmun muisti"
 
-#: src/test.c:775
+#: src/test.c:784
 msgid "node domain list"
 msgstr "solmun toimialueluettelo"
 
-#: src/test.c:785
+#: src/test.c:794
 msgid "resolving domain filename"
 msgstr "selvitetään toimialueen tiedostonimeä"
 
-#: src/test.c:810
-#, fuzzy
+#: src/test.c:819
 msgid "resolving network filename"
-msgstr "selvitetään toimialueen tiedostonimeä"
+msgstr "selvitetään verkkotiedostonimeä"
 
-#: src/test.c:908
+#: src/test.c:917
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: anna polku tai käytä test:///default"
 
-#: src/test.c:1046
+#: src/test.c:1055
 msgid "too many domains"
 msgstr "liian monta toimialuetta"
 
-#: src/test.c:1557
+#: src/test.c:1566
 msgid "Domain is already running"
 msgstr "toimialue on jo käynnissä"
 
-#: src/test.c:1572
+#: src/test.c:1581
 msgid "Domain is still running"
 msgstr "toimialue on edelleen käynnissä"
 
-#: src/test.c:1772 src/test.c:1797
-#, fuzzy
+#: src/test.c:1781 src/test.c:1806
 msgid "too many networks"
-msgstr "liian monta yhteyttä"
+msgstr "liian monta verkkoa"
 
-#: src/test.c:1816
-#, fuzzy
+#: src/test.c:1825
 msgid "Network is still running"
-msgstr "toimialue on edelleen käynnissä"
+msgstr "Verkko on edelleen käynnissä"
 
-#: src/test.c:1830
-#, fuzzy
+#: src/test.c:1839
 msgid "Network is already running"
-msgstr "toimialue on jo käynnissä"
+msgstr "Verkko on jo käynnissä"
+
+#: src/xml.c:151 src/xml.c:396
+#, fuzzy
+msgid "allocate buffer"
+msgstr "varaa uusi puskuri"
+
+#: src/xml.c:286
+msgid "topology cpuset syntax error"
+msgstr ""
+
+#: src/xml.c:386
+#, fuzzy
+msgid "topology syntax error"
+msgstr "asetustiedoston syntaksivirhe"
 
 #: src/sexpr.c:59
 msgid "failed to allocate a node"
@@ -641,66 +645,65 @@ msgstr "merkkijonon kopiointi epäonnistui"
 msgid "failed to read from Xen Daemon"
 msgstr "Luku Xen Daemonista epäonnistui"
 
-#: src/xend_internal.c:597 src/xend_internal.c:814 src/xend_internal.c:1534
-#: src/xend_internal.c:1553 src/xend_internal.c:2079
+#: src/xend_internal.c:597 src/xend_internal.c:817 src/xend_internal.c:1537
+#: src/xend_internal.c:1556 src/xend_internal.c:1944
 msgid "allocate new buffer"
 msgstr "varaa uusi puskuri"
 
-#: src/xend_internal.c:1021
+#: src/xend_internal.c:1024
 #, fuzzy
 msgid "failed to urlencode the create S-Expr"
 msgstr "<qt>Kansiota <b>%1</b> ei voida luoda.</qt>"
 
-#: src/xend_internal.c:1062
+#: src/xend_internal.c:1065
 msgid "domain information incomplete, missing domid"
 msgstr "toimialuetieto on epätäydellistä, domid puuttuu"
 
-#: src/xend_internal.c:1068
+#: src/xend_internal.c:1071
 msgid "domain information incorrect domid not numeric"
 msgstr "toimialuetieto on virheellistä, domid ei ole numeerinen"
 
-#: src/xend_internal.c:1073 src/xend_internal.c:1120
+#: src/xend_internal.c:1076 src/xend_internal.c:1123
 msgid "domain information incomplete, missing uuid"
 msgstr "toimialuetieto on epätäydellistä, uuid puuttuu"
 
-#: src/xend_internal.c:1112 src/xend_internal.c:1390 src/xend_internal.c:1397
+#: src/xend_internal.c:1115 src/xend_internal.c:1393 src/xend_internal.c:1400
 msgid "domain information incomplete, missing name"
 msgstr "toimialuetiedot ovat epätäydellisiä, nimi puuttuu"
 
-#: src/xend_internal.c:1286 src/xend_internal.c:1317
+#: src/xend_internal.c:1289 src/xend_internal.c:1320
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "toimialuetieto on epätäydellistä, ydin ja käynnistyslatain puuttuu"
 
-#: src/xend_internal.c:1378
+#: src/xend_internal.c:1381
 msgid "domain information incomplete, missing id"
 msgstr "toimialuetieto on epätäydellistä, id puuttuu"
 
-#: src/xend_internal.c:1503
+#: src/xend_internal.c:1506
 msgid "domain information incomplete, vbd has no dev"
 msgstr ""
 
-#: src/xend_internal.c:1518
+#: src/xend_internal.c:1521
 msgid "domain information incomplete, vbd has no src"
 msgstr ""
 
-#: src/xend_internal.c:1527
+#: src/xend_internal.c:1530
 msgid "cannot parse vbd filename, missing driver name"
 msgstr ""
 
-#: src/xend_internal.c:1546
+#: src/xend_internal.c:1549
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 
-#: src/xend_internal.c:1948
-#, fuzzy
+#: src/xend_internal.c:1918
 msgid "failed to parse topology information"
-msgstr "Xend-toimialueen tietojen jäsentäminen epäonnistui"
+msgstr "topologiatiedon jäsentäminen epäonnistui"
 
-#: src/xend_internal.c:2136
+#: src/xend_internal.c:1999
 msgid "failed to parse Xend domain information"
 msgstr "Xend-toimialueen tietojen jäsentäminen epäonnistui"
 
-#: src/xend_internal.c:3604
+#: src/xend_internal.c:3467
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Epäaktiivisen toimialueen %s luominen epäonnistui\n"
@@ -714,9 +717,8 @@ msgid "Prints global help or command specific help."
 msgstr "Tulostaa yleisen tai komentoon liittyvän ohjeen."
 
 #: src/virsh.c:316
-#, fuzzy
 msgid "name of command"
-msgstr "Epäaktiivisen toimialueen nimi"
+msgstr "komennon nimi"
 
 #: src/virsh.c:328
 msgid ""
@@ -862,41 +864,37 @@ msgstr "Palauttaa käynnissä olevan toimialueen tilan."
 
 #: src/virsh.c:667
 msgid "get device block stats for a domain"
-msgstr ""
+msgstr "hae toimialueen laitelohkotilastot"
 
 #: src/virsh.c:668
-#, fuzzy
 msgid "Get device block stats for a running domain."
-msgstr "Palauttaa käynnissä olevan toimialueen tilan."
+msgstr "Hae käynnissä olevan toimialueen laitelohkotilastot."
 
 #: src/virsh.c:674
-#, fuzzy
 msgid "block device"
-msgstr "odottaa"
+msgstr "lohkolaite "
 
 #: src/virsh.c:695
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get block stats %s %s"
-msgstr "Toimialueen %s tallentaminen tiedostoon %s epäonnistui"
+msgstr "Lohkotilastojen haku epäonnistui %s %s"
 
 #: src/virsh.c:724
-#, fuzzy
 msgid "get network interface stats for a domain"
-msgstr "Verkon nimi"
+msgstr "hae toimialueen verkkoliitäntätilastot"
 
 #: src/virsh.c:725
-#, fuzzy
 msgid "Get network interface stats for a running domain."
-msgstr "Palauttaa käynnissä olevan toimialueen tilan."
+msgstr "Hae käynnissä olevan toimialueen verkkoliitäntätilastot."
 
 #: src/virsh.c:731
 msgid "interface device"
-msgstr ""
+msgstr "liitäntälaite"
 
 #: src/virsh.c:752
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get interface stats %s %s"
-msgstr "solmun tietojen saanti epäonnistui"
+msgstr "Liitäntätilastojen haku epäonnistui %s %s"
 
 #: src/virsh.c:791
 msgid "suspend a domain"
@@ -936,7 +934,7 @@ msgstr "Kohteen ”%s” avaaminen epäonnistui: %s"
 #: src/virsh.c:871
 #, c-format
 msgid "Failed to open '%s': read: %s"
-msgstr ""
+msgstr "Kohteen ”%s” avaaminen epäonnistui: luku: %s"
 
 #: src/virsh.c:889
 #, c-format
@@ -1043,23 +1041,25 @@ msgstr "Toimialueen %s tallentaminen tiedostoon %s epäonnistui"
 
 #: src/virsh.c:1115
 msgid "show/set scheduler parameters"
-msgstr ""
+msgstr "näytä/aseta skeduloijan parametrit"
 
 #: src/virsh.c:1116
 msgid "Show/Set scheduler parameters."
-msgstr ""
+msgstr "Näytä/aseta skeduloijan parametrit."
 
 #: src/virsh.c:1122
+#, fuzzy
 msgid "weight for XEN_CREDIT"
-msgstr ""
+msgstr "Kirjastot Xen-työkaluille"
 
 #: src/virsh.c:1123
+#, fuzzy
 msgid "cap for XEN_CREDIT"
-msgstr ""
+msgstr "Kirjastot Xen-työkaluille"
 
 #: src/virsh.c:1193 src/virsh.c:1197
 msgid "Scheduler"
-msgstr ""
+msgstr "Skeduloija"
 
 #: src/virsh.c:1197
 msgid "Unknown"
@@ -1232,7 +1232,7 @@ msgstr "Käytetty muisti:"
 #: src/virsh.c:1569
 #, fuzzy
 msgid "NUMA free memory"
-msgstr "Käytetty muisti:"
+msgstr "Muisti: %1 %2 käytetty, %3 %4 vapaana"
 
 #: src/virsh.c:1570
 msgid "display available free memory for the NUMA cell."
@@ -1241,11 +1241,11 @@ msgstr ""
 #: src/virsh.c:1575
 #, fuzzy
 msgid "NUMA cell number"
-msgstr "(piilotettu solu)"
+msgstr "Matkapuhelinnnumero"
 
 #: src/virsh.c:1599
 msgid "Total"
-msgstr ""
+msgstr "Yhteensä"
 
 #: src/virsh.c:1611
 msgid "domain vcpu information"
@@ -1269,7 +1269,7 @@ msgstr "Prosessorin affiniteetti:"
 
 #: src/virsh.c:1682
 msgid "Domain shut off, virtual CPUs not present."
-msgstr ""
+msgstr "Toimialue sammutettu, virtuaalisuorittimia ei ole käytettävissä."
 
 #: src/virsh.c:1698
 msgid "control domain vcpu affinity"
@@ -1290,13 +1290,15 @@ msgstr "isännän prosessorinumero(t) (pilkulla erotettuina)"
 
 #: src/virsh.c:1761
 msgid "cpulist: Invalid format. Empty string."
-msgstr ""
+msgstr "cpulist: Virheellinen muoto. Tyhjä merkkijono."
 
 #: src/virsh.c:1771
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
+"cpulist: %s: Virheellinen muoto. Odotetaan lukua paikkaan %d (lähellä "
+"merkkiä ”%c”)."
 
 #: src/virsh.c:1781
 #, c-format
@@ -1304,11 +1306,13 @@ msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
 "c')."
 msgstr ""
+"cpulist: %s: Virheellinen muoto. Odotetaan lukua tai pilkkua paikkaan %d "
+"(lähellä merkkiä ”%c”)."
 
 #: src/virsh.c:1788
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
-msgstr ""
+msgstr "cpulist: %s: Virheellinen muoto. Lopettava pilkku paikassa %d."
 
 #: src/virsh.c:1802
 #, c-format
@@ -1329,14 +1333,12 @@ msgid "number of virtual CPUs"
 msgstr "virtuaaliprosessorien määrä"
 
 #: src/virsh.c:1853
-#, fuzzy
 msgid "Invalid number of virtual CPUs."
-msgstr "virtuaaliprosessorien määrä"
+msgstr "Virheellinen virtuaalisuorittimien määrä."
 
 #: src/virsh.c:1865
-#, fuzzy
 msgid "Too many virtual CPUs."
-msgstr "Liian monta virtuaalista suoritinta."
+msgstr "Liikaa virtuaalisuorittimia."
 
 #: src/virsh.c:1883
 msgid "change memory allocation"
@@ -1357,7 +1359,7 @@ msgstr "%d on virheellinen arvo muistin kooksi"
 
 #: src/virsh.c:1917
 msgid "Unable to verify MaxMemorySize"
-msgstr ""
+msgstr "Ei voi tarkistaa MaxMemorySizeä"
 
 #: src/virsh.c:1940
 msgid "change maximum memory limit"
@@ -1373,16 +1375,15 @@ msgstr "muistin enimmäisraja kilotavuissa"
 
 #: src/virsh.c:1974
 msgid "Unable to verify current MemorySize"
-msgstr ""
+msgstr "Ei voi tarkistaa nykyistä MaxMemorySizeä"
 
 #: src/virsh.c:1981
-#, fuzzy
 msgid "Unable to shrink current MemorySize"
-msgstr "toimialueen nykyinen muisti"
+msgstr "Ei voi pienentää nykyistä MaxMemorySizeä"
 
 #: src/virsh.c:1987
 msgid "Unable to change MaxMemorySize"
-msgstr ""
+msgstr "Ei voi muuttaa MaxMemorySizeä"
 
 #: src/virsh.c:2000
 msgid "node information"
@@ -1471,29 +1472,28 @@ msgstr "toimialueen UUID:n saanti epäonnistui"
 
 #: src/virsh.c:2200
 msgid "migrate domain to another host"
-msgstr ""
+msgstr "siirrä toimialue toiseen koneeseen"
 
 #: src/virsh.c:2201
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
+"Siirrä toimialue toiseen koneeseen.  Valitsin --live siirtää käytettäessä."
 
 #: src/virsh.c:2206
-#, fuzzy
 msgid "live migration"
-msgstr "solmun tiedot"
+msgstr "siirto käytettäessä"
 
 #: src/virsh.c:2208
-#, fuzzy
 msgid "connection URI of the destination host"
-msgstr "Yhdistä vieraskonsoliin"
+msgstr "kohdekoneen yhteys-URI"
 
 #: src/virsh.c:2209
 msgid "migration URI, usually can be omitted"
-msgstr ""
+msgstr "siirto-URI, voidaan yleensä jättää pois"
 
 #: src/virsh.c:2231
 msgid "migrate: Missing desturi"
-msgstr ""
+msgstr "siirto: Puuttuva kohde-URI"
 
 #: src/virsh.c:2263
 msgid "autostart a network"
@@ -1737,24 +1737,20 @@ msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "Käytetään hypervisoria: %s %d.%d.%d\n"
 
 #: src/virsh.c:2844
-#, fuzzy
 msgid "print the hypervisor hostname"
-msgstr "hypervisorin tyypin saanti epäonnistui"
+msgstr "tulosta hypervisorin konenimi"
 
 #: src/virsh.c:2858
-#, fuzzy
 msgid "failed to get hostname"
-msgstr "hypervisorin tyypin saanti epäonnistui"
+msgstr "konenimen haku epäonnistui"
 
 #: src/virsh.c:2873
-#, fuzzy
 msgid "print the hypervisor canonical URI"
-msgstr "hypervisorin yhteysosoite"
+msgstr "tulosta hypervisorin kanoninen URI"
 
 #: src/virsh.c:2887
-#, fuzzy
 msgid "failed to get URI"
-msgstr "toimialueen UUID:n saanti epäonnistui"
+msgstr "URIn haku epäonnistui"
 
 #: src/virsh.c:2902
 msgid "vnc display"
@@ -1766,11 +1762,11 @@ msgstr "Tulosta VNC-näytön IP-osoite ja porttinumero"
 
 #: src/virsh.c:2982
 msgid "tty console"
-msgstr ""
+msgstr "tty-konsoli"
 
 #: src/virsh.c:2983
 msgid "Output the device for the TTY console."
-msgstr ""
+msgstr "Tulosta TTY-konsolin laite."
 
 #: src/virsh.c:3045
 msgid "attach device from an XML file"
@@ -1803,36 +1799,32 @@ msgid "Failed to detach device from %s"
 msgstr "Laitteen irrottaminen tiedostosta %s epäonnistui"
 
 #: src/virsh.c:3153
-#, fuzzy
 msgid "attach network interface"
-msgstr "Verkon nimi"
+msgstr "liitä verkkoliitäntä"
 
 #: src/virsh.c:3154
 msgid "Attach new network interface."
-msgstr ""
+msgstr "Liitä uusi verkkolaite."
 
 #: src/virsh.c:3160 src/virsh.c:3276
-#, fuzzy
 msgid "network interface type"
-msgstr "Verkon nimi"
+msgstr "verkkoliitännän tyyppi"
 
 #: src/virsh.c:3161
-#, fuzzy
 msgid "source of network interface"
-msgstr "määrittämätön verkon nimi"
+msgstr "verkkoliitännän lähde"
 
 #: src/virsh.c:3162
-#, fuzzy
 msgid "target network name"
-msgstr "Verkon nimi"
+msgstr "kohdeverkon nimi"
 
 #: src/virsh.c:3163 src/virsh.c:3277
 msgid "MAC adress"
-msgstr ""
+msgstr "MAC-osoite"
 
 #: src/virsh.c:3164
 msgid "script used to bridge network interface"
-msgstr ""
+msgstr "komentosarja verkkoliitännän siltaamiseen"
 
 #: src/virsh.c:3196
 #, c-format
@@ -1840,66 +1832,62 @@ msgid "No support %s in command 'attach-interface'"
 msgstr ""
 
 #: src/virsh.c:3269
-#, fuzzy
 msgid "detach network interface"
-msgstr "Verkon nimi"
+msgstr "irrota verkkoliitäntä"
 
 #: src/virsh.c:3270
 msgid "Detach network interface."
-msgstr ""
+msgstr "Irrota verkkoliitäntä."
 
 #: src/virsh.c:3315 src/virsh.c:3320
-#, fuzzy
 msgid "Failed to get interface information"
-msgstr "solmun tietojen saanti epäonnistui"
+msgstr "Liitännän tietojen haku epäonnistui"
 
 #: src/virsh.c:3328
 #, c-format
 msgid "No found interface whose type is %s"
-msgstr ""
+msgstr "Ei löydy verkkoliitäntää, jonka tyyppi on %s"
 
 #: src/virsh.c:3350
 #, c-format
 msgid "No found interface whose MAC address is %s"
-msgstr ""
+msgstr "Ei löydy verkkoliitäntää, jonka MAC-osoite on %s"
 
 #: src/virsh.c:3356 src/virsh.c:3634
-#, fuzzy
 msgid "Failed to allocate memory"
-msgstr "solmun varaus epäonnistui"
+msgstr "Muistin varaus epäonnistui."
 
 #: src/virsh.c:3361 src/virsh.c:3639
-#, fuzzy
 msgid "Failed to create XML"
-msgstr "Ei pystytty lukemaan pistoketta %d\n"
+msgstr "XML:n luonti epäonnistui"
 
 #: src/virsh.c:3390
 msgid "attach disk device"
-msgstr ""
+msgstr "liitä levylaite"
 
 #: src/virsh.c:3391
 msgid "Attach new disk device."
-msgstr ""
+msgstr "Lisää uusi levylaite."
 
 #: src/virsh.c:3397
 msgid "source of disk device"
-msgstr ""
+msgstr "levylaitteen lähde"
 
 #: src/virsh.c:3398 src/virsh.c:3562
 msgid "target of disk device"
-msgstr ""
+msgstr "levylaitteen kohde"
 
 #: src/virsh.c:3399
 msgid "driver of disk device"
-msgstr ""
+msgstr "levylaitteen ajuri"
 
 #: src/virsh.c:3400
 msgid "subdriver of disk device"
-msgstr ""
+msgstr "levylaitteen aliajuri"
 
 #: src/virsh.c:3401
 msgid "target device type"
-msgstr ""
+msgstr "kohdelaitetyyppi"
 
 #: src/virsh.c:3402
 msgid "mode of device reading and writing"
@@ -1912,21 +1900,20 @@ msgstr ""
 
 #: src/virsh.c:3555
 msgid "detach disk device"
-msgstr ""
+msgstr "irrota levylaite"
 
 #: src/virsh.c:3556
 msgid "Detach disk device."
-msgstr ""
+msgstr "Irrota levylaite."
 
 #: src/virsh.c:3597 src/virsh.c:3602 src/virsh.c:3609
-#, fuzzy
 msgid "Failed to get disk information"
-msgstr "solmun tietojen saanti epäonnistui"
+msgstr "Levytietojen haku epäonnistui"
 
 #: src/virsh.c:3628
 #, c-format
 msgid "No found disk whose target is %s"
-msgstr ""
+msgstr "Ei löydy levyä, jonka kohde on %s"
 
 #: src/virsh.c:3668
 msgid "quit this interactive terminal"
@@ -1952,13 +1939,12 @@ msgid "  NAME\n"
 msgstr "  NIMI\n"
 
 #: src/virsh.c:3849
-#, fuzzy
 msgid ""
 "\n"
 "  SYNOPSIS\n"
 msgstr ""
 "\n"
-"  VALITSIMET\n"
+"  TIIVISTELMÄ\n"
 
 #: src/virsh.c:3856
 msgid ""
@@ -2165,14 +2151,14 @@ msgstr ""
 "  komennot (vuorovaikutukseton tila):\n"
 
 #: src/virsh.c:4806
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 "\n"
-"  (anna --help <komento> saadaksesi tietoja komennosta)\n"
+"  (anna help <komento> saadaksesi tietoja komennosta)\n"
 "\n"
 
 #: src/virsh.c:4902
@@ -2199,8 +2185,8 @@ msgstr ""
 "       'quit' poistuaksesi\n"
 "\n"
 
-#: src/conf.c:156 src/conf.c:205 src/conf.c:488 src/conf.c:525 src/conf.c:553
-#: src/conf.c:631
+#: src/conf.c:156 src/conf.c:205 src/conf.c:490 src/conf.c:527 src/conf.c:555
+#: src/conf.c:633
 msgid "allocating configuration"
 msgstr "varataan asetusohjelmaa"
 
@@ -2208,44 +2194,43 @@ msgstr "varataan asetusohjelmaa"
 msgid "unterminated number"
 msgstr "päättymätön numero"
 
-#: src/conf.c:372 src/conf.c:389 src/conf.c:401
+#: src/conf.c:374 src/conf.c:391 src/conf.c:403
 msgid "unterminated string"
 msgstr "päättämätön merkkijono"
 
-#: src/conf.c:429 src/conf.c:482
+#: src/conf.c:431 src/conf.c:484
 msgid "expecting a value"
 msgstr "odotetaan arvoa"
 
-#: src/conf.c:449
+#: src/conf.c:451
 msgid "expecting a separator in list"
 msgstr "odotetaan erotinta luettelossa"
 
-#: src/conf.c:472
+#: src/conf.c:474
 msgid "list is not closed with ] "
 msgstr "luettelo ei pääty ]"
 
-#: src/conf.c:518
+#: src/conf.c:520
 msgid "expecting a name"
 msgstr "odotetaan nimeä"
 
-#: src/conf.c:581
+#: src/conf.c:583
 msgid "expecting a separator"
 msgstr "odotetaan erotinta"
 
-#: src/conf.c:613
+#: src/conf.c:615
 msgid "expecting an assignment"
 msgstr "odotetaan sijoitusta"
 
-#: src/conf.c:887 src/conf.c:941
-#, fuzzy
+#: src/conf.c:889 src/conf.c:943
 msgid "failed to allocate buffer"
-msgstr "solmun varaus epäonnistui"
+msgstr "puskurin varaaminen epäonnistui"
 
-#: src/conf.c:899
+#: src/conf.c:901
 msgid "failed to open file"
 msgstr "ei voitu avata tiedostoa"
 
-#: src/conf.c:907
+#: src/conf.c:909
 msgid "failed to save content"
 msgstr "sisältöä ei voitu tallentaa"
 

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-09-30 23:00+0200\n"
+"POT-Creation-Date: 2007-10-23 17:38+0200\n"
 "PO-Revision-Date: 2007-08-22 23:49+0200\n"
 "Last-Translator: Gauthier Ancelin <gauthier.ancelin@laposte.net>\n"
 "Language-Team: Français <fedora-trans-fr@redhat.com>\n"
@@ -426,7 +426,7 @@ msgstr "affecter une réponse"
 msgid "read response"
 msgstr "lire la réponse"
 
-#: src/xmlrpc.c:484 src/xml.c:265
+#: src/xmlrpc.c:484 src/xml.c:622
 msgid "allocate string array"
 msgstr "affecter une valeur chaîne de grappe"
 
@@ -462,161 +462,175 @@ msgstr "Impossible d'ajouter le réseau à la table de hachage de connexion"
 msgid "network missing from connection hash table"
 msgstr "réseau manquant dans la table de hachage"
 
-#: src/test.c:223 src/test.c:588 src/test.c:1262
+#: src/test.c:232 src/test.c:597 src/test.c:1271
 msgid "getting time of day"
 msgstr "récupération de l'heure du jour"
 
-#: src/test.c:229 src/test.c:361 src/test.c:387 src/test.c:1537
+#: src/test.c:238 src/test.c:370 src/test.c:396 src/test.c:1546
 msgid "domain"
 msgstr "domaine"
 
-#: src/test.c:235 src/test.c:421 src/test.c:694
+#: src/test.c:244 src/test.c:430 src/test.c:703
 msgid "creating xpath context"
 msgstr "création du contexte xpath"
 
-#: src/test.c:241
+#: src/test.c:250
 msgid "domain name"
 msgstr "nom du domaine"
 
-#: src/test.c:247 src/test.c:251
+#: src/test.c:256 src/test.c:260
 msgid "domain uuid"
 msgstr "UUID du domaine"
 
-#: src/test.c:259
+#: src/test.c:268
 msgid "domain memory"
 msgstr "mémoire du domaine"
 
-#: src/test.c:268
+#: src/test.c:277
 msgid "domain current memory"
 msgstr "mémoire actuelle du domaine"
 
-#: src/test.c:278
+#: src/test.c:287
 msgid "domain vcpus"
 msgstr "VCPU du domaine"
 
-#: src/test.c:287
+#: src/test.c:296
 msgid "domain reboot behaviour"
 msgstr "comportement lors du redémarrage du domaine"
 
-#: src/test.c:297
+#: src/test.c:306
 msgid "domain poweroff behaviour"
 msgstr "comportement lors de l'arrêt du domaine"
 
-#: src/test.c:307
+#: src/test.c:316
 msgid "domain crash behaviour"
 msgstr "comportement lors du plantage du domaine"
 
-#: src/test.c:380
+#: src/test.c:389
 msgid "load domain definition file"
 msgstr "fichier de définition du domaine local"
 
-#: src/test.c:415 src/test.c:539 src/test.c:564
+#: src/test.c:424 src/test.c:548 src/test.c:573
 msgid "network"
 msgstr "réseau"
 
-#: src/test.c:427 src/virsh.c:2733
+#: src/test.c:436 src/virsh.c:2733
 msgid "network name"
 msgstr "nom du réseau"
 
-#: src/test.c:435 src/test.c:439 src/virsh.c:2624
+#: src/test.c:444 src/test.c:448 src/virsh.c:2624
 msgid "network uuid"
 msgstr "UUID réseau"
 
-#: src/test.c:447
+#: src/test.c:456
 msgid "network forward"
 msgstr "transfert réseau"
 
-#: src/test.c:456 src/test.c:466 src/test.c:471
+#: src/test.c:465 src/test.c:475 src/test.c:480
 msgid "ip address"
 msgstr "adresse IP"
 
-#: src/test.c:461
+#: src/test.c:470
 msgid "ip netmask"
 msgstr "masque de sous-réseau IP"
 
-#: src/test.c:557
+#: src/test.c:566
 msgid "load network definition file"
 msgstr "chargement du fichier de définition de réseau"
 
-#: src/test.c:673
+#: src/test.c:682
 msgid "loading host definition file"
 msgstr "chargement du fichier de définition de l'hôte"
 
-#: src/test.c:680
+#: src/test.c:689
 msgid "host"
 msgstr "hôte"
 
-#: src/test.c:688
+#: src/test.c:697
 msgid "node"
 msgstr "noeud"
 
-#: src/test.c:712
+#: src/test.c:721
 msgid "node cpu numa nodes"
 msgstr "CPU noeud, noeud NUMA (Non Uniform Memory Access)"
 
-#: src/test.c:720
+#: src/test.c:729
 msgid "node cpu sockets"
 msgstr "sockets CPU noeud"
 
-#: src/test.c:728
+#: src/test.c:737
 msgid "node cpu cores"
 msgstr "coeurs CPU noeud"
 
-#: src/test.c:736
+#: src/test.c:745
 msgid "node cpu threads"
 msgstr "threads CPU noeud"
 
-#: src/test.c:747
+#: src/test.c:756
 msgid "node active cpu"
 msgstr "CPU actif noeud"
 
-#: src/test.c:754
+#: src/test.c:763
 msgid "node cpu mhz"
 msgstr "MHz CPU noeud"
 
-#: src/test.c:769
+#: src/test.c:778
 msgid "node memory"
 msgstr "mémoire du noeud"
 
-#: src/test.c:775
+#: src/test.c:784
 msgid "node domain list"
 msgstr "liste de domaine du noeud"
 
-#: src/test.c:785
+#: src/test.c:794
 msgid "resolving domain filename"
 msgstr "résolution du nom de fichier du domaine"
 
-#: src/test.c:810
+#: src/test.c:819
 msgid "resolving network filename"
 msgstr "résolution du nom de fichier du réseau"
 
-#: src/test.c:908
+#: src/test.c:917
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen : donnez un chemin d'accès ou utilisez test:///default"
 
-#: src/test.c:1046
+#: src/test.c:1055
 msgid "too many domains"
 msgstr "trop de domaines"
 
-#: src/test.c:1557
+#: src/test.c:1566
 msgid "Domain is already running"
 msgstr "Le domaine est déjà actif"
 
-#: src/test.c:1572
+#: src/test.c:1581
 msgid "Domain is still running"
 msgstr "Le domaine est toujours actif"
 
-#: src/test.c:1772 src/test.c:1797
+#: src/test.c:1781 src/test.c:1806
 msgid "too many networks"
 msgstr "trop de réseaux"
 
-#: src/test.c:1816
+#: src/test.c:1825
 msgid "Network is still running"
 msgstr "Le réseau est toujours actif"
 
-#: src/test.c:1830
+#: src/test.c:1839
 msgid "Network is already running"
 msgstr "Le réseau est déjà actif"
+
+#: src/xml.c:151 src/xml.c:396
+#, fuzzy
+msgid "allocate buffer"
+msgstr "allouer une nouvelle mémoire tampon"
+
+#: src/xml.c:286
+msgid "topology cpuset syntax error"
+msgstr ""
+
+#: src/xml.c:386
+#, fuzzy
+msgid "topology syntax error"
+msgstr "erreur de syntaxe dans le fichier de configuration"
 
 #: src/sexpr.c:59
 msgid "failed to allocate a node"
@@ -630,67 +644,67 @@ msgstr "impossible de copier la valeur"
 msgid "failed to read from Xen Daemon"
 msgstr "impossible de lire depuis le démon Xen"
 
-#: src/xend_internal.c:597 src/xend_internal.c:814 src/xend_internal.c:1534
-#: src/xend_internal.c:1553 src/xend_internal.c:2079
+#: src/xend_internal.c:597 src/xend_internal.c:817 src/xend_internal.c:1537
+#: src/xend_internal.c:1556 src/xend_internal.c:1944
 msgid "allocate new buffer"
 msgstr "allouer une nouvelle mémoire tampon"
 
-#: src/xend_internal.c:1021
+#: src/xend_internal.c:1024
 msgid "failed to urlencode the create S-Expr"
 msgstr "échec de l'urlencode du S-Expr créé"
 
-#: src/xend_internal.c:1062
+#: src/xend_internal.c:1065
 msgid "domain information incomplete, missing domid"
 msgstr "informations de domaine incomplètes, domid manquant"
 
-#: src/xend_internal.c:1068
+#: src/xend_internal.c:1071
 msgid "domain information incorrect domid not numeric"
 msgstr "informations de domaine incorrectes, domid non numérique"
 
-#: src/xend_internal.c:1073 src/xend_internal.c:1120
+#: src/xend_internal.c:1076 src/xend_internal.c:1123
 msgid "domain information incomplete, missing uuid"
 msgstr "informations de domaine incomplètes, UUID manquant"
 
-#: src/xend_internal.c:1112 src/xend_internal.c:1390 src/xend_internal.c:1397
+#: src/xend_internal.c:1115 src/xend_internal.c:1393 src/xend_internal.c:1400
 msgid "domain information incomplete, missing name"
 msgstr "informations de domaine incomplètes, nom manquant"
 
-#: src/xend_internal.c:1286 src/xend_internal.c:1317
+#: src/xend_internal.c:1289 src/xend_internal.c:1320
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr ""
 "informations de domaine incomplètes, noyau et chargeur de démarrage manquants"
 
-#: src/xend_internal.c:1378
+#: src/xend_internal.c:1381
 msgid "domain information incomplete, missing id"
 msgstr "informations de domaine incomplètes, ID manquant"
 
-#: src/xend_internal.c:1503
+#: src/xend_internal.c:1506
 msgid "domain information incomplete, vbd has no dev"
 msgstr "informations de domaine incomplètes, vbd n'a pas de dev"
 
-#: src/xend_internal.c:1518
+#: src/xend_internal.c:1521
 msgid "domain information incomplete, vbd has no src"
 msgstr "informations de domaine incomplètes, vbd n'a pas de src"
 
-#: src/xend_internal.c:1527
+#: src/xend_internal.c:1530
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "impossible d'analyser le nom de fichier de vdb, nom de pilote manquant"
 
-#: src/xend_internal.c:1546
+#: src/xend_internal.c:1549
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 "impossible d'analyser le nom de fichier de vdb, type du pilote manquant"
 
-#: src/xend_internal.c:1948
+#: src/xend_internal.c:1918
 #, fuzzy
 msgid "failed to parse topology information"
 msgstr "impossible d'analyser les informations du domaine Xen"
 
-#: src/xend_internal.c:2136
+#: src/xend_internal.c:1999
 msgid "failed to parse Xend domain information"
 msgstr "impossible d'analyser les informations du domaine Xen"
 
-#: src/xend_internal.c:3604
+#: src/xend_internal.c:3467
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Impossible de créer le domaine inactif %s\n"
@@ -2172,8 +2186,8 @@ msgstr ""
 "         « quit » pour quitter\n"
 "\n"
 
-#: src/conf.c:156 src/conf.c:205 src/conf.c:488 src/conf.c:525 src/conf.c:553
-#: src/conf.c:631
+#: src/conf.c:156 src/conf.c:205 src/conf.c:490 src/conf.c:527 src/conf.c:555
+#: src/conf.c:633
 msgid "allocating configuration"
 msgstr "configuration d'allocation"
 
@@ -2181,43 +2195,43 @@ msgstr "configuration d'allocation"
 msgid "unterminated number"
 msgstr "nombre sans fin"
 
-#: src/conf.c:372 src/conf.c:389 src/conf.c:401
+#: src/conf.c:374 src/conf.c:391 src/conf.c:403
 msgid "unterminated string"
 msgstr "chaîne sans fin"
 
-#: src/conf.c:429 src/conf.c:482
+#: src/conf.c:431 src/conf.c:484
 msgid "expecting a value"
 msgstr "valeur attendue"
 
-#: src/conf.c:449
+#: src/conf.c:451
 msgid "expecting a separator in list"
 msgstr "séparateur attendu dans la liste"
 
-#: src/conf.c:472
+#: src/conf.c:474
 msgid "list is not closed with ] "
 msgstr "la liste n'est pas terminée avec « ] »"
 
-#: src/conf.c:518
+#: src/conf.c:520
 msgid "expecting a name"
 msgstr "nom attendu"
 
-#: src/conf.c:581
+#: src/conf.c:583
 msgid "expecting a separator"
 msgstr "séparateur attendu"
 
-#: src/conf.c:613
+#: src/conf.c:615
 msgid "expecting an assignment"
 msgstr "affectation attendue"
 
-#: src/conf.c:887 src/conf.c:941
+#: src/conf.c:889 src/conf.c:943
 msgid "failed to allocate buffer"
 msgstr "impossible d'allouer un tampon"
 
-#: src/conf.c:899
+#: src/conf.c:901
 msgid "failed to open file"
 msgstr "Impossible d'ouvrir le fichier"
 
-#: src/conf.c:907
+#: src/conf.c:909
 msgid "failed to save content"
 msgstr "Impossible d'enregistrer le contenu"
 

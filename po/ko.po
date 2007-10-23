@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ko\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-09-30 23:00+0200\n"
+"POT-Creation-Date: 2007-10-23 17:38+0200\n"
 "PO-Revision-Date: 2007-09-11 09:54+1000\n"
 "Last-Translator: Eunju Kim <eukim@redhat.com>\n"
 "Language-Team: Korean <ko@li.org>\n"
@@ -422,7 +422,7 @@ msgstr "응답 할당"
 msgid "read response"
 msgstr "응답 읽기"
 
-#: src/xmlrpc.c:484 src/xml.c:265
+#: src/xmlrpc.c:484 src/xml.c:622
 msgid "allocate string array"
 msgstr "문자열 배치 할당"
 
@@ -458,161 +458,175 @@ msgstr "해시 테이블 연결에 네트워크 추가 실패"
 msgid "network missing from connection hash table"
 msgstr "해시 테이블 연결에서 네트워크 부재"
 
-#: src/test.c:223 src/test.c:588 src/test.c:1262
+#: src/test.c:232 src/test.c:597 src/test.c:1271
 msgid "getting time of day"
 msgstr "시간 읽어오는 중"
 
-#: src/test.c:229 src/test.c:361 src/test.c:387 src/test.c:1537
+#: src/test.c:238 src/test.c:370 src/test.c:396 src/test.c:1546
 msgid "domain"
 msgstr "도메인"
 
-#: src/test.c:235 src/test.c:421 src/test.c:694
+#: src/test.c:244 src/test.c:430 src/test.c:703
 msgid "creating xpath context"
 msgstr "xpath 문맥 생성하는 중"
 
-#: src/test.c:241
+#: src/test.c:250
 msgid "domain name"
 msgstr "도메인명"
 
-#: src/test.c:247 src/test.c:251
+#: src/test.c:256 src/test.c:260
 msgid "domain uuid"
 msgstr "도메인 uuid"
 
-#: src/test.c:259
+#: src/test.c:268
 msgid "domain memory"
 msgstr "도메인 메모리"
 
-#: src/test.c:268
+#: src/test.c:277
 msgid "domain current memory"
 msgstr "현재 도메인 메모리"
 
-#: src/test.c:278
+#: src/test.c:287
 msgid "domain vcpus"
 msgstr "도메인 vcpus"
 
-#: src/test.c:287
+#: src/test.c:296
 msgid "domain reboot behaviour"
 msgstr "도메인 재부팅 동작"
 
-#: src/test.c:297
+#: src/test.c:306
 msgid "domain poweroff behaviour"
 msgstr "도메인 종료 동작"
 
-#: src/test.c:307
+#: src/test.c:316
 msgid "domain crash behaviour"
 msgstr "도메인 충돌 동작"
 
-#: src/test.c:380
+#: src/test.c:389
 msgid "load domain definition file"
 msgstr "도메인 정의 파일 읽어오기"
 
-#: src/test.c:415 src/test.c:539 src/test.c:564
+#: src/test.c:424 src/test.c:548 src/test.c:573
 msgid "network"
 msgstr "네트워크"
 
-#: src/test.c:427 src/virsh.c:2733
+#: src/test.c:436 src/virsh.c:2733
 msgid "network name"
 msgstr "네트워크 이름"
 
-#: src/test.c:435 src/test.c:439 src/virsh.c:2624
+#: src/test.c:444 src/test.c:448 src/virsh.c:2624
 msgid "network uuid"
 msgstr "네트워크 uuid"
 
-#: src/test.c:447
+#: src/test.c:456
 msgid "network forward"
 msgstr "네트워크 포워드"
 
-#: src/test.c:456 src/test.c:466 src/test.c:471
+#: src/test.c:465 src/test.c:475 src/test.c:480
 msgid "ip address"
 msgstr "ip 주소"
 
-#: src/test.c:461
+#: src/test.c:470
 msgid "ip netmask"
 msgstr "ip 넷마스크"
 
-#: src/test.c:557
+#: src/test.c:566
 msgid "load network definition file"
 msgstr "네트워크 정의 파일 읽어오기"
 
-#: src/test.c:673
+#: src/test.c:682
 msgid "loading host definition file"
 msgstr "호스트 정의 파일을 읽어오는중"
 
-#: src/test.c:680
+#: src/test.c:689
 msgid "host"
 msgstr "호스트"
 
-#: src/test.c:688
+#: src/test.c:697
 msgid "node"
 msgstr "노드"
 
-#: src/test.c:712
+#: src/test.c:721
 msgid "node cpu numa nodes"
 msgstr "노드 cpu numa 노드"
 
-#: src/test.c:720
+#: src/test.c:729
 msgid "node cpu sockets"
 msgstr "노드 cpu 소켓"
 
-#: src/test.c:728
+#: src/test.c:737
 msgid "node cpu cores"
 msgstr "노드 cpu 코어"
 
-#: src/test.c:736
+#: src/test.c:745
 msgid "node cpu threads"
 msgstr "노드 cpu 스레드"
 
-#: src/test.c:747
+#: src/test.c:756
 msgid "node active cpu"
 msgstr "노드 활성화 cpu"
 
-#: src/test.c:754
+#: src/test.c:763
 msgid "node cpu mhz"
 msgstr "노드 cpu mhz"
 
-#: src/test.c:769
+#: src/test.c:778
 msgid "node memory"
 msgstr "노드 메모리"
 
-#: src/test.c:775
+#: src/test.c:784
 msgid "node domain list"
 msgstr "노드 도메인 목록"
 
-#: src/test.c:785
+#: src/test.c:794
 msgid "resolving domain filename"
 msgstr "도메인 파일명 해결 중"
 
-#: src/test.c:810
+#: src/test.c:819
 msgid "resolving network filename"
 msgstr "네트워크 파일명 해결 중"
 
-#: src/test.c:908
+#: src/test.c:917
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: 경로를 지정하거나 test:///default 사용"
 
-#: src/test.c:1046
+#: src/test.c:1055
 msgid "too many domains"
 msgstr "과도한 도메인"
 
-#: src/test.c:1557
+#: src/test.c:1566
 msgid "Domain is already running"
 msgstr "이미 도메인이 실행 중"
 
-#: src/test.c:1572
+#: src/test.c:1581
 msgid "Domain is still running"
 msgstr "도메인이 아직 실행 중"
 
-#: src/test.c:1772 src/test.c:1797
+#: src/test.c:1781 src/test.c:1806
 msgid "too many networks"
 msgstr "과도한 네트워크"
 
-#: src/test.c:1816
+#: src/test.c:1825
 msgid "Network is still running"
 msgstr "네트워크가 아직 실행 중"
 
-#: src/test.c:1830
+#: src/test.c:1839
 msgid "Network is already running"
 msgstr "이미 네트워크가 실행 중"
+
+#: src/xml.c:151 src/xml.c:396
+#, fuzzy
+msgid "allocate buffer"
+msgstr "새 버퍼 할당"
+
+#: src/xml.c:286
+msgid "topology cpuset syntax error"
+msgstr ""
+
+#: src/xml.c:386
+#, fuzzy
+msgid "topology syntax error"
+msgstr "설정 파일 구문 오류"
 
 #: src/sexpr.c:59
 msgid "failed to allocate a node"
@@ -626,65 +640,65 @@ msgstr "문자열 복사 실패"
 msgid "failed to read from Xen Daemon"
 msgstr "Xen 데몬에서 읽기 실패"
 
-#: src/xend_internal.c:597 src/xend_internal.c:814 src/xend_internal.c:1534
-#: src/xend_internal.c:1553 src/xend_internal.c:2079
+#: src/xend_internal.c:597 src/xend_internal.c:817 src/xend_internal.c:1537
+#: src/xend_internal.c:1556 src/xend_internal.c:1944
 msgid "allocate new buffer"
 msgstr "새 버퍼 할당"
 
-#: src/xend_internal.c:1021
+#: src/xend_internal.c:1024
 msgid "failed to urlencode the create S-Expr"
 msgstr "생성된 S-Expr를 urlencode하기 실패"
 
-#: src/xend_internal.c:1062
+#: src/xend_internal.c:1065
 msgid "domain information incomplete, missing domid"
 msgstr "도메인 정보가 완료되지 않음, domid 부재"
 
-#: src/xend_internal.c:1068
+#: src/xend_internal.c:1071
 msgid "domain information incorrect domid not numeric"
 msgstr "도메인 정보가 수치가 아닌 잘못된 domid임"
 
-#: src/xend_internal.c:1073 src/xend_internal.c:1120
+#: src/xend_internal.c:1076 src/xend_internal.c:1123
 msgid "domain information incomplete, missing uuid"
 msgstr "도메인 정보가 완료되지 않음, uuid 부재"
 
-#: src/xend_internal.c:1112 src/xend_internal.c:1390 src/xend_internal.c:1397
+#: src/xend_internal.c:1115 src/xend_internal.c:1393 src/xend_internal.c:1400
 msgid "domain information incomplete, missing name"
 msgstr "도메인 정보가 완료되지 않음, 이름 부재"
 
-#: src/xend_internal.c:1286 src/xend_internal.c:1317
+#: src/xend_internal.c:1289 src/xend_internal.c:1320
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "도메인 정보가 완료되지 않음, 커널 & 부트로더 부재"
 
-#: src/xend_internal.c:1378
+#: src/xend_internal.c:1381
 msgid "domain information incomplete, missing id"
 msgstr "도메인 정보가 완료되지 않음, id 부재"
 
-#: src/xend_internal.c:1503
+#: src/xend_internal.c:1506
 msgid "domain information incomplete, vbd has no dev"
 msgstr "도메인 정보가 완료되지 않음, vbd는 dev가 없음"
 
-#: src/xend_internal.c:1518
+#: src/xend_internal.c:1521
 msgid "domain information incomplete, vbd has no src"
 msgstr "도메인 정보가 완료되지 않음, vbd는 src가 없음"
 
-#: src/xend_internal.c:1527
+#: src/xend_internal.c:1530
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd 파일명을 구문 분석할 수 없음, 드라이버명 부재"
 
-#: src/xend_internal.c:1546
+#: src/xend_internal.c:1549
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd 파일명을 구문 분석할 수 없음, 드라이버 유형 부재"
 
-#: src/xend_internal.c:1948
+#: src/xend_internal.c:1918
 #, fuzzy
 msgid "failed to parse topology information"
 msgstr "Xend 도메인 정보 분석 실패"
 
-#: src/xend_internal.c:2136
+#: src/xend_internal.c:1999
 msgid "failed to parse Xend domain information"
 msgstr "Xend 도메인 정보 분석 실패"
 
-#: src/xend_internal.c:3604
+#: src/xend_internal.c:3467
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "비활성화 도메인 %s 생성 실패\n"
@@ -2148,8 +2162,8 @@ msgstr ""
 "      종료하기 위해 'quit'입력\n"
 "\n"
 
-#: src/conf.c:156 src/conf.c:205 src/conf.c:488 src/conf.c:525 src/conf.c:553
-#: src/conf.c:631
+#: src/conf.c:156 src/conf.c:205 src/conf.c:490 src/conf.c:527 src/conf.c:555
+#: src/conf.c:633
 msgid "allocating configuration"
 msgstr "설정 할당 중"
 
@@ -2157,43 +2171,43 @@ msgstr "설정 할당 중"
 msgid "unterminated number"
 msgstr "종료되지 않은 숫자"
 
-#: src/conf.c:372 src/conf.c:389 src/conf.c:401
+#: src/conf.c:374 src/conf.c:391 src/conf.c:403
 msgid "unterminated string"
 msgstr "종료되지 않은 문자열"
 
-#: src/conf.c:429 src/conf.c:482
+#: src/conf.c:431 src/conf.c:484
 msgid "expecting a value"
 msgstr "값 예상하기"
 
-#: src/conf.c:449
+#: src/conf.c:451
 msgid "expecting a separator in list"
 msgstr "목록에 있는 분리자 예상하기"
 
-#: src/conf.c:472
+#: src/conf.c:474
 msgid "list is not closed with ] "
 msgstr "목록이 ]로 종료되지 않음"
 
-#: src/conf.c:518
+#: src/conf.c:520
 msgid "expecting a name"
 msgstr "이름 예상하기"
 
-#: src/conf.c:581
+#: src/conf.c:583
 msgid "expecting a separator"
 msgstr "분리자 예상하기"
 
-#: src/conf.c:613
+#: src/conf.c:615
 msgid "expecting an assignment"
 msgstr "할당 예상하기"
 
-#: src/conf.c:887 src/conf.c:941
+#: src/conf.c:889 src/conf.c:943
 msgid "failed to allocate buffer"
 msgstr "버퍼 할당 실패"
 
-#: src/conf.c:899
+#: src/conf.c:901
 msgid "failed to open file"
 msgstr "파일 열기 실패"
 
-#: src/conf.c:907
+#: src/conf.c:909
 msgid "failed to save content"
 msgstr "내용 저장 실패"
 

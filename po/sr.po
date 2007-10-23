@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-09-30 23:00+0200\n"
-"PO-Revision-Date: 2007-09-07 21:40-0000\n"
+"POT-Creation-Date: 2007-10-23 17:38+0200\n"
+"PO-Revision-Date: 2007-09-30 22:50-0000\n"
 "Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
 "Language-Team: Serbian (sr) <fedora-trans-sr@redhat.com>\n"
 "MIME-Version: 1.0\n"
@@ -423,7 +423,7 @@ msgstr "додели одговор"
 msgid "read response"
 msgstr "прочитај одговор"
 
-#: src/xmlrpc.c:484 src/xml.c:265
+#: src/xmlrpc.c:484 src/xml.c:622
 msgid "allocate string array"
 msgstr "заузми низ знакова"
 
@@ -459,161 +459,175 @@ msgstr "неуспело додавање мреже у хаш табелу ве
 msgid "network missing from connection hash table"
 msgstr "мрежа недостаје у хаш табели веза"
 
-#: src/test.c:223 src/test.c:588 src/test.c:1262
+#: src/test.c:232 src/test.c:597 src/test.c:1271
 msgid "getting time of day"
 msgstr "добављам време дана"
 
-#: src/test.c:229 src/test.c:361 src/test.c:387 src/test.c:1537
+#: src/test.c:238 src/test.c:370 src/test.c:396 src/test.c:1546
 msgid "domain"
 msgstr "домен"
 
-#: src/test.c:235 src/test.c:421 src/test.c:694
+#: src/test.c:244 src/test.c:430 src/test.c:703
 msgid "creating xpath context"
 msgstr "правим xpath контекст"
 
-#: src/test.c:241
+#: src/test.c:250
 msgid "domain name"
 msgstr "име домена"
 
-#: src/test.c:247 src/test.c:251
+#: src/test.c:256 src/test.c:260
 msgid "domain uuid"
 msgstr "uuid домена"
 
-#: src/test.c:259
+#: src/test.c:268
 msgid "domain memory"
 msgstr "меморија домена"
 
-#: src/test.c:268
+#: src/test.c:277
 msgid "domain current memory"
 msgstr "тренутна меморија домена"
 
-#: src/test.c:278
+#: src/test.c:287
 msgid "domain vcpus"
 msgstr "vcpu-и домена"
 
-#: src/test.c:287
+#: src/test.c:296
 msgid "domain reboot behaviour"
 msgstr "понашање поновног покретања домена"
 
-#: src/test.c:297
+#: src/test.c:306
 msgid "domain poweroff behaviour"
 msgstr "понашање гашења домена"
 
-#: src/test.c:307
+#: src/test.c:316
 msgid "domain crash behaviour"
 msgstr "понашање крахирања домена"
 
-#: src/test.c:380
+#: src/test.c:389
 msgid "load domain definition file"
 msgstr "учитај датотеку дефиниције домена"
 
-#: src/test.c:415 src/test.c:539 src/test.c:564
+#: src/test.c:424 src/test.c:548 src/test.c:573
 msgid "network"
 msgstr "мрежа"
 
-#: src/test.c:427 src/virsh.c:2733
+#: src/test.c:436 src/virsh.c:2733
 msgid "network name"
 msgstr "име мреже"
 
-#: src/test.c:435 src/test.c:439 src/virsh.c:2624
+#: src/test.c:444 src/test.c:448 src/virsh.c:2624
 msgid "network uuid"
 msgstr "uuid мреже"
 
-#: src/test.c:447
+#: src/test.c:456
 msgid "network forward"
 msgstr "прослеђивање мреже"
 
-#: src/test.c:456 src/test.c:466 src/test.c:471
+#: src/test.c:465 src/test.c:475 src/test.c:480
 msgid "ip address"
 msgstr "ip адреса"
 
-#: src/test.c:461
+#: src/test.c:470
 msgid "ip netmask"
 msgstr "ip мрежна маска"
 
-#: src/test.c:557
+#: src/test.c:566
 msgid "load network definition file"
 msgstr "учитај датотеку дефиниције мреже"
 
-#: src/test.c:673
+#: src/test.c:682
 msgid "loading host definition file"
 msgstr "учитавам датотеку дефиниције домаћина"
 
-#: src/test.c:680
+#: src/test.c:689
 msgid "host"
 msgstr "домаћин"
 
-#: src/test.c:688
+#: src/test.c:697
 msgid "node"
 msgstr "чвор"
 
-#: src/test.c:712
+#: src/test.c:721
 msgid "node cpu numa nodes"
 msgstr "cpu numa чворови за чвор"
 
-#: src/test.c:720
+#: src/test.c:729
 msgid "node cpu sockets"
 msgstr "cpu прикључци за чвор"
 
-#: src/test.c:728
+#: src/test.c:737
 msgid "node cpu cores"
 msgstr "cpu сржи за чвор"
 
-#: src/test.c:736
+#: src/test.c:745
 msgid "node cpu threads"
 msgstr "cpu нити за чвор"
 
-#: src/test.c:747
+#: src/test.c:756
 msgid "node active cpu"
 msgstr "активни cpu за чвор"
 
-#: src/test.c:754
+#: src/test.c:763
 msgid "node cpu mhz"
 msgstr "cpu mhz за чвор"
 
-#: src/test.c:769
+#: src/test.c:778
 msgid "node memory"
 msgstr "меморија чвора"
 
-#: src/test.c:775
+#: src/test.c:784
 msgid "node domain list"
 msgstr "списак домена за чвор"
 
-#: src/test.c:785
+#: src/test.c:794
 msgid "resolving domain filename"
 msgstr "разрешавам име датотеке домена"
 
-#: src/test.c:810
+#: src/test.c:819
 msgid "resolving network filename"
 msgstr "разрешавам мрежно име датотеке"
 
-#: src/test.c:908
+#: src/test.c:917
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: наведите путању или користите test:///default"
 
-#: src/test.c:1046
+#: src/test.c:1055
 msgid "too many domains"
 msgstr "превише домена"
 
-#: src/test.c:1557
+#: src/test.c:1566
 msgid "Domain is already running"
 msgstr "Домен је већ покренут"
 
-#: src/test.c:1572
+#: src/test.c:1581
 msgid "Domain is still running"
 msgstr "Домен још увек ради"
 
-#: src/test.c:1772 src/test.c:1797
+#: src/test.c:1781 src/test.c:1806
 msgid "too many networks"
 msgstr "превише мрежа"
 
-#: src/test.c:1816
+#: src/test.c:1825
 msgid "Network is still running"
 msgstr "Мрежа још увек ради"
 
-#: src/test.c:1830
+#: src/test.c:1839
 msgid "Network is already running"
 msgstr "Мрежа је већ покренута"
+
+#: src/xml.c:151 src/xml.c:396
+#, fuzzy
+msgid "allocate buffer"
+msgstr "заузми нови бафер"
+
+#: src/xml.c:286
+msgid "topology cpuset syntax error"
+msgstr ""
+
+#: src/xml.c:386
+#, fuzzy
+msgid "topology syntax error"
+msgstr "синтаксна грешка у датотеци подешавања"
 
 #: src/sexpr.c:59
 msgid "failed to allocate a node"
@@ -627,67 +641,66 @@ msgstr "неуспело умножавање ниске"
 msgid "failed to read from Xen Daemon"
 msgstr "неуспело читање из Xen демона"
 
-#: src/xend_internal.c:597 src/xend_internal.c:814 src/xend_internal.c:1534
-#: src/xend_internal.c:1553 src/xend_internal.c:2079
+#: src/xend_internal.c:597 src/xend_internal.c:817 src/xend_internal.c:1537
+#: src/xend_internal.c:1556 src/xend_internal.c:1944
 msgid "allocate new buffer"
 msgstr "заузми нови бафер"
 
-#: src/xend_internal.c:1021
+#: src/xend_internal.c:1024
 msgid "failed to urlencode the create S-Expr"
 msgstr "неуспех при urlencode С-израза create"
 
-#: src/xend_internal.c:1062
+#: src/xend_internal.c:1065
 msgid "domain information incomplete, missing domid"
 msgstr "непотпуни подаци о домену, недостаје domid"
 
-#: src/xend_internal.c:1068
+#: src/xend_internal.c:1071
 msgid "domain information incorrect domid not numeric"
 msgstr "подаци о домену су нетачни или domid није бројчан"
 
-#: src/xend_internal.c:1073 src/xend_internal.c:1120
+#: src/xend_internal.c:1076 src/xend_internal.c:1123
 msgid "domain information incomplete, missing uuid"
 msgstr "непотпуни подаци о домену, недостаје uuid"
 
-#: src/xend_internal.c:1112 src/xend_internal.c:1390 src/xend_internal.c:1397
+#: src/xend_internal.c:1115 src/xend_internal.c:1393 src/xend_internal.c:1400
 msgid "domain information incomplete, missing name"
 msgstr "непотпуни подаци о домену, недостаје име"
 
-#: src/xend_internal.c:1286 src/xend_internal.c:1317
+#: src/xend_internal.c:1289 src/xend_internal.c:1320
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "непотпуни подаци о домену, недостаје језгро и покретачки програм"
 
-#: src/xend_internal.c:1378
+#: src/xend_internal.c:1381
 msgid "domain information incomplete, missing id"
 msgstr "непотпуни подаци о домену, недостаје ид"
 
-#: src/xend_internal.c:1503
+#: src/xend_internal.c:1506
 msgid "domain information incomplete, vbd has no dev"
 msgstr "непотпуни подаци о домену, vbd нема dev"
 
-#: src/xend_internal.c:1518
+#: src/xend_internal.c:1521
 msgid "domain information incomplete, vbd has no src"
 msgstr "непотпуни подаци о домену, vbd нема src"
 
-#: src/xend_internal.c:1527
+#: src/xend_internal.c:1530
 msgid "cannot parse vbd filename, missing driver name"
 msgstr ""
 "не могу протумачити vbd име датотеке, недостаје име управљачког програма"
 
-#: src/xend_internal.c:1546
+#: src/xend_internal.c:1549
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 "не могу протумачити vbd име датотеке, недостаје врста управљачког програма"
 
-#: src/xend_internal.c:1948
-#, fuzzy
+#: src/xend_internal.c:1918
 msgid "failed to parse topology information"
-msgstr "неуспело тумачење података о Xend домену"
+msgstr "неуспело тумачење података о топологији"
 
-#: src/xend_internal.c:2136
+#: src/xend_internal.c:1999
 msgid "failed to parse Xend domain information"
 msgstr "неуспело тумачење података о Xend домену"
 
-#: src/xend_internal.c:3604
+#: src/xend_internal.c:3467
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Неуспело прављење не активираног домена %s\n"
@@ -1208,26 +1221,24 @@ msgid "Used memory:"
 msgstr "Употребљена меморија:"
 
 #: src/virsh.c:1569
-#, fuzzy
 msgid "NUMA free memory"
-msgstr "Употребљена меморија:"
+msgstr "слободна NUMA меморија"
 
 #: src/virsh.c:1570
 msgid "display available free memory for the NUMA cell."
-msgstr ""
+msgstr "прикажи доступну слободну меморију за NUMA ћелију."
 
 #: src/virsh.c:1575
-#, fuzzy
 msgid "NUMA cell number"
-msgstr "NUMA ћелија:"
+msgstr "број NUMA ћелије"
 
 #: src/virsh.c:1599
 msgid "Total"
-msgstr ""
+msgstr "Укупно"
 
 #: src/virsh.c:1611
 msgid "domain vcpu information"
-msgstr "подаци о vcpu домена"
+msgstr "vcpu подаци домена"
 
 #: src/virsh.c:1612
 msgid "Returns basic information about the domain virtual CPUs."
@@ -2158,8 +2169,8 @@ msgstr ""
 "          „quit“ за излаз\n"
 "\n"
 
-#: src/conf.c:156 src/conf.c:205 src/conf.c:488 src/conf.c:525 src/conf.c:553
-#: src/conf.c:631
+#: src/conf.c:156 src/conf.c:205 src/conf.c:490 src/conf.c:527 src/conf.c:555
+#: src/conf.c:633
 msgid "allocating configuration"
 msgstr "додељујем подешавања"
 
@@ -2167,43 +2178,43 @@ msgstr "додељујем подешавања"
 msgid "unterminated number"
 msgstr "недовршен број"
 
-#: src/conf.c:372 src/conf.c:389 src/conf.c:401
+#: src/conf.c:374 src/conf.c:391 src/conf.c:403
 msgid "unterminated string"
 msgstr "недовршена ниска"
 
-#: src/conf.c:429 src/conf.c:482
+#: src/conf.c:431 src/conf.c:484
 msgid "expecting a value"
 msgstr "очекујем вредност"
 
-#: src/conf.c:449
+#: src/conf.c:451
 msgid "expecting a separator in list"
 msgstr "очекујем разделник у списку"
 
-#: src/conf.c:472
+#: src/conf.c:474
 msgid "list is not closed with ] "
 msgstr "списак није затворен са ] "
 
-#: src/conf.c:518
+#: src/conf.c:520
 msgid "expecting a name"
 msgstr "очекујем име"
 
-#: src/conf.c:581
+#: src/conf.c:583
 msgid "expecting a separator"
 msgstr "очекујем разделник"
 
-#: src/conf.c:613
+#: src/conf.c:615
 msgid "expecting an assignment"
 msgstr "очекујем доделу"
 
-#: src/conf.c:887 src/conf.c:941
+#: src/conf.c:889 src/conf.c:943
 msgid "failed to allocate buffer"
 msgstr "неуспело заузимање бафера"
 
-#: src/conf.c:899
+#: src/conf.c:901
 msgid "failed to open file"
 msgstr "неуспело отварање датотеке"
 
-#: src/conf.c:907
+#: src/conf.c:909
 msgid "failed to save content"
 msgstr "неуспело чување садржаја"
 

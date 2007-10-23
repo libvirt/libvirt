@@ -7,13 +7,9 @@
     <reference name='VIR_CPU_USABLE' href='html/libvirt-libvirt.html#VIR_CPU_USABLE'/>
     <reference name='VIR_DOMAIN_BLOCKED' href='html/libvirt-libvirt.html#VIR_DOMAIN_BLOCKED'/>
     <reference name='VIR_DOMAIN_CRASHED' href='html/libvirt-libvirt.html#VIR_DOMAIN_CRASHED'/>
-    <reference name='VIR_DOMAIN_DESTROY' href='html/libvirt-libvirt.html#VIR_DOMAIN_DESTROY'/>
     <reference name='VIR_DOMAIN_NONE' href='html/libvirt-libvirt.html#VIR_DOMAIN_NONE'/>
     <reference name='VIR_DOMAIN_NOSTATE' href='html/libvirt-libvirt.html#VIR_DOMAIN_NOSTATE'/>
     <reference name='VIR_DOMAIN_PAUSED' href='html/libvirt-libvirt.html#VIR_DOMAIN_PAUSED'/>
-    <reference name='VIR_DOMAIN_PRESERVE' href='html/libvirt-libvirt.html#VIR_DOMAIN_PRESERVE'/>
-    <reference name='VIR_DOMAIN_RENAME_RESTART' href='html/libvirt-libvirt.html#VIR_DOMAIN_RENAME_RESTART'/>
-    <reference name='VIR_DOMAIN_RESTART' href='html/libvirt-libvirt.html#VIR_DOMAIN_RESTART'/>
     <reference name='VIR_DOMAIN_RUNNING' href='html/libvirt-libvirt.html#VIR_DOMAIN_RUNNING'/>
     <reference name='VIR_DOMAIN_SCHED_FIELD_BOOLEAN' href='html/libvirt-libvirt.html#VIR_DOMAIN_SCHED_FIELD_BOOLEAN'/>
     <reference name='VIR_DOMAIN_SCHED_FIELD_DOUBLE' href='html/libvirt-libvirt.html#VIR_DOMAIN_SCHED_FIELD_DOUBLE'/>
@@ -172,7 +168,6 @@
     <reference name='virDomainPinVcpu' href='html/libvirt-libvirt.html#virDomainPinVcpu'/>
     <reference name='virDomainPtr' href='html/libvirt-libvirt.html#virDomainPtr'/>
     <reference name='virDomainReboot' href='html/libvirt-libvirt.html#virDomainReboot'/>
-    <reference name='virDomainRestart' href='html/libvirt-libvirt.html#virDomainRestart'/>
     <reference name='virDomainRestore' href='html/libvirt-libvirt.html#virDomainRestore'/>
     <reference name='virDomainResume' href='html/libvirt-libvirt.html#virDomainResume'/>
     <reference name='virDomainSave' href='html/libvirt-libvirt.html#virDomainSave'/>
@@ -239,13 +234,9 @@
       <ref name='VIR_CPU_USABLE'/>
       <ref name='VIR_DOMAIN_BLOCKED'/>
       <ref name='VIR_DOMAIN_CRASHED'/>
-      <ref name='VIR_DOMAIN_DESTROY'/>
       <ref name='VIR_DOMAIN_NONE'/>
       <ref name='VIR_DOMAIN_NOSTATE'/>
       <ref name='VIR_DOMAIN_PAUSED'/>
-      <ref name='VIR_DOMAIN_PRESERVE'/>
-      <ref name='VIR_DOMAIN_RENAME_RESTART'/>
-      <ref name='VIR_DOMAIN_RESTART'/>
       <ref name='VIR_DOMAIN_RUNNING'/>
       <ref name='VIR_DOMAIN_SCHED_FIELD_BOOLEAN'/>
       <ref name='VIR_DOMAIN_SCHED_FIELD_DOUBLE'/>
@@ -408,7 +399,6 @@
       <ref name='virDomainPinVcpu'/>
       <ref name='virDomainPtr'/>
       <ref name='virDomainReboot'/>
-      <ref name='virDomainRestart'/>
       <ref name='virDomainRestore'/>
       <ref name='virDomainResume'/>
       <ref name='virDomainSave'/>
@@ -680,13 +670,9 @@
       <ref name='VIR_CPU_USABLE'/>
       <ref name='VIR_DOMAIN_BLOCKED'/>
       <ref name='VIR_DOMAIN_CRASHED'/>
-      <ref name='VIR_DOMAIN_DESTROY'/>
       <ref name='VIR_DOMAIN_NONE'/>
       <ref name='VIR_DOMAIN_NOSTATE'/>
       <ref name='VIR_DOMAIN_PAUSED'/>
-      <ref name='VIR_DOMAIN_PRESERVE'/>
-      <ref name='VIR_DOMAIN_RENAME_RESTART'/>
-      <ref name='VIR_DOMAIN_RESTART'/>
       <ref name='VIR_DOMAIN_RUNNING'/>
       <ref name='VIR_DOMAIN_SCHED_FIELD_BOOLEAN'/>
       <ref name='VIR_DOMAIN_SCHED_FIELD_DOUBLE'/>
@@ -775,7 +761,6 @@
       <ref name='virDomainPinVcpu'/>
       <ref name='virDomainPtr'/>
       <ref name='virDomainReboot'/>
-      <ref name='virDomainRestart'/>
       <ref name='virDomainRestore'/>
       <ref name='virDomainResume'/>
       <ref name='virDomainSave'/>

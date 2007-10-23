@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ja\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-09-30 23:00+0200\n"
-"PO-Revision-Date: 2007-08-25 21:59+0900\n"
+"POT-Creation-Date: 2007-10-23 17:38+0200\n"
+"PO-Revision-Date: 2007-10-01 19:09+0900\n"
 "Last-Translator: Hyu_gabaru Ryu_ichi <hyu_gabaru@yahoo.co.jp>\n"
 "Language-Team: Japanese <jp@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -47,7 +47,7 @@ msgstr "内部エラー"
 
 #: src/virterror.c:410
 msgid "out of memory"
-msgstr "メモリ不足"
+msgstr "メモリー不足"
 
 #: src/virterror.c:414
 msgid "this function is not supported by the hypervisor"
@@ -427,7 +427,7 @@ msgstr "応答の割り当て"
 msgid "read response"
 msgstr "応答の読み込み"
 
-#: src/xmlrpc.c:484 src/xml.c:265
+#: src/xmlrpc.c:484 src/xml.c:622
 msgid "allocate string array"
 msgstr "string array の割り当て"
 
@@ -463,161 +463,175 @@ msgstr "接続ハッシュテーブルへのネットワークの追加に失敗
 msgid "network missing from connection hash table"
 msgstr "接続ハッシュテーブルにないネットワークです"
 
-#: src/test.c:223 src/test.c:588 src/test.c:1262
+#: src/test.c:232 src/test.c:597 src/test.c:1271
 msgid "getting time of day"
 msgstr "現在の時刻を取得中"
 
-#: src/test.c:229 src/test.c:361 src/test.c:387 src/test.c:1537
+#: src/test.c:238 src/test.c:370 src/test.c:396 src/test.c:1546
 msgid "domain"
 msgstr "ドメイン"
 
-#: src/test.c:235 src/test.c:421 src/test.c:694
+#: src/test.c:244 src/test.c:430 src/test.c:703
 msgid "creating xpath context"
 msgstr "xpath コンテキストを作成中"
 
-#: src/test.c:241
+#: src/test.c:250
 msgid "domain name"
 msgstr "ドメイン名"
 
-#: src/test.c:247 src/test.c:251
+#: src/test.c:256 src/test.c:260
 msgid "domain uuid"
 msgstr "ドメイン uuid"
 
-#: src/test.c:259
-msgid "domain memory"
-msgstr "ドメインメモリ"
-
 #: src/test.c:268
-msgid "domain current memory"
-msgstr "現在のドメインメモリ"
+msgid "domain memory"
+msgstr "ドメインメモリー"
 
-#: src/test.c:278
+#: src/test.c:277
+msgid "domain current memory"
+msgstr "現在のドメインメモリー"
+
+#: src/test.c:287
 msgid "domain vcpus"
 msgstr "ドメイン vcpus"
 
-#: src/test.c:287
+#: src/test.c:296
 msgid "domain reboot behaviour"
 msgstr "ドメインの再起動動作"
 
-#: src/test.c:297
+#: src/test.c:306
 msgid "domain poweroff behaviour"
 msgstr "ドメインの電源オフ動作"
 
-#: src/test.c:307
+#: src/test.c:316
 msgid "domain crash behaviour"
 msgstr "ドメインのクラッシュ動作"
 
-#: src/test.c:380
+#: src/test.c:389
 msgid "load domain definition file"
 msgstr "ドメインの定義ファイルをロード"
 
-#: src/test.c:415 src/test.c:539 src/test.c:564
+#: src/test.c:424 src/test.c:548 src/test.c:573
 msgid "network"
 msgstr "ネットワーク"
 
-#: src/test.c:427 src/virsh.c:2733
+#: src/test.c:436 src/virsh.c:2733
 msgid "network name"
 msgstr "ネットワーク名"
 
-#: src/test.c:435 src/test.c:439 src/virsh.c:2624
+#: src/test.c:444 src/test.c:448 src/virsh.c:2624
 msgid "network uuid"
 msgstr "ネットワーク uuid"
 
-#: src/test.c:447
+#: src/test.c:456
 msgid "network forward"
 msgstr "ネットワークフォワード"
 
-#: src/test.c:456 src/test.c:466 src/test.c:471
+#: src/test.c:465 src/test.c:475 src/test.c:480
 msgid "ip address"
 msgstr "ip アドレス"
 
-#: src/test.c:461
+#: src/test.c:470
 msgid "ip netmask"
 msgstr "ip ネットマスク"
 
-#: src/test.c:557
+#: src/test.c:566
 msgid "load network definition file"
 msgstr "ネットワークの定義ファイルをロード"
 
-#: src/test.c:673
+#: src/test.c:682
 msgid "loading host definition file"
 msgstr "ホストの定義ファイルをロード中"
 
-#: src/test.c:680
+#: src/test.c:689
 msgid "host"
 msgstr "ホスト"
 
-#: src/test.c:688
+#: src/test.c:697
 msgid "node"
 msgstr "ノード"
 
-#: src/test.c:712
+#: src/test.c:721
 msgid "node cpu numa nodes"
 msgstr "node cpu numa nodes"
 
-#: src/test.c:720
+#: src/test.c:729
 msgid "node cpu sockets"
 msgstr "node cpu sockets"
 
-#: src/test.c:728
+#: src/test.c:737
 msgid "node cpu cores"
 msgstr "node cpu cores"
 
-#: src/test.c:736
+#: src/test.c:745
 msgid "node cpu threads"
 msgstr "node cpu threads"
 
-#: src/test.c:747
+#: src/test.c:756
 msgid "node active cpu"
 msgstr "node active cpu"
 
-#: src/test.c:754
+#: src/test.c:763
 msgid "node cpu mhz"
 msgstr "node cpu mhz"
 
-#: src/test.c:769
+#: src/test.c:778
 msgid "node memory"
-msgstr "ノードメモリ"
+msgstr "ノードメモリー"
 
-#: src/test.c:775
+#: src/test.c:784
 msgid "node domain list"
 msgstr "ノードドメイン一覧"
 
-#: src/test.c:785
+#: src/test.c:794
 msgid "resolving domain filename"
 msgstr "ドメインファイル名を解決中"
 
-#: src/test.c:810
+#: src/test.c:819
 msgid "resolving network filename"
 msgstr "ネットワークファイル名を解決中"
 
-#: src/test.c:908
+#: src/test.c:917
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: パスを指定するか、test:を使用する///省略値"
 
-#: src/test.c:1046
+#: src/test.c:1055
 msgid "too many domains"
 msgstr "ドメインが多すぎます"
 
-#: src/test.c:1557
+#: src/test.c:1566
 msgid "Domain is already running"
 msgstr "ドメインはすでに実行中です"
 
-#: src/test.c:1572
+#: src/test.c:1581
 msgid "Domain is still running"
 msgstr "ドメインはまだ実行中です"
 
-#: src/test.c:1772 src/test.c:1797
+#: src/test.c:1781 src/test.c:1806
 msgid "too many networks"
 msgstr "ネットワークが多すぎます"
 
-#: src/test.c:1816
+#: src/test.c:1825
 msgid "Network is still running"
 msgstr "ネットワークはまだ実行中です"
 
-#: src/test.c:1830
+#: src/test.c:1839
 msgid "Network is already running"
 msgstr "ネットワークはすでに実行中です"
+
+#: src/xml.c:151 src/xml.c:396
+#, fuzzy
+msgid "allocate buffer"
+msgstr "新しいバッファを割り当て"
+
+#: src/xml.c:286
+msgid "topology cpuset syntax error"
+msgstr ""
+
+#: src/xml.c:386
+#, fuzzy
+msgid "topology syntax error"
+msgstr "設定ファイルの構文エラー"
 
 #: src/sexpr.c:59
 msgid "failed to allocate a node"
@@ -631,65 +645,64 @@ msgstr "文字列のコピーに失敗しました"
 msgid "failed to read from Xen Daemon"
 msgstr "Xen デーモンからの読み込みに失敗しました"
 
-#: src/xend_internal.c:597 src/xend_internal.c:814 src/xend_internal.c:1534
-#: src/xend_internal.c:1553 src/xend_internal.c:2079
+#: src/xend_internal.c:597 src/xend_internal.c:817 src/xend_internal.c:1537
+#: src/xend_internal.c:1556 src/xend_internal.c:1944
 msgid "allocate new buffer"
 msgstr "新しいバッファを割り当て"
 
-#: src/xend_internal.c:1021
+#: src/xend_internal.c:1024
 msgid "failed to urlencode the create S-Expr"
 msgstr "S 式の生成で url のコード化に失敗しました"
 
-#: src/xend_internal.c:1062
+#: src/xend_internal.c:1065
 msgid "domain information incomplete, missing domid"
 msgstr "ドメイン情報が不完全です、domid が不足しています"
 
-#: src/xend_internal.c:1068
+#: src/xend_internal.c:1071
 msgid "domain information incorrect domid not numeric"
 msgstr "ドメイン情報が正しくありません、domid は数値ではありません"
 
-#: src/xend_internal.c:1073 src/xend_internal.c:1120
+#: src/xend_internal.c:1076 src/xend_internal.c:1123
 msgid "domain information incomplete, missing uuid"
 msgstr "ドメイン情報が不完全です、uuid が不足しています"
 
-#: src/xend_internal.c:1112 src/xend_internal.c:1390 src/xend_internal.c:1397
+#: src/xend_internal.c:1115 src/xend_internal.c:1393 src/xend_internal.c:1400
 msgid "domain information incomplete, missing name"
 msgstr "ドメイン情報が不完全です、name が不足しています"
 
-#: src/xend_internal.c:1286 src/xend_internal.c:1317
+#: src/xend_internal.c:1289 src/xend_internal.c:1320
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "ドメイン情報が不完全です、カーネルとブートローダーが不足しています"
 
-#: src/xend_internal.c:1378
+#: src/xend_internal.c:1381
 msgid "domain information incomplete, missing id"
 msgstr "ドメイン情報が不完全です、id が不足しています"
 
-#: src/xend_internal.c:1503
+#: src/xend_internal.c:1506
 msgid "domain information incomplete, vbd has no dev"
 msgstr "ドメイン情報が不完全です、vbd に dev がありません"
 
-#: src/xend_internal.c:1518
+#: src/xend_internal.c:1521
 msgid "domain information incomplete, vbd has no src"
 msgstr "ドメイン情報が不完全です、vbd に src がありません"
 
-#: src/xend_internal.c:1527
+#: src/xend_internal.c:1530
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd のファイル名を構文解析できません。ドライバー名欠如"
 
-#: src/xend_internal.c:1546
+#: src/xend_internal.c:1549
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd のファイル名を構文解析できません。ドライバータイプ欠如"
 
-#: src/xend_internal.c:1948
-#, fuzzy
+#: src/xend_internal.c:1918
 msgid "failed to parse topology information"
-msgstr "Xend ドメイン情報の解析に失敗しました"
+msgstr "トポロジー情報の解析に失敗しました"
 
-#: src/xend_internal.c:2136
+#: src/xend_internal.c:1999
 msgid "failed to parse Xend domain information"
 msgstr "Xend ドメイン情報の解析に失敗しました"
 
-#: src/xend_internal.c:3604
+#: src/xend_internal.c:3467
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "停止中のドメイン %s の作成に失敗しました\n"
@@ -1199,7 +1212,7 @@ msgstr "CPU 時間:"
 
 #: src/virsh.c:1547 src/virsh.c:1550
 msgid "Max memory:"
-msgstr "最大メモリ:"
+msgstr "最大メモリー:"
 
 #: src/virsh.c:1551
 msgid "no limit"
@@ -1207,25 +1220,23 @@ msgstr "制限なし"
 
 #: src/virsh.c:1553
 msgid "Used memory:"
-msgstr "使用メモリ:"
+msgstr "使用メモリー:"
 
 #: src/virsh.c:1569
-#, fuzzy
 msgid "NUMA free memory"
-msgstr "使用メモリ:"
+msgstr "NUMA 空きメモリー:"
 
 #: src/virsh.c:1570
 msgid "display available free memory for the NUMA cell."
-msgstr ""
+msgstr "NUMA セル用の利用可能な空きメモリーを表示します。"
 
 #: src/virsh.c:1575
-#, fuzzy
 msgid "NUMA cell number"
-msgstr "NUMA セル:"
+msgstr "NUMA セル番号:"
 
 #: src/virsh.c:1599
 msgid "Total"
-msgstr ""
+msgstr "合計"
 
 #: src/virsh.c:1611
 msgid "domain vcpu information"
@@ -1316,48 +1327,48 @@ msgstr "仮想 CPU が多すぎます。"
 
 #: src/virsh.c:1883
 msgid "change memory allocation"
-msgstr "メモリサイズの変更"
+msgstr "メモリーサイズの変更"
 
 #: src/virsh.c:1884
 msgid "Change the current memory allocation in the guest domain."
-msgstr "ゲストドメインの現在のメモリサイズを変更します。"
+msgstr "ゲストドメインの現在のメモリーサイズを変更します。"
 
 #: src/virsh.c:1890
 msgid "number of kilobytes of memory"
-msgstr "メモリサイズ(キロバイト指定)"
+msgstr "キロバイト単位でのメモリーサイズ"
 
 #: src/virsh.c:1911 src/virsh.c:1923 src/virsh.c:1968
 #, c-format
 msgid "Invalid value of %d for memory size"
-msgstr "%d はメモリサイズとしては不適切な値"
+msgstr "%d はメモリーサイズとしては不適切な値"
 
 #: src/virsh.c:1917
 msgid "Unable to verify MaxMemorySize"
-msgstr "最大メモリサイズを確認できません"
+msgstr "最大メモリーサイズを確認できません"
 
 #: src/virsh.c:1940
 msgid "change maximum memory limit"
-msgstr "最大メモリサイズの変更"
+msgstr "最大メモリー上限の変更"
 
 #: src/virsh.c:1941
 msgid "Change the maximum memory allocation limit in the guest domain."
-msgstr "ゲストドメインの最大メモリサイズを変更します。"
+msgstr "ゲストドメインの最大メモリー上限を変更します。"
 
 #: src/virsh.c:1947
 msgid "maximum memory limit in kilobytes"
-msgstr "最大メモリサイズ(キロバイト指定)"
+msgstr "キロバイト単位での最大メモリー上限"
 
 #: src/virsh.c:1974
 msgid "Unable to verify current MemorySize"
-msgstr "現在のメモリサイズを確認できません"
+msgstr "現在のメモリーサイズを確認できません"
 
 #: src/virsh.c:1981
 msgid "Unable to shrink current MemorySize"
-msgstr "現在のメモリサイズを縮小できません"
+msgstr "現在のメモリーサイズを縮小できません"
 
 #: src/virsh.c:1987
 msgid "Unable to change MaxMemorySize"
-msgstr "最大メモリサイズを変更できません"
+msgstr "最大メモリーサイズを変更できません"
 
 #: src/virsh.c:2000
 msgid "node information"
@@ -1397,7 +1408,7 @@ msgstr "NUMA セル:"
 
 #: src/virsh.c:2024
 msgid "Memory size:"
-msgstr "メモリサイズ:"
+msgstr "メモリーサイズ:"
 
 #: src/virsh.c:2034
 msgid "capabilities"
@@ -1825,7 +1836,7 @@ msgstr "%s という MAC アドレスのインターフェースは見つかり�
 
 #: src/virsh.c:3356 src/virsh.c:3634
 msgid "Failed to allocate memory"
-msgstr "メモリの割り当てに失敗しました"
+msgstr "メモリーの割り当てに失敗しました"
 
 #: src/virsh.c:3361 src/virsh.c:3639
 msgid "Failed to create XML"
@@ -2155,8 +2166,8 @@ msgstr ""
 "          'quit' 終了します\n"
 "\n"
 
-#: src/conf.c:156 src/conf.c:205 src/conf.c:488 src/conf.c:525 src/conf.c:553
-#: src/conf.c:631
+#: src/conf.c:156 src/conf.c:205 src/conf.c:490 src/conf.c:527 src/conf.c:555
+#: src/conf.c:633
 msgid "allocating configuration"
 msgstr "設定を割り当て中"
 
@@ -2164,43 +2175,43 @@ msgstr "設定を割り当て中"
 msgid "unterminated number"
 msgstr "終り方が不適切な数字です"
 
-#: src/conf.c:372 src/conf.c:389 src/conf.c:401
+#: src/conf.c:374 src/conf.c:391 src/conf.c:403
 msgid "unterminated string"
 msgstr "終り方が不適切な文字列です"
 
-#: src/conf.c:429 src/conf.c:482
+#: src/conf.c:431 src/conf.c:484
 msgid "expecting a value"
 msgstr "値を予期しています"
 
-#: src/conf.c:449
+#: src/conf.c:451
 msgid "expecting a separator in list"
 msgstr "一覧にセパレーターを予期しています"
 
-#: src/conf.c:472
+#: src/conf.c:474
 msgid "list is not closed with ] "
 msgstr "一覧が ] で閉じられていません"
 
-#: src/conf.c:518
+#: src/conf.c:520
 msgid "expecting a name"
 msgstr "名前を予期しています"
 
-#: src/conf.c:581
+#: src/conf.c:583
 msgid "expecting a separator"
 msgstr "セパレーターを予期しています"
 
-#: src/conf.c:613
+#: src/conf.c:615
 msgid "expecting an assignment"
 msgstr "割り当てを予期しています"
 
-#: src/conf.c:887 src/conf.c:941
+#: src/conf.c:889 src/conf.c:943
 msgid "failed to allocate buffer"
 msgstr "バッファの割り当てに失敗しました"
 
-#: src/conf.c:899
+#: src/conf.c:901
 msgid "failed to open file"
 msgstr "ファイルを開くのに失敗しました"
 
-#: src/conf.c:907
+#: src/conf.c:909
 msgid "failed to save content"
 msgstr "内容の保存に失敗しました"
 
@@ -2231,22 +2242,22 @@ msgstr "ソケット %d の書き込みに失敗しました\n"
 #: src/proxy_internal.c:448 src/proxy_internal.c:469 src/proxy_internal.c:489
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
-msgstr "プロキシで通信エラー: %d バイト、%d から取得\n"
+msgstr "プロキシーで通信エラー: %d バイト、%d から取得\n"
 
 #: src/proxy_internal.c:456
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
-msgstr "プロキシで通信エラー: %d バイトを予期していました、%d バイトを取得\n"
+msgstr "プロキシーで通信エラー: %d バイトを予期していました、%d バイトを取得\n"
 
 #: src/proxy_internal.c:478
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
-msgstr "プロキシで通信エラー: %d バイトのパケットを取得\n"
+msgstr "プロキシーで通信エラー: %d バイトのパケットを取得\n"
 
 #: src/proxy_internal.c:502
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
-msgstr "プロキシで通信エラー: 不良パケット\n"
+msgstr "プロキシーで通信エラー: 不良パケット\n"
 
 #: src/proxy_internal.c:508
 #, c-format
@@ -2256,12 +2267,13 @@ msgstr "非同期パケット番号 %d を取得しました\n"
 #: src/xen_internal.c:1321
 #, c-format
 msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
-msgstr "クレジットスケジューラの重さパラメータ(%d) が範囲外です(1-65535)"
+msgstr ""
+"credit スケジューラーの weight パラメーター (%d) が範囲外です (1-65535)"
 
 #: src/xen_internal.c:1331
 #, c-format
 msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
-msgstr "クレジットスケジューラのキャップパラメータ(%d)が範囲外です(0-65535)。"
+msgstr "credit スケジューラーの cap パラメーター (%d) が範囲外です (0-65535)。"
 
 #: src/xen_internal.c:2598
 #, c-format

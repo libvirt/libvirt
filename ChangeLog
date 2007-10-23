@@ -1,3 +1,7 @@
+Tue Oct 23 17:44:12 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* po/*: updated from translation team
+
 Tue Oct 23 17:30:52 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xml.c: fix the build of the proxy broken on previous commit
