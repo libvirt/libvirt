@@ -1,3 +1,7 @@
+Tue Oct 23 17:30:52 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xml.c: fix the build of the proxy broken on previous commit
+
 Mon Oct 22 22:33:59 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.c src/xen_unified.c src/xen_unified.h

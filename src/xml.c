@@ -26,7 +26,6 @@
 #include "xs_internal.h" /* for xenStoreDomainGetNetworkID */
 #include "xen_unified.h"
 
-#ifndef PROXY
 /**
  * virXMLError:
  * @conn: a connection if any
@@ -398,6 +397,7 @@ memory_error:
     return(-1);
 }
 
+#ifndef PROXY
 
 /************************************************************************
  *									*
