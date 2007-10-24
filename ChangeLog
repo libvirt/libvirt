@@ -1,3 +1,7 @@
+Wed Oct 24 10:38:38 CEST 2007 Daniel Veillard <veillard@redhat.com>
+
+	* po/id.po: Remove again bogus Project-Id-Version field from merge error
+
 Tue Oct 23 17:44:12 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* po/*: updated from translation team
