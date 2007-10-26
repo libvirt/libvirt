@@ -1585,7 +1585,11 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
 
     str = virXPathString("string(/domain/vcpu/@cpuset)", ctxt);
     if (str != NULL) {
+#ifdef WITH_XEN
         int maxcpu = xenNbCpus(conn);
+#else
+        int maxcpu = 64;
+#endif
         char *cpuset = NULL;
         char *ranges = NULL;
         const char *cur = str;
