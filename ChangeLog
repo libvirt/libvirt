@@ -1,3 +1,8 @@
+Fri Oct 26 21:10:44 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_driver.c: make qemudMonitorCommand responsible for
+	adding appropriate line ending instead of the caller
+
 Fri Oct 26 15:40:44 CEST 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xml.c: fix build when configured without Xen

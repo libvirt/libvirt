@@ -1311,10 +1311,12 @@ static int qemudMonitorCommand(struct qemud_driver *driver ATTRIBUTE_UNUSED,
                                char **reply) {
     int size = 0;
     char *buf = NULL;
+    size_t cmdlen = strlen(cmd);
 
-    if (write(vm->monitor, cmd, strlen(cmd)) < 0) {
+    if (safewrite(vm->monitor, cmd, cmdlen) != cmdlen)
         return -1;
-    }
+    if (safewrite(vm->monitor, "\r", 1) != 1)
+        return -1;
 
     *reply = NULL;
 
@@ -1328,32 +1330,24 @@ static int qemudMonitorCommand(struct qemud_driver *driver ATTRIBUTE_UNUSED,
             int got = read(vm->monitor, data, sizeof(data));
             char *b;
 
-            if (got == 0) {
-                if (buf)
-                    free(buf);
-                return -1;
-            }
+            if (got == 0)
+                goto error;
             if (got < 0) {
                 if (errno == EINTR)
                     continue;
                 if (errno == EAGAIN)
                     break;
+                goto error;
+            }
+            if (!(b = realloc(buf, size+got+1)))
+                goto error;
 
-                if (buf)
-                    free(buf);
-                return -1;
-            }
-            if (!(b = realloc(buf, size+got+1))) {
-                free(buf);
-                return -1;
-            }
             buf = b;
             memmove(buf+size, data, got);
             buf[size+got] = '\0';
             size += got;
         }
-        if (buf)
-            qemudDebug("Mon [%s]", buf);
+
         /* Look for QEMU prompt to indicate completion */
         if (buf && ((tmp = strstr(buf, "\n(qemu) ")) != NULL)) {
             tmp[0] = '\0';
@@ -1364,14 +1358,27 @@ static int qemudMonitorCommand(struct qemud_driver *driver ATTRIBUTE_UNUSED,
         if (poll(&fd, 1, -1) < 0) {
             if (errno == EINTR)
                 goto pollagain;
-
-            free(buf);
-            return -1;
+            goto error;
         }
     }
 
+    /* Log, but ignore failures to write logfile for VM */
+    if (safewrite(vm->logfile, buf, strlen(buf)) < 0)
+        qemudLog(QEMUD_WARN, "Unable to log VM console data: %s",
+                 strerror(errno));
+
     *reply = buf;
     return 0;
+
+ error:
+    if (buf) {
+        /* Log, but ignore failures to write logfile for VM */
+        if (safewrite(vm->logfile, buf, strlen(buf)) < 0)
+            qemudLog(QEMUD_WARN, "Unable to log VM console data: %s",
+                     strerror(errno));
+        free(buf);
+    }
+    return -1;
 }
 
 
@@ -1806,7 +1813,7 @@ static int qemudDomainSuspend(virDomainPtr dom) {
     if (vm->state == VIR_DOMAIN_PAUSED)
         return 0;
 
-    if (qemudMonitorCommand(driver, vm, "stop\r", &info) < 0) {
+    if (qemudMonitorCommand(driver, vm, "stop", &info) < 0) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED, "suspend operation failed");
         return -1;
     }
@@ -1831,7 +1838,7 @@ static int qemudDomainResume(virDomainPtr dom) {
     }
     if (vm->state == VIR_DOMAIN_RUNNING)
         return 0;
-    if (qemudMonitorCommand(driver, vm, "cont\r", &info) < 0) {
+    if (qemudMonitorCommand(driver, vm, "cont", &info) < 0) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED, "resume operation failed");
         return -1;
     }
@@ -2063,7 +2070,7 @@ static int qemudDomainSave(virDomainPtr dom,
     }
     if (asprintf (&command, "migrate \"exec:"
                   "dd of='%s' oflag=append conv=notrunc 2>/dev/null"
-                  "\"\r", safe_path) == -1) {
+                  "\"", safe_path) == -1) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
                          "out of memory");
         free(safe_path);
@@ -2190,7 +2197,7 @@ static int qemudDomainRestore(virConnectPtr conn,
     /* If it was running before, resume it now. */
     if (header.was_running) {
         char *info;
-        if (qemudMonitorCommand(driver, vm, "cont\r", &info) < 0) {
+        if (qemudMonitorCommand(driver, vm, "cont", &info) < 0) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
                              "failed to resume domain");
             return -1;
