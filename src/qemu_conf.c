@@ -499,22 +499,20 @@ int qemudExtractVersion(virConnectPtr conn,
 }
 
 
-/* Parse the XML definition for a disk */
-static struct qemud_vm_disk_def *qemudParseDiskXML(virConnectPtr conn,
-                                                   struct qemud_driver *driver ATTRIBUTE_UNUSED,
-                                                   xmlNodePtr node) {
-    struct qemud_vm_disk_def *disk = calloc(1, sizeof(struct qemud_vm_disk_def));
+/* Parse the XML definition for a disk
+ * @param disk pre-allocated & zero'd disk record
+ * @param node XML nodeset to parse for disk definition
+ * @return 0 on success, -1 on failure
+ */
+static int qemudParseDiskXML(virConnectPtr conn,
+                             struct qemud_vm_disk_def *disk,
+                             xmlNodePtr node) {
     xmlNodePtr cur;
     xmlChar *device = NULL;
     xmlChar *source = NULL;
     xmlChar *target = NULL;
     xmlChar *type = NULL;
     int typ = 0;
-
-    if (!disk) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "disk");
-        return NULL;
-    }
 
     type = xmlGetProp(node, BAD_CAST "type");
     if (type != NULL) {
@@ -612,7 +610,7 @@ static struct qemud_vm_disk_def *qemudParseDiskXML(virConnectPtr conn,
     xmlFree(target);
     xmlFree(source);
 
-    return disk;
+    return 0;
 
  error:
     if (type)
@@ -623,8 +621,7 @@ static struct qemud_vm_disk_def *qemudParseDiskXML(virConnectPtr conn,
         xmlFree(source);
     if (device)
         xmlFree(device);
-    free(disk);
-    return NULL;
+    return -1;
 }
 
 static void qemudRandomMAC(struct qemud_vm_net_def *net) {
@@ -637,11 +634,14 @@ static void qemudRandomMAC(struct qemud_vm_net_def *net) {
 }
 
 
-/* Parse the XML definition for a network interface */
-static struct qemud_vm_net_def *qemudParseInterfaceXML(virConnectPtr conn,
-                                                       struct qemud_driver *driver ATTRIBUTE_UNUSED,
-                                                       xmlNodePtr node) {
-    struct qemud_vm_net_def *net = calloc(1, sizeof(struct qemud_vm_net_def));
+/* Parse the XML definition for a network interface
+ * @param net pre-allocated & zero'd net record
+ * @param node XML nodeset to parse for net definition
+ * @return 0 on success, -1 on failure
+ */
+static int qemudParseInterfaceXML(virConnectPtr conn,
+                                  struct qemud_vm_net_def *net,
+                                  xmlNodePtr node) {
     xmlNodePtr cur;
     xmlChar *macaddr = NULL;
     xmlChar *type = NULL;
@@ -651,11 +651,6 @@ static struct qemud_vm_net_def *qemudParseInterfaceXML(virConnectPtr conn,
     xmlChar *script = NULL;
     xmlChar *address = NULL;
     xmlChar *port = NULL;
-
-    if (!net) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "net");
-        return NULL;
-    }
 
     net->type = QEMUD_NET_USER;
 
@@ -869,7 +864,7 @@ static struct qemud_vm_net_def *qemudParseInterfaceXML(virConnectPtr conn,
         xmlFree(address);
     }
 
-    return net;
+    return 0;
 
  error:
     if (network)
@@ -884,23 +879,16 @@ static struct qemud_vm_net_def *qemudParseInterfaceXML(virConnectPtr conn,
         xmlFree(script);
     if (bridge)
         xmlFree(bridge);
-    free(net);
-    return NULL;
+    return -1;
 }
 
 
 /* Parse the XML definition for a network interface */
-static struct qemud_vm_input_def *qemudParseInputXML(virConnectPtr conn,
-                                                   struct qemud_driver *driver ATTRIBUTE_UNUSED,
-                                                   xmlNodePtr node) {
-    struct qemud_vm_input_def *input = calloc(1, sizeof(struct qemud_vm_input_def));
+static int qemudParseInputXML(virConnectPtr conn,
+                              struct qemud_vm_input_def *input,
+                              xmlNodePtr node) {
     xmlChar *type = NULL;
     xmlChar *bus = NULL;
-
-    if (!input) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "input");
-        return NULL;
-    }
 
     type = xmlGetProp(node, BAD_CAST "type");
     bus = xmlGetProp(node, BAD_CAST "bus");
@@ -944,7 +932,7 @@ static struct qemud_vm_input_def *qemudParseInputXML(virConnectPtr conn,
     if (bus)
         xmlFree(bus);
 
-    return input;
+    return 0;
 
  error:
     if (type)
@@ -952,8 +940,7 @@ static struct qemud_vm_input_def *qemudParseInputXML(virConnectPtr conn,
     if (bus)
         xmlFree(bus);
 
-    free(input);
-    return NULL;
+    return -1;
 }
 
 
@@ -1318,8 +1305,13 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
         struct qemud_vm_disk_def *prev = NULL;
         for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-            struct qemud_vm_disk_def *disk;
-            if (!(disk = qemudParseDiskXML(conn, driver, obj->nodesetval->nodeTab[i]))) {
+            struct qemud_vm_disk_def *disk = calloc(1, sizeof(struct qemud_vm_disk_def));
+            if (!disk) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "disk");
+                goto error;
+            }
+            if (qemudParseDiskXML(conn, disk, obj->nodesetval->nodeTab[i]) < 0) {
+                free(disk);
                 goto error;
             }
             def->ndisks++;
@@ -1341,8 +1333,13 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
         struct qemud_vm_net_def *prev = NULL;
         for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-            struct qemud_vm_net_def *net;
-            if (!(net = qemudParseInterfaceXML(conn, driver, obj->nodesetval->nodeTab[i]))) {
+            struct qemud_vm_net_def *net = calloc(1, sizeof(struct qemud_vm_net_def));
+            if (!net) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "net");
+                goto error;
+            }
+            if (qemudParseInterfaceXML(conn, net, obj->nodesetval->nodeTab[i]) < 0) {
+                free(net);
                 goto error;
             }
             def->nnets++;
@@ -1363,8 +1360,13 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
         struct qemud_vm_input_def *prev = NULL;
         for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-            struct qemud_vm_input_def *input;
-            if (!(input = qemudParseInputXML(conn, driver, obj->nodesetval->nodeTab[i]))) {
+            struct qemud_vm_input_def *input = calloc(1, sizeof(struct qemud_vm_input_def));
+            if (!input) {
+                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "input");
+                goto error;
+            }
+            if (qemudParseInputXML(conn, input, obj->nodesetval->nodeTab[i]) < 0) {
+                free(input);
                 goto error;
             }
             /* Mouse + PS/2 is implicit with graphics, so don't store it */
@@ -1927,6 +1929,51 @@ static int qemudSaveConfig(virConnectPtr conn,
     free(xml);
 
     return ret;
+}
+
+struct qemud_vm_device_def *
+qemudParseVMDeviceDef(virConnectPtr conn,
+                      struct qemud_driver *driver ATTRIBUTE_UNUSED,
+                      const char *xmlStr)
+{
+    xmlDocPtr xml;
+    xmlNodePtr node;
+    struct qemud_vm_device_def *dev = calloc(1, sizeof(struct qemud_vm_device_def));
+
+    if (!(xml = xmlReadDoc(BAD_CAST xmlStr, "device.xml", NULL,
+                           XML_PARSE_NOENT | XML_PARSE_NONET |
+                           XML_PARSE_NOERROR | XML_PARSE_NOWARNING))) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_XML_ERROR, NULL);
+        return NULL;
+    }
+
+    node = xmlDocGetRootElement(xml);
+    if (node == NULL) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_XML_ERROR, "missing root element");
+        goto error;
+    }
+    if (xmlStrEqual(node->name, BAD_CAST "disk")) {
+        dev->type = QEMUD_DEVICE_DISK;
+        qemudParseDiskXML(conn, &(dev->data.disk), node);
+    } else if (xmlStrEqual(node->name, BAD_CAST "net")) {
+        dev->type = QEMUD_DEVICE_NET;
+        qemudParseInterfaceXML(conn, &(dev->data.net), node);
+    } else if (xmlStrEqual(node->name, BAD_CAST "input")) {
+        dev->type = QEMUD_DEVICE_DISK;
+        qemudParseInputXML(conn, &(dev->data.input), node);
+    } else {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_XML_ERROR, "unknown device type");
+        goto error;
+    }
+
+    xmlFreeDoc(xml);
+
+    return dev;
+
+  error:
+    if (xml) xmlFreeDoc(xml);
+    if (dev) free(dev);
+    return NULL;
 }
 
 struct qemud_vm_def *

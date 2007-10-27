@@ -125,6 +125,22 @@ struct qemud_vm_input_def {
     struct qemud_vm_input_def *next;
 };
 
+/* Flags for the 'type' field in next struct */
+enum qemud_vm_device_type {
+    QEMUD_DEVICE_DISK,
+    QEMUD_DEVICE_NET,
+    QEMUD_DEVICE_INPUT,
+};
+
+struct qemud_vm_device_def {
+    int type;
+    union {
+        struct qemud_vm_disk_def disk;
+        struct qemud_vm_net_def net;
+        struct qemud_vm_input_def input;
+    } data;
+};
+
 #define QEMUD_MAX_BOOT_DEVS 4
 
 /* 3 possible boot devices */
@@ -353,6 +369,11 @@ struct qemud_vm *
                                          struct qemud_vm_def *def);
 void        qemudRemoveInactiveVM       (struct qemud_driver *driver,
                                          struct qemud_vm *vm);
+
+struct qemud_vm_device_def *
+            qemudParseVMDeviceDef       (virConnectPtr conn,
+                                         struct qemud_driver *driver,
+                                         const char *xmlStr);
 
 struct qemud_vm_def *
             qemudParseVMDef             (virConnectPtr conn,

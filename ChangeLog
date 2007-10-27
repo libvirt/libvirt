@@ -1,3 +1,7 @@
+Fri Oct 26 21:14:44 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.h, src/qemu_conf.c: Refactor device parsing code
+
 Fri Oct 26 21:10:44 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c: make qemudMonitorCommand responsible for
