@@ -1,3 +1,8 @@
+Fri Oct 26 21:17:44 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_driver.c: Refactor shell ecscaping function to reuse
+	for monitor escaping
+
 Fri Oct 26 21:14:44 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.h, src/qemu_conf.c: Refactor device parsing code

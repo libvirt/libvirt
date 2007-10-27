@@ -1912,7 +1912,7 @@ static int qemudDomainGetInfo(virDomainPtr dom,
 }
 
 
-static char *qemudEscapeShellArg(const char *in)
+static char *qemudEscape(const char *in, int shell)
 {
     int len = 0;
     int i, j;
@@ -1934,7 +1934,10 @@ static char *qemudEscapeShellArg(const char *in)
             len += 2;
             break;
         case '\'':
-            len += 5;
+            if (shell)
+                len += 5;
+            else
+                len += 1;
             break;
         default:
             len += 1;
@@ -1961,11 +1964,15 @@ static char *qemudEscapeShellArg(const char *in)
             out[j++] = in[i];
             break;
         case '\'':
-            out[j++] = '\'';
-            out[j++] = '\\';
-            out[j++] = '\\';
-            out[j++] = '\'';
-            out[j++] = '\'';
+            if (shell) {
+                out[j++] = '\'';
+                out[j++] = '\\';
+                out[j++] = '\\';
+                out[j++] = '\'';
+                out[j++] = '\'';
+            } else {
+                out[j++] = in[i];
+            }
             break;
         default:
             out[j++] = in[i];
@@ -1977,6 +1984,10 @@ static char *qemudEscapeShellArg(const char *in)
     return out;
 }
 
+static char *qemudEscapeShellArg(const char *in)
+{
+    return qemudEscape(in, 1);
+}
 
 #define QEMUD_SAVE_MAGIC "LibvirtQemudSave"
 #define QEMUD_SAVE_VERSION 1
