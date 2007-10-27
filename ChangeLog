@@ -1,3 +1,9 @@
+Fri Oct 26 21:20:44 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/libvirt.c: Don't call state driver API if callback is NULL.
+	* src/remote_internal.c: Reject open attempts if inside the daemon
+	to avoid recursively calling self.
+
 Fri Oct 26 21:18:44 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c: Support CDROM media change for KVM/QEMU

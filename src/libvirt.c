@@ -302,7 +302,8 @@ int __virStateInitialize(void) {
         return -1;
 
     for (i = 0 ; i < virStateDriverTabCount ; i++) {
-        if (virStateDriverTab[i]->initialize() < 0)
+        if (virStateDriverTab[i]->initialize &&
+            virStateDriverTab[i]->initialize() < 0)
             ret = -1;
     }
     return ret;
@@ -312,7 +313,8 @@ int __virStateCleanup(void) {
     int i, ret = 0;
 
     for (i = 0 ; i < virStateDriverTabCount ; i++) {
-        if (virStateDriverTab[i]->cleanup() < 0)
+        if (virStateDriverTab[i]->cleanup &&
+            virStateDriverTab[i]->cleanup() < 0)
             ret = -1;
     }
     return ret;
@@ -322,7 +324,8 @@ int __virStateReload(void) {
     int i, ret = 0;
 
     for (i = 0 ; i < virStateDriverTabCount ; i++) {
-        if (virStateDriverTab[i]->reload() < 0)
+        if (virStateDriverTab[i]->reload &&
+            virStateDriverTab[i]->reload() < 0)
             ret = -1;
     }
     return ret;
@@ -332,7 +335,8 @@ int __virStateActive(void) {
     int i, ret = 0;
 
     for (i = 0 ; i < virStateDriverTabCount ; i++) {
-        if (virStateDriverTab[i]->active())
+        if (virStateDriverTab[i]->active &&
+            virStateDriverTab[i]->active())
             ret = 1;
     }
     return ret;

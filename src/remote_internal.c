@@ -59,6 +59,8 @@
 #define MAGIC 999               /* private_data->magic if OK */
 #define DEAD 998                /* private_data->magic if dead/closed */
 
+static int inside_daemon = 0;
+
 struct private_data {
     int magic;                  /* Should be MAGIC or DEAD. */
     int sock;                   /* Socket. */
@@ -119,6 +121,16 @@ static void query_free (struct query_fields *fields);
 /* GnuTLS functions used by remoteOpen. */
 static int initialise_gnutls (virConnectPtr conn);
 static gnutls_session_t negotiate_gnutls_on_connection (virConnectPtr conn, int sock, int no_verify, const char *hostname);
+
+static int
+remoteStartup(void)
+{
+    /* Mark that we're inside the daemon so we can avoid
+     * re-entering ourselves
+     */
+    inside_daemon = 1;
+    return 0;
+}
 
 /**
  * remoteFindServerPath:
@@ -695,9 +707,13 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv, const char *uri_str
 static int
 remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
 {
-    struct private_data *priv = malloc (sizeof(struct private_data));
+    struct private_data *priv;
     int ret, rflags = 0;
 
+    if (inside_daemon)
+        return VIR_DRV_OPEN_DECLINED;
+
+    priv = malloc (sizeof(struct private_data));
     if (!priv) {
         error (NULL, VIR_ERR_NO_MEMORY, "struct private_data");
         return VIR_DRV_OPEN_ERROR;
@@ -2361,6 +2377,9 @@ remoteNetworkOpen (virConnectPtr conn,
                    const char *uri_str,
                    int flags)
 {
+    if (inside_daemon)
+        return VIR_DRV_OPEN_DECLINED;
+
     if (conn &&
         conn->driver &&
         strcmp (conn->driver->name, "remote") == 0) {
@@ -3174,6 +3193,14 @@ static virNetworkDriver network_driver = {
     .networkSetAutostart = remoteNetworkSetAutostart,
 };
 
+static virStateDriver state_driver = {
+    remoteStartup,
+    NULL,
+    NULL,
+    NULL,
+};
+
+
 /** remoteRegister:
  *
  * Register driver with libvirt driver system.
@@ -3185,6 +3212,7 @@ remoteRegister (void)
 {
     if (virRegisterDriver (&driver) == -1) return -1;
     if (virRegisterNetworkDriver (&network_driver) == -1) return -1;
+    if (virRegisterStateDriver (&state_driver) == -1) return -1;
 
     return 0;
 }
