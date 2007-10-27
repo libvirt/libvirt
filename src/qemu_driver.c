@@ -1984,6 +1984,11 @@ static char *qemudEscape(const char *in, int shell)
     return out;
 }
 
+static char *qemudEscapeMonitorArg(const char *in)
+{
+    return qemudEscape(in, 0);
+}
+
 static char *qemudEscapeShellArg(const char *in)
 {
     return qemudEscape(in, 1);
@@ -2328,6 +2333,94 @@ static int qemudDomainUndefine(virDomainPtr dom) {
 
     qemudRemoveInactiveVM(driver, vm);
 
+    return 0;
+}
+
+static int qemudDomainChangeCDROM(virDomainPtr dom,
+                                  struct qemud_vm *vm,
+                                  struct qemud_vm_disk_def *olddisk,
+                                  struct qemud_vm_disk_def *newdisk) {
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    char *cmd, *reply, *safe_path;
+
+    /* Migrate to file */
+    safe_path = qemudEscapeMonitorArg(newdisk->src);
+    if (!safe_path) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "out of memory");
+        return -1;
+    }
+    if (asprintf (&cmd, "change %s \"%s\"",
+                  /* XXX qemu may support multiple CDROM in future */
+                  /* olddisk->dst */ "cdrom",
+                  safe_path) == -1) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "out of memory");
+        free(safe_path);
+        return -1;
+    }
+    free(safe_path);
+
+    if (qemudMonitorCommand(driver, vm, cmd, &reply) < 0) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED, "cannot change cdrom media");
+        free(cmd);
+        return -1;
+    }
+    free(reply);
+    free(cmd);
+    strcpy(olddisk->dst, newdisk->dst);
+    olddisk->type = newdisk->type;
+    return 0;
+}
+
+static int qemudDomainAttachDevice(virDomainPtr dom,
+                                   const char *xml) {
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
+    struct qemud_vm_device_def *dev;
+    struct qemud_vm_disk_def *disk;
+
+    if (!vm) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN, "no domain with matching uuid");
+        return -1;
+    }
+
+    if (!qemudIsActiveVM(vm)) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR, "cannot attach device on inactive domain");
+        return -1;
+    }
+
+    dev = qemudParseVMDeviceDef(dom->conn, driver, xml);
+    if (dev == NULL) {
+        return -1;
+    }
+
+    if (dev->type != QEMUD_DEVICE_DISK || dev->data.disk.device != QEMUD_DISK_CDROM) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT, "only CDROM disk devices can be attached");
+        free(dev);
+        return -1;
+    }
+
+    disk = vm->def->disks;
+    while (disk) {
+        if (disk->device == QEMUD_DISK_CDROM &&
+            STREQ(disk->dst, dev->data.disk.dst))
+            break;
+        disk = disk->next;
+    }
+
+    if (!disk) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT, "CDROM not attached, cannot change media");
+        free(dev);
+        return -1;
+    }
+
+    if (qemudDomainChangeCDROM(dom, vm, disk, &dev->data.disk) < 0) {
+        free(dev);
+        return -1;
+    }
+
+    free(dev);
     return 0;
 }
 
@@ -2723,7 +2816,7 @@ static virDriver qemuDriver = {
     qemudDomainStart, /* domainCreate */
     qemudDomainDefine, /* domainDefineXML */
     qemudDomainUndefine, /* domainUndefine */
-    NULL, /* domainAttachDevice */
+    qemudDomainAttachDevice, /* domainAttachDevice */
     NULL, /* domainDetachDevice */
     qemudDomainGetAutostart, /* domainGetAutostart */
     qemudDomainSetAutostart, /* domainSetAutostart */

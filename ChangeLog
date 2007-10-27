@@ -1,3 +1,7 @@
+Fri Oct 26 21:18:44 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_driver.c: Support CDROM media change for KVM/QEMU
+
 Fri Oct 26 21:17:44 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c: Refactor shell ecscaping function to reuse
