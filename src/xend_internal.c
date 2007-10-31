@@ -94,7 +94,6 @@ struct xenUnifiedDriver xenDaemonDriver = {
     xenDaemonDomainPinVcpu, /* domainPinVcpu */
     xenDaemonDomainGetVcpus, /* domainGetVcpus */
     NULL, /* domainGetMaxVcpus */
-    xenDaemonDomainDumpXML, /* domainDumpXML */
     xenDaemonListDefinedDomains, /* listDefinedDomains */
     xenDaemonNumOfDefinedDomains, /* numOfDefinedDomains */
     xenDaemonDomainCreate, /* domainCreate */
@@ -1343,6 +1342,7 @@ xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf
  * @root: the root of the parsed S-Expression
  * @xendConfigVersion: version of xend
  * @flags: a combination of virDomainXMLFlags
+ * @cpus: set of cpus the domain may be pinned to
  *
  * Parse the xend sexp description and turn it into the XML format similar
  * to the one unsed for creation.
@@ -1352,7 +1352,7 @@ xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf
  */
 static char *
 xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
-                     int xendConfigVersion, int flags)
+                     int xendConfigVersion, int flags, const char *cpus)
 {
     struct sexpr *cur, *node;
     const char *tmp;
@@ -1438,8 +1438,18 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
     if ((cur_mem >= MIN_XEN_GUEST_SIZE) && (cur_mem != max_mem))
 	virBufferVSprintf(&buf, "  <currentMemory>%d</currentMemory>\n",
 	                  cur_mem);
-    virBufferVSprintf(&buf, "  <vcpu>%d</vcpu>\n",
+    
+    virBufferVSprintf(&buf, "  <vcpu");
+    if (cpus != NULL) {
+	virBufferVSprintf(&buf, " cpuset='%s'", cpus);
+    }
+    virBufferVSprintf(&buf, ">%d</vcpu>\n",
                       sexpr_int(root, "domain/vcpus"));
+    /* TODO if need to output the cpus values,
+     * - parse the cpus values if xend exports
+     * or
+     * - analyze the cpus values extracted by xenDaemonDomainGetVcpus
+     */
     tmp = sexpr_node(root, "domain/on_poweroff");
     if (tmp != NULL)
         virBufferVSprintf(&buf, "  <on_poweroff>%s</on_poweroff>\n", tmp);
@@ -1802,7 +1812,7 @@ xend_parse_domain_sexp(virConnectPtr conn, char *sexpr, int xendConfigVersion) {
   if (!root)
       return NULL;
 
-  data = xend_parse_sexp_desc(conn, root, xendConfigVersion, 0);
+  data = xend_parse_sexp_desc(conn, root, xendConfigVersion, 0, NULL);
 
   sexpr_free(root);
 
@@ -2481,7 +2491,8 @@ xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory)
    dumpxml will work over proxy for inactive domains
    and this can be removed */
 char *
-xenDaemonDomainDumpXMLByID(virConnectPtr conn, int domid, int flags)
+xenDaemonDomainDumpXMLByID(virConnectPtr conn, int domid, int flags,
+                           const char *cpus)
 {
     char *ret = NULL;
     struct sexpr *root;
@@ -2496,14 +2507,16 @@ xenDaemonDomainDumpXMLByID(virConnectPtr conn, int domid, int flags)
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
 
-    ret = xend_parse_sexp_desc(conn, root, priv->xendConfigVersion, flags);
+    ret = xend_parse_sexp_desc(conn, root, priv->xendConfigVersion,
+                               flags, cpus);
     sexpr_free(root);
 
     return (ret);
 }
 
 char *
-xenDaemonDomainDumpXMLByName(virConnectPtr conn, const char *name, int flags)
+xenDaemonDomainDumpXMLByName(virConnectPtr conn, const char *name, int flags,
+                             const char *cpus)
 {
     char *ret = NULL;
     struct sexpr *root;
@@ -2518,7 +2531,8 @@ xenDaemonDomainDumpXMLByName(virConnectPtr conn, const char *name, int flags)
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
 
-    ret = xend_parse_sexp_desc(conn, root, priv->xendConfigVersion, flags);
+    ret = xend_parse_sexp_desc(conn, root, priv->xendConfigVersion,
+                               flags, cpus);
     sexpr_free(root);
 
     return (ret);
@@ -2529,6 +2543,8 @@ xenDaemonDomainDumpXMLByName(virConnectPtr conn, const char *name, int flags)
 /**
  * xenDaemonDomainDumpXML:
  * @domain: a domain object
+ * @flags: potential dump flags
+ * @cpus: list of cpu the domain is pinned to.
  *
  * Provide an XML description of the domain.
  *
@@ -2536,7 +2552,7 @@ xenDaemonDomainDumpXMLByName(virConnectPtr conn, const char *name, int flags)
  *         the caller must free() the returned value.
  */
 char *
-xenDaemonDomainDumpXML(virDomainPtr domain, int flags)
+xenDaemonDomainDumpXML(virDomainPtr domain, int flags, const char *cpus)
 {
     xenUnifiedPrivatePtr priv;
 
@@ -2553,9 +2569,11 @@ xenDaemonDomainDumpXML(virDomainPtr domain, int flags)
     }
 
     if (domain->id < 0)
-        return xenDaemonDomainDumpXMLByName(domain->conn, domain->name, flags);
+        return xenDaemonDomainDumpXMLByName(domain->conn, domain->name, flags,
+	                                    cpus);
     else
-        return xenDaemonDomainDumpXMLByID(domain->conn, domain->id, flags);
+        return xenDaemonDomainDumpXMLByID(domain->conn, domain->id, flags,
+	                                  cpus);
 }
 #endif /* !PROXY */
 

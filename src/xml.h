@@ -41,6 +41,12 @@ int		virParseCpuSet	(virConnectPtr conn,
 				 char sep,
 				 char *cpuset,
 				 int maxcpu);
+char *          virSaveCpuSet	(virConnectPtr conn,
+				 char *cpuset,
+				 int maxcpu);
+char *		virConvertCpuSet(virConnectPtr conn,
+				 const char *str,
+				 int maxcpu);
 char *		virDomainParseXMLDesc(virConnectPtr conn,
 				 const char *xmldesc,
 				 char **name,

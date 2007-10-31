@@ -135,7 +135,7 @@ parseCpuNumber(const char **str, int maxcpu)
 }
 
 /**
- * saveCpuSet:
+ * virSaveCpuSet:
  * @conn: connection
  * @cpuset: pointer to a char array for the CPU set
  * @maxcpu: number of elements available in @cpuset
@@ -145,8 +145,8 @@ parseCpuNumber(const char **str, int maxcpu)
  * Returns the new string NULL in case of error. The string need to be
  *         freed by the caller.
  */
-static char *
-saveCpuSet(virConnectPtr conn, char *cpuset, int maxcpu)
+char *
+virSaveCpuSet(virConnectPtr conn, char *cpuset, int maxcpu)
 {
     virBufferPtr buf;
     char *ret;
@@ -174,8 +174,6 @@ saveCpuSet(virConnectPtr conn, char *cpuset, int maxcpu)
                 first = 0;
             if (cur == start + 1)
                 virBufferVSprintf(buf, "%d", start);
-            else if (cur == start + 2)
-                virBufferVSprintf(buf, "%d,%d", start, cur - 1);
             else
                 virBufferVSprintf(buf, "%d-%d", start, cur - 1);
             start = -1;
@@ -187,8 +185,6 @@ saveCpuSet(virConnectPtr conn, char *cpuset, int maxcpu)
             virBufferAdd(buf, ",", -1);
         if (maxcpu == start + 1)
             virBufferVSprintf(buf, "%d", start);
-        else if (maxcpu == start + 2)
-            virBufferVSprintf(buf, "%d,%d", start, maxcpu - 1);
         else
             virBufferVSprintf(buf, "%d-%d", start, maxcpu - 1);
     }
@@ -198,6 +194,7 @@ saveCpuSet(virConnectPtr conn, char *cpuset, int maxcpu)
 
 /**
  * virParseCpuSet:
+ * @conn: connection
  * @str: pointer to a CPU set string pointer
  * @sep: potential character used to mark the end of string if not 0
  * @cpuset: pointer to a char array for the CPU set
@@ -300,6 +297,7 @@ virParseCpuSet(virConnectPtr conn, const char **str, char sep,
 
 /**
  * virParseXenCpuTopology:
+ * @conn: connection
  * @xml: XML output buffer
  * @str: the topology string 
  * @maxcpu: number of elements available in @cpuset
@@ -362,7 +360,7 @@ virParseXenCpuTopology(virConnectPtr conn, virBufferPtr xml,
         {
             char *dump;
 
-            dump = saveCpuSet(conn, cpuset, maxcpu);
+            dump = virSaveCpuSet(conn, cpuset, maxcpu);
             if (dump != NULL) {
                 virBufferVSprintf(xml, "           <dump>%s</dump>\n",
                                   dump);
@@ -408,6 +406,45 @@ virParseXenCpuTopology(virConnectPtr conn, virBufferPtr xml,
     return (-1);
 }
 
+/**
+ * virConvertCpuSet:
+ * @conn: connection
+ * @str: pointer to a Xen or user provided CPU set string pointer
+ * @maxcpu: number of CPUs on the node, if 0 4096 will be used
+ *
+ * Parse the given CPU set string and convert it to a range based
+ * string.
+ *
+ * Returns a new string which must be freed by the caller or NULL in
+ *         case of error.
+ */
+char *
+virConvertCpuSet(virConnectPtr conn, const char *str, int maxcpu) {
+    int ret;
+    char *res, *cpuset;
+    const char *cur = str;
+
+    if (str == NULL)
+        return(NULL);
+
+    if (maxcpu <= 0)
+        maxcpu = 4096;
+
+    cpuset = calloc(maxcpu, sizeof(char));
+    if (cpuset == NULL) {
+	virXMLError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"), 0);
+	return(NULL);
+    }
+    
+    ret = virParseCpuSet(conn, &cur, 0, cpuset, maxcpu);
+    if (ret < 0) {
+        free(cpuset);
+	return(NULL);
+    }
+    res = virSaveCpuSet(conn, cpuset, maxcpu);
+    free(cpuset);
+    return (res);
+}
 #ifndef PROXY
 
 /************************************************************************
@@ -1603,7 +1640,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
             if (cpuset != NULL) {
                 res = virParseCpuSet(conn, &cur, 0, cpuset, maxcpu);
                 if (res > 0) {
-                    ranges = saveCpuSet(conn, cpuset, maxcpu);
+                    ranges = virSaveCpuSet(conn, cpuset, maxcpu);
                     if (ranges != NULL) {
                         virBufferVSprintf(&buf, "(cpus '%s')", ranges);
                         free(ranges);

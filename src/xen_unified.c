@@ -36,9 +36,16 @@
 #include "xend_internal.h"
 #include "xs_internal.h"
 #include "xm_internal.h"
+#include "xml.h"
 
 static int
 xenUnifiedNodeGetInfo (virConnectPtr conn, virNodeInfoPtr info);
+static int
+xenUnifiedDomainGetMaxVcpus (virDomainPtr dom);
+static int
+xenUnifiedDomainGetVcpus (virDomainPtr dom,
+                          virVcpuInfoPtr info, int maxinfo,
+                          unsigned char *cpumaps, int maplen);
 
 /* The five Xen drivers below us. */
 static struct xenUnifiedDriver *drivers[XEN_UNIFIED_NR_DRIVERS] = {
@@ -113,14 +120,89 @@ int xenNbCells(virConnectPtr conn) {
  * xenNbCpus:
  * @conn: pointer to the hypervisor connection
  *
- * Number of NUMa cells present in the actual Node
+ * Number of CPUs present in the actual Node
  *
- * Returns the number of NUMA cells available on that Node
+ * Returns the number of CPUs available on that Node
  */
 int xenNbCpus(virConnectPtr conn) {
     if (nbNodeCpus < 0)
         xenNumaInit(conn);
     return(nbNodeCpus);
+}
+
+/**
+ * xenDomainUsedCpus:
+ * @dom: the domain
+ *
+ * Analyze which set of CPUs are used by the domain and
+ * return a string providing the ranges.
+ *
+ * Returns the string which needs to be freed by the caller or
+ *         NULL if the domain uses all CPU or in case of error.
+ */
+char *
+xenDomainUsedCpus(virDomainPtr dom)
+{
+    char *res = NULL;
+    int nb_cpu, ncpus;
+    int nb_vcpu;
+    char *cpulist = NULL;
+    unsigned char *cpumap = NULL;
+    size_t cpumaplen;
+    int nb = 0;
+    int n, m;
+    virVcpuInfoPtr cpuinfo = NULL;
+    virNodeInfo nodeinfo;
+
+    if (!VIR_IS_CONNECTED_DOMAIN(dom))
+        return (NULL);
+
+    nb_cpu = xenNbCpus(dom->conn);
+    if (nb_cpu <= 0)
+        return(NULL);
+    nb_vcpu = xenUnifiedDomainGetMaxVcpus(dom);
+    if (nb_vcpu <= 0)
+        return(NULL);
+    if (xenUnifiedNodeGetInfo(dom->conn, &nodeinfo) < 0)
+        return(NULL);
+
+    cpulist = (char *) calloc(nb_cpu, sizeof(char));
+    if (cpulist == NULL)
+        goto done;
+    cpuinfo = malloc(sizeof(virVcpuInfo) * nb_vcpu);
+    if (cpuinfo == NULL)
+        goto done;
+    cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
+    cpumap = (unsigned char *) calloc(nb_vcpu, cpumaplen);
+    if (cpumap == NULL)
+        goto done;
+
+    if ((ncpus = xenUnifiedDomainGetVcpus(dom, cpuinfo, nb_vcpu,
+                                          cpumap, cpumaplen)) >= 0) {
+	for (n = 0 ; n < ncpus ; n++) {
+	    for (m = 0 ; m < nb_cpu; m++) {
+	        if ((cpulist[m] == 0) &&
+	 	    (VIR_CPU_USABLE(cpumap, cpumaplen, n, m))) {
+		    cpulist[m] = 1;
+		    nb++;
+		    /* if all CPU are used just return NULL */
+		    if (nb == nb_cpu) 
+		        goto done;
+		        
+		}
+	    }
+	}
+        res = virSaveCpuSet(dom->conn, cpulist, nb_cpu);
+    }
+
+done:
+    if (cpulist != NULL)
+        free(cpulist);
+    if (cpumap != NULL)
+        free(cpumap);
+    if (cpuinfo != NULL)
+        free(cpuinfo);
+    return(res);
 }
 
 /*----- Dispatch functions. -----*/
@@ -862,19 +944,24 @@ static char *
 xenUnifiedDomainDumpXML (virDomainPtr dom, int flags)
 {
     GET_PRIVATE(dom->conn);
-    int i;
-    char *ret;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->domainDumpXML) {
-            ret = drivers[i]->domainDumpXML (dom, flags);
-            if (ret) return ret;
+    if (dom->id == -1 && priv->xendConfigVersion < 3 ) {
+        if (priv->opened[XEN_UNIFIED_XM_OFFSET])
+            return xenXMDomainDumpXML(dom, flags);
+    } else {
+        if (priv->opened[XEN_UNIFIED_XEND_OFFSET]) {
+            char *cpus, *res;
+            cpus = xenDomainUsedCpus(dom);
+            res = xenDaemonDomainDumpXML(dom, flags, cpus);
+	    if (cpus != NULL)
+	        free(cpus);
+	    return(res);
         }
+        if (priv->opened[XEN_UNIFIED_PROXY_OFFSET])
+            return xenProxyDomainDumpXML(dom, flags);
+    } 
 
-    /* XXX May need to return an error here if sub-drivers didn't
-     * set one.  We really should change these to direct calls to
-     * the sub-drivers at a later date.
-     */
+    xenUnifiedError (dom->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
 }
 

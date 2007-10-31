@@ -37,7 +37,6 @@ static int xenProxyListDomains(virConnectPtr conn, int *ids, int maxids);
 static int xenProxyNumOfDomains(virConnectPtr conn);
 static unsigned long xenProxyDomainGetMaxMemory(virDomainPtr domain);
 static int xenProxyDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info);
-static char *xenProxyDomainDumpXML(virDomainPtr domain, int flags);
 static char *xenProxyDomainGetOSType(virDomainPtr domain);
 
 struct xenUnifiedDriver xenProxyDriver = {
@@ -69,7 +68,6 @@ struct xenUnifiedDriver xenProxyDriver = {
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
     NULL, /* domainGetMaxVcpus */
-    xenProxyDomainDumpXML, /* domainDumpXML */
     NULL, /* listDefinedDomains */
     NULL, /* numOfDefinedDomains */
     NULL, /* domainCreate */
@@ -1014,7 +1012,7 @@ xenProxyGetCapabilities (virConnectPtr conn)
  *
  * Returns the XML document on success, NULL otherwise. 
  */
-static char *
+char *
 xenProxyDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
 {
     virProxyPacket req;

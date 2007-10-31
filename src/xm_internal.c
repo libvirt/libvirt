@@ -104,7 +104,6 @@ struct xenUnifiedDriver xenXMDriver = {
     NULL, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
     NULL, /* domainGetMaxVcpus */
-    xenXMDomainDumpXML, /* domainDumpXML */
     xenXMListDefinedDomains, /* listDefinedDomains */
     xenXMNumOfDefinedDomains, /* numOfDefinedDomains */
     xenXMDomainCreate, /* domainCreate */
@@ -660,11 +659,20 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             val = MIN_XEN_GUEST_SIZE * 2;
     virBufferVSprintf(buf, "  <memory>%ld</memory>\n", val * 1024);
 
+    virBufferVSprintf(buf, "  <vcpu"); /* DV */
+    if (xenXMConfigGetString(conf, "cpus", &str) == 0) {
+        char *ranges;
 
+	ranges = virConvertCpuSet(conn, str, 0);
+	if (ranges != NULL) {
+	    virBufferVSprintf(buf, " cpuset='%s'", ranges);
+	    free(ranges);
+	} else
+	    virBufferVSprintf(buf, " cpuset='%s'", str);
+    }
     if (xenXMConfigGetInt(conf, "vcpus", &val) < 0)
         val = 1;
-    virBufferVSprintf(buf, "  <vcpu>%ld</vcpu>\n", val);
-
+    virBufferVSprintf(buf, ">%ld</vcpu>\n", val);
 
     if (xenXMConfigGetString(conf, "on_poweroff", &str) < 0)
         str = "destroy";
@@ -1763,6 +1771,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
     virConfPtr conf = NULL;
     int hvm = 0, i;
     xenUnifiedPrivatePtr priv;
+    char *cpus;
 
     doc = xmlReadDoc((const xmlChar *) xml, "domain.xml", NULL,
                      XML_PARSE_NOENT | XML_PARSE_NONET |
@@ -1820,6 +1829,32 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
     if (xenXMConfigSetIntFromXPath(conn, conf, ctxt, "vcpus", "string(/domain/vcpu)", 0, 1,
                                    "cannot set vcpus config parameter") < 0)
         goto error;
+
+    cpus = virXPathString("string(/domain/vcpu/@cpuset)", ctxt);
+    if (cpus != NULL) {
+        char *ranges;
+
+	ranges = virConvertCpuSet(conn, cpus, 0);
+	if (ranges != NULL) {
+	    free(cpus);
+	    if (xenXMConfigSetString(conf, "cpus", ranges) < 0) {
+	        free(ranges);
+		goto error;
+	    }
+	    free(ranges);
+	} else {
+	    if (xenXMConfigSetString(conf, "cpus", cpus) < 0) {
+	        free(cpus);
+		goto error;
+	    }
+	    free(cpus);
+	}
+    }
+
+    if (xenXMConfigSetStringFromXPath(conn, conf, ctxt, "cpus", /* DV */
+                                      "string(/domain/vcpu/@cpuset)", 1,
+                                      "cannot set the cpuset parameter") < 0)
+            goto error;
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/type)", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&

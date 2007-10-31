@@ -1,3 +1,11 @@
+Wed Oct 31 10:36:00 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* proxy/libvirt_proxy.c src/proxy_internal.[ch] src/xen_internal.c
+	  src/xen_unified.[ch] src/xend_internal.[ch] src/xml.[ch]: last
+	  patch for the library NUMA support, allow to serialize CPU pinning
+	  to domain configs (but won't work though proxy access), includes
+	  many patches from Saori Fukuta.
+
 Fri Oct 26 21:20:44 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/libvirt.c: Don't call state driver API if callback is NULL.

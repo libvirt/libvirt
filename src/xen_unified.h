@@ -65,7 +65,6 @@ struct xenUnifiedDriver {
 	virDrvDomainPinVcpu		domainPinVcpu;
 	virDrvDomainGetVcpus		domainGetVcpus;
 	virDrvDomainGetMaxVcpus		domainGetMaxVcpus;
-	virDrvDomainDumpXML		domainDumpXML;
 	virDrvListDefinedDomains	listDefinedDomains;
 	virDrvNumOfDefinedDomains	numOfDefinedDomains;
 	virDrvDomainCreate		domainCreate;
@@ -119,6 +118,7 @@ typedef struct _xenUnifiedPrivate *xenUnifiedPrivatePtr;
 
 int xenNbCells(virConnectPtr conn);
 int xenNbCpus(virConnectPtr conn);
+char *xenDomainUsedCpus(virDomainPtr dom);
 #ifdef __cplusplus
 }
 #endif

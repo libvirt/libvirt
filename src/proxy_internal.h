@@ -96,6 +96,8 @@ extern virDomainPtr xenProxyLookupByUUID(virConnectPtr conn,
 extern virDomainPtr xenProxyLookupByName(virConnectPtr conn,
                                          const char *domname);
 
+extern char *       xenProxyDomainDumpXML(virDomainPtr domain,
+					  int flags);
 #ifdef __cplusplus
 }
 #endif                          /* __cplusplus */

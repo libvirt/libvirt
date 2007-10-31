@@ -614,7 +614,13 @@ retry2:
 	    if (req->len != sizeof(virProxyPacket))
 	        goto comm_error;
 
-	    xml = xenDaemonDomainDumpXMLByID(conn, request.data.arg, 0);
+            /*
+	     * Ideally we should get the CPUs used by the domain
+	     * but that information is really node specific and it
+	     * rather hard to get from that code path. So proxy
+	     * users won't see CPU pinning (last NULL arg)
+	     */
+	    xml = xenDaemonDomainDumpXMLByID(conn, request.data.arg, 0, NULL);
             if (!xml) {
                 req->data.arg = -1;
                 req->len = sizeof(virProxyPacket);
