@@ -758,10 +758,15 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
 
 
             /* Extract source driver type */
-            if (!(tmp = strchr(src, ':')) || !tmp[0])
-                goto skipdisk;
-            strncpy(drvName, src, (tmp-src));
-            drvName[tmp-src] = '\0';
+            if (!src[0]) {
+                strcpy(drvName, "phy");
+		tmp = &src[0];
+            } else if (!(tmp = strchr(src, ':')) || !tmp[0]) {
+                    goto skipdisk;
+            } else {
+                strncpy(drvName, src, (tmp-src));
+                drvName[tmp-src] = '\0';
+            }
 
             /* And the source driver sub-type */
             if (!strncmp(drvName, "tap", 3)) {
@@ -771,7 +776,8 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                 memmove(src, src+(tmp1-src)+1, strlen(src)-(tmp1-src));
             } else {
                 drvType[0] = '\0';
-                memmove(src, src+(tmp-src)+1, strlen(src)-(tmp-src));
+                if (src[0])
+                        memmove(src, src+(tmp-src)+1, strlen(src)-(tmp-src));
             }
 
             /* phy: type indicates a block device */
@@ -798,7 +804,8 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                 virBufferVSprintf(buf, "      <driver name='%s' type='%s'/>\n", drvName, drvType);
             else
                 virBufferVSprintf(buf, "      <driver name='%s'/>\n", drvName);
-            virBufferVSprintf(buf, "      <source %s='%s'/>\n", block ? "dev" : "file", src);
+            if (src[0])
+                virBufferVSprintf(buf, "      <source %s='%s'/>\n", block ? "dev" : "file", src);
             virBufferVSprintf(buf, "      <target dev='%s'/>\n", dev);
             if (!strcmp(head, "r") ||
                 !strcmp(head, "ro"))
@@ -1536,13 +1543,6 @@ static int xenXMParseXMLDisk(xmlNodePtr node, int hvm, int xendConfigVersion, ch
         cur = cur->next;
     }
 
-    if (source == NULL) {
-        if (target != NULL)
-            xmlFree(target);
-        if (device != NULL)
-            xmlFree(device);
-        return (-1);
-    }
     if (target == NULL) {
         if (source != NULL)
             xmlFree(source);
@@ -1573,6 +1573,14 @@ static int xenXMParseXMLDisk(xmlNodePtr node, int hvm, int xendConfigVersion, ch
         }
     }
 
+    if (source == NULL && !cdrom) {
+        if (target != NULL)
+            xmlFree(target);
+        if (device != NULL)
+            xmlFree(device);
+        return (-1);
+    }
+
     if (drvName) {
         buflen += strlen((const char*)drvName) + 1;
         if (!strcmp((const char*)drvName, "tap")) {
@@ -1588,7 +1596,10 @@ static int xenXMParseXMLDisk(xmlNodePtr node, int hvm, int xendConfigVersion, ch
             buflen += 4;
     }
 
-    buflen += strlen((const char*)source) + 1;
+    if(source)
+        buflen += strlen((const char*)source) + 1;
+    else
+        buflen += 1;
     buflen += strlen((const char*)target) + 1;
     if (hvm && xendConfigVersion == 1) /* ioemu: */
         buflen += 6;
@@ -1601,23 +1612,27 @@ static int xenXMParseXMLDisk(xmlNodePtr node, int hvm, int xendConfigVersion, ch
     if (!(buf = malloc(buflen)))
         goto cleanup;
 
-    if (drvName) {
-        strcpy(buf, (const char*)drvName);
-        if (!strcmp((const char*)drvName, "tap")) {
-            strcat(buf, ":");
-            if (drvType)
-                strcat(buf, (const char*)drvType);
+    if(source) {
+        if (drvName) {
+            strcpy(buf, (const char*)drvName);
+            if (!strcmp((const char*)drvName, "tap")) {
+                strcat(buf, ":");
+                if (drvType)
+                    strcat(buf, (const char*)drvType);
+                else
+                    strcat(buf, "aio");
+            }
+        } else {
+            if (typ == 0)
+                strcpy(buf, "file");
             else
-                strcat(buf, "aio");
+                strcpy(buf, "phy");
         }
+        strcat(buf, ":");
+        strcat(buf, (const char*)source);
     } else {
-        if (typ == 0)
-            strcpy(buf, "file");
-        else
-            strcpy(buf, "phy");
+        strcpy(buf, "");
     }
-    strcat(buf, ":");
-    strcat(buf, (const char*)source);
     strcat(buf, ",");
     if (hvm && xendConfigVersion == 1)
         strcat(buf, "ioemu:");
@@ -1637,7 +1652,8 @@ static int xenXMParseXMLDisk(xmlNodePtr node, int hvm, int xendConfigVersion, ch
     xmlFree(drvName);
     xmlFree(device);
     xmlFree(target);
-    xmlFree(source);
+    if(source)
+        xmlFree(source);
     *disk = buf;
 
     return (ret);

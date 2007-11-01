@@ -1,3 +1,9 @@
+Thu Nov  1 14:32:07 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xm_internal.c: patches from Masayuki Sunou to fix a problem
+	  when an HVM domain is started with a CD-Rom config, this should
+	  fix #328841
+
 Wed Oct 31 10:36:00 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* proxy/libvirt_proxy.c src/proxy_internal.[ch] src/xen_internal.c
