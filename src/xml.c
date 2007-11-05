@@ -126,7 +126,7 @@ parseCpuNumber(const char **str, int maxcpu)
 
     while ((*cur >= '0') && (*cur <= '9')) {
         ret = ret * 10 + (*cur - '0');
-        if (ret > maxcpu)
+        if (ret >= maxcpu)
             return (-1);
         cur++;
     }
@@ -1647,6 +1647,8 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
                     }
                 }
                 free(cpuset);
+                if (res < 0) 
+                    goto error;
             } else {
                 virXMLError(conn, VIR_ERR_NO_MEMORY, xmldesc, 0);
             }
