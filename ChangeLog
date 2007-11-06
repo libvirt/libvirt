@@ -1,3 +1,8 @@
+Tue Nov  6 17:24:16 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xs_internals.c: patch from Chris Lalancette, forgot to
+	  remove the domainDumpXML entry when changing the driver structure
+
 Tue Nov  6 12:42:55 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xml.c src/xs_internal.c src/xs_internal.h: applied patch
