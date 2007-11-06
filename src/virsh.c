@@ -1149,11 +1149,25 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     /* Currently supports Xen Credit only */
-    weight = vshCommandOptInt(cmd, "weight", &weightfound);
-    if (weightfound) nr_inputparams++;
-            
-    cap    = vshCommandOptInt(cmd, "cap", &capfound);
-    if (capfound) nr_inputparams++;
+    if(vshCommandOptBool(cmd, "weight")) {
+        weight = vshCommandOptInt(cmd, "weight", &weightfound);
+        if (!weightfound) {
+            vshError(ctl, FALSE, _("Invalid value of weight"));
+            goto cleanup;
+        } else {
+            nr_inputparams++;
+        }
+    }
+
+    if(vshCommandOptBool(cmd, "cap")) {
+        cap = vshCommandOptInt(cmd, "cap", &capfound);
+        if (!capfound) {
+            vshError(ctl, FALSE, _("Invalid value of cap"));
+            goto cleanup;
+        } else {
+            nr_inputparams++;
+        }
+    }
 
     params = vshMalloc(ctl, sizeof (virSchedParameter) * nr_inputparams);
     if (params == NULL) {

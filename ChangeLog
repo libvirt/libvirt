@@ -1,3 +1,8 @@
+Tue Nov  6 10:40:13 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: patch from Masayuki Sunou to fix parameter
+	  validation of virsh schedinfo parameters.
+
 Mon Nov  5 11:11:45 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xml.c: patch from Beth Kon to fix a problem when the
