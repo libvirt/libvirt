@@ -1,3 +1,9 @@
+Tue Nov  6 12:42:55 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xml.c src/xs_internal.c src/xs_internal.h: applied patch
+	  from Masayuki Sunou to fix xend errors when adding disk
+	  devices, due to improper device id lookup.
+
 Tue Nov  6 10:40:13 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: patch from Masayuki Sunou to fix parameter

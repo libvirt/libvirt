@@ -1922,9 +1922,22 @@ virDomainXMLDevID(virDomainPtr domain, const char *xmldesc, char *class,
             attr = xmlGetProp(cur, BAD_CAST "dev");
             if (attr == NULL)
                 goto error;
-            strncpy(ref, (char *) attr, ref_len);
-            ref[ref_len - 1] = '\0';
-            goto cleanup;
+#ifdef WITH_XEN
+            xref = xenStoreDomainGetDiskID(domain->conn, domain->id,
+                                              (char *) attr);
+            if (xref != NULL) {
+                strncpy(ref, xref, ref_len);
+                free(xref);
+                ref[ref_len - 1] = '\0';
+                goto cleanup;
+            }
+#else /* !WITH_XEN */
+            /* hack to avoid the warning that domain is unused */
+            if (domain->id < 0)
+                ret = -1;
+#endif /* !WITH_XEN */
+
+            goto error;
         }
     } else if (xmlStrEqual(node->name, BAD_CAST "interface")) {
         strcpy(class, "vif");
@@ -1945,11 +1958,11 @@ virDomainXMLDevID(virDomainPtr domain, const char *xmldesc, char *class,
                 ref[ref_len - 1] = '\0';
                 goto cleanup;
             }
-#else /* without xen */
+#else /* !WITH_XEN */
             /* hack to avoid the warning that domain is unused */
             if (domain->id < 0)
                 ret = -1;
-#endif /* WITH_XEN */
+#endif /* !WITH_XEN */
 
             goto error;
         }

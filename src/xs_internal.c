@@ -879,6 +879,58 @@ xenStoreDomainGetNetworkID(virConnectPtr conn, int id, const char *mac) {
     return(ret);
 }
 
+/*
+ * xenStoreDomainGetDiskID:
+ * @conn: pointer to the connection.
+ * @id: the domain id
+ * @dev: the virtual block device name
+ *
+ * Get the reference (i.e. the string number) for the device on that domain
+ * which uses the given virtual block device name
+ *
+ * Returns the new string or NULL in case of error, the string must be
+ *         freed by the caller.
+ */
+char *
+xenStoreDomainGetDiskID(virConnectPtr conn, int id, const char *dev) {
+    char dir[80], path[128], **list = NULL, *val = NULL;
+    unsigned int devlen, len, i, num;
+    char *ret = NULL;
+    xenUnifiedPrivatePtr priv;
+
+    if (id < 0)
+        return(NULL);
+
+    priv = (xenUnifiedPrivatePtr) conn->privateData;
+    if (priv->xshandle == NULL)
+        return (NULL);
+    if (dev == NULL)
+        return (NULL);
+    devlen = strlen(dev);
+    if (devlen <= 0)
+        return (NULL);
+
+    snprintf(dir, sizeof(dir), "/local/domain/0/backend/vbd/%d", id);
+    list = xs_directory(priv->xshandle, 0, dir, &num);
+    if (list == NULL)
+        return(NULL);
+    for (i = 0; i < num; i++) {
+        snprintf(path, sizeof(path), "%s/%s/%s", dir, list[i], "dev");
+        val = xs_read(priv->xshandle, 0, path, &len);
+        if (val == NULL)
+            break;
+        if ((devlen != len) || memcmp(val, dev, len)) {
+            free(val);
+        } else {
+            ret = strdup(list[i]);
+            free(val);
+            break;
+        }
+    }
+    free(list);
+    return(ret);
+}
+
 char *xenStoreDomainGetName(virConnectPtr conn,
                             int id) {
     char prop[200];
