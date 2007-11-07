@@ -53,7 +53,7 @@ ReportError(virConnectPtr conn,
         errorMessage[0] = '\0';
     }
     __virRaiseError(conn, dom, net, VIR_FROM_NONE, code, VIR_ERR_ERROR,
-                    NULL, NULL, NULL, -1, -1, errorMessage);
+                    NULL, NULL, NULL, -1, -1, "%s", errorMessage);
 }
 
 static int virSetCloseExec(int fd) {

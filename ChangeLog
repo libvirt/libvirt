@@ -1,3 +1,13 @@
+Tue Nov 6 19:54:00 CET 2007 Jim Meyering  <meyering@redhat.com>
+
+	Avoid risk of format string abuse (also avoids gcc warnings).
+	* src/util.c (ReportError): Use a literal "%s" format string.
+	* src/remote_internal.c (server_error): Likewise.
+	* src/qemu_conf.c (qemudReportError): Likewise.
+	* acinclude.m4: Add -Wformat -Wformat-security to default
+	  list of warning flags, to warn about errors such as the
+	  above.
+
 Tue Nov  6 17:24:16 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xs_internals.c: patch from Chris Lalancette, forgot to

@@ -3073,7 +3073,7 @@ server_error (virConnectPtr conn, remote_error *err)
                      err->domain, err->code, err->level,
                      str1, str2, str3,
                      err->int1, err->int2,
-                     message);
+                     "%s", message);
 }
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
