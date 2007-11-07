@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-10-23 17:38+0200\n"
+"POT-Creation-Date: 2007-11-07 14:28+0100\n"
 "PO-Revision-Date: 2007-07-19 12:53-0400\n"
 "Last-Translator: Magnus Larsson <fedoratrans@gmail.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/libvirt.c:412 src/hash.c:664
+#: src/libvirt.c:416 src/hash.c:664
 msgid "allocating connection"
 msgstr "allokerar anslutning"
 
@@ -422,7 +422,7 @@ msgstr "allokera svar"
 msgid "read response"
 msgstr "läs svar"
 
-#: src/xmlrpc.c:484 src/xml.c:622
+#: src/xmlrpc.c:484 src/xml.c:678
 msgid "allocate string array"
 msgstr "allokera lista av strängar"
 
@@ -511,11 +511,11 @@ msgstr "läs in domändefinitionsfil"
 msgid "network"
 msgstr "nätverksnamn"
 
-#: src/test.c:436 src/virsh.c:2733
+#: src/test.c:436 src/virsh.c:2747
 msgid "network name"
 msgstr "nätverksnamn"
 
-#: src/test.c:444 src/test.c:448 src/virsh.c:2624
+#: src/test.c:444 src/test.c:448 src/virsh.c:2638
 msgid "network uuid"
 msgstr "nätverks-uuid"
 
@@ -622,16 +622,16 @@ msgstr "Domänen kör fortfarande"
 msgid "Network is already running"
 msgstr "Domänen kör redan"
 
-#: src/xml.c:151 src/xml.c:396
+#: src/xml.c:161 src/xml.c:405 src/xml.c:435
 #, fuzzy
 msgid "allocate buffer"
 msgstr "allokera ny buffer"
 
-#: src/xml.c:286
+#: src/xml.c:294
 msgid "topology cpuset syntax error"
 msgstr ""
 
-#: src/xml.c:386
+#: src/xml.c:395
 #, fuzzy
 msgid "topology syntax error"
 msgstr "syntaxfel i konfigurationsfilen"
@@ -644,36 +644,36 @@ msgstr "misslyckades att allokera en nod"
 msgid "failed to copy a string"
 msgstr "misslyckades att kopiera en sträng"
 
-#: src/xend_internal.c:283 src/xend_internal.c:286
+#: src/xend_internal.c:282 src/xend_internal.c:285
 msgid "failed to read from Xen Daemon"
 msgstr "misslyckades att läsa från Xen-demonen"
 
-#: src/xend_internal.c:597 src/xend_internal.c:817 src/xend_internal.c:1537
-#: src/xend_internal.c:1556 src/xend_internal.c:1944
+#: src/xend_internal.c:596 src/xend_internal.c:816 src/xend_internal.c:1547
+#: src/xend_internal.c:1566 src/xend_internal.c:1954
 msgid "allocate new buffer"
 msgstr "allokera ny buffer"
 
-#: src/xend_internal.c:1024
+#: src/xend_internal.c:1023
 msgid "failed to urlencode the create S-Expr"
 msgstr "misslyckades att urlkoda den skapade S-Expr"
 
-#: src/xend_internal.c:1065
+#: src/xend_internal.c:1064
 msgid "domain information incomplete, missing domid"
 msgstr "domäninformation inkomplett, saknar domid"
 
-#: src/xend_internal.c:1071
+#: src/xend_internal.c:1070
 msgid "domain information incorrect domid not numeric"
 msgstr "domäninformation fel, domid är inte numerisk"
 
-#: src/xend_internal.c:1076 src/xend_internal.c:1123
+#: src/xend_internal.c:1075 src/xend_internal.c:1122
 msgid "domain information incomplete, missing uuid"
 msgstr "domäninformation inkomplett, saknar uuid"
 
-#: src/xend_internal.c:1115 src/xend_internal.c:1393 src/xend_internal.c:1400
+#: src/xend_internal.c:1114 src/xend_internal.c:1393 src/xend_internal.c:1400
 msgid "domain information incomplete, missing name"
 msgstr "domäninformation inkomplett, saknar namn"
 
-#: src/xend_internal.c:1289 src/xend_internal.c:1320
+#: src/xend_internal.c:1288 src/xend_internal.c:1319
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "domäninformation ej komplett, saknar kärna & startprogram"
 
@@ -681,32 +681,32 @@ msgstr "domäninformation ej komplett, saknar kärna & startprogram"
 msgid "domain information incomplete, missing id"
 msgstr "domäninformation ej komplett, saknar uuid"
 
-#: src/xend_internal.c:1506
+#: src/xend_internal.c:1516
 msgid "domain information incomplete, vbd has no dev"
 msgstr "domäninformation inkomplett, vbd har ingen dev"
 
-#: src/xend_internal.c:1521
+#: src/xend_internal.c:1531
 msgid "domain information incomplete, vbd has no src"
 msgstr "domäninformation inkomplett, vbd har ingen src"
 
-#: src/xend_internal.c:1530
+#: src/xend_internal.c:1540
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "kan inte analysera vbd-filnamn, saknar drivrutinsnamn"
 
-#: src/xend_internal.c:1549
+#: src/xend_internal.c:1559
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "kan inte analysera vbd-filnamn, saknar drivrutinstyp"
 
-#: src/xend_internal.c:1918
+#: src/xend_internal.c:1928
 #, fuzzy
 msgid "failed to parse topology information"
 msgstr "misslyckades att analysera domäninformation för Xend"
 
-#: src/xend_internal.c:1999
+#: src/xend_internal.c:2009
 msgid "failed to parse Xend domain information"
 msgstr "misslyckades att analysera domäninformation för Xend"
 
-#: src/xend_internal.c:3467
+#: src/xend_internal.c:3485
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Misslyckades att skapa inaktiv domän %s\n"
@@ -741,16 +741,16 @@ msgstr "Konfigurera en domän till att automatiskt starta vid uppstart."
 
 #: src/virsh.c:349 src/virsh.c:450 src/virsh.c:636 src/virsh.c:673
 #: src/virsh.c:730 src/virsh.c:797 src/virsh.c:1077 src/virsh.c:1121
-#: src/virsh.c:1297 src/virsh.c:1342 src/virsh.c:1381 src/virsh.c:1420
-#: src/virsh.c:1459 src/virsh.c:1498 src/virsh.c:1617 src/virsh.c:1704
-#: src/virsh.c:1832 src/virsh.c:1889 src/virsh.c:1946 src/virsh.c:2067
-#: src/virsh.c:2207 src/virsh.c:2908 src/virsh.c:2988 src/virsh.c:3051
-#: src/virsh.c:3105 src/virsh.c:3159 src/virsh.c:3275 src/virsh.c:3396
-#: src/virsh.c:3561
+#: src/virsh.c:1311 src/virsh.c:1356 src/virsh.c:1395 src/virsh.c:1434
+#: src/virsh.c:1473 src/virsh.c:1512 src/virsh.c:1631 src/virsh.c:1718
+#: src/virsh.c:1846 src/virsh.c:1903 src/virsh.c:1960 src/virsh.c:2081
+#: src/virsh.c:2221 src/virsh.c:2922 src/virsh.c:3002 src/virsh.c:3065
+#: src/virsh.c:3119 src/virsh.c:3173 src/virsh.c:3289 src/virsh.c:3410
+#: src/virsh.c:3575
 msgid "domain name, id or uuid"
 msgstr "domännman, id eller uuid"
 
-#: src/virsh.c:350 src/virsh.c:2271
+#: src/virsh.c:350 src/virsh.c:2285
 msgid "disable autostarting"
 msgstr "inaktivera autostartning"
 
@@ -841,15 +841,15 @@ msgstr "Misslyckades att lista inaktiva domäner"
 msgid "Id"
 msgstr "Id"
 
-#: src/virsh.c:574 src/virsh.c:2556
+#: src/virsh.c:574 src/virsh.c:2570
 msgid "Name"
 msgstr "Namn"
 
-#: src/virsh.c:574 src/virsh.c:2556
+#: src/virsh.c:574 src/virsh.c:2570
 msgid "State"
 msgstr "Tilstånd"
 
-#: src/virsh.c:587 src/virsh.c:609 src/virsh.c:4343 src/virsh.c:4359
+#: src/virsh.c:587 src/virsh.c:609 src/virsh.c:4357 src/virsh.c:4373
 msgid "no state"
 msgstr "inget tillstånd"
 
@@ -980,7 +980,7 @@ msgstr "avdefiniera en inaktiv domän"
 msgid "Undefine the configuration for an inactive domain."
 msgstr "Avdefiniera konfigurationen för en inaktiv domän."
 
-#: src/virsh.c:992 src/virsh.c:2136
+#: src/virsh.c:992 src/virsh.c:2150
 msgid "domain name or uuid"
 msgstr "domännamn eller uuid"
 
@@ -1058,248 +1058,258 @@ msgstr "vikt för XEN_CREDIT"
 msgid "cap for XEN_CREDIT"
 msgstr "gräns för XEN_CREDIT"
 
-#: src/virsh.c:1193 src/virsh.c:1197
+#: src/virsh.c:1155
+#, fuzzy
+msgid "Invalid value of weight"
+msgstr "Ogiltigt värde %d för minnesstorlek"
+
+#: src/virsh.c:1165
+#, fuzzy
+msgid "Invalid value of cap"
+msgstr "Ogiltigt värde %d för minnesstorlek"
+
+#: src/virsh.c:1207 src/virsh.c:1211
 msgid "Scheduler"
 msgstr "Schemaläggare"
 
-#: src/virsh.c:1197
+#: src/virsh.c:1211
 msgid "Unknown"
 msgstr "Okänd"
 
-#: src/virsh.c:1253
+#: src/virsh.c:1267
 msgid "restore a domain from a saved state in a file"
 msgstr "återställ en domän från ett sparat tillstånd i en fil"
 
-#: src/virsh.c:1254
+#: src/virsh.c:1268
 msgid "Restore a domain."
 msgstr "Återställ en domän."
 
-#: src/virsh.c:1259
+#: src/virsh.c:1273
 msgid "the state to restore"
 msgstr "tillståndet som ska återställas"
 
-#: src/virsh.c:1278
+#: src/virsh.c:1292
 #, c-format
 msgid "Domain restored from %s\n"
 msgstr "Domän återställd från %s\n"
 
-#: src/virsh.c:1280
+#: src/virsh.c:1294
 #, c-format
 msgid "Failed to restore domain from %s"
 msgstr "Misslyckades att återställa domän från %s"
 
-#: src/virsh.c:1291
+#: src/virsh.c:1305
 msgid "dump the core of a domain to a file for analysis"
 msgstr "dumpa kärnan för en domän till en fil för analys"
 
-#: src/virsh.c:1292
+#: src/virsh.c:1306
 msgid "Core dump a domain."
 msgstr "Spara kärnan för en domän."
 
-#: src/virsh.c:1298
+#: src/virsh.c:1312
 msgid "where to dump the core"
 msgstr "var kärnan ska sparas"
 
-#: src/virsh.c:1320
+#: src/virsh.c:1334
 #, c-format
 msgid "Domain %s dumpd to %s\n"
 msgstr "Domän %s sparad till %s\n"
 
-#: src/virsh.c:1322
+#: src/virsh.c:1336
 #, c-format
 msgid "Failed to core dump domain %s to %s"
 msgstr "Misslyckades att spara domän %s till %s"
 
-#: src/virsh.c:1336
+#: src/virsh.c:1350
 msgid "resume a domain"
 msgstr "fortsätt en domän"
 
-#: src/virsh.c:1337
+#: src/virsh.c:1351
 msgid "Resume a previously suspended domain."
 msgstr "Fortsätt en tidigare suspenderad domän."
 
-#: src/virsh.c:1360
+#: src/virsh.c:1374
 #, c-format
 msgid "Domain %s resumed\n"
 msgstr "Domän %s fortsatt\n"
 
-#: src/virsh.c:1362
+#: src/virsh.c:1376
 #, c-format
 msgid "Failed to resume domain %s"
 msgstr "Misslyckades att fortsätta domän %s"
 
-#: src/virsh.c:1375
+#: src/virsh.c:1389
 msgid "gracefully shutdown a domain"
 msgstr "stäng snällt ned en domän"
 
-#: src/virsh.c:1376
+#: src/virsh.c:1390
 msgid "Run shutdown in the target domain."
 msgstr "Kör nedstängning i måldomänen."
 
-#: src/virsh.c:1399
+#: src/virsh.c:1413
 #, c-format
 msgid "Domain %s is being shutdown\n"
 msgstr "Domän %s håller på att stängas ned\n"
 
-#: src/virsh.c:1401
+#: src/virsh.c:1415
 #, c-format
 msgid "Failed to shutdown domain %s"
 msgstr "Misslyckades att stänga ned domän %s"
 
-#: src/virsh.c:1414
+#: src/virsh.c:1428
 msgid "reboot a domain"
 msgstr "starta om en domän"
 
-#: src/virsh.c:1415
+#: src/virsh.c:1429
 msgid "Run a reboot command in the target domain."
 msgstr "Kör ett omstartskommando i måldomänen."
 
-#: src/virsh.c:1438
+#: src/virsh.c:1452
 #, c-format
 msgid "Domain %s is being rebooted\n"
 msgstr "Domän %s håller på att starts om\n"
 
-#: src/virsh.c:1440
+#: src/virsh.c:1454
 #, c-format
 msgid "Failed to reboot domain %s"
 msgstr "Misslyckades att starta om domän %s"
 
-#: src/virsh.c:1453
+#: src/virsh.c:1467
 msgid "destroy a domain"
 msgstr "förstör en domän"
 
-#: src/virsh.c:1454
+#: src/virsh.c:1468
 msgid "Destroy a given domain."
 msgstr "Förstör en given domän."
 
-#: src/virsh.c:1477
+#: src/virsh.c:1491
 #, c-format
 msgid "Domain %s destroyed\n"
 msgstr "Domän %s förstörd\n"
 
-#: src/virsh.c:1479
+#: src/virsh.c:1493
 #, c-format
 msgid "Failed to destroy domain %s"
 msgstr "Misslyckades att förstöra domän %s"
 
-#: src/virsh.c:1492
+#: src/virsh.c:1506
 msgid "domain information"
 msgstr "domäninformation"
 
-#: src/virsh.c:1493
+#: src/virsh.c:1507
 msgid "Returns basic information about the domain."
 msgstr "Returnerar grundinformation om domänen."
 
-#: src/virsh.c:1519 src/virsh.c:1521
+#: src/virsh.c:1533 src/virsh.c:1535
 msgid "Id:"
 msgstr "Id:"
 
-#: src/virsh.c:1522
+#: src/virsh.c:1536
 msgid "Name:"
 msgstr "Namn:"
 
-#: src/virsh.c:1525
+#: src/virsh.c:1539
 msgid "UUID:"
 msgstr "UUID:"
 
-#: src/virsh.c:1528
+#: src/virsh.c:1542
 msgid "OS Type:"
 msgstr "OS-typ:"
 
-#: src/virsh.c:1533 src/virsh.c:1661
+#: src/virsh.c:1547 src/virsh.c:1675
 msgid "State:"
 msgstr "Tillstånd:"
 
-#: src/virsh.c:1536 src/virsh.c:2018
+#: src/virsh.c:1550 src/virsh.c:2032
 msgid "CPU(s):"
 msgstr "CPU(er):"
 
-#: src/virsh.c:1543 src/virsh.c:1668
+#: src/virsh.c:1557 src/virsh.c:1682
 msgid "CPU time:"
 msgstr "CPU-tid:"
 
-#: src/virsh.c:1547 src/virsh.c:1550
+#: src/virsh.c:1561 src/virsh.c:1564
 msgid "Max memory:"
 msgstr "Max minne:"
 
-#: src/virsh.c:1551
+#: src/virsh.c:1565
 msgid "no limit"
 msgstr "ingen gräns"
 
-#: src/virsh.c:1553
+#: src/virsh.c:1567
 msgid "Used memory:"
 msgstr "Använt minne:"
 
-#: src/virsh.c:1569
+#: src/virsh.c:1583
 #, fuzzy
 msgid "NUMA free memory"
 msgstr "Använt minne:"
 
-#: src/virsh.c:1570
+#: src/virsh.c:1584
 msgid "display available free memory for the NUMA cell."
 msgstr ""
 
-#: src/virsh.c:1575
+#: src/virsh.c:1589
 #, fuzzy
 msgid "NUMA cell number"
 msgstr "NUMA-cell(er):"
 
-#: src/virsh.c:1599
+#: src/virsh.c:1613
 msgid "Total"
 msgstr ""
 
-#: src/virsh.c:1611
+#: src/virsh.c:1625
 msgid "domain vcpu information"
 msgstr "domänens vcpu-information"
 
-#: src/virsh.c:1612
+#: src/virsh.c:1626
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr "Returnerar grundinformation om domänens virtuella CPU:er."
 
-#: src/virsh.c:1659
+#: src/virsh.c:1673
 msgid "VCPU:"
 msgstr "VCPU:"
 
-#: src/virsh.c:1660
+#: src/virsh.c:1674
 msgid "CPU:"
 msgstr "CPU:"
 
-#: src/virsh.c:1670
+#: src/virsh.c:1684
 msgid "CPU Affinity:"
 msgstr "CPU-släktskap:"
 
-#: src/virsh.c:1682
+#: src/virsh.c:1696
 msgid "Domain shut off, virtual CPUs not present."
 msgstr "Domän avstängd, virtuella CPU:er ej närvarande."
 
-#: src/virsh.c:1698
+#: src/virsh.c:1712
 msgid "control domain vcpu affinity"
 msgstr "kontrolldomänens vcpu-släktskap"
 
-#: src/virsh.c:1699
+#: src/virsh.c:1713
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr "Sätt fast domän VCPU:er till värdens fysiska CPU:er."
 
-#: src/virsh.c:1705
+#: src/virsh.c:1719
 msgid "vcpu number"
 msgstr "vcpu-nummer"
 
-#: src/virsh.c:1706
+#: src/virsh.c:1720
 msgid "host cpu number(s) (comma separated)"
 msgstr "värdens cpu-nummmer (komma-separerade)"
 
-#: src/virsh.c:1761
+#: src/virsh.c:1775
 msgid "cpulist: Invalid format. Empty string."
 msgstr "cpulist: Ogiltigt format. Tom sträng."
 
-#: src/virsh.c:1771
+#: src/virsh.c:1785
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
 "cpulist: %s: Ogiltigt format. Förväntade siffra på position %d (nära '%c')."
 
-#: src/virsh.c:1781
+#: src/virsh.c:1795
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
@@ -1308,633 +1318,633 @@ msgstr ""
 "cpulist: %s: Ogiltigt format. Förväntade siffra eller komma på position %d "
 "(nära '%c')."
 
-#: src/virsh.c:1788
+#: src/virsh.c:1802
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
 msgstr "cpulist: %s: Ogiltigt format. Komma på slutet vid position %d."
 
-#: src/virsh.c:1802
+#: src/virsh.c:1816
 #, c-format
 msgid "Physical CPU %d doesn't exist."
 msgstr "Fysisk CPU %d finns inte."
 
-#: src/virsh.c:1826
+#: src/virsh.c:1840
 msgid "change number of virtual CPUs"
 msgstr "ändra antal virtuella CPU:er"
 
-#: src/virsh.c:1827
+#: src/virsh.c:1841
 msgid "Change the number of virtual CPUs active in the guest domain."
 msgstr "Ändra antalet virtuella, aktiva CPU:er i gästdomänen."
 
-#: src/virsh.c:1833
+#: src/virsh.c:1847
 msgid "number of virtual CPUs"
 msgstr "antal virtuella CPU:er"
 
-#: src/virsh.c:1853
+#: src/virsh.c:1867
 msgid "Invalid number of virtual CPUs."
 msgstr "Ogiltigt antal virtuella CPU:er."
 
-#: src/virsh.c:1865
+#: src/virsh.c:1879
 msgid "Too many virtual CPUs."
 msgstr "För många virtuella CPU:er."
 
-#: src/virsh.c:1883
+#: src/virsh.c:1897
 msgid "change memory allocation"
 msgstr "ändra minnesallokering"
 
-#: src/virsh.c:1884
+#: src/virsh.c:1898
 msgid "Change the current memory allocation in the guest domain."
 msgstr "Ändra nuvarande minnesallokering i gästdomänen."
 
-#: src/virsh.c:1890
+#: src/virsh.c:1904
 msgid "number of kilobytes of memory"
 msgstr "antal kilobytes minne"
 
-#: src/virsh.c:1911 src/virsh.c:1923 src/virsh.c:1968
+#: src/virsh.c:1925 src/virsh.c:1937 src/virsh.c:1982
 #, c-format
 msgid "Invalid value of %d for memory size"
 msgstr "Ogiltigt värde %d för minnesstorlek"
 
-#: src/virsh.c:1917
+#: src/virsh.c:1931
 msgid "Unable to verify MaxMemorySize"
 msgstr "Kan inte verifiera MaxMemorySize"
 
-#: src/virsh.c:1940
+#: src/virsh.c:1954
 msgid "change maximum memory limit"
 msgstr "ändra gräns för maximalt minne"
 
-#: src/virsh.c:1941
+#: src/virsh.c:1955
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr "Ändra gräns för maximal minnesallokering för gästdomänen."
 
-#: src/virsh.c:1947
+#: src/virsh.c:1961
 msgid "maximum memory limit in kilobytes"
 msgstr "maximal minnesgräns i kilobytes"
 
-#: src/virsh.c:1974
+#: src/virsh.c:1988
 msgid "Unable to verify current MemorySize"
 msgstr "Kan inte verifiera aktuell MemorySize"
 
-#: src/virsh.c:1981
+#: src/virsh.c:1995
 msgid "Unable to shrink current MemorySize"
 msgstr "Kan inte krympa aktuell MemorySize"
 
-#: src/virsh.c:1987
+#: src/virsh.c:2001
 msgid "Unable to change MaxMemorySize"
 msgstr "Kan inte ändra MaxMemorySize"
 
-#: src/virsh.c:2000
+#: src/virsh.c:2014
 msgid "node information"
 msgstr "nodinformation"
 
-#: src/virsh.c:2001
+#: src/virsh.c:2015
 msgid "Returns basic information about the node."
 msgstr "Returnerar grundinformation om noden."
 
-#: src/virsh.c:2014
+#: src/virsh.c:2028
 msgid "failed to get node information"
 msgstr "misslyckades att få nodinformation"
 
-#: src/virsh.c:2017
+#: src/virsh.c:2031
 msgid "CPU model:"
 msgstr "CPU-modell:"
 
-#: src/virsh.c:2019
+#: src/virsh.c:2033
 msgid "CPU frequency:"
 msgstr "CPU-frekvens:"
 
-#: src/virsh.c:2020
+#: src/virsh.c:2034
 msgid "CPU socket(s):"
 msgstr "CPU-uttag:"
 
-#: src/virsh.c:2021
+#: src/virsh.c:2035
 msgid "Core(s) per socket:"
 msgstr "Kärnor per uttag:"
 
-#: src/virsh.c:2022
+#: src/virsh.c:2036
 msgid "Thread(s) per core:"
 msgstr "Trådar per kärna:"
 
-#: src/virsh.c:2023
+#: src/virsh.c:2037
 msgid "NUMA cell(s):"
 msgstr "NUMA-cell(er):"
 
-#: src/virsh.c:2024
+#: src/virsh.c:2038
 msgid "Memory size:"
 msgstr "Minnesstorlek:"
 
-#: src/virsh.c:2034
+#: src/virsh.c:2048
 msgid "capabilities"
 msgstr "kapabiliteter"
 
-#: src/virsh.c:2035
+#: src/virsh.c:2049
 msgid "Returns capabilities of hypervisor/driver."
 msgstr "Returnera kapabiliteter för hypervisor/drivrutin."
 
-#: src/virsh.c:2048
+#: src/virsh.c:2062
 msgid "failed to get capabilities"
 msgstr "misslyckades att hämta kapabiliteter"
 
-#: src/virsh.c:2061
+#: src/virsh.c:2075
 msgid "domain information in XML"
 msgstr "domäninformation i XML"
 
-#: src/virsh.c:2062
+#: src/virsh.c:2076
 msgid "Output the domain information as an XML dump to stdout."
 msgstr "Skriv ut domäninformationen som en XML-dump till stdout."
 
-#: src/virsh.c:2101
+#: src/virsh.c:2115
 msgid "convert a domain id or UUID to domain name"
 msgstr "konvertera ett domän-id eller UUID till domännamn"
 
-#: src/virsh.c:2106
+#: src/virsh.c:2120
 msgid "domain id or uuid"
 msgstr "domännamn eller uuid"
 
-#: src/virsh.c:2131
+#: src/virsh.c:2145
 msgid "convert a domain name or UUID to domain id"
 msgstr "konvertera ett domännamn eller UUID till ett domän-id"
 
-#: src/virsh.c:2166
+#: src/virsh.c:2180
 msgid "convert a domain name or id to domain UUID"
 msgstr "konvertera ett domännamn eller id till domän-UUID"
 
-#: src/virsh.c:2171
+#: src/virsh.c:2185
 msgid "domain id or name"
 msgstr "domännamn eller uuid"
 
-#: src/virsh.c:2190
+#: src/virsh.c:2204
 msgid "failed to get domain UUID"
 msgstr "misslyckades att hämta domän-UUID"
 
-#: src/virsh.c:2200
+#: src/virsh.c:2214
 msgid "migrate domain to another host"
 msgstr ""
 
-#: src/virsh.c:2201
+#: src/virsh.c:2215
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
 
-#: src/virsh.c:2206
+#: src/virsh.c:2220
 #, fuzzy
 msgid "live migration"
 msgstr "nodinformation"
 
-#: src/virsh.c:2208
+#: src/virsh.c:2222
 #, fuzzy
 msgid "connection URI of the destination host"
 msgstr "anslut till gästkonsollen"
 
-#: src/virsh.c:2209
+#: src/virsh.c:2223
 msgid "migration URI, usually can be omitted"
 msgstr ""
 
-#: src/virsh.c:2231
+#: src/virsh.c:2245
 msgid "migrate: Missing desturi"
 msgstr ""
 
-#: src/virsh.c:2263
+#: src/virsh.c:2277
 msgid "autostart a network"
 msgstr "starta ett nätverk automatiskt"
 
-#: src/virsh.c:2265
+#: src/virsh.c:2279
 msgid "Configure a network to be automatically started at boot."
 msgstr "Konfigurera ett nätverk att starta automatiskt vid uppstart."
 
-#: src/virsh.c:2270 src/virsh.c:2695
+#: src/virsh.c:2284 src/virsh.c:2709
 msgid "network name or uuid"
 msgstr "nätverksnamn eller uuid"
 
-#: src/virsh.c:2292
+#: src/virsh.c:2306
 #, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "Misslyckades att markera nätverk %s som autostartat"
 
-#: src/virsh.c:2295
+#: src/virsh.c:2309
 #, c-format
 msgid "failed to unmark network %s as autostarted"
 msgstr "Misslyckades att avmarkera nätverk %s som autostartat"
 
-#: src/virsh.c:2302
+#: src/virsh.c:2316
 #, c-format
 msgid "Network %s marked as autostarted\n"
 msgstr "Nätverk %s markerat som autostartat\n"
 
-#: src/virsh.c:2304
+#: src/virsh.c:2318
 #, c-format
 msgid "Network %s unmarked as autostarted\n"
 msgstr "Nätverk %s avmarkerat som autostartat\n"
 
-#: src/virsh.c:2314
+#: src/virsh.c:2328
 msgid "create a network from an XML file"
 msgstr "skapa ett nätverk från en XML-fil"
 
-#: src/virsh.c:2315
+#: src/virsh.c:2329
 msgid "Create a network."
 msgstr "Skapa ett nätverk."
 
-#: src/virsh.c:2320 src/virsh.c:2368
+#: src/virsh.c:2334 src/virsh.c:2382
 msgid "file containing an XML network description"
 msgstr "fil som innehåller XML-nätverksbeskrivningen"
 
-#: src/virsh.c:2347
+#: src/virsh.c:2361
 #, c-format
 msgid "Network %s created from %s\n"
 msgstr "Nätverk %s skapat från %s\n"
 
-#: src/virsh.c:2350
+#: src/virsh.c:2364
 #, c-format
 msgid "Failed to create network from %s"
 msgstr "Misslyckades att skapa nätverk från %s"
 
-#: src/virsh.c:2362
+#: src/virsh.c:2376
 msgid "define (but don't start) a network from an XML file"
 msgstr "definiera (men starta inte) ett nätverk från en XML-fil"
 
-#: src/virsh.c:2363
+#: src/virsh.c:2377
 msgid "Define a network."
 msgstr "Definiera ett nätverk."
 
-#: src/virsh.c:2395
+#: src/virsh.c:2409
 #, c-format
 msgid "Network %s defined from %s\n"
 msgstr "Nätverk %s definierad från %s\n"
 
-#: src/virsh.c:2398
+#: src/virsh.c:2412
 #, c-format
 msgid "Failed to define network from %s"
 msgstr "Misslyckades att definiera nätverk från %s"
 
-#: src/virsh.c:2410
+#: src/virsh.c:2424
 msgid "destroy a network"
 msgstr "förstör ett nätverk"
 
-#: src/virsh.c:2411
+#: src/virsh.c:2425
 msgid "Destroy a given network."
 msgstr "Förstör ett givet nätverk."
 
-#: src/virsh.c:2416 src/virsh.c:2456
+#: src/virsh.c:2430 src/virsh.c:2470
 msgid "network name, id or uuid"
 msgstr "nätverksnamn, id eller uuid"
 
-#: src/virsh.c:2434
+#: src/virsh.c:2448
 #, c-format
 msgid "Network %s destroyed\n"
 msgstr "Nätverk %s förstört\n"
 
-#: src/virsh.c:2436
+#: src/virsh.c:2450
 #, c-format
 msgid "Failed to destroy network %s"
 msgstr "Misslyckades att förstöra nätverk %s"
 
-#: src/virsh.c:2450
+#: src/virsh.c:2464
 msgid "network information in XML"
 msgstr "nätverksinformation i XML"
 
-#: src/virsh.c:2451
+#: src/virsh.c:2465
 msgid "Output the network information as an XML dump to stdout."
 msgstr "Skriv ut nätverksinformationen som en XML-dump till stdout."
 
-#: src/virsh.c:2491
+#: src/virsh.c:2505
 msgid "list networks"
 msgstr "lista nätverk"
 
-#: src/virsh.c:2492
+#: src/virsh.c:2506
 msgid "Returns list of networks."
 msgstr "Returnera lista på nätverk."
 
-#: src/virsh.c:2497
+#: src/virsh.c:2511
 msgid "list inactive networks"
 msgstr "lista inaktiva nätverk"
 
-#: src/virsh.c:2498
+#: src/virsh.c:2512
 msgid "list inactive & active networks"
 msgstr "lista inaktiva & aktiva nätverk"
 
-#: src/virsh.c:2518 src/virsh.c:2526
+#: src/virsh.c:2532 src/virsh.c:2540
 msgid "Failed to list active networks"
 msgstr "Misslyckades att lista aktiva nätverk"
 
-#: src/virsh.c:2537 src/virsh.c:2546
+#: src/virsh.c:2551 src/virsh.c:2560
 msgid "Failed to list inactive networks"
 msgstr "Misslyckades att lista inaktiva nätverk"
 
-#: src/virsh.c:2556
+#: src/virsh.c:2570
 msgid "Autostart"
 msgstr "Autostart"
 
-#: src/virsh.c:2571 src/virsh.c:2594
+#: src/virsh.c:2585 src/virsh.c:2608
 msgid "no autostart"
 msgstr "ingen autostart"
 
-#: src/virsh.c:2577
+#: src/virsh.c:2591
 msgid "active"
 msgstr "aktiv"
 
-#: src/virsh.c:2600
+#: src/virsh.c:2614
 msgid "inactive"
 msgstr "inaktiv"
 
-#: src/virsh.c:2619
+#: src/virsh.c:2633
 msgid "convert a network UUID to network name"
 msgstr "konvertera ett nätverks-UUID till nätverksnamn"
 
-#: src/virsh.c:2650
+#: src/virsh.c:2664
 msgid "start a (previously defined) inactive network"
 msgstr "starta ett (tidigare definierat) inaktivt nätverk"
 
-#: src/virsh.c:2651
+#: src/virsh.c:2665
 msgid "Start a network."
 msgstr "Starta ett nätverk."
 
-#: src/virsh.c:2656
+#: src/virsh.c:2670
 msgid "name of the inactive network"
 msgstr "namn för det inaktiva nätverket"
 
-#: src/virsh.c:2673
+#: src/virsh.c:2687
 #, c-format
 msgid "Network %s started\n"
 msgstr "Nätverk %s startat\n"
 
-#: src/virsh.c:2676
+#: src/virsh.c:2690
 #, c-format
 msgid "Failed to start network %s"
 msgstr "Misslyckades att starta nätverk %s"
 
-#: src/virsh.c:2689
+#: src/virsh.c:2703
 msgid "undefine an inactive network"
 msgstr "avdefiniera ett inaktivt nätverk"
 
-#: src/virsh.c:2690
+#: src/virsh.c:2704
 msgid "Undefine the configuration for an inactive network."
 msgstr "Avdefiniera konfigurationen för ett inaktivt nätverk."
 
-#: src/virsh.c:2713
+#: src/virsh.c:2727
 #, c-format
 msgid "Network %s has been undefined\n"
 msgstr "Nätverk %s har avdefinierats\n"
 
-#: src/virsh.c:2715
+#: src/virsh.c:2729
 #, c-format
 msgid "Failed to undefine network %s"
 msgstr "Misslyckades att avdefiniera nätverk %s"
 
-#: src/virsh.c:2728
+#: src/virsh.c:2742
 msgid "convert a network name to network UUID"
 msgstr "konvertera ett nätverksnamn till nätverks-UUID"
 
-#: src/virsh.c:2753
+#: src/virsh.c:2767
 msgid "failed to get network UUID"
 msgstr "misslyckades att hämta nätverks-UUID"
 
-#: src/virsh.c:2764
+#: src/virsh.c:2778
 msgid "show version"
 msgstr "visa version"
 
-#: src/virsh.c:2765
+#: src/virsh.c:2779
 msgid "Display the system version information."
 msgstr "Visa informationen om systemversion"
 
-#: src/virsh.c:2788
+#: src/virsh.c:2802
 msgid "failed to get hypervisor type"
 msgstr "misslyckades att hämta typ av hypervisor"
 
-#: src/virsh.c:2797
+#: src/virsh.c:2811
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr "Kompilerad med bibliotek: libvir %d.%d.%d\n"
 
-#: src/virsh.c:2802
+#: src/virsh.c:2816
 msgid "failed to get the library version"
 msgstr "misslyckades att hämta biblioteksversion"
 
-#: src/virsh.c:2809
+#: src/virsh.c:2823
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
 msgstr "Använder bibliotek: libvir %d.%d.%d\n"
 
-#: src/virsh.c:2816
+#: src/virsh.c:2830
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
 msgstr "Använder API: %s %d.%d.%d\n"
 
-#: src/virsh.c:2821
+#: src/virsh.c:2835
 msgid "failed to get the hypervisor version"
 msgstr "misslyckades att hämta version av hypervisor"
 
-#: src/virsh.c:2826
+#: src/virsh.c:2840
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "Kan inte hämta ut version från körande %s hypervisor\n"
 
-#: src/virsh.c:2833
+#: src/virsh.c:2847
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "Kör hypervisor: %s %d.%d.%d\n"
 
-#: src/virsh.c:2844
+#: src/virsh.c:2858
 msgid "print the hypervisor hostname"
 msgstr "skriv ut värdnamnet för hypervisor"
 
-#: src/virsh.c:2858
+#: src/virsh.c:2872
 msgid "failed to get hostname"
 msgstr "misslyckades att få värdnamn"
 
-#: src/virsh.c:2873
+#: src/virsh.c:2887
 msgid "print the hypervisor canonical URI"
 msgstr "skriv ut de canonical-URI för hypervisor"
 
-#: src/virsh.c:2887
+#: src/virsh.c:2901
 msgid "failed to get URI"
 msgstr "misslyckades att hämta URI"
 
-#: src/virsh.c:2902
+#: src/virsh.c:2916
 msgid "vnc display"
 msgstr "vnc-skärm"
 
-#: src/virsh.c:2903
+#: src/virsh.c:2917
 msgid "Output the IP address and port number for the VNC display."
 msgstr "Skriv ut IP-adress och portnummer för VNC-skärmen."
 
-#: src/virsh.c:2982
+#: src/virsh.c:2996
 msgid "tty console"
 msgstr ""
 
-#: src/virsh.c:2983
+#: src/virsh.c:2997
 msgid "Output the device for the TTY console."
 msgstr ""
 
-#: src/virsh.c:3045
+#: src/virsh.c:3059
 msgid "attach device from an XML file"
 msgstr "anslut enhet från en XML-fil"
 
-#: src/virsh.c:3046
+#: src/virsh.c:3060
 msgid "Attach device from an XML <file>."
 msgstr "Anslut enhet från en XML <fil>."
 
-#: src/virsh.c:3052 src/virsh.c:3106
+#: src/virsh.c:3066 src/virsh.c:3120
 msgid "XML file"
 msgstr "XML-fil"
 
-#: src/virsh.c:3084
+#: src/virsh.c:3098
 #, c-format
 msgid "Failed to attach device from %s"
 msgstr "Misslyckades att ansluta enhet från %s"
 
-#: src/virsh.c:3099
+#: src/virsh.c:3113
 msgid "detach device from an XML file"
 msgstr "avmontera enhet från en XML-fil"
 
-#: src/virsh.c:3100
+#: src/virsh.c:3114
 msgid "Detach device from an XML <file>"
 msgstr "Avmontera enhet från en XML-fil"
 
-#: src/virsh.c:3138
+#: src/virsh.c:3152
 #, c-format
 msgid "Failed to detach device from %s"
 msgstr "Misslyckades att avmontera enheten från %s"
 
-#: src/virsh.c:3153
+#: src/virsh.c:3167
 msgid "attach network interface"
 msgstr "anslut nätverksgränssnitt"
 
-#: src/virsh.c:3154
+#: src/virsh.c:3168
 msgid "Attach new network interface."
 msgstr "Anslut nytt nätverksgränssnitt."
 
-#: src/virsh.c:3160 src/virsh.c:3276
+#: src/virsh.c:3174 src/virsh.c:3290
 msgid "network interface type"
 msgstr "nätverksgränssnittstyp"
 
-#: src/virsh.c:3161
+#: src/virsh.c:3175
 msgid "source of network interface"
 msgstr "källa för nätverksgränssnitt"
 
-#: src/virsh.c:3162
+#: src/virsh.c:3176
 msgid "target network name"
 msgstr "målets nätverksnamn"
 
-#: src/virsh.c:3163 src/virsh.c:3277
+#: src/virsh.c:3177 src/virsh.c:3291
 msgid "MAC adress"
 msgstr "MAC-adress"
 
-#: src/virsh.c:3164
+#: src/virsh.c:3178
 msgid "script used to bridge network interface"
 msgstr "skript som används för brygga nätverksgränssnitt"
 
-#: src/virsh.c:3196
+#: src/virsh.c:3210
 #, c-format
 msgid "No support %s in command 'attach-interface'"
 msgstr "Inget stöd för %s i kommando 'attach-interface'"
 
-#: src/virsh.c:3269
+#: src/virsh.c:3283
 msgid "detach network interface"
 msgstr "anslut nätverksgränssnitt"
 
-#: src/virsh.c:3270
+#: src/virsh.c:3284
 msgid "Detach network interface."
 msgstr "Avmontera nätverksgränssnitt."
 
-#: src/virsh.c:3315 src/virsh.c:3320
+#: src/virsh.c:3329 src/virsh.c:3334
 msgid "Failed to get interface information"
 msgstr "misslyckades att få gränssnittsinformation"
 
-#: src/virsh.c:3328
+#: src/virsh.c:3342
 #, c-format
 msgid "No found interface whose type is %s"
 msgstr "Hittade inget gränssnitt vars typ är %s"
 
-#: src/virsh.c:3350
+#: src/virsh.c:3364
 #, c-format
 msgid "No found interface whose MAC address is %s"
 msgstr "Hittade inget gränssnitt vars MAC-adress är %s"
 
-#: src/virsh.c:3356 src/virsh.c:3634
+#: src/virsh.c:3370 src/virsh.c:3648
 msgid "Failed to allocate memory"
 msgstr "Misslyckades att allokera minne"
 
-#: src/virsh.c:3361 src/virsh.c:3639
+#: src/virsh.c:3375 src/virsh.c:3653
 msgid "Failed to create XML"
 msgstr "Misslyckades att skapa XML"
 
-#: src/virsh.c:3390
+#: src/virsh.c:3404
 msgid "attach disk device"
 msgstr "anslut diskenhet"
 
-#: src/virsh.c:3391
+#: src/virsh.c:3405
 msgid "Attach new disk device."
 msgstr "Anslut ny diskenhet."
 
-#: src/virsh.c:3397
+#: src/virsh.c:3411
 msgid "source of disk device"
 msgstr "källa för skivenhet"
 
-#: src/virsh.c:3398 src/virsh.c:3562
+#: src/virsh.c:3412 src/virsh.c:3576
 msgid "target of disk device"
 msgstr "mål för diskenhet"
 
-#: src/virsh.c:3399
+#: src/virsh.c:3413
 msgid "driver of disk device"
 msgstr "drivrutin för diskenhet"
 
-#: src/virsh.c:3400
+#: src/virsh.c:3414
 msgid "subdriver of disk device"
 msgstr "underdrivrutin till diskenhet"
 
-#: src/virsh.c:3401
+#: src/virsh.c:3415
 msgid "target device type"
 msgstr "målenhetstyp"
 
-#: src/virsh.c:3402
+#: src/virsh.c:3416
 msgid "mode of device reading and writing"
 msgstr "läge för enhetsläsning och skrivning"
 
-#: src/virsh.c:3433 src/virsh.c:3442 src/virsh.c:3449
+#: src/virsh.c:3447 src/virsh.c:3456 src/virsh.c:3463
 #, c-format
 msgid "No support %s in command 'attach-disk'"
 msgstr "Inget stöd för %s i kommando 'attach-disk'"
 
-#: src/virsh.c:3555
+#: src/virsh.c:3569
 msgid "detach disk device"
 msgstr "avmontera diskenhet"
 
-#: src/virsh.c:3556
+#: src/virsh.c:3570
 msgid "Detach disk device."
 msgstr "Avmontera diskenhet."
 
-#: src/virsh.c:3597 src/virsh.c:3602 src/virsh.c:3609
+#: src/virsh.c:3611 src/virsh.c:3616 src/virsh.c:3623
 msgid "Failed to get disk information"
 msgstr "Misslyckades att få diskinformation"
 
-#: src/virsh.c:3628
+#: src/virsh.c:3642
 #, c-format
 msgid "No found disk whose target is %s"
 msgstr "Hittade ingen disk som hade målet %s"
 
-#: src/virsh.c:3668
+#: src/virsh.c:3682
 msgid "quit this interactive terminal"
 msgstr "avsluta denna interaktiva terminal"
 
-#: src/virsh.c:3809
+#: src/virsh.c:3823
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "kommando '%s' kräver flaggan <%s>"
 
-#: src/virsh.c:3810
+#: src/virsh.c:3824
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "kommando '%s' kräver flaggan --%s"
 
-#: src/virsh.c:3837
+#: src/virsh.c:3851
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "kommandot '%s' finns inte"
 
-#: src/virsh.c:3845
+#: src/virsh.c:3859
 msgid "  NAME\n"
 msgstr "  NAMN\n"
 
-#: src/virsh.c:3849
+#: src/virsh.c:3863
 msgid ""
 "\n"
 "  SYNOPSIS\n"
@@ -1942,7 +1952,7 @@ msgstr ""
 "\n"
 "  SYNOPSIS\n"
 
-#: src/virsh.c:3856
+#: src/virsh.c:3870
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -1950,7 +1960,7 @@ msgstr ""
 "\n"
 "  BESKRIVNING\n"
 
-#: src/virsh.c:3860
+#: src/virsh.c:3874
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -1958,35 +1968,35 @@ msgstr ""
 "\n"
 "  FLAGGOR\n"
 
-#: src/virsh.c:3867
+#: src/virsh.c:3881
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <nummer>"
 
-#: src/virsh.c:3869
+#: src/virsh.c:3883
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <sträng>"
 
-#: src/virsh.c:3988
+#: src/virsh.c:4002
 msgid "undefined domain name or id"
 msgstr "odefinierat domännamn eller id"
 
-#: src/virsh.c:4021
+#: src/virsh.c:4035
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "misslyckades att hämta domän '%s'"
 
-#: src/virsh.c:4034
+#: src/virsh.c:4048
 msgid "undefined network name"
 msgstr "odefinierat nätverksnamn"
 
-#: src/virsh.c:4058
+#: src/virsh.c:4072
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "misslyckades att hämta nätverk '%s'"
 
-#: src/virsh.c:4086
+#: src/virsh.c:4100
 #, c-format
 msgid ""
 "\n"
@@ -1997,123 +2007,123 @@ msgstr ""
 "(Tid: %.3f ms)\n"
 "\n"
 
-#: src/virsh.c:4160
+#: src/virsh.c:4174
 msgid "missing \""
 msgstr "saknar \""
 
-#: src/virsh.c:4221
+#: src/virsh.c:4235
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "oväntad token (kommandonamn): '%s'"
 
-#: src/virsh.c:4226
+#: src/virsh.c:4240
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "okänt kommando: '%s'"
 
-#: src/virsh.c:4233
+#: src/virsh.c:4247
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "kommandot '%s' stöder inte flaggan --%s"
 
-#: src/virsh.c:4248
+#: src/virsh.c:4262
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "förväntad syntax: --%s <%s>"
 
-#: src/virsh.c:4251
+#: src/virsh.c:4265
 msgid "number"
 msgstr "nummer"
 
-#: src/virsh.c:4251
+#: src/virsh.c:4265
 msgid "string"
 msgstr "sträng"
 
-#: src/virsh.c:4257
+#: src/virsh.c:4271
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "oväntad data '%s'"
 
-#: src/virsh.c:4279
+#: src/virsh.c:4293
 msgid "OPTION"
 msgstr "FLAGGA"
 
-#: src/virsh.c:4279
+#: src/virsh.c:4293
 msgid "DATA"
 msgstr "DATA"
 
-#: src/virsh.c:4329 src/virsh.c:4355
+#: src/virsh.c:4343 src/virsh.c:4369
 msgid "running"
 msgstr "kör"
 
-#: src/virsh.c:4331 src/virsh.c:4353
+#: src/virsh.c:4345 src/virsh.c:4367
 msgid "blocked"
 msgstr "blockerad"
 
-#: src/virsh.c:4333
+#: src/virsh.c:4347
 msgid "paused"
 msgstr "stannad"
 
-#: src/virsh.c:4335
+#: src/virsh.c:4349
 msgid "in shutdown"
 msgstr "stänger ner"
 
-#: src/virsh.c:4337
+#: src/virsh.c:4351
 msgid "shut off"
 msgstr "avstängd"
 
-#: src/virsh.c:4339
+#: src/virsh.c:4353
 msgid "crashed"
 msgstr "kraschad"
 
-#: src/virsh.c:4351
+#: src/virsh.c:4365
 msgid "offline"
 msgstr "oansluten"
 
-#: src/virsh.c:4370
+#: src/virsh.c:4384
 msgid "no valid connection"
 msgstr "ingen giltig anslutning"
 
-#: src/virsh.c:4417
+#: src/virsh.c:4431
 #, c-format
 msgid "%s: error: "
 msgstr "%s: fel: "
 
-#: src/virsh.c:4419
+#: src/virsh.c:4433
 msgid "error: "
 msgstr "fel: "
 
-#: src/virsh.c:4441 src/virsh.c:4453 src/virsh.c:4466
+#: src/virsh.c:4455 src/virsh.c:4467 src/virsh.c:4480
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: misslyckades att allokera %d bytes"
 
-#: src/virsh.c:4480
+#: src/virsh.c:4494
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "%s: %d: misslyckades att allokera %lu bytes"
 
-#: src/virsh.c:4516
+#: src/virsh.c:4530
 msgid "failed to connect to the hypervisor"
 msgstr "misslyckades att ansluta till hypervisor"
 
-#: src/virsh.c:4540
+#: src/virsh.c:4554
 msgid "failed to get the log file information"
 msgstr "misslyckades att få loggfilsinformation"
 
-#: src/virsh.c:4545
+#: src/virsh.c:4559
 msgid "the log path is not a file"
 msgstr "sökvägen till loggen är inte en fil"
 
-#: src/virsh.c:4551
+#: src/virsh.c:4565
 msgid "failed to open the log file. check the log file path"
 msgstr "misslyckades att öppna loggfil. kontrollera sökvägen till loggfilen"
 
-#: src/virsh.c:4619
+#: src/virsh.c:4633
 msgid "failed to write the log file"
 msgstr "misslyckades att skriva loggfilen"
 
-#: src/virsh.c:4788
+#: src/virsh.c:4802
 #, c-format
 msgid ""
 "\n"
@@ -2146,7 +2156,7 @@ msgstr ""
 "\n"
 "  kommandon (icke-interaktivt läge):\n"
 
-#: src/virsh.c:4806
+#: src/virsh.c:4820
 #, c-format
 msgid ""
 "\n"
@@ -2157,12 +2167,12 @@ msgstr ""
 "  (ange --help <kommando> för detaljer om kommandot)\n"
 "\n"
 
-#: src/virsh.c:4902
+#: src/virsh.c:4916
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "flaggan '-%c' stöds ej. Se --help."
 
-#: src/virsh.c:4984
+#: src/virsh.c:4998
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -2171,7 +2181,7 @@ msgstr ""
 "Välkommen till %s, den interaktiva terminalen för virtualisering.\n"
 "\n"
 
-#: src/virsh.c:4987
+#: src/virsh.c:5001
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
@@ -2230,66 +2240,66 @@ msgstr "misslyckades att öppna fil"
 msgid "failed to save content"
 msgstr "misslyckades att spara innehåll"
 
-#: src/xs_internal.c:346
+#: src/xs_internal.c:345
 msgid "failed to connect to Xen Store"
 msgstr "misslyckades att ansluta till Xen Store"
 
-#: src/proxy_internal.c:195
+#: src/proxy_internal.c:193
 #, c-format
 msgid "failed to exec %s\n"
 msgstr "kunde inte köra %s\n"
 
-#: src/proxy_internal.c:289
+#: src/proxy_internal.c:287
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr "Misslyckades att stänga uttag %d\n"
 
-#: src/proxy_internal.c:322
+#: src/proxy_internal.c:320
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr "Misslyckades att läsa från uttag %d\n"
 
-#: src/proxy_internal.c:356
+#: src/proxy_internal.c:354
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr "Misslyckades att skriva till uttag %d\n"
 
-#: src/proxy_internal.c:448 src/proxy_internal.c:469 src/proxy_internal.c:489
+#: src/proxy_internal.c:446 src/proxy_internal.c:467 src/proxy_internal.c:487
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr "Kommunikationsfel med proxy: fick %d bytes av %d\n"
 
-#: src/proxy_internal.c:456
+#: src/proxy_internal.c:454
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr "Kommunikationsfel med proxy: förväntade mig %d bytes men fick %d\n"
 
-#: src/proxy_internal.c:478
+#: src/proxy_internal.c:476
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr "Kommunikationsfel med proxy: fick %d bytes paket\n"
 
-#: src/proxy_internal.c:502
+#: src/proxy_internal.c:500
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
 msgstr "Kommunikationsfel med proxy: felformaterat paket\n"
 
-#: src/proxy_internal.c:508
+#: src/proxy_internal.c:506
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr "fick asynkront paketnummer %d\n"
 
-#: src/xen_internal.c:1321
+#: src/xen_internal.c:1320
 #, c-format
 msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
 msgstr ""
 
-#: src/xen_internal.c:1331
+#: src/xen_internal.c:1330
 #, c-format
 msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
 msgstr ""
 
-#: src/xen_internal.c:2598
+#: src/xen_internal.c:2597
 #, c-format
 msgid "allocating %d domain info"
 msgstr "allokerar %d domän-info"

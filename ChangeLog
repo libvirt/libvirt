@@ -1,3 +1,9 @@
+Wed Nov  7 14:38:43 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* docs/libvir.html docs/site.xsl: small updates with references
+	  to CIM and OpenVZ
+	* po/*: updated translations
+
 Tue Nov 6 19:54:00 CET 2007 Jim Meyering  <meyering@redhat.com>
 
 	Avoid risk of format string abuse (also avoids gcc warnings).
