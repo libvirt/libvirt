@@ -254,8 +254,10 @@ static virNetworkPtr vshCommandOptNetworkBy(vshControl * ctl, vshCmd * cmd,
     vshCommandOptNetworkBy(_ctl, _cmd, _optname, _name,             \
                            VSH_BYUUID|VSH_BYNAME)
 
-static void vshPrintExtra(vshControl * ctl, const char *format, ...);
-static void vshDebug(vshControl * ctl, int level, const char *format, ...);
+static void vshPrintExtra(vshControl * ctl, const char *format, ...)
+    ATTRIBUTE_FORMAT(printf, 2, 3);
+static void vshDebug(vshControl * ctl, int level, const char *format, ...)
+    ATTRIBUTE_FORMAT(printf, 3, 4);
 
 /* XXX: add batch support */
 #define vshPrint(_ctl, ...)   fprintf(stdout, __VA_ARGS__)

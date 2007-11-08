@@ -1,3 +1,7 @@
+Thu Nov  8 18:59:39 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: patch from Jim Meyering to use gcc's printf attribute.
+
 Thu Nov  8 17:06:50 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: patch from Jim Meyering to correct vshCommandOptInt
