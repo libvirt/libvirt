@@ -1137,9 +1137,9 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
     int nr_inputparams = 0;
     int inputparams = 0;
     int weightfound = 0;
-    int weight;
+    int weight = 0;
     int capfound = 0;
-    int cap;
+    int cap = 0;
     char str_weight[] = "weight";
     char str_cap[]    = "cap";
     int ret_val = FALSE;

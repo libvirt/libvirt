@@ -1,3 +1,8 @@
+Thu Nov  8 19:06:13 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: initialize a couple of variable to avoid warnings
+	  when compiling with Fedora.
+
 Thu Nov  8 18:59:39 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: patch from Jim Meyering to use gcc's printf attribute.
