@@ -1,7 +1,7 @@
 /*
  * virsh.c: a Xen shell used to exercise the libvirt API
  *
- * Copyright (C) 2005 Red Hat, Inc.
+ * Copyright (C) 2005, 2007 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -3956,10 +3956,10 @@ vshCommandOptInt(vshCmd * cmd, const char *name, int *found)
 
     if ((arg != NULL) && (arg->data != NULL)) {
         res = strtol(arg->data, &end_p, 10);
-	if ((arg->data == end_p) || (*end_p!= 0))
-	    num_found = FALSE;
-	else
-	    num_found = TRUE;
+        if ((arg->data == end_p) || (*end_p!= 0))
+            num_found = FALSE;
+        else
+            num_found = TRUE;
     }
     if (found)
         *found = num_found;

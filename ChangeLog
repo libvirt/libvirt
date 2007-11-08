@@ -1,3 +1,8 @@
+Thu Nov  8 17:06:50 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: patch from Jim Meyering to correct vshCommandOptInt
+	  indentation
+
 Wed Nov  7 14:38:43 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* docs/libvir.html docs/site.xsl: small updates with references
