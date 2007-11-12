@@ -1,3 +1,20 @@
+Mon Nov 12 14:56:33 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	Begin fixing uses of strtol: parse integers more carefully.
+	Patch from Jim Meyering
+	* src/internal.h: Include <errno.h>.
+	  Define new static inline function, xstrtol_i.
+	* src/virsh.c: Detect integer overflow in domain ID number
+	  in vshCommandOptDomainBy. Detect overflow and invalid port
+	  number suffix in cmdVNCDisplay.
+	* src/xend_internal.c: Parse CPU number more carefully in
+	  xenDaemonDomainGetVcpus.
+	* tests/int-overflow: New script. Test for the above-fixed bug.
+	* tests/Makefile.am: Add int-overflow to TESTS. Define
+	  TESTS_ENVIRONMENT, to propagate $abs_top_* variables into the
+	  int-overflow script. Adapt the "valgrind" rule not to clobber
+	  new TESTS_ENVIRONMENT.
+
 Thu Nov  8 19:06:13 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: initialize a couple of variable to avoid warnings

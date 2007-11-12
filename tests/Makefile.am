@@ -38,13 +38,19 @@ noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest conftest \
         nodeinfotest
 
 TESTS = xml2sexprtest sexpr2xmltest virshtest test_conf.sh xmconfigtest \
-        xencapstest qemuxml2argvtest qemuxml2xmltest nodeinfotest
+        xencapstest qemuxml2argvtest qemuxml2xmltest nodeinfotest \
+	int-overflow
 if ENABLE_XEN_TESTS
   TESTS += reconnect
 endif
 
+TESTS_ENVIRONMENT =				\
+  abs_top_builddir='$(abs_top_builddir)'	\
+  abs_top_srcdir='$(abs_top_srcdir)'		\
+  $(VG)
+
 valgrind:
-	$(MAKE) check TESTS_ENVIRONMENT="valgrind --quiet --leak-check=full"
+	$(MAKE) check VG="valgrind --quiet --leak-check=full"
 
 # Note: xmlrpc.[c|h] is not in libvirt yet
 xmlrpctest_SOURCES = \

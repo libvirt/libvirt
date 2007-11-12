@@ -33,7 +33,6 @@
 /* required for dom0_getdomaininfo_t */
 #include <xen/dom0_ops.h>
 #include <xen/version.h>
-#include <xen/xen.h>
 #ifdef HAVE_XEN_LINUX_PRIVCMD_H
 #include <xen/linux/privcmd.h>
 #else

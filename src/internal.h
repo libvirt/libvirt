@@ -5,6 +5,7 @@
 #ifndef __VIR_INTERNAL_H__
 #define __VIR_INTERNAL_H__
 
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -238,6 +239,30 @@ int __virDrvSupportsFeature (virConnectPtr conn, int feature);
 int __virDomainMigratePrepare (virConnectPtr dconn, char **cookie, int *cookielen, const char *uri_in, char **uri_out, unsigned long flags, const char *dname, unsigned long bandwidth);
 int __virDomainMigratePerform (virDomainPtr domain, const char *cookie, int cookielen, const char *uri, unsigned long flags, const char *dname, unsigned long bandwidth);
 virDomainPtr __virDomainMigrateFinish (virConnectPtr dconn, const char *dname, const char *cookie, int cookielen, const char *uri, unsigned long flags);
+
+/* Like strtol, but produce an "int" result, and check more carefully.
+   Return 0 upon success;  return -1 to indicate failure.
+   When END_PTR is NULL, the byte after the final valid digit must be NUL.
+   Otherwise, it's like strtol and lets the caller check any suffix for
+   validity.  This function is careful to return -1 when the string S
+   represents a number that is not representable as an "int". */
+static inline int
+xstrtol_i(char const *s, char **end_ptr, int base, int *result)
+{
+    long int val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtol(s, &p, base);
+    err = (errno || (!end_ptr && *p) || p == s || (int) val != val);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
 
 #ifdef __cplusplus
 }

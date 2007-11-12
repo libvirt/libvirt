@@ -2961,10 +2961,8 @@ cmdVNCDisplay(vshControl * ctl, vshCmd * cmd)
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
         goto cleanup;
     }
-    port = strtol((const char *)obj->stringval, NULL, 10);
-    if (port == -1) {
+    if (xstrtol_i((const char *)obj->stringval, NULL, 10, &port) || port < 0)
         goto cleanup;
-    }
     xmlXPathFreeObject(obj);
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/devices/graphics[@type='vnc']/@listen)", ctxt);
@@ -3997,7 +3995,7 @@ vshCommandOptDomainBy(vshControl * ctl, vshCmd * cmd, const char *optname,
                       char **name, int flag)
 {
     virDomainPtr dom = NULL;
-    char *n, *end = NULL;
+    char *n;
     int id;
 
     if (!(n = vshCommandOptString(cmd, optname, NULL))) {
@@ -4013,8 +4011,7 @@ vshCommandOptDomainBy(vshControl * ctl, vshCmd * cmd, const char *optname,
 
     /* try it by ID */
     if (flag & VSH_BYID) {
-        id = (int) strtol(n, &end, 10);
-        if (id >= 0 && end && *end == '\0') {
+        if (xstrtol_i(n, NULL, 10, &id) == 0 && id >= 0) {
             vshDebug(ctl, 5, "%s: <%s> seems like domain ID\n",
                      cmd->def->name, optname);
             dom = virDomainLookupByID(ctl->conn, id);

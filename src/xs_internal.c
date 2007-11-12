@@ -19,9 +19,9 @@
 
 #include <stdint.h>
 
-#include <xen/dom0_ops.h>
+/* #include <xen/dom0_ops.h> test DV */
 #include <xen/version.h>
-#include <xen/xen.h>
+/* #include <xen/xen.h> test DV */
 
 #include <xs.h>
 

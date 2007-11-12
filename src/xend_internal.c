@@ -3038,11 +3038,11 @@ xenDaemonDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
                         !strcmp(t->u.s.car->u.s.car->u.value, "cpumap") &&
                         (t->u.s.car->u.s.cdr->kind == SEXPR_CONS)) {
                         for (t = t->u.s.car->u.s.cdr->u.s.car; t->kind == SEXPR_CONS; t = t->u.s.cdr)
-                            if (t->u.s.car->kind == SEXPR_VALUE) {
-                                cpu = strtol(t->u.s.car->u.value, NULL, 0);
-                                if (cpu >= 0 && (VIR_CPU_MAPLEN(cpu+1) <= maplen)) {
-                                    VIR_USE_CPU(cpumap, cpu);
-                                }
+                            if (t->u.s.car->kind == SEXPR_VALUE
+                                && xstrtol_i(t->u.s.car->u.value, NULL, 10, &cpu) == 0
+                                && cpu >= 0
+                                && (VIR_CPU_MAPLEN(cpu+1) <= maplen)) {
+                                VIR_USE_CPU(cpumap, cpu);
                             }
                         break;
                     }
