@@ -1,3 +1,9 @@
+Mon Nov 12 23:11:35 CET 2007 Jim Meyering <meyering@redhat.com>
+
+	conftest: fix transposed size and count arguments to fwrite.
+	* tests/conftest.c: Include <string.h> and <errno.h>.
+	  Also include strerror in diagnostic.
+
 Mon Nov 12 14:56:33 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	Begin fixing uses of strtol: parse integers more carefully.

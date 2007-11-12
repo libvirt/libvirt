@@ -1,6 +1,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <errno.h>
 #include "conf.h"
 
 int main(int argc, char **argv) {
@@ -25,8 +27,8 @@ int main(int argc, char **argv) {
 	exit(3);
     }
     virConfFree(conf);
-    if (fwrite(buffer, len, 1, stdout) != len) {
-        fprintf(stderr, "Write failed\n");
+    if (fwrite(buffer, 1, len, stdout) != len) {
+	fprintf(stderr, "Write failed: %s\n", strerror (errno));
 	exit(1);
     }
     exit(0);
