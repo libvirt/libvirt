@@ -1,0 +1,22 @@
+#!/bin/bash
+# Ensure that an invalid domain ID isn't interpreted as a valid one.
+# Before, an ID of 2^32+2 would be treated just like an ID of 2.
+
+# Boilerplate code to set up a test directory, cd into it,
+# and to ensure we remove it upon completion.
+this_test_() { echo "./$0" | sed 's,.*/,,'; }
+t_=$(this_test_)-$$
+init_cwd_=$(pwd)
+trap 'st=$?; d='"$t_"';
+    cd '"$init_cwd_"' && chmod -R u+rwx "$d" && rm -rf "$d" && exit $st' 0
+trap '(exit $?); exit $?' 1 2 13 15
+mkdir "$t_" || fail=1
+cd "$t_" || fail=1
+
+echo "error: failed to get domain '4294967298'" > exp || fail=1
+echo domname 4294967298 | $abs_top_builddir/src/virsh --quiet \
+    --connect test://$abs_top_srcdir/docs/testnode.xml \
+    > /dev/null 2> err || fail=1
+diff -u err exp || fail=1
+
+exit $fail
