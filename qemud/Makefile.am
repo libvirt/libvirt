@@ -95,7 +95,7 @@ remote_dispatch_proc_switch.h: remote_generate_stubs.pl remote_protocol.x
 if LIBVIRT_INIT_SCRIPTS_RED_HAT
 install-init: libvirtd.init
 	mkdir -p $(DESTDIR)$(sysconfdir)/rc.d/init.d
-	$(INSTALL_SCRIPT) $(srcdir)/libvirtd.init $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
+	$(INSTALL_SCRIPT) libvirtd.init $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
 	mkdir -p $(DESTDIR)$(sysconfdir)/sysconfig
 	$(INSTALL_SCRIPT) $(srcdir)/libvirtd.sysconf $(DESTDIR)$(sysconfdir)/sysconfig/libvirtd
 
