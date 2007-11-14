@@ -1,3 +1,10 @@
+Wed Nov 14 11:55:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/stats_linux.c, src/stats_linux.h, src_xen_internal.c:
+	  Abstract out the Linux-specific statistics.  Fixed parsing
+	  of 64 bit numbers.
+	* src/Makefile.am: Updated Makefile for new files.
+
 Wed Nov 14 11:36:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/libvirt.c and all internal driver interfaces: Parse the

@@ -42,6 +42,7 @@ CLIENT_SOURCES =						\
 		xen_internal.c xen_internal.h			\
 		xs_internal.c xs_internal.h			\
 		xend_internal.c xend_internal.h			\
+		stats_linux.c stats_linux.h			\
 		sexpr.c sexpr.h					\
 		virterror.c					\
 		driver.h					\
@@ -53,8 +54,8 @@ CLIENT_SOURCES =						\
 		iptables.c iptables.h 				\
 		uuid.c uuid.h 					\
 		qemu_driver.c qemu_driver.h 			\
-		qemu_conf.c qemu_conf.h					\
-		openvz_conf.c openvz_conf.h				\
+		qemu_conf.c qemu_conf.h				\
+		openvz_conf.c openvz_conf.h			\
 		openvz_driver.c openvz_driver.h 		\
                 nodeinfo.h nodeinfo.c                           \
 		util.c util.h
