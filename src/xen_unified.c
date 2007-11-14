@@ -217,42 +217,28 @@ done:
  */
 
 static int
-xenUnifiedOpen (virConnectPtr conn, const char *name, int flags)
+xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, int flags)
 {
     int i, j;
     xenUnifiedPrivatePtr priv;
-    xmlURIPtr uri;
-
-    uri = xmlParseURI(name);
-    if (uri == NULL) {
-        return VIR_DRV_OPEN_DECLINED;
-    }
 
     /* Refuse any scheme which isn't "xen://" or "http://". */
     if (uri->scheme &&
         strcasecmp(uri->scheme, "xen") != 0 &&
-        strcasecmp(uri->scheme, "http") != 0) {
-        xmlFreeURI(uri);
+        strcasecmp(uri->scheme, "http") != 0)
         return VIR_DRV_OPEN_DECLINED;
-    }
 
     /* xmlParseURI will parse a naked string like "foo" as a URI with
      * a NULL scheme.  That's not useful for us because we want to only
      * allow full pathnames (eg. ///var/lib/xen/xend-socket).  Decline
      * anything else.
      */
-    if (!uri->scheme && name[0] != '/') {
-        xmlFreeURI(uri);
+    if (!uri->scheme && (!uri->path || uri->path[0] != '/'))
         return VIR_DRV_OPEN_DECLINED;
-    }
 
     /* Refuse any xen:// URI with a server specified - allow remote to do it */
-    if (uri->scheme && strcasecmp(uri->scheme, "xen") == 0 && uri->server) {
-        xmlFreeURI(uri);
+    if (uri->scheme && strcasecmp(uri->scheme, "xen") == 0 && uri->server)
         return VIR_DRV_OPEN_DECLINED;
-    }
-
-    xmlFreeURI(uri);
 
     /* Allocate per-connection private data. */
     priv = calloc (1, sizeof *priv);
@@ -261,13 +247,6 @@ xenUnifiedOpen (virConnectPtr conn, const char *name, int flags)
         return VIR_DRV_OPEN_ERROR;
     }
     conn->privateData = priv;
-
-    priv->name = strdup (name);
-    if (!priv->name) {
-        xenUnifiedError (NULL, VIR_ERR_NO_MEMORY, "allocating priv->name");
-        free (priv);
-        return VIR_DRV_OPEN_ERROR;
-    }
 
     priv->handle = -1;
     priv->xendConfigVersion = -1;
@@ -293,7 +272,7 @@ xenUnifiedOpen (virConnectPtr conn, const char *name, int flags)
 #ifdef ENABLE_DEBUG
             fprintf (stderr, "libvirt: xenUnifiedOpen: trying Xen sub-driver %d\n", i);
 #endif
-            if (drivers[i]->open (conn, name, flags) == VIR_DRV_OPEN_SUCCESS)
+            if (drivers[i]->open (conn, uri, flags) == VIR_DRV_OPEN_SUCCESS)
                 priv->opened[i] = 1;
 #ifdef ENABLE_DEBUG
             fprintf (stderr, "libvirt: xenUnifiedOpen: Xen sub-driver %d open %s\n",
@@ -307,7 +286,6 @@ xenUnifiedOpen (virConnectPtr conn, const char *name, int flags)
             (getuid() == 0 || i == XEN_UNIFIED_PROXY_OFFSET)) {
             for (j = 0; j < i; ++j)
                 if (priv->opened[j]) drivers[j]->close (conn);
-            free (priv->name);
             free (priv);
             /* The assumption is that one of the underlying drivers
              * has set virterror already.
@@ -332,7 +310,6 @@ xenUnifiedClose (virConnectPtr conn)
         if (priv->opened[i] && drivers[i]->close)
             (void) drivers[i]->close (conn);
 
-    free (priv->name);
     free (conn->privateData);
     conn->privateData = NULL;
 
@@ -395,21 +372,6 @@ xenUnifiedGetHostname (virConnectPtr conn)
         return NULL;
     }
     str = strdup (hostname);
-    if (str == NULL) {
-        xenUnifiedError (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
-        return NULL;
-    }
-    return str;
-}
-
-/* The name is recorded (canonicalised) in xenUnifiedOpen. */
-static char *
-xenUnifiedGetURI (virConnectPtr conn)
-{
-    GET_PRIVATE(conn);
-    char *str;
-
-    str = strdup (priv->name);
     if (str == NULL) {
         xenUnifiedError (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
         return NULL;
@@ -1249,7 +1211,6 @@ static virDriver xenUnifiedDriver = {
     .type 			= xenUnifiedType,
     .version 			= xenUnifiedVersion,
     .getHostname    = xenUnifiedGetHostname,
-    .getURI         = xenUnifiedGetURI,
     .getMaxVcpus 			= xenUnifiedGetMaxVcpus,
     .nodeGetInfo 			= xenUnifiedNodeGetInfo,
     .getCapabilities 		= xenUnifiedGetCapabilities,

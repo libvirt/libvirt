@@ -69,7 +69,6 @@ struct private_data {
     gnutls_session_t session;   /* GnuTLS session (if uses_tls != 0). */
     char *type;                 /* Cached return from remoteType. */
     int counter;                /* Generates serial numbers for RPC. */
-    char *uri;                  /* Original (remote) URI. */
     int networkOnly;            /* Only used for network API */
 };
 
@@ -251,15 +250,9 @@ enum virDrvOpenRemoteFlags {
 };
 
 static int
-doRemoteOpen (virConnectPtr conn, struct private_data *priv, const char *uri_str, int flags)
+doRemoteOpen (virConnectPtr conn, struct private_data *priv,
+              xmlURIPtr uri, int flags)
 {
-    if (!uri_str) return VIR_DRV_OPEN_DECLINED;
-
-    /* We have to parse the URL every time to discover whether
-     * it contains a transport or remote server name.  There's no
-     * way to get around this.
-     */
-    xmlURIPtr uri = xmlParseURI (uri_str);
     if (!uri || !uri->scheme)
         return VIR_DRV_OPEN_DECLINED; /* Decline - not a URL. */
 
@@ -656,13 +649,6 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv, const char *uri_str
               (xdrproc_t) xdr_void, (char *) NULL) == -1)
         goto failed;
 
-    /* Duplicate and save the uri_str. */
-    priv->uri = strdup (uri_str);
-    if (!priv->uri) {
-        error (NULL, VIR_ERR_NO_MEMORY, "allocating priv->uri");
-        goto failed;
-    }
-
     /* Successful. */
     retcode = VIR_DRV_OPEN_SUCCESS;
 
@@ -684,7 +670,6 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv, const char *uri_str
     }
 
     /* Free up the URL and strings. */
-    xmlFreeURI (uri);
     if (name) free (name);
     if (command) free (command);
     if (sockname) free (sockname);
@@ -705,7 +690,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv, const char *uri_str
 }
 
 static int
-remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
+remoteOpen (virConnectPtr conn, xmlURIPtr uri, int flags)
 {
     struct private_data *priv;
     int ret, rflags = 0;
@@ -722,10 +707,13 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
     if (flags & VIR_DRV_OPEN_RO)
         rflags |= VIR_DRV_OPEN_REMOTE_RO;
 
-    if (uri_str) {
-        if (STREQ (uri_str, "qemu:///system")) {
+    if (uri &&
+        uri->scheme && STREQ (uri->scheme, "qemu") &&
+        (!uri->server || STREQ (uri->server, "")) &&
+        uri->path) {
+        if (STREQ (uri->path, "/system")) {
             rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
-        } else if (STREQ (uri_str, "qemu:///session")) {
+        } else if (STREQ (uri->path, "/session")) {
             rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
             if (getuid() > 0) {
                 rflags |= VIR_DRV_OPEN_REMOTE_USER;
@@ -737,7 +725,7 @@ remoteOpen (virConnectPtr conn, const char *uri_str, int flags)
     memset(priv, 0, sizeof(struct private_data));
     priv->magic = DEAD;
     priv->sock = -1;
-    ret = doRemoteOpen(conn, priv, uri_str, rflags);
+    ret = doRemoteOpen(conn, priv, uri, rflags);
     if (ret != VIR_DRV_OPEN_SUCCESS) {
         conn->privateData = NULL;
         free(priv);
@@ -1222,9 +1210,6 @@ doRemoteClose (virConnectPtr conn, struct private_data *priv)
     /* See comment for remoteType. */
     if (priv->type) free (priv->type);
 
-    /* Free URI copy. */
-    if (priv->uri) free (priv->uri);
-
     /* Free private data. */
     priv->magic = DEAD;
 
@@ -1322,23 +1307,6 @@ remoteGetHostname (virConnectPtr conn)
 
     /* Caller frees this. */
     return ret.hostname;
-}
-
-/* This call is unusual because it doesn't go over RPC.  The
- * full URI is known (only) at the client end of the connection.
- */
-static char *
-remoteGetURI (virConnectPtr conn)
-{
-    GET_PRIVATE (conn, NULL);
-    char *str;
-
-    str = strdup (priv->uri);
-    if (str == NULL) {
-        error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
-        return NULL;
-    }
-    return str;
 }
 
 static int
@@ -2374,7 +2342,7 @@ remoteDomainInterfaceStats (virDomainPtr domain, const char *path,
 
 static int
 remoteNetworkOpen (virConnectPtr conn,
-                   const char *uri_str,
+                   xmlURIPtr uri,
                    int flags)
 {
     if (inside_daemon)
@@ -2408,7 +2376,7 @@ remoteNetworkOpen (virConnectPtr conn,
         memset(priv, 0, sizeof(struct private_data));
         priv->magic = DEAD;
         priv->sock = -1;
-        ret = doRemoteOpen(conn, priv, uri_str, rflags);
+        ret = doRemoteOpen(conn, priv, uri, rflags);
         if (ret != VIR_DRV_OPEN_SUCCESS) {
             conn->networkPrivateData = NULL;
             free(priv);
@@ -3124,7 +3092,6 @@ static virDriver driver = {
 	.type = remoteType,
 	.version = remoteVersion,
     .getHostname = remoteGetHostname,
-    .getURI = remoteGetURI,
 	.getMaxVcpus = remoteGetMaxVcpus,
 	.nodeGetInfo = remoteNodeGetInfo,
     .getCapabilities = remoteGetCapabilities,

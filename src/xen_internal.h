@@ -30,7 +30,7 @@ char *
         xenHypervisorDomainGetOSType (virDomainPtr dom);
 
 int	xenHypervisorOpen		(virConnectPtr conn,
-					 const char *name,
+					 xmlURIPtr uri,
 					 int flags);
 int	xenHypervisorClose		(virConnectPtr conn);
 int	xenHypervisorGetVersion		(virConnectPtr conn,

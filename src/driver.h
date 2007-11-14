@@ -9,6 +9,8 @@
 #include "libvirt/libvirt.h"
 #include "libvirt/virterror.h"
 
+#include <libxml/uri.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -74,7 +76,7 @@ typedef enum {
 
 typedef virDrvOpenStatus
 	(*virDrvOpen)			(virConnectPtr conn,
-					 const char *name,
+                     xmlURIPtr uri,
 					 int flags);
 typedef int
 	(*virDrvClose)			(virConnectPtr conn);

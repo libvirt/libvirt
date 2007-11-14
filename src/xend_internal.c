@@ -2037,18 +2037,29 @@ error:
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xenDaemonOpen(virConnectPtr conn, const char *name,
+xenDaemonOpen(virConnectPtr conn, xmlURIPtr uri,
               int flags ATTRIBUTE_UNUSED)
 {
-    xmlURIPtr uri = NULL;
     int ret;
-     
-    /* If the name is just "xen" (it might originally have been NULL,
-     * see xenUnifiedOpen) or any URI beginning with "xen:///" then
-     * try default paths and methods to get to the xend socket.
+
+    /* Switch on the scheme, which we expect to be NULL (file),
+     * "http" or "xen".
      */
-    if (strcasecmp (name, "xen") == 0 ||
-        strncasecmp (name, "xen:///", 7) == 0) {
+    if (uri->scheme == NULL) {
+        /* It should be a file access */
+        if (uri->path == NULL) {
+            virXendError(NULL, VIR_ERR_NO_CONNECT, __FUNCTION__);
+            goto failed;
+        }
+        ret = xenDaemonOpen_unix(conn, uri->path);
+        if (ret < 0)
+            goto failed;
+
+        ret = xend_detect_config_version(conn);
+        if (ret == -1)
+            goto failed;
+    }
+    else if (STRCASEEQ (uri->scheme, "xen")) {
         /*
          * try first to open the unix socket
          */
@@ -2069,50 +2080,22 @@ xenDaemonOpen(virConnectPtr conn, const char *name,
         ret = xend_detect_config_version(conn);
         if (ret == -1)
             goto failed;
+    } else if (STRCASEEQ (uri->scheme, "http")) {
+        ret = xenDaemonOpen_tcp(conn, uri->server, uri->port);
+        if (ret < 0)
+            goto failed;
+        ret = xend_detect_config_version(conn);
+        if (ret == -1)
+            goto failed;
     } else {
-        /*
-         * We were given a connection name, expected to be an URL
-         */
-        uri = xmlParseURI(name);
-        if (uri == NULL) {
-            virXendError(NULL, VIR_ERR_NO_CONNECT, name);
-            goto failed;
-        }
-
-        if (uri->scheme == NULL) {
-            /* It should be a file access */
-            if (uri->path == NULL) {
-                virXendError(NULL, VIR_ERR_NO_CONNECT, name);
-                goto failed;
-            }
-            ret = xenDaemonOpen_unix(conn, uri->path);
-            if (ret < 0)
-                goto failed;
-
-            ret = xend_detect_config_version(conn);
-            if (ret == -1)
-                goto failed;
-        } else if (!strcasecmp(uri->scheme, "http")) {
-            ret = xenDaemonOpen_tcp(conn, uri->server, uri->port);
-            if (ret < 0)
-                goto failed;
-            ret = xend_detect_config_version(conn);
-            if (ret == -1)
-                goto failed;
-        } else {
-            virXendError(NULL, VIR_ERR_NO_CONNECT, name);
-            goto failed;
-        }
+        virXendError(NULL, VIR_ERR_NO_CONNECT, __FUNCTION__);
+        goto failed;
     }
 
  done:
-    if (uri != NULL)
-        xmlFreeURI(uri);
     return(ret);
 
 failed:
-    if (uri != NULL)
-        xmlFreeURI(uri);
     return(-1);
 }
 

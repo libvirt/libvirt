@@ -470,7 +470,7 @@ static int xenXMConfigCacheRefresh (virConnectPtr conn) {
  */
 int
 xenXMOpen (virConnectPtr conn ATTRIBUTE_UNUSED,
-           const char *name ATTRIBUTE_UNUSED, int flags ATTRIBUTE_UNUSED)
+           xmlURIPtr uri ATTRIBUTE_UNUSED, int flags ATTRIBUTE_UNUSED)
 {
     if (configCache == NULL) {
         configCache = virHashCreate(50);

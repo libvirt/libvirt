@@ -326,7 +326,7 @@ virConnectCheckStoreID(virConnectPtr conn, int id)
  */
 int
 xenStoreOpen(virConnectPtr conn,
-             const char *name ATTRIBUTE_UNUSED,
+             xmlURIPtr uri ATTRIBUTE_UNUSED,
              int flags ATTRIBUTE_UNUSED)
 {
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;

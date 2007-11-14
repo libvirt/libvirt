@@ -1383,15 +1383,13 @@ static int qemudMonitorCommand(struct qemud_driver *driver ATTRIBUTE_UNUSED,
 
 
 static virDrvOpenStatus qemudOpen(virConnectPtr conn,
-                                  const char *name,
+                                  xmlURIPtr uri,
                                   int flags ATTRIBUTE_UNUSED) {
-    xmlURIPtr uri = NULL;
     uid_t uid = getuid();
 
     if (qemu_driver == NULL)
-        return VIR_DRV_OPEN_DECLINED;
+        goto decline;
 
-    uri = xmlParseURI(name);
     if (uri == NULL || uri->scheme == NULL || uri->path == NULL)
         goto decline;
 
@@ -1409,12 +1407,9 @@ static virDrvOpenStatus qemudOpen(virConnectPtr conn,
 
     conn->privateData = qemu_driver;
 
-    xmlFreeURI(uri);
     return VIR_DRV_OPEN_SUCCESS;
 
  decline:
-    if (uri != NULL)
-        xmlFreeURI(uri);
     return VIR_DRV_OPEN_DECLINED;    
 }
 
@@ -2514,7 +2509,7 @@ static virNetworkPtr qemudNetworkLookupByName(virConnectPtr conn ATTRIBUTE_UNUSE
 }
 
 static virDrvOpenStatus qemudOpenNetwork(virConnectPtr conn,
-                                         const char *name ATTRIBUTE_UNUSED,
+                                         xmlURIPtr uri ATTRIBUTE_UNUSED,
                                          int flags ATTRIBUTE_UNUSED) {
     if (!qemu_driver)
         return VIR_DRV_OPEN_DECLINED;
@@ -2783,7 +2778,7 @@ static virDriver qemuDriver = {
     qemudGetType, /* type */
     qemudGetVersion, /* version */
     qemudGetHostname, /* hostname */
-    NULL, /* URI - never called because remote_internal.c answers this */
+    NULL, /* URI  */
     qemudGetMaxVCPUs, /* getMaxVcpus */
     qemudGetNodeInfo, /* nodeGetInfo */
     qemudGetCapabilities, /* getCapabilities */

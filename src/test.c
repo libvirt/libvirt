@@ -879,35 +879,23 @@ static int getNetworkIndex(virNetworkPtr network) {
 }
 
 static int testOpen(virConnectPtr conn,
-                    const char *name,
+                    xmlURIPtr uri,
                     int flags ATTRIBUTE_UNUSED)
 {
-    xmlURIPtr uri;
     int ret;
 
-    if (!name)
+    if (!uri)
         return VIR_DRV_OPEN_DECLINED;
 
-    uri = xmlParseURI(name);
-    if (uri == NULL) {
+    if (!uri->scheme || strcmp(uri->scheme, "test") != 0)
         return VIR_DRV_OPEN_DECLINED;
-    }
-
-    if (!uri->scheme || strcmp(uri->scheme, "test") != 0) {
-        xmlFreeURI(uri);
-        return VIR_DRV_OPEN_DECLINED;
-    }
 
     /* Remote driver should handle these. */
-    if (uri->server) {
-        xmlFreeURI(uri);
+    if (uri->server)
         return VIR_DRV_OPEN_DECLINED;
-    }
 
-    if (uri->server) {
-        xmlFreeURI(uri);
+    if (uri->server)
         return VIR_DRV_OPEN_DECLINED;
-    }
 
     /* From this point on, the connection is for us. */
     if (!uri->path
@@ -923,8 +911,6 @@ static int testOpen(virConnectPtr conn,
     else
         ret = testOpenFromFile(conn,
                                uri->path);
-
-    xmlFreeURI(uri);
 
     return (ret);
 }
@@ -1655,7 +1641,7 @@ static int testDomainSetSchedulerParams(virDomainPtr domain,
 }
 
 static virDrvOpenStatus testOpenNetwork(virConnectPtr conn,
-                                        const char *name ATTRIBUTE_UNUSED,
+                                        xmlURIPtr uri ATTRIBUTE_UNUSED,
                                         int flags ATTRIBUTE_UNUSED) {
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;

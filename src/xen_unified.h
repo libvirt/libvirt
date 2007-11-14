@@ -108,9 +108,6 @@ struct _xenUnifiedPrivate {
      * xen_unified.c.
      */
     int opened[XEN_UNIFIED_NR_DRIVERS];
-
-    /* Canonical URI. */
-    char *name;
 };
 
 typedef struct _xenUnifiedPrivate *xenUnifiedPrivatePtr;

@@ -21,7 +21,7 @@ extern struct xenUnifiedDriver xenStoreDriver;
 int xenStoreInit (void);
 
 int		xenStoreOpen		(virConnectPtr conn,
-					 const char *name,
+					 xmlURIPtr uri,
 					 int flags);
 int		xenStoreClose		(virConnectPtr conn);
 int		xenStoreGetDomainInfo	(virDomainPtr domain,

@@ -149,6 +149,7 @@ struct _virConnect {
     virHashTablePtr domains;/* hash table for known domains */
     virHashTablePtr networks;/* hash table for known domains */
     int flags;              /* a set of connection flags */
+    char *name;                 /* connection URI */
 };
 
 /**

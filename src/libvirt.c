@@ -22,6 +22,7 @@
 
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
+#include <libxml/uri.h>
 
 #include "internal.h"
 #include "driver.h"
@@ -398,6 +399,7 @@ do_open (const char *name, int flags)
 {
     int i, res;
     virConnectPtr ret = NULL;
+    xmlURIPtr uri;
 
     /* Convert NULL or "" to xen:/// for back compat */
     if (!name || name[0] == '\0')
@@ -407,6 +409,12 @@ do_open (const char *name, int flags)
     if (!strcasecmp(name, "xen"))
         name = "xen:///";
 
+    /* Convert xen:// -> xen:/// because xmlParseURI cannot parse the
+     * former.  This allows URIs such as xen://localhost to work.
+     */
+    if (STREQ (name, "xen://"))
+        name = "xen:///";
+
     if (!initialized)
         if (virInitialize() < 0)
 	    return NULL;
@@ -414,19 +422,43 @@ do_open (const char *name, int flags)
     ret = virGetConnect();
     if (ret == NULL) {
         virLibConnError(NULL, VIR_ERR_NO_MEMORY, _("allocating connection"));
+        return NULL;
+    }
+
+    uri = xmlParseURI (name);
+    if (!uri) {
+        virLibConnError (ret, VIR_ERR_INVALID_ARG,
+                         _("could not parse connection URI"));
         goto failed;
     }
 
 #ifdef ENABLE_DEBUG
-    fprintf (stderr, "libvirt: do_open: proceeding with name=%s\n", name);
+    fprintf (stderr,
+             "libvirt: do_open: name \"%s\" to URI components:\n"
+             "  scheme %s\n"
+             "  opaque %s\n"
+             "  authority %s\n"
+             "  server %s\n"
+             "  user %s\n"
+             "  port %d\n"
+             "  path %s\n",
+             name,
+             uri->scheme, uri->opaque, uri->authority, uri->server,
+             uri->user, uri->port, uri->path);
 #endif
+
+    ret->name = strdup (name);
+    if (!ret->name) {
+        virLibConnError (ret, VIR_ERR_NO_MEMORY, "allocating conn->name");
+        goto failed;
+    }
 
     for (i = 0; i < virDriverTabCount; i++) {
 #ifdef ENABLE_DEBUG
         fprintf (stderr, "libvirt: do_open: trying driver %d (%s) ...\n",
                  i, virDriverTab[i]->name);
 #endif
-        res = virDriverTab[i]->open (ret, name, flags);
+        res = virDriverTab[i]->open (ret, uri, flags);
 #ifdef ENABLE_DEBUG
         fprintf (stderr, "libvirt: do_open: driver %d %s returned %s\n",
                  i, virDriverTab[i]->name,
@@ -448,7 +480,7 @@ do_open (const char *name, int flags)
     }
 
     for (i = 0; i < virNetworkDriverTabCount; i++) {
-        res = virNetworkDriverTab[i]->open (ret, name, flags);
+        res = virNetworkDriverTab[i]->open (ret, uri, flags);
 #ifdef ENABLE_DEBUG
         fprintf (stderr, "libvirt: do_open: network driver %d %s returned %s\n",
                  i, virNetworkDriverTab[i]->name,
@@ -472,12 +504,16 @@ do_open (const char *name, int flags)
         ret->flags = VIR_CONNECT_RO;
     }
 
+    xmlFreeURI (uri);
+
     return ret;
 
 failed:
+    if (ret->name) free (ret->name);
     if (ret->driver) ret->driver->close (ret);
+    if (uri) xmlFreeURI(uri);
 	virFreeConnect(ret);
-    return (NULL);
+    return NULL;
 }
 
 /**
@@ -539,6 +575,8 @@ virConnectClose(virConnectPtr conn)
     if (conn->networkDriver)
         conn->networkDriver->close (conn);
     conn->driver->close (conn);
+
+    if (conn->name) free (conn->name);
 
     if (virFreeConnect(conn) < 0)
         return (-1);
@@ -670,6 +708,8 @@ virConnectGetHostname (virConnectPtr conn)
 char *
 virConnectGetURI (virConnectPtr conn)
 {
+    char *name;
+
     DEBUG("conn=%p", conn);
 
     if (!VIR_IS_CONNECT(conn)) {
@@ -677,11 +717,18 @@ virConnectGetURI (virConnectPtr conn)
         return NULL;
     }
 
+    /* Drivers may override getURI, but if they don't then
+     * we provide a default implementation.
+     */
     if (conn->driver->getURI)
         return conn->driver->getURI (conn);
 
-    virLibConnError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
-    return NULL;
+    name = strdup (conn->name);
+    if (!name) {
+        virLibConnError (conn, VIR_ERR_NO_MEMORY, __FUNCTION__);
+        return NULL;
+    }
+    return name;
 }
 
 /**
