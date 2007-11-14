@@ -10,6 +10,7 @@
 #include "nodeinfo.h"
 
 static char *progname;
+static char *abs_top_srcdir;
 
 #define MAX_FILE 4096
 
@@ -67,9 +68,12 @@ static int linuxTestNodeInfo(const void *data) {
     char cpuinfo[PATH_MAX];
     char meminfo[PATH_MAX];
     char output[PATH_MAX];
-    snprintf(cpuinfo, PATH_MAX, "nodeinfodata/linux-%s.cpuinfo", (const char*)data);
-    snprintf(meminfo, PATH_MAX, "nodeinfodata/linux-%s.meminfo", (const char*)data);
-    snprintf(output, PATH_MAX, "nodeinfodata/linux-%s.txt", (const char*)data);
+    snprintf(cpuinfo, PATH_MAX, "%s/tests/nodeinfodata/linux-%s.cpuinfo",
+             abs_top_srcdir, (const char*)data);
+    snprintf(meminfo, PATH_MAX, "%s/tests/nodeinfodata/linux-%s.meminfo",
+             abs_top_srcdir, (const char*)data);
+    snprintf(output, PATH_MAX, "%s/tests/nodeinfodata/linux-%s.txt",
+             abs_top_srcdir, (const char*)data);
     return linuxTestCompareFiles(cpuinfo, meminfo, output);
 }
 #endif
@@ -89,6 +93,10 @@ main(int argc, char **argv)
         "nodeinfo-5",
         "nodeinfo-6",
     };
+
+    abs_top_srcdir = getenv("abs_top_srcdir");
+    if (!abs_top_srcdir)
+      return EXIT_FAILURE;
 
     progname = argv[0];
 

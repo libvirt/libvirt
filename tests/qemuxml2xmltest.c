@@ -9,6 +9,7 @@
 #include "internal.h"
 
 static char *progname;
+static char *abs_top_srcdir;
 struct qemud_driver driver;
 
 #define MAX_FILE 4096
@@ -59,7 +60,8 @@ static int testCompareXMLToXMLFiles(const char *xml) {
 
 static int testCompareXMLToXMLHelper(const void *data) {
     char xml[PATH_MAX];
-    snprintf(xml, PATH_MAX, "qemuxml2argvdata/qemuxml2argv-%s.xml", (const char*)data);
+    snprintf(xml, PATH_MAX, "%s/tests/qemuxml2argvdata/qemuxml2argv-%s.xml",
+             abs_top_srcdir, (const char*)data);
     return testCompareXMLToXMLFiles(xml);
 }
 
@@ -75,6 +77,10 @@ main(int argc, char **argv)
         fprintf(stderr, "Usage: %s\n", progname);
         exit(EXIT_FAILURE);
     }
+
+    abs_top_srcdir = getenv("abs_top_srcdir");
+    if (!abs_top_srcdir)
+      return 1;
 
     if (virtTestRun("QEMU XML-2-ARGV minimal",
                     1, testCompareXMLToXMLHelper, "minimal") < 0)

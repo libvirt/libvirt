@@ -1,9 +1,10 @@
 #!/bin/bash
+set -x
 NOK=0
-for f in confdata/*.conf
+for f in $abs_top_srcdir/tests/confdata/*.conf
 do
     ./conftest $f > conftest.$$
-    outfile=`echo $f | sed s+\.conf+\.out+`
+    outfile=`echo "$f" | sed s+\.conf$+\.out+`
     diff $outfile conftest.$$ > /dev/null
     if [ $? != 0 ] 
     then

@@ -13,19 +13,31 @@
 #include "xen_internal.h"
 
 static char *progname;
+static char *abs_top_srcdir;
 
 #define MAX_FILE 4096
 
 static int testCompareFiles(const char *hostmachine,
-			    const char *xml,
-			    const char *cpuinfo,
-			    const char *capabilities) {
+                            const char *xml_rel,
+                            const char *cpuinfo_rel,
+                            const char *capabilities_rel) {
   char xmlData[MAX_FILE];
   char *expectxml = &(xmlData[0]);
   char *actualxml = NULL;
   FILE *fp1 = NULL, *fp2 = NULL;
 
   int ret = -1;
+
+  char xml[PATH_MAX];
+  char cpuinfo[PATH_MAX];
+  char capabilities[PATH_MAX];
+
+  snprintf(xml, sizeof xml - 1, "%s/tests/%s",
+           abs_top_srcdir, xml_rel);
+  snprintf(cpuinfo, sizeof cpuinfo - 1, "%s/tests/%s",
+           abs_top_srcdir, cpuinfo_rel);
+  snprintf(capabilities, sizeof capabilities - 1, "%s/tests/%s",
+           abs_top_srcdir, capabilities_rel);
 
   if (virtTestLoadFile(xml, &expectxml, MAX_FILE) < 0)
     goto fail;
@@ -151,6 +163,10 @@ main(int argc, char **argv)
 	fprintf(stderr, "Usage: %s\n", progname);
 	exit(EXIT_FAILURE);
     }
+
+    abs_top_srcdir = getenv("abs_top_srcdir");
+    if (!abs_top_srcdir)
+      return 1;
 
     virInitialize();
 

@@ -32,10 +32,12 @@
 #include "conf.h"
 
 static char *progname;
+static char *abs_top_srcdir;
 
 #define MAX_FILE 4096
 
-static int testCompareParseXML(const char *xmcfg, const char *xml, int xendConfigVersion) {
+static int testCompareParseXML(const char *xmcfg_rel, const char *xml_rel,
+                               int xendConfigVersion) {
     char xmlData[MAX_FILE];
     char xmcfgData[MAX_FILE];
     char gotxmcfgData[MAX_FILE];
@@ -48,6 +50,11 @@ static int testCompareParseXML(const char *xmcfg, const char *xml, int xendConfi
     int wrote = MAX_FILE;
     void *old_priv;
     struct _xenUnifiedPrivate priv;
+    char xmcfg[PATH_MAX];
+    char xml[PATH_MAX];
+
+    snprintf(xmcfg, sizeof xmcfg - 1, "%s/tests/%s", abs_top_srcdir, xmcfg_rel);
+    snprintf(xml, sizeof xml - 1, "%s/tests/%s", abs_top_srcdir, xml_rel);
 
     conn = virConnectOpenReadOnly("test:///default");
     if (!conn) goto fail;
@@ -92,7 +99,8 @@ static int testCompareParseXML(const char *xmcfg, const char *xml, int xendConfi
     return ret;
 }
 
-static int testCompareFormatXML(const char *xmcfg, const char *xml, int xendConfigVersion) {
+static int testCompareFormatXML(const char *xmcfg_rel, const char *xml_rel,
+                                int xendConfigVersion) {
     char xmlData[MAX_FILE];
     char xmcfgData[MAX_FILE];
     char *xmlPtr = &(xmlData[0]);
@@ -103,6 +111,11 @@ static int testCompareFormatXML(const char *xmcfg, const char *xml, int xendConf
     virConnectPtr conn;
     void *old_priv;
     struct _xenUnifiedPrivate priv;
+    char xmcfg[PATH_MAX];
+    char xml[PATH_MAX];
+
+    snprintf(xmcfg, sizeof xmcfg - 1, "%s/tests/%s", abs_top_srcdir, xmcfg_rel);
+    snprintf(xml, sizeof xml - 1, "%s/tests/%s", abs_top_srcdir, xml_rel);
 
     conn = virConnectOpenReadOnly("test:///default");
     if (!conn) goto fail;
@@ -258,6 +271,10 @@ main(int argc, char **argv)
         fprintf(stderr, "Usage: %s\n", progname);
         exit(EXIT_FAILURE);
     }
+
+    abs_top_srcdir = getenv("abs_top_srcdir");
+    if (!abs_top_srcdir)
+      return 1;
 
     /* Config -> XML */
     if (virtTestRun("Paravirt old PVFB (Format)",

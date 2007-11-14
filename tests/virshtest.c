@@ -9,6 +9,7 @@
 #include "internal.h"
 
 static char *progname;
+static char *abs_top_srcdir;
 #define MAX_FILE 4096
 
 static int testFilterLine(char *buffer,
@@ -27,11 +28,15 @@ static int testFilterLine(char *buffer,
   return 0;
 }
 
-static int testCompareOutput(const char *expect, const char *filter, const char *const argv[]) {
+static int testCompareOutput(const char *expect_rel, const char *filter,
+                             const char *const argv[]) {
   char expectData[MAX_FILE];
   char actualData[MAX_FILE];
   char *expectPtr = &(expectData[0]);
   char *actualPtr = &(actualData[0]);
+  char expect[PATH_MAX];
+
+  snprintf(expect, sizeof expect - 1, "%s/tests/%s", abs_top_srcdir, expect_rel);
 
   if (virtTestLoadFile(expect, &expectPtr, MAX_FILE) < 0)
     return -1;
@@ -268,13 +273,13 @@ int
 main(int argc, char **argv)
 {
     int ret = 0;
-    char cwd[PATH_MAX];
     char buffer[PATH_MAX];
 
-    if (!getcwd(cwd, PATH_MAX-1))
+    abs_top_srcdir = getenv("abs_top_srcdir");
+    if (!abs_top_srcdir)
       return 1;
 
-    snprintf(buffer, PATH_MAX-1, "test://%s/../docs/testnode.xml", cwd);
+    snprintf(buffer, PATH_MAX-1, "test://%s/docs/testnode.xml", abs_top_srcdir);
     buffer[PATH_MAX-1] = '\0';
     progname = argv[0];
     custom_uri = buffer;

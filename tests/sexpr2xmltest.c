@@ -8,16 +8,23 @@
 #include "internal.h"
 
 static char *progname;
+static char *abs_top_srcdir;
 
 #define MAX_FILE 4096
 
-static int testCompareFiles(const char *xml, const char *sexpr, int xendConfigVersion) {
+static int testCompareFiles(const char *xml_rel, const char *sexpr_rel,
+                            int xendConfigVersion) {
   char xmlData[MAX_FILE];
   char sexprData[MAX_FILE];
   char *gotxml = NULL;
   char *xmlPtr = &(xmlData[0]);
   char *sexprPtr = &(sexprData[0]);
   int ret = -1;
+  char xml[PATH_MAX];
+  char sexpr[PATH_MAX];
+
+  snprintf(xml, sizeof xml - 1, "%s/tests/%s", abs_top_srcdir, xml_rel);
+  snprintf(sexpr, sizeof sexpr - 1, "%s/tests/%s", abs_top_srcdir, sexpr_rel);
 
   if (virtTestLoadFile(xml, &xmlPtr, MAX_FILE) < 0)
     goto fail;
@@ -174,6 +181,10 @@ main(int argc, char **argv)
 	fprintf(stderr, "Usage: %s\n", progname);
 	exit(EXIT_FAILURE);
     }
+
+    abs_top_srcdir = getenv("abs_top_srcdir");
+    if (!abs_top_srcdir)
+      return 1;
 
     if (virtTestRun("SEXPR-2-XML PV config (version 1)",
 		    1, testComparePVversion1, NULL) != 0)

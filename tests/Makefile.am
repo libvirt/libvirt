@@ -31,15 +31,29 @@ LDADDS = \
 	$(LIBVIRT) \
         $(COVERAGE_LDFLAGS)
 
-EXTRA_DIST = xmlrpcserver.py test_conf.sh
+EXTRA_DIST =		\
+	xmlrpcserver.py	\
+	test_conf.sh	\
+	confdata	\
+	qemuxml2argvdata \
+	xml2sexprdata	\
+	nodeinfodata	\
+	virshdata	\
+	xencapsdata	\
+	sexpr2xmldata	\
+	xmconfigdata
 
 noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest conftest \
 	reconnect xmconfigtest xencapstest qemuxml2argvtest qemuxml2xmltest \
         nodeinfotest
 
+test_scripts = \
+	int-overflow
+EXTRA_DIST += $(test_scripts)
+
 TESTS = xml2sexprtest sexpr2xmltest virshtest test_conf.sh xmconfigtest \
         xencapstest qemuxml2argvtest qemuxml2xmltest nodeinfotest \
-	int-overflow
+	$(test_scripts)
 if ENABLE_XEN_TESTS
   TESTS += reconnect
 endif

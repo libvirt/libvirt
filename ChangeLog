@@ -1,3 +1,21 @@
+Wed Nov 14 11:34:35 CET 2007 Jim Meyering <meyering@redhat.com>
+
+	Arrange for tests to pass in a non-srcdir build.
+	* tests/Makefile.am: Include the contents of the *data directories
+	in the make-dist-built tarball by adding each of that *data
+	directories to EXTRA_DIST.
+	Also add int-overflow (via $(test_scripts)) to EXTRA_DIST.
+	* tests/nodeinfotest.c: Prepend "$abs_top_srcdir/tests" to
+	each input file name.
+	* tests/qemuxml2argvtest.c: Likewise.
+	* tests/qemuxml2xmltest.c: Likewise.
+	* tests/sexpr2xmltest.c: Likewise.
+	* tests/test_conf.sh: Likewise.
+	* tests/virshtest.c: Likewise.
+	* tests/xencapstest.c: Likewise.
+	* tests/xmconfigtest.c: Likewise.
+	* tests/xml2sexprtest.c: Likewise.
+
 Tue Nov 13 15:33:35 CET 2007 Jim Meyering <meyering@redhat.com>
 
 	Make qemud's install-init rule work in a non-srcdir build.
