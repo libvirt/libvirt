@@ -1583,9 +1583,7 @@ remoteReadConfigFile (const char *filename)
     p = virConfGetValue (conf, "unix_sock_ro_perms");
     CHECK_TYPE ("unix_sock_ro_perms", VIR_CONF_STRING);
     if (p && p->str) {
-        char *tmp = NULL;
-        unix_sock_ro_perms = strtol(p->str, &tmp, 8);
-        if (*tmp) {
+        if (xstrtol_i(p->str, NULL, 8, &unix_sock_ro_perms) != 0) {
             qemudLog (QEMUD_ERR, "Failed to parse mode '%s'", p->str);
             return -1;
         }
@@ -1594,9 +1592,7 @@ remoteReadConfigFile (const char *filename)
     p = virConfGetValue (conf, "unix_sock_rw_perms");
     CHECK_TYPE ("unix_sock_rw_perms", VIR_CONF_STRING);
     if (p && p->str) {
-        char *tmp = NULL;
-        unix_sock_rw_perms = strtol(p->str, &tmp, 8);
-        if (*tmp) {
+        if (xstrtol_i(p->str, NULL, 8, &unix_sock_rw_perms) != 0) {
             qemudLog (QEMUD_ERR, "Failed to parse mode '%s'", p->str);
             return -1;
         }
@@ -1797,10 +1793,10 @@ int main(int argc, char **argv) {
             break;
 
         case 't':
-            timeout = strtol(optarg, &tmp, 10);
-            if (!tmp)
-                timeout = -1;
-            if (timeout <= 0)
+            if (xstrtol_i(optarg, &tmp, 10, &timeout) != 0
+                || timeout <= 0
+                /* Ensure that we can multiply by 1000 without overflowing.  */
+                || timeout > INT_MAX / 1000)
                 timeout = -1;
             break;
 

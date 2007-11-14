@@ -264,6 +264,25 @@ xstrtol_i(char const *s, char **end_ptr, int base, int *result)
     return 0;
 }
 
+/* Just like xstrtol_i, above, but produce an "unsigned int" value.  */
+static inline int
+xstrtol_ui(char const *s, char **end_ptr, int base, unsigned int *result)
+{
+    unsigned long int val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtoul(s, &p, base);
+    err = (errno || (!end_ptr && *p) || p == s || (unsigned int) val != val);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
+
 #ifdef __cplusplus
 }
 #endif                          /* __cplusplus */

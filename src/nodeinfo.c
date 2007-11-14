@@ -63,6 +63,8 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
             }
             nodeinfo->cpus++;
         } else if (STREQLEN(buf, "cpu MHz", 7)) {
+            char *p;
+            unsigned int ui;
             buf += 9;
             while (*buf && isspace(*buf))
                 buf++;
@@ -72,8 +74,12 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
                                 "parsing cpuinfo cpu MHz");
                 return -1;
             }
-            nodeinfo->mhz = (unsigned int)strtol(buf+1, NULL, 10);
+            if (xstrtol_ui(buf+1, &p, 10, &ui) == 0
+                /* Accept trailing fractional part.  */
+                && (*p == '\0' || *p == '.' || isspace(*p)))
+                nodeinfo->mhz = ui;
         } else if (STREQLEN(buf, "cpu cores", 9)) { /* aka cores */
+            char *p;
             unsigned int id;
             buf += 9;
             while (*buf && isspace(*buf))
@@ -84,8 +90,9 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
                                 "parsing cpuinfo cpu cores %c", *buf);
                 return -1;
             }
-            id = (unsigned int)strtol(buf+1, NULL, 10);
-            if (id > nodeinfo->cores)
+            if (xstrtol_ui(buf+1, &p, 10, &id) == 0
+                && (*p == '\0' || isspace(*p))
+                && id > nodeinfo->cores)
                 nodeinfo->cores = id;
         }
     }
@@ -108,14 +115,21 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
 }
 
 
-int linuxNodeInfoMemPopulate(virConnectPtr conn, FILE *meminfo, virNodeInfoPtr nodeinfo) {
+int linuxNodeInfoMemPopulate(virConnectPtr conn, FILE *meminfo,
+                             virNodeInfoPtr nodeinfo) {
     char line[1024];
 
     nodeinfo->memory = 0;
 
     while (fgets(line, sizeof(line), meminfo) != NULL) {
         if (STREQLEN(line, "MemTotal:", 9)) {
-            nodeinfo->memory = (unsigned int)strtol(line + 10, NULL, 10);
+            char *p;
+            unsigned int ui;
+            if (xstrtol_ui(line + 10, &p, 10, &ui) == 0
+                && (*p == '\0' || isspace(*p))) {
+                nodeinfo->memory = ui;
+                break;
+            }
         }
     }
     if (!nodeinfo->memory) {

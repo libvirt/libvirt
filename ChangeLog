@@ -1,12 +1,22 @@
 Wed Nov 14 11:34:35 CET 2007 Jim Meyering <meyering@redhat.com>
 
+	Parse integers more carefully, cont'd.
+	* qemud/qemud.c: Replace uses of strtol with uses of xstrtol_i.
+	  Avoid overflow for very large --timeout=N values.
+	* src/nodeinfo.c: In linuxNodeInfoMemPopulate and
+	  linuxNodeInfoCPUPopulate, use xstrtol_i rather than strtol.
+	  Unlike in qemud.c, here we allow trailing "isspace", and in
+	  the case of "cpuinfo cpu MHz", also allow a "." terminator,
+	  since we ignore the decimal and any following digits.
+	* src/internal.h: Define xstrtol_ui, too.
+
 	Arrange for tests to pass in a non-srcdir build.
 	* tests/Makefile.am: Include the contents of the *data directories
-	in the make-dist-built tarball by adding each of that *data
-	directories to EXTRA_DIST.
-	Also add int-overflow (via $(test_scripts)) to EXTRA_DIST.
+	  in the make-dist-built tarball by adding each of that *data
+	  directories to EXTRA_DIST.
+	  Also add int-overflow (via $(test_scripts)) to EXTRA_DIST.
 	* tests/nodeinfotest.c: Prepend "$abs_top_srcdir/tests" to
-	each input file name.
+	  each input file name.
 	* tests/qemuxml2argvtest.c: Likewise.
 	* tests/qemuxml2xmltest.c: Likewise.
 	* tests/sexpr2xmltest.c: Likewise.
