@@ -515,6 +515,10 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
                     sockname = strdup (LIBVIRTD_PRIV_UNIX_SOCKET_RO);
                 else
                     sockname = strdup (LIBVIRTD_PRIV_UNIX_SOCKET);
+                if (sockname == NULL) {
+                    error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+                    goto failed;
+                }
             }
         }
 
@@ -569,10 +573,19 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
         if (no_tty) nr_args += 5;   /* For -T -o BatchMode=yes -e none */
 
         command = command ? : strdup ("ssh");
+        if (command == NULL) {
+            error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+            goto failed;
+        }
 
         // Generate the final command argv[] array.
         //   ssh -p $port [-l $username] $hostname $netcat -U $sockname [NULL]
         cmd_argv = malloc (nr_args * sizeof (char *));
+        if (cmd_argv == NULL) {
+            error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+            goto failed;
+        }
+
         j = 0;
         cmd_argv[j++] = strdup (command);
         cmd_argv[j++] = strdup ("-p");
@@ -594,6 +607,11 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
         cmd_argv[j++] = strdup (sockname ? sockname : LIBVIRTD_PRIV_UNIX_SOCKET);
         cmd_argv[j++] = 0;
         assert (j == nr_args);
+        for (j = 0; j < nr_args; j++)
+            if (cmd_argv[j] == NULL) {
+                error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (ENOMEM));
+                goto failed;
+            }
     }
 
         /*FALLTHROUGH*/
@@ -626,6 +644,10 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
             // Run the external process.
             if (!cmd_argv) {
                 cmd_argv = malloc (2 * sizeof (char *));
+                if (cmd_argv == NULL) {
+                    error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+                    goto failed;
+                }
                 cmd_argv[0] = command;
                 cmd_argv[1] = 0;
             }
