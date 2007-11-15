@@ -1,3 +1,8 @@
+Thu Nov 15 18:06:15 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* docs/libvir.html docs/uri.html: update docs about the libvirt
+	  daemon startup when using QEmu/KVM.
+
 Thu Nov 15 14:00:04 CET 2007 Jim Meyering <meyering@redhat.com>
 
 	Make "make distcheck" work.
