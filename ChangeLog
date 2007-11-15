@@ -1,3 +1,12 @@
+Thu Nov 15 17:40:15 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* docs/hvsupport.html, docs/libvir.html: Document HV support
+	  for virNodeGetFreeMemory and virNodeGetCellsFreeMemory.
+	* src/libvirt.c: Add DEBUG to virNodeGetFreeMemory and
+	  virNodeGetCellsFreeMemory.
+	* src/xen_internal.c: virXenError* functions now take an
+	  additional virConnectPtr argument, and set it where possible.
+
 Thu Nov 15 18:06:15 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* docs/libvir.html docs/uri.html: update docs about the libvirt

@@ -2011,6 +2011,8 @@ virConnectGetCapabilities (virConnectPtr conn)
 unsigned long long
 virNodeGetFreeMemory(virConnectPtr conn)
 {
+    DEBUG("conn=%p", conn);
+
     if (!VIR_IS_CONNECT (conn)) {
         virLibConnError (NULL, VIR_ERR_INVALID_CONN, __FUNCTION__);
         return 0;
@@ -2729,6 +2731,9 @@ int
 virNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *freeMems,
                           int startCell, int maxCells)
 {
+    DEBUG("conn=%p, freeMems=%p, startCell=%d, maxCells=%d",
+          conn, freeMems, startCell, maxCells);
+
     if (!VIR_IS_CONNECT(conn)) {
         virLibConnError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
         return (-1);
