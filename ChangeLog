@@ -1,3 +1,10 @@
+Thu Nov 15 17:43:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/stats_linux.c: Fix parsing of short interface names
+	  occurring in the /proc/net/dev file.
+	* src/qemu_driver.c: Collect interface stats for QEMU & KVM
+	  domains.
+
 Thu Nov 15 17:40:15 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* docs/hvsupport.html, docs/libvir.html: Document HV support

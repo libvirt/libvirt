@@ -55,6 +55,7 @@
 #include "qemu_driver.h"
 #include "qemu_conf.h"
 #include "nodeinfo.h"
+#include "stats_linux.h"
 
 static int qemudShutdown(void);
 
@@ -2479,6 +2480,65 @@ static int qemudDomainSetAutostart(virDomainPtr dom,
     return 0;
 }
 
+static int
+qemudDomainInterfaceStats (virDomainPtr dom,
+                           const char *path,
+                           struct _virDomainInterfaceStats *stats)
+{
+#ifdef __linux__
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    struct qemud_vm *vm = qemudFindVMByID (driver, dom->id);
+    struct qemud_vm_net_def *net;
+
+    if (!vm) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                          "no domain with matching id %d", dom->id);
+        return -1;
+    }
+
+    if (!qemudIsActiveVM(vm)) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "domain is not running");
+        return -1;
+    }
+
+    if (!path || path[0] == '\0') {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
+                         "NULL or empty path");
+        return -1;
+    }
+
+    /* Check the path is one of the domain's network interfaces. */
+    for (net = vm->def->nets; net; net = net->next) {
+        switch (net->type) {
+        case QEMUD_NET_NETWORK:
+            if (STREQ (net->dst.network.ifname, path))
+                goto ok;
+            break;
+        case QEMUD_NET_ETHERNET:
+            if (STREQ (net->dst.ethernet.ifname, path))
+                goto ok;
+            break;
+        case QEMUD_NET_BRIDGE:
+            if (STREQ (net->dst.bridge.ifname, path))
+                goto ok;
+            break;
+        }
+    }
+
+    qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
+                      "invalid path, '%s' is not a known interface", path);
+    return -1;
+ ok:
+
+    return linuxDomainInterfaceStats (dom->conn, path, stats);
+#else
+    qemudReportError (dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                      "%s", __FUNCTION__);
+    return -1;
+#endif
+}
+
 static virNetworkPtr qemudNetworkLookupByUUID(virConnectPtr conn ATTRIBUTE_UNUSED,
                                      const unsigned char *uuid) {
     struct qemud_driver *driver = (struct qemud_driver *)conn->networkPrivateData;
@@ -2822,7 +2882,7 @@ static virDriver qemuDriver = {
     NULL, /* domainMigratePerform */
     NULL, /* domainMigrateFinish */
     NULL, /* domainBlockStats */
-    NULL, /* domainInterfaceStats */
+    qemudDomainInterfaceStats, /* domainInterfaceStats */
     NULL, /* nodeGetCellsFreeMemory */
     NULL, /* getFreeMemory */
 };

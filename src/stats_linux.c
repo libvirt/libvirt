@@ -291,7 +291,7 @@ linuxDomainInterfaceStats (virConnectPtr conn, const char *path,
 {
     int path_len;
     FILE *fp;
-    char line[256];
+    char line[256], *colon;
 
     fp = fopen ("/proc/net/dev", "r");
     if (!fp) {
@@ -313,16 +313,22 @@ linuxDomainInterfaceStats (virConnectPtr conn, const char *path,
         long long tx_errs;
         long long tx_drop;
 
-        if (STREQLEN (line, path, path_len) &&
-            line[path_len] == ':' &&
-            line[path_len+1] == ' ') {
+        /* The line looks like:
+         *   "   eth0:..."
+         * Split it at the colon.
+         */
+        colon = strchr (line, ':');
+        if (!colon) continue;
+        *colon = '\0';
+        if (colon-path_len >= line &&
+            STREQ (colon-path_len, path)) {
             /* IMPORTANT NOTE!
              * /proc/net/dev vif<domid>.nn sees the network from the point
              * of view of dom0 / hypervisor.  So bytes TRANSMITTED by dom0
              * are bytes RECEIVED by the domain.  That's why the TX/RX fields
              * appear to be swapped here.
              */
-            if (sscanf (&line[path_len+2],
+            if (sscanf (colon+1,
                         "%lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld %lld",
                         &tx_bytes, &tx_packets, &tx_errs, &tx_drop,
                         &dummy, &dummy, &dummy, &dummy,
