@@ -47,19 +47,23 @@ libvirtd_CFLAGS += $(AVAHI_CFLAGS)
 libvirtd_LDADD += $(AVAHI_LIBS)
 endif
 
+default_xml_dest = libvirt/qemu/networks/default.xml
 install-data-local: install-init
 	mkdir -p $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart
-	$(INSTALL_DATA) $(srcdir)/default-network.xml $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml
-	sed -i -e "s,</name>,</name>\n  <uuid>$(UUID)</uuid>," $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml
+	$(INSTALL_DATA) $(srcdir)/default-network.xml \
+	  $(DESTDIR)$(sysconfdir)/$(default_xml_dest)
+	sed -i -e "s,</name>,</name>\n  <uuid>$(UUID)</uuid>," \
+	  $(DESTDIR)$(sysconfdir)/$(default_xml_dest)
 	test -e $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml || \
-           ln -s ../default.xml $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
+           ln -s ../default.xml \
+	    $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
 	mkdir -p $(DESTDIR)$(localstatedir)/log/libvirt/qemu
 	mkdir -p $(DESTDIR)$(localstatedir)/run/libvirt
 	mkdir -p $(DESTDIR)$(localstatedir)/lib/libvirt
 
 uninstall-local: uninstall-init
 	rm -f $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
-	rm -f $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/default.xml
+	rm -f $(DESTDIR)$(sysconfdir)/$(default_xml_dest)
 	rmdir $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart || :
 	rmdir $(DESTDIR)$(localstatedir)/log/libvirt/qemu || :
 	rmdir $(DESTDIR)$(localstatedir)/run/libvirt || :
@@ -95,20 +99,24 @@ remote_dispatch_proc_switch.h: remote_generate_stubs.pl remote_protocol.x
 if LIBVIRT_INIT_SCRIPTS_RED_HAT
 install-init: libvirtd.init
 	mkdir -p $(DESTDIR)$(sysconfdir)/rc.d/init.d
-	$(INSTALL_SCRIPT) libvirtd.init $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
+	$(INSTALL_SCRIPT) libvirtd.init \
+	  $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
 	mkdir -p $(DESTDIR)$(sysconfdir)/sysconfig
-	$(INSTALL_SCRIPT) $(srcdir)/libvirtd.sysconf $(DESTDIR)$(sysconfdir)/sysconfig/libvirtd
+	$(INSTALL_SCRIPT) $(srcdir)/libvirtd.sysconf \
+	  $(DESTDIR)$(sysconfdir)/sysconfig/libvirtd
 
 uninstall-init:
-	rm -f $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd
+	rm -f $(DESTDIR)$(sysconfdir)/rc.d/init.d/libvirtd \
+		$(DESTDIR)$(sysconfdir)/sysconfig/libvirtd
 
 libvirtd.init: libvirtd.init.in
 	sed						\
 	    -e s!\@localstatedir\@!@localstatedir@!g	\
 	    -e s!\@sbindir\@!@sbindir@!g		\
 	    -e s!\@sysconfdir\@!@sysconfdir@!g		\
-	    < $< > $@
-	chmod a+x libvirtd.init
+	    < $< > $@-t
+	chmod a+x $@-t
+	mv $@-t $@
 
 CLEANFILES = libvirtd.init
 else

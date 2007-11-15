@@ -49,7 +49,8 @@ $(GENERATED): $(srcdir)/$(GENERATE) $(API_DESC)
 	$(PYTHON) $(srcdir)/$(GENERATE) $(srcdir)
 
 libvirt.py: $(srcdir)/libvir.py libvirtclass.py
-	cat $(srcdir)/libvir.py libvirtclass.py > libvirt.py
+	cat $(srcdir)/libvir.py libvirtclass.py > $@-t
+	mv $@-t $@
 
 $(libvirtmod_la_OBJECTS): $(GENERATED)
 
@@ -59,6 +60,9 @@ install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(DOCS_DIR)
 	@(for doc in $(DOCS) ; \
 	   do @INSTALL@ -m 0644 $$doc $(DESTDIR)$(DOCS_DIR) ; done)
+
+uninstall-local:
+	rm -f $(DESTDIR)$(pythondir)/libvirt.py
 
 CLEANFILES= $(GENERATED) libvirt.py
 

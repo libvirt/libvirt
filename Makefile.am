@@ -41,3 +41,6 @@ cov-am:
 	  > $(top_builddir)/coverage/index.html
 	for i in $(top_builddir)/src/*.gcov ; do o=`echo $$i | sed -e 's,$(top_builddir)/src,coverage,'` ; \
 	  perl $(srcdir)/scripts/coverage-report-entry.pl $$i > $$o.html ; done
+
+# disable this check
+distuninstallcheck:

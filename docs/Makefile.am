@@ -7,18 +7,82 @@ DOC_SOURCE_DIR=../src
 PAGES= index.html bugs.html FAQ.html remote.html
 APIPAGES=APIconstructors.html APIfiles.html APIfunctions.html \
     APIsymbols.html APIchunk0.html
-EXTRA_DIST=							\
-	   libvirt-api.xml libvirt-refs.xml apibuild.py		\
-	   *.xsl *.html *.gif html/*.html html/*.png \
-	   *.xml *.rng
-
 
 man_MANS=
+
+html =			\
+  book1.html		\
+  index.html		\
+  libvirt-conf.html	\
+  libvirt-lib.html	\
+  libvirt-libvirt.html	\
+  libvirt-virterror.html
+
+png =		\
+  left.png	\
+  up.png	\
+  home.png	\
+  right.png
+
+gif = \
+  Libxml2-Logo-90x34.gif \
+  architecture.gif \
+  node.gif \
+  redhat.gif
+
+dot_html = \
+  APIchunk0.html \
+  APIchunk1.html \
+  APIchunk2.html \
+  APIchunk3.html \
+  APIchunk4.html \
+  APIchunk5.html \
+  APIchunk6.html \
+  APIchunk7.html \
+  APIconstructors.html \
+  APIfiles.html \
+  APIfunctions.html \
+  APIsymbols.html \
+  FAQ.html \
+  architecture.html \
+  bugs.html \
+  downloads.html \
+  errors.html \
+  format.html \
+  hvsupport.html \
+  index.html \
+  intro.html \
+  libvir.html \
+  news.html \
+  python.html \
+  remote.html \
+  uri.html
+
+xml = \
+  libvirt-api.xml \
+  libvirt-refs.xml \
+  testdomfc4.xml \
+  testdomfv0.xml \
+  testnetdef.xml \
+  testnetpriv.xml \
+  testnode.xml
+
+rng = \
+  libvirt.rng \
+  network.rng
+
+EXTRA_DIST=					\
+  libvirt-api.xml libvirt-refs.xml apibuild.py	\
+  site.xsl newapi.xsl api.xsl			\
+  $(dot_html) $(gif) html			\
+  $(xml) $(rng)
 
 all: web $(top_builddir)/NEWS $(man_MANS)
 
 virsh.1: virsh.pod
-	pod2man -c "Virtualization Support" virsh.pod > virsh.1 && cp virsh.1 $(top_builddir)
+	pod2man -c "Virtualization Support" $(srcdir)/virsh.pod > $@-t
+	mv $@-t $@
+	cp $@ $(top_builddir)
 
 api: libvirt-api.xml libvirt-refs.xml $(APIPAGES) $(srcdir)/html/index.html
 
@@ -50,7 +114,9 @@ $(srcdir)/html/index.html: libvirt-api.xml $(srcdir)/newapi.xsl
 	  echo "Validating the resulting XHTML pages" ; \
 	  $(XMLLINT) --nonet --valid --noout html/*.html ; fi );
 
-libvirt-api.xml libvirt-refs.xml: apibuild.py ../include/libvirt/*.h ../src/*.h ../src/*.c
+libvirt-api.xml libvirt-refs.xml: apibuild.py \
+		$(srcdir)/../include/libvirt/*.h \
+		$(srcdir)/../src/*.h $(srcdir)/../src/*.c
 	-(./apibuild.py)
 
 $(top_builddir)/NEWS: $(top_srcdir)/docs/news.xsl $(top_srcdir)/docs/news.html
@@ -67,8 +133,15 @@ rebuild: api all
 
 install-data-local: 
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)
-	-@INSTALL@ -m 0644 $(srcdir)/libvir.html $(srcdir)/FAQ.html $(srcdir)/redhat.gif $(srcdir)/Libxml2-Logo-90x34.gif $(DESTDIR)$(HTML_DIR)
+	-@INSTALL@ -m 0644 $(srcdir)/libvir.html $(srcdir)/FAQ.html \
+	    $(srcdir)/redhat.gif $(srcdir)/Libxml2-Logo-90x34.gif \
+	  $(DESTDIR)$(HTML_DIR)
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)/html
-	-@INSTALL@ -m 0644 $(srcdir)/html/*.html $(DESTDIR)$(HTML_DIR)/html
-	-@INSTALL@ -m 0644 $(srcdir)/html/*.png $(DESTDIR)$(HTML_DIR)/html
+	for h in $(html); do \
+	  $(INSTALL) -m 0644 $(srcdir)/html/$$h $(DESTDIR)$(HTML_DIR)/html; done
+	for p in $(png); do \
+	  $(INSTALL) -m 0644 $(srcdir)/html/$$p $(DESTDIR)$(HTML_DIR)/html; done
 
+uninstall-local:
+	for h in $(html); do rm $(DESTDIR)$(HTML_DIR)/html/$$h; done
+	for p in $(png); do rm $(DESTDIR)$(HTML_DIR)/html/$$p; done

@@ -34,14 +34,8 @@ LDADDS = \
 EXTRA_DIST =		\
 	xmlrpcserver.py	\
 	test_conf.sh	\
-	confdata	\
 	qemuxml2argvdata \
-	xml2sexprdata	\
-	nodeinfodata	\
-	virshdata	\
-	xencapsdata	\
-	sexpr2xmldata	\
-	xmconfigdata
+	nodeinfodata
 
 noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest conftest \
 	reconnect xmconfigtest xencapstest qemuxml2argvtest qemuxml2xmltest \

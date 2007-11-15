@@ -1,3 +1,20 @@
+Thu Nov 15 14:00:04 CET 2007 Jim Meyering <meyering@redhat.com>
+
+	Make "make distcheck" work.
+	* Makefile.am: Expand some "*" wildcards, and (for now) disable
+	  the relatively unimportant, distuninstallcheck target.
+	  Fix a few redirect-directly-to-target bugs.
+	  Add a few $(srcdir)/ prefixes and add an uninstall-local rule.
+	* docs/Makefile.am: More of the same.  Split some long lines.
+	* python/Makefile.am: Likewise.
+	* python/tests/Makefile.am: Likewise.
+	* qemud/Makefile.am: Likewise.
+	* tests/Makefile.am: Remove the directories already listed in SUBDIRS.
+	* docs/examples/index.py: Adapt to produce the desired changes in
+	  docs/examples/Makefile.am. Also, sort *.c, so results are reproducible,
+	  and emit a comment telling emacs and vi that the file is read-only.
+	* docs/examples/Makefile.am: Regenerate.
+
 Thu Nov 15 11:54:40 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/stats_linux.c: patch from Jim Paris to fix compilation
@@ -7,7 +24,7 @@ Thu Nov 15 11:54:40 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 Wed Nov 14 18:09:31 CET 2007 Daniel Veillard <veillard@redhat.com>
 
-	* doc/libvir.html doc/format.html: add missing docs for 
+	* doc/libvir.html doc/format.html: add missing docs for
 	  <shareable/> on disk devices
 	* src/Makefile.am: fix the tst build rule for missing libraries
 
