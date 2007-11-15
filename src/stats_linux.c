@@ -19,7 +19,9 @@
 #include <string.h>
 #include <unistd.h>
 
+#ifdef WITH_XEN
 #include <xs.h>
+#endif
 
 #include "internal.h"
 #include "xen_unified.h"

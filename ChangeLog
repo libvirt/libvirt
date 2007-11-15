@@ -1,3 +1,10 @@
+Thu Nov 15 11:54:40 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/stats_linux.c: patch from Jim Paris to fix compilation
+	  when Xen isn't installed
+	* src/qemu_conf.h: small cleanup of signedness of bitfields
+	  from Jim Paris
+
 Wed Nov 14 18:09:31 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* doc/libvir.html doc/format.html: add missing docs for 

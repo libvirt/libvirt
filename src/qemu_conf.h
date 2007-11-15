@@ -305,8 +305,8 @@ struct qemud_driver {
     char *networkConfigDir;
     char *networkAutostartDir;
     char logDir[PATH_MAX];
-    int vncTLS : 1;
-    int vncTLSx509verify : 1;
+    unsigned int vncTLS : 1;
+    unsigned int vncTLSx509verify : 1;
     char *vncTLSx509certdir;
     char vncListen[BR_INET_ADDR_MAXLEN];
 };
