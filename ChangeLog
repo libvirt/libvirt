@@ -1,3 +1,7 @@
+Sat Nov 17 12:10:33 UTC 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* docs/Makefile.am: Added missing news.xsl to EXTRA_DIST
+
 Sat Nov 17 11:55:33 UTC 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/stats_linux.c: Fixed overflow of left shift on 32-bit platforms

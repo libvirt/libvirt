@@ -73,7 +73,7 @@ rng = \
 
 EXTRA_DIST=					\
   libvirt-api.xml libvirt-refs.xml apibuild.py	\
-  site.xsl newapi.xsl api.xsl			\
+  site.xsl newapi.xsl api.xsl news.xsl		\
   $(dot_html) $(gif) html			\
   $(xml) $(rng)
 
