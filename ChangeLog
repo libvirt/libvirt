@@ -1,3 +1,8 @@
+Sat Nov 17 13:05:33 UTC 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* tests/Makefile.am: Set abs_top_{build,src}dir based on 'pwd'
+	since older automake does not provide these vars
+
 Sat Nov 17 12:10:33 UTC 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* docs/Makefile.am: Added missing news.xsl to EXTRA_DIST
