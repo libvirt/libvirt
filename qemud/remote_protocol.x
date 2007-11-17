@@ -717,6 +717,9 @@ enum remote_message_status {
     REMOTE_ERROR = 1
 };
 
+/* 4 byte length word per header */
+const REMOTE_MESSAGE_HEADER_XDR_LEN = 4;
+
 struct remote_message_header {
     unsigned prog;              /* REMOTE_PROGRAM */
     unsigned vers;              /* REMOTE_PROTOCOL_VERSION */

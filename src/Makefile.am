@@ -61,7 +61,6 @@ CLIENT_SOURCES =						\
 		util.c util.h
 
 SERVER_SOURCES = 						\
-		../qemud/protocol.h ../qemud/protocol.c		\
 		../qemud/remote_protocol.c ../qemud/remote_protocol.h
 
 libvirt_la_SOURCES = $(CLIENT_SOURCES) $(SERVER_SOURCES)

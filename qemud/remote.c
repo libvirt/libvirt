@@ -83,7 +83,7 @@ remoteDispatchClientRequest (struct qemud_server *server ATTRIBUTE_UNUSED,
 #include "remote_dispatch_localvars.h"
 
     /* Parse the header. */
-    xdrmem_create (&xdr, client->buffer+4, client->bufferLength-4, XDR_DECODE);
+    xdrmem_create (&xdr, client->buffer, client->bufferLength, XDR_DECODE);
 
     if (!xdr_remote_message_header (&xdr, &req)) {
         remoteDispatchError (client, NULL, "xdr_remote_message_header");

@@ -743,6 +743,7 @@ enum remote_message_status {
 	REMOTE_ERROR = 1,
 };
 typedef enum remote_message_status remote_message_status;
+#define REMOTE_MESSAGE_HEADER_XDR_LEN 4
 
 struct remote_message_header {
 	u_int prog;

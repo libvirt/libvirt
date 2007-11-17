@@ -10,8 +10,7 @@ conf_DATA = libvirtd.conf
 # Distribute the generated files so that rpcgen isn't required on the
 # target machine (although almost any Unix machine will have it).
 EXTRA_DIST = libvirtd.init.in libvirtd.sysconf default-network.xml \
-	protocol.x remote_protocol.x \
-	protocol.c protocol.h \
+	remote_protocol.x \
 	remote_protocol.c remote_protocol.h \
 	remote_generate_stubs.pl rpcgen_fix.pl \
 	remote_dispatch_prototypes.h \
@@ -22,7 +21,6 @@ EXTRA_DIST = libvirtd.init.in libvirtd.sysconf default-network.xml \
 
 libvirtd_SOURCES = \
 		qemud.c internal.h \
-		protocol.h protocol.c \
 		remote_protocol.h remote_protocol.c \
 		remote.c \
 		event.c event.h
@@ -80,7 +78,6 @@ uninstall-local: uninstall-init
 	rm -f $@
 	rpcgen -h -o $@ $<
 
-protocol.c: protocol.h
 remote_protocol.c: remote_protocol.h
 
 remote.c: remote_dispatch_prototypes.h \

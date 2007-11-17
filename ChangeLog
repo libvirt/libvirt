@@ -1,3 +1,18 @@
+Sat Nov 17 11:04:33 UTC 2007 Daniel P. Berrange <berrange@redhat.com>
+
+        * qemud/Makefile.am: Remove protocol.[chx] from EXTRA_DIST.
+          Remove protocol.h and protocol.c from libvirtd_SOURCES.
+          Remove protocol.c dependency.
+        * qemud/protocol.c, qemud/protocol.h, qemud/protocol.x: Remove files.
+        * qemud/internal.h: Don't include "protocol.h".
+        * qemud/qemud.c: Clean up qemudDispatchClientRead.
+        s/QEMUD_PKT_HEADER_XDR_LEN/REMOTE_MESSAGE_HEADER_XDR_LEN/
+        * qemud/remote.c: In remoteDispatchClientRequest, reflect that the
+        client buffer no longer starts with the 4-byte XDR header length.
+        * qemud/remote_protocol.h: Regenerate.
+        * qemud/remote_protocol.x: Define REMOTE_MESSAGE_HEADER_XDR_LEN.
+        * src/Makefile.am: Remove protocol.h, protocol.c from SERVER_SOURCES.
+
 Thu Nov 15 17:43:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/stats_linux.c: Fix parsing of short interface names

@@ -29,7 +29,6 @@
 #include <gnutls/x509.h>
 #include "../src/gnutls_1_0_compat.h"
 
-#include "protocol.h"
 #include "remote_protocol.h"
 #include "../config.h"
 

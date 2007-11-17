@@ -1051,7 +1051,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
 
     if (!client->tls) {
         client->mode = QEMUD_MODE_RX_HEADER;
-        client->bufferLength = QEMUD_PKT_HEADER_XDR_LEN;
+        client->bufferLength = REMOTE_MESSAGE_HEADER_XDR_LEN;
 
         if (qemudRegisterClientEvent (server, client, 0) < 0)
             goto cleanup;
@@ -1180,7 +1180,7 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
     switch (client->mode) {
     case QEMUD_MODE_RX_HEADER: {
         XDR x;
-        qemud_packet_header h;
+        unsigned int len;
 
         if (qemudClientRead(server, client) < 0)
             return; /* Error, or blocking */
@@ -1190,33 +1190,32 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
 
         xdrmem_create(&x, client->buffer, client->bufferLength, XDR_DECODE);
 
-        if (!xdr_qemud_packet_header(&x, &h)) {
-            qemudDebug("Failed to decode packet header");
+        if (!xdr_u_int(&x, &len)) {
+            xdr_destroy (&x);
+            qemudDebug("Failed to decode packet length");
+            qemudDispatchClientFailure(server, client);
+            return;
+        }
+        xdr_destroy (&x);
+
+        if (len > REMOTE_MESSAGE_MAX) {
+            qemudDebug("Packet length %u too large", len);
             qemudDispatchClientFailure(server, client);
             return;
         }
 
-        if (h.prog != REMOTE_PROGRAM) {
-            qemudDebug("Header magic %x mismatch", h.prog);
-            qemudDispatchClientFailure(server, client);
-            return;
-        }
-
-        /* NB: h.length is unsigned. */
-        if (h.length > REMOTE_MESSAGE_MAX) {
-            qemudDebug("Packet length %u too large", h.length);
+        /* Length include length of the length field itself, so
+         * check minimum size requirements */
+        if (len <= REMOTE_MESSAGE_HEADER_XDR_LEN) {
+            qemudDebug("Packet length %u too small", len);
             qemudDispatchClientFailure(server, client);
             return;
         }
 
         client->mode = QEMUD_MODE_RX_PAYLOAD;
-        client->bufferLength = h.length;
+        client->bufferLength = len - REMOTE_MESSAGE_HEADER_XDR_LEN;
+        client->bufferOffset = 0;
         if (client->tls) client->direction = QEMUD_TLS_DIRECTION_READ;
-        /* Note that we don't reset bufferOffset here because we want
-         * to retain the whole message, including header.
-         */
-
-        xdr_destroy (&x);
 
         if (qemudRegisterClientEvent(server, client, 1) < 0) {
             qemudDispatchClientFailure(server, client);
@@ -1227,35 +1226,15 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
     }
 
     case QEMUD_MODE_RX_PAYLOAD: {
-        XDR x;
-        qemud_packet_header h;
-
         if (qemudClientRead(server, client) < 0)
             return; /* Error, or blocking */
 
         if (client->bufferOffset < client->bufferLength)
             return; /* Not read enough */
 
-        /* Reparse the header to decide if this is for qemud or remote. */
-        xdrmem_create(&x, client->buffer, client->bufferLength, XDR_DECODE);
-
-        if (!xdr_qemud_packet_header(&x, &h)) {
-            qemudDebug("Failed to decode packet header");
+        remoteDispatchClientRequest (server, client);
+        if (qemudRegisterClientEvent(server, client, 1) < 0)
             qemudDispatchClientFailure(server, client);
-            return;
-        }
-
-        if (h.prog == REMOTE_PROGRAM) {
-            remoteDispatchClientRequest (server, client);
-            if (qemudRegisterClientEvent(server, client, 1) < 0)
-                qemudDispatchClientFailure(server, client);
-        } else {
-            /* An internal error. */
-            qemudDebug ("Not REMOTE_PROGRAM");
-            qemudDispatchClientFailure(server, client);
-        }
-
-        xdr_destroy (&x);
 
         break;
     }
@@ -1336,7 +1315,7 @@ static void qemudDispatchClientWrite(struct qemud_server *server, struct qemud_c
         if (client->bufferOffset == client->bufferLength) {
             /* Done writing, switch back to receive */
             client->mode = QEMUD_MODE_RX_HEADER;
-            client->bufferLength = QEMUD_PKT_HEADER_XDR_LEN;
+            client->bufferLength = REMOTE_MESSAGE_HEADER_XDR_LEN;
             client->bufferOffset = 0;
             if (client->tls) client->direction = QEMUD_TLS_DIRECTION_READ;
 
