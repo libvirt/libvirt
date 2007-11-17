@@ -200,7 +200,7 @@ read_bd_stats (virConnectPtr conn, xenUnifiedPrivatePtr priv,
      * an assumed sector size.
      */
     if (stats->rd_bytes > 0) {
-        if (stats->rd_bytes >= 1L<<(63-9)) {
+        if (stats->rd_bytes >= ((unsigned long long)1)<<(63-9)) {
             statsErrorFunc (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__,
                             "stats->rd_bytes would overflow 64 bit counter",
                             domid);
@@ -209,7 +209,7 @@ read_bd_stats (virConnectPtr conn, xenUnifiedPrivatePtr priv,
         stats->rd_bytes *= 512;
     }
     if (stats->wr_bytes > 0) {
-        if (stats->wr_bytes >= 1L<<(63-9)) {
+        if (stats->wr_bytes >= ((unsigned long long)1)<<(63-9)) {
             statsErrorFunc (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__,
                             "stats->wr_bytes would overflow 64 bit counter",
                             domid);

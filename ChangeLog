@@ -1,3 +1,7 @@
+Sat Nov 17 11:55:33 UTC 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/stats_linux.c: Fixed overflow of left shift on 32-bit platforms
+
 Sat Nov 17 11:04:33 UTC 2007 Daniel P. Berrange <berrange@redhat.com>
 
         * qemud/Makefile.am: Remove protocol.[chx] from EXTRA_DIST.
