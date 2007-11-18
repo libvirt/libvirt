@@ -56,8 +56,8 @@ endif
 # abs_top_{src/build}dir variables, so don't rely
 # on them here. Fake them with 'pwd'
 TESTS_ENVIRONMENT =				\
-  abs_top_builddir=`pwd`/$(top_builddir)	\
-  abs_top_srcdir=`pwd`/$(top_srcdir)		\
+  abs_top_builddir=`pwd`/'$(top_builddir)'	\
+  abs_top_srcdir=`pwd`/'$(top_srcdir)'		\
   $(VG)
 
 valgrind:

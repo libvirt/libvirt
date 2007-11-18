@@ -1,3 +1,8 @@
+Sun Nov 18 11:24:33 UTC 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* tests/Makefile.am: Re-add quotes around top_{src,build}dir
+	variables
+
 Sat Nov 17 13:05:33 UTC 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* tests/Makefile.am: Set abs_top_{build,src}dir based on 'pwd'
