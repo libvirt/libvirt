@@ -1,3 +1,9 @@
+Tue Nov 20 10:49:28 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/virterror.c, src/stats_linux.c, include/libvirt/virterror.h:
+	  Renamed the VIR_FROM_LINUX error as VIR_FROM_STATS_LINUX for
+	  consistency.
+
 Tue Nov 20 11:06:28 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvirt/virterror.h src/openvz_conf.c src/openvz_driver.c

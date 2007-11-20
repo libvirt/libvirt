@@ -295,7 +295,7 @@ virDefaultErrorFunc(virErrorPtr err)
         case VIR_FROM_XENXM:
             dom = "Xen XM ";
             break;
-        case VIR_FROM_LINUX:
+        case VIR_FROM_STATS_LINUX:
             dom = "Linux Stats ";
             break;
 
