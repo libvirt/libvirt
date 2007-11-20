@@ -659,7 +659,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             val = MIN_XEN_GUEST_SIZE * 2;
     virBufferVSprintf(buf, "  <memory>%ld</memory>\n", val * 1024);
 
-    virBufferVSprintf(buf, "  <vcpu"); /* DV */
+    virBufferVSprintf(buf, "  <vcpu");
     if (xenXMConfigGetString(conf, "cpus", &str) == 0) {
         char *ranges;
 
@@ -1867,7 +1867,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
 	}
     }
 
-    if (xenXMConfigSetStringFromXPath(conn, conf, ctxt, "cpus", /* DV */
+    if (xenXMConfigSetStringFromXPath(conn, conf, ctxt, "cpus",
                                       "string(/domain/vcpu/@cpuset)", 1,
                                       "cannot set the cpuset parameter") < 0)
             goto error;
