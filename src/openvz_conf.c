@@ -67,7 +67,7 @@ error (virConnectPtr conn, virErrorNumber code, const char *info)
     const char *errmsg;
 
     errmsg = __virErrorMsg (code, info);
-    __virRaiseError (conn, NULL, NULL, VIR_FROM_REMOTE,
+    __virRaiseError (conn, NULL, NULL, VIR_FROM_OPENVZ,
                      code, VIR_ERR_ERROR, errmsg, info, NULL, 0, 0,
                      errmsg, info);
 }

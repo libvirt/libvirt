@@ -280,6 +280,25 @@ virDefaultErrorFunc(virErrorPtr err)
         case VIR_FROM_REMOTE:
             dom = "Remote ";
             break;
+        case VIR_FROM_SEXPR:
+            dom = "S-Expr ";
+            break;
+        case VIR_FROM_PROXY:
+            dom = "PROXY ";
+            break;
+        case VIR_FROM_CONF:
+            dom = "Config ";
+            break;
+        case VIR_FROM_OPENVZ:
+            dom = "OpenVZ ";
+            break;
+        case VIR_FROM_XENXM:
+            dom = "Xen XM ";
+            break;
+        case VIR_FROM_LINUX:
+            dom = "Linux Stats ";
+            break;
+
     }
     if ((err->dom != NULL) && (err->code != VIR_ERR_INVALID_DOMAIN)) {
         domain = err->dom->name;

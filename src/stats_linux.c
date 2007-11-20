@@ -51,7 +51,7 @@ statsErrorFunc (virConnectPtr conn,
         fullinfo[sizeof (fullinfo) - 1] = 0;
         info = fullinfo;
     }
-    __virRaiseError(conn, NULL, NULL, VIR_FROM_XEN, error, VIR_ERR_ERROR,
+    __virRaiseError(conn, NULL, NULL, VIR_FROM_LINUX, error, VIR_ERR_ERROR,
                     errmsg, info, NULL, value, 0, errmsg, info,
                     value);
 }

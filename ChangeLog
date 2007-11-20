@@ -1,3 +1,10 @@
+Tue Nov 20 11:06:28 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvirt/virterror.h src/openvz_conf.c src/openvz_driver.c
+	  src/stats_linux.c src/virterror.c src/xm_internal.c: patch from
+	  Saori Fukuta cleaning up various problems in the error reporting
+	  layers
+
 Tue Nov 20 11:03:02 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* tests/sexpr2xmltest.c tests/xml2sexprtest.c: warn before exiting
