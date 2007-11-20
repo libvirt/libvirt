@@ -108,6 +108,12 @@ static int testCompareDiskBlock(const void *data ATTRIBUTE_UNUSED) {
 			  1);
 }
 
+static int testCompareDiskShareable(const void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("sexpr2xmldata/sexpr2xml-disk-block-shareable.xml",
+			  "sexpr2xmldata/sexpr2xml-disk-block-shareable.sexpr",
+			  1);
+}
+
 static int testCompareDiskDrvBlktapQcow(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("sexpr2xmldata/sexpr2xml-disk-drv-blktap-qcow.xml",
 			  "sexpr2xmldata/sexpr2xml-disk-drv-blktap-qcow.sexpr",
@@ -183,8 +189,10 @@ main(int argc, char **argv)
     }
 
     abs_top_srcdir = getenv("abs_top_srcdir");
-    if (!abs_top_srcdir)
-      return 1;
+    if (!abs_top_srcdir) {
+        fprintf(stderr, "missing enviroment variable abs_top_srcdir\n");
+	exit(EXIT_FAILURE);
+    }
 
     if (virtTestRun("SEXPR-2-XML PV config (version 1)",
 		    1, testComparePVversion1, NULL) != 0)
@@ -220,6 +228,10 @@ main(int argc, char **argv)
 
     if (virtTestRun("SEXPR-2-XML Disk Block config",
 		    1, testCompareDiskBlock, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("SEXPR-2-XML Disk Block shareable",
+		    1, testCompareDiskShareable, NULL) != 0)
 	ret = -1;
 
     if (virtTestRun("SEXPR-2-XML Disk Driver blktap qcow config",

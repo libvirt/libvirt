@@ -1,3 +1,14 @@
+Tue Nov 20 11:03:02 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* tests/sexpr2xmltest.c tests/xml2sexprtest.c: warn before exiting
+	  if the path environment variable is missing, add the tests for
+	  <shareable/> from/to w! ode for disk
+	* tests/sexpr2xmldata/sexpr2xml-disk-block-shareable.sexpr
+	  tests/sexpr2xmldata/sexpr2xml-disk-block-shareable.xml
+	  tests/xml2sexprdata/xml2sexpr-disk-block-shareable.sexpr
+	  tests/xml2sexprdata/xml2sexpr-disk-block-shareable.xml:
+	  the new tests data
+
 Sun Nov 18 11:24:33 UTC 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* tests/Makefile.am: Re-add quotes around top_{src,build}dir

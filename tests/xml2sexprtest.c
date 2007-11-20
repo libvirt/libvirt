@@ -131,6 +131,13 @@ static int testCompareDiskBlock(const void *data ATTRIBUTE_UNUSED) {
 			  2);
 }
 
+static int testCompareDiskShareable(const void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("xml2sexprdata/xml2sexpr-disk-block-shareable.xml",
+			  "xml2sexprdata/xml2sexpr-disk-block-shareable.sexpr",
+			  "pvtest",
+			  2);
+}
+
 static int testCompareDiskDrvLoop(const void *data ATTRIBUTE_UNUSED) {
   return testCompareFiles("xml2sexprdata/xml2sexpr-disk-drv-loop.xml",
 			  "xml2sexprdata/xml2sexpr-disk-drv-loop.sexpr",
@@ -233,8 +240,11 @@ main(int argc, char **argv)
     progname = argv[0];
 
     abs_top_srcdir = getenv("abs_top_srcdir");
-    if (!abs_top_srcdir)
-      return 1;
+    if (!abs_top_srcdir) {
+        fprintf(stderr, "missing enviroment variable abs_top_srcdir\n");
+	exit(EXIT_FAILURE);
+    }
+        
 
     if (argc > 1) {
 	fprintf(stderr, "Usage: %s\n", progname);
@@ -279,6 +289,10 @@ main(int argc, char **argv)
 
     if (virtTestRun("XML-2-SEXPR Disk Block",
 		    1, testCompareDiskBlock, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("XML-2-SEXPR Disk Shareable",
+		    1, testCompareDiskShareable, NULL) != 0)
 	ret = -1;
 
     if (virtTestRun("XML-2-SEXPR Disk Drv Loop",

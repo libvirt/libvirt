@@ -1,0 +1,25 @@
+<domain type='xen' id='6'>
+  <name>pvtest</name>
+  <uuid>49a0c6ff-c066-5392-6498-3632d093c2e7</uuid>
+  <bootloader>/usr/bin/pygrub</bootloader>
+  <memory>524288</memory>
+  <currentMemory>393216</currentMemory>
+  <vcpu>1</vcpu>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <disk type='file' device='disk'>
+      <driver name='tap' type='aio'/>
+      <source file='/var/lib/xen/images/rhel5pv.img'/>
+      <target dev='xvda'/>
+      <shareable/>
+    </disk>
+    <interface type='bridge'>
+      <source bridge='xenbr0'/>
+      <target dev='vif6.0'/>
+      <mac address='00:16:3e:23:9e:eb'/>
+      <script path='vif-bridge'/>
+    </interface>
+  </devices>
+</domain>
