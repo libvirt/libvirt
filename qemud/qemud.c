@@ -165,7 +165,7 @@ remoteInitializeGnuTLS (void)
     }
 
     if (crl_file && crl_file[0] != '\0') {
-        if (remoteCheckCertFile("CA revocation list", ca_file) < 0)
+        if (remoteCheckCertFile("CA revocation list", crl_file) < 0)
             return -1;
 
         qemudDebug ("loading CRL from %s", crl_file);
