@@ -1159,7 +1159,7 @@ static int qemudStartNetworkDaemon(virConnectPtr conn,
         goto err_delbr;
     }
 
-    if ((err = brSetForwardDelay(driver->brctl, network->bridge, network->def->disableSTP ? 0 : 1))) {
+    if ((err = brSetEnableSTP(driver->brctl, network->bridge, network->def->disableSTP ? 0 : 1))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "failed to set bridge STP to %s\n",
                          network->def->disableSTP ? "off" : "on");

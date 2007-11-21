@@ -731,7 +731,7 @@ brSetEnableSTP(brControl *ctl ATTRIBUTE_UNUSED,
     int n;
 
     n = 1 + /* brctl */
-        1 + /* setfd */
+        1 + /* stp */
         1 + /* brige name */
         1;  /* value */
 
