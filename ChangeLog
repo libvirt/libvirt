@@ -1,3 +1,8 @@
+Wed Nov 21 11:36:43 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* docs/index.html docs/libvir.html: apply english corrections
+	  suggested by Bruce Montague
+
 Tue Nov 20 10:49:28 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/virterror.c, src/stats_linux.c, include/libvirt/virterror.h:
