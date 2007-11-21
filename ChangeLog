@@ -1,3 +1,9 @@
+Wed Nov 21 17:29:42 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xm_internal.c: fix the parsing of predefined domains on
+	  xen prior to 3.1 to take into accound the fact that disk can
+	  be shareable.
+
 Wed Nov 21 11:59:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* docs/libvir.html, docs/site.xsl: Fix the link to OCaml

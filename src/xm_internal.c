@@ -810,6 +810,9 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             if (!strcmp(head, "r") ||
                 !strcmp(head, "ro"))
                 virBufferAdd(buf, "      <readonly/>\n", -1);
+	    else if ((!strcmp(head, "w!")) ||
+	             (!strcmp(head, "!")))
+	        virBufferAdd(buf, "      <shareable/>\n", -1);
             virBufferAdd(buf, "    </disk>\n", -1);
 
         skipdisk:
