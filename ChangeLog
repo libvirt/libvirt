@@ -1,3 +1,8 @@
+Wed Nov 21 11:59:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* docs/libvir.html, docs/site.xsl: Fix the link to OCaml
+	  bindings.
+
 Wed Nov 21 11:36:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/bridge.c, src/qemu_driver.c: Incorrect call to
