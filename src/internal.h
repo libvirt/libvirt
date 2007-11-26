@@ -12,6 +12,23 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <libxml/threads.h>
+#ifdef HAVE_SYS_SYSLIMITS_H
+#include <sys/syslimits.h>
+#endif
+
+/* On architectures which lack these limits, define them (ie. Cygwin).
+ * Note that the libvirt code should be robust enough to handle the
+ * case where actual value is longer than these limits (eg. by setting
+ * length correctly in second argument to gethostname and by always
+ * using strncpy instead of strcpy).
+ */
+#ifndef HOST_NAME_MAX
+#define HOST_NAME_MAX 256
+#endif
+
+#ifndef IF_NAMESIZE
+#define IF_NAMESIZE 16
+#endif
 
 #include "hash.h"
 #include "libvirt/libvirt.h"

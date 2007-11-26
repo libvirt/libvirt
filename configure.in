@@ -64,7 +64,7 @@ dnl Availability of various common functions (non-fatal if missing).
 AC_CHECK_FUNCS([regexec])
 
 dnl Availability of various common headers (non-fatal if missing).
-AC_CHECK_HEADERS(paths.h)
+AC_CHECK_HEADERS([paths.h sys/syslimits.h])
 
 dnl Specific dir for HTML output ?
 AC_ARG_WITH(html-dir, AC_HELP_STRING([--with-html-dir=path],

@@ -8,12 +8,15 @@
  * Daniel Veillard <veillard@redhat.com>
  */
 
+#include "config.h"
+
 #include "libvirt/libvirt.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <limits.h>
 #ifdef WITH_XEN
 #include <xs.h>
 #endif
