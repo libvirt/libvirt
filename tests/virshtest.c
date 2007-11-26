@@ -1,8 +1,13 @@
+#include "config.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <limits.h>
+
+#ifdef HAVE_SYS_SYSLIMITS_H
+#include <sys/syslimits.h>
+#endif
 
 #include "xml.h"
 #include "testutils.h"

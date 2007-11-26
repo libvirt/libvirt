@@ -1,3 +1,10 @@
+Mon Nov 26 12:03:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* tests/Makefile.am, tests/nodeinfotest.c, tests/qemuxml2argvtest.c,
+	  tests/qemuxml2xmltest.c, tests/sexpr2xmltest.c, tests/virshtest.c,
+	  tests/xencapstest.c, tests/xmconfigtest.c, tests/xml2sexprtest.c:
+	  Miscellaneous fixes to the tests to compile under Cygwin.
+
 Mon Nov 26 11:56:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* qemud/qemud.c: If AF_INET6 not defined, don't test for it.

@@ -21,8 +21,14 @@
  *
  */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <string.h>
+
+#ifdef HAVE_SYS_SYSLIMITS_H
+#include <sys/syslimits.h>
+#endif
 
 #ifdef WITH_XEN
 #include "xen_unified.h"

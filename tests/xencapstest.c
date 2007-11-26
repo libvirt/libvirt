@@ -1,7 +1,11 @@
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "config.h"
+#ifdef HAVE_SYS_SYSLIMITS_H
+#include <sys/syslimits.h>
+#endif
 
 #ifdef WITH_XEN
 

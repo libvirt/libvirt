@@ -1,8 +1,18 @@
+#include "config.h"
+
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 
 #include <sys/types.h>
 #include <fcntl.h>
+
+#ifdef HAVE_SYS_SYSLIMITS_H
+#include <sys/syslimits.h>
+#endif
+
+#ifdef WITH_QEMU
 
 #include "testutils.h"
 #include "qemu_conf.h"
@@ -149,6 +159,12 @@ main(int argc, char **argv)
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
+
+#else
+
+int main (void) { exit (77); /* means 'test skipped' to automake */ }
+
+#endif /* WITH_QEMU */
 
 /*
  * Local variables:
