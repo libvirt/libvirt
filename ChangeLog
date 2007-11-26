@@ -1,3 +1,7 @@
+Mon Nov 26 11:39:04 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* configure.in: Minimum version of GnuTLS we support is 1.0.25.
+
 Thu Nov 22 00:14:04 CET 2007 Jim Meyering <meyering@redhat.com>
 
 	Fix a typo in a variable name.

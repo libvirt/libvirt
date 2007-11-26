@@ -23,7 +23,7 @@ AC_SUBST(LIBVIRT_VERSION_NUMBER)
 
 dnl Required minimum versions of all libs we depend on
 LIBXML_REQUIRED="2.5.0"
-GNUTLS_REQUIRED="1.2.0"
+GNUTLS_REQUIRED="1.0.25"
 AVAHI_REQUIRED="0.6.0"
 
 dnl Checks for programs.
