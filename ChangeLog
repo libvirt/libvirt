@@ -1,3 +1,8 @@
+Mon Nov 26 12:12:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* configure.in, src/console.c: Replace cfmakeraw if not in
+	  standard library.
+
 Mon Nov 26 12:03:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* tests/Makefile.am, tests/nodeinfotest.c, tests/qemuxml2argvtest.c,

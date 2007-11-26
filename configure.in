@@ -61,7 +61,7 @@ AM_PROG_CC_C_O
 LIBVIRT_COMPILE_WARNINGS(maximum)
 
 dnl Availability of various common functions (non-fatal if missing).
-AC_CHECK_FUNCS([regexec])
+AC_CHECK_FUNCS([regexec cfmakeraw])
 
 dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([paths.h sys/syslimits.h])
