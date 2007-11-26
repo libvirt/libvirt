@@ -1,3 +1,8 @@
+Mon Nov 26 11:52:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* configure.in, proxy/Makefile.am: Disable building of the Xen proxy
+	  if configured --without-xen.
+
 Mon Nov 26 11:49:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/bridge.c, src/bridge.h, src/qemu_conf.c, src/qemu_conf.h,

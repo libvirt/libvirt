@@ -1,5 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
+if WITH_PROXY
 INCLUDES = -I$(top_builddir)/include -I@top_srcdir@/include \
            -I@top_srcdir@/proxy -I@top_srcdir@/src @LIBXML_CFLAGS@ \
 	   -DPROXY  -DLOCALEBASEDIR=\""$(datadir)/locale"\" \
@@ -17,3 +18,4 @@ libvirt_proxy_LDADD =
 
 install-exec-hook:
 	chmod u+s $(DESTDIR)$(libexecdir)/libvirt_proxy
+endif

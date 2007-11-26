@@ -504,7 +504,10 @@ if test "${enableval}" = yes; then
   COMPILER_FLAGS=
 fi
 
+dnl Enable building the proxy?
+AM_CONDITIONAL(WITH_PROXY,[test "x$with_xen" = "xyes"])
 
+dnl Check for gettext
 AM_GNU_GETTEXT_VERSION([0.14.1])
 AM_GNU_GETTEXT([external])
 if test -d po
