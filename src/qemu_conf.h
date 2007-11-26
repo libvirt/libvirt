@@ -24,6 +24,10 @@
 #ifndef __QEMUD_CONF_H
 #define __QEMUD_CONF_H
 
+#include "config.h"
+
+#ifdef WITH_QEMU
+
 #include "internal.h"
 #include "bridge.h"
 #include "iptables.h"
@@ -429,7 +433,9 @@ struct qemu_arch_info {
 };
 extern struct qemu_arch_info qemudArchs[];
 
-#endif
+#endif /* WITH_QEMU */
+
+#endif /* __QEMUD_CONF_H */
 
 /*
  * Local variables:

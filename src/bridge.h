@@ -22,6 +22,10 @@
 #ifndef __QEMUD_BRIDGE_H__
 #define __QEMUD_BRIDGE_H__
 
+#include "config.h"
+
+#ifdef WITH_QEMU
+
 #include <net/if.h>
 #include <netinet/in.h>
 
@@ -96,6 +100,8 @@ int     brSetEnableSTP          (brControl *ctl,
 int     brGetEnableSTP          (brControl *ctl,
                                  const char *bridge,
                                  int *enable);
+
+#endif /* WITH_QEMU */
 
 #endif /* __QEMUD_BRIDGE_H__ */
 

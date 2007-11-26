@@ -21,6 +21,8 @@
  * Daniel Berrange <berrange@redhat.com>
  */
 
+#include "config.h"
+
 #ifdef WITH_TEST
 
 #define _GNU_SOURCE /* for asprintf */

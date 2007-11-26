@@ -21,6 +21,8 @@
 
 #include <config.h>
 
+#ifdef WITH_QEMU
+
 #include "bridge.h"
 
 #include <stdlib.h>
@@ -766,6 +768,8 @@ brSetEnableSTP(brControl *ctl ATTRIBUTE_UNUSED,
 
     return retval;
 }
+
+#endif /* WITH_QEMU */
 
 /*
  * Local variables:

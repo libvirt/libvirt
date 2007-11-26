@@ -1,3 +1,9 @@
+Mon Nov 26 11:49:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/bridge.c, src/bridge.h, src/qemu_conf.c, src/qemu_conf.h,
+	  src/qemu_driver.c, src/qemu_driver.h, src/test.c: Disable more
+	  of qemu if configured --without-qemu.
+
 Mon Nov 26 11:47:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/remote_internal.c: Miscellaneous header file fixes for

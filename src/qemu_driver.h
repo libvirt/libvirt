@@ -25,12 +25,17 @@
 #ifndef QEMUD_DRIVER_H
 #define QEMUD_DRIVER_H
 
+#include "config.h"
+
+#ifdef WITH_QEMU
+
 #include "internal.h"
 
 int qemudRegister(void);
 
-#endif
+#endif /* WITH_QEMU */
 
+#endif /* QEMUD_DRIVER_H */
 
 /*
  * Local variables:

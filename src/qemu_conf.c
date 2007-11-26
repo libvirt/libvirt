@@ -21,7 +21,9 @@
  * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#include <config.h>
+#include "config.h"
+
+#ifdef WITH_QEMU
 
 #include <dirent.h>
 #include <string.h>
@@ -3264,6 +3266,7 @@ int qemudDeleteConfig(virConnectPtr conn,
     return 0;
 }
 
+#endif /* WITH_QEMU */
 
 /*
  * Local variables:
