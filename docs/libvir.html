@@ -1184,15 +1184,33 @@ href="https://www.redhat.com/archives/libvir-list/2007-March/msg00215.html">the
 discussion</a> which led to the capabilities format in the mailing-list
 archives.</p>
 
-<h2><a name="Python" id="Python">Binding for Python</a></h2>
+<h2><a name="Python" id="Python">Bindings for other languages</a></h2>
 
-<p>Libvirt comes with direct support for the Python language (just
-make sure you installed the libvirt-python package if not compiling
-from sources). Also note that Daniel Berrange provides <a
-href="http://search.cpan.org/~danberr/Sys-Virt-0.1.0/">bindings for
-Perl</a> and Richard Jones supplies <a
-href="http://libvirt.org/ocaml/">bindings for
-OCaml</a> too.</p>
+<p>Libvirt comes with bindings to support other languages than
+pure C. First the headers embeds the necessary declarations to
+allow direct acces from C++ code, but also we have bindings for
+higher level kind of languages:</p>
+<ul>
+  <li>Python: Libvirt comes with direct support for the Python language
+     (just make sure you installed the libvirt-python package if not
+     compiling from sources). See below for more informations about
+     using libvirt with python</li>
+  <li>Perl: Daniel Berrange provides <a
+     href="http://search.cpan.org/~danberr/Sys-Virt-0.1.0/">bindings for
+     Perl</a>.</li>
+  <li>OCaml: Richard Jones supplies <a
+     href="http://libvirt.org/ocaml/">bindings for OCaml</a>.</li>
+  <li>Ruby: David Lutterkork provides <a
+     href= "http://libvirt.org/ruby/">bindings for Ruby</a>.</li>
+</ul>
+
+<p>Support, requests or help for libvirt bindings are welcome on
+the <a href="https://www.redhat.com/mailman/listinfo/libvir-list/">mailing
+list</a>, as usual try to provide enough background informations
+and make sure you use recent version, see the <a href="bugs.html">help
+page</a>.</p>
+
+<p>The remaining of this page focuses on the Python bindings.</p>
 
 <p>The Python binding should be complete and are mostly automatically
 generated from the formal description of the API in xml. The bindings are

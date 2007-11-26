@@ -1,3 +1,8 @@
+Mon Nov 26 15:06:19 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* doc/*: modified the python page into a bindings page, 
+	  added the Ruby binding link to all pages
+
 Mon Nov 26 12:12:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* configure.in, src/console.c: Replace cfmakeraw if not in
