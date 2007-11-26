@@ -68,15 +68,19 @@ uninstall-local: uninstall-init
 	rmdir $(DESTDIR)$(localstatedir)/lib/libvirt || :
 
 
+if RPCGEN
 .x.c:
 	rm -f $@
 	rpcgen -c -o $@ $<
+if GLIBC_RPCGEN
 	mv $@ $@.bak
 	perl -w rpcgen_fix.pl < $@.bak > $@
+endif
 
 .x.h:
 	rm -f $@
 	rpcgen -h -o $@ $<
+endif
 
 remote_protocol.c: remote_protocol.h
 

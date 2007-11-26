@@ -1,3 +1,8 @@
+Mon Nov 26 11:44:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* configure.in, qemud/Makefile.am: Check for buggy glibc rpcgen
+	  and only run Perl fix-up script for that.
+
 Mon Nov 26 11:42:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* configure.in: Check if -lrpc is needed to get XDR functions.

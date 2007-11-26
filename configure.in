@@ -69,6 +69,15 @@ AC_CHECK_HEADERS([paths.h sys/syslimits.h])
 dnl Need -lrpc? (Cygwin needs this)
 AC_SEARCH_LIBS(xdrmem_create,rpc)
 
+dnl Do we have rpcgen?
+AC_PATH_PROG(RPCGEN, rpcgen, no)
+AM_CONDITIONAL(RPCGEN, [test "x$ac_cv_path_RPCGEN" != "xno"])
+if test "x$ac_cv_path_RPCGEN" != "xno"; then
+	dnl Is this GLIBC's buggy rpcgen?
+	AM_CONDITIONAL(GLIBC_RPCGEN,
+		       [$ac_cv_path_RPCGEN -t </dev/null >/dev/null 2>&1])
+fi
+
 dnl Specific dir for HTML output ?
 AC_ARG_WITH(html-dir, AC_HELP_STRING([--with-html-dir=path],
             [path to base html directory, default $datadir/doc/html]),
