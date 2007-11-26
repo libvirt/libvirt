@@ -1,3 +1,8 @@
+Mon Nov 26 11:47:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/remote_internal.c: Miscellaneous header file fixes for
+	  Cygwin.
+
 Mon Nov 26 11:44:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* configure.in, qemud/Makefile.am: Check for buggy glibc rpcgen

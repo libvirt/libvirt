@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <assert.h>
 #include <errno.h>
 #include <signal.h>
@@ -42,6 +43,7 @@
 #include <netinet/tcp.h>
 #include <pwd.h>
 
+#include <rpc/types.h>
 #include <rpc/xdr.h>
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
