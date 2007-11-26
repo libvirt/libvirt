@@ -1,3 +1,8 @@
+Mon Nov 26 11:54:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* qemud/internal.h: Miscellaneous header file fixes to allow
+	  libvirtd to build under Cygwin.
+
 Mon Nov 26 11:52:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* configure.in, proxy/Makefile.am: Disable building of the Xen proxy
