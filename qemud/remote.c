@@ -54,7 +54,8 @@
 
 static void remoteDispatchError (struct qemud_client *client,
                                  remote_message_header *req,
-                                 const char *fmt, ...);
+                                 const char *fmt, ...)
+    ATTRIBUTE_FORMAT(printf, 3, 4);
 static virDomainPtr get_nonnull_domain (virConnectPtr conn, remote_nonnull_domain domain);
 static virNetworkPtr get_nonnull_network (virConnectPtr conn, remote_nonnull_network network);
 static void make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr dom_src);
