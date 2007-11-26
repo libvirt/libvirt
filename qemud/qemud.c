@@ -21,7 +21,7 @@
  * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#include <config.h>
+#include "config.h"
 
 #define _GNU_SOURCE /* for asprintf */
 
@@ -612,8 +612,10 @@ remoteListenTCP (struct qemud_server *server,
 
         if (sa.ss_family == AF_INET)
             sock->port = htons(((struct sockaddr_in*)&sa)->sin_port);
+#ifdef AF_INET6
         else if (sa.ss_family == AF_INET6)
             sock->port = htons(((struct sockaddr_in6*)&sa)->sin6_port);
+#endif
         else
             sock->port = -1;
 

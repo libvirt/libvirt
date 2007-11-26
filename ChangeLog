@@ -1,3 +1,7 @@
+Mon Nov 26 11:56:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* qemud/qemud.c: If AF_INET6 not defined, don't test for it.
+
 Mon Nov 26 11:54:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* qemud/internal.h: Miscellaneous header file fixes to allow
