@@ -1,3 +1,8 @@
+Tue Nov 27 16:40:29 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* docs/site.xsl docs/libvir.html *.html: add boilerplate for
+	  a Windows support page
+
 Tue Nov 27 15:29:01 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in: when configuring with --prefix=/usr i.e. the same
