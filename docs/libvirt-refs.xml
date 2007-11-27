@@ -79,10 +79,12 @@
     <reference name='VIR_FROM_REMOTE' href='html/libvirt-virterror.html#VIR_FROM_REMOTE'/>
     <reference name='VIR_FROM_RPC' href='html/libvirt-virterror.html#VIR_FROM_RPC'/>
     <reference name='VIR_FROM_SEXPR' href='html/libvirt-virterror.html#VIR_FROM_SEXPR'/>
+    <reference name='VIR_FROM_STATS_LINUX' href='html/libvirt-virterror.html#VIR_FROM_STATS_LINUX'/>
     <reference name='VIR_FROM_TEST' href='html/libvirt-virterror.html#VIR_FROM_TEST'/>
     <reference name='VIR_FROM_XEN' href='html/libvirt-virterror.html#VIR_FROM_XEN'/>
     <reference name='VIR_FROM_XEND' href='html/libvirt-virterror.html#VIR_FROM_XEND'/>
     <reference name='VIR_FROM_XENSTORE' href='html/libvirt-virterror.html#VIR_FROM_XENSTORE'/>
+    <reference name='VIR_FROM_XENXM' href='html/libvirt-virterror.html#VIR_FROM_XENXM'/>
     <reference name='VIR_FROM_XML' href='html/libvirt-virterror.html#VIR_FROM_XML'/>
     <reference name='VIR_GET_CPUMAP' href='html/libvirt-libvirt.html#VIR_GET_CPUMAP'/>
     <reference name='VIR_MIGRATE_LIVE' href='html/libvirt-libvirt.html#VIR_MIGRATE_LIVE'/>
@@ -306,10 +308,12 @@
       <ref name='VIR_FROM_REMOTE'/>
       <ref name='VIR_FROM_RPC'/>
       <ref name='VIR_FROM_SEXPR'/>
+      <ref name='VIR_FROM_STATS_LINUX'/>
       <ref name='VIR_FROM_TEST'/>
       <ref name='VIR_FROM_XEN'/>
       <ref name='VIR_FROM_XEND'/>
       <ref name='VIR_FROM_XENSTORE'/>
+      <ref name='VIR_FROM_XENXM'/>
       <ref name='VIR_FROM_XML'/>
       <ref name='VIR_GET_CPUMAP'/>
       <ref name='VIR_MIGRATE_LIVE'/>
@@ -865,10 +869,12 @@
       <ref name='VIR_FROM_REMOTE'/>
       <ref name='VIR_FROM_RPC'/>
       <ref name='VIR_FROM_SEXPR'/>
+      <ref name='VIR_FROM_STATS_LINUX'/>
       <ref name='VIR_FROM_TEST'/>
       <ref name='VIR_FROM_XEN'/>
       <ref name='VIR_FROM_XEND'/>
       <ref name='VIR_FROM_XENSTORE'/>
+      <ref name='VIR_FROM_XENXM'/>
       <ref name='VIR_FROM_XML'/>
       <ref name='VIR_WAR_NO_NETWORK'/>
       <ref name='_virError'/>
