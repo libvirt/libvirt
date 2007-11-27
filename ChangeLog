@@ -1,3 +1,12 @@
+Tue Nov 27 19:16:43 CET 2007 Jim Meyering <meyering@redhat.com>
+
+	When reporting errors, use "conn" whenever possible.
+	* src/remote_internal.c: change all error (NULL, ... to error (conn, ...
+	  (check_cert_file): Add+use parameter, conn.
+	  Adjust callers.
+	  (initialise_gnutls): The "conn" parameter *is* used, so remove
+	  ATTRIBUTE_UNUSED.
+
 Tue Nov 27 16:40:29 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* docs/site.xsl docs/libvir.html *.html: add boilerplate for
@@ -19,7 +28,7 @@ Tue Nov 27 15:29:01 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 Mon Nov 26 15:06:19 CET 2007 Daniel Veillard <veillard@redhat.com>
 
-	* doc/*: modified the python page into a bindings page, 
+	* doc/*: modified the python page into a bindings page,
 	  added the Ruby binding link to all pages
 
 Mon Nov 26 12:12:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>

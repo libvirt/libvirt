@@ -280,7 +280,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
     else if (strcasecmp (transport_str, "tcp") == 0)
         transport = trans_tcp;
     else {
-        error (NULL, VIR_ERR_INVALID_ARG,
+        error (conn, VIR_ERR_INVALID_ARG,
                "remote_open: transport in URL not recognised "
                "(should be tls|unix|ssh|ext|tcp)");
         return VIR_DRV_OPEN_ERROR;
@@ -308,7 +308,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
     server = strdup (uri->server ? uri->server : "localhost");
     if (!server) {
     out_of_memory:
-        error (NULL, VIR_ERR_NO_MEMORY, "duplicating server name");
+        error (conn, VIR_ERR_NO_MEMORY, "duplicating server name");
         goto failed;
     }
     if (uri->port != 0) {
@@ -394,7 +394,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
 
     /* For ext transport, command is required. */
     if (transport == trans_ext && !command) {
-        error (NULL, VIR_ERR_INVALID_ARG, "remote_open: for 'ext' transport, command is required");
+        error (conn, VIR_ERR_INVALID_ARG, "remote_open: for 'ext' transport, command is required");
         goto failed;
     }
 
@@ -438,7 +438,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
         hints.ai_flags = AI_ADDRCONFIG;
         int e = getaddrinfo (server, port, &hints, &res);
         if (e != 0) {
-            error (NULL, VIR_ERR_INVALID_ARG, gai_strerror (e));
+            error (conn, VIR_ERR_INVALID_ARG, gai_strerror (e));
             goto failed;
         }
 
@@ -458,7 +458,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
 
             priv->sock = socket (r->ai_family, SOCK_STREAM, 0);
             if (priv->sock == -1) {
-                error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+                error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
                 continue;
             }
 
@@ -468,7 +468,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
                         sizeof no_slow_start);
 
             if (connect (priv->sock, r->ai_addr, r->ai_addrlen) == -1) {
-                error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+                error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
                 close (priv->sock);
                 continue;
             }
@@ -504,12 +504,12 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
                 uid_t uid = getuid();
  
                 if (!(pw = getpwuid(uid))) {
-                    error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+                    error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
                     goto failed;
                 }
  
                 if (asprintf (&sockname, "@%s" LIBVIRTD_USER_UNIX_SOCKET, pw->pw_dir) < 0) {
-                    error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+                    error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
                     goto failed;
                 }
             } else {
@@ -518,7 +518,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
                 else
                     sockname = strdup (LIBVIRTD_PRIV_UNIX_SOCKET);
                 if (sockname == NULL) {
-                    error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+                    error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
                     goto failed;
                 }
             }
@@ -539,7 +539,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
       autostart_retry:
         priv->sock = socket (AF_UNIX, SOCK_STREAM, 0);
         if (priv->sock == -1) {
-            error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+            error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
             goto failed;
         }
         if (connect (priv->sock, (struct sockaddr *) &addr, sizeof addr) == -1) {
@@ -561,7 +561,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
                     goto autostart_retry;
                 }
             }
-            error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+            error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
             goto failed;
         }
 
@@ -576,7 +576,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
 
         command = command ? : strdup ("ssh");
         if (command == NULL) {
-            error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+            error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
             goto failed;
         }
 
@@ -584,7 +584,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
         //   ssh -p $port [-l $username] $hostname $netcat -U $sockname [NULL]
         cmd_argv = malloc (nr_args * sizeof (char *));
         if (cmd_argv == NULL) {
-            error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+            error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
             goto failed;
         }
 
@@ -611,7 +611,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
         assert (j == nr_args);
         for (j = 0; j < nr_args; j++)
             if (cmd_argv[j] == NULL) {
-                error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (ENOMEM));
+                error (conn, VIR_ERR_SYSTEM_ERROR, strerror (ENOMEM));
                 goto failed;
             }
     }
@@ -626,13 +626,13 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
          * to faff around with two file descriptors (a la 'pipe(2)').
          */
         if (socketpair (PF_UNIX, SOCK_STREAM, 0, sv) == -1) {
-            error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+            error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
             goto failed;
         }
 
         pid = fork ();
         if (pid == -1) {
-            error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+            error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
             goto failed;
         } else if (pid == 0) { /* Child. */
             close (sv[0]);
@@ -647,7 +647,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
             if (!cmd_argv) {
                 cmd_argv = malloc (2 * sizeof (char *));
                 if (cmd_argv == NULL) {
-                    error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+                    error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
                     goto failed;
                 }
                 cmd_argv[0] = command;
@@ -724,7 +724,7 @@ remoteOpen (virConnectPtr conn, xmlURIPtr uri, int flags)
 
     priv = malloc (sizeof(struct private_data));
     if (!priv) {
-        error (NULL, VIR_ERR_NO_MEMORY, "struct private_data");
+        error (conn, VIR_ERR_NO_MEMORY, "struct private_data");
         return VIR_DRV_OPEN_ERROR;
     }
 
@@ -947,11 +947,11 @@ static gnutls_certificate_credentials_t x509_cred;
 
 
 static int
-check_cert_file (const char *type, const char *file)
+check_cert_file (virConnectPtr conn, const char *type, const char *file)
 {
     struct stat sb;
     if (stat(file, &sb) < 0) {
-        __virRaiseError (NULL, NULL, NULL, VIR_FROM_REMOTE, VIR_ERR_RPC,
+        __virRaiseError (conn, NULL, NULL, VIR_FROM_REMOTE, VIR_ERR_RPC,
                          VIR_ERR_ERROR, LIBVIRT_CACERT, NULL, NULL, 0, 0,
                          "Cannot access %s '%s': %s (%d)",
                          type, file, strerror(errno), errno);
@@ -962,7 +962,7 @@ check_cert_file (const char *type, const char *file)
 
 
 static int
-initialise_gnutls (virConnectPtr conn ATTRIBUTE_UNUSED)
+initialise_gnutls (virConnectPtr conn)
 {
     static int initialised = 0;
     int err;
@@ -974,16 +974,16 @@ initialise_gnutls (virConnectPtr conn ATTRIBUTE_UNUSED)
     /* X509 stuff */
     err = gnutls_certificate_allocate_credentials (&x509_cred);
     if (err) {
-        error (NULL, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
+        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
         return -1;
     }
 
 
-    if (check_cert_file("CA certificate", LIBVIRT_CACERT) < 0)
+    if (check_cert_file(conn, "CA certificate", LIBVIRT_CACERT) < 0)
         return -1;
-    if (check_cert_file("client key", LIBVIRT_CLIENTKEY) < 0)
+    if (check_cert_file(conn, "client key", LIBVIRT_CLIENTKEY) < 0)
         return -1;
-    if (check_cert_file("client certificate", LIBVIRT_CLIENTCERT) < 0)
+    if (check_cert_file(conn, "client certificate", LIBVIRT_CLIENTCERT) < 0)
         return -1;
 
     /* Set the trusted CA cert. */
@@ -994,7 +994,7 @@ initialise_gnutls (virConnectPtr conn ATTRIBUTE_UNUSED)
         gnutls_certificate_set_x509_trust_file (x509_cred, LIBVIRT_CACERT,
                                                 GNUTLS_X509_FMT_PEM);
     if (err < 0) {
-        error (NULL, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
+        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
         return -1;
     }
 
@@ -1009,7 +1009,7 @@ initialise_gnutls (virConnectPtr conn ATTRIBUTE_UNUSED)
                                               LIBVIRT_CLIENTKEY,
                                               GNUTLS_X509_FMT_PEM);
     if (err < 0) {
-        error (NULL, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
+        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
         return -1;
     }
 
@@ -1035,21 +1035,21 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
      */
     err = gnutls_init (&session, GNUTLS_CLIENT);
     if (err) {
-        error (NULL, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
+        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
         return NULL;
     }
 
     /* Use default priorities */
     err = gnutls_set_default_priority (session);
     if (err) {
-        error (NULL, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
+        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
         return NULL;
     }
     err =
         gnutls_certificate_type_set_priority (session,
                                               cert_type_priority);
     if (err) {
-        error (NULL, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
+        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
         return NULL;
     }
 
@@ -1057,7 +1057,7 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
      */
     err = gnutls_credentials_set (session, GNUTLS_CRD_CERTIFICATE, x509_cred);
     if (err) {
-        error (NULL, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
+        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
         return NULL;
     }
 
@@ -1070,7 +1070,7 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
     if (err < 0) {
         if (err == GNUTLS_E_AGAIN || err == GNUTLS_E_INTERRUPTED)
             goto again;
-        error (NULL, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
+        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
         return NULL;
     }
 
@@ -1091,11 +1091,11 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
     if (len < 0 && len != GNUTLS_E_UNEXPECTED_PACKET_LENGTH) {
         if (len == GNUTLS_E_AGAIN || len == GNUTLS_E_INTERRUPTED)
             goto again_2;
-        error (NULL, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (len));
+        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (len));
         return NULL;
     }
     if (len != 1 || buf[0] != '\1') {
-        error (NULL, VIR_ERR_RPC,
+        error (conn, VIR_ERR_RPC,
                "server verification (of our certificate or IP address) failed\n");
         return NULL;
     }
@@ -1120,12 +1120,12 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
     time_t now;
 
     if ((ret = gnutls_certificate_verify_peers2 (session, &status)) < 0) {
-        error (NULL, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (ret));
+        error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (ret));
         return -1;
     }
   
     if ((now = time(NULL)) == ((time_t)-1)) {
-        error (NULL, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+        error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
         return -1;
     }
 
@@ -1146,17 +1146,17 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
             reason = "The certificate uses an insecure algorithm";
 #endif
     
-        error (NULL, VIR_ERR_RPC, reason);
+        error (conn, VIR_ERR_RPC, reason);
         return -1;
     }
 
     if (gnutls_certificate_type_get(session) != GNUTLS_CRT_X509) {
-        error (NULL, VIR_ERR_RPC, "Certificate type is not X.509");
+        error (conn, VIR_ERR_RPC, "Certificate type is not X.509");
         return -1;
     }
   
     if (!(certs = gnutls_certificate_get_peers(session, &nCerts))) {
-        error (NULL, VIR_ERR_RPC, "gnutls_certificate_get_peers failed");
+        error (conn, VIR_ERR_RPC, "gnutls_certificate_get_peers failed");
         return -1;
     }
   
@@ -1165,25 +1165,25 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
 
         ret = gnutls_x509_crt_init (&cert);
         if (ret < 0) {
-            error (NULL, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (ret));
+            error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (ret));
             return -1;
         }
         
         ret = gnutls_x509_crt_import (cert, &certs[i], GNUTLS_X509_FMT_DER);
         if (ret < 0) {
-            error (NULL, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (ret));
+            error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (ret));
             gnutls_x509_crt_deinit (cert);
             return -1;
         }
     
         if (gnutls_x509_crt_get_expiration_time (cert) < now) {
-            error (NULL, VIR_ERR_RPC, "The certificate has expired");
+            error (conn, VIR_ERR_RPC, "The certificate has expired");
             gnutls_x509_crt_deinit (cert);
             return -1;
         }
     
         if (gnutls_x509_crt_get_activation_time (cert) > now) {
-            error (NULL, VIR_ERR_RPC, "The certificate is not yet activated");
+            error (conn, VIR_ERR_RPC, "The certificate is not yet activated");
             gnutls_x509_crt_deinit (cert);
             return -1;
         }
@@ -1191,7 +1191,7 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
         if (i == 0) {
             if (!gnutls_x509_crt_check_hostname (cert, hostname)) {
                 __virRaiseError
-                    (NULL, NULL, NULL,
+                    (conn, NULL, NULL,
                      VIR_FROM_REMOTE, VIR_ERR_RPC,
                      VIR_ERR_ERROR, hostname, NULL, NULL,
                      0, 0,
@@ -2390,7 +2390,7 @@ remoteNetworkOpen (virConnectPtr conn,
         struct private_data *priv = malloc (sizeof(struct private_data));
         int ret, rflags = 0;
         if (!priv) {
-            error (NULL, VIR_ERR_NO_MEMORY, "struct private_data");
+            error (conn, VIR_ERR_NO_MEMORY, "struct private_data");
             return VIR_DRV_OPEN_ERROR;
         }
         if (flags & VIR_DRV_OPEN_RO)
