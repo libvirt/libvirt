@@ -341,8 +341,15 @@ xenStoreOpen(virConnectPtr conn,
 #endif /* ! PROXY */
 
     if (priv->xshandle == NULL) {
-        virXenStoreError(NULL, VIR_ERR_NO_XEN, 
-	                     _("failed to connect to Xen Store"));
+	/*
+         * not being able to connect via the socket as a normal user
+         * is rather normal, this should fallback to the proxy (or
+         * remote) mechanism.
+	 */
+        if (getuid() == 0) {
+	    virXenStoreError(NULL, VIR_ERR_NO_XEN, 
+				 _("failed to connect to Xen Store"));
+	}
         return (-1);
     }
     return (0);

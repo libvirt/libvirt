@@ -89,6 +89,18 @@ AC_ARG_WITH(html-subdir, AC_HELP_STRING([--with-html-subdir=path],
             [HTML_DIR="$HTML_DIR/\$(PACKAGE)-\$(VERSION)/html"])
 AC_SUBST(HTML_DIR)
 
+dnl if --prefix is /usr, don't use /usr/var for localstatedir
+dnl or /usr/etc for sysconfdir
+dnl as this makes a lot of things break in testing situations
+
+if test $prefix = "/usr" -a $localstatedir = '${prefix}/var' ; then
+    localstatedir='/var'
+fi
+if test $prefix = "/usr" -a $sysconfdir = '${prefix}/etc' ; then
+    sysconfdir='/etc'
+fi
+
+
 dnl Allow to build without Xen, QEMU/KVM, test or remote driver
 AC_ARG_WITH(xen,
 [  --with-xen              add XEN support (on)],[],[with_xen=yes])

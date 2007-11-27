@@ -1,3 +1,17 @@
+Tue Nov 27 15:29:01 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in: when configuring with --prefix=/usr i.e. the same
+	  prefix as the installed libvirt, use the same localstatedir /var
+	  (instead of /usr/var) and sysconfdir /etc (instead of /usr/etc) to
+	  be able to connect to the system daemon, and use the system local
+	  options
+	* src/xs_internal.c: avoid error message when non-root cannot open
+	  xenstore
+	* src/xend_internal.c: avoid error message when non-root cannot
+	  directly access xend, in those 2 cases the proxy (or remote code)
+	  should implement the access so there is no need to raise the error
+	  there.
+
 Mon Nov 26 15:06:19 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* doc/*: modified the python page into a bindings page, 

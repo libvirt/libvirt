@@ -232,8 +232,15 @@ do_connect(virConnectPtr xend)
         close(s);
         errno = serrno;
         s = -1;
-        virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-                     "failed to connect to xend");
+	/*
+	 * not being able to connect via the socket as a normal user
+	 * is rather normal, this should fallback to the proxy (or
+	 * remote) mechanism.
+	 */
+	if ((getuid() == 0) || (xend->flags & VIR_DRV_OPEN_RO)) {
+	    virXendError(xend, VIR_ERR_INTERNAL_ERROR,
+			 "failed to connect to xend");
+        }
     }
 
     return s;
