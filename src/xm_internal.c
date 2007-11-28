@@ -52,6 +52,9 @@
 #include "buf.h"
 #include "uuid.h"
 
+static int xenXMConfigSetString(virConfPtr conf, const char *setting,
+                                const char *str);
+
 typedef struct xenXMConfCache *xenXMConfCachePtr;
 typedef struct xenXMConfCache {
     time_t refreshedAt;
@@ -101,7 +104,7 @@ struct xenUnifiedDriver xenXMDriver = {
     NULL, /* domainRestore */
     NULL, /* domainCoreDump */
     xenXMDomainSetVcpus, /* domainSetVcpus */
-    NULL, /* domainPinVcpu */
+    xenXMDomainPinVcpu, /* domainPinVcpu */
     NULL, /* domainGetVcpus */
     NULL, /* domainGetMaxVcpus */
     xenXMListDefinedDomains, /* listDefinedDomains */
@@ -1213,6 +1216,106 @@ int xenXMDomainSetVcpus(virDomainPtr domain, unsigned int vcpus) {
         return (-1);
 
     return (0);
+}
+
+/**
+ * xenXMDomainPinVcpu:
+ * @domain: pointer to domain object
+ * @vcpu: virtual CPU number (reserved)
+ * @cpumap: pointer to a bit map of real CPUs (in 8-bit bytes)
+ * @maplen: length of cpumap in bytes
+ *
+ * Set the vcpu affinity in config
+ *
+ * Returns 0 for success; -1 (with errno) on error
+ */
+int xenXMDomainPinVcpu(virDomainPtr domain,
+                       unsigned int vcpu ATTRIBUTE_UNUSED,
+                       unsigned char *cpumap, int maplen)
+{
+    const char *filename;
+    xenXMConfCachePtr entry;
+    virBufferPtr mapbuf;
+    char *mapstr = NULL;
+    char *ranges = NULL;
+    int i, j, n, comma = 0;
+    int ret = -1;
+
+    if (domain == NULL || domain->conn == NULL || domain->name == NULL
+        || cpumap == NULL || maplen < 1 || maplen > (int)sizeof(cpumap_t)) {
+        xenXMError(domain ? domain->conn : NULL, VIR_ERR_INVALID_ARG,
+                   __FUNCTION__);
+        return -1;
+    }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        xenXMError (domain->conn, VIR_ERR_INVALID_ARG, "read only connection");
+        return -1;
+    }
+    if (domain->id != -1) {
+        xenXMError (domain->conn, VIR_ERR_INVALID_ARG, "not inactive domain");
+        return -1;
+    }
+
+    if (!(filename = virHashLookup(nameConfigMap, domain->name))) {
+        xenXMError (domain->conn, VIR_ERR_INTERNAL_ERROR, "virHashLookup");
+        return -1;
+    }
+    if (!(entry = virHashLookup(configCache, filename))) {
+        xenXMError (domain->conn, VIR_ERR_INTERNAL_ERROR,
+                    "can't retrieve config file for domain");
+        return -1;
+    }
+
+    /* from bit map, build character string of mapped CPU numbers */
+    mapbuf = virBufferNew (16);
+    if (mapbuf == NULL) {
+        xenXMError (domain->conn, VIR_ERR_NO_MEMORY, __FUNCTION__);
+        return -1;
+    }
+    for (i = 0; i < maplen; i++)
+        for (j = 0; j < 8; j++)
+            if ((cpumap[i] & (1 << j))) {
+                n = i*8 + j;
+
+                if (comma) {
+                    if (virBufferAdd (mapbuf, ",", 1) == -1) {
+                        xenXMError (domain->conn, VIR_ERR_NO_MEMORY, __FUNCTION__);
+                        virBufferFree (mapbuf);
+                    return -1;
+                    }
+                }
+                comma = 1;
+
+                if (virBufferVSprintf (mapbuf, "%d", n) == -1) {
+                    xenXMError (domain->conn, VIR_ERR_NO_MEMORY, __FUNCTION__);
+                    virBufferFree (mapbuf);
+                    return -1;
+                }
+            }
+
+    mapstr = virBufferContentAndFree (mapbuf);
+
+    /* convert the mapstr to a range based string */
+    ranges = virConvertCpuSet(domain->conn, mapstr, 0);
+
+    if (ranges != NULL) {
+        if (xenXMConfigSetString(entry->conf, "cpus", ranges) < 0)
+            goto cleanup;
+    } else
+        if (xenXMConfigSetString(entry->conf, "cpus", mapstr) < 0)
+            goto cleanup;
+
+    if (virConfWriteFile(entry->filename, entry->conf) < 0)
+        goto cleanup;
+
+    ret = 0;
+
+ cleanup:
+    if(mapstr)
+        free(mapstr);
+    if(ranges)
+        free(ranges);
+    return (ret);
 }
 
 /*
