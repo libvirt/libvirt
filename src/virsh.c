@@ -4643,7 +4643,9 @@ vshCloseLogFile(vshControl *ctl)
 {
     /* log file close */
     if (ctl->log_fd >= 0) {
-        close(ctl->log_fd);
+        if (close(ctl->log_fd) < 0)
+            vshError(ctl, FALSE, _("%s: failed to write log file: %s")
+                     ctl->logfile ? ctl->logfile : "?", strerror (errno));
         ctl->log_fd = -1;
     }
 
