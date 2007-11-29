@@ -26,33 +26,19 @@ LIBXML_REQUIRED="2.5.0"
 GNUTLS_REQUIRED="1.0.25"
 AVAHI_REQUIRED="0.6.0"
 
-dnl Checks for programs.
+dnl Checks for C compiler.
 AC_PROG_CC
+AM_PROG_CC_STDC
+AC_C_CONST
 AC_PROG_INSTALL
 AC_PROG_CPP
-AC_PATH_PROG(RM, rm, /bin/rm)
-AC_PATH_PROG(MV, mv, /bin/mv)
-AC_PATH_PROG(TAR, tar, /bin/tar)
-AC_PATH_PROG(XMLLINT, xmllint, /usr/bin/xmllint)
-AC_PATH_PROG(XSLTPROC, xsltproc, /usr/bin/xsltproc)
-
-dnl External programs that we can use if they are available.
-dnl We will hard-code paths to these programs unless we cannot
-dnl detect them, in which case we'll search for the program
-dnl along the $PATH at runtime and fail if it's not there.
-AC_PATH_PROG(DNSMASQ, dnsmasq, dnsmasq,
-	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
-AC_PATH_PROG(BRCTL, brctl, brctl,
-	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
-
-AC_DEFINE_UNQUOTED([DNSMASQ],["$DNSMASQ"],
-        [Location or name of the dnsmasq program])
-AC_DEFINE_UNQUOTED([BRCTL],["$BRCTL"],
-        [Location or name of the brctl program (see bridge-utils)])
 
 dnl Make sure we have an ANSI compiler
 AM_C_PROTOTYPES
 test "x$U" != "x" && AC_MSG_ERROR(Compiler not ANSI compliant)
+
+dnl Support building Win32 DLLs (must appear *before* AM_PROG_LIBTOOL)
+AC_LIBTOOL_WIN32_DLL
 
 AM_PROG_LIBTOOL
 
@@ -77,6 +63,27 @@ if test "x$ac_cv_path_RPCGEN" != "xno"; then
 	AM_CONDITIONAL(GLIBC_RPCGEN,
 		       [$ac_cv_path_RPCGEN -t </dev/null >/dev/null 2>&1])
 fi
+
+dnl Miscellaneous external programs.
+AC_PATH_PROG(RM, rm, /bin/rm)
+AC_PATH_PROG(MV, mv, /bin/mv)
+AC_PATH_PROG(TAR, tar, /bin/tar)
+AC_PATH_PROG(XMLLINT, xmllint, /usr/bin/xmllint)
+AC_PATH_PROG(XSLTPROC, xsltproc, /usr/bin/xsltproc)
+
+dnl External programs that we can use if they are available.
+dnl We will hard-code paths to these programs unless we cannot
+dnl detect them, in which case we'll search for the program
+dnl along the $PATH at runtime and fail if it's not there.
+AC_PATH_PROG(DNSMASQ, dnsmasq, dnsmasq,
+	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+AC_PATH_PROG(BRCTL, brctl, brctl,
+	[/sbin:/usr/sbin:/usr/local/sbin:$PATH])
+
+AC_DEFINE_UNQUOTED([DNSMASQ],["$DNSMASQ"],
+        [Location or name of the dnsmasq program])
+AC_DEFINE_UNQUOTED([BRCTL],["$BRCTL"],
+        [Location or name of the brctl program (see bridge-utils)])
 
 dnl Specific dir for HTML output ?
 AC_ARG_WITH(html-dir, AC_HELP_STRING([--with-html-dir=path],
