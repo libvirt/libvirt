@@ -27,6 +27,7 @@
 #include <ctype.h>
 #include <fcntl.h>
 #include <locale.h>
+#include <time.h>
 #include <limits.h>
 #include <assert.h>
 #include <errno.h>
