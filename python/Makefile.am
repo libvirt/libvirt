@@ -23,8 +23,6 @@ EXTRA_DIST =		\
 	libvirt-python-api.xml \
 	$(DOCS)
 
-libvirtmod_la_LDFLAGS = -module -avoid-version -L$(top_builddir)/src/.libs
-
 if WITH_PYTHON
 mylibs = $(top_builddir)/src/libvirt.la
 
@@ -33,9 +31,13 @@ all-local: libvirt.py
 python_LTLIBRARIES = libvirtmod.la
 
 libvirtmod_la_SOURCES = libvir.c types.c libvirt-py.c libvirt-py.h
-libvirtmod_la_LIBADD = $(mylibs)
 # Python header files contain a redundant decl, hence:
 libvirtmod_la_CFLAGS = -Wno-redundant-decls
+
+libvirtmod_la_LDFLAGS = -module -avoid-version -L$(top_builddir)/src/.libs \
+	@CYGWIN_EXTRA_LDFLAGS@
+libvirtmod_la_LIBADD = $(mylibs) \
+	@CYGWIN_EXTRA_LIBADD@ @CYGWIN_EXTRA_PYTHON_LIBADD@
 
 GENERATE = generator.py
 API_DESC = $(top_srcdir)/docs/libvirt-api.xml $(srcdir)/libvirt-python-api.xml
@@ -60,6 +62,13 @@ install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(DOCS_DIR)
 	@(for doc in $(DOCS) ; \
 	   do @INSTALL@ -m 0644 $$doc $(DESTDIR)$(DOCS_DIR) ; done)
+
+if CYGWIN
+install-data-hook:
+	cd $(DESTDIR)$(pythondir) && \
+	rm -f libvirtmod.dll && \
+	ln -s cygvirtmod.dll libvirtmod.dll
+endif
 
 uninstall-local:
 	rm -f $(DESTDIR)$(pythondir)/libvirt.py

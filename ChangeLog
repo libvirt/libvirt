@@ -1,3 +1,12 @@
+Thu Nov 29 17:40:00 GMT 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* configure.in: Added CYGWIN_EXTRA_LDFLAGS, CYGWIN_EXTRA_LIBADD,
+	  CYGWIN_EXTRA_PYTHON_LIBADD, CYGWIN automake conditional.
+	* src/Makefile.am: Extra flags required to build DLL of libvirt
+	  for Cygwin.
+	* python/Makefile.am: Extra flags and rule required to build
+	  Python module for Cygwin.
+
 Thu Nov 29 17:38:00 GMT 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* configure.in: Check for C compiler first before checking for

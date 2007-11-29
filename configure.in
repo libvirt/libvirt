@@ -536,6 +536,28 @@ else
     ALL_LINGUAS="af am ar as be bg bn_IN bn ca cs cy da de el en_GB es et eu_ES fa fi fr gl gu he hi hr hu hy id is it ja ka kn ko ku lo lt lv mk ml mr ms my nb nl nn no nso or pa pl pt_BR pt ro ru si sk sl sq sr@Latn sr sv ta te th tr uk ur vi zh_CN zh_TW zu"
 fi
 
+dnl Extra link-time flags for Cygwin.
+dnl Copied from libxml2 configure.in, but I removed mingw changes
+dnl for now since I'm not supporting mingw at present.  - RWMJ
+cygwin=
+CYGWIN_EXTRA_LDFLAGS=
+CYGWIN_EXTRA_LIBADD=
+CYGWIN_EXTRA_PYTHON_LIBADD=
+case "$host" in
+  *-*-cygwin*)
+    cygwin=yes
+    CYGWIN_EXTRA_LDFLAGS="-no-undefined"
+    CYGWIN_EXTRA_LIBADD="${INTLLIBS}"
+    if test "x$PYTHON_VERSION" != "x"; then
+      CYGWIN_EXTRA_PYTHON_LIBADD="-L/usr/lib/python${PYTHON_VERSION}/config -lpython${PYTHON_VERSION}"
+    fi
+    ;;
+esac
+AC_SUBST(CYGWIN_EXTRA_LDFLAGS)
+AC_SUBST(CYGWIN_EXTRA_LIBADD)
+AC_SUBST(CYGWIN_EXTRA_PYTHON_LIBADD)
+AM_CONDITIONAL(CYGWIN,[test "x$cygwin" = "xyes"])
+
 # very annoying
 rm -f COPYING
 cp COPYING.LIB COPYING
