@@ -1593,6 +1593,11 @@ latest version from CVS</a> </li>
 
 <li> The latest source patch from
 <a href="ftp://libvirt.org/libvirt/win32">the download area</a>. </li>
+
+<li> A version of Cygwin sunrpc, patched to support building
+  <code>librpc.dll</code>.
+  A patch and a binary package are available from
+  <a href="ftp://libvirt.org/libvirt/win32">the download area</a>. </li>
 </ol>
 
 <p>
@@ -1659,7 +1664,7 @@ source on Windows:
       <th valign="top" align="right"> Packages </th>
       <td>
 	openssh <br/>
-	sunrpc <br/>
+	sunrpc &ge; 4.0-4 (see below) <br/>
       </td>
     </tr>
   </table>
@@ -1676,6 +1681,23 @@ source on Windows:
     <code>/etc/group</code> files from Windows users.  If this
     is needed then a message is printed in the shell.
     Note that you need to do this as Windows Administrator. </p>
+</li>
+
+<li>
+  <p> Install Cygwin sunrpc &ge; 4.0-4 package, patched to include
+    <code>librpc.dll</code>.
+    To do this, first check to see whether <code>/usr/lib/librpc.dll</code>
+    exists.  If it does, you're good to go and can skip to the next
+    step. </p>
+
+  <p>
+    If you don't have this file, either install the binary package
+    <a href="ftp://libvirt.org/libvirt/win32/sunrpc-4.0-4.tar.bz2">sunrpc-4.0-4.tar.bz2</a> (just unpack it, as Administrator, in the Cygwin root directory).
+    Or you can download the
+    <a href="ftp://libvirt.org/libvirt/win32/sunrpc-4.0-dll.patch">source patch</a>
+    and apply it by hand to the Cygwin sunrpc package (eg. using
+    cygport).
+  </p>
 </li>
 
 <li>
@@ -1745,23 +1767,45 @@ src/virsh.exe <a href="http://libvirt.org/uri.html">-c qemu://remote/system</a> 
 make install
 </pre>
 </li>
+
+<li>
+  <p>
+    The above steps should also build and install Python modules.
+    However for reasons which I don't fully understand, Python won't
+    look in the
+    non-standard <code>/usr/local/lib/python*/site-packages/</code>
+    directory by default so you may need to set the environment
+    variable PYTHONPATH:
+  </p>
+
+<pre>
+export PYTHONPATH=/usr/local/lib/python2.5/site-packages
+</pre>
+
+  <p>
+    (Change the version number to your version of Python).  You
+    can test Python support from the command line:
+  </p>
+
+<pre>
+python
+&gt;&gt;&gt; import libvirt
+&gt;&gt;&gt; conn = libvirt.open ("test:///default")
+&gt;&gt;&gt; conn.listDomainsID ()
+[1]
+&gt;&gt;&gt; dom = conn.lookupByID (1)
+&gt;&gt;&gt; dom.XMLDesc (0)
+"&lt;domain type='test' id='1'&gt; ..."
+</pre>
+
+  <p>
+    The most common failure will be with <code>import libvirt</code>
+    which usually indicates that either <code>PYTHONPATH</code> is
+    wrong or a DLL cannot be loaded.
+  </p>
+</li>
+
 </ol>
-
-<!--
-
-<p>
-In the meantime please
-<a href="https://www.redhat.com/archives/libvir-list/2007-November/thread.html#00175">read this thread</a>
-and in particular
-<a href="https://www.redhat.com/archives/libvir-list/2007-November/msg00211.html">the
-current status of libvirt support in Windows</a>.
-
-<p>
-Eventually we will have source and binary downloads available in
-<a href="ftp://libvirt.org/libvirt/win32">the download area</a>.
-</p>
-
--->
 
 <h2><a name="Remote">Remote support</a></h2>
 
