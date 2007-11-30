@@ -4,7 +4,13 @@
 # Check python/generator.py in the source distribution of libvir
 # to find out more about the generation process
 #
-import libvirtmod
+
+# On cygwin, the DLL is called cygvirtmod.dll
+try:
+    import libvirtmod
+except:
+    import cygvirtmod as libvirtmod
+
 import types
 
 # The root of all libvirt errors.

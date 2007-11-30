@@ -15,7 +15,11 @@
 #include "libvirt_wrap.h"
 #include "libvirt-py.h"
 
+#ifndef __CYGWIN__
 extern void initlibvirtmod(void);
+#else
+extern void initcygvirtmod(void);
+#endif
 
 PyObject *libvirt_virDomainGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
 PyObject *libvirt_virNetworkGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
@@ -752,7 +756,12 @@ static PyMethodDef libvirtMethods[] = {
 };
 
 void
-initlibvirtmod(void)
+#ifndef __CYGWIN__
+initlibvirtmod
+#else
+initcygvirtmod
+#endif
+  (void)
 {
     static int initialized = 0;
 
@@ -762,7 +771,13 @@ initlibvirtmod(void)
     virInitialize();
 
     /* intialize the python extension module */
-    Py_InitModule((char *) "libvirtmod", libvirtMethods);
+    Py_InitModule((char *)
+#ifndef __CYGWIN__
+                  "libvirtmod"
+#else
+                  "cygvirtmod"
+#endif
+                  , libvirtMethods);
 
     initialized = 1;
 }

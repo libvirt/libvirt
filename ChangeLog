@@ -1,3 +1,12 @@
+Fri Nov 30 11:04:00 GMT 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* python/libvir.c, python/libvir.py: Make Python aware that
+	  the C bindings module is called cygvirtmod.dll when compiled
+	  by CYGWIN.
+	* python/Makefile.am: Remove symlink libvirtmod.dll -> cygvirtmod.dll
+	  no longer necessary because of the above.
+	* configure.in: Remove AM_CONDITIONAL(CYGWIN).
+
 Thu Nov 29 17:40:00 GMT 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* configure.in: Added CYGWIN_EXTRA_LDFLAGS, CYGWIN_EXTRA_LIBADD,

@@ -63,13 +63,6 @@ install-data-local:
 	@(for doc in $(DOCS) ; \
 	   do @INSTALL@ -m 0644 $$doc $(DESTDIR)$(DOCS_DIR) ; done)
 
-if CYGWIN
-install-data-hook:
-	cd $(DESTDIR)$(pythondir) && \
-	rm -f libvirtmod.dll && \
-	ln -s cygvirtmod.dll libvirtmod.dll
-endif
-
 uninstall-local:
 	rm -f $(DESTDIR)$(pythondir)/libvirt.py
 
