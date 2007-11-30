@@ -70,27 +70,27 @@ static int ipsock = 0;          /* -l  Listen for TCP/IP */
 /* Defaults for configuration file elements */
 static int listen_tls = 1;
 static int listen_tcp = 0;
-static const char *tls_port = LIBVIRTD_TLS_PORT;
-static const char *tcp_port = LIBVIRTD_TCP_PORT;
+static char *tls_port = (char *) LIBVIRTD_TLS_PORT;
+static char *tcp_port = (char *) LIBVIRTD_TCP_PORT;
 
 static gid_t unix_sock_gid = 0; /* Only root by default */
-static int unix_sock_rw_perms = 0700; /* Allow user only */
-static int unix_sock_ro_perms = 0777; /* Allow world */
+static int unix_sock_rw_mask = 0700; /* Allow user only */
+static int unix_sock_ro_mask = 0777; /* Allow world */
 
 #ifdef HAVE_AVAHI
 static int mdns_adv = 1;
-static const char *mdns_name = NULL;
+static char *mdns_name = NULL;
 #endif
 
 static int tls_no_verify_certificate = 0;
 static int tls_no_verify_address = 0;
-static const char **tls_allowed_ip_list = 0;
-static const char **tls_allowed_dn_list = 0;
+static char **tls_allowed_ip_list = NULL;
+static char **tls_allowed_dn_list = NULL;
 
-static const char *key_file = LIBVIRT_SERVERKEY;
-static const char *cert_file = LIBVIRT_SERVERCERT;
-static const char *ca_file = LIBVIRT_CACERT;
-static const char *crl_file = "";
+static char *key_file = (char *) LIBVIRT_SERVERKEY;
+static char *cert_file = (char *) LIBVIRT_SERVERCERT;
+static char *ca_file = (char *) LIBVIRT_CACERT;
+static char *crl_file = (char *) "";
 
 static gnutls_certificate_credentials_t x509_cred;
 static gnutls_dh_params_t dh_params;
@@ -407,7 +407,7 @@ static int qemudGoDaemon(void) {
                 status != 0) {
                 return -1;
             }
-      
+
             return pid;
         }
     }
@@ -482,7 +482,7 @@ static int qemudListenUnix(struct qemud_server *server,
 
 
     oldgrp = getgid();
-    oldmask = umask(readonly ? ~unix_sock_ro_perms : ~unix_sock_rw_perms);
+    oldmask = umask(readonly ? ~unix_sock_ro_mask : ~unix_sock_rw_mask);
     if (getuid() == 0)
         setgid(unix_sock_gid);
 
@@ -649,7 +649,7 @@ static int qemudInitPaths(struct qemud_server *server,
     char *base = 0;
     uid_t uid = geteuid();
 
-    
+
     if (!uid) {
         if (snprintf (sockname, maxlen, "%s/run/libvirt/libvirt-sock",
                       LOCAL_STATE_DIR) >= maxlen)
@@ -764,7 +764,7 @@ static struct qemud_server *qemudInitialize(int sigread) {
             group = libvirtd_mdns_add_group(server->mdns, mdns_name);
         }
 
-        /* 
+        /*
          * See if there's a TLS enabled port we can advertise. Cowardly
          * don't bother to advertise TCP since we don't want people using
          * them for real world apps
@@ -777,7 +777,7 @@ static struct qemud_server *qemudInitialize(int sigread) {
             }
             sock = sock->next;
         }
-    
+
         /*
          * Add the primary entry - we choose SSH because its most likely to always
          * be available
@@ -840,7 +840,7 @@ remoteCheckDN (gnutls_x509_crt_t cert)
 {
     char name[256];
     size_t namesize = sizeof name;
-    const char **wildcards;
+    char **wildcards;
     int err;
 
     err = gnutls_x509_crt_get_dn (cert, name, &namesize);
@@ -928,13 +928,13 @@ remoteCheckCertificate (gnutls_session_t session)
             gnutls_x509_crt_deinit (cert);
             return -1;
         }
-    
+
         if (gnutls_x509_crt_get_expiration_time (cert) < now) {
             qemudLog (QEMUD_ERR, "remoteCheckCertificate: the client certificate has expired");
             gnutls_x509_crt_deinit (cert);
             return -1;
         }
-    
+
         if (gnutls_x509_crt_get_activation_time (cert) > now) {
             qemudLog (QEMUD_ERR, "remoteCheckCertificate: the client certificate is not yet activated");
             gnutls_x509_crt_deinit (cert);
@@ -959,7 +959,7 @@ static int
 remoteCheckAccess (struct qemud_client *client)
 {
     char addr[NI_MAXHOST];
-    const char **wildcards;
+    char **wildcards;
     int found, err;
 
     /* Verify client certificate. */
@@ -1044,6 +1044,8 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
     }
 
     client = calloc(1, sizeof(struct qemud_client));
+    if (client == NULL)
+        goto cleanup;
     client->magic = QEMUD_CLIENT_MAGIC;
     client->fd = fd;
     client->readonly = sock->readonly;
@@ -1505,6 +1507,131 @@ static void qemudCleanup(struct qemud_server *server) {
     free(server);
 }
 
+/* Allocate an array of malloc'd strings from the config file, filename
+ * (used only in diagnostics), using handle "conf".  Upon error, return -1
+ * and free any allocated memory.  Otherwise, save the array in *list_arg
+ * and return 0.
+ */
+static int
+remoteConfigGetStringList(virConfPtr conf, const char *key, char ***list_arg,
+                          const char *filename)
+{
+    char **list;
+    virConfValuePtr p = virConfGetValue (conf, key);
+    if (!p)
+        return 0;
+
+    switch (p->type) {
+    case VIR_CONF_STRING:
+        list = malloc (2 * sizeof (*list));
+        if (list == NULL) {
+            qemudLog (QEMUD_ERR,
+                      "failed to allocate memory for %s config list", key);
+            return -1;
+        }
+        list[0] = strdup (p->str);
+        list[1] = NULL;
+        if (list[0] == NULL) {
+            qemudLog (QEMUD_ERR,
+                      "failed to allocate memory for %s config list value",
+                      key);
+            free (list);
+            return -1;
+        }
+        break;
+
+    case VIR_CONF_LIST: {
+        int i, len = 0;
+        virConfValuePtr pp;
+        for (pp = p->list; pp; pp = pp->next)
+            len++;
+        list = calloc (1+len, sizeof (*list));
+        if (list == NULL) {
+            qemudLog (QEMUD_ERR,
+                      "failed to allocate memory for %s config list", key);
+            return -1;
+        }
+        for (i = 0, pp = p->list; pp; ++i, pp = pp->next) {
+            if (pp->type != VIR_CONF_STRING) {
+                qemudLog (QEMUD_ERR, "remoteReadConfigFile: %s: %s:"
+                          " must be a string or list of strings\n",
+                          filename, key);
+                free (list);
+                return -1;
+            }
+            list[i] = strdup (pp->str);
+            if (list[i] == NULL) {
+                int j;
+                for (j = 0 ; j < i ; j++)
+                    free (list[j]);
+                free (list);
+                qemudLog (QEMUD_ERR, "failed to allocate memory"
+                          " for %s config list value", key);
+                return -1;
+            }
+
+        }
+        list[i] = NULL;
+        break;
+    }
+
+    default:
+        qemudLog (QEMUD_ERR, "remoteReadConfigFile: %s: %s:"
+                  " must be a string or list of strings\n",
+                  filename, key);
+        return -1;
+    }
+
+    *list_arg = list;
+    return 0;
+}
+
+/* A helper function used by each of the following macros.  */
+static int
+checkType (virConfValuePtr p, const char *filename,
+           const char *key, virConfType required_type)
+{
+    if (p->type != required_type) {
+        qemudLog (QEMUD_ERR,
+                  "remoteReadConfigFile: %s: %s: invalid type:"
+                  " got %s; expected %s\n", filename, key,
+                  virConfTypeName (p->type),
+                  virConfTypeName (required_type));
+        return -1;
+    }
+    return 0;
+}
+
+/* If there is no config data for the key, #var_name, then do nothing.
+   If there is valid data of type VIR_CONF_STRING, and strdup succeeds,
+   store the result in var_name.  Otherwise, (i.e. invalid type, or strdup
+   failure), give a diagnostic and "goto" the cleanup-and-fail label.  */
+#define GET_CONF_STR(conf, filename, var_name)                          \
+    do {                                                                \
+        virConfValuePtr p = virConfGetValue (conf, #var_name);          \
+        if (p) {                                                        \
+            if (checkType (p, filename, #var_name, VIR_CONF_STRING) < 0) \
+                goto free_and_fail;                                     \
+            (var_name) = strdup (p->str);                               \
+            if ((var_name) == NULL) {                                   \
+                qemudLog (QEMUD_ERR, "remoteReadConfigFile: %s\n",      \
+                          strerror (errno));                            \
+                goto free_and_fail;                                     \
+            }                                                           \
+        }                                                               \
+    } while (0)
+
+/* Like GET_CONF_STR, but for integral values.  */
+#define GET_CONF_INT(conf, filename, var_name)                          \
+    do {                                                                \
+        virConfValuePtr p = virConfGetValue (conf, #var_name);          \
+        if (p) {                                                        \
+            if (checkType (p, filename, #var_name, VIR_CONF_LONG) < 0)  \
+                goto free_and_fail;                                     \
+            (var_name) = p->l;                                          \
+        }                                                               \
+    } while (0)
+
 /* Read the config file if it exists.
  * Only used in the remote case, hence the name.
  */
@@ -1512,6 +1639,12 @@ static int
 remoteReadConfigFile (const char *filename)
 {
     virConfPtr conf;
+
+    /* The following variable names must match the corresponding
+       configuration strings.  */
+    char *unix_sock_ro_perms = NULL;
+    char *unix_sock_rw_perms = NULL;
+    char *unix_sock_group = NULL;
 
     /* Just check the file is readable before opening it, otherwise
      * libvirt emits an error.
@@ -1521,166 +1654,103 @@ remoteReadConfigFile (const char *filename)
     conf = virConfReadFile (filename);
     if (!conf) return 0;
 
-    virConfValuePtr p;
+    GET_CONF_STR (conf, filename, tls_port);
+    GET_CONF_STR (conf, filename, tcp_port);
 
-#define CHECK_TYPE(name,typ) if (p && p->type != (typ)) {               \
-        qemudLog (QEMUD_ERR,                                            \
-                  "remoteReadConfigFile: %s: %s: expected type " #typ "\n", \
-                  filename, (name));                                    \
-        return -1;                                                      \
-    }
-
-    p = virConfGetValue (conf, "listen_tls");
-    CHECK_TYPE ("listen_tls", VIR_CONF_LONG);
-    listen_tls = p ? p->l : listen_tls;
-
-    p = virConfGetValue (conf, "listen_tcp");
-    CHECK_TYPE ("listen_tcp", VIR_CONF_LONG);
-    listen_tcp = p ? p->l : listen_tcp;
-
-    p = virConfGetValue (conf, "tls_port");
-    CHECK_TYPE ("tls_port", VIR_CONF_STRING);
-    tls_port = p ? strdup (p->str) : tls_port;
-
-    p = virConfGetValue (conf, "tcp_port");
-    CHECK_TYPE ("tcp_port", VIR_CONF_STRING);
-    tcp_port = p ? strdup (p->str) : tcp_port;
-
-    p = virConfGetValue (conf, "unix_sock_group");
-    CHECK_TYPE ("unix_sock_group", VIR_CONF_STRING);
-    if (p && p->str) {
+    GET_CONF_STR (conf, filename, unix_sock_group);
+    if (unix_sock_group) {
         if (getuid() != 0) {
             qemudLog (QEMUD_WARN, "Cannot set group when not running as root");
         } else {
-            struct group *grp = getgrnam(p->str);
+            struct group *grp = getgrnam(unix_sock_group);
             if (!grp) {
-                qemudLog (QEMUD_ERR, "Failed to lookup group '%s'", p->str);
-                return -1;
+                qemudLog (QEMUD_ERR, "Failed to lookup group '%s'",
+                          unix_sock_group);
+                goto free_and_fail;
             }
             unix_sock_gid = grp->gr_gid;
         }
+        free (unix_sock_group);
+        unix_sock_group = NULL;
     }
 
-    p = virConfGetValue (conf, "unix_sock_ro_perms");
-    CHECK_TYPE ("unix_sock_ro_perms", VIR_CONF_STRING);
-    if (p && p->str) {
-        if (xstrtol_i(p->str, NULL, 8, &unix_sock_ro_perms) != 0) {
-            qemudLog (QEMUD_ERR, "Failed to parse mode '%s'", p->str);
-            return -1;
+    GET_CONF_STR (conf, filename, unix_sock_ro_perms);
+    if (unix_sock_ro_perms) {
+        if (xstrtol_i (unix_sock_ro_perms, NULL, 8, &unix_sock_ro_mask) != 0) {
+            qemudLog (QEMUD_ERR, "Failed to parse mode '%s'",
+                      unix_sock_ro_perms);
+            goto free_and_fail;
         }
+        free (unix_sock_ro_perms);
+        unix_sock_ro_perms = NULL;
     }
 
-    p = virConfGetValue (conf, "unix_sock_rw_perms");
-    CHECK_TYPE ("unix_sock_rw_perms", VIR_CONF_STRING);
-    if (p && p->str) {
-        if (xstrtol_i(p->str, NULL, 8, &unix_sock_rw_perms) != 0) {
-            qemudLog (QEMUD_ERR, "Failed to parse mode '%s'", p->str);
-            return -1;
+    GET_CONF_STR (conf, filename, unix_sock_rw_perms);
+    if (unix_sock_rw_perms) {
+        if (xstrtol_i (unix_sock_rw_perms, NULL, 8, &unix_sock_rw_mask) != 0) {
+            qemudLog (QEMUD_ERR, "Failed to parse mode '%s'",
+                      unix_sock_rw_perms);
+            goto free_and_fail;
         }
+        free (unix_sock_rw_perms);
+        unix_sock_rw_perms = NULL;
     }
 
 #ifdef HAVE_AVAHI
-    p = virConfGetValue (conf, "mdns_adv");
-    CHECK_TYPE ("mdns_adv", VIR_CONF_LONG);
-    mdns_adv = p ? p->l : mdns_adv;
-
-    p = virConfGetValue (conf, "mdns_name");
-    CHECK_TYPE ("mdns_name", VIR_CONF_STRING);
-    mdns_name = p ? strdup (p->str) : NULL;
+    GET_CONF_INT (conf, filename, mdns_adv);
+    GET_CONF_STR (conf, filename, mdns_name);
 #endif
 
-    p = virConfGetValue (conf, "tls_no_verify_certificate");
-    CHECK_TYPE ("tls_no_verify_certificate", VIR_CONF_LONG);
-    tls_no_verify_certificate = p ? p->l : tls_no_verify_certificate;
+    GET_CONF_INT (conf, filename, tls_no_verify_certificate);
+    GET_CONF_INT (conf, filename, tls_no_verify_address);
 
-    p = virConfGetValue (conf, "tls_no_verify_address");
-    CHECK_TYPE ("tls_no_verify_address", VIR_CONF_LONG);
-    tls_no_verify_address = p ? p->l : tls_no_verify_address;
+    GET_CONF_STR (conf, filename, key_file);
+    GET_CONF_STR (conf, filename, cert_file);
+    GET_CONF_STR (conf, filename, ca_file);
+    GET_CONF_STR (conf, filename, crl_file);
 
-    p = virConfGetValue (conf, "key_file");
-    CHECK_TYPE ("key_file", VIR_CONF_STRING);
-    key_file = p ? strdup (p->str) : key_file;
+    if (remoteConfigGetStringList (conf, "tls_allowed_dn_list",
+                                   &tls_allowed_dn_list, filename) < 0)
+        goto free_and_fail;
 
-    p = virConfGetValue (conf, "cert_file");
-    CHECK_TYPE ("cert_file", VIR_CONF_STRING);
-    cert_file = p ? strdup (p->str) : cert_file;
-
-    p = virConfGetValue (conf, "ca_file");
-    CHECK_TYPE ("ca_file", VIR_CONF_STRING);
-    ca_file = p ? strdup (p->str) : ca_file;
-
-    p = virConfGetValue (conf, "crl_file");
-    CHECK_TYPE ("crl_file", VIR_CONF_STRING);
-    crl_file = p ? strdup (p->str) : crl_file;
-
-    p = virConfGetValue (conf, "tls_allowed_dn_list");
-    if (p) {
-        switch (p->type) {
-        case VIR_CONF_STRING:
-            tls_allowed_dn_list = malloc (2 * sizeof (char *));
-            tls_allowed_dn_list[0] = strdup (p->str);
-            tls_allowed_dn_list[1] = 0;
-            break;
-
-        case VIR_CONF_LIST: {
-            int i, len = 0;
-            virConfValuePtr pp;
-            for (pp = p->list; pp; pp = p->next)
-                len++;
-            tls_allowed_dn_list =
-                malloc ((1+len) * sizeof (char *));
-            for (i = 0, pp = p->list; pp; ++i, pp = p->next) {
-                if (pp->type != VIR_CONF_STRING) {
-                    qemudLog (QEMUD_ERR, "remoteReadConfigFile: %s: tls_allowed_dn_list: should be a string or list of strings\n", filename);
-                    return -1;
-                }
-                tls_allowed_dn_list[i] = strdup (pp->str);
-            }
-            tls_allowed_dn_list[i] = 0;
-            break;
-        }
-
-        default:
-            qemudLog (QEMUD_ERR, "remoteReadConfigFile: %s: tls_allowed_dn_list: should be a string or list of strings\n", filename);
-            return -1;
-        }
-    }
-
-    p = virConfGetValue (conf, "tls_allowed_ip_list");
-    if (p) {
-        switch (p->type) {
-        case VIR_CONF_STRING:
-            tls_allowed_ip_list = malloc (2 * sizeof (char *));
-            tls_allowed_ip_list[0] = strdup (p->str);
-            tls_allowed_ip_list[1] = 0;
-            break;
-
-        case VIR_CONF_LIST: {
-            int i, len = 0;
-            virConfValuePtr pp;
-            for (pp = p->list; pp; pp = p->next)
-                len++;
-            tls_allowed_ip_list =
-                malloc ((1+len) * sizeof (char *));
-            for (i = 0, pp = p->list; pp; ++i, pp = p->next) {
-                if (pp->type != VIR_CONF_STRING) {
-                    qemudLog (QEMUD_ERR, "remoteReadConfigFile: %s: tls_allowed_ip_list: should be a string or list of strings\n", filename);
-                    return -1;
-                }
-                tls_allowed_ip_list[i] = strdup (pp->str);
-            }
-            tls_allowed_ip_list[i] = 0;
-            break;
-        }
-
-        default:
-            qemudLog (QEMUD_ERR, "remoteReadConfigFile: %s: tls_allowed_ip_list: should be a string or list of strings\n", filename);
-            return -1;
-        }
-    }
+    if (remoteConfigGetStringList (conf, "tls_allowed_ip_list",
+                                   &tls_allowed_ip_list, filename) < 0)
+        goto free_and_fail;
 
     virConfFree (conf);
     return 0;
+
+ free_and_fail:
+    virConfFree (conf);
+    free (mdns_name);
+    mdns_name = NULL;
+    free (unix_sock_ro_perms);
+    free (unix_sock_rw_perms);
+    free (unix_sock_group);
+
+    /* Don't bother trying to free tcp_port, tls_port, key_file, cert_file,
+       ca_file, or crl_file, since they are initialized to non-malloc'd
+       strings.  Besides, these are static variables, and callers are
+       unlikely to call this function more than once, so there wouldn't
+       even be a real leak.  */
+
+    if (tls_allowed_dn_list) {
+        int i;
+        for (i = 0; tls_allowed_dn_list[i]; i++)
+            free (tls_allowed_dn_list[i]);
+        free (tls_allowed_dn_list);
+        tls_allowed_dn_list = NULL;
+    }
+
+    if (tls_allowed_ip_list) {
+        int i;
+        for (i = 0; tls_allowed_ip_list[i]; i++)
+            free (tls_allowed_ip_list[i]);
+        free (tls_allowed_ip_list);
+        tls_allowed_ip_list = NULL;
+    }
+
+    return -1;
 }
 
 /* Print command-line usage. */

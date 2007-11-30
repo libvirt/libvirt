@@ -1,7 +1,7 @@
 /**
  * conf.h: parser for a subset of the Python encoded Xen configuration files
  *
- * Copyright (C) 2006 Red Hat, Inc.
+ * Copyright (C) 2006, 2007 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -27,6 +27,21 @@ typedef enum {
     VIR_CONF_STRING = 2,	/* a string */
     VIR_CONF_LIST = 3		/* a list */
 } virConfType;
+
+static inline const char *
+virConfTypeName (virConfType t)
+{
+    switch (t) {
+    case VIR_CONF_LONG:
+        return "long";
+    case VIR_CONF_STRING:
+        return "string";
+    case VIR_CONF_LIST:
+        return "list";
+    default:
+        return "*unexpected*";
+    }
+}
 
 /**
  * virConfValue:
@@ -80,3 +95,12 @@ int		__virConfWriteMem	(char *memory,
 }
 #endif
 #endif /* __VIR_CONF_H__ */
+
+/*
+ * Local variables:
+ *  indent-tabs-mode: nil
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  tab-width: 4
+ * End:
+ */

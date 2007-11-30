@@ -1,3 +1,23 @@
+Fri Nov 30 16:36:34 CET 2007 Jim Meyering <meyering@redhat.com>
+
+	Detect heap allocation failure; factor out some duplication.
+	* qemud/qemud.c (tls_port, tcp_port, mdns_name, tls_allowed_ip_list):
+	  (tls_allowed_dn_list): Remove "const", now that we free these.
+	  (unix_sock_rw_mask): Rename from unix_sock_rw_perms, so that
+	  the latter name can be used as a local string variable, so that the
+	  variable name matches the config attribute name.
+	  (unix_sock_ro_mask): Rename from unix_sock_ro_perms, likewise.
+	  (remoteCheckDN, remoteCheckAccess): Adapt to const removal.
+	  (qemudDispatchServer): Check for heap allocation failure.
+	  (remoteConfigGetStringList): New function, based on code from
+	  Dan Berrangé.
+	  (CHECK_TYPE): Remove macro.
+	  (checkType): New function.
+	  (GET_CONF_INT, GET_CONF_STR): New macros.
+	  (remoteReadConfigFile): Use new macros to avoid duplication and to
+	  check for allocation failure.
+	* src/conf.h (virConfTypeName): New static inline function.
+
 Fri Nov 30 11:04:00 GMT 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* python/libvir.c, python/libvir.py: Make Python aware that
