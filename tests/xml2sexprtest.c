@@ -1,7 +1,9 @@
+
 #include "config.h"
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include <sys/types.h>
 #include <fcntl.h>
@@ -9,6 +11,8 @@
 #ifdef HAVE_SYS_SYSLIMITS_H
 #include <sys/syslimits.h>
 #endif
+
+#if WITH_XEN
 
 #include "xml.h"
 #include "testutils.h"
@@ -354,3 +358,9 @@ main(int argc, char **argv)
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
+
+#else /* WITH_XEN */
+
+int main (void) { exit (77); /* means 'test skipped' for automake */ }
+
+#endif /* ! WITH_XEN */

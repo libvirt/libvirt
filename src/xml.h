@@ -32,6 +32,7 @@ int		virXPathNodeSet	(const char *xpath,
 				 xmlXPathContextPtr ctxt,
 				 xmlNodePtr **list);
 
+#if WITH_XEN
 int		virParseXenCpuTopology(virConnectPtr conn,
 				 virBufferPtr xml,
 				 const char *str,
@@ -60,6 +61,7 @@ int		virDomainXMLDevID(virDomainPtr domain,
 				 char *class,
 				 char *ref,
 				 int ref_len);
+#endif
 
 #ifdef __cplusplus
 }

@@ -1,3 +1,9 @@
+Fri Nov 30 17:50:34 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xml.c, src/xml.h: Disable xen specific functions if
+	Xen driver is disabled.
+	* tests/xml2sexprtest.c: Disable if xen driver is disabled
+
 Fri Nov 30 16:36:34 CET 2007 Jim Meyering <meyering@redhat.com>
 
 	Detect heap allocation failure; factor out some duplication.

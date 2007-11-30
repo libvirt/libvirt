@@ -57,7 +57,7 @@ virXMLError(virConnectPtr conn, virErrorNumber error, const char *info,
  * Parser and converter for the CPUset strings used in libvirt		*
  *									*
  ************************************************************************/
-
+#if WITH_XEN
 /**
  * skipSpaces:
  * @str: pointer to the char pointer used
@@ -448,6 +448,7 @@ virConvertCpuSet(virConnectPtr conn, const char *str, int maxcpu) {
     free(cpuset);
     return (res);
 }
+#endif /* WITH_XEN */
 #ifndef PROXY
 
 /************************************************************************
@@ -694,7 +695,7 @@ virXPathNodeSet(const char *xpath, xmlXPathContextPtr ctxt,
  * Converter functions to go from the XML tree to an S-Expr for Xen	*
  *									*
  ************************************************************************/
-
+#if WITH_XEN
 /**
  * virtDomainParseXMLGraphicsDescImage:
  * @conn: pointer to the hypervisor connection
@@ -1625,11 +1626,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
 
     str = virXPathString("string(/domain/vcpu/@cpuset)", ctxt);
     if (str != NULL) {
-#ifdef WITH_XEN
         int maxcpu = xenNbCpus(conn);
-#else
-        int maxcpu = 64;
-#endif
         char *cpuset = NULL;
         char *ranges = NULL;
         const char *cur = str;
@@ -1879,6 +1876,7 @@ virParseXMLDevice(virConnectPtr conn, const char *xmldesc, int hvm,
     goto cleanup;
 }
 
+
 /**
  * virDomainXMLDevID:
  * @domain: pointer to domain object
@@ -1901,9 +1899,7 @@ virDomainXMLDevID(virDomainPtr domain, const char *xmldesc, char *class,
     xmlNodePtr node, cur;
     xmlChar *attr = NULL;
 
-#ifdef WITH_XEN
     char *xref;
-#endif /* WITH_XEN */
     int ret = 0;
 
     xml = xmlReadDoc((const xmlChar *) xmldesc, "device.xml", NULL,
@@ -1925,7 +1921,6 @@ virDomainXMLDevID(virDomainPtr domain, const char *xmldesc, char *class,
             attr = xmlGetProp(cur, BAD_CAST "dev");
             if (attr == NULL)
                 goto error;
-#ifdef WITH_XEN
             xref = xenStoreDomainGetDiskID(domain->conn, domain->id,
                                               (char *) attr);
             if (xref != NULL) {
@@ -1934,11 +1929,9 @@ virDomainXMLDevID(virDomainPtr domain, const char *xmldesc, char *class,
                 ref[ref_len - 1] = '\0';
                 goto cleanup;
             }
-#else /* !WITH_XEN */
             /* hack to avoid the warning that domain is unused */
             if (domain->id < 0)
                 ret = -1;
-#endif /* !WITH_XEN */
 
             goto error;
         }
@@ -1952,7 +1945,6 @@ virDomainXMLDevID(virDomainPtr domain, const char *xmldesc, char *class,
             if (attr == NULL)
                 goto error;
 
-#ifdef WITH_XEN
             xref = xenStoreDomainGetNetworkID(domain->conn, domain->id,
                                               (char *) attr);
             if (xref != NULL) {
@@ -1961,11 +1953,9 @@ virDomainXMLDevID(virDomainPtr domain, const char *xmldesc, char *class,
                 ref[ref_len - 1] = '\0';
                 goto cleanup;
             }
-#else /* !WITH_XEN */
             /* hack to avoid the warning that domain is unused */
             if (domain->id < 0)
                 ret = -1;
-#endif /* !WITH_XEN */
 
             goto error;
         }
@@ -1981,6 +1971,7 @@ virDomainXMLDevID(virDomainPtr domain, const char *xmldesc, char *class,
         xmlFree(attr);
     return ret;
 }
+#endif /* WITH_XEN */
 #endif /* !PROXY */
 
 /*
