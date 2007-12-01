@@ -1,3 +1,8 @@
+Sat Dec  1 10:22:34 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_driver.c: Fix off-by-1 buffer NULL termination in
+	symlink comparison code
+
 Fri Nov 30 17:50:34 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xml.c, src/xml.h: Disable xen specific functions if

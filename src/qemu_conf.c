@@ -2667,7 +2667,7 @@ checkLinkPointsTo(const char *checkLink,
         char *p;
 
         strncpy(dir, checkLink, PATH_MAX);
-        dir[PATH_MAX] = '\0';
+        dir[PATH_MAX-1] = '\0';
 
         if (!(p = strrchr(dir, '/'))) {
             qemudLog(QEMUD_WARN, "Symlink path '%s' is not absolute", checkLink);
@@ -2685,7 +2685,7 @@ checkLinkPointsTo(const char *checkLink,
         }
 
         strncpy(dest, tmp, PATH_MAX);
-        dest[PATH_MAX] = '\0';
+        dest[PATH_MAX-1] = '\0';
     }
 
     /* canonicalize both paths */
@@ -2693,14 +2693,14 @@ checkLinkPointsTo(const char *checkLink,
         qemudLog(QEMUD_WARN, "Failed to expand path '%s' :%s",
                  dest, strerror(errno));
         strncpy(real, dest, PATH_MAX);
-        real[PATH_MAX] = '\0';
+        real[PATH_MAX-1] = '\0';
     }
 
     if (!realpath(checkDest, checkReal)) {
         qemudLog(QEMUD_WARN, "Failed to expand path '%s' :%s",
                  checkDest, strerror(errno));
         strncpy(checkReal, checkDest, PATH_MAX);
-        checkReal[PATH_MAX] = '\0';
+        checkReal[PATH_MAX-1] = '\0';
     }
 
     /* compare */
