@@ -4780,7 +4780,8 @@ static int
 vshDeinit(vshControl * ctl)
 {
     vshCloseLogFile(ctl);
-
+    if (ctl->name)
+        free(ctl->name);
     if (ctl->conn) {
         if (virConnectClose(ctl->conn) != 0) {
             ctl->conn = NULL;   /* prevent recursive call from vshError() */
@@ -4788,6 +4789,8 @@ vshDeinit(vshControl * ctl)
                      "failed to disconnect from the hypervisor");
         }
     }
+    virResetLastError();
+
     return TRUE;
 }
 
@@ -4985,11 +4988,15 @@ main(int argc, char **argv)
         ctl->name = strdup(defaultConn);
     }
 
-    if (!vshParseArgv(ctl, argc, argv))
+    if (!vshParseArgv(ctl, argc, argv)) {
+        vshDeinit(ctl);
         exit(EXIT_FAILURE);
+    }
 
-    if (!vshInit(ctl))
+    if (!vshInit(ctl)) {
+        vshDeinit(ctl);
         exit(EXIT_FAILURE);
+    }
 
     if (!ctl->imode) {
         ret = vshCommandRun(ctl, ctl->cmd);

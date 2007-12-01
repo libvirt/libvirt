@@ -726,6 +726,7 @@ virFreeConnect(virConnectPtr conn) {
         virHashFree(conn->networks, (virHashDeallocator) virNetworkFreeName);
     if (conn->hashes_mux != NULL)
         xmlFreeMutex(conn->hashes_mux);
+    virResetError(&conn->err);
     free(conn);
     return(0);
 }

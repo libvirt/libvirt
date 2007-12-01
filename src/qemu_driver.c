@@ -341,6 +341,9 @@ qemudShutdown(void) {
     if (qemu_driver->networkAutostartDir)
         free(qemu_driver->networkAutostartDir);
 
+    if (qemu_driver->vncTLSx509certdir)
+        free(qemu_driver->vncTLSx509certdir);
+
     if (qemu_driver->brctl)
         brShutdown(qemu_driver->brctl);
     if (qemu_driver->iptables)

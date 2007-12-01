@@ -246,7 +246,7 @@ iptRulesRemove(iptRules *rules,
     int i;
 
     for (i = 0; i < rules->nrules; i++)
-        if (!strcmp(rules->rules[i].rule, strdup(rule)))
+        if (!strcmp(rules->rules[i].rule, rule))
             break;
 
     if (i >= rules->nrules)

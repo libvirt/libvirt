@@ -3052,20 +3052,13 @@ server_error (virConnectPtr conn, remote_error *err)
     dom = err->dom ? get_nonnull_domain (conn, *err->dom) : NULL;
     net = err->net ? get_nonnull_network (conn, *err->net) : NULL;
 
-    /* These strings are nullable.  OK to ignore the return value
-     * of strdup since these strings are informational.
-     */
-    char *str1 = err->str1 ? strdup (*err->str1) : NULL;
-    char *str2 = err->str2 ? strdup (*err->str2) : NULL;
-    char *str3 = err->str3 ? strdup (*err->str3) : NULL;
-
-    char *message = err->message ? strdup (*err->message) : NULL;
-
     __virRaiseError (conn, dom, net,
                      err->domain, err->code, err->level,
-                     str1, str2, str3,
+                     err->str1 ? *err->str1 : NULL,
+                     err->str2 ? *err->str2 : NULL,
+                     err->str3 ? *err->str3 : NULL,
                      err->int1, err->int2,
-                     "%s", message);
+                     "%s", err->message ? *err->message : NULL);
 }
 
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
