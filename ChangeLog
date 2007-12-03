@@ -1,3 +1,9 @@
+Mon Dec  3 20:44:01 CET 2007 Jim Meyering <meyering@redhat.com>
+
+	Avoid compile failure when HAVE_AVAHI is not defined.
+	* qemud/qemud.c (remoteReadConfigFile): Remove some of the
+	"#ifdef HAVE_AVAHI" guards around uses of mdns_name and mdns_adv.
+
 Mon Dec  3 16:15:10 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/util.c: Fix header files for Windows builds.

@@ -77,10 +77,8 @@ static gid_t unix_sock_gid = 0; /* Only root by default */
 static int unix_sock_rw_mask = 0700; /* Allow user only */
 static int unix_sock_ro_mask = 0777; /* Allow world */
 
-#ifdef HAVE_AVAHI
 static int mdns_adv = 1;
 static char *mdns_name = NULL;
-#endif
 
 static int tls_no_verify_certificate = 0;
 static int tls_no_verify_address = 0;
@@ -1696,10 +1694,8 @@ remoteReadConfigFile (const char *filename)
         unix_sock_rw_perms = NULL;
     }
 
-#ifdef HAVE_AVAHI
     GET_CONF_INT (conf, filename, mdns_adv);
     GET_CONF_STR (conf, filename, mdns_name);
-#endif
 
     GET_CONF_INT (conf, filename, tls_no_verify_certificate);
     GET_CONF_INT (conf, filename, tls_no_verify_address);
