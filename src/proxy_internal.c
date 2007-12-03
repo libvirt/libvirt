@@ -42,7 +42,6 @@ static char *xenProxyDomainGetOSType(virDomainPtr domain);
 struct xenUnifiedDriver xenProxyDriver = {
     xenProxyOpen, /* open */
     xenProxyClose, /* close */
-    NULL, /* type */
     xenProxyGetVersion, /* version */
     NULL, /* hostname */
     NULL, /* URI */

@@ -671,7 +671,6 @@ typedef struct xen_op_v2_dom xen_op_v2_dom;
 #endif
 
 #ifndef PROXY
-static const char * xenHypervisorGetType(virConnectPtr conn);
 static unsigned long xenHypervisorGetMaxMemory(virDomainPtr domain);
 #endif
 
@@ -679,7 +678,6 @@ static unsigned long xenHypervisorGetMaxMemory(virDomainPtr domain);
 struct xenUnifiedDriver xenHypervisorDriver = {
     xenHypervisorOpen, /* open */
     xenHypervisorClose, /* close */
-    xenHypervisorGetType, /* type */
     xenHypervisorGetVersion, /* version */
     NULL, /* hostname */
     NULL, /* URI */
@@ -2111,28 +2109,6 @@ xenHypervisorClose(virConnectPtr conn)
     return (0);
 }
 
-
-#ifndef PROXY
-/**
- * xenHypervisorGetType:
- * @conn: pointer to the Xen Hypervisor block
- *
- * Get the version level of the Hypervisor running.
- *
- * Returns -1 in case of error, 0 otherwise. if the version can't be
- *    extracted by lack of capacities returns 0 and @hvVer is 0, otherwise
- *    @hvVer value is major * 1,000,000 + minor * 1,000 + release
- */
-static const char *
-xenHypervisorGetType(virConnectPtr conn)
-{
-    if (!VIR_IS_CONNECT(conn)) {
-        virXenError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__, 0);
-        return (NULL);
-    }
-    return("Xen");
-}
-#endif
 
 /**
  * xenHypervisorGetVersion:

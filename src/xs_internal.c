@@ -45,7 +45,6 @@ static char *xenStoreDomainGetOSType(virDomainPtr domain);
 struct xenUnifiedDriver xenStoreDriver = {
     xenStoreOpen, /* open */
     xenStoreClose, /* close */
-    NULL, /* type */
     NULL, /* version */
     NULL, /* hostname */
     NULL, /* URI */

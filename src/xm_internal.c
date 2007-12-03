@@ -81,7 +81,6 @@ static time_t lastRefresh = 0;
 struct xenUnifiedDriver xenXMDriver = {
     xenXMOpen, /* open */
     xenXMClose, /* close */
-    xenXMGetType, /* type */
     NULL, /* version */
     NULL, /* hostname */
     NULL, /* URI */
@@ -508,13 +507,6 @@ int xenXMClose(virConnectPtr conn ATTRIBUTE_UNUSED) {
         configCache = NULL;
     }
     return (0);
-}
-
-/*
- * Our backend type
- */
-const char *xenXMGetType(virConnectPtr conn ATTRIBUTE_UNUSED) {
-    return ("XenXM");
 }
 
 /*

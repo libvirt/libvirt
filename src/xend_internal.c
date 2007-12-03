@@ -49,7 +49,6 @@
 #include <xen/dom0_ops.h>
 
 #ifndef PROXY
-static const char * xenDaemonGetType(virConnectPtr conn);
 static int xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids);
 static int xenDaemonNumOfDomains(virConnectPtr conn);
 static int xenDaemonListDefinedDomains(virConnectPtr conn, char **const names, int maxnames);
@@ -68,7 +67,6 @@ static int xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
 struct xenUnifiedDriver xenDaemonDriver = {
     xenDaemonOpen, /* open */
     xenDaemonClose, /* close */
-    xenDaemonGetType, /* type */
     xenDaemonGetVersion, /* version */
     NULL, /* hostname */
     NULL, /* URI */
@@ -2704,28 +2702,6 @@ xenDaemonNodeGetTopology(virConnectPtr conn, virBufferPtr xml) {
     sexpr_free(root);
     return (ret);
 }
-
-#ifndef PROXY
-/**
- * xenDaemonGetType:
- * @conn: pointer to the Xen Daemon block
- *
- * Get the version level of the Hypervisor running.
- *
- * Returns -1 in case of error, 0 otherwise. if the version can't be
- *    extracted by lack of capacities returns 0 and @hvVer is 0, otherwise
- *    @hvVer value is major * 1,000,000 + minor * 1,000 + release
- */
-static const char *
-xenDaemonGetType(virConnectPtr conn)
-{
-    if (!VIR_IS_CONNECT(conn)) {
-        virXendError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
-        return (NULL);
-    }
-    return("XenDaemon");
-}
-#endif /* ! PROXY */
 
 /**
  * xenDaemonGetVersion:

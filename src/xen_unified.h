@@ -39,7 +39,6 @@ extern int xenUnifiedRegister (void);
 struct xenUnifiedDriver {
 	virDrvOpen			open;
 	virDrvClose			close;
-	virDrvGetType			type;
 	virDrvGetVersion		version;
     virDrvGetHostname       getHostname;
     virDrvGetURI            getURI;

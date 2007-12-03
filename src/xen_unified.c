@@ -321,13 +321,10 @@ xenUnifiedType (virConnectPtr conn)
 {
     GET_PRIVATE(conn);
     int i;
-    const char *ret;
 
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i)
-        if (priv->opened[i] && drivers[i]->type) {
-            ret = drivers[i]->type (conn);
-            if (ret) return ret;
-        }
+        if (priv->opened[i])
+            return "Xen";
 
     return NULL;
 }
