@@ -48,6 +48,7 @@
 #include "uuid.h"
 #include "buf.h"
 #include "conf.h"
+#include "util.h"
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
 
@@ -227,55 +228,6 @@ void qemudFreeVM(struct qemud_vm *vm) {
     free(vm);
 }
 
-/* Build up a fully qualfiied path for a config file to be
- * associated with a persistent guest or network */
-static int
-qemudMakeConfigPath(const char *configDir,
-                    const char *name,
-                    const char *ext,
-                    char *buf,
-                    unsigned int buflen) {
-    if ((strlen(configDir) + 1 + strlen(name) + (ext ? strlen(ext) : 0) + 1) > buflen)
-        return -1;
-
-    strcpy(buf, configDir);
-    strcat(buf, "/");
-    strcat(buf, name);
-    if (ext)
-        strcat(buf, ext);
-    return 0;
-}
-
-int
-qemudEnsureDir(const char *path)
-{
-    struct stat st;
-    char parent[PATH_MAX];
-    char *p;
-    int err;
-
-    if (stat(path, &st) >= 0)
-        return 0;
-
-    strncpy(parent, path, PATH_MAX);
-    parent[PATH_MAX - 1] = '\0';
-
-    if (!(p = strrchr(parent, '/')))
-        return EINVAL;
-
-    if (p == parent)
-        return EPERM;
-
-    *p = '\0';
-
-    if ((err = qemudEnsureDir(parent)))
-        return err;
-
-    if (mkdir(path, 0777) < 0 && errno != EEXIST)
-        return errno;
-
-    return 0;
-}
 
 /* The list of possible machine types for various architectures,
    as supported by QEMU - taken from 'qemu -M ?' for each arch */
@@ -2075,22 +2027,22 @@ qemudSaveVMDef(virConnectPtr conn,
     if (vm->configFile[0] == '\0') {
         int err;
 
-        if ((err = qemudEnsureDir(driver->configDir))) {
+        if ((err = virFileMakePath(driver->configDir))) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              "cannot create config directory %s: %s",
                              driver->configDir, strerror(err));
             return -1;
         }
 
-        if (qemudMakeConfigPath(driver->configDir, def->name, ".xml",
-                                vm->configFile, PATH_MAX) < 0) {
+        if (virFileBuildPath(driver->configDir, def->name, ".xml",
+                             vm->configFile, PATH_MAX) < 0) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              "cannot construct config file path");
             return -1;
         }
 
-        if (qemudMakeConfigPath(driver->autostartDir, def->name, ".xml",
-                                vm->autostartLink, PATH_MAX) < 0) {
+        if (virFileBuildPath(driver->autostartDir, def->name, ".xml",
+                             vm->autostartLink, PATH_MAX) < 0) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              "cannot construct autostart link path");
             vm->configFile[0] = '\0';
@@ -2114,7 +2066,7 @@ static int qemudSaveNetworkConfig(virConnectPtr conn,
         return -1;
     }
 
-    if ((err = qemudEnsureDir(driver->networkConfigDir))) {
+    if ((err = virFileMakePath(driver->networkConfigDir))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "cannot create config directory %s: %s",
                          driver->networkConfigDir, strerror(err));
@@ -2521,22 +2473,22 @@ qemudSaveNetworkDef(virConnectPtr conn,
     if (network->configFile[0] == '\0') {
         int err;
 
-        if ((err = qemudEnsureDir(driver->networkConfigDir))) {
+        if ((err = virFileMakePath(driver->networkConfigDir))) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              "cannot create config directory %s: %s",
                              driver->networkConfigDir, strerror(err));
             return -1;
         }
 
-        if (qemudMakeConfigPath(driver->networkConfigDir, def->name, ".xml",
-                                network->configFile, PATH_MAX) < 0) {
+        if (virFileBuildPath(driver->networkConfigDir, def->name, ".xml",
+                             network->configFile, PATH_MAX) < 0) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              "cannot construct config file path");
             return -1;
         }
 
-        if (qemudMakeConfigPath(driver->networkAutostartDir, def->name, ".xml",
-                                network->autostartLink, PATH_MAX) < 0) {
+        if (virFileBuildPath(driver->networkAutostartDir, def->name, ".xml",
+                             network->autostartLink, PATH_MAX) < 0) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              "cannot construct autostart link path");
             network->configFile[0] = '\0';
@@ -2547,174 +2499,6 @@ qemudSaveNetworkDef(virConnectPtr conn,
     return qemudSaveNetworkConfig(conn, driver, network, def);
 }
 
-static int
-qemudReadFile(const char *path,
-              char *buf,
-              int maxlen) {
-    FILE *fh;
-    struct stat st;
-    int ret = 0;
-
-    if (!(fh = fopen(path, "r"))) {
-        qemudLog(QEMUD_WARN, "Failed to open file '%s': %s",
-                 path, strerror(errno));
-        goto error;
-    }
-
-    if (fstat(fileno(fh), &st) < 0) {
-        qemudLog(QEMUD_WARN, "Failed to stat file '%s': %s",
-                 path, strerror(errno));
-        goto error;
-    }
-
-    if (S_ISDIR(st.st_mode)) {
-        qemudDebug("Ignoring directory '%s' - clearly not a config file", path);
-        goto error;
-    }
-
-    if (st.st_size >= maxlen) {
-        qemudLog(QEMUD_WARN, "File '%s' is too large", path);
-        goto error;
-    }
-
-    if ((ret = fread(buf, st.st_size, 1, fh)) != 1) {
-        qemudLog(QEMUD_WARN, "Failed to read config file '%s': %s",
-                 path, strerror(errno));
-        goto error;
-    }
-
-    buf[st.st_size] = '\0';
-
-    ret = 1;
-
- error:
-    if (fh)
-        fclose(fh);
-
-    return ret;
-}
-
-static int
-compareFileToNameSuffix(const char *file,
-                        const char *name,
-                        const char *suffix) {
-    int filelen = strlen(file);
-    int namelen = strlen(name);
-    int suffixlen = strlen(suffix);
-
-    if (filelen == (namelen + suffixlen) &&
-        !strncmp(file, name, namelen) &&
-        !strncmp(file + namelen, suffix, suffixlen))
-        return 1;
-    else
-        return 0;
-}
-
-static int
-hasSuffix(const char *str,
-          const char *suffix)
-{
-    int len = strlen(str);
-    int suffixlen = strlen(suffix);
-
-    if (len < suffixlen)
-        return 0;
-
-    return strcmp(str + len - suffixlen, suffix) == 0;
-}
-
-static int
-checkLinkPointsTo(const char *checkLink,
-                  const char *checkDest)
-{
-    char dest[PATH_MAX];
-    char real[PATH_MAX];
-    char checkReal[PATH_MAX];
-    int n;
-    int passed = 0;
-
-    /* read the link destination */
-    if ((n = readlink(checkLink, dest, PATH_MAX)) < 0) {
-        switch (errno) {
-        case ENOENT:
-        case ENOTDIR:
-            break;
-
-        case EINVAL:
-            qemudLog(QEMUD_WARN, "Autostart file '%s' is not a symlink",
-                     checkLink);
-            break;
-
-        default:
-            qemudLog(QEMUD_WARN, "Failed to read autostart symlink '%s': %s",
-                     checkLink, strerror(errno));
-            break;
-        }
-
-        goto failed;
-    } else if (n >= PATH_MAX) {
-        qemudLog(QEMUD_WARN, "Symlink '%s' contents too long to fit in buffer",
-                 checkLink);
-        goto failed;
-    }
-
-    dest[n] = '\0';
-
-    /* make absolute */
-    if (dest[0] != '/') {
-        char dir[PATH_MAX];
-        char tmp[PATH_MAX];
-        char *p;
-
-        strncpy(dir, checkLink, PATH_MAX);
-        dir[PATH_MAX-1] = '\0';
-
-        if (!(p = strrchr(dir, '/'))) {
-            qemudLog(QEMUD_WARN, "Symlink path '%s' is not absolute", checkLink);
-            goto failed;
-        }
-
-        if (p == dir) /* handle unlikely root dir case */
-            p++;
-
-        *p = '\0';
-
-        if (qemudMakeConfigPath(dir, dest, NULL, tmp, PATH_MAX) < 0) {
-            qemudLog(QEMUD_WARN, "Path '%s/%s' is too long", dir, dest);
-            goto failed;
-        }
-
-        strncpy(dest, tmp, PATH_MAX);
-        dest[PATH_MAX-1] = '\0';
-    }
-
-    /* canonicalize both paths */
-    if (!realpath(dest, real)) {
-        qemudLog(QEMUD_WARN, "Failed to expand path '%s' :%s",
-                 dest, strerror(errno));
-        strncpy(real, dest, PATH_MAX);
-        real[PATH_MAX-1] = '\0';
-    }
-
-    if (!realpath(checkDest, checkReal)) {
-        qemudLog(QEMUD_WARN, "Failed to expand path '%s' :%s",
-                 checkDest, strerror(errno));
-        strncpy(checkReal, checkDest, PATH_MAX);
-        checkReal[PATH_MAX-1] = '\0';
-    }
-
-    /* compare */
-    if (strcmp(checkReal, real) != 0) {
-        qemudLog(QEMUD_WARN, "Autostart link '%s' is not a symlink to '%s', ignoring",
-                 checkLink, checkReal);
-        goto failed;
-    }
-
-    passed = 1;
-
- failed:
-    return passed;
-}
 
 static struct qemud_vm *
 qemudLoadConfig(struct qemud_driver *driver,
@@ -2732,7 +2516,7 @@ qemudLoadConfig(struct qemud_driver *driver,
         return NULL;
     }
 
-    if (!compareFileToNameSuffix(file, def->name, ".xml")) {
+    if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
         qemudLog(QEMUD_WARN, "QEMU guest config filename '%s' does not match guest name '%s'",
                  path, def->name);
         qemudFreeVMDef(def);
@@ -2751,7 +2535,7 @@ qemudLoadConfig(struct qemud_driver *driver,
     strncpy(vm->autostartLink, autostartLink, PATH_MAX);
     vm->autostartLink[PATH_MAX-1] = '\0';
 
-    vm->autostart = checkLinkPointsTo(vm->autostartLink, vm->configFile);
+    vm->autostart = virFileLinkPointsTo(vm->autostartLink, vm->configFile);
 
     return vm;
 }
@@ -2772,7 +2556,7 @@ qemudLoadNetworkConfig(struct qemud_driver *driver,
         return NULL;
     }
 
-    if (!compareFileToNameSuffix(file, def->name, ".xml")) {
+    if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
         qemudLog(QEMUD_WARN, "Network config filename '%s' does not match network name '%s'",
                  path, def->name);
         qemudFreeNetworkDef(def);
@@ -2791,7 +2575,7 @@ qemudLoadNetworkConfig(struct qemud_driver *driver,
     strncpy(network->autostartLink, autostartLink, PATH_MAX);
     network->autostartLink[PATH_MAX-1] = '\0';
 
-    network->autostart = checkLinkPointsTo(network->autostartLink, network->configFile);
+    network->autostart = virFileLinkPointsTo(network->autostartLink, network->configFile);
 
     return network;
 }
@@ -2820,22 +2604,22 @@ int qemudScanConfigDir(struct qemud_driver *driver,
         if (entry->d_name[0] == '.')
             continue;
 
-        if (!hasSuffix(entry->d_name, ".xml"))
+        if (!virFileHasSuffix(entry->d_name, ".xml"))
             continue;
 
-        if (qemudMakeConfigPath(configDir, entry->d_name, NULL, path, PATH_MAX) < 0) {
+        if (virFileBuildPath(configDir, entry->d_name, NULL, path, PATH_MAX) < 0) {
             qemudLog(QEMUD_WARN, "Config filename '%s/%s' is too long",
                      configDir, entry->d_name);
             continue;
         }
 
-        if (qemudMakeConfigPath(autostartDir, entry->d_name, NULL, autostartLink, PATH_MAX) < 0) {
+        if (virFileBuildPath(autostartDir, entry->d_name, NULL, autostartLink, PATH_MAX) < 0) {
             qemudLog(QEMUD_WARN, "Autostart link path '%s/%s' is too long",
                      autostartDir, entry->d_name);
             continue;
         }
 
-        if (!qemudReadFile(path, xml, QEMUD_MAX_XML_LEN))
+        if (virFileReadAll(path, xml, QEMUD_MAX_XML_LEN) < 0)
             continue;
 
         if (isGuest)

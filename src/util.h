@@ -21,8 +21,37 @@
  * File created Jul 18, 2007 - Shuveb Hussain <shuveb@binarykarma.com>
  */
 
+#ifndef __VIR_UTIL_H__
+#define __VIR_UTIL_H__
+
+#include "internal.h"
+
 int virExec(virConnectPtr conn, char **argv, int *retpid, int infd, int *outfd, int *errfd);
 int virExecNonBlock(virConnectPtr conn, char **argv, int *retpid, int infd, int *outfd, int *errfd);
 
 int saferead(int fd, void *buf, size_t count);
 ssize_t safewrite(int fd, const void *buf, size_t count);
+
+int virFileReadAll(const char *path,
+                   char *buf,
+                   unsigned int buflen);
+
+int virFileMatchesNameSuffix(const char *file,
+                             const char *name,
+                             const char *suffix);
+
+int virFileHasSuffix(const char *str,
+                     const char *suffix);
+
+int virFileLinkPointsTo(const char *checkLink,
+                        const char *checkDest);
+int virFileMakePath(const char *path);
+
+int virFileBuildPath(const char *dir,
+                     const char *name,
+                     const char *ext,
+                     char *buf,
+                     unsigned int buflen);
+
+
+#endif /* __VIR_UTIL_H__ */

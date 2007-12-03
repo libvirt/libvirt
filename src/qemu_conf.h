@@ -362,7 +362,6 @@ int         qemudDeleteConfig           (virConnectPtr conn,
                                          struct qemud_driver *driver,
                                          const char *configFile,
                                          const char *name);
-int         qemudEnsureDir              (const char *path);
 
 void        qemudFreeVMDef              (struct qemud_vm_def *vm);
 void        qemudFreeVM                 (struct qemud_vm *vm);

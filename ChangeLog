@@ -1,3 +1,13 @@
+Mon Dec  3  9:10:10 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c: remove qemudMakeConfigPath, qemudEnsureDir,
+	qemudReadFile,compareFileToNameSuffix, hasSuffix, checkLinkPointsTo
+	* src/qemu_conf.h: remove qemudEnsureDir
+	* src/qemu_driver.c: Update to use new API names
+	* src/util.h, src/util.c: add virFileReadAll, virFileHasSuffix,
+	virFileMatchsNameSuffix, virFileLinkPointsTo, virFileMakePath,
+	virFileBuildPath
+
 Mon Dec  3 10:32:10 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_unified.[ch] src/proxy_internal.c src/xen_internal.c

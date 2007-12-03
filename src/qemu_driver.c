@@ -632,7 +632,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
     strcat(logfile, vm->def->name);
     strcat(logfile, ".log");
 
-    if (qemudEnsureDir(driver->logDir) < 0) {
+    if (virFileMakePath(driver->logDir) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "cannot create log directory %s: %s",
                          driver->logDir, strerror(errno));
@@ -2458,7 +2458,7 @@ static int qemudDomainSetAutostart(virDomainPtr dom,
     if (autostart) {
         int err;
 
-        if ((err = qemudEnsureDir(driver->autostartDir))) {
+        if ((err = virFileMakePath(driver->autostartDir))) {
             qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
                              "cannot create autostart directory %s: %s",
                              driver->autostartDir, strerror(err));
@@ -2806,7 +2806,7 @@ static int qemudNetworkSetAutostart(virNetworkPtr net,
     if (autostart) {
         int err;
 
-        if ((err = qemudEnsureDir(driver->networkAutostartDir))) {
+        if ((err = virFileMakePath(driver->networkAutostartDir))) {
             qemudReportError(net->conn, NULL, net, VIR_ERR_INTERNAL_ERROR,
                              "cannot create autostart directory %s: %s",
                              driver->networkAutostartDir, strerror(err));
