@@ -24,6 +24,8 @@
  * File created Jul 18, 2007 - Shuveb Hussain <shuveb@binarykarma.com>
  */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <unistd.h>
@@ -32,6 +34,12 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <string.h>
+
+#ifdef HAVE_SYS_SYSLIMITS_H
+#include <sys/syslimits.h>
+#endif
+
 #include <libvirt/virterror.h>
 #include "event.h"
 #include "buf.h"

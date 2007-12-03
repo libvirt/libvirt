@@ -1,3 +1,7 @@
+Mon Dec  3 16:15:10 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/util.c: Fix header files for Windows builds.
+
 Mon Dec  3  9:10:10 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c: remove qemudMakeConfigPath, qemudEnsureDir,
