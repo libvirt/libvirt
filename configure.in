@@ -58,11 +58,10 @@ AC_SEARCH_LIBS(xdrmem_create,rpc)
 dnl Do we have rpcgen?
 AC_PATH_PROG(RPCGEN, rpcgen, no)
 AM_CONDITIONAL(RPCGEN, [test "x$ac_cv_path_RPCGEN" != "xno"])
-if test "x$ac_cv_path_RPCGEN" != "xno"; then
-	dnl Is this GLIBC's buggy rpcgen?
-	AM_CONDITIONAL(GLIBC_RPCGEN,
-		       [$ac_cv_path_RPCGEN -t </dev/null >/dev/null 2>&1])
-fi
+dnl Is this GLIBC's buggy rpcgen?
+AM_CONDITIONAL(GLIBC_RPCGEN,
+	       [test "x$ac_cv_path_RPCGEN" != "xno" &&
+	        $ac_cv_path_RPCGEN -t </dev/null >/dev/null 2>&1])
 
 dnl Miscellaneous external programs.
 AC_PATH_PROG(RM, rm, /bin/rm)
