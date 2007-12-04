@@ -13,6 +13,8 @@
  * $Id$
  */
 
+#include "config.h"
+
 #include "libvirt/libvirt.h"
 #include "libvirt/virterror.h"
 #include <stdio.h>
@@ -39,10 +41,11 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 
+#ifdef HAVE_READLINE_READLINE_H
 #include <readline/readline.h>
 #include <readline/history.h>
+#endif
 
-#include "config.h"
 #include "internal.h"
 #include "console.h"
 
@@ -4656,6 +4659,8 @@ vshCloseLogFile(vshControl *ctl)
     }
 }
 
+#ifdef HAVE_READLINE_READLINE_H
+
 /* -----------------
  * Readline stuff
  * -----------------
@@ -4772,6 +4777,41 @@ vshReadlineInit(void)
     /* Tell the completer that we want a crack first. */
     rl_attempted_completion_function = vshReadlineCompletion;
 }
+
+static char *
+vshReadline (vshControl *ctl ATTRIBUTE_UNUSED, const char *prompt)
+{
+    return readline (prompt);
+}
+
+#else /* !HAVE_READLINE_READLINE_H */
+
+static void
+vshReadlineInit (void)
+{
+    /* empty */
+}
+
+static char *
+vshReadline (vshControl *ctl, const char *prompt)
+{
+    char line[1024];
+    char *r;
+    int len;
+
+    fputs (prompt, stdout);
+    r = fgets (line, sizeof line, stdin);
+    if (r == NULL) return NULL; /* EOF */
+
+    /* Chomp trailing \n */
+    len = strlen (r);
+    if (len > 0 && r[len-1] == '\n')
+        r[len-1] = '\0';
+
+    return vshStrdup (ctl, r);
+}
+
+#endif /* !HAVE_READLINE_READLINE_H */
 
 /*
  * Deinitliaze virsh
@@ -5013,11 +5053,13 @@ main(int argc, char **argv)
         vshReadlineInit();
         do {
             ctl->cmdstr =
-                readline(ctl->uid == 0 ? VSH_PROMPT_RW : VSH_PROMPT_RO);
+                vshReadline(ctl, ctl->uid == 0 ? VSH_PROMPT_RW : VSH_PROMPT_RO);
             if (ctl->cmdstr == NULL)
                 break;          /* EOF */
             if (*ctl->cmdstr) {
+#if HAVE_READLINE_READLINE_H
                 add_history(ctl->cmdstr);
+#endif
                 if (vshCommandParse(ctl, ctl->cmdstr))
                     vshCommandRun(ctl, ctl->cmd);
             }

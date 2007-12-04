@@ -1,3 +1,10 @@
+Tue Dec  4 17:47:01 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* configure.in: curses is not actually required to build libvirt
+	* configure.in, src/virsh.c: Make readline optional.  If not
+	  available then virsh is built without support for command
+	  line editing.
+
 Mon Dec  3 20:44:01 CET 2007 Jim Meyering <meyering@redhat.com>
 
 	Avoid compile failure when HAVE_AVAHI is not defined.

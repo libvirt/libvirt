@@ -383,16 +383,10 @@ AC_SUBST(AVAHI_CFLAGS)
 AC_SUBST(AVAHI_LIBS)
 
 dnl virsh libraries
-AC_CHECK_LIB(curses, initscr, 
-	[VIRSH_LIBS="$VIRSH_LIBS -lcurses"],
-	[AC_CHECK_LIB(ncurses, initscr,
-	        [VIRSH_LIBS="$VIRSH_LIBS -lncurses"],
-		[AC_MSG_ERROR([curses/ncurses library not found])],
-		[$VIRSH_LIBS])],
-	[$VIRSH_LIBS])
+AC_CHECK_HEADERS([readline/readline.h])
 AC_CHECK_LIB(readline, main, 
 	[VIRSH_LIBS="$VIRSH_LIBS -lreadline"], 
-	[AC_MSG_ERROR([readline library not found])],
+	[AC_MSG_WARN([readline library not found])],
 	[$VIRSH_LIBS])
 AC_SUBST(VIRSH_LIBS)
 
