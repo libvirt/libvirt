@@ -72,65 +72,52 @@ xmlrpctest_SOURCES = \
 	@top_srcdir@/src/xmlrpc.c \
 	@top_srcdir@/src/xmlrpc.h
 
-LIBOBJDIR = ../src/
-
-xmlrpctest_LDFLAGS = $(LIBOBJS)
 xmlrpctest_LDADD = $(LDADDS)
 
 xml2sexprtest_SOURCES = \
 	xml2sexprtest.c \
 	testutils.c testutils.h
-xml2sexprtest_LDFLAGS = $(LIBOBJS)
 xml2sexprtest_LDADD = $(LDADDS)
 
 sexpr2xmltest_SOURCES = \
 	sexpr2xmltest.c \
 	testutils.c testutils.h
-sexpr2xmltest_LDFLAGS = $(LIBOBJS)
 sexpr2xmltest_LDADD = $(LDADDS)
 
 xmconfigtest_SOURCES = \
 	xmconfigtest.c \
 	testutils.c testutils.h
-xmconfigtest_LDFLAGS = $(LIBOBJS)
 xmconfigtest_LDADD = $(LDADDS)
 
 qemuxml2argvtest_SOURCES = \
 	qemuxml2argvtest.c \
 	testutils.c testutils.h
-qemuxml2argvtest_LDFLAGS = $(LIBOBJS)
 qemuxml2argvtest_LDADD = $(LDADDS)
 
 qemuxml2xmltest_SOURCES = \
 	qemuxml2xmltest.c \
 	testutils.c testutils.h
-qemuxml2xmltest_LDFLAGS = $(LIBOBJS)
 qemuxml2xmltest_LDADD = $(LDADDS)
 
 virshtest_SOURCES = \
 	virshtest.c \
 	testutils.c testutils.h
-virshtest_LDFLAGS = $(LIBOBJS)
 virshtest_LDADD = $(LDADDS)
 
 conftest_SOURCES = \
 	conftest.c
-conftest_LDFLAGS = $(LIBOBJS)
 conftest_LDADD = $(LDADDS)
 
 xencapstest_SOURCES = \
 	xencapstest.c testutils.h testutils.c
-xencapstest_LDFLAGS = $(LIBOBJS)
 xencapstest_LDADD = $(LDADDS)
 
 nodeinfotest_SOURCES = \
 	nodeinfotest.c testutils.h testutils.c
-nodeinfotest_LDFLAGS = $(LIBOBJS)
 nodeinfotest_LDADD = $(LDADDS)
 
 reconnect_SOURCES = \
 	reconnect.c
-reconnect_LDFLAGS = $(LIBOBJS)
 reconnect_LDADD = $(LDADDS)
 
 $(LIBVIRT):

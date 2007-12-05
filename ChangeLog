@@ -1,3 +1,8 @@
+Wed Dec  5 18:00:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/Makefile.am, tests/Makefile.am: Remove LIBOBJS/LTLIBOBJS
+	  which were incorrectly committed earlier.
+
 Wed Dec  5 11:24:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/virsh.c: quit if initial conection attempt fails
