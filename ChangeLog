@@ -1,3 +1,9 @@
+Wed Dec  5 21:44:17 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* qemud/remote.c: rename remoteDispatchAuthPolkitInit to
+	  remoteDispatchAuthPolkit, the no-op init call when policykit
+	  is not available
+
 Wed Dec  5 14:16:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/qemud.c: Disable saslUsernameWhitelist config file

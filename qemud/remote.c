@@ -2671,7 +2671,7 @@ remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
 #else /* HAVE_POLKIT */
 
 static int
-remoteDispatchAuthPolkitInit (struct qemud_server *server ATTRIBUTE_UNUSED,
+remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
                               struct qemud_client *client,
                               remote_message_header *req,
                               void *args ATTRIBUTE_UNUSED,
