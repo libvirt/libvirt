@@ -3,15 +3,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include <limits.h>
 
-#ifdef HAVE_SYS_SYSLIMITS_H
-#include <sys/syslimits.h>
-#endif
-
+#include "internal.h"
 #include "xml.h"
 #include "testutils.h"
-#include "internal.h"
 
 static char *progname;
 static char *abs_top_srcdir;

@@ -36,11 +36,8 @@
 #include <sys/stat.h>
 #include <string.h>
 
-#ifdef HAVE_SYS_SYSLIMITS_H
-#include <sys/syslimits.h>
-#endif
-
-#include <libvirt/virterror.h>
+#include "libvirt/virterror.h"
+#include "internal.h"
 #include "event.h"
 #include "buf.h"
 #include "util.h"

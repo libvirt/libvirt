@@ -49,7 +49,7 @@
 #include <sys/wait.h>
 #include <libxml/uri.h>
 
-#include <libvirt/virterror.h>
+#include "libvirt/virterror.h"
 
 #include "event.h"
 #include "buf.h"

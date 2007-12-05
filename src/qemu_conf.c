@@ -42,7 +42,7 @@
 #include <libxml/xpath.h>
 #include <libxml/uri.h>
 
-#include <libvirt/virterror.h>
+#include "libvirt/virterror.h"
 
 #include "qemu_conf.h"
 #include "uuid.h"

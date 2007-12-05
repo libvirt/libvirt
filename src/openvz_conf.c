@@ -45,7 +45,7 @@
 #include <libxml/xpath.h>
 #include <libxml/uri.h>
 
-#include <libvirt/virterror.h>
+#include "libvirt/virterror.h"
 
 #include "openvz_driver.h"
 #include "openvz_conf.h"

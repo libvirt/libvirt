@@ -8,15 +8,11 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-#ifdef HAVE_SYS_SYSLIMITS_H
-#include <sys/syslimits.h>
-#endif
-
 #ifdef WITH_QEMU
 
+#include "internal.h"
 #include "testutils.h"
 #include "qemu_conf.h"
-#include "internal.h"
 
 static char *progname;
 static char *abs_top_srcdir;

@@ -3,15 +3,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef HAVE_SYS_SYSLIMITS_H
-#include <sys/syslimits.h>
-#endif
-
 #ifdef WITH_XEN
+
+#include "internal.h"
 #include "xml.h"
 #include "xend_internal.h"
 #include "testutils.h"
-#include "internal.h"
 
 static char *progname;
 static char *abs_top_srcdir;

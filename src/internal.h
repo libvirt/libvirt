@@ -6,14 +6,20 @@
 #define __VIR_INTERNAL_H__
 
 #include <errno.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <libxml/threads.h>
+#include <limits.h>
+
 #ifdef HAVE_SYS_SYSLIMITS_H
 #include <sys/syslimits.h>
+#endif
+
+#include "hash.h"
+#include "libvirt/libvirt.h"
+#include "libvirt/virterror.h"
+#include "driver.h"
+#include <libintl.h>
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 /* On architectures which lack these limits, define them (ie. Cygwin).
@@ -30,16 +36,6 @@
 #define IF_NAMESIZE 16
 #endif
 
-#include "hash.h"
-#include "libvirt/libvirt.h"
-#include "libvirt/virterror.h"
-#include "driver.h"
-#include <libintl.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define _(str) dgettext(GETTEXT_PACKAGE, (str))
 #define N_(str) dgettext(GETTEXT_PACKAGE, (str))
 #define gettext_noop(str) (str)
@@ -52,15 +48,12 @@ extern "C" {
 #define STREQLEN(a,b,n) (strncmp((a),(b),(n)) == 0)
 #define STRNEQLEN(a,b,n) (strncmp((a),(b),(n)) != 0)
 
+/* C99 uses __func__.  __FUNCTION__ is legacy. */
 #ifndef __GNUC__
-#define	__FUNCTION__	__func__
+#define __FUNCTION__ __func__
 #endif
 
 #ifdef __GNUC__
-#ifdef HAVE_ANSIDECL_H
-#include <ansidecl.h>
-#endif
-
 /**
  * ATTRIBUTE_UNUSED:
  *

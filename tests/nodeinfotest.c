@@ -2,11 +2,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#ifdef HAVE_SYS_SYSLIMITS_H
-#include <sys/syslimits.h>
-#endif
-
 #include <string.h>
 
 #include "testutils.h"

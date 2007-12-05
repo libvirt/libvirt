@@ -2,18 +2,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#ifdef HAVE_SYS_SYSLIMITS_H
-#include <sys/syslimits.h>
-#endif
+#include <string.h>
 
 #ifdef WITH_XEN
 
-#include <string.h>
-
+#include "internal.h"
 #include "xml.h"
 #include "testutils.h"
-#include "internal.h"
 #include "xen_internal.h"
 
 static char *progname;

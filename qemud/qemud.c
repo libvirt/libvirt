@@ -50,7 +50,7 @@
 #include <fnmatch.h>
 #include <grp.h>
 
-#include <libvirt/virterror.h>
+#include "libvirt/virterror.h"
 
 #include "internal.h"
 #include "../src/internal.h"

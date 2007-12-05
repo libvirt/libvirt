@@ -8,6 +8,8 @@
  * Richard W.M. Jones <rjones@redhat.com>
  */
 
+#include "config.h"
+
 #ifdef WITH_XEN
 
 /* Note:
@@ -1193,15 +1195,15 @@ xenUnifiedNodeGetFreeMemory (virConnectPtr conn)
 
 /*----- Register with libvirt.c, and initialise Xen drivers. -----*/
 
-#define VERSION ((DOM0_INTERFACE_VERSION >> 24) * 1000000 +         \
-                 ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +	\
-                 (DOM0_INTERFACE_VERSION & 0xFFFF))
+#define HV_VERSION ((DOM0_INTERFACE_VERSION >> 24) * 1000000 +         \
+                    ((DOM0_INTERFACE_VERSION >> 16) & 0xFF) * 1000 +   \
+                    (DOM0_INTERFACE_VERSION & 0xFFFF))
 
 /* The interface which we export upwards to libvirt.c. */
 static virDriver xenUnifiedDriver = {
     .no = VIR_DRV_XEN_UNIFIED,
     .name = "Xen",
-    .ver = VERSION,
+    .ver = HV_VERSION,
     .open 			= xenUnifiedOpen,
     .close 			= xenUnifiedClose,
     .supports_feature   = xenUnifiedSupportsFeature,

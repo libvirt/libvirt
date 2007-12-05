@@ -13,6 +13,9 @@
 
 #include "internal.h"
 
+#include <sys/un.h>
+#include <netinet/in.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -1,3 +1,22 @@
+Wed Dec  5 13:48:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* python/libvir.c, python/libvirt_wrap.h, qemud/qemud.c,
+	qemud/remote.c, src/internal.h, src/openvz_conf.c,
+	src/openvz_driver.c, src/proxy_internal.h, src/qemu_conf.c,
+	src/qemu_driver.c, src/remote_internal.h, src/test.h, src/util.c,
+	src/xen_unified.c, src/xen_unified.h, tests/nodeinfotest.c,
+	tests/qemuxml2argvtest.c, tests/qemuxml2xmltest.c, tests/reconnect.c,
+	tests/sexpr2xmltest.c, tests/virshtest.c, tests/xencapstest.c,
+	tests/xmconfigtest.c, tests/xml2sexprtest.c:
+	Change #include <> to #include "" for local includes.
+	Removed many includes from src/internal.h and put them in
+	the C files which actually use them.
+	Removed <ansidecl.h> - unused.
+	Added a comment around __func__.
+	Removed a clashing redefinition of VERSION symbol.
+	All limits (PATH_MAX etc) now done in src/internal.h, so we
+	don't need to include those headers in other files.
+
 Tue Dec  4 18:25:01 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* configure.in: Fix configure if rpcgen program is missing.

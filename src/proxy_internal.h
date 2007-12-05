@@ -12,7 +12,7 @@
 #ifndef __LIBVIR_PROXY_H__
 #define __LIBVIR_PROXY_H__
 
-#include <libvirt/libvirt.h>
+#include "libvirt/libvirt.h"
 
 #ifdef __cplusplus
 extern "C" {

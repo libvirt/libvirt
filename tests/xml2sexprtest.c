@@ -2,21 +2,16 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-
+#include <string.h>
 #include <sys/types.h>
 #include <fcntl.h>
 
-#ifdef HAVE_SYS_SYSLIMITS_H
-#include <sys/syslimits.h>
-#endif
-
 #if WITH_XEN
 
+#include "internal.h"
 #include "xml.h"
 #include "testutils.h"
-#include "internal.h"
 
 static char *progname;
 static char *abs_top_srcdir;
