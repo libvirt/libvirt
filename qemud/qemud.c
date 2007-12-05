@@ -1644,6 +1644,7 @@ static void qemudCleanup(struct qemud_server *server) {
         sock = next;
     }
 
+#ifdef HAVE_SASL
     if (server->saslUsernameWhitelist) {
         char **list = server->saslUsernameWhitelist;
         while (*list) {
@@ -1652,6 +1653,7 @@ static void qemudCleanup(struct qemud_server *server) {
             list++;
         }
     }
+#endif
 
     virStateCleanup();
 
@@ -1817,6 +1819,27 @@ static int remoteConfigGetAuth(virConfPtr conf, const char *key, int *auth, cons
     return 0;
 }
 
+#ifdef HAVE_SASL
+static inline int
+remoteReadSaslAllowedUsernameList (virConfPtr conf,
+                                   struct qemud_server *server,
+                                   const char *filename)
+{
+    return
+        remoteConfigGetStringList (conf, "sasl_allowed_username_list",
+                                   &server->saslUsernameWhitelist, filename);
+}
+#else
+static inline int
+remoteReadSaslAllowedUsernameList (virConfPtr conf ATTRIBUTE_UNUSED,
+                                   struct qemud_server *server ATTRIBUTE_UNUSED,
+                                   const char *filename ATTRIBUTE_UNUSED)
+{
+    return 0;
+}
+#endif
+
+
 /* Read the config file if it exists.
  * Only used in the remote case, hence the name.
  */
@@ -1913,8 +1936,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
                                    &tls_allowed_dn_list, filename) < 0)
         goto free_and_fail;
 
-    if (remoteConfigGetStringList (conf, "sasl_allowed_username_list",
-                                   &server->saslUsernameWhitelist, filename) < 0)
+    if (remoteReadSaslAllowedUsernameList (conf, server, filename) < 0)
         goto free_and_fail;
 
     virConfFree (conf);

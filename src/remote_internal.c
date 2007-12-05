@@ -163,7 +163,7 @@ remoteStartup(void)
     return 0;
 }
 
-#if HAVE_SASL
+#if HAVE_SASL || HAVE_POLKIT
 static void
 remoteDebug(struct private_data *priv, const char *msg,...)
 {

@@ -1,5 +1,12 @@
 Wed Dec  5 14:16:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
+	* qemud/qemud.c: Disable saslUsernameWhitelist config file
+	handling if SASL is disabled. (Rich Jones)
+	* src/remote_internal.c: Enable remoteDebug() API when SASL
+	is disabled too
+
+Wed Dec  5 14:16:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
 	* docs/libvir.html: Add page about authentication setup options
 	* docs/libvirt.css: Make <pre> tag show scrollbars if content
 	is too wide to fit
