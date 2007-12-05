@@ -4529,8 +4529,10 @@ vshInit(vshControl * ctl)
      * vshConnectionUsability, except ones which don't need a connection
      * such as "help".
      */
-    if (!ctl->conn)
+    if (!ctl->conn) {
         vshError(ctl, FALSE, _("failed to connect to the hypervisor"));
+        return FALSE;
+    }
 
     return TRUE;
 }

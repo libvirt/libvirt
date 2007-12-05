@@ -1,3 +1,7 @@
+Wed Dec  5 11:24:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/virsh.c: quit if initial conection attempt fails
+
 Wed Dec  5 10:29:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/Makefile.am: Fix VPATH build for remote_generate_stubs.pl
