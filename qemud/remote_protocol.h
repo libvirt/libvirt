@@ -68,6 +68,7 @@ typedef struct remote_error remote_error;
 enum remote_auth_type {
 	REMOTE_AUTH_NONE = 0,
 	REMOTE_AUTH_SASL = 1,
+	REMOTE_AUTH_POLKIT = 2,
 };
 typedef enum remote_auth_type remote_auth_type;
 
@@ -719,6 +720,11 @@ struct remote_auth_sasl_step_ret {
 	} data;
 };
 typedef struct remote_auth_sasl_step_ret remote_auth_sasl_step_ret;
+
+struct remote_auth_polkit_ret {
+	int complete;
+};
+typedef struct remote_auth_polkit_ret remote_auth_polkit_ret;
 #define REMOTE_PROGRAM 0x20008086
 #define REMOTE_PROTOCOL_VERSION 1
 
@@ -792,6 +798,7 @@ enum remote_procedure {
 	REMOTE_PROC_AUTH_SASL_INIT = 67,
 	REMOTE_PROC_AUTH_SASL_START = 68,
 	REMOTE_PROC_AUTH_SASL_STEP = 69,
+	REMOTE_PROC_AUTH_POLKIT = 70,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -935,6 +942,7 @@ extern  bool_t xdr_remote_auth_sasl_start_args (XDR *, remote_auth_sasl_start_ar
 extern  bool_t xdr_remote_auth_sasl_start_ret (XDR *, remote_auth_sasl_start_ret*);
 extern  bool_t xdr_remote_auth_sasl_step_args (XDR *, remote_auth_sasl_step_args*);
 extern  bool_t xdr_remote_auth_sasl_step_ret (XDR *, remote_auth_sasl_step_ret*);
+extern  bool_t xdr_remote_auth_polkit_ret (XDR *, remote_auth_polkit_ret*);
 extern  bool_t xdr_remote_procedure (XDR *, remote_procedure*);
 extern  bool_t xdr_remote_message_direction (XDR *, remote_message_direction*);
 extern  bool_t xdr_remote_message_status (XDR *, remote_message_status*);
@@ -1054,6 +1062,7 @@ extern bool_t xdr_remote_auth_sasl_start_args ();
 extern bool_t xdr_remote_auth_sasl_start_ret ();
 extern bool_t xdr_remote_auth_sasl_step_args ();
 extern bool_t xdr_remote_auth_sasl_step_ret ();
+extern bool_t xdr_remote_auth_polkit_ret ();
 extern bool_t xdr_remote_procedure ();
 extern bool_t xdr_remote_message_direction ();
 extern bool_t xdr_remote_message_status ();

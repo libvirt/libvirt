@@ -32,6 +32,10 @@
 #include <sasl/sasl.h>
 #endif
 
+#ifdef HAVE_POLKIT
+#include <dbus/dbus.h>
+#endif
+
 #ifdef HAVE_SYS_SYSLIMITS_H
 #include <sys/syslimits.h>
 #endif
@@ -154,6 +158,9 @@ struct qemud_server {
 #endif
 #if HAVE_SASL
     char **saslUsernameWhitelist;
+#endif
+#if HAVE_POLKIT
+    DBusConnection *sysbus;
 #endif
 };
 

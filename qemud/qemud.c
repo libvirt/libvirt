@@ -77,8 +77,13 @@ static gid_t unix_sock_gid = 0; /* Only root by default */
 static int unix_sock_rw_mask = 0700; /* Allow user only */
 static int unix_sock_ro_mask = 0777; /* Allow world */
 
+#if HAVE_POLKIT
+static int auth_unix_rw = REMOTE_AUTH_POLKIT;
+static int auth_unix_ro = REMOTE_AUTH_POLKIT;
+#else
 static int auth_unix_rw = REMOTE_AUTH_NONE;
 static int auth_unix_ro = REMOTE_AUTH_NONE;
+#endif /* HAVE_POLKIT */
 #if HAVE_SASL
 static int auth_tcp = REMOTE_AUTH_SASL;
 #else
@@ -759,6 +764,21 @@ static struct qemud_server *qemudNetworkInit(struct qemud_server *server) {
     }
 #endif
 
+#ifdef HAVE_POLKIT
+    if (auth_unix_rw == REMOTE_AUTH_POLKIT ||
+        auth_unix_ro == REMOTE_AUTH_POLKIT) {
+        DBusError derr;
+        dbus_error_init(&derr);
+        server->sysbus = dbus_bus_get(DBUS_BUS_SYSTEM, &derr);
+        if (!(server->sysbus)) {
+            qemudLog(QEMUD_ERR, "Failed to connect to system bus for PolicyKit auth: %s",
+                     derr.message);
+            dbus_error_free(&derr);
+            goto cleanup;
+        }
+    }
+#endif
+
     if (ipsock) {
         if (listen_tcp && remoteListenTCP (server, tcp_port, QEMUD_SOCK_TYPE_TCP, auth_tcp) < 0)
             goto cleanup;
@@ -826,6 +846,10 @@ static struct qemud_server *qemudNetworkInit(struct qemud_server *server) {
             sock = sock->next;
         }
 
+#ifdef HAVE_POLKIT
+        if (server->sysbus)
+            dbus_connection_unref(server->sysbus);
+#endif
         free(server);
     }
     return NULL;
@@ -1781,6 +1805,10 @@ static int remoteConfigGetAuth(virConfPtr conf, const char *key, int *auth, cons
     } else if (STREQ(p->str, "sasl")) {
         *auth = REMOTE_AUTH_SASL;
 #endif
+#if HAVE_POLKIT
+    } else if (STREQ(p->str, "polkit")) {
+        *auth = REMOTE_AUTH_POLKIT;
+#endif
     } else {
         qemudLog (QEMUD_ERR, "remoteReadConfigFile: %s: %s: unsupported auth %s\n", filename, key, p->str);
         return -1;
@@ -1816,6 +1844,13 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
 
     if (remoteConfigGetAuth(conf, "auth_unix_rw", &auth_unix_rw, filename) < 0)
         return -1;
+#if HAVE_POLKIT
+    /* Change default perms to be wide-open if PolicyKit is enabled.
+     * Admin can always override in config file
+     */
+    if (auth_unix_rw == REMOTE_AUTH_POLKIT)
+        unix_sock_rw_mask = 0777;
+#endif
     if (remoteConfigGetAuth(conf, "auth_unix_ro", &auth_unix_ro, filename) < 0)
         return -1;
     if (remoteConfigGetAuth(conf, "auth_tcp", &auth_tcp, filename) < 0)

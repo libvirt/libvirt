@@ -8,6 +8,12 @@ case REMOTE_PROC_AUTH_LIST:
 	ret = (char *) &lv_remote_auth_list_ret;
 	memset (&lv_remote_auth_list_ret, 0, sizeof lv_remote_auth_list_ret);
 	break;
+case REMOTE_PROC_AUTH_POLKIT:
+	fn = (dispatch_fn) remoteDispatchAuthPolkit;
+	ret_filter = (xdrproc_t) xdr_remote_auth_polkit_ret;
+	ret = (char *) &lv_remote_auth_polkit_ret;
+	memset (&lv_remote_auth_polkit_ret, 0, sizeof lv_remote_auth_polkit_ret);
+	break;
 case REMOTE_PROC_AUTH_SASL_INIT:
 	fn = (dispatch_fn) remoteDispatchAuthSaslInit;
 	ret_filter = (xdrproc_t) xdr_remote_auth_sasl_init_ret;

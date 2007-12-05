@@ -132,7 +132,8 @@ struct remote_error {
 /* Authentication types available thus far.... */
 enum remote_auth_type {
     REMOTE_AUTH_NONE = 0,
-    REMOTE_AUTH_SASL = 1
+    REMOTE_AUTH_SASL = 1,
+    REMOTE_AUTH_POLKIT = 2
 };
 
 
@@ -656,6 +657,10 @@ struct remote_auth_sasl_step_ret {
     char data<REMOTE_AUTH_SASL_DATA_MAX>;
 };
 
+struct remote_auth_polkit_ret {
+    int complete;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -731,7 +736,8 @@ enum remote_procedure {
     REMOTE_PROC_AUTH_LIST = 66,
     REMOTE_PROC_AUTH_SASL_INIT = 67,
     REMOTE_PROC_AUTH_SASL_START = 68,
-    REMOTE_PROC_AUTH_SASL_STEP = 69
+    REMOTE_PROC_AUTH_SASL_STEP = 69,
+    REMOTE_PROC_AUTH_POLKIT = 70
 };
 
 /* Custom RPC structure. */

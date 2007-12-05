@@ -25,6 +25,7 @@ dnl Required minimum versions of all libs we depend on
 LIBXML_REQUIRED="2.5.0"
 GNUTLS_REQUIRED="1.0.25"
 AVAHI_REQUIRED="0.6.0"
+POLKIT_REQUIRED="0.6"
 
 dnl Checks for C compiler.
 AC_PROG_CC
@@ -394,6 +395,25 @@ AC_SUBST(SASL_CFLAGS)
 AC_SUBST(SASL_LIBS)
 
 
+dnl PolicyKit library
+POLKIT_CFLAGS=
+POLKIT_LIBS=
+AC_ARG_WITH(polkit,
+  [  --with-polkit         use PolicyKit for UNIX socket access checks],
+  [],
+  [with_polkit=check])
+
+if test "$with_polkit" = "check"; then
+  PKG_CHECK_EXISTS(polkit-dbus >= $POLKIT_REQUIRED, [with_polkit=yes], [with_polkit=no])
+fi
+
+if test "$with_polkit" = "yes"; then
+  PKG_CHECK_MODULES(POLKIT, polkit-dbus >= $POLKIT_REQUIRED)
+  AC_DEFINE_UNQUOTED(HAVE_POLKIT, 1, [use PolicyKit for UNIX socket access checks])
+fi
+AM_CONDITIONAL(HAVE_POLKIT, [test "$with_polkit" = "yes"])
+AC_SUBST(POLKIT_CFLAGS)
+AC_SUBST(POLKIT_LIBS)
 
 dnl Avahi library
 AC_ARG_WITH(avahi,
@@ -626,6 +646,11 @@ if test "$with_avahi" = "yes" ; then
 AC_MSG_NOTICE([   avahi: $AVAHI_CFLAGS $AVAHI_LIBS])
 else
 AC_MSG_NOTICE([   avahi: no])
+fi
+if test "$with_polkit" = "yes" ; then
+AC_MSG_NOTICE([  polkit: $POLKIT_CFLAGS $POLKIT_LIBS])
+else
+AC_MSG_NOTICE([  polkit: no])
 fi
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Miscellaneous])

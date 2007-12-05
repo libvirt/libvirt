@@ -30,15 +30,24 @@ libvirtd_SOURCES = \
 libvirtd_CFLAGS = \
         -I$(top_srcdir)/include -I$(top_builddir)/include \
         $(LIBXML_CFLAGS) $(GNUTLS_CFLAGS) $(SASL_CFLAGS) \
+        $(POLKIT_CFLAGS) \
         $(WARN_CFLAGS) -DLOCAL_STATE_DIR="\"$(localstatedir)\"" \
         -DSYSCONF_DIR="\"$(sysconfdir)\"" \
 	-DQEMUD_PID_FILE="\"$(QEMUD_PID_FILE)\"" \
 	-DREMOTE_PID_FILE="\"$(REMOTE_PID_FILE)\"" \
         -DGETTEXT_PACKAGE=\"$(PACKAGE)\"
 
-libvirtd_LDFLAGS = $(WARN_CFLAGS) $(LIBXML_LIBS) $(GNUTLS_LIBS) $(SASL_LIBS)
+libvirtd_LDFLAGS = $(WARN_CFLAGS) $(LIBXML_LIBS) $(GNUTLS_LIBS) $(SASL_LIBS) \
+                   $(POLKIT_LIBS)
 libvirtd_DEPENDENCIES = ../src/libvirt.la
 libvirtd_LDADD = ../src/libvirt.la
+
+
+if HAVE_POLKIT
+policydir = $(datadir)/PolicyKit/policy
+policy_DATA = libvirtd.policy
+endif
+EXTRA_DIST += libvirtd.policy
 
 if HAVE_AVAHI
 libvirtd_SOURCES += mdns.c mdns.h

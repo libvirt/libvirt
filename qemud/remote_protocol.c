@@ -1309,6 +1309,15 @@ xdr_remote_auth_sasl_step_ret (XDR *xdrs, remote_auth_sasl_step_ret *objp)
 }
 
 bool_t
+xdr_remote_auth_polkit_ret (XDR *xdrs, remote_auth_polkit_ret *objp)
+{
+
+	 if (!xdr_int (xdrs, &objp->complete))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_remote_procedure (XDR *xdrs, remote_procedure *objp)
 {
 

@@ -1,3 +1,19 @@
+Wed Dec  5 13:20:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.in: do PolicyKit checks via pkg-config
+	* libvirt.spec.in: Add dep on PolicyKit if Fedora 8 or later
+	* qemud/Makefile.am: Add PolicyKit build flags and default
+	policy file
+	* qemud/libvirtd.conf: Add comment about polkit auth option
+	* qemud/libvirtd.policy: Default policy file
+	* qemud/qemud.c, qemud/remote.c: Implementation of PolicyKit
+	authentication
+	* qemud/remote_protocol.x: Add RPC calls for PolicyKit auth
+	* qemud/remote_dispatch*, qemud/remote_protocol.{c.h}: update
+	for new RPC calls.
+	* src/remote_internal.c: Fetch credentials for PolicyKit and
+	perform client part of auth process
+
 Wed Dec  5 18:00:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/Makefile.am, tests/Makefile.am: Remove LIBOBJS/LTLIBOBJS

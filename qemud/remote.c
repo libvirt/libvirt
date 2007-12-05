@@ -46,6 +46,11 @@
 #include <assert.h>
 #include <fnmatch.h>
 
+#ifdef HAVE_POLKIT
+#include <polkit/polkit.h>
+#include <polkit-dbus/polkit-dbus.h>
+#endif
+
 #include "libvirt/virterror.h"
 
 #include "internal.h"
@@ -132,7 +137,8 @@ remoteDispatchClientRequest (struct qemud_server *server,
         if (req.proc != REMOTE_PROC_AUTH_LIST &&
             req.proc != REMOTE_PROC_AUTH_SASL_INIT &&
             req.proc != REMOTE_PROC_AUTH_SASL_START &&
-            req.proc != REMOTE_PROC_AUTH_SASL_STEP
+            req.proc != REMOTE_PROC_AUTH_SASL_STEP &&
+            req.proc != REMOTE_PROC_AUTH_POLKIT
             ) {
             remoteDispatchError (client, &req, "authentication required");
             xdr_destroy (&xdr);
@@ -2549,6 +2555,133 @@ remoteDispatchAuthSaslStep (struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 #endif /* HAVE_SASL */
 
+
+#if HAVE_POLKIT
+static int qemudGetSocketIdentity(int fd, uid_t *uid, pid_t *pid) {
+#ifdef SO_PEERCRED
+    struct ucred cr;
+    unsigned int cr_len = sizeof (cr);
+
+    if (getsockopt (fd, SOL_SOCKET, SO_PEERCRED, &cr, &cr_len) < 0) {
+        qemudLog(QEMUD_ERR, "Failed to verify client credentials: %s", strerror(errno));
+        return -1;
+    }
+
+    *pid = cr.pid;
+    *uid = cr.uid;
+#else
+    /* XXX Many more OS support UNIX socket credentials we could port to. See dbus ....*/
+#error "UNIX socket credentials not supported/implemented on this platform yet..."
+#endif
+    return 0;
+}
+
+
+static int
+remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
+                          struct qemud_client *client,
+                          remote_message_header *req,
+                          void *args ATTRIBUTE_UNUSED,
+                          remote_auth_polkit_ret *ret)
+{
+    pid_t callerPid;
+    uid_t callerUid;
+
+    REMOTE_DEBUG("Start PolicyKit auth %d", client->fd);
+    if (client->auth != REMOTE_AUTH_POLKIT) {
+        qemudLog(QEMUD_ERR, "client tried invalid PolicyKit init request");
+        remoteDispatchFailAuth(client, req);
+        return -2;
+    }
+
+    if (qemudGetSocketIdentity(client->fd, &callerUid, &callerPid) < 0) {
+        qemudLog(QEMUD_ERR, "cannot get peer socket identity");
+        remoteDispatchFailAuth(client, req);
+        return -2;
+    }
+
+    /* Only do policy checks for non-root - allow root user
+       through with no checks, as a fail-safe - root can easily
+       change policykit policy anyway, so its pointless trying
+       to restrict root */
+    if (callerUid == 0) {
+        qemudLog(QEMUD_INFO, "Allowing PID %d running as root", callerPid);
+        ret->complete = 1;
+        client->auth = REMOTE_AUTH_NONE;
+    } else {
+        PolKitCaller *pkcaller = NULL;
+        PolKitAction *pkaction = NULL;
+        PolKitContext *pkcontext = NULL;
+        PolKitError *pkerr;
+        PolKitResult pkresult;
+        DBusError err;
+        const char *action = client->readonly ?
+            "org.libvirt.unix.monitor" :
+            "org.libvirt.unix.manage";
+
+        qemudLog(QEMUD_INFO, "Checking PID %d running as %d", callerPid, callerUid);
+        dbus_error_init(&err);
+        if (!(pkcaller = polkit_caller_new_from_pid(server->sysbus, callerPid, &err))) {
+            qemudLog(QEMUD_ERR, "Failed to lookup policy kit caller: %s", err.message);
+            dbus_error_free(&err);
+            remoteDispatchFailAuth(client, req);
+            return -2;
+        }
+
+        if (!(pkaction = polkit_action_new())) {
+            qemudLog(QEMUD_ERR, "Failed to create polkit action %s\n", strerror(errno));
+            polkit_caller_unref(pkcaller);
+            remoteDispatchFailAuth(client, req);
+            return -2;
+        }
+        polkit_action_set_action_id(pkaction, action);
+
+        if (!(pkcontext = polkit_context_new()) ||
+            !polkit_context_init(pkcontext, &pkerr)) {
+            qemudLog(QEMUD_ERR, "Failed to create polkit context %s\n",
+                     pkerr ? polkit_error_get_error_message(pkerr) : strerror(errno));
+            if (pkerr)
+                polkit_error_free(pkerr);
+            polkit_caller_unref(pkcaller);
+            polkit_action_unref(pkaction);
+            dbus_error_free(&err);
+            remoteDispatchFailAuth(client, req);
+            return -2;
+        }
+
+        pkresult = polkit_context_can_caller_do_action(pkcontext, pkaction, pkcaller);
+        polkit_context_unref(pkcontext);
+        polkit_caller_unref(pkcaller);
+        polkit_action_unref(pkaction);
+        if (pkresult != POLKIT_RESULT_YES) {
+            qemudLog(QEMUD_ERR, "Policy kit denied action %s from pid %d, uid %d, result: %s\n",
+                     action, callerPid, callerUid, polkit_result_to_string_representation(pkresult));
+            remoteDispatchFailAuth(client, req);
+            return -2;
+        }
+        qemudLog(QEMUD_INFO, "Policy allowed action %s from pid %d, uid %d, result %s",
+                 action, callerPid, callerUid, polkit_result_to_string_representation(pkresult));
+        ret->complete = 1;
+        client->auth = REMOTE_AUTH_NONE;
+    }
+
+    return 0;
+}
+
+#else /* HAVE_POLKIT */
+
+static int
+remoteDispatchAuthPolkitInit (struct qemud_server *server ATTRIBUTE_UNUSED,
+                              struct qemud_client *client,
+                              remote_message_header *req,
+                              void *args ATTRIBUTE_UNUSED,
+                              remote_auth_polkit_ret *ret ATTRIBUTE_UNUSED)
+{
+    qemudLog(QEMUD_ERR, "client tried unsupported PolicyKit init request");
+    remoteDispatchFailAuth(client, req);
+    return -1;
+}
+#endif /* HAVE_POLKIT */
 
 /*----- Helpers. -----*/
 

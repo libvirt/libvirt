@@ -3,6 +3,7 @@
  */
 
 static int remoteDispatchAuthList (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, void *args, remote_auth_list_ret *ret);
+static int remoteDispatchAuthPolkit (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, void *args, remote_auth_polkit_ret *ret);
 static int remoteDispatchAuthSaslInit (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, void *args, remote_auth_sasl_init_ret *ret);
 static int remoteDispatchAuthSaslStart (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_auth_sasl_start_args *args, remote_auth_sasl_start_ret *ret);
 static int remoteDispatchAuthSaslStep (struct qemud_server *server, struct qemud_client *client, remote_message_header *req, remote_auth_sasl_step_args *args, remote_auth_sasl_step_ret *ret);

@@ -115,6 +115,9 @@ static int remoteAuthenticate (virConnectPtr conn, struct private_data *priv, in
 #if HAVE_SASL
 static int remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open);
 #endif
+#if HAVE_POLKIT
+static int remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open);
+#endif /* HAVE_POLKIT */
 static void error (virConnectPtr conn, virErrorNumber code, const char *info);
 static void server_error (virConnectPtr conn, remote_error *err);
 static virDomainPtr get_nonnull_domain (virConnectPtr conn, remote_nonnull_domain domain);
@@ -2854,6 +2857,15 @@ remoteAuthenticate (virConnectPtr conn, struct private_data *priv, int in_open)
         break;
 #endif
 
+#if HAVE_POLKIT
+    case REMOTE_AUTH_POLKIT:
+        if (remoteAuthPolkit(conn, priv, in_open) < 0) {
+            free(ret.types.types_val);
+            return -1;
+        }
+        break;
+#endif
+
     case REMOTE_AUTH_NONE:
         /* Nothing todo, hurrah ! */
         break;
@@ -3443,6 +3455,29 @@ really_write_sasl (virConnectPtr conn, struct private_data *priv,
     return really_write_buf(conn, priv, in_open, output, outputlen);
 }
 #endif
+
+
+#if HAVE_POLKIT
+/* Perform the PolicyKit authentication process
+ */
+static int
+remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open)
+{
+    remote_auth_polkit_ret ret;
+
+    remoteDebug(priv, "Client initialize PolicyKit authentication");
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, in_open, REMOTE_PROC_AUTH_POLKIT,
+              (xdrproc_t) xdr_void, (char *)NULL,
+              (xdrproc_t) xdr_remote_auth_polkit_ret, (char *) &ret) != 0) {
+        return -1; /* virError already set by call */
+    }
+
+    remoteDebug(priv, "PolicyKit authentication complete");
+    return 0;
+}
+#endif /* HAVE_POLKIT */
 
 static int
 really_write (virConnectPtr conn, struct private_data *priv,
