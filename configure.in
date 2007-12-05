@@ -631,7 +631,7 @@ cp COPYING.LIB COPYING
 AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           docs/examples/Makefile docs/devhelp/Makefile \
 	  docs/examples/python/Makefile \
-	  gnulib/lib/Makefile tests/gnulib/Makefile \
+	  gnulib/lib/Makefile gnulib/tests/Makefile \
           libvirt.pc libvirt.spec \
           po/Makefile.in scripts/Makefile \
 	  include/libvirt/Makefile include/libvirt/libvirt.h \

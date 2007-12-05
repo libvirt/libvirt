@@ -1,0 +1,11 @@
+alloca.h
+float.h
+netinet_in.h
+stdbool.h
+stdint.h
+stdio.h
+stdlib.h
+string.h
+sys_socket.h
+unistd.h
+wchar.h
