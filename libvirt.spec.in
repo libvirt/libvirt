@@ -2,8 +2,10 @@
 
 %if %{fedora} >= 8
 %define with_polkit 1
+%define with_proxy no
 %else
 %define with_polkit 0
+%define with_proxy yes
 %endif
 
 Summary: Library providing a simple API virtualization
@@ -77,7 +79,10 @@ of recent versions of Linux (and other OSes).
 %setup -q
 
 %build
-%configure --with-init-script=redhat --with-qemud-pid-file=%{_localstatedir}/run/libvirt_qemud.pid --with-remote-file=%{_localstatedir}/run/libvirtd.pid
+%configure --with-init-script=redhat \
+           --with-qemud-pid-file=%{_localstatedir}/run/libvirt_qemud.pid \
+           --with-remote-file=%{_localstatedir}/run/libvirtd.pid \
+           --with-xen-proxy=%{with_proxy}
 make
 
 %install
@@ -157,7 +162,9 @@ fi
 %dir %{_localstatedir}/lib/libvirt/
 %{_datadir}/PolicyKit/policy/libvirtd.policy
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/qemu/
+%if %{with_proxy} == "yes"
 %attr(4755, root, root) %{_libexecdir}/libvirt_proxy
+%endif
 %attr(0755, root, root) %{_sbindir}/libvirtd
 %doc docs/*.rng
 %doc docs/*.xml

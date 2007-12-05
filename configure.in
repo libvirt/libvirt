@@ -571,7 +571,24 @@ if test "${enableval}" = yes; then
 fi
 
 dnl Enable building the proxy?
-AM_CONDITIONAL(WITH_PROXY,[test "x$with_xen" = "xyes"])
+
+AC_ARG_WITH(xen-proxy,
+[  --with-xen-proxy              add XEN setuid proxy support (on)],[],[with_xen_proxy=auto])
+
+AC_MSG_CHECKING([if Xen setuid proxy is needed])
+if test "$with_xen_proxy" = "auto"; then
+  if test "$with_polkit" = "yes"; then
+    with_xen_proxy="no"
+  else
+    with_xen_proxy="yes"
+  fi
+fi
+if test "$with_xen" != "yes"; then
+  with_xen_proxy="no"
+fi
+AC_MSG_RESULT([$with_xen_proxy])
+
+AM_CONDITIONAL(WITH_PROXY,[test "$with_xen_proxy" = "yes"])
 
 dnl Check for gettext
 AM_GNU_GETTEXT_VERSION([0.14.1])
@@ -628,6 +645,7 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Drivers])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([     Xen: $with_xen])
+AC_MSG_NOTICE([   Proxy: $with_xen_proxy])
 AC_MSG_NOTICE([    QEMU: $with_qemu])
 AC_MSG_NOTICE([  OpenVZ: $with_openvz])
 AC_MSG_NOTICE([    Test: $with_test])
