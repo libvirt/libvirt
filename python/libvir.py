@@ -89,6 +89,12 @@ def registerErrorHandler(f, ctx):
        Returns 1 in case of success."""
     return libvirtmod.virRegisterErrorHandler(f,ctx)
 
+def openAuth(uri, auth, flags):
+    ret = libvirtmod.virConnectOpenAuth(uri, auth, flags)
+    if ret is None:raise libvirtError('virConnectOpenAuth() failed')
+    return virConnect(_obj=ret)
+
+
 #
 # Return library version.
 #

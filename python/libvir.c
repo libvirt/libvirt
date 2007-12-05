@@ -245,6 +245,128 @@ libvirt_virRegisterErrorHandler(ATTRIBUTE_UNUSED PyObject * self,
     return (py_retval);
 }
 
+static int virConnectCredCallbackWrapper(virConnectCredentialPtr cred,
+                                         unsigned int ncred,
+                                         void *cbdata) {
+    PyObject *list;
+    PyObject *pycred;
+    PyObject *pyauth = (PyObject *)cbdata;
+    PyObject *pycbdata;
+    PyObject *pycb;
+    PyObject *pyret;
+    int ret = -1, i;
+
+    LIBVIRT_ENSURE_THREAD_STATE;
+
+    pycb = PyList_GetItem(pyauth, 1);
+    pycbdata = PyList_GetItem(pyauth, 2);
+
+    list = PyTuple_New(2);
+    pycred = PyTuple_New(ncred);
+    for (i = 0 ; i < ncred ; i++) {
+        PyObject *pycreditem;
+        pycreditem = PyList_New(5);
+        Py_INCREF(Py_None);
+        PyTuple_SetItem(pycred, i, pycreditem);
+        PyList_SetItem(pycreditem, 0, PyInt_FromLong((long) cred[i].type));
+        PyList_SetItem(pycreditem, 1, PyString_FromString(cred[i].prompt));
+        if (cred[i].challenge) {
+            PyList_SetItem(pycreditem, 2, PyString_FromString(cred[i].challenge));
+        } else {
+            Py_INCREF(Py_None);
+            PyList_SetItem(pycreditem, 2, Py_None);
+        }
+        if (cred[i].defresult) {
+            PyList_SetItem(pycreditem, 3, PyString_FromString(cred[i].defresult));
+        } else {
+            Py_INCREF(Py_None);
+            PyList_SetItem(pycreditem, 3, Py_None);
+        }
+        PyList_SetItem(pycreditem, 4, Py_None);
+    }
+
+    PyTuple_SetItem(list, 0, pycred);
+    Py_XINCREF(pycbdata);
+    PyTuple_SetItem(list, 1, pycbdata);
+
+    PyErr_Clear();
+    pyret = PyEval_CallObject(pycb, list);
+    if (PyErr_Occurred())
+        goto cleanup;
+
+    ret = PyLong_AsLong(pyret);
+    if (ret == 0) {
+        for (i = 0 ; i < ncred ; i++) {
+            PyObject *pycreditem;
+            PyObject *pyresult;
+            char *result = NULL;
+            pycreditem = PyTuple_GetItem(pycred, i);
+            pyresult = PyList_GetItem(pycreditem, 4);
+            if (pyresult != Py_None)
+                result = PyString_AsString(pyresult);
+            if (result != NULL) {
+                cred[i].result = strdup(result);
+                cred[i].resultlen = strlen(result);
+            } else {
+                cred[i].result = NULL;
+                cred[i].resultlen = 0;
+            }
+        }
+    }
+
+ cleanup:
+    Py_XDECREF(list);
+    Py_XDECREF(pyret);
+
+    LIBVIRT_RELEASE_THREAD_STATE;
+
+    return ret;
+}
+
+
+static PyObject *
+libvirt_virConnectOpenAuth(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    PyObject *py_retval;
+    virConnectPtr c_retval;
+    char * name;
+    int flags;
+    PyObject *pyauth;
+    PyObject *pycredcb;
+    PyObject *pycredtype;
+    virConnectAuth auth;
+
+    if (!PyArg_ParseTuple(args, (char *)"zOi:virConnectOpenAuth", &name, &pyauth, &flags))
+        return(NULL);
+
+    pycredtype = PyList_GetItem(pyauth, 0);
+    pycredcb = PyList_GetItem(pyauth, 1);
+
+    auth.ncredtype = PyList_Size(pycredtype);
+    if (auth.ncredtype) {
+        int i;
+        auth.credtype = malloc(sizeof(int) * auth.ncredtype);
+        if (auth.credtype == NULL) {
+            Py_INCREF(Py_None);
+            return (Py_None);
+        }
+        for (i = 0 ; i < auth.ncredtype ; i++) {
+            PyObject *val;
+            val = PyList_GetItem(pycredtype, i);
+            auth.credtype[i] = (int)PyLong_AsLong(val);
+        }
+    }
+    auth.cb = pycredcb ? virConnectCredCallbackWrapper : NULL;
+    auth.cbdata = pyauth;
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+
+    c_retval = virConnectOpenAuth(name, &auth, flags);
+    LIBVIRT_END_ALLOW_THREADS;
+    py_retval = libvirt_virConnectPtrWrap((virConnectPtr) c_retval);
+    return(py_retval);
+}
+
+
 /************************************************************************
  *									*
  *		Wrappers for functions where generator fails		*
@@ -733,6 +855,7 @@ static PyMethodDef libvirtMethods[] = {
 #include "libvirt-export.c"
     {(char *) "virGetVersion", libvirt_virGetVersion, METH_VARARGS, NULL},
     {(char *) "virDomainFree", libvirt_virDomainFree, METH_VARARGS, NULL},
+    {(char *) "virConnectOpenAuth", libvirt_virConnectOpenAuth, METH_VARARGS, NULL},
     {(char *) "virConnectClose", libvirt_virConnectClose, METH_VARARGS, NULL},
     {(char *) "virConnectListDomainsID", libvirt_virConnectListDomainsID, METH_VARARGS, NULL},
     {(char *) "virConnectListDefinedDomains", libvirt_virConnectListDefinedDomains, METH_VARARGS, NULL},
