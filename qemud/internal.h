@@ -73,10 +73,17 @@ enum qemud_mode {
     QEMUD_MODE_TLS_HANDSHAKE,
 };
 
-/* These have to remain compatible with gnutls_record_get_direction. */
-enum qemud_tls_direction {
-    QEMUD_TLS_DIRECTION_READ = 0,
-    QEMUD_TLS_DIRECTION_WRITE = 1,
+/* Whether we're passing reads & writes through a sasl SSF */
+enum qemud_sasl_ssf {
+    QEMUD_SASL_SSF_NONE = 0,
+    QEMUD_SASL_SSF_READ = 1,
+    QEMUD_SASL_SSF_WRITE = 2,
+};
+
+enum qemud_sock_type {
+    QEMUD_SOCK_TYPE_UNIX = 0,
+    QEMUD_SOCK_TYPE_TCP = 1,
+    QEMUD_SOCK_TYPE_TLS = 2,
 };
 
 /* Stores the per-client connection state */
@@ -90,13 +97,18 @@ struct qemud_client {
     struct sockaddr_storage addr;
     socklen_t addrlen;
 
-    /* If set, TLS is required on this socket. */
-    int tls;
-    gnutls_session_t session;
-    enum qemud_tls_direction direction;
+    int type; /* qemud_sock_type */
+    gnutls_session_t tlssession;
     int auth;
 #if HAVE_SASL
     sasl_conn_t *saslconn;
+    int saslSSF;
+    const char *saslDecoded;
+    unsigned int saslDecodedLength;
+    unsigned int saslDecodedOffset;
+    const char *saslEncoded;
+    unsigned int saslEncodedLength;
+    unsigned int saslEncodedOffset;
 #endif
 
     unsigned int incomingSerial;
@@ -121,8 +133,7 @@ struct qemud_client {
 struct qemud_socket {
     int fd;
     int readonly;
-    /* If set, TLS is required on this socket. */
-    int tls;
+    int type; /* qemud_sock_type */
     int auth;
     int port;
     struct qemud_socket *next;

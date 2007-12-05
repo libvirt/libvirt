@@ -79,6 +79,9 @@ struct private_data {
     FILE *debugLog;             /* Debug remote protocol */
 #if HAVE_SASL
     sasl_conn_t *saslconn;      /* SASL context */
+    const char *saslDecoded;
+    unsigned int saslDecodedLength;
+    unsigned int saslDecodedOffset;
 #endif
 };
 
@@ -2907,15 +2910,14 @@ static char *addrToString(struct sockaddr_storage *sa, socklen_t salen)
 
 /* Perform the SASL authentication process
  *
- * XXX negotiate a session encryption layer for non-TLS sockets
  * XXX fetch credentials from a libvirt client app callback
- * XXX max packet size spec
  * XXX better mechanism negotiation ? Ask client app ?
  */
 static int
 remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open)
 {
     sasl_conn_t *saslconn = NULL;
+    sasl_security_properties_t secprops;
     remote_auth_sasl_init_ret iret;
     remote_auth_sasl_start_args sargs;
     remote_auth_sasl_start_ret sret;
@@ -2929,6 +2931,8 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open)
     struct sockaddr_storage sa;
     socklen_t salen;
     char *localAddr, *remoteAddr;
+    const void *val;
+    sasl_ssf_t ssf;
 
     remoteDebug(priv, "Client initialize SASL authentication");
     /* Sets up the SASL library as a whole */
@@ -2984,6 +2988,51 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open)
                          VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                          "Failed to create SASL client context: %d (%s)",
                          err, sasl_errstring(err, NULL, NULL));
+        return -1;
+    }
+
+    /* Initialize some connection props we care about */
+    if (priv->uses_tls) {
+        gnutls_cipher_algorithm_t cipher;
+
+        cipher = gnutls_cipher_get(priv->session);
+        if (!(ssf = (sasl_ssf_t)gnutls_cipher_get_key_size(cipher))) {
+            __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                             VIR_ERR_INTERNAL_ERROR, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                             "invalid cipher size for TLS session");
+            sasl_dispose(&saslconn);
+            return -1;
+        }
+        ssf *= 8; /* key size is bytes, sasl wants bits */
+
+        remoteDebug(priv, "Setting external SSF %d", ssf);
+        err = sasl_setprop(saslconn, SASL_SSF_EXTERNAL, &ssf);
+        if (err != SASL_OK) {
+            __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                             VIR_ERR_INTERNAL_ERROR, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                             "cannot set external SSF %d (%s)",
+                             err, sasl_errstring(err, NULL, NULL));
+            sasl_dispose(&saslconn);
+            return -1;
+        }
+    }
+
+    memset (&secprops, 0, sizeof secprops);
+    /* If we've got TLS, we don't care about SSF */
+    secprops.min_ssf = priv->uses_tls ? 0 : 56; /* Equiv to DES supported by all Kerberos */
+    secprops.max_ssf = priv->uses_tls ? 0 : 100000; /* Very strong ! AES == 256 */
+    secprops.maxbufsize = 100000;
+    /* If we're not TLS, then forbid any anonymous or trivially crackable auth */
+    secprops.security_flags = priv->uses_tls ? 0 :
+        SASL_SEC_NOANONYMOUS | SASL_SEC_NOPLAINTEXT;
+
+    err = sasl_setprop(saslconn, SASL_SEC_PROPS, &secprops);
+    if (err != SASL_OK) {
+        __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                         VIR_ERR_INTERNAL_ERROR, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                         "cannot set security props %d (%s)",
+                         err, sasl_errstring(err, NULL, NULL));
+        sasl_dispose(&saslconn);
         return -1;
     }
 
@@ -3103,9 +3152,30 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open)
         }
     }
 
+    /* Check for suitable SSF if non-TLS */
+    if (!priv->uses_tls) {
+        err = sasl_getprop(saslconn, SASL_SSF, &val);
+        if (err != SASL_OK) {
+            __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                             VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                             "cannot query SASL ssf on connection %d (%s)",
+                             err, sasl_errstring(err, NULL, NULL));
+            sasl_dispose(&saslconn);
+            return -1;
+        }
+        ssf = *(const int *)val;
+        remoteDebug(priv, "SASL SSF value %d", ssf);
+        if (ssf < 56) { /* 56 == DES level, good for Kerberos */
+            __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                             VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                             "negotiation SSF %d was not strong enough", ssf);
+            sasl_dispose(&saslconn);
+            return -1;
+        }
+    }
+
     remoteDebug(priv, "SASL authentication complete");
-    /* XXX keep this around for wire encoding */
-    sasl_dispose(&saslconn);
+    priv->saslconn = saslconn;
     return 0;
 }
 #endif /* HAVE_SASL */
@@ -3306,11 +3376,11 @@ call (virConnectPtr conn, struct private_data *priv,
 }
 
 static int
-really_write (virConnectPtr conn, struct private_data *priv,
-              int in_open /* if we are in virConnectOpen */,
-              char *bytes, int len)
+really_write_buf (virConnectPtr conn, struct private_data *priv,
+                  int in_open /* if we are in virConnectOpen */,
+                  const char *bytes, int len)
 {
-    char *p;
+    const char *p;
     int err;
 
     p = bytes;
@@ -3348,55 +3418,156 @@ really_write (virConnectPtr conn, struct private_data *priv,
 }
 
 static int
+really_write_plain (virConnectPtr conn, struct private_data *priv,
+                    int in_open /* if we are in virConnectOpen */,
+                    char *bytes, int len)
+{
+    return really_write_buf(conn, priv, in_open, bytes, len);
+}
+
+#if HAVE_SASL
+static int
+really_write_sasl (virConnectPtr conn, struct private_data *priv,
+              int in_open /* if we are in virConnectOpen */,
+              char *bytes, int len)
+{
+    const char *output;
+    unsigned int outputlen;
+    int err;
+
+    err = sasl_encode(priv->saslconn, bytes, len, &output, &outputlen);
+    if (err != SASL_OK) {
+        return -1;
+    }
+
+    return really_write_buf(conn, priv, in_open, output, outputlen);
+}
+#endif
+
+static int
+really_write (virConnectPtr conn, struct private_data *priv,
+              int in_open /* if we are in virConnectOpen */,
+              char *bytes, int len)
+{
+#if HAVE_SASL
+    if (priv->saslconn)
+        return really_write_sasl(conn, priv, in_open, bytes, len);
+    else
+#endif
+        return really_write_plain(conn, priv, in_open, bytes, len);
+}
+
+static int
+really_read_buf (virConnectPtr conn, struct private_data *priv,
+                 int in_open /* if we are in virConnectOpen */,
+                 char *bytes, int len)
+{
+    int err;
+
+    if (priv->uses_tls) {
+    tlsreread:
+        err = gnutls_record_recv (priv->session, bytes, len);
+        if (err < 0) {
+            if (err == GNUTLS_E_INTERRUPTED)
+                goto tlsreread;
+            error (in_open ? NULL : conn,
+                   VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
+            return -1;
+        }
+        if (err == 0) {
+            error (in_open ? NULL : conn,
+                   VIR_ERR_RPC, "socket closed unexpectedly");
+            return -1;
+        }
+        return err;
+    } else {
+    reread:
+        err = read (priv->sock, bytes, len);
+        if (err == -1) {
+            if (errno == EINTR)
+                goto reread;
+            error (in_open ? NULL : conn,
+                   VIR_ERR_SYSTEM_ERROR, strerror (errno));
+            return -1;
+        }
+        if (err == 0) {
+            error (in_open ? NULL : conn,
+                   VIR_ERR_RPC, "socket closed unexpectedly");
+            return -1;
+        }
+        return err;
+    }
+
+    return 0;
+}
+
+static int
+really_read_plain (virConnectPtr conn, struct private_data *priv,
+                   int in_open /* if we are in virConnectOpen */,
+                   char *bytes, int len)
+{
+    do {
+        int ret = really_read_buf (conn, priv, in_open, bytes, len);
+        if (ret < 0)
+            return -1;
+
+        len -= ret;
+        bytes += ret;
+    } while (len > 0);
+
+    return 0;
+}
+
+#if HAVE_SASL
+static int
+really_read_sasl (virConnectPtr conn, struct private_data *priv,
+                  int in_open /* if we are in virConnectOpen */,
+                  char *bytes, int len)
+{
+    do {
+        int want, got;
+        if (priv->saslDecoded == NULL) {
+            char encoded[8192];
+            int encodedLen = sizeof(encoded);
+            int err, ret;
+            ret = really_read_buf (conn, priv, in_open, encoded, encodedLen);
+            if (ret < 0)
+                return -1;
+
+            err = sasl_decode(priv->saslconn, encoded, ret,
+                              &priv->saslDecoded, &priv->saslDecodedLength);
+        }
+
+        got = priv->saslDecodedLength - priv->saslDecodedOffset;
+        want = len;
+        if (want > got)
+            want = got;
+
+        memcpy(bytes, priv->saslDecoded + priv->saslDecodedOffset, want);
+        priv->saslDecodedOffset += want;
+        if (priv->saslDecodedOffset == priv->saslDecodedLength) {
+            priv->saslDecoded = NULL;
+            priv->saslDecodedOffset = priv->saslDecodedLength = 0;
+        }
+        bytes += want;
+        len -= want;
+    } while (len > 0);
+
+    return 0;
+}
+#endif
+
+static int
 really_read (virConnectPtr conn, struct private_data *priv,
              int in_open /* if we are in virConnectOpen */,
              char *bytes, int len)
 {
-    char *p;
-    int err;
-
-    p = bytes;
-    if (priv->uses_tls) {
-        do {
-            err = gnutls_record_recv (priv->session, p, len);
-            if (err < 0) {
-                if (err == GNUTLS_E_INTERRUPTED || err == GNUTLS_E_AGAIN)
-                    continue;
-                error (in_open ? NULL : conn,
-                       VIR_ERR_GNUTLS_ERROR, gnutls_strerror (err));
-                return -1;
-            }
-            if (err == 0) {
-                error (in_open ? NULL : conn,
-                       VIR_ERR_RPC, "socket closed unexpectedly");
-                return -1;
-            }
-            len -= err;
-            p += err;
-        }
-        while (len > 0);
-    } else {
-        do {
-            err = read (priv->sock, p, len);
-            if (err == -1) {
-                if (errno == EINTR || errno == EAGAIN)
-                    continue;
-                error (in_open ? NULL : conn,
-                       VIR_ERR_SYSTEM_ERROR, strerror (errno));
-                return -1;
-            }
-            if (err == 0) {
-                error (in_open ? NULL : conn,
-                       VIR_ERR_RPC, "socket closed unexpectedly");
-                return -1;
-            }
-            len -= err;
-            p += err;
-        }
-        while (len > 0);
-    }
-
-    return 0;
+#if HAVE_SASL
+    if (priv->saslconn)
+        return really_read_sasl (conn, priv, in_open, bytes, len);
+    else
+#endif
+        return really_read_plain (conn, priv, in_open, bytes, len);
 }
 
 /* For errors internal to this library. */

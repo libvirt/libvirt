@@ -461,6 +461,7 @@ static int qemudListenUnix(struct qemud_server *server,
 
     sock->readonly = readonly;
     sock->port = -1;
+    sock->type = QEMUD_SOCK_TYPE_UNIX;
 
     if ((sock->fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
         qemudLog(QEMUD_ERR, "Failed to create socket: %s",
@@ -575,7 +576,7 @@ remoteMakeSockets (int *fds, int max_fds, int *nfds_r, const char *service)
 static int
 remoteListenTCP (struct qemud_server *server,
                  const char *port,
-                 int tls,
+                 int type,
                  int auth)
 {
     int fds[2];
@@ -604,7 +605,7 @@ remoteListenTCP (struct qemud_server *server,
         server->nsockets++;
 
         sock->fd = fds[i];
-        sock->tls = tls;
+        sock->type = type;
         sock->auth = auth;
 
         if (getsockname(sock->fd, (struct sockaddr *)(&sa), &salen) < 0)
@@ -743,10 +744,10 @@ static struct qemud_server *qemudInitialize(int sigread) {
 
     if (ipsock) {
 #if HAVE_SASL
-        if (listen_tcp && remoteListenTCP (server, tcp_port, 0, REMOTE_AUTH_SASL) < 0)
+        if (listen_tcp && remoteListenTCP (server, tcp_port, QEMUD_SOCK_TYPE_TCP, REMOTE_AUTH_SASL) < 0)
             goto cleanup;
 #else
-        if (listen_tcp && remoteListenTCP (server, tcp_port, 0, REMOTE_AUTH_NONE) < 0)
+        if (listen_tcp && remoteListenTCP (server, tcp_port, QEMUD_SOCK_TYPE_TCP, REMOTE_AUTH_NONE) < 0)
             goto cleanup;
 #endif
 
@@ -754,7 +755,7 @@ static struct qemud_server *qemudInitialize(int sigread) {
             if (remoteInitializeGnuTLS () < 0)
                 goto cleanup;
 
-            if (remoteListenTCP (server, tls_port, 1, REMOTE_AUTH_NONE) < 0)
+            if (remoteListenTCP (server, tls_port, QEMUD_SOCK_TYPE_TLS, REMOTE_AUTH_NONE) < 0)
                 goto cleanup;
         }
     }
@@ -787,7 +788,7 @@ static struct qemud_server *qemudInitialize(int sigread) {
          */
         sock = server->sockets;
         while (sock) {
-            if (sock->port != -1 && sock->tls) {
+            if (sock->port != -1 && sock->type == QEMUD_SOCK_TYPE_TLS) {
                 port = sock->port;
                 break;
             }
@@ -979,7 +980,7 @@ remoteCheckAccess (struct qemud_client *client)
     int found, err;
 
     /* Verify client certificate. */
-    if (remoteCheckCertificate (client->session) == -1) {
+    if (remoteCheckCertificate (client->tlssession) == -1) {
         qemudLog (QEMUD_ERR, "remoteCheckCertificate: failed to verify client's certificate");
         if (!tls_no_verify_certificate) return -1;
         else qemudLog (QEMUD_INFO, "remoteCheckCertificate: tls_no_verify_certificate is set so the bad certificate is ignored");
@@ -1031,7 +1032,6 @@ remoteCheckAccess (struct qemud_client *client)
     client->bufferOffset = 0;
     client->buffer[0] = '\1';
     client->mode = QEMUD_MODE_TX_PACKET;
-    client->direction = QEMUD_TLS_DIRECTION_WRITE;
     return 0;
 }
 
@@ -1065,12 +1065,12 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
     client->magic = QEMUD_CLIENT_MAGIC;
     client->fd = fd;
     client->readonly = sock->readonly;
-    client->tls = sock->tls;
+    client->type = sock->type;
     client->auth = sock->auth;
     memcpy (&client->addr, &addr, sizeof addr);
     client->addrlen = addrlen;
 
-    if (!client->tls) {
+    if (client->type != QEMUD_SOCK_TYPE_TLS) {
         client->mode = QEMUD_MODE_RX_HEADER;
         client->bufferLength = REMOTE_MESSAGE_HEADER_XDR_LEN;
 
@@ -1079,15 +1079,15 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
     } else {
         int ret;
 
-        client->session = remoteInitializeTLSSession ();
-        if (client->session == NULL)
+        client->tlssession = remoteInitializeTLSSession ();
+        if (client->tlssession == NULL)
             goto cleanup;
 
-        gnutls_transport_set_ptr (client->session,
+        gnutls_transport_set_ptr (client->tlssession,
                                   (gnutls_transport_ptr_t) (long) fd);
 
         /* Begin the TLS handshake. */
-        ret = gnutls_handshake (client->session);
+        ret = gnutls_handshake (client->tlssession);
         if (ret == 0) {
             /* Unlikely, but ...  Next step is to check the certificate. */
             if (remoteCheckAccess (client) == -1)
@@ -1099,7 +1099,6 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
             /* Most likely. */
             client->mode = QEMUD_MODE_TLS_HANDSHAKE;
             client->bufferLength = -1;
-            client->direction = gnutls_record_get_direction (client->session);
 
             if (qemudRegisterClientEvent (server, client, 0) < 0)
                 goto cleanup;
@@ -1117,7 +1116,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
     return 0;
 
  cleanup:
-    if (client->session) gnutls_deinit (client->session);
+    if (client->tlssession) gnutls_deinit (client->tlssession);
     close (fd);
     free (client);
     return -1;
@@ -1150,24 +1149,21 @@ static void qemudDispatchClientFailure(struct qemud_server *server, struct qemud
 #if HAVE_SASL
     if (client->saslconn) sasl_dispose(&client->saslconn);
 #endif
-    if (client->tls && client->session) gnutls_deinit (client->session);
+    if (client->tlssession) gnutls_deinit (client->tlssession);
     close(client->fd);
     free(client);
 }
 
 
 
-static int qemudClientRead(struct qemud_server *server,
-                           struct qemud_client *client) {
-    int ret, len;
-    char *data;
-
-    data = client->buffer + client->bufferOffset;
-    len = client->bufferLength - client->bufferOffset;
+static int qemudClientReadBuf(struct qemud_server *server,
+                              struct qemud_client *client,
+                              char *data, unsigned len) {
+    int ret;
 
     /*qemudDebug ("qemudClientRead: len = %d", len);*/
 
-    if (!client->tls) {
+    if (!client->tlssession) {
         if ((ret = read (client->fd, data, len)) <= 0) {
             if (ret == 0 || errno != EAGAIN) {
                 if (ret != 0)
@@ -1177,8 +1173,7 @@ static int qemudClientRead(struct qemud_server *server,
             return -1;
         }
     } else {
-        ret = gnutls_record_recv (client->session, data, len);
-        client->direction = gnutls_record_get_direction (client->session);
+        ret = gnutls_record_recv (client->tlssession, data, len);
         if (qemudRegisterClientEvent (server, client, 1) < 0)
             qemudDispatchClientFailure (server, client);
         else if (ret <= 0) {
@@ -1193,9 +1188,79 @@ static int qemudClientRead(struct qemud_server *server,
         }
     }
 
+    return ret;
+}
+
+static int qemudClientReadPlain(struct qemud_server *server,
+                                struct qemud_client *client) {
+    int ret;
+    ret = qemudClientReadBuf(server, client,
+                             client->buffer + client->bufferOffset,
+                             client->bufferLength - client->bufferOffset);
+    if (ret < 0)
+        return ret;
     client->bufferOffset += ret;
     return 0;
 }
+
+#if HAVE_SASL
+static int qemudClientReadSASL(struct qemud_server *server,
+                               struct qemud_client *client) {
+    int got, want;
+
+    /* We're doing a SSF data read, so now its times to ensure
+     * future writes are under SSF too.
+     *
+     * cf remoteSASLCheckSSF in remote.c
+     */
+    client->saslSSF |= QEMUD_SASL_SSF_WRITE;
+
+    /* Need to read some more data off the wire */
+    if (client->saslDecoded == NULL) {
+        char encoded[8192];
+        int encodedLen = sizeof(encoded);
+        encodedLen = qemudClientReadBuf(server, client, encoded, encodedLen);
+
+        if (encodedLen < 0)
+            return -1;
+
+        sasl_decode(client->saslconn, encoded, encodedLen,
+                    &client->saslDecoded, &client->saslDecodedLength);
+
+        client->saslDecodedOffset = 0;
+    }
+
+    /* Some buffered decoded data to return now */
+    got = client->saslDecodedLength - client->saslDecodedOffset;
+    want = client->bufferLength - client->bufferOffset;
+
+    if (want > got)
+        want = got;
+
+    memcpy(client->buffer + client->bufferOffset,
+           client->saslDecoded + client->saslDecodedOffset, want);
+    client->saslDecodedOffset += want;
+    client->bufferOffset += want;
+
+    if (client->saslDecodedOffset == client->saslDecodedLength) {
+        client->saslDecoded = NULL;
+        client->saslDecodedOffset = client->saslDecodedLength = 0;
+    }
+
+    return 0;
+}
+#endif
+
+static int qemudClientRead(struct qemud_server *server,
+                           struct qemud_client *client) {
+#if HAVE_SASL
+    if (client->saslSSF & QEMUD_SASL_SSF_READ)
+        return qemudClientReadSASL(server, client);
+    else
+#endif
+        return qemudClientReadPlain(server, client);
+}
+
 
 static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_client *client) {
 
@@ -1239,7 +1304,6 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
         client->mode = QEMUD_MODE_RX_PAYLOAD;
         client->bufferLength = len - REMOTE_MESSAGE_HEADER_XDR_LEN;
         client->bufferOffset = 0;
-        if (client->tls) client->direction = QEMUD_TLS_DIRECTION_READ;
 
         if (qemudRegisterClientEvent(server, client, 1) < 0) {
             qemudDispatchClientFailure(server, client);
@@ -1267,7 +1331,7 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
         int ret;
 
         /* Continue the handshake. */
-        ret = gnutls_handshake (client->session);
+        ret = gnutls_handshake (client->tlssession);
         if (ret == 0) {
             /* Finished.  Next step is to check the certificate. */
             if (remoteCheckAccess (client) == -1)
@@ -1279,7 +1343,6 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
                       gnutls_strerror (ret));
             qemudDispatchClientFailure (server, client);
         } else {
-            client->direction = gnutls_record_get_direction (client->session);
             if (qemudRegisterClientEvent (server ,client, 1) < 0)
                 qemudDispatchClientFailure (server, client);
         }
@@ -1294,15 +1357,11 @@ static void qemudDispatchClientRead(struct qemud_server *server, struct qemud_cl
 }
 
 
-static int qemudClientWrite(struct qemud_server *server,
-                            struct qemud_client *client) {
-    int ret, len;
-    char *data;
-
-    data = client->buffer + client->bufferOffset;
-    len = client->bufferLength - client->bufferOffset;
-
-    if (!client->tls) {
+static int qemudClientWriteBuf(struct qemud_server *server,
+                               struct qemud_client *client,
+                               const char *data, int len) {
+    int ret;
+    if (!client->tlssession) {
         if ((ret = write(client->fd, data, len)) == -1) {
             if (errno != EAGAIN) {
                 qemudLog (QEMUD_ERR, "write: %s", strerror (errno));
@@ -1311,8 +1370,7 @@ static int qemudClientWrite(struct qemud_server *server,
             return -1;
         }
     } else {
-        ret = gnutls_record_send (client->session, data, len);
-        client->direction = gnutls_record_get_direction (client->session);
+        ret = gnutls_record_send (client->tlssession, data, len);
         if (qemudRegisterClientEvent (server, client, 1) < 0)
             qemudDispatchClientFailure (server, client);
         else if (ret < 0) {
@@ -1324,9 +1382,69 @@ static int qemudClientWrite(struct qemud_server *server,
             return -1;
         }
     }
+    return ret;
+}
 
+
+static int qemudClientWritePlain(struct qemud_server *server,
+                                 struct qemud_client *client) {
+    int ret = qemudClientWriteBuf(server, client,
+                                  client->buffer + client->bufferOffset,
+                                  client->bufferLength - client->bufferOffset);
+    if (ret < 0)
+        return -1;
     client->bufferOffset += ret;
     return 0;
+}
+
+
+#if HAVE_SASL
+static int qemudClientWriteSASL(struct qemud_server *server,
+                                struct qemud_client *client) {
+    int ret;
+
+    /* Not got any pending encoded data, so we need to encode raw stuff */
+    if (client->saslEncoded == NULL) {
+        int err;
+        err = sasl_encode(client->saslconn,
+                          client->buffer + client->bufferOffset,
+                          client->bufferLength - client->bufferOffset,
+                          &client->saslEncoded,
+                          &client->saslEncodedLength);
+
+        client->saslEncodedOffset = 0;
+    }
+
+    /* Send some of the encoded stuff out on the wire */
+    ret = qemudClientWriteBuf(server, client,
+                              client->saslEncoded + client->saslEncodedOffset,
+                              client->saslEncodedLength - client->saslEncodedOffset);
+
+    if (ret < 0)
+        return -1;
+
+    /* Note how much we sent */
+    client->saslEncodedOffset += ret;
+
+    /* Sent all encoded, so update raw buffer to indicate completion */
+    if (client->saslEncodedOffset == client->saslEncodedLength) {
+        client->saslEncoded = NULL;
+        client->saslEncodedOffset = client->saslEncodedLength = 0;
+        client->bufferOffset = client->bufferLength;
+    }
+
+    return 0;
+}
+#endif
+
+static int qemudClientWrite(struct qemud_server *server,
+                            struct qemud_client *client) {
+#if HAVE_SASL
+    if (client->saslSSF & QEMUD_SASL_SSF_WRITE)
+        return qemudClientWriteSASL(server, client);
+    else
+#endif
+        return qemudClientWritePlain(server, client);
 }
 
 
@@ -1341,7 +1459,6 @@ static void qemudDispatchClientWrite(struct qemud_server *server, struct qemud_c
             client->mode = QEMUD_MODE_RX_HEADER;
             client->bufferLength = REMOTE_MESSAGE_HEADER_XDR_LEN;
             client->bufferOffset = 0;
-            if (client->tls) client->direction = QEMUD_TLS_DIRECTION_READ;
 
             if (qemudRegisterClientEvent (server, client, 1) < 0)
                 qemudDispatchClientFailure (server, client);
@@ -1354,7 +1471,7 @@ static void qemudDispatchClientWrite(struct qemud_server *server, struct qemud_c
         int ret;
 
         /* Continue the handshake. */
-        ret = gnutls_handshake (client->session);
+        ret = gnutls_handshake (client->tlssession);
         if (ret == 0) {
             /* Finished.  Next step is to check the certificate. */
             if (remoteCheckAccess (client) == -1)
@@ -1366,7 +1483,6 @@ static void qemudDispatchClientWrite(struct qemud_server *server, struct qemud_c
                       gnutls_strerror (ret));
             qemudDispatchClientFailure (server, client);
         } else {
-            client->direction = gnutls_record_get_direction (client->session);
             if (qemudRegisterClientEvent (server, client, 1))
                 qemudDispatchClientFailure (server, client);
         }
@@ -1406,25 +1522,37 @@ static void qemudDispatchClientEvent(int fd, int events, void *opaque) {
 static int qemudRegisterClientEvent(struct qemud_server *server,
                                     struct qemud_client *client,
                                     int removeFirst) {
+    int mode;
+    switch (client->mode) {
+    case QEMUD_MODE_TLS_HANDSHAKE:
+        if (gnutls_record_get_direction (client->tlssession) == 0)
+            mode = POLLIN;
+        else
+            mode = POLLOUT;
+        break;
+
+    case QEMUD_MODE_RX_HEADER:
+    case QEMUD_MODE_RX_PAYLOAD:
+        mode = POLLIN;
+        break;
+
+    case QEMUD_MODE_TX_PACKET:
+        mode = POLLOUT;
+        break;
+
+    default:
+        return -1;
+    }
+
     if (removeFirst)
         if (virEventRemoveHandleImpl(client->fd) < 0)
             return -1;
 
-    if (client->tls) {
-        if (virEventAddHandleImpl(client->fd,
-                                  (client->direction ?
-                                   POLLOUT : POLLIN) | POLLERR | POLLHUP,
-                                  qemudDispatchClientEvent,
-                                  server) < 0)
+    if (virEventAddHandleImpl(client->fd,
+                              mode | POLLERR | POLLHUP,
+                              qemudDispatchClientEvent,
+                              server) < 0)
             return -1;
-    } else {
-        if (virEventAddHandleImpl(client->fd,
-                                  (client->mode == QEMUD_MODE_TX_PACKET ?
-                                   POLLOUT : POLLIN) | POLLERR | POLLHUP,
-                                  qemudDispatchClientEvent,
-                                  server) < 0)
-            return -1;
-    }
 
     return 0;
 }

@@ -1,3 +1,9 @@
+Wed Dec  5 10:25:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/remote_internal.c, qemud/qemud.c, qemud/internal.h,
+	qemud/remote.c: Add support for SASL SSF layer providing
+	data encryption of the connection post-authentication.
+
 Wed Dec  5 10:20:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in: Add checks for SASL library

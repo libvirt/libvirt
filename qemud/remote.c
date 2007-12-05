@@ -284,7 +284,6 @@ remoteDispatchClientRequest (struct qemud_server *server ATTRIBUTE_UNUSED,
     client->mode = QEMUD_MODE_TX_PACKET;
     client->bufferLength = len;
     client->bufferOffset = 0;
-    if (client->tls) client->direction = QEMUD_TLS_DIRECTION_WRITE;
 }
 
 /* An error occurred during the dispatching process itself (ie. not
@@ -369,7 +368,6 @@ remoteDispatchSendError (struct qemud_client *client,
     client->mode = QEMUD_MODE_TX_PACKET;
     client->bufferLength = len;
     client->bufferOffset = 0;
-    if (client->tls) client->direction = QEMUD_TLS_DIRECTION_WRITE;
 }
 
 static void
@@ -2042,6 +2040,7 @@ remoteDispatchAuthSaslInit (struct qemud_client *client,
                             remote_auth_sasl_init_ret *ret)
 {
     const char *mechlist = NULL;
+    sasl_security_properties_t secprops;
     int err;
     struct sockaddr_storage sa;
     socklen_t salen;
@@ -2097,6 +2096,60 @@ remoteDispatchAuthSaslInit (struct qemud_client *client,
         return -2;
     }
 
+    /* Inform SASL that we've got an external SSF layer from TLS */
+    if (client->type == QEMUD_SOCK_TYPE_TLS) {
+        gnutls_cipher_algorithm_t cipher;
+        sasl_ssf_t ssf;
+
+        cipher = gnutls_cipher_get(client->tlssession);
+        if (!(ssf = (sasl_ssf_t)gnutls_cipher_get_key_size(cipher))) {
+            qemudLog(QEMUD_ERR, "cannot TLS get cipher size");
+            remoteDispatchFailAuth(client, req);
+            sasl_dispose(&client->saslconn);
+            client->saslconn = NULL;
+            return -2;
+        }
+        ssf *= 8; /* tls key size is bytes, sasl wants bits */
+
+        err = sasl_setprop(client->saslconn, SASL_SSF_EXTERNAL, &ssf);
+        if (err != SASL_OK) {
+            qemudLog(QEMUD_ERR, "cannot set SASL external SSF %d (%s)",
+                     err, sasl_errstring(err, NULL, NULL));
+            remoteDispatchFailAuth(client, req);
+            sasl_dispose(&client->saslconn);
+            client->saslconn = NULL;
+            return -2;
+        }
+    }
+
+    memset (&secprops, 0, sizeof secprops);
+    if (client->type == QEMUD_SOCK_TYPE_TLS ||
+        client->type == QEMUD_SOCK_TYPE_UNIX) {
+        /* If we've got TLS or UNIX domain sock, we don't care about SSF */
+        secprops.min_ssf = 0;
+        secprops.max_ssf = 0;
+        secprops.maxbufsize = 8192;
+        secprops.security_flags = 0;
+    } else {
+        /* Plain TCP, better get an SSF layer */
+        secprops.min_ssf = 56; /* Good enough to require kerberos */
+        secprops.max_ssf = 100000; /* Arbitrary big number */
+        secprops.maxbufsize = 8192;
+        /* Forbid any anonymous or trivially crackable auth */
+        secprops.security_flags =
+            SASL_SEC_NOANONYMOUS | SASL_SEC_NOPLAINTEXT;
+    }
+
+    err = sasl_setprop(client->saslconn, SASL_SEC_PROPS, &secprops);
+    if (err != SASL_OK) {
+        qemudLog(QEMUD_ERR, "cannot set SASL security props %d (%s)",
+                 err, sasl_errstring(err, NULL, NULL));
+        remoteDispatchFailAuth(client, req);
+        sasl_dispose(&client->saslconn);
+        client->saslconn = NULL;
+        return -2;
+    }
+
     err = sasl_listmech(client->saslconn,
                         NULL, /* Don't need to set user */
                         "", /* Prefix */
@@ -2126,6 +2179,49 @@ remoteDispatchAuthSaslInit (struct qemud_client *client,
     return 0;
 }
 
+
+/* We asked for an SSF layer, so sanity check that we actaully
+ * got what we asked for */
+static int
+remoteSASLCheckSSF (struct qemud_client *client,
+                    remote_message_header *req) {
+    const void *val;
+    int err, ssf;
+
+    if (client->type == QEMUD_SOCK_TYPE_TLS ||
+        client->type == QEMUD_SOCK_TYPE_UNIX)
+        return 0; /* TLS or UNIX domain sockets trivially OK */
+
+    err = sasl_getprop(client->saslconn, SASL_SSF, &val);
+    if (err != SASL_OK) {
+        qemudLog(QEMUD_ERR, "cannot query SASL ssf on connection %d (%s)",
+                 err, sasl_errstring(err, NULL, NULL));
+        remoteDispatchFailAuth(client, req);
+        sasl_dispose(&client->saslconn);
+        client->saslconn = NULL;
+        return -1;
+    }
+    ssf = *(const int *)val;
+    REMOTE_DEBUG("negotiated an SSF of %d", ssf);
+    if (ssf < 56) { /* 56 is good for Kerberos */
+        qemudLog(QEMUD_ERR, "negotiated SSF %d was not strong enough", ssf);
+        remoteDispatchFailAuth(client, req);
+        sasl_dispose(&client->saslconn);
+        client->saslconn = NULL;
+        return -1;
+    }
+
+    /* Only setup for read initially, because we're about to send an RPC
+     * reply which must be in plain text. When the next incoming RPC
+     * arrives, we'll switch on writes too
+     *
+     * cf qemudClientReadSASL  in qemud.c
+     */
+    client->saslSSF = QEMUD_SASL_SSF_READ;
+
+    /* We have a SSF !*/
+    return 0;
+}
 
 /*
  * This starts the SASL authentication negotiation.
@@ -2192,6 +2288,9 @@ remoteDispatchAuthSaslStart (struct qemud_client *client,
     if (err == SASL_CONTINUE) {
         ret->complete = 0;
     } else {
+        if (remoteSASLCheckSSF(client, req) < 0)
+            return -2;
+
         REMOTE_DEBUG("Authentication successful %d", client->fd);
         ret->complete = 1;
         client->auth = REMOTE_AUTH_NONE;
@@ -2263,6 +2362,9 @@ remoteDispatchAuthSaslStep (struct qemud_client *client,
     if (err == SASL_CONTINUE) {
         ret->complete = 0;
     } else {
+        if (remoteSASLCheckSSF(client, req) < 0)
+            return -2;
+
         REMOTE_DEBUG("Authentication successful %d", client->fd);
         ret->complete = 1;
         client->auth = REMOTE_AUTH_NONE;
