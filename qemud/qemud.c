@@ -575,7 +575,8 @@ remoteMakeSockets (int *fds, int max_fds, int *nfds_r, const char *service)
 static int
 remoteListenTCP (struct qemud_server *server,
                  const char *port,
-                 int tls)
+                 int tls,
+                 int auth)
 {
     int fds[2];
     int nfds = 0;
@@ -604,6 +605,7 @@ remoteListenTCP (struct qemud_server *server,
 
         sock->fd = fds[i];
         sock->tls = tls;
+        sock->auth = auth;
 
         if (getsockname(sock->fd, (struct sockaddr *)(&sa), &salen) < 0)
             return -1;
@@ -699,6 +701,9 @@ static struct qemud_server *qemudInitialize(int sigread) {
     struct qemud_socket *sock;
     char sockname[PATH_MAX];
     char roSockname[PATH_MAX];
+#if HAVE_SASL
+    int err;
+#endif /* HAVE_SASL */
 
     if (!(server = calloc(1, sizeof(struct qemud_server)))) {
         qemudLog(QEMUD_ERR, "Failed to allocate struct qemud_server");
@@ -728,15 +733,28 @@ static struct qemud_server *qemudInitialize(int sigread) {
 
     virStateInitialize();
 
+#if HAVE_SASL
+    if ((err = sasl_server_init(NULL, "libvirt")) != SASL_OK) {
+        qemudLog(QEMUD_ERR, "Failed to initialize SASL authentication %s",
+                 sasl_errstring(err, NULL, NULL));
+        goto cleanup;
+    }
+#endif
+
     if (ipsock) {
-        if (listen_tcp && remoteListenTCP (server, tcp_port, 0) < 0)
+#if HAVE_SASL
+        if (listen_tcp && remoteListenTCP (server, tcp_port, 0, REMOTE_AUTH_SASL) < 0)
             goto cleanup;
+#else
+        if (listen_tcp && remoteListenTCP (server, tcp_port, 0, REMOTE_AUTH_NONE) < 0)
+            goto cleanup;
+#endif
 
         if (listen_tls) {
             if (remoteInitializeGnuTLS () < 0)
                 goto cleanup;
 
-            if (remoteListenTCP (server, tls_port, 1) < 0)
+            if (remoteListenTCP (server, tls_port, 1, REMOTE_AUTH_NONE) < 0)
                 goto cleanup;
         }
     }
@@ -1048,6 +1066,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
     client->fd = fd;
     client->readonly = sock->readonly;
     client->tls = sock->tls;
+    client->auth = sock->auth;
     memcpy (&client->addr, &addr, sizeof addr);
     client->addrlen = addrlen;
 
@@ -1128,6 +1147,9 @@ static void qemudDispatchClientFailure(struct qemud_server *server, struct qemud
     if (client->conn)
         virConnectClose(client->conn);
 
+#if HAVE_SASL
+    if (client->saslconn) sasl_dispose(&client->saslconn);
+#endif
     if (client->tls && client->session) gnutls_deinit (client->session);
     close(client->fd);
     free(client);

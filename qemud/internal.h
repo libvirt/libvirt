@@ -28,6 +28,9 @@
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
 #include "../src/gnutls_1_0_compat.h"
+#if HAVE_SASL
+#include <sasl/sasl.h>
+#endif
 
 #ifdef HAVE_SYS_SYSLIMITS_H
 #include <sys/syslimits.h>
@@ -91,6 +94,10 @@ struct qemud_client {
     int tls;
     gnutls_session_t session;
     enum qemud_tls_direction direction;
+    int auth;
+#if HAVE_SASL
+    sasl_conn_t *saslconn;
+#endif
 
     unsigned int incomingSerial;
     unsigned int outgoingSerial;
@@ -116,6 +123,7 @@ struct qemud_socket {
     int readonly;
     /* If set, TLS is required on this socket. */
     int tls;
+    int auth;
     int port;
     struct qemud_socket *next;
 };

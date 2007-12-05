@@ -671,6 +671,12 @@ __virErrorMsg(virErrorNumber error, const char *info)
 	    else
 		errmsg = _("invalid MAC adress: %s");
 	    break;
+    case VIR_ERR_AUTH_FAILED:
+	    if (info == NULL)
+		errmsg = _("authentication failed");
+	    else
+		errmsg = _("authentication failed: %s");
+	    break;
     }
     return (errmsg);
 }

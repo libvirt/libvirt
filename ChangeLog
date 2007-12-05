@@ -1,3 +1,20 @@
+Wed Dec  5 10:20:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.in: Add checks for SASL library
+	* include/libvirt/virterror.h: Add VIR_ERR_AUTH_FAILED
+	* libvirt.spec.in: Add deps on cyrus-sasl & md5 plugin
+	and add SASL config file
+	* qemud/Makefile.am: Add SASL config file & build flags
+	* qemud/remote_protocol.x: new RPC calls for SASL
+	* qemud/internal.h, qemud/qemud.c, qemud/remote.c: Server
+	side of SASL authentication support
+	* qemud/libvirtd.init.in, qemud/libvirtd.sysconf: Set
+	KRB5_KTNAME to tell daemon where kerberos keytab lives
+	* qemud/libvirtd.sasl: example SASL config file
+	* src/Makefile.am, tests/Makefile.am: add SASL build flags
+	* src/remote_internal.c: Add support for SASL auth client
+	* src/virterror.c: Add VOIR_ERR_AUTH_FAILED string
+
 Wed Dec  5 10:07:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_conf.c: Strip out NIC interfaces named vnetXXX since

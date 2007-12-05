@@ -4,3 +4,6 @@
 # Listen for TCP/IP connections
 # NB. must setup TLS/SSL keys prior to using this
 #LIBVIRTD_ARGS="--listen"
+
+# Override Kerberos service keytab for SASL/GSSAPI
+#KRB5_KTNAME=/etc/libvirt/krb5.tab

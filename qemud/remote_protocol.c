@@ -105,6 +105,15 @@ xdr_remote_error (XDR *xdrs, remote_error *objp)
 }
 
 bool_t
+xdr_remote_auth_type (XDR *xdrs, remote_auth_type *objp)
+{
+
+	 if (!xdr_enum (xdrs, (enum_t *) objp))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_remote_vcpu_info (XDR *xdrs, remote_vcpu_info *objp)
 {
 
@@ -1217,6 +1226,84 @@ xdr_remote_network_set_autostart_args (XDR *xdrs, remote_network_set_autostart_a
 	 if (!xdr_remote_nonnull_network (xdrs, &objp->net))
 		 return FALSE;
 	 if (!xdr_int (xdrs, &objp->autostart))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_auth_list_ret (XDR *xdrs, remote_auth_list_ret *objp)
+{
+	char **objp_cpp0 = (char **) (void *) &objp->types.types_val;
+
+	 if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->types.types_len, REMOTE_AUTH_TYPE_LIST_MAX,
+		sizeof (remote_auth_type), (xdrproc_t) xdr_remote_auth_type))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_auth_sasl_init_ret (XDR *xdrs, remote_auth_sasl_init_ret *objp)
+{
+
+	 if (!xdr_remote_nonnull_string (xdrs, &objp->mechlist))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_auth_sasl_start_args (XDR *xdrs, remote_auth_sasl_start_args *objp)
+{
+	char **objp_cpp0 = (char **) (void *) &objp->data.data_val;
+
+	 if (!xdr_remote_nonnull_string (xdrs, &objp->mech))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->nil))
+		 return FALSE;
+	 if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->data.data_len, REMOTE_AUTH_SASL_DATA_MAX,
+		sizeof (char), (xdrproc_t) xdr_char))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_auth_sasl_start_ret (XDR *xdrs, remote_auth_sasl_start_ret *objp)
+{
+	char **objp_cpp0 = (char **) (void *) &objp->data.data_val;
+
+	 if (!xdr_int (xdrs, &objp->complete))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->nil))
+		 return FALSE;
+	 if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->data.data_len, REMOTE_AUTH_SASL_DATA_MAX,
+		sizeof (char), (xdrproc_t) xdr_char))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_auth_sasl_step_args (XDR *xdrs, remote_auth_sasl_step_args *objp)
+{
+	char **objp_cpp0 = (char **) (void *) &objp->data.data_val;
+
+	 if (!xdr_int (xdrs, &objp->nil))
+		 return FALSE;
+	 if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->data.data_len, REMOTE_AUTH_SASL_DATA_MAX,
+		sizeof (char), (xdrproc_t) xdr_char))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_auth_sasl_step_ret (XDR *xdrs, remote_auth_sasl_step_ret *objp)
+{
+	char **objp_cpp0 = (char **) (void *) &objp->data.data_val;
+
+	 if (!xdr_int (xdrs, &objp->complete))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->nil))
+		 return FALSE;
+	 if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->data.data_len, REMOTE_AUTH_SASL_DATA_MAX,
+		sizeof (char), (xdrproc_t) xdr_char))
 		 return FALSE;
 	return TRUE;
 }

@@ -48,6 +48,9 @@
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
 #include "gnutls_1_0_compat.h"
+#if HAVE_SASL
+#include <sasl/sasl.h>
+#endif
 #include <libxml/uri.h>
 
 #include "internal.h"
@@ -72,6 +75,11 @@ struct private_data {
     char *type;                 /* Cached return from remoteType. */
     int counter;                /* Generates serial numbers for RPC. */
     int networkOnly;            /* Only used for network API */
+    char *hostname;             /* Original hostname */
+    FILE *debugLog;             /* Debug remote protocol */
+#if HAVE_SASL
+    sasl_conn_t *saslconn;      /* SASL context */
+#endif
 };
 
 #define GET_PRIVATE(conn,retcode)                                       \
@@ -90,7 +98,20 @@ struct private_data {
         return (retcode);                                               \
     }
 
-static int call (virConnectPtr conn, struct private_data *priv, int in_open, int proc_nr, xdrproc_t args_filter, char *args, xdrproc_t ret_filter, char *ret);
+enum {
+    REMOTE_CALL_IN_OPEN = 1,
+    REMOTE_CALL_QUIET_MISSING_RPC = 2,
+};
+
+
+static int call (virConnectPtr conn, struct private_data *priv,
+                 int flags, int proc_nr,
+                 xdrproc_t args_filter, char *args,
+                 xdrproc_t ret_filter, char *ret);
+static int remoteAuthenticate (virConnectPtr conn, struct private_data *priv, int in_open);
+#if HAVE_SASL
+static int remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open);
+#endif
 static void error (virConnectPtr conn, virErrorNumber code, const char *info);
 static void server_error (virConnectPtr conn, remote_error *err);
 static virDomainPtr get_nonnull_domain (virConnectPtr conn, remote_nonnull_domain domain);
@@ -121,7 +142,7 @@ static void query_free (struct query_fields *fields);
 
 /* GnuTLS functions used by remoteOpen. */
 static int initialise_gnutls (virConnectPtr conn);
-static gnutls_session_t negotiate_gnutls_on_connection (virConnectPtr conn, int sock, int no_verify, const char *hostname);
+static gnutls_session_t negotiate_gnutls_on_connection (virConnectPtr conn, struct private_data *priv, int no_verify);
 
 static int
 remoteStartup(void)
@@ -132,6 +153,22 @@ remoteStartup(void)
     inside_daemon = 1;
     return 0;
 }
+
+#if HAVE_SASL
+static void
+remoteDebug(struct private_data *priv, const char *msg,...)
+{
+    va_list args;
+    if (priv->debugLog == NULL)
+        return;
+
+    va_start(args, msg);
+    vfprintf(priv->debugLog, msg, args);
+    va_end(args);
+    fprintf(priv->debugLog, "\n");
+}
+#endif /* HAVE_SASL */
+
 
 /**
  * remoteFindServerPath:
@@ -297,7 +334,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
      * get freed in the failed: path.
      */
     char *name = 0, *command = 0, *sockname = 0, *netcat = 0, *username = 0;
-    char *server = 0, *port = 0;
+    char *port = 0;
     int no_verify = 0, no_tty = 0;
     char **cmd_argv = 0;
 
@@ -305,12 +342,6 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
     int retcode = VIR_DRV_OPEN_ERROR;
 
     /* Remote server defaults to "localhost" if not specified. */
-    server = strdup (uri->server ? uri->server : "localhost");
-    if (!server) {
-    out_of_memory:
-        error (conn, VIR_ERR_NO_MEMORY, "duplicating server name");
-        goto failed;
-    }
     if (uri->port != 0) {
         if (asprintf (&port, "%d", uri->port) == -1) goto out_of_memory;
     } else if (transport == trans_tls) {
@@ -325,6 +356,12 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
     } else
         port = NULL;           /* Port not used for unix, ext. */
 
+
+    priv->hostname = strdup (uri->server ? uri->server : "localhost");
+    if (!priv->hostname) {
+        error (NULL, VIR_ERR_NO_MEMORY, "allocating priv->hostname");
+        goto failed;
+    }
     if (uri->user) {
         username = strdup (uri->user);
         if (!username) goto out_of_memory;
@@ -367,6 +404,12 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
         } else if (strcasecmp (var->name, "no_tty") == 0) {
             no_tty = atoi (var->value);
             var->ignore = 1;
+        } else if (strcasecmp (var->name, "debug") == 0) {
+            if (var->value &&
+                strcasecmp(var->value, "stdout") == 0)
+                priv->debugLog = stdout;
+            else
+                priv->debugLog = stderr;
         }
 #if DEBUG
         else
@@ -436,7 +479,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
         memset (&hints, 0, sizeof hints);
         hints.ai_socktype = SOCK_STREAM;
         hints.ai_flags = AI_ADDRCONFIG;
-        int e = getaddrinfo (server, port, &hints, &res);
+        int e = getaddrinfo (priv->hostname, port, &hints, &res);
         if (e != 0) {
             error (conn, VIR_ERR_INVALID_ARG, gai_strerror (e));
             goto failed;
@@ -476,7 +519,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
             if (priv->uses_tls) {
                 priv->session =
                     negotiate_gnutls_on_connection
-                      (conn, priv->sock, no_verify, server);
+                      (conn, priv, no_verify);
                 if (!priv->session) {
                     close (priv->sock);
                     priv->sock = -1;
@@ -603,7 +646,7 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
             cmd_argv[j++] = strdup ("-e");
             cmd_argv[j++] = strdup ("none");
         }
-        cmd_argv[j++] = strdup (server);
+        cmd_argv[j++] = strdup (priv->hostname);
         cmd_argv[j++] = strdup (netcat ? netcat : "nc");
         cmd_argv[j++] = strdup ("-U");
         cmd_argv[j++] = strdup (sockname ? sockname : LIBVIRTD_PRIV_UNIX_SOCKET);
@@ -665,10 +708,15 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
     }
     } /* switch (transport) */
 
+
+    /* Try and authenticate with server */
+    if (remoteAuthenticate(conn, priv, 1) == -1)
+        goto failed;
+
     /* Finally we can call the remote side's open function. */
     remote_open_args args = { &name, flags };
 
-    if (call (conn, priv, 1, REMOTE_PROC_OPEN,
+    if (call (conn, priv, REMOTE_CALL_IN_OPEN, REMOTE_PROC_OPEN,
               (xdrproc_t) xdr_remote_open_args, (char *) &args,
               (xdrproc_t) xdr_void, (char *) NULL) == -1)
         goto failed;
@@ -676,30 +724,13 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
     /* Successful. */
     retcode = VIR_DRV_OPEN_SUCCESS;
 
-    /*FALLTHROUGH*/
- failed:
-    /* Close the socket if we failed. */
-    if (retcode != VIR_DRV_OPEN_SUCCESS && priv->sock >= 0) {
-        if (priv->uses_tls && priv->session)
-            gnutls_bye (priv->session, GNUTLS_SHUT_RDWR);
-        close (priv->sock);
-        if (priv->pid > 0) {
-            pid_t reap;
-            do {
-                reap = waitpid(priv->pid, NULL, 0);
-                if (reap == -1 && errno == EINTR)
-                    continue;
-            } while (reap != -1 && reap != priv->pid);
-        }
-    }
-
+ cleanup:
     /* Free up the URL and strings. */
     if (name) free (name);
     if (command) free (command);
     if (sockname) free (sockname);
     if (netcat) free (netcat);
     if (username) free (username);
-    if (server) free (server);
     if (port) free (port);
     if (cmd_argv) {
         char **cmd_argv_ptr = cmd_argv;
@@ -711,6 +742,34 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
     }
 
     return retcode;
+
+ out_of_memory:
+    error (NULL, VIR_ERR_NO_MEMORY, "uri params");
+
+ failed:
+    /* Close the socket if we failed. */
+    if (priv->sock >= 0) {
+        if (priv->uses_tls && priv->session) {
+            gnutls_bye (priv->session, GNUTLS_SHUT_RDWR);
+            gnutls_deinit (priv->session);
+        }
+        close (priv->sock);
+        if (priv->pid > 0) {
+            pid_t reap;
+            do {
+                reap = waitpid(priv->pid, NULL, 0);
+                if (reap == -1 && errno == EINTR)
+                    continue;
+            } while (reap != -1 && reap != priv->pid);
+        }
+    }
+
+    if (priv->hostname) {
+        free (priv->hostname);
+        priv->hostname = NULL;
+    }
+
+    goto cleanup;
 }
 
 static int
@@ -1017,11 +1076,12 @@ initialise_gnutls (virConnectPtr conn)
     return 0;
 }
 
-static int verify_certificate (virConnectPtr conn, gnutls_session_t session, const char *hostname);
+static int verify_certificate (virConnectPtr conn, struct private_data *priv, gnutls_session_t session);
 
 static gnutls_session_t
 negotiate_gnutls_on_connection (virConnectPtr conn,
-                                int sock, int no_verify, const char *hostname)
+                                struct private_data *priv,
+                                int no_verify)
 {
     const int cert_type_priority[3] = {
         GNUTLS_CRT_X509,
@@ -1062,7 +1122,7 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
     }
 
     gnutls_transport_set_ptr (session,
-                              (gnutls_transport_ptr_t) (long) sock);
+                              (gnutls_transport_ptr_t) (long) priv->sock);
 
     /* Perform the TLS handshake. */
  again:
@@ -1075,7 +1135,7 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
     }
 
     /* Verify certificate. */
-    if (verify_certificate (conn, session, hostname) == -1) {
+    if (verify_certificate (conn, priv, session) == -1) {
             fprintf (stderr,
                      "remote_internal: failed to verify peer's certificate\n");
             if (!no_verify) return NULL;
@@ -1110,8 +1170,8 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
 
 static int
 verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
-                    gnutls_session_t session,
-                    const char *hostname)
+                    struct private_data *priv,
+                    gnutls_session_t session)
 {
     int ret;
     unsigned int status;
@@ -1189,14 +1249,14 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
         }
     
         if (i == 0) {
-            if (!gnutls_x509_crt_check_hostname (cert, hostname)) {
+            if (!gnutls_x509_crt_check_hostname (cert, priv->hostname)) {
                 __virRaiseError
                     (conn, NULL, NULL,
                      VIR_FROM_REMOTE, VIR_ERR_RPC,
-                     VIR_ERR_ERROR, hostname, NULL, NULL,
+                     VIR_ERR_ERROR, priv->hostname, NULL, NULL,
                      0, 0,
                      "Certificate's owner does not match the hostname (%s)",
-                     hostname);
+                     priv->hostname);
                 gnutls_x509_crt_deinit (cert);
                 return -1;
             }
@@ -1218,8 +1278,14 @@ doRemoteClose (virConnectPtr conn, struct private_data *priv)
         return -1;
 
     /* Close socket. */
-    if (priv->uses_tls && priv->session)
+    if (priv->uses_tls && priv->session) {
         gnutls_bye (priv->session, GNUTLS_SHUT_RDWR);
+        gnutls_deinit (priv->session);
+    }
+#if HAVE_SASL
+    if (priv->saslconn)
+        sasl_dispose (&priv->saslconn);
+#endif
     close (priv->sock);
 
     if (priv->pid > 0) {
@@ -1230,6 +1296,9 @@ doRemoteClose (virConnectPtr conn, struct private_data *priv)
                 continue;
         } while (reap != -1 && reap != priv->pid);
     }
+
+    /* Free hostname copy */
+    if (priv->hostname) free (priv->hostname);
 
     /* See comment for remoteType. */
     if (priv->type) free (priv->type);
@@ -2751,6 +2820,298 @@ remoteNetworkSetAutostart (virNetworkPtr network, int autostart)
 
 /*----------------------------------------------------------------------*/
 
+static int
+remoteAuthenticate (virConnectPtr conn, struct private_data *priv, int in_open)
+{
+    struct remote_auth_list_ret ret;
+    int err;
+
+    memset(&ret, 0, sizeof ret);
+    err = call (conn, priv,
+                REMOTE_CALL_IN_OPEN | REMOTE_CALL_QUIET_MISSING_RPC,
+                REMOTE_PROC_AUTH_LIST,
+                (xdrproc_t) xdr_void, (char *) NULL,
+                (xdrproc_t) xdr_remote_auth_list_ret, (char *) &ret);
+    if (err == -2) /* Missing RPC - old server - ignore */
+        return 0;
+
+    if (err < 0)
+        return -1;
+
+    if (ret.types.types_len == 0)
+        return 0;
+
+    switch (ret.types.types_val[0]) {
+#if HAVE_SASL
+    case REMOTE_AUTH_SASL:
+        if (remoteAuthSASL(conn, priv, in_open) < 0) {
+            free(ret.types.types_val);
+            return -1;
+        }
+        break;
+#endif
+
+    case REMOTE_AUTH_NONE:
+        /* Nothing todo, hurrah ! */
+        break;
+
+    default:
+        __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                         VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                         "unsupported authentication type %d", ret.types.types_val[0]);
+        free(ret.types.types_val);
+        return -1;
+    }
+
+    free(ret.types.types_val);
+
+    return 0;
+}
+
+
+
+#if HAVE_SASL
+/*
+ * NB, keep in sync with similar method in qemud/remote.c
+ */
+static char *addrToString(struct sockaddr_storage *sa, socklen_t salen)
+{
+    char host[NI_MAXHOST], port[NI_MAXSERV];
+    char *addr;
+    int err;
+
+    if ((err = getnameinfo((struct sockaddr *)sa, salen,
+                           host, sizeof(host),
+                           port, sizeof(port),
+                           NI_NUMERICHOST | NI_NUMERICSERV)) != 0) {
+        __virRaiseError (NULL, NULL, NULL, VIR_FROM_REMOTE,
+                         VIR_ERR_NO_MEMORY, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                         "Cannot resolve address %d: %s", err, gai_strerror(err));
+        return NULL;
+    }
+
+    addr = malloc(strlen(host) + 1 + strlen(port) + 1);
+    if (!addr) {
+        __virRaiseError (NULL, NULL, NULL, VIR_FROM_REMOTE,
+                         VIR_ERR_NO_MEMORY, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                         "address");
+        return NULL;
+    }
+
+    strcpy(addr, host);
+    strcat(addr, ";");
+    strcat(addr, port);
+    return addr;
+}
+
+
+/* Perform the SASL authentication process
+ *
+ * XXX negotiate a session encryption layer for non-TLS sockets
+ * XXX fetch credentials from a libvirt client app callback
+ * XXX max packet size spec
+ * XXX better mechanism negotiation ? Ask client app ?
+ */
+static int
+remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open)
+{
+    sasl_conn_t *saslconn = NULL;
+    remote_auth_sasl_init_ret iret;
+    remote_auth_sasl_start_args sargs;
+    remote_auth_sasl_start_ret sret;
+    remote_auth_sasl_step_args pargs;
+    remote_auth_sasl_step_ret pret;
+    const char *clientout;
+    char *serverin;
+    unsigned int clientoutlen, serverinlen;
+    const char *mech;
+    int err, complete;
+    struct sockaddr_storage sa;
+    socklen_t salen;
+    char *localAddr, *remoteAddr;
+
+    remoteDebug(priv, "Client initialize SASL authentication");
+    /* Sets up the SASL library as a whole */
+    err = sasl_client_init(NULL);
+    if (err != SASL_OK) {
+        __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                         VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                         "failed to initialize SASL library: %d (%s)",
+                         err, sasl_errstring(err, NULL, NULL));
+        return -1;
+    }
+
+    /* Get local address in form  IPADDR:PORT */
+    salen = sizeof(sa);
+    if (getsockname(priv->sock, (struct sockaddr*)&sa, &salen) < 0) {
+        __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                         VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                         "failed to get sock address %d (%s)",
+                         errno, strerror(errno));
+        return -1;
+    }
+    if ((localAddr = addrToString(&sa, salen)) == NULL) {
+        return -1;
+    }
+
+    /* Get remote address in form  IPADDR:PORT */
+    salen = sizeof(sa);
+    if (getpeername(priv->sock, (struct sockaddr*)&sa, &salen) < 0) {
+        __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                         VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                         "failed to get peer address %d (%s)",
+                         errno, strerror(errno));
+        free(localAddr);
+        return -1;
+    }
+    if ((remoteAddr = addrToString(&sa, salen)) == NULL) {
+        free(localAddr);
+        return -1;
+    }
+
+    /* Setup a handle for being a client */
+    err = sasl_client_new("libvirt",
+                          priv->hostname,
+                          localAddr,
+                          remoteAddr,
+                          NULL, /* XXX callbacks */
+                          SASL_SUCCESS_DATA,
+                          &saslconn);
+    free(localAddr);
+    free(remoteAddr);
+    if (err != SASL_OK) {
+        __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                         VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                         "Failed to create SASL client context: %d (%s)",
+                         err, sasl_errstring(err, NULL, NULL));
+        return -1;
+    }
+
+    /* First call is to inquire about supported mechanisms in the server */
+    memset (&iret, 0, sizeof iret);
+    if (call (conn, priv, in_open, REMOTE_PROC_AUTH_SASL_INIT,
+              (xdrproc_t) xdr_void, (char *)NULL,
+              (xdrproc_t) xdr_remote_auth_sasl_init_ret, (char *) &iret) != 0) {
+        sasl_dispose(&saslconn);
+        return -1; /* virError already set by call */
+    }
+
+
+    /* Start the auth negotiation on the client end first */
+    remoteDebug(priv, "Client start negotiation mechlist '%s'", iret.mechlist);
+    err = sasl_client_start(saslconn,
+                            iret.mechlist,
+                            NULL, /* XXX interactions */
+                            &clientout,
+                            &clientoutlen,
+                            &mech);
+    if (err != SASL_OK && err != SASL_CONTINUE) {
+        __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                         VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                         "Failed to start SASL negotiation: %d (%s)",
+                         err, sasl_errdetail(saslconn));
+        free(iret.mechlist);
+        sasl_dispose(&saslconn);
+        return -1;
+    }
+    free(iret.mechlist);
+
+    if (clientoutlen > REMOTE_AUTH_SASL_DATA_MAX) {
+        __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                         VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                         "SASL negotiation data too long: %d bytes", clientoutlen);
+        sasl_dispose(&saslconn);
+        return -1;
+    }
+    /* NB, distinction of NULL vs "" is *critical* in SASL */
+    memset(&sargs, 0, sizeof sargs);
+    sargs.nil = clientout ? 0 : 1;
+    sargs.data.data_val = (char*)clientout;
+    sargs.data.data_len = clientoutlen;
+    sargs.mech = (char*)mech;
+    remoteDebug(priv, "Server start negotiation with mech %s. Data %d bytes %p", mech, clientoutlen, clientout);
+
+    /* Now send the initial auth data to the server */
+    memset (&sret, 0, sizeof sret);
+    if (call (conn, priv, in_open, REMOTE_PROC_AUTH_SASL_START,
+              (xdrproc_t) xdr_remote_auth_sasl_start_args, (char *) &sargs,
+              (xdrproc_t) xdr_remote_auth_sasl_start_ret, (char *) &sret) != 0) {
+        sasl_dispose(&saslconn);
+        return -1; /* virError already set by call */
+    }
+
+    complete = sret.complete;
+    /* NB, distinction of NULL vs "" is *critical* in SASL */
+    serverin = sret.nil ? NULL : sret.data.data_val;
+    serverinlen = sret.data.data_len;
+    remoteDebug(priv, "Client step result complete: %d. Data %d bytes %p",
+                complete, serverinlen, serverin);
+
+    /* Loop-the-loop...
+     * Even if the server has completed, the client must *always* do at least one step
+     * in this loop to verify the server isn't lieing about something. Mutual auth */
+    for (;;) {
+        err = sasl_client_step(saslconn,
+                               serverin,
+                               serverinlen,
+                               NULL, /* XXX interactions */
+                               &clientout,
+                               &clientoutlen);
+        if (serverin) free(serverin);
+        if (err != SASL_OK && err != SASL_CONTINUE) {
+            __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                             VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                             "Failed SASL step: %d (%s)",
+                             err, sasl_errdetail(saslconn));
+            sasl_dispose(&saslconn);
+            return -1;
+        }
+        remoteDebug(priv, "Client step result %d. Data %d bytes %p", err, clientoutlen, clientout);
+
+        /* Previous server call showed completion & we're now locally complete too */
+        if (complete && err == SASL_OK)
+            break;
+
+        /* Not done, prepare to talk with the server for another iteration */
+        /* NB, distinction of NULL vs "" is *critical* in SASL */
+        memset(&pargs, 0, sizeof pargs);
+        pargs.nil = clientout ? 0 : 1;
+        pargs.data.data_val = (char*)clientout;
+        pargs.data.data_len = clientoutlen;
+        remoteDebug(priv, "Server step with %d bytes %p", clientoutlen, clientout);
+
+        memset (&pret, 0, sizeof pret);
+        if (call (conn, priv, in_open, REMOTE_PROC_AUTH_SASL_STEP,
+                  (xdrproc_t) xdr_remote_auth_sasl_step_args, (char *) &pargs,
+                  (xdrproc_t) xdr_remote_auth_sasl_step_ret, (char *) &pret) != 0) {
+            sasl_dispose(&saslconn);
+            return -1; /* virError already set by call */
+        }
+
+        complete = pret.complete;
+        /* NB, distinction of NULL vs "" is *critical* in SASL */
+        serverin = pret.nil ? NULL : pret.data.data_val;
+        serverinlen = pret.data.data_len;
+
+        remoteDebug(priv, "Client step result complete: %d. Data %d bytes %p",
+                    complete, serverinlen, serverin);
+
+        /* This server call shows complete, and earlier client step was OK */
+        if (complete && err == SASL_OK) {
+            if (serverin) free(serverin);
+            break;
+        }
+    }
+
+    remoteDebug(priv, "SASL authentication complete");
+    /* XXX keep this around for wire encoding */
+    sasl_dispose(&saslconn);
+    return 0;
+}
+#endif /* HAVE_SASL */
+
+/*----------------------------------------------------------------------*/
+
 static int really_write (virConnectPtr conn, struct private_data *priv,
                          int in_open, char *bytes, int len);
 static int really_read (virConnectPtr conn, struct private_data *priv,
@@ -2768,7 +3129,7 @@ static int really_read (virConnectPtr conn, struct private_data *priv,
  */
 static int
 call (virConnectPtr conn, struct private_data *priv,
-      int in_open /* if we are in virConnectOpen */,
+      int flags /* if we are in virConnectOpen */,
       int proc_nr,
       xdrproc_t args_filter, char *args,
       xdrproc_t ret_filter, char *ret)
@@ -2793,13 +3154,13 @@ call (virConnectPtr conn, struct private_data *priv,
     /* Serialise header followed by args. */
     xdrmem_create (&xdr, buffer, sizeof buffer, XDR_ENCODE);
     if (!xdr_remote_message_header (&xdr, &hdr)) {
-        error (in_open ? NULL : conn,
+        error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn,
                VIR_ERR_RPC, "xdr_remote_message_header");
         return -1;
     }
 
     if (!(*args_filter) (&xdr, args)) {
-        error (in_open ? NULL : conn, VIR_ERR_RPC, "marshalling args");
+        error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn, VIR_ERR_RPC, "marshalling args");
         return -1;
     }
 
@@ -2815,23 +3176,23 @@ call (virConnectPtr conn, struct private_data *priv,
     /* Encode the length word. */
     xdrmem_create (&xdr, buffer2, sizeof buffer2, XDR_ENCODE);
     if (!xdr_int (&xdr, &len)) {
-        error (in_open ? NULL : conn, VIR_ERR_RPC, "xdr_int (length word)");
+        error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn, VIR_ERR_RPC, "xdr_int (length word)");
         return -1;
     }
     xdr_destroy (&xdr);
 
     /* Send length word followed by header+args. */
-    if (really_write (conn, priv, in_open, buffer2, sizeof buffer2) == -1 ||
-        really_write (conn, priv, in_open, buffer, len-4) == -1)
+    if (really_write (conn, priv, flags & REMOTE_CALL_IN_OPEN, buffer2, sizeof buffer2) == -1 ||
+        really_write (conn, priv, flags & REMOTE_CALL_IN_OPEN, buffer, len-4) == -1)
         return -1;
 
     /* Read and deserialise length word. */
-    if (really_read (conn, priv, in_open, buffer2, sizeof buffer2) == -1)
+    if (really_read (conn, priv, flags & REMOTE_CALL_IN_OPEN, buffer2, sizeof buffer2) == -1)
         return -1;
 
     xdrmem_create (&xdr, buffer2, sizeof buffer2, XDR_DECODE);
     if (!xdr_int (&xdr, &len)) {
-        error (in_open ? NULL : conn,
+        error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn,
                VIR_ERR_RPC, "xdr_int (length word, reply)");
         return -1;
     }
@@ -2841,33 +3202,33 @@ call (virConnectPtr conn, struct private_data *priv,
     len -= 4;
 
     if (len < 0 || len > REMOTE_MESSAGE_MAX) {
-        error (in_open ? NULL : conn,
+        error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn,
                VIR_ERR_RPC, "packet received from server too large");
         return -1;
     }
 
     /* Read reply header and what follows (either a ret or an error). */
-    if (really_read (conn, priv, in_open, buffer, len) == -1)
+    if (really_read (conn, priv, flags & REMOTE_CALL_IN_OPEN, buffer, len) == -1)
         return -1;
 
     /* Deserialise reply header. */
     xdrmem_create (&xdr, buffer, len, XDR_DECODE);
     if (!xdr_remote_message_header (&xdr, &hdr)) {
-        error (in_open ? NULL : conn,
+        error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn,
                VIR_ERR_RPC, "xdr_remote_message_header (reply)");
         return -1;
     }
 
     /* Check program, version, etc. are what we expect. */
     if (hdr.prog != REMOTE_PROGRAM) {
-        __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+        __virRaiseError (flags & REMOTE_CALL_IN_OPEN ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                          VIR_ERR_RPC, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                          "unknown program (received %x, expected %x)",
                          hdr.prog, REMOTE_PROGRAM);
         return -1;
     }
     if (hdr.vers != REMOTE_PROTOCOL_VERSION) {
-        __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+        __virRaiseError (flags & REMOTE_CALL_IN_OPEN ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                          VIR_ERR_RPC, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                          "unknown protocol version (received %x, expected %x)",
                          hdr.vers, REMOTE_PROTOCOL_VERSION);
@@ -2879,21 +3240,21 @@ call (virConnectPtr conn, struct private_data *priv,
      * message being received at this point.
      */
     if (hdr.proc != proc_nr) {
-        __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+        __virRaiseError (flags & REMOTE_CALL_IN_OPEN ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                          VIR_ERR_RPC, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                          "unknown procedure (received %x, expected %x)",
                          hdr.proc, proc_nr);
         return -1;
     }
     if (hdr.direction != REMOTE_REPLY) {
-        __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+        __virRaiseError (flags & REMOTE_CALL_IN_OPEN ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                          VIR_ERR_RPC, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                          "unknown direction (received %x, expected %x)",
                          hdr.direction, REMOTE_REPLY);
         return -1;
     }
     if (hdr.serial != serial) {
-        __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+        __virRaiseError (flags & REMOTE_CALL_IN_OPEN ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                          VIR_ERR_RPC, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                          "unknown serial (received %x, expected %x)",
                          hdr.serial, serial);
@@ -2907,7 +3268,7 @@ call (virConnectPtr conn, struct private_data *priv,
     switch (hdr.status) {
     case REMOTE_OK:
         if (!(*ret_filter) (&xdr, ret)) {
-            error (in_open ? NULL : conn, VIR_ERR_RPC, "unmarshalling ret");
+            error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn, VIR_ERR_RPC, "unmarshalling ret");
             return -1;
         }
         xdr_destroy (&xdr);
@@ -2916,17 +3277,26 @@ call (virConnectPtr conn, struct private_data *priv,
     case REMOTE_ERROR:
         memset (&rerror, 0, sizeof rerror);
         if (!xdr_remote_error (&xdr, &rerror)) {
-            error (in_open ? NULL : conn,
+            error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn,
                    VIR_ERR_RPC, "unmarshalling remote_error");
             return -1;
         }
         xdr_destroy (&xdr);
-        server_error (in_open ? NULL : conn, &rerror);
+        /* See if caller asked us to keep quiet about missing RPCs
+         * eg for interop with older servers */
+        if (flags & REMOTE_CALL_QUIET_MISSING_RPC &&
+            rerror.domain == VIR_FROM_REMOTE &&
+            rerror.code == VIR_ERR_RPC &&
+            rerror.level == VIR_ERR_ERROR &&
+            STREQLEN(*rerror.message, "unknown procedure", 17)) {
+            return -2;
+        }
+        server_error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn, &rerror);
         xdr_free ((xdrproc_t) xdr_remote_error, (char *) &rerror);
         return -1;
 
     default:
-        __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+        __virRaiseError (flags & REMOTE_CALL_IN_OPEN ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                          VIR_ERR_RPC, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                          "unknown status (received %x)",
                          hdr.status);

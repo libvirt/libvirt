@@ -17,6 +17,7 @@ INCLUDES = \
 	-I$(top_srcdir)/src \
 	$(LIBXML_CFLAGS) \
 	$(GNUTLS_CFLAGS) \
+	$(SASL_CFLAGS) \
         -D_XOPEN_SOURCE=600 -D_POSIX_C_SOURCE=199506L \
         -DGETTEXT_PACKAGE=\"$(PACKAGE)\" \
          $(COVERAGE_CFLAGS) \
@@ -27,6 +28,7 @@ LDADDS = \
 	@STATIC_BINARIES@ \
 	$(LIBXML_LIBS) \
         $(GNUTLS_LIBS) \
+        $(SASL_LIBS) \
         $(WARN_CFLAGS) \
 	$(LIBVIRT) \
         $(COVERAGE_LDFLAGS)

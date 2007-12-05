@@ -52,6 +52,8 @@
 
 #define DEBUG 0
 
+#define REMOTE_DEBUG(fmt,...) qemudDebug("REMOTE: " fmt, __VA_ARGS__)
+
 static void remoteDispatchError (struct qemud_client *client,
                                  remote_message_header *req,
                                  const char *fmt, ...)
@@ -116,6 +118,21 @@ remoteDispatchClientRequest (struct qemud_server *server ATTRIBUTE_UNUSED,
                              (int) req.status);
         xdr_destroy (&xdr);
         return;
+    }
+
+    /* If client is marked as needing auth, don't allow any RPC ops,
+     * except for authentication ones
+     */
+    if (client->auth) {
+        if (req.proc != REMOTE_PROC_AUTH_LIST &&
+            req.proc != REMOTE_PROC_AUTH_SASL_INIT &&
+            req.proc != REMOTE_PROC_AUTH_SASL_START &&
+            req.proc != REMOTE_PROC_AUTH_SASL_STEP
+            ) {
+            remoteDispatchError (client, &req, "authentication required");
+            xdr_destroy (&xdr);
+            return;
+        }
     }
 
     /* Based on the procedure number, dispatch.  In future we may base
@@ -275,23 +292,14 @@ remoteDispatchClientRequest (struct qemud_server *server ATTRIBUTE_UNUSED,
  * reply.
  */
 static void
-remoteDispatchError (struct qemud_client *client,
-                     remote_message_header *req,
-                     const char *fmt, ...)
+remoteDispatchSendError (struct qemud_client *client,
+                         remote_message_header *req,
+                         int code, const char *msg)
 {
     remote_message_header rep;
     remote_error error;
-    va_list args;
-    char msgbuf[1024];
-    char *msg = msgbuf;
     XDR xdr;
     int len;
-
-    va_start (args, fmt);
-    vsnprintf (msgbuf, sizeof msgbuf, fmt, args);
-    va_end (args);
-
-    qemudDebug ("%s", msgbuf);
 
     /* Future versions of the protocol may use different vers or prog.  Try
      * our hardest to send back a message that such clients could see.
@@ -313,12 +321,12 @@ remoteDispatchError (struct qemud_client *client,
     }
 
     /* Construct the error. */
-    error.code = VIR_ERR_RPC;
+    error.code = code;
     error.domain = VIR_FROM_REMOTE;
-    error.message = &msg;
+    error.message = (char**)&msg;
     error.level = VIR_ERR_ERROR;
     error.dom = NULL;
-    error.str1 = &msg;
+    error.str1 = (char**)&msg;
     error.str2 = NULL;
     error.str3 = NULL;
     error.int1 = 0;
@@ -363,6 +371,31 @@ remoteDispatchError (struct qemud_client *client,
     client->bufferOffset = 0;
     if (client->tls) client->direction = QEMUD_TLS_DIRECTION_WRITE;
 }
+
+static void
+remoteDispatchFailAuth (struct qemud_client *client,
+                        remote_message_header *req)
+{
+    remoteDispatchSendError (client, req, VIR_ERR_AUTH_FAILED, "authentication failed");
+}
+
+static void
+remoteDispatchError (struct qemud_client *client,
+                     remote_message_header *req,
+                     const char *fmt, ...)
+{
+    va_list args;
+    char msgbuf[1024];
+    char *msg = msgbuf;
+
+    va_start (args, fmt);
+    vsnprintf (msgbuf, sizeof msgbuf, fmt, args);
+    va_end (args);
+
+    remoteDispatchSendError (client, req, VIR_ERR_RPC, msg);
+}
+
+
 
 /*----- Functions. -----*/
 
@@ -1945,6 +1978,335 @@ remoteDispatchNumOfNetworks (struct qemud_client *client,
 
     return 0;
 }
+
+
+static int
+remoteDispatchAuthList (struct qemud_client *client,
+                        remote_message_header *req ATTRIBUTE_UNUSED,
+                        void *args ATTRIBUTE_UNUSED,
+                        remote_auth_list_ret *ret)
+{
+    ret->types.types_len = 1;
+    if ((ret->types.types_val = calloc (ret->types.types_len, sizeof (remote_auth_type))) == NULL) {
+        remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, "auth types");
+        return -2;
+    }
+    ret->types.types_val[0] = client->auth;
+    return 0;
+}
+
+
+#if HAVE_SASL
+/*
+ * NB, keep in sync with similar method in src/remote_internal.c
+ */
+static char *addrToString(struct qemud_client *client,
+                          remote_message_header *req,
+                          struct sockaddr_storage *sa, socklen_t salen) {
+    char host[1024], port[20];
+    char *addr;
+    int err;
+
+    if ((err = getnameinfo((struct sockaddr *)sa, salen,
+                           host, sizeof(host),
+                           port, sizeof(port),
+                           NI_NUMERICHOST | NI_NUMERICSERV)) != 0) {
+        remoteDispatchError(client, req,
+                            "Cannot resolve address %d: %s", err, gai_strerror(err));
+        return NULL;
+    }
+
+    addr = malloc(strlen(host) + 1 + strlen(port) + 1);
+    if (!addr) {
+        remoteDispatchError(client, req, "cannot allocate address");
+        return NULL;
+    }
+
+    strcpy(addr, host);
+    strcat(addr, ";");
+    strcat(addr, port);
+    return addr;
+}
+
+
+/*
+ * Initializes the SASL session in prepare for authentication
+ * and gives the client a list of allowed mechansims to choose
+ *
+ * XXX callbacks for stuff like password verification ?
+ */
+static int
+remoteDispatchAuthSaslInit (struct qemud_client *client,
+                            remote_message_header *req,
+                            void *args ATTRIBUTE_UNUSED,
+                            remote_auth_sasl_init_ret *ret)
+{
+    const char *mechlist = NULL;
+    int err;
+    struct sockaddr_storage sa;
+    socklen_t salen;
+    char *localAddr, *remoteAddr;
+
+    REMOTE_DEBUG("Initialize SASL auth %d", client->fd);
+    if (client->auth != REMOTE_AUTH_SASL ||
+        client->saslconn != NULL) {
+        qemudLog(QEMUD_ERR, "client tried invalid SASL init request");
+        remoteDispatchFailAuth(client, req);
+        return -2;
+    }
+
+    /* Get local address in form  IPADDR:PORT */
+    salen = sizeof(sa);
+    if (getsockname(client->fd, (struct sockaddr*)&sa, &salen) < 0) {
+        remoteDispatchError(client, req, "failed to get sock address %d (%s)",
+                            errno, strerror(errno));
+        return -2;
+    }
+    if ((localAddr = addrToString(client, req, &sa, salen)) == NULL) {
+        return -2;
+    }
+
+    /* Get remote address in form  IPADDR:PORT */
+    salen = sizeof(sa);
+    if (getpeername(client->fd, (struct sockaddr*)&sa, &salen) < 0) {
+        remoteDispatchError(client, req, "failed to get peer address %d (%s)",
+                            errno, strerror(errno));
+        free(localAddr);
+        return -2;
+    }
+    if ((remoteAddr = addrToString(client, req, &sa, salen)) == NULL) {
+        free(localAddr);
+        return -2;
+    }
+
+    err = sasl_server_new("libvirt",
+                          NULL, /* FQDN - just delegates to gethostname */
+                          NULL, /* User realm */
+                          localAddr,
+                          remoteAddr,
+                          NULL, /* XXX Callbacks */
+                          SASL_SUCCESS_DATA,
+                          &client->saslconn);
+    free(localAddr);
+    free(remoteAddr);
+    if (err != SASL_OK) {
+        qemudLog(QEMUD_ERR, "sasl context setup failed %d (%s)",
+                 err, sasl_errstring(err, NULL, NULL));
+        remoteDispatchFailAuth(client, req);
+        client->saslconn = NULL;
+        return -2;
+    }
+
+    err = sasl_listmech(client->saslconn,
+                        NULL, /* Don't need to set user */
+                        "", /* Prefix */
+                        ",", /* Separator */
+                        "", /* Suffix */
+                        &mechlist,
+                        NULL,
+                        NULL);
+    if (err != SASL_OK) {
+        qemudLog(QEMUD_ERR, "cannot list SASL mechanisms %d (%s)",
+                 err, sasl_errdetail(client->saslconn));
+        remoteDispatchFailAuth(client, req);
+        sasl_dispose(&client->saslconn);
+        client->saslconn = NULL;
+        return -2;
+    }
+    REMOTE_DEBUG("Available mechanisms for client: '%s'", mechlist);
+    ret->mechlist = strdup(mechlist);
+    if (!ret->mechlist) {
+        qemudLog(QEMUD_ERR, "cannot allocate mechlist");
+        remoteDispatchFailAuth(client, req);
+        sasl_dispose(&client->saslconn);
+        client->saslconn = NULL;
+        return -2;
+    }
+
+    return 0;
+}
+
+
+/*
+ * This starts the SASL authentication negotiation.
+ */
+static int
+remoteDispatchAuthSaslStart (struct qemud_client *client,
+                             remote_message_header *req,
+                             remote_auth_sasl_start_args *args,
+                             remote_auth_sasl_start_ret *ret)
+{
+    const char *serverout;
+    unsigned int serveroutlen;
+    int err;
+
+    REMOTE_DEBUG("Start SASL auth %d", client->fd);
+    if (client->auth != REMOTE_AUTH_SASL ||
+        client->saslconn == NULL) {
+        qemudLog(QEMUD_ERR, "client tried invalid SASL start request");
+        remoteDispatchFailAuth(client, req);
+        return -2;
+    }
+
+    REMOTE_DEBUG("Using SASL mechanism %s. Data %d bytes, nil: %d",
+                 args->mech, args->data.data_len, args->nil);
+    err = sasl_server_start(client->saslconn,
+                            args->mech,
+                            /* NB, distinction of NULL vs "" is *critical* in SASL */
+                            args->nil ? NULL : args->data.data_val,
+                            args->data.data_len,
+                            &serverout,
+                            &serveroutlen);
+    if (err != SASL_OK &&
+        err != SASL_CONTINUE) {
+        qemudLog(QEMUD_ERR, "sasl start failed %d (%s)",
+                 err, sasl_errdetail(client->saslconn));
+        sasl_dispose(&client->saslconn);
+        client->saslconn = NULL;
+        remoteDispatchFailAuth(client, req);
+        return -2;
+    }
+    if (serveroutlen > REMOTE_AUTH_SASL_DATA_MAX) {
+        qemudLog(QEMUD_ERR, "sasl start reply data too long %d", serveroutlen);
+        sasl_dispose(&client->saslconn);
+        client->saslconn = NULL;
+        remoteDispatchFailAuth(client, req);
+        return -2;
+    }
+
+    /* NB, distinction of NULL vs "" is *critical* in SASL */
+    if (serverout) {
+        ret->data.data_val = malloc(serveroutlen);
+        if (!ret->data.data_val) {
+            remoteDispatchError (client, req, "out of memory allocating array");
+            return -2;
+        }
+        memcpy(ret->data.data_val, serverout, serveroutlen);
+    } else {
+        ret->data.data_val = NULL;
+    }
+    ret->nil = serverout ? 0 : 1;
+    ret->data.data_len = serveroutlen;
+
+    REMOTE_DEBUG("SASL return data %d bytes, nil; %d", ret->data.data_len, ret->nil);
+    if (err == SASL_CONTINUE) {
+        ret->complete = 0;
+    } else {
+        REMOTE_DEBUG("Authentication successful %d", client->fd);
+        ret->complete = 1;
+        client->auth = REMOTE_AUTH_NONE;
+    }
+
+    return 0;
+}
+
+
+static int
+remoteDispatchAuthSaslStep (struct qemud_client *client,
+                            remote_message_header *req,
+                            remote_auth_sasl_step_args *args,
+                            remote_auth_sasl_step_ret *ret)
+{
+    const char *serverout;
+    unsigned int serveroutlen;
+    int err;
+
+    REMOTE_DEBUG("Step SASL auth %d", client->fd);
+    if (client->auth != REMOTE_AUTH_SASL ||
+        client->saslconn == NULL) {
+        qemudLog(QEMUD_ERR, "client tried invalid SASL start request");
+        remoteDispatchFailAuth(client, req);
+        return -2;
+    }
+
+    REMOTE_DEBUG("Using SASL Data %d bytes, nil: %d",
+                 args->data.data_len, args->nil);
+    err = sasl_server_step(client->saslconn,
+                           /* NB, distinction of NULL vs "" is *critical* in SASL */
+                           args->nil ? NULL : args->data.data_val,
+                           args->data.data_len,
+                           &serverout,
+                           &serveroutlen);
+    if (err != SASL_OK &&
+        err != SASL_CONTINUE) {
+        qemudLog(QEMUD_ERR, "sasl step failed %d (%s)",
+                 err, sasl_errdetail(client->saslconn));
+        sasl_dispose(&client->saslconn);
+        client->saslconn = NULL;
+        remoteDispatchFailAuth(client, req);
+        return -2;
+    }
+
+    if (serveroutlen > REMOTE_AUTH_SASL_DATA_MAX) {
+        qemudLog(QEMUD_ERR, "sasl step reply data too long %d", serveroutlen);
+        sasl_dispose(&client->saslconn);
+        client->saslconn = NULL;
+        remoteDispatchFailAuth(client, req);
+        return -2;
+    }
+
+    /* NB, distinction of NULL vs "" is *critical* in SASL */
+    if (serverout) {
+        ret->data.data_val = malloc(serveroutlen);
+        if (!ret->data.data_val) {
+            remoteDispatchError (client, req, "out of memory allocating array");
+            return -2;
+        }
+        memcpy(ret->data.data_val, serverout, serveroutlen);
+    } else {
+        ret->data.data_val = NULL;
+    }
+    ret->nil = serverout ? 0 : 1;
+    ret->data.data_len = serveroutlen;
+
+    REMOTE_DEBUG("SASL return data %d bytes, nil; %d", ret->data.data_len, ret->nil);
+    if (err == SASL_CONTINUE) {
+        ret->complete = 0;
+    } else {
+        REMOTE_DEBUG("Authentication successful %d", client->fd);
+        ret->complete = 1;
+        client->auth = REMOTE_AUTH_NONE;
+    }
+
+    return 0;
+}
+
+
+#else /* HAVE_SASL */
+static int
+remoteDispatchAuthSaslInit (struct qemud_client *client,
+                            remote_message_header *req,
+                            void *args ATTRIBUTE_UNUSED,
+                            remote_auth_sasl_init_ret *ret ATTRIBUTE_UNUSED)
+{
+    qemudLog(QEMUD_ERR, "client tried unsupported SASL init request");
+    remoteDispatchFailAuth(client, req);
+    return -1;
+}
+
+static int
+remoteDispatchAuthSaslStart (struct qemud_client *client,
+                             remote_message_header *req,
+                             remote_auth_sasl_start_args *args ATTRIBUTE_UNUSED,
+                             remote_auth_sasl_start_ret *ret ATTRIBUTE_UNUSED)
+{
+    qemudLog(QEMUD_ERR, "client tried unsupported SASL start request");
+    remoteDispatchFailAuth(client, req);
+    return -1;
+}
+
+static int
+remoteDispatchAuthSaslStep (struct qemud_client *client,
+                            remote_message_header *req,
+                            remote_auth_sasl_step_args *args ATTRIBUTE_UNUSED,
+                            remote_auth_sasl_step_ret *ret ATTRIBUTE_UNUSED)
+{
+    qemudLog(QEMUD_ERR, "client tried unsupported SASL step request");
+    remoteDispatchFailAuth(client, req);
+    return -1;
+}
+#endif /* HAVE_SASL */
+
 
 /*----- Helpers. -----*/
 

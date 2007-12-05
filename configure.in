@@ -361,6 +361,40 @@ CFLAGS="$old_cflags"
 LDFLAGS="$old_ldflags"
 
 
+dnl Cyrus SASL
+AC_ARG_WITH(sasl,
+  [  --with-sasl         use cyrus SASL for authentication],
+  [],
+  [with_sasl=yes])
+
+SASL_CFLAGS=
+SASL_LIBS=
+if test "$with_sasl" != "no"; then
+  if test "$with_sasl" != "yes"; then
+    SASL_CFLAGS="-I$with_sasl"
+    SASL_LIBS="-L$with_sasl"
+  fi
+  old_cflags="$CFLAGS"
+  old_libs="$LIBS"
+  CFLAGS="$CFLAGS $SASL_CFLAGS"
+  LIBS="$LIBS $SASL_LIBS"
+  AC_CHECK_HEADER([sasl/sasl.h],
+       [],
+       AC_MSG_ERROR([You must install the Cyrus SASL development package in order to compile libvirt]))
+  AC_CHECK_LIB(sasl2, sasl_client_init,
+       [],
+       [AC_MSG_ERROR([You must install the Cyrus SASL library in order to compile and run libvirt])])
+  CFLAGS="$old_cflags"
+  LIBS="$old_libs"
+  SASL_LIBS="$SASL_LIBS -lsasl2"
+  AC_DEFINE_UNQUOTED(HAVE_SASL, 1, [whether Cyrus SASL is available for authentication])
+fi
+AM_CONDITIONAL(HAVE_SASL, [test "$with_sasl" != "no"])
+AC_SUBST(SASL_CFLAGS)
+AC_SUBST(SASL_LIBS)
+
+
+
 dnl Avahi library
 AC_ARG_WITH(avahi,
   [  --with-avahi         use avahi to advertise remote daemon],
@@ -583,6 +617,11 @@ AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([  libxml: $LIBXML_CFLAGS $LIBXML_LIBS])
 AC_MSG_NOTICE([  gnutls: $GNUTLS_CFLAGS $GNUTLS_LIBS])
+if test "$with_sasl" != "no" ; then
+AC_MSG_NOTICE([    sasl: $SASL_CFLAGS $SASL_LIBS])
+else
+AC_MSG_NOTICE([    sasl: no])
+fi
 if test "$with_avahi" = "yes" ; then
 AC_MSG_NOTICE([   avahi: $AVAHI_CFLAGS $AVAHI_LIBS])
 else

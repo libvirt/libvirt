@@ -81,6 +81,12 @@ const REMOTE_NETWORK_NAME_LIST_MAX = 256;
 /* Upper limit on list of scheduler parameters. */
 const REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX = 16;
 
+/* Upper limit on SASL auth negotiation packet */
+const REMOTE_AUTH_SASL_DATA_MAX = 65536;
+
+/* Maximum number of auth types */
+const REMOTE_AUTH_TYPE_LIST_MAX = 20;
+
 /* UUID.  VIR_UUID_BUFLEN definition comes from libvirt.h */
 typedef opaque remote_uuid[VIR_UUID_BUFLEN];
 
@@ -122,6 +128,13 @@ struct remote_error {
     int int2;
     remote_network net;
 };
+
+/* Authentication types available thus far.... */
+enum remote_auth_type {
+    REMOTE_AUTH_NONE = 0,
+    REMOTE_AUTH_SASL = 1
+};
+
 
 /* Wire encoding of virVcpuInfo. */
 struct remote_vcpu_info {
@@ -612,6 +625,37 @@ struct remote_network_set_autostart_args {
     int autostart;
 };
 
+struct remote_auth_list_ret {
+    remote_auth_type types<REMOTE_AUTH_TYPE_LIST_MAX>;
+};
+
+struct remote_auth_sasl_init_ret {
+    remote_nonnull_string mechlist;
+};
+
+struct remote_auth_sasl_start_args {
+    remote_nonnull_string mech;
+    int nil;
+    char data<REMOTE_AUTH_SASL_DATA_MAX>;
+};
+
+struct remote_auth_sasl_start_ret {
+    int complete;
+    int nil;
+    char data<REMOTE_AUTH_SASL_DATA_MAX>;
+};
+
+struct remote_auth_sasl_step_args {
+    int nil;
+    char data<REMOTE_AUTH_SASL_DATA_MAX>;
+};
+
+struct remote_auth_sasl_step_ret {
+    int complete;
+    int nil;
+    char data<REMOTE_AUTH_SASL_DATA_MAX>;
+};
+
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -683,7 +727,11 @@ enum remote_procedure {
     REMOTE_PROC_DOMAIN_MIGRATE_PERFORM = 62,
     REMOTE_PROC_DOMAIN_MIGRATE_FINISH = 63,
     REMOTE_PROC_DOMAIN_BLOCK_STATS = 64,
-    REMOTE_PROC_DOMAIN_INTERFACE_STATS = 65
+    REMOTE_PROC_DOMAIN_INTERFACE_STATS = 65,
+    REMOTE_PROC_AUTH_LIST = 66,
+    REMOTE_PROC_AUTH_SASL_INIT = 67,
+    REMOTE_PROC_AUTH_SASL_START = 68,
+    REMOTE_PROC_AUTH_SASL_STEP = 69
 };
 
 /* Custom RPC structure. */

@@ -5,6 +5,7 @@ INCLUDES = -I$(top_builddir)/include \
 	   -I@top_srcdir@/qemud \
 	   $(LIBXML_CFLAGS) \
 	   $(GNUTLS_CFLAGS) \
+	   $(SASL_CFLAGS) \
 	   -DBINDIR=\""$(libexecdir)"\" \
 	   -DSBINDIR=\""$(sbindir)"\" \
 	   -DSYSCONF_DIR="\"$(sysconfdir)\"" \
@@ -59,7 +60,7 @@ SERVER_SOURCES = 						\
 		../qemud/remote_protocol.c ../qemud/remote_protocol.h
 
 libvirt_la_SOURCES = $(CLIENT_SOURCES) $(SERVER_SOURCES)
-libvirt_la_LIBADD = $(LIBXML_LIBS) $(GNUTLS_LIBS) $(LTLIBOBJS) \
+libvirt_la_LIBADD = $(LIBXML_LIBS) $(GNUTLS_LIBS) $(SASL_LIBS) $(LTLIBOBJS) \
 		    @CYGWIN_EXTRA_LIBADD@
 libvirt_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvirt_sym.version \
                      -version-info @LIBVIRT_VERSION_INFO@ \

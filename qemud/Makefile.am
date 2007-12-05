@@ -17,6 +17,7 @@ EXTRA_DIST = libvirtd.init.in libvirtd.sysconf default-network.xml \
 	remote_dispatch_localvars.h \
 	remote_dispatch_proc_switch.h \
 	mdns.c mdns.h \
+        libvirtd.sasl \
         $(conf_DATA)
 
 libvirtd_SOURCES = \
@@ -28,14 +29,14 @@ libvirtd_SOURCES = \
 #-D_XOPEN_SOURCE=600 -D_XOPEN_SOURCE_EXTENDED=1 -D_POSIX_C_SOURCE=199506L
 libvirtd_CFLAGS = \
         -I$(top_srcdir)/include -I$(top_builddir)/include \
-        $(LIBXML_CFLAGS) $(GNUTLS_CFLAGS) \
+        $(LIBXML_CFLAGS) $(GNUTLS_CFLAGS) $(SASL_CFLAGS) \
         $(WARN_CFLAGS) -DLOCAL_STATE_DIR="\"$(localstatedir)\"" \
         -DSYSCONF_DIR="\"$(sysconfdir)\"" \
 	-DQEMUD_PID_FILE="\"$(QEMUD_PID_FILE)\"" \
 	-DREMOTE_PID_FILE="\"$(REMOTE_PID_FILE)\"" \
         -DGETTEXT_PACKAGE=\"$(PACKAGE)\"
 
-libvirtd_LDFLAGS = $(WARN_CFLAGS) $(LIBXML_LIBS) $(GNUTLS_LIBS)
+libvirtd_LDFLAGS = $(WARN_CFLAGS) $(LIBXML_LIBS) $(GNUTLS_LIBS) $(SASL_LIBS)
 libvirtd_DEPENDENCIES = ../src/libvirt.la
 libvirtd_LDADD = ../src/libvirt.la
 
@@ -46,7 +47,7 @@ libvirtd_LDADD += $(AVAHI_LIBS)
 endif
 
 default_xml_dest = libvirt/qemu/networks/default.xml
-install-data-local: install-init
+install-data-local: install-init install-data-sasl
 	mkdir -p $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart
 	$(INSTALL_DATA) $(srcdir)/default-network.xml \
 	  $(DESTDIR)$(sysconfdir)/$(default_xml_dest)
@@ -59,7 +60,7 @@ install-data-local: install-init
 	mkdir -p $(DESTDIR)$(localstatedir)/run/libvirt
 	mkdir -p $(DESTDIR)$(localstatedir)/lib/libvirt
 
-uninstall-local: uninstall-init
+uninstall-local:: uninstall-init uninstall-data-sasl
 	rm -f $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart/default.xml
 	rm -f $(DESTDIR)$(sysconfdir)/$(default_xml_dest)
 	rmdir $(DESTDIR)$(sysconfdir)/libvirt/qemu/networks/autostart || :
@@ -67,6 +68,18 @@ uninstall-local: uninstall-init
 	rmdir $(DESTDIR)$(localstatedir)/run/libvirt || :
 	rmdir $(DESTDIR)$(localstatedir)/lib/libvirt || :
 
+if HAVE_SASL
+install-data-sasl:: install-init
+	mkdir -p $(DESTDIR)$(sysconfdir)/sasl2/
+	$(INSTALL_DATA) $(srcdir)/libvirtd.sasl $(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
+
+uninstall-data-sasl:: install-init
+	rm -f $(DESTDIR)$(sysconfdir)/sasl2/libvirt.conf
+	rmdir $(DESTDIR)$(sysconfdir)/sasl2/
+else
+install-data-sasl:
+uninstall-data-sasl:
+endif
 
 if RPCGEN
 .x.c:

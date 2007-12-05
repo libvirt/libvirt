@@ -16,6 +16,10 @@ Requires: ncurses
 Requires: dnsmasq
 Requires: bridge-utils
 Requires: iptables
+Requires: cyrus-sasl
+# Not technically required, but makes 'out-of-box' config
+# work correctly & doesn't have onerous dependancies
+Requires: cyrus-sasl-md5
 BuildRequires: xen-devel
 BuildRequires: libxml2-devel
 BuildRequires: readline-devel
@@ -26,6 +30,7 @@ BuildRequires: avahi-devel
 BuildRequires: dnsmasq
 BuildRequires: bridge-utils
 BuildRequires: qemu
+BuildRequires: cyrus-sasl-devel
 Obsoletes: libvir
 ExclusiveArch: i386 x86_64 ia64
 
@@ -132,6 +137,7 @@ fi
 %config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
 %config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf
 %config(noreplace) %{_sysconfdir}/libvirt/qemu.conf
+%config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
 %dir %{_datadir}/libvirt/
 %dir %{_datadir}/libvirt/networks/
 %{_datadir}/libvirt/networks/default.xml

@@ -28,6 +28,8 @@ typedef remote_nonnull_string *remote_string;
 #define REMOTE_MIGRATE_COOKIE_MAX 256
 #define REMOTE_NETWORK_NAME_LIST_MAX 256
 #define REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX 16
+#define REMOTE_AUTH_SASL_DATA_MAX 65536
+#define REMOTE_AUTH_TYPE_LIST_MAX 20
 
 typedef char remote_uuid[VIR_UUID_BUFLEN];
 
@@ -62,6 +64,12 @@ struct remote_error {
 	remote_network net;
 };
 typedef struct remote_error remote_error;
+
+enum remote_auth_type {
+	REMOTE_AUTH_NONE = 0,
+	REMOTE_AUTH_SASL = 1,
+};
+typedef enum remote_auth_type remote_auth_type;
 
 struct remote_vcpu_info {
 	u_int number;
@@ -659,6 +667,58 @@ struct remote_network_set_autostart_args {
 	int autostart;
 };
 typedef struct remote_network_set_autostart_args remote_network_set_autostart_args;
+
+struct remote_auth_list_ret {
+	struct {
+		u_int types_len;
+		remote_auth_type *types_val;
+	} types;
+};
+typedef struct remote_auth_list_ret remote_auth_list_ret;
+
+struct remote_auth_sasl_init_ret {
+	remote_nonnull_string mechlist;
+};
+typedef struct remote_auth_sasl_init_ret remote_auth_sasl_init_ret;
+
+struct remote_auth_sasl_start_args {
+	remote_nonnull_string mech;
+	int nil;
+	struct {
+		u_int data_len;
+		char *data_val;
+	} data;
+};
+typedef struct remote_auth_sasl_start_args remote_auth_sasl_start_args;
+
+struct remote_auth_sasl_start_ret {
+	int complete;
+	int nil;
+	struct {
+		u_int data_len;
+		char *data_val;
+	} data;
+};
+typedef struct remote_auth_sasl_start_ret remote_auth_sasl_start_ret;
+
+struct remote_auth_sasl_step_args {
+	int nil;
+	struct {
+		u_int data_len;
+		char *data_val;
+	} data;
+};
+typedef struct remote_auth_sasl_step_args remote_auth_sasl_step_args;
+
+struct remote_auth_sasl_step_ret {
+	int complete;
+	int nil;
+	struct {
+		u_int data_len;
+		char *data_val;
+	} data;
+};
+typedef struct remote_auth_sasl_step_ret remote_auth_sasl_step_ret;
 #define REMOTE_PROGRAM 0x20008086
 #define REMOTE_PROTOCOL_VERSION 1
 
@@ -728,6 +788,10 @@ enum remote_procedure {
 	REMOTE_PROC_DOMAIN_MIGRATE_FINISH = 63,
 	REMOTE_PROC_DOMAIN_BLOCK_STATS = 64,
 	REMOTE_PROC_DOMAIN_INTERFACE_STATS = 65,
+	REMOTE_PROC_AUTH_LIST = 66,
+	REMOTE_PROC_AUTH_SASL_INIT = 67,
+	REMOTE_PROC_AUTH_SASL_START = 68,
+	REMOTE_PROC_AUTH_SASL_STEP = 69,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -766,6 +830,7 @@ extern  bool_t xdr_remote_nonnull_network (XDR *, remote_nonnull_network*);
 extern  bool_t xdr_remote_domain (XDR *, remote_domain*);
 extern  bool_t xdr_remote_network (XDR *, remote_network*);
 extern  bool_t xdr_remote_error (XDR *, remote_error*);
+extern  bool_t xdr_remote_auth_type (XDR *, remote_auth_type*);
 extern  bool_t xdr_remote_vcpu_info (XDR *, remote_vcpu_info*);
 extern  bool_t xdr_remote_sched_param_value (XDR *, remote_sched_param_value*);
 extern  bool_t xdr_remote_sched_param (XDR *, remote_sched_param*);
@@ -864,6 +929,12 @@ extern  bool_t xdr_remote_network_get_bridge_name_ret (XDR *, remote_network_get
 extern  bool_t xdr_remote_network_get_autostart_args (XDR *, remote_network_get_autostart_args*);
 extern  bool_t xdr_remote_network_get_autostart_ret (XDR *, remote_network_get_autostart_ret*);
 extern  bool_t xdr_remote_network_set_autostart_args (XDR *, remote_network_set_autostart_args*);
+extern  bool_t xdr_remote_auth_list_ret (XDR *, remote_auth_list_ret*);
+extern  bool_t xdr_remote_auth_sasl_init_ret (XDR *, remote_auth_sasl_init_ret*);
+extern  bool_t xdr_remote_auth_sasl_start_args (XDR *, remote_auth_sasl_start_args*);
+extern  bool_t xdr_remote_auth_sasl_start_ret (XDR *, remote_auth_sasl_start_ret*);
+extern  bool_t xdr_remote_auth_sasl_step_args (XDR *, remote_auth_sasl_step_args*);
+extern  bool_t xdr_remote_auth_sasl_step_ret (XDR *, remote_auth_sasl_step_ret*);
 extern  bool_t xdr_remote_procedure (XDR *, remote_procedure*);
 extern  bool_t xdr_remote_message_direction (XDR *, remote_message_direction*);
 extern  bool_t xdr_remote_message_status (XDR *, remote_message_status*);
@@ -878,6 +949,7 @@ extern bool_t xdr_remote_nonnull_network ();
 extern bool_t xdr_remote_domain ();
 extern bool_t xdr_remote_network ();
 extern bool_t xdr_remote_error ();
+extern bool_t xdr_remote_auth_type ();
 extern bool_t xdr_remote_vcpu_info ();
 extern bool_t xdr_remote_sched_param_value ();
 extern bool_t xdr_remote_sched_param ();
@@ -976,6 +1048,12 @@ extern bool_t xdr_remote_network_get_bridge_name_ret ();
 extern bool_t xdr_remote_network_get_autostart_args ();
 extern bool_t xdr_remote_network_get_autostart_ret ();
 extern bool_t xdr_remote_network_set_autostart_args ();
+extern bool_t xdr_remote_auth_list_ret ();
+extern bool_t xdr_remote_auth_sasl_init_ret ();
+extern bool_t xdr_remote_auth_sasl_start_args ();
+extern bool_t xdr_remote_auth_sasl_start_ret ();
+extern bool_t xdr_remote_auth_sasl_step_args ();
+extern bool_t xdr_remote_auth_sasl_step_ret ();
 extern bool_t xdr_remote_procedure ();
 extern bool_t xdr_remote_message_direction ();
 extern bool_t xdr_remote_message_status ();

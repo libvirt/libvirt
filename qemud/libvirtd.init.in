@@ -37,6 +37,7 @@ PROCESS=libvirtd
 
 LIBVIRTD_CONFIG=
 LIBVIRTD_ARGS=
+KRB5_KTNAME=/etc/libvirt/krb5.tab
 
 test -f @sysconfdir@/sysconfig/libvirtd && . @sysconfdir@/sysconfig/libvirtd
 
@@ -50,7 +51,7 @@ RETVAL=0
 
 start() {
     echo -n $"Starting $SERVICE daemon: "
-    daemon --check $SERVICE $PROCESS --daemon $LIBVIRTD_CONFIG_ARGS $LIBVIRTD_ARGS
+    KRB5_KTNAME=$KRB5_KTNAME daemon --check $SERVICE $PROCESS --daemon $LIBVIRTD_CONFIG_ARGS $LIBVIRTD_ARGS
     RETVAL=$?
     echo
     [ $RETVAL -eq 0 ] && touch @localstatedir@/lock/subsys/$SERVICE
