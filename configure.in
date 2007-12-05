@@ -33,6 +33,13 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_CPP
 
+dnl gl_INIT uses m4_foreach_w, yet that is not defined in autoconf-2.59.
+dnl In order to accommodate developers with such old tools, here's a
+dnl replacement definition.
+m4_ifndef([m4_foreach_w],
+  [m4_define([m4_foreach_w],
+    [m4_foreach([$1], m4_split(m4_normalize([$2]), [ ]), [$3])])])
+
 gl_EARLY
 gl_INIT
 
@@ -289,8 +296,8 @@ LIBXML_LIBS=""
 LIBXML_FOUND="no"
 
 AC_ARG_WITH(libxml, [  --with-libxml=[PFX]       libxml2 location])
-if test "z$with_libxml" = "zno" ; then 
-    AC_MSG_CHECKING(for libxml2 libraries >= $LIBXML_REQUIRED) 
+if test "z$with_libxml" = "zno" ; then
+    AC_MSG_CHECKING(for libxml2 libraries >= $LIBXML_REQUIRED)
     AC_MSG_ERROR(libxml2 >= $LIBXML_REQUIRED is required for libvirt)
 elif test "z$with_libxml" = "z" -a "x$PKG_CONFIG" != "x" ; then
     PKG_CHECK_EXISTS(libxml-2.0,[LIBXML_FOUND=yes])
@@ -299,7 +306,7 @@ elif test "z$with_libxml" = "z" -a "x$PKG_CONFIG" != "x" ; then
     fi
 fi
 if test "z$LIBXML_FOUND" = "zno" ; then
-    if test "z$with_libxml" != "z" ; then 
+    if test "z$with_libxml" != "z" ; then
 	LIBXML_CONFIG=$with_libxml/bin/$LIBXML_CONFIG
     fi
     AC_MSG_CHECKING(libxml2 $LIBXML_CONFIG >= $LIBXML_REQUIRED )
@@ -442,8 +449,8 @@ AC_SUBST(AVAHI_LIBS)
 
 dnl virsh libraries
 AC_CHECK_HEADERS([readline/readline.h])
-AC_CHECK_LIB(readline, main, 
-	[VIRSH_LIBS="$VIRSH_LIBS -lreadline"], 
+AC_CHECK_LIB(readline, main,
+	[VIRSH_LIBS="$VIRSH_LIBS -lreadline"],
 	[AC_MSG_WARN([readline library not found])],
 	[$VIRSH_LIBS])
 AC_SUBST(VIRSH_LIBS)

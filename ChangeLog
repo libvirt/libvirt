@@ -1,3 +1,8 @@
+Wed Dec  5 23:57:53 CET 2007 Jim Meyering <meyering@redhat.com>
+
+	Accommodate developers using autoconf-2.59.
+	* configure.in (m4_foreach_w): Define if not defined.
+
 Wed Dec  5 22:38:18 CET 2007 Jim Meyering <meyering@redhat.com>
 
 	Include "config.h".
