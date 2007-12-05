@@ -23,8 +23,6 @@
 
 #include "config.h"
 
-#define _GNU_SOURCE /* for asprintf */
-
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
@@ -53,6 +51,7 @@
 #include "libvirt/virterror.h"
 
 #include "internal.h"
+#include "getaddrinfo.h"
 #include "../src/internal.h"
 #include "../src/remote_internal.h"
 #include "../src/conf.h"

@@ -1,8 +1,9 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = include src qemud proxy docs @PYTHON_SUBDIR@ tests po m4 scripts
+SUBDIRS = gnulib/lib include src qemud proxy docs gnulib/tests \
+  @PYTHON_SUBDIR@ tests po scripts
 
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS = -I m4 -I gnulib/m4
 
 EXTRA_DIST = libvirt.spec.in libvirt.spec COPYING.LIB \
              libvirt.pc.in libvirt.pc TODO AUTHORS ChangeLog \

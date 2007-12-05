@@ -21,8 +21,6 @@
  * Author: Richard Jones <rjones@redhat.com>
  */
 
-#define _GNU_SOURCE /* for asprintf */
-
 #include "config.h"
 
 #include <stdio.h>
@@ -55,6 +53,7 @@
 
 #include "internal.h"
 #include "driver.h"
+#include "getaddrinfo.h"
 #include "remote_internal.h"
 #include "remote_protocol.h"
 

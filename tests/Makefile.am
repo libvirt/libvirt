@@ -1,6 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = virshdata confdata sexpr2xmldata xml2sexprdata xmconfigdata xencapsdata
+SUBDIRS = virshdata confdata sexpr2xmldata \
+  xml2sexprdata xmconfigdata xencapsdata
 
 # Wierd libtool related juju...
 #
@@ -11,6 +12,7 @@ SUBDIRS = virshdata confdata sexpr2xmldata xml2sexprdata xmconfigdata xencapsdat
 LIBVIRT = $(wildcard $(top_builddir)/src/.libs/libvirt_la-*.o)
 
 INCLUDES = \
+	-I$(top_srcdir)/gnulib/lib -I../gnulib/lib \
 	-I$(top_builddir)/include \
 	-I$(top_builddir)/src \
 	-I$(top_srcdir)/include \
@@ -31,6 +33,7 @@ LDADDS = \
         $(SASL_LIBS) \
         $(WARN_CFLAGS) \
 	$(LIBVIRT) \
+	../gnulib/lib/libgnu.la \
         $(COVERAGE_LDFLAGS)
 
 EXTRA_DIST =		\

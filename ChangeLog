@@ -1,3 +1,53 @@
+Wed Dec  5 22:30:03 CET 2007 Jim Meyering <meyering@redhat.com>
+
+	Use gnulib, starting with its physmem and getaddrinfo modules.
+	New files go into these directories:
+	  gnulib/lib
+	  gnulib/m4
+	  gnulib/tests
+	* bootstrap: A wrapper around gnulib-tool.
+	* configure.in: Invoke gl_EARLY and gl_INIT, being careful to put
+	gl_EARLY before any macro that uses AC_COMPILE_IFELSE.
+	(AC_OUTPUT): Add lib/Makefile and gl-tests/Makefile.  Remove m4/Makefile.
+	* Makefile.am (SUBDIRS): Add gnulib/lib and remove m4.  Add gnulib/tests
+	early enough that those tests run before any libvirt unit tests.
+	* m4/Makefile.am: Remove file.  Not needed.
+	* src/Makefile.am (INCLUDES): Add -I$(top_srcdir)/gnulib/lib
+	-I../gnulib/lib.
+	(LDADDS, libvirt_la_LIBADD): Add ../gnulib/lib/libgnu.la.
+	* src/nodeinfo.c: Include "physmem.h".
+	* qemud/qemud.c, src/remote_internal.c: Include "getaddrinfo.h".
+	(MEMINFO_PATH, linuxNodeInfoMemPopulate): Remove definitions.
+	(virNodeInfoPopulate): Use physmem_total, not linuxNodeInfoMemPopulate.
+	* tests/Makefile.am (INCLUDES): Add -I$(top_srcdir)/gnulib/lib
+	-I../gnulib/lib.
+	(LDADDS): Add ../gnulib/lib/libgnu.la.
+	* qemud/Makefile.am (libvirtd_LDADD): Add ../gnulib/lib/libgnu.la.
+	* tests/nodeinfotest.c (linuxTestCompareFiles): No longer read total
+	memory from a file.
+	Update expected output not to include "Memory: NNNN"
+	* tests/nodeinfodata/linux-nodeinfo-1.txt:
+	* tests/nodeinfodata/linux-nodeinfo-2.txt:
+	* tests/nodeinfodata/linux-nodeinfo-3.txt:
+	* tests/nodeinfodata/linux-nodeinfo-4.txt:
+	* tests/nodeinfodata/linux-nodeinfo-5.txt:
+	* tests/nodeinfodata/linux-nodeinfo-6.txt:
+	* src/test.c [WITH_TEST]: Remove definition of _GNU_SOURCE that
+	would conflict with the one now in "config.h".
+	* autogen.sh: Add -I gnulib/m4.
+	* src/conf.c, src/sexpr.c: Don't define _GNU_SOURCE.
+	Instead, include "config.h".
+	* qemud/qemud.c: Remove definition of _GNU_SOURCE.
+	* src/openvz_driver.c: Likewise.
+	* src/qemu_driver.c: Likewise.
+	* src/remote_internal.c: Likewise.
+
+	* configure.in: Use AC_CONFIG_AUX_DIR(build-aux), so that a bunch
+	of gettextize-generated files go into build-aux/, rather than in
+	the top-level directory.
+	* .cvsignore: Adjust.
+	* build-aux/.cvsignore: New file.
+
 Wed Dec  5 21:44:17 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/remote.c: rename remoteDispatchAuthPolkitInit to

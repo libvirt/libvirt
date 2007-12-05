@@ -1,6 +1,8 @@
 ## Process this file with automake to produce Makefile.in
 
-INCLUDES = -I$(top_builddir)/include \
+INCLUDES = \
+	   -I$(top_srcdir)/gnulib/lib -I../gnulib/lib \
+	   -I../include \
 	   -I@top_srcdir@/include \
 	   -I@top_srcdir@/qemud \
 	   $(LIBXML_CFLAGS) \
@@ -15,7 +17,7 @@ INCLUDES = -I$(top_builddir)/include \
 	   $(WARN_CFLAGS) \
 	   $(LIBVIRT_FEATURES)
 DEPS = libvirt.la
-LDADDS = @STATIC_BINARIES@ $(WARN_CFLAGS) libvirt.la
+LDADDS = @STATIC_BINARIES@ $(WARN_CFLAGS) libvirt.la ../gnulib/lib/libgnu.la
 VIRSH_LIBS = @VIRSH_LIBS@
 
 confdir = $(sysconfdir)/libvirt/
@@ -61,7 +63,7 @@ SERVER_SOURCES = 						\
 
 libvirt_la_SOURCES = $(CLIENT_SOURCES) $(SERVER_SOURCES)
 libvirt_la_LIBADD = $(LIBXML_LIBS) $(GNUTLS_LIBS) $(SASL_LIBS) \
-		    @CYGWIN_EXTRA_LIBADD@
+		    @CYGWIN_EXTRA_LIBADD@ ../gnulib/lib/libgnu.la
 libvirt_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvirt_sym.version \
                      -version-info @LIBVIRT_VERSION_INFO@ \
                     $(COVERAGE_CFLAGS:-f%=-Wc,-f%) \

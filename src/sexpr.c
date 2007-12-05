@@ -10,7 +10,7 @@
  *  archive for more details.
  */
 
-#define _GNU_SOURCE /* for strndup */
+#include "config.h"
 
 #include "sexpr.h"
 #include "internal.h"

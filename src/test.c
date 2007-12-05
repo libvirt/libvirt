@@ -25,8 +25,6 @@
 
 #ifdef WITH_TEST
 
-#define _GNU_SOURCE /* for asprintf */
-
 #include <stdio.h>
 #include <string.h>
 #include <sys/time.h>

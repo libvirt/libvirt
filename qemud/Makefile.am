@@ -28,6 +28,7 @@ libvirtd_SOURCES = \
 
 #-D_XOPEN_SOURCE=600 -D_XOPEN_SOURCE_EXTENDED=1 -D_POSIX_C_SOURCE=199506L
 libvirtd_CFLAGS = \
+        -I$(top_srcdir)/gnulib/lib -I../gnulib/lib \
         -I$(top_srcdir)/include -I$(top_builddir)/include \
         $(LIBXML_CFLAGS) $(GNUTLS_CFLAGS) $(SASL_CFLAGS) \
         $(POLKIT_CFLAGS) \
@@ -40,7 +41,7 @@ libvirtd_CFLAGS = \
 libvirtd_LDFLAGS = $(WARN_CFLAGS) $(LIBXML_LIBS) $(GNUTLS_LIBS) $(SASL_LIBS) \
                    $(POLKIT_LIBS)
 libvirtd_DEPENDENCIES = ../src/libvirt.la
-libvirtd_LDADD = ../src/libvirt.la
+libvirtd_LDADD = ../src/libvirt.la ../gnulib/lib/libgnu.la
 
 
 if HAVE_POLKIT

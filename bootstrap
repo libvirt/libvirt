@@ -1,0 +1,117 @@
+#!/bin/sh
+# Run this after autogen.sh, to pull in all of the gnulib-related bits.
+# It's important to run *after* autogen.sh, since it updates some of
+# the same files autogen.sh does, yet those from gnulib are newer,
+# and match the tests.  So if a gnulib bug has been fixed since the
+# snapshot taken for whatever gettext release you're using, yet you
+# run "make check" against the wrong version, the corresponding unit
+# test in gl-tests/ may well fail.
+
+usage() {
+  echo >&2 "\
+Usage: $0 [OPTION]...
+Bootstrap this package from the checked-out sources.
+
+Options:
+ --gnulib-srcdir=DIRNAME  Specify the local directory where gnulib
+                          sources reside.  Use this if you already
+                          have gnulib sources on your machine, and
+                          do not want to waste your bandwidth downloading
+                          them again.
+
+If the file bootstrap.conf exists in the current working directory, its
+contents are read as shell variables to configure the bootstrap.
+
+Running without arguments will suffice in most cases.
+"
+}
+
+for option
+do
+  case $option in
+  --help)
+    usage
+    exit;;
+  --gnulib-srcdir=*)
+    GNULIB_SRCDIR=`expr "$option" : '--gnulib-srcdir=\(.*\)'`;;
+  *)
+    echo >&2 "$0: $option: unknown option"
+    exit 1;;
+  esac
+done
+
+cleanup_gnulib() {
+  st=$?
+  rm -fr .gnulib
+  exit $st
+}
+
+case ${GNULIB_SRCDIR--} in
+-)
+  if [ ! -d gnulib ]; then
+    echo "$0: getting gnulib files..."
+
+    trap cleanup_gnulib 1 2 13 15
+
+    git clone --depth 1 git://git.sv.gnu.org/gnulib .gnulib ||
+      cleanup_gnulib
+
+    trap - 1 2 13 15
+  fi
+  GNULIB_SRCDIR=.gnulib
+esac
+
+gnulib_tool=$GNULIB_SRCDIR/gnulib-tool
+<$gnulib_tool || exit
+
+# Tell gnulib to:
+#   put tests in new gnulib/tests/ dir
+#   put *.m4 files in new gnulib/m4/ dir
+#   put *.[ch] files in new gnulib/lib/ dir.
+# With --avoid=snprintf, we drop support for systems (many!) with
+# losing snprintf but pull in about 30 fewer files
+# With the current gnulib and gettext-0.17, the following
+# files are added to m4/ by both.  But gnulib is stable enough
+# and gettext-0.16.1 is new enough that they are identical.
+#   compiler-flags.m4
+#   inttypes_h.m4
+#   longlong.m4
+#   size_max.m4
+#   stdint_h.m4
+#   wchar_t.m4
+#   wint_t.m4
+#   xsize.m4
+
+# Note that if we don't exclude the snprintf module, there are two tests
+# that have incompatible licenses, so we would have to exclude them.  Even
+# excluding those two test modules, find reports a total of 94 added files.
+# Yes, snprintf has some heavy-duty dependents.
+#  --avoid=snprintf-tests
+#  --avoid=vasnprintf-tests
+
+avoid='--avoid=snprintf'
+
+avoid='
+  --avoid=snprintf-tests
+  --avoid=vasnprintf-tests
+  --avoid=alloca-opt-tests
+'
+
+$gnulib_tool			\
+  --lgpl			\
+  $avoid			\
+  --with-tests			\
+  --m4-base=gnulib/m4		\
+  --source-base=gnulib/lib	\
+  --tests-base=gnulib/tests	\
+  --import physmem getaddrinfo
+
+rm -f				\
+    .gitignore			\
+    gnulib/lib/.gitignore	\
+    gnulib/m4/.gitignore	\
+    gnulib/tests/.gitignore
+
+(cd gnulib/lib &&
+ (cat .cvsignore; \
+  ls -1 *.in.h|sed 's/\.in\.h/.h/') | sort -u > .t; mv .t .cvsignore)

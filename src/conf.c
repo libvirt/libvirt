@@ -8,7 +8,8 @@
  * Daniel Veillard <veillard@redhat.com>
  */
 
-#define _GNU_SOURCE /* want strndup ! */
+#include "config.h"
+
 #include <string.h>
 
 #include <stdio.h>

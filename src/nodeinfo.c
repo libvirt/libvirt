@@ -29,14 +29,14 @@
 #include <ctype.h>
 
 #include "nodeinfo.h"
+#include "physmem.h"
 
 #ifdef __linux__
-#define MEMINFO_PATH "/proc/meminfo"
 #define CPUINFO_PATH "/proc/cpuinfo"
 
 /* NB, these are not static as we need to call them from testsuite */
-int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr nodeinfo);
-int linuxNodeInfoMemPopulate(virConnectPtr conn, FILE *meminfo, virNodeInfoPtr nodeinfo);
+int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo,
+                             virNodeInfoPtr nodeinfo);
 
 int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr nodeinfo) {
     char line[1024];
@@ -114,44 +114,11 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
     return 0;
 }
 
-
-int linuxNodeInfoMemPopulate(virConnectPtr conn, FILE *meminfo,
-                             virNodeInfoPtr nodeinfo) {
-    char line[1024];
-
-    nodeinfo->memory = 0;
-
-    while (fgets(line, sizeof(line), meminfo) != NULL) {
-        if (STREQLEN(line, "MemTotal:", 9)) {
-            char *p;
-            unsigned int ui;
-            if (xstrtol_ui(line + 10, &p, 10, &ui) == 0
-                && (*p == '\0' || isspace(*p))) {
-                nodeinfo->memory = ui;
-                break;
-            }
-        }
-    }
-    if (!nodeinfo->memory) {
-        __virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
-                        VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                        "no memory found");
-        return -1;
-    }
-
-    return 0;
-}
-
-
 #endif
 
 int virNodeInfoPopulate(virConnectPtr conn,
                         virNodeInfoPtr nodeinfo) {
     struct utsname info;
-#ifdef __linux__
-    int ret;
-    FILE *cpuinfo, *meminfo;
-#endif
 
     if (uname(&info) < 0) {
         __virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
@@ -164,7 +131,9 @@ int virNodeInfoPopulate(virConnectPtr conn,
     nodeinfo->model[sizeof(nodeinfo->model)-1] = '\0';
 
 #ifdef __linux__
-    cpuinfo = fopen(CPUINFO_PATH, "r");
+    {
+    int ret;
+    FILE *cpuinfo = fopen(CPUINFO_PATH, "r");
     if (!cpuinfo) {
         __virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
                         VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
@@ -176,17 +145,11 @@ int virNodeInfoPopulate(virConnectPtr conn,
     if (ret < 0)
         return -1;
 
-    meminfo = fopen(MEMINFO_PATH, "r");
-    if (!meminfo) {
-        __virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
-                        VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                        "cannot open %s %s", MEMINFO_PATH, strerror(errno));
-        return -1;
-    }
-    ret = linuxNodeInfoMemPopulate(conn, meminfo, nodeinfo);
-    fclose(meminfo);
+    /* Convert to KB. */
+    nodeinfo->memory = physmem_total () / 1024;
 
     return ret;
+    }
 #else
     /* XXX Solaris will need an impl later if they port QEMU driver */
     __virRaiseError(conn, NULL, NULL, 0, VIR_ERR_INTERNAL_ERROR,
