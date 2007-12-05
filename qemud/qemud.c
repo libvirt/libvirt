@@ -1839,6 +1839,8 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     conf = virConfReadFile (filename);
     if (!conf) return 0;
 
+    GET_CONF_INT (conf, filename, listen_tcp);
+    GET_CONF_INT (conf, filename, listen_tls);
     GET_CONF_STR (conf, filename, tls_port);
     GET_CONF_STR (conf, filename, tcp_port);
 
