@@ -1,3 +1,19 @@
+Wed Dec  5 22:38:18 CET 2007 Jim Meyering <meyering@redhat.com>
+
+	Include "config.h".
+	* qemud/event.c: Likewise.
+	* src/buf.c: Likewise.
+	* src/hash.c: Likewise.
+	* src/nodeinfo.c: Likewise.
+	* src/openvz_conf.c: Likewise.
+	* src/proxy_internal.c: Likewise.
+	* src/virterror.c: Likewise.
+	* src/xmlrpc.c: Likewise.
+	* src/xs_internal.c: Likewise.
+	* tests/conftest.c: Likewise.
+	* tests/xmlrpctest.c: Likewise.
+	This fixes a mingw build failure reported by Rich Jones.
+
 Wed Dec  5 22:34:27 CET 2007 Jim Meyering <meyering@redhat.com>
 
 	Add all of the files pulled in from gnulib by running ./bootstrap.

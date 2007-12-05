@@ -18,6 +18,8 @@
  *         Daniel Veillard <veillard@redhat.com>
  */
 
+#include "config.h"
+
 #include <string.h>
 #include <stdlib.h>
 #include <libxml/threads.h>
