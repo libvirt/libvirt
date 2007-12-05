@@ -3,6 +3,9 @@
         virInitialize;
         virConnectOpen;
         virConnectOpenReadOnly;
+        virConnectOpenAuth;
+        virConnectAuthPtrDefault;
+
 	virConnectClose;
 	virConnectGetType;
 	virConnectGetVersion;

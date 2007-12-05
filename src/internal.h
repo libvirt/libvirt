@@ -46,7 +46,9 @@ extern "C" {
 #define STRNEQ(a,b) (strcmp((a),(b)) != 0)
 #define STRCASENEQ(a,b) (strcasecmp((a),(b)) != 0)
 #define STREQLEN(a,b,n) (strncmp((a),(b),(n)) == 0)
+#define STRCASEEQLEN(a,b,n) (strncasecmp((a),(b),(n)) == 0)
 #define STRNEQLEN(a,b,n) (strncmp((a),(b),(n)) != 0)
+#define STRCASENEQLEN(a,b,n) (strncasecmp((a),(b),(n)) != 0)
 
 /* C99 uses __func__.  __FUNCTION__ is legacy. */
 #ifndef __GNUC__

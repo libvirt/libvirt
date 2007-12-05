@@ -1,3 +1,15 @@
+Wed Dec  5 13:51:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* include/libvirt/libvirt.h.in: Add virConnectAuthPtrDefault
+	as default CLI auth callback
+	* src/libvirt_sym.version: Export virConnectAuthPtrDefault
+	* src/libvirt.c: Default auth callback for command line based
+	apps
+	* src/virsh.c: Use default auth callback
+	* src/internal.h: Add STRCASEEQLEN, STRCASENEQLEN
+	* src/remote_internal.c: Wire up callback API to SASL interaction
+	types / callbacks.
+
 Wed Dec  5 13:27:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* Makefile.am: Put include/ before src/ in SUBDIRS

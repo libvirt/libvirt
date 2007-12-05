@@ -63,6 +63,87 @@ static int initialized = 0;
 #define DEBUG(fs,...)
 #endif /* !ENABLE_DEBUG */
 
+static int virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
+                                         unsigned int ncred,
+                                         void *cbdata ATTRIBUTE_UNUSED) {
+    int i;
+
+    for (i = 0 ; i < ncred ; i++) {
+        char buf[1024];
+        char *bufptr = buf;
+
+        if (printf("%s:", cred[i].prompt) < 0)
+            return -1;
+        if (fflush(stdout) != 0)
+            return -1;
+
+        switch (cred[i].type) {
+        case VIR_CRED_USERNAME:
+        case VIR_CRED_AUTHNAME:
+        case VIR_CRED_ECHOPROMPT:
+        case VIR_CRED_REALM:
+            if (!fgets(buf, sizeof(buf), stdin)) {
+                if (feof(stdin)) { /* Treat EOF as "" */
+                    buf[0] = '\0';
+                    break;
+                }
+                return -1;
+            }
+            if (buf[strlen(buf)-1] == '\n')
+                buf[strlen(buf)-1] = '\0';
+            break;
+
+        case VIR_CRED_PASSPHRASE:
+        case VIR_CRED_NOECHOPROMPT:
+            bufptr = getpass("");
+            if (!bufptr)
+                return -1;
+            break;
+        }
+
+        if (STREQ(bufptr, "") && cred[i].defresult)
+            cred[i].result = strdup(cred[i].defresult);
+        else
+            cred[i].result = strdup(bufptr);
+        if (!cred[i].result)
+            return -1;
+        cred[i].resultlen = strlen(cred[i].result);
+    }
+
+    return 0;
+}
+
+/* Don't typically want VIR_CRED_USERNAME. It enables you to authenticate
+ * as one user, and act as another. It just results in annoying
+ * prompts for the username twice & is very rarely what you want
+ */
+static int virConnectCredTypeDefault[] = {
+    VIR_CRED_AUTHNAME,
+    VIR_CRED_ECHOPROMPT,
+    VIR_CRED_REALM,
+    VIR_CRED_PASSPHRASE,
+    VIR_CRED_NOECHOPROMPT,
+};
+
+static virConnectAuth virConnectAuthDefault = {
+    virConnectCredTypeDefault,
+    sizeof(virConnectCredTypeDefault)/sizeof(int),
+    virConnectAuthCallbackDefault,
+    NULL,
+};
+
+/*
+ * virConnectAuthPtrDefault
+ *
+ * A default implementation of the authentication callbacks. This
+ * implementation is suitable for command line based tools. It will
+ * prompt for username, passwords, realm and one time keys as needed.
+ * It will print on STDOUT, and read from STDIN. If this is not
+ * suitable for the application's needs an alternative implementation
+ * should be provided.
+ */
+virConnectAuthPtr virConnectAuthPtrDefault = &virConnectAuthDefault;
+
 /**
  * virInitialize:
  *

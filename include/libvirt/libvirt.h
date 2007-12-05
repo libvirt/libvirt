@@ -343,6 +343,8 @@ struct _virConnectAuth {
 typedef struct _virConnectAuth virConnectAuth;
 typedef virConnectAuth *virConnectAuthPtr;
 
+extern virConnectAuthPtr virConnectAuthPtrDefault;
+
 /**
  * VIR_UUID_BUFLEN:
  *

@@ -4520,10 +4520,10 @@ vshInit(vshControl * ctl)
          !strcasecmp(ctl->name, "xen")) && ctl->uid != 0)
          ctl->readonly = 1;
 
-    if (!ctl->readonly)
-        ctl->conn = virConnectOpen(ctl->name);
-    else
-        ctl->conn = virConnectOpenReadOnly(ctl->name);
+    ctl->conn = virConnectOpenAuth(ctl->name,
+                                   virConnectAuthPtrDefault,
+                                   ctl->readonly ? VIR_CONNECT_RO : 0);
+
 
     /* This is not necessarily fatal.  All the individual commands check
      * vshConnectionUsability, except ones which don't need a connection

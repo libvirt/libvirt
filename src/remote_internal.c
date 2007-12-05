@@ -111,12 +111,15 @@ static int call (virConnectPtr conn, struct private_data *priv,
                  int flags, int proc_nr,
                  xdrproc_t args_filter, char *args,
                  xdrproc_t ret_filter, char *ret);
-static int remoteAuthenticate (virConnectPtr conn, struct private_data *priv, int in_open);
+static int remoteAuthenticate (virConnectPtr conn, struct private_data *priv, int in_open,
+                               virConnectAuthPtr auth, const char *authtype);
 #if HAVE_SASL
-static int remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open);
+static int remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
+                           virConnectAuthPtr auth, const char *mech);
 #endif
 #if HAVE_POLKIT
-static int remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open);
+static int remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
+                             virConnectAuthPtr auth);
 #endif /* HAVE_POLKIT */
 static void error (virConnectPtr conn, virErrorNumber code, const char *info);
 static void server_error (virConnectPtr conn, remote_error *err);
@@ -342,7 +345,7 @@ doRemoteOpen (virConnectPtr conn,
      * get freed in the failed: path.
      */
     char *name = 0, *command = 0, *sockname = 0, *netcat = 0, *username = 0;
-    char *port = 0;
+    char *port = 0, *authtype = 0;
     int no_verify = 0, no_tty = 0;
     char **cmd_argv = 0;
 
@@ -401,6 +404,10 @@ doRemoteOpen (virConnectPtr conn,
         } else if (strcasecmp (var->name, "socket") == 0) {
             sockname = strdup (var->value);
             if (!sockname) goto out_of_memory;
+            var->ignore = 1;
+        } else if (strcasecmp (var->name, "auth") == 0) {
+            authtype = strdup (var->value);
+            if (!authtype) goto out_of_memory;
             var->ignore = 1;
         } else if (strcasecmp (var->name, "netcat") == 0) {
             netcat = strdup (var->value);
@@ -718,7 +725,7 @@ doRemoteOpen (virConnectPtr conn,
 
 
     /* Try and authenticate with server */
-    if (remoteAuthenticate(conn, priv, 1) == -1)
+    if (remoteAuthenticate(conn, priv, 1, auth, authtype) == -1)
         goto failed;
 
     /* Finally we can call the remote side's open function. */
@@ -737,6 +744,7 @@ doRemoteOpen (virConnectPtr conn,
     if (name) free (name);
     if (command) free (command);
     if (sockname) free (sockname);
+    if (authtype) free (authtype);
     if (netcat) free (netcat);
     if (username) free (username);
     if (port) free (port);
@@ -2833,10 +2841,11 @@ remoteNetworkSetAutostart (virNetworkPtr network, int autostart)
 /*----------------------------------------------------------------------*/
 
 static int
-remoteAuthenticate (virConnectPtr conn, struct private_data *priv, int in_open)
+remoteAuthenticate (virConnectPtr conn, struct private_data *priv, int in_open,
+                    virConnectAuthPtr auth, const char *authtype)
 {
     struct remote_auth_list_ret ret;
-    int err;
+    int err, type = REMOTE_AUTH_NONE;
 
     memset(&ret, 0, sizeof ret);
     err = call (conn, priv,
@@ -2853,19 +2862,52 @@ remoteAuthenticate (virConnectPtr conn, struct private_data *priv, int in_open)
     if (ret.types.types_len == 0)
         return 0;
 
-    switch (ret.types.types_val[0]) {
+    if (authtype) {
+        int want, i;
+        if (STRCASEEQ(authtype, "sasl") ||
+            STRCASEEQLEN(authtype, "sasl.", 5)) {
+            want = REMOTE_AUTH_SASL;
+        } else if (STRCASEEQ(authtype, "polkit")) {
+            want = REMOTE_AUTH_POLKIT;
+        } else {
+            __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                             VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                             "unknown authentication type %s", authtype);
+            return -1;
+        }
+        for (i = 0 ; i < ret.types.types_len ; i++) {
+            if (ret.types.types_val[i] == want)
+                type = want;
+        }
+        if (type == REMOTE_AUTH_NONE) {
+            __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                             VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                             "requested authentication type %s rejected", authtype);
+            return -1;
+        }
+    } else {
+        type = ret.types.types_val[0];
+    }
+
+    switch (type) {
 #if HAVE_SASL
-    case REMOTE_AUTH_SASL:
-        if (remoteAuthSASL(conn, priv, in_open) < 0) {
+    case REMOTE_AUTH_SASL: {
+        const char *mech = NULL;
+        if (authtype &&
+            STRCASEEQLEN(authtype, "sasl.", 5))
+            mech = authtype + 5;
+
+        if (remoteAuthSASL(conn, priv, in_open, auth, mech) < 0) {
             free(ret.types.types_val);
             return -1;
         }
         break;
+    }
 #endif
 
 #if HAVE_POLKIT
     case REMOTE_AUTH_POLKIT:
-        if (remoteAuthPolkit(conn, priv, in_open) < 0) {
+        if (remoteAuthPolkit(conn, priv, in_open, auth) < 0) {
             free(ret.types.types_val);
             return -1;
         }
@@ -2926,13 +2968,174 @@ static char *addrToString(struct sockaddr_storage *sa, socklen_t salen)
 }
 
 
-/* Perform the SASL authentication process
+static int remoteAuthCredVir2SASL(int vircred)
+{
+    switch (vircred) {
+    case VIR_CRED_USERNAME:
+        return SASL_CB_USER;
+
+    case VIR_CRED_AUTHNAME:
+        return SASL_CB_AUTHNAME;
+
+    case VIR_CRED_LANGUAGE:
+        return SASL_CB_LANGUAGE;
+
+    case VIR_CRED_CNONCE:
+        return SASL_CB_CNONCE;
+
+    case VIR_CRED_PASSPHRASE:
+        return SASL_CB_PASS;
+
+    case VIR_CRED_ECHOPROMPT:
+        return SASL_CB_ECHOPROMPT;
+
+    case VIR_CRED_NOECHOPROMPT:
+        return SASL_CB_NOECHOPROMPT;
+
+    case VIR_CRED_REALM:
+        return SASL_CB_GETREALM;
+    }
+
+    return 0;
+}
+
+static int remoteAuthCredSASL2Vir(int vircred)
+{
+    switch (vircred) {
+    case SASL_CB_USER:
+        return VIR_CRED_USERNAME;
+
+    case SASL_CB_AUTHNAME:
+        return VIR_CRED_AUTHNAME;
+
+    case SASL_CB_LANGUAGE:
+        return VIR_CRED_LANGUAGE;
+
+    case SASL_CB_CNONCE:
+        return VIR_CRED_CNONCE;
+
+    case SASL_CB_PASS:
+        return VIR_CRED_PASSPHRASE;
+
+    case SASL_CB_ECHOPROMPT:
+        return VIR_CRED_ECHOPROMPT;
+
+    case SASL_CB_NOECHOPROMPT:
+        return VIR_CRED_NOECHOPROMPT;
+
+    case SASL_CB_GETREALM:
+        return VIR_CRED_REALM;
+    }
+
+    return 0;
+}
+
+/*
+ * @param credtype array of credential types client supports
+ * @param ncredtype size of credtype array
+ * @return the SASL callback structure, or NULL on error
  *
- * XXX fetch credentials from a libvirt client app callback
- * XXX better mechanism negotiation ? Ask client app ?
+ * Build up the SASL callback structure. We register one callback for
+ * each credential type that the libvirt client indicated they support.
+ * We explicitly leav the callback function pointer at NULL though,
+ * because we don't actually want to get SASL callbacks triggered.
+ * Instead, we want the start/step functions to return SASL_INTERACT.
+ * This lets us give the libvirt client a list of all required
+ * credentials in one go, rather than triggering the callback one
+ * credential at a time,
+ */
+static sasl_callback_t *remoteAuthMakeCallbacks(int *credtype, int ncredtype)
+{
+    sasl_callback_t *cbs = calloc(ncredtype+1, sizeof (sasl_callback_t));
+    int i, n;
+    if (!cbs) {
+        return NULL;
+    }
+
+    for (i = 0, n = 0 ; i < ncredtype ; i++) {
+        int id = remoteAuthCredVir2SASL(credtype[i]);
+        if (id != 0)
+            cbs[n++].id = id;
+        /* Don't fill proc or context fields of sasl_callback_t
+         * because we want to use interactions instead */
+    }
+    cbs[n].id = 0;
+    return cbs;
+}
+
+
+/*
+ * @param interact SASL interactions required
+ * @param cred populated with libvirt credential metadata
+ * @return the size of the cred array returned
+ *
+ * Builds up an array of libvirt credential structs, populating
+ * with data from the SASL interaction struct. These two structs
+ * are basically a 1-to-1 copy of each other.
+ */
+static int remoteAuthMakeCredentials(sasl_interact_t *interact,
+                                     virConnectCredentialPtr *cred)
+{
+    int ninteract;
+    if (!cred)
+        return -1;
+
+    for (ninteract = 0 ; interact[ninteract].id != 0 ; ninteract++)
+        ; /* empty */
+
+    *cred = calloc(ninteract, sizeof(virConnectCredential));
+    if (!*cred)
+        return -1;
+
+    for (ninteract = 0 ; interact[ninteract].id != 0 ; ninteract++) {
+        (*cred)[ninteract].type = remoteAuthCredSASL2Vir(interact[ninteract].id);
+        if (!(*cred)[ninteract].type) {
+            free(*cred);
+            return -1;
+        }
+        if (interact[ninteract].challenge)
+            (*cred)[ninteract].challenge = interact[ninteract].challenge;
+        (*cred)[ninteract].prompt = interact[ninteract].prompt;
+        if (interact[ninteract].defresult)
+            (*cred)[ninteract].defresult = interact[ninteract].defresult;
+        (*cred)[ninteract].result = NULL;
+    }
+
+    return ninteract;
+}
+
+static void remoteAuthFreeCredentials(virConnectCredentialPtr cred,
+                                      int ncred)
+{
+    int i;
+    for (i = 0 ; i < ncred ; i++)
+        free(cred[i].result);
+    free(cred);
+}
+
+
+/*
+ * @param cred the populated libvirt credentials
+ * @param interact the SASL interactions to fill in results for
+ *
+ * Fills the SASL interactions with the result from the libvirt
+ * callbacks
+ */
+static void remoteAuthFillInteract(virConnectCredentialPtr cred,
+                                   sasl_interact_t *interact)
+{
+    int ninteract;
+    for (ninteract = 0 ; interact[ninteract].id != 0 ; ninteract++) {
+        interact[ninteract].result = cred[ninteract].result;
+        interact[ninteract].len = cred[ninteract].resultlen;
+    }
+}
+
+/* Perform the SASL authentication process
  */
 static int
-remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open)
+remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
+                virConnectAuthPtr auth, const char *wantmech)
 {
     sasl_conn_t *saslconn = NULL;
     sasl_security_properties_t secprops;
@@ -2942,15 +3145,21 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open)
     remote_auth_sasl_step_args pargs;
     remote_auth_sasl_step_ret pret;
     const char *clientout;
-    char *serverin;
+    char *serverin = NULL;
     unsigned int clientoutlen, serverinlen;
     const char *mech;
     int err, complete;
     struct sockaddr_storage sa;
     socklen_t salen;
-    char *localAddr, *remoteAddr;
+    char *localAddr = NULL, *remoteAddr = NULL;
     const void *val;
     sasl_ssf_t ssf;
+    sasl_callback_t *saslcb = NULL;
+    sasl_interact_t *interact = NULL;
+    virConnectCredentialPtr cred = NULL;
+    int ncred = 0;
+    int ret = -1;
+    const char *mechlist;
 
     remoteDebug(priv, "Client initialize SASL authentication");
     /* Sets up the SASL library as a whole */
@@ -2960,7 +3169,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open)
                          VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                          "failed to initialize SASL library: %d (%s)",
                          err, sasl_errstring(err, NULL, NULL));
-        return -1;
+        goto cleanup;
     }
 
     /* Get local address in form  IPADDR:PORT */
@@ -2970,11 +3179,10 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open)
                          VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                          "failed to get sock address %d (%s)",
                          errno, strerror(errno));
-        return -1;
+        goto cleanup;
     }
-    if ((localAddr = addrToString(&sa, salen)) == NULL) {
-        return -1;
-    }
+    if ((localAddr = addrToString(&sa, salen)) == NULL)
+        goto cleanup;
 
     /* Get remote address in form  IPADDR:PORT */
     salen = sizeof(sa);
@@ -2983,30 +3191,29 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open)
                          VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                          "failed to get peer address %d (%s)",
                          errno, strerror(errno));
-        free(localAddr);
-        return -1;
+        goto cleanup;
     }
-    if ((remoteAddr = addrToString(&sa, salen)) == NULL) {
-        free(localAddr);
-        return -1;
-    }
+    if ((remoteAddr = addrToString(&sa, salen)) == NULL)
+        goto cleanup;
+
+    if ((saslcb = remoteAuthMakeCallbacks(auth->credtype, auth->ncredtype)) == NULL)
+        goto cleanup;
 
     /* Setup a handle for being a client */
     err = sasl_client_new("libvirt",
                           priv->hostname,
                           localAddr,
                           remoteAddr,
-                          NULL, /* XXX callbacks */
+                          saslcb,
                           SASL_SUCCESS_DATA,
                           &saslconn);
-    free(localAddr);
-    free(remoteAddr);
+
     if (err != SASL_OK) {
         __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                          VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                          "Failed to create SASL client context: %d (%s)",
                          err, sasl_errstring(err, NULL, NULL));
-        return -1;
+        goto cleanup;
     }
 
     /* Initialize some connection props we care about */
@@ -3018,8 +3225,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open)
             __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                              VIR_ERR_INTERNAL_ERROR, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                              "invalid cipher size for TLS session");
-            sasl_dispose(&saslconn);
-            return -1;
+            goto cleanup;
         }
         ssf *= 8; /* key size is bytes, sasl wants bits */
 
@@ -3030,8 +3236,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open)
                              VIR_ERR_INTERNAL_ERROR, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                              "cannot set external SSF %d (%s)",
                              err, sasl_errstring(err, NULL, NULL));
-            sasl_dispose(&saslconn);
-            return -1;
+            goto cleanup;
         }
     }
 
@@ -3050,36 +3255,70 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open)
                          VIR_ERR_INTERNAL_ERROR, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                          "cannot set security props %d (%s)",
                          err, sasl_errstring(err, NULL, NULL));
-        sasl_dispose(&saslconn);
-        return -1;
+        goto cleanup;
     }
 
     /* First call is to inquire about supported mechanisms in the server */
     memset (&iret, 0, sizeof iret);
     if (call (conn, priv, in_open, REMOTE_PROC_AUTH_SASL_INIT,
               (xdrproc_t) xdr_void, (char *)NULL,
-              (xdrproc_t) xdr_remote_auth_sasl_init_ret, (char *) &iret) != 0) {
-        sasl_dispose(&saslconn);
-        return -1; /* virError already set by call */
+              (xdrproc_t) xdr_remote_auth_sasl_init_ret, (char *) &iret) != 0)
+        goto cleanup;
+
+
+    mechlist = iret.mechlist;
+    if (wantmech) {
+        if (strstr(mechlist, wantmech) == NULL) {
+            __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                             VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                             "SASL mechanism %s not supported by server", wantmech);
+            free(iret.mechlist);
+            goto cleanup;
+        }
+        mechlist = wantmech;
     }
-
-
+ restart:
     /* Start the auth negotiation on the client end first */
-    remoteDebug(priv, "Client start negotiation mechlist '%s'", iret.mechlist);
+    remoteDebug(priv, "Client start negotiation mechlist '%s'", mechlist);
     err = sasl_client_start(saslconn,
-                            iret.mechlist,
-                            NULL, /* XXX interactions */
+                            mechlist,
+                            &interact,
                             &clientout,
                             &clientoutlen,
                             &mech);
-    if (err != SASL_OK && err != SASL_CONTINUE) {
+    if (err != SASL_OK && err != SASL_CONTINUE && err != SASL_INTERACT) {
         __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                          VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                          "Failed to start SASL negotiation: %d (%s)",
                          err, sasl_errdetail(saslconn));
         free(iret.mechlist);
-        sasl_dispose(&saslconn);
-        return -1;
+        goto cleanup;
+    }
+
+    /* Need to gather some credentials from the client */
+    if (err == SASL_INTERACT) {
+        if (cred) {
+            remoteAuthFreeCredentials(cred, ncred);
+            cred = NULL;
+        }
+        if ((ncred =
+             remoteAuthMakeCredentials(interact, &cred)) < 0) {
+            __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                             VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                             "Failed to make auth credentials");
+            free(iret.mechlist);
+            goto cleanup;
+        }
+        /* Run the authentication callback */
+        if ((*(auth->cb))(cred, ncred, auth->cbdata) < 0) {
+            __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                             VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                             "Failed to collect auth credentials");
+            goto cleanup;
+            return -1;
+        }
+        remoteAuthFillInteract(cred, interact);
+        goto restart;
     }
     free(iret.mechlist);
 
@@ -3087,8 +3326,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open)
         __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                          VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                          "SASL negotiation data too long: %d bytes", clientoutlen);
-        sasl_dispose(&saslconn);
-        return -1;
+        goto cleanup;
     }
     /* NB, distinction of NULL vs "" is *critical* in SASL */
     memset(&sargs, 0, sizeof sargs);
@@ -3102,10 +3340,8 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open)
     memset (&sret, 0, sizeof sret);
     if (call (conn, priv, in_open, REMOTE_PROC_AUTH_SASL_START,
               (xdrproc_t) xdr_remote_auth_sasl_start_args, (char *) &sargs,
-              (xdrproc_t) xdr_remote_auth_sasl_start_ret, (char *) &sret) != 0) {
-        sasl_dispose(&saslconn);
-        return -1; /* virError already set by call */
-    }
+              (xdrproc_t) xdr_remote_auth_sasl_start_ret, (char *) &sret) != 0)
+        goto cleanup;
 
     complete = sret.complete;
     /* NB, distinction of NULL vs "" is *critical* in SASL */
@@ -3118,20 +3354,48 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open)
      * Even if the server has completed, the client must *always* do at least one step
      * in this loop to verify the server isn't lieing about something. Mutual auth */
     for (;;) {
+    restep:
         err = sasl_client_step(saslconn,
                                serverin,
                                serverinlen,
-                               NULL, /* XXX interactions */
+                               &interact,
                                &clientout,
                                &clientoutlen);
-        if (serverin) free(serverin);
-        if (err != SASL_OK && err != SASL_CONTINUE) {
+        if (err != SASL_OK && err != SASL_CONTINUE && err != SASL_INTERACT) {
             __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                              VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                              "Failed SASL step: %d (%s)",
                              err, sasl_errdetail(saslconn));
-            sasl_dispose(&saslconn);
-            return -1;
+            goto cleanup;
+        }
+        /* Need to gather some credentials from the client */
+        if (err == SASL_INTERACT) {
+            if (cred) {
+                remoteAuthFreeCredentials(cred, ncred);
+                cred = NULL;
+            }
+            if ((ncred = remoteAuthMakeCredentials(interact, &cred)) < 0) {
+                __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                                 VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                                 "Failed to make auth credentials");
+                goto cleanup;
+                return -1;
+            }
+            /* Run the authentication callback */
+            if ((*(auth->cb))(cred, ncred, auth->cbdata) < 0) {
+                __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                                 VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                                 "Failed to collect auth credentials");
+                goto cleanup;
+                return -1;
+            }
+            remoteAuthFillInteract(cred, interact);
+            goto restep;
+        }
+
+        if (serverin) {
+            free(serverin);
+            serverin = NULL;
         }
         remoteDebug(priv, "Client step result %d. Data %d bytes %p", err, clientoutlen, clientout);
 
@@ -3150,10 +3414,8 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open)
         memset (&pret, 0, sizeof pret);
         if (call (conn, priv, in_open, REMOTE_PROC_AUTH_SASL_STEP,
                   (xdrproc_t) xdr_remote_auth_sasl_step_args, (char *) &pargs,
-                  (xdrproc_t) xdr_remote_auth_sasl_step_ret, (char *) &pret) != 0) {
-            sasl_dispose(&saslconn);
-            return -1; /* virError already set by call */
-        }
+                  (xdrproc_t) xdr_remote_auth_sasl_step_ret, (char *) &pret) != 0)
+            goto cleanup;
 
         complete = pret.complete;
         /* NB, distinction of NULL vs "" is *critical* in SASL */
@@ -3178,8 +3440,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open)
                              VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                              "cannot query SASL ssf on connection %d (%s)",
                              err, sasl_errstring(err, NULL, NULL));
-            sasl_dispose(&saslconn);
-            return -1;
+            goto cleanup;
         }
         ssf = *(const int *)val;
         remoteDebug(priv, "SASL SSF value %d", ssf);
@@ -3187,16 +3448,65 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open)
             __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                              VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                              "negotiation SSF %d was not strong enough", ssf);
-            sasl_dispose(&saslconn);
-            return -1;
+            goto cleanup;
         }
     }
 
     remoteDebug(priv, "SASL authentication complete");
     priv->saslconn = saslconn;
-    return 0;
+    ret = 0;
+
+ cleanup:
+    if (localAddr) free(localAddr);
+    if (remoteAddr) free(remoteAddr);
+    if (serverin) free(serverin);
+
+    free(saslcb);
+    remoteAuthFreeCredentials(cred, ncred);
+    if (ret != 0 && saslconn)
+        sasl_dispose(&saslconn);
+    return ret;
 }
 #endif /* HAVE_SASL */
+
+
+#if HAVE_POLKIT
+/* Perform the PolicyKit authentication process
+ */
+static int
+remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
+                  virConnectAuthPtr auth)
+{
+    remote_auth_polkit_ret ret;
+    virConnectCredential cred = {
+        VIR_CRED_EXTERNAL,
+        conn->flags & VIR_CONNECT_RO ? "org.libvirt.unix.monitor" : "org.libvirt.unix.manage",
+        "PolicyKit",
+        NULL,
+        NULL,
+        0,
+    };
+    remoteDebug(priv, "Client initialize PolicyKit authentication");
+
+    /* Run the authentication callback */
+    if (auth && auth->cb && (*(auth->cb))(&cred, 1, auth->cbdata) < 0) {
+        __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                         VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                         "Failed to collect auth credentials");
+        return -1;
+    }
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, in_open, REMOTE_PROC_AUTH_POLKIT,
+              (xdrproc_t) xdr_void, (char *)NULL,
+              (xdrproc_t) xdr_remote_auth_polkit_ret, (char *) &ret) != 0) {
+        return -1; /* virError already set by call */
+    }
+
+    remoteDebug(priv, "PolicyKit authentication complete");
+    return 0;
+}
+#endif /* HAVE_POLKIT */
 
 /*----------------------------------------------------------------------*/
 
@@ -3461,29 +3771,6 @@ really_write_sasl (virConnectPtr conn, struct private_data *priv,
     return really_write_buf(conn, priv, in_open, output, outputlen);
 }
 #endif
-
-
-#if HAVE_POLKIT
-/* Perform the PolicyKit authentication process
- */
-static int
-remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open)
-{
-    remote_auth_polkit_ret ret;
-
-    remoteDebug(priv, "Client initialize PolicyKit authentication");
-
-    memset (&ret, 0, sizeof ret);
-    if (call (conn, priv, in_open, REMOTE_PROC_AUTH_POLKIT,
-              (xdrproc_t) xdr_void, (char *)NULL,
-              (xdrproc_t) xdr_remote_auth_polkit_ret, (char *) &ret) != 0) {
-        return -1; /* virError already set by call */
-    }
-
-    remoteDebug(priv, "PolicyKit authentication complete");
-    return 0;
-}
-#endif /* HAVE_POLKIT */
 
 static int
 really_write (virConnectPtr conn, struct private_data *priv,
