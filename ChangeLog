@@ -1,3 +1,8 @@
+Wed Dec  5 10:07:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.c: Strip out NIC interfaces named vnetXXX since
+	those are auto-generated names.
+
 Wed Dec  5 13:48:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* python/libvir.c, python/libvirt_wrap.h, qemud/qemud.c,
