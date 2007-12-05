@@ -1,3 +1,17 @@
+Wed Dec  5 10:29:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/Makefile.am: Fix VPATH build for remote_generate_stubs.pl
+	* qemud/internal.h: Add saslusername to client data & username
+	whitelist to server data
+	* qemud/libvirtd.conf: Add config param for whitelisting users.
+	Remove config param for whitelisting IP addrs. Cleanup whitespace
+	and syntax errors in default values
+	* qemud/qemud.c, qemud/remote.c: Remove IP whitelisting. Add
+	username whitelisting against SASL authenticated username.
+	Makefile socket authentication schemes configurable.
+	* qemud/remote_dispatch_prototypes.h, remote_generate_stubs.pl:
+	Add a struct qemud_server * parameter to every dispatch function
+
 Wed Dec  5 10:25:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/remote_internal.c, qemud/qemud.c, qemud/internal.h,

@@ -101,14 +101,14 @@ remote.c: remote_dispatch_prototypes.h \
 	  remote_dispatch_localvars.h \
 	  remote_dispatch_proc_switch.h
 
-remote_dispatch_prototypes.h: remote_generate_stubs.pl remote_protocol.x
-	perl -w remote_generate_stubs.pl -i remote_protocol.x > $@
+remote_dispatch_prototypes.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
+	perl -w $(srcdir)/remote_generate_stubs.pl -i $(srcdir)/remote_protocol.x > $@
 
-remote_dispatch_localvars.h: remote_generate_stubs.pl remote_protocol.x
-	perl -w remote_generate_stubs.pl -v remote_protocol.x > $@
+remote_dispatch_localvars.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
+	perl -w $(srcdir)/remote_generate_stubs.pl -v $(srcdir)/remote_protocol.x > $@
 
-remote_dispatch_proc_switch.h: remote_generate_stubs.pl remote_protocol.x
-	perl -w remote_generate_stubs.pl -w remote_protocol.x > $@
+remote_dispatch_proc_switch.h: $(srcdir)/remote_generate_stubs.pl remote_protocol.x
+	perl -w $(srcdir)/remote_generate_stubs.pl -w $(srcdir)/remote_protocol.x > $@
 
 if LIBVIRT_INIT_SCRIPTS_RED_HAT
 install-init: libvirtd.init

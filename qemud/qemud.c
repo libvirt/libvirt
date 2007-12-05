@@ -77,12 +77,19 @@ static gid_t unix_sock_gid = 0; /* Only root by default */
 static int unix_sock_rw_mask = 0700; /* Allow user only */
 static int unix_sock_ro_mask = 0777; /* Allow world */
 
+static int auth_unix_rw = REMOTE_AUTH_NONE;
+static int auth_unix_ro = REMOTE_AUTH_NONE;
+#if HAVE_SASL
+static int auth_tcp = REMOTE_AUTH_SASL;
+#else
+static int auth_tcp = REMOTE_AUTH_NONE;
+#endif
+static int auth_tls = REMOTE_AUTH_NONE;
+
 static int mdns_adv = 1;
 static char *mdns_name = NULL;
 
 static int tls_no_verify_certificate = 0;
-static int tls_no_verify_address = 0;
-static char **tls_allowed_ip_list = NULL;
 static char **tls_allowed_dn_list = NULL;
 
 static char *key_file = (char *) LIBVIRT_SERVERKEY;
@@ -448,7 +455,7 @@ static int qemudWritePidFile(const char *pidFile) {
 }
 
 static int qemudListenUnix(struct qemud_server *server,
-                           const char *path, int readonly) {
+                           const char *path, int readonly, int auth) {
     struct qemud_socket *sock = calloc(1, sizeof(struct qemud_socket));
     struct sockaddr_un addr;
     mode_t oldmask;
@@ -462,6 +469,7 @@ static int qemudListenUnix(struct qemud_server *server,
     sock->readonly = readonly;
     sock->port = -1;
     sock->type = QEMUD_SOCK_TYPE_UNIX;
+    sock->auth = auth;
 
     if ((sock->fd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
         qemudLog(QEMUD_ERR, "Failed to create socket: %s",
@@ -699,31 +707,13 @@ static int qemudInitPaths(struct qemud_server *server,
 
 static struct qemud_server *qemudInitialize(int sigread) {
     struct qemud_server *server;
-    struct qemud_socket *sock;
-    char sockname[PATH_MAX];
-    char roSockname[PATH_MAX];
-#if HAVE_SASL
-    int err;
-#endif /* HAVE_SASL */
 
     if (!(server = calloc(1, sizeof(struct qemud_server)))) {
         qemudLog(QEMUD_ERR, "Failed to allocate struct qemud_server");
         return NULL;
     }
 
-    /* We don't have a dom-0, so start from 1 */
     server->sigread = sigread;
-
-    roSockname[0] = '\0';
-
-    if (qemudInitPaths(server, sockname, roSockname, PATH_MAX) < 0)
-        goto cleanup;
-
-    if (qemudListenUnix(server, sockname, 0) < 0)
-        goto cleanup;
-
-    if (roSockname[0] != '\0' && qemudListenUnix(server, roSockname, 1) < 0)
-        goto cleanup;
 
     __virEventRegisterImpl(virEventAddHandleImpl,
                            virEventUpdateHandleImpl,
@@ -734,28 +724,50 @@ static struct qemud_server *qemudInitialize(int sigread) {
 
     virStateInitialize();
 
+    return server;
+}
+
+static struct qemud_server *qemudNetworkInit(struct qemud_server *server) {
+    struct qemud_socket *sock;
+    char sockname[PATH_MAX];
+    char roSockname[PATH_MAX];
 #if HAVE_SASL
-    if ((err = sasl_server_init(NULL, "libvirt")) != SASL_OK) {
-        qemudLog(QEMUD_ERR, "Failed to initialize SASL authentication %s",
-                 sasl_errstring(err, NULL, NULL));
+    int err;
+#endif /* HAVE_SASL */
+
+    roSockname[0] = '\0';
+
+    if (qemudInitPaths(server, sockname, roSockname, PATH_MAX) < 0)
         goto cleanup;
+
+    if (qemudListenUnix(server, sockname, 0, auth_unix_rw) < 0)
+        goto cleanup;
+
+    if (roSockname[0] != '\0' && qemudListenUnix(server, roSockname, 1, auth_unix_ro) < 0)
+        goto cleanup;
+
+#if HAVE_SASL
+    if (auth_unix_rw == REMOTE_AUTH_SASL ||
+        auth_unix_ro == REMOTE_AUTH_SASL ||
+        auth_tcp == REMOTE_AUTH_SASL ||
+        auth_tls == REMOTE_AUTH_SASL) {
+        if ((err = sasl_server_init(NULL, "libvirt")) != SASL_OK) {
+            qemudLog(QEMUD_ERR, "Failed to initialize SASL authentication %s",
+                     sasl_errstring(err, NULL, NULL));
+            goto cleanup;
+        }
     }
 #endif
 
     if (ipsock) {
-#if HAVE_SASL
-        if (listen_tcp && remoteListenTCP (server, tcp_port, QEMUD_SOCK_TYPE_TCP, REMOTE_AUTH_SASL) < 0)
+        if (listen_tcp && remoteListenTCP (server, tcp_port, QEMUD_SOCK_TYPE_TCP, auth_tcp) < 0)
             goto cleanup;
-#else
-        if (listen_tcp && remoteListenTCP (server, tcp_port, QEMUD_SOCK_TYPE_TCP, REMOTE_AUTH_NONE) < 0)
-            goto cleanup;
-#endif
 
         if (listen_tls) {
             if (remoteInitializeGnuTLS () < 0)
                 goto cleanup;
 
-            if (remoteListenTCP (server, tls_port, QEMUD_SOCK_TYPE_TLS, REMOTE_AUTH_NONE) < 0)
+            if (remoteListenTCP (server, tls_port, QEMUD_SOCK_TYPE_TLS, auth_tls) < 0)
                 goto cleanup;
         }
     }
@@ -975,53 +987,11 @@ remoteCheckCertificate (gnutls_session_t session)
 static int
 remoteCheckAccess (struct qemud_client *client)
 {
-    char addr[NI_MAXHOST];
-    char **wildcards;
-    int found, err;
-
     /* Verify client certificate. */
     if (remoteCheckCertificate (client->tlssession) == -1) {
         qemudLog (QEMUD_ERR, "remoteCheckCertificate: failed to verify client's certificate");
         if (!tls_no_verify_certificate) return -1;
         else qemudLog (QEMUD_INFO, "remoteCheckCertificate: tls_no_verify_certificate is set so the bad certificate is ignored");
-    }
-
-    /*----- IP address check, similar to tcp wrappers -----*/
-
-    /* Convert IP address to printable string (eg. "127.0.0.1" or "::1"). */
-    err = getnameinfo ((struct sockaddr *) &client->addr, client->addrlen,
-                       addr, sizeof addr, NULL, 0,
-                       NI_NUMERICHOST);
-    if (err != 0) {
-        qemudLog (QEMUD_ERR, "getnameinfo: %s", gai_strerror (err));
-        return -1;
-    }
-
-    /* Verify the client is on the list of allowed clients.
-     *
-     * NB: No tls_allowed_ip_list in config file means anyone can access.
-     * If tls_allowed_ip_list is in the config file but empty, means no
-     * one can access (not particularly useful, but it's what the sysadmin
-     * would expect).
-     */
-    wildcards = tls_allowed_ip_list;
-    if (wildcards) {
-        found = 0;
-
-        while (*wildcards) {
-            if (fnmatch (*wildcards, addr, 0) == 0) {
-                found = 1;
-                break;
-            }
-            wildcards++;
-        }
-    } else
-        found = 1;
-
-    if (!found) {
-        qemudLog (QEMUD_ERR, "remoteCheckAccess: client's IP address (%s) is not on the list of allowed clients (tls_allowed_ip_list)", addr);
-        if (!tls_no_verify_address) return -1;
-        else qemudLog (QEMUD_INFO, "remoteCheckAccess: tls_no_verify_address is set so the client's IP address is ignored");
     }
 
     /* Checks have succeeded.  Write a '\1' byte back to the client to
@@ -1148,6 +1118,7 @@ static void qemudDispatchClientFailure(struct qemud_server *server, struct qemud
 
 #if HAVE_SASL
     if (client->saslconn) sasl_dispose(&client->saslconn);
+    if (client->saslUsername) free(client->saslUsername);
 #endif
     if (client->tlssession) gnutls_deinit (client->tlssession);
     close(client->fd);
@@ -1649,6 +1620,14 @@ static void qemudCleanup(struct qemud_server *server) {
         sock = next;
     }
 
+    if (server->saslUsernameWhitelist) {
+        char **list = server->saslUsernameWhitelist;
+        while (*list) {
+            if (*list)
+                free(*list);
+            list++;
+        }
+    }
 
     virStateCleanup();
 
@@ -1780,11 +1759,41 @@ checkType (virConfValuePtr p, const char *filename,
         }                                                               \
     } while (0)
 
+
+static int remoteConfigGetAuth(virConfPtr conf, const char *key, int *auth, const char *filename) {
+    virConfValuePtr p;
+
+    p = virConfGetValue (conf, key);
+    if (!p)
+        return 0;
+
+    if (p->type != VIR_CONF_STRING) {
+        qemudLog (QEMUD_ERR, "remoteReadConfigFile: %s: %s: should be a string\n", filename, key);
+        return -1;
+    }
+
+    if (!p->str)
+        return 0;
+
+    if (STREQ(p->str, "none")) {
+        *auth = REMOTE_AUTH_NONE;
+#if HAVE_SASL
+    } else if (STREQ(p->str, "sasl")) {
+        *auth = REMOTE_AUTH_SASL;
+#endif
+    } else {
+        qemudLog (QEMUD_ERR, "remoteReadConfigFile: %s: %s: unsupported auth %s\n", filename, key, p->str);
+        return -1;
+    }
+
+    return 0;
+}
+
 /* Read the config file if it exists.
  * Only used in the remote case, hence the name.
  */
 static int
-remoteReadConfigFile (const char *filename)
+remoteReadConfigFile (struct qemud_server *server, const char *filename)
 {
     virConfPtr conf;
 
@@ -1804,6 +1813,15 @@ remoteReadConfigFile (const char *filename)
 
     GET_CONF_STR (conf, filename, tls_port);
     GET_CONF_STR (conf, filename, tcp_port);
+
+    if (remoteConfigGetAuth(conf, "auth_unix_rw", &auth_unix_rw, filename) < 0)
+        return -1;
+    if (remoteConfigGetAuth(conf, "auth_unix_ro", &auth_unix_ro, filename) < 0)
+        return -1;
+    if (remoteConfigGetAuth(conf, "auth_tcp", &auth_tcp, filename) < 0)
+        return -1;
+    if (remoteConfigGetAuth(conf, "auth_tls", &auth_tls, filename) < 0)
+        return -1;
 
     GET_CONF_STR (conf, filename, unix_sock_group);
     if (unix_sock_group) {
@@ -1848,7 +1866,6 @@ remoteReadConfigFile (const char *filename)
     GET_CONF_STR (conf, filename, mdns_name);
 
     GET_CONF_INT (conf, filename, tls_no_verify_certificate);
-    GET_CONF_INT (conf, filename, tls_no_verify_address);
 
     GET_CONF_STR (conf, filename, key_file);
     GET_CONF_STR (conf, filename, cert_file);
@@ -1859,8 +1876,8 @@ remoteReadConfigFile (const char *filename)
                                    &tls_allowed_dn_list, filename) < 0)
         goto free_and_fail;
 
-    if (remoteConfigGetStringList (conf, "tls_allowed_ip_list",
-                                   &tls_allowed_ip_list, filename) < 0)
+    if (remoteConfigGetStringList (conf, "sasl_allowed_username_list",
+                                   &server->saslUsernameWhitelist, filename) < 0)
         goto free_and_fail;
 
     virConfFree (conf);
@@ -1886,14 +1903,6 @@ remoteReadConfigFile (const char *filename)
             free (tls_allowed_dn_list[i]);
         free (tls_allowed_dn_list);
         tls_allowed_dn_list = NULL;
-    }
-
-    if (tls_allowed_ip_list) {
-        int i;
-        for (i = 0; tls_allowed_ip_list[i]; i++)
-            free (tls_allowed_ip_list[i]);
-        free (tls_allowed_ip_list);
-        tls_allowed_ip_list = NULL;
     }
 
     return -1;
@@ -2016,13 +2025,6 @@ int main(int argc, char **argv) {
         }
     }
 
-    /* Read the config file (if it exists). */
-    if (remoteReadConfigFile (remote_config_file) < 0)
-        goto error1;
-
-    if (godaemon)
-        openlog("libvirtd", 0, 0);
-
     if (pipe(sigpipe) < 0 ||
         qemudSetNonBlock(sigpipe[0]) < 0 ||
         qemudSetNonBlock(sigpipe[1]) < 0) {
@@ -2030,24 +2032,21 @@ int main(int argc, char **argv) {
                  strerror(errno));
         goto error1;
     }
-
     sigwrite = sigpipe[1];
 
-    sig_action.sa_handler = sig_handler;
-    sig_action.sa_flags = 0;
-    sigemptyset(&sig_action.sa_mask);
+    if (!(server = qemudInitialize(sigpipe[0]))) {
+        ret = 2;
+        goto error1;
+    }
 
-    sigaction(SIGHUP, &sig_action, NULL);
-    sigaction(SIGINT, &sig_action, NULL);
-    sigaction(SIGQUIT, &sig_action, NULL);
-    sigaction(SIGTERM, &sig_action, NULL);
-    sigaction(SIGCHLD, &sig_action, NULL);
-
-    sig_action.sa_handler = SIG_IGN;
-    sigaction(SIGPIPE, &sig_action, NULL);
+    /* Read the config file (if it exists). */
+    if (remoteReadConfigFile (server, remote_config_file) < 0)
+        goto error1;
 
     if (godaemon) {
-        int pid = qemudGoDaemon();
+        int pid;
+        openlog("libvirtd", 0, 0);
+        pid = qemudGoDaemon();
         if (pid < 0) {
             qemudLog(QEMUD_ERR, "Failed to fork as daemon: %s",
                      strerror(errno));
@@ -2066,10 +2065,18 @@ int main(int argc, char **argv) {
             goto error1;
     }
 
-    if (!(server = qemudInitialize(sigpipe[0]))) {
-        ret = 2;
-        goto error2;
-    }
+    sig_action.sa_handler = sig_handler;
+    sig_action.sa_flags = 0;
+    sigemptyset(&sig_action.sa_mask);
+
+    sigaction(SIGHUP, &sig_action, NULL);
+    sigaction(SIGINT, &sig_action, NULL);
+    sigaction(SIGQUIT, &sig_action, NULL);
+    sigaction(SIGTERM, &sig_action, NULL);
+    sigaction(SIGCHLD, &sig_action, NULL);
+
+    sig_action.sa_handler = SIG_IGN;
+    sigaction(SIGPIPE, &sig_action, NULL);
 
     if (virEventAddHandleImpl(sigpipe[0],
                               POLLIN,
@@ -2077,6 +2084,11 @@ int main(int argc, char **argv) {
                               server) < 0) {
         qemudLog(QEMUD_ERR, "Failed to register callback for signal pipe");
         ret = 3;
+        goto error2;
+    }
+
+    if (!(server = qemudNetworkInit(server))) {
+        ret = 2;
         goto error2;
     }
 

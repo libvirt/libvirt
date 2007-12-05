@@ -109,6 +109,7 @@ struct qemud_client {
     const char *saslEncoded;
     unsigned int saslEncodedLength;
     unsigned int saslEncodedOffset;
+    char *saslUsername;
 #endif
 
     unsigned int incomingSerial;
@@ -150,6 +151,9 @@ struct qemud_server {
     unsigned int shutdown : 1;
 #ifdef HAVE_AVAHI
     struct libvirtd_mdns *mdns;
+#endif
+#if HAVE_SASL
+    char **saslUsernameWhitelist;
 #endif
 };
 
