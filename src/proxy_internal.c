@@ -29,7 +29,7 @@
 static int debug = 0;
 
 static int xenProxyClose(virConnectPtr conn);
-static int xenProxyOpen(virConnectPtr conn, xmlURIPtr uri, int flags);
+static int xenProxyOpen(virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int flags);
 static int xenProxyGetVersion(virConnectPtr conn, unsigned long *hvVer);
 static int xenProxyNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);
 static char *xenProxyGetCapabilities(virConnectPtr conn);
@@ -520,14 +520,17 @@ retry:
  * Returns 0 in case of success, and -1 in case of failure
  */
 int
-xenProxyOpen(virConnectPtr conn, xmlURIPtr uri ATTRIBUTE_UNUSED, int flags)
+xenProxyOpen(virConnectPtr conn,
+             xmlURIPtr uri ATTRIBUTE_UNUSED,
+             virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+             int flags)
 {
     virProxyPacket req;
     int ret;
     int fd;
     xenUnifiedPrivatePtr priv;
     
-    if (!(flags & VIR_DRV_OPEN_RO))
+    if (!(flags & VIR_CONNECT_RO))
         return(-1);
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;

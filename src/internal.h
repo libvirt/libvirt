@@ -123,11 +123,6 @@ extern "C" {
 #define MAX_DRIVERS 10
 #define MIN_XEN_GUEST_SIZE 64  /* 64 megabytes */
 
-/*
- * Flags for Xen connections
- */
-#define VIR_CONNECT_RO 1
-
 /**
  * _virConnect:
  *

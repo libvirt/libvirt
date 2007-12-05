@@ -31,6 +31,7 @@ char *
 
 int	xenHypervisorOpen		(virConnectPtr conn,
 					 xmlURIPtr uri,
+					 virConnectAuthPtr auth,
 					 int flags);
 int	xenHypervisorClose		(virConnectPtr conn);
 int	xenHypervisorGetVersion		(virConnectPtr conn,

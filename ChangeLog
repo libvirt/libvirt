@@ -1,3 +1,15 @@
+Wed Dec  5 13:27:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* Makefile.am: Put include/ before src/ in SUBDIRS
+	* docs/*: updated for new public API
+	* include/libvirt.h.in: Added virConnectOpenAuth and related
+	definitions for authentication callbacks.
+	* proxy/libvirt_proxy.c, src/openvz_driver.c, src/proxy_internal.c,
+	src/qemu_driver.c, src/test.c, src/xen_internal.c, src/xen_unified.c,
+	src/xend_internal.c, src/xend_internal.h, src/xm_internal.c,
+	src/xm_internal.h, src/xs_internal.c, src/xs_internal.h,
+	src/remote_internal.c: Update for new auth arg to the open API
+
 Wed Dec  5 13:20:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in: do PolicyKit checks via pkg-config

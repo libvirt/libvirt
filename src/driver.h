@@ -27,11 +27,6 @@ typedef enum {
 } virDrvNo;
 
 
-typedef enum {
-    /* VIR_DRV_OPEN_QUIET = 1 - removed by RWMJ */
-    VIR_DRV_OPEN_RO = 2
-} virDrvOpenFlag;
-
 /* Status codes returned from driver open call. */
 typedef enum {
     /* Opened successfully. */
@@ -76,8 +71,9 @@ typedef enum {
 
 typedef virDrvOpenStatus
 	(*virDrvOpen)			(virConnectPtr conn,
-                     xmlURIPtr uri,
-					 int flags);
+                             xmlURIPtr uri,
+                             virConnectAuthPtr auth,
+                             int flags);
 typedef int
 	(*virDrvClose)			(virConnectPtr conn);
 typedef int

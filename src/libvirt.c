@@ -395,7 +395,9 @@ virGetVersion(unsigned long *libVer, const char *type,
 }
 
 static virConnectPtr
-do_open (const char *name, int flags)
+do_open (const char *name,
+         virConnectAuthPtr auth,
+         int flags)
 {
     int i, res;
     virConnectPtr ret = NULL;
@@ -458,7 +460,7 @@ do_open (const char *name, int flags)
         fprintf (stderr, "libvirt: do_open: trying driver %d (%s) ...\n",
                  i, virDriverTab[i]->name);
 #endif
-        res = virDriverTab[i]->open (ret, uri, flags);
+        res = virDriverTab[i]->open (ret, uri, auth, flags);
 #ifdef ENABLE_DEBUG
         fprintf (stderr, "libvirt: do_open: driver %d %s returned %s\n",
                  i, virDriverTab[i]->name,
@@ -480,7 +482,7 @@ do_open (const char *name, int flags)
     }
 
     for (i = 0; i < virNetworkDriverTabCount; i++) {
-        res = virNetworkDriverTab[i]->open (ret, uri, flags);
+        res = virNetworkDriverTab[i]->open (ret, uri, auth, flags);
 #ifdef ENABLE_DEBUG
         fprintf (stderr, "libvirt: do_open: network driver %d %s returned %s\n",
                  i, virNetworkDriverTab[i]->name,
@@ -500,9 +502,8 @@ do_open (const char *name, int flags)
         }
     }
 
-    if (flags & VIR_DRV_OPEN_RO) {
-        ret->flags = VIR_CONNECT_RO;
-    }
+    /* Cleansing flags */
+    ret->flags = flags & VIR_CONNECT_RO;
 
     xmlFreeURI (uri);
 
@@ -531,7 +532,7 @@ virConnectPtr
 virConnectOpen (const char *name)
 {
     DEBUG("name=%s", name);
-    return do_open (name, 0);
+    return do_open (name, NULL, 0);
 }
 
 /**
@@ -550,7 +551,30 @@ virConnectPtr
 virConnectOpenReadOnly(const char *name)
 {
     DEBUG("name=%s", name);
-    return do_open (name, VIR_DRV_OPEN_RO);
+    return do_open (name, NULL, VIR_CONNECT_RO);
+}
+
+/**
+ * virConnectOpenAuth:
+ * @name: URI of the hypervisor
+ * @auth: Authenticate callback parameters
+ * @flags: Open flags
+ *
+ * This function should be called first to get a connection to the 
+ * Hypervisor. If neccessary, authentication will be performed fetching
+ * credentials via the callback
+ *
+ * Returns a pointer to the hypervisor connection or NULL in case of error
+ *
+ * URIs are documented at http://libvirt.org/uri.html
+ */
+virConnectPtr
+virConnectOpenAuth(const char *name,
+                   virConnectAuthPtr auth,
+                   int flags)
+{
+    DEBUG("name=%s", name);
+    return do_open (name, auth, flags);
 }
 
 /**

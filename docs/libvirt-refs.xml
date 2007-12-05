@@ -2,9 +2,19 @@
 <apirefs name='libvirt'>
   <references>
     <reference name='LIBVIR_VERSION_NUMBER' href='html/libvirt-libvirt.html#LIBVIR_VERSION_NUMBER'/>
+    <reference name='VIR_CONNECT_RO' href='html/libvirt-libvirt.html#VIR_CONNECT_RO'/>
     <reference name='VIR_COPY_CPUMAP' href='html/libvirt-libvirt.html#VIR_COPY_CPUMAP'/>
     <reference name='VIR_CPU_MAPLEN' href='html/libvirt-libvirt.html#VIR_CPU_MAPLEN'/>
     <reference name='VIR_CPU_USABLE' href='html/libvirt-libvirt.html#VIR_CPU_USABLE'/>
+    <reference name='VIR_CRED_AUTHNAME' href='html/libvirt-libvirt.html#VIR_CRED_AUTHNAME'/>
+    <reference name='VIR_CRED_CNONCE' href='html/libvirt-libvirt.html#VIR_CRED_CNONCE'/>
+    <reference name='VIR_CRED_ECHOPROMPT' href='html/libvirt-libvirt.html#VIR_CRED_ECHOPROMPT'/>
+    <reference name='VIR_CRED_EXTERNAL' href='html/libvirt-libvirt.html#VIR_CRED_EXTERNAL'/>
+    <reference name='VIR_CRED_LANGUAGE' href='html/libvirt-libvirt.html#VIR_CRED_LANGUAGE'/>
+    <reference name='VIR_CRED_NOECHOPROMPT' href='html/libvirt-libvirt.html#VIR_CRED_NOECHOPROMPT'/>
+    <reference name='VIR_CRED_PASSPHRASE' href='html/libvirt-libvirt.html#VIR_CRED_PASSPHRASE'/>
+    <reference name='VIR_CRED_REALM' href='html/libvirt-libvirt.html#VIR_CRED_REALM'/>
+    <reference name='VIR_CRED_USERNAME' href='html/libvirt-libvirt.html#VIR_CRED_USERNAME'/>
     <reference name='VIR_DOMAIN_BLOCKED' href='html/libvirt-libvirt.html#VIR_DOMAIN_BLOCKED'/>
     <reference name='VIR_DOMAIN_CRASHED' href='html/libvirt-libvirt.html#VIR_DOMAIN_CRASHED'/>
     <reference name='VIR_DOMAIN_NONE' href='html/libvirt-libvirt.html#VIR_DOMAIN_NONE'/>
@@ -22,6 +32,7 @@
     <reference name='VIR_DOMAIN_SHUTOFF' href='html/libvirt-libvirt.html#VIR_DOMAIN_SHUTOFF'/>
     <reference name='VIR_DOMAIN_XML_INACTIVE' href='html/libvirt-libvirt.html#VIR_DOMAIN_XML_INACTIVE'/>
     <reference name='VIR_DOMAIN_XML_SECURE' href='html/libvirt-libvirt.html#VIR_DOMAIN_XML_SECURE'/>
+    <reference name='VIR_ERR_AUTH_FAILED' href='html/libvirt-virterror.html#VIR_ERR_AUTH_FAILED'/>
     <reference name='VIR_ERR_CALL_FAILED' href='html/libvirt-virterror.html#VIR_ERR_CALL_FAILED'/>
     <reference name='VIR_ERR_CONF_SYNTAX' href='html/libvirt-virterror.html#VIR_ERR_CONF_SYNTAX'/>
     <reference name='VIR_ERR_DOM_EXIST' href='html/libvirt-virterror.html#VIR_ERR_DOM_EXIST'/>
@@ -97,6 +108,8 @@
     <reference name='VIR_VCPU_OFFLINE' href='html/libvirt-libvirt.html#VIR_VCPU_OFFLINE'/>
     <reference name='VIR_VCPU_RUNNING' href='html/libvirt-libvirt.html#VIR_VCPU_RUNNING'/>
     <reference name='VIR_WAR_NO_NETWORK' href='html/libvirt-virterror.html#VIR_WAR_NO_NETWORK'/>
+    <reference name='_virConnectAuth' href='html/libvirt-libvirt.html#_virConnectAuth'/>
+    <reference name='_virConnectCredential' href='html/libvirt-libvirt.html#_virConnectCredential'/>
     <reference name='_virDomainBlockStats' href='html/libvirt-libvirt.html#_virDomainBlockStats'/>
     <reference name='_virDomainInfo' href='html/libvirt-libvirt.html#_virDomainInfo'/>
     <reference name='_virDomainInterfaceStats' href='html/libvirt-libvirt.html#_virDomainInterfaceStats'/>
@@ -109,7 +122,15 @@
     <reference name='virConnResetLastError' href='html/libvirt-virterror.html#virConnResetLastError'/>
     <reference name='virConnSetErrorFunc' href='html/libvirt-virterror.html#virConnSetErrorFunc'/>
     <reference name='virConnect' href='html/libvirt-libvirt.html#virConnect'/>
+    <reference name='virConnectAuth' href='html/libvirt-libvirt.html#virConnectAuth'/>
+    <reference name='virConnectAuthCallbackPtr' href='html/libvirt-libvirt.html#virConnectAuthCallbackPtr'/>
+    <reference name='virConnectAuthPtr' href='html/libvirt-libvirt.html#virConnectAuthPtr'/>
+    <reference name='virConnectAuthPtrDefault' href='html/libvirt-libvirt.html#virConnectAuthPtrDefault'/>
     <reference name='virConnectClose' href='html/libvirt-libvirt.html#virConnectClose'/>
+    <reference name='virConnectCredential' href='html/libvirt-libvirt.html#virConnectCredential'/>
+    <reference name='virConnectCredentialPtr' href='html/libvirt-libvirt.html#virConnectCredentialPtr'/>
+    <reference name='virConnectCredentialType' href='html/libvirt-libvirt.html#virConnectCredentialType'/>
+    <reference name='virConnectFlags' href='html/libvirt-libvirt.html#virConnectFlags'/>
     <reference name='virConnectGetCapabilities' href='html/libvirt-libvirt.html#virConnectGetCapabilities'/>
     <reference name='virConnectGetHostname' href='html/libvirt-libvirt.html#virConnectGetHostname'/>
     <reference name='virConnectGetMaxVcpus' href='html/libvirt-libvirt.html#virConnectGetMaxVcpus'/>
@@ -125,6 +146,7 @@
     <reference name='virConnectNumOfDomains' href='html/libvirt-libvirt.html#virConnectNumOfDomains'/>
     <reference name='virConnectNumOfNetworks' href='html/libvirt-libvirt.html#virConnectNumOfNetworks'/>
     <reference name='virConnectOpen' href='html/libvirt-libvirt.html#virConnectOpen'/>
+    <reference name='virConnectOpenAuth' href='html/libvirt-libvirt.html#virConnectOpenAuth'/>
     <reference name='virConnectOpenReadOnly' href='html/libvirt-libvirt.html#virConnectOpenReadOnly'/>
     <reference name='virConnectPtr' href='html/libvirt-libvirt.html#virConnectPtr'/>
     <reference name='virCopyLastError' href='html/libvirt-virterror.html#virCopyLastError'/>
@@ -231,9 +253,19 @@
       <ref name='LIBVIR_VERSION_NUMBER'/>
     </letter>
     <letter name='V'>
+      <ref name='VIR_CONNECT_RO'/>
       <ref name='VIR_COPY_CPUMAP'/>
       <ref name='VIR_CPU_MAPLEN'/>
       <ref name='VIR_CPU_USABLE'/>
+      <ref name='VIR_CRED_AUTHNAME'/>
+      <ref name='VIR_CRED_CNONCE'/>
+      <ref name='VIR_CRED_ECHOPROMPT'/>
+      <ref name='VIR_CRED_EXTERNAL'/>
+      <ref name='VIR_CRED_LANGUAGE'/>
+      <ref name='VIR_CRED_NOECHOPROMPT'/>
+      <ref name='VIR_CRED_PASSPHRASE'/>
+      <ref name='VIR_CRED_REALM'/>
+      <ref name='VIR_CRED_USERNAME'/>
       <ref name='VIR_DOMAIN_BLOCKED'/>
       <ref name='VIR_DOMAIN_CRASHED'/>
       <ref name='VIR_DOMAIN_NONE'/>
@@ -251,6 +283,7 @@
       <ref name='VIR_DOMAIN_SHUTOFF'/>
       <ref name='VIR_DOMAIN_XML_INACTIVE'/>
       <ref name='VIR_DOMAIN_XML_SECURE'/>
+      <ref name='VIR_ERR_AUTH_FAILED'/>
       <ref name='VIR_ERR_CALL_FAILED'/>
       <ref name='VIR_ERR_CONF_SYNTAX'/>
       <ref name='VIR_ERR_DOM_EXIST'/>
@@ -328,6 +361,8 @@
       <ref name='VIR_WAR_NO_NETWORK'/>
     </letter>
     <letter name='_'>
+      <ref name='_virConnectAuth'/>
+      <ref name='_virConnectCredential'/>
       <ref name='_virDomainBlockStats'/>
       <ref name='_virDomainInfo'/>
       <ref name='_virDomainInterfaceStats'/>
@@ -342,7 +377,15 @@
       <ref name='virConnResetLastError'/>
       <ref name='virConnSetErrorFunc'/>
       <ref name='virConnect'/>
+      <ref name='virConnectAuth'/>
+      <ref name='virConnectAuthCallbackPtr'/>
+      <ref name='virConnectAuthPtr'/>
+      <ref name='virConnectAuthPtrDefault'/>
       <ref name='virConnectClose'/>
+      <ref name='virConnectCredential'/>
+      <ref name='virConnectCredentialPtr'/>
+      <ref name='virConnectCredentialType'/>
+      <ref name='virConnectFlags'/>
       <ref name='virConnectGetCapabilities'/>
       <ref name='virConnectGetHostname'/>
       <ref name='virConnectGetMaxVcpus'/>
@@ -358,6 +401,7 @@
       <ref name='virConnectNumOfDomains'/>
       <ref name='virConnectNumOfNetworks'/>
       <ref name='virConnectOpen'/>
+      <ref name='virConnectOpenAuth'/>
       <ref name='virConnectOpenReadOnly'/>
       <ref name='virConnectPtr'/>
       <ref name='virCopyLastError'/>
@@ -472,6 +516,7 @@
     </type>
     <type name='virConnectPtr'>
       <ref name='virConnectOpen'/>
+      <ref name='virConnectOpenAuth'/>
       <ref name='virConnectOpenReadOnly'/>
       <ref name='virDomainGetConnect'/>
       <ref name='virNetworkGetConnect'/>
@@ -525,6 +570,7 @@
       <ref name='virNetworkGetUUID'/>
     </type>
     <type name='unsigned int'>
+      <ref name='virConnectAuthCallbackPtr'/>
       <ref name='virDomainCreateLinux'/>
       <ref name='virDomainPinVcpu'/>
       <ref name='virDomainReboot'/>
@@ -541,6 +587,12 @@
     </type>
     <type name='unsigned long long *'>
       <ref name='virNodeGetCellsFreeMemory'/>
+    </type>
+    <type name='virConnectAuthPtr'>
+      <ref name='virConnectOpenAuth'/>
+    </type>
+    <type name='virConnectCredentialPtr'>
+      <ref name='virConnectAuthCallbackPtr'/>
     </type>
     <type name='virConnectPtr'>
       <ref name='virConnCopyLastError'/>
@@ -662,6 +714,7 @@
     </type>
     <type name='void *'>
       <ref name='virConnSetErrorFunc'/>
+      <ref name='virConnectAuthCallbackPtr'/>
       <ref name='virErrorFunc'/>
       <ref name='virSetErrorFunc'/>
     </type>
@@ -669,9 +722,19 @@
   <files>
     <file name='libvirt'>
       <ref name='LIBVIR_VERSION_NUMBER'/>
+      <ref name='VIR_CONNECT_RO'/>
       <ref name='VIR_COPY_CPUMAP'/>
       <ref name='VIR_CPU_MAPLEN'/>
       <ref name='VIR_CPU_USABLE'/>
+      <ref name='VIR_CRED_AUTHNAME'/>
+      <ref name='VIR_CRED_CNONCE'/>
+      <ref name='VIR_CRED_ECHOPROMPT'/>
+      <ref name='VIR_CRED_EXTERNAL'/>
+      <ref name='VIR_CRED_LANGUAGE'/>
+      <ref name='VIR_CRED_NOECHOPROMPT'/>
+      <ref name='VIR_CRED_PASSPHRASE'/>
+      <ref name='VIR_CRED_REALM'/>
+      <ref name='VIR_CRED_USERNAME'/>
       <ref name='VIR_DOMAIN_BLOCKED'/>
       <ref name='VIR_DOMAIN_CRASHED'/>
       <ref name='VIR_DOMAIN_NONE'/>
@@ -699,6 +762,8 @@
       <ref name='VIR_VCPU_BLOCKED'/>
       <ref name='VIR_VCPU_OFFLINE'/>
       <ref name='VIR_VCPU_RUNNING'/>
+      <ref name='_virConnectAuth'/>
+      <ref name='_virConnectCredential'/>
       <ref name='_virDomainBlockStats'/>
       <ref name='_virDomainInfo'/>
       <ref name='_virDomainInterfaceStats'/>
@@ -706,7 +771,15 @@
       <ref name='_virSchedParameter'/>
       <ref name='_virVcpuInfo'/>
       <ref name='virConnect'/>
+      <ref name='virConnectAuth'/>
+      <ref name='virConnectAuthCallbackPtr'/>
+      <ref name='virConnectAuthPtr'/>
+      <ref name='virConnectAuthPtrDefault'/>
       <ref name='virConnectClose'/>
+      <ref name='virConnectCredential'/>
+      <ref name='virConnectCredentialPtr'/>
+      <ref name='virConnectCredentialType'/>
+      <ref name='virConnectFlags'/>
       <ref name='virConnectGetCapabilities'/>
       <ref name='virConnectGetHostname'/>
       <ref name='virConnectGetMaxVcpus'/>
@@ -722,6 +795,7 @@
       <ref name='virConnectNumOfDomains'/>
       <ref name='virConnectNumOfNetworks'/>
       <ref name='virConnectOpen'/>
+      <ref name='virConnectOpenAuth'/>
       <ref name='virConnectOpenReadOnly'/>
       <ref name='virConnectPtr'/>
       <ref name='virDomain'/>
@@ -812,6 +886,7 @@
       <ref name='virVcpuState'/>
     </file>
     <file name='virterror'>
+      <ref name='VIR_ERR_AUTH_FAILED'/>
       <ref name='VIR_ERR_CALL_FAILED'/>
       <ref name='VIR_ERR_CONF_SYNTAX'/>
       <ref name='VIR_ERR_DOM_EXIST'/>
@@ -912,11 +987,17 @@
           <ref name='VIR_GET_CPUMAP'/>
           <ref name='virConnectOpenReadOnly'/>
         </word>
+        <word name='Additional'>
+          <ref name='_virConnectCredential'/>
+        </word>
         <word name='After'>
           <ref name='virDomainSave'/>
         </word>
         <word name='Attempt'>
           <ref name='virDomainMigrate'/>
+        </word>
+        <word name='Authenticate'>
+          <ref name='virConnectOpenAuth'/>
         </word>
       </letter>
       <letter name='B'>
@@ -955,6 +1036,9 @@
           <ref name='virDomainGetVcpus'/>
           <ref name='virDomainPinVcpu'/>
           <ref name='virDomainSetVcpus'/>
+        </word>
+        <word name='Callback'>
+          <ref name='_virConnectAuth'/>
         </word>
         <word name='Change'>
           <ref name='virDomainSetSchedulerParameters'/>
@@ -1058,6 +1142,7 @@
           <ref name='virConnectGetType'/>
           <ref name='virConnectGetVersion'/>
           <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenAuth'/>
         </word>
       </letter>
       <letter name='I'>
@@ -1085,8 +1170,14 @@
         <word name='Launch'>
           <ref name='virDomainCreateLinux'/>
         </word>
+        <word name='Length'>
+          <ref name='_virConnectCredential'/>
+        </word>
         <word name='Linux'>
           <ref name='virDomainCreateLinux'/>
+        </word>
+        <word name='List'>
+          <ref name='_virConnectAuth'/>
         </word>
       </letter>
       <letter name='M'>
@@ -1132,12 +1223,22 @@
           <ref name='virGetVersion'/>
         </word>
         <word name='One'>
+          <ref name='_virConnectCredential'/>
           <ref name='virConnCopyLastError'/>
           <ref name='virCopyLastError'/>
           <ref name='virDomainGetVcpus'/>
         </word>
+        <word name='Open'>
+          <ref name='virConnectOpenAuth'/>
+        </word>
+        <word name='Optional'>
+          <ref name='_virConnectCredential'/>
+        </word>
       </letter>
       <letter name='P'>
+        <word name='Prompt'>
+          <ref name='_virConnectCredential'/>
+        </word>
         <word name='Provide'>
           <ref name='virConnGetLastError'/>
           <ref name='virDomainGetXMLDesc'/>
@@ -1178,6 +1279,9 @@
           <ref name='virConnResetLastError'/>
           <ref name='virResetError'/>
           <ref name='virResetLastError'/>
+        </word>
+        <word name='Result'>
+          <ref name='_virConnectCredential'/>
         </word>
         <word name='Resume'>
           <ref name='virDomainResume'/>
@@ -1235,11 +1339,13 @@
         <word name='URI'>
           <ref name='virConnectGetURI'/>
           <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenAuth'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainMigrate'/>
         </word>
         <word name='URIs'>
           <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenAuth'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainMigrate'/>
         </word>
@@ -1274,6 +1380,8 @@
           <ref name='virDomainSuspend'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk1'>
       <letter name='V'>
         <word name='VIR_COPY_CPUMAP'>
           <ref name='VIR_COPY_CPUMAP'/>
@@ -1307,8 +1415,6 @@
           <ref name='virNetworkGetUUIDString'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk1'>
       <letter name='W'>
         <word name='WARNING:'>
           <ref name='virDomainGetConnect'/>
@@ -1464,6 +1570,7 @@
           <ref name='virConnectClose'/>
           <ref name='virConnectGetHostname'/>
           <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenAuth'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainDestroy'/>
           <ref name='virDomainMigrate'/>
@@ -1506,6 +1613,9 @@
         <word name='attribute'>
           <ref name='virConnectGetMaxVcpus'/>
           <ref name='virDomainBlockStats'/>
+        </word>
+        <word name='authentication'>
+          <ref name='virConnectOpenAuth'/>
         </word>
         <word name='automatically'>
           <ref name='virDomainGetAutostart'/>
@@ -1633,6 +1743,8 @@
           <ref name='virNetworkGetUUIDString'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk2'>
       <letter name='c'>
         <word name='calculate'>
           <ref name='VIR_NODEINFO_MAXCPUS'/>
@@ -1654,6 +1766,7 @@
         </word>
         <word name='callback'>
           <ref name='virConnSetErrorFunc'/>
+          <ref name='virConnectOpenAuth'/>
           <ref name='virErrorFunc'/>
           <ref name='virSetErrorFunc'/>
         </word>
@@ -1661,6 +1774,7 @@
           <ref name='virConnSetErrorFunc'/>
           <ref name='virConnectClose'/>
           <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenAuth'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virSetErrorFunc'/>
         </word>
@@ -1729,6 +1843,9 @@
         <word name='cells'>
           <ref name='virNodeGetCellsFreeMemory'/>
         </word>
+        <word name='challenge'>
+          <ref name='_virConnectCredential'/>
+        </word>
         <word name='change'>
           <ref name='virDomainPinVcpu'/>
           <ref name='virDomainSetMaxMemory'/>
@@ -1755,6 +1872,7 @@
           <ref name='virGetVersion'/>
         </word>
         <word name='collect'>
+          <ref name='_virConnectAuth'/>
           <ref name='virConnectListDomains'/>
           <ref name='virConnectListNetworks'/>
         </word>
@@ -1789,6 +1907,9 @@
         </word>
         <word name='consequent'>
           <ref name='_virError'/>
+        </word>
+        <word name='constants'>
+          <ref name='_virConnectCredential'/>
         </word>
         <word name='content'>
           <ref name='virConnCopyLastError'/>
@@ -1846,6 +1967,10 @@
         <word name='create'>
           <ref name='virNetworkDefineXML'/>
         </word>
+        <word name='credentials'>
+          <ref name='_virConnectAuth'/>
+          <ref name='virConnectOpenAuth'/>
+        </word>
         <word name='cupmap'>
           <ref name='virDomainGetVcpus'/>
         </word>
@@ -1856,8 +1981,6 @@
           <ref name='virDomainCoreDump'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk2'>
       <letter name='d'>
         <word name='data'>
           <ref name='virConnSetErrorFunc'/>
@@ -1876,6 +1999,7 @@
           <ref name='virNetworkGetName'/>
         </word>
         <word name='default'>
+          <ref name='_virConnectCredential'/>
           <ref name='virConnSetErrorFunc'/>
           <ref name='virDomainMigrate'/>
           <ref name='virSetErrorFunc'/>
@@ -1892,6 +2016,9 @@
         </word>
         <word name='defining'>
           <ref name='virConnectGetCapabilities'/>
+        </word>
+        <word name='defresult'>
+          <ref name='_virConnectCredential'/>
         </word>
         <word name='described'>
           <ref name='virDomainGetVcpus'/>
@@ -1945,6 +2072,7 @@
         </word>
         <word name='documented'>
           <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenAuth'/>
           <ref name='virConnectOpenReadOnly'/>
         </word>
         <word name='does'>
@@ -1984,6 +2112,8 @@
           <ref name='virDomainMigrate'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk3'>
       <letter name='e'>
         <word name='each'>
           <ref name='virDomainBlockStats'/>
@@ -2053,6 +2183,9 @@
         <word name='features'>
           <ref name='virDomainMigrate'/>
         </word>
+        <word name='fetching'>
+          <ref name='virConnectOpenAuth'/>
+        </word>
         <word name='field'>
           <ref name='VIR_DOMAIN_SCHED_FIELD_LENGTH'/>
         </word>
@@ -2065,6 +2198,7 @@
           <ref name='virDomainSave'/>
         </word>
         <word name='filled'>
+          <ref name='_virConnectCredential'/>
           <ref name='virDomainGetSchedulerParameters'/>
           <ref name='virDomainGetVcpus'/>
           <ref name='virNodeGetCellsFreeMemory'/>
@@ -2078,10 +2212,12 @@
         </word>
         <word name='first'>
           <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenAuth'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virNodeGetCellsFreeMemory'/>
         </word>
         <word name='flags'>
+          <ref name='virConnectOpenAuth'/>
           <ref name='virDomainCoreDump'/>
           <ref name='virDomainMigrate'/>
           <ref name='virDomainReboot'/>
@@ -2159,6 +2295,7 @@
           <ref name='virConnSetErrorFunc'/>
           <ref name='virConnectClose'/>
           <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenAuth'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainBlockStats'/>
           <ref name='virDomainCreateLinux'/>
@@ -2191,6 +2328,7 @@
         <word name='get'>
           <ref name='virConnSetErrorFunc'/>
           <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenAuth'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainBlockStats'/>
           <ref name='virDomainGetInfo'/>
@@ -2232,8 +2370,6 @@
           <ref name='virDomainShutdown'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk3'>
       <letter name='h'>
         <word name='handler'>
           <ref name='virConnSetErrorFunc'/>
@@ -2276,11 +2412,13 @@
         <word name='html'>
           <ref name='virConnectGetType'/>
           <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenAuth'/>
           <ref name='virConnectOpenReadOnly'/>
         </word>
         <word name='http:'>
           <ref name='virConnectGetType'/>
           <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenAuth'/>
           <ref name='virConnectOpenReadOnly'/>
         </word>
         <word name='human-readable'>
@@ -2388,6 +2526,8 @@
           <ref name='virNetworkLookupByUUIDString'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk4'>
       <letter name='j'>
         <word name='join'>
           <ref name='virNetworkGetBridgeName'/>
@@ -2479,6 +2619,7 @@
         </word>
         <word name='libvirt'>
           <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenAuth'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainGetConnect'/>
           <ref name='virDomainMigrate'/>
@@ -2709,8 +2850,6 @@
           <ref name='_virDomainBlockStats'/>
         </word>
       </letter>
-    </chunk>
-    <chunk name='chunk4'>
       <letter name='n'>
         <word name='name'>
           <ref name='_virSchedParameter'/>
@@ -2736,6 +2875,9 @@
         </word>
         <word name='neccessarily'>
           <ref name='VIR_NODEINFO_MAXCPUS'/>
+        </word>
+        <word name='neccessary'>
+          <ref name='virConnectOpenAuth'/>
         </word>
         <word name='need'>
           <ref name='virConnCopyLastError'/>
@@ -2789,6 +2931,8 @@
           <ref name='virDomainSetSchedulerParameters'/>
         </word>
       </letter>
+    </chunk>
+    <chunk name='chunk5'>
       <letter name='o'>
         <word name='objects'>
           <ref name='virDomainSetSchedulerParameters'/>
@@ -2839,6 +2983,7 @@
         </word>
         <word name='org'>
           <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenAuth'/>
           <ref name='virConnectOpenReadOnly'/>
         </word>
         <word name='other'>
@@ -2874,6 +3019,7 @@
           <ref name='virDomainSetSchedulerParameters'/>
         </word>
         <word name='parameters'>
+          <ref name='virConnectOpenAuth'/>
           <ref name='virDomainGetSchedulerParameters'/>
           <ref name='virDomainGetSchedulerType'/>
           <ref name='virDomainSetSchedulerParameters'/>
@@ -2908,6 +3054,9 @@
         </word>
         <word name='perform'>
           <ref name='virDomainMigrate'/>
+        </word>
+        <word name='performed'>
+          <ref name='virConnectOpenAuth'/>
         </word>
         <word name='physical'>
           <ref name='VIR_CPU_MAPLEN'/>
@@ -3102,6 +3251,9 @@
           <ref name='virDomainSuspend'/>
           <ref name='virNetworkDestroy'/>
         </word>
+        <word name='response'>
+          <ref name='_virConnectCredential'/>
+        </word>
         <word name='restart'>
           <ref name='virDomainReboot'/>
         </word>
@@ -3116,6 +3268,7 @@
           <ref name='virConnectOpenReadOnly'/>
         </word>
         <word name='result'>
+          <ref name='_virConnectCredential'/>
           <ref name='virConnCopyLastError'/>
           <ref name='virConnectGetHostname'/>
           <ref name='virCopyLastError'/>
@@ -3193,7 +3346,7 @@
         </word>
       </letter>
     </chunk>
-    <chunk name='chunk5'>
+    <chunk name='chunk6'>
       <letter name='s'>
         <word name='same'>
           <ref name='virConnectGetURI'/>
@@ -3242,6 +3395,7 @@
         <word name='should'>
           <ref name='virConnectClose'/>
           <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenAuth'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainBlockStats'/>
           <ref name='virDomainDestroy'/>
@@ -3254,6 +3408,9 @@
           <ref name='virNetworkDestroy'/>
           <ref name='virNetworkFree'/>
           <ref name='virNetworkSetAutostart'/>
+        </word>
+        <word name='show'>
+          <ref name='_virConnectCredential'/>
         </word>
         <word name='shutdown'>
           <ref name='virDomainDestroy'/>
@@ -3428,6 +3585,7 @@
         </word>
         <word name='supported'>
           <ref name='VIR_NODEINFO_MAXCPUS'/>
+          <ref name='_virConnectAuth'/>
           <ref name='virConnectGetMaxVcpus'/>
           <ref name='virDomainGetMaxVcpus'/>
           <ref name='virDomainMigrate'/>
@@ -3589,7 +3747,7 @@
         </word>
       </letter>
     </chunk>
-    <chunk name='chunk6'>
+    <chunk name='chunk7'>
       <letter name='u'>
         <word name='undefine'>
           <ref name='virDomainUndefine'/>
@@ -3615,6 +3773,7 @@
         </word>
         <word name='uri'>
           <ref name='virConnectOpen'/>
+          <ref name='virConnectOpenAuth'/>
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virDomainMigrate'/>
         </word>
@@ -3642,6 +3801,7 @@
           <ref name='VIR_GET_CPUMAP'/>
           <ref name='VIR_UNUSE_CPU'/>
           <ref name='VIR_USE_CPU'/>
+          <ref name='_virConnectAuth'/>
           <ref name='_virDomainInfo'/>
           <ref name='_virVcpuInfo'/>
           <ref name='virConnectGetType'/>
@@ -3658,6 +3818,7 @@
           <ref name='virNetworkGetXMLDesc'/>
         </word>
         <word name='user'>
+          <ref name='_virConnectCredential'/>
           <ref name='virConnSetErrorFunc'/>
           <ref name='virDomainGetInfo'/>
           <ref name='virDomainMigrate'/>
@@ -3686,6 +3847,7 @@
           <ref name='virNetworkGetXMLDesc'/>
         </word>
         <word name='values'>
+          <ref name='_virConnectAuth'/>
           <ref name='virDomainGetSchedulerParameters'/>
           <ref name='virGetVersion'/>
         </word>
@@ -3702,8 +3864,15 @@
           <ref name='virConnectGetVersion'/>
           <ref name='virGetVersion'/>
         </word>
+        <word name='via'>
+          <ref name='virConnectOpenAuth'/>
+        </word>
         <word name='virConnCopyLastError'>
           <ref name='virConnGetLastError'/>
+        </word>
+        <word name='virConnectCredentialType'>
+          <ref name='_virConnectAuth'/>
+          <ref name='_virConnectCredential'/>
         </word>
         <word name='virConnectGetCapabilities'>
           <ref name='virDomainMigrate'/>
@@ -3882,6 +4051,7 @@
           <ref name='virConnCopyLastError'/>
           <ref name='virConnSetErrorFunc'/>
           <ref name='virConnectGetURI'/>
+          <ref name='virConnectOpenAuth'/>
           <ref name='virCopyLastError'/>
           <ref name='virDomainCoreDump'/>
           <ref name='virDomainGetMaxVcpus'/>
@@ -3903,6 +4073,7 @@
           <ref name='VIR_GET_CPUMAP'/>
           <ref name='VIR_UNUSE_CPU'/>
           <ref name='VIR_USE_CPU'/>
+          <ref name='_virConnectCredential'/>
           <ref name='virConnCopyLastError'/>
           <ref name='virConnectClose'/>
           <ref name='virConnectGetVersion'/>
@@ -3935,7 +4106,7 @@
         </word>
       </letter>
     </chunk>
-    <chunk name='chunk7'>
+    <chunk name='chunk8'>
       <letter name='x'>
         <word name='xen'>
           <ref name='virConnectOpen'/>
@@ -3964,14 +4135,15 @@
       </letter>
     </chunk>
     <chunks>
-      <chunk name='chunk0' start='A' end='V'/>
-      <chunk name='chunk1' start='W' end='c'/>
-      <chunk name='chunk2' start='d' end='g'/>
-      <chunk name='chunk3' start='h' end='m'/>
-      <chunk name='chunk4' start='n' end='r'/>
-      <chunk name='chunk5' start='s' end='t'/>
-      <chunk name='chunk6' start='u' end='w'/>
-      <chunk name='chunk7' start='x' end='z'/>
+      <chunk name='chunk0' start='A' end='U'/>
+      <chunk name='chunk1' start='V' end='b'/>
+      <chunk name='chunk2' start='c' end='d'/>
+      <chunk name='chunk3' start='e' end='i'/>
+      <chunk name='chunk4' start='j' end='n'/>
+      <chunk name='chunk5' start='o' end='r'/>
+      <chunk name='chunk6' start='s' end='t'/>
+      <chunk name='chunk7' start='u' end='w'/>
+      <chunk name='chunk8' start='x' end='z'/>
     </chunks>
   </index>
 </apirefs>

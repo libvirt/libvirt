@@ -326,6 +326,7 @@ virConnectCheckStoreID(virConnectPtr conn, int id)
 int
 xenStoreOpen(virConnectPtr conn,
              xmlURIPtr uri ATTRIBUTE_UNUSED,
+             virConnectAuthPtr auth ATTRIBUTE_UNUSED,
              int flags ATTRIBUTE_UNUSED)
 {
     xenUnifiedPrivatePtr priv = (xenUnifiedPrivatePtr) conn->privateData;
@@ -333,7 +334,7 @@ xenStoreOpen(virConnectPtr conn,
 #ifdef PROXY
     priv->xshandle = xs_daemon_open_readonly();
 #else
-    if (flags & VIR_DRV_OPEN_RO)
+    if (flags & VIR_CONNECT_RO)
 	priv->xshandle = xs_daemon_open_readonly();
     else
 	priv->xshandle = xs_daemon_open();

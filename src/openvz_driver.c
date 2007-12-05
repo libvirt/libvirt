@@ -89,7 +89,12 @@ static int openvzReload(void);
 static int openvzActive(void);
 static int openvzCloseNetwork(virConnectPtr conn);
 static virDrvOpenStatus openvzOpenNetwork(virConnectPtr conn, 
-        const char *name ATTRIBUTE_UNUSED, int flags ATTRIBUTE_UNUSED);
+                                          const char *name ATTRIBUTE_UNUSED,
+                                          int *credtype ATTRIBUTE_UNUSED,
+                                          int ncredtype ATTRIBUTE_UNUSED,
+                                          virConnectAuthCallbackPtr cb ATTRIBUTE_UNUSED,
+                                          void *cbdata ATTRIBUTE_UNUSED,
+                                          int flags ATTRIBUTE_UNUSED);
 
 static virDomainPtr openvzDomainDefineXML(virConnectPtr conn, const char *xml);
 static virDomainPtr openvzDomainCreateLinux(virConnectPtr conn, const char *xml, 
@@ -551,8 +556,12 @@ bail_out5:
 }
 
 static virDrvOpenStatus openvzOpen(virConnectPtr conn,
-                           const char *name,
-                           int flags ATTRIBUTE_UNUSED) {
+                                   const char *name,
+                                   int *credtype ATTRIBUTE_UNUSED,
+                                   int ncredtype ATTRIBUTE_UNUSED,
+                                   virConnectAuthCallbackPtr cb ATTRIBUTE_UNUSED,
+                                   void *cbdata ATTRIBUTE_UNUSED,
+                                   int flags ATTRIBUTE_UNUSED) {
     struct openvz_vm *vms;
 
     /* Just check if the guy is root. Nothing really to open for OpenVZ */
@@ -693,8 +702,12 @@ static int openvzCloseNetwork(virConnectPtr conn ATTRIBUTE_UNUSED) {
 }
 
 static virDrvOpenStatus openvzOpenNetwork(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                         const char *name ATTRIBUTE_UNUSED,
-                                         int flags ATTRIBUTE_UNUSED) {
+                                          const char *name ATTRIBUTE_UNUSED,
+                                          int *credtype ATTRIBUTE_UNUSED,
+                                          int ncredtype ATTRIBUTE_UNUSED,
+                                          virConnectAuthCallbackPtr cb ATTRIBUTE_UNUSED,
+                                          void *cbdata ATTRIBUTE_UNUSED,
+                                          int flags ATTRIBUTE_UNUSED) {
     return VIR_DRV_OPEN_SUCCESS;
 }
 

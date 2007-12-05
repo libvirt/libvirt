@@ -235,7 +235,7 @@ do_connect(virConnectPtr xend)
 	 * is rather normal, this should fallback to the proxy (or
 	 * remote) mechanism.
 	 */
-	if ((getuid() == 0) || (xend->flags & VIR_DRV_OPEN_RO)) {
+	if ((getuid() == 0) || (xend->flags & VIR_CONNECT_RO)) {
 	    virXendError(xend, VIR_ERR_INTERNAL_ERROR,
 			 "failed to connect to xend");
         }
@@ -2042,7 +2042,9 @@ error:
  * Returns 0 in case of success, -1 in case of error.
  */
 int
-xenDaemonOpen(virConnectPtr conn, xmlURIPtr uri,
+xenDaemonOpen(virConnectPtr conn,
+              xmlURIPtr uri,
+              virConnectAuthPtr auth ATTRIBUTE_UNUSED,
               int flags ATTRIBUTE_UNUSED)
 {
     int ret;

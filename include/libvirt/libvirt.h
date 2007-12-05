@@ -1,3 +1,4 @@
+
 /* -*- c -*-
  * libvirt.h:
  * Summary: core interfaces for the libvirt library
@@ -275,6 +276,74 @@ virDomainPtr virDomainMigrate (virDomainPtr domain, virConnectPtr dconn,
 typedef virNodeInfo *virNodeInfoPtr;
 
 /**
+ * virConnectFlags
+ *
+ * Flags when openning a connection to a hypervisor
+ */
+typedef enum {
+    VIR_CONNECT_RO = 1,    /* A readonly connection */
+} virConnectFlags;
+
+
+typedef enum {
+    VIR_CRED_USERNAME = 1,     /* Identity to act as */
+    VIR_CRED_AUTHNAME = 2,     /* Identify to authorize as */
+    VIR_CRED_LANGUAGE = 3,     /* RFC 1766 languages, comma separated */
+    VIR_CRED_CNONCE = 4,       /* client supplies a nonce */
+    VIR_CRED_PASSPHRASE = 5,   /* Passphrase secret */
+    VIR_CRED_ECHOPROMPT = 6,   /* Challenge response */
+    VIR_CRED_NOECHOPROMPT = 7, /* Challenge response */
+    VIR_CRED_REALM = 8,        /* Authentication realm */
+    VIR_CRED_EXTERNAL = 9,     /* Externally managed credential */
+
+    /* More may be added - expect the unexpected */
+} virConnectCredentialType;
+
+struct _virConnectCredential {
+    int type; /* One of virConnectCredentialType constants */
+    const char *prompt; /* Prompt to show to user */
+    const char *challenge; /* Additional challenge to show */
+    const char *defresult; /* Optional default result */
+    char *result; /* Result to be filled with user response (or defresult) */
+    unsigned int resultlen; /* Length of the result */
+};
+
+typedef struct _virConnectCredential virConnectCredential;
+typedef virConnectCredential *virConnectCredentialPtr;
+
+
+/**
+ * virConnectCredCallbackPtr
+ *
+ * @param authtype type of authentication being performed
+ * @param cred list of virConnectCredential object to fetch from user
+ * @param ncred size of cred list
+ * @param cbdata opaque data passed to virConnectOpenAuth
+ * 
+ * When authentication requires one or more interactions, this callback
+ * is invoked. For each interaction supplied, data must be gathered
+ * from the user and filled in to the 'result' and 'resultlen' fields.
+ * If an interaction can not be filled, fill in NULL and 0.
+ *
+ * Return 0 if all interactions were filled, or -1 upon error
+ */
+typedef int (*virConnectAuthCallbackPtr)(virConnectCredentialPtr cred,
+					 unsigned int ncred,
+					 void *cbdata);
+
+struct _virConnectAuth {
+    int *credtype; /* List of supported virConnectCredentialType values */
+    unsigned int ncredtype;
+
+    virConnectAuthCallbackPtr cb; /* Callback used to collect credentials */
+    void *cbdata;
+};
+
+
+typedef struct _virConnectAuth virConnectAuth;
+typedef virConnectAuth *virConnectAuthPtr;
+
+/**
  * VIR_UUID_BUFLEN:
  *
  * This macro provides the length of the buffer required
@@ -314,6 +383,9 @@ int			virInitialize		(void);
 
 virConnectPtr		virConnectOpen		(const char *name);
 virConnectPtr		virConnectOpenReadOnly	(const char *name);
+virConnectPtr           virConnectOpenAuth      (const char *name,
+						 virConnectAuthPtr auth,
+						 int flags);
 int			virConnectClose		(virConnectPtr conn);
 const char *		virConnectGetType	(virConnectPtr conn);
 int			virConnectGetVersion	(virConnectPtr conn,

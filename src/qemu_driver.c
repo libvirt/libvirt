@@ -1390,6 +1390,7 @@ static int qemudMonitorCommand(struct qemud_driver *driver ATTRIBUTE_UNUSED,
 
 static virDrvOpenStatus qemudOpen(virConnectPtr conn,
                                   xmlURIPtr uri,
+                                  virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                   int flags ATTRIBUTE_UNUSED) {
     uid_t uid = getuid();
 
@@ -2575,6 +2576,7 @@ static virNetworkPtr qemudNetworkLookupByName(virConnectPtr conn ATTRIBUTE_UNUSE
 
 static virDrvOpenStatus qemudOpenNetwork(virConnectPtr conn,
                                          xmlURIPtr uri ATTRIBUTE_UNUSED,
+                                         virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                          int flags ATTRIBUTE_UNUSED) {
     if (!qemu_driver)
         return VIR_DRV_OPEN_DECLINED;

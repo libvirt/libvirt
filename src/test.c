@@ -882,6 +882,7 @@ static int getNetworkIndex(virNetworkPtr network) {
 
 static int testOpen(virConnectPtr conn,
                     xmlURIPtr uri,
+                    virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                     int flags ATTRIBUTE_UNUSED)
 {
     int ret;
@@ -1644,6 +1645,7 @@ static int testDomainSetSchedulerParams(virDomainPtr domain,
 
 static virDrvOpenStatus testOpenNetwork(virConnectPtr conn,
                                         xmlURIPtr uri ATTRIBUTE_UNUSED,
+                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
                                         int flags ATTRIBUTE_UNUSED) {
     if (STRNEQ(conn->driver->name, "Test"))
         return VIR_DRV_OPEN_DECLINED;

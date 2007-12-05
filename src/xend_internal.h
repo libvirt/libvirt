@@ -183,7 +183,7 @@ char *xenDaemonDomainDumpXMLByName(virConnectPtr xend,
   char *xend_parse_domain_sexp(virConnectPtr conn,  char *root, int xendConfigVersion);
 
 /* refactored ones */
-int xenDaemonOpen(virConnectPtr conn, xmlURIPtr uri, int flags);
+int xenDaemonOpen(virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int flags);
 int xenDaemonClose(virConnectPtr conn);
 int xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer);
 int xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info);

@@ -219,7 +219,7 @@ done:
  */
 
 static int
-xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, int flags)
+xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int flags)
 {
     int i, j;
     xenUnifiedPrivatePtr priv;
@@ -274,7 +274,7 @@ xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, int flags)
 #ifdef ENABLE_DEBUG
             fprintf (stderr, "libvirt: xenUnifiedOpen: trying Xen sub-driver %d\n", i);
 #endif
-            if (drivers[i]->open (conn, uri, flags) == VIR_DRV_OPEN_SUCCESS)
+            if (drivers[i]->open (conn, uri, auth, flags) == VIR_DRV_OPEN_SUCCESS)
                 priv->opened[i] = 1;
 #ifdef ENABLE_DEBUG
             fprintf (stderr, "libvirt: xenUnifiedOpen: Xen sub-driver %d open %s\n",

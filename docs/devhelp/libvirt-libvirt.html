@@ -61,19 +61,26 @@ typedef struct _virDomainInterfaceStats <a href="#virDomainInterfaceStatsStruct"
 typedef enum <a href="#virDomainState">virDomainState</a>;
 typedef struct _virDomain <a href="#virDomain">virDomain</a>;
 typedef <a href="libvirt-libvirt.html#virDomainInterfaceStatsStruct">virDomainInterfaceStatsStruct</a> * <a href="#virDomainInterfaceStatsPtr">virDomainInterfaceStatsPtr</a>;
+typedef <a href="libvirt-libvirt.html#virConnectAuth">virConnectAuth</a> * <a href="#virConnectAuthPtr">virConnectAuthPtr</a>;
 typedef enum <a href="#virSchedParameterType">virSchedParameterType</a>;
-typedef <a href="libvirt-libvirt.html#virSchedParameter">virSchedParameter</a> * <a href="#virSchedParameterPtr">virSchedParameterPtr</a>;
+typedef <a href="libvirt-libvirt.html#virConnectCredential">virConnectCredential</a> * <a href="#virConnectCredentialPtr">virConnectCredentialPtr</a>;
 typedef <a href="libvirt-libvirt.html#virNodeInfo">virNodeInfo</a> * <a href="#virNodeInfoPtr">virNodeInfoPtr</a>;
 typedef <a href="libvirt-libvirt.html#virNetwork">virNetwork</a> * <a href="#virNetworkPtr">virNetworkPtr</a>;
 typedef <a href="libvirt-libvirt.html#virDomainInfo">virDomainInfo</a> * <a href="#virDomainInfoPtr">virDomainInfoPtr</a>;
 typedef <a href="libvirt-libvirt.html#virConnect">virConnect</a> * <a href="#virConnectPtr">virConnectPtr</a>;
 typedef struct _virSchedParameter <a href="#virSchedParameter">virSchedParameter</a>;
+typedef enum <a href="#virConnectFlags">virConnectFlags</a>;
+typedef <a href="libvirt-libvirt.html#virSchedParameter">virSchedParameter</a> * <a href="#virSchedParameterPtr">virSchedParameterPtr</a>;
 typedef enum <a href="#virVcpuState">virVcpuState</a>;
+typedef struct _virConnectAuth <a href="#virConnectAuth">virConnectAuth</a>;
+typedef struct _virConnectCredential <a href="#virConnectCredential">virConnectCredential</a>;
 typedef <a href="libvirt-libvirt.html#virVcpuInfo">virVcpuInfo</a> * <a href="#virVcpuInfoPtr">virVcpuInfoPtr</a>;
 typedef enum <a href="#virDomainXMLFlags">virDomainXMLFlags</a>;
 typedef <a href="libvirt-libvirt.html#virDomain">virDomain</a> * <a href="#virDomainPtr">virDomainPtr</a>;
+typedef enum <a href="#virConnectCredentialType">virConnectCredentialType</a>;
 typedef enum <a href="#virDomainCreateFlags">virDomainCreateFlags</a>;
 int	<a href="#virDomainGetInfo">virDomainGetInfo</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 <a href="libvirt-libvirt.html#virDomainInfoPtr">virDomainInfoPtr</a> info);
+int	<a href="#virNetworkCreate">virNetworkCreate</a>		(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network);
 int	<a href="#virNetworkFree">virNetworkFree</a>			(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network);
 const char *	<a href="#virNetworkGetName">virNetworkGetName</a>	(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network);
 const char *	<a href="#virDomainGetName">virDomainGetName</a>	(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
@@ -88,6 +95,7 @@ int	<a href="#virInitialize">virInitialize</a>			(void);
 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainLookupByName">virDomainLookupByName</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * name);
 <a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a>	<a href="#virNetworkLookupByUUID">virNetworkLookupByUUID</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const unsigned char * uuid);
 char *	<a href="#virNetworkGetBridgeName">virNetworkGetBridgeName</a>		(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network);
+char *	<a href="#virNetworkGetXMLDesc">virNetworkGetXMLDesc</a>		(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network, <br/>					 int flags);
 int	<a href="#virDomainPinVcpu">virDomainPinVcpu</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned int vcpu, <br/>					 unsigned char * cpumap, <br/>					 int maplen);
 int	<a href="#virDomainRestore">virDomainRestore</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * from);
 const char *	<a href="#virConnectGetType">virConnectGetType</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
@@ -119,21 +127,20 @@ int	<a href="#virDomainFree">virDomainFree</a>			(<a href="libvirt-libvirt.html#
 int	<a href="#virDomainSetAutostart">virDomainSetAutostart</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 int autostart);
 int	<a href="#virDomainSuspend">virDomainSuspend</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 int	<a href="#virConnectGetMaxVcpus">virConnectGetMaxVcpus</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * type);
-<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virNetworkGetConnect">virNetworkGetConnect</a>	(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> net);
 int	<a href="#virConnectNumOfDefinedDomains">virConnectNumOfDefinedDomains</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
-<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a>	<a href="#virNetworkCreateXML">virNetworkCreateXML</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * xmlDesc);
+<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virNetworkGetConnect">virNetworkGetConnect</a>	(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> net);
 <a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a>	<a href="#virNetworkDefineXML">virNetworkDefineXML</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * xml);
-int	<a href="#virNetworkCreate">virNetworkCreate</a>		(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network);
+<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainLookupByID">virDomainLookupByID</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 int id);
 int	<a href="#virDomainSetSchedulerParameters">virDomainSetSchedulerParameters</a>	(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 <a href="libvirt-libvirt.html#virSchedParameterPtr">virSchedParameterPtr</a> params, <br/>					 int nparams);
 int	<a href="#virNodeGetCellsFreeMemory">virNodeGetCellsFreeMemory</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 unsigned long long * freeMems, <br/>					 int startCell, <br/>					 int maxCells);
 int	<a href="#virConnectClose">virConnectClose</a>			(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
 int	<a href="#virDomainReboot">virDomainReboot</a>			(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned int flags);
 int	<a href="#virDomainBlockStats">virDomainBlockStats</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom, <br/>					 const char * path, <br/>					 <a href="libvirt-libvirt.html#virDomainBlockStatsPtr">virDomainBlockStatsPtr</a> stats, <br/>					 size_t size);
 int	<a href="#virDomainSetVcpus">virDomainSetVcpus</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned int nvcpus);
-<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainLookupByID">virDomainLookupByID</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 int id);
+<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virConnectOpenAuth">virConnectOpenAuth</a>	(const char * name, <br/>					 <a href="libvirt-libvirt.html#virConnectAuthPtr">virConnectAuthPtr</a> auth, <br/>					 int flags);
 int	<a href="#virNetworkGetUUIDString">virNetworkGetUUIDString</a>		(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network, <br/>					 char * buf);
 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainMigrate">virDomainMigrate</a>	(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 <a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> dconn, <br/>					 unsigned long flags, <br/>					 const char * dname, <br/>					 const char * uri, <br/>					 unsigned long bandwidth);
-char *	<a href="#virNetworkGetXMLDesc">virNetworkGetXMLDesc</a>		(<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a> network, <br/>					 int flags);
+<a href="libvirt-libvirt.html#virNetworkPtr">virNetworkPtr</a>	<a href="#virNetworkCreateXML">virNetworkCreateXML</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * xmlDesc);
 unsigned int	<a href="#virDomainGetID">virDomainGetID</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 int	<a href="#virDomainResume">virDomainResume</a>			(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain);
 <a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a>	<a href="#virDomainCreateLinux">virDomainCreateLinux</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 const char * xmlDesc, <br/>					 unsigned int flags);
@@ -149,6 +156,7 @@ char *	<a href="#virConnectGetHostname">virConnectGetHostname</a>		(<a href="lib
 char *	<a href="#virDomainGetXMLDesc">virDomainGetXMLDesc</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 int flags);
 int	<a href="#virDomainSetMaxMemory">virDomainSetMaxMemory</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br/>					 unsigned long memory);
 int	<a href="#virDomainInterfaceStats">virDomainInterfaceStats</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom, <br/>					 const char * path, <br/>					 <a href="libvirt-libvirt.html#virDomainInterfaceStatsPtr">virDomainInterfaceStatsPtr</a> stats, <br/>					 size_t size);
+typedef int <a href="#virConnectAuthCallbackPtr">virConnectAuthCallbackPtr</a>	(<a href="libvirt-libvirt.html#virConnectCredentialPtr">virConnectCredentialPtr</a> cred, <br/>					 unsigned int ncred, <br/>					 void * cbdata);
 int	<a href="#virConnectGetVersion">virConnectGetVersion</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 unsigned long * hvVer);
 int	<a href="#virConnectListNetworks">virConnectListNetworks</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br/>					 char ** const names, <br/>					 int maxnames);
 char *	<a href="#virConnectGetURI">virConnectGetURI</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn);
@@ -209,6 +217,54 @@ int	<a href="#virDomainSave">virDomainSave</a>			(<a href="libvirt-libvirt.html#
         <div class="refsect2" lang="en"><h3><a name="virConnect">Structure </a>virConnect</h3><pre class="programlisting">struct _virConnect {
 The content of this structure is not made public by the API.
 } virConnect;
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConnectAuth">Structure </a>virConnectAuth</h3><pre class="programlisting">struct _virConnectAuth {
+    int *	credtype	: List of supported <a href="libvirt-libvirt.html#virConnectCredentialType">virConnectCredentialType</a> values
+    unsigned int	ncredtype
+    <a href="libvirt-libvirt.html#virConnectAuthCallbackPtr">virConnectAuthCallbackPtr</a>	cb	: Callback used to collect credentials
+    void *	cbdata
+} virConnectAuth;
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConnectAuthPtr">Typedef </a>virConnectAuthPtr</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectAuth">virConnectAuth</a> * virConnectAuthPtr;
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConnectCredential">Structure </a>virConnectCredential</h3><pre class="programlisting">struct _virConnectCredential {
+    int	type	: One of <a href="libvirt-libvirt.html#virConnectCredentialType">virConnectCredentialType</a> constants
+    const char *	prompt	: Prompt to show to user
+    const char *	challenge	: Additional challenge to show
+    const char *	defresult	: Optional default result
+    char *	result	: Result to be filled with user response (or defresult)
+    unsigned int	resultlen	: Length of the result
+} virConnectCredential;
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConnectCredentialPtr">Typedef </a>virConnectCredentialPtr</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectCredential">virConnectCredential</a> * virConnectCredentialPtr;
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConnectCredentialType">Enum </a>virConnectCredentialType</h3><pre class="programlisting">enum <a href="#virConnectCredentialType">virConnectCredentialType</a> {
+    <a name="VIR_CRED_USERNAME">VIR_CRED_USERNAME</a> = 1 /* Identity to act as */
+    <a name="VIR_CRED_AUTHNAME">VIR_CRED_AUTHNAME</a> = 2 /* Identify to authorize as */
+    <a name="VIR_CRED_LANGUAGE">VIR_CRED_LANGUAGE</a> = 3 /* RFC 1766 languages, comma separated */
+    <a name="VIR_CRED_CNONCE">VIR_CRED_CNONCE</a> = 4 /* client supplies a nonce */
+    <a name="VIR_CRED_PASSPHRASE">VIR_CRED_PASSPHRASE</a> = 5 /* Passphrase secret */
+    <a name="VIR_CRED_ECHOPROMPT">VIR_CRED_ECHOPROMPT</a> = 6 /* Challenge response */
+    <a name="VIR_CRED_NOECHOPROMPT">VIR_CRED_NOECHOPROMPT</a> = 7 /* Challenge response */
+    <a name="VIR_CRED_REALM">VIR_CRED_REALM</a> = 8 /* Authentication realm */
+    <a name="VIR_CRED_EXTERNAL">VIR_CRED_EXTERNAL</a> = 9 /*  Externally managed credential More may be added - expect the unexpected */
+};
+</pre><p/>
+</div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConnectFlags">Enum </a>virConnectFlags</h3><pre class="programlisting">enum <a href="#virConnectFlags">virConnectFlags</a> {
+    <a name="VIR_CONNECT_RO">VIR_CONNECT_RO</a> = 1 /*  A readonly connection */
+};
 </pre><p/>
 </div>
         <hr/>
@@ -372,6 +428,14 @@ The content of this structure is not made public by the API.
 </pre><p/>
 </div>
         <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConnectAuthCallbackPtr"/>Function type virConnectAuthCallbackPtr</h3><pre class="programlisting">int	virConnectAuthCallbackPtr	(<a href="libvirt-libvirt.html#virConnectCredentialPtr">virConnectCredentialPtr</a> cred, <br/>					 unsigned int ncred, <br/>					 void * cbdata)<br/>
+</pre><p/>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cred</tt></i>:</span></td><td/></tr><tr><td><span class="term"><i><tt>ncred</tt></i>:</span></td><td/></tr><tr><td><span class="term"><i><tt>cbdata</tt></i>:</span></td><td/></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td/></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConnectAuthPtrDefault">Variable </a>virConnectAuthPtrDefault</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectAuthPtr">virConnectAuthPtr</a> virConnectAuthPtrDefault;
+</pre><p/>
+</div>
+        <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnectClose"/>virConnectClose ()</h3><pre class="programlisting">int	virConnectClose			(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br/>
 </pre><p>This function closes the connection to the Hypervisor. This should not be called if further interaction with the Hypervisor are needed especially if there is running domain which need further monitoring by the application.</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 in case of success or -1 in case of error.</td></tr></tbody></table></div></div>
@@ -435,6 +499,10 @@ The content of this structure is not made public by the API.
         <div class="refsect2" lang="en"><h3><a name="virConnectOpen"/>virConnectOpen ()</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	virConnectOpen		(const char * name)<br/>
 </pre><p>This function should be called first to get a connection to the Hypervisor and xen store</p>
 <div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>name</tt></i>:</span></td><td>URI of the hypervisor</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a pointer to the hypervisor connection or NULL in case of error URIs are documented at http://libvirt.org/uri.html</td></tr></tbody></table></div></div>
+        <hr/>
+        <div class="refsect2" lang="en"><h3><a name="virConnectOpenAuth"/>virConnectOpenAuth ()</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	virConnectOpenAuth	(const char * name, <br/>					 <a href="libvirt-libvirt.html#virConnectAuthPtr">virConnectAuthPtr</a> auth, <br/>					 int flags)<br/>
+</pre><p>This function should be called first to get a connection to the Hypervisor. If neccessary, authentication will be performed fetching credentials via the callback</p>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>name</tt></i>:</span></td><td>URI of the hypervisor</td></tr><tr><td><span class="term"><i><tt>auth</tt></i>:</span></td><td>Authenticate callback parameters</td></tr><tr><td><span class="term"><i><tt>flags</tt></i>:</span></td><td>Open flags</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a pointer to the hypervisor connection or NULL in case of error URIs are documented at http://libvirt.org/uri.html</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnectOpenReadOnly"/>virConnectOpenReadOnly ()</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	virConnectOpenReadOnly	(const char * name)<br/>
 </pre><p>This function should be called first to get a restricted connection to the libbrary functionalities. The set of APIs usable are then restricted on the available methods to control the domains.</p>

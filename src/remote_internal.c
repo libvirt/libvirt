@@ -286,7 +286,6 @@ remoteForkDaemon(virConnectPtr conn)
 }
 
 
-/* Must not overlap with virDrvOpenFlags */
 enum virDrvOpenRemoteFlags {
     VIR_DRV_OPEN_REMOTE_RO = (1 << 0),
     VIR_DRV_OPEN_REMOTE_UNIX = (1 << 1),
@@ -295,8 +294,11 @@ enum virDrvOpenRemoteFlags {
 };
 
 static int
-doRemoteOpen (virConnectPtr conn, struct private_data *priv,
-              xmlURIPtr uri, int flags)
+doRemoteOpen (virConnectPtr conn,
+              struct private_data *priv,
+              xmlURIPtr uri,
+              virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+              int flags)
 {
     if (!uri || !uri->scheme)
         return VIR_DRV_OPEN_DECLINED; /* Decline - not a URL. */
@@ -779,7 +781,10 @@ doRemoteOpen (virConnectPtr conn, struct private_data *priv,
 }
 
 static int
-remoteOpen (virConnectPtr conn, xmlURIPtr uri, int flags)
+remoteOpen (virConnectPtr conn,
+            xmlURIPtr uri,
+            virConnectAuthPtr auth,
+            int flags)
 {
     struct private_data *priv;
     int ret, rflags = 0;
@@ -793,7 +798,7 @@ remoteOpen (virConnectPtr conn, xmlURIPtr uri, int flags)
         return VIR_DRV_OPEN_ERROR;
     }
 
-    if (flags & VIR_DRV_OPEN_RO)
+    if (flags & VIR_CONNECT_RO)
         rflags |= VIR_DRV_OPEN_REMOTE_RO;
 
     if (uri &&
@@ -814,7 +819,7 @@ remoteOpen (virConnectPtr conn, xmlURIPtr uri, int flags)
     memset(priv, 0, sizeof(struct private_data));
     priv->magic = DEAD;
     priv->sock = -1;
-    ret = doRemoteOpen(conn, priv, uri, rflags);
+    ret = doRemoteOpen(conn, priv, uri, auth, rflags);
     if (ret != VIR_DRV_OPEN_SUCCESS) {
         conn->privateData = NULL;
         free(priv);
@@ -2442,6 +2447,7 @@ remoteDomainInterfaceStats (virDomainPtr domain, const char *path,
 static int
 remoteNetworkOpen (virConnectPtr conn,
                    xmlURIPtr uri,
+                   virConnectAuthPtr auth,
                    int flags)
 {
     if (inside_daemon)
@@ -2468,14 +2474,14 @@ remoteNetworkOpen (virConnectPtr conn,
             error (conn, VIR_ERR_NO_MEMORY, "struct private_data");
             return VIR_DRV_OPEN_ERROR;
         }
-        if (flags & VIR_DRV_OPEN_RO)
+        if (flags & VIR_CONNECT_RO)
             rflags |= VIR_DRV_OPEN_REMOTE_RO;
         rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
 
         memset(priv, 0, sizeof(struct private_data));
         priv->magic = DEAD;
         priv->sock = -1;
-        ret = doRemoteOpen(conn, priv, uri, rflags);
+        ret = doRemoteOpen(conn, priv, uri, auth, rflags);
         if (ret != VIR_DRV_OPEN_SUCCESS) {
             conn->networkPrivateData = NULL;
             free(priv);

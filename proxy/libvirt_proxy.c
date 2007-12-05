@@ -77,7 +77,7 @@ proxyInitXen(void) {
     priv->xshandle = NULL;
     priv->proxy = -1;
 
-    ret = xenHypervisorOpen(conn, NULL, 0);
+    ret = xenHypervisorOpen(conn, NULL, NULL, 0);
     if (ret < 0) {
         fprintf(stderr, "Failed to open Xen hypervisor\n");
         return(-1);
@@ -93,7 +93,7 @@ proxyInitXen(void) {
         fprintf(stderr, "Failed to connect to Xen daemon\n");
         return(-1);
     }
-    ret = xenStoreOpen(conn, NULL, VIR_DRV_OPEN_RO);
+    ret = xenStoreOpen(conn, NULL, NULL, VIR_CONNECT_RO);
     if (ret < 0) {
         fprintf(stderr, "Failed to open XenStore connection");
         return (-1);
