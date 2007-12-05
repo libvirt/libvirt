@@ -170,6 +170,11 @@ pre.programlisting
     background:		#F0F0F0;
     }
 
+pre {
+    overflow: auto;
+    width: 100%;
+}
+
 table.top_table {
   border-collapse: collapse;
 }

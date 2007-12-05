@@ -60,6 +60,9 @@
       <xsl:when test="$name = '#HVSupport'">
         <xsl:text>hvsupport.html</xsl:text>
       </xsl:when>
+      <xsl:when test="$name = '#ACL'">
+        <xsl:text>auth.html</xsl:text>
+      </xsl:when>
       <xsl:when test="$name = '#Windows'">
         <xsl:text>windows.html</xsl:text>
       </xsl:when>

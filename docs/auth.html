@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>Access control</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Access control</h1><p>
+When connecting to libvirt, some connections may require client
+authentication before allowing use of the APIs. The set of possible
+authentication mechanisms is administrator controlled, independant
+of applications using libvirt.
+</p><ul><li><a href="#ACL_server_config">Server configuration</a></li>
+ <li><a href="#ACL_server_unix_perms">UNIX socket permissions/group</a></li>
+ <li><a href="#ACL_server_polkit">UNIX socket PolicyKit auth</a></li>
+ <li><a href="#ACL_server_username">Username/password auth</a></li>
+ <li><a href="#ACL_server_kerberos">Kerberos auth</a></li>
+</ul><h3 name="ACL_server_config">Server configuration</h3><p>
+The libvirt daemon allows the adminstrator to choose the authentication
+mechanisms used for client connections on each network socket independantly.
+This is primarily controlled via the libvirt daemon master config file in
+<code>/etc/libvirt/libvirtd.conf</code>. Each of the libvirt sockets can
+have its authentication mechanism configured independantly. There is
+currently a choice of <code>none</code>, <code>polkit</code>, and <code>sasl</code>.
+The SASL scheme can be further configured to choose between a large
+number of different mechanisms.
+</p><h3 name="ACL_server_unix_perms">UNIX socket permissions/group</h3><p>
+If libvirt does not contain support for PolicyKit, then access control for
+the UNIX domain socket is done using traditional file user/group ownership
+and permissions. There are 2 sockets, one for full read-write access, the
+other for read-only access. The RW socket will be restricted (mode 0700) to
+only allow the <code>root</code> user to connect. The read-only socket will
+be open access (mode 0777) to allow any user to connect.
+</p><p>
+To allow non-root users greater access, the <code>libvirtd.conf</code> file
+can be edited to change the permissions via the <code>unix_sock_rw_perms</code>,
+config parameter and to set a user group via the <code>unix_sock_group</code>
+parameter. For example, setting the former to mode <code>0770</code> and the
+latter <code>wheel</code> would let any user in the wheel group connect to
+the libvirt daemon.
+</p><h3 name="ACL_server_polkit">UNIX socket PolicyKit auth</h3><p>
+If libvirt contains support for PolicyKit, then access control options are
+more advanced. The <code>unix_sock_auth</code> parameter will default to
+<code>polkit</code>, and the file permissions will default to <code>0777</code>
+even on the RW socket. Upon connecting to the socket, the client application
+will be required to identify itself with PolicyKit. The default policy for the
+RW daemon socket will require any application running in the current desktop
+session to authenticate using the user's password. This is akin to <code>sudo</code>
+auth, but does not require that the client application ultimately run as root.
+Default policy will still allow any application to connect to the RO socket.
+</p><p>
+The default policy can be overriden by the adminstrator using the PolicyKit
+master configuration file in <code>/etc/PolicyKit/PolicyKit.conf</code>. The
+<code>PolicyKit.conf(5)</code> manual page provides details on the syntax
+available. The two libvirt daemon actions available are named <code>org.libvirt.unix.monitor</code>
+for the RO socket, and <code>org.libvirt.unix.manage</code> for the RW socket.
+</p><p>
+As an example, to allow a user <code>fred</code>full access to the RW socket,
+while requiring <code>joe</code> to authenticate with the admin password,
+would require adding the following snippet to <code>PolicyKit.conf</code>.
+</p><pre>
+  &lt;match action="org.libvirt.unix.manage" user="fred"&gt;
+    &lt;return result="yes"/&gt;
+  &lt;/match&gt;
+  &lt;match action="org.libvirt.unix.manage" user="joe"&gt;
+    &lt;return result="auth_admin"/&gt;
+  &lt;/match&gt;
+</pre><h3 name="ACL_server_username">Username/password auth</h3><p>
+The plain TCP socket of the libvirt daemon defaults to using SASL for authentication.
+The SASL mechanism configured by default is DIGEST-MD5, which provides a basic
+username+password style authentication. It also provides for encryption of the data
+stream, so the security of the plain TCP socket is on a par with that of the TLS
+socket. If desired the UNIX socket and TLS socket can also have SASL enabled by
+setting the <code>auth_unix_ro</code>, <code>auth_unix_rw</code>, <code>auth_tls</code>
+config params in <code>libvirt.conf</code>.
+</p><p>
+Out of the box, no user accounts are defined, so no clients will be able to authenticate
+on the TCP socket. Adding users and setting their passwords is done with the <code>saslpasswd2</code>
+command. When running this command it is important to tell it that the appname is <code>libvirt</code>.
+As an example, to add a user <code>fred</code>, run
+</p><pre>
+# saslpasswd2 -a libvirt fred
+Password: xxxxxx
+Again (for verification): xxxxxx
+</pre><p>
+To see a list of all accounts the <code>sasldblistusers2</code> command can be used.
+This command expects to be given the path to the libvirt user database, which is kept
+in <code>/etc/libvirt/passwd.db</code>
+</p><pre>
+# sasldblistusers2 -f /etc/libvirt/passwd.db
+fred@t60wlan.home.berrange.com: userPassword
+</pre><p>
+Finally, to disable a user's access, the <code>saslpasswd2</code> command can be used
+again:
+</p><pre>
+# saslpasswd2 -a libvirt -d fred
+</pre><h3 name="ACL_server_kerberos">Kerberos auth</h3><p>
+The plain TCP socket of the libvirt daemon defaults to using SASL for authentication.
+The SASL mechanism configured by default is DIGEST-MD5, which provides a basic
+username+password style authentication. To enable Kerberos single-sign-on instead,
+the libvirt SASL configuration file must be changed. This is <code>/etc/sasl2/libvirt.conf</code>.
+The <code>mech_list</code> parameter must first be changed to <code>gssapi</code>
+instead of the default <code>digest-md5</code>. If SASL is enabled on the UNIX
+and/or TLS sockets, Kerberos will also be used for them. Like DIGEST-MD5, the Kerberos
+mechanism provides data encryption of the session.
+</p><p>
+Some operating systems do not install the SASL kerberos plugin by default. It
+may be neccessary to install a sub-package such as <code>cyrus-sasl-gssapi</code>.
+To check whether the Kerberos plugin is installed run the <code>pluginviewer</code>
+program and verify that <code>gssapi</code> is listed,eg:
+</p><pre>
+# pluginviewer
+...snip...
+Plugin "gssapiv2" [loaded],     API version: 4
+        SASL mechanism: GSSAPI, best SSF: 56
+        security flags: NO_ANONYMOUS|NO_PLAINTEXT|NO_ACTIVE|PASS_CREDENTIALS|MUTUAL_AUTH
+        features: WANT_CLIENT_FIRST|PROXY_AUTHENTICATION|NEED_SERVER_FQDN
+</pre><p>
+Next is is neccessary for the adminsitrator of the Kerberos realm to issue a principle
+for the libvirt server. There needs to be one principle per host running the libvirt
+daemon. The principle should be named <code>libvirt/full.hostname@KERBEROS.REALM</code>.
+This is typically done by running the <code>kadmin.local</code> command on the Kerberos
+server, though some Kerberos servers have alternate ways of setting up service principles.
+Once created, the principle should be exported to a keytab, copied to the host running
+the libvirt daemon and placed in <code>/etc/libvirt/krb5.tab</code>
+</p><pre>
+# kadmin.local
+kadmin.local: add_principal libvirt/foo.example.com
+Enter password for principal "libvirt/foo.example.com@EXAMPLE.COM":
+Re-enter password for principal "libvirt/foo.example.com@EXAMPLE.COM":
+Principal "libvirt/foo.example.com@EXAMPLE.COM" created.
+
+kadmin.local:  ktadd -k /root/libvirt-foo-example.tab libvirt/foo.example.com@EXAMPLE.COM
+Entry for principal libvirt/foo.example.com@EXAMPLE.COM with kvno 4, encryption type Triple DES cbc mode with HMAC/sha1 added to keytab WRFILE:/root/libvirt-foo-example.tab.
+Entry for principal libvirt/foo.example.com@EXAMPLE.COM with kvno 4, encryption type ArcFour with HMAC/md5 added to keytab WRFILE:/root/libvirt-foo-example.tab.
+Entry for principal libvirt/foo.example.com@EXAMPLE.COM with kvno 4, encryption type DES with HMAC/sha1 added to keytab WRFILE:/root/libvirt-foo-example.tab.
+Entry for principal libvirt/foo.example.com@EXAMPLE.COM with kvno 4, encryption type DES cbc mode with RSA-MD5 added to keytab WRFILE:/root/libvirt-foo-example.tab.
+
+kadmin.local: quit
+
+# scp /root/libvirt-foo-example.tab root@foo.example.com:/etc/libvirt/krb5.tab
+# rm /root/libvirt-foo-example.tab
+</pre><p>
+Any client application wishing to connect to a Kerberos enabled libvirt server
+merely needs to run <code>kinit</code> to gain a user principle. This may well
+be done automatically when a user logs into a desktop session, if PAM is setup
+to authenticate against Kerberos.
+</p></div></div><div class="linkList2"><div class="llinks2"><h3 class="links2"><span>main menu</span></h3><ul><li><a href="index.html">Home</a></li><li><a href="news.html">Releases</a></li><li><a href="intro.html">Introduction</a></li><li><a href="architecture.html">libvirt architecture</a></li><li><a href="downloads.html">Downloads</a></li><li><a href="format.html">XML Format</a></li><li><a href="python.html">Bindings for other languages</a></li><li><a href="errors.html">Handling of errors</a></li><li><a href="FAQ.html">FAQ</a></li><li><a href="bugs.html">Reporting bugs and getting help</a></li><li><a href="windows.html">Windows support</a></li><li><a href="remote.html">Remote support</a></li><li><a href="auth.html">Access control</a></li><li><a href="uri.html">Connection URIs</a></li><li><a href="hvsupport.html">Hypervisor support</a></li><li><a href="html/index.html">API Menu</a></li><li><a href="examples/index.html">C code examples</a></li><li><a href="ChangeLog.html">Recent Changes</a></li></ul></div><div class="llinks2"><h3 class="links2"><span>related links</span></h3><ul><li><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></li><li><a href="https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&amp;component=libvirt&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;bug_status=MODIFIED&amp;short_desc_type=allwordssubstr&amp;short_desc=&amp;long_desc_type=allwordssubstr">Open bugs</a></li><li><a href="http://virt-manager.et.redhat.com/">virt-manager</a></li><li><a href="http://search.cpan.org/~danberr/Sys-Virt-0.1.0/">Perl bindings</a></li><li><a href="http://libvirt.org/ocaml/">OCaml bindings</a></li><li><a href="http://libvirt.org/ruby/">Ruby bindings</a></li><li><a href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen project</a></li><li><form action="search.php" enctype="application/x-www-form-urlencoded" method="get"><input name="query" type="text" size="12" value="Search..." /><input name="submit" type="submit" value="Go" /></form></li><li><a href="http://xmlsoft.org/"><img src="Libxml2-Logo-90x34.gif" alt="Made with Libxml2 Logo" /></a></li></ul><p class="credits">Graphics and design by <a href="mail:dfong@redhat.com">Diana Fong</a></p></div></div><div id="bottom"><p class="p1"></p></div></div></body></html>
