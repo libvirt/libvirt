@@ -1,3 +1,8 @@
+Thu Dec  6 12:00:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/remote_internal.c: Clean up a warning if neither SASL
+	  nor PolKit are enabled.
+
 Thu Dec  6 12:41:18 CET 2007 Jim Meyering <meyering@redhat.com>
 
 	Build also on systems where -lreadline requires e.g., -lncurses.

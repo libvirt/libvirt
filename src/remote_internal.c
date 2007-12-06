@@ -2841,7 +2841,12 @@ remoteNetworkSetAutostart (virNetworkPtr network, int autostart)
 
 static int
 remoteAuthenticate (virConnectPtr conn, struct private_data *priv, int in_open,
-                    virConnectAuthPtr auth, const char *authtype)
+                    virConnectAuthPtr auth
+#if !HAVE_SASL && !HAVE_POLKIT
+                    ATTRIBUTE_UNUSED
+#endif
+                    ,
+                    const char *authtype)
 {
     struct remote_auth_list_ret ret;
     int err, type = REMOTE_AUTH_NONE;
