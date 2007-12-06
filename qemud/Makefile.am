@@ -1,12 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-UUID=$(shell uuidgen)
-
-sbin_PROGRAMS = libvirtd
-
-confdir = $(sysconfdir)/libvirt/
-conf_DATA = libvirtd.conf
-
 # Distribute the generated files so that rpcgen isn't required on the
 # target machine (although almost any Unix machine will have it).
 EXTRA_DIST = libvirtd.init.in libvirtd.sysconf default-network.xml \
@@ -18,7 +11,32 @@ EXTRA_DIST = libvirtd.init.in libvirtd.sysconf default-network.xml \
 	remote_dispatch_proc_switch.h \
 	mdns.c mdns.h \
         libvirtd.sasl \
-        $(conf_DATA)
+        libvirtd.conf
+
+if RPCGEN
+.x.c:
+	rm -f $@
+	rpcgen -c -o $@ $<
+if GLIBC_RPCGEN
+	mv $@ $@.bak
+	perl -w rpcgen_fix.pl < $@.bak > $@
+endif
+
+.x.h:
+	rm -f $@
+	rpcgen -h -o $@ $<
+endif
+
+remote_protocol.c: remote_protocol.h
+
+if WITH_LIBVIRTD
+
+UUID=$(shell uuidgen)
+
+sbin_PROGRAMS = libvirtd
+
+confdir = $(sysconfdir)/libvirt/
+conf_DATA = libvirtd.conf
 
 libvirtd_SOURCES = \
 		qemud.c internal.h \
@@ -42,7 +60,6 @@ libvirtd_LDFLAGS = $(WARN_CFLAGS) $(LIBXML_LIBS) $(GNUTLS_LIBS) $(SASL_LIBS) \
                    $(POLKIT_LIBS)
 libvirtd_DEPENDENCIES = ../src/libvirt.la
 libvirtd_LDADD = ../src/libvirt.la ../gnulib/lib/libgnu.la
-
 
 if HAVE_POLKIT
 policydir = $(datadir)/PolicyKit/policy
@@ -91,22 +108,6 @@ install-data-sasl:
 uninstall-data-sasl:
 endif
 
-if RPCGEN
-.x.c:
-	rm -f $@
-	rpcgen -c -o $@ $<
-if GLIBC_RPCGEN
-	mv $@ $@.bak
-	perl -w rpcgen_fix.pl < $@.bak > $@
-endif
-
-.x.h:
-	rm -f $@
-	rpcgen -h -o $@ $<
-endif
-
-remote_protocol.c: remote_protocol.h
-
 remote.c: remote_dispatch_prototypes.h \
 	  remote_dispatch_localvars.h \
 	  remote_dispatch_proc_switch.h
@@ -149,3 +150,5 @@ install-init:
 uninstall-init:
 
 endif # DBUS_INIT_SCRIPTS_RED_HAT
+
+endif # WITH_LIBVIRTD

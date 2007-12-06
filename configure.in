@@ -131,6 +131,8 @@ AC_ARG_WITH(test,
 [  --with-test             add test driver support (on)],[],[with_test=yes])
 AC_ARG_WITH(remote,
 [  --with-remote           add remote driver support (on)],[],[with_remote=yes])
+AC_ARG_WITH(libvirtd,
+[  --with-libvirtd         add libvirtd support (on)],[],[with_libvirtd=yes])
 
 dnl
 dnl specific tests to setup DV devel environments with debug etc ...
@@ -636,6 +638,9 @@ AC_MSG_RESULT([$with_xen_proxy])
 
 AM_CONDITIONAL(WITH_PROXY,[test "$with_xen_proxy" = "yes"])
 
+dnl Enable building libvirtd?
+AM_CONDITIONAL(WITH_LIBVIRTD,[test "x$with_libvirtd" = "xyes"])
+
 dnl Check for gettext
 AM_GNU_GETTEXT_VERSION([0.14.1])
 AM_GNU_GETTEXT([external])
@@ -697,6 +702,7 @@ AC_MSG_NOTICE([    QEMU: $with_qemu])
 AC_MSG_NOTICE([  OpenVZ: $with_openvz])
 AC_MSG_NOTICE([    Test: $with_test])
 AC_MSG_NOTICE([  Remote: $with_remote])
+AC_MSG_NOTICE([Libvirtd: $with_libvirtd])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])
