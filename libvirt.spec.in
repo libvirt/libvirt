@@ -1,6 +1,6 @@
 # -*- rpm-spec -*-
 
-%if 0%{?fedora} >= 8
+%if "%{fedora}" >= "8"
 %define with_polkit 1
 %define with_proxy no
 %else
