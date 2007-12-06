@@ -1,6 +1,6 @@
 # -*- rpm-spec -*-
 
-%if %{fedora} >= 8
+%if 0%{?fedora} >= 8
 %define with_polkit 1
 %define with_proxy no
 %else
@@ -160,7 +160,9 @@ fi
 %{_datadir}/libvirt/networks/default.xml
 %dir %{_localstatedir}/run/libvirt/
 %dir %{_localstatedir}/lib/libvirt/
+%if %{with_polkit}
 %{_datadir}/PolicyKit/policy/libvirtd.policy
+%endif
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/qemu/
 %if %{with_proxy} == "yes"
 %attr(4755, root, root) %{_libexecdir}/libvirt_proxy
