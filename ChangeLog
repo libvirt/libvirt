@@ -1,3 +1,7 @@
+Thu Dec  6 15:42:52 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* po/*: updated the localization files
+
 Thu Dec  6 12:00:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/remote_internal.c: Clean up a warning if neither SASL

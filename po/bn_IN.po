@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: bn_IN\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-11-07 14:28+0100\n"
+"POT-Creation-Date: 2007-12-06 15:41+0100\n"
 "PO-Revision-Date: 2007-08-28 15:08+0530\n"
 "Last-Translator: Runa Bhattacharjee <runab@redhat.com>\n"
 "Language-Team: Bengali INDIA\n"
@@ -19,453 +19,468 @@ msgstr ""
 "\n"
 "\n"
 
-#: src/libvirt.c:416 src/hash.c:664
+#: src/libvirt.c:507 src/hash.c:666
 msgid "allocating connection"
 msgstr "সংযোগ বরাদ্দকরণ"
 
-#: src/virterror.c:243
+#: src/libvirt.c:514
+#, fuzzy
+msgid "could not parse connection URI"
+msgstr "%s-র সাথে সংযোগ করতে ব্যর্থ"
+
+#: src/virterror.c:245
 msgid "warning"
 msgstr "সতর্কবার্তা"
 
-#: src/virterror.c:246
+#: src/virterror.c:248
 msgid "error"
 msgstr "ত্রুটি"
 
-#: src/virterror.c:350
+#: src/virterror.c:371
 msgid "No error message provided"
 msgstr "কোনো ত্রুটির বার্তা উপস্থিত নেই"
 
-#: src/virterror.c:405
+#: src/virterror.c:426
 #, c-format
 msgid "internal error %s"
 msgstr "অভ্যন্তরীণ ত্রুটি %s"
 
-#: src/virterror.c:407
+#: src/virterror.c:428
 msgid "internal error"
 msgstr "অভ্যন্তরীণ ত্রুটি"
 
-#: src/virterror.c:410
+#: src/virterror.c:431
 msgid "out of memory"
 msgstr "মেমরি অবশিষ্ট নেই"
 
-#: src/virterror.c:414
+#: src/virterror.c:435
 msgid "this function is not supported by the hypervisor"
 msgstr "হাইপার-ভাইসর দ্বারা এই কর্ম সমর্থিত নয়"
 
-#: src/virterror.c:416
+#: src/virterror.c:437
 #, c-format
 msgid "this function is not supported by the hypervisor: %s"
 msgstr "হাইপার-ভাইসর দ্বারা এই কর্ম সমর্থিত নয়: %s"
 
-#: src/virterror.c:420
+#: src/virterror.c:441
 msgid "could not connect to hypervisor"
 msgstr "হাইপার-ভাইসরের সাথে সংযোগ করতে ব্যর্থ"
 
-#: src/virterror.c:422
+#: src/virterror.c:443
 #, c-format
 msgid "could not connect to %s"
 msgstr "%s-র সাথে সংযোগ করতে ব্যর্থ"
 
-#: src/virterror.c:426
+#: src/virterror.c:447
 msgid "invalid connection pointer in"
 msgstr "এর মধ্যে সংযোগ সংক্রান্ত অবৈধ নির্দেশক"
 
-#: src/virterror.c:428
+#: src/virterror.c:449
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "%s-র মধ্যে সংযোগ সংক্রান্ত অবৈধ নির্দেশক"
 
-#: src/virterror.c:432
+#: src/virterror.c:453
 msgid "invalid domain pointer in"
 msgstr "অবৈধ ডোমেইন নির্দেশক উপস্থিত"
 
-#: src/virterror.c:434
+#: src/virterror.c:455
 #, c-format
 msgid "invalid domain pointer in %s"
 msgstr "%s-র মধ্যে অবৈধ ডোমেইন নির্দেশক"
 
-#: src/virterror.c:438
+#: src/virterror.c:459
 msgid "invalid argument in"
 msgstr "অবৈধ আর্গুমেন্ট উপস্থিত"
 
-#: src/virterror.c:440
+#: src/virterror.c:461
 #, c-format
 msgid "invalid argument in %s"
 msgstr "%s-র মধ্যে অবৈধ আর্গুমেন্ট"
 
-#: src/virterror.c:444
+#: src/virterror.c:465
 #, c-format
 msgid "operation failed: %s"
 msgstr "কর্ম বিফল: %s"
 
-#: src/virterror.c:446
+#: src/virterror.c:467
 msgid "operation failed"
 msgstr "কর্ম বিফল"
 
-#: src/virterror.c:450
+#: src/virterror.c:471
 #, c-format
 msgid "GET operation failed: %s"
 msgstr "GET কর্ম বিফল: %s"
 
-#: src/virterror.c:452
+#: src/virterror.c:473
 msgid "GET operation failed"
 msgstr "GET কর্ম বিফল"
 
-#: src/virterror.c:456
+#: src/virterror.c:477
 #, c-format
 msgid "POST operation failed: %s"
 msgstr "POST কর্ম বিফল: %s"
 
-#: src/virterror.c:458
+#: src/virterror.c:479
 msgid "POST operation failed"
 msgstr "POST কর্ম বিফল"
 
-#: src/virterror.c:461
+#: src/virterror.c:482
 #, c-format
 msgid "got unknown HTTP error code %d"
 msgstr "অজানা HTTP ত্রুটির কোড %d প্রাপ্ত"
 
-#: src/virterror.c:465
+#: src/virterror.c:486
 #, c-format
 msgid "unknown host %s"
 msgstr "অজানা হোস্ট %s"
 
-#: src/virterror.c:467
+#: src/virterror.c:488
 msgid "unknown host"
 msgstr "অজানা হোস্ট"
 
-#: src/virterror.c:471
+#: src/virterror.c:492
 #, c-format
 msgid "failed to serialize S-Expr: %s"
 msgstr "S-Expr সিরিয়ালাইজ করতে ব্যর্থ: %s"
 
-#: src/virterror.c:473
+#: src/virterror.c:494
 msgid "failed to serialize S-Expr"
 msgstr "S-Expr সিরিয়ালাইজ করতে ব্যর্থ"
 
-#: src/virterror.c:477
+#: src/virterror.c:498
 msgid "could not use Xen hypervisor entry"
 msgstr "Xen হাইপার-ভাইসর এন্ট্রি ব্যবহার করতে ব্যর্থ"
 
-#: src/virterror.c:479
+#: src/virterror.c:500
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "Xen হাইপার-ভাইসর এন্ট্রি %s ব্যবহার করতে ব্যর্থ"
 
-#: src/virterror.c:483
+#: src/virterror.c:504
 msgid "could not connect to Xen Store"
 msgstr "Xen Store-র সাথে সংযোগ করতে ব্যর্থ"
 
-#: src/virterror.c:485
+#: src/virterror.c:506
 #, c-format
 msgid "could not connect to Xen Store %s"
 msgstr "Xen Store %s-র সাথে সংযোগ করতে ব্যর্থ"
 
-#: src/virterror.c:488
+#: src/virterror.c:509
 #, c-format
 msgid "failed Xen syscall %s %d"
 msgstr "Xen syscall %s %d ব্যর্থ"
 
-#: src/virterror.c:492
+#: src/virterror.c:513
 msgid "unknown OS type"
 msgstr "অজানা OS-র প্রকৃতি"
 
-#: src/virterror.c:494
+#: src/virterror.c:515
 #, c-format
 msgid "unknown OS type %s"
 msgstr "অজানা OS প্রকৃতি %s"
 
-#: src/virterror.c:497
+#: src/virterror.c:518
 msgid "missing kernel information"
 msgstr "কার্নেল সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:501
+#: src/virterror.c:522
 msgid "missing root device information"
 msgstr "root ডিভাইস সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:503
+#: src/virterror.c:524
 #, c-format
 msgid "missing root device information in %s"
 msgstr "%s-র মধ্যে root ডিভাইস সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:507
+#: src/virterror.c:528
 msgid "missing source information for device"
 msgstr "ডিভাইসের উৎস সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:509
+#: src/virterror.c:530
 #, c-format
 msgid "missing source information for device %s"
 msgstr "ডিভাইস %s-র উৎস সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:513
+#: src/virterror.c:534
 msgid "missing target information for device"
 msgstr "ডিভাইসের গন্তব্য সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:515
+#: src/virterror.c:536
 #, c-format
 msgid "missing target information for device %s"
 msgstr "%s ডিভাইসের গন্তব্য সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:519
+#: src/virterror.c:540
 msgid "missing domain name information"
 msgstr "ডোমেইনের নাম সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:521
+#: src/virterror.c:542
 #, c-format
 msgid "missing domain name information in %s"
 msgstr "%s-র মধ্যে ডোমেইন সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:525
+#: src/virterror.c:546
 msgid "missing operating system information"
 msgstr "অপারেটিং সিস্টেম সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:527
+#: src/virterror.c:548
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "%s-র মধ্যে অপারেটিং সিস্টেম সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:531
+#: src/virterror.c:552
 msgid "missing devices information"
 msgstr "ডিভাইস সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:533
+#: src/virterror.c:554
 #, c-format
 msgid "missing devices information for %s"
 msgstr "%s-র জন্য ডিভাইস সংক্রান্ত তথ্য অনুপস্থিত"
 
-#: src/virterror.c:537
+#: src/virterror.c:558
 msgid "too many drivers registered"
 msgstr "অত্যাধিক সংখ্যক ড্রাইভার নিবন্ধিত"
 
-#: src/virterror.c:539
+#: src/virterror.c:560
 #, c-format
 msgid "too many drivers registered in %s"
 msgstr "%s-র মধ্যে অত্যাধিক সংখ্যক ড্রাইভার নিবন্ধিত"
 
-#: src/virterror.c:543
+#: src/virterror.c:564
 msgid "library call failed, possibly not supported"
 msgstr "লাইব্রেরি কল বিফল, সম্ভবত সমর্থিত নয়"
 
-#: src/virterror.c:545
+#: src/virterror.c:566
 #, c-format
 msgid "library call %s failed, possibly not supported"
 msgstr "লাইব্রেরি কল %s বিফল, সম্ভবত সমর্থিত নয়"
 
-#: src/virterror.c:549
+#: src/virterror.c:570
 msgid "XML description not well formed or invalid"
 msgstr "XML বিবরণ সঠিকরূপে গঠিত নয় অথবা বৈধ নয়"
 
-#: src/virterror.c:551
+#: src/virterror.c:572
 #, c-format
 msgid "XML description for %s is not well formed or invalid"
 msgstr "%s-র জন্য XML বিবরণ সঠিকরূপে গঠিত নয় অথবা বৈধ নয়"
 
-#: src/virterror.c:555
+#: src/virterror.c:576
 msgid "this domain exists already"
 msgstr "চিহ্নিত ডোমেইন বর্তমানে উপস্থিত রয়েছে"
 
-#: src/virterror.c:557
+#: src/virterror.c:578
 #, c-format
 msgid "domain %s exists already"
 msgstr "%s ডোমেইন বর্তমানে উপস্থিত"
 
-#: src/virterror.c:561
+#: src/virterror.c:582
 msgid "operation forbidden for read only access"
 msgstr "শুধুমাত্র পাঠযোগ্য অবস্থায় ব্যবহারের সময় কর্ম সঞ্চালন নিষিদ্ধ"
 
-#: src/virterror.c:563
+#: src/virterror.c:584
 #, c-format
 msgid "operation %s forbidden for read only access"
 msgstr "শুধুমাত্র পাঠযোগ্য অবস্থায় ব্যবহারের সময় %s কর্ম সঞ্চালন নিষিদ্ধ"
 
-#: src/virterror.c:567
+#: src/virterror.c:588
 msgid "failed to open configuration file for reading"
 msgstr "পড়ার উদ্দেশ্যে কনফিগারেশন ফাইল খুলতে ব্যর্থ"
 
-#: src/virterror.c:569
+#: src/virterror.c:590
 #, c-format
 msgid "failed to open %s for reading"
 msgstr "পড়ার উদ্দেশ্যে %s খুলতে ব্যর্থ"
 
-#: src/virterror.c:573
+#: src/virterror.c:594
 msgid "failed to read configuration file"
 msgstr "কনফিগারেশন ফাইল পড়তে ব্যর্থ"
 
-#: src/virterror.c:575
+#: src/virterror.c:596
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "কনফিগারেশন ফাইল %s পড়তে ব্যর্থ"
 
-#: src/virterror.c:579
+#: src/virterror.c:600
 msgid "failed to parse configuration file"
 msgstr "কনফিগারেশন ফাইল পার্স করতে ব্যর্থ"
 
-#: src/virterror.c:581
+#: src/virterror.c:602
 #, c-format
 msgid "failed to parse configuration file %s"
 msgstr "কনফিগারেশন ফাইল %s পার্স করতে ব্যর্থ"
 
-#: src/virterror.c:585
+#: src/virterror.c:606
 msgid "configuration file syntax error"
 msgstr "কনফিগারেশন ফাইলের মধ্যে সিন্টেক্স সংক্রান্ত সমস্যা"
 
-#: src/virterror.c:587
+#: src/virterror.c:608
 #, c-format
 msgid "configuration file syntax error: %s"
 msgstr "কনফিগারেশন ফাইলের মধ্যে সিন্টেক্স সংক্রান্ত সমস্যা: %s"
 
-#: src/virterror.c:591
+#: src/virterror.c:612
 msgid "failed to write configuration file"
 msgstr "কনফিগারেশন ফাইলের মধ্যে লিখতে ব্যর্থ"
 
-#: src/virterror.c:593
+#: src/virterror.c:614
 #, c-format
 msgid "failed to write configuration file: %s"
 msgstr "কনফিগারেশন ফাইলের মধ্যে লিখতে ব্যর্থ: %s"
 
-#: src/virterror.c:597
+#: src/virterror.c:618
 msgid "parser error"
 msgstr "পার্সার সংক্রান্ত ত্রুটি"
 
-#: src/virterror.c:603
+#: src/virterror.c:624
 msgid "invalid network pointer in"
 msgstr "এর মধ্যে নেটওয়ার্ক সংক্রান্ত অবৈধ নির্দেশক"
 
-#: src/virterror.c:605
+#: src/virterror.c:626
 #, c-format
 msgid "invalid network pointer in %s"
 msgstr "%s-র মধ্যে নেটওয়ার্ক সংক্রান্ত অবৈধ নির্দেশক"
 
-#: src/virterror.c:609
+#: src/virterror.c:630
 msgid "this network exists already"
 msgstr "চিহ্নিত নেটওয়ার্ক বর্তমানে উপস্থিত রয়েছে"
 
-#: src/virterror.c:611
+#: src/virterror.c:632
 #, c-format
 msgid "network %s exists already"
 msgstr "%s নেটওয়ার্ক বর্তমানে উপস্থিত"
 
-#: src/virterror.c:615
+#: src/virterror.c:636
 msgid "system call error"
 msgstr "সিস্টেম কল সংক্রান্ত ত্রুটি"
 
-#: src/virterror.c:621
+#: src/virterror.c:642
 msgid "RPC error"
 msgstr "RPC সংক্রান্ত ত্রুটি"
 
-#: src/virterror.c:627
+#: src/virterror.c:648
 msgid "GNUTLS call error"
 msgstr "GNUTLS কল সংক্রান্ত ত্রুটি"
 
-#: src/virterror.c:633
+#: src/virterror.c:654
 msgid "Failed to find the network"
 msgstr "নেটওয়ার্ক অনুসন্ধান করতে ব্যর্থ"
 
-#: src/virterror.c:635
+#: src/virterror.c:656
 #, c-format
 msgid "Failed to find the network: %s"
 msgstr "নেটওয়ার্ক অনুসন্ধান করতে ব্যর্থ: %s"
 
-#: src/virterror.c:639
+#: src/virterror.c:660
 msgid "Domain not found"
 msgstr "ডোমেইন পাওয়া যায়নি"
 
-#: src/virterror.c:641
+#: src/virterror.c:662
 #, c-format
 msgid "Domain not found: %s"
 msgstr "ডোমেইন পাওয়া যায়নি: %s"
 
-#: src/virterror.c:645
+#: src/virterror.c:666
 msgid "Network not found"
 msgstr "নেটওয়ার্ক পাওয়া যায়নি"
 
-#: src/virterror.c:647
+#: src/virterror.c:668
 #, c-format
 msgid "Network not found: %s"
 msgstr "নেটওয়ার্ক পাওয়া যায়নি: %s"
 
-#: src/virterror.c:651
+#: src/virterror.c:672
 msgid "invalid MAC adress"
 msgstr "অবৈধ MAC ঠিকানা"
 
-#: src/virterror.c:653
+#: src/virterror.c:674
 #, c-format
 msgid "invalid MAC adress: %s"
 msgstr "অবৈধ MAC ঠিকানা: %s"
 
-#: src/xmlrpc.c:63
+#: src/virterror.c:678
+#, fuzzy
+msgid "authentication failed"
+msgstr "কর্ম বিফল"
+
+#: src/virterror.c:680
+#, fuzzy, c-format
+msgid "authentication failed: %s"
+msgstr "কর্ম বিফল: %s"
+
+#: src/xmlrpc.c:65
 msgid "copying node content"
 msgstr "নোডের তথ্য কপি করা হচ্ছে"
 
-#: src/xmlrpc.c:163
+#: src/xmlrpc.c:165
 msgid "allocate value array"
 msgstr "value অ্যারে বরাদ্দ করুন"
 
-#: src/xmlrpc.c:196
+#: src/xmlrpc.c:198
 msgid "unexpected dict node"
 msgstr "অপ্রত্যাশিত dict নোড"
 
-#: src/xmlrpc.c:268
+#: src/xmlrpc.c:270
 msgid "unexpected value node"
 msgstr "অপ্রত্যাশিত value নোড"
 
-#: src/xmlrpc.c:431
+#: src/xmlrpc.c:433
 msgid "send request"
 msgstr "অনুরোধ প্রেরণ"
 
-#: src/xmlrpc.c:437
+#: src/xmlrpc.c:439
 msgid "unexpected mime type"
 msgstr "অপ্রত্যাশিত mime প্রকৃতি"
 
-#: src/xmlrpc.c:444
+#: src/xmlrpc.c:446
 msgid "allocate response"
 msgstr "প্রত্যুত্তরের মান বরাদ্দকরণ"
 
-#: src/xmlrpc.c:452 src/xmlrpc.c:514
+#: src/xmlrpc.c:454 src/xmlrpc.c:516
 msgid "read response"
 msgstr "প্রত্যুত্তরের মান পড়া"
 
-#: src/xmlrpc.c:484 src/xml.c:678
+#: src/xmlrpc.c:486 src/xml.c:682
 msgid "allocate string array"
 msgstr "string অ্যারে বরাদ্দ করুন"
 
-#: src/xmlrpc.c:606
+#: src/xmlrpc.c:608
 msgid "parse server response failed"
 msgstr "সার্ভার থেকে প্রাপ্ত প্রত্যুত্তর পার্স করতে ব্যর্থ"
 
-#: src/xmlrpc.c:670
+#: src/xmlrpc.c:672
 msgid "allocate new context"
 msgstr "নতুন কনটেক্সট বরাদ্দকরণ"
 
-#: src/hash.c:770 src/hash.c:775
+#: src/hash.c:773 src/hash.c:778
 msgid "allocating domain"
 msgstr "ডোমেইন বরাদ্দকরণ"
 
-#: src/hash.c:786
+#: src/hash.c:789
 msgid "failed to add domain to connection hash table"
 msgstr "সংযোগ সংক্রান্ত হ্যাশ টেবিলের মধ্যে ডোমেইন যোগ করতে ব্যর্থ"
 
-#: src/hash.c:838
+#: src/hash.c:841
 msgid "domain missing from connection hash table"
 msgstr "সংযোগ সংক্রান্ত হ্যাশ টেবিলের মধ্যে ডোমেইন অনুপস্থিত"
 
-#: src/hash.c:903 src/hash.c:908
+#: src/hash.c:906 src/hash.c:911
 msgid "allocating network"
 msgstr "নেটওয়ার্ক বরাদ্দকরণ"
 
-#: src/hash.c:918
+#: src/hash.c:921
 msgid "failed to add network to connection hash table"
 msgstr "সংযোগ সংক্রান্ত হ্যাশ টেবিলের মধ্যে নেটওয়ার্ক যোগ করতে ব্যর্থ"
 
-#: src/hash.c:970
+#: src/hash.c:973
 msgid "network missing from connection hash table"
 msgstr "সংযোগ সংক্রান্ত হ্যাশ টেবিলের মধ্যে নেটওয়ার্ক অনুপস্থিত"
 
-#: src/test.c:232 src/test.c:597 src/test.c:1271
+#: src/test.c:232 src/test.c:597 src/test.c:1258
 msgid "getting time of day"
 msgstr "দিনের বর্তমান সময় সংগ্রহ"
 
-#: src/test.c:238 src/test.c:370 src/test.c:396 src/test.c:1546
+#: src/test.c:238 src/test.c:370 src/test.c:396 src/test.c:1533
 msgid "domain"
 msgstr "ডোমেইম"
 
@@ -513,11 +528,11 @@ msgstr "ডোমেইন ব্যাখ্যাকারী ফাইল ল
 msgid "network"
 msgstr "নেটওয়ার্ক"
 
-#: src/test.c:436 src/virsh.c:2747
+#: src/test.c:436 src/virsh.c:2753
 msgid "network name"
 msgstr "নেটওয়ার্কের নাম"
 
-#: src/test.c:444 src/test.c:448 src/virsh.c:2638
+#: src/test.c:444 src/test.c:448 src/virsh.c:2644
 msgid "network uuid"
 msgstr "নেটওয়ার্ক uuid"
 
@@ -589,44 +604,44 @@ msgstr "ডোমেইন ফাইলের নাম মীমাংস ক�
 msgid "resolving network filename"
 msgstr "নেটওয়ার্ক ফাইলের নাম মীমাংস করা হচ্ছে"
 
-#: src/test.c:917
+#: src/test.c:906
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: একটি পাথ লিখুন অথবা test:///default ব্যবহার করুন"
 
-#: src/test.c:1055
+#: src/test.c:1042
 msgid "too many domains"
 msgstr "অত্যাধিক সংখ্যক ডোমেইন"
 
-#: src/test.c:1566
+#: src/test.c:1553
 msgid "Domain is already running"
 msgstr "ডোমেইন বর্তমানে সক্রিয়"
 
-#: src/test.c:1581
+#: src/test.c:1568
 msgid "Domain is still running"
 msgstr "ডোমেইন বর্তমানে সক্রিয়"
 
-#: src/test.c:1781 src/test.c:1806
+#: src/test.c:1769 src/test.c:1794
 msgid "too many networks"
 msgstr "অত্যাধিক নেটওয়ার্ক সংখ্যা"
 
-#: src/test.c:1825
+#: src/test.c:1813
 msgid "Network is still running"
 msgstr "নেটওয়ার্ক বর্তমানে সক্রিয়"
 
-#: src/test.c:1839
+#: src/test.c:1827
 msgid "Network is already running"
 msgstr "নেটওয়ার্ক পূর্বেই সক্রিয়"
 
-#: src/xml.c:161 src/xml.c:405 src/xml.c:435
+#: src/xml.c:164 src/xml.c:408 src/xml.c:438
 #, fuzzy
 msgid "allocate buffer"
 msgstr "নতুন বাফার বরাদ্দকরণ"
 
-#: src/xml.c:294
+#: src/xml.c:297
 msgid "topology cpuset syntax error"
 msgstr ""
 
-#: src/xml.c:395
+#: src/xml.c:398
 #, fuzzy
 msgid "topology syntax error"
 msgstr "কনফিগারেশন ফাইলের মধ্যে সিন্টেক্স সংক্রান্ত সমস্যা"
@@ -639,86 +654,86 @@ msgstr "নোড বরাদ্দ করতে ব্যর্থ"
 msgid "failed to copy a string"
 msgstr "পংক্তি কপি করতে ব্যর্থ"
 
-#: src/xend_internal.c:282 src/xend_internal.c:285
+#: src/xend_internal.c:287 src/xend_internal.c:290
 msgid "failed to read from Xen Daemon"
 msgstr "Xen Daemon থেকে পড়তে ব্যর্থ"
 
-#: src/xend_internal.c:596 src/xend_internal.c:816 src/xend_internal.c:1547
-#: src/xend_internal.c:1566 src/xend_internal.c:1954
+#: src/xend_internal.c:601 src/xend_internal.c:821 src/xend_internal.c:1552
+#: src/xend_internal.c:1571 src/xend_internal.c:1959
 msgid "allocate new buffer"
 msgstr "নতুন বাফার বরাদ্দকরণ"
 
-#: src/xend_internal.c:1023
+#: src/xend_internal.c:1028
 msgid "failed to urlencode the create S-Expr"
 msgstr "create S-Expr-র urlencode করতে ব্যর্থ"
 
-#: src/xend_internal.c:1064
+#: src/xend_internal.c:1069
 msgid "domain information incomplete, missing domid"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, domid অনুপস্থিত"
 
-#: src/xend_internal.c:1070
+#: src/xend_internal.c:1075
 msgid "domain information incorrect domid not numeric"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, domid সংখ্যামূলক নয়"
 
-#: src/xend_internal.c:1075 src/xend_internal.c:1122
+#: src/xend_internal.c:1080 src/xend_internal.c:1127
 msgid "domain information incomplete, missing uuid"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, uuid অনুপস্থিত"
 
-#: src/xend_internal.c:1114 src/xend_internal.c:1393 src/xend_internal.c:1400
+#: src/xend_internal.c:1119 src/xend_internal.c:1398 src/xend_internal.c:1405
 msgid "domain information incomplete, missing name"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, নাম অনুপস্থিত"
 
-#: src/xend_internal.c:1288 src/xend_internal.c:1319
+#: src/xend_internal.c:1293 src/xend_internal.c:1324
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, কার্নেল ও বুট-লোডার অনুপস্থিত"
 
-#: src/xend_internal.c:1381
+#: src/xend_internal.c:1386
 msgid "domain information incomplete, missing id"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, id অনুপস্থিত"
 
-#: src/xend_internal.c:1516
+#: src/xend_internal.c:1521
 msgid "domain information incomplete, vbd has no dev"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, vbd-র মধ্যে dev অনুপস্থিত"
 
-#: src/xend_internal.c:1531
+#: src/xend_internal.c:1536
 msgid "domain information incomplete, vbd has no src"
 msgstr "ডোমেইন সংক্রান্ত তথ্য অসম্পূর্ণ, vbd-র মধ্যে src অনুপস্থিত"
 
-#: src/xend_internal.c:1540
+#: src/xend_internal.c:1545
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "vbd ফাইলের নাম পার্স করতে ব্যর্থ, ড্রাইভারের নাম অনুপস্থিত"
 
-#: src/xend_internal.c:1559
+#: src/xend_internal.c:1564
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "vbd ফাইলের নাম পার্স করতে ব্যর্থ, ড্রাইভারের ধরন অনুপস্থিত"
 
-#: src/xend_internal.c:1928
+#: src/xend_internal.c:1933
 #, fuzzy
 msgid "failed to parse topology information"
 msgstr "Xend ডোমেইন সংক্রান্ত তথ্য পার্স করতে ব্যর্থ"
 
-#: src/xend_internal.c:2009
+#: src/xend_internal.c:2014
 msgid "failed to parse Xend domain information"
 msgstr "Xend ডোমেইন সংক্রান্ত তথ্য পার্স করতে ব্যর্থ"
 
-#: src/xend_internal.c:3485
+#: src/xend_internal.c:3453
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "নিষ্ক্রিয় ডোমেইন %s নির্মাণ করতে ব্যর্থ\n"
 
-#: src/virsh.c:309
+#: src/virsh.c:315
 msgid "print help"
 msgstr "সহায়িকা প্রদর্শন"
 
-#: src/virsh.c:310
+#: src/virsh.c:316
 msgid "Prints global help or command specific help."
 msgstr "গ্লোবাল সহায়তা অথবা সুনির্দিষ্ট কমান্ডের জন্য সহায়িকা প্রদর্শন করা হবে।"
 
-#: src/virsh.c:316
+#: src/virsh.c:322
 msgid "name of command"
 msgstr "কমান্ডের নাম"
 
-#: src/virsh.c:328
+#: src/virsh.c:334
 msgid ""
 "Commands:\n"
 "\n"
@@ -726,581 +741,581 @@ msgstr ""
 "কমান্ড:\n"
 "\n"
 
-#: src/virsh.c:342
+#: src/virsh.c:348
 msgid "autostart a domain"
 msgstr "একটি ডোমেইন স্বয়ংক্রিয় রূপে আরম্ভ করুন"
 
-#: src/virsh.c:344
+#: src/virsh.c:350
 msgid "Configure a domain to be automatically started at boot."
 msgstr "বুট করার সময় স্বয়ংক্রিয়রূপে আরম্ভের জন্য একটি ডোমেইন কনফিগার করুন।"
 
-#: src/virsh.c:349 src/virsh.c:450 src/virsh.c:636 src/virsh.c:673
-#: src/virsh.c:730 src/virsh.c:797 src/virsh.c:1077 src/virsh.c:1121
-#: src/virsh.c:1311 src/virsh.c:1356 src/virsh.c:1395 src/virsh.c:1434
-#: src/virsh.c:1473 src/virsh.c:1512 src/virsh.c:1631 src/virsh.c:1718
-#: src/virsh.c:1846 src/virsh.c:1903 src/virsh.c:1960 src/virsh.c:2081
-#: src/virsh.c:2221 src/virsh.c:2922 src/virsh.c:3002 src/virsh.c:3065
-#: src/virsh.c:3119 src/virsh.c:3173 src/virsh.c:3289 src/virsh.c:3410
-#: src/virsh.c:3575
+#: src/virsh.c:355 src/virsh.c:456 src/virsh.c:642 src/virsh.c:679
+#: src/virsh.c:736 src/virsh.c:803 src/virsh.c:1083 src/virsh.c:1127
+#: src/virsh.c:1317 src/virsh.c:1362 src/virsh.c:1401 src/virsh.c:1440
+#: src/virsh.c:1479 src/virsh.c:1518 src/virsh.c:1637 src/virsh.c:1724
+#: src/virsh.c:1852 src/virsh.c:1909 src/virsh.c:1966 src/virsh.c:2087
+#: src/virsh.c:2227 src/virsh.c:2928 src/virsh.c:3006 src/virsh.c:3069
+#: src/virsh.c:3123 src/virsh.c:3177 src/virsh.c:3293 src/virsh.c:3414
+#: src/virsh.c:3579
 msgid "domain name, id or uuid"
 msgstr "ডোমেইনের নাম, id অথবা uuid"
 
-#: src/virsh.c:350 src/virsh.c:2285
+#: src/virsh.c:356 src/virsh.c:2291
 msgid "disable autostarting"
 msgstr "স্বয়ংক্রিয় প্রারম্ভকরণ নিষ্ক্রিয় করুন"
 
-#: src/virsh.c:371
+#: src/virsh.c:377
 #, c-format
 msgid "Failed to mark domain %s as autostarted"
 msgstr "ডোমেইন %s স্বয়ংক্রিয় প্রারম্ভকারী রূপে চিহ্নিত করতে ব্যর্থ"
 
-#: src/virsh.c:374
+#: src/virsh.c:380
 #, c-format
 msgid "Failed to unmark domain %s as autostarted"
 msgstr "ডোমেইন %s থেকে স্বয়ংক্রিয় প্রারম্ভকারী চিহ্ন মুছে ফেলতে ব্যর্থ"
 
-#: src/virsh.c:381
+#: src/virsh.c:387
 #, c-format
 msgid "Domain %s marked as autostarted\n"
 msgstr "ডোমেইন %s স্বয়ংক্রিয়রূপে প্রারম্ভকারী রূপে চিহ্নিত করা হয়েছে\n"
 
-#: src/virsh.c:383
+#: src/virsh.c:389
 #, c-format
 msgid "Domain %s unmarked as autostarted\n"
 msgstr "ডোমেইন %s থেকে স্বয়ংক্রিয়রূপে প্রারম্ভকারী চিহ্ন মুছে ফেলা হয়েছে\n"
 
-#: src/virsh.c:394
+#: src/virsh.c:400
 msgid "(re)connect to hypervisor"
 msgstr "হাইপার-ভাইসরের সাথে (পুনরায়) সংযোগ স্থাপন"
 
-#: src/virsh.c:396
+#: src/virsh.c:402
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr ""
 "স্থানীয় হাইপার-ভাইসরের সাথে সংযোগ। শেল প্রারম্ভের পরে এই কমান্ডটি প্রয়োগের জন্য "
 "বিল্ট-ইন।"
 
-#: src/virsh.c:401
+#: src/virsh.c:407
 msgid "hypervisor connection URI"
 msgstr "হাইপার-ভাইসর সংযোগের URI"
 
-#: src/virsh.c:402
+#: src/virsh.c:408
 msgid "read-only connection"
 msgstr "শুধুমাত্র পাঠযোগ্য সংযোগ"
 
-#: src/virsh.c:414
+#: src/virsh.c:420
 msgid "Failed to disconnect from the hypervisor"
 msgstr "হাইপার-ভাইসরের সাথে সংযোগ বিচ্ছিন্ন করতে ব্যর্থ"
 
-#: src/virsh.c:433
+#: src/virsh.c:439
 msgid "Failed to connect to the hypervisor"
 msgstr "হাইপার-ভাইসরের সাথে সংযোগ করতে ব্যর্থ"
 
-#: src/virsh.c:443
+#: src/virsh.c:449
 msgid "connect to the guest console"
 msgstr "গেস্ট কনসোলের সাথে সংযোগ স্থাপন করুন"
 
-#: src/virsh.c:445
+#: src/virsh.c:451
 msgid "Connect the virtual serial console for the guest"
 msgstr "গেস্টের জন্য ভার্চুয়াল সিরিয়াল কনসোল সংযোগ করুন"
 
-#: src/virsh.c:490
+#: src/virsh.c:496
 msgid "No console available for domain\n"
 msgstr "ডোমেইনের জন্য কোনো কনসোল উপলব্ধ নেই\n"
 
-#: src/virsh.c:508
+#: src/virsh.c:514
 msgid "list domains"
 msgstr "ডোমেইনের তালিকা"
 
-#: src/virsh.c:509
+#: src/virsh.c:515
 msgid "Returns list of domains."
 msgstr "ডোমেইনের তালিকা প্রদর্শন করা হয়।"
 
-#: src/virsh.c:514
+#: src/virsh.c:520
 msgid "list inactive domains"
 msgstr "নিষ্ক্রিয় ডোমেইনের তালিকা"
 
-#: src/virsh.c:515
+#: src/virsh.c:521
 msgid "list inactive & active domains"
 msgstr "নিষ্ক্রিয় ও সক্রিয় ডোমেইনের তালিকা"
 
-#: src/virsh.c:537 src/virsh.c:544
+#: src/virsh.c:543 src/virsh.c:550
 msgid "Failed to list active domains"
 msgstr "সক্রিয় ডোমেইনের তালিকা নির্মাণে ব্যর্থ"
 
-#: src/virsh.c:555 src/virsh.c:564
+#: src/virsh.c:561 src/virsh.c:570
 msgid "Failed to list inactive domains"
 msgstr "নিষ্ক্রিয় ডোমেইনের তালিকা নির্মাণে ব্যর্থ"
 
-#: src/virsh.c:574
+#: src/virsh.c:580
 msgid "Id"
 msgstr "Id"
 
-#: src/virsh.c:574 src/virsh.c:2570
+#: src/virsh.c:580 src/virsh.c:2576
 msgid "Name"
 msgstr "নাম"
 
-#: src/virsh.c:574 src/virsh.c:2570
+#: src/virsh.c:580 src/virsh.c:2576
 msgid "State"
 msgstr "অবস্থা"
 
-#: src/virsh.c:587 src/virsh.c:609 src/virsh.c:4357 src/virsh.c:4373
+#: src/virsh.c:593 src/virsh.c:615 src/virsh.c:4360 src/virsh.c:4376
 msgid "no state"
 msgstr "কোনো অবস্থা নয়"
 
-#: src/virsh.c:630
+#: src/virsh.c:636
 msgid "domain state"
 msgstr "ডোমেইনের অবস্থা"
 
-#: src/virsh.c:631
+#: src/virsh.c:637
 msgid "Returns state about a running domain."
 msgstr "চলমান ডোমেইনের অবস্থা সম্পর্কে তথ্য উপলব্ধ করা হয়।"
 
-#: src/virsh.c:667
+#: src/virsh.c:673
 msgid "get device block stats for a domain"
 msgstr "কোনো ডোমেইনের জন্য ডিভাইস ব্লকের পরিসংখ্যান প্রাপ্ত করুন"
 
-#: src/virsh.c:668
+#: src/virsh.c:674
 msgid "Get device block stats for a running domain."
 msgstr "চলমান ডোমেইনের ডিভাইস ব্লকের পরিসংখ্যান প্রাপ্ত করুন।"
 
-#: src/virsh.c:674
+#: src/virsh.c:680
 msgid "block device"
 msgstr "ব্লক ডিভাইস"
 
-#: src/virsh.c:695
+#: src/virsh.c:701
 #, c-format
 msgid "Failed to get block stats %s %s"
 msgstr "ব্লক সংক্রান্ত পরিসংখ্যান প্রাপ্ত করতে ব্যর্থ %s %s"
 
-#: src/virsh.c:724
+#: src/virsh.c:730
 msgid "get network interface stats for a domain"
 msgstr "ডোমেইনের জন্যা নেটওয়ার্ক ইন্টারফকে পরিসংখ্যান প্রাপ্ত করুন"
 
-#: src/virsh.c:725
+#: src/virsh.c:731
 msgid "Get network interface stats for a running domain."
 msgstr "চলমান ডোমেইনের নেটওয়ার্ক সংক্রান্ত পরিসংখ্যান প্রাপ্ত করুন।"
 
-#: src/virsh.c:731
+#: src/virsh.c:737
 msgid "interface device"
 msgstr "ইন্টারফেস ডিভাইস"
 
-#: src/virsh.c:752
+#: src/virsh.c:758
 #, c-format
 msgid "Failed to get interface stats %s %s"
 msgstr "ইন্টারফেস সংক্রান্ত পরিসংখ্যান প্রাপ্ত করতে ব্যর্থ %s %s"
 
-#: src/virsh.c:791
+#: src/virsh.c:797
 msgid "suspend a domain"
 msgstr "ডোমেইন সাসপেন্ড অবস্থায় স্থাপনা"
 
-#: src/virsh.c:792
+#: src/virsh.c:798
 msgid "Suspend a running domain."
 msgstr "ডোমেইন সাসপেন্ড অবস্থায় স্থাপন করুন।"
 
-#: src/virsh.c:815
+#: src/virsh.c:821
 #, c-format
 msgid "Domain %s suspended\n"
 msgstr "ডোমেইন %s সাসপেন্ড অবস্থায় স্থাপিত\n"
 
-#: src/virsh.c:817
+#: src/virsh.c:823
 #, c-format
 msgid "Failed to suspend domain %s"
 msgstr "ডোমেইন %s সাসপেন্ড অবস্থায় স্থাপন করতে ব্যর্থ"
 
-#: src/virsh.c:830
+#: src/virsh.c:836
 msgid "create a domain from an XML file"
 msgstr "একটি XML ফাইল থেকে ডোমেইন নির্মাণে ব্যর্থ"
 
-#: src/virsh.c:831
+#: src/virsh.c:837
 msgid "Create a domain."
 msgstr "একটি ডোমেইন নির্মাণ করুন।"
 
-#: src/virsh.c:836 src/virsh.c:944
+#: src/virsh.c:842 src/virsh.c:950
 msgid "file containing an XML domain description"
 msgstr "XML ডোমেইনের বিবরণসহ একটি ফাইল"
 
-#: src/virsh.c:851
+#: src/virsh.c:857
 #, c-format
 msgid "Failed to open '%s': %s"
 msgstr "'%s' খুলতে ব্যর্থ: %s"
 
-#: src/virsh.c:871
+#: src/virsh.c:877
 #, c-format
 msgid "Failed to open '%s': read: %s"
 msgstr "'%s' খুলতে ব্যর্থ: পড়া হয়েছে: %s"
 
-#: src/virsh.c:889
+#: src/virsh.c:895
 #, c-format
 msgid "Error allocating memory: %s"
 msgstr "মেমরি বরাদ্দ করতে সমস্যা: %s"
 
-#: src/virsh.c:923
+#: src/virsh.c:929
 #, c-format
 msgid "Domain %s created from %s\n"
 msgstr "%s ডোমেইন %s থেকে নির্মিত\n"
 
-#: src/virsh.c:927
+#: src/virsh.c:933
 #, c-format
 msgid "Failed to create domain from %s"
 msgstr "%s থেকে ডোমেইন নির্মাণ করতে ব্যর্থ"
 
-#: src/virsh.c:938
+#: src/virsh.c:944
 msgid "define (but don't start) a domain from an XML file"
 msgstr "একটি XML ফাইল থেকে ডোমেইন ব্যাখ্যা করা হবে (আরম্ভ করা হবে না)"
 
-#: src/virsh.c:939
+#: src/virsh.c:945
 msgid "Define a domain."
 msgstr "একটি ডোমেইনের ব্যাখ্যা লিখুন।"
 
-#: src/virsh.c:971
+#: src/virsh.c:977
 #, c-format
 msgid "Domain %s defined from %s\n"
 msgstr "ডোমেইন %s, %s থেকে ব্যাখ্যা করা হয়েছে\n"
 
-#: src/virsh.c:975
+#: src/virsh.c:981
 #, c-format
 msgid "Failed to define domain from %s"
 msgstr "%s থেকে ডোমেইনের ব্যাখ্যা করতে ব্যর্থ"
 
-#: src/virsh.c:986
+#: src/virsh.c:992
 msgid "undefine an inactive domain"
 msgstr "নিষ্ক্রিয় ডোমেইনের ব্যাখ্যা মুছে ফেলুন"
 
-#: src/virsh.c:987
+#: src/virsh.c:993
 msgid "Undefine the configuration for an inactive domain."
 msgstr "একটি নিষ্ক্রিয় ডোমেইনের কনফিগারেশনের ব্যাখ্যা মুছে ফেলুন।"
 
-#: src/virsh.c:992 src/virsh.c:2150
+#: src/virsh.c:998 src/virsh.c:2156
 msgid "domain name or uuid"
 msgstr "ডোমেইনের নাম অথবা uuid"
 
-#: src/virsh.c:1010
+#: src/virsh.c:1016
 #, c-format
 msgid "Domain %s has been undefined\n"
 msgstr "ডোমেইন %s-র ব্যাখ্যা মুছে ফেলা হয়েছে\n"
 
-#: src/virsh.c:1012
+#: src/virsh.c:1018
 #, c-format
 msgid "Failed to undefine domain %s"
 msgstr "ডোমেইন %s-র ব্যাখ্যা মুছে ফেলতে ব্যর্থ"
 
-#: src/virsh.c:1026
+#: src/virsh.c:1032
 msgid "start a (previously defined) inactive domain"
 msgstr "একটি (পূর্বে ব্যাখ্যা করা) নিষ্ক্রিয় ডোমেইন আরম্ভ করুন"
 
-#: src/virsh.c:1027
+#: src/virsh.c:1033
 msgid "Start a domain."
 msgstr "একটি ডোমেইন আরম্ভ করুন।"
 
-#: src/virsh.c:1032
+#: src/virsh.c:1038
 msgid "name of the inactive domain"
 msgstr "একটি নিষ্ক্রিয় ডোমেইনের নাম"
 
-#: src/virsh.c:1049
+#: src/virsh.c:1055
 msgid "Domain is already active"
 msgstr "ডোমেইন বর্তমানে সক্রিয়"
 
-#: src/virsh.c:1055
+#: src/virsh.c:1061
 #, c-format
 msgid "Domain %s started\n"
 msgstr "ডোমেইন %s আরম্ভ করা হয়েছে\n"
 
-#: src/virsh.c:1058
+#: src/virsh.c:1064
 #, c-format
 msgid "Failed to start domain %s"
 msgstr "ডোমেইন %s আরম্ভ করতে ব্যর্থ"
 
-#: src/virsh.c:1071
+#: src/virsh.c:1077
 msgid "save a domain state to a file"
 msgstr "ডোমেইনের অবস্থা একটি ফাইলে সংরক্ষণ করুন"
 
-#: src/virsh.c:1072
+#: src/virsh.c:1078
 msgid "Save a running domain."
 msgstr "একটি চলমান ডোমেইন সংরক্ষণ করুন"
 
-#: src/virsh.c:1078
+#: src/virsh.c:1084
 msgid "where to save the data"
 msgstr "তথ্য সংরক্ষণের স্থান"
 
-#: src/virsh.c:1100
+#: src/virsh.c:1106
 #, c-format
 msgid "Domain %s saved to %s\n"
 msgstr "ডোমেইন %s, %s-এ সংরক্ষণ করা হয়েছে\n"
 
-#: src/virsh.c:1102
+#: src/virsh.c:1108
 #, c-format
 msgid "Failed to save domain %s to %s"
 msgstr "%s ডোমেইন %s-এ সংরক্ষণ করতে ব্যর্থ"
 
-#: src/virsh.c:1115
+#: src/virsh.c:1121
 msgid "show/set scheduler parameters"
 msgstr "সময় নির্ধারণকারী সংক্রান্ত পরামিতি প্রদর্শন/স্থাপন"
 
-#: src/virsh.c:1116
+#: src/virsh.c:1122
 msgid "Show/Set scheduler parameters."
 msgstr "সময় নির্ধারণকারী সংক্রান্ত পরামিতি প্রদর্শন/স্থাপন।"
 
-#: src/virsh.c:1122
+#: src/virsh.c:1128
 msgid "weight for XEN_CREDIT"
 msgstr "XEN_CREDIT-র ক্ষেত্রে weight"
 
-#: src/virsh.c:1123
+#: src/virsh.c:1129
 msgid "cap for XEN_CREDIT"
 msgstr "XEN_CREDIT-র ক্ষেত্রে cap"
 
-#: src/virsh.c:1155
+#: src/virsh.c:1161
 #, fuzzy
 msgid "Invalid value of weight"
 msgstr "মেমরির অবৈধ মাপ %d"
 
-#: src/virsh.c:1165
+#: src/virsh.c:1171
 #, fuzzy
 msgid "Invalid value of cap"
 msgstr "মেমরির অবৈধ মাপ %d"
 
-#: src/virsh.c:1207 src/virsh.c:1211
+#: src/virsh.c:1213 src/virsh.c:1217
 msgid "Scheduler"
 msgstr "সময়নির্ধারণকারী"
 
-#: src/virsh.c:1211
+#: src/virsh.c:1217
 msgid "Unknown"
 msgstr "অজানা"
 
-#: src/virsh.c:1267
+#: src/virsh.c:1273
 msgid "restore a domain from a saved state in a file"
 msgstr "ফাইলের মধ্যে সংরক্ষিত অবস্থা থেকে ডোমেইন পুনরুদ্ধার করুন"
 
-#: src/virsh.c:1268
+#: src/virsh.c:1274
 msgid "Restore a domain."
 msgstr "ডোমেইন পুনরুদ্ধার করুন।"
 
-#: src/virsh.c:1273
+#: src/virsh.c:1279
 msgid "the state to restore"
 msgstr "পুনরুদ্ধারের জন্য চিহ্নিত অবস্থা"
 
-#: src/virsh.c:1292
+#: src/virsh.c:1298
 #, c-format
 msgid "Domain restored from %s\n"
 msgstr "%s থেকে ডোমেইন পুনরুদ্ধার করা হয়েছে\n"
 
-#: src/virsh.c:1294
+#: src/virsh.c:1300
 #, c-format
 msgid "Failed to restore domain from %s"
 msgstr "%s থেকে ডোমেইন পুনরুদ্ধার করতে ব্যর্থ"
 
-#: src/virsh.c:1305
+#: src/virsh.c:1311
 msgid "dump the core of a domain to a file for analysis"
 msgstr "পর্যালোচনার উদ্দেশ্যে কোনো ডোমেইনের কোর তথ্য সংরক্ষণ করুন"
 
-#: src/virsh.c:1306
+#: src/virsh.c:1312
 msgid "Core dump a domain."
 msgstr "ডোমেইনের কোর তথ্য সংরক্ষণ করুন।"
 
-#: src/virsh.c:1312
+#: src/virsh.c:1318
 msgid "where to dump the core"
 msgstr "তথ্য সংরক্ষণের স্থান"
 
-#: src/virsh.c:1334
+#: src/virsh.c:1340
 #, c-format
 msgid "Domain %s dumpd to %s\n"
 msgstr "ডোমেইন %s, %s-এ সংরক্ষণ করা হয়েছে\n"
 
-#: src/virsh.c:1336
+#: src/virsh.c:1342
 #, c-format
 msgid "Failed to core dump domain %s to %s"
 msgstr "%s ডোমেইন %s-এ সংরক্ষণ করতে ব্যর্থ"
 
-#: src/virsh.c:1350
+#: src/virsh.c:1356
 msgid "resume a domain"
 msgstr "ডোমেইন পুনরারম্ভ করুন"
 
-#: src/virsh.c:1351
+#: src/virsh.c:1357
 msgid "Resume a previously suspended domain."
 msgstr "পুর্বে সাসপেন্ড অবস্থায় স্থাপিত ডোমেইন পুনরারম্ভ করুন।"
 
-#: src/virsh.c:1374
+#: src/virsh.c:1380
 #, c-format
 msgid "Domain %s resumed\n"
 msgstr "%s ডোমেইন পুনরারম্ভ করা হয়েছে\n"
 
-#: src/virsh.c:1376
+#: src/virsh.c:1382
 #, c-format
 msgid "Failed to resume domain %s"
 msgstr "ডোমেইন %s পুনরারম্ভ করতে ব্যর্থ"
 
-#: src/virsh.c:1389
+#: src/virsh.c:1395
 msgid "gracefully shutdown a domain"
 msgstr "সঠিক পদ্ধতিতে ডোমেইন বন্ধ করুন"
 
-#: src/virsh.c:1390
+#: src/virsh.c:1396
 msgid "Run shutdown in the target domain."
 msgstr "উদ্দিষ্ট ডোমেইন বন্ধ করতে shutdown প্রণালী প্রয়োগ করুন।"
 
-#: src/virsh.c:1413
+#: src/virsh.c:1419
 #, c-format
 msgid "Domain %s is being shutdown\n"
 msgstr "ডোমেইন %s বন্ধ করা হচ্ছে\n"
 
-#: src/virsh.c:1415
+#: src/virsh.c:1421
 #, c-format
 msgid "Failed to shutdown domain %s"
 msgstr "ডোমেইন %s বন্ধ করতে ব্যর্থ"
 
-#: src/virsh.c:1428
+#: src/virsh.c:1434
 msgid "reboot a domain"
 msgstr "ডোমেইন পুনরায় বুট করা হবে"
 
-#: src/virsh.c:1429
+#: src/virsh.c:1435
 msgid "Run a reboot command in the target domain."
 msgstr "উদ্দিষ্ট ডোমেইনের মধ্যে reboot কমান্ড প্রয়োগ করুন।"
 
-#: src/virsh.c:1452
+#: src/virsh.c:1458
 #, c-format
 msgid "Domain %s is being rebooted\n"
 msgstr "ডোমেইন %s পুনরায় বুট করা হচ্ছে\n"
 
-#: src/virsh.c:1454
+#: src/virsh.c:1460
 #, c-format
 msgid "Failed to reboot domain %s"
 msgstr "ডোমেইন %s পুনরায় বুট করতে ব্যর্থ"
 
-#: src/virsh.c:1467
+#: src/virsh.c:1473
 msgid "destroy a domain"
 msgstr "একটি ডোমেইন ধ্বংশ করুন"
 
-#: src/virsh.c:1468
+#: src/virsh.c:1474
 msgid "Destroy a given domain."
 msgstr "চিহ্নিত ডোমেইন ধ্বংশ করা হবে।"
 
-#: src/virsh.c:1491
+#: src/virsh.c:1497
 #, c-format
 msgid "Domain %s destroyed\n"
 msgstr "ডোমেইন %s ধ্বংশ করা হয়েছে\n"
 
-#: src/virsh.c:1493
+#: src/virsh.c:1499
 #, c-format
 msgid "Failed to destroy domain %s"
 msgstr "ডোমেইন %s ধ্বংশ করতে ব্যর্থ"
 
-#: src/virsh.c:1506
+#: src/virsh.c:1512
 msgid "domain information"
 msgstr "ডোমেইন সংক্রান্ত তথ্য"
 
-#: src/virsh.c:1507
+#: src/virsh.c:1513
 msgid "Returns basic information about the domain."
 msgstr "ডোমেইন সংক্রান্ত সাধারণ তথ্য উপলব্ধ করা হয়।"
 
-#: src/virsh.c:1533 src/virsh.c:1535
+#: src/virsh.c:1539 src/virsh.c:1541
 msgid "Id:"
 msgstr "Id:"
 
-#: src/virsh.c:1536
+#: src/virsh.c:1542
 msgid "Name:"
 msgstr "নাম:"
 
-#: src/virsh.c:1539
+#: src/virsh.c:1545
 msgid "UUID:"
 msgstr "UUID:"
 
-#: src/virsh.c:1542
+#: src/virsh.c:1548
 msgid "OS Type:"
 msgstr "OS-র প্রকৃতি:"
 
-#: src/virsh.c:1547 src/virsh.c:1675
+#: src/virsh.c:1553 src/virsh.c:1681
 msgid "State:"
 msgstr "অবস্থা:"
 
-#: src/virsh.c:1550 src/virsh.c:2032
+#: src/virsh.c:1556 src/virsh.c:2038
 msgid "CPU(s):"
 msgstr "CPU সংখ্যা:"
 
-#: src/virsh.c:1557 src/virsh.c:1682
+#: src/virsh.c:1563 src/virsh.c:1688
 msgid "CPU time:"
 msgstr "CPU-র সময়:"
 
-#: src/virsh.c:1561 src/virsh.c:1564
+#: src/virsh.c:1567 src/virsh.c:1570
 msgid "Max memory:"
 msgstr "সর্বোচ্চ মেমরি:"
 
-#: src/virsh.c:1565
+#: src/virsh.c:1571
 msgid "no limit"
 msgstr "সীমাবিহীন"
 
-#: src/virsh.c:1567
+#: src/virsh.c:1573
 msgid "Used memory:"
 msgstr "ব্যবহৃত মেমরি:"
 
-#: src/virsh.c:1583
+#: src/virsh.c:1589
 #, fuzzy
 msgid "NUMA free memory"
 msgstr "ব্যবহৃত মেমরি:"
 
-#: src/virsh.c:1584
+#: src/virsh.c:1590
 msgid "display available free memory for the NUMA cell."
 msgstr ""
 
-#: src/virsh.c:1589
+#: src/virsh.c:1595
 #, fuzzy
 msgid "NUMA cell number"
 msgstr "NUMA সেল:"
 
-#: src/virsh.c:1613
+#: src/virsh.c:1619
 msgid "Total"
 msgstr ""
 
-#: src/virsh.c:1625
+#: src/virsh.c:1631
 msgid "domain vcpu information"
 msgstr "ডোমেইন vcpu সংক্রান্ত তথ্য"
 
-#: src/virsh.c:1626
+#: src/virsh.c:1632
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr "ডোমেইনের ভার্চুয়াল CPU সংক্রান্ত সাধারণ তথ্য উপলব্ধ করা হয়।"
 
-#: src/virsh.c:1673
+#: src/virsh.c:1679
 msgid "VCPU:"
 msgstr "VCPU:"
 
-#: src/virsh.c:1674
+#: src/virsh.c:1680
 msgid "CPU:"
 msgstr "CPU:"
 
-#: src/virsh.c:1684
+#: src/virsh.c:1690
 msgid "CPU Affinity:"
 msgstr "CPU-র প্রবণতা:"
 
-#: src/virsh.c:1696
+#: src/virsh.c:1702
 msgid "Domain shut off, virtual CPUs not present."
 msgstr "ডোমেইন বন্ধ করা হয়েছে, ভার্চুয়াল CPU অনুপস্থিত।"
 
-#: src/virsh.c:1712
+#: src/virsh.c:1718
 msgid "control domain vcpu affinity"
 msgstr "কন্ট্রোল ডোমেইন vcpu-র প্রবণতা"
 
-#: src/virsh.c:1713
+#: src/virsh.c:1719
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr "হোস্টের প্রকৃত CPU-র সাথে ডোমেইন VCPU সংযুক্ত করা হবে।"
 
-#: src/virsh.c:1719
+#: src/virsh.c:1725
 msgid "vcpu number"
 msgstr "vcpu সংখ্যা"
 
-#: src/virsh.c:1720
+#: src/virsh.c:1726
 msgid "host cpu number(s) (comma separated)"
 msgstr "হোস্ট cpu সংখ্যা (কমা চিহ্ন দ্বারা বিভাজিত)"
 
-#: src/virsh.c:1775
+#: src/virsh.c:1781
 msgid "cpulist: Invalid format. Empty string."
 msgstr "cpulist: অবৈধ বিন্যাস। পংক্তি ফাঁকা।"
 
-#: src/virsh.c:1785
+#: src/virsh.c:1791
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
 "cpulist: %s: অবৈধ বিন্যাস। %d অবস্থানে সংখ্যামূলক মান প্রত্যাশিত ('%c'-র পার্শ্বে)।"
 
-#: src/virsh.c:1795
+#: src/virsh.c:1801
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
@@ -1309,684 +1324,684 @@ msgstr ""
 "cpulist: %s: অবৈধ বিন্যাস। %d অবস্থানে সংখ্যামূলক মান অথবা কমা-চিহ্ন প্রত্যাশিত ('%"
 "c'-র পার্শ্বে)।"
 
-#: src/virsh.c:1802
+#: src/virsh.c:1808
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
 msgstr "cpulist: %s: অবৈধ বিন্যাস। %d অবস্থানে সমাপ্তকারী পংক্তি।"
 
-#: src/virsh.c:1816
+#: src/virsh.c:1822
 #, c-format
 msgid "Physical CPU %d doesn't exist."
 msgstr "প্রকৃত CPU %d বর্তমানে উপস্থিত নেই"
 
-#: src/virsh.c:1840
+#: src/virsh.c:1846
 msgid "change number of virtual CPUs"
 msgstr "ভার্চুয়াল CPU সংখ্যা পরিবর্তন করুন"
 
-#: src/virsh.c:1841
+#: src/virsh.c:1847
 msgid "Change the number of virtual CPUs active in the guest domain."
 msgstr "গেস্ট ডোমেইনের মধ্যে সক্রিয় ভার্চুয়াল CPU-র সংখ্যা পরিবর্তন করুন।"
 
-#: src/virsh.c:1847
+#: src/virsh.c:1853
 msgid "number of virtual CPUs"
 msgstr "ভার্চুয়াল CPU সংখ্যা"
 
-#: src/virsh.c:1867
+#: src/virsh.c:1873
 msgid "Invalid number of virtual CPUs."
 msgstr "ভার্চুয়াল CPU সংখ্যার বৈধ নয়।"
 
-#: src/virsh.c:1879
+#: src/virsh.c:1885
 msgid "Too many virtual CPUs."
 msgstr "অত্যাধিক ভার্চুয়াল CPU।"
 
-#: src/virsh.c:1897
+#: src/virsh.c:1903
 msgid "change memory allocation"
 msgstr "বরাদ্দ মেমরির মান পরিবর্তন করুন"
 
-#: src/virsh.c:1898
+#: src/virsh.c:1904
 msgid "Change the current memory allocation in the guest domain."
 msgstr "গেস্ট ডোমেইনের মধ্যে বর্তমানে বরাদ্দ করা মেমরির মান পরিবর্তন করুন।"
 
-#: src/virsh.c:1904
+#: src/virsh.c:1910
 msgid "number of kilobytes of memory"
 msgstr "কিলোবাইট অনুসারে মেমরির মাপ"
 
-#: src/virsh.c:1925 src/virsh.c:1937 src/virsh.c:1982
+#: src/virsh.c:1931 src/virsh.c:1943 src/virsh.c:1988
 #, c-format
 msgid "Invalid value of %d for memory size"
 msgstr "মেমরির অবৈধ মাপ %d"
 
-#: src/virsh.c:1931
+#: src/virsh.c:1937
 msgid "Unable to verify MaxMemorySize"
 msgstr "MaxMemorySize পরীক্ষা করতে ব্যর্থ"
 
-#: src/virsh.c:1954
+#: src/virsh.c:1960
 msgid "change maximum memory limit"
 msgstr "সর্বোচ্চ মেমরির মাত্রা পরিবর্তন করুন"
 
-#: src/virsh.c:1955
+#: src/virsh.c:1961
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr "গেস্ট ডোমেইনের মধ্যে মেমরির সর্বোচ্চ সীমা পরিবর্তন করুন।"
 
-#: src/virsh.c:1961
+#: src/virsh.c:1967
 msgid "maximum memory limit in kilobytes"
 msgstr "কিলোবাইট অনুসারে সর্বোচ্চ মেমরির মাত্রা"
 
-#: src/virsh.c:1988
+#: src/virsh.c:1994
 msgid "Unable to verify current MemorySize"
 msgstr "বর্তমানMemorySize পরীক্ষা করতে ব্যর্থ"
 
-#: src/virsh.c:1995
+#: src/virsh.c:2001
 msgid "Unable to shrink current MemorySize"
 msgstr "বর্তমান MemorySize হ্রাস করতে ব্যর্থ"
 
-#: src/virsh.c:2001
+#: src/virsh.c:2007
 msgid "Unable to change MaxMemorySize"
 msgstr "MaxMemorySize পরিবর্তন করতে ব্যর্থ"
 
-#: src/virsh.c:2014
+#: src/virsh.c:2020
 msgid "node information"
 msgstr "নোড সংক্রান্ত তথ্য"
 
-#: src/virsh.c:2015
+#: src/virsh.c:2021
 msgid "Returns basic information about the node."
 msgstr "নোড সংক্রান্ত মৌলিক তথ্য উপলব্ধ করা হয়।"
 
-#: src/virsh.c:2028
+#: src/virsh.c:2034
 msgid "failed to get node information"
 msgstr "নোড সংক্রান্ত তথ্য প্রাপ্ত করতে ব্যর্থ"
 
-#: src/virsh.c:2031
+#: src/virsh.c:2037
 msgid "CPU model:"
 msgstr "CPU-র মডেল:"
 
-#: src/virsh.c:2033
+#: src/virsh.c:2039
 msgid "CPU frequency:"
 msgstr "CPU-র ফ্রিকোয়েন্সির মাত্রা:"
 
-#: src/virsh.c:2034
+#: src/virsh.c:2040
 msgid "CPU socket(s):"
 msgstr "CPU-র সকেট:"
 
-#: src/virsh.c:2035
+#: src/virsh.c:2041
 msgid "Core(s) per socket:"
 msgstr "প্রতি সকেটে কোর সংখ্যা:"
 
-#: src/virsh.c:2036
+#: src/virsh.c:2042
 msgid "Thread(s) per core:"
 msgstr "প্রতি কোরে থ্রেড সংখ্যা:"
 
-#: src/virsh.c:2037
+#: src/virsh.c:2043
 msgid "NUMA cell(s):"
 msgstr "NUMA সেল:"
 
-#: src/virsh.c:2038
+#: src/virsh.c:2044
 msgid "Memory size:"
 msgstr "মেমরির মাপ:"
 
-#: src/virsh.c:2048
+#: src/virsh.c:2054
 msgid "capabilities"
 msgstr "ক্ষমতা"
 
-#: src/virsh.c:2049
+#: src/virsh.c:2055
 msgid "Returns capabilities of hypervisor/driver."
 msgstr "হাইপার-ভাইসর/ড্রাইভারের ক্ষমতা সম্বন্ধে অবগত করে।"
 
-#: src/virsh.c:2062
+#: src/virsh.c:2068
 msgid "failed to get capabilities"
 msgstr "ক্ষমতা সম্বন্ধীয় তথ্য প্রাপ্ত করতে ব্যর্থ"
 
-#: src/virsh.c:2075
+#: src/virsh.c:2081
 msgid "domain information in XML"
 msgstr "XML-র মধ্যে ডোমেইন সংক্রান্ত তথ্য"
 
-#: src/virsh.c:2076
+#: src/virsh.c:2082
 msgid "Output the domain information as an XML dump to stdout."
 msgstr "XML ডাম্প রূপে stdout-র মধ্যে ডোমেইন সংক্রান্ত তথ্য প্রদর্শন করা হবে।"
 
-#: src/virsh.c:2115
+#: src/virsh.c:2121
 msgid "convert a domain id or UUID to domain name"
 msgstr "একটি ডোমেইন id অথবা UUID-কে ডোমেইন নামে রূপান্তর করুন"
 
-#: src/virsh.c:2120
+#: src/virsh.c:2126
 msgid "domain id or uuid"
 msgstr "ডোমেইন id অথবা uuid"
 
-#: src/virsh.c:2145
+#: src/virsh.c:2151
 msgid "convert a domain name or UUID to domain id"
 msgstr "ডোমেইনের নাম অথবা UUID-কে ডোমেইন id-তে রূপান্তর করুন"
 
-#: src/virsh.c:2180
+#: src/virsh.c:2186
 msgid "convert a domain name or id to domain UUID"
 msgstr "একটি ডোমেইনের নাম অথবা id-কে ডোমেইন UUID-তে রূপান্তর করুন"
 
-#: src/virsh.c:2185
+#: src/virsh.c:2191
 msgid "domain id or name"
 msgstr "ডোমেইন id অথবা নাম"
 
-#: src/virsh.c:2204
+#: src/virsh.c:2210
 msgid "failed to get domain UUID"
 msgstr "ডোমেইন UUID প্রাপ্ত করতে ব্যর্থ"
 
-#: src/virsh.c:2214
+#: src/virsh.c:2220
 msgid "migrate domain to another host"
 msgstr "ডোমেইন একটি পৃথক হোস্টে মাইগ্রেট করুন"
 
-#: src/virsh.c:2215
+#: src/virsh.c:2221
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
 "ডোমেইন একটি পৃথক হোস্টে মাইগ্রেট করুন। লাইভ মাইগ্রেশনের জন্য --live বিকল্প যোগ করুন।"
 
-#: src/virsh.c:2220
+#: src/virsh.c:2226
 msgid "live migration"
 msgstr "লাইভ মাইগ্রেশন"
 
-#: src/virsh.c:2222
+#: src/virsh.c:2228
 msgid "connection URI of the destination host"
 msgstr "উদ্দিষ্ট হোস্টের সংযোগের URI"
 
-#: src/virsh.c:2223
+#: src/virsh.c:2229
 msgid "migration URI, usually can be omitted"
 msgstr "মাইগ্রেশনের URI, সাধারণত উল্লেখ করা আবশ্যক নয়"
 
-#: src/virsh.c:2245
+#: src/virsh.c:2251
 msgid "migrate: Missing desturi"
 msgstr "মাইগ্রেট: desturi অনুপস্থিত"
 
-#: src/virsh.c:2277
+#: src/virsh.c:2283
 msgid "autostart a network"
 msgstr "নেটওয়ার্ক স্বয়ংক্রিয় আরম্ভ করুন"
 
-#: src/virsh.c:2279
+#: src/virsh.c:2285
 msgid "Configure a network to be automatically started at boot."
 msgstr "বুট করার সময় স্বয়ংক্রিয়রূপে আরম্ভের জন্য একটি নেটওয়ার্ক কনফিগার করুন।"
 
-#: src/virsh.c:2284 src/virsh.c:2709
+#: src/virsh.c:2290 src/virsh.c:2715
 msgid "network name or uuid"
 msgstr "নেটওয়ার্কের নাম অথবা uuid"
 
-#: src/virsh.c:2306
+#: src/virsh.c:2312
 #, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "নেটওয়ার্ক %s, স্বয়ং প্রারম্ভকারী রূপে চিহ্নিত করতে ব্যর্থ"
 
-#: src/virsh.c:2309
+#: src/virsh.c:2315
 #, c-format
 msgid "failed to unmark network %s as autostarted"
 msgstr "নেটওয়ার্ক %s থেকে স্বয়ং প্রারম্ভকারী চিহ্ন মুছে ফেলতে ব্যর্থ"
 
-#: src/virsh.c:2316
+#: src/virsh.c:2322
 #, c-format
 msgid "Network %s marked as autostarted\n"
 msgstr "নেটওয়ার্ক %s স্বয়ং প্রারম্ভকারী রূপে চিহ্নিত করা হয়েছে\n"
 
-#: src/virsh.c:2318
+#: src/virsh.c:2324
 #, c-format
 msgid "Network %s unmarked as autostarted\n"
 msgstr "নেটওয়ার্ক %s থেকে স্বয়ং প্রারম্ভকারী চিহ্ন মুছে ফেলা হয়েছে\n"
 
-#: src/virsh.c:2328
+#: src/virsh.c:2334
 msgid "create a network from an XML file"
 msgstr "একটি XML ফাইল থেকে নেটওয়ার্ক নির্মাণ করুন"
 
-#: src/virsh.c:2329
+#: src/virsh.c:2335
 msgid "Create a network."
 msgstr "একটি নেটওয়ার্ক নির্মাণ করুন।"
 
-#: src/virsh.c:2334 src/virsh.c:2382
+#: src/virsh.c:2340 src/virsh.c:2388
 msgid "file containing an XML network description"
 msgstr "XML নেটওয়ার্কের বিবরণসহ একটি ফাইল"
 
-#: src/virsh.c:2361
+#: src/virsh.c:2367
 #, c-format
 msgid "Network %s created from %s\n"
 msgstr "%s নেটওয়ার্ক %s থেকে নির্মিত\n"
 
-#: src/virsh.c:2364
+#: src/virsh.c:2370
 #, c-format
 msgid "Failed to create network from %s"
 msgstr "%s থেকে নেটওয়ার্ক নির্মাণ করতে ব্যর্থ"
 
-#: src/virsh.c:2376
+#: src/virsh.c:2382
 msgid "define (but don't start) a network from an XML file"
 msgstr "একটি XML ফাইল থেকে নেটওয়ার্ক ব্যাখ্যা করা হবে (আরম্ভ করা হবে না)"
 
-#: src/virsh.c:2377
+#: src/virsh.c:2383
 msgid "Define a network."
 msgstr "একটি নেটওয়ার্কের ব্যাখ্যা লিখুন।"
 
-#: src/virsh.c:2409
+#: src/virsh.c:2415
 #, c-format
 msgid "Network %s defined from %s\n"
 msgstr "নেটওয়ার্ক %s, %s থেকে ব্যাখ্যা করা হয়েছে\n"
 
-#: src/virsh.c:2412
+#: src/virsh.c:2418
 #, c-format
 msgid "Failed to define network from %s"
 msgstr "%s থেকে নেটওয়ার্কের ব্যাখ্যা করতে ব্যর্থ"
 
-#: src/virsh.c:2424
+#: src/virsh.c:2430
 msgid "destroy a network"
 msgstr "একটি নেটওয়ার্ক ধ্বংশ করুন"
 
-#: src/virsh.c:2425
+#: src/virsh.c:2431
 msgid "Destroy a given network."
 msgstr "চিহ্নিত নেটওয়ার্ক ধ্বংশ করা হবে।"
 
-#: src/virsh.c:2430 src/virsh.c:2470
+#: src/virsh.c:2436 src/virsh.c:2476
 msgid "network name, id or uuid"
 msgstr "নেটওয়ার্কের নাম, id অথবা uuid"
 
-#: src/virsh.c:2448
+#: src/virsh.c:2454
 #, c-format
 msgid "Network %s destroyed\n"
 msgstr "নেটওয়ার্ক %s ধ্বংশ করা হয়েছে\n"
 
-#: src/virsh.c:2450
+#: src/virsh.c:2456
 #, c-format
 msgid "Failed to destroy network %s"
 msgstr "নেটওয়ার্ক %s ধ্বংশ করতে ব্যর্থ"
 
-#: src/virsh.c:2464
+#: src/virsh.c:2470
 msgid "network information in XML"
 msgstr "XML-র মধ্যে নেটওয়ার্ক সংক্রান্ত তথ্য"
 
-#: src/virsh.c:2465
+#: src/virsh.c:2471
 msgid "Output the network information as an XML dump to stdout."
 msgstr "XML ডাম্প রূপে stdout-র মধ্যে নেটওয়ার্ক সংক্রান্ত তথ্য প্রদর্শন করা হবে।"
 
-#: src/virsh.c:2505
+#: src/virsh.c:2511
 msgid "list networks"
 msgstr "নেটওয়ার্কের তালিকা"
 
-#: src/virsh.c:2506
+#: src/virsh.c:2512
 msgid "Returns list of networks."
 msgstr "নেটওয়ার্কের তালিকা প্রদর্শন করা হয়।"
 
-#: src/virsh.c:2511
+#: src/virsh.c:2517
 msgid "list inactive networks"
 msgstr "নিষ্ক্রিয় নেটওয়ার্কের তালিকা"
 
-#: src/virsh.c:2512
+#: src/virsh.c:2518
 msgid "list inactive & active networks"
 msgstr "নিষ্ক্রিয় ও সক্রিয় নেটওয়ার্কের তালিকা"
 
-#: src/virsh.c:2532 src/virsh.c:2540
+#: src/virsh.c:2538 src/virsh.c:2546
 msgid "Failed to list active networks"
 msgstr "সক্রিয় নেটওয়ার্কের তালিকা নির্মাণে ব্যর্থ"
 
-#: src/virsh.c:2551 src/virsh.c:2560
+#: src/virsh.c:2557 src/virsh.c:2566
 msgid "Failed to list inactive networks"
 msgstr "নিষ্ক্রিয় নেটওয়ার্কের তালিকা নির্মাণে ব্যর্থ"
 
-#: src/virsh.c:2570
+#: src/virsh.c:2576
 msgid "Autostart"
 msgstr "স্বয়ংক্রিয় প্রারম্ভকরণ"
 
-#: src/virsh.c:2585 src/virsh.c:2608
+#: src/virsh.c:2591 src/virsh.c:2614
 msgid "no autostart"
 msgstr "স্বয়ংক্রিয় প্রারম্ভকরণ হবে না"
 
-#: src/virsh.c:2591
+#: src/virsh.c:2597
 msgid "active"
 msgstr "সক্রিয়"
 
-#: src/virsh.c:2614
+#: src/virsh.c:2620
 msgid "inactive"
 msgstr "নিষ্ক্রিয়"
 
-#: src/virsh.c:2633
+#: src/virsh.c:2639
 msgid "convert a network UUID to network name"
 msgstr "একটি নেটওয়ার্ক UUID-কে নেটওয়ার্ক নামে রূপান্তর করুন"
 
-#: src/virsh.c:2664
+#: src/virsh.c:2670
 msgid "start a (previously defined) inactive network"
 msgstr "একটি (পূর্বে ব্যাখ্যা করা) নিষ্ক্রিয় নেটওয়ার্ক আরম্ভ করুন"
 
-#: src/virsh.c:2665
+#: src/virsh.c:2671
 msgid "Start a network."
 msgstr "একটি নেটওয়ার্ক আরম্ভ করুন।"
 
-#: src/virsh.c:2670
+#: src/virsh.c:2676
 msgid "name of the inactive network"
 msgstr "একটি নিষ্ক্রিয় নেটওয়ার্কের নাম"
 
-#: src/virsh.c:2687
+#: src/virsh.c:2693
 #, c-format
 msgid "Network %s started\n"
 msgstr "নেটওয়ার্ক %s আরম্ভ করা হয়েছে\n"
 
-#: src/virsh.c:2690
+#: src/virsh.c:2696
 #, c-format
 msgid "Failed to start network %s"
 msgstr "নেটওয়ার্ক %s আরম্ভ করতে ব্যর্থ"
 
-#: src/virsh.c:2703
+#: src/virsh.c:2709
 msgid "undefine an inactive network"
 msgstr "নিষ্ক্রিয় নেটওয়ার্কের ব্যাখ্যা মুছে ফেলুন"
 
-#: src/virsh.c:2704
+#: src/virsh.c:2710
 msgid "Undefine the configuration for an inactive network."
 msgstr "একটি নিষ্ক্রিয় নেটওয়ার্কের কনফিগারেশনের ব্যাখ্যা মুছে ফেলুন।"
 
-#: src/virsh.c:2727
+#: src/virsh.c:2733
 #, c-format
 msgid "Network %s has been undefined\n"
 msgstr "নেটওয়ার্ক %s-র ব্যাখ্যা মুছে ফেলা হয়েছে\n"
 
-#: src/virsh.c:2729
+#: src/virsh.c:2735
 #, c-format
 msgid "Failed to undefine network %s"
 msgstr "নেটওয়ার্ক %s-র ব্যাখ্যা মুছে ফেলতে ব্যর্থ"
 
-#: src/virsh.c:2742
+#: src/virsh.c:2748
 msgid "convert a network name to network UUID"
 msgstr "একটি নেটওয়ার্কের নাম ডোমেইন UUID-তে রূপান্তর করুন"
 
-#: src/virsh.c:2767
+#: src/virsh.c:2773
 msgid "failed to get network UUID"
 msgstr "নেটওয়ার্ক UUID প্রাপ্ত করতে ব্যর্থ"
 
-#: src/virsh.c:2778
+#: src/virsh.c:2784
 msgid "show version"
 msgstr "সংস্করণ সংখ্যা প্রদর্শন করা হবে"
 
-#: src/virsh.c:2779
+#: src/virsh.c:2785
 msgid "Display the system version information."
 msgstr "সিস্টেমের সংস্করণ সংক্রান্ত তথ্য প্রদর্শন করুন।"
 
-#: src/virsh.c:2802
+#: src/virsh.c:2808
 msgid "failed to get hypervisor type"
 msgstr "হাইপার-ভাইসরের প্রকৃতি প্রাপ্ত করতে ব্যর্থ"
 
-#: src/virsh.c:2811
+#: src/virsh.c:2817
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr "চিহ্নিত লাইব্রেরির সাথে কম্পাইল করা হয়েছে: libvir %d.%d.%d\n"
 
-#: src/virsh.c:2816
+#: src/virsh.c:2822
 msgid "failed to get the library version"
 msgstr "লাইব্রেরির সংস্করণ প্রাপ্ত করতে ব্যর্থ"
 
-#: src/virsh.c:2823
+#: src/virsh.c:2829
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
 msgstr "ব্যবহৃত লাইব্রেরি: libvir %d.%d.%d\n"
 
-#: src/virsh.c:2830
+#: src/virsh.c:2836
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
 msgstr "ব্যবহৃত API: %s %d.%d.%d\n"
 
-#: src/virsh.c:2835
+#: src/virsh.c:2841
 msgid "failed to get the hypervisor version"
 msgstr "হাইপার-ভাইসরের সংস্করণ প্রাপ্ত করতে ব্যর্থ"
 
-#: src/virsh.c:2840
+#: src/virsh.c:2846
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "চলমান %s হাইপার-ভাইসরের সংস্করণ প্রাপ্ত করতে ব্যর্থ\n"
 
-#: src/virsh.c:2847
+#: src/virsh.c:2853
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "চলমান হাইপার-ভাইসর: %s %d.%d.%d\n"
 
-#: src/virsh.c:2858
+#: src/virsh.c:2864
 msgid "print the hypervisor hostname"
 msgstr "হাইপার-ভাইসরের হোস্ট-নেম প্রদর্শন করা হবে"
 
-#: src/virsh.c:2872
+#: src/virsh.c:2878
 msgid "failed to get hostname"
 msgstr "হোস্ট-নেম প্রাপ্ত করতে ব্যর্থ"
 
-#: src/virsh.c:2887
+#: src/virsh.c:2893
 msgid "print the hypervisor canonical URI"
 msgstr "হাইপার-ভাইসর canonical URI প্রদর্শন করা হবে"
 
-#: src/virsh.c:2901
+#: src/virsh.c:2907
 msgid "failed to get URI"
 msgstr "URI প্রাপ্ত করতে ব্যর্থ"
 
-#: src/virsh.c:2916
+#: src/virsh.c:2922
 msgid "vnc display"
 msgstr "vnc প্রদর্শন"
 
-#: src/virsh.c:2917
+#: src/virsh.c:2923
 msgid "Output the IP address and port number for the VNC display."
 msgstr "VNC প্রদর্শনের জন্য IP ঠিকানা ও পোর্ট সংখ্যা প্রদর্শন করা হবে।"
 
-#: src/virsh.c:2996
+#: src/virsh.c:3000
 msgid "tty console"
 msgstr "tty কনসোল"
 
-#: src/virsh.c:2997
+#: src/virsh.c:3001
 msgid "Output the device for the TTY console."
 msgstr "TTY কনসোলের ডিভাইস আউটপুট করা হবে।"
 
-#: src/virsh.c:3059
+#: src/virsh.c:3063
 msgid "attach device from an XML file"
 msgstr "একটি XML ফাইল থেকে ডিভাইস যোগ করা হবে"
 
-#: src/virsh.c:3060
+#: src/virsh.c:3064
 msgid "Attach device from an XML <file>."
 msgstr "একটি XML <file> থেকে ডিভাইস যোগ করুন।"
 
-#: src/virsh.c:3066 src/virsh.c:3120
+#: src/virsh.c:3070 src/virsh.c:3124
 msgid "XML file"
 msgstr "XML ফাইল"
 
-#: src/virsh.c:3098
+#: src/virsh.c:3102
 #, c-format
 msgid "Failed to attach device from %s"
 msgstr "%s থেকে ডিভাইস নির্মাণ করতে ব্যর্থ"
 
-#: src/virsh.c:3113
+#: src/virsh.c:3117
 msgid "detach device from an XML file"
 msgstr "একটি XML ফাইল থেকে ডিভাইস বিচ্ছিন্ন করুন"
 
-#: src/virsh.c:3114
+#: src/virsh.c:3118
 msgid "Detach device from an XML <file>"
 msgstr "একটি XML <file> থেকে ডিভাইস বিচ্ছিন্ন করুন"
 
-#: src/virsh.c:3152
+#: src/virsh.c:3156
 #, c-format
 msgid "Failed to detach device from %s"
 msgstr "%s থেকে ডিভাইস বিচ্ছিন্ন করতে ব্যর্থ"
 
-#: src/virsh.c:3167
+#: src/virsh.c:3171
 msgid "attach network interface"
 msgstr "নেটওয়ার্ক ইন্টারফেস যোগ করুন"
 
-#: src/virsh.c:3168
+#: src/virsh.c:3172
 msgid "Attach new network interface."
 msgstr "একটি নতুন নেটওয়ার্ক ইন্টারফেস যোগ করুন।"
 
-#: src/virsh.c:3174 src/virsh.c:3290
+#: src/virsh.c:3178 src/virsh.c:3294
 msgid "network interface type"
 msgstr "নেটওয়ার্ক ইন্টারফেসের ধরন"
 
-#: src/virsh.c:3175
+#: src/virsh.c:3179
 msgid "source of network interface"
 msgstr "নেটওয়ার্ক ইন্টারফেসের উৎসস্থল"
 
-#: src/virsh.c:3176
+#: src/virsh.c:3180
 msgid "target network name"
 msgstr "উদ্দিষ্ট নেটওয়ার্কের নাম"
 
-#: src/virsh.c:3177 src/virsh.c:3291
+#: src/virsh.c:3181 src/virsh.c:3295
 msgid "MAC adress"
 msgstr "MAC ঠিকানা"
 
-#: src/virsh.c:3178
+#: src/virsh.c:3182
 msgid "script used to bridge network interface"
 msgstr "নেটওয়ার্ক ইন্টারফেস ব্রিজ করতে ব্যবহৃথ স্ক্রিপ্ট"
 
-#: src/virsh.c:3210
+#: src/virsh.c:3214
 #, c-format
 msgid "No support %s in command 'attach-interface'"
 msgstr "'attach-interface' কমান্ড দ্বারা %s সমর্থিত নয়"
 
-#: src/virsh.c:3283
+#: src/virsh.c:3287
 msgid "detach network interface"
 msgstr "নেটওয়ার্ক ইন্টারফেস বিচ্ছিন্ন করুন"
 
-#: src/virsh.c:3284
+#: src/virsh.c:3288
 msgid "Detach network interface."
 msgstr "নেটওয়ার্ক ইন্টারফেস বিচ্ছিন্ন করুন।"
 
-#: src/virsh.c:3329 src/virsh.c:3334
+#: src/virsh.c:3333 src/virsh.c:3338
 msgid "Failed to get interface information"
 msgstr "ইন্টারফেস সংক্রান্ত সংক্রান্ত তথ্য প্রাপ্ত করতে ব্যর্থ"
 
-#: src/virsh.c:3342
+#: src/virsh.c:3346
 #, c-format
 msgid "No found interface whose type is %s"
 msgstr "%s প্রকৃতির কোনো ইন্টারফেস পাওয়া যায়নি"
 
-#: src/virsh.c:3364
+#: src/virsh.c:3368
 #, c-format
 msgid "No found interface whose MAC address is %s"
 msgstr "%s MAC ঠিকানা সহ কোনো ইন্টারফেস পাওয়া যায়নি"
 
-#: src/virsh.c:3370 src/virsh.c:3648
+#: src/virsh.c:3374 src/virsh.c:3652
 msgid "Failed to allocate memory"
 msgstr "মেমরি বরাদ্দ করতে ব্যর্থ"
 
-#: src/virsh.c:3375 src/virsh.c:3653
+#: src/virsh.c:3379 src/virsh.c:3657
 msgid "Failed to create XML"
 msgstr "XML নির্মাণ করতে ব্যর্থ"
 
-#: src/virsh.c:3404
+#: src/virsh.c:3408
 msgid "attach disk device"
 msgstr "ডিস্ক ডিভাইস যোগ করুন"
 
-#: src/virsh.c:3405
+#: src/virsh.c:3409
 msgid "Attach new disk device."
 msgstr "নতুন ডিস্ক ডিভাইস যোগ করুন।"
 
-#: src/virsh.c:3411
+#: src/virsh.c:3415
 msgid "source of disk device"
 msgstr "ডিস্ক ডিভাইসের উৎস"
 
-#: src/virsh.c:3412 src/virsh.c:3576
+#: src/virsh.c:3416 src/virsh.c:3580
 msgid "target of disk device"
 msgstr "ডিস্ক ডিভাইসের গন্তব্য"
 
-#: src/virsh.c:3413
+#: src/virsh.c:3417
 msgid "driver of disk device"
 msgstr "ডিস্ক ডিভাইসের ড্রাইভার"
 
-#: src/virsh.c:3414
+#: src/virsh.c:3418
 msgid "subdriver of disk device"
 msgstr "ডিস্ক ডিভাইসের সাব-ড্রাইভার"
 
-#: src/virsh.c:3415
+#: src/virsh.c:3419
 msgid "target device type"
 msgstr "উদ্দিষ্ট ডিভাইসের প্রকৃতি"
 
-#: src/virsh.c:3416
+#: src/virsh.c:3420
 msgid "mode of device reading and writing"
 msgstr "ডিভাইস থেকে পড়া ও ডিভাইসে লেখার মোড"
 
-#: src/virsh.c:3447 src/virsh.c:3456 src/virsh.c:3463
+#: src/virsh.c:3451 src/virsh.c:3460 src/virsh.c:3467
 #, c-format
 msgid "No support %s in command 'attach-disk'"
 msgstr "'attach-disk' কমান্ড দ্বারা %s সমর্থিত নয়"
 
-#: src/virsh.c:3569
+#: src/virsh.c:3573
 msgid "detach disk device"
 msgstr "ডিস্ক ডিভাইস বিচ্ছিন্ন করুন"
 
-#: src/virsh.c:3570
+#: src/virsh.c:3574
 msgid "Detach disk device."
 msgstr "ডিস্ক ডিভাইস বিচ্ছিন্ন করুন।"
 
-#: src/virsh.c:3611 src/virsh.c:3616 src/virsh.c:3623
+#: src/virsh.c:3615 src/virsh.c:3620 src/virsh.c:3627
 msgid "Failed to get disk information"
 msgstr "ডিস্ক সংক্রান্ত তথ্য প্রাপ্ত করতে ব্যর্থ"
 
-#: src/virsh.c:3642
+#: src/virsh.c:3646
 #, c-format
 msgid "No found disk whose target is %s"
 msgstr "%s গন্তব্যস্থল সহ কোনো ডিস্ক পাওয়া যায়নি"
 
-#: src/virsh.c:3682
+#: src/virsh.c:3686
 msgid "quit this interactive terminal"
 msgstr "বর্তমান ইন্টারেক্টিভ টার্মিনাল থেকে প্রস্থান করুন"
 
-#: src/virsh.c:3823
+#: src/virsh.c:3827
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "'%s' কমান্ডের সাথে <%s> বিকল্প প্রয়োগ করা আবশ্যক"
 
-#: src/virsh.c:3824
+#: src/virsh.c:3828
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "কমান্ড '%s'-র সাথে --%s বিকল্প প্রয়োগ করা আবশ্যক"
 
-#: src/virsh.c:3851
+#: src/virsh.c:3855
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "কমান্ড '%s' বর্তমানে উপস্থিত নেই"
 
-#: src/virsh.c:3859
+#: src/virsh.c:3863
 msgid "  NAME\n"
 msgstr "  NAME\n"
 
-#: src/virsh.c:3863
+#: src/virsh.c:3867
 msgid ""
 "\n"
 "  SYNOPSIS\n"
 msgstr ""
 "\n"
 "  SYNOPSIS\n"
-
-#: src/virsh.c:3870
-msgid ""
-"\n"
-"  DESCRIPTION\n"
-msgstr ""
-"\n"
-"  DESCRIPTION\n"
 
 #: src/virsh.c:3874
 msgid ""
 "\n"
+"  DESCRIPTION\n"
+msgstr ""
+"\n"
+"  DESCRIPTION\n"
+
+#: src/virsh.c:3878
+msgid ""
+"\n"
 "  OPTIONS\n"
 msgstr ""
 "\n"
 "  OPTIONS\n"
 
-#: src/virsh.c:3881
+#: src/virsh.c:3885
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <number>"
 
-#: src/virsh.c:3883
+#: src/virsh.c:3887
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <string>"
 
-#: src/virsh.c:4002
+#: src/virsh.c:4006
 msgid "undefined domain name or id"
 msgstr "ডোমেইন নাম অথবা id-র ব্যাখ্যা নেই"
 
-#: src/virsh.c:4035
+#: src/virsh.c:4038
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "ডোমেইন '%s' প্রাপ্ত করতে ব্যর্থ"
 
-#: src/virsh.c:4048
+#: src/virsh.c:4051
 msgid "undefined network name"
 msgstr "ব্যাখ্যা বিহীন নেটওয়ার্কের নাম"
 
-#: src/virsh.c:4072
+#: src/virsh.c:4075
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "নেটওয়ার্ক '%s' প্রাপ্ত করতে ব্যর্থ"
 
-#: src/virsh.c:4100
+#: src/virsh.c:4103
 #, c-format
 msgid ""
 "\n"
@@ -1997,123 +2012,128 @@ msgstr ""
 "(সময়: %.3f ms)\n"
 "\n"
 
-#: src/virsh.c:4174
+#: src/virsh.c:4177
 msgid "missing \""
 msgstr "অনুপস্থিত \""
 
-#: src/virsh.c:4235
+#: src/virsh.c:4238
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "অপ্রত্যাশিত টোকেন (কমান্ডের নাম): '%s'"
 
-#: src/virsh.c:4240
+#: src/virsh.c:4243
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "অজানা কমান্ড: '%s'"
 
-#: src/virsh.c:4247
+#: src/virsh.c:4250
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "কমান্ড '%s'-র দ্বারা --%s বিকল্প সমর্থিত হয় না"
 
-#: src/virsh.c:4262
+#: src/virsh.c:4265
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "প্রত্যাশিত সিন্টেক্স: --%s <%s>"
 
-#: src/virsh.c:4265
+#: src/virsh.c:4268
 msgid "number"
 msgstr "সংখ্যা"
 
-#: src/virsh.c:4265
+#: src/virsh.c:4268
 msgid "string"
 msgstr "পংক্তি"
 
-#: src/virsh.c:4271
+#: src/virsh.c:4274
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "অপ্রত্যাশিত তথ্য '%s'"
 
-#: src/virsh.c:4293
+#: src/virsh.c:4296
 msgid "OPTION"
 msgstr "OPTION"
 
-#: src/virsh.c:4293
+#: src/virsh.c:4296
 msgid "DATA"
 msgstr "DATA"
 
-#: src/virsh.c:4343 src/virsh.c:4369
+#: src/virsh.c:4346 src/virsh.c:4372
 msgid "running"
 msgstr "চলমান"
 
-#: src/virsh.c:4345 src/virsh.c:4367
+#: src/virsh.c:4348 src/virsh.c:4370
 msgid "blocked"
 msgstr "অবরুদ্ধ"
 
-#: src/virsh.c:4347
+#: src/virsh.c:4350
 msgid "paused"
 msgstr "স্থগিত"
 
-#: src/virsh.c:4349
+#: src/virsh.c:4352
 msgid "in shutdown"
 msgstr "shutdown অবস্থায়"
 
-#: src/virsh.c:4351
+#: src/virsh.c:4354
 msgid "shut off"
 msgstr "বন্ধ"
 
-#: src/virsh.c:4353
+#: src/virsh.c:4356
 msgid "crashed"
 msgstr "বিপর্যস্ত"
 
-#: src/virsh.c:4365
+#: src/virsh.c:4368
 msgid "offline"
 msgstr "অফ-লাইন"
 
-#: src/virsh.c:4384
+#: src/virsh.c:4387
 msgid "no valid connection"
 msgstr "বৈধ সংযোগ অনুপস্থিত"
 
-#: src/virsh.c:4431
+#: src/virsh.c:4434
 #, c-format
 msgid "%s: error: "
 msgstr "%s: ত্রুটি: "
 
-#: src/virsh.c:4433
+#: src/virsh.c:4436
 msgid "error: "
 msgstr "ত্রুটি: "
 
-#: src/virsh.c:4455 src/virsh.c:4467 src/virsh.c:4480
+#: src/virsh.c:4458 src/virsh.c:4470 src/virsh.c:4483
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: %d বাইট বরাদ্দ করতে ব্যর্থ"
 
-#: src/virsh.c:4494
+#: src/virsh.c:4497
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "%s: %d: %lu বাইট বরাদ্দ করতে ব্যর্থ"
 
-#: src/virsh.c:4530
+#: src/virsh.c:4533
 msgid "failed to connect to the hypervisor"
 msgstr "হাইপার-ভাইসরের সাথে সংযোগ করতে ব্যর্থ"
 
-#: src/virsh.c:4554
+#: src/virsh.c:4559
 msgid "failed to get the log file information"
 msgstr "লগ ফাইল সংক্রান্ত তথ্য প্রাপ্ত করতে ব্যর্থ"
 
-#: src/virsh.c:4559
+#: src/virsh.c:4564
 msgid "the log path is not a file"
 msgstr "চিহ্নিত লগ পাথটি ফাইল নয়"
 
-#: src/virsh.c:4565
+#: src/virsh.c:4570
 msgid "failed to open the log file. check the log file path"
 msgstr "লগ ফাইল খুলতে ব্যর্থ। লগ ফাইলের পাথ পরীক্ষা করুন"
 
-#: src/virsh.c:4633
+#: src/virsh.c:4638
 msgid "failed to write the log file"
 msgstr "লগ ফাইলের মধ্যে লিখতে ব্যর্থ"
 
-#: src/virsh.c:4802
+#: src/virsh.c:4653
+#, fuzzy, c-format
+msgid "%s: failed to write log file: %s"
+msgstr "লগ ফাইলের মধ্যে লিখতে ব্যর্থ"
+
+#: src/virsh.c:4849
 #, c-format
 msgid ""
 "\n"
@@ -2146,7 +2166,7 @@ msgstr ""
 "\n"
 "  কমান্ড (নন ইন্টারেক্টিভ মোড):\n"
 
-#: src/virsh.c:4820
+#: src/virsh.c:4867
 #, c-format
 msgid ""
 "\n"
@@ -2157,12 +2177,12 @@ msgstr ""
 "  (কমান্ড সংক্রান্ত বিবরণ জানতে help <command> প্রয়োগ করুন)\n"
 "\n"
 
-#: src/virsh.c:4916
+#: src/virsh.c:4963
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "অসমর্থিত বিকল্প '-%c'। --help দেখুন।"
 
-#: src/virsh.c:4998
+#: src/virsh.c:5049
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -2171,7 +2191,7 @@ msgstr ""
 "ভার্চুয়ালাইজেশন ইন্টারেক্টিভ টার্মিনাল %s-এ স্বাগতম।\n"
 "\n"
 
-#: src/virsh.c:5001
+#: src/virsh.c:5052
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
@@ -2181,116 +2201,116 @@ msgstr ""
 "       প্রস্থান করতে 'quit' লিখুন\n"
 "\n"
 
-#: src/conf.c:156 src/conf.c:205 src/conf.c:490 src/conf.c:527 src/conf.c:555
-#: src/conf.c:633
+#: src/conf.c:157 src/conf.c:206 src/conf.c:491 src/conf.c:528 src/conf.c:556
+#: src/conf.c:634
 msgid "allocating configuration"
 msgstr "কনফিগারেশনের মান বরাদ্দ করা হচ্ছে"
 
-#: src/conf.c:340
+#: src/conf.c:341
 msgid "unterminated number"
 msgstr "অসমাপ্ত সংখ্যা"
 
-#: src/conf.c:374 src/conf.c:391 src/conf.c:403
+#: src/conf.c:375 src/conf.c:392 src/conf.c:404
 msgid "unterminated string"
 msgstr "অসমাপ্ত পংক্তি"
 
-#: src/conf.c:431 src/conf.c:484
+#: src/conf.c:432 src/conf.c:485
 msgid "expecting a value"
 msgstr "মান প্রত্যাশিত"
 
-#: src/conf.c:451
+#: src/conf.c:452
 msgid "expecting a separator in list"
 msgstr "তালিকার মধ্যে একটি বিভাজন রেখা প্রত্যাশিত"
 
-#: src/conf.c:474
+#: src/conf.c:475
 msgid "list is not closed with ] "
 msgstr "] দ্বারা তালিকা সমাপ্ত হয়নি "
 
-#: src/conf.c:520
+#: src/conf.c:521
 msgid "expecting a name"
 msgstr "নাম প্রত্যাশিত"
 
-#: src/conf.c:583
+#: src/conf.c:584
 msgid "expecting a separator"
 msgstr "বিভাজনরেখা প্রত্যাশিত"
 
-#: src/conf.c:615
+#: src/conf.c:616
 msgid "expecting an assignment"
 msgstr "আরক্ষিত মান প্রত্যাশিত"
 
-#: src/conf.c:889 src/conf.c:943
+#: src/conf.c:890 src/conf.c:944
 msgid "failed to allocate buffer"
 msgstr "বাফার বরাদ্দ করতে ব্যর্থ"
 
-#: src/conf.c:901
+#: src/conf.c:902
 msgid "failed to open file"
 msgstr "ফাইল খুলতে ব্যর্থ"
 
-#: src/conf.c:909
+#: src/conf.c:910
 msgid "failed to save content"
 msgstr "বিষয়বস্তু সংরক্ষণ করতে ব্যর্থ"
 
-#: src/xs_internal.c:345
+#: src/xs_internal.c:353
 msgid "failed to connect to Xen Store"
 msgstr "Xen Store-র সাথে সংযোগ করতে ব্যর্থ"
 
-#: src/proxy_internal.c:193
+#: src/proxy_internal.c:194
 #, c-format
 msgid "failed to exec %s\n"
 msgstr "%s exec করতে ব্যর্থ\n"
 
-#: src/proxy_internal.c:287
+#: src/proxy_internal.c:288
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr "সকেট %d বন্ধ করতে ব্যর্থ\n"
 
-#: src/proxy_internal.c:320
+#: src/proxy_internal.c:321
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr "সকেট %d পড়তে ব্যর্থ\n"
 
-#: src/proxy_internal.c:354
+#: src/proxy_internal.c:355
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr "সকেট %d লিখতে ব্যর্থ\n"
 
-#: src/proxy_internal.c:446 src/proxy_internal.c:467 src/proxy_internal.c:487
+#: src/proxy_internal.c:447 src/proxy_internal.c:468 src/proxy_internal.c:488
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr "প্রক্সি সহযোগে সংযোগে সমস্যা: %d বাইট প্রাপ্ত, সর্বমোট %d\n"
 
-#: src/proxy_internal.c:454
+#: src/proxy_internal.c:455
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr "প্রক্সি সহযোগে সংযোগে সমস্যা: প্রত্যাশিত %d বাইট, প্রাপ্ত %d\n"
 
-#: src/proxy_internal.c:476
+#: src/proxy_internal.c:477
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr "প্রক্সি সহযোগে সংযোগে সমস্যা: প্রাপ্ত %d বাইট প্যাকেট\n"
 
-#: src/proxy_internal.c:500
+#: src/proxy_internal.c:501
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
 msgstr "প্রক্সি সহযোগে সংযোগে সমস্যা: ভুলভাবে গঠিত প্যাকেট\n"
 
-#: src/proxy_internal.c:506
+#: src/proxy_internal.c:507
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr "অ্যাসিঙ্ক্রোনাস প্যাকেট সংখ্যা %d প্রাপ্ত\n"
 
-#: src/xen_internal.c:1320
+#: src/xen_internal.c:1323
 #, c-format
 msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
 msgstr ""
 "ক্রেডিট স্কেডিউলারের weight পরামিতির (%d) মান নির্দিষ্ট সীমা বহির্ভূত (1-65535)"
 
-#: src/xen_internal.c:1330
+#: src/xen_internal.c:1333
 #, c-format
 msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
 msgstr "ক্রেডিট স্কেডিউলারের cap পরামিতির (%d) মান নির্দিষ্ট সীমা বহির্ভূত (0-65535)"
 
-#: src/xen_internal.c:2597
+#: src/xen_internal.c:2483
 #, c-format
 msgid "allocating %d domain info"
 msgstr "%d ডোমেইন সংক্রান্ত তথ্য বরাদ্দ করা হয়েছে"
