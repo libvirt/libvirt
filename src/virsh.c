@@ -4661,7 +4661,7 @@ vshCloseLogFile(vshControl *ctl)
     }
 }
 
-#ifdef HAVE_READLINE_READLINE_H
+#ifdef USE_READLINE
 
 /* -----------------
  * Readline stuff
@@ -4786,7 +4786,7 @@ vshReadline (vshControl *ctl ATTRIBUTE_UNUSED, const char *prompt)
     return readline (prompt);
 }
 
-#else /* !HAVE_READLINE_READLINE_H */
+#else /* !USE_READLINE */
 
 static void
 vshReadlineInit (void)
@@ -4813,7 +4813,7 @@ vshReadline (vshControl *ctl, const char *prompt)
     return vshStrdup (ctl, r);
 }
 
-#endif /* !HAVE_READLINE_READLINE_H */
+#endif /* !USE_READLINE */
 
 /*
  * Deinitliaze virsh
@@ -5059,7 +5059,7 @@ main(int argc, char **argv)
             if (ctl->cmdstr == NULL)
                 break;          /* EOF */
             if (*ctl->cmdstr) {
-#if HAVE_READLINE_READLINE_H
+#if USE_READLINE
                 add_history(ctl->cmdstr);
 #endif
                 if (vshCommandParse(ctl, ctl->cmdstr))

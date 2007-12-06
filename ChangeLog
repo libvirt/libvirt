@@ -1,3 +1,8 @@
+Thu Dec  6 11:23:31 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in src/Makefile.am src/virsh.c: fix compilation problems
+	  when readline headers were found but not the library
+
 Wed Dec  5 23:57:53 CET 2007 Jim Meyering <meyering@redhat.com>
 
 	Accommodate developers using autoconf-2.59.

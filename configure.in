@@ -448,11 +448,21 @@ AC_SUBST(AVAHI_CFLAGS)
 AC_SUBST(AVAHI_LIBS)
 
 dnl virsh libraries
+USE_READLINE=
+READLINE_CFLAGS=
 AC_CHECK_HEADERS([readline/readline.h])
 AC_CHECK_LIB(readline, main,
-	[VIRSH_LIBS="$VIRSH_LIBS -lreadline"],
-	[AC_MSG_WARN([readline library not found])],
+	[USE_READLINE=yes],
+	[USE_READLINE=no],
 	[$VIRSH_LIBS])
+if test "$USE_READLINE" = "yes" ; then
+    VIRSH_LIBS="$VIRSH_LIBS -lreadline"
+    AC_DEFINE_UNQUOTED(USE_READLINE, 1, [whether virsh use readline])
+    READLINE_CFLAGS="-DUSE_READLINE"
+else
+    AC_MSG_WARN([readline library not found])
+fi
+AC_SUBST(READLINE_CFLAGS)
 AC_SUBST(VIRSH_LIBS)
 
 # end of if with_depends
@@ -687,4 +697,5 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Miscellaneous])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([  Debug: $enable_debug])
+AC_MSG_NOTICE([  Readline: $USE_READLINE])
 AC_MSG_NOTICE([])
