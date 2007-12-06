@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>List of Symbols per Module for libvirt</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">List of Symbols per Module for libvirt</h1><h2><a name="libvirt" id="libvirt">Module libvirt</a>:</h2><p><a href="html/libvirt-libvirt.html#LIBVIR_VERSION_NUMBER">LIBVIR_VERSION_NUMBER</a><br />
+<a href="html/libvirt-libvirt.html#VIR_CONNECT_RO">VIR_CONNECT_RO</a><br />
 <a href="html/libvirt-libvirt.html#VIR_COPY_CPUMAP">VIR_COPY_CPUMAP</a><br />
 <a href="html/libvirt-libvirt.html#VIR_CPU_MAPLEN">VIR_CPU_MAPLEN</a><br />
 <a href="html/libvirt-libvirt.html#VIR_CPU_USABLE">VIR_CPU_USABLE</a><br />
+<a href="html/libvirt-libvirt.html#VIR_CRED_AUTHNAME">VIR_CRED_AUTHNAME</a><br />
+<a href="html/libvirt-libvirt.html#VIR_CRED_CNONCE">VIR_CRED_CNONCE</a><br />
+<a href="html/libvirt-libvirt.html#VIR_CRED_ECHOPROMPT">VIR_CRED_ECHOPROMPT</a><br />
+<a href="html/libvirt-libvirt.html#VIR_CRED_EXTERNAL">VIR_CRED_EXTERNAL</a><br />
+<a href="html/libvirt-libvirt.html#VIR_CRED_LANGUAGE">VIR_CRED_LANGUAGE</a><br />
+<a href="html/libvirt-libvirt.html#VIR_CRED_NOECHOPROMPT">VIR_CRED_NOECHOPROMPT</a><br />
+<a href="html/libvirt-libvirt.html#VIR_CRED_PASSPHRASE">VIR_CRED_PASSPHRASE</a><br />
+<a href="html/libvirt-libvirt.html#VIR_CRED_REALM">VIR_CRED_REALM</a><br />
+<a href="html/libvirt-libvirt.html#VIR_CRED_USERNAME">VIR_CRED_USERNAME</a><br />
 <a href="html/libvirt-libvirt.html#VIR_DOMAIN_BLOCKED">VIR_DOMAIN_BLOCKED</a><br />
 <a href="html/libvirt-libvirt.html#VIR_DOMAIN_CRASHED">VIR_DOMAIN_CRASHED</a><br />
 <a href="html/libvirt-libvirt.html#VIR_DOMAIN_NONE">VIR_DOMAIN_NONE</a><br />
@@ -31,6 +41,8 @@
 <a href="html/libvirt-libvirt.html#VIR_VCPU_BLOCKED">VIR_VCPU_BLOCKED</a><br />
 <a href="html/libvirt-libvirt.html#VIR_VCPU_OFFLINE">VIR_VCPU_OFFLINE</a><br />
 <a href="html/libvirt-libvirt.html#VIR_VCPU_RUNNING">VIR_VCPU_RUNNING</a><br />
+<a href="html/libvirt-libvirt.html#_virConnectAuth">_virConnectAuth</a><br />
+<a href="html/libvirt-libvirt.html#_virConnectCredential">_virConnectCredential</a><br />
 <a href="html/libvirt-libvirt.html#_virDomainBlockStats">_virDomainBlockStats</a><br />
 <a href="html/libvirt-libvirt.html#_virDomainInfo">_virDomainInfo</a><br />
 <a href="html/libvirt-libvirt.html#_virDomainInterfaceStats">_virDomainInterfaceStats</a><br />
@@ -38,7 +50,15 @@
 <a href="html/libvirt-libvirt.html#_virSchedParameter">_virSchedParameter</a><br />
 <a href="html/libvirt-libvirt.html#_virVcpuInfo">_virVcpuInfo</a><br />
 <a href="html/libvirt-libvirt.html#virConnect">virConnect</a><br />
+<a href="html/libvirt-libvirt.html#virConnectAuth">virConnectAuth</a><br />
+<a href="html/libvirt-libvirt.html#virConnectAuthCallbackPtr">virConnectAuthCallbackPtr</a><br />
+<a href="html/libvirt-libvirt.html#virConnectAuthPtr">virConnectAuthPtr</a><br />
+<a href="html/libvirt-libvirt.html#virConnectAuthPtrDefault">virConnectAuthPtrDefault</a><br />
 <a href="html/libvirt-libvirt.html#virConnectClose">virConnectClose</a><br />
+<a href="html/libvirt-libvirt.html#virConnectCredential">virConnectCredential</a><br />
+<a href="html/libvirt-libvirt.html#virConnectCredentialPtr">virConnectCredentialPtr</a><br />
+<a href="html/libvirt-libvirt.html#virConnectCredentialType">virConnectCredentialType</a><br />
+<a href="html/libvirt-libvirt.html#virConnectFlags">virConnectFlags</a><br />
 <a href="html/libvirt-libvirt.html#virConnectGetCapabilities">virConnectGetCapabilities</a><br />
 <a href="html/libvirt-libvirt.html#virConnectGetHostname">virConnectGetHostname</a><br />
 <a href="html/libvirt-libvirt.html#virConnectGetMaxVcpus">virConnectGetMaxVcpus</a><br />
@@ -54,6 +74,7 @@
 <a href="html/libvirt-libvirt.html#virConnectNumOfDomains">virConnectNumOfDomains</a><br />
 <a href="html/libvirt-libvirt.html#virConnectNumOfNetworks">virConnectNumOfNetworks</a><br />
 <a href="html/libvirt-libvirt.html#virConnectOpen">virConnectOpen</a><br />
+<a href="html/libvirt-libvirt.html#virConnectOpenAuth">virConnectOpenAuth</a><br />
 <a href="html/libvirt-libvirt.html#virConnectOpenReadOnly">virConnectOpenReadOnly</a><br />
 <a href="html/libvirt-libvirt.html#virConnectPtr">virConnectPtr</a><br />
 <a href="html/libvirt-libvirt.html#virDomain">virDomain</a><br />
@@ -142,7 +163,8 @@
 <a href="html/libvirt-libvirt.html#virVcpuInfo">virVcpuInfo</a><br />
 <a href="html/libvirt-libvirt.html#virVcpuInfoPtr">virVcpuInfoPtr</a><br />
 <a href="html/libvirt-libvirt.html#virVcpuState">virVcpuState</a><br />
-</p><h2><a name="virterror" id="virterror">Module virterror</a>:</h2><p><a href="html/libvirt-virterror.html#VIR_ERR_CALL_FAILED">VIR_ERR_CALL_FAILED</a><br />
+</p><h2><a name="virterror" id="virterror">Module virterror</a>:</h2><p><a href="html/libvirt-virterror.html#VIR_ERR_AUTH_FAILED">VIR_ERR_AUTH_FAILED</a><br />
+<a href="html/libvirt-virterror.html#VIR_ERR_CALL_FAILED">VIR_ERR_CALL_FAILED</a><br />
 <a href="html/libvirt-virterror.html#VIR_ERR_CONF_SYNTAX">VIR_ERR_CONF_SYNTAX</a><br />
 <a href="html/libvirt-virterror.html#VIR_ERR_DOM_EXIST">VIR_ERR_DOM_EXIST</a><br />
 <a href="html/libvirt-virterror.html#VIR_ERR_DRIVER_FULL">VIR_ERR_DRIVER_FULL</a><br />

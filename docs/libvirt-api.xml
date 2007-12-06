@@ -101,7 +101,6 @@
      <exports symbol='virDomainLookupByName' type='function'/>
      <exports symbol='virNetworkLookupByUUID' type='function'/>
      <exports symbol='virNetworkGetBridgeName' type='function'/>
-     <exports symbol='virNetworkGetXMLDesc' type='function'/>
      <exports symbol='virDomainPinVcpu' type='function'/>
      <exports symbol='virDomainRestore' type='function'/>
      <exports symbol='virConnectGetType' type='function'/>
@@ -133,8 +132,9 @@
      <exports symbol='virDomainSetAutostart' type='function'/>
      <exports symbol='virDomainSuspend' type='function'/>
      <exports symbol='virConnectGetMaxVcpus' type='function'/>
-     <exports symbol='virConnectNumOfDefinedDomains' type='function'/>
      <exports symbol='virNetworkGetConnect' type='function'/>
+     <exports symbol='virConnectNumOfDefinedDomains' type='function'/>
+     <exports symbol='virNetworkCreateXML' type='function'/>
      <exports symbol='virNetworkDefineXML' type='function'/>
      <exports symbol='virDomainLookupByID' type='function'/>
      <exports symbol='virDomainSetSchedulerParameters' type='function'/>
@@ -146,7 +146,7 @@
      <exports symbol='virConnectOpenAuth' type='function'/>
      <exports symbol='virNetworkGetUUIDString' type='function'/>
      <exports symbol='virDomainMigrate' type='function'/>
-     <exports symbol='virNetworkCreateXML' type='function'/>
+     <exports symbol='virNetworkGetXMLDesc' type='function'/>
      <exports symbol='virDomainGetID' type='function'/>
      <exports symbol='virDomainResume' type='function'/>
      <exports symbol='virDomainCreateLinux' type='function'/>
