@@ -1,3 +1,7 @@
+Thu Dec  6 12:41:18 CET 2007 Jim Meyering <meyering@redhat.com>
+
+	* qemud/qemud.c (qemudInitPaths): Remove unused code.
+
 Thu Dec  6 16:32:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/virsh.c: The prompt should depend on readonly status,

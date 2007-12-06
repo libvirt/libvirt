@@ -659,9 +659,7 @@ static int qemudInitPaths(struct qemud_server *server,
                           char *sockname,
                           char *roSockname,
                           int maxlen) {
-    char *base = 0;
     uid_t uid = geteuid();
-
 
     if (!uid) {
         if (snprintf (sockname, maxlen, "%s/run/libvirt/libvirt-sock",
@@ -693,14 +691,7 @@ static int qemudInitPaths(struct qemud_server *server,
         if (snprintf(server->logDir, PATH_MAX, "%s/.libvirt/log", pw->pw_dir) >= PATH_MAX)
             goto snprintf_error;
 
-        if (asprintf (&base, "%s/.libvirt", pw->pw_dir) == -1) {
-            qemudLog (QEMUD_ERR, "out of memory in asprintf");
-            return -1;
-        }
-
     } /* !remote */
-
-    if (base) free (base);
 
     return 0;
 
