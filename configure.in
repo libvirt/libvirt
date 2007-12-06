@@ -448,19 +448,43 @@ AC_SUBST(AVAHI_CFLAGS)
 AC_SUBST(AVAHI_LIBS)
 
 dnl virsh libraries
-USE_READLINE=
-READLINE_CFLAGS=
 AC_CHECK_HEADERS([readline/readline.h])
-AC_CHECK_LIB(readline, main,
-	[USE_READLINE=yes],
-	[USE_READLINE=no],
-	[$VIRSH_LIBS])
-if test "$USE_READLINE" = "yes" ; then
-    VIRSH_LIBS="$VIRSH_LIBS -lreadline"
-    AC_DEFINE_UNQUOTED(USE_READLINE, 1, [whether virsh use readline])
-    READLINE_CFLAGS="-DUSE_READLINE"
+
+# Check for readline.
+AC_CHECK_LIB(readline, readline,
+	[lv_use_readline=yes; VIRSH_LIBS="$VIRSH_LIBS -lreadline"],
+	[lv_use_readline=no])
+
+# If the above test failed, it may simply be that -lreadline requires
+# some termcap-related code, e.g., from one of the following libraries.
+# See if adding one of them to LIBS helps.
+if test $lv_use_readline = no; then
+    lv_saved_libs=$LIBS
+    LIBS=
+    AC_SEARCH_LIBS(tgetent, ncurses curses termcap termlib)
+    case $LIBS in
+      no*) ;;  # handle "no" and "none required"
+      *) # anything else is a -lLIBRARY
+	# Now, check for -lreadline again, also using $LIBS.
+	# Note: this time we use a different function, so that
+	# we don't get a cached "no" result.
+	AC_CHECK_LIB(readline, rl_initialize,
+		[lv_use_readline=yes
+		 VIRSH_LIBS="$VIRSH_LIBS -lreadline $LIBS"],,
+		[$LIBS])
+	;;
+    esac
+    test $lv_use_readline = no &&
+	AC_MSG_WARN([readline library not found])
+    LIBS=$lv_saved_libs
+fi
+
+if test $lv_use_readline = yes; then
+    AC_DEFINE_UNQUOTED([USE_READLINE], 1,
+		       [whether virsh can use readline])
+    READLINE_CFLAGS=-DUSE_READLINE
 else
-    AC_MSG_WARN([readline library not found])
+    READLINE_CFLAGS=
 fi
 AC_SUBST(READLINE_CFLAGS)
 AC_SUBST(VIRSH_LIBS)
@@ -697,5 +721,5 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Miscellaneous])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([  Debug: $enable_debug])
-AC_MSG_NOTICE([  Readline: $USE_READLINE])
+AC_MSG_NOTICE([  Readline: $lv_use_readline])
 AC_MSG_NOTICE([])

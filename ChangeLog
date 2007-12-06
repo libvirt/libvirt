@@ -1,3 +1,10 @@
+Thu Dec  6 12:41:18 CET 2007 Jim Meyering <meyering@redhat.com>
+
+	Build also on systems where -lreadline requires e.g., -lncurses.
+	* configure.in: If the test for -lreadline fails, search for a
+	library with termcap support.  If one is found (often -lncurses),
+	rerun the test for -lreadline, linking also with the new library.
+
 Thu Dec  6 11:23:31 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in src/Makefile.am src/virsh.c: fix compilation problems
