@@ -1,3 +1,8 @@
+Thu Dec  6 16:32:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/virsh.c: The prompt should depend on readonly status,
+	  not on the UID.
+
 Thu Dec  6 16:30:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* configure.in, qemud/Makefile.am: Added a --without-libvirtd

@@ -5054,8 +5054,9 @@ main(int argc, char **argv)
         }
         vshReadlineInit();
         do {
+            const char *prompt = ctl->readonly ? VSH_PROMPT_RO : VSH_PROMPT_RW;
             ctl->cmdstr =
-                vshReadline(ctl, ctl->uid == 0 ? VSH_PROMPT_RW : VSH_PROMPT_RO);
+                vshReadline(ctl, prompt);
             if (ctl->cmdstr == NULL)
                 break;          /* EOF */
             if (*ctl->cmdstr) {
