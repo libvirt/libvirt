@@ -4,10 +4,12 @@
  *           entry points where an automatically generated stub is
  *           unpractical
  *
- * Copyright (C) 2005 Red Hat, Inc.
+ * Copyright (C) 2005, 2007 Red Hat, Inc.
  *
  * Daniel Veillard <veillard@redhat.com>
  */
+
+#include "config.h"
 
 #include <Python.h>
 #include "libvirt/libvirt.h"

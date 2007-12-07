@@ -2,12 +2,14 @@
  * proxy_svr.c: root suid proxy server for Xen access to APIs with no
  *              side effects from unauthenticated clients.
  *
- * Copyright (C) 2006 Red Hat, Inc.
+ * Copyright (C) 2006, 2007 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
  * Daniel Veillard <veillard@redhat.com>
  */
+
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -23,6 +23,8 @@
  */
 
 #ifdef WITH_XEN
+#include "config.h"
+
 #include <dirent.h>
 #include <time.h>
 #include <sys/stat.h>

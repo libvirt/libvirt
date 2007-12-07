@@ -1,3 +1,14 @@
+Fri Dec  7 11:06:58 CET 2007 Jim Meyering <meyering@redhat.com>
+
+	Include "config.h" in remaining non-generated files.
+	* proxy/libvirt_proxy.c: Likewise.
+	* python/libvir.c: Likewise.
+	* python/types.c: Likewise.
+	* src/event.c: Likewise.
+	* src/xm_internal.c: Likewise.
+	* tests/reconnect.c: Likewise.
+	* tests/testutils.c: Likewise.
+
 Fri Dec  7 09:39:41 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* python/generator.py python/libvir.c python/libvirt-python-api.xml:

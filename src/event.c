@@ -21,6 +21,7 @@
  * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
+#include "config.h"
 
 #include "event.h"
 

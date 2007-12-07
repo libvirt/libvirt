@@ -2,10 +2,12 @@
  * types.c: converter functions between the internal representation
  *          and the Python objects
  *
- * Copyright (C) 2005 Red Hat, Inc.
+ * Copyright (C) 2005, 2007 Red Hat, Inc.
  *
  * Daniel Veillard <veillard@redhat.com>
  */
+
+#include "config.h"
 
 #include "libvirt_wrap.h"
 
