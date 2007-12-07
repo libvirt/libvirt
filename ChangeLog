@@ -1,5 +1,10 @@
 Fri Dec  7 14:27:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
+	* configure.in: Extra checks for uname and some header files
+	  (for MinGW Windows port).
+
+Fri Dec  7 14:27:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
 	* bootstrap, Makefile.am, gnulib/*: Import more gnulib
 	  modules for use by MinGW Windows port.
 

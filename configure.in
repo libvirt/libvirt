@@ -60,10 +60,10 @@ AM_PROG_CC_C_O
 LIBVIRT_COMPILE_WARNINGS(maximum)
 
 dnl Availability of various common functions (non-fatal if missing).
-AC_CHECK_FUNCS([regexec cfmakeraw])
+AC_CHECK_FUNCS([cfmakeraw regexec uname])
 
 dnl Availability of various common headers (non-fatal if missing).
-AC_CHECK_HEADERS([paths.h sys/syslimits.h])
+AC_CHECK_HEADERS([pwd.h paths.h sys/syslimits.h sys/utsname.h sys/wait.h winsock2.h])
 
 dnl Need -lrpc? (Cygwin needs this)
 AC_SEARCH_LIBS(xdrmem_create,rpc)
@@ -677,7 +677,7 @@ cp COPYING.LIB COPYING
 AC_OUTPUT(Makefile src/Makefile include/Makefile docs/Makefile \
           docs/examples/Makefile docs/devhelp/Makefile \
 	  docs/examples/python/Makefile \
-	  gnulib/lib/Makefile gnulib/tests/Makefile \
+	  gnulib/lib/Makefile \
           libvirt.pc libvirt.spec \
           po/Makefile.in scripts/Makefile \
 	  include/libvirt/Makefile include/libvirt/libvirt.h \
