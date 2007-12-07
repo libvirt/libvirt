@@ -1,3 +1,8 @@
+Fri Dec  7 10:25:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* gnulib/m4/getdelim.m4, gnulib/m4/getline.m4: Remove bogus
+	AC_PREREQ(2.60) since it works fine without this
+
 Fri Dec  7 10:16:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in: ensure $prefix is quoted in conditional test

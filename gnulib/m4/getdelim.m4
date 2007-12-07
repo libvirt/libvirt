@@ -6,8 +6,6 @@ dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
 
-AC_PREREQ([2.60])
-
 AC_DEFUN([gl_FUNC_GETDELIM],
 [
   AC_REQUIRE([gl_STDIO_H_DEFAULTS])
