@@ -3,6 +3,7 @@ Makefile.in
 .deps
 .libs
 *.lo
+*.loT
 *.la
 virsh
 *.gcda

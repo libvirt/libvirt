@@ -30,11 +30,14 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <paths.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
+
+#ifdef HAVE_PATHS_H
+#include <paths.h>
+#endif
 
 #include "libvirt/virterror.h"
 #include "internal.h"
@@ -64,6 +67,8 @@ ReportError(virConnectPtr conn,
     __virRaiseError(conn, dom, net, VIR_FROM_NONE, code, VIR_ERR_ERROR,
                     NULL, NULL, NULL, -1, -1, "%s", errorMessage);
 }
+
+#ifndef __MINGW32__
 
 static int virSetCloseExec(int fd) {
     int flags;
@@ -198,6 +203,34 @@ virExecNonBlock(virConnectPtr conn,
     return(_virExec(conn, argv, retpid, infd, outfd, errfd, 1));
 }
 
+#else /* __MINGW32__ */
+
+int
+virExec(virConnectPtr conn,
+        char **argv ATTRIBUTE_UNUSED,
+        int *retpid ATTRIBUTE_UNUSED,
+        int infd ATTRIBUTE_UNUSED,
+        int *outfd ATTRIBUTE_UNUSED,
+        int *errfd ATTRIBUTE_UNUSED)
+{
+    ReportError (conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
+    return -1;
+}
+
+int
+virExecNonBlock(virConnectPtr conn,
+                char **argv ATTRIBUTE_UNUSED,
+                int *retpid ATTRIBUTE_UNUSED,
+                int infd ATTRIBUTE_UNUSED,
+                int *outfd ATTRIBUTE_UNUSED,
+                int *errfd ATTRIBUTE_UNUSED)
+{
+    ReportError (conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, __FUNCTION__);
+    return -1;
+}
+
+#endif /* __MINGW32__ */
+
 /* Like read(), but restarts after EINTR */
 int saferead(int fd, void *buf, size_t count)
 {
@@ -313,6 +346,7 @@ int virFileHasSuffix(const char *str,
     return strcmp(str + len - suffixlen, suffix) == 0;
 }
 
+#ifndef __MINGW32__
 
 int virFileLinkPointsTo(const char *checkLink,
                         const char *checkDest)
@@ -396,6 +430,22 @@ int virFileLinkPointsTo(const char *checkLink,
 
     return 1;
 }
+
+#else /* !__MINGW32__ */
+
+/* Gnulib has an implementation of readlink which could be used
+ * to implement this, but it requires LGPLv3.
+ */
+
+int
+virFileLinkPointsTo (const char *checkLink ATTRIBUTE_UNUSED,
+                     const char *checkDest ATTRIBUTE_UNUSED)
+{
+    virLog ("%s: not implemented", __FUNCTION__);
+    return 0;
+}
+
+#endif /*! __MINGW32__ */
 
 int virFileMakePath(const char *path)
 {

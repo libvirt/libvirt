@@ -35,8 +35,14 @@
 #include <libxml/uri.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/stat.h>
+
+#ifndef HAVE_WINSOCK2_H
 #include <net/if.h>
 #include <netinet/in.h>
+#else
+#include <winsock2.h>
+#endif
 
 #include "internal.h"
 #include "test.h"

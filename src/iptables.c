@@ -19,9 +19,9 @@
  *     Mark McLoughlin <markmc@redhat.com>
  */
 
-#include <config.h>
+#include "config.h"
 
-#include "iptables.h"
+#if WITH_QEMU
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,12 +31,19 @@
 #include <limits.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <paths.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
+#endif
+
+#ifdef HAVE_PATHS_H
+#include <paths.h>
+#endif
 
 #include "internal.h"
+#include "iptables.h"
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
 
@@ -1091,6 +1098,8 @@ iptablesRemoveForwardMasquerade(iptablesContext *ctx,
 {
     return iptablesForwardMasquerade(ctx, network, physdev, REMOVE);
 }
+
+#endif /* WITH_QEMU */
 
 /*
  * Local variables:

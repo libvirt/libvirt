@@ -13,8 +13,12 @@
 
 #include "internal.h"
 
+#ifndef HAVE_WINSOCK2_H
 #include <sys/un.h>
 #include <netinet/in.h>
+#else
+#include <winsock2.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {

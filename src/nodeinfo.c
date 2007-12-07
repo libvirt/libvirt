@@ -26,9 +26,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <sys/utsname.h>
 #include <errno.h>
 #include <ctype.h>
+
+#ifdef HAVE_SYS_UTSNAME_H
+#include <sys/utsname.h>
+#endif
 
 #include "nodeinfo.h"
 #include "physmem.h"
@@ -120,6 +123,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
 
 int virNodeInfoPopulate(virConnectPtr conn,
                         virNodeInfoPtr nodeinfo) {
+#ifdef HAVE_UNAME
     struct utsname info;
 
     if (uname(&info) < 0) {
@@ -128,9 +132,14 @@ int virNodeInfoPopulate(virConnectPtr conn,
                         "cannot extract machine type %s", strerror(errno));
         return -1;
     }
-
     strncpy(nodeinfo->model, info.machine, sizeof(nodeinfo->model)-1);
     nodeinfo->model[sizeof(nodeinfo->model)-1] = '\0';
+
+#else /* !HAVE_UNAME */
+
+    nodeinfo->model[0] = '\0';
+
+#endif /* !HAVE_UNAME */
 
 #ifdef __linux__
     {

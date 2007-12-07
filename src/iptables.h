@@ -22,6 +22,8 @@
 #ifndef __QEMUD_IPTABLES_H__
 #define __QEMUD_IPTABLES_H__
 
+#if WITH_QEMU
+
 typedef struct _iptablesContext iptablesContext;
 
 iptablesContext *iptablesContextNew              (void);
@@ -82,6 +84,8 @@ int              iptablesAddForwardMasquerade    (iptablesContext *ctx,
 int              iptablesRemoveForwardMasquerade (iptablesContext *ctx,
                                                   const char *network,
                                                   const char *physdev);
+
+#endif /* WITH_QEMU */
 
 #endif /* __QEMUD_IPTABLES_H__ */
 

@@ -8,6 +8,8 @@
  * Daniel Veillard <veillard@redhat.com>
  */
 
+#ifdef WITH_XEN
+
 #include "config.h"
 
 #include <stdio.h>
@@ -1110,6 +1112,8 @@ xenProxyDomainGetOSType(virDomainPtr domain)
 
     return(ostype);
 }
+
+#endif /* WITH_XEN */
 
 /*
  * vim: set tabstop=4:
