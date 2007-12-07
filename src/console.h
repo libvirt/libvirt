@@ -23,6 +23,8 @@
 #ifndef __VIR_CONSOLE_H__
 #define __VIR_CONSOLE_H__
 
+#ifndef __MINGW32__
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -32,6 +34,8 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* !__MINGW32__ */
 
 #endif /* __VIR_CONSOLE_H__ */
 

@@ -23,6 +23,11 @@
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include <libxml/uri.h>
+#include "getpass.h"
+
+#if HAVE_WINSOCK2_H
+#include <winsock2.h>
+#endif
 
 #include "internal.h"
 #include "driver.h"
@@ -144,6 +149,21 @@ static virConnectAuth virConnectAuthDefault = {
  */
 virConnectAuthPtr virConnectAuthPtrDefault = &virConnectAuthDefault;
 
+#if HAVE_WINSOCK2_H
+static int
+winsock_init (void)
+{
+    WORD winsock_version, err;
+    WSADATA winsock_data;
+
+    /* http://msdn2.microsoft.com/en-us/library/ms742213.aspx */
+    winsock_version = MAKEWORD (2, 2);
+    err = WSAStartup (winsock_version, &winsock_data);
+    if (err != 0)
+        return -1;
+}
+#endif
+
 /**
  * virInitialize:
  *
@@ -160,6 +180,10 @@ virInitialize(void)
     if (initialized)
         return(0);
     initialized = 1;
+
+#if HAVE_WINSOCK2_H
+    if (winsock_init () == -1) return -1;
+#endif
 
     if (!bindtextdomain(GETTEXT_PACKAGE, LOCALEBASEDIR))
         return (-1);

@@ -22,6 +22,8 @@
 
 #include "config.h"
 
+#ifndef __MINGW32__
+
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -192,6 +194,8 @@ int vshRunConsole(const char *tty) {
 
     return ret;
 }
+
+#endif /* !__MINGW32__ */
 
 /*
  * Local variables:

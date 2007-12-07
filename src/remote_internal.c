@@ -31,15 +31,29 @@
 #include <errno.h>
 #include <signal.h>
 #include <sys/types.h>
-#include <sys/socket.h>
 #include <sys/stat.h>
-#include <sys/wait.h>
 #include <fcntl.h>
+
+#ifdef HAVE_SYS_WAIT_H
+#include <sys/wait.h>
+#endif
+
+#ifdef HAVE_PWD_H
+#include <pwd.h>
+#endif
+
+#ifdef HAVE_PATHS_H
 #include <paths.h>
+#endif
+
+#ifndef HAVE_WINSOCK2_H
+#include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
-#include <pwd.h>
+#else
+#include <winsock2.h>
+#endif
 
 #include <rpc/types.h>
 #include <rpc/xdr.h>
@@ -51,9 +65,15 @@
 #endif
 #include <libxml/uri.h>
 
+#include "getaddrinfo.h"
+
+/* AI_ADDRCONFIG is missing on some systems. */
+#ifndef AI_ADDRCONFIG
+# define AI_ADDRCONFIG 0
+#endif
+
 #include "internal.h"
 #include "driver.h"
-#include "getaddrinfo.h"
 #include "remote_internal.h"
 #include "remote_protocol.h"
 
@@ -207,6 +227,7 @@ remoteFindDaemonPath(void)
     return NULL;
 }
 
+#ifndef WIN32
 /**
  * qemuForkDaemon:
  *
@@ -286,7 +307,7 @@ remoteForkDaemon(virConnectPtr conn)
 
     return (0);
 }
-
+#endif
 
 enum virDrvOpenRemoteFlags {
     VIR_DRV_OPEN_REMOTE_RO = (1 << 0),
@@ -554,6 +575,7 @@ doRemoteOpen (virConnectPtr conn,
         break;
     }
 
+#ifndef WIN32
     case trans_unix: {
         if (!sockname) {
             if (flags & VIR_DRV_OPEN_REMOTE_USER) {
@@ -720,6 +742,16 @@ doRemoteOpen (virConnectPtr conn,
         priv->sock = sv[0];
         priv->pid = pid;
     }
+#else /* WIN32 */
+
+    case trans_unix:
+    case trans_ssh:
+    case trans_ext:
+        error (conn, VIR_ERR_INVALID_ARG,
+               _("transport methods unix, ssh and ext are not supported under Windows"));
+
+#endif /* WIN32 */
+
     } /* switch (transport) */
 
 
@@ -769,6 +801,7 @@ doRemoteOpen (virConnectPtr conn,
             gnutls_deinit (priv->session);
         }
         close (priv->sock);
+#ifndef WIN32
         if (priv->pid > 0) {
             pid_t reap;
             do {
@@ -777,6 +810,7 @@ doRemoteOpen (virConnectPtr conn,
                     continue;
             } while (reap != -1 && reap != priv->pid);
         }
+#endif
     }
 
     if (priv->hostname) {
@@ -808,6 +842,7 @@ remoteOpen (virConnectPtr conn,
     if (flags & VIR_CONNECT_RO)
         rflags |= VIR_DRV_OPEN_REMOTE_RO;
 
+#if WITH_QEMU
     if (uri &&
         uri->scheme && STREQ (uri->scheme, "qemu") &&
         (!uri->server || STREQ (uri->server, "")) &&
@@ -822,6 +857,7 @@ remoteOpen (virConnectPtr conn,
             }
         }
     }
+#endif
 
     memset(priv, 0, sizeof(struct private_data));
     priv->magic = DEAD;
@@ -1306,6 +1342,7 @@ doRemoteClose (virConnectPtr conn, struct private_data *priv)
 #endif
     close (priv->sock);
 
+#ifndef WIN32
     if (priv->pid > 0) {
         pid_t reap;
         do {
@@ -1314,6 +1351,7 @@ doRemoteClose (virConnectPtr conn, struct private_data *priv)
                 continue;
         } while (reap != -1 && reap != priv->pid);
     }
+#endif
 
     /* Free hostname copy */
     if (priv->hostname) free (priv->hostname);

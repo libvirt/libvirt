@@ -36,6 +36,10 @@
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
 
+#ifndef ENODATA
+#define ENODATA EIO
+#endif
+
 static int
 virUUIDGenerateRandomBytes(unsigned char *buf,
                            int buflen)

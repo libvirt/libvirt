@@ -1,3 +1,16 @@
+Fri Dec  7 14:49:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/console.c, src/console.h, src/virsh.c: Disable
+	  text console on Windows.
+	* src/libvirt.c: Use replacement getpass from Gnulib.
+	* src/libvirt.c: Initialize Winsock before use.
+	* src/remote_internal.c: Header file fixes for Windows.
+	  Don't fail if AI_ADDRCONFIG isn't defined.  Disable
+	  unsupported stuff under Windows.
+	* src/uuid.c: ENODATA unavailable on Windows, use EIO instead.
+	* src/virsh.c: No uid_t / getuid on Windows.
+	* src/virsh.c: No O_SYNC on Windows.
+
 Fri Dec  7 14:47:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/internal.h: Use gnulib gettext library.  Define

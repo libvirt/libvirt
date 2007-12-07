@@ -202,7 +202,9 @@ typedef struct __vshControl {
     virConnectPtr conn;         /* connection to hypervisor (MAY BE NULL) */
     vshCmd *cmd;                /* the current command */
     char *cmdstr;               /* string with command */
+#ifndef __MINGW32__
     uid_t uid;                  /* process owner */
+#endif /* __MINGW32__ */
     int imode;                  /* interactive mode? */
     int quiet;                  /* quiet mode */
     int debug;                  /* print debug messages? */
@@ -457,6 +459,8 @@ static vshCmdOptDef opts_console[] = {
     {NULL, 0, 0, NULL}
 };
 
+#ifndef __MINGW32__
+
 static int
 cmdConsole(vshControl * ctl, vshCmd * cmd)
 {
@@ -505,6 +509,17 @@ cmdConsole(vshControl * ctl, vshCmd * cmd)
     virDomainFree(dom);
     return ret;
 }
+
+#else /* __MINGW32__ */
+
+static int
+cmdConsole(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
+{
+    vshError (ctl, FALSE, _("console not implemented on this platform"));
+    return FALSE;
+}
+
+#endif /* __MINGW32__ */
 
 /*
  * "list" command
@@ -4508,17 +4523,21 @@ vshInit(vshControl * ctl)
     if (ctl->conn)
         return FALSE;
 
+#ifndef __MINGW32__
     ctl->uid = getuid();
+#endif
 
     vshOpenLogFile(ctl);
 
     /* set up the library error handler */
     virSetErrorFunc(NULL, virshErrorHandler);
 
+#ifndef __MINGW32__
     /* Force a non-root, Xen connection to readonly */
     if ((ctl->name == NULL ||
          !strcasecmp(ctl->name, "xen")) && ctl->uid != 0)
          ctl->readonly = 1;
+#endif
 
     ctl->conn = virConnectOpenAuth(ctl->name,
                                    virConnectAuthPtrDefault,
@@ -4536,6 +4555,11 @@ vshInit(vshControl * ctl)
 
     return TRUE;
 }
+
+#ifndef O_SYNC
+#define O_SYNC 0
+#endif
+#define LOGFILE_FLAGS (O_WRONLY | O_APPEND | O_CREAT | O_SYNC)
 
 /**
  * vshOpenLogFile:
@@ -4566,7 +4590,7 @@ vshOpenLogFile(vshControl *ctl)
     }
 
     /* log file open */
-    if ((ctl->log_fd = open(ctl->logfile, O_WRONLY | O_APPEND | O_CREAT | O_SYNC, FILE_MODE)) < 0) {
+    if ((ctl->log_fd = open(ctl->logfile, LOGFILE_FLAGS, FILE_MODE)) < 0) {
         vshError(ctl, TRUE, _("failed to open the log file. check the log file path"));
     }
 }
