@@ -112,10 +112,10 @@ dnl if --prefix is /usr, don't use /usr/var for localstatedir
 dnl or /usr/etc for sysconfdir
 dnl as this makes a lot of things break in testing situations
 
-if test $prefix = "/usr" -a $localstatedir = '${prefix}/var' ; then
+if test "$prefix" = "/usr" -a "$localstatedir" = '${prefix}/var' ; then
     localstatedir='/var'
 fi
-if test $prefix = "/usr" -a $sysconfdir = '${prefix}/etc' ; then
+if test "$prefix" = "/usr" -a "$sysconfdir" = '${prefix}/etc' ; then
     sysconfdir='/etc'
 fi
 
