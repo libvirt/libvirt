@@ -1,3 +1,8 @@
+Fri Dec  7 14:55:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* proxy/Makefile.am: Include gnulib code when building the
+	  proxy.
+
 Fri Dec  7 14:49:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/console.c, src/console.h, src/virsh.c: Disable
