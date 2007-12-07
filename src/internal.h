@@ -12,11 +12,12 @@
 #include <sys/syslimits.h>
 #endif
 
+#include "gettext.h"
+
 #include "hash.h"
 #include "libvirt/libvirt.h"
 #include "libvirt/virterror.h"
 #include "driver.h"
-#include <libintl.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,9 +37,12 @@ extern "C" {
 #define IF_NAMESIZE 16
 #endif
 
+#ifndef INET_ADDRSTRLEN
+#define INET_ADDRSTRLEN 16
+#endif
+
 #define _(str) dgettext(GETTEXT_PACKAGE, (str))
 #define N_(str) dgettext(GETTEXT_PACKAGE, (str))
-#define gettext_noop(str) (str)
 
 /* String equality tests, suggested by Jim Meyering. */
 #define STREQ(a,b) (strcmp((a),(b)) == 0)

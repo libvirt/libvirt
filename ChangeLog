@@ -1,3 +1,8 @@
+Fri Dec  7 14:47:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/internal.h: Use gnulib gettext library.  Define
+	  INET_ADDRSTRLEN unless already defined.
+
 Fri Dec  7 14:36:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/.cvsignore: Ignore *.loT files (generated under Windows).
@@ -8,6 +13,10 @@ Fri Dec  7 14:36:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 	  configured --without-qemu.
 	* src/nodeinfo.c: If no 'uname' function, set model name to
 	  empty string (for Windows).
+	* src/xen_unified.h, src/util.c, src/test.c: Include <winsock2.h>
+	  on Windows.
+	* src/util.c: Disable virExec* and virFileLinkPointsTo on
+	  MinGW.
 
 Fri Dec  7 14:34:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
