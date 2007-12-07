@@ -27,6 +27,7 @@ PyObject *libvirt_virGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *arg
 PyObject *libvirt_virConnGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
 PyObject * libvirt_virDomainBlockStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
 PyObject * libvirt_virDomainInterfaceStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
+PyObject * libvirt_virNodeGetCellsFreeMemory(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
 
 /************************************************************************
  *									*
@@ -844,7 +845,45 @@ libvirt_virNetworkGetAutostart(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) 
     return(py_retval);
 }
 
+PyObject * libvirt_virNodeGetCellsFreeMemory(PyObject *self ATTRIBUTE_UNUSED,
+         PyObject *args)
+{
+    PyObject *py_retval;
+    PyObject *pyobj_conn;
+    int startCell, maxCells, c_retval, i;
+    virConnectPtr conn;
+    unsigned long long *freeMems;
 
+    if (!PyArg_ParseTuple(args, (char *)"Oii:virNodeGetCellsFreeMemory", &pyobj_conn, &startCell, &maxCells))
+        return(NULL);
+
+    if ((startCell < 0) || (maxCells <= 0) || (startCell + maxCells > 10000))
+        goto error;
+
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+    freeMems = (unsigned long long *)
+          malloc(maxCells * sizeof(unsigned long long));
+    if (freeMems == NULL)
+        goto error;
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virNodeGetCellsFreeMemory(conn, freeMems, startCell, maxCells);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (c_retval < 0) {
+	free(freeMems);
+error:
+        Py_INCREF(Py_None);
+	return Py_None;
+    }
+    py_retval = PyList_New(c_retval);
+    for (i = 0;i < c_retval;i++) {
+	PyList_SetItem(py_retval, i, 
+	        libvirt_longlongWrap((long long) freeMems[i]));
+    }
+    free(freeMems);
+    return(py_retval);
+}
 
 /************************************************************************
  *									*
@@ -875,6 +914,7 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virNetworkGetAutostart", libvirt_virNetworkGetAutostart, METH_VARARGS, NULL},
     {(char *) "virDomainBlockStats", libvirt_virDomainBlockStats, METH_VARARGS, NULL},
     {(char *) "virDomainInterfaceStats", libvirt_virDomainInterfaceStats, METH_VARARGS, NULL},
+    {(char *) "virNodeGetCellsFreeMemory", libvirt_virNodeGetCellsFreeMemory, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 

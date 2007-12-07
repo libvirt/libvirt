@@ -75,5 +75,12 @@
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
       <arg name='path' type='char *' info='the path for the interface device'/>
     </function>
+    <function name="virNodeGetCellsFreeMemory" file='python'>
+      <info>Returns the availbale memory for a list of cells</info>
+      <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+      <arg name='startCell' type='int' info='first cell in the list'/>
+      <arg name='maxCells' type='int' info='number of cell in the list'/>
+      <return type='int *' info="the list available memory in the cells"/>
+    </function>
   </symbols>
 </api>

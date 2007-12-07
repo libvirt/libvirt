@@ -278,6 +278,7 @@ skip_impl = (
     'virNetworkLookupByUUID',
     'virDomainBlockStats',
     'virDomainInterfaceStats',
+    'virNodeGetCellsFreeMemory',
 )
 
 def skip_function(name):
