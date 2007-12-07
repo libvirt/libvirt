@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = gnulib/lib include src qemud proxy docs gnulib/tests \
+SUBDIRS = gnulib/lib include src qemud proxy docs \
   @PYTHON_SUBDIR@ tests po scripts
 
 ACLOCAL_AMFLAGS = -I m4 -I gnulib/m4

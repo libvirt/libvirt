@@ -25,7 +25,9 @@ AC_DEFUN([gl_EARLY],
   m4_pattern_allow([^gl_LIBOBJS$])dnl a variable
   m4_pattern_allow([^gl_LTLIBOBJS$])dnl a variable
   AC_REQUIRE([AC_PROG_RANLIB])
+  AC_REQUIRE([AC_GNU_SOURCE])
   AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
+  AC_REQUIRE([AC_FUNC_FSEEKO])
 ])
 
 # This macro should be invoked from ./configure.in, in the section
@@ -42,33 +44,63 @@ AC_DEFUN([gl_INIT],
   gl_HEADER_ARPA_INET
   AC_PROG_MKDIR_P
   gl_FLOAT_H
+  gl_FUNC_FSEEKO
+  gl_STDIO_MODULE_INDICATOR([fseeko])
   gl_GETADDRINFO
+  gl_FUNC_GETDELIM
+  gl_STDIO_MODULE_INDICATOR([getdelim])
+  gl_FUNC_GETLINE
+  gl_STDIO_MODULE_INDICATOR([getline])
+  gl_FUNC_GETPASS
+  dnl you must add AM_GNU_GETTEXT([external]) or similar to configure.ac.
+  AM_GNU_GETTEXT_VERSION([0.17])
   AC_SUBST([LIBINTL])
   AC_SUBST([LTLIBINTL])
   gl_INET_NTOP
+  gl_FUNC_LSEEK
+  gl_UNISTD_MODULE_INDICATOR([lseek])
   gl_FUNC_MALLOC_POSIX
   gl_STDLIB_MODULE_INDICATOR([malloc-posix])
   gl_HEADER_NETINET_IN
   AC_PROG_MKDIR_P
   gl_PHYSMEM
+  gl_FUNC_POLL
+  gl_FUNC_REALLOC_POSIX
+  gl_STDLIB_MODULE_INDICATOR([realloc-posix])
   gl_SIZE_MAX
   gl_FUNC_SNPRINTF
   gl_STDIO_MODULE_INDICATOR([snprintf])
   gl_TYPE_SOCKLEN_T
   AM_STDBOOL_H
   gl_STDINT_H
-  gt_TYPE_WCHAR_T
-  gt_TYPE_WINT_T
   gl_STDIO_H
   gl_STDLIB_H
   gl_FUNC_STRDUP
   gl_STRING_MODULE_INDICATOR([strdup])
   gl_HEADER_STRING_H
+  gl_FUNC_STRNDUP
+  gl_STRING_MODULE_INDICATOR([strndup])
+  gl_FUNC_STRNLEN
+  gl_STRING_MODULE_INDICATOR([strnlen])
+  gl_FUNC_STRPBRK
+  gl_STRING_MODULE_INDICATOR([strpbrk])
+  gl_FUNC_STRSEP
+  gl_STRING_MODULE_INDICATOR([strsep])
+  gl_HEADER_SYS_SELECT
+  AC_PROG_MKDIR_P
   gl_HEADER_SYS_SOCKET
   AC_PROG_MKDIR_P
-  AC_CHECK_FUNCS([shutdown])
+  gl_HEADER_SYS_STAT_H
+  AC_PROG_MKDIR_P
+  gl_HEADER_SYS_TIME_H
+  AC_PROG_MKDIR_P
   gl_UNISTD_H
   gl_FUNC_VASNPRINTF
+  gl_FUNC_VASPRINTF
+  gl_STDIO_MODULE_INDICATOR([vasprintf])
+  m4_ifdef([AM_XGETTEXT_OPTION],
+    [AM_XGETTEXT_OPTION([--flag=asprintf:2:c-format])
+     AM_XGETTEXT_OPTION([--flag=vasprintf:2:c-format])])
   gl_WCHAR_H
   gl_XSIZE
   m4_popdef([AC_LIBSOURCES])
@@ -121,27 +153,37 @@ AC_DEFUN([gl_LIBSOURCES], [
 # This macro records the list of files which have been installed by
 # gnulib-tool and may be removed by future gnulib-tool invocations.
 AC_DEFUN([gl_FILE_LIST], [
+  build-aux/config.rpath
   build-aux/link-warning.h
   lib/alloca.in.h
   lib/asnprintf.c
+  lib/asprintf.c
   lib/dummy.c
   lib/float+.h
   lib/float.in.h
+  lib/fseeko.c
   lib/gai_strerror.c
   lib/getaddrinfo.c
   lib/getaddrinfo.h
+  lib/getdelim.c
+  lib/getline.c
+  lib/getpass.c
+  lib/getpass.h
   lib/gettext.h
   lib/inet_ntop.c
   lib/inet_ntop.h
-  lib/intprops.h
+  lib/lseek.c
   lib/malloc.c
   lib/netinet_in.in.h
   lib/physmem.c
   lib/physmem.h
+  lib/poll.c
+  lib/poll.in.h
   lib/printf-args.c
   lib/printf-args.h
   lib/printf-parse.c
   lib/printf-parse.h
+  lib/realloc.c
   lib/size_max.h
   lib/snprintf.c
   lib/stdbool.in.h
@@ -150,30 +192,64 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/stdlib.in.h
   lib/strdup.c
   lib/string.in.h
+  lib/strndup.c
+  lib/strnlen.c
+  lib/strpbrk.c
+  lib/strsep.c
+  lib/sys_select.in.h
   lib/sys_socket.in.h
+  lib/sys_stat.in.h
+  lib/sys_time.in.h
   lib/unistd.in.h
   lib/vasnprintf.c
   lib/vasnprintf.h
-  lib/verify.h
+  lib/vasprintf.c
   lib/wchar.in.h
   lib/xsize.h
   m4/absolute-header.m4
   m4/alloca.m4
   m4/arpa_inet_h.m4
+  m4/codeset.m4
   m4/eoverflow.m4
   m4/extensions.m4
   m4/float_h.m4
+  m4/fseeko.m4
   m4/getaddrinfo.m4
+  m4/getdelim.m4
+  m4/getline.m4
+  m4/getpass.m4
+  m4/gettext.m4
+  m4/glibc2.m4
+  m4/glibc21.m4
   m4/gnulib-common.m4
+  m4/iconv.m4
   m4/include_next.m4
   m4/inet_ntop.m4
+  m4/intdiv0.m4
+  m4/intl.m4
+  m4/intldir.m4
+  m4/intlmacosx.m4
+  m4/intmax.m4
   m4/intmax_t.m4
+  m4/inttypes-pri.m4
   m4/inttypes_h.m4
+  m4/lcmessage.m4
+  m4/lib-ld.m4
+  m4/lib-link.m4
+  m4/lib-prefix.m4
+  m4/lock.m4
   m4/longlong.m4
+  m4/lseek.m4
   m4/malloc.m4
   m4/netinet_in_h.m4
+  m4/nls.m4
   m4/onceonly_2_57.m4
   m4/physmem.m4
+  m4/po.m4
+  m4/poll.m4
+  m4/printf-posix.m4
+  m4/progtest.m4
+  m4/realloc.m4
   m4/size_max.m4
   m4/snprintf.m4
   m4/socklen.m4
@@ -185,22 +261,21 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/stdlib_h.m4
   m4/strdup.m4
   m4/string_h.m4
+  m4/strndup.m4
+  m4/strnlen.m4
+  m4/strpbrk.m4
+  m4/strsep.m4
+  m4/sys_select_h.m4
   m4/sys_socket_h.m4
+  m4/sys_stat_h.m4
+  m4/sys_time_h.m4
+  m4/uintmax_t.m4
   m4/unistd_h.m4
   m4/vasnprintf.m4
+  m4/vasprintf.m4
+  m4/visibility.m4
   m4/wchar.m4
   m4/wchar_t.m4
   m4/wint_t.m4
   m4/xsize.m4
-  tests/test-arpa_inet.c
-  tests/test-getaddrinfo.c
-  tests/test-netinet_in.c
-  tests/test-stdbool.c
-  tests/test-stdint.c
-  tests/test-stdio.c
-  tests/test-stdlib.c
-  tests/test-string.c
-  tests/test-sys_socket.c
-  tests/test-unistd.c
-  tests/test-wchar.c
 ])

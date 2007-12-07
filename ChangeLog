@@ -1,3 +1,8 @@
+Fri Dec  7 14:27:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	* bootstrap, Makefile.am, gnulib/*: Import more gnulib
+	  modules for use by MinGW Windows port.
+
 Fri Dec  7 11:06:58 CET 2007 Jim Meyering <meyering@redhat.com>
 
 	Include "config.h" in remaining non-generated files.
