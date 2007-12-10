@@ -34,11 +34,11 @@ AC_DEFUN([gl_EARLY],
 # "Check for header files, types and library functions".
 AC_DEFUN([gl_INIT],
 [
+  AM_CONDITIONAL([GL_COND_LIBTOOL], [true])
+  gl_cond_libtool=true
   m4_pushdef([AC_LIBOBJ], m4_defn([gl_LIBOBJ]))
   m4_pushdef([AC_REPLACE_FUNCS], m4_defn([gl_REPLACE_FUNCS]))
   m4_pushdef([AC_LIBSOURCES], m4_defn([gl_LIBSOURCES]))
-  AM_CONDITIONAL([GL_COND_LIBTOOL], [true])
-  gl_cond_libtool=true
   gl_source_base='gnulib/lib'
   gl_FUNC_ALLOCA
   gl_HEADER_ARPA_INET
@@ -120,6 +120,34 @@ AC_DEFUN([gl_INIT],
     AC_SUBST([gl_LIBOBJS], [$gl_libobjs])
     AC_SUBST([gl_LTLIBOBJS], [$gl_ltlibobjs])
   ])
+  gltests_libdeps=
+  gltests_ltlibdeps=
+  m4_pushdef([AC_LIBOBJ], m4_defn([gltests_LIBOBJ]))
+  m4_pushdef([AC_REPLACE_FUNCS], m4_defn([gltests_REPLACE_FUNCS]))
+  m4_pushdef([AC_LIBSOURCES], m4_defn([gltests_LIBSOURCES]))
+  gl_source_base='gnulib/tests'
+  gt_TYPE_WCHAR_T
+  gt_TYPE_WINT_T
+  AC_CHECK_FUNCS([shutdown])
+  m4_popdef([AC_LIBSOURCES])
+  m4_popdef([AC_REPLACE_FUNCS])
+  m4_popdef([AC_LIBOBJ])
+  AC_CONFIG_COMMANDS_PRE([
+    gltests_libobjs=
+    gltests_ltlibobjs=
+    if test -n "$gltests_LIBOBJS"; then
+      # Remove the extension.
+      sed_drop_objext='s/\.o$//;s/\.obj$//'
+      for i in `for i in $gltests_LIBOBJS; do echo "$i"; done | sed "$sed_drop_objext" | sort | uniq`; do
+        gltests_libobjs="$gltests_libobjs $i.$ac_objext"
+        gltests_ltlibobjs="$gltests_ltlibobjs $i.lo"
+      done
+    fi
+    AC_SUBST([gltests_LIBOBJS], [$gltests_libobjs])
+    AC_SUBST([gltests_LTLIBOBJS], [$gltests_ltlibobjs])
+  ])
+  LIBTESTS_LIBDEPS="$gltests_libdeps"
+  AC_SUBST([LIBTESTS_LIBDEPS])
 ])
 
 # Like AC_LIBOBJ, except that the module name goes
@@ -146,6 +174,34 @@ AC_DEFUN([gl_LIBSOURCES], [
       m4_syscmd([test -r gnulib/lib/]_gl_NAME[ || test ! -d gnulib/lib])dnl
       m4_if(m4_sysval, [0], [],
         [AC_FATAL([missing gnulib/lib/]_gl_NAME)])
+    ])
+  ])
+])
+
+# Like AC_LIBOBJ, except that the module name goes
+# into gltests_LIBOBJS instead of into LIBOBJS.
+AC_DEFUN([gltests_LIBOBJ], [
+  AS_LITERAL_IF([$1], [gltests_LIBSOURCES([$1.c])])dnl
+  gltests_LIBOBJS="$gltests_LIBOBJS $1.$ac_objext"
+])
+
+# Like AC_REPLACE_FUNCS, except that the module name goes
+# into gltests_LIBOBJS instead of into LIBOBJS.
+AC_DEFUN([gltests_REPLACE_FUNCS], [
+  m4_foreach_w([gl_NAME], [$1], [AC_LIBSOURCES(gl_NAME[.c])])dnl
+  AC_CHECK_FUNCS([$1], , [gltests_LIBOBJ($ac_func)])
+])
+
+# Like AC_LIBSOURCES, except the directory where the source file is
+# expected is derived from the gnulib-tool parametrization,
+# and alloca is special cased (for the alloca-opt module).
+# We could also entirely rely on EXTRA_lib..._SOURCES.
+AC_DEFUN([gltests_LIBSOURCES], [
+  m4_foreach([_gl_NAME], [$1], [
+    m4_if(_gl_NAME, [alloca.c], [], [
+      m4_syscmd([test -r gnulib/tests/]_gl_NAME[ || test ! -d gnulib/tests])dnl
+      m4_if(m4_sysval, [0], [],
+        [AC_FATAL([missing gnulib/tests/]_gl_NAME)])
     ])
   ])
 ])
@@ -278,4 +334,31 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/wchar_t.m4
   m4/wint_t.m4
   m4/xsize.m4
+  tests/test-alloca-opt.c
+  tests/test-arpa_inet.c
+  tests/test-fseeko.c
+  tests/test-fseeko.sh
+  tests/test-getaddrinfo.c
+  tests/test-getdelim.c
+  tests/test-getline.c
+  tests/test-lseek.c
+  tests/test-lseek.sh
+  tests/test-netinet_in.c
+  tests/test-snprintf.c
+  tests/test-stdbool.c
+  tests/test-stdint.c
+  tests/test-stdio.c
+  tests/test-stdlib.c
+  tests/test-string.c
+  tests/test-sys_select.c
+  tests/test-sys_socket.c
+  tests/test-sys_stat.c
+  tests/test-sys_time.c
+  tests/test-unistd.c
+  tests/test-vasnprintf.c
+  tests/test-vasprintf.c
+  tests/test-wchar.c
+  tests=lib/dummy.c
+  tests=lib/intprops.h
+  tests=lib/verify.h
 ])

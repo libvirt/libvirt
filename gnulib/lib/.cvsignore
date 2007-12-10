@@ -1,11 +1,11 @@
-alloca.h
-.deps
-float.h
 *.la
-.libs
 *.lo
+.deps
+.libs
 Makefile
 Makefile.in
+alloca.h
+float.h
 netinet_in.h
 poll.h
 stdbool.h

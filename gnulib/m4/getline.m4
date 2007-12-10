@@ -1,4 +1,4 @@
-# getline.m4 serial 17
+# getline.m4 serial 18
 
 dnl Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006, 2007 Free
 dnl Software Foundation, Inc.
@@ -6,6 +6,8 @@ dnl
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
+
+AC_PREREQ([2.59])
 
 dnl See if there's a working, system-supplied version of the getline function.
 dnl We can't just do AC_REPLACE_FUNCS(getline) because some systems
