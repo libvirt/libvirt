@@ -47,7 +47,9 @@ noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest conftest \
         nodeinfotest
 
 test_scripts = \
+	daemon-conf \
 	int-overflow
+
 EXTRA_DIST += $(test_scripts)
 
 TESTS = xml2sexprtest sexpr2xmltest virshtest test_conf.sh xmconfigtest \
@@ -63,6 +65,7 @@ endif
 TESTS_ENVIRONMENT =				\
   abs_top_builddir=`pwd`/'$(top_builddir)'	\
   abs_top_srcdir=`pwd`/'$(top_srcdir)'		\
+  PATH='$(abs_top_builddir)/qemud$(PATH_SEPARATOR)'"$$PATH" \
   $(VG)
 
 valgrind:

@@ -1,0 +1,64 @@
+#!/bin/sh
+# Get coverage of libvirtd's config-parsing code.
+
+# Boilerplate code to set up a test directory, cd into it,
+# and to ensure we remove it upon completion.
+this_test_() { echo "./$0" | sed 's,.*/,,'; }
+t_=$(this_test_)-$$
+init_cwd_=$(pwd)
+trap 'st=$?; d='"$t_"';
+    cd '"$init_cwd_"' && chmod -R u+rwx "$d" && rm -rf "$d" && exit $st' 0
+trap '(exit $?); exit $?' 1 2 13 15
+mkdir "$t_" || fail=1
+cd "$t_" || fail=1
+
+# Start with the sample libvirtd.conf file, uncommenting all real directives.
+sed -n 's/^#\([^ #]\)/\1/p' $abs_top_srcdir/qemud/libvirtd.conf > tmp.conf
+
+# Iterate through that list of directives, corrupting one RHS at a
+# time and running libvirtd with the resulting config.  Each libvirtd
+# invocation must fail.
+n=$(wc -l < tmp.conf)
+i=1
+while :; do
+  param_name=$(sed -n "$i"'s/ = .*//p' tmp.conf)
+  rhs=$(sed -n "$i"'s/.* = \(.*\)/\1/p' tmp.conf)
+  f=in$i.conf
+  # Change an RHS that starts with '"' or '[' to "3".
+  # Change an RHS that starts with 0 or 1 to the string '"foo"'.
+  sed "$i"'s/ = [["].*/ = 3/;'"$i"'s/ = [01].*/ = "foo"/' tmp.conf > $f
+  libvirtd --config=$f 2> err && fail=1
+  case $rhs in
+    # '"'*) msg='should be a string';;
+    '"'*) msg='invalid type: got long; expected string';;
+    [01]*) msg='invalid type: got string; expected long';;
+    '['*) msg='must be a string or list of strings';;
+    *) echo "unexpected RHS: $rhs" 1>&2; fail=1;;
+  esac
+
+  test $i = $n && break
+
+  # Filter out this diagnostic.
+  sed '/^Cannot set group when not running as root$/d' err > k && mv k err
+
+  printf '%s\n\n' "remoteReadConfigFile: $f: $param_name: $msg" > expected-err
+  diff -u expected-err err || fail=1
+
+  i=$(expr $i + 1)
+done
+
+# Run with the unmodified config file.
+libvirtd --config=tmp.conf > log 2>&1 & pid=$!
+sleep 2
+kill $pid
+
+# Expect an orderly shut-down and successful exit.
+wait $pid || fail=1
+
+# "cat log" would print this for non-root:
+#   Cannot set group when not running as root
+#   Shutting down on signal 15
+# And normally, we'd require that output, but obviously
+# it'd be different for root.
+
+exit $fail

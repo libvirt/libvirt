@@ -1783,10 +1783,8 @@ static int remoteConfigGetAuth(virConfPtr conf, const char *key, int *auth, cons
     if (!p)
         return 0;
 
-    if (p->type != VIR_CONF_STRING) {
-        qemudLog (QEMUD_ERR, "remoteReadConfigFile: %s: %s: should be a string\n", filename, key);
+    if (checkType (p, filename, key, VIR_CONF_STRING) < 0)
         return -1;
-    }
 
     if (!p->str)
         return 0;

@@ -1,3 +1,14 @@
+Tue Dec 11 22:19:22 CET 2007 Jim Meyering <meyering@redhat.com>
+
+	Test libvirtd's config-processing code.
+	And remove a minor diagnostic inconsistency.
+	* tests/daemon-conf: New test.
+	* tests/Makefile.am (TESTS_ENVIRONMENT): Prepend qemud/ to PATH,
+	so we can invoke libvirtd without an absolute name.
+	(test_scripts): Add daemon-conf.
+	* qemud/qemud.c (remoteConfigGetAuth): Use checkType,
+	rather than open-coding it with a different diagnostic.
+
 Mon Dec 10 19:25:22 CET 2007 Jim Meyering <meyering@redhat.com>
 
 	Add gnulib-tool unit tests.
