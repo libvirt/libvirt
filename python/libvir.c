@@ -347,7 +347,7 @@ libvirt_virConnectOpenAuth(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     auth.ncredtype = PyList_Size(pycredtype);
     if (auth.ncredtype) {
         int i;
-        auth.credtype = malloc(sizeof(int) * auth.ncredtype);
+        auth.credtype = malloc(sizeof(*auth.credtype) * auth.ncredtype);
         if (auth.credtype == NULL) {
             Py_INCREF(Py_None);
             return (Py_None);
@@ -490,7 +490,7 @@ libvirt_virConnectListDefinedDomains(PyObject *self ATTRIBUTE_UNUSED,
     }
     
     if (c_retval) {
-        names = malloc(sizeof(char *) * c_retval);
+        names = malloc(sizeof(*names) * c_retval);
         if (!names) {
             Py_INCREF(Py_None);
             return (Py_None);
@@ -670,7 +670,7 @@ libvirt_virConnectListNetworks(PyObject *self ATTRIBUTE_UNUSED,
     }
     
     if (c_retval) {
-        names = malloc(sizeof(char *) * c_retval);
+        names = malloc(sizeof(*names) * c_retval);
         if (!names) {
             Py_INCREF(Py_None);
             return (Py_None);
@@ -717,7 +717,7 @@ libvirt_virConnectListDefinedNetworks(PyObject *self ATTRIBUTE_UNUSED,
     }
     
     if (c_retval) {
-        names = malloc(sizeof(char *) * c_retval);
+        names = malloc(sizeof(*names) * c_retval);
         if (!names) {
             Py_INCREF(Py_None);
             return (Py_None);
@@ -863,8 +863,8 @@ PyObject * libvirt_virNodeGetCellsFreeMemory(PyObject *self ATTRIBUTE_UNUSED,
         goto error;
 
     conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
-    freeMems = (unsigned long long *)
-          malloc(maxCells * sizeof(unsigned long long));
+    freeMems =
+        malloc(maxCells * sizeof(*freeMems));
     if (freeMems == NULL)
         goto error;
 

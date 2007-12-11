@@ -322,7 +322,7 @@ virParseXenCpuTopology(virConnectPtr conn, virBufferPtr xml,
     if ((str == NULL) || (xml == NULL) || (maxcpu <= 0) || (maxcpu > 100000))
         return (-1);
 
-    cpuset = malloc(maxcpu * sizeof(char));
+    cpuset = malloc(maxcpu * sizeof(*cpuset));
     if (cpuset == NULL)
         goto memory_error;
 
@@ -433,7 +433,7 @@ virConvertCpuSet(virConnectPtr conn, const char *str, int maxcpu) {
     if (maxcpu <= 0)
         maxcpu = 4096;
 
-    cpuset = calloc(maxcpu, sizeof(char));
+    cpuset = calloc(maxcpu, sizeof(*cpuset));
     if (cpuset == NULL) {
 	virXMLError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"), 0);
 	return(NULL);
@@ -676,11 +676,11 @@ virXPathNodeSet(const char *xpath, xmlXPathContextPtr ctxt,
 
     ret = obj->nodesetval->nodeNr;
     if (list != NULL) {
-        *list = malloc(ret * sizeof(xmlNodePtr));
+        *list = malloc(ret * sizeof(**list));
         if (*list == NULL) {
             virXMLError(NULL, VIR_ERR_NO_MEMORY,
                         _("allocate string array"),
-                        ret * sizeof(xmlNodePtr));
+                        ret * sizeof(**list));
         } else {
             memcpy(*list, obj->nodesetval->nodeTab,
                    ret * sizeof(xmlNodePtr));
@@ -1636,7 +1636,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
          * it in a range format guaranteed to be understood by Xen.
          */
         if (maxcpu > 0) {
-            cpuset = malloc(maxcpu * sizeof(char));
+            cpuset = malloc(maxcpu * sizeof(*cpuset));
             if (cpuset != NULL) {
                 res = virParseCpuSet(conn, &cur, 0, cpuset, maxcpu);
                 if (res > 0) {

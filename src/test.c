@@ -592,7 +592,7 @@ static int testLoadNetworkFromFile(virConnectPtr conn,
 static int testOpenDefault(virConnectPtr conn) {
     int u;
     struct timeval tv;
-    testConnPtr privconn = malloc(sizeof(testConn));
+    testConnPtr privconn = malloc(sizeof(*privconn));
     if (!privconn) {
         testError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "testConn");
         return VIR_DRV_OPEN_ERROR;
@@ -678,7 +678,7 @@ static int testOpenFromFile(virConnectPtr conn,
     xmlNodePtr *domains, *networks = NULL;
     xmlXPathContextPtr ctxt = NULL;
     virNodeInfoPtr nodeInfo;
-    testConnPtr privconn = malloc(sizeof(testConn));
+    testConnPtr privconn = malloc(sizeof(*privconn));
     if (!privconn) {
         testError(NULL, NULL, NULL, VIR_ERR_NO_MEMORY, "testConn");
         return VIR_DRV_OPEN_ERROR;

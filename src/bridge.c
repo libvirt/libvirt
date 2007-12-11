@@ -83,7 +83,7 @@ brInit(brControl **ctlp)
         return err;
     }
 
-    *ctlp = (brControl *)malloc(sizeof(struct _brControl));
+    *ctlp = malloc(sizeof(**ctlp));
     if (!*ctlp) {
         close(fd);
         return ENOMEM;
@@ -680,7 +680,7 @@ brSetForwardDelay(brControl *ctl ATTRIBUTE_UNUSED,
 
     snprintf(delayStr, sizeof(delayStr), "%d", delay);
 
-    if (!(argv = (char **)calloc(n + 1, sizeof(char *))))
+    if (!(argv = calloc(n + 1, sizeof(*argv))))
         goto error;
 
     n = 0;
@@ -737,7 +737,7 @@ brSetEnableSTP(brControl *ctl ATTRIBUTE_UNUSED,
         1 + /* brige name */
         1;  /* value */
 
-    if (!(argv = (char **)calloc(n + 1, sizeof(char *))))
+    if (!(argv = calloc(n + 1, sizeof(*argv))))
         goto error;
 
     n = 0;

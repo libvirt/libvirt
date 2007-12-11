@@ -460,7 +460,7 @@ static int qemudWritePidFile(const char *pidFile) {
 
 static int qemudListenUnix(struct qemud_server *server,
                            const char *path, int readonly, int auth) {
-    struct qemud_socket *sock = calloc(1, sizeof(struct qemud_socket));
+    struct qemud_socket *sock = calloc(1, sizeof(*sock));
     struct sockaddr_un addr;
     mode_t oldmask;
     gid_t oldgrp;
@@ -703,7 +703,7 @@ static int qemudInitPaths(struct qemud_server *server,
 static struct qemud_server *qemudInitialize(int sigread) {
     struct qemud_server *server;
 
-    if (!(server = calloc(1, sizeof(struct qemud_server)))) {
+    if (!(server = calloc(1, sizeof(*server)))) {
         qemudLog(QEMUD_ERR, "Failed to allocate struct qemud_server");
         return NULL;
     }
@@ -1043,7 +1043,7 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
         return -1;
     }
 
-    client = calloc(1, sizeof(struct qemud_client));
+    client = calloc(1, sizeof(*client));
     if (client == NULL)
         goto cleanup;
     client->magic = QEMUD_CLIENT_MAGIC;

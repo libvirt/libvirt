@@ -153,6 +153,7 @@ static xmlRpcValuePtr xmlRpcValueUnmarshalArray(xmlNodePtr node)
     xmlRpcValuePtr ret = xmlRpcValueNew(XML_RPC_ARRAY);
     xmlNodePtr cur;
     int n_elements = 0;
+    xmlRpcValuePtr *elems;
 
     if (!ret)
         return NULL;
@@ -160,19 +161,20 @@ static xmlRpcValuePtr xmlRpcValueUnmarshalArray(xmlNodePtr node)
     for (cur = xmlFirstElement(node); cur; cur = xmlNextElement(cur))
 	n_elements += 1;
 
-    ret->value.array.elements = malloc(n_elements * sizeof(xmlRpcValue));
-    if (!ret->value.array.elements) {
+    elems = malloc(n_elements * sizeof(*elems));
+    if (!elems) {
         xmlRpcError(VIR_ERR_NO_MEMORY, _("allocate value array"),
-                    n_elements * sizeof(xmlRpcValue));
+                    n_elements * sizeof(*elems));
 	free(ret);
 	return NULL;
     }
     n_elements = 0;
     for (cur = xmlFirstElement(node); cur; cur = xmlNextElement(cur)) {
-	ret->value.array.elements[n_elements] = xmlRpcValueUnmarshal(cur);
+	elems[n_elements] = xmlRpcValueUnmarshal(cur);
 	n_elements += 1;
     }
 
+    ret->value.array.elements = elems;
     ret->value.array.n_elements = n_elements;
 
     return ret;

@@ -239,7 +239,7 @@ static void libvirtd_mdns_watch_dispatch(int fd, int events, void *opaque)
 
 static AvahiWatch *libvirtd_mdns_watch_new(const AvahiPoll *api ATTRIBUTE_UNUSED,
                                             int fd, AvahiWatchEvent event, AvahiWatchCallback cb, void *userdata) {
-    AvahiWatch *w = malloc(sizeof(AvahiWatch));
+    AvahiWatch *w = malloc(sizeof(*w));
     if (!w)
         return NULL;
 
@@ -289,7 +289,7 @@ static AvahiTimeout *libvirtd_mdns_timeout_new(const AvahiPoll *api ATTRIBUTE_UN
                                                 AvahiTimeoutCallback cb,
                                                 void *userdata)
 {
-    AvahiTimeout *t = malloc(sizeof(AvahiTimeout));
+    AvahiTimeout *t = malloc(sizeof(*t));
     struct timeval now;
     long long nowms, thenms, timeout;
     AVAHI_DEBUG("Add timeout %p TV %p", t, tv);
@@ -359,7 +359,7 @@ static void libvirtd_mdns_timeout_free(AvahiTimeout *t)
 
 static AvahiPoll *libvirtd_create_poll(void)
 {
-    AvahiPoll *p = malloc(sizeof(AvahiPoll));
+    AvahiPoll *p = malloc(sizeof(*p));
     if (!p)
         return NULL;
 
@@ -379,7 +379,7 @@ static AvahiPoll *libvirtd_create_poll(void)
 
 struct libvirtd_mdns *libvirtd_mdns_new(void)
 {
-    struct libvirtd_mdns *mdns = malloc(sizeof(struct libvirtd_mdns));
+    struct libvirtd_mdns *mdns = malloc(sizeof(*mdns));
     if (!mdns)
         return NULL;
     memset(mdns, 0, sizeof(*mdns));
@@ -408,7 +408,7 @@ int libvirtd_mdns_start(struct libvirtd_mdns *mdns)
 }
 
 struct libvirtd_mdns_group *libvirtd_mdns_add_group(struct libvirtd_mdns *mdns, const char *name) {
-    struct libvirtd_mdns_group *group = malloc(sizeof(struct libvirtd_mdns_group));
+    struct libvirtd_mdns_group *group = malloc(sizeof(*group));
 
     AVAHI_DEBUG("Adding group '%s'", name);
     if (!group)
@@ -444,7 +444,7 @@ void libvirtd_mdns_remove_group(struct libvirtd_mdns *mdns, struct libvirtd_mdns
 }
 
 struct libvirtd_mdns_entry *libvirtd_mdns_add_entry(struct libvirtd_mdns_group *group, const char *type, int port) {
-    struct libvirtd_mdns_entry *entry = malloc(sizeof(struct libvirtd_mdns_entry));
+    struct libvirtd_mdns_entry *entry = malloc(sizeof(*entry));
 
     AVAHI_DEBUG("Adding entry %s %d to group %s", type, port, group->name);
     if (!entry)

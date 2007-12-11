@@ -281,7 +281,7 @@ static int virEventMakePollFDs(struct pollfd **retfds) {
     }
     *retfds = NULL;
     /* Setup the poll file handle data structs */
-    if (!(fds = malloc(sizeof(struct pollfd) * nfds)))
+    if (!(fds = malloc(sizeof(*fds) * nfds)))
         return -1;
 
     for (i = 0, nfds = 0 ; i < eventLoop.handlesCount ; i++) {

@@ -246,7 +246,7 @@ openvzAssignVMDef(virConnectPtr conn,
         return vm;
     }
 
-    if (!(vm = calloc(1, sizeof(struct openvz_vm)))) {
+    if (!(vm = calloc(1, sizeof(*vm)))) {
         openvzFreeVMDef(def);    
         error(conn, VIR_ERR_NO_MEMORY, "vm");
         return NULL;
@@ -298,7 +298,7 @@ static struct openvz_vm_def
     struct ovz_ip *ovzIp;
     struct ovz_ns *ovzNs;
 
-    if (!(def = calloc(1, sizeof(struct openvz_vm_def)))) {
+    if (!(def = calloc(1, sizeof(*def)))) {
         error(conn, VIR_ERR_NO_MEMORY, "xmlXPathContext");
         return NULL;
     }
@@ -393,7 +393,7 @@ static struct openvz_vm_def
         error(conn, VIR_ERR_INTERNAL_ERROR, errorMessage);
         goto bail_out;
     }
-    if (!(ovzIp = calloc(1, sizeof(struct ovz_ip)))) {
+    if (!(ovzIp = calloc(1, sizeof(*ovzIp)))) {
         openvzLog(OPENVZ_ERR, "Failed to Create Memory for 'ovz_ip' structure");
         goto bail_out;
     }
@@ -465,7 +465,7 @@ static struct openvz_vm_def
         error(conn, VIR_ERR_INTERNAL_ERROR, errorMessage);
         goto bail_out;
     }
-    if (!(ovzNs = calloc(1, sizeof(struct ovz_ns)))) {
+    if (!(ovzNs = calloc(1, sizeof(*ovzNs)))) {
         openvzLog(OPENVZ_ERR, "Failed to Create Memory for 'ovz_ns' structure");
         goto bail_out;
     }
@@ -527,7 +527,7 @@ openvzGetVPSInfo(virConnectPtr conn) {
     }
     pnext = &vm; 
     while(!feof(fp)) { 
-        *pnext = calloc(1, sizeof(struct openvz_vm));
+        *pnext = calloc(1, sizeof(**pnext));
         if(!*pnext) {
             error(conn, VIR_ERR_INTERNAL_ERROR, "calloc failed");
             goto error;
@@ -557,7 +557,7 @@ openvzGetVPSInfo(virConnectPtr conn) {
             (*pnext)->vpsid = -1; 
         }
 
-        vmdef = calloc(1, sizeof(struct openvz_vm_def));
+        vmdef = calloc(1, sizeof(*vmdef));
         if(!vmdef) {
             error(conn, VIR_ERR_INTERNAL_ERROR, "calloc failed");
             free(*pnext);

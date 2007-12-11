@@ -215,7 +215,7 @@ iptRulesAppend(iptRules *rules,
 {
     iptRule *r;
 
-    if (!(r = (iptRule *)realloc(rules->rules, sizeof(iptRule) * (rules->nrules+1)))) {
+    if (!(r = realloc(rules->rules, sizeof(*r) * (rules->nrules+1)))) {
         int i = 0;
         while (argv[i])
             free(argv[i++]);
@@ -319,7 +319,7 @@ iptRulesNew(const char *table,
 {
     iptRules *rules;
 
-    if (!(rules = (iptRules *)calloc(1, sizeof (iptRules))))
+    if (!(rules = calloc(1, sizeof (*rules))))
         return NULL;
 
     if (!(rules->table = strdup(table)))
@@ -400,7 +400,7 @@ iptablesAddRemoveChain(iptRules *rules, int action)
         2 + /*   --table foo     */
         2;  /*   --new-chain bar */
 
-    if (!(argv = (char **)calloc(n + 1, sizeof(char *))))
+    if (!(argv = calloc(n + 1, sizeof(*argv))))
         goto error;
 
     n = 0;
@@ -458,7 +458,7 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
 
     va_end(args);
 
-    if (!(argv = (char **)calloc(n + 1, sizeof(char *))))
+    if (!(argv = calloc(n + 1, sizeof(*argv))))
         goto error;
 
     if (!(rule = (char *)malloc(rulelen)))
@@ -549,7 +549,7 @@ iptablesContextNew(void)
 {
     iptablesContext *ctx;
 
-    if (!(ctx = (iptablesContext *) calloc(1, sizeof (iptablesContext))))
+    if (!(ctx = calloc(1, sizeof (*ctx))))
         return NULL;
 
     if (!(ctx->input_filter = iptRulesNew("filter", IPTABLES_PREFIX "INPUT")))

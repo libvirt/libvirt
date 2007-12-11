@@ -661,7 +661,7 @@ doRemoteOpen (virConnectPtr conn,
 
         // Generate the final command argv[] array.
         //   ssh -p $port [-l $username] $hostname $netcat -U $sockname [NULL]
-        cmd_argv = malloc (nr_args * sizeof (char *));
+        cmd_argv = malloc (nr_args * sizeof (*cmd_argv));
         if (cmd_argv == NULL) {
             error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
             goto failed;
@@ -724,7 +724,7 @@ doRemoteOpen (virConnectPtr conn,
 
             // Run the external process.
             if (!cmd_argv) {
-                cmd_argv = malloc (2 * sizeof (char *));
+                cmd_argv = malloc (2 * sizeof (*cmd_argv));
                 if (cmd_argv == NULL) {
                     error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
                     goto failed;
@@ -833,7 +833,7 @@ remoteOpen (virConnectPtr conn,
     if (inside_daemon)
         return VIR_DRV_OPEN_DECLINED;
 
-    priv = malloc (sizeof(struct private_data));
+    priv = malloc (sizeof(*priv));
     if (!priv) {
         error (conn, VIR_ERR_NO_MEMORY, "struct private_data");
         return VIR_DRV_OPEN_ERROR;
@@ -2381,7 +2381,7 @@ remoteDomainSetSchedulerParameters (virDomainPtr domain,
 
     /* Serialise the scheduler parameters. */
     args.params.params_len = nparams;
-    args.params.params_val = malloc (sizeof (struct remote_sched_param)
+    args.params.params_val = malloc (sizeof (*args.params.params_val)
                                      * nparams);
     if (args.params.params_val == NULL) {
         error (domain->conn, VIR_ERR_RPC, "out of memory allocating array");
@@ -2513,7 +2513,7 @@ remoteNetworkOpen (virConnectPtr conn,
          * use the UNIX transport. This handles Xen driver
          * which doesn't have its own impl of the network APIs.
          */
-        struct private_data *priv = malloc (sizeof(struct private_data));
+        struct private_data *priv = malloc (sizeof(*priv));
         int ret, rflags = 0;
         if (!priv) {
             error (conn, VIR_ERR_NO_MEMORY, "struct private_data");
@@ -3088,7 +3088,7 @@ static int remoteAuthCredSASL2Vir(int vircred)
  */
 static sasl_callback_t *remoteAuthMakeCallbacks(int *credtype, int ncredtype)
 {
-    sasl_callback_t *cbs = calloc(ncredtype+1, sizeof (sasl_callback_t));
+    sasl_callback_t *cbs = calloc(ncredtype+1, sizeof (*cbs));
     int i, n;
     if (!cbs) {
         return NULL;
@@ -3125,7 +3125,7 @@ static int remoteAuthMakeCredentials(sasl_interact_t *interact,
     for (ninteract = 0 ; interact[ninteract].id != 0 ; ninteract++)
         ; /* empty */
 
-    *cred = calloc(ninteract, sizeof(virConnectCredential));
+    *cred = calloc(ninteract, sizeof(*cred));
     if (!*cred)
         return -1;
 

@@ -87,11 +87,11 @@ virHashCreate(int size)
     if (size <= 0)
         size = 256;
 
-    table = malloc(sizeof(virHashTable));
+    table = malloc(sizeof(*table));
     if (table) {
         table->size = size;
         table->nbElems = 0;
-        table->table = calloc(1, size * sizeof(virHashEntry));
+        table->table = calloc(1, size * sizeof(*(table->table)));
         if (table->table) {
             return (table);
         }
@@ -133,7 +133,7 @@ virHashGrow(virHashTablePtr table, int size)
     if (oldtable == NULL)
         return (-1);
 
-    table->table = calloc(1, size * sizeof(virHashEntry));
+    table->table = calloc(1, size * sizeof(*(table->table)));
     if (table->table == NULL) {
         table->table = oldtable;
         return (-1);
@@ -279,7 +279,7 @@ virHashAddEntry(virHashTablePtr table, const char *name, void *userdata)
     if (insert == NULL) {
         entry = &(table->table[key]);
     } else {
-        entry = malloc(sizeof(virHashEntry));
+        entry = malloc(sizeof(*entry));
         if (entry == NULL)
             return (-1);
     }
@@ -352,7 +352,7 @@ virHashUpdateEntry(virHashTablePtr table, const char *name,
     if (insert == NULL) {
         entry = &(table->table[key]);
     } else {
-        entry = malloc(sizeof(virHashEntry));
+        entry = malloc(sizeof(*entry));
         if (entry == NULL)
             return (-1);
     }
@@ -661,7 +661,7 @@ virConnectPtr
 virGetConnect(void) {
     virConnectPtr ret;
 
-    ret = (virConnectPtr) calloc(1, sizeof(virConnect));
+    ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
         virHashError(NULL, VIR_ERR_NO_MEMORY, _("allocating connection"));
         goto failed;
@@ -768,7 +768,7 @@ __virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) 
     /*
      * not found, allocate a new one
      */
-    ret = (virDomainPtr) calloc(1, sizeof(virDomain));
+    ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
         virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating domain"));
 	goto error;
@@ -901,7 +901,7 @@ __virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid)
     /*
      * not found, allocate a new one
      */
-    ret = (virNetworkPtr) calloc(1, sizeof(virNetwork));
+    ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
         virHashError(conn, VIR_ERR_NO_MEMORY, _("allocating network"));
 	goto error;

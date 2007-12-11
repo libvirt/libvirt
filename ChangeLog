@@ -1,3 +1,35 @@
+Tue Dec 11 22:56:47 CET 2007 Jim Meyering <meyering@redhat.com>
+
+	Use a variable name as sizeof argument, not a type name.
+	Given code like: T *var = calloc (n, sizeof (T));
+	Convert to this: T *var = calloc (n, sizeof (*var));
+	This first-cut change adjusts all malloc, calloc, and
+	realloc statements.
+	The only binary differences are in remote_internal.c
+	(due to the bug fix) and in xmlrpc.c (due to factorization).
+	* python/libvir.c: As above.
+	* qemud/event.c: Likewise.
+	* qemud/mdns.c: Likewise.
+	* qemud/qemud.c: Likewise.
+	* qemud/remote.c: Likewise.
+	* src/bridge.c: Likewise.
+	* src/buf.c: Likewise.
+	* src/conf.c: Likewise.
+	* src/hash.c: Likewise.
+	* src/iptables.c: Likewise.
+	* src/openvz_conf.c: Likewise.
+	* src/qemu_conf.c: Likewise.
+	* src/qemu_driver.c: Likewise.
+	* src/test.c: Likewise.
+	* src/xen_internal.c: Likewise.
+	* src/xen_unified.c: Likewise.
+	* src/xm_internal.c: Likewise.
+	* src/xml.c: Likewise.
+	* tests/qemuxml2argvtest.c: Likewise.
+	* src/xmlrpc.c (xmlRpcValuePtr): Likewise, and minor factorization.
+	* src/remote_internal.c (remoteAuthMakeCredentials): Use the right
+	type when allocating space for an array of cred _pointers_.
+
 Tue Dec 11 22:19:22 CET 2007 Jim Meyering <meyering@redhat.com>
 
 	Test libvirtd's config-processing code.

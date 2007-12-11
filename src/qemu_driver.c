@@ -158,7 +158,7 @@ qemudStartup(void) {
     char *base = NULL;
     char driverConf[PATH_MAX];
 
-    if (!(qemu_driver = calloc(1, sizeof(struct qemud_driver)))) {
+    if (!(qemu_driver = calloc(1, sizeof(*qemu_driver)))) {
         return -1;
     }
 
@@ -838,7 +838,7 @@ qemudBuildDnsmasqArgv(virConnectPtr conn,
         (2 * network->def->nranges) + /* --dhcp-range 10.0.0.2,10.0.0.254 */
         1;  /* NULL */
 
-    if (!(*argv = calloc(len, sizeof(char *))))
+    if (!(*argv = calloc(len, sizeof(**argv))))
         goto no_memory;
 
 #define APPEND_ARG(v, n, s) do {     \

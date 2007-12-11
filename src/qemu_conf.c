@@ -918,7 +918,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     int i;
     struct qemud_vm_def *def;
 
-    if (!(def = calloc(1, sizeof(struct qemud_vm_def)))) {
+    if (!(def = calloc(1, sizeof(*def)))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "xmlXPathContext");
         return NULL;
     }
@@ -1264,7 +1264,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
         struct qemud_vm_disk_def *prev = NULL;
         for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-            struct qemud_vm_disk_def *disk = calloc(1, sizeof(struct qemud_vm_disk_def));
+            struct qemud_vm_disk_def *disk = calloc(1, sizeof(*disk));
             if (!disk) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "disk");
                 goto error;
@@ -1292,7 +1292,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
         struct qemud_vm_net_def *prev = NULL;
         for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-            struct qemud_vm_net_def *net = calloc(1, sizeof(struct qemud_vm_net_def));
+            struct qemud_vm_net_def *net = calloc(1, sizeof(*net));
             if (!net) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "net");
                 goto error;
@@ -1319,7 +1319,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
         struct qemud_vm_input_def *prev = NULL;
         for (i = 0; i < obj->nodesetval->nodeNr; i++) {
-            struct qemud_vm_input_def *input = calloc(1, sizeof(struct qemud_vm_input_def));
+            struct qemud_vm_input_def *input = calloc(1, sizeof(*input));
             if (!input) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "input");
                 goto error;
@@ -1359,7 +1359,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         }
 
         if (!hasPS2mouse) {
-            input = calloc(1, sizeof(struct qemud_vm_input_def));
+            input = calloc(1, sizeof(*input));
             if (!input) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "input");
                 goto error;
@@ -1454,7 +1454,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     if (!(retval = strdup(tapfdstr)))
         goto no_memory;
 
-    if (!(tapfds = realloc(vm->tapfds, sizeof(int) * (vm->ntapfds+2))))
+    if (!(tapfds = realloc(vm->tapfds, sizeof(*tapfds) * (vm->ntapfds+2))))
         goto no_memory;
 
     vm->tapfds = tapfds;
@@ -1554,7 +1554,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
     snprintf(memory, sizeof(memory), "%d", vm->def->memory/1024);
     snprintf(vcpus, sizeof(vcpus), "%d", vm->def->vcpus);
 
-    if (!(*argv = malloc(sizeof(char *) * (len+1))))
+    if (!(*argv = malloc(sizeof(**argv) * (len+1))))
         goto no_memory;
     if (!((*argv)[++n] = strdup(vm->def->os.binary)))
         goto no_memory;
@@ -1899,7 +1899,7 @@ qemudParseVMDeviceDef(virConnectPtr conn,
 {
     xmlDocPtr xml;
     xmlNodePtr node;
-    struct qemud_vm_device_def *dev = calloc(1, sizeof(struct qemud_vm_device_def));
+    struct qemud_vm_device_def *dev = calloc(1, sizeof(*dev));
 
     if (!(xml = xmlReadDoc(BAD_CAST xmlStr, "device.xml", NULL,
                            XML_PARSE_NOENT | XML_PARSE_NONET |
@@ -1981,7 +1981,7 @@ qemudAssignVMDef(virConnectPtr conn,
         return vm;
     }
 
-    if (!(vm = calloc(1, sizeof(struct qemud_vm)))) {
+    if (!(vm = calloc(1, sizeof(*vm)))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "vm");
         return NULL;
     }
@@ -2180,7 +2180,7 @@ static int qemudParseDhcpRangesXML(virConnectPtr conn,
             continue;
         }
 
-        if (!(range = calloc(1, sizeof(struct qemud_dhcp_range_def)))) {
+        if (!(range = calloc(1, sizeof(*range)))) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "range");
             return 0;
         }
@@ -2272,7 +2272,7 @@ static struct qemud_network_def *qemudParseNetworkXML(virConnectPtr conn,
     xmlXPathObjectPtr obj = NULL, tmp = NULL;
     struct qemud_network_def *def;
 
-    if (!(def = calloc(1, sizeof(struct qemud_network_def)))) {
+    if (!(def = calloc(1, sizeof(*def)))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "network_def");
         return NULL;
     }
@@ -2433,7 +2433,7 @@ qemudAssignNetworkDef(virConnectPtr conn,
         return network;
     }
 
-    if (!(network = calloc(1, sizeof(struct qemud_network)))) {
+    if (!(network = calloc(1, sizeof(*network)))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "network");
         return NULL;
     }

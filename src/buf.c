@@ -40,7 +40,7 @@ virBufferGrow(virBufferPtr buf, unsigned int len)
 
     size = buf->use + len + 1000;
 
-    newbuf = (char *) realloc(buf->content, size);
+    newbuf = realloc(buf->content, size);
     if (newbuf == NULL) return -1;
     buf->content = newbuf;
     buf->size = size;

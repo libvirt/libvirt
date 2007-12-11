@@ -231,7 +231,7 @@ static int xenXMConfigEnsureIdentity(virConfPtr conf, const char *filename) {
     /* Had better have a name...*/
     if (xenXMConfigGetString(conf, "name", &name) < 0) {
         virConfValuePtr value;
-        value = malloc(sizeof(virConfValue));
+        value = malloc(sizeof(*value));
         if (!value) {
             return (-1);
         }
@@ -252,7 +252,7 @@ static int xenXMConfigEnsureIdentity(virConfPtr conf, const char *filename) {
         virConfValuePtr value;
         char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-        value = malloc(sizeof(virConfValue));
+        value = malloc(sizeof(*value));
         if (!value) {
             return (-1);
         }
@@ -401,7 +401,7 @@ static int xenXMConfigCacheRefresh (virConnectPtr conn) {
             entry->conf = NULL;
         } else { /* Completely new entry */
             newborn = 1;
-            if (!(entry = malloc(sizeof(xenXMConfCache)))) {
+            if (!(entry = malloc(sizeof(*entry)))) {
                 xenXMError (conn, VIR_ERR_NO_MEMORY, strerror (errno));
                 goto cleanup;
             }
@@ -1081,7 +1081,7 @@ int xenXMDomainSetMemory(virDomainPtr domain, unsigned long memory) {
     if (!(entry = virHashLookup(configCache, filename)))
         return (-1);
 
-    if (!(value = malloc(sizeof(virConfValue))))
+    if (!(value = malloc(sizeof(*value))))
         return (-1);
 
     value->type = VIR_CONF_LONG;
@@ -1123,7 +1123,7 @@ int xenXMDomainSetMaxMemory(virDomainPtr domain, unsigned long memory) {
     if (!(entry = virHashLookup(configCache, filename)))
         return (-1);
 
-    if (!(value = malloc(sizeof(virConfValue))))
+    if (!(value = malloc(sizeof(*value))))
         return (-1);
 
     value->type = VIR_CONF_LONG;
@@ -1196,7 +1196,7 @@ int xenXMDomainSetVcpus(virDomainPtr domain, unsigned int vcpus) {
     if (!(entry = virHashLookup(configCache, filename)))
         return (-1);
 
-    if (!(value = malloc(sizeof(virConfValue))))
+    if (!(value = malloc(sizeof(*value))))
         return (-1);
 
     value->type = VIR_CONF_LONG;
@@ -1481,7 +1481,7 @@ static
 int xenXMConfigSetInt(virConfPtr conf, const char *setting, long l) {
     virConfValuePtr value = NULL;
 
-    if (!(value = malloc(sizeof(virConfValue))))
+    if (!(value = malloc(sizeof(*value))))
         return -1;
 
     value->type = VIR_CONF_LONG;
@@ -1496,7 +1496,7 @@ static
 int xenXMConfigSetString(virConfPtr conf, const char *setting, const char *str) {
     virConfValuePtr value = NULL;
 
-    if (!(value = malloc(sizeof(virConfValue))))
+    if (!(value = malloc(sizeof(*value))))
         return -1;
 
     value->type = VIR_CONF_STRING;
@@ -2112,7 +2112,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
         obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics", ctxt);
         if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
             (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
-            if (!(vfb = malloc(sizeof(virConfValue)))) {
+            if (!(vfb = malloc(sizeof(*vfb)))) {
                 xenXMError(conn, VIR_ERR_NO_MEMORY, "config");
                 goto error;
             }
@@ -2177,7 +2177,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
                 xmlFree(type);
                 if (val) {
                     virConfValuePtr disp;
-                    if (!(disp = malloc(sizeof(virConfValue)))) {
+                    if (!(disp = malloc(sizeof(*disp)))) {
                         free(val);
                         xenXMError(conn, VIR_ERR_NO_MEMORY, "config");
                         goto error;
@@ -2199,7 +2199,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
         virConfValuePtr disks;
-        if (!(disks = malloc(sizeof(virConfValue)))) {
+        if (!(disks = malloc(sizeof(*disks)))) {
             xenXMError(conn, VIR_ERR_NO_MEMORY, "config");
             goto error;
         }
@@ -2211,7 +2211,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
             if (xenXMParseXMLDisk(obj->nodesetval->nodeTab[i], hvm, priv->xendConfigVersion, &disk) < 0)
                 goto error;
             if (disk) {
-                if (!(thisDisk = malloc(sizeof(virConfValue)))) {
+                if (!(thisDisk = malloc(sizeof(*thisDisk)))) {
                     free(disk);
                     xenXMError(conn, VIR_ERR_NO_MEMORY, "config");
                     goto error;
@@ -2231,7 +2231,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
     if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
         virConfValuePtr vifs;
-        if (!(vifs = malloc(sizeof(virConfValue)))) {
+        if (!(vifs = malloc(sizeof(*vifs)))) {
             xenXMError(conn, VIR_ERR_NO_MEMORY, "config");
             goto error;
         }
@@ -2242,7 +2242,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
             char *vif = xenXMParseXMLVif(conn, obj->nodesetval->nodeTab[i], hvm);
             if (!vif)
                 goto error;
-            if (!(thisVif = malloc(sizeof(virConfValue)))) {
+            if (!(thisVif = malloc(sizeof(*thisVif)))) {
                 if (vif)
                     free(vif);
                 xenXMError(conn, VIR_ERR_NO_MEMORY, "config");
@@ -2377,7 +2377,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
         goto error;
     }
 
-    if (!(entry = calloc(1, sizeof(xenXMConfCache)))) {
+    if (!(entry = calloc(1, sizeof(*entry)))) {
         xenXMError(conn, VIR_ERR_NO_MEMORY, "config");
         goto error;
     }

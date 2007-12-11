@@ -639,7 +639,7 @@ remoteDispatchDomainGetSchedulerParameters (struct qemud_server *server ATTRIBUT
         remoteDispatchError (client, req, "nparams too large");
         return -2;
     }
-    params = malloc (sizeof (virSchedParameter) * nparams);
+    params = malloc (sizeof (*params) * nparams);
     if (params == NULL) {
         remoteDispatchError (client, req, "out of memory allocating array");
         return -2;
@@ -661,7 +661,7 @@ remoteDispatchDomainGetSchedulerParameters (struct qemud_server *server ATTRIBUT
 
     /* Serialise the scheduler parameters. */
     ret->params.params_len = nparams;
-    ret->params.params_val = malloc (sizeof (struct remote_sched_param)
+    ret->params.params_val = malloc (sizeof (*(ret->params.params_val))
                                      * nparams);
     if (ret->params.params_val == NULL) {
         virDomainFree(dom);
@@ -726,7 +726,7 @@ remoteDispatchDomainSetSchedulerParameters (struct qemud_server *server ATTRIBUT
         remoteDispatchError (client, req, "nparams too large");
         return -2;
     }
-    params = malloc (sizeof (virSchedParameter) * nparams);
+    params = malloc (sizeof (*params) * nparams);
     if (params == NULL) {
         remoteDispatchError (client, req, "out of memory allocating array");
         return -2;
@@ -1158,8 +1158,8 @@ remoteDispatchDomainGetVcpus (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     /* Allocate buffers to take the results. */
-    info = calloc (args->maxinfo, sizeof (virVcpuInfo));
-    cpumaps = calloc (args->maxinfo * args->maplen, sizeof (unsigned char));
+    info = calloc (args->maxinfo, sizeof (*info));
+    cpumaps = calloc (args->maxinfo * args->maplen, sizeof (*cpumaps));
 
     info_len = virDomainGetVcpus (dom,
                                   info, args->maxinfo,
@@ -1171,7 +1171,7 @@ remoteDispatchDomainGetVcpus (struct qemud_server *server ATTRIBUTE_UNUSED,
 
     /* Allocate the return buffer for info. */
     ret->info.info_len = info_len;
-    ret->info.info_val = calloc (info_len, sizeof (remote_vcpu_info));
+    ret->info.info_val = calloc (info_len, sizeof (*(ret->info.info_val)));
 
     for (i = 0; i < info_len; ++i) {
         ret->info.info_val[i].number = info[i].number;
@@ -1210,7 +1210,7 @@ remoteDispatchDomainMigratePrepare (struct qemud_server *server ATTRIBUTE_UNUSED
     dname = args->dname == NULL ? NULL : *args->dname;
 
     /* Wacky world of XDR ... */
-    uri_out = calloc (1, sizeof (char *));
+    uri_out = calloc (1, sizeof (*uri_out));
 
     r = __virDomainMigratePrepare (client->conn, &cookie, &cookielen,
                                    uri_in, uri_out,
@@ -1295,7 +1295,7 @@ remoteDispatchListDefinedDomains (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     /* Allocate return buffer. */
-    ret->names.names_val = calloc (args->maxnames, sizeof (char *));
+    ret->names.names_val = calloc (args->maxnames, sizeof (*(ret->names.names_val)));
 
     ret->names.names_len =
         virConnectListDefinedDomains (client->conn,
@@ -1703,7 +1703,7 @@ remoteDispatchListDefinedNetworks (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     /* Allocate return buffer. */
-    ret->names.names_val = calloc (args->maxnames, sizeof (char *));
+    ret->names.names_val = calloc (args->maxnames, sizeof (*(ret->names.names_val)));
 
     ret->names.names_len =
         virConnectListDefinedNetworks (client->conn,
@@ -1729,7 +1729,7 @@ remoteDispatchListDomains (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     /* Allocate return buffer. */
-    ret->ids.ids_val = calloc (args->maxids, sizeof (int));
+    ret->ids.ids_val = calloc (args->maxids, sizeof (*(ret->ids.ids_val)));
 
     ret->ids.ids_len = virConnectListDomains (client->conn,
                                               ret->ids.ids_val, args->maxids);
@@ -1754,7 +1754,7 @@ remoteDispatchListNetworks (struct qemud_server *server ATTRIBUTE_UNUSED,
     }
 
     /* Allocate return buffer. */
-    ret->names.names_val = calloc (args->maxnames, sizeof (char *));
+    ret->names.names_val = calloc (args->maxnames, sizeof (*(ret->names.names_val)));
 
     ret->names.names_len =
         virConnectListNetworks (client->conn,
@@ -2062,7 +2062,7 @@ remoteDispatchAuthList (struct qemud_server *server ATTRIBUTE_UNUSED,
                         remote_auth_list_ret *ret)
 {
     ret->types.types_len = 1;
-    if ((ret->types.types_val = calloc (ret->types.types_len, sizeof (remote_auth_type))) == NULL) {
+    if ((ret->types.types_val = calloc (ret->types.types_len, sizeof (*(ret->types.types_val)))) == NULL) {
         remoteDispatchSendError(client, req, VIR_ERR_NO_MEMORY, "auth types");
         return -2;
     }

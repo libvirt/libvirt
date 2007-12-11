@@ -1,7 +1,7 @@
 /*
  * xen_internal.c: direct access to Xen hypervisor level
  *
- * Copyright (C) 2005, 2006 Red Hat, Inc.
+ * Copyright (C) 2005, 2006, 2007 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -220,10 +220,10 @@ typedef struct xen_v2s4_availheap  xen_v2s4_availheap;
 
 #define XEN_GETDOMAININFOLIST_ALLOC(domlist, size)                      \
     (hypervisor_version < 2 ?                                           \
-     ((domlist.v0 = malloc(sizeof(xen_v0_getdomaininfo)*(size))) != NULL) : \
+     ((domlist.v0 = malloc(sizeof(*domlist.v0)*(size))) != NULL) :      \
      (dom_interface_version < 5 ?                                       \
-      ((domlist.v2 = malloc(sizeof(xen_v2_getdomaininfo)*(size))) != NULL) : \
-      ((domlist.v2d5 = malloc(sizeof(xen_v2d5_getdomaininfo)*(size))) != NULL)))
+      ((domlist.v2 = malloc(sizeof(*domlist.v2)*(size))) != NULL) :     \
+      ((domlist.v2d5 = malloc(sizeof(*domlist.v2d5)*(size))) != NULL)))
 
 #define XEN_GETDOMAININFOLIST_FREE(domlist)        \
     (hypervisor_version < 2 ?                      \
@@ -232,12 +232,12 @@ typedef struct xen_v2s4_availheap  xen_v2s4_availheap;
       free(domlist.v2) :                           \
       free(domlist.v2d5)))
 
-#define XEN_GETDOMAININFOLIST_CLEAR(domlist, size)                     \
-    (hypervisor_version < 2 ?                                          \
-     memset(domlist.v0, 0, sizeof(xen_v0_getdomaininfo) * size) :      \
-     (dom_interface_version < 5 ?                                      \
-      memset(domlist.v2, 0, sizeof(xen_v2_getdomaininfo) * size) :     \
-      memset(domlist.v2d5, 0, sizeof(xen_v2d5_getdomaininfo) * size)))
+#define XEN_GETDOMAININFOLIST_CLEAR(domlist, size)            \
+    (hypervisor_version < 2 ?                                 \
+     memset(domlist.v0, 0, sizeof(*domlist.v0) * size) :      \
+     (dom_interface_version < 5 ?                             \
+      memset(domlist.v2, 0, sizeof(*domlist.v2) * size) :     \
+      memset(domlist.v2d5, 0, sizeof(*domlist.v2d5) * size)))
 
 #define XEN_GETDOMAININFOLIST_DOMAIN(domlist, n)    \
     (hypervisor_version < 2 ?                       \
@@ -1964,7 +1964,7 @@ xenHypervisorInit(void)
      */
     hypervisor_version = 2;
 
-    ipt = malloc(sizeof(virVcpuInfo));
+    ipt = malloc(sizeof(*ipt));
     if (ipt == NULL){
 #ifdef DEBUG
         fprintf(stderr, "Memory allocation failed at xenHypervisorInit()\n");

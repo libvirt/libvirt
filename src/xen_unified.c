@@ -168,10 +168,10 @@ xenDomainUsedCpus(virDomainPtr dom)
     if (xenUnifiedNodeGetInfo(dom->conn, &nodeinfo) < 0)
         return(NULL);
 
-    cpulist = (char *) calloc(nb_cpu, sizeof(char));
+    cpulist = calloc(nb_cpu, sizeof(*cpulist));
     if (cpulist == NULL)
         goto done;
-    cpuinfo = malloc(sizeof(virVcpuInfo) * nb_vcpu);
+    cpuinfo = malloc(sizeof(*cpuinfo) * nb_vcpu);
     if (cpuinfo == NULL)
         goto done;
     cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));

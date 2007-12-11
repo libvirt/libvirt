@@ -60,7 +60,7 @@ static int testCompareXMLToArgvFiles(const char *xml, const char *cmd) {
         len += strlen(*tmp) + 1;
         tmp++;
     }
-    actualargv = malloc(sizeof(char)*len);
+    actualargv = malloc(sizeof(*actualargv)*len);
     actualargv[0] = '\0';
     tmp = argv;
     len = 0;
