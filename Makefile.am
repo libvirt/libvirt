@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
 SUBDIRS = gnulib/lib include src qemud proxy docs gnulib/tests \
-  @PYTHON_SUBDIR@ tests po scripts
+  python tests po scripts
 
 ACLOCAL_AMFLAGS = -I m4 -I gnulib/m4
 
@@ -21,7 +21,7 @@ check-local: all tests
 
 tests:
 	@(cd docs/examples ; $(MAKE) MAKEFLAGS+=--silent tests)
-	@(if [ "@PYTHON_SUBDIR@" != "" ] ; then cd python ; \
+	@(if [ "$(pythondir)" != "" ] ; then cd python ; \
 	  $(MAKE) MAKEFLAGS+=--silent tests ; fi)
 
 cov: cov-recursive cov-am

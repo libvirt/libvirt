@@ -1,3 +1,10 @@
+Wed Dec 12 09:11:44 CET 2007 Jim Meyering <meyering@redhat.com>
+
+	Always build in python/ subdir.
+	* configure.in (PYTHON_SUBDIR): Don't set.  Remove all uses.
+	* Makefile.am (SUBDIRS): Hard-code "python" here.
+	(tests): Test equivalent "$(pythondir)", not @PYTHON_SUBDIR@.
+
 Wed Dec 12 08:20:07 CET 2007 Jim Meyering <meyering@redhat.com>
 
 	Accommodate automake-1.9.
