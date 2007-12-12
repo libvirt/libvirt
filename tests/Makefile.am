@@ -65,7 +65,7 @@ endif
 TESTS_ENVIRONMENT =				\
   abs_top_builddir=`pwd`/'$(top_builddir)'	\
   abs_top_srcdir=`pwd`/'$(top_srcdir)'		\
-  PATH='$(abs_top_builddir)/qemud$(PATH_SEPARATOR)'"$$PATH" \
+  PATH="$$abs_top_builddir/qemud$(PATH_SEPARATOR)$$PATH" \
   $(VG)
 
 valgrind:

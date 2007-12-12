@@ -1,3 +1,9 @@
+Wed Dec 12 08:20:07 CET 2007 Jim Meyering <meyering@redhat.com>
+
+	Accommodate automake-1.9.
+	* tests/Makefile.am (TESTS_ENVIRONMENT): Adjust PATH setting
+	to work also with automake-1.9.  Can't use $(abs_top_builddir).
+
 Tue Dec 11 22:56:47 CET 2007 Jim Meyering <meyering@redhat.com>
 
 	Use a variable name as sizeof argument, not a type name.
