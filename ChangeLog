@@ -1,3 +1,8 @@
+Wed Dec 12 16:42:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	Fix virBufferEscapeString escaping of '<'
+	* src/buf.c (virBufferEscapeString): '<' escaped as "&lt;"
+
 Wed Dec 12 09:11:44 CET 2007 Jim Meyering <meyering@redhat.com>
 
 	Always build in python/ subdir.

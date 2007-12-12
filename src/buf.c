@@ -222,7 +222,7 @@ virBufferEscapeString(virBufferPtr buf, const char *format, const char *str)
         if (*cur == '<') {
 	    *out++ = '&';
 	    *out++ = 'l';
-	    *out++ = 'l';
+	    *out++ = 't';
 	    *out++ = ';';
 	} else if (*cur == '>') {
 	    *out++ = '&';
