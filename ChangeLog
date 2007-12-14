@@ -1,3 +1,9 @@
+Fri Dec 14 16:36:02 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xs_internal.[ch]: patch from Saori Fukuta to fix the
+	  detach-disk command when using Xen tap devices.
+	* docs/libvir.html: typo fix from Jim Meyering
+
 Wed Dec 12 16:42:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	Fix virBufferEscapeString escaping of '<'

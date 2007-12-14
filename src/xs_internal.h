@@ -53,7 +53,7 @@ char *		xenStoreDomainGetNetworkID(virConnectPtr conn,
 					 const char *mac);
 char *		xenStoreDomainGetDiskID(virConnectPtr conn,
 					 int id,
-					 const char *mac);
+					 const char *dev);
 char *          xenStoreDomainGetName(virConnectPtr conn,
 				      int id);
 

@@ -920,23 +920,43 @@ xenStoreDomainGetDiskID(virConnectPtr conn, int id, const char *dev) {
 
     snprintf(dir, sizeof(dir), "/local/domain/0/backend/vbd/%d", id);
     list = xs_directory(priv->xshandle, 0, dir, &num);
-    if (list == NULL)
-        return(NULL);
-    for (i = 0; i < num; i++) {
-        snprintf(path, sizeof(path), "%s/%s/%s", dir, list[i], "dev");
-        val = xs_read(priv->xshandle, 0, path, &len);
-        if (val == NULL)
-            break;
-        if ((devlen != len) || memcmp(val, dev, len)) {
-            free(val);
-        } else {
-            ret = strdup(list[i]);
-            free(val);
-            break;
+    if (list != NULL) {
+        for (i = 0; i < num; i++) {
+            snprintf(path, sizeof(path), "%s/%s/%s", dir, list[i], "dev");
+            val = xs_read(priv->xshandle, 0, path, &len);
+            if (val == NULL)
+                break;
+            if ((devlen != len) || memcmp(val, dev, len)) {
+                free (val);
+            } else {
+                ret = strdup(list[i]);
+                free (val);
+                free (list);
+                return (ret);
+            }
         }
+        free (list);
     }
-    free(list);
-    return(ret);
+    snprintf(dir, sizeof(dir), "/local/domain/0/backend/tap/%d", id);
+    list = xs_directory(priv->xshandle, 0, dir, &num);
+    if (list != NULL) {
+        for (i = 0; i < num; i++) {
+            snprintf(path, sizeof(path), "%s/%s/%s", dir, list[i], "dev");
+            val = xs_read(priv->xshandle, 0, path, &len);
+            if (val == NULL)
+                break;
+            if ((devlen != len) || memcmp(val, dev, len)) {
+                free (val);
+            } else {
+                ret = strdup(list[i]);
+                free (val);
+                free (list);
+                return (ret);
+            }
+        }
+        free (list);
+    }
+    return (NULL);
 }
 
 char *xenStoreDomainGetName(virConnectPtr conn,
