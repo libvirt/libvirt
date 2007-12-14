@@ -1969,11 +1969,6 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
 	}
     }
 
-    if (xenXMConfigSetStringFromXPath(conn, conf, ctxt, "cpus",
-                                      "string(/domain/vcpu/@cpuset)", 1,
-                                      "cannot set the cpuset parameter") < 0)
-            goto error;
-
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/type)", ctxt);
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && !strcmp((char*)obj->stringval, "hvm"))

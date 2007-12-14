@@ -1,3 +1,8 @@
+Fri Dec 14 16:50:14 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/xm_internal.c: patch from Saori Fukuta to fix setting
+	  CPU parameters in the config files, the value was overwritten
+
 Fri Dec 14 16:36:02 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xs_internal.[ch]: patch from Saori Fukuta to fix the
