@@ -104,6 +104,9 @@ static int virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
             if (!bufptr)
                 return -1;
             break;
+
+        default:
+            return -1;
         }
 
         if (STREQ(bufptr, "") && cred[i].defresult)

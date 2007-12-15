@@ -1,3 +1,10 @@
+Sat Dec 15 12:12:14 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/libvirt.c: Return error code if passed unsupported
+	credential types.
+	* src/remote_internal.c: Don't run callback if it doesn't
+	support the VIR_CRED_EXTERNAL credential type
+
 Fri Dec 14 16:50:14 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/xm_internal.c: patch from Saori Fukuta to fix setting

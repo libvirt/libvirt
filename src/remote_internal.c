@@ -3520,6 +3520,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
                   virConnectAuthPtr auth)
 {
     remote_auth_polkit_ret ret;
+    int i, allowcb = 0;
     virConnectCredential cred = {
         VIR_CRED_EXTERNAL,
         conn->flags & VIR_CONNECT_RO ? "org.libvirt.unix.monitor" : "org.libvirt.unix.manage",
@@ -3530,12 +3531,24 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
     };
     remoteDebug(priv, "Client initialize PolicyKit authentication");
 
+    for (i = 0 ; i < auth->ncredtype ; i++) {
+        if (auth->credtype[i] == VIR_CRED_EXTERNAL)
+            allowcb = 1;
+    }
+
     /* Run the authentication callback */
-    if (auth && auth->cb && (*(auth->cb))(&cred, 1, auth->cbdata) < 0) {
-        __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
-                         VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                         "Failed to collect auth credentials");
-        return -1;
+    if (allowcb) {
+        if (auth && auth->cb &&
+            (*(auth->cb))(&cred, 1, auth->cbdata) < 0) {
+            __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                             VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                             "Failed to collect auth credentials");
+            return -1;
+        } else {
+            remoteDebug(priv, "No auth callback provided for PolicyKit");
+        }
+    } else {
+        remoteDebug(priv, "Client auth callback does not support PolicyKit");
     }
 
     memset (&ret, 0, sizeof ret);
