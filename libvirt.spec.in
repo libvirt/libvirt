@@ -202,6 +202,14 @@ fi
 %doc docs/examples/python
 
 %changelog
+* Tue Dec 18 2007 Daniel Veillard <veillard@redhat.com> - 0.4.0-1
+- Release of 0.4.0
+- SASL based authentication
+- PolicyKit authentication
+- improved NUMA and statistics support
+- lots of assorted improvements, bugfixes and cleanups
+- documentation and localization improvements
+
 * Sun Sep 30 2007 Daniel Veillard <veillard@redhat.com> - 0.3.3-1
 - Release of 0.3.3
 - Avahi support
