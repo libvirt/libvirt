@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zh_TW\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-12-06 15:41+0100\n"
+"POT-Creation-Date: 2007-12-18 00:11+0100\n"
 "PO-Revision-Date: 2007-04-10 16:18+1000\n"
 "Last-Translator: Chester Cheng <ccheng@redhat.com>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
@@ -17,11 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: src/libvirt.c:507 src/hash.c:666
+#: src/libvirt.c:534 src/hash.c:666
 msgid "allocating connection"
 msgstr "正在分配連線"
 
-#: src/libvirt.c:514
+#: src/libvirt.c:541
 #, fuzzy
 msgid "could not parse connection URI"
 msgstr "無法連上 %s"
@@ -417,43 +417,43 @@ msgstr "操作失敗：%s"
 msgid "copying node content"
 msgstr "複製節點內容"
 
-#: src/xmlrpc.c:165
+#: src/xmlrpc.c:166
 msgid "allocate value array"
 msgstr "分配數值陣列"
 
-#: src/xmlrpc.c:198
+#: src/xmlrpc.c:200
 msgid "unexpected dict node"
 msgstr "無預期的 dict 節點"
 
-#: src/xmlrpc.c:270
+#: src/xmlrpc.c:272
 msgid "unexpected value node"
 msgstr "無預期的數值節點"
 
-#: src/xmlrpc.c:433
+#: src/xmlrpc.c:435
 msgid "send request"
 msgstr "發送要求"
 
-#: src/xmlrpc.c:439
+#: src/xmlrpc.c:441
 msgid "unexpected mime type"
 msgstr "無預期的 mime 類型"
 
-#: src/xmlrpc.c:446
+#: src/xmlrpc.c:448
 msgid "allocate response"
 msgstr "分配回應"
 
-#: src/xmlrpc.c:454 src/xmlrpc.c:516
+#: src/xmlrpc.c:456 src/xmlrpc.c:518
 msgid "read response"
 msgstr "讀取回應"
 
-#: src/xmlrpc.c:486 src/xml.c:682
+#: src/xmlrpc.c:488 src/xml.c:682
 msgid "allocate string array"
 msgstr "分配字串陣列"
 
-#: src/xmlrpc.c:608
+#: src/xmlrpc.c:610
 msgid "parse server response failed"
 msgstr "無法解析伺服器的回應"
 
-#: src/xmlrpc.c:672
+#: src/xmlrpc.c:674
 msgid "allocate new context"
 msgstr "分配新的內文"
 
@@ -481,165 +481,165 @@ msgstr "無法將網路加入至連線雜湊表"
 msgid "network missing from connection hash table"
 msgstr "連線雜湊表中找不到網路"
 
-#: src/test.c:232 src/test.c:597 src/test.c:1258
+#: src/test.c:238 src/test.c:603 src/test.c:1264
 msgid "getting time of day"
 msgstr "讀取當天的時間"
 
-#: src/test.c:238 src/test.c:370 src/test.c:396 src/test.c:1533
+#: src/test.c:244 src/test.c:376 src/test.c:402 src/test.c:1539
 msgid "domain"
 msgstr "區域"
 
-#: src/test.c:244 src/test.c:430 src/test.c:703
+#: src/test.c:250 src/test.c:436 src/test.c:709
 msgid "creating xpath context"
 msgstr "建立 xpath 的內文"
 
-#: src/test.c:250
+#: src/test.c:256
 msgid "domain name"
 msgstr "區域名稱"
 
-#: src/test.c:256 src/test.c:260
+#: src/test.c:262 src/test.c:266
 msgid "domain uuid"
 msgstr "區域的 uuid"
 
-#: src/test.c:268
+#: src/test.c:274
 msgid "domain memory"
 msgstr "區域的記憶體"
 
-#: src/test.c:277
+#: src/test.c:283
 msgid "domain current memory"
 msgstr "區域目前的記憶體"
 
-#: src/test.c:287
+#: src/test.c:293
 msgid "domain vcpus"
 msgstr "區域的 vcpus"
 
-#: src/test.c:296
+#: src/test.c:302
 msgid "domain reboot behaviour"
 msgstr "區域的重新啟動行為"
 
-#: src/test.c:306
+#: src/test.c:312
 msgid "domain poweroff behaviour"
 msgstr "區域的關機行為"
 
-#: src/test.c:316
+#: src/test.c:322
 msgid "domain crash behaviour"
 msgstr "區域的當機行為"
 
-#: src/test.c:389
+#: src/test.c:395
 msgid "load domain definition file"
 msgstr "載入區域定義檔"
 
-#: src/test.c:424 src/test.c:548 src/test.c:573
+#: src/test.c:430 src/test.c:554 src/test.c:579
 #, fuzzy
 msgid "network"
 msgstr "網路名稱"
 
-#: src/test.c:436 src/virsh.c:2753
+#: src/test.c:442 src/virsh.c:2768
 msgid "network name"
 msgstr "網路名稱"
 
-#: src/test.c:444 src/test.c:448 src/virsh.c:2644
+#: src/test.c:450 src/test.c:454 src/virsh.c:2659
 msgid "network uuid"
 msgstr "網路 uuid"
 
-#: src/test.c:456
+#: src/test.c:462
 #, fuzzy
 msgid "network forward"
 msgstr "網路名稱"
 
-#: src/test.c:465 src/test.c:475 src/test.c:480
+#: src/test.c:471 src/test.c:481 src/test.c:486
 msgid "ip address"
 msgstr ""
 
-#: src/test.c:470
+#: src/test.c:476
 msgid "ip netmask"
 msgstr ""
 
-#: src/test.c:566
+#: src/test.c:572
 #, fuzzy
 msgid "load network definition file"
 msgstr "載入區域定義檔"
 
-#: src/test.c:682
+#: src/test.c:688
 msgid "loading host definition file"
 msgstr "載入主機定義檔"
 
-#: src/test.c:689
+#: src/test.c:695
 msgid "host"
 msgstr "主機"
 
-#: src/test.c:697
+#: src/test.c:703
 msgid "node"
 msgstr "節點"
 
-#: src/test.c:721
+#: src/test.c:727
 msgid "node cpu numa nodes"
 msgstr "節點的處理器 numa 節點"
 
-#: src/test.c:729
+#: src/test.c:735
 msgid "node cpu sockets"
 msgstr "結點的處理器插槽"
 
-#: src/test.c:737
+#: src/test.c:743
 msgid "node cpu cores"
 msgstr "節點的處理器核心"
 
-#: src/test.c:745
+#: src/test.c:751
 msgid "node cpu threads"
 msgstr "節點的處理器執行續"
 
-#: src/test.c:756
+#: src/test.c:762
 msgid "node active cpu"
 msgstr "節點啟用中的處理器"
 
-#: src/test.c:763
+#: src/test.c:769
 msgid "node cpu mhz"
 msgstr "節點的處理器速度（MHz）"
 
-#: src/test.c:778
+#: src/test.c:784
 msgid "node memory"
 msgstr "節點的記憶體"
 
-#: src/test.c:784
+#: src/test.c:790
 msgid "node domain list"
 msgstr "節點的區域清單"
 
-#: src/test.c:794
+#: src/test.c:800
 msgid "resolving domain filename"
 msgstr "解析區域的檔名"
 
-#: src/test.c:819
+#: src/test.c:825
 #, fuzzy
 msgid "resolving network filename"
 msgstr "解析區域的檔名"
 
-#: src/test.c:906
+#: src/test.c:912
 msgid "testOpen: supply a path or use test:///default"
 msgstr ""
 
-#: src/test.c:1042
+#: src/test.c:1048
 msgid "too many domains"
 msgstr "過多區域"
 
-#: src/test.c:1553
+#: src/test.c:1559
 msgid "Domain is already running"
 msgstr "區域已經啟動"
 
-#: src/test.c:1568
+#: src/test.c:1574
 msgid "Domain is still running"
 msgstr "區域還在執行中"
 
-#: src/test.c:1769 src/test.c:1794
+#: src/test.c:1775 src/test.c:1800
 #, fuzzy
 msgid "too many networks"
 msgstr "過多連線"
 
-#: src/test.c:1813
+#: src/test.c:1819
 #, fuzzy
 msgid "Network is still running"
 msgstr "區域還在執行中"
 
-#: src/test.c:1827
+#: src/test.c:1833
 #, fuzzy
 msgid "Network is already running"
 msgstr "區域已經啟動"
@@ -670,8 +670,8 @@ msgstr "無法複製字串"
 msgid "failed to read from Xen Daemon"
 msgstr "無法從 Xen 系統程式讀取"
 
-#: src/xend_internal.c:601 src/xend_internal.c:821 src/xend_internal.c:1552
-#: src/xend_internal.c:1571 src/xend_internal.c:1959
+#: src/xend_internal.c:601 src/xend_internal.c:821 src/xend_internal.c:1554
+#: src/xend_internal.c:1573 src/xend_internal.c:1975
 msgid "allocate new buffer"
 msgstr "分配新的緩衝區"
 
@@ -691,63 +691,63 @@ msgstr "區域的資訊不正確，domid 並非數字型態"
 msgid "domain information incomplete, missing uuid"
 msgstr "區域的資訊不全，沒有 uuid"
 
-#: src/xend_internal.c:1119 src/xend_internal.c:1398 src/xend_internal.c:1405
+#: src/xend_internal.c:1119 src/xend_internal.c:1400 src/xend_internal.c:1407
 msgid "domain information incomplete, missing name"
 msgstr "區域的資訊不全，沒有名稱"
 
-#: src/xend_internal.c:1293 src/xend_internal.c:1324
+#: src/xend_internal.c:1295 src/xend_internal.c:1326
 #, fuzzy
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "區域的資訊不全，沒有核心"
 
-#: src/xend_internal.c:1386
+#: src/xend_internal.c:1388
 msgid "domain information incomplete, missing id"
 msgstr "區域的資訊不全，沒有 id"
 
-#: src/xend_internal.c:1521
+#: src/xend_internal.c:1523
 msgid "domain information incomplete, vbd has no dev"
 msgstr "區域的資訊不全，vbd 沒有 dev"
 
-#: src/xend_internal.c:1536
+#: src/xend_internal.c:1538
 msgid "domain information incomplete, vbd has no src"
 msgstr "區域的資訊不全，vbd 沒有 src"
 
-#: src/xend_internal.c:1545
+#: src/xend_internal.c:1547
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "無法解析 vbd 檔名，找不到驅動程式名稱"
 
-#: src/xend_internal.c:1564
+#: src/xend_internal.c:1566
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "無法解析 vbd 檔名，找不到驅動程式類型"
 
-#: src/xend_internal.c:1933
+#: src/xend_internal.c:1949
 #, fuzzy
 msgid "failed to parse topology information"
 msgstr "無法解析 Xend 的區域資訊"
 
-#: src/xend_internal.c:2014
+#: src/xend_internal.c:2030
 msgid "failed to parse Xend domain information"
 msgstr "無法解析 Xend 的區域資訊"
 
-#: src/xend_internal.c:3453
+#: src/xend_internal.c:3469
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "無法建立非運作中的區域 %s\n"
 
-#: src/virsh.c:315
+#: src/virsh.c:317
 msgid "print help"
 msgstr "列印求助訊息"
 
-#: src/virsh.c:316
+#: src/virsh.c:318
 msgid "Prints global help or command specific help."
 msgstr "列印一般求助訊息，或特定指令的求助訊息。"
 
-#: src/virsh.c:322
+#: src/virsh.c:324
 #, fuzzy
 msgid "name of command"
 msgstr "非作用中區域的名稱"
 
-#: src/virsh.c:334
+#: src/virsh.c:336
 msgid ""
 "Commands:\n"
 "\n"
@@ -755,1242 +755,1246 @@ msgstr ""
 "指令：\n"
 "\n"
 
-#: src/virsh.c:348
+#: src/virsh.c:350
 msgid "autostart a domain"
 msgstr "自動啟動一個區域"
 
-#: src/virsh.c:350
+#: src/virsh.c:352
 msgid "Configure a domain to be automatically started at boot."
 msgstr "將區域設定為開機時自動啟動。"
 
-#: src/virsh.c:355 src/virsh.c:456 src/virsh.c:642 src/virsh.c:679
-#: src/virsh.c:736 src/virsh.c:803 src/virsh.c:1083 src/virsh.c:1127
-#: src/virsh.c:1317 src/virsh.c:1362 src/virsh.c:1401 src/virsh.c:1440
-#: src/virsh.c:1479 src/virsh.c:1518 src/virsh.c:1637 src/virsh.c:1724
-#: src/virsh.c:1852 src/virsh.c:1909 src/virsh.c:1966 src/virsh.c:2087
-#: src/virsh.c:2227 src/virsh.c:2928 src/virsh.c:3006 src/virsh.c:3069
-#: src/virsh.c:3123 src/virsh.c:3177 src/virsh.c:3293 src/virsh.c:3414
-#: src/virsh.c:3579
+#: src/virsh.c:357 src/virsh.c:458 src/virsh.c:657 src/virsh.c:694
+#: src/virsh.c:751 src/virsh.c:818 src/virsh.c:1098 src/virsh.c:1142
+#: src/virsh.c:1332 src/virsh.c:1377 src/virsh.c:1416 src/virsh.c:1455
+#: src/virsh.c:1494 src/virsh.c:1533 src/virsh.c:1652 src/virsh.c:1739
+#: src/virsh.c:1867 src/virsh.c:1924 src/virsh.c:1981 src/virsh.c:2102
+#: src/virsh.c:2242 src/virsh.c:2943 src/virsh.c:3021 src/virsh.c:3084
+#: src/virsh.c:3138 src/virsh.c:3192 src/virsh.c:3308 src/virsh.c:3429
+#: src/virsh.c:3594
 msgid "domain name, id or uuid"
 msgstr "區域名稱、id 或 uuid"
 
-#: src/virsh.c:356 src/virsh.c:2291
+#: src/virsh.c:358 src/virsh.c:2306
 msgid "disable autostarting"
 msgstr "停用自動啟動"
 
-#: src/virsh.c:377
+#: src/virsh.c:379
 #, fuzzy, c-format
 msgid "Failed to mark domain %s as autostarted"
 msgstr "無法將區域 %s 標示為 %s 自動啟動"
 
-#: src/virsh.c:380
+#: src/virsh.c:382
 #, fuzzy, c-format
 msgid "Failed to unmark domain %s as autostarted"
 msgstr "無法將區域 %s 標示為 %s 自動啟動"
 
-#: src/virsh.c:387
+#: src/virsh.c:389
 #, fuzzy, c-format
 msgid "Domain %s marked as autostarted\n"
 msgstr "區域 %s %s已標記為自動啟動\n"
 
-#: src/virsh.c:389
+#: src/virsh.c:391
 #, fuzzy, c-format
 msgid "Domain %s unmarked as autostarted\n"
 msgstr "區域 %s %s已標記為自動啟動\n"
 
-#: src/virsh.c:400
+#: src/virsh.c:402
 msgid "(re)connect to hypervisor"
 msgstr "（重新）連至 hypervisor"
 
-#: src/virsh.c:402
+#: src/virsh.c:404
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr "連上本機的 hypervisor。這是 shell 啟動後的內建指令。"
 
-#: src/virsh.c:407
+#: src/virsh.c:409
 msgid "hypervisor connection URI"
 msgstr "hypervisor 連線的 URI"
 
-#: src/virsh.c:408
+#: src/virsh.c:410
 msgid "read-only connection"
 msgstr "唯讀的連線"
 
-#: src/virsh.c:420
+#: src/virsh.c:422
 msgid "Failed to disconnect from the hypervisor"
 msgstr "無法從 hypervisor 處斷線"
 
-#: src/virsh.c:439
+#: src/virsh.c:441
 msgid "Failed to connect to the hypervisor"
 msgstr "無法連上 hypervisor"
 
-#: src/virsh.c:449
+#: src/virsh.c:451
 msgid "connect to the guest console"
 msgstr "連接客座端主控台"
 
-#: src/virsh.c:451
+#: src/virsh.c:453
 msgid "Connect the virtual serial console for the guest"
 msgstr "透過虛擬序列埠主控台，連接用戶端"
 
-#: src/virsh.c:496
+#: src/virsh.c:500
 msgid "No console available for domain\n"
 msgstr "區域中沒有可用的主控台\n"
 
-#: src/virsh.c:514
+#: src/virsh.c:518
+msgid "console not implemented on this platform"
+msgstr ""
+
+#: src/virsh.c:529
 msgid "list domains"
 msgstr "列出區域"
 
-#: src/virsh.c:515
+#: src/virsh.c:530
 msgid "Returns list of domains."
 msgstr "傳回區域清單。"
 
-#: src/virsh.c:520
+#: src/virsh.c:535
 msgid "list inactive domains"
 msgstr "列出非作用中的區域"
 
-#: src/virsh.c:521
+#: src/virsh.c:536
 msgid "list inactive & active domains"
 msgstr "列出作用中與非作用中的區域"
 
-#: src/virsh.c:543 src/virsh.c:550
+#: src/virsh.c:558 src/virsh.c:565
 msgid "Failed to list active domains"
 msgstr "無法列出運作中的區域"
 
-#: src/virsh.c:561 src/virsh.c:570
+#: src/virsh.c:576 src/virsh.c:585
 msgid "Failed to list inactive domains"
 msgstr "無法列出非作用中的區域"
 
-#: src/virsh.c:580
+#: src/virsh.c:595
 msgid "Id"
 msgstr "Id"
 
-#: src/virsh.c:580 src/virsh.c:2576
+#: src/virsh.c:595 src/virsh.c:2591
 msgid "Name"
 msgstr "名稱"
 
-#: src/virsh.c:580 src/virsh.c:2576
+#: src/virsh.c:595 src/virsh.c:2591
 msgid "State"
 msgstr "狀態"
 
-#: src/virsh.c:593 src/virsh.c:615 src/virsh.c:4360 src/virsh.c:4376
+#: src/virsh.c:608 src/virsh.c:630 src/virsh.c:4375 src/virsh.c:4391
 msgid "no state"
 msgstr "無狀態"
 
-#: src/virsh.c:636
+#: src/virsh.c:651
 msgid "domain state"
 msgstr "區域狀態"
 
-#: src/virsh.c:637
+#: src/virsh.c:652
 msgid "Returns state about a running domain."
 msgstr "傳回執行中區域的狀態"
 
-#: src/virsh.c:673
+#: src/virsh.c:688
 msgid "get device block stats for a domain"
 msgstr ""
 
-#: src/virsh.c:674
+#: src/virsh.c:689
 #, fuzzy
 msgid "Get device block stats for a running domain."
 msgstr "傳回執行中區域的狀態"
 
-#: src/virsh.c:680
+#: src/virsh.c:695
 #, fuzzy
 msgid "block device"
 msgstr "以組絕"
 
-#: src/virsh.c:701
+#: src/virsh.c:716
 #, fuzzy, c-format
 msgid "Failed to get block stats %s %s"
 msgstr "無法將區域 %s 存至 %s"
 
-#: src/virsh.c:730
+#: src/virsh.c:745
 #, fuzzy
 msgid "get network interface stats for a domain"
 msgstr "網路名稱"
 
-#: src/virsh.c:731
+#: src/virsh.c:746
 #, fuzzy
 msgid "Get network interface stats for a running domain."
 msgstr "傳回執行中區域的狀態"
 
-#: src/virsh.c:737
+#: src/virsh.c:752
 msgid "interface device"
 msgstr ""
 
-#: src/virsh.c:758
+#: src/virsh.c:773
 #, fuzzy, c-format
 msgid "Failed to get interface stats %s %s"
 msgstr "無法取得節點資訊"
 
-#: src/virsh.c:797
+#: src/virsh.c:812
 msgid "suspend a domain"
 msgstr "暫停區域"
 
-#: src/virsh.c:798
+#: src/virsh.c:813
 msgid "Suspend a running domain."
 msgstr "暫停執行中的區域。"
 
-#: src/virsh.c:821
+#: src/virsh.c:836
 #, c-format
 msgid "Domain %s suspended\n"
 msgstr "區域 %s 已經暫停\n"
 
-#: src/virsh.c:823
+#: src/virsh.c:838
 #, c-format
 msgid "Failed to suspend domain %s"
 msgstr "無法暫停區域 %s"
 
-#: src/virsh.c:836
+#: src/virsh.c:851
 msgid "create a domain from an XML file"
 msgstr "從 XML 檔案建立區域"
 
-#: src/virsh.c:837
+#: src/virsh.c:852
 msgid "Create a domain."
 msgstr "建立區域。"
 
-#: src/virsh.c:842 src/virsh.c:950
+#: src/virsh.c:857 src/virsh.c:965
 #, fuzzy
 msgid "file containing an XML domain description"
 msgstr "包含 XML 區域描述的檔案"
 
-#: src/virsh.c:857
+#: src/virsh.c:872
 #, fuzzy, c-format
 msgid "Failed to open '%s': %s"
 msgstr "無法暫停區域 %s"
 
-#: src/virsh.c:877
+#: src/virsh.c:892
 #, fuzzy, c-format
 msgid "Failed to open '%s': read: %s"
 msgstr "無法開啟要讀取的 %s"
 
-#: src/virsh.c:895
+#: src/virsh.c:910
 #, fuzzy, c-format
 msgid "Error allocating memory: %s"
 msgstr "分配網路"
 
-#: src/virsh.c:929
+#: src/virsh.c:944
 #, c-format
 msgid "Domain %s created from %s\n"
 msgstr "區域 %s 建立自 %s\n"
 
-#: src/virsh.c:933
+#: src/virsh.c:948
 #, c-format
 msgid "Failed to create domain from %s"
 msgstr "無法從 %s 建立區域"
 
-#: src/virsh.c:944
+#: src/virsh.c:959
 msgid "define (but don't start) a domain from an XML file"
 msgstr "從 XML 檔案定義（但不啟動）區域"
 
-#: src/virsh.c:945
+#: src/virsh.c:960
 msgid "Define a domain."
 msgstr "定義區域。"
 
-#: src/virsh.c:977
+#: src/virsh.c:992
 #, c-format
 msgid "Domain %s defined from %s\n"
 msgstr "區域 %s 定義自 %s\n"
 
-#: src/virsh.c:981
+#: src/virsh.c:996
 #, c-format
 msgid "Failed to define domain from %s"
 msgstr "無法從 %s 定義區域"
 
-#: src/virsh.c:992
+#: src/virsh.c:1007
 msgid "undefine an inactive domain"
 msgstr "取消定義非作用中的區域"
 
-#: src/virsh.c:993
+#: src/virsh.c:1008
 msgid "Undefine the configuration for an inactive domain."
 msgstr "為非作用中的區域取消定義。"
 
-#: src/virsh.c:998 src/virsh.c:2156
+#: src/virsh.c:1013 src/virsh.c:2171
 msgid "domain name or uuid"
 msgstr "區域名稱或 uuid"
 
-#: src/virsh.c:1016
+#: src/virsh.c:1031
 #, c-format
 msgid "Domain %s has been undefined\n"
 msgstr "區域 %s 已經取消定義\n"
 
-#: src/virsh.c:1018
+#: src/virsh.c:1033
 #, c-format
 msgid "Failed to undefine domain %s"
 msgstr "無法為區域 %s 取消定義"
 
-#: src/virsh.c:1032
+#: src/virsh.c:1047
 msgid "start a (previously defined) inactive domain"
 msgstr "開啟（先前定義的）非作用中區域"
 
-#: src/virsh.c:1033
+#: src/virsh.c:1048
 msgid "Start a domain."
 msgstr "開啟一個區域。"
 
-#: src/virsh.c:1038
+#: src/virsh.c:1053
 msgid "name of the inactive domain"
 msgstr "非作用中區域的名稱"
 
-#: src/virsh.c:1055
+#: src/virsh.c:1070
 msgid "Domain is already active"
 msgstr "區域已經啟動"
 
-#: src/virsh.c:1061
+#: src/virsh.c:1076
 #, c-format
 msgid "Domain %s started\n"
 msgstr "區域 %s 已開啟\n"
 
-#: src/virsh.c:1064
+#: src/virsh.c:1079
 #, c-format
 msgid "Failed to start domain %s"
 msgstr "無法開啟區域 %s"
 
-#: src/virsh.c:1077
+#: src/virsh.c:1092
 msgid "save a domain state to a file"
 msgstr "將區域狀態存至檔案"
 
-#: src/virsh.c:1078
+#: src/virsh.c:1093
 msgid "Save a running domain."
 msgstr "儲存執行中的區域。"
 
-#: src/virsh.c:1084
+#: src/virsh.c:1099
 msgid "where to save the data"
 msgstr "將資料存至何處"
 
-#: src/virsh.c:1106
+#: src/virsh.c:1121
 #, c-format
 msgid "Domain %s saved to %s\n"
 msgstr "區域 %s 已存至 %s\n"
 
-#: src/virsh.c:1108
+#: src/virsh.c:1123
 #, c-format
 msgid "Failed to save domain %s to %s"
 msgstr "無法將區域 %s 存至 %s"
 
-#: src/virsh.c:1121
+#: src/virsh.c:1136
 msgid "show/set scheduler parameters"
 msgstr ""
 
-#: src/virsh.c:1122
+#: src/virsh.c:1137
 msgid "Show/Set scheduler parameters."
 msgstr ""
 
-#: src/virsh.c:1128
+#: src/virsh.c:1143
 msgid "weight for XEN_CREDIT"
 msgstr ""
 
-#: src/virsh.c:1129
+#: src/virsh.c:1144
 msgid "cap for XEN_CREDIT"
 msgstr ""
 
-#: src/virsh.c:1161
+#: src/virsh.c:1176
 #, fuzzy
 msgid "Invalid value of weight"
 msgstr "記憶體大小 %d 不是有效的數值"
 
-#: src/virsh.c:1171
+#: src/virsh.c:1186
 #, fuzzy
 msgid "Invalid value of cap"
 msgstr "記憶體大小 %d 不是有效的數值"
 
-#: src/virsh.c:1213 src/virsh.c:1217
+#: src/virsh.c:1228 src/virsh.c:1232
 msgid "Scheduler"
 msgstr ""
 
-#: src/virsh.c:1217
+#: src/virsh.c:1232
 #, fuzzy
 msgid "Unknown"
 msgstr "未知的主機"
 
-#: src/virsh.c:1273
+#: src/virsh.c:1288
 msgid "restore a domain from a saved state in a file"
 msgstr "從檔案中的儲存狀態回復區域"
 
-#: src/virsh.c:1274
+#: src/virsh.c:1289
 msgid "Restore a domain."
 msgstr "回復區域。"
 
-#: src/virsh.c:1279
+#: src/virsh.c:1294
 msgid "the state to restore"
 msgstr "要回復的狀態"
 
-#: src/virsh.c:1298
+#: src/virsh.c:1313
 #, c-format
 msgid "Domain restored from %s\n"
 msgstr "從 %s 回復區域\n"
 
-#: src/virsh.c:1300
+#: src/virsh.c:1315
 #, c-format
 msgid "Failed to restore domain from %s"
 msgstr "無法從 %s 回復區域"
 
-#: src/virsh.c:1311
+#: src/virsh.c:1326
 msgid "dump the core of a domain to a file for analysis"
 msgstr "將一個區域的核心傾印到檔案中，以供分析用"
 
-#: src/virsh.c:1312
+#: src/virsh.c:1327
 msgid "Core dump a domain."
 msgstr "傾印一個區域的核心。"
 
-#: src/virsh.c:1318
+#: src/virsh.c:1333
 msgid "where to dump the core"
 msgstr "將核心傾印至何處"
 
-#: src/virsh.c:1340
+#: src/virsh.c:1355
 #, c-format
 msgid "Domain %s dumpd to %s\n"
 msgstr "區域 %s 已傾印至 %s\n"
 
-#: src/virsh.c:1342
+#: src/virsh.c:1357
 #, c-format
 msgid "Failed to core dump domain %s to %s"
 msgstr "無法將區域 %s 的核心傾印至 %s"
 
-#: src/virsh.c:1356
+#: src/virsh.c:1371
 msgid "resume a domain"
 msgstr "繼續執行區域"
 
-#: src/virsh.c:1357
+#: src/virsh.c:1372
 msgid "Resume a previously suspended domain."
 msgstr "繼續一項先前暫停的區域。"
 
-#: src/virsh.c:1380
+#: src/virsh.c:1395
 #, c-format
 msgid "Domain %s resumed\n"
 msgstr "區域 %s 已經繼續執行\n"
 
-#: src/virsh.c:1382
+#: src/virsh.c:1397
 #, c-format
 msgid "Failed to resume domain %s"
 msgstr "無法繼續區域 %s"
 
-#: src/virsh.c:1395
+#: src/virsh.c:1410
 msgid "gracefully shutdown a domain"
 msgstr "以正確方法讓區域停機"
 
-#: src/virsh.c:1396
+#: src/virsh.c:1411
 msgid "Run shutdown in the target domain."
 msgstr "在目標區域執行關機。"
 
-#: src/virsh.c:1419
+#: src/virsh.c:1434
 #, c-format
 msgid "Domain %s is being shutdown\n"
 msgstr "區域 %s 正在執行關機\n"
 
-#: src/virsh.c:1421
+#: src/virsh.c:1436
 #, c-format
 msgid "Failed to shutdown domain %s"
 msgstr "無法關上區域 %s"
 
-#: src/virsh.c:1434
+#: src/virsh.c:1449
 msgid "reboot a domain"
 msgstr "重新啟動區域"
 
-#: src/virsh.c:1435
+#: src/virsh.c:1450
 msgid "Run a reboot command in the target domain."
 msgstr "在目標區域中執行重新開機指令。"
 
-#: src/virsh.c:1458
+#: src/virsh.c:1473
 #, c-format
 msgid "Domain %s is being rebooted\n"
 msgstr "區域 %s 正在重新開機中\n"
 
-#: src/virsh.c:1460
+#: src/virsh.c:1475
 #, c-format
 msgid "Failed to reboot domain %s"
 msgstr "無法重新啟動區域 %s"
 
-#: src/virsh.c:1473
+#: src/virsh.c:1488
 msgid "destroy a domain"
 msgstr "刪除一個區域"
 
-#: src/virsh.c:1474
+#: src/virsh.c:1489
 msgid "Destroy a given domain."
 msgstr "刪除給定的區域。"
 
-#: src/virsh.c:1497
+#: src/virsh.c:1512
 #, c-format
 msgid "Domain %s destroyed\n"
 msgstr "區域 %s 已經刪除\n"
 
-#: src/virsh.c:1499
+#: src/virsh.c:1514
 #, c-format
 msgid "Failed to destroy domain %s"
 msgstr "無法刪除區域 %s"
 
-#: src/virsh.c:1512
+#: src/virsh.c:1527
 msgid "domain information"
 msgstr "區域資訊"
 
-#: src/virsh.c:1513
+#: src/virsh.c:1528
 msgid "Returns basic information about the domain."
 msgstr "傳回區域的相關資訊。"
 
-#: src/virsh.c:1539 src/virsh.c:1541
+#: src/virsh.c:1554 src/virsh.c:1556
 msgid "Id:"
 msgstr "Id:"
 
-#: src/virsh.c:1542
+#: src/virsh.c:1557
 msgid "Name:"
 msgstr "名稱："
 
-#: src/virsh.c:1545
+#: src/virsh.c:1560
 msgid "UUID:"
 msgstr "UUID："
 
-#: src/virsh.c:1548
+#: src/virsh.c:1563
 msgid "OS Type:"
 msgstr "作業系統類型："
 
-#: src/virsh.c:1553 src/virsh.c:1681
+#: src/virsh.c:1568 src/virsh.c:1696
 msgid "State:"
 msgstr "狀態："
 
-#: src/virsh.c:1556 src/virsh.c:2038
+#: src/virsh.c:1571 src/virsh.c:2053
 msgid "CPU(s):"
 msgstr "處理器數目："
 
-#: src/virsh.c:1563 src/virsh.c:1688
+#: src/virsh.c:1578 src/virsh.c:1703
 msgid "CPU time:"
 msgstr "處理器時間："
 
-#: src/virsh.c:1567 src/virsh.c:1570
+#: src/virsh.c:1582 src/virsh.c:1585
 msgid "Max memory:"
 msgstr "最大記憶體："
 
-#: src/virsh.c:1571
+#: src/virsh.c:1586
 msgid "no limit"
 msgstr "沒有限制"
 
-#: src/virsh.c:1573
+#: src/virsh.c:1588
 msgid "Used memory:"
 msgstr "已使用的記憶體："
 
-#: src/virsh.c:1589
+#: src/virsh.c:1604
 #, fuzzy
 msgid "NUMA free memory"
 msgstr "已使用的記憶體："
 
-#: src/virsh.c:1590
+#: src/virsh.c:1605
 msgid "display available free memory for the NUMA cell."
 msgstr ""
 
-#: src/virsh.c:1595
+#: src/virsh.c:1610
 #, fuzzy
 msgid "NUMA cell number"
 msgstr "NUMA cell："
 
-#: src/virsh.c:1619
+#: src/virsh.c:1634
 msgid "Total"
 msgstr ""
 
-#: src/virsh.c:1631
+#: src/virsh.c:1646
 msgid "domain vcpu information"
 msgstr "區域 vcpu 的資訊"
 
-#: src/virsh.c:1632
+#: src/virsh.c:1647
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr "傳回區域的虛擬處理器之基本資訊。"
 
-#: src/virsh.c:1679
+#: src/virsh.c:1694
 msgid "VCPU:"
 msgstr "VCPU："
 
-#: src/virsh.c:1680
+#: src/virsh.c:1695
 msgid "CPU:"
 msgstr "處理器："
 
-#: src/virsh.c:1690
+#: src/virsh.c:1705
 msgid "CPU Affinity:"
 msgstr "處理器的同屬："
 
-#: src/virsh.c:1702
+#: src/virsh.c:1717
 msgid "Domain shut off, virtual CPUs not present."
 msgstr ""
 
-#: src/virsh.c:1718
+#: src/virsh.c:1733
 msgid "control domain vcpu affinity"
 msgstr "控制區域 vcpu 的同屬"
 
-#: src/virsh.c:1719
+#: src/virsh.c:1734
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr "讓區域 VCPU 符合主機的實際處理器。"
 
-#: src/virsh.c:1725
+#: src/virsh.c:1740
 msgid "vcpu number"
 msgstr "vcpu 數量"
 
-#: src/virsh.c:1726
+#: src/virsh.c:1741
 msgid "host cpu number(s) (comma separated)"
 msgstr "主機處理器數目（以逗號隔開）"
 
-#: src/virsh.c:1781
+#: src/virsh.c:1796
 msgid "cpulist: Invalid format. Empty string."
 msgstr ""
 
-#: src/virsh.c:1791
+#: src/virsh.c:1806
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
 
-#: src/virsh.c:1801
+#: src/virsh.c:1816
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
 "c')."
 msgstr ""
 
-#: src/virsh.c:1808
+#: src/virsh.c:1823
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
 msgstr ""
 
-#: src/virsh.c:1822
+#: src/virsh.c:1837
 #, c-format
 msgid "Physical CPU %d doesn't exist."
 msgstr "實體處理器「%d」不存在。"
 
-#: src/virsh.c:1846
+#: src/virsh.c:1861
 msgid "change number of virtual CPUs"
 msgstr "改變虛擬處理器的數量"
 
-#: src/virsh.c:1847
+#: src/virsh.c:1862
 msgid "Change the number of virtual CPUs active in the guest domain."
 msgstr "改變在客座區域中啟用的虛擬器處理器數量"
 
-#: src/virsh.c:1853
+#: src/virsh.c:1868
 msgid "number of virtual CPUs"
 msgstr "虛擬處理器的數量"
 
-#: src/virsh.c:1873
+#: src/virsh.c:1888
 #, fuzzy
 msgid "Invalid number of virtual CPUs."
 msgstr "虛擬處理器的數量"
 
-#: src/virsh.c:1885
+#: src/virsh.c:1900
 #, fuzzy
 msgid "Too many virtual CPUs."
 msgstr "太多虛擬處理器。"
 
-#: src/virsh.c:1903
+#: src/virsh.c:1918
 msgid "change memory allocation"
 msgstr "改變記憶體分配"
 
-#: src/virsh.c:1904
+#: src/virsh.c:1919
 msgid "Change the current memory allocation in the guest domain."
 msgstr "改變客座區域中，目前的記憶體分配。"
 
-#: src/virsh.c:1910
+#: src/virsh.c:1925
 #, fuzzy
 msgid "number of kilobytes of memory"
 msgstr "記憶體數量（位元組）"
 
-#: src/virsh.c:1931 src/virsh.c:1943 src/virsh.c:1988
+#: src/virsh.c:1946 src/virsh.c:1958 src/virsh.c:2003
 #, c-format
 msgid "Invalid value of %d for memory size"
 msgstr "記憶體大小 %d 不是有效的數值"
 
-#: src/virsh.c:1937
+#: src/virsh.c:1952
 msgid "Unable to verify MaxMemorySize"
 msgstr ""
 
-#: src/virsh.c:1960
+#: src/virsh.c:1975
 msgid "change maximum memory limit"
 msgstr "改變最大記憶體的限制"
 
-#: src/virsh.c:1961
+#: src/virsh.c:1976
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr "改變客座區域的最大記憶體分配限制。"
 
-#: src/virsh.c:1967
+#: src/virsh.c:1982
 #, fuzzy
 msgid "maximum memory limit in kilobytes"
 msgstr "最大記憶體限制（位元組）"
 
-#: src/virsh.c:1994
+#: src/virsh.c:2009
 msgid "Unable to verify current MemorySize"
 msgstr ""
 
-#: src/virsh.c:2001
+#: src/virsh.c:2016
 #, fuzzy
 msgid "Unable to shrink current MemorySize"
 msgstr "區域目前的記憶體"
 
-#: src/virsh.c:2007
+#: src/virsh.c:2022
 msgid "Unable to change MaxMemorySize"
 msgstr ""
 
-#: src/virsh.c:2020
+#: src/virsh.c:2035
 msgid "node information"
 msgstr "節點資訊"
 
-#: src/virsh.c:2021
+#: src/virsh.c:2036
 msgid "Returns basic information about the node."
 msgstr "傳回節點的基本資訊。"
 
-#: src/virsh.c:2034
+#: src/virsh.c:2049
 msgid "failed to get node information"
 msgstr "無法取得節點資訊"
 
-#: src/virsh.c:2037
+#: src/virsh.c:2052
 msgid "CPU model:"
 msgstr "處理器類型："
 
-#: src/virsh.c:2039
+#: src/virsh.c:2054
 msgid "CPU frequency:"
 msgstr "處理器的頻率："
 
-#: src/virsh.c:2040
+#: src/virsh.c:2055
 msgid "CPU socket(s):"
 msgstr "處理器的插槽："
 
-#: src/virsh.c:2041
+#: src/virsh.c:2056
 msgid "Core(s) per socket:"
 msgstr "每個插槽的核心："
 
-#: src/virsh.c:2042
+#: src/virsh.c:2057
 msgid "Thread(s) per core:"
 msgstr "每個核心的執行續："
 
-#: src/virsh.c:2043
+#: src/virsh.c:2058
 msgid "NUMA cell(s):"
 msgstr "NUMA cell："
 
-#: src/virsh.c:2044
+#: src/virsh.c:2059
 msgid "Memory size:"
 msgstr "記憶體大小："
 
-#: src/virsh.c:2054
+#: src/virsh.c:2069
 msgid "capabilities"
 msgstr "能力"
 
-#: src/virsh.c:2055
+#: src/virsh.c:2070
 msgid "Returns capabilities of hypervisor/driver."
 msgstr "傳回 hypervisor 或驅動程式的能力。"
 
-#: src/virsh.c:2068
+#: src/virsh.c:2083
 msgid "failed to get capabilities"
 msgstr "無法取得能力方面的資訊"
 
-#: src/virsh.c:2081
+#: src/virsh.c:2096
 msgid "domain information in XML"
 msgstr "XML 格式的區域資訊"
 
-#: src/virsh.c:2082
+#: src/virsh.c:2097
 #, fuzzy
 msgid "Output the domain information as an XML dump to stdout."
 msgstr "將區域資訊以 XML 格式輸出到螢幕上。"
 
-#: src/virsh.c:2121
+#: src/virsh.c:2136
 msgid "convert a domain id or UUID to domain name"
 msgstr "將區域 id 或 UUID 轉為區域名稱"
 
-#: src/virsh.c:2126
+#: src/virsh.c:2141
 msgid "domain id or uuid"
 msgstr "區域 id 或 uuid"
 
-#: src/virsh.c:2151
+#: src/virsh.c:2166
 msgid "convert a domain name or UUID to domain id"
 msgstr "將區域名稱或 UUID 轉為區域 ID"
 
-#: src/virsh.c:2186
+#: src/virsh.c:2201
 msgid "convert a domain name or id to domain UUID"
 msgstr "將區域名稱或 ID 轉為 UUID"
 
-#: src/virsh.c:2191
+#: src/virsh.c:2206
 msgid "domain id or name"
 msgstr "區域 ID 或名稱"
 
-#: src/virsh.c:2210
+#: src/virsh.c:2225
 msgid "failed to get domain UUID"
 msgstr "無法取得區域 UUID"
 
-#: src/virsh.c:2220
+#: src/virsh.c:2235
 msgid "migrate domain to another host"
 msgstr ""
 
-#: src/virsh.c:2221
+#: src/virsh.c:2236
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
 
-#: src/virsh.c:2226
+#: src/virsh.c:2241
 #, fuzzy
 msgid "live migration"
 msgstr "節點資訊"
 
-#: src/virsh.c:2228
+#: src/virsh.c:2243
 #, fuzzy
 msgid "connection URI of the destination host"
 msgstr "連接客座端主控台"
 
-#: src/virsh.c:2229
+#: src/virsh.c:2244
 msgid "migration URI, usually can be omitted"
 msgstr ""
 
-#: src/virsh.c:2251
+#: src/virsh.c:2266
 msgid "migrate: Missing desturi"
 msgstr ""
 
-#: src/virsh.c:2283
+#: src/virsh.c:2298
 msgid "autostart a network"
 msgstr "自動啟動網路"
 
-#: src/virsh.c:2285
+#: src/virsh.c:2300
 msgid "Configure a network to be automatically started at boot."
 msgstr "將網路設定為開機時自動啟動。"
 
-#: src/virsh.c:2290 src/virsh.c:2715
+#: src/virsh.c:2305 src/virsh.c:2730
 msgid "network name or uuid"
 msgstr "網路名稱或 uuid"
 
-#: src/virsh.c:2312
+#: src/virsh.c:2327
 #, fuzzy, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "無法%s將網路標記為%s自動啟動"
 
-#: src/virsh.c:2315
+#: src/virsh.c:2330
 #, fuzzy, c-format
 msgid "failed to unmark network %s as autostarted"
 msgstr "無法%s將網路標記為%s自動啟動"
 
-#: src/virsh.c:2322
+#: src/virsh.c:2337
 #, fuzzy, c-format
 msgid "Network %s marked as autostarted\n"
 msgstr "網路 %s %s標記為自動啟動\n"
 
-#: src/virsh.c:2324
+#: src/virsh.c:2339
 #, fuzzy, c-format
 msgid "Network %s unmarked as autostarted\n"
 msgstr "網路 %s %s標記為自動啟動\n"
 
-#: src/virsh.c:2334
+#: src/virsh.c:2349
 msgid "create a network from an XML file"
 msgstr "從 XML 檔案建立網路"
 
-#: src/virsh.c:2335
+#: src/virsh.c:2350
 msgid "Create a network."
 msgstr "建立網路。"
 
-#: src/virsh.c:2340 src/virsh.c:2388
+#: src/virsh.c:2355 src/virsh.c:2403
 msgid "file containing an XML network description"
 msgstr "包含 XML 網路描述的檔案"
 
-#: src/virsh.c:2367
+#: src/virsh.c:2382
 #, c-format
 msgid "Network %s created from %s\n"
 msgstr "網路 %s 建立自 %s\n"
 
-#: src/virsh.c:2370
+#: src/virsh.c:2385
 #, c-format
 msgid "Failed to create network from %s"
 msgstr "無法從 %s 建立網路"
 
-#: src/virsh.c:2382
+#: src/virsh.c:2397
 msgid "define (but don't start) a network from an XML file"
 msgstr "從 XML 檔案定義（但不啟動）網路"
 
-#: src/virsh.c:2383
+#: src/virsh.c:2398
 msgid "Define a network."
 msgstr "定義網路。"
 
-#: src/virsh.c:2415
+#: src/virsh.c:2430
 #, c-format
 msgid "Network %s defined from %s\n"
 msgstr "網路 %s 定義自 %s\n"
 
-#: src/virsh.c:2418
+#: src/virsh.c:2433
 #, c-format
 msgid "Failed to define network from %s"
 msgstr "無法從 %s 定義網路"
 
-#: src/virsh.c:2430
+#: src/virsh.c:2445
 msgid "destroy a network"
 msgstr "刪除一個網路"
 
-#: src/virsh.c:2431
+#: src/virsh.c:2446
 msgid "Destroy a given network."
 msgstr "刪除給定的網路。"
 
-#: src/virsh.c:2436 src/virsh.c:2476
+#: src/virsh.c:2451 src/virsh.c:2491
 msgid "network name, id or uuid"
 msgstr "網路名稱、id 或 uuid"
 
-#: src/virsh.c:2454
+#: src/virsh.c:2469
 #, c-format
 msgid "Network %s destroyed\n"
 msgstr "網路 %s 已經刪除\n"
 
-#: src/virsh.c:2456
+#: src/virsh.c:2471
 #, c-format
 msgid "Failed to destroy network %s"
 msgstr "無法刪除網路 %s"
 
-#: src/virsh.c:2470
+#: src/virsh.c:2485
 msgid "network information in XML"
 msgstr "XML 格式的網路資訊"
 
-#: src/virsh.c:2471
+#: src/virsh.c:2486
 #, fuzzy
 msgid "Output the network information as an XML dump to stdout."
 msgstr "將網路資訊以 XML 格式輸出到螢幕上。"
 
-#: src/virsh.c:2511
+#: src/virsh.c:2526
 msgid "list networks"
 msgstr "列出網路"
 
-#: src/virsh.c:2512
+#: src/virsh.c:2527
 msgid "Returns list of networks."
 msgstr "傳回網路清單。"
 
-#: src/virsh.c:2517
+#: src/virsh.c:2532
 msgid "list inactive networks"
 msgstr "列出非作用中的網路"
 
-#: src/virsh.c:2518
+#: src/virsh.c:2533
 msgid "list inactive & active networks"
 msgstr "列出作用中與非作用中的網路"
 
-#: src/virsh.c:2538 src/virsh.c:2546
+#: src/virsh.c:2553 src/virsh.c:2561
 msgid "Failed to list active networks"
 msgstr "無法列出運作中的網路"
 
-#: src/virsh.c:2557 src/virsh.c:2566
+#: src/virsh.c:2572 src/virsh.c:2581
 msgid "Failed to list inactive networks"
 msgstr "無法列出非作用中的網路"
 
-#: src/virsh.c:2576
+#: src/virsh.c:2591
 msgid "Autostart"
 msgstr "自動啟動"
 
-#: src/virsh.c:2591 src/virsh.c:2614
+#: src/virsh.c:2606 src/virsh.c:2629
 msgid "no autostart"
 msgstr "不自動啟動"
 
-#: src/virsh.c:2597
+#: src/virsh.c:2612
 msgid "active"
 msgstr "啟用"
 
-#: src/virsh.c:2620
+#: src/virsh.c:2635
 msgid "inactive"
 msgstr "非啟用中"
 
-#: src/virsh.c:2639
+#: src/virsh.c:2654
 msgid "convert a network UUID to network name"
 msgstr "將網路 id 或 UUID 轉為網路名稱"
 
-#: src/virsh.c:2670
+#: src/virsh.c:2685
 msgid "start a (previously defined) inactive network"
 msgstr "開啟（先前定義的）非作用中網路"
 
-#: src/virsh.c:2671
+#: src/virsh.c:2686
 msgid "Start a network."
 msgstr "啟動一個網路。"
 
-#: src/virsh.c:2676
+#: src/virsh.c:2691
 msgid "name of the inactive network"
 msgstr "非作用中網路的名稱"
 
-#: src/virsh.c:2693
+#: src/virsh.c:2708
 #, c-format
 msgid "Network %s started\n"
 msgstr "網路 %s 已開啟\n"
 
-#: src/virsh.c:2696
+#: src/virsh.c:2711
 #, c-format
 msgid "Failed to start network %s"
 msgstr "無法開啟網路 %s"
 
-#: src/virsh.c:2709
+#: src/virsh.c:2724
 msgid "undefine an inactive network"
 msgstr "取消定義非作用中的網路"
 
-#: src/virsh.c:2710
+#: src/virsh.c:2725
 msgid "Undefine the configuration for an inactive network."
 msgstr "為非作用中的網路取消定義。"
 
-#: src/virsh.c:2733
+#: src/virsh.c:2748
 #, c-format
 msgid "Network %s has been undefined\n"
 msgstr "網路 %s 已經取消定義\n"
 
-#: src/virsh.c:2735
+#: src/virsh.c:2750
 #, c-format
 msgid "Failed to undefine network %s"
 msgstr "無法為網路 %s 取消定義"
 
-#: src/virsh.c:2748
+#: src/virsh.c:2763
 msgid "convert a network name to network UUID"
 msgstr "將網路名稱轉為網路 UUID"
 
-#: src/virsh.c:2773
+#: src/virsh.c:2788
 msgid "failed to get network UUID"
 msgstr "無法取得網路 UUID"
 
-#: src/virsh.c:2784
+#: src/virsh.c:2799
 msgid "show version"
 msgstr "顯示版本"
 
-#: src/virsh.c:2785
+#: src/virsh.c:2800
 msgid "Display the system version information."
 msgstr "顯示系統版本的資訊。"
 
-#: src/virsh.c:2808
+#: src/virsh.c:2823
 msgid "failed to get hypervisor type"
 msgstr "無法取得 hypervisor 類型"
 
-#: src/virsh.c:2817
+#: src/virsh.c:2832
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr "用此函式庫來編譯：libvir %d.%d.%d\n"
 
-#: src/virsh.c:2822
+#: src/virsh.c:2837
 msgid "failed to get the library version"
 msgstr "無法取得函式庫的版本"
 
-#: src/virsh.c:2829
+#: src/virsh.c:2844
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
 msgstr "使用函式庫：libvir %d.%d.%d\n"
 
-#: src/virsh.c:2836
+#: src/virsh.c:2851
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
 msgstr "使用 API：%s %d.%d.%d\n"
 
-#: src/virsh.c:2841
+#: src/virsh.c:2856
 msgid "failed to get the hypervisor version"
 msgstr "無法取得 hypervisor 的版本"
 
-#: src/virsh.c:2846
+#: src/virsh.c:2861
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "無法解開執行中 %s hypervisor 的版本\n"
 
-#: src/virsh.c:2853
+#: src/virsh.c:2868
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "執行 hypervisor：%s %d.%d.%d\n"
 
-#: src/virsh.c:2864
+#: src/virsh.c:2879
 #, fuzzy
 msgid "print the hypervisor hostname"
 msgstr "無法取得 hypervisor 類型"
 
-#: src/virsh.c:2878
+#: src/virsh.c:2893
 #, fuzzy
 msgid "failed to get hostname"
 msgstr "無法取得 hypervisor 類型"
 
-#: src/virsh.c:2893
+#: src/virsh.c:2908
 #, fuzzy
 msgid "print the hypervisor canonical URI"
 msgstr "hypervisor 連線的 URI"
 
-#: src/virsh.c:2907
+#: src/virsh.c:2922
 #, fuzzy
 msgid "failed to get URI"
 msgstr "無法取得區域 UUID"
 
-#: src/virsh.c:2922
+#: src/virsh.c:2937
 msgid "vnc display"
 msgstr "vnc 顯示"
 
-#: src/virsh.c:2923
+#: src/virsh.c:2938
 #, fuzzy
 msgid "Output the IP address and port number for the VNC display."
 msgstr "為 VNC 顯示模式輸出 IP 位址與連接埠號。"
 
-#: src/virsh.c:3000
+#: src/virsh.c:3015
 msgid "tty console"
 msgstr ""
 
-#: src/virsh.c:3001
+#: src/virsh.c:3016
 msgid "Output the device for the TTY console."
 msgstr ""
 
-#: src/virsh.c:3063
+#: src/virsh.c:3078
 #, fuzzy
 msgid "attach device from an XML file"
 msgstr "從 XML 檔案建立區域"
 
-#: src/virsh.c:3064
+#: src/virsh.c:3079
 #, fuzzy
 msgid "Attach device from an XML <file>."
 msgstr "從 XML 檔案建立區域"
 
-#: src/virsh.c:3070 src/virsh.c:3124
+#: src/virsh.c:3085 src/virsh.c:3139
 msgid "XML file"
 msgstr ""
 
-#: src/virsh.c:3102
+#: src/virsh.c:3117
 #, fuzzy, c-format
 msgid "Failed to attach device from %s"
 msgstr "無法從 %s 建立區域"
 
-#: src/virsh.c:3117
+#: src/virsh.c:3132
 #, fuzzy
 msgid "detach device from an XML file"
 msgstr "從 XML 檔案建立區域"
 
-#: src/virsh.c:3118
+#: src/virsh.c:3133
 #, fuzzy
 msgid "Detach device from an XML <file>"
 msgstr "從 XML 檔案建立區域"
 
-#: src/virsh.c:3156
+#: src/virsh.c:3171
 #, fuzzy, c-format
 msgid "Failed to detach device from %s"
 msgstr "無法從 %s 建立區域"
 
-#: src/virsh.c:3171
+#: src/virsh.c:3186
 #, fuzzy
 msgid "attach network interface"
 msgstr "網路名稱"
 
-#: src/virsh.c:3172
+#: src/virsh.c:3187
 msgid "Attach new network interface."
 msgstr ""
 
-#: src/virsh.c:3178 src/virsh.c:3294
+#: src/virsh.c:3193 src/virsh.c:3309
 #, fuzzy
 msgid "network interface type"
 msgstr "網路名稱"
 
-#: src/virsh.c:3179
+#: src/virsh.c:3194
 #, fuzzy
 msgid "source of network interface"
 msgstr "未定義的網路名稱"
 
-#: src/virsh.c:3180
+#: src/virsh.c:3195
 #, fuzzy
 msgid "target network name"
 msgstr "網路名稱"
 
-#: src/virsh.c:3181 src/virsh.c:3295
+#: src/virsh.c:3196 src/virsh.c:3310
 msgid "MAC adress"
 msgstr ""
 
-#: src/virsh.c:3182
+#: src/virsh.c:3197
 msgid "script used to bridge network interface"
 msgstr ""
 
-#: src/virsh.c:3214
+#: src/virsh.c:3229
 #, c-format
 msgid "No support %s in command 'attach-interface'"
 msgstr ""
 
-#: src/virsh.c:3287
+#: src/virsh.c:3302
 #, fuzzy
 msgid "detach network interface"
 msgstr "網路名稱"
 
-#: src/virsh.c:3288
+#: src/virsh.c:3303
 msgid "Detach network interface."
 msgstr ""
 
-#: src/virsh.c:3333 src/virsh.c:3338
+#: src/virsh.c:3348 src/virsh.c:3353
 #, fuzzy
 msgid "Failed to get interface information"
 msgstr "無法取得節點資訊"
 
-#: src/virsh.c:3346
+#: src/virsh.c:3361
 #, c-format
 msgid "No found interface whose type is %s"
 msgstr ""
 
-#: src/virsh.c:3368
+#: src/virsh.c:3383
 #, c-format
 msgid "No found interface whose MAC address is %s"
 msgstr ""
 
-#: src/virsh.c:3374 src/virsh.c:3652
+#: src/virsh.c:3389 src/virsh.c:3667
 #, fuzzy
 msgid "Failed to allocate memory"
 msgstr "無法分配節點"
 
-#: src/virsh.c:3379 src/virsh.c:3657
+#: src/virsh.c:3394 src/virsh.c:3672
 #, fuzzy
 msgid "Failed to create XML"
 msgstr "無法讀取插槽 %d\n"
 
-#: src/virsh.c:3408
+#: src/virsh.c:3423
 msgid "attach disk device"
 msgstr ""
 
-#: src/virsh.c:3409
+#: src/virsh.c:3424
 msgid "Attach new disk device."
 msgstr ""
 
-#: src/virsh.c:3415
+#: src/virsh.c:3430
 msgid "source of disk device"
 msgstr ""
 
-#: src/virsh.c:3416 src/virsh.c:3580
+#: src/virsh.c:3431 src/virsh.c:3595
 msgid "target of disk device"
 msgstr ""
 
-#: src/virsh.c:3417
+#: src/virsh.c:3432
 msgid "driver of disk device"
 msgstr ""
 
-#: src/virsh.c:3418
+#: src/virsh.c:3433
 msgid "subdriver of disk device"
 msgstr ""
 
-#: src/virsh.c:3419
+#: src/virsh.c:3434
 msgid "target device type"
 msgstr ""
 
-#: src/virsh.c:3420
+#: src/virsh.c:3435
 msgid "mode of device reading and writing"
 msgstr ""
 
-#: src/virsh.c:3451 src/virsh.c:3460 src/virsh.c:3467
+#: src/virsh.c:3466 src/virsh.c:3475 src/virsh.c:3482
 #, c-format
 msgid "No support %s in command 'attach-disk'"
 msgstr ""
 
-#: src/virsh.c:3573
+#: src/virsh.c:3588
 msgid "detach disk device"
 msgstr ""
 
-#: src/virsh.c:3574
+#: src/virsh.c:3589
 msgid "Detach disk device."
 msgstr ""
 
-#: src/virsh.c:3615 src/virsh.c:3620 src/virsh.c:3627
+#: src/virsh.c:3630 src/virsh.c:3635 src/virsh.c:3642
 #, fuzzy
 msgid "Failed to get disk information"
 msgstr "無法取得節點資訊"
 
-#: src/virsh.c:3646
+#: src/virsh.c:3661
 #, c-format
 msgid "No found disk whose target is %s"
 msgstr ""
 
-#: src/virsh.c:3686
+#: src/virsh.c:3701
 msgid "quit this interactive terminal"
 msgstr "離開這互動式的終端機"
 
-#: src/virsh.c:3827
+#: src/virsh.c:3842
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "「%s」指令需要 <%s> 選項"
 
-#: src/virsh.c:3828
+#: src/virsh.c:3843
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "「%s」指令需要 --%s 選項"
 
-#: src/virsh.c:3855
+#: src/virsh.c:3870
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "「%s」指令不存在"
 
-#: src/virsh.c:3863
+#: src/virsh.c:3878
 msgid "  NAME\n"
 msgstr "  名稱\n"
 
-#: src/virsh.c:3867
+#: src/virsh.c:3882
 #, fuzzy
 msgid ""
 "\n"
@@ -1999,7 +2003,7 @@ msgstr ""
 "\n"
 "  選項\n"
 
-#: src/virsh.c:3874
+#: src/virsh.c:3889
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -2007,7 +2011,7 @@ msgstr ""
 "\n"
 "  描述\n"
 
-#: src/virsh.c:3878
+#: src/virsh.c:3893
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -2015,35 +2019,35 @@ msgstr ""
 "\n"
 "  選項\n"
 
-#: src/virsh.c:3885
+#: src/virsh.c:3900
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <number>"
 
-#: src/virsh.c:3887
+#: src/virsh.c:3902
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <string>"
 
-#: src/virsh.c:4006
+#: src/virsh.c:4021
 msgid "undefined domain name or id"
 msgstr "未定義的區域名稱或 id"
 
-#: src/virsh.c:4038
+#: src/virsh.c:4053
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "無法取得區域「%s」"
 
-#: src/virsh.c:4051
+#: src/virsh.c:4066
 msgid "undefined network name"
 msgstr "未定義的網路名稱"
 
-#: src/virsh.c:4075
+#: src/virsh.c:4090
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "無法取得網路「%s」"
 
-#: src/virsh.c:4103
+#: src/virsh.c:4118
 #, c-format
 msgid ""
 "\n"
@@ -2054,130 +2058,130 @@ msgstr ""
 "（時間：%.3f 毫秒)\n"
 "\n"
 
-#: src/virsh.c:4177
+#: src/virsh.c:4192
 msgid "missing \""
 msgstr "找不到 \""
 
-#: src/virsh.c:4238
+#: src/virsh.c:4253
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "無預期的 token（指令名稱）：「%s」"
 
-#: src/virsh.c:4243
+#: src/virsh.c:4258
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "未知的指令：「%s」"
 
-#: src/virsh.c:4250
+#: src/virsh.c:4265
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "「%s」指令並不支援 --%s 選項"
 
-#: src/virsh.c:4265
+#: src/virsh.c:4280
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "語法：--%s <%s>"
 
-#: src/virsh.c:4268
+#: src/virsh.c:4283
 msgid "number"
 msgstr "數量"
 
-#: src/virsh.c:4268
+#: src/virsh.c:4283
 msgid "string"
 msgstr "字串"
 
-#: src/virsh.c:4274
+#: src/virsh.c:4289
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "無預期的資料「%s」"
 
-#: src/virsh.c:4296
+#: src/virsh.c:4311
 msgid "OPTION"
 msgstr "選項"
 
-#: src/virsh.c:4296
+#: src/virsh.c:4311
 msgid "DATA"
 msgstr "資料"
 
-#: src/virsh.c:4346 src/virsh.c:4372
+#: src/virsh.c:4361 src/virsh.c:4387
 msgid "running"
 msgstr "執行中"
 
-#: src/virsh.c:4348 src/virsh.c:4370
+#: src/virsh.c:4363 src/virsh.c:4385
 msgid "blocked"
 msgstr "以組絕"
 
-#: src/virsh.c:4350
+#: src/virsh.c:4365
 msgid "paused"
 msgstr "已暫停"
 
-#: src/virsh.c:4352
+#: src/virsh.c:4367
 msgid "in shutdown"
 msgstr "關機中"
 
-#: src/virsh.c:4354
+#: src/virsh.c:4369
 msgid "shut off"
 msgstr "關機"
 
-#: src/virsh.c:4356
+#: src/virsh.c:4371
 msgid "crashed"
 msgstr "當機"
 
-#: src/virsh.c:4368
+#: src/virsh.c:4383
 msgid "offline"
 msgstr "離線"
 
-#: src/virsh.c:4387
+#: src/virsh.c:4402
 msgid "no valid connection"
 msgstr "沒有有效的連線"
 
-#: src/virsh.c:4434
+#: src/virsh.c:4449
 #, c-format
 msgid "%s: error: "
 msgstr "%s：錯誤："
 
-#: src/virsh.c:4436
+#: src/virsh.c:4451
 msgid "error: "
 msgstr "錯誤："
 
-#: src/virsh.c:4458 src/virsh.c:4470 src/virsh.c:4483
+#: src/virsh.c:4473 src/virsh.c:4485 src/virsh.c:4498
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s：%d：無法分配 %d 位元組"
 
-#: src/virsh.c:4497
+#: src/virsh.c:4512
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "%s：%d：無法分配 %lu 位元組"
 
-#: src/virsh.c:4533
+#: src/virsh.c:4552
 msgid "failed to connect to the hypervisor"
 msgstr "無法連上 hypervisor"
 
-#: src/virsh.c:4559
+#: src/virsh.c:4583
 #, fuzzy
 msgid "failed to get the log file information"
 msgstr "無法取得節點資訊"
 
-#: src/virsh.c:4564
+#: src/virsh.c:4588
 msgid "the log path is not a file"
 msgstr ""
 
-#: src/virsh.c:4570
+#: src/virsh.c:4594
 msgid "failed to open the log file. check the log file path"
 msgstr ""
 
-#: src/virsh.c:4638
+#: src/virsh.c:4662
 #, fuzzy
 msgid "failed to write the log file"
 msgstr "無法寫入設定檔"
 
-#: src/virsh.c:4653
+#: src/virsh.c:4677
 #, fuzzy, c-format
 msgid "%s: failed to write log file: %s"
 msgstr "無法寫入設定檔"
 
-#: src/virsh.c:4849
+#: src/virsh.c:4873
 #, fuzzy, c-format
 msgid ""
 "\n"
@@ -2209,7 +2213,7 @@ msgstr ""
 "\n"
 "  命令（非互動式模式）：\n"
 
-#: src/virsh.c:4867
+#: src/virsh.c:4891
 #, fuzzy, c-format
 msgid ""
 "\n"
@@ -2220,12 +2224,12 @@ msgstr ""
 "  （請使用 --help <指令> 以取得關於指令的詳細資料）\n"
 "\n"
 
-#: src/virsh.c:4963
+#: src/virsh.c:4987
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "不支援的選項「-%c」。請參閱 --help。"
 
-#: src/virsh.c:5049
+#: src/virsh.c:5073
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -2234,7 +2238,7 @@ msgstr ""
 "歡迎使用 %s - 虛擬化的互動模式終端機。\n"
 "\n"
 
-#: src/virsh.c:5052
+#: src/virsh.c:5076
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
@@ -2298,47 +2302,47 @@ msgstr "無法存入內容"
 msgid "failed to connect to Xen Store"
 msgstr "無法連上 Xen Store"
 
-#: src/proxy_internal.c:194
+#: src/proxy_internal.c:196
 #, c-format
 msgid "failed to exec %s\n"
 msgstr "無法執行 %s\n"
 
-#: src/proxy_internal.c:288
+#: src/proxy_internal.c:290
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr "無法關閉插槽 %d\n"
 
-#: src/proxy_internal.c:321
+#: src/proxy_internal.c:323
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr "無法讀取插槽 %d\n"
 
-#: src/proxy_internal.c:355
+#: src/proxy_internal.c:357
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr "無法寫入插槽 %d\n"
 
-#: src/proxy_internal.c:447 src/proxy_internal.c:468 src/proxy_internal.c:488
+#: src/proxy_internal.c:449 src/proxy_internal.c:470 src/proxy_internal.c:490
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr "使用代理伺服器時通訊錯誤：取得 %d 的位元組（自 %d 處）\n"
 
-#: src/proxy_internal.c:455
+#: src/proxy_internal.c:457
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr "使用代理伺服器時通訊錯誤：預期 %d 個位元組取得 %d\n"
 
-#: src/proxy_internal.c:477
+#: src/proxy_internal.c:479
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr "使用代理伺服器時通訊錯誤：取得 %d 位元組的封包\n"
 
-#: src/proxy_internal.c:501
+#: src/proxy_internal.c:503
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
 msgstr "使用代理伺服器時通訊錯誤：封包格式錯誤\n"
 
-#: src/proxy_internal.c:507
+#: src/proxy_internal.c:509
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr "取得非同步的封包號碼 %d\n"

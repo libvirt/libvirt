@@ -1,3 +1,8 @@
+Tue Dec 18 00:18:33 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in docs/libvir.html docs/news.html po/*:
+	  prepare release of libvirt-0.4.0
+
 Mon Dec 17 18:04:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* libvirt.spec.in: Added dep on 'nc'

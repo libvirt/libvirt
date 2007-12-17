@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-12-06 15:41+0100\n"
+"POT-Creation-Date: 2007-12-18 00:11+0100\n"
 "PO-Revision-Date: 2007-08-03 01:24+0800\n"
 "Last-Translator: Sharuzzaman Ahmat Raslan <sharuzzaman@myrealbox.com>\n"
 "Language-Team: ms <ms@li.org>\n"
@@ -15,12 +15,12 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/libvirt.c:507 src/hash.c:666
+#: src/libvirt.c:534 src/hash.c:666
 #, fuzzy
 msgid "allocating connection"
 msgstr "Sambungan Masatamat:"
 
-#: src/libvirt.c:514
+#: src/libvirt.c:541
 #, fuzzy
 msgid "could not parse connection URI"
 msgstr "Tidak dapat menulis ke fail %s."
@@ -447,52 +447,52 @@ msgstr "Operasi antaramuka HTTP gagal\n"
 msgid "copying node content"
 msgstr "Log Pemecut Kandungan"
 
-#: src/xmlrpc.c:165
+#: src/xmlrpc.c:166
 #, fuzzy
 msgid "allocate value array"
 msgstr "Mesti nyatakan nilai"
 
-#: src/xmlrpc.c:198
+#: src/xmlrpc.c:200
 #, fuzzy
 msgid "unexpected dict node"
 msgstr "Pelayan Kamus Dict"
 
-#: src/xmlrpc.c:270
+#: src/xmlrpc.c:272
 #, fuzzy
 msgid "unexpected value node"
 msgstr "%s: saiz alamat mempunyai nilai %u tidak dijangka\n"
 
-#: src/xmlrpc.c:433
+#: src/xmlrpc.c:435
 #, fuzzy
 msgid "send request"
 msgstr "Permintaan tidak sah"
 
-#: src/xmlrpc.c:439
+#: src/xmlrpc.c:441
 #, fuzzy
 msgid "unexpected mime type"
 msgstr "Jenis tetikus dikesan: %s"
 
-#: src/xmlrpc.c:446
+#: src/xmlrpc.c:448
 #, fuzzy
 msgid "allocate response"
 msgstr "Jawapan tidak sah telah diterima."
 
-#: src/xmlrpc.c:454 src/xmlrpc.c:516
+#: src/xmlrpc.c:456 src/xmlrpc.c:518
 #, fuzzy
 msgid "read response"
 msgstr "Baca-Saja"
 
-#: src/xmlrpc.c:486 src/xml.c:682
+#: src/xmlrpc.c:488 src/xml.c:682
 #, fuzzy
 msgid "allocate string array"
 msgstr "Rentetan IP tidak sah"
 
-#: src/xmlrpc.c:608
+#: src/xmlrpc.c:610
 #, fuzzy
 msgid "parse server response failed"
 msgstr "SSLv23_server_method() gagal."
 
-#: src/xmlrpc.c:672
+#: src/xmlrpc.c:674
 #, fuzzy
 msgid "allocate new context"
 msgstr "Konteks pengguna tidak diketahui"
@@ -524,192 +524,192 @@ msgstr "Ralat bila cuba menulis ke fail konfigurasi."
 msgid "network missing from connection hash table"
 msgstr ""
 
-#: src/test.c:232 src/test.c:597 src/test.c:1258
+#: src/test.c:238 src/test.c:603 src/test.c:1264
 #, fuzzy
 msgid "getting time of day"
 msgstr "Tak dapat perolehi masa bagi hari"
 
-#: src/test.c:238 src/test.c:370 src/test.c:396 src/test.c:1533
+#: src/test.c:244 src/test.c:376 src/test.c:402 src/test.c:1539
 msgid "domain"
 msgstr "domain"
 
-#: src/test.c:244 src/test.c:430 src/test.c:703
+#: src/test.c:250 src/test.c:436 src/test.c:709
 #, fuzzy
 msgid "creating xpath context"
 msgstr "Konteks pengguna tidak diketahui"
 
-#: src/test.c:250
+#: src/test.c:256
 #, fuzzy
 msgid "domain name"
 msgstr "Nama Domain"
 
-#: src/test.c:256 src/test.c:260
+#: src/test.c:262 src/test.c:266
 #, fuzzy
 msgid "domain uuid"
 msgstr "VG UUID:   "
 
-#: src/test.c:268
+#: src/test.c:274
 #, fuzzy
 msgid "domain memory"
 msgstr "Memori Rendah"
 
-#: src/test.c:277
+#: src/test.c:283
 #, fuzzy
 msgid "domain current memory"
 msgstr "Saiz _memori tersendiri"
 
-#: src/test.c:287
+#: src/test.c:293
 #, fuzzy
 msgid "domain vcpus"
 msgstr "_Domain NIS:"
 
-#: src/test.c:296
+#: src/test.c:302
 #, fuzzy
 msgid "domain reboot behaviour"
 msgstr "<Enter> untuk ulangbut"
 
-#: src/test.c:306
+#: src/test.c:312
 #, fuzzy
 msgid "domain poweroff behaviour"
 msgstr "domain NIS default"
 
-#: src/test.c:316
+#: src/test.c:322
 #, fuzzy
 msgid "domain crash behaviour"
 msgstr "Simpan Longgokan Musnah"
 
-#: src/test.c:389
+#: src/test.c:395
 #, fuzzy
 msgid "load domain definition file"
 msgstr "Tidak dapat memuatkan fail!"
 
-#: src/test.c:424 src/test.c:548 src/test.c:573
+#: src/test.c:430 src/test.c:554 src/test.c:579
 #, fuzzy
 msgid "network"
 msgstr "Nama Pengguna"
 
-#: src/test.c:436 src/virsh.c:2753
+#: src/test.c:442 src/virsh.c:2768
 #, fuzzy
 msgid "network name"
 msgstr "Nama Pengguna"
 
-#: src/test.c:444 src/test.c:448 src/virsh.c:2644
+#: src/test.c:450 src/test.c:454 src/virsh.c:2659
 #, fuzzy
 msgid "network uuid"
 msgstr "VG UUID:   "
 
-#: src/test.c:456
+#: src/test.c:462
 #, fuzzy
 msgid "network forward"
 msgstr "Nama Pengguna"
 
-#: src/test.c:465 src/test.c:475 src/test.c:480
+#: src/test.c:471 src/test.c:481 src/test.c:486
 #, fuzzy
 msgid "ip address"
 msgstr "Alamat MAC"
 
-#: src/test.c:470
+#: src/test.c:476
 msgid "ip netmask"
 msgstr ""
 
-#: src/test.c:566
+#: src/test.c:572
 #, fuzzy
 msgid "load network definition file"
 msgstr "Tidak dapat memuatkan fail!"
 
-#: src/test.c:682
+#: src/test.c:688
 msgid "loading host definition file"
 msgstr ""
 
-#: src/test.c:689
+#: src/test.c:695
 #, fuzzy
 msgid "host"
 msgstr "Hos"
 
-#: src/test.c:697
+#: src/test.c:703
 #, fuzzy
 msgid "node"
 msgstr "Nod"
 
-#: src/test.c:721
+#: src/test.c:727
 msgid "node cpu numa nodes"
 msgstr ""
 
-#: src/test.c:729
+#: src/test.c:735
 #, fuzzy
 msgid "node cpu sockets"
 msgstr "Monitor frekuensi CPU"
 
-#: src/test.c:737
+#: src/test.c:743
 #, fuzzy
 msgid "node cpu cores"
 msgstr "Monitor frekuensi CPU"
 
-#: src/test.c:745
+#: src/test.c:751
 #, fuzzy
 msgid "node cpu threads"
 msgstr "Monitor frekuensi CPU"
 
-#: src/test.c:756
+#: src/test.c:762
 #, fuzzy
 msgid "node active cpu"
 msgstr "Monitor frekuensi CPU"
 
-#: src/test.c:763
+#: src/test.c:769
 #, fuzzy
 msgid "node cpu mhz"
 msgstr "Monitor frekuensi CPU"
 
-#: src/test.c:778
+#: src/test.c:784
 #, fuzzy
 msgid "node memory"
 msgstr "Memori Rendah"
 
-#: src/test.c:784
+#: src/test.c:790
 #, fuzzy
 msgid "node domain list"
 msgstr "penggunaan:   %s --list [nama]\n"
 
-#: src/test.c:794
+#: src/test.c:800
 #, fuzzy
 msgid "resolving domain filename"
 msgstr "Namafail imej _bulan:"
 
-#: src/test.c:819
+#: src/test.c:825
 #, fuzzy
 msgid "resolving network filename"
 msgstr "Namafail imej _bulan:"
 
-#: src/test.c:906
+#: src/test.c:912
 msgid "testOpen: supply a path or use test:///default"
 msgstr ""
 
-#: src/test.c:1042
+#: src/test.c:1048
 #, fuzzy
 msgid "too many domains"
 msgstr "Terlalu banyak gantian"
 
-#: src/test.c:1553
+#: src/test.c:1559
 #, fuzzy
 msgid "Domain is already running"
 msgstr "autorun sedang berjalan!\n"
 
-#: src/test.c:1568
+#: src/test.c:1574
 #, fuzzy
 msgid "Domain is still running"
 msgstr "autorun sedang berjalan!\n"
 
-#: src/test.c:1769 src/test.c:1794
+#: src/test.c:1775 src/test.c:1800
 #, fuzzy
 msgid "too many networks"
 msgstr "Terlalu banyak gantian"
 
-#: src/test.c:1813
+#: src/test.c:1819
 #, fuzzy
 msgid "Network is still running"
 msgstr "autorun sedang berjalan!\n"
 
-#: src/test.c:1827
+#: src/test.c:1833
 #, fuzzy
 msgid "Network is already running"
 msgstr "autorun sedang berjalan!\n"
@@ -742,8 +742,8 @@ msgstr "salinan [%s] gagal (md5sum tidak sepadan)"
 msgid "failed to read from Xen Daemon"
 msgstr ""
 
-#: src/xend_internal.c:601 src/xend_internal.c:821 src/xend_internal.c:1552
-#: src/xend_internal.c:1571 src/xend_internal.c:1959
+#: src/xend_internal.c:601 src/xend_internal.c:821 src/xend_internal.c:1554
+#: src/xend_internal.c:1573 src/xend_internal.c:1975
 #, fuzzy
 msgid "allocate new buffer"
 msgstr "Selit ke dalam buffer baru"
@@ -764,1406 +764,1410 @@ msgstr ""
 msgid "domain information incomplete, missing uuid"
 msgstr ""
 
-#: src/xend_internal.c:1119 src/xend_internal.c:1398 src/xend_internal.c:1405
+#: src/xend_internal.c:1119 src/xend_internal.c:1400 src/xend_internal.c:1407
 msgid "domain information incomplete, missing name"
 msgstr ""
 
-#: src/xend_internal.c:1293 src/xend_internal.c:1324
+#: src/xend_internal.c:1295 src/xend_internal.c:1326
 #, fuzzy
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "Sila isikan maklumat pengesahan"
 
-#: src/xend_internal.c:1386
+#: src/xend_internal.c:1388
 #, fuzzy
 msgid "domain information incomplete, missing id"
 msgstr "Sila isikan maklumat pengesahan"
 
-#: src/xend_internal.c:1521
+#: src/xend_internal.c:1523
 msgid "domain information incomplete, vbd has no dev"
 msgstr ""
 
-#: src/xend_internal.c:1536
+#: src/xend_internal.c:1538
 #, fuzzy
 msgid "domain information incomplete, vbd has no src"
 msgstr "Sila isikan maklumat pengesahan"
 
-#: src/xend_internal.c:1545
+#: src/xend_internal.c:1547
 msgid "cannot parse vbd filename, missing driver name"
 msgstr ""
 
-#: src/xend_internal.c:1564
+#: src/xend_internal.c:1566
 msgid "cannot parse vbd filename, missing driver type"
 msgstr ""
 
-#: src/xend_internal.c:1933
+#: src/xend_internal.c:1949
 #, fuzzy
 msgid "failed to parse topology information"
 msgstr "Gagal menukar maklumat usia untuk %s: %s\n"
 
-#: src/xend_internal.c:2014
+#: src/xend_internal.c:2030
 msgid "failed to parse Xend domain information"
 msgstr ""
 
-#: src/xend_internal.c:3453
+#: src/xend_internal.c:3469
 #, fuzzy, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Gagal mencipta direktori %s"
 
-#: src/virsh.c:315
+#: src/virsh.c:317
 #, fuzzy
 msgid "print help"
 msgstr "-h            cetak bantuan ini\n"
 
-#: src/virsh.c:316
+#: src/virsh.c:318
 msgid "Prints global help or command specific help."
 msgstr ""
 
-#: src/virsh.c:322
+#: src/virsh.c:324
 #, fuzzy
 msgid "name of command"
 msgstr "  Pilihan    Arahan\n"
 
-#: src/virsh.c:334
+#: src/virsh.c:336
 #, fuzzy
 msgid ""
 "Commands:\n"
 "\n"
 msgstr "Arahan"
 
-#: src/virsh.c:348
+#: src/virsh.c:350
 #, fuzzy
 msgid "autostart a domain"
 msgstr "_Domain NIS:"
 
-#: src/virsh.c:350
+#: src/virsh.c:352
 msgid "Configure a domain to be automatically started at boot."
 msgstr ""
 
-#: src/virsh.c:355 src/virsh.c:456 src/virsh.c:642 src/virsh.c:679
-#: src/virsh.c:736 src/virsh.c:803 src/virsh.c:1083 src/virsh.c:1127
-#: src/virsh.c:1317 src/virsh.c:1362 src/virsh.c:1401 src/virsh.c:1440
-#: src/virsh.c:1479 src/virsh.c:1518 src/virsh.c:1637 src/virsh.c:1724
-#: src/virsh.c:1852 src/virsh.c:1909 src/virsh.c:1966 src/virsh.c:2087
-#: src/virsh.c:2227 src/virsh.c:2928 src/virsh.c:3006 src/virsh.c:3069
-#: src/virsh.c:3123 src/virsh.c:3177 src/virsh.c:3293 src/virsh.c:3414
-#: src/virsh.c:3579
+#: src/virsh.c:357 src/virsh.c:458 src/virsh.c:657 src/virsh.c:694
+#: src/virsh.c:751 src/virsh.c:818 src/virsh.c:1098 src/virsh.c:1142
+#: src/virsh.c:1332 src/virsh.c:1377 src/virsh.c:1416 src/virsh.c:1455
+#: src/virsh.c:1494 src/virsh.c:1533 src/virsh.c:1652 src/virsh.c:1739
+#: src/virsh.c:1867 src/virsh.c:1924 src/virsh.c:1981 src/virsh.c:2102
+#: src/virsh.c:2242 src/virsh.c:2943 src/virsh.c:3021 src/virsh.c:3084
+#: src/virsh.c:3138 src/virsh.c:3192 src/virsh.c:3308 src/virsh.c:3429
+#: src/virsh.c:3594
 msgid "domain name, id or uuid"
 msgstr ""
 
-#: src/virsh.c:356 src/virsh.c:2291
+#: src/virsh.c:358 src/virsh.c:2306
 #, fuzzy
 msgid "disable autostarting"
 msgstr "Matikan firewall"
 
-#: src/virsh.c:377
+#: src/virsh.c:379
 #, fuzzy, c-format
 msgid "Failed to mark domain %s as autostarted"
 msgstr "gagal untuk menyimpan kandungan"
 
-#: src/virsh.c:380
+#: src/virsh.c:382
 #, fuzzy, c-format
 msgid "Failed to unmark domain %s as autostarted"
 msgstr "gagal untuk menyimpan kandungan"
 
-#: src/virsh.c:387
+#: src/virsh.c:389
 #, fuzzy, c-format
 msgid "Domain %s marked as autostarted\n"
 msgstr "Automounter dimulakan: %s\n"
 
-#: src/virsh.c:389
+#: src/virsh.c:391
 #, fuzzy, c-format
 msgid "Domain %s unmarked as autostarted\n"
 msgstr "Automounter dimulakan: %s\n"
 
-#: src/virsh.c:400
+#: src/virsh.c:402
 #, fuzzy
 msgid "(re)connect to hypervisor"
 msgstr "Tidak dapat menyambung ke RHN..."
 
-#: src/virsh.c:402
+#: src/virsh.c:404
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr ""
 
-#: src/virsh.c:407
+#: src/virsh.c:409
 #, fuzzy
 msgid "hypervisor connection URI"
 msgstr "Permintaan per Sambungan"
 
-#: src/virsh.c:408
+#: src/virsh.c:410
 #, fuzzy
 msgid "read-only connection"
 msgstr "Mod lihat (baca sahaja)"
 
-#: src/virsh.c:420
+#: src/virsh.c:422
 #, fuzzy
 msgid "Failed to disconnect from the hypervisor"
 msgstr "Gagal untuk memuatkan cakera pemandu daripada fail."
 
-#: src/virsh.c:439
+#: src/virsh.c:441
 #, fuzzy
 msgid "Failed to connect to the hypervisor"
 msgstr "Tidak dapat menyambung ke RHN..."
 
-#: src/virsh.c:449
+#: src/virsh.c:451
 #, fuzzy
 msgid "connect to the guest console"
 msgstr "Tidak dapat menyambung ke RHN..."
 
-#: src/virsh.c:451
+#: src/virsh.c:453
 msgid "Connect the virtual serial console for the guest"
 msgstr ""
 
-#: src/virsh.c:496
+#: src/virsh.c:500
 #, fuzzy
 msgid "No console available for domain\n"
 msgstr "Tiada log sambungan untuk %1 %2 didapati"
 
-#: src/virsh.c:514
+#: src/virsh.c:518
+msgid "console not implemented on this platform"
+msgstr ""
+
+#: src/virsh.c:529
 #, fuzzy
 msgid "list domains"
 msgstr "Domain Failover"
 
-#: src/virsh.c:515
+#: src/virsh.c:530
 #, fuzzy
 msgid "Returns list of domains."
 msgstr "penggunaan:   %s --list [nama]\n"
 
-#: src/virsh.c:520
+#: src/virsh.c:535
 #, fuzzy
 msgid "list inactive domains"
 msgstr "penggunaan:   %s --list [nama]\n"
 
-#: src/virsh.c:521
+#: src/virsh.c:536
 msgid "list inactive & active domains"
 msgstr ""
 
-#: src/virsh.c:543 src/virsh.c:550
+#: src/virsh.c:558 src/virsh.c:565
 msgid "Failed to list active domains"
 msgstr ""
 
-#: src/virsh.c:561 src/virsh.c:570
+#: src/virsh.c:576 src/virsh.c:585
 msgid "Failed to list inactive domains"
 msgstr ""
 
-#: src/virsh.c:580
+#: src/virsh.c:595
 msgid "Id"
 msgstr "Id"
 
-#: src/virsh.c:580 src/virsh.c:2576
+#: src/virsh.c:595 src/virsh.c:2591
 msgid "Name"
 msgstr "Nama"
 
-#: src/virsh.c:580 src/virsh.c:2576
+#: src/virsh.c:595 src/virsh.c:2591
 msgid "State"
 msgstr "Keadaan"
 
-#: src/virsh.c:593 src/virsh.c:615 src/virsh.c:4360 src/virsh.c:4376
+#: src/virsh.c:608 src/virsh.c:630 src/virsh.c:4375 src/virsh.c:4391
 #, fuzzy
 msgid "no state"
 msgstr "keadaan tidak diketahui"
 
-#: src/virsh.c:636
+#: src/virsh.c:651
 #, fuzzy
 msgid "domain state"
 msgstr "keadaan tidak diketahui"
 
-#: src/virsh.c:637
+#: src/virsh.c:652
 msgid "Returns state about a running domain."
 msgstr ""
 
-#: src/virsh.c:673
+#: src/virsh.c:688
 msgid "get device block stats for a domain"
 msgstr ""
 
-#: src/virsh.c:674
+#: src/virsh.c:689
 #, fuzzy
 msgid "Get device block stats for a running domain."
 msgstr "domain NIS default"
 
-#: src/virsh.c:680
+#: src/virsh.c:695
 #, fuzzy
 msgid "block device"
 msgstr "Sumber Cekera Jurupacu"
 
-#: src/virsh.c:701
+#: src/virsh.c:716
 #, fuzzy, c-format
 msgid "Failed to get block stats %s %s"
 msgstr "gagal untuk menyimpan kandungan"
 
-#: src/virsh.c:730
+#: src/virsh.c:745
 #, fuzzy
 msgid "get network interface stats for a domain"
 msgstr "Ulangtetap antaramuka rangkaian"
 
-#: src/virsh.c:731
+#: src/virsh.c:746
 msgid "Get network interface stats for a running domain."
 msgstr ""
 
-#: src/virsh.c:737
+#: src/virsh.c:752
 msgid "interface device"
 msgstr ""
 
-#: src/virsh.c:758
+#: src/virsh.c:773
 #, fuzzy, c-format
 msgid "Failed to get interface stats %s %s"
 msgstr "Gagal menukar maklumat usia untuk %s: %s\n"
 
-#: src/virsh.c:797
+#: src/virsh.c:812
 #, fuzzy
 msgid "suspend a domain"
 msgstr "_Domain NIS:"
 
-#: src/virsh.c:798
+#: src/virsh.c:813
 #, fuzzy
 msgid "Suspend a running domain."
 msgstr "domain NIS default"
 
-#: src/virsh.c:821
+#: src/virsh.c:836
 #, fuzzy, c-format
 msgid "Domain %s suspended\n"
 msgstr "_Domain NIS:"
 
-#: src/virsh.c:823
+#: src/virsh.c:838
 #, fuzzy, c-format
 msgid "Failed to suspend domain %s"
 msgstr "Mengikat ke domain NIS: "
 
-#: src/virsh.c:836
+#: src/virsh.c:851
 msgid "create a domain from an XML file"
 msgstr ""
 
-#: src/virsh.c:837
+#: src/virsh.c:852
 #, fuzzy
 msgid "Create a domain."
 msgstr "_Domain NIS:"
 
-#: src/virsh.c:842 src/virsh.c:950
+#: src/virsh.c:857 src/virsh.c:965
 msgid "file containing an XML domain description"
 msgstr ""
 
-#: src/virsh.c:857
+#: src/virsh.c:872
 #, fuzzy, c-format
 msgid "Failed to open '%s': %s"
 msgstr "Gagal untuk membuka %s: %s\n"
 
-#: src/virsh.c:877
+#: src/virsh.c:892
 #, fuzzy, c-format
 msgid "Failed to open '%s': read: %s"
 msgstr "Gagal membaca direktori %s: %s"
 
-#: src/virsh.c:895
+#: src/virsh.c:910
 #, fuzzy, c-format
 msgid "Error allocating memory: %s"
 msgstr "Ralat membaca maklumat memori sistem:"
 
-#: src/virsh.c:929
+#: src/virsh.c:944
 #, fuzzy, c-format
 msgid "Domain %s created from %s\n"
 msgstr "Benarkan hos dari:"
 
-#: src/virsh.c:933
+#: src/virsh.c:948
 #, fuzzy, c-format
 msgid "Failed to create domain from %s"
 msgstr "Gagal untuk memuatkan cakera pemandu daripada fail."
 
-#: src/virsh.c:944
+#: src/virsh.c:959
 msgid "define (but don't start) a domain from an XML file"
 msgstr ""
 
-#: src/virsh.c:945
+#: src/virsh.c:960
 #, fuzzy
 msgid "Define a domain."
 msgstr "_Domain NIS:"
 
-#: src/virsh.c:977
+#: src/virsh.c:992
 #, fuzzy, c-format
 msgid "Domain %s defined from %s\n"
 msgstr "Benarkan hos dari:"
 
-#: src/virsh.c:981
+#: src/virsh.c:996
 #, fuzzy, c-format
 msgid "Failed to define domain from %s"
 msgstr "Gagal untuk memuatkan cakera pemandu daripada fail."
 
-#: src/virsh.c:992
+#: src/virsh.c:1007
 #, fuzzy
 msgid "undefine an inactive domain"
 msgstr "domain NIS default"
 
-#: src/virsh.c:993
+#: src/virsh.c:1008
 msgid "Undefine the configuration for an inactive domain."
 msgstr ""
 
-#: src/virsh.c:998 src/virsh.c:2156
+#: src/virsh.c:1013 src/virsh.c:2171
 #, fuzzy
 msgid "domain name or uuid"
 msgstr ""
 "Pengunaan: %s FAIL\n"
 "    atau: %s OPSYEN\n"
 
-#: src/virsh.c:1016
+#: src/virsh.c:1031
 #, fuzzy, c-format
 msgid "Domain %s has been undefined\n"
 msgstr "%s: Direktori telah ditukarnama"
 
-#: src/virsh.c:1018
+#: src/virsh.c:1033
 #, fuzzy, c-format
 msgid "Failed to undefine domain %s"
 msgstr "Mengikat ke domain NIS: "
 
-#: src/virsh.c:1032
+#: src/virsh.c:1047
 msgid "start a (previously defined) inactive domain"
 msgstr ""
 
-#: src/virsh.c:1033
+#: src/virsh.c:1048
 #, fuzzy
 msgid "Start a domain."
 msgstr "_Domain NIS:"
 
-#: src/virsh.c:1038
+#: src/virsh.c:1053
 #, fuzzy
 msgid "name of the inactive domain"
 msgstr "Sistem Nama Domain"
 
-#: src/virsh.c:1055
+#: src/virsh.c:1070
 #, fuzzy
 msgid "Domain is already active"
 msgstr "autorun sedang berjalan!\n"
 
-#: src/virsh.c:1061
+#: src/virsh.c:1076
 #, fuzzy, c-format
 msgid "Domain %s started\n"
 msgstr "Automounter dimulakan: %s\n"
 
-#: src/virsh.c:1064
+#: src/virsh.c:1079
 #, fuzzy, c-format
 msgid "Failed to start domain %s"
 msgstr "Ralat, tidak dapat memulakan pelayan X."
 
-#: src/virsh.c:1077
+#: src/virsh.c:1092
 #, fuzzy
 msgid "save a domain state to a file"
 msgstr "Pilih lokasi untuk menyimpan fail"
 
-#: src/virsh.c:1078
+#: src/virsh.c:1093
 #, fuzzy
 msgid "Save a running domain."
 msgstr "domain NIS default"
 
-#: src/virsh.c:1084
+#: src/virsh.c:1099
 #, fuzzy
 msgid "where to save the data"
 msgstr "Memerlukan kekunci untuk menyimpan data anda"
 
-#: src/virsh.c:1106
+#: src/virsh.c:1121
 #, fuzzy, c-format
 msgid "Domain %s saved to %s\n"
 msgstr "Mengikat ke domain NIS: "
 
-#: src/virsh.c:1108
+#: src/virsh.c:1123
 #, fuzzy, c-format
 msgid "Failed to save domain %s to %s"
 msgstr "gagal untuk menyimpan kandungan"
 
-#: src/virsh.c:1121
+#: src/virsh.c:1136
 #, fuzzy
 msgid "show/set scheduler parameters"
 msgstr "Menetapkan parameter cakera keras"
 
-#: src/virsh.c:1122
+#: src/virsh.c:1137
 #, fuzzy
 msgid "Show/Set scheduler parameters."
 msgstr "Menetapkan parameter cakera keras"
 
-#: src/virsh.c:1128
+#: src/virsh.c:1143
 msgid "weight for XEN_CREDIT"
 msgstr ""
 
-#: src/virsh.c:1129
+#: src/virsh.c:1144
 msgid "cap for XEN_CREDIT"
 msgstr ""
 
-#: src/virsh.c:1161
+#: src/virsh.c:1176
 #, fuzzy
 msgid "Invalid value of weight"
 msgstr "Nilai tidak sah bagi record_size"
 
-#: src/virsh.c:1171
+#: src/virsh.c:1186
 #, fuzzy
 msgid "Invalid value of cap"
 msgstr "Nilai tidak sah bagi record_size"
 
-#: src/virsh.c:1213 src/virsh.c:1217
+#: src/virsh.c:1228 src/virsh.c:1232
 msgid "Scheduler"
 msgstr ""
 
-#: src/virsh.c:1217
+#: src/virsh.c:1232
 #, fuzzy
 msgid "Unknown"
 msgstr "Entah"
 
-#: src/virsh.c:1273
+#: src/virsh.c:1288
 msgid "restore a domain from a saved state in a file"
 msgstr ""
 
-#: src/virsh.c:1274
+#: src/virsh.c:1289
 #, fuzzy
 msgid "Restore a domain."
 msgstr "_Domain NIS:"
 
-#: src/virsh.c:1279
+#: src/virsh.c:1294
 #, fuzzy
 msgid "the state to restore"
 msgstr "pergi ke keadaan %d\n"
 
-#: src/virsh.c:1298
+#: src/virsh.c:1313
 #, fuzzy, c-format
 msgid "Domain restored from %s\n"
 msgstr "Benarkan hos dari:"
 
-#: src/virsh.c:1300
+#: src/virsh.c:1315
 #, fuzzy, c-format
 msgid "Failed to restore domain from %s"
 msgstr "Gagal untuk memuatkan cakera pemandu daripada fail."
 
-#: src/virsh.c:1311
+#: src/virsh.c:1326
 msgid "dump the core of a domain to a file for analysis"
 msgstr ""
 
-#: src/virsh.c:1312
+#: src/virsh.c:1327
 #, fuzzy
 msgid "Core dump a domain."
 msgstr "Direktori Lambakan _Core :"
 
-#: src/virsh.c:1318
+#: src/virsh.c:1333
 #, fuzzy
 msgid "where to dump the core"
 msgstr "Nyatakan fail untuk menyimpan lambakan"
 
-#: src/virsh.c:1340
+#: src/virsh.c:1355
 #, fuzzy, c-format
 msgid "Domain %s dumpd to %s\n"
 msgstr "Mengikat ke domain NIS: "
 
-#: src/virsh.c:1342
+#: src/virsh.c:1357
 #, fuzzy, c-format
 msgid "Failed to core dump domain %s to %s"
 msgstr "gagal untuk menyimpan kandungan"
 
-#: src/virsh.c:1356
+#: src/virsh.c:1371
 #, fuzzy
 msgid "resume a domain"
 msgstr "_Domain NIS:"
 
-#: src/virsh.c:1357
+#: src/virsh.c:1372
 msgid "Resume a previously suspended domain."
 msgstr ""
 
-#: src/virsh.c:1380
+#: src/virsh.c:1395
 #, fuzzy, c-format
 msgid "Domain %s resumed\n"
 msgstr "_Domain NIS:"
 
-#: src/virsh.c:1382
+#: src/virsh.c:1397
 #, fuzzy, c-format
 msgid "Failed to resume domain %s"
 msgstr "Mengikat ke domain NIS: "
 
-#: src/virsh.c:1395
+#: src/virsh.c:1410
 #, fuzzy
 msgid "gracefully shutdown a domain"
 msgstr "domain NIS default"
 
-#: src/virsh.c:1396
+#: src/virsh.c:1411
 msgid "Run shutdown in the target domain."
 msgstr ""
 
-#: src/virsh.c:1419
+#: src/virsh.c:1434
 #, fuzzy, c-format
 msgid "Domain %s is being shutdown\n"
 msgstr "nama domain adalah panjangnya sifar"
 
-#: src/virsh.c:1421
+#: src/virsh.c:1436
 #, fuzzy, c-format
 msgid "Failed to shutdown domain %s"
 msgstr "Mengikat ke domain NIS: "
 
-#: src/virsh.c:1434
+#: src/virsh.c:1449
 #, fuzzy
 msgid "reboot a domain"
 msgstr "_Domain NIS:"
 
-#: src/virsh.c:1435
+#: src/virsh.c:1450
 msgid "Run a reboot command in the target domain."
 msgstr ""
 
-#: src/virsh.c:1458
+#: src/virsh.c:1473
 #, fuzzy, c-format
 msgid "Domain %s is being rebooted\n"
 msgstr "nama domain adalah panjangnya sifar"
 
-#: src/virsh.c:1460
+#: src/virsh.c:1475
 #, fuzzy, c-format
 msgid "Failed to reboot domain %s"
 msgstr "Mengikat ke domain NIS: "
 
-#: src/virsh.c:1473
+#: src/virsh.c:1488
 #, fuzzy
 msgid "destroy a domain"
 msgstr "_Domain NIS:"
 
-#: src/virsh.c:1474
+#: src/virsh.c:1489
 #, fuzzy
 msgid "Destroy a given domain."
 msgstr "domain NIS default"
 
-#: src/virsh.c:1497
+#: src/virsh.c:1512
 #, fuzzy, c-format
 msgid "Domain %s destroyed\n"
 msgstr "_Domain NIS:"
 
-#: src/virsh.c:1499
+#: src/virsh.c:1514
 #, fuzzy, c-format
 msgid "Failed to destroy domain %s"
 msgstr "Mengikat ke domain NIS: "
 
-#: src/virsh.c:1512
+#: src/virsh.c:1527
 #, fuzzy
 msgid "domain information"
 msgstr "Maklumat tidak sah"
 
-#: src/virsh.c:1513
+#: src/virsh.c:1528
 msgid "Returns basic information about the domain."
 msgstr ""
 
-#: src/virsh.c:1539 src/virsh.c:1541
+#: src/virsh.c:1554 src/virsh.c:1556
 msgid "Id:"
 msgstr "Id:"
 
-#: src/virsh.c:1542
+#: src/virsh.c:1557
 msgid "Name:"
 msgstr "Nama:"
 
-#: src/virsh.c:1545
+#: src/virsh.c:1560
 msgid "UUID:"
 msgstr "UUID:"
 
-#: src/virsh.c:1548
+#: src/virsh.c:1563
 #, fuzzy
 msgid "OS Type:"
 msgstr "Jenis Pemasangan"
 
-#: src/virsh.c:1553 src/virsh.c:1681
+#: src/virsh.c:1568 src/virsh.c:1696
 msgid "State:"
 msgstr "Keadaan:"
 
-#: src/virsh.c:1556 src/virsh.c:2038
+#: src/virsh.c:1571 src/virsh.c:2053
 #, fuzzy
 msgid "CPU(s):"
 msgstr "cpu # "
 
-#: src/virsh.c:1563 src/virsh.c:1688
+#: src/virsh.c:1578 src/virsh.c:1703
 #, fuzzy
 msgid "CPU time:"
 msgstr "Waktu Alaska"
 
-#: src/virsh.c:1567 src/virsh.c:1570
+#: src/virsh.c:1582 src/virsh.c:1585
 #, fuzzy
 msgid "Max memory:"
 msgstr "Memori Rendah"
 
-#: src/virsh.c:1571
+#: src/virsh.c:1586
 #, fuzzy
 msgid "no limit"
 msgstr "Had media:"
 
-#: src/virsh.c:1573
+#: src/virsh.c:1588
 #, fuzzy
 msgid "Used memory:"
 msgstr "Memori Rendah"
 
-#: src/virsh.c:1589
+#: src/virsh.c:1604
 #, fuzzy
 msgid "NUMA free memory"
 msgstr "Memori Rendah"
 
-#: src/virsh.c:1590
+#: src/virsh.c:1605
 msgid "display available free memory for the NUMA cell."
 msgstr ""
 
-#: src/virsh.c:1595
+#: src/virsh.c:1610
 msgid "NUMA cell number"
 msgstr ""
 
-#: src/virsh.c:1619
+#: src/virsh.c:1634
 msgid "Total"
 msgstr ""
 
-#: src/virsh.c:1631
+#: src/virsh.c:1646
 #, fuzzy
 msgid "domain vcpu information"
 msgstr "Membaca maklumat pakej..."
 
-#: src/virsh.c:1632
+#: src/virsh.c:1647
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr ""
 
-#: src/virsh.c:1679
+#: src/virsh.c:1694
 msgid "VCPU:"
 msgstr "VCPU:"
 
-#: src/virsh.c:1680
+#: src/virsh.c:1695
 msgid "CPU:"
 msgstr "CPU:"
 
-#: src/virsh.c:1690
+#: src/virsh.c:1705
 #, fuzzy
 msgid "CPU Affinity:"
 msgstr "Model CPU:"
 
-#: src/virsh.c:1702
+#: src/virsh.c:1717
 msgid "Domain shut off, virtual CPUs not present."
 msgstr ""
 
-#: src/virsh.c:1718
+#: src/virsh.c:1733
 msgid "control domain vcpu affinity"
 msgstr ""
 
-#: src/virsh.c:1719
+#: src/virsh.c:1734
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr ""
 
-#: src/virsh.c:1725
+#: src/virsh.c:1740
 #, fuzzy
 msgid "vcpu number"
 msgstr "Numbor peranti"
 
-#: src/virsh.c:1726
+#: src/virsh.c:1741
 msgid "host cpu number(s) (comma separated)"
 msgstr ""
 
-#: src/virsh.c:1781
+#: src/virsh.c:1796
 msgid "cpulist: Invalid format. Empty string."
 msgstr ""
 
-#: src/virsh.c:1791
+#: src/virsh.c:1806
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
 
-#: src/virsh.c:1801
+#: src/virsh.c:1816
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
 "c')."
 msgstr ""
 
-#: src/virsh.c:1808
+#: src/virsh.c:1823
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
 msgstr ""
 
-#: src/virsh.c:1822
+#: src/virsh.c:1837
 #, fuzzy, c-format
 msgid "Physical CPU %d doesn't exist."
 msgstr "$0: peranti microcode $DEVICE tidak wujud?"
 
-#: src/virsh.c:1846
+#: src/virsh.c:1861
 msgid "change number of virtual CPUs"
 msgstr ""
 
-#: src/virsh.c:1847
+#: src/virsh.c:1862
 msgid "Change the number of virtual CPUs active in the guest domain."
 msgstr ""
 
-#: src/virsh.c:1853
+#: src/virsh.c:1868
 #, fuzzy
 msgid "number of virtual CPUs"
 msgstr "Hos maya default"
 
-#: src/virsh.c:1873
+#: src/virsh.c:1888
 #, fuzzy
 msgid "Invalid number of virtual CPUs."
 msgstr "nombor peranti major tidak sah %s"
 
-#: src/virsh.c:1885
+#: src/virsh.c:1900
 #, fuzzy
 msgid "Too many virtual CPUs."
 msgstr "Terlalu banyak fail salinan?"
 
-#: src/virsh.c:1903
+#: src/virsh.c:1918
 #, fuzzy
 msgid "change memory allocation"
 msgstr "Saiz _memori tersendiri"
 
-#: src/virsh.c:1904
+#: src/virsh.c:1919
 msgid "Change the current memory allocation in the guest domain."
 msgstr ""
 
-#: src/virsh.c:1910
+#: src/virsh.c:1925
 #, fuzzy
 msgid "number of kilobytes of memory"
 msgstr "Saiz _memori tersendiri"
 
-#: src/virsh.c:1931 src/virsh.c:1943 src/virsh.c:1988
+#: src/virsh.c:1946 src/virsh.c:1958 src/virsh.c:2003
 #, fuzzy, c-format
 msgid "Invalid value of %d for memory size"
 msgstr "Nilai tidak sah bagi record_size"
 
-#: src/virsh.c:1937
+#: src/virsh.c:1952
 #, fuzzy
 msgid "Unable to verify MaxMemorySize"
 msgstr "Tidak boleh untuk akses ke CDROM"
 
-#: src/virsh.c:1960
+#: src/virsh.c:1975
 msgid "change maximum memory limit"
 msgstr ""
 
-#: src/virsh.c:1961
+#: src/virsh.c:1976
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr ""
 
-#: src/virsh.c:1967
+#: src/virsh.c:1982
 msgid "maximum memory limit in kilobytes"
 msgstr ""
 
-#: src/virsh.c:1994
+#: src/virsh.c:2009
 msgid "Unable to verify current MemorySize"
 msgstr ""
 
-#: src/virsh.c:2001
+#: src/virsh.c:2016
 #, fuzzy
 msgid "Unable to shrink current MemorySize"
 msgstr "Saiz _memori tersendiri"
 
-#: src/virsh.c:2007
+#: src/virsh.c:2022
 #, fuzzy
 msgid "Unable to change MaxMemorySize"
 msgstr "Tidak dapat menukar ke uid %d."
 
-#: src/virsh.c:2020
+#: src/virsh.c:2035
 #, fuzzy
 msgid "node information"
 msgstr "Maklumat tidak sah"
 
-#: src/virsh.c:2021
+#: src/virsh.c:2036
 msgid "Returns basic information about the node."
 msgstr ""
 
-#: src/virsh.c:2034
+#: src/virsh.c:2049
 #, fuzzy
 msgid "failed to get node information"
 msgstr "Gagal menukar maklumat usia untuk %s: %s\n"
 
-#: src/virsh.c:2037
+#: src/virsh.c:2052
 msgid "CPU model:"
 msgstr "Model CPU:"
 
-#: src/virsh.c:2039
+#: src/virsh.c:2054
 #, fuzzy
 msgid "CPU frequency:"
 msgstr "Monitor frekuensi CPU"
 
-#: src/virsh.c:2040
+#: src/virsh.c:2055
 #, fuzzy
 msgid "CPU socket(s):"
 msgstr "#1 socket() gagal."
 
-#: src/virsh.c:2041
+#: src/virsh.c:2056
 #, fuzzy
 msgid "Core(s) per socket:"
 msgstr "Ralat mencipta soket"
 
-#: src/virsh.c:2042
+#: src/virsh.c:2057
 #, fuzzy
 msgid "Thread(s) per core:"
 msgstr "Direktori Lambakan _Core :"
 
-#: src/virsh.c:2043
+#: src/virsh.c:2058
 msgid "NUMA cell(s):"
 msgstr ""
 
-#: src/virsh.c:2044
+#: src/virsh.c:2059
 #, fuzzy
 msgid "Memory size:"
 msgstr "Saiz _memori tersendiri"
 
-#: src/virsh.c:2054
+#: src/virsh.c:2069
 msgid "capabilities"
 msgstr ""
 
-#: src/virsh.c:2055
+#: src/virsh.c:2070
 msgid "Returns capabilities of hypervisor/driver."
 msgstr ""
 
-#: src/virsh.c:2068
+#: src/virsh.c:2083
 #, fuzzy
 msgid "failed to get capabilities"
 msgstr "gagal mendapatkan atribut bagi %s"
 
-#: src/virsh.c:2081
+#: src/virsh.c:2096
 #, fuzzy
 msgid "domain information in XML"
 msgstr "Sila isikan maklumat pengesahan"
 
-#: src/virsh.c:2082
+#: src/virsh.c:2097
 #, fuzzy
 msgid "Output the domain information as an XML dump to stdout."
 msgstr "Sila isikan maklumat pengesahan"
 
-#: src/virsh.c:2121
+#: src/virsh.c:2136
 msgid "convert a domain id or UUID to domain name"
 msgstr ""
 
-#: src/virsh.c:2126
+#: src/virsh.c:2141
 msgid "domain id or uuid"
 msgstr ""
 
-#: src/virsh.c:2151
+#: src/virsh.c:2166
 msgid "convert a domain name or UUID to domain id"
 msgstr ""
 
-#: src/virsh.c:2186
+#: src/virsh.c:2201
 msgid "convert a domain name or id to domain UUID"
 msgstr ""
 
-#: src/virsh.c:2191
+#: src/virsh.c:2206
 #, fuzzy
 msgid "domain id or name"
 msgstr ""
 "Pengunaan: %s FAIL\n"
 "    atau: %s OPSYEN\n"
 
-#: src/virsh.c:2210
+#: src/virsh.c:2225
 msgid "failed to get domain UUID"
 msgstr ""
 
-#: src/virsh.c:2220
+#: src/virsh.c:2235
 msgid "migrate domain to another host"
 msgstr ""
 
-#: src/virsh.c:2221
+#: src/virsh.c:2236
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
 
-#: src/virsh.c:2226
+#: src/virsh.c:2241
 #, fuzzy
 msgid "live migration"
 msgstr "Maklumat tidak sah"
 
-#: src/virsh.c:2228
+#: src/virsh.c:2243
 #, fuzzy
 msgid "connection URI of the destination host"
 msgstr "Tidak dapat menyambung ke RHN..."
 
-#: src/virsh.c:2229
+#: src/virsh.c:2244
 msgid "migration URI, usually can be omitted"
 msgstr ""
 
-#: src/virsh.c:2251
+#: src/virsh.c:2266
 msgid "migrate: Missing desturi"
 msgstr ""
 
-#: src/virsh.c:2283
+#: src/virsh.c:2298
 #, fuzzy
 msgid "autostart a network"
 msgstr "Konfigurasi Rangkaian"
 
-#: src/virsh.c:2285
+#: src/virsh.c:2300
 msgid "Configure a network to be automatically started at boot."
 msgstr ""
 
-#: src/virsh.c:2290 src/virsh.c:2715
+#: src/virsh.c:2305 src/virsh.c:2730
 #, fuzzy
 msgid "network name or uuid"
 msgstr ""
 "Pengunaan: %s FAIL\n"
 "    atau: %s OPSYEN\n"
 
-#: src/virsh.c:2312
+#: src/virsh.c:2327
 #, fuzzy, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "gagal untuk menyimpan kandungan"
 
-#: src/virsh.c:2315
+#: src/virsh.c:2330
 #, fuzzy, c-format
 msgid "failed to unmark network %s as autostarted"
 msgstr "gagal untuk menyimpan kandungan"
 
-#: src/virsh.c:2322
+#: src/virsh.c:2337
 #, fuzzy, c-format
 msgid "Network %s marked as autostarted\n"
 msgstr "Automounter dimulakan: %s\n"
 
-#: src/virsh.c:2324
+#: src/virsh.c:2339
 #, fuzzy, c-format
 msgid "Network %s unmarked as autostarted\n"
 msgstr "Automounter dimulakan: %s\n"
 
-#: src/virsh.c:2334
+#: src/virsh.c:2349
 msgid "create a network from an XML file"
 msgstr ""
 
-#: src/virsh.c:2335
+#: src/virsh.c:2350
 #, fuzzy
 msgid "Create a network."
 msgstr "Konfigurasi Rangkaian"
 
-#: src/virsh.c:2340 src/virsh.c:2388
+#: src/virsh.c:2355 src/virsh.c:2403
 msgid "file containing an XML network description"
 msgstr ""
 
-#: src/virsh.c:2367
+#: src/virsh.c:2382
 #, fuzzy, c-format
 msgid "Network %s created from %s\n"
 msgstr "Benarkan hos dari:"
 
-#: src/virsh.c:2370
+#: src/virsh.c:2385
 #, fuzzy, c-format
 msgid "Failed to create network from %s"
 msgstr "Gagal untuk memuatkan cakera pemandu daripada fail."
 
-#: src/virsh.c:2382
+#: src/virsh.c:2397
 msgid "define (but don't start) a network from an XML file"
 msgstr ""
 
-#: src/virsh.c:2383
+#: src/virsh.c:2398
 #, fuzzy
 msgid "Define a network."
 msgstr "Konfigurasi Rangkaian"
 
-#: src/virsh.c:2415
+#: src/virsh.c:2430
 #, fuzzy, c-format
 msgid "Network %s defined from %s\n"
 msgstr "Benarkan hos dari:"
 
-#: src/virsh.c:2418
+#: src/virsh.c:2433
 #, fuzzy, c-format
 msgid "Failed to define network from %s"
 msgstr "Gagal untuk memuatkan cakera pemandu daripada fail."
 
-#: src/virsh.c:2430
+#: src/virsh.c:2445
 #, fuzzy
 msgid "destroy a network"
 msgstr "Konfigurasi Rangkaian"
 
-#: src/virsh.c:2431
+#: src/virsh.c:2446
 #, fuzzy
 msgid "Destroy a given network."
 msgstr "Konfigurasi Rangkaian bagi %s"
 
-#: src/virsh.c:2436 src/virsh.c:2476
+#: src/virsh.c:2451 src/virsh.c:2491
 #, fuzzy
 msgid "network name, id or uuid"
 msgstr ""
 "Pengunaan: %s FAIL\n"
 "    atau: %s OPSYEN\n"
 
-#: src/virsh.c:2454
+#: src/virsh.c:2469
 #, fuzzy, c-format
 msgid "Network %s destroyed\n"
 msgstr "Konfigurasi Rangkaian"
 
-#: src/virsh.c:2456
+#: src/virsh.c:2471
 #, fuzzy, c-format
 msgid "Failed to destroy network %s"
 msgstr "akses ke alatan rangkaian"
 
-#: src/virsh.c:2470
+#: src/virsh.c:2485
 #, fuzzy
 msgid "network information in XML"
 msgstr "Sila penuhkan maklumat rangkaian"
 
-#: src/virsh.c:2471
+#: src/virsh.c:2486
 #, fuzzy
 msgid "Output the network information as an XML dump to stdout."
 msgstr "Sila penuhkan maklumat rangkaian"
 
-#: src/virsh.c:2511
+#: src/virsh.c:2526
 #, fuzzy
 msgid "list networks"
 msgstr "Senarai Dibenarkan"
 
-#: src/virsh.c:2512
+#: src/virsh.c:2527
 #, fuzzy
 msgid "Returns list of networks."
 msgstr "Cari rangkaian tanpawayar"
 
-#: src/virsh.c:2517
+#: src/virsh.c:2532
 #, fuzzy
 msgid "list inactive networks"
 msgstr "Cari rangkaian tanpawayar"
 
-#: src/virsh.c:2518
+#: src/virsh.c:2533
 #, fuzzy
 msgid "list inactive & active networks"
 msgstr "penggunaan:   %s --list [nama]\n"
 
-#: src/virsh.c:2538 src/virsh.c:2546
+#: src/virsh.c:2553 src/virsh.c:2561
 #, fuzzy
 msgid "Failed to list active networks"
 msgstr "gagal untuk menyimpan kandungan"
 
-#: src/virsh.c:2557 src/virsh.c:2566
+#: src/virsh.c:2572 src/virsh.c:2581
 #, fuzzy
 msgid "Failed to list inactive networks"
 msgstr "gagal untuk menyimpan kandungan"
 
-#: src/virsh.c:2576
+#: src/virsh.c:2591
 msgid "Autostart"
 msgstr ""
 
-#: src/virsh.c:2591 src/virsh.c:2614
+#: src/virsh.c:2606 src/virsh.c:2629
 #, fuzzy
 msgid "no autostart"
 msgstr "Tiada katalaluan"
 
-#: src/virsh.c:2597
+#: src/virsh.c:2612
 #, fuzzy
 msgid "active"
 msgstr "Aktif"
 
-#: src/virsh.c:2620
+#: src/virsh.c:2635
 #, fuzzy
 msgid "inactive"
 msgstr "tidak aktif"
 
-#: src/virsh.c:2639
+#: src/virsh.c:2654
 msgid "convert a network UUID to network name"
 msgstr ""
 
-#: src/virsh.c:2670
+#: src/virsh.c:2685
 msgid "start a (previously defined) inactive network"
 msgstr ""
 
-#: src/virsh.c:2671
+#: src/virsh.c:2686
 #, fuzzy
 msgid "Start a network."
 msgstr "Konfigurasi Rangkaian"
 
-#: src/virsh.c:2676
+#: src/virsh.c:2691
 #, fuzzy
 msgid "name of the inactive network"
 msgstr "Konfigurasi Rangkaian bagi %s"
 
-#: src/virsh.c:2693
+#: src/virsh.c:2708
 #, fuzzy, c-format
 msgid "Network %s started\n"
 msgstr "[Rangkaian tidak dimulakan]\n"
 
-#: src/virsh.c:2696
+#: src/virsh.c:2711
 #, fuzzy, c-format
 msgid "Failed to start network %s"
 msgstr "Ralat, tidak dapat memulakan pelayan X."
 
-#: src/virsh.c:2709
+#: src/virsh.c:2724
 #, fuzzy
 msgid "undefine an inactive network"
 msgstr "Konfigurasi Rangkaian bagi %s"
 
-#: src/virsh.c:2710
+#: src/virsh.c:2725
 msgid "Undefine the configuration for an inactive network."
 msgstr ""
 
-#: src/virsh.c:2733
+#: src/virsh.c:2748
 #, fuzzy, c-format
 msgid "Network %s has been undefined\n"
 msgstr "%s: Direktori telah ditukarnama"
 
-#: src/virsh.c:2735
+#: src/virsh.c:2750
 #, fuzzy, c-format
 msgid "Failed to undefine network %s"
 msgstr "akses ke alatan rangkaian"
 
-#: src/virsh.c:2748
+#: src/virsh.c:2763
 msgid "convert a network name to network UUID"
 msgstr ""
 
-#: src/virsh.c:2773
+#: src/virsh.c:2788
 #, fuzzy
 msgid "failed to get network UUID"
 msgstr "Gagal menukar maklumat usia untuk %s: %s\n"
 
-#: src/virsh.c:2784
+#: src/virsh.c:2799
 #, fuzzy
 msgid "show version"
 msgstr "versi alternatif %s\n"
 
-#: src/virsh.c:2785
+#: src/virsh.c:2800
 #, fuzzy
 msgid "Display the system version information."
 msgstr "Maklumat sistem bunyi ALSA"
 
-#: src/virsh.c:2808
+#: src/virsh.c:2823
 msgid "failed to get hypervisor type"
 msgstr ""
 
-#: src/virsh.c:2817
+#: src/virsh.c:2832
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr ""
 
-#: src/virsh.c:2822
+#: src/virsh.c:2837
 msgid "failed to get the library version"
 msgstr ""
 
-#: src/virsh.c:2829
+#: src/virsh.c:2844
 #, fuzzy, c-format
 msgid "Using library: libvir %d.%d.%d\n"
 msgstr "Pustaka pemeriksaan katalaluan."
 
-#: src/virsh.c:2836
+#: src/virsh.c:2851
 #, fuzzy, c-format
 msgid "Using API: %s %d.%d.%d\n"
 msgstr "Guna KFeeder"
 
-#: src/virsh.c:2841
+#: src/virsh.c:2856
 msgid "failed to get the hypervisor version"
 msgstr ""
 
-#: src/virsh.c:2846
+#: src/virsh.c:2861
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr ""
 
-#: src/virsh.c:2853
+#: src/virsh.c:2868
 #, fuzzy, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "%s terlaksana.\n"
 
-#: src/virsh.c:2864
+#: src/virsh.c:2879
 #, fuzzy
 msgid "print the hypervisor hostname"
 msgstr "tak dapat menentukan namahos"
 
-#: src/virsh.c:2878
+#: src/virsh.c:2893
 #, fuzzy
 msgid "failed to get hostname"
 msgstr "gagal mendapatkan atribut bagi %s"
 
-#: src/virsh.c:2893
+#: src/virsh.c:2908
 #, fuzzy
 msgid "print the hypervisor canonical URI"
 msgstr "Permintaan per Sambungan"
 
-#: src/virsh.c:2907
+#: src/virsh.c:2922
 #, fuzzy
 msgid "failed to get URI"
 msgstr "gagal mendapatkan atribut bagi %s"
 
-#: src/virsh.c:2922
+#: src/virsh.c:2937
 #, fuzzy
 msgid "vnc display"
 msgstr "Pengurus Paparan X."
 
-#: src/virsh.c:2923
+#: src/virsh.c:2938
 msgid "Output the IP address and port number for the VNC display."
 msgstr ""
 
-#: src/virsh.c:3000
+#: src/virsh.c:3015
 msgid "tty console"
 msgstr ""
 
-#: src/virsh.c:3001
+#: src/virsh.c:3016
 msgid "Output the device for the TTY console."
 msgstr ""
 
-#: src/virsh.c:3063
+#: src/virsh.c:3078
 msgid "attach device from an XML file"
 msgstr ""
 
-#: src/virsh.c:3064
+#: src/virsh.c:3079
 msgid "Attach device from an XML <file>."
 msgstr ""
 
-#: src/virsh.c:3070 src/virsh.c:3124
+#: src/virsh.c:3085 src/virsh.c:3139
 #, fuzzy
 msgid "XML file"
 msgstr "Menyalin Fail"
 
-#: src/virsh.c:3102
+#: src/virsh.c:3117
 #, fuzzy, c-format
 msgid "Failed to attach device from %s"
 msgstr "Gagal menaikkan ${DEVICE}."
 
-#: src/virsh.c:3117
+#: src/virsh.c:3132
 msgid "detach device from an XML file"
 msgstr ""
 
-#: src/virsh.c:3118
+#: src/virsh.c:3133
 msgid "Detach device from an XML <file>"
 msgstr ""
 
-#: src/virsh.c:3156
+#: src/virsh.c:3171
 #, fuzzy, c-format
 msgid "Failed to detach device from %s"
 msgstr "Gagal menaikkan ${DEVICE}."
 
-#: src/virsh.c:3171
+#: src/virsh.c:3186
 #, fuzzy
 msgid "attach network interface"
 msgstr "Ulangtetap antaramuka rangkaian"
 
-#: src/virsh.c:3172
+#: src/virsh.c:3187
 #, fuzzy
 msgid "Attach new network interface."
 msgstr "Mengesan melalui antaramuka rangkaian:"
 
-#: src/virsh.c:3178 src/virsh.c:3294
+#: src/virsh.c:3193 src/virsh.c:3309
 #, fuzzy
 msgid "network interface type"
 msgstr "Ulangtetap antaramuka rangkaian"
 
-#: src/virsh.c:3179
+#: src/virsh.c:3194
 #, fuzzy
 msgid "source of network interface"
 msgstr "Ulangtetap antaramuka rangkaian"
 
-#: src/virsh.c:3180
+#: src/virsh.c:3195
 #, fuzzy
 msgid "target network name"
 msgstr "Nama Volum _Logikal:"
 
-#: src/virsh.c:3181 src/virsh.c:3295
+#: src/virsh.c:3196 src/virsh.c:3310
 #, fuzzy
 msgid "MAC adress"
 msgstr "Alamat MAC"
 
-#: src/virsh.c:3182
+#: src/virsh.c:3197
 msgid "script used to bridge network interface"
 msgstr ""
 
-#: src/virsh.c:3214
+#: src/virsh.c:3229
 #, c-format
 msgid "No support %s in command 'attach-interface'"
 msgstr ""
 
-#: src/virsh.c:3287
+#: src/virsh.c:3302
 #, fuzzy
 msgid "detach network interface"
 msgstr "Ulangtetap antaramuka rangkaian"
 
-#: src/virsh.c:3288
+#: src/virsh.c:3303
 #, fuzzy
 msgid "Detach network interface."
 msgstr "Ulangtetap antaramuka rangkaian"
 
-#: src/virsh.c:3333 src/virsh.c:3338
+#: src/virsh.c:3348 src/virsh.c:3353
 #, fuzzy
 msgid "Failed to get interface information"
 msgstr "Gagal menukar maklumat usia untuk %s: %s\n"
 
-#: src/virsh.c:3346
+#: src/virsh.c:3361
 #, c-format
 msgid "No found interface whose type is %s"
 msgstr ""
 
-#: src/virsh.c:3368
+#: src/virsh.c:3383
 #, c-format
 msgid "No found interface whose MAC address is %s"
 msgstr ""
 
-#: src/virsh.c:3374 src/virsh.c:3652
+#: src/virsh.c:3389 src/virsh.c:3667
 #, fuzzy
 msgid "Failed to allocate memory"
 msgstr "malloc() gagal. Tidak dapat memperuntukkan memori yang cukup."
 
-#: src/virsh.c:3379 src/virsh.c:3657
+#: src/virsh.c:3394 src/virsh.c:3672
 #, fuzzy
 msgid "Failed to create XML"
 msgstr "Gagal mencipta direktori %s"
 
-#: src/virsh.c:3408
+#: src/virsh.c:3423
 #, fuzzy
 msgid "attach disk device"
 msgstr "Jadikan Peranti RAID."
 
-#: src/virsh.c:3409
+#: src/virsh.c:3424
 #, fuzzy
 msgid "Attach new disk device."
 msgstr "Tambah Jenis Peranti baru"
 
-#: src/virsh.c:3415
+#: src/virsh.c:3430
 #, fuzzy
 msgid "source of disk device"
 msgstr "Sumber Cekera Jurupacu"
 
-#: src/virsh.c:3416 src/virsh.c:3580
+#: src/virsh.c:3431 src/virsh.c:3595
 #, fuzzy
 msgid "target of disk device"
 msgstr "Jadikan Peranti RAID."
 
-#: src/virsh.c:3417
+#: src/virsh.c:3432
 #, fuzzy
 msgid "driver of disk device"
 msgstr "Membaca cakera jurupacu..."
 
-#: src/virsh.c:3418
+#: src/virsh.c:3433
 #, fuzzy
 msgid "subdriver of disk device"
 msgstr "Jadikan Peranti RAID."
 
-#: src/virsh.c:3419
+#: src/virsh.c:3434
 #, fuzzy
 msgid "target device type"
 msgstr "Pilih Jenis Peranti"
 
-#: src/virsh.c:3420
+#: src/virsh.c:3435
 msgid "mode of device reading and writing"
 msgstr ""
 
-#: src/virsh.c:3451 src/virsh.c:3460 src/virsh.c:3467
+#: src/virsh.c:3466 src/virsh.c:3475 src/virsh.c:3482
 #, c-format
 msgid "No support %s in command 'attach-disk'"
 msgstr ""
 
-#: src/virsh.c:3573
+#: src/virsh.c:3588
 #, fuzzy
 msgid "detach disk device"
 msgstr "Jadikan Peranti RAID."
 
-#: src/virsh.c:3574
+#: src/virsh.c:3589
 #, fuzzy
 msgid "Detach disk device."
 msgstr "Jadikan Peranti RAID."
 
-#: src/virsh.c:3615 src/virsh.c:3620 src/virsh.c:3627
+#: src/virsh.c:3630 src/virsh.c:3635 src/virsh.c:3642
 #, fuzzy
 msgid "Failed to get disk information"
 msgstr "Gagal untuk melekapkan cakera jurupacu"
 
-#: src/virsh.c:3646
+#: src/virsh.c:3661
 #, c-format
 msgid "No found disk whose target is %s"
 msgstr ""
 
-#: src/virsh.c:3686
+#: src/virsh.c:3701
 msgid "quit this interactive terminal"
 msgstr ""
 
-#: src/virsh.c:3827
+#: src/virsh.c:3842
 #, fuzzy, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "Ralat Pilihan s s"
 
-#: src/virsh.c:3828
+#: src/virsh.c:3843
 #, fuzzy, c-format
 msgid "command '%s' requires --%s option"
 msgstr "Ralat Pilihan s s"
 
-#: src/virsh.c:3855
+#: src/virsh.c:3870
 #, fuzzy, c-format
 msgid "command '%s' doesn't exist"
 msgstr "Peranti '$device' tidak wujud"
 
-#: src/virsh.c:3863
+#: src/virsh.c:3878
 #, fuzzy
 msgid "  NAME\n"
 msgstr " Nama   : "
 
-#: src/virsh.c:3867
+#: src/virsh.c:3882
 msgid ""
 "\n"
 "  SYNOPSIS\n"
@@ -2171,7 +2175,7 @@ msgstr ""
 "\n"
 "  SINOPSIS\n"
 
-#: src/virsh.c:3874
+#: src/virsh.c:3889
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -2179,7 +2183,7 @@ msgstr ""
 "\n"
 "  HURAIAN\n"
 
-#: src/virsh.c:3878
+#: src/virsh.c:3893
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -2187,35 +2191,35 @@ msgstr ""
 "\n"
 "  PILIHAN\n"
 
-#: src/virsh.c:3885
+#: src/virsh.c:3900
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <number>"
 
-#: src/virsh.c:3887
+#: src/virsh.c:3902
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <string>"
 
-#: src/virsh.c:4006
+#: src/virsh.c:4021
 msgid "undefined domain name or id"
 msgstr ""
 
-#: src/virsh.c:4038
+#: src/virsh.c:4053
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "gagal untuk mendapatkan domain '%s'"
 
-#: src/virsh.c:4051
+#: src/virsh.c:4066
 msgid "undefined network name"
 msgstr "nama rangkaian tidak ditakrif"
 
-#: src/virsh.c:4075
+#: src/virsh.c:4090
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "gagal untuk mendapatkan rangkaian '%s'"
 
-#: src/virsh.c:4103
+#: src/virsh.c:4118
 #, c-format
 msgid ""
 "\n"
@@ -2226,128 +2230,128 @@ msgstr ""
 "(Masa: %.3f ms)\n"
 "\n"
 
-#: src/virsh.c:4177
+#: src/virsh.c:4192
 msgid "missing \""
 msgstr "hilang \""
 
-#: src/virsh.c:4238
+#: src/virsh.c:4253
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "token tidak dijangka (nama arahan): '%s'"
 
-#: src/virsh.c:4243
+#: src/virsh.c:4258
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "arahan tidak diketahui: '%s'"
 
-#: src/virsh.c:4250
+#: src/virsh.c:4265
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "arahan '%s' tidak menyokong pilihan --%s"
 
-#: src/virsh.c:4265
+#: src/virsh.c:4280
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "sintaks dijangka: --%s <%s>"
 
-#: src/virsh.c:4268
+#: src/virsh.c:4283
 msgid "number"
 msgstr "nombor"
 
-#: src/virsh.c:4268
+#: src/virsh.c:4283
 msgid "string"
 msgstr "rentetan"
 
-#: src/virsh.c:4274
+#: src/virsh.c:4289
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "data tidak dijangka '%s'"
 
-#: src/virsh.c:4296
+#: src/virsh.c:4311
 msgid "OPTION"
 msgstr "PILIHAN"
 
-#: src/virsh.c:4296
+#: src/virsh.c:4311
 msgid "DATA"
 msgstr "DATA"
 
-#: src/virsh.c:4346 src/virsh.c:4372
+#: src/virsh.c:4361 src/virsh.c:4387
 msgid "running"
 msgstr "terlaksana"
 
-#: src/virsh.c:4348 src/virsh.c:4370
+#: src/virsh.c:4363 src/virsh.c:4385
 msgid "blocked"
 msgstr ""
 
-#: src/virsh.c:4350
+#: src/virsh.c:4365
 msgid "paused"
 msgstr ""
 
-#: src/virsh.c:4352
+#: src/virsh.c:4367
 msgid "in shutdown"
 msgstr "dalam dimatikan"
 
-#: src/virsh.c:4354
+#: src/virsh.c:4369
 msgid "shut off"
 msgstr "matikan"
 
-#: src/virsh.c:4356
+#: src/virsh.c:4371
 msgid "crashed"
 msgstr ""
 
-#: src/virsh.c:4368
+#: src/virsh.c:4383
 msgid "offline"
 msgstr "luartalian"
 
-#: src/virsh.c:4387
+#: src/virsh.c:4402
 msgid "no valid connection"
 msgstr "tiada sambungan sah"
 
-#: src/virsh.c:4434
+#: src/virsh.c:4449
 #, c-format
 msgid "%s: error: "
 msgstr "%s: ralat:"
 
-#: src/virsh.c:4436
+#: src/virsh.c:4451
 msgid "error: "
 msgstr "ralat:"
 
-#: src/virsh.c:4458 src/virsh.c:4470 src/virsh.c:4483
+#: src/virsh.c:4473 src/virsh.c:4485 src/virsh.c:4498
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: gagal untuk mengumpukkan %d byte"
 
-#: src/virsh.c:4497
+#: src/virsh.c:4512
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "%s: %d: gagal untuk mengumpukkan %lu byte"
 
-#: src/virsh.c:4533
+#: src/virsh.c:4552
 msgid "failed to connect to the hypervisor"
 msgstr "gala untuk menyambung ke hipervisor"
 
-#: src/virsh.c:4559
+#: src/virsh.c:4583
 msgid "failed to get the log file information"
 msgstr "gagal untuk mendapatkan maklumat fail log"
 
-#: src/virsh.c:4564
+#: src/virsh.c:4588
 msgid "the log path is not a file"
 msgstr "laluan log adalah bukan fail"
 
-#: src/virsh.c:4570
+#: src/virsh.c:4594
 msgid "failed to open the log file. check the log file path"
 msgstr ""
 
-#: src/virsh.c:4638
+#: src/virsh.c:4662
 msgid "failed to write the log file"
 msgstr "gagal untuk menulis ke fail log"
 
-#: src/virsh.c:4653
+#: src/virsh.c:4677
 #, fuzzy, c-format
 msgid "%s: failed to write log file: %s"
 msgstr "gagal untuk menulis ke fail log"
 
-#: src/virsh.c:4849
+#: src/virsh.c:4873
 #, c-format
 msgid ""
 "\n"
@@ -2366,7 +2370,7 @@ msgid ""
 "  commands (non interactive mode):\n"
 msgstr ""
 
-#: src/virsh.c:4867
+#: src/virsh.c:4891
 #, c-format
 msgid ""
 "\n"
@@ -2374,19 +2378,19 @@ msgid ""
 "\n"
 msgstr ""
 
-#: src/virsh.c:4963
+#: src/virsh.c:4987
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr ""
 
-#: src/virsh.c:5049
+#: src/virsh.c:5073
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
 msgstr ""
 
-#: src/virsh.c:5052
+#: src/virsh.c:5076
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
@@ -2446,47 +2450,47 @@ msgstr "gagal untuk menyimpan kandungan"
 msgid "failed to connect to Xen Store"
 msgstr ""
 
-#: src/proxy_internal.c:194
+#: src/proxy_internal.c:196
 #, c-format
 msgid "failed to exec %s\n"
 msgstr "gagal untuk melaksanakan %s\n"
 
-#: src/proxy_internal.c:288
+#: src/proxy_internal.c:290
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr "Gagal untuk menutup soket %d\n"
 
-#: src/proxy_internal.c:321
+#: src/proxy_internal.c:323
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr "Gagal untuk membaca soket %d\n"
 
-#: src/proxy_internal.c:355
+#: src/proxy_internal.c:357
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr "Gagal untuk menulis ke soket %d\n"
 
-#: src/proxy_internal.c:447 src/proxy_internal.c:468 src/proxy_internal.c:488
+#: src/proxy_internal.c:449 src/proxy_internal.c:470 src/proxy_internal.c:490
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr ""
 
-#: src/proxy_internal.c:455
+#: src/proxy_internal.c:457
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr ""
 
-#: src/proxy_internal.c:477
+#: src/proxy_internal.c:479
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr ""
 
-#: src/proxy_internal.c:501
+#: src/proxy_internal.c:503
 #, c-format
 msgid "Communication error with proxy: malformed packet\n"
 msgstr ""
 
-#: src/proxy_internal.c:507
+#: src/proxy_internal.c:509
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr ""
