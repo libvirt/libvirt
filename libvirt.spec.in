@@ -24,6 +24,9 @@ Requires: ncurses
 Requires: dnsmasq
 Requires: bridge-utils
 Requires: iptables
+# So remote clients can access libvirt over SSH tunnel
+# (client invokes 'nc' against the UNIX socket on the server)
+Requires: nc
 Requires: cyrus-sasl
 # Not technically required, but makes 'out-of-box' config
 # work correctly & doesn't have onerous dependancies

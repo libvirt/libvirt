@@ -1,4 +1,8 @@
-Mon Dec 17 18:03:00 UTC 2007 Daniel P. Berrange <berrange@redhat.com>
+Mon Dec 17 18:04:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* libvirt.spec.in: Added dep on 'nc'
+
+Mon Dec 17 18:03:00 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c: Compatability with Xen 3.2.0 changed
 	fields for physinfo data used by virNodeInfoPtr.
