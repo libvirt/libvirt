@@ -1,3 +1,9 @@
+Mon Dec 17 17:38:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	Fix remote_internal.c error handling of qparam_get_query
+	* src/remote_internal.c: Fixed reversed check of error handling
+	  of qparam_get_query call (Dan Berrange).
+
 Mon Dec 17 10:05:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	Add separate qparams module for handling query parameters.

@@ -455,7 +455,7 @@ doRemoteOpen (virConnectPtr conn,
 #else
          uri->query =
 #endif
-         qparam_get_query (vars)) != 0) goto failed;
+         qparam_get_query (vars)) == NULL) goto failed;
 
     free_qparam_set (vars);
 
