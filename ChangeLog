@@ -1,3 +1,10 @@
+Mon Dec 17 10:01:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	Add extra utility functions to buf.c
+	* src/buf.c, src/buf.h: Added utility functions
+	  virBufferURIEncodeString and virBufferAddChar to the
+	  buffer module.
+
 Sat Dec 15 12:12:14 EST 2007 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/libvirt.c: Return error code if passed unsupported
