@@ -74,10 +74,10 @@
 
 #include "internal.h"
 #include "driver.h"
+#include "buf.h"
+#include "qparams.h"
 #include "remote_internal.h"
 #include "remote_protocol.h"
-
-#define DEBUG 0                 /* Enable verbose messages on stderr. */
 
 /* Per-connection private data. */
 #define MAGIC 999               /* private_data->magic if OK */
@@ -151,22 +151,6 @@ static void make_nonnull_network (remote_nonnull_network *net_dst, virNetworkPtr
 
 /* Helper functions for remoteOpen. */
 static char *get_transport_from_scheme (char *scheme);
-
-/* Parse query string. */
-struct query_fields {
-    struct query_fields *next;	/* Linked list chain. */
-    char *name;			/* Field name (unescaped). */
-    char *value;		/* Field value (unescaped). */
-    int ignore;			/* Ignore field in query_create. */
-};
-
-static int query_parse (const char *query,
-                        const char *separator,
-                        struct query_fields * *fields_out);
-static int query_create (const struct query_fields *fields,
-                         const char *separator,
-                         char **query_out);
-static void query_free (struct query_fields *fields);
 
 /* GnuTLS functions used by remoteOpen. */
 static int initialise_gnutls (virConnectPtr conn);
@@ -403,55 +387,59 @@ doRemoteOpen (virConnectPtr conn,
      * feasibly it might contain variables needed by the real driver,
      * although that won't be the case for now).
      */
-    struct query_fields *vars, *var;
+    struct qparam_set *vars;
+    struct qparam *var;
+    int i;
     char *query;
 #ifdef HAVE_XMLURI_QUERY_RAW
     query = uri->query_raw;
 #else
     query = uri->query;
 #endif
-    if (query_parse (query, NULL, &vars) != 0) goto failed;
+    vars = qparam_query_parse (query);
+    if (vars == NULL) goto failed;
 
-    for (var = vars; var; var = var->next) {
-        if (strcasecmp (var->name, "name") == 0) {
+    for (i = 0; i < vars->n; i++) {
+        var = &vars->p[i];
+        if (STRCASEEQ (var->name, "name")) {
             name = strdup (var->value);
             if (!name) goto out_of_memory;
             var->ignore = 1;
-        } else if (strcasecmp (var->name, "command") == 0) {
+        } else if (STRCASEEQ (var->name, "command")) {
             command = strdup (var->value);
             if (!command) goto out_of_memory;
             var->ignore = 1;
-        } else if (strcasecmp (var->name, "socket") == 0) {
+        } else if (STRCASEEQ (var->name, "socket")) {
             sockname = strdup (var->value);
             if (!sockname) goto out_of_memory;
             var->ignore = 1;
-        } else if (strcasecmp (var->name, "auth") == 0) {
+        } else if (STRCASEEQ (var->name, "auth")) {
             authtype = strdup (var->value);
             if (!authtype) goto out_of_memory;
             var->ignore = 1;
-        } else if (strcasecmp (var->name, "netcat") == 0) {
+        } else if (STRCASEEQ (var->name, "netcat")) {
             netcat = strdup (var->value);
             if (!netcat) goto out_of_memory;
             var->ignore = 1;
-        } else if (strcasecmp (var->name, "no_verify") == 0) {
+        } else if (STRCASEEQ (var->name, "no_verify")) {
             no_verify = atoi (var->value);
             var->ignore = 1;
-        } else if (strcasecmp (var->name, "no_tty") == 0) {
+        } else if (STRCASEEQ (var->name, "no_tty")) {
             no_tty = atoi (var->value);
             var->ignore = 1;
-        } else if (strcasecmp (var->name, "debug") == 0) {
+        } else if (STRCASEEQ (var->name, "debug")) {
             if (var->value &&
-                strcasecmp(var->value, "stdout") == 0)
+                STRCASEEQ (var->value, "stdout"))
                 priv->debugLog = stdout;
             else
                 priv->debugLog = stderr;
         }
-#if DEBUG
+#ifdef ENABLE_DEBUG
         else
             fprintf (stderr,
                      "remoteOpen: "
-                     "passing through variable '%s' to remote end\n",
-                     var->name);
+                     "passing through variable '%s' ('%s') to remote end\n",
+                     var->name, var->value);
 #endif
     }
 
@@ -461,14 +449,15 @@ doRemoteOpen (virConnectPtr conn,
     if (uri->query) xmlFree (uri->query);
 #endif
 
-    if (query_create (vars, NULL,
+    if ((
 #ifdef HAVE_XMLURI_QUERY_RAW
-                      &uri->query_raw
+         uri->query_raw =
 #else
-                      &uri->query
+         uri->query =
 #endif
-                      ) != 0) goto failed;
-    query_free (vars);
+         qparam_get_query (vars)) != 0) goto failed;
+
+    free_qparam_set (vars);
 
     /* For ext transport, command is required. */
     if (transport == trans_ext && !command) {
@@ -496,7 +485,7 @@ doRemoteOpen (virConnectPtr conn,
     }
 
     assert (name);
-#if DEBUG
+#ifdef ENABLE_DEBUG
     fprintf (stderr, "remoteOpen: proceeding with name = %s\n", name);
 #endif
 
@@ -882,179 +871,6 @@ get_transport_from_scheme (char *scheme)
     return p ? p+1 : 0;
 }
 
-static int
-query_create (const struct query_fields *fields,
-              const char *separator,
-              char **query_out)
-{
-    /* List of characters which are safe inside names or values,
-     * apart from '@', IS_MARK and IS_ALPHANUM.  Best to escape
-     * as much as possible.  Certainly '=', '&' and '#' must NEVER
-     * be added to this list.
-     */
-    static const xmlChar *special_chars = BAD_CAST "";
-
-    int append_sep = 0, sep_len;
-    xmlBufferPtr buf;
-    xmlChar *str;
-    int rv;
-
-    if (query_out) *query_out = NULL;
-    if (!fields) return 0;
-
-    if (separator == NULL) {
-	separator = "&";
-	sep_len = 1;
-    } else
-	sep_len = xmlStrlen (BAD_CAST separator);
-
-    buf = xmlBufferCreate ();
-    if (!buf) return -1;
-
-    rv = 0;
-    while (fields) {
-	if (!fields->ignore) {
-	    if (append_sep) {
-		rv = xmlBufferAdd (buf, BAD_CAST separator, sep_len);
-		if (rv != 0) goto error;
-	    }
-	    append_sep = 1;
-
-	    str = xmlURIEscapeStr (BAD_CAST fields->name, special_chars);
-	    if (!str) { rv = XML_ERR_NO_MEMORY; goto error; }
-	    rv = xmlBufferAdd (buf, str, xmlStrlen (str));
-	    xmlFree (str);
-	    if (rv != 0) goto error;
-
-	    rv = xmlBufferAdd (buf, BAD_CAST "=", 1);
-	    if (rv != 0) goto error;
-	    str = xmlURIEscapeStr (BAD_CAST fields->value, special_chars);
-	    if (!str) { rv = XML_ERR_NO_MEMORY; goto error; }
-	    rv = xmlBufferAdd (buf, str, xmlStrlen (str));
-	    xmlFree (str);
-	    if (rv != 0) goto error;
-	}
-
-	fields = fields->next;
-    }
-
-    if (query_out && buf->content) {
-	*query_out = (char *) xmlStrdup (buf->content);
-	if (!*query_out) {
-	    rv = XML_ERR_NO_MEMORY;
-	    goto error;
-	}
-    }
-
- error:
-    if (buf)
-	xmlBufferFree (buf);
-    return rv;
-}
-
-static int
-query_parse (const char *query_,
-             const char *separator,
-             struct query_fields * *fields_out)
-{
-    struct query_fields *fields, *field, **prev;
-    int sep_len;
-    const xmlChar *query = BAD_CAST query_, *end, *eq;
-    char *name, *value;
-
-    if (fields_out) *fields_out = NULL;
-    if (!query || query[0] == '\0') return 0;
-
-    if (separator == NULL) {
-	separator = "&";
-	sep_len = 1;
-    } else
-	sep_len = xmlStrlen (BAD_CAST separator);
-
-    fields = NULL;
-    prev = &fields;
-
-    while (*query) {
-	/* Find the next separator, or end of the string. */
-	end = xmlStrstr (query, BAD_CAST separator);
-	if (!end) end = query + xmlStrlen (query);
-
-	/* Find the first '=' character between here and end. */
-	eq = xmlStrchr (query, '=');
-	if (eq && eq >= end) eq = NULL;
-
-	/* Empty section (eg. "?&"). */
-	if (end == query)
-	    goto next;
-	/* If there is no '=' character, then we have just "name"
-	 * and consistent with CGI.pm we assume value is "".
-	 */
-	else if (!eq) {
-	    name = xmlURIUnescapeString ((const char *) query,
-					 end - query, NULL);
-	    value = (char *) xmlStrdup (BAD_CAST "");
-	    if (!name || !value) goto out_of_memory;
-	}
-	/* Or if we have "name=" here (works around annoying
-	 * problem when calling xmlURIUnescapeString with len = 0).
-	 */
-	else if (eq+1 == end) {
-	    name = xmlURIUnescapeString ((const char *) query,
-					 eq - query, NULL);
-	    value = (char *) xmlStrdup (BAD_CAST "");
-	    if (!name || !value) goto out_of_memory;
-	}
-	/* If the '=' character is at the beginning then we have
-	 * "=value" and consistent with CGI.pm we _ignore_ this.
-	 */
-	else if (query == eq)
-	    goto next;
-	/* Otherwise it's "name=value". */
-	else {
-	    name = xmlURIUnescapeString ((const char *) query,
-					 eq - query, NULL);
-	    value = xmlURIUnescapeString ((const char *) eq+1,
-					  end - (eq+1), NULL);
-	    if (!name || !value) goto out_of_memory;
-	}
-
-	/* Allocate this field and append to the list. */
-	field = xmlMalloc (sizeof *field);
-	if (!field) goto out_of_memory;
-	field->next = NULL;
-	field->name = name;
-	field->value = value;
-	field->ignore = 0;
-	*prev = field;
-	prev = &field->next;
-
-    next:
-	query = end;
-	if (*query) query += sep_len; /* skip separator */
-    }
-
-    if (fields_out) *fields_out = fields;
-    return 0;
-
- out_of_memory:
-    query_free (fields);
-    return XML_ERR_NO_MEMORY;
-}
-
-static void
-query_free (struct query_fields *fields)
-{
-    struct query_fields *t;
-
-    while (fields) {
-        if (fields->name) xmlFree (fields->name);
-        if (fields->value) xmlFree (fields->value);
-        t = fields;
-        fields = fields->next;
-        xmlFree (t);
-    }
-}
-
 /* GnuTLS functions used by remoteOpen. */
 static gnutls_certificate_credentials_t x509_cred;
 
@@ -1100,7 +916,7 @@ initialise_gnutls (virConnectPtr conn)
         return -1;
 
     /* Set the trusted CA cert. */
-#if DEBUG
+#ifdef ENABLE_DEBUG
     fprintf (stderr, "loading CA file %s\n", LIBVIRT_CACERT);
 #endif
     err =
@@ -1112,7 +928,7 @@ initialise_gnutls (virConnectPtr conn)
     }
 
     /* Set the client certificate and private key. */
-#if DEBUG
+#ifdef ENABLE_DEBUG
     fprintf (stderr, "loading client cert and key from files %s and %s\n",
              LIBVIRT_CLIENTCERT, LIBVIRT_CLIENTKEY);
 #endif

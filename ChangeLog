@@ -1,3 +1,11 @@
+Mon Dec 17 10:05:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
+
+	Add separate qparams module for handling query parameters.
+	* src/qparams.c, src/qparams.h, src/Makefile.am: Added a
+	  separate 'qparams' module for handling query parameters.
+	* src/remote_internal.c: Factor out query parameter code so
+	  it uses the 'qparams' module.
+
 Mon Dec 17 10:01:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	Add extra utility functions to buf.c
