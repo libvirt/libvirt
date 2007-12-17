@@ -1,3 +1,8 @@
+Mon Dec 17 18:03:00 UTC 2007 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xend_internal.c: Compatability with Xen 3.2.0 changed
+	fields for physinfo data used by virNodeInfoPtr.
+
 Mon Dec 17 17:38:00 UTC 2007 Richard W.M. Jones <rjones@redhat.com>
 
 	Fix remote_internal.c error handling of qparam_get_query

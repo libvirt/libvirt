@@ -1288,6 +1288,8 @@ xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf
     if (hvm) {
         virBufferVSprintf(buf, "    <type>hvm</type>\n");
         tmp = sexpr_node(node, "domain/image/hvm/kernel");
+        if (tmp == NULL)
+            tmp = sexpr_node(node, "domain/image/hvm/loader");
         if (tmp == NULL && !bootloader) {
             virXendError(xend, VIR_ERR_INTERNAL_ERROR,
                          _("domain information incomplete, missing kernel & bootloader"));
@@ -1893,11 +1895,11 @@ sexpr_to_xend_node_info(struct sexpr *root, virNodeInfoPtr info)
         return (-1);
 
     machine = sexpr_node(root, "node/machine");
-    if (machine == NULL)
+    if (machine == NULL) {
         info->model[0] = 0;
-    else {
+    } else {
         snprintf(&info->model[0], sizeof(info->model) - 1, "%s", machine);
-	info->model[sizeof(info->model) - 1] = 0;
+        info->model[sizeof(info->model) - 1] = 0;
     }
     info->memory = (unsigned long) sexpr_u64(root, "node/total_memory") << 10;
 
@@ -1905,6 +1907,20 @@ sexpr_to_xend_node_info(struct sexpr *root, virNodeInfoPtr info)
     info->mhz = sexpr_int(root, "node/cpu_mhz");
     info->nodes = sexpr_int(root, "node/nr_nodes");
     info->sockets = sexpr_int(root, "node/sockets_per_node");
+    /* Xen 3.2.0 replaces sockets_per_node with 'nr_cpus'.
+     * Old Xen calculated sockets_per_node using its internal
+     * nr_cpus / (nodes*cores*threads), so fake it ourselves
+     * in the same way
+     */
+    if (info->sockets == 0) {
+        int nr_cpus = sexpr_int(root, "node/nr_cpus");
+        info->sockets = nr_cpus / (info->nodes * info->cores * info->threads);
+        /* Should already be fine, but for sanity make
+         * sure we have at least one socket
+         */
+        if (info->sockets == 0)
+            info->sockets = 1;
+    }
     info->cores = sexpr_int(root, "node/cores_per_socket");
     info->threads = sexpr_int(root, "node/threads_per_core");
     return (0);
