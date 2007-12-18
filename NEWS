@@ -5,6 +5,76 @@
        http://libvirt.org/news.html
 
 Releases
+0.4.0: Dec 18 2007:
+   - New features: Compilation on Windows cygwin/mingw (Richard Jones),
+      Ruby bindings (David Lutterkort), SASL based authentication for
+      libvirt remote support (Daniel Berrange), PolicyKit authentication
+      (Daniel Berrange)
+   - Documentation: example files for QEMU and libvirtd configuations
+      (Daniel Berrange), english cleanups (Jim Paris), CIM and OpenVZ
+      references, document <shareable/>, daemon startup when using
+      QEMU/KVM, document HV support for new NUMA calls (Richard Jones),
+      various english fixes (Bruce Montague), OCaml docs links (Richard Jones),
+      describe the various bindings add Ruby link, Windows support page
+      (Richard Jones), authentication documentation updates (Daniel Berrange)
+      
+   - Bug fixes: NUMA topology error handling (Beth Kon), NUMA topology
+      cells without CPU (Beth Kon), XML to/from XM bridge config (Daniel
+      Berrange), XM processing of vnc parameters (Daniel Berrange), Reset
+      migration source after failure (Jim Paris), negative integer in config  
+      (Tatsuro Enokura), zero terminating string buffer, detect integer
+      overflow (Jim Meyering), QEmu command line ending fixes (Daniel Berrange),
+      recursion problem in the daemon (Daniel Berrange), HVM domain with CDRom
+      (Masayuki Sunou), off by one error in NUMA cpu count (Beth Kon), 
+      avoid xend errors when adding disks (Masayuki Sunou), compile error
+      (Chris Lalancette), transposed fwrite args (Jim Meyering), compile
+      without xen and on solaris (Jim Paris), parsing of interface names
+      (Richard Jones), overflow for starts on 32bits (Daniel Berrange),
+      fix problems in error reporting (Saori Fukuta), wrong call to
+      brSetForwardDelay changed to brSetEnableSTP (Richard Jones),
+      allow shareable disk in old Xen, fix wrong certificate file (Jim
+      Meyering), avoid some startup error when non-root, off-by-1 buffer
+      NULL termination (Daniel Berrange), various string allocation fixes
+      (Daniel Berrange), avoid problems with vnetXXX interfaces in domain dumps
+      (Daniel Berrange), build fixes for RHEL (Daniel Berrange), virsh prompt
+      should not depend on uid (Richard Jones), fix scaping of '<' (Richard
+      Jones), fix detach-disk on Xen tap devices (Saori Fukuta), CPU
+      parameter setting in XM config (Saori Fukuta), credential handling
+      fixes (Daniel Berrange), fix compatibility with Xen 3.2.0 (Daniel
+      Berrange)
+      
+   - Improvements: /etc/libvirt/qemu.conf configuration for QEMU driver
+      (Daniel Berrange), NUMA cpu pinning in config files (DV and Saori Fukuta),
+      CDRom media change in KVM/QEMU (Daniel Berrange), tests for
+      <shareable/> in configs, pinning inactive domains for Xen 3.0.3
+      (Saori Fukuta), use gnulib for portability enhancement (Jim Meyering),
+      --without-libvirtd config option (Richard Jones), Python bindings for
+      NUMA, add extra utility functions to buffer (Richard Jones), 
+      separate qparams module for handling query parameters (Richard Jones)
+      
+   - Code cleanups: remove virDomainRestart from API as it was never used 
+      (Richard Jones), constify params for attach/detach APIs (Daniel Berrange),
+      gcc printf attribute checkings (Jim Meyering), refactoring of device
+      parsing code and shell escaping (Daniel Berrange), virsh schedinfo
+      parameters validation (Masayuki Sunou), Avoid risk of format string abuse
+      (Jim Meyering), integer parsing cleanups (Jim Meyering), build out
+      of the source tree (Jim Meyering), URI parsing refactoring (Richard
+      Jones), failed strdup/malloc handling (Jim Meyering), Make "make
+      distcheck" work (Jim Meyering), improve xen internall error reports
+      (Richard Jones), cleanup of the daemon remote code (Daniel Berrange),
+      rename error VIR_FROM_LINUX to VIR_FROM_STATS_LINUX (Richard Jones),
+      don't compile the proxy if without Xen (Richard Jones), fix paths when
+      configuring for /usr prefix, improve error reporting code (Jim Meyering),
+      detect heap allocation failure (Jim Meyering), disable xen sexpr parsing
+      code if Xen is disabled (Daniel Berrange), cleanup of the GetType
+      entry point for Xen drivers, move some QEmu path handling to generic
+      module (Daniel Berrange), many code cleanups related to the Windows
+      port (Richard Jones), disable the proxy if using PolicyKit, readline
+      availability detection, test libvirtd's config-processing code (Jim
+      Meyering), use a variable name as sizeof argument (Jim Meyering)
+      
+
+
 0.3.3: Sep 30 2007:
    - New features: Avahi mDNS daemon export (Daniel Berrange),
       NUMA support (Beth Kan) 
