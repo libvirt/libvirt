@@ -72,9 +72,10 @@ static int openvzDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info);
 static int openvzDomainShutdown(virDomainPtr dom);
 static int openvzDomainReboot(virDomainPtr dom, unsigned int flags);
 static int openvzDomainCreate(virDomainPtr dom);
-static virDrvOpenStatus openvzOpen(virConnectPtr conn, const char *name,
-                           int flags ATTRIBUTE_UNUSED);
-
+static virDrvOpenStatus openvzOpen(virConnectPtr conn,
+                                 xmlURIPtr uri,
+                                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                 int flags ATTRIBUTE_UNUSED);
 static int openvzClose(virConnectPtr conn);
 static const char *openvzGetType(virConnectPtr conn ATTRIBUTE_UNUSED);
 static int openvzListDomains(virConnectPtr conn, int *ids, int nids);
@@ -554,35 +555,37 @@ bail_out5:
 }
 
 static virDrvOpenStatus openvzOpen(virConnectPtr conn,
-                                   const char *name,
-                                   int *credtype ATTRIBUTE_UNUSED,
-                                   int ncredtype ATTRIBUTE_UNUSED,
-                                   virConnectAuthCallbackPtr cb ATTRIBUTE_UNUSED,
-                                   void *cbdata ATTRIBUTE_UNUSED,
-                                   int flags ATTRIBUTE_UNUSED) {
-    struct openvz_vm *vms;
+                                 xmlURIPtr uri,
+                                 virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                 int flags ATTRIBUTE_UNUSED)
+{
+   struct openvz_vm *vms;
 
-    /* Just check if the guy is root. Nothing really to open for OpenVZ */
-    if (getuid()) { // OpenVZ tools can only be used by r00t
-            return VIR_DRV_OPEN_DECLINED;
-    } else {
-        if (strcmp(name, "openvz:///system")) 
-            return VIR_DRV_OPEN_DECLINED;
-    }
+    /*Just check if the user is root. Nothing really to open for OpenVZ */
+   if (getuid()) { // OpenVZ tools can only be used by r00t
+           return VIR_DRV_OPEN_DECLINED;
+   } else {
+       if (uri == NULL || uri->scheme == NULL || uri->path == NULL)
+                   return VIR_DRV_OPEN_DECLINED;
+       if (STRNEQ (uri->scheme, "openvz"))
+                   return VIR_DRV_OPEN_DECLINED;
+       if (STRNEQ (uri->path, "/system"))
+                   return VIR_DRV_OPEN_DECLINED;
+   }
     /* See if we are running an OpenVZ enabled kernel */
-    if(access("/proc/vz/veinfo", F_OK) == -1 || 
-                access("/proc/user_beancounters", F_OK) == -1) {
-        return VIR_DRV_OPEN_DECLINED;
-    }
+   if(access("/proc/vz/veinfo", F_OK) == -1 ||
+               access("/proc/user_beancounters", F_OK) == -1) {
+       return VIR_DRV_OPEN_DECLINED;
+   }
 
-    conn->privateData = &ovz_driver;
+   conn->privateData = &ovz_driver;
 
-    virStateInitialize();
-    vms = openvzGetVPSInfo(conn);
-    ovz_driver.vms = vms;
+   virStateInitialize();
+   vms = openvzGetVPSInfo(conn);
+   ovz_driver.vms = vms;
 
-    return VIR_DRV_OPEN_SUCCESS;
-}
+   return VIR_DRV_OPEN_SUCCESS;
+};
 
 static int openvzClose(virConnectPtr conn) {
     

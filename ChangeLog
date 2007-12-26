@@ -1,3 +1,8 @@
+Wed Dec 26 06:38:53 CET 2007 Daniel Veillard <veillard@redhat.com>
+
+	* src/openvz.c: patch from Mikhail Pokidko to fix the OpenVZ
+	  compilation error #426385
+
 Tue Dec 18 00:18:33 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in docs/libvir.html docs/news.html po/*:
