@@ -10,6 +10,9 @@ config.h
 config.h.in
 config.log
 config.status
+config.guess
+config.sub
+config.rpath
 stamp-h
 stamp-h1
 libtool
@@ -24,3 +27,5 @@ coverage
 results.log
 libvirt-*.tar.gz
 INSTALL
+ltmain.sh
+mkinstalldirs
