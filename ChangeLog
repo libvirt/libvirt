@@ -1,3 +1,8 @@
+Wed Jan  2 17:45:53 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/remote_internal.c: fix policykit auth handling of NULL
+	callbacks to not crash
+
 Wed Dec 26 06:38:53 CET 2007 Daniel Veillard <veillard@redhat.com>
 
 	* src/openvz.c: patch from Mikhail Pokidko to fix the OpenVZ

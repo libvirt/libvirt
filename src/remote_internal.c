@@ -2,7 +2,7 @@
  * remote_internal.c: driver to provide access to libvirtd running
  *   on a remote machine
  *
- * Copyright (C) 2007 Red Hat, Inc.
+ * Copyright (C) 2007-2008 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -3347,24 +3347,26 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
     };
     remoteDebug(priv, "Client initialize PolicyKit authentication");
 
-    for (i = 0 ; i < auth->ncredtype ; i++) {
-        if (auth->credtype[i] == VIR_CRED_EXTERNAL)
-            allowcb = 1;
-    }
+    if (auth && auth->cb) {
+        /* Check if the neccessary credential type for PolicyKit is supported */
+        for (i = 0 ; i < auth->ncredtype ; i++) {
+            if (auth->credtype[i] == VIR_CRED_EXTERNAL)
+                allowcb = 1;
+        }
 
-    /* Run the authentication callback */
-    if (allowcb) {
-        if (auth && auth->cb &&
-            (*(auth->cb))(&cred, 1, auth->cbdata) < 0) {
-            __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
-                             VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                             "Failed to collect auth credentials");
-            return -1;
+        if (allowcb) {
+            /* Run the authentication callback */
+            if ((*(auth->cb))(&cred, 1, auth->cbdata) < 0) {
+                __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                                 VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                                 "Failed to collect auth credentials");
+                return -1;
+            }
         } else {
-            remoteDebug(priv, "No auth callback provided for PolicyKit");
+            remoteDebug(priv, "Client auth callback does not support PolicyKit");
         }
     } else {
-        remoteDebug(priv, "Client auth callback does not support PolicyKit");
+        remoteDebug(priv, "No auth callback provided");
     }
 
     memset (&ret, 0, sizeof ret);
