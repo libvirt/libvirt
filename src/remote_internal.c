@@ -23,12 +23,14 @@
 
 #include "config.h"
 
+/* Windows socket compatibility functions. */
+#include "socketcompat.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <assert.h>
-#include <errno.h>
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -44,15 +46,6 @@
 
 #ifdef HAVE_PATHS_H
 #include <paths.h>
-#endif
-
-#ifndef HAVE_WINSOCK2_H
-#include <sys/socket.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#else
-#include <winsock2.h>
 #endif
 
 #include <rpc/types.h>
@@ -525,7 +518,7 @@ doRemoteOpen (virConnectPtr conn,
 
             priv->sock = socket (r->ai_family, SOCK_STREAM, 0);
             if (priv->sock == -1) {
-                error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+                error (conn, VIR_ERR_SYSTEM_ERROR, strerror (socket_errno ()));
                 continue;
             }
 
@@ -535,7 +528,7 @@ doRemoteOpen (virConnectPtr conn,
                         sizeof no_slow_start);
 
             if (connect (priv->sock, r->ai_addr, r->ai_addrlen) == -1) {
-                error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
+                error (conn, VIR_ERR_SYSTEM_ERROR, strerror (socket_errno ()));
                 close (priv->sock);
                 continue;
             }
@@ -3036,7 +3029,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
         __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                          VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                          "failed to get sock address %d (%s)",
-                         errno, strerror(errno));
+                         socket_errno (), strerror(socket_errno ()));
         goto cleanup;
     }
     if ((localAddr = addrToString(&sa, salen)) == NULL)
@@ -3048,7 +3041,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
         __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                          VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
                          "failed to get peer address %d (%s)",
-                         errno, strerror(errno));
+                         socket_errno (), strerror(socket_errno ()));
         goto cleanup;
     }
     if ((remoteAddr = addrToString(&sa, salen)) == NULL)
@@ -3601,12 +3594,13 @@ really_write_buf (virConnectPtr conn, struct private_data *priv,
         while (len > 0);
     } else {
         do {
-            err = write (priv->sock, p, len);
+            err = send (priv->sock, p, len, 0);
             if (err == -1) {
-                if (errno == EINTR || errno == EAGAIN)
+                int errno_ = socket_errno ();
+                if (errno_ == EINTR || errno_ == EAGAIN)
                     continue;
                 error (in_open ? NULL : conn,
-                       VIR_ERR_SYSTEM_ERROR, strerror (errno));
+                       VIR_ERR_SYSTEM_ERROR, strerror (errno_));
                 return -1;
             }
             len -= err;
@@ -3683,12 +3677,13 @@ really_read_buf (virConnectPtr conn, struct private_data *priv,
         return err;
     } else {
     reread:
-        err = read (priv->sock, bytes, len);
+        err = recv (priv->sock, bytes, len, 0);
         if (err == -1) {
-            if (errno == EINTR)
+            int errno_ = socket_errno ();
+            if (errno_ == EINTR)
                 goto reread;
             error (in_open ? NULL : conn,
-                   VIR_ERR_SYSTEM_ERROR, strerror (errno));
+                   VIR_ERR_SYSTEM_ERROR, strerror (errno_));
             return -1;
         }
         if (err == 0) {

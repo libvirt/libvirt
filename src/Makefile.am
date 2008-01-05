@@ -31,6 +31,7 @@ lib_LTLIBRARIES = libvirt.la
 CLIENT_SOURCES =						\
 		libvirt.c internal.h				\
 		gnutls_1_0_compat.h				\
+		socketcompat.h					\
 		hash.c hash.h					\
 		test.c test.h                                   \
                 buf.c buf.h					\
@@ -68,7 +69,7 @@ libvirt_la_LIBADD = $(LIBXML_LIBS) $(GNUTLS_LIBS) $(SASL_LIBS) \
 libvirt_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvirt_sym.version \
                      -version-info @LIBVIRT_VERSION_INFO@ \
                     $(COVERAGE_CFLAGS:-f%=-Wc,-f%) \
-		    @CYGWIN_EXTRA_LDFLAGS@
+		    @CYGWIN_EXTRA_LDFLAGS@ @MINGW_EXTRA_LDFLAGS@
 libvirt_la_CFLAGS = $(COVERAGE_CFLAGS)
 
 bin_PROGRAMS = virsh

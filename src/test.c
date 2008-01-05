@@ -28,7 +28,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/time.h>
-#include <errno.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
@@ -37,12 +36,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#ifndef HAVE_WINSOCK2_H
-#include <net/if.h>
-#include <netinet/in.h>
-#else
-#include <winsock2.h>
-#endif
+#include "socketcompat.h"
 
 #include "internal.h"
 #include "test.h"

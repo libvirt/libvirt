@@ -25,7 +25,7 @@
 #include <libxml/uri.h>
 #include "getpass.h"
 
-#if HAVE_WINSOCK2_H
+#ifdef HAVE_WINSOCK2_H
 #include <winsock2.h>
 #endif
 

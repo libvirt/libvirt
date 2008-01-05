@@ -65,8 +65,8 @@ AC_CHECK_FUNCS([cfmakeraw regexec uname])
 dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([pwd.h paths.h sys/syslimits.h sys/utsname.h sys/wait.h winsock2.h])
 
-dnl Need -lrpc? (Cygwin needs this)
-AC_SEARCH_LIBS(xdrmem_create,rpc)
+dnl Need -lrpc or -lxdr? (Cygwin and MinGW resp. need this)
+AC_SEARCH_LIBS(xdrmem_create,[rpc xdr])
 
 dnl Do we have rpcgen?
 AC_PATH_PROG(RPCGEN, rpcgen, no)
@@ -650,6 +650,7 @@ dnl for now since I'm not supporting mingw at present.  - RWMJ
 CYGWIN_EXTRA_LDFLAGS=
 CYGWIN_EXTRA_LIBADD=
 CYGWIN_EXTRA_PYTHON_LIBADD=
+MINGW_EXTRA_LDFLAGS=
 case "$host" in
   *-*-cygwin*)
     CYGWIN_EXTRA_LDFLAGS="-no-undefined"
@@ -658,10 +659,14 @@ case "$host" in
       CYGWIN_EXTRA_PYTHON_LIBADD="-L/usr/lib/python${PYTHON_VERSION}/config -lpython${PYTHON_VERSION}"
     fi
     ;;
+  *-*-mingw*)
+    MINGW_EXTRA_LDFLAGS="-no-undefined"
+    ;;
 esac
 AC_SUBST(CYGWIN_EXTRA_LDFLAGS)
 AC_SUBST(CYGWIN_EXTRA_LIBADD)
 AC_SUBST(CYGWIN_EXTRA_PYTHON_LIBADD)
+AC_SUBST(MINGW_EXTRA_LDFLAGS)
 
 # very annoying
 rm -f COPYING

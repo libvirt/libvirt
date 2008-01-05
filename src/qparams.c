@@ -20,6 +20,8 @@
  * Utility functions to help parse and assemble query strings.
  */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>

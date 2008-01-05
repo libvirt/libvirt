@@ -1,3 +1,17 @@
+Wed Jan  5 16:02:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Miscellaneous fixes for building on Windows (MinGW).
+	* configure.in: xdr functions may require -lxdr.
+	* configure.in, src/Makefile.am: Extra linking flags for
+	  building libvirt DLL.
+	* src/socketcompat.h: Hide Windows Winsock incompatibilities
+	  in a separate header file.
+	* src/remote_internal.c: Switch to using socketcompat.h /
+	  socket_errno().
+	* src/test.c: Switch to using socketcompat.h.
+	* gnulib/lib/arpa/.cvsignore: Ignore another generated file.
+	* src/qparams.c: Include <config.h>.
+
 Wed Jan  2 17:45:53 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/remote_internal.c: fix policykit auth handling of NULL
