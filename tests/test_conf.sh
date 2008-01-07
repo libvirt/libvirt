@@ -8,6 +8,9 @@ do
     diff $outfile conftest.$$ > /dev/null
     if [ $? != 0 ] 
     then
+        if [ -n "$DEBUG_TESTS" ]; then
+            diff -u $outfile conftest.$$
+        fi
         echo "$f					FAILED"
         NOK=1
     else

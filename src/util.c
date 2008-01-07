@@ -272,8 +272,8 @@ ssize_t safewrite(int fd, const void *buf, size_t count)
 
 
 int virFileReadAll(const char *path,
-                   char *buf,
-                   unsigned int buflen)
+                   int maxlen,
+                   char **buf)
 {
     FILE *fh;
     struct stat st;
@@ -296,20 +296,28 @@ int virFileReadAll(const char *path,
         goto error;
     }
 
-    if (st.st_size >= (buflen-1)) {
-        virLog("File '%s' is too large", path);
+    if (st.st_size > maxlen) {
+        virLog("File '%s' is too large %d, max %d", path, st.st_size, maxlen);
         goto error;
     }
 
-    if ((ret = fread(buf, st.st_size, 1, fh)) != 1) {
+    *buf = malloc(st.st_size + 1);
+    if (*buf == NULL) {
+        virLog("Failed to allocate data");
+        goto error;
+    }
+
+    if ((ret = fread(*buf, st.st_size, 1, fh)) != 1) {
+        free(buf);
+        *buf = NULL;
         virLog("Failed to read config file '%s': %s",
                path, strerror(errno));
         goto error;
     }
 
-    buf[st.st_size] = '\0';
+    (*buf)[st.st_size] = '\0';
 
-    ret = 0;
+    ret = st.st_size;
 
  error:
     if (fh)

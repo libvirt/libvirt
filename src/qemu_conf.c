@@ -2604,7 +2604,7 @@ int qemudScanConfigDir(struct qemud_driver *driver,
     }
 
     while ((entry = readdir(dir))) {
-        char xml[QEMUD_MAX_XML_LEN];
+        char *xml;
         char path[PATH_MAX];
         char autostartLink[PATH_MAX];
 
@@ -2626,13 +2626,15 @@ int qemudScanConfigDir(struct qemud_driver *driver,
             continue;
         }
 
-        if (virFileReadAll(path, xml, QEMUD_MAX_XML_LEN) < 0)
+        if (virFileReadAll(path, QEMUD_MAX_XML_LEN, &xml) < 0)
             continue;
 
         if (isGuest)
             qemudLoadConfig(driver, entry->d_name, path, xml, autostartLink);
         else
             qemudLoadNetworkConfig(driver, entry->d_name, path, xml, autostartLink);
+
+        free(xml);
     }
 
     closedir(dir);

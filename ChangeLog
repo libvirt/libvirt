@@ -1,4 +1,14 @@
-Wed Jan  5 16:02:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
+Mon Jan  7 10:19:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/util.c, src/util.h: virFileReadAll() now allocates its
+	own buffer
+	* src/conf.c: Use virFileReadAll() to avoid truncating config
+	files
+	* src/qemu_conf.c: Update for new virFileReadAll() contract
+	* tests/test_conf.sh, tests/confdata/libvirtd.conf,
+	tests/libvirtd.out: New test case for large config file
+
+Sat Jan  5 16:02:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Miscellaneous fixes for building on Windows (MinGW).
 	* configure.in: xdr functions may require -lxdr.

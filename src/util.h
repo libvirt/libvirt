@@ -33,8 +33,8 @@ int saferead(int fd, void *buf, size_t count);
 ssize_t safewrite(int fd, const void *buf, size_t count);
 
 int virFileReadAll(const char *path,
-                   char *buf,
-                   unsigned int buflen);
+		   int maxlen,
+                   char **buf);
 
 int virFileMatchesNameSuffix(const char *file,
                              const char *name,

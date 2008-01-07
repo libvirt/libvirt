@@ -21,6 +21,7 @@
 #include "internal.h"
 #include "buf.h"
 #include "conf.h"
+#include "util.h"
 
 /************************************************************************
  *									*
@@ -693,6 +694,9 @@ error:
  *									*
  ************************************************************************/
 
+/* 10 MB limit on config file size as a sanity check */
+#define MAX_CONFIG_FILE_SIZE (1024*1024*10)
+
 /**
  * __virConfReadFile:
  * @filename: the path to the configuration file.
@@ -705,26 +709,25 @@ error:
 virConfPtr
 __virConfReadFile(const char *filename)
 {
-    char content[4096];
-    int fd;
+    char *content;
     int len;
+    virConfPtr conf;
 
     if (filename == NULL) {
         virConfError(NULL, VIR_ERR_INVALID_ARG, __FUNCTION__, 0);
         return(NULL);
     }
-    fd = open(filename, O_RDONLY);
-    if (fd < 0) {
+
+    if ((len = virFileReadAll(filename, MAX_CONFIG_FILE_SIZE, &content)) < 0) {
         virConfError(NULL, VIR_ERR_OPEN_FAILED, filename, 0);
-	return(NULL);
+        return NULL;
     }
-    len = read(fd, content, sizeof(content));
-    close(fd);
-    if (len <= 0) {
-        virConfError(NULL, VIR_ERR_READ_FAILED, filename, 0);
-	return(NULL);
-    }
-    return(virConfParse(filename, content, len));
+
+    conf = virConfParse(filename, content, len);
+
+    free(content);
+
+    return conf;
 }
 
 /**
