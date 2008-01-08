@@ -297,7 +297,7 @@ int virFileReadAll(const char *path,
     }
 
     if (st.st_size > maxlen) {
-        virLog("File '%s' is too large %d, max %d", path, st.st_size, maxlen);
+        virLog("File '%s' is too large %d, max %d", path, (int)st.st_size, maxlen);
         goto error;
     }
 
