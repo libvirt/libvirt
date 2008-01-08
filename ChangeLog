@@ -1,3 +1,7 @@
+Tue Jan  8 11:12:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/util.c: Fix addr passed to free() in error cleanup
+
 Mon Jan  7 10:19:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/util.c, src/util.h: virFileReadAll() now allocates its

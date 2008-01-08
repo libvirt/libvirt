@@ -308,7 +308,7 @@ int virFileReadAll(const char *path,
     }
 
     if ((ret = fread(*buf, st.st_size, 1, fh)) != 1) {
-        free(buf);
+        free(*buf);
         *buf = NULL;
         virLog("Failed to read config file '%s': %s",
                path, strerror(errno));
