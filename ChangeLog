@@ -1,3 +1,8 @@
+Wed Jan  9 16:04:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xen_internal.c: Ensure cpumap is at least 8 bytes long
+	when doing hypercall (Saori Fukuta)
+
 Wed Jan  9 10:55:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/qemu_driver.c: Wire up to system_shutdown command for

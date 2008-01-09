@@ -1638,6 +1638,9 @@ virXen_setvcpumap(int handle, int id, unsigned int vcpu,
                   unsigned char * cpumap, int maplen)
 {
     int ret = -1;
+    unsigned char *new = NULL;
+    unsigned char *bitmap = NULL;
+    uint32_t nr_cpus;
 
     if (hypervisor_version > 1) {
         xen_op_v2_dom op;
@@ -1649,16 +1652,36 @@ virXen_setvcpumap(int handle, int id, unsigned int vcpu,
         memset(&op, 0, sizeof(op));
         op.cmd = XEN_V2_OP_SETVCPUMAP;
         op.domain = (domid_t) id;
+
+        /* The allocated memory to cpumap must be 'sizeof(uint64_t)' byte *
+         * for Xen, and also nr_cpus must be 'sizeof(uint64_t) * 8'       */
+        if (maplen < 8) {
+            new = calloc(1, sizeof(uint64_t));
+            if (!new) {
+                virXenErrorFunc(NULL, VIR_ERR_NO_MEMORY, __FUNCTION__, 
+                                "allocating private data", 0);
+                return (-1);
+            }
+            memcpy(new, cpumap, maplen);
+            bitmap = new;
+            nr_cpus = sizeof(uint64_t) * 8;
+        } else {
+            bitmap = cpumap;
+            nr_cpus = maplen * 8;
+        }
+
         if (dom_interface_version < 5) {
             op.u.setvcpumap.vcpu = vcpu;
-            op.u.setvcpumap.cpumap.bitmap = cpumap;
-            op.u.setvcpumap.cpumap.nr_cpus = maplen * 8;
+            op.u.setvcpumap.cpumap.bitmap = bitmap;
+            op.u.setvcpumap.cpumap.nr_cpus = nr_cpus;
         } else {
             op.u.setvcpumapd5.vcpu = vcpu;
-            op.u.setvcpumapd5.cpumap.bitmap.v = cpumap;
-            op.u.setvcpumapd5.cpumap.nr_cpus = maplen * 8;
+            op.u.setvcpumapd5.cpumap.bitmap.v = bitmap;
+            op.u.setvcpumapd5.cpumap.nr_cpus = nr_cpus;
         }
         ret = xenHypervisorDoV2Dom(handle, &op);
+        if (new)
+            free(new);
 
         if (unlock_pages(cpumap, maplen) < 0) {
             virXenError(NULL, VIR_ERR_XEN_CALL, " release", maplen);
