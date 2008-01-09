@@ -1849,6 +1849,27 @@ static int qemudDomainResume(virDomainPtr dom) {
 }
 
 
+static int qemudDomainShutdown(virDomainPtr dom) {
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    struct qemud_vm *vm = qemudFindVMByID(driver, dom->id);
+    char* info;
+
+    if (!vm) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         "no domain with matching id %d", dom->id);
+        return -1;
+    }
+
+    if (qemudMonitorCommand(driver, vm, "system_powerdown", &info) < 0) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "shutdown operation failed");
+        return -1;
+    }
+    return 0;
+
+}
+
+
 static int qemudDomainDestroy(virDomainPtr dom) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     struct qemud_vm *vm = qemudFindVMByID(driver, dom->id);
@@ -2855,7 +2876,7 @@ static virDriver qemuDriver = {
     qemudDomainLookupByName, /* domainLookupByName */
     qemudDomainSuspend, /* domainSuspend */
     qemudDomainResume, /* domainResume */
-    qemudDomainDestroy, /* domainShutdown */
+    qemudDomainShutdown, /* domainShutdown */
     NULL, /* domainReboot */
     qemudDomainDestroy, /* domainDestroy */
     qemudDomainGetOSType, /* domainGetOSType */

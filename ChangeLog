@@ -1,3 +1,8 @@
+Wed Jan  9 10:55:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_driver.c: Wire up to system_shutdown command for
+	graceful ACPI triggered shutdown process (Guido Guenther)
+
 Tue Jan  8 12:48:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/util.c: cast  off_t to int in debug output to avoid warning
