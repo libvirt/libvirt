@@ -1,3 +1,7 @@
+Thu Jan 10 13:44:17 GMT 2008 Mark McLoughlin <markmc@redhat.com>
+
+	* src/util.[ch]: Add virRun() helper function (Dan Berrange)
+
 Wed Jan  9 16:04:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xen_internal.c: Ensure cpumap is at least 8 bytes long

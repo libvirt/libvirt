@@ -33,6 +33,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <string.h>
 
 #ifdef HAVE_PATHS_H
@@ -201,6 +202,43 @@ virExecNonBlock(virConnectPtr conn,
           int *retpid, int infd, int *outfd, int *errfd) {
 
     return(_virExec(conn, argv, retpid, infd, outfd, errfd, 1));
+}
+
+/**
+ * @conn connection to report errors against
+ * @argv NULL terminated argv to run
+ * @status optional variable to return exit status in
+ *
+ * Run a command without using the shell.
+ *
+ * If status is NULL, then return 0 if the command run and
+ * exited with 0 status; Otherwise return -1
+ *
+ * If status is not-NULL, then return 0 if the command ran.
+ * The status variable is filled with the command exit status
+ * and should be checked by caller for success. Return -1
+ * only if the command could not be run.
+ */
+int
+virRun(virConnectPtr conn,
+       char **argv,
+       int *status) {
+    int childpid, exitstatus, ret;
+
+    if ((ret = virExec(conn, argv, &childpid, -1, NULL, NULL)) < 0)
+        return ret;
+
+    while ((ret = waitpid(childpid, &exitstatus, 0) == -1) && errno == EINTR);
+    if (ret == -1)
+        return -1;
+
+    if (status == NULL) {
+        errno = EINVAL;
+        return (WIFEXITED(exitstatus) && WEXITSTATUS(exitstatus) == 0) ? 0 : -1;
+    } else {
+        *status = exitstatus;
+        return 0;
+    }
 }
 
 #else /* __MINGW32__ */

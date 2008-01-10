@@ -28,6 +28,7 @@
 
 int virExec(virConnectPtr conn, char **argv, int *retpid, int infd, int *outfd, int *errfd);
 int virExecNonBlock(virConnectPtr conn, char **argv, int *retpid, int infd, int *outfd, int *errfd);
+int virRun(virConnectPtr conn, char **argv, int *status);
 
 int saferead(int fd, void *buf, size_t count);
 ssize_t safewrite(int fd, const void *buf, size_t count);
