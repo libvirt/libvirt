@@ -1,3 +1,10 @@
+Thu Jan 10 13:56:33 GMT 2008 Mark McLoughlin <markmc@redhat.com>
+
+	Like --with-iptables-prefix, --with-iptables-dir is no
+	longer useful, so let's remove it.
+
+	* configure.in, src/iptables.c: remove --with-iptables-dir
+
 Thu Jan 10 13:54:10 GMT 2008 Mark McLoughlin <markmc@redhat.com>
 
 	--with-iptables-prefix was added to integrate with

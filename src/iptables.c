@@ -48,11 +48,6 @@
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
 
-#ifdef ENABLE_IPTABLES_LOKKIT
-#undef IPTABLES_DIR
-#define IPTABLES_DIR LOCAL_STATE_DIR "/lib/libvirt/iptables"
-#endif
-
 enum {
     ADD = 0,
     REMOVE
@@ -73,12 +68,12 @@ typedef struct
     int      nrules;
     iptRule *rules;
 
-#ifdef IPTABLES_DIR
+#ifdef ENABLE_IPTABLES_LOKKIT
 
     char   dir[PATH_MAX];
     char   path[PATH_MAX];
 
-#endif /* IPTABLES_DIR */
+#endif /* ENABLE_IPTABLES_LOKKIT */
 
 } iptRules;
 
@@ -89,7 +84,6 @@ struct _iptablesContext
     iptRules *nat_postrouting;
 };
 
-#ifdef IPTABLES_DIR
 #ifdef ENABLE_IPTABLES_LOKKIT
 static void
 notifyRulesUpdated(const char *table,
@@ -189,7 +183,6 @@ notifyRulesRemoved(const char *table,
 
 #undef MAX_FILE_LEN
 }
-#endif /* ENABLE_IPTABLES_LOKKIT */
 
 static int
 writeRules(const char *path,
@@ -237,7 +230,7 @@ writeRules(const char *path,
 
     return 0;
 }
-#endif /* IPTABLES_DIR */
+#endif /* ENABLE_IPTABLES_LOKKIT */
 
 static void
 iptRuleFree(iptRule *rule)
@@ -279,7 +272,7 @@ iptRulesAppend(iptRules *rules,
 
     rules->nrules++;
 
-#ifdef IPTABLES_DIR
+#ifdef ENABLE_IPTABLES_LOKKIT
     {
         int err;
 
@@ -290,11 +283,8 @@ iptRulesAppend(iptRules *rules,
             return err;
     }
 
-#ifdef ENABLE_IPTABLES_LOKKIT
     notifyRulesUpdated(rules->table, rules->path);
 #endif /* ENABLE_IPTABLES_LOKKIT */
-
-#endif /* IPTABLES_DIR */
 
     return 0;
 }
@@ -320,7 +310,7 @@ iptRulesRemove(iptRules *rules,
 
     rules->nrules--;
 
-#ifdef IPTABLES_DIR
+#ifdef ENABLE_IPTABLES_LOKKIT
     {
         int err;
 
@@ -328,14 +318,11 @@ iptRulesRemove(iptRules *rules,
             return err;
     }
 
-#ifdef ENABLE_IPTABLES_LOKKIT
     if (rules->nrules > 0)
         notifyRulesUpdated(rules->table, rules->path);
     else
         notifyRulesRemoved(rules->table, rules->path);
 #endif /* ENABLE_IPTABLES_LOKKIT */
-
-#endif /* IPTABLES_DIR */
 
     return 0;
 }
@@ -366,10 +353,10 @@ iptRulesFree(iptRules *rules)
         rules->nrules = 0;
     }
 
-#ifdef IPTABLES_DIR
+#ifdef ENABLE_IPTABLES_LOKKIT
     rules->dir[0] = '\0';
     rules->path[0] = '\0';
-#endif /* IPTABLES_DIR */
+#endif /* ENABLE_IPTABLES_LOKKIT */
 
     free(rules);
 }
@@ -392,13 +379,14 @@ iptRulesNew(const char *table,
     rules->rules = NULL;
     rules->nrules = 0;
 
-#ifdef IPTABLES_DIR
-    if (virFileBuildPath(IPTABLES_DIR, table, NULL, rules->dir, sizeof(rules->dir)) < 0)
+#ifdef ENABLE_IPTABLES_LOKKIT
+    if (virFileBuildPath(LOCAL_STATE_DIR "/lib/libvirt/iptables", table, NULL,
+                         rules->dir, sizeof(rules->dir)) < 0)
         goto error;
 
     if (virFileBuildPath(rules->dir, chain, ".chain", rules->path, sizeof(rules->path)) < 0)
         goto error;
-#endif /* IPTABLES_DIR */
+#endif /* ENABLE_IPTABLES_LOKKIT */
 
     return rules;
 

@@ -183,18 +183,6 @@ AM_CONDITIONAL(LIBVIRT_INIT_SCRIPTS_RED_HAT, test x$with_init_scripts = xredhat)
 AC_MSG_RESULT($with_init_scripts)
 
 dnl
-dnl also support saving the various chains to files
-dnl in e.g. /etc/sysconfig/iptables.d
-dnl
-AC_ARG_WITH(iptables-dir,
-            AC_HELP_STRING([--with-iptables-dir=path],
-                           [directory used to save iptables chains, defaults to not saving]),
-            [IPTABLES_DIR=$withval])
-if test x"$IPTABLES_DIR" != "x"; then
-   AC_DEFINE_UNQUOTED(IPTABLES_DIR, "$IPTABLES_DIR", [directory used for saving iptables chains])
-fi
-
-dnl
 dnl ensure that Fedora's system-config-firewall knows
 dnl about libvirt's iptables rules
 dnl
