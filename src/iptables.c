@@ -335,35 +335,53 @@ iptablesAddRemoveChain(iptRules *rules, int action)
     return retval;
 }
 
+static char *
+argvToString(char **argv)
+{
+    int len, i;
+    char *ret, *p;
+
+    for (len = 1, i = 0; argv[i]; i++)
+        len += strlen(argv[i]) + 1;
+
+    if (!(p = ret = (char *)malloc(len)))
+        return NULL;
+
+    for (i = 0; argv[i]; i++) {
+        if (i != 0)
+            *(p++) = ' ';
+
+        strcpy(p, argv[i]);
+        p += strlen(argv[i]);
+    }
+
+    *p = '\0';
+
+    return ret;
+}
+
 static int
 iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
 {
     va_list args;
     int retval = ENOMEM;
     char **argv;
-    char *rule = NULL, *p;
+    char *rule = NULL;
     const char *s;
-    int n, rulelen, command_idx;
+    int n, command_idx;
 
     n = 1 + /* /sbin/iptables  */
         2 + /*   --table foo   */
         2 + /*   --insert bar  */
         1;  /*   arg           */
 
-    rulelen = strlen(arg) + 1;
-
     va_start(args, arg);
-    while ((s = va_arg(args, const char *))) {
+    while ((s = va_arg(args, const char *)))
         n++;
-        rulelen += strlen(s) + 1;
-    }
 
     va_end(args);
 
     if (!(argv = calloc(n + 1, sizeof(*argv))))
-        goto error;
-
-    if (!(rule = (char *)malloc(rulelen)))
         goto error;
 
     n = 0;
@@ -379,7 +397,7 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
 
     command_idx = n;
 
-    if (!(argv[n++] = strdup(action == ADD ? "--insert" : "--delete")))
+    if (!(argv[n++] = strdup("--insert")))
         goto error;
 
     if (!(argv[n++] = strdup(rules->chain)))
@@ -388,23 +406,22 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
     if (!(argv[n++] = strdup(arg)))
         goto error;
 
-    p = strcpy(rule, arg);
-    p += strlen(arg);
-
     va_start(args, arg);
 
-    while ((s = va_arg(args, const char *))) {
+    while ((s = va_arg(args, const char *)))
         if (!(argv[n++] = strdup(s)))
             goto error;
 
-        *(p++) = ' ';
-        strcpy(p, s);
-        p += strlen(s);
-    }
-
     va_end(args);
 
-    *p = '\0';
+    if (!(rule = argvToString(&argv[command_idx])))
+        goto error;
+
+    if (action == REMOVE) {
+        free(argv[command_idx]);
+        if (!(argv[command_idx] = strdup("--delete")))
+            goto error;
+    }
 
     if (action == ADD &&
         (retval = iptablesAddRemoveChain(rules, action)))
