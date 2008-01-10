@@ -1,3 +1,8 @@
+Thu Jan 10 13:57:56 GMT 2008 Mark McLoughlin <markmc@redhat.com>
+
+	* src/iptables.c: now that we only use built-in iptables
+	chains, we don't need to add or delete them
+
 Thu Jan 10 13:56:33 GMT 2008 Mark McLoughlin <markmc@redhat.com>
 
 	Like --with-iptables-prefix, --with-iptables-dir is no

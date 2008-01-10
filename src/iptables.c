@@ -395,53 +395,6 @@ iptRulesNew(const char *table,
     return NULL;
 }
 
-static int
-iptablesAddRemoveChain(iptRules *rules, int action)
-{
-    char **argv;
-    int retval = ENOMEM;
-    int n, status;
-
-    n = 1 + /* /sbin/iptables    */
-        2 + /*   --table foo     */
-        2;  /*   --new-chain bar */
-
-    if (!(argv = calloc(n + 1, sizeof(*argv))))
-        goto error;
-
-    n = 0;
-
-    if (!(argv[n++] = strdup(IPTABLES_PATH)))
-        goto error;
-
-    if (!(argv[n++] = strdup("--table")))
-        goto error;
-
-    if (!(argv[n++] = strdup(rules->table)))
-        goto error;
-
-    if (!(argv[n++] = strdup(action == ADD ? "--new-chain" : "--delete-chain")))
-        goto error;
-
-    if (!(argv[n++] = strdup(rules->chain)))
-        goto error;
-
-    if (virRun(NULL, argv, &status) < 0)
-        retval = errno;
-
-    retval = 0;
-
- error:
-    if (argv) {
-        n = 0;
-        while (argv[n])
-            free(argv[n++]);
-        free(argv);
-    }
-
-    return retval;
-}
-
 static char *
 argvToString(char **argv)
 {
@@ -530,18 +483,10 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
             goto error;
     }
 
-    if (action == ADD &&
-        (retval = iptablesAddRemoveChain(rules, action)))
-        goto error;
-
     if (virRun(NULL, argv, NULL) < 0) {
         retval = errno;
         goto error;
     }
-
-    if (action == REMOVE &&
-        (retval = iptablesAddRemoveChain(rules, action)))
-        goto error;
 
     if (action == ADD) {
         retval = iptRulesAppend(rules, rule, argv, command_idx);
@@ -633,11 +578,6 @@ iptRulesReload(iptRules *rules)
 
         rule->argv[rule->command_idx] = orig;
     }
-
-    if ((retval = iptablesAddRemoveChain(rules, REMOVE)) ||
-        (retval = iptablesAddRemoveChain(rules, ADD)))
-        qemudLog(QEMUD_WARN, "Failed to re-create chain '%s' in table '%s': %s",
-                 rules->chain, rules->table, strerror(retval));
 
     for (i = 0; i < rules->nrules; i++)
         if (virRun(NULL, rules->rules[i].argv, NULL) < 0)
