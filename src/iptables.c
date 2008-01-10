@@ -48,6 +48,11 @@
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
 
+#ifdef ENABLE_IPTABLES_LOKKIT
+#undef IPTABLES_DIR
+#define IPTABLES_DIR LOCAL_STATE_DIR "/lib/libvirt/iptables"
+#endif
+
 enum {
     ADD = 0,
     REMOVE
@@ -85,6 +90,107 @@ struct _iptablesContext
 };
 
 #ifdef IPTABLES_DIR
+#ifdef ENABLE_IPTABLES_LOKKIT
+static void
+notifyRulesUpdated(const char *table,
+                   const char *path)
+{
+    char arg[PATH_MAX];
+    char *argv[4];
+
+    snprintf(arg, sizeof(arg), "--custom-rules=ipv4:%s:%s", table, path);
+
+    argv[0] = (char *) LOKKIT_PATH;
+    argv[1] = (char *) "--nostart";
+    argv[2] = arg;
+    argv[3] = NULL;
+
+    if (virRun(NULL, argv, NULL) < 0)
+        qemudLog(QEMUD_WARN, "Failed to run '" LOKKIT_PATH " %s' : %s",
+                 arg, strerror(errno));
+}
+
+static int
+stripLine(char *str, int len, const char *line)
+{
+    char *s, *p;
+    int changed;
+
+    changed = 0;
+    s = str;
+
+    while ((p = strchr(s, '\n'))) {
+        if (p == s || strncmp(s, line, p - s) != 0) {
+            s = ++p;
+            continue;
+        }
+
+        ++p;
+        memmove(s, p, len - (p - str) + 1);
+        len -= p - s;
+        changed = 1;
+    }
+
+    if (strcmp(s, line) == 0) {
+        *s = '\0';
+        changed = 1;
+    }
+
+    return changed;
+}
+
+static void
+notifyRulesRemoved(const char *table,
+                   const char *path)
+{
+/* 10 MB limit on config file size as a sanity check */
+#define MAX_FILE_LEN (1024*1024*10)
+
+    char arg[PATH_MAX];
+    char *content;
+    int len;
+    FILE *f = NULL;
+
+    len = virFileReadAll(SYSCONF_DIR "/sysconfig/system-config-firewall",
+                         MAX_FILE_LEN, &content);
+    if (len < 0) {
+        qemudLog(QEMUD_WARN, "Failed to read " SYSCONF_DIR "/sysconfig/system-config-firewall");
+        return;
+    }
+
+    snprintf(arg, sizeof(arg), "--custom-rules=ipv4:%s:%s", table, path);
+
+    if (!stripLine(content, len, arg)) {
+        free(content);
+        return;
+    }
+
+    if (!(f = fopen(SYSCONF_DIR "/sysconfig/system-config-firewall", "w")))
+        goto write_error;
+
+    if (fputs(content, f) == EOF)
+        goto write_error;
+
+    if (fclose(f) == EOF) {
+        f = NULL;
+        goto write_error;
+    }
+
+    free(content);
+
+    return;
+
+ write_error:
+    qemudLog(QEMUD_WARN, "Failed to write to " SYSCONF_DIR "/sysconfig/system-config-firewall : %s",
+             strerror(errno));
+    if (f)
+        fclose(f);
+    free(content);
+
+#undef MAX_FILE_LEN
+}
+#endif /* ENABLE_IPTABLES_LOKKIT */
+
 static int
 writeRules(const char *path,
            const iptRule *rules,
@@ -183,6 +289,11 @@ iptRulesAppend(iptRules *rules,
         if ((err = writeRules(rules->path, rules->rules, rules->nrules)))
             return err;
     }
+
+#ifdef ENABLE_IPTABLES_LOKKIT
+    notifyRulesUpdated(rules->table, rules->path);
+#endif /* ENABLE_IPTABLES_LOKKIT */
+
 #endif /* IPTABLES_DIR */
 
     return 0;
@@ -216,6 +327,14 @@ iptRulesRemove(iptRules *rules,
         if ((err = writeRules(rules->path, rules->rules, rules->nrules)))
             return err;
     }
+
+#ifdef ENABLE_IPTABLES_LOKKIT
+    if (rules->nrules > 0)
+        notifyRulesUpdated(rules->table, rules->path);
+    else
+        notifyRulesRemoved(rules->table, rules->path);
+#endif /* ENABLE_IPTABLES_LOKKIT */
+
 #endif /* IPTABLES_DIR */
 
     return 0;

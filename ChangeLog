@@ -1,3 +1,18 @@
+Thu Jan 10 13:52:05 GMT 2008 Mark McLoughlin <markmc@redhat.com>
+
+	Add support for integrating our iptables support with
+	Fedora's iptables configuration using the lokkit --custom-rules
+	command.
+
+	Basically, we write out our rules to /var/lib/libvirt/iptables
+	and run lokkit --custom-rules so that if e.g. iptables is
+	restarted or the user edits their firewall configuration,
+	then libvirt's rules get reloaded.
+
+	* configure.in: Add --enable-iptables-lokkit
+
+	* src/iptables.c: Add support for lokkit
+
 Thu Jan 10 13:51:00 GMT 2008 Mark McLoughlin <markmc@redhat.com>
 
 	* src/iptables.c: Include the iptables command and chain

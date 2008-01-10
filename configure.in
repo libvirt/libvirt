@@ -204,6 +204,27 @@ if test x"$IPTABLES_DIR" != "x"; then
    AC_DEFINE_UNQUOTED(IPTABLES_DIR, "$IPTABLES_DIR", [directory used for saving iptables chains])
 fi
 
+dnl
+dnl ensure that Fedora's system-config-firewall knows
+dnl about libvirt's iptables rules
+dnl
+AC_ARG_ENABLE(iptables-lokkit,
+              AC_HELP_STRING([--enable-iptables-lokkit=no/yes/check],
+                             [enable registering libvirt's iptables rules with Fedora's lokkit]),
+                             [],[enable_iptables_lokkit=check])
+if test x"$enable_iptables_lokkit" != x"no"; then
+   AC_PATH_PROG(LOKKIT_PATH, lokkit, [], [/usr/sbin:$PATH])
+fi
+
+if test x"$enable_iptables_lokkit" = x"yes" -a x"$LOKKIT_PATH" = x; then
+   AC_MSG_ERROR([Cannot find lokkit and --enable-iptables-lokkit specified])
+fi
+
+if test x"$LOKKIT_PATH" != x; then
+   AC_DEFINE(ENABLE_IPTABLES_LOKKIT, [], [whether support for Fedora's lokkit is enabled])
+   AC_DEFINE_UNQUOTED(LOKKIT_PATH, "$LOKKIT_PATH", [path to lokkit binary])
+fi
+
 AC_PATH_PROG(IPTABLES_PATH, iptables, /sbin/iptables)
 AC_DEFINE_UNQUOTED(IPTABLES_PATH, "$IPTABLES_PATH", [path to iptables binary])
 
