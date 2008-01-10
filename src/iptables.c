@@ -570,7 +570,6 @@ static void
 iptRulesReload(iptRules *rules)
 {
     int i;
-    int retval;
 
     for (i = 0; i < rules->nrules; i++) {
         iptRule *rule = &rules->rules[i];
