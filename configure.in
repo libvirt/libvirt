@@ -183,16 +183,6 @@ AM_CONDITIONAL(LIBVIRT_INIT_SCRIPTS_RED_HAT, test x$with_init_scripts = xredhat)
 AC_MSG_RESULT($with_init_scripts)
 
 dnl
-dnl allow the creation of iptables rules in chains with a
-dnl specific prefix rather than in the standard toplevel chains
-dnl
-AC_ARG_WITH(iptables-prefix,
-            AC_HELP_STRING([--with-iptables-prefix=prefix],
-                           [prefix used for iptables chains, default is to use standard toplevel chains]),
-            [IPTABLES_PREFIX=$withval])
-AC_DEFINE_UNQUOTED(IPTABLES_PREFIX, "$IPTABLES_PREFIX", [prefix used for iptables chains])
-
-dnl
 dnl also support saving the various chains to files
 dnl in e.g. /etc/sysconfig/iptables.d
 dnl

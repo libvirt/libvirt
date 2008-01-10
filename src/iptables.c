@@ -592,13 +592,13 @@ iptablesContextNew(void)
     if (!(ctx = calloc(1, sizeof (*ctx))))
         return NULL;
 
-    if (!(ctx->input_filter = iptRulesNew("filter", IPTABLES_PREFIX "INPUT")))
+    if (!(ctx->input_filter = iptRulesNew("filter", "INPUT")))
         goto error;
 
-    if (!(ctx->forward_filter = iptRulesNew("filter", IPTABLES_PREFIX "FORWARD")))
+    if (!(ctx->forward_filter = iptRulesNew("filter", "FORWARD")))
         goto error;
 
-    if (!(ctx->nat_postrouting = iptRulesNew("nat", IPTABLES_PREFIX "POSTROUTING")))
+    if (!(ctx->nat_postrouting = iptRulesNew("nat", "POSTROUTING")))
         goto error;
 
     return ctx;

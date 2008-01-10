@@ -1,3 +1,13 @@
+Thu Jan 10 13:54:10 GMT 2008 Mark McLoughlin <markmc@redhat.com>
+
+	--with-iptables-prefix was added to integrate with
+	a proposed system for letting iptables know how to
+	reload our rules. The proposed system wasn't accepted
+	so, although there might be some other theoretical
+	use for this, let's just remove it.
+
+	* configure.in, src/iptables.c: remove --with-iptables-prefix
+
 Thu Jan 10 13:52:05 GMT 2008 Mark McLoughlin <markmc@redhat.com>
 
 	Add support for integrating our iptables support with
