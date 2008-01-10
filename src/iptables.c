@@ -233,6 +233,25 @@ writeRules(const char *path,
 #endif /* ENABLE_IPTABLES_LOKKIT */
 
 static void
+iptRulesSave(iptRules *rules)
+{
+#ifdef ENABLE_IPTABLES_LOKKIT
+    int err;
+
+    if ((err = writeRules(rules->path, rules->rules, rules->nrules))) {
+        qemudLog(QEMUD_WARN, "Failed to saves iptables rules to %s : %s",
+                 rules->path, strerror(err));
+        return;
+    }
+
+    if (rules->nrules > 0)
+        notifyRulesUpdated(rules->table, rules->path);
+    else
+        notifyRulesRemoved(rules->table, rules->path);
+#endif /* ENABLE_IPTABLES_LOKKIT */
+}
+
+static void
 iptRuleFree(iptRule *rule)
 {
     if (rule->rule)
@@ -272,20 +291,6 @@ iptRulesAppend(iptRules *rules,
 
     rules->nrules++;
 
-#ifdef ENABLE_IPTABLES_LOKKIT
-    {
-        int err;
-
-        if ((err = virFileMakePath(rules->dir)))
-            return err;
-
-        if ((err = writeRules(rules->path, rules->rules, rules->nrules)))
-            return err;
-    }
-
-    notifyRulesUpdated(rules->table, rules->path);
-#endif /* ENABLE_IPTABLES_LOKKIT */
-
     return 0;
 }
 
@@ -309,20 +314,6 @@ iptRulesRemove(iptRules *rules,
             (rules->nrules - i - 1) * sizeof (iptRule));
 
     rules->nrules--;
-
-#ifdef ENABLE_IPTABLES_LOKKIT
-    {
-        int err;
-
-        if ((err = writeRules(rules->path, rules->rules, rules->nrules)))
-            return err;
-    }
-
-    if (rules->nrules > 0)
-        notifyRulesUpdated(rules->table, rules->path);
-    else
-        notifyRulesRemoved(rules->table, rules->path);
-#endif /* ENABLE_IPTABLES_LOKKIT */
 
     return 0;
 }
@@ -557,6 +548,22 @@ iptablesContextFree(iptablesContext *ctx)
     if (ctx->nat_postrouting)
         iptRulesFree(ctx->nat_postrouting);
     free(ctx);
+}
+
+/**
+ * iptablesSaveRules:
+ * @ctx: pointer to the IP table context
+ *
+ * Saves all the IP table rules associated with a context
+ * to disk so that if iptables is restarted, the rules
+ * will automatically be reload.
+ */
+void
+iptablesSaveRules(iptablesContext *ctx)
+{
+    iptRulesSave(ctx->input_filter);
+    iptRulesSave(ctx->forward_filter);
+    iptRulesSave(ctx->nat_postrouting);
 }
 
 static void

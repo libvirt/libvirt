@@ -1,3 +1,11 @@
+Thu Jan 10 13:59:15 GMT 2008 Mark McLoughlin <markmc@redhat.com>
+
+	* src/iptables.[ch]: add iptablesSaveRules(), and don't
+	save the rules to disk and run lokkit each time a new
+	rule is added
+
+	* src/qemu_driver.c: use iptablesSaveRules()
+
 Thu Jan 10 13:57:56 GMT 2008 Mark McLoughlin <markmc@redhat.com>
 
 	* src/iptables.c: now that we only use built-in iptables

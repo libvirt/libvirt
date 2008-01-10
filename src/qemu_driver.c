@@ -1009,8 +1009,10 @@ qemudAddIptablesRules(virConnectPtr conn,
 
 
     /* The remaining rules are only needed for IP forwarding */
-    if (!network->def->forward)
+    if (!network->def->forward) {
+        iptablesSaveRules(driver->iptables);
         return 1;
+    }
 
     /* allow forwarding packets from the bridge interface */
     if ((err = iptablesAddForwardAllowOut(driver->iptables,
@@ -1043,6 +1045,8 @@ qemudAddIptablesRules(virConnectPtr conn,
                          strerror(err));
         goto err10;
     }
+
+    iptablesSaveRules(driver->iptables);
 
     return 1;
 
@@ -1100,6 +1104,7 @@ qemudRemoveIptablesRules(struct qemud_driver *driver,
     iptablesRemoveTcpInput(driver->iptables, network->bridge, 53);
     iptablesRemoveUdpInput(driver->iptables, network->bridge, 67);
     iptablesRemoveTcpInput(driver->iptables, network->bridge, 67);
+    iptablesSaveRules(driver->iptables);
 }
 
 static int
