@@ -1,3 +1,7 @@
+Thu Jan 10 13:48:01 GMT 2008 Mark McLoughlin <markmc@redhat.com>
+
+	* src/iptables.c: Fix compile error in --with-iptables-dir code
+
 Thu Jan 10 13:46:14 GMT 2008 Mark McLoughlin <markmc@redhat.com>
 
 	* src/util.c: change virExec() such that with --enable-debug,

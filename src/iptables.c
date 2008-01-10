@@ -91,7 +91,7 @@ struct _iptablesContext
 #ifdef IPTABLES_DIR
 static int
 writeRules(const char *path,
-           const iptRules *rules,
+           const iptRule *rules,
            int nrules)
 {
     char tmp[PATH_MAX];
