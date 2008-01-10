@@ -57,7 +57,7 @@ typedef struct
 {
     char  *rule;
     char **argv;
-    int    flipflop;
+    int    command_idx;
 } iptRule;
 
 typedef struct
@@ -153,7 +153,7 @@ static int
 iptRulesAppend(iptRules *rules,
                char *rule,
                char **argv,
-               int flipflop)
+               int command_idx)
 {
     iptRule *r;
 
@@ -167,9 +167,9 @@ iptRulesAppend(iptRules *rules,
 
     rules->rules = r;
 
-    rules->rules[rules->nrules].rule     = rule;
-    rules->rules[rules->nrules].argv     = argv;
-    rules->rules[rules->nrules].flipflop = flipflop;
+    rules->rules[rules->nrules].rule        = rule;
+    rules->rules[rules->nrules].argv        = argv;
+    rules->rules[rules->nrules].command_idx = command_idx;
 
     rules->nrules++;
 
@@ -343,7 +343,7 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
     char **argv;
     char *rule = NULL, *p;
     const char *s;
-    int n, rulelen, flipflop;
+    int n, rulelen, command_idx;
 
     n = 1 + /* /sbin/iptables  */
         2 + /*   --table foo   */
@@ -377,7 +377,7 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
     if (!(argv[n++] = strdup(rules->table)))
         goto error;
 
-    flipflop = n;
+    command_idx = n;
 
     if (!(argv[n++] = strdup(action == ADD ? "--insert" : "--delete")))
         goto error;
@@ -420,7 +420,7 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
         goto error;
 
     if (action == ADD) {
-        retval = iptRulesAppend(rules, rule, argv, flipflop);
+        retval = iptRulesAppend(rules, rule, argv, command_idx);
         rule = NULL;
         argv = NULL;
     } else {
@@ -500,14 +500,14 @@ iptRulesReload(iptRules *rules)
         iptRule *rule = &rules->rules[i];
         char *orig;
 
-        orig = rule->argv[rule->flipflop];
-        rule->argv[rule->flipflop] = (char *) "--delete";
+        orig = rule->argv[rule->command_idx];
+        rule->argv[rule->command_idx] = (char *) "--delete";
 
         if (virRun(NULL, rule->argv, NULL) < 0)
             qemudLog(QEMUD_WARN, "Failed to remove iptables rule '%s' from chain '%s' in table '%s': %s",
                      rule->rule, rules->chain, rules->table, strerror(errno));
 
-        rule->argv[rule->flipflop] = orig;
+        rule->argv[rule->command_idx] = orig;
     }
 
     if ((retval = iptablesAddRemoveChain(rules, REMOVE)) ||
