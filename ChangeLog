@@ -1,3 +1,8 @@
+Thu Jan 10 13:49:01 GMT 2008 Mark McLoughlin <markmc@redhat.com>
+
+	* src/iptables.c:  make use of virFileMakePath(),
+	virFileBuildPath() and virRun().
+
 Thu Jan 10 13:48:01 GMT 2008 Mark McLoughlin <markmc@redhat.com>
 
 	* src/iptables.c: Fix compile error in --with-iptables-dir code

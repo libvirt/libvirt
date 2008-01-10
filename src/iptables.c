@@ -44,17 +44,13 @@
 
 #include "internal.h"
 #include "iptables.h"
+#include "util.h"
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
 
 enum {
     ADD = 0,
     REMOVE
-};
-
-enum {
-    WITH_ERRORS = 0,
-    NO_ERRORS
 };
 
 typedef struct
@@ -135,60 +131,6 @@ writeRules(const char *path,
 
     return 0;
 }
-
-static int
-ensureDir(const char *path)
-{
-    struct stat st;
-    char parent[PATH_MAX];
-    char *p;
-    int err;
-
-    if (stat(path, &st) >= 0)
-        return 0;
-
-    strncpy(parent, path, PATH_MAX);
-    parent[PATH_MAX - 1] = '\0';
-
-    if (!(p = strrchr(parent, '/')))
-        return EINVAL;
-
-    if (p == parent)
-        return EPERM;
-
-    *p = '\0';
-
-    if ((err = ensureDir(parent)))
-        return err;
-
-    if (mkdir(path, 0700) < 0 && errno != EEXIST)
-        return errno;
-
-    return 0;
-}
-
-static int
-buildDir(const char *table,
-         char *path,
-         int maxlen)
-{
-    if (snprintf(path, maxlen, IPTABLES_DIR "/%s", table) >= maxlen)
-        return EINVAL;
-    else
-        return 0;
-}
-
-static int
-buildPath(const char *table,
-          const char *chain,
-          char *path,
-          int maxlen)
-{
-    if (snprintf(path, maxlen, IPTABLES_DIR "/%s/%s.chain", table, chain) >= maxlen)
-        return EINVAL;
-    else
-        return 0;
-}
 #endif /* IPTABLES_DIR */
 
 static void
@@ -235,7 +177,7 @@ iptRulesAppend(iptRules *rules,
     {
         int err;
 
-        if ((err = ensureDir(rules->dir)))
+        if ((err = virFileMakePath(rules->dir)))
             return err;
 
         if ((err = writeRules(rules->path, rules->rules, rules->nrules)))
@@ -332,10 +274,10 @@ iptRulesNew(const char *table,
     rules->nrules = 0;
 
 #ifdef IPTABLES_DIR
-    if (buildDir(table, rules->dir, sizeof(rules->dir)))
+    if (virFileBuildPath(IPTABLES_DIR, table, NULL, rules->dir, sizeof(rules->dir)) < 0)
         goto error;
 
-    if (buildPath(table, chain, rules->path, sizeof(rules->path)))
+    if (virFileBuildPath(rules->dir, chain, ".chain", rules->path, sizeof(rules->path)) < 0)
         goto error;
 #endif /* IPTABLES_DIR */
 
@@ -347,54 +289,11 @@ iptRulesNew(const char *table,
 }
 
 static int
-iptablesSpawn(int errors, char * const *argv)
-{
-    pid_t pid, ret;
-    int status;
-    int null = -1;
-
-    if (errors == NO_ERRORS && (null = open(_PATH_DEVNULL, O_RDONLY)) < 0)
-        return errno;
-
-    pid = fork();
-    if (pid == -1) {
-        if (errors == NO_ERRORS)
-            close(null);
-        return errno;
-    }
-
-    if (pid == 0) { /* child */
-        if (errors == NO_ERRORS) {
-            dup2(null, STDIN_FILENO);
-            dup2(null, STDOUT_FILENO);
-            dup2(null, STDERR_FILENO);
-            close(null);
-        }
-
-        execvp(argv[0], argv);
-
-        _exit (1);
-    }
-
-    if (errors == NO_ERRORS)
-        close(null);
-
-    while ((ret = waitpid(pid, &status, 0) == -1) && errno == EINTR);
-    if (ret == -1)
-        return errno;
-
-    if (errors == NO_ERRORS)
-        return 0;
-    else
-        return (WIFEXITED(status) && WEXITSTATUS(status) == 0) ? 0 : EINVAL;
-}
-
-static int
 iptablesAddRemoveChain(iptRules *rules, int action)
 {
     char **argv;
     int retval = ENOMEM;
-    int n;
+    int n, status;
 
     n = 1 + /* /sbin/iptables    */
         2 + /*   --table foo     */
@@ -420,7 +319,10 @@ iptablesAddRemoveChain(iptRules *rules, int action)
     if (!(argv[n++] = strdup(rules->chain)))
         goto error;
 
-    retval = iptablesSpawn(NO_ERRORS, argv);
+    if (virRun(NULL, argv, &status) < 0)
+        retval = errno;
+
+    retval = 0;
 
  error:
     if (argv) {
@@ -508,8 +410,10 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
         (retval = iptablesAddRemoveChain(rules, action)))
         goto error;
 
-    if ((retval = iptablesSpawn(WITH_ERRORS, argv)))
+    if (virRun(NULL, argv, NULL) < 0) {
+        retval = errno;
         goto error;
+    }
 
     if (action == REMOVE &&
         (retval = iptablesAddRemoveChain(rules, action)))
@@ -599,7 +503,7 @@ iptRulesReload(iptRules *rules)
         orig = rule->argv[rule->flipflop];
         rule->argv[rule->flipflop] = (char *) "--delete";
 
-        if ((retval = iptablesSpawn(WITH_ERRORS, rule->argv)))
+        if (virRun(NULL, rule->argv, NULL) < 0)
             qemudLog(QEMUD_WARN, "Failed to remove iptables rule '%s' from chain '%s' in table '%s': %s",
                      rule->rule, rules->chain, rules->table, strerror(errno));
 
@@ -612,9 +516,9 @@ iptRulesReload(iptRules *rules)
                  rules->chain, rules->table, strerror(retval));
 
     for (i = 0; i < rules->nrules; i++)
-        if ((retval = iptablesSpawn(WITH_ERRORS, rules->rules[i].argv)))
+        if (virRun(NULL, rules->rules[i].argv, NULL) < 0)
             qemudLog(QEMUD_WARN, "Failed to add iptables rule '%s' to chain '%s' in table '%s': %s",
-                     rules->rules[i].rule, rules->chain, rules->table, strerror(retval));
+                     rules->rules[i].rule, rules->chain, rules->table, strerror(errno));
 }
 
 /**
