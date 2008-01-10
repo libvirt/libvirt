@@ -1,3 +1,8 @@
+Thu Jan 10 13:46:14 GMT 2008 Mark McLoughlin <markmc@redhat.com>
+
+	* src/util.c: change virExec() such that with --enable-debug,
+	stdout and stderr no longer go to /dev/null.
+
 Thu Jan 10 13:44:17 GMT 2008 Mark McLoughlin <markmc@redhat.com>
 
 	* src/util.[ch]: Add virRun() helper function (Dan Berrange)

@@ -157,10 +157,17 @@ _virExec(virConnectPtr conn,
 
     if (dup2(infd >= 0 ? infd : null, STDIN_FILENO) < 0)
         _exit(1);
+#ifndef ENABLE_DEBUG
     if (dup2(pipeout[1] > 0 ? pipeout[1] : null, STDOUT_FILENO) < 0)
         _exit(1);
     if (dup2(pipeerr[1] > 0 ? pipeerr[1] : null, STDERR_FILENO) < 0)
         _exit(1);
+#else /* ENABLE_DEBUG */
+    if (pipeout[1] > 0 && dup2(pipeout[1], STDOUT_FILENO) < 0)
+        _exit(1);
+    if (pipeerr[1] > 0 && dup2(pipeerr[1], STDERR_FILENO) < 0)
+        _exit(1);
+#endif /* ENABLE_DEBUG */
 
     close(null);
     if (pipeout[1] > 0)
