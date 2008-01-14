@@ -426,11 +426,11 @@ struct qemu_feature_flags {
 struct qemu_arch_info {
     const char *arch;
     int wordsize;
-    const char **machines;
+    const char *const *machines;
     const char *binary;
     const struct qemu_feature_flags *fflags;
 };
-extern struct qemu_arch_info qemudArchs[];
+extern const struct qemu_arch_info const qemudArchs[];
 
 #endif /* WITH_QEMU */
 

@@ -231,35 +231,35 @@ void qemudFreeVM(struct qemud_vm *vm) {
 
 /* The list of possible machine types for various architectures,
    as supported by QEMU - taken from 'qemu -M ?' for each arch */
-static const char *arch_info_x86_machines[] = {
+static const char *const arch_info_x86_machines[] = {
     "pc", "isapc", NULL
 };
-static const char *arch_info_mips_machines[] = {
+static const char *const arch_info_mips_machines[] = {
     "mips", NULL
 };
-static const char *arch_info_sparc_machines[] = {
+static const char *const arch_info_sparc_machines[] = {
     "sun4m", NULL
 };
-static const char *arch_info_ppc_machines[] = {
+static const char *const arch_info_ppc_machines[] = {
     "g3bw", "mac99", "prep", NULL
 };
 
 /* Feature flags for the architecture info */
-struct qemu_feature_flags arch_info_i686_flags [] = {
+static const struct qemu_feature_flags const arch_info_i686_flags [] = {
     { "pae",  1, 1 },
     { "acpi", 1, 1 },
     { "apic", 1, 0 },
     { NULL, -1, -1 }
 };
 
-struct qemu_feature_flags arch_info_x86_64_flags [] = {
+static const struct qemu_feature_flags const arch_info_x86_64_flags [] = {
     { "acpi", 1, 1 },
     { "apic", 1, 0 },
     { NULL, -1, -1 }
 };
 
 /* The archicture tables for supported QEMU archs */
-struct qemu_arch_info qemudArchs[] = { 
+const struct qemu_arch_info const qemudArchs[] = { 
     /* i686 must be in position 0 */
     {  "i686", 32, arch_info_x86_machines, "qemu", arch_info_i686_flags },
     /* x86_64 must be in position 1 */

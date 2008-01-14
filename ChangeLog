@@ -1,5 +1,10 @@
 2008-01-14  Jim Meyering  <meyering@redhat.com>
 
+	Clean up the global name space.
+	* src/qemu_conf.c: Add "static" and "const" attributes to some globals.
+	* src/qemu_conf.h: Update a declaration.
+	* src/qemu_driver.c (qemud_driver): Declare static.
+
 	Clean up global name space in examples and tests.
 	* docs/examples/suspend.c: Declare global "conn" to be static.
 	* tests/qemuxml2argvtest.c: Declare global "driver" to be static.

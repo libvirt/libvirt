@@ -107,7 +107,7 @@ static int qemudShutdownNetworkDaemon(virConnectPtr conn,
                                       struct qemud_driver *driver,
                                       struct qemud_network *network);
 
-struct qemud_driver *qemu_driver = NULL;
+static struct qemud_driver *qemu_driver = NULL;
 
 
 static
