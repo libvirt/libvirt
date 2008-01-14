@@ -3047,8 +3047,12 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
     if ((remoteAddr = addrToString(&sa, salen)) == NULL)
         goto cleanup;
 
-    if ((saslcb = remoteAuthMakeCallbacks(auth->credtype, auth->ncredtype)) == NULL)
-        goto cleanup;
+    if (auth) {
+        if ((saslcb = remoteAuthMakeCallbacks(auth->credtype, auth->ncredtype)) == NULL)
+            goto cleanup;
+    } else {
+        saslcb = NULL;
+    }
 
     /* Setup a handle for being a client */
     err = sasl_client_new("libvirt",
@@ -3161,15 +3165,21 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
             goto cleanup;
         }
         /* Run the authentication callback */
-        if ((*(auth->cb))(cred, ncred, auth->cbdata) < 0) {
+        if (auth && auth->cb) {
+            if ((*(auth->cb))(cred, ncred, auth->cbdata) < 0) {
+                __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                                 VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                                 "Failed to collect auth credentials");
+                goto cleanup;
+            }
+            remoteAuthFillInteract(cred, interact);
+            goto restart;
+        } else {
             __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                              VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                             "Failed to collect auth credentials");
+                             "No authentication callback available");
             goto cleanup;
-            return -1;
         }
-        remoteAuthFillInteract(cred, interact);
-        goto restart;
     }
     free(iret.mechlist);
 
@@ -3233,15 +3243,22 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
                 return -1;
             }
             /* Run the authentication callback */
-            if ((*(auth->cb))(cred, ncred, auth->cbdata) < 0) {
+            if (auth && auth->cb) {
+                if ((*(auth->cb))(cred, ncred, auth->cbdata) < 0) {
+                    __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
+                                     VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                                     "Failed to collect auth credentials");
+                    goto cleanup;
+                    return -1;
+                }
+                remoteAuthFillInteract(cred, interact);
+                goto restep;
+            } else {
                 __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                                  VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
-                                 "Failed to collect auth credentials");
+                                 "No authentication callback available");
                 goto cleanup;
-                return -1;
             }
-            remoteAuthFillInteract(cred, interact);
-            goto restep;
         }
 
         if (serverin) {
