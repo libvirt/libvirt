@@ -16,7 +16,7 @@
 
 static char *progname;
 static char *abs_top_srcdir;
-struct qemud_driver driver;
+static struct qemud_driver driver;
 
 #define MAX_FILE 4096
 

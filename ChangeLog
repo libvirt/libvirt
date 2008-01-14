@@ -1,3 +1,10 @@
+2008-01-14  Jim Meyering  <meyering@redhat.com>
+
+	Clean up global name space in examples and tests.
+	* docs/examples/suspend.c: Declare global "conn" to be static.
+	* tests/qemuxml2argvtest.c: Declare global "driver" to be static.
+	* tests/qemuxml2xmltest.c: Likewise.
+
 Sun Jan 13 22:59:53 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/remote_internal.c: Refactor code to make error patches

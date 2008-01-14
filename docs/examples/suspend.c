@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <libvirt/libvirt.h>
 
-virConnectPtr conn = NULL; /* the hypervisor connection */
+static virConnectPtr conn = NULL; /* the hypervisor connection */
 
 /**
  * checkDomainState:
