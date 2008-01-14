@@ -26,10 +26,32 @@
 int
 main (int argc, char **argv)
 {
-  /* Assume stdin is seekable iff argc > 1.  */
+  /* Assume stdin is non-empty and seekable iff argc > 1.  */
   int expected = argc > 1 ? 0 : -1;
   /* Exit with success only if fseek/fseeko agree.  */
   int r1 = fseeko (stdin, (off_t)0, SEEK_CUR);
   int r2 = fseek (stdin, (long)0, SEEK_CUR);
-  return ! (r1 == r2 && r1 == expected);
+  if (r1 != r2 || r1 != expected)
+    return 1;
+  if (argc > 1)
+    {
+      /* Test that fseek discards ungetc data.  */
+      int ch = fgetc (stdin);
+      if (ch == EOF)
+        return 1;
+      if (ungetc (ch ^ 0xff, stdin) != (ch ^ 0xff))
+        return 1;
+      if (fseeko (stdin, (off_t) 0, SEEK_END))
+        return 1;
+      if (fgetc (stdin) != EOF)
+        return 1;
+      /* Test that fseek resets end-of-file marker.  */
+      if (!feof (stdin))
+        return 1;
+      if (fseeko (stdin, (off_t) 0, SEEK_END))
+        return 1;
+      if (feof (stdin))
+        return 1;
+    }
+  return 0;
 }

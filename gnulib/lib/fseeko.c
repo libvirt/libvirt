@@ -111,6 +111,9 @@ rpl_fseeko (FILE *fp, off_t offset, int whence)
 #if defined __sferror               /* FreeBSD, NetBSD, OpenBSD, MacOS X, Cygwin */
 	  fp->_offset = pos;
 	  fp->_flags |= __SOFF;
+	  fp->_flags &= ~__SEOF;
+#elif defined _IOERR                /* AIX, HP-UX, IRIX, OSF/1, Solaris, mingw */
+          fp->_flag &= ~_IOEOF;
 #endif
 	  return 0;
 	}

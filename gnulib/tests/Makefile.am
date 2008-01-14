@@ -34,12 +34,13 @@ AM_CPPFLAGS = \
   -I../.. -I$(srcdir)/../.. \
   -I../../gnulib/lib -I$(srcdir)/../../gnulib/lib
 
-LDADD = libtests.a $(LIBTESTS_LIBDEPS) ../../gnulib/lib/libgnu.la
+LDADD = libtests.a ../../gnulib/lib/libgnu.la libtests.a $(LIBTESTS_LIBDEPS)
 
 libtests_a_SOURCES =
 libtests_a_LIBADD = $(gltests_LIBOBJS)
 libtests_a_DEPENDENCIES = $(gltests_LIBOBJS)
 EXTRA_libtests_a_SOURCES =
+AM_LIBTOOLFLAGS = --preserve-dup-deps
 
 ## begin gnulib module alloca-opt-tests
 

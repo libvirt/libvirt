@@ -1,5 +1,25 @@
 2008-01-14  Jim Meyering  <meyering@redhat.com>
 
+	Update files from gnulib.
+	* gnulib/lib/Makefile.am: Update.
+	* gnulib/lib/float.in.h: Likewise.
+	* gnulib/lib/fseeko.c: Likewise.
+	* gnulib/lib/printf-parse.c: Likewise.
+	* gnulib/lib/stdint.in.h: Likewise.
+	* gnulib/lib/stdio.in.h: Likewise.
+	* gnulib/lib/stdlib.in.h: Likewise.
+	* gnulib/lib/string.in.h: Likewise.
+	* gnulib/lib/unistd.in.h: Likewise.
+	* gnulib/lib/vasnprintf.h: Likewise.
+	* gnulib/m4/alloca.m4: Likewise.
+	* gnulib/m4/float_h.m4: Likewise.
+	* gnulib/m4/gnulib-comp.m4: Likewise.
+	* gnulib/m4/stdlib_h.m4: Likewise.
+	* gnulib/m4/string_h.m4: Likewise.
+	* gnulib/m4/unistd_h.m4: Likewise.
+	* gnulib/tests/Makefile.am: Likewise.
+	* gnulib/tests/test-fseeko.c: Likewise.
+
 	Clean up the global name space.
 	* src/qemu_conf.c: Add "static" and "const" attributes to some globals.
 	* src/qemu_conf.h: Update a declaration.
@@ -77,7 +97,7 @@ Thu Jan 10 13:51:00 GMT 2008 Mark McLoughlin <markmc@redhat.com>
 Thu Jan 10 13:50:11 GMT 2008 Mark McLoughlin <markmc@redhat.com>
 
 	* src/iptables.c: Re-name the "flipflop" variable to "command_idx"
-	
+
 Thu Jan 10 13:49:01 GMT 2008 Mark McLoughlin <markmc@redhat.com>
 
 	* src/iptables.c:  make use of virFileMakePath(),

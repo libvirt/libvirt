@@ -1,5 +1,5 @@
 /* Formatted output to strings.
-   Copyright (C) 1999-2000, 2002-2003, 2006-2007 Free Software Foundation, Inc.
+   Copyright (C) 1999-2000, 2002-2003, 2006-2008 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as published by
@@ -392,6 +392,44 @@ PRINTF_PARSE (const CHAR_T *format, DIRECTIVES *d, arguments *a)
 			}
 		      cp++;
 		    }
+#if defined __APPLE__ && defined __MACH__
+		  /* On MacOS X 10.3, PRIdMAX is defined as "qd".
+		     We cannot change it to "lld" because PRIdMAX must also
+		     be understood by the system's printf routines.  */
+		  else if (*cp == 'q')
+		    {
+		      if (64 / 8 > sizeof (long))
+			{
+			  /* int64_t = long long */
+			  flags += 16;
+			}
+		      else
+			{
+			  /* int64_t = long */
+			  flags += 8;
+			}
+		      cp++;
+		    }
+#endif
+#if (defined _WIN32 || defined __WIN32__) && ! defined __CYGWIN__
+		  /* On native Win32, PRIdMAX is defined as "I64d".
+		     We cannot change it to "lld" because PRIdMAX must also
+		     be understood by the system's printf routines.  */
+		  else if (*cp == 'I' && cp[1] == '6' && cp[2] == '4')
+		    {
+		      if (64 / 8 > sizeof (long))
+			{
+			  /* __int64 = long long */
+			  flags += 16;
+			}
+		      else
+			{
+			  /* __int64 = long */
+			  flags += 8;
+			}
+		      cp += 3;
+		    }
+#endif
 		  else
 		    break;
 		}

@@ -181,7 +181,10 @@ extern int getlogin_r (char *name, size_t size);
 
 
 #if @GNULIB_GETPAGESIZE@
-# if !@HAVE_GETPAGESIZE@
+# if @REPLACE_GETPAGESIZE@
+#  define getpagesize rpl_getpagesize
+extern int getpagesize (void);
+# elif !@HAVE_GETPAGESIZE@
 /* This is for POSIX systems.  */
 #  if !defined getpagesize && defined _SC_PAGESIZE
 #   if ! (defined __VMS && __VMS_VER < 70000000)

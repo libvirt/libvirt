@@ -1,4 +1,4 @@
-# stdlib_h.m4 serial 4
+# stdlib_h.m4 serial 5
 dnl Copyright (C) 2007 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
@@ -26,12 +26,17 @@ AC_DEFUN([gl_STDLIB_H_DEFAULTS],
   GNULIB_MKDTEMP=0;       AC_SUBST([GNULIB_MKDTEMP])
   GNULIB_MKSTEMP=0;       AC_SUBST([GNULIB_MKSTEMP])
   GNULIB_PUTENV=0;        AC_SUBST([GNULIB_PUTENV])
+  GNULIB_SETENV=0;        AC_SUBST([GNULIB_SETENV])
+  GNULIB_UNSETENV=0;      AC_SUBST([GNULIB_UNSETENV])
   dnl Assume proper GNU behavior unless another module says otherwise.
   HAVE_CALLOC_POSIX=1;    AC_SUBST([HAVE_CALLOC_POSIX])
   HAVE_GETSUBOPT=1;       AC_SUBST([HAVE_GETSUBOPT])
   HAVE_MALLOC_POSIX=1;    AC_SUBST([HAVE_MALLOC_POSIX])
   HAVE_MKDTEMP=1;         AC_SUBST([HAVE_MKDTEMP])
   HAVE_REALLOC_POSIX=1;   AC_SUBST([HAVE_REALLOC_POSIX])
+  HAVE_SETENV=1;          AC_SUBST([HAVE_SETENV])
+  HAVE_UNSETENV=1;        AC_SUBST([HAVE_UNSETENV])
   REPLACE_MKSTEMP=0;      AC_SUBST([REPLACE_MKSTEMP])
   REPLACE_PUTENV=0;       AC_SUBST([REPLACE_PUTENV])
+  VOID_UNSETENV=0;        AC_SUBST([VOID_UNSETENV])
 ])

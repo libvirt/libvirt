@@ -23,6 +23,12 @@
 
 #ifndef _GL_STDINT_H
 
+/* When including a system file that in turn includes <inttypes.h>,
+   use the system <inttypes.h>, not our substitute.  This avoids
+   problems with (for example) VMS, whose <sys/bitypes.h> includes
+   <inttypes.h>.  */
+#define _GL_JUST_INCLUDE_SYSTEM_INTTYPES_H
+
 /* Get those types that are already defined in other system include
    files, so that we can "#define int8_t signed char" below without
    worrying about a later system include file containing a "typedef
@@ -66,9 +72,7 @@
   /* In OpenBSD 3.8, <inttypes.h> includes <machine/types.h>, which defines
      int{8,16,32,64}_t, uint{8,16,32,64}_t and __BIT_TYPES_DEFINED__.
      <inttypes.h> also defines intptr_t and uintptr_t.  */
-# define _GL_JUST_INCLUDE_SYSTEM_INTTYPES_H
 # include <inttypes.h>
-# undef _GL_JUST_INCLUDE_SYSTEM_INTTYPES_H
 #elif @HAVE_SYS_INTTYPES_H@
   /* Solaris 7 <sys/inttypes.h> has the types except the *_fast*_t types, and
      the macros except for *_FAST*_*, INTPTR_MIN, PTRDIFF_MIN, PTRDIFF_MAX.  */
@@ -90,6 +94,8 @@
 # endif
 
 #endif
+
+#undef _GL_JUST_INCLUDE_SYSTEM_INTTYPES_H
 
 /* Minimum and maximum values for a integer type under the usual assumption.
    Return an unspecified value if BITS == 0, adding a check to pacify
