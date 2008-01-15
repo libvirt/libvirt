@@ -1,3 +1,9 @@
+Mon Jan 15 09:18:53 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/remote_internal.c: Fix off by one in checking SSH
+	argv for NULL. Fix format args in error message to avoid
+	compile warning.
+
 2008-01-14  Jim Meyering  <meyering@redhat.com>
 
 	Update files from gnulib.

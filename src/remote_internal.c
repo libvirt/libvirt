@@ -670,11 +670,12 @@ doRemoteOpen (virConnectPtr conn,
         cmd_argv[j++] = strdup (sockname ? sockname : LIBVIRTD_PRIV_UNIX_SOCKET);
         cmd_argv[j++] = 0;
         assert (j == nr_args);
-        for (j = 0; j < nr_args; j++)
+        for (j = 0; j < (nr_args-1); j++) {
             if (cmd_argv[j] == NULL) {
                 error (conn, VIR_ERR_SYSTEM_ERROR, strerror (ENOMEM));
                 goto failed;
             }
+        }
     }
 
         /*FALLTHROUGH*/
@@ -3177,7 +3178,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
         }
         __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                          VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL,
-                         0, 0, msg);
+                         0, 0, "%s", msg);
         goto cleanup;
     }
     free(iret.mechlist);
@@ -3253,7 +3254,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
             }
             __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                              VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL,
-                             0, 0, msg);
+                             0, 0, "%s", msg);
             goto cleanup;
         }
 
