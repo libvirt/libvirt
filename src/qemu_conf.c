@@ -218,6 +218,7 @@ void qemudFreeVMDef(struct qemud_vm_def *def) {
         input = input->next;
         free(prev);
     }
+    xmlFree(def->keymap);
     free(def);
 }
 
@@ -1245,6 +1246,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
             else
                 strcpy(def->vncListen, driver->vncListen);
             def->vncListen[BR_INET_ADDR_MAXLEN-1] = '\0';
+            def->keymap = (char *) xmlGetProp(obj->nodesetval->nodeTab[0], BAD_CAST "keymap");
             xmlFree(vncport);
             xmlFree(vnclisten);
         } else if (!strcmp((char *)prop, "sdl")) {
@@ -1807,6 +1809,12 @@ int qemudBuildCommandLine(virConnectPtr conn,
             goto no_memory;
         if (!((*argv)[++n] = strdup(vncdisplay)))
             goto no_memory;
+        if (vm->def->keymap) {
+            if (!((*argv)[++n] = strdup("-k")))
+                goto no_memory;
+            if (!((*argv)[++n] = strdup(vm->def->keymap)))
+                goto no_memory;
+        }
     } else if (vm->def->graphicsType == QEMUD_GRAPHICS_NONE) {
         /* Nada - we added -nographic earlier in this function */
     } else {
@@ -2916,6 +2924,11 @@ char *qemudGenerateXML(virConnectPtr conn,
         if (def->vncListen[0] &&
             virBufferVSprintf(buf, " listen='%s'",
                               def->vncListen) < 0)
+            goto no_memory;
+
+        if (def->keymap &&
+            virBufferVSprintf(buf, " keymap='%s'",
+                              def->keymap) < 0)
             goto no_memory;
 
         if (virBufferAdd(buf, "/>\n", -1) < 0)

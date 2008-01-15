@@ -1,4 +1,9 @@
-Mon Jan 15 09:18:53 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+Tue Jan 15 10:01:53 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/qemu_conf.h, src/qemu_conf.c: Add support for 'keymap'
+	parameter wrt to VNC servers (Daniel Hokka Zakrisson)
+
+Tue Jan 15 09:18:53 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/remote_internal.c: Fix off by one in checking SSH
 	argv for NULL. Fix format args in error message to avoid
