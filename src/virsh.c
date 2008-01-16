@@ -333,7 +333,7 @@ cmdHelp(vshControl * ctl, vshCmd * cmd)
     if (!cmdname) {
         vshCmdDef *def;
 
-        vshPrint(ctl, _("Commands:\n\n"));
+        vshPrint(ctl, "%s", _("Commands:\n\n"));
         for (def = commands; def->name; def++)
             vshPrint(ctl, "    %-15s %s\n", def->name,
                      N_(vshCmddefGetInfo(def, "help")));
@@ -418,7 +418,7 @@ cmdConnect(vshControl * ctl, vshCmd * cmd)
 
     if (ctl->conn) {
         if (virConnectClose(ctl->conn) != 0) {
-            vshError(ctl, FALSE,
+            vshError(ctl, FALSE, "%s",
                      _("Failed to disconnect from the hypervisor"));
             return FALSE;
         }
@@ -438,7 +438,7 @@ cmdConnect(vshControl * ctl, vshCmd * cmd)
     }
 
     if (!ctl->conn)
-        vshError(ctl, FALSE, _("Failed to connect to the hypervisor"));
+        vshError(ctl, FALSE, "%s", _("Failed to connect to the hypervisor"));
 
     return ctl->conn ? TRUE : FALSE;
 }
@@ -497,7 +497,7 @@ cmdConsole(vshControl * ctl, vshCmd * cmd)
         if (vshRunConsole((const char *)obj->stringval) == 0)
             ret = TRUE;
     } else {
-        vshPrintExtra(ctl, _("No console available for domain\n"));
+        vshPrintExtra(ctl, "%s", _("No console available for domain\n"));
     }
     xmlXPathFreeObject(obj);
 
@@ -515,7 +515,7 @@ cmdConsole(vshControl * ctl, vshCmd * cmd)
 static int
 cmdConsole(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 {
-    vshError (ctl, FALSE, _("console not implemented on this platform"));
+    vshError (ctl, FALSE, "%s", _("console not implemented on this platform"));
     return FALSE;
 }
 
@@ -555,14 +555,14 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
     if (active) {
         maxid = virConnectNumOfDomains(ctl->conn);
         if (maxid < 0) {
-            vshError(ctl, FALSE, _("Failed to list active domains"));
+            vshError(ctl, FALSE, "%s", _("Failed to list active domains"));
             return FALSE;
         }
         if (maxid) {
             ids = vshMalloc(ctl, sizeof(int) * maxid);
 
             if ((maxid = virConnectListDomains(ctl->conn, &ids[0], maxid)) < 0) {
-                vshError(ctl, FALSE, _("Failed to list active domains"));
+                vshError(ctl, FALSE, "%s", _("Failed to list active domains"));
                 free(ids);
                 return FALSE;
             }
@@ -573,7 +573,7 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
     if (inactive) {
         maxname = virConnectNumOfDefinedDomains(ctl->conn);
         if (maxname < 0) {
-            vshError(ctl, FALSE, _("Failed to list inactive domains"));
+            vshError(ctl, FALSE, "%s", _("Failed to list inactive domains"));
             if (ids)
                 free(ids);
             return FALSE;
@@ -582,7 +582,7 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
             names = vshMalloc(ctl, sizeof(char *) * maxname);
 
             if ((maxname = virConnectListDefinedDomains(ctl->conn, names, maxname)) < 0) {
-                vshError(ctl, FALSE, _("Failed to list inactive domains"));
+                vshError(ctl, FALSE, "%s", _("Failed to list inactive domains"));
                 if (ids)
                     free(ids);
                 free(names);
@@ -1067,7 +1067,7 @@ cmdStart(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (virDomainGetID(dom) != (unsigned int)-1) {
-        vshError(ctl, FALSE, _("Domain is already active"));
+        vshError(ctl, FALSE, "%s", _("Domain is already active"));
 	virDomainFree(dom);
         return FALSE;
     }
@@ -1173,7 +1173,7 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
     if(vshCommandOptBool(cmd, "weight")) {
         weight = vshCommandOptInt(cmd, "weight", &weightfound);
         if (!weightfound) {
-            vshError(ctl, FALSE, _("Invalid value of weight"));
+            vshError(ctl, FALSE, "%s", _("Invalid value of weight"));
             goto cleanup;
         } else {
             nr_inputparams++;
@@ -1183,7 +1183,7 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
     if(vshCommandOptBool(cmd, "cap")) {
         cap = vshCommandOptInt(cmd, "cap", &capfound);
         if (!capfound) {
-            vshError(ctl, FALSE, _("Invalid value of cap"));
+            vshError(ctl, FALSE, "%s", _("Invalid value of cap"));
             goto cleanup;
         } else {
             nr_inputparams++;
@@ -1713,7 +1713,7 @@ cmdVcpuinfo(vshControl * ctl, vshCmd * cmd)
         }
     } else {
         if (info.state == VIR_DOMAIN_SHUTOFF) {
-            vshError(ctl, FALSE,
+            vshError(ctl, FALSE, "%s",
                  _("Domain shut off, virtual CPUs not present."));
         }
         ret = FALSE;
@@ -1793,7 +1793,7 @@ cmdVcpupin(vshControl * ctl, vshCmd * cmd)
      * numbers and give an intelligent error message if not.
      */
     if (cpulist[0] == '\0') {
-        vshError(ctl, FALSE, _("cpulist: Invalid format. Empty string."));
+        vshError(ctl, FALSE, "%s", _("cpulist: Invalid format. Empty string."));
         virDomainFree (dom);
         return FALSE;
     }
@@ -1885,7 +1885,7 @@ cmdSetvcpus(vshControl * ctl, vshCmd * cmd)
 
     count = vshCommandOptInt(cmd, "count", &count);
     if (count <= 0) {
-        vshError(ctl, FALSE, _("Invalid number of virtual CPUs."));
+        vshError(ctl, FALSE, "%s", _("Invalid number of virtual CPUs."));
         virDomainFree(dom);
         return FALSE;
     }
@@ -1897,7 +1897,7 @@ cmdSetvcpus(vshControl * ctl, vshCmd * cmd)
     }
 
     if (count > maxcpu) {
-        vshError(ctl, FALSE, _("Too many virtual CPUs."));
+        vshError(ctl, FALSE, "%s", _("Too many virtual CPUs."));
         virDomainFree(dom);
         return FALSE;
     }
@@ -1949,7 +1949,7 @@ cmdSetmem(vshControl * ctl, vshCmd * cmd)
 
     if (virDomainGetInfo(dom, &info) != 0) {
         virDomainFree(dom);
-        vshError(ctl, FALSE, _("Unable to verify MaxMemorySize"));
+        vshError(ctl, FALSE, "%s", _("Unable to verify MaxMemorySize"));
         return FALSE;
     }
 
@@ -2006,20 +2006,20 @@ cmdSetmaxmem(vshControl * ctl, vshCmd * cmd)
 
     if (virDomainGetInfo(dom, &info) != 0) {
         virDomainFree(dom);
-        vshError(ctl, FALSE, _("Unable to verify current MemorySize"));
+        vshError(ctl, FALSE, "%s", _("Unable to verify current MemorySize"));
         return FALSE;
     }
 
     if (kilobytes < info.memory) {
         if (virDomainSetMemory(dom, kilobytes) != 0) {
             virDomainFree(dom);
-            vshError(ctl, FALSE, _("Unable to shrink current MemorySize"));
+            vshError(ctl, FALSE, "%s", _("Unable to shrink current MemorySize"));
             return FALSE;
         }
     }
 
     if (virDomainSetMaxMemory(dom, kilobytes) != 0) {
-        vshError(ctl, FALSE, _("Unable to change MaxMemorySize"));
+        vshError(ctl, FALSE, "%s", _("Unable to change MaxMemorySize"));
         ret = FALSE;
     }
 
@@ -2046,7 +2046,7 @@ cmdNodeinfo(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         return FALSE;
 
     if (virNodeGetInfo(ctl->conn, &info) < 0) {
-        vshError(ctl, FALSE, _("failed to get node information"));
+        vshError(ctl, FALSE, "%s", _("failed to get node information"));
         return FALSE;
     }
     vshPrint(ctl, "%-20s %s\n", _("CPU model:"), info.model);
@@ -2080,7 +2080,7 @@ cmdCapabilities (vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         return FALSE;
 
     if ((caps = virConnectGetCapabilities (ctl->conn)) == NULL) {
-        vshError(ctl, FALSE, _("failed to get capabilities"));
+        vshError(ctl, FALSE, "%s", _("failed to get capabilities"));
         return FALSE;
     }
     vshPrint (ctl, "%s\n", caps);
@@ -2222,7 +2222,7 @@ cmdDomuuid(vshControl * ctl, vshCmd * cmd)
     if (virDomainGetUUIDString(dom, uuid) != -1)
         vshPrint(ctl, "%s\n", uuid);
     else
-        vshError(ctl, FALSE, _("failed to get domain UUID"));
+        vshError(ctl, FALSE, "%s", _("failed to get domain UUID"));
 
     return TRUE;
 }
@@ -2263,7 +2263,7 @@ cmdMigrate (vshControl *ctl, vshCmd *cmd)
 
     desturi = vshCommandOptString (cmd, "desturi", &found);
     if (!found) {
-        vshError (ctl, FALSE, _("migrate: Missing desturi"));
+        vshError (ctl, FALSE, "%s", _("migrate: Missing desturi"));
         goto done;
     }
 
@@ -2550,7 +2550,7 @@ cmdNetworkList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
     if (active) {
         maxactive = virConnectNumOfNetworks(ctl->conn);
         if (maxactive < 0) {
-            vshError(ctl, FALSE, _("Failed to list active networks"));
+            vshError(ctl, FALSE, "%s", _("Failed to list active networks"));
             return FALSE;
         }
         if (maxactive) {
@@ -2558,7 +2558,7 @@ cmdNetworkList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 
             if ((maxactive = virConnectListNetworks(ctl->conn, activeNames,
 	                                            maxactive)) < 0) {
-                vshError(ctl, FALSE, _("Failed to list active networks"));
+                vshError(ctl, FALSE, "%s", _("Failed to list active networks"));
                 free(activeNames);
                 return FALSE;
             }
@@ -2569,7 +2569,7 @@ cmdNetworkList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
     if (inactive) {
         maxinactive = virConnectNumOfDefinedNetworks(ctl->conn);
         if (maxinactive < 0) {
-            vshError(ctl, FALSE, _("Failed to list inactive networks"));
+            vshError(ctl, FALSE, "%s", _("Failed to list inactive networks"));
             if (activeNames)
                 free(activeNames);
             return FALSE;
@@ -2578,7 +2578,7 @@ cmdNetworkList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
             inactiveNames = vshMalloc(ctl, sizeof(char *) * maxinactive);
 
             if ((maxinactive = virConnectListDefinedNetworks(ctl->conn, inactiveNames, maxinactive)) < 0) {
-                vshError(ctl, FALSE, _("Failed to list inactive networks"));
+                vshError(ctl, FALSE, "%s", _("Failed to list inactive networks"));
                 if (activeNames)
                     free(activeNames);
                 free(inactiveNames);
@@ -2785,7 +2785,7 @@ cmdNetworkUuid(vshControl * ctl, vshCmd * cmd)
     if (virNetworkGetUUIDString(network, uuid) != -1)
         vshPrint(ctl, "%s\n", uuid);
     else
-        vshError(ctl, FALSE, _("failed to get network UUID"));
+        vshError(ctl, FALSE, "%s", _("failed to get network UUID"));
 
     return TRUE;
 }
@@ -2820,7 +2820,7 @@ cmdVersion(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 
     hvType = virConnectGetType(ctl->conn);
     if (hvType == NULL) {
-        vshError(ctl, FALSE, _("failed to get hypervisor type"));
+        vshError(ctl, FALSE, "%s", _("failed to get hypervisor type"));
         return FALSE;
     }
 
@@ -2834,7 +2834,7 @@ cmdVersion(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 
     ret = virGetVersion(&libVersion, hvType, &apiVersion);
     if (ret < 0) {
-        vshError(ctl, FALSE, _("failed to get the library version"));
+        vshError(ctl, FALSE, "%s", _("failed to get the library version"));
         return FALSE;
     }
     major = libVersion / 1000000;
@@ -2853,7 +2853,7 @@ cmdVersion(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 
     ret = virConnectGetVersion(ctl->conn, &hvVersion);
     if (ret < 0) {
-        vshError(ctl, FALSE, _("failed to get the hypervisor version"));
+        vshError(ctl, FALSE, "%s", _("failed to get the hypervisor version"));
         return FALSE;
     }
     if (hvVersion == 0) {
@@ -2890,7 +2890,7 @@ cmdHostname (vshControl *ctl, vshCmd *cmd ATTRIBUTE_UNUSED)
 
     hostname = virConnectGetHostname (ctl->conn);
     if (hostname == NULL) {
-        vshError(ctl, FALSE, _("failed to get hostname"));
+        vshError(ctl, FALSE, "%s", _("failed to get hostname"));
         return FALSE;
     }
 
@@ -2919,7 +2919,7 @@ cmdURI (vshControl *ctl, vshCmd *cmd ATTRIBUTE_UNUSED)
 
     uri = virConnectGetURI (ctl->conn);
     if (uri == NULL) {
-        vshError(ctl, FALSE, _("failed to get URI"));
+        vshError(ctl, FALSE, "%s", _("failed to get URI"));
         return FALSE;
     }
 
@@ -3345,12 +3345,12 @@ cmdDetachInterface(vshControl * ctl, vshCmd * cmd)
                      XML_PARSE_NOWARNING);
     free(doc);
     if (!xml) {
-        vshError(ctl, FALSE, _("Failed to get interface information"));
+        vshError(ctl, FALSE, "%s", _("Failed to get interface information"));
         goto cleanup;
     }
     ctxt = xmlXPathNewContext(xml);
     if (!ctxt) {
-        vshError(ctl, FALSE, _("Failed to get interface information"));
+        vshError(ctl, FALSE, "%s", _("Failed to get interface information"));
         goto cleanup;
     }
 
@@ -3386,12 +3386,12 @@ cmdDetachInterface(vshControl * ctl, vshCmd * cmd)
  hit:
     xml_buf = xmlBufferCreate();
     if (!xml_buf) {
-        vshError(ctl, FALSE, _("Failed to allocate memory"));
+        vshError(ctl, FALSE, "%s", _("Failed to allocate memory"));
         goto cleanup;
     }
 
     if(xmlNodeDump(xml_buf, xml, obj->nodesetval->nodeTab[i], 0, 0) < 0){
-        vshError(ctl, FALSE, _("Failed to create XML"));
+        vshError(ctl, FALSE, "%s", _("Failed to create XML"));
         goto cleanup;
     }
 
@@ -3627,19 +3627,19 @@ cmdDetachDisk(vshControl * ctl, vshCmd * cmd)
                      XML_PARSE_NOWARNING);
     free(doc);
     if (!xml) {
-        vshError(ctl, FALSE, _("Failed to get disk information"));
+        vshError(ctl, FALSE, "%s", _("Failed to get disk information"));
         goto cleanup;
     }
     ctxt = xmlXPathNewContext(xml);
     if (!ctxt) {
-        vshError(ctl, FALSE, _("Failed to get disk information"));
+        vshError(ctl, FALSE, "%s", _("Failed to get disk information"));
         goto cleanup;
     }
 
     obj = xmlXPathEval(BAD_CAST "/domain/devices/disk", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
         (obj->nodesetval == NULL) || (obj->nodesetval->nodeNr == 0)) {
-        vshError(ctl, FALSE, _("Failed to get disk information"));
+        vshError(ctl, FALSE, "%s", _("Failed to get disk information"));
         goto cleanup;
     }
 
@@ -3664,12 +3664,12 @@ cmdDetachDisk(vshControl * ctl, vshCmd * cmd)
  hit:
     xml_buf = xmlBufferCreate();
     if (!xml_buf) {
-        vshError(ctl, FALSE, _("Failed to allocate memory"));
+        vshError(ctl, FALSE, "%s", _("Failed to allocate memory"));
         goto cleanup;
     }
 
     if(xmlNodeDump(xml_buf, xml, obj->nodesetval->nodeTab[i], 0, 0) < 0){
-        vshError(ctl, FALSE, _("Failed to create XML"));
+        vshError(ctl, FALSE, "%s", _("Failed to create XML"));
         goto cleanup;
     }
 
@@ -4018,7 +4018,7 @@ vshCommandOptDomainBy(vshControl * ctl, vshCmd * cmd, const char *optname,
     int id;
 
     if (!(n = vshCommandOptString(cmd, optname, NULL))) {
-        vshError(ctl, FALSE, _("undefined domain name or id"));
+        vshError(ctl, FALSE, "%s", _("undefined domain name or id"));
         return NULL;
     }
 
@@ -4063,7 +4063,7 @@ vshCommandOptNetworkBy(vshControl * ctl, vshCmd * cmd, const char *optname,
     char *n;
 
     if (!(n = vshCommandOptString(cmd, optname, NULL))) {
-        vshError(ctl, FALSE, _("undefined network name"));
+        vshError(ctl, FALSE, "%s", _("undefined network name"));
         return NULL;
     }
 
@@ -4189,7 +4189,7 @@ vshCommandGetToken(vshControl * ctl, char *str, char **end, char **res)
         sz++;
     }
     if (quote) {
-        vshError(ctl, FALSE, _("missing \""));
+        vshError(ctl, FALSE, "%s", _("missing \""));
         return VSH_TK_ERROR;
     }
     if (tkstr == NULL || *tkstr == '\0' || p == NULL)
@@ -4399,7 +4399,7 @@ vshConnectionUsability(vshControl * ctl, virConnectPtr conn, int showerror)
      */
     if (!conn) {
         if (showerror)
-            vshError(ctl, FALSE, _("no valid connection"));
+            vshError(ctl, FALSE, "%s", _("no valid connection"));
         return FALSE;
     }
     return TRUE;
@@ -4549,7 +4549,7 @@ vshInit(vshControl * ctl)
      * such as "help".
      */
     if (!ctl->conn) {
-        vshError(ctl, FALSE, _("failed to connect to the hypervisor"));
+        vshError(ctl, FALSE, "%s", _("failed to connect to the hypervisor"));
         return FALSE;
     }
 
@@ -4580,18 +4580,20 @@ vshOpenLogFile(vshControl *ctl)
             case ENOENT:
                 break;
             default:
-                vshError(ctl, TRUE, _("failed to get the log file information"));
+                vshError(ctl, TRUE, "%s",
+                         _("failed to get the log file information"));
                 break;
         }
     } else {
         if (!S_ISREG(st.st_mode)) {
-            vshError(ctl, TRUE, _("the log path is not a file"));
+            vshError(ctl, TRUE, "%s", _("the log path is not a file"));
         }
     }
 
     /* log file open */
     if ((ctl->log_fd = open(ctl->logfile, LOGFILE_FLAGS, FILE_MODE)) < 0) {
-        vshError(ctl, TRUE, _("failed to open the log file. check the log file path"));
+        vshError(ctl, TRUE, "%s",
+                 _("failed to open the log file. check the log file path"));
     }
 }
 
@@ -4659,7 +4661,7 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format, va_list
     /* write log */
     if (write(ctl->log_fd, msg_buf, strlen(msg_buf)) == -1) {
         vshCloseLogFile(ctl);
-        vshError(ctl, FALSE, _("failed to write the log file"));
+        vshError(ctl, FALSE, "%s", _("failed to write the log file"));
     }
 }
 
@@ -4887,7 +4889,7 @@ vshUsage(vshControl * ctl, const char *cmdname)
                     "    %-15s %s\n", cmd->name, N_(vshCmddefGetInfo(cmd,
                                                                      "help")));
 
-        fprintf(stdout,
+        fprintf(stdout, "%s",
                 _("\n  (specify help <command> for details about the command)\n\n"));
         return;
     }
@@ -5072,7 +5074,7 @@ main(int argc, char **argv)
             vshPrint(ctl,
                      _("Welcome to %s, the virtualization interactive terminal.\n\n"),
                      progname);
-            vshPrint(ctl,
+            vshPrint(ctl, "%s",
                      _("Type:  'help' for help with commands\n"
                        "       'quit' to quit\n\n"));
         }

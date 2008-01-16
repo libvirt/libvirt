@@ -499,10 +499,10 @@ retry:
      */
     if ((res == NULL) || (res->version != PROXY_PROTO_VERSION) ||
         (res->len < sizeof(virProxyPacket))) {
-	fprintf(stderr,
-		_("Communication error with proxy: malformed packet\n"));
-	xenProxyClose(conn);
-	return(-1);
+        fprintf(stderr, "%s",
+                _("Communication error with proxy: malformed packet\n"));
+        xenProxyClose(conn);
+        return(-1);
     }
     if (res->serial != serial) {
         TODO /* Asynchronous communication */
