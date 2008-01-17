@@ -60,8 +60,9 @@ libvirt_virDomainBlockStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     if (c_retval < 0)
         return VIR_PY_NONE;
 
-    /* convert to a Python tupple of long objects */
-    info = PyTuple_New(5);
+    /* convert to a Python tuple of long objects */
+    if ((info = PyTuple_New(5)) == NULL)
+        return VIR_PY_NONE;
     PyTuple_SetItem(info, 0, PyLong_FromLongLong(stats.rd_req));
     PyTuple_SetItem(info, 1, PyLong_FromLongLong(stats.rd_bytes));
     PyTuple_SetItem(info, 2, PyLong_FromLongLong(stats.wr_req));
@@ -88,8 +89,9 @@ libvirt_virDomainInterfaceStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
     if (c_retval < 0)
         return VIR_PY_NONE;
 
-    /* convert to a Python tupple of long objects */
-    info = PyTuple_New(8);
+    /* convert to a Python tuple of long objects */
+    if ((info = PyTuple_New(8)) == NULL)
+        return VIR_PY_NONE;
     PyTuple_SetItem(info, 0, PyLong_FromLongLong(stats.rx_bytes));
     PyTuple_SetItem(info, 1, PyLong_FromLongLong(stats.rx_packets));
     PyTuple_SetItem(info, 2, PyLong_FromLongLong(stats.rx_errs));
@@ -118,7 +120,8 @@ libvirt_virGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *args ATTRIBUT
     if (virCopyLastError(&err) <= 0)
         return VIR_PY_NONE;
 
-    info = PyTuple_New(9);
+    if ((info = PyTuple_New(9)) == NULL)
+        return VIR_PY_NONE;
     PyTuple_SetItem(info, 0, PyInt_FromLong((long) err.code));
     PyTuple_SetItem(info, 1, PyInt_FromLong((long) err.domain));
     PyTuple_SetItem(info, 2, libvirt_constcharPtrWrap(err.message));
@@ -147,7 +150,8 @@ libvirt_virConnGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
     if (virConnCopyLastError(conn, &err) <= 0)
         return VIR_PY_NONE;
 
-    info = PyTuple_New(9);
+    if ((info = PyTuple_New(9)) == NULL)
+        return VIR_PY_NONE;
     PyTuple_SetItem(info, 0, PyInt_FromLong((long) err.code));
     PyTuple_SetItem(info, 1, PyInt_FromLong((long) err.domain));
     PyTuple_SetItem(info, 2, libvirt_constcharPtrWrap(err.message));
