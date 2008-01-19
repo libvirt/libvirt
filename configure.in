@@ -147,7 +147,7 @@ AC_SUBST(STATIC_BINARIES)
 dnl --enable-debug=(yes|no)
 AC_ARG_ENABLE(debug,
               AC_HELP_STRING([--enable-debug=no/yes],
-                             [enable debugging output]),[],[enable_debug=no])
+                             [enable debugging output]),[],[enable_debug=yes])
 if test x"$enable_debug" = x"yes"; then
    AC_DEFINE(ENABLE_DEBUG, [], [whether debugging is enabled])
 fi
@@ -725,5 +725,6 @@ AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Miscellaneous])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([  Debug: $enable_debug])
+AC_MSG_NOTICE([  Warnings: $enable_compile_warnings])
 AC_MSG_NOTICE([  Readline: $lv_use_readline])
 AC_MSG_NOTICE([])

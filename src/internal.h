@@ -54,6 +54,19 @@ extern "C" {
 #define STRNEQLEN(a,b,n) (strncmp((a),(b),(n)) != 0)
 #define STRCASENEQLEN(a,b,n) (strncasecmp((a),(b),(n)) != 0)
 
+
+/* If configured with --enable-debug=yes then library calls
+ * are printed to stderr for debugging.
+ */
+#ifdef ENABLE_DEBUG
+extern int debugFlag;
+#define VIR_DEBUG(category, fmt,...)                                    \
+    do { if (debugFlag) fprintf (stderr, "DEBUG: %s: %s (" fmt ")\n", category, __func__, __VA_ARGS__); } while (0)
+#else
+#define VIR_DEBUG(category, fmt,...)
+    do { } while (0)
+#endif /* !ENABLE_DEBUG */
+
 /* C99 uses __func__.  __FUNCTION__ is legacy. */
 #ifndef __GNUC__
 #define __FUNCTION__ __func__

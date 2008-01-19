@@ -1,3 +1,12 @@
+Sat Jan 19 13:32:22 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/configure.in: enable debug by default. print status of
+	compiler warning flags in configure summary
+	* src/internal.h: Provide a generic VIR_DEBUG macro for logging
+	* src/libvirt.c, src/remote_internal.c, src/xen_unified.c,
+	src/xend_internal.c: Use generic VIR_DEBUG macro for logging.
+	Enable debug when env var LIBVIRT_DEBUG=1
+
 Tue Jan 15 16:25:57 CET  Jim Meyering  <meyering@redhat.com>
 
 	* docs/examples/examples.xml: Regenerate, now that *.c file names

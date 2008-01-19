@@ -55,18 +55,12 @@ static virStateDriverPtr virStateDriverTab[MAX_DRIVERS];
 static int virStateDriverTabCount = 0;
 static int initialized = 0;
 
-/* If configured with --enable-debug=yes then library calls
- * are printed to stderr for debugging.
- */
+#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
+#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
+
 #ifdef ENABLE_DEBUG
-#define DEBUG(fs,...)                                                   \
-    fprintf (stderr, "libvirt: %s (" fs ")\n", __func__, __VA_ARGS__)
-#define DEBUG0                                                          \
-    fprintf (stderr, "libvirt: %s ()\n", __func__)
-#else
-#define DEBUG0
-#define DEBUG(fs,...)
-#endif /* !ENABLE_DEBUG */
+int debugFlag = 0;
+#endif
 
 static int virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
                                          unsigned int ncred,
@@ -179,10 +173,20 @@ winsock_init (void)
 int
 virInitialize(void)
 {
-    DEBUG0;
+#ifdef ENABLE_DEBUG
+    char *debugEnv;
+#endif
     if (initialized)
         return(0);
     initialized = 1;
+
+#ifdef ENABLE_DEBUG
+    debugEnv = getenv("LIBVIRT_DEBUG");
+    if (debugEnv && *debugEnv && *debugEnv != '0')
+        debugFlag = 1;
+#endif
+
+    DEBUG0("register drivers");
 
 #if HAVE_WINSOCK2_H
     if (winsock_init () == -1) return -1;
@@ -542,20 +546,17 @@ do_open (const char *name,
         goto failed;
     }
 
-#ifdef ENABLE_DEBUG
-    fprintf (stderr,
-             "libvirt: do_open: name \"%s\" to URI components:\n"
-             "  scheme %s\n"
-             "  opaque %s\n"
-             "  authority %s\n"
-             "  server %s\n"
-             "  user %s\n"
-             "  port %d\n"
-             "  path %s\n",
-             name,
-             uri->scheme, uri->opaque, uri->authority, uri->server,
-             uri->user, uri->port, uri->path);
-#endif
+    DEBUG("name \"%s\" to URI components:\n"
+          "  scheme %s\n"
+          "  opaque %s\n"
+          "  authority %s\n"
+          "  server %s\n"
+          "  user %s\n"
+          "  port %d\n"
+          "  path %s\n",
+          name,
+          uri->scheme, uri->opaque, uri->authority, uri->server,
+          uri->user, uri->port, uri->path);
 
     ret->name = strdup (name);
     if (!ret->name) {
@@ -564,18 +565,14 @@ do_open (const char *name,
     }
 
     for (i = 0; i < virDriverTabCount; i++) {
-#ifdef ENABLE_DEBUG
-        fprintf (stderr, "libvirt: do_open: trying driver %d (%s) ...\n",
-                 i, virDriverTab[i]->name);
-#endif
+        DEBUG("trying driver %d (%s) ...",
+              i, virDriverTab[i]->name);
         res = virDriverTab[i]->open (ret, uri, auth, flags);
-#ifdef ENABLE_DEBUG
-        fprintf (stderr, "libvirt: do_open: driver %d %s returned %s\n",
-                 i, virDriverTab[i]->name,
-                 res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
-                 (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
-                  (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
-#endif
+        DEBUG("driver %d %s returned %s",
+              i, virDriverTab[i]->name,
+              res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
+              (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
+               (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
         if (res == VIR_DRV_OPEN_ERROR) goto failed;
         else if (res == VIR_DRV_OPEN_SUCCESS) {
             ret->driver = virDriverTab[i];
@@ -591,13 +588,11 @@ do_open (const char *name,
 
     for (i = 0; i < virNetworkDriverTabCount; i++) {
         res = virNetworkDriverTab[i]->open (ret, uri, auth, flags);
-#ifdef ENABLE_DEBUG
-        fprintf (stderr, "libvirt: do_open: network driver %d %s returned %s\n",
-                 i, virNetworkDriverTab[i]->name,
-                 res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
-                 (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
-                  (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
-#endif
+        DEBUG("network driver %d %s returned %s",
+              i, virNetworkDriverTab[i]->name,
+              res == VIR_DRV_OPEN_SUCCESS ? "SUCCESS" :
+              (res == VIR_DRV_OPEN_DECLINED ? "DECLINED" :
+               (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
         if (res == VIR_DRV_OPEN_ERROR) {
             if (STREQ(virNetworkDriverTab[i]->name, "remote")) {
                 virLibConnWarning (NULL, VIR_WAR_NO_NETWORK, 

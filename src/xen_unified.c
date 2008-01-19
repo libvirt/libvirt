@@ -40,6 +40,8 @@
 #include "xm_internal.h"
 #include "xml.h"
 
+#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt,__VA_ARGS__)
+
 static int
 xenUnifiedNodeGetInfo (virConnectPtr conn, virNodeInfoPtr info);
 static int
@@ -271,15 +273,11 @@ xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int f
             continue;
 
         if (drivers[i]->open) {
-#ifdef ENABLE_DEBUG
-            fprintf (stderr, "libvirt: xenUnifiedOpen: trying Xen sub-driver %d\n", i);
-#endif
+            DEBUG("trying Xen sub-driver %d", i);
             if (drivers[i]->open (conn, uri, auth, flags) == VIR_DRV_OPEN_SUCCESS)
                 priv->opened[i] = 1;
-#ifdef ENABLE_DEBUG
-            fprintf (stderr, "libvirt: xenUnifiedOpen: Xen sub-driver %d open %s\n",
-                     i, priv->opened[i] ? "ok" : "failed");
-#endif
+            DEBUG("Xen sub-driver %d open %s\n",
+                  i, priv->opened[i] ? "ok" : "failed");
         }
 
         /* If as root, then all drivers must succeed.

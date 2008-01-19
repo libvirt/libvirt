@@ -72,6 +72,9 @@
 #include "remote_internal.h"
 #include "remote_protocol.h"
 
+#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt,__VA_ARGS__)
+#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
+
 /* Per-connection private data. */
 #define MAGIC 999               /* private_data->magic if OK */
 #define DEAD 998                /* private_data->magic if dead/closed */
@@ -158,22 +161,6 @@ remoteStartup(void)
     inside_daemon = 1;
     return 0;
 }
-
-#if HAVE_SASL || HAVE_POLKIT
-static void
-remoteDebug(struct private_data *priv, const char *msg,...)
-{
-    va_list args;
-    if (priv->debugLog == NULL)
-        return;
-
-    va_start(args, msg);
-    vfprintf(priv->debugLog, msg, args);
-    va_end(args);
-    fprintf(priv->debugLog, "\n");
-}
-#endif /* HAVE_SASL */
-
 
 /**
  * remoteFindServerPath:
@@ -426,14 +413,9 @@ doRemoteOpen (virConnectPtr conn,
                 priv->debugLog = stdout;
             else
                 priv->debugLog = stderr;
-        }
-#ifdef ENABLE_DEBUG
-        else
-            fprintf (stderr,
-                     "remoteOpen: "
-                     "passing through variable '%s' ('%s') to remote end\n",
-                     var->name, var->value);
-#endif
+        } else
+            DEBUG("passing through variable '%s' ('%s') to remote end",
+                  var->name, var->value);
     }
 
 #ifdef HAVE_XMLURI_QUERY_RAW
@@ -478,9 +460,7 @@ doRemoteOpen (virConnectPtr conn,
     }
 
     assert (name);
-#ifdef ENABLE_DEBUG
-    fprintf (stderr, "remoteOpen: proceeding with name = %s\n", name);
-#endif
+    DEBUG("proceeding with name = %s", name);
 
     /* Connect to the remote service. */
     switch (transport) {
@@ -910,9 +890,7 @@ initialise_gnutls (virConnectPtr conn)
         return -1;
 
     /* Set the trusted CA cert. */
-#ifdef ENABLE_DEBUG
-    fprintf (stderr, "loading CA file %s\n", LIBVIRT_CACERT);
-#endif
+    DEBUG("loading CA file %s", LIBVIRT_CACERT);
     err =
         gnutls_certificate_set_x509_trust_file (x509_cred, LIBVIRT_CACERT,
                                                 GNUTLS_X509_FMT_PEM);
@@ -922,10 +900,8 @@ initialise_gnutls (virConnectPtr conn)
     }
 
     /* Set the client certificate and private key. */
-#ifdef ENABLE_DEBUG
-    fprintf (stderr, "loading client cert and key from files %s and %s\n",
-             LIBVIRT_CLIENTCERT, LIBVIRT_CLIENTKEY);
-#endif
+    DEBUG("loading client cert and key from files %s and %s",
+          LIBVIRT_CLIENTCERT, LIBVIRT_CLIENTKEY);
     err =
         gnutls_certificate_set_x509_key_file (x509_cred,
                                               LIBVIRT_CLIENTCERT,
@@ -1000,10 +976,9 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
 
     /* Verify certificate. */
     if (verify_certificate (conn, priv, session) == -1) {
-            fprintf (stderr,
-                     "remote_internal: failed to verify peer's certificate\n");
-            if (!no_verify) return NULL;
-        }
+        DEBUG0("failed to verify peer's certificate");
+        if (!no_verify) return NULL;
+    }
 
     /* At this point, the server is verifying _our_ certificate, IP address,
      * etc.  If we make the grade, it will send us a '\1' byte.
@@ -3013,7 +2988,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
     int ret = -1;
     const char *mechlist;
 
-    remoteDebug(priv, "Client initialize SASL authentication");
+    DEBUG0("Client initialize SASL authentication");
     /* Sets up the SASL library as a whole */
     err = sasl_client_init(NULL);
     if (err != SASL_OK) {
@@ -3085,7 +3060,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
         }
         ssf *= 8; /* key size is bytes, sasl wants bits */
 
-        remoteDebug(priv, "Setting external SSF %d", ssf);
+        DEBUG("Setting external SSF %d", ssf);
         err = sasl_setprop(saslconn, SASL_SSF_EXTERNAL, &ssf);
         if (err != SASL_OK) {
             __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
@@ -3135,7 +3110,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
     }
  restart:
     /* Start the auth negotiation on the client end first */
-    remoteDebug(priv, "Client start negotiation mechlist '%s'", mechlist);
+    DEBUG("Client start negotiation mechlist '%s'", mechlist);
     err = sasl_client_start(saslconn,
                             mechlist,
                             &interact,
@@ -3195,7 +3170,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
     sargs.data.data_val = (char*)clientout;
     sargs.data.data_len = clientoutlen;
     sargs.mech = (char*)mech;
-    remoteDebug(priv, "Server start negotiation with mech %s. Data %d bytes %p", mech, clientoutlen, clientout);
+    DEBUG("Server start negotiation with mech %s. Data %d bytes %p", mech, clientoutlen, clientout);
 
     /* Now send the initial auth data to the server */
     memset (&sret, 0, sizeof sret);
@@ -3208,8 +3183,8 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
     /* NB, distinction of NULL vs "" is *critical* in SASL */
     serverin = sret.nil ? NULL : sret.data.data_val;
     serverinlen = sret.data.data_len;
-    remoteDebug(priv, "Client step result complete: %d. Data %d bytes %p",
-                complete, serverinlen, serverin);
+    DEBUG("Client step result complete: %d. Data %d bytes %p",
+          complete, serverinlen, serverin);
 
     /* Loop-the-loop...
      * Even if the server has completed, the client must *always* do at least one step
@@ -3262,7 +3237,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
             free(serverin);
             serverin = NULL;
         }
-        remoteDebug(priv, "Client step result %d. Data %d bytes %p", err, clientoutlen, clientout);
+        DEBUG("Client step result %d. Data %d bytes %p", err, clientoutlen, clientout);
 
         /* Previous server call showed completion & we're now locally complete too */
         if (complete && err == SASL_OK)
@@ -3274,7 +3249,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
         pargs.nil = clientout ? 0 : 1;
         pargs.data.data_val = (char*)clientout;
         pargs.data.data_len = clientoutlen;
-        remoteDebug(priv, "Server step with %d bytes %p", clientoutlen, clientout);
+        DEBUG("Server step with %d bytes %p", clientoutlen, clientout);
 
         memset (&pret, 0, sizeof pret);
         if (call (conn, priv, in_open, REMOTE_PROC_AUTH_SASL_STEP,
@@ -3287,8 +3262,8 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
         serverin = pret.nil ? NULL : pret.data.data_val;
         serverinlen = pret.data.data_len;
 
-        remoteDebug(priv, "Client step result complete: %d. Data %d bytes %p",
-                    complete, serverinlen, serverin);
+        DEBUG("Client step result complete: %d. Data %d bytes %p",
+              complete, serverinlen, serverin);
 
         /* This server call shows complete, and earlier client step was OK */
         if (complete && err == SASL_OK) {
@@ -3308,7 +3283,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
             goto cleanup;
         }
         ssf = *(const int *)val;
-        remoteDebug(priv, "SASL SSF value %d", ssf);
+        DEBUG("SASL SSF value %d", ssf);
         if (ssf < 56) { /* 56 == DES level, good for Kerberos */
             __virRaiseError (in_open ? NULL : conn, NULL, NULL, VIR_FROM_REMOTE,
                              VIR_ERR_AUTH_FAILED, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
@@ -3317,7 +3292,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
         }
     }
 
-    remoteDebug(priv, "SASL authentication complete");
+    DEBUG0("SASL authentication complete");
     priv->saslconn = saslconn;
     ret = 0;
 
@@ -3352,7 +3327,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
         NULL,
         0,
     };
-    remoteDebug(priv, "Client initialize PolicyKit authentication");
+    DEBUG0("Client initialize PolicyKit authentication");
 
     if (auth && auth->cb) {
         /* Check if the neccessary credential type for PolicyKit is supported */
@@ -3370,10 +3345,10 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
                 return -1;
             }
         } else {
-            remoteDebug(priv, "Client auth callback does not support PolicyKit");
+            DEBUG0("Client auth callback does not support PolicyKit");
         }
     } else {
-        remoteDebug(priv, "No auth callback provided");
+        DEBUG0("No auth callback provided");
     }
 
     memset (&ret, 0, sizeof ret);
@@ -3383,7 +3358,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
         return -1; /* virError already set by call */
     }
 
-    remoteDebug(priv, "PolicyKit authentication complete");
+    DEBUG0("PolicyKit authentication complete");
     return 0;
 }
 #endif /* HAVE_POLKIT */

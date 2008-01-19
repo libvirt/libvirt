@@ -48,6 +48,9 @@
 /* required for cpumap_t */
 #include <xen/dom0_ops.h>
 
+#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt,__VA_ARGS__)
+#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
+
 #ifndef PROXY
 static int xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids);
 static int xenDaemonNumOfDomains(virConnectPtr conn);
@@ -3410,9 +3413,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
         }
     }
 
-#ifdef ENABLE_DEBUG
-    fprintf (stderr, "hostname = %s, port = %s\n", hostname, port);
-#endif
+    DEBUG("hostname = %s, port = %s", hostname, port);
 
     /* Make the call. */
     ret = xend_op (domain->conn, domain->name,
@@ -3424,9 +3425,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
                    NULL);
     free (hostname);
 
-#ifdef ENABLE_DEBUG
-    fprintf (stderr, "migration done\n");
-#endif
+    DEBUG0("migration done");
 
     return ret;
 }
