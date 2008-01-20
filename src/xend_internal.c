@@ -1910,6 +1910,9 @@ sexpr_to_xend_node_info(struct sexpr *root, virNodeInfoPtr info)
     info->mhz = sexpr_int(root, "node/cpu_mhz");
     info->nodes = sexpr_int(root, "node/nr_nodes");
     info->sockets = sexpr_int(root, "node/sockets_per_node");
+    info->cores = sexpr_int(root, "node/cores_per_socket");
+    info->threads = sexpr_int(root, "node/threads_per_core");
+
     /* Xen 3.2.0 replaces sockets_per_node with 'nr_cpus'.
      * Old Xen calculated sockets_per_node using its internal
      * nr_cpus / (nodes*cores*threads), so fake it ourselves
@@ -1917,15 +1920,16 @@ sexpr_to_xend_node_info(struct sexpr *root, virNodeInfoPtr info)
      */
     if (info->sockets == 0) {
         int nr_cpus = sexpr_int(root, "node/nr_cpus");
-        info->sockets = nr_cpus / (info->nodes * info->cores * info->threads);
-        /* Should already be fine, but for sanity make
+        int procs = info->nodes * info->cores * info->threads;
+        if (procs == 0) /* Sanity check in case of Xen bugs in futures..*/
+            return (-1);
+        info->sockets = nr_cpus / procs;
+        /* Should already be fine, but for further sanity make
          * sure we have at least one socket
          */
         if (info->sockets == 0)
             info->sockets = 1;
     }
-    info->cores = sexpr_int(root, "node/cores_per_socket");
-    info->threads = sexpr_int(root, "node/threads_per_core");
     return (0);
 }
 
