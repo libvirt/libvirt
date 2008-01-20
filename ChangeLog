@@ -1,3 +1,8 @@
+Sun Jan 20 11:01:22 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/internal.h: Add xstrtol_ull, xstrtol_ll convenience
+	functions
+
 Sun Jan 20 10:54:22 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xend_internal.c: Fix nodeinfo compat with Xen 3.2.0 and

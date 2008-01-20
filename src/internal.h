@@ -308,6 +308,42 @@ xstrtol_ui(char const *s, char **end_ptr, int base, unsigned int *result)
     return 0;
 }
 
+static inline int
+xstrtol_ll(char const *s, char **end_ptr, int base, long long *result)
+{
+    long long val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtoll(s, &p, base);
+    err = (errno || (!end_ptr && *p) || p == s || (long long) val != val);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
+
+/* Just like xstrtol_i, above, but produce an "unsigned long long" value.  */
+static inline int
+xstrtol_ull(char const *s, char **end_ptr, int base, unsigned long long *result)
+{
+    unsigned long long val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtoull(s, &p, base);
+    err = (errno || (!end_ptr && *p) || p == s || (unsigned long long) val != val);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
 #ifdef __cplusplus
 }
 #endif                          /* __cplusplus */
