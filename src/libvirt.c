@@ -618,7 +618,7 @@ failed:
     if (ret->name) free (ret->name);
     if (ret->driver) ret->driver->close (ret);
     if (uri) xmlFreeURI(uri);
-	virFreeConnect(ret);
+	virUnrefConnect(ret);
     return NULL;
 }
 
@@ -705,9 +705,7 @@ virConnectClose(virConnectPtr conn)
         conn->networkDriver->close (conn);
     conn->driver->close (conn);
 
-    if (conn->name) free (conn->name);
-
-    if (virFreeConnect(conn) < 0)
+    if (virUnrefConnect(conn) < 0)
         return (-1);
     return (0);
 }
@@ -1211,7 +1209,7 @@ virDomainFree(virDomainPtr domain)
         virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (-1);
     }
-    if (virFreeDomain(domain->conn, domain) < 0)
+    if (virUnrefDomain(domain) < 0)
         return (-1);
     return(0);
 }
@@ -3324,7 +3322,7 @@ virNetworkFree(virNetworkPtr network)
         virLibNetworkError(NULL, VIR_ERR_INVALID_NETWORK, __FUNCTION__);
         return (-1);
     }
-    if (virFreeNetwork(network->conn, network) < 0)
+    if (virUnrefNetwork(network) < 0)
         return (-1);
     return(0);
 }

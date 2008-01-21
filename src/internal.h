@@ -149,8 +149,8 @@ extern int debugFlag;
  */
 struct _virConnect {
     unsigned int magic;     /* specific value to check */
-
-    int uses;               /* reference count */
+    int flags;              /* a set of connection flags */
+    char *name;                 /* connection URI */
 
     /* The underlying hypervisor driver and network driver. */
     virDriverPtr      driver;
@@ -168,12 +168,16 @@ struct _virConnect {
     virErrorFunc handler;   /* associated handlet */
     void *userData;         /* the user data */
 
-    /* misc */
-    xmlMutexPtr hashes_mux;/* a mutex to protect the domain and networks hash tables */
-    virHashTablePtr domains;/* hash table for known domains */
-    virHashTablePtr networks;/* hash table for known domains */
-    int flags;              /* a set of connection flags */
-    char *name;                 /* connection URI */
+    /*
+     * The lock mutex must be acquired before accessing/changing
+     * any of members following this point, or changing the ref
+     * count of any virDomain/virNetwork object associated with
+     * this connection
+     */
+    pthread_mutex_t lock;
+    virHashTablePtr domains;  /* hash table for known domains */
+    virHashTablePtr networks; /* hash table for known domains */
+    int refs;                 /* reference count */
 };
 
 /**
@@ -183,7 +187,7 @@ struct _virConnect {
 */
 struct _virDomain {
     unsigned int magic;                  /* specific value to check */
-    int uses;                            /* reference count */
+    int refs;                            /* reference count */
     virConnectPtr conn;                  /* pointer back to the connection */
     char *name;                          /* the domain external name */
     int id;                              /* the domain ID */
@@ -197,18 +201,12 @@ struct _virDomain {
 */
 struct _virNetwork {
     unsigned int magic;                  /* specific value to check */
-    int uses;                            /* reference count */
+    int refs;                            /* reference count */
     virConnectPtr conn;                  /* pointer back to the connection */
     char *name;                          /* the network external name */
     unsigned char uuid[VIR_UUID_BUFLEN]; /* the network unique identifier */
 };
 
-/*
-* Internal routines
-*/
-char *virDomainGetVM(virDomainPtr domain);
-char *virDomainGetVMInfo(virDomainPtr domain,
-			 const char *vm, const char *name);
 
 /************************************************************************
  *									*
@@ -234,18 +232,16 @@ const char *__virErrorMsg(virErrorNumber error, const char *info);
  *									*
  ************************************************************************/
 
-virConnectPtr	virGetConnect	(void);
-int		virFreeConnect	(virConnectPtr conn);
-virDomainPtr	__virGetDomain	(virConnectPtr conn,
-				 const char *name,
-				 const unsigned char *uuid);
-int		virFreeDomain	(virConnectPtr conn,
-				 virDomainPtr domain);
-virNetworkPtr	__virGetNetwork	(virConnectPtr conn,
-				 const char *name,
-				 const unsigned char *uuid);
-int		virFreeNetwork	(virConnectPtr conn,
-				 virNetworkPtr domain);
+virConnectPtr  virGetConnect   (void);
+int            virUnrefConnect (virConnectPtr conn);
+virDomainPtr   __virGetDomain  (virConnectPtr conn,
+                                const char *name,
+                                const unsigned char *uuid);
+int            virUnrefDomain  (virDomainPtr domain);
+virNetworkPtr  __virGetNetwork (virConnectPtr conn,
+                                const char *name,
+                                const unsigned char *uuid);
+int           virUnrefNetwork  (virNetworkPtr network);
 
 #define virGetDomain(c,n,u) __virGetDomain((c),(n),(u))
 #define virGetNetwork(c,n,u) __virGetNetwork((c),(n),(u))

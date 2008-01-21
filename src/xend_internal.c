@@ -2038,7 +2038,7 @@ error:
     virXendError(conn, VIR_ERR_INTERNAL_ERROR,
                  _("failed to parse Xend domain information"));
     if (ret != NULL)
-        virFreeDomain(conn, ret);
+        virUnrefDomain(ret);
     return(NULL);
 }
 #endif /* !PROXY */
@@ -3185,7 +3185,7 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
     /* Make sure we don't leave a still-born domain around */
     if (dom != NULL) {
         xenDaemonDomainDestroy(dom);
-        virFreeDomain(dom->conn, dom);
+        virUnrefDomain(dom);
     }
     if (name != NULL)
         free(name);

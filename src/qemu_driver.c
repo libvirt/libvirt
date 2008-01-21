@@ -1888,7 +1888,7 @@ static int qemudDomainDestroy(virDomainPtr dom) {
     qemudShutdownVMDaemon(dom->conn, driver, vm);
     if (!vm->configFile[0])
         qemudRemoveInactiveVM(driver, vm);
-    virFreeDomain(dom->conn, dom);
+
     return 0;
 }
 
@@ -2763,8 +2763,6 @@ static int qemudNetworkDestroy(virNetworkPtr net) {
     }
 
     ret = qemudShutdownNetworkDaemon(net->conn, driver, network);
-
-    virFreeNetwork(net->conn, net);
 
     return ret;
 }

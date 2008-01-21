@@ -1,3 +1,13 @@
+Mon Jan 21 11:18:04 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/hash.c: Split the virFree* functions into virUnref*
+	and virRelease*. Switch to use standard pthread_mutex_t type.
+	* src/internal.h: Rename virFree* to virUnref*
+	* src/qemu_driver.c: Remove bogus release of object in
+	virDomainDestroy and virNetworkDestroy.
+	* src/xend_internal.c, src/libvirt.c: Update to call virUnref*
+	* src/xs_internal.c: Remove dead code & mark functions static
+
 Mon Jan 21 10:52:04 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* python/generator.py: Abort with non-zero status if any functions

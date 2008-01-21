@@ -227,7 +227,7 @@ virDomainDoStoreWrite(virDomainPtr domain, const char *path,
  *
  * Returns the new string or NULL in case of error
  */
-char *
+static char *
 virDomainGetVM(virDomainPtr domain)
 {
     char *vm;
@@ -261,7 +261,7 @@ virDomainGetVM(virDomainPtr domain)
  *
  * Returns the new string or NULL in case of error
  */
-char *
+static char *
 virDomainGetVMInfo(virDomainPtr domain, const char *vm, const char *name)
 {
     char s[256];
@@ -284,30 +284,6 @@ virDomainGetVMInfo(virDomainPtr domain, const char *vm, const char *name)
     return (ret);
 }
 
-#if 0
-/**
- * virConnectCheckStoreID:
- * @conn: pointer to the hypervisor connection
- * @id: the id number as returned from Xenstore
- *
- * the xenstore sometimes list non-running domains, double check
- * from the hypervisor if we have direct access
- *
- * Returns -1 if the check failed, 0 if successful or not possible to check
- */
-static int
-virConnectCheckStoreID(virConnectPtr conn, int id)
-{
-    if (conn->id >= 0) {
-        int tmp;
-
-        tmp = xenHypervisorCheckID(conn, id);
-        if (tmp < 0)
-            return (-1);
-    }
-    return (0);
-}
-#endif
 #endif /* ! PROXY */
 
 /************************************************************************
