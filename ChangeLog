@@ -1,3 +1,10 @@
+Mon Jan 21 10:25:04 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/util.c, src/util.h: Rename virFileReadAll to __virFileReadAll,
+	and add macro for compat
+	* src/libvirt_sym.version: Export __virFileReadAll
+	* src/virsh.c: Use virFileReadAll for loading XML files
+
 Mon Jan 21 10:12:04 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/openvz_driver.c: Remove no-op networking APIs

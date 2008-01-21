@@ -316,9 +316,9 @@ ssize_t safewrite(int fd, const void *buf, size_t count)
 }
 
 
-int virFileReadAll(const char *path,
-                   int maxlen,
-                   char **buf)
+int __virFileReadAll(const char *path,
+                     int maxlen,
+                     char **buf)
 {
     FILE *fh;
     struct stat st;

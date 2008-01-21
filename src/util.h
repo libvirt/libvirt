@@ -33,9 +33,10 @@ int virRun(virConnectPtr conn, char **argv, int *status);
 int saferead(int fd, void *buf, size_t count);
 ssize_t safewrite(int fd, const void *buf, size_t count);
 
-int virFileReadAll(const char *path,
-		   int maxlen,
-                   char **buf);
+int __virFileReadAll(const char *path,
+		     int maxlen,
+		     char **buf);
+#define virFileReadAll(p,m,b) __virFileReadAll((p),(m),(b))
 
 int virFileMatchesNameSuffix(const char *file,
                              const char *name,

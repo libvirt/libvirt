@@ -48,6 +48,7 @@
 
 #include "internal.h"
 #include "console.h"
+#include "util.h"
 
 static char *progname;
 
@@ -55,6 +56,8 @@ static char *progname;
 #define TRUE 1
 #define FALSE 0
 #endif
+
+#define VIRSH_MAX_XML_FILE 10*1024*1024
 
 #define VSH_PROMPT_RW    "virsh # "
 #define VSH_PROMPT_RO    "virsh > "
@@ -858,66 +861,6 @@ static vshCmdOptDef opts_create[] = {
     {NULL, 0, 0, NULL}
 };
 
-/* Read in a whole file and return it as a string.
- * If it fails, it logs an error and returns NULL.
- * String must be freed by caller.
- */
-static char *
-readFile (vshControl *ctl, const char *filename)
-{
-    char *retval;
-    int len = 0, fd;
-
-    if ((fd = open(filename, O_RDONLY)) == -1) {
-        vshError (ctl, FALSE, _("Failed to open '%s': %s"),
-                  filename, strerror (errno));
-        return NULL;
-    }
-
-    if (!(retval = malloc(len + 1)))
-        goto out_of_memory;
-
-    while (1) {
-        char buffer[1024];
-        char *new;
-        int ret;
-
-        if ((ret = read(fd, buffer, sizeof(buffer))) == 0)
-            break;
-
-        if (ret == -1) {
-            if (errno == EINTR)
-                continue;
-
-            vshError (ctl, FALSE, _("Failed to open '%s': read: %s"),
-                      filename, strerror (errno));
-            goto error;
-        }
-
-        if (!(new = realloc(retval, len + ret + 1)))
-            goto out_of_memory;
-
-        retval = new;
-
-        memcpy(retval + len, buffer, ret);
-        len += ret;
-   }
-
-   retval[len] = '\0';
-   return retval;
-
- out_of_memory:
-   vshError (ctl, FALSE, _("Error allocating memory: %s"),
-             strerror(errno));
-
- error:
-   if (retval)
-     free(retval);
-   close(fd);
-
-   return NULL;
-}
-
 static int
 cmdCreate(vshControl * ctl, vshCmd * cmd)
 {
@@ -934,8 +877,8 @@ cmdCreate(vshControl * ctl, vshCmd * cmd)
     if (!found)
         return FALSE;
 
-    buffer = readFile (ctl, from);
-    if (buffer == NULL) return FALSE;
+    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+        return FALSE;
 
     dom = virDomainCreateLinux(ctl->conn, buffer, 0);
     free (buffer);
@@ -982,8 +925,8 @@ cmdDefine(vshControl * ctl, vshCmd * cmd)
     if (!found)
         return FALSE;
 
-    buffer = readFile (ctl, from);
-    if (buffer == NULL) return FALSE;
+    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+        return FALSE;
 
     dom = virDomainDefineXML(ctl->conn, buffer);
     free (buffer);
@@ -2372,8 +2315,8 @@ cmdNetworkCreate(vshControl * ctl, vshCmd * cmd)
     if (!found)
         return FALSE;
 
-    buffer = readFile (ctl, from);
-    if (buffer == NULL) return FALSE;
+    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+        return FALSE;
 
     network = virNetworkCreateXML(ctl->conn, buffer);
     free (buffer);
@@ -2420,8 +2363,8 @@ cmdNetworkDefine(vshControl * ctl, vshCmd * cmd)
     if (!found)
         return FALSE;
 
-    buffer = readFile (ctl, from);
-    if (buffer == NULL) return FALSE;
+    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+        return FALSE;
 
     network = virNetworkDefineXML(ctl->conn, buffer);
     free (buffer);
@@ -3107,8 +3050,8 @@ cmdAttachDevice(vshControl * ctl, vshCmd * cmd)
         return FALSE;
     }
 
-    buffer = readFile (ctl, from);
-    if (buffer == NULL) return FALSE;
+    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+        return FALSE;
 
     ret = virDomainAttachDevice(dom, buffer);
     free (buffer);
@@ -3161,8 +3104,8 @@ cmdDetachDevice(vshControl * ctl, vshCmd * cmd)
         return FALSE;
     }
 
-    buffer = readFile (ctl, from);
-    if (buffer == NULL) return FALSE;
+    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+        return FALSE;
 
     ret = virDomainDetachDevice(dom, buffer);
     free (buffer);
