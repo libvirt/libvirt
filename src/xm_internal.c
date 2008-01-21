@@ -2232,7 +2232,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
         }
         vifs->type = VIR_CONF_LIST;
         vifs->list = NULL;
-        for (i = 0; i < obj->nodesetval->nodeNr; i++) {
+        for (i = obj->nodesetval->nodeNr - 1; i >= 0; i--) {
             virConfValuePtr thisVif;
             char *vif = xenXMParseXMLVif(conn, obj->nodesetval->nodeTab[i], hvm);
             if (!vif)

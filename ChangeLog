@@ -1,3 +1,8 @@
+Mon Jan 21 09:25:12 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/xml-internal.c: apply patch from Hiroyuki Kaguchi to 
+	  preserve the vif list order.
+
 Mon Jan 21 09:06:28 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* docs/API* docs/api.xsl docs/site.xsl docs/Makefile.am: remove the
