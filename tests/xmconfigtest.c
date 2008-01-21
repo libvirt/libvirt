@@ -51,7 +51,7 @@ static int testCompareParseXML(const char *xmcfg_rel, const char *xml_rel,
     int ret = -1;
     virConnectPtr conn;
     int wrote = MAX_FILE;
-    void *old_priv;
+    void *old_priv = NULL;
     struct _xenUnifiedPrivate priv;
     char xmcfg[PATH_MAX];
     char xml[PATH_MAX];
