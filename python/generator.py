@@ -212,7 +212,7 @@ skipped_modules = {
 }
 
 skipped_types = {
-    'int *': "usually a return type",
+#    'int *': "usually a return type",
 }
 
 #######################################################################
@@ -277,6 +277,8 @@ skip_impl = (
     'virDomainLookupByUUID',
     'virNetworkGetUUID',
     'virNetworkLookupByUUID',
+    'virDomainGetAutostart',
+    'virNetworkGetAutostart',
     'virDomainBlockStats',
     'virDomainInterfaceStats',
     'virNodeGetCellsFreeMemory',
@@ -287,18 +289,23 @@ skip_impl = (
     'virDomainPinVcpu',
 )
 
-def skip_function(name):
-    if name == "virConnectClose":
-        return 1
-    if name == "virDomainFree":
-        return 1
-    if name == "virNetworkFree":
-        return 1
-    if name == "vshRunConsole":
-        return 1
-    if name == "virGetVersion":
-        return 1
-    return 0
+
+# These are functions which the generator skips completly - no python
+# or C code is generated. Generally should not be used for any more
+# functions than those already listed
+skip_function = (
+    'virConnectListDomains', # Python API is called virConectListDomainsID for unknown reasons
+    'virConnSetErrorFunc', # Not used in Python API  XXX is this a bug ?
+    'virResetError', # Not used in Python API  XXX is this a bug ?
+    'virConnectGetVersion', # Not used in Python API  XXX is this a bug ?
+    'virGetVersion', # Python C code is manually written
+    'virSetErrorFunc', # Python API is called virRegisterErrorHandler for unknown reasons
+    'virConnCopyLastError', # Python API is called virConnGetLastError instead
+    'virCopyLastError', # Python API is called virGetLastError instead
+    'virConnectOpenAuth', # Python C code is manually written
+    'virDefaultErrorFunc', # Python virErrorFuncHandler impl calls this from C
+)
+
 
 def print_function_wrapper(name, output, export, include):
     global py_types
@@ -314,7 +321,7 @@ def print_function_wrapper(name, output, export, include):
 
     if skipped_modules.has_key(file):
         return 0
-    if skip_function(name) == 1:
+    if name in skip_function:
         return 0
     if name in skip_impl:
 	# Don't delete the function entry in the caller.
@@ -527,12 +534,19 @@ def buildStubs():
     export.close()
     wrapper.close()
 
-    print "Generated %d wrapper functions, %d failed, %d skipped\n" % (nb_wrap,
-							      failed, skipped);
+    print "Generated %d wrapper functions" % nb_wrap
+
     print "Missing type converters: "
     for type in unknown_types.keys():
 	print "%s:%d " % (type, len(unknown_types[type])),
     print
+
+    for f in functions_failed:
+        print "ERROR: failed %s" % f
+
+    if failed > 0:
+        return -1
+    return 0
 
 #######################################################################
 #
@@ -1126,5 +1140,7 @@ def buildWrappers():
     txt.close()
     classes.close()
 
-buildStubs()
+if buildStubs() < 0:
+    sys.exit(1)
 buildWrappers()
+sys.exit(0)

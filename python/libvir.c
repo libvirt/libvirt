@@ -23,14 +23,6 @@ extern void initlibvirtmod(void);
 extern void initcygvirtmod(void);
 #endif
 
-PyObject *libvirt_virDomainGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
-PyObject *libvirt_virNetworkGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
-PyObject *libvirt_virGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
-PyObject *libvirt_virConnGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
-PyObject * libvirt_virDomainBlockStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
-PyObject * libvirt_virDomainInterfaceStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
-PyObject * libvirt_virNodeGetCellsFreeMemory(PyObject *self ATTRIBUTE_UNUSED, PyObject *args);
-
 /* The two-statement sequence "Py_INCREF(Py_None); return Py_None;"
    is so common that we encapsulate it here.  Now, each use is simply
    return VIR_PY_NONE;  */
@@ -42,7 +34,7 @@ PyObject * libvirt_virNodeGetCellsFreeMemory(PyObject *self ATTRIBUTE_UNUSED, Py
  *									*
  ************************************************************************/
 
-PyObject *
+static PyObject *
 libvirt_virDomainBlockStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     virDomainPtr domain;
     PyObject *pyobj_domain;
@@ -71,7 +63,7 @@ libvirt_virDomainBlockStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     return(info);
 }
 
-PyObject *
+static PyObject *
 libvirt_virDomainInterfaceStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     virDomainPtr domain;
     PyObject *pyobj_domain;
@@ -424,7 +416,7 @@ libvirt_virDomainPinVcpu(PyObject *self ATTRIBUTE_UNUSED,
 static PyObject *libvirt_virPythonErrorFuncHandler = NULL;
 static PyObject *libvirt_virPythonErrorFuncCtxt = NULL;
 
-PyObject *
+static PyObject *
 libvirt_virGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *args ATTRIBUTE_UNUSED)
 {
     virError err;
@@ -448,7 +440,7 @@ libvirt_virGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *args ATTRIBUT
     return info;
 }
 
-PyObject *
+static PyObject *
 libvirt_virConnGetLastError(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
 {
     virError err;
@@ -716,41 +708,6 @@ libvirt_virGetVersion (PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
         return Py_BuildValue ((char *) "kk", libVer, typeVer);
 }
 
-static PyObject *
-libvirt_virDomainFree(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
-    PyObject *py_retval;
-    int c_retval;
-    virDomainPtr domain;
-    PyObject *pyobj_domain;
-
-    if (!PyArg_ParseTuple(args, (char *)"O:virDomainFree", &pyobj_domain))
-        return(NULL);
-    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
-
-    LIBVIRT_BEGIN_ALLOW_THREADS;
-    c_retval = virDomainFree(domain);
-    LIBVIRT_END_ALLOW_THREADS;
-    py_retval = libvirt_intWrap((int) c_retval);
-    return(py_retval);
-}
-
-static PyObject *
-libvirt_virConnectClose(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
-    PyObject *py_retval;
-    int c_retval;
-    virConnectPtr conn;
-    PyObject *pyobj_conn;
-
-    if (!PyArg_ParseTuple(args, (char *)"O:virConnectClose", &pyobj_conn))
-        return(NULL);
-    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
-
-    LIBVIRT_BEGIN_ALLOW_THREADS;
-    c_retval = virConnectClose(conn);
-    LIBVIRT_END_ALLOW_THREADS;
-    py_retval = libvirt_intWrap((int) c_retval);
-    return(py_retval);
-}
 
 static PyObject *
 libvirt_virConnectListDomainsID(PyObject *self ATTRIBUTE_UNUSED,
@@ -874,7 +831,7 @@ libvirt_virNodeGetInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     return(py_retval);
 }
 
-PyObject *
+static PyObject *
 libvirt_virDomainGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     PyObject *py_retval;
     unsigned char uuid[VIR_UUID_BUFLEN];
@@ -919,25 +876,6 @@ libvirt_virDomainLookupByUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     c_retval = virDomainLookupByUUID(conn, uuid);
     LIBVIRT_END_ALLOW_THREADS;
     py_retval = libvirt_virDomainPtrWrap((virDomainPtr) c_retval);
-    return(py_retval);
-}
-
-
-static PyObject *
-libvirt_virNetworkFree(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
-    PyObject *py_retval;
-    int c_retval;
-    virNetworkPtr domain;
-    PyObject *pyobj_domain;
-
-    if (!PyArg_ParseTuple(args, (char *)"O:virNetworkFree", &pyobj_domain))
-        return(NULL);
-    domain = (virNetworkPtr) PyvirNetwork_Get(pyobj_domain);
-
-    LIBVIRT_BEGIN_ALLOW_THREADS;
-    c_retval = virNetworkFree(domain);
-    LIBVIRT_END_ALLOW_THREADS;
-    py_retval = libvirt_intWrap((int) c_retval);
     return(py_retval);
 }
 
@@ -1026,7 +964,7 @@ libvirt_virConnectListDefinedNetworks(PyObject *self ATTRIBUTE_UNUSED,
 }
 
 
-PyObject *
+static PyObject *
 libvirt_virNetworkGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     PyObject *py_retval;
     unsigned char uuid[VIR_UUID_BUFLEN];
@@ -1075,7 +1013,7 @@ libvirt_virNetworkLookupByUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) 
 }
 
 
-PyObject *
+static PyObject *
 libvirt_virDomainGetAutostart(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     PyObject *py_retval;
     int c_retval, autostart;
@@ -1098,7 +1036,7 @@ libvirt_virDomainGetAutostart(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
 }
 
 
-PyObject *
+static PyObject *
 libvirt_virNetworkGetAutostart(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     PyObject *py_retval;
     int c_retval, autostart;
@@ -1120,8 +1058,8 @@ libvirt_virNetworkGetAutostart(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) 
     return(py_retval);
 }
 
-PyObject * libvirt_virNodeGetCellsFreeMemory(PyObject *self ATTRIBUTE_UNUSED,
-         PyObject *args)
+static PyObject *
+libvirt_virNodeGetCellsFreeMemory(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
 {
     PyObject *py_retval;
     PyObject *pyobj_conn;
@@ -1167,9 +1105,7 @@ error:
 static PyMethodDef libvirtMethods[] = {
 #include "libvirt-export.c"
     {(char *) "virGetVersion", libvirt_virGetVersion, METH_VARARGS, NULL},
-    {(char *) "virDomainFree", libvirt_virDomainFree, METH_VARARGS, NULL},
     {(char *) "virConnectOpenAuth", libvirt_virConnectOpenAuth, METH_VARARGS, NULL},
-    {(char *) "virConnectClose", libvirt_virConnectClose, METH_VARARGS, NULL},
     {(char *) "virConnectListDomainsID", libvirt_virConnectListDomainsID, METH_VARARGS, NULL},
     {(char *) "virConnectListDefinedDomains", libvirt_virConnectListDefinedDomains, METH_VARARGS, NULL},
     {(char *) "virDomainGetInfo", libvirt_virDomainGetInfo, METH_VARARGS, NULL},
@@ -1179,7 +1115,6 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virRegisterErrorHandler", libvirt_virRegisterErrorHandler, METH_VARARGS, NULL},
     {(char *) "virGetLastError", libvirt_virGetLastError, METH_VARARGS, NULL},
     {(char *) "virConnGetLastError", libvirt_virConnGetLastError, METH_VARARGS, NULL},
-    {(char *) "virNetworkFree", libvirt_virNetworkFree, METH_VARARGS, NULL},
     {(char *) "virConnectListNetworks", libvirt_virConnectListNetworks, METH_VARARGS, NULL},
     {(char *) "virConnectListDefinedNetworks", libvirt_virConnectListDefinedNetworks, METH_VARARGS, NULL},
     {(char *) "virNetworkGetUUID", libvirt_virNetworkGetUUID, METH_VARARGS, NULL},
