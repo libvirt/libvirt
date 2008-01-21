@@ -102,6 +102,319 @@ libvirt_virDomainInterfaceStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
     PyTuple_SetItem(info, 7, PyLong_FromLongLong(stats.tx_drop));
     return(info);
 }
+
+
+static PyObject *
+libvirt_virDomainGetSchedulerType(PyObject *self ATTRIBUTE_UNUSED,
+                                  PyObject *args) {
+    virDomainPtr domain;
+    PyObject *pyobj_domain, *info;
+    char *c_retval;
+    int nparams;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virDomainGetScedulerType",
+                          &pyobj_domain))
+        return(NULL);
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    c_retval = virDomainGetSchedulerType(domain, &nparams);
+    if (c_retval == NULL)
+        return VIR_PY_NONE;
+
+    /* convert to a Python tupple of long objects */
+    if ((info = PyTuple_New(2)) == NULL) {
+        free(c_retval);
+        return VIR_PY_NONE;
+    }
+
+    PyTuple_SetItem(info, 0, libvirt_constcharPtrWrap(c_retval));
+    PyTuple_SetItem(info, 1, PyInt_FromLong((long)nparams));
+    free(c_retval);
+    return(info);
+}
+
+static PyObject *
+libvirt_virDomainGetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
+                                        PyObject *args) {
+    virDomainPtr domain;
+    PyObject *pyobj_domain, *info;
+    char *c_retval;
+    int nparams, i;
+    virSchedParameterPtr params;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virDomainGetScedulerParameters",
+                          &pyobj_domain))
+        return(NULL);
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    c_retval = virDomainGetSchedulerType(domain, &nparams);
+    if (c_retval == NULL)
+        return VIR_PY_NONE;
+    free(c_retval);
+
+    if ((params = malloc(sizeof(*params)*nparams)) == NULL)
+        return VIR_PY_NONE;
+
+    if (virDomainGetSchedulerParameters(domain, params, &nparams) < 0) {
+        free(params);
+        return VIR_PY_NONE;
+    }
+
+    /* convert to a Python tupple of long objects */
+    if ((info = PyDict_New()) == NULL) {
+        free(params);
+        return VIR_PY_NONE;
+    }
+    for (i = 0 ; i < nparams ; i++) {
+        PyObject *key, *val;
+
+        switch (params[i].type) {
+        case VIR_DOMAIN_SCHED_FIELD_INT:
+            val = PyInt_FromLong((long)params[i].value.i);
+            break;
+
+        case VIR_DOMAIN_SCHED_FIELD_UINT:
+            val = PyInt_FromLong((long)params[i].value.ui);
+            break;
+
+        case VIR_DOMAIN_SCHED_FIELD_LLONG:
+            val = PyLong_FromLongLong((long long)params[i].value.l);
+            break;
+
+        case VIR_DOMAIN_SCHED_FIELD_ULLONG:
+            val = PyLong_FromLongLong((long long)params[i].value.ul);
+            break;
+
+        case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
+            val = PyFloat_FromDouble((double)params[i].value.d);
+            break;
+
+        case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
+            val = PyBool_FromLong((long)params[i].value.b);
+            break;
+
+        default:
+            free(params);
+            Py_DECREF(info);
+            return VIR_PY_NONE;
+        }
+
+        key = libvirt_constcharPtrWrap(params[i].field);
+        PyDict_SetItem(info, key, val);
+    }
+    free(params);
+    return(info);
+}
+
+static PyObject *
+libvirt_virDomainSetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
+                                        PyObject *args) {
+    virDomainPtr domain;
+    PyObject *pyobj_domain, *info;
+    char *c_retval;
+    int nparams, i;
+    virSchedParameterPtr params;
+
+    if (!PyArg_ParseTuple(args, (char *)"OO:virDomainSetScedulerParameters",
+                          &pyobj_domain, &info))
+        return(NULL);
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    c_retval = virDomainGetSchedulerType(domain, &nparams);
+    if (c_retval == NULL)
+        return VIR_PY_NONE;
+    free(c_retval);
+
+    if ((params = malloc(sizeof(*params)*nparams)) == NULL)
+        return VIR_PY_NONE;
+
+    if (virDomainGetSchedulerParameters(domain, params, &nparams) < 0) {
+        free(params);
+        return VIR_PY_NONE;
+    }
+
+    /* convert to a Python tupple of long objects */
+    for (i = 0 ; i < nparams ; i++) {
+        PyObject *key, *val;
+        key = libvirt_constcharPtrWrap(params[i].field);
+        val = PyDict_GetItem(info, key);
+        Py_DECREF(key);
+
+        if (val == NULL)
+            continue;
+
+        switch (params[i].type) {
+        case VIR_DOMAIN_SCHED_FIELD_INT:
+            params[i].value.i = (int)PyInt_AS_LONG(val);
+            break;
+
+        case VIR_DOMAIN_SCHED_FIELD_UINT:
+            params[i].value.ui = (unsigned int)PyInt_AS_LONG(val);
+            break;
+
+        case VIR_DOMAIN_SCHED_FIELD_LLONG:
+            params[i].value.l = (long long)PyLong_AsLongLong(val);
+            break;
+
+        case VIR_DOMAIN_SCHED_FIELD_ULLONG:
+            params[i].value.ul = (unsigned long long)PyLong_AsLongLong(val);
+            break;
+
+        case VIR_DOMAIN_SCHED_FIELD_DOUBLE:
+            params[i].value.d = (double)PyFloat_AsDouble(val);
+            break;
+
+        case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
+            {
+                /* Hack - Python's definition of Py_True breaks strict
+                 * aliasing rules, so can't directly compare :-(
+                 */
+                PyObject *hacktrue = PyBool_FromLong(1);
+                params[i].value.b = hacktrue == val ? 1 : 0;
+                Py_DECREF(hacktrue);
+            }
+            break;
+
+        default:
+            free(params);
+            return VIR_PY_NONE;
+        }
+    }
+
+    if (virDomainSetSchedulerParameters(domain, params, nparams) < 0) {
+        free(params);
+        return VIR_PY_NONE;
+    }
+
+    free(params);
+    return VIR_PY_NONE;
+}
+
+static PyObject *
+libvirt_virDomainGetVcpus(PyObject *self ATTRIBUTE_UNUSED,
+                          PyObject *args) {
+    virDomainPtr domain;
+    PyObject *pyobj_domain, *pyretval = NULL, *pycpuinfo = NULL, *pycpumap = NULL;
+    virNodeInfo nodeinfo;
+    virDomainInfo dominfo;
+    virVcpuInfoPtr cpuinfo = NULL;
+    unsigned char *cpumap = NULL;
+    int cpumaplen, i;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virDomainGetVcpus",
+                          &pyobj_domain))
+        return(NULL);
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    if (virNodeGetInfo(virDomainGetConnect(domain), &nodeinfo) != 0)
+        return VIR_PY_NONE;
+
+    if (virDomainGetInfo(domain, &dominfo) != 0)
+        return VIR_PY_NONE;
+
+    if ((cpuinfo = malloc(sizeof(*cpuinfo)*dominfo.nrVirtCpu)) == NULL)
+        return VIR_PY_NONE;
+
+    cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
+    if ((cpumap = malloc(dominfo.nrVirtCpu * cpumaplen)) == NULL)
+        goto cleanup;
+
+    if (virDomainGetVcpus(domain,
+                          cpuinfo, dominfo.nrVirtCpu,
+                          cpumap, cpumaplen) < 0)
+        goto cleanup;
+
+    /* convert to a Python tupple of long objects */
+    if ((pyretval = PyTuple_New(2)) == NULL)
+        goto cleanup;
+    if ((pycpuinfo = PyList_New(dominfo.nrVirtCpu)) == NULL)
+        goto cleanup;
+    if ((pycpumap = PyList_New(dominfo.nrVirtCpu)) == NULL)
+        goto cleanup;
+
+    for (i = 0 ; i < dominfo.nrVirtCpu ; i++) {
+        PyObject *info = PyTuple_New(4);
+        if (info == NULL)
+            goto cleanup;
+        PyTuple_SetItem(info, 0, PyInt_FromLong((long)cpuinfo[i].number));
+        PyTuple_SetItem(info, 1, PyInt_FromLong((long)cpuinfo[i].state));
+        PyTuple_SetItem(info, 2, PyLong_FromLongLong((long long)cpuinfo[i].cpuTime));
+        PyTuple_SetItem(info, 3, PyInt_FromLong((long)cpuinfo[i].cpu));
+        PyList_SetItem(pycpuinfo, i, info);
+    }
+    for (i = 0 ; i < dominfo.nrVirtCpu ; i++) {
+        PyObject *info = PyTuple_New(VIR_NODEINFO_MAXCPUS(nodeinfo));
+        int j;
+        if (info == NULL)
+            goto cleanup;
+        for (j = 0 ; j < VIR_NODEINFO_MAXCPUS(nodeinfo) ; j++) {
+            PyTuple_SetItem(info, j, PyBool_FromLong(VIR_CPU_USABLE(cpumap, cpumaplen, i, j)));
+        }
+        PyList_SetItem(pycpumap, i, info);
+    }
+    PyTuple_SetItem(pyretval, 0, pycpuinfo);
+    PyTuple_SetItem(pyretval, 1, pycpumap);
+
+    free(cpuinfo);
+    free(cpumap);
+
+    return(pyretval);
+
+ cleanup:
+    free(cpuinfo);
+    free(cpumap);
+    /* NB, Py_DECREF is a badly defined macro, so we require
+     * braces here to avoid 'ambiguous else' warnings from
+     * the compiler.
+     * NB. this comment is true at of time of writing wrt to
+     * at least python2.5.
+     */
+    if (pyretval) { Py_DECREF(pyretval); }
+    if (pycpuinfo) { Py_DECREF(pycpuinfo); }
+    if (pycpumap) { Py_DECREF(pycpumap); }
+    return VIR_PY_NONE;
+}
+
+
+static PyObject *
+libvirt_virDomainPinVcpu(PyObject *self ATTRIBUTE_UNUSED,
+                         PyObject *args) {
+    virDomainPtr domain;
+    PyObject *pyobj_domain, *pycpumap, *truth;
+    virNodeInfo nodeinfo;
+    unsigned char *cpumap;
+    int cpumaplen, i, vcpu;
+
+    if (!PyArg_ParseTuple(args, (char *)"OiO:virDomainPinVcpu",
+                          &pyobj_domain, &vcpu, &pycpumap))
+        return(NULL);
+    domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
+
+    if (virNodeGetInfo(virDomainGetConnect(domain), &nodeinfo) != 0)
+        return VIR_PY_NONE;
+
+    cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
+    if ((cpumap = malloc(cpumaplen)) == NULL)
+        return VIR_PY_NONE;
+    memset(cpumap, 0, cpumaplen);
+
+    truth = PyBool_FromLong(1);
+    for (i = 0 ; i < VIR_NODEINFO_MAXCPUS(nodeinfo) ; i++) {
+        PyObject *flag = PyTuple_GetItem(pycpumap, i);
+        if (flag == truth)
+            VIR_USE_CPU(cpumap, i);
+        else
+            VIR_UNUSE_CPU(cpumap, i);
+    }
+
+    virDomainPinVcpu(domain, vcpu, cpumap, cpumaplen);
+    Py_DECREF(truth);
+    free(cpumap);
+
+    return VIR_PY_NONE;
+}
+
+
 /************************************************************************
  *									*
  *		Global error handler at the Python level		*
@@ -876,6 +1189,11 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainBlockStats", libvirt_virDomainBlockStats, METH_VARARGS, NULL},
     {(char *) "virDomainInterfaceStats", libvirt_virDomainInterfaceStats, METH_VARARGS, NULL},
     {(char *) "virNodeGetCellsFreeMemory", libvirt_virNodeGetCellsFreeMemory, METH_VARARGS, NULL},
+    {(char *) "virDomainGetSchedulerType", libvirt_virDomainGetSchedulerType, METH_VARARGS, NULL},
+    {(char *) "virDomainGetSchedulerParameters", libvirt_virDomainGetSchedulerParameters, METH_VARARGS, NULL},
+    {(char *) "virDomainSetSchedulerParameters", libvirt_virDomainSetSchedulerParameters, METH_VARARGS, NULL},
+    {(char *) "virDomainGetVcpus", libvirt_virDomainGetVcpus, METH_VARARGS, NULL},
+    {(char *) "virDomainPinVcpu", libvirt_virDomainPinVcpu, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 

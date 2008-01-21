@@ -229,6 +229,7 @@ py_types = {
     'double':  ('d', None, "double", "double"),
     'unsigned int':  ('i', None, "int", "int"),
     'unsigned long':  ('l', None, "long", "long"),
+    'unsigned long long':  ('l', None, "longlong", "long long"),
     'unsigned char *':  ('z', None, "charPtr", "char *"),
     'char *':  ('z', None, "charPtr", "char *"),
     'const char *':  ('z', None, "charPtrConst", "const char *"),
@@ -279,6 +280,11 @@ skip_impl = (
     'virDomainBlockStats',
     'virDomainInterfaceStats',
     'virNodeGetCellsFreeMemory',
+    'virDomainGetSchedulerType',
+    'virDomainGetSchedulerParameters',
+    'virDomainSetSchedulerParameters',
+    'virDomainGetVcpus',
+    'virDomainPinVcpu',
 )
 
 def skip_function(name):

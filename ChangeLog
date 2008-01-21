@@ -1,3 +1,11 @@
+Mon Jan 21 10:39:04 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* python/generator.py: mark VCPU / schedular related functions
+	as skipped.
+	* python/libvirt-python-api.xml: Add new defs for VCPU/ schedular
+	related functions
+	* python/libvir.c: Manual impl of VCPU/schedular functions
+
 Mon Jan 21 10:25:04 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/util.c, src/util.h: Rename virFileReadAll to __virFileReadAll,
