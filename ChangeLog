@@ -1,6 +1,13 @@
+Mon Jan 21 15:03:04 CET 2008  Jim Meyering  <meyering@redhat.com>
+
+	Don't access line[-1] for a zero-length "line" from fgets.
+	A NUL byte at beginning of input, or just after a newline
+	would provoke an invalid buf[-1] access (possible segfault).
+	* src/libvirt.c (virConnectAuthCallbackDefault):
+
 Mon Jan 21 09:25:12 CET 2008 Daniel Veillard <veillard@redhat.com>
 
-	* src/xml-internal.c: apply patch from Hiroyuki Kaguchi to 
+	* src/xml-internal.c: apply patch from Hiroyuki Kaguchi to
 	  preserve the vif list order.
 
 Mon Jan 21 09:06:28 CET 2008 Daniel Veillard <veillard@redhat.com>
@@ -27,7 +34,24 @@ Sat Jan 19 13:32:22 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 	src/xend_internal.c: Use generic VIR_DEBUG macro for logging.
 	Enable debug when env var LIBVIRT_DEBUG=1
 
-Tue Jan 15 16:25:57 CET  Jim Meyering  <meyering@redhat.com>
+Thu Jan 17 23:12:42 CET 2008  Jim Meyering  <meyering@redhat.com>
+
+	Handle PyTuple_New's malloc failure.
+	* python/libvir.c (libvirt_virDomainBlockStats): Handle a NULL
+	return from PyTuple_New.
+	(libvirt_virDomainInterfaceStats, libvirt_virGetLastError): Likewise.
+	(libvirt_virConnGetLastError): Likewise.
+
+	Factor out some duplication.
+	* python/libvir.c (VIR_PY_NONE): New macro, to encapsulate
+	a common two-statement sequence.
+	Replace all such 2-stmt sequences.
+
+	Avoid format string warnings.
+	* src/virsh.c: Add "%s" where needed.
+	* src/proxy_internal.c: Likewise.
+
+Tue Jan 15 16:25:57 CET 2008  Jim Meyering  <meyering@redhat.com>
 
 	* docs/examples/examples.xml: Regenerate, now that *.c file names
 	are sorted.

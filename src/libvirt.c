@@ -70,6 +70,7 @@ static int virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
     for (i = 0 ; i < ncred ; i++) {
         char buf[1024];
         char *bufptr = buf;
+        size_t len;
 
         if (printf("%s:", cred[i].prompt) < 0)
             return -1;
@@ -88,8 +89,9 @@ static int virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
                 }
                 return -1;
             }
-            if (buf[strlen(buf)-1] == '\n')
-                buf[strlen(buf)-1] = '\0';
+            len = strlen(buf);
+            if (len != 0 && buf[len-1] == '\n')
+                buf[len-1] = '\0';
             break;
 
         case VIR_CRED_PASSPHRASE:
