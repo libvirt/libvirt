@@ -1,3 +1,7 @@
+Mon Jan 21 10:12:04 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/openvz_driver.c: Remove no-op networking APIs
+
 Mon Jan 21 15:03:04 CET 2008  Jim Meyering  <meyering@redhat.com>
 
 	Adjust sexpr-related interfaces to be const-correct.

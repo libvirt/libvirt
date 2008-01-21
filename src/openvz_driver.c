@@ -86,14 +86,6 @@ static int openvzStartup(void);
 static int openvzShutdown(void);
 static int openvzReload(void);
 static int openvzActive(void);
-static int openvzCloseNetwork(virConnectPtr conn);
-static virDrvOpenStatus openvzOpenNetwork(virConnectPtr conn, 
-                                          const char *name ATTRIBUTE_UNUSED,
-                                          int *credtype ATTRIBUTE_UNUSED,
-                                          int ncredtype ATTRIBUTE_UNUSED,
-                                          virConnectAuthCallbackPtr cb ATTRIBUTE_UNUSED,
-                                          void *cbdata ATTRIBUTE_UNUSED,
-                                          int flags ATTRIBUTE_UNUSED);
 
 static virDomainPtr openvzDomainDefineXML(virConnectPtr conn, const char *xml);
 static virDomainPtr openvzDomainCreateLinux(virConnectPtr conn, const char *xml, 
@@ -698,20 +690,6 @@ static int openvzActive(void) {
     return 1;
 }
 
-static int openvzCloseNetwork(virConnectPtr conn ATTRIBUTE_UNUSED) {
-    return 0;
-}
-
-static virDrvOpenStatus openvzOpenNetwork(virConnectPtr conn ATTRIBUTE_UNUSED,
-                                          const char *name ATTRIBUTE_UNUSED,
-                                          int *credtype ATTRIBUTE_UNUSED,
-                                          int ncredtype ATTRIBUTE_UNUSED,
-                                          virConnectAuthCallbackPtr cb ATTRIBUTE_UNUSED,
-                                          void *cbdata ATTRIBUTE_UNUSED,
-                                          int flags ATTRIBUTE_UNUSED) {
-    return VIR_DRV_OPEN_SUCCESS;
-}
-
 static virDriver openvzDriver = {
     VIR_DRV_OPENVZ,
     "OPENVZ",
@@ -771,27 +749,6 @@ static virDriver openvzDriver = {
     NULL, /* nodeGetFreeMemory */
 };
 
-static virNetworkDriver openvzNetworkDriver = {
-    NULL, /* name */	
-    openvzOpenNetwork, /* open */
-    openvzCloseNetwork, /* close */
-    NULL, /* numOfNetworks */
-    NULL, /* listNetworks */
-    NULL, /* numOfDefinedNetworks */
-    NULL, /* listDefinedNetworks */
-    NULL, /* networkLookupByUUID */
-    NULL, /* networkLookupByName */
-    NULL, /* networkCreateXML */
-    NULL, /* networkDefineXML */
-    NULL, /* networkUndefine */
-    NULL, /* networkCreate */
-    NULL, /* networkDestroy */
-    NULL, /* networkDumpXML */
-    NULL, /* networkGetBridgeName */
-    NULL, /* networkGetAutostart */
-    NULL, /* networkSetAutostart */
-};
-
 static virStateDriver openvzStateDriver = {
     openvzStartup,
     openvzShutdown,
@@ -801,7 +758,6 @@ static virStateDriver openvzStateDriver = {
 
 int openvzRegister(void) {
     virRegisterDriver(&openvzDriver);
-    virRegisterNetworkDriver(&openvzNetworkDriver);
     virRegisterStateDriver(&openvzStateDriver);
     return 0;
 }
