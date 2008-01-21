@@ -5,8 +5,6 @@ SUBDIRS= . examples devhelp
 DOC_SOURCE_DIR=../src
 
 PAGES= index.html bugs.html FAQ.html remote.html
-APIPAGES=APIconstructors.html APIfiles.html APIfunctions.html \
-    APIsymbols.html APIchunk0.html
 
 man_MANS=
 
@@ -31,18 +29,6 @@ gif = \
   redhat.gif
 
 dot_html = \
-  APIchunk0.html \
-  APIchunk1.html \
-  APIchunk2.html \
-  APIchunk3.html \
-  APIchunk4.html \
-  APIchunk5.html \
-  APIchunk6.html \
-  APIchunk7.html \
-  APIconstructors.html \
-  APIfiles.html \
-  APIfunctions.html \
-  APIsymbols.html \
   FAQ.html \
   architecture.html \
   bugs.html \
@@ -73,7 +59,7 @@ rng = \
 
 EXTRA_DIST=					\
   libvirt-api.xml libvirt-refs.xml apibuild.py	\
-  site.xsl newapi.xsl api.xsl news.xsl		\
+  site.xsl newapi.xsl news.xsl		\
   $(dot_html) $(gif) html			\
   $(xml) $(rng)
 
@@ -84,7 +70,7 @@ virsh.1: virsh.pod
 	mv $@-t $@
 	cp $@ $(top_builddir)
 
-api: libvirt-api.xml libvirt-refs.xml $(APIPAGES) $(srcdir)/html/index.html
+api: libvirt-api.xml libvirt-refs.xml $(srcdir)/html/index.html
 
 web: $(PAGES)
 
@@ -96,15 +82,6 @@ $(PAGES): libvir.html site.xsl
 	  echo "Validating the HTML Web pages" ; \
 	  $(XMLLINT) --nonet --valid --noout $(PAGES) ; fi );
 
-
-$(APIPAGES): libvirt-api.xml libvirt-refs.xml $(top_srcdir)/docs/site.xsl $(top_srcdir)/docs/api.xsl
-	-@(if [ -x $(XSLTPROC) ] ; then \
-	  echo "Rebuilding the HTML API pages from libvirt-refs.xml" ; \
-	  $(XSLTPROC) --nonet --html $(top_srcdir)/docs/api.xsl \
-	                     $(top_srcdir)/docs/libvir.html ; fi );
-	-@(if [ -x $(XMLLINT) ] ; then \
-	  echo "Validating the HTML API pages" ; \
-	  $(XMLLINT) --nonet --valid --noout API*.html ; fi );
 
 $(srcdir)/html/index.html: libvirt-api.xml $(srcdir)/newapi.xsl
 	-@(if [ -x $(XSLTPROC) ] ; then \

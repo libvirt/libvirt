@@ -2,6 +2,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="../libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>Module libvirt from libvirt</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Module libvirt from libvirt</h1><table class="navigation" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle"><td><a accesskey="u" href="index.html"><img src="up.png" width="24" height="24" border="0" alt="Up" /></a></td><th align="left"><a href="index.html">API documentation</a></th><td><a accesskey="h" href="../index.html"><img src="home.png" width="24" height="24" border="0" alt="Home" /></a></td><th align="center"><a href="../index.html">The virtualization API</a></th><th align="right"><a href="libvirt-virterror.html">virterror</a></th><td><a accesskey="n" href="libvirt-virterror.html"><img src="right.png" width="24" height="24" border="0" alt="Next" /></a></td></tr></table><p>Provides the interfaces of the libvirt library to handle Xen domains from a process running in domain 0 </p><h2>Table of Contents</h2><pre class="programlisting">#define <a href="#LIBVIR_VERSION_NUMBER">LIBVIR_VERSION_NUMBER</a></pre><pre class="programlisting">#define <a href="#VIR_COPY_CPUMAP">VIR_COPY_CPUMAP</a></pre><pre class="programlisting">#define <a href="#VIR_CPU_MAPLEN">VIR_CPU_MAPLEN</a></pre><pre class="programlisting">#define <a href="#VIR_CPU_USABLE">VIR_CPU_USABLE</a></pre><pre class="programlisting">#define <a href="#VIR_DOMAIN_SCHED_FIELD_LENGTH">VIR_DOMAIN_SCHED_FIELD_LENGTH</a></pre><pre class="programlisting">#define <a href="#VIR_GET_CPUMAP">VIR_GET_CPUMAP</a></pre><pre class="programlisting">#define <a href="#VIR_NODEINFO_MAXCPUS">VIR_NODEINFO_MAXCPUS</a></pre><pre class="programlisting">#define <a href="#VIR_UNUSE_CPU">VIR_UNUSE_CPU</a></pre><pre class="programlisting">#define <a href="#VIR_USE_CPU">VIR_USE_CPU</a></pre><pre class="programlisting">#define <a href="#VIR_UUID_BUFLEN">VIR_UUID_BUFLEN</a></pre><pre class="programlisting">#define <a href="#VIR_UUID_STRING_BUFLEN">VIR_UUID_STRING_BUFLEN</a></pre><pre class="programlisting">Structure <a href="#virConnect">virConnect</a><br />struct _virConnect
 The content of this structure is not made public by the API.
+</pre><pre class="programlisting">Structure <a href="#virConnectAuth">virConnectAuth</a><br />struct _virConnectAuth
+</pre><pre class="programlisting">Typedef <a href="libvirt-libvirt.html#virConnectAuth">virConnectAuth</a> * <a name="virConnectAuthPtr" id="virConnectAuthPtr">virConnectAuthPtr</a>
+</pre><pre class="programlisting">Structure <a href="#virConnectCredential">virConnectCredential</a><br />struct _virConnectCredential
+</pre><pre class="programlisting">Typedef <a href="libvirt-libvirt.html#virConnectCredential">virConnectCredential</a> * <a name="virConnectCredentialPtr" id="virConnectCredentialPtr">virConnectCredentialPtr</a>
+</pre><pre class="programlisting">Enum <a href="#virConnectCredentialType">virConnectCredentialType</a>
+</pre><pre class="programlisting">Enum <a href="#virConnectFlags">virConnectFlags</a>
 </pre><pre class="programlisting">Typedef <a href="libvirt-libvirt.html#virConnect">virConnect</a> * <a name="virConnectPtr" id="virConnectPtr">virConnectPtr</a>
 </pre><pre class="programlisting">Structure <a href="#virDomain">virDomain</a><br />struct _virDomain
 The content of this structure is not made public by the API.
@@ -27,7 +33,10 @@ The content of this structure is not made public by the API.
 </pre><pre class="programlisting">Structure <a href="#virVcpuInfo">virVcpuInfo</a><br />struct _virVcpuInfo
 </pre><pre class="programlisting">Typedef <a href="libvirt-libvirt.html#virVcpuInfo">virVcpuInfo</a> * <a name="virVcpuInfoPtr" id="virVcpuInfoPtr">virVcpuInfoPtr</a>
 </pre><pre class="programlisting">Enum <a href="#virVcpuState">virVcpuState</a>
-</pre><pre class="programlisting">int	<a href="#virConnectClose">virConnectClose</a>			(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)</pre>
+</pre><pre class="programlisting">Function type: <a href="#virConnectAuthCallbackPtr">virConnectAuthCallbackPtr</a>
+int	<a href="#virConnectAuthCallbackPtr">virConnectAuthCallbackPtr</a>	(<a href="libvirt-libvirt.html#virConnectCredentialPtr">virConnectCredentialPtr</a> cred, <br />					 unsigned int ncred, <br />					 void * cbdata)
+</pre>
+<pre class="programlisting">int	<a href="#virConnectClose">virConnectClose</a>			(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)</pre>
 <pre class="programlisting">char *	<a href="#virConnectGetCapabilities">virConnectGetCapabilities</a>	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)</pre>
 <pre class="programlisting">char *	<a href="#virConnectGetHostname">virConnectGetHostname</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)</pre>
 <pre class="programlisting">int	<a href="#virConnectGetMaxVcpus">virConnectGetMaxVcpus</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn, <br />					 const char * type)</pre>
@@ -43,6 +52,7 @@ The content of this structure is not made public by the API.
 <pre class="programlisting">int	<a href="#virConnectNumOfDomains">virConnectNumOfDomains</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)</pre>
 <pre class="programlisting">int	<a href="#virConnectNumOfNetworks">virConnectNumOfNetworks</a>		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)</pre>
 <pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virConnectOpen">virConnectOpen</a>		(const char * name)</pre>
+<pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virConnectOpenAuth">virConnectOpenAuth</a>	(const char * name, <br />					 <a href="libvirt-libvirt.html#virConnectAuthPtr">virConnectAuthPtr</a> auth, <br />					 int flags)</pre>
 <pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	<a href="#virConnectOpenReadOnly">virConnectOpenReadOnly</a>	(const char * name)</pre>
 <pre class="programlisting">int	<a href="#virDomainAttachDevice">virDomainAttachDevice</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br />					 const char * xml)</pre>
 <pre class="programlisting">int	<a href="#virDomainBlockStats">virDomainBlockStats</a>		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> dom, <br />					 const char * path, <br />					 <a href="libvirt-libvirt.html#virDomainBlockStatsPtr">virDomainBlockStatsPtr</a> stats, <br />					 size_t size)</pre>
@@ -122,7 +132,33 @@ The content of this structure is not made public by the API.
 <h3><a name="VIR_UUID_STRING_BUFLEN" id="VIR_UUID_STRING_BUFLEN"></a>Macro: VIR_UUID_STRING_BUFLEN</h3><pre>#define VIR_UUID_STRING_BUFLEN</pre><p>This macro provides the length of the buffer required for virDomainGetUUIDString()</p>
 <h3><a name="virConnect" id="virConnect">Structure virConnect</a></h3><pre class="programlisting">Structure virConnect<br />struct _virConnect {
 The content of this structure is not made public by the API.
-}</pre>
+}</pre><h3><a name="virConnectAuth" id="virConnectAuth">Structure virConnectAuth</a></h3><pre class="programlisting">Structure virConnectAuth<br />struct _virConnectAuth {
+    int *	credtype	: List of supported virConnectCredentialT
+    unsigned int	ncredtype
+    <a href="libvirt-libvirt.html#virConnectAuthCallbackPtr">virConnectAuthCallbackPtr</a>	cb	: Callback used to collect credentials
+    void *	cbdata
+}</pre><h3><a name="virConnectCredential" id="virConnectCredential">Structure virConnectCredential</a></h3><pre class="programlisting">Structure virConnectCredential<br />struct _virConnectCredential {
+    int	type	: One of <a href="libvirt-libvirt.html#virConnectCredentialType">virConnectCredentialType</a> constan
+    const char *	prompt	: Prompt to show to user
+    const char *	challenge	: Additional challenge to show
+    const char *	defresult	: Optional default result
+    char *	result	: Result to be filled with user response
+    unsigned int	resultlen	: Length of the result
+}</pre><h3>Enum <a name="virConnectCredentialType" id="virConnectCredentialType">virConnectCredentialType</a></h3><pre class="programlisting">Enum virConnectCredentialType {
+    <a name="VIR_CRED_USERNAME" id="VIR_CRED_USERNAME">VIR_CRED_USERNAME</a> = 1 : Identity to act as
+    <a name="VIR_CRED_AUTHNAME" id="VIR_CRED_AUTHNAME">VIR_CRED_AUTHNAME</a> = 2 : Identify to authorize as
+    <a name="VIR_CRED_LANGUAGE" id="VIR_CRED_LANGUAGE">VIR_CRED_LANGUAGE</a> = 3 : RFC 1766 languages, comma separated
+    <a name="VIR_CRED_CNONCE" id="VIR_CRED_CNONCE">VIR_CRED_CNONCE</a> = 4 : client supplies a nonce
+    <a name="VIR_CRED_PASSPHRASE" id="VIR_CRED_PASSPHRASE">VIR_CRED_PASSPHRASE</a> = 5 : Passphrase secret
+    <a name="VIR_CRED_ECHOPROMPT" id="VIR_CRED_ECHOPROMPT">VIR_CRED_ECHOPROMPT</a> = 6 : Challenge response
+    <a name="VIR_CRED_NOECHOPROMPT" id="VIR_CRED_NOECHOPROMPT">VIR_CRED_NOECHOPROMPT</a> = 7 : Challenge response
+    <a name="VIR_CRED_REALM" id="VIR_CRED_REALM">VIR_CRED_REALM</a> = 8 : Authentication realm
+    <a name="VIR_CRED_EXTERNAL" id="VIR_CRED_EXTERNAL">VIR_CRED_EXTERNAL</a> = 9 : Externally managed credential More may be added - expect the unexpected
+}
+</pre><h3>Enum <a name="virConnectFlags" id="virConnectFlags">virConnectFlags</a></h3><pre class="programlisting">Enum virConnectFlags {
+    <a name="VIR_CONNECT_RO" id="VIR_CONNECT_RO">VIR_CONNECT_RO</a> = 1 : A readonly connection
+}
+</pre>
       a virConnectPtr is pointer to a virConnect private structure, this is the type used to reference a connection to the Xen Hypervisor in the API.
     <h3><a name="virDomain" id="virDomain">Structure virDomain</a></h3><pre class="programlisting">Structure virDomain<br />struct _virDomain {
 The content of this structure is not made public by the API.
@@ -212,7 +248,10 @@ The content of this structure is not made public by the API.
     <a name="VIR_VCPU_RUNNING" id="VIR_VCPU_RUNNING">VIR_VCPU_RUNNING</a> = 1 : the virtual CPU is running
     <a name="VIR_VCPU_BLOCKED" id="VIR_VCPU_BLOCKED">VIR_VCPU_BLOCKED</a> = 2 : the virtual CPU is blocked on resource
 }
-</pre><h3><a name="virConnectClose" id="virConnectClose"></a>Function: virConnectClose</h3><pre class="programlisting">int	virConnectClose			(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br />
+</pre><h3><a name="virConnectAuthCallbackPtr" id="virConnectAuthCallbackPtr"></a>Function type: virConnectAuthCallbackPtr</h3><pre class="programlisting">Function type: virConnectAuthCallbackPtr
+int	virConnectAuthCallbackPtr	(<a href="libvirt-libvirt.html#virConnectCredentialPtr">virConnectCredentialPtr</a> cred, <br />					 unsigned int ncred, <br />					 void * cbdata)
+</pre><p></p><div class="variablelist"><table border="0"><col align="left" /><tbody><tr><td><span class="term"><i><tt>cred</tt></i>:</span></td><td></td></tr><tr><td><span class="term"><i><tt>ncred</tt></i>:</span></td><td></td></tr><tr><td><span class="term"><i><tt>cbdata</tt></i>:</span></td><td></td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td></td></tr></tbody></table></div><br />
+<h3><a name="virConnectClose" id="virConnectClose"></a>Function: virConnectClose</h3><pre class="programlisting">int	virConnectClose			(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br />
 </pre><p>This function closes the connection to the Hypervisor. This should not be called if further interaction with the Hypervisor are needed especially if there is running domain which need further monitoring by the application.</p>
 <div class="variablelist"><table border="0"><col align="left" /><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>0 in case of success or -1 in case of error.</td></tr></tbody></table></div><h3><a name="virConnectGetCapabilities" id="virConnectGetCapabilities"></a>Function: virConnectGetCapabilities</h3><pre class="programlisting">char *	virConnectGetCapabilities	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br />
 </pre><p>Provides capabilities of the hypervisor / driver.</p>
@@ -244,7 +283,9 @@ The content of this structure is not made public by the API.
 </pre><p>Provides the number of active networks.</p>
 <div class="variablelist"><table border="0"><col align="left" /><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of network found or -1 in case of error</td></tr></tbody></table></div><h3><a name="virConnectOpen" id="virConnectOpen"></a>Function: virConnectOpen</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	virConnectOpen		(const char * name)<br />
 </pre><p>This function should be called first to get a connection to the Hypervisor and xen store</p>
-<div class="variablelist"><table border="0"><col align="left" /><tbody><tr><td><span class="term"><i><tt>name</tt></i>:</span></td><td>URI of the hypervisor</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a pointer to the hypervisor connection or NULL in case of error URIs are documented at http://libvirt.org/uri.html</td></tr></tbody></table></div><h3><a name="virConnectOpenReadOnly" id="virConnectOpenReadOnly"></a>Function: virConnectOpenReadOnly</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	virConnectOpenReadOnly	(const char * name)<br />
+<div class="variablelist"><table border="0"><col align="left" /><tbody><tr><td><span class="term"><i><tt>name</tt></i>:</span></td><td>URI of the hypervisor</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a pointer to the hypervisor connection or NULL in case of error URIs are documented at http://libvirt.org/uri.html</td></tr></tbody></table></div><h3><a name="virConnectOpenAuth" id="virConnectOpenAuth"></a>Function: virConnectOpenAuth</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	virConnectOpenAuth	(const char * name, <br />					 <a href="libvirt-libvirt.html#virConnectAuthPtr">virConnectAuthPtr</a> auth, <br />					 int flags)<br />
+</pre><p>This function should be called first to get a connection to the Hypervisor. If neccessary, authentication will be performed fetching credentials via the callback</p>
+<div class="variablelist"><table border="0"><col align="left" /><tbody><tr><td><span class="term"><i><tt>name</tt></i>:</span></td><td>URI of the hypervisor</td></tr><tr><td><span class="term"><i><tt>auth</tt></i>:</span></td><td>Authenticate callback parameters</td></tr><tr><td><span class="term"><i><tt>flags</tt></i>:</span></td><td>Open flags</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a pointer to the hypervisor connection or NULL in case of error URIs are documented at http://libvirt.org/uri.html</td></tr></tbody></table></div><h3><a name="virConnectOpenReadOnly" id="virConnectOpenReadOnly"></a>Function: virConnectOpenReadOnly</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>	virConnectOpenReadOnly	(const char * name)<br />
 </pre><p>This function should be called first to get a restricted connection to the libbrary functionalities. The set of APIs usable are then restricted on the available methods to control the domains.</p>
 <div class="variablelist"><table border="0"><col align="left" /><tbody><tr><td><span class="term"><i><tt>name</tt></i>:</span></td><td>URI of the hypervisor</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a pointer to the hypervisor connection or NULL in case of error URIs are documented at http://libvirt.org/uri.html</td></tr></tbody></table></div><h3><a name="virDomainAttachDevice" id="virDomainAttachDevice"></a>Function: virDomainAttachDevice</h3><pre class="programlisting">int	virDomainAttachDevice		(<a href="libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain, <br />					 const char * xml)<br />
 </pre><p>Create a virtual device attachment to backend.</p>

@@ -1,3 +1,8 @@
+Mon Jan 21 09:06:28 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* docs/API* docs/api.xsl docs/site.xsl docs/Makefile.am: remove the
+	  generation of the API*.html files as it's not really useful here
+
 Sun Jan 20 11:01:22 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/internal.h: Add xstrtol_ull, xstrtol_ll convenience

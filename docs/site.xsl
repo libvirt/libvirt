@@ -203,14 +203,6 @@
       <p><a href="{$href_base}/html/index.html">API menu</a></p>
       <p><a href="{$href_base}ChangeLog.html">ChangeLog</a></p>
     <div class="box">
-      <h2 class="box_title">API Indexes</h2>
-    </div>
-      <p><a href="{$href_base}APIchunk0.html">Alphabetic</a></p>
-      <p><a href="{$href_base}APIconstructors.html">Constructors</a></p>
-      <p><a href="{$href_base}APIfunctions.html">Functions/Types</a></p>
-      <p><a href="{$href_base}APIfiles.html">Modules</a></p>
-      <p><a href="{$href_base}APIsymbols.html">Symbols</a></p>
-    <div class="box">
       <h2 class="box_title">related links</h2>
     </div>
     <p><a href="https://www.redhat.com/archives/libvir-list/">Mail archive</a></p>
@@ -229,16 +221,6 @@
       <li><a href="{$href_base}index.html">Main menu</a></li>
       <li><a href="{$href_base}/html/index.html">API menu</a></li>
       <li><a href="{$href_base}ChangeLog.html">ChangeLog</a></li>
-      </ul>
-    </div>
-    <div class="llinks2">
-      <h3 class="links2"><span>API indexes</span></h3>
-      <ul>
-      <li><a href="{$href_base}APIchunk0.html">Alphabetic</a></li>
-      <li><a href="{$href_base}APIconstructors.html">Constructors</a></li>
-      <li><a href="{$href_base}APIfunctions.html">Functions/Types</a></li>
-      <li><a href="{$href_base}APIfiles.html">Modules</a></li>
-      <li><a href="{$href_base}APIsymbols.html">Symbols</a></li>
       </ul>
     </div>
     <div class="llinks2">
