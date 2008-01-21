@@ -730,7 +730,7 @@ sexpr_get(virConnectPtr xend, const char *fmt, ...)
  * Returns the value found or 0 if not found (but may not be an error)
  */
 static int
-sexpr_int(struct sexpr *sexpr, const char *name)
+sexpr_int(const struct sexpr *sexpr, const char *name)
 {
     const char *value = sexpr_node(sexpr, name);
 
@@ -751,7 +751,7 @@ sexpr_int(struct sexpr *sexpr, const char *name)
  * Returns the value found or 0 if not found (but may not be an error)
  */
 static double
-sexpr_float(struct sexpr *sexpr, const char *name)
+sexpr_float(const struct sexpr *sexpr, const char *name)
 {
     const char *value = sexpr_node(sexpr, name);
 
@@ -772,7 +772,7 @@ sexpr_float(struct sexpr *sexpr, const char *name)
  * Returns the value found or 0 if not found (but may not be an error)
  */
 static uint64_t
-sexpr_u64(struct sexpr *sexpr, const char *name)
+sexpr_u64(const struct sexpr *sexpr, const char *name)
 {
     const char *value = sexpr_node(sexpr, name);
 
@@ -794,7 +794,7 @@ sexpr_u64(struct sexpr *sexpr, const char *name)
  * Returns a -1 on error, 0 on success
  */
 static int
-sexpr_uuid(unsigned char *ptr, struct sexpr *node, const char *path)
+sexpr_uuid(unsigned char *ptr, const struct sexpr *node, const char *path)
 {
     const char *r = sexpr_node(node, path);
     if (!r)
@@ -1840,7 +1840,8 @@ xend_parse_domain_sexp(virConnectPtr conn, char *sexpr, int xendConfigVersion) {
  * Returns 0 in case of success, -1 in case of error
  */
 static int
-sexpr_to_xend_domain_info(virDomainPtr domain, struct sexpr *root, virDomainInfoPtr info)
+sexpr_to_xend_domain_info(virDomainPtr domain, const struct sexpr *root,
+                          virDomainInfoPtr info)
 {
     const char *flags;
 
@@ -1889,7 +1890,7 @@ sexpr_to_xend_domain_info(virDomainPtr domain, struct sexpr *root, virDomainInfo
  * Returns 0 in case of success, -1 in case of error
  */
 static int
-sexpr_to_xend_node_info(struct sexpr *root, virNodeInfoPtr info)
+sexpr_to_xend_node_info(const struct sexpr *root, virNodeInfoPtr info)
 {
     const char *machine;
 
@@ -1943,7 +1944,8 @@ sexpr_to_xend_node_info(struct sexpr *root, virNodeInfoPtr info)
  * Returns 0 in case of success, -1 in case of error
  */
 static int 
-sexpr_to_xend_topology_xml(virConnectPtr conn, struct sexpr *root, virBufferPtr xml)
+sexpr_to_xend_topology_xml(virConnectPtr conn, const struct sexpr *root,
+                           virBufferPtr xml)
 {
     const char *nodeToCpu;
     int numCells = 0;
@@ -1996,7 +1998,7 @@ error:
  * Returns the domain pointer or NULL in case of error.
  */
 static virDomainPtr
-sexpr_to_domain(virConnectPtr conn, struct sexpr *root)
+sexpr_to_domain(virConnectPtr conn, const struct sexpr *root)
 {
     virDomainPtr ret = NULL;
     unsigned char uuid[VIR_UUID_BUFLEN];

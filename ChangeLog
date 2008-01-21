@@ -1,5 +1,14 @@
 Mon Jan 21 15:03:04 CET 2008  Jim Meyering  <meyering@redhat.com>
 
+	Adjust sexpr-related interfaces to be const-correct.
+	* src/sexpr.c (sexpr_cons, append, sexpr_append, sexpr2string)
+	(sexpr_lookup_key, sexpr_lookup, sexpr_node, sexpr_fmt_node):
+	Add "const" attribute where appropriate.
+	* src/xend_internal.c (sexpr_int, sexpr_float, sexpr_u64)
+	(sexpr_uuid, sexpr_to_xend_domain_info, sexpr_to_xend_node_info)
+	(sexpr_to_xend_topology_xml, sexpr_to_domain): Likewise.
+	* src/sexpr.h: Adjust prototypes.
+
 	Don't access line[-1] for a zero-length "line" from fgets.
 	A NUL byte at beginning of input, or just after a newline
 	would provoke an invalid buf[-1] access (possible segfault).

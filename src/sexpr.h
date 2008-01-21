@@ -35,20 +35,20 @@ struct sexpr {
 };
 
 /* conversion to/from strings */
-size_t sexpr2string(struct sexpr *sexpr, char *buffer, size_t n_buffer);
+size_t sexpr2string(const struct sexpr *sexpr, char *buffer, size_t n_buffer);
 struct sexpr *string2sexpr(const char *buffer);
 
 /* constructors and destructors */
 struct sexpr *sexpr_nil(void);
 struct sexpr *sexpr_string(const char *str, ssize_t len);
-struct sexpr *sexpr_cons(struct sexpr *car, struct sexpr *cdr);
-struct sexpr *sexpr_append(struct sexpr *lst, struct sexpr *item);
+struct sexpr *sexpr_cons(const struct sexpr *car, const struct sexpr *cdr);
+struct sexpr *sexpr_append(struct sexpr *lst, const struct sexpr *item);
 void sexpr_free(struct sexpr *sexpr);
 
 /* lookup in S-Expressions */
-const char *sexpr_node(struct sexpr *sexpr, const char *node);
-const char *sexpr_fmt_node(struct sexpr *sexpr, const char *fmt, ...)
+const char *sexpr_node(const struct sexpr *sexpr, const char *node);
+const char *sexpr_fmt_node(const struct sexpr *sexpr, const char *fmt, ...)
   ATTRIBUTE_FORMAT(printf,2,3);
-struct sexpr *sexpr_lookup(struct sexpr *sexpr, const char *node);
+struct sexpr *sexpr_lookup(const struct sexpr *sexpr, const char *node);
 int sexpr_has(struct sexpr *sexpr, const char *node);
 #endif

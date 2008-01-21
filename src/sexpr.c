@@ -150,15 +150,15 @@ sexpr_string(const char *str, ssize_t len)
  * Returns the resulting S-Expression pointer or NULL in case of error.
  */
 struct sexpr *
-sexpr_cons(struct sexpr *car, struct sexpr *cdr)
+sexpr_cons(const struct sexpr *car, const struct sexpr *cdr)
 {
     struct sexpr *ret = sexpr_new();
 
     if (ret == NULL)
         return ret;
     ret->kind = SEXPR_CONS;
-    ret->u.s.car = car;
-    ret->u.s.cdr = cdr;
+    ret->u.s.car = (struct sexpr *) car;
+    ret->u.s.cdr = (struct sexpr *) cdr;
 
     return ret;
 }
@@ -171,14 +171,14 @@ sexpr_cons(struct sexpr *car, struct sexpr *cdr)
  * Internal operation appending a value at the end of an existing list
  */
 static void
-append(struct sexpr *lst, struct sexpr *value)
+append(struct sexpr *lst, const struct sexpr *value)
 {
     while (lst->kind != SEXPR_NIL) {
         lst = lst->u.s.cdr;
     }
 
     lst->kind = SEXPR_CONS;
-    lst->u.s.car = value;
+    lst->u.s.car = (struct sexpr *) value;
     lst->u.s.cdr = sexpr_nil();
 }
 
@@ -191,7 +191,7 @@ append(struct sexpr *lst, struct sexpr *value)
  * Returns lst or NULL in case of error
  */
 struct sexpr *
-sexpr_append(struct sexpr *lst, struct sexpr *value)
+sexpr_append(struct sexpr *lst, const struct sexpr *value)
 {
     if (lst == NULL)
         return (NULL);
@@ -215,7 +215,7 @@ sexpr_append(struct sexpr *lst, struct sexpr *value)
  *         0 in case of error.
  */
 size_t
-sexpr2string(struct sexpr * sexpr, char *buffer, size_t n_buffer)
+sexpr2string(const struct sexpr * sexpr, char *buffer, size_t n_buffer)
 {
     size_t ret = 0, tmp;
 
@@ -415,7 +415,7 @@ string2sexpr(const char *buffer)
  * Returns the pointer to the sub expression or NULL if not found.
  */
 static struct sexpr *
-sexpr_lookup_key(struct sexpr *sexpr, const char *node)
+sexpr_lookup_key(const struct sexpr *sexpr, const char *node)
 {
     char buffer[4096], *ptr, *token;
 
@@ -436,7 +436,7 @@ sexpr_lookup_key(struct sexpr *sexpr, const char *node)
     }
 
     for (token = strsep(&ptr, "/"); token; token = strsep(&ptr, "/")) {
-        struct sexpr *i;
+        const struct sexpr *i;
 
         if (token == NULL)
             continue;
@@ -464,7 +464,7 @@ sexpr_lookup_key(struct sexpr *sexpr, const char *node)
         return NULL;
     }
 
-    return sexpr;
+    return (struct sexpr *) sexpr;
 }
 
 /**
@@ -478,7 +478,7 @@ sexpr_lookup_key(struct sexpr *sexpr, const char *node)
  * Returns the pointer to the sub expression or NULL if not found.
  */
 struct sexpr *
-sexpr_lookup(struct sexpr *sexpr, const char *node)
+sexpr_lookup(const struct sexpr *sexpr, const char *node)
 {
     struct sexpr *s = sexpr_lookup_key(sexpr, node);
 
@@ -528,7 +528,7 @@ sexpr_has(struct sexpr *sexpr, const char *node)
  * Returns the value of the node or NULL if not found.
  */
 const char *
-sexpr_node(struct sexpr *sexpr, const char *node)
+sexpr_node(const struct sexpr *sexpr, const char *node)
 {
     struct sexpr *n = sexpr_lookup(sexpr, node);
 
@@ -547,7 +547,7 @@ sexpr_node(struct sexpr *sexpr, const char *node)
  * Returns the value of the node or NULL if not found.
  */
 const char *
-sexpr_fmt_node(struct sexpr *sexpr, const char *fmt, ...)
+sexpr_fmt_node(const struct sexpr *sexpr, const char *fmt, ...)
 {
     va_list ap;
     char node[4096];
