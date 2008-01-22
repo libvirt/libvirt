@@ -31,6 +31,7 @@
 #define gnutls_transport_ptr_t           gnutls_transport_ptr
 #define gnutls_datum_t                   gnutls_datum
 #define gnutls_certificate_credentials_t gnutls_certificate_credentials
+#define gnutls_cipher_algorithm_t        gnutls_cipher_algorithm
 #endif
 
 #endif /* LIBVIRT_GNUTLS_1_0_COMPAT_H__ */

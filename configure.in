@@ -218,12 +218,6 @@ CPPFLAGS="$CPPFLAGS -I$withval/install/usr/include"
 LDFLAGS="$LDFLAGS -L$withval/install/usr/lib"
 fi
 
-dnl
-dnl To be able to make dist on a non-xenified host
-dnl
-AC_ARG_WITH(depends,
-	[  --with-depends          check for dependancies (on)])
-
 LIBVIRT_FEATURES=
 WITH_XEN=0
 
@@ -241,9 +235,6 @@ fi
 if test "$with_remote" = "yes" ; then
     LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_REMOTE"
 fi
-
-if test "$with_depends" != "no"
-then
 
 if test "$with_xen" = "yes" ; then
     dnl search for the Xen store library
@@ -297,17 +288,14 @@ LIBXML_LIBS=""
 LIBXML_FOUND="no"
 
 AC_ARG_WITH(libxml, [  --with-libxml=[PFX]       libxml2 location])
-if test "z$with_libxml" = "zno" ; then
+if test "x$with_libxml" = "xno" ; then
     AC_MSG_CHECKING(for libxml2 libraries >= $LIBXML_REQUIRED)
     AC_MSG_ERROR(libxml2 >= $LIBXML_REQUIRED is required for libvirt)
-elif test "z$with_libxml" = "z" -a "x$PKG_CONFIG" != "x" ; then
-    PKG_CHECK_EXISTS(libxml-2.0,[LIBXML_FOUND=yes])
-    if test "$LIBXML_FOUND" != "no" ; then
-        PKG_CHECK_MODULES(LIBXML, libxml-2.0 >= $LIBXML_REQUIRED)
-    fi
+elif test "x$with_libxml"  = "x" -a "x$PKG_CONFIG" = "x" ; then
+    PKG_CHECK_MODULES(LIBXML, libxml-2.0 >= $LIBXML_REQUIRED, [LIBXML_FOUND=yes], [LIBXML_FOUND=no])
 fi
-if test "z$LIBXML_FOUND" = "zno" ; then
-    if test "z$with_libxml" != "z" ; then
+if test "$LIBXML_FOUND" = "no" ; then
+    if test "x$with_libxml" != "x" ; then
 	LIBXML_CONFIG=$with_libxml/bin/$LIBXML_CONFIG
     fi
     AC_MSG_CHECKING(libxml2 $LIBXML_CONFIG >= $LIBXML_REQUIRED )
@@ -322,7 +310,8 @@ if test "z$LIBXML_FOUND" = "zno" ; then
 	LIBXML_FOUND="yes"
         AC_MSG_RESULT(yes)
     else
-        AC_MSG_ERROR(You need at least libxml2 $LIBXML_REQUIRED for this version of libvirt)
+        AC_MSG_ERROR(
+          [You need at least libxml2 $LIBXML_REQUIRED for this version of libvirt])
     fi
 fi
 
@@ -343,16 +332,21 @@ LDFLAGS="$old_ldflags"
 dnl GnuTLS library
 GNUTLS_CFLAGS=
 GNUTLS_LIBS=
-if test "x$PKG_CONFIG" != "x" ; then
-  PKG_CHECK_MODULES(GNUTLS, gnutls >= $GNUTLS_REQUIRED)
-else
+GNUTLS_FOUND=no
+if test -z "$PKG_CONFIG" ; then
+  PKG_CHECK_MODULES(GNUTLS, gnutls >= $GNUTLS_REQUIRED,
+     [GNUTLS_FOUND=yes], [GNUTLS_FOUND=no])
+fi
+if test "$GNUTLS_FOUND" = "no"; then
   AC_CHECK_HEADER([gnutls/gnutls.h],
-       [],
-       AC_MSG_ERROR([You must install the GnuTLS development package in order to compile libvirt]))
+    [],
+    AC_MSG_ERROR(
+      [You must install the GnuTLS development package in order to compile libvirt]))
   old_libs="$LIBS"
   AC_CHECK_LIB(gnutls, gnutls_handshake,
-       [],
-       [AC_MSG_ERROR([You must install the GnuTLS library in order to compile and run libvirt])])
+    [],
+    [AC_MSG_ERROR(
+       [You must install the GnuTLS library in order to compile and run libvirt])])
   GNUTLS_LIBS=$LIBS
   LIBS="$old_libs"
 fi
@@ -379,12 +373,12 @@ dnl Cyrus SASL
 AC_ARG_WITH(sasl,
   [  --with-sasl         use cyrus SASL for authentication],
   [],
-  [with_sasl=yes])
+  [with_sasl=check])
 
 SASL_CFLAGS=
 SASL_LIBS=
-if test "$with_sasl" != "no"; then
-  if test "$with_sasl" != "yes"; then
+if test "x$with_sasl" != "xno"; then
+  if test "x$with_sasl" != "xyes" -a "x$with_sasl" != "xcheck"; then
     SASL_CFLAGS="-I$with_sasl"
     SASL_LIBS="-L$with_sasl"
   fi
@@ -392,18 +386,31 @@ if test "$with_sasl" != "no"; then
   old_libs="$LIBS"
   CFLAGS="$CFLAGS $SASL_CFLAGS"
   LIBS="$LIBS $SASL_LIBS"
-  AC_CHECK_HEADER([sasl/sasl.h],
-       [],
-       AC_MSG_ERROR([You must install the Cyrus SASL development package in order to compile libvirt]))
-  AC_CHECK_LIB(sasl2, sasl_client_init,
-       [],
-       [AC_MSG_ERROR([You must install the Cyrus SASL library in order to compile and run libvirt])])
+  AC_CHECK_HEADER([sasl/sasl.h],[],[
+    if test "x$with_sasl" != "xcheck" ; then
+        with_sasl=no
+    else
+        AC_MSG_ERROR(
+          [You must install the Cyrus SASL development package in order to compile libvirt])
+    fi])
+  if test "x$with_sasl" != "xno" ; then
+    AC_CHECK_LIB(sasl2, sasl_client_init,[],[
+      if test "x$with_sasl" = "xcheck" ; then
+          with_sasl=no
+      else
+         AC_MSG_ERROR(
+           [You must install the Cyrus SASL library in order to compile and run libvirt])
+      fi])
+  fi
   CFLAGS="$old_cflags"
   LIBS="$old_libs"
   SASL_LIBS="$SASL_LIBS -lsasl2"
-  AC_DEFINE_UNQUOTED(HAVE_SASL, 1, [whether Cyrus SASL is available for authentication])
+  if test "x$with_sasl" = "xyes" ; then
+    AC_DEFINE_UNQUOTED(HAVE_SASL, 1,
+      [whether Cyrus SASL is available for authentication])
+  fi
 fi
-AM_CONDITIONAL(HAVE_SASL, [test "$with_sasl" != "no"])
+AM_CONDITIONAL(HAVE_SASL, [test "x$with_sasl" = "xyes"])
 AC_SUBST(SASL_CFLAGS)
 AC_SUBST(SASL_LIBS)
 
@@ -416,15 +423,22 @@ AC_ARG_WITH(polkit,
   [],
   [with_polkit=check])
 
-if test "$with_polkit" = "check"; then
-  PKG_CHECK_EXISTS(polkit-dbus >= $POLKIT_REQUIRED, [with_polkit=yes], [with_polkit=no])
+if test "x$with_polkit" = "xyes" -o "x$with_polkit" = "xcheck"; then
+  PKG_CHECK_MODULES(POLKIT, polkit-dbus >= $POLKIT_REQUIRED,
+    [with_polkit=yes], [
+    if test "x$with_polkit" = "xcheck" ; then
+       with_polkit=no
+    else
+       AC_MSG_ERROR(
+         [You must install PolicyKit >= $POLKIT_REQUIRED to compile libvirt])
+    fi
+  ])
+  if test "x$with_polkit" = "xyes" ; then
+    AC_DEFINE_UNQUOTED(HAVE_POLKIT, 1,
+      [use PolicyKit for UNIX socket access checks])
+  fi
 fi
-
-if test "$with_polkit" = "yes"; then
-  PKG_CHECK_MODULES(POLKIT, polkit-dbus >= $POLKIT_REQUIRED)
-  AC_DEFINE_UNQUOTED(HAVE_POLKIT, 1, [use PolicyKit for UNIX socket access checks])
-fi
-AM_CONDITIONAL(HAVE_POLKIT, [test "$with_polkit" = "yes"])
+AM_CONDITIONAL(HAVE_POLKIT, [test "x$with_polkit" = "xyes"])
 AC_SUBST(POLKIT_CFLAGS)
 AC_SUBST(POLKIT_LIBS)
 
@@ -434,17 +448,24 @@ AC_ARG_WITH(avahi,
   [],
   [with_avahi=check])
 
-if test "$with_avahi" = "check" -a "x$PKG_CONFIG" != "x" ; then
-  PKG_CHECK_EXISTS(avahi-client >= $AVAHI_REQUIRED, [with_avahi=yes], [with_avahi=no])
-fi
-
 AVAHI_CFLAGS=
 AVAHI_LIBS=
-if test "$with_avahi" = "yes"; then
-  PKG_CHECK_MODULES(AVAHI, avahi-client >= $AVAHI_REQUIRED)
-  AC_DEFINE_UNQUOTED(HAVE_AVAHI, 1, [whether Avahi is used to broadcast server presense])
+if test "x$with_avahi" = "xyes" -o "x$with_avahi" = "xcheck"; then
+  PKG_CHECK_MODULES(AVAHI, avahi-client >= $AVAHI_REQUIRED,
+    [with_avahi=yes], [
+    if test "x$with_avahi" = "xcheck" ; then
+       with_avahi=no
+    else
+       AC_MSG_ERROR(
+         [You must install Avahi >= $AVAHI_REQUIRED to compile libvirt])
+    fi
+  ])
+  if test "x$with_avahi" = "xyes" ; then
+    AC_DEFINE_UNQUOTED(HAVE_AVAHI, 1,
+      [whether Avahi is used to broadcast server presense])
+  fi
 fi
-AM_CONDITIONAL(HAVE_AVAHI, [test "$with_avahi" = "yes"])
+AM_CONDITIONAL(HAVE_AVAHI, [test "x$with_avahi" = "xyes"])
 AC_SUBST(AVAHI_CFLAGS)
 AC_SUBST(AVAHI_LIBS)
 
@@ -489,9 +510,6 @@ else
 fi
 AC_SUBST(READLINE_CFLAGS)
 AC_SUBST(VIRSH_LIBS)
-
-# end of if with_depends
-fi
 
 AC_SUBST(WITH_XEN)
 AC_SUBST(LIBVIRT_FEATURES)

@@ -1,3 +1,11 @@
+Tue Jan 22 16:27:47 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.ac: Remove use of PKG_CHECK_EXISTS macro. Avoid
+	lines going over 80 chars wide. Make sasl check automatic
+	enable/disable as neccessary.
+	* acinclude.m4: Added compatability macro for old pkg-config
+	* src/gnutls_1_0_compat.h: Add compat for gnutls_cipher_algorithm_t
+
 Mon Jan 21 18:03:47 CET 2008  Jim Meyering  <meyering@redhat.com>
 
 	Avoid "may be used uninitialized" warning.
