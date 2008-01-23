@@ -1,3 +1,8 @@
+Wed Jan 23 14:43:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Remove DOS line-endings.
+	* src/socketcompat.h: Remove DOS line-endings in this file.
+
 Tue Jan 22 16:27:47 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.ac: Remove use of PKG_CHECK_EXISTS macro. Avoid
