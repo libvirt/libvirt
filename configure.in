@@ -65,8 +65,12 @@ AC_CHECK_FUNCS([cfmakeraw regexec uname])
 dnl Availability of various common headers (non-fatal if missing).
 AC_CHECK_HEADERS([pwd.h paths.h sys/syslimits.h sys/utsname.h sys/wait.h winsock2.h])
 
-dnl Need -lrpc or -lxdr? (Cygwin and MinGW resp. need this)
-AC_SEARCH_LIBS(xdrmem_create,[rpc xdr])
+dnl Where are the XDR functions?
+dnl If portablexdr is installed, prefer that.
+dnl Otherwise try -lrpc (Cygwin) -lxdr (some MinGW) or none (most Unix)
+AC_CHECK_LIB([portablexdr],[xdrmem_create],[],[
+	AC_SEARCH_LIBS([xdrmem_create],[rpc xdr])
+	])
 
 dnl Do we have rpcgen?
 AC_PATH_PROG(RPCGEN, rpcgen, no)

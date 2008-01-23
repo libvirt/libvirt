@@ -1,3 +1,12 @@
+Wed Jan 23 14:47:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Portability improvements for Mac OS X.
+	* configure.in: Use PortableXDR if available.
+	* qemud/internal.h: Use "socketcompat.h".
+	* qemud/qemud.c: Use <signal.h>.
+	* src/sexpr.c: Use <stdlib.h> instead of <malloc.h>.
+	* src/socketcompat.h: Include <sys/un.h> for Mac OS X.
+
 Wed Jan 23 14:43:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Remove DOS line-endings.

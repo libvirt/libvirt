@@ -47,6 +47,7 @@
 #include <assert.h>
 #include <fnmatch.h>
 #include <grp.h>
+#include <signal.h>
 
 #include "libvirt/virterror.h"
 
