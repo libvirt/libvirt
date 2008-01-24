@@ -1,3 +1,9 @@
+Thu Jan 24 10:08:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Correct typos in the documentation (Atsushi SAKAI)
+	* README, libvirt.spec.in, docs/devhelp/html.xsl,
+	  docs/devhelp/index.html: Correct typos in the documentation.
+
 Wed Jan 23 14:36:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in: Fix enablement of SASL
