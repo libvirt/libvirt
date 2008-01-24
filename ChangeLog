@@ -1,3 +1,8 @@
+Thu Jan 24 18:08:28 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c: Jay Gagnon pointed out that virDomainGetXMLDesc
+	  was failing with a non-zero flag value
+
 Thu Jan 24 10:08:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Correct typos in the documentation (Atsushi SAKAI)

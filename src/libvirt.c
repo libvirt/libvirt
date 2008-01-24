@@ -1838,10 +1838,6 @@ virDomainGetXMLDesc(virDomainPtr domain, int flags)
         virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return (NULL);
     }
-    if (flags != 0) {
-        virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
-        return (NULL);
-    }
 
     conn = domain->conn;
 
