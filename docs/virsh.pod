@@ -290,6 +290,9 @@ Change the current memory allocation in the guest domain. This should take
 effect immediately. The memory limit is specified in
 kilobytes.
 
+For Xen, you can only adjust the memory of a running domain if the
+domain is paravirtualized or running the PV balloon driver.
+
 =item B<setmaxmem> I<domain-id> B<kilobytes>
 
 Change the maximum memory allocation limit in the guest domain. This should
@@ -301,6 +304,9 @@ kilobytes.
 Change the number of virtual CPUs active in the guest domain. Note that
 I<count> may be limited by host, hypervisor or limit coming from the 
 original description of domain.
+
+For Xen, you can only adjust the virtual CPUs of a running domain if
+the domain is paravirtualized.
 
 =item B<shutdown> I<domain-id>
 

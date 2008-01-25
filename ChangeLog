@@ -1,3 +1,9 @@
+Fri Jan 25 12:00:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Clarify virsh documentation.
+	* docs/virsh.pod: Clarify virsh documentation on when you can
+	  set memory and vCPUs.
+
 Fri Jan 25 10:46:32 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/xen_internal.c: fix an erronous use of VIR_DOMAIN_NONE instead
