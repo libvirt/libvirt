@@ -1,3 +1,8 @@
+Fri Jan 25 10:46:32 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c: fix an erronous use of VIR_DOMAIN_NONE instead
+	  of VIR_DOMAIN_NOSTATE (both defined as 0, no regression)
+
 Thu Jan 24 18:08:28 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt.c: Jay Gagnon pointed out that virDomainGetXMLDesc

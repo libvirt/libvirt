@@ -2875,7 +2875,7 @@ xenHypervisorGetDomInfo(virConnectPtr conn, int id, virDomainInfoPtr info)
 	    info->state = VIR_DOMAIN_RUNNING;
 	    break;
 	default:
-	    info->state = VIR_DOMAIN_NONE;
+	    info->state = VIR_DOMAIN_NOSTATE;
     }
 
     /*
