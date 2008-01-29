@@ -1,5 +1,14 @@
 Tue Jan 29 18:39:25 CET 2008  Jim Meyering  <meyering@redhat.com>
 
+	Add framework for code style- and syntax-checking rules.
+	Almost all tests are initially disabled via the list in Makefile.cfg.
+	* Makefile.am (EXTRA_DIST): Add .x-sc_avoid_if_before_free.
+	Omit names of files that automake includes automatically.
+	* .x-sc_avoid_if_before_free: New file.
+	* build-aux/vc-list-files: Likewise.
+	* build-aux/find-unnecessary-if-before-free: Likewise.
+	* GNUmakefile, Makefile.cfg, Makefile.maint: New files.
+
 	Given code like if (foo) free (foo); remove the useless "if (foo) " part
 	Likewise, given if (foo != NULL) free (foo); remove the useless "if"
 	test.

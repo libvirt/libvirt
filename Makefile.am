@@ -5,9 +5,11 @@ SUBDIRS = gnulib/lib include src qemud proxy docs gnulib/tests \
 
 ACLOCAL_AMFLAGS = -I m4 -I gnulib/m4
 
-EXTRA_DIST = libvirt.spec.in libvirt.spec COPYING.LIB \
-             libvirt.pc.in libvirt.pc TODO AUTHORS ChangeLog \
-	     NEWS README $(man_MANS) autobuild.sh
+EXTRA_DIST = \
+  libvirt.spec libvirt.spec.in \
+  libvirt.pc libvirt.pc.in \
+  $(man_MANS) autobuild.sh \
+  .x-sc_avoid_if_before_free
 
 man_MANS = virsh.1
 
