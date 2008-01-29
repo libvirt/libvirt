@@ -29,7 +29,6 @@
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 
 #include <avahi-client/client.h>
 #include <avahi-client/publish.h>

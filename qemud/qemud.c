@@ -44,7 +44,6 @@
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
-#include <assert.h>
 #include <fnmatch.h>
 #include <grp.h>
 #include <signal.h>

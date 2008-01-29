@@ -43,7 +43,6 @@
 #include <errno.h>
 #include <getopt.h>
 #include <ctype.h>
-#include <assert.h>
 #include <fnmatch.h>
 
 #ifdef HAVE_POLKIT
