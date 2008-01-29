@@ -1,6 +1,6 @@
 /* Test the getaddrinfo module.
 
-   Copyright (C) 2006-2007 Free Software Foundation, Inc.
+   Copyright (C) 2006-2008 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 /* Written by Simon Josefsson.  */
 
-#include "config.h"
+#include <config.h>
 #include "getaddrinfo.h"
 #include "inet_ntop.h"
 #include <stdio.h>

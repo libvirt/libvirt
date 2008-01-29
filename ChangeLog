@@ -1,5 +1,12 @@
 Tue Jan 29 18:39:25 CET 2008  Jim Meyering  <meyering@redhat.com>
 
+	Update from gnulib
+	* lib/poll.c: Update.
+	* lib/string.in.h: Update.
+	* m4/string_h.m4: Update.
+	* tests/test-getaddrinfo.c: Update.
+	* lib/Makefile.am: Regenerate.
+
 	Enable the <config.h>-requiring test; fix violations
 	Use <config.h>, not "config.h", per autoconf documentation.
 	* Makefile.cfg (local-checks-to-skip) [sc_require_config_h]: Enable.

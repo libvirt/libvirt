@@ -313,11 +313,15 @@ char *strstr (const char *haystack, const char *needle)
 
 /* Find the first occurrence of NEEDLE in HAYSTACK, using case-insensitive
    comparison.  */
-#if ! @HAVE_STRCASESTR@
+#if @GNULIB_STRCASESTR@
+# if @REPLACE_STRCASESTR@
+#  define strcasestr rpl_strcasestr
+# endif
+# if ! @HAVE_STRCASESTR@ || @REPLACE_STRCASESTR@
 extern char *strcasestr (const char *haystack, const char *needle)
   __attribute__ ((__pure__));
-#endif
-#if defined GNULIB_POSIXCHECK
+# endif
+#elif defined GNULIB_POSIXCHECK
 /* strcasestr() does not work with multibyte strings:
    It is a glibc extension, and glibc implements it only for unibyte
    locales.  */
@@ -542,7 +546,10 @@ extern char *strerror (int);
 #endif
 
 #if @GNULIB_STRSIGNAL@
-# if ! @HAVE_DECL_STRSIGNAL@
+# if @REPLACE_STRSIGNAL@
+#  define strsignal rpl_strsignal
+# endif
+# if ! @HAVE_DECL_STRSIGNAL@ || @REPLACE_STRSIGNAL@
 extern char *strsignal (int __sig);
 # endif
 #elif defined GNULIB_POSIXCHECK
