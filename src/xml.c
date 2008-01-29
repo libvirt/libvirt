@@ -397,14 +397,12 @@ virParseXenCpuTopology(virConnectPtr conn, virBufferPtr xml,
   parse_error:
     virXMLError(conn, VIR_ERR_XEN_CALL, _("topology syntax error"), 0);
   error:
-    if (cpuset != NULL)
-        free(cpuset);
+    free(cpuset);
 
     return (-1);
 
   memory_error:
-    if (cpuset != NULL)
-        free(cpuset);
+    free(cpuset);
     virXMLError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"), 0);
     return (-1);
 }
@@ -1066,16 +1064,14 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
     if (str != NULL && !strcmp(str, "localtime")) {
         virBufferAdd(buf, "(localtime 1)", 13);
     }
-    if (str)
-        free(str);
+    free(str);
 
     virBufferAdd(buf, "))", 2);
 
     return (0);
 
   error:
-    if (nodes)
-        free(nodes);
+    free(nodes);
     return (-1);
 }
 
@@ -1723,8 +1719,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
                                                  vcpus, xendConfigVersion);
             }
 
-            if (str != NULL)
-                free(str);
+            free(str);
 
             if (res != 0)
                 goto error;
@@ -1797,8 +1792,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
     return (buf.content);
 
   error:
-    if (nam != NULL)
-        free(nam);
+    free(nam);
     if (name != NULL)
         *name = NULL;
     if (ctxt != NULL)
@@ -1807,8 +1801,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
         xmlFreeDoc(xml);
     if (pctxt != NULL)
         xmlFreeParserCtxt(pctxt);
-    if (buf.content != NULL)
-        free(buf.content);
+    free(buf.content);
     return (NULL);
 }
 

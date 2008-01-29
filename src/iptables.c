@@ -254,8 +254,7 @@ iptRulesSave(iptRules *rules)
 static void
 iptRuleFree(iptRule *rule)
 {
-    if (rule->rule)
-        free(rule->rule);
+    free(rule->rule);
     rule->rule = NULL;
 
     if (rule->argv) {
@@ -488,8 +487,7 @@ iptablesAddRemoveRule(iptRules *rules, int action, const char *arg, ...)
     }
 
  error:
-    if (rule)
-        free(rule);
+    free(rule);
 
     if (argv) {
         n = 0;

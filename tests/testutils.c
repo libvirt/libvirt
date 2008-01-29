@@ -83,8 +83,7 @@ virtTestRun(const char *title, int nloops, int (*body)(const void *data), const 
     else
         fprintf(stderr, "%-50s ... FAILED\n", title);
 
-    if (ts)
-        free(ts);
+    free(ts);
     return ret;
 }
 

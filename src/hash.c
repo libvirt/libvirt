@@ -226,8 +226,7 @@ virHashFree(virHashTablePtr table, virHashDeallocator f)
                 next = iter->next;
                 if ((f != NULL) && (iter->payload != NULL))
                     f(iter->payload, iter->name);
-                if (iter->name)
-                    free(iter->name);
+                free(iter->name);
                 iter->payload = NULL;
                 if (!inside_table)
                     free(iter);
@@ -453,8 +452,7 @@ virHashRemoveEntry(virHashTablePtr table, const char *name,
                 if ((f != NULL) && (entry->payload != NULL))
                     f(entry->payload, entry->name);
                 entry->payload = NULL;
-                if (entry->name)
-                    free(entry->name);
+                free(entry->name);
                 if (prev) {
                     prev->next = entry->next;
                     free(entry);
@@ -538,8 +536,7 @@ int virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, virHashDealloc
             if (iter(entry->payload, entry->name, data)) {
                 count++;
                 f(entry->payload, entry->name);
-                if (entry->name)
-                    free(entry->name);
+                free(entry->name);
                 if (prev) {
                     prev->next = entry->next;
                     free(entry);
@@ -812,8 +809,7 @@ __virGetDomain(virConnectPtr conn, const char *name, const unsigned char *uuid) 
  error:
     pthread_mutex_unlock(&conn->lock);
     if (ret != NULL) {
-        if (ret->name != NULL)
-            free(ret->name );
+        free(ret->name );
         free(ret);
     }
     return(NULL);
@@ -946,8 +942,7 @@ __virGetNetwork(virConnectPtr conn, const char *name, const unsigned char *uuid)
  error:
     pthread_mutex_unlock(&conn->lock);
     if (ret != NULL) {
-        if (ret->name != NULL)
-            free(ret->name );
+        free(ret->name );
         free(ret);
     }
     return(NULL);

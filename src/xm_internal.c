@@ -1307,10 +1307,8 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
     ret = 0;
 
  cleanup:
-    if(mapstr)
-        free(mapstr);
-    if(ranges)
-        free(ranges);
+    free(mapstr);
+    free(ranges);
     return (ret);
 }
 
@@ -1865,8 +1863,7 @@ static char *xenXMParseXMLVif(virConnectPtr conn, xmlNodePtr node, int hvm) {
     }
 
  cleanup:
-    if (bridge != NULL)
-        free(bridge);
+    free(bridge);
     if (mac != NULL)
         xmlFree(mac);
     if (source != NULL)
@@ -2238,8 +2235,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
             if (!vif)
                 goto error;
             if (!(thisVif = malloc(sizeof(*thisVif)))) {
-                if (vif)
-                    free(vif);
+                free(vif);
                 xenXMError(conn, VIR_ERR_NO_MEMORY, "config");
                 goto error;
             }
@@ -2410,8 +2406,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
     return (ret);
 
  error:
-    if (entry)
-        free(entry);
+    free(entry);
     if (conf)
         virConfFree(conf);
     return (NULL);

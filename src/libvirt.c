@@ -615,7 +615,7 @@ do_open (const char *name,
     return ret;
 
 failed:
-    if (ret->name) free (ret->name);
+    free (ret->name);
     if (ret->driver) ret->driver->close (ret);
     if (uri) xmlFreeURI(uri);
 	virUnrefConnect(ret);
@@ -1974,8 +1974,8 @@ virDomainMigrate (virDomainPtr domain,
         ddomain = virDomainLookupByName (dconn, dname);
 
  done:
-    if (uri_out) free (uri_out);
-    if (cookie) free (cookie);
+    free (uri_out);
+    free (cookie);
     return ddomain;
 }
 

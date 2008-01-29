@@ -1133,7 +1133,7 @@ static void qemudDispatchClientFailure(struct qemud_server *server, struct qemud
 
 #if HAVE_SASL
     if (client->saslconn) sasl_dispose(&client->saslconn);
-    if (client->saslUsername) free(client->saslUsername);
+    free(client->saslUsername);
 #endif
     if (client->tlssession) gnutls_deinit (client->tlssession);
     close(client->fd);
@@ -1639,8 +1639,7 @@ static void qemudCleanup(struct qemud_server *server) {
     if (server->saslUsernameWhitelist) {
         char **list = server->saslUsernameWhitelist;
         while (*list) {
-            if (*list)
-                free(*list);
+            free(*list);
             list++;
         }
     }

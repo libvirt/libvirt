@@ -735,13 +735,13 @@ doRemoteOpen (virConnectPtr conn,
 
  cleanup:
     /* Free up the URL and strings. */
-    if (name) free (name);
-    if (command) free (command);
-    if (sockname) free (sockname);
-    if (authtype) free (authtype);
-    if (netcat) free (netcat);
-    if (username) free (username);
-    if (port) free (port);
+    free (name);
+    free (command);
+    free (sockname);
+    free (authtype);
+    free (netcat);
+    free (username);
+    free (port);
     if (cmd_argv) {
         char **cmd_argv_ptr = cmd_argv;
         while (*cmd_argv_ptr) {
@@ -1139,10 +1139,10 @@ doRemoteClose (virConnectPtr conn, struct private_data *priv)
 #endif
 
     /* Free hostname copy */
-    if (priv->hostname) free (priv->hostname);
+    free (priv->hostname);
 
     /* See comment for remoteType. */
-    if (priv->type) free (priv->type);
+    free (priv->type);
 
     /* Free private data. */
     priv->magic = DEAD;
@@ -3267,7 +3267,7 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
 
         /* This server call shows complete, and earlier client step was OK */
         if (complete && err == SASL_OK) {
-            if (serverin) free(serverin);
+            free(serverin);
             break;
         }
     }
@@ -3297,9 +3297,9 @@ remoteAuthSASL (virConnectPtr conn, struct private_data *priv, int in_open,
     ret = 0;
 
  cleanup:
-    if (localAddr) free(localAddr);
-    if (remoteAddr) free(remoteAddr);
-    if (serverin) free(serverin);
+    free(localAddr);
+    free(remoteAddr);
+    free(serverin);
 
     free(saslcb);
     remoteAuthFreeCredentials(cred, ncred);

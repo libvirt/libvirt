@@ -354,8 +354,7 @@ static int testLoadDomain(virConnectPtr conn,
     return (handle);
 
  error:
-    if (name)
-        free(name);
+    free(name);
     return (-1);
 }
 
@@ -525,16 +524,11 @@ static int testLoadNetwork(virConnectPtr conn,
     return (handle);
 
  error:
-    if (ipaddress)
-        free(ipaddress);
-    if (ipnetmask)
-        free(ipnetmask);
-    if (dhcpstart)
-        free(dhcpstart);
-    if (dhcpend)
-        free(dhcpend);
-    if (name)
-        free(name);
+    free(ipaddress);
+    free(ipnetmask);
+    free(dhcpstart);
+    free(dhcpend);
+    free(name);
     return (-1);
 }
 
@@ -838,10 +832,8 @@ static int testOpenFromFile(virConnectPtr conn,
     return (0);
 
  error:
-    if (domains != NULL)
-        free(domains);
-    if (networks != NULL)
-        free(networks);
+    free(domains);
+    free(networks);
     if (xml)
         xmlFreeDoc(xml);
     if (fd != -1)

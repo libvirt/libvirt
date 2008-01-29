@@ -153,8 +153,7 @@ static int testCompareFormatXML(const char *xmcfg_rel, const char *xml_rel,
  fail:
     if (conf)
         virConfFree(conf);
-    if (gotxml)
-        free(gotxml);
+    free(gotxml);
 
     if (conn) {
         conn->privateData = old_priv;

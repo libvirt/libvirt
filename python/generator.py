@@ -375,7 +375,7 @@ def print_function_wrapper(name, output, export, include):
     if ret[0] == 'void':
         if file == "python_accessor":
 	    if args[1][1] == "char *":
-		c_call = "\n    if (%s->%s != NULL) free(%s->%s);\n" % (
+		c_call = "\n    free(%s->%s);\n" % (
 		                 args[0][0], args[1][0], args[0][0], args[1][0])
 		c_call = c_call + "    %s->%s = (%s)strdup((const xmlChar *)%s);\n" % (args[0][0],
 		                 args[1][0], args[1][1], args[1][0])

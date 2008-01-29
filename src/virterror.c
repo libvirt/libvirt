@@ -109,14 +109,10 @@ virResetError(virErrorPtr err)
 {
     if (err == NULL)
         return;
-    if (err->message != NULL)
-        free(err->message);
-    if (err->str1 != NULL)
-        free(err->str1);
-    if (err->str2 != NULL)
-        free(err->str2);
-    if (err->str3 != NULL)
-        free(err->str3);
+    free(err->message);
+    free(err->str1);
+    free(err->str2);
+    free(err->str3);
     memset(err, 0, sizeof(virError));
 }
 

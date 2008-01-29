@@ -494,8 +494,7 @@ static struct openvz_vm_def
     return def;
 
  bail_out:
-    if (prop)
-        free(prop);
+    free(prop);
     if (obj)
         xmlXPathFreeObject(obj);
     if (ctxt)

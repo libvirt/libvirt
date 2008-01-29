@@ -635,9 +635,7 @@ xenStoreLookupByName(virConnectPtr conn, const char *name)
     ret->id = id;
 
 done:
-    if (xenddomain != NULL)
 	free(xenddomain);
-    if (idlist != NULL)
 	free(idlist);
 
     return(ret);

@@ -1680,8 +1680,7 @@ virXen_setvcpumap(int handle, int id, unsigned int vcpu,
             op.u.setvcpumapd5.cpumap.nr_cpus = nr_cpus;
         }
         ret = xenHypervisorDoV2Dom(handle, &op);
-        if (new)
-            free(new);
+        free(new);
 
         if (unlock_pages(cpumap, maplen) < 0) {
             virXenError(NULL, VIR_ERR_XEN_CALL, " release", maplen);
@@ -2056,15 +2055,13 @@ xenHypervisorInit(void)
     virXenError(NULL, VIR_ERR_XEN_CALL, " ioctl ", IOCTL_PRIVCMD_HYPERCALL);
     close(fd);
     in_init = 0;
-    if (ipt)
-        free(ipt);
+    free(ipt);
     return(-1);
 
  done:
     close(fd);
     in_init = 0;
-    if (ipt)
-        free(ipt);
+    free(ipt);
     return(0);
 }
 

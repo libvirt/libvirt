@@ -150,8 +150,7 @@ void
 virBufferFree(virBufferPtr buf)
 {
     if (buf) {
-        if (buf->content)
-            free(buf->content);
+        free(buf->content);
         free(buf);
     }
 }

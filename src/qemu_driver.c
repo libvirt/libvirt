@@ -228,7 +228,7 @@ qemudStartup(void) {
 
  out_of_memory:
     qemudLog (QEMUD_ERR, "qemudStartup: out of memory");
-    if (base) free (base);
+    free (base);
     free(qemu_driver);
     qemu_driver = NULL;
     return -1;
@@ -330,17 +330,11 @@ qemudShutdown(void) {
     qemu_driver->nactivenetworks = 0;
     qemu_driver->ninactivenetworks = 0;
 
-    if (qemu_driver->configDir)
-        free(qemu_driver->configDir);
-    if (qemu_driver->autostartDir)
-        free(qemu_driver->autostartDir);
-    if (qemu_driver->networkConfigDir)
-        free(qemu_driver->networkConfigDir);
-    if (qemu_driver->networkAutostartDir)
-        free(qemu_driver->networkAutostartDir);
-
-    if (qemu_driver->vncTLSx509certdir)
-        free(qemu_driver->vncTLSx509certdir);
+    free(qemu_driver->configDir);
+    free(qemu_driver->autostartDir);
+    free(qemu_driver->networkConfigDir);
+    free(qemu_driver->networkAutostartDir);
+    free(qemu_driver->vncTLSx509certdir);
 
     if (qemu_driver->brctl)
         brShutdown(qemu_driver->brctl);

@@ -1379,8 +1379,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     return def;
 
  error:
-    if (prop)
-        free(prop);
+    free(prop);
     if (obj)
         xmlXPathFreeObject(obj);
     if (ctxt)
@@ -1468,8 +1467,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
  no_memory:
     qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "tapfds");
  error:
-    if (retval)
-        free(retval);
+    free(retval);
     if (tapfd != -1)
         close(tapfd);
     return NULL;
@@ -1941,7 +1939,7 @@ qemudParseVMDeviceDef(virConnectPtr conn,
 
   error:
     if (xml) xmlFreeDoc(xml);
-    if (dev) free(dev);
+    free(dev);
     return NULL;
 }
 

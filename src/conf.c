@@ -490,7 +490,6 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
     ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
         virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"), 0);
-	if (str != NULL)
 	    free(str);
         return(NULL);
     }
@@ -642,8 +641,7 @@ virConfParseStatement(virConfParserCtxtPtr ctxt)
     if (virConfAddEntry(ctxt->conf, name, value, comm) == NULL) {
         free(name);
 	virConfFreeValue(value);
-	if (comm != NULL)
-	    free(comm);
+    free(comm);
 	return(-1);
     }
     return(0);
@@ -776,8 +774,7 @@ __virConfFree(virConfPtr conf)
         virConfEntryPtr next;
         free(tmp->name);
         virConfFreeValue(tmp->value);
-        if (tmp->comment)
-            free(tmp->comment);
+        free(tmp->comment);
         next = tmp->next;
         free(tmp);
         tmp = next;

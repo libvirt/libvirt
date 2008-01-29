@@ -200,12 +200,9 @@ xenDomainUsedCpus(virDomainPtr dom)
     }
 
 done:
-    if (cpulist != NULL)
-        free(cpulist);
-    if (cpumap != NULL)
-        free(cpumap);
-    if (cpuinfo != NULL)
-        free(cpuinfo);
+    free(cpulist);
+    free(cpumap);
+    free(cpuinfo);
     return(res);
 }
 
@@ -912,9 +909,8 @@ xenUnifiedDomainDumpXML (virDomainPtr dom, int flags)
             char *cpus, *res;
             cpus = xenDomainUsedCpus(dom);
             res = xenDaemonDomainDumpXML(dom, flags, cpus);
-	    if (cpus != NULL)
 	        free(cpus);
-	    return(res);
+            return(res);
         }
         if (priv->opened[XEN_UNIFIED_PROXY_OFFSET])
             return xenProxyDomainDumpXML(dom, flags);

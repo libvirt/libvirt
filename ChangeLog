@@ -1,3 +1,34 @@
+Tue Jan 29 18:39:25 CET 2008  Jim Meyering  <meyering@redhat.com>
+
+	Given code like if (foo) free (foo); remove the useless "if (foo) " part
+	Likewise, given if (foo != NULL) free (foo); remove the useless "if"
+	test.
+	* proxy/libvirt_proxy.c: Remove unnecessary "if" test before free.
+	* python/generator.py: Likewise.
+	* qemud/qemud.c: Likewise.
+	* src/buf.c: Likewise.
+	* src/conf.c: Likewise.
+	* src/hash.c: Likewise.
+	* src/iptables.c: Likewise.
+	* src/libvirt.c: Likewise.
+	* src/openvz_conf.c: Likewise.
+	* src/qemu_conf.c: Likewise.
+	* src/qemu_driver.c: Likewise.
+	* src/remote_internal.c: Likewise.
+	* src/test.c: Likewise.
+	* src/virsh.c: Likewise.
+	* src/virterror.c: Likewise.
+	* src/xen_internal.c: Likewise.
+	* src/xen_unified.c: Likewise.
+	* src/xend_internal.c: Likewise.
+	* src/xm_internal.c: Likewise.
+	* src/xml.c: Likewise.
+	* src/xmlrpc.c: Likewise.
+	* src/xs_internal.c: Likewise.
+	* tests/testutils.c: Likewise.
+	* tests/xencapstest.c: Likewise.
+	* tests/xmconfigtest.c: Likewise.
+
 Fri Jan 25 12:00:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Clarify virsh documentation.

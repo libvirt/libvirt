@@ -505,8 +505,7 @@ retry2:
 		memcpy(&request.extra.str[0], uuid, VIR_UUID_BUFLEN);
 		strcpy(&request.extra.str[VIR_UUID_BUFLEN], name);
 	    }
-	    if (name)
-	        free(name);
+        free(name);
 	    break;
 	}
 	case VIR_PROXY_LOOKUP_UUID: {

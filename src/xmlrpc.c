@@ -115,8 +115,7 @@ static xmlRpcValuePtr xmlRpcValueUnmarshalInteger(xmlNodePtr node)
     
     if (ret && value)
         ret->value.integer = atoi(value);
-    if (value)
-        free(value);
+    free(value);
     return ret;
 }
 
@@ -131,8 +130,7 @@ static xmlRpcValuePtr xmlRpcValueUnmarshalBoolean(xmlNodePtr node)
 	ret->value.boolean = true;
     else
 	ret->value.boolean = false;
-    if (value)
-        free(value);
+    free(value);
     return ret;
 }
 
@@ -143,8 +141,7 @@ static xmlRpcValuePtr xmlRpcValueUnmarshalDouble(xmlNodePtr node)
 
     if (ret && value)
         ret->value.real = atof(value);
-    if (value)
-        free(value);
+    free(value);
     return ret;
 }
 
@@ -198,8 +195,7 @@ static xmlRpcValueDictElementPtr xmlRpcValueUnmarshalDictElement(xmlNodePtr node
 	    ret->value = xmlRpcValueUnmarshal(cur);
 	} else {
             xmlRpcError(VIR_ERR_XML_ERROR, _("unexpected dict node"), 0);
-	    if (ret->name)
-		free(ret->name);
+	    free(ret->name);
 	    if (ret->value)
 		xmlRpcValueFree(ret->value);
 	    free(ret);
@@ -679,12 +675,8 @@ xmlRpcContextPtr xmlRpcContextNew(const char *uri)
 void xmlRpcContextFree(xmlRpcContextPtr context)
 {
     if (context) {
-	if (context->uri)
-	    free(context->uri);
-
-	if (context->faultMessage)
-	    free(context->faultMessage);
-
+	free(context->uri);
+	free(context->faultMessage);
 	free(context);
     }
 }

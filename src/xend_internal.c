@@ -620,8 +620,7 @@ xend_op_ext2(virConnectPtr xend, const char *path, char *error,
     }
 
     ret = http2unix(xend, xend_post(xend, path, buf.content, error, n_error));
-    if (buf.content != NULL)
-        free(buf.content);
+    free(buf.content);
 
     return ret;
 }
@@ -1640,10 +1639,8 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
             virBufferAdd(&buf, "    </disk>\n", 12);
 
             bad_parse:
-            if (drvName)
-                free(drvName);
-            if (drvType)
-                free(drvType);
+            free(drvName);
+            free(drvType);
         } else if (sexpr_lookup(node, "device/vif")) {
             const char *tmp2;
             tmp2 = sexpr_node(node, "device/vif/script");
@@ -1809,8 +1806,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
     return (buf.content);
 
   error:
-    if (buf.content != NULL)
-        free(buf.content);
+    free(buf.content);
     return (NULL);
 }
 
@@ -2809,7 +2805,6 @@ xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids)
     }
 
 error:
-    if (root != NULL)
 	sexpr_free(root);
     return(ret);
 }
@@ -2843,7 +2838,6 @@ xenDaemonNumOfDomains(virConnectPtr conn)
     }
 
 error:
-    if (root != NULL)
 	sexpr_free(root);
     return(ret);
 }
@@ -2877,8 +2871,7 @@ xenDaemonLookupByID(virConnectPtr conn, int id) {
     return (ret);
 
  error:
-    if (name != NULL)
-      free(name);
+    free(name);
     return (NULL);
 }
 
@@ -3152,10 +3145,8 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
     sexpr = virDomainParseXMLDesc(conn, xmlDesc, &name, priv->xendConfigVersion);
     if ((sexpr == NULL) || (name == NULL)) {
         virXendError(conn, VIR_ERR_XML_ERROR, "domain");
-        if (sexpr != NULL)
-            free(sexpr);
-        if (name != NULL)
-            free(name);
+        free(sexpr);
+        free(name);
 
         return (NULL);
     }
@@ -3187,8 +3178,7 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
         xenDaemonDomainDestroy(dom);
         virUnrefDomain(dom);
     }
-    if (name != NULL)
-        free(name);
+    free(name);
     return (NULL);
 }
 
@@ -3228,8 +3218,7 @@ xenDaemonAttachDevice(virDomainPtr domain, const char *xml)
     str = virDomainGetOSType(domain);
     if (strcmp(str, "linux"))
         hvm = 1;
-    if (str)
-        free(str);
+    free(str);
     sexpr = virParseXMLDevice(domain->conn, xml, hvm, priv->xendConfigVersion);
     if (sexpr == NULL)
         return (-1);
@@ -3460,10 +3449,8 @@ virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
     sexpr = virDomainParseXMLDesc(conn, xmlDesc, &name, priv->xendConfigVersion);
     if ((sexpr == NULL) || (name == NULL)) {
         virXendError(conn, VIR_ERR_XML_ERROR, "domain");
-        if (sexpr != NULL)
-            free(sexpr);
-        if (name != NULL)
-            free(name);
+        free(sexpr);
+        free(name);
 
         return (NULL);
     }
@@ -3482,8 +3469,7 @@ virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
 
     return (dom);
   error:
-    if (name != NULL)
-        free(name);
+    free(name);
     return (NULL);
 }
 int xenDaemonDomainCreate(virDomainPtr domain)
@@ -3558,8 +3544,7 @@ xenDaemonNumOfDefinedDomains(virConnectPtr conn)
     }
 
 error:
-    if (root != NULL)
-        sexpr_free(root);
+    sexpr_free(root);
     return(ret);
 }
 
@@ -3591,8 +3576,7 @@ int xenDaemonListDefinedDomains(virConnectPtr conn, char **const names, int maxn
     }
 
 error:
-    if (root != NULL)
-        sexpr_free(root);
+    sexpr_free(root);
     return(ret);
 }
 

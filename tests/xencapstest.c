@@ -62,8 +62,7 @@ static int testCompareFiles(const char *hostmachine,
 
  fail:
 
-  if (actualxml)
-    free(actualxml);
+  free(actualxml);
   if (fp1)
     fclose(fp1);
   if (fp2)

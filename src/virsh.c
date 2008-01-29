@@ -428,8 +428,7 @@ cmdConnect(vshControl * ctl, vshCmd * cmd)
         ctl->conn = NULL;
     }
 
-    if (ctl->name)
-        free(ctl->name);
+    free(ctl->name);
     ctl->name = vshStrdup(ctl, vshCommandOptString(cmd, "name", NULL));
 
     if (!ro) {
@@ -577,8 +576,7 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         maxname = virConnectNumOfDefinedDomains(ctl->conn);
         if (maxname < 0) {
             vshError(ctl, FALSE, "%s", _("Failed to list inactive domains"));
-            if (ids)
-                free(ids);
+            free(ids);
             return FALSE;
         }
         if (maxname) {
@@ -586,8 +584,7 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 
             if ((maxname = virConnectListDefinedDomains(ctl->conn, names, maxname)) < 0) {
                 vshError(ctl, FALSE, "%s", _("Failed to list inactive domains"));
-                if (ids)
-                    free(ids);
+                free(ids);
                 free(names);
                 return FALSE;
             }
@@ -639,10 +636,8 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         virDomainFree(dom);
         free(names[i]);
     }
-    if (ids)
-        free(ids);
-    if (names)
-        free(names);
+    free(ids);
+    free(names);
     return TRUE;
 }
 
@@ -1217,8 +1212,7 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
         }
     }
  cleanup:
-    if (params)
-        free(params);
+    free(params);
     virDomainFree(dom);
     return ret_val;
 }
@@ -2513,8 +2507,7 @@ cmdNetworkList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         maxinactive = virConnectNumOfDefinedNetworks(ctl->conn);
         if (maxinactive < 0) {
             vshError(ctl, FALSE, "%s", _("Failed to list inactive networks"));
-            if (activeNames)
-                free(activeNames);
+            free(activeNames);
             return FALSE;
         }
         if (maxinactive) {
@@ -2522,8 +2515,7 @@ cmdNetworkList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 
             if ((maxinactive = virConnectListDefinedNetworks(ctl->conn, inactiveNames, maxinactive)) < 0) {
                 vshError(ctl, FALSE, "%s", _("Failed to list inactive networks"));
-                if (activeNames)
-                    free(activeNames);
+                free(activeNames);
                 free(inactiveNames);
                 return FALSE;
             }
@@ -2581,10 +2573,8 @@ cmdNetworkList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         virNetworkFree(network);
         free(inactiveNames[i]);
     }
-    if (activeNames)
-        free(activeNames);
-    if (inactiveNames)
-        free(inactiveNames);
+    free(activeNames);
+    free(inactiveNames);
     return TRUE;
 }
 
@@ -3230,10 +3220,8 @@ cmdAttachInterface(vshControl * ctl, vshCmd * cmd)
  cleanup:
     if (dom)
         virDomainFree(dom);
-    if (buf)
-        free(buf);
-    if (tmp)
-        free(tmp);
+    free(buf);
+    free(tmp);
     return ret;
 }
 
@@ -3516,10 +3504,8 @@ cmdAttachDisk(vshControl * ctl, vshCmd * cmd)
  cleanup:
     if (dom)
         virDomainFree(dom);
-    if (buf)
-        free(buf);
-    if (tmp)
-        free(tmp);
+    free(buf);
+    free(tmp);
     return ret;
 }
 
@@ -3868,8 +3854,7 @@ vshCommandOptFree(vshCmdOpt * arg)
 
         a = a->next;
 
-        if (tmp->data)
-            free(tmp->data);
+        free(tmp->data);
         free(tmp);
     }
 }
@@ -4267,7 +4252,7 @@ vshCommandParse(vshControl * ctl, char *cmdstr)
             c->next = NULL;
 
             if (!vshCommandCheckOpts(ctl, c)) {
-                if(c) free(c);
+                free(c);
                 goto syntaxError;
             }
 
@@ -4286,8 +4271,7 @@ vshCommandParse(vshControl * ctl, char *cmdstr)
         vshCommandFree(ctl->cmd);
     if (first)
         vshCommandOptFree(first);
-    if (tkdata)
-        free(tkdata);
+    free(tkdata);
     return FALSE;
 }
 
@@ -4791,8 +4775,7 @@ static int
 vshDeinit(vshControl * ctl)
 {
     vshCloseLogFile(ctl);
-    if (ctl->name)
-        free(ctl->name);
+    free(ctl->name);
     if (ctl->conn) {
         if (virConnectClose(ctl->conn) != 0) {
             ctl->conn = NULL;   /* prevent recursive call from vshError() */
