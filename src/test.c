@@ -21,7 +21,7 @@
  * Daniel Berrange <berrange@redhat.com>
  */
 
-#include "config.h"
+#include <config.h>
 
 #ifdef WITH_TEST
 

@@ -1,0 +1,6 @@
+^docs/examples/info1\.c$
+^docs/examples/suspend\.c$
+^gnulib/lib/dummy\.c$
+^gnulib/tests/dummy\.c$
+^qemud/remote_protocol\.c$
+^ChangeLog$

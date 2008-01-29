@@ -24,7 +24,7 @@
  * File created Jul 18, 2007 - Shuveb Hussain <shuveb@binarykarma.com>
  */
 
-#include "config.h"
+#include <config.h>
 
 #include <stdio.h>
 #include <stdarg.h>

@@ -19,7 +19,7 @@
  *     Mark McLoughlin <markmc@redhat.com>
  */
 
-#include "config.h"
+#include <config.h>
 
 #include "uuid.h"
 

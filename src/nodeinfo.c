@@ -21,7 +21,7 @@
  * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
-#include "config.h"
+#include <config.h>
 
 #include <stdio.h>
 #include <string.h>

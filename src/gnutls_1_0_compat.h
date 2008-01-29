@@ -22,7 +22,7 @@
 
 #ifndef LIBVIRT_GNUTLS_1_0_COMPAT_H__
 
-#include "config.h"
+#include <config.h>
 
 #ifdef GNUTLS_1_0_COMPAT
 #define gnutls_session_t                 gnutls_session

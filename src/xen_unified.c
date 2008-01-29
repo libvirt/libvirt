@@ -8,7 +8,7 @@
  * Richard W.M. Jones <rjones@redhat.com>
  */
 
-#include "config.h"
+#include <config.h>
 
 #ifdef WITH_XEN
 

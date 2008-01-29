@@ -1,5 +1,11 @@
 Tue Jan 29 18:39:25 CET 2008  Jim Meyering  <meyering@redhat.com>
 
+	Enable the <config.h>-requiring test; fix violations
+	Use <config.h>, not "config.h", per autoconf documentation.
+	* Makefile.cfg (local-checks-to-skip) [sc_require_config_h]: Enable.
+	* .x-sc_require_config_h: New file, to list exempted files.
+	* Makefile.am (EXTRA_DIST): Add .x-sc_require_config_h.
+
 	Enable the duplicate-"the" test; fix violations
 	* Makefile.cfg (local-checks-to-skip) [sc_the_the]: Enable.
 	* docs/virsh.pod: Remove a duplicate "the".

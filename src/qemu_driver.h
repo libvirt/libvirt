@@ -25,7 +25,7 @@
 #ifndef QEMUD_DRIVER_H
 #define QEMUD_DRIVER_H
 
-#include "config.h"
+#include <config.h>
 
 #ifdef WITH_QEMU
 

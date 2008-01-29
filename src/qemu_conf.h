@@ -24,7 +24,7 @@
 #ifndef __QEMUD_CONF_H
 #define __QEMUD_CONF_H
 
-#include "config.h"
+#include <config.h>
 
 #ifdef WITH_QEMU
 

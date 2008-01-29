@@ -20,7 +20,7 @@
  * Daniel Berrange <berrange@redhat.com>
  */
 
-#include "config.h"
+#include <config.h>
 
 #ifndef __MINGW32__
 

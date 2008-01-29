@@ -21,7 +21,7 @@
  * Author: Richard Jones <rjones@redhat.com>
  */
 
-#include "config.h"
+#include <config.h>
 
 /* Windows socket compatibility functions. */
 #include "socketcompat.h"

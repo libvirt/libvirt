@@ -13,7 +13,7 @@
  * $Id$
  */
 
-#include "config.h"
+#include <config.h>
 
 #include "libvirt/libvirt.h"
 #include "libvirt/virterror.h"
