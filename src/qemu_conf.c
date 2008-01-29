@@ -1382,8 +1382,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     free(prop);
     if (obj)
         xmlXPathFreeObject(obj);
-    if (ctxt)
-        xmlXPathFreeContext(ctxt);
+    xmlXPathFreeContext(ctxt);
     qemudFreeVMDef(def);
     return NULL;
 }
@@ -2392,8 +2391,7 @@ static struct qemud_network_def *qemudParseNetworkXML(virConnectPtr conn,
         xmlXPathFreeObject(obj);
     if (tmp)
         xmlXPathFreeObject(tmp);
-    if (ctxt)
-        xmlXPathFreeContext(ctxt);
+    xmlXPathFreeContext(ctxt);
     qemudFreeNetworkDef(def);
     return NULL;
 }

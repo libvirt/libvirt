@@ -1795,8 +1795,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
     free(nam);
     if (name != NULL)
         *name = NULL;
-    if (ctxt != NULL)
-        xmlXPathFreeContext(ctxt);
+    xmlXPathFreeContext(ctxt);
     if (xml != NULL)
         xmlFreeDoc(xml);
     if (pctxt != NULL)

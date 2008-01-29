@@ -1,5 +1,14 @@
 Tue Jan 29 18:39:25 CET 2008  Jim Meyering  <meyering@redhat.com>
 
+	Also detect and remove unnecessary if-before-xmlXPathFreeContext.
+	* build-aux/find-unnecessary-if-before-free: Update regexp.
+	* src/virsh.c: Remove unnecessary "if (P)"-before xmlXPathFreeContext.
+	* src/openvz_conf.c: Likewise.
+	* src/qemu_conf.c: Likewise.
+	* src/xm_internal.c: Likewise.
+	* src/xml.c: Likewise.
+	* tests/xmlrpctest.c: Likewise.
+
 	Enable two more tests.
 	* Makefile.cfg (local-checks-to-skip)
 	[sc_cast_of_x_alloc_return_value, sc_cast_of_argument_to_free]: Enable.

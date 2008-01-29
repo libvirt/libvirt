@@ -121,8 +121,7 @@ checkRequestValue(const char *xmlstr, const char *xpath, int type, void *expecte
 error:    
     if (obj)
         xmlXPathFreeObject(obj);
-    if (ctxt)
-        xmlXPathFreeContext(ctxt);
+    xmlXPathFreeContext(ctxt);
     if (xml)
         xmlFreeDoc(xml);
     return ret;

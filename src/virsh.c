@@ -504,8 +504,7 @@ cmdConsole(vshControl * ctl, vshCmd * cmd)
     xmlXPathFreeObject(obj);
 
  cleanup:
-    if (ctxt)
-        xmlXPathFreeContext(ctxt);
+    xmlXPathFreeContext(ctxt);
     if (xml)
         xmlFreeDoc(xml);
     virDomainFree(dom);
@@ -2932,8 +2931,7 @@ cmdVNCDisplay(vshControl * ctl, vshCmd * cmd)
  cleanup:
     if (obj)
         xmlXPathFreeObject(obj);
-    if (ctxt)
-        xmlXPathFreeContext(ctxt);
+    xmlXPathFreeContext(ctxt);
     if (xml)
         xmlFreeDoc(xml);
     virDomainFree(dom);
@@ -2995,8 +2993,7 @@ cmdTTYConsole(vshControl * ctl, vshCmd * cmd)
  cleanup:
     if (obj)
         xmlXPathFreeObject(obj);
-    if (ctxt)
-        xmlXPathFreeContext(ctxt);
+    xmlXPathFreeContext(ctxt);
     if (xml)
         xmlFreeDoc(xml);
     virDomainFree(dom);
@@ -3337,8 +3334,7 @@ cmdDetachInterface(vshControl * ctl, vshCmd * cmd)
         virDomainFree(dom);
     if (obj)
         xmlXPathFreeObject(obj);
-    if (ctxt)
-        xmlXPathFreeContext(ctxt);
+    xmlXPathFreeContext(ctxt);
     if (xml)
         xmlFreeDoc(xml);
     if (xml_buf)
@@ -3611,8 +3607,7 @@ cmdDetachDisk(vshControl * ctl, vshCmd * cmd)
  cleanup:
     if (obj)
         xmlXPathFreeObject(obj);
-    if (ctxt)
-        xmlXPathFreeContext(ctxt);
+    xmlXPathFreeContext(ctxt);
     if (xml)
         xmlFreeDoc(xml);
     if (xml_buf)

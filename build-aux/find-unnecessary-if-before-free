@@ -22,7 +22,7 @@ use warnings;
 	{
 	  if ($line =~
 	      /\b(if\s*\(\s*(\S+?)(?:\s*!=\s*NULL)?\s*\)
-	       \s+(?:sexpr_)?free\s*\(\s*\2\s*\))/sx)
+	       \s+(?:xmlXPathFreeContext|(?:sexpr_)?free)\s*\(\s*\2\s*\))/sx)
 	    {
 	      print "$file: $1\n";
 	      $found_match = 1;
@@ -37,6 +37,6 @@ my $foo = <<'EOF';
 # The above is to *find* them.
 # This adjusts them, removing the unnecessary "if (p)" part.
 
-git ls-files -z |xargs -0 \
-perl -0x3b -pi -e 's/\bif\s*\(\s*(\S+?)(?:\s*!=\s*NULL)?\s*\)\s+((?:sexpr_)?free\s*\(\s*\1\s*\))/$2/s'
+git ls-files -z --exclude=find-unnecessary-if-before-free |xargs -0 \
+perl -0x3b -pi -e 's/\bif\s*\(\s*(\S+?)(?:\s*!=\s*NULL)?\s*\)\s+((?:xmlXPathFreeContext|(?:sexpr_)?free)\s*\(\s*\1\s*\))/$2/s'
 EOF

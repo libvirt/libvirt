@@ -497,8 +497,7 @@ static struct openvz_vm_def
     free(prop);
     if (obj)
         xmlXPathFreeObject(obj);
-    if (ctxt)
-        xmlXPathFreeContext(ctxt);
+    xmlXPathFreeContext(ctxt);
     openvzFreeVMDef(def);
 
     return NULL;

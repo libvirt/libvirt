@@ -2273,8 +2273,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
         xmlFree(prop);
     if (obj != NULL)
         xmlXPathFreeObject(obj);
-    if (ctxt != NULL)
-        xmlXPathFreeContext(ctxt);
+    xmlXPathFreeContext(ctxt);
     if (doc != NULL)
         xmlFreeDoc(doc);
     return (NULL);
