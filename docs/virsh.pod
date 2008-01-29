@@ -327,7 +327,7 @@ anymore.
 =item B<resume> I<domain-id>
 
 Moves a domain out of the suspended state.  This will allow a previously
-suspended domain to now be eligible for scheduling by the the underlying
+suspended domain to now be eligible for scheduling by the underlying
 hypervisor.
 
 =item B<ttyconsole> I<domain-id>

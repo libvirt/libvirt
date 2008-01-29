@@ -1,5 +1,11 @@
 Tue Jan 29 18:39:25 CET 2008  Jim Meyering  <meyering@redhat.com>
 
+	Enable the duplicate-"the" test; fix violations
+	* Makefile.cfg (local-checks-to-skip) [sc_the_the]: Enable.
+	* docs/virsh.pod: Remove a duplicate "the".
+	* libvirt.spec.in: Likewise.
+	* virsh.1: Likewise.
+
 	Add framework for code style- and syntax-checking rules.
 	Almost all tests are initially disabled via the list in Makefile.cfg.
 	* Makefile.am (EXTRA_DIST): Add .x-sc_avoid_if_before_free.

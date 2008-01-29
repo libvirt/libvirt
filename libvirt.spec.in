@@ -75,7 +75,7 @@ Obsoletes: libvir-python
 %description python
 The libvirt-python package contains a module that permits applications
 written in the Python programming language to use the interface
-supplied by the libvirt library to use the the virtualization capabilities 
+supplied by the libvirt library to use the virtualization capabilities 
 of recent versions of Linux (and other OSes).
 
 %prep
