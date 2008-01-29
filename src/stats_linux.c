@@ -18,6 +18,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 
 #ifdef WITH_XEN
 #include <xs.h>
@@ -179,7 +180,7 @@ read_bd_stats (virConnectPtr conn, xenUnifiedPrivatePtr priv,
     if (stats->rd_req == -1 && stats->rd_bytes == -1 &&
         stats->wr_req == -1 && stats->wr_bytes == -1 &&
         stats->errs == -1) {
-        statsErrorFunc (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__,
+        statsErrorFunc (conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
                         "Failed to read any block statistics", domid);
         return -1;
     }
@@ -192,7 +193,7 @@ read_bd_stats (virConnectPtr conn, xenUnifiedPrivatePtr priv,
         stats->wr_req == 0 && stats->wr_bytes == 0 &&
         stats->errs == 0 &&
         !check_bd_connected (priv, device, domid)) {
-        statsErrorFunc (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__,
+        statsErrorFunc (conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
                         "Frontend block device not connected", domid);
         return -1;
     }
@@ -202,7 +203,7 @@ read_bd_stats (virConnectPtr conn, xenUnifiedPrivatePtr priv,
      */
     if (stats->rd_bytes > 0) {
         if (stats->rd_bytes >= ((unsigned long long)1)<<(63-9)) {
-            statsErrorFunc (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__,
+            statsErrorFunc (conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
                             "stats->rd_bytes would overflow 64 bit counter",
                             domid);
             return -1;
@@ -211,7 +212,7 @@ read_bd_stats (virConnectPtr conn, xenUnifiedPrivatePtr priv,
     }
     if (stats->wr_bytes > 0) {
         if (stats->wr_bytes >= ((unsigned long long)1)<<(63-9)) {
-            statsErrorFunc (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__,
+            statsErrorFunc (conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
                             "stats->wr_bytes would overflow 64 bit counter",
                             domid);
             return -1;
@@ -223,59 +224,145 @@ read_bd_stats (virConnectPtr conn, xenUnifiedPrivatePtr priv,
 }
 
 int
+xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *path)
+{
+    int disk, part = 0;
+
+    /* Strip leading path if any */
+    if (strlen(path) > 5 &&
+        STREQLEN(path, "/dev/", 5))
+        path += 5;
+
+    /*
+     * Possible block device majors & partition ranges. This
+     * matches the ranges supported in Xend xen/util/blkif.py
+     *
+     * hdNM:  N=a-t, M=1-63,  major={IDE0_MAJOR -> IDE9_MAJOR}
+     * sdNM:  N=a-z,aa-iv, M=1-15,  major={SCSI_DISK0_MAJOR -> SCSI_DISK15_MAJOR}
+     * xvdNM: N=a-p, M=1-15,  major=XENVBD_MAJOR
+     *
+     * NB, the SCSI major isn't technically correct, as XenD only knows
+     * about major=8. We cope with all SCSI majors in anticipation of
+     * XenD perhaps being fixed one day....
+     *
+     * The path for statistics will be
+     *
+     * /sys/devices/xen-backend/(vbd|tap)-{domid}-{devid}/statistics/{...}
+     */
+
+    if (strlen (path) >= 4 &&
+        STREQLEN (path, "xvd", 3)) {
+        /* Xen paravirt device handling */
+        disk = (path[3] - 'a');
+        if (disk < 0 || disk > 15) {
+            statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
+                            "invalid path, device names must be in range xvda - xvdp",
+                            domid);
+            return -1;
+        }
+
+        if (path[4] != '\0') {
+            if (!isdigit(path[4]) || path[4] == '0' ||
+                xstrtol_i(path+4, NULL, 10, &part) < 0 ||
+                part < 1 || part > 15) {
+                statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
+                                "invalid path, partition numbers for xvdN must be in range 1 - 15",
+                                domid);
+                return -1;
+            }
+        }
+
+        return (XENVBD_MAJOR * 256) + (disk * 16) + part;
+    } else if (strlen (path) >= 3 &&
+               STREQLEN (path, "sd", 2)) {
+        /* SCSI device handling */
+        int majors[] = { SCSI_DISK0_MAJOR, SCSI_DISK1_MAJOR, SCSI_DISK2_MAJOR,
+                         SCSI_DISK3_MAJOR, SCSI_DISK4_MAJOR, SCSI_DISK5_MAJOR,
+                         SCSI_DISK6_MAJOR, SCSI_DISK7_MAJOR, SCSI_DISK8_MAJOR,
+                         SCSI_DISK9_MAJOR, SCSI_DISK10_MAJOR, SCSI_DISK11_MAJOR,
+                         SCSI_DISK12_MAJOR, SCSI_DISK13_MAJOR, SCSI_DISK14_MAJOR,
+                         SCSI_DISK15_MAJOR };
+
+        disk = (path[2] - 'a');
+        if (disk < 0 || disk > 25) {
+            statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
+                            "invalid path, device names must be in range sda - sdiv",
+                            domid);
+            return -1;
+        }
+        if (path[3] != '\0') {
+            const char *p = NULL;
+            if (path[3] >= 'a' && path[3] <= 'z') {
+                disk = ((disk + 1) * 26) + (path[3] - 'a');
+                if (disk < 0 || disk > 255) {
+                    statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
+                                    "invalid path, device names must be in range sda - sdiv",
+                                    domid);
+                    return -1;
+                }
+
+                if (path[4] != '\0')
+                    p = path + 4;
+            } else {
+                p = path + 3;
+            }
+            if (p && (!isdigit(*p) || *p == '0' ||
+                      xstrtol_i(p, NULL, 10, &part) < 0 ||
+                      part < 1 || part > 15)) {
+                statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
+                                "invalid path, partition numbers for sdN must be in range 1 - 15",
+                                domid);
+                return -1;
+            }
+        }
+
+        return (majors[disk/16] * 256) + ((disk%16) * 16) + part;
+    } else if (strlen (path) >= 3 &&
+               STREQLEN (path, "hd", 2)) {
+        /* IDE device handling */
+        int majors[] = { IDE0_MAJOR, IDE1_MAJOR, IDE2_MAJOR, IDE3_MAJOR,
+                         IDE4_MAJOR, IDE5_MAJOR, IDE6_MAJOR, IDE7_MAJOR,
+                         IDE8_MAJOR, IDE9_MAJOR };
+        disk = (path[2] - 'a');
+        if (disk < 0 || disk > 19) {
+            statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
+                            "invalid path, device names must be in range hda - hdt",
+                            domid);
+            return -1;
+        }
+
+        if (path[3] != '\0') {
+            if (!isdigit(path[3]) || path[3] == '0' ||
+                xstrtol_i(path+3, NULL, 10, &part) < 0 ||
+                part < 1 || part > 63) {
+                statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
+                                "invalid path, partition numbers for hdN must be in range 1 - 63",
+                                domid);
+                return -1;
+            }
+        }
+
+        return (majors[disk/2] * 256) + ((disk % 2) * 63) + part;
+    }
+
+    /* Otherwise, unsupported device name. */
+    statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
+                    "unsupported path, use xvdN, hdN, or sdN", domid);
+    return -1;
+}
+
+int
 xenLinuxDomainBlockStats (xenUnifiedPrivatePtr priv,
                           virDomainPtr dom,
                           const char *path,
                           struct _virDomainBlockStats *stats)
 {
-    int minor, device;
+    int device = xenLinuxDomainDeviceID(dom->conn, dom->id, path);
 
-    /* Paravirt domains:
-     * Paths have the form "xvd[a-]" and map to paths
-     * /sys/devices/xen-backend/(vbd|tap)-domid-major:minor/
-     * statistics/(rd|wr|oo)_req.
-     * The major:minor is in this case fixed as 202*256 + minor*16
-     * where minor is 0 for xvda, 1 for xvdb and so on.
-     *
-     * XXX Not clear what happens to device numbers for devices
-     * >= xdvo (minor >= 16), which would otherwise overflow the
-     * 256 minor numbers assigned to this major number.  So we
-     * currently limit you to the first 16 block devices per domain.
-     */
-    if (strlen (path) == 4 &&
-        STREQLEN (path, "xvd", 3)) {
-        if ((minor = path[3] - 'a') < 0 || minor >= 16) {
-            statsErrorFunc (dom->conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
-                            "invalid path, should be xvda, xvdb, etc.",
-                            dom->id);
-            return -1;
-        }
-        device = XENVBD_MAJOR * 256 + minor * 16;
+    if (device < 0)
+        return -1;
 
-        return read_bd_stats (dom->conn, priv, device, dom->id, stats);
-    }
-    /* Fullvirt domains:
-     * hda, hdb etc map to major = HD_MAJOR*256 + minor*16.
-     *
-     * See comment above about devices >= hdo.
-     */
-    else if (strlen (path) == 3 &&
-             STREQLEN (path, "hd", 2)) {
-        if ((minor = path[2] - 'a') < 0 || minor >= 16) {
-            statsErrorFunc (dom->conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
-                            "invalid path, should be hda, hdb, etc.",
-                            dom->id);
-            return -1;
-        }
-        device = HD_MAJOR * 256 + minor * 16;
-
-        return read_bd_stats (dom->conn, priv, device, dom->id, stats);
-    }
-
-    /* Otherwise, unsupported device name. */
-    statsErrorFunc (dom->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__,
-                    "unsupported path (use xvda, hda, etc.)", dom->id);
-    return -1;
+    return read_bd_stats (dom->conn, priv, device, dom->id, stats);
 }
 
 #endif /* WITH_XEN */
@@ -296,7 +383,7 @@ linuxDomainInterfaceStats (virConnectPtr conn, const char *path,
 
     fp = fopen ("/proc/net/dev", "r");
     if (!fp) {
-        statsErrorFunc (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__,
+        statsErrorFunc (conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
                         "/proc/net/dev", errno);
         return -1;
     }
@@ -352,7 +439,7 @@ linuxDomainInterfaceStats (virConnectPtr conn, const char *path,
     }
     fclose (fp);
 
-    statsErrorFunc (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__,
+    statsErrorFunc (conn, VIR_ERR_INTERNAL_ERROR, __FUNCTION__,
                     "/proc/net/dev: Interface not found", 0);
     return -1;
 }

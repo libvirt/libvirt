@@ -13,6 +13,7 @@ xencapstest
 qemuxml2xmltest
 qemuxml2argvtest
 nodeinfotest
+statstest
 *.gcda
 *.gcno
 

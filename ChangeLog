@@ -1,3 +1,10 @@
+Tue Jan 29 13:33:25 EST 2008  Daniel P. Berrange <berrange@redhat.com>
+
+	* src/stats_linux.c, src/stats_linux.h: Fix conversion of device
+	names into device numbers
+	* tests/.cvsignore, tests/Makefile.am, tests/statstest.c: Add
+	test case to validate device name -> number conversion
+
 Tue Jan 29 18:39:25 CET 2008  Jim Meyering  <meyering@redhat.com>
 
 	Also detect and remove unnecessary if-before-xmlXPathFreeContext.
