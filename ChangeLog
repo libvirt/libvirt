@@ -1,3 +1,11 @@
+Wed Jan 30 20:49:34 CET 2008  Jim Meyering  <meyering@redhat.com>
+
+	Plug test-related leaks.
+	* src/test.c (testLoadNetwork): Free forwardDev.
+	(testLoadDomain): Free ctxt.
+	(testLoadNetwork): Likewise.
+	(testOpenFromFile): Likewise.
+
 Wed Jan 30 13:18:25 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/hash.c: Remove double mutex lock() flaw

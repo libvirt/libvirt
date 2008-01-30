@@ -351,9 +351,11 @@ static int testLoadDomain(virConnectPtr conn,
     privconn->domains[handle].onPoweroff = onPoweroff;
     privconn->domains[handle].onCrash = onCrash;
 
+    xmlXPathFreeContext(ctxt);
     return (handle);
 
  error:
+    xmlXPathFreeContext(ctxt);
     free(name);
     return (-1);
 }
@@ -507,6 +509,7 @@ static int testLoadNetwork(virConnectPtr conn,
     if (forwardDev) {
         strncpy(privconn->networks[handle].forwardDev, forwardDev, sizeof(privconn->networks[handle].forwardDev)-1);
         privconn->networks[handle].forwardDev[sizeof(privconn->networks[handle].forwardDev)-1] = '\0';
+        free(forwardDev);
     }
 
     strncpy(privconn->networks[handle].ipAddress, ipaddress, sizeof(privconn->networks[handle].ipAddress)-1);
@@ -521,9 +524,12 @@ static int testLoadNetwork(virConnectPtr conn,
     strncpy(privconn->networks[handle].dhcpEnd, dhcpend, sizeof(privconn->networks[handle].dhcpEnd)-1);
     privconn->networks[handle].dhcpEnd[sizeof(privconn->networks[handle].dhcpEnd)-1] = '\0';
     free(dhcpend);
+    xmlXPathFreeContext(ctxt);
     return (handle);
 
  error:
+    xmlXPathFreeContext(ctxt);
+    free (forwardDev);
     free(ipaddress);
     free(ipnetmask);
     free(dhcpstart);
@@ -827,11 +833,13 @@ static int testOpenFromFile(virConnectPtr conn,
         }
     }
 
+    xmlXPathFreeContext(ctxt);
     xmlFreeDoc(xml);
 
     return (0);
 
  error:
+    xmlXPathFreeContext(ctxt);
     free(domains);
     free(networks);
     if (xml)
