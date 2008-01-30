@@ -1741,9 +1741,9 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
             if (sexpr_lookup(node, "usbdevice")) {
                 tmp = sexpr_node(node, "usbdevice");
                 if (tmp && *tmp) {
-                    if (!strcmp(tmp, "usbtablet"))
+                    if (!strcmp(tmp, "tablet"))
                         virBufferAdd(&buf, "    <input type='tablet' bus='usb'/>\n", 37);
-                    else if (!strcmp(tmp, "usbmouse"))
+                    else if (!strcmp(tmp, "mouse"))
                         virBufferAdd(&buf, "    <input type='mouse' bus='usb'/>\n", 36);
                 }
             }
