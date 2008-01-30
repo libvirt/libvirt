@@ -1,5 +1,7 @@
 Wed Jan 30 20:49:34 CET 2008  Jim Meyering  <meyering@redhat.com>
 
+	* src/virsh.c (cmdCapabilities): Plug a small leak.
+
 	* src/test.c (testLoadDomain): Avoid leaks upon failure.
 
 	Avoid used-uninitialized errors in test driver.

@@ -2020,6 +2020,7 @@ cmdCapabilities (vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
         return FALSE;
     }
     vshPrint (ctl, "%s\n", caps);
+    free (caps);
 
     return TRUE;
 }
