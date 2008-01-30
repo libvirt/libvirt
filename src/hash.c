@@ -881,7 +881,7 @@ virUnrefDomain(virDomainPtr domain) {
         return (0);
     }
 
-    pthread_mutex_lock(&domain->conn->lock);
+    pthread_mutex_unlock(&domain->conn->lock);
     return (refs);
 }
 
@@ -1013,7 +1013,7 @@ virUnrefNetwork(virNetworkPtr network) {
         return (0);
     }
 
-    pthread_mutex_lock(&network->conn->lock);
+    pthread_mutex_unlock(&network->conn->lock);
     return (refs);
 }
 
