@@ -672,7 +672,7 @@ static int testOpenFromFile(virConnectPtr conn,
     xmlNodePtr *domains, *networks = NULL;
     xmlXPathContextPtr ctxt = NULL;
     virNodeInfoPtr nodeInfo;
-    testConnPtr privconn = malloc(sizeof(*privconn));
+    testConnPtr privconn = calloc(1, sizeof(*privconn));
     if (!privconn) {
         testError(NULL, NULL, NULL, VIR_ERR_NO_MEMORY, "testConn");
         return VIR_DRV_OPEN_ERROR;

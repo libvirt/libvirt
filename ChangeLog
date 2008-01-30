@@ -1,5 +1,8 @@
 Wed Jan 30 20:49:34 CET 2008  Jim Meyering  <meyering@redhat.com>
 
+	Avoid used-uninitialized errors in test driver.
+	* src/test.c (testOpenFromFile): Initialize "privconn".
+
 	* src/libvirt.c (do_open): Avoid double-free upon failure.
 
 	Avoid segfault upon malloc failure, and plug a leak.
