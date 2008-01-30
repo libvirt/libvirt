@@ -327,7 +327,7 @@ static int testLoadDomain(virConnectPtr conn,
         }
     }
     if (handle < 0)
-        return (-1);
+        goto error;
 
     privconn->domains[handle].active = 1;
     privconn->domains[handle].id = domid;
