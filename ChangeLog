@@ -1,3 +1,9 @@
+Wed Jan 30 07:54:25 CET 2008  Jim Meyering  <meyering@redhat.com>
+
+	Arrange for "make syntax-check" to pass.
+	* .x-sc_avoid_if_before_free: Exempt ChangeLog.
+	* tests/statstest.c: Include <config.h>, not "config.h".
+
 Tue Jan 29 13:33:25 EST 2008  Daniel P. Berrange <berrange@redhat.com>
 
 	* src/stats_linux.c, src/stats_linux.h: Fix conversion of device

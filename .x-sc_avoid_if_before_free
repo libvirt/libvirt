@@ -2,3 +2,4 @@
 ^gnulib/lib/printf-parse\.c$
 ^gnulib/lib/vasnprintf\.c$
 ^build-aux/find-unnecessary-if-before-free$
+^ChangeLog$
