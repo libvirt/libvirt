@@ -1,7 +1,7 @@
 /*
  * test.c: A "mock" hypervisor for use by application unit tests
  *
- * Copyright (C) 2006-2007 Red Hat, Inc.
+ * Copyright (C) 2006-2008 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1281,6 +1281,11 @@ static int testDomainSave(virDomainPtr domain,
     GET_DOMAIN(domain, -1);
 
     xml = testDomainDumpXML(domain, 0);
+    if (xml == NULL) {
+        testError(domain->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
+                  "cannot allocate space for metadata");
+        return (-1);
+    }
 
     if ((fd = open(path, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
         testError(domain->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
@@ -1303,9 +1308,11 @@ static int testDomainSave(virDomainPtr domain,
     if (write(fd, xml, len) != len) {
         testError(domain->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
                   "cannot write metadata");
+        free(xml);
         close(fd);
         return (-1);
     }
+    free(xml);
     if (close(fd) < 0) {
         testError(domain->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
                   "cannot save domain data");
