@@ -2161,6 +2161,7 @@ cmdDomuuid(vshControl * ctl, vshCmd * cmd)
     else
         vshError(ctl, FALSE, "%s", _("failed to get domain UUID"));
 
+    virDomainFree(dom);
     return TRUE;
 }
 
@@ -3038,8 +3039,10 @@ cmdAttachDevice(vshControl * ctl, vshCmd * cmd)
         return FALSE;
     }
 
-    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
+        virDomainFree(dom);
         return FALSE;
+    }
 
     ret = virDomainAttachDevice(dom, buffer);
     free (buffer);
@@ -3092,8 +3095,10 @@ cmdDetachDevice(vshControl * ctl, vshCmd * cmd)
         return FALSE;
     }
 
-    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0)
+    if (virFileReadAll(from, VIRSH_MAX_XML_FILE, &buffer) < 0) {
+        virDomainFree(dom);
         return FALSE;
+    }
 
     ret = virDomainDetachDevice(dom, buffer);
     free (buffer);
