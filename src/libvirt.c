@@ -615,7 +615,6 @@ do_open (const char *name,
     return ret;
 
 failed:
-    free (ret->name);
     if (ret->driver) ret->driver->close (ret);
     if (uri) xmlFreeURI(uri);
 	virUnrefConnect(ret);

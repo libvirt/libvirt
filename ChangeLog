@@ -1,5 +1,7 @@
 Wed Jan 30 20:49:34 CET 2008  Jim Meyering  <meyering@redhat.com>
 
+	* src/libvirt.c (do_open): Avoid double-free upon failure.
+
 	Avoid segfault upon malloc failure, and plug a leak.
 	* src/test.c (testDomainSave): Detect testDomainDumpXML failure.
 	Free "xml".
