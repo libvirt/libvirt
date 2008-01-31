@@ -12,7 +12,7 @@ static void testQuietError(void *userData ATTRIBUTE_UNUSED, virErrorPtr error AT
     /* nada */
 }
 
-#ifdef __linux__
+#if __linux__ && WITH_XEN
 static int testDevice(const char *path, int expect)
 {
     int actual = xenLinuxDomainDeviceID(NULL, 1, path);
@@ -31,7 +31,7 @@ int
 main(void)
 {
     int ret = 0;
-#ifdef __linux__
+#if __linux__ && WITH_XEN
     /* Some of our tests delibrately test failure cases, so
      * register a handler to stop error messages cluttering
      * up display
