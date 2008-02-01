@@ -1,7 +1,7 @@
 #!/bin/sh
-# List the specified version-controlled files.
+# List version-controlled file names.
 
-# Copyright (C) 2006, 2007 Free Software Foundation, Inc.
+# Copyright (C) 2006-2008 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,7 +18,8 @@
 
 
 # List the specified version-controlled files.
-# With no argument, list them all.
+# With no argument, list them all.  With a single DIRECTORY argument,
+# list the version-controlled files in that directory.
 # This script must be run solely from the top of a $srcdir build directory.
 
 # If there's an argument, it must be a single, "."-relative directory name.
@@ -28,12 +29,17 @@ dir=
 case $# in
   0) ;;
   1) dir=$1 ;;
-  *) echo "$0: too many arguments" 1>&2; exit 1 ;;
+  *) echo "$0: too many arguments" 1>&2
+     echo "Usage: $0 [DIR]" 1>&2; exit 1;;
 esac
 
 test "x$dir" = x && dir=.
 
-if test -d CVS; then
+if test -d .git; then
+  exec git ls-files "$dir"
+elif test -d .hg; then
+  exec hg locate "$dir/*"
+elif test -d CVS; then
   if test -x build-aux/cvsu; then
     build-aux/cvsu --find --types=AFGM "$dir"
   else
@@ -46,5 +52,6 @@ if test -d CVS; then
       $(find ${*-*} -name Entries -print) /dev/null;
   fi
 else
-  git-ls-files "$dir"
+  echo "$0: Failed to determine type of version control used in "`pwd` 1>&2
+  exit 1
 fi

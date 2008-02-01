@@ -1,5 +1,5 @@
 /* vsprintf with automatic memory allocation.
-   Copyright (C) 1999, 2002-2007 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2002-2008 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as published by
@@ -95,7 +95,7 @@
 
 #if (NEED_PRINTF_DOUBLE || NEED_PRINTF_INFINITE_DOUBLE) && !defined IN_LIBINTL
 # include <math.h>
-# include "isnan.h"
+# include "isnand.h"
 #endif
 
 #if (NEED_PRINTF_LONG_DOUBLE || NEED_PRINTF_INFINITE_LONG_DOUBLE) && !defined IN_LIBINTL
@@ -106,7 +106,7 @@
 
 #if (NEED_PRINTF_DIRECTIVE_A || NEED_PRINTF_DOUBLE) && !defined IN_LIBINTL
 # include <math.h>
-# include "isnan.h"
+# include "isnand.h"
 # include "printf-frexp.h"
 #endif
 
@@ -236,7 +236,7 @@ decimal_point_char ()
 static int
 is_infinite_or_zero (double x)
 {
-  return isnan (x) || x + x == x;
+  return isnand (x) || x + x == x;
 }
 
 #endif
@@ -2327,7 +2327,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 # if NEED_PRINTF_DIRECTIVE_A || NEED_PRINTF_DOUBLE
 		    double arg = a.arg[dp->arg_index].a.a_double;
 
-		    if (isnan (arg))
+		    if (isnand (arg))
 		      {
 			if (dp->conversion == 'A')
 			  {
@@ -2676,7 +2676,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		  if (dp->conversion == 'f' || dp->conversion == 'F')
 		    {
 		      double arg = a.arg[dp->arg_index].a.a_double;
-		      if (!(isnan (arg) || arg + arg == arg))
+		      if (!(isnand (arg) || arg + arg == arg))
 			{
 			  /* arg is finite and nonzero.  */
 			  int exponent = floorlog10 (arg < 0 ? -arg : arg);
@@ -3080,7 +3080,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		  {
 		    double arg = a.arg[dp->arg_index].a.a_double;
 
-		    if (isnan (arg))
+		    if (isnand (arg))
 		      {
 			if (dp->conversion >= 'A' && dp->conversion <= 'Z')
 			  {
@@ -4327,7 +4327,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
 		    if (prec_ourselves)
 		      {
 			/* Handle the precision.  */
-			TCHAR_T *prec_ptr = 
+			TCHAR_T *prec_ptr =
 # if USE_SNPRINTF
 			  (TCHAR_T *) (result + length);
 # else
@@ -4654,6 +4654,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
        not have this limitation.  */
     return result;
 
+#if USE_SNPRINTF
   overflow:
     if (!(result == resultbuf || result == NULL))
       free (result);
@@ -4662,6 +4663,7 @@ VASNPRINTF (DCHAR_T *resultbuf, size_t *lengthp,
     CLEANUP ();
     errno = EOVERFLOW;
     return NULL;
+#endif
 
   out_of_memory:
     if (!(result == resultbuf || result == NULL))

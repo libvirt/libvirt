@@ -1,3 +1,8 @@
+Fri Feb  1 20:46:07 CET 2008  Jim Meyering  <meyering@redhat.com>
+
+	Pull vc-list-files from gnulib, and update.
+	* bootstrap (gnulib_tool): Add the vc-list-files module.
+
 Thu Jan 31 20:12:40 CET 2008  Guido Guenther  <agx@sigxcpu.org>
 
 	Avoid compilation failure when building --without-xen.

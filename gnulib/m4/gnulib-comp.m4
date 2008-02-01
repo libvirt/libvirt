@@ -225,6 +225,7 @@ AC_DEFUN([gltests_LIBSOURCES], [
 AC_DEFUN([gl_FILE_LIST], [
   build-aux/config.rpath
   build-aux/link-warning.h
+  build-aux/vc-list-files
   lib/alloca.in.h
   lib/asnprintf.c
   lib/asprintf.c

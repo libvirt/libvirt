@@ -77,7 +77,8 @@ $gnulib_tool			\
   --tests-base=gnulib/tests	\
   --import physmem getaddrinfo  \
     sys_stat vasprintf strndup  \
-    strsep poll gettext getpass
+    strsep poll gettext getpass \
+    vc-list-files
 
 rm -f				\
     .gitignore			\
