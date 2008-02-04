@@ -287,12 +287,20 @@ sc_two_space_separator_in_usage:
 	    echo "$(ME): an option and its description"; \
 		1>&2; exit 1; } || :
 
+err_func_re = \
+(DISABLE_fprintf|(xmlRpc|vir(Xend|XML|Hash|Conf|Test|LibConn))Error)
+
 # Look for diagnostics that aren't marked for translation.
 # This won't find any for which error's format string is on a separate line.
 sc_unmarked_diagnostics:
 	@grep -nE							\
-	    '\<error \([^"]*"[^"]*[a-z]{3}' $$($(CVS_LIST_EXCEPT))	\
+	    '\<(vshError|error) \([^"]*"[^"]*[a-z]{3}' $$($(CVS_LIST_EXCEPT))	\
 	  | grep -v '_''(' &&						\
+	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2;		\
+	    exit 1; } || :
+	@{ grep     -nE '\<$(err_func_re) *\(.*;$$' $$($(CVS_LIST_EXCEPT));   \
+	   grep -A1 -nE '\<$(err_func_re) *\(.*,$$' $$($(CVS_LIST_EXCEPT)); } \
+	  | grep '[	 ]"' &&						\
 	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2;		\
 	    exit 1; } || :
 

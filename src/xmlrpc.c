@@ -50,9 +50,9 @@ static xmlRpcValuePtr xmlRpcValueNew(xmlRpcValueType type)
     xmlRpcValuePtr ret = malloc(sizeof(*ret));
     
     if (!ret)
-        xmlRpcError(VIR_ERR_NO_MEMORY, "allocate value", sizeof(*ret));
+	xmlRpcError(VIR_ERR_NO_MEMORY, _("allocate value"), sizeof(*ret));
     else
-        ret->kind = type;
+	ret->kind = type;
     return ret;
 }
 
@@ -183,7 +183,7 @@ static xmlRpcValueDictElementPtr xmlRpcValueUnmarshalDictElement(xmlNodePtr node
     xmlNodePtr cur;
 
     if (!ret) {
-        xmlRpcError(VIR_ERR_NO_MEMORY, "allocate dict", sizeof(*ret));
+	xmlRpcError(VIR_ERR_NO_MEMORY, _("allocate dict"), sizeof(*ret));
 	return NULL;
     }
     memset(ret, 0, sizeof(*ret));

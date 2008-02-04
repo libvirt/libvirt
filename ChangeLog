@@ -1,5 +1,18 @@
 Mon Feb  2 15:56:45 CET 2008  Jim Meyering  <meyering@redhat.com>
 
+	Enable more checks for unmarked messages; fix violators.
+	* Makefile.maint (sc_unmarked_diagnostics): Check for more functions.
+	* src/conf.c (virConfParseValue): Remove trailing space in diagnostic.
+	* src/libvirt.c (do_open, virDomainMigrate): Mark diagnostics.
+	* src/xend_internal.c (do_connect, xenDaemonDomainDumpXMLByID): Likewise.
+	(xenDaemonDomainDumpXMLByName, xenDaemonCreateLinux): Likewise.
+	(xenDaemonDomainMigratePerform, xenDaemonDomainDefineXML): Likewise.
+	* src/xml.c (virXPathString, virXPathNumber, virXPathLong): Likewise.
+	(virXPathBoolean, virXPathNode, virXPathNodeSet): Likewise.
+	(virDomainParseXMLOSDescHVM): Likewise.
+	* src/xmlrpc.c (xmlRpcValueNew): Likewise.
+	(xmlRpcValueUnmarshalDictElement): Likewise.
+
 	Mark a string for translation.
 	* src/virsh.c: Add a "%s" and wrap with _(...).
 

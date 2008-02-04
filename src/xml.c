@@ -1,7 +1,7 @@
 /*
  * xml.c: XML based interfaces for the libvir library
  *
- * Copyright (C) 2005, 2007 Red Hat, Inc.
+ * Copyright (C) 2005, 2007, 2008 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -473,7 +473,7 @@ virXPathString(const char *xpath, xmlXPathContextPtr ctxt)
 
     if ((ctxt == NULL) || (xpath == NULL)) {
         virXMLError(NULL, VIR_ERR_INTERNAL_ERROR,
-                    "Invalid parameter to virXPathString()", 0);
+                    _("Invalid parameter to virXPathString()"), 0);
         return (NULL);
     }
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
@@ -486,7 +486,7 @@ virXPathString(const char *xpath, xmlXPathContextPtr ctxt)
     ret = strdup((char *) obj->stringval);
     xmlXPathFreeObject(obj);
     if (ret == NULL) {
-        virXMLError(NULL, VIR_ERR_NO_MEMORY, "strdup", 0);
+        virXMLError(NULL, VIR_ERR_NO_MEMORY, _("strdup failed"), 0);
     }
     return (ret);
 }
@@ -509,7 +509,7 @@ virXPathNumber(const char *xpath, xmlXPathContextPtr ctxt, double *value)
 
     if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
         virXMLError(NULL, VIR_ERR_INTERNAL_ERROR,
-                    "Invalid parameter to virXPathNumber()", 0);
+                    _("Invalid parameter to virXPathNumber()"), 0);
         return (-1);
     }
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
@@ -544,7 +544,7 @@ virXPathLong(const char *xpath, xmlXPathContextPtr ctxt, long *value)
 
     if ((ctxt == NULL) || (xpath == NULL) || (value == NULL)) {
         virXMLError(NULL, VIR_ERR_INTERNAL_ERROR,
-                    "Invalid parameter to virXPathNumber()", 0);
+                    _("Invalid parameter to virXPathNumber()"), 0);
         return (-1);
     }
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
@@ -590,7 +590,7 @@ virXPathBoolean(const char *xpath, xmlXPathContextPtr ctxt)
 
     if ((ctxt == NULL) || (xpath == NULL)) {
         virXMLError(NULL, VIR_ERR_INTERNAL_ERROR,
-                    "Invalid parameter to virXPathBoolean()", 0);
+                    _("Invalid parameter to virXPathBoolean()"), 0);
         return (-1);
     }
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
@@ -623,7 +623,7 @@ virXPathNode(const char *xpath, xmlXPathContextPtr ctxt)
 
     if ((ctxt == NULL) || (xpath == NULL)) {
         virXMLError(NULL, VIR_ERR_INTERNAL_ERROR,
-                    "Invalid parameter to virXPathNode()", 0);
+                    _("Invalid parameter to virXPathNode()"), 0);
         return (NULL);
     }
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
@@ -659,7 +659,7 @@ virXPathNodeSet(const char *xpath, xmlXPathContextPtr ctxt,
 
     if ((ctxt == NULL) || (xpath == NULL)) {
         virXMLError(NULL, VIR_ERR_INTERNAL_ERROR,
-                    "Invalid parameter to virXPathNodeSet()", 0);
+                    _("Invalid parameter to virXPathNodeSet()"), 0);
         return (-1);
     }
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
@@ -882,7 +882,7 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
                 if (nbootorder ==
                     ((sizeof(bootorder) / sizeof(bootorder[0])) - 1)) {
                     virXMLError(conn, VIR_ERR_XML_ERROR,
-                                "too many boot devices", 0);
+                                _("too many boot devices"), 0);
                     return (-1);
                 }
                 if (xmlStrEqual(boot_dev, BAD_CAST "fd")) {
@@ -1004,7 +1004,8 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
                 isMouse = 0;
             else if (strcmp((const char *) itype, "mouse")) {
                 xmlFree(itype);
-                virXMLError(conn, VIR_ERR_XML_ERROR, "input", 0);
+                virXMLError(conn, VIR_ERR_XML_ERROR,
+                            _("invalid input device"), 0);
                 goto error;
             }
             xmlFree(itype);
@@ -1020,7 +1021,8 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
                 if (!strcmp((const char *) bus, "ps2")) {
                     if (!isMouse) {
                         xmlFree(bus);
-                        virXMLError(conn, VIR_ERR_XML_ERROR, "input", 0);
+                        virXMLError(conn, VIR_ERR_XML_ERROR,
+                                    _("invalid input device"), 0);
                         goto error;
                     }
                     /* Nothing - implicit ps2 */

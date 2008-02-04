@@ -217,7 +217,7 @@ do_connect(virConnectPtr xend)
     s = socket(priv->type, SOCK_STREAM, 0);
     if (s == -1) {
         virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-                     "failed to create a socket");
+                     _("failed to create a socket"));
         return -1;
     }
 
@@ -240,7 +240,7 @@ do_connect(virConnectPtr xend)
 	 */
 	if ((getuid() == 0) || (xend->flags & VIR_CONNECT_RO)) {
 	    virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-			 "failed to connect to xend");
+                     _("failed to connect to xend"));
         }
     }
 
@@ -2512,7 +2512,8 @@ xenDaemonDomainDumpXMLByID(virConnectPtr conn, int domid, int flags,
     root = sexpr_get(conn, "/xend/domain/%d?detail=1", domid);
     if (root == NULL) {
         virXendError (conn, VIR_ERR_XEN_CALL,
-                      "xenDaemonDomainDumpXMLByID failed to find this domain");
+                      _("xenDaemonDomainDumpXMLByID failed to"
+                        " find this domain"));
         return (NULL);
     }
 
@@ -2536,7 +2537,8 @@ xenDaemonDomainDumpXMLByName(virConnectPtr conn, const char *name, int flags,
     root = sexpr_get(conn, "/xend/domain/%s?detail=1", name);
     if (root == NULL) {
         virXendError (conn, VIR_ERR_XEN_CALL,
-                      "xenDaemonDomainDumpXMLByName failed to find this domain");
+                      _("xenDaemonDomainDumpXMLByName failed to"
+                        " find this domain"));
         return (NULL);
     }
 
@@ -3144,7 +3146,8 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
 
     sexpr = virDomainParseXMLDesc(conn, xmlDesc, &name, priv->xendConfigVersion);
     if ((sexpr == NULL) || (name == NULL)) {
-        virXendError(conn, VIR_ERR_XML_ERROR, "domain");
+        virXendError(conn, VIR_ERR_XML_ERROR,
+                     _("failed to parse domain description"));
         free(sexpr);
         free(name);
 
@@ -3323,7 +3326,8 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
     /* Xen doesn't support renaming domains during migration. */
     if (dname) {
         virXendError (conn, VIR_ERR_NO_SUPPORT,
-                      "xenDaemonDomainMigrate: Xen does not support renaming domains during migration");
+                      _("xenDaemonDomainMigrate: Xen does not support"
+                        " renaming domains during migration"));
         return -1;
     }
 
@@ -3332,7 +3336,8 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
      */
     if (bandwidth) {
         virXendError (conn, VIR_ERR_NO_SUPPORT,
-                      "xenDaemonDomainMigrate: Xen does not support bandwidth limits during migration");
+                      _("xenDaemonDomainMigrate: Xen does not support"
+                        " bandwidth limits during migration"));
         return -1;
     }
 
@@ -3343,7 +3348,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
     }
     if (flags != 0) {
         virXendError (conn, VIR_ERR_NO_SUPPORT,
-                      "xenDaemonDomainMigrate: unsupported flag");
+                      _("xenDaemonDomainMigrate: unsupported flag"));
         return -1;
     }
 
@@ -3356,24 +3361,26 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
         xmlURIPtr uriptr = xmlParseURI (uri);
         if (!uriptr) {
             virXendError (conn, VIR_ERR_INVALID_ARG,
-                          "xenDaemonDomainMigrate: invalid URI");
+                          _("xenDaemonDomainMigrate: invalid URI"));
             return -1;
         }
         if (uriptr->scheme && STRCASENEQ (uriptr->scheme, "xenmigr")) {
             virXendError (conn, VIR_ERR_INVALID_ARG,
-                          "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen");
+                          _("xenDaemonDomainMigrate: only xenmigr://"
+                            " migrations are supported by Xen"));
             xmlFreeURI (uriptr);
             return -1;
         }
         if (!uriptr->server) {
             virXendError (conn, VIR_ERR_INVALID_ARG,
-                          "xenDaemonDomainMigrate: a hostname must be specified in the URI");
+                          _("xenDaemonDomainMigrate: a hostname must be"
+                            " specified in the URI"));
             xmlFreeURI (uriptr);
             return -1;
         }
         hostname = strdup (uriptr->server);
         if (!hostname) {
-            virXendError (conn, VIR_ERR_NO_MEMORY, "strdup");
+            virXendError (conn, VIR_ERR_NO_MEMORY, _("strdup failed"));
             xmlFreeURI (uriptr);
             return -1;
         }
@@ -3386,7 +3393,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
 
         if (sscanf (p+1, "%d", &port_nr) != 1) {
             virXendError (conn, VIR_ERR_INVALID_ARG,
-                          "xenDaemonDomainMigrate: invalid port number");
+                          _("xenDaemonDomainMigrate: invalid port number"));
             return -1;
         }
         snprintf (port, sizeof port, "%d", port_nr);
@@ -3395,7 +3402,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
         n = p - uri; /* n = Length of hostname in bytes. */
         hostname = strdup (uri);
         if (!hostname) {
-            virXendError (conn, VIR_ERR_NO_MEMORY, "strdup");
+            virXendError (conn, VIR_ERR_NO_MEMORY, _("strdup failed"));
             return -1;
         }
         hostname[n] = '\0';
@@ -3403,7 +3410,7 @@ xenDaemonDomainMigratePerform (virDomainPtr domain,
     else {                      /* "hostname" (or IP address) */
         hostname = strdup (uri);
         if (!hostname) {
-            virXendError (conn, VIR_ERR_NO_MEMORY, "strdup");
+            virXendError (conn, VIR_ERR_NO_MEMORY, _("strdup failed"));
             return -1;
         }
     }
@@ -3448,7 +3455,8 @@ virDomainPtr xenDaemonDomainDefineXML(virConnectPtr conn, const char *xmlDesc) {
 
     sexpr = virDomainParseXMLDesc(conn, xmlDesc, &name, priv->xendConfigVersion);
     if ((sexpr == NULL) || (name == NULL)) {
-        virXendError(conn, VIR_ERR_XML_ERROR, "domain");
+        virXendError(conn, VIR_ERR_XML_ERROR,
+                     _("failed to parse domain description"));
         free(sexpr);
         free(name);
 

@@ -1,7 +1,7 @@
 /**
  * conf.c: parser for a subset of the Python encoded Xen configuration files
  *
- * Copyright (C) 2006, 2007 Red Hat, Inc.
+ * Copyright (C) 2006, 2007, 2008 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -473,7 +473,7 @@ virConfParseValue(virConfParserCtxtPtr ctxt)
 	    NEXT;
 	} else {
 	    virConfError(NULL, VIR_ERR_CONF_SYNTAX,
-			 _("list is not closed with ] "), ctxt->line);
+			 _("list is not closed with ]"), ctxt->line);
 	    virConfFreeList(lst);
 	    return(NULL);
 	}

@@ -2,7 +2,7 @@
  * libvirt.c: Main interfaces for the libvirt library to handle virtualization
  *           domains from a process running in domain 0
  *
- * Copyright (C) 2005,2006 Red Hat, Inc.
+ * Copyright (C) 2005,2006,2008 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -562,7 +562,7 @@ do_open (const char *name,
 
     ret->name = strdup (name);
     if (!ret->name) {
-        virLibConnError (ret, VIR_ERR_NO_MEMORY, "allocating conn->name");
+        virLibConnError (ret, VIR_ERR_NO_MEMORY, _("allocating conn->name"));
         goto failed;
     }
 
@@ -1946,7 +1946,7 @@ virDomainMigrate (virDomainPtr domain,
     if (ret == -1) goto done;
     if (uri == NULL && uri_out == NULL) {
         virLibConnError (conn, VIR_ERR_INTERNAL_ERROR,
-                         "domainMigratePrepare did not set uri");
+                         _("domainMigratePrepare did not set uri"));
         goto done;
     }
     if (uri_out) uri = uri_out; /* Did domainMigratePrepare change URI? */
