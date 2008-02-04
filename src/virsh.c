@@ -1,7 +1,7 @@
 /*
  * virsh.c: a Xen shell used to exercise the libvirt API
  *
- * Copyright (C) 2005, 2007 Red Hat, Inc.
+ * Copyright (C) 2005, 2007-2008 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -4770,7 +4770,7 @@ vshReadline (vshControl *ctl, const char *prompt)
 #endif /* !USE_READLINE */
 
 /*
- * Deinitliaze virsh
+ * Deinitialize virsh
  */
 static int
 vshDeinit(vshControl * ctl)
@@ -4780,8 +4780,8 @@ vshDeinit(vshControl * ctl)
     if (ctl->conn) {
         if (virConnectClose(ctl->conn) != 0) {
             ctl->conn = NULL;   /* prevent recursive call from vshError() */
-            vshError(ctl, TRUE,
-                     "failed to disconnect from the hypervisor");
+            vshError(ctl, TRUE, "%s",
+                     _("failed to disconnect from the hypervisor"));
         }
     }
     virResetLastError();

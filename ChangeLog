@@ -1,5 +1,8 @@
 Mon Feb  2 15:56:45 CET 2008  Jim Meyering  <meyering@redhat.com>
 
+	Mark a string for translation.
+	* src/virsh.c: Add a "%s" and wrap with _(...).
+
 	Enable the sc_unmarked_diagnostics test and correct all violations
 	involving the "error" function.
 	* Makefile.cfg (local-checks-to-skip): Remove from skip list.
