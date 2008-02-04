@@ -104,7 +104,7 @@ struct private_data {
     struct private_data *priv = (struct private_data *) (conn)->privateData; \
     if (!priv || priv->magic != MAGIC) {                                \
         error (conn, VIR_ERR_INVALID_ARG,                               \
-               "tried to use a closed or uninitialised handle");        \
+               _("tried to use a closed or uninitialised handle"));     \
         return (retcode);                                               \
     }
 
@@ -112,7 +112,7 @@ struct private_data {
     struct private_data *priv = (struct private_data *) (conn)->networkPrivateData; \
     if (!priv || priv->magic != MAGIC) {                                \
         error (conn, VIR_ERR_INVALID_ARG,                               \
-               "tried to use a closed or uninitialised handle");        \
+               _("tried to use a closed or uninitialised handle"));     \
         return (retcode);                                               \
     }
 
@@ -206,7 +206,7 @@ remoteForkDaemon(virConnectPtr conn)
     int ret, pid, status;
 
     if (!daemonPath) {
-        error(conn, VIR_ERR_INTERNAL_ERROR, "failed to find libvirtd binary");
+        error(conn, VIR_ERR_INTERNAL_ERROR, _("failed to find libvirtd binary"));
         return(-1);
     }
 
@@ -313,8 +313,8 @@ doRemoteOpen (virConnectPtr conn,
         transport = trans_tcp;
     else {
         error (conn, VIR_ERR_INVALID_ARG,
-               "remote_open: transport in URL not recognised "
-               "(should be tls|unix|ssh|ext|tcp)");
+               _("remote_open: transport in URL not recognised "
+                 "(should be tls|unix|ssh|ext|tcp)"));
         return VIR_DRV_OPEN_ERROR;
     }
 
@@ -354,7 +354,7 @@ doRemoteOpen (virConnectPtr conn,
 
     priv->hostname = strdup (uri->server ? uri->server : "localhost");
     if (!priv->hostname) {
-        error (NULL, VIR_ERR_NO_MEMORY, "allocating priv->hostname");
+        error (NULL, VIR_ERR_NO_MEMORY, _("allocating priv->hostname"));
         goto failed;
     }
     if (uri->user) {
@@ -436,7 +436,8 @@ doRemoteOpen (virConnectPtr conn,
 
     /* For ext transport, command is required. */
     if (transport == trans_ext && !command) {
-        error (conn, VIR_ERR_INVALID_ARG, "remote_open: for 'ext' transport, command is required");
+        error (conn, VIR_ERR_INVALID_ARG,
+               _("remote_open: for 'ext' transport, command is required"));
         goto failed;
     }
 
@@ -754,7 +755,7 @@ doRemoteOpen (virConnectPtr conn,
     return retcode;
 
  out_of_memory:
-    error (NULL, VIR_ERR_NO_MEMORY, "uri params");
+    error (NULL, VIR_ERR_NO_MEMORY, _("uri params"));
 
  failed:
     /* Close the socket if we failed. */
@@ -798,7 +799,7 @@ remoteOpen (virConnectPtr conn,
 
     priv = malloc (sizeof(*priv));
     if (!priv) {
-        error (conn, VIR_ERR_NO_MEMORY, "struct private_data");
+        error (conn, VIR_ERR_NO_MEMORY, _("struct private_data"));
         return VIR_DRV_OPEN_ERROR;
     }
 
@@ -1050,12 +1051,12 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
     }
 
     if (gnutls_certificate_type_get(session) != GNUTLS_CRT_X509) {
-        error (conn, VIR_ERR_RPC, "Certificate type is not X.509");
+        error (conn, VIR_ERR_RPC, _("Certificate type is not X.509"));
         return -1;
     }
   
     if (!(certs = gnutls_certificate_get_peers(session, &nCerts))) {
-        error (conn, VIR_ERR_RPC, "gnutls_certificate_get_peers failed");
+        error (conn, VIR_ERR_RPC, _("gnutls_certificate_get_peers failed"));
         return -1;
     }
   
@@ -1076,13 +1077,13 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
         }
     
         if (gnutls_x509_crt_get_expiration_time (cert) < now) {
-            error (conn, VIR_ERR_RPC, "The certificate has expired");
+            error (conn, VIR_ERR_RPC, _("The certificate has expired"));
             gnutls_x509_crt_deinit (cert);
             return -1;
         }
     
         if (gnutls_x509_crt_get_activation_time (cert) > now) {
-            error (conn, VIR_ERR_RPC, "The certificate is not yet activated");
+            error (conn, VIR_ERR_RPC, _("The certificate is not yet activated"));
             gnutls_x509_crt_deinit (cert);
             return -1;
         }
@@ -1309,7 +1310,7 @@ remoteListDomains (virConnectPtr conn, int *ids, int maxids)
     GET_PRIVATE (conn, -1);
 
     if (maxids > REMOTE_DOMAIN_ID_LIST_MAX) {
-        error (conn, VIR_ERR_RPC, "maxids > REMOTE_DOMAIN_ID_LIST_MAX");
+        error (conn, VIR_ERR_RPC, _("maxids > REMOTE_DOMAIN_ID_LIST_MAX"));
         return -1;
     }
     args.maxids = maxids;
@@ -1321,7 +1322,7 @@ remoteListDomains (virConnectPtr conn, int *ids, int maxids)
         return -1;
 
     if (ret.ids.ids_len > maxids) {
-        error (conn, VIR_ERR_RPC, "ret.ids.ids_len > maxids");
+        error (conn, VIR_ERR_RPC, _("ret.ids.ids_len > maxids"));
         xdr_free ((xdrproc_t) xdr_remote_list_domains_ret, (char *) &ret);
         return -1;
     }
@@ -1693,7 +1694,7 @@ remoteDomainPinVcpu (virDomainPtr domain,
     GET_PRIVATE (domain->conn, -1);
 
     if (maplen > REMOTE_CPUMAP_MAX) {
-        error (domain->conn, VIR_ERR_RPC, "maplen > REMOTE_CPUMAP_MAX");
+        error (domain->conn, VIR_ERR_RPC, _("maplen > REMOTE_CPUMAP_MAX"));
         return -1;
     }
 
@@ -1723,11 +1724,12 @@ remoteDomainGetVcpus (virDomainPtr domain,
     GET_PRIVATE (domain->conn, -1);
 
     if (maxinfo > REMOTE_VCPUINFO_MAX) {
-        error (domain->conn, VIR_ERR_RPC, "maxinfo > REMOTE_VCPUINFO_MAX");
+        error (domain->conn, VIR_ERR_RPC, _("maxinfo > REMOTE_VCPUINFO_MAX"));
         return -1;
     }
     if (maxinfo * maplen > REMOTE_CPUMAPS_MAX) {
-        error (domain->conn, VIR_ERR_RPC, "maxinfo * maplen > REMOTE_CPUMAPS_MAX");
+        error (domain->conn, VIR_ERR_RPC,
+               _("maxinfo * maplen > REMOTE_CPUMAPS_MAX"));
         return -1;
     }
 
@@ -1742,12 +1744,13 @@ remoteDomainGetVcpus (virDomainPtr domain,
         return -1;
 
     if (ret.info.info_len > maxinfo) {
-        error (domain->conn, VIR_ERR_RPC, "ret.info.info_len > maxinfo");
+        error (domain->conn, VIR_ERR_RPC, _("ret.info.info_len > maxinfo"));
         xdr_free ((xdrproc_t) xdr_remote_domain_get_vcpus_ret, (char *) &ret);
         return -1;
     }
     if (ret.cpumaps.cpumaps_len > maxinfo * maplen) {
-        error (domain->conn, VIR_ERR_RPC, "ret.cpumaps.cpumaps_len > maxinfo * maplen");
+        error (domain->conn, VIR_ERR_RPC,
+               _("ret.cpumaps.cpumaps_len > maxinfo * maplen"));
         xdr_free ((xdrproc_t) xdr_remote_domain_get_vcpus_ret, (char *) &ret);
         return -1;
     }
@@ -1907,7 +1910,7 @@ remoteListDefinedDomains (virConnectPtr conn, char **const names, int maxnames)
     GET_PRIVATE (conn, -1);
 
     if (maxnames > REMOTE_DOMAIN_NAME_LIST_MAX) {
-        error (conn, VIR_ERR_RPC, "maxnames > REMOTE_DOMAIN_NAME_LIST_MAX");
+        error (conn, VIR_ERR_RPC, _("maxnames > REMOTE_DOMAIN_NAME_LIST_MAX"));
         return -1;
     }
     args.maxnames = maxnames;
@@ -1919,7 +1922,7 @@ remoteListDefinedDomains (virConnectPtr conn, char **const names, int maxnames)
         return -1;
 
     if (ret.names.names_len > maxnames) {
-        error (conn, VIR_ERR_RPC, "ret.names.names_len > maxnames");
+        error (conn, VIR_ERR_RPC, _("ret.names.names_len > maxnames"));
         xdr_free ((xdrproc_t) xdr_remote_list_defined_domains_ret, (char *) &ret);
         return -1;
     }
@@ -2119,7 +2122,9 @@ remoteDomainGetSchedulerParameters (virDomainPtr domain,
     if (ret.params.params_len > REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX ||
         ret.params.params_len > *nparams) {
         xdr_free ((xdrproc_t) xdr_remote_domain_get_scheduler_parameters_ret, (char *) &ret);
-        error (domain->conn, VIR_ERR_RPC, "remoteDomainGetSchedulerParameters: returned number of parameters exceeds limit");
+        error (domain->conn, VIR_ERR_RPC,
+               _("remoteDomainGetSchedulerParameters: "
+                 "returned number of parameters exceeds limit"));
         return -1;
     }
     *nparams = ret.params.params_len;
@@ -2145,7 +2150,9 @@ remoteDomainGetSchedulerParameters (virDomainPtr domain,
             params[i].value.b = ret.params.params_val[i].value.remote_sched_param_value_u.b; break;
         default:
             xdr_free ((xdrproc_t) xdr_remote_domain_get_scheduler_parameters_ret, (char *) &ret);
-            error (domain->conn, VIR_ERR_RPC, "remoteDomainGetSchedulerParameters: unknown parameter type");
+            error (domain->conn, VIR_ERR_RPC,
+                   _("remoteDomainGetSchedulerParameters: "
+                     "unknown parameter type"));
             return -1;
         }
     }
@@ -2169,7 +2176,7 @@ remoteDomainSetSchedulerParameters (virDomainPtr domain,
     args.params.params_val = malloc (sizeof (*args.params.params_val)
                                      * nparams);
     if (args.params.params_val == NULL) {
-        error (domain->conn, VIR_ERR_RPC, "out of memory allocating array");
+        error (domain->conn, VIR_ERR_RPC, _("out of memory allocating array"));
         return -1;
     }
 
@@ -2178,7 +2185,7 @@ remoteDomainSetSchedulerParameters (virDomainPtr domain,
         // call() will free this:
         args.params.params_val[i].field = strdup (params[i].field);
         if (args.params.params_val[i].field == NULL) {
-            error (domain->conn, VIR_ERR_NO_MEMORY, "out of memory");
+            error (domain->conn, VIR_ERR_NO_MEMORY, _("out of memory"));
             do_error = 1;
         }
         args.params.params_val[i].value.type = params[i].type;
@@ -2196,7 +2203,7 @@ remoteDomainSetSchedulerParameters (virDomainPtr domain,
         case VIR_DOMAIN_SCHED_FIELD_BOOLEAN:
             args.params.params_val[i].value.remote_sched_param_value_u.b = params[i].value.b; break;
         default:
-            error (domain->conn, VIR_ERR_RPC, "unknown parameter type");
+            error (domain->conn, VIR_ERR_RPC, _("unknown parameter type"));
             do_error = 1;
         }
     }
@@ -2301,7 +2308,7 @@ remoteNetworkOpen (virConnectPtr conn,
         struct private_data *priv = malloc (sizeof(*priv));
         int ret, rflags = 0;
         if (!priv) {
-            error (conn, VIR_ERR_NO_MEMORY, "struct private_data");
+            error (conn, VIR_ERR_NO_MEMORY, _("struct private_data"));
             return VIR_DRV_OPEN_ERROR;
         }
         if (flags & VIR_CONNECT_RO)
@@ -2361,7 +2368,7 @@ remoteListNetworks (virConnectPtr conn, char **const names, int maxnames)
     GET_NETWORK_PRIVATE (conn, -1);
 
     if (maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
-        error (conn, VIR_ERR_RPC, "maxnames > REMOTE_NETWORK_NAME_LIST_MAX");
+        error (conn, VIR_ERR_RPC, _("maxnames > REMOTE_NETWORK_NAME_LIST_MAX"));
         return -1;
     }
     args.maxnames = maxnames;
@@ -2373,7 +2380,7 @@ remoteListNetworks (virConnectPtr conn, char **const names, int maxnames)
         return -1;
 
     if (ret.names.names_len > maxnames) {
-        error (conn, VIR_ERR_RPC, "ret.names.names_len > maxnames");
+        error (conn, VIR_ERR_RPC, _("ret.names.names_len > maxnames"));
         xdr_free ((xdrproc_t) xdr_remote_list_networks_ret, (char *) &ret);
         return -1;
     }
@@ -2416,7 +2423,7 @@ remoteListDefinedNetworks (virConnectPtr conn,
     GET_NETWORK_PRIVATE (conn, -1);
 
     if (maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
-        error (conn, VIR_ERR_RPC, "maxnames > REMOTE_NETWORK_NAME_LIST_MAX");
+        error (conn, VIR_ERR_RPC, _("maxnames > REMOTE_NETWORK_NAME_LIST_MAX"));
         return -1;
     }
     args.maxnames = maxnames;
@@ -2428,7 +2435,7 @@ remoteListDefinedNetworks (virConnectPtr conn,
         return -1;
 
     if (ret.names.names_len > maxnames) {
-        error (conn, VIR_ERR_RPC, "ret.names.names_len > maxnames");
+        error (conn, VIR_ERR_RPC, _("ret.names.names_len > maxnames"));
         xdr_free ((xdrproc_t) xdr_remote_list_defined_networks_ret, (char *) &ret);
         return -1;
     }
@@ -3413,7 +3420,8 @@ call (virConnectPtr conn, struct private_data *priv,
     }
 
     if (!(*args_filter) (&xdr, args)) {
-        error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn, VIR_ERR_RPC, "marshalling args");
+        error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn, VIR_ERR_RPC,
+               _("marshalling args"));
         return -1;
     }
 
@@ -3429,7 +3437,7 @@ call (virConnectPtr conn, struct private_data *priv,
     /* Encode the length word. */
     xdrmem_create (&xdr, buffer2, sizeof buffer2, XDR_ENCODE);
     if (!xdr_int (&xdr, &len)) {
-        error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn, VIR_ERR_RPC, "xdr_int (length word)");
+        error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn, VIR_ERR_RPC, _("xdr_int (length word)"));
         return -1;
     }
     xdr_destroy (&xdr);
@@ -3521,7 +3529,8 @@ call (virConnectPtr conn, struct private_data *priv,
     switch (hdr.status) {
     case REMOTE_OK:
         if (!(*ret_filter) (&xdr, ret)) {
-            error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn, VIR_ERR_RPC, "unmarshalling ret");
+            error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn, VIR_ERR_RPC,
+                   _("unmarshalling ret"));
             return -1;
         }
         xdr_destroy (&xdr);
@@ -3531,7 +3540,7 @@ call (virConnectPtr conn, struct private_data *priv,
         memset (&rerror, 0, sizeof rerror);
         if (!xdr_remote_error (&xdr, &rerror)) {
             error (flags & REMOTE_CALL_IN_OPEN ? NULL : conn,
-                   VIR_ERR_RPC, "unmarshalling remote_error");
+                   VIR_ERR_RPC, _("unmarshalling remote_error"));
             return -1;
         }
         xdr_destroy (&xdr);

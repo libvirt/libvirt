@@ -1,3 +1,10 @@
+Mon Feb  2 15:56:45 CET 2008  Jim Meyering  <meyering@redhat.com>
+
+	Enable the sc_unmarked_diagnostics test and correct all violations
+	involving the "error" function.
+	* Makefile.cfg (local-checks-to-skip): Remove from skip list.
+	* src/remote_internal.c: Mark translatable strings.
+
 Fri Feb  1 20:46:07 CET 2008  Jim Meyering  <meyering@redhat.com>
 
 	Pull vc-list-files from gnulib, and update.
