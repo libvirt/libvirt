@@ -907,7 +907,7 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
     bootorder[nbootorder] = '\0';
 
     if (loader == NULL) {
-        virXMLError(conn, VIR_ERR_INTERNAL_ERROR, "no HVM domain loader", 0);
+        virXMLError(conn, VIR_ERR_INTERNAL_ERROR, _("no HVM domain loader"), 0);
         return -1;
     }
 

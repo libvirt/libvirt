@@ -1,5 +1,8 @@
 Tue Feb  3 20:26:53 CET 2008  Jim Meyering  <meyering@redhat.com>
 
+	Fix new "make distcheck" failures.
+	* src/xml.c (virDomainParseXMLOSDescHVM): Mark a diagnostic.
+
 	Remove all trailing blanks; turn on the rule to detect them.
 	* Makefile.cfg (local-checks-to-skip): Remove sc_trailing_blank.
 	* .x-sc_trailing_blank: New file, to exempt the few binary files.
