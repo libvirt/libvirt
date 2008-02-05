@@ -737,7 +737,7 @@ iptablesForwardAllowOut(iptablesContext *ctx,
  * @network: the source network name
  * @iface: the source interface name
  * @physdev: the physical output device
- * 
+ *
  * Add a rule to the IP table context to allow the traffic for the
  * network @network via interface @iface to be forwarded to
  * @physdev device. This allow the outbound traffic on a bridge.
@@ -759,7 +759,7 @@ iptablesAddForwardAllowOut(iptablesContext *ctx,
  * @network: the source network name
  * @iface: the source interface name
  * @physdev: the physical output device
- * 
+ *
  * Remove a rule from the IP table context hence forbidding forwarding
  * of the traffic for the network @network via interface @iface
  * to the @physdev device output. This stops the outbound traffic on a bridge.
@@ -814,7 +814,7 @@ iptablesForwardAllowIn(iptablesContext *ctx,
  * @network: the source network name
  * @iface: the output interface name
  * @physdev: the physical input device or NULL
- * 
+ *
  * Add rules to the IP table context to allow the traffic for the
  * network @network on @physdev device to be forwarded to
  * interface @iface. This allow the inbound traffic on a bridge.
@@ -836,7 +836,7 @@ iptablesAddForwardAllowIn(iptablesContext *ctx,
  * @network: the source network name
  * @iface: the output interface name
  * @physdev: the physical input device or NULL
- * 
+ *
  * Remove rules from the IP table context hence forbidding the traffic for
  * network @network on @physdev device to be forwarded to
  * interface @iface. This stops the inbound traffic on a bridge.
@@ -1036,7 +1036,7 @@ iptablesForwardMasquerade(iptablesContext *ctx,
  * @ctx: pointer to the IP table context
  * @network: the source network name
  * @physdev: the physical input device or NULL
- * 
+ *
  * Add rules to the IP table context to allow masquerading
  * network @network on @physdev. This allow the bridge to
  * masquerade for that network (on @physdev).
@@ -1056,7 +1056,7 @@ iptablesAddForwardMasquerade(iptablesContext *ctx,
  * @ctx: pointer to the IP table context
  * @network: the source network name
  * @physdev: the physical input device or NULL
- * 
+ *
  * Remove rules from the IP table context to stop masquerading
  * network @network on @physdev. This stops the bridge from
  * masquerading for that network (on @physdev).

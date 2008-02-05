@@ -751,7 +751,7 @@ libvirt_virConnectListDefinedDomains(PyObject *self ATTRIBUTE_UNUSED,
     c_retval = virConnectNumOfDefinedDomains(conn);
     if (c_retval < 0)
         return VIR_PY_NONE;
-    
+
     if (c_retval) {
         names = malloc(sizeof(*names) * c_retval);
         if (!names)
@@ -939,7 +939,7 @@ libvirt_virConnectListDefinedNetworks(PyObject *self ATTRIBUTE_UNUSED,
     c_retval = virConnectNumOfDefinedNetworks(conn);
     if (c_retval < 0)
         return VIR_PY_NONE;
-    
+
     if (c_retval) {
         names = malloc(sizeof(*names) * c_retval);
         if (!names)
@@ -1090,7 +1090,7 @@ error:
     }
     py_retval = PyList_New(c_retval);
     for (i = 0;i < c_retval;i++) {
-	PyList_SetItem(py_retval, i, 
+	PyList_SetItem(py_retval, i,
 	        libvirt_longlongWrap((long long) freeMems[i]));
     }
     free(freeMems);

@@ -263,7 +263,7 @@
   </xsl:template>
 
 <!--
- - The top section 
+ - The top section
  -->
   <xsl:template name="top">
     <div id="top">
@@ -286,7 +286,7 @@
   <xsl:template name="bottom">
     <div id="bottom">
       <p class="p1"></p>
-    </div> 
+    </div>
   </xsl:template>
 
 <!--

@@ -243,7 +243,7 @@ brAddDelInterface(brControl *ctl,
  * @ctl: bridge control pointer
  * @bridge: the bridge name
  * @iface: the network interface name
- * 
+ *
  * Adds an interface to a bridge
  *
  * Returns 0 in case of success or an errno code in case of failure.
@@ -271,7 +271,7 @@ brAddInterface(brControl *ctl ATTRIBUTE_UNUSED,
  * @ctl: bridge control pointer
  * @bridge: the bridge name
  * @iface: the network interface name
- * 
+ *
  * Removes an interface from a bridge
  *
  * Returns 0 in case of success or an errno code in case of failure.
@@ -662,7 +662,7 @@ brctlSpawn(char * const *argv)
  *
  * Returns 0 in case of success or an errno code in case of failure.
  */
- 
+
 int
 brSetForwardDelay(brControl *ctl ATTRIBUTE_UNUSED,
                   const char *bridge,

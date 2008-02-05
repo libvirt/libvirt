@@ -145,7 +145,7 @@ virHashGrow(virHashTablePtr table, int size)
     table->size = size;
 
     /*  If the two loops are merged, there would be situations where
-     * a new entry needs to allocated and data copied into it from 
+     * a new entry needs to allocated and data copied into it from
      * the main table. So instead, we run through the array twice, first
      * copying all the elements in the main array (where we can't get
      * conflicts) and then the rest, so we only free (and don't allocate)

@@ -1,3 +1,9 @@
+Tue Feb  3 20:26:53 CET 2008  Jim Meyering  <meyering@redhat.com>
+
+	Remove all trailing blanks; turn on the rule to detect them.
+	* Makefile.cfg (local-checks-to-skip): Remove sc_trailing_blank.
+	* .x-sc_trailing_blank: New file, to exempt the few binary files.
+
 Tue Feb  3 11:21:45 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/xml.c, src/xend_internal.c: Allow use of kernel+initrd

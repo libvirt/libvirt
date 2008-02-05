@@ -1,5 +1,5 @@
 # If you want to use the non-TLS socket, then you *must* include
-# the GSSAPI or DIGEST-MD5 mechanisms, because they are the only 
+# the GSSAPI or DIGEST-MD5 mechanisms, because they are the only
 # ones that can offer session encryption as well as authentication.
 #
 # If you're only using TLS, then you can turn on any mechanisms

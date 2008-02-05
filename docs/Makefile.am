@@ -108,7 +108,7 @@ maintainer-clean-local: clean-local
 
 rebuild: api all
 
-install-data-local: 
+install-data-local:
 	$(mkinstalldirs) $(DESTDIR)$(HTML_DIR)
 	-@INSTALL@ -m 0644 $(srcdir)/libvir.html $(srcdir)/FAQ.html \
 	    $(srcdir)/redhat.gif $(srcdir)/Libxml2-Logo-90x34.gif \

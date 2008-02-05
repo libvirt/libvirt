@@ -75,7 +75,7 @@ Obsoletes: libvir-python
 %description python
 The libvirt-python package contains a module that permits applications
 written in the Python programming language to use the interface
-supplied by the libvirt library to use the virtualization capabilities 
+supplied by the libvirt library to use the virtualization capabilities
 of recent versions of Linux (and other OSes).
 
 %prep
@@ -348,7 +348,7 @@ fi
 - add patch to address dom0_ops API breakage in Xen 3.0.3 tree
 
 * Mon Aug 28 2006 Jeremy Katz <katzj@redhat.com> - 0.1.4-4
-- add patch to support paravirt framebuffer in Xen 
+- add patch to support paravirt framebuffer in Xen
 
 * Mon Aug 21 2006 Daniel Veillard <veillard@redhat.com> 0.1.4-3
 - another patch to fix network handling in non-HVM guests
@@ -421,7 +421,7 @@ fi
 - fixes some problems in 0.0.3 due to the change of names
 
 * Wed Feb  8 2006 Daniel Veillard <veillard@redhat.com> 0.0.3-1
-- changed library name to libvirt from libvir, complete and test the python 
+- changed library name to libvirt from libvir, complete and test the python
   bindings
 
 * Sun Jan 29 2006 Daniel Veillard <veillard@redhat.com> 0.0.2-1

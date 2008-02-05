@@ -188,15 +188,15 @@ This prints a small synopsis about all commands available for \fBvirsh\fR
 quit this interactive terminal
 .IP "\fBversion\fR" 4
 .IX Item "version"
-Will print out the major version info about what this built from. 
+Will print out the major version info about what this built from.
 .RS 4
 .Sp
 .RS 4
-\&\fBExample\fR 
+\&\fBExample\fR
 .Sp
-\&\fBvirsh\fR version 
+\&\fBvirsh\fR version
 .Sp
-Compiled against library: libvir 0.0.6 
+Compiled against library: libvir 0.0.6
 .Sp
 Using library: libvir 0.0.6
 .Sp
@@ -250,20 +250,20 @@ specified it prints out information about all domains.
 An example format for the list is as follows:
 .Sp
 \&\fBvirsh\fR list
- Id Name                 State 
+ Id Name                 State
 .Sp
-\&\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\- 
+\&\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
 .Sp
 .Vb 2
-\&  0 Domain-0             running 
+\&  0 Domain-0             running
 \&  2 fedora               paused
 .Ve
 .Sp
-Name is the name of the domain.  \s-1ID\s0 the domain numeric id.  
- State is the run state (see below).  
+Name is the name of the domain.  \s-1ID\s0 the domain numeric id.
+ State is the run state (see below).
 .IP "\fBfreecell\fR optional \fIcellno\fR" 4
 .IX Item "freecell optional cellno"
-Prints the available amount of memory on the machine or within a 
+Prints the available amount of memory on the machine or within a
 \&\s-1NUMA\s0 cell if \fIcellno\fR is provided.
 .RS 4
 .Sp
@@ -290,7 +290,7 @@ scheduling by the Xen hypervisor.
 .IP "\fBs \- shutdown\fR" 4
 .IX Item "s - shutdown"
 The domain is in the process of shutting down, i.e. the guest operating system
-has been notified and should be in the process of stopping its operations 
+has been notified and should be in the process of stopping its operations
 gracefully.
 .IP "\fBc \- crashed\fR" 4
 .IX Item "c - crashed"
@@ -318,11 +318,11 @@ The option \fI\-\-disable\fR disable autostarting.
 Connect the virtual serial console for the guest.
 .IP "\fBcreate\fR \fI\s-1FILE\s0\fR" 4
 .IX Item "create FILE"
-Create a domain from an \s-1XML\s0 <file> an easy way to create one if you have a pre-existing xen guest created via \fBxm\fR create <\s-1XMLFILE\s0>. 
+Create a domain from an \s-1XML\s0 <file> an easy way to create one if you have a pre-existing xen guest created via \fBxm\fR create <\s-1XMLFILE\s0>.
 .Sp
 \&\fBExample\fR
 .Sp
-virsh dumpxml <domain\-id> > file. 
+virsh dumpxml <domain\-id> > file.
 .IP "\fBdefine\fR \fI\s-1FILE\s0\fR" 4
 .IX Item "define FILE"
 Define a domain from an \s-1XML\s0 <file>. The domain definitions is registered
@@ -353,7 +353,7 @@ convert a domain Id to domain name
 Returns state about a running domain.
 .IP "\fBdumpxml\fR \fIdomain-id\fR" 4
 .IX Item "dumpxml domain-id"
-Output the domain informations as an \s-1XML\s0 dump to stdout, this format can be used by the \fBcreate\fR command. 
+Output the domain informations as an \s-1XML\s0 dump to stdout, this format can be used by the \fBcreate\fR command.
 .IP "\fBreboot\fR \fIdomain-id\fR" 4
 .IX Item "reboot domain-id"
 Reboot a domain.  This acts just as if the domain had the \fBreboot\fR
@@ -385,19 +385,19 @@ kilobytes.
 .IP "\fBsetmaxmem\fR \fIdomain-id\fR \fBkilobytes\fR" 4
 .IX Item "setmaxmem domain-id kilobytes"
 Change the maximum memory allocation limit in the guest domain. This should
-not change the current memory use. The memory limit is specified in 
+not change the current memory use. The memory limit is specified in
 kilobytes.
 .IP "\fBsetvcpus\fR \fIdomain-id\fR \fIcount\fR" 4
 .IX Item "setvcpus domain-id count"
 Change the number of virtual CPUs active in the guest domain. Note that
-\&\fIcount\fR may be limited by host, hypervisor or limit coming from the 
+\&\fIcount\fR may be limited by host, hypervisor or limit coming from the
 original description of domain.
 .IP "\fBshutdown\fR \fIdomain-id\fR" 4
 .IX Item "shutdown domain-id"
 Gracefully shuts down a domain.  This coordinates with the domain \s-1OS\s0
 to perform graceful shutdown, so there is no guarantee that it will
 succeed, and may take a variable length of time depending on what
-services must be shutdown in the domain.  
+services must be shutdown in the domain.
 .Sp
 For a xen guest vm the behavior of what happens to a domain when it reboots is set by the
 \&\fIon_shutdown\fR parameter of the xmdomain.cfg file when the domain was
@@ -491,7 +491,7 @@ The \fI\-\-disable\fR option disable autostarting.
 .IP "\fBnet-create\fR \fIfile\fR" 4
 .IX Item "net-create file"
 Create a virtual network from an \s-1XML\s0 \fIfile\fR, see the documentation to get
-a description of the \s-1XML\s0 network format used by libvirt. 
+a description of the \s-1XML\s0 network format used by libvirt.
 .IP "\fBnet-define\fR \fIfile\fR" 4
 .IX Item "net-define file"
 Define a virtual network from an \s-1XML\s0 \fIfile\fR, the network is just defined but
@@ -536,18 +536,18 @@ format as accepted by the \fBconnect\fR option.
 .SH "AUTHOR"
 .IX Header "AUTHOR"
 .Vb 2
-\&  Andrew Puch <apuch @ redhat.com> 
+\&  Andrew Puch <apuch @ redhat.com>
 \&  Daniel Veillard <veillard @ redhat.com>
 .Ve
 .Sp
 .Vb 3
-\&  Based on the xm man paged by 
+\&  Based on the xm man paged by
 \&  Sean Dague <sean at dague dot net>
 \&  Daniel Stekloff <dsteklof at us dot ibm dot com>
 .Ve
 .SH "BUGS"
 .IX Header "BUGS"
-Bugs can be view on the RedHat buzilla page under the libvirt 
+Bugs can be view on the RedHat buzilla page under the libvirt
 <https://bugzilla.redhat.com/>
 .Sp
 <https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&component=libvirt&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&bug_status=MODIFIED&short_desc_type=allwordssubstr&short_desc=&long_desc_type=allwordssubstr>

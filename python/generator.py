@@ -186,8 +186,8 @@ class docParser:
                 str = str + c
             if self.in_function == 1:
                 self.function_cond = str
-                
-                
+
+
 def function(name, desc, ret, args, file, cond):
     functions[name] = (desc, ret, args, file, cond)
 
@@ -750,7 +750,7 @@ def buildWrappers():
 	if not classes_processed.has_key(tinfo[2]):
 	    classes_list.append(tinfo[2])
 	    classes_processed[tinfo[2]] = ()
-	    
+
 	ctypes.append(type)
 	ctypes_processed[type] = ()
 
@@ -776,7 +776,7 @@ def buildWrappers():
 	func = nameFixup(name, "None", file, file)
 	info = (0, func, name, ret, args, file)
 	function_classes['None'].append(info)
-   
+
     classes = open("libvirtclass.py", "w")
 
     txt = open("libvirtclass.txt", "w")

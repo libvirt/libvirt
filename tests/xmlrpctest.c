@@ -38,12 +38,12 @@ testMethodPlusINT(const void *data)
 {
     int retval = 0;
     xmlRpcContextPtr cxt = (xmlRpcContextPtr) data;
-    
-    if (xmlRpcCall(cxt, "plus", "i", "ii", 
+
+    if (xmlRpcCall(cxt, "plus", "i", "ii",
             (const char *) &retval, 10, 10) < 0)
         return -1;
-        
-    return retval==(10+10) ? 0 : -1;   
+
+    return retval==(10+10) ? 0 : -1;
 }
 
 static int
@@ -51,12 +51,12 @@ testMethodPlusDOUBLE(const void *data)
 {
     double retval = 0;
     xmlRpcContextPtr cxt = (xmlRpcContextPtr) data;
-    
-    if (xmlRpcCall(cxt, "plus", "f", "ff", 
+
+    if (xmlRpcCall(cxt, "plus", "f", "ff",
             (const char *) &retval, 10.1234, 10.1234) < 0)
         return -1;
-        
-    return retval==(10.1234+10.1234) ? 0 : -1;   
+
+    return retval==(10.1234+10.1234) ? 0 : -1;
 }
 
 static virBufferPtr
@@ -66,11 +66,11 @@ marshalRequest(const char *fmt, ...)
     xmlRpcValuePtr *argv;
     virBufferPtr buf;
     va_list ap;
-    
+
     va_start(ap, fmt);
     argv = xmlRpcArgvNew(fmt, ap, &argc);
     va_end(ap);
-    
+
     buf = xmlRpcMarshalRequest("test", argc, argv);
 
     xmlRpcArgvFree(argc, argv);
@@ -84,32 +84,32 @@ checkRequestValue(const char *xmlstr, const char *xpath, int type, void *expecte
     xmlXPathContextPtr ctxt = NULL;
     xmlXPathObjectPtr obj = NULL;
     int ret = -1;
-    
+
     xml = xmlReadDoc((const xmlChar *) xmlstr, "xmlrpctest.xml", NULL,
                           XML_PARSE_NOENT | XML_PARSE_NONET |
                           XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
     if (!xml)
         goto error;
-    
+
     if (!(ctxt = xmlXPathNewContext(xml)))
         goto error;
-    
+
     if (!(obj = xmlXPathEval(BAD_CAST xpath, ctxt)))
         goto error;
 
     switch(type) {
         case XML_RPC_INTEGER:
-            if ((obj->type != XPATH_NUMBER) || 
+            if ((obj->type != XPATH_NUMBER) ||
                     ((int) obj->floatval != *((int *)expected)))
                 goto error;
             break;
          case XML_RPC_DOUBLE:
-            if ((obj->type != XPATH_NUMBER) || 
+            if ((obj->type != XPATH_NUMBER) ||
                     ((double) obj->floatval != *((double *)expected)))
                 goto error;
             break;
          case XML_RPC_STRING:
-            if ((obj->type != XPATH_STRING) || 
+            if ((obj->type != XPATH_STRING) ||
                     (strcmp((const char *)obj->stringval, (const char *)expected)))
                 goto error;
             break;
@@ -118,7 +118,7 @@ checkRequestValue(const char *xmlstr, const char *xpath, int type, void *expecte
     }
     ret = 0;
 
-error:    
+error:
     if (obj)
         xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
@@ -136,10 +136,10 @@ testMarshalRequestINT(const void *data)
     virBufferPtr buf = marshalRequest("i", num);
 
     if (check)
-        ret = checkRequestValue(buf->content, 
+        ret = checkRequestValue(buf->content,
                 "number(/methodCall/params/param[1]/value/int)",
                 XML_RPC_INTEGER, (void *) &num);
-    
+
     virBufferFree(buf);
     return ret;
 }
@@ -152,8 +152,8 @@ testMarshalRequestSTRING(const void *data ATTRIBUTE_UNUSED)
     int check = data ? *((int *)data) : 0;
     virBufferPtr buf = marshalRequest("s", str);
 
-    if (check) 
-        ret = checkRequestValue(buf->content, 
+    if (check)
+        ret = checkRequestValue(buf->content,
                 "string(/methodCall/params/param[1]/value/string)",
                 XML_RPC_STRING, (void *) str);
     virBufferFree(buf);
@@ -169,10 +169,10 @@ testMarshalRequestDOUBLE(const void *data)
     virBufferPtr buf = marshalRequest("f", num);
 
     if (check)
-        ret = checkRequestValue(buf->content, 
+        ret = checkRequestValue(buf->content,
                 "number(/methodCall/params/param[1]/value/double)",
                 XML_RPC_DOUBLE, (void *) &num);
-    
+
     virBufferFree(buf);
     return ret;
 }
@@ -182,7 +182,7 @@ testBufferStrcat(const void *data ATTRIBUTE_UNUSED)
 {
     virBufferPtr buf = virBufferNew(1000*32);  /* don't waste time with realloc */
     int i;
-    
+
     for (i=0; i < 1000; i++)
         virBufferStrcat(buf, "My name is ", "libvirt", ".\n", NULL);
 
@@ -195,7 +195,7 @@ testBufferVSprintf(const void *data ATTRIBUTE_UNUSED)
 {
     virBufferPtr buf = virBufferNew(1000*32);  /* don't waste time with realloc */
     int i;
-    
+
     for (i=0; i < 1000; i++)
         virBufferVSprintf(buf, "My name is %s.\n", "libvirt");
 
@@ -215,14 +215,14 @@ main(int argc, char **argv)
 
 	if (argc > 2)
 	{
-		fprintf(stderr, "Usage: %s [url]\n", progname); 
+		fprintf(stderr, "Usage: %s [url]\n", progname);
 		exit(EXIT_FAILURE);
 	}
     if (argc == 2)
         url = argv[1];
-    
-     /* 
-      * client-server tests 
+
+     /*
+      * client-server tests
       */
 	if (!(cxt = xmlRpcContextNew(url)))
 	{
@@ -230,37 +230,37 @@ main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-       if (virtTestRun("XML-RPC methodCall INT+INT", 
+       if (virtTestRun("XML-RPC methodCall INT+INT",
                 NLOOPS, testMethodPlusINT, (const void *) cxt) != 0)
         ret = -1;
-    
-    if (virtTestRun("XML-RPC methodCall DOUBLE+DOUBLE", 
+
+    if (virtTestRun("XML-RPC methodCall DOUBLE+DOUBLE",
                 NLOOPS, testMethodPlusDOUBLE, (const void *) cxt) != 0)
         ret = -1;
-    
+
  	xmlRpcContextFree(cxt);
-   
-    /* 
-     * regression / performance tests 
+
+    /*
+     * regression / performance tests
      */
-    if (virtTestRun("XML-RPC request marshalling: INT (check)", 
+    if (virtTestRun("XML-RPC request marshalling: INT (check)",
                 1, testMarshalRequestINT, (const void *) &check) != 0)
         ret = -1;
-    if (virtTestRun("XML-RPC request marshalling: INT", 
+    if (virtTestRun("XML-RPC request marshalling: INT",
                 NLOOPS, testMarshalRequestINT, NULL) != 0)
         ret = -1;
-    
-    if (virtTestRun("XML-RPC request marshalling: DOUBLE (check)", 
+
+    if (virtTestRun("XML-RPC request marshalling: DOUBLE (check)",
                 1, testMarshalRequestDOUBLE, (const void *) &check) != 0)
         ret = -1;
-    if (virtTestRun("XML-RPC request marshalling: DOUBLE", 
+    if (virtTestRun("XML-RPC request marshalling: DOUBLE",
                 NLOOPS, testMarshalRequestDOUBLE, NULL) != 0)
         ret = -1;
 
-    if (virtTestRun("XML-RPC request marshalling: STRING (check)", 
+    if (virtTestRun("XML-RPC request marshalling: STRING (check)",
                 1, testMarshalRequestSTRING, (void *) &check) != 0)
         ret = -1;
-    if (virtTestRun("XML-RPC request marshalling: STRING", 
+    if (virtTestRun("XML-RPC request marshalling: STRING",
                 NLOOPS, testMarshalRequestSTRING, NULL) != 0)
         ret = -1;
 
@@ -268,7 +268,7 @@ main(int argc, char **argv)
         ret = -1;
     if (virtTestRun("Buffer: sprintf", NLOOPS, testBufferVSprintf, NULL) != 0)
         ret = -1;
-  
+
 
 	exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

@@ -302,7 +302,7 @@ virParseCpuSet(virConnectPtr conn, const char **str, char sep,
  * virParseXenCpuTopology:
  * @conn: connection
  * @xml: XML output buffer
- * @str: the topology string 
+ * @str: the topology string
  * @maxcpu: number of elements available in @cpuset
  *
  * Parse a Xend CPU topology string and build the associated XML
@@ -436,7 +436,7 @@ virConvertCpuSet(virConnectPtr conn, const char *str, int maxcpu) {
 	virXMLError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"), 0);
 	return(NULL);
     }
-    
+
     ret = virParseCpuSet(conn, &cur, 0, cpuset, maxcpu);
     if (ret < 0) {
         free(cpuset);
@@ -911,7 +911,7 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
         return -1;
     }
 
-    /* 
+    /*
      * Originally XenD abused the 'kernel' parameter for the HVM
      * firmware. New XenD allows HVM guests to boot from a kernel
      * and if this is enabled, the HVM firmware must use the new
@@ -1112,7 +1112,7 @@ virDomainParseXMLOSDescKernel(virConnectPtr conn ATTRIBUTE_UNUSED,
         }
         cur = cur->next;
     }
-    
+
     virBufferVSprintf(buf, "(kernel '%s')", (const char *) kernel);
 
     if (initrd != NULL)
@@ -1592,7 +1592,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
                     }
                 }
                 free(cpuset);
-                if (res < 0) 
+                if (res < 0)
                     goto error;
             } else {
                 virXMLError(conn, VIR_ERR_NO_MEMORY, xmldesc, 0);

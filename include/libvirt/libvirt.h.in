@@ -106,7 +106,7 @@ typedef enum {
  * virNodeInfoPtr:
  *
  * a virNodeInfo is a structure filled by virNodeGetInfo() and providing
- * the informations for the Node. 
+ * the informations for the Node.
  */
 
 typedef struct _virNodeInfo virNodeInfo;
@@ -319,7 +319,7 @@ typedef virConnectCredential *virConnectCredentialPtr;
  * @param cred list of virConnectCredential object to fetch from user
  * @param ncred size of cred list
  * @param cbdata opaque data passed to virConnectOpenAuth
- * 
+ *
  * When authentication requires one or more interactions, this callback
  * is invoked. For each interaction supplied, data must be gathered
  * from the user and filled in to the 'result' and 'resultlen' fields.
@@ -368,7 +368,7 @@ extern virConnectAuthPtr virConnectAuthPtrDefault;
 /**
  * LIBVIR_VERSION_NUMBER:
  *
- * Macro providing the version of the library as 
+ * Macro providing the version of the library as
  * version * 1,000,000 + minor * 1000 + micro
  */
 
@@ -473,7 +473,7 @@ int			virDomainCoreDump	(virDomainPtr domain,
  */
 int			virDomainGetInfo	(virDomainPtr domain,
 						 virDomainInfoPtr info);
-						 
+
 /*
  * Return scheduler type in effect 'sedf', 'credit', 'linux'
  */
@@ -487,7 +487,7 @@ const char *		virDomainGetName	(virDomainPtr domain);
 unsigned int		virDomainGetID		(virDomainPtr domain);
 int			virDomainGetUUID	(virDomainPtr domain,
 						 unsigned char *uuid);
-int			virDomainGetUUIDString	(virDomainPtr domain, 
+int			virDomainGetUUIDString	(virDomainPtr domain,
 						char *buf);
 char *			virDomainGetOSType	(virDomainPtr domain);
 unsigned long		virDomainGetMaxMemory	(virDomainPtr domain);

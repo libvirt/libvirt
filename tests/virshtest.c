@@ -283,12 +283,12 @@ main(int argc, char **argv)
     buffer[PATH_MAX-1] = '\0';
     progname = argv[0];
     custom_uri = buffer;
-    
+
     if (argc > 1) {
-        fprintf(stderr, "Usage: %s\n", progname); 
+        fprintf(stderr, "Usage: %s\n", progname);
         exit(EXIT_FAILURE);
     }
-    
+
     if (virtTestRun("virsh list (default)",
 		    1, testCompareListDefault, NULL) != 0)
         ret = -1;

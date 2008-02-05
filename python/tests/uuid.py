@@ -36,6 +36,6 @@ except:
 if dom2.name() != name0:
     print 'lookup of %s based on UUID brings a different domain %s' % (
            name0, dom2.name())
-     
+
 print "OK"
 sys.exit(0)

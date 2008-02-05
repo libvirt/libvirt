@@ -1355,7 +1355,7 @@ xenHypervisorSetSchedulerParameters(virDomainPtr domain,
             return -1;
         }
     }
-     
+
     return 0;
 }
 
@@ -1658,7 +1658,7 @@ virXen_setvcpumap(int handle, int id, unsigned int vcpu,
         if (maplen < 8) {
             new = calloc(1, sizeof(uint64_t));
             if (!new) {
-                virXenErrorFunc(NULL, VIR_ERR_NO_MEMORY, __FUNCTION__, 
+                virXenErrorFunc(NULL, VIR_ERR_NO_MEMORY, __FUNCTION__,
                                 "allocating private data", 0);
                 return (-1);
             }
@@ -2764,7 +2764,7 @@ xenHypervisorGetDomMaxMemory(virConnectPtr conn, int id)
 
     if (kb_per_pages == 0) {
         kb_per_pages = sysconf(_SC_PAGESIZE) / 1024;
-	if (kb_per_pages <= 0) 
+	if (kb_per_pages <= 0)
 	    kb_per_pages = 4;
     }
 
@@ -2825,7 +2825,7 @@ xenHypervisorGetDomInfo(virConnectPtr conn, int id, virDomainInfoPtr info)
 
     if (kb_per_pages == 0) {
         kb_per_pages = sysconf(_SC_PAGESIZE) / 1024;
-	if (kb_per_pages <= 0) 
+	if (kb_per_pages <= 0)
 	    kb_per_pages = 4;
     }
 
@@ -2920,15 +2920,15 @@ xenHypervisorGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
  * xenHypervisorNodeGetCellsFreeMemory:
  * @conn: pointer to the hypervisor connection
  * @freeMems: pointer to the array of unsigned long long
- * @startCell: index of first cell to return freeMems info on. 
- * @maxCells: Maximum number of cells for which freeMems information can 
+ * @startCell: index of first cell to return freeMems info on.
+ * @maxCells: Maximum number of cells for which freeMems information can
  *            be returned.
  *
  * This call returns the amount of free memory in one or more NUMA cells.
  * The @freeMems array must be allocated by the caller and will be filled
- * with the amount of free memory in kilobytes for each cell requested, 
- * starting with startCell (in freeMems[0]), up to either 
- * (startCell + maxCells), or the number of additional cells in the node, 
+ * with the amount of free memory in kilobytes for each cell requested,
+ * starting with startCell (in freeMems[0]), up to either
+ * (startCell + maxCells), or the number of additional cells in the node,
  * whichever is smaller.
  *
  * Returns the number of entries filled in freeMems, or -1 in case of error.
@@ -2941,7 +2941,7 @@ xenHypervisorNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *free
     int i, j, ret;
     xenUnifiedPrivatePtr priv;
     int nbNodeCells;
-    
+
     if (conn == NULL) {
         virXenErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
                         "invalid argument", 0);

@@ -17,15 +17,15 @@ Releases
       various english fixes (Bruce Montague), OCaml docs links (Richard Jones),
       describe the various bindings add Ruby link, Windows support page
       (Richard Jones), authentication documentation updates (Daniel Berrange)
-      
+
    - Bug fixes: NUMA topology error handling (Beth Kon), NUMA topology
       cells without CPU (Beth Kon), XML to/from XM bridge config (Daniel
       Berrange), XM processing of vnc parameters (Daniel Berrange), Reset
-      migration source after failure (Jim Paris), negative integer in config  
+      migration source after failure (Jim Paris), negative integer in config
       (Tatsuro Enokura), zero terminating string buffer, detect integer
       overflow (Jim Meyering), QEmu command line ending fixes (Daniel Berrange),
       recursion problem in the daemon (Daniel Berrange), HVM domain with CDRom
-      (Masayuki Sunou), off by one error in NUMA cpu count (Beth Kon), 
+      (Masayuki Sunou), off by one error in NUMA cpu count (Beth Kon),
       avoid xend errors when adding disks (Masayuki Sunou), compile error
       (Chris Lalancette), transposed fwrite args (Jim Meyering), compile
       without xen and on solaris (Jim Paris), parsing of interface names
@@ -42,17 +42,17 @@ Releases
       parameter setting in XM config (Saori Fukuta), credential handling
       fixes (Daniel Berrange), fix compatibility with Xen 3.2.0 (Daniel
       Berrange)
-      
+
    - Improvements: /etc/libvirt/qemu.conf configuration for QEMU driver
       (Daniel Berrange), NUMA cpu pinning in config files (DV and Saori Fukuta),
       CDRom media change in KVM/QEMU (Daniel Berrange), tests for
       <shareable/> in configs, pinning inactive domains for Xen 3.0.3
       (Saori Fukuta), use gnulib for portability enhancement (Jim Meyering),
       --without-libvirtd config option (Richard Jones), Python bindings for
-      NUMA, add extra utility functions to buffer (Richard Jones), 
+      NUMA, add extra utility functions to buffer (Richard Jones),
       separate qparams module for handling query parameters (Richard Jones)
-      
-   - Code cleanups: remove virDomainRestart from API as it was never used 
+
+   - Code cleanups: remove virDomainRestart from API as it was never used
       (Richard Jones), constify params for attach/detach APIs (Daniel Berrange),
       gcc printf attribute checkings (Jim Meyering), refactoring of device
       parsing code and shell escaping (Daniel Berrange), virsh schedinfo
@@ -72,20 +72,20 @@ Releases
       port (Richard Jones), disable the proxy if using PolicyKit, readline
       availability detection, test libvirtd's config-processing code (Jim
       Meyering), use a variable name as sizeof argument (Jim Meyering)
-      
+
 
 
 0.3.3: Sep 30 2007:
    - New features: Avahi mDNS daemon export (Daniel Berrange),
-      NUMA support (Beth Kan) 
-   - Documentation: cleanups (Toth Istvan), typos (Eduardo Pereira), 
+      NUMA support (Beth Kan)
+   - Documentation: cleanups (Toth Istvan), typos (Eduardo Pereira),
    - Bug fixes: memory corruption on large dumps (Masayuki Sunou), fix
       virsh vncdisplay command exit (Masayuki Sunou), Fix network stats
       TX/RX result (Richard Jones), warning on Xen 3.0.3 (Richard Jones),
       missing buffer check in virDomainXMLDevID (Hugh Brock), avoid zombies
       when using remote (Daniel Berrange), xend connection error message
       (Richard Jones), avoid ssh tty prompt (Daniel Berrange), username
-      handling for remote URIs (Fabian Deutsch), fix potential crash 
+      handling for remote URIs (Fabian Deutsch), fix potential crash
       on multiple input XML tags (Daniel Berrange), Solaris Xen hypercalls
       fixup (Mark Johnson)
    - Improvements: OpenVZ support (Shuveb Hussain and Anoop Cyriac),
@@ -103,7 +103,7 @@ Releases
 
 
 0.3.2: Aug 21 2007:
-   - New features: KVM migration and save/restore (Jim Paris), 
+   - New features: KVM migration and save/restore (Jim Paris),
       added API for migration (Richard Jones), added APIs for block device and
       interface statistic (Richard Jones).
    - Documentation: examples for XML network APIs,
@@ -124,10 +124,10 @@ Releases
       speedup of domain queries on Xen (Daniel berrange), augment XML dumps
       with interface devices names (Richard Jones), internal API to query
       drivers for features (Richard Jones).
-      
+
    - Cleanups: Improve virNodeGetInfo implentation (Daniel berrange),
       general UUID code cleanup (Daniel berrange), fix API generator
-      file selection. 
+      file selection.
 
 
 0.3.1: Jul 24 2007:
@@ -161,13 +161,13 @@ Releases
    - Secure Remote support (Richard Jones).
       See the remote page
       of the documentation
-  
+
    - Documentation: remote support (Richard Jones), description of
       the URI connection strings (Richard Jones), update of virsh man
       page, matrix of libvirt API/hypervisor support with version
       informations (Richard Jones)
-   - Bug fixes: examples Makefile.am generation (Richard Jones), 
-      SetMem fix (Mark Johnson), URI handling and ordering of 
+   - Bug fixes: examples Makefile.am generation (Richard Jones),
+      SetMem fix (Mark Johnson), URI handling and ordering of
       drivers (Daniel Berrange), fix virsh help without hypervisor (Richard
       Jones), id marshalling fix (Daniel Berrange), fix virConnectGetMaxVcpus
       on remote (Richard Jones), avoid a realloc leak (Jim Meyering), scheduler
@@ -177,12 +177,12 @@ Releases
       XML serialization bugs
    - Improvements: QEmu switch to XDR-based protocol (Dan Berrange),
       device attach/detach commands (Masayuki Sunou), OCaml bindings
-      (Richard Jones), new entry points virDomainGetConnect and 
-      virNetworkGetConnect useful for bindings (Richard Jones), 
+      (Richard Jones), new entry points virDomainGetConnect and
+      virNetworkGetConnect useful for bindings (Richard Jones),
       reunitifaction of remote and qemu daemon under a single libvirtd
       with a config file (Daniel Berrange)
    - Cleanups: parsing of connection URIs (Richard Jones), messages
-      from virsh (Saori Fukuta), Coverage files (Daniel Berrange), 
+      from virsh (Saori Fukuta), Coverage files (Daniel Berrange),
       Solaris fixes (Mark Johnson), avoid [r]index calls (Richard Jones),
       release information in Xen backend, virsh cpupin command cleanups
       (Masayuki Sunou), xen:/// suppport as standard Xen URI (Richard Jones and
@@ -202,7 +202,7 @@ Releases
 0.2.3: Jun 8 2007:
    - Documentation: documentation for upcoming remote access (Richard Jones),
       virConnectNumOfDefinedDomains doc (Jan Michael), virsh help messages
-      for dumpxml and net-dumpxml (Chris Wright), 
+      for dumpxml and net-dumpxml (Chris Wright),
    - Bug fixes: RelaxNG schemas regexp fix (Robin Green), RelaxNG arch bug
       (Mark McLoughlin), large buffers bug fixes (Shigeki Sakamoto), error
       on out of memory condition (Shigeki Sakamoto), virshStrdup fix, non-root
@@ -214,7 +214,7 @@ Releases
       QEmu memory bug (Daniel Berrange), memory leak fix (Masayuki Sunou),
       fix compiler flags (Richard Jones), remove type ioemu on recent Xen
       HVM for paravirt drivers (Saori Fukuta), uninitialized string bug
-      (Masayuki Sunou), allow init even if the daemon is not running, 
+      (Masayuki Sunou), allow init even if the daemon is not running,
       XML to config fix (Daniel Berrange)
    - Improvements: add a special error class for the test module (Richard
       Jones), virConnectGetCapabilities on proxy (Richard Jones), allow
@@ -236,10 +236,10 @@ Releases
 
 
 0.2.2: Apr 17 2007:
-   - Documentation: fix errors due to Amaya (with Simon Hernandez), 
+   - Documentation: fix errors due to Amaya (with Simon Hernandez),
       virsh uses kB not bytes (Atsushi SAKAI), add command line help to
       qemud (Richard Jones), xenUnifiedRegister docs (Atsushi SAKAI),
-      strings typos (Nikolay Sivov), ilocalization probalem raised by 
+      strings typos (Nikolay Sivov), ilocalization probalem raised by
       Thomas Canniot
    - Bug fixes: virsh memory values test (Masayuki Sunou), operations without
       libvirt_qemud (Atsushi SAKAI), fix spec file (Florian La Roche, Jeremy
@@ -251,26 +251,26 @@ Releases
       Berrange), bridged config configuration (Daniel Berrange), erroneous
       XEN_V2_OP_SETMAXMEM value (Masayuki Sunou), memory free error (Mark
       McLoughlin), set VIR_CONNECT_RO on read-only connections (S.Sakamoto),
-      avoid memory explosion bug (Daniel Berrange), integer overflow 
+      avoid memory explosion bug (Daniel Berrange), integer overflow
       for qemu CPU time (Daniel Berrange), QEMU binary path check (Daniel
       Berrange)
    - Cleanups: remove some global variables (Jim Meyering), printf-style
       functions checks (Jim Meyering), better virsh error messages, increase
       compiler checkings and security (Daniel Berrange), virBufferGrow usage
       and docs, use calloc instead of malloc/memset, replace all sprintf by
-      snprintf, avoid configure clobbering user's CTAGS (Jim Meyering), 
+      snprintf, avoid configure clobbering user's CTAGS (Jim Meyering),
       signal handler error cleanup (Richard Jones), iptables internal code
       claenup (Mark McLoughlin), unified Xen driver (Richard Jones),
       cleanup XPath libxml2 calls, IPTables rules tightening (Daniel
-      Berrange), 
+      Berrange),
    - Improvements: more regression tests on XML (Daniel Berrange), Python
       bindings now generate exception in error cases (Richard Jones),
       Python bindings for vir*GetAutoStart (Daniel Berrange),
       handling of CD-Rom device without device name (Nobuhiro Itou),
       fix hypervisor call to work with Xen 3.0.5 (Daniel Berrange),
       DomainGetOSType for inactive domains (Daniel Berrange), multiple boot
-      devices for HVM (Daniel Berrange), 
-      
+      devices for HVM (Daniel Berrange),
+
 
 
 0.2.1: Mar 16 2007:
@@ -293,7 +293,7 @@ Releases
       Berrange), pointer/int mismatch (Richard Jones), configure time
       selection of drivers, libvirt spec hacking (Daniel Berrange)
    - Add support for network autostart and init scripts (Mark McLoughlin)
-   - New API virConnectGetCapabilities() to detect the virtualization 
+   - New API virConnectGetCapabilities() to detect the virtualization
     capabilities of a host (Richard Jones)
    - Minor improvements: qemud signal handling (Mark), don't shutdown or reboot
     domain0 (Kazuki Mizushima), QEmu version autodetection (Daniel Berrange),
@@ -312,7 +312,7 @@ Releases
       parsing (Richard Jones)
    - Add support for QEmu and KVM virtualization (Daniel Berrange)
    - Add support for network configuration (Mark McLoughlin)
-   - Minor improvements: regression testing (Daniel Berrange), 
+   - Minor improvements: regression testing (Daniel Berrange),
       localization string updates
 
 
@@ -375,7 +375,7 @@ Releases
    - Support for localization of strings using gettext (Daniel Berrange)
    - Support for new Xen-3.0.3 cdrom and disk configuration (Daniel Berrange)
    - Support for setting VNC port when creating domains with new
-      xend config files (Daniel Berrange) 
+      xend config files (Daniel Berrange)
    - Fix bug when running against xen-3.0.2 hypercalls (Jim Fehlig)
    - Fix reconnection problem when talking directly to http xend
 
@@ -409,7 +409,7 @@ Releases
     floppy and cdrom (Daniel Berrange), features block in XML to report/ask
     PAE, ACPI, APIC for HVM domains (Daniel Berrange), fail saide-effect
     operations when using read-only connection, large improvements to test
-    driver (Daniel Berrange) 
+    driver (Daniel Berrange)
    - documentation: spelling (Daniel Berrange), test driver examples.
 
 

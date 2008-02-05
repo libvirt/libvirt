@@ -101,7 +101,7 @@ virCopyLastError(virErrorPtr to)
 /**
  * virResetError:
  * @err: pointer to the virError to clean up
- * 
+ *
  * Reset the error being pointed to
  */
 void
@@ -118,7 +118,7 @@ virResetError(virErrorPtr err)
 
 /**
  * virResetLastError:
- * 
+ *
  * Reset the last error caught at the library level.
  */
 void

@@ -52,6 +52,6 @@ int main(void) {
     virConnectClose(conn);
     printf("OK\n");
     exit(0);
-    
+
 }
 

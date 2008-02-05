@@ -260,7 +260,7 @@ static const struct qemu_feature_flags const arch_info_x86_64_flags [] = {
 };
 
 /* The archicture tables for supported QEMU archs */
-const struct qemu_arch_info const qemudArchs[] = { 
+const struct qemu_arch_info const qemudArchs[] = {
     /* i686 must be in position 0 */
     {  "i686", 32, arch_info_x86_machines, "qemu", arch_info_i686_flags },
     /* x86_64 must be in position 1 */
@@ -483,13 +483,13 @@ static int qemudParseDiskXML(virConnectPtr conn,
     }
 
     device = xmlGetProp(node, BAD_CAST "device");
-  
+
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
             if ((source == NULL) &&
                 (xmlStrEqual(cur->name, BAD_CAST "source"))) {
-	
+
                 if (typ == QEMUD_DISK_FILE)
                     source = xmlGetProp(cur, BAD_CAST "file");
                 else
@@ -520,7 +520,7 @@ static int qemudParseDiskXML(virConnectPtr conn,
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "Invalid floppy device name: %s", target);
         goto error;
     }
-  
+
     if (device &&
         !strcmp((const char *)device, "cdrom") &&
         strcmp((const char *)target, "hdc")) {
@@ -2642,7 +2642,7 @@ int qemudScanConfigDir(struct qemud_driver *driver,
     }
 
     closedir(dir);
- 
+
     return 0;
 }
 

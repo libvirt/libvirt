@@ -4,8 +4,8 @@ The examples are:
 
 dominfo.py  - print information about a running domU based on the results of
               virDomainGetInfo and virDomainGetXMLDesc
-domstart.py - create a domU from an XML description if the domU isn't 
-              running yet 
+domstart.py - create a domU from an XML description if the domU isn't
+              running yet
 domsave.py  - save all running domU's into a directory
 domrestore.py - restore domU's from their saved files in a directory
 

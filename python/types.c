@@ -45,7 +45,7 @@ libvirt_ulongWrap(unsigned long val)
 #endif
     ret = PyLong_FromLong(val);
     return (ret);
-}   
+}
 
 PyObject *
 libvirt_longlongWrap(long long val)

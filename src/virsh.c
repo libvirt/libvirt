@@ -1136,7 +1136,7 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
          strncpy(params[inputparams].field,str_weight,sizeof(str_weight));
          params[inputparams].type = VIR_DOMAIN_SCHED_FIELD_UINT;
          params[inputparams].value.ui = weight;
-         inputparams++; 
+         inputparams++;
     }
 
     if (capfound) {

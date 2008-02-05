@@ -18,9 +18,9 @@
     </form>
     <ul><!-- style="margin-left: -1em" -->
       <li><a href="{$href_base}index.html">Home</a></li>
-      <li><a style="font-weight:bold" 
+      <li><a style="font-weight:bold"
              href="{$href_base}docs.html">Developer Menu</a></li>
-      <li><a style="font-weight:bold" 
+      <li><a style="font-weight:bold"
              href="{$href_base}html/index.html">API Menu</a></li>
       <xsl:for-each select="/examples/sections/section">
         <li><a href="#{@name}"><xsl:value-of select="@name"/> Examples</a></li>

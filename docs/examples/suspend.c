@@ -27,7 +27,7 @@ static int
 checkDomainState(virDomainPtr dom) {
     virDomainInfo info;        /* the informations being fetched */
     int ret;
-    
+
     ret = virDomainGetInfo(dom, &info);
     if (ret < 0) {
 	return(-1);
@@ -124,7 +124,7 @@ int main(int argc, char **argv) {
 	fprintf(stderr, "Failed find a running guest domain\n");
 	goto error;
     }
-    
+
     SuspendAndResumeDomain(id);
 
 error:

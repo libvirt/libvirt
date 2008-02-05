@@ -19,7 +19,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * Authors: 
+ * Authors:
  * Shuveb Hussain <shuveb@binarykarma.com>
  * Anoop Joe Cyriac <anoop@binarykarma.com>
  *
@@ -88,7 +88,7 @@ static int openvzReload(void);
 static int openvzActive(void);
 
 static virDomainPtr openvzDomainDefineXML(virConnectPtr conn, const char *xml);
-static virDomainPtr openvzDomainCreateLinux(virConnectPtr conn, const char *xml, 
+static virDomainPtr openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
         unsigned int flags ATTRIBUTE_UNUSED);
 
 static int openvzDomainUndefine(virDomainPtr dom);
@@ -222,7 +222,7 @@ static int openvzDomainGetInfo(virDomainPtr dom,
     info->state = vm->status;
 
     /* TODO These need to be calculated differently for OpenVZ */
-    //info->cpuTime = 
+    //info->cpuTime =
     //info->maxMem = vm->def->maxmem;
     //info->memory = vm->def->memory;
     //info->nrVirtCpu = vm->def->vcpus;
@@ -241,30 +241,30 @@ static int openvzDomainShutdown(virDomainPtr dom) {
         error(dom->conn, VIR_ERR_INVALID_DOMAIN, "no domain with matching id");
         return -1;
     }
-    
+
     if (vm->status != VIR_DOMAIN_RUNNING) {
         error(dom->conn, VIR_ERR_OPERATION_DENIED, "domain is not in running state");
         return -1;
     }
     snprintf(cmdbuf, CMDBUF_LEN - 1, VZCTL " stop %d ", dom->id);
-    
-    if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1) 
+
+    if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1)
     {
         openvzLog(OPENVZ_ERR, "Error in parsing Options to OPENVZ");
         goto bail_out;
-    }    
-        
+    }
+
     ret = virExec(dom->conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
     if(ret == -1) {
         error(dom->conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
         return -1;
     }
-    
+
     vm->vpsid = -1;
     vm->status = VIR_DOMAIN_SHUTOFF;
     ovz_driver.num_inactive ++;
     ovz_driver.num_active --;
-    
+
 bail_out:
     cmdExecFree(cmdExec);
 
@@ -284,14 +284,14 @@ static int openvzDomainReboot(virDomainPtr dom,
         error(dom->conn, VIR_ERR_INVALID_DOMAIN, "no domain with matching id");
         return -1;
     }
-    
+
     if (vm->status != VIR_DOMAIN_RUNNING) {
         error(dom->conn, VIR_ERR_OPERATION_DENIED, "domain is not in running state");
         return -1;
     }
     snprintf(cmdbuf, CMDBUF_LEN - 1, VZCTL " restart %d ", dom->id);
-    
-    if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1) 
+
+    if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1)
     {
         openvzLog(OPENVZ_ERR, "Error in parsing Options to OPENVZ");
         goto bail_out1;
@@ -301,10 +301,10 @@ static int openvzDomainReboot(virDomainPtr dom,
         error(dom->conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
         return -1;
     }
-   
-bail_out1:    
+
+bail_out1:
     cmdExecFree(cmdExec);
-    
+
     return ret;
 }
 
@@ -323,7 +323,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
 
     vm = openvzFindVMByID(driver, strtoI(vmdef->name));
     if (vm) {
-        openvzLog(OPENVZ_ERR, "Already an OPENVZ VM active with the id '%s'", 
+        openvzLog(OPENVZ_ERR, "Already an OPENVZ VM active with the id '%s'",
                 vmdef->name);
         goto bail_out2;
     }
@@ -350,7 +350,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
         strcat(cmdbuf, cmdOption);
     }
 
-    if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1) 
+    if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1)
     {
         openvzLog(OPENVZ_ERR, "Error in parsing Options to OPENVZ");
         goto bail_out2;
@@ -360,10 +360,10 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
         error(conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
         goto bail_out2;
     }
-    
+
     waitpid(pid, NULL, 0);
     cmdExecFree(cmdExec);
-    
+
     dom = virGetDomain(conn, vm->vmdef->name, vm->vmdef->uuid);
     if (dom)
         dom->id = vm->vpsid;
@@ -390,7 +390,7 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
     vm = openvzFindVMByID(driver, strtoI(vmdef->name));
     if (vm) {
         openvzFreeVMDef(vmdef);
-        openvzLog(OPENVZ_ERR, "Already an OPENVZ VM defined with the id '%d'", 
+        openvzLog(OPENVZ_ERR, "Already an OPENVZ VM defined with the id '%d'",
                 strtoI(vmdef->name));
         return NULL;
     }
@@ -417,7 +417,7 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
         strcat(cmdbuf, cmdOption);
     }
 
-    if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1) 
+    if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1)
     {
         openvzLog(OPENVZ_ERR, "Error in parsing Options to OPENVZ");
         goto bail_out3;
@@ -427,13 +427,13 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
         error(conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
         return NULL;
     }
-    
+
     waitpid(pid, NULL, 0);
     cmdExecFree(cmdExec);
 
     snprintf(cmdbuf, CMDBUF_LEN - 1, VZCTL " start %s ", vmdef->name);
 
-    if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1) 
+    if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1)
     {
         openvzLog(OPENVZ_ERR, "Error in parsing Options to OPENVZ");
         goto bail_out3;
@@ -443,7 +443,7 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
         error(conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
         return NULL;
     }
-    
+
     sscanf(vmdef->name, "%d", &vm->vpsid);
     vm->status = VIR_DOMAIN_RUNNING;
     ovz_driver.num_inactive--;
@@ -457,7 +457,7 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
         dom->id = vm->vpsid;
     return dom;
 bail_out3:
-    cmdExecFree(cmdExec);    
+    cmdExecFree(cmdExec);
     return NULL;
 }
 
@@ -476,7 +476,7 @@ openvzDomainCreate(virDomainPtr dom)
         error(dom->conn, VIR_ERR_INVALID_DOMAIN, "no domain with matching id");
         return -1;
     }
-    
+
     if (vm->status != VIR_DOMAIN_SHUTOFF) {
         error(dom->conn, VIR_ERR_OPERATION_DENIED, "domain is not in shutoff state");
         return -1;
@@ -484,8 +484,8 @@ openvzDomainCreate(virDomainPtr dom)
 
     vmdef = vm->vmdef;
     snprintf(cmdbuf, CMDBUF_LEN - 1, VZCTL " start %s ", vmdef->name);
-    
-    if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1) 
+
+    if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1)
     {
         openvzLog(OPENVZ_ERR, "Error in parsing Options to OPENVZ");
         goto bail_out4;
@@ -495,14 +495,14 @@ openvzDomainCreate(virDomainPtr dom)
         error(dom->conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
         return -1;
     }
-    
-    sscanf(vmdef->name, "%d", &vm->vpsid); 
+
+    sscanf(vmdef->name, "%d", &vm->vpsid);
     vm->status = VIR_DOMAIN_RUNNING;
     ovz_driver.num_inactive --;
     ovz_driver.num_active ++;
-    
+
     waitpid(pid, NULL, 0);
-bail_out4:    
+bail_out4:
     cmdExecFree(cmdExec);
 
     return ret;
@@ -527,8 +527,8 @@ openvzDomainUndefine(virDomainPtr dom)
         return -1;
     }
     snprintf(cmdbuf, CMDBUF_LEN - 1, VZCTL " destroy %s ", vm->vmdef->name);
-    
-    if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1) 
+
+    if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1)
     {
         openvzLog(OPENVZ_ERR, "Error in parsing Options to OPENVZ");
         goto bail_out5;
@@ -538,10 +538,10 @@ openvzDomainUndefine(virDomainPtr dom)
         error(conn, VIR_ERR_INTERNAL_ERROR, "Could not exec " VZLIST);
         return -1;
     }
-    
+
     waitpid(pid, NULL, 0);
     openvzRemoveInactiveVM(driver, vm);
-bail_out5:    
+bail_out5:
     cmdExecFree(cmdExec);
     return ret;
 }
@@ -580,7 +580,7 @@ static virDrvOpenStatus openvzOpen(virConnectPtr conn,
 };
 
 static int openvzClose(virConnectPtr conn) {
-    
+
     struct openvz_driver *driver = (struct openvz_driver *)conn->privateData;
     struct openvz_vm *vm = driver->vms;
 
@@ -594,7 +594,7 @@ static int openvzClose(virConnectPtr conn) {
         vm = vm->next;
         free(prev);
     }
-    
+
     conn->privateData = NULL;
 
     return 0;
@@ -666,12 +666,12 @@ static int openvzListDefinedDomains(virConnectPtr conn,
 }
 
 static int openvzNumDefinedDomains(virConnectPtr conn ATTRIBUTE_UNUSED) {
-    return ovz_driver.num_inactive; 
+    return ovz_driver.num_inactive;
 }
 
 static int openvzStartup(void) {
     openvzAssignUUIDs();
-    
+
     return 0;
 }
 

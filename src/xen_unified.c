@@ -80,8 +80,8 @@ xenUnifiedError (virConnectPtr conn, virErrorNumber error, const char *info)
 
 /*
  * Helper functions currently used in the NUMA code
- * Those variables should not be accessed directly but through helper 
- * functions xenNbCells() and xenNbCpu() available to all Xen backends 
+ * Those variables should not be accessed directly but through helper
+ * functions xenNbCells() and xenNbCpu() available to all Xen backends
  */
 static int nbNodeCells = -1;
 static int nbNodeCpus = -1;
@@ -190,9 +190,9 @@ xenDomainUsedCpus(virDomainPtr dom)
 		    cpulist[m] = 1;
 		    nb++;
 		    /* if all CPU are used just return NULL */
-		    if (nb == nb_cpu) 
+		    if (nb == nb_cpu)
 		        goto done;
-		        
+
 		}
 	    }
 	}
@@ -914,7 +914,7 @@ xenUnifiedDomainDumpXML (virDomainPtr dom, int flags)
         }
         if (priv->opened[XEN_UNIFIED_PROXY_OFFSET])
             return xenProxyDomainDumpXML(dom, flags);
-    } 
+    }
 
     xenUnifiedError (dom->conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
     return NULL;
@@ -1087,7 +1087,7 @@ xenUnifiedDomainGetSchedulerType (virDomainPtr dom, int *nparams)
         if (priv->opened[i] && drivers[i]->domainGetSchedulerType) {
             schedulertype = drivers[i]->domainGetSchedulerType (dom, nparams);
 	    if (schedulertype != NULL)
-		return(schedulertype); 
+		return(schedulertype);
         }
     }
     return(NULL);
@@ -1161,7 +1161,7 @@ xenUnifiedNodeGetCellsFreeMemory (virConnectPtr conn, unsigned long long *freeMe
     GET_PRIVATE (conn);
 
     if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET])
-        return xenHypervisorNodeGetCellsFreeMemory (conn, freeMems, 
+        return xenHypervisorNodeGetCellsFreeMemory (conn, freeMems,
                                                     startCell, maxCells);
 
     xenUnifiedError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);
@@ -1176,7 +1176,7 @@ xenUnifiedNodeGetFreeMemory (virConnectPtr conn)
     GET_PRIVATE (conn);
 
     if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET]) {
-        ret = xenHypervisorNodeGetCellsFreeMemory (conn, &freeMem, 
+        ret = xenHypervisorNodeGetCellsFreeMemory (conn, &freeMem,
                                                     -1, 1);
 	if (ret != 1)
 	    return (0);

@@ -54,11 +54,11 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
   <li>Bug fixes: NUMA topology error handling (Beth Kon), NUMA topology
       cells without CPU (Beth Kon), XML to/from XM bridge config (Daniel
       Berrange), XM processing of vnc parameters (Daniel Berrange), Reset
-      migration source after failure (Jim Paris), negative integer in config  
+      migration source after failure (Jim Paris), negative integer in config
       (Tatsuro Enokura), zero terminating string buffer, detect integer
       overflow (Jim Meyering), QEmu command line ending fixes (Daniel Berrange),
       recursion problem in the daemon (Daniel Berrange), HVM domain with CDRom
-      (Masayuki Sunou), off by one error in NUMA cpu count (Beth Kon), 
+      (Masayuki Sunou), off by one error in NUMA cpu count (Beth Kon),
       avoid xend errors when adding disks (Masayuki Sunou), compile error
       (Chris Lalancette), transposed fwrite args (Jim Meyering), compile
       without xen and on solaris (Jim Paris), parsing of interface names
@@ -82,10 +82,10 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
       &lt;shareable/&gt; in configs, pinning inactive domains for Xen 3.0.3
       (Saori Fukuta), use gnulib for portability enhancement (Jim Meyering),
       --without-libvirtd config option (Richard Jones), Python bindings for
-      NUMA, add extra utility functions to buffer (Richard Jones), 
+      NUMA, add extra utility functions to buffer (Richard Jones),
       separate qparams module for handling query parameters (Richard Jones)
       </li>
-  <li>Code cleanups: remove virDomainRestart from API as it was never used 
+  <li>Code cleanups: remove virDomainRestart from API as it was never used
       (Richard Jones), constify params for attach/detach APIs (Daniel Berrange),
       gcc printf attribute checkings (Jim Meyering), refactoring of device
       parsing code and shell escaping (Daniel Berrange), virsh schedinfo
@@ -119,7 +119,7 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
       missing buffer check in virDomainXMLDevID (Hugh Brock), avoid zombies
       when using remote (Daniel Berrange), xend connection error message
       (Richard Jones), avoid ssh tty prompt (Daniel Berrange), username
-      handling for remote URIs (Fabian Deutsch), fix potential crash 
+      handling for remote URIs (Fabian Deutsch), fix potential crash
       on multiple input XML tags (Daniel Berrange), Solaris Xen hypercalls
       fixup (Mark Johnson)</li>
   <li>Improvements: OpenVZ support (Shuveb Hussain and Anoop Cyriac),
@@ -137,7 +137,7 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
 </ul>
 <h3>0.3.2: Aug 21 2007</h3>
 <ul>
-  <li>New features: KVM migration and save/restore (Jim Paris), 
+  <li>New features: KVM migration and save/restore (Jim Paris),
       added API for migration (Richard Jones), added APIs for block device and
       interface statistic (Richard Jones).</li>
   <li>Documentation: examples for XML network APIs,
@@ -200,8 +200,8 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
       the URI connection strings (Richard Jones), update of virsh man
       page, matrix of libvirt API/hypervisor support with version
       informations (Richard Jones)</li>
-  <li>Bug fixes: examples Makefile.am generation (Richard Jones), 
-      SetMem fix (Mark Johnson), URI handling and ordering of 
+  <li>Bug fixes: examples Makefile.am generation (Richard Jones),
+      SetMem fix (Mark Johnson), URI handling and ordering of
       drivers (Daniel Berrange), fix virsh help without hypervisor (Richard
       Jones), id marshalling fix (Daniel Berrange), fix virConnectGetMaxVcpus
       on remote (Richard Jones), avoid a realloc leak (Jim Meyering), scheduler
@@ -211,12 +211,12 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
       XML serialization bugs</li>
   <li>Improvements: QEmu switch to XDR-based protocol (Dan Berrange),
       device attach/detach commands (Masayuki Sunou), OCaml bindings
-      (Richard Jones), new entry points virDomainGetConnect and 
-      virNetworkGetConnect useful for bindings (Richard Jones), 
+      (Richard Jones), new entry points virDomainGetConnect and
+      virNetworkGetConnect useful for bindings (Richard Jones),
       reunitifaction of remote and qemu daemon under a single libvirtd
       with a config file (Daniel Berrange)</li>
   <li>Cleanups: parsing of connection URIs (Richard Jones), messages
-      from virsh (Saori Fukuta), Coverage files (Daniel Berrange), 
+      from virsh (Saori Fukuta), Coverage files (Daniel Berrange),
       Solaris fixes (Mark Johnson), avoid [r]index calls (Richard Jones),
       release information in Xen backend, virsh cpupin command cleanups
       (Masayuki Sunou), xen:/// suppport as standard Xen URI (Richard Jones and
@@ -248,7 +248,7 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
       QEmu memory bug (Daniel Berrange), memory leak fix (Masayuki Sunou),
       fix compiler flags (Richard Jones), remove type ioemu on recent Xen
       HVM for paravirt drivers (Saori Fukuta), uninitialized string bug
-      (Masayuki Sunou), allow init even if the daemon is not running, 
+      (Masayuki Sunou), allow init even if the daemon is not running,
       XML to config fix (Daniel Berrange)</li>
   <li>Improvements: add a special error class for the test module (Richard
       Jones), virConnectGetCapabilities on proxy (Richard Jones), allow
@@ -270,10 +270,10 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
 </ul>
 <h3>0.2.2: Apr 17 2007</h3>
 <ul>
-  <li>Documentation: fix errors due to Amaya (with Simon Hernandez), 
+  <li>Documentation: fix errors due to Amaya (with Simon Hernandez),
       virsh uses kB not bytes (Atsushi SAKAI), add command line help to
       qemud (Richard Jones), xenUnifiedRegister docs (Atsushi SAKAI),
-      strings typos (Nikolay Sivov), ilocalization probalem raised by 
+      strings typos (Nikolay Sivov), ilocalization probalem raised by
       Thomas Canniot</li>
   <li>Bug fixes: virsh memory values test (Masayuki Sunou), operations without
       libvirt_qemud (Atsushi SAKAI), fix spec file (Florian La Roche, Jeremy
@@ -285,14 +285,14 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
       Berrange), bridged config configuration (Daniel Berrange), erroneous
       XEN_V2_OP_SETMAXMEM value (Masayuki Sunou), memory free error (Mark
       McLoughlin), set VIR_CONNECT_RO on read-only connections (S.Sakamoto),
-      avoid memory explosion bug (Daniel Berrange), integer overflow 
+      avoid memory explosion bug (Daniel Berrange), integer overflow
       for qemu CPU time (Daniel Berrange), QEMU binary path check (Daniel
       Berrange)</li>
   <li>Cleanups: remove some global variables (Jim Meyering), printf-style
       functions checks (Jim Meyering), better virsh error messages, increase
       compiler checkings and security (Daniel Berrange), virBufferGrow usage
       and docs, use calloc instead of malloc/memset, replace all sprintf by
-      snprintf, avoid configure clobbering user's CTAGS (Jim Meyering), 
+      snprintf, avoid configure clobbering user's CTAGS (Jim Meyering),
       signal handler error cleanup (Richard Jones), iptables internal code
       claenup (Mark McLoughlin), unified Xen driver (Richard Jones),
       cleanup XPath libxml2 calls, IPTables rules tightening (Daniel
@@ -303,7 +303,7 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
       handling of CD-Rom device without device name (Nobuhiro Itou),
       fix hypervisor call to work with Xen 3.0.5 (Daniel Berrange),
       DomainGetOSType for inactive domains (Daniel Berrange), multiple boot
-      devices for HVM (Daniel Berrange), 
+      devices for HVM (Daniel Berrange),
       </li>
 </ul>
 <h3>0.2.1: Mar 16 2007</h3>
@@ -327,7 +327,7 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
       Berrange), pointer/int mismatch (Richard Jones), configure time
       selection of drivers, libvirt spec hacking (Daniel Berrange)</li>
   <li>Add support for network autostart and init scripts (Mark McLoughlin)</li>
-  <li>New API virConnectGetCapabilities() to detect the virtualization 
+  <li>New API virConnectGetCapabilities() to detect the virtualization
     capabilities of a host (Richard Jones)</li>
   <li>Minor improvements: qemud signal handling (Mark), don't shutdown or reboot
     domain0 (Kazuki Mizushima), QEmu version autodetection (Daniel Berrange),
@@ -347,7 +347,7 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
       parsing (Richard Jones)</li>
   <li>Add support for QEmu and KVM virtualization (Daniel Berrange)</li>
   <li>Add support for network configuration (Mark McLoughlin)</li>
-  <li>Minor improvements: regression testing (Daniel Berrange), 
+  <li>Minor improvements: regression testing (Daniel Berrange),
       localization string updates</li>
 </ul>
 
@@ -1037,8 +1037,8 @@ support a variety of options:</p>
     VMs to have outgoing access. Example configs are:</p>
     <pre>&lt;interface type='user'/&gt;</pre>
     <pre>
-&lt;interface type='user'&gt;                                                  
-  &lt;mac address="11:22:33:44:55:66"/&gt;                                     
+&lt;interface type='user'&gt;
+  &lt;mac address="11:22:33:44:55:66"/&gt;
 &lt;/interface&gt;
     </pre>
   </li>
@@ -1082,7 +1082,7 @@ support a variety of options:</p>
   &lt;source dev='br0'/&gt;
   &lt;target dev='vnet7'/&gt;
   &lt;mac address="11:22:33:44:55:66"/&gt;
-&lt;/interface&gt;</pre> 
+&lt;/interface&gt;</pre>
   </li>
   <li>Generic connection to LAN
     <p>Provides a means for the administrator to execute an arbitrary script
@@ -1678,7 +1678,7 @@ source on Windows:
 
 <ol>
 <li>
-  <p>Run Cygwin 
+  <p>Run Cygwin
     <a href="http://www.cygwin.com/setup.exe">setup.exe</a>.
     When it starts up it will show a dialog like this:
   </p>
@@ -3130,7 +3130,7 @@ daemon is to manage qemu instances.
 </p>
 
 <p>
-The <code>libvirtd</code> daemon should be started by the 
+The <code>libvirtd</code> daemon should be started by the
 init scripts when the machine boots. It should appear as
 a process <code>libvirtd --daemon</code> running as root
 in the background and will handle qemu instances on behalf

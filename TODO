@@ -6,7 +6,7 @@ TODO:
 
 Other environment:
 - support for UML
-  
+
   + UML control layer should be easy at least for one user but incomplete
 
 Probable TODOs:
@@ -20,7 +20,7 @@ Would-be-nice TODO:
 
 Cleanup:
 - now that libxml2 is linked in, drop hash.[ch] and get back to libxml2 ones ?
-  same for the buffers 
+  same for the buffers
 
 Autoconf:
 - On Debian and other platforms, C++ compiler is required because

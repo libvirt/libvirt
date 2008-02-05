@@ -60,7 +60,7 @@ typedef struct _virProxyPacket virProxyPacket;
 typedef  virProxyPacket *virProxyPacketPtr;
 
 /*
- * If there is extra data sent from the proxy to the client, 
+ * If there is extra data sent from the proxy to the client,
  * they are appended after the packet.
  * the size may not be fixed, it's passed as len and includes the
  * extra data.

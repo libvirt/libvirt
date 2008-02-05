@@ -155,10 +155,10 @@ static void libvirtd_mdns_create_services(struct libvirtd_mdns_group *group) {
                                                  group->name,
                                                  entry->type,
                                                  NULL,
-                                                 NULL, 
+                                                 NULL,
                                                  entry->port,
                                                  NULL)) < 0) {
-            AVAHI_DEBUG("Failed to add %s service on port %d: %s", 
+            AVAHI_DEBUG("Failed to add %s service on port %d: %s",
                         entry->type, entry->port, avahi_strerror(ret));
             avahi_entry_group_reset(group->handle);
             return;

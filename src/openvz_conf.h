@@ -19,7 +19,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * Authors: 
+ * Authors:
  * Shuveb Hussain <shuveb@binarykarma.com>
  * Anoop Joe Cyriac <anoop@binarykarma.com>
  *
@@ -111,8 +111,8 @@ openvzIsActiveVM(struct openvz_vm *vm)
 }
 
 int openvz_readline(int fd, char *ptr, int maxlen);
-struct openvz_vm *openvzFindVMByID(const struct openvz_driver *driver, int id); 
-struct openvz_vm *openvzFindVMByUUID(const struct openvz_driver *driver, 
+struct openvz_vm *openvzFindVMByID(const struct openvz_driver *driver, int id);
+struct openvz_vm *openvzFindVMByUUID(const struct openvz_driver *driver,
                                             const unsigned char *uuid);
 
 struct openvz_vm *openvzFindVMByName(const struct openvz_driver *driver, const char *name);

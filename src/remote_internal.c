@@ -166,7 +166,7 @@ remoteStartup(void)
  * remoteFindServerPath:
  *
  * Tries to find the path to the libvirtd binary.
- * 
+ *
  * Returns path on success or NULL in case of error.
  */
 static const char *
@@ -544,12 +544,12 @@ doRemoteOpen (virConnectPtr conn,
             if (flags & VIR_DRV_OPEN_REMOTE_USER) {
                 struct passwd *pw;
                 uid_t uid = getuid();
- 
+
                 if (!(pw = getpwuid(uid))) {
                     error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
                     goto failed;
                 }
- 
+
                 if (asprintf (&sockname, "@%s" LIBVIRTD_USER_UNIX_SOCKET, pw->pw_dir) < 0) {
                     error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
                     goto failed;
@@ -932,7 +932,7 @@ negotiate_gnutls_on_connection (virConnectPtr conn,
     int err;
     gnutls_session_t session;
 
-    /* Initialize TLS session 
+    /* Initialize TLS session
      */
     err = gnutls_init (&session, GNUTLS_CLIENT);
     if (err) {
@@ -1023,7 +1023,7 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
         error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (ret));
         return -1;
     }
-  
+
     if ((now = time(NULL)) == ((time_t)-1)) {
         error (conn, VIR_ERR_SYSTEM_ERROR, strerror (errno));
         return -1;
@@ -1034,10 +1034,10 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
 
         if (status & GNUTLS_CERT_INVALID)
             reason = "The certificate is not trusted.";
-        
+
         if (status & GNUTLS_CERT_SIGNER_NOT_FOUND)
             reason = "The certificate hasn't got a known issuer.";
-    
+
         if (status & GNUTLS_CERT_REVOKED)
             reason = "The certificate has been revoked.";
 
@@ -1045,7 +1045,7 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
         if (status & GNUTLS_CERT_INSECURE_ALGORITHM)
             reason = "The certificate uses an insecure algorithm";
 #endif
-    
+
         error (conn, VIR_ERR_RPC, reason);
         return -1;
     }
@@ -1054,12 +1054,12 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
         error (conn, VIR_ERR_RPC, _("Certificate type is not X.509"));
         return -1;
     }
-  
+
     if (!(certs = gnutls_certificate_get_peers(session, &nCerts))) {
         error (conn, VIR_ERR_RPC, _("gnutls_certificate_get_peers failed"));
         return -1;
     }
-  
+
     for (i = 0 ; i < nCerts ; i++) {
         gnutls_x509_crt_t cert;
 
@@ -1068,26 +1068,26 @@ verify_certificate (virConnectPtr conn ATTRIBUTE_UNUSED,
             error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (ret));
             return -1;
         }
-        
+
         ret = gnutls_x509_crt_import (cert, &certs[i], GNUTLS_X509_FMT_DER);
         if (ret < 0) {
             error (conn, VIR_ERR_GNUTLS_ERROR, gnutls_strerror (ret));
             gnutls_x509_crt_deinit (cert);
             return -1;
         }
-    
+
         if (gnutls_x509_crt_get_expiration_time (cert) < now) {
             error (conn, VIR_ERR_RPC, _("The certificate has expired"));
             gnutls_x509_crt_deinit (cert);
             return -1;
         }
-    
+
         if (gnutls_x509_crt_get_activation_time (cert) > now) {
             error (conn, VIR_ERR_RPC, _("The certificate is not yet activated"));
             gnutls_x509_crt_deinit (cert);
             return -1;
         }
-    
+
         if (i == 0) {
             if (!gnutls_x509_crt_check_hostname (cert, priv->hostname)) {
                 __virRaiseError

@@ -2334,7 +2334,7 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
             xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "uuid config parameter is missing");
             goto error;
         }
-        
+
         if (!(olddomain = virGetDomain(conn, value->str, uuid)))
             goto error;
 

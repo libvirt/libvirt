@@ -2,7 +2,7 @@
 # Run this to generate all the initial makefiles, etc.
 
 srcdir=`dirname $0`
-test -z "$srcdir" && srcdir=. 
+test -z "$srcdir" && srcdir=.
 
 THEDIR=`pwd`
 cd $srcdir
@@ -70,6 +70,6 @@ if test x$OBJ_DIR != x; then
 fi
 
 $srcdir/configure "$@" && {
-    echo 
+    echo
     echo "Now type 'make' to compile libvirt."
 }

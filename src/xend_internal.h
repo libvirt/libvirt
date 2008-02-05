@@ -31,7 +31,7 @@ extern "C" {
  * \param host The host name to connect to
  * \param port The port number to connect to
  * \return 0 in case of success, -1 in case of error
- * 
+ *
  * This method creates a new Xend instance via TCP.
  *
  * This function may not fail if Xend is not running.
@@ -44,7 +44,7 @@ int xenDaemonOpen_tcp(virConnectPtr xend, const char *host, int port);
  * \brief Setup the connection to xend instance via a Unix domain socket
  * \param path The path to the domain socket
  * \return 0 in case of success, -1 in case of error
- * 
+ *
  * This method creates a new xend instance via a Unix domain socket.
  *
  * This function may not fail if Xend is not running.
@@ -59,7 +59,7 @@ int xenDaemonOpen_unix(virConnectPtr xend, const char *path);
  * \param xend A xend instance
  * \param name The domain's name
  * \return 0 for success; -1 (with errno) on error
- * 
+ *
  * xen_create() returns after a domain has been allocated including
  * its memory.  This does not guarentee, though, that the devices
  * have come up properly.  For instance, if you create a VBD with an

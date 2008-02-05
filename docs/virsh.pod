@@ -58,21 +58,21 @@ The following commands are generic i.e. not specific to a domain.
 This prints a small synopsis about all commands available for B<virsh>
 B<help> I<command> will print out a detailed help message on that command.
 
-=item B<quit> 
+=item B<quit>
 
 quit this interactive terminal
 
-=item B<version> 
+=item B<version>
 
-Will print out the major version info about what this built from. 
+Will print out the major version info about what this built from.
 
 =over 4
 
-B<Example> 
+B<Example>
 
-B<virsh> version 
+B<virsh> version
 
-Compiled against library: libvir 0.0.6 
+Compiled against library: libvir 0.0.6
 
 Using library: libvir 0.0.6
 
@@ -113,7 +113,7 @@ The I<--readonly> option allows for read-only connection
 Returns basic information about the node, like number and type of CPU,
 and size of the physical memory.
 
-=item B<capabilities>  
+=item B<capabilities>
 
 Print an XML document describing the capabilities of the hypervisor
 we are currently connected to. This includes a section on the host
@@ -123,7 +123,7 @@ description see:
   L<http://libvirt.org/format.html#Capa1>
 The XML also show the NUMA topology informations if available.
 
-=item B<list>  
+=item B<list>
 
 Prints information about one or more domains.  If no domains are
 specified it prints out information about all domains.
@@ -131,20 +131,20 @@ specified it prints out information about all domains.
 An example format for the list is as follows:
 
 B<virsh> list
- Id Name                 State 
+ Id Name                 State
 
----------------------------------- 
+----------------------------------
 
-  0 Domain-0             running 
-  2 fedora               paused 
+  0 Domain-0             running
+  2 fedora               paused
 
 
-Name is the name of the domain.  ID the domain numeric id.  
- State is the run state (see below).  
+Name is the name of the domain.  ID the domain numeric id.
+ State is the run state (see below).
 
 =item B<freecell> optional I<cellno>
 
-Prints the available amount of memory on the machine or within a 
+Prints the available amount of memory on the machine or within a
 NUMA cell if I<cellno> is provided.
 
 =over 4
@@ -175,7 +175,7 @@ scheduling by the Xen hypervisor.
 =item B<s - shutdown>
 
 The domain is in the process of shutting down, i.e. the guest operating system
-has been notified and should be in the process of stopping its operations 
+has been notified and should be in the process of stopping its operations
 gracefully.
 
 =item B<c - crashed>
@@ -209,13 +209,13 @@ The option I<--disable> disable autostarting.
 
 Connect the virtual serial console for the guest.
 
-=item B<create> I<FILE> 
+=item B<create> I<FILE>
 
-Create a domain from an XML <file> an easy way to create one if you have a pre-existing xen guest created via B<xm> create <XMLFILE>. 
+Create a domain from an XML <file> an easy way to create one if you have a pre-existing xen guest created via B<xm> create <XMLFILE>.
 
 B<Example>
 
-virsh dumpxml <domain-id> > file. 
+virsh dumpxml <domain-id> > file.
 
 =item B<define> I<FILE>
 
@@ -229,7 +229,7 @@ OS any chance to react, and it the equivalent of ripping the power
 cord out on a physical machine.  In most cases you will want to use
 the B<shutdown> command instead.
 
-=item B<dominfo> I<domain-id> 
+=item B<dominfo> I<domain-id>
 
 Returns basic information about the domain.
 
@@ -255,7 +255,7 @@ Returns state about a running domain.
 
 =item B<dumpxml> I<domain-id>
 
-Output the domain informations as an XML dump to stdout, this format can be used by the B<create> command. 
+Output the domain informations as an XML dump to stdout, this format can be used by the B<create> command.
 
 
 =item B<reboot> I<domain-id>
@@ -296,13 +296,13 @@ domain is paravirtualized or running the PV balloon driver.
 =item B<setmaxmem> I<domain-id> B<kilobytes>
 
 Change the maximum memory allocation limit in the guest domain. This should
-not change the current memory use. The memory limit is specified in 
+not change the current memory use. The memory limit is specified in
 kilobytes.
 
 =item B<setvcpus> I<domain-id> I<count>
 
 Change the number of virtual CPUs active in the guest domain. Note that
-I<count> may be limited by host, hypervisor or limit coming from the 
+I<count> may be limited by host, hypervisor or limit coming from the
 original description of domain.
 
 For Xen, you can only adjust the virtual CPUs of a running domain if
@@ -313,7 +313,7 @@ the domain is paravirtualized.
 Gracefully shuts down a domain.  This coordinates with the domain OS
 to perform graceful shutdown, so there is no guarantee that it will
 succeed, and may take a variable length of time depending on what
-services must be shutdown in the domain.  
+services must be shutdown in the domain.
 
 For a xen guest vm the behavior of what happens to a domain when it reboots is set by the
 I<on_shutdown> parameter of the xmdomain.cfg file when the domain was
@@ -428,7 +428,7 @@ The I<--disable> option disable autostarting.
 =item B<net-create> I<file>
 
 Create a virtual network from an XML I<file>, see the documentation to get
-a description of the XML network format used by libvirt. 
+a description of the XML network format used by libvirt.
 
 =item B<net-define> I<file>
 
@@ -485,19 +485,19 @@ L<xm(1)>, L<xmdomain.cfg(5)>, L<xentop(1)> , L<http://www.libvirt.org/>
 
 =head1 AUTHOR
 
-  Andrew Puch <apuch @ redhat.com> 
+  Andrew Puch <apuch @ redhat.com>
   Daniel Veillard <veillard @ redhat.com>
 
-  Based on the xm man paged by 
+  Based on the xm man paged by
   Sean Dague <sean at dague dot net>
   Daniel Stekloff <dsteklof at us dot ibm dot com>
 
 
 =head1 BUGS
 
-Bugs can be view on the RedHat buzilla page under the libvirt 
+Bugs can be view on the RedHat buzilla page under the libvirt
 L<https://bugzilla.redhat.com/>
 
 L<https://bugzilla.redhat.com/bugzilla/buglist.cgi?product=Fedora+Core&component=libvirt&bug_status=NEW&bug_status=ASSIGNED&bug_status=REOPENED&bug_status=MODIFIED&short_desc_type=allwordssubstr&short_desc=&long_desc_type=allwordssubstr>
- 
+
 =end

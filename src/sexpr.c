@@ -501,7 +501,7 @@ sexpr_lookup(const struct sexpr *sexpr, const char *node)
  * NB, even if the key was found sexpr_lookup may return NULL if
  * the corresponding value was empty
  *
- * Returns true if the key was found, false otherwise 
+ * Returns true if the key was found, false otherwise
  */
 int
 sexpr_has(struct sexpr *sexpr, const char *node)

@@ -12,10 +12,10 @@ Functional description:
      - stop
      - suspend
      - resume
-     - monitor 
+     - monitor
   More advanced features should be allowed as future extensions, but
   are not expected to be provided in first shipment.
-  
+
   Open enough Licence that customers can link their apps to it (LGPL)
 
   Small and contained enough that we can use it as a way to
@@ -32,8 +32,8 @@ Python code on top driving the hypervisor.
 are not uncommon, and it is very low level usually without comment about
 the function or its arguments. They are usually only called once in the
 whole tree by the python bindings. In essence it looks like the Xen project
-was not implemented with the idea of reusing that part of the code by 
-applications. 
+was not implemented with the idea of reusing that part of the code by
+applications.
   Indeed most of the userland code coming with Xen is built on Python,
 like xend the xen daemon running on domain 0 or the xenstored daemon which
 manage the state of the domains launched.
@@ -54,7 +54,7 @@ The IBM way:
 ------------
 
   Here is supposition about code that I can't instanciate except by looking
-at said code but it looks that IBM also needed a C programmatic API to 
+at said code but it looks that IBM also needed a C programmatic API to
 manage the Xen domain definitions. Their solution was to build (Rusty
 Russell did this) an LGPL C API connecting directly to the xenstore
 daemon (./tools/xenstore/*). In a way this is quite more fragile as it depends

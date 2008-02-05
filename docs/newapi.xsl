@@ -492,7 +492,7 @@
       <xsl:sort select='@symbol'/>
     </xsl:apply-templates>
   </xsl:template>
-  
+
   <xsl:template match="file">
     <xsl:variable name="name" select="@name"/>
     <xsl:variable name="title">Module <xsl:value-of select="$name"/> from <xsl:value-of select="/api/@name"/></xsl:variable>

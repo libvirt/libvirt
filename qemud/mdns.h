@@ -38,7 +38,7 @@ struct libvirtd_mdns *libvirtd_mdns_new(void);
 
 /**
  * Starts the mdns client, advertizing any groups/entries currently registered
- * 
+ *
  * @mdns: manager to start advertizing
  *
  * Starts the mdns client. Services may not be immediately visible, since

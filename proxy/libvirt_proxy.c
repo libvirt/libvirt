@@ -134,7 +134,7 @@ proxyCloseUnixSocket(void) {
 
     if (fdServer < 0)
         return(0);
-    
+
     ret = close(fdServer);
     if (debug > 0)
         fprintf(stderr, "closing unix socket %d: %d\n", fdServer, ret);
@@ -166,7 +166,7 @@ proxyListenUnixSocket(const char *path) {
     }
 
     /*
-     * Abstract socket do not hit the filesystem, way more secure and 
+     * Abstract socket do not hit the filesystem, way more secure and
      * garanteed to be atomic
      */
     memset(&addr, 0, sizeof(addr));
@@ -348,7 +348,7 @@ retry:
     if (debug)
         fprintf(stderr, "wrote %d bytes to client %d on socket %d\n",
 	        ret, nr, pollInfos[nr].fd);
-    
+
     return(0);
 }
 /**
@@ -389,13 +389,13 @@ retry:
     if (debug)
         fprintf(stderr, "read %d bytes from client %d on socket %d\n",
 	        ret, nr, pollInfos[nr].fd);
-    
+
     if ((req->version != PROXY_PROTO_VERSION) ||
         (req->len < sizeof(virProxyPacket)) ||
 	(req->len > sizeof(virProxyFullPacket)))
 	goto comm_error;
 
-    
+
     if (debug)
         fprintf(stderr, "Got command %d from client %d\n", req->command, nr);
 
@@ -683,7 +683,7 @@ comm_error:
 /**
  * proxyProcessRequests:
  *
- * process requests and timers 
+ * process requests and timers
  */
 static void
 proxyProcessRequests(void) {
@@ -745,7 +745,7 @@ proxyProcessRequests(void) {
 		proxyCloseClientSocket(i);
 	    }
 	}
-	    
+
     }
 }
 
@@ -756,7 +756,7 @@ proxyProcessRequests(void) {
  * open, serve client requests, and process timing events.
  */
 
-static void 
+static void
 proxyMainLoop(void) {
     while (! done) {
 	if (proxyListenUnixSocket(PROXY_SOCKET_PATH) < 0)

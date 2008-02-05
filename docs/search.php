@@ -66,7 +66,7 @@
 	    $result = mysql_query ("SELECT words.relevance, symbols.name, symbols.type, symbols.module, symbols.descr FROM words, symbols WHERE LCASE(words.name) LIKE LCASE('$word') and words.symbol = symbols.name ORDER BY words.relevance DESC LIMIT 75");
 	    if ($result) {
 		$j = mysql_num_rows($result);
-		if ($j == 0) 
+		if ($j == 0)
 		    mysql_free_result($result);
 	    }
 	    logQueryWord($word);
@@ -80,7 +80,7 @@
 	    $result = mysql_query ("SELECT relevance, name, id, resource, section FROM wordsHTML WHERE LCASE(name) LIKE LCASE('$word') ORDER BY relevance DESC LIMIT 75");
 	    if ($result) {
 		$j = mysql_num_rows($result);
-		if ($j == 0) 
+		if ($j == 0)
 		    mysql_free_result($result);
 	    }
 	    logQueryWord($word);
@@ -94,7 +94,7 @@
 	    $result = mysql_query ("SELECT wordsArchive.relevance, wordsArchive.name, 'libvir-list', archives.resource, archives.title FROM wordsArchive, archives WHERE LCASE(wordsArchive.name) LIKE LCASE('$word') and wordsArchive.ID = archives.ID ORDER BY relevance DESC LIMIT 75");
 	    if ($result) {
 		$j = mysql_num_rows($result);
-		if ($j == 0) 
+		if ($j == 0)
 		    mysql_free_result($result);
 	    }
 	    logQueryWord($word);

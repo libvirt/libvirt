@@ -18,7 +18,7 @@ def read_domain(fname):
     doc = libxml2.parseDoc(xmldesc)
     name = doc.xpathNewContext().xpathEval("/domain/name")[0].content
     return (name, xmldesc)
-    
+
 def usage():
    print 'Usage: %s domain.xml' % sys.argv[0]
    print '       Check that the domain described by DOMAIN.XML is running'

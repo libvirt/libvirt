@@ -24,7 +24,7 @@
     <ul><!-- style="margin-left: -1em" -->
       <li><a style="font-weight:bold"
              href="{$href_base}index.html">Main Menu</a></li>
-      <li><a style="font-weight:bold" 
+      <li><a style="font-weight:bold"
              href="{$href_base}html/index.html">Modules Index</a></li>
       <li><a style="font-weight:bold"
              href="index.html">API Menu</a></li>
@@ -35,13 +35,13 @@
     <a href="https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id={@number}">
     <xsl:value-of select="@number"/></a>
   </xsl:template>
-  
+
   <xsl:template match="item">
     <li><xsl:apply-templates/></li>
   </xsl:template>
 
   <xsl:template match="entry">
-    
+
     <p>
     <b><xsl:value-of select="@who"/></b>
        <xsl:text> </xsl:text>

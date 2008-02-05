@@ -167,7 +167,7 @@ char *
 virBufferContentAndFree (virBufferPtr buf)
 {
     char *content;
-    
+
     if (buf == NULL)
         return(NULL);
 

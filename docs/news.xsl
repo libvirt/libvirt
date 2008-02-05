@@ -34,7 +34,7 @@
   </xsl:template>
   <xsl:template match="xhtml:a">
     <xsl:value-of select="."/>
-    <xsl:text> at 
+    <xsl:text> at
 </xsl:text>
     <xsl:value-of select="@href"/>
     <xsl:text>

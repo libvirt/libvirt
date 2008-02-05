@@ -883,7 +883,7 @@ xenDaemonOpen_unix(virConnectPtr conn, const char *path)
  * xenDaemonOpen_tcp:
  * @conn: an existing virtual connection block
  * @host: the host name for the Xen Daemon
- * @port: the port 
+ * @port: the port
  *
  * Creates a possibly remote Xen Daemon connection
  * Note: this doesn't try to check if the connection actually works
@@ -1160,9 +1160,9 @@ xend_detect_config_version(virConnectPtr conn) {
     root = sexpr_get(conn, "/xend/node/");
     if (root == NULL)
         return (-1);
-    
+
     value = sexpr_node(root, "node/xend_config_format");
-    
+
     if (value) {
         priv->xendConfigVersion = strtol(value, NULL, 10);
     }  else {
@@ -1270,7 +1270,7 @@ xend_log(virConnectPtr xend, char *buffer, size_t n_buffer)
  * @xend: the xend connection object
  * @node: the root of the parsed S-Expression
  * @buf: output buffer object
- * @hvm: true or 1 if no contains HVM S-Expression 
+ * @hvm: true or 1 if no contains HVM S-Expression
  * @bootloader: true or 1 if a bootloader is defined
  *
  * Parse the xend sexp for description of os and append it to buf.
@@ -1289,7 +1289,7 @@ xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf
     if (node == NULL || buf == NULL) {
        return(-1);
     }
-    
+
     virBufferAddLit(buf, "  <os>\n");
     if (hvm)
         virBufferAddLit(buf, "    <type>hvm</type>\n");
@@ -1466,7 +1466,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
     if ((cur_mem >= MIN_XEN_GUEST_SIZE) && (cur_mem != max_mem))
 	virBufferVSprintf(&buf, "  <currentMemory>%d</currentMemory>\n",
 	                  cur_mem);
-    
+
     virBufferVSprintf(&buf, "  <vcpu");
     if (cpus != NULL) {
 	virBufferVSprintf(&buf, " cpuset='%s'", cpus);
@@ -1961,7 +1961,7 @@ sexpr_to_xend_node_info(const struct sexpr *root, virNodeInfoPtr info)
  *
  * Returns 0 in case of success, -1 in case of error
  */
-static int 
+static int
 sexpr_to_xend_topology_xml(virConnectPtr conn, const struct sexpr *root,
                            virBufferPtr xml)
 {
@@ -1996,11 +1996,11 @@ sexpr_to_xend_topology_xml(virConnectPtr conn, const struct sexpr *root,
   </topology>\n");
     if (r < 0) goto vir_buffer_failed;
     return (0);
-    
+
 
 vir_buffer_failed:
     virXendError(conn, VIR_ERR_NO_MEMORY, _("allocate new buffer"));
-        
+
 error:
     return (-1);
 }
@@ -2348,7 +2348,7 @@ xenDaemonDomainSave(virDomainPtr domain, const char *filename)
 	             __FUNCTION__);
         return(-1);
     }
-    
+
 
     /* We can't save the state of Domain-0, that would mean stopping it too */
     if (domain->id == 0) {
@@ -2689,7 +2689,7 @@ error:
  * xenDaemonNodeGetInfo:
  * @conn: pointer to the Xen Daemon block
  * @info: pointer to a virNodeInfo structure allocated by the user
- * 
+ *
  * Extract hardware information about the node.
  *
  * Returns 0 in case of success and -1 in case of failure.
@@ -2767,7 +2767,7 @@ xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer)
     struct sexpr *root;
     int major, minor;
     unsigned long version;
-    
+
     if (!VIR_IS_CONNECT(conn)) {
         virXendError(conn, VIR_ERR_INVALID_CONN, __FUNCTION__);
         return (-1);
@@ -2937,7 +2937,7 @@ xenDaemonDomainSetVcpus(virDomainPtr domain, unsigned int vcpus)
  * @vcpu: virtual CPU number
  * @cpumap: pointer to a bit map of real CPUs (in 8-bit bytes)
  * @maplen: length of cpumap in bytes
- * 
+ *
  * Dynamically change the real CPUs which can be allocated to a virtual CPU.
  *
  * Returns 0 for success; -1 (with errno) on error
@@ -2983,7 +2983,7 @@ xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
  *	One cpumap inside cpumaps has the format described in virDomainPinVcpu() API.
  * @maplen: number of bytes in one cpumap, from 1 up to size of CPU map in
  *	underlying virtualization system (Xen...).
- * 
+ *
  * Extract information about virtual CPUs of domain, store it in info array
  * and also in cpumaps if this pointer is'nt NULL.
  *
@@ -3142,7 +3142,7 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
  * Launch a new Linux guest domain, based on an XML description similar
  * to the one returned by virDomainGetXMLDesc()
  * This function may requires priviledged access to the hypervisor.
- * 
+ *
  * Returns a new domain object or NULL in case of failure
  */
 static virDomainPtr
@@ -3211,7 +3211,7 @@ xenDaemonCreateLinux(virConnectPtr conn, const char *xmlDesc,
  * xenDaemonAttachDevice:
  * @domain: pointer to domain object
  * @xml: pointer to XML description of device
- * 
+ *
  * Create a virtual device attachment to backend.
  * XML description is translated into S-expression.
  *
@@ -3256,10 +3256,10 @@ xenDaemonAttachDevice(virDomainPtr domain, const char *xml)
         /* device doesn't exist, define it */
         ret = xend_op(domain->conn, domain->name, "op", "device_create",
                       "config", conf, NULL);
-    } 
+    }
     else {
         /* device exists, attempt to modify it */
-        ret = xend_op(domain->conn, domain->name, "op", "device_configure", 
+        ret = xend_op(domain->conn, domain->name, "op", "device_configure",
                       "config", conf, "dev", ref, NULL);
     }
     free(sexpr);
@@ -3270,7 +3270,7 @@ xenDaemonAttachDevice(virDomainPtr domain, const char *xml)
  * xenDaemonDetachDevice:
  * @domain: pointer to domain object
  * @xml: pointer to XML description of device
- * 
+ *
  * Destroy a virtual device attachment to backend.
  *
  * Returns 0 in case of success, -1 in case of failure.

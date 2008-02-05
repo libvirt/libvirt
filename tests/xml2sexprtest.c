@@ -256,7 +256,7 @@ main(int argc, char **argv)
         fprintf(stderr, "missing enviroment variable abs_top_srcdir\n");
 	exit(EXIT_FAILURE);
     }
-        
+
 
     if (argc > 1) {
 	fprintf(stderr, "Usage: %s\n", progname);

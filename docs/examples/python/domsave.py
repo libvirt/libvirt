@@ -36,5 +36,5 @@ for id in doms:
         print "done"
     else:
         print "error %d" % ret
-    
+
 #pdb.set_trace()

@@ -6,7 +6,7 @@ do
     ./conftest $f > conftest.$$
     outfile=`echo "$f" | sed s+\.conf$+\.out+`
     diff $outfile conftest.$$ > /dev/null
-    if [ $? != 0 ] 
+    if [ $? != 0 ]
     then
         if [ -n "$DEBUG_TESTS" ]; then
             diff -u $outfile conftest.$$

@@ -1,9 +1,9 @@
 # Swedish translation of libvirt.
 # Copyright (C) 2006 Free Software Foundation, Inc.
 # Magnus Larsson <fedoratrans@gmail.com>, 2006, 2007.
-# 
-# 
-# 
+#
+#
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"

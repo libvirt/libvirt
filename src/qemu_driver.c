@@ -298,7 +298,7 @@ qemudShutdown(void) {
             qemudRemoveInactiveVM(qemu_driver, vm);
         vm = next;
     }
-    
+
     /* free inactive VMs */
     vm = qemu_driver->vms;
     while (vm) {
@@ -318,7 +318,7 @@ qemudShutdown(void) {
             qemudShutdownNetworkDaemon(NULL, qemu_driver, network);
         network = next;
     }
-    
+
     /* free inactive networks */
     network = qemu_driver->networks;
     while (network) {
@@ -1406,7 +1406,7 @@ static virDrvOpenStatus qemudOpen(virConnectPtr conn,
     } else { /* root */
         if (STRNEQ (uri->path, "/system") &&
             STRNEQ (uri->path, "/session"))
-            goto decline; 
+            goto decline;
     }
 
     conn->privateData = qemu_driver;
@@ -1414,7 +1414,7 @@ static virDrvOpenStatus qemudOpen(virConnectPtr conn,
     return VIR_DRV_OPEN_SUCCESS;
 
  decline:
-    return VIR_DRV_OPEN_DECLINED;    
+    return VIR_DRV_OPEN_DECLINED;
 }
 
 static int qemudClose(virConnectPtr conn) {
@@ -2166,7 +2166,7 @@ static int qemudDomainRestore(virConnectPtr conn,
 
     if (header.version > QEMUD_SAVE_VERSION) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         "image version is not supported (%d > %d)", 
+                         "image version is not supported (%d > %d)",
                          header.version, QEMUD_SAVE_VERSION);
         close(fd);
         return -1;

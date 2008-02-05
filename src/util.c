@@ -50,7 +50,7 @@
 
 #define virLog(msg...) fprintf(stderr, msg)
 
-static void 
+static void
 ReportError(virConnectPtr conn,
                       virDomainPtr dom,
                       virNetworkPtr net,
@@ -124,11 +124,11 @@ _virExec(virConnectPtr conn,
             close(pipeout[1]);
             if(non_block)
                 if(virSetNonBlock(pipeout[0]) == -1)
-                    ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, 
+                    ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                             "Failed to set non-blocking file descriptor flag");
 
             if(virSetCloseExec(pipeout[0]) == -1)
-                ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, 
+                ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                         "Failed to set close-on-exec file descriptor flag");
             *outfd = pipeout[0];
         }
@@ -136,11 +136,11 @@ _virExec(virConnectPtr conn,
             close(pipeerr[1]);
             if(non_block)
                 if(virSetNonBlock(pipeerr[0]) == -1)
-                    ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, 
+                    ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                             "Failed to set non-blocking file descriptor flag");
 
             if(virSetCloseExec(pipeerr[0]) == -1)
-                ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, 
+                ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                         "Failed to set close-on-exec file descriptor flag");
             *errfd = pipeerr[0];
         }
@@ -280,7 +280,7 @@ virExecNonBlock(virConnectPtr conn,
 int saferead(int fd, void *buf, size_t count)
 {
 	size_t nread = 0;
-	while (count > 0) { 
+	while (count > 0) {
 		int r = read(fd, buf, count);
 		if (r < 0 && errno == EINTR)
 			continue;

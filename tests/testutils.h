@@ -17,7 +17,7 @@
 extern "C" {
 #endif
 
-  
+
     double virtTestCountAverage(double *items,
                                 int nitems);
 

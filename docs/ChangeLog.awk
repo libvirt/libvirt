@@ -7,7 +7,7 @@ function translate(str) {
     sub(/[0-9][0-9][0-9][0-9][0-9]+/, "<bug number='&'/>", str)
     return(str)
 }
-BEGIN         { 
+BEGIN         {
 		nb_entry = 0
                 in_entry = 0
                 in_item = 0
@@ -20,7 +20,7 @@ END           {
                 print "</log>"
 	      }
 /^[ \t]*$/    { next }
-/^[A-Za-z0-9]/ { 
+/^[A-Za-z0-9]/ {
                 match($0, "\(.*\) \([A-Z]+\) \([0-9][0-9][0-9][0-9]\) \(.*\) <\(.*\)>", loge)
                 if (in_item == 1)  printf("%s</item>\n", translate(item))
                 if (in_entry == 1) print "  </entry>"
@@ -41,7 +41,7 @@ END           {
                 match($0, "[ \t]*. *\(.*\)", loge)
 		item = loge[1]
               }
-/^[ \t]*[a-zA-Z0-9\#]/    { 
+/^[ \t]*[a-zA-Z0-9\#]/    {
                 if (in_item == 1) {
 		    match($0, "[ \t]*\(.*\)[ \t]*", loge)
 		    item = sprintf("%s %s",  item, loge[1])

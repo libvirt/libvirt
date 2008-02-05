@@ -6,7 +6,7 @@
     <ref name='domain'/>
   </start>
 
-  <!-- 
+  <!--
       We handle only document defining a domain
       Currently the virtualization types supported are:
         - xen, either paravirualized with a linux os or fully virtualized (hvm)
@@ -166,7 +166,7 @@
     </group>
   </define>
 
-  <!-- 
+  <!--
       The Identifiers can be:
       - an optional id attribute with a number on the domain element
       - a mandatory name
@@ -371,7 +371,7 @@
   </define>
 
   <!--
-      Disk may use a special driver for access. Currently this is 
+      Disk may use a special driver for access. Currently this is
       only defined for Xen for tap/aio and file, but will certainly be
       extended in the future, and libvirt doesn't look for specific values.
     -->

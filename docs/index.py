@@ -34,7 +34,7 @@
 #    Bye
 #
 # Then run the script in the doc subdir, it will create the symbols and
-# word tables and populate them with informations extracted from 
+# word tables and populate them with informations extracted from
 # the libvirt-api.xml API description, and make then accessible read-only
 # by nobody@loaclhost the user expected to be Apache's one
 #
@@ -187,7 +187,7 @@ def checkTables(db, verbose = 1):
     except:
         pass
     return 0
-    
+
 def openMySQL(db="libvir", passwd=None, verbose = 1):
     global DB
 
@@ -231,7 +231,7 @@ def updateWord(name, symbol, relevance):
 	    print "UPDATE words SET relevance = %d where name = '%s' and symbol = '%s'" % (relevance, name, symbol)
 	    print sys.exc_type, sys.exc_value
 	    return -1
-	     
+
     return ret
 
 def updateSymbol(name, module, type, desc):
@@ -272,9 +272,9 @@ def updateSymbol(name, module, type, desc):
 	    print """UPDATE symbols SET module='%s', type='%s', descr='%s' where name='%s'""" % (module, type, desc, name)
 	    print sys.exc_type, sys.exc_value
 	    return -1
-	     
+
     return ret
-        
+
 def addFunction(name, module, desc = ""):
     return updateSymbol(name, module, 'function', desc)
 
@@ -321,7 +321,7 @@ def addPage(resource, title):
 	    print """UPDATE pages SET title='%s' WHERE resource='%s'""" % (title, resource)
 	    print sys.exc_type, sys.exc_value
 	    return -1
-	     
+
     return ret
 
 def updateWordHTML(name, resource, desc, id, relevance):
@@ -361,7 +361,7 @@ def updateWordHTML(name, resource, desc, id, relevance):
 	    print """UPDATE wordsHTML SET section='%s', id='%s', relevance='%d' where name='%s' and resource='%s'""" % (desc, id, relevance, name, resource)
 	    print sys.exc_type, sys.exc_value
 	    return -1
-	     
+
     return ret
 
 def checkXMLMsgArchive(url):
@@ -383,9 +383,9 @@ def checkXMLMsgArchive(url):
 	    return -1
     except:
 	return -1
-	     
+
     return row[0]
-    
+
 def addXMLMsgArchive(url, title):
     global DB
 
@@ -414,7 +414,7 @@ def addXMLMsgArchive(url, title):
     except:
         print "addXMLMsgArchive failed command: %s" % (cmd)
 	return -1
-	     
+
     return((int)(row[0]))
 
 def updateWordArchive(name, id, relevance):
@@ -444,7 +444,7 @@ def updateWordArchive(name, id, relevance):
 	    print """UPDATE wordsArchive SET relevance='%d' where name='%s' and ID='%d'""" % (relevance, name, id)
 	    print sys.exc_type, sys.exc_value
 	    return -1
-	     
+
     return ret
 
 #########################################################################
@@ -501,7 +501,7 @@ def cleanupWordsString(str):
     str = string.replace(str, "\xc2", " ")
     str = string.replace(str, "\xa0", " ")
     return str
-    
+
 def cleanupDescrString(str):
     str = string.replace(str, "'", " ")
     str = string.replace(str, "\n", " ")
@@ -557,7 +557,7 @@ def addWord(word, module, symbol, relevance):
         wordsDict[word] = {}
     wordsDict[word][(module, symbol)] = relevance
     return relevance
-    
+
 def addString(str, module, symbol, relevance):
     if str == None or len(str) < 3:
         return -1
@@ -603,7 +603,7 @@ def addWordHTML(word, resource, id, section, relevance):
     d = wordsDictHTML[word];
     d[resource] = (relevance, id, section)
     return relevance
-    
+
 def addStringHTML(str, resource, id, section, relevance):
     if str == None or len(str) < 3:
         return -1
@@ -650,7 +650,7 @@ def addWordArchive(word, id, relevance):
     d = wordsDictArchive[word];
     d[id] = relevance
     return relevance
-    
+
 def addStringArchive(str, id, relevance):
     if str == None or len(str) < 3:
         return -1
@@ -692,7 +692,7 @@ def foundExport(file, symbol):
     for word in l:
 	addWord(word, file, symbol, 10)
     return 1
-     
+
 def analyzeAPIFile(top):
     count = 0
     name = top.prop("name")
@@ -711,7 +711,7 @@ def analyzeAPIFile(top):
 def analyzeAPIFiles(top):
     count = 0
     cur = top.children
-        
+
     while cur != None:
         if cur.type == 'text':
 	    cur = cur.next
@@ -897,7 +897,7 @@ def analyzeAPIFunction(top):
 def analyzeAPISymbols(top):
     count = 0
     cur = top.children
-        
+
     while cur != None:
         if cur.type == 'text':
 	    cur = cur.next
@@ -1129,7 +1129,7 @@ def scanXMLDateArchive(t = None, force = 0):
 	    pass
 
     return newmsg
-    
+
 
 #########################################################################
 #									#

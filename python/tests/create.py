@@ -129,7 +129,7 @@ while i < 30:
         okay = 0
 	t = -1
 	break;
-        
+
     if t == 0:
         break
 

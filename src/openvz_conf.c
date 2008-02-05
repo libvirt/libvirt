@@ -19,7 +19,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  *
- * Authors: 
+ * Authors:
  * Shuveb Hussain <shuveb@binarykarma.com>
  * Anoop Joe Cyriac <anoop@binarykarma.com>
  *
@@ -74,7 +74,7 @@ error (virConnectPtr conn, virErrorNumber code, const char *info)
                      errmsg, info);
 }
 
-struct openvz_vm 
+struct openvz_vm
 *openvzFindVMByID(const struct openvz_driver *driver, int id) {
     struct openvz_vm *vm = driver->vms;
 
@@ -87,7 +87,7 @@ struct openvz_vm
     return NULL;
 }
 
-struct openvz_vm 
+struct openvz_vm
 *openvzFindVMByUUID(const struct openvz_driver *driver,
                                    const unsigned char *uuid) {
     struct openvz_vm *vm = driver->vms;
@@ -101,7 +101,7 @@ struct openvz_vm
     return NULL;
 }
 
-struct openvz_vm 
+struct openvz_vm
 *openvzFindVMByName(const struct openvz_driver *driver,
                                    const char *name) {
     struct  openvz_vm *vm = driver->vms;
@@ -126,7 +126,7 @@ strtoI(const char *str)
 
     /* Check for various possible errors */
     if ((endptr == str)         /* "No digits were found" */
-        ||((*endptr != '\0') 
+        ||((*endptr != '\0')
             && (*endptr != ' ')) /*"Name contain characters other than integers" */ )
         return 0;
     return val;
@@ -172,7 +172,7 @@ openvzFreeVMDef(struct openvz_vm_def *def)
     }
 }
 
-/* Free all memory associated with a openvz_vm structure 
+/* Free all memory associated with a openvz_vm structure
  * @checkCallee == 0 then openvzFreeDriver() is callee else some other function
  */
 void
@@ -237,7 +237,7 @@ openvzAssignVMDef(virConnectPtr conn,
         }
         else
         {
-            openvzLog(OPENVZ_ERR, "Error already an active OPENVZ VM having id '%s'", 
+            openvzLog(OPENVZ_ERR, "Error already an active OPENVZ VM having id '%s'",
                     def->name);
             openvzFreeVMDef(def);
             return NULL; /* can't redefine an active domain */
@@ -247,7 +247,7 @@ openvzAssignVMDef(virConnectPtr conn,
     }
 
     if (!(vm = calloc(1, sizeof(*vm)))) {
-        openvzFreeVMDef(def);    
+        openvzFreeVMDef(def);
         error(conn, VIR_ERR_NO_MEMORY, "vm");
         return NULL;
     }
@@ -263,14 +263,14 @@ openvzAssignVMDef(virConnectPtr conn,
     return vm;
 }
 
-struct openvz_vm_def 
+struct openvz_vm_def
 *openvzParseVMDef(virConnectPtr conn,
                  const char *xmlStr, const char *displayName)
 {
     xmlDocPtr xml;
     struct openvz_vm_def *def = NULL;
 
-    xml = xmlReadDoc(BAD_CAST xmlStr, displayName ? displayName : "domain.xml", NULL, 
+    xml = xmlReadDoc(BAD_CAST xmlStr, displayName ? displayName : "domain.xml", NULL,
             XML_PARSE_NOENT | XML_PARSE_NONET | XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
     if (!xml) {
         error(conn, VIR_ERR_XML_ERROR, NULL);
@@ -287,7 +287,7 @@ struct openvz_vm_def
  * Parses a libvirt XML definition of a guest, and populates the
  * the openvz_vm struct with matching data about the guests config
  */
-static struct openvz_vm_def 
+static struct openvz_vm_def
 *openvzParseXML(virConnectPtr conn,
                         xmlDocPtr xml) {
     xmlNodePtr root = NULL;
@@ -337,10 +337,10 @@ static struct openvz_vm_def
         error(conn, VIR_ERR_INTERNAL_ERROR,"invalid domain name");
         goto bail_out;
     }
-    
+
     /* rejecting VPS ID <= OPENVZ_RSRV_VM_LIMIT for they are reserved */
     if (strtoI((const char *) obj->stringval) <= OPENVZ_RSRV_VM_LIMIT) {
-        error(conn, VIR_ERR_INTERNAL_ERROR, 
+        error(conn, VIR_ERR_INTERNAL_ERROR,
                 "VPS ID Error (must be an integer greater than 100");
         goto bail_out;
     }
@@ -365,7 +365,7 @@ static struct openvz_vm_def
 
     /* Extract filesystem info */
     obj = xmlXPathEval(BAD_CAST "string(/domain/container/filesystem/template[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) ||	(obj->stringval == NULL) 
+    if ((obj == NULL) || (obj->type != XPATH_STRING) ||	(obj->stringval == NULL)
             || (obj->stringval[0] == 0)) {
         error(conn, VIR_ERR_OS_TYPE, NULL);
         goto bail_out;
@@ -381,9 +381,9 @@ static struct openvz_vm_def
     /*          Extract network                 */
         /*              Extract ipaddress           */
     obj = xmlXPathEval(BAD_CAST"string(/domain/container/network/ipaddress[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) || (obj->stringval == NULL) 
+    if ((obj == NULL) || (obj->type != XPATH_STRING) || (obj->stringval == NULL)
             || (obj->stringval[0] == 0)) {
-        openvzLog(OPENVZ_WARN, "No IP address in the given xml config file '%s'", 
+        openvzLog(OPENVZ_WARN, "No IP address in the given xml config file '%s'",
                 xml->name);
     }
     if (xmlStrlen(obj->stringval) >= (OPENVZ_IP_MAX)) {
@@ -405,9 +405,9 @@ static struct openvz_vm_def
     obj = xmlXPathEval(BAD_CAST "string(/domain/container/network/netmask[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING)
         || (obj->stringval == NULL) || (obj->stringval[0] == 0))
-        openvzLog(OPENVZ_WARN, "No Netmask address in the given xml config file '%s'", 
+        openvzLog(OPENVZ_WARN, "No Netmask address in the given xml config file '%s'",
                 xml->name);
-    
+
     if (strlen((const char *) obj->stringval) >= (OPENVZ_IP_MAX)) {
         char errorMessage[OPENVZ_MAX_ERROR_LEN];
 
@@ -420,10 +420,10 @@ static struct openvz_vm_def
 
         /*              Extract hostname            */
     obj = xmlXPathEval(BAD_CAST "string(/domain/container/network/hostname[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) || (obj->stringval == NULL) 
+    if ((obj == NULL) || (obj->type != XPATH_STRING) || (obj->stringval == NULL)
             || (obj->stringval[0] == 0))
         openvzLog(OPENVZ_WARN, "No hostname in the given xml config file '%s'", xml->name);
-    
+
     if (strlen((const char *) obj->stringval) >= (OPENVZ_HOSTNAME_MAX - 1)) {
         char errorMessage[OPENVZ_MAX_ERROR_LEN];
 
@@ -436,11 +436,11 @@ static struct openvz_vm_def
 
         /*              Extract gateway             */
     obj = xmlXPathEval(BAD_CAST"string(/domain/container/network/gateway[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) || (obj->stringval == NULL) 
+    if ((obj == NULL) || (obj->type != XPATH_STRING) || (obj->stringval == NULL)
             || (obj->stringval[0] == 0))
-        openvzLog(OPENVZ_WARN, "No Gateway address in the given xml config file '%s'", 
+        openvzLog(OPENVZ_WARN, "No Gateway address in the given xml config file '%s'",
                 xml->name);
-    
+
     if (strlen((const char *) obj->stringval) >= (OPENVZ_IP_MAX)) {
         char errorMessage[OPENVZ_MAX_ERROR_LEN];
 
@@ -453,11 +453,11 @@ static struct openvz_vm_def
 
         /*              Extract nameserver          */
     obj = xmlXPathEval(BAD_CAST "string(/domain/container/network/nameserver[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) || (obj->stringval == NULL) 
+    if ((obj == NULL) || (obj->type != XPATH_STRING) || (obj->stringval == NULL)
             || (obj->stringval[0] == 0))
-        openvzLog(OPENVZ_WARN, "No Nameserver address inthe given xml config file '%s'", 
+        openvzLog(OPENVZ_WARN, "No Nameserver address inthe given xml config file '%s'",
                 xml->name);
-    
+
     if (strlen((const char *) obj->stringval) >= (OPENVZ_IP_MAX)) {
         char errorMessage[OPENVZ_MAX_ERROR_LEN];
 
@@ -475,7 +475,7 @@ static struct openvz_vm_def
 
     /*          Extract profile         */
     obj = xmlXPathEval(BAD_CAST "string(/domain/container/profile[1])", ctxt);
-    if ((obj == NULL) || (obj->type != XPATH_STRING) || (obj->stringval == NULL) 
+    if ((obj == NULL) || (obj->type != XPATH_STRING) || (obj->stringval == NULL)
             || (obj->stringval[0] == 0)) {
         error(conn, VIR_ERR_INTERNAL_ERROR, NULL);
         goto bail_out;
@@ -518,19 +518,19 @@ openvzGetVPSInfo(virConnectPtr conn) {
     driver = conn->privateData;
     driver->num_active = 0;
     driver->num_inactive = 0;
-    
+
     if((fp = popen(VZLIST " -a -ovpsid,status -H 2>/dev/null", "r")) == NULL) {
         error(conn, VIR_ERR_INTERNAL_ERROR, "popen failed");
         return NULL;
     }
-    pnext = &vm; 
-    while(!feof(fp)) { 
+    pnext = &vm;
+    while(!feof(fp)) {
         *pnext = calloc(1, sizeof(**pnext));
         if(!*pnext) {
             error(conn, VIR_ERR_INTERNAL_ERROR, "calloc failed");
             goto error;
         }
-        
+
         if(!vm)
             vm = *pnext;
 
@@ -540,7 +540,7 @@ openvzGetVPSInfo(virConnectPtr conn) {
             free(*pnext);
 	    goto error;
 	}
-        if(strcmp(status, "stopped")) { 
+        if(strcmp(status, "stopped")) {
             (*pnext)->status = VIR_DOMAIN_RUNNING;
             driver->num_active ++;
             (*pnext)->vpsid = veid;
@@ -552,7 +552,7 @@ openvzGetVPSInfo(virConnectPtr conn) {
 	     * inactive domains don't have their ID set in libvirt,
 	     * thought this doesn't make sense for OpenVZ
 	     */
-            (*pnext)->vpsid = -1; 
+            (*pnext)->vpsid = -1;
         }
 
         vmdef = calloc(1, sizeof(*vmdef));
@@ -561,7 +561,7 @@ openvzGetVPSInfo(virConnectPtr conn) {
             free(*pnext);
 	    goto error;
         }
-        
+
         snprintf(vmdef->name, OPENVZ_NAME_MAX,  "%i", veid);
         openvzGetVPSUUID(veid, uuidstr);
         ret = virUUIDParse(uuidstr, vmdef->uuid);
@@ -590,7 +590,7 @@ error:
     return NULL;
 }
 
-static char 
+static char
 *openvzLocateConfDir(void)
 {
     const char *conf_dir_list[] = {"/etc/vz/conf", "/usr/local/etc/conf", NULL};
@@ -606,7 +606,7 @@ static char
 }
 
 /* Richard Steven's classic readline() function */
-int 
+int
 openvz_readline(int fd, char *ptr, int maxlen)
 {
     int n, rc;
@@ -631,7 +631,7 @@ openvz_readline(int fd, char *ptr, int maxlen)
     return n;
 }
 
-static int 
+static int
 openvzGetVPSUUID(int vpsid, char *uuidstr)
 {
     char conf_file[PATH_MAX];
@@ -672,7 +672,7 @@ openvzGetVPSUUID(int vpsid, char *uuidstr)
  * assign if not present.
  */
 
-static int 
+static int
 openvzSetUUID(int vpsid)
 {
     char conf_file[PATH_MAX];

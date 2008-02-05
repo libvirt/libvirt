@@ -201,7 +201,7 @@ virConfAddEntry(virConfPtr conf, char *name, virConfValuePtr value, char *comm)
         return(NULL);
     if ((comm == NULL) && (name == NULL))
         return(NULL);
-    
+
     ret = calloc(1, sizeof(*ret));
     if (ret == NULL) {
         virConfError(NULL, VIR_ERR_NO_MEMORY, _("allocating configuration"), 0);
@@ -790,7 +790,7 @@ __virConfFree(virConfPtr conf)
  *
  * Lookup the value associated to this entry in the configuration file
  *
- * Returns a pointer to the value or NULL if the lookup failed, the data 
+ * Returns a pointer to the value or NULL if the lookup failed, the data
  *         associated will be freed when virConfFree() is called
  */
 virConfValuePtr
@@ -896,7 +896,7 @@ __virConfWriteFile(const char *filename, virConfPtr conf)
         virConfSaveEntry(buf, cur);
 	cur = cur->next;
     }
-    
+
     fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR );
     if (fd < 0) {
         virConfError(NULL, VIR_ERR_WRITE_FAILED, _("failed to open file"), 0);
@@ -950,7 +950,7 @@ __virConfWriteMem(char *memory, int *len, virConfPtr conf)
         virConfSaveEntry(buf, cur);
         cur = cur->next;
     }
-    
+
     if ((int) buf->use >= *len) {
         *len = buf->use;
         ret = -1;

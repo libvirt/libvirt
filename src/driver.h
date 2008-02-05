@@ -1,5 +1,5 @@
 /*
- * driver.h: description of the set of interfaces provided by a 
+ * driver.h: description of the set of interfaces provided by a
  *           entry point to the virtualization engine
  */
 
@@ -197,7 +197,7 @@ typedef char *
 	(*virDrvDomainGetSchedulerType)	(virDomainPtr domain,
 					 int *nparams);
 
-typedef int 
+typedef int
 	(*virDrvDomainGetSchedulerParameters)
 					(virDomainPtr domain,
 					 virSchedParameterPtr params,

@@ -21,7 +21,7 @@
 
 #include <stdint.h>
 
-#include <xen/dom0_ops.h> 
+#include <xen/dom0_ops.h>
 #include <xen/version.h>
 #include <xen/xen.h>
 
@@ -256,7 +256,7 @@ virDomainGetVM(virDomainPtr domain)
  * @vm: the xenstore vm path
  * @name: the value's path
  *
- * Internal API extracting one information the device used 
+ * Internal API extracting one information the device used
  * by the domain from xensttore
  *
  * Returns the new string or NULL in case of error
@@ -325,7 +325,7 @@ xenStoreOpen(virConnectPtr conn,
          * remote) mechanism.
 	 */
         if (getuid() == 0) {
-	    virXenStoreError(NULL, VIR_ERR_NO_XEN, 
+	    virXenStoreError(NULL, VIR_ERR_NO_XEN,
 				 _("failed to connect to Xen Store"));
 	}
         return (-1);
@@ -662,7 +662,7 @@ xenStoreDomainShutdown(virDomainPtr domain)
     if (domain->id == -1 || domain->id == 0)
         return(-1);
     /*
-     * this is very hackish, the domU kernel probes for a special 
+     * this is very hackish, the domU kernel probes for a special
      * node in the xenstore and launch the shutdown command if found.
      */
     return(virDomainDoStoreWrite(domain, "control/shutdown", "halt"));
@@ -690,7 +690,7 @@ xenStoreDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
     if (domain->id == -1 || domain->id == 0)
         return(-1);
     /*
-     * this is very hackish, the domU kernel probes for a special 
+     * this is very hackish, the domU kernel probes for a special
      * node in the xenstore and launch the shutdown command if found.
      */
     return(virDomainDoStoreWrite(domain, "control/shutdown", "reboot"));
@@ -731,7 +731,7 @@ xenStoreDomainGetOSType(virDomainPtr domain) {
  * @domid: id of the domain
  *
  * Return the port number on which the domain is listening for VNC
- * connections. 
+ * connections.
  *
  * Returns the port number, -1 in case of error
  */

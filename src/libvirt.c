@@ -204,7 +204,7 @@ virInitialize(void)
 #ifdef WITH_TEST
     if (testRegister() == -1) return -1;
 #endif
-#ifdef WITH_QEMU 
+#ifdef WITH_QEMU
     if (qemudRegister() == -1) return -1;
 #endif
 #ifdef WITH_XEN
@@ -468,7 +468,7 @@ int __virStateActive(void) {
  * Provides two information back, @libVer is the version of the library
  * while @typeVer will be the version of the hypervisor type @type against
  * which the library was compiled. If @type is NULL, "Xen" is assumed, if
- * @type is unknown or not availble, an error code will be returned and 
+ * @type is unknown or not availble, an error code will be returned and
  * @typeVer will be 0.
  *
  * Returns -1 in case of failure, 0 otherwise, and values for @libVer and
@@ -597,7 +597,7 @@ do_open (const char *name,
                (res == VIR_DRV_OPEN_ERROR ? "ERROR" : "unknown status")));
         if (res == VIR_DRV_OPEN_ERROR) {
             if (STREQ(virNetworkDriverTab[i]->name, "remote")) {
-                virLibConnWarning (NULL, VIR_WAR_NO_NETWORK, 
+                virLibConnWarning (NULL, VIR_WAR_NO_NETWORK,
                                    "Is the daemon running ?");
             }
             break;
@@ -625,7 +625,7 @@ failed:
  * virConnectOpen:
  * @name: URI of the hypervisor
  *
- * This function should be called first to get a connection to the 
+ * This function should be called first to get a connection to the
  * Hypervisor and xen store
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
@@ -643,7 +643,7 @@ virConnectOpen (const char *name)
  * virConnectOpenReadOnly:
  * @name: URI of the hypervisor
  *
- * This function should be called first to get a restricted connection to the 
+ * This function should be called first to get a restricted connection to the
  * libbrary functionalities. The set of APIs usable are then restricted
  * on the available methods to control the domains.
  *
@@ -664,7 +664,7 @@ virConnectOpenReadOnly(const char *name)
  * @auth: Authenticate callback parameters
  * @flags: Open flags
  *
- * This function should be called first to get a connection to the 
+ * This function should be called first to get a connection to the
  * Hypervisor. If neccessary, authentication will be performed fetching
  * credentials via the callback
  *
@@ -757,7 +757,7 @@ virConnectGetType(virConnectPtr conn)
  * @conn: pointer to the hypervisor connection
  * @hvVer: return value for the version of the running hypervisor (OUT)
  *
- * Get the version level of the Hypervisor running. This may work only with 
+ * Get the version level of the Hypervisor running. This may work only with
  * hypervisor call, i.e. with priviledged access to the hypervisor, not
  * with a Read-Only connection.
  *
@@ -978,7 +978,7 @@ virDomainGetConnect (virDomainPtr dom)
  * Launch a new Linux guest domain, based on an XML description similar
  * to the one returned by virDomainGetXMLDesc()
  * This function may requires priviledged access to the hypervisor.
- * 
+ *
  * Returns a new domain object or NULL in case of failure
  */
 virDomainPtr
@@ -1096,10 +1096,10 @@ virDomainLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
     if (uuidstr == NULL) {
         virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (NULL);
-	
+
     }
-    /* XXX: sexpr_uuid() also supports 'xxxx-xxxx-xxxx-xxxx' format. 
-     *      We needn't it here. Right? 
+    /* XXX: sexpr_uuid() also supports 'xxxx-xxxx-xxxx-xxxx' format.
+     *      We needn't it here. Right?
      */
     ret = sscanf(uuidstr,
                  "%02x%02x%02x%02x-"
@@ -1111,14 +1111,14 @@ virDomainLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
                  raw + 4, raw + 5, raw + 6, raw + 7,
                  raw + 8, raw + 9, raw + 10, raw + 11,
                  raw + 12, raw + 13, raw + 14, raw + 15);
-    
+
     if (ret!=VIR_UUID_BUFLEN) {
 	virLibConnError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
 	return (NULL);
     }
     for (i = 0; i < VIR_UUID_BUFLEN; i++)
         uuid[i] = raw[i] & 0xFF;
-    
+
     return virDomainLookupByUUID(conn, &uuid[0]);
 }
 
@@ -1218,7 +1218,7 @@ virDomainFree(virDomainPtr domain)
  * @domain: a domain object
  *
  * Suspends an active domain, the process is frozen without further access
- * to CPU resources and I/O but the memory used by the domain at the 
+ * to CPU resources and I/O but the memory used by the domain at the
  * hypervisor level will stay allocated. Use virDomainResume() to reactivate
  * the domain.
  * This function may requires priviledged access.
@@ -1346,7 +1346,7 @@ virDomainSave(virDomainPtr domain, const char *to)
 /**
  * virDomainRestore:
  * @conn: pointer to the hypervisor connection
- * @from: path to the 
+ * @from: path to the
  *
  * This method will restore a domain saved to disk by virDomainSave().
  *
@@ -1586,7 +1586,7 @@ virDomainGetUUID(virDomainPtr domain, unsigned char *uuid)
  * @domain: a domain object
  * @buf: pointer to a VIR_UUID_STRING_BUFLEN bytes array
  *
- * Get the UUID for a domain as string. For more information about 
+ * Get the UUID for a domain as string. For more information about
  * UUID see RFC4122.
  *
  * Returns -1 in case of error, 0 in case of success
@@ -1605,7 +1605,7 @@ virDomainGetUUIDString(virDomainPtr domain, char *buf)
         virLibDomainError(domain, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
     }
-    
+
     if (virDomainGetUUID(domain, &uuid[0]))
         return (-1);
 
@@ -1665,7 +1665,7 @@ virDomainGetOSType(virDomainPtr domain)
 /**
  * virDomainGetMaxMemory:
  * @domain: a domain object or NULL
- * 
+ *
  * Retrieve the maximum amount of physical memory allocated to a
  * domain. If domain is NULL, then this get the amount of memory reserved
  * to Domain0 i.e. the domain where the application runs.
@@ -1696,7 +1696,7 @@ virDomainGetMaxMemory(virDomainPtr domain)
  * virDomainSetMaxMemory:
  * @domain: a domain object or NULL
  * @memory: the memory size in kilobytes
- * 
+ *
  * Dynamically change the maximum amount of physical memory allocated to a
  * domain. If domain is NULL, then this change the amount of memory reserved
  * to Domain0 i.e. the domain where the application runs.
@@ -1739,7 +1739,7 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
  * virDomainSetMemory:
  * @domain: a domain object or NULL
  * @memory: the memory size in kilobytes
- * 
+ *
  * Dynamically change the target amount of physical memory allocated to a
  * domain. If domain is NULL, then this change the amount of memory reserved
  * to Domain0 i.e. the domain where the application runs.
@@ -1783,7 +1783,7 @@ virDomainSetMemory(virDomainPtr domain, unsigned long memory)
  * virDomainGetInfo:
  * @domain: a domain object
  * @info: pointer to a virDomainInfo structure allocated by the user
- * 
+ *
  * Extract information about a domain. Note that if the connection
  * used to get the domain is limited only a partial set of the information
  * can be extracted.
@@ -2069,7 +2069,7 @@ __virDomainMigrateFinish (virConnectPtr dconn,
  * virNodeGetInfo:
  * @conn: pointer to the hypervisor connection
  * @info: pointer to a virNodeInfo structure allocated by the user
- * 
+ *
  * Extract hardware information about the node.
  *
  * Returns 0 in case of success and -1 in case of failure.
@@ -2125,7 +2125,7 @@ virConnectGetCapabilities (virConnectPtr conn)
 /**
  * virNodeGetFreeMemory:
  * @conn: pointer to the hypervisor connection
- * 
+ *
  * provides the free memory availble on the Node
  *
  * Returns the available free memory in kilobytes or 0 in case of error
@@ -2226,7 +2226,7 @@ virDomainGetSchedulerParameters(virDomainPtr domain,
  * Returns -1 in case of error, 0 in case of success.
  */
 int
-virDomainSetSchedulerParameters(virDomainPtr domain, 
+virDomainSetSchedulerParameters(virDomainPtr domain,
 				virSchedParameterPtr params, int nparams)
 {
     virConnectPtr conn;
@@ -2455,7 +2455,7 @@ virConnectNumOfDefinedDomains(virConnectPtr conn)
  * @maxnames: size of the array
  *
  * list the defined domains, stores the pointers to the names in @names
- * 
+ *
  * Returns the number of names provided in the array or -1 in case of error
  */
 int
@@ -2639,7 +2639,7 @@ virDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
  *	underlying virtualization system (Xen...).
  *	If maplen < size, missing bytes are set to zero.
  *	If maplen > size, failure code is returned.
- * 
+ *
  * Dynamically change the real CPUs which can be allocated to a virtual CPU.
  * This function requires priviledged access to the hypervisor.
  *
@@ -2694,7 +2694,7 @@ virDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
  *      virDomainPinVcpu() API.
  * @maplen: number of bytes in one cpumap, from 1 up to size of CPU map in
  *	underlying virtualization system (Xen...).
- * 
+ *
  * Extract information about virtual CPUs of domain, store it in info array
  * and also in cpumaps if this pointer is'nt NULL.
  *
@@ -2737,7 +2737,7 @@ virDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
 /**
  * virDomainGetMaxVcpus:
  * @domain: pointer to domain object
- * 
+ *
  * Provides the maximum number of virtual CPUs supported for
  * the guest VM. If the guest is inactive, this is basically
  * the same as virConnectGetMaxVcpus. If the guest is running
@@ -2771,7 +2771,7 @@ virDomainGetMaxVcpus(virDomainPtr domain)
  * virDomainAttachDevice:
  * @domain: pointer to domain object
  * @xml: pointer to XML description of one device
- * 
+ *
  * Create a virtual device attachment to backend.
  *
  * Returns 0 in case of success, -1 in case of failure.
@@ -2803,7 +2803,7 @@ virDomainAttachDevice(virDomainPtr domain, const char *xml)
  * virDomainDetachDevice:
  * @domain: pointer to domain object
  * @xml: pointer to XML description of one device
- * 
+ *
  * Destroy a virtual device attachment to backend.
  *
  * Returns 0 in case of success, -1 in case of failure.

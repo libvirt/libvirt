@@ -69,7 +69,7 @@ uninstall-local:
 CLEANFILES= $(GENERATED) libvirt.py
 
 else
-all: 
+all:
 endif
 
 dummy:
