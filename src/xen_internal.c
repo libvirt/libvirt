@@ -1,7 +1,7 @@
 /*
  * xen_internal.c: direct access to Xen hypervisor level
  *
- * Copyright (C) 2005, 2006, 2007 Red Hat, Inc.
+ * Copyright (C) 2005, 2006, 2007, 2008 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -2330,11 +2330,11 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn,
         if (r == -1) goto vir_buffer_failed;
     }
     if (host_pae) {
-        r = virBufferAdd (xml, "\
-        <pae/>\n", -1);
+        r = virBufferAddLit (xml, "\
+        <pae/>\n");
         if (r == -1) goto vir_buffer_failed;
     }
-    r = virBufferAdd (xml,
+    r = virBufferAddLit (xml,
                       "\
       </features>\n\
     </cpu>\n\
@@ -2344,7 +2344,7 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn,
         <uri_transport>xenmigr</uri_transport>\n\
       </uri_transports>\n\
     </migration_features>\n\
-  </host>\n", -1);
+  </host>\n");
     if (r == -1) goto vir_buffer_failed;
 
     if (sys_interface_version >= 4) {
@@ -2376,48 +2376,48 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn,
                                    guest_archs[i].bits == 64 ? "64" : "");
             if (r == -1) goto vir_buffer_failed;
         }
-        r = virBufferAdd (xml,
+        r = virBufferAddLit (xml,
                           "\
     </arch>\n\
-    <features>\n", -1);
+    <features>\n");
         if (r == -1) goto vir_buffer_failed;
         if (guest_archs[i].pae) {
-            r = virBufferAdd (xml,
+            r = virBufferAddLit (xml,
                               "\
-      <pae/>\n", -1);
+      <pae/>\n");
             if (r == -1) goto vir_buffer_failed;
         }
         if (guest_archs[i].nonpae) {
-            r = virBufferAdd (xml, "      <nonpae/>\n", -1);
+            r = virBufferAddLit (xml, "      <nonpae/>\n");
             if (r == -1) goto vir_buffer_failed;
         }
         if (guest_archs[i].ia64_be) {
-            r = virBufferAdd (xml, "      <ia64_be/>\n", -1);
+            r = virBufferAddLit (xml, "      <ia64_be/>\n");
             if (r == -1) goto vir_buffer_failed;
         }
         if (guest_archs[i].hvm) {
-            r = virBufferAdd (xml, "      <acpi default='on' toggle='yes'/>\n",
-	                      -1);
+            r = virBufferAddLit (xml,
+                                 "      <acpi default='on' toggle='yes'/>\n");
             if (r == -1) goto vir_buffer_failed;
             // In Xen 3.1.0, APIC is always on and can't be toggled
             if (hv_major >= 3 && hv_minor > 0) {
-                r = virBufferAdd (xml,
-		              "      <apic default='off' toggle='no'/>\n", -1);
+                r = virBufferAddLit (xml,
+		              "      <apic default='off' toggle='no'/>\n");
             } else {
-                r = virBufferAdd (xml,
-		              "      <apic default='on' toggle='yes'/>\n", -1);
+                r = virBufferAddLit (xml,
+		              "      <apic default='on' toggle='yes'/>\n");
             }
             if (r == -1) goto vir_buffer_failed;
         }
-        r = virBufferAdd (xml, "\
+        r = virBufferAddLit (xml, "\
     </features>\n\
-  </guest>\n", -1);
+  </guest>\n");
         if (r == -1) goto vir_buffer_failed;
     }
 
-    r = virBufferAdd (xml,
+    r = virBufferAddLit (xml,
                       "\
-</capabilities>\n", -1);
+</capabilities>\n");
     if (r == -1) goto vir_buffer_failed;
     xml_str = strdup (xml->content);
     if (!xml_str) goto vir_buffer_failed;

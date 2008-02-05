@@ -264,17 +264,17 @@ virConfSaveValue(virBufferPtr buf, virConfValuePtr val)
 	    virConfValuePtr cur;
 
 	    cur = val->list;
-	    virBufferAdd(buf, "[ ", 2);
+	    virBufferAddLit(buf, "[ ");
 	    if (cur != NULL) {
 	        virConfSaveValue(buf, cur);
 		cur = cur->next;
 		while (cur != NULL) {
-		    virBufferAdd(buf, ", ", 2);
+		    virBufferAddLit(buf, ", ");
 		    virConfSaveValue(buf, cur);
 		    cur = cur->next;
 		}
 	    }
-	    virBufferAdd(buf, " ]", 2);
+	    virBufferAddLit(buf, " ]");
 	    break;
 	}
 	default:
@@ -297,17 +297,17 @@ virConfSaveEntry(virBufferPtr buf, virConfEntryPtr cur)
 {
     if (cur->name != NULL) {
         virBufferAdd(buf, cur->name, -1);
-	virBufferAdd(buf, " = ", 3);
+	virBufferAddLit(buf, " = ");
 	virConfSaveValue(buf, cur->value);
 	if (cur->comment != NULL) {
-	    virBufferAdd(buf, " #", 2);
+	    virBufferAddLit(buf, " #");
 	    virBufferAdd(buf, cur->comment, -1);
 	}
     } else if (cur->comment != NULL) {
-	virBufferAdd(buf, "#", 1);
+	virBufferAddLit(buf, "#");
 	virBufferAdd(buf, cur->comment, -1);
     }
-    virBufferAdd(buf, "\n", 1);
+    virBufferAddLit(buf, "\n");
     return(0);
 }
 

@@ -1,3 +1,25 @@
+Tue Feb  3 15:21:45 CET 2008  Jim Meyering  <meyering@redhat.com>
+
+	Eliminate all uses of virBufferAdd with string literals.
+	* Makefile.maint (sc_prohibit_virBufferAdd_with_string_literal):
+	New rule.
+	* src/buf.h (virBufferAddLit): Define.
+	* src/conf.c (virConfSaveValue): Use virBufferAddLit, in place
+	of virBufferAdd everywhere possible.
+	(virConfSaveEntry): Likewise.
+	* src/qemu_conf.c (qemudGenerateXML, qemudGenerateNetworkXML): Likewise.
+	* src/qemu_driver.c (qemudGetFeatures, qemudGetCapabilities): Likewise.
+	* src/test.c (testDomainDumpXML, testNetworkDumpXML): Likewise.
+	* src/xen_internal.c (xenHypervisorMakeCapabilitiesXML): Likewise.
+	* src/xend_internal.c (xend_parse_sexp_desc_os): Likewise.
+	(xend_parse_sexp_desc, sexpr_to_xend_topology_xml): Likewise.
+	* src/xm_internal.c (xenXMDomainFormatXML, xenXMDomainPinVcpu): Likewise.
+	* src/xml.c (virSaveCpuSet, virParseXenCpuTopology): Likewise.
+	(virDomainParseXMLGraphicsDescImage): Likewise.
+	(virDomainParseXMLGraphicsDescVFB, virDomainParseXMLOSDescHVM): Likewise.
+	(virDomainParseXMLOSDescPV, virDomainParseXMLDiskDesc): Likewise.
+	(virDomainParseXMLIfDesc, virDomainParseXMLDesc): Likewise.
+
 Mon Feb  2 15:56:45 CET 2008  Jim Meyering  <meyering@redhat.com>
 
 	Enable more checks for unmarked messages; fix violators.

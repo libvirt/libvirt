@@ -2714,7 +2714,7 @@ char *qemudGenerateXML(virConnectPtr conn,
     if (virBufferVSprintf(buf, "  <vcpu>%d</vcpu>\n", def->vcpus) < 0)
         goto no_memory;
 
-    if (virBufferAdd(buf, "  <os>\n", -1) < 0)
+    if (virBufferAddLit(buf, "  <os>\n") < 0)
         goto no_memory;
 
     if (def->virtType == QEMUD_VIRT_QEMU) {
@@ -2756,33 +2756,33 @@ char *qemudGenerateXML(virConnectPtr conn,
             goto no_memory;
     }
 
-    if (virBufferAdd(buf, "  </os>\n", -1) < 0)
+    if (virBufferAddLit(buf, "  </os>\n") < 0)
         goto no_memory;
 
     if (def->features & QEMUD_FEATURE_ACPI) {
-        if (virBufferAdd(buf, "  <features>\n", -1) < 0)
+        if (virBufferAddLit(buf, "  <features>\n") < 0)
             goto no_memory;
-        if (virBufferAdd(buf, "    <acpi/>\n", -1) < 0)
+        if (virBufferAddLit(buf, "    <acpi/>\n") < 0)
             goto no_memory;
-        if (virBufferAdd(buf, "  </features>\n", -1) < 0)
+        if (virBufferAddLit(buf, "  </features>\n") < 0)
             goto no_memory;
     }
 
     virBufferVSprintf(buf, "  <clock offset='%s'/>\n", def->localtime ? "localtime" : "utc");
 
-    if (virBufferAdd(buf, "  <on_poweroff>destroy</on_poweroff>\n", -1) < 0)
+    if (virBufferAddLit(buf, "  <on_poweroff>destroy</on_poweroff>\n") < 0)
         goto no_memory;
     if (def->noReboot) {
-        if (virBufferAdd(buf, "  <on_reboot>destroy</on_reboot>\n", -1) < 0)
+        if (virBufferAddLit(buf, "  <on_reboot>destroy</on_reboot>\n") < 0)
             goto no_memory;
     } else {
-        if (virBufferAdd(buf, "  <on_reboot>restart</on_reboot>\n", -1) < 0)
+        if (virBufferAddLit(buf, "  <on_reboot>restart</on_reboot>\n") < 0)
             goto no_memory;
     }
-    if (virBufferAdd(buf, "  <on_crash>destroy</on_crash>\n", -1) < 0)
+    if (virBufferAddLit(buf, "  <on_crash>destroy</on_crash>\n") < 0)
         goto no_memory;
 
-    if (virBufferAdd(buf, "  <devices>\n", -1) < 0)
+    if (virBufferAddLit(buf, "  <devices>\n") < 0)
         goto no_memory;
 
     if (virBufferVSprintf(buf, "    <emulator>%s</emulator>\n", def->os.binary) < 0)
@@ -2814,7 +2814,7 @@ char *qemudGenerateXML(virConnectPtr conn,
             goto no_memory;
 
         if (disk->readonly)
-            if (virBufferAdd(buf, "      <readonly/>\n", -1) < 0)
+            if (virBufferAddLit(buf, "      <readonly/>\n") < 0)
                 goto no_memory;
 
         if (virBufferVSprintf(buf, "    </disk>\n") < 0)
@@ -2904,12 +2904,12 @@ char *qemudGenerateXML(virConnectPtr conn,
     }
     /* If graphics is enable, add implicit mouse */
     if (def->graphicsType != QEMUD_GRAPHICS_NONE)
-        if (virBufferAdd(buf, "    <input type='mouse' bus='ps2'/>\n", -1) < 0)
+        if (virBufferAddLit(buf, "    <input type='mouse' bus='ps2'/>\n") < 0)
             goto no_memory;
 
     switch (def->graphicsType) {
     case QEMUD_GRAPHICS_VNC:
-        if (virBufferAdd(buf, "    <graphics type='vnc'", -1) < 0)
+        if (virBufferAddLit(buf, "    <graphics type='vnc'") < 0)
             goto no_memory;
 
         if (def->vncPort &&
@@ -2927,12 +2927,12 @@ char *qemudGenerateXML(virConnectPtr conn,
                               def->keymap) < 0)
             goto no_memory;
 
-        if (virBufferAdd(buf, "/>\n", -1) < 0)
+        if (virBufferAddLit(buf, "/>\n") < 0)
             goto no_memory;
         break;
 
     case QEMUD_GRAPHICS_SDL:
-        if (virBufferAdd(buf, "    <graphics type='sdl'/>\n", -1) < 0)
+        if (virBufferAddLit(buf, "    <graphics type='sdl'/>\n") < 0)
             goto no_memory;
         break;
 
@@ -2944,11 +2944,11 @@ char *qemudGenerateXML(virConnectPtr conn,
     if (def->graphicsType == QEMUD_GRAPHICS_VNC) {
     }
 
-    if (virBufferAdd(buf, "  </devices>\n", -1) < 0)
+    if (virBufferAddLit(buf, "  </devices>\n") < 0)
         goto no_memory;
 
 
-    if (virBufferAdd(buf, "</domain>\n", -1) < 0)
+    if (virBufferAddLit(buf, "</domain>\n") < 0)
         goto no_memory;
 
     return virBufferContentAndFree (buf);
@@ -2989,11 +2989,11 @@ char *qemudGenerateNetworkXML(virConnectPtr conn,
             virBufferVSprintf(buf, "  <forward dev='%s'/>\n",
                               def->forwardDev);
         } else {
-            virBufferAdd(buf, "  <forward/>\n", -1);
+            virBufferAddLit(buf, "  <forward/>\n");
         }
     }
 
-    virBufferAdd(buf, "  <bridge", -1);
+    virBufferAddLit(buf, "  <bridge");
     if (qemudIsActiveNetwork(network)) {
         if (virBufferVSprintf(buf, " name='%s'", network->bridge) < 0)
             goto no_memory;
@@ -3007,7 +3007,7 @@ char *qemudGenerateNetworkXML(virConnectPtr conn,
         goto no_memory;
 
     if (def->ipAddress[0] || def->netmask[0]) {
-        if (virBufferAdd(buf, "  <ip", -1) < 0)
+        if (virBufferAddLit(buf, "  <ip") < 0)
             goto no_memory;
 
         if (def->ipAddress[0] &&
@@ -3018,12 +3018,12 @@ char *qemudGenerateNetworkXML(virConnectPtr conn,
             virBufferVSprintf(buf, " netmask='%s'", def->netmask) < 0)
             goto no_memory;
 
-        if (virBufferAdd(buf, ">\n", -1) < 0)
+        if (virBufferAddLit(buf, ">\n") < 0)
             goto no_memory;
 
         if (def->ranges) {
             struct qemud_dhcp_range_def *range = def->ranges;
-            if (virBufferAdd(buf, "    <dhcp>\n", -1) < 0)
+            if (virBufferAddLit(buf, "    <dhcp>\n") < 0)
                 goto no_memory;
             while (range) {
                 if (virBufferVSprintf(buf, "      <range start='%s' end='%s' />\n",
@@ -3031,15 +3031,15 @@ char *qemudGenerateNetworkXML(virConnectPtr conn,
                     goto no_memory;
                 range = range->next;
             }
-            if (virBufferAdd(buf, "    </dhcp>\n", -1) < 0)
+            if (virBufferAddLit(buf, "    </dhcp>\n") < 0)
                 goto no_memory;
         }
 
-        if (virBufferAdd(buf, "  </ip>\n", -1) < 0)
+        if (virBufferAddLit(buf, "  </ip>\n") < 0)
             goto no_memory;
     }
 
-    if (virBufferAdd(buf, "</network>\n", -1) < 0)
+    if (virBufferAddLit(buf, "</network>\n") < 0)
         goto no_memory;
 
     return virBufferContentAndFree (buf);

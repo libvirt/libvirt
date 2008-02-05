@@ -1,7 +1,7 @@
 /*
  * driver.c: core driver methods for managing qemu guests
  *
- * Copyright (C) 2006, 2007 Red Hat, Inc.
+ * Copyright (C) 2006, 2007, 2008 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1459,19 +1459,19 @@ static int qemudGetFeatures(virBufferPtr xml,
     if (flags == NULL)
         return 0;
 
-    r = virBufferAdd(xml, "\
-    <features>\n", -1);
+    r = virBufferAddLit(xml, "\
+    <features>\n");
     if (r == -1) return r;
     for (i = 0; flags[i].name; ++i) {
         if (STREQ(flags[i].name, "pae")) {
             int pae = flags[i].default_on || flags[i].toggle;
             int nonpae = flags[i].toggle;
             if (pae) {
-                r = virBufferAdd(xml, "      <pae/>\n", -1);
+                r = virBufferAddLit(xml, "      <pae/>\n");
                 if (r == -1) return r;
             }
             if (nonpae) {
-                r = virBufferAdd(xml, "      <nonpae/>\n", -1);
+                r = virBufferAddLit(xml, "      <nonpae/>\n");
                 if (r == -1) return r;
             }
         } else {
@@ -1482,7 +1482,7 @@ static int qemudGetFeatures(virBufferPtr xml,
             if (r == -1) return r;
         }
     }
-    r = virBufferAdd(xml, "    </features>\n", -1);
+    r = virBufferAddLit(xml, "    </features>\n");
     return r;
 }
 
@@ -1550,26 +1550,26 @@ static char *qemudGetCapabilities(virConnectPtr conn ATTRIBUTE_UNUSED) {
         }
 
         if (have_kqemu) {
-            r = virBufferAdd (xml,
+            r = virBufferAddLit (xml,
                            "\
-      <domain type=\"kqemu\"/>\n", -1);
+      <domain type=\"kqemu\"/>\n");
             if (r == -1) goto vir_buffer_failed;
         }
         if (have_kvm) {
-            r = virBufferAdd (xml,
+            r = virBufferAddLit (xml,
                            "\
       <domain type=\"kvm\">\n\
         <emulator>/usr/bin/qemu-kvm</emulator>\n\
-      </domain>\n", -1);
+      </domain>\n");
             if (r == -1) goto vir_buffer_failed;
         }
-        r = virBufferAdd (xml, "    </arch>\n", -1);
+        r = virBufferAddLit (xml, "    </arch>\n");
         if (r == -1) goto vir_buffer_failed;
 
         r = qemudGetFeatures(xml, qemudArchs[i].fflags);
         if (r == -1) goto vir_buffer_failed;
 
-        r = virBufferAdd (xml, "  </guest>\n", -1);
+        r = virBufferAddLit (xml, "  </guest>\n");
         if (r == -1) goto vir_buffer_failed;
 
         /* The "other" PC architecture needs emulation. */
@@ -1594,7 +1594,7 @@ static char *qemudGetCapabilities(virConnectPtr conn ATTRIBUTE_UNUSED) {
                                 qemudArchs[i].machines[j]);
             if (r == -1) goto vir_buffer_failed;
         }
-        r = virBufferAdd (xml, "    </arch>\n  </guest>\n", -1);
+        r = virBufferAddLit (xml, "    </arch>\n  </guest>\n");
         if (r == -1) goto vir_buffer_failed;
     }
 
@@ -1620,20 +1620,20 @@ static char *qemudGetCapabilities(virConnectPtr conn ATTRIBUTE_UNUSED) {
                                 qemudArchs[i].machines[j]);
             if (r == -1) goto vir_buffer_failed;
         }
-        r = virBufferAdd (xml, "    </arch>\n", -1);
+        r = virBufferAddLit (xml, "    </arch>\n");
         if (r == -1) goto vir_buffer_failed;
 
         r = qemudGetFeatures(xml, qemudArchs[i].fflags);
         if (r == -1) goto vir_buffer_failed;
 
-        r = virBufferAdd (xml, "  </guest>\n", -1);
+        r = virBufferAddLit (xml, "  </guest>\n");
         if (r == -1) goto vir_buffer_failed;
     }
 
     /* Finish off. */
-    r = virBufferAdd (xml,
+    r = virBufferAddLit (xml,
                       "\
-</capabilities>\n", -1);
+</capabilities>\n");
     if (r == -1) goto vir_buffer_failed;
 
     return virBufferContentAndFree(xml);

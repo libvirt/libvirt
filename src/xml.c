@@ -172,7 +172,7 @@ virSaveCpuSet(virConnectPtr conn, char *cpuset, int maxcpu)
                 start = cur;
         } else if (start != -1) {
             if (!first)
-                virBufferAdd(buf, ",", -1);
+                virBufferAddLit(buf, ",");
             else
                 first = 0;
             if (cur == start + 1)
@@ -185,7 +185,7 @@ virSaveCpuSet(virConnectPtr conn, char *cpuset, int maxcpu)
     }
     if (start != -1) {
         if (!first)
-            virBufferAdd(buf, ",", -1);
+            virBufferAddLit(buf, ",");
         if (maxcpu == start + 1)
             virBufferVSprintf(buf, "%d", start);
         else
@@ -384,9 +384,9 @@ virParseXenCpuTopology(virConnectPtr conn, virBufferPtr xml,
                     goto memory_error;
             }
         }
-        ret = virBufferAdd(xml, "\
+        ret = virBufferAddLit(xml, "\
         </cpus>\n\
-      </cell>\n", -1);
+      </cell>\n");
         if (ret < 0)
             goto memory_error;
 
@@ -718,15 +718,15 @@ virDomainParseXMLGraphicsDescImage(virConnectPtr conn ATTRIBUTE_UNUSED,
     graphics_type = xmlGetProp(node, BAD_CAST "type");
     if (graphics_type != NULL) {
         if (xmlStrEqual(graphics_type, BAD_CAST "sdl")) {
-            virBufferAdd(buf, "(sdl 1)", 7);
+            virBufferAddLit(buf, "(sdl 1)", 7);
             /* TODO:
              * Need to understand sdl options
              *
-             *virBufferAdd(buf, "(display localhost:10.0)", 24);
-             *virBufferAdd(buf, "(xauthority /root/.Xauthority)", 30);
+             *virBufferAddLit(buf, "(display localhost:10.0)");
+             *virBufferAddLit(buf, "(xauthority /root/.Xauthority)");
              */
         } else if (xmlStrEqual(graphics_type, BAD_CAST "vnc")) {
-            virBufferAdd(buf, "(vnc 1)", 7);
+            virBufferAddLit(buf, "(vnc 1)");
             if (xendConfigVersion >= 2) {
                 xmlChar *vncport = xmlGetProp(node, BAD_CAST "port");
                 xmlChar *vnclisten = xmlGetProp(node, BAD_CAST "listen");
@@ -737,7 +737,7 @@ virDomainParseXMLGraphicsDescImage(virConnectPtr conn ATTRIBUTE_UNUSED,
                     long port = strtol((const char *) vncport, NULL, 10);
 
                     if (port == -1)
-                        virBufferAdd(buf, "(vncunused 1)", 13);
+                        virBufferAddLit(buf, "(vncunused 1)");
                     else if (port >= 5900)
                         virBufferVSprintf(buf, "(vncdisplay %ld)",
                                           port - 5900);
@@ -784,18 +784,18 @@ virDomainParseXMLGraphicsDescVFB(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     graphics_type = xmlGetProp(node, BAD_CAST "type");
     if (graphics_type != NULL) {
-        virBufferAdd(buf, "(device (vkbd))", 15);
-        virBufferAdd(buf, "(device (vfb ", 13);
+        virBufferAddLit(buf, "(device (vkbd))");
+        virBufferAddLit(buf, "(device (vfb ");
         if (xmlStrEqual(graphics_type, BAD_CAST "sdl")) {
-            virBufferAdd(buf, "(type sdl)", 10);
+            virBufferAddLit(buf, "(type sdl)");
             /* TODO:
              * Need to understand sdl options
              *
-             *virBufferAdd(buf, "(display localhost:10.0)", 24);
-             *virBufferAdd(buf, "(xauthority /root/.Xauthority)", 30);
+             *virBufferAddLit(buf, "(display localhost:10.0)");
+             *virBufferAddLit(buf, "(xauthority /root/.Xauthority)");
              */
         } else if (xmlStrEqual(graphics_type, BAD_CAST "vnc")) {
-            virBufferAdd(buf, "(type vnc)", 10);
+            virBufferAddLit(buf, "(type vnc)");
             xmlChar *vncport = xmlGetProp(node, BAD_CAST "port");
             xmlChar *vnclisten = xmlGetProp(node, BAD_CAST "listen");
             xmlChar *vncpasswd = xmlGetProp(node, BAD_CAST "passwd");
@@ -805,7 +805,7 @@ virDomainParseXMLGraphicsDescVFB(virConnectPtr conn ATTRIBUTE_UNUSED,
                 long port = strtol((const char *) vncport, NULL, 10);
 
                 if (port == -1)
-                    virBufferAdd(buf, "(vncunused 1)", 13);
+                    virBufferAddLit(buf, "(vncunused 1)");
                 else if (port >= 5900)
                     virBufferVSprintf(buf, "(vncdisplay %ld)",
                                       port - 5900);
@@ -824,7 +824,7 @@ virDomainParseXMLGraphicsDescVFB(virConnectPtr conn ATTRIBUTE_UNUSED,
                 xmlFree(keymap);
             }
         }
-        virBufferAdd(buf, "))", 2);
+        virBufferAddLit(buf, "))");
         xmlFree(graphics_type);
     }
     return 0;
@@ -910,7 +910,7 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
         virXMLError(conn, VIR_ERR_OS_TYPE, (const char *) type, 0);
         return (-1);
     }
-    virBufferAdd(buf, "(image (hvm ", 12);
+    virBufferAddLit(buf, "(image (hvm ");
     if (loader == NULL) {
         virXMLError(conn, VIR_ERR_NO_KERNEL, NULL, 0);
         goto error;
@@ -980,13 +980,13 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
     }
 
     if (virXPathNode("/domain/features/acpi", ctxt) != NULL)
-        virBufferAdd(buf, "(acpi 1)", 8);
+        virBufferAddLit(buf, "(acpi 1)");
     if (virXPathNode("/domain/features/apic", ctxt) != NULL)
-        virBufferAdd(buf, "(apic 1)", 8);
+        virBufferAddLit(buf, "(apic 1)");
     if (virXPathNode("/domain/features/pae", ctxt) != NULL)
-        virBufferAdd(buf, "(pae 1)", 7);
+        virBufferAddLit(buf, "(pae 1)");
 
-    virBufferAdd(buf, "(usb 1)", 7);
+    virBufferAddLit(buf, "(usb 1)");
     nb_nodes = virXPathNodeSet("/domain/devices/input", ctxt, &nodes);
     if (nb_nodes > 0) {
         int i;
@@ -1015,7 +1015,7 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
                 if (!isMouse) {
                     /* Nothing - implicit ps2 */
                 } else {
-                    virBufferAdd(buf, "(usbdevice tablet)", 13);
+                    virBufferAddLit(buf, "(usbdevice tablet)");
                 }
             } else {
                 if (!strcmp((const char *) bus, "ps2")) {
@@ -1028,9 +1028,9 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
                     /* Nothing - implicit ps2 */
                 } else if (!strcmp((const char *) bus, "usb")) {
                     if (isMouse)
-                        virBufferAdd(buf, "(usbdevice mouse)", 17);
+                        virBufferAddLit(buf, "(usbdevice mouse)");
                     else
-                        virBufferAdd(buf, "(usbdevice tablet)", 18);
+                        virBufferAddLit(buf, "(usbdevice tablet)");
                 }
             }
             xmlFree(bus);
@@ -1046,7 +1046,7 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
         goto error;
     }
     if (res) {
-        virBufferAdd(buf, "(serial pty)", 12);
+        virBufferAddLit(buf, "(serial pty)");
     }
 
     /* HVM graphics for xen <= 3.0.5 */
@@ -1064,11 +1064,11 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
 
     str = virXPathString("string(/domain/clock/@offset)", ctxt);
     if (str != NULL && !strcmp(str, "localtime")) {
-        virBufferAdd(buf, "(localtime 1)", 13);
+        virBufferAddLit(buf, "(localtime 1)");
     }
     free(str);
 
-    virBufferAdd(buf, "))", 2);
+    virBufferAddLit(buf, "))");
 
     return (0);
 
@@ -1147,7 +1147,7 @@ virDomainParseXMLOSDescPV(virConnectPtr conn, xmlNodePtr node,
         virXMLError(conn, VIR_ERR_OS_TYPE, (const char *) type, 0);
         return (-1);
     }
-    virBufferAdd(buf, "(image (linux ", 14);
+    virBufferAddLit(buf, "(image (linux ");
     if (kernel == NULL) {
         virXMLError(conn, VIR_ERR_NO_KERNEL, NULL, 0);
         return (-1);
@@ -1174,7 +1174,7 @@ virDomainParseXMLOSDescPV(virConnectPtr conn, xmlNodePtr node,
     }
 
   error:
-    virBufferAdd(buf, "))", 2);
+    virBufferAddLit(buf, "))");
     return (0);
 }
 
@@ -1304,14 +1304,14 @@ virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node,
     }
 
 
-    virBufferAdd(buf, "(device ", 8);
+    virBufferAddLit(buf, "(device ");
     /* Normally disks are in a (device (vbd ...)) block
      * but blktap disks ended up in a differently named
      * (device (tap ....)) block.... */
     if (drvName && !strcmp((const char *) drvName, "tap")) {
-        virBufferAdd(buf, "(tap ", 5);
+        virBufferAddLit(buf, "(tap ");
     } else {
-        virBufferAdd(buf, "(vbd ", 5);
+        virBufferAddLit(buf, "(vbd ");
     }
 
     if (hvm) {
@@ -1358,8 +1358,8 @@ virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node,
     else
         virBufferVSprintf(buf, "(mode 'w')");
 
-    virBufferAdd(buf, ")", 1);
-    virBufferAdd(buf, ")", 1);
+    virBufferAddLit(buf, ")");
+    virBufferAddLit(buf, ")");
 
   cleanup:
     if (drvType)
@@ -1442,7 +1442,7 @@ virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED,
         cur = cur->next;
     }
 
-    virBufferAdd(buf, "(vif ", 5);
+    virBufferAddLit(buf, "(vif ");
     if (mac != NULL) {
         unsigned int addr[12];
         int tmp = sscanf((const char *) mac,
@@ -1496,9 +1496,9 @@ virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED,
      * from Xen 3.1.0
      */
     if ((hvm) && (xendConfigVersion < 4))
-        virBufferAdd(buf, "(type ioemu)", 12);
+        virBufferAddLit(buf, "(type ioemu)");
 
-    virBufferAdd(buf, ")", 1);
+    virBufferAddLit(buf, ")");
     ret = 0;
   error:
     if (mac != NULL)
@@ -1583,7 +1583,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
         }
         xmlFree(prop);
     }
-    virBufferAdd(&buf, "(vm ", 4);
+    virBufferAddLit(&buf, "(vm ");
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
         goto error;
@@ -1748,7 +1748,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
     nb_nodes = virXPathNodeSet("/domain/devices/interface", ctxt, &nodes);
     if (nb_nodes > 0) {
         for (i = 0; i < nb_nodes; i++) {
-            virBufferAdd(&buf, "(device ", 8);
+            virBufferAddLit(&buf, "(device ");
             res =
                 virDomainParseXMLIfDesc(conn, nodes[i], &buf, hvm,
                                         xendConfigVersion);
@@ -1756,7 +1756,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
                 free(nodes);
                 goto error;
             }
-            virBufferAdd(&buf, ")", 1);
+            virBufferAddLit(&buf, ")");
         }
         free(nodes);
     }
@@ -1779,7 +1779,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
     }
 
 
-    virBufferAdd(&buf, ")", 1); /* closes (vm */
+    virBufferAddLit(&buf, ")"); /* closes (vm */
     buf.content[buf.use] = 0;
 
     xmlXPathFreeContext(ctxt);

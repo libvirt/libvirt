@@ -1286,7 +1286,7 @@ xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf
        return(-1);
     }
     
-    virBufferAdd(buf, "  <os>\n", 7);
+    virBufferAddLit(buf, "  <os>\n");
     if (hvm) {
         virBufferVSprintf(buf, "    <type>hvm</type>\n");
         tmp = sexpr_node(node, "domain/image/hvm/kernel");
@@ -1304,7 +1304,7 @@ xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf
             while (*tmp) {
                 if (*tmp == 'a')
                     /* XXX no way to deal with boot from 2nd floppy */
-                    virBufferAdd(buf, "    <boot dev='fd'/>\n", 21 );
+                    virBufferAddLit(buf, "    <boot dev='fd'/>\n");
                 else if (*tmp == 'c')
                     /*
                      * Don't know what to put here.  Say the vm has been given 3
@@ -1312,11 +1312,11 @@ xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf
                      * We're going to assume that first disk is the boot disk since
                      * this is most common practice
                      */
-                    virBufferAdd(buf, "    <boot dev='hd'/>\n", 21 );
+                    virBufferAddLit(buf, "    <boot dev='hd'/>\n");
                 else if (*tmp == 'd')
-                    virBufferAdd(buf, "    <boot dev='cdrom'/>\n", 24 );
+                    virBufferAddLit(buf, "    <boot dev='cdrom'/>\n");
                 else if (*tmp == 'n')
-                    virBufferAdd(buf, "    <boot dev='network'/>\n", 26 );
+                    virBufferAddLit(buf, "    <boot dev='network'/>\n");
                 tmp++;
             }
         }
@@ -1341,7 +1341,7 @@ xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf
            virBufferEscapeString(buf, "    <cmdline>%s</cmdline>\n", tmp);
     }
 
-    virBufferAdd(buf, "  </os>\n", 8);
+    virBufferAddLit(buf, "  </os>\n");
     return(0);
 }
 
@@ -1472,20 +1472,20 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
     if (hvm) {
         int clockLocal;
 
-        virBufferAdd(&buf, "  <features>\n", 13);
+        virBufferAddLit(&buf, "  <features>\n");
         if (sexpr_int(root, "domain/image/hvm/acpi"))
-            virBufferAdd(&buf, "    <acpi/>\n", 12);
+            virBufferAddLit(&buf, "    <acpi/>\n");
         if (sexpr_int(root, "domain/image/hvm/apic"))
-            virBufferAdd(&buf, "    <apic/>\n", 12);
+            virBufferAddLit(&buf, "    <apic/>\n");
         if (sexpr_int(root, "domain/image/hvm/pae"))
-            virBufferAdd(&buf, "    <pae/>\n", 11);
-        virBufferAdd(&buf, "  </features>\n", 14);
+            virBufferAddLit(&buf, "    <pae/>\n");
+        virBufferAddLit(&buf, "  </features>\n");
 
         clockLocal = sexpr_int(root, "domain/image/hvm/localtime");
         virBufferVSprintf(&buf, "  <clock offset='%s'/>\n", clockLocal ? "localtime" : "utc");
     }
 
-    virBufferAdd(&buf, "  <devices>\n", 12);
+    virBufferAddLit(&buf, "  <devices>\n");
 
     /* in case of HVM we have devices emulation */
     tmp = sexpr_node(root, "domain/image/hvm/device_model");
@@ -1636,7 +1636,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
                 virBufferVSprintf(&buf, "      <readonly/>\n");
 	    else if ((mode != NULL) && (!strcmp(mode, "w!")))
                 virBufferVSprintf(&buf, "      <shareable/>\n");
-            virBufferAdd(&buf, "    </disk>\n", 12);
+            virBufferAddLit(&buf, "    </disk>\n");
 
             bad_parse:
             free(drvName);
@@ -1673,7 +1673,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
                 virBufferVSprintf(&buf, "      <script path='%s'/>\n",
                                   tmp2);
 
-            virBufferAdd(&buf, "    </interface>\n", 17);
+            virBufferAddLit(&buf, "    </interface>\n");
             vif_index++;
         } else if (sexpr_lookup(node, "device/vfb")) {
             /* New style graphics config for PV guests in >= 3.0.4,
@@ -1682,7 +1682,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
 
             if (tmp && !strcmp(tmp, "sdl")) {
                 virBufferVSprintf(&buf, "    <input type='mouse' bus='%s'/>\n", hvm ? "ps2": "xen");
-                virBufferAdd(&buf, "    <graphics type='sdl'/>\n", 27);
+                virBufferAddLit(&buf, "    <graphics type='sdl'/>\n");
             } else if (tmp && !strcmp(tmp, "vnc")) {
                 int port = xenStoreDomainGetVNCPort(conn, domid);
                 const char *listenAddr = sexpr_node(node, "device/vfb/vnclisten");
@@ -1699,7 +1699,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
 		}
                 if (keymap)
                     virBufferVSprintf(&buf, " keymap='%s'", keymap);
-                virBufferAdd(&buf, "/>\n", 3);
+                virBufferAddLit(&buf, "/>\n");
             }
         }
     }
@@ -1707,29 +1707,29 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
     if (hvm) {
         tmp = sexpr_node(root, "domain/image/hvm/fda");
         if ((tmp != NULL) && (tmp[0] != 0)) {
-            virBufferAdd(&buf, "    <disk type='file' device='floppy'>\n", 39);
+            virBufferAddLit(&buf, "    <disk type='file' device='floppy'>\n");
             virBufferVSprintf(&buf, "      <source file='%s'/>\n", tmp);
-            virBufferAdd(&buf, "      <target dev='fda'/>\n", 26);
-            virBufferAdd(&buf, "    </disk>\n", 12);
+            virBufferAddLit(&buf, "      <target dev='fda'/>\n");
+            virBufferAddLit(&buf, "    </disk>\n");
         }
         tmp = sexpr_node(root, "domain/image/hvm/fdb");
         if ((tmp != NULL) && (tmp[0] != 0)) {
-            virBufferAdd(&buf, "    <disk type='file' device='floppy'>\n", 39);
+            virBufferAddLit(&buf, "    <disk type='file' device='floppy'>\n");
             virBufferVSprintf(&buf, "      <source file='%s'/>\n", tmp);
-            virBufferAdd(&buf, "      <target dev='fdb'/>\n", 26);
-            virBufferAdd(&buf, "    </disk>\n", 12);
+            virBufferAddLit(&buf, "      <target dev='fdb'/>\n");
+            virBufferAddLit(&buf, "    </disk>\n");
         }
 
         /* Old style cdrom config from Xen <= 3.0.2 */
         if (xendConfigVersion == 1) {
             tmp = sexpr_node(root, "domain/image/hvm/cdrom");
             if ((tmp != NULL) && (tmp[0] != 0)) {
-                virBufferAdd(&buf, "    <disk type='file' device='cdrom'>\n", 38);
-                virBufferAdd(&buf, "      <driver name='file'/>\n", 28);
+                virBufferAddLit(&buf, "    <disk type='file' device='cdrom'>\n");
+                virBufferAddLit(&buf, "      <driver name='file'/>\n");
                 virBufferVSprintf(&buf, "      <source file='%s'/>\n", tmp);
-                virBufferAdd(&buf, "      <target dev='hdc'/>\n", 26);
-                virBufferAdd(&buf, "      <readonly/>\n", 18);
-                virBufferAdd(&buf, "    </disk>\n", 12);
+                virBufferAddLit(&buf, "      <target dev='hdc'/>\n");
+                virBufferAddLit(&buf, "      <readonly/>\n");
+                virBufferAddLit(&buf, "    </disk>\n");
             }
         }
     }
@@ -1742,9 +1742,9 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
                 tmp = sexpr_node(node, "usbdevice");
                 if (tmp && *tmp) {
                     if (!strcmp(tmp, "tablet"))
-                        virBufferAdd(&buf, "    <input type='tablet' bus='usb'/>\n", 37);
+                        virBufferAddLit(&buf, "    <input type='tablet' bus='usb'/>\n");
                     else if (!strcmp(tmp, "mouse"))
-                        virBufferAdd(&buf, "    <input type='mouse' bus='usb'/>\n", 36);
+                        virBufferAddLit(&buf, "    <input type='mouse' bus='usb'/>\n");
                 }
             }
         }
@@ -1779,7 +1779,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
 		}
                 if (keymap)
                     virBufferVSprintf(&buf, " keymap='%s'", keymap);
-                virBufferAdd(&buf, "/>\n", 3);
+                virBufferAddLit(&buf, "/>\n");
             }
         }
 
@@ -1788,7 +1788,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
         if (tmp != NULL) {
             if (tmp[0] == '1') {
                 virBufferVSprintf(&buf, "    <input type='mouse' bus='%s'/>\n", hvm ? "ps2" : "xen");
-                virBufferAdd(&buf, "    <graphics type='sdl'/>\n", 27 );
+                virBufferAddLit(&buf, "    <graphics type='sdl'/>\n");
             }
         }
     }
@@ -1799,8 +1799,8 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
         free(tty);
     }
 
-    virBufferAdd(&buf, "  </devices>\n", 13);
-    virBufferAdd(&buf, "</domain>\n", 10);
+    virBufferAddLit(&buf, "  </devices>\n");
+    virBufferAddLit(&buf, "</domain>\n");
 
     buf.content[buf.use] = 0;
     return (buf.content);
@@ -1969,9 +1969,9 @@ sexpr_to_xend_topology_xml(virConnectPtr conn, const struct sexpr *root,
     r = virParseXenCpuTopology(conn, xml, nodeToCpu, numCpus);
     if (r < 0) goto error;
 
-    r = virBufferAdd (xml, "\
+    r = virBufferAddLit (xml, "\
     </cells>\n\
-  </topology>\n", -1);
+  </topology>\n");
     if (r < 0) goto vir_buffer_failed;
     return (0);
     

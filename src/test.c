@@ -1492,7 +1492,7 @@ static char *testDomainDumpXML(virDomainPtr domain, int flags ATTRIBUTE_UNUSED)
     virBufferVSprintf(buf, "  <on_poweroff>%s</on_poweroff>\n", testRestartFlagToString(privdom->onPoweroff));
     virBufferVSprintf(buf, "  <on_crash>%s</on_crash>\n", testRestartFlagToString(privdom->onCrash));
 
-    virBufferAdd(buf, "</domain>\n", -1);
+    virBufferAddLit(buf, "</domain>\n");
 
     xml = buf->content;
     free(buf);
@@ -1863,7 +1863,7 @@ static char *testNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
         return (NULL);
     }
 
-    virBufferAdd(buf, "<network>\n", -1);
+    virBufferAddLit(buf, "<network>\n");
     virBufferVSprintf(buf, "  <name>%s</name>\n", network->name);
     uuid = network->uuid;
     virUUIDFormat(uuid, uuidstr);
@@ -1873,18 +1873,18 @@ static char *testNetworkDumpXML(virNetworkPtr network, int flags ATTRIBUTE_UNUSE
         if (privnet->forwardDev[0])
             virBufferVSprintf(buf, "  <forward dev='%s'/>\n", privnet->forwardDev);
         else
-            virBufferAdd(buf, "  <forward/>\n", -1);
+            virBufferAddLit(buf, "  <forward/>\n");
     }
 
     virBufferVSprintf(buf, "  <ip address='%s' netmask='%s'>\n",
                       privnet->ipAddress, privnet->ipNetmask);
-    virBufferAdd(buf, "    <dhcp>\n", -1);
+    virBufferAddLit(buf, "    <dhcp>\n");
     virBufferVSprintf(buf, "      <range start='%s' end='%s'/>\n",
                       privnet->dhcpStart, privnet->dhcpEnd);
-    virBufferAdd(buf, "    </dhcp>\n", -1);
-    virBufferAdd(buf, "  </ip>\n", -1);
+    virBufferAddLit(buf, "    </dhcp>\n");
+    virBufferAddLit(buf, "  </ip>\n");
 
-    virBufferAdd(buf, "</network>\n", -1);
+    virBufferAddLit(buf, "</network>\n");
 
     xml = buf->content;
     free(buf);

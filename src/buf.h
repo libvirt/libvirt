@@ -1,7 +1,7 @@
 /*
  * buf.h: buffers for libvirt
  *
- * Copyright (C) 2005-2007 Red Hat, Inc.
+ * Copyright (C) 2005-2008 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -36,5 +36,8 @@ int virBufferVSprintf(virBufferPtr buf, const char *format, ...)
 int virBufferStrcat(virBufferPtr buf, ...);
 int virBufferEscapeString(virBufferPtr buf, const char *format, const char *str);
 int virBufferURIEncodeString (virBufferPtr buf, const char *str);
+
+#define virBufferAddLit(buf_, literal_string_) \
+  virBufferAdd (buf_, "" literal_string_ "", sizeof literal_string_ - 1)
 
 #endif /* __VIR_BUFFER_H__ */

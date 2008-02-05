@@ -592,7 +592,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
 
     buf = virBufferNew(4096);
 
-    virBufferAdd(buf, "<domain type='xen'>\n", -1);
+    virBufferAddLit(buf, "<domain type='xen'>\n");
     virBufferVSprintf(buf, "  <name>%s</name>\n", name);
     virUUIDFormat(uuid, uuidstr);
     virBufferVSprintf(buf, "  <uuid>%s</uuid>\n", uuidstr);
@@ -603,8 +603,8 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
 
     if (hvm) {
         const char *boot;
-        virBufferAdd(buf, "  <os>\n", -1);
-        virBufferAdd(buf, "    <type>hvm</type>\n", -1);
+        virBufferAddLit(buf, "  <os>\n");
+        virBufferAddLit(buf, "    <type>hvm</type>\n");
         if (xenXMConfigGetString(conf, "kernel", &str) == 0)
             virBufferVSprintf(buf, "    <loader>%s</loader>\n", str);
 
@@ -629,7 +629,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             boot++;
         }
 
-        virBufferAdd(buf, "  </os>\n", -1);
+        virBufferAddLit(buf, "  </os>\n");
     } else {
 
         if (xenXMConfigGetString(conf, "bootloader", &str) == 0)
@@ -637,14 +637,14 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
         if (xenXMConfigGetString(conf, "bootargs", &str) == 0)
             virBufferEscapeString(buf, "  <bootloader_args>%s</bootloader_args>\n", str);
         if (xenXMConfigGetString(conf, "kernel", &str) == 0) {
-            virBufferAdd(buf, "  <os>\n", -1);
-            virBufferAdd(buf, "    <type>linux</type>\n", -1);
+            virBufferAddLit(buf, "  <os>\n");
+            virBufferAddLit(buf, "    <type>linux</type>\n");
             virBufferVSprintf(buf, "    <kernel>%s</kernel>\n", str);
             if (xenXMConfigGetString(conf, "ramdisk", &str) == 0)
                 virBufferVSprintf(buf, "    <initrd>%s</initrd>\n", str);
             if (xenXMConfigGetString(conf, "extra", &str) == 0)
                 virBufferEscapeString(buf, "    <cmdline>%s</cmdline>\n", str);
-            virBufferAdd(buf, "  </os>\n", -1);
+            virBufferAddLit(buf, "  </os>\n");
         }
     }
 
@@ -687,24 +687,24 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
 
 
     if (hvm) {
-        virBufferAdd(buf, "  <features>\n", -1);
+        virBufferAddLit(buf, "  <features>\n");
         if (xenXMConfigGetInt(conf, "pae", &val) == 0 &&
             val)
-            virBufferAdd(buf, "    <pae/>\n", -1);
+            virBufferAddLit(buf, "    <pae/>\n");
         if (xenXMConfigGetInt(conf, "acpi", &val) == 0 &&
             val)
-            virBufferAdd(buf, "    <acpi/>\n", -1);
+            virBufferAddLit(buf, "    <acpi/>\n");
         if (xenXMConfigGetInt(conf, "apic", &val) == 0 &&
             val)
-            virBufferAdd(buf, "    <apic/>\n", -1);
-        virBufferAdd(buf, "  </features>\n", -1);
+            virBufferAddLit(buf, "    <apic/>\n");
+        virBufferAddLit(buf, "  </features>\n");
 
         if (xenXMConfigGetInt(conf, "localtime", &val) < 0)
             val = 0;
         virBufferVSprintf(buf, "  <clock offset='%s'/>\n", val ? "localtime" : "utc");
     }
 
-    virBufferAdd(buf, "  <devices>\n", -1);
+    virBufferAddLit(buf, "  <devices>\n");
 
     if (hvm) {
         if (xenXMConfigGetString(conf, "device_model", &str) == 0)
@@ -808,11 +808,11 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             virBufferVSprintf(buf, "      <target dev='%s'/>\n", dev);
             if (!strcmp(head, "r") ||
                 !strcmp(head, "ro"))
-                virBufferAdd(buf, "      <readonly/>\n", -1);
+                virBufferAddLit(buf, "      <readonly/>\n");
 	    else if ((!strcmp(head, "w!")) ||
 	             (!strcmp(head, "!")))
-	        virBufferAdd(buf, "      <shareable/>\n", -1);
-            virBufferAdd(buf, "    </disk>\n", -1);
+	        virBufferAddLit(buf, "      <shareable/>\n");
+            virBufferAddLit(buf, "    </disk>\n");
 
         skipdisk:
             list = list->next;
@@ -821,12 +821,12 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
 
     if (hvm && priv->xendConfigVersion == 1) {
         if (xenXMConfigGetString(conf, "cdrom", &str) == 0) {
-            virBufferAdd(buf, "    <disk type='file' device='cdrom'>\n", -1);
-            virBufferAdd(buf, "      <driver name='file'/>\n", -1);
+            virBufferAddLit(buf, "    <disk type='file' device='cdrom'>\n");
+            virBufferAddLit(buf, "      <driver name='file'/>\n");
             virBufferVSprintf(buf, "      <source file='%s'/>\n", str);
-            virBufferAdd(buf, "      <target dev='hdc'/>\n", -1);
-            virBufferAdd(buf, "      <readonly/>\n", -1);
-            virBufferAdd(buf, "    </disk>\n", -1);
+            virBufferAddLit(buf, "      <target dev='hdc'/>\n");
+            virBufferAddLit(buf, "      <readonly/>\n");
+            virBufferAddLit(buf, "    </disk>\n");
         }
     }
 
@@ -897,7 +897,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                 type = 1;
             }
 
-            virBufferAdd(buf, "    <interface type='bridge'>\n", -1);
+            virBufferAddLit(buf, "    <interface type='bridge'>\n");
             if (mac[0])
                 virBufferVSprintf(buf, "      <mac address='%s'/>\n", mac);
             if (type == 1 && bridge[0])
@@ -906,7 +906,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
                 virBufferVSprintf(buf, "      <script path='%s'/>\n", script);
             if (ip[0])
                 virBufferVSprintf(buf, "      <ip address='%s'/>\n", ip);
-            virBufferAdd(buf, "    </interface>\n", -1);
+            virBufferAddLit(buf, "    </interface>\n");
 
         skipnic:
             list = list->next;
@@ -916,9 +916,9 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
     if (hvm) {
         if (xenXMConfigGetString(conf, "usbdevice", &str) == 0 && str) {
             if (!strcmp(str, "tablet"))
-                virBufferAdd(buf, "    <input type='tablet' bus='usb'/>\n", 37);
+                virBufferAddLit(buf, "    <input type='tablet' bus='usb'/>\n");
             else if (!strcmp(str, "mouse"))
-                virBufferAdd(buf, "    <input type='mouse' bus='usb'/>\n", 36);
+                virBufferAddLit(buf, "    <input type='mouse' bus='usb'/>\n");
             /* Ignore else branch - probably some other non-input device we don't
                support in libvirt yet */
         }
@@ -1006,23 +1006,23 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
         if (keymap) {
             virBufferVSprintf(buf, " keymap='%s'", keymap);
         }
-        virBufferAdd(buf, "/>\n", 3);
+        virBufferAddLit(buf, "/>\n");
     }
     if (sdl) {
-        virBufferAdd(buf, "    <graphics type='sdl'/>\n", -1);
+        virBufferAddLit(buf, "    <graphics type='sdl'/>\n");
     }
 
     if (hvm) {
         if (xenXMConfigGetString(conf, "serial", &str) == 0 && !strcmp(str, "pty")) {
-            virBufferAdd(buf, "    <console/>\n", -1);
+            virBufferAddLit(buf, "    <console/>\n");
         }
     } else { /* Paravirt implicitly always has a console */
-        virBufferAdd(buf, "    <console/>\n", -1);
+        virBufferAddLit(buf, "    <console/>\n");
     }
 
-    virBufferAdd(buf, "  </devices>\n", -1);
+    virBufferAddLit(buf, "  </devices>\n");
 
-    virBufferAdd(buf, "</domain>\n", -1);
+    virBufferAddLit(buf, "</domain>\n");
 
     xml = buf->content;
     buf->content = NULL;
@@ -1274,7 +1274,7 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
                 n = i*8 + j;
 
                 if (comma) {
-                    if (virBufferAdd (mapbuf, ",", 1) == -1) {
+                    if (virBufferAddLit (mapbuf, ",") == -1) {
                         xenXMError (domain->conn, VIR_ERR_NO_MEMORY, __FUNCTION__);
                         virBufferFree (mapbuf);
                     return -1;
