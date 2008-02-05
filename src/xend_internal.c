@@ -1280,65 +1280,84 @@ xend_log(virConnectPtr xend, char *buffer, size_t n_buffer)
 static int
 xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf, int hvm, int bootloader)
 {
-    const char *tmp;
+    const char *loader = NULL;
+    const char *kernel = NULL;
+    const char *initrd = NULL;
+    const char *cmdline = NULL;
+    const char *root = NULL;
 
     if (node == NULL || buf == NULL) {
        return(-1);
     }
     
     virBufferAddLit(buf, "  <os>\n");
+    if (hvm)
+        virBufferAddLit(buf, "    <type>hvm</type>\n");
+    else
+        virBufferAddLit(buf, "    <type>linux</type>\n");
+
     if (hvm) {
-        virBufferVSprintf(buf, "    <type>hvm</type>\n");
-        tmp = sexpr_node(node, "domain/image/hvm/kernel");
-        if (tmp == NULL)
-            tmp = sexpr_node(node, "domain/image/hvm/loader");
-        if (tmp == NULL && !bootloader) {
-            virXendError(xend, VIR_ERR_INTERNAL_ERROR,
-                         _("domain information incomplete, missing kernel & bootloader"));
-            return(-1);
-        }
-        if (tmp)
-            virBufferVSprintf(buf, "    <loader>%s</loader>\n", tmp);
-        tmp = sexpr_node(node, "domain/image/hvm/boot");
-        if ((tmp != NULL) && (tmp[0] != 0)) {
-            while (*tmp) {
-                if (*tmp == 'a')
-                    /* XXX no way to deal with boot from 2nd floppy */
-                    virBufferAddLit(buf, "    <boot dev='fd'/>\n");
-                else if (*tmp == 'c')
-                    /*
-                     * Don't know what to put here.  Say the vm has been given 3
-                     * disks - hda, hdb, hdc.  How does one identify the boot disk?
-                     * We're going to assume that first disk is the boot disk since
-                     * this is most common practice
-                     */
-                    virBufferAddLit(buf, "    <boot dev='hd'/>\n");
-                else if (*tmp == 'd')
-                    virBufferAddLit(buf, "    <boot dev='cdrom'/>\n");
-                else if (*tmp == 'n')
-                    virBufferAddLit(buf, "    <boot dev='network'/>\n");
-                tmp++;
+        loader = sexpr_node(node, "domain/image/hvm/loader");
+        if (loader == NULL) {
+            loader = sexpr_node(node, "domain/image/hvm/kernel");
+
+            if (loader == NULL) {
+                virXendError(xend, VIR_ERR_INTERNAL_ERROR,
+                             _("domain information incomplete, missing HVM loader"));
+                return(-1);
             }
+        } else {
+            kernel = sexpr_node(node, "domain/image/hvm/kernel");
+            initrd = sexpr_node(node, "domain/image/hvm/ramdisk");
+            cmdline = sexpr_node(node, "domain/image/hvm/args");
+            root = sexpr_node(node, "domain/image/hvm/root");
         }
     } else {
-        virBufferVSprintf(buf, "    <type>linux</type>\n");
-        tmp = sexpr_node(node, "domain/image/linux/kernel");
-        if (tmp == NULL && !bootloader) {
+        kernel = sexpr_node(node, "domain/image/linux/kernel");
+        initrd = sexpr_node(node, "domain/image/linux/ramdisk");
+        cmdline = sexpr_node(node, "domain/image/linux/args");
+        root = sexpr_node(node, "domain/image/linux/root");
+    }
+
+    if (hvm)
+        virBufferVSprintf(buf, "    <loader>%s</loader>\n", loader);
+
+    if (kernel) {
+        virBufferVSprintf(buf, "    <kernel>%s</kernel>\n", kernel);
+        if (initrd && initrd[0])
+            virBufferVSprintf(buf, "    <initrd>%s</initrd>\n", initrd);
+        if (root && root[0])
+            virBufferVSprintf(buf, "    <root>%s</root>\n", root);
+        if (cmdline && cmdline[0])
+            virBufferEscapeString(buf, "    <cmdline>%s</cmdline>\n", cmdline);
+    } else {
+        if (hvm) {
+            const char *boot = sexpr_node(node, "domain/image/hvm/boot");
+            if ((boot != NULL) && (boot[0] != 0)) {
+                while (*boot) {
+                    if (*boot == 'a')
+                        /* XXX no way to deal with boot from 2nd floppy */
+                        virBufferAddLit(buf, "    <boot dev='fd'/>\n");
+                    else if (*boot == 'c')
+                        /*
+                         * Don't know what to put here.  Say the vm has been given 3
+                         * disks - hda, hdb, hdc.  How does one identify the boot disk?
+                         * We're going to assume that first disk is the boot disk since
+                         * this is most common practice
+                         */
+                        virBufferAddLit(buf, "    <boot dev='hd'/>\n");
+                    else if (*boot == 'd')
+                        virBufferAddLit(buf, "    <boot dev='cdrom'/>\n");
+                    else if (*boot == 'n')
+                        virBufferAddLit(buf, "    <boot dev='network'/>\n");
+                    boot++;
+                }
+            }
+        } else if (!bootloader) {
             virXendError(xend, VIR_ERR_INTERNAL_ERROR,
                          _("domain information incomplete, missing kernel & bootloader"));
             return(-1);
         }
-        if (tmp)
-            virBufferVSprintf(buf, "    <kernel>%s</kernel>\n", tmp);
-        tmp = sexpr_node(node, "domain/image/linux/ramdisk");
-        if ((tmp != NULL) && (tmp[0] != 0))
-           virBufferVSprintf(buf, "    <initrd>%s</initrd>\n", tmp);
-        tmp = sexpr_node(node, "domain/image/linux/root");
-        if ((tmp != NULL) && (tmp[0] != 0))
-           virBufferVSprintf(buf, "    <root>%s</root>\n", tmp);
-        tmp = sexpr_node(node, "domain/image/linux/args");
-        if ((tmp != NULL) && (tmp[0] != 0))
-           virBufferEscapeString(buf, "    <cmdline>%s</cmdline>\n", tmp);
     }
 
     virBufferAddLit(buf, "  </os>\n");
@@ -1367,7 +1386,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
     const char *tmp;
     char *tty;
     virBuffer buf;
-    int hvm = 0, bootloader = 0;
+    int hvm = 0, bootloader = 0, vfb = 0;
     int domid = -1;
     int max_mem, cur_mem;
     unsigned char uuid[VIR_UUID_BUFLEN];
@@ -1487,8 +1506,10 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
 
     virBufferAddLit(&buf, "  <devices>\n");
 
-    /* in case of HVM we have devices emulation */
-    tmp = sexpr_node(root, "domain/image/hvm/device_model");
+    if (hvm)
+        tmp = sexpr_node(root, "domain/image/hvm/device_model");
+    else
+        tmp = sexpr_node(root, "domain/image/linux/device_model");
     if ((tmp != NULL) && (tmp[0] != 0))
         virBufferVSprintf(&buf, "    <emulator>%s</emulator>\n", tmp);
 
@@ -1681,6 +1702,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
             tmp = sexpr_node(node, "device/vfb/type");
 
             if (tmp && !strcmp(tmp, "sdl")) {
+                vfb = 1;
                 virBufferVSprintf(&buf, "    <input type='mouse' bus='%s'/>\n", hvm ? "ps2": "xen");
                 virBufferAddLit(&buf, "    <graphics type='sdl'/>\n");
             } else if (tmp && !strcmp(tmp, "vnc")) {
@@ -1688,6 +1710,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
                 const char *listenAddr = sexpr_node(node, "device/vfb/vnclisten");
                 const char *vncPasswd = NULL;
                 const char *keymap = sexpr_node(node, "device/vfb/keymap");
+                vfb = 1;
                 virBufferVSprintf(&buf, "    <input type='mouse' bus='%s'/>\n", hvm ? "ps2": "xen");
                 virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'", port);
                 if (listenAddr)
@@ -1751,8 +1774,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
     }
 
     /* Graphics device (HVM <= 3.0.4, or PV <= 3.0.3) vnc config */
-    if ((hvm && xendConfigVersion < 4) ||
-        (!hvm && xendConfigVersion < 3)) {
+    if (!vfb) {
         tmp = sexpr_fmt_node(root, "domain/image/%s/vnc", hvm ? "hvm" : "linux");
         if (tmp != NULL) {
             if (tmp[0] == '1') {

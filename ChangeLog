@@ -1,3 +1,12 @@
+Tue Feb  3 11:21:45 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/xml.c, src/xend_internal.c: Allow use of kernel+initrd
+	in HVM guests as well as PV
+	* tests/xml2sexprdata/*, tests/sexpr2xmldata/*: Updated for
+	slight changes in SXPR element ordering
+	* tests/xml2sexprtest.c, tests/sexpr2xmltest.c: Add test
+	case for new HVM kernel+initrd ability
+
 Tue Feb  3 15:21:45 CET 2008  Jim Meyering  <meyering@redhat.com>
 
 	Eliminate all uses of virBufferAdd with string literals.

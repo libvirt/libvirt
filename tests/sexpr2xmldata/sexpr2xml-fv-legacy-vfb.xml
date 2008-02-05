@@ -1,0 +1,33 @@
+<domain type='xen' id='1'>
+  <name>s10u4</name>
+  <uuid>fde0533d-d043-88c6-dfba-4822fa32f309</uuid>
+  <os>
+    <type>hvm</type>
+    <loader>/usr/lib/xen/boot/hvmloader</loader>
+    <boot dev='hd'/>
+  </os>
+  <memory>1048576</memory>
+  <vcpu>1</vcpu>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <features>
+    <pae/>
+  </features>
+  <clock offset='utc'/>
+  <devices>
+    <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
+    <interface type='ethernet'>
+      <target dev='vif1.0'/>
+      <mac address='00:16:3e:3b:b9:d7'/>
+      <script path='vif-vnic'/>
+    </interface>
+    <disk type='block' device='disk'>
+      <driver name='phy'/>
+      <source dev='/dev/zvol/dsk/export/s10u4-root'/>
+      <target dev='hda'/>
+    </disk>
+    <input type='mouse' bus='ps2'/>
+    <graphics type='vnc' port='-1' keymap='en-us'/>
+  </devices>
+</domain>

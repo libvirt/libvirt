@@ -718,7 +718,7 @@ virDomainParseXMLGraphicsDescImage(virConnectPtr conn ATTRIBUTE_UNUSED,
     graphics_type = xmlGetProp(node, BAD_CAST "type");
     if (graphics_type != NULL) {
         if (xmlStrEqual(graphics_type, BAD_CAST "sdl")) {
-            virBufferAddLit(buf, "(sdl 1)", 7);
+            virBufferAddLit(buf, "(sdl 1)");
             /* TODO:
              * Need to understand sdl options
              *
@@ -839,22 +839,21 @@ virDomainParseXMLGraphicsDescVFB(virConnectPtr conn ATTRIBUTE_UNUSED,
  * @ctxt: a path context representing the XML description
  * @vcpus: number of virtual CPUs to configure
  * @xendConfigVersion: xend configuration file format
+ * @hasKernel: whether the domain is booting from a kernel
  *
- * Parse the OS part of the XML description for an HVM domain and add it to
- * the S-Expr in buf. This is a temporary interface as the S-Expr interface
- * will be replaced by XML-RPC in the future. However the XML format should
- * stay valid over time.
+ * Parse the OS part of the XML description for a HVM domain
+ * and add it to the S-Expr in buf.
  *
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
 virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
                            virBufferPtr buf, xmlXPathContextPtr ctxt,
-                           int vcpus, int xendConfigVersion)
+                           int vcpus, int xendConfigVersion,
+                           int hasKernel)
 {
     xmlNodePtr cur, txt;
     xmlNodePtr *nodes = NULL;
-    xmlChar *type = NULL;
     xmlChar *loader = NULL;
     char bootorder[5];
     int nbootorder = 0;
@@ -864,14 +863,8 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if ((type == NULL) &&
-	        (xmlStrEqual(cur->name, BAD_CAST "type"))) {
-                txt = cur->children;
-                if ((txt != NULL) && (txt->type == XML_TEXT_NODE) &&
-                    (txt->next == NULL))
-                    type = txt->content;
-            } else if ((loader == NULL) &&
-                       (xmlStrEqual(cur->name, BAD_CAST "loader"))) {
+            if ((loader == NULL) &&
+                (xmlStrEqual(cur->name, BAD_CAST "loader"))) {
                 txt = cur->children;
                 if ((txt != NULL) && (txt->type == XML_TEXT_NODE) &&
                     (txt->next == NULL))
@@ -904,28 +897,31 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
         }
         cur = cur->next;
     }
+    /*
+     * XenD always needs boot order defined for HVM, even if
+     * booting off a kernel + initrd, so force to 'c' if nothing
+     * else is specified
+     */
+    if (nbootorder == 0)
+        bootorder[nbootorder++] = 'c';
     bootorder[nbootorder] = '\0';
-    if ((type == NULL) || (!xmlStrEqual(type, BAD_CAST "hvm"))) {
-        /* VIR_ERR_OS_TYPE */
-        virXMLError(conn, VIR_ERR_OS_TYPE, (const char *) type, 0);
-        return (-1);
-    }
-    virBufferAddLit(buf, "(image (hvm ");
+
     if (loader == NULL) {
-        virXMLError(conn, VIR_ERR_NO_KERNEL, NULL, 0);
-        goto error;
+        virXMLError(conn, VIR_ERR_INTERNAL_ERROR, "no HVM domain loader", 0);
+        return -1;
+    }
+
+    /* 
+     * Originally XenD abused the 'kernel' parameter for the HVM
+     * firmware. New XenD allows HVM guests to boot from a kernel
+     * and if this is enabled, the HVM firmware must use the new
+     * 'loader' parameter
+     */
+    if (hasKernel) {
+        virBufferVSprintf(buf, "(loader '%s')", (const char *) loader);
     } else {
         virBufferVSprintf(buf, "(kernel '%s')", (const char *) loader);
     }
-
-    /* get the device emulation model */
-    str = virXPathString("string(/domain/devices/emulator[1])", ctxt);
-    if (str == NULL) {
-        virXMLError(conn, VIR_ERR_NO_KERNEL, NULL, 0);  /* TODO: error */
-        goto error;
-    }
-    virBufferVSprintf(buf, "(device_model '%s')", str);
-    xmlFree(str);
 
     virBufferVSprintf(buf, "(vcpus %d)", vcpus);
 
@@ -1049,26 +1045,11 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
         virBufferAddLit(buf, "(serial pty)");
     }
 
-    /* HVM graphics for xen <= 3.0.5 */
-    if (xendConfigVersion < 4) {
-        /* Is a graphics device specified? */
-        cur = virXPathNode("/domain/devices/graphics[1]", ctxt);
-        if (cur != NULL) {
-            res = virDomainParseXMLGraphicsDescImage(conn, cur, buf,
-                                                     xendConfigVersion);
-            if (res != 0) {
-                goto error;
-            }
-        }
-    }
-
     str = virXPathString("string(/domain/clock/@offset)", ctxt);
     if (str != NULL && !strcmp(str, "localtime")) {
         virBufferAddLit(buf, "(localtime 1)");
     }
     free(str);
-
-    virBufferAddLit(buf, "))");
 
     return (0);
 
@@ -1077,45 +1058,34 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
     return (-1);
 }
 
+
 /**
- * virDomainParseXMLOSDescPV:
+ * virDomainParseXMLOSDescKernel:
  * @conn: pointer to the hypervisor connection
  * @node: node containing PV OS description
  * @buf: a buffer for the result S-Expr
- * @ctxt: a path context representing the XML description
- * @xendConfigVersion: xend configuration file format
  *
- * Parse the OS part of the XML description for a paravirtualized domain
- * and add it to the S-Expr in buf.  This is a temporary interface as the
- * S-Expr interface will be replaced by XML-RPC in the future. However
- * the XML format should stay valid over time.
+ * Parse the OS part of the XML description for a domain using a direct
+ * kernel and initrd to boot.
  *
  * Returns 0 in case of success, -1 in case of error.
  */
 static int
-virDomainParseXMLOSDescPV(virConnectPtr conn, xmlNodePtr node,
-                          virBufferPtr buf, xmlXPathContextPtr ctxt,
-                          int xendConfigVersion)
+virDomainParseXMLOSDescKernel(virConnectPtr conn ATTRIBUTE_UNUSED,
+                              xmlNodePtr node,
+                              virBufferPtr buf)
 {
     xmlNodePtr cur, txt;
-    const xmlChar *type = NULL;
     const xmlChar *root = NULL;
     const xmlChar *kernel = NULL;
     const xmlChar *initrd = NULL;
     const xmlChar *cmdline = NULL;
-    int res;
 
     cur = node->children;
     while (cur != NULL) {
         if (cur->type == XML_ELEMENT_NODE) {
-            if ((type == NULL)
-                && (xmlStrEqual(cur->name, BAD_CAST "type"))) {
-                txt = cur->children;
-                if ((txt != NULL) && (txt->type == XML_TEXT_NODE) &&
-                    (txt->next == NULL))
-                    type = txt->content;
-            } else if ((kernel == NULL) &&
-                       (xmlStrEqual(cur->name, BAD_CAST "kernel"))) {
+            if ((kernel == NULL) &&
+                (xmlStrEqual(cur->name, BAD_CAST "kernel"))) {
                 txt = cur->children;
                 if ((txt != NULL) && (txt->type == XML_TEXT_NODE) &&
                     (txt->next == NULL))
@@ -1142,18 +1112,9 @@ virDomainParseXMLOSDescPV(virConnectPtr conn, xmlNodePtr node,
         }
         cur = cur->next;
     }
-    if ((type != NULL) && (!xmlStrEqual(type, BAD_CAST "linux"))) {
-        /* VIR_ERR_OS_TYPE */
-        virXMLError(conn, VIR_ERR_OS_TYPE, (const char *) type, 0);
-        return (-1);
-    }
-    virBufferAddLit(buf, "(image (linux ");
-    if (kernel == NULL) {
-        virXMLError(conn, VIR_ERR_NO_KERNEL, NULL, 0);
-        return (-1);
-    } else {
-        virBufferVSprintf(buf, "(kernel '%s')", (const char *) kernel);
-    }
+    
+    virBufferVSprintf(buf, "(kernel '%s')", (const char *) kernel);
+
     if (initrd != NULL)
         virBufferVSprintf(buf, "(ramdisk '%s')", (const char *) initrd);
     if (root != NULL)
@@ -1161,20 +1122,6 @@ virDomainParseXMLOSDescPV(virConnectPtr conn, xmlNodePtr node,
     if (cmdline != NULL)
         virBufferVSprintf(buf, "(args '%s')", (const char *) cmdline);
 
-    /* PV graphics for xen <= 3.0.4 */
-    if (xendConfigVersion < 3) {
-        cur = virXPathNode("/domain/devices/graphics[1]", ctxt);
-        if (cur != NULL) {
-            res = virDomainParseXMLGraphicsDescImage(conn, cur, buf,
-                                                     xendConfigVersion);
-            if (res != 0) {
-                goto error;
-            }
-        }
-    }
-
-  error:
-    virBufferAddLit(buf, "))");
     return (0);
 }
 
@@ -1708,23 +1655,54 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
 
     if (!bootloader) {
         if ((node = virXPathNode("/domain/os[1]", ctxt)) != NULL) {
+            int has_kernel = 0;
+
             /* Analyze of the os description, based on HVM or PV. */
             str = virXPathString("string(/domain/os/type[1])", ctxt);
-
-            if ((str == NULL) || (strcmp(str, "hvm"))) {
-                res = virDomainParseXMLOSDescPV(conn, node,
-                                                &buf, ctxt,
-                                                xendConfigVersion);
-            } else {
+            if ((str != NULL) && STREQ(str, "hvm"))
                 hvm = 1;
-                res = virDomainParseXMLOSDescHVM(conn, node, &buf, ctxt,
-                                                 vcpus, xendConfigVersion);
+            xmlFree(str);
+            str = NULL;
+
+            if (hvm)
+                virBufferAddLit(&buf, "(image (hvm ");
+            else
+                virBufferAddLit(&buf, "(image (linux ");
+
+            if (virXPathBoolean("count(/domain/os/kernel) > 0", ctxt)) {
+                if (virDomainParseXMLOSDescKernel(conn, node,
+                                                  &buf) != 0)
+                    goto error;
+                has_kernel = 1;
             }
 
-            free(str);
-
-            if (res != 0)
+            if (hvm &&
+                virDomainParseXMLOSDescHVM(conn, node,
+                                           &buf, ctxt, vcpus,
+                                           xendConfigVersion,
+                                           has_kernel) != 0)
                 goto error;
+
+            /* get the device emulation model */
+            str = virXPathString("string(/domain/devices/emulator[1])", ctxt);
+            if (str != NULL) {
+                virBufferVSprintf(&buf, "(device_model '%s')", str);
+                xmlFree(str);
+                str = NULL;
+            }
+
+            /* PV graphics for xen <= 3.0.4, or HVM graphics for xen <= 3.1.0 */
+            if ((!hvm && xendConfigVersion < 3) ||
+                (hvm && xendConfigVersion < 4)) {
+                xmlNodePtr cur;
+                cur = virXPathNode("/domain/devices/graphics[1]", ctxt);
+                if (cur != NULL &&
+                    virDomainParseXMLGraphicsDescImage(conn, cur, &buf,
+                                                       xendConfigVersion) != 0)
+                    goto error;
+            }
+
+            virBufferAddLit(&buf, "))");
         } else {
             virXMLError(conn, VIR_ERR_NO_OS, nam, 0);
             goto error;

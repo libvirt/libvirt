@@ -178,6 +178,18 @@ static int testCompareFVclockLocaltime(const void *data ATTRIBUTE_UNUSED) {
 			  1);
 }
 
+static int testCompareFVKernel(const void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("sexpr2xmldata/sexpr2xml-fv-kernel.xml",
+			  "sexpr2xmldata/sexpr2xml-fv-kernel.sexpr",
+			  1);
+}
+
+static int testCompareFVLegacyVFB(const void *data ATTRIBUTE_UNUSED) {
+  return testCompareFiles("sexpr2xmldata/sexpr2xml-fv-legacy-vfb.xml",
+			  "sexpr2xmldata/sexpr2xml-fv-legacy-vfb.sexpr",
+			  4);
+}
+
 
 int
 main(int argc, char **argv)
@@ -274,6 +286,14 @@ main(int argc, char **argv)
 
     if (virtTestRun("SEXPR-2-XML clock Localtime",
 		    1, testCompareFVclockLocaltime, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("SEXPR-2-XML FV kernel",
+		    1, testCompareFVKernel, NULL) != 0)
+	ret = -1;
+
+    if (virtTestRun("SEXPR-2-XML FV legacy VFB",
+		    1, testCompareFVLegacyVFB, NULL) != 0)
 	ret = -1;
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
