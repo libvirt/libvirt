@@ -1,3 +1,8 @@
+Wed Feb  6 17:22:34 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_conf.c: applied 2 patches from Guido Guenther to avoid 
+	  crashes when reading the config file
+
 Tue Feb  3 20:26:53 CET 2008  Jim Meyering  <meyering@redhat.com>
 
 	Fix new "make distcheck" failures.

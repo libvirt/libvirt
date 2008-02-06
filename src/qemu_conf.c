@@ -1193,6 +1193,8 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
             } else if (!strcmp((char *)prop, "network")) {
                 def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_NET;
             } else {
+	        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+				 "unknown boot dev \'%s\'", (char*)prop);
                 goto error;
             }
             xmlFree(prop);
@@ -2523,7 +2525,8 @@ qemudLoadConfig(struct qemud_driver *driver,
     if (!(def = qemudParseVMDef(NULL, driver, xml, file))) {
         virErrorPtr err = virGetLastError();
         qemudLog(QEMUD_WARN, "Error parsing QEMU guest config '%s' : %s",
-                 path, err->message);
+                 path, err ? err->message :
+		             "BUG: unknown error - please report it\n");
         return NULL;
     }
 
