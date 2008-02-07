@@ -221,7 +221,6 @@ Tue Jan 29 18:39:25 CET 2008  Jim Meyering  <meyering@redhat.com>
 	* tests/xencapstest.c: Likewise.
 	* tests/xmconfigtest.c: Likewise.
 
->>>>>>> 1.995
 Fri Jan 25 12:00:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Clarify virsh documentation.
