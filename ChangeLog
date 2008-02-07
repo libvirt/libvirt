@@ -1,3 +1,7 @@
+Thu Feb  7 10:16:42 IST 2008 Mark McLoughlin <markmc@redhat.com>
+
+	* src/iptables.c: Create directory for saving iptables rules
+	
 Thu Feb  7 10:12:15 IST 2008 Mark McLoughlin <markmc@redhat.com>
 
 	* src/xm_internal.[ch]: Move static function prototype from header

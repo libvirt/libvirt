@@ -238,6 +238,12 @@ iptRulesSave(iptRules *rules)
 #ifdef ENABLE_IPTABLES_LOKKIT
     int err;
 
+    if ((err = virFileMakePath(rules->dir))) {
+        qemudLog(QEMUD_WARN, "Failed to create directory %s : %s",
+                 rules->dir, strerror(err));
+        return;
+    }
+
     if ((err = writeRules(rules->path, rules->rules, rules->nrules))) {
         qemudLog(QEMUD_WARN, "Failed to saves iptables rules to %s : %s",
                  rules->path, strerror(err));
