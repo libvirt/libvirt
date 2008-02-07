@@ -27,6 +27,8 @@ extern void initcygvirtmod(void);
    is so common that we encapsulate it here.  Now, each use is simply
    return VIR_PY_NONE;  */
 #define VIR_PY_NONE (Py_INCREF (Py_None), Py_None)
+#define VIR_PY_INT_FAIL (libvirt_intWrap(-1))
+#define VIR_PY_INT_SUCCESS (libvirt_intWrap(0))
 
 /************************************************************************
  *									*
@@ -214,15 +216,15 @@ libvirt_virDomainSetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
 
     c_retval = virDomainGetSchedulerType(domain, &nparams);
     if (c_retval == NULL)
-        return VIR_PY_NONE;
+        return VIR_PY_INT_FAIL;
     free(c_retval);
 
     if ((params = malloc(sizeof(*params)*nparams)) == NULL)
-        return VIR_PY_NONE;
+        return VIR_PY_INT_FAIL;
 
     if (virDomainGetSchedulerParameters(domain, params, &nparams) < 0) {
         free(params);
-        return VIR_PY_NONE;
+        return VIR_PY_INT_FAIL;
     }
 
     /* convert to a Python tupple of long objects */
@@ -269,17 +271,17 @@ libvirt_virDomainSetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
 
         default:
             free(params);
-            return VIR_PY_NONE;
+            return VIR_PY_INT_FAIL;
         }
     }
 
     if (virDomainSetSchedulerParameters(domain, params, nparams) < 0) {
         free(params);
-        return VIR_PY_NONE;
+        return VIR_PY_INT_FAIL;
     }
 
     free(params);
-    return VIR_PY_NONE;
+    return VIR_PY_INT_SUCCESS;
 }
 
 static PyObject *
@@ -383,11 +385,11 @@ libvirt_virDomainPinVcpu(PyObject *self ATTRIBUTE_UNUSED,
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
     if (virNodeGetInfo(virDomainGetConnect(domain), &nodeinfo) != 0)
-        return VIR_PY_NONE;
+        return VIR_PY_INT_FAIL;
 
     cpumaplen = VIR_CPU_MAPLEN(VIR_NODEINFO_MAXCPUS(nodeinfo));
     if ((cpumap = malloc(cpumaplen)) == NULL)
-        return VIR_PY_NONE;
+        return VIR_PY_INT_FAIL;
     memset(cpumap, 0, cpumaplen);
 
     truth = PyBool_FromLong(1);
@@ -403,7 +405,7 @@ libvirt_virDomainPinVcpu(PyObject *self ATTRIBUTE_UNUSED,
     Py_DECREF(truth);
     free(cpumap);
 
-    return VIR_PY_NONE;
+    return VIR_PY_INT_SUCCESS;
 }
 
 
@@ -1030,7 +1032,7 @@ libvirt_virDomainGetAutostart(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
     LIBVIRT_END_ALLOW_THREADS;
 
     if (c_retval < 0)
-        return VIR_PY_NONE;
+        return VIR_PY_INT_FAIL;
     py_retval = libvirt_intWrap(autostart);
     return(py_retval);
 }
@@ -1053,7 +1055,7 @@ libvirt_virNetworkGetAutostart(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) 
     LIBVIRT_END_ALLOW_THREADS;
 
     if (c_retval < 0)
-        return VIR_PY_NONE;
+        return VIR_PY_INT_FAIL;
     py_retval = libvirt_intWrap(autostart);
     return(py_retval);
 }
