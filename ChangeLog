@@ -1,3 +1,8 @@
+Thu Feb  7 10:19:12 IST 2008 Mark McLoughlin <markmc@redhat.com>
+
+	* src/xen_internal.c: Don't crash if there's no
+	/sys/hypervisor/capabilities
+
 Thu Feb  7 10:16:42 IST 2008 Mark McLoughlin <markmc@redhat.com>
 
 	* src/iptables.c: Create directory for saving iptables rules

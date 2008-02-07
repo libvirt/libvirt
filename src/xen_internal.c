@@ -2233,7 +2233,7 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn,
      */
 
     /* Expecting one line in this file - ignore any more. */
-    if (fgets (line, sizeof line, capabilities)) {
+    if ((capabilities) && (fgets (line, sizeof line, capabilities))) {
         /* Split the line into tokens.  strtok_r is OK here because we "own"
          * this buffer.  Parse out the features from each token.
          */
