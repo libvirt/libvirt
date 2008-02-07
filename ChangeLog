@@ -1,3 +1,8 @@
+2008-02-07  Jim Meyering  <meyering@redhat.com>
+
+	* src/xm_internal.c: Remove trailing blanks
+	* NEWS, ChangeLog: Likewise.
+
 Thu Feb  7 10:19:12 IST 2008 Mark McLoughlin <markmc@redhat.com>
 
 	* src/xen_internal.c: Don't crash if there's no
@@ -6,11 +11,11 @@ Thu Feb  7 10:19:12 IST 2008 Mark McLoughlin <markmc@redhat.com>
 Thu Feb  7 10:16:42 IST 2008 Mark McLoughlin <markmc@redhat.com>
 
 	* src/iptables.c: Create directory for saving iptables rules
-	
+
 Thu Feb  7 10:12:15 IST 2008 Mark McLoughlin <markmc@redhat.com>
 
 	* src/xm_internal.[ch]: Move static function prototype from header
-	
+
 Thu Feb  7 10:47:44 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* python/libvir.c: apply patch from Cole Robinson to provide
@@ -20,15 +25,15 @@ Thu Feb  7 10:29:57 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt.c: fix bug in xenUnifiedDomainSuspend() patch provided
 	  by Marcus Meissner
-	  
+
 Wed Feb  6 18:55:37 CET 2008 Daniel Veillard <veillard@redhat.com>
 
-	* src/xm_internal.[ch]: applied patch from Shigeki Sakamoto to 
+	* src/xm_internal.[ch]: applied patch from Shigeki Sakamoto to
 	  add/change/delete a Disk/NIC of an inactive domains
 
 Wed Feb  6 17:22:34 CET 2008 Daniel Veillard <veillard@redhat.com>
 
-	* src/qemu_conf.c: applied 2 patches from Guido Guenther to avoid 
+	* src/qemu_conf.c: applied 2 patches from Guido Guenther to avoid
 	  crashes when reading the config file
 
 Tue Feb  3 20:26:53 CET 2008  Jim Meyering  <meyering@redhat.com>

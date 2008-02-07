@@ -2528,10 +2528,10 @@ int xenXMNumOfDefinedDomains(virConnectPtr conn) {
  * xenXMDomainAttachDevice:
  * @domain: pointer to domain object
  * @xml: pointer to XML description of device
- * 
+ *
  * Create a virtual device attachment to backend.
  * XML description is translated into config file.
- * 
+ *
  * Returns 0 in case of success, -1 in case of failure.
  */
 static int
@@ -2893,7 +2893,7 @@ xenXMAttachInterface(virDomainPtr domain, xmlXPathContextPtr ctxt, int hvm,
             attr_node->children = text_node;
             attr_node->last = text_node;
             attr_node->parent = node_tmp;
-            
+
             node_cur->next = node_tmp;
         }
         if (!(dev = xenXMParseXMLVif(domain->conn, node, hvm)))
@@ -2943,7 +2943,7 @@ xenXMAttachInterface(virDomainPtr domain, xmlXPathContextPtr ctxt, int hvm,
 /**
  * xenXMAutoAssignMac:
  * @mac: pointer to Mac String
- * 
+ *
  * a mac is assigned automatically.
  *
  * Returns 0 in case of success, -1 in case of failure.
@@ -2966,7 +2966,7 @@ xenXMAutoAssignMac() {
  * xenXMDomainDetachDevice:
  * @domain: pointer to domain object
  * @xml: pointer to XML description of device
- * 
+ *
  * Destroy a virtual device attachment to backend.
  *
  * Returns 0 in case of success, -1 in case of failure.

@@ -17,7 +17,7 @@ Releases
       various english fixes (Bruce Montague), OCaml docs links (Richard Jones),
       describe the various bindings add Ruby link, Windows support page
       (Richard Jones), authentication documentation updates (Daniel Berrange)
-      
+
    - Bug fixes: NUMA topology error handling (Beth Kon), NUMA topology
       cells without CPU (Beth Kon), XML to/from XM bridge config (Daniel
       Berrange), XM processing of vnc parameters (Daniel Berrange), Reset
@@ -42,7 +42,7 @@ Releases
       parameter setting in XM config (Saori Fukuta), credential handling
       fixes (Daniel Berrange), fix compatibility with Xen 3.2.0 (Daniel
       Berrange)
-      
+
    - Improvements: /etc/libvirt/qemu.conf configuration for QEMU driver
       (Daniel Berrange), NUMA cpu pinning in config files (DV and Saori Fukuta),
       CDRom media change in KVM/QEMU (Daniel Berrange), tests for
@@ -51,7 +51,7 @@ Releases
       --without-libvirtd config option (Richard Jones), Python bindings for
       NUMA, add extra utility functions to buffer (Richard Jones),
       separate qparams module for handling query parameters (Richard Jones)
-      
+
    - Code cleanups: remove virDomainRestart from API as it was never used
       (Richard Jones), constify params for attach/detach APIs (Daniel Berrange),
       gcc printf attribute checkings (Jim Meyering), refactoring of device
@@ -72,13 +72,13 @@ Releases
       port (Richard Jones), disable the proxy if using PolicyKit, readline
       availability detection, test libvirtd's config-processing code (Jim
       Meyering), use a variable name as sizeof argument (Jim Meyering)
-      
+
 
 
 0.3.3: Sep 30 2007:
    - New features: Avahi mDNS daemon export (Daniel Berrange),
-      NUMA support (Beth Kan) 
-   - Documentation: cleanups (Toth Istvan), typos (Eduardo Pereira), 
+      NUMA support (Beth Kan)
+   - Documentation: cleanups (Toth Istvan), typos (Eduardo Pereira),
    - Bug fixes: memory corruption on large dumps (Masayuki Sunou), fix
       virsh vncdisplay command exit (Masayuki Sunou), Fix network stats
       TX/RX result (Richard Jones), warning on Xen 3.0.3 (Richard Jones),
@@ -124,10 +124,10 @@ Releases
       speedup of domain queries on Xen (Daniel berrange), augment XML dumps
       with interface devices names (Richard Jones), internal API to query
       drivers for features (Richard Jones).
-      
+
    - Cleanups: Improve virNodeGetInfo implentation (Daniel berrange),
       general UUID code cleanup (Daniel berrange), fix API generator
-      file selection. 
+      file selection.
 
 
 0.3.1: Jul 24 2007:
@@ -161,7 +161,7 @@ Releases
    - Secure Remote support (Richard Jones).
       See the remote page
       of the documentation
-  
+
    - Documentation: remote support (Richard Jones), description of
       the URI connection strings (Richard Jones), update of virsh man
       page, matrix of libvirt API/hypervisor support with version
@@ -202,7 +202,7 @@ Releases
 0.2.3: Jun 8 2007:
    - Documentation: documentation for upcoming remote access (Richard Jones),
       virConnectNumOfDefinedDomains doc (Jan Michael), virsh help messages
-      for dumpxml and net-dumpxml (Chris Wright), 
+      for dumpxml and net-dumpxml (Chris Wright),
    - Bug fixes: RelaxNG schemas regexp fix (Robin Green), RelaxNG arch bug
       (Mark McLoughlin), large buffers bug fixes (Shigeki Sakamoto), error
       on out of memory condition (Shigeki Sakamoto), virshStrdup fix, non-root
@@ -262,7 +262,7 @@ Releases
       signal handler error cleanup (Richard Jones), iptables internal code
       claenup (Mark McLoughlin), unified Xen driver (Richard Jones),
       cleanup XPath libxml2 calls, IPTables rules tightening (Daniel
-      Berrange), 
+      Berrange),
    - Improvements: more regression tests on XML (Daniel Berrange), Python
       bindings now generate exception in error cases (Richard Jones),
       Python bindings for vir*GetAutoStart (Daniel Berrange),
@@ -270,7 +270,7 @@ Releases
       fix hypervisor call to work with Xen 3.0.5 (Daniel Berrange),
       DomainGetOSType for inactive domains (Daniel Berrange), multiple boot
       devices for HVM (Daniel Berrange),
-      
+
 
 
 0.2.1: Mar 16 2007:
@@ -375,7 +375,7 @@ Releases
    - Support for localization of strings using gettext (Daniel Berrange)
    - Support for new Xen-3.0.3 cdrom and disk configuration (Daniel Berrange)
    - Support for setting VNC port when creating domains with new
-      xend config files (Daniel Berrange) 
+      xend config files (Daniel Berrange)
    - Fix bug when running against xen-3.0.2 hypercalls (Jim Fehlig)
    - Fix reconnection problem when talking directly to http xend
 
@@ -409,7 +409,7 @@ Releases
     floppy and cdrom (Daniel Berrange), features block in XML to report/ask
     PAE, ACPI, APIC for HVM domains (Daniel Berrange), fail saide-effect
     operations when using read-only connection, large improvements to test
-    driver (Daniel Berrange) 
+    driver (Daniel Berrange)
    - documentation: spelling (Daniel Berrange), test driver examples.
 
 
