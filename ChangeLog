@@ -1,5 +1,12 @@
 Thu Feb  7 20:19:19 CET 2008 Jim Meyering  <meyering@redhat.com>
 
+	Enable another syntax-check rule.
+	* Makefile.cfg (local-checks-to-skip): Remove sc_no_have_config_h.
+	* qemud/mdns.c: Remove "#ifdef HAVE_CONFIG_H".
+	* Makefile.maint (sc_no_have_config_h): Tighten up regexp,
+	so that the above mention of "HAVE_CONFIG_H" doesn't match.
+	* .x-sc_no_have_config_h: New file, to exempt gnulib/ straggler.
+
 	* autobuild.sh: Run "make syntax-check", so the autobuilder does this.
 
 Thu Feb  7 18:02:22 CET 2008 Daniel Veillard <veillard@redhat.com>
