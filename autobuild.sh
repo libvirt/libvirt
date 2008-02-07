@@ -23,6 +23,7 @@ make install
 
 set -o pipefail
 make check 2>&1 | tee $RESULTS
+make syntax-check 2>&1 | tee -a $RESULTS
 make cov
 
 rm -f *.tar.gz
