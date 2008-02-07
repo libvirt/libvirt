@@ -1,3 +1,8 @@
+Thu Feb  7 10:29:57 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c: fix bug in xenUnifiedDomainSuspend() patch provided
+	  by Marcus Meissner
+	  
 Wed Feb  6 18:55:37 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/xm_internal.[ch]: applied patch from Shigeki Sakamoto to 
@@ -216,6 +221,7 @@ Tue Jan 29 18:39:25 CET 2008  Jim Meyering  <meyering@redhat.com>
 	* tests/xencapstest.c: Likewise.
 	* tests/xmconfigtest.c: Likewise.
 
+>>>>>>> 1.995
 Fri Jan 25 12:00:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Clarify virsh documentation.

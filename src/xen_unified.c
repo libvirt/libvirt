@@ -694,7 +694,7 @@ xenUnifiedDomainDestroy (virDomainPtr dom)
             drivers[i]->domainDestroy (dom) == 0)
             return 0;
 
-    if (priv->opened[i] &&
+    if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] &&
         drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainDestroy &&
         drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->domainDestroy (dom) == 0)
         return 0;
