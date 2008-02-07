@@ -1,3 +1,7 @@
+Thu Feb  7 10:12:15 IST 2008 Mark McLoughlin <markmc@redhat.com>
+
+	* src/xm_internal.[ch]: Move static function prototype from header
+	
 Thu Feb  7 10:47:44 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* python/libvir.c: apply patch from Cole Robinson to provide

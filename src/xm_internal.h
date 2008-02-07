@@ -61,9 +61,6 @@ int xenXMDomainUndefine(virDomainPtr domain);
 virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml);
 char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf);
 
-static int xenXMDomainAttachDevice(virDomainPtr domain, const char *xml);
-static int xenXMDomainDetachDevice(virDomainPtr domain, const char *xml);
-
 #ifdef __cplusplus
 }
 #endif

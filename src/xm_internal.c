@@ -77,6 +77,8 @@ static int xenXMAttachDisk(virDomainPtr domain, xmlXPathContextPtr ctxt, int hvm
                             xmlNodePtr node, xenXMConfCachePtr entry);
 static int xenXMAttachInterface(virDomainPtr domain, xmlXPathContextPtr ctxt, int hvm,
                                 xmlNodePtr node, xenXMConfCachePtr entry);
+static int xenXMDomainAttachDevice(virDomainPtr domain, const char *xml);
+static int xenXMDomainDetachDevice(virDomainPtr domain, const char *xml);
 
 #define XM_REFRESH_INTERVAL 10
 
