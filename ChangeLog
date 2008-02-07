@@ -1,3 +1,8 @@
+Thu Feb  7 17:46:14 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/hash.c: fix a couple of problems in virHashRemoveSet based
+	  on Hiroyuki Kaguchi patch and explanations.
+
 Thu Feb  7 17:48:30 CET 2008 Jim Meyering  <meyering@redhat.com>
 
 	Mark all qemudLog diagnostics for translation.
@@ -51,6 +56,8 @@ Thu Feb  7 17:48:30 CET 2008 Jim Meyering  <meyering@redhat.com>
 	(xenXMDomainDetachDevice): Likewise.
 	* src/xml.c (virXPathString): Likewise.
 	* tests/xmlrpctest.c (checkRequestValue): Likewise.
+
+2008-02-07  Jim Meyering  <meyering@redhat.com>
 
 	* src/xm_internal.c: Remove trailing blanks
 	* NEWS, ChangeLog: Likewise.

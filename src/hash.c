@@ -537,9 +537,11 @@ int virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, virHashDealloc
                 count++;
                 f(entry->payload, entry->name);
                 free(entry->name);
+                table->nbElems--;
                 if (prev) {
                     prev->next = entry->next;
                     free(entry);
+                    entry = prev;
                 } else {
                     if (entry->next == NULL) {
                         entry->valid = 0;
@@ -549,16 +551,14 @@ int virHashRemoveSet(virHashTablePtr table, virHashSearcher iter, virHashDealloc
                         memcpy(&(table->table[i]), entry,
                                sizeof(virHashEntry));
                         free(entry);
-                        entry = NULL;
+                        entry = &(table->table[i]);
+                        continue;
                     }
                 }
-                table->nbElems--;
             }
             prev = entry;
             if (entry) {
                 entry = entry->next;
-            } else {
-                entry = NULL;
             }
         }
     }
