@@ -1,7 +1,7 @@
 /*
  * xmlrpctest.c: simple client for XML-RPC tests
  *
- * Copyright (C) 2005 Red Hat, Inc.
+ * Copyright (C) 2005, 2008 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -119,8 +119,7 @@ checkRequestValue(const char *xmlstr, const char *xpath, int type, void *expecte
     ret = 0;
 
 error:
-    if (obj)
-        xmlXPathFreeObject(obj);
+    xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
     if (xml)
         xmlFreeDoc(xml);

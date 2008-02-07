@@ -479,8 +479,7 @@ virXPathString(const char *xpath, xmlXPathContextPtr ctxt)
     obj = xmlXPathEval(BAD_CAST xpath, ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        if (obj)
-            xmlXPathFreeObject(obj);
+        xmlXPathFreeObject(obj);
         return (NULL);
     }
     ret = strdup((char *) obj->stringval);

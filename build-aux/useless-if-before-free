@@ -1,0 +1,118 @@
+#!/usr/bin/perl -T
+# Detect instances of "if (p) free (p);".
+# Likewise for "if (p != NULL) free (p);".
+
+my $VERSION = '2008-02-04 22:25'; # UTC
+# The definition above must lie within the first 8 lines in order
+# for the Emacs time-stamp write hook (at end) to update it.
+# If you change this file with Emacs, please let the write hook
+# do its job.  Otherwise, update this string manually.
+
+# Exit status is like grep: 0 for no match. 1 for any number.
+# Note: giving line numbers isn't practical, since I've reset the
+# input record separator.
+use strict;
+use warnings;
+use Getopt::Long;
+
+(my $ME = $0) =~ s|.*/||;
+
+my $debug = 0;
+my $verbose = 0;
+
+sub usage ($)
+{
+  my ($exit_code) = @_;
+  my $STREAM = ($exit_code == 0 ? *STDOUT : *STDERR);
+  if ($exit_code != 0)
+    {
+      print $STREAM "Try `$ME --help' for more information.\n";
+    }
+  else
+    {
+      print $STREAM <<EOF;
+Usage: $ME [OPTIONS] FILE...
+
+OPTIONS:
+
+   --name=N     add name N to the list of `free'-like functions to detect;
+                  may be repeated
+
+   --help       display this help and exit
+   --version    output version information and exit
+   --verbose    generate verbose output
+
+EXAMPLE:
+
+    git ls-files -z |xargs -0 $ME
+
+EOF
+    }
+  exit $exit_code;
+}
+
+{
+  my @name = qw(free);
+  GetOptions
+    (
+     debug => \$debug,
+     verbose => \$verbose,
+     help => sub { usage 0 },
+     version => sub { print "$ME version $VERSION\n"; exit },
+     'name=s@' => \@name,
+    ) or usage 1;
+
+  # Make sure we have the right number of non-option arguments.
+  # Always tell the user why we fail.
+  @ARGV < 1
+    and (warn "$ME: missing FILE argument\n"), usage 1;
+
+  my $or = join '|', @name;
+  my $regexp = qr/(?:$or)/;
+
+  # Set the input record separator.
+  $/ = '"';
+
+  my $found_match = 0;
+  foreach my $file (@ARGV)
+    {
+      open FH, '<', $file
+        or die "$ME: can't open `$file' for reading: $!\n";
+      while (defined (my $line = <FH>))
+        {
+          if ($line =~
+              /\b(if\s*\(\s*(\S+?)(?:\s*!=\s*NULL)?\s*\)
+               (?:   \s*$regexp\s*\(\s*\2\s*\)|
+                \s*\{\s*$regexp\s*\(\s*\2\s*\)\s*;\s*\}))/sx)
+            {
+              print "$file: $1\n";
+              $found_match = 1;
+            }
+        }
+      close FH;
+    }
+  exit !$found_match;
+}
+
+my $foo = <<'EOF';
+# The above is to *find* them.
+# This adjusts them, removing the unnecessary "if (p)" part.
+
+# FIXME: do something like this as an option.
+git ls-files -z --exclude=$ME |xargs -0 \
+perl -0x3b -pi -e 's/\bif\s*\(\s*(\S+?)(?:\s*!=\s*NULL)?\s*\)\s+((?:sexpr_)?free\s*\(\s*\1\s*\))/$2/s'
+
+When modifying files, refuse to process anything other than a regular file.
+
+# Or this one-liner to detect them:
+git ls-files -z |xargs -0 perl -00 -ne '/\b(if\s*\(\s*(\S+?)(?:\s*!=\s*NULL)?\s*\)(?:\s*(?:sexpr_)?free\s*\(\s*\2\s*\)|\s*\{\s*(?:sexpr_)?free\s*\(\s*\2\s*\)\s*;\s*\}))/sx and print "$1\n"'
+EOF
+
+## Local Variables:
+## indent-tabs-mode: nil
+## eval: (add-hook 'write-file-hooks 'time-stamp)
+## time-stamp-start: "my $VERSION = '"
+## time-stamp-format: "%:y-%02m-%02d %02H:%02M"
+## time-stamp-time-zone: "UTC"
+## time-stamp-end: "'; # UTC"
+## End:

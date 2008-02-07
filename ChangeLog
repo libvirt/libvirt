@@ -1,4 +1,24 @@
-2008-02-07  Jim Meyering  <meyering@redhat.com>
+Thu Feb  7 17:48:30 CET 2008 Jim Meyering  <meyering@redhat.com>
+
+	Remove more useless if tests before "free"-like functions.
+	* build-aux/useless-if-before-free: Rename from ...
+	* build-aux/find-unnecessary-if-before-free: ... this.  Remove file.
+	Also changed it so that new names are no longer hard-coded in the
+	script.  Instead, they're supplied via options:
+	* Makefile.cfg (useless_free_options): Define.
+	Add xmlXPathFreeObject to the list of free-like functions it detects.
+	* Makefile.maint (sc_avoid_if_before_free): Reflect script renaming.
+	* .x-sc_avoid_if_before_free: Likewise.
+	* src/openvz_conf.c (openvzParseXML): Remove useless "if"-before-free.
+	* src/qemu_conf.c (qemudParseXML, qemudParseNetworkXML): Likewise.
+	* src/virsh.c (cmdVNCDisplay, cmdTTYConsole, cmdDetachInterface):
+	(cmdDetachDisk): Likewise.
+	* src/xm_internal.c (xenXMConfigSetIntFromXPath): Likewise.
+	(xenXMConfigSetStringFromXPath, xenXMParseXMLToConfig): Likewise.
+	(xenXMDomainAttachDevice, xenXMAttachDisk, xenXMAttachInterface):
+	(xenXMDomainDetachDevice): Likewise.
+	* src/xml.c (virXPathString): Likewise.
+	* tests/xmlrpctest.c (checkRequestValue): Likewise.
 
 	* src/xm_internal.c: Remove trailing blanks
 	* NEWS, ChangeLog: Likewise.

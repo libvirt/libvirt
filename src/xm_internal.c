@@ -1558,8 +1558,7 @@ int xenXMConfigSetIntFromXPath(virConnectPtr conn,
     ret = 0;
 
  error:
-    if (obj)
-        xmlXPathFreeObject(obj);
+    xmlXPathFreeObject(obj);
 
     return ret;
 }
@@ -1593,8 +1592,7 @@ int xenXMConfigSetStringFromXPath(virConnectPtr conn,
     ret = 0;
 
  error:
-    if (obj)
-        xmlXPathFreeObject(obj);
+    xmlXPathFreeObject(obj);
 
     return ret;
 }
@@ -2280,8 +2278,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
         virConfFree(conf);
     if (prop != NULL)
         xmlFree(prop);
-    if (obj != NULL)
-        xmlXPathFreeObject(obj);
+    xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
     if (doc != NULL)
         xmlFreeDoc(doc);
@@ -2580,8 +2577,7 @@ xenXMDomainAttachDevice(virDomainPtr domain, const char *xml) {
         (obj->stringval) && (STREQ((char *)obj->stringval, "hvm")))
         hvm = 1;
 
-    if (ctxt)
-        xmlXPathFreeContext(ctxt);
+    xmlXPathFreeContext(ctxt);
     ctxt = NULL;
     if (doc)
         xmlFreeDoc(doc);
@@ -2619,12 +2615,9 @@ xenXMDomainAttachDevice(virDomainPtr domain, const char *xml) {
     ret = 0;
 
  cleanup:
-    if (domxml)
-        free(domxml);
-    if (obj)
-        xmlXPathFreeObject(obj);
-    if (ctxt)
-        xmlXPathFreeContext(ctxt);
+    free(domxml);
+    xmlXPathFreeObject(obj);
+    xmlXPathFreeContext(ctxt);
     if (doc)
         xmlFreeDoc(doc);
 
@@ -2738,8 +2731,7 @@ xenXMAttachDisk(virDomainPtr domain, xmlXPathContextPtr ctxt, int hvm,
             prev->next = list_val;
     } else {
         /* configure */
-        if (list_val->str)
-            free(list_val->str);
+        free(list_val->str);
         list_val->str = dev;
     }
 
@@ -2747,12 +2739,9 @@ xenXMAttachDisk(virDomainPtr domain, xmlXPathContextPtr ctxt, int hvm,
     goto cleanup;
 
  cleanup:
-    if (type)
-        free(type);
-    if (source)
-        free(source);
-    if (target)
-        free(target);
+    free(type);
+    free(source);
+    free(target);
 
     return (ret);
 }
@@ -2825,8 +2814,7 @@ xenXMAttachInterface(virDomainPtr domain, xmlXPathContextPtr ctxt, int hvm,
 
             if (!(strcmp(dommac, (const char *) mac))) {
                 if (autoassign) {
-                    if (mac)
-                        free(mac);
+                    free(mac);
                     mac = NULL;
                     if (!(mac = (xmlChar *)xenXMAutoAssignMac()))
                         goto cleanup;
@@ -2914,8 +2902,7 @@ xenXMAttachInterface(virDomainPtr domain, xmlXPathContextPtr ctxt, int hvm,
             prev->next = list_val;
     } else {
         /* configure */
-        if (list_val->str)
-            free(list_val->str);
+        free(list_val->str);
         list_val->str = dev;
     }
 
@@ -2930,12 +2917,9 @@ xenXMAttachInterface(virDomainPtr domain, xmlXPathContextPtr ctxt, int hvm,
     if (text_node)
         xmlFree(text_node);
  cleanup:
-    if (type)
-        free(type);
-    if (source)
-        free(source);
-    if (mac)
-        free(mac);
+    free(type);
+    free(source);
+    free(mac);
 
     return (ret);
 }
@@ -3139,16 +3123,12 @@ xenXMDomainDetachDevice(virDomainPtr domain, const char *xml) {
     ret = 0;
 
  cleanup:
-    if (ctxt)
-        xmlXPathFreeContext(ctxt);
+    xmlXPathFreeContext(ctxt);
     if (doc)
         xmlFreeDoc(doc);
-    if (domdevice)
-        free(domdevice);
-    if (key)
-        free(key);
-    if (list_val)
-        free(list_val);
+    free(domdevice);
+    free(key);
+    free(list_val);
 
     return (ret);
 }

@@ -1,7 +1,7 @@
 /*
  * config.c: VM configuration management
  *
- * Copyright (C) 2006, 2007 Red Hat, Inc.
+ * Copyright (C) 2006, 2007, 2008 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  *
  * This library is free software; you can redistribute it and/or
@@ -1004,8 +1004,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
             goto error;
         }
     }
-    if (obj)
-        xmlXPathFreeObject(obj);
+    xmlXPathFreeObject(obj);
 
 
     /* Extract domain memory */
@@ -1023,8 +1022,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
             goto error;
         }
     }
-    if (obj)
-        xmlXPathFreeObject(obj);
+    xmlXPathFreeObject(obj);
 
     /* Extract domain vcpu info */
     obj = xmlXPathEval(BAD_CAST "string(/domain/vcpu[1])", ctxt);
@@ -1039,8 +1037,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
             goto error;
         }
     }
-    if (obj)
-        xmlXPathFreeObject(obj);
+    xmlXPathFreeObject(obj);
 
     /* See if ACPI feature is requested */
     obj = xmlXPathEval(BAD_CAST "/domain/features/acpi", ctxt);
@@ -1062,8 +1059,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         else
             def->noReboot = 0;
     }
-    if (obj)
-        xmlXPathFreeObject(obj);
+    xmlXPathFreeObject(obj);
 
     /* See if we set clock to localtime */
     obj = xmlXPathEval(BAD_CAST "string(/domain/clock/@offset)", ctxt);
@@ -1076,8 +1072,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         else
             def->localtime = 0;
     }
-    if (obj)
-        xmlXPathFreeObject(obj);
+    xmlXPathFreeObject(obj);
 
 
     /* Extract OS type info */
@@ -1111,8 +1106,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         }
         strcpy(def->os.arch, (const char *)obj->stringval);
     }
-    if (obj)
-        xmlXPathFreeObject(obj);
+    xmlXPathFreeObject(obj);
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/type[1]/@machine)", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
@@ -1134,8 +1128,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         }
         strcpy(def->os.machine, (const char *)obj->stringval);
     }
-    if (obj)
-        xmlXPathFreeObject(obj);
+    xmlXPathFreeObject(obj);
 
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/kernel[1])", ctxt);
@@ -1147,8 +1140,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         }
         strcpy(def->os.kernel, (const char *)obj->stringval);
     }
-    if (obj)
-        xmlXPathFreeObject(obj);
+    xmlXPathFreeObject(obj);
 
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/initrd[1])", ctxt);
@@ -1160,8 +1152,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         }
         strcpy(def->os.initrd, (const char *)obj->stringval);
     }
-    if (obj)
-        xmlXPathFreeObject(obj);
+    xmlXPathFreeObject(obj);
 
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/cmdline[1])", ctxt);
@@ -1173,8 +1164,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         }
         strcpy(def->os.cmdline, (const char *)obj->stringval);
     }
-    if (obj)
-        xmlXPathFreeObject(obj);
+    xmlXPathFreeObject(obj);
 
 
     /* analysis of the disk devices */
@@ -1224,8 +1214,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         }
         strcpy(def->os.binary, (const char *)obj->stringval);
     }
-    if (obj)
-        xmlXPathFreeObject(obj);
+    xmlXPathFreeObject(obj);
 
     obj = xmlXPathEval(BAD_CAST "/domain/devices/graphics", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_NODESET) ||
@@ -1382,8 +1371,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
 
  error:
     free(prop);
-    if (obj)
-        xmlXPathFreeObject(obj);
+    xmlXPathFreeObject(obj);
     xmlXPathFreeContext(ctxt);
     qemudFreeVMDef(def);
     return NULL;
@@ -2389,10 +2377,8 @@ static struct qemud_network_def *qemudParseNetworkXML(virConnectPtr conn,
  error:
     /* XXX free all the stuff in the qemud_network struct, or leave it upto
        the caller ? */
-    if (obj)
-        xmlXPathFreeObject(obj);
-    if (tmp)
-        xmlXPathFreeObject(tmp);
+    xmlXPathFreeObject(obj);
+    xmlXPathFreeObject(tmp);
     xmlXPathFreeContext(ctxt);
     qemudFreeNetworkDef(def);
     return NULL;
