@@ -410,14 +410,18 @@ static int qemudExtractVersionInfo(const char *qemu, int *version, int *flags) {
             if (errno == EINTR) {
                 goto rewait;
             }
-            qemudLog(QEMUD_ERR, "Unexpected exit status from qemu %d pid %lu", got, (unsigned long)child);
+            qemudLog(QEMUD_ERR,
+                     _("Unexpected exit status from qemu %d pid %lu"),
+                     got, (unsigned long)child);
             ret = -1;
         }
         /* Check & log unexpected exit status, but don't fail,
          * as there's really no need to throw an error if we did
          * actually read a valid version number above */
         if (WEXITSTATUS(got) != 1) {
-            qemudLog(QEMUD_WARN, "Unexpected exit status '%d', qemu probably failed", got);
+            qemudLog(QEMUD_WARN,
+                     _("Unexpected exit status '%d', qemu probably failed"),
+                     got);
         }
 
         return ret;
@@ -2510,21 +2514,25 @@ qemudLoadConfig(struct qemud_driver *driver,
 
     if (!(def = qemudParseVMDef(NULL, driver, xml, file))) {
         virErrorPtr err = virGetLastError();
-        qemudLog(QEMUD_WARN, "Error parsing QEMU guest config '%s' : %s",
-                 path, err ? err->message :
-		             "BUG: unknown error - please report it\n");
+        qemudLog(QEMUD_WARN, _("Error parsing QEMU guest config '%s' : %s"),
+                 path, (err ? err->message :
+                        _("BUG: unknown error - please report it\n")));
         return NULL;
     }
 
     if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
-        qemudLog(QEMUD_WARN, "QEMU guest config filename '%s' does not match guest name '%s'",
+        qemudLog(QEMUD_WARN,
+                 _("QEMU guest config filename '%s'"
+                   " does not match guest name '%s'"),
                  path, def->name);
         qemudFreeVMDef(def);
         return NULL;
     }
 
     if (!(vm = qemudAssignVMDef(NULL, driver, def))) {
-        qemudLog(QEMUD_WARN, "Failed to load QEMU guest config '%s': out of memory", path);
+        qemudLog(QEMUD_WARN,
+                 _("Failed to load QEMU guest config '%s': out of memory"),
+                 path);
         qemudFreeVMDef(def);
         return NULL;
     }
@@ -2551,20 +2559,23 @@ qemudLoadNetworkConfig(struct qemud_driver *driver,
 
     if (!(def = qemudParseNetworkDef(NULL, driver, xml, file))) {
         virErrorPtr err = virGetLastError();
-        qemudLog(QEMUD_WARN, "Error parsing network config '%s' : %s",
+        qemudLog(QEMUD_WARN, _("Error parsing network config '%s' : %s"),
                  path, err->message);
         return NULL;
     }
 
     if (!virFileMatchesNameSuffix(file, def->name, ".xml")) {
-        qemudLog(QEMUD_WARN, "Network config filename '%s' does not match network name '%s'",
+        qemudLog(QEMUD_WARN,
+                 _("Network config filename '%s'"
+                   " does not match network name '%s'"),
                  path, def->name);
         qemudFreeNetworkDef(def);
         return NULL;
     }
 
     if (!(network = qemudAssignNetworkDef(NULL, driver, def))) {
-        qemudLog(QEMUD_WARN, "Failed to load network config '%s': out of memory", path);
+        qemudLog(QEMUD_WARN,
+                 _("Failed to load network config '%s': out of memory"), path);
         qemudFreeNetworkDef(def);
         return NULL;
     }
@@ -2591,7 +2602,7 @@ int qemudScanConfigDir(struct qemud_driver *driver,
     if (!(dir = opendir(configDir))) {
         if (errno == ENOENT)
             return 0;
-        qemudLog(QEMUD_ERR, "Failed to open dir '%s': %s",
+        qemudLog(QEMUD_ERR, _("Failed to open dir '%s': %s"),
                  configDir, strerror(errno));
         return -1;
     }
@@ -2608,13 +2619,14 @@ int qemudScanConfigDir(struct qemud_driver *driver,
             continue;
 
         if (virFileBuildPath(configDir, entry->d_name, NULL, path, PATH_MAX) < 0) {
-            qemudLog(QEMUD_WARN, "Config filename '%s/%s' is too long",
+            qemudLog(QEMUD_WARN, _("Config filename '%s/%s' is too long"),
                      configDir, entry->d_name);
             continue;
         }
 
-        if (virFileBuildPath(autostartDir, entry->d_name, NULL, autostartLink, PATH_MAX) < 0) {
-            qemudLog(QEMUD_WARN, "Autostart link path '%s/%s' is too long",
+        if (virFileBuildPath(autostartDir, entry->d_name, NULL,
+                             autostartLink, PATH_MAX) < 0) {
+            qemudLog(QEMUD_WARN, _("Autostart link path '%s/%s' is too long"),
                      autostartDir, entry->d_name);
             continue;
         }

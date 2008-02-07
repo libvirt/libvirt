@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007 Red Hat, Inc.
+ * Copyright (C) 2007, 2008 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -100,8 +100,8 @@ notifyRulesUpdated(const char *table,
     argv[3] = NULL;
 
     if (virRun(NULL, argv, NULL) < 0)
-        qemudLog(QEMUD_WARN, "Failed to run '" LOKKIT_PATH " %s' : %s",
-                 arg, strerror(errno));
+        qemudLog(QEMUD_WARN, _("Failed to run '" LOKKIT_PATH
+                               " %s' : %s"), arg, strerror(errno));
 }
 
 static int
@@ -148,7 +148,8 @@ notifyRulesRemoved(const char *table,
     len = virFileReadAll(SYSCONF_DIR "/sysconfig/system-config-firewall",
                          MAX_FILE_LEN, &content);
     if (len < 0) {
-        qemudLog(QEMUD_WARN, "Failed to read " SYSCONF_DIR "/sysconfig/system-config-firewall");
+        qemudLog(QEMUD_WARN, _("Failed to read " SYSCONF_DIR
+                               "/sysconfig/system-config-firewall"));
         return;
     }
 
@@ -175,7 +176,8 @@ notifyRulesRemoved(const char *table,
     return;
 
  write_error:
-    qemudLog(QEMUD_WARN, "Failed to write to " SYSCONF_DIR "/sysconfig/system-config-firewall : %s",
+    qemudLog(QEMUD_WARN, _("Failed to write to " SYSCONF_DIR
+                           "/sysconfig/system-config-firewall : %s"),
              strerror(errno));
     if (f)
         fclose(f);
@@ -239,13 +241,13 @@ iptRulesSave(iptRules *rules)
     int err;
 
     if ((err = virFileMakePath(rules->dir))) {
-        qemudLog(QEMUD_WARN, "Failed to create directory %s : %s",
+        qemudLog(QEMUD_WARN, _("Failed to create directory %s : %s"),
                  rules->dir, strerror(err));
         return;
     }
 
     if ((err = writeRules(rules->path, rules->rules, rules->nrules))) {
-        qemudLog(QEMUD_WARN, "Failed to saves iptables rules to %s : %s",
+        qemudLog(QEMUD_WARN, _("Failed to saves iptables rules to %s : %s"),
                  rules->path, strerror(err));
         return;
     }
@@ -583,7 +585,9 @@ iptRulesReload(iptRules *rules)
         rule->argv[rule->command_idx] = (char *) "--delete";
 
         if (virRun(NULL, rule->argv, NULL) < 0)
-            qemudLog(QEMUD_WARN, "Failed to remove iptables rule '%s' from chain '%s' in table '%s': %s",
+            qemudLog(QEMUD_WARN,
+                     _("Failed to remove iptables rule '%s'"
+                       " from chain '%s' in table '%s': %s"),
                      rule->rule, rules->chain, rules->table, strerror(errno));
 
         rule->argv[rule->command_idx] = orig;
@@ -591,7 +595,8 @@ iptRulesReload(iptRules *rules)
 
     for (i = 0; i < rules->nrules; i++)
         if (virRun(NULL, rules->rules[i].argv, NULL) < 0)
-            qemudLog(QEMUD_WARN, "Failed to add iptables rule '%s' to chain '%s' in table '%s': %s",
+            qemudLog(QEMUD_WARN, _("Failed to add iptables rule '%s'"
+                                   " to chain '%s' in table '%s': %s"),
                      rules->rules[i].rule, rules->chain, rules->table, strerror(errno));
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007 Red Hat, Inc.
+ * Copyright (C) 2007, 2008 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -99,8 +99,8 @@ virUUIDGenerate(unsigned char *uuid)
 
     if ((err = virUUIDGenerateRandomBytes(uuid, VIR_UUID_BUFLEN)))
         qemudLog(QEMUD_WARN,
-                 "Falling back to pseudorandom UUID, "
-                 "failed to generate random bytes: %s", strerror(err));
+                 _("Falling back to pseudorandom UUID,"
+                   " failed to generate random bytes: %s"), strerror(err));
 
     return virUUIDGeneratePseudoRandomBytes(uuid, VIR_UUID_BUFLEN);
 }
@@ -197,4 +197,3 @@ void virUUIDFormat(const unsigned char *uuid, char *uuidstr)
  *  tab-width: 4
  * End:
  */
-

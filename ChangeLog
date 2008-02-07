@@ -1,5 +1,37 @@
 Thu Feb  7 17:48:30 CET 2008 Jim Meyering  <meyering@redhat.com>
 
+	Mark all qemudLog diagnostics for translation.
+	* po/POTFILES.in: Add names of many new files.
+	* Makefile.maint (err_func_re): Add qemudLog.
+	Mark diagnostics with _(...).  Split some long lines.
+	* qemud/qemud.c (remoteCheckCertFile, remoteInitializeGnuTLS):
+	(qemudDispatchSignalEvent, qemudSetCloseExec, qemudSetNonBlock):
+	(qemudWritePidFile, qemudListenUnix, remoteMakeSockets):
+	(remoteListenTCP, qemudInitPaths, qemudInitialize):
+	(qemudNetworkInit, remoteInitializeTLSSession, remoteCheckDN):
+	(remoteCheckCertificate, remoteCheckAccess, qemudDispatchServer):
+	(qemudClientReadBuf, qemudDispatchClientRead):
+	(qemudClientWriteBuf, qemudDispatchClientWrite, qemudOneLoop):
+	(remoteConfigGetStringList, checkType, GET_CONF_STR):
+	(remoteConfigGetAuth, remoteReadConfigFile, main):
+	* qemud/remote.c (remoteDispatchAuthSaslInit, remoteSASLCheckSSF):
+	(remoteSASLCheckAccess, remoteDispatchAuthSaslStart):
+	(remoteDispatchAuthSaslStep, remoteDispatchAuthSaslInit):
+	(remoteDispatchAuthSaslStart, remoteDispatchAuthSaslStep):
+	(qemudGetSocketIdentity, remoteDispatchAuthPolkit):
+	* src/iptables.c (notifyRulesUpdated, MAX_FILE_LEN, iptRulesSave):
+	(iptRulesReload):
+	* src/qemu_conf.c (qemudExtractVersionInfo, qemudLoadConfig):
+	(qemudLoadNetworkConfig, qemudScanConfigDir):
+	* src/qemu_driver.c (qemudSetCloseExec, qemudSetNonBlock):
+	(qemudAutostartConfigs, qemudStartup, qemudReload):
+	(qemudWaitForMonitor, qemudStartVMDaemon, qemudVMData):
+	(qemudShutdownVMDaemon, qemudStartNetworkDaemon):
+	(qemudShutdownNetworkDaemon, qemudMonitorCommand):
+	(qemudDomainUndefine, qemudNetworkUndefine):
+	* src/uuid.c (virUUIDGenerate):
+	* src/xm_internal.c (xenXMAttachInterface):
+
 	Remove more useless if tests before "free"-like functions.
 	* build-aux/useless-if-before-free: Rename from ...
 	* build-aux/find-unnecessary-if-before-free: ... this.  Remove file.
