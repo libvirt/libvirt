@@ -2648,7 +2648,7 @@ remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
             !polkit_context_init(pkcontext, &pkerr)) {
             qemudLog(QEMUD_ERR, _("Failed to create polkit context %s\n"),
                      (pkerr ? polkit_error_get_error_message(pkerr)
-                      : strerror(errno));
+                      : strerror(errno)));
             if (pkerr)
                 polkit_error_free(pkerr);
             polkit_caller_unref(pkcaller);

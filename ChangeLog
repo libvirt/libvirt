@@ -1,3 +1,7 @@
+Thu Feb  7 18:02:22 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* qemud/remote.c: fix a missing ')' introduced earlier
+
 Thu Feb  7 17:46:14 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/hash.c: fix a couple of problems in virHashRemoveSet based
