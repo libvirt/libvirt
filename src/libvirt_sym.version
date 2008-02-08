@@ -132,6 +132,7 @@
 	__virDomainMigrateFinish;
 
         __virFileReadAll;
+        __virStrToLong_i;
 
     local: *;
 };

@@ -549,6 +549,87 @@ int virFileBuildPath(const char *dir,
     return 0;
 }
 
+/* Like strtol, but produce an "int" result, and check more carefully.
+   Return 0 upon success;  return -1 to indicate failure.
+   When END_PTR is NULL, the byte after the final valid digit must be NUL.
+   Otherwise, it's like strtol and lets the caller check any suffix for
+   validity.  This function is careful to return -1 when the string S
+   represents a number that is not representable as an "int". */
+int
+__virStrToLong_i(char const *s, char **end_ptr, int base, int *result)
+{
+    long int val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtol(s, &p, base);
+    err = (errno || (!end_ptr && *p) || p == s || (int) val != val);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
+
+/* Just like virStrToLong_i, above, but produce an "unsigned int" value.  */
+int
+virStrToLong_ui(char const *s, char **end_ptr, int base, unsigned int *result)
+{
+    unsigned long int val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtoul(s, &p, base);
+    err = (errno || (!end_ptr && *p) || p == s || (unsigned int) val != val);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
+
+/* Just like virStrToLong_i, above, but produce an "long long" value.  */
+int
+virStrToLong_ll(char const *s, char **end_ptr, int base, long long *result)
+{
+    long long val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtoll(s, &p, base);
+    err = (errno || (!end_ptr && *p) || p == s || (long long) val != val);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
+
+/* Just like virStrToLong_i, above, but produce an "unsigned long long" value.  */
+int
+virStrToLong_ull(char const *s, char **end_ptr, int base, unsigned long long *result)
+{
+    unsigned long long val;
+    char *p;
+    int err;
+
+    errno = 0;
+    val = strtoull(s, &p, base);
+    err = (errno || (!end_ptr && *p) || p == s || (unsigned long long) val != val);
+    if (end_ptr)
+        *end_ptr = p;
+    if (err)
+        return -1;
+    *result = val;
+    return 0;
+}
+
 /*
  * Local variables:
  *  indent-tabs-mode: nil

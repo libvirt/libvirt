@@ -35,7 +35,7 @@
 
 #include "libvirt/libvirt.h"
 #include "driver.h"
-#include "internal.h"
+#include "util.h"
 #include "sexpr.h"
 #include "xml.h"
 #include "buf.h"
@@ -3049,7 +3049,7 @@ xenDaemonDomainGetVcpus(virDomainPtr domain, virVcpuInfoPtr info, int maxinfo,
                         (t->u.s.car->u.s.cdr->kind == SEXPR_CONS)) {
                         for (t = t->u.s.car->u.s.cdr->u.s.car; t->kind == SEXPR_CONS; t = t->u.s.cdr)
                             if (t->u.s.car->kind == SEXPR_VALUE
-                                && xstrtol_i(t->u.s.car->u.value, NULL, 10, &cpu) == 0
+                                && virStrToLong_i(t->u.s.car->u.value, NULL, 10, &cpu) == 0
                                 && cpu >= 0
                                 && (VIR_CPU_MAPLEN(cpu+1) <= maplen)) {
                                 VIR_USE_CPU(cpumap, cpu);

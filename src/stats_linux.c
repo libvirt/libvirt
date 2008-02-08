@@ -24,7 +24,7 @@
 #include <xs.h>
 #endif
 
-#include "internal.h"
+#include "util.h"
 #include "xen_unified.h"
 #include "stats_linux.h"
 
@@ -263,7 +263,7 @@ xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *path)
 
         if (path[4] != '\0') {
             if (!isdigit(path[4]) || path[4] == '0' ||
-                xstrtol_i(path+4, NULL, 10, &part) < 0 ||
+                virStrToLong_i(path+4, NULL, 10, &part) < 0 ||
                 part < 1 || part > 15) {
                 statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
                                 "invalid path, partition numbers for xvdN must be in range 1 - 15",
@@ -307,7 +307,7 @@ xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *path)
                 p = path + 3;
             }
             if (p && (!isdigit(*p) || *p == '0' ||
-                      xstrtol_i(p, NULL, 10, &part) < 0 ||
+                      virStrToLong_i(p, NULL, 10, &part) < 0 ||
                       part < 1 || part > 15)) {
                 statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
                                 "invalid path, partition numbers for sdN must be in range 1 - 15",
@@ -333,7 +333,7 @@ xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *path)
 
         if (path[3] != '\0') {
             if (!isdigit(path[3]) || path[3] == '0' ||
-                xstrtol_i(path+3, NULL, 10, &part) < 0 ||
+                virStrToLong_i(path+3, NULL, 10, &part) < 0 ||
                 part < 1 || part > 63) {
                 statsErrorFunc (conn, VIR_ERR_INVALID_ARG, __FUNCTION__,
                                 "invalid path, partition numbers for hdN must be in range 1 - 63",

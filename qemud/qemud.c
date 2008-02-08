@@ -52,7 +52,7 @@
 
 #include "internal.h"
 #include "getaddrinfo.h"
-#include "../src/internal.h"
+#include "../src/util.h"
 #include "../src/remote_internal.h"
 #include "../src/conf.h"
 #include "event.h"
@@ -1905,7 +1905,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
 
     GET_CONF_STR (conf, filename, unix_sock_ro_perms);
     if (unix_sock_ro_perms) {
-        if (xstrtol_i (unix_sock_ro_perms, NULL, 8, &unix_sock_ro_mask) != 0) {
+        if (virStrToLong_i (unix_sock_ro_perms, NULL, 8, &unix_sock_ro_mask) != 0) {
             qemudLog (QEMUD_ERR, _("Failed to parse mode '%s'"),
                       unix_sock_ro_perms);
             goto free_and_fail;
@@ -1916,7 +1916,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
 
     GET_CONF_STR (conf, filename, unix_sock_rw_perms);
     if (unix_sock_rw_perms) {
-        if (xstrtol_i (unix_sock_rw_perms, NULL, 8, &unix_sock_rw_mask) != 0) {
+        if (virStrToLong_i (unix_sock_rw_perms, NULL, 8, &unix_sock_rw_mask) != 0) {
             qemudLog (QEMUD_ERR, _("Failed to parse mode '%s'"),
                       unix_sock_rw_perms);
             goto free_and_fail;
@@ -2061,7 +2061,7 @@ int main(int argc, char **argv) {
             break;
 
         case 't':
-            if (xstrtol_i(optarg, &tmp, 10, &timeout) != 0
+            if (virStrToLong_i(optarg, &tmp, 10, &timeout) != 0
                 || timeout <= 0
                 /* Ensure that we can multiply by 1000 without overflowing.  */
                 || timeout > INT_MAX / 1000)

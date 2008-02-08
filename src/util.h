@@ -56,4 +56,23 @@ int virFileBuildPath(const char *dir,
                      unsigned int buflen);
 
 
+int __virStrToLong_i(char const *s,
+                     char **end_ptr,
+                     int base,
+                     int *result);
+#define virStrToLong_i(s,e,b,r) __virStrToLong_i((s),(e),(b),(r))
+
+int virStrToLong_ui(char const *s,
+                    char **end_ptr,
+                    int base,
+                    unsigned int *result);
+int virStrToLong_ll(char const *s,
+                    char **end_ptr,
+                    int base,
+                    long long *result);
+int virStrToLong_ull(char const *s,
+                     char **end_ptr,
+                     int base,
+                     unsigned long long *result);
+
 #endif /* __VIR_UTIL_H__ */

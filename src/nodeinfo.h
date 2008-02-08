@@ -24,7 +24,7 @@
 #ifndef __VIR_NODEINFO_H__
 #define __VIR_NODEINFO_H__
 
-#include "internal.h"
+#include "libvirt/libvirt.h"
 
 #ifdef __cplusplus
 extern "C" {

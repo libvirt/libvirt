@@ -1,3 +1,22 @@
+Thu Feb  7 09:10:18 IST 2008 Mark McLoughlin <markmc@redhat.com>
+
+	Fix gcc-4.3.0 "inlining failed" warning.
+
+	* src/internal.h: move xstrol() variants from here ...
+
+	* src/util.[ch]: ... to here and rename to virStrToLong()
+
+	* src/libvirt_sym.version: export __virStrToLong_i() for
+	virsh and qemud.
+
+	* src/nodeinfo.c, src/stats_linux.c, src/virsh.c,
+	  src/xend_internal.c, qemud/qemud.c: replace xstrtol()
+	calls with virStrToLong()
+
+	* src/nodeinfo.h: don't include internal.h, which was only
+	needed for xstrtol(), but instead include libvirt.h which
+	is suffificient for the declarations in the header.
+
 Thu Feb  7 20:19:19 CET 2008 Jim Meyering  <meyering@redhat.com>
 
 	Enable another syntax-check rule.

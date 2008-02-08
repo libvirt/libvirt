@@ -46,7 +46,6 @@
 #include <readline/history.h>
 #endif
 
-#include "internal.h"
 #include "console.h"
 #include "util.h"
 
@@ -2914,7 +2913,7 @@ cmdVNCDisplay(vshControl * ctl, vshCmd * cmd)
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
         goto cleanup;
     }
-    if (xstrtol_i((const char *)obj->stringval, NULL, 10, &port) || port < 0)
+    if (virStrToLong_i((const char *)obj->stringval, NULL, 10, &port) || port < 0)
         goto cleanup;
     xmlXPathFreeObject(obj);
 
@@ -3955,7 +3954,7 @@ vshCommandOptDomainBy(vshControl * ctl, vshCmd * cmd, const char *optname,
 
     /* try it by ID */
     if (flag & VSH_BYID) {
-        if (xstrtol_i(n, NULL, 10, &id) == 0 && id >= 0) {
+        if (virStrToLong_i(n, NULL, 10, &id) == 0 && id >= 0) {
             vshDebug(ctl, 5, "%s: <%s> seems like domain ID\n",
                      cmd->def->name, optname);
             dom = virDomainLookupByID(ctl->conn, id);

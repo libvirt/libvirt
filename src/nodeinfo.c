@@ -35,6 +35,7 @@
 
 #include "nodeinfo.h"
 #include "physmem.h"
+#include "util.h"
 
 #ifdef __linux__
 #define CPUINFO_PATH "/proc/cpuinfo"
@@ -79,7 +80,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
                                 "parsing cpuinfo cpu MHz");
                 return -1;
             }
-            if (xstrtol_ui(buf+1, &p, 10, &ui) == 0
+            if (virStrToLong_ui(buf+1, &p, 10, &ui) == 0
                 /* Accept trailing fractional part.  */
                 && (*p == '\0' || *p == '.' || isspace(*p)))
                 nodeinfo->mhz = ui;
@@ -95,7 +96,7 @@ int linuxNodeInfoCPUPopulate(virConnectPtr conn, FILE *cpuinfo, virNodeInfoPtr n
                                 "parsing cpuinfo cpu cores %c", *buf);
                 return -1;
             }
-            if (xstrtol_ui(buf+1, &p, 10, &id) == 0
+            if (virStrToLong_ui(buf+1, &p, 10, &id) == 0
                 && (*p == '\0' || isspace(*p))
                 && id > nodeinfo->cores)
                 nodeinfo->cores = id;
