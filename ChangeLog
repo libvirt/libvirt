@@ -1,3 +1,9 @@
+Mon Feb 11 17:05:53 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* docs/libvir.html docs/format.html: fixes the examples on the
+	  section about ethernet bridging, as raised by Maxwell Bottiger,
+	  fixes bug #430790
+
 Thu Feb  7 09:10:18 IST 2008 Mark McLoughlin <markmc@redhat.com>
 
 	Fix gcc-4.3.0 "inlining failed" warning.

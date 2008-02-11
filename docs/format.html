@@ -269,11 +269,11 @@ support a variety of options:</p><ol><li>Userspace SLIRP stack
     provides the guest VM full incoming &amp; outgoing net access just like a
     physical machine. Examples include:</p>
     <pre>&lt;interface type='bridge'&gt;
- &lt;source dev='br0'/&gt;
+ &lt;source bridge='br0'/&gt;
 &lt;/interface&gt;
 
 &lt;interface type='bridge'&gt;
-  &lt;source dev='br0'/&gt;
+  &lt;source bridge='br0'/&gt;
   &lt;target dev='vnet7'/&gt;
   &lt;mac address="11:22:33:44:55:66"/&gt;
 &lt;/interface&gt;</pre>
