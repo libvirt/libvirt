@@ -1,3 +1,7 @@
+Tue Feb 12 9:44:22 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* .x-sc_trailing_blank: ignore NEWS / ChangeLog file 
+
 Mon Feb 11 17:05:53 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* docs/libvir.html docs/format.html: fixes the examples on the
