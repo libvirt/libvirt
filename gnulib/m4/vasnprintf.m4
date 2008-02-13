@@ -1,5 +1,5 @@
-# vasnprintf.m4 serial 23
-dnl Copyright (C) 2002-2004, 2006-2007 Free Software Foundation, Inc.
+# vasnprintf.m4 serial 24
+dnl Copyright (C) 2002-2004, 2006-2008 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -166,6 +166,21 @@ AC_DEFUN([gl_PREREQ_VASNPRINTF_FLAG_GROUPING],
   esac
 ])
 
+# Extra prerequisites of lib/vasnprintf.c for supporting the '-' flag.
+AC_DEFUN([gl_PREREQ_VASNPRINTF_FLAG_LEFTADJUST],
+[
+  AC_REQUIRE([gl_PRINTF_FLAG_LEFTADJUST])
+  case "$gl_cv_func_printf_flag_leftadjust" in
+    *yes)
+      ;;
+    *)
+      AC_DEFINE([NEED_PRINTF_FLAG_LEFTADJUST], 1,
+        [Define if the vasnprintf implementation needs special code for the
+         '-' flag.])
+      ;;
+  esac
+])
+
 # Extra prerequisites of lib/vasnprintf.c for supporting the 0 flag.
 AC_DEFUN([gl_PREREQ_VASNPRINTF_FLAG_ZERO],
 [
@@ -234,6 +249,7 @@ AC_DEFUN([gl_PREREQ_VASNPRINTF_WITH_EXTRAS],
   gl_PREREQ_VASNPRINTF_DIRECTIVE_A
   gl_PREREQ_VASNPRINTF_DIRECTIVE_F
   gl_PREREQ_VASNPRINTF_FLAG_GROUPING
+  gl_PREREQ_VASNPRINTF_FLAG_LEFTADJUST
   gl_PREREQ_VASNPRINTF_FLAG_ZERO
   gl_PREREQ_VASNPRINTF_PRECISION
   gl_PREREQ_VASNPRINTF_ENOMEM

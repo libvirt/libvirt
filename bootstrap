@@ -78,6 +78,7 @@ $gnulib_tool			\
   --import physmem getaddrinfo  \
     sys_stat vasprintf strndup  \
     strsep poll gettext getpass \
+    useless-if-before-free      \
     vc-list-files
 
 rm -f				\

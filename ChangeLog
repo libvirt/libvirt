@@ -1,6 +1,15 @@
+Wed Feb 13 22:51:27 CET 2008 Jim Meyering  <meyering@redhat.com>
+
+	Pull useless-if-before-free from gnulib, and update.
+	* bootstrap (gnulib_tool): Add useless-if-before-free to
+	the list of modules.
+	* build-aux/useless-if-before-free: Update from gnulib.
+	* gnulib/lib/vasnprintf.c: Work around a bug in HPUX 10.20.
+	* gnulib/m4/vasnprintf.m4: Likewise.
+
 Tue Feb 12 9:44:22 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
-	* .x-sc_trailing_blank: ignore NEWS / ChangeLog file 
+	* .x-sc_trailing_blank: ignore NEWS / ChangeLog file
 
 Mon Feb 11 17:05:53 CET 2008 Daniel Veillard <veillard@redhat.com>
 
