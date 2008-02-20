@@ -49,6 +49,8 @@ Requires: /usr/bin/qemu-img
 # From Xen RPMs
 Requires: /usr/sbin/qcow-create
 %endif
+# For LVM drivers
+Requires: lvm2
 BuildRequires: xen-devel
 BuildRequires: libxml2-devel
 BuildRequires: readline-devel
@@ -73,6 +75,8 @@ BuildRequires: /usr/bin/qemu-img
 # From Xen RPMs
 BuildRequires: /usr/sbin/qcow-create
 %endif
+# For LVM drivers
+BuildRequires: lvm2
 Obsoletes: libvir
 ExclusiveArch: i386 x86_64 ia64
 

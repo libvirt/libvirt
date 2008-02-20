@@ -68,6 +68,14 @@ CLIENT_SOURCES =						\
 SERVER_SOURCES = 						\
 		../qemud/remote_protocol.c ../qemud/remote_protocol.h
 
+if WITH_STORAGE_LVM
+CLIENT_SOURCES += storage_backend_logical.h storage_backend_logical.c
+else
+EXTRA_DIST += storage_backend_logical.h storage_backend_logical.c
+endif
+
+
+
 libvirt_la_SOURCES = $(CLIENT_SOURCES) $(SERVER_SOURCES)
 libvirt_la_LIBADD = $(LIBXML_LIBS) $(GNUTLS_LIBS) $(SASL_LIBS) $(SELINUX_LIBS) \
 		    @CYGWIN_EXTRA_LIBADD@ ../gnulib/lib/libgnu.la

@@ -36,6 +36,9 @@
 #if HAVE_SELINUX
 #include <selinux/selinux.h>
 #endif
+#if WITH_STORAGE_LVM
+#include "storage_backend_logical.h"
+#endif
 
 #include "util.h"
 
@@ -47,6 +50,9 @@ static virStorageBackendPtr backends[] = {
 #if WITH_STORAGE_FS
     &virStorageBackendFileSystem,
     &virStorageBackendNetFileSystem,
+#endif
+#if WITH_STORAGE_LVM
+    &virStorageBackendLogical,
 #endif
 };
 
@@ -90,6 +96,10 @@ virStorageBackendFromString(const char *type) {
     if (STREQ(type, "netfs"))
         return VIR_STORAGE_POOL_NETFS;
 #endif
+#if WITH_STORAGE_LVM
+    if (STREQ(type, "logical"))
+        return VIR_STORAGE_POOL_LOGICAL;
+#endif
 
     virStorageReportError(NULL, VIR_ERR_INTERNAL_ERROR,
                           _("unknown storage backend type %s"), type);
@@ -106,6 +116,10 @@ virStorageBackendToString(int type) {
         return "fs";
     case VIR_STORAGE_POOL_NETFS:
         return "netfs";
+#endif
+#if WITH_STORAGE_LVM
+    case VIR_STORAGE_POOL_LOGICAL:
+        return "logical";
 #endif
     }
 
