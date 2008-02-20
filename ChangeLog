@@ -1,3 +1,9 @@
+Wed Feb 20 10:18:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/remote_internal.c: Implement storage APIs in remote
+	driver. Replace memset+malloc with calloc. Replace strcmp
+	with STREQ
+
 Wed Feb 20 10:17:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/remote.c: Add binding for storage APIs

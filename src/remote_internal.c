@@ -89,7 +89,7 @@ struct private_data {
     gnutls_session_t session;   /* GnuTLS session (if uses_tls != 0). */
     char *type;                 /* Cached return from remoteType. */
     int counter;                /* Generates serial numbers for RPC. */
-    int networkOnly;            /* Only used for network API */
+    int localUses;              /* Ref count for private data */
     char *hostname;             /* Original hostname */
     FILE *debugLog;             /* Debug remote protocol */
 #if HAVE_SASL
@@ -116,6 +116,15 @@ struct private_data {
         return (retcode);                                               \
     }
 
+#define GET_STORAGE_PRIVATE(conn,retcode)                               \
+    struct private_data *priv = (struct private_data *) (conn)->storagePrivateData; \
+    if (!priv || priv->magic != MAGIC) {                                \
+        error (conn, VIR_ERR_INVALID_ARG,                               \
+               "tried to use a closed or uninitialised handle");        \
+        return (retcode);                                               \
+    }
+
+
 enum {
     REMOTE_CALL_IN_OPEN = 1,
     REMOTE_CALL_QUIET_MISSING_RPC = 2,
@@ -140,8 +149,12 @@ static void error (virConnectPtr conn, virErrorNumber code, const char *info);
 static void server_error (virConnectPtr conn, remote_error *err);
 static virDomainPtr get_nonnull_domain (virConnectPtr conn, remote_nonnull_domain domain);
 static virNetworkPtr get_nonnull_network (virConnectPtr conn, remote_nonnull_network network);
+static virStoragePoolPtr get_nonnull_storage_pool (virConnectPtr conn, remote_nonnull_storage_pool pool);
+static virStorageVolPtr get_nonnull_storage_vol (virConnectPtr conn, remote_nonnull_storage_vol vol);
 static void make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr dom_src);
 static void make_nonnull_network (remote_nonnull_network *net_dst, virNetworkPtr net_src);
+static void make_nonnull_storage_pool (remote_nonnull_storage_pool *pool_dst, virStoragePoolPtr vol_src);
+static void make_nonnull_storage_vol (remote_nonnull_storage_vol *vol_dst, virStorageVolPtr vol_src);
 
 /*----------------------------------------------------------------------*/
 
@@ -797,7 +810,7 @@ remoteOpen (virConnectPtr conn,
     if (inside_daemon)
         return VIR_DRV_OPEN_DECLINED;
 
-    priv = malloc (sizeof(*priv));
+    priv = calloc (1, sizeof(*priv));
     if (!priv) {
         error (conn, VIR_ERR_NO_MEMORY, _("struct private_data"));
         return VIR_DRV_OPEN_ERROR;
@@ -823,7 +836,6 @@ remoteOpen (virConnectPtr conn,
     }
 #endif
 
-    memset(priv, 0, sizeof(struct private_data));
     priv->magic = DEAD;
     priv->sock = -1;
     ret = doRemoteOpen(conn, priv, uri, auth, rflags);
@@ -2292,7 +2304,7 @@ remoteNetworkOpen (virConnectPtr conn,
 
     if (conn &&
         conn->driver &&
-        strcmp (conn->driver->name, "remote") == 0) {
+        STREQ (conn->driver->name, "remote")) {
         /* If we're here, the remote driver is already
          * in use due to a) a QEMU uri, or b) a remote
          * URI. So we can re-use existing connection
@@ -2305,7 +2317,7 @@ remoteNetworkOpen (virConnectPtr conn,
          * use the UNIX transport. This handles Xen driver
          * which doesn't have its own impl of the network APIs.
          */
-        struct private_data *priv = malloc (sizeof(*priv));
+        struct private_data *priv = calloc (1, sizeof(*priv));
         int ret, rflags = 0;
         if (!priv) {
             error (conn, VIR_ERR_NO_MEMORY, _("struct private_data"));
@@ -2315,7 +2327,6 @@ remoteNetworkOpen (virConnectPtr conn,
             rflags |= VIR_DRV_OPEN_REMOTE_RO;
         rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
 
-        memset(priv, 0, sizeof(struct private_data));
         priv->magic = DEAD;
         priv->sock = -1;
         ret = doRemoteOpen(conn, priv, uri, auth, rflags);
@@ -2324,7 +2335,7 @@ remoteNetworkOpen (virConnectPtr conn,
             free(priv);
         } else {
             priv->magic = MAGIC;
-            priv->networkOnly = 1;
+            priv->localUses = 1;
             conn->networkPrivateData = priv;
         }
         return ret;
@@ -2336,10 +2347,13 @@ remoteNetworkClose (virConnectPtr conn)
 {
     int ret = 0;
     GET_NETWORK_PRIVATE (conn, -1);
-    if (priv->networkOnly) {
-        ret = doRemoteClose(conn, priv);
-        free(priv);
-        conn->networkPrivateData = NULL;
+    if (priv->localUses) {
+        priv->localUses--;
+        if (!priv->localUses) {
+            ret = doRemoteClose(conn, priv);
+            free(priv);
+            conn->networkPrivateData = NULL;
+        }
     }
     return ret;
 }
@@ -2666,6 +2680,726 @@ remoteNetworkSetAutostart (virNetworkPtr network, int autostart)
 
     return 0;
 }
+
+
+
+
+/*----------------------------------------------------------------------*/
+
+static int
+remoteStorageOpen (virConnectPtr conn,
+                   xmlURIPtr uri,
+                   virConnectAuthPtr auth,
+                   int flags)
+{
+    if (inside_daemon)
+        return VIR_DRV_OPEN_DECLINED;
+
+    if (conn &&
+        conn->driver &&
+        STREQ (conn->driver->name, "remote")) {
+        /* If we're here, the remote driver is already
+         * in use due to a) a QEMU uri, or b) a remote
+         * URI. So we can re-use existing connection
+         */
+        conn->storagePrivateData = conn->privateData;
+        return VIR_DRV_OPEN_SUCCESS;
+    } else if (conn->networkDriver &&
+               STREQ (conn->networkDriver->name, "remote")) {
+        conn->storagePrivateData = conn->networkPrivateData;
+        ((struct private_data *)conn->storagePrivateData)->localUses++;
+        return VIR_DRV_OPEN_SUCCESS;
+    } else {
+        /* Using a non-remote driver, so we need to open a
+         * new connection for network APIs, forcing it to
+         * use the UNIX transport. This handles Xen driver
+         * which doesn't have its own impl of the network APIs.
+         */
+        struct private_data *priv = calloc (1, sizeof(struct private_data));
+        int ret, rflags = 0;
+        if (!priv) {
+            error (NULL, VIR_ERR_NO_MEMORY, _("struct private_data"));
+            return VIR_DRV_OPEN_ERROR;
+        }
+        if (flags & VIR_CONNECT_RO)
+            rflags |= VIR_DRV_OPEN_REMOTE_RO;
+        rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
+
+        priv->magic = DEAD;
+        priv->sock = -1;
+        ret = doRemoteOpen(conn, priv, uri, auth, rflags);
+        if (ret != VIR_DRV_OPEN_SUCCESS) {
+            conn->storagePrivateData = NULL;
+            free(priv);
+        } else {
+            priv->magic = MAGIC;
+            priv->localUses = 1;
+            conn->storagePrivateData = priv;
+        }
+        return ret;
+    }
+}
+
+static int
+remoteStorageClose (virConnectPtr conn)
+{
+    int ret = 0;
+    GET_STORAGE_PRIVATE (conn, -1);
+    if (priv->localUses) {
+        priv->localUses--;
+        if (!priv->localUses) {
+            ret = doRemoteClose(conn, priv);
+            free(priv);
+            conn->storagePrivateData = NULL;
+        }
+    }
+    return ret;
+}
+
+static int
+remoteNumOfStoragePools (virConnectPtr conn)
+{
+    remote_num_of_storage_pools_ret ret;
+    GET_STORAGE_PRIVATE (conn, -1);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_NUM_OF_STORAGE_POOLS,
+              (xdrproc_t) xdr_void, (char *) NULL,
+              (xdrproc_t) xdr_remote_num_of_storage_pools_ret, (char *) &ret) == -1)
+        return -1;
+
+    return ret.num;
+}
+
+static int
+remoteListStoragePools (virConnectPtr conn, char **const names, int maxnames)
+{
+    int i;
+    remote_list_storage_pools_args args;
+    remote_list_storage_pools_ret ret;
+    GET_STORAGE_PRIVATE (conn, -1);
+
+    if (maxnames > REMOTE_STORAGE_POOL_NAME_LIST_MAX) {
+        error (conn, VIR_ERR_RPC, _("too many storage pools requested"));
+        return -1;
+    }
+    args.maxnames = maxnames;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_LIST_STORAGE_POOLS,
+              (xdrproc_t) xdr_remote_list_storage_pools_args, (char *) &args,
+              (xdrproc_t) xdr_remote_list_storage_pools_ret, (char *) &ret) == -1)
+        return -1;
+
+    if (ret.names.names_len > maxnames) {
+        error (conn, VIR_ERR_RPC, _("too many storage pools received"));
+        xdr_free ((xdrproc_t) xdr_remote_list_storage_pools_ret, (char *) &ret);
+        return -1;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here.
+     */
+    for (i = 0; i < ret.names.names_len; ++i)
+        names[i] = strdup (ret.names.names_val[i]);
+
+    xdr_free ((xdrproc_t) xdr_remote_list_storage_pools_ret, (char *) &ret);
+
+    return ret.names.names_len;
+}
+
+static int
+remoteNumOfDefinedStoragePools (virConnectPtr conn)
+{
+    remote_num_of_defined_storage_pools_ret ret;
+    GET_STORAGE_PRIVATE (conn, -1);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_NUM_OF_DEFINED_STORAGE_POOLS,
+              (xdrproc_t) xdr_void, (char *) NULL,
+              (xdrproc_t) xdr_remote_num_of_defined_storage_pools_ret, (char *) &ret) == -1)
+        return -1;
+
+    return ret.num;
+}
+
+static int
+remoteListDefinedStoragePools (virConnectPtr conn,
+                               char **const names, int maxnames)
+{
+    int i;
+    remote_list_defined_storage_pools_args args;
+    remote_list_defined_storage_pools_ret ret;
+    GET_STORAGE_PRIVATE (conn, -1);
+
+    if (maxnames > REMOTE_STORAGE_POOL_NAME_LIST_MAX) {
+        error (conn, VIR_ERR_RPC, _("too many storage pools requested"));
+        return -1;
+    }
+    args.maxnames = maxnames;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_LIST_DEFINED_STORAGE_POOLS,
+              (xdrproc_t) xdr_remote_list_defined_storage_pools_args, (char *) &args,
+              (xdrproc_t) xdr_remote_list_defined_storage_pools_ret, (char *) &ret) == -1)
+        return -1;
+
+    if (ret.names.names_len > maxnames) {
+        error (conn, VIR_ERR_RPC, _("too many storage pools received"));
+        xdr_free ((xdrproc_t) xdr_remote_list_defined_storage_pools_ret, (char *) &ret);
+        return -1;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here.
+     */
+    for (i = 0; i < ret.names.names_len; ++i)
+        names[i] = strdup (ret.names.names_val[i]);
+
+    xdr_free ((xdrproc_t) xdr_remote_list_defined_storage_pools_ret, (char *) &ret);
+
+    return ret.names.names_len;
+}
+
+static virStoragePoolPtr
+remoteStoragePoolLookupByUUID (virConnectPtr conn,
+                               const unsigned char *uuid)
+{
+    virStoragePoolPtr pool;
+    remote_storage_pool_lookup_by_uuid_args args;
+    remote_storage_pool_lookup_by_uuid_ret ret;
+    GET_STORAGE_PRIVATE (conn, NULL);
+
+    memcpy (args.uuid, uuid, VIR_UUID_BUFLEN);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_UUID,
+              (xdrproc_t) xdr_remote_storage_pool_lookup_by_uuid_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_pool_lookup_by_uuid_ret, (char *) &ret) == -1)
+        return NULL;
+
+    pool = get_nonnull_storage_pool (conn, ret.pool);
+    xdr_free ((xdrproc_t) &xdr_remote_storage_pool_lookup_by_uuid_ret, (char *) &ret);
+
+    return pool;
+}
+
+static virStoragePoolPtr
+remoteStoragePoolLookupByName (virConnectPtr conn,
+                               const char *name)
+{
+    virStoragePoolPtr pool;
+    remote_storage_pool_lookup_by_name_args args;
+    remote_storage_pool_lookup_by_name_ret ret;
+    GET_STORAGE_PRIVATE (conn, NULL);
+
+    args.name = (char *) name;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_NAME,
+              (xdrproc_t) xdr_remote_storage_pool_lookup_by_name_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_pool_lookup_by_name_ret, (char *) &ret) == -1)
+        return NULL;
+
+    pool = get_nonnull_storage_pool (conn, ret.pool);
+    xdr_free ((xdrproc_t) &xdr_remote_storage_pool_lookup_by_name_ret, (char *) &ret);
+
+    return pool;
+}
+
+static virStoragePoolPtr
+remoteStoragePoolLookupByVolume (virStorageVolPtr vol)
+{
+    virStoragePoolPtr pool;
+    remote_storage_pool_lookup_by_volume_args args;
+    remote_storage_pool_lookup_by_volume_ret ret;
+    GET_STORAGE_PRIVATE (vol->conn, NULL);
+
+    make_nonnull_storage_vol (&args.vol, vol);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (vol->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_VOLUME,
+              (xdrproc_t) xdr_remote_storage_pool_lookup_by_volume_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_pool_lookup_by_volume_ret, (char *) &ret) == -1)
+        return NULL;
+
+    pool = get_nonnull_storage_pool (vol->conn, ret.pool);
+    xdr_free ((xdrproc_t) &xdr_remote_storage_pool_lookup_by_volume_ret, (char *) &ret);
+
+    return pool;
+}
+
+
+static virStoragePoolPtr
+remoteStoragePoolCreateXML (virConnectPtr conn, const char *xmlDesc, unsigned int flags)
+{
+    virStoragePoolPtr pool;
+    remote_storage_pool_create_xml_args args;
+    remote_storage_pool_create_xml_ret ret;
+    GET_STORAGE_PRIVATE (conn, NULL);
+
+    args.xml = (char *) xmlDesc;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_STORAGE_POOL_CREATE_XML,
+              (xdrproc_t) xdr_remote_storage_pool_create_xml_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_pool_create_xml_ret, (char *) &ret) == -1)
+        return NULL;
+
+    pool = get_nonnull_storage_pool (conn, ret.pool);
+    xdr_free ((xdrproc_t) &xdr_remote_storage_pool_create_xml_ret, (char *) &ret);
+
+    return pool;
+}
+
+static virStoragePoolPtr
+remoteStoragePoolDefineXML (virConnectPtr conn, const char *xml, unsigned int flags)
+{
+    virStoragePoolPtr pool;
+    remote_storage_pool_define_xml_args args;
+    remote_storage_pool_define_xml_ret ret;
+    GET_STORAGE_PRIVATE (conn, NULL);
+
+    args.xml = (char *) xml;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_STORAGE_POOL_DEFINE_XML,
+              (xdrproc_t) xdr_remote_storage_pool_define_xml_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_pool_define_xml_ret, (char *) &ret) == -1)
+        return NULL;
+
+    pool = get_nonnull_storage_pool (conn, ret.pool);
+    xdr_free ((xdrproc_t) &xdr_remote_storage_pool_define_xml_ret, (char *) &ret);
+
+    return pool;
+}
+
+static int
+remoteStoragePoolUndefine (virStoragePoolPtr pool)
+{
+    remote_storage_pool_undefine_args args;
+    GET_STORAGE_PRIVATE (pool->conn, -1);
+
+    make_nonnull_storage_pool (&args.pool, pool);
+
+    if (call (pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_UNDEFINE,
+              (xdrproc_t) xdr_remote_storage_pool_undefine_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteStoragePoolCreate (virStoragePoolPtr pool, unsigned int flags)
+{
+    remote_storage_pool_create_args args;
+    GET_STORAGE_PRIVATE (pool->conn, -1);
+
+    make_nonnull_storage_pool (&args.pool, pool);
+    args.flags = flags;
+
+    if (call (pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_CREATE,
+              (xdrproc_t) xdr_remote_storage_pool_create_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteStoragePoolBuild (virStoragePoolPtr pool,
+                        unsigned int flags)
+{
+    remote_storage_pool_build_args args;
+    GET_STORAGE_PRIVATE (pool->conn, -1);
+
+    make_nonnull_storage_pool (&args.pool, pool);
+    args.flags = flags;
+
+    if (call (pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_BUILD,
+              (xdrproc_t) xdr_remote_storage_pool_build_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteStoragePoolDestroy (virStoragePoolPtr pool)
+{
+    remote_storage_pool_destroy_args args;
+    GET_STORAGE_PRIVATE (pool->conn, -1);
+
+    make_nonnull_storage_pool (&args.pool, pool);
+
+    if (call (pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_DESTROY,
+              (xdrproc_t) xdr_remote_storage_pool_destroy_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteStoragePoolDelete (virStoragePoolPtr pool,
+                         unsigned int flags)
+{
+    remote_storage_pool_delete_args args;
+    GET_STORAGE_PRIVATE (pool->conn, -1);
+
+    make_nonnull_storage_pool (&args.pool, pool);
+    args.flags = flags;
+
+    if (call (pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_DELETE,
+              (xdrproc_t) xdr_remote_storage_pool_delete_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteStoragePoolRefresh (virStoragePoolPtr pool,
+                          unsigned int flags)
+{
+    remote_storage_pool_refresh_args args;
+    GET_STORAGE_PRIVATE (pool->conn, -1);
+
+    make_nonnull_storage_pool (&args.pool, pool);
+    args.flags = flags;
+
+    if (call (pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_REFRESH,
+              (xdrproc_t) xdr_remote_storage_pool_refresh_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteStoragePoolGetInfo (virStoragePoolPtr pool, virStoragePoolInfoPtr info)
+{
+    remote_storage_pool_get_info_args args;
+    remote_storage_pool_get_info_ret ret;
+    GET_STORAGE_PRIVATE (pool->conn, -1);
+
+    make_nonnull_storage_pool (&args.pool, pool);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_GET_INFO,
+              (xdrproc_t) xdr_remote_storage_pool_get_info_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_pool_get_info_ret, (char *) &ret) == -1)
+        return -1;
+
+    info->state = ret.state;
+    info->capacity = ret.capacity;
+    info->allocation = ret.allocation;
+    info->available = ret.available;
+
+    return 0;
+}
+
+static char *
+remoteStoragePoolDumpXML (virStoragePoolPtr pool,
+                          unsigned int flags)
+{
+    remote_storage_pool_dump_xml_args args;
+    remote_storage_pool_dump_xml_ret ret;
+    GET_STORAGE_PRIVATE (pool->conn, NULL);
+
+    make_nonnull_storage_pool (&args.pool, pool);
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_DUMP_XML,
+              (xdrproc_t) xdr_remote_storage_pool_dump_xml_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_pool_dump_xml_ret, (char *) &ret) == -1)
+        return NULL;
+
+    /* Caller frees. */
+    return ret.xml;
+}
+
+static int
+remoteStoragePoolGetAutostart (virStoragePoolPtr pool, int *autostart)
+{
+    remote_storage_pool_get_autostart_args args;
+    remote_storage_pool_get_autostart_ret ret;
+    GET_STORAGE_PRIVATE (pool->conn, -1);
+
+    make_nonnull_storage_pool (&args.pool, pool);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_GET_AUTOSTART,
+              (xdrproc_t) xdr_remote_storage_pool_get_autostart_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_pool_get_autostart_ret, (char *) &ret) == -1)
+        return -1;
+
+    if (autostart) *autostart = ret.autostart;
+
+    return 0;
+}
+
+static int
+remoteStoragePoolSetAutostart (virStoragePoolPtr pool, int autostart)
+{
+    remote_storage_pool_set_autostart_args args;
+    GET_STORAGE_PRIVATE (pool->conn, -1);
+
+    make_nonnull_storage_pool (&args.pool, pool);
+    args.autostart = autostart;
+
+    if (call (pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_SET_AUTOSTART,
+              (xdrproc_t) xdr_remote_storage_pool_set_autostart_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+remoteStoragePoolNumOfVolumes (virStoragePoolPtr pool)
+{
+    remote_storage_pool_num_of_volumes_args args;
+    remote_storage_pool_num_of_volumes_ret ret;
+    GET_STORAGE_PRIVATE (pool->conn, -1);
+
+    make_nonnull_storage_pool(&args.pool, pool);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_NUM_OF_VOLUMES,
+              (xdrproc_t) xdr_remote_storage_pool_num_of_volumes_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_pool_num_of_volumes_ret, (char *) &ret) == -1)
+        return -1;
+
+    return ret.num;
+}
+
+static int
+remoteStoragePoolListVolumes (virStoragePoolPtr pool, char **const names, int maxnames)
+{
+    int i;
+    remote_storage_pool_list_volumes_args args;
+    remote_storage_pool_list_volumes_ret ret;
+    GET_STORAGE_PRIVATE (pool->conn, -1);
+
+    if (maxnames > REMOTE_STORAGE_VOL_NAME_LIST_MAX) {
+        error (pool->conn, VIR_ERR_RPC, _("too many storage volumes requested"));
+        return -1;
+    }
+    args.maxnames = maxnames;
+    make_nonnull_storage_pool(&args.pool, pool);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (pool->conn, priv, 0, REMOTE_PROC_STORAGE_POOL_LIST_VOLUMES,
+              (xdrproc_t) xdr_remote_storage_pool_list_volumes_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_pool_list_volumes_ret, (char *) &ret) == -1)
+        return -1;
+
+    if (ret.names.names_len > maxnames) {
+        error (pool->conn, VIR_ERR_RPC, _("too many storage volumes received"));
+        xdr_free ((xdrproc_t) xdr_remote_storage_pool_list_volumes_ret, (char *) &ret);
+        return -1;
+    }
+
+    /* This call is caller-frees (although that isn't clear from
+     * the documentation).  However xdr_free will free up both the
+     * names and the list of pointers, so we have to strdup the
+     * names here.
+     */
+    for (i = 0; i < ret.names.names_len; ++i)
+        names[i] = strdup (ret.names.names_val[i]);
+
+    xdr_free ((xdrproc_t) xdr_remote_storage_pool_list_volumes_ret, (char *) &ret);
+
+    return ret.names.names_len;
+}
+
+
+
+static virStorageVolPtr
+remoteStorageVolLookupByName (virStoragePoolPtr pool,
+                              const char *name)
+{
+    virStorageVolPtr vol;
+    remote_storage_vol_lookup_by_name_args args;
+    remote_storage_vol_lookup_by_name_ret ret;
+    GET_STORAGE_PRIVATE (pool->conn, NULL);
+
+    make_nonnull_storage_pool(&args.pool, pool);
+    args.name = (char *) name;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (pool->conn, priv, 0, REMOTE_PROC_STORAGE_VOL_LOOKUP_BY_NAME,
+              (xdrproc_t) xdr_remote_storage_vol_lookup_by_name_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_vol_lookup_by_name_ret, (char *) &ret) == -1)
+        return NULL;
+
+    vol = get_nonnull_storage_vol (pool->conn, ret.vol);
+    xdr_free ((xdrproc_t) &xdr_remote_storage_vol_lookup_by_name_ret, (char *) &ret);
+
+    return vol;
+}
+
+static virStorageVolPtr
+remoteStorageVolLookupByKey (virConnectPtr conn,
+                             const char *key)
+{
+    virStorageVolPtr vol;
+    remote_storage_vol_lookup_by_key_args args;
+    remote_storage_vol_lookup_by_key_ret ret;
+    GET_STORAGE_PRIVATE (conn, NULL);
+
+    args.key = (char *) key;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_STORAGE_VOL_LOOKUP_BY_KEY,
+              (xdrproc_t) xdr_remote_storage_vol_lookup_by_key_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_vol_lookup_by_key_ret, (char *) &ret) == -1)
+        return NULL;
+
+    vol = get_nonnull_storage_vol (conn, ret.vol);
+    xdr_free ((xdrproc_t) &xdr_remote_storage_vol_lookup_by_key_ret, (char *) &ret);
+
+    return vol;
+}
+
+static virStorageVolPtr
+remoteStorageVolLookupByPath (virConnectPtr conn,
+                              const char *path)
+{
+    virStorageVolPtr vol;
+    remote_storage_vol_lookup_by_path_args args;
+    remote_storage_vol_lookup_by_path_ret ret;
+    GET_STORAGE_PRIVATE (conn, NULL);
+
+    args.path = (char *) path;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (conn, priv, 0, REMOTE_PROC_STORAGE_VOL_LOOKUP_BY_PATH,
+              (xdrproc_t) xdr_remote_storage_vol_lookup_by_path_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_vol_lookup_by_path_ret, (char *) &ret) == -1)
+        return NULL;
+
+    vol = get_nonnull_storage_vol (conn, ret.vol);
+    xdr_free ((xdrproc_t) &xdr_remote_storage_vol_lookup_by_path_ret, (char *) &ret);
+
+    return vol;
+}
+
+static virStorageVolPtr
+remoteStorageVolCreateXML (virStoragePoolPtr pool, const char *xmlDesc,
+                           unsigned int flags)
+{
+    virStorageVolPtr vol;
+    remote_storage_vol_create_xml_args args;
+    remote_storage_vol_create_xml_ret ret;
+    GET_STORAGE_PRIVATE (pool->conn, NULL);
+
+    make_nonnull_storage_pool (&args.pool, pool);
+    args.xml = (char *) xmlDesc;
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (pool->conn, priv, 0, REMOTE_PROC_STORAGE_VOL_CREATE_XML,
+              (xdrproc_t) xdr_remote_storage_vol_create_xml_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_vol_create_xml_ret, (char *) &ret) == -1)
+        return NULL;
+
+    vol = get_nonnull_storage_vol (pool->conn, ret.vol);
+    xdr_free ((xdrproc_t) &xdr_remote_storage_vol_create_xml_ret, (char *) &ret);
+
+    return vol;
+}
+
+static int
+remoteStorageVolDelete (virStorageVolPtr vol,
+                        unsigned int flags)
+{
+    remote_storage_vol_delete_args args;
+    GET_STORAGE_PRIVATE (vol->conn, -1);
+
+    make_nonnull_storage_vol (&args.vol, vol);
+    args.flags = flags;
+
+    if (call (vol->conn, priv, 0, REMOTE_PROC_STORAGE_VOL_DELETE,
+              (xdrproc_t) xdr_remote_storage_vol_delete_args, (char *) &args,
+              (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        return -1;
+
+    return 0;
+}
+
+static int
+remoteStorageVolGetInfo (virStorageVolPtr vol, virStorageVolInfoPtr info)
+{
+    remote_storage_vol_get_info_args args;
+    remote_storage_vol_get_info_ret ret;
+    GET_STORAGE_PRIVATE (vol->conn, -1);
+
+    make_nonnull_storage_vol (&args.vol, vol);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (vol->conn, priv, 0, REMOTE_PROC_STORAGE_VOL_GET_INFO,
+              (xdrproc_t) xdr_remote_storage_vol_get_info_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_vol_get_info_ret, (char *) &ret) == -1)
+        return -1;
+
+    info->type = ret.type;
+    info->capacity = ret.capacity;
+    info->allocation = ret.allocation;
+
+    return 0;
+}
+
+static char *
+remoteStorageVolDumpXML (virStorageVolPtr vol,
+                         unsigned int flags)
+{
+    remote_storage_vol_dump_xml_args args;
+    remote_storage_vol_dump_xml_ret ret;
+    GET_STORAGE_PRIVATE (vol->conn, NULL);
+
+    make_nonnull_storage_vol (&args.vol, vol);
+    args.flags = flags;
+
+    memset (&ret, 0, sizeof ret);
+    if (call (vol->conn, priv, 0, REMOTE_PROC_STORAGE_VOL_DUMP_XML,
+              (xdrproc_t) xdr_remote_storage_vol_dump_xml_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_vol_dump_xml_ret, (char *) &ret) == -1)
+        return NULL;
+
+    /* Caller frees. */
+    return ret.xml;
+}
+
+static char *
+remoteStorageVolGetPath (virStorageVolPtr vol)
+{
+    remote_storage_vol_get_path_args args;
+    remote_storage_vol_get_path_ret ret;
+    GET_NETWORK_PRIVATE (vol->conn, NULL);
+
+    make_nonnull_storage_vol (&args.vol, vol);
+
+    memset (&ret, 0, sizeof ret);
+    if (call (vol->conn, priv, 0, REMOTE_PROC_STORAGE_VOL_GET_PATH,
+              (xdrproc_t) xdr_remote_storage_vol_get_path_args, (char *) &args,
+              (xdrproc_t) xdr_remote_storage_vol_get_path_ret, (char *) &ret) == -1)
+        return NULL;
+
+    /* Caller frees. */
+    return ret.name;
+}
+
 
 /*----------------------------------------------------------------------*/
 
@@ -3816,6 +4550,18 @@ get_nonnull_network (virConnectPtr conn, remote_nonnull_network network)
     return virGetNetwork (conn, network.name, BAD_CAST network.uuid);
 }
 
+static virStoragePoolPtr
+get_nonnull_storage_pool (virConnectPtr conn, remote_nonnull_storage_pool pool)
+{
+    return virGetStoragePool (conn, pool.name, BAD_CAST pool.uuid);
+}
+
+static virStorageVolPtr
+get_nonnull_storage_vol (virConnectPtr conn, remote_nonnull_storage_vol vol)
+{
+    return virGetStorageVol (conn, vol.pool, vol.name, vol.key);
+}
+
 /* Make remote_nonnull_domain and remote_nonnull_network. */
 static void
 make_nonnull_domain (remote_nonnull_domain *dom_dst, virDomainPtr dom_src)
@@ -3830,6 +4576,21 @@ make_nonnull_network (remote_nonnull_network *net_dst, virNetworkPtr net_src)
 {
     net_dst->name = net_src->name;
     memcpy (net_dst->uuid, net_src->uuid, VIR_UUID_BUFLEN);
+}
+
+static void
+make_nonnull_storage_pool (remote_nonnull_storage_pool *pool_dst, virStoragePoolPtr pool_src)
+{
+    pool_dst->name = pool_src->name;
+    memcpy (pool_dst->uuid, pool_src->uuid, VIR_UUID_BUFLEN);
+}
+
+static void
+make_nonnull_storage_vol (remote_nonnull_storage_vol *vol_dst, virStorageVolPtr vol_src)
+{
+    vol_dst->pool = vol_src->pool;
+    vol_dst->name = vol_src->name;
+    vol_dst->key = vol_src->key;
 }
 
 /*----------------------------------------------------------------------*/
@@ -3912,6 +4673,42 @@ static virNetworkDriver network_driver = {
     .networkSetAutostart = remoteNetworkSetAutostart,
 };
 
+static virStorageDriver storage_driver = {
+    .name = "remote",
+    .open = remoteStorageOpen,
+    .close = remoteStorageClose,
+    .numOfPools = remoteNumOfStoragePools,
+    .listPools = remoteListStoragePools,
+    .numOfDefinedPools = remoteNumOfDefinedStoragePools,
+    .listDefinedPools = remoteListDefinedStoragePools,
+    .poolLookupByUUID = remoteStoragePoolLookupByUUID,
+    .poolLookupByName = remoteStoragePoolLookupByName,
+    .poolLookupByVolume = remoteStoragePoolLookupByVolume,
+    .poolCreateXML = remoteStoragePoolCreateXML,
+    .poolDefineXML = remoteStoragePoolDefineXML,
+    .poolUndefine = remoteStoragePoolUndefine,
+    .poolCreate = remoteStoragePoolCreate,
+    .poolBuild = remoteStoragePoolBuild,
+    .poolDestroy = remoteStoragePoolDestroy,
+    .poolDelete = remoteStoragePoolDelete,
+    .poolRefresh = remoteStoragePoolRefresh,
+    .poolGetInfo = remoteStoragePoolGetInfo,
+    .poolGetXMLDesc = remoteStoragePoolDumpXML,
+    .poolGetAutostart = remoteStoragePoolGetAutostart,
+    .poolSetAutostart = remoteStoragePoolSetAutostart,
+    .poolNumOfVolumes = remoteStoragePoolNumOfVolumes,
+    .poolListVolumes = remoteStoragePoolListVolumes,
+
+    .volLookupByName = remoteStorageVolLookupByName,
+    .volLookupByKey = remoteStorageVolLookupByKey,
+    .volLookupByPath = remoteStorageVolLookupByPath,
+    .volCreateXML = remoteStorageVolCreateXML,
+    .volDelete = remoteStorageVolDelete,
+    .volGetInfo = remoteStorageVolGetInfo,
+    .volGetXMLDesc = remoteStorageVolDumpXML,
+    .volGetPath = remoteStorageVolGetPath,
+};
+
 static virStateDriver state_driver = {
     remoteStartup,
     NULL,
@@ -3931,6 +4728,7 @@ remoteRegister (void)
 {
     if (virRegisterDriver (&driver) == -1) return -1;
     if (virRegisterNetworkDriver (&network_driver) == -1) return -1;
+    if (virRegisterStorageDriver (&storage_driver) == -1) return -1;
     if (virRegisterStateDriver (&state_driver) == -1) return -1;
 
     return 0;
