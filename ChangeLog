@@ -1,3 +1,8 @@
+Wed Feb 20 10:15:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* docs/libvirt-api.xml, docs/libvirt-refs.xml, docs/devhelp/*:
+	re-generate docs to include latest API details
+
 Wed Feb 20 10:01:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* include/libvirt/virterror.h, src/virterror.c: Add error codes

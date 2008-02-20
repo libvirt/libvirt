@@ -16,12 +16,17 @@
      <exports symbol='VIR_UUID_STRING_BUFLEN' type='macro'/>
      <exports symbol='VIR_GET_CPUMAP' type='macro'/>
      <exports symbol='VIR_UNUSE_CPU' type='macro'/>
+     <exports symbol='VIR_STORAGE_POOL_BUILD_REPAIR' type='enum'/>
      <exports symbol='VIR_CRED_EXTERNAL' type='enum'/>
      <exports symbol='VIR_DOMAIN_SHUTDOWN' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_UINT' type='enum'/>
+     <exports symbol='VIR_STORAGE_POOL_BUILDING' type='enum'/>
      <exports symbol='VIR_CRED_CNONCE' type='enum'/>
      <exports symbol='VIR_CRED_ECHOPROMPT' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_DOUBLE' type='enum'/>
+     <exports symbol='VIR_STORAGE_VOL_BLOCK' type='enum'/>
+     <exports symbol='VIR_STORAGE_POOL_RUNNING' type='enum'/>
+     <exports symbol='VIR_STORAGE_POOL_BUILD_RESIZE' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_LLONG' type='enum'/>
      <exports symbol='VIR_CONNECT_RO' type='enum'/>
      <exports symbol='VIR_CRED_AUTHNAME' type='enum'/>
@@ -34,18 +39,26 @@
      <exports symbol='VIR_DOMAIN_RUNNING' type='enum'/>
      <exports symbol='VIR_DOMAIN_BLOCKED' type='enum'/>
      <exports symbol='VIR_DOMAIN_SHUTOFF' type='enum'/>
+     <exports symbol='VIR_STORAGE_POOL_BUILD_NEW' type='enum'/>
      <exports symbol='VIR_VCPU_BLOCKED' type='enum'/>
+     <exports symbol='VIR_STORAGE_POOL_DELETE_NORMAL' type='enum'/>
+     <exports symbol='VIR_STORAGE_VOL_DELETE_ZEROED' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_INT' type='enum'/>
      <exports symbol='VIR_DOMAIN_SCHED_FIELD_ULLONG' type='enum'/>
      <exports symbol='VIR_CRED_REALM' type='enum'/>
+     <exports symbol='VIR_STORAGE_VOL_FILE' type='enum'/>
      <exports symbol='VIR_VCPU_RUNNING' type='enum'/>
      <exports symbol='VIR_DOMAIN_PAUSED' type='enum'/>
+     <exports symbol='VIR_STORAGE_POOL_DEGRADED' type='enum'/>
      <exports symbol='VIR_DOMAIN_CRASHED' type='enum'/>
      <exports symbol='VIR_DOMAIN_XML_INACTIVE' type='enum'/>
      <exports symbol='VIR_DOMAIN_NONE' type='enum'/>
      <exports symbol='VIR_DOMAIN_NOSTATE' type='enum'/>
      <exports symbol='VIR_CRED_PASSPHRASE' type='enum'/>
+     <exports symbol='VIR_STORAGE_VOL_DELETE_NORMAL' type='enum'/>
+     <exports symbol='VIR_STORAGE_POOL_DELETE_ZEROED' type='enum'/>
      <exports symbol='VIR_DOMAIN_XML_SECURE' type='enum'/>
+     <exports symbol='VIR_STORAGE_POOL_INACTIVE' type='enum'/>
      <exports symbol='virDomainBlockStatsStruct' type='typedef'/>
      <exports symbol='virDomainMigrateFlags' type='typedef'/>
      <exports symbol='virNodeInfo' type='typedef'/>
@@ -54,120 +67,174 @@
      <exports symbol='virConnect' type='typedef'/>
      <exports symbol='virVcpuInfo' type='typedef'/>
      <exports symbol='virDomainInfo' type='typedef'/>
+     <exports symbol='virStoragePoolDeleteFlags' type='typedef'/>
+     <exports symbol='virStoragePool' type='typedef'/>
+     <exports symbol='virStoragePoolPtr' type='typedef'/>
      <exports symbol='virDomainInterfaceStatsStruct' type='typedef'/>
+     <exports symbol='virStoragePoolInfo' type='typedef'/>
      <exports symbol='virDomainState' type='typedef'/>
      <exports symbol='virDomain' type='typedef'/>
      <exports symbol='virDomainInterfaceStatsPtr' type='typedef'/>
      <exports symbol='virConnectAuthPtr' type='typedef'/>
+     <exports symbol='virStorageVolInfo' type='typedef'/>
      <exports symbol='virSchedParameterType' type='typedef'/>
      <exports symbol='virConnectCredentialPtr' type='typedef'/>
      <exports symbol='virNodeInfoPtr' type='typedef'/>
      <exports symbol='virNetworkPtr' type='typedef'/>
      <exports symbol='virDomainInfoPtr' type='typedef'/>
      <exports symbol='virConnectPtr' type='typedef'/>
+     <exports symbol='virStorageVol' type='typedef'/>
+     <exports symbol='virStorageVolInfoPtr' type='typedef'/>
      <exports symbol='virSchedParameter' type='typedef'/>
      <exports symbol='virConnectFlags' type='typedef'/>
      <exports symbol='virSchedParameterPtr' type='typedef'/>
+     <exports symbol='virStorageVolPtr' type='typedef'/>
      <exports symbol='virVcpuState' type='typedef'/>
+     <exports symbol='virStorageVolDeleteFlags' type='typedef'/>
      <exports symbol='virConnectAuth' type='typedef'/>
      <exports symbol='virConnectCredential' type='typedef'/>
      <exports symbol='virVcpuInfoPtr' type='typedef'/>
+     <exports symbol='virStoragePoolBuildFlags' type='typedef'/>
      <exports symbol='virDomainXMLFlags' type='typedef'/>
+     <exports symbol='virStorageVolType' type='typedef'/>
      <exports symbol='virDomainPtr' type='typedef'/>
      <exports symbol='virConnectCredentialType' type='typedef'/>
+     <exports symbol='virStoragePoolState' type='typedef'/>
+     <exports symbol='virStoragePoolInfoPtr' type='typedef'/>
      <exports symbol='virDomainCreateFlags' type='typedef'/>
      <exports symbol='_virDomainInfo' type='struct'/>
      <exports symbol='_virConnectAuth' type='struct'/>
      <exports symbol='_virVcpuInfo' type='struct'/>
      <exports symbol='_virDomainInterfaceStats' type='struct'/>
+     <exports symbol='_virStoragePoolInfo' type='struct'/>
      <exports symbol='_virConnectCredential' type='struct'/>
+     <exports symbol='_virStorageVolInfo' type='struct'/>
      <exports symbol='_virDomainBlockStats' type='struct'/>
      <exports symbol='_virNodeInfo' type='struct'/>
      <exports symbol='_virSchedParameter' type='struct'/>
      <exports symbol='virConnectAuthPtrDefault' type='variable'/>
-     <exports symbol='virDomainGetInfo' type='function'/>
-     <exports symbol='virNetworkCreate' type='function'/>
-     <exports symbol='virNetworkFree' type='function'/>
-     <exports symbol='virNetworkGetName' type='function'/>
-     <exports symbol='virDomainGetName' type='function'/>
-     <exports symbol='virNetworkGetAutostart' type='function'/>
+     <exports symbol='virStoragePoolGetXMLDesc' type='function'/>
+     <exports symbol='virStorageVolGetKey' type='function'/>
+     <exports symbol='virConnectClose' type='function'/>
      <exports symbol='virDomainDefineXML' type='function'/>
      <exports symbol='virDomainShutdown' type='function'/>
-     <exports symbol='virNetworkUndefine' type='function'/>
+     <exports symbol='virConnectListStoragePools' type='function'/>
      <exports symbol='virGetVersion' type='function'/>
-     <exports symbol='virConnectListDefinedDomains' type='function'/>
-     <exports symbol='virConnectGetCapabilities' type='function'/>
-     <exports symbol='virInitialize' type='function'/>
-     <exports symbol='virDomainLookupByName' type='function'/>
-     <exports symbol='virNetworkLookupByUUID' type='function'/>
-     <exports symbol='virNetworkGetBridgeName' type='function'/>
-     <exports symbol='virDomainPinVcpu' type='function'/>
-     <exports symbol='virDomainRestore' type='function'/>
-     <exports symbol='virConnectGetType' type='function'/>
-     <exports symbol='virNetworkLookupByName' type='function'/>
-     <exports symbol='virNodeGetFreeMemory' type='function'/>
+     <exports symbol='virNodeGetCellsFreeMemory' type='function'/>
+     <exports symbol='virStoragePoolSetAutostart' type='function'/>
+     <exports symbol='virStorageVolCreateXML' type='function'/>
      <exports symbol='virDomainGetSchedulerParameters' type='function'/>
-     <exports symbol='virDomainCreate' type='function'/>
-     <exports symbol='virConnectListDomains' type='function'/>
-     <exports symbol='virNetworkLookupByUUIDString' type='function'/>
-     <exports symbol='virDomainCoreDump' type='function'/>
-     <exports symbol='virDomainLookupByUUID' type='function'/>
      <exports symbol='virDomainLookupByUUIDString' type='function'/>
      <exports symbol='virConnectNumOfDefinedNetworks' type='function'/>
-     <exports symbol='virDomainUndefine' type='function'/>
-     <exports symbol='virDomainGetOSType' type='function'/>
-     <exports symbol='virConnectListDefinedNetworks' type='function'/>
-     <exports symbol='virNodeGetInfo' type='function'/>
-     <exports symbol='virDomainGetUUID' type='function'/>
-     <exports symbol='virDomainSetMemory' type='function'/>
-     <exports symbol='virNetworkSetAutostart' type='function'/>
      <exports symbol='virConnectNumOfDomains' type='function'/>
-     <exports symbol='virDomainGetUUIDString' type='function'/>
-     <exports symbol='virDomainGetConnect' type='function'/>
-     <exports symbol='virDomainGetMaxMemory' type='function'/>
-     <exports symbol='virDomainAttachDevice' type='function'/>
-     <exports symbol='virDomainGetMaxVcpus' type='function'/>
+     <exports symbol='virNetworkGetUUID' type='function'/>
+     <exports symbol='virStoragePoolGetConnect' type='function'/>
+     <exports symbol='virConnectGetVersion' type='function'/>
      <exports symbol='virDomainFree' type='function'/>
-     <exports symbol='virConnectOpen' type='function'/>
+     <exports symbol='virStoragePoolGetName' type='function'/>
      <exports symbol='virDomainSetAutostart' type='function'/>
-     <exports symbol='virDomainSuspend' type='function'/>
-     <exports symbol='virConnectGetMaxVcpus' type='function'/>
-     <exports symbol='virNetworkGetConnect' type='function'/>
-     <exports symbol='virConnectNumOfDefinedDomains' type='function'/>
-     <exports symbol='virNetworkCreateXML' type='function'/>
-     <exports symbol='virNetworkDefineXML' type='function'/>
-     <exports symbol='virDomainLookupByID' type='function'/>
-     <exports symbol='virDomainSetSchedulerParameters' type='function'/>
-     <exports symbol='virNodeGetCellsFreeMemory' type='function'/>
-     <exports symbol='virConnectClose' type='function'/>
-     <exports symbol='virDomainReboot' type='function'/>
-     <exports symbol='virDomainBlockStats' type='function'/>
-     <exports symbol='virDomainSetVcpus' type='function'/>
-     <exports symbol='virConnectOpenAuth' type='function'/>
-     <exports symbol='virNetworkGetUUIDString' type='function'/>
-     <exports symbol='virDomainMigrate' type='function'/>
-     <exports symbol='virNetworkGetXMLDesc' type='function'/>
-     <exports symbol='virDomainGetID' type='function'/>
-     <exports symbol='virDomainResume' type='function'/>
+     <exports symbol='virStoragePoolDefineXML' type='function'/>
+     <exports symbol='virStorageVolLookupByPath' type='function'/>
+     <exports symbol='virStorageVolLookupByName' type='function'/>
      <exports symbol='virDomainCreateLinux' type='function'/>
-     <exports symbol='virDomainGetSchedulerType' type='function'/>
-     <exports symbol='virNetworkDestroy' type='function'/>
+     <exports symbol='virDomainSetMaxMemory' type='function'/>
+     <exports symbol='virInitialize' type='function'/>
+     <exports symbol='virDomainMigrate' type='function'/>
+     <exports symbol='virDomainSuspend' type='function'/>
+     <exports symbol='virNetworkCreate' type='function'/>
      <exports symbol='virDomainDestroy' type='function'/>
      <exports symbol='virConnectNumOfNetworks' type='function'/>
-     <exports symbol='virDomainDetachDevice' type='function'/>
-     <exports symbol='virDomainGetAutostart' type='function'/>
-     <exports symbol='virDomainGetVcpus' type='function'/>
-     <exports symbol='virNetworkGetUUID' type='function'/>
-     <exports symbol='virConnectGetHostname' type='function'/>
+     <exports symbol='virStoragePoolLookupByUUIDString' type='function'/>
      <exports symbol='virDomainGetXMLDesc' type='function'/>
-     <exports symbol='virDomainSetMaxMemory' type='function'/>
-     <exports symbol='virDomainInterfaceStats' type='function'/>
-     <exports symbol='virConnectAuthCallbackPtr' type='function'/>
-     <exports symbol='virConnectGetVersion' type='function'/>
-     <exports symbol='virConnectListNetworks' type='function'/>
-     <exports symbol='virConnectGetURI' type='function'/>
+     <exports symbol='virStoragePoolGetUUID' type='function'/>
+     <exports symbol='virStorageVolGetInfo' type='function'/>
+     <exports symbol='virNetworkGetName' type='function'/>
+     <exports symbol='virNetworkDestroy' type='function'/>
+     <exports symbol='virStoragePoolLookupByName' type='function'/>
+     <exports symbol='virNetworkGetAutostart' type='function'/>
+     <exports symbol='virNetworkGetBridgeName' type='function'/>
+     <exports symbol='virStorageVolGetXMLDesc' type='function'/>
+     <exports symbol='virDomainSetSchedulerParameters' type='function'/>
+     <exports symbol='virConnectGetType' type='function'/>
      <exports symbol='virDomainSave' type='function'/>
+     <exports symbol='virDomainCreate' type='function'/>
+     <exports symbol='virConnectListDomains' type='function'/>
+     <exports symbol='virDomainCoreDump' type='function'/>
+     <exports symbol='virDomainSetMemory' type='function'/>
+     <exports symbol='virNodeGetInfo' type='function'/>
+     <exports symbol='virNetworkSetAutostart' type='function'/>
+     <exports symbol='virDomainGetMaxMemory' type='function'/>
+     <exports symbol='virStoragePoolFree' type='function'/>
+     <exports symbol='virNetworkDefineXML' type='function'/>
+     <exports symbol='virDomainBlockStats' type='function'/>
+     <exports symbol='virConnectOpenAuth' type='function'/>
+     <exports symbol='virStoragePoolDelete' type='function'/>
+     <exports symbol='virDomainResume' type='function'/>
+     <exports symbol='virStorageVolGetName' type='function'/>
+     <exports symbol='virStoragePoolGetAutostart' type='function'/>
+     <exports symbol='virDomainGetAutostart' type='function'/>
+     <exports symbol='virStoragePoolListVolumes' type='function'/>
+     <exports symbol='virConnectGetHostname' type='function'/>
+     <exports symbol='virDomainGetName' type='function'/>
+     <exports symbol='virNetworkGetXMLDesc' type='function'/>
+     <exports symbol='virConnectNumOfStoragePools' type='function'/>
+     <exports symbol='virDomainGetInfo' type='function'/>
+     <exports symbol='virConnectListDefinedDomains' type='function'/>
+     <exports symbol='virConnectGetCapabilities' type='function'/>
+     <exports symbol='virDomainLookupByName' type='function'/>
+     <exports symbol='virDomainPinVcpu' type='function'/>
+     <exports symbol='virDomainRestore' type='function'/>
+     <exports symbol='virStorageVolGetPath' type='function'/>
+     <exports symbol='virNetworkLookupByUUIDString' type='function'/>
+     <exports symbol='virDomainLookupByID' type='function'/>
+     <exports symbol='virStorageVolFree' type='function'/>
+     <exports symbol='virNetworkLookupByUUID' type='function'/>
+     <exports symbol='virConnectListDefinedNetworks' type='function'/>
+     <exports symbol='virDomainGetUUID' type='function'/>
+     <exports symbol='virNetworkCreateXML' type='function'/>
+     <exports symbol='virDomainGetVcpus' type='function'/>
+     <exports symbol='virStoragePoolCreateXML' type='function'/>
+     <exports symbol='virStoragePoolGetInfo' type='function'/>
+     <exports symbol='virStoragePoolRefresh' type='function'/>
+     <exports symbol='virConnectNumOfDefinedDomains' type='function'/>
+     <exports symbol='virStorageVolLookupByKey' type='function'/>
+     <exports symbol='virDomainUndefine' type='function'/>
+     <exports symbol='virDomainReboot' type='function'/>
+     <exports symbol='virNetworkGetUUIDString' type='function'/>
+     <exports symbol='virNetworkLookupByName' type='function'/>
+     <exports symbol='virDomainGetMaxVcpus' type='function'/>
+     <exports symbol='virDomainGetSchedulerType' type='function'/>
+     <exports symbol='virDomainDetachDevice' type='function'/>
+     <exports symbol='virStoragePoolNumOfVolumes' type='function'/>
+     <exports symbol='virStoragePoolGetUUIDString' type='function'/>
+     <exports symbol='virStoragePoolUndefine' type='function'/>
+     <exports symbol='virConnectAuthCallbackPtr' type='function'/>
+     <exports symbol='virDomainAttachDevice' type='function'/>
+     <exports symbol='virConnectGetURI' type='function'/>
      <exports symbol='virConnectOpenReadOnly' type='function'/>
+     <exports symbol='virNetworkFree' type='function'/>
+     <exports symbol='virStoragePoolLookupByUUID' type='function'/>
+     <exports symbol='virStorageVolDelete' type='function'/>
+     <exports symbol='virNetworkUndefine' type='function'/>
+     <exports symbol='virConnectListDefinedStoragePools' type='function'/>
+     <exports symbol='virNetworkGetConnect' type='function'/>
+     <exports symbol='virNodeGetFreeMemory' type='function'/>
+     <exports symbol='virStorageVolGetConnect' type='function'/>
+     <exports symbol='virStoragePoolDestroy' type='function'/>
+     <exports symbol='virStoragePoolLookupByVolume' type='function'/>
+     <exports symbol='virDomainLookupByUUID' type='function'/>
+     <exports symbol='virDomainGetOSType' type='function'/>
+     <exports symbol='virStoragePoolBuild' type='function'/>
+     <exports symbol='virConnectGetMaxVcpus' type='function'/>
+     <exports symbol='virDomainGetUUIDString' type='function'/>
+     <exports symbol='virDomainGetConnect' type='function'/>
+     <exports symbol='virConnectNumOfDefinedStoragePools' type='function'/>
+     <exports symbol='virConnectOpen' type='function'/>
+     <exports symbol='virStoragePoolCreate' type='function'/>
+     <exports symbol='virDomainSetVcpus' type='function'/>
+     <exports symbol='virDomainGetID' type='function'/>
+     <exports symbol='virDomainInterfaceStats' type='function'/>
+     <exports symbol='virConnectListNetworks' type='function'/>
     </file>
     <file name='virterror'>
      <summary>error handling interfaces for the libvirt library</summary>
@@ -200,6 +267,7 @@
      <exports symbol='VIR_ERR_INVALID_NETWORK' type='enum'/>
      <exports symbol='VIR_ERR_AUTH_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_OPERATION_DENIED' type='enum'/>
+     <exports symbol='VIR_FROM_STORAGE' type='enum'/>
      <exports symbol='VIR_ERR_NO_KERNEL' type='enum'/>
      <exports symbol='VIR_ERR_GNUTLS_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_POST_FAILED' type='enum'/>
@@ -221,12 +289,15 @@
      <exports symbol='VIR_ERR_NO_SOURCE' type='enum'/>
      <exports symbol='VIR_ERR_NO_TARGET' type='enum'/>
      <exports symbol='VIR_ERR_NETWORK_EXIST' type='enum'/>
+     <exports symbol='VIR_WAR_NO_STORAGE' type='enum'/>
      <exports symbol='VIR_ERR_WRITE_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_INTERNAL_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_CONF_SYNTAX' type='enum'/>
+     <exports symbol='VIR_ERR_INVALID_STORAGE_POOL' type='enum'/>
      <exports symbol='VIR_FROM_REMOTE' type='enum'/>
      <exports symbol='VIR_ERR_NO_SUPPORT' type='enum'/>
      <exports symbol='VIR_FROM_XEND' type='enum'/>
+     <exports symbol='VIR_ERR_INVALID_STORAGE_VOL' type='enum'/>
      <exports symbol='VIR_FROM_PROXY' type='enum'/>
      <exports symbol='VIR_ERR_NO_NETWORK' type='enum'/>
      <exports symbol='VIR_ERR_NO_DOMAIN' type='enum'/>
@@ -335,7 +406,7 @@
     <enum name='VIR_DOMAIN_SHUTOFF' file='libvirt' value='5' type='virDomainState' info='the domain is shut off'/>
     <enum name='VIR_DOMAIN_XML_INACTIVE' file='libvirt' value='2' type='virDomainXMLFlags' info=' dump inactive domain informations'/>
     <enum name='VIR_DOMAIN_XML_SECURE' file='libvirt' value='1' type='virDomainXMLFlags' info='dump security sensitive informations too'/>
-    <enum name='VIR_ERR_AUTH_FAILED' file='virterror' value='45' type='virErrorNumber' info=' authentication failed'/>
+    <enum name='VIR_ERR_AUTH_FAILED' file='virterror' value='45' type='virErrorNumber' info='authentication failed'/>
     <enum name='VIR_ERR_CALL_FAILED' file='virterror' value='26' type='virErrorNumber' info='not supported by the drivers (DEPRECATED)'/>
     <enum name='VIR_ERR_CONF_SYNTAX' file='virterror' value='33' type='virErrorNumber' info='failed to parse the syntax of a conf file'/>
     <enum name='VIR_ERR_DOM_EXIST' file='virterror' value='28' type='virErrorNumber' info='the domain already exist'/>
@@ -350,6 +421,8 @@
     <enum name='VIR_ERR_INVALID_DOMAIN' file='virterror' value='7' type='virErrorNumber' info='invalid domain object'/>
     <enum name='VIR_ERR_INVALID_MAC' file='virterror' value='44' type='virErrorNumber' info='invalid MAC adress'/>
     <enum name='VIR_ERR_INVALID_NETWORK' file='virterror' value='36' type='virErrorNumber' info='invalid network object'/>
+    <enum name='VIR_ERR_INVALID_STORAGE_POOL' file='virterror' value='46' type='virErrorNumber' info='invalid storage pool object'/>
+    <enum name='VIR_ERR_INVALID_STORAGE_VOL' file='virterror' value='47' type='virErrorNumber' info='invalid storage vol object'/>
     <enum name='VIR_ERR_NETWORK_EXIST' file='virterror' value='37' type='virErrorNumber' info='the network already exist'/>
     <enum name='VIR_ERR_NONE' file='virterror' value='0' type='virErrorLevel'/>
     <enum name='VIR_ERR_NO_CONNECT' file='virterror' value='5' type='virErrorNumber' info='can&apos;t connect to hypervisor'/>
@@ -393,7 +466,8 @@
     <enum name='VIR_FROM_REMOTE' file='virterror' value='13' type='virErrorDomain' info='Error from remote driver'/>
     <enum name='VIR_FROM_RPC' file='virterror' value='7' type='virErrorDomain' info='Error in the XML-RPC code'/>
     <enum name='VIR_FROM_SEXPR' file='virterror' value='4' type='virErrorDomain' info='Error in the S-Epression code'/>
-    <enum name='VIR_FROM_STATS_LINUX' file='virterror' value='16' type='virErrorDomain' info=' Error in the Linux Stats code'/>
+    <enum name='VIR_FROM_STATS_LINUX' file='virterror' value='16' type='virErrorDomain' info='Error in the Linux Stats code'/>
+    <enum name='VIR_FROM_STORAGE' file='virterror' value='17' type='virErrorDomain' info=' Error from storage driver'/>
     <enum name='VIR_FROM_TEST' file='virterror' value='12' type='virErrorDomain' info='Error from test driver'/>
     <enum name='VIR_FROM_XEN' file='virterror' value='1' type='virErrorDomain' info='Error at Xen hypervisor layer'/>
     <enum name='VIR_FROM_XEND' file='virterror' value='2' type='virErrorDomain' info='Error at connection with xend daemon'/>
@@ -401,10 +475,24 @@
     <enum name='VIR_FROM_XENXM' file='virterror' value='15' type='virErrorDomain' info='Error at Xen XM layer'/>
     <enum name='VIR_FROM_XML' file='virterror' value='5' type='virErrorDomain' info='Error in the XML code'/>
     <enum name='VIR_MIGRATE_LIVE' file='libvirt' value='1' type='virDomainMigrateFlags' info=' live migration'/>
+    <enum name='VIR_STORAGE_POOL_BUILDING' file='libvirt' value='1' type='virStoragePoolState' info='Initializing pool, not available'/>
+    <enum name='VIR_STORAGE_POOL_BUILD_NEW' file='libvirt' value='0' type='virStoragePoolBuildFlags' info='Regular build from scratch'/>
+    <enum name='VIR_STORAGE_POOL_BUILD_REPAIR' file='libvirt' value='1' type='virStoragePoolBuildFlags' info='Repair / reinitialize'/>
+    <enum name='VIR_STORAGE_POOL_BUILD_RESIZE' file='libvirt' value='2' type='virStoragePoolBuildFlags' info=' Extend existing pool'/>
+    <enum name='VIR_STORAGE_POOL_DEGRADED' file='libvirt' value='3' type='virStoragePoolState' info=' Running degraded'/>
+    <enum name='VIR_STORAGE_POOL_DELETE_NORMAL' file='libvirt' value='0' type='virStoragePoolDeleteFlags' info='Delete metadata only    (fast)'/>
+    <enum name='VIR_STORAGE_POOL_DELETE_ZEROED' file='libvirt' value='1' type='virStoragePoolDeleteFlags' info=' Clear all data to zeros (slow)'/>
+    <enum name='VIR_STORAGE_POOL_INACTIVE' file='libvirt' value='0' type='virStoragePoolState' info='Not running'/>
+    <enum name='VIR_STORAGE_POOL_RUNNING' file='libvirt' value='2' type='virStoragePoolState' info='Running normally'/>
+    <enum name='VIR_STORAGE_VOL_BLOCK' file='libvirt' value='1' type='virStorageVolType' info=' Block based volumes'/>
+    <enum name='VIR_STORAGE_VOL_DELETE_NORMAL' file='libvirt' value='0' type='virStorageVolDeleteFlags' info='Delete metadata only    (fast)'/>
+    <enum name='VIR_STORAGE_VOL_DELETE_ZEROED' file='libvirt' value='1' type='virStorageVolDeleteFlags' info=' Clear all data to zeros (slow)'/>
+    <enum name='VIR_STORAGE_VOL_FILE' file='libvirt' value='0' type='virStorageVolType' info='Regular file based volumes'/>
     <enum name='VIR_VCPU_BLOCKED' file='libvirt' value='2' type='virVcpuState' info=' the virtual CPU is blocked on resource'/>
     <enum name='VIR_VCPU_OFFLINE' file='libvirt' value='0' type='virVcpuState' info='the virtual CPU is offline'/>
     <enum name='VIR_VCPU_RUNNING' file='libvirt' value='1' type='virVcpuState' info='the virtual CPU is running'/>
     <enum name='VIR_WAR_NO_NETWORK' file='virterror' value='41' type='virErrorNumber' info='failed to start network'/>
+    <enum name='VIR_WAR_NO_STORAGE' file='virterror' value='48' type='virErrorNumber' info=' failed to start storage'/>
     <struct name='virConnect' file='libvirt' type='struct _virConnect'/>
     <struct name='virConnectAuth' file='libvirt' type='struct _virConnectAuth'>
       <field name='credtype' type='int *' info=' List of supported virConnectCredentialType values'/>
@@ -511,6 +599,32 @@
       <info>a virSchedParameterPtr is a pointer to a virSchedParameter structure.</info>
     </typedef>
     <typedef name='virSchedParameterType' file='libvirt' type='enum'/>
+    <struct name='virStoragePool' file='libvirt' type='struct _virStoragePool'/>
+    <typedef name='virStoragePoolBuildFlags' file='libvirt' type='enum'/>
+    <typedef name='virStoragePoolDeleteFlags' file='libvirt' type='enum'/>
+    <struct name='virStoragePoolInfo' file='libvirt' type='struct _virStoragePoolInfo'>
+      <field name='state' type='int' info=' virStoragePoolState flags'/>
+      <field name='capacity' type='unsigned long long' info=' Logical size bytes'/>
+      <field name='allocation' type='unsigned long long' info=' Current allocation bytes'/>
+      <field name='available' type='unsigned long long' info=' Remaining free space bytes'/>
+    </struct>
+    <typedef name='virStoragePoolInfoPtr' file='libvirt' type='virStoragePoolInfo *'/>
+    <typedef name='virStoragePoolPtr' file='libvirt' type='virStoragePool *'>
+      <info>a virStoragePoolPtr is pointer to a virStoragePool private structure, this is the type used to reference a storage pool in the API.</info>
+    </typedef>
+    <typedef name='virStoragePoolState' file='libvirt' type='enum'/>
+    <struct name='virStorageVol' file='libvirt' type='struct _virStorageVol'/>
+    <typedef name='virStorageVolDeleteFlags' file='libvirt' type='enum'/>
+    <struct name='virStorageVolInfo' file='libvirt' type='struct _virStorageVolInfo'>
+      <field name='type' type='int' info=' virStorageVolType flags'/>
+      <field name='capacity' type='unsigned long long' info=' Logical size bytes'/>
+      <field name='allocation' type='unsigned long long' info=' Current allocation bytes'/>
+    </struct>
+    <typedef name='virStorageVolInfoPtr' file='libvirt' type='virStorageVolInfo *'/>
+    <typedef name='virStorageVolPtr' file='libvirt' type='virStorageVol *'>
+      <info>a virStorageVolPtr is pointer to a virStorageVol private structure, this is the type used to reference a storage volume in the API.</info>
+    </typedef>
+    <typedef name='virStorageVolType' file='libvirt' type='enum'/>
     <struct name='virVcpuInfo' file='libvirt' type='struct _virVcpuInfo'>
       <field name='number' type='unsigned int' info=' virtual CPU number'/>
       <field name='state' type='int' info=' value from virVcpuState'/>
@@ -601,6 +715,13 @@
       <arg name='names' type='char ** const' info='pointer to an array to store the names'/>
       <arg name='maxnames' type='int' info='size of the array'/>
     </function>
+    <function name='virConnectListDefinedStoragePools' file='libvirt' module='libvirt'>
+      <info>Provides the list of names of inactive storage pools upto maxnames. If there are more than maxnames, the remaining names will be silently ignored.</info>
+      <return type='int' info='0 on success, -1 on error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
+      <arg name='names' type='char ** const' info='array of char * to fill with pool names (allocated by caller)'/>
+      <arg name='maxnames' type='int' info='size of the names array'/>
+    </function>
     <function name='virConnectListDomains' file='libvirt' module='libvirt'>
       <info>Collect the list of active domains, and store their ID in @maxids</info>
       <return type='int' info='the number of domain found or -1 in case of error'/>
@@ -615,6 +736,13 @@
       <arg name='names' type='char ** const' info='array to collect the list of names of active networks'/>
       <arg name='maxnames' type='int' info='size of @names'/>
     </function>
+    <function name='virConnectListStoragePools' file='libvirt' module='libvirt'>
+      <info>Provides the list of names of active storage pools upto maxnames. If there are more than maxnames, the remaining names will be silently ignored.</info>
+      <return type='int' info='0 on success, -1 on error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
+      <arg name='names' type='char ** const' info='array of char * to fill with pool names (allocated by caller)'/>
+      <arg name='maxnames' type='int' info='size of the names array'/>
+    </function>
     <function name='virConnectNumOfDefinedDomains' file='libvirt' module='libvirt'>
       <info>Provides the number of inactive domains.</info>
       <return type='int' info='the number of domain found or -1 in case of error'/>
@@ -625,6 +753,11 @@
       <return type='int' info='the number of networks found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
+    <function name='virConnectNumOfDefinedStoragePools' file='libvirt' module='libvirt'>
+      <info>Provides the number of inactive storage pools</info>
+      <return type='int' info='the number of pools found, or -1 on error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
+    </function>
     <function name='virConnectNumOfDomains' file='libvirt' module='libvirt'>
       <info>Provides the number of active domains.</info>
       <return type='int' info='the number of domain found or -1 in case of error'/>
@@ -634,6 +767,11 @@
       <info>Provides the number of active networks.</info>
       <return type='int' info='the number of network found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
+    </function>
+    <function name='virConnectNumOfStoragePools' file='libvirt' module='libvirt'>
+      <info>Provides the number of active storage pools</info>
+      <return type='int' info='the number of pools found, or -1 on error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
     </function>
     <function name='virConnectOpen' file='libvirt' module='libvirt'>
       <info>This function should be called first to get a connection to the Hypervisor and xen store</info>
@@ -1067,6 +1205,208 @@
       <return type='void'/>
       <arg name='userData' type='void *' info='pointer to the user data provided in the handler callback'/>
       <arg name='handler' type='virErrorFunc' info='the function to get called in case of error or NULL'/>
+    </function>
+    <function name='virStoragePoolBuild' file='libvirt' module='libvirt'>
+      <info>Build the underlying storage pool</info>
+      <return type='int' info='0 on success, or -1 upon failure'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
+      <arg name='flags' type='unsigned int' info=''/>
+    </function>
+    <function name='virStoragePoolCreate' file='libvirt' module='libvirt'>
+      <info>Starts an inactive storage pool</info>
+      <return type='int' info='0 on success, or -1 if it could not be started'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
+      <arg name='flags' type='unsigned int' info=''/>
+    </function>
+    <function name='virStoragePoolCreateXML' file='libvirt' module='libvirt'>
+      <info>Create a new storage based on its XML description. The pool is not persitent, so its definition will disappear when it is destroyed, or if the host is restarted</info>
+      <return type='virStoragePoolPtr' info='a virStoragePoolPtr object, or NULL if creation failed'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
+      <arg name='xmlDesc' type='const char *' info='XML description for new pool'/>
+      <arg name='flags' type='unsigned int' info=''/>
+    </function>
+    <function name='virStoragePoolDefineXML' file='libvirt' module='libvirt'>
+      <info>Define a new inactive storage pool based on its XML description. The pool is persitent, until explicitly undefined.</info>
+      <return type='virStoragePoolPtr' info='a virStoragePoolPtr object, or NULL if creation failed'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
+      <arg name='xml' type='const char *' info='XML description for new pool'/>
+      <arg name='flags' type='unsigned int' info=''/>
+    </function>
+    <function name='virStoragePoolDelete' file='libvirt' module='libvirt'>
+      <info>Delete the underlying pool resources. This is a non-recoverable operation. The virStoragePoolPtr object itself is not free&apos;d.</info>
+      <return type='int' info='0 on success, or -1 if it could not be obliterate'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
+      <arg name='flags' type='unsigned int' info='flags for obliteration process'/>
+    </function>
+    <function name='virStoragePoolDestroy' file='libvirt' module='libvirt'>
+      <info>Destroy an active storage pool. This will deactivate the pool on the host, but keep any persistent config associated with it. If it has a persistent config it can later be restarted with virStoragePoolCreate(). This does not free the associated virStoragePoolPtr object.</info>
+      <return type='int' info='0 on success, or -1 if it could not be destroyed'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
+    </function>
+    <function name='virStoragePoolFree' file='libvirt' module='libvirt'>
+      <info>Free a storage pool object, releasing all memory associated with it. Does not change the state of the pool on the host.</info>
+      <return type='int' info='0 on success, or -1 if it could not be free&apos;d.'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
+    </function>
+    <function name='virStoragePoolGetAutostart' file='libvirt' module='libvirt'>
+      <info>Fetches the value of the autostart flag, which determines whether the pool is automatically started at boot time</info>
+      <return type='int' info='0 on success, -1 on failure'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
+      <arg name='autostart' type='int *' info='location in which to store autostart flag'/>
+    </function>
+    <function name='virStoragePoolGetConnect' file='libvirt' module='libvirt'>
+      <info>Provides the connection pointer associated with a storage pool.  The reference counter on the connection is not increased by this call.  WARNING: When writing libvirt bindings in other languages, do not use this function.  Instead, store the connection and the pool object together.</info>
+      <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to a poool'/>
+    </function>
+    <function name='virStoragePoolGetInfo' file='libvirt' module='libvirt'>
+      <info>Get volatile information about the storage pool such as free space / usage summary</info>
+      <return type='int' info='0 on success, or -1 on failure.'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
+      <arg name='info' type='virStoragePoolInfoPtr' info='pointer at which to store info'/>
+    </function>
+    <function name='virStoragePoolGetName' file='libvirt' module='libvirt'>
+      <info>Fetch the locally unique name of the storage pool</info>
+      <return type='const char *' info='the name of the pool, or NULL on error'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
+    </function>
+    <function name='virStoragePoolGetUUID' file='libvirt' module='libvirt'>
+      <info>Fetch the globally unique ID of the storage pool</info>
+      <return type='int' info='0 on success, or -1 on error;'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
+      <arg name='uuid' type='unsigned char *' info='buffer of VIR_UUID_BUFLEN bytes in size'/>
+    </function>
+    <function name='virStoragePoolGetUUIDString' file='libvirt' module='libvirt'>
+      <info>Fetch the globally unique ID of the storage pool as a string</info>
+      <return type='int' info='0 on success, or -1 on error;'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
+      <arg name='buf' type='char *' info='buffer of VIR_UUID_STRING_BUFLEN bytes in size'/>
+    </function>
+    <function name='virStoragePoolGetXMLDesc' file='libvirt' module='libvirt'>
+      <info>Fetch an XML document describing all aspects of the storage pool. This is suitable for later feeding back into the virStoragePoolCreateXML method.</info>
+      <return type='char *' info='a XML document, or NULL on error'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
+      <arg name='flags' type='unsigned int' info='flags for XML format options (unused, pass 0)'/>
+    </function>
+    <function name='virStoragePoolListVolumes' file='libvirt' module='libvirt'>
+      <info>Fetch list of storage volume names, limiting to at most maxnames.</info>
+      <return type='int' info='the number of names fetched, or -1 on error'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
+      <arg name='names' type='char ** const' info='array in which to storage volume names'/>
+      <arg name='maxnames' type='int' info='size of names array'/>
+    </function>
+    <function name='virStoragePoolLookupByName' file='libvirt' module='libvirt'>
+      <info>Fetch a storage pool based on its unique name</info>
+      <return type='virStoragePoolPtr' info='a virStoragePoolPtr object, or NULL if no matching pool is found'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
+      <arg name='name' type='const char *' info='name of pool to fetch'/>
+    </function>
+    <function name='virStoragePoolLookupByUUID' file='libvirt' module='libvirt'>
+      <info>Fetch a storage pool based on its globally unique id</info>
+      <return type='virStoragePoolPtr' info='a virStoragePoolPtr object, or NULL if no matching pool is found'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
+      <arg name='uuid' type='const unsigned char *' info='globally unique id of pool to fetch'/>
+    </function>
+    <function name='virStoragePoolLookupByUUIDString' file='libvirt' module='libvirt'>
+      <info>Fetch a storage pool based on its globally unique id</info>
+      <return type='virStoragePoolPtr' info='a virStoragePoolPtr object, or NULL if no matching pool is found'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
+      <arg name='uuidstr' type='const char *' info='globally unique id of pool to fetch'/>
+    </function>
+    <function name='virStoragePoolLookupByVolume' file='libvirt' module='libvirt'>
+      <info>Fetch a storage pool which contains a particular volume</info>
+      <return type='virStoragePoolPtr' info='a virStoragePoolPtr object, or NULL if no matching pool is found'/>
+      <arg name='vol' type='virStorageVolPtr' info='pointer to storage volume'/>
+    </function>
+    <function name='virStoragePoolNumOfVolumes' file='libvirt' module='libvirt'>
+      <info>Fetch the number of storage volumes within a pool</info>
+      <return type='int' info='the number of storage pools, or -1 on failure'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
+    </function>
+    <function name='virStoragePoolRefresh' file='libvirt' module='libvirt'>
+      <info>Request that the pool refresh its list of volumes. This may involve communicating with a remote server, and/or initializing new devices at the OS layer</info>
+      <return type='int' info='0 if the volume list was refreshed, -1 on failure'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
+      <arg name='flags' type='unsigned int' info='flags to control refresh behaviour (currently unused, use 0)'/>
+    </function>
+    <function name='virStoragePoolSetAutostart' file='libvirt' module='libvirt'>
+      <info>Sets the autostart flag</info>
+      <return type='int' info='0 on success, -1 on failure'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
+      <arg name='autostart' type='int' info='new flag setting'/>
+    </function>
+    <function name='virStoragePoolUndefine' file='libvirt' module='libvirt'>
+      <info>Undefine an inactive storage pool</info>
+      <return type='int' info='a virStoragePoolPtr object, or NULL if creation failed'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
+    </function>
+    <function name='virStorageVolCreateXML' file='libvirt' module='libvirt'>
+      <info>Create a storage volume within a pool based on an XML description. Not all pools support creation of volumes</info>
+      <return type='virStorageVolPtr' info='the storage volume, or NULL on error'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
+      <arg name='xmldesc' type='const char *' info='description of volume to create'/>
+      <arg name='flags' type='unsigned int' info='flags for creation (unused, pass 0)'/>
+    </function>
+    <function name='virStorageVolDelete' file='libvirt' module='libvirt'>
+      <info>Delete the storage volume from the pool</info>
+      <return type='int' info='0 on success, or -1 on error'/>
+      <arg name='vol' type='virStorageVolPtr' info='pointer to storage volume'/>
+      <arg name='flags' type='unsigned int' info=''/>
+    </function>
+    <function name='virStorageVolFree' file='libvirt' module='libvirt'>
+      <info>Release the storage volume handle. The underlying storage volume contains to exist</info>
+      <return type='int' info='0 on success, or -1 on error'/>
+      <arg name='vol' type='virStorageVolPtr' info='pointer to storage volume'/>
+    </function>
+    <function name='virStorageVolGetConnect' file='libvirt' module='libvirt'>
+      <info>Provides the connection pointer associated with a storage volume.  The reference counter on the connection is not increased by this call.  WARNING: When writing libvirt bindings in other languages, do not use this function.  Instead, store the connection and the volume object together.</info>
+      <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
+      <arg name='vol' type='virStorageVolPtr' info='pointer to a poool'/>
+    </function>
+    <function name='virStorageVolGetInfo' file='libvirt' module='libvirt'>
+      <info>Fetches volatile information about the storage volume such as its current allocation</info>
+      <return type='int' info='0 on success, or -1 on failure'/>
+      <arg name='vol' type='virStorageVolPtr' info='pointer to storage volume'/>
+      <arg name='info' type='virStorageVolInfoPtr' info='pointer at which to store info'/>
+    </function>
+    <function name='virStorageVolGetKey' file='libvirt' module='libvirt'>
+      <info>Fetch the storage volume key. This is globally unique, so the same volume will hve the same key no matter what host it is accessed from</info>
+      <return type='const char *' info='the volume key, or NULL on error'/>
+      <arg name='vol' type='virStorageVolPtr' info='pointer to storage volume'/>
+    </function>
+    <function name='virStorageVolGetName' file='libvirt' module='libvirt'>
+      <info>Fetch the storage volume name. This is unique within the scope of a pool</info>
+      <return type='const char *' info='the volume name, or NULL on error'/>
+      <arg name='vol' type='virStorageVolPtr' info='pointer to storage volume'/>
+    </function>
+    <function name='virStorageVolGetPath' file='libvirt' module='libvirt'>
+      <info>Fetch the storage volume path. Depending on the pool configuration this is either persistent across hosts, or dynamically assigned at pool startup. Consult pool documentation for information on getting the persistent naming</info>
+      <return type='char *' info='the storage volume path, or NULL on error'/>
+      <arg name='vol' type='virStorageVolPtr' info='pointer to storage volume'/>
+    </function>
+    <function name='virStorageVolGetXMLDesc' file='libvirt' module='libvirt'>
+      <info>Fetch an XML document describing all aspects of the storage volume</info>
+      <return type='char *' info='the XML document, or NULL on error'/>
+      <arg name='vol' type='virStorageVolPtr' info='pointer to storage volume'/>
+      <arg name='flags' type='unsigned int' info='flags for XML generation (unused, pass 0)'/>
+    </function>
+    <function name='virStorageVolLookupByKey' file='libvirt' module='libvirt'>
+      <info>Fetch a pointer to a storage volume based on its globally unique key</info>
+      <return type='virStorageVolPtr' info='a storage volume, or NULL if not found / error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
+      <arg name='key' type='const char *' info='globally unique key'/>
+    </function>
+    <function name='virStorageVolLookupByName' file='libvirt' module='libvirt'>
+      <info>Fetch a pointer to a storage volume based on its name within a pool</info>
+      <return type='virStorageVolPtr' info='a storage volume, or NULL if not found / error'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
+      <arg name='name' type='const char *' info='name of storage volume'/>
+    </function>
+    <function name='virStorageVolLookupByPath' file='libvirt' module='libvirt'>
+      <info>Fetch a pointer to a storage volume based on its locally (host) unique path</info>
+      <return type='virStorageVolPtr' info='a storage volume, or NULL if not found / error'/>
+      <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
+      <arg name='path' type='const char *' info='locally unique path'/>
     </function>
   </symbols>
 </api>

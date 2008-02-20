@@ -96,7 +96,8 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     <a name="VIR_FROM_REMOTE">VIR_FROM_REMOTE</a> = 13 /* Error from remote driver */
     <a name="VIR_FROM_OPENVZ">VIR_FROM_OPENVZ</a> = 14 /* Error from OpenVZ driver */
     <a name="VIR_FROM_XENXM">VIR_FROM_XENXM</a> = 15 /* Error at Xen XM layer */
-    <a name="VIR_FROM_STATS_LINUX">VIR_FROM_STATS_LINUX</a> = 16 /*  Error in the Linux Stats code */
+    <a name="VIR_FROM_STATS_LINUX">VIR_FROM_STATS_LINUX</a> = 16 /* Error in the Linux Stats code */
+    <a name="VIR_FROM_STORAGE">VIR_FROM_STORAGE</a> = 17 /*  Error from storage driver */
 };
 </pre><p/>
 </div>
@@ -155,7 +156,10 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     <a name="VIR_ERR_NO_DOMAIN">VIR_ERR_NO_DOMAIN</a> = 42 /* domain not found or unexpectedly disappeared */
     <a name="VIR_ERR_NO_NETWORK">VIR_ERR_NO_NETWORK</a> = 43 /* network not found */
     <a name="VIR_ERR_INVALID_MAC">VIR_ERR_INVALID_MAC</a> = 44 /* invalid MAC adress */
-    <a name="VIR_ERR_AUTH_FAILED">VIR_ERR_AUTH_FAILED</a> = 45 /*  authentication failed */
+    <a name="VIR_ERR_AUTH_FAILED">VIR_ERR_AUTH_FAILED</a> = 45 /* authentication failed */
+    <a name="VIR_ERR_INVALID_STORAGE_POOL">VIR_ERR_INVALID_STORAGE_POOL</a> = 46 /* invalid storage pool object */
+    <a name="VIR_ERR_INVALID_STORAGE_VOL">VIR_ERR_INVALID_STORAGE_VOL</a> = 47 /* invalid storage vol object */
+    <a name="VIR_WAR_NO_STORAGE">VIR_WAR_NO_STORAGE</a> = 48 /*  failed to start storage */
 };
 </pre><p/>
 </div>

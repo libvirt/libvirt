@@ -22,9 +22,9 @@ install-data-local:
 	-@INSTALL@ -m 0644 $(srcdir)/*.html $(srcdir)/*.c $(srcdir)/*.xml \
 	  $(srcdir)/*.xsl $(srcdir)/*.res $(DESTDIR)$(HTML_DIR)
 
-EXTRA_DIST=examples.xsl index.py examples.xml
+EXTRA_DIST=examples.xsl index.py examples.xml 
 
-noinst_PROGRAMS=info1 suspend
+noinst_PROGRAMS=info1 suspend 
 
 info1_SOURCES=info1.c
 info1_LDFLAGS=
@@ -36,7 +36,7 @@ suspend_LDFLAGS=
 suspend_DEPENDENCIES= $(DEPS)
 suspend_LDADD= $(LDADDS)
 
-valgrind:
+valgrind: 
 	$(MAKE) CHECKER='valgrind' tests
 
 tests: $(noinst_PROGRAMS)
