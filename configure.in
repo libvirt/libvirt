@@ -561,6 +561,8 @@ AC_ARG_WITH(storage-fs,
 [  --with-storage-fs           with FileSystem backend for the storage driver (on)],[],[with_storage_fs=check])
 AC_ARG_WITH(storage-lvm,
 [  --with-storage-lvm          with LVM backend for the storage driver (on)],[],[with_storage_lvm=check])
+AC_ARG_WITH(storage-iscsi,
+[  --with-storage-iscsi        with iSCSI backend for the storage driver (on)],[],[with_storage_iscsi=check])
 
 if test "$with_storage_fs" = "yes" -o "$with_storage_fs" = "check"; then
   AC_PATH_PROG(MOUNT, [mount], [], [$PATH:/sbin:/usr/sbin])
@@ -653,6 +655,25 @@ if test "$with_storage_lvm" = "yes" -o "$with_storage_lvm" = "check"; then
   fi
 fi
 AM_CONDITIONAL(WITH_STORAGE_LVM, [test "$with_storage_lvm" = "yes"])
+
+
+
+if test "$with_storage_iscsi" = "yes" -o "$with_storage_iscsi" = "check"; then
+  AC_PATH_PROG(ISCSIADM, [iscsiadm], [], [$PATH:/sbin:/usr/sbin])
+  if test "$with_storage_iscsi" = "yes" ; then
+    if test -z "$ISCSIADM" ; then AC_MSG_ERROR(We need iscsiadm for iSCSI storage driver) ; fi
+  else
+    if test -z "$ISCSIADM" ; then with_storage_iscsi=no ; fi
+
+    if test "$with_storage_iscsi" = "check" ; then with_storage_iscsi=yes ; fi
+  fi
+
+  if test "$with_storage_iscsi" = "yes" ; then
+    AC_DEFINE_UNQUOTED(WITH_STORAGE_ISCSI, 1, [whether iSCSI backend for storage driver is enabled])
+    AC_DEFINE_UNQUOTED([ISCSIADM],["$ISCSIADM"],[Location of iscsiadm program])
+  fi
+fi
+AM_CONDITIONAL(WITH_STORAGE_ISCSI, [test "$with_storage_iscsi" = "yes"])
 
 
 dnl
@@ -869,6 +890,7 @@ AC_MSG_NOTICE([     Dir: yes])
 AC_MSG_NOTICE([      FS: $with_storage_fs])
 AC_MSG_NOTICE([   NetFS: $with_storage_fs])
 AC_MSG_NOTICE([     LVM: $with_storage_lvm])
+AC_MSG_NOTICE([   iSCSI: $with_storage_iscsi])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])

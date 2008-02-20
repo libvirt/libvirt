@@ -74,6 +74,12 @@ else
 EXTRA_DIST += storage_backend_logical.h storage_backend_logical.c
 endif
 
+if WITH_STORAGE_ISCSI
+CLIENT_SOURCES +=  storage_backend_iscsi.h storage_backend_iscsi.c
+else
+EXTRA_DIST +=  storage_backend_iscsi.h storage_backend_iscsi.c
+endif
+
 
 
 libvirt_la_SOURCES = $(CLIENT_SOURCES) $(SERVER_SOURCES)

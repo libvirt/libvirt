@@ -51,6 +51,8 @@ Requires: /usr/sbin/qcow-create
 %endif
 # For LVM drivers
 Requires: lvm2
+# For ISCSI driver
+Requires: iscsi-initiator-utils
 BuildRequires: xen-devel
 BuildRequires: libxml2-devel
 BuildRequires: readline-devel
@@ -77,6 +79,8 @@ BuildRequires: /usr/sbin/qcow-create
 %endif
 # For LVM drivers
 BuildRequires: lvm2
+# For ISCSI driver
+BuildRequires: iscsi-initiator-utils
 Obsoletes: libvir
 ExclusiveArch: i386 x86_64 ia64
 

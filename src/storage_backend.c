@@ -39,6 +39,10 @@
 #if WITH_STORAGE_LVM
 #include "storage_backend_logical.h"
 #endif
+#if WITH_STORAGE_ISCSI
+#include "storage_backend_iscsi.h"
+#endif
+
 
 #include "util.h"
 
@@ -53,6 +57,9 @@ static virStorageBackendPtr backends[] = {
 #endif
 #if WITH_STORAGE_LVM
     &virStorageBackendLogical,
+#endif
+#if WITH_STORAGE_ISCSI
+    &virStorageBackendISCSI,
 #endif
 };
 
@@ -100,6 +107,10 @@ virStorageBackendFromString(const char *type) {
     if (STREQ(type, "logical"))
         return VIR_STORAGE_POOL_LOGICAL;
 #endif
+#if WITH_STORAGE_ISCSI
+    if (STREQ(type, "iscsi"))
+        return VIR_STORAGE_POOL_ISCSI;
+#endif
 
     virStorageReportError(NULL, VIR_ERR_INTERNAL_ERROR,
                           _("unknown storage backend type %s"), type);
@@ -120,6 +131,10 @@ virStorageBackendToString(int type) {
 #if WITH_STORAGE_LVM
     case VIR_STORAGE_POOL_LOGICAL:
         return "logical";
+#endif
+#if WITH_STORAGE_ISCSI
+    case VIR_STORAGE_POOL_ISCSI:
+        return "iscsi";
 #endif
     }
 
