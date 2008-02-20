@@ -1,3 +1,8 @@
+Wed Feb 20 09:51:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* include/libvirt/libvirt.h, include/libvirt/libvirt.h.in,
+	src/libvirt_sym.version: Add public API for storage management
+
 Wed Feb 13 22:51:27 CET 2008 Jim Meyering  <meyering@redhat.com>
 
 	Pull useless-if-before-free from gnulib, and update.
