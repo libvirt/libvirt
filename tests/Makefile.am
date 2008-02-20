@@ -20,6 +20,7 @@ INCLUDES = \
 	$(LIBXML_CFLAGS) \
 	$(GNUTLS_CFLAGS) \
 	$(SASL_CFLAGS) \
+	$(SELINUX_CFLAGS) \
         -D_XOPEN_SOURCE=600 -D_POSIX_C_SOURCE=199506L \
         -DGETTEXT_PACKAGE=\"$(PACKAGE)\" \
          $(COVERAGE_CFLAGS) \
@@ -31,6 +32,7 @@ LDADDS = \
 	$(LIBXML_LIBS) \
         $(GNUTLS_LIBS) \
         $(SASL_LIBS) \
+        $(SELINUX_LIBS) \
         $(WARN_CFLAGS) \
 	$(LIBVIRT) \
 	../gnulib/lib/libgnu.la \

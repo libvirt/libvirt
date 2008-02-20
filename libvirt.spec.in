@@ -41,6 +41,7 @@ BuildRequires: ncurses-devel
 BuildRequires: gettext
 BuildRequires: gnutls-devel
 BuildRequires: avahi-devel
+BuildRequires: libselinux-devel
 BuildRequires: dnsmasq
 BuildRequires: bridge-utils
 BuildRequires: qemu

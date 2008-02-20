@@ -103,6 +103,44 @@ virStorageBackendVolOptionsPtr virStorageBackendVolOptionsForType(int type);
 int virStorageBackendFromString(const char *type);
 const char *virStorageBackendToString(int type);
 
+int virStorageBackendUpdateVolInfo(virConnectPtr conn,
+                                   virStorageVolDefPtr vol,
+                                   int withCapacity);
+
+int virStorageBackendUpdateVolInfoFD(virConnectPtr conn,
+                                     virStorageVolDefPtr vol,
+                                     int fd,
+                                     int withCapacity);
+
+char *virStorageBackendStablePath(virConnectPtr conn,
+                                  virStoragePoolObjPtr pool,
+                                  char *devpath);
+
+typedef int (*virStorageBackendListVolRegexFunc)(virConnectPtr conn,
+                                                 virStoragePoolObjPtr pool,
+                                                 char **const groups,
+                                                 void *data);
+typedef int (*virStorageBackendListVolNulFunc)(virConnectPtr conn,
+                                               virStoragePoolObjPtr pool,
+                                               size_t n_tokens,
+                                               char **const groups,
+                                               void *data);
+
+int virStorageBackendRunProgRegex(virConnectPtr conn,
+                                  virStoragePoolObjPtr pool,
+                                  const char **prog,
+                                  int nregex,
+                                  const char **regex,
+                                  int *nvars,
+                                  virStorageBackendListVolRegexFunc func,
+                                  void *data);
+
+int virStorageBackendRunProgNul(virConnectPtr conn,
+                                virStoragePoolObjPtr pool,
+                                const char **prog,
+                                size_t n_columns,
+                                virStorageBackendListVolNulFunc func,
+                                void *data);
 
 #endif /* __VIR_STORAGE_BACKEND_H__ */
 

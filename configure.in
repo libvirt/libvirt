@@ -473,6 +473,40 @@ AM_CONDITIONAL(HAVE_AVAHI, [test "x$with_avahi" = "xyes"])
 AC_SUBST(AVAHI_CFLAGS)
 AC_SUBST(AVAHI_LIBS)
 
+dnl SELinux
+AC_ARG_WITH(selinux,
+  [  --with-selinux         use SELinux to manage security],
+  [],
+  [with_selinux=check])
+
+SELINUX_CFLAGS=
+SELINUX_LIBS=
+if test "$with_selinux" != "no"; then
+  old_cflags="$CFLAGS"
+  old_libs="$LIBS"
+  if test "$with_selinux" = "check"; then
+    AC_CHECK_HEADER([selinux/selinux.h],[],[with_selinux=no])
+    AC_CHECK_LIB(selinux, fgetfilecon,[],[with_selinux=no])
+    if test "$with_selinux" != "no"; then
+      with_selinux="yes"
+    fi
+  else
+    AC_CHECK_HEADER([selinux/selinux.h],[],
+       [AC_MSG_ERROR([You must install the SELinux development package in order to compile libvirt])])
+    AC_CHECK_LIB(selinux, fgetfilecon,[],
+       [AC_MSG_ERROR([You must install the SELinux development package in order to compile and run libvirt])])
+  fi
+  CFLAGS="$old_cflags"
+  LIBS="$old_libs"
+fi
+if test "$with_selinux" = "yes"; then
+  SELINUX_LIBS="-lselinux"
+  AC_DEFINE_UNQUOTED(HAVE_SELINUX, 1, [whether SELinux is available for security])
+fi
+AM_CONDITIONAL(HAVE_SELINUX, [test "$with_selinux" != "no"])
+AC_SUBST(SELINUX_CFLAGS)
+AC_SUBST(SELINUX_LIBS)
+
 dnl virsh libraries
 AC_CHECK_HEADERS([readline/readline.h])
 
@@ -744,6 +778,11 @@ if test "$with_polkit" = "yes" ; then
 AC_MSG_NOTICE([  polkit: $POLKIT_CFLAGS $POLKIT_LIBS])
 else
 AC_MSG_NOTICE([  polkit: no])
+fi
+if test "$with_selinux" = "yes" ; then
+AC_MSG_NOTICE([  selinux: $SELINUX_CFLAGS $SELINUX_LIBS])
+else
+AC_MSG_NOTICE([  selinux: no])
 fi
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Miscellaneous])
