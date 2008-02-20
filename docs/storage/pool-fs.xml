@@ -1,0 +1,15 @@
+<pool type="fs">
+  <name>virtimages</name>
+  <source>
+    <device path="/dev/VolGroup00/VirtImages"/>
+  </source>
+  <target>
+    <path>/var/lib/virt/images</path>
+    <permissions>
+      <mode>0700</mode>
+      <owner>0</owner>
+      <group>0</group>
+      <label>system_u:object_r:xen_image_t:s0</label>
+    </permissions>
+  </target>
+</pool>

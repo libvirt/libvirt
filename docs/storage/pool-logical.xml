@@ -1,0 +1,9 @@
+<pool type="logical">
+  <name>HostVG</name>
+  <source>
+    <device path="/dev/sda1"/>
+  </source>
+  <target>
+    <path>/dev/HostVG</path>
+  </target>
+</pool>

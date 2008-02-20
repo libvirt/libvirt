@@ -1,0 +1,10 @@
+<volume type="file">
+  <name>vmdk3.img</name>
+  <storage>
+    <allocation>0</allocation>
+    <capacity unit="T">1</capacity>
+  </storage>
+  <target>
+    <format type="vmdk"/>
+  </target>
+</volume>
