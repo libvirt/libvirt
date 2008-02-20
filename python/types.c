@@ -145,6 +145,42 @@ libvirt_virNetworkPtrWrap(virNetworkPtr node)
 }
 
 PyObject *
+libvirt_virStoragePoolPtrWrap(virStoragePoolPtr node)
+{
+    PyObject *ret;
+
+#ifdef DEBUG
+    printf("libvirt_virStoragePoolPtrWrap: node = %p\n", node);
+#endif
+    if (node == NULL) {
+        Py_INCREF(Py_None);
+        return (Py_None);
+    }
+    ret =
+        PyCObject_FromVoidPtrAndDesc((void *) node, (char *) "virStoragePoolPtr",
+                                     NULL);
+    return (ret);
+}
+
+PyObject *
+libvirt_virStorageVolPtrWrap(virStorageVolPtr node)
+{
+    PyObject *ret;
+
+#ifdef DEBUG
+    printf("libvirt_virStorageVolPtrWrap: node = %p\n", node);
+#endif
+    if (node == NULL) {
+        Py_INCREF(Py_None);
+        return (Py_None);
+    }
+    ret =
+        PyCObject_FromVoidPtrAndDesc((void *) node, (char *) "virStorageVolPtr",
+                                     NULL);
+    return (ret);
+}
+
+PyObject *
 libvirt_virConnectPtrWrap(virConnectPtr node)
 {
     PyObject *ret;

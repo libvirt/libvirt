@@ -1,3 +1,8 @@
+Wed Feb 20 10:20:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* python/generator.py, python/libvir.c, python/libvirt_wrap.h,
+	python/types.c: Add binding for storage APIs
+
 Wed Feb 20 10:18:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/remote_internal.c: Implement storage APIs in remote

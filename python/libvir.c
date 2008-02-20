@@ -1099,6 +1099,291 @@ error:
     return(py_retval);
 }
 
+
+static PyObject *
+libvirt_virConnectListStoragePools(PyObject *self ATTRIBUTE_UNUSED,
+                                   PyObject *args) {
+    PyObject *py_retval;
+    char **names = NULL;
+    int c_retval, i;
+    virConnectPtr conn;
+    PyObject *pyobj_conn;
+
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virConnectListStoragePools", &pyobj_conn))
+        return(NULL);
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    c_retval = virConnectNumOfStoragePools(conn);
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    if (c_retval) {
+        names = malloc(sizeof(*names) * c_retval);
+        if (!names)
+            return VIR_PY_NONE;
+        c_retval = virConnectListStoragePools(conn, names, c_retval);
+        if (c_retval < 0) {
+            free(names);
+            return VIR_PY_NONE;
+        }
+    }
+    py_retval = PyList_New(c_retval);
+    if (py_retval == NULL) {
+        if (names) {
+            for (i = 0;i < c_retval;i++)
+                free(names[i]);
+            free(names);
+        }
+        return VIR_PY_NONE;
+    }
+
+    if (names) {
+        for (i = 0;i < c_retval;i++) {
+            PyList_SetItem(py_retval, i, libvirt_constcharPtrWrap(names[i]));
+            free(names[i]);
+        }
+        free(names);
+    }
+
+    return(py_retval);
+}
+
+
+static PyObject *
+libvirt_virConnectListDefinedStoragePools(PyObject *self ATTRIBUTE_UNUSED,
+                                          PyObject *args) {
+    PyObject *py_retval;
+    char **names = NULL;
+    int c_retval, i;
+    virConnectPtr conn;
+    PyObject *pyobj_conn;
+
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virConnectListDefinedStoragePools", &pyobj_conn))
+        return(NULL);
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    c_retval = virConnectNumOfDefinedStoragePools(conn);
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    if (c_retval) {
+        names = malloc(sizeof(*names) * c_retval);
+        if (!names)
+            return VIR_PY_NONE;
+        c_retval = virConnectListDefinedStoragePools(conn, names, c_retval);
+        if (c_retval < 0) {
+            free(names);
+            return VIR_PY_NONE;
+        }
+    }
+    py_retval = PyList_New(c_retval);
+    if (py_retval == NULL) {
+        if (names) {
+            for (i = 0;i < c_retval;i++)
+                free(names[i]);
+            free(names);
+        }
+        return VIR_PY_NONE;
+    }
+
+    if (names) {
+        for (i = 0;i < c_retval;i++) {
+            PyList_SetItem(py_retval, i, libvirt_constcharPtrWrap(names[i]));
+            free(names[i]);
+        }
+        free(names);
+    }
+
+    return(py_retval);
+}
+
+
+static PyObject *
+libvirt_virStoragePoolListVolumes(PyObject *self ATTRIBUTE_UNUSED,
+                                  PyObject *args) {
+    PyObject *py_retval;
+    char **names = NULL;
+    int c_retval, i;
+    virStoragePoolPtr pool;
+    PyObject *pyobj_pool;
+
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virStoragePoolListVolumes", &pyobj_pool))
+        return(NULL);
+    pool = (virStoragePoolPtr) PyvirStoragePool_Get(pyobj_pool);
+
+    c_retval = virStoragePoolNumOfVolumes(pool);
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    if (c_retval) {
+        names = malloc(sizeof(*names) * c_retval);
+        if (!names)
+            return VIR_PY_NONE;
+        c_retval = virStoragePoolListVolumes(pool, names, c_retval);
+        if (c_retval < 0) {
+            free(names);
+            return VIR_PY_NONE;
+        }
+    }
+    py_retval = PyList_New(c_retval);
+    if (py_retval == NULL) {
+        if (names) {
+            for (i = 0;i < c_retval;i++)
+                free(names[i]);
+            free(names);
+        }
+        return VIR_PY_NONE;
+    }
+
+    if (names) {
+        for (i = 0;i < c_retval;i++) {
+            PyList_SetItem(py_retval, i, libvirt_constcharPtrWrap(names[i]));
+            free(names[i]);
+        }
+        free(names);
+    }
+
+    return(py_retval);
+}
+
+static PyObject *
+libvirt_virStoragePoolGetAutostart(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    PyObject *py_retval;
+    int c_retval, autostart;
+    virStoragePoolPtr pool;
+    PyObject *pyobj_pool;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virStoragePoolGetAutostart", &pyobj_pool))
+        return(NULL);
+
+    pool = (virStoragePoolPtr) PyvirStoragePool_Get(pyobj_pool);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virStoragePoolGetAutostart(pool, &autostart);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    py_retval = libvirt_intWrap(autostart);
+    return(py_retval);
+}
+
+static PyObject *
+libvirt_virStoragePoolGetInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    PyObject *py_retval;
+    int c_retval;
+    virStoragePoolPtr pool;
+    PyObject *pyobj_pool;
+    virStoragePoolInfo info;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virStoragePoolGetInfo", &pyobj_pool))
+        return(NULL);
+    pool = (virStoragePoolPtr) PyvirStoragePool_Get(pyobj_pool);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virStoragePoolGetInfo(pool, &info);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    if ((py_retval = PyList_New(4)) == NULL)
+        return VIR_PY_NONE;
+
+    PyList_SetItem(py_retval, 0, libvirt_intWrap((int) info.state));
+    PyList_SetItem(py_retval, 1,
+                   libvirt_longlongWrap((unsigned long long) info.capacity));
+    PyList_SetItem(py_retval, 2,
+                   libvirt_longlongWrap((unsigned long long) info.allocation));
+    PyList_SetItem(py_retval, 3,
+                   libvirt_longlongWrap((unsigned long long) info.available));
+    return(py_retval);
+}
+
+
+static PyObject *
+libvirt_virStorageVolGetInfo(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    PyObject *py_retval;
+    int c_retval;
+    virStorageVolPtr pool;
+    PyObject *pyobj_pool;
+    virStorageVolInfo info;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virStorageVolGetInfo", &pyobj_pool))
+        return(NULL);
+    pool = (virStorageVolPtr) PyvirStorageVol_Get(pyobj_pool);
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virStorageVolGetInfo(pool, &info);
+    LIBVIRT_END_ALLOW_THREADS;
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    if ((py_retval = PyList_New(3)) == NULL)
+        return VIR_PY_NONE;
+    PyList_SetItem(py_retval, 0, libvirt_intWrap((int) info.type));
+    PyList_SetItem(py_retval, 1,
+                   libvirt_longlongWrap((unsigned long long) info.capacity));
+    PyList_SetItem(py_retval, 2,
+                   libvirt_longlongWrap((unsigned long long) info.allocation));
+    return(py_retval);
+}
+
+static PyObject *
+libvirt_virStoragePoolGetUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    PyObject *py_retval;
+    unsigned char uuid[VIR_UUID_BUFLEN];
+    virStoragePoolPtr pool;
+    PyObject *pyobj_pool;
+    int c_retval;
+
+    if (!PyArg_ParseTuple(args, (char *)"O:virStoragePoolGetUUID", &pyobj_pool))
+        return(NULL);
+    pool = (virStoragePoolPtr) PyvirStoragePool_Get(pyobj_pool);
+
+    if (pool == NULL)
+        return VIR_PY_NONE;
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virStoragePoolGetUUID(pool, &uuid[0]);
+    LIBVIRT_END_ALLOW_THREADS;
+
+    if (c_retval < 0)
+        return VIR_PY_NONE;
+
+    py_retval = PyString_FromStringAndSize((char *) &uuid[0], VIR_UUID_BUFLEN);
+
+    return(py_retval);
+}
+
+
+static PyObject *
+libvirt_virStoragePoolLookupByUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
+    PyObject *py_retval;
+    virStoragePoolPtr c_retval;
+    virConnectPtr conn;
+    PyObject *pyobj_conn;
+    unsigned char * uuid;
+    int len;
+
+    if (!PyArg_ParseTuple(args, (char *)"Oz#:virStoragePoolLookupByUUID", &pyobj_conn, &uuid, &len))
+        return(NULL);
+    conn = (virConnectPtr) PyvirConnect_Get(pyobj_conn);
+
+    if ((uuid == NULL) || (len != VIR_UUID_BUFLEN))
+        return VIR_PY_NONE;
+
+    LIBVIRT_BEGIN_ALLOW_THREADS;
+    c_retval = virStoragePoolLookupByUUID(conn, uuid);
+    LIBVIRT_END_ALLOW_THREADS;
+    py_retval = libvirt_virStoragePoolPtrWrap((virStoragePoolPtr) c_retval);
+    return(py_retval);
+}
+
+
+
 /************************************************************************
  *									*
  *			The registration stuff				*
@@ -1131,6 +1416,14 @@ static PyMethodDef libvirtMethods[] = {
     {(char *) "virDomainSetSchedulerParameters", libvirt_virDomainSetSchedulerParameters, METH_VARARGS, NULL},
     {(char *) "virDomainGetVcpus", libvirt_virDomainGetVcpus, METH_VARARGS, NULL},
     {(char *) "virDomainPinVcpu", libvirt_virDomainPinVcpu, METH_VARARGS, NULL},
+    {(char *) "virConnectListStoragePools", libvirt_virConnectListStoragePools, METH_VARARGS, NULL},
+    {(char *) "virConnectListDefinedStoragePools", libvirt_virConnectListDefinedStoragePools, METH_VARARGS, NULL},
+    {(char *) "virStoragePoolGetAutostart", libvirt_virStoragePoolGetAutostart, METH_VARARGS, NULL},
+    {(char *) "virStoragePoolListVolumes", libvirt_virStoragePoolListVolumes, METH_VARARGS, NULL},
+    {(char *) "virStoragePoolGetInfo", libvirt_virStoragePoolGetInfo, METH_VARARGS, NULL},
+    {(char *) "virStorageVolGetInfo", libvirt_virStorageVolGetInfo, METH_VARARGS, NULL},
+    {(char *) "virStoragePoolGetUUID", libvirt_virStoragePoolGetUUID, METH_VARARGS, NULL},
+    {(char *) "virStoragePoolLookupByUUID", libvirt_virStoragePoolLookupByUUID, METH_VARARGS, NULL},
     {NULL, NULL, 0, NULL}
 };
 
