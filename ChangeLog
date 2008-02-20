@@ -1,3 +1,7 @@
+Wed Feb 20 10:22:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/virsh.c: Added commands for all storage APIs
+
 Wed Feb 20 10:20:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* python/generator.py, python/libvir.c, python/libvirt_wrap.h,
