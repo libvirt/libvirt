@@ -678,6 +678,18 @@ __virErrorMsg(virErrorNumber error, const char *info)
 	    else
 		errmsg = _("authentication failed: %s");
 	    break;
+	case VIR_ERR_NO_STORAGE_POOL:
+		if (info == NULL)
+			errmsg = _("Storage pool not found");
+ 		else
+			errmsg = _("Storage pool not found: %s");
+		break;
+	case VIR_ERR_NO_STORAGE_VOL:
+		if (info == NULL)
+			errmsg = _("Storage volume not found");
+		else
+			errmsg = _("Storage volume not found: %s");
+		break;
 	case VIR_ERR_INVALID_STORAGE_POOL:
 		if (info == NULL)
 			errmsg = _("invalid storage pool pointer in");

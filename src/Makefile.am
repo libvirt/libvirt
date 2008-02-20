@@ -58,6 +58,9 @@ CLIENT_SOURCES =						\
 		openvz_conf.c openvz_conf.h			\
 		openvz_driver.c openvz_driver.h 		\
                 nodeinfo.h nodeinfo.c                           \
+		storage_conf.h storage_conf.c			\
+		storage_driver.h storage_driver.c		\
+		storage_backend.h storage_backend.c		\
 		util.c util.h
 
 SERVER_SOURCES = 						\

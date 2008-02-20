@@ -37,6 +37,7 @@
 #include "xen_unified.h"
 #include "remote_internal.h"
 #include "qemu_driver.h"
+#include "storage_driver.h"
 #ifdef WITH_OPENVZ
 #include "openvz_driver.h"
 #endif
@@ -215,6 +216,7 @@ virInitialize(void)
 #ifdef WITH_OPENVZ
     if (openvzRegister() == -1) return -1;
 #endif
+    if (storageRegister() == -1) return -1;
 #ifdef WITH_REMOTE
     if (remoteRegister () == -1) return -1;
 #endif

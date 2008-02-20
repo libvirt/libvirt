@@ -1,3 +1,17 @@
+Wed Feb 20 10:26:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* Makefile.maint: Add virStorageReportError to locale check rule
+	* configure.in: Turn on large file support
+	* po/POTFILES.in: Add storage driver files
+	* include/libvirt/virterror.h, src/virterror.c: Add more error codes
+	* src/storage_driver.c, src/storage_driver.h: Add impl of all the
+	storage APIs
+	* src/storage_conf.c, src/storage_conf.h: Support routines for
+	parsing and formatting XML, and persisting storage pool configs
+	* src/storage_backend.c, src/storage_backend.h: Contract for
+	internal storage backends to interface with driver
+	* src/Makefile.am: Add new storage source files to library build
+
 Wed Feb 20 10:23:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/virsh.c: Added convenience methods for creating pools

@@ -136,6 +136,8 @@ typedef enum {
     VIR_ERR_INVALID_STORAGE_POOL, /* invalid storage pool object */
     VIR_ERR_INVALID_STORAGE_VOL, /* invalid storage vol object */
     VIR_WAR_NO_STORAGE, /* failed to start storage */
+    VIR_ERR_NO_STORAGE_POOL, /* storage pool not found */
+    VIR_ERR_NO_STORAGE_VOL, /* storage pool not found */
 } virErrorNumber;
 
 /**
