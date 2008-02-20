@@ -1917,6 +1917,22 @@ static int testNetworkSetAutostart(virNetworkPtr network,
     return (0);
 }
 
+static virDrvOpenStatus testStorageOpen(virConnectPtr conn,
+                                        xmlURIPtr uri ATTRIBUTE_UNUSED,
+                                        virConnectAuthPtr auth ATTRIBUTE_UNUSED,
+                                        int flags ATTRIBUTE_UNUSED) {
+    if (STRNEQ(conn->driver->name, "Test"))
+        return VIR_DRV_OPEN_DECLINED;
+
+    conn->storagePrivateData = conn->privateData;
+    return VIR_DRV_OPEN_SUCCESS;
+}
+
+static int testStorageClose(virConnectPtr conn) {
+    conn->storagePrivateData = NULL;
+    return 0;
+}
+
 
 static virDriver testDriver = {
     VIR_DRV_TEST,
@@ -1999,6 +2015,12 @@ static virNetworkDriver testNetworkDriver = {
 };
 
 
+static virStorageDriver testStorageDriver = {
+    .name = "Test",
+    .open = testStorageOpen,
+    .close = testStorageClose,
+};
+
 /**
  * testRegister:
  *
@@ -2010,6 +2032,8 @@ testRegister(void)
     if (virRegisterDriver(&testDriver) < 0)
         return -1;
     if (virRegisterNetworkDriver(&testNetworkDriver) < 0)
+        return -1;
+    if (virRegisterStorageDriver(&testStorageDriver) < 0)
         return -1;
     return 0;
 }
