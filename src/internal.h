@@ -120,7 +120,7 @@ extern int debugFlag;
  * VIR_DOMAIN_MAGIC:
  *
  * magic value used to protect the API when pointers to domain structures
- * are passed down by the uers.
+ * are passed down by the users.
  */
 #define VIR_DOMAIN_MAGIC		0xDEAD4321
 #define VIR_IS_DOMAIN(obj)		((obj) && (obj)->magic==VIR_DOMAIN_MAGIC)
@@ -130,11 +130,31 @@ extern int debugFlag;
  * VIR_NETWORK_MAGIC:
  *
  * magic value used to protect the API when pointers to network structures
- * are passed down by the uers.
+ * are passed down by the users.
  */
 #define VIR_NETWORK_MAGIC		0xDEAD1234
 #define VIR_IS_NETWORK(obj)		((obj) && (obj)->magic==VIR_NETWORK_MAGIC)
 #define VIR_IS_CONNECTED_NETWORK(obj)	(VIR_IS_NETWORK(obj) && VIR_IS_CONNECT((obj)->conn))
+
+/**
+ * VIR_STORAGE_POOL_MAGIC:
+ *
+ * magic value used to protect the API when pointers to storage pool structures
+ * are passed down by the users.
+ */
+#define VIR_STORAGE_POOL_MAGIC		0xDEAD5678
+#define VIR_IS_STORAGE_POOL(obj)		((obj) && (obj)->magic==VIR_STORAGE_POOL_MAGIC)
+#define VIR_IS_CONNECTED_STORAGE_POOL(obj)	(VIR_IS_STORAGE_POOL(obj) && VIR_IS_CONNECT((obj)->conn))
+
+/**
+ * VIR_STORAGE_VOL_MAGIC:
+ *
+ * magic value used to protect the API when pointers to storage vol structures
+ * are passed down by the users.
+ */
+#define VIR_STORAGE_VOL_MAGIC		0xDEAD8765
+#define VIR_IS_STORAGE_VOL(obj)		((obj) && (obj)->magic==VIR_STORAGE_VOL_MAGIC)
+#define VIR_IS_CONNECTED_STORAGE_VOL(obj)	(VIR_IS_STORAGE_VOL(obj) && VIR_IS_CONNECT((obj)->conn))
 
 /*
  * arbitrary limitations
@@ -155,6 +175,7 @@ struct _virConnect {
     /* The underlying hypervisor driver and network driver. */
     virDriverPtr      driver;
     virNetworkDriverPtr networkDriver;
+    virStorageDriverPtr storageDriver;
 
     /* Private data pointer which can be used by driver and
      * network driver as they wish.
@@ -162,6 +183,7 @@ struct _virConnect {
      */
     void *            privateData;
     void *            networkPrivateData;
+    void *            storagePrivateData;
 
     /* Per-connection error. */
     virError err;           /* the last error */
@@ -177,6 +199,8 @@ struct _virConnect {
     pthread_mutex_t lock;
     virHashTablePtr domains;  /* hash table for known domains */
     virHashTablePtr networks; /* hash table for known domains */
+    virHashTablePtr storagePools;/* hash table for known storage pools */
+    virHashTablePtr storageVols;/* hash table for known storage vols */
     int refs;                 /* reference count */
 };
 
@@ -205,6 +229,34 @@ struct _virNetwork {
     virConnectPtr conn;                  /* pointer back to the connection */
     char *name;                          /* the network external name */
     unsigned char uuid[VIR_UUID_BUFLEN]; /* the network unique identifier */
+};
+
+/**
+* _virStoragePool:
+*
+* Internal structure associated to a storage pool
+*/
+struct _virStoragePool {
+    unsigned int magic;                  /* specific value to check */
+    int refs;                            /* reference count */
+    virConnectPtr conn;                  /* pointer back to the connection */
+    char *name;                          /* the storage pool external name */
+    unsigned char uuid[VIR_UUID_BUFLEN]; /* the storage pool unique identifier */
+};
+
+/**
+* _virStorageVol:
+*
+* Internal structure associated to a storage volume
+*/
+struct _virStorageVol {
+    unsigned int magic;                  /* specific value to check */
+    int refs;                            /* reference count */
+    virConnectPtr conn;                  /* pointer back to the connection */
+    char *pool;                          /* Pool name of owner */
+    char *name;                          /* the storage vol external name */
+    /* XXX currently abusing path for this. Ought not to be so evil */
+    char key[PATH_MAX];                  /* unique key for storage vol */
 };
 
 
@@ -243,8 +295,20 @@ virNetworkPtr  __virGetNetwork (virConnectPtr conn,
                                 const unsigned char *uuid);
 int           virUnrefNetwork  (virNetworkPtr network);
 
+virStoragePoolPtr __virGetStoragePool (virConnectPtr conn,
+                                       const char *name,
+                                       const unsigned char *uuid);
+int               virUnrefStoragePool (virStoragePoolPtr pool);
+virStorageVolPtr  __virGetStorageVol  (virConnectPtr conn,
+                                       const char *pool,
+                                       const char *name,
+                                       const char *key);
+int               virUnrefStorageVol  (virStorageVolPtr vol);
+
 #define virGetDomain(c,n,u) __virGetDomain((c),(n),(u))
 #define virGetNetwork(c,n,u) __virGetNetwork((c),(n),(u))
+#define virGetStoragePool(c,n,u) __virGetStoragePool((c),(n),(u))
+#define virGetStorageVol(c,p,n,u) __virGetStorageVol((c),(p),(n),(u))
 
 int __virStateInitialize(void);
 int __virStateCleanup(void);

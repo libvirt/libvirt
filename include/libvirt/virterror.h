@@ -54,6 +54,7 @@ typedef enum {
     VIR_FROM_OPENVZ,    /* Error from OpenVZ driver */
     VIR_FROM_XENXM,	/* Error at Xen XM layer */
     VIR_FROM_STATS_LINUX, /* Error in the Linux Stats code */
+    VIR_FROM_STORAGE,   /* Error from storage driver */
 } virErrorDomain;
 
 
@@ -132,6 +133,9 @@ typedef enum {
     VIR_ERR_NO_NETWORK, /* network not found */
     VIR_ERR_INVALID_MAC, /* invalid MAC adress */
     VIR_ERR_AUTH_FAILED, /* authentication failed */
+    VIR_ERR_INVALID_STORAGE_POOL, /* invalid storage pool object */
+    VIR_ERR_INVALID_STORAGE_VOL, /* invalid storage vol object */
+    VIR_WAR_NO_STORAGE, /* failed to start storage */
 } virErrorNumber;
 
 /**

@@ -1,3 +1,11 @@
+Wed Feb 20 10:01:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* include/libvirt/virterror.h, src/virterror.c: Add error codes
+	for storage API drivers
+	* src/internal.h, src/hash.c: Add internal storage object structs
+	* src/driver.h: internal driver API for storage management
+	* src/libvirt.c: hook up storage API to internal driver API
+
 Wed Feb 20 09:51:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* include/libvirt/libvirt.h, include/libvirt/libvirt.h.in,

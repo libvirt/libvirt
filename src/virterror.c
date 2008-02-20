@@ -296,6 +296,9 @@ virDefaultErrorFunc(virErrorPtr err)
         case VIR_FROM_STATS_LINUX:
             dom = "Linux Stats ";
             break;
+        case VIR_FROM_STORAGE:
+            dom = "Storage ";
+            break;
 
     }
     if ((err->dom != NULL) && (err->code != VIR_ERR_INVALID_DOMAIN)) {
@@ -675,6 +678,24 @@ __virErrorMsg(virErrorNumber error, const char *info)
 	    else
 		errmsg = _("authentication failed: %s");
 	    break;
+	case VIR_ERR_INVALID_STORAGE_POOL:
+		if (info == NULL)
+			errmsg = _("invalid storage pool pointer in");
+		else
+			errmsg = _("invalid storage pool pointer in %s");
+		break;
+	case VIR_ERR_INVALID_STORAGE_VOL:
+		if (info == NULL)
+			errmsg = _("invalid storage volume pointer in");
+		else
+			errmsg = _("invalid storage volume pointer in %s");
+		break;
+	case VIR_WAR_NO_STORAGE:
+		if (info == NULL)
+			errmsg = _("Failed to find a storage driver");
+		else
+			errmsg = _("Failed to find a storage driver: %s");
+		break;
     }
     return (errmsg);
 }
