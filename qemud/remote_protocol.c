@@ -58,6 +58,30 @@ xdr_remote_nonnull_network (XDR *xdrs, remote_nonnull_network *objp)
 }
 
 bool_t
+xdr_remote_nonnull_storage_pool (XDR *xdrs, remote_nonnull_storage_pool *objp)
+{
+
+	 if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+		 return FALSE;
+	 if (!xdr_remote_uuid (xdrs, objp->uuid))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_nonnull_storage_vol (XDR *xdrs, remote_nonnull_storage_vol *objp)
+{
+
+	 if (!xdr_remote_nonnull_string (xdrs, &objp->pool))
+		 return FALSE;
+	 if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+		 return FALSE;
+	 if (!xdr_remote_nonnull_string (xdrs, &objp->key))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
 xdr_remote_domain (XDR *xdrs, remote_domain *objp)
 {
 
@@ -71,6 +95,24 @@ xdr_remote_network (XDR *xdrs, remote_network *objp)
 {
 
 	 if (!xdr_pointer (xdrs, (char **)objp, sizeof (remote_nonnull_network), (xdrproc_t) xdr_remote_nonnull_network))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool (XDR *xdrs, remote_storage_pool *objp)
+{
+
+	 if (!xdr_pointer (xdrs, (char **)objp, sizeof (remote_nonnull_storage_pool), (xdrproc_t) xdr_remote_nonnull_storage_pool))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_vol (XDR *xdrs, remote_storage_vol *objp)
+{
+
+	 if (!xdr_pointer (xdrs, (char **)objp, sizeof (remote_nonnull_storage_vol), (xdrproc_t) xdr_remote_nonnull_storage_vol))
 		 return FALSE;
 	return TRUE;
 }
@@ -1313,6 +1355,482 @@ xdr_remote_auth_polkit_ret (XDR *xdrs, remote_auth_polkit_ret *objp)
 {
 
 	 if (!xdr_int (xdrs, &objp->complete))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_num_of_storage_pools_ret (XDR *xdrs, remote_num_of_storage_pools_ret *objp)
+{
+
+	 if (!xdr_int (xdrs, &objp->num))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_list_storage_pools_args (XDR *xdrs, remote_list_storage_pools_args *objp)
+{
+
+	 if (!xdr_int (xdrs, &objp->maxnames))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_list_storage_pools_ret (XDR *xdrs, remote_list_storage_pools_ret *objp)
+{
+	char **objp_cpp0 = (char **) (void *) &objp->names.names_val;
+
+	 if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->names.names_len, REMOTE_STORAGE_POOL_NAME_LIST_MAX,
+		sizeof (remote_nonnull_string), (xdrproc_t) xdr_remote_nonnull_string))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_num_of_defined_storage_pools_ret (XDR *xdrs, remote_num_of_defined_storage_pools_ret *objp)
+{
+
+	 if (!xdr_int (xdrs, &objp->num))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_list_defined_storage_pools_args (XDR *xdrs, remote_list_defined_storage_pools_args *objp)
+{
+
+	 if (!xdr_int (xdrs, &objp->maxnames))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_list_defined_storage_pools_ret (XDR *xdrs, remote_list_defined_storage_pools_ret *objp)
+{
+	char **objp_cpp0 = (char **) (void *) &objp->names.names_val;
+
+	 if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->names.names_len, REMOTE_STORAGE_POOL_NAME_LIST_MAX,
+		sizeof (remote_nonnull_string), (xdrproc_t) xdr_remote_nonnull_string))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_lookup_by_uuid_args (XDR *xdrs, remote_storage_pool_lookup_by_uuid_args *objp)
+{
+
+	 if (!xdr_remote_uuid (xdrs, objp->uuid))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_lookup_by_uuid_ret (XDR *xdrs, remote_storage_pool_lookup_by_uuid_ret *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_lookup_by_name_args (XDR *xdrs, remote_storage_pool_lookup_by_name_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_lookup_by_name_ret (XDR *xdrs, remote_storage_pool_lookup_by_name_ret *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_lookup_by_volume_args (XDR *xdrs, remote_storage_pool_lookup_by_volume_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_vol (xdrs, &objp->vol))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_lookup_by_volume_ret (XDR *xdrs, remote_storage_pool_lookup_by_volume_ret *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_create_xml_args (XDR *xdrs, remote_storage_pool_create_xml_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_string (xdrs, &objp->xml))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->flags))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_create_xml_ret (XDR *xdrs, remote_storage_pool_create_xml_ret *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_define_xml_args (XDR *xdrs, remote_storage_pool_define_xml_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_string (xdrs, &objp->xml))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->flags))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_define_xml_ret (XDR *xdrs, remote_storage_pool_define_xml_ret *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_build_args (XDR *xdrs, remote_storage_pool_build_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->flags))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_undefine_args (XDR *xdrs, remote_storage_pool_undefine_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_create_args (XDR *xdrs, remote_storage_pool_create_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->flags))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_destroy_args (XDR *xdrs, remote_storage_pool_destroy_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_delete_args (XDR *xdrs, remote_storage_pool_delete_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->flags))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_refresh_args (XDR *xdrs, remote_storage_pool_refresh_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->flags))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_dump_xml_args (XDR *xdrs, remote_storage_pool_dump_xml_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->flags))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_dump_xml_ret (XDR *xdrs, remote_storage_pool_dump_xml_ret *objp)
+{
+
+	 if (!xdr_remote_nonnull_string (xdrs, &objp->xml))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_get_info_args (XDR *xdrs, remote_storage_pool_get_info_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_get_info_ret (XDR *xdrs, remote_storage_pool_get_info_ret *objp)
+{
+
+	 if (!xdr_u_char (xdrs, &objp->state))
+		 return FALSE;
+	 if (!xdr_u_quad_t (xdrs, &objp->capacity))
+		 return FALSE;
+	 if (!xdr_u_quad_t (xdrs, &objp->allocation))
+		 return FALSE;
+	 if (!xdr_u_quad_t (xdrs, &objp->available))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_get_autostart_args (XDR *xdrs, remote_storage_pool_get_autostart_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_get_autostart_ret (XDR *xdrs, remote_storage_pool_get_autostart_ret *objp)
+{
+
+	 if (!xdr_int (xdrs, &objp->autostart))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_set_autostart_args (XDR *xdrs, remote_storage_pool_set_autostart_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->autostart))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_num_of_volumes_args (XDR *xdrs, remote_storage_pool_num_of_volumes_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_num_of_volumes_ret (XDR *xdrs, remote_storage_pool_num_of_volumes_ret *objp)
+{
+
+	 if (!xdr_int (xdrs, &objp->num))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_list_volumes_args (XDR *xdrs, remote_storage_pool_list_volumes_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+		 return FALSE;
+	 if (!xdr_int (xdrs, &objp->maxnames))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_pool_list_volumes_ret (XDR *xdrs, remote_storage_pool_list_volumes_ret *objp)
+{
+	char **objp_cpp0 = (char **) (void *) &objp->names.names_val;
+
+	 if (!xdr_array (xdrs, objp_cpp0, (u_int *) &objp->names.names_len, REMOTE_STORAGE_VOL_NAME_LIST_MAX,
+		sizeof (remote_nonnull_string), (xdrproc_t) xdr_remote_nonnull_string))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_vol_lookup_by_name_args (XDR *xdrs, remote_storage_vol_lookup_by_name_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+		 return FALSE;
+	 if (!xdr_remote_nonnull_string (xdrs, &objp->name))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_vol_lookup_by_name_ret (XDR *xdrs, remote_storage_vol_lookup_by_name_ret *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_vol (xdrs, &objp->vol))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_vol_lookup_by_key_args (XDR *xdrs, remote_storage_vol_lookup_by_key_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_string (xdrs, &objp->key))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_vol_lookup_by_key_ret (XDR *xdrs, remote_storage_vol_lookup_by_key_ret *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_vol (xdrs, &objp->vol))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_vol_lookup_by_path_args (XDR *xdrs, remote_storage_vol_lookup_by_path_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_string (xdrs, &objp->path))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_vol_lookup_by_path_ret (XDR *xdrs, remote_storage_vol_lookup_by_path_ret *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_vol (xdrs, &objp->vol))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_vol_create_xml_args (XDR *xdrs, remote_storage_vol_create_xml_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_pool (xdrs, &objp->pool))
+		 return FALSE;
+	 if (!xdr_remote_nonnull_string (xdrs, &objp->xml))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->flags))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_vol_create_xml_ret (XDR *xdrs, remote_storage_vol_create_xml_ret *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_vol (xdrs, &objp->vol))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_vol_delete_args (XDR *xdrs, remote_storage_vol_delete_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_vol (xdrs, &objp->vol))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->flags))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_vol_dump_xml_args (XDR *xdrs, remote_storage_vol_dump_xml_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_vol (xdrs, &objp->vol))
+		 return FALSE;
+	 if (!xdr_u_int (xdrs, &objp->flags))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_vol_dump_xml_ret (XDR *xdrs, remote_storage_vol_dump_xml_ret *objp)
+{
+
+	 if (!xdr_remote_nonnull_string (xdrs, &objp->xml))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_vol_get_info_args (XDR *xdrs, remote_storage_vol_get_info_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_vol (xdrs, &objp->vol))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_vol_get_info_ret (XDR *xdrs, remote_storage_vol_get_info_ret *objp)
+{
+
+	 if (!xdr_char (xdrs, &objp->type))
+		 return FALSE;
+	 if (!xdr_u_quad_t (xdrs, &objp->capacity))
+		 return FALSE;
+	 if (!xdr_u_quad_t (xdrs, &objp->allocation))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_vol_get_path_args (XDR *xdrs, remote_storage_vol_get_path_args *objp)
+{
+
+	 if (!xdr_remote_nonnull_storage_vol (xdrs, &objp->vol))
+		 return FALSE;
+	return TRUE;
+}
+
+bool_t
+xdr_remote_storage_vol_get_path_ret (XDR *xdrs, remote_storage_vol_get_path_ret *objp)
+{
+
+	 if (!xdr_remote_nonnull_string (xdrs, &objp->name))
 		 return FALSE;
 	return TRUE;
 }

@@ -1,3 +1,11 @@
+Wed Feb 20 10:17:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/remote.c: Add binding for storage APIs
+	* qemud/remote_protcol.x: Add wire format definition for storage
+	APIs
+	* qemud/remote_protocol.{c,h}: Re-generated
+	* qemud/remote_dispatch*: Re-generated
+
 Wed Feb 20 10:15:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* docs/libvirt-api.xml, docs/libvirt-refs.xml, docs/devhelp/*:

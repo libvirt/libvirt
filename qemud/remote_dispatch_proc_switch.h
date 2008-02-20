@@ -368,6 +368,15 @@ case REMOTE_PROC_LIST_DEFINED_NETWORKS:
 	ret = (char *) &lv_remote_list_defined_networks_ret;
 	memset (&lv_remote_list_defined_networks_ret, 0, sizeof lv_remote_list_defined_networks_ret);
 	break;
+case REMOTE_PROC_LIST_DEFINED_STORAGE_POOLS:
+	fn = (dispatch_fn) remoteDispatchListDefinedStoragePools;
+	args_filter = (xdrproc_t) xdr_remote_list_defined_storage_pools_args;
+	args = (char *) &lv_remote_list_defined_storage_pools_args;
+	memset (&lv_remote_list_defined_storage_pools_args, 0, sizeof lv_remote_list_defined_storage_pools_args);
+	ret_filter = (xdrproc_t) xdr_remote_list_defined_storage_pools_ret;
+	ret = (char *) &lv_remote_list_defined_storage_pools_ret;
+	memset (&lv_remote_list_defined_storage_pools_ret, 0, sizeof lv_remote_list_defined_storage_pools_ret);
+	break;
 case REMOTE_PROC_LIST_DOMAINS:
 	fn = (dispatch_fn) remoteDispatchListDomains;
 	args_filter = (xdrproc_t) xdr_remote_list_domains_args;
@@ -385,6 +394,15 @@ case REMOTE_PROC_LIST_NETWORKS:
 	ret_filter = (xdrproc_t) xdr_remote_list_networks_ret;
 	ret = (char *) &lv_remote_list_networks_ret;
 	memset (&lv_remote_list_networks_ret, 0, sizeof lv_remote_list_networks_ret);
+	break;
+case REMOTE_PROC_LIST_STORAGE_POOLS:
+	fn = (dispatch_fn) remoteDispatchListStoragePools;
+	args_filter = (xdrproc_t) xdr_remote_list_storage_pools_args;
+	args = (char *) &lv_remote_list_storage_pools_args;
+	memset (&lv_remote_list_storage_pools_args, 0, sizeof lv_remote_list_storage_pools_args);
+	ret_filter = (xdrproc_t) xdr_remote_list_storage_pools_ret;
+	ret = (char *) &lv_remote_list_storage_pools_ret;
+	memset (&lv_remote_list_storage_pools_ret, 0, sizeof lv_remote_list_storage_pools_ret);
 	break;
 case REMOTE_PROC_NETWORK_CREATE:
 	fn = (dispatch_fn) remoteDispatchNetworkCreate;
@@ -491,6 +509,12 @@ case REMOTE_PROC_NUM_OF_DEFINED_NETWORKS:
 	ret = (char *) &lv_remote_num_of_defined_networks_ret;
 	memset (&lv_remote_num_of_defined_networks_ret, 0, sizeof lv_remote_num_of_defined_networks_ret);
 	break;
+case REMOTE_PROC_NUM_OF_DEFINED_STORAGE_POOLS:
+	fn = (dispatch_fn) remoteDispatchNumOfDefinedStoragePools;
+	ret_filter = (xdrproc_t) xdr_remote_num_of_defined_storage_pools_ret;
+	ret = (char *) &lv_remote_num_of_defined_storage_pools_ret;
+	memset (&lv_remote_num_of_defined_storage_pools_ret, 0, sizeof lv_remote_num_of_defined_storage_pools_ret);
+	break;
 case REMOTE_PROC_NUM_OF_DOMAINS:
 	fn = (dispatch_fn) remoteDispatchNumOfDomains;
 	ret_filter = (xdrproc_t) xdr_remote_num_of_domains_ret;
@@ -503,11 +527,218 @@ case REMOTE_PROC_NUM_OF_NETWORKS:
 	ret = (char *) &lv_remote_num_of_networks_ret;
 	memset (&lv_remote_num_of_networks_ret, 0, sizeof lv_remote_num_of_networks_ret);
 	break;
+case REMOTE_PROC_NUM_OF_STORAGE_POOLS:
+	fn = (dispatch_fn) remoteDispatchNumOfStoragePools;
+	ret_filter = (xdrproc_t) xdr_remote_num_of_storage_pools_ret;
+	ret = (char *) &lv_remote_num_of_storage_pools_ret;
+	memset (&lv_remote_num_of_storage_pools_ret, 0, sizeof lv_remote_num_of_storage_pools_ret);
+	break;
 case REMOTE_PROC_OPEN:
 	fn = (dispatch_fn) remoteDispatchOpen;
 	args_filter = (xdrproc_t) xdr_remote_open_args;
 	args = (char *) &lv_remote_open_args;
 	memset (&lv_remote_open_args, 0, sizeof lv_remote_open_args);
+	break;
+case REMOTE_PROC_STORAGE_POOL_BUILD:
+	fn = (dispatch_fn) remoteDispatchStoragePoolBuild;
+	args_filter = (xdrproc_t) xdr_remote_storage_pool_build_args;
+	args = (char *) &lv_remote_storage_pool_build_args;
+	memset (&lv_remote_storage_pool_build_args, 0, sizeof lv_remote_storage_pool_build_args);
+	break;
+case REMOTE_PROC_STORAGE_POOL_CREATE:
+	fn = (dispatch_fn) remoteDispatchStoragePoolCreate;
+	args_filter = (xdrproc_t) xdr_remote_storage_pool_create_args;
+	args = (char *) &lv_remote_storage_pool_create_args;
+	memset (&lv_remote_storage_pool_create_args, 0, sizeof lv_remote_storage_pool_create_args);
+	break;
+case REMOTE_PROC_STORAGE_POOL_CREATE_XML:
+	fn = (dispatch_fn) remoteDispatchStoragePoolCreateXml;
+	args_filter = (xdrproc_t) xdr_remote_storage_pool_create_xml_args;
+	args = (char *) &lv_remote_storage_pool_create_xml_args;
+	memset (&lv_remote_storage_pool_create_xml_args, 0, sizeof lv_remote_storage_pool_create_xml_args);
+	ret_filter = (xdrproc_t) xdr_remote_storage_pool_create_xml_ret;
+	ret = (char *) &lv_remote_storage_pool_create_xml_ret;
+	memset (&lv_remote_storage_pool_create_xml_ret, 0, sizeof lv_remote_storage_pool_create_xml_ret);
+	break;
+case REMOTE_PROC_STORAGE_POOL_DEFINE_XML:
+	fn = (dispatch_fn) remoteDispatchStoragePoolDefineXml;
+	args_filter = (xdrproc_t) xdr_remote_storage_pool_define_xml_args;
+	args = (char *) &lv_remote_storage_pool_define_xml_args;
+	memset (&lv_remote_storage_pool_define_xml_args, 0, sizeof lv_remote_storage_pool_define_xml_args);
+	ret_filter = (xdrproc_t) xdr_remote_storage_pool_define_xml_ret;
+	ret = (char *) &lv_remote_storage_pool_define_xml_ret;
+	memset (&lv_remote_storage_pool_define_xml_ret, 0, sizeof lv_remote_storage_pool_define_xml_ret);
+	break;
+case REMOTE_PROC_STORAGE_POOL_DELETE:
+	fn = (dispatch_fn) remoteDispatchStoragePoolDelete;
+	args_filter = (xdrproc_t) xdr_remote_storage_pool_delete_args;
+	args = (char *) &lv_remote_storage_pool_delete_args;
+	memset (&lv_remote_storage_pool_delete_args, 0, sizeof lv_remote_storage_pool_delete_args);
+	break;
+case REMOTE_PROC_STORAGE_POOL_DESTROY:
+	fn = (dispatch_fn) remoteDispatchStoragePoolDestroy;
+	args_filter = (xdrproc_t) xdr_remote_storage_pool_destroy_args;
+	args = (char *) &lv_remote_storage_pool_destroy_args;
+	memset (&lv_remote_storage_pool_destroy_args, 0, sizeof lv_remote_storage_pool_destroy_args);
+	break;
+case REMOTE_PROC_STORAGE_POOL_DUMP_XML:
+	fn = (dispatch_fn) remoteDispatchStoragePoolDumpXml;
+	args_filter = (xdrproc_t) xdr_remote_storage_pool_dump_xml_args;
+	args = (char *) &lv_remote_storage_pool_dump_xml_args;
+	memset (&lv_remote_storage_pool_dump_xml_args, 0, sizeof lv_remote_storage_pool_dump_xml_args);
+	ret_filter = (xdrproc_t) xdr_remote_storage_pool_dump_xml_ret;
+	ret = (char *) &lv_remote_storage_pool_dump_xml_ret;
+	memset (&lv_remote_storage_pool_dump_xml_ret, 0, sizeof lv_remote_storage_pool_dump_xml_ret);
+	break;
+case REMOTE_PROC_STORAGE_POOL_GET_AUTOSTART:
+	fn = (dispatch_fn) remoteDispatchStoragePoolGetAutostart;
+	args_filter = (xdrproc_t) xdr_remote_storage_pool_get_autostart_args;
+	args = (char *) &lv_remote_storage_pool_get_autostart_args;
+	memset (&lv_remote_storage_pool_get_autostart_args, 0, sizeof lv_remote_storage_pool_get_autostart_args);
+	ret_filter = (xdrproc_t) xdr_remote_storage_pool_get_autostart_ret;
+	ret = (char *) &lv_remote_storage_pool_get_autostart_ret;
+	memset (&lv_remote_storage_pool_get_autostart_ret, 0, sizeof lv_remote_storage_pool_get_autostart_ret);
+	break;
+case REMOTE_PROC_STORAGE_POOL_GET_INFO:
+	fn = (dispatch_fn) remoteDispatchStoragePoolGetInfo;
+	args_filter = (xdrproc_t) xdr_remote_storage_pool_get_info_args;
+	args = (char *) &lv_remote_storage_pool_get_info_args;
+	memset (&lv_remote_storage_pool_get_info_args, 0, sizeof lv_remote_storage_pool_get_info_args);
+	ret_filter = (xdrproc_t) xdr_remote_storage_pool_get_info_ret;
+	ret = (char *) &lv_remote_storage_pool_get_info_ret;
+	memset (&lv_remote_storage_pool_get_info_ret, 0, sizeof lv_remote_storage_pool_get_info_ret);
+	break;
+case REMOTE_PROC_STORAGE_POOL_LIST_VOLUMES:
+	fn = (dispatch_fn) remoteDispatchStoragePoolListVolumes;
+	args_filter = (xdrproc_t) xdr_remote_storage_pool_list_volumes_args;
+	args = (char *) &lv_remote_storage_pool_list_volumes_args;
+	memset (&lv_remote_storage_pool_list_volumes_args, 0, sizeof lv_remote_storage_pool_list_volumes_args);
+	ret_filter = (xdrproc_t) xdr_remote_storage_pool_list_volumes_ret;
+	ret = (char *) &lv_remote_storage_pool_list_volumes_ret;
+	memset (&lv_remote_storage_pool_list_volumes_ret, 0, sizeof lv_remote_storage_pool_list_volumes_ret);
+	break;
+case REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_NAME:
+	fn = (dispatch_fn) remoteDispatchStoragePoolLookupByName;
+	args_filter = (xdrproc_t) xdr_remote_storage_pool_lookup_by_name_args;
+	args = (char *) &lv_remote_storage_pool_lookup_by_name_args;
+	memset (&lv_remote_storage_pool_lookup_by_name_args, 0, sizeof lv_remote_storage_pool_lookup_by_name_args);
+	ret_filter = (xdrproc_t) xdr_remote_storage_pool_lookup_by_name_ret;
+	ret = (char *) &lv_remote_storage_pool_lookup_by_name_ret;
+	memset (&lv_remote_storage_pool_lookup_by_name_ret, 0, sizeof lv_remote_storage_pool_lookup_by_name_ret);
+	break;
+case REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_UUID:
+	fn = (dispatch_fn) remoteDispatchStoragePoolLookupByUuid;
+	args_filter = (xdrproc_t) xdr_remote_storage_pool_lookup_by_uuid_args;
+	args = (char *) &lv_remote_storage_pool_lookup_by_uuid_args;
+	memset (&lv_remote_storage_pool_lookup_by_uuid_args, 0, sizeof lv_remote_storage_pool_lookup_by_uuid_args);
+	ret_filter = (xdrproc_t) xdr_remote_storage_pool_lookup_by_uuid_ret;
+	ret = (char *) &lv_remote_storage_pool_lookup_by_uuid_ret;
+	memset (&lv_remote_storage_pool_lookup_by_uuid_ret, 0, sizeof lv_remote_storage_pool_lookup_by_uuid_ret);
+	break;
+case REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_VOLUME:
+	fn = (dispatch_fn) remoteDispatchStoragePoolLookupByVolume;
+	args_filter = (xdrproc_t) xdr_remote_storage_pool_lookup_by_volume_args;
+	args = (char *) &lv_remote_storage_pool_lookup_by_volume_args;
+	memset (&lv_remote_storage_pool_lookup_by_volume_args, 0, sizeof lv_remote_storage_pool_lookup_by_volume_args);
+	ret_filter = (xdrproc_t) xdr_remote_storage_pool_lookup_by_volume_ret;
+	ret = (char *) &lv_remote_storage_pool_lookup_by_volume_ret;
+	memset (&lv_remote_storage_pool_lookup_by_volume_ret, 0, sizeof lv_remote_storage_pool_lookup_by_volume_ret);
+	break;
+case REMOTE_PROC_STORAGE_POOL_NUM_OF_VOLUMES:
+	fn = (dispatch_fn) remoteDispatchStoragePoolNumOfVolumes;
+	args_filter = (xdrproc_t) xdr_remote_storage_pool_num_of_volumes_args;
+	args = (char *) &lv_remote_storage_pool_num_of_volumes_args;
+	memset (&lv_remote_storage_pool_num_of_volumes_args, 0, sizeof lv_remote_storage_pool_num_of_volumes_args);
+	ret_filter = (xdrproc_t) xdr_remote_storage_pool_num_of_volumes_ret;
+	ret = (char *) &lv_remote_storage_pool_num_of_volumes_ret;
+	memset (&lv_remote_storage_pool_num_of_volumes_ret, 0, sizeof lv_remote_storage_pool_num_of_volumes_ret);
+	break;
+case REMOTE_PROC_STORAGE_POOL_REFRESH:
+	fn = (dispatch_fn) remoteDispatchStoragePoolRefresh;
+	args_filter = (xdrproc_t) xdr_remote_storage_pool_refresh_args;
+	args = (char *) &lv_remote_storage_pool_refresh_args;
+	memset (&lv_remote_storage_pool_refresh_args, 0, sizeof lv_remote_storage_pool_refresh_args);
+	break;
+case REMOTE_PROC_STORAGE_POOL_SET_AUTOSTART:
+	fn = (dispatch_fn) remoteDispatchStoragePoolSetAutostart;
+	args_filter = (xdrproc_t) xdr_remote_storage_pool_set_autostart_args;
+	args = (char *) &lv_remote_storage_pool_set_autostart_args;
+	memset (&lv_remote_storage_pool_set_autostart_args, 0, sizeof lv_remote_storage_pool_set_autostart_args);
+	break;
+case REMOTE_PROC_STORAGE_POOL_UNDEFINE:
+	fn = (dispatch_fn) remoteDispatchStoragePoolUndefine;
+	args_filter = (xdrproc_t) xdr_remote_storage_pool_undefine_args;
+	args = (char *) &lv_remote_storage_pool_undefine_args;
+	memset (&lv_remote_storage_pool_undefine_args, 0, sizeof lv_remote_storage_pool_undefine_args);
+	break;
+case REMOTE_PROC_STORAGE_VOL_CREATE_XML:
+	fn = (dispatch_fn) remoteDispatchStorageVolCreateXml;
+	args_filter = (xdrproc_t) xdr_remote_storage_vol_create_xml_args;
+	args = (char *) &lv_remote_storage_vol_create_xml_args;
+	memset (&lv_remote_storage_vol_create_xml_args, 0, sizeof lv_remote_storage_vol_create_xml_args);
+	ret_filter = (xdrproc_t) xdr_remote_storage_vol_create_xml_ret;
+	ret = (char *) &lv_remote_storage_vol_create_xml_ret;
+	memset (&lv_remote_storage_vol_create_xml_ret, 0, sizeof lv_remote_storage_vol_create_xml_ret);
+	break;
+case REMOTE_PROC_STORAGE_VOL_DELETE:
+	fn = (dispatch_fn) remoteDispatchStorageVolDelete;
+	args_filter = (xdrproc_t) xdr_remote_storage_vol_delete_args;
+	args = (char *) &lv_remote_storage_vol_delete_args;
+	memset (&lv_remote_storage_vol_delete_args, 0, sizeof lv_remote_storage_vol_delete_args);
+	break;
+case REMOTE_PROC_STORAGE_VOL_DUMP_XML:
+	fn = (dispatch_fn) remoteDispatchStorageVolDumpXml;
+	args_filter = (xdrproc_t) xdr_remote_storage_vol_dump_xml_args;
+	args = (char *) &lv_remote_storage_vol_dump_xml_args;
+	memset (&lv_remote_storage_vol_dump_xml_args, 0, sizeof lv_remote_storage_vol_dump_xml_args);
+	ret_filter = (xdrproc_t) xdr_remote_storage_vol_dump_xml_ret;
+	ret = (char *) &lv_remote_storage_vol_dump_xml_ret;
+	memset (&lv_remote_storage_vol_dump_xml_ret, 0, sizeof lv_remote_storage_vol_dump_xml_ret);
+	break;
+case REMOTE_PROC_STORAGE_VOL_GET_INFO:
+	fn = (dispatch_fn) remoteDispatchStorageVolGetInfo;
+	args_filter = (xdrproc_t) xdr_remote_storage_vol_get_info_args;
+	args = (char *) &lv_remote_storage_vol_get_info_args;
+	memset (&lv_remote_storage_vol_get_info_args, 0, sizeof lv_remote_storage_vol_get_info_args);
+	ret_filter = (xdrproc_t) xdr_remote_storage_vol_get_info_ret;
+	ret = (char *) &lv_remote_storage_vol_get_info_ret;
+	memset (&lv_remote_storage_vol_get_info_ret, 0, sizeof lv_remote_storage_vol_get_info_ret);
+	break;
+case REMOTE_PROC_STORAGE_VOL_GET_PATH:
+	fn = (dispatch_fn) remoteDispatchStorageVolGetPath;
+	args_filter = (xdrproc_t) xdr_remote_storage_vol_get_path_args;
+	args = (char *) &lv_remote_storage_vol_get_path_args;
+	memset (&lv_remote_storage_vol_get_path_args, 0, sizeof lv_remote_storage_vol_get_path_args);
+	ret_filter = (xdrproc_t) xdr_remote_storage_vol_get_path_ret;
+	ret = (char *) &lv_remote_storage_vol_get_path_ret;
+	memset (&lv_remote_storage_vol_get_path_ret, 0, sizeof lv_remote_storage_vol_get_path_ret);
+	break;
+case REMOTE_PROC_STORAGE_VOL_LOOKUP_BY_KEY:
+	fn = (dispatch_fn) remoteDispatchStorageVolLookupByKey;
+	args_filter = (xdrproc_t) xdr_remote_storage_vol_lookup_by_key_args;
+	args = (char *) &lv_remote_storage_vol_lookup_by_key_args;
+	memset (&lv_remote_storage_vol_lookup_by_key_args, 0, sizeof lv_remote_storage_vol_lookup_by_key_args);
+	ret_filter = (xdrproc_t) xdr_remote_storage_vol_lookup_by_key_ret;
+	ret = (char *) &lv_remote_storage_vol_lookup_by_key_ret;
+	memset (&lv_remote_storage_vol_lookup_by_key_ret, 0, sizeof lv_remote_storage_vol_lookup_by_key_ret);
+	break;
+case REMOTE_PROC_STORAGE_VOL_LOOKUP_BY_NAME:
+	fn = (dispatch_fn) remoteDispatchStorageVolLookupByName;
+	args_filter = (xdrproc_t) xdr_remote_storage_vol_lookup_by_name_args;
+	args = (char *) &lv_remote_storage_vol_lookup_by_name_args;
+	memset (&lv_remote_storage_vol_lookup_by_name_args, 0, sizeof lv_remote_storage_vol_lookup_by_name_args);
+	ret_filter = (xdrproc_t) xdr_remote_storage_vol_lookup_by_name_ret;
+	ret = (char *) &lv_remote_storage_vol_lookup_by_name_ret;
+	memset (&lv_remote_storage_vol_lookup_by_name_ret, 0, sizeof lv_remote_storage_vol_lookup_by_name_ret);
+	break;
+case REMOTE_PROC_STORAGE_VOL_LOOKUP_BY_PATH:
+	fn = (dispatch_fn) remoteDispatchStorageVolLookupByPath;
+	args_filter = (xdrproc_t) xdr_remote_storage_vol_lookup_by_path_args;
+	args = (char *) &lv_remote_storage_vol_lookup_by_path_args;
+	memset (&lv_remote_storage_vol_lookup_by_path_args, 0, sizeof lv_remote_storage_vol_lookup_by_path_args);
+	ret_filter = (xdrproc_t) xdr_remote_storage_vol_lookup_by_path_ret;
+	ret = (char *) &lv_remote_storage_vol_lookup_by_path_ret;
+	memset (&lv_remote_storage_vol_lookup_by_path_ret, 0, sizeof lv_remote_storage_vol_lookup_by_path_ret);
 	break;
 case REMOTE_PROC_SUPPORTS_FEATURE:
 	fn = (dispatch_fn) remoteDispatchSupportsFeature;

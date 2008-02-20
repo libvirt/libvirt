@@ -27,6 +27,8 @@ typedef remote_nonnull_string *remote_string;
 #define REMOTE_CPUMAPS_MAX 16384
 #define REMOTE_MIGRATE_COOKIE_MAX 256
 #define REMOTE_NETWORK_NAME_LIST_MAX 256
+#define REMOTE_STORAGE_POOL_NAME_LIST_MAX 256
+#define REMOTE_STORAGE_VOL_NAME_LIST_MAX 1024
 #define REMOTE_DOMAIN_SCHEDULER_PARAMETERS_MAX 16
 #define REMOTE_AUTH_SASL_DATA_MAX 65536
 #define REMOTE_AUTH_TYPE_LIST_MAX 20
@@ -46,9 +48,26 @@ struct remote_nonnull_network {
 };
 typedef struct remote_nonnull_network remote_nonnull_network;
 
+struct remote_nonnull_storage_pool {
+	remote_nonnull_string name;
+	remote_uuid uuid;
+};
+typedef struct remote_nonnull_storage_pool remote_nonnull_storage_pool;
+
+struct remote_nonnull_storage_vol {
+	remote_nonnull_string pool;
+	remote_nonnull_string name;
+	remote_nonnull_string key;
+};
+typedef struct remote_nonnull_storage_vol remote_nonnull_storage_vol;
+
 typedef remote_nonnull_domain *remote_domain;
 
 typedef remote_nonnull_network *remote_network;
+
+typedef remote_nonnull_storage_pool *remote_storage_pool;
+
+typedef remote_nonnull_storage_vol *remote_storage_vol;
 
 struct remote_error {
 	int code;
@@ -725,6 +744,274 @@ struct remote_auth_polkit_ret {
 	int complete;
 };
 typedef struct remote_auth_polkit_ret remote_auth_polkit_ret;
+
+struct remote_num_of_storage_pools_ret {
+	int num;
+};
+typedef struct remote_num_of_storage_pools_ret remote_num_of_storage_pools_ret;
+
+struct remote_list_storage_pools_args {
+	int maxnames;
+};
+typedef struct remote_list_storage_pools_args remote_list_storage_pools_args;
+
+struct remote_list_storage_pools_ret {
+	struct {
+		u_int names_len;
+		remote_nonnull_string *names_val;
+	} names;
+};
+typedef struct remote_list_storage_pools_ret remote_list_storage_pools_ret;
+
+struct remote_num_of_defined_storage_pools_ret {
+	int num;
+};
+typedef struct remote_num_of_defined_storage_pools_ret remote_num_of_defined_storage_pools_ret;
+
+struct remote_list_defined_storage_pools_args {
+	int maxnames;
+};
+typedef struct remote_list_defined_storage_pools_args remote_list_defined_storage_pools_args;
+
+struct remote_list_defined_storage_pools_ret {
+	struct {
+		u_int names_len;
+		remote_nonnull_string *names_val;
+	} names;
+};
+typedef struct remote_list_defined_storage_pools_ret remote_list_defined_storage_pools_ret;
+
+struct remote_storage_pool_lookup_by_uuid_args {
+	remote_uuid uuid;
+};
+typedef struct remote_storage_pool_lookup_by_uuid_args remote_storage_pool_lookup_by_uuid_args;
+
+struct remote_storage_pool_lookup_by_uuid_ret {
+	remote_nonnull_storage_pool pool;
+};
+typedef struct remote_storage_pool_lookup_by_uuid_ret remote_storage_pool_lookup_by_uuid_ret;
+
+struct remote_storage_pool_lookup_by_name_args {
+	remote_nonnull_string name;
+};
+typedef struct remote_storage_pool_lookup_by_name_args remote_storage_pool_lookup_by_name_args;
+
+struct remote_storage_pool_lookup_by_name_ret {
+	remote_nonnull_storage_pool pool;
+};
+typedef struct remote_storage_pool_lookup_by_name_ret remote_storage_pool_lookup_by_name_ret;
+
+struct remote_storage_pool_lookup_by_volume_args {
+	remote_nonnull_storage_vol vol;
+};
+typedef struct remote_storage_pool_lookup_by_volume_args remote_storage_pool_lookup_by_volume_args;
+
+struct remote_storage_pool_lookup_by_volume_ret {
+	remote_nonnull_storage_pool pool;
+};
+typedef struct remote_storage_pool_lookup_by_volume_ret remote_storage_pool_lookup_by_volume_ret;
+
+struct remote_storage_pool_create_xml_args {
+	remote_nonnull_string xml;
+	u_int flags;
+};
+typedef struct remote_storage_pool_create_xml_args remote_storage_pool_create_xml_args;
+
+struct remote_storage_pool_create_xml_ret {
+	remote_nonnull_storage_pool pool;
+};
+typedef struct remote_storage_pool_create_xml_ret remote_storage_pool_create_xml_ret;
+
+struct remote_storage_pool_define_xml_args {
+	remote_nonnull_string xml;
+	u_int flags;
+};
+typedef struct remote_storage_pool_define_xml_args remote_storage_pool_define_xml_args;
+
+struct remote_storage_pool_define_xml_ret {
+	remote_nonnull_storage_pool pool;
+};
+typedef struct remote_storage_pool_define_xml_ret remote_storage_pool_define_xml_ret;
+
+struct remote_storage_pool_build_args {
+	remote_nonnull_storage_pool pool;
+	u_int flags;
+};
+typedef struct remote_storage_pool_build_args remote_storage_pool_build_args;
+
+struct remote_storage_pool_undefine_args {
+	remote_nonnull_storage_pool pool;
+};
+typedef struct remote_storage_pool_undefine_args remote_storage_pool_undefine_args;
+
+struct remote_storage_pool_create_args {
+	remote_nonnull_storage_pool pool;
+	u_int flags;
+};
+typedef struct remote_storage_pool_create_args remote_storage_pool_create_args;
+
+struct remote_storage_pool_destroy_args {
+	remote_nonnull_storage_pool pool;
+};
+typedef struct remote_storage_pool_destroy_args remote_storage_pool_destroy_args;
+
+struct remote_storage_pool_delete_args {
+	remote_nonnull_storage_pool pool;
+	u_int flags;
+};
+typedef struct remote_storage_pool_delete_args remote_storage_pool_delete_args;
+
+struct remote_storage_pool_refresh_args {
+	remote_nonnull_storage_pool pool;
+	u_int flags;
+};
+typedef struct remote_storage_pool_refresh_args remote_storage_pool_refresh_args;
+
+struct remote_storage_pool_dump_xml_args {
+	remote_nonnull_storage_pool pool;
+	u_int flags;
+};
+typedef struct remote_storage_pool_dump_xml_args remote_storage_pool_dump_xml_args;
+
+struct remote_storage_pool_dump_xml_ret {
+	remote_nonnull_string xml;
+};
+typedef struct remote_storage_pool_dump_xml_ret remote_storage_pool_dump_xml_ret;
+
+struct remote_storage_pool_get_info_args {
+	remote_nonnull_storage_pool pool;
+};
+typedef struct remote_storage_pool_get_info_args remote_storage_pool_get_info_args;
+
+struct remote_storage_pool_get_info_ret {
+	u_char state;
+	u_quad_t capacity;
+	u_quad_t allocation;
+	u_quad_t available;
+};
+typedef struct remote_storage_pool_get_info_ret remote_storage_pool_get_info_ret;
+
+struct remote_storage_pool_get_autostart_args {
+	remote_nonnull_storage_pool pool;
+};
+typedef struct remote_storage_pool_get_autostart_args remote_storage_pool_get_autostart_args;
+
+struct remote_storage_pool_get_autostart_ret {
+	int autostart;
+};
+typedef struct remote_storage_pool_get_autostart_ret remote_storage_pool_get_autostart_ret;
+
+struct remote_storage_pool_set_autostart_args {
+	remote_nonnull_storage_pool pool;
+	int autostart;
+};
+typedef struct remote_storage_pool_set_autostart_args remote_storage_pool_set_autostart_args;
+
+struct remote_storage_pool_num_of_volumes_args {
+	remote_nonnull_storage_pool pool;
+};
+typedef struct remote_storage_pool_num_of_volumes_args remote_storage_pool_num_of_volumes_args;
+
+struct remote_storage_pool_num_of_volumes_ret {
+	int num;
+};
+typedef struct remote_storage_pool_num_of_volumes_ret remote_storage_pool_num_of_volumes_ret;
+
+struct remote_storage_pool_list_volumes_args {
+	remote_nonnull_storage_pool pool;
+	int maxnames;
+};
+typedef struct remote_storage_pool_list_volumes_args remote_storage_pool_list_volumes_args;
+
+struct remote_storage_pool_list_volumes_ret {
+	struct {
+		u_int names_len;
+		remote_nonnull_string *names_val;
+	} names;
+};
+typedef struct remote_storage_pool_list_volumes_ret remote_storage_pool_list_volumes_ret;
+
+struct remote_storage_vol_lookup_by_name_args {
+	remote_nonnull_storage_pool pool;
+	remote_nonnull_string name;
+};
+typedef struct remote_storage_vol_lookup_by_name_args remote_storage_vol_lookup_by_name_args;
+
+struct remote_storage_vol_lookup_by_name_ret {
+	remote_nonnull_storage_vol vol;
+};
+typedef struct remote_storage_vol_lookup_by_name_ret remote_storage_vol_lookup_by_name_ret;
+
+struct remote_storage_vol_lookup_by_key_args {
+	remote_nonnull_string key;
+};
+typedef struct remote_storage_vol_lookup_by_key_args remote_storage_vol_lookup_by_key_args;
+
+struct remote_storage_vol_lookup_by_key_ret {
+	remote_nonnull_storage_vol vol;
+};
+typedef struct remote_storage_vol_lookup_by_key_ret remote_storage_vol_lookup_by_key_ret;
+
+struct remote_storage_vol_lookup_by_path_args {
+	remote_nonnull_string path;
+};
+typedef struct remote_storage_vol_lookup_by_path_args remote_storage_vol_lookup_by_path_args;
+
+struct remote_storage_vol_lookup_by_path_ret {
+	remote_nonnull_storage_vol vol;
+};
+typedef struct remote_storage_vol_lookup_by_path_ret remote_storage_vol_lookup_by_path_ret;
+
+struct remote_storage_vol_create_xml_args {
+	remote_nonnull_storage_pool pool;
+	remote_nonnull_string xml;
+	u_int flags;
+};
+typedef struct remote_storage_vol_create_xml_args remote_storage_vol_create_xml_args;
+
+struct remote_storage_vol_create_xml_ret {
+	remote_nonnull_storage_vol vol;
+};
+typedef struct remote_storage_vol_create_xml_ret remote_storage_vol_create_xml_ret;
+
+struct remote_storage_vol_delete_args {
+	remote_nonnull_storage_vol vol;
+	u_int flags;
+};
+typedef struct remote_storage_vol_delete_args remote_storage_vol_delete_args;
+
+struct remote_storage_vol_dump_xml_args {
+	remote_nonnull_storage_vol vol;
+	u_int flags;
+};
+typedef struct remote_storage_vol_dump_xml_args remote_storage_vol_dump_xml_args;
+
+struct remote_storage_vol_dump_xml_ret {
+	remote_nonnull_string xml;
+};
+typedef struct remote_storage_vol_dump_xml_ret remote_storage_vol_dump_xml_ret;
+
+struct remote_storage_vol_get_info_args {
+	remote_nonnull_storage_vol vol;
+};
+typedef struct remote_storage_vol_get_info_args remote_storage_vol_get_info_args;
+
+struct remote_storage_vol_get_info_ret {
+	char type;
+	u_quad_t capacity;
+	u_quad_t allocation;
+};
+typedef struct remote_storage_vol_get_info_ret remote_storage_vol_get_info_ret;
+
+struct remote_storage_vol_get_path_args {
+	remote_nonnull_storage_vol vol;
+};
+typedef struct remote_storage_vol_get_path_args remote_storage_vol_get_path_args;
+
+struct remote_storage_vol_get_path_ret {
+	remote_nonnull_string name;
+};
+typedef struct remote_storage_vol_get_path_ret remote_storage_vol_get_path_ret;
 #define REMOTE_PROGRAM 0x20008086
 #define REMOTE_PROTOCOL_VERSION 1
 
@@ -799,6 +1086,36 @@ enum remote_procedure {
 	REMOTE_PROC_AUTH_SASL_START = 68,
 	REMOTE_PROC_AUTH_SASL_STEP = 69,
 	REMOTE_PROC_AUTH_POLKIT = 70,
+	REMOTE_PROC_NUM_OF_STORAGE_POOLS = 71,
+	REMOTE_PROC_LIST_STORAGE_POOLS = 72,
+	REMOTE_PROC_NUM_OF_DEFINED_STORAGE_POOLS = 73,
+	REMOTE_PROC_LIST_DEFINED_STORAGE_POOLS = 74,
+	REMOTE_PROC_DISCOVER_STORAGE_POOLS = 75,
+	REMOTE_PROC_STORAGE_POOL_CREATE_XML = 76,
+	REMOTE_PROC_STORAGE_POOL_DEFINE_XML = 77,
+	REMOTE_PROC_STORAGE_POOL_CREATE = 78,
+	REMOTE_PROC_STORAGE_POOL_BUILD = 79,
+	REMOTE_PROC_STORAGE_POOL_DESTROY = 80,
+	REMOTE_PROC_STORAGE_POOL_DELETE = 81,
+	REMOTE_PROC_STORAGE_POOL_UNDEFINE = 82,
+	REMOTE_PROC_STORAGE_POOL_REFRESH = 83,
+	REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_NAME = 84,
+	REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_UUID = 85,
+	REMOTE_PROC_STORAGE_POOL_LOOKUP_BY_VOLUME = 86,
+	REMOTE_PROC_STORAGE_POOL_GET_INFO = 87,
+	REMOTE_PROC_STORAGE_POOL_DUMP_XML = 88,
+	REMOTE_PROC_STORAGE_POOL_GET_AUTOSTART = 89,
+	REMOTE_PROC_STORAGE_POOL_SET_AUTOSTART = 90,
+	REMOTE_PROC_STORAGE_POOL_NUM_OF_VOLUMES = 91,
+	REMOTE_PROC_STORAGE_POOL_LIST_VOLUMES = 92,
+	REMOTE_PROC_STORAGE_VOL_CREATE_XML = 93,
+	REMOTE_PROC_STORAGE_VOL_DELETE = 94,
+	REMOTE_PROC_STORAGE_VOL_LOOKUP_BY_NAME = 95,
+	REMOTE_PROC_STORAGE_VOL_LOOKUP_BY_KEY = 96,
+	REMOTE_PROC_STORAGE_VOL_LOOKUP_BY_PATH = 97,
+	REMOTE_PROC_STORAGE_VOL_GET_INFO = 98,
+	REMOTE_PROC_STORAGE_VOL_DUMP_XML = 99,
+	REMOTE_PROC_STORAGE_VOL_GET_PATH = 100,
 };
 typedef enum remote_procedure remote_procedure;
 
@@ -834,8 +1151,12 @@ extern  bool_t xdr_remote_string (XDR *, remote_string*);
 extern  bool_t xdr_remote_uuid (XDR *, remote_uuid);
 extern  bool_t xdr_remote_nonnull_domain (XDR *, remote_nonnull_domain*);
 extern  bool_t xdr_remote_nonnull_network (XDR *, remote_nonnull_network*);
+extern  bool_t xdr_remote_nonnull_storage_pool (XDR *, remote_nonnull_storage_pool*);
+extern  bool_t xdr_remote_nonnull_storage_vol (XDR *, remote_nonnull_storage_vol*);
 extern  bool_t xdr_remote_domain (XDR *, remote_domain*);
 extern  bool_t xdr_remote_network (XDR *, remote_network*);
+extern  bool_t xdr_remote_storage_pool (XDR *, remote_storage_pool*);
+extern  bool_t xdr_remote_storage_vol (XDR *, remote_storage_vol*);
 extern  bool_t xdr_remote_error (XDR *, remote_error*);
 extern  bool_t xdr_remote_auth_type (XDR *, remote_auth_type*);
 extern  bool_t xdr_remote_vcpu_info (XDR *, remote_vcpu_info*);
@@ -943,6 +1264,54 @@ extern  bool_t xdr_remote_auth_sasl_start_ret (XDR *, remote_auth_sasl_start_ret
 extern  bool_t xdr_remote_auth_sasl_step_args (XDR *, remote_auth_sasl_step_args*);
 extern  bool_t xdr_remote_auth_sasl_step_ret (XDR *, remote_auth_sasl_step_ret*);
 extern  bool_t xdr_remote_auth_polkit_ret (XDR *, remote_auth_polkit_ret*);
+extern  bool_t xdr_remote_num_of_storage_pools_ret (XDR *, remote_num_of_storage_pools_ret*);
+extern  bool_t xdr_remote_list_storage_pools_args (XDR *, remote_list_storage_pools_args*);
+extern  bool_t xdr_remote_list_storage_pools_ret (XDR *, remote_list_storage_pools_ret*);
+extern  bool_t xdr_remote_num_of_defined_storage_pools_ret (XDR *, remote_num_of_defined_storage_pools_ret*);
+extern  bool_t xdr_remote_list_defined_storage_pools_args (XDR *, remote_list_defined_storage_pools_args*);
+extern  bool_t xdr_remote_list_defined_storage_pools_ret (XDR *, remote_list_defined_storage_pools_ret*);
+extern  bool_t xdr_remote_storage_pool_lookup_by_uuid_args (XDR *, remote_storage_pool_lookup_by_uuid_args*);
+extern  bool_t xdr_remote_storage_pool_lookup_by_uuid_ret (XDR *, remote_storage_pool_lookup_by_uuid_ret*);
+extern  bool_t xdr_remote_storage_pool_lookup_by_name_args (XDR *, remote_storage_pool_lookup_by_name_args*);
+extern  bool_t xdr_remote_storage_pool_lookup_by_name_ret (XDR *, remote_storage_pool_lookup_by_name_ret*);
+extern  bool_t xdr_remote_storage_pool_lookup_by_volume_args (XDR *, remote_storage_pool_lookup_by_volume_args*);
+extern  bool_t xdr_remote_storage_pool_lookup_by_volume_ret (XDR *, remote_storage_pool_lookup_by_volume_ret*);
+extern  bool_t xdr_remote_storage_pool_create_xml_args (XDR *, remote_storage_pool_create_xml_args*);
+extern  bool_t xdr_remote_storage_pool_create_xml_ret (XDR *, remote_storage_pool_create_xml_ret*);
+extern  bool_t xdr_remote_storage_pool_define_xml_args (XDR *, remote_storage_pool_define_xml_args*);
+extern  bool_t xdr_remote_storage_pool_define_xml_ret (XDR *, remote_storage_pool_define_xml_ret*);
+extern  bool_t xdr_remote_storage_pool_build_args (XDR *, remote_storage_pool_build_args*);
+extern  bool_t xdr_remote_storage_pool_undefine_args (XDR *, remote_storage_pool_undefine_args*);
+extern  bool_t xdr_remote_storage_pool_create_args (XDR *, remote_storage_pool_create_args*);
+extern  bool_t xdr_remote_storage_pool_destroy_args (XDR *, remote_storage_pool_destroy_args*);
+extern  bool_t xdr_remote_storage_pool_delete_args (XDR *, remote_storage_pool_delete_args*);
+extern  bool_t xdr_remote_storage_pool_refresh_args (XDR *, remote_storage_pool_refresh_args*);
+extern  bool_t xdr_remote_storage_pool_dump_xml_args (XDR *, remote_storage_pool_dump_xml_args*);
+extern  bool_t xdr_remote_storage_pool_dump_xml_ret (XDR *, remote_storage_pool_dump_xml_ret*);
+extern  bool_t xdr_remote_storage_pool_get_info_args (XDR *, remote_storage_pool_get_info_args*);
+extern  bool_t xdr_remote_storage_pool_get_info_ret (XDR *, remote_storage_pool_get_info_ret*);
+extern  bool_t xdr_remote_storage_pool_get_autostart_args (XDR *, remote_storage_pool_get_autostart_args*);
+extern  bool_t xdr_remote_storage_pool_get_autostart_ret (XDR *, remote_storage_pool_get_autostart_ret*);
+extern  bool_t xdr_remote_storage_pool_set_autostart_args (XDR *, remote_storage_pool_set_autostart_args*);
+extern  bool_t xdr_remote_storage_pool_num_of_volumes_args (XDR *, remote_storage_pool_num_of_volumes_args*);
+extern  bool_t xdr_remote_storage_pool_num_of_volumes_ret (XDR *, remote_storage_pool_num_of_volumes_ret*);
+extern  bool_t xdr_remote_storage_pool_list_volumes_args (XDR *, remote_storage_pool_list_volumes_args*);
+extern  bool_t xdr_remote_storage_pool_list_volumes_ret (XDR *, remote_storage_pool_list_volumes_ret*);
+extern  bool_t xdr_remote_storage_vol_lookup_by_name_args (XDR *, remote_storage_vol_lookup_by_name_args*);
+extern  bool_t xdr_remote_storage_vol_lookup_by_name_ret (XDR *, remote_storage_vol_lookup_by_name_ret*);
+extern  bool_t xdr_remote_storage_vol_lookup_by_key_args (XDR *, remote_storage_vol_lookup_by_key_args*);
+extern  bool_t xdr_remote_storage_vol_lookup_by_key_ret (XDR *, remote_storage_vol_lookup_by_key_ret*);
+extern  bool_t xdr_remote_storage_vol_lookup_by_path_args (XDR *, remote_storage_vol_lookup_by_path_args*);
+extern  bool_t xdr_remote_storage_vol_lookup_by_path_ret (XDR *, remote_storage_vol_lookup_by_path_ret*);
+extern  bool_t xdr_remote_storage_vol_create_xml_args (XDR *, remote_storage_vol_create_xml_args*);
+extern  bool_t xdr_remote_storage_vol_create_xml_ret (XDR *, remote_storage_vol_create_xml_ret*);
+extern  bool_t xdr_remote_storage_vol_delete_args (XDR *, remote_storage_vol_delete_args*);
+extern  bool_t xdr_remote_storage_vol_dump_xml_args (XDR *, remote_storage_vol_dump_xml_args*);
+extern  bool_t xdr_remote_storage_vol_dump_xml_ret (XDR *, remote_storage_vol_dump_xml_ret*);
+extern  bool_t xdr_remote_storage_vol_get_info_args (XDR *, remote_storage_vol_get_info_args*);
+extern  bool_t xdr_remote_storage_vol_get_info_ret (XDR *, remote_storage_vol_get_info_ret*);
+extern  bool_t xdr_remote_storage_vol_get_path_args (XDR *, remote_storage_vol_get_path_args*);
+extern  bool_t xdr_remote_storage_vol_get_path_ret (XDR *, remote_storage_vol_get_path_ret*);
 extern  bool_t xdr_remote_procedure (XDR *, remote_procedure*);
 extern  bool_t xdr_remote_message_direction (XDR *, remote_message_direction*);
 extern  bool_t xdr_remote_message_status (XDR *, remote_message_status*);
@@ -954,8 +1323,12 @@ extern bool_t xdr_remote_string ();
 extern bool_t xdr_remote_uuid ();
 extern bool_t xdr_remote_nonnull_domain ();
 extern bool_t xdr_remote_nonnull_network ();
+extern bool_t xdr_remote_nonnull_storage_pool ();
+extern bool_t xdr_remote_nonnull_storage_vol ();
 extern bool_t xdr_remote_domain ();
 extern bool_t xdr_remote_network ();
+extern bool_t xdr_remote_storage_pool ();
+extern bool_t xdr_remote_storage_vol ();
 extern bool_t xdr_remote_error ();
 extern bool_t xdr_remote_auth_type ();
 extern bool_t xdr_remote_vcpu_info ();
@@ -1063,6 +1436,54 @@ extern bool_t xdr_remote_auth_sasl_start_ret ();
 extern bool_t xdr_remote_auth_sasl_step_args ();
 extern bool_t xdr_remote_auth_sasl_step_ret ();
 extern bool_t xdr_remote_auth_polkit_ret ();
+extern bool_t xdr_remote_num_of_storage_pools_ret ();
+extern bool_t xdr_remote_list_storage_pools_args ();
+extern bool_t xdr_remote_list_storage_pools_ret ();
+extern bool_t xdr_remote_num_of_defined_storage_pools_ret ();
+extern bool_t xdr_remote_list_defined_storage_pools_args ();
+extern bool_t xdr_remote_list_defined_storage_pools_ret ();
+extern bool_t xdr_remote_storage_pool_lookup_by_uuid_args ();
+extern bool_t xdr_remote_storage_pool_lookup_by_uuid_ret ();
+extern bool_t xdr_remote_storage_pool_lookup_by_name_args ();
+extern bool_t xdr_remote_storage_pool_lookup_by_name_ret ();
+extern bool_t xdr_remote_storage_pool_lookup_by_volume_args ();
+extern bool_t xdr_remote_storage_pool_lookup_by_volume_ret ();
+extern bool_t xdr_remote_storage_pool_create_xml_args ();
+extern bool_t xdr_remote_storage_pool_create_xml_ret ();
+extern bool_t xdr_remote_storage_pool_define_xml_args ();
+extern bool_t xdr_remote_storage_pool_define_xml_ret ();
+extern bool_t xdr_remote_storage_pool_build_args ();
+extern bool_t xdr_remote_storage_pool_undefine_args ();
+extern bool_t xdr_remote_storage_pool_create_args ();
+extern bool_t xdr_remote_storage_pool_destroy_args ();
+extern bool_t xdr_remote_storage_pool_delete_args ();
+extern bool_t xdr_remote_storage_pool_refresh_args ();
+extern bool_t xdr_remote_storage_pool_dump_xml_args ();
+extern bool_t xdr_remote_storage_pool_dump_xml_ret ();
+extern bool_t xdr_remote_storage_pool_get_info_args ();
+extern bool_t xdr_remote_storage_pool_get_info_ret ();
+extern bool_t xdr_remote_storage_pool_get_autostart_args ();
+extern bool_t xdr_remote_storage_pool_get_autostart_ret ();
+extern bool_t xdr_remote_storage_pool_set_autostart_args ();
+extern bool_t xdr_remote_storage_pool_num_of_volumes_args ();
+extern bool_t xdr_remote_storage_pool_num_of_volumes_ret ();
+extern bool_t xdr_remote_storage_pool_list_volumes_args ();
+extern bool_t xdr_remote_storage_pool_list_volumes_ret ();
+extern bool_t xdr_remote_storage_vol_lookup_by_name_args ();
+extern bool_t xdr_remote_storage_vol_lookup_by_name_ret ();
+extern bool_t xdr_remote_storage_vol_lookup_by_key_args ();
+extern bool_t xdr_remote_storage_vol_lookup_by_key_ret ();
+extern bool_t xdr_remote_storage_vol_lookup_by_path_args ();
+extern bool_t xdr_remote_storage_vol_lookup_by_path_ret ();
+extern bool_t xdr_remote_storage_vol_create_xml_args ();
+extern bool_t xdr_remote_storage_vol_create_xml_ret ();
+extern bool_t xdr_remote_storage_vol_delete_args ();
+extern bool_t xdr_remote_storage_vol_dump_xml_args ();
+extern bool_t xdr_remote_storage_vol_dump_xml_ret ();
+extern bool_t xdr_remote_storage_vol_get_info_args ();
+extern bool_t xdr_remote_storage_vol_get_info_ret ();
+extern bool_t xdr_remote_storage_vol_get_path_args ();
+extern bool_t xdr_remote_storage_vol_get_path_ret ();
 extern bool_t xdr_remote_procedure ();
 extern bool_t xdr_remote_message_direction ();
 extern bool_t xdr_remote_message_status ();
