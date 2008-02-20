@@ -1440,7 +1440,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
             virBufferVSprintf(&buf, "  <bootloader>%s</bootloader>\n", tmp);
         } else if (sexpr_has(root, "domain/bootloader")) {
             bootloader = 1;
-            virBufferVSprintf(&buf, "  <bootloader/>\n");
+            virBufferAddLit(&buf, "  <bootloader/>\n");
         }
         tmp = sexpr_node(root, "domain/bootloader_args");
         if (tmp != NULL && bootloader) {
@@ -1464,12 +1464,12 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
         max_mem = cur_mem;
     virBufferVSprintf(&buf, "  <memory>%d</memory>\n", max_mem);
     if ((cur_mem >= MIN_XEN_GUEST_SIZE) && (cur_mem != max_mem))
-	virBufferVSprintf(&buf, "  <currentMemory>%d</currentMemory>\n",
-	                  cur_mem);
+        virBufferVSprintf(&buf, "  <currentMemory>%d</currentMemory>\n",
+                          cur_mem);
 
-    virBufferVSprintf(&buf, "  <vcpu");
+    virBufferAddLit(&buf, "  <vcpu");
     if (cpus != NULL) {
-	virBufferVSprintf(&buf, " cpuset='%s'", cpus);
+        virBufferVSprintf(&buf, " cpuset='%s'", cpus);
     }
     virBufferVSprintf(&buf, ">%d</vcpu>\n",
                       sexpr_int(root, "domain/vcpus"));
@@ -1646,7 +1646,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
                 }
             } else {
                 /* This case is the cdrom device only */
-                virBufferVSprintf(&buf, "    <disk device='cdrom'>\n");
+                virBufferAddLit(&buf, "    <disk device='cdrom'>\n");
             }
             virBufferVSprintf(&buf, "      <target dev='%s'/>\n", dst);
 
@@ -1654,9 +1654,9 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
             /* XXX should we force mode == r, if cdrom==1, or assume
                xend has already done this ? */
             if ((mode != NULL) && (!strcmp(mode, "r")))
-                virBufferVSprintf(&buf, "      <readonly/>\n");
+                virBufferAddLit(&buf, "      <readonly/>\n");
 	    else if ((mode != NULL) && (!strcmp(mode, "w!")))
-                virBufferVSprintf(&buf, "      <shareable/>\n");
+                virBufferAddLit(&buf, "      <shareable/>\n");
             virBufferAddLit(&buf, "    </disk>\n");
 
             bad_parse:
@@ -1667,12 +1667,12 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
             tmp2 = sexpr_node(node, "device/vif/script");
             tmp = sexpr_node(node, "device/vif/bridge");
             if ((tmp2 && strstr(tmp2, "bridge")) || tmp) {
-                virBufferVSprintf(&buf, "    <interface type='bridge'>\n");
+                virBufferAddLit(&buf, "    <interface type='bridge'>\n");
                 if (tmp != NULL)
                     virBufferVSprintf(&buf, "      <source bridge='%s'/>\n",
                                       tmp);
             } else {
-                virBufferVSprintf(&buf, "    <interface type='ethernet'>\n");
+                virBufferAddLit(&buf, "    <interface type='ethernet'>\n");
             }
 
             tmp = sexpr_node(node, "device/vif/vifname");

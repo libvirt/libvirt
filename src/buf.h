@@ -29,15 +29,19 @@ struct _virBuffer {
 virBufferPtr virBufferNew(unsigned int size);
 void virBufferFree(virBufferPtr buf);
 char *virBufferContentAndFree(virBufferPtr buf);
-int virBufferAdd(virBufferPtr buf, const char *str, int len);
-int virBufferAddChar(virBufferPtr buf, char c);
-int virBufferVSprintf(virBufferPtr buf, const char *format, ...)
+int __virBufferAdd(virBufferPtr buf, const char *str, int len);
+int __virBufferAddChar(virBufferPtr buf, char c);
+int __virBufferVSprintf(virBufferPtr buf, const char *format, ...)
   ATTRIBUTE_FORMAT(printf, 2, 3);
 int virBufferStrcat(virBufferPtr buf, ...);
 int virBufferEscapeString(virBufferPtr buf, const char *format, const char *str);
 int virBufferURIEncodeString (virBufferPtr buf, const char *str);
 
 #define virBufferAddLit(buf_, literal_string_) \
-  virBufferAdd (buf_, "" literal_string_ "", sizeof literal_string_ - 1)
+  __virBufferAdd (buf_, "" literal_string_ "", sizeof literal_string_ - 1)
+
+#define virBufferAdd(b,s,l) __virBufferAdd((b),(s),(l))
+#define virBufferAddChar(b,c) __virBufferAddChar((b),(c))
+#define virBufferVSprintf(b,f,...) __virBufferVSprintf((b),(f), __VA_ARGS__)
 
 #endif /* __VIR_BUFFER_H__ */

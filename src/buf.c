@@ -61,7 +61,7 @@ virBufferGrow(virBufferPtr buf, unsigned int len)
  * Returns 0 successful, -1 in case of internal or API error.
  */
 int
-virBufferAdd(virBufferPtr buf, const char *str, int len)
+__virBufferAdd(virBufferPtr buf, const char *str, int len)
 {
     unsigned int needSize;
 
@@ -97,7 +97,7 @@ virBufferAdd(virBufferPtr buf, const char *str, int len)
  * Returns 0 if successful, -1 in the case of error.
  */
 int
-virBufferAddChar (virBufferPtr buf, char c)
+__virBufferAddChar (virBufferPtr buf, char c)
 {
     unsigned int needSize;
 
@@ -190,7 +190,7 @@ virBufferContentAndFree (virBufferPtr buf)
  * Returns 0 successful, -1 in case of internal or API error.
  */
 int
-virBufferVSprintf(virBufferPtr buf, const char *format, ...)
+__virBufferVSprintf(virBufferPtr buf, const char *format, ...)
 {
     int size, count, grow_size;
     va_list locarg, argptr;
@@ -198,6 +198,11 @@ virBufferVSprintf(virBufferPtr buf, const char *format, ...)
     if ((format == NULL) || (buf == NULL)) {
         return (-1);
     }
+
+    if (buf->size == 0 &&
+        virBufferGrow(buf, 100) < 0)
+        return -1;
+
     size = buf->size - buf->use - 1;
     va_start(argptr, format);
     va_copy(locarg, argptr);

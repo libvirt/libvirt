@@ -178,6 +178,11 @@
 
         __virFileReadAll;
         __virStrToLong_i;
+        __virStrToLong_ull;
+
+        __virBufferVSprintf;
+        __virBufferAdd;
+        __virBufferAddChar;
 
     local: *;
 };

@@ -667,7 +667,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             val = MIN_XEN_GUEST_SIZE * 2;
     virBufferVSprintf(buf, "  <memory>%ld</memory>\n", val * 1024);
 
-    virBufferVSprintf(buf, "  <vcpu");
+    virBufferAddLit(buf, "  <vcpu");
     if (xenXMConfigGetString(conf, "cpus", &str) == 0) {
         char *ranges;
 

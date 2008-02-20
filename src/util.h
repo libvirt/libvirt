@@ -70,9 +70,10 @@ int virStrToLong_ll(char const *s,
                     char **end_ptr,
                     int base,
                     long long *result);
-int virStrToLong_ull(char const *s,
-                     char **end_ptr,
-                     int base,
-                     unsigned long long *result);
+int __virStrToLong_ull(char const *s,
+		       char **end_ptr,
+		       int base,
+		       unsigned long long *result);
+#define virStrToLong_ull(s,e,b,r) __virStrToLong_ull((s),(e),(b),(r))
 
 #endif /* __VIR_UTIL_H__ */

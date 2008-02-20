@@ -1298,11 +1298,11 @@ virDomainParseXMLDiskDesc(virConnectPtr conn, xmlNodePtr node,
         }
     }
     if (ro == 1)
-        virBufferVSprintf(buf, "(mode 'r')");
+        virBufferAddLit(buf, "(mode 'r')");
     else if (shareable == 1)
-        virBufferVSprintf(buf, "(mode 'w!')");
+        virBufferAddLit(buf, "(mode 'w!')");
     else
-        virBufferVSprintf(buf, "(mode 'w')");
+        virBufferAddLit(buf, "(mode 'w')");
 
     virBufferAddLit(buf, ")");
     virBufferAddLit(buf, ")");
@@ -1617,7 +1617,7 @@ virDomainParseXMLDesc(virConnectPtr conn, const char *xmldesc, char **name,
         free(str);
     } else if (virXPathNumber("count(/domain/bootloader)", ctxt, &f) == 0
                && (f > 0)) {
-        virBufferVSprintf(&buf, "(bootloader)");
+        virBufferAddLit(&buf, "(bootloader)");
         /*
          * if using a bootloader, the kernel and initrd strings are not
          * significant and should be discarded

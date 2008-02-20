@@ -613,7 +613,7 @@ virStrToLong_ll(char const *s, char **end_ptr, int base, long long *result)
 
 /* Just like virStrToLong_i, above, but produce an "unsigned long long" value.  */
 int
-virStrToLong_ull(char const *s, char **end_ptr, int base, unsigned long long *result)
+__virStrToLong_ull(char const *s, char **end_ptr, int base, unsigned long long *result)
 {
     unsigned long long val;
     char *p;

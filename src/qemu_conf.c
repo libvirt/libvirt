@@ -2818,7 +2818,7 @@ char *qemudGenerateXML(virConnectPtr conn,
             if (virBufferAddLit(buf, "      <readonly/>\n") < 0)
                 goto no_memory;
 
-        if (virBufferVSprintf(buf, "    </disk>\n") < 0)
+        if (virBufferAddLit(buf, "    </disk>\n") < 0)
             goto no_memory;
 
         disk = disk->next;
@@ -2889,7 +2889,7 @@ char *qemudGenerateXML(virConnectPtr conn,
             }
         }
 
-        if (virBufferVSprintf(buf, "    </interface>\n") < 0)
+        if (virBufferAddLit(buf, "    </interface>\n") < 0)
             goto no_memory;
 
         net = net->next;
@@ -2974,7 +2974,7 @@ char *qemudGenerateNetworkXML(virConnectPtr conn,
     if (!buf)
         goto no_memory;
 
-    if (virBufferVSprintf(buf, "<network>\n") < 0)
+    if (virBufferAddLit(buf, "<network>\n") < 0)
         goto no_memory;
 
     if (virBufferVSprintf(buf, "  <name>%s</name>\n", def->name) < 0)
