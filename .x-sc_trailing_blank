@@ -3,3 +3,4 @@
 \.gif$
 ^NEWS$
 ^ChangeLog$
+^docs/.*
