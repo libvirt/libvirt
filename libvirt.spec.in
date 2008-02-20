@@ -53,6 +53,8 @@ Requires: /usr/sbin/qcow-create
 Requires: lvm2
 # For ISCSI driver
 Requires: iscsi-initiator-utils
+# For disk driver
+Requires: parted
 BuildRequires: xen-devel
 BuildRequires: libxml2-devel
 BuildRequires: readline-devel
@@ -81,6 +83,8 @@ BuildRequires: /usr/sbin/qcow-create
 BuildRequires: lvm2
 # For ISCSI driver
 BuildRequires: iscsi-initiator-utils
+# For disk driver
+BuildRequires: parted-devel
 Obsoletes: libvir
 ExclusiveArch: i386 x86_64 ia64
 
@@ -203,6 +207,7 @@ fi
 %if %{with_proxy} == "yes"
 %attr(4755, root, root) %{_libexecdir}/libvirt_proxy
 %endif
+%attr(0755, root, root) %{_libexecdir}/libvirt_parthelper
 %attr(0755, root, root) %{_sbindir}/libvirtd
 %doc docs/*.rng
 %doc docs/*.xml

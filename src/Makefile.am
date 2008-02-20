@@ -80,6 +80,13 @@ else
 EXTRA_DIST +=  storage_backend_iscsi.h storage_backend_iscsi.c
 endif
 
+if WITH_STORAGE_DISK
+CLIENT_SOURCES += storage_backend_disk.h storage_backend_disk.c
+else
+EXTRA_DIST += storage_backend_disk.h storage_backend_disk.c
+endif
+
+
 
 
 libvirt_la_SOURCES = $(CLIENT_SOURCES) $(SERVER_SOURCES)
@@ -98,6 +105,17 @@ virsh_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDFLAGS)
 virsh_DEPENDENCIES = $(DEPS)
 virsh_LDADD = $(LDADDS) $(VIRSH_LIBS)
 virsh_CFLAGS = $(COVERAGE_CFLAGS) $(READLINE_CFLAGS)
+
+if WITH_STORAGE_DISK
+libexec_PROGRAMS = libvirt_parthelper
+
+libvirt_parthelper_SOURCES = parthelper.c
+libvirt_parthelper_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDCFLAGS)
+libvirt_parthelper_LDADD = $(LIBPARTED_LIBS)
+libvirt_parthelper_CFLAGS =  $(LIBPARTED_CFLAGS)
+else
+EXTRA_DIST += parthelper.c
+endif
 
 #
 # target to ease building test programs

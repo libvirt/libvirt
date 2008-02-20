@@ -27,6 +27,7 @@ LIBXML_REQUIRED="2.5.0"
 GNUTLS_REQUIRED="1.0.25"
 AVAHI_REQUIRED="0.6.0"
 POLKIT_REQUIRED="0.6"
+PARTED_REQUIRED="1.8.0"
 
 dnl Checks for C compiler.
 AC_PROG_CC
@@ -563,6 +564,8 @@ AC_ARG_WITH(storage-lvm,
 [  --with-storage-lvm          with LVM backend for the storage driver (on)],[],[with_storage_lvm=check])
 AC_ARG_WITH(storage-iscsi,
 [  --with-storage-iscsi        with iSCSI backend for the storage driver (on)],[],[with_storage_iscsi=check])
+AC_ARG_WITH(storage-disk,
+[  --with-storage-disk         with GPartd Disk backend for the storage driver (on)],[],[with_storage_disk=check])
 
 if test "$with_storage_fs" = "yes" -o "$with_storage_fs" = "check"; then
   AC_PATH_PROG(MOUNT, [mount], [], [$PATH:/sbin:/usr/sbin])
@@ -674,6 +677,50 @@ if test "$with_storage_iscsi" = "yes" -o "$with_storage_iscsi" = "check"; then
   fi
 fi
 AM_CONDITIONAL(WITH_STORAGE_ISCSI, [test "$with_storage_iscsi" = "yes"])
+
+
+
+LIBPARTED_CFLAGS=
+LIBPARTED_LIBS=
+if test "$with_storage_disk" = "yes" -o "$with_storage_disk" = "check"; then
+  AC_PATH_PROG(PARTED, [parted], [], [$PATH:/sbin:/usr/sbin])
+  if test -z "$PARTED" ; then with_storage_disk=no ; fi
+
+  PARTED_FOUND=yes
+  if test "$with_storage_disk" != "no" -a "x$PKG_CONFIG" != "x" ; then
+    PKG_CHECK_MODULES(LIBPARTED, libparted >= $PARTED_REQUIRED, [], [PARTED_FOUND=no])
+  fi
+  if test "$PARTED_FOUND" = "no"; then
+    # RHEL-5 vintage parted is missing pkg-config files
+    save_LIBS="$LIBS"
+    save_CFLAGS="$CFLAGS"
+    PARTED_FOUND=yes
+    AC_CHECK_HEADER(parted/parted.h,,[PARTED_FOUND=no])
+    AC_CHECK_LIB(uuid, uuid_generate,,[PARTED_FOUND=no])
+    AC_CHECK_LIB(parted, ped_device_read,,[PARTED_FOUND=no])
+    LIBPARTED_LIBS="-luuid -lparted"
+    LIBS="$save_LIBS"
+    CFLAGS="$save_CFLAGS"
+  fi
+
+  if test "$PARTED_FOUND" = "no" ; then
+    if test "$with_storage_disk" = "yes" ; then
+      AC_MSG_ERROR(We need parted for disk storage driver)
+    else
+      with_storage_disk=no
+    fi
+  else
+    with_storage_disk=yes
+  fi
+
+  if test "$with_storage_disk" = "yes"; then
+    AC_DEFINE_UNQUOTED(WITH_STORAGE_DISK, 1, [whether Disk backend for storage driver is enabled])
+    AC_DEFINE_UNQUOTED([PARTED],["$PARTED"], [Location or name of the parted program])
+  fi
+fi
+AM_CONDITIONAL(WITH_STORAGE_DISK, [test "$with_storage_disk" = "yes"])
+AC_SUBST(LIBPARTED_CFLAGS)
+AC_SUBST(LIBPARTED_LIBS)
 
 
 dnl
@@ -891,6 +938,7 @@ AC_MSG_NOTICE([      FS: $with_storage_fs])
 AC_MSG_NOTICE([   NetFS: $with_storage_fs])
 AC_MSG_NOTICE([     LVM: $with_storage_lvm])
 AC_MSG_NOTICE([   iSCSI: $with_storage_iscsi])
+AC_MSG_NOTICE([    Disk: $with_storage_disk])
 AC_MSG_NOTICE([])
 AC_MSG_NOTICE([Libraries])
 AC_MSG_NOTICE([])

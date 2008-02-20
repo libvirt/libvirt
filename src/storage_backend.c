@@ -42,6 +42,9 @@
 #if WITH_STORAGE_ISCSI
 #include "storage_backend_iscsi.h"
 #endif
+#if WITH_STORAGE_DISK
+#include "storage_backend_disk.h"
+#endif
 
 
 #include "util.h"
@@ -60,6 +63,9 @@ static virStorageBackendPtr backends[] = {
 #endif
 #if WITH_STORAGE_ISCSI
     &virStorageBackendISCSI,
+#endif
+#if WITH_STORAGE_DISK
+    &virStorageBackendDisk,
 #endif
 };
 
@@ -111,6 +117,10 @@ virStorageBackendFromString(const char *type) {
     if (STREQ(type, "iscsi"))
         return VIR_STORAGE_POOL_ISCSI;
 #endif
+#if WITH_STORAGE_DISK
+    if (STREQ(type, "disk"))
+        return VIR_STORAGE_POOL_DISK;
+#endif
 
     virStorageReportError(NULL, VIR_ERR_INTERNAL_ERROR,
                           _("unknown storage backend type %s"), type);
@@ -135,6 +145,10 @@ virStorageBackendToString(int type) {
 #if WITH_STORAGE_ISCSI
     case VIR_STORAGE_POOL_ISCSI:
         return "iscsi";
+#endif
+#if WITH_STORAGE_DISK
+    case VIR_STORAGE_POOL_DISK:
+        return "disk";
 #endif
     }
 

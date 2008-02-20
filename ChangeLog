@@ -1,3 +1,12 @@
+Wed Feb 20 10:46:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.in: Added check for parted tool & libraries
+	* libvirt.spec.in: Added dep on parted
+	* po/POTFILES.in: Added storage_backend_disk.c
+	* src/Makefile.am, src/storage_backend.c, src/parthelper.c,
+	src/storage_backend_disk.c, src/storage_backend_disk.h: Added
+	disk partition storage pool backend
+
 Wed Feb 20 10:44:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in: Added check for iscsiadm tool
