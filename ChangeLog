@@ -1,3 +1,7 @@
+Wed Feb 20 10:42:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/qemud.c: Set close-on-exec flag for signal pipe
+
 Wed Feb 20 10:39:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in: Added checks for LVM tools

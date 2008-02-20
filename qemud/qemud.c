@@ -2089,7 +2089,9 @@ int main(int argc, char **argv) {
 
     if (pipe(sigpipe) < 0 ||
         qemudSetNonBlock(sigpipe[0]) < 0 ||
-        qemudSetNonBlock(sigpipe[1]) < 0) {
+        qemudSetNonBlock(sigpipe[1]) < 0 ||
+        qemudSetCloseExec(sigpipe[0]) < 0 ||
+        qemudSetCloseExec(sigpipe[1]) < 0) {
         qemudLog(QEMUD_ERR, _("Failed to create pipe: %s"),
                  strerror(errno));
         goto error1;
