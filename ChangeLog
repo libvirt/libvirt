@@ -1,3 +1,9 @@
+Wed Feb 20 18:24:39 CET 2008 Jim Meyering <meyering@redhat.com>
+
+	Avoid "make syntax-check" failure.
+	* docs/examples/index.py: Don't emit trailing blanks.
+	* docs/examples/Makefile.am: Regenerate.
+
 Wed Feb 20 11:52:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* qemud/remote.c: Update to non-deprecated PolicyKit apis

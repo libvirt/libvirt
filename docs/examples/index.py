@@ -245,18 +245,14 @@ install-data-local:
 	  $(srcdir)/*.xsl $(srcdir)/*.res $(DESTDIR)$(HTML_DIR)
 
 """
-    EXTRA_DIST=""
-    for extra in extras:
-        EXTRA_DIST = EXTRA_DIST + extra + " "
+    EXTRA_DIST= string.join(extras, ' ')
     Makefile = Makefile + "EXTRA_DIST=%s\n\n" % (EXTRA_DIST)
-    noinst_PROGRAMS=""
-    for example in examples:
-        noinst_PROGRAMS = noinst_PROGRAMS + example + " "
+    noinst_PROGRAMS= string.join(examples, ' ')
     Makefile = Makefile + "noinst_PROGRAMS=%s\n\n" % (noinst_PROGRAMS)
     for example in examples:
         Makefile = Makefile + "%s_SOURCES=%s.c\n%s_LDFLAGS=\n%s_DEPENDENCIES= $(DEPS)\n%s_LDADD= $(LDADDS)\n\n" % (example, example, example,
 	       example, example)
-    Makefile = Makefile + "valgrind: \n\t$(MAKE) CHECKER='valgrind' tests\n\n"
+    Makefile = Makefile + "valgrind:\n\t$(MAKE) CHECKER='valgrind' tests\n\n"
     Makefile = Makefile + "tests: $(noinst_PROGRAMS)\n"
     Makefile = Makefile + "\t@(echo '## examples regression tests')\n"
 #    Makefile = Makefile + "\t@(echo > .memdump)\n"
