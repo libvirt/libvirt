@@ -10,3 +10,4 @@ virsh
 *.gcno
 *.gcov
 *.cov
+libvirt_parthelper
