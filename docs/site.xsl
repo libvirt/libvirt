@@ -66,6 +66,9 @@
       <xsl:when test="$name = '#Windows'">
         <xsl:text>windows.html</xsl:text>
       </xsl:when>
+      <xsl:when test="$name = '#Storage'">
+        <xsl:text>storage.html</xsl:text>
+      </xsl:when>
       <xsl:when test="$name = ''">
         <xsl:text>unknown.html</xsl:text>
       </xsl:when>

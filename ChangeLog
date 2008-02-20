@@ -1,3 +1,9 @@
+Wed Feb 20 10:50:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* docs/libvir.html, docs/site.xsl: Added webpage describing
+	the storage management capabilities
+	* docs/*.html: Re-generate content
+
 Wed Feb 20 10:49:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/test.c: no-op stub impl of storage APIs
