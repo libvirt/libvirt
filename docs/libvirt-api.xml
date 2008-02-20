@@ -240,7 +240,7 @@
      <summary>error handling interfaces for the libvirt library</summary>
      <description>Provides the interfaces of the libvirt library to handle errors raised while using the library. </description>
      <author>Daniel Veillard &lt;veillard@redhat.com&gt; </author>
-     <exports symbol='VIR_FROM_XML' type='enum'/>
+     <exports symbol='VIR_ERR_XML_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_RPC' type='enum'/>
      <exports symbol='VIR_ERR_SYSTEM_ERROR' type='enum'/>
      <exports symbol='VIR_FROM_TEST' type='enum'/>
@@ -256,16 +256,17 @@
      <exports symbol='VIR_FROM_SEXPR' type='enum'/>
      <exports symbol='VIR_FROM_RPC' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_MAC' type='enum'/>
-     <exports symbol='VIR_ERR_XML_ERROR' type='enum'/>
+     <exports symbol='VIR_ERR_NO_STORAGE_VOL' type='enum'/>
      <exports symbol='VIR_FROM_NONE' type='enum'/>
      <exports symbol='VIR_ERR_DOM_EXIST' type='enum'/>
      <exports symbol='VIR_ERR_NO_XENSTORE' type='enum'/>
      <exports symbol='VIR_FROM_DOM' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_DOMAIN' type='enum'/>
-     <exports symbol='VIR_FROM_QEMU' type='enum'/>
+     <exports symbol='VIR_ERR_NO_STORAGE_POOL' type='enum'/>
      <exports symbol='VIR_FROM_CONF' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_NETWORK' type='enum'/>
      <exports symbol='VIR_ERR_AUTH_FAILED' type='enum'/>
+     <exports symbol='VIR_FROM_XML' type='enum'/>
      <exports symbol='VIR_ERR_OPERATION_DENIED' type='enum'/>
      <exports symbol='VIR_FROM_STORAGE' type='enum'/>
      <exports symbol='VIR_ERR_NO_KERNEL' type='enum'/>
@@ -296,6 +297,7 @@
      <exports symbol='VIR_ERR_INVALID_STORAGE_POOL' type='enum'/>
      <exports symbol='VIR_FROM_REMOTE' type='enum'/>
      <exports symbol='VIR_ERR_NO_SUPPORT' type='enum'/>
+     <exports symbol='VIR_FROM_QEMU' type='enum'/>
      <exports symbol='VIR_FROM_XEND' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_STORAGE_VOL' type='enum'/>
      <exports symbol='VIR_FROM_PROXY' type='enum'/>
@@ -435,6 +437,8 @@
     <enum name='VIR_ERR_NO_OS' file='virterror' value='22' type='virErrorNumber' info='missing domain OS information'/>
     <enum name='VIR_ERR_NO_ROOT' file='virterror' value='18' type='virErrorNumber' info='missing root device information'/>
     <enum name='VIR_ERR_NO_SOURCE' file='virterror' value='19' type='virErrorNumber' info='missing source device information'/>
+    <enum name='VIR_ERR_NO_STORAGE_POOL' file='virterror' value='49' type='virErrorNumber' info='storage pool not found'/>
+    <enum name='VIR_ERR_NO_STORAGE_VOL' file='virterror' value='50' type='virErrorNumber' info=' storage pool not found'/>
     <enum name='VIR_ERR_NO_SUPPORT' file='virterror' value='3' type='virErrorNumber' info='no support for this function'/>
     <enum name='VIR_ERR_NO_TARGET' file='virterror' value='20' type='virErrorNumber' info='missing target device information'/>
     <enum name='VIR_ERR_NO_XEN' file='virterror' value='14' type='virErrorNumber' info='could not open Xen hypervisor control'/>
@@ -492,7 +496,7 @@
     <enum name='VIR_VCPU_OFFLINE' file='libvirt' value='0' type='virVcpuState' info='the virtual CPU is offline'/>
     <enum name='VIR_VCPU_RUNNING' file='libvirt' value='1' type='virVcpuState' info='the virtual CPU is running'/>
     <enum name='VIR_WAR_NO_NETWORK' file='virterror' value='41' type='virErrorNumber' info='failed to start network'/>
-    <enum name='VIR_WAR_NO_STORAGE' file='virterror' value='48' type='virErrorNumber' info=' failed to start storage'/>
+    <enum name='VIR_WAR_NO_STORAGE' file='virterror' value='48' type='virErrorNumber' info='failed to start storage'/>
     <struct name='virConnect' file='libvirt' type='struct _virConnect'/>
     <struct name='virConnectAuth' file='libvirt' type='struct _virConnectAuth'>
       <field name='credtype' type='int *' info=' List of supported virConnectCredentialType values'/>

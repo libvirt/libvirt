@@ -61,6 +61,8 @@
     <reference name='VIR_ERR_NO_OS' href='html/libvirt-virterror.html#VIR_ERR_NO_OS'/>
     <reference name='VIR_ERR_NO_ROOT' href='html/libvirt-virterror.html#VIR_ERR_NO_ROOT'/>
     <reference name='VIR_ERR_NO_SOURCE' href='html/libvirt-virterror.html#VIR_ERR_NO_SOURCE'/>
+    <reference name='VIR_ERR_NO_STORAGE_POOL' href='html/libvirt-virterror.html#VIR_ERR_NO_STORAGE_POOL'/>
+    <reference name='VIR_ERR_NO_STORAGE_VOL' href='html/libvirt-virterror.html#VIR_ERR_NO_STORAGE_VOL'/>
     <reference name='VIR_ERR_NO_SUPPORT' href='html/libvirt-virterror.html#VIR_ERR_NO_SUPPORT'/>
     <reference name='VIR_ERR_NO_TARGET' href='html/libvirt-virterror.html#VIR_ERR_NO_TARGET'/>
     <reference name='VIR_ERR_NO_XEN' href='html/libvirt-virterror.html#VIR_ERR_NO_XEN'/>
@@ -383,6 +385,8 @@
       <ref name='VIR_ERR_NO_OS'/>
       <ref name='VIR_ERR_NO_ROOT'/>
       <ref name='VIR_ERR_NO_SOURCE'/>
+      <ref name='VIR_ERR_NO_STORAGE_POOL'/>
+      <ref name='VIR_ERR_NO_STORAGE_VOL'/>
       <ref name='VIR_ERR_NO_SUPPORT'/>
       <ref name='VIR_ERR_NO_TARGET'/>
       <ref name='VIR_ERR_NO_XEN'/>
@@ -1205,6 +1209,8 @@
       <ref name='VIR_ERR_NO_OS'/>
       <ref name='VIR_ERR_NO_ROOT'/>
       <ref name='VIR_ERR_NO_SOURCE'/>
+      <ref name='VIR_ERR_NO_STORAGE_POOL'/>
+      <ref name='VIR_ERR_NO_STORAGE_VOL'/>
       <ref name='VIR_ERR_NO_SUPPORT'/>
       <ref name='VIR_ERR_NO_TARGET'/>
       <ref name='VIR_ERR_NO_XEN'/>

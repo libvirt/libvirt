@@ -1,3 +1,9 @@
+Wed Feb 20 11:03:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* po/*.po, po/libvirt.pot: Re-generate to pull in latest
+	strings from storage APIs
+	* docs/libvirt-api.xml, docs/libvirt-refs.xml: Re-generate
+
 Wed Feb 20 10:50:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* docs/libvir.html, docs/site.xsl: Added webpage describing
