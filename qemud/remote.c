@@ -2620,7 +2620,7 @@ remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
         PolKitCaller *pkcaller = NULL;
         PolKitAction *pkaction = NULL;
         PolKitContext *pkcontext = NULL;
-        PolKitError *pkerr;
+        PolKitError *pkerr = NULL;
         PolKitResult pkresult;
         DBusError err;
         const char *action = client->readonly ?
@@ -2662,8 +2662,25 @@ remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
             return -2;
         }
 
-        pkresult = polkit_context_can_caller_do_action(pkcontext, pkaction,
+#if HAVE_POLKIT_CONTEXT_IS_CALLER_AUTHORIZED
+        pkresult = polkit_context_is_caller_authorized(pkcontext,
+                                                       pkaction,
+                                                       pkcaller,
+                                                       0,
+                                                       &pkerr);
+        if (pkerr && polkit_error_is_set(pkerr)) {
+            qemudLog(QEMUD_ERR,
+                     _("Policy kit failed to check authorization %d %s"),
+                     polkit_error_get_error_code(pkerr),
+                     polkit_error_get_error_message(pkerr));
+            remoteDispatchFailAuth(client, req);
+            return -2;
+        }
+#else
+        pkresult = polkit_context_can_caller_do_action(pkcontext,
+                                                       pkaction,
                                                        pkcaller);
+#endif
         polkit_context_unref(pkcontext);
         polkit_caller_unref(pkcaller);
         polkit_action_unref(pkaction);

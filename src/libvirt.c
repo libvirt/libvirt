@@ -33,6 +33,7 @@
 #include "driver.h"
 
 #include "uuid.h"
+#include "util.h"
 #include "test.h"
 #include "xen_unified.h"
 #include "remote_internal.h"
@@ -75,16 +76,38 @@ static int virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
         char *bufptr = buf;
         size_t len;
 
-        if (printf("%s:", cred[i].prompt) < 0)
-            return -1;
-        if (fflush(stdout) != 0)
-            return -1;
-
         switch (cred[i].type) {
+#if defined(POLKIT_GRANT) || defined(POLKIT_AUTH)
+        case VIR_CRED_EXTERNAL: {
+            int ret;
+            const char *const args[] = {
+#if defined(POLKIT_GRANT)
+                POLKIT_GRANT, "--gain", cred[i].prompt, NULL
+#else
+                POLKIT_AUTH, "--obtain", cred[i].prompt, NULL
+#endif
+            };
+
+            if (STRNEQ(cred[i].challenge, "PolicyKit"))
+                return -1;
+            if (virRun(NULL, (char **) args, &ret) < 0)
+                return -1;
+
+            if (!WIFEXITED(ret) ||
+                (WEXITSTATUS(ret) != 0 && WEXITSTATUS(ret) != 1))
+                return -1;
+            break;
+        }
+#endif
         case VIR_CRED_USERNAME:
         case VIR_CRED_AUTHNAME:
         case VIR_CRED_ECHOPROMPT:
         case VIR_CRED_REALM:
+            if (printf("%s:", cred[i].prompt) < 0)
+                return -1;
+            if (fflush(stdout) != 0)
+                return -1;
+
             if (!fgets(buf, sizeof(buf), stdin)) {
                 if (feof(stdin)) { /* Treat EOF as "" */
                     buf[0] = '\0';
@@ -99,6 +122,11 @@ static int virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
 
         case VIR_CRED_PASSPHRASE:
         case VIR_CRED_NOECHOPROMPT:
+            if (printf("%s:", cred[i].prompt) < 0)
+                return -1;
+            if (fflush(stdout) != 0)
+                return -1;
+
             bufptr = getpass("");
             if (!bufptr)
                 return -1;
@@ -130,6 +158,9 @@ static int virConnectCredTypeDefault[] = {
     VIR_CRED_REALM,
     VIR_CRED_PASSPHRASE,
     VIR_CRED_NOECHOPROMPT,
+#if defined(POLKIT_AUTH) || defined(POLKIT_GRANT)
+    VIR_CRED_EXTERNAL,
+#endif
 };
 
 static virConnectAuth virConnectAuthDefault = {
@@ -615,10 +646,6 @@ do_open (const char *name,
     if (STREQ (name, "xen://"))
         name = "xen:///";
 
-    if (!initialized)
-        if (virInitialize() < 0)
-	    return NULL;
-
     ret = virGetConnect();
     if (ret == NULL) {
         virLibConnError(NULL, VIR_ERR_NO_MEMORY, _("allocating connection"));
@@ -649,6 +676,9 @@ do_open (const char *name,
         virLibConnError (ret, VIR_ERR_NO_MEMORY, _("allocating conn->name"));
         goto failed;
     }
+
+    /* Cleansing flags */
+    ret->flags = flags & VIR_CONNECT_RO;
 
     for (i = 0; i < virDriverTabCount; i++) {
         DEBUG("trying driver %d (%s) ...",
@@ -714,9 +744,6 @@ do_open (const char *name,
         }
     }
 
-    /* Cleansing flags */
-    ret->flags = flags & VIR_CONNECT_RO;
-
     xmlFreeURI (uri);
 
     return ret;
@@ -742,6 +769,10 @@ failed:
 virConnectPtr
 virConnectOpen (const char *name)
 {
+    if (!initialized)
+        if (virInitialize() < 0)
+            return NULL;
+
     DEBUG("name=%s", name);
     return do_open (name, NULL, 0);
 }
@@ -761,6 +792,10 @@ virConnectOpen (const char *name)
 virConnectPtr
 virConnectOpenReadOnly(const char *name)
 {
+    if (!initialized)
+        if (virInitialize() < 0)
+            return NULL;
+
     DEBUG("name=%s", name);
     return do_open (name, NULL, VIR_CONNECT_RO);
 }
@@ -784,7 +819,11 @@ virConnectOpenAuth(const char *name,
                    virConnectAuthPtr auth,
                    int flags)
 {
-    DEBUG("name=%s", name);
+    if (!initialized)
+        if (virInitialize() < 0)
+            return NULL;
+
+    DEBUG("name=%s, auth=%p, flags=%d", name, auth, flags);
     return do_open (name, auth, flags);
 }
 

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-02-20 10:56-0500\n"
+"POT-Creation-Date: 2008-02-20 11:25-0500\n"
 "PO-Revision-Date: 2007-12-16 01:12+0100\n"
 "Last-Translator: Gauthier Ancelin <gauthier.ancelin@laposte.net>\n"
 "Language-Team: french <fedora-trans-fr@redhat.com>\n"
@@ -235,17 +235,22 @@ msgstr "Impossible de créer le domaine inactif %s\n"
 msgid "Failed to create polkit context %s\n"
 msgstr "Impossible de créer le domaine inactif %s\n"
 
-#: qemud/remote.c:2672
+#: qemud/remote.c:2673
+#, c-format
+msgid "Policy kit failed to check authorization %d %s"
+msgstr ""
+
+#: qemud/remote.c:2689
 #, c-format
 msgid "Policy kit denied action %s from pid %d, uid %d, result: %s\n"
 msgstr ""
 
-#: qemud/remote.c:2680
+#: qemud/remote.c:2697
 #, c-format
 msgid "Policy allowed action %s from pid %d, uid %d, result %s"
 msgstr ""
 
-#: qemud/remote.c:2699
+#: qemud/remote.c:2716
 msgid "client tried unsupported PolicyKit init request"
 msgstr ""
 
@@ -658,7 +663,7 @@ msgstr ""
 msgid "failure writing output: %s\n"
 msgstr ""
 
-#: src/hash.c:695 src/libvirt.c:624
+#: src/hash.c:695 src/libvirt.c:651
 msgid "allocating connection"
 msgstr "allocation de connexion"
 
@@ -751,16 +756,16 @@ msgstr ""
 msgid "Failed to add iptables rule '%s' to chain '%s' in table '%s': %s"
 msgstr ""
 
-#: src/libvirt.c:631
+#: src/libvirt.c:658
 msgid "could not parse connection URI"
 msgstr "impossible d'analyser l'URI de connexion"
 
-#: src/libvirt.c:649
+#: src/libvirt.c:676
 #, fuzzy
 msgid "allocating conn->name"
 msgstr "allocation de connexion"
 
-#: src/libvirt.c:2058
+#: src/libvirt.c:2097
 #, fuzzy
 msgid "domainMigratePrepare did not set uri"
 msgstr "informations de domaine incorrectes, domid non numérique"
@@ -2472,8 +2477,8 @@ msgstr "cpulist : format invalide. Chaîne vide."
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
-"cpulist : %s : format invalide. Chiffre attendu à la position %d (à côté de "
-"« %c »)."
+"cpulist : %s : format invalide. Chiffre attendu à la position %d (à côté de « "
+"%c »)."
 
 #: src/virsh.c:1773
 #, c-format
@@ -4337,8 +4342,8 @@ msgstr "Impossible d'accéder au réseau : %s"
 #, c-format
 msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
 msgstr ""
-"Le paramètre « poids » (%d) du planificateur à répartition de charge est "
-"hors limites (1-65535)"
+"Le paramètre « poids » (%d) du planificateur à répartition de charge est hors "
+"limites (1-65535)"
 
 #: src/xen_internal.c:1333
 #, c-format

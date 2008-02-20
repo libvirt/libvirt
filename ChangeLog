@@ -1,3 +1,12 @@
+Wed Feb 20 11:52:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/remote.c: Update to non-deprecated PolicyKit apis
+	* src/libvirt.c: call out to polkit-grant/polkit-auth to
+	obtain credentials
+	* po/*.po, po/libvirt.pot: Re-generate for new translatable
+	strings
+	* configure.in: Add test for polkit apis & CLI programs
+
 Wed Feb 20 11:03:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* po/*.po, po/libvirt.pot: Re-generate to pull in latest

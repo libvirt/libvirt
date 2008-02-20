@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pt_BR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-02-20 10:56-0500\n"
+"POT-Creation-Date: 2008-02-20 11:25-0500\n"
 "PO-Revision-Date: 2007-12-08 14:30-0300\n"
 "Last-Translator: Igor Pires Soares <igor@projetofedora.org>\n"
 "Language-Team: Brazilian Portuguese <fedora-trans-pt_br@redhat.com>\n"
@@ -233,17 +233,22 @@ msgstr "Não foi possível criar o domínio inativo %s\n"
 msgid "Failed to create polkit context %s\n"
 msgstr "Não foi possível criar o domínio inativo %s\n"
 
-#: qemud/remote.c:2672
+#: qemud/remote.c:2673
+#, c-format
+msgid "Policy kit failed to check authorization %d %s"
+msgstr ""
+
+#: qemud/remote.c:2689
 #, c-format
 msgid "Policy kit denied action %s from pid %d, uid %d, result: %s\n"
 msgstr ""
 
-#: qemud/remote.c:2680
+#: qemud/remote.c:2697
 #, c-format
 msgid "Policy allowed action %s from pid %d, uid %d, result %s"
 msgstr ""
 
-#: qemud/remote.c:2699
+#: qemud/remote.c:2716
 msgid "client tried unsupported PolicyKit init request"
 msgstr ""
 
@@ -656,7 +661,7 @@ msgstr ""
 msgid "failure writing output: %s\n"
 msgstr ""
 
-#: src/hash.c:695 src/libvirt.c:624
+#: src/hash.c:695 src/libvirt.c:651
 msgid "allocating connection"
 msgstr "alocando a conexão"
 
@@ -749,16 +754,16 @@ msgstr ""
 msgid "Failed to add iptables rule '%s' to chain '%s' in table '%s': %s"
 msgstr ""
 
-#: src/libvirt.c:631
+#: src/libvirt.c:658
 msgid "could not parse connection URI"
 msgstr "não foi possível analisar a URI de conexão"
 
-#: src/libvirt.c:649
+#: src/libvirt.c:676
 #, fuzzy
 msgid "allocating conn->name"
 msgstr "alocando a conexão"
 
-#: src/libvirt.c:2058
+#: src/libvirt.c:2097
 #, fuzzy
 msgid "domainMigratePrepare did not set uri"
 msgstr "informação do domínio incompleta, domid não numérico"

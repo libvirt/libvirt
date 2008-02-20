@@ -441,6 +441,23 @@ if test "x$with_polkit" = "xyes" -o "x$with_polkit" = "xcheck"; then
   if test "x$with_polkit" = "xyes" ; then
     AC_DEFINE_UNQUOTED(HAVE_POLKIT, 1,
       [use PolicyKit for UNIX socket access checks])
+
+    old_CFLAGS=$CFLAGS
+    old_LDFLAGS=$LDFLAGS
+    CFLAGS="$CFLAGS $POLKIT_CFLAGS"
+    LDFLAGS="$LDFLAGS $POLKIT_LIBS"
+    AC_CHECK_FUNCS(polkit_context_is_caller_authorized)
+    CFLAGS="$old_CFLAGS"
+    LDFLAGS="$old_LDFLAGS"
+
+    AC_PATH_PROG(POLKIT_GRANT, polkit-grant)
+    if test "x$POLKIT_GRANT" != "x"; then
+      AC_DEFINE_UNQUOTED([POLKIT_GRANT],["$POLKIT_GRANT"],[Location of polkit-grant program])
+    fi
+    AC_PATH_PROG(POLKIT_AUTH, polkit-auth)
+    if test "x$POLKIT_AUTH" != "x"; then
+      AC_DEFINE_UNQUOTED([POLKIT_AUTH],["$POLKIT_AUTH"],[Location of polkit-auth program])
+    fi
   fi
 fi
 AM_CONDITIONAL(HAVE_POLKIT, [test "x$with_polkit" = "xyes"])
