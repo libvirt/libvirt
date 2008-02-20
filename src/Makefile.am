@@ -62,6 +62,7 @@ CLIENT_SOURCES =						\
 		storage_conf.h storage_conf.c			\
 		storage_driver.h storage_driver.c		\
 		storage_backend.h storage_backend.c		\
+		storage_backend_fs.h storage_backend_fs.c 	\
 		util.c util.h
 
 SERVER_SOURCES = 						\

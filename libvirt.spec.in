@@ -8,6 +8,12 @@
 %define with_proxy yes
 %endif
 
+%if "%{fedora}"
+%define with_qemu 1
+%else
+%define with_qemu 0
+%endif
+
 Summary: Library providing a simple API virtualization
 Name: libvirt
 Version: @VERSION@
@@ -34,6 +40,15 @@ Requires: cyrus-sasl-md5
 %if %{with_polkit}
 Requires: PolicyKit >= 0.6
 %endif
+# For mount/umount in FS driver
+BuildRequires: util-linux
+%if %{with_qemu}
+# From QEMU RPMs
+Requires: /usr/bin/qemu-img
+%else
+# From Xen RPMs
+Requires: /usr/sbin/qcow-create
+%endif
 BuildRequires: xen-devel
 BuildRequires: libxml2-devel
 BuildRequires: readline-devel
@@ -48,6 +63,15 @@ BuildRequires: qemu
 BuildRequires: cyrus-sasl-devel
 %if %{with_polkit}
 BuildRequires: PolicyKit-devel >= 0.6
+%endif
+# For mount/umount in FS driver
+BuildRequires: util-linux
+%if %{with_qemu}
+# From QEMU RPMs
+BuildRequires: /usr/bin/qemu-img
+%else
+# From Xen RPMs
+BuildRequires: /usr/sbin/qcow-create
 %endif
 Obsoletes: libvir
 ExclusiveArch: i386 x86_64 ia64

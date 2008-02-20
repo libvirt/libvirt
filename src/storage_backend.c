@@ -40,10 +40,24 @@
 #include "util.h"
 
 #include "storage_backend.h"
+#include "storage_backend_fs.h"
+
+static virStorageBackendPtr backends[] = {
+    &virStorageBackendDirectory,
+#if WITH_STORAGE_FS
+    &virStorageBackendFileSystem,
+    &virStorageBackendNetFileSystem,
+#endif
+};
 
 
 virStorageBackendPtr
 virStorageBackendForType(int type) {
+    unsigned int i;
+    for (i = 0 ; i < (sizeof(backends)/sizeof(backends[0])) ; i++)
+        if (backends[i]->type == type)
+            return backends[i];
+
     virStorageReportError(NULL, VIR_ERR_INTERNAL_ERROR,
                           _("missing backend for pool type %d"), type);
     return NULL;
@@ -68,6 +82,15 @@ virStorageBackendVolOptionsForType(int type) {
 
 int
 virStorageBackendFromString(const char *type) {
+    if (STREQ(type, "dir"))
+        return VIR_STORAGE_POOL_DIR;
+#if WITH_STORAGE_FS
+    if (STREQ(type, "fs"))
+        return VIR_STORAGE_POOL_FS;
+    if (STREQ(type, "netfs"))
+        return VIR_STORAGE_POOL_NETFS;
+#endif
+
     virStorageReportError(NULL, VIR_ERR_INTERNAL_ERROR,
                           _("unknown storage backend type %s"), type);
     return -1;
@@ -75,6 +98,17 @@ virStorageBackendFromString(const char *type) {
 
 const char *
 virStorageBackendToString(int type) {
+    switch (type) {
+    case VIR_STORAGE_POOL_DIR:
+        return "dir";
+#if WITH_STORAGE_FS
+    case VIR_STORAGE_POOL_FS:
+        return "fs";
+    case VIR_STORAGE_POOL_NETFS:
+        return "netfs";
+#endif
+    }
+
     virStorageReportError(NULL, VIR_ERR_INTERNAL_ERROR,
                           _("unknown storage backend type %d"), type);
     return NULL;

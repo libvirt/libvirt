@@ -1,5 +1,16 @@
 Wed Feb 20 10:32:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
+	* configure.in: Add checks for mount/unmount/qemu-img/qcow-create
+	* docs/storage/*.xml: Add some example XML configs for storage
+	* libvirt.spec.in: Added deps on qemu-img and/or qcow-create,
+	and util-linux
+	* src/Makefile.am, src/storage_backend.c, src/storage_backend_fs.c,
+	src/storage_backend_fs.h: Add impl of directory, filesystem &
+	network filesystem pools.
+	* po/POTFILES.in: Added storage_backend_fs.c
+
+Wed Feb 20 10:32:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
 	* configure.in: Add check for selinux library
 	* libvirt.spec.in: Add BuildRequires on libselinux-devel
 	* src/Makefile.am, tests/Makefile.am: Add selinux build flags
