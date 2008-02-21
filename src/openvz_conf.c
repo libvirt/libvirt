@@ -677,7 +677,6 @@ openvzSetUUID(int vpsid)
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     unsigned char uuid[VIR_UUID_BUFLEN];
     char *conf_dir;
-    int fd, ret;
 
     conf_dir = openvzLocateConfDir();
     if (conf_dir == NULL)
@@ -685,23 +684,22 @@ openvzSetUUID(int vpsid)
     sprintf(conf_file, "%s/%d.conf", conf_dir, vpsid);
     free(conf_dir);
 
-    fd = open(conf_file, O_RDWR);
-    if(fd == -1)
+    if (openvzGetVPSUUID(vpsid, uuidstr))
         return -1;
 
-    ret = openvzGetVPSUUID(vpsid, uuidstr);
-    if(ret == -1)
-        return -1;
+    if (uuidstr[0] == 0) {
+	FILE *fp = fopen(conf_file, "a"); /* append */
+	if (fp == NULL)
+	  return -1;
 
-    if(uuidstr[0] == 0) {
         virUUIDGenerate(uuid);
         virUUIDFormat(uuid, uuidstr);
 
-        lseek(fd, 0, SEEK_END);
-        write(fd, "\n#UUID: ", 8);
-        write(fd, uuidstr, strlen(uuidstr));
-        write(fd, "\n", 1);
-        close(fd);
+	/* Record failure if fprintf or fclose fails,
+	   and be careful always to close the stream.  */
+	if ((fprintf(fp, "\n#UUID: %s\n", uuidstr) < 0)
+	    + (fclose(fp) == EOF))
+	    return -1;
     }
 
     return 0;

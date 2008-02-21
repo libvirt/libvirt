@@ -1,5 +1,9 @@
 Thu Feb 21 19:22:10 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	Rewrite openvzSetUUID.
+	* src/openvz_conf.c (openvzSetUUID): Rewrite to avoid unchecked
+	lseek, write, and close as well as a potential file descriptor leak.
+
 	Handle failed openvzLocateConfDir.
 	* src/openvz_conf.c (openvzLocateConfDir, openvzGetVPSUUID):
 	(openvzSetUUID): Don't dereference NULL upon failure.
