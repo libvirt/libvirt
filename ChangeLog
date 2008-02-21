@@ -1,3 +1,7 @@
+Wed Feb 20 22:48:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/libvirt_sym.version: Added missing virStorageVolGetConnect
+
 Wed Feb 20 18:24:39 CET 2008 Jim Meyering <meyering@redhat.com>
 
 	Avoid "make syntax-check" failure.
