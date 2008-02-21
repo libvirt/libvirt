@@ -638,6 +638,8 @@ openvzGetVPSUUID(int vpsid, char *uuidstr)
     int fd, ret;
 
     conf_dir = openvzLocateConfDir();
+    if (conf_dir == NULL)
+        return -1;
     sprintf(conf_file, "%s/%d.conf", conf_dir, vpsid);
     free(conf_dir);
 
@@ -678,6 +680,8 @@ openvzSetUUID(int vpsid)
     int fd, ret;
 
     conf_dir = openvzLocateConfDir();
+    if (conf_dir == NULL)
+        return -1;
     sprintf(conf_file, "%s/%d.conf", conf_dir, vpsid);
     free(conf_dir);
 
@@ -719,6 +723,8 @@ int openvzAssignUUIDs(void)
     char ext[8];
 
     conf_dir = openvzLocateConfDir();
+    if (conf_dir == NULL)
+        return -1;
 
     dp = opendir(conf_dir);
     if(dp == NULL) {
