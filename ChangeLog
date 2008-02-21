@@ -1,3 +1,8 @@
+Thu Feb 21 15:17:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Fix double-free in OpenVZ driver.
+	* src/openvz_conf.c: Double-free fix (Anton Protopopov).
+
 Wed Feb 20 22:48:27 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/libvirt_sym.version: Added missing virStorageVolGetConnect

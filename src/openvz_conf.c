@@ -536,7 +536,6 @@ openvzGetVPSInfo(virConnectPtr conn) {
         if (fscanf(fp, "%d %s\n", &veid, status) != 2) {
 	    error(conn, VIR_ERR_INTERNAL_ERROR,
 	          "Failed to parse vzlist output");
-            free(*pnext);
 	    goto error;
 	}
         if(strcmp(status, "stopped")) {
@@ -557,7 +556,6 @@ openvzGetVPSInfo(virConnectPtr conn) {
         vmdef = calloc(1, sizeof(*vmdef));
         if(!vmdef) {
             error(conn, VIR_ERR_INTERNAL_ERROR, "calloc failed");
-            free(*pnext);
 	    goto error;
         }
 
@@ -568,7 +566,6 @@ openvzGetVPSInfo(virConnectPtr conn) {
         if(ret == -1) {
             error(conn, VIR_ERR_INTERNAL_ERROR,
 	          "UUID in config file malformed");
-            free(*pnext);
 	    free(vmdef);
             goto error;
         }
