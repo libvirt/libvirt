@@ -46,9 +46,10 @@
 #include <readline/history.h>
 #endif
 
+#include "buf.h"
 #include "console.h"
 #include "util.h"
-#include "buf.h"
+#include "util-lib.h"
 
 static char *progname;
 
@@ -6170,7 +6171,7 @@ vshOutputLogFile(vshControl *ctl, int log_level, const char *msg_format, va_list
         snprintf(msg_buf + strlen(msg_buf), sizeof(msg_buf) - strlen(msg_buf), "\n");
 
     /* write log */
-    if (write(ctl->log_fd, msg_buf, strlen(msg_buf)) == -1) {
+    if (safewrite(ctl->log_fd, msg_buf, strlen(msg_buf)) < 0) {
         vshCloseLogFile(ctl);
         vshError(ctl, FALSE, "%s", _("failed to write the log file"));
     }

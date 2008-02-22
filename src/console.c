@@ -1,7 +1,7 @@
 /*
  * console.c: A dumb serial console client
  *
- * Copyright (C) 2007 Red Hat, Inc.
+ * Copyright (C) 2007, 2008 Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,6 +37,7 @@
 
 #include "console.h"
 #include "internal.h"
+#include "util-lib.h"
 
 /* ie  Ctrl-]  as per telnet */
 #define CTRL_CLOSE_BRACKET '\35'
@@ -161,7 +162,8 @@ int vshRunConsole(const char *tty) {
 
                 while (sent < got) {
                     int done;
-                    if ((done = write(destfd, buf + sent, got - sent)) <= 0) {
+                    if ((done = safewrite(destfd, buf + sent, got - sent))
+                        <= 0) {
                         fprintf(stderr, _("failure writing output: %s\n"),
                                 strerror(errno));
                         goto cleanup;

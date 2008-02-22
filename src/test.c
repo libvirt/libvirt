@@ -42,6 +42,7 @@
 #include "test.h"
 #include "xml.h"
 #include "buf.h"
+#include "util.h"
 #include "uuid.h"
 
 /* Flags that determine the action to take on a shutdown or crash of a domain
@@ -1293,19 +1294,19 @@ static int testDomainSave(virDomainPtr domain,
         return (-1);
     }
     len = strlen(xml);
-    if (write(fd, TEST_SAVE_MAGIC, sizeof(TEST_SAVE_MAGIC)) != sizeof(TEST_SAVE_MAGIC)) {
+    if (safewrite(fd, TEST_SAVE_MAGIC, sizeof(TEST_SAVE_MAGIC)) < 0) {
         testError(domain->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
                   "cannot write header");
         close(fd);
         return (-1);
     }
-    if (write(fd, (char*)&len, sizeof(len)) != sizeof(len)) {
+    if (safewrite(fd, (char*)&len, sizeof(len)) < 0) {
         testError(domain->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
                   "cannot write metadata length");
         close(fd);
         return (-1);
     }
-    if (write(fd, xml, len) != len) {
+    if (safewrite(fd, xml, len) < 0) {
         testError(domain->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
                   "cannot write metadata");
         free(xml);
@@ -1398,7 +1399,7 @@ static int testDomainCoreDump(virDomainPtr domain,
                   "cannot save domain core");
         return (-1);
     }
-    if (write(fd, TEST_SAVE_MAGIC, sizeof(TEST_SAVE_MAGIC)) != sizeof(TEST_SAVE_MAGIC)) {
+    if (safewrite(fd, TEST_SAVE_MAGIC, sizeof(TEST_SAVE_MAGIC)) < 0) {
         testError(domain->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
                   "cannot write header");
         close(fd);

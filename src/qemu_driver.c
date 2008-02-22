@@ -539,11 +539,9 @@ static int qemudWaitForMonitor(virConnectPtr conn,
                                      "console");
 
     buf[sizeof(buf)-1] = '\0';
- retry:
-    if (write(vm->logfile, buf, strlen(buf)) < 0) {
+
+    if (safewrite(vm->logfile, buf, strlen(buf)) < 0) {
         /* Log, but ignore failures to write logfile for VM */
-        if (errno == EINTR)
-            goto retry;
         qemudLog(QEMUD_WARN, _("Unable to log VM console data: %s"),
                  strerror(errno));
     }
@@ -656,15 +654,15 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     tmp = argv;
     while (*tmp) {
-        if (write(vm->logfile, *tmp, strlen(*tmp)) < 0)
+        if (safewrite(vm->logfile, *tmp, strlen(*tmp)) < 0)
             qemudLog(QEMUD_WARN, _("Unable to write argv to logfile %d: %s"),
                      errno, strerror(errno));
-        if (write(vm->logfile, " ", 1) < 0)
+        if (safewrite(vm->logfile, " ", 1) < 0)
             qemudLog(QEMUD_WARN, _("Unable to write argv to logfile %d: %s"),
                      errno, strerror(errno));
         tmp++;
     }
-    if (write(vm->logfile, "\n", 1) < 0)
+    if (safewrite(vm->logfile, "\n", 1) < 0)
         qemudLog(QEMUD_WARN, _("Unable to write argv to logfile %d: %s"),
                  errno, strerror(errno));
 
@@ -733,11 +731,8 @@ static int qemudVMData(struct qemud_driver *driver ATTRIBUTE_UNUSED,
         }
         buf[ret] = '\0';
 
-    retry:
-        if (write(vm->logfile, buf, ret) < 0) {
+        if (safewrite(vm->logfile, buf, ret) < 0) {
             /* Log, but ignore failures to write logfile for VM */
-            if (errno == EINTR)
-                goto retry;
             qemudLog(QEMUD_WARN, _("Unable to log VM console data: %s"),
                      strerror(errno));
         }
@@ -1113,7 +1108,7 @@ qemudEnableIpForwarding(void)
     if ((fd = open(PROC_IP_FORWARD, O_WRONLY|O_TRUNC)) == -1)
         return 0;
 
-    if (write(fd, "1\n", 2) < 0)
+    if (safewrite(fd, "1\n", 2) < 0)
         ret = 0;
 
     close (fd);

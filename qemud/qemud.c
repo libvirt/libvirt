@@ -118,7 +118,7 @@ static void sig_handler(int sig) {
         return;
 
     origerrno = errno;
-    r = write(sigwrite, &sigc, 1);
+    r = safewrite(sigwrite, &sigc, 1);
     if (r == -1) {
         sig_errors++;
         sig_lasterrno = errno;
@@ -1360,11 +1360,9 @@ static int qemudClientWriteBuf(struct qemud_server *server,
                                const char *data, int len) {
     int ret;
     if (!client->tlssession) {
-        if ((ret = write(client->fd, data, len)) == -1) {
-            if (errno != EAGAIN) {
-                qemudLog (QEMUD_ERR, _("write: %s"), strerror (errno));
-                qemudDispatchClientFailure(server, client);
-            }
+        if ((ret = safewrite(client->fd, data, len)) == -1) {
+            qemudLog (QEMUD_ERR, _("write: %s"), strerror (errno));
+            qemudDispatchClientFailure(server, client);
             return -1;
         }
     } else {

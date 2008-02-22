@@ -904,7 +904,7 @@ __virConfWriteFile(const char *filename, virConfPtr conf)
 	goto error;
     }
 
-    ret = write(fd, buf->content, buf->use);
+    ret = safewrite(fd, buf->content, buf->use);
     close(fd);
     if (ret != (int) buf->use) {
         virConfError(NULL, VIR_ERR_WRITE_FAILED, _("failed to save content"), 0);

@@ -46,6 +46,17 @@ sc_avoid_if_before_free:
 	  { echo '$(ME): found useless "if" before "free" above' 1>&2;	\
 	    exit 1; } || :
 
+# Avoid uses of write(2).  Either switch to streams (fwrite), or use
+# the safewrite wrapper.
+sc_avoid_write:
+	@if $(CVS_LIST_EXCEPT) | grep '\.c$$' > /dev/null; then		\
+	  grep '\<write *(' $$($(CVS_LIST_EXCEPT) | grep '\.c$$') &&	\
+	    { echo "$(ME): the above files use write;"			\
+	      " consider using the safewrite wrapper instead"		\
+		  1>&2; exit 1; } || :;					\
+	else :;								\
+	fi
+
 sc_cast_of_argument_to_free:
 	@grep -nE '\<free \(\(' $$($(CVS_LIST_EXCEPT)) &&		\
 	  { echo '$(ME): don'\''t cast free argument' 1>&2;		\

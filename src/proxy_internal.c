@@ -1,7 +1,7 @@
 /*
  * proxy_client.c: client side of the communication with the libvirt proxy.
  *
- * Copyright (C) 2006 Red Hat, Inc.
+ * Copyright (C) 2006, 2008 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -26,6 +26,7 @@
 #include "internal.h"
 #include "driver.h"
 #include "proxy_internal.h"
+#include "util.h"
 #include "xen_unified.h"
 
 #define STANDALONE
@@ -345,17 +346,10 @@ virProxyWriteClientSocket(int fd, const char *data, int len) {
     if ((fd < 0) || (data == NULL) || (len < 0))
         return(-1);
 
-retry:
-    ret = write(fd, data, len);
+    ret = safewrite(fd, data, len);
     if (ret < 0) {
-        if (errno == EINTR) {
-	    if (debug > 0)
-	        fprintf(stderr, "write socket %d, %d bytes interrupted\n",
-		        fd, len);
-	    goto retry;
-	}
         fprintf(stderr, _("Failed to write to socket %d\n"), fd);
-	return(-1);
+        return(-1);
     }
     if (debug)
 	fprintf(stderr, "wrote %d bytes to socket %d\n",

@@ -1,5 +1,24 @@
 Fri Feb 22 13:32:11 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	Use safewrite in place of write, in many cases.
+	Also add "make syntax-check" rules to ensure no new uses sneak in.
+	* Makefile.maint (sc_avoid_write): New rule, to avoid recurrence.
+	* .x-sc_avoid_write: New file.  Record two legitimate exemptions.
+	* qemud/qemud.c (sig_handler, qemudClientWriteBuf): Use safewrite,
+	not write.
+	* src/conf.c (__virConfWriteFile): Likewise.
+	* src/qemu_conf.c (qemudSaveConfig, qemudSaveNetworkConfig): Likewise.
+	* src/qemu_driver.c (qemudWaitForMonitor, qemudStartVMDaemon)
+	(qemudVMData, PROC_IP_FORWARD): Likewise.
+	* proxy/libvirt_proxy.c: Include "util.h".
+	(proxyWriteClientSocket): Use safewrite.
+	* src/test.c (testDomainSave, testDomainCoreDump): Likewise.
+	* src/proxy_internal.c (virProxyWriteClientSocket): Likewise.
+	* src/virsh.c: Include "util-lib.h".
+	(vshOutputLogFile): Use safewrite.
+	* src/console.c: Include "util-lib.h".
+	(vshRunConsole): Use safewrite.
+
 	Move safewrite and saferead to a separate file.
 	* src/util.c (saferead, safewrite): Move function definitions to
 	util-lib.c and include that .c file.

@@ -1866,7 +1866,7 @@ static int qemudSaveConfig(virConnectPtr conn,
     }
 
     towrite = strlen(xml);
-    if (write(fd, xml, towrite) != towrite) {
+    if (safewrite(fd, xml, towrite) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "cannot write config file %s: %s",
                          vm->configFile, strerror(errno));
@@ -2089,7 +2089,7 @@ static int qemudSaveNetworkConfig(virConnectPtr conn,
     }
 
     towrite = strlen(xml);
-    if (write(fd, xml, towrite) != towrite) {
+    if (safewrite(fd, xml, towrite) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "cannot write config file %s: %s",
                          network->configFile, strerror(errno));
