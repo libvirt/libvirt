@@ -245,9 +245,9 @@ static void qemudDispatchSignalEvent(int fd ATTRIBUTE_UNUSED,
 
     switch (sigc) {
     case SIGHUP:
-        qemudLog(QEMUD_INFO, _("Reloading configuration on SIGHUP"));
+        qemudLog(QEMUD_INFO, "%s", _("Reloading configuration on SIGHUP"));
         if (virStateReload() < 0)
-            qemudLog(QEMUD_WARN, _("Error while reloading drivers"));
+            qemudLog(QEMUD_WARN, "%s", _("Error while reloading drivers"));
         break;
 
     case SIGINT:
@@ -274,7 +274,8 @@ static int qemudSetCloseExec(int fd) {
         goto error;
     return 0;
  error:
-    qemudLog(QEMUD_ERR, _("Failed to set close-on-exec file descriptor flag"));
+    qemudLog(QEMUD_ERR,
+             "%s", _("Failed to set close-on-exec file descriptor flag"));
     return -1;
 }
 
@@ -288,7 +289,8 @@ static int qemudSetNonBlock(int fd) {
         goto error;
     return 0;
  error:
-    qemudLog(QEMUD_ERR, _("Failed to set non-blocking file descriptor flag"));
+    qemudLog(QEMUD_ERR,
+             "%s", _("Failed to set non-blocking file descriptor flag"));
     return -1;
 }
 
@@ -467,7 +469,7 @@ static int qemudListenUnix(struct qemud_server *server,
 
     if (!sock) {
         qemudLog(QEMUD_ERR,
-                 _("Failed to allocate memory for struct qemud_socket"));
+                 "%s", _("Failed to allocate memory for struct qemud_socket"));
         return -1;
     }
 
@@ -517,7 +519,7 @@ static int qemudListenUnix(struct qemud_server *server,
                               POLLIN| POLLERR | POLLHUP,
                               qemudDispatchServerEvent,
                               server) < 0) {
-        qemudLog(QEMUD_ERR, _("Failed to add server event callback"));
+        qemudLog(QEMUD_ERR, "%s", _("Failed to add server event callback"));
         goto cleanup;
     }
 
@@ -647,7 +649,7 @@ remoteListenTCP (struct qemud_server *server,
                                   POLLIN| POLLERR | POLLHUP,
                                   qemudDispatchServerEvent,
                                   server) < 0) {
-            qemudLog(QEMUD_ERR, _("Failed to add server event callback"));
+            qemudLog(QEMUD_ERR, "%s", _("Failed to add server event callback"));
             return -1;
         }
 
@@ -698,7 +700,7 @@ static int qemudInitPaths(struct qemud_server *server,
 
  snprintf_error:
     qemudLog(QEMUD_ERR,
-             _("Resulting path to long for buffer in qemudInitPaths()"));
+             "%s", _("Resulting path to long for buffer in qemudInitPaths()"));
     return -1;
 }
 
@@ -706,7 +708,7 @@ static struct qemud_server *qemudInitialize(int sigread) {
     struct qemud_server *server;
 
     if (!(server = calloc(1, sizeof(*server)))) {
-        qemudLog(QEMUD_ERR, _("Failed to allocate struct qemud_server"));
+        qemudLog(QEMUD_ERR, "%s", _("Failed to allocate struct qemud_server"));
         return NULL;
     }
 
@@ -935,20 +937,23 @@ remoteCheckCertificate (gnutls_session_t session)
 
     if (status != 0) {
         if (status & GNUTLS_CERT_INVALID)
-            qemudLog (QEMUD_ERR, _("remoteCheckCertificate: "
-                                   "the client certificate is not trusted."));
+            qemudLog (QEMUD_ERR, "%s",
+                      _("remoteCheckCertificate: "
+                        "the client certificate is not trusted."));
 
         if (status & GNUTLS_CERT_SIGNER_NOT_FOUND)
-            qemudLog (QEMUD_ERR, _("remoteCheckCertificate: the client "
-                                   "certificate has unknown issuer."));
+            qemudLog (QEMUD_ERR, "%s",
+                      _("remoteCheckCertificate: the client "
+                        "certificate has unknown issuer."));
 
         if (status & GNUTLS_CERT_REVOKED)
-            qemudLog (QEMUD_ERR, _("remoteCheckCertificate: "
-                                   "the client certificate has been revoked."));
+            qemudLog (QEMUD_ERR, "%s",
+                      _("remoteCheckCertificate: "
+                        "the client certificate has been revoked."));
 
 #ifndef GNUTLS_1_0_COMPAT
         if (status & GNUTLS_CERT_INSECURE_ALGORITHM)
-            qemudLog (QEMUD_ERR,
+            qemudLog (QEMUD_ERR, "%s",
                       _("remoteCheckCertificate: the client certificate"
                         " uses an insecure algorithm."));
 #endif
@@ -957,13 +962,13 @@ remoteCheckCertificate (gnutls_session_t session)
     }
 
     if (gnutls_certificate_type_get (session) != GNUTLS_CRT_X509) {
-        qemudLog (QEMUD_ERR, _("remoteCheckCertificate: "
-                               "certificate is not X.509"));
+        qemudLog (QEMUD_ERR,
+                  "%s", _("remoteCheckCertificate: certificate is not X.509"));
         return -1;
     }
 
     if (!(certs = gnutls_certificate_get_peers(session, &nCerts))) {
-        qemudLog (QEMUD_ERR, _("remoteCheckCertificate: no peers"));
+        qemudLog (QEMUD_ERR, "%s", _("remoteCheckCertificate: no peers"));
         return -1;
     }
 
@@ -973,7 +978,7 @@ remoteCheckCertificate (gnutls_session_t session)
         gnutls_x509_crt_t cert;
 
         if (gnutls_x509_crt_init (&cert) < 0) {
-            qemudLog (QEMUD_ERR,
+            qemudLog (QEMUD_ERR, "%s",
                       _("remoteCheckCertificate: gnutls_x509_crt_init failed"));
             return -1;
         }
@@ -984,15 +989,15 @@ remoteCheckCertificate (gnutls_session_t session)
         }
 
         if (gnutls_x509_crt_get_expiration_time (cert) < now) {
-            qemudLog (QEMUD_ERR, _("remoteCheckCertificate: "
-                                   "the client certificate has expired"));
+            qemudLog (QEMUD_ERR, "%s", _("remoteCheckCertificate: "
+                                         "the client certificate has expired"));
             gnutls_x509_crt_deinit (cert);
             return -1;
         }
 
         if (gnutls_x509_crt_get_activation_time (cert) > now) {
-            qemudLog (QEMUD_ERR, _("remoteCheckCertificate: the client "
-                                   "certificate is not yet activated"));
+            qemudLog (QEMUD_ERR, "%s", _("remoteCheckCertificate: the client "
+                                         "certificate is not yet activated"));
             gnutls_x509_crt_deinit (cert);
             return -1;
         }
@@ -1000,7 +1005,7 @@ remoteCheckCertificate (gnutls_session_t session)
         if (i == 0) {
             if (!remoteCheckDN (cert)) {
                 /* This is the most common error: make it informative. */
-                qemudLog (QEMUD_ERR, _("remoteCheckCertificate: client's Distinguished Name is not on the list of allowed clients (tls_allowed_dn_list).  Use 'openssl x509 -in clientcert.pem -text' to view the Distinguished Name field in the client certificate, or run this daemon with --verbose option."));
+                qemudLog (QEMUD_ERR, "%s", _("remoteCheckCertificate: client's Distinguished Name is not on the list of allowed clients (tls_allowed_dn_list).  Use 'openssl x509 -in clientcert.pem -text' to view the Distinguished Name field in the client certificate, or run this daemon with --verbose option."));
                 gnutls_x509_crt_deinit (cert);
                 return -1;
             }
@@ -1016,9 +1021,13 @@ remoteCheckAccess (struct qemud_client *client)
 {
     /* Verify client certificate. */
     if (remoteCheckCertificate (client->tlssession) == -1) {
-        qemudLog (QEMUD_ERR, _("remoteCheckCertificate: failed to verify client's certificate"));
+        qemudLog (QEMUD_ERR, "%s",
+                  _("remoteCheckCertificate: "
+                    "failed to verify client's certificate"));
         if (!tls_no_verify_certificate) return -1;
-        else qemudLog (QEMUD_INFO, _("remoteCheckCertificate: tls_no_verify_certificate is set so the bad certificate is ignored"));
+        else qemudLog (QEMUD_INFO, "%s",
+                       _("remoteCheckCertificate: tls_no_verify_certificate "
+                         "is set so the bad certificate is ignored"));
     }
 
     /* Checks have succeeded.  Write a '\1' byte back to the client to
@@ -1887,7 +1896,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     if (unix_sock_group) {
         if (getuid() != 0) {
             qemudLog (QEMUD_WARN,
-                      _("Cannot set group when not running as root"));
+                      "%s", _("Cannot set group when not running as root"));
         } else {
             struct group *grp = getgrnam(unix_sock_group);
             if (!grp) {
@@ -2144,7 +2153,8 @@ int main(int argc, char **argv) {
                               POLLIN,
                               qemudDispatchSignalEvent,
                               server) < 0) {
-        qemudLog(QEMUD_ERR, _("Failed to register callback for signal pipe"));
+        qemudLog(QEMUD_ERR,
+                 "%s", _("Failed to register callback for signal pipe"));
         ret = 3;
         goto error2;
     }

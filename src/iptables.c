@@ -148,8 +148,8 @@ notifyRulesRemoved(const char *table,
     len = virFileReadAll(SYSCONF_DIR "/sysconfig/system-config-firewall",
                          MAX_FILE_LEN, &content);
     if (len < 0) {
-        qemudLog(QEMUD_WARN, _("Failed to read " SYSCONF_DIR
-                               "/sysconfig/system-config-firewall"));
+        qemudLog(QEMUD_WARN, "%s", _("Failed to read " SYSCONF_DIR
+                                     "/sysconfig/system-config-firewall"));
         return;
     }
 

@@ -92,7 +92,7 @@ virStorageBackendISCSIExtractSession(virConnectPtr conn,
 
     if (STREQ(groups[1], pool->def->source.devices[0].path)) {
         if ((*session = strdup(groups[0])) == NULL) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("session"));
+            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("session"));
             return -1;
         }
     }
@@ -133,7 +133,7 @@ virStorageBackendISCSISession(virConnectPtr conn,
 
     if (session == NULL) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot find session"));
+                              "%s", _("cannot find session"));
         return NULL;
     }
 
@@ -174,17 +174,17 @@ virStorageBackendISCSIMakeLUN(virConnectPtr conn,
     snprintf(lunid, sizeof(lunid)-1, "lun-%s", groups[3]);
 
     if ((vol = calloc(1, sizeof(virStorageVolDef))) == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("volume"));
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
         return -1;
     }
 
     if ((vol->name = strdup(lunid)) == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("name"));
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("name"));
         goto cleanup;
     }
 
     if ((devpath = malloc(5 + strlen(dev) + 1)) == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("devpath"));
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("devpath"));
         goto cleanup;
     }
     strcpy(devpath, "/dev/");
@@ -230,7 +230,7 @@ virStorageBackendISCSIMakeLUN(virConnectPtr conn,
     /* XXX use unique iSCSI id instead */
     vol->key = strdup(vol->target.path);
     if (vol->key == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("key"));
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("key"));
         goto cleanup;
     }
 
@@ -342,7 +342,7 @@ virStorageBackendISCSIPortal(virConnectPtr conn,
 
     portal = malloc(strlen(ipaddr) + 1 + 4 + 2 + 1);
     if (portal == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("portal"));
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("portal"));
         return NULL;
     }
 
@@ -361,14 +361,14 @@ virStorageBackendISCSIStartPool(virConnectPtr conn,
 
     if (pool->def->source.host.name == NULL) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("missing source host"));
+                              "%s", _("missing source host"));
         return -1;
     }
 
     if (pool->def->source.ndevice != 1 ||
         pool->def->source.devices[0].path == NULL) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("missing source device"));
+                              "%s", _("missing source device"));
         return -1;
     }
 

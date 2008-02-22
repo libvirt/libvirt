@@ -1,5 +1,19 @@
 Fri Feb 22 13:32:11 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	avoid format string warnings
+	Avoid warnings like this:
+	file:nnn:format not a string literal and no format arguments
+	* qemud/qemud.c: Insert a "%s" format argument.
+	* qemud/remote.c: Likewise.
+	* src/iptables.c: Likewise.
+	* src/qemu_driver.c: Likewise.
+	* src/storage_backend.c: Likewise.
+	* src/storage_backend_fs.c: Likewise.
+	* src/storage_backend_iscsi.c Likewise.
+	* src/storage_backend_logical.c: Likewise.
+	* src/storage_conf.c: Likewise.
+	* src/storage_driver.c: Likewise.
+
 	Use safewrite in place of write, in many cases.
 	Also add "make syntax-check" rules to ensure no new uses sneak in.
 	* Makefile.maint (sc_avoid_write): New rule, to avoid recurrence.

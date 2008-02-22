@@ -247,7 +247,7 @@ virStorageBackendUpdateVolInfoFD(virConnectPtr conn,
     }
     vol->target.perms.label = strdup(filecon);
     if (vol->target.perms.label == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("context"));
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("context"));
         return -1;
     }
     freecon(filecon);
@@ -306,7 +306,7 @@ virStorageBackendStablePath(virConnectPtr conn,
         stablepath = malloc(strlen(pool->def->target.path) +
                             1 + strlen(dent->d_name) + 1);
         if (stablepath == NULL) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("path"));
+            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("path"));
             closedir(dh);
             return NULL;
         }
@@ -359,7 +359,7 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
 
     /* Compile all regular expressions */
     if ((reg = calloc(nregex, sizeof(*reg))) == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("regex"));
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("regex"));
         return -1;
     }
 
@@ -385,12 +385,12 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
     /* Storage for matched variables */
     if ((groups = calloc(totgroups, sizeof(*groups))) == NULL) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                              _("regex groups"));
+                              "%s", _("regex groups"));
         goto cleanup;
     }
     if ((vars = calloc(maxvars+1, sizeof(*vars))) == NULL) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                              _("regex groups"));
+                              "%s", _("regex groups"));
         goto cleanup;
     }
 
@@ -402,7 +402,7 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
 
     if ((list = fdopen(fd, "r")) == NULL) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot read fd"));
+                              "%s", _("cannot read fd"));
         goto cleanup;
     }
 
@@ -426,7 +426,7 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
                     if ((groups[ngroup++] =
                          strdup(line + vars[j+1].rm_so)) == NULL) {
                         virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                                              _("regex groups"));
+                                              "%s", _("regex groups"));
                         goto cleanup;
                     }
                 }
@@ -489,7 +489,7 @@ virStorageBackendRunProgRegex(virConnectPtr conn,
             }
         } else {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("command did not exit cleanly"));
+                                  "%s", _("command did not exit cleanly"));
             return -1;
         }
     }
@@ -530,7 +530,7 @@ virStorageBackendRunProgNul(virConnectPtr conn,
     if (n_columns > SIZE_MAX / sizeof *v
         || (v = malloc (n_columns * sizeof *v)) == NULL) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                              _("n_columns too large"));
+                              "%s", _("n_columns too large"));
         return -1;
     }
     for (i = 0; i < n_columns; i++)
@@ -543,7 +543,7 @@ virStorageBackendRunProgNul(virConnectPtr conn,
 
     if ((fp = fdopen(fd, "r")) == NULL) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot read fd"));
+                              "%s", _("cannot read fd"));
         goto cleanup;
     }
 
@@ -611,7 +611,7 @@ virStorageBackendRunProgNul(virConnectPtr conn,
             }
         } else {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("command did not exit cleanly"));
+                                  "%s", _("command did not exit cleanly"));
             return -1;
         }
     }

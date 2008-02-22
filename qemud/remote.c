@@ -2130,7 +2130,7 @@ remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
     REMOTE_DEBUG("Initialize SASL auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_SASL ||
         client->saslconn != NULL) {
-        qemudLog(QEMUD_ERR, _("client tried invalid SASL init request"));
+        qemudLog(QEMUD_ERR, "%s", _("client tried invalid SASL init request"));
         remoteDispatchFailAuth(client, req);
         return -2;
     }
@@ -2184,7 +2184,7 @@ remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
 
         cipher = gnutls_cipher_get(client->tlssession);
         if (!(ssf = (sasl_ssf_t)gnutls_cipher_get_key_size(cipher))) {
-            qemudLog(QEMUD_ERR, _("cannot TLS get cipher size"));
+            qemudLog(QEMUD_ERR, "%s", _("cannot TLS get cipher size"));
             remoteDispatchFailAuth(client, req);
             sasl_dispose(&client->saslconn);
             client->saslconn = NULL;
@@ -2250,7 +2250,7 @@ remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
     REMOTE_DEBUG("Available mechanisms for client: '%s'", mechlist);
     ret->mechlist = strdup(mechlist);
     if (!ret->mechlist) {
-        qemudLog(QEMUD_ERR, _("cannot allocate mechlist"));
+        qemudLog(QEMUD_ERR, "%s", _("cannot allocate mechlist"));
         remoteDispatchFailAuth(client, req);
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
@@ -2323,7 +2323,7 @@ remoteSASLCheckAccess (struct qemud_server *server,
         return -1;
     }
     if (val == NULL) {
-        qemudLog(QEMUD_ERR, _("no client username was found"));
+        qemudLog(QEMUD_ERR, "%s", _("no client username was found"));
         remoteDispatchFailAuth(client, req);
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
@@ -2333,7 +2333,7 @@ remoteSASLCheckAccess (struct qemud_server *server,
 
     client->saslUsername = strdup((const char*)val);
     if (client->saslUsername == NULL) {
-        qemudLog(QEMUD_ERR, _("out of memory copying username"));
+        qemudLog(QEMUD_ERR, "%s", _("out of memory copying username"));
         remoteDispatchFailAuth(client, req);
         sasl_dispose(&client->saslconn);
         client->saslconn = NULL;
@@ -2378,7 +2378,7 @@ remoteDispatchAuthSaslStart (struct qemud_server *server,
     REMOTE_DEBUG("Start SASL auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_SASL ||
         client->saslconn == NULL) {
-        qemudLog(QEMUD_ERR, _("client tried invalid SASL start request"));
+        qemudLog(QEMUD_ERR, "%s", _("client tried invalid SASL start request"));
         remoteDispatchFailAuth(client, req);
         return -2;
     }
@@ -2458,7 +2458,7 @@ remoteDispatchAuthSaslStep (struct qemud_server *server,
     REMOTE_DEBUG("Step SASL auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_SASL ||
         client->saslconn == NULL) {
-        qemudLog(QEMUD_ERR, _("client tried invalid SASL start request"));
+        qemudLog(QEMUD_ERR, "%s", _("client tried invalid SASL start request"));
         remoteDispatchFailAuth(client, req);
         return -2;
     }
@@ -2532,7 +2532,7 @@ remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
                             void *args ATTRIBUTE_UNUSED,
                             remote_auth_sasl_init_ret *ret ATTRIBUTE_UNUSED)
 {
-    qemudLog(QEMUD_ERR, _("client tried unsupported SASL init request"));
+    qemudLog(QEMUD_ERR, "%s", _("client tried unsupported SASL init request"));
     remoteDispatchFailAuth(client, req);
     return -1;
 }
@@ -2544,7 +2544,7 @@ remoteDispatchAuthSaslStart (struct qemud_server *server ATTRIBUTE_UNUSED,
                              remote_auth_sasl_start_args *args ATTRIBUTE_UNUSED,
                              remote_auth_sasl_start_ret *ret ATTRIBUTE_UNUSED)
 {
-    qemudLog(QEMUD_ERR, _("client tried unsupported SASL start request"));
+    qemudLog(QEMUD_ERR, "%s", _("client tried unsupported SASL start request"));
     remoteDispatchFailAuth(client, req);
     return -1;
 }
@@ -2556,7 +2556,7 @@ remoteDispatchAuthSaslStep (struct qemud_server *server ATTRIBUTE_UNUSED,
                             remote_auth_sasl_step_args *args ATTRIBUTE_UNUSED,
                             remote_auth_sasl_step_ret *ret ATTRIBUTE_UNUSED)
 {
-    qemudLog(QEMUD_ERR, _("client tried unsupported SASL step request"));
+    qemudLog(QEMUD_ERR, "%s", _("client tried unsupported SASL step request"));
     remoteDispatchFailAuth(client, req);
     return -1;
 }
@@ -2597,13 +2597,14 @@ remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
 
     REMOTE_DEBUG("Start PolicyKit auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_POLKIT) {
-        qemudLog(QEMUD_ERR, _("client tried invalid PolicyKit init request"));
+        qemudLog(QEMUD_ERR,
+                 "%s", _("client tried invalid PolicyKit init request"));
         remoteDispatchFailAuth(client, req);
         return -2;
     }
 
     if (qemudGetSocketIdentity(client->fd, &callerUid, &callerPid) < 0) {
-        qemudLog(QEMUD_ERR, _("cannot get peer socket identity"));
+        qemudLog(QEMUD_ERR, "%s", _("cannot get peer socket identity"));
         remoteDispatchFailAuth(client, req);
         return -2;
     }
@@ -2713,7 +2714,8 @@ remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
                               void *args ATTRIBUTE_UNUSED,
                               remote_auth_polkit_ret *ret ATTRIBUTE_UNUSED)
 {
-    qemudLog(QEMUD_ERR, _("client tried unsupported PolicyKit init request"));
+    qemudLog(QEMUD_ERR,
+             "%s", _("client tried unsupported PolicyKit init request"));
     remoteDispatchFailAuth(client, req);
     return -1;
 }

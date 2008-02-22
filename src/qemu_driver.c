@@ -71,7 +71,8 @@ static int qemudSetCloseExec(int fd) {
         goto error;
     return 0;
  error:
-    qemudLog(QEMUD_ERR, _("Failed to set close-on-exec file descriptor flag"));
+    qemudLog(QEMUD_ERR,
+             "%s", _("Failed to set close-on-exec file descriptor flag"));
     return -1;
 }
 
@@ -85,7 +86,8 @@ static int qemudSetNonBlock(int fd) {
         goto error;
     return 0;
  error:
-    qemudLog(QEMUD_ERR, _("Failed to set non-blocking file descriptor flag"));
+    qemudLog(QEMUD_ERR,
+             "%s", _("Failed to set non-blocking file descriptor flag"));
     return -1;
 }
 
@@ -182,7 +184,8 @@ qemudStartup(void) {
             goto snprintf_error;
 
         if (asprintf (&base, "%s/.libvirt", pw->pw_dir) == -1) {
-            qemudLog (QEMUD_ERR, _("out of memory in asprintf"));
+            qemudLog (QEMUD_ERR,
+                      "%s", _("out of memory in asprintf"));
             goto out_of_memory;
         }
     }
@@ -224,11 +227,12 @@ qemudStartup(void) {
 
  snprintf_error:
     qemudLog(QEMUD_ERR,
-             _("Resulting path to long for buffer in qemudInitPaths()"));
+             "%s", _("Resulting path to long for buffer in qemudInitPaths()"));
     return -1;
 
  out_of_memory:
-    qemudLog (QEMUD_ERR, _("qemudStartup: out of memory"));
+    qemudLog (QEMUD_ERR,
+              "%s", _("qemudStartup: out of memory"));
     free (base);
     free(qemu_driver);
     qemu_driver = NULL;
@@ -246,7 +250,8 @@ qemudReload(void) {
     qemudScanConfigs(qemu_driver);
 
      if (qemu_driver->iptables) {
-        qemudLog(QEMUD_INFO, _("Reloading iptables rules"));
+        qemudLog(QEMUD_INFO,
+                 "%s", _("Reloading iptables rules"));
         iptablesReloadRules(qemu_driver->iptables);
     }
 
@@ -772,7 +777,8 @@ static void qemudShutdownVMDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
     if (waitpid(vm->pid, NULL, WNOHANG) != vm->pid) {
         kill(vm->pid, SIGKILL);
         if (waitpid(vm->pid, NULL, 0) != vm->pid) {
-            qemudLog(QEMUD_WARN, _("Got unexpected pid, damn"));
+            qemudLog(QEMUD_WARN,
+                     "%s", _("Got unexpected pid, damn"));
         }
     }
 
@@ -1260,7 +1266,8 @@ static int qemudShutdownNetworkDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
         waitpid(network->dnsmasqPid, NULL, WNOHANG) != network->dnsmasqPid) {
         kill(network->dnsmasqPid, SIGKILL);
         if (waitpid(network->dnsmasqPid, NULL, 0) != network->dnsmasqPid)
-            qemudLog(QEMUD_WARN, _("Got unexpected pid for dnsmasq\n"));
+            qemudLog(QEMUD_WARN,
+                     "%s", _("Got unexpected pid for dnsmasq\n"));
     }
 
     network->bridge[0] = '\0';

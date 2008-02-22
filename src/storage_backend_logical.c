@@ -113,12 +113,12 @@ virStorageBackendLogicalMakeVol(virConnectPtr conn,
     /* Or a completely new volume */
     if (vol == NULL) {
         if ((vol = calloc(1, sizeof(*vol))) == NULL) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("volume"));
+            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
             return -1;
         }
 
         if ((vol->name = strdup(groups[0])) == NULL) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("volume"));
+            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
             return -1;
         }
 
@@ -130,7 +130,7 @@ virStorageBackendLogicalMakeVol(virConnectPtr conn,
     if (vol->target.path == NULL) {
         if ((vol->target.path = malloc(strlen(pool->def->target.path) +
                                        1 + strlen(vol->name) + 1)) == NULL) {
-            virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("volume"));
+            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
             return -1;
         }
         strcpy(vol->target.path, pool->def->target.path);
@@ -140,7 +140,7 @@ virStorageBackendLogicalMakeVol(virConnectPtr conn,
 
     if (vol->key == NULL &&
         (vol->key = strdup(groups[1])) == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("volume"));
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
         return -1;
     }
 
@@ -151,30 +151,30 @@ virStorageBackendLogicalMakeVol(virConnectPtr conn,
     /* Finally fill in extents information */
     if ((tmp = realloc(vol->source.extents, sizeof(*tmp)
                        * (vol->source.nextent + 1))) == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("extents"));
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("extents"));
         return -1;
     }
     vol->source.extents = tmp;
 
     if ((vol->source.extents[vol->source.nextent].path =
          strdup(groups[2])) == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("extents"));
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("extents"));
         return -1;
     }
 
     if (virStrToLong_ull(groups[3], NULL, 10, &offset) < 0) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("malformed volume extent offset value"));
+                              "%s", _("malformed volume extent offset value"));
         return -1;
     }
     if (virStrToLong_ull(groups[4], NULL, 10, &length) < 0) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("malformed volume extent length value"));
+                              "%s", _("malformed volume extent length value"));
         return -1;
     }
     if (virStrToLong_ull(groups[5], NULL, 10, &size) < 0) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("malformed volume extent size value"));
+                              "%s", _("malformed volume extent size value"));
         return -1;
     }
 
@@ -266,7 +266,7 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn,
 
     /* XXX multiple pvs */
     if ((vgargv = malloc(sizeof(char*) * (1))) == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("command line"));
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("command line"));
         return -1;
     }
 

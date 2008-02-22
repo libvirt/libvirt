@@ -503,18 +503,18 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
         if (pool->def->source.host.name == NULL) {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("missing source host"));
+                                  "%s", _("missing source host"));
             return -1;
         }
         if (pool->def->source.dir == NULL) {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("missing source path"));
+                                  "%s", _("missing source path"));
             return -1;
         }
     } else {
         if (pool->def->source.ndevice != 1) {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("missing source device"));
+                                  "%s", _("missing source device"));
             return -1;
         }
     }
@@ -537,7 +537,7 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
         src = strdup(pool->def->source.devices[0].path);
     }
     if (src == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("source"));
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("source"));
         return -1;
     }
     mntargv[3] = src;
@@ -568,18 +568,18 @@ virStorageBackendFileSystemUnmount(virConnectPtr conn,
     if (pool->def->type == VIR_STORAGE_POOL_NETFS) {
         if (pool->def->source.host.name == NULL) {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("missing source host"));
+                                  "%s", _("missing source host"));
             return -1;
         }
         if (pool->def->source.dir == NULL) {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("missing source dir"));
+                                  "%s", _("missing source dir"));
             return -1;
         }
     } else {
         if (pool->def->source.ndevice != 1) {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                                  _("missing source device"));
+                                  "%s", _("missing source device"));
             return -1;
         }
     }
@@ -680,7 +680,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
         vol = calloc(1, sizeof(virStorageVolDef));
         if (vol == NULL) {
             virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                                  _("volume"));
+                                  "%s", _("volume"));
             goto cleanup;
         }
 
@@ -688,7 +688,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
         if (vol->name == NULL) {
             free(vol);
             virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                                  _("volume name"));
+                                  "%s", _("volume name"));
             goto cleanup;
         }
 
@@ -699,7 +699,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
             free(vol->target.path);
             free(vol);
             virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                                  _("volume name"));
+                                  "%s", _("volume name"));
             goto cleanup;
         }
         strcpy(vol->target.path, pool->def->target.path);
@@ -710,7 +710,7 @@ virStorageBackendFileSystemRefresh(virConnectPtr conn,
             free(vol->target.path);
             free(vol);
             virStorageReportError(conn, VIR_ERR_NO_MEMORY,
-                                  _("volume key"));
+                                  "%s", _("volume key"));
             goto cleanup;
         }
 
@@ -822,7 +822,7 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
     vol->target.path = malloc(strlen(pool->def->target.path) +
                               1 + strlen(vol->name) + 1);
     if (vol->target.path == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, _("target"));
+        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("target"));
         return -1;
     }
     strcpy(vol->target.path, pool->def->target.path);
@@ -831,7 +831,7 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
     vol->key = strdup(vol->target.path);
     if (vol->key == NULL) {
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("storage vol key"));
+                              "%s", _("storage vol key"));
         return -1;
     }
 
@@ -963,7 +963,8 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
         }
 #else
         virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("creation of non-raw images is not supported without qemu-img"));
+                              "%s", _("creation of non-raw images "
+                                      "is not supported without qemu-img"));
         return -1;
 #endif
     }
