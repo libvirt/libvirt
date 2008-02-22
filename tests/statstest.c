@@ -7,10 +7,13 @@
 #include "stats_linux.h"
 #include "internal.h"
 
-static void testQuietError(void *userData ATTRIBUTE_UNUSED, virErrorPtr error ATTRIBUTE_UNUSED)
+#if WITH_XEN
+static void testQuietError(void *userData ATTRIBUTE_UNUSED,
+                           virErrorPtr error ATTRIBUTE_UNUSED)
 {
     /* nada */
 }
+#endif
 
 #if __linux__ && WITH_XEN
 static int testDevice(const char *path, int expect)

@@ -1,3 +1,8 @@
+Fri Feb 22 13:32:11 CET 2008 Jim Meyering <meyering@redhat.com>
+
+	With --without-xen, avoid warning about unused function.
+	* tests/statstest.c (testQuietError) [!WITH_XEN]: Don't define.
+
 Thu Feb 21 19:22:10 CET 2008 Jim Meyering <meyering@redhat.com>
 
 	Rewrite openvzSetUUID.
