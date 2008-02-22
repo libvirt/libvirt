@@ -1,7 +1,7 @@
 /*
  * utils.c: common, generic utility functions
  *
- * Copyright (C) 2006, 2007 Red Hat, Inc.
+ * Copyright (C) 2006, 2007, 2008 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
  * Copyright (C) 2006, 2007 Binary Karma
  * Copyright (C) 2006 Shuveb Hussain
@@ -45,6 +45,8 @@
 #include "event.h"
 #include "buf.h"
 #include "util.h"
+
+#include "util-lib.c"
 
 #define MAX_ERROR_LEN   1024
 
@@ -275,45 +277,6 @@ virExecNonBlock(virConnectPtr conn,
 }
 
 #endif /* __MINGW32__ */
-
-/* Like read(), but restarts after EINTR */
-int saferead(int fd, void *buf, size_t count)
-{
-	size_t nread = 0;
-	while (count > 0) {
-		int r = read(fd, buf, count);
-		if (r < 0 && errno == EINTR)
-			continue;
-		if (r < 0)
-			return r;
-		if (r == 0)
-			return nread;
-		buf = (unsigned char *)buf + r;
-		count -= r;
-		nread += r;
-	}
-	return nread;
-}
-
-/* Like write(), but restarts after EINTR */
-ssize_t safewrite(int fd, const void *buf, size_t count)
-{
-	size_t nwritten = 0;
-	while (count > 0) {
-		int r = write(fd, buf, count);
-
-		if (r < 0 && errno == EINTR)
-			continue;
-		if (r < 0)
-			return r;
-		if (r == 0)
-			return nwritten;
-		buf = (unsigned char *)buf + r;
-		count -= r;
-		nwritten += r;
-	}
-	return nwritten;
-}
 
 
 int __virFileReadAll(const char *path,

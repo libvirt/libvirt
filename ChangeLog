@@ -1,5 +1,18 @@
 Fri Feb 22 13:32:11 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	Move safewrite and saferead to a separate file.
+	* src/util.c (saferead, safewrite): Move function definitions to
+	util-lib.c and include that .c file.
+	* src/util-lib.c (saferead, safewrite): New file.
+	Functions from src/util.c with slight change (s/int r =/ssize_t r =/)
+	to reflect read/write return type.
+	* src/util-lib.h: Declare the two moved functions.
+	* src/util.h: Remove declarations.  Include src/util-lib.h.
+	* proxy/Makefile.am (libvirt_proxy_SOURCES): Add src/util-lib.c.
+	* qemud/Makefile.am (libvirtd_SOURCES): Likewise.
+	* src/Makefile.am (virsh_SOURCES): Add util-lib.c.
+	Remove some SP-before-TAB.
+
 	With --enable-iptables-lokkit=no, avoid warning about unused parameter.
 	* src/iptables.c (iptRulesSave) [!ENABLE_IPTABLES_LOKKIT]:
 	Mark parameter as used.

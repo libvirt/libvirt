@@ -42,6 +42,7 @@ libvirtd_SOURCES = \
 		qemud.c internal.h \
 		remote_protocol.h remote_protocol.c \
 		remote.c \
+		$(srcdir)/../src/util-lib.c \
 		event.c event.h
 
 #-D_XOPEN_SOURCE=600 -D_XOPEN_SOURCE_EXTENDED=1 -D_POSIX_C_SOURCE=199506L

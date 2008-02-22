@@ -2,7 +2,7 @@
  * proxy_svr.c: root suid proxy server for Xen access to APIs with no
  *              side effects from unauthenticated clients.
  *
- * Copyright (C) 2006, 2007 Red Hat, Inc.
+ * Copyright (C) 2006, 2007, 2008 Red Hat, Inc.
  *
  * See COPYING.LIB for the License of this software
  *
@@ -26,6 +26,7 @@
 #include "internal.h"
 
 #include "proxy_internal.h"
+#include "util.h"
 #include "xen_internal.h"
 #include "xend_internal.h"
 #include "xs_internal.h"
@@ -317,19 +318,12 @@ proxyWriteClientSocket(int nr, virProxyPacketPtr req) {
 	return(-1);
     }
 
-retry:
-    ret = write(pollInfos[nr].fd, (char *) req, req->len);
+    ret = safewrite(pollInfos[nr].fd, (char *) req, req->len);
     if (ret < 0) {
-        if (errno == EINTR) {
-	    if (debug > 0)
-	        fprintf(stderr, "write socket %d to client %d interrupted\n",
-		        pollInfos[nr].fd, nr);
-	    goto retry;
-	}
         fprintf(stderr, "write %d bytes to socket %d from client %d failed\n",
 	        req->len, pollInfos[nr].fd, nr);
-	proxyCloseClientSocket(nr);
-	return(-1);
+        proxyCloseClientSocket(nr);
+        return(-1);
     }
     if (ret == 0) {
 	if (debug)

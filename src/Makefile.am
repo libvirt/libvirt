@@ -51,21 +51,21 @@ CLIENT_SOURCES =						\
 		conf.c conf.h                                   \
 		xm_internal.c xm_internal.h                     \
 		remote_internal.c remote_internal.h		\
-		bridge.c bridge.h 				\
-		iptables.c iptables.h 				\
-		uuid.c uuid.h 					\
-		qemu_driver.c qemu_driver.h 			\
+		bridge.c bridge.h				\
+		iptables.c iptables.h				\
+		uuid.c uuid.h					\
+		qemu_driver.c qemu_driver.h			\
 		qemu_conf.c qemu_conf.h				\
 		openvz_conf.c openvz_conf.h			\
-		openvz_driver.c openvz_driver.h 		\
+		openvz_driver.c openvz_driver.h			\
                 nodeinfo.h nodeinfo.c                           \
 		storage_conf.h storage_conf.c			\
 		storage_driver.h storage_driver.c		\
 		storage_backend.h storage_backend.c		\
-		storage_backend_fs.h storage_backend_fs.c 	\
+		storage_backend_fs.h storage_backend_fs.c	\
 		util.c util.h
 
-SERVER_SOURCES = 						\
+SERVER_SOURCES =						\
 		../qemud/remote_protocol.c ../qemud/remote_protocol.h
 
 if WITH_STORAGE_LVM
@@ -100,7 +100,7 @@ libvirt_la_CFLAGS = $(COVERAGE_CFLAGS)
 
 bin_PROGRAMS = virsh
 
-virsh_SOURCES = virsh.c console.c console.h
+virsh_SOURCES = virsh.c console.c console.h util-lib.c
 virsh_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDFLAGS)
 virsh_DEPENDENCIES = $(DEPS)
 virsh_LDADD = $(LDADDS) $(VIRSH_LIBS)
