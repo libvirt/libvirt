@@ -1,5 +1,9 @@
 Fri Feb 22 13:32:11 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	With --enable-iptables-lokkit=no, avoid warning about unused parameter.
+	* src/iptables.c (iptRulesSave) [!ENABLE_IPTABLES_LOKKIT]:
+	Mark parameter as used.
+
 	With --without-xen, avoid warning about unused function.
 	* tests/statstest.c (testQuietError) [!WITH_XEN]: Don't define.
 

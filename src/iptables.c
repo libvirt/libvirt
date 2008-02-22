@@ -256,6 +256,8 @@ iptRulesSave(iptRules *rules)
         notifyRulesUpdated(rules->table, rules->path);
     else
         notifyRulesRemoved(rules->table, rules->path);
+#else
+    (void) rules;
 #endif /* ENABLE_IPTABLES_LOKKIT */
 }
 
