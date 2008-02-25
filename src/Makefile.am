@@ -96,7 +96,7 @@ libvirt_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvirt_sym.version \
                      -version-info @LIBVIRT_VERSION_INFO@ \
                     $(COVERAGE_CFLAGS:-f%=-Wc,-f%) \
 		    @CYGWIN_EXTRA_LDFLAGS@ @MINGW_EXTRA_LDFLAGS@
-libvirt_la_CFLAGS = $(COVERAGE_CFLAGS)
+libvirt_la_CFLAGS = $(COVERAGE_CFLAGS) -DIN_LIBVIRT
 
 bin_PROGRAMS = virsh
 

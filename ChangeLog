@@ -1,3 +1,8 @@
+Mon Feb 25 14:53:59 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/Makefile.am src/util-lib.h: fix done with Jim to allow
+	  compilation of virsh with the static libraries.
+
 Mon Feb 25 10:59:43 CET 2008 Jim Meyering <meyering@redhat.com>
 
 	Avoid new "make syntax-check" failures.
