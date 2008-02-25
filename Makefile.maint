@@ -304,6 +304,9 @@ err_func_re = \
 
 # Look for diagnostics that aren't marked for translation.
 # This won't find any for which error's format string is on a separate line.
+# The sed filters eliminate false-positives like these:
+#    _("...: "
+#    "%s", _("no storage vol w..."
 sc_unmarked_diagnostics:
 	@grep -nE							\
 	    '\<(vshError|error) \([^"]*"[^"]*[a-z]{3}' $$($(CVS_LIST_EXCEPT))	\
@@ -312,7 +315,8 @@ sc_unmarked_diagnostics:
 	    exit 1; } || :
 	@{ grep     -nE '\<$(err_func_re) *\(.*;$$' $$($(CVS_LIST_EXCEPT));   \
 	   grep -A1 -nE '\<$(err_func_re) *\(.*,$$' $$($(CVS_LIST_EXCEPT)); } \
-	  | grep '[	 ]"' &&						\
+	   | sed 's/_("[^"][^"]*"//;s/[	 ]"%s"//'			\
+	   | grep '[	 ]"' &&						\
 	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2;		\
 	    exit 1; } || :
 

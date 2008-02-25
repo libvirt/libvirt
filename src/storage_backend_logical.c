@@ -287,7 +287,7 @@ virStorageBackendLogicalBuildPool(virConnectPtr conn,
                                   strerror(errno));
             goto cleanup;
         }
-        if (write(fd, zeros, sizeof(zeros)) != sizeof(zeros)) {
+        if (safewrite(fd, zeros, sizeof(zeros)) < 0) {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                   _("cannot clear device header %s"),
                                   strerror(errno));

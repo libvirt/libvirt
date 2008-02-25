@@ -854,7 +854,7 @@ virStorageBackendFileSystemVolCreate(virConnectPtr conn,
                 int bytes = sizeof(zeros);
                 if (bytes > remain)
                     bytes = remain;
-                if ((bytes = write(fd, zeros, bytes)) < 0) {
+                if ((bytes = safewrite(fd, zeros, bytes)) < 0) {
                     virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                           _("cannot fill file '%s': %s"),
                                           vol->target.path, strerror(errno));

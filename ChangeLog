@@ -1,3 +1,13 @@
+Mon Feb 25 10:59:43 CET 2008 Jim Meyering <meyering@redhat.com>
+
+	Avoid new "make syntax-check" failures.
+	* .x-sc_avoid_write: Exempt src/util-lib.c, too.
+	* Makefile.maint (sc_unmarked_diagnostics): Filter out false positives.
+	* src/storage_backend_fs.c (virStorageBackendFileSystemVolCreate):
+	Use safewrite, not write.
+	* src/storage_backend_logical.c (virStorageBackendLogicalBuildPool):
+	Likewise.
+
 Fri Feb 22 13:32:11 CET 2008 Jim Meyering <meyering@redhat.com>
 
 	avoid format string warnings
