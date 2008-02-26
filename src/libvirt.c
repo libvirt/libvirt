@@ -656,7 +656,7 @@ do_open (const char *name,
 		     * if running a xen kernel, give it priority over
 		     * QEmu emultation
 		     */
-		    if (STREQ(latest, "xen:///")) 
+		    if (STREQ(latest, "xen:///"))
 		        use = latest;
 		    else if (use == NULL)
 		        use = latest;
