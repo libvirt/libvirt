@@ -1,3 +1,11 @@
+Tue Feb 26 18:38:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Implement virDomainBlockStats for QEMU/KVM.
+	* src/qemu_driver.c: Implement virDomainBlockStats for QEMU/KVM
+	  using QEMU/KVM 'info blockstats' command (Richard Jones).
+	* src/qemu_driver.c, src/qemu_conf.h: const-correctness
+	  fixes (Jim Meyering).
+
 Tue Feb 26 18:28:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	No address attribute in Xen domain XML.

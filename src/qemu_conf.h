@@ -318,13 +318,13 @@ struct qemud_driver {
 
 
 static inline int
-qemudIsActiveVM(struct qemud_vm *vm)
+qemudIsActiveVM(const struct qemud_vm *vm)
 {
     return vm->id != -1;
 }
 
 static inline int
-qemudIsActiveNetwork(struct qemud_network *network)
+qemudIsActiveNetwork(const struct qemud_network *network)
 {
     return network->active;
 }

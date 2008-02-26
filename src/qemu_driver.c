@@ -59,6 +59,9 @@
 
 static int qemudShutdown(void);
 
+/* qemudDebug statements should be changed to use this macro instead. */
+#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
+#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
 
 #define qemudLog(level, msg...) fprintf(stderr, msg)
 
@@ -1312,10 +1315,11 @@ static void qemudDispatchVMEvent(int fd, int events, void *opaque) {
         qemudDispatchVMFailure(driver, vm, fd);
 }
 
-static int qemudMonitorCommand(struct qemud_driver *driver ATTRIBUTE_UNUSED,
-                               struct qemud_vm *vm,
-                               const char *cmd,
-                               char **reply) {
+static int
+qemudMonitorCommand (const struct qemud_driver *driver ATTRIBUTE_UNUSED,
+                     const struct qemud_vm *vm,
+                     const char *cmd,
+                     char **reply) {
     int size = 0;
     char *buf = NULL;
     size_t cmdlen = strlen(cmd);
@@ -2527,6 +2531,148 @@ static int qemudDomainSetAutostart(virDomainPtr dom,
     return 0;
 }
 
+/* This uses the 'info blockstats' monitor command which was
+ * integrated into both qemu & kvm in late 2007.  If the command is
+ * not supported we detect this and return the appropriate error.
+ */
+static int
+qemudDomainBlockStats (virDomainPtr dom,
+                       const char *path,
+                       struct _virDomainBlockStats *stats)
+{
+    const struct qemud_driver *driver =
+        (struct qemud_driver *)dom->conn->privateData;
+    char *dummy, *info;
+    const char *p, *eol;
+    char qemu_dev_name[32];
+    size_t len;
+    const struct qemud_vm *vm = qemudFindVMByID(driver, dom->id);
+
+    if (!vm) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                          _("no domain with matching id %d"), dom->id);
+        return -1;
+    }
+    if (!qemudIsActiveVM (vm)) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                          "%s", _("domain is not running"));
+        return -1;
+    }
+
+    /*
+     * QEMU internal block device names are different from the device
+     * names we use in libvirt, so we need to map between them:
+     *
+     *   hd[a-]   to  ide0-hd[0-]
+     *   cdrom    to  ide1-cd0
+     *   fd[a-]   to  floppy[0-]
+     */
+    if (STREQLEN (path, "hd", 2) && path[2] >= 'a' && path[2] <= 'z')
+        snprintf (qemu_dev_name, sizeof (qemu_dev_name),
+                  "ide0-hd%d", path[2] - 'a');
+    else if (STREQ (path, "cdrom"))
+        strcpy (qemu_dev_name, "ide1-cd0");
+    else if (STREQLEN (path, "fd", 2) && path[2] >= 'a' && path[2] <= 'z')
+        snprintf (qemu_dev_name, sizeof (qemu_dev_name),
+                  "floppy%d", path[2] - 'a');
+    else {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
+                          _("invalid path: %s"), path);
+        return -1;
+    }
+
+    len = strlen (qemu_dev_name);
+
+    if (qemudMonitorCommand (driver, vm, "info blockstats", &info) < 0) {
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                          "%s", _("'info blockstats' command failed"));
+        return -1;
+    }
+
+    DEBUG ("info blockstats reply: %s", info);
+
+    /* If the command isn't supported then qemu prints the supported
+     * info commands, so the output starts "info ".  Since this is
+     * unlikely to be the name of a block device, we can use this
+     * to detect if qemu supports the command.
+     */
+    if (STREQLEN (info, "info ", 5)) {
+        free (info);
+        qemudReportError (dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                          "%s",
+                          _("'info blockstats' not supported by this qemu"));
+        return -1;
+    }
+
+    stats->rd_req = -1;
+    stats->rd_bytes = -1;
+    stats->wr_req = -1;
+    stats->wr_bytes = -1;
+    stats->errs = -1;
+
+    /* The output format for both qemu & KVM is:
+     *   blockdevice: rd_bytes=% wr_bytes=% rd_operations=% wr_operations=%
+     *   (repeated for each block device)
+     * where '%' is a 64 bit number.
+     */
+    p = info;
+
+    while (*p) {
+        if (STREQLEN (p, qemu_dev_name, len)
+            && p[len] == ':' && p[len+1] == ' ') {
+
+            eol = strchr (p, '\n');
+            if (!eol)
+                eol = p + strlen (p);
+
+            p += len+2;         /* Skip to first label. */
+
+            while (*p) {
+                if (STREQLEN (p, "rd_bytes=", 9)) {
+                    p += 9;
+                    if (virStrToLong_ll (p, &dummy, 10, &stats->rd_bytes) == -1)
+                        DEBUG ("error reading rd_bytes: %s", p);
+                } else if (STREQLEN (p, "wr_bytes=", 9)) {
+                    p += 9;
+                    if (virStrToLong_ll (p, &dummy, 10, &stats->wr_bytes) == -1)
+                        DEBUG ("error reading wr_bytes: %s", p);
+                } else if (STREQLEN (p, "rd_operations=", 14)) {
+                    p += 14;
+                    if (virStrToLong_ll (p, &dummy, 10, &stats->rd_req) == -1)
+                        DEBUG ("error reading rd_req: %s", p);
+                } else if (STREQLEN (p, "wr_operations=", 14)) {
+                    p += 14;
+                    if (virStrToLong_ll (p, &dummy, 10, &stats->wr_req) == -1)
+                        DEBUG ("error reading wr_req: %s", p);
+                } else
+                    DEBUG ("unknown block stat near %s", p);
+
+                /* Skip to next label. */
+                p = strchr (p, ' ');
+                if (!p || p >= eol) break;
+                p++;
+            }
+
+            goto done;
+        }
+
+        /* Skip to next line. */
+        p = strchr (p, '\n');
+        if (!p) break;
+        p++;
+    }
+
+    /* If we reach here then the device was not found. */
+    free (info);
+    qemudReportError (dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
+                      _("device not found: %s (%s)"), path, qemu_dev_name);
+    return -1;
+
+ done:
+    free (info);
+    return 0;
+}
+
 static int
 qemudDomainInterfaceStats (virDomainPtr dom,
                            const char *path,
@@ -2928,7 +3074,7 @@ static virDriver qemuDriver = {
     NULL, /* domainMigratePrepare */
     NULL, /* domainMigratePerform */
     NULL, /* domainMigrateFinish */
-    NULL, /* domainBlockStats */
+    qemudDomainBlockStats, /* domainBlockStats */
     qemudDomainInterfaceStats, /* domainInterfaceStats */
     NULL, /* nodeGetCellsFreeMemory */
     NULL, /* getFreeMemory */
