@@ -1,3 +1,10 @@
+Tue Feb 26 18:28:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	No address attribute in Xen domain XML.
+	* src/xm_internal.c: handle the case where <mac/> clause
+	  in Xen domain interface has no address attribute
+	  (Shigeki Sakamoto).
+
 Tue Feb 26 08:02:57 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/driver.h src/libvirt.c src/openvz_driver.c src/qemu_driver.c

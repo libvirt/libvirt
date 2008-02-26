@@ -2769,12 +2769,13 @@ xenXMAttachInterface(virDomainPtr domain, xmlXPathContextPtr ctxt, int hvm,
     }
     source = xmlGetProp(node, BAD_CAST type);
 
-    if (!(node = virXPathNode("/interface/mac", ctxt))) {
+    if ((node = virXPathNode("/interface/mac", ctxt)))
+        mac = xmlGetProp(node, BAD_CAST "address");
+    if (!node || !mac) {
         if (!(mac = (xmlChar *)xenXMAutoAssignMac()))
             goto cleanup;
         autoassign = 1;
-    } else
-        mac = xmlGetProp(node, BAD_CAST "address");
+    }
 
     list_item = virConfGetValue(entry->conf, "vif");
     if (list_item && list_item->type == VIR_CONF_LIST) {
