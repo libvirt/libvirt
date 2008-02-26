@@ -47,6 +47,9 @@ int virFileHasSuffix(const char *str,
 
 int virFileLinkPointsTo(const char *checkLink,
                         const char *checkDest);
+
+int virFileExists(const char *path);
+
 int virFileMakePath(const char *path);
 
 int virFileBuildPath(const char *dir,

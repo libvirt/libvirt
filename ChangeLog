@@ -1,3 +1,11 @@
+Tue Feb 26 08:02:57 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/driver.h src/libvirt.c src/openvz_driver.c src/qemu_driver.c
+	  src/remote_internal.c src/test.c src/util.c src/util.h
+	  src/xen_unified.c: added probe interface at the driver level,
+	  use that to improve default hypervisor selection in the absence
+	  of a given URI when connecting
+
 Mon Feb 25 14:53:59 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/Makefile.am src/util-lib.h: fix done with Jim to allow

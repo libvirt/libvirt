@@ -632,9 +632,47 @@ do_open (const char *name,
     virConnectPtr ret = NULL;
     xmlURIPtr uri;
 
-    /* Convert NULL or "" to xen:/// for back compat */
-    if (!name || name[0] == '\0')
-        name = "xen:///";
+    /*
+     *  If no URI is passed, then check for an environment string if not
+     *  available probe the compiled in drivers to find a default hypervisor
+     *  if detectable.
+     */
+    if (!name || name[0] == '\0') {
+        char *defname = getenv("LIBVIRT_DEFAULT_URI");
+        if (defname && *defname) {
+	    DEBUG("Using LIBVIRT_DEFAULT_URI %s", defname);
+            name = defname;
+        } else {
+	    const char *use = NULL;
+	    const char *latest;
+	    int probes = 0;
+	    for (i = 0; i < virNetworkDriverTabCount; i++) {
+	        if ((virDriverTab[i]->probe != NULL) &&
+		    ((latest = virDriverTab[i]->probe()) != NULL)) {
+		    probes++;
+
+		    DEBUG("Probed %s", latest);
+		    /*
+		     * if running a xen kernel, give it priority over
+		     * QEmu emultation
+		     */
+		    if (STREQ(latest, "xen:///")) 
+		        use = latest;
+		    else if (use == NULL)
+		        use = latest;
+		}
+	    }
+	    if (use == NULL) {
+		name = "xen:///";
+	        DEBUG("Could not probe any hypervisor defaulting to %s",
+		      name);
+	    } else {
+		name = use;
+	        DEBUG("Using %s as default URI, %d hypervisor found",
+		      use, probes);
+	    }
+	}
+    }
 
     /* Convert xen -> xen:/// for back compat */
     if (!strcasecmp(name, "xen"))

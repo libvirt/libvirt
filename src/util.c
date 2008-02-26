@@ -463,6 +463,15 @@ virFileLinkPointsTo (const char *checkLink ATTRIBUTE_UNUSED,
 
 #endif /*! __MINGW32__ */
 
+int virFileExists(const char *path)
+{
+    struct stat st;
+
+    if (stat(path, &st) >= 0)
+        return(1);
+    return(0);
+}
+
 int virFileMakePath(const char *path)
 {
     struct stat st;

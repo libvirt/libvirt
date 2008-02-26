@@ -1388,6 +1388,25 @@ static int qemudMonitorCommand(struct qemud_driver *driver ATTRIBUTE_UNUSED,
     return -1;
 }
 
+/**
+ * qemudProbe:
+ *
+ * Probe for the availability of the qemu driver, assume the
+ * presence of QEmu emulation if the binaries are installed
+ */
+static const char *qemudProbe(void)
+{
+    if ((virFileExists("/usr/bin/qemu")) ||
+        (virFileExists("/usr/bin/qemu-kvm")) ||
+	(virFileExists("/usr/bin/xenner"))) {
+        if (getuid() == 0) {
+	    return("qemu:///system");
+	} else {
+	    return("qemu:///session");
+	}
+    }
+    return(NULL);
+}
 
 static virDrvOpenStatus qemudOpen(virConnectPtr conn,
                                   xmlURIPtr uri,
@@ -2859,6 +2878,7 @@ static virDriver qemuDriver = {
     VIR_DRV_QEMU,
     "QEMU",
     LIBVIR_VERSION_NUMBER,
+    qemudProbe, /* probe */
     qemudOpen, /* open */
     qemudClose, /* close */
     NULL, /* supports_feature */

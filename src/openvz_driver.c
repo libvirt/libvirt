@@ -546,6 +546,15 @@ bail_out5:
     return ret;
 }
 
+static const char *openvzProbe(void)
+{
+#ifdef __linux__
+    if ((getuid() == 0) && (virFileExists("/proc/vz")))
+        return("openvz:///");
+#endif
+    return(NULL);
+}
+
 static virDrvOpenStatus openvzOpen(virConnectPtr conn,
                                  xmlURIPtr uri,
                                  virConnectAuthPtr auth ATTRIBUTE_UNUSED,
@@ -694,6 +703,7 @@ static virDriver openvzDriver = {
     VIR_DRV_OPENVZ,
     "OPENVZ",
     LIBVIR_VERSION_NUMBER,
+    openvzProbe, /* probe */
     openvzOpen, /* open */
     openvzClose, /* close */
     NULL, /* supports_feature */

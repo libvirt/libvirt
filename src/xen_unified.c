@@ -39,6 +39,7 @@
 #include "xs_internal.h"
 #include "xm_internal.h"
 #include "xml.h"
+#include "util.h"
 
 #define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt,__VA_ARGS__)
 
@@ -216,6 +217,24 @@ done:
  * the single function (or small number of appropriate functions)
  * in the low level drivers directly.
  */
+
+static const char *
+xenUnifiedProbe (void)
+{
+#ifdef __linux__
+    if (virFileExists("/proc/xen"))
+        return("xen:///");
+#endif
+#ifdef __sun__
+    FILE *fh;
+
+    if (fh = fopen("/dev/xen/domcaps", "r")) {
+	fclose(fh);
+        return("xen:///");
+    }
+#endif
+    return(NULL);
+}
 
 static int
 xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int flags)
@@ -1198,6 +1217,7 @@ static virDriver xenUnifiedDriver = {
     .no = VIR_DRV_XEN_UNIFIED,
     .name = "Xen",
     .ver = HV_VERSION,
+    .probe 			= xenUnifiedProbe,
     .open 			= xenUnifiedOpen,
     .close 			= xenUnifiedClose,
     .supports_feature   = xenUnifiedSupportsFeature,

@@ -69,6 +69,8 @@ typedef enum {
 #define VIR_DRV_SUPPORTS_FEATURE(drv,conn,feature)                      \
     ((drv)->supports_feature ? (drv)->supports_feature((conn),(feature)) : 0)
 
+typedef const char *
+	(*virDrvProbe)			(void);
 typedef virDrvOpenStatus
 	(*virDrvOpen)			(virConnectPtr conn,
                              xmlURIPtr uri,
@@ -277,62 +279,63 @@ typedef unsigned long long
  *  - close
  */
 struct _virDriver {
-	int	       no;	/* the number virDrvNo */
-	const char * name;	/* the name of the driver */
-	unsigned long ver;	/* the version of the backend */
-	virDrvOpen			open;
-	virDrvClose			close;
+    int	       no;	/* the number virDrvNo */
+    const char * name;	/* the name of the driver */
+    unsigned long ver;	/* the version of the backend */
+    virDrvProbe			probe;
+    virDrvOpen			open;
+    virDrvClose			close;
     virDrvSupportsFeature   supports_feature;
-	virDrvGetType			type;
-	virDrvGetVersion		version;
+    virDrvGetType			type;
+    virDrvGetVersion		version;
     virDrvGetHostname       getHostname;
     virDrvGetURI            getURI;
-	virDrvGetMaxVcpus		getMaxVcpus;
-	virDrvNodeGetInfo		nodeGetInfo;
-	virDrvGetCapabilities		getCapabilities;
-	virDrvListDomains		listDomains;
-	virDrvNumOfDomains		numOfDomains;
-	virDrvDomainCreateLinux		domainCreateLinux;
-	virDrvDomainLookupByID		domainLookupByID;
-	virDrvDomainLookupByUUID	domainLookupByUUID;
-	virDrvDomainLookupByName	domainLookupByName;
-	virDrvDomainSuspend		domainSuspend;
-	virDrvDomainResume		domainResume;
-	virDrvDomainShutdown		domainShutdown;
-	virDrvDomainReboot		domainReboot;
-	virDrvDomainDestroy		domainDestroy;
-	virDrvDomainGetOSType		domainGetOSType;
-	virDrvDomainGetMaxMemory	domainGetMaxMemory;
-	virDrvDomainSetMaxMemory	domainSetMaxMemory;
-	virDrvDomainSetMemory		domainSetMemory;
-	virDrvDomainGetInfo		domainGetInfo;
-	virDrvDomainSave		domainSave;
-	virDrvDomainRestore		domainRestore;
-	virDrvDomainCoreDump		domainCoreDump;
-	virDrvDomainSetVcpus		domainSetVcpus;
-	virDrvDomainPinVcpu		domainPinVcpu;
-	virDrvDomainGetVcpus		domainGetVcpus;
-	virDrvDomainGetMaxVcpus		domainGetMaxVcpus;
-	virDrvDomainDumpXML		domainDumpXML;
-	virDrvListDefinedDomains	listDefinedDomains;
-	virDrvNumOfDefinedDomains	numOfDefinedDomains;
-	virDrvDomainCreate		domainCreate;
-	virDrvDomainDefineXML           domainDefineXML;
-	virDrvDomainUndefine            domainUndefine;
-	virDrvDomainAttachDevice	domainAttachDevice;
-	virDrvDomainDetachDevice	domainDetachDevice;
-	virDrvDomainGetAutostart	domainGetAutostart;
-	virDrvDomainSetAutostart	domainSetAutostart;
-	virDrvDomainGetSchedulerType	domainGetSchedulerType;
-	virDrvDomainGetSchedulerParameters domainGetSchedulerParameters;
-	virDrvDomainSetSchedulerParameters domainSetSchedulerParameters;
+    virDrvGetMaxVcpus		getMaxVcpus;
+    virDrvNodeGetInfo		nodeGetInfo;
+    virDrvGetCapabilities		getCapabilities;
+    virDrvListDomains		listDomains;
+    virDrvNumOfDomains		numOfDomains;
+    virDrvDomainCreateLinux		domainCreateLinux;
+    virDrvDomainLookupByID		domainLookupByID;
+    virDrvDomainLookupByUUID	domainLookupByUUID;
+    virDrvDomainLookupByName	domainLookupByName;
+    virDrvDomainSuspend		domainSuspend;
+    virDrvDomainResume		domainResume;
+    virDrvDomainShutdown		domainShutdown;
+    virDrvDomainReboot		domainReboot;
+    virDrvDomainDestroy		domainDestroy;
+    virDrvDomainGetOSType		domainGetOSType;
+    virDrvDomainGetMaxMemory	domainGetMaxMemory;
+    virDrvDomainSetMaxMemory	domainSetMaxMemory;
+    virDrvDomainSetMemory		domainSetMemory;
+    virDrvDomainGetInfo		domainGetInfo;
+    virDrvDomainSave		domainSave;
+    virDrvDomainRestore		domainRestore;
+    virDrvDomainCoreDump		domainCoreDump;
+    virDrvDomainSetVcpus		domainSetVcpus;
+    virDrvDomainPinVcpu		domainPinVcpu;
+    virDrvDomainGetVcpus		domainGetVcpus;
+    virDrvDomainGetMaxVcpus		domainGetMaxVcpus;
+    virDrvDomainDumpXML		domainDumpXML;
+    virDrvListDefinedDomains	listDefinedDomains;
+    virDrvNumOfDefinedDomains	numOfDefinedDomains;
+    virDrvDomainCreate		domainCreate;
+    virDrvDomainDefineXML           domainDefineXML;
+    virDrvDomainUndefine            domainUndefine;
+    virDrvDomainAttachDevice	domainAttachDevice;
+    virDrvDomainDetachDevice	domainDetachDevice;
+    virDrvDomainGetAutostart	domainGetAutostart;
+    virDrvDomainSetAutostart	domainSetAutostart;
+    virDrvDomainGetSchedulerType	domainGetSchedulerType;
+    virDrvDomainGetSchedulerParameters domainGetSchedulerParameters;
+    virDrvDomainSetSchedulerParameters domainSetSchedulerParameters;
     virDrvDomainMigratePrepare	domainMigratePrepare;
     virDrvDomainMigratePerform	domainMigratePerform;
     virDrvDomainMigrateFinish	domainMigrateFinish;
     virDrvDomainBlockStats      domainBlockStats;
     virDrvDomainInterfaceStats  domainInterfaceStats;
-	virDrvNodeGetCellsFreeMemory	nodeGetCellsFreeMemory;
-	virDrvNodeGetFreeMemory		getFreeMemory;
+    virDrvNodeGetCellsFreeMemory	nodeGetCellsFreeMemory;
+    virDrvNodeGetFreeMemory		getFreeMemory;
 };
 
 typedef int

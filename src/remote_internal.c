@@ -4599,6 +4599,7 @@ static virDriver driver = {
     .no = VIR_DRV_REMOTE,
     .name = "remote",
     .ver = REMOTE_PROTOCOL_VERSION,
+    .probe = NULL,
     .open = remoteOpen,
     .close = remoteClose,
     .supports_feature = remoteSupportsFeature,
