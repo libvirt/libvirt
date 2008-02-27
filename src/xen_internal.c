@@ -47,6 +47,7 @@
 #include <xen/sched.h>
 
 #include "buf.h"
+#include "capabilities.h"
 
 /* #define DEBUG */
 /*
@@ -2154,6 +2155,121 @@ xenHypervisorGetVersion(virConnectPtr conn, unsigned long *hvVer)
     return(0);
 }
 
+struct guest_arch {
+    const char *model;
+    int bits;
+    int hvm;
+    int pae;
+    int nonpae;
+    int ia64_be;
+};
+
+
+static virCapsPtr
+xenHypervisorBuildCapabilities(virConnectPtr conn,
+                               const char *hostmachine,
+                               int host_pae,
+                               char *hvm_type,
+                               struct guest_arch *guest_archs,
+                               int nr_guest_archs) {
+    virCapsPtr caps;
+    int i;
+    int hv_major = hv_version >> 16;
+    int hv_minor = hv_version & 0xFFFF;
+
+    if ((caps = virCapabilitiesNew(hostmachine, 1, 1)) == NULL)
+        goto no_memory;
+    if (hvm_type && STRNEQ(hvm_type, "") &&
+        virCapabilitiesAddHostFeature(caps, hvm_type) < 0)
+        goto no_memory;
+    if (host_pae &&
+        virCapabilitiesAddHostFeature(caps, "pae") < 0)
+        goto no_memory;
+
+
+    if (virCapabilitiesAddHostMigrateTransport(caps,
+                                               "xenmigr") < 0)
+        goto no_memory;
+
+
+    if (sys_interface_version >= 4) {
+        if (xenDaemonNodeGetTopology(conn, caps) != 0) {
+            virCapabilitiesFree(caps);
+            return NULL;
+        }
+    }
+
+    for (i = 0; i < nr_guest_archs; ++i) {
+        virCapsGuestPtr guest;
+        const char const *machines[] = { guest_archs[i].hvm ? "xenfv" : "xenpv" };
+
+        if ((guest = virCapabilitiesAddGuest(caps,
+                                             guest_archs[i].hvm ? "hvm" : "xen",
+                                             guest_archs[i].model,
+                                             guest_archs[i].bits,
+                                             (STREQ(hostmachine, "x86_64") ?
+                                              "/usr/lib64/xen/bin/qemu-dm" :
+                                              "/usr/lib/xen/bin/qemu-dm"),
+                                             (guest_archs[i].hvm ?
+                                              "/usr/lib/xen/boot/hvmloader" :
+                                              NULL),
+                                             1,
+                                             machines)) == NULL)
+            goto no_memory;
+
+        if (virCapabilitiesAddGuestDomain(guest,
+                                          "xen",
+                                          NULL,
+                                          NULL,
+                                          0,
+                                          NULL) == NULL)
+            goto no_memory;
+
+        if (guest_archs[i].pae &&
+            virCapabilitiesAddGuestFeature(guest,
+                                           "pae",
+                                           1,
+                                           0) == NULL)
+            goto no_memory;
+
+        if (guest_archs[i].nonpae &&
+            virCapabilitiesAddGuestFeature(guest,
+                                           "nonpae",
+                                           1,
+                                           0) == NULL)
+            goto no_memory;
+
+        if (guest_archs[i].ia64_be &&
+            virCapabilitiesAddGuestFeature(guest,
+                                           "ia64_be",
+                                           1,
+                                           0) == NULL)
+            goto no_memory;
+
+        if (guest_archs[i].hvm) {
+            if (virCapabilitiesAddGuestFeature(guest,
+                                               "acpi",
+                                               1, 1) == NULL)
+                goto no_memory;
+
+            // In Xen 3.1.0, APIC is always on and can't be toggled
+            if (virCapabilitiesAddGuestFeature(guest,
+                                               "apic",
+                                               1,
+                                               (hv_major > 3 &&
+                                                hv_minor > 0 ?
+                                                0 : 1)) == NULL)
+                goto no_memory;
+        }
+    }
+
+    return caps;
+
+ no_memory:
+    virCapabilitiesFree(caps);
+    return NULL;
+}
+
 /**
  * xenHypervisorGetCapabilities:
  * @conn: pointer to the connection block
@@ -2170,25 +2286,17 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn,
     char line[1024], *str, *token;
     regmatch_t subs[4];
     char *saveptr = NULL;
-    int i, r, topology;
+    int i;
 
     char hvm_type[4] = ""; /* "vmx" or "svm" (or "" if not in CPU). */
     int host_pae = 0;
-    struct guest_arch {
-        const char *model;
-        int bits;
-        int hvm;
-        int pae;
-        int nonpae;
-        int ia64_be;
-    } guest_archs[32];
+    struct guest_arch guest_archs[32];
     int nr_guest_archs = 0;
 
-    virBufferPtr xml;
-    char *xml_str;
+    char *xml;
 
-    int hv_major = hv_version >> 16;
-    int hv_minor = hv_version & 0xFFFF;
+
+    virCapsPtr caps = NULL;
 
     memset(guest_archs, 0, sizeof(guest_archs));
 
@@ -2306,129 +2414,22 @@ xenHypervisorMakeCapabilitiesXML(virConnectPtr conn,
         }
     }
 
-    /* Construct the final XML. */
-    xml = virBufferNew (1024);
-    if (!xml) {
-        virXenError(conn, VIR_ERR_NO_MEMORY, __FUNCTION__, 0);
-        return NULL;
-    }
-    r = virBufferVSprintf (xml,
-                           "\
-<capabilities>\n\
-  <host>\n\
-    <cpu>\n\
-      <arch>%s</arch>\n\
-      <features>\n",
-                           hostmachine);
-    if (r == -1) goto vir_buffer_failed;
+    if ((caps = xenHypervisorBuildCapabilities(conn,
+                                               hostmachine,
+                                               host_pae,
+                                               hvm_type,
+                                               guest_archs,
+                                               nr_guest_archs)) == NULL)
+        goto no_memory;
+    if ((xml = virCapabilitiesFormatXML(caps)) == NULL)
+        goto no_memory;
 
-    if (strcmp (hvm_type, "") != 0) {
-        r = virBufferVSprintf (xml,
-                               "\
-        <%s/>\n",
-                               hvm_type);
-        if (r == -1) goto vir_buffer_failed;
-    }
-    if (host_pae) {
-        r = virBufferAddLit (xml, "\
-        <pae/>\n");
-        if (r == -1) goto vir_buffer_failed;
-    }
-    r = virBufferAddLit (xml,
-                      "\
-      </features>\n\
-    </cpu>\n\
-    <migration_features>\n\
-      <live/>\n\
-      <uri_transports>\n\
-        <uri_transport>xenmigr</uri_transport>\n\
-      </uri_transports>\n\
-    </migration_features>\n\
-  </host>\n");
-    if (r == -1) goto vir_buffer_failed;
+    virCapabilitiesFree(caps);
+    return xml;
 
-    if (sys_interface_version >= 4) {
-        topology = xenDaemonNodeGetTopology(conn, xml);
-        if (topology != 0)
-            goto topology_failed;
-    }
-
-    for (i = 0; i < nr_guest_archs; ++i) {
-        r = virBufferVSprintf (xml,
-                               "\
-\n\
-  <guest>\n\
-    <os_type>%s</os_type>\n\
-    <arch name=\"%s\">\n\
-      <wordsize>%d</wordsize>\n\
-      <domain type=\"xen\"></domain>\n",
-                               guest_archs[i].hvm ? "hvm" : "xen",
-                               guest_archs[i].model,
-                               guest_archs[i].bits);
-        if (r == -1) goto vir_buffer_failed;
-        if (guest_archs[i].hvm) {
-            r = virBufferVSprintf (xml,
-                              "\
-      <emulator>/usr/lib%s/xen/bin/qemu-dm</emulator>\n\
-      <machine>pc</machine>\n\
-      <machine>isapc</machine>\n\
-      <loader>/usr/lib/xen/boot/hvmloader</loader>\n",
-                                   guest_archs[i].bits == 64 ? "64" : "");
-            if (r == -1) goto vir_buffer_failed;
-        }
-        r = virBufferAddLit (xml,
-                          "\
-    </arch>\n\
-    <features>\n");
-        if (r == -1) goto vir_buffer_failed;
-        if (guest_archs[i].pae) {
-            r = virBufferAddLit (xml,
-                              "\
-      <pae/>\n");
-            if (r == -1) goto vir_buffer_failed;
-        }
-        if (guest_archs[i].nonpae) {
-            r = virBufferAddLit (xml, "      <nonpae/>\n");
-            if (r == -1) goto vir_buffer_failed;
-        }
-        if (guest_archs[i].ia64_be) {
-            r = virBufferAddLit (xml, "      <ia64_be/>\n");
-            if (r == -1) goto vir_buffer_failed;
-        }
-        if (guest_archs[i].hvm) {
-            r = virBufferAddLit (xml,
-                                 "      <acpi default='on' toggle='yes'/>\n");
-            if (r == -1) goto vir_buffer_failed;
-            // In Xen 3.1.0, APIC is always on and can't be toggled
-            if (hv_major >= 3 && hv_minor > 0) {
-                r = virBufferAddLit (xml,
-		              "      <apic default='off' toggle='no'/>\n");
-            } else {
-                r = virBufferAddLit (xml,
-		              "      <apic default='on' toggle='yes'/>\n");
-            }
-            if (r == -1) goto vir_buffer_failed;
-        }
-        r = virBufferAddLit (xml, "\
-    </features>\n\
-  </guest>\n");
-        if (r == -1) goto vir_buffer_failed;
-    }
-
-    r = virBufferAddLit (xml,
-                      "\
-</capabilities>\n");
-    if (r == -1) goto vir_buffer_failed;
-    xml_str = strdup (xml->content);
-    if (!xml_str) goto vir_buffer_failed;
-    virBufferFree (xml);
-
-    return xml_str;
-
- vir_buffer_failed:
+ no_memory:
     virXenError(conn, VIR_ERR_NO_MEMORY, __FUNCTION__, 0);
- topology_failed:
-    virBufferFree (xml);
+    virCapabilitiesFree(caps);
     return NULL;
 }
 

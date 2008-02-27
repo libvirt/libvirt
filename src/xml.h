@@ -33,10 +33,6 @@ int		virXPathNodeSet	(const char *xpath,
 				 xmlNodePtr **list);
 
 #if WITH_XEN
-int		virParseXenCpuTopology(virConnectPtr conn,
-				 virBufferPtr xml,
-				 const char *str,
-				 int maxcpu);
 int		virParseCpuSet	(virConnectPtr conn,
 				 const char **str,
 				 char sep,

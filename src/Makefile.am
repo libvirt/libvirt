@@ -37,6 +37,7 @@ CLIENT_SOURCES =						\
 		test.c test.h                                   \
                 buf.c buf.h					\
 		qparams.c qparams.h				\
+                capabilities.c capabilities.h			\
 		xml.c xml.h					\
 		event.c event.h					\
 		xen_unified.c xen_unified.h			\

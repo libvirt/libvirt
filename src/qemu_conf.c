@@ -232,102 +232,184 @@ void qemudFreeVM(struct qemud_vm *vm) {
 
 /* The list of possible machine types for various architectures,
    as supported by QEMU - taken from 'qemu -M ?' for each arch */
-static const char *const arch_info_x86_machines[] = {
-    "pc", "isapc", NULL
+static const char *const arch_info_hvm_x86_machines[] = {
+    "pc", "isapc"
 };
-static const char *const arch_info_mips_machines[] = {
-    "mips", NULL
+static const char *const arch_info_hvm_mips_machines[] = {
+    "mips"
 };
-static const char *const arch_info_sparc_machines[] = {
-    "sun4m", NULL
+static const char *const arch_info_hvm_sparc_machines[] = {
+    "sun4m"
 };
-static const char *const arch_info_ppc_machines[] = {
-    "g3bw", "mac99", "prep", NULL
+static const char *const arch_info_hvm_ppc_machines[] = {
+    "g3bw", "mac99", "prep"
+};
+
+static const char *const arch_info_xen_x86_machines[] = {
+    "xenner"
+};
+
+struct qemu_feature_flags {
+    const char *name;
+    const int default_on;
+    const int toggle;
+};
+
+struct qemu_arch_info {
+    const char *arch;
+    int wordsize;
+    const char *const *machines;
+    int nmachines;
+    const char *binary;
+    const struct qemu_feature_flags *flags;
+    int nflags;
 };
 
 /* Feature flags for the architecture info */
 static const struct qemu_feature_flags const arch_info_i686_flags [] = {
-    { "pae",  1, 1 },
+    { "pae",  1, 0 },
+    { "nonpae",  1, 0 },
     { "acpi", 1, 1 },
     { "apic", 1, 0 },
-    { NULL, -1, -1 }
 };
 
 static const struct qemu_feature_flags const arch_info_x86_64_flags [] = {
     { "acpi", 1, 1 },
     { "apic", 1, 0 },
-    { NULL, -1, -1 }
 };
 
 /* The archicture tables for supported QEMU archs */
-const struct qemu_arch_info const qemudArchs[] = {
-    /* i686 must be in position 0 */
-    {  "i686", 32, arch_info_x86_machines, "qemu", arch_info_i686_flags },
-    /* x86_64 must be in position 1 */
-    {  "x86_64", 64, arch_info_x86_machines, "qemu-system-x86_64", arch_info_x86_64_flags },
-    {  "mips", 32, arch_info_mips_machines, "qemu-system-mips", NULL },
-    {  "mipsel", 32, arch_info_mips_machines, "qemu-system-mipsel", NULL },
-    {  "sparc", 32, arch_info_sparc_machines, "qemu-system-sparc", NULL },
-    {  "ppc", 32, arch_info_ppc_machines, "qemu-system-ppc", NULL },
-    { NULL, -1, NULL, NULL, NULL }
+static const struct qemu_arch_info const arch_info_hvm[] = {
+    {  "i686", 32, arch_info_hvm_x86_machines, 2,
+       "/usr/bin/qemu", arch_info_i686_flags, 4 },
+    {  "x86_64", 64, arch_info_hvm_x86_machines, 2,
+       "/usr/bin/qemu-system-x86_64", arch_info_x86_64_flags, 2 },
+    {  "mips", 32, arch_info_hvm_mips_machines, 1,
+       "/usr/bin/qemu-system-mips", NULL, 0 },
+    {  "mipsel", 32, arch_info_hvm_mips_machines, 1,
+       "/usr/bin/qemu-system-mipsel", NULL, 0 },
+    {  "sparc", 32, arch_info_hvm_sparc_machines, 1,
+       "/usr/bin/qemu-system-sparc", NULL, 0 },
+    {  "ppc", 32, arch_info_hvm_ppc_machines, 3,
+       "/usr/bin/qemu-system-ppc", NULL, 0 },
 };
 
-/* Return the default architecture if none is explicitly requested*/
-static const char *qemudDefaultArch(void) {
-    return qemudArchs[0].arch;
-}
+static const struct qemu_arch_info const arch_info_xen[] = {
+    {  "i686", 32, arch_info_xen_x86_machines, 1,
+       "/usr/bin/xenner", arch_info_i686_flags, 4 },
+    {  "x86_64", 64, arch_info_xen_x86_machines, 1,
+       "/usr/bin/xenner", arch_info_x86_64_flags, 2 },
+};
 
-/* Return the default machine type for a given architecture */
-static const char *qemudDefaultMachineForArch(const char *arch) {
+static int
+qemudCapsInitGuest(virCapsPtr caps,
+                   const char *hostmachine,
+                   const struct qemu_arch_info *info,
+                   int hvm) {
+    virCapsGuestPtr guest;
     int i;
 
-    for (i = 0; qemudArchs[i].arch; i++) {
-        if (!strcmp(qemudArchs[i].arch, arch)) {
-            return qemudArchs[i].machines[0];
+    if ((guest = virCapabilitiesAddGuest(caps,
+                                         hvm ? "hvm" : "xen",
+                                         info->arch,
+                                         info->wordsize,
+                                         info->binary,
+                                         NULL,
+                                         info->nmachines,
+                                         info->machines)) == NULL)
+        return -1;
+
+    if (hvm) {
+        /* Check for existance of base emulator */
+        if (access(info->binary, X_OK) == 0 &&
+            virCapabilitiesAddGuestDomain(guest,
+                                          "qemu",
+                                          NULL,
+                                          NULL,
+                                          0,
+                                          NULL) == NULL)
+            return -1;
+
+        /* If guest & host match, then we can accelerate */
+        if (STREQ(info->arch, hostmachine)) {
+            if (access("/dev/kqemu", F_OK) == 0 &&
+                virCapabilitiesAddGuestDomain(guest,
+                                              "kqemu",
+                                              NULL,
+                                              NULL,
+                                              0,
+                                              NULL) == NULL)
+                return -1;
+
+            if (access("/dev/kvm", F_OK) == 0 &&
+                virCapabilitiesAddGuestDomain(guest,
+                                              "kvm",
+                                              "/usr/bin/qemu-kvm",
+                                              NULL,
+                                              0,
+                                              NULL) == NULL)
+                return -1;
+        }
+    } else {
+        if (virCapabilitiesAddGuestDomain(guest,
+                                          "kvm",
+                                          NULL,
+                                          NULL,
+                                          0,
+                                          NULL) == NULL)
+            return -1;
+    }
+
+    if (info->nflags) {
+        for (i = 0 ; i < info->nflags ; i++) {
+            if (virCapabilitiesAddGuestFeature(guest,
+                                               info->flags[i].name,
+                                               info->flags[i].default_on,
+                                               info->flags[i].toggle) == NULL)
+                return -1;
         }
     }
 
-    return NULL;
+    return 0;
 }
 
-/* Return the default binary name for a particular architecture */
-static const char *qemudDefaultBinaryForArch(const char *arch) {
+virCapsPtr qemudCapsInit(void) {
+    struct utsname utsname;
+    virCapsPtr caps;
     int i;
 
-    for (i = 0 ; qemudArchs[i].arch; i++) {
-        if (!strcmp(qemudArchs[i].arch, arch)) {
-            return qemudArchs[i].binary;
-        }
+    /* Really, this never fails - look at the man-page. */
+    uname (&utsname);
+
+    if ((caps = virCapabilitiesNew(utsname.machine,
+                                   0, 0)) == NULL)
+        goto no_memory;
+
+    for (i = 0 ; i < (sizeof(arch_info_hvm)/sizeof(arch_info_hvm[0])) ; i++)
+        if (qemudCapsInitGuest(caps,
+                               utsname.machine,
+                               &arch_info_hvm[i], 1) < 0)
+            goto no_memory;
+
+    if (access("/usr/bin/xenner", X_OK) == 0 &&
+        access("/dev/kvm", F_OK) == 0) {
+        for (i = 0 ; i < (sizeof(arch_info_xen)/sizeof(arch_info_xen[0])) ; i++)
+            /* Allow Xen 32-on-32, 32-on-64 and 64-on-64 */
+            if (STREQ(arch_info_xen[i].arch, utsname.machine) ||
+                (STREQ(utsname.machine, "x86_64") &&
+                 STREQ(arch_info_xen[i].arch, "i686"))) {
+                if (qemudCapsInitGuest(caps,
+                                       utsname.machine,
+                                       &arch_info_xen[i], 0) < 0)
+                    goto no_memory;
+            }
     }
 
+    return caps;
+
+ no_memory:
+    virCapabilitiesFree(caps);
     return NULL;
-}
-
-/* Find the fully qualified path to the binary for an architecture */
-static char *qemudLocateBinaryForArch(virConnectPtr conn,
-                                      int virtType, const char *arch) {
-    const char *name;
-    char *path;
-
-    if (virtType == QEMUD_VIRT_KVM)
-        name = "qemu-kvm";
-    else
-        name = qemudDefaultBinaryForArch(arch);
-
-    if (!name) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot determin binary for architecture %s", arch);
-        return NULL;
-    }
-
-    /* XXX lame. should actually use $PATH ... */
-    path = malloc(strlen(name) + strlen("/usr/bin/") + 1);
-    if (!path) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "path");
-        return NULL;
-    }
-    strcpy(path, "/usr/bin/");
-    strcat(path, name);
-    return path;
 }
 
 
@@ -429,31 +511,31 @@ static int qemudExtractVersionInfo(const char *qemu, int *version, int *flags) {
 }
 
 int qemudExtractVersion(virConnectPtr conn,
-                        struct qemud_driver *driver ATTRIBUTE_UNUSED) {
-    char *binary = NULL;
+                        struct qemud_driver *driver) {
+    const char *binary;
     struct stat sb;
     int ignored;
 
     if (driver->qemuVersion > 0)
         return 0;
 
-    if (!(binary = qemudLocateBinaryForArch(conn, QEMUD_VIRT_QEMU, "i686")))
+    if ((binary = virCapabilitiesDefaultGuestEmulator(driver->caps,
+                                                      "hvm",
+                                                      "i686",
+                                                      "qemu")) == NULL)
         return -1;
 
     if (stat(binary, &sb) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "Cannot find QEMU binary %s: %s", binary,
                          strerror(errno));
-        free(binary);
         return -1;
     }
 
     if (qemudExtractVersionInfo(binary, &driver->qemuVersion, &ignored) < 0) {
-        free(binary);
         return -1;
     }
 
-    free(binary);
     return 0;
 }
 
@@ -1086,7 +1168,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         qemudReportError(conn, NULL, NULL, VIR_ERR_OS_TYPE, NULL);
         goto error;
     }
-    if (strcmp((const char *)obj->stringval, "hvm")) {
+    if (!virCapabilitiesSupportsGuestOSType(driver->caps, (const char*)obj->stringval)) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OS_TYPE, "%s", obj->stringval);
         goto error;
     }
@@ -1097,7 +1179,11 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/type[1]/@arch)", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        const char *defaultArch = qemudDefaultArch();
+        const char *defaultArch = virCapabilitiesDefaultGuestArch(driver->caps, def->os.type);
+        if (defaultArch == NULL) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "unsupported architecture");
+            goto error;
+        }
         if (strlen(defaultArch) >= (QEMUD_OS_TYPE_MAX_LEN-1)) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "architecture type too long");
             goto error;
@@ -1115,9 +1201,11 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/type[1]/@machine)", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        const char *defaultMachine = qemudDefaultMachineForArch(def->os.arch);
-        if (!defaultMachine) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "unsupported arch %s", def->os.arch);
+        const char *defaultMachine = virCapabilitiesDefaultGuestMachine(driver->caps,
+                                                                        def->os.type,
+                                                                        def->os.arch);
+        if (defaultMachine == NULL) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "unsupported architecture");
             goto error;
         }
         if (strlen(defaultMachine) >= (QEMUD_OS_MACHINE_MAX_LEN-1)) {
@@ -1205,12 +1293,18 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     obj = xmlXPathEval(BAD_CAST "string(/domain/devices/emulator[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        char *tmp = qemudLocateBinaryForArch(conn, def->virtType, def->os.arch);
-        if (!tmp) {
+        const char *type = (def->virtType == QEMUD_VIRT_QEMU ? "qemu" :
+                            def->virtType == QEMUD_VIRT_KQEMU ? "kqemu":
+                            "kvm");
+        const char *emulator = virCapabilitiesDefaultGuestEmulator(driver->caps,
+                                                                   def->os.type,
+                                                                   def->os.arch,
+                                                                   type);
+        if (!emulator) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "unsupported guest type");
             goto error;
         }
-        strcpy(def->os.binary, tmp);
-        free(tmp);
+        strcpy(def->os.binary, emulator);
     } else {
         if (strlen((const char *)obj->stringval) >= (PATH_MAX-1)) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "emulator path too long");

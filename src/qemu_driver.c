@@ -56,6 +56,7 @@
 #include "qemu_conf.h"
 #include "nodeinfo.h"
 #include "stats_linux.h"
+#include "capabilities.h"
 
 static int qemudShutdown(void);
 
@@ -214,6 +215,10 @@ qemudStartup(void) {
         goto out_of_memory;
 
     free(base);
+    base = NULL;
+
+    if ((qemu_driver->caps = qemudCapsInit()) == NULL)
+        goto out_of_memory;
 
     if (qemudLoadDriverConfig(qemu_driver, driverConf) < 0) {
         qemudShutdown();
@@ -296,6 +301,8 @@ qemudShutdown(void) {
 
     if (!qemu_driver)
         return -1;
+
+    virCapabilitiesFree(qemu_driver->caps);
 
     /* shutdown active VMs */
     vm = qemu_driver->vms;
@@ -1479,191 +1486,17 @@ static int qemudGetNodeInfo(virConnectPtr conn,
     return virNodeInfoPopulate(conn, nodeinfo);
 }
 
-static int qemudGetFeatures(virBufferPtr xml,
-                            const struct qemu_feature_flags *flags) {
-    int i, r;
 
-    if (flags == NULL)
-        return 0;
+static char *qemudGetCapabilities(virConnectPtr conn) {
+    struct qemud_driver *driver = (struct qemud_driver *)conn->privateData;
+    char *xml;
 
-    r = virBufferAddLit(xml, "\
-    <features>\n");
-    if (r == -1) return r;
-    for (i = 0; flags[i].name; ++i) {
-        if (STREQ(flags[i].name, "pae")) {
-            int pae = flags[i].default_on || flags[i].toggle;
-            int nonpae = flags[i].toggle;
-            if (pae) {
-                r = virBufferAddLit(xml, "      <pae/>\n");
-                if (r == -1) return r;
-            }
-            if (nonpae) {
-                r = virBufferAddLit(xml, "      <nonpae/>\n");
-                if (r == -1) return r;
-            }
-        } else {
-            r = virBufferVSprintf(xml, "      <%s default='%s' toggle='%s'/>\n",
-                                  flags[i].name,
-                                  flags[i].default_on ? "on" : "off",
-                                  flags[i].toggle ? "yes" : "no");
-            if (r == -1) return r;
-        }
-    }
-    r = virBufferAddLit(xml, "    </features>\n");
-    return r;
-}
-
-static char *qemudGetCapabilities(virConnectPtr conn ATTRIBUTE_UNUSED) {
-    struct utsname utsname;
-    int i, j, r;
-    int have_kqemu = 0;
-    int have_kvm = 0;
-    virBufferPtr xml;
-
-    /* Really, this never fails - look at the man-page. */
-    uname (&utsname);
-
-    have_kqemu = access ("/dev/kqemu", F_OK) == 0;
-    have_kvm = access ("/dev/kvm", F_OK) == 0;
-
-    /* Construct the XML. */
-    xml = virBufferNew (1024);
-    if (!xml) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
+    if ((xml = virCapabilitiesFormatXML(driver->caps)) == NULL) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "capabilities");
         return NULL;
     }
 
-    r = virBufferVSprintf (xml,
-                        "\
-<capabilities>\n\
-  <host>\n\
-    <cpu>\n\
-      <arch>%s</arch>\n\
-    </cpu>\n\
-  </host>\n",
-                        utsname.machine);
-    if (r == -1) {
-    vir_buffer_failed:
-        virBufferFree (xml);
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, NULL);
-        return NULL;
-    }
-
-    i = -1;
-    if (strcmp (utsname.machine, "i686") == 0) i = 0;
-    else if (strcmp (utsname.machine, "x86_64") == 0) i = 1;
-    if (i >= 0) {
-        /* For the default (PC-like) guest, qemudArchs[0] or [1]. */
-        r = virBufferVSprintf (xml,
-                            "\
-\n\
-  <guest>\n\
-    <os_type>hvm</os_type>\n\
-    <arch name=\"%s\">\n\
-      <wordsize>%d</wordsize>\n\
-      <emulator>/usr/bin/%s</emulator>\n\
-      <domain type=\"qemu\"/>\n",
-                            qemudArchs[i].arch,
-                            qemudArchs[i].wordsize,
-                            qemudArchs[i].binary);
-        if (r == -1) goto vir_buffer_failed;
-
-        for (j = 0; qemudArchs[i].machines[j]; ++j) {
-            r = virBufferVSprintf (xml,
-                                "\
-      <machine>%s</machine>\n",
-                                qemudArchs[i].machines[j]);
-            if (r == -1) goto vir_buffer_failed;
-        }
-
-        if (have_kqemu) {
-            r = virBufferAddLit (xml,
-                           "\
-      <domain type=\"kqemu\"/>\n");
-            if (r == -1) goto vir_buffer_failed;
-        }
-        if (have_kvm) {
-            r = virBufferAddLit (xml,
-                           "\
-      <domain type=\"kvm\">\n\
-        <emulator>/usr/bin/qemu-kvm</emulator>\n\
-      </domain>\n");
-            if (r == -1) goto vir_buffer_failed;
-        }
-        r = virBufferAddLit (xml, "    </arch>\n");
-        if (r == -1) goto vir_buffer_failed;
-
-        r = qemudGetFeatures(xml, qemudArchs[i].fflags);
-        if (r == -1) goto vir_buffer_failed;
-
-        r = virBufferAddLit (xml, "  </guest>\n");
-        if (r == -1) goto vir_buffer_failed;
-
-        /* The "other" PC architecture needs emulation. */
-        i = i ^ 1;
-        r = virBufferVSprintf (xml,
-                            "\
-\n\
-  <guest>\n\
-    <os_type>hvm</os_type>\n\
-    <arch name=\"%s\">\n\
-      <wordsize>%d</wordsize>\n\
-      <emulator>/usr/bin/%s</emulator>\n\
-      <domain type=\"qemu\"/>\n",
-                            qemudArchs[i].arch,
-                            qemudArchs[i].wordsize,
-                            qemudArchs[i].binary);
-        if (r == -1) goto vir_buffer_failed;
-        for (j = 0; qemudArchs[i].machines[j]; ++j) {
-            r = virBufferVSprintf (xml,
-                                "\
-      <machine>%s</machine>\n",
-                                qemudArchs[i].machines[j]);
-            if (r == -1) goto vir_buffer_failed;
-        }
-        r = virBufferAddLit (xml, "    </arch>\n  </guest>\n");
-        if (r == -1) goto vir_buffer_failed;
-    }
-
-    /* The non-PC architectures, qemudArchs[>=2]. */
-    for (i = 2; qemudArchs[i].arch; ++i) {
-        r = virBufferVSprintf (xml,
-                            "\
-\n\
-  <guest>\n\
-    <os_type>hvm</os_type>\n\
-    <arch name=\"%s\">\n\
-      <wordsize>%d</wordsize>\n\
-      <emulator>/usr/bin/%s</emulator>\n\
-      <domain type=\"qemu\"/>\n",
-                            qemudArchs[i].arch,
-                            qemudArchs[i].wordsize,
-                            qemudArchs[i].binary);
-        if (r == -1) goto vir_buffer_failed;
-        for (j = 0; qemudArchs[i].machines[j]; ++j) {
-            r = virBufferVSprintf (xml,
-                                "\
-      <machine>%s</machine>\n",
-                                qemudArchs[i].machines[j]);
-            if (r == -1) goto vir_buffer_failed;
-        }
-        r = virBufferAddLit (xml, "    </arch>\n");
-        if (r == -1) goto vir_buffer_failed;
-
-        r = qemudGetFeatures(xml, qemudArchs[i].fflags);
-        if (r == -1) goto vir_buffer_failed;
-
-        r = virBufferAddLit (xml, "  </guest>\n");
-        if (r == -1) goto vir_buffer_failed;
-    }
-
-    /* Finish off. */
-    r = virBufferAddLit (xml,
-                      "\
-</capabilities>\n");
-    if (r == -1) goto vir_buffer_failed;
-
-    return virBufferContentAndFree(xml);
+    return xml;
 }
 
 

@@ -31,6 +31,7 @@
 #include "internal.h"
 #include "bridge.h"
 #include "iptables.h"
+#include "capabilities.h"
 #include <netinet/in.h>
 
 #define qemudDebug(fmt, ...) do {} while(0)
@@ -314,6 +315,8 @@ struct qemud_driver {
     unsigned int vncTLSx509verify : 1;
     char *vncTLSx509certdir;
     char vncListen[BR_INET_ADDR_MAXLEN];
+
+    virCapsPtr caps;
 };
 
 
@@ -350,6 +353,8 @@ struct qemud_network *qemudFindNetworkByUUID(const struct qemud_driver *driver,
                                              const unsigned char *uuid);
 struct qemud_network *qemudFindNetworkByName(const struct qemud_driver *driver,
                                              const char *name);
+
+virCapsPtr  qemudCapsInit               (void);
 
 int         qemudExtractVersion         (virConnectPtr conn,
                                          struct qemud_driver *driver);
@@ -418,20 +423,6 @@ char *      qemudGenerateNetworkXML     (virConnectPtr conn,
                                          struct qemud_network *network,
                                          struct qemud_network_def *def);
 
-struct qemu_feature_flags {
-    const char *name;
-    const int default_on;
-    const int toggle;
-};
-
-struct qemu_arch_info {
-    const char *arch;
-    int wordsize;
-    const char *const *machines;
-    const char *binary;
-    const struct qemu_feature_flags *fflags;
-};
-extern const struct qemu_arch_info const qemudArchs[];
 
 #endif /* WITH_QEMU */
 

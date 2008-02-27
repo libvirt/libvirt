@@ -88,6 +88,9 @@ main(int argc, char **argv)
     if (!abs_top_srcdir)
       return 1;
 
+
+    driver.caps = qemudCapsInit();
+
     if (virtTestRun("QEMU XML-2-ARGV minimal",
                     1, testCompareXMLToXMLHelper, "minimal") < 0)
         ret = -1;
@@ -152,6 +155,7 @@ main(int argc, char **argv)
                     1, testCompareXMLToXMLHelper, "net-user") < 0)
         ret = -1;
 
+    virCapabilitiesFree(driver.caps);
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

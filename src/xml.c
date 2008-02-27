@@ -26,6 +26,7 @@
 #include "sexpr.h"
 #include "xml.h"
 #include "buf.h"
+#include "util.h"
 #include "xs_internal.h"        /* for xenStoreDomainGetNetworkID */
 #include "xen_unified.h"
 
@@ -58,56 +59,6 @@ virXMLError(virConnectPtr conn, virErrorNumber error, const char *info,
  *									*
  ************************************************************************/
 #if WITH_XEN
-/**
- * skipSpaces:
- * @str: pointer to the char pointer used
- *
- * Skip potential blanks, this includes space tabs, line feed,
- * carriage returns and also '\\' which can be erronously emitted
- * by xend
- */
-static void
-skipSpaces(const char **str)
-{
-    const char *cur = *str;
-
-    while ((*cur == ' ') || (*cur == '\t') || (*cur == '\n') ||
-           (*cur == '\r') || (*cur == '\\'))
-        cur++;
-    *str = cur;
-}
-
-/**
- * parseNumber:
- * @str: pointer to the char pointer used
- *
- * Parse an unsigned number
- *
- * Returns the unsigned number or -1 in case of error. @str will be
- *         updated to skip the number.
- */
-static int
-parseNumber(const char **str)
-{
-    int ret = 0;
-    const char *cur = *str;
-
-    if ((*cur < '0') || (*cur > '9'))
-        return (-1);
-
-    while ((*cur >= '0') && (*cur <= '9')) {
-        unsigned int c = *cur - '0';
-
-        if ((ret > INT_MAX / 10) ||
-            ((ret == INT_MAX / 10) && (c > INT_MAX % 10)))
-            return (-1);
-        ret = ret * 10 + c;
-        cur++;
-    }
-    *str = cur;
-    return (ret);
-}
-
 /**
  * parseCpuNumber:
  * @str: pointer to the char pointer used
@@ -225,7 +176,7 @@ virParseCpuSet(virConnectPtr conn, const char **str, char sep,
         return (-1);
 
     cur = *str;
-    skipSpaces(&cur);
+    virSkipSpaces(&cur);
     if (*cur == 0)
         goto parse_error;
 
@@ -251,7 +202,7 @@ virParseCpuSet(virConnectPtr conn, const char **str, char sep,
         start = parseCpuNumber(&cur, maxcpu);
         if (start < 0)
             goto parse_error;
-        skipSpaces(&cur);
+        virSkipSpaces(&cur);
         if ((*cur == ',') || (*cur == 0) || (*cur == sep)) {
             if (neg) {
                 if (cpuset[start] == 1) {
@@ -268,7 +219,7 @@ virParseCpuSet(virConnectPtr conn, const char **str, char sep,
             if (neg)
                 goto parse_error;
             cur++;
-            skipSpaces(&cur);
+            virSkipSpaces(&cur);
             last = parseCpuNumber(&cur, maxcpu);
             if (last < start)
                 goto parse_error;
@@ -278,11 +229,11 @@ virParseCpuSet(virConnectPtr conn, const char **str, char sep,
                     ret++;
                 }
             }
-            skipSpaces(&cur);
+            virSkipSpaces(&cur);
         }
         if (*cur == ',') {
             cur++;
-            skipSpaces(&cur);
+            virSkipSpaces(&cur);
             neg = 0;
         } else if ((*cur == 0) || (*cur == sep)) {
             break;
@@ -298,114 +249,6 @@ virParseCpuSet(virConnectPtr conn, const char **str, char sep,
     return (-1);
 }
 
-/**
- * virParseXenCpuTopology:
- * @conn: connection
- * @xml: XML output buffer
- * @str: the topology string
- * @maxcpu: number of elements available in @cpuset
- *
- * Parse a Xend CPU topology string and build the associated XML
- * format.
- *
- * Returns 0 in case of success, -1 in case of error
- */
-int
-virParseXenCpuTopology(virConnectPtr conn, virBufferPtr xml,
-                       const char *str, int maxcpu)
-{
-    const char *cur;
-    char *cpuset = NULL;
-    int cell, cpu, nb_cpus;
-    int ret;
-
-    if ((str == NULL) || (xml == NULL) || (maxcpu <= 0) || (maxcpu > 100000))
-        return (-1);
-
-    cpuset = malloc(maxcpu * sizeof(*cpuset));
-    if (cpuset == NULL)
-        goto memory_error;
-
-    cur = str;
-    while (*cur != 0) {
-        /*
-         * Find the next NUMA cell described in the xend output
-         */
-        cur = strstr(cur, "node");
-        if (cur == NULL)
-            break;
-        cur += 4;
-        cell = parseNumber(&cur);
-        if (cell < 0)
-            goto parse_error;
-        skipSpaces(&cur);
-        if (*cur != ':')
-            goto parse_error;
-        cur++;
-        skipSpaces(&cur);
-        if (!strncmp(cur, "no cpus", 7)) {
-            nb_cpus = 0;
-            for (cpu = 0; cpu < maxcpu; cpu++)
-                cpuset[cpu] = 0;
-        } else {
-            nb_cpus = virParseCpuSet(conn, &cur, 'n', cpuset, maxcpu);
-            if (nb_cpus < 0)
-                goto error;
-        }
-
-        /*
-         * add xml for all cpus associated with that cell
-         */
-        ret = virBufferVSprintf(xml, "\
-      <cell id='%d'>\n\
-        <cpus num='%d'>\n", cell, nb_cpus);
-#ifdef STANDALONE
-        {
-            char *dump;
-
-            dump = virSaveCpuSet(conn, cpuset, maxcpu);
-            if (dump != NULL) {
-                virBufferVSprintf(xml, "           <dump>%s</dump>\n",
-                                  dump);
-                free(dump);
-            } else {
-                virBufferVSprintf(xml, "           <error>%s</error>\n",
-                                  "Failed to dump CPU set");
-            }
-        }
-#endif
-        if (ret < 0)
-            goto memory_error;
-        for (cpu = 0; cpu < maxcpu; cpu++) {
-            if (cpuset[cpu] == 1) {
-                ret = virBufferVSprintf(xml, "\
-           <cpu id='%d'/>\n", cpu);
-                if (ret < 0)
-                    goto memory_error;
-            }
-        }
-        ret = virBufferAddLit(xml, "\
-        </cpus>\n\
-      </cell>\n");
-        if (ret < 0)
-            goto memory_error;
-
-    }
-    free(cpuset);
-    return (0);
-
-  parse_error:
-    virXMLError(conn, VIR_ERR_XEN_CALL, _("topology syntax error"), 0);
-  error:
-    free(cpuset);
-
-    return (-1);
-
-  memory_error:
-    free(cpuset);
-    virXMLError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"), 0);
-    return (-1);
-}
 
 /**
  * virConvertCpuSet:

@@ -52,6 +52,7 @@
 
 #define virLog(msg...) fprintf(stderr, msg)
 
+#ifndef PROXY
 static void
 ReportError(virConnectPtr conn,
                       virDomainPtr dom,
@@ -600,6 +601,57 @@ __virStrToLong_ull(char const *s, char **end_ptr, int base, unsigned long long *
         return -1;
     *result = val;
     return 0;
+}
+#endif /* PROXY */
+
+/**
+ * virSkipSpaces:
+ * @str: pointer to the char pointer used
+ *
+ * Skip potential blanks, this includes space tabs, line feed,
+ * carriage returns and also '\\' which can be erronously emitted
+ * by xend
+ */
+void
+virSkipSpaces(const char **str)
+{
+    const char *cur = *str;
+
+    while ((*cur == ' ') || (*cur == '\t') || (*cur == '\n') ||
+           (*cur == '\r') || (*cur == '\\'))
+        cur++;
+    *str = cur;
+}
+
+/**
+ * virParseNumber:
+ * @str: pointer to the char pointer used
+ *
+ * Parse an unsigned number
+ *
+ * Returns the unsigned number or -1 in case of error. @str will be
+ *         updated to skip the number.
+ */
+int
+virParseNumber(const char **str)
+{
+    int ret = 0;
+    const char *cur = *str;
+
+    if ((*cur < '0') || (*cur > '9'))
+        return (-1);
+
+    while ((*cur >= '0') && (*cur <= '9')) {
+        unsigned int c = *cur - '0';
+
+        if ((ret > INT_MAX / 10) ||
+            ((ret == INT_MAX / 10) && (c > INT_MAX % 10)))
+            return (-1);
+        ret = ret * 10 + c;
+        cur++;
+    }
+    *str = cur;
+    return (ret);
 }
 
 /*

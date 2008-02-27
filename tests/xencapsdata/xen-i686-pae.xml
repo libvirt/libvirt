@@ -1,4 +1,5 @@
 <capabilities>
+
   <host>
     <cpu>
       <arch>i686</arch>
@@ -16,12 +17,16 @@
 
   <guest>
     <os_type>xen</os_type>
-    <arch name="i686">
+    <arch name='i686'>
       <wordsize>32</wordsize>
-      <domain type="xen"></domain>
+      <emulator>/usr/lib/xen/bin/qemu-dm</emulator>
+      <machine>xenpv</machine>
+      <domain type='xen'>
+      </domain>
     </arch>
     <features>
       <pae/>
     </features>
   </guest>
+
 </capabilities>

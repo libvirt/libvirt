@@ -44,6 +44,7 @@
 #include "buf.h"
 #include "util.h"
 #include "uuid.h"
+#include "capabilities.h"
 
 /* Flags that determine the action to take on a shutdown or crash of a domain
  */
@@ -119,7 +120,7 @@ typedef struct _testConn testConn;
 typedef struct _testConn *testConnPtr;
 
 #define TEST_MODEL "i686"
-#define TEST_MODEL_WORDSIZE "32"
+#define TEST_MODEL_WORDSIZE 32
 
 static const virNodeInfo defaultNodeInfo = {
     TEST_MODEL,
@@ -978,38 +979,60 @@ static int testNodeGetInfo(virConnectPtr conn,
 
 static char *testGetCapabilities (virConnectPtr conn)
 {
-    static char caps[] = "\
-<capabilities>\n\
-  <host>\n\
-    <cpu>\n\
-      <arch>" TEST_MODEL "</arch>\n\
-      <features>\n\
-        <pae/>\n\
-        <nonpae/>\n\
-      </features>\n\
-    </cpu>\n\
-  </host>\n\
-\n\
-  <guest>\n\
-    <os_type>linux</os_type>\n\
-    <arch name=\"" TEST_MODEL "\">\n\
-      <wordsize>" TEST_MODEL_WORDSIZE "</wordsize>\n\
-      <domain type=\"test\"/>\n\
-    </arch>\n\
-    <features>\n\
-      <pae/>\n\
-      <nonpae/>\n\
-    </features>\n\
-  </guest>\n\
-</capabilities>\n\
-";
+    virCapsPtr caps;
+    virCapsGuestPtr guest;
+    char *xml;
+    int cell1[] = { 0, 2, 4, 6, 8, 10, 12, 14 };
+    int cell2[] = { 1, 3, 5, 7, 9, 11, 13, 15 };
 
-    char *caps_copy = strdup (caps);
-    if (!caps_copy) {
-        testError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, __FUNCTION__);
-        return NULL;
-    }
-    return caps_copy;
+    if ((caps = virCapabilitiesNew(TEST_MODEL, 0, 0)) == NULL)
+        goto no_memory;
+
+    if (virCapabilitiesAddHostFeature(caps, "pae") < 0)
+        goto no_memory;
+    if (virCapabilitiesAddHostFeature(caps ,"nonpae") < 0)
+        goto no_memory;
+
+    if (virCapabilitiesAddHostNUMACell(caps, 0, 8, cell1) < 0)
+        goto no_memory;
+    if (virCapabilitiesAddHostNUMACell(caps, 1, 8, cell2) < 0)
+        goto no_memory;
+
+    if ((guest = virCapabilitiesAddGuest(caps,
+                                         "linux",
+                                         TEST_MODEL,
+                                         TEST_MODEL_WORDSIZE,
+                                         NULL,
+                                         NULL,
+                                         0,
+                                         NULL)) == NULL)
+        goto no_memory;
+
+    if (virCapabilitiesAddGuestDomain(guest,
+                                      "test",
+                                      NULL,
+                                      NULL,
+                                      0,
+                                      NULL) == NULL)
+        goto no_memory;
+
+
+    if (virCapabilitiesAddGuestFeature(guest, "pae", 1, 1) == NULL)
+        goto no_memory;
+    if (virCapabilitiesAddGuestFeature(guest ,"nonpae", 1, 1) == NULL)
+        goto no_memory;
+
+    if ((xml = virCapabilitiesFormatXML(caps)) == NULL)
+        goto no_memory;
+
+    virCapabilitiesFree(caps);
+
+    return xml;
+
+ no_memory:
+    virCapabilitiesFree(caps);
+    testError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, __FUNCTION__);
+    return NULL;
 }
 
 static int testNumOfDomains(virConnectPtr conn)

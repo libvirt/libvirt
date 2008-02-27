@@ -79,4 +79,8 @@ int __virStrToLong_ull(char const *s,
 		       unsigned long long *result);
 #define virStrToLong_ull(s,e,b,r) __virStrToLong_ull((s),(e),(b),(r))
 
+void virSkipSpaces(const char **str);
+int virParseNumber(const char **str);
+
+
 #endif /* __VIR_UTIL_H__ */

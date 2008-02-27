@@ -1,3 +1,16 @@
+Tue Feb 26 23:16:00 EST 2006 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/capabilities.h, src/capabilities.c, src/Makefile.am:
+	Add generic API for dealing with hypervisor capabilities
+	* src/qemu_conf.c, src/qemu_conf.h, src/qemu_driver.c: Switch
+	to using capabilities API. Add support for Xenner guests
+	* src/xen_internalc, src/xend_internal.c, src/xend_internal.h,
+	src/xml.h, src/xml.c, src/util.c, src/util.h, src/test.c:
+	Switch to using capabilities API
+	* tests/xencapstest.c, tests/xencapsdata/*.xml: Update for
+	changes to capabilities API
+	* proxy/Makefile.am: Link to capabilities.c and util.c
+
 Tue Feb 26 18:38:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Implement virDomainBlockStats for QEMU/KVM.

@@ -39,6 +39,7 @@
 #include "sexpr.h"
 #include "xml.h"
 #include "buf.h"
+#include "capabilities.h"
 #include "uuid.h"
 #include "xen_unified.h"
 #include "xend_internal.h"
@@ -1952,58 +1953,103 @@ sexpr_to_xend_node_info(const struct sexpr *root, virNodeInfoPtr info)
     return (0);
 }
 
+
 /**
- * sexpr_to_xend_topology_xml:
+ * sexpr_to_xend_topology
  * @root: an S-Expression describing a node
+ * @caps: capability info
  *
- * Internal routine creating an XML string with the values from
- * the node root provided.
+ * Internal routine populating capability info with
+ * NUMA node mapping details
  *
  * Returns 0 in case of success, -1 in case of error
  */
 static int
-sexpr_to_xend_topology_xml(virConnectPtr conn, const struct sexpr *root,
-                           virBufferPtr xml)
+sexpr_to_xend_topology(virConnectPtr conn,
+                       const struct sexpr *root,
+                       virCapsPtr caps)
 {
     const char *nodeToCpu;
-    int numCells = 0;
+    const char *cur;
+    char *cpuset = NULL;
+    int *cpuNums = NULL;
+    int cell, cpu, nb_cpus;
+    int n = 0;
     int numCpus;
-    int r;
 
     nodeToCpu = sexpr_node(root, "node/node_to_cpu");
     if (nodeToCpu == NULL) {
         virXendError(conn, VIR_ERR_INTERNAL_ERROR,
                      _("failed to parse topology information"));
-        goto error;
+        return -1;
     }
 
-    numCells = sexpr_int(root, "node/nr_nodes");
     numCpus = sexpr_int(root, "node/nr_cpus");
 
-    /* start filling in xml */
-    r = virBufferVSprintf (xml,
-                               "\
-  <topology>\n\
-    <cells num='%d'>\n",
-                           numCells);
-    if (r < 0) goto vir_buffer_failed;
 
-    r = virParseXenCpuTopology(conn, xml, nodeToCpu, numCpus);
-    if (r < 0) goto error;
+    cpuset = malloc(numCpus * sizeof(*cpuset));
+    if (cpuset == NULL)
+        goto memory_error;
+    cpuNums = malloc(numCpus * sizeof(*cpuNums));
+    if (cpuNums == NULL)
+        goto memory_error;
 
-    r = virBufferAddLit (xml, "\
-    </cells>\n\
-  </topology>\n");
-    if (r < 0) goto vir_buffer_failed;
+    cur = nodeToCpu;
+    while (*cur != 0) {
+        /*
+         * Find the next NUMA cell described in the xend output
+         */
+        cur = strstr(cur, "node");
+        if (cur == NULL)
+            break;
+        cur += 4;
+        cell = virParseNumber(&cur);
+        if (cell < 0)
+            goto parse_error;
+        virSkipSpaces(&cur);
+        if (*cur != ':')
+            goto parse_error;
+        cur++;
+        virSkipSpaces(&cur);
+        if (!strncmp(cur, "no cpus", 7)) {
+            nb_cpus = 0;
+            for (cpu = 0; cpu < numCpus; cpu++)
+                cpuset[cpu] = 0;
+        } else {
+            nb_cpus = virParseCpuSet(conn, &cur, 'n', cpuset, numCpus);
+            if (nb_cpus < 0)
+                goto error;
+        }
+
+        for (n = 0, cpu = 0; cpu < numCpus; cpu++)
+            if (cpuset[cpu] == 1)
+                cpuNums[n++] = cpu;
+
+        if (virCapabilitiesAddHostNUMACell(caps,
+                                           cell,
+                                           nb_cpus,
+                                           cpuNums) < 0)
+            goto memory_error;
+    }
+    free(cpuNums);
+    free(cpuset);
     return (0);
 
+  parse_error:
+    virXendError(conn, VIR_ERR_XEN_CALL, _("topology syntax error"));
+  error:
+    free(cpuNums);
+    free(cpuset);
 
-vir_buffer_failed:
-    virXendError(conn, VIR_ERR_NO_MEMORY, _("allocate new buffer"));
+    return (-1);
 
-error:
+  memory_error:
+    free(cpuNums);
+    free(cpuset);
+    virXendError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"));
     return (-1);
 }
+
 
 #ifndef PROXY
 /**
@@ -2720,13 +2766,15 @@ xenDaemonNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info) {
 /**
  * xenDaemonNodeGetTopology:
  * @conn: pointer to the Xen Daemon block
+ * @caps: capabilities info
  *
  * This method retrieves a node's topology information.
  *
  * Returns -1 in case of error, 0 otherwise.
  */
 int
-xenDaemonNodeGetTopology(virConnectPtr conn, virBufferPtr xml) {
+xenDaemonNodeGetTopology(virConnectPtr conn,
+                         virCapsPtr caps) {
     int ret = -1;
     struct sexpr *root;
 
@@ -2735,17 +2783,17 @@ xenDaemonNodeGetTopology(virConnectPtr conn, virBufferPtr xml) {
         return (-1);
     }
 
-    if (xml == NULL) {
+    if (caps == NULL) {
         virXendError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
         return (-1);
-        }
+    }
 
     root = sexpr_get(conn, "/xend/node/");
     if (root == NULL) {
         return (-1);
     }
 
-    ret = sexpr_to_xend_topology_xml(conn, root, xml);
+    ret = sexpr_to_xend_topology(conn, root, caps);
     sexpr_free(root);
     return (ret);
 }
