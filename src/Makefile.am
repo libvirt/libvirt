@@ -101,7 +101,7 @@ libvirt_la_CFLAGS = $(COVERAGE_CFLAGS) -DIN_LIBVIRT
 
 bin_PROGRAMS = virsh
 
-virsh_SOURCES = virsh.c console.c console.h util-lib.c
+virsh_SOURCES = virsh.c console.c console.h util-lib.c util-lib.h
 virsh_LDFLAGS = $(WARN_CFLAGS) $(COVERAGE_LDFLAGS)
 virsh_DEPENDENCIES = $(DEPS)
 virsh_LDADD = $(LDADDS) $(VIRSH_LIBS)

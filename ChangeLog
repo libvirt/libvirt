@@ -1,5 +1,8 @@
 Wed Feb 27 15:39:10 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	Avoid "make distcheck" failure.
+	* src/Makefile.am (virsh_SOURCES): Add util-lib.h.
+
 	Fix a "make syntax-check" failure.
 	* src/capabilities.c: Include <config.h> from the .c file,
 	* src/capabilities.h: ... not from the .h file.
