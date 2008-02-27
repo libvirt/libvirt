@@ -698,7 +698,7 @@ virStorageVolDefParseDoc(virConnectPtr conn,
         goto cleanup;
     }
 
-    /* Auto-generated so delibrately ignore */
+    /* Auto-generated so deliberately ignore */
     /*ret->key = virXPathString("string(/volume/key)", ctxt);*/
 
     capacity = virXPathString("string(/volume/capacity)", ctxt);

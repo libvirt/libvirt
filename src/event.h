@@ -28,7 +28,7 @@
 /**
  * virEventHandleCallback: callback for receiving file handle events
  *
- * @fd: file handle on which the event occured
+ * @fd: file handle on which the event occurred
  * @events: bitset of events from POLLnnn constants
  * @opaque: user data registered with handle
  */
@@ -38,8 +38,8 @@ typedef void (*virEventHandleCallback)(int fd, int events, void *opaque);
  * virEventAddHandle: register a callback for monitoring file handle events
  *
  * @fd: file handle to monitor for events
- * @events: bitset of events to wach from POLLnnn constants
- * @cb: callback to invoke when an event occurrs
+ * @events: bitset of events to watch from POLLnnn constants
+ * @cb: callback to invoke when an event occurs
  * @opaque: user data to pass to callback
  *
  * returns -1 if the file handle cannot be registered, 0 upon success
@@ -50,7 +50,7 @@ int virEventAddHandle(int fd, int events, virEventHandleCallback cb, void *opaqu
  * virEventUpdateHandle: change event set for a monitored file handle
  *
  * @fd: file handle to monitor for events
- * @events: bitset of events to wach from POLLnnn constants
+ * @events: bitset of events to watch from POLLnnn constants
  *
  * Will not fail if fd exists
  */
@@ -77,7 +77,7 @@ typedef void (*virEventTimeoutCallback)(int timer, void *opaque);
  * virEventAddTimeout: register a callback for a timer event
  *
  * @frequency: time between events in milliseconds
- * @cb: callback to invoke when an event occurrs
+ * @cb: callback to invoke when an event occurs
  * @opaque: user data to pass to callback
  *
  * Setting frequency to -1 will disable the timer. Setting the frequency

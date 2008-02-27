@@ -92,7 +92,7 @@ static int nbNodeCpus = -1;
  * @conn: pointer to the hypervisor connection
  *
  * Initializer for previous variables. We currently assume that
- * the number of physical CPU and the numebr of NUMA cell is fixed
+ * the number of physical CPU and the number of NUMA cell is fixed
  * until reboot which might be false in future Xen implementations.
  */
 static void
@@ -111,7 +111,7 @@ xenNumaInit(virConnectPtr conn) {
  * xenNbCells:
  * @conn: pointer to the hypervisor connection
  *
- * Number of NUMa cells present in the actual Node
+ * Number of NUMA cells present in the actual Node
  *
  * Returns the number of NUMA cells available on that Node
  */

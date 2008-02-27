@@ -24,7 +24,7 @@
 /**
  * virSexprError:
  * @conn: the connection if available
- * @error: the error noumber
+ * @error: the error number
  * @info: extra information string
  *
  * Handle an error in the S-Expression code
@@ -289,7 +289,7 @@ trim(const char *string)
  * @end: pointer to an index in the buffer for the already parsed bytes
  *
  * Internal routine implementing the parse of S-Expression
- * Note that failure in this function is catrosphic.  If it returns
+ * Note that failure in this function is catastrophic.  If it returns
  * NULL, you've leaked memory and you're currently OOM.  It will always
  * parse an SEXPR given a buffer
  *
@@ -387,7 +387,7 @@ _string2sexpr(const char *buffer, size_t * end)
  * @buffer: a zero terminated buffer containing an S-Expression in UTF-8
  *
  * Parse the S-Expression in the buffer.
- * Note that failure in this function is catrosphic.  If it returns
+ * Note that failure in this function is catastrophic.  If it returns
  * NULL, you've leaked memory and you're currently OOM.  It will always
  * parse an SEXPR given a buffer
  *

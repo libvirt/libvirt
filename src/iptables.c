@@ -544,7 +544,7 @@ iptablesContextNew(void)
  * iptablesContextFree:
  * @ctx: pointer to the IP table context
  *
- * Free the ressources associated with an IP table context
+ * Free the resources associated with an IP table context
  */
 void
 iptablesContextFree(iptablesContext *ctx)
@@ -663,7 +663,7 @@ iptablesAddTcpInput(iptablesContext *ctx,
  * @iface: the interface name
  * @port: the TCP port to remove
  *
- * Removes an input from the IP table, hence forbiding access to the given
+ * Removes an input from the IP table, hence forbidding access to the given
  * @port on the given @iface interface for TCP packets
  *
  * Returns 0 in case of success or an error code in case of error
@@ -702,7 +702,7 @@ iptablesAddUdpInput(iptablesContext *ctx,
  * @iface: the interface name
  * @port: the UDP port to remove
  *
- * Removes an input from the IP table, hence forbiding access to the given
+ * Removes an input from the IP table, hence forbidding access to the given
  * @port on the given @iface interface for UDP packets
  *
  * Returns 0 in case of success or an error code in case of error

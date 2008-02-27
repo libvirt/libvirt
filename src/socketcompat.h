@@ -43,7 +43,7 @@ socket_errno (void)
 
 #include <winsock2.h>
 
-/* Socket functions in Windoze don't set errno.  Instead of using errno
+/* Socket functions in Windows don't set errno.  Instead of using errno
  * to test for socket errors, call this function to get the errno.
  */
 static inline int

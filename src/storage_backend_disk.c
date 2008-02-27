@@ -324,7 +324,7 @@ virStorageBackendDiskMakeVol(virConnectPtr conn,
         STREQ(groups[2], "metadata"))
         return 0;
 
-    /* Remaining data / metdata parts get turn into volumes... */
+    /* Remaining data / metadata parts get turn into volumes... */
     if (STREQ(groups[2], "metadata") ||
         STREQ(groups[2], "data")) {
         virStorageVolDefPtr vol = data;
@@ -338,7 +338,7 @@ virStorageBackendDiskMakeVol(virConnectPtr conn,
         /* ....or free space extents */
         return virStorageBackendDiskMakeFreeExtent(conn, pool, groups);
     } else {
-        /* This codepath should never happen unless someone changed
+        /* This code path should never happen unless someone changed
          * libvirt_parthelper forgot to change this code */
         return -1;
     }

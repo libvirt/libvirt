@@ -335,7 +335,7 @@ virStorageBackendStablePath(virConnectPtr conn,
  * Run an external program.
  *
  * Read its output and apply a series of regexes to each line
- * When the entire set of regexes has matched consequetively
+ * When the entire set of regexes has matched consecutively
  * then run a callback passing in all the matches
  */
 int

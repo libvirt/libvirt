@@ -1,4 +1,8 @@
-Tue Feb 26 23:16:00 EST 2006 Daniel P. Berrange <berrange@redhat.com>
+Wed Feb 27 10:34:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Fix typos (Atsushi SAKAI).
+
+Tue Feb 26 23:16:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/capabilities.h, src/capabilities.c, src/Makefile.am:
 	Add generic API for dealing with hypervisor capabilities

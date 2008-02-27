@@ -138,7 +138,7 @@ static regex_t xen_cap_rec;
 
 struct xen_v0_getdomaininfo {
     domid_t  domain;	/* the domain number */
-    uint32_t flags;	/* falgs, see before */
+    uint32_t flags;	/* flags, see before */
     uint64_t tot_pages;	/* total number of pages used */
     uint64_t max_pages;	/* maximum number of pages allowed */
     unsigned long shared_info_frame; /* MFN of shared_info struct */
@@ -152,7 +152,7 @@ typedef struct xen_v0_getdomaininfo xen_v0_getdomaininfo;
 
 struct xen_v2_getdomaininfo {
     domid_t  domain;	/* the domain number */
-    uint32_t flags;	/* falgs, see before */
+    uint32_t flags;	/* flags, see before */
     uint64_t tot_pages;	/* total number of pages used */
     uint64_t max_pages;	/* maximum number of pages allowed */
     uint64_t shared_info_frame; /* MFN of shared_info struct */
@@ -171,7 +171,7 @@ typedef struct xen_v2_getdomaininfo xen_v2_getdomaininfo;
 
 struct xen_v2d5_getdomaininfo {
     domid_t  domain;	/* the domain number */
-    uint32_t flags;	/* falgs, see before */
+    uint32_t flags;	/* flags, see before */
     uint64_t tot_pages ALIGN_64;	/* total number of pages used */
     uint64_t max_pages ALIGN_64;	/* maximum number of pages allowed */
     uint64_t shared_info_frame ALIGN_64; /* MFN of shared_info struct */
@@ -809,7 +809,7 @@ virXenPerror (virConnectPtr conn, const char *msg)
 /**
  * xenHypervisorDoV0Op:
  * @handle: the handle to the Xen hypervisor
- * @op: pointer to the hyperviros operation structure
+ * @op: pointer to the hypervisor operation structure
  *
  * Do an hypervisor operation though the old interface,
  * this leads to an hypervisor call through ioctl.
@@ -850,7 +850,7 @@ xenHypervisorDoV0Op(int handle, xen_op_v0 * op)
 /**
  * xenHypervisorDoV1Op:
  * @handle: the handle to the Xen hypervisor
- * @op: pointer to the hyperviros operation structure
+ * @op: pointer to the hypervisor operation structure
  *
  * Do an hypervisor v1 operation, this leads to an hypervisor call through
  * ioctl.
@@ -894,7 +894,7 @@ xenHypervisorDoV1Op(int handle, xen_op_v1* op)
  * @handle: the handle to the Xen hypervisor
  * @op: pointer to the hypervisor operation structure
  *
- * Do an hypervisor v2 stsyem operation, this leads to an hypervisor
+ * Do an hypervisor v2 system operation, this leads to an hypervisor
  * call through ioctl.
  *
  * Returns 0 in case of success and -1 in case of error.
@@ -1970,7 +1970,7 @@ xenHypervisorInit(void)
 #endif
 
     /*
-     * we faild to make any hypercall
+     * we failed to make any hypercall
      */
 
     hypervisor_version = -1;
@@ -2049,7 +2049,7 @@ xenHypervisorInit(void)
     }
 
     /*
-     * we faild to make the getdomaininfolist hypercall
+     * we failed to make the getdomaininfolist hypercall
      */
 
     hypervisor_version = -1;
@@ -3183,7 +3183,7 @@ xenHypervisorPinVcpu(virDomainPtr domain, unsigned int vcpu,
  *	underlying virtualization system (Xen...).
  *
  * Extract information about virtual CPUs of domain, store it in info array
- * and also in cpumaps if this pointer is'nt NULL.
+ * and also in cpumaps if this pointer isn't NULL.
  *
  * Returns the number of info filled in case of success, -1 in case of failure.
  */
