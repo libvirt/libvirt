@@ -1,3 +1,8 @@
+Wed Feb 27 20:12:35 CET 2008 Jim Meyering <meyering@redhat.com>
+
+	Make qemud/'s rpcgen rules work.
+	* qemud/Makefile.am (SUFFIXES): Define to .x before implicit rule.
+
 Wed Feb 27 16:11:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	virMacAddrCompare for comparing MAC addresses

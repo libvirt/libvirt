@@ -14,6 +14,7 @@ EXTRA_DIST = libvirtd.init.in libvirtd.sysconf default-network.xml \
         libvirtd.conf
 
 if RPCGEN
+SUFFIXES = .x
 .x.c:
 	rm -f $@
 	rpcgen -c -o $@ $<
