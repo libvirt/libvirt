@@ -24,9 +24,6 @@
 #ifndef __VIR_CAPABILITIES_H
 #define __VIR_CAPABILITIES_H
 
-#include <config.h>
-
-
 typedef struct _virCapsGuestFeature virCapsGuestFeature;
 typedef virCapsGuestFeature *virCapsGuestFeaturePtr;
 struct _virCapsGuestFeature {

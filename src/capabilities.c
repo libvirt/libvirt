@@ -21,6 +21,8 @@
  * Author: Daniel P. Berrange <berrange@redhat.com>
  */
 
+#include <config.h>
+
 #include "capabilities.h"
 #include "buf.h"
 
@@ -30,7 +32,7 @@
  * @arch: host machine architecture
  * @offlineMigrate: non-zero if offline migration is available
  * @liveMigrate: non-zero if live migration is available
- * 
+ *
  * Allocate a new capabilities object
  */
 virCapsPtr

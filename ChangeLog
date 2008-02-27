@@ -1,3 +1,9 @@
+Wed Feb 27 15:39:10 CET 2008 Jim Meyering <meyering@redhat.com>
+
+	Fix a "make syntax-check" failure.
+	* src/capabilities.c: Include <config.h> from the .c file,
+	* src/capabilities.h: ... not from the .h file.
+
 Wed Feb 27 10:34:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Fix typos (Atsushi SAKAI).
