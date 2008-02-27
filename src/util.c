@@ -654,6 +654,16 @@ virParseNumber(const char **str)
     return (ret);
 }
 
+/* Use this function when comparing two MAC addresses.  It deals with
+ * string case compare and will eventually be extended to understand
+ * that 01:02:03:04:05:06 is the same as 1:2:3:4:5:6.
+ */
+int
+__virMacAddrCompare (const char *mac1, const char *mac2)
+{
+    return strcasecmp (mac1, mac2);
+}
+
 /*
  * Local variables:
  *  indent-tabs-mode: nil

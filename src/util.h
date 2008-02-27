@@ -79,8 +79,10 @@ int __virStrToLong_ull(char const *s,
 		       unsigned long long *result);
 #define virStrToLong_ull(s,e,b,r) __virStrToLong_ull((s),(e),(b),(r))
 
+int __virMacAddrCompare (const char *mac1, const char *mac2);
+#define virMacAddrCompare(mac1,mac2) __virMacAddrCompare((mac1),(mac2))
+
 void virSkipSpaces(const char **str);
 int virParseNumber(const char **str);
-
 
 #endif /* __VIR_UTIL_H__ */

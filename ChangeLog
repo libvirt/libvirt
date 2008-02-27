@@ -1,3 +1,12 @@
+Wed Feb 27 16:11:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	virMacAddrCompare for comparing MAC addresses
+	* src/util.c, src/util.h, src/libvirt_sym.version: Added
+	  virMacAddrCompare utility function for comparing MAC
+	  addresses.
+	* src/virsh.c, src/xm_internal.c: Use virMacAddrCompare
+	  to compare addresses.  (Shigeki Sakamoto and Richard Jones).
+
 Wed Feb 27 15:39:10 CET 2008 Jim Meyering <meyering@redhat.com>
 
 	Avoid "make distcheck" failure.

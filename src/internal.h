@@ -54,7 +54,6 @@ extern "C" {
 #define STRNEQLEN(a,b,n) (strncmp((a),(b),(n)) != 0)
 #define STRCASENEQLEN(a,b,n) (strncasecmp((a),(b),(n)) != 0)
 
-
 /* If configured with --enable-debug=yes then library calls
  * are printed to stderr for debugging.
  */

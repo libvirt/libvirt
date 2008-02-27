@@ -185,5 +185,7 @@
         __virBufferAdd;
         __virBufferAddChar;
 
+	__virMacAddrCompare;
+
     local: *;
 };

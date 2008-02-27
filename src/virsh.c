@@ -4742,7 +4742,7 @@ cmdDetachInterface(vshControl * ctl, vshCmd * cmd)
         while (cur != NULL) {
             if (cur->type == XML_ELEMENT_NODE && xmlStrEqual(cur->name, BAD_CAST "mac")) {
                 tmp_mac = xmlGetProp(cur, BAD_CAST "address");
-                diff_mac = xmlStrcasecmp(tmp_mac, BAD_CAST mac);
+                diff_mac = virMacAddrCompare ((char *) tmp_mac, mac);
                 xmlFree(tmp_mac);
                 if (!diff_mac) {
                     goto hit;

@@ -53,6 +53,7 @@
 #include "xml.h"
 #include "buf.h"
 #include "uuid.h"
+#include "util.h"
 
 static int xenXMConfigSetString(virConfPtr conf, const char *setting,
                                 const char *str);
@@ -2813,7 +2814,7 @@ xenXMAttachInterface(virDomainPtr domain, xmlXPathContextPtr ctxt, int hvm,
                 key = nextkey;
             }
 
-            if (!(strcmp(dommac, (const char *) mac))) {
+            if (virMacAddrCompare (dommac, (const char *) mac) == 0) {
                 if (autoassign) {
                     free(mac);
                     mac = NULL;
@@ -3088,7 +3089,7 @@ xenXMDomainDetachDevice(virDomainPtr domain, const char *xml) {
                     mac = nextmac;
                 }
 
-                if (!(strcmp(dommac, (const char *) key)))
+                if (virMacAddrCompare (dommac, (const char *) key) == 0)
                     break;
             }
         skip:
