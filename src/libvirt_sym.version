@@ -166,10 +166,10 @@
 
 	__virEventRegisterImpl;
 
- 	__virStateInitialize;
- 	__virStateCleanup;
- 	__virStateReload;
- 	__virStateActive;
+	__virStateInitialize;
+	__virStateCleanup;
+	__virStateReload;
+	__virStateActive;
 
 	__virDrvSupportsFeature;
 

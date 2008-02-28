@@ -1,3 +1,23 @@
+Thu Feb 28 18:04:59 CET 2008 Jim Meyering <meyering@redhat.com>
+
+	Avoid link errors with "configure --disable-shared".
+	* src/Makefile.am: Create a convenience library, libvirt_test.la,
+	and don't restrict access to *its* symbols.
+	* tests/Makefile.am (LDADDS): Add ../src/libvirt_test.la, so that
+	"configure --disable-shared" no longer provokes link errors.
+	(LIBVIRT): Remove definition.
+	(LDADDS): Remove use.
+	($(LIBVIRT)): Remove rule.
+	(LDADDS): Use the new convenience library instead.
+	(CLEANFILES): Define.
+	* docs/examples/index.py (dump_Makefile): Append $(COVERAGE_LDFLAGS),
+	to the LDADDS definition, to avoid link error with the combination of
+	--enable-test-coverage and --disable-shared.
+	* docs/examples/Makefile.am: Regenerate.
+	* docs/examples/index.html: Likewise.
+	* qemud/Makefile.am (libvirtd_LDFLAGS): Append $(COVERAGE_LDFLAGS).
+	* src/libvirt_sym.version: Remove some SP-before-TAB.
+
 Thu Feb 28 12:16:39 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_conf.c: applied patch from Cole Robinson to use virErrorMsg

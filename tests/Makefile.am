@@ -3,14 +3,6 @@
 SUBDIRS = virshdata confdata sexpr2xmldata \
   xml2sexprdata xmconfigdata xencapsdata
 
-# Wierd libtool related juju...
-#
-# We explicitly want wildcard here instead of just linking
-# to the libvirt.a file. This ensures that when coverage
-# tests are run, all the output data ends up in the correct
-# location. ie, src/ instead of src/.libs.
-LIBVIRT = $(wildcard $(top_builddir)/src/.libs/libvirt_la-*.o)
-
 INCLUDES = \
 	-I$(top_srcdir)/gnulib/lib -I../gnulib/lib \
 	-I$(top_builddir)/include \
@@ -34,7 +26,7 @@ LDADDS = \
         $(SASL_LIBS) \
         $(SELINUX_LIBS) \
         $(WARN_CFLAGS) \
-	$(LIBVIRT) \
+	../src/libvirt_test.la \
 	../gnulib/lib/libgnu.la \
         $(COVERAGE_LDFLAGS)
 
@@ -132,5 +124,4 @@ reconnect_SOURCES = \
 	reconnect.c
 reconnect_LDADD = $(LDADDS)
 
-$(LIBVIRT):
-	-@(cd $(top_builddir)/src && $(MAKE) MAKEFLAGS+=--silent)
+CLEANFILES = *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda

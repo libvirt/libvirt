@@ -99,6 +99,25 @@ libvirt_la_LDFLAGS = -Wl,--version-script=$(srcdir)/libvirt_sym.version \
 		    @CYGWIN_EXTRA_LDFLAGS@ @MINGW_EXTRA_LDFLAGS@
 libvirt_la_CFLAGS = $(COVERAGE_CFLAGS) -DIN_LIBVIRT
 
+# Create an automake "convenience library" version of libvirt_la,
+# just for testing, since the test harness requires access to internal
+# bits and pieces that we don't want to make publicly accessible.
+noinst_LTLIBRARIES = libvirt_test.la
+
+# Convert libvirt_sym.version
+#      to libvirt_test_sym.version, and
+# remove -version-info X.Y.Z (not needed since this is a convenience library.
+test_LDFLAGS =						\
+  $$(echo '$(libvirt_la_LDFLAGS)'			\
+     |sed 's!-Wl,--v.*_sym\.version!!'			\
+     |sed 's!-version-info @LIBVIRT_VERSION_INFO@!!')
+
+# Just like the above, but with a slightly different set of public symbols.
+libvirt_test_la_SOURCES = $(libvirt_la_SOURCES)
+libvirt_test_la_LIBADD = $(libvirt_la_LIBADD)
+libvirt_test_la_LDFLAGS = $(test_LDFLAGS)
+libvirt_test_la_CFLAGS = $(COVERAGE_CFLAGS)
+
 bin_PROGRAMS = virsh
 
 virsh_SOURCES = virsh.c console.c console.h util-lib.c util-lib.h

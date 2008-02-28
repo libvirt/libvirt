@@ -3,7 +3,7 @@
 SUBDIRS=python
 INCLUDES = -I$(top_builddir)/include -I$(top_srcdir)/include -I@srcdir@/include
 DEPS = $(top_builddir)/src/libvirt.la
-LDADDS = @STATIC_BINARIES@ $(WARN_CFLAGS) $(top_builddir)/src/libvirt.la
+LDADDS = @STATIC_BINARIES@ $(WARN_CFLAGS) $(top_builddir)/src/libvirt.la 	$(COVERAGE_LDFLAGS)
 
 rebuild: examples.xml index.html
 

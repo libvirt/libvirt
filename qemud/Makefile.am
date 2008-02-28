@@ -48,18 +48,22 @@ libvirtd_SOURCES = \
 
 #-D_XOPEN_SOURCE=600 -D_XOPEN_SOURCE_EXTENDED=1 -D_POSIX_C_SOURCE=199506L
 libvirtd_CFLAGS = \
-        -I$(top_srcdir)/gnulib/lib -I../gnulib/lib \
-        -I$(top_srcdir)/include -I$(top_builddir)/include \
-        $(LIBXML_CFLAGS) $(GNUTLS_CFLAGS) $(SASL_CFLAGS) \
-        $(POLKIT_CFLAGS) \
-        $(WARN_CFLAGS) -DLOCAL_STATE_DIR="\"$(localstatedir)\"" \
-        -DSYSCONF_DIR="\"$(sysconfdir)\"" \
+	-I$(top_srcdir)/gnulib/lib -I../gnulib/lib \
+	-I$(top_srcdir)/include -I$(top_builddir)/include \
+	$(LIBXML_CFLAGS) $(GNUTLS_CFLAGS) $(SASL_CFLAGS) \
+	$(POLKIT_CFLAGS) \
+	$(WARN_CFLAGS) -DLOCAL_STATE_DIR="\"$(localstatedir)\"" \
+	$(COVERAGE_CFLAGS) \
+	-DSYSCONF_DIR="\"$(sysconfdir)\"" \
 	-DQEMUD_PID_FILE="\"$(QEMUD_PID_FILE)\"" \
 	-DREMOTE_PID_FILE="\"$(REMOTE_PID_FILE)\"" \
-        -DGETTEXT_PACKAGE=\"$(PACKAGE)\"
+	-DGETTEXT_PACKAGE=\"$(PACKAGE)\"
 
-libvirtd_LDFLAGS = $(WARN_CFLAGS) $(LIBXML_LIBS) $(GNUTLS_LIBS) $(SASL_LIBS) \
-                   $(POLKIT_LIBS)
+libvirtd_LDFLAGS = \
+	$(WARN_CFLAGS) $(LIBXML_LIBS) $(GNUTLS_LIBS) $(SASL_LIBS) \
+	$(COVERAGE_LDFLAGS)
+	$(POLKIT_LIBS)
+
 libvirtd_DEPENDENCIES = ../src/libvirt.la
 libvirtd_LDADD = ../src/libvirt.la ../gnulib/lib/libgnu.la
 
@@ -145,7 +149,6 @@ libvirtd.init: libvirtd.init.in
 	chmod a+x $@-t
 	mv $@-t $@
 
-CLEANFILES = libvirtd.init
 else
 
 install-init:
@@ -154,3 +157,6 @@ uninstall-init:
 endif # DBUS_INIT_SCRIPTS_RED_HAT
 
 endif # WITH_LIBVIRTD
+
+CLEANFILES = libvirtd.init
+CLEANFILES += *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda
