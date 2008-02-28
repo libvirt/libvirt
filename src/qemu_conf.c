@@ -58,6 +58,7 @@ void qemudReportError(virConnectPtr conn,
                       int code, const char *fmt, ...) {
     va_list args;
     char errorMessage[QEMUD_MAX_ERROR_LEN];
+    const char *virerr;
 
     if (fmt) {
         va_start(args, fmt);
@@ -66,8 +67,10 @@ void qemudReportError(virConnectPtr conn,
     } else {
         errorMessage[0] = '\0';
     }
+
+    virerr = __virErrorMsg(code, (errorMessage[0] ? errorMessage[0] : NULL));
     __virRaiseError(conn, dom, net, VIR_FROM_QEMU, code, VIR_ERR_ERROR,
-                    NULL, NULL, NULL, -1, -1, "%s", errorMessage);
+                    virerr, errorMessage, NULL, -1, -1, virerr, errorMessage);
 }
 
 int qemudLoadDriverConfig(struct qemud_driver *driver,
