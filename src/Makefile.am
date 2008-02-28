@@ -137,20 +137,20 @@ else
 EXTRA_DIST += parthelper.c
 endif
 
-#
-# target to ease building test programs
-#
-tst: tst.c
-	$(CC) $(CFLAGS) $(INCLUDES) -I../include -o tst tst.c .libs/libvirt.a $(LIBXML_LIBS) $(VIRSH_LIBS) $(GNUTLS_LIBS) $(LIBS)
-
-COVERAGE_FILES = $(CLIENT_SOURCES:%.c=libvirt_la-%.cov)
-
-cov: clean-cov $(COVERAGE_FILES)
+cov: clean-cov
+	for i in $(CLIENT_SOURCES); do			\
+	  case $$i in *.c) ;; *) continue;; esac;	\
+	  b=$$(basename $$i .c);			\
+	  o_files=;					\
+	  for i in '' _test; do				\
+	    o="$(LV_LIBTOOL_OBJDIR)/libvirt$${i}_la-$$b.o";	\
+	    test -f "$$o"				\
+	      && o_files="$$o_files $$o";		\
+	  done;						\
+	  gcov -b -f $$o_files > $$b.cov;		\
+	done
 
 clean-cov:
 	rm -f *.cov *.gcov
-
-%.cov: .libs/%.o
-	gcov -b -f -o .libs $< > $@
 
 CLEANFILES = *.cov *.gcov .libs/*.gcda .libs/*.gcno *.gcno *.gcda

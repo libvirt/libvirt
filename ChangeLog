@@ -1,5 +1,11 @@
 Thu Feb 28 18:04:59 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	Rewrite test-coverage rules to accommodate multiple .o files per .c.
+	* src/Makefile.am (cov): Rewrite rule to merge gcov results corresponding
+	to two .o files: the libvirt_la- one, and the libvirt_test_la- one.
+	(tst): Remove unused rule.
+	* configure.in (LV_LIBTOOL_OBJDIR): Define and AC_SUBST.
+
 	Avoid link errors with "configure --disable-shared".
 	* src/Makefile.am: Create a convenience library, libvirt_test.la,
 	and don't restrict access to *its* symbols.

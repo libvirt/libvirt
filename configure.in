@@ -913,6 +913,13 @@ AC_SUBST(MINGW_EXTRA_LDFLAGS)
 
 AC_SYS_LARGEFILE
 
+# Set LV_LIBTOOL_OBJDIR to "." or $lt_cv_objdir, depending on whether
+# we're building shared libraries.  This is the name of the directory
+# in which .o files will be created.
+test "$enable_shared" = no && lt_cv_objdir=.
+LV_LIBTOOL_OBJDIR=${lt_cv_objdir-.}
+AC_SUBST(LV_LIBTOOL_OBJDIR)
+
 # very annoying
 rm -f COPYING
 cp COPYING.LIB COPYING
