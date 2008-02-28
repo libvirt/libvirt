@@ -1,3 +1,8 @@
+Wed Feb 27 20:21:35 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/bridge.c, src/bridge.h, src/qemu_conf.c: Set mac address
+	on TUN device to work with Xenner
+
 Wed Feb 27 20:12:35 CET 2008 Jim Meyering <meyering@redhat.com>
 
 	Make qemud/'s rpcgen rules work.

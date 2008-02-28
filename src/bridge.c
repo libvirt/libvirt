@@ -42,6 +42,7 @@
 #include <linux/sockios.h>   /* SIOCBRADDBR etc.   */
 #include <linux/if_bridge.h> /* SYSFS_BRIDGE_ATTR  */
 #include <linux/if_tun.h>    /* IFF_TUN, IFF_NO_PI */
+#include <net/if_arp.h>    /* ARPHRD_ETHER */
 
 #include "internal.h"
 
@@ -312,6 +313,7 @@ brDeleteInterface(brControl *ctl ATTRIBUTE_UNUSED,
 int
 brAddTap(brControl *ctl,
          const char *bridge,
+         unsigned char *macaddr,
          char *ifname,
          int maxlen,
          int *tapfd)
@@ -355,6 +357,18 @@ brAddTap(brControl *ctl,
         }
 
         if (ioctl(fd, TUNSETIFF, &try) == 0) {
+            struct ifreq addr;
+            memset(&addr, 0, sizeof(addr));
+            memcpy(addr.ifr_hwaddr.sa_data, macaddr, 6);
+            addr.ifr_hwaddr.sa_family = ARPHRD_ETHER;
+
+            /* Device actually starts in 'UP' state, but it
+             * needs to be down to set the MAC addr
+             */
+            if ((errno = brSetInterfaceUp(ctl, try.ifr_name, 0)))
+                goto error;
+            if (ioctl(fd, SIOCSIFHWADDR, &addr) != 0)
+                goto error;
             if ((errno = brAddInterface(ctl, bridge, try.ifr_name)))
                 goto error;
             if ((errno = brSetInterfaceUp(ctl, try.ifr_name, 1)))

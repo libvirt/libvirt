@@ -1530,6 +1530,7 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     }
 
     if ((err = brAddTap(driver->brctl, brname,
+                        net->mac,
                         ifname, BR_IFNAME_MAXLEN, &tapfd))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "Failed to add tap interface '%s' to bridge '%s' : %s",
