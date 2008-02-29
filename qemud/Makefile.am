@@ -61,7 +61,7 @@ libvirtd_CFLAGS = \
 
 libvirtd_LDFLAGS = \
 	$(WARN_CFLAGS) $(LIBXML_LIBS) $(GNUTLS_LIBS) $(SASL_LIBS) \
-	$(COVERAGE_LDFLAGS)
+	$(COVERAGE_LDFLAGS) \
 	$(POLKIT_LIBS)
 
 libvirtd_DEPENDENCIES = ../src/libvirt.la
