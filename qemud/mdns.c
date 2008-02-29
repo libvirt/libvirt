@@ -209,7 +209,7 @@ static void libvirtd_mdns_client_callback(AvahiClient *c, AvahiClientState state
             /* The server records are now being established. This
              * might be caused by a host name change. We need to wait
              * for our own records to register until the host name is
-             * properly esatblished. */
+             * properly established. */
             AVAHI_DEBUG("Client collision/connecting %p", mdns->client);
             group = mdns->group;
             while (group) {

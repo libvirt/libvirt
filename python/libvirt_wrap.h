@@ -86,7 +86,7 @@ PyObject * libvirt_virStorageVolPtrWrap(virStorageVolPtr node);
  *  if (x) LIBVIRT_STMT_START { ... } LIBVIRT_STMT_END; else ...
  *
  *  When GCC is compiling C code in non-ANSI mode, it will use the
- *  compiler __extension__ to wrap the statements wihin `({' and '})' braces.
+ *  compiler __extension__ to wrap the statements within `({' and '})' braces.
  *  When compiling on platforms where configure has defined
  *  HAVE_DOWHILE_MACROS, statements will be wrapped with `do' and `while (0)'.
  *  For any other platforms (SunOS4 is known to have this issue), wrap the

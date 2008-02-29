@@ -41,7 +41,7 @@ typedef enum {
     VIR_FROM_XEN,	/* Error at Xen hypervisor layer */
     VIR_FROM_XEND,	/* Error at connection with xend daemon */
     VIR_FROM_XENSTORE,	/* Error at connection with xen store */
-    VIR_FROM_SEXPR,	/* Error in the S-Epression code */
+    VIR_FROM_SEXPR,	/* Error in the S-Expression code */
     VIR_FROM_XML,	/* Error in the XML code */
     VIR_FROM_DOM,	/* Error when operating on a domain */
     VIR_FROM_RPC,	/* Error in the XML-RPC code */
@@ -131,7 +131,7 @@ typedef enum {
     VIR_WAR_NO_NETWORK, /* failed to start network */
     VIR_ERR_NO_DOMAIN, /* domain not found or unexpectedly disappeared */
     VIR_ERR_NO_NETWORK, /* network not found */
-    VIR_ERR_INVALID_MAC, /* invalid MAC adress */
+    VIR_ERR_INVALID_MAC, /* invalid MAC address */
     VIR_ERR_AUTH_FAILED, /* authentication failed */
     VIR_ERR_INVALID_STORAGE_POOL, /* invalid storage pool object */
     VIR_ERR_INVALID_STORAGE_VOL, /* invalid storage vol object */

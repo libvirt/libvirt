@@ -2261,7 +2261,7 @@ remoteDispatchAuthSaslInit (struct qemud_server *server ATTRIBUTE_UNUSED,
 }
 
 
-/* We asked for an SSF layer, so sanity check that we actaully
+/* We asked for an SSF layer, so sanity check that we actually
  * got what we asked for */
 static int
 remoteSASLCheckSSF (struct qemud_client *client,

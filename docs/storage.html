@@ -84,7 +84,7 @@ full capacity for storage volumes. This value is in bytes. This
 is not applicable when creating a pool.</dd>
 
 <dt>available</dt>
-<dd>Providing the free space available for allocating new volums
+<dd>Providing the free space available for allocating new volumes
 in the pool. Due to underlying device constraints it may not be
 possible to allocate the entire free space to a single volume.
 This value is in bytes. This is not applicable when creating a
@@ -131,8 +131,8 @@ pool it will be the name of the directory in which volumes will
 be created. For device based pools it will tbe directory in which
 devices nodes exist. For the latter <code>/dev/</code> may seem
 like the logical choice, however, devices nodes there are not
-guarenteed stable across reboots, since they are allocated on
-demand. It is preferrable to use a stable location such as one
+guaranteed stable across reboots, since they are allocated on
+demand. It is preferable to use a stable location such as one
 of the <code>/dev/disk/by-{path,id,uuid,label</code> locations.
 </dd>
 <dt>permissions<dt>
@@ -152,7 +152,7 @@ contains the MAC (eg SELinux) label string.
 If a storage pool exposes information about its underlying
 placement / allocation scheme, the <code>device</code> element
 within the <code>source</code> element may contain information
-about its avilable extents. Some pools have a constraint that
+about its available extents. Some pools have a constraint that
 a volume must be allocated entirely within a single constraint
 (eg disk partition pools). Thus the extent information allows an
 application to determine the maximum possible size for a new
@@ -215,8 +215,8 @@ pool it will be the name of the directory in which volumes will
 be created. For device based pools it will tbe directory in which
 devices nodes exist. For the latter <code>/dev/</code> may seem
 like the logical choice, however, devices nodes there are not
-guarenteed stable across reboots, since they are allocated on
-demand. It is preferrable to use a stable location such as one
+guaranteed stable across reboots, since they are allocated on
+demand. It is preferable to use a stable location such as one
 of the <code>/dev/disk/by-{path,id,uuid,label</code> locations.
 </dd>
 <dt>format</dt>
@@ -293,10 +293,10 @@ One of the following options:
 </ul><p>
 When listing existing volumes all these formats are supported
 natively. When creating new volumes, only a subset may be
-available. The <code>raw</code> type is guarenteed always
+available. The <code>raw</code> type is guaranteed always
 available. The <code>qcow2</code> type can be created if
 either <code>qemu-img</code> or <code>qcow-create</code> tools
-are present. The others are dependant on support of the
+are present. The others are dependent on support of the
 <code>qemu-img</code> tool.
 
 </p><h4><a name="StorageBackendFS" id="StorageBackendFS">Filesystem pool</a></h4>
@@ -328,7 +328,7 @@ required.
 <h5>Valid pool format types</h5>
 
 <p>
-The fileystem pool supports the following formats:
+The filesystem pool supports the following formats:
 </p>
 
 <ul><li><code>auto</code> - automatically determine format</li>
@@ -378,7 +378,7 @@ point. It will default to using NFS as the protocol.
 <h5>Valid pool format types</h5>
 
 <p>
-The network fileystem pool supports the following formats:
+The network filesystem pool supports the following formats:
 </p>
 
 <ul><li><code>auto</code> - automatically determine format</li>

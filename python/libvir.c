@@ -115,7 +115,7 @@ libvirt_virDomainGetSchedulerType(PyObject *self ATTRIBUTE_UNUSED,
     if (c_retval == NULL)
         return VIR_PY_NONE;
 
-    /* convert to a Python tupple of long objects */
+    /* convert to a Python tuple of long objects */
     if ((info = PyTuple_New(2)) == NULL) {
         free(c_retval);
         return VIR_PY_NONE;
@@ -154,7 +154,7 @@ libvirt_virDomainGetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
         return VIR_PY_NONE;
     }
 
-    /* convert to a Python tupple of long objects */
+    /* convert to a Python tuple of long objects */
     if ((info = PyDict_New()) == NULL) {
         free(params);
         return VIR_PY_NONE;
@@ -227,7 +227,7 @@ libvirt_virDomainSetSchedulerParameters(PyObject *self ATTRIBUTE_UNUSED,
         return VIR_PY_INT_FAIL;
     }
 
-    /* convert to a Python tupple of long objects */
+    /* convert to a Python tuple of long objects */
     for (i = 0 ; i < nparams ; i++) {
         PyObject *key, *val;
         key = libvirt_constcharPtrWrap(params[i].field);
@@ -318,7 +318,7 @@ libvirt_virDomainGetVcpus(PyObject *self ATTRIBUTE_UNUSED,
                           cpumap, cpumaplen) < 0)
         goto cleanup;
 
-    /* convert to a Python tupple of long objects */
+    /* convert to a Python tuple of long objects */
     if ((pyretval = PyTuple_New(2)) == NULL)
         goto cleanup;
     if ((pycpuinfo = PyList_New(dominfo.nrVirtCpu)) == NULL)
@@ -1442,7 +1442,7 @@ initcygvirtmod
 
     virInitialize();
 
-    /* intialize the python extension module */
+    /* initialize the python extension module */
     Py_InitModule((char *)
 #ifndef __CYGWIN__
                   "libvirtmod"

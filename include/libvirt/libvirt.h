@@ -241,7 +241,7 @@ struct _virDomainInterfaceStats {
 /**
  * virDomainInterfaceStatsPtr:
  *
- * A pointe to a virDomainInterfaceStats structure
+ * A pointer to a virDomainInterfaceStats structure
  */
 typedef virDomainInterfaceStatsStruct *virDomainInterfaceStatsPtr;
 
@@ -261,7 +261,7 @@ virDomainPtr virDomainMigrate (virDomainPtr domain, virConnectPtr dconn,
  * @nodeinfo: virNodeInfo instance
  *
  * This macro is to calculate the total number of CPUs supported
- * but not neccessarily active in the host.
+ * but not necessarily active in the host.
  */
 
 
@@ -278,7 +278,7 @@ typedef virNodeInfo *virNodeInfoPtr;
 /**
  * virConnectFlags
  *
- * Flags when openning a connection to a hypervisor
+ * Flags when opening a connection to a hypervisor
  */
 typedef enum {
     VIR_CONNECT_RO = 1,    /* A readonly connection */
@@ -573,7 +573,7 @@ int			virDomainPinVcpu	(virDomainPtr domain,
  * @cpumap: pointer to a bit map of real CPUs (in 8-bit bytes) (IN/OUT)
  * @cpu: the physical CPU number
  *
- * This macro is to be used in conjonction with virDomainPinVcpu() API.
+ * This macro is to be used in conjunction with virDomainPinVcpu() API.
  * USE_CPU macro set the bit (CPU usable) of the related cpu in cpumap.
  */
 
@@ -584,7 +584,7 @@ int			virDomainPinVcpu	(virDomainPtr domain,
  * @cpumap: pointer to a bit map of real CPUs (in 8-bit bytes) (IN/OUT)
  * @cpu: the physical CPU number
  *
- * This macro is to be used in conjonction with virDomainPinVcpu() API.
+ * This macro is to be used in conjunction with virDomainPinVcpu() API.
  * USE_CPU macro reset the bit (CPU not usable) of the related cpu in cpumap.
  */
 
@@ -594,7 +594,7 @@ int			virDomainPinVcpu	(virDomainPtr domain,
  * VIR_CPU_MAPLEN:
  * @cpu: number of physical CPUs
  *
- * This macro is to be used in conjonction with virDomainPinVcpu() API.
+ * This macro is to be used in conjunction with virDomainPinVcpu() API.
  * It returns the length (in bytes) required to store the complete
  * CPU map between a single virtual & all physical CPUs of a domain.
  */
@@ -615,7 +615,7 @@ int			virDomainGetVcpus	(virDomainPtr domain,
  * @vcpu: the virtual CPU number
  * @cpu: the physical CPU number
  *
- * This macro is to be used in conjonction with virDomainGetVcpus() API.
+ * This macro is to be used in conjunction with virDomainGetVcpus() API.
  * VIR_CPU_USABLE macro returns a non zero value (true) if the cpu
  * is usable by the vcpu, and 0 otherwise.
  */
@@ -632,7 +632,7 @@ int			virDomainGetVcpus	(virDomainPtr domain,
  *	This cpumap must be previously allocated by the caller
  *      (ie: malloc(maplen))
  *
- * This macro is to be used in conjonction with virDomainGetVcpus() and
+ * This macro is to be used in conjunction with virDomainGetVcpus() and
  * virDomainPinVcpu() APIs. VIR_COPY_CPUMAP macro extract the cpumap of
  * the specified vcpu from cpumaps array and copy it into cpumap to be used
  * later by virDomainPinVcpu() API.
@@ -647,7 +647,7 @@ int			virDomainGetVcpus	(virDomainPtr domain,
  * @maplen: the length (in bytes) of one cpumap
  * @vcpu: the virtual CPU number
  *
- * This macro is to be used in conjonction with virDomainGetVcpus() and
+ * This macro is to be used in conjunction with virDomainGetVcpus() and
  * virDomainPinVcpu() APIs. VIR_GET_CPUMAP macro returns a pointer to the
  * cpumap of the specified vcpu from cpumaps array.
  */

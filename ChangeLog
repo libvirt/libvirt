@@ -1,3 +1,7 @@
+Fri Feb 29 12:50:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Many typos fixed (Atsushi SAKAI).
+
 Thu Feb 28 18:04:59 CET 2008 Jim Meyering <meyering@redhat.com>
 
 	Rewrite test-coverage rules to accommodate multiple .o files per .c.

@@ -45,7 +45,7 @@ significant:</p><ul><li>name: the domain name, preferably ASCII based</li>
   <li>memory: the maximum memory allocated to the domain in kilobytes</li>
   <li>vcpu: the number of virtual cpu configured for the domain</li>
   <li>os: a block describing the Operating System, its content will be
-    dependant on the OS type
+    dependent on the OS type
     <ul><li>type: indicate the OS type, always linux at this point</li>
       <li>kernel: path to the kernel on the Domain 0 filesystem</li>
       <li>initrd: an optional path for the init ramdisk on the Domain 0
@@ -168,7 +168,7 @@ systems:</p><pre>&lt;domain type='xen' id='3'&gt;
     pointing to an additional program in charge of emulating the devices</li>
   <li>the disk entry indicates in the dev target section that the emulation
     for the drive is the first IDE disk device hda. The list of device names
-    supported is dependant on the Hypervisor, but for Xen it can be any IDE
+    supported is dependent on the Hypervisor, but for Xen it can be any IDE
     device <code>hda</code>-<code>hdd</code>, or a floppy device
     <code>fda</code>, <code>fdb</code>. The <code>&lt;disk&gt;</code> element
     also supports a 'device' attribute to indicate what kinda of hardware to
@@ -247,7 +247,7 @@ support a variety of options:</p><ol><li>Userspace SLIRP stack
     of the box which does NAT'ing to the default route and has an IP range of
     <code>192.168.22.0/255.255.255.0</code>. Each guest will have an
     associated tun device created with a name of vnetN, which can also be
-    overriden with the &lt;target&gt; element. Example configs are:</p>
+    overridden with the &lt;target&gt; element. Example configs are:</p>
     <pre>&lt;interface type='network'&gt;
   &lt;source network='default'/&gt;
 &lt;/interface&gt;
@@ -263,7 +263,7 @@ support a variety of options:</p><ol><li>Userspace SLIRP stack
     <p>Provides a bridge from the VM directly onto the LAN. This assumes
     there is a bridge device on the host which has one or more of the hosts
     physical NICs enslaved. The guest VM will have an associated tun device
-    created with a name of vnetN, which can also be overriden with the
+    created with a name of vnetN, which can also be overridden with the
     &lt;target&gt; element. The tun device will be enslaved to the bridge.
     The IP range / network configuration is whatever is used on the LAN. This
     provides the guest VM full incoming &amp; outgoing net access just like a
@@ -281,11 +281,11 @@ support a variety of options:</p><ol><li>Userspace SLIRP stack
   <li>Generic connection to LAN
     <p>Provides a means for the administrator to execute an arbitrary script
     to connect the guest's network to the LAN. The guest will have a tun
-    device created with a name of vnetN, which can also be overriden with the
+    device created with a name of vnetN, which can also be overridden with the
     &lt;target&gt; element. After creating the tun device a shell script will
     be run which is expected to do whatever host network integration is
     required. By default this script is called /etc/qemu-ifup but can be
-    overriden.</p>
+    overridden.</p>
     <pre>&lt;interface type='ethernet'/&gt;
 
 &lt;interface type='ethernet'&gt;
@@ -409,7 +409,7 @@ BIOS you will see</p><pre>&lt;capabilities&gt;
     &lt;/features&gt;
   &lt;/guest&gt;</span>
   ...
-&lt;/capabilities&gt;</pre><p>The first block (in red) indicates the host hardware capbilities, currently
+&lt;/capabilities&gt;</pre><p>The first block (in red) indicates the host hardware capabilities, currently
 it is limited to the CPU properties but other information may be available,
 it shows the CPU architecture, and the features of the chip (the feature
 block is similar to what you will find in a Xen fully virtualized domain

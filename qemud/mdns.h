@@ -69,7 +69,7 @@ struct libvirtd_mdns_group *libvirtd_mdns_add_group(struct libvirtd_mdns *mdns, 
 /**
  * Removes a group container from advertizement
  *
- * @mdns amanger to detatch group from
+ * @mdns amanger to detach group from
  * @group group to remove
  */
 void libvirtd_mdns_remove_group(struct libvirtd_mdns *mdns, struct libvirtd_mdns_group *group);
@@ -88,7 +88,7 @@ struct libvirtd_mdns_entry *libvirtd_mdns_add_entry(struct libvirtd_mdns_group *
 /**
  * Removes a service entry from a group
  *
- * @group group to deteach service entry from
+ * @group group to detach service entry from
  * @entry service entry to remove
  */
 void libvirtd_mdns_remove_entry(struct libvirtd_mdns_group *group, struct libvirtd_mdns_entry *entry);
