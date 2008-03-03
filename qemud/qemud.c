@@ -2025,7 +2025,7 @@ libvirt management daemon:\n\
 
 #define MAX_LISTEN 5
 int main(int argc, char **argv) {
-    struct qemud_server *server;
+    struct qemud_server *server = NULL;
     struct sigaction sig_action;
     int sigpipe[2];
     const char *pid_file = NULL;
@@ -2180,7 +2180,8 @@ int main(int argc, char **argv) {
         unlink (pid_file);
 
  error1:
-    qemudCleanup(server);
+    if (server)
+        qemudCleanup(server);
     return ret;
 }
 

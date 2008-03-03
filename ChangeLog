@@ -1,3 +1,9 @@
+Mon Mar  3 19:09:51 CET 2008 Jim Meyering <meyering@redhat.com>
+
+	Avoid segfault upon early libvirtd failure.
+	* qemud/qemud.c (main): Don't call qemudCleanup on an
+	uninitialized pointer.
+
 Mon Mar  3 15:40:31 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* NEWS configure.in libvirt.spec.in docs/* include/libvirt/libvirt.h
