@@ -2166,8 +2166,6 @@ int main(int argc, char **argv) {
 
     qemudRunLoop(server);
 
-    qemudCleanup(server);
-
     close(sigwrite);
 
     if (godaemon)
@@ -2181,6 +2179,7 @@ int main(int argc, char **argv) {
         unlink (pid_file);
 
  error1:
+    qemudCleanup(server);
     return ret;
 }
 

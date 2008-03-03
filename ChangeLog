@@ -1,5 +1,9 @@
 Mon Mar  3 14:14:03 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	Plug skipped-qemudCleanup leak.
+	* qemud/qemud.c (main): Call qemudCleanup also upon failure.
+	Otherwise, an error return would skip it and induce leaks.
+
 	Plug remoteReadConfigFile leak.
 	* qemud/qemud.c (remoteReadConfigFile): Be careful to free
 	"conf" after a successful virConfReadFile.
