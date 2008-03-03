@@ -73,6 +73,7 @@ virCapabilitiesFreeGuestDomain(virCapsGuestDomainPtr dom)
     for (i = 0 ; i < dom->info.nmachines ; i++)
         free(dom->info.machines[i]);
     free(dom->info.machines);
+    free(dom->type);
 
     free(dom);
 }
@@ -323,9 +324,6 @@ virCapabilitiesAddGuestDomain(virCapsGuestPtr guest,
     int i;
 
     if ((dom = calloc(1, sizeof(*dom))) == NULL)
-        goto no_memory;
-
-    if ((dom->type = strdup(hvtype)) == NULL)
         goto no_memory;
 
     if ((dom->type = strdup(hvtype)) == NULL)

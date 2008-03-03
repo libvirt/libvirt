@@ -1,3 +1,9 @@
+Mon Mar  3 14:14:03 CET 2008 Jim Meyering <meyering@redhat.com>
+
+	Plug virCapabilities*GuestDomain leak.
+	* src/capabilities.c (virCapabilitiesFreeGuestDomain): Free dom->type.
+	(virCapabilitiesAddGuestDomain): Remove duplicate strdup stmt.
+
 Mon Mar  3 07:16:35 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* include/libvirt/libvirt.h include/libvirt/libvirt.h.in:
