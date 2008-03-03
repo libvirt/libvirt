@@ -1877,7 +1877,7 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
     GET_CONF_STR (conf, filename, tcp_port);
 
     if (remoteConfigGetAuth(conf, "auth_unix_rw", &auth_unix_rw, filename) < 0)
-        return -1;
+        goto free_and_fail;
 #if HAVE_POLKIT
     /* Change default perms to be wide-open if PolicyKit is enabled.
      * Admin can always override in config file
@@ -1886,11 +1886,11 @@ remoteReadConfigFile (struct qemud_server *server, const char *filename)
         unix_sock_rw_mask = 0777;
 #endif
     if (remoteConfigGetAuth(conf, "auth_unix_ro", &auth_unix_ro, filename) < 0)
-        return -1;
+        goto free_and_fail;
     if (remoteConfigGetAuth(conf, "auth_tcp", &auth_tcp, filename) < 0)
-        return -1;
+        goto free_and_fail;
     if (remoteConfigGetAuth(conf, "auth_tls", &auth_tls, filename) < 0)
-        return -1;
+        goto free_and_fail;
 
     GET_CONF_STR (conf, filename, unix_sock_group);
     if (unix_sock_group) {
