@@ -1,5 +1,9 @@
 Mon Mar  3 14:14:03 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	Plug saslUsernameWhitelist leak.
+	* qemud/qemud.c (qemudCleanup): Free the array as well as
+	the strings in it.
+
 	Plug skipped-qemudCleanup leak.
 	* qemud/qemud.c (main): Call qemudCleanup also upon failure.
 	Otherwise, an error return would skip it and induce leaks.

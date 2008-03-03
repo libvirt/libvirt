@@ -1661,6 +1661,7 @@ static void qemudCleanup(struct qemud_server *server) {
             free(*list);
             list++;
         }
+        free(server->saslUsernameWhitelist);
     }
 #endif
 
