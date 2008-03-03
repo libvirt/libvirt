@@ -1,3 +1,8 @@
+Mon Mar  3 21:17:29 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/capabilities.c: Cole Robinson pointed out a well formedness
+	  problem when generating the capabilities in the test driver.
+
 Mon Mar  3 19:09:51 CET 2008 Jim Meyering <meyering@redhat.com>
 
 	Don't use first byte of string as a pointer.

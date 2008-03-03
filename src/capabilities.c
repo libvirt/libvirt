@@ -583,7 +583,7 @@ virCapabilitiesFormatXML(virCapsPtr caps)
                                   caps->host.numaCell[i]->ncpus) < 0)
                 goto no_memory;
             for (j = 0 ; j < caps->host.numaCell[i]->ncpus ; j++)
-                if (virBufferVSprintf(&xml, "            <cpu id='%d'>\n",
+                if (virBufferVSprintf(&xml, "            <cpu id='%d'/>\n",
                                       caps->host.numaCell[i]->cpus[j]) < 0)
                     goto no_memory;
             if (virBufferAddLit(&xml, "          </cpus>\n") < 0)
