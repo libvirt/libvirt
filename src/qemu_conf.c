@@ -68,7 +68,7 @@ void qemudReportError(virConnectPtr conn,
         errorMessage[0] = '\0';
     }
 
-    virerr = __virErrorMsg(code, (errorMessage[0] ? errorMessage[0] : NULL));
+    virerr = __virErrorMsg(code, (errorMessage[0] ? errorMessage : NULL));
     __virRaiseError(conn, dom, net, VIR_FROM_QEMU, code, VIR_ERR_ERROR,
                     virerr, errorMessage, NULL, -1, -1, virerr, errorMessage);
 }

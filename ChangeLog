@@ -1,5 +1,9 @@
 Mon Mar  3 19:09:51 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	Don't use first byte of string as a pointer.
+	* src/qemu_conf.c (qemudReportError): Use the pointer, errorMessage,
+	not its first byte, errorMessage[0].
+
 	Avoid segfault upon early libvirtd failure.
 	* qemud/qemud.c (main): Don't call qemudCleanup on an
 	uninitialized pointer.
