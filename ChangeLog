@@ -1,5 +1,9 @@
 Mon Mar  3 14:14:03 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	Plug two leaks: host.migrateTrans and arch.name
+	* src/capabilities.c (virCapabilitiesFree): Free host.migrateTrans.
+	(virCapabilitiesFreeGuest): Free arch.name member.
+
 	Plug virCapabilities*GuestDomain leak.
 	* src/capabilities.c (virCapabilitiesFreeGuestDomain): Free dom->type.
 	(virCapabilitiesAddGuestDomain): Remove duplicate strdup stmt.

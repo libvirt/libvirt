@@ -91,6 +91,7 @@ virCapabilitiesFreeGuest(virCapsGuestPtr guest)
     int i;
     free(guest->ostype);
 
+    free(guest->arch.name);
     free(guest->arch.defaultInfo.emulator);
     free(guest->arch.defaultInfo.loader);
     for (i = 0 ; i < guest->arch.defaultInfo.nmachines ; i++)
@@ -129,6 +130,10 @@ virCapabilitiesFree(virCapsPtr caps) {
     for (i = 0 ; i < caps->host.nnumaCell ; i++)
         virCapabilitiesFreeHostNUMACell(caps->host.numaCell[i]);
     free(caps->host.numaCell);
+
+    for (i = 0 ; i < caps->host.nmigrateTrans ; i++)
+        free(caps->host.migrateTrans[i]);
+    free(caps->host.migrateTrans);
 
     free(caps->host.arch);
     free(caps);
