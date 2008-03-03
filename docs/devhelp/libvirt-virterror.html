@@ -84,7 +84,7 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     <a name="VIR_FROM_XEN">VIR_FROM_XEN</a> = 1 /* Error at Xen hypervisor layer */
     <a name="VIR_FROM_XEND">VIR_FROM_XEND</a> = 2 /* Error at connection with xend daemon */
     <a name="VIR_FROM_XENSTORE">VIR_FROM_XENSTORE</a> = 3 /* Error at connection with xen store */
-    <a name="VIR_FROM_SEXPR">VIR_FROM_SEXPR</a> = 4 /* Error in the S-Epression code */
+    <a name="VIR_FROM_SEXPR">VIR_FROM_SEXPR</a> = 4 /* Error in the S-Expression code */
     <a name="VIR_FROM_XML">VIR_FROM_XML</a> = 5 /* Error in the XML code */
     <a name="VIR_FROM_DOM">VIR_FROM_DOM</a> = 6 /* Error when operating on a domain */
     <a name="VIR_FROM_RPC">VIR_FROM_RPC</a> = 7 /* Error in the XML-RPC code */
@@ -155,7 +155,7 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
     <a name="VIR_WAR_NO_NETWORK">VIR_WAR_NO_NETWORK</a> = 41 /* failed to start network */
     <a name="VIR_ERR_NO_DOMAIN">VIR_ERR_NO_DOMAIN</a> = 42 /* domain not found or unexpectedly disappeared */
     <a name="VIR_ERR_NO_NETWORK">VIR_ERR_NO_NETWORK</a> = 43 /* network not found */
-    <a name="VIR_ERR_INVALID_MAC">VIR_ERR_INVALID_MAC</a> = 44 /* invalid MAC adress */
+    <a name="VIR_ERR_INVALID_MAC">VIR_ERR_INVALID_MAC</a> = 44 /* invalid MAC address */
     <a name="VIR_ERR_AUTH_FAILED">VIR_ERR_AUTH_FAILED</a> = 45 /* authentication failed */
     <a name="VIR_ERR_INVALID_STORAGE_POOL">VIR_ERR_INVALID_STORAGE_POOL</a> = 46 /* invalid storage pool object */
     <a name="VIR_ERR_INVALID_STORAGE_VOL">VIR_ERR_INVALID_STORAGE_VOL</a> = 47 /* invalid storage vol object */
@@ -180,7 +180,7 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnGetLastError"/>virConnGetLastError ()</h3><pre class="programlisting"><a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a>	virConnGetLastError	(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br/>
 </pre><p>Provide a pointer to the last error caught on that connection Simpler but may not be suitable for multithreaded accesses, in which case use virConnCopyLastError()</p>
-<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a pointer to the last error or NULL if none occured.</td></tr></tbody></table></div></div>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>conn</tt></i>:</span></td><td>pointer to the hypervisor connection</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a pointer to the last error or NULL if none occurred.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConnResetLastError"/>virConnResetLastError ()</h3><pre class="programlisting">void	virConnResetLastError		(<a href="libvirt-libvirt.html#virConnectPtr">virConnectPtr</a> conn)<br/>
 </pre><p>Reset the last error caught on that connection</p>
@@ -200,7 +200,7 @@ void	<a href="#virConnResetLastError">virConnResetLastError</a>		(<a href="libvi
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virGetLastError"/>virGetLastError ()</h3><pre class="programlisting"><a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a>	virGetLastError		(void)<br/>
 </pre><p>Provide a pointer to the last error caught at the library level Simpler but may not be suitable for multithreaded accesses, in which case use virCopyLastError()</p>
-<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a pointer to the last error or NULL if none occured.</td></tr></tbody></table></div></div>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>a pointer to the last error or NULL if none occurred.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virResetError"/>virResetError ()</h3><pre class="programlisting">void	virResetError			(<a href="libvirt-virterror.html#virErrorPtr">virErrorPtr</a> err)<br/>
 </pre><p>Reset the error being pointed to</p>

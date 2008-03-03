@@ -10,7 +10,7 @@ Releases
       Ruby bindings (David Lutterkort), SASL based authentication for
       libvirt remote support (Daniel Berrange), PolicyKit authentication
       (Daniel Berrange)
-   - Documentation: example files for QEMU and libvirtd configuations
+   - Documentation: example files for QEMU and libvirtd configurations
       (Daniel Berrange), english cleanups (Jim Paris), CIM and OpenVZ
       references, document <shareable/>, daemon startup when using
       QEMU/KVM, document HV support for new NUMA calls (Richard Jones),

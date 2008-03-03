@@ -336,18 +336,18 @@
       <info>Macro providing the version of the library as version * 1,000,000 + minor * 1000 + micro</info>
     </macro>
     <macro name='VIR_COPY_CPUMAP' file='libvirt'>
-      <info>This macro is to be used in conjonction with virDomainGetVcpus() and virDomainPinVcpu() APIs. VIR_COPY_CPUMAP macro extract the cpumap of the specified vcpu from cpumaps array and copy it into cpumap to be used later by virDomainPinVcpu() API.</info>
+      <info>This macro is to be used in conjunction with virDomainGetVcpus() and virDomainPinVcpu() APIs. VIR_COPY_CPUMAP macro extract the cpumap of the specified vcpu from cpumaps array and copy it into cpumap to be used later by virDomainPinVcpu() API.</info>
       <arg name='cpumaps' info='pointer to an array of cpumap (in 8-bit bytes) (IN)'/>
       <arg name='maplen' info='the length (in bytes) of one cpumap'/>
       <arg name='vcpu' info='the virtual CPU number'/>
       <arg name='cpumap' info='pointer to a cpumap (in 8-bit bytes) (OUT) This cpumap must be previously allocated by the caller (ie: malloc(maplen))'/>
     </macro>
     <macro name='VIR_CPU_MAPLEN' file='libvirt'>
-      <info>This macro is to be used in conjonction with virDomainPinVcpu() API. It returns the length (in bytes) required to store the complete CPU map between a single virtual &amp; all physical CPUs of a domain.</info>
+      <info>This macro is to be used in conjunction with virDomainPinVcpu() API. It returns the length (in bytes) required to store the complete CPU map between a single virtual &amp; all physical CPUs of a domain.</info>
       <arg name='cpu' info='number of physical CPUs'/>
     </macro>
     <macro name='VIR_CPU_USABLE' file='libvirt'>
-      <info>This macro is to be used in conjonction with virDomainGetVcpus() API. VIR_CPU_USABLE macro returns a non zero value (true) if the cpu is usable by the vcpu, and 0 otherwise.</info>
+      <info>This macro is to be used in conjunction with virDomainGetVcpus() API. VIR_CPU_USABLE macro returns a non zero value (true) if the cpu is usable by the vcpu, and 0 otherwise.</info>
       <arg name='cpumaps' info='pointer to an array of cpumap (in 8-bit bytes) (IN)'/>
       <arg name='maplen' info='the length (in bytes) of one cpumap'/>
       <arg name='vcpu' info='the virtual CPU number'/>
@@ -357,22 +357,22 @@
       <info>Macro providing the field length of virSchedParameter</info>
     </macro>
     <macro name='VIR_GET_CPUMAP' file='libvirt'>
-      <info>This macro is to be used in conjonction with virDomainGetVcpus() and virDomainPinVcpu() APIs. VIR_GET_CPUMAP macro returns a pointer to the cpumap of the specified vcpu from cpumaps array.</info>
+      <info>This macro is to be used in conjunction with virDomainGetVcpus() and virDomainPinVcpu() APIs. VIR_GET_CPUMAP macro returns a pointer to the cpumap of the specified vcpu from cpumaps array.</info>
       <arg name='cpumaps' info='pointer to an array of cpumap (in 8-bit bytes) (IN)'/>
       <arg name='maplen' info='the length (in bytes) of one cpumap'/>
       <arg name='vcpu' info='the virtual CPU number'/>
     </macro>
     <macro name='VIR_NODEINFO_MAXCPUS' file='libvirt'>
-      <info>This macro is to calculate the total number of CPUs supported but not neccessarily active in the host.</info>
+      <info>This macro is to calculate the total number of CPUs supported but not necessary active in the host.</info>
       <arg name='nodeinfo' info='virNodeInfo instance'/>
     </macro>
     <macro name='VIR_UNUSE_CPU' file='libvirt'>
-      <info>This macro is to be used in conjonction with virDomainPinVcpu() API. USE_CPU macro reset the bit (CPU not usable) of the related cpu in cpumap.</info>
+      <info>This macro is to be used in conjunction with virDomainPinVcpu() API. USE_CPU macro reset the bit (CPU not usable) of the related cpu in cpumap.</info>
       <arg name='cpumap' info='pointer to a bit map of real CPUs (in 8-bit bytes) (IN/OUT)'/>
       <arg name='cpu' info='the physical CPU number'/>
     </macro>
     <macro name='VIR_USE_CPU' file='libvirt'>
-      <info>This macro is to be used in conjonction with virDomainPinVcpu() API. USE_CPU macro set the bit (CPU usable) of the related cpu in cpumap.</info>
+      <info>This macro is to be used in conjunction with virDomainPinVcpu() API. USE_CPU macro set the bit (CPU usable) of the related cpu in cpumap.</info>
       <arg name='cpumap' info='pointer to a bit map of real CPUs (in 8-bit bytes) (IN/OUT)'/>
       <arg name='cpu' info='the physical CPU number'/>
     </macro>
@@ -421,7 +421,7 @@
     <enum name='VIR_ERR_INVALID_ARG' file='virterror' value='8' type='virErrorNumber' info='invalid function argument'/>
     <enum name='VIR_ERR_INVALID_CONN' file='virterror' value='6' type='virErrorNumber' info='invalid connection object'/>
     <enum name='VIR_ERR_INVALID_DOMAIN' file='virterror' value='7' type='virErrorNumber' info='invalid domain object'/>
-    <enum name='VIR_ERR_INVALID_MAC' file='virterror' value='44' type='virErrorNumber' info='invalid MAC adress'/>
+    <enum name='VIR_ERR_INVALID_MAC' file='virterror' value='44' type='virErrorNumber' info='invalid MAC address'/>
     <enum name='VIR_ERR_INVALID_NETWORK' file='virterror' value='36' type='virErrorNumber' info='invalid network object'/>
     <enum name='VIR_ERR_INVALID_STORAGE_POOL' file='virterror' value='46' type='virErrorNumber' info='invalid storage pool object'/>
     <enum name='VIR_ERR_INVALID_STORAGE_VOL' file='virterror' value='47' type='virErrorNumber' info='invalid storage vol object'/>
@@ -469,7 +469,7 @@
     <enum name='VIR_FROM_QEMU' file='virterror' value='10' type='virErrorDomain' info='Error at the QEMU daemon'/>
     <enum name='VIR_FROM_REMOTE' file='virterror' value='13' type='virErrorDomain' info='Error from remote driver'/>
     <enum name='VIR_FROM_RPC' file='virterror' value='7' type='virErrorDomain' info='Error in the XML-RPC code'/>
-    <enum name='VIR_FROM_SEXPR' file='virterror' value='4' type='virErrorDomain' info='Error in the S-Epression code'/>
+    <enum name='VIR_FROM_SEXPR' file='virterror' value='4' type='virErrorDomain' info='Error in the S-Expression code'/>
     <enum name='VIR_FROM_STATS_LINUX' file='virterror' value='16' type='virErrorDomain' info='Error in the Linux Stats code'/>
     <enum name='VIR_FROM_STORAGE' file='virterror' value='17' type='virErrorDomain' info=' Error from storage driver'/>
     <enum name='VIR_FROM_TEST' file='virterror' value='12' type='virErrorDomain' info='Error from test driver'/>
@@ -524,10 +524,10 @@
       <info>A pointer to a virDomainBlockStats structure</info>
     </typedef>
     <struct name='virDomainBlockStatsStruct' file='libvirt' type='struct _virDomainBlockStats'>
-      <field name='rd_req' type='long long' info=''/>
-      <field name='rd_bytes' type='long long' info=''/>
-      <field name='wr_req' type='long long' info=''/>
-      <field name='wr_bytes' type='long long' info=''/>
+      <field name='rd_req' type='long long' info=' number of read requests'/>
+      <field name='rd_bytes' type='long long' info=' number of read bytes'/>
+      <field name='wr_req' type='long long' info=' number of write requests'/>
+      <field name='wr_bytes' type='long long' info=' numbber of written bytes'/>
       <field name='errs' type='long long' info=' In Xen this returns the mysterious &apos;oo_req&apos;.'/>
     </struct>
     <typedef name='virDomainCreateFlags' file='libvirt' type='enum'/>
@@ -542,7 +542,7 @@
       <info>a virDomainInfoPtr is a pointer to a virDomainInfo structure.</info>
     </typedef>
     <typedef name='virDomainInterfaceStatsPtr' file='libvirt' type='virDomainInterfaceStatsStruct *'>
-      <info>A pointe to a virDomainInterfaceStats structure</info>
+      <info>A pointer to a virDomainInterfaceStats structure</info>
     </typedef>
     <struct name='virDomainInterfaceStatsStruct' file='libvirt' type='struct _virDomainInterfaceStats'>
       <field name='rx_bytes' type='long long' info=''/>
@@ -646,7 +646,7 @@
     </function>
     <function name='virConnGetLastError' file='virterror' module='virterror'>
       <info>Provide a pointer to the last error caught on that connection Simpler but may not be suitable for multithreaded accesses, in which case use virConnCopyLastError()</info>
-      <return type='virErrorPtr' info='a pointer to the last error or NULL if none occured.'/>
+      <return type='virErrorPtr' info='a pointer to the last error or NULL if none occurred.'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virConnResetLastError' file='virterror' module='virterror'>
@@ -1068,7 +1068,7 @@
     </functype>
     <function name='virGetLastError' file='virterror' module='virterror'>
       <info>Provide a pointer to the last error caught at the library level Simpler but may not be suitable for multithreaded accesses, in which case use virCopyLastError()</info>
-      <return type='virErrorPtr' info='a pointer to the last error or NULL if none occured.'/>
+      <return type='virErrorPtr' info='a pointer to the last error or NULL if none occurred.'/>
     </function>
     <function name='virGetVersion' file='libvirt' module='libvirt'>
       <info>Provides two information back, @libVer is the version of the library while @typeVer will be the version of the hypervisor type @type against which the library was compiled. If @type is NULL, &quot;Xen&quot; is assumed, if @type is unknown or not availble, an error code will be returned and @typeVer will be 0.</info>

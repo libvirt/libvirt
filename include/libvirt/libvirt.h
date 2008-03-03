@@ -201,10 +201,10 @@ int	virDomainSetSchedulerParameters	(virDomainPtr domain,
 typedef struct _virDomainBlockStats virDomainBlockStatsStruct;
 
 struct _virDomainBlockStats {
-  long long rd_req;
-  long long rd_bytes;
-  long long wr_req;
-  long long wr_bytes;
+  long long rd_req; /* number of read requests */
+  long long rd_bytes; /* number of read bytes */
+  long long wr_req; /* number of write requests */
+  long long wr_bytes; /* numbber of written bytes */
   long long errs;   /* In Xen this returns the mysterious 'oo_req'. */
 };
 
@@ -261,7 +261,7 @@ virDomainPtr virDomainMigrate (virDomainPtr domain, virConnectPtr dconn,
  * @nodeinfo: virNodeInfo instance
  *
  * This macro is to calculate the total number of CPUs supported
- * but not necessarily active in the host.
+ * but not necessary active in the host.
  */
 
 

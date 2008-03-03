@@ -227,15 +227,15 @@ int	<a href="#virConnectListNetworks">virConnectListNetworks</a>		(<a href="libv
 </div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="VIR_COPY_CPUMAP">Macro </a>VIR_COPY_CPUMAP</h3><pre class="programlisting">#define <a href="#VIR_COPY_CPUMAP">VIR_COPY_CPUMAP</a>(cpumaps, maplen, vcpu, cpumap);
-</pre><p>This macro is to be used in conjonction with virDomainGetVcpus() and virDomainPinVcpu() APIs. <a href="libvirt-libvirt.html#VIR_COPY_CPUMAP">VIR_COPY_CPUMAP</a> macro extract the cpumap of the specified vcpu from cpumaps array and copy it into cpumap to be used later by virDomainPinVcpu() API.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cpumaps</tt></i>:</span></td><td>pointer to an array of cpumap (in 8-bit bytes) (IN)</td></tr><tr><td><span class="term"><i><tt>maplen</tt></i>:</span></td><td>the length (in bytes) of one cpumap</td></tr><tr><td><span class="term"><i><tt>vcpu</tt></i>:</span></td><td>the virtual CPU number</td></tr><tr><td><span class="term"><i><tt>cpumap</tt></i>:</span></td><td>pointer to a cpumap (in 8-bit bytes) (OUT) This cpumap must be previously allocated by the caller (ie: malloc(maplen))</td></tr></tbody></table></div>
+</pre><p>This macro is to be used in conjunction with virDomainGetVcpus() and virDomainPinVcpu() APIs. <a href="libvirt-libvirt.html#VIR_COPY_CPUMAP">VIR_COPY_CPUMAP</a> macro extract the cpumap of the specified vcpu from cpumaps array and copy it into cpumap to be used later by virDomainPinVcpu() API.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cpumaps</tt></i>:</span></td><td>pointer to an array of cpumap (in 8-bit bytes) (IN)</td></tr><tr><td><span class="term"><i><tt>maplen</tt></i>:</span></td><td>the length (in bytes) of one cpumap</td></tr><tr><td><span class="term"><i><tt>vcpu</tt></i>:</span></td><td>the virtual CPU number</td></tr><tr><td><span class="term"><i><tt>cpumap</tt></i>:</span></td><td>pointer to a cpumap (in 8-bit bytes) (OUT) This cpumap must be previously allocated by the caller (ie: malloc(maplen))</td></tr></tbody></table></div>
 </div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="VIR_CPU_MAPLEN">Macro </a>VIR_CPU_MAPLEN</h3><pre class="programlisting">#define <a href="#VIR_CPU_MAPLEN">VIR_CPU_MAPLEN</a>(cpu);
-</pre><p>This macro is to be used in conjonction with virDomainPinVcpu() API. It returns the length (in bytes) required to store the complete CPU map between a single virtual &amp; all physical CPUs of a domain.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cpu</tt></i>:</span></td><td>number of physical CPUs</td></tr></tbody></table></div>
+</pre><p>This macro is to be used in conjunction with virDomainPinVcpu() API. It returns the length (in bytes) required to store the complete CPU map between a single virtual &amp; all physical CPUs of a domain.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cpu</tt></i>:</span></td><td>number of physical CPUs</td></tr></tbody></table></div>
 </div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="VIR_CPU_USABLE">Macro </a>VIR_CPU_USABLE</h3><pre class="programlisting">#define <a href="#VIR_CPU_USABLE">VIR_CPU_USABLE</a>(cpumaps, maplen, vcpu, cpu);
-</pre><p>This macro is to be used in conjonction with virDomainGetVcpus() API. <a href="libvirt-libvirt.html#VIR_CPU_USABLE">VIR_CPU_USABLE</a> macro returns a non zero value (true) if the cpu is usable by the vcpu, and 0 otherwise.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cpumaps</tt></i>:</span></td><td>pointer to an array of cpumap (in 8-bit bytes) (IN)</td></tr><tr><td><span class="term"><i><tt>maplen</tt></i>:</span></td><td>the length (in bytes) of one cpumap</td></tr><tr><td><span class="term"><i><tt>vcpu</tt></i>:</span></td><td>the virtual CPU number</td></tr><tr><td><span class="term"><i><tt>cpu</tt></i>:</span></td><td>the physical CPU number</td></tr></tbody></table></div>
+</pre><p>This macro is to be used in conjunction with virDomainGetVcpus() API. <a href="libvirt-libvirt.html#VIR_CPU_USABLE">VIR_CPU_USABLE</a> macro returns a non zero value (true) if the cpu is usable by the vcpu, and 0 otherwise.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cpumaps</tt></i>:</span></td><td>pointer to an array of cpumap (in 8-bit bytes) (IN)</td></tr><tr><td><span class="term"><i><tt>maplen</tt></i>:</span></td><td>the length (in bytes) of one cpumap</td></tr><tr><td><span class="term"><i><tt>vcpu</tt></i>:</span></td><td>the virtual CPU number</td></tr><tr><td><span class="term"><i><tt>cpu</tt></i>:</span></td><td>the physical CPU number</td></tr></tbody></table></div>
 </div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="VIR_DOMAIN_SCHED_FIELD_LENGTH">Macro </a>VIR_DOMAIN_SCHED_FIELD_LENGTH</h3><pre class="programlisting">#define <a href="#VIR_DOMAIN_SCHED_FIELD_LENGTH">VIR_DOMAIN_SCHED_FIELD_LENGTH</a>;
@@ -243,19 +243,19 @@ int	<a href="#virConnectListNetworks">virConnectListNetworks</a>		(<a href="libv
 </div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="VIR_GET_CPUMAP">Macro </a>VIR_GET_CPUMAP</h3><pre class="programlisting">#define <a href="#VIR_GET_CPUMAP">VIR_GET_CPUMAP</a>(cpumaps, maplen, vcpu);
-</pre><p>This macro is to be used in conjonction with virDomainGetVcpus() and virDomainPinVcpu() APIs. <a href="libvirt-libvirt.html#VIR_GET_CPUMAP">VIR_GET_CPUMAP</a> macro returns a pointer to the cpumap of the specified vcpu from cpumaps array.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cpumaps</tt></i>:</span></td><td>pointer to an array of cpumap (in 8-bit bytes) (IN)</td></tr><tr><td><span class="term"><i><tt>maplen</tt></i>:</span></td><td>the length (in bytes) of one cpumap</td></tr><tr><td><span class="term"><i><tt>vcpu</tt></i>:</span></td><td>the virtual CPU number</td></tr></tbody></table></div>
+</pre><p>This macro is to be used in conjunction with virDomainGetVcpus() and virDomainPinVcpu() APIs. <a href="libvirt-libvirt.html#VIR_GET_CPUMAP">VIR_GET_CPUMAP</a> macro returns a pointer to the cpumap of the specified vcpu from cpumaps array.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cpumaps</tt></i>:</span></td><td>pointer to an array of cpumap (in 8-bit bytes) (IN)</td></tr><tr><td><span class="term"><i><tt>maplen</tt></i>:</span></td><td>the length (in bytes) of one cpumap</td></tr><tr><td><span class="term"><i><tt>vcpu</tt></i>:</span></td><td>the virtual CPU number</td></tr></tbody></table></div>
 </div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="VIR_NODEINFO_MAXCPUS">Macro </a>VIR_NODEINFO_MAXCPUS</h3><pre class="programlisting">#define <a href="#VIR_NODEINFO_MAXCPUS">VIR_NODEINFO_MAXCPUS</a>(nodeinfo);
-</pre><p>This macro is to calculate the total number of CPUs supported but not neccessarily active in the host.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>nodeinfo</tt></i>:</span></td><td><a href="libvirt-libvirt.html#virNodeInfo">virNodeInfo</a> instance</td></tr></tbody></table></div>
+</pre><p>This macro is to calculate the total number of CPUs supported but not necessary active in the host.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>nodeinfo</tt></i>:</span></td><td><a href="libvirt-libvirt.html#virNodeInfo">virNodeInfo</a> instance</td></tr></tbody></table></div>
 </div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="VIR_UNUSE_CPU">Macro </a>VIR_UNUSE_CPU</h3><pre class="programlisting">#define <a href="#VIR_UNUSE_CPU">VIR_UNUSE_CPU</a>(cpumap, cpu);
-</pre><p>This macro is to be used in conjonction with virDomainPinVcpu() API. USE_CPU macro reset the bit (CPU not usable) of the related cpu in cpumap.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cpumap</tt></i>:</span></td><td>pointer to a bit map of real CPUs (in 8-bit bytes) (IN/OUT)</td></tr><tr><td><span class="term"><i><tt>cpu</tt></i>:</span></td><td>the physical CPU number</td></tr></tbody></table></div>
+</pre><p>This macro is to be used in conjunction with virDomainPinVcpu() API. USE_CPU macro reset the bit (CPU not usable) of the related cpu in cpumap.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cpumap</tt></i>:</span></td><td>pointer to a bit map of real CPUs (in 8-bit bytes) (IN/OUT)</td></tr><tr><td><span class="term"><i><tt>cpu</tt></i>:</span></td><td>the physical CPU number</td></tr></tbody></table></div>
 </div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="VIR_USE_CPU">Macro </a>VIR_USE_CPU</h3><pre class="programlisting">#define <a href="#VIR_USE_CPU">VIR_USE_CPU</a>(cpumap, cpu);
-</pre><p>This macro is to be used in conjonction with virDomainPinVcpu() API. USE_CPU macro set the bit (CPU usable) of the related cpu in cpumap.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cpumap</tt></i>:</span></td><td>pointer to a bit map of real CPUs (in 8-bit bytes) (IN/OUT)</td></tr><tr><td><span class="term"><i><tt>cpu</tt></i>:</span></td><td>the physical CPU number</td></tr></tbody></table></div>
+</pre><p>This macro is to be used in conjunction with virDomainPinVcpu() API. USE_CPU macro set the bit (CPU usable) of the related cpu in cpumap.</p><div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>cpumap</tt></i>:</span></td><td>pointer to a bit map of real CPUs (in 8-bit bytes) (IN/OUT)</td></tr><tr><td><span class="term"><i><tt>cpu</tt></i>:</span></td><td>the physical CPU number</td></tr></tbody></table></div>
 </div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="VIR_UUID_BUFLEN">Macro </a>VIR_UUID_BUFLEN</h3><pre class="programlisting">#define <a href="#VIR_UUID_BUFLEN">VIR_UUID_BUFLEN</a>;
@@ -335,10 +335,10 @@ The content of this structure is not made public by the API.
 </div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virDomainBlockStatsStruct">Structure </a>virDomainBlockStatsStruct</h3><pre class="programlisting">struct _virDomainBlockStats {
-    long long	rd_req
-    long long	rd_bytes
-    long long	wr_req
-    long long	wr_bytes
+    long long	rd_req	: number of read requests
+    long long	rd_bytes	: number of read bytes
+    long long	wr_req	: number of write requests
+    long long	wr_bytes	: numbber of written bytes
     long long	errs	: In Xen this returns the mysterious 'oo_req'.
 } virDomainBlockStatsStruct;
 </pre><p/>
@@ -365,7 +365,7 @@ The content of this structure is not made public by the API.
 </div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virDomainInterfaceStatsPtr">Typedef </a>virDomainInterfaceStatsPtr</h3><pre class="programlisting"><a href="libvirt-libvirt.html#virDomainInterfaceStatsStruct">virDomainInterfaceStatsStruct</a> * virDomainInterfaceStatsPtr;
-</pre><p>A pointe to a <a href="libvirt-libvirt.html#virDomainInterfaceStats">virDomainInterfaceStats</a> structure</p>
+</pre><p>A pointer to a <a href="libvirt-libvirt.html#virDomainInterfaceStats">virDomainInterfaceStats</a> structure</p>
 </div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virDomainInterfaceStatsStruct">Structure </a>virDomainInterfaceStatsStruct</h3><pre class="programlisting">struct _virDomainInterfaceStats {

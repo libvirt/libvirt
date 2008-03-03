@@ -2192,6 +2192,7 @@
         </word>
         <word name='bytes'>
           <ref name='VIR_CPU_MAPLEN'/>
+          <ref name='_virDomainBlockStats'/>
           <ref name='_virStoragePoolInfo'/>
           <ref name='_virStorageVolInfo'/>
           <ref name='cpumap'/>
@@ -2370,7 +2371,7 @@
           <ref name='virDomainGetAutostart'/>
           <ref name='virNetworkGetAutostart'/>
         </word>
-        <word name='conjonction'>
+        <word name='conjunction'>
           <ref name='VIR_COPY_CPUMAP'/>
           <ref name='VIR_CPU_MAPLEN'/>
           <ref name='VIR_CPU_USABLE'/>
@@ -3591,11 +3592,11 @@
           <ref name='_virDomainInfo'/>
           <ref name='_virVcpuInfo'/>
         </word>
-        <word name='neccessarily'>
-          <ref name='VIR_NODEINFO_MAXCPUS'/>
-        </word>
         <word name='neccessary'>
           <ref name='virConnectOpenAuth'/>
+        </word>
+        <word name='necessary'>
+          <ref name='VIR_NODEINFO_MAXCPUS'/>
         </word>
         <word name='need'>
           <ref name='virConnCopyLastError'/>
@@ -3655,6 +3656,9 @@
           <ref name='virDomainGetSchedulerParameters'/>
           <ref name='virDomainSetSchedulerParameters'/>
         </word>
+        <word name='numbber'>
+          <ref name='_virDomainBlockStats'/>
+        </word>
       </letter>
       <letter name='o'>
         <word name='objects'>
@@ -3666,7 +3670,7 @@
         <word name='obliteration'>
           <ref name='virStoragePoolDelete'/>
         </word>
-        <word name='occured'>
+        <word name='occurred'>
           <ref name='virConnGetLastError'/>
           <ref name='virGetLastError'/>
         </word>
@@ -3926,6 +3930,9 @@
         <word name='reactivate'>
           <ref name='virDomainSuspend'/>
         </word>
+        <word name='read'>
+          <ref name='_virDomainBlockStats'/>
+        </word>
         <word name='real'>
           <ref name='_virVcpuInfo'/>
           <ref name='cpumap'/>
@@ -3997,6 +4004,9 @@
         </word>
         <word name='requested'>
           <ref name='virNodeGetCellsFreeMemory'/>
+        </word>
+        <word name='requests'>
+          <ref name='_virDomainBlockStats'/>
         </word>
         <word name='required'>
           <ref name='VIR_CPU_MAPLEN'/>
@@ -4979,11 +4989,17 @@
         <word name='work'>
           <ref name='virConnectGetVersion'/>
         </word>
+        <word name='write'>
+          <ref name='_virDomainBlockStats'/>
+        </word>
         <word name='writing'>
           <ref name='virDomainGetConnect'/>
           <ref name='virNetworkGetConnect'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStorageVolGetConnect'/>
+        </word>
+        <word name='written'>
+          <ref name='_virDomainBlockStats'/>
         </word>
         <word name='www'>
           <ref name='virConnectGetType'/>

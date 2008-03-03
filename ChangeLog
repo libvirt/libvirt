@@ -1,3 +1,9 @@
+Mon Mar  3 07:16:35 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* include/libvirt/libvirt.h include/libvirt/libvirt.h.in:
+	  missing comments for _virDomainBlockStats fields
+	* docs/*: rebuilt docs
+
 Fri Feb 29 18:01:14 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/Makefile.am: fix a broken line split
