@@ -519,7 +519,7 @@ virStorageBackendFileSystemMount(virConnectPtr conn,
         }
     }
 
-    /* Short-circuit is already mounted */
+    /* Short-circuit if already mounted */
     if ((ret = virStorageBackendFileSystemIsMounted(conn, pool)) != 0) {
         if (ret < 0)
             return -1;
