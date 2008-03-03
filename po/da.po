@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: da\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-02-20 11:25-0500\n"
+"POT-Creation-Date: 2008-03-03 15:08+0100\n"
 "PO-Revision-Date: 2007-05-10 15:48+0200\n"
 "Last-Translator: Keld Simonsen <keld@rap.dk>\n"
 "Language-Team:  <da@li.org>\n"
@@ -202,55 +202,55 @@ msgstr ""
 msgid "Failed to verify client credentials: %s"
 msgstr "kunne ikke få knudeinformation"
 
-#: qemud/remote.c:2600
+#: qemud/remote.c:2601
 msgid "client tried invalid PolicyKit init request"
 msgstr ""
 
-#: qemud/remote.c:2606
+#: qemud/remote.c:2607
 msgid "cannot get peer socket identity"
 msgstr ""
 
-#: qemud/remote.c:2616
+#: qemud/remote.c:2617
 #, c-format
 msgid "Allowing PID %d running as root"
 msgstr ""
 
-#: qemud/remote.c:2630
+#: qemud/remote.c:2631
 #, c-format
 msgid "Checking PID %d running as %d"
 msgstr ""
 
-#: qemud/remote.c:2635
+#: qemud/remote.c:2636
 #, c-format
 msgid "Failed to lookup policy kit caller: %s"
 msgstr ""
 
-#: qemud/remote.c:2643
+#: qemud/remote.c:2644
 #, fuzzy, c-format
 msgid "Failed to create polkit action %s\n"
 msgstr "Kunne ikke oprette inaktivt domæne %s\n"
 
-#: qemud/remote.c:2653
+#: qemud/remote.c:2654
 #, fuzzy, c-format
 msgid "Failed to create polkit context %s\n"
 msgstr "Kunne ikke oprette inaktivt domæne %s\n"
 
-#: qemud/remote.c:2673
+#: qemud/remote.c:2674
 #, c-format
 msgid "Policy kit failed to check authorization %d %s"
 msgstr ""
 
-#: qemud/remote.c:2689
+#: qemud/remote.c:2690
 #, c-format
 msgid "Policy kit denied action %s from pid %d, uid %d, result: %s\n"
 msgstr ""
 
-#: qemud/remote.c:2697
+#: qemud/remote.c:2698
 #, c-format
 msgid "Policy allowed action %s from pid %d, uid %d, result %s"
 msgstr ""
 
-#: qemud/remote.c:2716
+#: qemud/remote.c:2718
 msgid "client tried unsupported PolicyKit init request"
 msgstr ""
 
@@ -309,170 +309,170 @@ msgstr "allokerer netværk"
 msgid "Shutting down on signal %d"
 msgstr ""
 
-#: qemud/qemud.c:277 src/qemu_driver.c:74
+#: qemud/qemud.c:278 src/qemu_driver.c:79
 msgid "Failed to set close-on-exec file descriptor flag"
 msgstr ""
 
-#: qemud/qemud.c:291 src/qemu_driver.c:88
+#: qemud/qemud.c:293 src/qemu_driver.c:94
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr ""
 
-#: qemud/qemud.c:433
+#: qemud/qemud.c:435
 #, fuzzy, c-format
 msgid "Failed to open pid file '%s' : %s"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: qemud/qemud.c:439
+#: qemud/qemud.c:441
 #, fuzzy, c-format
 msgid "Failed to fdopen pid file '%s' : %s"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: qemud/qemud.c:446
+#: qemud/qemud.c:448
 #, fuzzy, c-format
 msgid "Failed to write to pid file '%s' : %s"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: qemud/qemud.c:453
+#: qemud/qemud.c:455
 #, fuzzy, c-format
 msgid "Failed to close pid file '%s' : %s"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: qemud/qemud.c:470
+#: qemud/qemud.c:472
 #, fuzzy
 msgid "Failed to allocate memory for struct qemud_socket"
 msgstr "kunne ikke allokere en knude"
 
-#: qemud/qemud.c:480
+#: qemud/qemud.c:482
 #, fuzzy, c-format
 msgid "Failed to create socket: %s"
 msgstr "Kunne ikke læse fra sokkel %d\n"
 
-#: qemud/qemud.c:502
+#: qemud/qemud.c:504
 #, fuzzy, c-format
 msgid "Failed to bind socket to '%s': %s"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: qemud/qemud.c:511
+#: qemud/qemud.c:513
 #, fuzzy, c-format
 msgid "Failed to listen for connections on '%s': %s"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: qemud/qemud.c:520 qemud/qemud.c:650
+#: qemud/qemud.c:522 qemud/qemud.c:652
 msgid "Failed to add server event callback"
 msgstr ""
 
-#: qemud/qemud.c:549
+#: qemud/qemud.c:551
 #, c-format
 msgid "getaddrinfo: %s\n"
 msgstr ""
 
-#: qemud/qemud.c:558
+#: qemud/qemud.c:560
 #, c-format
 msgid "socket: %s"
 msgstr ""
 
-#: qemud/qemud.c:567
+#: qemud/qemud.c:569
 #, c-format
 msgid "bind: %s"
 msgstr ""
 
-#: qemud/qemud.c:574
+#: qemud/qemud.c:576
 #, c-format
 msgid "listen: %s"
 msgstr ""
 
-#: qemud/qemud.c:611
+#: qemud/qemud.c:613
 #, c-format
 msgid "remoteListenTCP: calloc: %s"
 msgstr ""
 
-#: qemud/qemud.c:642
+#: qemud/qemud.c:644
 #, c-format
 msgid "remoteListenTCP: listen: %s"
 msgstr ""
 
-#: qemud/qemud.c:684 src/qemu_driver.c:176
+#: qemud/qemud.c:686 src/qemu_driver.c:182
 #, fuzzy, c-format
 msgid "Failed to find user record for uid '%d': %s"
 msgstr "Kunne ikke afdefinere netværk %s"
 
-#: qemud/qemud.c:701 src/qemu_driver.c:227
+#: qemud/qemud.c:703 src/qemu_driver.c:238
 msgid "Resulting path to long for buffer in qemudInitPaths()"
 msgstr ""
 
-#: qemud/qemud.c:709
+#: qemud/qemud.c:711
 #, fuzzy
 msgid "Failed to allocate struct qemud_server"
 msgstr "kunne ikke allokere en knude"
 
-#: qemud/qemud.c:753
+#: qemud/qemud.c:755
 #, fuzzy, c-format
 msgid "Failed to initialize SASL authentication %s"
 msgstr "Kunne ikke afdefinere netværk %s"
 
-#: qemud/qemud.c:768
+#: qemud/qemud.c:770
 #, fuzzy, c-format
 msgid "Failed to connect to system bus for PolicyKit auth: %s"
 msgstr "Kunne ikke koble op til hypervisor"
 
-#: qemud/qemud.c:879
+#: qemud/qemud.c:881
 #, c-format
 msgid "remoteInitializeTLSSession: %s"
 msgstr ""
 
-#: qemud/qemud.c:896
+#: qemud/qemud.c:898
 #, c-format
 msgid "remoteCheckDN: gnutls_x509_cert_get_dn: %s"
 msgstr ""
 
-#: qemud/qemud.c:915
+#: qemud/qemud.c:917
 #, c-format
 msgid "remoteCheckDN: failed: client DN is %s"
 msgstr ""
 
-#: qemud/qemud.c:931
+#: qemud/qemud.c:933
 #, fuzzy, c-format
 msgid "remoteCheckCertificate: verify failed: %s"
 msgstr "operation mislykkedes: %s"
 
-#: qemud/qemud.c:938
+#: qemud/qemud.c:941
 msgid "remoteCheckCertificate: the client certificate is not trusted."
 msgstr ""
 
-#: qemud/qemud.c:942
+#: qemud/qemud.c:946
 msgid "remoteCheckCertificate: the client certificate has unknown issuer."
 msgstr ""
 
-#: qemud/qemud.c:946
+#: qemud/qemud.c:951
 msgid "remoteCheckCertificate: the client certificate has been revoked."
 msgstr ""
 
-#: qemud/qemud.c:952
+#: qemud/qemud.c:957
 msgid ""
 "remoteCheckCertificate: the client certificate uses an insecure algorithm."
 msgstr ""
 
-#: qemud/qemud.c:960
+#: qemud/qemud.c:966
 msgid "remoteCheckCertificate: certificate is not X.509"
 msgstr ""
 
-#: qemud/qemud.c:966
+#: qemud/qemud.c:971
 msgid "remoteCheckCertificate: no peers"
 msgstr ""
 
-#: qemud/qemud.c:977
+#: qemud/qemud.c:982
 msgid "remoteCheckCertificate: gnutls_x509_crt_init failed"
 msgstr ""
 
-#: qemud/qemud.c:987
+#: qemud/qemud.c:992
 msgid "remoteCheckCertificate: the client certificate has expired"
 msgstr ""
 
-#: qemud/qemud.c:994
+#: qemud/qemud.c:999
 msgid "remoteCheckCertificate: the client certificate is not yet activated"
 msgstr ""
 
-#: qemud/qemud.c:1003
+#: qemud/qemud.c:1008
 msgid ""
 "remoteCheckCertificate: client's Distinguished Name is not on the list of "
 "allowed clients (tls_allowed_dn_list).  Use 'openssl x509 -in clientcert.pem "
@@ -480,106 +480,106 @@ msgid ""
 "run this daemon with --verbose option."
 msgstr ""
 
-#: qemud/qemud.c:1019
+#: qemud/qemud.c:1025
 msgid "remoteCheckCertificate: failed to verify client's certificate"
 msgstr ""
 
-#: qemud/qemud.c:1021
+#: qemud/qemud.c:1029
 msgid ""
 "remoteCheckCertificate: tls_no_verify_certificate is set so the bad "
 "certificate is ignored"
 msgstr ""
 
-#: qemud/qemud.c:1045
+#: qemud/qemud.c:1054
 #, fuzzy, c-format
 msgid "Failed to accept connection: %s"
 msgstr "Kunne ikke starte netværk %s"
 
-#: qemud/qemud.c:1103 qemud/qemud.c:1340 qemud/qemud.c:1480
+#: qemud/qemud.c:1112 qemud/qemud.c:1349 qemud/qemud.c:1487
 #, fuzzy, c-format
 msgid "TLS handshake failed: %s"
 msgstr "GET-operation mislykkedes: %s"
 
-#: qemud/qemud.c:1168
+#: qemud/qemud.c:1177
 #, c-format
 msgid "read: %s"
 msgstr ""
 
-#: qemud/qemud.c:1181
+#: qemud/qemud.c:1190
 #, c-format
 msgid "gnutls_record_recv: %s"
 msgstr ""
 
-#: qemud/qemud.c:1365
+#: qemud/qemud.c:1373
 #, c-format
 msgid "write: %s"
 msgstr ""
 
-#: qemud/qemud.c:1376
+#: qemud/qemud.c:1383
 #, c-format
 msgid "gnutls_record_send: %s"
 msgstr ""
 
-#: qemud/qemud.c:1588
+#: qemud/qemud.c:1595
 #, c-format
 msgid "Signal handler reported %d errors: last error: %s"
 msgstr ""
 
-#: qemud/qemud.c:1684 qemud/qemud.c:1706
+#: qemud/qemud.c:1692 qemud/qemud.c:1714
 #, fuzzy, c-format
 msgid "failed to allocate memory for %s config list"
 msgstr "kunne ikke allokere en knude"
 
-#: qemud/qemud.c:1691 qemud/qemud.c:1723
+#: qemud/qemud.c:1699 qemud/qemud.c:1731
 #, fuzzy, c-format
 msgid "failed to allocate memory for %s config list value"
 msgstr "kunne ikke allokere en knude"
 
-#: qemud/qemud.c:1711 qemud/qemud.c:1734
+#: qemud/qemud.c:1719 qemud/qemud.c:1742
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: must be a string or list of strings\n"
 msgstr ""
 
-#: qemud/qemud.c:1751
+#: qemud/qemud.c:1759
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: invalid type: got %s; expected %s\n"
 msgstr ""
 
-#: qemud/qemud.c:1772
+#: qemud/qemud.c:1780
 #, c-format
 msgid "remoteReadConfigFile: %s\n"
 msgstr ""
 
-#: qemud/qemud.c:1816
+#: qemud/qemud.c:1824
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: unsupported auth %s\n"
 msgstr ""
 
-#: qemud/qemud.c:1892
+#: qemud/qemud.c:1900
 msgid "Cannot set group when not running as root"
 msgstr ""
 
-#: qemud/qemud.c:1896
+#: qemud/qemud.c:1904
 #, fuzzy, c-format
 msgid "Failed to lookup group '%s'"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: qemud/qemud.c:1909 qemud/qemud.c:1920
+#: qemud/qemud.c:1917 qemud/qemud.c:1928
 #, fuzzy, c-format
 msgid "Failed to parse mode '%s'"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: qemud/qemud.c:2095
+#: qemud/qemud.c:2103
 #, fuzzy, c-format
 msgid "Failed to create pipe: %s"
 msgstr "Kunne ikke læse fra sokkel %d\n"
 
-#: qemud/qemud.c:2115
+#: qemud/qemud.c:2123
 #, fuzzy, c-format
 msgid "Failed to fork as daemon: %s"
 msgstr "Kunne ikke fortsætte domæne %s"
 
-#: qemud/qemud.c:2149
+#: qemud/qemud.c:2158
 msgid "Failed to register callback for signal pipe"
 msgstr ""
 
@@ -634,37 +634,37 @@ msgstr "kunne ikke åbne fil"
 msgid "failed to save content"
 msgstr "kunne ikke gemme indhold"
 
-#: src/console.c:74
+#: src/console.c:75
 #, fuzzy, c-format
 msgid "unable to open tty %s: %s\n"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: src/console.c:85
+#: src/console.c:86
 #, c-format
 msgid "unable to get tty attributes: %s\n"
 msgstr ""
 
-#: src/console.c:94
+#: src/console.c:95
 #, c-format
 msgid "unable to set tty attributes: %s\n"
 msgstr ""
 
-#: src/console.c:129
+#: src/console.c:130
 #, c-format
 msgid "failure waiting for I/O: %s\n"
 msgstr ""
 
-#: src/console.c:144
+#: src/console.c:145
 #, c-format
 msgid "failure reading input: %s\n"
 msgstr ""
 
-#: src/console.c:165
+#: src/console.c:167
 #, c-format
 msgid "failure writing output: %s\n"
 msgstr ""
 
-#: src/hash.c:695 src/libvirt.c:651
+#: src/hash.c:695 src/libvirt.c:689
 msgid "allocating connection"
 msgstr "allokerer forbindelse"
 
@@ -747,212 +747,240 @@ msgstr "Kunne ikke oprette netværk fra %s"
 msgid "Failed to saves iptables rules to %s : %s"
 msgstr "Kunne ikke gemme domæne %s til %s"
 
-#: src/iptables.c:589
+#: src/iptables.c:591
 #, c-format
 msgid "Failed to remove iptables rule '%s' from chain '%s' in table '%s': %s"
 msgstr ""
 
-#: src/iptables.c:598
+#: src/iptables.c:600
 #, c-format
 msgid "Failed to add iptables rule '%s' to chain '%s' in table '%s': %s"
 msgstr ""
 
-#: src/libvirt.c:658
+#: src/libvirt.c:696
 #, fuzzy
 msgid "could not parse connection URI"
 msgstr "kunne ikke forbinde til %s"
 
-#: src/libvirt.c:676
+#: src/libvirt.c:714
 #, fuzzy
 msgid "allocating conn->name"
 msgstr "allokerer forbindelse"
 
-#: src/libvirt.c:2097
+#: src/libvirt.c:2135
 #, fuzzy
 msgid "domainMigratePrepare did not set uri"
 msgstr "domæneinformation fejl, domid er ikke numerisk"
 
-#: src/proxy_internal.c:196
+#: src/proxy_internal.c:197
 #, c-format
 msgid "failed to exec %s\n"
 msgstr "kunne ikke køre %s\n"
 
-#: src/proxy_internal.c:290
+#: src/proxy_internal.c:291
 #, c-format
 msgid "Failed to close socket %d\n"
 msgstr "Kunne ikke lukke sokkel %d\n"
 
-#: src/proxy_internal.c:323
+#: src/proxy_internal.c:324
 #, c-format
 msgid "Failed to read socket %d\n"
 msgstr "Kunne ikke læse fra sokkel %d\n"
 
-#: src/proxy_internal.c:357
+#: src/proxy_internal.c:351
 #, c-format
 msgid "Failed to write to socket %d\n"
 msgstr "Kunne ikke skrive til sokkel %d\n"
 
-#: src/proxy_internal.c:449 src/proxy_internal.c:470 src/proxy_internal.c:490
+#: src/proxy_internal.c:443 src/proxy_internal.c:464 src/proxy_internal.c:484
 #, c-format
 msgid "Communication error with proxy: got %d bytes of %d\n"
 msgstr "Kommunikationsfejl med proxy: fik %d byte af %d\n"
 
-#: src/proxy_internal.c:457
+#: src/proxy_internal.c:451
 #, c-format
 msgid "Communication error with proxy: expected %d bytes got %d\n"
 msgstr "Kommunikationsfejl med proxy: forventede %d byte men fik %d\n"
 
-#: src/proxy_internal.c:479
+#: src/proxy_internal.c:473
 #, c-format
 msgid "Communication error with proxy: got %d bytes packet\n"
 msgstr "Kommunikationsfejl med proxy: fik %d byte pakke\n"
 
-#: src/proxy_internal.c:503
+#: src/proxy_internal.c:497
 msgid "Communication error with proxy: malformed packet\n"
 msgstr "Kommunikationsfejl med proxy: fejlformateret pakke\n"
 
-#: src/proxy_internal.c:509
+#: src/proxy_internal.c:503
 #, c-format
 msgid "got asynchronous packet number %d\n"
 msgstr "fik asynkront pakkenummer %d\n"
 
-#: src/qemu_conf.c:414
+#: src/qemu_conf.c:499
 #, c-format
 msgid "Unexpected exit status from qemu %d pid %lu"
 msgstr ""
 
-#: src/qemu_conf.c:423
+#: src/qemu_conf.c:508
 #, c-format
 msgid "Unexpected exit status '%d', qemu probably failed"
 msgstr ""
 
-#: src/qemu_conf.c:2517
+#: src/qemu_conf.c:2615
 #, c-format
 msgid "Error parsing QEMU guest config '%s' : %s"
 msgstr ""
 
-#: src/qemu_conf.c:2519
+#: src/qemu_conf.c:2617
 msgid "BUG: unknown error - please report it\n"
 msgstr ""
 
-#: src/qemu_conf.c:2525
+#: src/qemu_conf.c:2623
 #, c-format
 msgid "QEMU guest config filename '%s' does not match guest name '%s'"
 msgstr ""
 
-#: src/qemu_conf.c:2534
+#: src/qemu_conf.c:2632
 #, c-format
 msgid "Failed to load QEMU guest config '%s': out of memory"
 msgstr ""
 
-#: src/qemu_conf.c:2562
+#: src/qemu_conf.c:2660
 #, c-format
 msgid "Error parsing network config '%s' : %s"
 msgstr ""
 
-#: src/qemu_conf.c:2569
+#: src/qemu_conf.c:2667
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr ""
 
-#: src/qemu_conf.c:2578
+#: src/qemu_conf.c:2676
 #, fuzzy, c-format
 msgid "Failed to load network config '%s': out of memory"
 msgstr "kunne ikke tilføje netværk til hashindekstabellen for forbindelser"
 
-#: src/qemu_conf.c:2605
+#: src/qemu_conf.c:2703
 #, fuzzy, c-format
 msgid "Failed to open dir '%s': %s"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: src/qemu_conf.c:2622
+#: src/qemu_conf.c:2720
 #, c-format
 msgid "Config filename '%s/%s' is too long"
 msgstr ""
 
-#: src/qemu_conf.c:2629
+#: src/qemu_conf.c:2727
 #, c-format
 msgid "Autostart link path '%s/%s' is too long"
 msgstr ""
 
-#: src/qemu_driver.c:126
+#: src/qemu_driver.c:132
 #, fuzzy, c-format
 msgid "Failed to autostart network '%s': %s"
 msgstr "Kunne ikke starte netværk %s"
 
-#: src/qemu_driver.c:141
+#: src/qemu_driver.c:147
 #, fuzzy, c-format
 msgid "Failed to autostart VM '%s': %s"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: src/qemu_driver.c:185
+#: src/qemu_driver.c:192
 #, fuzzy
 msgid "out of memory in asprintf"
 msgstr "ikke mere hukommelse"
 
-#: src/qemu_driver.c:231
+#: src/qemu_driver.c:243
 #, fuzzy
 msgid "qemudStartup: out of memory"
 msgstr "ikke mere hukommelse"
 
-#: src/qemu_driver.c:249
+#: src/qemu_driver.c:262
 msgid "Reloading iptables rules"
 msgstr ""
 
-#: src/qemu_driver.c:547 src/qemu_driver.c:741 src/qemu_driver.c:1372
-#: src/qemu_driver.c:1382
+#: src/qemu_driver.c:560 src/qemu_driver.c:751 src/qemu_driver.c:1385
+#: src/qemu_driver.c:1395
 #, c-format
 msgid "Unable to log VM console data: %s"
 msgstr ""
 
-#: src/qemu_driver.c:660 src/qemu_driver.c:663 src/qemu_driver.c:668
+#: src/qemu_driver.c:673 src/qemu_driver.c:676 src/qemu_driver.c:681
 #, fuzzy, c-format
 msgid "Unable to write argv to logfile %d: %s"
 msgstr "kunne ikke skrive konfigurationsfilen"
 
-#: src/qemu_driver.c:755
+#: src/qemu_driver.c:765
 #, c-format
 msgid "Shutting down VM '%s'"
 msgstr ""
 
-#: src/qemu_driver.c:766
+#: src/qemu_driver.c:776
 #, fuzzy, c-format
 msgid "Unable to close logfile %d: %s"
 msgstr "kunne ikke skrive konfigurationsfilen"
 
-#: src/qemu_driver.c:780
+#: src/qemu_driver.c:791
 #, fuzzy
 msgid "Got unexpected pid, damn"
 msgstr "uventet dict-knude"
 
-#: src/qemu_driver.c:1224
+#: src/qemu_driver.c:1235
 #, fuzzy, c-format
 msgid "Failed to bring down bridge '%s' : %s"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: src/qemu_driver.c:1230 src/qemu_driver.c:1260
+#: src/qemu_driver.c:1241 src/qemu_driver.c:1271
 #, fuzzy, c-format
 msgid "Failed to delete bridge '%s' : %s\n"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: src/qemu_driver.c:1243
+#: src/qemu_driver.c:1254
 #, fuzzy, c-format
 msgid "Shutting down network '%s'"
 msgstr "kunne ikke hente netværk '%s'"
 
-#: src/qemu_driver.c:1255
+#: src/qemu_driver.c:1266
 #, fuzzy, c-format
 msgid "Failed to bring down bridge '%s' : %s\n"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: src/qemu_driver.c:1268
+#: src/qemu_driver.c:1280
 msgid "Got unexpected pid for dnsmasq\n"
 msgstr ""
 
-#: src/qemu_driver.c:2350 src/qemu_driver.c:2726
+#: src/qemu_driver.c:2208 src/qemu_driver.c:2726
 #, fuzzy, c-format
 msgid "Failed to delete autostart link '%s': %s"
 msgstr "Kunne ikke gemme domæne %s til %s"
+
+#: src/qemu_driver.c:2386
+#, c-format
+msgid "no domain with matching id %d"
+msgstr ""
+
+#: src/qemu_driver.c:2391
+#, fuzzy
+msgid "domain is not running"
+msgstr "Domænet kører stadigvæk"
+
+#: src/qemu_driver.c:2413
+#, fuzzy, c-format
+msgid "invalid path: %s"
+msgstr "ugyldigt argument i %s"
+
+#: src/qemu_driver.c:2421
+msgid "'info blockstats' command failed"
+msgstr ""
+
+#: src/qemu_driver.c:2436
+msgid "'info blockstats' not supported by this qemu"
+msgstr ""
+
+#: src/qemu_driver.c:2501
+#, fuzzy, c-format
+msgid "device not found: %s (%s)"
+msgstr "Domæne genetableret fra %s\n"
 
 #: src/remote_internal.c:107 src/remote_internal.c:115
 msgid "tried to use a closed or uninitialised handle"
@@ -1152,7 +1180,7 @@ msgstr ""
 msgid "cannot read dir %s: %s"
 msgstr ""
 
-#: src/storage_backend.c:309 src/storage_driver.c:1190
+#: src/storage_backend.c:309 src/storage_driver.c:1191
 msgid "path"
 msgstr ""
 
@@ -1321,22 +1349,22 @@ msgstr ""
 msgid "creation of non-raw images is not supported without qemu-img"
 msgstr ""
 
-#: src/storage_backend_fs.c:975 src/storage_backend_logical.c:444
+#: src/storage_backend_fs.c:976 src/storage_backend_logical.c:444
 #, fuzzy, c-format
 msgid "cannot set file owner '%s': %s"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: src/storage_backend_fs.c:984 src/storage_backend_logical.c:451
+#: src/storage_backend_fs.c:985 src/storage_backend_logical.c:451
 #, fuzzy, c-format
 msgid "cannot set file mode '%s': %s"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: src/storage_backend_fs.c:1000 src/storage_backend_logical.c:458
+#: src/storage_backend_fs.c:1001 src/storage_backend_logical.c:458
 #, c-format
 msgid "cannot close file '%s': %s"
 msgstr ""
 
-#: src/storage_backend_fs.c:1023
+#: src/storage_backend_fs.c:1024
 #, c-format
 msgid "cannot unlink file '%s': %s"
 msgstr ""
@@ -1417,7 +1445,7 @@ msgstr "vis version"
 msgid "cannot find session"
 msgstr ""
 
-#: src/storage_backend_iscsi.c:182 src/storage_driver.c:862
+#: src/storage_backend_iscsi.c:182 src/storage_driver.c:863
 #, fuzzy
 msgid "name"
 msgstr "Navn"
@@ -1590,36 +1618,36 @@ msgstr ""
 msgid "cannot construct autostart link path"
 msgstr ""
 
-#: src/storage_conf.c:1172
+#: src/storage_conf.c:1173
 msgid "config file"
 msgstr ""
 
-#: src/storage_conf.c:1181
+#: src/storage_conf.c:1182
 #, fuzzy
 msgid "failed to generate XML"
 msgstr "Kunne ikke læse fra sokkel %d\n"
 
-#: src/storage_conf.c:1189
+#: src/storage_conf.c:1190
 #, fuzzy, c-format
 msgid "cannot create config file %s: %s"
 msgstr "kunne ikke skrive konfigurationsfilen: %s"
 
-#: src/storage_conf.c:1197
+#: src/storage_conf.c:1198
 #, fuzzy, c-format
 msgid "cannot write config file %s: %s"
 msgstr "kunne ikke skrive konfigurationsfilen: %s"
 
-#: src/storage_conf.c:1204
+#: src/storage_conf.c:1205
 #, c-format
 msgid "cannot save config file %s: %s"
 msgstr ""
 
-#: src/storage_conf.c:1225
+#: src/storage_conf.c:1226
 #, fuzzy, c-format
 msgid "no config file for %s"
 msgstr "syntaksfejl i konfigurationsfilen: %s"
 
-#: src/storage_conf.c:1231
+#: src/storage_conf.c:1232
 #, c-format
 msgid "cannot remove config for %s"
 msgstr ""
@@ -1644,9 +1672,9 @@ msgstr ""
 #: src/storage_driver.c:473 src/storage_driver.c:510 src/storage_driver.c:549
 #: src/storage_driver.c:580 src/storage_driver.c:621 src/storage_driver.c:658
 #: src/storage_driver.c:699 src/storage_driver.c:728 src/storage_driver.c:822
-#: src/storage_driver.c:847 src/storage_driver.c:891 src/storage_driver.c:975
-#: src/storage_driver.c:1029 src/storage_driver.c:1092
-#: src/storage_driver.c:1136 src/storage_driver.c:1170
+#: src/storage_driver.c:847 src/storage_driver.c:892 src/storage_driver.c:976
+#: src/storage_driver.c:1030 src/storage_driver.c:1093
+#: src/storage_driver.c:1137 src/storage_driver.c:1171
 msgid "no storage pool with matching uuid"
 msgstr ""
 
@@ -1665,9 +1693,9 @@ msgid "storage pool is already active"
 msgstr "Domænet er allerede aktivt"
 
 #: src/storage_driver.c:590 src/storage_driver.c:668 src/storage_driver.c:828
-#: src/storage_driver.c:853 src/storage_driver.c:897 src/storage_driver.c:981
-#: src/storage_driver.c:1035 src/storage_driver.c:1098
-#: src/storage_driver.c:1142 src/storage_driver.c:1176
+#: src/storage_driver.c:853 src/storage_driver.c:898 src/storage_driver.c:982
+#: src/storage_driver.c:1036 src/storage_driver.c:1099
+#: src/storage_driver.c:1143 src/storage_driver.c:1177
 msgid "storage pool is not active"
 msgstr ""
 
@@ -1698,29 +1726,29 @@ msgstr "Kunne ikke gemme domæne %s til %s"
 msgid "Failed to delete symlink '%s': %s"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: src/storage_driver.c:905 src/storage_driver.c:1046
-#: src/storage_driver.c:1106 src/storage_driver.c:1150
-#: src/storage_driver.c:1184
+#: src/storage_driver.c:906 src/storage_driver.c:1047
+#: src/storage_driver.c:1107 src/storage_driver.c:1151
+#: src/storage_driver.c:1185
 msgid "no storage vol with matching name"
 msgstr ""
 
-#: src/storage_driver.c:934
+#: src/storage_driver.c:935
 msgid "no storage vol with matching key"
 msgstr ""
 
-#: src/storage_driver.c:959
+#: src/storage_driver.c:960
 msgid "no storage vol with matching path"
 msgstr ""
 
-#: src/storage_driver.c:994
+#: src/storage_driver.c:995
 msgid "storage vol already exists"
 msgstr ""
 
-#: src/storage_driver.c:1001
+#: src/storage_driver.c:1002
 msgid "storage pool does not support volume creation"
 msgstr ""
 
-#: src/storage_driver.c:1052
+#: src/storage_driver.c:1053
 msgid "storage pool does not support vol deletion"
 msgstr ""
 
@@ -1732,165 +1760,165 @@ msgstr "kunne ikke allokere en knude"
 msgid "failed to copy a string"
 msgstr "kunne ikke kopiere en streng"
 
-#: src/test.c:232 src/test.c:597 src/test.c:1258
+#: src/test.c:234 src/test.c:599 src/test.c:1282
 msgid "getting time of day"
 msgstr "henter tid på døgnet"
 
-#: src/test.c:238 src/test.c:371 src/test.c:397 src/test.c:1540
+#: src/test.c:240 src/test.c:373 src/test.c:399 src/test.c:1564
 msgid "domain"
 msgstr "domæne"
 
-#: src/test.c:244 src/test.c:431 src/test.c:703
+#: src/test.c:246 src/test.c:433 src/test.c:705
 msgid "creating xpath context"
 msgstr "skaber kontekst for xpath"
 
-#: src/test.c:250
+#: src/test.c:252
 msgid "domain name"
 msgstr "domænenavn"
 
-#: src/test.c:256 src/test.c:260
+#: src/test.c:258 src/test.c:262
 msgid "domain uuid"
 msgstr "domæne-uuid"
 
-#: src/test.c:268
+#: src/test.c:270
 msgid "domain memory"
 msgstr "domænehukommelse"
 
-#: src/test.c:277
+#: src/test.c:279
 msgid "domain current memory"
 msgstr "aktuel hukommelse for domæne"
 
-#: src/test.c:287
+#: src/test.c:289
 msgid "domain vcpus"
 msgstr "domæne-vcpu:er"
 
-#: src/test.c:296
+#: src/test.c:298
 msgid "domain reboot behaviour"
 msgstr "opførsel ved genstart af domæne"
 
-#: src/test.c:306
+#: src/test.c:308
 msgid "domain poweroff behaviour"
 msgstr "opførsel ved lukning af domæne"
 
-#: src/test.c:316
+#: src/test.c:318
 msgid "domain crash behaviour"
 msgstr "opførsel ved nedbrud af domæne"
 
-#: src/test.c:390
+#: src/test.c:392
 msgid "load domain definition file"
 msgstr "indlæs domæne-definitionsfil"
 
-#: src/test.c:425 src/test.c:548 src/test.c:573
+#: src/test.c:427 src/test.c:550 src/test.c:575
 #, fuzzy
 msgid "network"
 msgstr "netværksnavn"
 
-#: src/test.c:437 src/virsh.c:2723
+#: src/test.c:439 src/virsh.c:2724
 msgid "network name"
 msgstr "netværksnavn"
 
-#: src/test.c:445 src/test.c:449 src/virsh.c:2614
+#: src/test.c:447 src/test.c:451 src/virsh.c:2615
 msgid "network uuid"
 msgstr "netværks uuid"
 
-#: src/test.c:457
+#: src/test.c:459
 #, fuzzy
 msgid "network forward"
 msgstr "netværksnavn"
 
-#: src/test.c:466 src/test.c:476 src/test.c:481
+#: src/test.c:468 src/test.c:478 src/test.c:483
 msgid "ip address"
 msgstr ""
 
-#: src/test.c:471
+#: src/test.c:473
 msgid "ip netmask"
 msgstr ""
 
-#: src/test.c:566
+#: src/test.c:568
 #, fuzzy
 msgid "load network definition file"
 msgstr "indlæs domæne-definitionsfil"
 
-#: src/test.c:682
+#: src/test.c:684
 msgid "loading host definition file"
 msgstr "indlæser værts-definitionsfil"
 
-#: src/test.c:689
+#: src/test.c:691
 msgid "host"
 msgstr "vært"
 
-#: src/test.c:697
+#: src/test.c:699
 msgid "node"
 msgstr "knude"
 
-#: src/test.c:721
+#: src/test.c:723
 msgid "node cpu numa nodes"
 msgstr "knudens cpu-numa-knuder"
 
-#: src/test.c:729
+#: src/test.c:731
 msgid "node cpu sockets"
 msgstr "knudens cpu-sokkel"
 
-#: src/test.c:737
+#: src/test.c:739
 msgid "node cpu cores"
 msgstr "knudens cpu-kerner"
 
-#: src/test.c:745
+#: src/test.c:747
 msgid "node cpu threads"
 msgstr "knudens cpu-tråde"
 
-#: src/test.c:756
+#: src/test.c:758
 msgid "node active cpu"
 msgstr "knudens aktive cpu"
 
-#: src/test.c:763
+#: src/test.c:765
 msgid "node cpu mhz"
 msgstr "knudens cpu mhz"
 
-#: src/test.c:778
+#: src/test.c:780
 msgid "node memory"
 msgstr "knudens hukommelse"
 
-#: src/test.c:784
+#: src/test.c:786
 msgid "node domain list"
 msgstr "knudens domæneliste"
 
-#: src/test.c:794
+#: src/test.c:796
 msgid "resolving domain filename"
 msgstr "slå op domænefilnavn"
 
-#: src/test.c:819
+#: src/test.c:821
 #, fuzzy
 msgid "resolving network filename"
 msgstr "slå op domænefilnavn"
 
-#: src/test.c:906
+#: src/test.c:908
 msgid "testOpen: supply a path or use test:///default"
 msgstr ""
 
-#: src/test.c:1042
+#: src/test.c:1066
 msgid "too many domains"
 msgstr "for mange domæner"
 
-#: src/test.c:1560
+#: src/test.c:1584
 msgid "Domain is already running"
 msgstr "Domænet kører allerede"
 
-#: src/test.c:1575
+#: src/test.c:1599
 msgid "Domain is still running"
 msgstr "Domænet kører stadigvæk"
 
-#: src/test.c:1776 src/test.c:1801
+#: src/test.c:1800 src/test.c:1825
 #, fuzzy
 msgid "too many networks"
 msgstr "for mange forbindelser"
 
-#: src/test.c:1820
+#: src/test.c:1844
 #, fuzzy
 msgid "Network is still running"
 msgstr "Domænet kører stadigvæk"
 
-#: src/test.c:1834
+#: src/test.c:1858
 #, fuzzy
 msgid "Network is already running"
 msgstr "Domænet kører allerede"
@@ -1900,20 +1928,20 @@ msgstr "Domænet kører allerede"
 msgid "Falling back to pseudorandom UUID, failed to generate random bytes: %s"
 msgstr ""
 
-#: src/virsh.c:341
+#: src/virsh.c:342
 msgid "print help"
 msgstr "udskriv hjælp"
 
-#: src/virsh.c:342
+#: src/virsh.c:343
 msgid "Prints global help or command specific help."
 msgstr "Udskriv global hjælp eller udbed specifik hjælp."
 
-#: src/virsh.c:348
+#: src/virsh.c:349
 #, fuzzy
 msgid "name of command"
 msgstr "navn for det inaktive domæne"
 
-#: src/virsh.c:360
+#: src/virsh.c:361
 msgid ""
 "Commands:\n"
 "\n"
@@ -1921,1751 +1949,1751 @@ msgstr ""
 "Kommandoer:\n"
 "\n"
 
-#: src/virsh.c:374
+#: src/virsh.c:375
 msgid "autostart a domain"
 msgstr "start et domæne automatisk"
 
-#: src/virsh.c:376
+#: src/virsh.c:377
 msgid "Configure a domain to be automatically started at boot."
 msgstr "Konfigurér et domæne til at blive automatisk startet ved opstart."
 
-#: src/virsh.c:381 src/virsh.c:481 src/virsh.c:675 src/virsh.c:712
-#: src/virsh.c:769 src/virsh.c:836 src/virsh.c:1056 src/virsh.c:1100
-#: src/virsh.c:1289 src/virsh.c:1334 src/virsh.c:1373 src/virsh.c:1412
-#: src/virsh.c:1451 src/virsh.c:1490 src/virsh.c:1609 src/virsh.c:1696
-#: src/virsh.c:1824 src/virsh.c:1881 src/virsh.c:1938 src/virsh.c:2060
-#: src/virsh.c:2201 src/virsh.c:4315 src/virsh.c:4391 src/virsh.c:4452
-#: src/virsh.c:4508 src/virsh.c:4564 src/virsh.c:4678 src/virsh.c:4797
-#: src/virsh.c:4960
+#: src/virsh.c:382 src/virsh.c:482 src/virsh.c:676 src/virsh.c:713
+#: src/virsh.c:770 src/virsh.c:837 src/virsh.c:1057 src/virsh.c:1101
+#: src/virsh.c:1290 src/virsh.c:1335 src/virsh.c:1374 src/virsh.c:1413
+#: src/virsh.c:1452 src/virsh.c:1491 src/virsh.c:1610 src/virsh.c:1697
+#: src/virsh.c:1825 src/virsh.c:1882 src/virsh.c:1939 src/virsh.c:2061
+#: src/virsh.c:2202 src/virsh.c:4316 src/virsh.c:4392 src/virsh.c:4453
+#: src/virsh.c:4509 src/virsh.c:4565 src/virsh.c:4679 src/virsh.c:4798
+#: src/virsh.c:4961
 msgid "domain name, id or uuid"
 msgstr "domænenavn, id eller uuid"
 
-#: src/virsh.c:382 src/virsh.c:2265 src/virsh.c:2773
+#: src/virsh.c:383 src/virsh.c:2266 src/virsh.c:2774
 msgid "disable autostarting"
 msgstr "deaktivér automatisk start"
 
-#: src/virsh.c:403
+#: src/virsh.c:404
 #, c-format
 msgid "Failed to mark domain %s as autostarted"
 msgstr "Kunne ikke markere domæne %s som automatisk startet"
 
-#: src/virsh.c:406
+#: src/virsh.c:407
 #, c-format
 msgid "Failed to unmark domain %s as autostarted"
 msgstr "Kunne ikke fravælge domæne %s som automatisk startet"
 
-#: src/virsh.c:413
+#: src/virsh.c:414
 #, c-format
 msgid "Domain %s marked as autostarted\n"
 msgstr "Domæne %s mærket som automatisk startet\n"
 
-#: src/virsh.c:415
+#: src/virsh.c:416
 #, c-format
 msgid "Domain %s unmarked as autostarted\n"
 msgstr "Domæne %s fravalgt som automatisk startet\n"
 
-#: src/virsh.c:426
+#: src/virsh.c:427
 msgid "(re)connect to hypervisor"
 msgstr "(gen)tilslut til hypervisor"
 
-#: src/virsh.c:428
+#: src/virsh.c:429
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr ""
 "Forbind til lokal hypervisor. Dette er en indbygget kommando efter skallen "
 "er startet op."
 
-#: src/virsh.c:433
+#: src/virsh.c:434
 msgid "hypervisor connection URI"
 msgstr "forbindelses-URI for hypervisor"
 
-#: src/virsh.c:434
+#: src/virsh.c:435
 msgid "read-only connection"
 msgstr "forbindelse skrivebeskyttet"
 
-#: src/virsh.c:446
+#: src/virsh.c:447
 msgid "Failed to disconnect from the hypervisor"
 msgstr "Kunne ikke koble ned fra hypervisor"
 
-#: src/virsh.c:464
+#: src/virsh.c:465
 msgid "Failed to connect to the hypervisor"
 msgstr "Kunne ikke koble op til hypervisor"
 
-#: src/virsh.c:474
+#: src/virsh.c:475
 msgid "connect to the guest console"
 msgstr "forbind til gæstekonsol"
 
-#: src/virsh.c:476
+#: src/virsh.c:477
 msgid "Connect the virtual serial console for the guest"
 msgstr "Forbind den virtuelle serielle konsol for gæsten"
 
-#: src/virsh.c:523
+#: src/virsh.c:524
 msgid "No console available for domain\n"
 msgstr "Ingen konsol tilgængelig for domænet\n"
 
-#: src/virsh.c:540
+#: src/virsh.c:541
 msgid "console not implemented on this platform"
 msgstr ""
 
-#: src/virsh.c:551
+#: src/virsh.c:552
 msgid "list domains"
 msgstr "vis domæner"
 
-#: src/virsh.c:552
+#: src/virsh.c:553
 msgid "Returns list of domains."
 msgstr "Returnerer liste af domæner"
 
-#: src/virsh.c:557
+#: src/virsh.c:558
 msgid "list inactive domains"
 msgstr "vis inaktive domæner"
 
-#: src/virsh.c:558
+#: src/virsh.c:559
 msgid "list inactive & active domains"
 msgstr "vis inaktive og aktive domæner"
 
-#: src/virsh.c:580 src/virsh.c:587
+#: src/virsh.c:581 src/virsh.c:588
 msgid "Failed to list active domains"
 msgstr "Kunne ikke liste aktive domæner"
 
-#: src/virsh.c:598 src/virsh.c:606
+#: src/virsh.c:599 src/virsh.c:607
 msgid "Failed to list inactive domains"
 msgstr "Kunne ikke liste inaktive domæner"
 
-#: src/virsh.c:615
+#: src/virsh.c:616
 msgid "Id"
 msgstr "Id"
 
-#: src/virsh.c:615 src/virsh.c:2548 src/virsh.c:3365 src/virsh.c:4031
+#: src/virsh.c:616 src/virsh.c:2549 src/virsh.c:3366 src/virsh.c:4032
 msgid "Name"
 msgstr "Navn"
 
-#: src/virsh.c:615 src/virsh.c:2548 src/virsh.c:3365
+#: src/virsh.c:616 src/virsh.c:2549 src/virsh.c:3366
 msgid "State"
 msgstr "Tilstand"
 
-#: src/virsh.c:628 src/virsh.c:650 src/virsh.c:5886 src/virsh.c:5902
+#: src/virsh.c:629 src/virsh.c:651 src/virsh.c:5887 src/virsh.c:5903
 msgid "no state"
 msgstr "ingen tilstand"
 
-#: src/virsh.c:669
+#: src/virsh.c:670
 msgid "domain state"
 msgstr "domænetilstand"
 
-#: src/virsh.c:670
+#: src/virsh.c:671
 msgid "Returns state about a running domain."
 msgstr "Returnerer tilstand for et kørende domæne."
 
-#: src/virsh.c:706
+#: src/virsh.c:707
 msgid "get device block stats for a domain"
 msgstr ""
 
-#: src/virsh.c:707
+#: src/virsh.c:708
 #, fuzzy
 msgid "Get device block stats for a running domain."
 msgstr "Returnerer tilstand for et kørende domæne."
 
-#: src/virsh.c:713
+#: src/virsh.c:714
 #, fuzzy
 msgid "block device"
 msgstr "blokeret"
 
-#: src/virsh.c:734
+#: src/virsh.c:735
 #, fuzzy, c-format
 msgid "Failed to get block stats %s %s"
 msgstr "Kunne ikke gemme domæne %s til %s"
 
-#: src/virsh.c:763
+#: src/virsh.c:764
 #, fuzzy
 msgid "get network interface stats for a domain"
 msgstr "netværksnavn"
 
-#: src/virsh.c:764
+#: src/virsh.c:765
 #, fuzzy
 msgid "Get network interface stats for a running domain."
 msgstr "Returnerer tilstand for et kørende domæne."
 
-#: src/virsh.c:770
+#: src/virsh.c:771
 msgid "interface device"
 msgstr ""
 
-#: src/virsh.c:791
+#: src/virsh.c:792
 #, fuzzy, c-format
 msgid "Failed to get interface stats %s %s"
 msgstr "kunne ikke få knudeinformation"
 
-#: src/virsh.c:830
+#: src/virsh.c:831
 msgid "suspend a domain"
 msgstr "suspendér et domæne"
 
-#: src/virsh.c:831
+#: src/virsh.c:832
 msgid "Suspend a running domain."
 msgstr "Suspendér et kørende domæne."
 
-#: src/virsh.c:854
+#: src/virsh.c:855
 #, c-format
 msgid "Domain %s suspended\n"
 msgstr "Domæne %s suspenderet\n"
 
-#: src/virsh.c:856
+#: src/virsh.c:857
 #, c-format
 msgid "Failed to suspend domain %s"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: src/virsh.c:869
+#: src/virsh.c:870
 msgid "create a domain from an XML file"
 msgstr "opret et domæne fra en XML-fil"
 
-#: src/virsh.c:870
+#: src/virsh.c:871
 msgid "Create a domain."
 msgstr "Opret et domæne."
 
-#: src/virsh.c:875 src/virsh.c:923
+#: src/virsh.c:876 src/virsh.c:924
 msgid "file containing an XML domain description"
 msgstr "fil som indeholder en XML-domænebeskrivelse"
 
-#: src/virsh.c:902
+#: src/virsh.c:903
 #, c-format
 msgid "Domain %s created from %s\n"
 msgstr "Domæne %s oprettet fra %s\n"
 
-#: src/virsh.c:906
+#: src/virsh.c:907
 #, c-format
 msgid "Failed to create domain from %s"
 msgstr "Kunne ikke oprette domæne fra %s"
 
-#: src/virsh.c:917
+#: src/virsh.c:918
 msgid "define (but don't start) a domain from an XML file"
 msgstr "definér (men start ikke) et domæne fra en XML-fil"
 
-#: src/virsh.c:918
+#: src/virsh.c:919
 msgid "Define a domain."
 msgstr "Definér et domæne."
 
-#: src/virsh.c:950
+#: src/virsh.c:951
 #, c-format
 msgid "Domain %s defined from %s\n"
 msgstr "Domæne %s defineret fra %s\n"
 
-#: src/virsh.c:954
+#: src/virsh.c:955
 #, c-format
 msgid "Failed to define domain from %s"
 msgstr "Kunne ikke definere domæne fra %s"
 
-#: src/virsh.c:965
+#: src/virsh.c:966
 msgid "undefine an inactive domain"
 msgstr "afdefinér et inaktivt domæne"
 
-#: src/virsh.c:966
+#: src/virsh.c:967
 msgid "Undefine the configuration for an inactive domain."
 msgstr "Afdefinér konfigurationen for et inaktivt domæne."
 
-#: src/virsh.c:971 src/virsh.c:2129
+#: src/virsh.c:972 src/virsh.c:2130
 msgid "domain name or uuid"
 msgstr "domænenavn eller uuid"
 
-#: src/virsh.c:989
+#: src/virsh.c:990
 #, c-format
 msgid "Domain %s has been undefined\n"
 msgstr "Domæne %s er blevet afdefineret\n"
 
-#: src/virsh.c:991
+#: src/virsh.c:992
 #, c-format
 msgid "Failed to undefine domain %s"
 msgstr "Kunne ikke afdefinere domæne %s"
 
-#: src/virsh.c:1005
+#: src/virsh.c:1006
 msgid "start a (previously defined) inactive domain"
 msgstr "start et (tidligere defineret) inaktivt domæne"
 
-#: src/virsh.c:1006
+#: src/virsh.c:1007
 msgid "Start a domain."
 msgstr "Starte et domæne."
 
-#: src/virsh.c:1011
+#: src/virsh.c:1012
 msgid "name of the inactive domain"
 msgstr "navn for det inaktive domæne"
 
-#: src/virsh.c:1028
+#: src/virsh.c:1029
 msgid "Domain is already active"
 msgstr "Domænet er allerede aktivt"
 
-#: src/virsh.c:1034
+#: src/virsh.c:1035
 #, c-format
 msgid "Domain %s started\n"
 msgstr "Domæne %s startede\n"
 
-#: src/virsh.c:1037
+#: src/virsh.c:1038
 #, c-format
 msgid "Failed to start domain %s"
 msgstr "Kunne ikke starte domæne %s"
 
-#: src/virsh.c:1050
+#: src/virsh.c:1051
 msgid "save a domain state to a file"
 msgstr "gem en domænetilstand på en fil"
 
-#: src/virsh.c:1051
+#: src/virsh.c:1052
 msgid "Save a running domain."
 msgstr "Gem et kørende domæne."
 
-#: src/virsh.c:1057
+#: src/virsh.c:1058
 msgid "where to save the data"
 msgstr "hvor data skal gemmes"
 
-#: src/virsh.c:1079
+#: src/virsh.c:1080
 #, c-format
 msgid "Domain %s saved to %s\n"
 msgstr "Domæne %s gemt på %s\n"
 
-#: src/virsh.c:1081
+#: src/virsh.c:1082
 #, c-format
 msgid "Failed to save domain %s to %s"
 msgstr "Kunne ikke gemme domæne %s til %s"
 
-#: src/virsh.c:1094
+#: src/virsh.c:1095
 msgid "show/set scheduler parameters"
 msgstr ""
 
-#: src/virsh.c:1095
+#: src/virsh.c:1096
 msgid "Show/Set scheduler parameters."
 msgstr ""
 
-#: src/virsh.c:1101
+#: src/virsh.c:1102
 msgid "weight for XEN_CREDIT"
 msgstr ""
 
-#: src/virsh.c:1102
+#: src/virsh.c:1103
 msgid "cap for XEN_CREDIT"
 msgstr ""
 
-#: src/virsh.c:1134
+#: src/virsh.c:1135
 #, fuzzy
 msgid "Invalid value of weight"
 msgstr "Ugyldig værdi af %d for hukommelsesstørrelse"
 
-#: src/virsh.c:1144
+#: src/virsh.c:1145
 #, fuzzy
 msgid "Invalid value of cap"
 msgstr "Ugyldig værdi af %d for hukommelsesstørrelse"
 
-#: src/virsh.c:1186 src/virsh.c:1190
+#: src/virsh.c:1187 src/virsh.c:1191
 msgid "Scheduler"
 msgstr ""
 
-#: src/virsh.c:1190
+#: src/virsh.c:1191
 #, fuzzy
 msgid "Unknown"
 msgstr "ukendt vært"
 
-#: src/virsh.c:1245
+#: src/virsh.c:1246
 msgid "restore a domain from a saved state in a file"
 msgstr "genetablér et domæne fra et gemt tilstand i en fil"
 
-#: src/virsh.c:1246
+#: src/virsh.c:1247
 msgid "Restore a domain."
 msgstr "genetablér et domæne."
 
-#: src/virsh.c:1251
+#: src/virsh.c:1252
 msgid "the state to restore"
 msgstr "tilstanden som skal genetableres"
 
-#: src/virsh.c:1270
+#: src/virsh.c:1271
 #, c-format
 msgid "Domain restored from %s\n"
 msgstr "Domæne genetableret fra %s\n"
 
-#: src/virsh.c:1272
+#: src/virsh.c:1273
 #, c-format
 msgid "Failed to restore domain from %s"
 msgstr "Kunne ikke genetablere domæne fra %s"
 
-#: src/virsh.c:1283
+#: src/virsh.c:1284
 msgid "dump the core of a domain to a file for analysis"
 msgstr "dump et domæne fra hukommelsen til en fil for analyse"
 
-#: src/virsh.c:1284
+#: src/virsh.c:1285
 msgid "Core dump a domain."
 msgstr "dump et domæne fra hukommelsen"
 
-#: src/virsh.c:1290
+#: src/virsh.c:1291
 msgid "where to dump the core"
 msgstr "hvor dump fra hukommelsen skal gemmes"
 
-#: src/virsh.c:1312
+#: src/virsh.c:1313
 #, c-format
 msgid "Domain %s dumpd to %s\n"
 msgstr "Domæne %s udskrevet på %s\n"
 
-#: src/virsh.c:1314
+#: src/virsh.c:1315
 #, c-format
 msgid "Failed to core dump domain %s to %s"
 msgstr "Kunne ikke udskrive domæne %s fra hukommelsen til %s"
 
-#: src/virsh.c:1328
+#: src/virsh.c:1329
 msgid "resume a domain"
 msgstr "fortsæt et domæne"
 
-#: src/virsh.c:1329
+#: src/virsh.c:1330
 msgid "Resume a previously suspended domain."
 msgstr "Fortsæt et tidligere suspenderet domæne."
 
-#: src/virsh.c:1352
+#: src/virsh.c:1353
 #, c-format
 msgid "Domain %s resumed\n"
 msgstr "Domæne %s fortsat\n"
 
-#: src/virsh.c:1354
+#: src/virsh.c:1355
 #, c-format
 msgid "Failed to resume domain %s"
 msgstr "Kunne ikke fortsætte domæne %s"
 
-#: src/virsh.c:1367
+#: src/virsh.c:1368
 msgid "gracefully shutdown a domain"
 msgstr "luk et domæne pænt ned"
 
-#: src/virsh.c:1368
+#: src/virsh.c:1369
 msgid "Run shutdown in the target domain."
 msgstr "Kør nedlukning i måldomænet."
 
-#: src/virsh.c:1391
+#: src/virsh.c:1392
 #, c-format
 msgid "Domain %s is being shutdown\n"
 msgstr "Domæne %s er ved at blive lukket ned\n"
 
-#: src/virsh.c:1393
+#: src/virsh.c:1394
 #, c-format
 msgid "Failed to shutdown domain %s"
 msgstr "Kunne ikke lukke domæne %s ned"
 
-#: src/virsh.c:1406
+#: src/virsh.c:1407
 msgid "reboot a domain"
 msgstr "genstart et domæne"
 
-#: src/virsh.c:1407
+#: src/virsh.c:1408
 msgid "Run a reboot command in the target domain."
 msgstr "Kør en gentartskommando i måldomænet."
 
-#: src/virsh.c:1430
+#: src/virsh.c:1431
 #, c-format
 msgid "Domain %s is being rebooted\n"
 msgstr "Domæne %s er ved at blive genstartet\n"
 
-#: src/virsh.c:1432
+#: src/virsh.c:1433
 #, c-format
 msgid "Failed to reboot domain %s"
 msgstr "Kunne ikke genstarte domæne %s"
 
-#: src/virsh.c:1445
+#: src/virsh.c:1446
 msgid "destroy a domain"
 msgstr "ødelæg en domæne"
 
-#: src/virsh.c:1446
+#: src/virsh.c:1447
 msgid "Destroy a given domain."
 msgstr "Ødelæg et givet domæne."
 
-#: src/virsh.c:1469
+#: src/virsh.c:1470
 #, c-format
 msgid "Domain %s destroyed\n"
 msgstr "Domæne %s ødelagt\n"
 
-#: src/virsh.c:1471
+#: src/virsh.c:1472
 #, c-format
 msgid "Failed to destroy domain %s"
 msgstr "Kunne ikke ødelægge domæne %s"
 
-#: src/virsh.c:1484
+#: src/virsh.c:1485
 msgid "domain information"
 msgstr "domæneinformation"
 
-#: src/virsh.c:1485
+#: src/virsh.c:1486
 msgid "Returns basic information about the domain."
 msgstr "Returnerer basal information om domænet."
 
-#: src/virsh.c:1511 src/virsh.c:1513
+#: src/virsh.c:1512 src/virsh.c:1514
 msgid "Id:"
 msgstr "Id:"
 
-#: src/virsh.c:1514 src/virsh.c:3470 src/virsh.c:3919
+#: src/virsh.c:1515 src/virsh.c:3471 src/virsh.c:3920
 msgid "Name:"
 msgstr "Navn:"
 
-#: src/virsh.c:1517 src/virsh.c:3473
+#: src/virsh.c:1518 src/virsh.c:3474
 msgid "UUID:"
 msgstr "UUID:"
 
-#: src/virsh.c:1520
+#: src/virsh.c:1521
 msgid "OS Type:"
 msgstr "OS-type:"
 
-#: src/virsh.c:1525 src/virsh.c:1653 src/virsh.c:3480 src/virsh.c:3484
-#: src/virsh.c:3488 src/virsh.c:3492
+#: src/virsh.c:1526 src/virsh.c:1654 src/virsh.c:3481 src/virsh.c:3485
+#: src/virsh.c:3489 src/virsh.c:3493
 msgid "State:"
 msgstr "Tilstand:"
 
-#: src/virsh.c:1528 src/virsh.c:2010
+#: src/virsh.c:1529 src/virsh.c:2011
 msgid "CPU(s):"
 msgstr "CPU(er):"
 
-#: src/virsh.c:1535 src/virsh.c:1660
+#: src/virsh.c:1536 src/virsh.c:1661
 msgid "CPU time:"
 msgstr "CPU-tid:"
 
-#: src/virsh.c:1539 src/virsh.c:1542
+#: src/virsh.c:1540 src/virsh.c:1543
 msgid "Max memory:"
 msgstr "Max hukommelse:"
 
-#: src/virsh.c:1543
+#: src/virsh.c:1544
 msgid "no limit"
 msgstr "ingen grænse"
 
-#: src/virsh.c:1545
+#: src/virsh.c:1546
 msgid "Used memory:"
 msgstr "Brugt hukommelse:"
 
-#: src/virsh.c:1561
+#: src/virsh.c:1562
 #, fuzzy
 msgid "NUMA free memory"
 msgstr "Brugt hukommelse:"
 
-#: src/virsh.c:1562
+#: src/virsh.c:1563
 msgid "display available free memory for the NUMA cell."
 msgstr ""
 
-#: src/virsh.c:1567
+#: src/virsh.c:1568
 #, fuzzy
 msgid "NUMA cell number"
 msgstr "NUMA-celler:"
 
-#: src/virsh.c:1591
+#: src/virsh.c:1592
 msgid "Total"
 msgstr ""
 
-#: src/virsh.c:1603
+#: src/virsh.c:1604
 msgid "domain vcpu information"
 msgstr "domænets vcpu-information"
 
-#: src/virsh.c:1604
+#: src/virsh.c:1605
 msgid "Returns basic information about the domain virtual CPUs."
 msgstr "Returnerer basal information om domænets virtuelle CPU'er."
 
-#: src/virsh.c:1651
+#: src/virsh.c:1652
 msgid "VCPU:"
 msgstr "VCPU:"
 
-#: src/virsh.c:1652
+#: src/virsh.c:1653
 msgid "CPU:"
 msgstr "CPU:"
 
-#: src/virsh.c:1662
+#: src/virsh.c:1663
 msgid "CPU Affinity:"
 msgstr "CPU-slægtskab:"
 
-#: src/virsh.c:1674
+#: src/virsh.c:1675
 msgid "Domain shut off, virtual CPUs not present."
 msgstr ""
 
-#: src/virsh.c:1690
+#: src/virsh.c:1691
 msgid "control domain vcpu affinity"
 msgstr "kontroldomænets vcpu-slægtskab"
 
-#: src/virsh.c:1691
+#: src/virsh.c:1692
 msgid "Pin domain VCPUs to host physical CPUs."
 msgstr "Fastsæt domæne VCPU'er til værters fysiske CPU'er."
 
-#: src/virsh.c:1697
+#: src/virsh.c:1698
 msgid "vcpu number"
 msgstr "vcpu-nummer"
 
-#: src/virsh.c:1698
+#: src/virsh.c:1699
 msgid "host cpu number(s) (comma separated)"
 msgstr "værters cpu-nummmer (komma-separerede)"
 
-#: src/virsh.c:1753
+#: src/virsh.c:1754
 msgid "cpulist: Invalid format. Empty string."
 msgstr ""
 
-#: src/virsh.c:1763
+#: src/virsh.c:1764
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
 
-#: src/virsh.c:1773
+#: src/virsh.c:1774
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
 "c')."
 msgstr ""
 
-#: src/virsh.c:1780
+#: src/virsh.c:1781
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
 msgstr ""
 
-#: src/virsh.c:1794
+#: src/virsh.c:1795
 #, c-format
 msgid "Physical CPU %d doesn't exist."
 msgstr "Fysisk CPU %d findes ikke."
 
-#: src/virsh.c:1818
+#: src/virsh.c:1819
 msgid "change number of virtual CPUs"
 msgstr "ændr antal virtuelle CPU'er"
 
-#: src/virsh.c:1819
+#: src/virsh.c:1820
 msgid "Change the number of virtual CPUs active in the guest domain."
 msgstr "Ændr antal virtuelle, aktive CPU'er i gæstedomænet."
 
-#: src/virsh.c:1825
+#: src/virsh.c:1826
 msgid "number of virtual CPUs"
 msgstr "antal virtuelle CPU:er"
 
-#: src/virsh.c:1845
+#: src/virsh.c:1846
 #, fuzzy
 msgid "Invalid number of virtual CPUs."
 msgstr "antal virtuelle CPU:er"
 
-#: src/virsh.c:1857
+#: src/virsh.c:1858
 #, fuzzy
 msgid "Too many virtual CPUs."
 msgstr "For mange virtuelle CPU'er"
 
-#: src/virsh.c:1875
+#: src/virsh.c:1876
 msgid "change memory allocation"
 msgstr "ændr hukommelsesallokering"
 
-#: src/virsh.c:1876
+#: src/virsh.c:1877
 msgid "Change the current memory allocation in the guest domain."
 msgstr "Ændr nuværende hukommelsesallokering i gæstedomænet."
 
-#: src/virsh.c:1882
+#: src/virsh.c:1883
 msgid "number of kilobytes of memory"
 msgstr "antal kilobyte i hukommelse"
 
-#: src/virsh.c:1903 src/virsh.c:1915 src/virsh.c:1960
+#: src/virsh.c:1904 src/virsh.c:1916 src/virsh.c:1961
 #, c-format
 msgid "Invalid value of %d for memory size"
 msgstr "Ugyldig værdi af %d for hukommelsesstørrelse"
 
-#: src/virsh.c:1909
+#: src/virsh.c:1910
 msgid "Unable to verify MaxMemorySize"
 msgstr ""
 
-#: src/virsh.c:1932
+#: src/virsh.c:1933
 msgid "change maximum memory limit"
 msgstr "ændr grænse for maksimal hukommelse"
 
-#: src/virsh.c:1933
+#: src/virsh.c:1934
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr "Ændr grænse for maksimal hukommelsesallokering for gæstedomænet."
 
-#: src/virsh.c:1939
+#: src/virsh.c:1940
 msgid "maximum memory limit in kilobytes"
 msgstr "maksimal hukommelsesgrænse i kilobyte"
 
-#: src/virsh.c:1966
+#: src/virsh.c:1967
 msgid "Unable to verify current MemorySize"
 msgstr ""
 
-#: src/virsh.c:1973
+#: src/virsh.c:1974
 #, fuzzy
 msgid "Unable to shrink current MemorySize"
 msgstr "aktuel hukommelse for domæne"
 
-#: src/virsh.c:1979
+#: src/virsh.c:1980
 msgid "Unable to change MaxMemorySize"
 msgstr ""
 
-#: src/virsh.c:1992
+#: src/virsh.c:1993
 msgid "node information"
 msgstr "knudeinformation"
 
-#: src/virsh.c:1993
+#: src/virsh.c:1994
 msgid "Returns basic information about the node."
 msgstr "Returnerer basal information om knuden."
 
-#: src/virsh.c:2006
+#: src/virsh.c:2007
 msgid "failed to get node information"
 msgstr "kunne ikke få knudeinformation"
 
-#: src/virsh.c:2009
+#: src/virsh.c:2010
 msgid "CPU model:"
 msgstr "CPU-model:"
 
-#: src/virsh.c:2011
+#: src/virsh.c:2012
 msgid "CPU frequency:"
 msgstr "CPU-frekvens:"
 
-#: src/virsh.c:2012
+#: src/virsh.c:2013
 msgid "CPU socket(s):"
 msgstr "CPU-sokkel:"
 
-#: src/virsh.c:2013
+#: src/virsh.c:2014
 msgid "Core(s) per socket:"
 msgstr "Kerner per sokkel:"
 
-#: src/virsh.c:2014
+#: src/virsh.c:2015
 msgid "Thread(s) per core:"
 msgstr "Tråde per kerne:"
 
-#: src/virsh.c:2015
+#: src/virsh.c:2016
 msgid "NUMA cell(s):"
 msgstr "NUMA-celler:"
 
-#: src/virsh.c:2016
+#: src/virsh.c:2017
 msgid "Memory size:"
 msgstr "Hukommelsesstørrelse:"
 
-#: src/virsh.c:2026
+#: src/virsh.c:2027
 msgid "capabilities"
 msgstr "faciliteter"
 
-#: src/virsh.c:2027
+#: src/virsh.c:2028
 msgid "Returns capabilities of hypervisor/driver."
 msgstr "returnerer hypervisor/drivers faciliteter"
 
-#: src/virsh.c:2040
+#: src/virsh.c:2041
 msgid "failed to get capabilities"
 msgstr "kunne ikke få fat på faciliteter"
 
-#: src/virsh.c:2054
+#: src/virsh.c:2055
 msgid "domain information in XML"
 msgstr "domæneinformation i XML"
 
-#: src/virsh.c:2055
+#: src/virsh.c:2056
 msgid "Output the domain information as an XML dump to stdout."
 msgstr "Udskriv domæneinformationen som et XML-dump til stdout."
 
-#: src/virsh.c:2094
+#: src/virsh.c:2095
 msgid "convert a domain id or UUID to domain name"
 msgstr "konvertér et domæne-id eller UUID til domænenavn"
 
-#: src/virsh.c:2099
+#: src/virsh.c:2100
 msgid "domain id or uuid"
 msgstr "domænenavn eller uuid"
 
-#: src/virsh.c:2124
+#: src/virsh.c:2125
 msgid "convert a domain name or UUID to domain id"
 msgstr "konvertér et domænenavn eller UUID til et domæne-id"
 
-#: src/virsh.c:2159
+#: src/virsh.c:2160
 msgid "convert a domain name or id to domain UUID"
 msgstr "konvertér et domænenavn eller id til domæne-UUID"
 
-#: src/virsh.c:2164
+#: src/virsh.c:2165
 msgid "domain id or name"
 msgstr "domænenavn eller uuid"
 
-#: src/virsh.c:2183
+#: src/virsh.c:2184
 msgid "failed to get domain UUID"
 msgstr "kunne ikke hente domæne-UUID"
 
-#: src/virsh.c:2194
+#: src/virsh.c:2195
 msgid "migrate domain to another host"
 msgstr ""
 
-#: src/virsh.c:2195
+#: src/virsh.c:2196
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
 
-#: src/virsh.c:2200
+#: src/virsh.c:2201
 #, fuzzy
 msgid "live migration"
 msgstr "knudeinformation"
 
-#: src/virsh.c:2202
+#: src/virsh.c:2203
 #, fuzzy
 msgid "connection URI of the destination host"
 msgstr "forbind til gæstekonsol"
 
-#: src/virsh.c:2203
+#: src/virsh.c:2204
 msgid "migration URI, usually can be omitted"
 msgstr ""
 
-#: src/virsh.c:2225
+#: src/virsh.c:2226
 msgid "migrate: Missing desturi"
 msgstr ""
 
-#: src/virsh.c:2257
+#: src/virsh.c:2258
 msgid "autostart a network"
 msgstr "autostart et netværk"
 
-#: src/virsh.c:2259
+#: src/virsh.c:2260
 msgid "Configure a network to be automatically started at boot."
 msgstr "Konfigurér et netværk til at blive automatisk startet ved opstart."
 
-#: src/virsh.c:2264 src/virsh.c:2685
+#: src/virsh.c:2265 src/virsh.c:2686
 msgid "network name or uuid"
 msgstr "netværksnavn eller uuid"
 
-#: src/virsh.c:2286
+#: src/virsh.c:2287
 #, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "Kunne ikke markere netværk %s som automatisk startet"
 
-#: src/virsh.c:2289
+#: src/virsh.c:2290
 #, c-format
 msgid "failed to unmark network %s as autostarted"
 msgstr "Kunne ikke fravælge netværk %s som automatisk startet"
 
-#: src/virsh.c:2296
+#: src/virsh.c:2297
 #, c-format
 msgid "Network %s marked as autostarted\n"
 msgstr "netværk %s mærket som automatisk startet\n"
 
-#: src/virsh.c:2298
+#: src/virsh.c:2299
 #, c-format
 msgid "Network %s unmarked as autostarted\n"
 msgstr "netværk %s fravalgt som automatisk startet\n"
 
-#: src/virsh.c:2308
+#: src/virsh.c:2309
 msgid "create a network from an XML file"
 msgstr "opret et netværk fra en XML-fil"
 
-#: src/virsh.c:2309
+#: src/virsh.c:2310
 msgid "Create a network."
 msgstr "Opret et netværk."
 
-#: src/virsh.c:2314 src/virsh.c:2362
+#: src/virsh.c:2315 src/virsh.c:2363
 msgid "file containing an XML network description"
 msgstr "fil som indeholder XML-netværksbeskrivelse"
 
-#: src/virsh.c:2341
+#: src/virsh.c:2342
 #, c-format
 msgid "Network %s created from %s\n"
 msgstr "Netværk %s oprettet fra %s\n"
 
-#: src/virsh.c:2344
+#: src/virsh.c:2345
 #, c-format
 msgid "Failed to create network from %s"
 msgstr "Kunne ikke oprette netværk fra %s"
 
-#: src/virsh.c:2356
+#: src/virsh.c:2357
 msgid "define (but don't start) a network from an XML file"
 msgstr "definér (men start ikke) et netværk fra en XML-fil"
 
-#: src/virsh.c:2357
+#: src/virsh.c:2358
 msgid "Define a network."
 msgstr "Definér et netværk."
 
-#: src/virsh.c:2389
+#: src/virsh.c:2390
 #, c-format
 msgid "Network %s defined from %s\n"
 msgstr "Netværk %s defineret fra %s\n"
 
-#: src/virsh.c:2392
+#: src/virsh.c:2393
 #, c-format
 msgid "Failed to define network from %s"
 msgstr "Kunne ikke definere netværk fra %s"
 
-#: src/virsh.c:2404
+#: src/virsh.c:2405
 msgid "destroy a network"
 msgstr "ødelæg et netværk"
 
-#: src/virsh.c:2405
+#: src/virsh.c:2406
 msgid "Destroy a given network."
 msgstr "Ødelæg et givet netværk."
 
-#: src/virsh.c:2410 src/virsh.c:2450
+#: src/virsh.c:2411 src/virsh.c:2451
 msgid "network name, id or uuid"
 msgstr "netværksnavn, id eller uuid"
 
-#: src/virsh.c:2428
+#: src/virsh.c:2429
 #, c-format
 msgid "Network %s destroyed\n"
 msgstr "Netværk %s ødelagt\n"
 
-#: src/virsh.c:2430
+#: src/virsh.c:2431
 #, c-format
 msgid "Failed to destroy network %s"
 msgstr "Kunne ikke ødelægge netværk %s"
 
-#: src/virsh.c:2444
+#: src/virsh.c:2445
 msgid "network information in XML"
 msgstr "netværksinformation i XML"
 
-#: src/virsh.c:2445
+#: src/virsh.c:2446
 msgid "Output the network information as an XML dump to stdout."
 msgstr "Udskriv netværksinformationen som et XML-dump til stdout."
 
-#: src/virsh.c:2485
+#: src/virsh.c:2486
 msgid "list networks"
 msgstr "list netværker"
 
-#: src/virsh.c:2486
+#: src/virsh.c:2487
 msgid "Returns list of networks."
 msgstr "Returnerer liste af netværker"
 
-#: src/virsh.c:2491
+#: src/virsh.c:2492
 msgid "list inactive networks"
 msgstr "vis inaktive netværker"
 
-#: src/virsh.c:2492
+#: src/virsh.c:2493
 msgid "list inactive & active networks"
 msgstr "vis inaktive og aktive netværker"
 
-#: src/virsh.c:2512 src/virsh.c:2520
+#: src/virsh.c:2513 src/virsh.c:2521
 msgid "Failed to list active networks"
 msgstr "Kunne ikke liste aktive netværker"
 
-#: src/virsh.c:2531 src/virsh.c:2539
+#: src/virsh.c:2532 src/virsh.c:2540
 msgid "Failed to list inactive networks"
 msgstr "Kunne ikke liste inaktive netværker"
 
-#: src/virsh.c:2548 src/virsh.c:3365
+#: src/virsh.c:2549 src/virsh.c:3366
 msgid "Autostart"
 msgstr "Autostart"
 
-#: src/virsh.c:2563 src/virsh.c:2586 src/virsh.c:3380 src/virsh.c:3403
+#: src/virsh.c:2564 src/virsh.c:2587 src/virsh.c:3381 src/virsh.c:3404
 msgid "no autostart"
 msgstr "ingen autostart"
 
-#: src/virsh.c:2569 src/virsh.c:3386
+#: src/virsh.c:2570 src/virsh.c:3387
 msgid "active"
 msgstr "aktiv"
 
-#: src/virsh.c:2592 src/virsh.c:3409 src/virsh.c:3481
+#: src/virsh.c:2593 src/virsh.c:3410 src/virsh.c:3482
 msgid "inactive"
 msgstr "inaktiv"
 
-#: src/virsh.c:2609
+#: src/virsh.c:2610
 msgid "convert a network UUID to network name"
 msgstr "konvertér et netværks UUID til netværksnavn"
 
-#: src/virsh.c:2640
+#: src/virsh.c:2641
 msgid "start a (previously defined) inactive network"
 msgstr "start et (tidligere defineret) inaktivt netværk"
 
-#: src/virsh.c:2641
+#: src/virsh.c:2642
 msgid "Start a network."
 msgstr "Starte et netværk."
 
-#: src/virsh.c:2646
+#: src/virsh.c:2647
 msgid "name of the inactive network"
 msgstr "navn på det inaktive netværk"
 
-#: src/virsh.c:2663
+#: src/virsh.c:2664
 #, c-format
 msgid "Network %s started\n"
 msgstr "Netværk %s startede\n"
 
-#: src/virsh.c:2666
+#: src/virsh.c:2667
 #, c-format
 msgid "Failed to start network %s"
 msgstr "Kunne ikke starte netværk %s"
 
-#: src/virsh.c:2679
+#: src/virsh.c:2680
 msgid "undefine an inactive network"
 msgstr "afdefinér et inaktivt netværk"
 
-#: src/virsh.c:2680
+#: src/virsh.c:2681
 msgid "Undefine the configuration for an inactive network."
 msgstr "Afdefinér konfigurationen for et inaktivt netværk."
 
-#: src/virsh.c:2703
+#: src/virsh.c:2704
 #, c-format
 msgid "Network %s has been undefined\n"
 msgstr "Netværk %s er blevet afdefineret\n"
 
-#: src/virsh.c:2705
+#: src/virsh.c:2706
 #, c-format
 msgid "Failed to undefine network %s"
 msgstr "Kunne ikke afdefinere netværk %s"
 
-#: src/virsh.c:2718
+#: src/virsh.c:2719
 msgid "convert a network name to network UUID"
 msgstr "konvertér et netværksnavn eller id til netværks-UUID"
 
-#: src/virsh.c:2743
+#: src/virsh.c:2744
 msgid "failed to get network UUID"
 msgstr "kunne ikke hente netværks-UUID"
 
-#: src/virsh.c:2765
+#: src/virsh.c:2766
 #, fuzzy
 msgid "autostart a pool"
 msgstr "start et domæne automatisk"
 
-#: src/virsh.c:2767
+#: src/virsh.c:2768
 #, fuzzy
 msgid "Configure a pool to be automatically started at boot."
 msgstr "Konfigurér et domæne til at blive automatisk startet ved opstart."
 
-#: src/virsh.c:2772 src/virsh.c:3107 src/virsh.c:3147 src/virsh.c:3187
-#: src/virsh.c:3227 src/virsh.c:3267 src/virsh.c:3452 src/virsh.c:3723
-#: src/virsh.c:3859 src/virsh.c:3901 src/virsh.c:3953 src/virsh.c:3995
-#: src/virsh.c:4139
+#: src/virsh.c:2773 src/virsh.c:3108 src/virsh.c:3148 src/virsh.c:3188
+#: src/virsh.c:3228 src/virsh.c:3268 src/virsh.c:3453 src/virsh.c:3724
+#: src/virsh.c:3860 src/virsh.c:3902 src/virsh.c:3954 src/virsh.c:3996
+#: src/virsh.c:4140
 #, fuzzy
 msgid "pool name or uuid"
 msgstr "domænenavn eller uuid"
 
-#: src/virsh.c:2794
+#: src/virsh.c:2795
 #, fuzzy, c-format
 msgid "failed to mark pool %s as autostarted"
 msgstr "Kunne ikke markere netværk %s som automatisk startet"
 
-#: src/virsh.c:2797
+#: src/virsh.c:2798
 #, fuzzy, c-format
 msgid "failed to unmark pool %s as autostarted"
 msgstr "Kunne ikke fravælge netværk %s som automatisk startet"
 
-#: src/virsh.c:2804
+#: src/virsh.c:2805
 #, fuzzy, c-format
 msgid "Pool %s marked as autostarted\n"
 msgstr "Domæne %s mærket som automatisk startet\n"
 
-#: src/virsh.c:2806
+#: src/virsh.c:2807
 #, fuzzy, c-format
 msgid "Pool %s unmarked as autostarted\n"
 msgstr "Domæne %s fravalgt som automatisk startet\n"
 
-#: src/virsh.c:2816
+#: src/virsh.c:2817
 #, fuzzy
 msgid "create a pool from an XML file"
 msgstr "opret et domæne fra en XML-fil"
 
-#: src/virsh.c:2817 src/virsh.c:2864
+#: src/virsh.c:2818 src/virsh.c:2865
 #, fuzzy
 msgid "Create a pool."
 msgstr "Opret et domæne."
 
-#: src/virsh.c:2822 src/virsh.c:2964
+#: src/virsh.c:2823 src/virsh.c:2965
 #, fuzzy
 msgid "file containing an XML pool description"
 msgstr "fil som indeholder en XML-domænebeskrivelse"
 
-#: src/virsh.c:2849
+#: src/virsh.c:2850
 #, fuzzy, c-format
 msgid "Pool %s created from %s\n"
 msgstr "Domæne %s oprettet fra %s\n"
 
-#: src/virsh.c:2852
+#: src/virsh.c:2853
 #, fuzzy, c-format
 msgid "Failed to create pool from %s"
 msgstr "Kunne ikke oprette domæne fra %s"
 
-#: src/virsh.c:2863
+#: src/virsh.c:2864
 #, fuzzy
 msgid "create a pool from a set of args"
 msgstr "opret et domæne fra en XML-fil"
 
-#: src/virsh.c:2869 src/virsh.c:3012
+#: src/virsh.c:2870 src/virsh.c:3013
 #, fuzzy
 msgid "name of the pool"
 msgstr "navn for det inaktive domæne"
 
-#: src/virsh.c:2870 src/virsh.c:3013
+#: src/virsh.c:2871 src/virsh.c:3014
 msgid "type of the pool"
 msgstr ""
 
-#: src/virsh.c:2871 src/virsh.c:3014
+#: src/virsh.c:2872 src/virsh.c:3015
 msgid "source-host for underlying storage"
 msgstr ""
 
-#: src/virsh.c:2872 src/virsh.c:3015
+#: src/virsh.c:2873 src/virsh.c:3016
 msgid "source path for underlying storage"
 msgstr ""
 
-#: src/virsh.c:2873 src/virsh.c:3016
+#: src/virsh.c:2874 src/virsh.c:3017
 msgid "source device for underlying storage"
 msgstr ""
 
-#: src/virsh.c:2874 src/virsh.c:3017
+#: src/virsh.c:2875 src/virsh.c:3018
 msgid "target for underlying storage"
 msgstr ""
 
-#: src/virsh.c:2939
+#: src/virsh.c:2940
 #, fuzzy, c-format
 msgid "Pool %s created\n"
 msgstr "Domæne %s oprettet fra %s\n"
 
-#: src/virsh.c:2943
+#: src/virsh.c:2944
 #, fuzzy, c-format
 msgid "Failed to create pool %s"
 msgstr "Kunne ikke oprette domæne fra %s"
 
-#: src/virsh.c:2958
+#: src/virsh.c:2959
 #, fuzzy
 msgid "define (but don't start) a pool from an XML file"
 msgstr "definér (men start ikke) et domæne fra en XML-fil"
 
-#: src/virsh.c:2959 src/virsh.c:3007
+#: src/virsh.c:2960 src/virsh.c:3008
 #, fuzzy
 msgid "Define a pool."
 msgstr "Definér et domæne."
 
-#: src/virsh.c:2991
+#: src/virsh.c:2992
 #, fuzzy, c-format
 msgid "Pool %s defined from %s\n"
 msgstr "Domæne %s defineret fra %s\n"
 
-#: src/virsh.c:2994
+#: src/virsh.c:2995
 #, fuzzy, c-format
 msgid "Failed to define pool from %s"
 msgstr "Kunne ikke definere domæne fra %s"
 
-#: src/virsh.c:3006
+#: src/virsh.c:3007
 msgid "define a pool from a set of args"
 msgstr ""
 
-#: src/virsh.c:3082
+#: src/virsh.c:3083
 #, fuzzy, c-format
 msgid "Pool %s defined\n"
 msgstr "Domæne %s defineret fra %s\n"
 
-#: src/virsh.c:3086
+#: src/virsh.c:3087
 #, fuzzy, c-format
 msgid "Failed to define pool %s"
 msgstr "Kunne ikke afdefinere domæne %s"
 
-#: src/virsh.c:3101
+#: src/virsh.c:3102
 msgid "build a pool"
 msgstr ""
 
-#: src/virsh.c:3102
+#: src/virsh.c:3103
 msgid "Build a given pool."
 msgstr ""
 
-#: src/virsh.c:3125
+#: src/virsh.c:3126
 #, c-format
 msgid "Pool %s builded\n"
 msgstr ""
 
-#: src/virsh.c:3127
+#: src/virsh.c:3128
 #, fuzzy, c-format
 msgid "Failed to build pool %s"
 msgstr "Kunne ikke suspendere domæne %s"
 
-#: src/virsh.c:3141
+#: src/virsh.c:3142
 #, fuzzy
 msgid "destroy a pool"
 msgstr "ødelæg en domæne"
 
-#: src/virsh.c:3142
+#: src/virsh.c:3143
 #, fuzzy
 msgid "Destroy a given pool."
 msgstr "Ødelæg et givet domæne."
 
-#: src/virsh.c:3165
+#: src/virsh.c:3166
 #, fuzzy, c-format
 msgid "Pool %s destroyed\n"
 msgstr "Domæne %s ødelagt\n"
 
-#: src/virsh.c:3167
+#: src/virsh.c:3168
 #, fuzzy, c-format
 msgid "Failed to destroy pool %s"
 msgstr "Kunne ikke ødelægge domæne %s"
 
-#: src/virsh.c:3181
+#: src/virsh.c:3182
 msgid "delete a pool"
 msgstr ""
 
-#: src/virsh.c:3182
+#: src/virsh.c:3183
 #, fuzzy
 msgid "Delete a given pool."
 msgstr "Ødelæg et givet domæne."
 
-#: src/virsh.c:3205
+#: src/virsh.c:3206
 #, c-format
 msgid "Pool %s deleteed\n"
 msgstr ""
 
-#: src/virsh.c:3207
+#: src/virsh.c:3208
 #, fuzzy, c-format
 msgid "Failed to delete pool %s"
 msgstr "Kunne ikke ødelægge domæne %s"
 
-#: src/virsh.c:3221
+#: src/virsh.c:3222
 msgid "refresh a pool"
 msgstr ""
 
-#: src/virsh.c:3222
+#: src/virsh.c:3223
 msgid "Refresh a given pool."
 msgstr ""
 
-#: src/virsh.c:3245
+#: src/virsh.c:3246
 #, fuzzy, c-format
 msgid "Pool %s refreshed\n"
 msgstr "Domæne %s fortsat\n"
 
-#: src/virsh.c:3247
+#: src/virsh.c:3248
 #, fuzzy, c-format
 msgid "Failed to refresh pool %s"
 msgstr "Kunne ikke fortsætte domæne %s"
 
-#: src/virsh.c:3261
+#: src/virsh.c:3262
 #, fuzzy
 msgid "pool information in XML"
 msgstr "domæneinformation i XML"
 
-#: src/virsh.c:3262
+#: src/virsh.c:3263
 #, fuzzy
 msgid "Output the pool information as an XML dump to stdout."
 msgstr "Udskriv domæneinformationen som et XML-dump til stdout."
 
-#: src/virsh.c:3302
+#: src/virsh.c:3303
 #, fuzzy
 msgid "list pools"
 msgstr "vis domæner"
 
-#: src/virsh.c:3303
+#: src/virsh.c:3304
 #, fuzzy
 msgid "Returns list of pools."
 msgstr "Returnerer liste af domæner"
 
-#: src/virsh.c:3308
+#: src/virsh.c:3309
 #, fuzzy
 msgid "list inactive pools"
 msgstr "vis inaktive domæner"
 
-#: src/virsh.c:3309
+#: src/virsh.c:3310
 #, fuzzy
 msgid "list inactive & active pools"
 msgstr "vis inaktive og aktive domæner"
 
-#: src/virsh.c:3329 src/virsh.c:3337
+#: src/virsh.c:3330 src/virsh.c:3338
 #, fuzzy
 msgid "Failed to list active pools"
 msgstr "Kunne ikke liste aktive domæner"
 
-#: src/virsh.c:3348 src/virsh.c:3356
+#: src/virsh.c:3349 src/virsh.c:3357
 #, fuzzy
 msgid "Failed to list inactive pools"
 msgstr "Kunne ikke liste inaktive domæner"
 
-#: src/virsh.c:3446
+#: src/virsh.c:3447
 #, fuzzy
 msgid "storage pool information"
 msgstr "knudeinformation"
 
-#: src/virsh.c:3447
+#: src/virsh.c:3448
 #, fuzzy
 msgid "Returns basic information about the storage pool."
 msgstr "Returnerer basal information om knuden."
 
-#: src/virsh.c:3485
+#: src/virsh.c:3486
 msgid "building"
 msgstr ""
 
-#: src/virsh.c:3489 src/virsh.c:5872 src/virsh.c:5898
+#: src/virsh.c:3490 src/virsh.c:5873 src/virsh.c:5899
 msgid "running"
 msgstr "kører"
 
-#: src/virsh.c:3493
+#: src/virsh.c:3494
 msgid "degraded"
 msgstr ""
 
-#: src/virsh.c:3500 src/virsh.c:3929
+#: src/virsh.c:3501 src/virsh.c:3930
 msgid "Capacity:"
 msgstr ""
 
-#: src/virsh.c:3503 src/virsh.c:3932
+#: src/virsh.c:3504 src/virsh.c:3933
 #, fuzzy
 msgid "Allocation:"
 msgstr "allokerer domæne"
 
-#: src/virsh.c:3506
+#: src/virsh.c:3507
 msgid "Available:"
 msgstr ""
 
-#: src/virsh.c:3522
+#: src/virsh.c:3523
 #, fuzzy
 msgid "convert a pool UUID to pool name"
 msgstr "konvertér et netværks UUID til netværksnavn"
 
-#: src/virsh.c:3527
+#: src/virsh.c:3528
 #, fuzzy
 msgid "pool uuid"
 msgstr "domæne-uuid"
 
-#: src/virsh.c:3553
+#: src/virsh.c:3554
 #, fuzzy
 msgid "start a (previously defined) inactive pool"
 msgstr "start et (tidligere defineret) inaktivt domæne"
 
-#: src/virsh.c:3554
+#: src/virsh.c:3555
 #, fuzzy
 msgid "Start a pool."
 msgstr "Starte et domæne."
 
-#: src/virsh.c:3559
+#: src/virsh.c:3560
 #, fuzzy
 msgid "name of the inactive pool"
 msgstr "navn for det inaktive domæne"
 
-#: src/virsh.c:3576
+#: src/virsh.c:3577
 #, fuzzy, c-format
 msgid "Pool %s started\n"
 msgstr "Domæne %s startede\n"
 
-#: src/virsh.c:3579
+#: src/virsh.c:3580
 #, fuzzy, c-format
 msgid "Failed to start pool %s"
 msgstr "Kunne ikke starte domæne %s"
 
-#: src/virsh.c:3592
+#: src/virsh.c:3593
 #, fuzzy
 msgid "create a vol from a set of as"
 msgstr "opret et domæne fra en XML-fil"
 
-#: src/virsh.c:3593 src/virsh.c:3795
+#: src/virsh.c:3594 src/virsh.c:3796
 #, fuzzy
 msgid "Create a vol."
 msgstr "Opret et domæne."
 
-#: src/virsh.c:3598 src/virsh.c:3761 src/virsh.c:3800
+#: src/virsh.c:3599 src/virsh.c:3762 src/virsh.c:3801
 #, fuzzy
 msgid "pool name"
 msgstr "domænenavn"
 
-#: src/virsh.c:3599
+#: src/virsh.c:3600
 #, fuzzy
 msgid "name of the vol"
 msgstr "navn for det inaktive domæne"
 
-#: src/virsh.c:3600
+#: src/virsh.c:3601
 msgid "size of the vol with optional k,M,G,T suffix"
 msgstr ""
 
-#: src/virsh.c:3601
+#: src/virsh.c:3602
 msgid "initial allocation size with optional k,M,G,T suffix"
 msgstr ""
 
-#: src/virsh.c:3602
+#: src/virsh.c:3603
 msgid "file format type raw,bochs,qcow,qcow2,vmdk"
 msgstr ""
 
-#: src/virsh.c:3661 src/virsh.c:3666
+#: src/virsh.c:3662 src/virsh.c:3667
 #, c-format
 msgid "Malformed size %s"
 msgstr ""
 
-#: src/virsh.c:3697
+#: src/virsh.c:3698
 #, fuzzy, c-format
 msgid "Vol %s created\n"
 msgstr "Domæne %s oprettet fra %s\n"
 
-#: src/virsh.c:3701
+#: src/virsh.c:3702
 #, fuzzy, c-format
 msgid "Failed to create vol %s"
 msgstr "Kunne ikke læse fra sokkel %d\n"
 
-#: src/virsh.c:3717
+#: src/virsh.c:3718
 #, fuzzy
 msgid "undefine an inactive pool"
 msgstr "afdefinér et inaktivt domæne"
 
-#: src/virsh.c:3718
+#: src/virsh.c:3719
 #, fuzzy
 msgid "Undefine the configuration for an inactive pool."
 msgstr "Afdefinér konfigurationen for et inaktivt domæne."
 
-#: src/virsh.c:3741
+#: src/virsh.c:3742
 #, fuzzy, c-format
 msgid "Pool %s has been undefined\n"
 msgstr "Domæne %s er blevet afdefineret\n"
 
-#: src/virsh.c:3743
+#: src/virsh.c:3744
 #, fuzzy, c-format
 msgid "Failed to undefine pool %s"
 msgstr "Kunne ikke afdefinere domæne %s"
 
-#: src/virsh.c:3756
+#: src/virsh.c:3757
 #, fuzzy
 msgid "convert a pool name to pool UUID"
 msgstr "konvertér et netværksnavn eller id til netværks-UUID"
 
-#: src/virsh.c:3781
+#: src/virsh.c:3782
 #, fuzzy
 msgid "failed to get pool UUID"
 msgstr "kunne ikke hente domæne-UUID"
 
-#: src/virsh.c:3794
+#: src/virsh.c:3795
 #, fuzzy
 msgid "create a vol from an XML file"
 msgstr "opret et domæne fra en XML-fil"
 
-#: src/virsh.c:3801
+#: src/virsh.c:3802
 #, fuzzy
 msgid "file containing an XML vol description"
 msgstr "fil som indeholder en XML-domænebeskrivelse"
 
-#: src/virsh.c:3838
+#: src/virsh.c:3839
 #, fuzzy, c-format
 msgid "Vol %s created from %s\n"
 msgstr "Domæne %s oprettet fra %s\n"
 
-#: src/virsh.c:3842
+#: src/virsh.c:3843
 #, fuzzy, c-format
 msgid "Failed to create vol from %s"
 msgstr "Kunne ikke oprette domæne fra %s"
 
-#: src/virsh.c:3853
+#: src/virsh.c:3854
 msgid "delete a vol"
 msgstr ""
 
-#: src/virsh.c:3854
+#: src/virsh.c:3855
 #, fuzzy
 msgid "Delete a given vol."
 msgstr "Ødelæg et givet domæne."
 
-#: src/virsh.c:3860 src/virsh.c:3902 src/virsh.c:3954
+#: src/virsh.c:3861 src/virsh.c:3903 src/virsh.c:3955
 msgid "vol name, key or path"
 msgstr ""
 
-#: src/virsh.c:3879
+#: src/virsh.c:3880
 #, fuzzy, c-format
 msgid "Vol %s deleteed\n"
 msgstr "Domæne %s ødelagt\n"
 
-#: src/virsh.c:3881
+#: src/virsh.c:3882
 #, fuzzy, c-format
 msgid "Failed to delete vol %s"
 msgstr "Kunne ikke ødelægge domæne %s"
 
-#: src/virsh.c:3895
+#: src/virsh.c:3896
 #, fuzzy
 msgid "storage vol information"
 msgstr "knudeinformation"
 
-#: src/virsh.c:3896
+#: src/virsh.c:3897
 #, fuzzy
 msgid "Returns basic information about the storage vol."
 msgstr "Returnerer basal information om knuden."
 
-#: src/virsh.c:3924
+#: src/virsh.c:3925
 #, fuzzy
 msgid "Type:"
 msgstr "OS-type:"
 
-#: src/virsh.c:3926
+#: src/virsh.c:3927
 msgid "file"
 msgstr ""
 
-#: src/virsh.c:3926
+#: src/virsh.c:3927
 #, fuzzy
 msgid "block"
 msgstr "blokeret"
 
-#: src/virsh.c:3947
+#: src/virsh.c:3948
 #, fuzzy
 msgid "vol information in XML"
 msgstr "domæneinformation i XML"
 
-#: src/virsh.c:3948
+#: src/virsh.c:3949
 #, fuzzy
 msgid "Output the vol information as an XML dump to stdout."
 msgstr "Udskriv domæneinformationen som et XML-dump til stdout."
 
-#: src/virsh.c:3989
+#: src/virsh.c:3990
 #, fuzzy
 msgid "list vols"
 msgstr "vis domæner"
 
-#: src/virsh.c:3990
+#: src/virsh.c:3991
 #, fuzzy
 msgid "Returns list of vols by pool."
 msgstr "Returnerer liste af domæner"
 
-#: src/virsh.c:4015 src/virsh.c:4023
+#: src/virsh.c:4016 src/virsh.c:4024
 #, fuzzy
 msgid "Failed to list active vols"
 msgstr "Kunne ikke liste aktive domæner"
 
-#: src/virsh.c:4031
+#: src/virsh.c:4032
 msgid "Path"
 msgstr ""
 
-#: src/virsh.c:4068
+#: src/virsh.c:4069
 #, fuzzy
 msgid "convert a vol UUID to vol name"
 msgstr "konvertér et netværks UUID til netværksnavn"
 
-#: src/virsh.c:4073
+#: src/virsh.c:4074
 msgid "vol key or path"
 msgstr ""
 
-#: src/virsh.c:4101
+#: src/virsh.c:4102
 #, fuzzy
 msgid "convert a vol UUID to vol key"
 msgstr "konvertér et netværks UUID til netværksnavn"
 
-#: src/virsh.c:4106
+#: src/virsh.c:4107
 #, fuzzy
 msgid "vol uuid"
 msgstr "domæne-uuid"
 
-#: src/virsh.c:4134
+#: src/virsh.c:4135
 #, fuzzy
 msgid "convert a vol UUID to vol path"
 msgstr "konvertér et netværks UUID til netværksnavn"
 
-#: src/virsh.c:4140
+#: src/virsh.c:4141
 msgid "vol name or key"
 msgstr ""
 
-#: src/virsh.c:4171
+#: src/virsh.c:4172
 msgid "show version"
 msgstr "vis version"
 
-#: src/virsh.c:4172
+#: src/virsh.c:4173
 msgid "Display the system version information."
 msgstr "Vis informationen om systemversion"
 
-#: src/virsh.c:4195
+#: src/virsh.c:4196
 msgid "failed to get hypervisor type"
 msgstr "kunne ikke hente type på hypervisor"
 
-#: src/virsh.c:4204
+#: src/virsh.c:4205
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr "Kompileret med bibliotek: libvir %d.%d.%d\n"
 
-#: src/virsh.c:4209
+#: src/virsh.c:4210
 msgid "failed to get the library version"
 msgstr "kunne ikke hente biblioteksversion"
 
-#: src/virsh.c:4216
+#: src/virsh.c:4217
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
 msgstr "Bruger bibliotek: libvir %d.%d.%d\n"
 
-#: src/virsh.c:4223
+#: src/virsh.c:4224
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
 msgstr "Bruger API: %s %d.%d.%d\n"
 
-#: src/virsh.c:4228
+#: src/virsh.c:4229
 msgid "failed to get the hypervisor version"
 msgstr "kunne ikke hente version af hypervisor"
 
-#: src/virsh.c:4233
+#: src/virsh.c:4234
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "Kan ikke hente version ud af kørende %s hypervisor\n"
 
-#: src/virsh.c:4240
+#: src/virsh.c:4241
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "Kører hypervisor: %s %d.%d.%d\n"
 
-#: src/virsh.c:4251
+#: src/virsh.c:4252
 #, fuzzy
 msgid "print the hypervisor hostname"
 msgstr "kunne ikke hente type på hypervisor"
 
-#: src/virsh.c:4265
+#: src/virsh.c:4266
 #, fuzzy
 msgid "failed to get hostname"
 msgstr "kunne ikke hente type på hypervisor"
 
-#: src/virsh.c:4280
+#: src/virsh.c:4281
 #, fuzzy
 msgid "print the hypervisor canonical URI"
 msgstr "forbindelses-URI for hypervisor"
 
-#: src/virsh.c:4294
+#: src/virsh.c:4295
 #, fuzzy
 msgid "failed to get URI"
 msgstr "kunne ikke hente domæne-UUID"
 
-#: src/virsh.c:4309
+#: src/virsh.c:4310
 msgid "vnc display"
 msgstr "vnc-skærm"
 
-#: src/virsh.c:4310
+#: src/virsh.c:4311
 msgid "Output the IP address and port number for the VNC display."
 msgstr "Udskriv IP-adressen og portnummer for VNC-skærmen."
 
-#: src/virsh.c:4385
+#: src/virsh.c:4386
 msgid "tty console"
 msgstr ""
 
-#: src/virsh.c:4386
+#: src/virsh.c:4387
 msgid "Output the device for the TTY console."
 msgstr ""
 
-#: src/virsh.c:4446
+#: src/virsh.c:4447
 #, fuzzy
 msgid "attach device from an XML file"
 msgstr "opret et domæne fra en XML-fil"
 
-#: src/virsh.c:4447
+#: src/virsh.c:4448
 #, fuzzy
 msgid "Attach device from an XML <file>."
 msgstr "opret et domæne fra en XML-fil"
 
-#: src/virsh.c:4453 src/virsh.c:4509
+#: src/virsh.c:4454 src/virsh.c:4510
 msgid "XML file"
 msgstr ""
 
-#: src/virsh.c:4487
+#: src/virsh.c:4488
 #, fuzzy, c-format
 msgid "Failed to attach device from %s"
 msgstr "Kunne ikke oprette domæne fra %s"
 
-#: src/virsh.c:4502
+#: src/virsh.c:4503
 #, fuzzy
 msgid "detach device from an XML file"
 msgstr "opret et domæne fra en XML-fil"
 
-#: src/virsh.c:4503
+#: src/virsh.c:4504
 #, fuzzy
 msgid "Detach device from an XML <file>"
 msgstr "opret et domæne fra en XML-fil"
 
-#: src/virsh.c:4543
+#: src/virsh.c:4544
 #, fuzzy, c-format
 msgid "Failed to detach device from %s"
 msgstr "Kunne ikke oprette domæne fra %s"
 
-#: src/virsh.c:4558
+#: src/virsh.c:4559
 #, fuzzy
 msgid "attach network interface"
 msgstr "netværksnavn"
 
-#: src/virsh.c:4559
+#: src/virsh.c:4560
 msgid "Attach new network interface."
 msgstr ""
 
-#: src/virsh.c:4565 src/virsh.c:4679
+#: src/virsh.c:4566 src/virsh.c:4680
 #, fuzzy
 msgid "network interface type"
 msgstr "netværksnavn"
 
-#: src/virsh.c:4566
+#: src/virsh.c:4567
 #, fuzzy
 msgid "source of network interface"
 msgstr "udefineret netværksnavn"
 
-#: src/virsh.c:4567
+#: src/virsh.c:4568
 #, fuzzy
 msgid "target network name"
 msgstr "netværksnavn"
 
-#: src/virsh.c:4568 src/virsh.c:4680
+#: src/virsh.c:4569 src/virsh.c:4681
 msgid "MAC adress"
 msgstr ""
 
-#: src/virsh.c:4569
+#: src/virsh.c:4570
 msgid "script used to bridge network interface"
 msgstr ""
 
-#: src/virsh.c:4601
+#: src/virsh.c:4602
 #, c-format
 msgid "No support %s in command 'attach-interface'"
 msgstr ""
 
-#: src/virsh.c:4672
+#: src/virsh.c:4673
 #, fuzzy
 msgid "detach network interface"
 msgstr "netværksnavn"
 
-#: src/virsh.c:4673
+#: src/virsh.c:4674
 msgid "Detach network interface."
 msgstr ""
 
-#: src/virsh.c:4718 src/virsh.c:4723
+#: src/virsh.c:4719 src/virsh.c:4724
 #, fuzzy
 msgid "Failed to get interface information"
 msgstr "kunne ikke få knudeinformation"
 
-#: src/virsh.c:4731
+#: src/virsh.c:4732
 #, c-format
 msgid "No found interface whose type is %s"
 msgstr ""
 
-#: src/virsh.c:4753
+#: src/virsh.c:4754
 #, c-format
 msgid "No found interface whose MAC address is %s"
 msgstr ""
 
-#: src/virsh.c:4759 src/virsh.c:5033
+#: src/virsh.c:4760 src/virsh.c:5034
 #, fuzzy
 msgid "Failed to allocate memory"
 msgstr "kunne ikke allokere en knude"
 
-#: src/virsh.c:4764 src/virsh.c:5038
+#: src/virsh.c:4765 src/virsh.c:5039
 #, fuzzy
 msgid "Failed to create XML"
 msgstr "Kunne ikke læse fra sokkel %d\n"
 
-#: src/virsh.c:4791
+#: src/virsh.c:4792
 msgid "attach disk device"
 msgstr ""
 
-#: src/virsh.c:4792
+#: src/virsh.c:4793
 msgid "Attach new disk device."
 msgstr ""
 
-#: src/virsh.c:4798
+#: src/virsh.c:4799
 msgid "source of disk device"
 msgstr ""
 
-#: src/virsh.c:4799 src/virsh.c:4961
+#: src/virsh.c:4800 src/virsh.c:4962
 msgid "target of disk device"
 msgstr ""
 
-#: src/virsh.c:4800
+#: src/virsh.c:4801
 msgid "driver of disk device"
 msgstr ""
 
-#: src/virsh.c:4801
+#: src/virsh.c:4802
 msgid "subdriver of disk device"
 msgstr ""
 
-#: src/virsh.c:4802
+#: src/virsh.c:4803
 msgid "target device type"
 msgstr ""
 
-#: src/virsh.c:4803
+#: src/virsh.c:4804
 msgid "mode of device reading and writing"
 msgstr ""
 
-#: src/virsh.c:4834 src/virsh.c:4843 src/virsh.c:4850
+#: src/virsh.c:4835 src/virsh.c:4844 src/virsh.c:4851
 #, c-format
 msgid "No support %s in command 'attach-disk'"
 msgstr ""
 
-#: src/virsh.c:4954
+#: src/virsh.c:4955
 msgid "detach disk device"
 msgstr ""
 
-#: src/virsh.c:4955
+#: src/virsh.c:4956
 msgid "Detach disk device."
 msgstr ""
 
-#: src/virsh.c:4996 src/virsh.c:5001 src/virsh.c:5008
+#: src/virsh.c:4997 src/virsh.c:5002 src/virsh.c:5009
 #, fuzzy
 msgid "Failed to get disk information"
 msgstr "kunne ikke få knudeinformation"
 
-#: src/virsh.c:5027
+#: src/virsh.c:5028
 #, c-format
 msgid "No found disk whose target is %s"
 msgstr ""
 
-#: src/virsh.c:5065
+#: src/virsh.c:5066
 msgid "quit this interactive terminal"
 msgstr "afslut denne interaktive terminal"
 
-#: src/virsh.c:5236
+#: src/virsh.c:5237
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "kommando '%s' kræver flaget <%s>"
 
-#: src/virsh.c:5237
+#: src/virsh.c:5238
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "kommando '%s' kræver flaget --%s"
 
-#: src/virsh.c:5264
+#: src/virsh.c:5265
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "kommandoen '%s' findes ikke"
 
-#: src/virsh.c:5272
+#: src/virsh.c:5273
 msgid "  NAME\n"
 msgstr "  NAVN\n"
 
-#: src/virsh.c:5276
+#: src/virsh.c:5277
 #, fuzzy
 msgid ""
 "\n"
@@ -3674,7 +3702,7 @@ msgstr ""
 "\n"
 "  FLAG\n"
 
-#: src/virsh.c:5283
+#: src/virsh.c:5284
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -3682,7 +3710,7 @@ msgstr ""
 "\n"
 "  BESKRIVELSE\n"
 
-#: src/virsh.c:5287
+#: src/virsh.c:5288
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -3690,55 +3718,55 @@ msgstr ""
 "\n"
 "  FLAG\n"
 
-#: src/virsh.c:5294
+#: src/virsh.c:5295
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <nummer>"
 
-#: src/virsh.c:5296
+#: src/virsh.c:5297
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <streng>"
 
-#: src/virsh.c:5440
+#: src/virsh.c:5441
 msgid "undefined domain name or id"
 msgstr "udefineret domænenavn eller id"
 
-#: src/virsh.c:5472
+#: src/virsh.c:5473
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "kunne ikke hente domæne '%s'"
 
-#: src/virsh.c:5485
+#: src/virsh.c:5486
 msgid "undefined network name"
 msgstr "udefineret netværksnavn"
 
-#: src/virsh.c:5509
+#: src/virsh.c:5510
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "kunne ikke hente netværk '%s'"
 
-#: src/virsh.c:5522 src/virsh.c:5568
+#: src/virsh.c:5523 src/virsh.c:5569
 #, fuzzy
 msgid "undefined pool name"
 msgstr "udefineret netværksnavn"
 
-#: src/virsh.c:5546
+#: src/virsh.c:5547
 #, fuzzy, c-format
 msgid "failed to get pool '%s'"
 msgstr "kunne ikke hente domæne '%s'"
 
-#: src/virsh.c:5563
+#: src/virsh.c:5564
 #, fuzzy
 msgid "undefined vol name"
 msgstr "udefineret netværksnavn"
 
-#: src/virsh.c:5599
+#: src/virsh.c:5600
 #, fuzzy, c-format
 msgid "failed to get vol '%s'"
 msgstr "kunne ikke hente domæne '%s'"
 
-#: src/virsh.c:5630
+#: src/virsh.c:5631
 #, c-format
 msgid ""
 "\n"
@@ -3749,131 +3777,131 @@ msgstr ""
 "(Tid: %.3f ms)\n"
 "\n"
 
-#: src/virsh.c:5704
+#: src/virsh.c:5705
 msgid "missing \""
 msgstr "mangler \""
 
-#: src/virsh.c:5765
+#: src/virsh.c:5766
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "uventet token (kommandonavn): '%s'"
 
-#: src/virsh.c:5770
+#: src/virsh.c:5771
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "ukendt kommando: '%s'"
 
-#: src/virsh.c:5777
+#: src/virsh.c:5778
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "kommandoen '%s' understøtter ikke flaget --%s"
 
-#: src/virsh.c:5792
+#: src/virsh.c:5793
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "forventet syntaks: --%s <%s>"
 
-#: src/virsh.c:5795
+#: src/virsh.c:5796
 msgid "number"
 msgstr "nummer"
 
-#: src/virsh.c:5795
+#: src/virsh.c:5796
 msgid "string"
 msgstr "streng"
 
-#: src/virsh.c:5801
+#: src/virsh.c:5802
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "uventet data '%s'"
 
-#: src/virsh.c:5823
+#: src/virsh.c:5824
 msgid "OPTION"
 msgstr "FLAG"
 
-#: src/virsh.c:5823
+#: src/virsh.c:5824
 msgid "DATA"
 msgstr "DATA"
 
-#: src/virsh.c:5874 src/virsh.c:5896
+#: src/virsh.c:5875 src/virsh.c:5897
 msgid "blocked"
 msgstr "blokeret"
 
-#: src/virsh.c:5876
+#: src/virsh.c:5877
 msgid "paused"
 msgstr "stoppet"
 
-#: src/virsh.c:5878
+#: src/virsh.c:5879
 msgid "in shutdown"
 msgstr "lukker ned"
 
-#: src/virsh.c:5880
+#: src/virsh.c:5881
 msgid "shut off"
 msgstr "nedlukket"
 
-#: src/virsh.c:5882
+#: src/virsh.c:5883
 msgid "crashed"
 msgstr "brudt ned"
 
-#: src/virsh.c:5894
+#: src/virsh.c:5895
 msgid "offline"
 msgstr "ikke tilsluttet"
 
-#: src/virsh.c:5913
+#: src/virsh.c:5914
 msgid "no valid connection"
 msgstr "ingen gyldig forbindelse"
 
-#: src/virsh.c:5960
+#: src/virsh.c:5961
 #, c-format
 msgid "%s: error: "
 msgstr "%s: fejl: "
 
-#: src/virsh.c:5962
+#: src/virsh.c:5963
 msgid "error: "
 msgstr "fejl: "
 
-#: src/virsh.c:5984 src/virsh.c:5996 src/virsh.c:6009
+#: src/virsh.c:5985 src/virsh.c:5997 src/virsh.c:6010
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: kunne ikke allokere %d byte"
 
-#: src/virsh.c:6023
+#: src/virsh.c:6024
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "%s: %d: kunne ikke allokere %lu byte"
 
-#: src/virsh.c:6063
+#: src/virsh.c:6064
 msgid "failed to connect to the hypervisor"
 msgstr "kunne ikke forbinde til hypervisor"
 
-#: src/virsh.c:6095
+#: src/virsh.c:6096
 #, fuzzy
 msgid "failed to get the log file information"
 msgstr "kunne ikke få knudeinformation"
 
-#: src/virsh.c:6100
+#: src/virsh.c:6101
 msgid "the log path is not a file"
 msgstr ""
 
-#: src/virsh.c:6107
+#: src/virsh.c:6108
 msgid "failed to open the log file. check the log file path"
 msgstr ""
 
-#: src/virsh.c:6175
+#: src/virsh.c:6176
 #, fuzzy
 msgid "failed to write the log file"
 msgstr "kunne ikke skrive konfigurationsfilen"
 
-#: src/virsh.c:6190
+#: src/virsh.c:6191
 #, fuzzy, c-format
 msgid "%s: failed to write log file: %s"
 msgstr "kunne ikke skrive konfigurationsfilen"
 
-#: src/virsh.c:6367
+#: src/virsh.c:6368
 #, fuzzy
 msgid "failed to disconnect from the hypervisor"
 msgstr "Kunne ikke koble ned fra hypervisor"
 
-#: src/virsh.c:6385
+#: src/virsh.c:6386
 #, fuzzy, c-format
 msgid ""
 "\n"
@@ -3905,7 +3933,7 @@ msgstr ""
 "\n"
 "  kommandoer (ikke-interaktiv tilstand):\n"
 
-#: src/virsh.c:6403
+#: src/virsh.c:6404
 #, fuzzy
 msgid ""
 "\n"
@@ -3916,12 +3944,12 @@ msgstr ""
 "  (angiv --help <kommando> for detaljer om kommandoen)\n"
 "\n"
 
-#: src/virsh.c:6499
+#: src/virsh.c:6500
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "flaget '-%c' understøttes ikke. Se --help."
 
-#: src/virsh.c:6585
+#: src/virsh.c:6586
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -3930,7 +3958,7 @@ msgstr ""
 "Velkommen til %s, den interaktive terminal for virtualisering.\n"
 "\n"
 
-#: src/virsh.c:6588
+#: src/virsh.c:6589
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
@@ -4305,12 +4333,12 @@ msgstr "Netværk %s oprettet fra %s\n"
 
 #: src/virterror.c:671
 #, fuzzy
-msgid "invalid MAC adress"
+msgid "invalid MAC address"
 msgstr "ugyldigt argument i %s"
 
 #: src/virterror.c:673
 #, fuzzy, c-format
-msgid "invalid MAC adress: %s"
+msgid "invalid MAC address: %s"
 msgstr "ugyldigt argument i %s"
 
 #: src/virterror.c:677
@@ -4373,202 +4401,202 @@ msgstr "Kunne ikke afdefinere netværk %s"
 msgid "Failed to find a storage driver: %s"
 msgstr "Kunne ikke afdefinere netværk %s"
 
-#: src/xen_internal.c:1323
+#: src/xen_internal.c:1324
 #, c-format
 msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
 msgstr ""
 
-#: src/xen_internal.c:1333
+#: src/xen_internal.c:1334
 #, c-format
 msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
 msgstr ""
 
-#: src/xen_internal.c:2503
+#: src/xen_internal.c:2504
 #, c-format
 msgid "allocating %d domain info"
 msgstr "allokerer %d domæne-info"
 
-#: src/xend_internal.c:220
+#: src/xend_internal.c:221
 #, fuzzy
 msgid "failed to create a socket"
 msgstr "kunne ikke allokere en knude"
 
-#: src/xend_internal.c:243
+#: src/xend_internal.c:244
 #, fuzzy
 msgid "failed to connect to xend"
 msgstr "kunne ikke forbinde til Xen Store"
 
-#: src/xend_internal.c:290 src/xend_internal.c:293
+#: src/xend_internal.c:291 src/xend_internal.c:294
 msgid "failed to read from Xen Daemon"
 msgstr "kunne ikke læse fra Xen-dæmonen"
 
-#: src/xend_internal.c:604 src/xend_internal.c:823 src/xend_internal.c:1577
-#: src/xend_internal.c:1596 src/xend_internal.c:2002
+#: src/xend_internal.c:605 src/xend_internal.c:824 src/xend_internal.c:1578
+#: src/xend_internal.c:1597
 msgid "allocate new buffer"
 msgstr "allokér ny buffer"
 
-#: src/xend_internal.c:1030
+#: src/xend_internal.c:1031
 msgid "failed to urlencode the create S-Expr"
 msgstr "kunne ikke url-kode den oprettede S-Expr"
 
-#: src/xend_internal.c:1071
+#: src/xend_internal.c:1072
 msgid "domain information incomplete, missing domid"
 msgstr "domæneinformation ukomplet, mangler domid"
 
-#: src/xend_internal.c:1077
+#: src/xend_internal.c:1078
 msgid "domain information incorrect domid not numeric"
 msgstr "domæneinformation fejl, domid er ikke numerisk"
 
-#: src/xend_internal.c:1082 src/xend_internal.c:1129
+#: src/xend_internal.c:1083 src/xend_internal.c:1130
 msgid "domain information incomplete, missing uuid"
 msgstr "domæneinformation ukomplet, mangler uuid"
 
-#: src/xend_internal.c:1121 src/xend_internal.c:1421 src/xend_internal.c:1428
+#: src/xend_internal.c:1122 src/xend_internal.c:1422 src/xend_internal.c:1429
 msgid "domain information incomplete, missing name"
 msgstr "domæneinformation ukomplet, mangler navn"
 
-#: src/xend_internal.c:1306
+#: src/xend_internal.c:1307
 #, fuzzy
 msgid "domain information incomplete, missing HVM loader"
 msgstr "domæneinformation ukomplet, mangler navn"
 
-#: src/xend_internal.c:1358
+#: src/xend_internal.c:1359
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr "domæneinformation ukomplet, mangler kerne & opstartsindlæser"
 
-#: src/xend_internal.c:1409
+#: src/xend_internal.c:1410
 msgid "domain information incomplete, missing id"
 msgstr "domæneinformation ukomplet, mangler id"
 
-#: src/xend_internal.c:1546
+#: src/xend_internal.c:1547
 msgid "domain information incomplete, vbd has no dev"
 msgstr "domæneinformation ukomplet, vbd har ingen dev"
 
-#: src/xend_internal.c:1561
+#: src/xend_internal.c:1562
 msgid "domain information incomplete, vbd has no src"
 msgstr "domæneinformation ukomplet, vbd har ingen src"
 
-#: src/xend_internal.c:1570
+#: src/xend_internal.c:1571
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "Kan ikke fortolke vbd-filnavn, mangler drivernavn"
 
-#: src/xend_internal.c:1589
+#: src/xend_internal.c:1590
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "Kan ikke fortolke vbd-filnavn, mangler drivertype"
 
-#: src/xend_internal.c:1976
+#: src/xend_internal.c:1983
 #, fuzzy
 msgid "failed to parse topology information"
 msgstr "kunne ikke analysere domæneinformation for Xend"
 
-#: src/xend_internal.c:2057
+#: src/xend_internal.c:2039
+#, fuzzy
+msgid "topology syntax error"
+msgstr "syntaksfejl i konfigurationsfilen"
+
+#: src/xend_internal.c:2049 src/xml.c:115 src/xml.c:279
+#, fuzzy
+msgid "allocate buffer"
+msgstr "allokér ny buffer"
+
+#: src/xend_internal.c:2103
 msgid "failed to parse Xend domain information"
 msgstr "kunne ikke analysere domæneinformation for Xend"
 
-#: src/xend_internal.c:2537
+#: src/xend_internal.c:2583
 msgid "xenDaemonDomainDumpXMLByID failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:2562
+#: src/xend_internal.c:2608
 msgid "xenDaemonDomainDumpXMLByName failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:3172 src/xend_internal.c:3481
+#: src/xend_internal.c:3220 src/xend_internal.c:3529
 #, fuzzy
 msgid "failed to parse domain description"
 msgstr "kunne ikke analysere domæneinformation for Xend"
 
-#: src/xend_internal.c:3351
+#: src/xend_internal.c:3399
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
 msgstr ""
 
-#: src/xend_internal.c:3361
+#: src/xend_internal.c:3409
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
 msgstr ""
 
-#: src/xend_internal.c:3373
+#: src/xend_internal.c:3421
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr ""
 
-#: src/xend_internal.c:3386
+#: src/xend_internal.c:3434
 msgid "xenDaemonDomainMigrate: invalid URI"
 msgstr ""
 
-#: src/xend_internal.c:3391
+#: src/xend_internal.c:3439
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr ""
 
-#: src/xend_internal.c:3398
+#: src/xend_internal.c:3446
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr ""
 
-#: src/xend_internal.c:3405 src/xend_internal.c:3427 src/xend_internal.c:3435
-#: src/xml.c:488
+#: src/xend_internal.c:3453 src/xend_internal.c:3475 src/xend_internal.c:3483
+#: src/xml.c:331
 msgid "strdup failed"
 msgstr ""
 
-#: src/xend_internal.c:3418
+#: src/xend_internal.c:3466
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr ""
 
-#: src/xend_internal.c:3491
+#: src/xend_internal.c:3539
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Kunne ikke oprette inaktivt domæne %s\n"
 
-#: src/xml.c:164 src/xml.c:406 src/xml.c:436
-#, fuzzy
-msgid "allocate buffer"
-msgstr "allokér ny buffer"
-
-#: src/xml.c:297
+#: src/xml.c:248
 msgid "topology cpuset syntax error"
 msgstr ""
 
-#: src/xml.c:398
-#, fuzzy
-msgid "topology syntax error"
-msgstr "syntaksfejl i konfigurationsfilen"
-
-#: src/xml.c:476
+#: src/xml.c:319
 msgid "Invalid parameter to virXPathString()"
 msgstr ""
 
-#: src/xml.c:511 src/xml.c:546
+#: src/xml.c:354 src/xml.c:389
 msgid "Invalid parameter to virXPathNumber()"
 msgstr ""
 
-#: src/xml.c:592
+#: src/xml.c:435
 msgid "Invalid parameter to virXPathBoolean()"
 msgstr ""
 
-#: src/xml.c:625
+#: src/xml.c:468
 msgid "Invalid parameter to virXPathNode()"
 msgstr ""
 
-#: src/xml.c:661
+#: src/xml.c:504
 msgid "Invalid parameter to virXPathNodeSet()"
 msgstr ""
 
-#: src/xml.c:679 src/xmlrpc.c:484
+#: src/xml.c:522 src/xmlrpc.c:484
 msgid "allocate string array"
 msgstr "allokér liste af strenge"
 
-#: src/xml.c:877
+#: src/xml.c:720
 #, fuzzy
 msgid "too many boot devices"
 msgstr "for mange domæner"
 
-#: src/xml.c:909
+#: src/xml.c:752
 #, fuzzy
 msgid "no HVM domain loader"
 msgstr "knudens domæneliste"
 
-#: src/xml.c:1003 src/xml.c:1020
+#: src/xml.c:846 src/xml.c:863
 #, fuzzy
 msgid "invalid input device"
 msgstr "ugyldig domænepeger i"

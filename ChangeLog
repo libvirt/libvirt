@@ -1,3 +1,8 @@
+Mon Mar  3 15:40:31 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* NEWS configure.in libvirt.spec.in docs/* include/libvirt/libvirt.h
+	  po/*: preparing release of libvirt-0.4.1
+
 Mon Mar  3 14:14:03 CET 2008 Jim Meyering <meyering@redhat.com>
 
 	Plug saslUsernameWhitelist leak.

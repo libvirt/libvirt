@@ -37,6 +37,61 @@ href="downloads.html">CVS version or snapshot</a>, contact the mailing list
 and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
 
 
+<h3>0.4.1: Mar 3 2008</h3>
+<ul>
+  <li>New features: build on MacOSX (Richard Jones), storage management
+      (Daniel Berrange), Xenner - Xen on KVM - support (Daniel Berrange)</li>
+  <li>Documentation: Fix of various typos (Atsushi SAKAI), memory and
+      vcpu settings details (Richard Jones), ethernet bridging typo
+      (Maxwell Bottiger), add storage APIs documentation (Daniel Berrange)</li>
+  <li>Bug fixes: OpenVZ code compilation (Mikhail Pokidko), crash in
+      policykit auth handling (Daniel Berrange), large config files
+      (Daniel Berrange), cpumap hypercall size (Saori Fukuta), crash
+      in remote auth (Daniel Berrange), ssh args error (Daniel Berrange),
+      preserve vif order from config files (Hiroyuki Kaguchi), invalid
+      pointer access (Jim Meyering), virDomainGetXMLDesc flag handling,
+      device name conversion on stats (Daniel Berrange), double mutex lock
+      (Daniel Berrange), config file reading crashes (Guido Guenther),
+      xenUnifiedDomainSuspend bug (Marcus Meissner), do not crash if
+      /sys/hypervisor/capabilities is missing (Mark McLoughlin),
+      virHashRemoveSet bug (Hiroyuki Kaguchi), close-on-exec flag for
+      qemud signal pipe (Daniel Berrange), double free in OpenVZ
+      (Anton Protopopov), handle mac without addresses (Shigeki Sakamoto),
+      MAC addresses checks (Shigeki Sakamoto and Richard Jones)</li>
+  <li>Improvements: Windows build (Richard Jones), KVM/QEmu shutdown
+      (Guido Guenther), catch virExec output on debug (Mark McLoughlin),
+      integration of iptables and lokkit (Mark McLoughlin), keymap
+      parameter for VNC servers (Daniel Hokka Zakrisson), enable debug
+      by default using VIR_DEBUG (Daniel Berrange), xen 3.2 fixes
+      (Daniel Berrange), Python bindings for VCPU and scheduling
+      (Daniel Berrange), framework for automatic code syntax checks
+      (Jim Meyering), allow kernel+initrd setup in Xen PV (Daniel Berrange),
+      allow change of Disk/NIC of an inactive domains (Shigeki Sakamoto),
+      virsh commands to manipulate and create storage(Daniel Berrange),
+      update use of PolicyKit APIs, better detection of fedault hypervisor,
+      block device statistics for QEmu/KVM (Richard Jones), various improvements
+      for Xenner (Daniel Berrange)</li>
+  <li>Code cleanups: avoid warnings (Daniel Berrange), virRun helper
+      function (Dan Berrange), iptable code fixes (Mark McLoughlin),
+      static and const cleanups (Jim Meyering), malloc and python cleanups
+      (Jim Meyering), xstrtol_ull and xstrtol_ll functions (Daniel Berrange),
+      remove no-op networking from OpenVZ (Daniel Berrange), python generator
+      cleanups (Daniel Berrange), cleanup ref counting (Daniel Berrange),
+      remove uninitialized warnings (Jim Meyering), cleanup configure
+      for RHEL4 (Daniel Berrange), CR/LF cleanups (Richard Jones),
+      various automatic code check and associated cleanups (Jim Meyering),
+      various memory leaks (Jim Meyering), fix compilation when building
+      without Xen (Guido Guenther), mark translatables strings (Jim Meyering),
+      use virBufferAddLit for constant strings (Jim Meyering), fix
+      make distcheck (Jim Meyering), return values for python bindings (Cole
+      Robinson), trailing blanks fixes (Jim Meyering), gcc-4.3.0 fixes
+      (Mark McLoughlin), use safe read and write routines (Jim Meyering),
+      refactoring of code dealing with hypervisor capabilities (Daniel
+      Berrange), qemudReportError to use virErrorMsg (Cole Robinson),
+      intemediate library and Makefiles for compiling static and coverage
+      rule support (Jim Meyering), cleanup of various leaks (Jim Meyering)</li>
+</ul>
+
 <h3>0.4.0: Dec 18 2007</h3>
 <ul>
   <li>New features: Compilation on Windows cygwin/mingw (Richard Jones),
