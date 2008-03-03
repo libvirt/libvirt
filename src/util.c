@@ -35,6 +35,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <string.h>
+#include <ctype.h>
 
 #ifdef HAVE_PATHS_H
 #include <paths.h>
@@ -49,6 +50,8 @@
 #include "util-lib.c"
 
 #define MAX_ERROR_LEN   1024
+
+#define TOLOWER(Ch) (isupper (Ch) ? tolower (Ch) : (Ch))
 
 #define virLog(msg...) fprintf(stderr, msg)
 
@@ -654,14 +657,35 @@ virParseNumber(const char **str)
     return (ret);
 }
 
-/* Use this function when comparing two MAC addresses.  It deals with
- * string case compare and will eventually be extended to understand
- * that 01:02:03:04:05:06 is the same as 1:2:3:4:5:6.
+/* Compare two MAC addresses, ignoring differences in case,
+ * as well as leading zeros.
  */
 int
-__virMacAddrCompare (const char *mac1, const char *mac2)
+__virMacAddrCompare (const char *p, const char *q)
 {
-    return strcasecmp (mac1, mac2);
+    unsigned char c, d;
+    do {
+        while (*p == '0' && isxdigit (p[1]))
+            ++p;
+        while (*q == '0' && isxdigit (q[1]))
+            ++q;
+        c = TOLOWER (*p);
+        d = TOLOWER (*q);
+
+        if (c == 0 || d == 0)
+            break;
+
+        ++p;
+        ++q;
+    } while (c == d);
+
+    if (UCHAR_MAX <= INT_MAX)
+        return c - d;
+
+    /* On machines where 'char' and 'int' are types of the same size, the
+       difference of two 'unsigned char' values - including the sign bit -
+       doesn't fit in an 'int'.  */
+    return (c > d ? 1 : c < d ? -1 : 0);
 }
 
 /*

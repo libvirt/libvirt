@@ -1,3 +1,10 @@
+Mon Mar  3 21:39:17 CET 2008 Jim Meyering <meyering@redhat.com>
+
+	Also ignore leading zeros when comparing MAC addresses.
+	* src/util.c: Include <ctype.h>.
+	(TOLOWER): Define.
+	(__virMacAddrCompare): Rewrite to also ignore leading zeros.
+
 Mon Mar  3 21:17:29 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/capabilities.c: Cole Robinson pointed out a well formedness
