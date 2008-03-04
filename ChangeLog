@@ -1,3 +1,9 @@
+Tue Mar  4 20:01:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Make iSCSI login actually work
+	* src/storage_backend_iscsi.c: Make iSCSI login actually work
+	  (Chris Lalancette).
+
 Tue Mar  4 19:57:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Report error when vcpupin is given bad vCPU number.
