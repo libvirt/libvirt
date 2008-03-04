@@ -1723,6 +1723,7 @@ cmdVcpupin(vshControl * ctl, vshCmd * cmd)
 
     vcpu = vshCommandOptInt(cmd, "vcpu", &vcpufound);
     if (!vcpufound) {
+        vshError(ctl, FALSE, _("vcpupin: Invalid or missing vCPU number."));
         virDomainFree(dom);
         return FALSE;
     }

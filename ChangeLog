@@ -1,3 +1,9 @@
+Tue Mar  4 19:57:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Report error when vcpupin is given bad vCPU number.
+	* src/virsh.c: Report error when vcpupin is given bad vCPU number
+	  (Shigeki Sakamoto).
+
 Mon Mar  3 21:39:17 CET 2008 Jim Meyering <meyering@redhat.com>
 
 	Also ignore leading zeros when comparing MAC addresses.
