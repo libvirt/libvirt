@@ -1,3 +1,8 @@
+Fri Mar  7 12:11:53 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* docs/libvir.html docs/storage.html: apply documentation fixes
+	  and typos cleanup from Atsushi Sakai
+
 Fri Mar  7 10:22:00 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: applied patch from Cole Robinson to not
