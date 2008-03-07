@@ -1323,7 +1323,7 @@ xend_parse_sexp_desc_os(virConnectPtr xend, struct sexpr *node, virBufferPtr buf
     if (hvm)
         virBufferVSprintf(buf, "    <loader>%s</loader>\n", loader);
 
-    if (kernel) {
+    if ((kernel) && ((!loader) || (STRNEQ(kernel, loader)))) {
         virBufferVSprintf(buf, "    <kernel>%s</kernel>\n", kernel);
         if (initrd && initrd[0])
             virBufferVSprintf(buf, "    <initrd>%s</initrd>\n", initrd);

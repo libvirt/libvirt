@@ -1,3 +1,8 @@
+Fri Mar  7 10:22:00 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: applied patch from Cole Robinson to not
+	  loose the boot tag when defining a fully virtualized xen domain
+
 Tue Mar  4 20:01:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Make iSCSI login actually work
