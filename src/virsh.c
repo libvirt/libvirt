@@ -6045,13 +6045,6 @@ vshInit(vshControl * ctl)
     /* set up the library error handler */
     virSetErrorFunc(NULL, virshErrorHandler);
 
-#ifndef __MINGW32__
-    /* Force a non-root, Xen connection to readonly */
-    if ((ctl->name == NULL ||
-         !strcasecmp(ctl->name, "xen")) && ctl->uid != 0)
-         ctl->readonly = 1;
-#endif
-
     ctl->conn = virConnectOpenAuth(ctl->name,
                                    virConnectAuthPtrDefault,
                                    ctl->readonly ? VIR_CONNECT_RO : 0);
