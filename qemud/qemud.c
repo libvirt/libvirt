@@ -393,7 +393,7 @@ static int qemudGoDaemon(void) {
             case -1:
                 return -1;
             default:
-                return nextpid;
+                _exit(0);
             }
 
         cleanup:
@@ -418,8 +418,7 @@ static int qemudGoDaemon(void) {
                 status != 0) {
                 return -1;
             }
-
-            return pid;
+            _exit(0);
         }
     }
 }
@@ -2116,16 +2115,12 @@ int main(int argc, char **argv) {
         goto error1;
 
     if (godaemon) {
-        int pid;
         openlog("libvirtd", 0, 0);
-        pid = qemudGoDaemon();
-        if (pid < 0) {
+        if (qemudGoDaemon() < 0) {
             qemudLog(QEMUD_ERR, _("Failed to fork as daemon: %s"),
                      strerror(errno));
             goto error1;
         }
-        if (pid > 0)
-            goto out;
 
         /* Choose the name of the PID file. */
         if (!pid_file) {
@@ -2172,7 +2167,6 @@ int main(int argc, char **argv) {
     if (godaemon)
         closelog();
 
- out:
     ret = 0;
 
  error2:

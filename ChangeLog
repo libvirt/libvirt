@@ -1,3 +1,8 @@
+Tue Mar 11 10:17:53 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* qemud/qemud.c: Don't run cleanup code when parent process is
+	exiting in daemon mode.
+
 Fri Mar  7 12:11:53 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* docs/libvir.html docs/storage.html: apply documentation fixes
