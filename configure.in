@@ -450,10 +450,6 @@ if test "x$with_polkit" = "xyes" -o "x$with_polkit" = "xcheck"; then
     CFLAGS="$old_CFLAGS"
     LDFLAGS="$old_LDFLAGS"
 
-    AC_PATH_PROG(POLKIT_GRANT, polkit-grant)
-    if test "x$POLKIT_GRANT" != "x"; then
-      AC_DEFINE_UNQUOTED([POLKIT_GRANT],["$POLKIT_GRANT"],[Location of polkit-grant program])
-    fi
     AC_PATH_PROG(POLKIT_AUTH, polkit-auth)
     if test "x$POLKIT_AUTH" != "x"; then
       AC_DEFINE_UNQUOTED([POLKIT_AUTH],["$POLKIT_AUTH"],[Location of polkit-auth program])

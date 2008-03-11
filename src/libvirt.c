@@ -19,6 +19,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <assert.h>
+#ifdef HAVE_SYS_WAIT_H
+#include <sys/wait.h>
+#endif
 
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
@@ -66,6 +69,39 @@ static int initialized = 0;
 int debugFlag = 0;
 #endif
 
+#if defined(POLKIT_AUTH)
+static int virConnectAuthGainPolkit(const char *privilege) {
+    const char *const args[] = {
+        POLKIT_AUTH, "--obtain", privilege, NULL
+    };
+    int childpid, status, ret;
+
+    /* Root has all rights */
+    if (getuid() == 0)
+        return 0;
+
+    if ((childpid = fork()) < 0)
+        return -1;
+
+    if (!childpid) {
+        execvp(args[0], (char **)args);
+        _exit(-1);
+    }
+
+    while ((ret = waitpid(childpid, &status, 0) == -1) && errno == EINTR);
+    if (ret == -1) {
+        return -1;
+    }
+
+    if (!WIFEXITED(status) ||
+        (WEXITSTATUS(status) != 0 && WEXITSTATUS(status) != 1)) {
+        return -1;
+    }
+
+    return 0;
+}
+#endif
+
 static int virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
                                          unsigned int ncred,
                                          void *cbdata ATTRIBUTE_UNUSED) {
@@ -77,25 +113,15 @@ static int virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
         size_t len;
 
         switch (cred[i].type) {
-#if defined(POLKIT_GRANT) || defined(POLKIT_AUTH)
+#if defined(POLKIT_AUTH)
         case VIR_CRED_EXTERNAL: {
             int ret;
-            const char *const args[] = {
-#if defined(POLKIT_GRANT)
-                POLKIT_GRANT, "--gain", cred[i].prompt, NULL
-#else
-                POLKIT_AUTH, "--obtain", cred[i].prompt, NULL
-#endif
-            };
-
             if (STRNEQ(cred[i].challenge, "PolicyKit"))
                 return -1;
-            if (virRun(NULL, (char **) args, &ret) < 0)
+
+            if (virConnectAuthGainPolkit(cred[i].prompt) < 0)
                 return -1;
 
-            if (!WIFEXITED(ret) ||
-                (WEXITSTATUS(ret) != 0 && WEXITSTATUS(ret) != 1))
-                return -1;
             break;
         }
 #endif
@@ -158,7 +184,7 @@ static int virConnectCredTypeDefault[] = {
     VIR_CRED_REALM,
     VIR_CRED_PASSPHRASE,
     VIR_CRED_NOECHOPROMPT,
-#if defined(POLKIT_AUTH) || defined(POLKIT_GRANT)
+#if defined(POLKIT_AUTH)
     VIR_CRED_EXTERNAL,
 #endif
 };

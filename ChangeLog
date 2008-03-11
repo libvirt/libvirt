@@ -1,3 +1,9 @@
+Tue Mar 11 10:45:53 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/libvirt.c, configure.in: Remove use of polkit-grant since
+	it is fundamentally broken. Only use polkit-auth instead. Keep
+	stdin/out/err open when running polkit-auth.
+
 Tue Mar 11 10:21:53 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/virsh.c: Don't force connection to readonly as non-root
