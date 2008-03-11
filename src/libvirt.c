@@ -115,7 +115,6 @@ static int virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
         switch (cred[i].type) {
 #if defined(POLKIT_AUTH)
         case VIR_CRED_EXTERNAL: {
-            int ret;
             if (STRNEQ(cred[i].challenge, "PolicyKit"))
                 return -1;
 
