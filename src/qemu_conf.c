@@ -594,9 +594,16 @@ static int qemudParseDiskXML(virConnectPtr conn,
     }
 
     if (source == NULL) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SOURCE, target ? "%s" : NULL, target);
-        goto error;
+        /* There is a case without the source
+         * to the CD-ROM device
+         */
+        if (!device || STRNEQ((const char *) device, "cdrom")) {
+            qemudReportError(conn, NULL, NULL, VIR_ERR_NO_SOURCE,
+                             target ? "%s" : NULL, target);
+            goto error;
+        }
     }
+
     if (target == NULL) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_NO_TARGET, source ? "%s" : NULL, source);
         goto error;
@@ -630,7 +637,7 @@ static int qemudParseDiskXML(virConnectPtr conn,
         goto error;
     }
 
-    strncpy(disk->src, (const char *)source, NAME_MAX-1);
+    strncpy(disk->src, (source ? (const char *) source : "\0"), NAME_MAX-1);
     disk->src[NAME_MAX-1] = '\0';
 
     strncpy(disk->dst, (const char *)target, NAME_MAX-1);
@@ -1747,9 +1754,15 @@ int qemudBuildCommandLine(virConnectPtr conn,
         char dev[NAME_MAX];
         char file[PATH_MAX];
         if (!strcmp(disk->dst, "hdc") &&
-            disk->device == QEMUD_DISK_CDROM)
-            snprintf(dev, NAME_MAX, "-%s", "cdrom");
-        else
+            disk->device == QEMUD_DISK_CDROM) {
+            if (disk->src[0])
+                snprintf(dev, NAME_MAX, "-%s", "cdrom");
+            else {
+                /* Don't put anything on the cmdline for an empty cdrom*/
+                disk = disk->next;
+                continue;
+            }
+        } else
             snprintf(dev, NAME_MAX, "-%s", disk->dst);
         snprintf(file, PATH_MAX, "%s", disk->src);
 
@@ -2906,8 +2919,10 @@ char *qemudGenerateXML(virConnectPtr conn,
                               types[disk->type], devices[disk->device]) < 0)
             goto no_memory;
 
-        if (virBufferVSprintf(buf, "      <source %s='%s'/>\n", typeAttrs[disk->type], disk->src) < 0)
-            goto no_memory;
+        if (disk->src[0])
+            if (virBufferVSprintf(buf, "      <source %s='%s'/>\n",
+                                  typeAttrs[disk->type], disk->src) < 0)
+                goto no_memory;
 
         if (virBufferVSprintf(buf, "      <target dev='%s'/>\n", disk->dst) < 0)
             goto no_memory;

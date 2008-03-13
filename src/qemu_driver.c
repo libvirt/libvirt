@@ -2223,23 +2223,29 @@ static int qemudDomainChangeCDROM(virDomainPtr dom,
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     char *cmd, *reply, *safe_path;
 
-    /* Migrate to file */
-    safe_path = qemudEscapeMonitorArg(newdisk->src);
-    if (!safe_path) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         "out of memory");
-        return -1;
-    }
-    if (asprintf (&cmd, "change %s \"%s\"",
-                  /* XXX qemu may support multiple CDROM in future */
-                  /* olddisk->dst */ "cdrom",
-                  safe_path) == -1) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         "out of memory");
+    if (newdisk->src[0]) {
+        safe_path = qemudEscapeMonitorArg(newdisk->src);
+        if (!safe_path) {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                             "out of memory");
+            return -1;
+        }
+        if (asprintf (&cmd, "change %s \"%s\"",
+                      /* XXX qemu may support multiple CDROM in future */
+                      /* olddisk->dst */ "cdrom",
+                      safe_path) == -1) {
+            qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                             "out of memory");
+            free(safe_path);
+            return -1;
+        }
         free(safe_path);
+
+    } else if (asprintf(&cmd, "eject cdrom") == -1) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "out of memory");
         return -1;
     }
-    free(safe_path);
 
     if (qemudMonitorCommand(driver, vm, cmd, &reply) < 0) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED, "cannot change cdrom media");
@@ -2248,7 +2254,7 @@ static int qemudDomainChangeCDROM(virDomainPtr dom,
     }
     free(reply);
     free(cmd);
-    strcpy(olddisk->dst, newdisk->dst);
+    strcpy(olddisk->src, newdisk->src);
     olddisk->type = newdisk->type;
     return 0;
 }
