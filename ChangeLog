@@ -1,3 +1,7 @@
+Thu Mar 13 10:19:16 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/bridge.c src/virsh.c: typo fixes from Atsushi SAKAI
+
 Thu Mar 13 10:15:58 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_conf.c src/qemu_driver.c: patch from Cole Robinson

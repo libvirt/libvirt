@@ -545,7 +545,7 @@ brGetInetAddr(brControl *ctl,
  * brSetInetAddress:
  * @ctl: bridge control pointer
  * @ifname: the interface name
- * @addr: the string representation of the IP adress
+ * @addr: the string representation of the IP address
  *
  * Function to bind the interface to an IP address, it should handle
  * IPV4 and IPv6. The string for addr would be of the form
@@ -566,7 +566,7 @@ brSetInetAddress(brControl *ctl,
  * brGetInetAddress:
  * @ctl: bridge control pointer
  * @ifname: the interface name
- * @addr: the array for the string representation of the IP adress
+ * @addr: the array for the string representation of the IP address
  * @maxlen: size of @addr in bytes
  *
  * Function to get the IP address of an interface, it should handle

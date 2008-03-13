@@ -668,7 +668,7 @@ cmdList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
 static vshCmdInfo info_domstate[] = {
     {"syntax", "domstate <domain>"},
     {"help", gettext_noop("domain state")},
-    {"desc", gettext_noop("Returns state about a running domain.")},
+    {"desc", gettext_noop("Returns state about a domain.")},
     {NULL, NULL}
 };
 
@@ -1818,7 +1818,7 @@ cmdVcpupin(vshControl * ctl, vshCmd * cmd)
 static vshCmdInfo info_setvcpus[] = {
     {"syntax", "setvcpus <domain> <count>"},
     {"help", gettext_noop("change number of virtual CPUs")},
-    {"desc", gettext_noop("Change the number of virtual CPUs active in the guest domain.")},
+    {"desc", gettext_noop("Change the number of virtual CPUs in the guest domain.")},
     {NULL, NULL}
 };
 
@@ -4567,7 +4567,7 @@ static vshCmdOptDef opts_attach_interface[] = {
     {"type",   VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network interface type")},
     {"source", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("source of network interface")},
     {"target", VSH_OT_DATA, 0, gettext_noop("target network name")},
-    {"mac",    VSH_OT_DATA, 0, gettext_noop("MAC adress")},
+    {"mac",    VSH_OT_DATA, 0, gettext_noop("MAC address")},
     {"script", VSH_OT_DATA, 0, gettext_noop("script used to bridge network interface")},
     {NULL, 0, 0, NULL}
 };
@@ -4679,7 +4679,7 @@ static vshCmdInfo info_detach_interface[] = {
 static vshCmdOptDef opts_detach_interface[] = {
     {"domain", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("domain name, id or uuid")},
     {"type",   VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("network interface type")},
-    {"mac",    VSH_OT_DATA, 0, gettext_noop("MAC adress")},
+    {"mac",    VSH_OT_DATA, 0, gettext_noop("MAC address")},
     {NULL, 0, 0, NULL}
 };
 
