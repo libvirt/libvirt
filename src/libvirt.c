@@ -2447,6 +2447,10 @@ virDomainSetSchedulerParameters(virDomainPtr domain,
         virLibDomainError(NULL, VIR_ERR_INVALID_DOMAIN, __FUNCTION__);
         return -1;
     }
+    if (domain->conn->flags & VIR_CONNECT_RO) {
+        virLibDomainError(domain, VIR_ERR_OPERATION_DENIED, __FUNCTION__);
+        return -1;
+    }
     conn = domain->conn;
 
     if (conn->driver->domainSetSchedulerParameters)

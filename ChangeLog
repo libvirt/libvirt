@@ -1,3 +1,8 @@
+Thu Mar 13 10:24:45 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c: virDomainSetSchedulerParameters need to be 
+	  blocked on read-only connections, patch from Saori Fukuta
+
 Thu Mar 13 10:19:16 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/bridge.c src/virsh.c: typo fixes from Atsushi SAKAI
