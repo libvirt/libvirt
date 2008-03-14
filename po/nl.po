@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-03-03 15:08+0100\n"
+"POT-Creation-Date: 2008-03-14 16:32+0100\n"
 "PO-Revision-Date: 2007-08-21 22:04+0200\n"
 "Last-Translator: Peter van Egdom <p.van.egdom@gmail.com>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
@@ -310,162 +310,162 @@ msgstr ""
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr ""
 
-#: qemud/qemud.c:435
+#: qemud/qemud.c:434
 #, fuzzy, c-format
 msgid "Failed to open pid file '%s' : %s"
 msgstr "openen van bestand is mislukt"
 
-#: qemud/qemud.c:441
+#: qemud/qemud.c:440
 #, fuzzy, c-format
 msgid "Failed to fdopen pid file '%s' : %s"
 msgstr "openen van bestand is mislukt"
 
-#: qemud/qemud.c:448
+#: qemud/qemud.c:447
 #, fuzzy, c-format
 msgid "Failed to write to pid file '%s' : %s"
 msgstr "openen van bestand is mislukt"
 
-#: qemud/qemud.c:455
+#: qemud/qemud.c:454
 #, fuzzy, c-format
 msgid "Failed to close pid file '%s' : %s"
 msgstr "openen van bestand is mislukt"
 
-#: qemud/qemud.c:472
+#: qemud/qemud.c:471
 #, fuzzy
 msgid "Failed to allocate memory for struct qemud_socket"
 msgstr "Toewijzen van geheugen is mislukt"
 
-#: qemud/qemud.c:482
+#: qemud/qemud.c:481
 #, fuzzy, c-format
 msgid "Failed to create socket: %s"
 msgstr "Starten van het netwerk %s is mislukt"
 
-#: qemud/qemud.c:504
+#: qemud/qemud.c:503
 #, fuzzy, c-format
 msgid "Failed to bind socket to '%s': %s"
 msgstr "Starten van het netwerk %s is mislukt"
 
-#: qemud/qemud.c:513
+#: qemud/qemud.c:512
 #, fuzzy, c-format
 msgid "Failed to listen for connections on '%s': %s"
 msgstr "Starten van het netwerk %s is mislukt"
 
-#: qemud/qemud.c:522 qemud/qemud.c:652
+#: qemud/qemud.c:521 qemud/qemud.c:651
 msgid "Failed to add server event callback"
 msgstr ""
 
-#: qemud/qemud.c:551
+#: qemud/qemud.c:550
 #, c-format
 msgid "getaddrinfo: %s\n"
 msgstr ""
 
-#: qemud/qemud.c:560
+#: qemud/qemud.c:559
 #, c-format
 msgid "socket: %s"
 msgstr ""
 
-#: qemud/qemud.c:569
+#: qemud/qemud.c:568
 #, c-format
 msgid "bind: %s"
 msgstr ""
 
-#: qemud/qemud.c:576
+#: qemud/qemud.c:575
 #, c-format
 msgid "listen: %s"
 msgstr ""
 
-#: qemud/qemud.c:613
+#: qemud/qemud.c:612
 #, c-format
 msgid "remoteListenTCP: calloc: %s"
 msgstr ""
 
-#: qemud/qemud.c:644
+#: qemud/qemud.c:643
 #, c-format
 msgid "remoteListenTCP: listen: %s"
 msgstr ""
 
-#: qemud/qemud.c:686 src/qemu_driver.c:182
+#: qemud/qemud.c:685 src/qemu_driver.c:182
 #, c-format
 msgid "Failed to find user record for uid '%d': %s"
 msgstr ""
 
-#: qemud/qemud.c:703 src/qemu_driver.c:238
-msgid "Resulting path to long for buffer in qemudInitPaths()"
+#: qemud/qemud.c:702
+msgid "Resulting path too long for buffer in qemudInitPaths()"
 msgstr ""
 
-#: qemud/qemud.c:711
+#: qemud/qemud.c:710
 #, fuzzy
 msgid "Failed to allocate struct qemud_server"
 msgstr "Toewijzen van geheugen is mislukt"
 
-#: qemud/qemud.c:755
+#: qemud/qemud.c:754
 #, c-format
 msgid "Failed to initialize SASL authentication %s"
 msgstr ""
 
-#: qemud/qemud.c:770
+#: qemud/qemud.c:769
 #, c-format
 msgid "Failed to connect to system bus for PolicyKit auth: %s"
 msgstr ""
 
-#: qemud/qemud.c:881
+#: qemud/qemud.c:880
 #, c-format
 msgid "remoteInitializeTLSSession: %s"
 msgstr ""
 
-#: qemud/qemud.c:898
+#: qemud/qemud.c:897
 #, c-format
 msgid "remoteCheckDN: gnutls_x509_cert_get_dn: %s"
 msgstr ""
 
-#: qemud/qemud.c:917
+#: qemud/qemud.c:916
 #, c-format
 msgid "remoteCheckDN: failed: client DN is %s"
 msgstr ""
 
-#: qemud/qemud.c:933
+#: qemud/qemud.c:932
 #, c-format
 msgid "remoteCheckCertificate: verify failed: %s"
 msgstr ""
 
-#: qemud/qemud.c:941
+#: qemud/qemud.c:940
 msgid "remoteCheckCertificate: the client certificate is not trusted."
 msgstr ""
 
-#: qemud/qemud.c:946
+#: qemud/qemud.c:945
 msgid "remoteCheckCertificate: the client certificate has unknown issuer."
 msgstr ""
 
-#: qemud/qemud.c:951
+#: qemud/qemud.c:950
 msgid "remoteCheckCertificate: the client certificate has been revoked."
 msgstr ""
 
-#: qemud/qemud.c:957
+#: qemud/qemud.c:956
 msgid ""
 "remoteCheckCertificate: the client certificate uses an insecure algorithm."
 msgstr ""
 
-#: qemud/qemud.c:966
+#: qemud/qemud.c:965
 msgid "remoteCheckCertificate: certificate is not X.509"
 msgstr ""
 
-#: qemud/qemud.c:971
+#: qemud/qemud.c:970
 msgid "remoteCheckCertificate: no peers"
 msgstr ""
 
-#: qemud/qemud.c:982
+#: qemud/qemud.c:981
 msgid "remoteCheckCertificate: gnutls_x509_crt_init failed"
 msgstr ""
 
-#: qemud/qemud.c:992
+#: qemud/qemud.c:991
 msgid "remoteCheckCertificate: the client certificate has expired"
 msgstr ""
 
-#: qemud/qemud.c:999
+#: qemud/qemud.c:998
 msgid "remoteCheckCertificate: the client certificate is not yet activated"
 msgstr ""
 
-#: qemud/qemud.c:1008
+#: qemud/qemud.c:1007
 msgid ""
 "remoteCheckCertificate: client's Distinguished Name is not on the list of "
 "allowed clients (tls_allowed_dn_list).  Use 'openssl x509 -in clientcert.pem "
@@ -473,106 +473,106 @@ msgid ""
 "run this daemon with --verbose option."
 msgstr ""
 
-#: qemud/qemud.c:1025
+#: qemud/qemud.c:1024
 msgid "remoteCheckCertificate: failed to verify client's certificate"
 msgstr ""
 
-#: qemud/qemud.c:1029
+#: qemud/qemud.c:1028
 msgid ""
 "remoteCheckCertificate: tls_no_verify_certificate is set so the bad "
 "certificate is ignored"
 msgstr ""
 
-#: qemud/qemud.c:1054
+#: qemud/qemud.c:1053
 #, fuzzy, c-format
 msgid "Failed to accept connection: %s"
 msgstr "Starten van het netwerk %s is mislukt"
 
-#: qemud/qemud.c:1112 qemud/qemud.c:1349 qemud/qemud.c:1487
+#: qemud/qemud.c:1111 qemud/qemud.c:1348 qemud/qemud.c:1486
 #, c-format
 msgid "TLS handshake failed: %s"
 msgstr ""
 
-#: qemud/qemud.c:1177
+#: qemud/qemud.c:1176
 #, c-format
 msgid "read: %s"
 msgstr ""
 
-#: qemud/qemud.c:1190
+#: qemud/qemud.c:1189
 #, c-format
 msgid "gnutls_record_recv: %s"
 msgstr ""
 
-#: qemud/qemud.c:1373
+#: qemud/qemud.c:1372
 #, c-format
 msgid "write: %s"
 msgstr ""
 
-#: qemud/qemud.c:1383
+#: qemud/qemud.c:1382
 #, c-format
 msgid "gnutls_record_send: %s"
 msgstr ""
 
-#: qemud/qemud.c:1595
+#: qemud/qemud.c:1594
 #, c-format
 msgid "Signal handler reported %d errors: last error: %s"
 msgstr ""
 
-#: qemud/qemud.c:1692 qemud/qemud.c:1714
+#: qemud/qemud.c:1691 qemud/qemud.c:1713
 #, fuzzy, c-format
 msgid "failed to allocate memory for %s config list"
 msgstr "Toewijzen van geheugen is mislukt"
 
-#: qemud/qemud.c:1699 qemud/qemud.c:1731
+#: qemud/qemud.c:1698 qemud/qemud.c:1730
 #, fuzzy, c-format
 msgid "failed to allocate memory for %s config list value"
 msgstr "Toewijzen van geheugen is mislukt"
 
-#: qemud/qemud.c:1719 qemud/qemud.c:1742
+#: qemud/qemud.c:1718 qemud/qemud.c:1741
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: must be a string or list of strings\n"
 msgstr ""
 
-#: qemud/qemud.c:1759
+#: qemud/qemud.c:1758
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: invalid type: got %s; expected %s\n"
 msgstr ""
 
-#: qemud/qemud.c:1780
+#: qemud/qemud.c:1779
 #, c-format
 msgid "remoteReadConfigFile: %s\n"
 msgstr ""
 
-#: qemud/qemud.c:1824
+#: qemud/qemud.c:1823
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: unsupported auth %s\n"
 msgstr ""
 
-#: qemud/qemud.c:1900
+#: qemud/qemud.c:1899
 msgid "Cannot set group when not running as root"
 msgstr ""
 
-#: qemud/qemud.c:1904
+#: qemud/qemud.c:1903
 #, c-format
 msgid "Failed to lookup group '%s'"
 msgstr ""
 
-#: qemud/qemud.c:1917 qemud/qemud.c:1928
+#: qemud/qemud.c:1916 qemud/qemud.c:1927
 #, fuzzy, c-format
 msgid "Failed to parse mode '%s'"
 msgstr "Starten van het domein %s is mislukt"
 
-#: qemud/qemud.c:2103
+#: qemud/qemud.c:2102
 #, fuzzy, c-format
 msgid "Failed to create pipe: %s"
 msgstr "Starten van het domein %s is mislukt"
 
-#: qemud/qemud.c:2123
+#: qemud/qemud.c:2120
 #, fuzzy, c-format
 msgid "Failed to fork as daemon: %s"
 msgstr "Starten van het domein %s is mislukt"
 
-#: qemud/qemud.c:2158
+#: qemud/qemud.c:2153
 msgid "Failed to register callback for signal pipe"
 msgstr ""
 
@@ -655,7 +655,7 @@ msgstr ""
 msgid "failure writing output: %s\n"
 msgstr ""
 
-#: src/hash.c:695 src/libvirt.c:689
+#: src/hash.c:695 src/libvirt.c:714
 msgid "allocating connection"
 msgstr "toewijzen van verbinding"
 
@@ -744,17 +744,17 @@ msgstr ""
 msgid "Failed to add iptables rule '%s' to chain '%s' in table '%s': %s"
 msgstr ""
 
-#: src/libvirt.c:696
+#: src/libvirt.c:721
 #, fuzzy
 msgid "could not parse connection URI"
 msgstr "geen geldige connectie"
 
-#: src/libvirt.c:714
+#: src/libvirt.c:739
 #, fuzzy
 msgid "allocating conn->name"
 msgstr "toewijzen van verbinding"
 
-#: src/libvirt.c:2135
+#: src/libvirt.c:2160
 msgid "domainMigratePrepare did not set uri"
 msgstr ""
 
@@ -812,51 +812,51 @@ msgstr ""
 msgid "Unexpected exit status '%d', qemu probably failed"
 msgstr ""
 
-#: src/qemu_conf.c:2615
+#: src/qemu_conf.c:2628
 #, c-format
 msgid "Error parsing QEMU guest config '%s' : %s"
 msgstr ""
 
-#: src/qemu_conf.c:2617
+#: src/qemu_conf.c:2630
 msgid "BUG: unknown error - please report it\n"
 msgstr ""
 
-#: src/qemu_conf.c:2623
+#: src/qemu_conf.c:2636
 #, c-format
 msgid "QEMU guest config filename '%s' does not match guest name '%s'"
 msgstr ""
 
-#: src/qemu_conf.c:2632
+#: src/qemu_conf.c:2645
 #, c-format
 msgid "Failed to load QEMU guest config '%s': out of memory"
 msgstr ""
 
-#: src/qemu_conf.c:2660
+#: src/qemu_conf.c:2673
 #, c-format
 msgid "Error parsing network config '%s' : %s"
 msgstr ""
 
-#: src/qemu_conf.c:2667
+#: src/qemu_conf.c:2680
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr ""
 
-#: src/qemu_conf.c:2676
+#: src/qemu_conf.c:2689
 #, c-format
 msgid "Failed to load network config '%s': out of memory"
 msgstr ""
 
-#: src/qemu_conf.c:2703
+#: src/qemu_conf.c:2716
 #, fuzzy, c-format
 msgid "Failed to open dir '%s': %s"
 msgstr "openen van bestand is mislukt"
 
-#: src/qemu_conf.c:2720
+#: src/qemu_conf.c:2733
 #, c-format
 msgid "Config filename '%s/%s' is too long"
 msgstr ""
 
-#: src/qemu_conf.c:2727
+#: src/qemu_conf.c:2740
 #, c-format
 msgid "Autostart link path '%s/%s' is too long"
 msgstr ""
@@ -873,6 +873,10 @@ msgstr "Starten van het domein %s is mislukt"
 
 #: src/qemu_driver.c:192
 msgid "out of memory in asprintf"
+msgstr ""
+
+#: src/qemu_driver.c:238
+msgid "Resulting path to long for buffer in qemudInitPaths()"
 msgstr ""
 
 #: src/qemu_driver.c:243
@@ -932,35 +936,35 @@ msgstr ""
 msgid "Got unexpected pid for dnsmasq\n"
 msgstr ""
 
-#: src/qemu_driver.c:2208 src/qemu_driver.c:2726
+#: src/qemu_driver.c:2208 src/qemu_driver.c:2732
 #, fuzzy, c-format
 msgid "Failed to delete autostart link '%s': %s"
 msgstr "Starten van het domein %s is mislukt"
 
-#: src/qemu_driver.c:2386
+#: src/qemu_driver.c:2392
 #, c-format
 msgid "no domain with matching id %d"
 msgstr ""
 
-#: src/qemu_driver.c:2391
+#: src/qemu_driver.c:2397
 #, fuzzy
 msgid "domain is not running"
 msgstr "domein-id of uuid"
 
-#: src/qemu_driver.c:2413
+#: src/qemu_driver.c:2419
 #, fuzzy, c-format
 msgid "invalid path: %s"
 msgstr "ongeldig MAC-adres: %s"
 
-#: src/qemu_driver.c:2421
+#: src/qemu_driver.c:2427
 msgid "'info blockstats' command failed"
 msgstr ""
 
-#: src/qemu_driver.c:2436
+#: src/qemu_driver.c:2442
 msgid "'info blockstats' not supported by this qemu"
 msgstr ""
 
-#: src/qemu_driver.c:2501
+#: src/qemu_driver.c:2507
 #, fuzzy, c-format
 msgid "device not found: %s (%s)"
 msgstr "Domein niet gevonden: %s"
@@ -1229,7 +1233,7 @@ msgid "cannot read %s: %s"
 msgstr ""
 
 #: src/storage_backend_fs.c:506 src/storage_backend_fs.c:571
-#: src/storage_backend_iscsi.c:364
+#: src/storage_backend_iscsi.c:372
 msgid "missing source host"
 msgstr ""
 
@@ -1238,7 +1242,7 @@ msgid "missing source path"
 msgstr ""
 
 #: src/storage_backend_fs.c:517 src/storage_backend_fs.c:582
-#: src/storage_backend_iscsi.c:371
+#: src/storage_backend_iscsi.c:379
 msgid "missing source device"
 msgstr ""
 
@@ -1263,7 +1267,7 @@ msgstr ""
 
 #: src/storage_backend_fs.c:683 src/storage_backend_logical.c:116
 #: src/storage_backend_logical.c:121 src/storage_backend_logical.c:133
-#: src/storage_backend_logical.c:143 src/storage_backend_iscsi.c:177
+#: src/storage_backend_logical.c:143 src/storage_backend_iscsi.c:185
 #: src/storage_backend_disk.c:177 src/storage_backend_disk.c:190
 #: src/storage_backend_disk.c:197 src/storage_backend_disk.c:220
 msgid "volume"
@@ -1420,25 +1424,25 @@ msgstr "versie tonen"
 msgid "cannot find session"
 msgstr ""
 
-#: src/storage_backend_iscsi.c:182 src/storage_driver.c:863
+#: src/storage_backend_iscsi.c:190 src/storage_driver.c:863
 #, fuzzy
 msgid "name"
 msgstr "Naam"
 
-#: src/storage_backend_iscsi.c:187
+#: src/storage_backend_iscsi.c:195
 msgid "devpath"
 msgstr ""
 
-#: src/storage_backend_iscsi.c:207
+#: src/storage_backend_iscsi.c:215
 #, fuzzy, c-format
 msgid "cannot open %s: %s"
 msgstr "Domein niet gevonden: %s"
 
-#: src/storage_backend_iscsi.c:233
+#: src/storage_backend_iscsi.c:241
 msgid "key"
 msgstr ""
 
-#: src/storage_backend_iscsi.c:345
+#: src/storage_backend_iscsi.c:353
 msgid "portal"
 msgstr ""
 
@@ -1780,11 +1784,11 @@ msgstr ""
 msgid "network"
 msgstr "netwerk"
 
-#: src/test.c:439 src/virsh.c:2724
+#: src/test.c:439 src/virsh.c:2725
 msgid "network name"
 msgstr "netwerknaam"
 
-#: src/test.c:447 src/test.c:451 src/virsh.c:2615
+#: src/test.c:447 src/test.c:451 src/virsh.c:2616
 msgid "network uuid"
 msgstr "netwerk uuid"
 
@@ -1921,14 +1925,14 @@ msgstr ""
 #: src/virsh.c:770 src/virsh.c:837 src/virsh.c:1057 src/virsh.c:1101
 #: src/virsh.c:1290 src/virsh.c:1335 src/virsh.c:1374 src/virsh.c:1413
 #: src/virsh.c:1452 src/virsh.c:1491 src/virsh.c:1610 src/virsh.c:1697
-#: src/virsh.c:1825 src/virsh.c:1882 src/virsh.c:1939 src/virsh.c:2061
-#: src/virsh.c:2202 src/virsh.c:4316 src/virsh.c:4392 src/virsh.c:4453
-#: src/virsh.c:4509 src/virsh.c:4565 src/virsh.c:4679 src/virsh.c:4798
-#: src/virsh.c:4961
+#: src/virsh.c:1826 src/virsh.c:1883 src/virsh.c:1940 src/virsh.c:2062
+#: src/virsh.c:2203 src/virsh.c:4317 src/virsh.c:4393 src/virsh.c:4454
+#: src/virsh.c:4510 src/virsh.c:4566 src/virsh.c:4680 src/virsh.c:4799
+#: src/virsh.c:4962
 msgid "domain name, id or uuid"
 msgstr ""
 
-#: src/virsh.c:383 src/virsh.c:2266 src/virsh.c:2774
+#: src/virsh.c:383 src/virsh.c:2267 src/virsh.c:2775
 msgid "disable autostarting"
 msgstr ""
 
@@ -2021,15 +2025,15 @@ msgstr ""
 msgid "Id"
 msgstr "Id"
 
-#: src/virsh.c:616 src/virsh.c:2549 src/virsh.c:3366 src/virsh.c:4032
+#: src/virsh.c:616 src/virsh.c:2550 src/virsh.c:3367 src/virsh.c:4033
 msgid "Name"
 msgstr "Naam"
 
-#: src/virsh.c:616 src/virsh.c:2549 src/virsh.c:3366
+#: src/virsh.c:616 src/virsh.c:2550 src/virsh.c:3367
 msgid "State"
 msgstr ""
 
-#: src/virsh.c:629 src/virsh.c:651 src/virsh.c:5887 src/virsh.c:5903
+#: src/virsh.c:629 src/virsh.c:651 src/virsh.c:5888 src/virsh.c:5904
 msgid "no state"
 msgstr ""
 
@@ -2038,7 +2042,7 @@ msgid "domain state"
 msgstr ""
 
 #: src/virsh.c:671
-msgid "Returns state about a running domain."
+msgid "Returns state about a domain."
 msgstr ""
 
 #: src/virsh.c:707
@@ -2141,7 +2145,7 @@ msgstr ""
 msgid "Undefine the configuration for an inactive domain."
 msgstr ""
 
-#: src/virsh.c:972 src/virsh.c:2130
+#: src/virsh.c:972 src/virsh.c:2131
 msgid "domain name or uuid"
 msgstr ""
 
@@ -2363,11 +2367,11 @@ msgstr ""
 msgid "Id:"
 msgstr "Id:"
 
-#: src/virsh.c:1515 src/virsh.c:3471 src/virsh.c:3920
+#: src/virsh.c:1515 src/virsh.c:3472 src/virsh.c:3921
 msgid "Name:"
 msgstr "Naam:"
 
-#: src/virsh.c:1518 src/virsh.c:3474
+#: src/virsh.c:1518 src/virsh.c:3475
 msgid "UUID:"
 msgstr "UUID:"
 
@@ -2375,12 +2379,12 @@ msgstr "UUID:"
 msgid "OS Type:"
 msgstr ""
 
-#: src/virsh.c:1526 src/virsh.c:1654 src/virsh.c:3481 src/virsh.c:3485
-#: src/virsh.c:3489 src/virsh.c:3493
+#: src/virsh.c:1526 src/virsh.c:1654 src/virsh.c:3482 src/virsh.c:3486
+#: src/virsh.c:3490 src/virsh.c:3494
 msgid "State:"
 msgstr ""
 
-#: src/virsh.c:1529 src/virsh.c:2011
+#: src/virsh.c:1529 src/virsh.c:2012
 msgid "CPU(s):"
 msgstr "Processor(s):"
 
@@ -2457,1137 +2461,1144 @@ msgstr ""
 msgid "host cpu number(s) (comma separated)"
 msgstr ""
 
-#: src/virsh.c:1754
+#: src/virsh.c:1726
+msgid "vcpupin: Invalid or missing vCPU number."
+msgstr ""
+
+#: src/virsh.c:1755
 msgid "cpulist: Invalid format. Empty string."
 msgstr ""
 
-#: src/virsh.c:1764
+#: src/virsh.c:1765
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
 
-#: src/virsh.c:1774
+#: src/virsh.c:1775
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
 "c')."
 msgstr ""
 
-#: src/virsh.c:1781
+#: src/virsh.c:1782
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
 msgstr ""
 
-#: src/virsh.c:1795
+#: src/virsh.c:1796
 #, c-format
 msgid "Physical CPU %d doesn't exist."
 msgstr "Fysieke processor %d bestaat niet."
 
-#: src/virsh.c:1819
+#: src/virsh.c:1820
 msgid "change number of virtual CPUs"
 msgstr "aantal virtuele processors aanpassen"
 
-#: src/virsh.c:1820
-msgid "Change the number of virtual CPUs active in the guest domain."
+#: src/virsh.c:1821
+#, fuzzy
+msgid "Change the number of virtual CPUs in the guest domain."
 msgstr "Het aantal actieve virtuele processors in het guest-domein aanpassen."
 
-#: src/virsh.c:1826
+#: src/virsh.c:1827
 msgid "number of virtual CPUs"
 msgstr ""
 
-#: src/virsh.c:1846
+#: src/virsh.c:1847
 msgid "Invalid number of virtual CPUs."
 msgstr ""
 
-#: src/virsh.c:1858
+#: src/virsh.c:1859
 msgid "Too many virtual CPUs."
 msgstr ""
 
-#: src/virsh.c:1876
+#: src/virsh.c:1877
 msgid "change memory allocation"
 msgstr "geheugentoewijzing aanpassen"
 
-#: src/virsh.c:1877
+#: src/virsh.c:1878
 msgid "Change the current memory allocation in the guest domain."
 msgstr "De huidige geheugentoewijzing in het guest-domein aanpassen."
 
-#: src/virsh.c:1883
+#: src/virsh.c:1884
 msgid "number of kilobytes of memory"
 msgstr ""
 
-#: src/virsh.c:1904 src/virsh.c:1916 src/virsh.c:1961
+#: src/virsh.c:1905 src/virsh.c:1917 src/virsh.c:1962
 #, c-format
 msgid "Invalid value of %d for memory size"
 msgstr ""
 
-#: src/virsh.c:1910
+#: src/virsh.c:1911
 msgid "Unable to verify MaxMemorySize"
 msgstr "Niet in staat om MaxMemorySize te controleren"
 
-#: src/virsh.c:1933
+#: src/virsh.c:1934
 msgid "change maximum memory limit"
 msgstr "maximum geheugenlimiet aanpassen"
 
-#: src/virsh.c:1934
+#: src/virsh.c:1935
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr ""
 "De maximale limiet voor geheugentoewijzing in het guest-domein aanpassen."
 
-#: src/virsh.c:1940
+#: src/virsh.c:1941
 msgid "maximum memory limit in kilobytes"
 msgstr "maximum geheugenlimiet in kilobytes"
 
-#: src/virsh.c:1967
+#: src/virsh.c:1968
 msgid "Unable to verify current MemorySize"
 msgstr "Niet in staat om huidige MemorySize te controleren"
 
-#: src/virsh.c:1974
+#: src/virsh.c:1975
 msgid "Unable to shrink current MemorySize"
 msgstr "Niet in staat om huidige MemorySize te verkleinen"
 
-#: src/virsh.c:1980
+#: src/virsh.c:1981
 msgid "Unable to change MaxMemorySize"
 msgstr "Niet in staat om MaxMemorySize aan te passen"
 
-#: src/virsh.c:1993
+#: src/virsh.c:1994
 msgid "node information"
 msgstr ""
 
-#: src/virsh.c:1994
+#: src/virsh.c:1995
 msgid "Returns basic information about the node."
 msgstr ""
 
-#: src/virsh.c:2007
+#: src/virsh.c:2008
 msgid "failed to get node information"
 msgstr ""
 
-#: src/virsh.c:2010
+#: src/virsh.c:2011
 msgid "CPU model:"
 msgstr "Processormodel:"
 
-#: src/virsh.c:2012
+#: src/virsh.c:2013
 msgid "CPU frequency:"
 msgstr "Processorfrequentie:"
 
-#: src/virsh.c:2013
+#: src/virsh.c:2014
 msgid "CPU socket(s):"
 msgstr "Processorsocket(s):"
 
-#: src/virsh.c:2014
+#: src/virsh.c:2015
 msgid "Core(s) per socket:"
 msgstr ""
 
-#: src/virsh.c:2015
+#: src/virsh.c:2016
 msgid "Thread(s) per core:"
 msgstr "Thread(s) per core:"
 
-#: src/virsh.c:2016
+#: src/virsh.c:2017
 msgid "NUMA cell(s):"
 msgstr ""
 
-#: src/virsh.c:2017
+#: src/virsh.c:2018
 msgid "Memory size:"
 msgstr "Geheugengrootte:"
 
-#: src/virsh.c:2027
+#: src/virsh.c:2028
 msgid "capabilities"
 msgstr "mogelijkheden"
 
-#: src/virsh.c:2028
+#: src/virsh.c:2029
 msgid "Returns capabilities of hypervisor/driver."
 msgstr ""
 
-#: src/virsh.c:2041
+#: src/virsh.c:2042
 msgid "failed to get capabilities"
 msgstr ""
 
-#: src/virsh.c:2055
+#: src/virsh.c:2056
 msgid "domain information in XML"
 msgstr "domein-informatie in XML"
 
-#: src/virsh.c:2056
+#: src/virsh.c:2057
 msgid "Output the domain information as an XML dump to stdout."
 msgstr ""
 
-#: src/virsh.c:2095
+#: src/virsh.c:2096
 msgid "convert a domain id or UUID to domain name"
 msgstr ""
 
-#: src/virsh.c:2100
+#: src/virsh.c:2101
 msgid "domain id or uuid"
 msgstr "domein-id of uuid"
 
-#: src/virsh.c:2125
+#: src/virsh.c:2126
 msgid "convert a domain name or UUID to domain id"
 msgstr ""
 
-#: src/virsh.c:2160
+#: src/virsh.c:2161
 msgid "convert a domain name or id to domain UUID"
 msgstr ""
 
-#: src/virsh.c:2165
+#: src/virsh.c:2166
 msgid "domain id or name"
 msgstr "domein-id of naam"
 
-#: src/virsh.c:2184
+#: src/virsh.c:2185
 msgid "failed to get domain UUID"
 msgstr ""
 
-#: src/virsh.c:2195
+#: src/virsh.c:2196
 msgid "migrate domain to another host"
 msgstr ""
 
-#: src/virsh.c:2196
+#: src/virsh.c:2197
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
 
-#: src/virsh.c:2201
+#: src/virsh.c:2202
 msgid "live migration"
 msgstr ""
 
-#: src/virsh.c:2203
+#: src/virsh.c:2204
 msgid "connection URI of the destination host"
 msgstr ""
 
-#: src/virsh.c:2204
+#: src/virsh.c:2205
 msgid "migration URI, usually can be omitted"
 msgstr ""
 
-#: src/virsh.c:2226
+#: src/virsh.c:2227
 msgid "migrate: Missing desturi"
 msgstr ""
 
-#: src/virsh.c:2258
+#: src/virsh.c:2259
 msgid "autostart a network"
 msgstr "een netwerk automatisch starten"
 
-#: src/virsh.c:2260
+#: src/virsh.c:2261
 msgid "Configure a network to be automatically started at boot."
 msgstr ""
 
-#: src/virsh.c:2265 src/virsh.c:2686
+#: src/virsh.c:2266 src/virsh.c:2687
 msgid "network name or uuid"
 msgstr "netwerknaam of uuid"
 
-#: src/virsh.c:2287
+#: src/virsh.c:2288
 #, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr ""
 
-#: src/virsh.c:2290
+#: src/virsh.c:2291
 #, c-format
 msgid "failed to unmark network %s as autostarted"
 msgstr ""
 
-#: src/virsh.c:2297
+#: src/virsh.c:2298
 #, c-format
 msgid "Network %s marked as autostarted\n"
 msgstr ""
 
-#: src/virsh.c:2299
+#: src/virsh.c:2300
 #, c-format
 msgid "Network %s unmarked as autostarted\n"
 msgstr ""
 
-#: src/virsh.c:2309
+#: src/virsh.c:2310
 msgid "create a network from an XML file"
 msgstr ""
 
-#: src/virsh.c:2310
+#: src/virsh.c:2311
 msgid "Create a network."
 msgstr ""
 
-#: src/virsh.c:2315 src/virsh.c:2363
+#: src/virsh.c:2316 src/virsh.c:2364
 msgid "file containing an XML network description"
 msgstr ""
 
-#: src/virsh.c:2342
+#: src/virsh.c:2343
 #, c-format
 msgid "Network %s created from %s\n"
 msgstr ""
 
-#: src/virsh.c:2345
+#: src/virsh.c:2346
 #, c-format
 msgid "Failed to create network from %s"
 msgstr ""
 
-#: src/virsh.c:2357
+#: src/virsh.c:2358
 msgid "define (but don't start) a network from an XML file"
 msgstr ""
 
-#: src/virsh.c:2358
+#: src/virsh.c:2359
 msgid "Define a network."
 msgstr ""
 
-#: src/virsh.c:2390
+#: src/virsh.c:2391
 #, c-format
 msgid "Network %s defined from %s\n"
 msgstr ""
 
-#: src/virsh.c:2393
+#: src/virsh.c:2394
 #, c-format
 msgid "Failed to define network from %s"
 msgstr ""
 
-#: src/virsh.c:2405
+#: src/virsh.c:2406
 msgid "destroy a network"
 msgstr ""
 
-#: src/virsh.c:2406
+#: src/virsh.c:2407
 msgid "Destroy a given network."
 msgstr ""
 
-#: src/virsh.c:2411 src/virsh.c:2451
+#: src/virsh.c:2412 src/virsh.c:2452
 msgid "network name, id or uuid"
 msgstr "netwerknaam, id of uuid"
 
-#: src/virsh.c:2429
+#: src/virsh.c:2430
 #, c-format
 msgid "Network %s destroyed\n"
 msgstr ""
 
-#: src/virsh.c:2431
+#: src/virsh.c:2432
 #, c-format
 msgid "Failed to destroy network %s"
 msgstr ""
 
-#: src/virsh.c:2445
+#: src/virsh.c:2446
 msgid "network information in XML"
 msgstr ""
 
-#: src/virsh.c:2446
+#: src/virsh.c:2447
 msgid "Output the network information as an XML dump to stdout."
 msgstr ""
 
-#: src/virsh.c:2486
+#: src/virsh.c:2487
 msgid "list networks"
 msgstr ""
 
-#: src/virsh.c:2487
+#: src/virsh.c:2488
 msgid "Returns list of networks."
 msgstr ""
 
-#: src/virsh.c:2492
+#: src/virsh.c:2493
 msgid "list inactive networks"
 msgstr ""
 
-#: src/virsh.c:2493
+#: src/virsh.c:2494
 msgid "list inactive & active networks"
 msgstr ""
 
-#: src/virsh.c:2513 src/virsh.c:2521
+#: src/virsh.c:2514 src/virsh.c:2522
 msgid "Failed to list active networks"
 msgstr ""
 
-#: src/virsh.c:2532 src/virsh.c:2540
+#: src/virsh.c:2533 src/virsh.c:2541
 msgid "Failed to list inactive networks"
 msgstr ""
 
-#: src/virsh.c:2549 src/virsh.c:3366
+#: src/virsh.c:2550 src/virsh.c:3367
 msgid "Autostart"
 msgstr "Automatisch starten"
 
-#: src/virsh.c:2564 src/virsh.c:2587 src/virsh.c:3381 src/virsh.c:3404
+#: src/virsh.c:2565 src/virsh.c:2588 src/virsh.c:3382 src/virsh.c:3405
 msgid "no autostart"
 msgstr ""
 
-#: src/virsh.c:2570 src/virsh.c:3387
+#: src/virsh.c:2571 src/virsh.c:3388
 msgid "active"
 msgstr "actief"
 
-#: src/virsh.c:2593 src/virsh.c:3410 src/virsh.c:3482
+#: src/virsh.c:2594 src/virsh.c:3411 src/virsh.c:3483
 msgid "inactive"
 msgstr "inactief"
 
-#: src/virsh.c:2610
+#: src/virsh.c:2611
 msgid "convert a network UUID to network name"
 msgstr ""
 
-#: src/virsh.c:2641
+#: src/virsh.c:2642
 msgid "start a (previously defined) inactive network"
 msgstr ""
 
-#: src/virsh.c:2642
+#: src/virsh.c:2643
 msgid "Start a network."
 msgstr ""
 
-#: src/virsh.c:2647
+#: src/virsh.c:2648
 msgid "name of the inactive network"
 msgstr ""
 
-#: src/virsh.c:2664
+#: src/virsh.c:2665
 #, c-format
 msgid "Network %s started\n"
 msgstr ""
 
-#: src/virsh.c:2667
+#: src/virsh.c:2668
 #, c-format
 msgid "Failed to start network %s"
 msgstr "Starten van het netwerk %s is mislukt"
 
-#: src/virsh.c:2680
+#: src/virsh.c:2681
 msgid "undefine an inactive network"
 msgstr ""
 
-#: src/virsh.c:2681
+#: src/virsh.c:2682
 msgid "Undefine the configuration for an inactive network."
 msgstr ""
 
-#: src/virsh.c:2704
+#: src/virsh.c:2705
 #, c-format
 msgid "Network %s has been undefined\n"
 msgstr ""
 
-#: src/virsh.c:2706
+#: src/virsh.c:2707
 #, c-format
 msgid "Failed to undefine network %s"
 msgstr ""
 
-#: src/virsh.c:2719
+#: src/virsh.c:2720
 msgid "convert a network name to network UUID"
 msgstr ""
 
-#: src/virsh.c:2744
+#: src/virsh.c:2745
 msgid "failed to get network UUID"
 msgstr ""
 
-#: src/virsh.c:2766
+#: src/virsh.c:2767
 #, fuzzy
 msgid "autostart a pool"
 msgstr "een domein automatisch starten"
 
-#: src/virsh.c:2768
+#: src/virsh.c:2769
 msgid "Configure a pool to be automatically started at boot."
 msgstr ""
 
-#: src/virsh.c:2773 src/virsh.c:3108 src/virsh.c:3148 src/virsh.c:3188
-#: src/virsh.c:3228 src/virsh.c:3268 src/virsh.c:3453 src/virsh.c:3724
-#: src/virsh.c:3860 src/virsh.c:3902 src/virsh.c:3954 src/virsh.c:3996
-#: src/virsh.c:4140
+#: src/virsh.c:2774 src/virsh.c:3109 src/virsh.c:3149 src/virsh.c:3189
+#: src/virsh.c:3229 src/virsh.c:3269 src/virsh.c:3454 src/virsh.c:3725
+#: src/virsh.c:3861 src/virsh.c:3903 src/virsh.c:3955 src/virsh.c:3997
+#: src/virsh.c:4141
 #, fuzzy
 msgid "pool name or uuid"
 msgstr "netwerknaam of uuid"
 
-#: src/virsh.c:2795
+#: src/virsh.c:2796
 #, c-format
 msgid "failed to mark pool %s as autostarted"
 msgstr ""
 
-#: src/virsh.c:2798
+#: src/virsh.c:2799
 #, c-format
 msgid "failed to unmark pool %s as autostarted"
 msgstr ""
 
-#: src/virsh.c:2805
+#: src/virsh.c:2806
 #, c-format
 msgid "Pool %s marked as autostarted\n"
 msgstr ""
 
-#: src/virsh.c:2807
+#: src/virsh.c:2808
 #, c-format
 msgid "Pool %s unmarked as autostarted\n"
 msgstr ""
 
-#: src/virsh.c:2817
+#: src/virsh.c:2818
 #, fuzzy
 msgid "create a pool from an XML file"
 msgstr "apparaat vanuit een XML-bestand toevoegen"
 
-#: src/virsh.c:2818 src/virsh.c:2865
+#: src/virsh.c:2819 src/virsh.c:2866
 msgid "Create a pool."
 msgstr ""
 
-#: src/virsh.c:2823 src/virsh.c:2965
+#: src/virsh.c:2824 src/virsh.c:2966
 msgid "file containing an XML pool description"
 msgstr ""
 
-#: src/virsh.c:2850
+#: src/virsh.c:2851
 #, c-format
 msgid "Pool %s created from %s\n"
 msgstr ""
 
-#: src/virsh.c:2853
+#: src/virsh.c:2854
 #, fuzzy, c-format
 msgid "Failed to create pool from %s"
 msgstr "Starten van het domein %s is mislukt"
 
-#: src/virsh.c:2864
+#: src/virsh.c:2865
 msgid "create a pool from a set of args"
 msgstr ""
 
-#: src/virsh.c:2870 src/virsh.c:3013
+#: src/virsh.c:2871 src/virsh.c:3014
 msgid "name of the pool"
 msgstr ""
 
-#: src/virsh.c:2871 src/virsh.c:3014
+#: src/virsh.c:2872 src/virsh.c:3015
 msgid "type of the pool"
 msgstr ""
 
-#: src/virsh.c:2872 src/virsh.c:3015
+#: src/virsh.c:2873 src/virsh.c:3016
 msgid "source-host for underlying storage"
 msgstr ""
 
-#: src/virsh.c:2873 src/virsh.c:3016
+#: src/virsh.c:2874 src/virsh.c:3017
 msgid "source path for underlying storage"
 msgstr ""
 
-#: src/virsh.c:2874 src/virsh.c:3017
+#: src/virsh.c:2875 src/virsh.c:3018
 msgid "source device for underlying storage"
 msgstr ""
 
-#: src/virsh.c:2875 src/virsh.c:3018
+#: src/virsh.c:2876 src/virsh.c:3019
 msgid "target for underlying storage"
 msgstr ""
 
-#: src/virsh.c:2940
+#: src/virsh.c:2941
 #, c-format
 msgid "Pool %s created\n"
 msgstr ""
 
-#: src/virsh.c:2944
+#: src/virsh.c:2945
 #, fuzzy, c-format
 msgid "Failed to create pool %s"
 msgstr "Starten van het domein %s is mislukt"
 
-#: src/virsh.c:2959
+#: src/virsh.c:2960
 msgid "define (but don't start) a pool from an XML file"
 msgstr ""
 
-#: src/virsh.c:2960 src/virsh.c:3008
+#: src/virsh.c:2961 src/virsh.c:3009
 msgid "Define a pool."
 msgstr ""
 
-#: src/virsh.c:2992
+#: src/virsh.c:2993
 #, c-format
 msgid "Pool %s defined from %s\n"
 msgstr ""
 
-#: src/virsh.c:2995
+#: src/virsh.c:2996
 #, fuzzy, c-format
 msgid "Failed to define pool from %s"
 msgstr "Starten van het netwerk %s is mislukt"
 
-#: src/virsh.c:3007
+#: src/virsh.c:3008
 msgid "define a pool from a set of args"
 msgstr ""
 
-#: src/virsh.c:3083
+#: src/virsh.c:3084
 #, c-format
 msgid "Pool %s defined\n"
 msgstr ""
 
-#: src/virsh.c:3087
+#: src/virsh.c:3088
 #, fuzzy, c-format
 msgid "Failed to define pool %s"
 msgstr "Starten van het domein %s is mislukt"
 
-#: src/virsh.c:3102
+#: src/virsh.c:3103
 msgid "build a pool"
 msgstr ""
 
-#: src/virsh.c:3103
+#: src/virsh.c:3104
 msgid "Build a given pool."
 msgstr ""
 
-#: src/virsh.c:3126
+#: src/virsh.c:3127
 #, c-format
 msgid "Pool %s builded\n"
 msgstr ""
 
-#: src/virsh.c:3128
+#: src/virsh.c:3129
 #, fuzzy, c-format
 msgid "Failed to build pool %s"
 msgstr "Starten van het domein %s is mislukt"
 
-#: src/virsh.c:3142
+#: src/virsh.c:3143
 msgid "destroy a pool"
 msgstr ""
 
-#: src/virsh.c:3143
+#: src/virsh.c:3144
 msgid "Destroy a given pool."
 msgstr ""
 
-#: src/virsh.c:3166
+#: src/virsh.c:3167
 #, fuzzy, c-format
 msgid "Pool %s destroyed\n"
 msgstr "Domein %s is gestart\n"
 
-#: src/virsh.c:3168
+#: src/virsh.c:3169
 #, fuzzy, c-format
 msgid "Failed to destroy pool %s"
 msgstr "Starten van het domein %s is mislukt"
 
-#: src/virsh.c:3182
+#: src/virsh.c:3183
 msgid "delete a pool"
 msgstr ""
 
-#: src/virsh.c:3183
+#: src/virsh.c:3184
 msgid "Delete a given pool."
 msgstr ""
 
-#: src/virsh.c:3206
-#, c-format
-msgid "Pool %s deleteed\n"
-msgstr ""
+#: src/virsh.c:3207
+#, fuzzy, c-format
+msgid "Pool %s deleted\n"
+msgstr "Domein %s is gestart\n"
 
-#: src/virsh.c:3208
+#: src/virsh.c:3209
 #, fuzzy, c-format
 msgid "Failed to delete pool %s"
 msgstr "Starten van het domein %s is mislukt"
 
-#: src/virsh.c:3222
+#: src/virsh.c:3223
 msgid "refresh a pool"
 msgstr ""
 
-#: src/virsh.c:3223
+#: src/virsh.c:3224
 msgid "Refresh a given pool."
 msgstr ""
 
-#: src/virsh.c:3246
+#: src/virsh.c:3247
 #, c-format
 msgid "Pool %s refreshed\n"
 msgstr ""
 
-#: src/virsh.c:3248
+#: src/virsh.c:3249
 #, fuzzy, c-format
 msgid "Failed to refresh pool %s"
 msgstr "Starten van het domein %s is mislukt"
 
-#: src/virsh.c:3262
+#: src/virsh.c:3263
 #, fuzzy
 msgid "pool information in XML"
 msgstr "domein-informatie in XML"
 
-#: src/virsh.c:3263
+#: src/virsh.c:3264
 msgid "Output the pool information as an XML dump to stdout."
 msgstr ""
 
-#: src/virsh.c:3303
+#: src/virsh.c:3304
 msgid "list pools"
 msgstr ""
 
-#: src/virsh.c:3304
+#: src/virsh.c:3305
 msgid "Returns list of pools."
 msgstr ""
 
-#: src/virsh.c:3309
+#: src/virsh.c:3310
 msgid "list inactive pools"
 msgstr ""
 
-#: src/virsh.c:3310
+#: src/virsh.c:3311
 msgid "list inactive & active pools"
 msgstr ""
 
-#: src/virsh.c:3330 src/virsh.c:3338
+#: src/virsh.c:3331 src/virsh.c:3339
 #, fuzzy
 msgid "Failed to list active pools"
 msgstr "Starten van het domein %s is mislukt"
 
-#: src/virsh.c:3349 src/virsh.c:3357
+#: src/virsh.c:3350 src/virsh.c:3358
 #, fuzzy
 msgid "Failed to list inactive pools"
 msgstr "Starten van het domein %s is mislukt"
 
-#: src/virsh.c:3447
+#: src/virsh.c:3448
 #, fuzzy
 msgid "storage pool information"
 msgstr "domein-informatie"
 
-#: src/virsh.c:3448
+#: src/virsh.c:3449
 msgid "Returns basic information about the storage pool."
 msgstr ""
 
-#: src/virsh.c:3486
+#: src/virsh.c:3487
 msgid "building"
 msgstr ""
 
-#: src/virsh.c:3490 src/virsh.c:5873 src/virsh.c:5899
+#: src/virsh.c:3491 src/virsh.c:5874 src/virsh.c:5900
 msgid "running"
 msgstr "wordt uitgevoerd"
 
-#: src/virsh.c:3494
+#: src/virsh.c:3495
 msgid "degraded"
 msgstr ""
 
-#: src/virsh.c:3501 src/virsh.c:3930
+#: src/virsh.c:3502 src/virsh.c:3931
 msgid "Capacity:"
 msgstr ""
 
-#: src/virsh.c:3504 src/virsh.c:3933
+#: src/virsh.c:3505 src/virsh.c:3934
 #, fuzzy
 msgid "Allocation:"
 msgstr "toewijzen van domein"
 
-#: src/virsh.c:3507
+#: src/virsh.c:3508
 msgid "Available:"
 msgstr ""
 
-#: src/virsh.c:3523
+#: src/virsh.c:3524
 msgid "convert a pool UUID to pool name"
 msgstr ""
 
-#: src/virsh.c:3528
+#: src/virsh.c:3529
 #, fuzzy
 msgid "pool uuid"
 msgstr "domein-uuid"
 
-#: src/virsh.c:3554
+#: src/virsh.c:3555
 msgid "start a (previously defined) inactive pool"
 msgstr ""
 
-#: src/virsh.c:3555
+#: src/virsh.c:3556
 msgid "Start a pool."
 msgstr ""
 
-#: src/virsh.c:3560
+#: src/virsh.c:3561
 msgid "name of the inactive pool"
 msgstr ""
 
-#: src/virsh.c:3577
+#: src/virsh.c:3578
 #, fuzzy, c-format
 msgid "Pool %s started\n"
 msgstr "Domein %s is gestart\n"
 
-#: src/virsh.c:3580
+#: src/virsh.c:3581
 #, fuzzy, c-format
 msgid "Failed to start pool %s"
 msgstr "Starten van het domein %s is mislukt"
 
-#: src/virsh.c:3593
-msgid "create a vol from a set of as"
-msgstr ""
+#: src/virsh.c:3594
+#, fuzzy
+msgid "create a volume from a set of args"
+msgstr "apparaat vanuit een XML-bestand toevoegen"
 
-#: src/virsh.c:3594 src/virsh.c:3796
+#: src/virsh.c:3595 src/virsh.c:3797
 msgid "Create a vol."
 msgstr ""
 
-#: src/virsh.c:3599 src/virsh.c:3762 src/virsh.c:3801
+#: src/virsh.c:3600 src/virsh.c:3763 src/virsh.c:3802
 msgid "pool name"
 msgstr ""
 
-#: src/virsh.c:3600
+#: src/virsh.c:3601
 #, fuzzy
-msgid "name of the vol"
+msgid "name of the volume"
 msgstr "naam van commando"
 
-#: src/virsh.c:3601
+#: src/virsh.c:3602
 msgid "size of the vol with optional k,M,G,T suffix"
 msgstr ""
 
-#: src/virsh.c:3602
+#: src/virsh.c:3603
 msgid "initial allocation size with optional k,M,G,T suffix"
 msgstr ""
 
-#: src/virsh.c:3603
+#: src/virsh.c:3604
 msgid "file format type raw,bochs,qcow,qcow2,vmdk"
 msgstr ""
 
-#: src/virsh.c:3662 src/virsh.c:3667
+#: src/virsh.c:3663 src/virsh.c:3668
 #, c-format
 msgid "Malformed size %s"
 msgstr ""
 
-#: src/virsh.c:3698
+#: src/virsh.c:3699
 #, fuzzy, c-format
 msgid "Vol %s created\n"
 msgstr "Domein %s is gestart\n"
 
-#: src/virsh.c:3702
+#: src/virsh.c:3703
 #, fuzzy, c-format
 msgid "Failed to create vol %s"
 msgstr "Starten van het domein %s is mislukt"
 
-#: src/virsh.c:3718
+#: src/virsh.c:3719
 msgid "undefine an inactive pool"
 msgstr ""
 
-#: src/virsh.c:3719
+#: src/virsh.c:3720
 msgid "Undefine the configuration for an inactive pool."
 msgstr ""
 
-#: src/virsh.c:3742
+#: src/virsh.c:3743
 #, c-format
 msgid "Pool %s has been undefined\n"
 msgstr ""
 
-#: src/virsh.c:3744
+#: src/virsh.c:3745
 #, fuzzy, c-format
 msgid "Failed to undefine pool %s"
 msgstr "Starten van het domein %s is mislukt"
 
-#: src/virsh.c:3757
+#: src/virsh.c:3758
 msgid "convert a pool name to pool UUID"
 msgstr ""
 
-#: src/virsh.c:3782
+#: src/virsh.c:3783
 #, fuzzy
 msgid "failed to get pool UUID"
 msgstr "openen van bestand is mislukt"
 
-#: src/virsh.c:3795
+#: src/virsh.c:3796
 #, fuzzy
 msgid "create a vol from an XML file"
 msgstr "apparaat vanuit een XML-bestand toevoegen"
 
-#: src/virsh.c:3802
+#: src/virsh.c:3803
 msgid "file containing an XML vol description"
 msgstr ""
 
-#: src/virsh.c:3839
+#: src/virsh.c:3840
 #, c-format
 msgid "Vol %s created from %s\n"
 msgstr ""
 
-#: src/virsh.c:3843
+#: src/virsh.c:3844
 #, fuzzy, c-format
 msgid "Failed to create vol from %s"
 msgstr "Starten van het domein %s is mislukt"
 
-#: src/virsh.c:3854
+#: src/virsh.c:3855
 msgid "delete a vol"
 msgstr ""
 
-#: src/virsh.c:3855
+#: src/virsh.c:3856
 msgid "Delete a given vol."
 msgstr ""
 
-#: src/virsh.c:3861 src/virsh.c:3903 src/virsh.c:3955
+#: src/virsh.c:3862 src/virsh.c:3904 src/virsh.c:3956
 msgid "vol name, key or path"
 msgstr ""
 
-#: src/virsh.c:3880
-#, c-format
-msgid "Vol %s deleteed\n"
-msgstr ""
+#: src/virsh.c:3881
+#, fuzzy, c-format
+msgid "Vol %s deleted\n"
+msgstr "Domein %s is gestart\n"
 
-#: src/virsh.c:3882
+#: src/virsh.c:3883
 #, fuzzy, c-format
 msgid "Failed to delete vol %s"
 msgstr "Starten van het domein %s is mislukt"
 
-#: src/virsh.c:3896
+#: src/virsh.c:3897
 #, fuzzy
 msgid "storage vol information"
 msgstr "domein-informatie"
 
-#: src/virsh.c:3897
+#: src/virsh.c:3898
 msgid "Returns basic information about the storage vol."
 msgstr ""
 
-#: src/virsh.c:3925
+#: src/virsh.c:3926
 msgid "Type:"
 msgstr ""
 
-#: src/virsh.c:3927
+#: src/virsh.c:3928
 #, fuzzy
 msgid "file"
 msgstr "XML-bestand"
 
-#: src/virsh.c:3927
+#: src/virsh.c:3928
 #, fuzzy
 msgid "block"
 msgstr "geblokkeerd"
 
-#: src/virsh.c:3948
+#: src/virsh.c:3949
 #, fuzzy
 msgid "vol information in XML"
 msgstr "domein-informatie in XML"
 
-#: src/virsh.c:3949
+#: src/virsh.c:3950
 msgid "Output the vol information as an XML dump to stdout."
 msgstr ""
 
-#: src/virsh.c:3990
+#: src/virsh.c:3991
 msgid "list vols"
 msgstr ""
 
-#: src/virsh.c:3991
+#: src/virsh.c:3992
 msgid "Returns list of vols by pool."
 msgstr ""
 
-#: src/virsh.c:4016 src/virsh.c:4024
+#: src/virsh.c:4017 src/virsh.c:4025
 #, fuzzy
 msgid "Failed to list active vols"
 msgstr "Starten van het domein %s is mislukt"
 
-#: src/virsh.c:4032
+#: src/virsh.c:4033
 msgid "Path"
 msgstr ""
 
-#: src/virsh.c:4069
+#: src/virsh.c:4070
 msgid "convert a vol UUID to vol name"
 msgstr ""
 
-#: src/virsh.c:4074
+#: src/virsh.c:4075
 msgid "vol key or path"
 msgstr ""
 
-#: src/virsh.c:4102
+#: src/virsh.c:4103
 msgid "convert a vol UUID to vol key"
 msgstr ""
 
-#: src/virsh.c:4107
+#: src/virsh.c:4108
 #, fuzzy
 msgid "vol uuid"
 msgstr "domein-uuid"
 
-#: src/virsh.c:4135
+#: src/virsh.c:4136
 msgid "convert a vol UUID to vol path"
 msgstr ""
 
-#: src/virsh.c:4141
+#: src/virsh.c:4142
 msgid "vol name or key"
 msgstr ""
 
-#: src/virsh.c:4172
+#: src/virsh.c:4173
 msgid "show version"
 msgstr "versie tonen"
 
-#: src/virsh.c:4173
+#: src/virsh.c:4174
 msgid "Display the system version information."
 msgstr ""
 
-#: src/virsh.c:4196
+#: src/virsh.c:4197
 msgid "failed to get hypervisor type"
 msgstr ""
 
-#: src/virsh.c:4205
+#: src/virsh.c:4206
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr "Gecompileerd tegen bibliotheek: libvir %d.%d.%d\n"
 
-#: src/virsh.c:4210
+#: src/virsh.c:4211
 msgid "failed to get the library version"
 msgstr ""
 
-#: src/virsh.c:4217
+#: src/virsh.c:4218
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
 msgstr ""
 
-#: src/virsh.c:4224
+#: src/virsh.c:4225
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
 msgstr ""
 
-#: src/virsh.c:4229
+#: src/virsh.c:4230
 msgid "failed to get the hypervisor version"
 msgstr ""
 
-#: src/virsh.c:4234
+#: src/virsh.c:4235
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr ""
 
-#: src/virsh.c:4241
+#: src/virsh.c:4242
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr ""
 
-#: src/virsh.c:4252
+#: src/virsh.c:4253
 msgid "print the hypervisor hostname"
 msgstr ""
 
-#: src/virsh.c:4266
+#: src/virsh.c:4267
 msgid "failed to get hostname"
 msgstr ""
 
-#: src/virsh.c:4281
+#: src/virsh.c:4282
 msgid "print the hypervisor canonical URI"
 msgstr ""
 
-#: src/virsh.c:4295
+#: src/virsh.c:4296
 msgid "failed to get URI"
 msgstr ""
 
-#: src/virsh.c:4310
+#: src/virsh.c:4311
 msgid "vnc display"
 msgstr ""
 
-#: src/virsh.c:4311
+#: src/virsh.c:4312
 msgid "Output the IP address and port number for the VNC display."
 msgstr ""
 
-#: src/virsh.c:4386
+#: src/virsh.c:4387
 msgid "tty console"
 msgstr ""
 
-#: src/virsh.c:4387
+#: src/virsh.c:4388
 msgid "Output the device for the TTY console."
 msgstr ""
 
-#: src/virsh.c:4447
+#: src/virsh.c:4448
 msgid "attach device from an XML file"
 msgstr "apparaat vanuit een XML-bestand toevoegen"
 
-#: src/virsh.c:4448
+#: src/virsh.c:4449
 msgid "Attach device from an XML <file>."
 msgstr "Apparaat vanuit een XML <file> toevoegen."
 
-#: src/virsh.c:4454 src/virsh.c:4510
+#: src/virsh.c:4455 src/virsh.c:4511
 msgid "XML file"
 msgstr "XML-bestand"
 
-#: src/virsh.c:4488
+#: src/virsh.c:4489
 #, c-format
 msgid "Failed to attach device from %s"
 msgstr ""
 
-#: src/virsh.c:4503
+#: src/virsh.c:4504
 msgid "detach device from an XML file"
 msgstr ""
 
-#: src/virsh.c:4504
+#: src/virsh.c:4505
 msgid "Detach device from an XML <file>"
 msgstr ""
 
-#: src/virsh.c:4544
+#: src/virsh.c:4545
 #, c-format
 msgid "Failed to detach device from %s"
 msgstr ""
 
-#: src/virsh.c:4559
+#: src/virsh.c:4560
 msgid "attach network interface"
 msgstr "netwerk-interface toevoegen"
 
-#: src/virsh.c:4560
+#: src/virsh.c:4561
 msgid "Attach new network interface."
 msgstr "Nieuwe netwerk-interface toevoegen."
 
-#: src/virsh.c:4566 src/virsh.c:4680
+#: src/virsh.c:4567 src/virsh.c:4681
 msgid "network interface type"
 msgstr ""
 
-#: src/virsh.c:4567
+#: src/virsh.c:4568
 msgid "source of network interface"
 msgstr ""
 
-#: src/virsh.c:4568
+#: src/virsh.c:4569
 msgid "target network name"
 msgstr ""
 
-#: src/virsh.c:4569 src/virsh.c:4681
-msgid "MAC adress"
+#: src/virsh.c:4570 src/virsh.c:4682
+#, fuzzy
+msgid "MAC address"
 msgstr "MAC-adres"
 
-#: src/virsh.c:4570
+#: src/virsh.c:4571
 msgid "script used to bridge network interface"
 msgstr ""
 
-#: src/virsh.c:4602
+#: src/virsh.c:4603
 #, c-format
 msgid "No support %s in command 'attach-interface'"
 msgstr ""
 
-#: src/virsh.c:4673
+#: src/virsh.c:4674
 msgid "detach network interface"
 msgstr ""
 
-#: src/virsh.c:4674
+#: src/virsh.c:4675
 msgid "Detach network interface."
 msgstr ""
 
-#: src/virsh.c:4719 src/virsh.c:4724
+#: src/virsh.c:4720 src/virsh.c:4725
 msgid "Failed to get interface information"
 msgstr ""
 
-#: src/virsh.c:4732
+#: src/virsh.c:4733
 #, c-format
 msgid "No found interface whose type is %s"
 msgstr ""
 
-#: src/virsh.c:4754
+#: src/virsh.c:4755
 #, c-format
 msgid "No found interface whose MAC address is %s"
 msgstr ""
 
-#: src/virsh.c:4760 src/virsh.c:5034
+#: src/virsh.c:4761 src/virsh.c:5035
 msgid "Failed to allocate memory"
 msgstr "Toewijzen van geheugen is mislukt"
 
-#: src/virsh.c:4765 src/virsh.c:5039
+#: src/virsh.c:4766 src/virsh.c:5040
 msgid "Failed to create XML"
 msgstr ""
 
-#: src/virsh.c:4792
+#: src/virsh.c:4793
 msgid "attach disk device"
 msgstr "schijfapparaat toevoegen"
 
-#: src/virsh.c:4793
+#: src/virsh.c:4794
 msgid "Attach new disk device."
 msgstr "Nieuw schijfapparaat toevoegen."
 
-#: src/virsh.c:4799
+#: src/virsh.c:4800
 msgid "source of disk device"
 msgstr ""
 
-#: src/virsh.c:4800 src/virsh.c:4962
+#: src/virsh.c:4801 src/virsh.c:4963
 msgid "target of disk device"
 msgstr ""
 
-#: src/virsh.c:4801
+#: src/virsh.c:4802
 msgid "driver of disk device"
 msgstr ""
 
-#: src/virsh.c:4802
+#: src/virsh.c:4803
 msgid "subdriver of disk device"
 msgstr ""
 
-#: src/virsh.c:4803
+#: src/virsh.c:4804
 msgid "target device type"
 msgstr ""
 
-#: src/virsh.c:4804
+#: src/virsh.c:4805
 msgid "mode of device reading and writing"
 msgstr ""
 
-#: src/virsh.c:4835 src/virsh.c:4844 src/virsh.c:4851
+#: src/virsh.c:4836 src/virsh.c:4845 src/virsh.c:4852
 #, c-format
 msgid "No support %s in command 'attach-disk'"
 msgstr ""
 
-#: src/virsh.c:4955
+#: src/virsh.c:4956
 msgid "detach disk device"
 msgstr ""
 
-#: src/virsh.c:4956
+#: src/virsh.c:4957
 msgid "Detach disk device."
 msgstr ""
 
-#: src/virsh.c:4997 src/virsh.c:5002 src/virsh.c:5009
+#: src/virsh.c:4998 src/virsh.c:5003 src/virsh.c:5010
 msgid "Failed to get disk information"
 msgstr ""
 
-#: src/virsh.c:5028
+#: src/virsh.c:5029
 #, c-format
 msgid "No found disk whose target is %s"
 msgstr ""
 
-#: src/virsh.c:5066
+#: src/virsh.c:5067
 msgid "quit this interactive terminal"
 msgstr ""
 
-#: src/virsh.c:5237
+#: src/virsh.c:5238
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "commando '%s' vereist <%s> optie"
 
-#: src/virsh.c:5238
+#: src/virsh.c:5239
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "commando '%s' vereist --%s optie"
 
-#: src/virsh.c:5265
+#: src/virsh.c:5266
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "commando '%s' bestaat niet"
 
-#: src/virsh.c:5273
+#: src/virsh.c:5274
 msgid "  NAME\n"
 msgstr "  NAAM\n"
 
-#: src/virsh.c:5277
+#: src/virsh.c:5278
 msgid ""
 "\n"
 "  SYNOPSIS\n"
@@ -3595,7 +3606,7 @@ msgstr ""
 "\n"
 "  OVERZICHT\n"
 
-#: src/virsh.c:5284
+#: src/virsh.c:5285
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -3603,7 +3614,7 @@ msgstr ""
 "\n"
 "  OMSCHRIJVING\n"
 
-#: src/virsh.c:5288
+#: src/virsh.c:5289
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -3611,55 +3622,55 @@ msgstr ""
 "\n"
 "  OPTIES\n"
 
-#: src/virsh.c:5295
+#: src/virsh.c:5296
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <nummer>"
 
-#: src/virsh.c:5297
+#: src/virsh.c:5298
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <string>"
 
-#: src/virsh.c:5441
+#: src/virsh.c:5442
 msgid "undefined domain name or id"
 msgstr ""
 
-#: src/virsh.c:5473
+#: src/virsh.c:5474
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr ""
 
-#: src/virsh.c:5486
+#: src/virsh.c:5487
 msgid "undefined network name"
 msgstr ""
 
-#: src/virsh.c:5510
+#: src/virsh.c:5511
 #, c-format
 msgid "failed to get network '%s'"
 msgstr ""
 
-#: src/virsh.c:5523 src/virsh.c:5569
+#: src/virsh.c:5524 src/virsh.c:5570
 #, fuzzy
 msgid "undefined pool name"
 msgstr "domein-id of naam"
 
-#: src/virsh.c:5547
+#: src/virsh.c:5548
 #, fuzzy, c-format
 msgid "failed to get pool '%s'"
 msgstr "Starten van het domein %s is mislukt"
 
-#: src/virsh.c:5564
+#: src/virsh.c:5565
 #, fuzzy
 msgid "undefined vol name"
 msgstr "domein-id of naam"
 
-#: src/virsh.c:5600
+#: src/virsh.c:5601
 #, fuzzy, c-format
 msgid "failed to get vol '%s'"
 msgstr "Starten van het domein %s is mislukt"
 
-#: src/virsh.c:5631
+#: src/virsh.c:5632
 #, c-format
 msgid ""
 "\n"
@@ -3670,128 +3681,128 @@ msgstr ""
 "(Tijd: %.3f ms)\n"
 "\n"
 
-#: src/virsh.c:5705
+#: src/virsh.c:5706
 msgid "missing \""
 msgstr "\" ontbreekt"
 
-#: src/virsh.c:5766
+#: src/virsh.c:5767
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr ""
 
-#: src/virsh.c:5771
+#: src/virsh.c:5772
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "onbekend commando: '%s'"
 
-#: src/virsh.c:5778
+#: src/virsh.c:5779
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "commando '%s' heeft geen ondersteuning voor optie --%s"
 
-#: src/virsh.c:5793
+#: src/virsh.c:5794
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "verwachte syntaxis: --%s <%s>"
 
-#: src/virsh.c:5796
+#: src/virsh.c:5797
 msgid "number"
 msgstr ""
 
-#: src/virsh.c:5796
+#: src/virsh.c:5797
 msgid "string"
 msgstr ""
 
-#: src/virsh.c:5802
+#: src/virsh.c:5803
 #, c-format
 msgid "unexpected data '%s'"
 msgstr ""
 
-#: src/virsh.c:5824
+#: src/virsh.c:5825
 msgid "OPTION"
 msgstr "OPTIE"
 
-#: src/virsh.c:5824
+#: src/virsh.c:5825
 msgid "DATA"
 msgstr "GEGEVENS"
 
-#: src/virsh.c:5875 src/virsh.c:5897
+#: src/virsh.c:5876 src/virsh.c:5898
 msgid "blocked"
 msgstr "geblokkeerd"
 
-#: src/virsh.c:5877
+#: src/virsh.c:5878
 msgid "paused"
 msgstr "gepauzeerd"
 
-#: src/virsh.c:5879
+#: src/virsh.c:5880
 msgid "in shutdown"
 msgstr ""
 
-#: src/virsh.c:5881
+#: src/virsh.c:5882
 msgid "shut off"
 msgstr ""
 
-#: src/virsh.c:5883
+#: src/virsh.c:5884
 msgid "crashed"
 msgstr ""
 
-#: src/virsh.c:5895
+#: src/virsh.c:5896
 msgid "offline"
 msgstr ""
 
-#: src/virsh.c:5914
+#: src/virsh.c:5915
 msgid "no valid connection"
 msgstr "geen geldige connectie"
 
-#: src/virsh.c:5961
+#: src/virsh.c:5962
 #, c-format
 msgid "%s: error: "
 msgstr "%s: fout: "
 
-#: src/virsh.c:5963
+#: src/virsh.c:5964
 msgid "error: "
 msgstr "fout: "
 
-#: src/virsh.c:5985 src/virsh.c:5997 src/virsh.c:6010
+#: src/virsh.c:5986 src/virsh.c:5998 src/virsh.c:6011
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr ""
 
-#: src/virsh.c:6024
+#: src/virsh.c:6025
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr ""
 
-#: src/virsh.c:6064
+#: src/virsh.c:6058
 msgid "failed to connect to the hypervisor"
 msgstr ""
 
-#: src/virsh.c:6096
+#: src/virsh.c:6090
 msgid "failed to get the log file information"
 msgstr ""
 
-#: src/virsh.c:6101
+#: src/virsh.c:6095
 msgid "the log path is not a file"
 msgstr ""
 
-#: src/virsh.c:6108
+#: src/virsh.c:6102
 msgid "failed to open the log file. check the log file path"
 msgstr ""
 
-#: src/virsh.c:6176
+#: src/virsh.c:6170
 msgid "failed to write the log file"
 msgstr ""
 
-#: src/virsh.c:6191
+#: src/virsh.c:6185
 #, fuzzy, c-format
 msgid "%s: failed to write log file: %s"
 msgstr "openen van bestand is mislukt"
 
-#: src/virsh.c:6368
+#: src/virsh.c:6362
 msgid "failed to disconnect from the hypervisor"
 msgstr ""
 
-#: src/virsh.c:6386
+#: src/virsh.c:6380
 #, c-format
 msgid ""
 "\n"
@@ -3810,26 +3821,26 @@ msgid ""
 "  commands (non interactive mode):\n"
 msgstr ""
 
-#: src/virsh.c:6404
+#: src/virsh.c:6398
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
 "\n"
 msgstr ""
 
-#: src/virsh.c:6500
+#: src/virsh.c:6494
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr ""
 
-#: src/virsh.c:6586
+#: src/virsh.c:6580
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
 msgstr ""
 
-#: src/virsh.c:6589
+#: src/virsh.c:6583
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"

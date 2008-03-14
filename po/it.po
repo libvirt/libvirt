@@ -1,585 +1,598 @@
-# translation of it.po to Italiano
-# translation of it.po to
-# Copyright (C) 2006, 2007 Free Software Foundation, Inc.
+# translation of libvirt.HEAD.po to
+# Copyright (C) 2006, 2007, 2008 Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Francesco Tombolini <tombo@adamantio.net>, 2007.
+#
+# Francesco Tombolini <tombo@adamantio.net>, 2007, 2008.
+# Guido Grazioli <guido.grazioli@gmail.com>, 2008.
 msgid ""
 msgstr ""
-"Project-Id-Version: it\n"
+"Project-Id-Version: libvirt.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-03-03 15:08+0100\n"
-"PO-Revision-Date: 2007-12-12 06:58+0100\n"
+"POT-Creation-Date: 2008-03-14 16:32+0100\n"
+"PO-Revision-Date: 2008-03-12 09:54+0100\n"
 "Last-Translator: Francesco Tombolini <tombo@adamantio.net>\n"
-"Language-Team: Italiano <fedora-trans-it@redhat.com>\n"
+"Language-Team:  <fedora-trans-it@redhat.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.11.4\n"
 "Plural-Forms:  nplurals=2; plural=(n != 1);\n"
+"X-Generator: KBabel 1.11.4\n"
 
 #: gnulib/lib/gai_strerror.c:44
 msgid "Address family for hostname not supported"
-msgstr ""
+msgstr "Una famiglia di indirizzi per hostname non è supportata"
 
 #: gnulib/lib/gai_strerror.c:45
 msgid "Temporary failure in name resolution"
-msgstr ""
+msgstr "Fallimento temporaneo nella risoluzione degli indirizzi"
 
 #: gnulib/lib/gai_strerror.c:46
 msgid "Bad value for ai_flags"
-msgstr ""
+msgstr "Valore non valido per ai_flags"
 
 #: gnulib/lib/gai_strerror.c:47
 msgid "Non-recoverable failure in name resolution"
-msgstr ""
+msgstr "Fallimento irrecuperabile nella risoluzione del nome"
 
 #: gnulib/lib/gai_strerror.c:48
-#, fuzzy
 msgid "ai_family not supported"
-msgstr "errore chiamata della libreria, forse non risulta supportata"
+msgstr "ai_family non supportata"
 
 #: gnulib/lib/gai_strerror.c:49
-#, fuzzy
 msgid "Memory allocation failure"
-msgstr "modifica assegnazione della memoria"
+msgstr "Fallimento nell'allocazione della memoria"
 
 #: gnulib/lib/gai_strerror.c:50
 msgid "No address associated with hostname"
-msgstr ""
+msgstr "Nessun indirizzo associato con l'hostname"
 
 #: gnulib/lib/gai_strerror.c:51
 msgid "Name or service not known"
-msgstr ""
+msgstr "Nome o servizio sconosciuto"
 
 #: gnulib/lib/gai_strerror.c:52
 msgid "Servname not supported for ai_socktype"
-msgstr ""
+msgstr "Servname non supportato per ai_socktype"
 
 #: gnulib/lib/gai_strerror.c:53
 msgid "ai_socktype not supported"
-msgstr ""
+msgstr "ai_socktype non supportato"
 
 #: gnulib/lib/gai_strerror.c:54
-#, fuzzy
 msgid "System error"
-msgstr "errore di system call"
+msgstr "Errore di sistema"
 
 #: gnulib/lib/gai_strerror.c:55
 msgid "Argument buffer too small"
-msgstr ""
+msgstr "Buffer di argomento troppo piccolo"
 
 #: gnulib/lib/gai_strerror.c:57
 msgid "Processing request in progress"
-msgstr ""
+msgstr "Richiesta di elaborazione in corso"
 
 #: gnulib/lib/gai_strerror.c:58
 msgid "Request canceled"
-msgstr ""
+msgstr "Richiesta annullata"
 
 #: gnulib/lib/gai_strerror.c:59
 msgid "Request not canceled"
-msgstr ""
+msgstr "Richiesta non annullata"
 
 #: gnulib/lib/gai_strerror.c:60
 msgid "All requests done"
-msgstr ""
+msgstr "Tutte le richieste sono state eseguite"
 
 #: gnulib/lib/gai_strerror.c:61
 msgid "Interrupted by a signal"
-msgstr ""
+msgstr "Interrotto da un segnale"
 
 #: gnulib/lib/gai_strerror.c:62
 msgid "Parameter string not correctly encoded"
-msgstr ""
+msgstr "Parametro stringa non correttamente codificato"
 
 #: gnulib/lib/gai_strerror.c:74
-#, fuzzy
 msgid "Unknown error"
-msgstr "Sconosciuto"
+msgstr "Errore sconosciuto"
 
 #: qemud/remote.c:2133
 msgid "client tried invalid SASL init request"
-msgstr ""
+msgstr "il client ha tentato una richiesta di inizializzazione SASL non valida"
 
 #: qemud/remote.c:2173
 #, c-format
 msgid "sasl context setup failed %d (%s)"
-msgstr ""
+msgstr "impostazione contesto sasl fallita %d (%s)"
 
 #: qemud/remote.c:2187
 msgid "cannot TLS get cipher size"
-msgstr ""
+msgstr "impossibile ottenere la dimensione della cifra TLS"
 
 #: qemud/remote.c:2197
 #, c-format
 msgid "cannot set SASL external SSF %d (%s)"
-msgstr ""
+msgstr "impossibile impostare SSF esterno di SASL %d (%s)"
 
 #: qemud/remote.c:2226
 #, c-format
 msgid "cannot set SASL security props %d (%s)"
-msgstr ""
+msgstr "impossibile impostare proprietà di sicurezza di SASL %d (%s)"
 
 #: qemud/remote.c:2243
 #, c-format
 msgid "cannot list SASL mechanisms %d (%s)"
-msgstr ""
+msgstr "impossibile elencare i meccanismi di SASL %d (%s)"
 
 #: qemud/remote.c:2253
 msgid "cannot allocate mechlist"
-msgstr ""
+msgstr "impossibile allocare elenco mech"
 
 #: qemud/remote.c:2278
 #, c-format
 msgid "cannot query SASL ssf on connection %d (%s)"
-msgstr ""
+msgstr "impossibile interrogare SASL ssf alla connessione %d (%s)"
 
 #: qemud/remote.c:2288
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
-msgstr ""
+msgstr "la negoziazione SSF %d non è abbastanza forte"
 
 #: qemud/remote.c:2318
 #, c-format
 msgid "cannot query SASL username on connection %d (%s)"
-msgstr ""
+msgstr "impossibile interrogare l'username di SASL alla connessione %d (%s)"
 
 #: qemud/remote.c:2326
 msgid "no client username was found"
-msgstr ""
+msgstr "nessun username client trovato"
 
 #: qemud/remote.c:2336
-#, fuzzy
 msgid "out of memory copying username"
-msgstr "memoria esaurita"
+msgstr "memoria esaurita durante la copia dell'username"
 
 #: qemud/remote.c:2355
 #, c-format
 msgid "SASL client %s not allowed in whitelist"
-msgstr ""
+msgstr "il client SASL %s non è ammesso nella whitelist"
 
 #: qemud/remote.c:2381 qemud/remote.c:2461
 msgid "client tried invalid SASL start request"
-msgstr ""
+msgstr "il client ha tentato una richiesta di avvio SASL non valida"
 
 #: qemud/remote.c:2397
 #, c-format
 msgid "sasl start failed %d (%s)"
-msgstr ""
+msgstr "impossibile avviare sasl %d (%s)"
 
 #: qemud/remote.c:2405
 #, c-format
 msgid "sasl start reply data too long %d"
-msgstr ""
+msgstr "risposta dati di avvio SASL troppo lunga %d"
 
 #: qemud/remote.c:2476
 #, c-format
 msgid "sasl step failed %d (%s)"
-msgstr ""
+msgstr "step SASL fallito %d (%s)"
 
 #: qemud/remote.c:2485
 #, c-format
 msgid "sasl step reply data too long %d"
-msgstr ""
+msgstr "dati di risposta di uno step SASL troppo lunghi %d"
 
 #: qemud/remote.c:2535
 msgid "client tried unsupported SASL init request"
 msgstr ""
+"il client ha tentato una richiesta di inizializzazione SASL non supportata"
 
 #: qemud/remote.c:2547
 msgid "client tried unsupported SASL start request"
-msgstr ""
+msgstr "il client ha tentato una richiesta di avvio SASL non supportata"
 
 #: qemud/remote.c:2559
 msgid "client tried unsupported SASL step request"
-msgstr ""
+msgstr "il client ha tentato una richiesta di step SASL non supportata"
 
 #: qemud/remote.c:2573
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to verify client credentials: %s"
-msgstr "Impossibile ottenere statistiche sull'interfaccia %s %s"
+msgstr "Impossibile verificare le credenziali utente: %s"
 
 #: qemud/remote.c:2601
 msgid "client tried invalid PolicyKit init request"
 msgstr ""
+"il client ha tentato una richiesta di inizializzazione PolicyKit non valida"
 
 #: qemud/remote.c:2607
 msgid "cannot get peer socket identity"
-msgstr ""
+msgstr "impossibile ottenere l'identità del socket peer"
 
 #: qemud/remote.c:2617
 #, c-format
 msgid "Allowing PID %d running as root"
-msgstr ""
+msgstr "Concessione al PID %d di essere eseguito come root"
 
 #: qemud/remote.c:2631
 #, c-format
 msgid "Checking PID %d running as %d"
-msgstr ""
+msgstr "Verifica che il PID %d venga eseguito come %d"
 
 #: qemud/remote.c:2636
 #, c-format
 msgid "Failed to lookup policy kit caller: %s"
-msgstr ""
+msgstr "Impossibile ricercare il policy kit caller: %s"
 
 #: qemud/remote.c:2644
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create polkit action %s\n"
-msgstr "Impossibile creare il dominio inattivo %s\n"
+msgstr "Impossibile creare l'azione polkit %s\n"
 
 #: qemud/remote.c:2654
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create polkit context %s\n"
-msgstr "Impossibile creare il dominio inattivo %s\n"
+msgstr "Impossibile creare il contesto polkit %s\n"
 
 #: qemud/remote.c:2674
 #, c-format
 msgid "Policy kit failed to check authorization %d %s"
-msgstr ""
+msgstr "Policy kit ha fallito il controllo dell'autorizzazione %d %s"
 
 #: qemud/remote.c:2690
 #, c-format
 msgid "Policy kit denied action %s from pid %d, uid %d, result: %s\n"
-msgstr ""
+msgstr "Policy kit ha negato l'azione %s dal pid %d, uid %d, risultato: %s\n"
 
 #: qemud/remote.c:2698
 #, c-format
 msgid "Policy allowed action %s from pid %d, uid %d, result %s"
-msgstr ""
+msgstr "Policy kit ha consentito l'azione %s dal pid %d, uid %d, risultato %s"
 
 #: qemud/remote.c:2718
 msgid "client tried unsupported PolicyKit init request"
 msgstr ""
+"il client ha tentato una richiesta di inizializzazione PolicyKit non "
+"supportata"
 
 #: qemud/qemud.c:140
 #, c-format
 msgid "Cannot access %s '%s': %s (%d)"
-msgstr ""
+msgstr "Impossibile accedere %s '%s': %s (%d)"
 
 #: qemud/qemud.c:157
 #, c-format
 msgid "gnutls_certificate_allocate_credentials: %s"
-msgstr ""
+msgstr "gnutls_certificate_allocate_credentials: %s"
 
 #: qemud/qemud.c:170
 #, c-format
 msgid "gnutls_certificate_set_x509_trust_file: %s"
-msgstr ""
+msgstr "gnutls_certificate_set_x509_trust_file: %s"
 
 #: qemud/qemud.c:184
 #, c-format
 msgid "gnutls_certificate_set_x509_crl_file: %s"
-msgstr ""
+msgstr "gnutls_certificate_set_x509_crl_file: %s"
 
 #: qemud/qemud.c:202
 #, c-format
 msgid "gnutls_certificate_set_x509_key_file: %s"
-msgstr ""
+msgstr "gnutls_certificate_set_x509_key_file: %s"
 
 #: qemud/qemud.c:215
 #, c-format
 msgid "gnutls_dh_params_init: %s"
-msgstr ""
+msgstr "gnutls_dh_params_init: %s"
 
 #: qemud/qemud.c:221
 #, c-format
 msgid "gnutls_dh_params_generate2: %s"
-msgstr ""
+msgstr "gnutls_dh_params_generate2: %s"
 
 #: qemud/qemud.c:239
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read from signal pipe: %s"
-msgstr "impossibile leggere da un demone Xen"
+msgstr "Impossibile leggere dalla pipe del segnale: %s"
 
 #: qemud/qemud.c:248
-#, fuzzy
 msgid "Reloading configuration on SIGHUP"
-msgstr "assegnazione configurazione in corso"
+msgstr "Ricaricamento configurazione al SIGHUP"
 
 #: qemud/qemud.c:250
-#, fuzzy
 msgid "Error while reloading drivers"
-msgstr "Si è verificato un errore allocando la memoria: %s"
+msgstr "Errore durante il ricaricamento dei drivers"
 
 #: qemud/qemud.c:256
 #, c-format
 msgid "Shutting down on signal %d"
-msgstr ""
+msgstr "Chiusura al segnale %d"
 
 #: qemud/qemud.c:278 src/qemu_driver.c:79
 msgid "Failed to set close-on-exec file descriptor flag"
-msgstr ""
+msgstr "Impossibile impostare il flag close-on-exec del file descriptor"
 
 #: qemud/qemud.c:293 src/qemu_driver.c:94
 msgid "Failed to set non-blocking file descriptor flag"
-msgstr ""
+msgstr "Impossibile impostare il flag non-blocking del file descriptor"
 
-#: qemud/qemud.c:435
-#, fuzzy, c-format
+#: qemud/qemud.c:434
+#, c-format
 msgid "Failed to open pid file '%s' : %s"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "Impossibile aprire il file pid '%s' : %s"
 
-#: qemud/qemud.c:441
-#, fuzzy, c-format
+#: qemud/qemud.c:440
+#, c-format
 msgid "Failed to fdopen pid file '%s' : %s"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "Impossibile fdopen il file del pid '%s' : %s"
 
-#: qemud/qemud.c:448
-#, fuzzy, c-format
+#: qemud/qemud.c:447
+#, c-format
 msgid "Failed to write to pid file '%s' : %s"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "Impossibile scrivere sul file pid '%s' : %s"
 
-#: qemud/qemud.c:455
-#, fuzzy, c-format
+#: qemud/qemud.c:454
+#, c-format
 msgid "Failed to close pid file '%s' : %s"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "Impossibile chiudere il file del pid '%s' : %s"
 
-#: qemud/qemud.c:472
-#, fuzzy
+#: qemud/qemud.c:471
 msgid "Failed to allocate memory for struct qemud_socket"
-msgstr "Impossibile assegnare memoria"
+msgstr "Impossibile allocare memoria per struct qemud_socket"
 
-#: qemud/qemud.c:482
-#, fuzzy, c-format
+#: qemud/qemud.c:481
+#, c-format
 msgid "Failed to create socket: %s"
-msgstr "Impossibile leggere il socket %d\n"
+msgstr "Impossibile creare il socket: %s"
 
-#: qemud/qemud.c:504
-#, fuzzy, c-format
+#: qemud/qemud.c:503
+#, c-format
 msgid "Failed to bind socket to '%s': %s"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "Impossibile collegarsi al socket '%s': %s"
 
-#: qemud/qemud.c:513
-#, fuzzy, c-format
+#: qemud/qemud.c:512
+#, c-format
 msgid "Failed to listen for connections on '%s': %s"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "Impossibile restare in ascolto per connessioni su '%s': %s"
 
-#: qemud/qemud.c:522 qemud/qemud.c:652
+#: qemud/qemud.c:521 qemud/qemud.c:651
 msgid "Failed to add server event callback"
-msgstr ""
+msgstr "Impossibile aggiungere l'evento callback sul server"
 
-#: qemud/qemud.c:551
+#: qemud/qemud.c:550
 #, c-format
 msgid "getaddrinfo: %s\n"
-msgstr ""
+msgstr "getaddrinfo: %s\n"
 
-#: qemud/qemud.c:560
+#: qemud/qemud.c:559
 #, c-format
 msgid "socket: %s"
-msgstr ""
+msgstr "socket: %s"
 
-#: qemud/qemud.c:569
+#: qemud/qemud.c:568
 #, c-format
 msgid "bind: %s"
-msgstr ""
+msgstr "bind: %s"
 
-#: qemud/qemud.c:576
+#: qemud/qemud.c:575
 #, c-format
 msgid "listen: %s"
-msgstr ""
+msgstr "in ascolto su: %s"
 
-#: qemud/qemud.c:613
+#: qemud/qemud.c:612
 #, c-format
 msgid "remoteListenTCP: calloc: %s"
-msgstr ""
+msgstr "remoteListenTCP: calloc: %s"
 
-#: qemud/qemud.c:644
+#: qemud/qemud.c:643
 #, c-format
 msgid "remoteListenTCP: listen: %s"
-msgstr ""
+msgstr "remoteListenTCP: listen: %s"
 
-#: qemud/qemud.c:686 src/qemu_driver.c:182
-#, fuzzy, c-format
+#: qemud/qemud.c:685 src/qemu_driver.c:182
+#, c-format
 msgid "Failed to find user record for uid '%d': %s"
-msgstr "Impossibile trovare la rete: %s"
+msgstr "Impossibile trovare il record utente per l'uid '%d': %s"
 
-#: qemud/qemud.c:703 src/qemu_driver.c:238
-msgid "Resulting path to long for buffer in qemudInitPaths()"
-msgstr ""
-
-#: qemud/qemud.c:711
+#: qemud/qemud.c:702
 #, fuzzy
+msgid "Resulting path too long for buffer in qemudInitPaths()"
+msgstr ""
+"Il percorso risultante è troppo lungo per il buffer in qemudInitPaths()"
+
+#: qemud/qemud.c:710
 msgid "Failed to allocate struct qemud_server"
-msgstr "Impossibile assegnare memoria"
+msgstr "Impossibile allocare struct qemud_server"
 
-#: qemud/qemud.c:755
-#, fuzzy, c-format
+#: qemud/qemud.c:754
+#, c-format
 msgid "Failed to initialize SASL authentication %s"
-msgstr "Impossibile trovare la rete: %s"
+msgstr "Impossibile inizializzare l'autenticazione SASL %s"
 
-#: qemud/qemud.c:770
-#, fuzzy, c-format
+#: qemud/qemud.c:769
+#, c-format
 msgid "Failed to connect to system bus for PolicyKit auth: %s"
-msgstr "Impossibile collegarsi all'hypervisor"
+msgstr ""
+"Impossibile connettersi al bus di sistema per l'autorizzazione PolicyKit: %s"
 
-#: qemud/qemud.c:881
+#: qemud/qemud.c:880
 #, c-format
 msgid "remoteInitializeTLSSession: %s"
-msgstr ""
+msgstr "remoteInitializeTLSSession: %s"
 
-#: qemud/qemud.c:898
+#: qemud/qemud.c:897
 #, c-format
 msgid "remoteCheckDN: gnutls_x509_cert_get_dn: %s"
-msgstr ""
+msgstr "remoteCheckDN: gnutls_x509_cert_get_dn: %s"
 
-#: qemud/qemud.c:917
+#: qemud/qemud.c:916
 #, c-format
 msgid "remoteCheckDN: failed: client DN is %s"
-msgstr ""
+msgstr "remoteCheckDN: fallito: il DN del client è %s"
 
-#: qemud/qemud.c:933
-#, fuzzy, c-format
+#: qemud/qemud.c:932
+#, c-format
 msgid "remoteCheckCertificate: verify failed: %s"
-msgstr "autenticazione fallita: %s"
+msgstr "remoteCheckCertificate: verifica fallita: %s"
 
-#: qemud/qemud.c:941
+#: qemud/qemud.c:940
 msgid "remoteCheckCertificate: the client certificate is not trusted."
-msgstr ""
+msgstr "remoteCheckCertificate: il certificato del client non è credibile."
 
-#: qemud/qemud.c:946
+#: qemud/qemud.c:945
 msgid "remoteCheckCertificate: the client certificate has unknown issuer."
 msgstr ""
+"remoteCheckCertificate: il certificato del client è stato emesso da un "
+"autorità sconosciuta."
 
-#: qemud/qemud.c:951
+#: qemud/qemud.c:950
 msgid "remoteCheckCertificate: the client certificate has been revoked."
-msgstr ""
+msgstr "remoteCheckCertificate: il certificato del client è stato revocato."
 
-#: qemud/qemud.c:957
+#: qemud/qemud.c:956
 msgid ""
 "remoteCheckCertificate: the client certificate uses an insecure algorithm."
 msgstr ""
+"remoteCheckCertificate: il certificato del client usa un algoritmo insicuro."
 
-#: qemud/qemud.c:966
+#: qemud/qemud.c:965
 msgid "remoteCheckCertificate: certificate is not X.509"
-msgstr ""
+msgstr "remoteCheckCertificate: il certificato non è X.509"
 
-#: qemud/qemud.c:971
+#: qemud/qemud.c:970
 msgid "remoteCheckCertificate: no peers"
-msgstr ""
+msgstr "remoteCheckCertificate: nessun peers"
 
-#: qemud/qemud.c:982
+#: qemud/qemud.c:981
 msgid "remoteCheckCertificate: gnutls_x509_crt_init failed"
-msgstr ""
+msgstr "remoteCheckCertificate: fallimento gnutls_x509_crt_init"
 
-#: qemud/qemud.c:992
+#: qemud/qemud.c:991
 msgid "remoteCheckCertificate: the client certificate has expired"
-msgstr ""
+msgstr "remoteCheckCertificate: il certificato del client è scaduto"
 
-#: qemud/qemud.c:999
+#: qemud/qemud.c:998
 msgid "remoteCheckCertificate: the client certificate is not yet activated"
 msgstr ""
+"remoteCheckCertificate: il certificato del client non è ancora stato attivato"
 
-#: qemud/qemud.c:1008
+#: qemud/qemud.c:1007
 msgid ""
 "remoteCheckCertificate: client's Distinguished Name is not on the list of "
 "allowed clients (tls_allowed_dn_list).  Use 'openssl x509 -in clientcert.pem "
 "-text' to view the Distinguished Name field in the client certificate, or "
 "run this daemon with --verbose option."
 msgstr ""
+"remoteCheckCertificate: il Distinguished Name del client non è elencato "
+"nella lista dei clients consentiti (tls_allowed_dn_list).  Usare 'openssl "
+"x509 -in clientcert.pem -text' per vedere il campo Distinguished Name nel "
+"certificato del client, o eseguire questo demone con l'opzione --verbose."
 
-#: qemud/qemud.c:1025
+#: qemud/qemud.c:1024
 msgid "remoteCheckCertificate: failed to verify client's certificate"
 msgstr ""
+"remoteCheckCertificate: impossibile verificare il certificato del client"
 
-#: qemud/qemud.c:1029
+#: qemud/qemud.c:1028
 msgid ""
 "remoteCheckCertificate: tls_no_verify_certificate is set so the bad "
 "certificate is ignored"
 msgstr ""
+"remoteCheckCertificate: è impostato tls_no_verify_certificate perciò il "
+"certificato non corretto è ignorato"
 
-#: qemud/qemud.c:1054
-#, fuzzy, c-format
+#: qemud/qemud.c:1053
+#, c-format
 msgid "Failed to accept connection: %s"
-msgstr "Impossibile avviare la rete %s"
+msgstr "Impossibile accettare la connessione: %s"
 
-#: qemud/qemud.c:1112 qemud/qemud.c:1349 qemud/qemud.c:1487
-#, fuzzy, c-format
+#: qemud/qemud.c:1111 qemud/qemud.c:1348 qemud/qemud.c:1486
+#, c-format
 msgid "TLS handshake failed: %s"
-msgstr "operazione GET fallita: %s"
+msgstr "negoziazione TLS fallita: %s"
 
-#: qemud/qemud.c:1177
+#: qemud/qemud.c:1176
 #, c-format
 msgid "read: %s"
-msgstr ""
+msgstr "lettura: %s"
 
-#: qemud/qemud.c:1190
+#: qemud/qemud.c:1189
 #, c-format
 msgid "gnutls_record_recv: %s"
-msgstr ""
+msgstr "gnutls_record_recv: %s"
 
-#: qemud/qemud.c:1373
+#: qemud/qemud.c:1372
 #, c-format
 msgid "write: %s"
-msgstr ""
+msgstr "scrittura: %s"
 
-#: qemud/qemud.c:1383
+#: qemud/qemud.c:1382
 #, c-format
 msgid "gnutls_record_send: %s"
-msgstr ""
+msgstr "gnutls_record_send: %s"
 
-#: qemud/qemud.c:1595
+#: qemud/qemud.c:1594
 #, c-format
 msgid "Signal handler reported %d errors: last error: %s"
-msgstr ""
+msgstr "Il gestore di segnale ha riportato %d errori: ultimo errore: %s"
 
-#: qemud/qemud.c:1692 qemud/qemud.c:1714
-#, fuzzy, c-format
+#: qemud/qemud.c:1691 qemud/qemud.c:1713
+#, c-format
 msgid "failed to allocate memory for %s config list"
-msgstr "Impossibile assegnare memoria"
+msgstr "Impossibile allocare memoria per l'elenco di configurazione %s"
 
-#: qemud/qemud.c:1699 qemud/qemud.c:1731
-#, fuzzy, c-format
+#: qemud/qemud.c:1698 qemud/qemud.c:1730
+#, c-format
 msgid "failed to allocate memory for %s config list value"
-msgstr "Impossibile assegnare memoria"
+msgstr "Impossibile allocare memoria per l'elenco di configurazione valore %s"
 
-#: qemud/qemud.c:1719 qemud/qemud.c:1742
+#: qemud/qemud.c:1718 qemud/qemud.c:1741
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: must be a string or list of strings\n"
 msgstr ""
+"remoteReadConfigFile: %s: %s: deve essere una stringa o un elenco di "
+"stringhe\n"
 
-#: qemud/qemud.c:1759
+#: qemud/qemud.c:1758
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: invalid type: got %s; expected %s\n"
 msgstr ""
+"remoteReadConfigFile: %s: %s: tipo non valido: ottenuto %s; aspettato %s\n"
 
-#: qemud/qemud.c:1780
+#: qemud/qemud.c:1779
 #, c-format
 msgid "remoteReadConfigFile: %s\n"
-msgstr ""
+msgstr "remoteReadConfigFile: %s\n"
 
-#: qemud/qemud.c:1824
+#: qemud/qemud.c:1823
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: unsupported auth %s\n"
-msgstr ""
+msgstr "remoteReadConfigFile: %s: %s: autorizzazione non supportata %s\n"
 
-#: qemud/qemud.c:1900
+#: qemud/qemud.c:1899
 msgid "Cannot set group when not running as root"
-msgstr ""
+msgstr "Impostazione gruppo impossibile quando non in esecuzione come root"
 
-#: qemud/qemud.c:1904
-#, fuzzy, c-format
+#: qemud/qemud.c:1903
+#, c-format
 msgid "Failed to lookup group '%s'"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "Impossibile ricercare gruppo '%s'"
 
-#: qemud/qemud.c:1917 qemud/qemud.c:1928
-#, fuzzy, c-format
+#: qemud/qemud.c:1916 qemud/qemud.c:1927
+#, c-format
 msgid "Failed to parse mode '%s'"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "Impossibile eseguire il parsing della modalità '%s'"
 
-#: qemud/qemud.c:2103
-#, fuzzy, c-format
+#: qemud/qemud.c:2102
+#, c-format
 msgid "Failed to create pipe: %s"
-msgstr "Impossibile creare XML"
+msgstr "Impossibile creare la pipe: %s"
 
-#: qemud/qemud.c:2123
-#, fuzzy, c-format
+#: qemud/qemud.c:2120
+#, c-format
 msgid "Failed to fork as daemon: %s"
-msgstr "Impossibile ripristinare il dominio %s"
+msgstr "Impossibile eseguire il fork come demone: %s"
 
-#: qemud/qemud.c:2158
+#: qemud/qemud.c:2153
 msgid "Failed to register callback for signal pipe"
-msgstr ""
+msgstr "Impossibile registrare il callback per la pipe del segnale"
 
 #: src/conf.c:158 src/conf.c:207 src/conf.c:492 src/conf.c:528 src/conf.c:556
 #: src/conf.c:634
@@ -596,32 +609,31 @@ msgstr "stringa non terminata"
 
 #: src/conf.c:433 src/conf.c:486
 msgid "expecting a value"
-msgstr "in attesa di un valore"
+msgstr "mancanza di un valore"
 
 #: src/conf.c:453
 msgid "expecting a separator in list"
-msgstr "in attesa di un separatore nell'elenco"
+msgstr "mancanza separatore in elenco"
 
 #: src/conf.c:476
-#, fuzzy
 msgid "list is not closed with ]"
-msgstr "l'elenco non termina con ] "
+msgstr "l'elenco non termina con ]"
 
 #: src/conf.c:521
 msgid "expecting a name"
-msgstr "in attesa di un nome"
+msgstr "mancanza di un nome"
 
 #: src/conf.c:584
 msgid "expecting a separator"
-msgstr "in attesa di un separatore"
+msgstr "mancanza di un separatore"
 
 #: src/conf.c:616
 msgid "expecting an assignment"
-msgstr "in attesa di un incarico"
+msgstr "mancanza di un incarico"
 
 #: src/conf.c:890 src/conf.c:944
 msgid "failed to allocate buffer"
-msgstr "impossibile assegnare un buffer"
+msgstr "impossibile allocare un buffer"
 
 #: src/conf.c:902
 msgid "failed to open file"
@@ -632,36 +644,36 @@ msgid "failed to save content"
 msgstr "impossibile salvare il contenuto"
 
 #: src/console.c:75
-#, fuzzy, c-format
+#, c-format
 msgid "unable to open tty %s: %s\n"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "impossibile aprire tty %s: %s\n"
 
 #: src/console.c:86
 #, c-format
 msgid "unable to get tty attributes: %s\n"
-msgstr ""
+msgstr "impossibile ottenere gli attributi della tty: %s\n"
 
 #: src/console.c:95
 #, c-format
 msgid "unable to set tty attributes: %s\n"
-msgstr ""
+msgstr "impossibile impostare gli attributi della tty: %s\n"
 
 #: src/console.c:130
 #, c-format
 msgid "failure waiting for I/O: %s\n"
-msgstr ""
+msgstr "attesa di I/O fallita: %s\n"
 
 #: src/console.c:145
 #, c-format
 msgid "failure reading input: %s\n"
-msgstr ""
+msgstr "lettura input fallita: %s\n"
 
 #: src/console.c:167
 #, c-format
 msgid "failure writing output: %s\n"
-msgstr ""
+msgstr "scrittura output fallita: %s\n"
 
-#: src/hash.c:695 src/libvirt.c:689
+#: src/hash.c:695 src/libvirt.c:714
 msgid "allocating connection"
 msgstr "assegnazione collegamento in corso"
 
@@ -671,11 +683,11 @@ msgstr "assegnazione dominio in corso"
 
 #: src/hash.c:843
 msgid "failed to add domain to connection hash table"
-msgstr "impossibile aggiungere il dominio alla tabella hash di collegamento"
+msgstr "impossibile aggiungere il dominio alla tabella hash di connessione"
 
 #: src/hash.c:881
 msgid "domain missing from connection hash table"
-msgstr "dominio mancante dalla tabella hash di collegamento"
+msgstr "dominio mancante nella tabella hash di collegamento"
 
 #: src/hash.c:961 src/hash.c:966
 msgid "allocating network"
@@ -690,83 +702,78 @@ msgid "network missing from connection hash table"
 msgstr "rete mancante dalla tabella hash di connessione"
 
 #: src/hash.c:1094 src/hash.c:1099
-#, fuzzy
 msgid "allocating storage pool"
-msgstr "allocazione rete"
+msgstr "allocazione pool storage"
 
 #: src/hash.c:1109
-#, fuzzy
 msgid "failed to add storage pool to connection hash table"
-msgstr "impossibile aggiungere la rete alla tabella hash di connessione"
+msgstr ""
+"impossibile aggiungere lo storage pool alla tabella hash di connessione"
 
 #: src/hash.c:1148
-#, fuzzy
 msgid "pool missing from connection hash table"
-msgstr "dominio mancante dalla tabella hash di collegamento"
+msgstr "pool mancante dalla tabella hash di connessione"
 
 #: src/hash.c:1226 src/hash.c:1231 src/hash.c:1236
-#, fuzzy
 msgid "allocating storage vol"
-msgstr "allocazione rete"
+msgstr "allocazione volume storage"
 
 #: src/hash.c:1246
-#, fuzzy
 msgid "failed to add storage vol to connection hash table"
-msgstr "impossibile aggiungere la rete alla tabella hash di connessione"
+msgstr ""
+"impossibile aggiungere il volume storage alla tabella hash di connessione"
 
 #: src/hash.c:1286
-#, fuzzy
 msgid "vol missing from connection hash table"
-msgstr "dominio mancante dalla tabella hash di collegamento"
+msgstr "volume mancante dalla tabella hash di connessione"
 
 #: src/iptables.c:103
-#, fuzzy
 msgid "Failed to run '"
-msgstr "Impossibile creare XML"
+msgstr "Impossibile eseguire '"
 
 #: src/iptables.c:151
-#, fuzzy
 msgid "Failed to read "
-msgstr "Impossibile creare XML"
+msgstr "Impossibile leggere"
 
 #: src/iptables.c:179
-#, fuzzy
 msgid "Failed to write to "
-msgstr "Impossibile scrivere sul socket %d\n"
+msgstr "Impossibile scrivere su "
 
 #: src/iptables.c:244
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create directory %s : %s"
-msgstr "Impossibile creare la rete da %s"
+msgstr "Impossibile creare la directory %s : %s"
 
 #: src/iptables.c:250
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to saves iptables rules to %s : %s"
-msgstr "Impossibile salvare il dominio %s su %s"
+msgstr "Impossibile salvare le regole di iptables su %s : %s"
 
 #: src/iptables.c:591
 #, c-format
 msgid "Failed to remove iptables rule '%s' from chain '%s' in table '%s': %s"
 msgstr ""
+"Impossibile rimuovere la regola iptables '%s' dalla catena '%s' nella tavola "
+"'%s': %s"
 
 #: src/iptables.c:600
 #, c-format
 msgid "Failed to add iptables rule '%s' to chain '%s' in table '%s': %s"
 msgstr ""
+"Impossibile aggiungere la regola iptables '%s' alla catena '%s' nella tavola "
+"'%s': %s"
 
-#: src/libvirt.c:696
+#: src/libvirt.c:721
 msgid "could not parse connection URI"
-msgstr "impossibile analizzare l'URI di connessione"
+msgstr "errore di parsing dell'URI di connessione"
 
-#: src/libvirt.c:714
-#, fuzzy
+#: src/libvirt.c:739
 msgid "allocating conn->name"
-msgstr "assegnazione collegamento in corso"
+msgstr "allocazione conn->nome"
 
-#: src/libvirt.c:2135
-#, fuzzy
+#: src/libvirt.c:2160
 msgid "domainMigratePrepare did not set uri"
-msgstr "informazioni del dominio non corrette, domid non numerico"
+msgstr "domainMigratePrepare non ha impostato l'uri"
 
 #: src/proxy_internal.c:197
 #, c-format
@@ -781,7 +788,7 @@ msgstr "Impossibile chiudere il socket %d\n"
 #: src/proxy_internal.c:324
 #, c-format
 msgid "Failed to read socket %d\n"
-msgstr "Impossibile leggere il socket %d\n"
+msgstr "Impossibile leggere dal socket %d\n"
 
 #: src/proxy_internal.c:351
 #, c-format
@@ -816,856 +823,839 @@ msgstr "presente un numero %d asincrono del pacchetto \n"
 #: src/qemu_conf.c:499
 #, c-format
 msgid "Unexpected exit status from qemu %d pid %lu"
-msgstr ""
+msgstr "Stato di uscita inaspettato da qemu %d pid %lu"
 
 #: src/qemu_conf.c:508
 #, c-format
 msgid "Unexpected exit status '%d', qemu probably failed"
-msgstr ""
+msgstr "Stato inaspettato di uscita '%d', qemu è probabilmente fallito"
 
-#: src/qemu_conf.c:2615
+#: src/qemu_conf.c:2628
 #, c-format
 msgid "Error parsing QEMU guest config '%s' : %s"
-msgstr ""
+msgstr "Errore nel parsing della configurazione guest di QEMU '%s' : %s"
 
-#: src/qemu_conf.c:2617
+#: src/qemu_conf.c:2630
 msgid "BUG: unknown error - please report it\n"
-msgstr ""
+msgstr "BUG: errore sconosciuto - si prega di segnalarlo\n"
 
-#: src/qemu_conf.c:2623
+#: src/qemu_conf.c:2636
 #, c-format
 msgid "QEMU guest config filename '%s' does not match guest name '%s'"
 msgstr ""
+"Il nome del file di configurazione guest di QEMU '%s' non coincide con il "
+"nome del guest '%s'"
 
-#: src/qemu_conf.c:2632
+#: src/qemu_conf.c:2645
 #, c-format
 msgid "Failed to load QEMU guest config '%s': out of memory"
 msgstr ""
+"Impossibile caricare la configurazione guest di QEMU '%s': memoria esaurita"
 
-#: src/qemu_conf.c:2660
+#: src/qemu_conf.c:2673
 #, c-format
 msgid "Error parsing network config '%s' : %s"
-msgstr ""
+msgstr "Errore nel parsing della configurazione di rete '%s' : %s"
 
-#: src/qemu_conf.c:2667
+#: src/qemu_conf.c:2680
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr ""
+"Il nome del file di configurazione di rete '%s' non coincide col nome della "
+"rete '%s'"
 
-#: src/qemu_conf.c:2676
-#, fuzzy, c-format
+#: src/qemu_conf.c:2689
+#, c-format
 msgid "Failed to load network config '%s': out of memory"
-msgstr "impossibile aggiungere la rete alla tabella hash di connessione"
+msgstr "Impossibile caricare la configurazione di rete '%s': memoria esaurita"
 
-#: src/qemu_conf.c:2703
-#, fuzzy, c-format
+#: src/qemu_conf.c:2716
+#, c-format
 msgid "Failed to open dir '%s': %s"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "Impossibile aprire la dir '%s': %s"
 
-#: src/qemu_conf.c:2720
+#: src/qemu_conf.c:2733
 #, c-format
 msgid "Config filename '%s/%s' is too long"
-msgstr ""
+msgstr "Il nome del file di configurazione '%s/%s' è troppo lungo"
 
-#: src/qemu_conf.c:2727
+#: src/qemu_conf.c:2740
 #, c-format
 msgid "Autostart link path '%s/%s' is too long"
-msgstr ""
+msgstr "Percorso del link di avvio automatico '%s/%s' troppo lungo"
 
 #: src/qemu_driver.c:132
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to autostart network '%s': %s"
-msgstr "Impossibile avviare la rete %s"
+msgstr "Impossibile avviare automaticamente la rete '%s': %s"
 
 #: src/qemu_driver.c:147
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to autostart VM '%s': %s"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "Impossibile avviare automaticamente la VM '%s': %s"
 
 #: src/qemu_driver.c:192
-#, fuzzy
 msgid "out of memory in asprintf"
-msgstr "memoria esaurita"
+msgstr "memoria esaurita in asprintf"
+
+#: src/qemu_driver.c:238
+msgid "Resulting path to long for buffer in qemudInitPaths()"
+msgstr ""
+"Il percorso risultante è troppo lungo per il buffer in qemudInitPaths()"
 
 #: src/qemu_driver.c:243
-#, fuzzy
 msgid "qemudStartup: out of memory"
-msgstr "memoria esaurita"
+msgstr "qemudStartup: memoria esaurita"
 
 #: src/qemu_driver.c:262
 msgid "Reloading iptables rules"
-msgstr ""
+msgstr "Ricaricamento regole iptables"
 
 #: src/qemu_driver.c:560 src/qemu_driver.c:751 src/qemu_driver.c:1385
 #: src/qemu_driver.c:1395
 #, c-format
 msgid "Unable to log VM console data: %s"
-msgstr ""
+msgstr "Impossibile loggare i dati della VM console: %s"
 
 #: src/qemu_driver.c:673 src/qemu_driver.c:676 src/qemu_driver.c:681
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write argv to logfile %d: %s"
-msgstr "%s: impossibile scrivere il file di log: %s"
+msgstr "Impossibile scrivere argv sul file di log %d: %s"
 
 #: src/qemu_driver.c:765
 #, c-format
 msgid "Shutting down VM '%s'"
-msgstr ""
+msgstr "Chiusura VM '%s'"
 
 #: src/qemu_driver.c:776
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to close logfile %d: %s"
-msgstr "%s: impossibile scrivere il file di log: %s"
+msgstr "Impossibile chiudere il file di log %d: %s"
 
 #: src/qemu_driver.c:791
-#, fuzzy
 msgid "Got unexpected pid, damn"
-msgstr "nodo del dizionario inaspettato"
+msgstr "E' stato ottenuto un pid inaspettato"
 
 #: src/qemu_driver.c:1235
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to bring down bridge '%s' : %s"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "Impossibile chiudere il bridge '%s': %s"
 
 #: src/qemu_driver.c:1241 src/qemu_driver.c:1271
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to delete bridge '%s' : %s\n"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "Impossibile eliminare il bridge '%s': %s\n"
 
 #: src/qemu_driver.c:1254
-#, fuzzy, c-format
+#, c-format
 msgid "Shutting down network '%s'"
-msgstr "impossibile ottenere la rete '%s'"
+msgstr "Chiusura rete '%s'"
 
 #: src/qemu_driver.c:1266
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to bring down bridge '%s' : %s\n"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "Impossibile chiudere il bridge '%s': %s\n"
 
 #: src/qemu_driver.c:1280
 msgid "Got unexpected pid for dnsmasq\n"
-msgstr ""
+msgstr "Ottenuto pid inaspettato per dnsmasq\n"
 
-#: src/qemu_driver.c:2208 src/qemu_driver.c:2726
-#, fuzzy, c-format
+#: src/qemu_driver.c:2208 src/qemu_driver.c:2732
+#, c-format
 msgid "Failed to delete autostart link '%s': %s"
-msgstr "Impossibile ottenere statistiche blocco di %s %s"
+msgstr "Impossibile eliminare il collegamento di avvio automatico '%s': %s"
 
-#: src/qemu_driver.c:2386
+#: src/qemu_driver.c:2392
 #, c-format
 msgid "no domain with matching id %d"
-msgstr ""
+msgstr "non ci sono domini con id corrispondente: %d"
 
-#: src/qemu_driver.c:2391
-#, fuzzy
+#: src/qemu_driver.c:2397
 msgid "domain is not running"
-msgstr "Il dominio è ancora in esecuzione"
+msgstr "Il dominio non è in esecuzione"
 
-#: src/qemu_driver.c:2413
-#, fuzzy, c-format
+#: src/qemu_driver.c:2419
+#, c-format
 msgid "invalid path: %s"
-msgstr "argomento non valido in %s"
+msgstr "percorso non valido: %s"
 
-#: src/qemu_driver.c:2421
+#: src/qemu_driver.c:2427
 msgid "'info blockstats' command failed"
-msgstr ""
+msgstr "comando fallito 'info blockstats'"
 
-#: src/qemu_driver.c:2436
+#: src/qemu_driver.c:2442
 msgid "'info blockstats' not supported by this qemu"
-msgstr ""
+msgstr "'info blockstats' non è supportato da questo qemu"
 
-#: src/qemu_driver.c:2501
-#, fuzzy, c-format
+#: src/qemu_driver.c:2507
+#, c-format
 msgid "device not found: %s (%s)"
-msgstr "Dominio non trovato: %s"
+msgstr "dispositivo non trovato: %s (%s)"
 
 #: src/remote_internal.c:107 src/remote_internal.c:115
 msgid "tried to use a closed or uninitialised handle"
-msgstr ""
+msgstr "si è tentato di usare un handle chiuso o non inizializzato"
 
 #: src/remote_internal.c:222
-#, fuzzy
 msgid "failed to find libvirtd binary"
-msgstr "Impossibile trovare la rete"
+msgstr "Impossibile trovare l'eseguibile di libvirtd"
 
 #: src/remote_internal.c:329
 msgid ""
 "remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp)"
 msgstr ""
+"remote_open: trasporto in URL non riconosciuto (dovrebbe essere tls|unix|ssh|"
+"ext|tcp)"
 
 #: src/remote_internal.c:370
-#, fuzzy
 msgid "allocating priv->hostname"
-msgstr "assegnazione dominio in corso"
+msgstr "allocazione priv->hostname"
 
 #: src/remote_internal.c:453
 msgid "remote_open: for 'ext' transport, command is required"
-msgstr ""
+msgstr "remote_open: per il trasporto 'ext', è richiesto un comando"
 
 #: src/remote_internal.c:728
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr ""
+"I metodi di trasporto unix, ssh ed ext non sono supportati sotto Windows"
 
 #: src/remote_internal.c:771
 msgid "uri params"
-msgstr ""
+msgstr "parametri uri"
 
 #: src/remote_internal.c:815 src/remote_internal.c:2323
 #: src/remote_internal.c:2721
 msgid "struct private_data"
-msgstr ""
+msgstr "struct private_data"
 
 #: src/remote_internal.c:1066
 msgid "Certificate type is not X.509"
-msgstr ""
+msgstr "Il tipo di certificato non è X.509"
 
 #: src/remote_internal.c:1071
 msgid "gnutls_certificate_get_peers failed"
-msgstr ""
+msgstr "gnutls_certificate_get_peers fallito"
 
 #: src/remote_internal.c:1092
 msgid "The certificate has expired"
-msgstr ""
+msgstr "Il certificato è scaduto"
 
 #: src/remote_internal.c:1098
 msgid "The certificate is not yet activated"
-msgstr ""
+msgstr "Il certificato non è ancora attivato"
 
 #: src/remote_internal.c:1325
 msgid "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
-msgstr ""
+msgstr "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 
 #: src/remote_internal.c:1337
 msgid "ret.ids.ids_len > maxids"
-msgstr ""
+msgstr "ret.ids.ids_len > maxids"
 
 #: src/remote_internal.c:1709
 msgid "maplen > REMOTE_CPUMAP_MAX"
-msgstr ""
+msgstr "maplen > REMOTE_CPUMAP_MAX"
 
 #: src/remote_internal.c:1739
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
-msgstr ""
+msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
 #: src/remote_internal.c:1744
 msgid "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
-msgstr ""
+msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 
 #: src/remote_internal.c:1759
 msgid "ret.info.info_len > maxinfo"
-msgstr ""
+msgstr "ret.info.info_len > maxinfo"
 
 #: src/remote_internal.c:1765
 msgid "ret.cpumaps.cpumaps_len > maxinfo * maplen"
-msgstr ""
+msgstr "ret.cpumaps.cpumaps_len > maxinfo * maplen"
 
 #: src/remote_internal.c:1925
 msgid "maxnames > REMOTE_DOMAIN_NAME_LIST_MAX"
-msgstr ""
+msgstr "maxnames > REMOTE_DOMAIN_NAME_LIST_MAX"
 
 #: src/remote_internal.c:1937 src/remote_internal.c:2397
 #: src/remote_internal.c:2452
 msgid "ret.names.names_len > maxnames"
-msgstr ""
+msgstr "ret.names.names_len > maxnames"
 
 #: src/remote_internal.c:2138
 msgid ""
 "remoteDomainGetSchedulerParameters: returned number of parameters exceeds "
 "limit"
 msgstr ""
+"remoteDomainGetSchedulerParameters: ha restituito un numero di parametri che "
+"eccede il limite"
 
 #: src/remote_internal.c:2166
 msgid "remoteDomainGetSchedulerParameters: unknown parameter type"
-msgstr ""
+msgstr "remoteDomainGetSchedulerParameters: tipo di parametro sconosciuto"
 
 #: src/remote_internal.c:2191
-#, fuzzy
 msgid "out of memory allocating array"
-msgstr "modifica assegnazione della memoria"
+msgstr "memoria esaurita durante l'allocazione dell'array"
 
 #: src/remote_internal.c:2200 src/virterror.c:430
 msgid "out of memory"
 msgstr "memoria esaurita"
 
 #: src/remote_internal.c:2218
-#, fuzzy
 msgid "unknown parameter type"
-msgstr "Tipo di OS sconosciuto"
+msgstr "tipo di parametro sconosciuto"
 
 #: src/remote_internal.c:2385 src/remote_internal.c:2440
 msgid "maxnames > REMOTE_NETWORK_NAME_LIST_MAX"
-msgstr ""
+msgstr "maxnames > REMOTE_NETWORK_NAME_LIST_MAX"
 
 #: src/remote_internal.c:2783 src/remote_internal.c:2838
-#, fuzzy
 msgid "too many storage pools requested"
-msgstr "troppi driver registrati"
+msgstr "troppi pools di storage richiesti"
 
 #: src/remote_internal.c:2795 src/remote_internal.c:2850
-#, fuzzy
 msgid "too many storage pools received"
-msgstr "troppi driver registrati"
+msgstr "troppi pools di storage ricevuti"
 
 #: src/remote_internal.c:3195
-#, fuzzy
 msgid "too many storage volumes requested"
-msgstr "troppi driver registrati"
+msgstr "troppi volumi di storage richiesti"
 
 #: src/remote_internal.c:3208
-#, fuzzy
 msgid "too many storage volumes received"
-msgstr "troppi driver registrati"
+msgstr "troppi volumi di storage ricevuti"
 
 #: src/remote_internal.c:4158
 msgid "marshalling args"
-msgstr ""
+msgstr "marshalling dei parametri"
 
 #: src/remote_internal.c:4174
 msgid "xdr_int (length word)"
-msgstr ""
+msgstr "xdr_int (length word)"
 
 #: src/remote_internal.c:4267
 msgid "unmarshalling ret"
-msgstr ""
+msgstr "unmarshalling ret"
 
 #: src/remote_internal.c:4277
 msgid "unmarshalling remote_error"
-msgstr ""
+msgstr "unmarshalling remote_error"
 
 #: src/storage_backend.c:81
 #, c-format
 msgid "missing backend for pool type %d"
-msgstr ""
+msgstr "backend per il tipo di pool mancante %d"
 
 #: src/storage_backend.c:126
-#, fuzzy, c-format
+#, c-format
 msgid "unknown storage backend type %s"
-msgstr "Tipo di OS sconosciuto %s"
+msgstr "tipo di storage backend sconosciuto %s"
 
 #: src/storage_backend.c:156
-#, fuzzy, c-format
+#, c-format
 msgid "unknown storage backend type %d"
-msgstr "Tipo di OS sconosciuto %s"
+msgstr "tipo di storage backend sconosciuto %d"
 
 #: src/storage_backend.c:170 src/storage_backend_fs.c:340
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open volume '%s': %s"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "impossibile aprire il volume '%s': %s"
 
 #: src/storage_backend.c:198
 #, c-format
 msgid "cannot stat file '%s': %s"
-msgstr ""
+msgstr "impossibile eseguire lo stat del file '%s': %s"
 
 #: src/storage_backend.c:226
 #, c-format
 msgid "cannot seek to end of file '%s':%s"
-msgstr ""
+msgstr "impossibile determinare la fine del file '%s':%s"
 
 #: src/storage_backend.c:244
 #, c-format
 msgid "cannot get file context of %s: %s"
-msgstr ""
+msgstr "Impossibile determinare il contesto del file di %s: %s"
 
 #: src/storage_backend.c:250
 msgid "context"
-msgstr ""
+msgstr "contesto"
 
 #: src/storage_backend.c:295
 #, c-format
 msgid "cannot read dir %s: %s"
-msgstr ""
+msgstr "impossibile leggere la directory %s: %s"
 
 #: src/storage_backend.c:309 src/storage_driver.c:1191
 msgid "path"
-msgstr ""
+msgstr "percorso"
 
 #: src/storage_backend.c:362
 msgid "regex"
-msgstr ""
+msgstr "regex"
 
 #: src/storage_backend.c:372
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to compile regex %s"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "Compilazione regex %s fallita"
 
 #: src/storage_backend.c:388 src/storage_backend.c:393
 #: src/storage_backend.c:429
 msgid "regex groups"
-msgstr ""
+msgstr "gruppi regex"
 
 #: src/storage_backend.c:405 src/storage_backend.c:546
 msgid "cannot read fd"
-msgstr ""
+msgstr "impossibile leggere fd"
 
 #: src/storage_backend.c:479 src/storage_backend.c:601
-#, fuzzy, c-format
+#, c-format
 msgid "failed to wait for command: %s"
-msgstr "Impossibile iniziare il dominio %s"
+msgstr "attesa del comando fallita: %s"
 
 #: src/storage_backend.c:486 src/storage_backend.c:608
 #, c-format
 msgid "non-zero exit status from command %d"
-msgstr ""
+msgstr "stato di uscita non-zero dal comando %d"
 
 #: src/storage_backend.c:492 src/storage_backend.c:614
 msgid "command did not exit cleanly"
-msgstr ""
+msgstr "il comando non è terminato correttamente"
 
 #: src/storage_backend.c:533
 msgid "n_columns too large"
-msgstr ""
+msgstr "n_columns troppo grandi"
 
 #: src/storage_backend.c:580
-#, fuzzy, c-format
+#, c-format
 msgid "read error: %s"
-msgstr "errore interno %s"
+msgstr "errore in lettura: %s"
 
 #: src/storage_backend_fs.c:186 src/storage_backend_fs.c:256
 #: src/storage_backend_fs.c:308 src/storage_backend_disk.c:136
 #, c-format
 msgid "unsupported volume format %s"
-msgstr ""
+msgstr "formato di volume non supportato %s"
 
 #: src/storage_backend_fs.c:219 src/storage_backend_fs.c:291
 #: src/storage_backend_fs.c:323 src/storage_backend_disk.c:163
 #, c-format
 msgid "unsupported volume format %d"
-msgstr ""
+msgstr "formato di volume non supportato %d"
 
 #: src/storage_backend_fs.c:352
 #, c-format
 msgid "cannot read header '%s': %s"
-msgstr ""
+msgstr "impossibile leggere l'header '%s': %s"
 
 #: src/storage_backend_fs.c:460
 #, c-format
 msgid "cannot read %s: %s"
-msgstr ""
+msgstr "impossibile leggere %s: %s"
 
 #: src/storage_backend_fs.c:506 src/storage_backend_fs.c:571
-#: src/storage_backend_iscsi.c:364
-#, fuzzy
+#: src/storage_backend_iscsi.c:372
 msgid "missing source host"
-msgstr "informazioni sorgente mancanti per il dispositivo"
+msgstr "host sorgente mancante"
 
 #: src/storage_backend_fs.c:511 src/storage_conf.c:318
-#, fuzzy
 msgid "missing source path"
-msgstr "informazioni sorgente mancanti per il dispositivo"
+msgstr "percorso sorgente mancante"
 
 #: src/storage_backend_fs.c:517 src/storage_backend_fs.c:582
-#: src/storage_backend_iscsi.c:371
-#, fuzzy
+#: src/storage_backend_iscsi.c:379
 msgid "missing source device"
-msgstr "informazioni sorgente mancanti per il dispositivo"
+msgstr "dispositivo sorgente mancante"
 
 #: src/storage_backend_fs.c:540
 msgid "source"
-msgstr ""
+msgstr "sorgente"
 
 #: src/storage_backend_fs.c:576
-#, fuzzy
 msgid "missing source dir"
-msgstr "informazioni sorgente mancanti per il dispositivo"
+msgstr "directory sorgente mancante"
 
 #: src/storage_backend_fs.c:648 src/storage_backend_fs.c:842
 #: src/storage_backend_fs.c:881
 #, c-format
 msgid "cannot create path '%s': %s"
-msgstr ""
+msgstr "impossibile creare il percorso '%s': %s"
 
 #: src/storage_backend_fs.c:671
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open path '%s': %s"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "Impossibile aprire il percorso '%s': %s"
 
 #: src/storage_backend_fs.c:683 src/storage_backend_logical.c:116
 #: src/storage_backend_logical.c:121 src/storage_backend_logical.c:133
-#: src/storage_backend_logical.c:143 src/storage_backend_iscsi.c:177
+#: src/storage_backend_logical.c:143 src/storage_backend_iscsi.c:185
 #: src/storage_backend_disk.c:177 src/storage_backend_disk.c:190
 #: src/storage_backend_disk.c:197 src/storage_backend_disk.c:220
 msgid "volume"
-msgstr ""
+msgstr "volume"
 
 #: src/storage_backend_fs.c:691 src/storage_backend_fs.c:702
-#, fuzzy
 msgid "volume name"
-msgstr "nome del dominio"
+msgstr "nome volume"
 
 #: src/storage_backend_fs.c:713
 msgid "volume key"
-msgstr ""
+msgstr "chiave volume"
 
 #: src/storage_backend_fs.c:740
 #, c-format
 msgid "cannot statvfs path '%s': %s"
-msgstr ""
+msgstr "impossibile eseguire lo stat del percorso del vfs '%s': %s"
 
 #: src/storage_backend_fs.c:801
 #, c-format
 msgid "cannot unlink path '%s': %s"
-msgstr ""
+msgstr "impossibile fare l'unlink del percorso '%s': %s"
 
 #: src/storage_backend_fs.c:825
 msgid "target"
-msgstr ""
+msgstr "destinazione"
 
 #: src/storage_backend_fs.c:834
 msgid "storage vol key"
-msgstr ""
+msgstr "chiave volume di storage"
 
 #: src/storage_backend_fs.c:859
 #, c-format
 msgid "cannot fill file '%s': %s"
-msgstr ""
+msgstr "impossibile riempire il file '%s': %s"
 
 #: src/storage_backend_fs.c:872
 #, c-format
 msgid "cannot extend file '%s': %s"
-msgstr ""
+msgstr "impossibile estendere il file '%s': %s"
 
 #: src/storage_backend_fs.c:888 src/storage_backend_fs.c:924
 #: src/storage_backend_fs.c:959 src/storage_backend_logical.c:435
 #, c-format
 msgid "cannot read path '%s': %s"
-msgstr ""
+msgstr "impossibile leggere il percorso '%s': %s"
 
 #: src/storage_backend_fs.c:901
-#, fuzzy, c-format
+#, c-format
 msgid "unknown storage vol type %d"
-msgstr "Tipo di OS sconosciuto %s"
+msgstr "tipo di storage di volume sconosciuto %d"
 
 #: src/storage_backend_fs.c:939
 #, c-format
 msgid "unsupported storage vol type %d"
-msgstr ""
+msgstr "tipo di storage di volume non supportato %d"
 
 #: src/storage_backend_fs.c:966
 msgid "creation of non-raw images is not supported without qemu-img"
-msgstr ""
+msgstr "la creazione di un immagine non-raw non è supportata senza qemu-img"
 
 #: src/storage_backend_fs.c:976 src/storage_backend_logical.c:444
-#, fuzzy, c-format
+#, c-format
 msgid "cannot set file owner '%s': %s"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "impossibile impostare il proprietario del file '%s': %s"
 
 #: src/storage_backend_fs.c:985 src/storage_backend_logical.c:451
-#, fuzzy, c-format
+#, c-format
 msgid "cannot set file mode '%s': %s"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "impossibile impostare la modalità del file '%s': %s"
 
 #: src/storage_backend_fs.c:1001 src/storage_backend_logical.c:458
 #, c-format
 msgid "cannot close file '%s': %s"
-msgstr ""
+msgstr "impossibile chiudere il file '%s': %s"
 
 #: src/storage_backend_fs.c:1024
 #, c-format
 msgid "cannot unlink file '%s': %s"
-msgstr ""
+msgstr "impossibile fare l'unlink del file '%s': %s"
 
 #: src/storage_backend_logical.c:56 src/storage_backend_disk.c:83
 #, c-format
 msgid "unsupported pool format %s"
-msgstr ""
+msgstr "formato di pool non supportato %s"
 
 #: src/storage_backend_logical.c:69 src/storage_backend_disk.c:108
 #, c-format
 msgid "unsupported pool format %d"
-msgstr ""
+msgstr "formato di pool non supportato %d"
 
 #: src/storage_backend_logical.c:154 src/storage_backend_logical.c:161
 #: src/storage_backend_disk.c:250
 msgid "extents"
-msgstr ""
+msgstr "extents"
 
 #: src/storage_backend_logical.c:167
 msgid "malformed volume extent offset value"
-msgstr ""
+msgstr "valore offset degli extent del volume malformato"
 
 #: src/storage_backend_logical.c:172
 msgid "malformed volume extent length value"
-msgstr ""
+msgstr "valore lunghezza degli extent del volume malformato"
 
 #: src/storage_backend_logical.c:177
 msgid "malformed volume extent size value"
-msgstr ""
+msgstr "valore dimensione degli extent del volume malfomato"
 
 #: src/storage_backend_logical.c:269
-#, fuzzy
 msgid "command line"
-msgstr "nome del dominio"
+msgstr "linea di comando"
 
 #: src/storage_backend_logical.c:286
 #, c-format
 msgid "cannot open device %s"
-msgstr ""
+msgstr "impossibile aprire il dispositivo %s"
 
 #: src/storage_backend_logical.c:292
 #, c-format
 msgid "cannot clear device header %s"
-msgstr ""
+msgstr "impossibile cancellare l'header del dispositivo %s"
 
 #: src/storage_backend_logical.c:299
 #, c-format
 msgid "cannot close device %s"
-msgstr ""
+msgstr "impossibile chiudere il dispositivo %s"
 
 #: src/storage_backend_logical.c:467
 #, c-format
 msgid "cannot find newly created volume '%s': %s"
-msgstr ""
+msgstr "impossibile trovare il volume appena creato '%s': %s"
 
 #: src/storage_backend_iscsi.c:59
-#, fuzzy, c-format
+#, c-format
 msgid "host lookup failed %s"
-msgstr "operazione fallita: %s"
+msgstr "lookup dell'host fallito %s"
 
 #: src/storage_backend_iscsi.c:66
 #, c-format
 msgid "no IP address for target %s"
-msgstr ""
+msgstr "nessun indirizzo IP per la destinazione %s"
 
 #: src/storage_backend_iscsi.c:75
 #, c-format
 msgid "cannot format ip addr for %s"
-msgstr ""
+msgstr "impossibile formattare un indirizzo ip per %s"
 
 #: src/storage_backend_iscsi.c:95
-#, fuzzy
 msgid "session"
-msgstr "mostra versione"
+msgstr "sessione"
 
 #: src/storage_backend_iscsi.c:136
 msgid "cannot find session"
-msgstr ""
+msgstr "impossibile determinare la sessione"
 
-#: src/storage_backend_iscsi.c:182 src/storage_driver.c:863
-#, fuzzy
+#: src/storage_backend_iscsi.c:190 src/storage_driver.c:863
 msgid "name"
-msgstr "Nome"
+msgstr "nome"
 
-#: src/storage_backend_iscsi.c:187
+#: src/storage_backend_iscsi.c:195
 msgid "devpath"
-msgstr ""
+msgstr "percorso del dispositivo"
 
-#: src/storage_backend_iscsi.c:207
-#, fuzzy, c-format
+#: src/storage_backend_iscsi.c:215
+#, c-format
 msgid "cannot open %s: %s"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "impossibile aprire %s: %s"
 
-#: src/storage_backend_iscsi.c:233
+#: src/storage_backend_iscsi.c:241
 msgid "key"
-msgstr ""
+msgstr "chiave"
 
-#: src/storage_backend_iscsi.c:345
-#, fuzzy
+#: src/storage_backend_iscsi.c:353
 msgid "portal"
-msgstr "Totale"
+msgstr "portale"
 
 #: src/storage_backend_disk.c:229
 msgid "volume extents"
-msgstr ""
+msgstr "extent del volume"
 
 #: src/storage_backend_disk.c:237
 msgid "cannot parse device start location"
-msgstr ""
+msgstr "impossibile determinare la locazione d'inizio del dispositivo"
 
 #: src/storage_backend_disk.c:244
 msgid "cannot parse device end location"
-msgstr ""
+msgstr "impossibile determinare la locazione finale del dispositivo"
 
 #: src/storage_backend_disk.c:463
 msgid "no large enough free extent"
-msgstr ""
+msgstr "non ci sono estensioni libere abbastanza grandi"
 
 #: src/storage_backend_disk.c:498
 msgid "Disk pools are not yet supported"
-msgstr ""
+msgstr "I pool di dischi non sono ancora supportati"
 
 #: src/storage_conf.c:156
 msgid "missing auth host attribute"
-msgstr ""
+msgstr "attributo autorizzazione host mancante"
 
 #: src/storage_conf.c:163
 msgid "missing auth passwd attribute"
-msgstr ""
+msgstr "attributo password autorizzazione mancante"
 
 #: src/storage_conf.c:186 src/storage_conf.c:565
 msgid "malformed octal mode"
-msgstr ""
+msgstr "modalità ottale malformata"
 
 #: src/storage_conf.c:196
 msgid "malformed owner element"
-msgstr ""
+msgstr "elemento owner malformato"
 
 #: src/storage_conf.c:207
 msgid "malformed group element"
-msgstr ""
+msgstr "elemento group malformato"
 
 #: src/storage_conf.c:235 src/storage_conf.c:690
-#, fuzzy
 msgid "unknown root element"
-msgstr "host %s sconosciuto"
+msgstr "elemento root sconosciuto"
 
 #: src/storage_conf.c:251 src/storage_conf.c:697
 msgid "missing name element"
-msgstr ""
+msgstr "elemento name mancante"
 
 #: src/storage_conf.c:259
-#, fuzzy
 msgid "unable to generate uuid"
-msgstr "nome della rete o uuid"
+msgstr "impossibile generare uuid"
 
 #: src/storage_conf.c:265
 msgid "malformed uuid element"
-msgstr ""
+msgstr "elemento uuid malformato"
 
 #: src/storage_conf.c:284
-#, fuzzy
 msgid "missing source host name"
-msgstr "informazioni sorgente mancanti per il dispositivo"
+msgstr "nome host sorgente mancante"
 
 #: src/storage_conf.c:294
-#, fuzzy
 msgid "cannot extract source devices"
-msgstr "dispositivo dell'interfaccia"
+msgstr "impossibile estrarre dispositivi sorgente"
 
 #: src/storage_conf.c:299
-#, fuzzy
 msgid "device"
-msgstr "dispositivo a blocchi"
+msgstr "dispositivo"
 
 #: src/storage_conf.c:307
-#, fuzzy
 msgid "missing source device path"
-msgstr "informazioni dispositivo root mancanti"
+msgstr "percorso dispositivo sorgente mancante"
 
 #: src/storage_conf.c:332
-#, fuzzy, c-format
+#, c-format
 msgid "unknown auth type '%s'"
-msgstr "Tipo di OS sconosciuto %s"
+msgstr "tipo di auth sconosciuta '%s'"
 
 #: src/storage_conf.c:349
-#, fuzzy
 msgid "missing target path"
-msgstr "informazioni target mancanti per il dispositivo"
+msgstr "percorso destinazione mancante"
 
 #: src/storage_conf.c:381 src/storage_conf.c:769
 msgid "malformed xml document"
-msgstr ""
+msgstr "documento xml malformato"
 
 #: src/storage_conf.c:388 src/storage_conf.c:776
 msgid "xmlXPathContext"
-msgstr ""
+msgstr "xmlXPathContext"
 
 #: src/storage_conf.c:395 src/storage_conf.c:783
-#, fuzzy
 msgid "missing root element"
-msgstr "informazioni dispositivo root mancanti"
+msgstr "elemento root mancante"
 
 #: src/storage_conf.c:432
-#, fuzzy
 msgid "unexpected pool type"
-msgstr "tipo mime inaspettato"
+msgstr "tipo pool inaspettato"
 
 #: src/storage_conf.c:543 src/storage_conf.c:906
 msgid "xml"
-msgstr ""
+msgstr "xml"
 
 #: src/storage_conf.c:575 src/storage_conf.c:585
 msgid "missing owner element"
-msgstr ""
+msgstr "elemento owner mancante"
 
 #: src/storage_conf.c:649
-#, fuzzy, c-format
+#, c-format
 msgid "unknown size units '%s'"
-msgstr "host %s sconosciuto"
+msgstr "unità di dimensione sconosciute '%s'"
 
 #: src/storage_conf.c:656
 msgid "malformed capacity element"
-msgstr ""
+msgstr "elemento capacity malformato"
 
 #: src/storage_conf.c:661
 msgid "capacity element value too large"
-msgstr ""
+msgstr "valore elemento capacità troppo elevato"
 
 #: src/storage_conf.c:708
 msgid "missing capacity element"
-msgstr ""
+msgstr "elemento capacity mancante"
 
 #: src/storage_conf.c:1016
 msgid "pool"
-msgstr ""
+msgstr "pool"
 
 #: src/storage_conf.c:1145
 #, c-format
 msgid "cannot create config directory %s: %s"
-msgstr ""
+msgstr "impossibile creare la directory di configurazione %s: %s"
 
 #: src/storage_conf.c:1153
 msgid "cannot construct config file path"
-msgstr ""
+msgstr "impossibile costruire il percorso del file di configurazione"
 
 #: src/storage_conf.c:1158
 msgid "configFile"
-msgstr ""
+msgstr "configFile"
 
 #: src/storage_conf.c:1165
 msgid "cannot construct autostart link path"
-msgstr ""
+msgstr "impossibile costruire il percorso del link di avvio automatico"
 
 #: src/storage_conf.c:1173
 msgid "config file"
-msgstr ""
+msgstr "file di configurazione"
 
 #: src/storage_conf.c:1182
-#, fuzzy
 msgid "failed to generate XML"
-msgstr "Impossibile creare XML"
+msgstr "impossibile generare XML"
 
 #: src/storage_conf.c:1190
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create config file %s: %s"
-msgstr "errore nella scrittura del file di configurazione: %s"
+msgstr "impossibile creare il file di configurazione %s: %s"
 
 #: src/storage_conf.c:1198
-#, fuzzy, c-format
+#, c-format
 msgid "cannot write config file %s: %s"
-msgstr "errore nella scrittura del file di configurazione: %s"
+msgstr "impossibile scrivere il file di configurazione %s: %s"
 
 #: src/storage_conf.c:1205
 #, c-format
 msgid "cannot save config file %s: %s"
-msgstr ""
+msgstr "impossibile salvare il file di configurazione %s: %s"
 
 #: src/storage_conf.c:1226
-#, fuzzy, c-format
+#, c-format
 msgid "no config file for %s"
-msgstr "errore di sintassi del file di configurazione: %s"
+msgstr "nessun file di configurazione per %s"
 
 #: src/storage_conf.c:1232
 #, c-format
 msgid "cannot remove config for %s"
-msgstr ""
+msgstr "impossibile rimuovere la configurazione per %s"
 
 #: src/storage_driver.c:264 src/storage_driver.c:744 src/storage_driver.c:766
 msgid "no pool with matching uuid"
-msgstr ""
+msgstr "non ci sono pool con uuid corrispondente"
 
 #: src/storage_driver.c:282
 msgid "no pool with matching name"
-msgstr ""
+msgstr "non ci sono pool con nome corrispondente"
 
 #: src/storage_driver.c:332 src/storage_driver.c:369
-#, fuzzy
 msgid "names"
-msgstr "Nome"
+msgstr "nomi"
 
 #: src/storage_driver.c:404
 msgid "storage pool already exists"
-msgstr ""
+msgstr "storage pool già esistente"
 
 #: src/storage_driver.c:473 src/storage_driver.c:510 src/storage_driver.c:549
 #: src/storage_driver.c:580 src/storage_driver.c:621 src/storage_driver.c:658
@@ -1674,86 +1664,83 @@ msgstr ""
 #: src/storage_driver.c:1030 src/storage_driver.c:1093
 #: src/storage_driver.c:1137 src/storage_driver.c:1171
 msgid "no storage pool with matching uuid"
-msgstr ""
+msgstr "nessun storage pool con uuid corrispondente"
 
 #: src/storage_driver.c:479
 msgid "pool is still active"
-msgstr ""
+msgstr "il pool è ancora attivo"
 
 #: src/storage_driver.c:520
-#, fuzzy
 msgid "pool already active"
-msgstr "Il dominio risulta essere già inattivo"
+msgstr "il pool è già attivo"
 
 #: src/storage_driver.c:559
-#, fuzzy
 msgid "storage pool is already active"
-msgstr "Il dominio risulta essere già inattivo"
+msgstr "lo storage pool è già attivo"
 
 #: src/storage_driver.c:590 src/storage_driver.c:668 src/storage_driver.c:828
 #: src/storage_driver.c:853 src/storage_driver.c:898 src/storage_driver.c:982
 #: src/storage_driver.c:1036 src/storage_driver.c:1099
 #: src/storage_driver.c:1143 src/storage_driver.c:1177
-#, fuzzy
 msgid "storage pool is not active"
-msgstr "il percorso del log non è un file"
+msgstr "lo storage pool non è attivo"
 
 #: src/storage_driver.c:631
 msgid "storage pool is still active"
-msgstr ""
+msgstr "lo storage pool è ancora attivo"
 
 #: src/storage_driver.c:637
 msgid "pool does not support volume delete"
-msgstr ""
+msgstr "il pool non supporta la cancellazione del volume"
 
 #: src/storage_driver.c:772
 msgid "pool has no config file"
-msgstr ""
+msgstr "il pool non ha un file di configurazione"
 
 #: src/storage_driver.c:786
 #, c-format
 msgid "cannot create autostart directory %s: %s"
-msgstr ""
+msgstr "impossibile creare directory di avvio automatico %s: %s"
 
 #: src/storage_driver.c:793
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create symlink '%s' to '%s': %s"
-msgstr "Impossibile salvare il dominio %s su %s"
+msgstr "Impossibile creare il symlink '%s' su '%s': %s"
 
 #: src/storage_driver.c:802
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to delete symlink '%s': %s"
-msgstr "Impossibile aprire '%s': %s"
+msgstr "Impossibile eliminare il symlink '%s': %s"
 
 #: src/storage_driver.c:906 src/storage_driver.c:1047
 #: src/storage_driver.c:1107 src/storage_driver.c:1151
 #: src/storage_driver.c:1185
 msgid "no storage vol with matching name"
-msgstr ""
+msgstr "nessun vol di storage corrispondente al nome"
 
 #: src/storage_driver.c:935
 msgid "no storage vol with matching key"
-msgstr ""
+msgstr "nessun vol di storage con chiave corrispondente"
 
 #: src/storage_driver.c:960
 msgid "no storage vol with matching path"
-msgstr ""
+msgstr "nessun vol di storage con percorso corrispondente"
 
 #: src/storage_driver.c:995
 msgid "storage vol already exists"
-msgstr ""
+msgstr "il volume di storage esiste già"
 
 #: src/storage_driver.c:1002
 msgid "storage pool does not support volume creation"
-msgstr ""
+msgstr "lo storage pool non supporta la creazione del volume"
 
 #: src/storage_driver.c:1053
 msgid "storage pool does not support vol deletion"
-msgstr ""
+msgstr "lo storage pool non supporta la cancellazione del vol"
 
 #: src/sexpr.c:59
 msgid "failed to allocate a node"
-msgstr "impossibile assegnare un nodo"
+msgstr "impossibile allocare un nodo"
 
 #: src/sexpr.c:352 src/sexpr.c:367
 msgid "failed to copy a string"
@@ -1793,15 +1780,15 @@ msgstr "vcpus del dominio"
 
 #: src/test.c:298
 msgid "domain reboot behaviour"
-msgstr "comportamente durante il riavvio del dominio"
+msgstr "comportamento del dominio durante il riavvio"
 
 #: src/test.c:308
 msgid "domain poweroff behaviour"
-msgstr "comportamento poweroff del dominio"
+msgstr "comportamento del dominio in caso di poweroff"
 
 #: src/test.c:318
 msgid "domain crash behaviour"
-msgstr "comportamento di crash del dominio"
+msgstr "comportamento del dominio in caso di crash"
 
 #: src/test.c:392
 msgid "load domain definition file"
@@ -1811,21 +1798,21 @@ msgstr "carica file di definizione del dominio"
 msgid "network"
 msgstr "rete"
 
-#: src/test.c:439 src/virsh.c:2724
+#: src/test.c:439 src/virsh.c:2725
 msgid "network name"
 msgstr "nome rete"
 
-#: src/test.c:447 src/test.c:451 src/virsh.c:2615
+#: src/test.c:447 src/test.c:451 src/virsh.c:2616
 msgid "network uuid"
 msgstr "uuid di rete"
 
 #: src/test.c:459
 msgid "network forward"
-msgstr "invio di rete"
+msgstr "forward di rete"
 
 #: src/test.c:468 src/test.c:478 src/test.c:483
 msgid "ip address"
-msgstr "Indirizzo ip"
+msgstr "indirizzo ip"
 
 #: src/test.c:473
 msgid "ip netmask"
@@ -1849,27 +1836,27 @@ msgstr "nodo"
 
 #: src/test.c:723
 msgid "node cpu numa nodes"
-msgstr "nodo numa della cpu"
+msgstr "nodi numa della cpu del nodo"
 
 #: src/test.c:731
 msgid "node cpu sockets"
-msgstr "nodo dei socket della cpu"
+msgstr "socket della cpu del nodo"
 
 #: src/test.c:739
 msgid "node cpu cores"
-msgstr "nodo dei core della cpu"
+msgstr "numero di core della cpu del nodo"
 
 #: src/test.c:747
 msgid "node cpu threads"
-msgstr "nodo dei thread della cpu"
+msgstr "thread delle cpu del nodo"
 
 #: src/test.c:758
 msgid "node active cpu"
-msgstr "nodo della cpu attiva"
+msgstr "cpu attiva del nodo"
 
 #: src/test.c:765
 msgid "node cpu mhz"
-msgstr "nodo mhz della cpu"
+msgstr "mhz della cpu del nodo"
 
 #: src/test.c:780
 msgid "node memory"
@@ -1877,7 +1864,7 @@ msgstr "memoria del nodo"
 
 #: src/test.c:786
 msgid "node domain list"
-msgstr "elenco dominio del nodo"
+msgstr "elenco dei domini del nodo"
 
 #: src/test.c:796
 msgid "resolving domain filename"
@@ -1919,6 +1906,7 @@ msgstr "La rete è già in esecuzione"
 #, c-format
 msgid "Falling back to pseudorandom UUID, failed to generate random bytes: %s"
 msgstr ""
+"Ritorno all'UUID pseudorandom, generazione dei bytes randomici fallita: %s"
 
 #: src/virsh.c:342
 msgid "print help"
@@ -1926,7 +1914,7 @@ msgstr "stampa aiuto"
 
 #: src/virsh.c:343
 msgid "Prints global help or command specific help."
-msgstr "Stampa l'aiuto globale o l'aiuto specifico di un comando."
+msgstr "Stampare l'aiuto globale o l'aiuto specifico di un comando."
 
 #: src/virsh.c:349
 msgid "name of command"
@@ -1954,14 +1942,14 @@ msgstr ""
 #: src/virsh.c:770 src/virsh.c:837 src/virsh.c:1057 src/virsh.c:1101
 #: src/virsh.c:1290 src/virsh.c:1335 src/virsh.c:1374 src/virsh.c:1413
 #: src/virsh.c:1452 src/virsh.c:1491 src/virsh.c:1610 src/virsh.c:1697
-#: src/virsh.c:1825 src/virsh.c:1882 src/virsh.c:1939 src/virsh.c:2061
-#: src/virsh.c:2202 src/virsh.c:4316 src/virsh.c:4392 src/virsh.c:4453
-#: src/virsh.c:4509 src/virsh.c:4565 src/virsh.c:4679 src/virsh.c:4798
-#: src/virsh.c:4961
+#: src/virsh.c:1826 src/virsh.c:1883 src/virsh.c:1940 src/virsh.c:2062
+#: src/virsh.c:2203 src/virsh.c:4317 src/virsh.c:4393 src/virsh.c:4454
+#: src/virsh.c:4510 src/virsh.c:4566 src/virsh.c:4680 src/virsh.c:4799
+#: src/virsh.c:4962
 msgid "domain name, id or uuid"
 msgstr "nome del dominio, id o uuid"
 
-#: src/virsh.c:383 src/virsh.c:2266 src/virsh.c:2774
+#: src/virsh.c:383 src/virsh.c:2267 src/virsh.c:2775
 msgid "disable autostarting"
 msgstr "disabilita avvio automatico"
 
@@ -1973,8 +1961,7 @@ msgstr "Impossibile contrassegnare il dominio %s come auto avviante"
 #: src/virsh.c:407
 #, c-format
 msgid "Failed to unmark domain %s as autostarted"
-msgstr ""
-"Impossibile rimuovere il contrassegno di avvio automatico dal dominio %s"
+msgstr "Impossibile disabilitare l'avvio automatico del dominio %s"
 
 #: src/virsh.c:414
 #, c-format
@@ -1988,13 +1975,13 @@ msgstr "Rimozione contrassegno di avvio automatico al dominio %s effettuata\n"
 
 #: src/virsh.c:427
 msgid "(re)connect to hypervisor"
-msgstr "(re)collega all'hypervisor"
+msgstr "(ri)connettersi all'hypervisor"
 
 #: src/virsh.c:429
 msgid ""
 "Connect to local hypervisor. This is built-in command after shell start up."
 msgstr ""
-"Collega all'hypervisor locale. Questo è un comando interno dopo l'avvio "
+"Connettersi all'hypervisor locale. Questo è un comando interno dopo l'avvio "
 "della shell."
 
 #: src/virsh.c:434
@@ -2003,11 +1990,11 @@ msgstr "URI di connessione dell'hypervisor"
 
 #: src/virsh.c:435
 msgid "read-only connection"
-msgstr "collegamento di sola lettura"
+msgstr "collegamento in sola lettura"
 
 #: src/virsh.c:447
 msgid "Failed to disconnect from the hypervisor"
-msgstr "Impossibile scollegarsi dall'hypervisor"
+msgstr "Impossibile disconnettersi dall'hypervisor"
 
 #: src/virsh.c:465
 msgid "Failed to connect to the hypervisor"
@@ -2015,11 +2002,11 @@ msgstr "Impossibile collegarsi all'hypervisor"
 
 #: src/virsh.c:475
 msgid "connect to the guest console"
-msgstr "connettersi alla console ospite"
+msgstr "connettersi alla console guest"
 
 #: src/virsh.c:477
 msgid "Connect the virtual serial console for the guest"
-msgstr "Connettere la console virtuale seriale per l'ospite"
+msgstr "Connettere la console seriale virtuale per il guest"
 
 #: src/virsh.c:524
 msgid "No console available for domain\n"
@@ -2027,7 +2014,7 @@ msgstr "Nessuna console disponibile per il dominio\n"
 
 #: src/virsh.c:541
 msgid "console not implemented on this platform"
-msgstr ""
+msgstr "la console non è implementata su questa piattaforma"
 
 #: src/virsh.c:552
 msgid "list domains"
@@ -2035,19 +2022,19 @@ msgstr "elenca domini"
 
 #: src/virsh.c:553
 msgid "Returns list of domains."
-msgstr "Ritorna elenco dei domini"
+msgstr "Mostrare l'elenco dei domini"
 
 #: src/virsh.c:558
 msgid "list inactive domains"
-msgstr "elenca domini inattivi"
+msgstr "elencare domini inattivi"
 
 #: src/virsh.c:559
 msgid "list inactive & active domains"
-msgstr "elenca domini inattivi & attivi"
+msgstr "elencare domini inattivi & attivi"
 
 #: src/virsh.c:581 src/virsh.c:588
 msgid "Failed to list active domains"
-msgstr "Impossibile elencare domini attivi"
+msgstr "Impossibile elencare i domini attivi"
 
 #: src/virsh.c:599 src/virsh.c:607
 msgid "Failed to list inactive domains"
@@ -2057,15 +2044,15 @@ msgstr "Impossibile elencare domini inattivi"
 msgid "Id"
 msgstr "Id"
 
-#: src/virsh.c:616 src/virsh.c:2549 src/virsh.c:3366 src/virsh.c:4032
+#: src/virsh.c:616 src/virsh.c:2550 src/virsh.c:3367 src/virsh.c:4033
 msgid "Name"
 msgstr "Nome"
 
-#: src/virsh.c:616 src/virsh.c:2549 src/virsh.c:3366
+#: src/virsh.c:616 src/virsh.c:2550 src/virsh.c:3367
 msgid "State"
 msgstr "Stato"
 
-#: src/virsh.c:629 src/virsh.c:651 src/virsh.c:5887 src/virsh.c:5903
+#: src/virsh.c:629 src/virsh.c:651 src/virsh.c:5888 src/virsh.c:5904
 msgid "no state"
 msgstr "nessuno stato"
 
@@ -2074,8 +2061,9 @@ msgid "domain state"
 msgstr "stato del dominio"
 
 #: src/virsh.c:671
-msgid "Returns state about a running domain."
-msgstr "Ritorna lo stato di un dominio in esecuzione."
+#, fuzzy
+msgid "Returns state about a domain."
+msgstr "Mostrare lo stato di un dominio in esecuzione."
 
 #: src/virsh.c:707
 msgid "get device block stats for a domain"
@@ -2132,11 +2120,11 @@ msgstr "Impossibile sospendere il dominio %s"
 
 #: src/virsh.c:870
 msgid "create a domain from an XML file"
-msgstr "crea un dominio da un file XML"
+msgstr "creare un dominio da un file XML"
 
 #: src/virsh.c:871
 msgid "Create a domain."
-msgstr "Crea un dominio."
+msgstr "Creare un dominio."
 
 #: src/virsh.c:876 src/virsh.c:924
 msgid "file containing an XML domain description"
@@ -2154,7 +2142,7 @@ msgstr "Impossibile creare il dominio da %s"
 
 #: src/virsh.c:918
 msgid "define (but don't start) a domain from an XML file"
-msgstr "definire (ma non iniziare) un dominio da un file XML"
+msgstr "definire (ma non avviare) un dominio da un file XML"
 
 #: src/virsh.c:919
 msgid "Define a domain."
@@ -2176,9 +2164,9 @@ msgstr "rimuovere la definizione di un dominio inattivo"
 
 #: src/virsh.c:967
 msgid "Undefine the configuration for an inactive domain."
-msgstr "Rimuovere la definizione della configurazione per un dominio inattivo."
+msgstr "Rimozione della configurazione per un dominio inattivo."
 
-#: src/virsh.c:972 src/virsh.c:2130
+#: src/virsh.c:972 src/virsh.c:2131
 msgid "domain name or uuid"
 msgstr "nome del dominio o uuid"
 
@@ -2194,11 +2182,11 @@ msgstr "Impossibile rimuovere la definizione del dominio %s"
 
 #: src/virsh.c:1006
 msgid "start a (previously defined) inactive domain"
-msgstr "inizia un (precedentemente definito) dominio inattivo"
+msgstr "avviare un (precedentemente definito) dominio inattivo"
 
 #: src/virsh.c:1007
 msgid "Start a domain."
-msgstr "Inizia un dominio."
+msgstr "Avviare un dominio."
 
 #: src/virsh.c:1012
 msgid "name of the inactive domain"
@@ -2206,25 +2194,25 @@ msgstr "nome del dominio inattivo"
 
 #: src/virsh.c:1029
 msgid "Domain is already active"
-msgstr "Il dominio risulta essere già inattivo"
+msgstr "Il dominio risulta essere già attivo"
 
 #: src/virsh.c:1035
 #, c-format
 msgid "Domain %s started\n"
-msgstr "Dominio %s iniziato\n"
+msgstr "Dominio %s avviato\n"
 
 #: src/virsh.c:1038
 #, c-format
 msgid "Failed to start domain %s"
-msgstr "Impossibile iniziare il dominio %s"
+msgstr "Impossibile avviare il dominio %s"
 
 #: src/virsh.c:1051
 msgid "save a domain state to a file"
-msgstr "salva lo stato di un dominio in un file"
+msgstr "salvare lo stato di un dominio in un file"
 
 #: src/virsh.c:1052
 msgid "Save a running domain."
-msgstr "Salva un dominio in esecuzione."
+msgstr "Salvare un dominio in esecuzione."
 
 #: src/virsh.c:1058
 msgid "where to save the data"
@@ -2240,13 +2228,14 @@ msgstr "Dominio %s salvato su %s\n"
 msgid "Failed to save domain %s to %s"
 msgstr "Impossibile salvare il dominio %s su %s"
 
+# Il termine "scheduler" è ratificato e non va tradotto.
 #: src/virsh.c:1095
 msgid "show/set scheduler parameters"
-msgstr "mostra/imposta i parametri del pianificatore"
+msgstr "mostrare/impostare i parametri dello scheduler"
 
 #: src/virsh.c:1096
 msgid "Show/Set scheduler parameters."
-msgstr "Mostra/Imposta i parametri del pianificatore."
+msgstr "Mostrare/Impostare i parametri dello scheduler."
 
 #: src/virsh.c:1102
 msgid "weight for XEN_CREDIT"
@@ -2258,15 +2247,15 @@ msgstr "protezione per XEN_CREDIT"
 
 #: src/virsh.c:1135
 msgid "Invalid value of weight"
-msgstr "valore non valido del peso"
+msgstr "Valore del parametro weight non valido"
 
 #: src/virsh.c:1145
 msgid "Invalid value of cap"
-msgstr "Valore non valido di protezione"
+msgstr "Valore del parametro cap non valido"
 
 #: src/virsh.c:1187 src/virsh.c:1191
 msgid "Scheduler"
-msgstr "Pianificatore"
+msgstr "Scheduler"
 
 #: src/virsh.c:1191
 msgid "Unknown"
@@ -2274,11 +2263,12 @@ msgstr "Sconosciuto"
 
 #: src/virsh.c:1246
 msgid "restore a domain from a saved state in a file"
-msgstr "ripristina un dominio da uno stato precedentemente salvato in un file"
+msgstr ""
+"ripristinare un dominio da uno stato precedentemente salvato in un file"
 
 #: src/virsh.c:1247
 msgid "Restore a domain."
-msgstr "Ripristina un dominio."
+msgstr "Ripristinare un dominio."
 
 #: src/virsh.c:1252
 msgid "the state to restore"
@@ -2296,11 +2286,11 @@ msgstr "Impossibile ripristinare il dominio da %s"
 
 #: src/virsh.c:1284
 msgid "dump the core of a domain to a file for analysis"
-msgstr "il core di un dominio è stato spostato in un file per l'analisi"
+msgstr "creare il dump del core di un dominio in un file per l'analisi"
 
 #: src/virsh.c:1285
 msgid "Core dump a domain."
-msgstr "Core dump di un domain."
+msgstr "Eseguire il core dump di un dominio."
 
 #: src/virsh.c:1291
 msgid "where to dump the core"
@@ -2336,11 +2326,11 @@ msgstr "Impossibile ripristinare il dominio %s"
 
 #: src/virsh.c:1368
 msgid "gracefully shutdown a domain"
-msgstr "arrestare un dominio correttamente"
+msgstr "arrestare un dominio (graceful shutdown)"
 
 #: src/virsh.c:1369
 msgid "Run shutdown in the target domain."
-msgstr "Esegui shutdown nel dominio target."
+msgstr "Eseguire shutdown nel dominio target."
 
 #: src/virsh.c:1392
 #, c-format
@@ -2358,7 +2348,7 @@ msgstr "riavvia un dominio"
 
 #: src/virsh.c:1408
 msgid "Run a reboot command in the target domain."
-msgstr "Esegui un comando di reboot nel dominio target"
+msgstr "Eseguire un comando di reboot nel dominio target."
 
 #: src/virsh.c:1431
 #, c-format
@@ -2372,11 +2362,11 @@ msgstr "Impossibile riavviare il dominio %s"
 
 #: src/virsh.c:1446
 msgid "destroy a domain"
-msgstr "distruggi un dominio"
+msgstr "distruggere un dominio"
 
 #: src/virsh.c:1447
 msgid "Destroy a given domain."
-msgstr "Distruggi un dato dominio."
+msgstr "Distruggere un dato dominio."
 
 #: src/virsh.c:1470
 #, c-format
@@ -2394,17 +2384,17 @@ msgstr "informazioni del dominio"
 
 #: src/virsh.c:1486
 msgid "Returns basic information about the domain."
-msgstr "Ritorna informazioni di base del dominio."
+msgstr "Mostrare le informazioni di base del dominio."
 
 #: src/virsh.c:1512 src/virsh.c:1514
 msgid "Id:"
 msgstr "Id:"
 
-#: src/virsh.c:1515 src/virsh.c:3471 src/virsh.c:3920
+#: src/virsh.c:1515 src/virsh.c:3472 src/virsh.c:3921
 msgid "Name:"
 msgstr "Nome:"
 
-#: src/virsh.c:1518 src/virsh.c:3474
+#: src/virsh.c:1518 src/virsh.c:3475
 msgid "UUID:"
 msgstr "UUID:"
 
@@ -2412,14 +2402,14 @@ msgstr "UUID:"
 msgid "OS Type:"
 msgstr "Tipo di OS:"
 
-#: src/virsh.c:1526 src/virsh.c:1654 src/virsh.c:3481 src/virsh.c:3485
-#: src/virsh.c:3489 src/virsh.c:3493
+#: src/virsh.c:1526 src/virsh.c:1654 src/virsh.c:3482 src/virsh.c:3486
+#: src/virsh.c:3490 src/virsh.c:3494
 msgid "State:"
 msgstr "Stato:"
 
-#: src/virsh.c:1529 src/virsh.c:2011
+#: src/virsh.c:1529 src/virsh.c:2012
 msgid "CPU(s):"
-msgstr "CPU(s):"
+msgstr "CPU:"
 
 #: src/virsh.c:1536 src/virsh.c:1661
 msgid "CPU time:"
@@ -2439,11 +2429,11 @@ msgstr "Memoria utilizzata:"
 
 #: src/virsh.c:1562
 msgid "NUMA free memory"
-msgstr "Memoria libera di NUMA"
+msgstr "Memoria libera NUMA"
 
 #: src/virsh.c:1563
 msgid "display available free memory for the NUMA cell."
-msgstr "visualizza memoria libera disponibila per la cella NUMA."
+msgstr "visualizza memoria libera disponibile per la cella NUMA."
 
 #: src/virsh.c:1568
 msgid "NUMA cell number"
@@ -2455,11 +2445,11 @@ msgstr "Totale"
 
 #: src/virsh.c:1604
 msgid "domain vcpu information"
-msgstr "Informazioni vcpu del dominio"
+msgstr "informazioni vcpu del dominio"
 
 #: src/virsh.c:1605
 msgid "Returns basic information about the domain virtual CPUs."
-msgstr "Ritorna informazioni di base sulle CPU virtuali del dominio."
+msgstr "Mostrare le informazioni di base sulle CPU virtuali del dominio."
 
 #: src/virsh.c:1652
 msgid "VCPU:"
@@ -2493,1183 +2483,1135 @@ msgstr "numero vcpu"
 msgid "host cpu number(s) (comma separated)"
 msgstr "numeri cpu host (separati da una virgola)"
 
-#: src/virsh.c:1754
-msgid "cpulist: Invalid format. Empty string."
-msgstr "cpulist: Formato invalido. Stringa vuota."
+#: src/virsh.c:1726
+msgid "vcpupin: Invalid or missing vCPU number."
+msgstr ""
 
-#: src/virsh.c:1764
+#: src/virsh.c:1755
+msgid "cpulist: Invalid format. Empty string."
+msgstr "cpulist: Formato non valido. Stringa vuota."
+
+#: src/virsh.c:1765
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
-"cpulist: %s: Formato invalido. È necessaria una cifra nella posizione %d "
-"(vicino '%c')."
+"cpulist: %s: Formato non valido. È necessaria una cifra nella posizione %d "
+"(vicino a '%c')."
 
-#: src/virsh.c:1774
+#: src/virsh.c:1775
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
 "c')."
 msgstr ""
-"cpulist: %s: Formato invalido. È necessaria una cifra o una virgola nella "
-"posizione %d (vicino '%c')."
+"cpulist: %s: Formato non valido. È necessaria una cifra o una virgola nella "
+"posizione %d (vicino a '%c')."
 
-#: src/virsh.c:1781
+#: src/virsh.c:1782
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
-msgstr "cpulist: %s: Formato invalido. Virgola finale nella posizione %d."
+msgstr "cpulist: %s: Formato non valido. Virgola finale nella posizione %d."
 
-#: src/virsh.c:1795
+#: src/virsh.c:1796
 #, c-format
 msgid "Physical CPU %d doesn't exist."
 msgstr "La CPU fisica %d non esiste."
 
-#: src/virsh.c:1819
+#: src/virsh.c:1820
 msgid "change number of virtual CPUs"
 msgstr "modifica numero di CPU virtuali"
 
-#: src/virsh.c:1820
-msgid "Change the number of virtual CPUs active in the guest domain."
+#: src/virsh.c:1821
+#, fuzzy
+msgid "Change the number of virtual CPUs in the guest domain."
 msgstr "Modifica il numero di CPU virtuali attive nel dominio guest."
 
-#: src/virsh.c:1826
+#: src/virsh.c:1827
 msgid "number of virtual CPUs"
 msgstr "numero di CPU virtuali"
 
-#: src/virsh.c:1846
+#: src/virsh.c:1847
 msgid "Invalid number of virtual CPUs."
-msgstr "Numero invalido di CPU virtuali."
+msgstr "Numero non valido di CPU virtuali."
 
-#: src/virsh.c:1858
+#: src/virsh.c:1859
 msgid "Too many virtual CPUs."
 msgstr "Troppe CPU virtuali."
 
-#: src/virsh.c:1876
-msgid "change memory allocation"
-msgstr "modifica assegnazione della memoria"
-
 #: src/virsh.c:1877
-msgid "Change the current memory allocation in the guest domain."
-msgstr "Modifica l'assegnazione della memoria attuale nel dominio guest."
+msgid "change memory allocation"
+msgstr "modifica allocazione della memoria"
 
-#: src/virsh.c:1883
+#: src/virsh.c:1878
+msgid "Change the current memory allocation in the guest domain."
+msgstr "Modifica l'allocazione della memoria attuale nel dominio guest."
+
+#: src/virsh.c:1884
 msgid "number of kilobytes of memory"
 msgstr "numero di kilobyte di memoria"
 
-#: src/virsh.c:1904 src/virsh.c:1916 src/virsh.c:1961
+#: src/virsh.c:1905 src/virsh.c:1917 src/virsh.c:1962
 #, c-format
 msgid "Invalid value of %d for memory size"
-msgstr "Il valore %d per la grandezza della memoria non è valido"
+msgstr "Valore %d per la grandezza della memoria non valido"
 
-#: src/virsh.c:1910
+#: src/virsh.c:1911
 msgid "Unable to verify MaxMemorySize"
 msgstr "Impossibile verificare DimensioneMemoriaMassima"
 
-#: src/virsh.c:1933
+#: src/virsh.c:1934
 msgid "change maximum memory limit"
 msgstr "modifica limite massimo della memoria"
 
-#: src/virsh.c:1934
+#: src/virsh.c:1935
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr ""
 "Modifica il limite massimo di allocazione della memoria nel dominio guest."
 
-#: src/virsh.c:1940
+#: src/virsh.c:1941
 msgid "maximum memory limit in kilobytes"
 msgstr "limite massimo della memoria in kilobyte"
 
-#: src/virsh.c:1967
+#: src/virsh.c:1968
 msgid "Unable to verify current MemorySize"
 msgstr "Impossibile verificare DimensioneMemoria corrente"
 
-#: src/virsh.c:1974
+#: src/virsh.c:1975
 msgid "Unable to shrink current MemorySize"
 msgstr "Impossibile diminuire la DimensioneMemoria corrente"
 
-#: src/virsh.c:1980
+#: src/virsh.c:1981
 msgid "Unable to change MaxMemorySize"
 msgstr "Impossibile modificare la DimensioneMemoriaMassima"
 
-#: src/virsh.c:1993
+#: src/virsh.c:1994
 msgid "node information"
 msgstr "informazione del nodo"
 
-#: src/virsh.c:1994
+#: src/virsh.c:1995
 msgid "Returns basic information about the node."
-msgstr "Ritorna informazioni di base sul nodo."
+msgstr "Mostrare le informazioni di base sul nodo."
 
-#: src/virsh.c:2007
+#: src/virsh.c:2008
 msgid "failed to get node information"
 msgstr "impossibile ottenere informazioni sul nodo"
 
-#: src/virsh.c:2010
+#: src/virsh.c:2011
 msgid "CPU model:"
 msgstr "Modello CPU:"
 
-#: src/virsh.c:2012
+#: src/virsh.c:2013
 msgid "CPU frequency:"
 msgstr "Frequenza CPU:"
 
-#: src/virsh.c:2013
+#: src/virsh.c:2014
 msgid "CPU socket(s):"
 msgstr "Socket CPU:"
 
-#: src/virsh.c:2014
+#: src/virsh.c:2015
 msgid "Core(s) per socket:"
 msgstr "Core per socket:"
 
-#: src/virsh.c:2015
+#: src/virsh.c:2016
 msgid "Thread(s) per core:"
 msgstr "Thread per core:"
 
-#: src/virsh.c:2016
+#: src/virsh.c:2017
 msgid "NUMA cell(s):"
 msgstr "Cella NUMA:"
 
-#: src/virsh.c:2017
+#: src/virsh.c:2018
 msgid "Memory size:"
 msgstr "Dimensione memoria:"
 
-#: src/virsh.c:2027
+#: src/virsh.c:2028
 msgid "capabilities"
 msgstr "capacità"
 
-#: src/virsh.c:2028
+#: src/virsh.c:2029
 msgid "Returns capabilities of hypervisor/driver."
-msgstr "Restituisce le capacità dell'ipervisore/driver."
+msgstr "Mostrare le capacità dell'hypervisor/driver."
 
-#: src/virsh.c:2041
+#: src/virsh.c:2042
 msgid "failed to get capabilities"
-msgstr "impossibile ottenere le capacità"
-
-#: src/virsh.c:2055
-msgid "domain information in XML"
-msgstr "informazioni dominio in XML"
+msgstr "impossibile ottenere le capabilities"
 
 #: src/virsh.c:2056
+msgid "domain information in XML"
+msgstr "informazioni del dominio in XML"
+
+#: src/virsh.c:2057
 msgid "Output the domain information as an XML dump to stdout."
-msgstr "Mostra le informazioni sul dominio come XML dump su stdout."
+msgstr "Mostrare le informazioni sul dominio in XML su stdout."
 
-#: src/virsh.c:2095
+#: src/virsh.c:2096
 msgid "convert a domain id or UUID to domain name"
-msgstr "converte un id o UUID del dominio in un nome del dominio"
+msgstr "converte un id o UUID di dominio in un nome di dominio"
 
-#: src/virsh.c:2100
+#: src/virsh.c:2101
 msgid "domain id or uuid"
 msgstr "id o uuid del dominio"
 
-#: src/virsh.c:2125
+#: src/virsh.c:2126
 msgid "convert a domain name or UUID to domain id"
-msgstr "converte un nome del dominio o UUID in id del dominio"
+msgstr "converte un UUID o un nome di dominio in un id di dominio"
 
-#: src/virsh.c:2160
+#: src/virsh.c:2161
 msgid "convert a domain name or id to domain UUID"
-msgstr "converte un nome del dominio o id in UUID del dominio"
+msgstr "converte un nome o un id di dominio in un UUID di dominio"
 
-#: src/virsh.c:2165
+#: src/virsh.c:2166
 msgid "domain id or name"
 msgstr "id o nome del dominio"
 
-#: src/virsh.c:2184
+#: src/virsh.c:2185
 msgid "failed to get domain UUID"
 msgstr "impossibile ottenere l'UUID del dominio"
 
-#: src/virsh.c:2195
-msgid "migrate domain to another host"
-msgstr "migra dominio su di un altro host"
-
 #: src/virsh.c:2196
+msgid "migrate domain to another host"
+msgstr "migrare dominio su di un altro host"
+
+#: src/virsh.c:2197
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
-"Migra dominio su di un altro host.  Aggiungi --live per un migrazione live."
+"Migrare dominio su di un altro host.  Aggiungere --live per un migrazione "
+"live."
 
-#: src/virsh.c:2201
+#: src/virsh.c:2202
 msgid "live migration"
-msgstr "migrazione live"
-
-#: src/virsh.c:2203
-msgid "connection URI of the destination host"
-msgstr "collegamento URI dell'host di destinazione"
+msgstr "migrazione a caldo"
 
 #: src/virsh.c:2204
+msgid "connection URI of the destination host"
+msgstr "URI di collegamento all'host di destinazione"
+
+#: src/virsh.c:2205
 msgid "migration URI, usually can be omitted"
 msgstr "URI di migrazione, generalmente può essere omesso"
 
-#: src/virsh.c:2226
+#: src/virsh.c:2227
 msgid "migrate: Missing desturi"
-msgstr "migrare: desturi non specificato"
+msgstr "migrazione: desturi non specificato"
 
-#: src/virsh.c:2258
+#: src/virsh.c:2259
 msgid "autostart a network"
 msgstr "avvio automatico di una rete"
 
-#: src/virsh.c:2260
+#: src/virsh.c:2261
 msgid "Configure a network to be automatically started at boot."
 msgstr ""
 "Configura una rete per essere automaticamente avviata all'avvio del sistema."
 
-#: src/virsh.c:2265 src/virsh.c:2686
+#: src/virsh.c:2266 src/virsh.c:2687
 msgid "network name or uuid"
-msgstr "nome della rete o uuid"
+msgstr "nome o uuid della rete"
 
-#: src/virsh.c:2287
+#: src/virsh.c:2288
 #, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "Impossibile contrassegnare la rete %s come auto avviante"
 
-#: src/virsh.c:2290
+#: src/virsh.c:2291
 #, c-format
 msgid "failed to unmark network %s as autostarted"
-msgstr ""
-"Impossibile rimuovere il contrassegno di avvio automatico dalla rete %s"
+msgstr "Impossibile disabilitare l'avvio automatico della rete %s"
 
-#: src/virsh.c:2297
+#: src/virsh.c:2298
 #, c-format
 msgid "Network %s marked as autostarted\n"
 msgstr "La rete %s è stata contrassegnata come auto avviante\n"
 
-#: src/virsh.c:2299
+#: src/virsh.c:2300
 #, c-format
 msgid "Network %s unmarked as autostarted\n"
 msgstr "Rimozione contrassegno di avvio automatico della rete %s effettuato\n"
 
-#: src/virsh.c:2309
-msgid "create a network from an XML file"
-msgstr "crea una rete da un file XML"
-
 #: src/virsh.c:2310
-msgid "Create a network."
-msgstr "Crea una rete."
+msgid "create a network from an XML file"
+msgstr "creare una rete da un file XML"
 
-#: src/virsh.c:2315 src/virsh.c:2363
+#: src/virsh.c:2311
+msgid "Create a network."
+msgstr "Creare una rete."
+
+#: src/virsh.c:2316 src/virsh.c:2364
 msgid "file containing an XML network description"
 msgstr "il file contiene una descrizione della rete XML"
 
-#: src/virsh.c:2342
+#: src/virsh.c:2343
 #, c-format
 msgid "Network %s created from %s\n"
 msgstr "Rete %s creata da %s\n"
 
-#: src/virsh.c:2345
+#: src/virsh.c:2346
 #, c-format
 msgid "Failed to create network from %s"
 msgstr "Impossibile creare la rete da %s"
 
-#: src/virsh.c:2357
+#: src/virsh.c:2358
 msgid "define (but don't start) a network from an XML file"
 msgstr "definire (ma non avviare) una rete da un file XML"
 
-#: src/virsh.c:2358
+#: src/virsh.c:2359
 msgid "Define a network."
 msgstr "Definire una rete."
 
-#: src/virsh.c:2390
+#: src/virsh.c:2391
 #, c-format
 msgid "Network %s defined from %s\n"
 msgstr "Rete %s definita da %s\n"
 
-#: src/virsh.c:2393
+#: src/virsh.c:2394
 #, c-format
 msgid "Failed to define network from %s"
 msgstr "Impossibile definire la rete da %s"
 
-#: src/virsh.c:2405
-msgid "destroy a network"
-msgstr "distruggi una rete"
-
 #: src/virsh.c:2406
+msgid "destroy a network"
+msgstr "distruggere una rete"
+
+#: src/virsh.c:2407
 msgid "Destroy a given network."
-msgstr "Distruggi una data rete."
+msgstr "Distruggere una data rete."
 
-#: src/virsh.c:2411 src/virsh.c:2451
+#: src/virsh.c:2412 src/virsh.c:2452
 msgid "network name, id or uuid"
-msgstr "nome della rete, id o uuid"
+msgstr "nome, id o uuid della rete"
 
-#: src/virsh.c:2429
+#: src/virsh.c:2430
 #, c-format
 msgid "Network %s destroyed\n"
 msgstr "Rete %s distrutta\n"
 
-#: src/virsh.c:2431
+#: src/virsh.c:2432
 #, c-format
 msgid "Failed to destroy network %s"
 msgstr "Impossibile distruggere la rete %s"
 
-#: src/virsh.c:2445
+#: src/virsh.c:2446
 msgid "network information in XML"
 msgstr "informazioni rete in XML"
 
-#: src/virsh.c:2446
+#: src/virsh.c:2447
 msgid "Output the network information as an XML dump to stdout."
-msgstr "Mostra le informazioni sulla rete come XML dump su stdout."
-
-#: src/virsh.c:2486
-msgid "list networks"
-msgstr "mostra le reti"
+msgstr "Mostrare le informazioni sulla rete in XML su stdout."
 
 #: src/virsh.c:2487
-msgid "Returns list of networks."
-msgstr "Restituisce l'elenco delle reti"
+msgid "list networks"
+msgstr "mostrare le reti"
 
-#: src/virsh.c:2492
-msgid "list inactive networks"
-msgstr "elenca le reti inattive"
+#: src/virsh.c:2488
+msgid "Returns list of networks."
+msgstr "Mostrare l'elenco delle reti"
 
 #: src/virsh.c:2493
-msgid "list inactive & active networks"
-msgstr "elenca reti inattive & attive"
+msgid "list inactive networks"
+msgstr "elencare le reti inattive"
 
-#: src/virsh.c:2513 src/virsh.c:2521
+#: src/virsh.c:2494
+msgid "list inactive & active networks"
+msgstr "elencare reti inattive & attive"
+
+#: src/virsh.c:2514 src/virsh.c:2522
 msgid "Failed to list active networks"
 msgstr "Impossibile elencare le reti attive"
 
-#: src/virsh.c:2532 src/virsh.c:2540
+#: src/virsh.c:2533 src/virsh.c:2541
 msgid "Failed to list inactive networks"
 msgstr "Impossibile elencare le reti inattive"
 
-#: src/virsh.c:2549 src/virsh.c:3366
+#: src/virsh.c:2550 src/virsh.c:3367
 msgid "Autostart"
 msgstr "Avvio automatico"
 
-#: src/virsh.c:2564 src/virsh.c:2587 src/virsh.c:3381 src/virsh.c:3404
+#: src/virsh.c:2565 src/virsh.c:2588 src/virsh.c:3382 src/virsh.c:3405
 msgid "no autostart"
-msgstr "Non avviare automaticamente"
+msgstr "non avviare automaticamente"
 
-#: src/virsh.c:2570 src/virsh.c:3387
+#: src/virsh.c:2571 src/virsh.c:3388
 msgid "active"
 msgstr "attivo"
 
-#: src/virsh.c:2593 src/virsh.c:3410 src/virsh.c:3482
+#: src/virsh.c:2594 src/virsh.c:3411 src/virsh.c:3483
 msgid "inactive"
 msgstr "non attivo"
 
-#: src/virsh.c:2610
+#: src/virsh.c:2611
 msgid "convert a network UUID to network name"
-msgstr "converte una UUID di rete in un nome di rete"
-
-#: src/virsh.c:2641
-msgid "start a (previously defined) inactive network"
-msgstr "avvia una (precedentemente definita) rete non attiva"
+msgstr "converte un UUID di rete in un nome di rete"
 
 #: src/virsh.c:2642
-msgid "Start a network."
-msgstr "Avvia una rete."
+msgid "start a (previously defined) inactive network"
+msgstr "avviare una (precedentemente definita) rete non attiva"
 
-#: src/virsh.c:2647
+#: src/virsh.c:2643
+msgid "Start a network."
+msgstr "Avviare una rete."
+
+#: src/virsh.c:2648
 msgid "name of the inactive network"
 msgstr "nome della rete non attiva"
 
-#: src/virsh.c:2664
+#: src/virsh.c:2665
 #, c-format
 msgid "Network %s started\n"
 msgstr "Rete %s avviata\n"
 
-#: src/virsh.c:2667
+#: src/virsh.c:2668
 #, c-format
 msgid "Failed to start network %s"
 msgstr "Impossibile avviare la rete %s"
 
-#: src/virsh.c:2680
+#: src/virsh.c:2681
 msgid "undefine an inactive network"
 msgstr "rimuovere la definizione di una rete non attiva"
 
-#: src/virsh.c:2681
+#: src/virsh.c:2682
 msgid "Undefine the configuration for an inactive network."
-msgstr "Rimuovere la definizione della configurazione per una rete non attiva."
+msgstr "Rimozione della configurazione per una rete non attiva."
 
-#: src/virsh.c:2704
+#: src/virsh.c:2705
 #, c-format
 msgid "Network %s has been undefined\n"
 msgstr "È stata rimossa la definizione della rete %s\n"
 
-#: src/virsh.c:2706
+#: src/virsh.c:2707
 #, c-format
 msgid "Failed to undefine network %s"
 msgstr "Impossibile rimuovere la definizione della rete %s"
 
-#: src/virsh.c:2719
+#: src/virsh.c:2720
 msgid "convert a network name to network UUID"
-msgstr "converte un nome di rete in UUID di rete"
+msgstr "converte un nome di rete in un UUID di rete"
 
-#: src/virsh.c:2744
+#: src/virsh.c:2745
 msgid "failed to get network UUID"
 msgstr "impossibile ottenere l'UUID di rete"
 
-#: src/virsh.c:2766
-#, fuzzy
+#: src/virsh.c:2767
 msgid "autostart a pool"
-msgstr "Avvio automatico di un dominio"
+msgstr "avvio automatico di un pool"
 
-#: src/virsh.c:2768
-#, fuzzy
+#: src/virsh.c:2769
 msgid "Configure a pool to be automatically started at boot."
 msgstr ""
-"Configura un dominio per essere avviato automaticamente all'avvio del "
-"sistema."
+"Configura un pool per essere avviato automaticamente all'avvio del sistema."
 
-#: src/virsh.c:2773 src/virsh.c:3108 src/virsh.c:3148 src/virsh.c:3188
-#: src/virsh.c:3228 src/virsh.c:3268 src/virsh.c:3453 src/virsh.c:3724
-#: src/virsh.c:3860 src/virsh.c:3902 src/virsh.c:3954 src/virsh.c:3996
-#: src/virsh.c:4140
-#, fuzzy
+#: src/virsh.c:2774 src/virsh.c:3109 src/virsh.c:3149 src/virsh.c:3189
+#: src/virsh.c:3229 src/virsh.c:3269 src/virsh.c:3454 src/virsh.c:3725
+#: src/virsh.c:3861 src/virsh.c:3903 src/virsh.c:3955 src/virsh.c:3997
+#: src/virsh.c:4141
 msgid "pool name or uuid"
-msgstr "nome del dominio o uuid"
+msgstr "nome o uuid del pool"
 
-#: src/virsh.c:2795
-#, fuzzy, c-format
+#: src/virsh.c:2796
+#, c-format
 msgid "failed to mark pool %s as autostarted"
-msgstr "Impossibile contrassegnare la rete %s come auto avviante"
+msgstr "Impossibile contrassegnare il pool %s come auto avviante"
 
-#: src/virsh.c:2798
-#, fuzzy, c-format
+#: src/virsh.c:2799
+#, c-format
 msgid "failed to unmark pool %s as autostarted"
-msgstr ""
-"Impossibile rimuovere il contrassegno di avvio automatico dalla rete %s"
+msgstr "Impossibile disabilitare l'avvio automatico del pool %s"
 
-#: src/virsh.c:2805
-#, fuzzy, c-format
+#: src/virsh.c:2806
+#, c-format
 msgid "Pool %s marked as autostarted\n"
-msgstr "Dominio %s contrassegnato come auto avviante\n"
+msgstr "Pool %s contrassegnato come auto avviante\n"
 
-#: src/virsh.c:2807
-#, fuzzy, c-format
+#: src/virsh.c:2808
+#, c-format
 msgid "Pool %s unmarked as autostarted\n"
-msgstr "Rimozione contrassegno di avvio automatico al dominio %s effettuata\n"
+msgstr "Marcatura di avvio automatico del pool %s rimossa\n"
 
-#: src/virsh.c:2817
-#, fuzzy
+#: src/virsh.c:2818
 msgid "create a pool from an XML file"
-msgstr "crea un dominio da un file XML"
+msgstr "creare un pool da un file XML"
 
-#: src/virsh.c:2818 src/virsh.c:2865
-#, fuzzy
+#: src/virsh.c:2819 src/virsh.c:2866
 msgid "Create a pool."
-msgstr "Crea un dominio."
+msgstr "Creare un pool."
 
-#: src/virsh.c:2823 src/virsh.c:2965
-#, fuzzy
+#: src/virsh.c:2824 src/virsh.c:2966
 msgid "file containing an XML pool description"
-msgstr "il file contiene una descrizione XML del dominio"
+msgstr "il file contenente una descrizione XML del pool"
 
-#: src/virsh.c:2850
-#, fuzzy, c-format
+#: src/virsh.c:2851
+#, c-format
 msgid "Pool %s created from %s\n"
-msgstr "Dominio %s creato da %s\n"
+msgstr "Pool %s creato da %s\n"
 
-#: src/virsh.c:2853
-#, fuzzy, c-format
+#: src/virsh.c:2854
+#, c-format
 msgid "Failed to create pool from %s"
-msgstr "Impossibile creare il dominio da %s"
+msgstr "Impossibile creare il pool da %s"
 
-#: src/virsh.c:2864
-#, fuzzy
+#: src/virsh.c:2865
 msgid "create a pool from a set of args"
-msgstr "crea un dominio da un file XML"
-
-#: src/virsh.c:2870 src/virsh.c:3013
-#, fuzzy
-msgid "name of the pool"
-msgstr "nome del dominio inattivo"
+msgstr "creare un pool da un insieme di argomenti"
 
 #: src/virsh.c:2871 src/virsh.c:3014
-msgid "type of the pool"
-msgstr ""
+msgid "name of the pool"
+msgstr "nome del pool"
 
 #: src/virsh.c:2872 src/virsh.c:3015
-msgid "source-host for underlying storage"
-msgstr ""
+msgid "type of the pool"
+msgstr "tipo di pool"
 
 #: src/virsh.c:2873 src/virsh.c:3016
-msgid "source path for underlying storage"
-msgstr ""
+msgid "source-host for underlying storage"
+msgstr "source-host per lo storage soggiacente"
 
 #: src/virsh.c:2874 src/virsh.c:3017
-msgid "source device for underlying storage"
-msgstr ""
+msgid "source path for underlying storage"
+msgstr "percorso sorgente per lo storage soggiacente"
 
 #: src/virsh.c:2875 src/virsh.c:3018
+msgid "source device for underlying storage"
+msgstr "dispositivo sorgente per lo storage soggiacente"
+
+#: src/virsh.c:2876 src/virsh.c:3019
 msgid "target for underlying storage"
-msgstr ""
+msgstr "destinazione per lo storage soggiacente"
 
-#: src/virsh.c:2940
-#, fuzzy, c-format
+#: src/virsh.c:2941
+#, c-format
 msgid "Pool %s created\n"
-msgstr "Dominio %s creato da %s\n"
+msgstr "Pool %s creato\n"
 
-#: src/virsh.c:2944
-#, fuzzy, c-format
+#: src/virsh.c:2945
+#, c-format
 msgid "Failed to create pool %s"
-msgstr "Impossibile creare il dominio da %s"
+msgstr "Impossibile creare il pool %s"
 
-#: src/virsh.c:2959
-#, fuzzy
+#: src/virsh.c:2960
 msgid "define (but don't start) a pool from an XML file"
-msgstr "definire (ma non iniziare) un dominio da un file XML"
+msgstr "definire (ma non avviare) un pool da un file XML"
 
-#: src/virsh.c:2960 src/virsh.c:3008
-#, fuzzy
+#: src/virsh.c:2961 src/virsh.c:3009
 msgid "Define a pool."
-msgstr "Definire un dominio."
+msgstr "Definire un pool."
 
-#: src/virsh.c:2992
-#, fuzzy, c-format
+#: src/virsh.c:2993
+#, c-format
 msgid "Pool %s defined from %s\n"
-msgstr "Dominio %s definito da %s\n"
+msgstr "Pool %s definito da %s\n"
 
-#: src/virsh.c:2995
-#, fuzzy, c-format
+#: src/virsh.c:2996
+#, c-format
 msgid "Failed to define pool from %s"
-msgstr "Impossibile definire il dominio da %s"
+msgstr "Impossibile definire il pool da %s"
 
-#: src/virsh.c:3007
+#: src/virsh.c:3008
 msgid "define a pool from a set of args"
-msgstr ""
+msgstr "definire un pool da un insieme di argomenti"
 
-#: src/virsh.c:3083
-#, fuzzy, c-format
+#: src/virsh.c:3084
+#, c-format
 msgid "Pool %s defined\n"
-msgstr "Dominio %s definito da %s\n"
+msgstr "Pool %s definito\n"
 
-#: src/virsh.c:3087
-#, fuzzy, c-format
+#: src/virsh.c:3088
+#, c-format
 msgid "Failed to define pool %s"
-msgstr "Impossibile rimuovere la definizione del dominio %s"
-
-#: src/virsh.c:3102
-msgid "build a pool"
-msgstr ""
+msgstr "Impossibile definire il pool %s"
 
 #: src/virsh.c:3103
-msgid "Build a given pool."
-msgstr ""
+msgid "build a pool"
+msgstr "creare un pool"
 
-#: src/virsh.c:3126
+#: src/virsh.c:3104
+msgid "Build a given pool."
+msgstr "Creare un determinato pool."
+
+#: src/virsh.c:3127
 #, c-format
 msgid "Pool %s builded\n"
-msgstr ""
+msgstr "Pool %s creato\n"
 
-#: src/virsh.c:3128
-#, fuzzy, c-format
+#: src/virsh.c:3129
+#, c-format
 msgid "Failed to build pool %s"
-msgstr "Impossibile sospendere il dominio %s"
-
-#: src/virsh.c:3142
-#, fuzzy
-msgid "destroy a pool"
-msgstr "distruggi un dominio"
+msgstr "Impossibile creare il pool %s"
 
 #: src/virsh.c:3143
-#, fuzzy
+msgid "destroy a pool"
+msgstr "distruggere un pool"
+
+#: src/virsh.c:3144
 msgid "Destroy a given pool."
-msgstr "Distruggi un dato dominio."
+msgstr "Distruggere un dato pool."
 
-#: src/virsh.c:3166
-#, fuzzy, c-format
+#: src/virsh.c:3167
+#, c-format
 msgid "Pool %s destroyed\n"
-msgstr "Dominio %s distrutto\n"
+msgstr "Pool %s distrutto\n"
 
-#: src/virsh.c:3168
-#, fuzzy, c-format
+#: src/virsh.c:3169
+#, c-format
 msgid "Failed to destroy pool %s"
-msgstr "Impossibile distruggere il dominio %s"
-
-#: src/virsh.c:3182
-msgid "delete a pool"
-msgstr ""
+msgstr "Impossibile distruggere il pool %s"
 
 #: src/virsh.c:3183
-#, fuzzy
+msgid "delete a pool"
+msgstr "eliminare un pool"
+
+#: src/virsh.c:3184
 msgid "Delete a given pool."
-msgstr "Distruggi un dato dominio."
+msgstr "Eliminare un dato pool."
 
-#: src/virsh.c:3206
-#, c-format
-msgid "Pool %s deleteed\n"
-msgstr ""
-
-#: src/virsh.c:3208
+#: src/virsh.c:3207
 #, fuzzy, c-format
-msgid "Failed to delete pool %s"
-msgstr "Impossibile distruggere il dominio %s"
+msgid "Pool %s deleted\n"
+msgstr "Pool %s eliminato\n"
 
-#: src/virsh.c:3222
-msgid "refresh a pool"
-msgstr ""
+#: src/virsh.c:3209
+#, c-format
+msgid "Failed to delete pool %s"
+msgstr "Impossibile eliminare il pool %s"
 
 #: src/virsh.c:3223
+msgid "refresh a pool"
+msgstr "aggiornare un pool"
+
+#: src/virsh.c:3224
 msgid "Refresh a given pool."
-msgstr ""
+msgstr "Aggiornare un dato pool."
 
-#: src/virsh.c:3246
-#, fuzzy, c-format
+#: src/virsh.c:3247
+#, c-format
 msgid "Pool %s refreshed\n"
-msgstr "Dominio %s ripristinato\n"
+msgstr "Pool %s aggiornato\n"
 
-#: src/virsh.c:3248
-#, fuzzy, c-format
+#: src/virsh.c:3249
+#, c-format
 msgid "Failed to refresh pool %s"
-msgstr "Impossibile ripristinare il dominio %s"
-
-#: src/virsh.c:3262
-#, fuzzy
-msgid "pool information in XML"
-msgstr "informazioni dominio in XML"
+msgstr "Impossibile aggiornare il pool %s"
 
 #: src/virsh.c:3263
-#, fuzzy
-msgid "Output the pool information as an XML dump to stdout."
-msgstr "Mostra le informazioni sul dominio come XML dump su stdout."
+msgid "pool information in XML"
+msgstr "informazioni pool in XML"
 
-#: src/virsh.c:3303
-#, fuzzy
-msgid "list pools"
-msgstr "elenca domini"
+#: src/virsh.c:3264
+msgid "Output the pool information as an XML dump to stdout."
+msgstr "Mostrare le informazioni sul pool in XML su stdout."
 
 #: src/virsh.c:3304
-#, fuzzy
-msgid "Returns list of pools."
-msgstr "Ritorna elenco dei domini"
+msgid "list pools"
+msgstr "elencare i pool"
 
-#: src/virsh.c:3309
-#, fuzzy
-msgid "list inactive pools"
-msgstr "elenca domini inattivi"
+#: src/virsh.c:3305
+msgid "Returns list of pools."
+msgstr "Mostrare l'elenco dei pool"
 
 #: src/virsh.c:3310
-#, fuzzy
+msgid "list inactive pools"
+msgstr "elencare i pool inattivi"
+
+#: src/virsh.c:3311
 msgid "list inactive & active pools"
-msgstr "elenca domini inattivi & attivi"
+msgstr "elencare i pool inattivi & attivi"
 
-#: src/virsh.c:3330 src/virsh.c:3338
-#, fuzzy
+#: src/virsh.c:3331 src/virsh.c:3339
 msgid "Failed to list active pools"
-msgstr "Impossibile elencare domini attivi"
+msgstr "Impossibile elencare i pool attivi"
 
-#: src/virsh.c:3349 src/virsh.c:3357
-#, fuzzy
+#: src/virsh.c:3350 src/virsh.c:3358
 msgid "Failed to list inactive pools"
-msgstr "Impossibile elencare domini inattivi"
-
-#: src/virsh.c:3447
-#, fuzzy
-msgid "storage pool information"
-msgstr "informazione del nodo"
+msgstr "Impossibile elencare i pool inattivi"
 
 #: src/virsh.c:3448
-#, fuzzy
+msgid "storage pool information"
+msgstr "informazioni pool storage"
+
+#: src/virsh.c:3449
 msgid "Returns basic information about the storage pool."
-msgstr "Ritorna informazioni di base sul nodo."
+msgstr "Mostrare informazioni base sul pool di storage"
 
-#: src/virsh.c:3486
+#: src/virsh.c:3487
 msgid "building"
-msgstr ""
+msgstr "creazione in corso"
 
-#: src/virsh.c:3490 src/virsh.c:5873 src/virsh.c:5899
+#: src/virsh.c:3491 src/virsh.c:5874 src/virsh.c:5900
 msgid "running"
 msgstr "in esecuzione"
 
-#: src/virsh.c:3494
+#: src/virsh.c:3495
 msgid "degraded"
-msgstr ""
+msgstr "degradato"
 
-#: src/virsh.c:3501 src/virsh.c:3930
+#: src/virsh.c:3502 src/virsh.c:3931
 msgid "Capacity:"
-msgstr ""
+msgstr "Capacità:"
 
-#: src/virsh.c:3504 src/virsh.c:3933
-#, fuzzy
+#: src/virsh.c:3505 src/virsh.c:3934
 msgid "Allocation:"
-msgstr "assegnazione dominio in corso"
+msgstr "Allocazione:"
 
-#: src/virsh.c:3507
+#: src/virsh.c:3508
 msgid "Available:"
-msgstr ""
+msgstr "Disponibile:"
 
-#: src/virsh.c:3523
-#, fuzzy
+#: src/virsh.c:3524
 msgid "convert a pool UUID to pool name"
-msgstr "converte una UUID di rete in un nome di rete"
+msgstr "converte un UUID di pool in un nome di pool"
 
-#: src/virsh.c:3528
-#, fuzzy
+#: src/virsh.c:3529
 msgid "pool uuid"
-msgstr "uuid del dominio"
-
-#: src/virsh.c:3554
-#, fuzzy
-msgid "start a (previously defined) inactive pool"
-msgstr "inizia un (precedentemente definito) dominio inattivo"
+msgstr "pool uuid"
 
 #: src/virsh.c:3555
-#, fuzzy
+msgid "start a (previously defined) inactive pool"
+msgstr "avviare un (precedentemente definito) pool inattivo"
+
+#: src/virsh.c:3556
 msgid "Start a pool."
-msgstr "Inizia un dominio."
+msgstr "Avviare un pool."
 
-#: src/virsh.c:3560
-#, fuzzy
+#: src/virsh.c:3561
 msgid "name of the inactive pool"
-msgstr "nome del dominio inattivo"
+msgstr "nome del pool inattivo"
 
-#: src/virsh.c:3577
-#, fuzzy, c-format
+#: src/virsh.c:3578
+#, c-format
 msgid "Pool %s started\n"
-msgstr "Dominio %s iniziato\n"
+msgstr "Pool %s avviato\n"
 
-#: src/virsh.c:3580
-#, fuzzy, c-format
+#: src/virsh.c:3581
+#, c-format
 msgid "Failed to start pool %s"
-msgstr "Impossibile iniziare il dominio %s"
+msgstr "Impossibile avviare il pool %s"
 
-#: src/virsh.c:3593
+#: src/virsh.c:3594
 #, fuzzy
-msgid "create a vol from a set of as"
-msgstr "crea un dominio da un file XML"
+msgid "create a volume from a set of args"
+msgstr "creare un volume da un gruppo di volumi"
 
-#: src/virsh.c:3594 src/virsh.c:3796
-#, fuzzy
+#: src/virsh.c:3595 src/virsh.c:3797
 msgid "Create a vol."
-msgstr "Crea un dominio."
+msgstr "Creare un volume."
 
-#: src/virsh.c:3599 src/virsh.c:3762 src/virsh.c:3801
-#, fuzzy
+#: src/virsh.c:3600 src/virsh.c:3763 src/virsh.c:3802
 msgid "pool name"
-msgstr "nome del dominio"
-
-#: src/virsh.c:3600
-#, fuzzy
-msgid "name of the vol"
-msgstr "nome del dominio inattivo"
+msgstr "nome pool"
 
 #: src/virsh.c:3601
-msgid "size of the vol with optional k,M,G,T suffix"
-msgstr ""
+#, fuzzy
+msgid "name of the volume"
+msgstr "nome del vol"
 
 #: src/virsh.c:3602
-msgid "initial allocation size with optional k,M,G,T suffix"
-msgstr ""
+msgid "size of the vol with optional k,M,G,T suffix"
+msgstr "dimensione del volume con suffissi k,M,G,T opzionali"
 
 #: src/virsh.c:3603
-msgid "file format type raw,bochs,qcow,qcow2,vmdk"
-msgstr ""
+msgid "initial allocation size with optional k,M,G,T suffix"
+msgstr "dimensione di allocazione iniziale con suffisso k,M,G,T opzionale"
 
-#: src/virsh.c:3662 src/virsh.c:3667
+#: src/virsh.c:3604
+msgid "file format type raw,bochs,qcow,qcow2,vmdk"
+msgstr "tipo di formato di file raw,bochs,qcow,qcow2,vmdk"
+
+#: src/virsh.c:3663 src/virsh.c:3668
 #, c-format
 msgid "Malformed size %s"
-msgstr ""
+msgstr "Dimensione malformata %s"
 
-#: src/virsh.c:3698
-#, fuzzy, c-format
+#: src/virsh.c:3699
+#, c-format
 msgid "Vol %s created\n"
-msgstr "Dominio %s creato da %s\n"
+msgstr "Vol %s creato\n"
 
-#: src/virsh.c:3702
-#, fuzzy, c-format
+#: src/virsh.c:3703
+#, c-format
 msgid "Failed to create vol %s"
-msgstr "Impossibile creare XML"
-
-#: src/virsh.c:3718
-#, fuzzy
-msgid "undefine an inactive pool"
-msgstr "rimuovere la definizione di un dominio inattivo"
+msgstr "Impossibile creare il volume %s"
 
 #: src/virsh.c:3719
-#, fuzzy
+msgid "undefine an inactive pool"
+msgstr "rimuovere la definizione di un pool inattivo"
+
+#: src/virsh.c:3720
 msgid "Undefine the configuration for an inactive pool."
-msgstr "Rimuovere la definizione della configurazione per un dominio inattivo."
+msgstr "Rimozione della configurazione per un pool inattivo."
 
-#: src/virsh.c:3742
-#, fuzzy, c-format
+#: src/virsh.c:3743
+#, c-format
 msgid "Pool %s has been undefined\n"
-msgstr "È stata rimossa la definizione del dominio %s\n"
+msgstr "La definizione del pool %s è stata rimossa\n"
 
-#: src/virsh.c:3744
-#, fuzzy, c-format
+#: src/virsh.c:3745
+#, c-format
 msgid "Failed to undefine pool %s"
-msgstr "Impossibile rimuovere la definizione del dominio %s"
+msgstr "Impossibile rimuovere la definizione del pool %s"
 
-#: src/virsh.c:3757
-#, fuzzy
+#: src/virsh.c:3758
 msgid "convert a pool name to pool UUID"
-msgstr "converte un nome di rete in UUID di rete"
+msgstr "converte un nome di pool in UUID di pool"
 
-#: src/virsh.c:3782
-#, fuzzy
+#: src/virsh.c:3783
 msgid "failed to get pool UUID"
-msgstr "impossibile ottenere l'UUID del dominio"
+msgstr "impossibile ottenere il pool UUID"
 
-#: src/virsh.c:3795
-#, fuzzy
+#: src/virsh.c:3796
 msgid "create a vol from an XML file"
-msgstr "crea un dominio da un file XML"
+msgstr "creare un volume da un file XML"
 
-#: src/virsh.c:3802
-#, fuzzy
+#: src/virsh.c:3803
 msgid "file containing an XML vol description"
-msgstr "il file contiene una descrizione XML del dominio"
+msgstr "file contenente una descrizione XML del vol"
 
-#: src/virsh.c:3839
-#, fuzzy, c-format
+#: src/virsh.c:3840
+#, c-format
 msgid "Vol %s created from %s\n"
-msgstr "Dominio %s creato da %s\n"
+msgstr "Vol %s creato da %s\n"
 
-#: src/virsh.c:3843
-#, fuzzy, c-format
+#: src/virsh.c:3844
+#, c-format
 msgid "Failed to create vol from %s"
-msgstr "Impossibile creare il dominio da %s"
-
-#: src/virsh.c:3854
-msgid "delete a vol"
-msgstr ""
+msgstr "Impossibile creare il volume da %s"
 
 #: src/virsh.c:3855
-#, fuzzy
+msgid "delete a vol"
+msgstr "eliminare un vol"
+
+#: src/virsh.c:3856
 msgid "Delete a given vol."
-msgstr "Distruggi un dato dominio."
+msgstr "Eliminare un dato vol."
 
-#: src/virsh.c:3861 src/virsh.c:3903 src/virsh.c:3955
+#: src/virsh.c:3862 src/virsh.c:3904 src/virsh.c:3956
 msgid "vol name, key or path"
-msgstr ""
+msgstr "nome, chiave o percorso volume"
 
-#: src/virsh.c:3880
+#: src/virsh.c:3881
 #, fuzzy, c-format
-msgid "Vol %s deleteed\n"
-msgstr "Dominio %s distrutto\n"
+msgid "Vol %s deleted\n"
+msgstr "Vol %s eliminato\n"
 
-#: src/virsh.c:3882
-#, fuzzy, c-format
+#: src/virsh.c:3883
+#, c-format
 msgid "Failed to delete vol %s"
-msgstr "Impossibile distruggere il dominio %s"
-
-#: src/virsh.c:3896
-#, fuzzy
-msgid "storage vol information"
-msgstr "informazione del nodo"
+msgstr "Impossibile eliminare il volume %s"
 
 #: src/virsh.c:3897
-#, fuzzy
+msgid "storage vol information"
+msgstr "informazioni volume di storage"
+
+#: src/virsh.c:3898
 msgid "Returns basic information about the storage vol."
-msgstr "Ritorna informazioni di base sul nodo."
+msgstr "Mostrare le informazioni di base sul nodo."
 
-#: src/virsh.c:3925
-#, fuzzy
+#: src/virsh.c:3926
 msgid "Type:"
-msgstr "Tipo di OS:"
+msgstr "Tipo:"
 
-#: src/virsh.c:3927
-#, fuzzy
+#: src/virsh.c:3928
 msgid "file"
-msgstr "File XML"
+msgstr "file"
 
-#: src/virsh.c:3927
-#, fuzzy
+#: src/virsh.c:3928
 msgid "block"
-msgstr "bloccato"
-
-#: src/virsh.c:3948
-#, fuzzy
-msgid "vol information in XML"
-msgstr "informazioni dominio in XML"
+msgstr "blocco"
 
 #: src/virsh.c:3949
-#, fuzzy
-msgid "Output the vol information as an XML dump to stdout."
-msgstr "Mostra le informazioni sul dominio come XML dump su stdout."
+msgid "vol information in XML"
+msgstr "informazioni volume in XML"
 
-#: src/virsh.c:3990
-#, fuzzy
-msgid "list vols"
-msgstr "elenca domini"
+#: src/virsh.c:3950
+msgid "Output the vol information as an XML dump to stdout."
+msgstr "Mostrare le informazioni sul vol in XML su stdout."
 
 #: src/virsh.c:3991
-#, fuzzy
+msgid "list vols"
+msgstr "elencare i volumi"
+
+#: src/virsh.c:3992
 msgid "Returns list of vols by pool."
-msgstr "Ritorna elenco dei domini"
+msgstr "Mostrare l'elenco dei domini"
 
-#: src/virsh.c:4016 src/virsh.c:4024
-#, fuzzy
+#: src/virsh.c:4017 src/virsh.c:4025
 msgid "Failed to list active vols"
-msgstr "Impossibile elencare domini attivi"
+msgstr "Impossibile elencare i vol attivi"
 
-#: src/virsh.c:4032
+#: src/virsh.c:4033
 msgid "Path"
-msgstr ""
+msgstr "Percorso"
 
-#: src/virsh.c:4069
-#, fuzzy
+#: src/virsh.c:4070
 msgid "convert a vol UUID to vol name"
-msgstr "converte una UUID di rete in un nome di rete"
+msgstr "converte un UUID di volume in un nome di volume"
 
-#: src/virsh.c:4074
+#: src/virsh.c:4075
 msgid "vol key or path"
-msgstr ""
+msgstr "chiave o percorso volume"
 
-#: src/virsh.c:4102
-#, fuzzy
+#: src/virsh.c:4103
 msgid "convert a vol UUID to vol key"
-msgstr "converte una UUID di rete in un nome di rete"
+msgstr "converte un UUID di volume in una chiave di volume"
 
-#: src/virsh.c:4107
-#, fuzzy
+#: src/virsh.c:4108
 msgid "vol uuid"
-msgstr "uuid del dominio"
+msgstr "vol uuid"
 
-#: src/virsh.c:4135
-#, fuzzy
+#: src/virsh.c:4136
 msgid "convert a vol UUID to vol path"
-msgstr "converte una UUID di rete in un nome di rete"
+msgstr "converte un UUID di volume in un percorso di volume"
 
-#: src/virsh.c:4141
+#: src/virsh.c:4142
 msgid "vol name or key"
-msgstr ""
+msgstr "nome o chiave volume"
 
-#: src/virsh.c:4172
+#: src/virsh.c:4173
 msgid "show version"
 msgstr "mostra versione"
 
-#: src/virsh.c:4173
+#: src/virsh.c:4174
 msgid "Display the system version information."
-msgstr "Visualizza le informazioni della versione del sistema."
+msgstr "Visualizzare le informazioni sulla versione di sistema."
 
-#: src/virsh.c:4196
+#: src/virsh.c:4197
 msgid "failed to get hypervisor type"
 msgstr "impossibile ottenere il tipo di hypervisor"
 
-#: src/virsh.c:4205
+#: src/virsh.c:4206
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr "Compilato rispetto la libreria: libvir %d.%d.%d\n"
 
-#: src/virsh.c:4210
+#: src/virsh.c:4211
 msgid "failed to get the library version"
 msgstr "impossibile ottenere la versione della libreria"
 
-#: src/virsh.c:4217
+#: src/virsh.c:4218
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
-msgstr "Utilizzo libreria in corso: libvir %d.%d.%d\n"
+msgstr "Libreria in uso: libvir %d.%d.%d\n"
 
-#: src/virsh.c:4224
+#: src/virsh.c:4225
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
-msgstr "Utilizzo API in corso: %s %d.%d.%d\n"
+msgstr "API in uso: %s %d.%d.%d\n"
 
-#: src/virsh.c:4229
+#: src/virsh.c:4230
 msgid "failed to get the hypervisor version"
 msgstr "impossibile ottenere la versione dell'hypervisor"
 
-#: src/virsh.c:4234
+#: src/virsh.c:4235
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "Impossibile estrarre la versione dell'hypervisor %s in esecuzione\n"
 
-#: src/virsh.c:4241
+#: src/virsh.c:4242
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "Esecuzione hypervisor: %s %d.%d.%d\n"
 
-#: src/virsh.c:4252
+#: src/virsh.c:4253
 msgid "print the hypervisor hostname"
 msgstr "stampa il nome host di hypervisor"
 
-#: src/virsh.c:4266
+#: src/virsh.c:4267
 msgid "failed to get hostname"
 msgstr "impossibile ottenere il nome host"
 
-#: src/virsh.c:4281
+#: src/virsh.c:4282
 msgid "print the hypervisor canonical URI"
 msgstr "stampa l'URI canonico di hypervisor"
 
-#: src/virsh.c:4295
+#: src/virsh.c:4296
 msgid "failed to get URI"
 msgstr "impossibile ottenere l'URI"
 
-#: src/virsh.c:4310
+#: src/virsh.c:4311
 msgid "vnc display"
 msgstr "vnc display"
 
-#: src/virsh.c:4311
+#: src/virsh.c:4312
 msgid "Output the IP address and port number for the VNC display."
-msgstr "Mostra l'indirizzo IP ed il numero di porta per il display VNC."
+msgstr "Mostrare l'indirizzo IP ed il numero di porta per il display VNC."
 
-#: src/virsh.c:4386
+#: src/virsh.c:4387
 msgid "tty console"
 msgstr "console tty"
 
-#: src/virsh.c:4387
+#: src/virsh.c:4388
 msgid "Output the device for the TTY console."
 msgstr "Eseguire l'output del dispositivo per la console TTY."
 
-#: src/virsh.c:4447
+#: src/virsh.c:4448
 msgid "attach device from an XML file"
 msgstr "attacca dispositivo da un file XML"
 
-#: src/virsh.c:4448
+#: src/virsh.c:4449
 msgid "Attach device from an XML <file>."
 msgstr "Attacca dispositivo da un <file> XML"
 
-#: src/virsh.c:4454 src/virsh.c:4510
+#: src/virsh.c:4455 src/virsh.c:4511
 msgid "XML file"
 msgstr "File XML"
 
-#: src/virsh.c:4488
+#: src/virsh.c:4489
 #, c-format
 msgid "Failed to attach device from %s"
-msgstr "Impossibile attaccare il dispositivo da %s"
-
-#: src/virsh.c:4503
-msgid "detach device from an XML file"
-msgstr "stacca dispositivo da un file XML"
+msgstr "Impossibile collegare il dispositivo da %s"
 
 #: src/virsh.c:4504
-msgid "Detach device from an XML <file>"
-msgstr "Stacca dispositivo da un <file> XML"
+msgid "detach device from an XML file"
+msgstr "scollegare dispositivo da un file XML"
 
-#: src/virsh.c:4544
+#: src/virsh.c:4505
+msgid "Detach device from an XML <file>"
+msgstr "Scollegare dispositivo da un <file> XML"
+
+#: src/virsh.c:4545
 #, c-format
 msgid "Failed to detach device from %s"
 msgstr "Impossibile staccare il dispositivo da %s"
 
-#: src/virsh.c:4559
+#: src/virsh.c:4560
 msgid "attach network interface"
 msgstr "collegare interfaccia di rete"
 
-#: src/virsh.c:4560
+#: src/virsh.c:4561
 msgid "Attach new network interface."
 msgstr "Collegamento di una nuova interfaccia di rete."
 
-#: src/virsh.c:4566 src/virsh.c:4680
+#: src/virsh.c:4567 src/virsh.c:4681
 msgid "network interface type"
 msgstr "tipo di interfaccia di rete"
 
-#: src/virsh.c:4567
+#: src/virsh.c:4568
 msgid "source of network interface"
 msgstr "sorgente dell'interfaccia di rete"
 
-#: src/virsh.c:4568
+#: src/virsh.c:4569
 msgid "target network name"
 msgstr "nome della rete target"
 
-#: src/virsh.c:4569 src/virsh.c:4681
-msgid "MAC adress"
+#: src/virsh.c:4570 src/virsh.c:4682
+#, fuzzy
+msgid "MAC address"
 msgstr "Indirizzo MAC"
 
-#: src/virsh.c:4570
+#: src/virsh.c:4571
 msgid "script used to bridge network interface"
 msgstr "script utilizzato per l'interfaccia di rete bridge"
 
-#: src/virsh.c:4602
+#: src/virsh.c:4603
 #, c-format
 msgid "No support %s in command 'attach-interface'"
 msgstr "Nessun supporto %s nel comando 'attach-interface'"
 
-#: src/virsh.c:4673
-msgid "detach network interface"
-msgstr "scollegamento interfaccia di rete"
-
 #: src/virsh.c:4674
-msgid "Detach network interface."
-msgstr "Scollegamento dell'interfaccia di rete."
+msgid "detach network interface"
+msgstr "scollegare una interfaccia di rete"
 
-#: src/virsh.c:4719 src/virsh.c:4724
+#: src/virsh.c:4675
+msgid "Detach network interface."
+msgstr "Scollegare interfaccia di rete."
+
+#: src/virsh.c:4720 src/virsh.c:4725
 msgid "Failed to get interface information"
 msgstr "Impossibile ottenere informazioni sull'interfaccia"
 
-#: src/virsh.c:4732
+#: src/virsh.c:4733
 #, c-format
 msgid "No found interface whose type is %s"
 msgstr "Non è stata trovata alcuna interfaccia di tipo %s"
 
-#: src/virsh.c:4754
+#: src/virsh.c:4755
 #, c-format
 msgid "No found interface whose MAC address is %s"
 msgstr "Non è stata trovata alcuna interfaccia con un indirizzo MAC %s"
 
-#: src/virsh.c:4760 src/virsh.c:5034
+#: src/virsh.c:4761 src/virsh.c:5035
 msgid "Failed to allocate memory"
-msgstr "Impossibile assegnare memoria"
+msgstr "Impossibile allocare memoria"
 
-#: src/virsh.c:4765 src/virsh.c:5039
+#: src/virsh.c:4766 src/virsh.c:5040
 msgid "Failed to create XML"
 msgstr "Impossibile creare XML"
 
-#: src/virsh.c:4792
+#: src/virsh.c:4793
 msgid "attach disk device"
 msgstr "colleganto dispositivo del disco"
 
-#: src/virsh.c:4793
+#: src/virsh.c:4794
 msgid "Attach new disk device."
-msgstr "Colegamento di un nuovo dispositivo del disco."
+msgstr "Collegamento di un nuovo dispositivo disco."
 
-#: src/virsh.c:4799
+#: src/virsh.c:4800
 msgid "source of disk device"
 msgstr "sorgente dispositivo del disco"
 
-#: src/virsh.c:4800 src/virsh.c:4962
+#: src/virsh.c:4801 src/virsh.c:4963
 msgid "target of disk device"
 msgstr "target del dispositivo del disco"
 
-#: src/virsh.c:4801
+#: src/virsh.c:4802
 msgid "driver of disk device"
 msgstr "driver del dispositivo del disco"
 
-#: src/virsh.c:4802
+#: src/virsh.c:4803
 msgid "subdriver of disk device"
 msgstr "subdriver del dispositivo del disco"
 
-#: src/virsh.c:4803
+#: src/virsh.c:4804
 msgid "target device type"
 msgstr "tipo di dispositivo target"
 
-#: src/virsh.c:4804
+#: src/virsh.c:4805
 msgid "mode of device reading and writing"
 msgstr "modalità di lettura e scrittura del dispositivo"
 
-#: src/virsh.c:4835 src/virsh.c:4844 src/virsh.c:4851
+#: src/virsh.c:4836 src/virsh.c:4845 src/virsh.c:4852
 #, c-format
 msgid "No support %s in command 'attach-disk'"
 msgstr "Nessun supporto %s nel comando 'attach-disk'"
 
-#: src/virsh.c:4955
-msgid "detach disk device"
-msgstr "scollegamento dispositivo del disco"
-
 #: src/virsh.c:4956
-msgid "Detach disk device."
-msgstr "Scollegamento dispositivo del disco."
+msgid "detach disk device"
+msgstr "scollegare un dispositivo del disco"
 
-#: src/virsh.c:4997 src/virsh.c:5002 src/virsh.c:5009
+#: src/virsh.c:4957
+msgid "Detach disk device."
+msgstr "Scollegare dispositivo disco."
+
+#: src/virsh.c:4998 src/virsh.c:5003 src/virsh.c:5010
 msgid "Failed to get disk information"
 msgstr "Impossibile ottenere informazioni sul disco"
 
-#: src/virsh.c:5028
+#: src/virsh.c:5029
 #, c-format
 msgid "No found disk whose target is %s"
 msgstr "Nessun disco trovato con target %s"
 
-#: src/virsh.c:5066
+#: src/virsh.c:5067
 msgid "quit this interactive terminal"
 msgstr "abbandona questo terminale interattivo"
 
-#: src/virsh.c:5237
+#: src/virsh.c:5238
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "il comando '%s' richiede l'opzione <%s>"
 
-#: src/virsh.c:5238
+#: src/virsh.c:5239
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "il comando '%s' richiede l'opzione --%s"
 
-#: src/virsh.c:5265
+#: src/virsh.c:5266
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "il comando '%s' non esiste"
 
-#: src/virsh.c:5273
+#: src/virsh.c:5274
 msgid "  NAME\n"
 msgstr "  NOME\n"
 
-#: src/virsh.c:5277
+#: src/virsh.c:5278
 msgid ""
 "\n"
 "  SYNOPSIS\n"
@@ -3677,7 +3619,7 @@ msgstr ""
 "\n"
 "  SOMMARIO\n"
 
-#: src/virsh.c:5284
+#: src/virsh.c:5285
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -3685,7 +3627,7 @@ msgstr ""
 "\n"
 "  DESCRIZIONE\n"
 
-#: src/virsh.c:5288
+#: src/virsh.c:5289
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -3693,55 +3635,53 @@ msgstr ""
 "\n"
 "  OPZIONI\n"
 
-#: src/virsh.c:5295
+#: src/virsh.c:5296
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <number>"
 
-#: src/virsh.c:5297
+#: src/virsh.c:5298
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <string>"
 
-#: src/virsh.c:5441
+#: src/virsh.c:5442
 msgid "undefined domain name or id"
 msgstr "id o nome del dominio non definito"
 
-#: src/virsh.c:5473
+#: src/virsh.c:5474
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "impossibile ottenere il dominio '%s'"
 
-#: src/virsh.c:5486
+#: src/virsh.c:5487
 msgid "undefined network name"
 msgstr "nome della rete non definito"
 
-#: src/virsh.c:5510
+#: src/virsh.c:5511
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "impossibile ottenere la rete '%s'"
 
-#: src/virsh.c:5523 src/virsh.c:5569
-#, fuzzy
+#: src/virsh.c:5524 src/virsh.c:5570
 msgid "undefined pool name"
-msgstr "nome della rete non definito"
+msgstr "nome pool non definito"
 
-#: src/virsh.c:5547
-#, fuzzy, c-format
+#: src/virsh.c:5548
+#, c-format
 msgid "failed to get pool '%s'"
-msgstr "impossibile ottenere il dominio '%s'"
+msgstr "impossibile ottenere il pool '%s'"
 
-#: src/virsh.c:5564
-#, fuzzy
+#: src/virsh.c:5565
 msgid "undefined vol name"
-msgstr "nome della rete non definito"
+msgstr "nome vol non definito"
 
-#: src/virsh.c:5600
-#, fuzzy, c-format
+#: src/virsh.c:5601
+#, c-format
 msgid "failed to get vol '%s'"
-msgstr "impossibile ottenere il dominio '%s'"
+msgstr "impossibile ottenere il vol '%s'"
 
-#: src/virsh.c:5631
+#: src/virsh.c:5632
 #, c-format
 msgid ""
 "\n"
@@ -3749,133 +3689,132 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"(Tempo: %.3f ms)\n"
+"(Durata: %.3f ms)\n"
 "\n"
 
-#: src/virsh.c:5705
+#: src/virsh.c:5706
 msgid "missing \""
-msgstr "mancante \""
+msgstr "\" mancanti"
 
-#: src/virsh.c:5766
+#: src/virsh.c:5767
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "token inaspettato (nome del comando): '%s'"
 
-#: src/virsh.c:5771
+#: src/virsh.c:5772
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "comando sconosciuto: '%s'"
 
-#: src/virsh.c:5778
+#: src/virsh.c:5779
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "il comando '%s' non supporta l'opzione --%s"
 
-#: src/virsh.c:5793
+#: src/virsh.c:5794
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "sintassi prevista: --%s <%s>"
 
-#: src/virsh.c:5796
+#: src/virsh.c:5797
 msgid "number"
 msgstr "numero"
 
-#: src/virsh.c:5796
+#: src/virsh.c:5797
 msgid "string"
 msgstr "stringa"
 
-#: src/virsh.c:5802
+#: src/virsh.c:5803
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "dato inaspettato '%s'"
 
-#: src/virsh.c:5824
+#: src/virsh.c:5825
 msgid "OPTION"
 msgstr "OPZIONE"
 
-#: src/virsh.c:5824
+#: src/virsh.c:5825
 msgid "DATA"
 msgstr "DATI"
 
-#: src/virsh.c:5875 src/virsh.c:5897
+#: src/virsh.c:5876 src/virsh.c:5898
 msgid "blocked"
 msgstr "bloccato"
 
-#: src/virsh.c:5877
+#: src/virsh.c:5878
 msgid "paused"
 msgstr "in pausa"
 
-#: src/virsh.c:5879
+#: src/virsh.c:5880
 msgid "in shutdown"
 msgstr "in arresto"
 
-#: src/virsh.c:5881
+#: src/virsh.c:5882
 msgid "shut off"
-msgstr "disabilitato"
+msgstr "terminato"
 
-#: src/virsh.c:5883
+#: src/virsh.c:5884
 msgid "crashed"
-msgstr "crashed"
+msgstr "interrotto con errore"
 
-#: src/virsh.c:5895
+#: src/virsh.c:5896
 msgid "offline"
 msgstr "scollegato"
 
-#: src/virsh.c:5914
+#: src/virsh.c:5915
 msgid "no valid connection"
-msgstr "collegamento non valido"
+msgstr "nessuna connessione valida"
 
-#: src/virsh.c:5961
+#: src/virsh.c:5962
 #, c-format
 msgid "%s: error: "
 msgstr "%s: errore: "
 
-#: src/virsh.c:5963
+#: src/virsh.c:5964
 msgid "error: "
 msgstr "errore: "
 
-#: src/virsh.c:5985 src/virsh.c:5997 src/virsh.c:6010
+#: src/virsh.c:5986 src/virsh.c:5998 src/virsh.c:6011
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: impossibile allocare %d byte"
 
-#: src/virsh.c:6024
+#: src/virsh.c:6025
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "%s: %d: impossibile allocare %lu bytes"
 
-#: src/virsh.c:6064
+#: src/virsh.c:6058
 msgid "failed to connect to the hypervisor"
 msgstr "impossibile collegarsi all'hypervisor"
 
-#: src/virsh.c:6096
+#: src/virsh.c:6090
 msgid "failed to get the log file information"
 msgstr "impossibile ottenere informazioni sul file di log"
 
-#: src/virsh.c:6101
+#: src/virsh.c:6095
 msgid "the log path is not a file"
 msgstr "il percorso del log non è un file"
 
-#: src/virsh.c:6108
+#: src/virsh.c:6102
 msgid "failed to open the log file. check the log file path"
 msgstr ""
 "impossibile aprire il file di log. controllare il percorso del file di log"
 
-#: src/virsh.c:6176
+#: src/virsh.c:6170
 msgid "failed to write the log file"
-msgstr "impossibile scrivere il file di log"
+msgstr "errore nella scrittura del file di log"
 
-#: src/virsh.c:6191
+#: src/virsh.c:6185
 #, c-format
 msgid "%s: failed to write log file: %s"
 msgstr "%s: impossibile scrivere il file di log: %s"
 
-#: src/virsh.c:6368
-#, fuzzy
+#: src/virsh.c:6362
 msgid "failed to disconnect from the hypervisor"
-msgstr "Impossibile scollegarsi dall'hypervisor"
+msgstr "impossibile disconnettersi dall'hypervisor"
 
-#: src/virsh.c:6386
+#: src/virsh.c:6380
 #, c-format
 msgid ""
 "\n"
@@ -3898,7 +3837,7 @@ msgstr ""
 "\n"
 "  opzioni:\n"
 "    -c | --connect <uri>    URI di connessione hypervisor\n"
-"    -r | --readonly         connessione sola lettura\n"
+"    -r | --readonly         connessione in sola lettura\n"
 "    -d | --debug <num>      livello debug [0-5]\n"
 "    -h | --help             questo aiuto\n"
 "    -q | --quiet            modalità silenziosa\n"
@@ -3908,7 +3847,7 @@ msgstr ""
 "\n"
 "  comandi (modalità non interattiva):\n"
 
-#: src/virsh.c:6404
+#: src/virsh.c:6398
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
@@ -3918,27 +3857,27 @@ msgstr ""
 "  (specifica help <command> per informazioni sul comando)\n"
 "\n"
 
-#: src/virsh.c:6500
+#: src/virsh.c:6494
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "opzione non supportata '-%c'. Consultare --help."
 
-#: src/virsh.c:6586
+#: src/virsh.c:6580
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
 "\n"
 msgstr ""
-"Benvenuti a %s, il termiale interattivo per la virtualizzazione.\n"
+"Benvenuti a %s, il terminale interattivo per la virtualizzazione.\n"
 "\n"
 
-#: src/virsh.c:6589
+#: src/virsh.c:6583
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
 "\n"
 msgstr ""
-"Digitate:  'help' per un aiuto con i comandi\n"
+"Digitate:  'help' per un aiuto sui comandi\n"
 "       'quit' per uscire\n"
 "\n"
 
@@ -3974,7 +3913,7 @@ msgstr "questa funzione non è supportata dall'hypervisor: %s"
 
 #: src/virterror.c:440
 msgid "could not connect to hypervisor"
-msgstr "impossibile collegarsi a hypervisor"
+msgstr "impossibile collegarsi all'hypervisor"
 
 #: src/virterror.c:442
 #, c-format
@@ -3983,21 +3922,21 @@ msgstr "impossibile collegarsi a %s"
 
 #: src/virterror.c:446
 msgid "invalid connection pointer in"
-msgstr "indicatore non valido del collegamento in"
+msgstr "puntatore di collegamento non valido in"
 
 #: src/virterror.c:448
 #, c-format
 msgid "invalid connection pointer in %s"
-msgstr "indicatore non valido del collegamento in %s"
+msgstr "puntatore di collegamento non valido in %s"
 
 #: src/virterror.c:452
 msgid "invalid domain pointer in"
-msgstr "indicatore non valido del dominio in"
+msgstr "puntatore di dominio non valido in"
 
 #: src/virterror.c:454
 #, c-format
 msgid "invalid domain pointer in %s"
-msgstr "indicatore non valido del dominio in %s"
+msgstr "puntatore di dominio non valido in %s"
 
 #: src/virterror.c:458
 msgid "invalid argument in"
@@ -4168,12 +4107,12 @@ msgstr "errore chiamata %s della libreria, forse non risulta supportata"
 
 #: src/virterror.c:569
 msgid "XML description not well formed or invalid"
-msgstr "descrizione XML malformata o invalida"
+msgstr "descrizione XML malformata o non valida"
 
 #: src/virterror.c:571
 #, c-format
 msgid "XML description for %s is not well formed or invalid"
-msgstr "descrizione XML per %s malformata o invalida"
+msgstr "descrizione XML per %s malformata o non valida"
 
 #: src/virterror.c:575
 msgid "this domain exists already"
@@ -4195,32 +4134,30 @@ msgstr "operazione %s proibita per un accesso di sola lettura"
 
 #: src/virterror.c:587
 msgid "failed to open configuration file for reading"
-msgstr ""
-"errore durante l'apertura del file di configurazione per un processo di "
-"lettura"
+msgstr "impossibile aprire in lettura il file di configurazione"
 
 #: src/virterror.c:589
 #, c-format
 msgid "failed to open %s for reading"
-msgstr "errore durante l'apertura di %s per un processo di lettura"
+msgstr "impossibile aprire in lettura %s"
 
 #: src/virterror.c:593
 msgid "failed to read configuration file"
-msgstr "errore nel processo di lettura del file di configurazione"
+msgstr "errore di lettura del file di configurazione"
 
 #: src/virterror.c:595
 #, c-format
 msgid "failed to read configuration file %s"
-msgstr "errore nel processo di lettura del file di configurazione %s"
+msgstr "errore di lettura del file di configurazione %s"
 
 #: src/virterror.c:599
 msgid "failed to parse configuration file"
-msgstr "errore nell'analisi del file di configurazione"
+msgstr "errore nel parsing del file di configurazione"
 
 #: src/virterror.c:601
 #, c-format
 msgid "failed to parse configuration file %s"
-msgstr "errore nell'analisi del file di configurazione %s"
+msgstr "errore nel parsing del file di configurazione %s"
 
 #: src/virterror.c:605
 msgid "configuration file syntax error"
@@ -4242,7 +4179,7 @@ msgstr "errore nella scrittura del file di configurazione: %s"
 
 #: src/virterror.c:617
 msgid "parser error"
-msgstr "errore analizzatore"
+msgstr "errore del parser"
 
 #: src/virterror.c:623
 msgid "invalid network pointer in"
@@ -4302,14 +4239,13 @@ msgid "Network not found: %s"
 msgstr "Rete non trovata: %s"
 
 #: src/virterror.c:671
-#, fuzzy
 msgid "invalid MAC address"
-msgstr "Indirizzo MAC invalido"
+msgstr "indirizzo MAC non valido"
 
 #: src/virterror.c:673
-#, fuzzy, c-format
+#, c-format
 msgid "invalid MAC address: %s"
-msgstr "Indirizzo MAC invalido: %s"
+msgstr "indirizzo MAC non valido: %s"
 
 #: src/virterror.c:677
 msgid "authentication failed"
@@ -4321,68 +4257,59 @@ msgid "authentication failed: %s"
 msgstr "autenticazione fallita: %s"
 
 #: src/virterror.c:683
-#, fuzzy
 msgid "Storage pool not found"
-msgstr "Rete non trovata"
+msgstr "Storage pool non trovato"
 
 #: src/virterror.c:685
-#, fuzzy, c-format
+#, c-format
 msgid "Storage pool not found: %s"
-msgstr "Rete non trovata: %s"
+msgstr "Storage pool non trovato: %s"
 
 #: src/virterror.c:689
-#, fuzzy
 msgid "Storage volume not found"
-msgstr "Rete non trovata"
+msgstr "Volume di storage non trovato"
 
 #: src/virterror.c:691
-#, fuzzy, c-format
+#, c-format
 msgid "Storage volume not found: %s"
-msgstr "Rete non trovata: %s"
+msgstr "Volume di storage non trovato: %s"
 
 #: src/virterror.c:695
-#, fuzzy
 msgid "invalid storage pool pointer in"
-msgstr "puntatore di rete non valido in"
+msgstr "puntatore al pool di storage non valido in"
 
 #: src/virterror.c:697
-#, fuzzy, c-format
+#, c-format
 msgid "invalid storage pool pointer in %s"
-msgstr "puntatore di rete non valido in %s"
+msgstr "puntatore al pool di storage non valido in %s"
 
 #: src/virterror.c:701
-#, fuzzy
 msgid "invalid storage volume pointer in"
-msgstr "puntatore di rete non valido in"
+msgstr "puntatore al volume di storage non valido in"
 
 #: src/virterror.c:703
-#, fuzzy, c-format
+#, c-format
 msgid "invalid storage volume pointer in %s"
-msgstr "puntatore di rete non valido in %s"
+msgstr "puntatore al volume di storage non valido in %s"
 
 #: src/virterror.c:707
-#, fuzzy
 msgid "Failed to find a storage driver"
-msgstr "Impossibile trovare la rete"
+msgstr "Impossibile trovare un driver di storage"
 
 #: src/virterror.c:709
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find a storage driver: %s"
-msgstr "Impossibile trovare la rete: %s"
+msgstr "Impossibile trovare un driver di storage: %s"
 
 #: src/xen_internal.c:1324
 #, c-format
 msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
-msgstr ""
-"Il parametro di peso del credito del pianificatore (%d) è fuori dalla gamma "
-"(1-65535)"
+msgstr "Il parametro weight del credit scheduler (%d) è fuori scala (1-65535)"
 
 #: src/xen_internal.c:1334
 #, c-format
 msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
-msgstr ""
-"Il parametro cap del credito del pianificatore (%d) è fuori dalla gamma (0-"
-"65535)"
+msgstr "Il parametro cap del credit scheduler (%d) è fuori scala (0-65535)"
 
 #: src/xen_internal.c:2504
 #, c-format
@@ -4390,14 +4317,12 @@ msgid "allocating %d domain info"
 msgstr "allocazione informazioni del dominio %d"
 
 #: src/xend_internal.c:221
-#, fuzzy
 msgid "failed to create a socket"
-msgstr "impossibile assegnare un nodo"
+msgstr "impossibile creare un socket"
 
 #: src/xend_internal.c:244
-#, fuzzy
 msgid "failed to connect to xend"
-msgstr "impossibile collegarsi a Xen Store"
+msgstr "impossibile connettersi a xend"
 
 #: src/xend_internal.c:291 src/xend_internal.c:294
 msgid "failed to read from Xen Daemon"
@@ -4429,9 +4354,8 @@ msgid "domain information incomplete, missing name"
 msgstr "informazioni del dominio incomplete, nome mancante"
 
 #: src/xend_internal.c:1307
-#, fuzzy
 msgid "domain information incomplete, missing HVM loader"
-msgstr "informazioni del dominio incomplete, nome mancante"
+msgstr "informazioni del dominio incomplete, loader HVM mancante"
 
 #: src/xend_internal.c:1359
 msgid "domain information incomplete, missing kernel & bootloader"
@@ -4439,7 +4363,7 @@ msgstr "informazioni del dominio incomplete, kernel & bootloader mancante"
 
 #: src/xend_internal.c:1410
 msgid "domain information incomplete, missing id"
-msgstr "Le informazioni di dominio non sono complete, id mancante"
+msgstr "informazioni del dominio incomplete, id mancante"
 
 #: src/xend_internal.c:1547
 msgid "domain information incomplete, vbd has no dev"
@@ -4459,7 +4383,7 @@ msgstr "impossibile analizzare il filename vbd, tipo di driver mancante"
 
 #: src/xend_internal.c:1983
 msgid "failed to parse topology information"
-msgstr "impossibile analizzare le informazioni sulla topologia"
+msgstr "errore nel parsing delle informazioni sulla topologia"
 
 #: src/xend_internal.c:2039
 msgid "topology syntax error"
@@ -4471,57 +4395,61 @@ msgstr "assegnazione buffer"
 
 #: src/xend_internal.c:2103
 msgid "failed to parse Xend domain information"
-msgstr "impossibile analizzare le informazioni del dominio Xend"
+msgstr "errore nel parsing delle informazioni del dominio Xend"
 
 #: src/xend_internal.c:2583
 msgid "xenDaemonDomainDumpXMLByID failed to find this domain"
-msgstr ""
+msgstr "xenDaemonDomainDumpXMLByID impossibile trovare questo dominio"
 
 #: src/xend_internal.c:2608
 msgid "xenDaemonDomainDumpXMLByName failed to find this domain"
-msgstr ""
+msgstr "xenDaemonDomainDumpXMLByName impossibile trovare questo dominio"
 
 #: src/xend_internal.c:3220 src/xend_internal.c:3529
-#, fuzzy
 msgid "failed to parse domain description"
-msgstr "impossibile analizzare le informazioni del dominio Xend"
+msgstr "errore nel parsing della descrizione del dominio"
 
 #: src/xend_internal.c:3399
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
 msgstr ""
+"xenDaemonDomainMigrate: Xen non supporta la rinomina del dominio durante la "
+"migrazione"
 
 #: src/xend_internal.c:3409
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
 msgstr ""
+"xenDaemonDomainMigrate: Xen non supporta la limitazione di banda durante la "
+"migrazione"
 
 #: src/xend_internal.c:3421
 msgid "xenDaemonDomainMigrate: unsupported flag"
-msgstr ""
+msgstr "xenDaemonDomainMigrate: flag non supportato"
 
 #: src/xend_internal.c:3434
 msgid "xenDaemonDomainMigrate: invalid URI"
-msgstr ""
+msgstr "xenDaemonDomainMigrate: URI non valido"
 
 #: src/xend_internal.c:3439
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr ""
+"xenDaemonDomainMigrate: solo le migrazioni xenmigr:// sono supportate da Xen"
 
 #: src/xend_internal.c:3446
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
-msgstr ""
+msgstr "xenDaemonDomainMigrate: un hostname deve essere specificato nell'URI"
 
 #: src/xend_internal.c:3453 src/xend_internal.c:3475 src/xend_internal.c:3483
 #: src/xml.c:331
 msgid "strdup failed"
-msgstr ""
+msgstr "strdup fallito"
 
 #: src/xend_internal.c:3466
 msgid "xenDaemonDomainMigrate: invalid port number"
-msgstr ""
+msgstr "xenDaemonDomainMigrate: numero di porta non valido"
 
 #: src/xend_internal.c:3539
 #, c-format
@@ -4534,64 +4462,59 @@ msgstr "errore di sintassi della topologia cpuset"
 
 #: src/xml.c:319
 msgid "Invalid parameter to virXPathString()"
-msgstr ""
+msgstr "Parametro per virXPathString() non valido"
 
 #: src/xml.c:354 src/xml.c:389
 msgid "Invalid parameter to virXPathNumber()"
-msgstr ""
+msgstr "Parametro per virXPathNumber() non valido"
 
 #: src/xml.c:435
 msgid "Invalid parameter to virXPathBoolean()"
-msgstr ""
+msgstr "Parametro per virXPathBoolean() non valido"
 
 #: src/xml.c:468
 msgid "Invalid parameter to virXPathNode()"
-msgstr ""
+msgstr "Parametro per virXPathNode() non valido"
 
 #: src/xml.c:504
 msgid "Invalid parameter to virXPathNodeSet()"
-msgstr ""
+msgstr "Parameter per virXPathNodeSet() non valido"
 
 #: src/xml.c:522 src/xmlrpc.c:484
 msgid "allocate string array"
 msgstr "assegna array della stringa"
 
 #: src/xml.c:720
-#, fuzzy
 msgid "too many boot devices"
-msgstr "troppi domini"
+msgstr "troppi dispositivi di avvio"
 
 #: src/xml.c:752
-#, fuzzy
 msgid "no HVM domain loader"
-msgstr "elenco dominio del nodo"
+msgstr "loader di dominio HVM non presente"
 
 #: src/xml.c:846 src/xml.c:863
-#, fuzzy
 msgid "invalid input device"
-msgstr "indicatore non valido del dominio in"
+msgstr "dispositivo di input non valido"
 
 #: src/xmlrpc.c:53
-#, fuzzy
 msgid "allocate value"
-msgstr "assegna array del valore"
+msgstr "alloca valore"
 
 #: src/xmlrpc.c:65
 msgid "copying node content"
-msgstr "copiatura contenuto nodo in corso"
+msgstr "copia contenuto nodo in corso"
 
 #: src/xmlrpc.c:163
 msgid "allocate value array"
-msgstr "assegna array del valore"
+msgstr "alloca array di valore"
 
 #: src/xmlrpc.c:186
-#, fuzzy
 msgid "allocate dict"
-msgstr "assegna nuovo contenuto"
+msgstr "alloca dict"
 
 #: src/xmlrpc.c:197
 msgid "unexpected dict node"
-msgstr "nodo del dizionario inaspettato"
+msgstr "nodo dict inaspettato"
 
 #: src/xmlrpc.c:268
 msgid "unexpected value node"
@@ -4615,15 +4538,12 @@ msgstr "leggi risposta"
 
 #: src/xmlrpc.c:606
 msgid "parse server response failed"
-msgstr "analizzazione risposta server fallita"
+msgstr "errore nel parsing della risposta del server"
 
 #: src/xmlrpc.c:670
 msgid "allocate new context"
-msgstr "assegna nuovo contenuto"
+msgstr "assegna nuovo contesto"
 
 #: src/xs_internal.c:329
 msgid "failed to connect to Xen Store"
-msgstr "impossibile collegarsi a Xen Store"
-
-#~ msgid "Failed to open '%s': read: %s"
-#~ msgstr "Impossibile aprire '%s': letto: %s"
+msgstr "impossibile connettersi allo Xen Store"
