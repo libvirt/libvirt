@@ -121,7 +121,7 @@ capabilities in terms of CPU and features, and a set of description
 for each kind of guest which can be virtualized. For a more complete
 description see:
   L<http://libvirt.org/format.html#Capa1>
-The XML also show the NUMA topology informations if available.
+The XML also show the NUMA topology information if available.
 
 =item B<list>
 
@@ -255,7 +255,7 @@ Returns state about a running domain.
 
 =item B<dumpxml> I<domain-id>
 
-Output the domain informations as an XML dump to stdout, this format can be used by the B<create> command.
+Output the domain information as an XML dump to stdout, this format can be used by the B<create> command.
 
 
 =item B<reboot> I<domain-id>
@@ -413,7 +413,7 @@ if more than one are present on the domain.
 
 The following commands manipulate networks. Libvirt has the capability to
 define virtual networks which can then be used by domains and linked to
-actual network devices. For more detailed informations about this feature
+actual network devices. For more detailed information about this feature
 see the documentation at L<http://libvirt.org/format.html#Net1> . A lot
 of the command for virtual networks are similar to the one used for domains,
 but the way to name a virtual network is either by its name or UUID.

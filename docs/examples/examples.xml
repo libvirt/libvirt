@@ -1,7 +1,7 @@
 <examples>
   <example filename='info1.c'>
-    <synopsis>Extract informations about Xen domain 0</synopsis>
-    <purpose>Demonstrate the basic use of the library to connect to the hypervisor and extract domain informations.</purpose>
+    <synopsis>Extract information about Xen domain 0</synopsis>
+    <purpose>Demonstrate the basic use of the library to connect to the hypervisor and extract domain information.</purpose>
     <usage>info1</usage>
     <test>info1</test>
     <author>Daniel Veillard</author>

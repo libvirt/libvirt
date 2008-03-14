@@ -85,7 +85,7 @@ class libvirtError(Exception):
 def registerErrorHandler(f, ctx):
     """Register a Python written function to for error reporting.
        The function is called back as f(ctx, error), with error
-       being a list of informations about the error being raised.
+       being a list of information about the error being raised.
        Returns 1 in case of success."""
     return libvirtmod.virRegisterErrorHandler(f,ctx)
 

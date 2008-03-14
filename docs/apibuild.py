@@ -752,7 +752,7 @@ class CParser:
 	return((args, desc))
 
      #
-     # Parse a comment block and merge the informations found in the
+     # Parse a comment block and merge the information found in the
      # parameters descriptions, finally returns a block as complete
      # as possible
      #

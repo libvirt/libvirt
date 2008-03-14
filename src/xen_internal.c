@@ -397,28 +397,28 @@ struct xen_v0_domainop {
 typedef struct xen_v0_domainop xen_v0_domainop;
 
 /*
- * The informations for a destroydomain system hypercall
+ * The information for a destroydomain system hypercall
  */
 #define XEN_V0_OP_DESTROYDOMAIN	9
 #define XEN_V1_OP_DESTROYDOMAIN	9
 #define XEN_V2_OP_DESTROYDOMAIN	2
 
 /*
- * The informations for a pausedomain system hypercall
+ * The information for a pausedomain system hypercall
  */
 #define XEN_V0_OP_PAUSEDOMAIN	10
 #define XEN_V1_OP_PAUSEDOMAIN	10
 #define XEN_V2_OP_PAUSEDOMAIN	3
 
 /*
- * The informations for an unpausedomain system hypercall
+ * The information for an unpausedomain system hypercall
  */
 #define XEN_V0_OP_UNPAUSEDOMAIN	11
 #define XEN_V1_OP_UNPAUSEDOMAIN	11
 #define XEN_V2_OP_UNPAUSEDOMAIN	4
 
 /*
- * The informations for an setmaxmem system hypercall
+ * The information for an setmaxmem system hypercall
  */
 #define XEN_V0_OP_SETMAXMEM	28
 #define XEN_V1_OP_SETMAXMEM	28
@@ -442,7 +442,7 @@ struct xen_v2d5_setmaxmem {
 typedef struct xen_v2d5_setmaxmem xen_v2d5_setmaxmem;
 
 /*
- * The informations for an setmaxvcpu system hypercall
+ * The information for an setmaxvcpu system hypercall
  */
 #define XEN_V0_OP_SETMAXVCPU	41
 #define XEN_V1_OP_SETMAXVCPU	41
@@ -461,7 +461,7 @@ struct xen_v2_setmaxvcpu {
 typedef struct xen_v2_setmaxvcpu xen_v2_setmaxvcpu;
 
 /*
- * The informations for an setvcpumap system hypercall
+ * The information for an setvcpumap system hypercall
  * Note that between 1 and 2 the limitation to 64 physical CPU was lifted
  * hence the difference in structures
  */
@@ -509,7 +509,7 @@ struct xen_v2d5_setvcpumap {
 typedef struct xen_v2d5_setvcpumap xen_v2d5_setvcpumap;
 
 /*
- * The informations for an vcpuinfo system hypercall
+ * The information for an vcpuinfo system hypercall
  */
 #define XEN_V0_OP_GETVCPUINFO   43
 #define XEN_V1_OP_GETVCPUINFO	43
@@ -980,7 +980,7 @@ xenHypervisorDoV2Dom(int handle, xen_op_v2_dom* op)
  * @maxids: maximum number of domains to list
  * @dominfos: output structures
  *
- * Do a low level hypercall to list existing domains informations
+ * Do a low level hypercall to list existing domains information
  *
  * Returns the number of domains or -1 in case of failure
  */

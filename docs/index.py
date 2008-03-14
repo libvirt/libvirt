@@ -34,7 +34,7 @@
 #    Bye
 #
 # Then run the script in the doc subdir, it will create the symbols and
-# word tables and populate them with informations extracted from
+# word tables and populate them with information extracted from
 # the libvirt-api.xml API description, and make then accessible read-only
 # by nobody@loaclhost the user expected to be Apache's one
 #

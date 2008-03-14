@@ -1,3 +1,8 @@
+Fri Mar 14 11:01:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Fix typo "informations" -> "information" (Atsushi SAKAI and
+	Saori FUKUTA).
+
 Thu Mar 13 10:24:45 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/libvirt.c: virDomainSetSchedulerParameters need to be 

@@ -8,7 +8,7 @@ engines:</p><ul><li><a href="#Xen">Xen hypervisor</a></li>
 </ul><h3><a name="Xen" id="Xen">Libvirt Xen support</a></h3><p>When running in a Xen environment, programs using libvirt have to execute
 in "Domain 0", which is the primary Linux OS loaded on the machine. That OS
 kernel provides most if not all of the actual drivers used by the set of
-domains. It also runs the Xen Store, a database of informations shared by the
+domains. It also runs the Xen Store, a database of information shared by the
 hypervisor, the kernels, the drivers and the xen daemon. Xend. The xen daemon
 supervise the control and execution of the sets of domains. The hypervisor,
 drivers, kernels and daemons communicate though a shared system bus
@@ -23,7 +23,7 @@ the Xen infrastructure:</p><ul><li>a connection to the Xen Daemon though an HTTP
       as root and providing read-only support</li>
 </ul><p>The library will usually interact with the Xen daemon for any operation
 changing the state of the system, but for performance and accuracy reasons
-may talk directly to the hypervisor when gathering state informations at
+may talk directly to the hypervisor when gathering state information at
 least when possible (i.e. when the running program using libvirt has root
 priviledge access).</p><p>If it runs without root access virConnectOpenReadOnly() should be used to
 connect to initialize the library. It will then fork a libvirt_proxy

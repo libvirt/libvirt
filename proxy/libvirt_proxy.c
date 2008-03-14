@@ -571,7 +571,7 @@ retry2:
 	        goto comm_error;
 
 	    /*
-	     * Hum, could we expect those informations to be unmutable and
+	     * Hum, could we expect those information to be unmutable and
 	     * cache them ? Since it's probably an unfrequent call better
 	     * not make assumption and do the xend RPC each call.
 	     */
@@ -763,7 +763,7 @@ proxyMainLoop(void) {
 /**
  * usage:
  *
- * dump on stdout informations about the program
+ * dump on stdout information about the program
  */
 static void
 usage(const char *progname) {

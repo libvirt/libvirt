@@ -34,13 +34,13 @@
       <arg name='uuid' type='const unsigned char *' info='the UUID string for the network, must be 16 bytes'/>
     </function>
     <function name='virDomainGetInfo' file='python'>
-      <info>Extract informations about a domain. Note that if the connection used to get the domain is limited only a partial set of the informations can be extracted.</info>
-      <return type='int *' info='the list of informations or None in case of error'/>
+      <info>Extract information about a domain. Note that if the connection used to get the domain is limited only a partial set of the information can be extracted.</info>
+      <return type='int *' info='the list of information or None in case of error'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
     <function name='virNodeGetInfo' file='python'>
-      <info>Extract hardware informations about the Node.</info>
-      <return type='int *' info='the list of informations or None in case of error'/>
+      <info>Extract hardware information about the Node.</info>
+      <return type='int *' info='the list of information or None in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
     <function name='virDomainGetUUID' file='python'>

@@ -15,14 +15,14 @@ if conn == None:
 try:
     (model, memory, cpus, mhz, nodes, socket, cores, threads) = conn.getInfo()
 except:
-    print 'Failed to extract the current node informations'
+    print 'Failed to extract the current node information'
     sys.exit(1)
 
 print "Xen running on %d %s processors at %d MHz, %d MBytes of memory" % (
        cpus, model, mhz, memory)
 
 if cpus > nodes * socket * cores * threads:
-    print "Erroneous CPU informations"
+    print "Erroneous CPU information"
     sys.exit(1)
 
 if cpus < nodes * socket * cores * threads:

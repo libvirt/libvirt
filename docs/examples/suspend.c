@@ -25,7 +25,7 @@ static virConnectPtr conn = NULL; /* the hypervisor connection */
  */
 static int
 checkDomainState(virDomainPtr dom) {
-    virDomainInfo info;        /* the informations being fetched */
+    virDomainInfo info;        /* the information being fetched */
     int ret;
 
     ret = virDomainGetInfo(dom, &info);
@@ -39,7 +39,7 @@ checkDomainState(virDomainPtr dom) {
  * SuspendAndResumeDomain:
  * @id: the id of the domain
  *
- * extract the domain 0 informations
+ * extract the domain 0 information
  */
 static void
 SuspendAndResumeDomain(int id) {

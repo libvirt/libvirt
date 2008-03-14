@@ -25,8 +25,8 @@
 
   <!--
       Description of a Xen domain:
-      The description must start with the identification informations and then
-      os or bootloader, resources, features, devices and termination informations
+      The description must start with the identification information and then
+      os or bootloader, resources, features, devices and termination information
       can be given in any order.
     -->
   <define name='xen-domain'>
@@ -60,7 +60,7 @@
 
   <!--
       Description of a QEmu domain:
-      The description must start with the identification informations and then
+      The description must start with the identification information and then
       os, resources, devices can be given in any order.
       The specific part are the combinations of architectures and machines
       being emulated.
@@ -145,7 +145,7 @@
 
   <!--
       Description of a KVM domain:
-      The description must start with the identification informations and then
+      The description must start with the identification information and then
       os, resources, devices can be given in any order.
     -->
   <define name='kvm-domain'>

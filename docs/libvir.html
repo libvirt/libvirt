@@ -254,7 +254,7 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
   <li>Documentation: remote support (Richard Jones), description of
       the URI connection strings (Richard Jones), update of virsh man
       page, matrix of libvirt API/hypervisor support with version
-      informations (Richard Jones)</li>
+      information (Richard Jones)</li>
   <li>Bug fixes: examples Makefile.am generation (Richard Jones),
       SetMem fix (Mark Johnson), URI handling and ordering of
       drivers (Daniel Berrange), fix virsh help without hypervisor (Richard
@@ -424,7 +424,7 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
 <h3>0.1.9: Nov 29 2006</h3>
 <ul>
   <li>python bindings: release interpeter lock when calling C (Daniel Berrange)</li>
-  <li>don't raise HTTP error when looking informations for a domain</li>
+  <li>don't raise HTTP error when looking information for a domain</li>
   <li>some refactoring to use the driver for all entry points</li>
   <li>better error reporting (Daniel Berrange)</li>
   <li>fix OS reporting when running as non-root</li>
@@ -442,7 +442,7 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
   <li>added support for inactive domains, new APIs, various associated cleanup (Daniel Berrange)</li>
   <li>special device model for HVM guests (Daniel Berrange)</li>
   <li>add API to dump core of domains (but requires a patched xend)</li>
-  <li>pygrub bootloader informations take over &lt;os&gt; informations</li>
+  <li>pygrub bootloader information take over &lt;os&gt; information</li>
   <li>updated the localization strings</li>
 </ul>
 <h3>0.1.8: Oct 16 2006</h3>
@@ -459,9 +459,9 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
 </ul>
 <h3>0.1.7: Sep 29 2006</h3>
 <ul>
-  <li> fix a memory bug on getting vcpu informations from xend (Daniel Berrange)</li>
+  <li> fix a memory bug on getting vcpu information from xend (Daniel Berrange)</li>
   <li> fix another problem in the hypercalls change in Xen changeset
-       86d26e6ec89b when getting domain informations (Daniel Berrange)</li>
+       86d26e6ec89b when getting domain information (Daniel Berrange)</li>
 </ul>
 <h3>0.1.6: Sep 22 2006</h3>
 <ul>
@@ -497,7 +497,7 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
     initialization errors (Daniel Berrange)</li>
   <li>improvements: UUID in XML description (Peter Vetere), proxy code
     cleanup, virtual CPU and affinity support + virsh support (Michel
-    Ponceau, Philippe Berthault, Daniel Berrange), port and tty informations
+    Ponceau, Philippe Berthault, Daniel Berrange), port and tty information
     for console in XML (Daniel Berrange), added XML dump to driver and proxy
     support (Daniel Berrange), extention of boot options with support for
     floppy and cdrom (Daniel Berrange), features block in XML to report/ask
@@ -678,7 +678,7 @@ engines:</p>
 <p>When running in a Xen environment, programs using libvirt have to execute
 in "Domain 0", which is the primary Linux OS loaded on the machine. That OS
 kernel provides most if not all of the actual drivers used by the set of
-domains. It also runs the Xen Store, a database of informations shared by the
+domains. It also runs the Xen Store, a database of information shared by the
 hypervisor, the kernels, the drivers and the xen daemon. Xend. The xen daemon
 supervise the control and execution of the sets of domains. The hypervisor,
 drivers, kernels and daemons communicate though a shared system bus
@@ -700,7 +700,7 @@ the Xen infrastructure:</p>
 
 <p>The library will usually interact with the Xen daemon for any operation
 changing the state of the system, but for performance and accuracy reasons
-may talk directly to the hypervisor when gathering state informations at
+may talk directly to the hypervisor when gathering state information at
 least when possible (i.e. when the running program using libvirt has root
 priviledge access).</p>
 
@@ -995,7 +995,7 @@ systems:</p>
   <li>the <code>&lt;os&gt;</code> block description is very different, first
     it indicates that the type is 'hvm' for hardware virtualization, then
     instead of a kernel, boot and command line arguments, it points to an os
-    boot loader which will extract the boot informations from the boot device
+    boot loader which will extract the boot information from the boot device
     specified in a separate boot element. The <code>dev</code> attribute on
     the <code>boot</code> tag can be one of:
     <ul>
@@ -1300,9 +1300,9 @@ description).</p>
 
 <p>The second block (in blue) indicates the paravirtualization support of the
 Xen support, you will see the os_type of xen to indicate a paravirtual
-kernel, then architecture informations and potential features.</p>
+kernel, then architecture information and potential features.</p>
 
-<p>The third block (in green) gives similar informations but when running a
+<p>The third block (in green) gives similar information but when running a
 32 bit OS fully virtualized with Xen using the hvm support.</p>
 
 <p>This section is likely to be updated and augmented in the future, see <a
@@ -1319,7 +1319,7 @@ higher level kind of languages:</p>
 <ul>
   <li>Python: Libvirt comes with direct support for the Python language
      (just make sure you installed the libvirt-python package if not
-     compiling from sources). See below for more informations about
+     compiling from sources). See below for more information about
      using libvirt with python</li>
   <li>Perl: Daniel Berrange provides <a
      href="http://search.cpan.org/~danberr/Sys-Virt-0.1.0/">bindings for
@@ -1332,7 +1332,7 @@ higher level kind of languages:</p>
 
 <p>Support, requests or help for libvirt bindings are welcome on
 the <a href="https://www.redhat.com/mailman/listinfo/libvir-list/">mailing
-list</a>, as usual try to provide enough background informations
+list</a>, as usual try to provide enough background information
 and make sure you use recent version, see the <a href="bugs.html">help
 page</a>.</p>
 
@@ -1411,7 +1411,7 @@ from the C API, the only points to notice are:</p>
   <li>getting an object representing the Domain 0 using <span
     style="color: #007F00; background-color: #FFFFFF">lookupByName</span></li>
   <li>if the domain is not found a libvirtError exception will be raised</li>
-  <li>extracting and printing some informations about the domain using
+  <li>extracting and printing some information about the domain using
     various <span
     style="color: #E50073; background-color: #FFFFFF">methods</span>
     associated to the virDomain class.</li>
@@ -1422,7 +1422,7 @@ from the C API, the only points to notice are:</p>
 <p>The main goals of libvirt when it comes to error handling are:</p>
 <ul>
   <li>provide as much detail as possible</li>
-  <li>provide the informations as soon as possible</li>
+  <li>provide the information as soon as possible</li>
   <li>dont force the library user into one style of error handling</li>
 </ul>
 
@@ -1446,7 +1446,7 @@ set specifically to a connection with</p>
     <ol>
       <li>if there is a callback associated to the connection set with <a
         href="html/libvirt-virterror.html#virConnSetErrorFunc">virConnSetErrorFunc</a>,
-        call it with the error informations</li>
+        call it with the error information</li>
       <li>otherwise if there is a global callback set with <a
         href="html/libvirt-virterror.html#virSetErrorFunc">virSetErrorFunc</a>,
         call it with the error information</li>
@@ -1473,7 +1473,7 @@ set specifically to a connection with</p>
   </li>
 </ol>
 
-<p>In all cases the error informations are provided as a <a
+<p>In all cases the error information is provided as a <a
 href="html/libvirt-virterror.html#virErrorPtr">virErrorPtr</a> pointer to
 read-only structure <a
 href="html/libvirt-virterror.html#virError">virError</a> containing the
@@ -1496,12 +1496,12 @@ following fields:</p>
     targetted in the operation</li>
 </ul>
 
-<p>and then extra raw informations about the error which may be initialized
+<p>and then extra raw information about the error which may be initialized
 to 0 or NULL if unused</p>
 <ul>
-  <li>str1, str2, str3: string informations, usually str1 is the error
+  <li>str1, str2, str3: string information, usually str1 is the error
     message format</li>
-  <li>int1, int2: integer informations</li>
+  <li>int1, int2: integer information</li>
 </ul>
 
 <p>So usually, setting up specific error handling with libvirt consist of
