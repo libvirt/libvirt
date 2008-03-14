@@ -219,7 +219,7 @@ Releases
    - Documentation: remote support (Richard Jones), description of
       the URI connection strings (Richard Jones), update of virsh man
       page, matrix of libvirt API/hypervisor support with version
-      informations (Richard Jones)
+      information (Richard Jones)
    - Bug fixes: examples Makefile.am generation (Richard Jones),
       SetMem fix (Mark Johnson), URI handling and ordering of
       drivers (Daniel Berrange), fix virsh help without hypervisor (Richard
@@ -385,7 +385,7 @@ Releases
 
 0.1.9: Nov 29 2006:
    - python bindings: release interpeter lock when calling C (Daniel Berrange)
-   - don't raise HTTP error when looking informations for a domain
+   - don't raise HTTP error when looking information for a domain
    - some refactoring to use the driver for all entry points
    - better error reporting (Daniel Berrange)
    - fix OS reporting when running as non-root
@@ -403,7 +403,7 @@ Releases
    - added support for inactive domains, new APIs, various associated cleanup (Daniel Berrange)
    - special device model for HVM guests (Daniel Berrange)
    - add API to dump core of domains (but requires a patched xend)
-   - pygrub bootloader informations take over <os> informations
+   - pygrub bootloader information take over <os> information
    - updated the localization strings
 
 
@@ -420,9 +420,9 @@ Releases
 
 
 0.1.7: Sep 29 2006:
-   -  fix a memory bug on getting vcpu informations from xend (Daniel Berrange)
+   -  fix a memory bug on getting vcpu information from xend (Daniel Berrange)
    -  fix another problem in the hypercalls change in Xen changeset
-       86d26e6ec89b when getting domain informations (Daniel Berrange)
+       86d26e6ec89b when getting domain information (Daniel Berrange)
 
 
 0.1.6: Sep 22 2006:
@@ -457,7 +457,7 @@ Releases
     initialization errors (Daniel Berrange)
    - improvements: UUID in XML description (Peter Vetere), proxy code
     cleanup, virtual CPU and affinity support + virsh support (Michel
-    Ponceau, Philippe Berthault, Daniel Berrange), port and tty informations
+    Ponceau, Philippe Berthault, Daniel Berrange), port and tty information
     for console in XML (Daniel Berrange), added XML dump to driver and proxy
     support (Daniel Berrange), extention of boot options with support for
     floppy and cdrom (Daniel Berrange), features block in XML to report/ask

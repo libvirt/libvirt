@@ -1,5 +1,14 @@
 Fri Mar 14 11:01:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
+	* virsh.1 docs/apibuild.py docs/architecture.html docs/errors.html
+	  docs/format.html docs/index.py docs/libvir.html docs/libvirt-api.xml
+	  docs/libvirt.rng docs/news.html docs/python.html docs/virsh.pod
+	  docs/devhelp/libvirt-libvirt.html docs/examples/examples.xml
+	  docs/examples/index.html docs/examples/info1.c
+	  docs/examples/suspend.c docs/html/libvirt-libvirt.html
+	  include/libvirt/libvirt.h include/libvirt/libvirt.h.in
+	  proxy/libvirt_proxy.c python/libvir.py python/libvirt-python-api.xml
+	  python/tests/node.py src/xen_internal.c:
 	Fix typo "informations" -> "information" (Atsushi SAKAI and
 	Saori FUKUTA).
 
