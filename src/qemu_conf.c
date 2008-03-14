@@ -1175,7 +1175,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/type[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_OS_TYPE, NULL);
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OS_TYPE, "no OS type");
         goto error;
     }
     if (!virCapabilitiesSupportsGuestOSType(driver->caps, (const char*)obj->stringval)) {
@@ -1540,7 +1540,6 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     }
 
     if ((err = brAddTap(driver->brctl, brname,
-                        net->mac,
                         ifname, BR_IFNAME_MAXLEN, &tapfd))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                          "Failed to add tap interface '%s' to bridge '%s' : %s",
@@ -1548,7 +1547,9 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         goto error;
     }
 
-    snprintf(tapfdstr, sizeof(tapfdstr), "tap,fd=%d,script=,vlan=%d", tapfd, vlan);
+    snprintf(tapfdstr, sizeof(tapfdstr),
+             "tap,fd=%d,script=,vlan=%d,ifname=%s",
+             tapfd, vlan, ifname);
 
     if (!(retval = strdup(tapfdstr)))
         goto no_memory;

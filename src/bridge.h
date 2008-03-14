@@ -62,7 +62,6 @@ int     brDeleteInterface       (brControl *ctl,
 
 int     brAddTap                (brControl *ctl,
                                  const char *bridge,
-                                 unsigned char *mac,
                                  char *ifname,
                                  int maxlen,
                                  int *tapfd);

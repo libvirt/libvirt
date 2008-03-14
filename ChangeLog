@@ -1,3 +1,10 @@
+Fri Mar 14 16:38:34 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/bridge.c, src/bridge.h: Don't set MAC address on TAP
+	device.
+	* src/qemu_conf.c: Pass ifname= param along with TAP file
+	handle for Xenner
+
 Fri Mar 14 16:55:34 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* po/*: updated translations
