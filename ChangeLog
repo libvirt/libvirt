@@ -1,3 +1,7 @@
+Fri Mar 14 16:30:27 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/bridge.c: fix a typo in a comment
+
 Fri Mar 14 16:19:21 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* qemud/qemud.c src/virsh.c: fixing some user facing strings

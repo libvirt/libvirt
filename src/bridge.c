@@ -303,7 +303,7 @@ brDeleteInterface(brControl *ctl ATTRIBUTE_UNUSED,
  * @maxlen: size of @ifname array
  * @tapfd: file descriptor return value for the new tap device
  *
- * This function reates a new tap device on a bridge. @ifname can be either
+ * This function creates a new tap device on a bridge. @ifname can be either
  * a fixed name or a name template with '%d' for dynamic name allocation.
  * in either case the final name for the bridge will be stored in @ifname
  * and the associated file descriptor in @tapfd.
