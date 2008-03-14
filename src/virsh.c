@@ -3204,7 +3204,7 @@ cmdPoolDelete(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (virStoragePoolDelete(pool, 0) == 0) {
-        vshPrint(ctl, _("Pool %s deleteed\n"), name);
+        vshPrint(ctl, _("Pool %s deleted\n"), name);
     } else {
         vshError(ctl, FALSE, _("Failed to delete pool %s"), name);
         ret = FALSE;
@@ -3590,15 +3590,15 @@ cmdPoolStart(vshControl * ctl, vshCmd * cmd)
  * "vol-create-as" command
  */
 static vshCmdInfo info_vol_create_as[] = {
-    {"syntax", "create-as <pool> <name> <capacity>"},
-    {"help", gettext_noop("create a vol from a set of as")},
+    {"syntax", "vol-create-as <pool> <name> <capacity>"},
+    {"help", gettext_noop("create a volume from a set of args")},
     {"desc", gettext_noop("Create a vol.")},
     {NULL, NULL}
 };
 
 static vshCmdOptDef opts_vol_create_as[] = {
     {"pool", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("pool name")},
-    {"name", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the vol")},
+    {"name", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("name of the volume")},
     {"capacity", VSH_OT_DATA, VSH_OFLAG_REQ, gettext_noop("size of the vol with optional k,M,G,T suffix")},
     {"allocation", VSH_OT_DATA, 0, gettext_noop("initial allocation size with optional k,M,G,T suffix")},
     {"format", VSH_OT_DATA, 0, gettext_noop("file format type raw,bochs,qcow,qcow2,vmdk")},
@@ -3878,7 +3878,7 @@ cmdVolDelete(vshControl * ctl, vshCmd * cmd)
     }
 
     if (virStorageVolDelete(vol, 0) == 0) {
-        vshPrint(ctl, _("Vol %s deleteed\n"), name);
+        vshPrint(ctl, _("Vol %s deleted\n"), name);
     } else {
         vshError(ctl, FALSE, _("Failed to delete vol %s"), name);
         ret = FALSE;

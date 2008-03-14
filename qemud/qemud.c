@@ -699,7 +699,7 @@ static int qemudInitPaths(struct qemud_server *server,
 
  snprintf_error:
     qemudLog(QEMUD_ERR,
-             "%s", _("Resulting path to long for buffer in qemudInitPaths()"));
+             "%s", _("Resulting path too long for buffer in qemudInitPaths()"));
     return -1;
 }
 
