@@ -240,17 +240,22 @@ virStorageBackendUpdateVolInfoFD(virConnectPtr conn,
 
 #if HAVE_SELINUX
     if (fgetfilecon(fd, &filecon) == -1) {
-        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
-                              _("cannot get file context of %s: %s"),
-                              vol->target.path, strerror(errno));
-        return -1;
+        if (errno != ENODATA) {
+            virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                                  _("cannot get file context of %s: %s"),
+                                  vol->target.path, strerror(errno));
+            return -1;
+        } else {
+            vol->target.perms.label = NULL;
+        }
+    } else {
+        vol->target.perms.label = strdup(filecon);
+        if (vol->target.perms.label == NULL) {
+            virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("context"));
+            return -1;
+        }
+        freecon(filecon);
     }
-    vol->target.perms.label = strdup(filecon);
-    if (vol->target.perms.label == NULL) {
-        virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("context"));
-        return -1;
-    }
-    freecon(filecon);
 #else
     vol->target.perms.label = NULL;
 #endif
