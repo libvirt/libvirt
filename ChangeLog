@@ -1,3 +1,8 @@
+Mon Mar 17 17:40:12 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* libvirt.c: fixed DefinedDomains function comments c.f. 437216
+	* docs/libvirt-*.xml docs/*/libvirt-libvirt.html: regenerated
+
 Mon Mar 17 11:10:22 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/storage_driver.c: Don't crash if backend is missing the

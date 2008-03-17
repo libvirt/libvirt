@@ -2177,6 +2177,8 @@
           <ref name='VIR_NODEINFO_MAXCPUS'/>
           <ref name='virConnGetLastError'/>
           <ref name='virConnectGetURI'/>
+          <ref name='virConnectListDefinedDomains'/>
+          <ref name='virConnectNumOfDefinedDomains'/>
           <ref name='virDomainDefineXML'/>
           <ref name='virDomainReboot'/>
           <ref name='virDomainShutdown'/>
@@ -2516,6 +2518,7 @@
         </word>
         <word name='defined'>
           <ref name='virConnectListDefinedDomains'/>
+          <ref name='virConnectNumOfDefinedDomains'/>
           <ref name='virDomainCreate'/>
           <ref name='virDomainUndefine'/>
           <ref name='virNetworkCreate'/>
@@ -3078,6 +3081,7 @@
           <ref name='virDomainMigrate'/>
         </word>
         <word name='inactive'>
+          <ref name='virConnectListDefinedDomains'/>
           <ref name='virConnectListDefinedNetworks'/>
           <ref name='virConnectListDefinedStoragePools'/>
           <ref name='virConnectNumOfDefinedDomains'/>

@@ -706,7 +706,7 @@
       <arg name='hvVer' type='unsigned long *' info='return value for the version of the running hypervisor (OUT)'/>
     </function>
     <function name='virConnectListDefinedDomains' file='libvirt' module='libvirt'>
-      <info>list the defined domains, stores the pointers to the names in @names</info>
+      <info>list the defined but inactive domains, stores the pointers to the names in @names</info>
       <return type='int' info='the number of names provided in the array or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='names' type='char ** const' info='pointer to an array to store the names'/>
@@ -748,7 +748,7 @@
       <arg name='maxnames' type='int' info='size of the names array'/>
     </function>
     <function name='virConnectNumOfDefinedDomains' file='libvirt' module='libvirt'>
-      <info>Provides the number of inactive domains.</info>
+      <info>Provides the number of defined but inactive domains.</info>
       <return type='int' info='the number of domain found or -1 in case of error'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
     </function>
