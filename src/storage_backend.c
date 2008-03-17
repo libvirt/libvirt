@@ -240,7 +240,7 @@ virStorageBackendUpdateVolInfoFD(virConnectPtr conn,
 
 #if HAVE_SELINUX
     if (fgetfilecon(fd, &filecon) == -1) {
-        if (errno != ENODATA) {
+        if (errno != ENODATA && errno != ENOTSUP) {
             virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
                                   _("cannot get file context of %s: %s"),
                                   vol->target.path, strerror(errno));
