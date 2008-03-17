@@ -42,6 +42,7 @@
 #include "util.h"
 
 #define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt,__VA_ARGS__)
+#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
 
 static int
 xenUnifiedNodeGetInfo (virConnectPtr conn, virNodeInfoPtr info);
@@ -239,7 +240,7 @@ xenUnifiedProbe (void)
 static int
 xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int flags)
 {
-    int i, j;
+    int i;
     xenUnifiedPrivatePtr priv;
 
     /* Refuse any scheme which isn't "xen://" or "http://". */
@@ -276,41 +277,73 @@ xenUnifiedOpen (virConnectPtr conn, xmlURIPtr uri, virConnectAuthPtr auth, int f
     priv->xshandle = NULL;
     priv->proxy = -1;
 
-    for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i) {
-        priv->opened[i] = 0;
 
-        /* Only use XM driver for Xen <= 3.0.3 (ie xendConfigVersion <= 2) */
-        if (drivers[i] == &xenXMDriver &&
-            priv->xendConfigVersion > 2)
-            continue;
-
-        /* Ignore proxy for root */
-        if (i == XEN_UNIFIED_PROXY_OFFSET && getuid() == 0)
-            continue;
-
-        if (drivers[i]->open) {
-            DEBUG("trying Xen sub-driver %d", i);
-            if (drivers[i]->open (conn, uri, auth, flags) == VIR_DRV_OPEN_SUCCESS)
-                priv->opened[i] = 1;
-            DEBUG("Xen sub-driver %d open %s\n",
-                  i, priv->opened[i] ? "ok" : "failed");
+    /* Hypervisor is only run as root & required to succeed */
+    if (getuid() == 0) {
+        DEBUG0("Trying hypervisor sub-driver");
+        if (drivers[XEN_UNIFIED_HYPERVISOR_OFFSET]->open(conn, uri, auth, flags) ==
+            VIR_DRV_OPEN_SUCCESS) {
+            DEBUG0("Activated hypervisor sub-driver");
+            priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET] = 1;
         }
+    }
 
-        /* If as root, then all drivers must succeed.
-           If non-root, then only proxy must succeed */
-        if (!priv->opened[i] &&
-            (getuid() == 0 || i == XEN_UNIFIED_PROXY_OFFSET)) {
-            for (j = 0; j < i; ++j)
-                if (priv->opened[j]) drivers[j]->close (conn);
-            free (priv);
-            /* The assumption is that one of the underlying drivers
-             * has set virterror already.
-             */
-            return VIR_DRV_OPEN_ERROR;
+    /* XenD is required to suceed if root.
+     * If it fails as non-root, then the proxy driver may take over 
+     */
+    DEBUG0("Trying XenD sub-driver");
+    if (drivers[XEN_UNIFIED_XEND_OFFSET]->open(conn, uri, auth, flags) ==
+        VIR_DRV_OPEN_SUCCESS) {
+        DEBUG0("Activated XenD sub-driver");
+        priv->opened[XEN_UNIFIED_XEND_OFFSET] = 1;
+
+        /* XenD is active, so try the xm & xs drivers too, both requird to
+         * succeed if root, optional otherwise */
+        if (priv->xendConfigVersion <= 2) {
+            DEBUG0("Trying XM sub-driver");
+            if (drivers[XEN_UNIFIED_XM_OFFSET]->open(conn, uri, auth, flags) ==
+                VIR_DRV_OPEN_SUCCESS) {
+                DEBUG0("Activated XM sub-driver");
+                priv->opened[XEN_UNIFIED_XM_OFFSET] = 1;
+            }
+        }
+        DEBUG0("Trying XS sub-driver");
+        if (drivers[XEN_UNIFIED_XS_OFFSET]->open(conn, uri, auth, flags) ==
+            VIR_DRV_OPEN_SUCCESS) {
+            DEBUG0("Activated XS sub-driver");
+            priv->opened[XEN_UNIFIED_XS_OFFSET] = 1;
+        } else {
+            if (getuid() == 0)
+                goto fail; /* XS is mandatory as root */
+        }
+    } else {
+        if (getuid() == 0) {
+            goto fail; /* XenD is mandatory as root */
+        } else {
+#if WITH_PROXY
+            DEBUG0("Trying proxy sub-driver");
+            if (drivers[XEN_UNIFIED_PROXY_OFFSET]->open(conn, uri, auth, flags) ==
+                VIR_DRV_OPEN_SUCCESS) {
+                DEBUG0("Activated proxy sub-driver");
+                priv->opened[XEN_UNIFIED_PROXY_OFFSET] = 1;
+            } else {
+                goto fail; /* Proxy is mandatory if XenD failed */
+            }
+#else
+            DEBUG0("Handing off for remote driver");
+            return VIR_DRV_OPEN_DECLINED; /* Let remote_driver try instead */
+#endif
         }
     }
 
     return VIR_DRV_OPEN_SUCCESS;
+
+ fail:
+    DEBUG0("Failed to activate a mandatory sub-driver");
+    for (i = 0 ; i < XEN_UNIFIED_NR_DRIVERS ; i++)
+        if (priv->opened[i]) drivers[i]->close(conn);
+    free(priv);
+    return VIR_DRV_OPEN_ERROR;
 }
 
 #define GET_PRIVATE(conn) \

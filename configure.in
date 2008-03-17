@@ -869,6 +869,9 @@ fi
 AC_MSG_RESULT([$with_xen_proxy])
 
 AM_CONDITIONAL(WITH_PROXY,[test "$with_xen_proxy" = "yes"])
+if test "$with_xen_proxy" = "yes"; then
+  AC_DEFINE(WITH_PROXY, 1, [Whether Xen proxy is enabled])
+fi
 
 dnl Enable building libvirtd?
 AM_CONDITIONAL(WITH_LIBVIRTD,[test "x$with_libvirtd" = "xyes"])

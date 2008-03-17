@@ -835,6 +835,14 @@ remoteOpen (virConnectPtr conn,
         }
     }
 #endif
+#if WITH_XEN
+    if (uri &&
+        uri->scheme && STREQ (uri->scheme, "xen") &&
+        (!uri->server || STREQ (uri->server, "")) &&
+        (!uri->path || STREQ(uri->path, "/"))) {
+        rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
+    }
+#endif
 
     priv->magic = DEAD;
     priv->sock = -1;

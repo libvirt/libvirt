@@ -1,3 +1,13 @@
+Mon Mar 17 13:24:22 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* configure.in: Add WITH_PROXY to config.h file
+	* src/remote_internal.c: Handle local Xen URIs if Xen drivers
+	declines them
+	* src/xen_unfied.c: Use explicit logic for opening sub-drivers
+	rather than a hacked loop.
+	* src/xend_internal.c: Don't complain about failing to open
+	xend when non-root read-only.
+	
 Mon Mar 17 17:55:56 CET 2008 Jim Meyering <meyering@redhat.com>
 
 	Treat ENOTSUP like ENODATA, after failed fgetfilecon.
