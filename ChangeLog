@@ -1,3 +1,9 @@
+Mon Mar 17 11:10:22 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/storage_driver.c: Don't crash if backend is missing the
+	startPool operation, and run refreshPool when creating an
+	unmanaged pool
+
 Mon Mar 17 11:09:22 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/storage_backend.c: Cope with missing SELinux context

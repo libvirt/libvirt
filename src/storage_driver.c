@@ -416,8 +416,12 @@ storagePoolCreate(virConnectPtr conn,
         return NULL;
     }
 
-    if (backend->startPool(conn, pool) < 0) {
-        virStoragePoolObjRemove(driver, pool);
+    if (backend->startPool &&
+        backend->startPool(conn, pool) < 0)
+        return NULL;
+    if (backend->refreshPool(conn, pool) < 0) {
+        if (backend->stopPool)
+            backend->stopPool(conn, pool);
         return NULL;
     }
     pool->active = 1;
