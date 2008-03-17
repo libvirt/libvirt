@@ -1,3 +1,8 @@
+Mon Mar 17 11:46:09 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/libvirt.c docs/libvirt-*.xml docs/html/libvirt-libvirt.html:
+	  fixed a few missing argument descriptions and regenerated.
+
 Mon Mar 17 11:23:32 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* NEWS virsh.1 docs//* include/libvirt/libvirt.h[.in] qemud/mdns.h

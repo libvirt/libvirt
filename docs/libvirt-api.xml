@@ -790,7 +790,7 @@
       <arg name='flags' type='int' info='Open flags'/>
     </function>
     <function name='virConnectOpenReadOnly' file='libvirt' module='libvirt'>
-      <info>This function should be called first to get a restricted connection to the library functionalities. The set of APIs usable are then restricted on the available methods to control the domains.</info>
+      <info>This function should be called first to get a restricted connection to the libbrary functionalities. The set of APIs usable are then restricted on the available methods to control the domains.</info>
       <return type='virConnectPtr' info='a pointer to the hypervisor connection or NULL in case of error  URIs are documented at http://libvirt.org/uri.html'/>
       <arg name='name' type='const char *' info='URI of the hypervisor'/>
     </function>
@@ -831,7 +831,7 @@
       <arg name='domain' type='virDomainPtr' info='pointer to a defined domain'/>
     </function>
     <function name='virDomainCreateLinux' file='libvirt' module='libvirt'>
-      <info>Launch a new Linux guest domain, based on an XML description similar to the one returned by virDomainGetXMLDesc() This function may requires riviledged access to the hypervisor.</info>
+      <info>Launch a new Linux guest domain, based on an XML description similar to the one returned by virDomainGetXMLDesc() This function may requires privileged access to the hypervisor.</info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='xmlDesc' type='const char *' info='an XML description of the domain'/>
@@ -1214,27 +1214,27 @@
       <info>Build the underlying storage pool</info>
       <return type='int' info='0 on success, or -1 upon failure'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
-      <arg name='flags' type='unsigned int' info=''/>
+      <arg name='flags' type='unsigned int' info='future flags, use 0 for now'/>
     </function>
     <function name='virStoragePoolCreate' file='libvirt' module='libvirt'>
       <info>Starts an inactive storage pool</info>
       <return type='int' info='0 on success, or -1 if it could not be started'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
-      <arg name='flags' type='unsigned int' info=''/>
+      <arg name='flags' type='unsigned int' info='future flags, use 0 for now'/>
     </function>
     <function name='virStoragePoolCreateXML' file='libvirt' module='libvirt'>
-      <info>Create a new storage based on its XML description. The pool is not persistent, so its definition will disappear when it is destroyed, or if the host is restarted</info>
+      <info>Create a new storage based on its XML description. The pool is not persitent, so its definition will disappear when it is destroyed, or if the host is restarted</info>
       <return type='virStoragePoolPtr' info='a virStoragePoolPtr object, or NULL if creation failed'/>
       <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
       <arg name='xmlDesc' type='const char *' info='XML description for new pool'/>
-      <arg name='flags' type='unsigned int' info=''/>
+      <arg name='flags' type='unsigned int' info='future flags, use 0 for now'/>
     </function>
     <function name='virStoragePoolDefineXML' file='libvirt' module='libvirt'>
       <info>Define a new inactive storage pool based on its XML description. The pool is persitent, until explicitly undefined.</info>
       <return type='virStoragePoolPtr' info='a virStoragePoolPtr object, or NULL if creation failed'/>
       <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
       <arg name='xml' type='const char *' info='XML description for new pool'/>
-      <arg name='flags' type='unsigned int' info=''/>
+      <arg name='flags' type='unsigned int' info='future flags, use 0 for now'/>
     </function>
     <function name='virStoragePoolDelete' file='libvirt' module='libvirt'>
       <info>Delete the underlying pool resources. This is a non-recoverable operation. The virStoragePoolPtr object itself is not free&apos;d.</info>
@@ -1290,7 +1290,7 @@
       <info>Fetch an XML document describing all aspects of the storage pool. This is suitable for later feeding back into the virStoragePoolCreateXML method.</info>
       <return type='char *' info='a XML document, or NULL on error'/>
       <arg name='pool' type='virStoragePoolPtr' info='pointer to storage pool'/>
-      <arg name='flags' type='unsigned int' info='flags for XML format options (unused, pass 0)'/>
+      <arg name='flags' type='unsigned int' info='flags for XML format options (set of virDomainXMLFlags)'/>
     </function>
     <function name='virStoragePoolListVolumes' file='libvirt' module='libvirt'>
       <info>Fetch list of storage volume names, limiting to at most maxnames.</info>
@@ -1355,7 +1355,7 @@
       <info>Delete the storage volume from the pool</info>
       <return type='int' info='0 on success, or -1 on error'/>
       <arg name='vol' type='virStorageVolPtr' info='pointer to storage volume'/>
-      <arg name='flags' type='unsigned int' info=''/>
+      <arg name='flags' type='unsigned int' info='future flags, use 0 for now'/>
     </function>
     <function name='virStorageVolFree' file='libvirt' module='libvirt'>
       <info>Release the storage volume handle. The underlying storage volume contains to exist</info>

@@ -2790,10 +2790,15 @@
           <ref name='virDomainMigrate'/>
           <ref name='virDomainReboot'/>
           <ref name='virNetworkGetXMLDesc'/>
+          <ref name='virStoragePoolBuild'/>
+          <ref name='virStoragePoolCreate'/>
+          <ref name='virStoragePoolCreateXML'/>
+          <ref name='virStoragePoolDefineXML'/>
           <ref name='virStoragePoolDelete'/>
           <ref name='virStoragePoolGetXMLDesc'/>
           <ref name='virStoragePoolRefresh'/>
           <ref name='virStorageVolCreateXML'/>
+          <ref name='virStorageVolDelete'/>
           <ref name='virStorageVolGetXMLDesc'/>
         </word>
         <word name='following:'>
@@ -2912,6 +2917,13 @@
           <ref name='virConnectClose'/>
           <ref name='virDomainSuspend'/>
         </word>
+        <word name='future'>
+          <ref name='virStoragePoolBuild'/>
+          <ref name='virStoragePoolCreate'/>
+          <ref name='virStoragePoolCreateXML'/>
+          <ref name='virStoragePoolDefineXML'/>
+          <ref name='virStorageVolDelete'/>
+        </word>
       </letter>
     </chunk>
     <chunk name='chunk4'>
@@ -3001,6 +3013,7 @@
           <ref name='virDomainBlockStats'/>
           <ref name='virDomainInterfaceStats'/>
           <ref name='virGetVersion'/>
+          <ref name='virStorageVolGetKey'/>
         </word>
         <word name='here'>
           <ref name='virConnectGetMaxVcpus'/>
@@ -3043,9 +3056,6 @@
         </word>
         <word name='human-readable'>
           <ref name='_virError'/>
-        </word>
-        <word name='have'>
-          <ref name='virStorageVolGetKey'/>
         </word>
         <word name='hypervisors'>
           <ref name='virDomainMigrate'/>
@@ -3593,10 +3603,8 @@
           <ref name='_virVcpuInfo'/>
         </word>
         <word name='necessary'>
-          <ref name='virConnectOpenAuth'/>
-        </word>
-        <word name='necessary'>
           <ref name='VIR_NODEINFO_MAXCPUS'/>
+          <ref name='virConnectOpenAuth'/>
         </word>
         <word name='need'>
           <ref name='virConnCopyLastError'/>
@@ -3652,12 +3660,16 @@
           <ref name='virConnGetLastError'/>
           <ref name='virGetLastError'/>
         </word>
+        <word name='now'>
+          <ref name='virStoragePoolBuild'/>
+          <ref name='virStoragePoolCreate'/>
+          <ref name='virStoragePoolCreateXML'/>
+          <ref name='virStoragePoolDefineXML'/>
+          <ref name='virStorageVolDelete'/>
+        </word>
         <word name='nparams'>
           <ref name='virDomainGetSchedulerParameters'/>
           <ref name='virDomainSetSchedulerParameters'/>
-        </word>
-        <word name='number'>
-          <ref name='_virDomainBlockStats'/>
         </word>
       </letter>
       <letter name='o'>
@@ -3779,7 +3791,6 @@
         </word>
         <word name='pass'>
           <ref name='virConnSetErrorFunc'/>
-          <ref name='virStoragePoolGetXMLDesc'/>
           <ref name='virStorageVolCreateXML'/>
           <ref name='virStorageVolGetXMLDesc'/>
         </word>
@@ -3836,10 +3847,6 @@
           <ref name='virNetworkCreate'/>
           <ref name='virStoragePoolNumOfVolumes'/>
           <ref name='virStorageVolCreateXML'/>
-        </word>
-        <word name='pool'>
-          <ref name='virStoragePoolGetConnect'/>
-          <ref name='virStorageVolGetConnect'/>
         </word>
         <word name='port'>
           <ref name='virDomainMigrate'/>
@@ -4187,6 +4194,7 @@
           <ref name='virDomainMigrate'/>
           <ref name='virDomainPinVcpu'/>
           <ref name='virNetworkGetXMLDesc'/>
+          <ref name='virStoragePoolGetXMLDesc'/>
         </word>
         <word name='setting'>
           <ref name='virStoragePoolSetAutostart'/>
@@ -4611,7 +4619,6 @@
         </word>
         <word name='unused'>
           <ref name='virDomainCoreDump'/>
-          <ref name='virStoragePoolGetXMLDesc'/>
           <ref name='virStoragePoolRefresh'/>
           <ref name='virStorageVolCreateXML'/>
           <ref name='virStorageVolGetXMLDesc'/>
@@ -4648,8 +4655,13 @@
           <ref name='virErrorFunc'/>
           <ref name='virGetLastError'/>
           <ref name='virNetworkGetConnect'/>
+          <ref name='virStoragePoolBuild'/>
+          <ref name='virStoragePoolCreate'/>
+          <ref name='virStoragePoolCreateXML'/>
+          <ref name='virStoragePoolDefineXML'/>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStoragePoolRefresh'/>
+          <ref name='virStorageVolDelete'/>
           <ref name='virStorageVolGetConnect'/>
         </word>
         <word name='used'>
@@ -4802,6 +4814,7 @@
         </word>
         <word name='virDomainXMLFlags'>
           <ref name='virDomainGetXMLDesc'/>
+          <ref name='virStoragePoolGetXMLDesc'/>
         </word>
         <word name='virError'>
           <ref name='virResetError'/>

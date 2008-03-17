@@ -4032,6 +4032,7 @@ virStoragePoolLookupByVolume(virStorageVolPtr vol)
  * virStoragePoolCreateXML:
  * @conn: pointer to hypervisor connection
  * @xmlDesc: XML description for new pool
+ * @flags: future flags, use 0 for now
  *
  * Create a new storage based on its XML description. The
  * pool is not persitent, so its definition will disappear
@@ -4070,6 +4071,7 @@ virStoragePoolCreateXML(virConnectPtr conn,
  * virStoragePoolDefineXML:
  * @conn: pointer to hypervisor connection
  * @xml: XML description for new pool
+ * @flags: future flags, use 0 for now
  *
  * Define a new inactive storage pool based on its XML description. The
  * pool is persitent, until explicitly undefined.
@@ -4107,6 +4109,7 @@ virStoragePoolDefineXML(virConnectPtr conn,
 /**
  * virStoragePoolBuild:
  * @pool: pointer to storage pool
+ * @flags: future flags, use 0 for now
  *
  * Build the underlying storage pool
  *
@@ -4174,6 +4177,7 @@ virStoragePoolUndefine(virStoragePoolPtr pool)
 /**
  * virStoragePoolCreate:
  * @pool: pointer to storage pool
+ * @flags: future flags, use 0 for now
  *
  * Starts an inactive storage pool
  *
@@ -4472,7 +4476,7 @@ virStoragePoolGetInfo(virStoragePoolPtr pool,
 /**
  * virStoragePoolGetXMLDesc:
  * @pool: pointer to storage pool
- * @flags: flags for XML format options (unused, pass 0)
+ * @flags: flags for XML format options (set of virDomainXMLFlags)
  *
  * Fetch an XML document describing all aspects of the
  * storage pool. This is suitable for later feeding back
@@ -4847,6 +4851,7 @@ virStorageVolCreateXML(virStoragePoolPtr pool,
 /**
  * virStorageVolDelete:
  * @vol: pointer to storage volume
+ * @flags: future flags, use 0 for now
  *
  * Delete the storage volume from the pool
  *
