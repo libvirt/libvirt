@@ -1,3 +1,10 @@
+Mon Mar 17 11:23:32 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* NEWS virsh.1 docs//* include/libvirt/libvirt.h[.in] qemud/mdns.h
+	  src/libvirt.c src/qemu.conf src/remote_internal.c src/xend_internal.c
+	  tests/confdata/libvirtd.conf tests/confdata/libvirtd.out: patch from 
+	  Atsushi SAKAI fixing a ot more typo
+
 Fri Mar 14 16:38:34 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/bridge.c, src/bridge.h: Don't set MAC address on TAP

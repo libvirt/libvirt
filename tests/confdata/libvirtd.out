@@ -9,7 +9,7 @@
 # NB, must pass the --listen flag to the libvirtd process for this to
 # have any effect.
 #
-# It is neccessary to setup a CA and issue server certificates before
+# It is necessary to setup a CA and issue server certificates before
 # using this capability.
 #
 # This is enabled by default, uncomment this to disable it

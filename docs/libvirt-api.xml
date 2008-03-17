@@ -527,7 +527,7 @@
       <field name='rd_req' type='long long' info=' number of read requests'/>
       <field name='rd_bytes' type='long long' info=' number of read bytes'/>
       <field name='wr_req' type='long long' info=' number of write requests'/>
-      <field name='wr_bytes' type='long long' info=' numbber of written bytes'/>
+      <field name='wr_bytes' type='long long' info=' number of written bytes'/>
       <field name='errs' type='long long' info=' In Xen this returns the mysterious &apos;oo_req&apos;.'/>
     </struct>
     <typedef name='virDomainCreateFlags' file='libvirt' type='enum'/>
@@ -700,7 +700,7 @@
       <arg name='conn' type='virConnectPtr' info='pointer to a hypervisor connection'/>
     </function>
     <function name='virConnectGetVersion' file='libvirt' module='libvirt'>
-      <info>Get the version level of the Hypervisor running. This may work only with hypervisor call, i.e. with priviledged access to the hypervisor, not with a Read-Only connection.</info>
+      <info>Get the version level of the Hypervisor running. This may work only with hypervisor call, i.e. with privileged access to the hypervisor, not with a Read-Only connection.</info>
       <return type='int' info='-1 in case of error, 0 otherwise. if the version can&apos;t be extracted by lack of capacities returns 0 and @hvVer is 0, otherwise @hvVer value is major * 1,000,000 + minor * 1,000 + release'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='hvVer' type='unsigned long *' info='return value for the version of the running hypervisor (OUT)'/>
@@ -783,14 +783,14 @@
       <arg name='name' type='const char *' info='URI of the hypervisor'/>
     </function>
     <function name='virConnectOpenAuth' file='libvirt' module='libvirt'>
-      <info>This function should be called first to get a connection to the Hypervisor. If neccessary, authentication will be performed fetching credentials via the callback</info>
+      <info>This function should be called first to get a connection to the Hypervisor. If necessary, authentication will be performed fetching credentials via the callback</info>
       <return type='virConnectPtr' info='a pointer to the hypervisor connection or NULL in case of error  URIs are documented at http://libvirt.org/uri.html'/>
       <arg name='name' type='const char *' info='URI of the hypervisor'/>
       <arg name='auth' type='virConnectAuthPtr' info='Authenticate callback parameters'/>
       <arg name='flags' type='int' info='Open flags'/>
     </function>
     <function name='virConnectOpenReadOnly' file='libvirt' module='libvirt'>
-      <info>This function should be called first to get a restricted connection to the libbrary functionalities. The set of APIs usable are then restricted on the available methods to control the domains.</info>
+      <info>This function should be called first to get a restricted connection to the library functionalities. The set of APIs usable are then restricted on the available methods to control the domains.</info>
       <return type='virConnectPtr' info='a pointer to the hypervisor connection or NULL in case of error  URIs are documented at http://libvirt.org/uri.html'/>
       <arg name='name' type='const char *' info='URI of the hypervisor'/>
     </function>
@@ -831,7 +831,7 @@
       <arg name='domain' type='virDomainPtr' info='pointer to a defined domain'/>
     </function>
     <function name='virDomainCreateLinux' file='libvirt' module='libvirt'>
-      <info>Launch a new Linux guest domain, based on an XML description similar to the one returned by virDomainGetXMLDesc() This function may requires priviledged access to the hypervisor.</info>
+      <info>Launch a new Linux guest domain, based on an XML description similar to the one returned by virDomainGetXMLDesc() This function may requires riviledged access to the hypervisor.</info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
       <arg name='xmlDesc' type='const char *' info='an XML description of the domain'/>
@@ -844,7 +844,7 @@
       <arg name='xml' type='const char *' info='the XML description for the domain, preferably in UTF-8'/>
     </function>
     <function name='virDomainDestroy' file='libvirt' module='libvirt'>
-      <info>Destroy the domain object. The running instance is shutdown if not down already and all resources used by it are given back to the hypervisor. The data structure is freed and should not be used thereafter if the call does not return an error. This function may requires priviledged access</info>
+      <info>Destroy the domain object. The running instance is shutdown if not down already and all resources used by it are given back to the hypervisor. The data structure is freed and should not be used thereafter if the call does not return an error. This function may requires privileged access</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
@@ -984,7 +984,7 @@
       <arg name='bandwidth' type='unsigned long' info='(optional) specify migration bandwidth limit in Mbps'/>
     </function>
     <function name='virDomainPinVcpu' file='libvirt' module='libvirt'>
-      <info>Dynamically change the real CPUs which can be allocated to a virtual CPU. This function requires priviledged access to the hypervisor.</info>
+      <info>Dynamically change the real CPUs which can be allocated to a virtual CPU. This function requires privileged access to the hypervisor.</info>
       <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object, or NULL for Domain0'/>
       <arg name='vcpu' type='unsigned int' info='virtual CPU number'/>
@@ -1004,7 +1004,7 @@
       <arg name='from' type='const char *' info='path to the'/>
     </function>
     <function name='virDomainResume' file='libvirt' module='libvirt'>
-      <info>Resume an suspended domain, the process is restarted from the state where it was frozen by calling virSuspendDomain(). This function may requires priviledged access</info>
+      <info>Resume an suspended domain, the process is restarted from the state where it was frozen by calling virSuspendDomain(). This function may requires privileged access</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
@@ -1021,13 +1021,13 @@
       <arg name='autostart' type='int' info='whether the domain should be automatically started 0 or 1'/>
     </function>
     <function name='virDomainSetMaxMemory' file='libvirt' module='libvirt'>
-      <info>Dynamically change the maximum amount of physical memory allocated to a domain. If domain is NULL, then this change the amount of memory reserved to Domain0 i.e. the domain where the application runs. This function requires priviledged access to the hypervisor.</info>
+      <info>Dynamically change the maximum amount of physical memory allocated to a domain. If domain is NULL, then this change the amount of memory reserved to Domain0 i.e. the domain where the application runs. This function requires privileged access to the hypervisor.</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object or NULL'/>
       <arg name='memory' type='unsigned long' info='the memory size in kilobytes'/>
     </function>
     <function name='virDomainSetMemory' file='libvirt' module='libvirt'>
-      <info>Dynamically change the target amount of physical memory allocated to a domain. If domain is NULL, then this change the amount of memory reserved to Domain0 i.e. the domain where the application runs. This function may requires priviledged access to the hypervisor.</info>
+      <info>Dynamically change the target amount of physical memory allocated to a domain. If domain is NULL, then this change the amount of memory reserved to Domain0 i.e. the domain where the application runs. This function may requires privileged access to the hypervisor.</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object or NULL'/>
       <arg name='memory' type='unsigned long' info='the memory size in kilobytes'/>
@@ -1040,7 +1040,7 @@
       <arg name='nparams' type='int' info='number of scheduler parameter (this value should be same or less than the returned value nparams of virDomainGetSchedulerType)'/>
     </function>
     <function name='virDomainSetVcpus' file='libvirt' module='libvirt'>
-      <info>Dynamically change the number of virtual CPUs used by the domain. Note that this call may fail if the underlying virtualization hypervisor does not support it or if growing the number is arbitrary limited. This function requires priviledged access to the hypervisor.</info>
+      <info>Dynamically change the number of virtual CPUs used by the domain. Note that this call may fail if the underlying virtualization hypervisor does not support it or if growing the number is arbitrary limited. This function requires privileged access to the hypervisor.</info>
       <return type='int' info='0 in case of success, -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object, or NULL for Domain0'/>
       <arg name='nvcpus' type='unsigned int' info='the new number of virtual CPUs for this domain'/>
@@ -1051,7 +1051,7 @@
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
     <function name='virDomainSuspend' file='libvirt' module='libvirt'>
-      <info>Suspends an active domain, the process is frozen without further access to CPU resources and I/O but the memory used by the domain at the hypervisor level will stay allocated. Use virDomainResume() to reactivate the domain. This function may requires priviledged access.</info>
+      <info>Suspends an active domain, the process is frozen without further access to CPU resources and I/O but the memory used by the domain at the hypervisor level will stay allocated. Use virDomainResume() to reactivate the domain. This function may requires privileged access.</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='a domain object'/>
     </function>
@@ -1099,7 +1099,7 @@
       <arg name='xml' type='const char *' info='the XML description for the network, preferably in UTF-8'/>
     </function>
     <function name='virNetworkDestroy' file='libvirt' module='libvirt'>
-      <info>Destroy the network object. The running instance is shutdown if not down already and all resources used by it are given back to the hypervisor. The data structure is freed and should not be used thereafter if the call does not return an error. This function may requires priviledged access</info>
+      <info>Destroy the network object. The running instance is shutdown if not down already and all resources used by it are given back to the hypervisor. The data structure is freed and should not be used thereafter if the call does not return an error. This function may requires privileged access</info>
       <return type='int' info='0 in case of success and -1 in case of failure.'/>
       <arg name='network' type='virNetworkPtr' info='a network object'/>
     </function>
@@ -1223,7 +1223,7 @@
       <arg name='flags' type='unsigned int' info=''/>
     </function>
     <function name='virStoragePoolCreateXML' file='libvirt' module='libvirt'>
-      <info>Create a new storage based on its XML description. The pool is not persitent, so its definition will disappear when it is destroyed, or if the host is restarted</info>
+      <info>Create a new storage based on its XML description. The pool is not persistent, so its definition will disappear when it is destroyed, or if the host is restarted</info>
       <return type='virStoragePoolPtr' info='a virStoragePoolPtr object, or NULL if creation failed'/>
       <arg name='conn' type='virConnectPtr' info='pointer to hypervisor connection'/>
       <arg name='xmlDesc' type='const char *' info='XML description for new pool'/>
@@ -1261,7 +1261,7 @@
     <function name='virStoragePoolGetConnect' file='libvirt' module='libvirt'>
       <info>Provides the connection pointer associated with a storage pool.  The reference counter on the connection is not increased by this call.  WARNING: When writing libvirt bindings in other languages, do not use this function.  Instead, store the connection and the pool object together.</info>
       <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
-      <arg name='pool' type='virStoragePoolPtr' info='pointer to a poool'/>
+      <arg name='pool' type='virStoragePoolPtr' info='pointer to a pool'/>
     </function>
     <function name='virStoragePoolGetInfo' file='libvirt' module='libvirt'>
       <info>Get volatile information about the storage pool such as free space / usage summary</info>
@@ -1365,7 +1365,7 @@
     <function name='virStorageVolGetConnect' file='libvirt' module='libvirt'>
       <info>Provides the connection pointer associated with a storage volume.  The reference counter on the connection is not increased by this call.  WARNING: When writing libvirt bindings in other languages, do not use this function.  Instead, store the connection and the volume object together.</info>
       <return type='virConnectPtr' info='the virConnectPtr or NULL in case of failure.'/>
-      <arg name='vol' type='virStorageVolPtr' info='pointer to a poool'/>
+      <arg name='vol' type='virStorageVolPtr' info='pointer to a pool'/>
     </function>
     <function name='virStorageVolGetInfo' file='libvirt' module='libvirt'>
       <info>Fetches volatile information about the storage volume such as its current allocation</info>
@@ -1374,7 +1374,7 @@
       <arg name='info' type='virStorageVolInfoPtr' info='pointer at which to store info'/>
     </function>
     <function name='virStorageVolGetKey' file='libvirt' module='libvirt'>
-      <info>Fetch the storage volume key. This is globally unique, so the same volume will hve the same key no matter what host it is accessed from</info>
+      <info>Fetch the storage volume key. This is globally unique, so the same volume will have the same key no matter what host it is accessed from</info>
       <return type='const char *' info='the volume key, or NULL on error'/>
       <arg name='vol' type='virStorageVolPtr' info='pointer to storage volume'/>
     </function>

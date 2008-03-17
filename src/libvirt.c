@@ -870,7 +870,7 @@ virConnectOpenReadOnly(const char *name)
  * @flags: Open flags
  *
  * This function should be called first to get a connection to the
- * Hypervisor. If neccessary, authentication will be performed fetching
+ * Hypervisor. If necessary, authentication will be performed fetching
  * credentials via the callback
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
@@ -969,7 +969,7 @@ virConnectGetType(virConnectPtr conn)
  * @hvVer: return value for the version of the running hypervisor (OUT)
  *
  * Get the version level of the Hypervisor running. This may work only with
- * hypervisor call, i.e. with priviledged access to the hypervisor, not
+ * hypervisor call, i.e. with privileged access to the hypervisor, not
  * with a Read-Only connection.
  *
  * Returns -1 in case of error, 0 otherwise. if the version can't be
@@ -1188,7 +1188,7 @@ virDomainGetConnect (virDomainPtr dom)
  *
  * Launch a new Linux guest domain, based on an XML description similar
  * to the one returned by virDomainGetXMLDesc()
- * This function may requires priviledged access to the hypervisor.
+ * This function may requires privileged access to the hypervisor.
  *
  * Returns a new domain object or NULL in case of failure
  */
@@ -1372,7 +1372,7 @@ virDomainLookupByName(virConnectPtr conn, const char *name)
  * already and all resources used by it are given back to the hypervisor.
  * The data structure is freed and should not be used thereafter if the
  * call does not return an error.
- * This function may requires priviledged access
+ * This function may requires privileged access
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -1432,7 +1432,7 @@ virDomainFree(virDomainPtr domain)
  * to CPU resources and I/O but the memory used by the domain at the
  * hypervisor level will stay allocated. Use virDomainResume() to reactivate
  * the domain.
- * This function may requires priviledged access.
+ * This function may requires privileged access.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -1466,7 +1466,7 @@ virDomainSuspend(virDomainPtr domain)
  *
  * Resume an suspended domain, the process is restarted from the state where
  * it was frozen by calling virSuspendDomain().
- * This function may requires priviledged access
+ * This function may requires privileged access
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -1911,7 +1911,7 @@ virDomainGetMaxMemory(virDomainPtr domain)
  * Dynamically change the maximum amount of physical memory allocated to a
  * domain. If domain is NULL, then this change the amount of memory reserved
  * to Domain0 i.e. the domain where the application runs.
- * This function requires priviledged access to the hypervisor.
+ * This function requires privileged access to the hypervisor.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -1954,7 +1954,7 @@ virDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
  * Dynamically change the target amount of physical memory allocated to a
  * domain. If domain is NULL, then this change the amount of memory reserved
  * to Domain0 i.e. the domain where the application runs.
- * This function may requires priviledged access to the hypervisor.
+ * This function may requires privileged access to the hypervisor.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -2805,7 +2805,7 @@ virDomainSetAutostart(virDomainPtr domain,
  * Dynamically change the number of virtual CPUs used by the domain.
  * Note that this call may fail if the underlying virtualization hypervisor
  * does not support it or if growing the number is arbitrary limited.
- * This function requires priviledged access to the hypervisor.
+ * This function requires privileged access to the hypervisor.
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
@@ -2856,7 +2856,7 @@ virDomainSetVcpus(virDomainPtr domain, unsigned int nvcpus)
  *	If maplen > size, failure code is returned.
  *
  * Dynamically change the real CPUs which can be allocated to a virtual CPU.
- * This function requires priviledged access to the hypervisor.
+ * This function requires privileged access to the hypervisor.
  *
  * Returns 0 in case of success, -1 in case of failure.
  */
@@ -3486,7 +3486,7 @@ virNetworkCreate(virNetworkPtr network)
  * already and all resources used by it are given back to the hypervisor.
  * The data structure is freed and should not be used thereafter if the
  * call does not return an error.
- * This function may requires priviledged access
+ * This function may requires privileged access
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -3753,7 +3753,7 @@ virNetworkSetAutostart(virNetworkPtr network,
 
 /**
  * virStoragePoolGetConnect:
- * @pool: pointer to a poool
+ * @pool: pointer to a pool
  *
  * Provides the connection pointer associated with a storage pool.  The
  * reference counter on the connection is not increased by this
@@ -4638,7 +4638,7 @@ virStoragePoolListVolumes(virStoragePoolPtr pool,
 
 /**
  * virStorageVolGetConnect:
- * @vol: pointer to a poool
+ * @vol: pointer to a pool
  *
  * Provides the connection pointer associated with a storage volume.  The
  * reference counter on the connection is not increased by this
@@ -4789,7 +4789,7 @@ virStorageVolGetName(virStorageVolPtr vol)
  * @vol: pointer to storage volume
  *
  * Fetch the storage volume key. This is globally
- * unique, so the same volume will hve the same
+ * unique, so the same volume will have the same
  * key no matter what host it is accessed from
  *
  * return the volume key, or NULL on error

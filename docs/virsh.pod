@@ -97,7 +97,7 @@ this is used to connect to the local Xen hypervisor, this is the default
 
 =item qemu:///system
 
-allow to connect locally as root to the daemon supervizing QEmu and KVM domains
+allow to connect locally as root to the daemon supervising QEmu and KVM domains
 
 =item qemu:///session
 

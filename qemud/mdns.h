@@ -37,9 +37,9 @@ struct libvirtd_mdns_entry;
 struct libvirtd_mdns *libvirtd_mdns_new(void);
 
 /**
- * Starts the mdns client, advertizing any groups/entries currently registered
+ * Starts the mdns client, advertising any groups/entries currently registered
  *
- * @mdns: manager to start advertizing
+ * @mdns: manager to start advertising
  *
  * Starts the mdns client. Services may not be immediately visible, since
  * it may asynchronously wait for the mdns service to startup
@@ -49,15 +49,15 @@ struct libvirtd_mdns *libvirtd_mdns_new(void);
 int libvirtd_mdns_start(struct libvirtd_mdns *mdns);
 
 /**
- * Stops the mdns client, removing any advertizements
+ * Stops the mdns client, removing any advertisements
  *
- * @mdns: manager to start advertizing
+ * @mdns: manager to start advertising
  *
  */
 void libvirtd_mdns_stop(struct libvirtd_mdns *mdns);
 
 /**
- * Adds a group container for advertizement
+ * Adds a group container for advertisement
  *
  * @mdns manager to attach the group to
  * @name unique human readable service name
@@ -67,7 +67,7 @@ void libvirtd_mdns_stop(struct libvirtd_mdns *mdns);
 struct libvirtd_mdns_group *libvirtd_mdns_add_group(struct libvirtd_mdns *mdns, const char *name);
 
 /**
- * Removes a group container from advertizement
+ * Removes a group container from advertisement
  *
  * @mdns amanger to detach group from
  * @group group to remove

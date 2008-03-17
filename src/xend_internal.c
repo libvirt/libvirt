@@ -3189,7 +3189,7 @@ xenDaemonLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
  *
  * Launch a new Linux guest domain, based on an XML description similar
  * to the one returned by virDomainGetXMLDesc()
- * This function may requires priviledged access to the hypervisor.
+ * This function may requires privileged access to the hypervisor.
  *
  * Returns a new domain object or NULL in case of failure
  */

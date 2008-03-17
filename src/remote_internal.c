@@ -4071,7 +4071,7 @@ remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int in_open,
     DEBUG0("Client initialize PolicyKit authentication");
 
     if (auth && auth->cb) {
-        /* Check if the neccessary credential type for PolicyKit is supported */
+        /* Check if the necessary credential type for PolicyKit is supported */
         for (i = 0 ; i < auth->ncredtype ; i++) {
             if (auth->credtype[i] == VIR_CRED_EXTERNAL)
                 allowcb = 1;

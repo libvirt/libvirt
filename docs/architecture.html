@@ -40,9 +40,9 @@ domain, by specifying the architecture and machine type targetted.</p><p>The cod
 <code>qemud/</code> directory.</p><h3><a name="drivers" id="drivers">the driver based architecture</a></h3><p>As the previous section explains, libvirt can communicate using different
 channels with the current hypervisor, and should also be able to use
 different kind of hypervisor. To simplify the internal design, code, ease
-maintainance and simplify the support of other virtualization engine the
+maintenance and simplify the support of other virtualization engine the
 internals have been structured as one core component, the libvirt.c module
-acting as a front-end for the library API and a set of hypvisor drivers
+acting as a front-end for the library API and a set of hypervisor drivers
 defining a common set of routines. That way the Xen Daemon accces, the Xen
 Store one, the Hypervisor hypercall are all isolated in separate C modules
 implementing at least a subset of the common operations defined by the

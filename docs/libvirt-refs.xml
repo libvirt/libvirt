@@ -3044,7 +3044,7 @@
         <word name='human-readable'>
           <ref name='_virError'/>
         </word>
-        <word name='hve'>
+        <word name='have'>
           <ref name='virStorageVolGetKey'/>
         </word>
         <word name='hypervisors'>
@@ -3592,7 +3592,7 @@
           <ref name='_virDomainInfo'/>
           <ref name='_virVcpuInfo'/>
         </word>
-        <word name='neccessary'>
+        <word name='necessary'>
           <ref name='virConnectOpenAuth'/>
         </word>
         <word name='necessary'>
@@ -3656,7 +3656,7 @@
           <ref name='virDomainGetSchedulerParameters'/>
           <ref name='virDomainSetSchedulerParameters'/>
         </word>
-        <word name='numbber'>
+        <word name='number'>
           <ref name='_virDomainBlockStats'/>
         </word>
       </letter>
@@ -3837,7 +3837,7 @@
           <ref name='virStoragePoolNumOfVolumes'/>
           <ref name='virStorageVolCreateXML'/>
         </word>
-        <word name='poool'>
+        <word name='pool'>
           <ref name='virStoragePoolGetConnect'/>
           <ref name='virStorageVolGetConnect'/>
         </word>
@@ -3860,7 +3860,7 @@
         <word name='printing'>
           <ref name='virSetErrorFunc'/>
         </word>
-        <word name='priviledged'>
+        <word name='privileged'>
           <ref name='virConnectGetVersion'/>
           <ref name='virDomainCreateLinux'/>
           <ref name='virDomainDestroy'/>

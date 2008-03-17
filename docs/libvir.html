@@ -521,7 +521,7 @@ and check the <a href="ChangeLog.html">ChangeLog</a> to gauge progress.</p>
 <h3>0.1.2: Jul 3 2006</h3>
 <ul>
   <li>headers include paths fixup</li>
-  <li>proxy mechanism for unpriviledged read-only access by httpu</li>
+  <li>proxy mechanism for unprivileged read-only access by httpu</li>
 </ul>
 
 <h3>0.1.1: Jun 21 2006</h3>
@@ -729,9 +729,9 @@ domain, by specifying the architecture and machine type targetted.</p>
 <p>As the previous section explains, libvirt can communicate using different
 channels with the current hypervisor, and should also be able to use
 different kind of hypervisor. To simplify the internal design, code, ease
-maintainance and simplify the support of other virtualization engine the
+maintenance and simplify the support of other virtualization engine the
 internals have been structured as one core component, the libvirt.c module
-acting as a front-end for the library API and a set of hypvisor drivers
+acting as a front-end for the library API and a set of hypervisor drivers
 defining a common set of routines. That way the Xen Daemon accces, the Xen
 Store one, the Hypervisor hypercall are all isolated in separate C modules
 implementing at least a subset of the common operations defined by the
@@ -1557,7 +1557,7 @@ containing the same field as a virError in C, but cast to Python.</p>
     <p>Yes. The LGPL allows you to embed libvirt into a proprietary
     application. It would be graceful to send-back bug fixes and improvements
     as patches for possible incorporation in the main development tree. It
-    will decrease your maintainance costs anyway if you do so.</p>
+    will decrease your maintenance costs anyway if you do so.</p>
   </li>
 </ol>
 
@@ -2912,11 +2912,11 @@ of applications using libvirt.
 <h3 name="ACL_server_config">Server configuration</h3>
 
 <p>
-The libvirt daemon allows the adminstrator to choose the authentication
-mechanisms used for client connections on each network socket independantly.
+The libvirt daemon allows the administrator to choose the authentication
+mechanisms used for client connections on each network socket independently.
 This is primarily controlled via the libvirt daemon master config file in
 <code>/etc/libvirt/libvirtd.conf</code>. Each of the libvirt sockets can
-have its authentication mechanism configured independantly. There is
+have its authentication mechanism configured independently. There is
 currently a choice of <code>none</code>, <code>polkit</code>, and <code>sasl</code>.
 The SASL scheme can be further configured to choose between a large
 number of different mechanisms.
@@ -2957,7 +2957,7 @@ Default policy will still allow any application to connect to the RO socket.
 </p>
 
 <p>
-The default policy can be overriden by the adminstrator using the PolicyKit
+The default policy can be overriden by the administrator using the PolicyKit
 master configuration file in <code>/etc/PolicyKit/PolicyKit.conf</code>. The
 <code>PolicyKit.conf(5)</code> manual page provides details on the syntax
 available. The two libvirt daemon actions available are named <code>org.libvirt.unix.monitor</code>
@@ -3040,7 +3040,7 @@ mechanism provides data encryption of the session.
 
 <p>
 Some operating systems do not install the SASL kerberos plugin by default. It
-may be neccessary to install a sub-package such as <code>cyrus-sasl-gssapi</code>.
+may be necessary to install a sub-package such as <code>cyrus-sasl-gssapi</code>.
 To check whether the Kerberos plugin is installed run the <code>pluginviewer</code>
 program and verify that <code>gssapi</code> is listed,eg:
 </p>
@@ -3055,7 +3055,7 @@ Plugin "gssapiv2" [loaded],     API version: 4
 </pre>
 
 <p>
-Next is is neccessary for the adminsitrator of the Kerberos realm to issue a principle
+Next is is necessary for the adminsitrator of the Kerberos realm to issue a principle
 for the libvirt server. There needs to be one principle per host running the libvirt
 daemon. The principle should be named <code>libvirt/full.hostname@KERBEROS.REALM</code>.
 This is typically done by running the <code>kadmin.local</code> command on the Kerberos
