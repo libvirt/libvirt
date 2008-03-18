@@ -1,3 +1,8 @@
+Tue Mar 18 23:31:26 CET 2008 Jim Meyering <meyering@redhat.com>
+
+	Avoid "make syntax-check" failure.
+	* src/xen_unified.c: Remove trailing blank.
+
 Mon Mar 17 13:24:22 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* configure.in: Add WITH_PROXY to config.h file
@@ -7,7 +12,7 @@ Mon Mar 17 13:24:22 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
 	rather than a hacked loop.
 	* src/xend_internal.c: Don't complain about failing to open
 	xend when non-root read-only.
-	
+
 Mon Mar 17 17:55:56 CET 2008 Jim Meyering <meyering@redhat.com>
 
 	Treat ENOTSUP like ENODATA, after failed fgetfilecon.
