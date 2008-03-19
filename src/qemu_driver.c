@@ -1765,6 +1765,66 @@ static char *qemudDomainGetOSType(virDomainPtr dom) {
     return type;
 }
 
+/* Returns max memory in kb, 0 if error */
+static unsigned long qemudDomainGetMaxMemory(virDomainPtr dom) {
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
+
+    if (!vm) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         _("no domain with matching uuid '%s'"), dom->uuid);
+        return 0;
+    }
+
+    return vm->def->maxmem;
+}
+
+static int qemudDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax) {
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
+
+    if (!vm) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         _("no domain with matching uuid '%s'"), dom->uuid);
+        return -1;
+    }
+
+    if (newmax < vm->def->memory) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
+                         _("cannot set max memory lower than current memory"));
+        return -1;
+    }
+
+    vm->def->maxmem = newmax;
+    return 0;
+}
+
+static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
+    struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
+    struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
+
+    if (!vm) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         _("no domain with matching uuid '%s'"), dom->uuid);
+        return -1;
+    }
+
+    if (qemudIsActiveVM(vm)) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("cannot set memory of an active domain"));
+        return -1;
+    }
+
+    if (newmem > vm->def->maxmem) {
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
+                         _("cannot set memory higher than max memory"));
+        return -1;
+    }
+
+    vm->def->memory = newmem;
+    return 0;
+}
+
 static int qemudDomainGetInfo(virDomainPtr dom,
                        virDomainInfoPtr info) {
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
@@ -2886,9 +2946,9 @@ static virDriver qemuDriver = {
     NULL, /* domainReboot */
     qemudDomainDestroy, /* domainDestroy */
     qemudDomainGetOSType, /* domainGetOSType */
-    NULL, /* domainGetMaxMemory */
-    NULL, /* domainSetMaxMemory */
-    NULL, /* domainSetMemory */
+    qemudDomainGetMaxMemory, /* domainGetMaxMemory */
+    qemudDomainSetMaxMemory, /* domainSetMaxMemory */
+    qemudDomainSetMemory, /* domainSetMemory */
     qemudDomainGetInfo, /* domainGetInfo */
     qemudDomainSave, /* domainSave */
     qemudDomainRestore, /* domainRestore */

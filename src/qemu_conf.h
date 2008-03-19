@@ -193,8 +193,8 @@ struct qemud_vm_def {
     unsigned char uuid[VIR_UUID_BUFLEN];
     char name[QEMUD_MAX_NAME_LEN];
 
-    int memory;
-    int maxmem;
+    unsigned long memory;
+    unsigned long maxmem;
     int vcpus;
 
     int noReboot;

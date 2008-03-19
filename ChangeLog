@@ -1,3 +1,8 @@
+Wed Mar 19 15:31:34 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_conf.c src/qemu_conf.h src/qemu_driver.c: applied patch
+	  from Cole Robinson implementing memory operations for qemu driver
+
 Tue Mar 18 23:31:26 CET 2008 Jim Meyering <meyering@redhat.com>
 
 	Avoid "make syntax-check" failure.

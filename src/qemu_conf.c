@@ -1650,7 +1650,7 @@ int qemudBuildCommandLine(virConnectPtr conn,
          (vm->def->graphicsType == QEMUD_GRAPHICS_SDL ? 0 : 1)) + /* graphics */
         (vm->migrateFrom[0] ? 3 : 0); /* migrateFrom */
 
-    snprintf(memory, sizeof(memory), "%d", vm->def->memory/1024);
+    snprintf(memory, sizeof(memory), "%lu", vm->def->memory/1024);
     snprintf(vcpus, sizeof(vcpus), "%d", vm->def->vcpus);
 
     if (!(*argv = malloc(sizeof(**argv) * (len+1))))
@@ -2820,9 +2820,9 @@ char *qemudGenerateXML(virConnectPtr conn,
     virUUIDFormat(uuid, uuidstr);
     if (virBufferVSprintf(buf, "  <uuid>%s</uuid>\n", uuidstr) < 0)
         goto no_memory;
-    if (virBufferVSprintf(buf, "  <memory>%d</memory>\n", def->maxmem) < 0)
+    if (virBufferVSprintf(buf, "  <memory>%lu</memory>\n", def->maxmem) < 0)
         goto no_memory;
-    if (virBufferVSprintf(buf, "  <currentMemory>%d</currentMemory>\n", def->memory) < 0)
+    if (virBufferVSprintf(buf, "  <currentMemory>%lu</currentMemory>\n", def->memory) < 0)
         goto no_memory;
     if (virBufferVSprintf(buf, "  <vcpu>%d</vcpu>\n", def->vcpus) < 0)
         goto no_memory;
