@@ -85,4 +85,6 @@ int __virMacAddrCompare (const char *mac1, const char *mac2);
 void virSkipSpaces(const char **str);
 int virParseNumber(const char **str);
 
+int virParseMacAddr(const char* str, unsigned char *addr);
+
 #endif /* __VIR_UTIL_H__ */

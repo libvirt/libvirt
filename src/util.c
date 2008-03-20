@@ -688,6 +688,51 @@ __virMacAddrCompare (const char *p, const char *q)
     return (c > d ? 1 : c < d ? -1 : 0);
 }
 
+/**
+ * virParseMacAddr:
+ * @str: string representation of MAC address, e.g., "0:1E:FC:E:3a:CB"
+ * @addr: 6-byte MAC address
+ *
+ * Parse a MAC address
+ *
+ * Return 0 upon success, or -1 in case of error.
+ */
+int
+virParseMacAddr(const char* str, unsigned char *addr)
+{
+    int i;
+
+    errno = 0;
+    for (i = 0; i < 6; i++) {
+        char *end_ptr;
+        unsigned long result;
+
+        /* This is solely to avoid accepting the leading
+         * space or "+" that strtoul would otherwise accept.
+         */
+        if (!isxdigit(*str))
+            break;
+
+        result = strtoul(str, &end_ptr, 16);
+
+        if ((end_ptr - str) < 1 || 2 < (end_ptr - str) ||
+            (errno != 0) ||
+            (0xFF < result))
+            break;
+
+        addr[i] = (unsigned char) result;
+
+	if ((i == 5) && (*end_ptr == '\0'))
+	    return 0;
+	if (*end_ptr != ':')
+	    break;
+
+        str = end_ptr + 1;
+    }
+
+    return -1;
+}
+
 /*
  * Local variables:
  *  indent-tabs-mode: nil

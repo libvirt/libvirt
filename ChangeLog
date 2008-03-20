@@ -1,3 +1,9 @@
+Thu Mar 20 12:23:03 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/util.c src/util.h src/xml.c: applied patch from Hiroyuki Kaguchi
+	  fixing Ethernet MAC addresses parsingand separating as an util
+	  function, with added comments from Jim Meyering
+
 Wed Mar 19 15:31:34 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_conf.c src/qemu_conf.h src/qemu_driver.c: applied patch
