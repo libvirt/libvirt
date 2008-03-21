@@ -132,6 +132,8 @@ AC_ARG_WITH(qemu,
 [  --with-qemu             add QEMU/KVM support (on)],[],[with_qemu=yes])
 AC_ARG_WITH(openvz,
 [  --with-openvz           add OpenVZ support (off)],[],[with_openvz=no])
+AC_ARG_WITH(lxc,
+[  --with-lxc              add Linux Container support (off)],[],[with_lxc=no])
 AC_ARG_WITH(test,
 [  --with-test             add test driver support (on)],[],[with_test=yes])
 AC_ARG_WITH(remote,
@@ -228,6 +230,9 @@ WITH_XEN=0
 
 if test "$with_openvz" = "yes" ; then
     LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_OPENVZ"
+fi
+if test "$with_lxc" = "yes" ; then
+    LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_LXC"
 fi
 if test "$with_qemu" = "yes" ; then
     LIBVIRT_FEATURES="$LIBVIRT_FEATURES -DWITH_QEMU"
@@ -950,6 +955,7 @@ AC_MSG_NOTICE([     Xen: $with_xen])
 AC_MSG_NOTICE([   Proxy: $with_xen_proxy])
 AC_MSG_NOTICE([    QEMU: $with_qemu])
 AC_MSG_NOTICE([  OpenVZ: $with_openvz])
+AC_MSG_NOTICE([     LXC: $with_lxc])
 AC_MSG_NOTICE([    Test: $with_test])
 AC_MSG_NOTICE([  Remote: $with_remote])
 AC_MSG_NOTICE([Libvirtd: $with_libvirtd])

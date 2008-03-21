@@ -1,3 +1,11 @@
+Fri Mar 21 15:59:53 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in include/libvirt/virterror.h src/Makefile.am
+	  src/driver.h src/lxc_conf.[ch] src/lxc_driver.[ch] src/virterror.c:
+	  Applied 3 patches from Dave Leskovec for intial support of
+	  Linux containers, configured off by default, work in progress.
+	* src/libvirt.c: improve virDomainCreateLinux xmlDesc description
+
 Thu Mar 20 12:23:03 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/util.c src/util.h src/xml.c: applied patch from Hiroyuki Kaguchi

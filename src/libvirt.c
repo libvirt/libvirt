@@ -45,6 +45,9 @@
 #ifdef WITH_OPENVZ
 #include "openvz_driver.h"
 #endif
+#ifdef WITH_LXC
+#include "lxc_driver.h"
+#endif
 
 /*
  * TODO:
@@ -271,6 +274,9 @@ virInitialize(void)
 #endif
 #ifdef WITH_OPENVZ
     if (openvzRegister() == -1) return -1;
+#endif
+#ifdef WITH_LXC
+    if (lxcRegister() == -1) return -1;
 #endif
     if (storageRegister() == -1) return -1;
 #ifdef WITH_REMOTE
@@ -1183,7 +1189,7 @@ virDomainGetConnect (virDomainPtr dom)
 /**
  * virDomainCreateLinux:
  * @conn: pointer to the hypervisor connection
- * @xmlDesc: an XML description of the domain
+ * @xmlDesc: string containing an XML description of the domain
  * @flags: an optional set of virDomainFlags
  *
  * Launch a new Linux guest domain, based on an XML description similar

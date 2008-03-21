@@ -59,6 +59,8 @@ CLIENT_SOURCES =						\
 		qemu_conf.c qemu_conf.h				\
 		openvz_conf.c openvz_conf.h			\
 		openvz_driver.c openvz_driver.h			\
+		lxc_driver.c lxc_driver.h			\
+		lxc_conf.c lxc_conf.h				\
                 nodeinfo.h nodeinfo.c                           \
 		storage_conf.h storage_conf.c			\
 		storage_driver.h storage_driver.c		\

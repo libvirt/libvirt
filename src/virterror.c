@@ -296,6 +296,9 @@ virDefaultErrorFunc(virErrorPtr err)
         case VIR_FROM_STATS_LINUX:
             dom = "Linux Stats ";
             break;
+        case VIR_FROM_LXC:
+            dom = "Linux Container ";
+            break;
         case VIR_FROM_STORAGE:
             dom = "Storage ";
             break;
