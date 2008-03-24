@@ -299,7 +299,7 @@ sc_two_space_separator_in_usage:
 		1>&2; exit 1; } || :
 
 err_func_re = \
-(DISABLE_fprintf|qemudLog|(xmlRpc|vir(Xend|XML|Hash|Conf|Test|LibConn|StorageReport))Error)
+(DISABLE_fprintf|qemudLog|(xmlRpc|vir(Xend|XML|Hash|Conf|Test|LibConn|StorageReport|lxc))Error)
 
 # Look for diagnostics that aren't marked for translation.
 # This won't find any for which error's format string is on a separate line.
