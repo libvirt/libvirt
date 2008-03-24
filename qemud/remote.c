@@ -41,7 +41,6 @@
 #include <syslog.h>
 #include <string.h>
 #include <errno.h>
-#include <getopt.h>
 #include <ctype.h>
 #include <fnmatch.h>
 

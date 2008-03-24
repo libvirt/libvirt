@@ -1,5 +1,7 @@
 Mon Mar 24 11:16:58 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	* qemud/remote.c: Don't include <getopt.h>. Not used.
+
 	Sync Makefile rules from coreutils.
 	* Makefile.maint: Merge.
 	* GNUmakefile: Update from coreutils.
