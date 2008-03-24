@@ -6,6 +6,8 @@ src/console.c
 src/hash.c
 src/iptables.c
 src/libvirt.c
+src/lxc_conf.c
+src/lxc_driver.c
 src/proxy_internal.c
 src/qemu_conf.c
 src/qemu_driver.c

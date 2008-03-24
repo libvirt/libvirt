@@ -1,3 +1,9 @@
+Mon Mar 24 10:20:21 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/xend_internal.c: applied patch from Saori Fukuta adding the
+	  scheduler API for the Xen daemon driver
+	* po/POTFILES.in: add the two new linux container modules
+
 Fri Mar 21 15:59:53 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in include/libvirt/virterror.h src/Makefile.am
