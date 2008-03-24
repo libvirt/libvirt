@@ -962,14 +962,14 @@ qemudAddIptablesRules(virConnectPtr conn,
     /* allow DHCP requests through to dnsmasq */
     if ((err = iptablesAddTcpInput(driver->iptables, network->bridge, 67))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to allow DHCP requests from '%s' : %s\n"),
+                         _("failed to add iptables rule to allow DHCP requests from '%s' : %s"),
                          network->bridge, strerror(err));
         goto err1;
     }
 
     if ((err = iptablesAddUdpInput(driver->iptables, network->bridge, 67))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to allow DHCP requests from '%s' : %s\n"),
+                         _("failed to add iptables rule to allow DHCP requests from '%s' : %s"),
                          network->bridge, strerror(err));
         goto err2;
     }
@@ -977,14 +977,14 @@ qemudAddIptablesRules(virConnectPtr conn,
     /* allow DNS requests through to dnsmasq */
     if ((err = iptablesAddTcpInput(driver->iptables, network->bridge, 53))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to allow DNS requests from '%s' : %s\n"),
+                         _("failed to add iptables rule to allow DNS requests from '%s' : %s"),
                          network->bridge, strerror(err));
         goto err3;
     }
 
     if ((err = iptablesAddUdpInput(driver->iptables, network->bridge, 53))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to allow DNS requests from '%s' : %s\n"),
+                         _("failed to add iptables rule to allow DNS requests from '%s' : %s"),
                          network->bridge, strerror(err));
         goto err4;
     }
@@ -994,14 +994,14 @@ qemudAddIptablesRules(virConnectPtr conn,
 
     if ((err = iptablesAddForwardRejectOut(driver->iptables, network->bridge))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to block outbound traffic from '%s' : %s\n"),
+                         _("failed to add iptables rule to block outbound traffic from '%s' : %s"),
                          network->bridge, strerror(err));
         goto err5;
     }
 
     if ((err = iptablesAddForwardRejectIn(driver->iptables, network->bridge))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to block inbound traffic to '%s' : %s\n"),
+                         _("failed to add iptables rule to block inbound traffic to '%s' : %s"),
                          network->bridge, strerror(err));
         goto err6;
     }
@@ -1009,7 +1009,7 @@ qemudAddIptablesRules(virConnectPtr conn,
     /* Allow traffic between guests on the same bridge */
     if ((err = iptablesAddForwardAllowCross(driver->iptables, network->bridge))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to allow cross bridge traffic on '%s' : %s\n"),
+                         _("failed to add iptables rule to allow cross bridge traffic on '%s' : %s"),
                          network->bridge, strerror(err));
         goto err7;
     }
@@ -1027,7 +1027,7 @@ qemudAddIptablesRules(virConnectPtr conn,
                                           network->bridge,
                                           network->def->forwardDev))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to allow forwarding from '%s' : %s\n"),
+                         _("failed to add iptables rule to allow forwarding from '%s' : %s"),
                          network->bridge, strerror(err));
         goto err8;
     }
@@ -1038,7 +1038,7 @@ qemudAddIptablesRules(virConnectPtr conn,
                                          network->bridge,
                                          network->def->forwardDev))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to allow forwarding to '%s' : %s\n"),
+                         _("failed to add iptables rule to allow forwarding to '%s' : %s"),
                          network->bridge, strerror(err));
         goto err9;
     }
@@ -1048,7 +1048,7 @@ qemudAddIptablesRules(virConnectPtr conn,
                                             network->def->network,
                                             network->def->forwardDev))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to enable masquerading : %s\n"),
+                         _("failed to add iptables rule to enable masquerading : %s"),
                          strerror(err));
         goto err10;
     }
@@ -1169,14 +1169,14 @@ static int qemudStartNetworkDaemon(virConnectPtr conn,
     if (network->def->forwardDelay &&
         (err = brSetForwardDelay(driver->brctl, network->bridge, network->def->forwardDelay))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to set bridge forward delay to %d\n"),
+                         _("failed to set bridge forward delay to %d"),
                          network->def->forwardDelay);
         goto err_delbr;
     }
 
     if ((err = brSetEnableSTP(driver->brctl, network->bridge, network->def->disableSTP ? 0 : 1))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to set bridge STP to %s\n"),
+                         _("failed to set bridge STP to %s"),
                          network->def->disableSTP ? "off" : "on");
         goto err_delbr;
     }
@@ -1184,7 +1184,7 @@ static int qemudStartNetworkDaemon(virConnectPtr conn,
     if (network->def->ipAddress[0] &&
         (err = brSetInetAddress(driver->brctl, network->bridge, network->def->ipAddress))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("cannot set IP address on bridge '%s' to '%s' : %s\n"),
+                         _("cannot set IP address on bridge '%s' to '%s' : %s"),
                          network->bridge, network->def->ipAddress, strerror(err));
         goto err_delbr;
     }
@@ -1192,7 +1192,7 @@ static int qemudStartNetworkDaemon(virConnectPtr conn,
     if (network->def->netmask[0] &&
         (err = brSetInetNetmask(driver->brctl, network->bridge, network->def->netmask))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("cannot set netmask on bridge '%s' to '%s' : %s\n"),
+                         _("cannot set netmask on bridge '%s' to '%s' : %s"),
                          network->bridge, network->def->netmask, strerror(err));
         goto err_delbr;
     }
@@ -1200,7 +1200,7 @@ static int qemudStartNetworkDaemon(virConnectPtr conn,
     if (network->def->ipAddress[0] &&
         (err = brSetInterfaceUp(driver->brctl, network->bridge, 1))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to bring the bridge '%s' up : %s\n"),
+                         _("failed to bring the bridge '%s' up : %s"),
                          network->bridge, strerror(err));
         goto err_delbr;
     }
@@ -1211,7 +1211,7 @@ static int qemudStartNetworkDaemon(virConnectPtr conn,
     if (network->def->forward &&
         !qemudEnableIpForwarding()) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to enable IP forwarding : %s\n"), strerror(err));
+                         _("failed to enable IP forwarding : %s"), strerror(err));
         goto err_delbr2;
     }
 
@@ -1238,7 +1238,7 @@ static int qemudStartNetworkDaemon(virConnectPtr conn,
 
  err_delbr:
     if ((err = brDeleteBridge(driver->brctl, network->bridge))) {
-        qemudLog(QEMUD_WARN, _("Failed to delete bridge '%s' : %s\n"),
+        qemudLog(QEMUD_WARN, _("Failed to delete bridge '%s' : %s"),
                  network->bridge, strerror(err));
     }
 
@@ -1263,12 +1263,12 @@ static int qemudShutdownNetworkDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
 
     if (network->def->ipAddress[0] &&
         (err = brSetInterfaceUp(driver->brctl, network->bridge, 0))) {
-        qemudLog(QEMUD_WARN, _("Failed to bring down bridge '%s' : %s\n"),
+        qemudLog(QEMUD_WARN, _("Failed to bring down bridge '%s' : %s"),
                  network->bridge, strerror(err));
     }
 
     if ((err = brDeleteBridge(driver->brctl, network->bridge))) {
-        qemudLog(QEMUD_WARN, _("Failed to delete bridge '%s' : %s\n"),
+        qemudLog(QEMUD_WARN, _("Failed to delete bridge '%s' : %s"),
                  network->bridge, strerror(err));
     }
 
@@ -1277,7 +1277,7 @@ static int qemudShutdownNetworkDaemon(virConnectPtr conn ATTRIBUTE_UNUSED,
         kill(network->dnsmasqPid, SIGKILL);
         if (waitpid(network->dnsmasqPid, NULL, 0) != network->dnsmasqPid)
             qemudLog(QEMUD_WARN,
-                     "%s", _("Got unexpected pid for dnsmasq\n"));
+                     "%s", _("Got unexpected pid for dnsmasq"));
     }
 
     network->bridge[0] = '\0';
