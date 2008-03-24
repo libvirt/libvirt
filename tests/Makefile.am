@@ -53,13 +53,15 @@ if ENABLE_XEN_TESTS
   TESTS += reconnect
 endif
 
+path_add = $$abs_top_builddir/src$(PATH_SEPARATOR)$$abs_top_builddir/qemud
+
 # NB, automake < 1.10 does not provide the real
 # abs_top_{src/build}dir variables, so don't rely
 # on them here. Fake them with 'pwd'
 TESTS_ENVIRONMENT =				\
-  abs_top_builddir=`pwd`/'$(top_builddir)'	\
-  abs_top_srcdir=`pwd`/'$(top_srcdir)'		\
-  PATH="$$abs_top_builddir/qemud$(PATH_SEPARATOR)$$PATH" \
+  abs_top_builddir=`cd '$(top_builddir)'; pwd`	\
+  abs_top_srcdir=`cd '$(top_srcdir)'; pwd`	\
+  PATH="$(path_add)$(PATH_SEPARATOR)$$PATH"	\
   $(VG)
 
 valgrind:

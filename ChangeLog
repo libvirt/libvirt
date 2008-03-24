@@ -1,3 +1,11 @@
+Mon Mar 24 11:16:58 CET 2008 Jim Meyering <meyering@redhat.com>
+
+	Fix bugs in tests/Makefile.am.
+	* tests/Makefile.am (TESTS_ENVIRONMENT): Correct invalid
+	settings of abs_top_builddir and abs_top_srcdir.
+	Also prepend src/ to PATH, so we test the just-built virsh,
+	not whatever happens to be in the original $PATH.
+
 Mon Mar 24 10:20:21 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: applied patch from Saori Fukuta adding the
