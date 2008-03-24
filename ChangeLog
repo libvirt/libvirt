@@ -1,3 +1,8 @@
+Mon Mar 24 11:47:47 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/qemu_driver.c: applied patch from Guido Günther to make error
+	  strings as translatable
+
 Mon Mar 24 11:16:58 CET 2008 Jim Meyering <meyering@redhat.com>
 
 	* Makefile.maint (err_func_re): Add lxcError.
