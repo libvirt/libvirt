@@ -1,6 +1,6 @@
 /* Memory allocation on the stack.
 
-   Copyright (C) 1995, 1999, 2001-2004, 2006-2007 Free Software
+   Copyright (C) 1995, 1999, 2001-2004, 2006-2008 Free Software
    Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify it
@@ -42,6 +42,8 @@
 # elif defined _MSC_VER
 #  include <malloc.h>
 #  define alloca _alloca
+# elif defined __DECC && defined __VMS
+#  define alloca __ALLOCA
 # else
 #  include <stddef.h>
 #  ifdef  __cplusplus

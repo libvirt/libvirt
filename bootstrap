@@ -79,6 +79,8 @@ $gnulib_tool			\
     sys_stat vasprintf strndup  \
     strsep poll gettext getpass \
     useless-if-before-free      \
+    posix-shell                 \
+    mktempd                     \
     vc-list-files
 
 rm -f				\

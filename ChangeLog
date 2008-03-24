@@ -1,5 +1,14 @@
 Mon Mar 24 11:16:58 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	Add new testing framework and the first test to use it.
+	* tests/Makefile.am (test_scripts): Add vcpupin.
+	(EXTRA_DIST): Add test-lib.sh.
+	* tests/test-lib.sh: Testing framework, from coreutils.
+	* tests/vcpupin: New file.
+	* build-aux/mktempd: New file, from gnulib.
+	* bootstrap: Add posix-shell and mktempd to the list of imported modules.
+	* gnulib/m4/posix-shell.m4: New file, from gnulib.
+
 	Fix bugs in tests/Makefile.am.
 	* tests/Makefile.am (TESTS_ENVIRONMENT): Correct invalid
 	settings of abs_top_builddir and abs_top_srcdir.

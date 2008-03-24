@@ -69,13 +69,15 @@ getdelim (char **lineptr, size_t *n, int delimiter, FILE *fp)
 
   if (*lineptr == NULL || *n == 0)
     {
+      char *new_lineptr;
       *n = 120;
-      *lineptr = (char *) realloc (*lineptr, *n);
-      if (*lineptr == NULL)
+      new_lineptr = (char *) realloc (*lineptr, *n);
+      if (new_lineptr == NULL)
 	{
 	  result = -1;
 	  goto unlock_return;
 	}
+      *lineptr = new_lineptr;
     }
 
   for (;;)

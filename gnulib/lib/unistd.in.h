@@ -1,5 +1,5 @@
 /* Substitute for and wrapper around <unistd.h>.
-   Copyright (C) 2004-2007 Free Software Foundation, Inc.
+   Copyright (C) 2004-2008 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as published by
@@ -83,6 +83,26 @@ extern int dup2 (int oldfd, int newfd);
     (GL_LINK_WARNING ("dup2 is unportable - " \
                       "use gnulib module dup2 for portability"), \
      dup2 (o, n))
+#endif
+
+
+#if @GNULIB_ENVIRON@
+# if !@HAVE_DECL_ENVIRON@
+/* Set of environment variables and values.  An array of strings of the form
+   "VARIABLE=VALUE", terminated with a NULL.  */
+#  if defined __APPLE__ && defined __MACH__
+#   include <crt_externs.h>
+#   define environ (*_NSGetEnviron ())
+#  else
+extern char **environ;
+#  endif
+# endif
+#elif defined GNULIB_POSIXCHECK
+# undef environ
+# define environ \
+    (GL_LINK_WARNING ("environ is unportable - " \
+                      "use gnulib module environ for portability"), \
+     environ)
 #endif
 
 

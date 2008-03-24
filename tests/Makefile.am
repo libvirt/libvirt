@@ -1,5 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
+SHELL = $(PREFERABLY_POSIX_SHELL)
+
 SUBDIRS = virshdata confdata sexpr2xmldata \
   xml2sexprdata xmconfigdata xencapsdata
 
@@ -31,6 +33,7 @@ LDADDS = \
         $(COVERAGE_LDFLAGS)
 
 EXTRA_DIST =		\
+	test-lib.sh	\
 	xmlrpcserver.py	\
 	test_conf.sh	\
 	qemuxml2argvdata \
@@ -42,7 +45,8 @@ noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest conftest \
 
 test_scripts = \
 	daemon-conf \
-	int-overflow
+	int-overflow \
+	vcpupin
 
 EXTRA_DIST += $(test_scripts)
 
@@ -62,6 +66,7 @@ TESTS_ENVIRONMENT =				\
   abs_top_builddir=`cd '$(top_builddir)'; pwd`	\
   abs_top_srcdir=`cd '$(top_srcdir)'; pwd`	\
   PATH="$(path_add)$(PATH_SEPARATOR)$$PATH"	\
+  SHELL="$(SHELL)"				\
   $(VG)
 
 valgrind:
