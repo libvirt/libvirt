@@ -8,25 +8,23 @@ gzip_rsyncable := \
   $(shell gzip --help 2>/dev/null|grep rsyncable >/dev/null && echo --rsyncable)
 GZIP_ENV = '--no-name --best $(gzip_rsyncable)'
 
-CVS_LIST = build-aux/vc-list-files
+VC_LIST = build-aux/vc-list-files
 
-CVS_LIST_EXCEPT = \
-$(CVS_LIST) | if test -f .x-$@; then grep -vEf .x-$@; else grep -v ChangeLog; fi
+VC_LIST_EXCEPT = \
+  $(VC_LIST) | if test -f .x-$@; then grep -vEf .x-$@; else grep -v ChangeLog; fi
 
 # Prevent programs like 'sort' from considering distinct strings to be equal.
 # Doing it here saves us from having to set LC_ALL elsewhere in this file.
 export LC_ALL = C
 
 # Collect the names of rules starting with `sc_'.
-syntax-check-rules := $(shell sed -n 's/^\(sc_[a-zA-Z0-9_-]*\):.*/\1/p' $(ME))
+syntax-check-rules := $(shell sed -n 's/^\(sc_[a-zA-Z0-9_-]*\):.*/\1/p' \
+                        $(srcdir)/$(ME))
 .PHONY: $(syntax-check-rules)
 
-# Checks that don't require cvs.
-# Run `changelog-check' last, as previous test may reveal problems requiring
-# new ChangeLog entries.
 local-checks-available = \
   po-check copyright-check m4-check author_mark_check \
-  changelog-check patch-check strftime-check $(syntax-check-rules) \
+  patch-check strftime-check $(syntax-check-rules) \
   makefile_path_separator_check \
   makefile-check check-AUTHORS
 .PHONY: $(local-checks-available)
@@ -34,23 +32,29 @@ local-checks-available = \
 local-check := $(filter-out $(local-checks-to-skip), $(local-checks-available))
 
 syntax-check: $(local-check)
+#	@grep -nE '#  *include <(limits|std(def|arg|bool))\.h>'		\
+#	    $$(find -type f -name '*.[chly]') &&			\
+#	  { echo '$(ME): found conditional include' 1>&2;		\
+#	    exit 1; } || :
 
-## --------------- ##
-## Sanity checks.  ##
-## --------------- ##
+#	grep -nE '^#  *include <(string|stdlib)\.h>'			\
+#	    $(srcdir)/{lib,src}/*.[chy] &&				\
+#	  { echo '$(ME): FIXME' 1>&2;					\
+#	    exit 1; } || :
+# FIXME: don't allow `#include .strings\.h' anywhere
 
 sc_avoid_if_before_free:
 	@$(srcdir)/build-aux/useless-if-before-free			\
 		$(useless_free_options)					\
-	    $$($(CVS_LIST_EXCEPT)) &&					\
+	    $$($(VC_LIST_EXCEPT)) &&					\
 	  { echo '$(ME): found useless "if" before "free" above' 1>&2;	\
 	    exit 1; } || :
 
 # Avoid uses of write(2).  Either switch to streams (fwrite), or use
 # the safewrite wrapper.
 sc_avoid_write:
-	@if $(CVS_LIST_EXCEPT) | grep '\.c$$' > /dev/null; then		\
-	  grep '\<write *(' $$($(CVS_LIST_EXCEPT) | grep '\.c$$') &&	\
+	@if $(VC_LIST_EXCEPT) | grep '\.c$$' > /dev/null; then		\
+	  grep '\<write *(' $$($(VC_LIST_EXCEPT) | grep '\.c$$') &&	\
 	    { echo "$(ME): the above files use write;"			\
 	      " consider using the safewrite wrapper instead"		\
 		  1>&2; exit 1; } || :;					\
@@ -58,22 +62,22 @@ sc_avoid_write:
 	fi
 
 sc_cast_of_argument_to_free:
-	@grep -nE '\<free \(\(' $$($(CVS_LIST_EXCEPT)) &&		\
+	@grep -nE '\<free \(\(' $$($(VC_LIST_EXCEPT)) &&		\
 	  { echo '$(ME): don'\''t cast free argument' 1>&2;		\
 	    exit 1; } || :
 
 sc_cast_of_x_alloc_return_value:
-	@grep -nE '\*\) *x(m|c|re)alloc\>' $$($(CVS_LIST_EXCEPT)) &&	\
+	@grep -nE '\*\) *x(m|c|re)alloc\>' $$($(VC_LIST_EXCEPT)) &&	\
 	  { echo '$(ME): don'\''t cast x*alloc return value' 1>&2;	\
 	    exit 1; } || :
 
 sc_cast_of_alloca_return_value:
-	@grep -nE '\*\) *alloca\>' $$($(CVS_LIST_EXCEPT)) &&		\
+	@grep -nE '\*\) *alloca\>' $$($(VC_LIST_EXCEPT)) &&		\
 	  { echo '$(ME): don'\''t cast alloca return value' 1>&2;	\
 	    exit 1; } || :
 
 sc_space_tab:
-	@grep -n '[ ]	' $$($(CVS_LIST_EXCEPT)) &&			\
+	@grep -n '[ ]	' $$($(VC_LIST_EXCEPT)) &&			\
 	  { echo '$(ME): found SPACE-TAB sequence; remove the SPACE'	\
 		1>&2; exit 1; } || :
 
@@ -81,14 +85,14 @@ sc_space_tab:
 # They provide no error checking mechanism.
 # Instead, use strto* functions.
 sc_prohibit_atoi_atof:
-	@grep -nE '\<([fs]?scanf|ato([filq]|ll))\>' $$($(CVS_LIST_EXCEPT)) && \
+	@grep -nE '\<([fs]?scanf|ato([filq]|ll))\>' $$($(VC_LIST_EXCEPT)) && \
 	  { echo '$(ME): do not use *scan''f, ato''f, ato''i, ato''l, ato''ll, ato''q, or ss''canf'	\
 		1>&2; exit 1; } || :
 
 # Use STREQ rather than comparing strcmp == 0, or != 0.
 sc_prohibit_strcmp:
-	@grep -nE '! *str''cmp \(|\<str''cmp \([^)]+\) *==' \
-	    $$($(CVS_LIST_EXCEPT)) && \
+	@grep -nE '! *str''cmp \(|\<str''cmp \([^)]+\) *=='		\
+	    $$($(VC_LIST_EXCEPT)) &&					\
 	  { echo '$(ME): use STREQ in place of the above uses of str''cmp' \
 		1>&2; exit 1; } || :
 
@@ -101,66 +105,61 @@ sc_error_exit_success:
 	    exit 1; } || :
 
 sc_file_system:
-	@grep -ni 'file''system' $$($(CVS_LIST_EXCEPT)) &&		\
+	@grep -ni 'file''system' $$($(VC_LIST_EXCEPT)) &&		\
 	  { echo '$(ME): found use of "file''system";'			\
 	    'rewrite to use "file system"' 1>&2;			\
 	    exit 1; } || :
 
 sc_no_have_config_h:
-	@grep -n '^# *if.*HAVE''_CONFIG_H' $$($(CVS_LIST_EXCEPT)) &&	\
+	@grep -n '^# *if.*HAVE''_CONFIG_H' $$($(VC_LIST_EXCEPT)) &&	\
 	  { echo '$(ME): found use of HAVE''_CONFIG_H; remove'		\
 		1>&2; exit 1; } || :
 
 # Nearly all .c files must include <config.h>.
 sc_require_config_h:
-	@if $(CVS_LIST_EXCEPT) | grep '\.c$$' > /dev/null; then		\
+	@if $(VC_LIST_EXCEPT) | grep '\.c$$' > /dev/null; then		\
 	  grep -L '^# *include <config\.h>'				\
-		$$($(CVS_LIST_EXCEPT) | grep '\.c$$')			\
+		$$($(VC_LIST_EXCEPT) | grep '\.c$$')			\
 	      | grep . &&						\
 	  { echo '$(ME): the above files do not include <config.h>'	\
 		1>&2; exit 1; } || :;					\
 	else :;								\
 	fi
 
+# To use this "command" macro, you must first define two shell variables:
+# h: the header, enclosed in <> or ""
+# re: a regular expression that matches IFF something provided by $h is used.
+define _header_without_use
+  h_esc=`echo "$$h"|sed 's/\./\\./'`;					\
+  if $(VC_LIST_EXCEPT) | grep '\.c$$' > /dev/null; then			\
+    files=$$(grep -l '^# *include '"$$h_esc"				\
+	     $$($(VC_LIST_EXCEPT) | grep '\.c$$')) &&			\
+    grep -LE "$$re" $$files | grep . &&					\
+      { echo "$(ME): the above files include $$h but don't use it"	\
+	1>&2; exit 1; } || :;						\
+  else :;								\
+  fi
+endef
+
 # Prohibit the inclusion of assert.h without an actual use of assert.
 sc_prohibit_assert_without_use:
-	@if $(CVS_LIST_EXCEPT) | grep '\.c$$' > /dev/null; then		\
-	  files=$$(grep -l '# *include <assert\.h>'			\
-		    $$($(CVS_LIST_EXCEPT) | grep '\.c$$')) &&		\
-	  grep -L '\<assert (' $$files					\
-	      | grep . &&						\
-	    { echo "$(ME): the above files include <assert.h> but don't use it" \
-		  1>&2; exit 1; } || :;					\
-	else :;								\
-	fi
+	@h='<assert.h>' re='\<assert *\(' $(_header_without_use)
+
+# Prohibit the inclusion of getopt.h without an actual use.
+sc_prohibit_getopt_without_use:
+	@h='<getopt.h>' re='\<getopt(_long)? *\(' $(_header_without_use)
 
 # Don't include quotearg.h unless you use one of its functions.
 sc_prohibit_quotearg_without_use:
-	@if $(CVS_LIST_EXCEPT) | grep '\.c$$' > /dev/null; then		\
-	  files=$$(grep -l '# *include "quotearg\.h"'			\
-		    $$($(CVS_LIST_EXCEPT) | grep '\.c$$')) &&		\
-	  grep -LE '\<quotearg(_[^ ]+)? \(' $$files			\
-	      | grep . &&						\
-	    { echo "$(ME): the above files include "quotearg.h" but don't use it" \
-		  1>&2; exit 1; } || :;					\
-	else :;								\
-	fi
+	@h='"quotearg.h"' re='\<quotearg(_[^ ]+)? *\(' $(_header_without_use)
 
 # Don't include quote.h unless you use one of its functions.
 sc_prohibit_quote_without_use:
-	@if $(CVS_LIST_EXCEPT) | grep '\.c$$' > /dev/null; then		\
-	  files=$$(grep -l '# *include "quote\.h"'			\
-		    $$($(CVS_LIST_EXCEPT) | grep '\.c$$')) &&		\
-	  grep -LE '\<quote(_n)? \(' $$files			\
-	      | grep . &&						\
-	    { echo "$(ME): the above files include "quote.h" but don't use it" \
-		  1>&2; exit 1; } || :;					\
-	else :;								\
-	fi
+	@h='"quote.h"' re='\<quote(_n)? *\(' $(_header_without_use)
 
 sc_obsolete_symbols:
 	@grep -nE '\<(HAVE''_FCNTL_H|O''_NDELAY)\>'			\
-	     $$($(CVS_LIST_EXCEPT)) &&					\
+	     $$($(VC_LIST_EXCEPT)) &&					\
 	  { echo '$(ME): do not use HAVE''_FCNTL_H or O''_NDELAY'	\
 		1>&2; exit 1; } || :
 
@@ -194,7 +193,7 @@ endif
 # Make sure that none are inadvertently reintroduced.
 sc_prohibit_jm_in_m4:
 	@grep -nE 'jm_[A-Z]'					\
-		$$($(CVS_LIST) m4 |grep '\.m4$$'; echo /dev/null) && \
+		$$($(VC_LIST) m4 |grep '\.m4$$'; echo /dev/null) && \
 	    { echo '$(ME): do not use jm_ in m4 macro names'	\
 	      1>&2; exit 1; } || :
 
@@ -202,8 +201,8 @@ sc_root_tests:
 	@if test -d tests \
 	      && grep check-root tests/Makefile.am>/dev/null 2>&1; then \
 	t1=sc-root.expected; t2=sc-root.actual;				\
-	grep -nl '^PRIV_CHECK_ARG=require-root'				\
-	  $$($(CVS_LIST) tests) |sed s,tests,., |sort > $$t1;		\
+	grep -nl '^require_root_$$'					\
+	  $$($(VC_LIST) tests) |sed s,tests,., |sort > $$t1;		\
 	sed -n 's,	cd \([^ ]*\) .*MAKE..check TESTS=\(.*\),./\1/\2,p' \
 	  $(srcdir)/tests/Makefile.am |sort > $$t2;			\
 	diff -u $$t1 $$t2 || diff=1;					\
@@ -242,7 +241,7 @@ headers_with_interesting_macro_defs = \
 sc_always_defined_macros: .re-defmac
 	@if test -f $(srcdir)/src/system.h; then			\
 	  trap 'rc=$$?; rm -f .re-defmac; exit $$rc' 0 1 2 3 15;	\
-	  grep -f .re-defmac $$($(CVS_LIST))				\
+	  grep -f .re-defmac $$($(VC_LIST))				\
 	    && { echo '$(ME): define the above via some gnulib .h file'	\
 		  1>&2;  exit 1; } || :;				\
 	fi
@@ -262,7 +261,7 @@ sc_system_h_headers: .re-list
 	@if test -f $(srcdir)/src/system.h; then			\
 	  trap 'rc=$$?; rm -f .re-list; exit $$rc' 0 1 2 3 15;		\
 	  grep -nE -f .re-list						\
-	      $$($(CVS_LIST) src |					\
+	      $$($(VC_LIST) src |					\
 		 grep -Ev '((copy|system)\.h|parse-gram\.c)$$')		\
 	    && { echo '$(ME): the above are already included via system.h'\
 		  1>&2;  exit 1; } || :;				\
@@ -271,12 +270,12 @@ sc_system_h_headers: .re-list
 sc_sun_os_names:
 	@grep -nEi \
 	    'solaris[^[:alnum:]]*2\.(7|8|9|[1-9][0-9])|sunos[^[:alnum:]][6-9]' \
-	    $$($(CVS_LIST_EXCEPT)) &&					\
+	    $$($(VC_LIST_EXCEPT)) &&					\
 	  { echo '$(ME): found misuse of Sun OS version numbers' 1>&2;	\
 	    exit 1; } || :
 
 sc_the_the:
-	@grep -ni '\<the ''the\>' $$($(CVS_LIST_EXCEPT)) &&		\
+	@grep -ni '\<the ''the\>' $$($(VC_LIST_EXCEPT)) &&		\
 	  { echo '$(ME): found use of "the ''the";' 1>&2;		\
 	    exit 1; } || :
 
@@ -284,7 +283,7 @@ sc_tight_scope:
 	$(MAKE) -C src $@
 
 sc_trailing_blank:
-	@grep -n '[	 ]$$' $$($(CVS_LIST_EXCEPT)) &&			\
+	@grep -n '[	 ]$$' $$($(VC_LIST_EXCEPT)) &&			\
 	  { echo '$(ME): found trailing blank(s)'			\
 		1>&2; exit 1; } || :
 
@@ -294,7 +293,7 @@ sc_trailing_blank:
 longopt_re = --[a-z][0-9A-Za-z-]*(\[?=[0-9A-Za-z-]*\]?)?
 sc_two_space_separator_in_usage:
 	@grep -nE '^   *(-[A-Za-z],)? $(longopt_re) [^ ].*\\$$'		\
-	    $$($(CVS_LIST_EXCEPT)) &&					\
+	    $$($(VC_LIST_EXCEPT)) &&					\
 	  { echo "$(ME): help2man requires at least two spaces between"; \
 	    echo "$(ME): an option and its description"; \
 		1>&2; exit 1; } || :
@@ -309,32 +308,32 @@ err_func_re = \
 #    "%s", _("no storage vol w..."
 sc_unmarked_diagnostics:
 	@grep -nE							\
-	    '\<(vshError|error) \([^"]*"[^"]*[a-z]{3}' $$($(CVS_LIST_EXCEPT))	\
+	    '\<(vshError|error) \([^"]*"[^"]*[a-z]{3}' $$($(VC_LIST_EXCEPT)) \
 	  | grep -v '_''(' &&						\
 	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2;		\
 	    exit 1; } || :
-	@{ grep     -nE '\<$(err_func_re) *\(.*;$$' $$($(CVS_LIST_EXCEPT));   \
-	   grep -A1 -nE '\<$(err_func_re) *\(.*,$$' $$($(CVS_LIST_EXCEPT)); } \
+	@{ grep     -nE '\<$(err_func_re) *\(.*;$$' $$($(VC_LIST_EXCEPT));   \
+	   grep -A1 -nE '\<$(err_func_re) *\(.*,$$' $$($(VC_LIST_EXCEPT)); } \
 	   | sed 's/_("[^"][^"]*"//;s/[	 ]"%s"//'			\
 	   | grep '[	 ]"' &&						\
 	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2;		\
 	    exit 1; } || :
 
 sc_prohibit_virBufferAdd_with_string_literal:
-	@grep -nE '\<virBufferAdd *\([^,]+, *"[^"]' $$($(CVS_LIST_EXCEPT)) && \
+	@grep -nE '\<virBufferAdd *\([^,]+, *"[^"]' $$($(VC_LIST_EXCEPT)) && \
 	  { echo '$(ME): use virBufferAddLit, not virBufferAdd,' \
 	      'with a string literal' 1>&2; exit 1; } || :
 
 # Avoid useless parentheses like those in this example:
 # #if defined (SYMBOL) || defined (SYM2)
 sc_useless_cpp_parens:
-	@grep -n '^# *if .*defined *(' $$($(CVS_LIST_EXCEPT)) &&	\
+	@grep -n '^# *if .*defined *(' $$($(VC_LIST_EXCEPT)) &&		\
 	  { echo '$(ME): found useless parentheses in cpp directive'	\
 		1>&2; exit 1; } || :
 
 # Require the latest GPL.
 sc_GPL_version:
-	@grep -n 'either ''version [^3]' $$($(CVS_LIST_EXCEPT)) &&	\
+	@grep -n 'either ''version [^3]' $$($(VC_LIST_EXCEPT)) &&	\
 	  { echo '$(ME): GPL vN, N!=3' 1>&2; exit 1; } || :
 
 # Ensure that the c99-to-c89 patch applies cleanly.
@@ -410,12 +409,16 @@ po-check:
 	  grep -E -v '^(#|$$)' po/POTFILES.in				\
 	    | grep -v '^src/false\.c$$' | sort > $@-1;			\
 	  files=;							\
-	  for file in $$($(CVS_LIST_EXCEPT)); do			\
+	  for file in $$($(VC_LIST_EXCEPT)); do				\
+	    case $$file in						\
+	    djgpp/* | man/*) continue;;					\
+	    */c99-to-c89.diff) continue;;				\
+	    esac;							\
 	    case $$file in						\
 	    *.[ch])							\
 	      base=`expr " $$file" : ' \(.*\)\..'`;			\
 	      { test -f $$base.l || test -f $$base.y; } && continue;;	\
-	    *) continue;;						\
+	    *) continue;;				\
 	    esac;							\
 	    files="$$files $$file";					\
 	  done;								\
@@ -447,16 +450,14 @@ makefile_path_separator_check:
 # Check that `make alpha' will not fail at the end of the process.
 writable-files:
 	if test -d $(release_archive_dir); then :; else			\
-	  mkdir $(release_archive_dir);					\
+	  for file in $(distdir).tar.gz					\
+	              $(release_archive_dir)/$(distdir).tar.gz; do	\
+	    test -e $$file || continue;					\
+	    test -w $$file						\
+	      || { echo ERROR: $$file is not writable; fail=1; };	\
+	  done;								\
+	  test "$$fail" && exit 1 || :
 	fi
-	for file in $(distdir).tar.gz $(xd-delta)			\
-	            $(release_archive_dir)/$(distdir).tar.gz		\
-	            $(release_archive_dir)/$(xd-delta); do		\
-	  test -e $$file || continue;					\
-	  test -w $$file						\
-	    || { echo ERROR: $$file is not writable; fail=1; };		\
-	done;								\
-	test "$$fail" && exit 1 || :
 
 v_etc_file = lib/version-etc.c
 sample-test = tests/sample-test

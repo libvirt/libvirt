@@ -1,5 +1,9 @@
 Mon Mar 24 11:16:58 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	Sync Makefile rules from coreutils.
+	* Makefile.maint: Merge.
+	* GNUmakefile: Update from coreutils.
+
 	Add new testing framework and the first test to use it.
 	* tests/Makefile.am (test_scripts): Add vcpupin.
 	(EXTRA_DIST): Add test-lib.sh.
