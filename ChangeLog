@@ -1,3 +1,8 @@
+Tue Mar 25 10:23:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/virsh.c: Additional error messages for missing
+	  parameters (Shigeki Sakamoto).
+
 Mon Mar 24 11:56:58 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/qemu_driver.c: remove trailing newlines from error messages

@@ -1729,6 +1729,7 @@ cmdVcpupin(vshControl * ctl, vshCmd * cmd)
     }
 
     if (!(cpulist = vshCommandOptString(cmd, "cpulist", NULL))) {
+        vshError(ctl, FALSE, _("vcpupin: Missing cpulist"));
         virDomainFree(dom);
         return FALSE;
     }
@@ -1739,6 +1740,7 @@ cmdVcpupin(vshControl * ctl, vshCmd * cmd)
     }
 
     if (virDomainGetInfo(dom, &info) != 0) {
+        vshError(ctl, FALSE, _("vcpupin: Invalid vCPU number."));
         virDomainFree(dom);
         return FALSE;
     }
@@ -4473,6 +4475,7 @@ cmdAttachDevice(vshControl * ctl, vshCmd * cmd)
 
     from = vshCommandOptString(cmd, "file", &found);
     if (!found) {
+        vshError(ctl, FALSE, _("attach-device: Missing <file> option"));
         virDomainFree(dom);
         return FALSE;
     }
@@ -4529,6 +4532,7 @@ cmdDetachDevice(vshControl * ctl, vshCmd * cmd)
 
     from = vshCommandOptString(cmd, "file", &found);
     if (!found) {
+        vshError(ctl, FALSE, _("detach-device: Missing <file> option"));
         virDomainFree(dom);
         return FALSE;
     }
