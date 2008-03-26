@@ -1,3 +1,8 @@
+Wed Mar 26 14:00:47 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/xen_internal.c proxy/libvirt_proxy.c: fix Xen hypercall for
+	  Xen-3.2, and merged its debugging with the general library facility
+
 Wed Mar 26 12:57:00 UTC 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	* po/lt.po: Fixed typo (Beth Kon).

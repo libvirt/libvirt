@@ -32,6 +32,11 @@
 #include "xs_internal.h"
 #include "xen_unified.h"
 
+/*
+ * This is provided in libvirt.c when the code is part of the library
+ */
+int debugFlag = 0;
+
 static int fdServer = -1;
 static int debug = 0;
 static int persist = 0;

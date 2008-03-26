@@ -49,7 +49,9 @@
 #include "buf.h"
 #include "capabilities.h"
 
-/* #define DEBUG */
+#define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
+#define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
+
 /*
  * so far there is 2 versions of the structures usable for doing
  * hypervisor calls.
@@ -1941,9 +1943,7 @@ xenHypervisorInit(void)
     ret = ioctl(fd, cmd, (unsigned long) &hc);
 
     if ((ret != -1) && (ret != 0)) {
-#ifdef DEBUG
-        fprintf(stderr, "Using new hypervisor call: %X\n", ret);
-#endif
+        DEBUG("Using new hypervisor call: %X\n", ret);
         hv_version = ret;
         xen_ioctl_hypercall_cmd = cmd;
         goto detect_v2;
@@ -1959,9 +1959,7 @@ xenHypervisorInit(void)
     cmd = _IOC(_IOC_NONE, 'P', 0, sizeof(v0_hypercall_t));
     ret = ioctl(fd, cmd, (unsigned long) &v0_hc);
     if ((ret != -1) && (ret != 0)) {
-#ifdef DEBUG
-        fprintf(stderr, "Using old hypervisor call: %X\n", ret);
-#endif
+        DEBUG("Using old hypervisor call: %X\n", ret);
         hv_version = ret;
         xen_ioctl_hypercall_cmd = cmd;
         hypervisor_version = 0;
@@ -1989,9 +1987,7 @@ xenHypervisorInit(void)
 
     ipt = malloc(sizeof(*ipt));
     if (ipt == NULL){
-#ifdef DEBUG
-        fprintf(stderr, "Memory allocation failed at xenHypervisorInit()\n");
-#endif
+	virXenError(NULL, VIR_ERR_NO_MEMORY, __FUNCTION__, 0);
         return(-1);
     }
     /* Currently consider RHEL5.0 Fedora7, xen-3.1, and xen-unstable */
@@ -2000,17 +1996,13 @@ xenHypervisorInit(void)
         /* RHEL 5.0 */
         dom_interface_version = 3; /* XEN_DOMCTL_INTERFACE_VERSION */
         if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
-#ifdef DEBUG
-            fprintf(stderr, "Using hypervisor call v2, sys ver2 dom ver3\n");
-#endif
+            DEBUG0("Using hypervisor call v2, sys ver2 dom ver3\n");
             goto done;
         }
         /* Fedora 7 */
         dom_interface_version = 4; /* XEN_DOMCTL_INTERFACE_VERSION */
         if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
-#ifdef DEBUG
-            fprintf(stderr, "Using hypervisor call v2, sys ver2 dom ver4\n");
-#endif
+            DEBUG0("Using hypervisor call v2, sys ver2 dom ver4\n");
             goto done;
         }
     }
@@ -2020,21 +2012,27 @@ xenHypervisorInit(void)
         /* xen-3.1 */
         dom_interface_version = 5; /* XEN_DOMCTL_INTERFACE_VERSION */
         if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
-#ifdef DEBUG
-            fprintf(stderr, "Using hypervisor call v2, sys ver3 dom ver5\n");
-#endif
+            DEBUG0("Using hypervisor call v2, sys ver3 dom ver5\n");
             goto done;
         }
     }
 
     sys_interface_version = 4; /* XEN_SYSCTL_INTERFACE_VERSION */
     if (virXen_getdomaininfo(fd, 0, &info) == 1) {
-        /* xen-unstable */
+        /* Fedora 8 */
         dom_interface_version = 5; /* XEN_DOMCTL_INTERFACE_VERSION */
         if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
-#ifdef DEBUG
-            fprintf(stderr, "Using hypervisor call v2, sys ver4 dom ver5\n");
-#endif
+            DEBUG0("Using hypervisor call v2, sys ver4 dom ver5\n");
+            goto done;
+        }
+    }
+
+    sys_interface_version = 6; /* XEN_SYSCTL_INTERFACE_VERSION */
+    if (virXen_getdomaininfo(fd, 0, &info) == 1) {
+        /* Xen 3.2, Fedora 9 */
+        dom_interface_version = 5; /* XEN_DOMCTL_INTERFACE_VERSION */
+        if (virXen_getvcpusinfo(fd, 0, 0, ipt, NULL, 0) == 0){
+            DEBUG0("Using hypervisor call v2, sys ver6 dom ver5\n");
             goto done;
         }
     }
@@ -2042,9 +2040,7 @@ xenHypervisorInit(void)
     hypervisor_version = 1;
     sys_interface_version = -1;
     if (virXen_getdomaininfo(fd, 0, &info) == 1) {
-#ifdef DEBUG
-        fprintf(stderr, "Using hypervisor call v1\n");
-#endif
+        DEBUG0("Using hypervisor call v1\n");
         goto done;
     }
 
@@ -2052,6 +2048,7 @@ xenHypervisorInit(void)
      * we failed to make the getdomaininfolist hypercall
      */
 
+    DEBUG0("Failed to find any Xen hypervisor method\n");
     hypervisor_version = -1;
     virXenError(NULL, VIR_ERR_XEN_CALL, " ioctl ", IOCTL_PRIVCMD_HYPERCALL);
     close(fd);
