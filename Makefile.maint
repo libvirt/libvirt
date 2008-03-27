@@ -314,11 +314,11 @@ msg_gen_function += remoteDispatchError
 msg_gen_function += virStorageLog
 msg_gen_function += xenXMError
 msg_gen_function += ReportError
+msg_gen_function += qemudReportError
 
 # msg_gen_function += virXenError
 # msg_gen_function += testError
 # msg_gen_function += openvzLog
-# msg_gen_function += qemudReportError
 # msg_gen_function += error
 
 func_or := $(shell printf '$(msg_gen_function)'|tr -s '[[:space:]]' '|')

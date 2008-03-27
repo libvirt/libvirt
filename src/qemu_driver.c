@@ -916,7 +916,8 @@ qemudBuildDnsmasqArgv(virConnectPtr conn,
             free((*argv)[i]);
         free(*argv);
     }
-    qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "dnsmasq argv");
+    qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                     "%s", _("failed to allocate space for dnsmasq argv"));
     return -1;
 }
 
@@ -954,7 +955,8 @@ qemudAddIptablesRules(virConnectPtr conn,
     int err;
 
     if (!driver->iptables && !(driver->iptables = iptablesContextNew())) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "iptables support");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                     "%s", _("failed to allocate space for IP tables support"));
         return 1;
     }
 
@@ -1492,7 +1494,8 @@ static char *qemudGetCapabilities(virConnectPtr conn) {
     char *xml;
 
     if ((xml = virCapabilitiesFormatXML(driver->caps)) == NULL) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "capabilities");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                 "%s", _("failed to allocate space for capabilities support"));
         return NULL;
     }
 
@@ -1764,7 +1767,8 @@ static char *qemudDomainGetOSType(virDomainPtr dom) {
     }
 
     if (!(type = strdup(vm->def->os.type))) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_MEMORY, "ostype");
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_MEMORY,
+                         "%s", _("failed to allocate space for ostype"));
         return NULL;
     }
     return type;
@@ -2194,7 +2198,8 @@ static int qemudListDefinedDomains(virConnectPtr conn,
     while (vm && got < nnames) {
         if (!qemudIsActiveVM(vm)) {
             if (!(names[got] = strdup(vm->def->name))) {
-                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "names");
+                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                     "%s", _("failed to allocate space for VM name string"));
                 goto cleanup;
             }
             got++;
@@ -2706,7 +2711,8 @@ static int qemudListNetworks(virConnectPtr conn, char **const names, int nnames)
     while (network && got < nnames) {
         if (qemudIsActiveNetwork(network)) {
             if (!(names[got] = strdup(network->def->name))) {
-                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "names");
+                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                     "%s", _("failed to allocate space for VM name string"));
                 goto cleanup;
             }
             got++;
@@ -2733,7 +2739,8 @@ static int qemudListDefinedNetworks(virConnectPtr conn, char **const names, int 
     while (network && got < nnames) {
         if (!qemudIsActiveNetwork(network)) {
             if (!(names[got] = strdup(network->def->name))) {
-                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "names");
+                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                     "%s", _("failed to allocate space for VM name string"));
                 goto cleanup;
             }
             got++;
@@ -2866,13 +2873,15 @@ static char *qemudNetworkGetBridgeName(virNetworkPtr net) {
     struct qemud_network *network = qemudFindNetworkByUUID(driver, net->uuid);
     char *bridge;
     if (!network) {
-        qemudReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK, "no network with matching id");
+        qemudReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
+                         "%s", _("no network with matching id"));
         return NULL;
     }
 
     bridge = strdup(network->bridge);
     if (!bridge) {
-        qemudReportError(net->conn, NULL, net, VIR_ERR_NO_MEMORY, "bridge");
+        qemudReportError(net->conn, NULL, net, VIR_ERR_NO_MEMORY,
+                 "%s", _("failed to allocate space for network bridge string"));
         return NULL;
     }
     return bridge;

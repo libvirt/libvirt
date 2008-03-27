@@ -82,7 +82,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
     strcpy(driver->vncListen, "127.0.0.1");
     if (!(driver->vncTLSx509certdir = strdup(SYSCONF_DIR "/pki/libvirt-vnc"))) {
         qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_MEMORY,
-                         "vncTLSx509certdir");
+                         "%s", _("failed to allocate vncTLSx509certdir"));
         return -1;
     }
 
@@ -117,7 +117,7 @@ int qemudLoadDriverConfig(struct qemud_driver *driver,
         free(driver->vncTLSx509certdir);
         if (!(driver->vncTLSx509certdir = strdup(p->str))) {
             qemudReportError(NULL, NULL, NULL, VIR_ERR_NO_MEMORY,
-                             "vncTLSx509certdir");
+                             "%s", _("failed to allocate vncTLSx509certdir"));
             virConfFree(conf);
             return -1;
         }
@@ -530,7 +530,7 @@ int qemudExtractVersion(virConnectPtr conn,
 
     if (stat(binary, &sb) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "Cannot find QEMU binary %s: %s", binary,
+                         _("Cannot find QEMU binary %s: %s"), binary,
                          strerror(errno));
         return -1;
     }
@@ -613,14 +613,16 @@ static int qemudParseDiskXML(virConnectPtr conn,
         !strcmp((const char *)device, "floppy") &&
         strcmp((const char *)target, "fda") &&
         strcmp((const char *)target, "fdb")) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "Invalid floppy device name: %s", target);
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Invalid floppy device name: %s"), target);
         goto error;
     }
 
     if (device &&
         !strcmp((const char *)device, "cdrom") &&
         strcmp((const char *)target, "hdc")) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "Invalid cdrom device name: %s", target);
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Invalid cdrom device name: %s"), target);
         goto error;
     }
 
@@ -633,7 +635,8 @@ static int qemudParseDiskXML(virConnectPtr conn,
         strcmp((const char *)target, "hdb") &&
         strcmp((const char *)target, "hdc") &&
         strcmp((const char *)target, "hdd")) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "Invalid harddisk device name: %s", target);
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Invalid harddisk device name: %s"), target);
         goto error;
     }
 
@@ -653,7 +656,8 @@ static int qemudParseDiskXML(virConnectPtr conn,
     else if (!strcmp((const char *)device, "floppy"))
         disk->device = QEMUD_DISK_FLOPPY;
     else {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "Invalid device type: %s", device);
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("Invalid device type: %s"), device);
         goto error;
     }
 
@@ -795,11 +799,11 @@ static int qemudParseInterfaceXML(virConnectPtr conn,
 
         if (network == NULL) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "No <source> 'network' attribute specified with <interface type='network'/>");
+                             "%s", _("No <source> 'network' attribute specified with <interface type='network'/>"));
             goto error;
         } else if ((len = xmlStrlen(network)) >= (QEMUD_MAX_NAME_LEN-1)) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "Network name '%s' too long", network);
+                             _("Network name '%s' too long"), network);
             goto error;
         } else {
             strncpy(net->dst.network.name, (char *)network, len);
@@ -814,7 +818,8 @@ static int qemudParseInterfaceXML(virConnectPtr conn,
         if (ifname != NULL) {
             if ((len = xmlStrlen(ifname)) >= (BR_IFNAME_MAXLEN-1)) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 "TAP interface name '%s' is too long", ifname);
+                                 _("TAP interface name '%s' is too long"),
+                                 ifname);
                 goto error;
             } else {
                 strncpy(net->dst.network.ifname, (char *)ifname, len);
@@ -829,7 +834,7 @@ static int qemudParseInterfaceXML(virConnectPtr conn,
         if (script != NULL) {
             if ((len = xmlStrlen(script)) >= (PATH_MAX-1)) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 "TAP script path '%s' is too long", script);
+                                 _("TAP script path '%s' is too long"), script);
                 goto error;
             } else {
                 strncpy(net->dst.ethernet.script, (char *)script, len);
@@ -841,7 +846,8 @@ static int qemudParseInterfaceXML(virConnectPtr conn,
         if (ifname != NULL) {
             if ((len = xmlStrlen(ifname)) >= (BR_IFNAME_MAXLEN-1)) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 "TAP interface name '%s' is too long", ifname);
+                                 _("TAP interface name '%s' is too long"),
+                                 ifname);
                 goto error;
             } else {
                 strncpy(net->dst.ethernet.ifname, (char *)ifname, len);
@@ -854,11 +860,11 @@ static int qemudParseInterfaceXML(virConnectPtr conn,
 
         if (bridge == NULL) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "No <source> 'dev' attribute specified with <interface type='bridge'/>");
+                             "%s", _("No <source> 'dev' attribute specified with <interface type='bridge'/>"));
             goto error;
         } else if ((len = xmlStrlen(bridge)) >= (BR_IFNAME_MAXLEN-1)) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "TAP bridge path '%s' is too long", bridge);
+                             _("TAP bridge path '%s' is too long"), bridge);
             goto error;
         } else {
             strncpy(net->dst.bridge.brname, (char *)bridge, len);
@@ -871,7 +877,7 @@ static int qemudParseInterfaceXML(virConnectPtr conn,
         if (ifname != NULL) {
             if ((len = xmlStrlen(ifname)) >= (BR_IFNAME_MAXLEN-1)) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 "TAP interface name '%s' is too long", ifname);
+                                 _("TAP interface name '%s' is too long"), ifname);
                 goto error;
             } else {
                 strncpy(net->dst.bridge.ifname, (char *)ifname, len);
@@ -887,13 +893,13 @@ static int qemudParseInterfaceXML(virConnectPtr conn,
 
         if (port == NULL) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "No <source> 'port' attribute specified with socket interface");
+                             "%s", _("No <source> 'port' attribute specified with socket interface"));
             goto error;
         }
         if (!(net->dst.socket.port = strtol((char*)port, &ret, 10)) &&
             ret == (char*)port) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "Cannot parse <source> 'port' attribute with socket interface");
+                             "%s", _("Cannot parse <source> 'port' attribute with socket interface"));
             goto error;
         }
         xmlFree(port);
@@ -903,12 +909,12 @@ static int qemudParseInterfaceXML(virConnectPtr conn,
             if (net->type == QEMUD_NET_CLIENT ||
                 net->type == QEMUD_NET_MCAST) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 "No <source> 'address' attribute specified with socket interface");
+                                 "%s", _("No <source> 'address' attribute specified with socket interface"));
                 goto error;
             }
         } else if ((len = xmlStrlen(address)) >= (BR_INET_ADDR_MAXLEN)) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "IP address '%s' is too long", address);
+                             _("IP address '%s' is too long"), address);
             goto error;
         }
         if (address == NULL) {
@@ -950,7 +956,8 @@ static int qemudParseInputXML(virConnectPtr conn,
     bus = xmlGetProp(node, BAD_CAST "bus");
 
     if (!type) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "no type provide for input device");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("missing input device type"));
         goto error;
     }
 
@@ -959,21 +966,26 @@ static int qemudParseInputXML(virConnectPtr conn,
     } else if (!strcmp((const char *)type, "tablet")) {
         input->type = QEMU_INPUT_TYPE_TABLET;
     } else {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "unsupported input device type %s", (const char*)type);
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("unsupported input device type %s"),
+                         (const char*)type);
         goto error;
     }
 
     if (bus) {
         if (!strcmp((const char*)bus, "ps2")) { /* Only allow mouse */
             if (input->type == QEMU_INPUT_TYPE_TABLET) {
-                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "ps2 bus does not support %s input device", (const char*)type);
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                                 _("ps2 bus does not support %s input device"),
+                                 (const char*)type);
                 goto error;
             }
             input->bus = QEMU_INPUT_BUS_PS2;
         } else if (!strcmp((const char *)bus, "usb")) { /* Allow mouse & keyboard */
             input->bus = QEMU_INPUT_BUS_USB;
         } else {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "unsupported input bus %s", (const char*)bus);
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("unsupported input bus %s"), (const char*)bus);
             goto error;
         }
     } else {
@@ -1016,27 +1028,31 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     struct qemud_vm_def *def;
 
     if (!(def = calloc(1, sizeof(*def)))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "xmlXPathContext");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                         "%s", _("failed to allocate space for xmlXPathContext"));
         return NULL;
     }
 
     /* Prepare parser / xpath context */
     root = xmlDocGetRootElement(xml);
     if ((root == NULL) || (!xmlStrEqual(root->name, BAD_CAST "domain"))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "incorrect root element");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("incorrect root element"));
         goto error;
     }
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "xmlXPathContext");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                         "%s", _("failed to allocate space for xmlXPathContext"));
         goto error;
     }
 
 
     /* Find out what type of QEMU virtualization to use */
     if (!(prop = xmlGetProp(root, BAD_CAST "type"))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "missing domain type attribute");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("missing domain type attribute"));
         goto error;
     }
 
@@ -1047,7 +1063,8 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     else if (!strcmp((char *)prop, "kvm"))
         def->virtType = QEMUD_VIRT_KVM;
     else {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "invalid domain type attribute");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("invalid domain type attribute"));
         goto error;
     }
     free(prop);
@@ -1062,7 +1079,8 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         goto error;
     }
     if (strlen((const char *)obj->stringval) >= (QEMUD_MAX_NAME_LEN-1)) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "domain name length too long");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("domain name length too long"));
         goto error;
     }
     strcpy(def->name, (const char *)obj->stringval);
@@ -1076,11 +1094,12 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         int err;
         if ((err = virUUIDGenerate(def->uuid))) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "Failed to generate UUID: %s", strerror(err));
+                             _("Failed to generate UUID: %s"), strerror(err));
             goto error;
         }
     } else if (virUUIDParse((const char *)obj->stringval, def->uuid) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "malformed uuid element");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("malformed uuid element"));
         goto error;
     }
     xmlXPathFreeObject(obj);
@@ -1090,13 +1109,15 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     obj = xmlXPathEval(BAD_CAST "string(/domain/memory[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "missing memory element");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("missing memory element"));
         goto error;
     } else {
         conv = NULL;
         def->maxmem = strtoll((const char*)obj->stringval, &conv, 10);
         if (conv == (const char*)obj->stringval) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "malformed memory information");
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("malformed memory information"));
             goto error;
         }
     }
@@ -1114,7 +1135,8 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         if (def->memory > def->maxmem)
             def->memory = def->maxmem;
         if (conv == (const char*)obj->stringval) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "malformed memory information");
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("malformed memory information"));
             goto error;
         }
     }
@@ -1129,7 +1151,8 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         conv = NULL;
         def->vcpus = strtoll((const char*)obj->stringval, &conv, 10);
         if (conv == (const char*)obj->stringval) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "malformed vcpu information");
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("malformed vcpu information"));
             goto error;
         }
     }
@@ -1175,11 +1198,13 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/type[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) ||
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_OS_TYPE, "no OS type");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OS_TYPE,
+                         "%s", _("no OS type"));
         goto error;
     }
     if (!virCapabilitiesSupportsGuestOSType(driver->caps, (const char*)obj->stringval)) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_OS_TYPE, "%s", obj->stringval);
+        qemudReportError(conn, NULL, NULL, VIR_ERR_OS_TYPE,
+                         "%s", obj->stringval);
         goto error;
     }
     strcpy(def->os.type, (const char *)obj->stringval);
@@ -1191,17 +1216,20 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         (obj->stringval == NULL) || (obj->stringval[0] == 0)) {
         const char *defaultArch = virCapabilitiesDefaultGuestArch(driver->caps, def->os.type);
         if (defaultArch == NULL) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "unsupported architecture");
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("unsupported architecture"));
             goto error;
         }
         if (strlen(defaultArch) >= (QEMUD_OS_TYPE_MAX_LEN-1)) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "architecture type too long");
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("architecture type too long"));
             goto error;
         }
         strcpy(def->os.arch, defaultArch);
     } else {
         if (strlen((const char *)obj->stringval) >= (QEMUD_OS_TYPE_MAX_LEN-1)) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "architecture type too long");
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("architecture type too long"));
             goto error;
         }
         strcpy(def->os.arch, (const char *)obj->stringval);
@@ -1215,17 +1243,20 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
                                                                         def->os.type,
                                                                         def->os.arch);
         if (defaultMachine == NULL) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "unsupported architecture");
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("unsupported architecture"));
             goto error;
         }
         if (strlen(defaultMachine) >= (QEMUD_OS_MACHINE_MAX_LEN-1)) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "machine type too long");
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("machine type too long"));
             goto error;
         }
         strcpy(def->os.machine, defaultMachine);
     } else {
         if (strlen((const char *)obj->stringval) >= (QEMUD_OS_MACHINE_MAX_LEN-1)) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "architecture type too long");
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("architecture type too long"));
             goto error;
         }
         strcpy(def->os.machine, (const char *)obj->stringval);
@@ -1237,7 +1268,8 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
         if (strlen((const char *)obj->stringval) >= (PATH_MAX-1)) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "kernel path too long");
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("kernel path too long"));
             goto error;
         }
         strcpy(def->os.kernel, (const char *)obj->stringval);
@@ -1249,7 +1281,8 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
         if (strlen((const char *)obj->stringval) >= (PATH_MAX-1)) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "initrd path too long");
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("initrd path too long"));
             goto error;
         }
         strcpy(def->os.initrd, (const char *)obj->stringval);
@@ -1261,7 +1294,8 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
     if ((obj != NULL) && (obj->type == XPATH_STRING) &&
         (obj->stringval != NULL) && (obj->stringval[0] != 0)) {
         if (strlen((const char *)obj->stringval) >= (PATH_MAX-1)) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "cmdline arguments too long");
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("cmdline arguments too long"));
             goto error;
         }
         strcpy(def->os.cmdline, (const char *)obj->stringval);
@@ -1286,7 +1320,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
                 def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_NET;
             } else {
 	        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-				 "unknown boot dev \'%s\'", (char*)prop);
+                             _("unknown boot device \'%s\'"), (char*)prop);
                 goto error;
             }
             xmlFree(prop);
@@ -1311,13 +1345,15 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
                                                                    def->os.arch,
                                                                    type);
         if (!emulator) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "unsupported guest type");
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("unsupported guest type"));
             goto error;
         }
         strcpy(def->os.binary, emulator);
     } else {
         if (strlen((const char *)obj->stringval) >= (PATH_MAX-1)) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "emulator path too long");
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             "%s", _("emulator path too long"));
             goto error;
         }
         strcpy(def->os.binary, (const char *)obj->stringval);
@@ -1351,7 +1387,8 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         } else if (!strcmp((char *)prop, "sdl")) {
             def->graphicsType = QEMUD_GRAPHICS_SDL;
         } else {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "Unsupported graphics type %s", prop);
+            qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                             _("Unsupported graphics type %s"), prop);
             goto error;
         }
         xmlFree(prop);
@@ -1367,7 +1404,8 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         for (i = 0; i < obj->nodesetval->nodeNr; i++) {
             struct qemud_vm_disk_def *disk = calloc(1, sizeof(*disk));
             if (!disk) {
-                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "disk");
+                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                           "%s", _("failed to allocate space for disk string"));
                 goto error;
             }
             if (qemudParseDiskXML(conn, disk, obj->nodesetval->nodeTab[i]) < 0) {
@@ -1395,7 +1433,8 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         for (i = 0; i < obj->nodesetval->nodeNr; i++) {
             struct qemud_vm_net_def *net = calloc(1, sizeof(*net));
             if (!net) {
-                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "net");
+                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                           "%s", _("failed to allocate space for net string"));
                 goto error;
             }
             if (qemudParseInterfaceXML(conn, net, obj->nodesetval->nodeTab[i]) < 0) {
@@ -1422,7 +1461,8 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         for (i = 0; i < obj->nodesetval->nodeNr; i++) {
             struct qemud_vm_input_def *input = calloc(1, sizeof(*input));
             if (!input) {
-                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "input");
+                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                         "%s", _("failed to allocate space for input string"));
                 goto error;
             }
             if (qemudParseInputXML(conn, input, obj->nodesetval->nodeTab[i]) < 0) {
@@ -1462,7 +1502,8 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
         if (!hasPS2mouse) {
             input = calloc(1, sizeof(*input));
             if (!input) {
-                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "input");
+                qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                         "%s", _("failed to allocate space for input string"));
                 goto error;
             }
             input->type = QEMU_INPUT_TYPE_MOUSE;
@@ -1505,11 +1546,13 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     if (net->type == QEMUD_NET_NETWORK) {
         if (!(network = qemudFindNetworkByName(driver, net->dst.network.name))) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "Network '%s' not found", net->dst.network.name);
+                             _("Network '%s' not found"),
+                             net->dst.network.name);
             goto error;
         } else if (network->bridge[0] == '\0') {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "Network '%s' not active", net->dst.network.name);
+                             _("Network '%s' not active"),
+                             net->dst.network.name);
             goto error;
         }
         brname = network->bridge;
@@ -1529,20 +1572,21 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
         ifname = net->dst.bridge.ifname;
     } else {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "Network type %d is not supported", net->type);
+                         _("Network type %d is not supported"), net->type);
         goto error;
     }
 
     if (!driver->brctl && (err = brInit(&driver->brctl))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "cannot initialize bridge support: %s", strerror(err));
+                         _("cannot initialize bridge support: %s"),
+                         strerror(err));
         goto error;
     }
 
     if ((err = brAddTap(driver->brctl, brname,
                         ifname, BR_IFNAME_MAXLEN, &tapfd))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "Failed to add tap interface '%s' to bridge '%s' : %s",
+                     _("Failed to add tap interface '%s' to bridge '%s' : %s"),
                          ifname, brname, strerror(err));
         goto error;
     }
@@ -1564,7 +1608,8 @@ qemudNetworkIfaceConnect(virConnectPtr conn,
     return retval;
 
  no_memory:
-    qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "tapfds");
+    qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                     "%s", _("failed to allocate space for tapfds string"));
  error:
     free(retval);
     if (tapfd != -1)
@@ -1597,7 +1642,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
      */
     if (stat(vm->def->os.binary, &sb) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "Cannot find QEMU binary %s: %s", vm->def->os.binary,
+                         _("Cannot find QEMU binary %s: %s"),
+                         vm->def->os.binary,
                          strerror(errno));
         return -1;
     }
@@ -1938,7 +1984,8 @@ int qemudBuildCommandLine(virConnectPtr conn,
     return 0;
 
  no_memory:
-    qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "argv");
+    qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                     "%s", _("failed to allocate space for argv string"));
  error:
     if (vm->tapfds) {
         for (i = 0; vm->tapfds[i] != -1; i++)
@@ -1972,7 +2019,7 @@ static int qemudSaveConfig(virConnectPtr conn,
                    O_WRONLY | O_CREAT | O_TRUNC,
                    S_IRUSR | S_IWUSR )) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "cannot create config file %s: %s",
+                         _("cannot create config file %s: %s"),
                          vm->configFile, strerror(errno));
         goto cleanup;
     }
@@ -1980,14 +2027,14 @@ static int qemudSaveConfig(virConnectPtr conn,
     towrite = strlen(xml);
     if (safewrite(fd, xml, towrite) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "cannot write config file %s: %s",
+                         _("cannot write config file %s: %s"),
                          vm->configFile, strerror(errno));
         goto cleanup;
     }
 
     if (close(fd) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "cannot save config file %s: %s",
+                         _("cannot save config file %s: %s"),
                          vm->configFile, strerror(errno));
         goto cleanup;
     }
@@ -2021,7 +2068,8 @@ qemudParseVMDeviceDef(virConnectPtr conn,
 
     node = xmlDocGetRootElement(xml);
     if (node == NULL) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_XML_ERROR, "missing root element");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_XML_ERROR,
+                         "%s", _("missing root element"));
         goto error;
     }
     if (xmlStrEqual(node->name, BAD_CAST "disk")) {
@@ -2034,7 +2082,8 @@ qemudParseVMDeviceDef(virConnectPtr conn,
         dev->type = QEMUD_DEVICE_DISK;
         qemudParseInputXML(conn, &(dev->data.input), node);
     } else {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_XML_ERROR, "unknown device type");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_XML_ERROR,
+                         "%s", _("unknown device type"));
         goto error;
     }
 
@@ -2093,7 +2142,8 @@ qemudAssignVMDef(virConnectPtr conn,
     }
 
     if (!(vm = calloc(1, sizeof(*vm)))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "vm");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                         "%s", _("failed to allocate space for vm string"));
         return NULL;
     }
 
@@ -2147,7 +2197,7 @@ qemudSaveVMDef(virConnectPtr conn,
 
         if ((err = virFileMakePath(driver->configDir))) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "cannot create config directory %s: %s",
+                             _("cannot create config directory %s: %s"),
                              driver->configDir, strerror(err));
             return -1;
         }
@@ -2155,14 +2205,14 @@ qemudSaveVMDef(virConnectPtr conn,
         if (virFileBuildPath(driver->configDir, def->name, ".xml",
                              vm->configFile, PATH_MAX) < 0) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "cannot construct config file path");
+                             "%s", _("cannot construct config file path"));
             return -1;
         }
 
         if (virFileBuildPath(driver->autostartDir, def->name, ".xml",
                              vm->autostartLink, PATH_MAX) < 0) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "cannot construct autostart link path");
+                             "%s", _("cannot construct autostart link path"));
             vm->configFile[0] = '\0';
             return -1;
         }
@@ -2186,7 +2236,7 @@ static int qemudSaveNetworkConfig(virConnectPtr conn,
 
     if ((err = virFileMakePath(driver->networkConfigDir))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "cannot create config directory %s: %s",
+                         _("cannot create config directory %s: %s"),
                          driver->networkConfigDir, strerror(err));
         goto cleanup;
     }
@@ -2195,7 +2245,7 @@ static int qemudSaveNetworkConfig(virConnectPtr conn,
                    O_WRONLY | O_CREAT | O_TRUNC,
                    S_IRUSR | S_IWUSR )) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "cannot create config file %s: %s",
+                         _("cannot create config file %s: %s"),
                          network->configFile, strerror(errno));
         goto cleanup;
     }
@@ -2203,14 +2253,14 @@ static int qemudSaveNetworkConfig(virConnectPtr conn,
     towrite = strlen(xml);
     if (safewrite(fd, xml, towrite) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "cannot write config file %s: %s",
+                         _("cannot write config file %s: %s"),
                          network->configFile, strerror(errno));
         goto cleanup;
     }
 
     if (close(fd) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         "cannot save config file %s: %s",
+                         _("cannot save config file %s: %s"),
                          network->configFile, strerror(errno));
         goto cleanup;
     }
@@ -2292,7 +2342,8 @@ static int qemudParseDhcpRangesXML(virConnectPtr conn,
         }
 
         if (!(range = calloc(1, sizeof(*range)))) {
-            qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "range");
+            qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                         "%s", _("failed to allocate space for range string"));
             return 0;
         }
 
@@ -2384,20 +2435,23 @@ static struct qemud_network_def *qemudParseNetworkXML(virConnectPtr conn,
     struct qemud_network_def *def;
 
     if (!(def = calloc(1, sizeof(*def)))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "network_def");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                   "%s", _("failed to allocate space for network_def string"));
         return NULL;
     }
 
     /* Prepare parser / xpath context */
     root = xmlDocGetRootElement(xml);
     if ((root == NULL) || (!xmlStrEqual(root->name, BAD_CAST "network"))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "incorrect root element");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("incorrect root element"));
         goto error;
     }
 
     ctxt = xmlXPathNewContext(xml);
     if (ctxt == NULL) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "xmlXPathContext");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+               "%s", _("failed to allocate space for xmlXPathContext string"));
         goto error;
     }
 
@@ -2410,7 +2464,8 @@ static struct qemud_network_def *qemudParseNetworkXML(virConnectPtr conn,
         goto error;
     }
     if (strlen((const char *)obj->stringval) >= (QEMUD_MAX_NAME_LEN-1)) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "network name length too long");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("network name length too long"));
         goto error;
     }
     strcpy(def->name, (const char *)obj->stringval);
@@ -2424,11 +2479,12 @@ static struct qemud_network_def *qemudParseNetworkXML(virConnectPtr conn,
         int err;
         if ((err = virUUIDGenerate(def->uuid))) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "Failed to generate UUID: %s", strerror(err));
+                             _("Failed to generate UUID: %s"), strerror(err));
             goto error;
         }
     } else if (virUUIDParse((const char *)obj->stringval, def->uuid) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "%s", "malformed uuid element");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("malformed uuid element"));
         goto error;
     }
     xmlXPathFreeObject(obj);
@@ -2460,7 +2516,7 @@ static struct qemud_network_def *qemudParseNetworkXML(virConnectPtr conn,
         if (!def->ipAddress[0] ||
             !def->netmask[0]) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "Forwarding requested, but no IPv4 address/netmask provided");
+                             "%s", _("Forwarding requested, but no IPv4 address/netmask provided"));
             goto error;
         }
 
@@ -2471,7 +2527,7 @@ static struct qemud_network_def *qemudParseNetworkXML(virConnectPtr conn,
             int len;
             if ((len = xmlStrlen(tmp->stringval)) >= (BR_IFNAME_MAXLEN-1)) {
                 qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                                 "forward device name '%s' is too long",
+                                 _("forward device name '%s' is too long"),
                                  (char*)tmp->stringval);
                 goto error;
             }
@@ -2542,7 +2598,8 @@ qemudAssignNetworkDef(virConnectPtr conn,
     }
 
     if (!(network = calloc(1, sizeof(*network)))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "network");
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                         "%s", _("failed to allocate space for network string"));
         return NULL;
     }
 
@@ -2590,7 +2647,7 @@ qemudSaveNetworkDef(virConnectPtr conn,
 
         if ((err = virFileMakePath(driver->networkConfigDir))) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "cannot create config directory %s: %s",
+                             _("cannot create config directory %s: %s"),
                              driver->networkConfigDir, strerror(err));
             return -1;
         }
@@ -2598,14 +2655,14 @@ qemudSaveNetworkDef(virConnectPtr conn,
         if (virFileBuildPath(driver->networkConfigDir, def->name, ".xml",
                              network->configFile, PATH_MAX) < 0) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "cannot construct config file path");
+                             "%s", _("cannot construct config file path"));
             return -1;
         }
 
         if (virFileBuildPath(driver->networkAutostartDir, def->name, ".xml",
                              network->autostartLink, PATH_MAX) < 0) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             "cannot construct autostart link path");
+                             "%s", _("cannot construct autostart link path"));
             network->configFile[0] = '\0';
             return -1;
         }
@@ -2801,7 +2858,8 @@ char *qemudGenerateXML(virConnectPtr conn,
         break;
     }
     if (!type) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "unexpected domain type %d", def->virtType);
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("unexpected domain type %d"), def->virtType);
         goto cleanup;
     }
 
@@ -3069,7 +3127,8 @@ char *qemudGenerateXML(virConnectPtr conn,
     return virBufferContentAndFree (buf);
 
  no_memory:
-    qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "xml");
+    qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                     "%s", _("failed to generate XML: out of memory"));
  cleanup:
     if (buf) virBufferFree (buf);
     return NULL;
@@ -3160,7 +3219,8 @@ char *qemudGenerateNetworkXML(virConnectPtr conn,
     return virBufferContentAndFree (buf);
 
  no_memory:
-    qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY, "xml");
+    qemudReportError(conn, NULL, NULL, VIR_ERR_NO_MEMORY,
+                     "%s", _("failed to generate XML: out of memory"));
     if (buf) virBufferFree (buf);
     return NULL;
 }
@@ -3171,12 +3231,14 @@ int qemudDeleteConfig(virConnectPtr conn,
                       const char *configFile,
                       const char *name) {
     if (!configFile[0]) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "no config file for %s", name);
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("no config file for %s"), name);
         return -1;
     }
 
     if (unlink(configFile) < 0) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot remove config for %s", name);
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("cannot remove config for %s"), name);
         return -1;
     }
 

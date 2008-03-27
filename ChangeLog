@@ -1,5 +1,20 @@
 Thu Mar 27 14:36:56 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	qemudReportError: mark for translation string args to this function
+	* Makefile.maint (msg_gen_function): Add qemudReportError.
+	* src/qemu_conf.c (qemudLoadDriverConfig)
+	(qemudExtractVersion, qemudParseDiskXML, qemudParseInterfaceXML)
+	(qemudParseInputXML, qemudParseXML, qemudNetworkIfaceConnect)
+	(qemudBuildCommandLine, qemudSaveConfig, qemudParseVMDeviceDef)
+	(qemudAssignVMDef, qemudSaveVMDef, qemudSaveNetworkConfig)
+	(qemudParseDhcpRangesXML, qemudParseNetworkXML)
+	(qemudAssignNetworkDef, qemudSaveNetworkDef, qemudGenerateXML)
+	(qemudGenerateNetworkXML, qemudDeleteConfig): Mark strings.
+	* src/qemu_driver.c (qemudBuildDnsmasqArgv, qemudAddIptablesRules)
+	(qemudGetCapabilities, qemudDomainGetOSType)
+	(qemudListDefinedDomains, qemudListNetworks)
+	(qemudListDefinedNetworks, qemudNetworkGetBridgeName): Mark strings.
+
 	ReportError: mark for translation string args to this function
 	* Makefile.maint (msg_gen_function): Add ReportError.
 	* src/util.c (_virExec): Mark strings.
