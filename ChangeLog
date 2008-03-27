@@ -1,5 +1,12 @@
 Thu Mar 27 14:36:56 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	openvzLog: mark its string arguments for translation
+	* Makefile.maint (msg_gen_function): Add openvzLog.
+	* src/openvz_conf.c (openvzAssignVMDef, openvzParseXML): Mark strings.
+	* src/openvz_driver.c (openvzDomainShutdown, openvzDomainReboot):
+	(openvzDomainDefineXML, openvzDomainCreateLinux):
+	(openvzDomainCreate, openvzDomainUndefine): Likewise.
+
 	error: mark most string arguments for translation
 	Also mark some arguments to __virRaiseError.
 	* Makefile.maint (msg_gen_function): Add error.

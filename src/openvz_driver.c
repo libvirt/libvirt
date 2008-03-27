@@ -253,7 +253,7 @@ static int openvzDomainShutdown(virDomainPtr dom) {
 
     if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1)
     {
-        openvzLog(OPENVZ_ERR, "Error in parsing Options to OPENVZ");
+        openvzLog(OPENVZ_ERR, "%s", _("Error in parsing Options to OPENVZ"));
         goto bail_out;
     }
 
@@ -298,7 +298,7 @@ static int openvzDomainReboot(virDomainPtr dom,
 
     if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1)
     {
-        openvzLog(OPENVZ_ERR, "Error in parsing Options to OPENVZ");
+        openvzLog(OPENVZ_ERR, "%s", _("Error in parsing Options to OPENVZ"));
         goto bail_out1;
     }
     ret = virExec(dom->conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
@@ -328,13 +328,13 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
 
     vm = openvzFindVMByID(driver, strtoI(vmdef->name));
     if (vm) {
-        openvzLog(OPENVZ_ERR, "Already an OPENVZ VM active with the id '%s'",
-                vmdef->name);
+        openvzLog(OPENVZ_ERR, _("Already an OPENVZ VM active with the id '%s'"),
+                  vmdef->name);
         goto bail_out2;
     }
     if (!(vm = openvzAssignVMDef(conn, driver, vmdef))) {
         openvzFreeVMDef(vmdef);
-        openvzLog(OPENVZ_ERR, "Error creating OPENVZ VM");
+        openvzLog(OPENVZ_ERR, "%s", _("Error creating OPENVZ VM"));
     }
 
     snprintf(cmdbuf, CMDBUF_LEN - 1, VZCTL " create %s", vmdef->name);
@@ -357,7 +357,7 @@ openvzDomainDefineXML(virConnectPtr conn, const char *xml)
 
     if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1)
     {
-        openvzLog(OPENVZ_ERR, "Error in parsing Options to OPENVZ");
+        openvzLog(OPENVZ_ERR, "%s", _("Error in parsing Options to OPENVZ"));
         goto bail_out2;
     }
     ret = virExec(conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
@@ -395,12 +395,13 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
     vm = openvzFindVMByID(driver, strtoI(vmdef->name));
     if (vm) {
         openvzFreeVMDef(vmdef);
-        openvzLog(OPENVZ_ERR, "Already an OPENVZ VM defined with the id '%d'",
+        openvzLog(OPENVZ_ERR,
+                  _("Already an OPENVZ VM defined with the id '%d'"),
                 strtoI(vmdef->name));
         return NULL;
     }
     if (!(vm = openvzAssignVMDef(conn, driver, vmdef))) {
-        openvzLog(OPENVZ_ERR, "Error creating OPENVZ VM");
+        openvzLog(OPENVZ_ERR, "%s", _("Error creating OPENVZ VM"));
         return NULL;
     }
 
@@ -424,7 +425,7 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
 
     if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1)
     {
-        openvzLog(OPENVZ_ERR, "Error in parsing Options to OPENVZ");
+        openvzLog(OPENVZ_ERR, "%s", _("Error in parsing Options to OPENVZ"));
         goto bail_out3;
     }
     ret = virExec(conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
@@ -440,7 +441,7 @@ openvzDomainCreateLinux(virConnectPtr conn, const char *xml,
 
     if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1)
     {
-        openvzLog(OPENVZ_ERR, "Error in parsing Options to OPENVZ");
+        openvzLog(OPENVZ_ERR, "%s", _("Error in parsing Options to OPENVZ"));
         goto bail_out3;
     }
     ret = virExec(conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
@@ -494,7 +495,7 @@ openvzDomainCreate(virDomainPtr dom)
 
     if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1)
     {
-        openvzLog(OPENVZ_ERR, "Error in parsing Options to OPENVZ");
+        openvzLog(OPENVZ_ERR, "%s", _("Error in parsing Options to OPENVZ"));
         goto bail_out4;
     }
     ret = virExec(dom->conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);
@@ -537,7 +538,7 @@ openvzDomainUndefine(virDomainPtr dom)
 
     if((ret = convCmdbufExec(cmdbuf, cmdExec)) == -1)
     {
-        openvzLog(OPENVZ_ERR, "Error in parsing Options to OPENVZ");
+        openvzLog(OPENVZ_ERR, "%s", _("Error in parsing Options to OPENVZ"));
         goto bail_out5;
     }
     ret = virExec(conn, (char **)cmdExec, &pid, -1, &outfd, &errfd);

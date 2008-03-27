@@ -237,8 +237,9 @@ openvzAssignVMDef(virConnectPtr conn,
         }
         else
         {
-            openvzLog(OPENVZ_ERR, "Error already an active OPENVZ VM having id '%s'",
-                    def->name);
+            openvzLog(OPENVZ_ERR,
+		      _("Error already an active OPENVZ VM having id '%s'"),
+		      def->name);
             openvzFreeVMDef(def);
             return NULL; /* can't redefine an active domain */
         }
@@ -383,8 +384,9 @@ static struct openvz_vm_def
     obj = xmlXPathEval(BAD_CAST"string(/domain/container/network/ipaddress[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) || (obj->stringval == NULL)
             || (obj->stringval[0] == 0)) {
-        openvzLog(OPENVZ_WARN, "No IP address in the given xml config file '%s'",
-                xml->name);
+        openvzLog(OPENVZ_WARN,
+		  _("No IP address in the given xml config file '%s'"),
+		  xml->name);
     }
     if (xmlStrlen(obj->stringval) >= (OPENVZ_IP_MAX)) {
         char errorMessage[OPENVZ_MAX_ERROR_LEN];
@@ -395,7 +397,8 @@ static struct openvz_vm_def
         goto bail_out;
     }
     if (!(ovzIp = calloc(1, sizeof(*ovzIp)))) {
-        openvzLog(OPENVZ_ERR, "Failed to Create Memory for 'ovz_ip' structure");
+        openvzLog(OPENVZ_ERR,
+		  _("Failed to Create Memory for 'ovz_ip' structure"));
         goto bail_out;
     }
     strncpy(ovzIp->ip, (const char *) obj->stringval, OPENVZ_IP_MAX);
@@ -406,8 +409,9 @@ static struct openvz_vm_def
     obj = xmlXPathEval(BAD_CAST "string(/domain/container/network/netmask[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING)
         || (obj->stringval == NULL) || (obj->stringval[0] == 0))
-        openvzLog(OPENVZ_WARN, "No Netmask address in the given xml config file '%s'",
-                xml->name);
+        openvzLog(OPENVZ_WARN,
+		  _("No Netmask address in the given xml config file '%s'"),
+		  xml->name);
 
     if (strlen((const char *) obj->stringval) >= (OPENVZ_IP_MAX)) {
         char errorMessage[OPENVZ_MAX_ERROR_LEN];
@@ -424,7 +428,9 @@ static struct openvz_vm_def
     obj = xmlXPathEval(BAD_CAST "string(/domain/container/network/hostname[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) || (obj->stringval == NULL)
             || (obj->stringval[0] == 0))
-        openvzLog(OPENVZ_WARN, "No hostname in the given xml config file '%s'", xml->name);
+        openvzLog(OPENVZ_WARN,
+		  _("No hostname in the given xml config file '%s'"),
+		  xml->name);
 
     if (strlen((const char *) obj->stringval) >= (OPENVZ_HOSTNAME_MAX - 1)) {
         char errorMessage[OPENVZ_MAX_ERROR_LEN];
@@ -441,8 +447,9 @@ static struct openvz_vm_def
     obj = xmlXPathEval(BAD_CAST"string(/domain/container/network/gateway[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) || (obj->stringval == NULL)
             || (obj->stringval[0] == 0))
-        openvzLog(OPENVZ_WARN, "No Gateway address in the given xml config file '%s'",
-                xml->name);
+        openvzLog(OPENVZ_WARN,
+		  _("No Gateway address in the given xml config file '%s'"),
+		  xml->name);
 
     if (strlen((const char *) obj->stringval) >= (OPENVZ_IP_MAX)) {
         char errorMessage[OPENVZ_MAX_ERROR_LEN];
@@ -459,8 +466,9 @@ static struct openvz_vm_def
     obj = xmlXPathEval(BAD_CAST "string(/domain/container/network/nameserver[1])", ctxt);
     if ((obj == NULL) || (obj->type != XPATH_STRING) || (obj->stringval == NULL)
             || (obj->stringval[0] == 0))
-        openvzLog(OPENVZ_WARN, "No Nameserver address inthe given xml config file '%s'",
-                xml->name);
+        openvzLog(OPENVZ_WARN,
+		  _("No Nameserver address inthe given xml config file '%s'"),
+		  xml->name);
 
     if (strlen((const char *) obj->stringval) >= (OPENVZ_IP_MAX)) {
         char errorMessage[OPENVZ_MAX_ERROR_LEN];
@@ -471,7 +479,8 @@ static struct openvz_vm_def
         goto bail_out;
     }
     if (!(ovzNs = calloc(1, sizeof(*ovzNs)))) {
-        openvzLog(OPENVZ_ERR, "Failed to Create Memory for 'ovz_ns' structure");
+        openvzLog(OPENVZ_ERR,
+                  _("Failed to Create Memory for 'ovz_ns' structure"));
         goto bail_out;
     }
     strncpy(ovzNs->ip, (const char *) obj->stringval, OPENVZ_IP_MAX);
