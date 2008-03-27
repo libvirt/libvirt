@@ -1904,26 +1904,30 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
                      XML_PARSE_NOENT | XML_PARSE_NONET |
                      XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
     if (doc == NULL) {
-        xenXMError(conn, VIR_ERR_XML_ERROR, "cannot read XML domain definition");
+        xenXMError(conn, VIR_ERR_XML_ERROR,
+                   _("cannot read XML domain definition"));
         return (NULL);
     }
     node = xmlDocGetRootElement(doc);
     if ((node == NULL) || (!xmlStrEqual(node->name, BAD_CAST "domain"))) {
-        xenXMError(conn, VIR_ERR_XML_ERROR, "missing top level domain element");
+        xenXMError(conn, VIR_ERR_XML_ERROR,
+                   _("missing top level domain element"));
         goto error;
     }
 
     prop = xmlGetProp(node, BAD_CAST "type");
     if (prop != NULL) {
         if (!xmlStrEqual(prop, BAD_CAST "xen")) {
-            xenXMError(conn, VIR_ERR_XML_ERROR, "domain type is invalid");
+            xenXMError(conn, VIR_ERR_XML_ERROR,
+                       _("domain type is invalid"));
             goto error;
         }
         xmlFree(prop);
         prop = NULL;
     }
     if (!(ctxt = xmlXPathNewContext(doc))) {
-        xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "cannot create XPath context");
+        xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                   _("cannot create XPath context"));
         goto error;
     }
     if (!(conf = virConfNew()))
@@ -2117,7 +2121,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
         if ((obj != NULL) && (obj->type == XPATH_NODESET) &&
             (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
             if (!(vfb = malloc(sizeof(*vfb)))) {
-                xenXMError(conn, VIR_ERR_NO_MEMORY, "config");
+                xenXMError(conn, VIR_ERR_NO_MEMORY, _("config"));
                 goto error;
             }
             vfb->type = VIR_CONF_LIST;
@@ -2183,7 +2187,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
                     virConfValuePtr disp;
                     if (!(disp = malloc(sizeof(*disp)))) {
                         free(val);
-                        xenXMError(conn, VIR_ERR_NO_MEMORY, "config");
+                        xenXMError(conn, VIR_ERR_NO_MEMORY, _("config"));
                         goto error;
                     }
                     disp->type = VIR_CONF_STRING;
@@ -2204,7 +2208,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
         virConfValuePtr disks;
         if (!(disks = malloc(sizeof(*disks)))) {
-            xenXMError(conn, VIR_ERR_NO_MEMORY, "config");
+            xenXMError(conn, VIR_ERR_NO_MEMORY, _("config"));
             goto error;
         }
         disks->type = VIR_CONF_LIST;
@@ -2217,7 +2221,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
             if (disk) {
                 if (!(thisDisk = malloc(sizeof(*thisDisk)))) {
                     free(disk);
-                    xenXMError(conn, VIR_ERR_NO_MEMORY, "config");
+                    xenXMError(conn, VIR_ERR_NO_MEMORY, _("config"));
                     goto error;
                 }
                 thisDisk->type = VIR_CONF_STRING;
@@ -2236,7 +2240,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
         (obj->nodesetval != NULL) && (obj->nodesetval->nodeNr >= 0)) {
         virConfValuePtr vifs;
         if (!(vifs = malloc(sizeof(*vifs)))) {
-            xenXMError(conn, VIR_ERR_NO_MEMORY, "config");
+            xenXMError(conn, VIR_ERR_NO_MEMORY, _("config"));
             goto error;
         }
         vifs->type = VIR_CONF_LIST;
@@ -2248,7 +2252,7 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
                 goto error;
             if (!(thisVif = malloc(sizeof(*thisVif)))) {
                 free(vif);
-                xenXMError(conn, VIR_ERR_NO_MEMORY, "config");
+                xenXMError(conn, VIR_ERR_NO_MEMORY, _("config"));
                 goto error;
             }
             thisVif->type = VIR_CONF_STRING;
@@ -2324,7 +2328,8 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
     if (!(value = virConfGetValue(conf, "name")) ||
         value->type != VIR_CONF_STRING ||
         value->str == NULL) {
-        xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "name config parameter is missing");
+        xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                   _("name config parameter is missing"));
         goto error;
     }
 
@@ -2332,17 +2337,20 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
         /* domain exists, we will overwrite it */
 
         if (!(oldfilename = (char *)virHashLookup(nameConfigMap, value->str))) {
-            xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "can't retrieve config filename for domain to overwrite");
+            xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                       _("can't retrieve config filename for domain to overwrite"));
             goto error;
         }
 
         if (!(entry = virHashLookup(configCache, oldfilename))) {
-            xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "can't retrieve config entry for domain to overwrite");
+            xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                       _("can't retrieve config entry for domain to overwrite"));
             goto error;
         }
 
         if (xenXMConfigGetUUID(entry->conf, "uuid", uuid) < 0) {
-            xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "uuid config parameter is missing");
+            xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                       _("uuid config parameter is missing"));
             goto error;
         }
 
@@ -2351,13 +2359,15 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
 
         /* Remove the name -> filename mapping */
         if (virHashRemoveEntry(nameConfigMap, value->str, NULL) < 0) {
-            xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "failed to remove old domain from config map");
+            xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                       _("failed to remove old domain from config map"));
             goto error;
         }
 
         /* Remove the config record itself */
         if (virHashRemoveEntry(configCache, oldfilename, xenXMConfigFree) < 0) {
-            xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "failed to remove old domain from config map");
+            xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                       _("failed to remove old domain from config map"));
             goto error;
         }
 
@@ -2365,7 +2375,8 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
     }
 
     if ((strlen(configDir) + 1 + strlen(value->str) + 1) > PATH_MAX) {
-        xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "config file name is too long");
+        xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                   _("config file name is too long"));
         goto error;
     }
 
@@ -2374,17 +2385,19 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
     strcat(filename, value->str);
 
     if (virConfWriteFile(filename, conf) < 0) {
-        xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "unable to write config file");
+        xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                   _("unable to write config file"));
         goto error;
     }
 
     if (!(entry = calloc(1, sizeof(*entry)))) {
-        xenXMError(conn, VIR_ERR_NO_MEMORY, "config");
+        xenXMError(conn, VIR_ERR_NO_MEMORY, _("config"));
         goto error;
     }
 
     if ((entry->refreshedAt = time(NULL)) == ((time_t)-1)) {
-        xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "unable to get current time");
+        xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                   _("unable to get current time"));
         goto error;
     }
 
@@ -2392,18 +2405,21 @@ virDomainPtr xenXMDomainDefineXML(virConnectPtr conn, const char *xml) {
     entry->conf = conf;
 
     if (xenXMConfigGetUUID(conf, "uuid", uuid) < 0) {
-        xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "uuid config parameter is missing");
+        xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                   _("uuid config parameter is missing"));
         goto error;
     }
 
     if (virHashAddEntry(configCache, filename, entry) < 0) {
-        xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "unable to store config file handle");
+        xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                   _("unable to store config file handle"));
         goto error;
     }
 
     if (virHashAddEntry(nameConfigMap, value->str, entry->filename) < 0) {
         virHashRemoveEntry(configCache, filename, NULL);
-        xenXMError(conn, VIR_ERR_INTERNAL_ERROR, "unable to store config file handle");
+        xenXMError(conn, VIR_ERR_INTERNAL_ERROR,
+                   _("unable to store config file handle"));
         goto error;
     }
 
@@ -2570,11 +2586,13 @@ xenXMDomainAttachDevice(virDomainPtr domain, const char *xml) {
                      XML_PARSE_NOENT | XML_PARSE_NONET |
                      XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
     if (!doc) {
-        xenXMError(domain->conn, VIR_ERR_XML_ERROR, "cannot read XML domain definition");
+        xenXMError(domain->conn, VIR_ERR_XML_ERROR,
+                   _("cannot read XML domain definition"));
         goto cleanup;
     }
     if (!(ctxt = xmlXPathNewContext(doc))) {
-        xenXMError(domain->conn, VIR_ERR_INTERNAL_ERROR, "cannot create XPath context");
+        xenXMError(domain->conn, VIR_ERR_INTERNAL_ERROR,
+                   _("cannot create XPath context"));
         goto cleanup;
     }
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/type)", ctxt);
@@ -2591,12 +2609,12 @@ xenXMDomainAttachDevice(virDomainPtr domain, const char *xml) {
                      XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
     if (!doc) {
         xenXMError(domain->conn, VIR_ERR_XML_ERROR,
-	           "cannot read XML domain definition");
+                   _("cannot read XML domain definition"));
         goto cleanup;
     }
     if (!(ctxt = xmlXPathNewContext(doc))) {
         xenXMError(domain->conn, VIR_ERR_INTERNAL_ERROR,
-	           "cannot create XPath context");
+                   _("cannot create XPath context"));
         goto cleanup;
     }
 
@@ -2607,7 +2625,8 @@ xenXMDomainAttachDevice(virDomainPtr domain, const char *xml) {
         if (xenXMAttachInterface(domain, ctxt, hvm, node, entry))
             goto cleanup;
     } else {
-        xenXMError(domain->conn, VIR_ERR_XML_ERROR, "unknown device");
+        xenXMError(domain->conn, VIR_ERR_XML_ERROR,
+                   _("unknown device"));
         goto cleanup;
     }
 
@@ -2989,11 +3008,13 @@ xenXMDomainDetachDevice(virDomainPtr domain, const char *xml) {
                      XML_PARSE_NOENT | XML_PARSE_NONET |
                      XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
     if (!doc) {
-        xenXMError(domain->conn, VIR_ERR_XML_ERROR, "cannot read XML domain definition");
+        xenXMError(domain->conn, VIR_ERR_XML_ERROR,
+                   _("cannot read XML domain definition"));
         goto cleanup;
     }
     if (!(ctxt = xmlXPathNewContext(doc))) {
-        xenXMError(domain->conn, VIR_ERR_INTERNAL_ERROR, "cannot create XPath context");
+        xenXMError(domain->conn, VIR_ERR_INTERNAL_ERROR,
+                   _("cannot create XPath context"));
         goto cleanup;
     }
 

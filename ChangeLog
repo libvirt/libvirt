@@ -1,5 +1,10 @@
 Thu Mar 27 14:36:56 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	xenXMError: mark for translation string args to this function
+	* Makefile.maint (msg_gen_function): Add xenXMError.
+	* src/xm_internal.c (xenXMParseXMLToConfig, xenXMDomainDefineXML):
+	(xenXMDomainAttachDevice, xenXMDomainDetachDevice): Mark strings.
+
 	Mark many more strings for translation.
 	* Makefile.maint (err_func_re): Add to the list and make it readable.
 	* po/POTFILES.in: Add src/util.c and src/xm_internal.c, and sort.

@@ -312,8 +312,8 @@ msg_gen_function += virLog
 msg_gen_function += qemudLog
 msg_gen_function += remoteDispatchError
 msg_gen_function += virStorageLog
+msg_gen_function += xenXMError
 
-# msg_gen_function += xenXMError
 # msg_gen_function += virXenError
 # msg_gen_function += ReportError
 # msg_gen_function += testError
