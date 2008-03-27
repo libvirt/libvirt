@@ -41,8 +41,27 @@
 #define DEBUG(fmt,...) VIR_DEBUG(__FILE__, fmt, __VA_ARGS__)
 #define DEBUG0(msg) VIR_DEBUG(__FILE__, "%s", msg)
 
-static int lxcStartup(virConnectPtr conn);
-static int lxcShutdown(virConnectPtr conn);
+/*
+ * GLibc headers are behind the kernel, so we define these
+ * constants if they're not present already.
+ */
+
+#ifndef CLONE_NEWPID
+#define CLONE_NEWPID  0x20000000
+#endif
+#ifndef CLONE_NEWUTS
+#define CLONE_NEWUTS  0x04000000
+#endif
+#ifndef CLONE_NEWUSER
+#define CLONE_NEWUSER 0x10000000
+#endif
+#ifndef CLONE_NEWIPC
+#define CLONE_NEWIPC  0x08000000
+#endif
+
+static int lxcStartup(void);
+static int lxcShutdown(void);
+static lxc_driver_t *lxc_driver;
 
 /* Functions */
 static int lxcDummyChild( void *argv ATTRIBUTE_UNUSED )
@@ -105,6 +124,9 @@ static virDrvOpenStatus lxcOpen(virConnectPtr conn,
         goto declineConnection;
     }
 
+    if (lxc_driver == NULL)
+        goto declineConnection;
+
     /* Verify uri was specified */
     if ((NULL == uri) || (NULL == uri->scheme)) {
         goto declineConnection;
@@ -115,15 +137,7 @@ static virDrvOpenStatus lxcOpen(virConnectPtr conn,
         goto declineConnection;
     }
 
-    /* Check that this is a container enabled kernel */
-    if(0 != lxcCheckContainerSupport()) {
-        goto declineConnection;
-    }
-
-    /* initialize driver data */
-    if (0 > lxcStartup(conn)) {
-        goto declineConnection;
-    }
+    conn->privateData = lxc_driver;
 
     return VIR_DRV_OPEN_SUCCESS;
 
@@ -133,7 +147,8 @@ declineConnection:
 
 static int lxcClose(virConnectPtr conn)
 {
-    return lxcShutdown(conn);
+    conn->privateData = NULL;
+    return 0;
 }
 
 static virDomainPtr lxcDomainLookupByID(virConnectPtr conn,
@@ -360,26 +375,29 @@ static char *lxcDomainDumpXML(virDomainPtr dom,
     return lxcGenerateXML(dom->conn, driver, vm, vm->def);
 }
 
-static int lxcStartup(virConnectPtr conn)
-{
-    lxc_driver_t *driver;
 
-    driver = calloc(1, sizeof(lxc_driver_t));
-    if (NULL == driver) {
+static int lxcStartup(void)
+{
+    lxc_driver = calloc(1, sizeof(lxc_driver_t));
+    if (NULL == lxc_driver) {
         return -1;
     }
 
-    conn->privateData = driver;
+    /* Check that this is a container enabled kernel */
+    if(0 != lxcCheckContainerSupport()) {
+        return -1;
+    }
+
 
     /* Call function to load lxc driver configuration information */
-    if (lxcLoadDriverConfig(conn) < 0) {
-        lxcShutdown(conn);
+    if (lxcLoadDriverConfig(lxc_driver) < 0) {
+        lxcShutdown();
         return -1;
     }
 
     /* Call function to load the container configuration files */
-    if (lxcLoadContainerInfo(conn) < 0) {
-        lxcShutdown(conn);
+    if (lxcLoadContainerInfo(lxc_driver) < 0) {
+        lxcShutdown();
         return -1;
     }
 
@@ -392,18 +410,36 @@ static void lxcFreeDriver(lxc_driver_t *driver)
     free(driver);
 }
 
-static int lxcShutdown(virConnectPtr conn)
+static int lxcShutdown(void)
 {
-    lxc_driver_t *driver = (lxc_driver_t *)conn->privateData;
-    lxc_vm_t *vms = driver->vms;
+    lxc_vm_t *vms = lxc_driver->vms;
 
     lxcFreeVMs(vms);
-    driver->vms = NULL;
-    lxcFreeDriver(driver);
-    conn->privateData = NULL;
+    lxc_driver->vms = NULL;
+    lxcFreeDriver(lxc_driver);
 
     return 0;
 }
+
+/**
+ * lxcActive:
+ *
+ * Checks if the LXC daemon is active, i.e. has an active domain
+ *
+ * Returns 1 if active, 0 otherwise
+ */
+static int
+lxcActive(void) {
+    /* If we've any active networks or guests, then we
+     * mark this driver as active
+     */
+    if (lxc_driver->nactivevms)
+        return 1;
+
+    /* Otherwise we're happy to deal with a shutdown */
+    return 0;
+}
+
 
 /* Function Tables */
 static virDriver lxcDriver = {
@@ -466,9 +502,18 @@ static virDriver lxcDriver = {
     NULL, /* getFreeMemory */
 };
 
+
+static virStateDriver lxcStateDriver = {
+    lxcStartup,
+    lxcShutdown,
+    NULL, /* reload */
+    lxcActive,
+};
+
 int lxcRegister(void)
 {
     virRegisterDriver(&lxcDriver);
+    virRegisterStateDriver(&lxcStateDriver);
     return 0;
 }
 

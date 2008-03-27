@@ -843,6 +843,12 @@ remoteOpen (virConnectPtr conn,
         rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
     }
 #endif
+#if WITH_LXC
+    if (uri &&
+        uri->scheme && STREQ (uri->scheme, "lxc")) {
+        rflags |= VIR_DRV_OPEN_REMOTE_UNIX;
+    }
+#endif
 
     priv->magic = DEAD;
     priv->sock = -1;

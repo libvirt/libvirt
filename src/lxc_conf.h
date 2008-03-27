@@ -102,12 +102,12 @@ int lxcSaveVMDef(virConnectPtr conn,
                  lxc_driver_t *driver,
                  lxc_vm_t *vm,
                  lxc_vm_def_t *def);
-int lxcLoadDriverConfig(virConnectPtr conn);
+int lxcLoadDriverConfig(lxc_driver_t *driver);
 int lxcSaveConfig(virConnectPtr conn,
                   lxc_driver_t *driver,
                   lxc_vm_t *vm,
                   lxc_vm_def_t *def);
-int lxcLoadContainerInfo(virConnectPtr conn);
+int lxcLoadContainerInfo(lxc_driver_t *driver);
 int lxcLoadContainerConfigFile(lxc_driver_t *driver,
                                const char *file);
 lxc_vm_t * lxcAssignVMDef(virConnectPtr conn,

@@ -593,7 +593,6 @@ int lxcSaveVMDef(virConnectPtr conn,
                  lxc_vm_def_t *def)
 {
     int rc = -1;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     if (vm->configFile[0] == '\0') {
         if ((rc = virFileMakePath(driver->configDir))) {
@@ -603,16 +602,15 @@ int lxcSaveVMDef(virConnectPtr conn,
             goto save_complete;
         }
 
-        virUUIDFormat(def->uuid, uuidstr);
-        if (virFileBuildPath(driver->configDir, uuidstr, ".xml",
+        if (virFileBuildPath(driver->configDir, vm->def->name, ".xml",
                             vm->configFile, PATH_MAX) < 0) {
             lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
                      _("cannot construct config file path"));
             goto save_complete;
         }
 
-        strncpy(vm->configFileBase, uuidstr, PATH_MAX);
-        strncat(vm->configFileBase, ".xml", PATH_MAX - strlen(uuidstr));
+        strncpy(vm->configFileBase, vm->def->name, PATH_MAX-1);
+        strncat(vm->configFileBase, ".xml", PATH_MAX - strlen(vm->def->name)-1);
 
     }
 
@@ -631,7 +629,6 @@ static lxc_vm_t * lxcLoadConfig(lxc_driver_t *driver,
 {
     lxc_vm_def_t *containerDef;
     lxc_vm_t * vm;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
 
     containerDef = lxcParseVMDef(NULL, xmlData, file);
     if (NULL == containerDef) {
@@ -639,9 +636,8 @@ static lxc_vm_t * lxcLoadConfig(lxc_driver_t *driver,
         return NULL;
     }
 
-    virUUIDFormat(containerDef->uuid, uuidstr);
-    if (!virFileMatchesNameSuffix(file, uuidstr, ".xml")) {
-        DEBUG0("Container uuid does not match config file name");
+    if (!virFileMatchesNameSuffix(file, containerDef->name, ".xml")) {
+        DEBUG0("Container name does not match config file name");
         lxcFreeVMDef(containerDef);
         return NULL;
     }
@@ -662,14 +658,12 @@ static lxc_vm_t * lxcLoadConfig(lxc_driver_t *driver,
     return vm;
 }
 
-int lxcLoadDriverConfig(virConnectPtr conn)
+int lxcLoadDriverConfig(lxc_driver_t *driver)
 {
-    lxc_driver_t *driverPtr = (lxc_driver_t*)conn->privateData;
-
     /* Set the container configuration directory */
-    driverPtr->configDir = strdup(SYSCONF_DIR "/libvirt/lxc");
-    if (NULL == driverPtr->configDir) {
-        lxcError(conn, NULL, VIR_ERR_NO_MEMORY, "configDir");
+    driver->configDir = strdup(SYSCONF_DIR "/libvirt/lxc");
+    if (NULL == driver->configDir) {
+        lxcError(NULL, NULL, VIR_ERR_NO_MEMORY, "configDir");
         return -1;
     }
 
@@ -702,19 +696,18 @@ load_complete:
     return rc;
 }
 
-int lxcLoadContainerInfo(virConnectPtr conn)
+int lxcLoadContainerInfo(lxc_driver_t *driver)
 {
     int rc = -1;
-    lxc_driver_t *driverPtr = (lxc_driver_t*)conn->privateData;
     DIR *dir;
     struct dirent *dirEntry;
 
-    if (!(dir = opendir(driverPtr->configDir))) {
+    if (!(dir = opendir(driver->configDir))) {
         if (ENOENT == errno) {
             /* no config dir => no containers */
             rc = 0;
         } else {
-            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+            lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                      _("failed to open config directory: %s"), strerror(errno));
         }
 
@@ -730,7 +723,7 @@ int lxcLoadContainerInfo(virConnectPtr conn)
             continue;
         }
 
-        lxcLoadContainerConfigFile(driverPtr, dirEntry->d_name);
+        lxcLoadContainerConfigFile(driver, dirEntry->d_name);
     }
 
     closedir(dir);
@@ -758,12 +751,13 @@ char *lxcGenerateXML(virConnectPtr conn,
     }
 
     if (lxcIsActiveVM(vm)) {
-        if (virBufferVSprintf(buf, "<domain type='linuxcontainer' id='%d'>\n",
-                             vm->def->id) < 0) {
+        if (virBufferVSprintf(buf, "<domain type='%s' id='%d'>\n",
+			      LXC_DOMAIN_TYPE, vm->def->id) < 0) {
             goto no_memory;
         }
     } else {
-        if (virBufferAddLit(buf, "<domain type='linuxcontainer'>\n") < 0) {
+	if (virBufferVSprintf(buf, "<domain type='%s'>\n",
+			      LXC_DOMAIN_TYPE) < 0) {
             goto no_memory;
         }
     }
@@ -940,3 +934,12 @@ int lxcDeleteConfig(virConnectPtr conn,
 
 #endif /* WITH_LXC */
 
+
+/*
+ * Local variables:
+ *  indent-tabs-mode: nil
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ *  tab-width: 4
+ * End:
+ */

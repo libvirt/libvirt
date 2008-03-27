@@ -1,3 +1,10 @@
+Thu Mar 27 10:30:12 CET 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/lxc_conf.c src/lxc_conf.h src/lxc_driver.c src/remote_internal.c:
+	  applied patch from Dan Berrange to change the way the lxc driver
+	  works, migrating the support in the daemon, it also removes some
+	  compilation issues and teh way the configuration files are named.
+
 Thu Mar 27 09:09:34 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/storage_backend_iscsi.c: patch from Chris Lalancette to improve
