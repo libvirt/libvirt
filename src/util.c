@@ -106,21 +106,22 @@ _virExec(virConnectPtr conn,
     int pipeerr[2] = {-1,-1};
 
     if ((null = open(_PATH_DEVNULL, O_RDONLY)) < 0) {
-        ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot open %s : %s",
-                         _PATH_DEVNULL, strerror(errno));
+        ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                    _("cannot open %s: %s"),
+                    _PATH_DEVNULL, strerror(errno));
         goto cleanup;
     }
 
     if ((outfd != NULL && pipe(pipeout) < 0) ||
         (errfd != NULL && pipe(pipeerr) < 0)) {
-        ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot create pipe : %s",
-                         strerror(errno));
+        ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                    _("cannot create pipe: %s"), strerror(errno));
         goto cleanup;
     }
 
     if ((pid = fork()) < 0) {
-        ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR, "cannot fork child process : %s",
-                         strerror(errno));
+        ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                    _("cannot fork child process: %s"), strerror(errno));
         goto cleanup;
     }
 
@@ -131,11 +132,11 @@ _virExec(virConnectPtr conn,
             if(non_block)
                 if(virSetNonBlock(pipeout[0]) == -1)
                     ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                            "Failed to set non-blocking file descriptor flag");
+                        _("Failed to set non-blocking file descriptor flag"));
 
             if(virSetCloseExec(pipeout[0]) == -1)
                 ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                        "Failed to set close-on-exec file descriptor flag");
+                        _("Failed to set close-on-exec file descriptor flag"));
             *outfd = pipeout[0];
         }
         if (errfd) {
@@ -143,11 +144,11 @@ _virExec(virConnectPtr conn,
             if(non_block)
                 if(virSetNonBlock(pipeerr[0]) == -1)
                     ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                            "Failed to set non-blocking file descriptor flag");
+                          _("Failed to set non-blocking file descriptor flag"));
 
             if(virSetCloseExec(pipeerr[0]) == -1)
                 ReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                        "Failed to set close-on-exec file descriptor flag");
+                        _("Failed to set close-on-exec file descriptor flag"));
             *errfd = pipeerr[0];
         }
         *retpid = pid;

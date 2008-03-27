@@ -1,5 +1,9 @@
 Thu Mar 27 14:36:56 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	ReportError: mark for translation string args to this function
+	* Makefile.maint (msg_gen_function): Add ReportError.
+	* src/util.c (_virExec): Mark strings.
+
 	xenXMError: mark for translation string args to this function
 	* Makefile.maint (msg_gen_function): Add xenXMError.
 	* src/xm_internal.c (xenXMParseXMLToConfig, xenXMDomainDefineXML):
