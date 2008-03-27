@@ -323,6 +323,7 @@ msg_gen_function += openvzLog
 # msg_gen_function += error
 # msg_gen_function += virXenError
 # msg_gen_function += testError
+# msg_gen_function += lxcError
 
 func_or := $(shell printf '$(msg_gen_function)'|tr -s '[[:space:]]' '|')
 func_re := ($(func_or))

@@ -1,5 +1,9 @@
 Thu Mar 27 14:36:56 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	lxcError: mark a string and add to the list of nearly-checked functions
+	* Makefile.maint (msg_gen_function): Add, but commented-out.
+	* src/lxc_conf.c (lxcParseXML): Mark a diagnostic for translation.
+
 	testError: mark most string arguments for translation
 	* Makefile.maint (msg_gen_function): Add testError
 	* src/test.c (testDomainSave, testDomainRestore): Mark strings.

@@ -398,7 +398,7 @@ static lxc_vm_def_t * lxcParseXML(virConnectPtr conn, xmlDocPtr docPtr)
     if ((xmlProp = xmlGetProp(rootNodePtr, BAD_CAST "id"))) {
         if (0 > virStrToLong_i((char*)xmlProp, NULL, 10, &(containerDef->id))) {
             lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                     "invalid domain id");
+                     _("invalid domain id"));
             goto error;
         }
     } else {
