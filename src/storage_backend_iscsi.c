@@ -170,20 +170,91 @@ static int
 virStorageBackendISCSIMakeLUN(virConnectPtr conn,
                               virStoragePoolObjPtr pool,
                               char **const groups,
-                              void *data ATTRIBUTE_UNUSED)
+                              void *data)
 {
     virStorageVolDefPtr vol;
     int fd = -1;
+    unsigned int target, channel, id, lun;
     char lunid[100];
-    char *dev = groups[4];
     int opentries = 0;
     char *devpath = NULL;
+    char *session = data;
+    char sysfs_path[PATH_MAX];
+    char *dev = NULL;
+    DIR *sysdir;
+    struct dirent *block_dirent;
+    struct stat sbuf;
+    int len;
+
+    if ((virStrToLong_ui(groups[0], NULL, 10, &target) < 0) ||
+        (virStrToLong_ui(groups[1], NULL, 10, &channel) < 0) ||
+        (virStrToLong_ui(groups[2], NULL, 10, &id) < 0) ||
+        (virStrToLong_ui(groups[3], NULL, 10, &lun) < 0)) {
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR, "%s",
+                              _("Failed parsing iscsiadm commands"));
+        return -1;
+    }
+
+    if (lun == 0) {
+        /* the 0'th LUN isn't a real LUN, it's just a control LUN; skip it */
+        return 0;
+    }
+
+    snprintf(sysfs_path, PATH_MAX,
+             "/sys/class/iscsi_session/session%s/device/"
+             "target%d:%d:%d/%d:%d:%d:%d/block",
+             session, target, channel, id, target, channel, id, lun);
+
+    if (stat(sysfs_path, &sbuf) < 0) {
+        /* block path in subdir didn't exist; this is unexpected, so fail */
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Failed to find the sysfs path for %d:%d:%d:%d: %s"),
+                              target, channel, id, lun, strerror(errno));
+        return -1;
+    }
+
+    sysdir = opendir(sysfs_path);
+    if (sysdir == NULL) {
+        /* we failed for some reason; return an error */
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Failed to opendir sysfs path %s: %s"),
+                              sysfs_path, strerror(errno));
+        return -1;
+    }
+
+    while ((block_dirent = readdir(sysdir)) != NULL) {
+        len = strlen(block_dirent->d_name);
+        if ((len == 1 && block_dirent->d_name[0] == '.') ||
+            (len == 2 && block_dirent->d_name[0] == '.' && block_dirent->d_name[1] == '.')) {
+            /* the . and .. directories; just skip them */
+            continue;
+        }
+
+        /* OK, not . or ..; let's see if it is a SCSI device */
+        if (len > 2 &&
+            block_dirent->d_name[0] == 's' &&
+            block_dirent->d_name[1] == 'd') {
+            /* looks like a scsi device, smells like scsi device; it must be
+               a scsi device */
+            dev = strdup(block_dirent->d_name);
+            break;
+        }
+    }
+    closedir(sysdir);
+
+    if (dev == NULL) {
+        /* we didn't find the sd? device we were looking for; fail */
+        virStorageReportError(conn, VIR_ERR_INTERNAL_ERROR,
+                              _("Failed to find SCSI device for %d:%d:%d:%d: %s"),
+                              target, channel, id, lun, strerror(errno));
+        return -1;
+    }
 
     snprintf(lunid, sizeof(lunid)-1, "lun-%s", groups[3]);
 
     if ((vol = calloc(1, sizeof(virStorageVolDef))) == NULL) {
         virStorageReportError(conn, VIR_ERR_NO_MEMORY, "%s", _("volume"));
-        return -1;
+        goto cleanup;
     }
 
     if ((vol->name = strdup(lunid)) == NULL) {
@@ -197,6 +268,8 @@ virStorageBackendISCSIMakeLUN(virConnectPtr conn,
     }
     strcpy(devpath, "/dev/");
     strcat(devpath, dev);
+    free(dev);
+    dev = NULL;
     /* It can take a little while between logging into the ISCSI
      * server and udev creating the /dev nodes, so if we get ENOENT
      * we must retry a few times - they should eventually appear.
@@ -258,6 +331,7 @@ virStorageBackendISCSIMakeLUN(virConnectPtr conn,
     if (fd != -1) close(fd);
     free(devpath);
     virStorageVolDefFree(vol);
+    free(dev);
     return -1;
 }
 
@@ -281,14 +355,13 @@ virStorageBackendISCSIFindLUNs(virConnectPtr conn,
      *           scsi1 Channel 00 Id 0 Lun: 5
      *                   Attached scsi disk sdg          State: running
      *
-     * Need 2 regex to match alternating lines
+     * Need a regex to match the Channel:Id:Lun lines
      */
     const char *regexes[] = {
-        "^\\s*scsi(\\S+)\\s+Channel\\s+(\\S+)\\s+Id\\s+(\\S+)\\s+Lun:\\s+(\\S+)\\s*$",
-        "^\\s*Attached\\s+scsi\\s+disk\\s+(\\S+)\\s+State:\\s+running\\s*$"
+        "^\\s*scsi(\\S+)\\s+Channel\\s+(\\S+)\\s+Id\\s+(\\S+)\\s+Lun:\\s+(\\S+)\\s*$"
     };
     int vars[] = {
-        4, 1
+        4
     };
     const char *prog[] = {
         ISCSIADM, "--mode", "session", "-r", session, "-P", "3", NULL,
@@ -296,11 +369,11 @@ virStorageBackendISCSIFindLUNs(virConnectPtr conn,
 
     return virStorageBackendRunProgRegex(conn, pool,
                                          prog,
-                                         2,
+                                         1,
                                          regexes,
                                          vars,
                                          virStorageBackendISCSIMakeLUN,
-                                         NULL);
+                                         (void *)session);
 }
 
 
