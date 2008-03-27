@@ -474,12 +474,12 @@ static int qemudOpenMonitor(virConnectPtr conn,
     }
     if (qemudSetCloseExec(monfd) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Unable to set monitor close-on-exec flag"));
+                         "%s", _("Unable to set monitor close-on-exec flag"));
         goto error;
     }
     if (qemudSetNonBlock(monfd) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("Unable to put monitor into non-blocking mode"));
+                         "%s", _("Unable to put monitor into non-blocking mode"));
         goto error;
     }
 
@@ -608,7 +608,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
 
     if (qemudIsActiveVM(vm)) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("VM is already active"));
+                         "%s", _("VM is already active"));
         return -1;
     }
 
@@ -616,7 +616,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         int port = qemudNextFreeVNCPort(driver);
         if (port < 0) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                             _("Unable to find an unused VNC port"));
+                             "%s", _("Unable to find an unused VNC port"));
             return -1;
         }
         vm->def->vncActivePort = port;
@@ -930,7 +930,7 @@ dhcpStartDhcpDaemon(virConnectPtr conn,
 
     if (network->def->ipAddress[0] == '\0') {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("cannot start dhcp daemon without IP address for server"));
+                         "%s", _("cannot start dhcp daemon without IP address for server"));
         return -1;
     }
 
@@ -1142,7 +1142,7 @@ static int qemudStartNetworkDaemon(virConnectPtr conn,
 
     if (qemudIsActiveNetwork(network)) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("network is already active"));
+                         "%s", _("network is already active"));
         return -1;
     }
 
@@ -1666,14 +1666,16 @@ static int qemudDomainSuspend(virDomainPtr dom) {
         return -1;
     }
     if (!qemudIsActiveVM(vm)) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED, _("domain is not running"));
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("domain is not running"));
         return -1;
     }
     if (vm->state == VIR_DOMAIN_PAUSED)
         return 0;
 
     if (qemudMonitorCommand(driver, vm, "stop", &info) < 0) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED, _("suspend operation failed"));
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("suspend operation failed"));
         return -1;
     }
     vm->state = VIR_DOMAIN_PAUSED;
@@ -1688,17 +1690,20 @@ static int qemudDomainResume(virDomainPtr dom) {
     char *info;
     struct qemud_vm *vm = qemudFindVMByID(driver, dom->id);
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN, _("no domain with matching id %d"), dom->id);
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         _("no domain with matching id %d"), dom->id);
         return -1;
     }
     if (!qemudIsActiveVM(vm)) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED, _("domain is not running"));
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("domain is not running"));
         return -1;
     }
     if (vm->state == VIR_DOMAIN_RUNNING)
         return 0;
     if (qemudMonitorCommand(driver, vm, "cont", &info) < 0) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED, _("resume operation failed"));
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("resume operation failed"));
         return -1;
     }
     vm->state = VIR_DOMAIN_RUNNING;
@@ -1721,7 +1726,7 @@ static int qemudDomainShutdown(virDomainPtr dom) {
 
     if (qemudMonitorCommand(driver, vm, "system_powerdown", &info) < 0) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("shutdown operation failed"));
+                         "%s", _("shutdown operation failed"));
         return -1;
     }
     return 0;
@@ -1754,7 +1759,7 @@ static char *qemudDomainGetOSType(virDomainPtr dom) {
 
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         _("no domain with matching uuid"));
+                         "%s", _("no domain with matching uuid"));
         return NULL;
     }
 
@@ -1791,7 +1796,7 @@ static int qemudDomainSetMaxMemory(virDomainPtr dom, unsigned long newmax) {
 
     if (newmax < vm->def->memory) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
-                         _("cannot set max memory lower than current memory"));
+                         "%s", _("cannot set max memory lower than current memory"));
         return -1;
     }
 
@@ -1811,13 +1816,13 @@ static int qemudDomainSetMemory(virDomainPtr dom, unsigned long newmem) {
 
     if (qemudIsActiveVM(vm)) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("cannot set memory of an active domain"));
+                         "%s", _("cannot set memory of an active domain"));
         return -1;
     }
 
     if (newmem > vm->def->maxmem) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
-                         _("cannot set memory higher than max memory"));
+                         "%s", _("cannot set memory higher than max memory"));
         return -1;
     }
 
@@ -1830,7 +1835,8 @@ static int qemudDomainGetInfo(virDomainPtr dom,
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         "%s", _("no domain with matching uuid"));
         return -1;
     }
 
@@ -1967,7 +1973,7 @@ static int qemudDomainSave(virDomainPtr dom,
 
     if (!qemudIsActiveVM(vm)) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("domain is not running"));
+                         "%s", _("domain is not running"));
         return -1;
     }
 
@@ -1976,7 +1982,7 @@ static int qemudDomainSave(virDomainPtr dom,
         header.was_running = 1;
         if (qemudDomainSuspend(dom) != 0) {
             qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                             _("failed to pause domain"));
+                             "%s", _("failed to pause domain"));
             return -1;
         }
     }
@@ -1985,7 +1991,7 @@ static int qemudDomainSave(virDomainPtr dom,
     xml = qemudGenerateXML(dom->conn, driver, vm, vm->def, 0);
     if (!xml) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("failed to get domain xml"));
+                         "%s", _("failed to get domain xml"));
         return -1;
     }
     header.xml_len = strlen(xml) + 1;
@@ -2000,7 +2006,7 @@ static int qemudDomainSave(virDomainPtr dom,
 
     if (safewrite(fd, &header, sizeof(header)) != sizeof(header)) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("failed to write save header"));
+                         "%s", _("failed to write save header"));
         close(fd);
         free(xml);
         return -1;
@@ -2008,7 +2014,7 @@ static int qemudDomainSave(virDomainPtr dom,
 
     if (safewrite(fd, xml, header.xml_len) != header.xml_len) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("failed to write xml"));
+                         "%s", _("failed to write xml"));
         close(fd);
         free(xml);
         return -1;
@@ -2021,14 +2027,14 @@ static int qemudDomainSave(virDomainPtr dom,
     safe_path = qemudEscapeShellArg(path);
     if (!safe_path) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("out of memory"));
+                         "%s", _("out of memory"));
         return -1;
     }
     if (asprintf (&command, "migrate \"exec:"
                   "dd of='%s' oflag=append conv=notrunc 2>/dev/null"
                   "\"", safe_path) == -1) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("out of memory"));
+                         "%s", _("out of memory"));
         free(safe_path);
         return -1;
     }
@@ -2036,7 +2042,7 @@ static int qemudDomainSave(virDomainPtr dom,
 
     if (qemudMonitorCommand(driver, vm, command, &info) < 0) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("migrate operation failed"));
+                         "%s", _("migrate operation failed"));
         free(command);
         return -1;
     }
@@ -2066,20 +2072,20 @@ static int qemudDomainRestore(virConnectPtr conn,
     /* Verify the header and read the XML */
     if ((fd = open(path, O_RDONLY)) < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("cannot read domain image"));
+                         "%s", _("cannot read domain image"));
         return -1;
     }
 
     if (saferead(fd, &header, sizeof(header)) != sizeof(header)) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("failed to read qemu header"));
+                         "%s", _("failed to read qemu header"));
         close(fd);
         return -1;
     }
 
     if (memcmp(header.magic, QEMUD_SAVE_MAGIC, sizeof(header.magic)) != 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("image magic is incorrect"));
+                         "%s", _("image magic is incorrect"));
         close(fd);
         return -1;
     }
@@ -2094,14 +2100,14 @@ static int qemudDomainRestore(virConnectPtr conn,
 
     if ((xml = (char *)malloc(header.xml_len)) == NULL) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("out of memory"));
+                         "%s", _("out of memory"));
         close(fd);
         return -1;
     }
 
     if (saferead(fd, xml, header.xml_len) != header.xml_len) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("failed to read XML"));
+                         "%s", _("failed to read XML"));
         close(fd);
         free(xml);
         return -1;
@@ -2110,7 +2116,7 @@ static int qemudDomainRestore(virConnectPtr conn,
     /* Create a domain from this XML */
     if (!(def = qemudParseVMDef(conn, driver, xml, NULL))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("failed to parse XML"));
+                         "%s", _("failed to parse XML"));
         close(fd);
         free(xml);
         return -1;
@@ -2129,7 +2135,7 @@ static int qemudDomainRestore(virConnectPtr conn,
 
     if (!(vm = qemudAssignVMDef(conn, driver, def))) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("failed to assign new VM"));
+                         "%s", _("failed to assign new VM"));
         qemudFreeVMDef(def);
         close(fd);
         return -1;
@@ -2144,7 +2150,7 @@ static int qemudDomainRestore(virConnectPtr conn,
     vm->stdin = -1;
     if (ret < 0) {
         qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("failed to start VM"));
+                         "%s", _("failed to start VM"));
         if (!vm->configFile[0])
             qemudRemoveInactiveVM(driver, vm);
         return -1;
@@ -2155,7 +2161,7 @@ static int qemudDomainRestore(virConnectPtr conn,
         char *info;
         if (qemudMonitorCommand(driver, vm, "cont", &info) < 0) {
             qemudReportError(conn, NULL, NULL, VIR_ERR_OPERATION_FAILED,
-                             _("failed to resume domain"));
+                             "%s", _("failed to resume domain"));
             return -1;
         }
         free(info);
@@ -2171,7 +2177,8 @@ static char *qemudDomainDumpXML(virDomainPtr dom,
     struct qemud_driver *driver = (struct qemud_driver *)dom->conn->privateData;
     struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         "%s", _("no domain with matching uuid"));
         return NULL;
     }
 
@@ -2215,7 +2222,7 @@ static int qemudDomainStart(virDomainPtr dom) {
 
     if (!vm) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
-                         _("no domain with matching uuid"));
+                         "%s", _("no domain with matching uuid"));
         return -1;
     }
 
@@ -2252,12 +2259,14 @@ static int qemudDomainUndefine(virDomainPtr dom) {
     struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
 
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         "%s", _("no domain with matching uuid"));
         return -1;
     }
 
     if (qemudIsActiveVM(vm)) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR, _("cannot delete active domain"));
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("cannot delete active domain"));
         return -1;
     }
 
@@ -2287,7 +2296,7 @@ static int qemudDomainChangeCDROM(virDomainPtr dom,
         safe_path = qemudEscapeMonitorArg(newdisk->src);
         if (!safe_path) {
             qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                             _("out of memory"));
+                             "%s", _("out of memory"));
             return -1;
         }
         if (asprintf (&cmd, "change %s \"%s\"",
@@ -2295,7 +2304,7 @@ static int qemudDomainChangeCDROM(virDomainPtr dom,
                       /* olddisk->dst */ "cdrom",
                       safe_path) == -1) {
             qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                             _("out of memory"));
+                             "%s", _("out of memory"));
             free(safe_path);
             return -1;
         }
@@ -2303,12 +2312,13 @@ static int qemudDomainChangeCDROM(virDomainPtr dom,
 
     } else if (asprintf(&cmd, "eject cdrom") == -1) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("out of memory"));
+                         "%s", _("out of memory"));
         return -1;
     }
 
     if (qemudMonitorCommand(driver, vm, cmd, &reply) < 0) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED, _("cannot change cdrom media"));
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
+                         "%s", _("cannot change cdrom media"));
         free(cmd);
         return -1;
     }
@@ -2327,12 +2337,14 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     struct qemud_vm_disk_def *disk;
 
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         "%s", _("no domain with matching uuid"));
         return -1;
     }
 
     if (!qemudIsActiveVM(vm)) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR, _("cannot attach device on inactive domain"));
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INTERNAL_ERROR,
+                         "%s", _("cannot attach device on inactive domain"));
         return -1;
     }
 
@@ -2342,7 +2354,8 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     }
 
     if (dev->type != QEMUD_DEVICE_DISK || dev->data.disk.device != QEMUD_DISK_CDROM) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT, _("only CDROM disk devices can be attached"));
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                         "%s", _("only CDROM disk devices can be attached"));
         free(dev);
         return -1;
     }
@@ -2356,7 +2369,8 @@ static int qemudDomainAttachDevice(virDomainPtr dom,
     }
 
     if (!disk) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT, _("CDROM not attached, cannot change media"));
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_NO_SUPPORT,
+                         "%s", _("CDROM not attached, cannot change media"));
         free(dev);
         return -1;
     }
@@ -2376,7 +2390,8 @@ static int qemudDomainGetAutostart(virDomainPtr dom,
     struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
 
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         "%s", _("no domain with matching uuid"));
         return -1;
     }
 
@@ -2391,7 +2406,8 @@ static int qemudDomainSetAutostart(virDomainPtr dom,
     struct qemud_vm *vm = qemudFindVMByUUID(driver, dom->uuid);
 
     if (!vm) {
-        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
+        qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_DOMAIN,
+                         "%s", _("no domain with matching uuid"));
         return -1;
     }
 
@@ -2590,13 +2606,13 @@ qemudDomainInterfaceStats (virDomainPtr dom,
 
     if (!qemudIsActiveVM(vm)) {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_OPERATION_FAILED,
-                         _("domain is not running"));
+                         "%s", _("domain is not running"));
         return -1;
     }
 
     if (!path || path[0] == '\0') {
         qemudReportError(dom->conn, dom, NULL, VIR_ERR_INVALID_ARG,
-                         _("NULL or empty path"));
+                         "%s", _("NULL or empty path"));
         return -1;
     }
 
@@ -2638,7 +2654,8 @@ static virNetworkPtr qemudNetworkLookupByUUID(virConnectPtr conn ATTRIBUTE_UNUSE
     virNetworkPtr net;
 
     if (!network) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_NETWORK, _("no network with matching uuid"));
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_NETWORK,
+                         "%s", _("no network with matching uuid"));
         return NULL;
     }
 
@@ -2652,7 +2669,8 @@ static virNetworkPtr qemudNetworkLookupByName(virConnectPtr conn ATTRIBUTE_UNUSE
     virNetworkPtr net;
 
     if (!network) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_NETWORK, _("no network with matching name"));
+        qemudReportError(conn, NULL, NULL, VIR_ERR_NO_NETWORK,
+                         "%s", _("no network with matching name"));
         return NULL;
     }
 
@@ -2781,7 +2799,8 @@ static int qemudNetworkUndefine(virNetworkPtr net) {
     struct qemud_network *network = qemudFindNetworkByUUID(driver, net->uuid);
 
     if (!network) {
-        qemudReportError(net->conn, NULL, net, VIR_ERR_INVALID_DOMAIN, _("no network with matching uuid"));
+        qemudReportError(net->conn, NULL, net, VIR_ERR_INVALID_DOMAIN,
+                         "%s", _("no network with matching uuid"));
         return -1;
     }
 
@@ -2806,7 +2825,7 @@ static int qemudNetworkStart(virNetworkPtr net) {
 
     if (!network) {
         qemudReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
-                         _("no network with matching uuid"));
+                         "%s", _("no network with matching uuid"));
         return -1;
     }
 
@@ -2820,7 +2839,7 @@ static int qemudNetworkDestroy(virNetworkPtr net) {
 
     if (!network) {
         qemudReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
-                         _("no network with matching uuid"));
+                         "%s", _("no network with matching uuid"));
         return -1;
     }
 
@@ -2835,7 +2854,7 @@ static char *qemudNetworkDumpXML(virNetworkPtr net, int flags ATTRIBUTE_UNUSED) 
 
     if (!network) {
         qemudReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
-                         _("no network with matching uuid"));
+                         "%s", _("no network with matching uuid"));
         return NULL;
     }
 
@@ -2865,7 +2884,8 @@ static int qemudNetworkGetAutostart(virNetworkPtr net,
     struct qemud_network *network = qemudFindNetworkByUUID(driver, net->uuid);
 
     if (!network) {
-        qemudReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK, _("no network with matching uuid"));
+        qemudReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
+                         "%s", _("no network with matching uuid"));
         return -1;
     }
 
@@ -2880,7 +2900,8 @@ static int qemudNetworkSetAutostart(virNetworkPtr net,
     struct qemud_network *network = qemudFindNetworkByUUID(driver, net->uuid);
 
     if (!network) {
-        qemudReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK, _("no network with matching uuid"));
+        qemudReportError(net->conn, NULL, net, VIR_ERR_INVALID_NETWORK,
+                         "%s", _("no network with matching uuid"));
         return -1;
     }
 

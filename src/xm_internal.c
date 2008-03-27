@@ -434,7 +434,8 @@ static int xenXMConfigCacheRefresh (virConnectPtr conn) {
                 virHashRemoveEntry(configCache, path, NULL);
             }
             free(entry);
-            xenXMError (conn, VIR_ERR_INTERNAL_ERROR, "xenXMConfigCacheRefresh: name");
+            xenXMError (conn, VIR_ERR_INTERNAL_ERROR,
+                        _("xenXMConfigCacheRefresh: name"));
             goto cleanup;
         }
 
@@ -444,7 +445,8 @@ static int xenXMConfigCacheRefresh (virConnectPtr conn) {
             if (virHashAddEntry(configCache, entry->filename, entry) < 0) {
                 virConfFree(entry->conf);
                 free(entry);
-                xenXMError (conn, VIR_ERR_INTERNAL_ERROR, "xenXMConfigCacheRefresh: virHashAddEntry");
+                xenXMError (conn, VIR_ERR_INTERNAL_ERROR,
+                            _("xenXMConfigCacheRefresh: virHashAddEntry"));
                 goto cleanup;
             }
         }
@@ -1254,21 +1256,23 @@ int xenXMDomainPinVcpu(virDomainPtr domain,
         return -1;
     }
     if (domain->conn->flags & VIR_CONNECT_RO) {
-        xenXMError (domain->conn, VIR_ERR_INVALID_ARG, "read only connection");
+        xenXMError (domain->conn, VIR_ERR_INVALID_ARG,
+                    _("read only connection"));
         return -1;
     }
     if (domain->id != -1) {
-        xenXMError (domain->conn, VIR_ERR_INVALID_ARG, "not inactive domain");
+        xenXMError (domain->conn, VIR_ERR_INVALID_ARG,
+                    _("not inactive domain"));
         return -1;
     }
 
     if (!(filename = virHashLookup(nameConfigMap, domain->name))) {
-        xenXMError (domain->conn, VIR_ERR_INTERNAL_ERROR, "virHashLookup");
+        xenXMError (domain->conn, VIR_ERR_INTERNAL_ERROR, _("virHashLookup"));
         return -1;
     }
     if (!(entry = virHashLookup(configCache, filename))) {
         xenXMError (domain->conn, VIR_ERR_INTERNAL_ERROR,
-                    "can't retrieve config file for domain");
+                    _("can't retrieve config file for domain"));
         return -1;
     }
 

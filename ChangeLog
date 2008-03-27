@@ -1,3 +1,67 @@
+Thu Mar 27 14:36:56 CET 2008 Jim Meyering <meyering@redhat.com>
+
+	Mark many more strings for translation.
+	* Makefile.maint (err_func_re): Add to the list and make it readable.
+	* po/POTFILES.in: Add src/util.c and src/xm_internal.c, and sort.
+	* src/storage_backend.c: Fix comment.
+	* src/util.c (virFileLinkPointsTo): Mark a string.
+	* qemud/remote.c (remoteDispatchClientRequest): Mark strings.
+	(remoteDispatchOpen, CHECK_CONN, remoteDispatchGetType): Likewise.
+	(remoteDispatchDomainGetSchedulerType): Likewise.
+	(remoteDispatchDomainGetSchedulerParameters): Likewise.
+	(remoteDispatchDomainSetSchedulerParameters): Likewise.
+	(remoteDispatchDomainBlockStats): Likewise.
+	(remoteDispatchDomainInterfaceStats): Likewise.
+	(remoteDispatchDomainAttachDevice, remoteDispatchDomainCreate):
+	(remoteDispatchDomainDestroy, remoteDispatchDomainDetachDevice):
+	(remoteDispatchDomainDumpXml, remoteDispatchDomainGetAutostart):
+	(remoteDispatchDomainGetInfo, remoteDispatchDomainGetMaxMemory):
+	(remoteDispatchDomainGetMaxVcpus, remoteDispatchDomainGetOsType):
+	(remoteDispatchDomainGetVcpus): Likewise.
+	(remoteDispatchDomainMigratePerform): Likewise.
+	(remoteDispatchListDefinedDomains, remoteDispatchDomainPinVcpu):
+	(remoteDispatchDomainReboot, remoteDispatchDomainResume):
+	(remoteDispatchDomainSave, remoteDispatchDomainCoreDump):
+	(remoteDispatchDomainSetAutostart): Likewise.
+	(remoteDispatchDomainSetMaxMemory, remoteDispatchDomainSetMemory):
+	(remoteDispatchDomainSetVcpus, remoteDispatchDomainShutdown):
+	(remoteDispatchDomainSuspend, remoteDispatchDomainUndefine):
+	(remoteDispatchListDefinedNetworks, remoteDispatchListDomains):
+	(remoteDispatchListNetworks, remoteDispatchNetworkCreate):
+	(remoteDispatchNetworkDestroy, remoteDispatchNetworkDumpXml):
+	(remoteDispatchNetworkGetAutostart, remoteDispatchNetworkGetBridgeName):
+	(remoteDispatchNetworkSetAutostart, remoteDispatchNetworkUndefine):
+	(addrToString, remoteDispatchAuthSaslInit, remoteDispatchAuthSaslStart):
+	(remoteDispatchAuthSaslStep, remoteDispatchListDefinedStoragePools):
+	(remoteDispatchListStoragePools, remoteDispatchStoragePoolCreate):
+	(remoteDispatchStoragePoolBuild, remoteDispatchStoragePoolDestroy):
+	(remoteDispatchStoragePoolDelete, remoteDispatchStoragePoolRefresh):
+	(remoteDispatchStoragePoolGetInfo, remoteDispatchStoragePoolDumpXml):
+	(remoteDispatchStoragePoolGetAutostart): Likewise.
+	(remoteDispatchStoragePoolSetAutostart):
+	(remoteDispatchStoragePoolListVolumes):
+	(remoteDispatchStoragePoolNumOfVolumes):
+	(remoteDispatchStoragePoolUndefine, remoteDispatchStorageVolCreateXml):
+	(remoteDispatchStorageVolDelete, remoteDispatchStorageVolGetInfo):
+	(remoteDispatchStorageVolDumpXml, remoteDispatchStorageVolGetPath):
+	(remoteDispatchStorageVolLookupByName): Likewise.
+	* src/qemu_driver.c (qemudOpenMonitor, qemudStartVMDaemon):
+	(dhcpStartDhcpDaemon, qemudStartNetworkDaemon):
+	(qemudDomainSuspend, qemudDomainResume, qemudDomainShutdown):
+	(qemudDomainGetOSType, qemudDomainSetMaxMemory):
+	(qemudDomainSetMemory, qemudDomainGetInfo, qemudDomainSave):
+	(qemudDomainRestore, qemudDomainDumpXML, qemudDomainStart):
+	(qemudDomainUndefine, qemudDomainChangeCDROM):
+	(qemudDomainAttachDevice, qemudDomainGetAutostart):
+	(qemudDomainSetAutostart, qemudDomainInterfaceStats):
+	(qemudNetworkLookupByUUID, qemudNetworkLookupByName):
+	(qemudNetworkUndefine, qemudNetworkStart, qemudNetworkDestroy):
+	(qemudNetworkDumpXML, qemudNetworkGetAutostart):
+	(qemudNetworkSetAutostart): Likewise.
+	* src/virsh.c (cmdVcpupin, cmdAttachDevice, cmdDetachDevice): Likewise.
+	* src/xm_internal.c (xenXMConfigCacheRefresh, xenXMDomainPinVcpu):
+	Likewise.
+
 Thu Mar 27 10:30:12 CET 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/lxc_conf.c src/lxc_conf.h src/lxc_driver.c src/remote_internal.c:

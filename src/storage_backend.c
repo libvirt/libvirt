@@ -1,5 +1,5 @@
 /*
- * storage_backend.h: internal storage driver backend contract
+ * storage_backend.c: internal storage driver backend contract
  *
  * Copyright (C) 2007-2008 Red Hat, Inc.
  * Copyright (C) 2007-2008 Daniel P. Berrange

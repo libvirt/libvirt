@@ -461,7 +461,7 @@ int
 virFileLinkPointsTo (const char *checkLink ATTRIBUTE_UNUSED,
                      const char *checkDest ATTRIBUTE_UNUSED)
 {
-    virLog ("%s: not implemented", __FUNCTION__);
+    virLog (_("%s: not implemented"), __FUNCTION__);
     return 0;
 }
 
