@@ -317,9 +317,10 @@ msg_gen_function += ReportError
 msg_gen_function += qemudReportError
 msg_gen_function += openvzLog
 
-# Uncomment this after adjusting remaining diagnostics to be translatable.
+# Uncomment the following and run "make syntax-check" to see diagnostics
+# that are not yet marked for translation, but that need to be rewritten
+# so that they are translatable.
 # msg_gen_function += error
-
 # msg_gen_function += virXenError
 # msg_gen_function += testError
 

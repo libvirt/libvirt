@@ -1307,31 +1307,31 @@ static int testDomainSave(virDomainPtr domain,
     xml = testDomainDumpXML(domain, 0);
     if (xml == NULL) {
         testError(domain->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
-                  "cannot allocate space for metadata");
+                  _("cannot allocate space for metadata"));
         return (-1);
     }
 
     if ((fd = open(path, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
         testError(domain->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
-                  "cannot save domain");
+                  _("cannot save domain"));
         return (-1);
     }
     len = strlen(xml);
     if (safewrite(fd, TEST_SAVE_MAGIC, sizeof(TEST_SAVE_MAGIC)) < 0) {
         testError(domain->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
-                  "cannot write header");
+                  _("cannot write header"));
         close(fd);
         return (-1);
     }
     if (safewrite(fd, (char*)&len, sizeof(len)) < 0) {
         testError(domain->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
-                  "cannot write metadata length");
+                  _("cannot write metadata length"));
         close(fd);
         return (-1);
     }
     if (safewrite(fd, xml, len) < 0) {
         testError(domain->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
-                  "cannot write metadata");
+                  _("cannot write metadata"));
         free(xml);
         close(fd);
         return (-1);
@@ -1339,7 +1339,7 @@ static int testDomainSave(virDomainPtr domain,
     free(xml);
     if (close(fd) < 0) {
         testError(domain->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
-                  "cannot save domain data");
+                  _("cannot save domain data"));
         close(fd);
         return (-1);
     }
@@ -1363,30 +1363,30 @@ static int testDomainRestore(virConnectPtr conn,
 
     if ((fd = open(path, O_RDONLY)) < 0) {
         testError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                  "cannot read domain image");
+                  _("cannot read domain image"));
         return (-1);
     }
     if (read(fd, magic, sizeof(magic)) != sizeof(magic)) {
         testError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                  "incomplete save header");
+                  _("incomplete save header"));
         close(fd);
         return (-1);
     }
     if (memcmp(magic, TEST_SAVE_MAGIC, sizeof(magic))) {
         testError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                  "mismatched header magic");
+                  _("mismatched header magic"));
         close(fd);
         return (-1);
     }
     if (read(fd, (char*)&len, sizeof(len)) != sizeof(len)) {
         testError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                  "failed to read metadata length");
+                  _("failed to read metadata length"));
         close(fd);
         return (-1);
     }
     if (len < 1 || len > 8192) {
         testError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                  "length of metadata out of range");
+                  _("length of metadata out of range"));
         close(fd);
         return (-1);
     }
@@ -1398,7 +1398,7 @@ static int testDomainRestore(virConnectPtr conn,
     }
     if (read(fd, xml, len) != len) {
         testError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                  "incomplete metdata");
+                  _("incomplete metdata"));
         close(fd);
         return (-1);
     }
@@ -1419,18 +1419,18 @@ static int testDomainCoreDump(virDomainPtr domain,
 
     if ((fd = open(to, O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
         testError(domain->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
-                  "cannot save domain core");
+                  _("cannot save domain core"));
         return (-1);
     }
     if (safewrite(fd, TEST_SAVE_MAGIC, sizeof(TEST_SAVE_MAGIC)) < 0) {
         testError(domain->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
-                  "cannot write header");
+                  _("cannot write header"));
         close(fd);
         return (-1);
     }
     if (close(fd) < 0) {
         testError(domain->conn, domain, NULL, VIR_ERR_INTERNAL_ERROR,
-                  "cannot save domain data");
+                  _("cannot save domain data"));
         close(fd);
         return (-1);
     }
