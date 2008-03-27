@@ -146,7 +146,7 @@ static virDomainPtr openvzDomainLookupByID(virConnectPtr conn,
     virDomainPtr dom;
 
     if (!vm) {
-        error(conn, VIR_ERR_INTERNAL_ERROR, "no domain with matching id");
+        error(conn, VIR_ERR_INTERNAL_ERROR, _("no domain with matching id"));
         return NULL;
     }
 
@@ -174,7 +174,7 @@ static virDomainPtr openvzDomainLookupByUUID(virConnectPtr conn,
     virDomainPtr dom;
 
     if (!vm) {
-        error(conn, VIR_ERR_INVALID_DOMAIN, "no domain with matching uuid");
+        error(conn, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
         return NULL;
     }
 
@@ -195,7 +195,7 @@ static virDomainPtr openvzDomainLookupByName(virConnectPtr conn,
     virDomainPtr dom;
 
     if (!vm) {
-        error(conn, VIR_ERR_INTERNAL_ERROR, "no domain with matching name");
+        error(conn, VIR_ERR_INTERNAL_ERROR, _("no domain with matching name"));
         return NULL;
     }
 
@@ -215,7 +215,8 @@ static int openvzDomainGetInfo(virDomainPtr dom,
     struct openvz_vm *vm = openvzFindVMByUUID(driver, dom->uuid);
 
     if (!vm) {
-        error(dom->conn, VIR_ERR_INVALID_DOMAIN, "no domain with matching uuid");
+        error(dom->conn, VIR_ERR_INVALID_DOMAIN,
+              _("no domain with matching uuid"));
         return -1;
     }
 
@@ -238,12 +239,14 @@ static int openvzDomainShutdown(virDomainPtr dom) {
     struct openvz_vm *vm = openvzFindVMByID(driver, dom->id);
 
     if (!vm) {
-        error(dom->conn, VIR_ERR_INVALID_DOMAIN, "no domain with matching id");
+        error(dom->conn, VIR_ERR_INVALID_DOMAIN,
+              _("no domain with matching id"));
         return -1;
     }
 
     if (vm->status != VIR_DOMAIN_RUNNING) {
-        error(dom->conn, VIR_ERR_OPERATION_DENIED, "domain is not in running state");
+        error(dom->conn, VIR_ERR_OPERATION_DENIED,
+              _("domain is not in running state"));
         return -1;
     }
     snprintf(cmdbuf, CMDBUF_LEN - 1, VZCTL " stop %d ", dom->id);
@@ -281,12 +284,14 @@ static int openvzDomainReboot(virDomainPtr dom,
     struct openvz_vm *vm = openvzFindVMByID(driver, dom->id);
 
     if (!vm) {
-        error(dom->conn, VIR_ERR_INVALID_DOMAIN, "no domain with matching id");
+        error(dom->conn, VIR_ERR_INVALID_DOMAIN,
+              _("no domain with matching id"));
         return -1;
     }
 
     if (vm->status != VIR_DOMAIN_RUNNING) {
-        error(dom->conn, VIR_ERR_OPERATION_DENIED, "domain is not in running state");
+        error(dom->conn, VIR_ERR_OPERATION_DENIED,
+              _("domain is not in running state"));
         return -1;
     }
     snprintf(cmdbuf, CMDBUF_LEN - 1, VZCTL " restart %d ", dom->id);
@@ -473,12 +478,14 @@ openvzDomainCreate(virDomainPtr dom)
     struct openvz_vm_def *vmdef;
 
     if (!vm) {
-        error(dom->conn, VIR_ERR_INVALID_DOMAIN, "no domain with matching id");
+        error(dom->conn, VIR_ERR_INVALID_DOMAIN,
+              _("no domain with matching id"));
         return -1;
     }
 
     if (vm->status != VIR_DOMAIN_SHUTOFF) {
-        error(dom->conn, VIR_ERR_OPERATION_DENIED, "domain is not in shutoff state");
+        error(dom->conn, VIR_ERR_OPERATION_DENIED,
+              _("domain is not in shutoff state"));
         return -1;
     }
 
@@ -518,12 +525,12 @@ openvzDomainUndefine(virDomainPtr dom)
     struct openvz_vm *vm = openvzFindVMByUUID(driver, dom->uuid);
 
     if (!vm) {
-        error(conn, VIR_ERR_INVALID_DOMAIN, "no domain with matching uuid");
+        error(conn, VIR_ERR_INVALID_DOMAIN, _("no domain with matching uuid"));
         return -1;
     }
 
     if (openvzIsActiveVM(vm)) {
-        error(conn, VIR_ERR_INTERNAL_ERROR, "cannot delete active domain");
+        error(conn, VIR_ERR_INTERNAL_ERROR, _("cannot delete active domain"));
         return -1;
     }
     snprintf(cmdbuf, CMDBUF_LEN - 1, VZCTL " destroy %s ", vm->vmdef->name);

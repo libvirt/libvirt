@@ -1,5 +1,19 @@
 Thu Mar 27 14:36:56 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	error: mark most string arguments for translation
+	Also mark some arguments to __virRaiseError.
+	* Makefile.maint (msg_gen_function): Add error.
+	* po/POTFILES.in: Add src/openvz_conf.c and src/openvz_driver.c.
+	* src/openvz_conf.c (openvzParseXML, openvzGetVPSInfo): Mark strings.
+	* src/openvz_driver.c (openvzDomainLookupByID): Likewise.
+	(openvzDomainLookupByUUID, openvzDomainLookupByName): Likewise.
+	(openvzDomainGetInfo, openvzDomainShutdown, openvzDomainReboot)
+	(openvzDomainCreate, openvzDomainUndefine): Likewise.
+	* src/remote_internal.c (check_cert_file): Likewise.
+	(negotiate_gnutls_on_connection, verify_certificate): Likewise.
+	(remoteAuthenticate, addrToString, remoteAuthSASL): Likewise.
+	(remoteAuthPolkit, call, really_read_buf): Likewise.
+
 	Convert diagnostics like "VAR > MAX_VAR" to translatable messages.
 	* src/remote_internal.c (errorf): New function.
 	(remoteListDomains, remoteDomainPinVcpu, remoteDomainGetVcpus):
