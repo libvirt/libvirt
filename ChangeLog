@@ -1,5 +1,12 @@
 Thu Mar 27 14:36:56 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	Convert diagnostics like "VAR > MAX_VAR" to translatable messages.
+	* src/remote_internal.c (errorf): New function.
+	(remoteListDomains, remoteDomainPinVcpu, remoteDomainGetVcpus):
+	(remoteListDefinedDomains, remoteListNetworks):
+	(remoteListDefinedNetworks): Convert strings to be translatable,
+	and also to include offending and maximum values.  Use errorf.
+
 	qemudReportError: mark for translation string args to this function
 	* Makefile.maint (msg_gen_function): Add qemudReportError.
 	* src/qemu_conf.c (qemudLoadDriverConfig)

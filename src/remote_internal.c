@@ -146,6 +146,8 @@ static int remoteAuthPolkit (virConnectPtr conn, struct private_data *priv, int 
                              virConnectAuthPtr auth);
 #endif /* HAVE_POLKIT */
 static void error (virConnectPtr conn, virErrorNumber code, const char *info);
+static void errorf (virConnectPtr conn, virErrorNumber code,
+                     const char *fmt, ...) ATTRIBUTE_FORMAT(printf, 3, 4);
 static void server_error (virConnectPtr conn, remote_error *err);
 static virDomainPtr get_nonnull_domain (virConnectPtr conn, remote_nonnull_domain domain);
 static virNetworkPtr get_nonnull_network (virConnectPtr conn, remote_nonnull_network network);
@@ -1336,7 +1338,9 @@ remoteListDomains (virConnectPtr conn, int *ids, int maxids)
     GET_PRIVATE (conn, -1);
 
     if (maxids > REMOTE_DOMAIN_ID_LIST_MAX) {
-        error (conn, VIR_ERR_RPC, _("maxids > REMOTE_DOMAIN_ID_LIST_MAX"));
+        errorf (conn, VIR_ERR_RPC,
+                _("too many remote domain IDs: %d > %d"),
+                maxids, REMOTE_DOMAIN_ID_LIST_MAX);
         return -1;
     }
     args.maxids = maxids;
@@ -1348,7 +1352,9 @@ remoteListDomains (virConnectPtr conn, int *ids, int maxids)
         return -1;
 
     if (ret.ids.ids_len > maxids) {
-        error (conn, VIR_ERR_RPC, _("ret.ids.ids_len > maxids"));
+        errorf (conn, VIR_ERR_RPC,
+                _("too many remote domain IDs: %d > %d"),
+                ret.ids.ids_len, maxids);
         xdr_free ((xdrproc_t) xdr_remote_list_domains_ret, (char *) &ret);
         return -1;
     }
@@ -1720,7 +1726,9 @@ remoteDomainPinVcpu (virDomainPtr domain,
     GET_PRIVATE (domain->conn, -1);
 
     if (maplen > REMOTE_CPUMAP_MAX) {
-        error (domain->conn, VIR_ERR_RPC, _("maplen > REMOTE_CPUMAP_MAX"));
+        errorf (domain->conn, VIR_ERR_RPC,
+                _("map length greater than maximum: %d > %d"),
+                maplen, REMOTE_CPUMAP_MAX);
         return -1;
     }
 
@@ -1750,12 +1758,15 @@ remoteDomainGetVcpus (virDomainPtr domain,
     GET_PRIVATE (domain->conn, -1);
 
     if (maxinfo > REMOTE_VCPUINFO_MAX) {
-        error (domain->conn, VIR_ERR_RPC, _("maxinfo > REMOTE_VCPUINFO_MAX"));
+        errorf (domain->conn, VIR_ERR_RPC,
+                _("vCPU count exceeds maximum: %d > %d"),
+                maxinfo, REMOTE_VCPUINFO_MAX);
         return -1;
     }
     if (maxinfo * maplen > REMOTE_CPUMAPS_MAX) {
-        error (domain->conn, VIR_ERR_RPC,
-               _("maxinfo * maplen > REMOTE_CPUMAPS_MAX"));
+        errorf (domain->conn, VIR_ERR_RPC,
+                _("vCPU map buffer length exceeds maximum: %d > %d"),
+                maxinfo * maplen, REMOTE_CPUMAPS_MAX);
         return -1;
     }
 
@@ -1770,13 +1781,16 @@ remoteDomainGetVcpus (virDomainPtr domain,
         return -1;
 
     if (ret.info.info_len > maxinfo) {
-        error (domain->conn, VIR_ERR_RPC, _("ret.info.info_len > maxinfo"));
+        errorf (domain->conn, VIR_ERR_RPC,
+                _("host reports too many vCPUs: %d > %d"),
+                ret.info.info_len, maxinfo);
         xdr_free ((xdrproc_t) xdr_remote_domain_get_vcpus_ret, (char *) &ret);
         return -1;
     }
     if (ret.cpumaps.cpumaps_len > maxinfo * maplen) {
-        error (domain->conn, VIR_ERR_RPC,
-               _("ret.cpumaps.cpumaps_len > maxinfo * maplen"));
+        errorf (domain->conn, VIR_ERR_RPC,
+                _("host reports map buffer length exceeds maximum: %d > %d"),
+                ret.cpumaps.cpumaps_len, maxinfo * maplen);
         xdr_free ((xdrproc_t) xdr_remote_domain_get_vcpus_ret, (char *) &ret);
         return -1;
     }
@@ -1936,7 +1950,9 @@ remoteListDefinedDomains (virConnectPtr conn, char **const names, int maxnames)
     GET_PRIVATE (conn, -1);
 
     if (maxnames > REMOTE_DOMAIN_NAME_LIST_MAX) {
-        error (conn, VIR_ERR_RPC, _("maxnames > REMOTE_DOMAIN_NAME_LIST_MAX"));
+        errorf (conn, VIR_ERR_RPC,
+                _("too many remote domain names: %d > %d"),
+                maxnames, REMOTE_DOMAIN_NAME_LIST_MAX);
         return -1;
     }
     args.maxnames = maxnames;
@@ -1948,7 +1964,9 @@ remoteListDefinedDomains (virConnectPtr conn, char **const names, int maxnames)
         return -1;
 
     if (ret.names.names_len > maxnames) {
-        error (conn, VIR_ERR_RPC, _("ret.names.names_len > maxnames"));
+        errorf (conn, VIR_ERR_RPC,
+                _("too many remote domain names: %d > %d"),
+                ret.names.names_len, maxnames);
         xdr_free ((xdrproc_t) xdr_remote_list_defined_domains_ret, (char *) &ret);
         return -1;
     }
@@ -2396,7 +2414,9 @@ remoteListNetworks (virConnectPtr conn, char **const names, int maxnames)
     GET_NETWORK_PRIVATE (conn, -1);
 
     if (maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
-        error (conn, VIR_ERR_RPC, _("maxnames > REMOTE_NETWORK_NAME_LIST_MAX"));
+        errorf (conn, VIR_ERR_RPC,
+                _("too many remote networks: %d > %d"),
+                maxnames, REMOTE_NETWORK_NAME_LIST_MAX);
         return -1;
     }
     args.maxnames = maxnames;
@@ -2408,7 +2428,9 @@ remoteListNetworks (virConnectPtr conn, char **const names, int maxnames)
         return -1;
 
     if (ret.names.names_len > maxnames) {
-        error (conn, VIR_ERR_RPC, _("ret.names.names_len > maxnames"));
+        errorf (conn, VIR_ERR_RPC,
+                _("too many remote networks: %d > %d"),
+                ret.names.names_len, maxnames);
         xdr_free ((xdrproc_t) xdr_remote_list_networks_ret, (char *) &ret);
         return -1;
     }
@@ -2451,7 +2473,9 @@ remoteListDefinedNetworks (virConnectPtr conn,
     GET_NETWORK_PRIVATE (conn, -1);
 
     if (maxnames > REMOTE_NETWORK_NAME_LIST_MAX) {
-        error (conn, VIR_ERR_RPC, _("maxnames > REMOTE_NETWORK_NAME_LIST_MAX"));
+        errorf (conn, VIR_ERR_RPC,
+                _("too many remote networks: %d > %d"),
+                maxnames, REMOTE_NETWORK_NAME_LIST_MAX);
         return -1;
     }
     args.maxnames = maxnames;
@@ -2463,7 +2487,9 @@ remoteListDefinedNetworks (virConnectPtr conn,
         return -1;
 
     if (ret.names.names_len > maxnames) {
-        error (conn, VIR_ERR_RPC, _("ret.names.names_len > maxnames"));
+        errorf (conn, VIR_ERR_RPC,
+                _("too many remote networks: %d > %d"),
+                ret.names.names_len, maxnames);
         xdr_free ((xdrproc_t) xdr_remote_list_defined_networks_ret, (char *) &ret);
         return -1;
     }
@@ -4522,6 +4548,29 @@ error (virConnectPtr conn, virErrorNumber code, const char *info)
     __virRaiseError (conn, NULL, NULL, VIR_FROM_REMOTE,
                      code, VIR_ERR_ERROR, errmsg, info, NULL, 0, 0,
                      errmsg, info);
+}
+
+/* For errors internal to this library.
+   Identical to the above, but with a format string and optional params.  */
+static void
+errorf (virConnectPtr conn, virErrorNumber code, const char *fmt, ...)
+{
+    const char *errmsg;
+    va_list args;
+    char errorMessage[256];
+
+    if (fmt) {
+        va_start(args, fmt);
+        vsnprintf(errorMessage, sizeof errorMessage - 1, fmt, args);
+        va_end(args);
+    } else {
+        errorMessage[0] = '\0';
+    }
+
+    errmsg = __virErrorMsg (code, errorMessage);
+    __virRaiseError (conn, NULL, NULL, VIR_FROM_REMOTE,
+                     code, VIR_ERR_ERROR, NULL, NULL, NULL, 0, 0,
+                     "%s", errmsg);
 }
 
 /* For errors generated on the server side and sent back to us. */
