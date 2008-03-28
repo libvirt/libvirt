@@ -56,6 +56,14 @@
          rest of the network -->
     <element name="forward">
       <optional><attribute name="dev"><text/></attribute></optional>
+      <optional>
+        <attribute name="mode">
+          <choice>
+            <value>nat</value>
+            <value>routed</value>
+          </choice>
+        </attribute>
+      </optional>
     </element>
   </optional>
 </element>

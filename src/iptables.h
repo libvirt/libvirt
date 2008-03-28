@@ -55,6 +55,15 @@ int              iptablesRemoveForwardAllowOut   (iptablesContext *ctx,
                                                   const char *iface,
                                                   const char *physdev);
 
+int              iptablesAddForwardAllowRelatedIn(iptablesContext *ctx,
+                                                  const char *network,
+                                                  const char *iface,
+                                                  const char *physdev);
+int              iptablesRemoveForwardAllowRelatedIn(iptablesContext *ctx,
+                                                  const char *network,
+                                                  const char *iface,
+                                                  const char *physdev);
+
 int              iptablesAddForwardAllowIn       (iptablesContext *ctx,
                                                   const char *network,
                                                   const char *iface,

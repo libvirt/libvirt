@@ -949,6 +949,98 @@ dhcpStartDhcpDaemon(virConnectPtr conn,
 }
 
 static int
+qemudAddMasqueradingIptablesRules(virConnectPtr conn,
+                      struct qemud_driver *driver,
+                      struct qemud_network *network) {
+    int err;
+    /* allow forwarding packets from the bridge interface */
+    if ((err = iptablesAddForwardAllowOut(driver->iptables,
+                                          network->def->network,
+                                          network->bridge,
+                                          network->def->forwardDev))) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("failed to add iptables rule to allow forwarding from '%s' : %s\n"),
+                         network->bridge, strerror(err));
+        goto masqerr1;
+    }
+
+    /* allow forwarding packets to the bridge interface if they are part of an existing connection */
+    if ((err = iptablesAddForwardAllowRelatedIn(driver->iptables,
+                                         network->def->network,
+                                         network->bridge,
+                                         network->def->forwardDev))) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("failed to add iptables rule to allow forwarding to '%s' : %s\n"),
+                         network->bridge, strerror(err));
+        goto masqerr2;
+    }
+
+    /* enable masquerading */
+    if ((err = iptablesAddForwardMasquerade(driver->iptables,
+                                            network->def->network,
+                                            network->def->forwardDev))) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("failed to add iptables rule to enable masquerading : %s\n"),
+                         strerror(err));
+        goto masqerr3;
+    }
+
+    return 1;
+
+ masqerr3:
+    iptablesRemoveForwardAllowRelatedIn(driver->iptables,
+                                 network->def->network,
+                                 network->bridge,
+                                 network->def->forwardDev);
+ masqerr2:
+    iptablesRemoveForwardAllowOut(driver->iptables,
+                                  network->def->network,
+                                  network->bridge,
+                                  network->def->forwardDev);
+ masqerr1:
+    return 0;
+}
+
+static int
+qemudAddRoutingIptablesRules(virConnectPtr conn,
+                      struct qemud_driver *driver,
+                      struct qemud_network *network) {
+    int err;
+    /* allow routing packets from the bridge interface */
+    if ((err = iptablesAddForwardAllowOut(driver->iptables,
+                                          network->def->network,
+                                          network->bridge,
+                                          network->def->forwardDev))) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("failed to add iptables rule to allow routing from '%s' : %s\n"),
+                         network->bridge, strerror(err));
+        goto routeerr1;
+    }
+
+    /* allow routing packets to the bridge interface */
+    if ((err = iptablesAddForwardAllowIn(driver->iptables,
+                                         network->def->network,
+                                         network->bridge,
+                                         network->def->forwardDev))) {
+        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                         _("failed to add iptables rule to allow routing to '%s' : %s\n"),
+                         network->bridge, strerror(err));
+        goto routeerr2;
+    }
+
+    return 1;
+
+
+ routeerr2:
+    iptablesRemoveForwardAllowOut(driver->iptables,
+                                  network->def->network,
+                                  network->bridge,
+                                  network->def->forwardDev);
+ routeerr1:
+    return 0;
+}
+
+static int
 qemudAddIptablesRules(virConnectPtr conn,
                       struct qemud_driver *driver,
                       struct qemud_network *network) {
@@ -1023,53 +1115,17 @@ qemudAddIptablesRules(virConnectPtr conn,
         return 1;
     }
 
-    /* allow forwarding packets from the bridge interface */
-    if ((err = iptablesAddForwardAllowOut(driver->iptables,
-                                          network->def->network,
-                                          network->bridge,
-                                          network->def->forwardDev))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to allow forwarding from '%s' : %s"),
-                         network->bridge, strerror(err));
-        goto err8;
+    /* If masquerading is enabled, set up the rules*/
+    if (network->def->forwardMode == QEMUD_NET_FORWARD_NAT) {
+        if (qemudAddMasqueradingIptablesRules(conn, driver, network))
+            return 1;
+    }
+    /* else if routing is enabled, set up the rules*/
+    else if (network->def->forwardMode == QEMUD_NET_FORWARD_ROUTE) {
+        if (qemudAddRoutingIptablesRules(conn, driver, network))
+            return 1;
     }
 
-    /* allow forwarding packets to the bridge interface if they are part of an existing connection */
-    if ((err = iptablesAddForwardAllowIn(driver->iptables,
-                                         network->def->network,
-                                         network->bridge,
-                                         network->def->forwardDev))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to allow forwarding to '%s' : %s"),
-                         network->bridge, strerror(err));
-        goto err9;
-    }
-
-    /* enable masquerading */
-    if ((err = iptablesAddForwardMasquerade(driver->iptables,
-                                            network->def->network,
-                                            network->def->forwardDev))) {
-        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                         _("failed to add iptables rule to enable masquerading : %s"),
-                         strerror(err));
-        goto err10;
-    }
-
-    iptablesSaveRules(driver->iptables);
-
-    return 1;
-
- err10:
-    iptablesRemoveForwardAllowIn(driver->iptables,
-                                 network->def->network,
-                                 network->bridge,
-                                 network->def->forwardDev);
- err9:
-    iptablesRemoveForwardAllowOut(driver->iptables,
-                                  network->def->network,
-                                  network->bridge,
-                                  network->def->forwardDev);
- err8:
     iptablesRemoveForwardAllowCross(driver->iptables,
                                     network->bridge);
  err7:

@@ -793,7 +793,7 @@ iptablesRemoveForwardAllowOut(iptablesContext *ctx,
  * and associated with an existing connection
  */
 static int
-iptablesForwardAllowIn(iptablesContext *ctx,
+iptablesForwardAllowRelatedIn(iptablesContext *ctx,
                        const char *network,
                        const char *iface,
                        const char *physdev,
@@ -816,6 +816,77 @@ iptablesForwardAllowIn(iptablesContext *ctx,
                                      "--out-interface", iface,
                                      "--match", "state",
                                      "--state", "ESTABLISHED,RELATED",
+                                     "--jump", "ACCEPT",
+                                     NULL);
+    }
+}
+
+/**
+ * iptablesAddForwardAllowRelatedIn:
+ * @ctx: pointer to the IP table context
+ * @network: the source network name
+ * @iface: the output interface name
+ * @physdev: the physical input device or NULL
+ *
+ * Add rules to the IP table context to allow the traffic for the
+ * network @network on @physdev device to be forwarded to
+ * interface @iface, if it is part of an existing connection.
+ *
+ * Returns 0 in case of success or an error code otherwise
+ */
+int
+iptablesAddForwardAllowRelatedIn(iptablesContext *ctx,
+                          const char *network,
+                          const char *iface,
+                          const char *physdev)
+{
+    return iptablesForwardAllowRelatedIn(ctx, network, iface, physdev, ADD);
+}
+
+/**
+ * iptablesRemoveForwardAllowRelatedIn:
+ * @ctx: pointer to the IP table context
+ * @network: the source network name
+ * @iface: the output interface name
+ * @physdev: the physical input device or NULL
+ *
+ * Remove rules from the IP table context hence forbidding the traffic for
+ * network @network on @physdev device to be forwarded to
+ * interface @iface, if it is part of an existing connection.
+ *
+ * Returns 0 in case of success or an error code otherwise
+ */
+int
+iptablesRemoveForwardAllowRelatedIn(iptablesContext *ctx,
+                             const char *network,
+                             const char *iface,
+                             const char *physdev)
+{
+    return iptablesForwardAllowRelatedIn(ctx, network, iface, physdev, REMOVE);
+}
+
+/* Allow all traffic destined to the bridge, with a valid network address
+ */
+static int
+iptablesForwardAllowIn(iptablesContext *ctx,
+                       const char *network,
+                       const char *iface,
+                       const char *physdev,
+                       int action)
+{
+    if (physdev && physdev[0]) {
+        return iptablesAddRemoveRule(ctx->forward_filter,
+                                     action,
+                                     "--destination", network,
+                                     "--in-interface", physdev,
+                                     "--out-interface", iface,
+                                     "--jump", "ACCEPT",
+                                     NULL);
+    } else {
+        return iptablesAddRemoveRule(ctx->forward_filter,
+                                     action,
+                                     "--destination", network,
+                                     "--out-interface", iface,
                                      "--jump", "ACCEPT",
                                      NULL);
     }

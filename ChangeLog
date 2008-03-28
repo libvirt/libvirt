@@ -1,4 +1,14 @@
-Fri Mar 27 13:55:56 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
+Fri Mar 28 16:34:56 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/network.rng: Add new routed networking schema
+	* src/iptables.c, src/iptables.h: Add iptablesAddForwardAllowRelatedIn
+	and iptablesRemoveForwardAllowRelatedIn
+	* src/qemu_conf.h: Add attribute for routed networking
+	* src/qemu_conf.c: Parse / format new networking attributes
+	* src/qemu_driver.c: Support routed networking config
+	(patches from Mads Chr. Olesen)
+	
+Fri Mar 28 13:55:56 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/storage_conf.c: Fix XML output tag for FS storage pools
 	directory path

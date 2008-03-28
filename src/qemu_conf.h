@@ -83,6 +83,12 @@ enum qemud_vm_net_type {
     QEMUD_NET_BRIDGE,
 };
 
+/* 2 possible types of forwarding */
+enum qemud_vm_net_forward_type {
+    QEMUD_NET_FORWARD_NAT,
+    QEMUD_NET_FORWARD_ROUTE,
+};
+
 #define QEMUD_MAX_NAME_LEN 50
 #define QEMUD_MAX_XML_LEN 4096
 #define QEMUD_MAX_ERROR_LEN 1024
@@ -266,6 +272,7 @@ struct qemud_network_def {
     int forwardDelay;
 
     int forward;
+    int forwardMode; /* From qemud_vm_net_forward_type */
     char forwardDev[BR_IFNAME_MAXLEN];
 
     char ipAddress[BR_INET_ADDR_MAXLEN];

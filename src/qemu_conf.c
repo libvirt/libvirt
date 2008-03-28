@@ -2521,6 +2521,17 @@ static struct qemud_network_def *qemudParseNetworkXML(virConnectPtr conn,
         }
 
         def->forward = 1;
+
+        tmp = xmlXPathEval(BAD_CAST "string(/network/forward[1]/@mode)", ctxt);
+        if ((tmp != NULL) && (tmp->type == XPATH_STRING) &&
+            (tmp->stringval != NULL) && (xmlStrEqual(tmp->stringval, BAD_CAST "route"))) {
+            def->forwardMode = QEMUD_NET_FORWARD_ROUTE;
+        } else {
+            def->forwardMode = QEMUD_NET_FORWARD_NAT;
+        }
+        xmlXPathFreeObject(tmp);
+        tmp = NULL;
+
         tmp = xmlXPathEval(BAD_CAST "string(/network/forward[1]/@dev)", ctxt);
         if ((tmp != NULL) && (tmp->type == XPATH_STRING) &&
             (tmp->stringval != NULL) && (tmp->stringval[0] != 0)) {
@@ -3160,10 +3171,10 @@ char *qemudGenerateNetworkXML(virConnectPtr conn,
 
     if (def->forward) {
         if (def->forwardDev[0]) {
-            virBufferVSprintf(buf, "  <forward dev='%s'/>\n",
-                              def->forwardDev);
+            virBufferVSprintf(buf, "  <forward dev='%s' mode='%s'/>\n",
+                              def->forwardDev, (def->forwardMode == QEMUD_NET_FORWARD_ROUTE ? "route" : "nat"));
         } else {
-            virBufferAddLit(buf, "  <forward/>\n");
+            virBufferVSprintf(buf, "  <forward mode='%s'/>\n", (def->forwardMode == QEMUD_NET_FORWARD_ROUTE ? "route" : "nat"));
         }
     }
 
