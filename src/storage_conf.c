@@ -479,7 +479,7 @@ virStoragePoolDefFormat(virConnectPtr conn,
     }
     if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_DIR) &&
         def->source.dir &&
-        virBufferVSprintf(buf,"    <directory path='%s'/>\n", def->source.dir) < 0)
+        virBufferVSprintf(buf,"    <dir path='%s'/>\n", def->source.dir) < 0)
         goto no_memory;
     if ((options->flags & VIR_STORAGE_BACKEND_POOL_SOURCE_ADAPTER) &&
         def->source.adapter &&

@@ -1,3 +1,8 @@
+Fri Mar 27 13:55:56 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/storage_conf.c: Fix XML output tag for FS storage pools
+	directory path
+
 Thu Mar 27 20:59:56 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/iptables.c: Ensure masquering rule only catches traffic
