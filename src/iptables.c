@@ -1032,6 +1032,7 @@ iptablesForwardMasquerade(iptablesContext *ctx,
         return iptablesAddRemoveRule(ctx->nat_postrouting,
                                      action,
                                      "--source", network,
+                                     "--destination", "!", network,
                                      "--out-interface", physdev,
                                      "--jump", "MASQUERADE",
                                      NULL);
@@ -1039,6 +1040,7 @@ iptablesForwardMasquerade(iptablesContext *ctx,
         return iptablesAddRemoveRule(ctx->nat_postrouting,
                                      action,
                                      "--source", network,
+                                     "--destination", "!", network,
                                      "--jump", "MASQUERADE",
                                      NULL);
     }
