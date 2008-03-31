@@ -1,3 +1,11 @@
+Mon Mar 31 13:58:25 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/lxc_conf.c src/lxc_conf.h: cleanup patch for the conf driver
+	  of linux countainers, reuse XPath helpers, make string fields dynamic
+	  and remove a memory leak.
+	* src/lxc_driver.c: avoid some problems when the config directory is
+	  not accessible and for regression tests
+
 Fri Mar 28 16:34:56 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/network.rng: Add new routed networking schema
@@ -6,8 +14,8 @@ Fri Mar 28 16:34:56 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
 	* src/qemu_conf.h: Add attribute for routed networking
 	* src/qemu_conf.c: Parse / format new networking attributes
 	* src/qemu_driver.c: Support routed networking config
-	(patches from Mads Chr. Olesen)
-	
+	  (patches from Mads Chr. Olesen)
+
 Fri Mar 28 13:55:56 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/storage_conf.c: Fix XML output tag for FS storage pools

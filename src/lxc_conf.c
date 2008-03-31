@@ -41,6 +41,7 @@
 #include "buf.h"
 #include "util.h"
 #include "uuid.h"
+#include "xml.h"
 
 #include "lxc_conf.h"
 
@@ -70,18 +71,6 @@ void lxcError(virConnectPtr conn, virDomainPtr dom, int code,
                     codeErrorMessage, errorMessage);
 }
 
-static inline int lxcIsEmptyXPathStringObj(xmlXPathObjectPtr xpathObj)
-{
-    if ((xpathObj == NULL) ||
-        (xpathObj->type != XPATH_STRING) ||
-        (xpathObj->stringval == NULL) ||
-        (xpathObj->stringval[0] == 0)) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
 static int lxcParseMountXML(virConnectPtr conn, xmlNodePtr nodePtr,
                             lxc_mount_t *lxcMount)
 {
@@ -92,7 +81,8 @@ static int lxcParseMountXML(virConnectPtr conn, xmlNodePtr nodePtr,
     int strLen;
     int rc = -1;
 
-    if (NULL == (fsType = xmlGetProp(nodePtr, BAD_CAST "type"))) {
+    fsType = xmlGetProp(nodePtr, BAD_CAST "type");
+    if (NULL == fsType) {
         lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
                  _("missing filesystem type"));
         goto error;
@@ -155,6 +145,7 @@ static int lxcParseMountXML(virConnectPtr conn, xmlNodePtr nodePtr,
     rc = 0;
 
 error:
+    xmlFree(fsType);
     xmlFree(mountSource);
     xmlFree(mountTarget);
 
@@ -164,55 +155,40 @@ error:
 static int lxcParseDomainName(virConnectPtr conn, char **name,
                               xmlXPathContextPtr contextPtr)
 {
-    int rc = -1;
-    xmlXPathObjectPtr xpathObj = NULL;
+    char *res;
 
-    xpathObj = xmlXPathEval(BAD_CAST "string(/domain/name[1])", contextPtr);
-    if (lxcIsEmptyXPathStringObj(xpathObj)) {
+    res = virXPathString("string(/domain/name[1])", contextPtr);
+    if (res == NULL) {
         lxcError(conn, NULL, VIR_ERR_NO_NAME, NULL);
-        goto parse_complete;
+        return(-1);
     }
 
-    *name = strdup((const char *)xpathObj->stringval);
-    if (NULL == *name) {
-        lxcError(conn, NULL, VIR_ERR_NO_MEMORY, NULL);
-        goto parse_complete;
-    }
-
-
-    rc = 0;
-
-parse_complete:
-    xmlXPathFreeObject(xpathObj);
-    return rc;
+    *name = res;
+    return(0);
 }
 
 static int lxcParseDomainUUID(virConnectPtr conn, unsigned char *uuid,
                               xmlXPathContextPtr contextPtr)
 {
-    int rc = -1;
-    xmlXPathObjectPtr xpathObj = NULL;
+    char *res;
 
-    xpathObj = xmlXPathEval(BAD_CAST "string(/domain/uuid[1])", contextPtr);
-    if (lxcIsEmptyXPathStringObj(xpathObj)) {
-        if ((rc = virUUIDGenerate(uuid))) {
+    res = virXPathString("string(/domain/uuid[1])", contextPtr);
+    if (res == NULL) {
+        if (virUUIDGenerate(uuid)) {
             lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("failed to generate uuid: %s"), strerror(rc));
-            goto parse_complete;
+                     _("failed to generate uuid"));
+            return(-1);
         }
     } else {
-        if (virUUIDParse((const char *)xpathObj->stringval, uuid) < 0) {
+        if (virUUIDParse(res, uuid) < 0) {
             lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
                      _("invalid uuid element"));
-            goto parse_complete;
+	    free(res);
+            return(-1);
         }
+	free(res);
     }
-
-    rc = 0;
-
-parse_complete:
-    xmlXPathFreeObject(xpathObj);
-    return rc;
+    return(0);
 }
 
 static int lxcParseDomainMounts(virConnectPtr conn,
@@ -220,27 +196,23 @@ static int lxcParseDomainMounts(virConnectPtr conn,
                                 xmlXPathContextPtr contextPtr)
 {
     int rc = -1;
-    xmlXPathObjectPtr xpathObj = NULL;
     int i;
     lxc_mount_t *mountObj;
     lxc_mount_t *prevObj = NULL;
     int nmounts = 0;
+    xmlNodePtr *list;
+    int res;
 
-    xpathObj = xmlXPathEval(BAD_CAST "/domain/devices/filesystem",
-                            contextPtr);
-    if ((xpathObj != NULL) &&
-        (xpathObj->type == XPATH_NODESET) &&
-        (xpathObj->nodesetval != NULL) &&
-        (xpathObj->nodesetval->nodeNr >= 0)) {
-        for (i = 0; i < xpathObj->nodesetval->nodeNr; ++i) {
+    res = virXPathNodeSet("/domain/devices/filesystem", contextPtr, &list);
+    if (res > 0) {
+        for (i = 0; i < res; ++i) {
             mountObj = calloc(1, sizeof(lxc_mount_t));
             if (NULL == mountObj) {
                 lxcError(conn, NULL, VIR_ERR_NO_MEMORY, "mount");
                 goto parse_complete;
             }
 
-            rc = lxcParseMountXML(conn, xpathObj->nodesetval->nodeTab[i],
-                                  mountObj);
+            rc = lxcParseMountXML(conn, list[i], mountObj);
             if (0 > rc) {
                 free(mountObj);
                 goto parse_complete;
@@ -256,101 +228,76 @@ static int lxcParseDomainMounts(virConnectPtr conn,
             }
             prevObj = mountObj;
         }
+	free(list);
     }
 
     rc = nmounts;
 
 parse_complete:
-    xmlXPathFreeObject(xpathObj);
-
     return rc;
 }
 
-static int lxcParseDomainInit(virConnectPtr conn, char* init, xmlXPathContextPtr contextPtr)
+static int lxcParseDomainInit(virConnectPtr conn, char** init,
+                              xmlXPathContextPtr contextPtr)
 {
-    int rc = -1;
-    xmlXPathObjectPtr xpathObj = NULL;
+    char *res;
 
-    xpathObj = xmlXPathEval(BAD_CAST "string(/domain/os/init[1])",
-                           contextPtr);
-    if (lxcIsEmptyXPathStringObj(xpathObj)) {
+    res = virXPathString("string(/domain/os/init[1])", contextPtr);
+    if (res == NULL) {
         lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
                  _("invalid or missing init element"));
-        goto parse_complete;
+        return(-1);
     }
 
-    if (strlen((const char*)xpathObj->stringval) >= PATH_MAX - 1) {
+    if (strlen(res) >= PATH_MAX - 1) {
         lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
                  _("init string too long"));
-        goto parse_complete;
+        free(res);
+	return(-1);
     }
 
-    strcpy(init, (const char *)xpathObj->stringval);
+    *init = res;
 
-    rc = 0;
-
-parse_complete:
-    xmlXPathFreeObject(xpathObj);
-
-    return rc;
+    return(0);
 }
 
 
-static int lxcParseDomainTty(virConnectPtr conn, char *tty, xmlXPathContextPtr contextPtr)
+static int lxcParseDomainTty(virConnectPtr conn, char **tty, xmlXPathContextPtr contextPtr)
 {
-    int rc = -1;
-    xmlXPathObjectPtr xpathObj = NULL;
+    char *res;
 
-    xpathObj = xmlXPathEval(BAD_CAST "string(/domain/devices/console[1]/@tty)",
-                            contextPtr);
-    if (lxcIsEmptyXPathStringObj(xpathObj)) {
+    res = virXPathString("string(/domain/devices/console[1]/@tty)", contextPtr);
+    if (res == NULL) {
         /* make sure the tty string is empty */
-        tty[0] = 0x00;
+        *tty = strdup("");
+	if (*tty == NULL) {
+	    lxcError(conn, NULL, VIR_ERR_NO_MEMORY, NULL);
+	    return(-1);
+	}
     } else {
-        /* check the source string length */
-        if (strlen((const char*)xpathObj->stringval) >= LXC_MAX_TTY_NAME - 1) {
-            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("tty name is too long"));
-            goto parse_complete;
-        }
-        strcpy(tty, (const char *)xpathObj->stringval);
+        *tty = res;
     }
 
-    rc = 0;
-
-parse_complete:
-    xmlXPathFreeObject(xpathObj);
-
-    return rc;
+    return(0);
 }
 
 static int lxcParseDomainMemory(virConnectPtr conn, int* memory, xmlXPathContextPtr contextPtr)
 {
-    int rc = -1;
-    xmlXPathObjectPtr xpathObj = NULL;
-    char *endChar = NULL;
+    long res;
+    int rc;
 
-    xpathObj = xmlXPathEval(BAD_CAST "string(/domain/memory[1])", contextPtr);
-    if (lxcIsEmptyXPathStringObj(xpathObj)) {
+    rc = virXPathLong("string(/domain/memory[1])", contextPtr, &res);
+    if ((rc == -2) || ((rc == 0) && (res <= 0))) {
+	*memory = -1;
+	lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+	         _("invalid memory value"));
+    } else if (rc < 0) {
         /* not an error, default to an invalid value so it's not used */
-        *memory = -1;
+	*memory = -1;
     } else {
-        *memory = strtoll((const char*)xpathObj->stringval,
-                                          &endChar, 10);
-        if ((endChar == (const char*)xpathObj->stringval) ||
-           (*endChar != '\0')) {
-            lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("invalid memory value"));
-            goto parse_complete;
-        }
+	*memory = (int) res;
     }
-
-    rc = 0;
-
-parse_complete:
-    xmlXPathFreeObject(xpathObj);
-
-    return rc;
+    return(0);
 }
 
 static lxc_vm_def_t * lxcParseXML(virConnectPtr conn, xmlDocPtr docPtr)
@@ -411,7 +358,7 @@ static lxc_vm_def_t * lxcParseXML(virConnectPtr conn, xmlDocPtr docPtr)
         goto error;
     }
 
-    if (lxcParseDomainInit(conn, containerDef->init, contextPtr) < 0) {
+    if (lxcParseDomainInit(conn, &(containerDef->init), contextPtr) < 0) {
         goto error;
     }
 
@@ -425,7 +372,7 @@ static lxc_vm_def_t * lxcParseXML(virConnectPtr conn, xmlDocPtr docPtr)
         goto error;
     }
 
-    if (lxcParseDomainTty(conn, containerDef->tty, contextPtr) < 0) {
+    if (lxcParseDomainTty(conn, &(containerDef->tty), contextPtr) < 0) {
         goto error;
     }
 
@@ -708,7 +655,8 @@ int lxcLoadContainerInfo(lxc_driver_t *driver)
             rc = 0;
         } else {
             lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
-                     _("failed to open config directory: %s"), strerror(errno));
+                     _("failed to open config directory %s: %s"),
+		     driver->configDir, strerror(errno));
         }
 
         goto load_complete;
@@ -837,9 +785,13 @@ no_memory:
 
 void lxcFreeVMDef(lxc_vm_def_t *vmdef)
 {
-    lxc_mount_t *curMount = vmdef->mounts;
+    lxc_mount_t *curMount;
     lxc_mount_t *nextMount;
 
+    if (vmdef == NULL)
+        return;
+
+    curMount = vmdef->mounts;
     while (curMount) {
         nextMount = curMount->next;
         free(curMount);
@@ -847,8 +799,9 @@ void lxcFreeVMDef(lxc_vm_def_t *vmdef)
     }
 
     free(vmdef->name);
-    vmdef->name = NULL;
-
+    free(vmdef->init);
+    free(vmdef->tty);
+    free(vmdef);
 }
 
 void lxcFreeVMs(lxc_vm_t *vms)
@@ -859,7 +812,6 @@ void lxcFreeVMs(lxc_vm_t *vms)
     while (curVm) {
         lxcFreeVM(curVm);
         nextVm = curVm->next;
-        free(curVm);
         curVm = nextVm;
     }
 }
@@ -867,7 +819,7 @@ void lxcFreeVMs(lxc_vm_t *vms)
 void lxcFreeVM(lxc_vm_t *vm)
 {
     lxcFreeVMDef(vm->def);
-    free(vm->def);
+    free(vm);
 }
 
 lxc_vm_t *lxcFindVMByID(const lxc_driver_t *driver, int id)

@@ -61,7 +61,7 @@
 
 static int lxcStartup(void);
 static int lxcShutdown(void);
-static lxc_driver_t *lxc_driver;
+static lxc_driver_t *lxc_driver = NULL;
 
 /* Functions */
 static int lxcDummyChild( void *argv ATTRIBUTE_UNUSED )
@@ -378,6 +378,13 @@ static char *lxcDomainDumpXML(virDomainPtr dom,
 
 static int lxcStartup(void)
 {
+    uid_t uid = getuid();
+
+    /* Check that the user is root */
+    if (0 != uid) {
+        return -1;
+    }
+
     lxc_driver = calloc(1, sizeof(lxc_driver_t));
     if (NULL == lxc_driver) {
         return -1;
@@ -412,11 +419,12 @@ static void lxcFreeDriver(lxc_driver_t *driver)
 
 static int lxcShutdown(void)
 {
-    lxc_vm_t *vms = lxc_driver->vms;
-
-    lxcFreeVMs(vms);
+    if (lxc_driver == NULL)
+        return(NULL);
+    lxcFreeVMs(lxc_driver->vms);
     lxc_driver->vms = NULL;
     lxcFreeDriver(lxc_driver);
+    lxc_driver = NULL;
 
     return 0;
 }
@@ -430,6 +438,8 @@ static int lxcShutdown(void)
  */
 static int
 lxcActive(void) {
+    if (lxc_driver == NULL)
+        return(0);
     /* If we've any active networks or guests, then we
      * mark this driver as active
      */

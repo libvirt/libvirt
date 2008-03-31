@@ -51,7 +51,7 @@ struct __lxc_vm_def {
     int id;
 
     /* init command string */
-    char init[PATH_MAX];
+    char *init;
 
     int maxMemory;
 
@@ -60,7 +60,7 @@ struct __lxc_vm_def {
     lxc_mount_t *mounts;
 
     /* tty device */
-    char tty[LXC_MAX_TTY_NAME];
+    char *tty;
 };
 
 typedef struct __lxc_vm lxc_vm_t;
