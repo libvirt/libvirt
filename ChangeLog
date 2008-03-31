@@ -1,3 +1,8 @@
+Mon Mar 31 14:12:42 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* configure.in: small patch from Mike Gerdts to avoid problems with
+	  older awk implementations, fixes #439649
+
 Mon Mar 31 13:58:25 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/lxc_conf.c src/lxc_conf.h: cleanup patch for the conf driver
