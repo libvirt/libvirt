@@ -264,6 +264,7 @@ struct _virStorageVol {
  *		API for error handling					*
  *									*
  ************************************************************************/
+extern virError __lastErr;
 void __virRaiseError(virConnectPtr conn,
 		     virDomainPtr dom,
 		     virNetworkPtr net,

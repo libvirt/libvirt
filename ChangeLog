@@ -1,3 +1,9 @@
+Mon Mar 31 16:35:47 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/hash.c src/internal.h src/virterror.c: remove dandling
+	  domain/net/conn pointers from error data when released.
+	* src/lxc_driver.c: fix a NULL/0 return error mismatch
+
 Mon Mar 31 14:12:42 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in: small patch from Mike Gerdts to avoid problems with

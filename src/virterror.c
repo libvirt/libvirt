@@ -18,7 +18,7 @@
 #include "libvirt/virterror.h"
 #include "internal.h"
 
-static virError lastErr =       /* the last error */
+virError __lastErr =       /* the last error */
 { 0, 0, NULL, VIR_ERR_NONE, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL };
 static virErrorFunc virErrorHandler = NULL;     /* global error handler */
 static void *virUserData = NULL;        /* associated data */
@@ -72,9 +72,9 @@ static void *virUserData = NULL;        /* associated data */
 virErrorPtr
 virGetLastError(void)
 {
-    if (lastErr.code == VIR_ERR_OK)
+    if (__lastErr.code == VIR_ERR_OK)
         return (NULL);
-    return (&lastErr);
+    return (&__lastErr);
 }
 
 /*
@@ -92,10 +92,10 @@ virCopyLastError(virErrorPtr to)
 {
     if (to == NULL)
         return (-1);
-    if (lastErr.code == VIR_ERR_OK)
+    if (__lastErr.code == VIR_ERR_OK)
         return (0);
-    memcpy(to, &lastErr, sizeof(virError));
-    return (lastErr.code);
+    memcpy(to, &__lastErr, sizeof(virError));
+    return (__lastErr.code);
 }
 
 /**
@@ -124,7 +124,7 @@ virResetError(virErrorPtr err)
 void
 virResetLastError(void)
 {
-    virResetError(&lastErr);
+    virResetError(&__lastErr);
 }
 
 /**
@@ -347,7 +347,7 @@ __virRaiseError(virConnectPtr conn, virDomainPtr dom, virNetworkPtr net,
                 const char *str1, const char *str2, const char *str3,
                 int int1, int int2, const char *msg, ...)
 {
-    virErrorPtr to = &lastErr;
+    virErrorPtr to = &__lastErr;
     void *userData = virUserData;
     virErrorFunc handler = virErrorHandler;
     char *str;

@@ -420,7 +420,7 @@ static void lxcFreeDriver(lxc_driver_t *driver)
 static int lxcShutdown(void)
 {
     if (lxc_driver == NULL)
-        return(NULL);
+        return(-1);
     lxcFreeVMs(lxc_driver->vms);
     lxc_driver->vms = NULL;
     lxcFreeDriver(lxc_driver);

@@ -757,6 +757,9 @@ virReleaseConnect(virConnectPtr conn) {
         virHashFree(conn->storageVols, (virHashDeallocator) virStorageVolFreeName);
 
     virResetError(&conn->err);
+    if (__lastErr.conn == conn)
+        __lastErr.conn = NULL;
+
     free(conn->name);
 
     pthread_mutex_unlock(&conn->lock);
@@ -880,6 +883,10 @@ virReleaseDomain(virDomainPtr domain) {
         virHashError(conn, VIR_ERR_INTERNAL_ERROR,
                      _("domain missing from connection hash table"));
 
+    if (conn->err.dom == domain)
+        conn->err.dom = NULL;
+    if (__lastErr.dom == domain)
+        __lastErr.dom = NULL;
     domain->magic = -1;
     domain->id = -1;
     free(domain->name);
@@ -1012,6 +1019,11 @@ virReleaseNetwork(virNetworkPtr network) {
     if (virHashRemoveEntry(conn->networks, network->name, NULL) < 0)
         virHashError(conn, VIR_ERR_INTERNAL_ERROR,
                      _("network missing from connection hash table"));
+
+    if (conn->err.net == network)
+        conn->err.net = NULL;
+    if (__lastErr.net == network)
+        __lastErr.net = NULL;
 
     network->magic = -1;
     free(network->name);
