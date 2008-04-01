@@ -1,3 +1,8 @@
+Tue Apr  1 15:00:03 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/lxc_conf.c: patch from Dave Leskovec fixing an freed memory
+	  access I introduced yesterday
+
 Mon Mar 31 16:35:47 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/hash.c src/internal.h src/virterror.c: remove dandling

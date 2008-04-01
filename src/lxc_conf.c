@@ -810,8 +810,8 @@ void lxcFreeVMs(lxc_vm_t *vms)
     lxc_vm_t *nextVm;
 
     while (curVm) {
-        lxcFreeVM(curVm);
         nextVm = curVm->next;
+        lxcFreeVM(curVm);
         curVm = nextVm;
     }
 }
