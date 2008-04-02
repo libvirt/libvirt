@@ -19,7 +19,9 @@
 #include "internal.h"
 
 virError __lastErr =       /* the last error */
-{ 0, 0, NULL, VIR_ERR_NONE, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL };
+  { .code = 0, .domain = 0, .message = NULL, .level = VIR_ERR_NONE,
+    .conn = NULL, .dom = NULL, .str1 = NULL, .str2 = NULL, .str3 = NULL,
+    .int1 = 0, .int2 = 0, .net = NULL };
 static virErrorFunc virErrorHandler = NULL;     /* global error handler */
 static void *virUserData = NULL;        /* associated data */
 
