@@ -106,6 +106,17 @@ typedef struct _testNet *testNetPtr;
 
 #define MAX_DOMAINS 20
 #define MAX_NETWORKS 20
+#define MAX_CPUS 128
+
+struct _testCell {
+    unsigned long mem;
+    int numCpus;
+    int cpus[MAX_CPUS];
+};
+typedef struct _testCell testCell;
+typedef struct _testCell *testCellPtr;
+
+#define MAX_CELLS 128
 
 struct _testConn {
     char path[PATH_MAX];
@@ -115,6 +126,8 @@ struct _testConn {
     testDom domains[MAX_DOMAINS];
     int numNetworks;
     testNet networks[MAX_NETWORKS];
+    int numCells;
+    testCell cells[MAX_CELLS];
 };
 typedef struct _testConn testConn;
 typedef struct _testConn *testConnPtr;
@@ -638,6 +651,16 @@ static int testOpenDefault(virConnectPtr conn) {
     strcpy(privconn->networks[0].dhcpStart, "192.168.122.128");
     strcpy(privconn->networks[0].dhcpEnd, "192.168.122.253");
 
+    // Numa setup
+    privconn->numCells = 2;
+    for (u = 0; u < 2; ++u) {
+        privconn->cells[u].numCpus = 8;
+        privconn->cells[u].mem = (u + 1) * 2048 * 1024;
+    }
+    for (u = 0 ; u < 16 ; u++) {
+        privconn->cells[u % 2].cpus[(u / 2)] = u;
+    }
+
     conn->privateData = privconn;
     return (VIR_DRV_OPEN_SUCCESS);
 }
@@ -711,6 +734,7 @@ static int testOpenFromFile(virConnectPtr conn,
     privconn->nextDomID = 1;
     privconn->numDomains = 0;
     privconn->numNetworks = 0;
+    privconn->numCells = 0;
     strncpy(privconn->path, file, PATH_MAX-1);
     privconn->path[PATH_MAX-1] = '\0';
     memmove(&privconn->nodeInfo, &defaultNodeInfo, sizeof(defaultNodeInfo));
@@ -982,8 +1006,9 @@ static char *testGetCapabilities (virConnectPtr conn)
     virCapsPtr caps;
     virCapsGuestPtr guest;
     char *xml;
-    int cell1[] = { 0, 2, 4, 6, 8, 10, 12, 14 };
-    int cell2[] = { 1, 3, 5, 7, 9, 11, 13, 15 };
+    int i;
+
+    GET_CONNECTION(conn, -1);
 
     if ((caps = virCapabilitiesNew(TEST_MODEL, 0, 0)) == NULL)
         goto no_memory;
@@ -993,10 +1018,11 @@ static char *testGetCapabilities (virConnectPtr conn)
     if (virCapabilitiesAddHostFeature(caps ,"nonpae") < 0)
         goto no_memory;
 
-    if (virCapabilitiesAddHostNUMACell(caps, 0, 8, cell1) < 0)
-        goto no_memory;
-    if (virCapabilitiesAddHostNUMACell(caps, 1, 8, cell2) < 0)
-        goto no_memory;
+    for (i = 0; i < privconn->numCells; ++i) {
+        if (virCapabilitiesAddHostNUMACell(caps, i, privconn->cells[i].numCpus,
+                                           privconn->cells[i].cpus) < 0)
+            goto no_memory;
+    }
 
     if ((guest = virCapabilitiesAddGuest(caps,
                                          "linux",
@@ -1576,6 +1602,29 @@ static virDomainPtr testDomainDefineXML(virConnectPtr conn,
     return virGetDomain(conn, privconn->domains[handle].name, privconn->domains[handle].uuid);
 }
 
+static int testNodeGetCellsFreeMemory(virConnectPtr conn,
+                                      unsigned long long *freemems,
+                                      int startCell, int maxCells) {
+    int i, j;
+
+    GET_CONNECTION(conn, -1);
+
+    if (startCell > privconn->numCells) {
+        testError(conn, NULL, NULL, VIR_ERR_INVALID_ARG,
+                  _("Range exceeds available cells"));
+        return -1;
+    }
+
+    for (i = startCell, j = 0;
+         (i < privconn->numCells && j < maxCells) ;
+         ++i, ++j) {
+        freemems[j] = privconn->cells[i].mem;
+    }
+
+    return j;
+}
+
+
 static int testDomainCreate(virDomainPtr domain) {
     GET_DOMAIN(domain, -1);
 
@@ -2014,7 +2063,7 @@ static virDriver testDriver = {
     NULL, /* domainMigrateFinish */
     NULL, /* domainBlockStats */
     NULL, /* domainInterfaceStats */
-    NULL, /* nodeGetCellsFreeMemory */
+    testNodeGetCellsFreeMemory, /* nodeGetCellsFreeMemory */
     NULL, /* getFreeMemory */
 };
 

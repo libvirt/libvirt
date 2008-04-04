@@ -1,3 +1,8 @@
+Fri Apr  4 09:29:08 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/test.c: patch from Cole Robinson to add
+	  virNodeGetCellsFreeMemory to the test driver
+
 Wed Apr  2 17:19:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	C99 initializer on __lastErr
