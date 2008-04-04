@@ -604,7 +604,7 @@ void *virHashSearch(virHashTablePtr table, virHashSearcher iter, const void *dat
 /**
  * virHashError:
  * @conn: the connection if available
- * @error: the error noumber
+ * @error: the error number
  * @info: extra information string
  *
  * Handle an error at the connection level

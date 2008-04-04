@@ -96,7 +96,7 @@ typedef enum {
 } vshErrorLevel;
 
 /*
- * The error handler for virtsh
+ * The error handler for virsh
  */
 static void
 virshErrorHandler(void *unused, virErrorPtr error)
@@ -3615,7 +3615,7 @@ static int cmdVolSize(const char *data, unsigned long long *val)
         return -1;
 
     if (end && *end) {
-        /* Delibrate fallthrough cases here :-) */
+        /* Deliberate fallthrough cases here :-) */
         switch (*end) {
         case 'T':
             *val *= 1024;
@@ -5464,13 +5464,13 @@ vshCommandOptDomainBy(vshControl * ctl, vshCmd * cmd, const char *optname,
     }
     /* try it by UUID */
     if (dom==NULL && (flag & VSH_BYUUID) && strlen(n)==VIR_UUID_STRING_BUFLEN-1) {
-        vshDebug(ctl, 5, "%s: <%s> tring as domain UUID\n",
+        vshDebug(ctl, 5, "%s: <%s> trying as domain UUID\n",
                  cmd->def->name, optname);
         dom = virDomainLookupByUUIDString(ctl->conn, n);
     }
     /* try it by NAME */
     if (dom==NULL && (flag & VSH_BYNAME)) {
-        vshDebug(ctl, 5, "%s: <%s> tring as domain NAME\n",
+        vshDebug(ctl, 5, "%s: <%s> trying as domain NAME\n",
                  cmd->def->name, optname);
         dom = virDomainLookupByName(ctl->conn, n);
     }
@@ -5501,13 +5501,13 @@ vshCommandOptNetworkBy(vshControl * ctl, vshCmd * cmd, const char *optname,
 
     /* try it by UUID */
     if (network==NULL && (flag & VSH_BYUUID) && strlen(n)==VIR_UUID_STRING_BUFLEN-1) {
-        vshDebug(ctl, 5, "%s: <%s> tring as network UUID\n",
+        vshDebug(ctl, 5, "%s: <%s> trying as network UUID\n",
 		 cmd->def->name, optname);
         network = virNetworkLookupByUUIDString(ctl->conn, n);
     }
     /* try it by NAME */
     if (network==NULL && (flag & VSH_BYNAME)) {
-        vshDebug(ctl, 5, "%s: <%s> tring as network NAME\n",
+        vshDebug(ctl, 5, "%s: <%s> trying as network NAME\n",
                  cmd->def->name, optname);
         network = virNetworkLookupByName(ctl->conn, n);
     }
@@ -5670,7 +5670,7 @@ vshCommandGetToken(vshControl * ctl, char *str, char **end, char **res)
     if (p == NULL || *p == '\0')
         return VSH_TK_END;
     if (*p == ';') {
-        *end = ++p;             /* = \0 or begi of next command */
+        *end = ++p;             /* = \0 or begin of next command */
         return VSH_TK_END;
     }
     while (*p) {
@@ -5834,7 +5834,7 @@ vshCommandParse(vshControl * ctl, char *cmdstr)
                 break;
         }
 
-        /* commad parsed -- allocate new struct for the command */
+        /* command parsed -- allocate new struct for the command */
         if (cmd) {
             vshCmd *c = vshMalloc(ctl, sizeof(vshCmd));
 

@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /><link rel="stylesheet" type="text/css" href="libvirt.css" /><link rel="SHORTCUT ICON" href="/32favicon.png" /><title>Access control</title></head><body><div id="container"><div id="intro"><div id="adjustments"></div><div id="pageHeader"></div><div id="content2"><h1 class="style1">Access control</h1><p>
 When connecting to libvirt, some connections may require client
 authentication before allowing use of the APIs. The set of possible
-authentication mechanisms is administrator controlled, independant
+authentication mechanisms is administrator controlled, independent
 of applications using libvirt.
 </p><ul><li><a href="#ACL_server_config">Server configuration</a></li>
  <li><a href="#ACL_server_unix_perms">UNIX socket permissions/group</a></li>
@@ -44,7 +44,7 @@ session to authenticate using the user's password. This is akin to <code>sudo</c
 auth, but does not require that the client application ultimately run as root.
 Default policy will still allow any application to connect to the RO socket.
 </p><p>
-The default policy can be overriden by the administrator using the PolicyKit
+The default policy can be overridden by the administrator using the PolicyKit
 master configuration file in <code>/etc/PolicyKit/PolicyKit.conf</code>. The
 <code>PolicyKit.conf(5)</code> manual page provides details on the syntax
 available. The two libvirt daemon actions available are named <code>org.libvirt.unix.monitor</code>
@@ -111,7 +111,7 @@ Plugin "gssapiv2" [loaded],     API version: 4
         security flags: NO_ANONYMOUS|NO_PLAINTEXT|NO_ACTIVE|PASS_CREDENTIALS|MUTUAL_AUTH
         features: WANT_CLIENT_FIRST|PROXY_AUTHENTICATION|NEED_SERVER_FQDN
 </pre><p>
-Next is is necessary for the adminsitrator of the Kerberos realm to issue a principle
+Next is is necessary for the administrator of the Kerberos realm to issue a principle
 for the libvirt server. There needs to be one principle per host running the libvirt
 daemon. The principle should be named <code>libvirt/full.hostname@KERBEROS.REALM</code>.
 This is typically done by running the <code>kadmin.local</code> command on the Kerberos

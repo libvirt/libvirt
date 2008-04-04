@@ -162,7 +162,7 @@ struct xend {
 /**
  * virXendError:
  * @conn: the connection if available
- * @error: the error noumber
+ * @error: the error number
  * @info: extra information string
  *
  * Handle an error at the xend daemon interface
@@ -183,7 +183,7 @@ virXendError(virConnectPtr conn, virErrorNumber error, const char *info)
 /**
  * virXendErrorInt:
  * @conn: the connection if available
- * @error: the error noumber
+ * @error: the error number
  * @val: extra integer information
  *
  * Handle an error at the xend daemon interface
@@ -3035,7 +3035,7 @@ xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
  * @info: pointer to an array of virVcpuInfo structures (OUT)
  * @maxinfo: number of structures in info array
  * @cpumaps: pointer to an bit map of real CPUs for all vcpus of this domain (in 8-bit bytes) (OUT)
- *	If cpumaps is NULL, then no cupmap information is returned by the API.
+ *	If cpumaps is NULL, then no cpumap information is returned by the API.
  *	It's assumed there is <maxinfo> cpumap in cpumaps array.
  *	The memory allocated to cpumaps must be (maxinfo * maplen) bytes
  *	(ie: calloc(maxinfo, maplen)).
@@ -3044,7 +3044,7 @@ xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
  *	underlying virtualization system (Xen...).
  *
  * Extract information about virtual CPUs of domain, store it in info array
- * and also in cpumaps if this pointer is'nt NULL.
+ * and also in cpumaps if this pointer isn't NULL.
  *
  * Returns the number of info filled in case of success, -1 in case of failure.
  */

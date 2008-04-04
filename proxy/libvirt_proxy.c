@@ -173,7 +173,7 @@ proxyListenUnixSocket(const char *path) {
 
     /*
      * Abstract socket do not hit the filesystem, way more secure and
-     * garanteed to be atomic
+     * guaranteed to be atomic
      */
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
@@ -782,7 +782,7 @@ usage(const char *progname) {
 /**
  * main:
  *
- * Check that we are running with root priviledges, initialize the
+ * Check that we are running with root privileges, initialize the
  * connections to the daemon and or hypervisor, and then run the main loop
  */
 int main(int argc, char **argv) {

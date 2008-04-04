@@ -246,7 +246,7 @@
   </xsl:template>
 
 <!--
-  the menu box for developper's pages
+  the menu box for developer's pages
  -->
 <!--
   the page title

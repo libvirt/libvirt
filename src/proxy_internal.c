@@ -106,7 +106,7 @@ xenProxyInit (void)
 /**
  * virProxyError:
  * @conn: the connection if available
- * @error: the error noumber
+ * @error: the error number
  * @info: extra information string
  *
  * Handle an error at the xend daemon interface
@@ -243,7 +243,7 @@ retry:
 
     /*
      * Abstract socket do not hit the filesystem, way more secure and
-     * garanteed to be atomic
+     * guaranteed to be atomic
      */
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
@@ -298,7 +298,7 @@ virProxyCloseClientSocket(int fd) {
  * virProxyReadClientSocket:
  * @fd: the socket
  * @buffer: the target memory area
- * @len: the lenght in bytes
+ * @len: the length in bytes
  * @quiet: quiet access
  *
  * Process a read from a client socket
@@ -335,7 +335,7 @@ retry:
  * virProxyWriteClientSocket:
  * @fd: the socket
  * @data: the data
- * @len: the lenght of data in bytes
+ * @len: the length of data in bytes
  *
  * Process a read from a client socket
  */

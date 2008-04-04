@@ -731,7 +731,7 @@ __virConfReadFile(const char *filename)
 /**
  * __virConfReadMem:
  * @memory: pointer to the content of the configuration file
- * @len: lenght in byte
+ * @len: length in byte
  *
  * Reads a configuration file loaded in memory. The string can be
  * zero terminated in which case @len can be 0

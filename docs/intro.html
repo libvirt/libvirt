@@ -10,7 +10,7 @@ some of the specific concepts used in libvirt documentation:</p><ul><li>a <stron
   <li>a <strong>domain</strong> is an instance of an operating system running
     on a virtualized machine provided by the hypervisor</li>
 </ul><p style="text-align: center"><img alt="Hypervisor and domains running on a node" src="node.gif" /></p><p>Now we can define the goal of libvirt: to provide the lowest possible
-generic and stable layer to manage domains on a node.</p><p>This implies the following:</p><ul><li>the API should not be targetted to a single virtualization environment
+generic and stable layer to manage domains on a node.</p><p>This implies the following:</p><ul><li>the API should not be targeted to a single virtualization environment
     though Xen is the current default, which also means that some very
     specific capabilities which are not generic enough may not be provided as
     libvirt APIs</li>

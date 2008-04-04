@@ -104,7 +104,7 @@ The content of this structure is not made public by the API.
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConfReadMem"/>virConfReadMem ()</h3><pre class="programlisting"><a href="libvirt-conf.html#virConfPtr">virConfPtr</a>	virConfReadMem		(const char * memory, <br/>					 int len)<br/>
 </pre><p>Reads a configuration file loaded in memory. The string can be zero terminated in which case @len can be 0</p>
-<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>memory</tt></i>:</span></td><td>pointer to the content of the configuration file</td></tr><tr><td><span class="term"><i><tt>len</tt></i>:</span></td><td>lenght in byte</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>an handle to lookup settings or NULL if it failed to parse the content, use virConfFree() to free the data.</td></tr></tbody></table></div></div>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>memory</tt></i>:</span></td><td>pointer to the content of the configuration file</td></tr><tr><td><span class="term"><i><tt>len</tt></i>:</span></td><td>length in byte</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>an handle to lookup settings or NULL if it failed to parse the content, use virConfFree() to free the data.</td></tr></tbody></table></div></div>
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConfWriteFile"/>virConfWriteFile ()</h3><pre class="programlisting">int	virConfWriteFile		(const char * filename, <br/>					 <a href="libvirt-conf.html#virConfPtr">virConfPtr</a> conf)<br/>
 </pre><p>Writes a configuration file back to a file.</p>
@@ -112,7 +112,7 @@ The content of this structure is not made public by the API.
         <hr/>
         <div class="refsect2" lang="en"><h3><a name="virConfWriteMem"/>virConfWriteMem ()</h3><pre class="programlisting">int	virConfWriteMem			(char * memory, <br/>					 int * len, <br/>					 <a href="libvirt-conf.html#virConfPtr">virConfPtr</a> conf)<br/>
 </pre><p>Writes a configuration file back to a memory area. @len is an IN/OUT parameter, it indicates the size available in bytes, and on output the size required for the configuration file (even if the call fails due to insufficient space).</p>
-<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>memory</tt></i>:</span></td><td>pointer to the memory to store the config file</td></tr><tr><td><span class="term"><i><tt>len</tt></i>:</span></td><td>pointer to the lenght in byte of the store, on output the size</td></tr><tr><td><span class="term"><i><tt>conf</tt></i>:</span></td><td>the conf</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of bytes written or -1 in case of error.</td></tr></tbody></table></div></div>
+<div class="variablelist"><table border="0"><col align="left"/><tbody><tr><td><span class="term"><i><tt>memory</tt></i>:</span></td><td>pointer to the memory to store the config file</td></tr><tr><td><span class="term"><i><tt>len</tt></i>:</span></td><td>pointer to the length in byte of the store, on output the size</td></tr><tr><td><span class="term"><i><tt>conf</tt></i>:</span></td><td>the conf</td></tr><tr><td><span class="term"><i><tt>Returns</tt></i>:</span></td><td>the number of bytes written or -1 in case of error.</td></tr></tbody></table></div></div>
         <hr/>
       </div>
     </div>

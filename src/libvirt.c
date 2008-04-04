@@ -52,7 +52,7 @@
 /*
  * TODO:
  * - use lock to protect against concurrent accesses ?
- * - use reference counting to garantee coherent pointer state ?
+ * - use reference counting to guarantee coherent pointer state ?
  */
 
 static virDriverPtr virDriverTab[MAX_DRIVERS];
@@ -359,7 +359,7 @@ virLibDomainError(virDomainPtr domain, virErrorNumber error,
 /**
  * virLibNetworkError:
  * @conn: the connection if available
- * @error: the error noumber
+ * @error: the error number
  * @info: extra information string
  *
  * Handle an error at the connection level
@@ -385,7 +385,7 @@ virLibNetworkError(virNetworkPtr network, virErrorNumber error,
 /**
  * virLibStoragePoolError:
  * @conn: the connection if available
- * @error: the error noumber
+ * @error: the error number
  * @info: extra information string
  *
  * Handle an error at the connection level
@@ -411,7 +411,7 @@ virLibStoragePoolError(virStoragePoolPtr pool, virErrorNumber error,
 /**
  * virLibStorageVolError:
  * @conn: the connection if available
- * @error: the error noumber
+ * @error: the error number
  * @info: extra information string
  *
  * Handle an error at the connection level
@@ -614,7 +614,7 @@ int __virStateActive(void) {
  * Provides two information back, @libVer is the version of the library
  * while @typeVer will be the version of the hypervisor type @type against
  * which the library was compiled. If @type is NULL, "Xen" is assumed, if
- * @type is unknown or not availble, an error code will be returned and
+ * @type is unknown or not available, an error code will be returned and
  * @typeVer will be 0.
  *
  * Returns -1 in case of failure, 0 otherwise, and values for @libVer and
@@ -685,7 +685,7 @@ do_open (const char *name,
 		    DEBUG("Probed %s", latest);
 		    /*
 		     * if running a xen kernel, give it priority over
-		     * QEmu emultation
+		     * QEmu emulation
 		     */
 		    if (STREQ(latest, "xen:///"))
 		        use = latest;
@@ -851,7 +851,7 @@ virConnectOpen (const char *name)
  * @name: URI of the hypervisor
  *
  * This function should be called first to get a restricted connection to the
- * libbrary functionalities. The set of APIs usable are then restricted
+ * library functionalities. The set of APIs usable are then restricted
  * on the available methods to control the domains.
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
@@ -2343,7 +2343,7 @@ virConnectGetCapabilities (virConnectPtr conn)
  * virNodeGetFreeMemory:
  * @conn: pointer to the hypervisor connection
  *
- * provides the free memory availble on the Node
+ * provides the free memory available on the Node
  *
  * Returns the available free memory in kilobytes or 0 in case of error
  */
@@ -2908,7 +2908,7 @@ virDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
  * @maxinfo: number of structures in info array
  * @cpumaps: pointer to an bit map of real CPUs for all vcpus of this
  *      domain (in 8-bit bytes) (OUT)
- *	If cpumaps is NULL, then no cupmap information is returned by the API.
+ *	If cpumaps is NULL, then no cpumap information is returned by the API.
  *	It's assumed there is <maxinfo> cpumap in cpumaps array.
  *	The memory allocated to cpumaps must be (maxinfo * maplen) bytes
  *	(ie: calloc(maxinfo, maplen)).
@@ -2918,7 +2918,7 @@ virDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
  *	underlying virtualization system (Xen...).
  *
  * Extract information about virtual CPUs of domain, store it in info array
- * and also in cpumaps if this pointer is'nt NULL.
+ * and also in cpumaps if this pointer isn't NULL.
  *
  * Returns the number of info filled in case of success, -1 in case of failure.
  */
@@ -4042,7 +4042,7 @@ virStoragePoolLookupByVolume(virStorageVolPtr vol)
  * @flags: future flags, use 0 for now
  *
  * Create a new storage based on its XML description. The
- * pool is not persitent, so its definition will disappear
+ * pool is not persistent, so its definition will disappear
  * when it is destroyed, or if the host is restarted
  *
  * Returns a virStoragePoolPtr object, or NULL if creation failed
@@ -4081,7 +4081,7 @@ virStoragePoolCreateXML(virConnectPtr conn,
  * @flags: future flags, use 0 for now
  *
  * Define a new inactive storage pool based on its XML description. The
- * pool is persitent, until explicitly undefined.
+ * pool is persistent, until explicitly undefined.
  *
  * Returns a virStoragePoolPtr object, or NULL if creation failed
  */

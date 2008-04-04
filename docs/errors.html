@@ -8,7 +8,7 @@ asynchronous error reporting. When an error happens in the library code the
 error is logged, allowing to retrieve it later and if the user registered an
 error callback it will be called synchronously. Once the call to libvirt ends
 the error can be detected by the return value and the full information for
-the last logged error can be retrieved.</p><p>To avoid as much as prossible troubles with a global variable in a
+the last logged error can be retrieved.</p><p>To avoid as much as possible troubles with a global variable in a
 multithreaded environment, libvirt will associate when possible the errors to
 the current connection they are related to, that way the error is stored in a
 dynamic structure which can be made thread specific. Error callback can be
@@ -43,7 +43,7 @@ following fields:</p><ul><li>code: an error number from the <a href="html/libvir
   <li>conn: if available a pointer to the <a href="html/libvirt-libvirt.html#virConnectPtr">virConnectPtr</a>
     connection to the hypervisor where this happened</li>
   <li>dom: if available a pointer to the <a href="html/libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain
-    targetted in the operation</li>
+    targeted in the operation</li>
 </ul><p>and then extra raw information about the error which may be initialized
 to 0 or NULL if unused</p><ul><li>str1, str2, str3: string information, usually str1 is the error
     message format</li>
@@ -51,7 +51,7 @@ to 0 or NULL if unused</p><ul><li>str1, str2, str3: string information, usually 
 </ul><p>So usually, setting up specific error handling with libvirt consist of
 registering an handler with with <a href="html/libvirt-virterror.html#virSetErrorFunc">virSetErrorFunc</a> or
 with <a href="html/libvirt-virterror.html#virConnSetErrorFunc">virConnSetErrorFunc</a>,
-chech the value of the code value, take appropriate action, if needed let
+check the value of the code value, take appropriate action, if needed let
 libvirt print the error on stderr by calling <a href="html/libvirt-virterror.html#virDefaultErrorFunc">virDefaultErrorFunc</a>.
 For asynchronous error handing, set such a function doing nothing to avoid
 the error being reported on stderr, and call virConnGetLastError or

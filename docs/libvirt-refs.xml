@@ -2065,7 +2065,7 @@
           <ref name='virConnectOpenReadOnly'/>
           <ref name='virNodeGetFreeMemory'/>
         </word>
-        <word name='availble'>
+        <word name='available'>
           <ref name='virGetVersion'/>
           <ref name='virNodeGetFreeMemory'/>
         </word>
@@ -2473,7 +2473,7 @@
           <ref name='_virConnectAuth'/>
           <ref name='virConnectOpenAuth'/>
         </word>
-        <word name='cupmap'>
+        <word name='cpumap'>
           <ref name='virDomainGetVcpus'/>
         </word>
         <word name='current'>
@@ -3282,7 +3282,7 @@
           <ref name='virResetLastError'/>
           <ref name='virSetErrorFunc'/>
         </word>
-        <word name='libbrary'>
+        <word name='library'>
           <ref name='virConnectOpenReadOnly'/>
         </word>
         <word name='library'>
@@ -3824,7 +3824,7 @@
           <ref name='virStoragePoolDestroy'/>
           <ref name='virStorageVolGetPath'/>
         </word>
-        <word name='persitent'>
+        <word name='persistent'>
           <ref name='virStoragePoolCreateXML'/>
           <ref name='virStoragePoolDefineXML'/>
         </word>

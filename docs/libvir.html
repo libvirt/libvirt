@@ -19,7 +19,7 @@ of recent versions of Linux (and other OSes). It is free software available
 under the <a href="http://www.opensource.org/licenses/lgpl-license.html">GNU
 Lesser General Public License</a>. Virtualization of the Linux Operating
 System means the ability to run multiple instances of Operating Systems
-concurently on a single hardware system where the basic resources are driven
+concurrently on a single hardware system where the basic resources are driven
 by a Linux (or Solaris) instance. The library aims at providing a long term
 stable C API initially for <a
 href="http://www.cl.cam.ac.uk/Research/SRG/netos/xen/index.html">Xen
@@ -638,7 +638,7 @@ generic and stable layer to manage domains on a node.</p>
 
 <p>This implies the following:</p>
 <ul>
-  <li>the API should not be targetted to a single virtualization environment
+  <li>the API should not be targeted to a single virtualization environment
     though Xen is the current default, which also means that some very
     specific capabilities which are not generic enough may not be provided as
     libvirt APIs</li>
@@ -687,7 +687,7 @@ this environment:</p>
 <img src="architecture.gif" alt="The Xen architecture">
 
 <p>The library can be initialized in 2 ways depending on the level of
-priviledge of the embedding program. If it runs with root access,
+privilege of the embedding program. If it runs with root access,
 virConnectOpen() can be used, it will use three different ways to connect to
 the Xen infrastructure:</p>
 <ul>
@@ -702,7 +702,7 @@ the Xen infrastructure:</p>
 changing the state of the system, but for performance and accuracy reasons
 may talk directly to the hypervisor when gathering state information at
 least when possible (i.e. when the running program using libvirt has root
-priviledge access).</p>
+privilege access).</p>
 
 <p>If it runs without root access virConnectOpenReadOnly() should be used to
 connect to initialize the library. It will then fork a libvirt_proxy
@@ -719,7 +719,7 @@ QEmu or KVM process. That program called libvirt_qemud talks though a specific
 protocol to the library, and connects to the console of the QEmu process in
 order to control and report on its status. Libvirt tries to expose all the
 emulations models of QEmu, the selection is done when creating the new
-domain, by specifying the architecture and machine type targetted.</p>
+domain, by specifying the architecture and machine type targeted.</p>
 
 <p>The code controlling the QEmu process is available in the
 <code>qemud/</code> directory.</p>
@@ -732,7 +732,7 @@ different kind of hypervisor. To simplify the internal design, code, ease
 maintenance and simplify the support of other virtualization engine the
 internals have been structured as one core component, the libvirt.c module
 acting as a front-end for the library API and a set of hypervisor drivers
-defining a common set of routines. That way the Xen Daemon accces, the Xen
+defining a common set of routines. That way the Xen Daemon access, the Xen
 Store one, the Hypervisor hypercall are all isolated in separate C modules
 implementing at least a subset of the common operations defined by the
 drivers present in driver.h:</p>
@@ -849,7 +849,7 @@ significant:</p>
   <li>memory: the maximum memory allocated to the domain in kilobytes</li>
   <li>vcpu: the number of virtual cpu configured for the domain</li>
   <li>os: a block describing the Operating System, its content will be
-    dependant on the OS type
+    dependent on the OS type
     <ul>
       <li>type: indicate the OS type, always linux at this point</li>
       <li>kernel: path to the kernel on the Domain 0 filesystem</li>
@@ -1008,7 +1008,7 @@ systems:</p>
     pointing to an additional program in charge of emulating the devices</li>
   <li>the disk entry indicates in the dev target section that the emulation
     for the drive is the first IDE disk device hda. The list of device names
-    supported is dependant on the Hypervisor, but for Xen it can be any IDE
+    supported is dependent on the Hypervisor, but for Xen it can be any IDE
     device <code>hda</code>-<code>hdd</code>, or a floppy device
     <code>fda</code>, <code>fdb</code>. The <code>&lt;disk&gt;</code> element
     also supports a 'device' attribute to indicate what kinda of hardware to
@@ -1108,7 +1108,7 @@ support a variety of options:</p>
     of the box which does NAT'ing to the default route and has an IP range of
     <code>192.168.22.0/255.255.255.0</code>. Each guest will have an
     associated tun device created with a name of vnetN, which can also be
-    overriden with the &lt;target&gt; element. Example configs are:</p>
+    overridden with the &lt;target&gt; element. Example configs are:</p>
     <pre>&lt;interface type='network'&gt;
   &lt;source network='default'/&gt;
 &lt;/interface&gt;
@@ -1124,7 +1124,7 @@ support a variety of options:</p>
     <p>Provides a bridge from the VM directly onto the LAN. This assumes
     there is a bridge device on the host which has one or more of the hosts
     physical NICs enslaved. The guest VM will have an associated tun device
-    created with a name of vnetN, which can also be overriden with the
+    created with a name of vnetN, which can also be overridden with the
     &lt;target&gt; element. The tun device will be enslaved to the bridge.
     The IP range / network configuration is whatever is used on the LAN. This
     provides the guest VM full incoming &amp; outgoing net access just like a
@@ -1142,11 +1142,11 @@ support a variety of options:</p>
   <li>Generic connection to LAN
     <p>Provides a means for the administrator to execute an arbitrary script
     to connect the guest's network to the LAN. The guest will have a tun
-    device created with a name of vnetN, which can also be overriden with the
+    device created with a name of vnetN, which can also be overridden with the
     &lt;target&gt; element. After creating the tun device a shell script will
     be run which is expected to do whatever host network integration is
     required. By default this script is called /etc/qemu-ifup but can be
-    overriden.</p>
+    overridden.</p>
     <pre>&lt;interface type='ethernet'/&gt;
 
 &lt;interface type='ethernet'&gt;
@@ -1292,7 +1292,7 @@ BIOS you will see</p>
   ...
 &lt;/capabilities&gt;</pre>
 
-<p>The first block (in red) indicates the host hardware capbilities, currently
+<p>The first block (in red) indicates the host hardware capabilities, currently
 it is limited to the CPU properties but other information may be available,
 it shows the CPU architecture, and the features of the chip (the feature
 block is similar to what you will find in a Xen fully virtualized domain
@@ -1433,7 +1433,7 @@ error callback it will be called synchronously. Once the call to libvirt ends
 the error can be detected by the return value and the full information for
 the last logged error can be retrieved.</p>
 
-<p>To avoid as much as prossible troubles with a global variable in a
+<p>To avoid as much as possible troubles with a global variable in a
 multithreaded environment, libvirt will associate when possible the errors to
 the current connection they are related to, that way the error is stored in a
 dynamic structure which can be made thread specific. Error callback can be
@@ -1493,7 +1493,7 @@ following fields:</p>
     connection to the hypervisor where this happened</li>
   <li>dom: if available a pointer to the <a
     href="html/libvirt-libvirt.html#virDomainPtr">virDomainPtr</a> domain
-    targetted in the operation</li>
+    targeted in the operation</li>
 </ul>
 
 <p>and then extra raw information about the error which may be initialized
@@ -1509,7 +1509,7 @@ registering an handler with with <a
 href="html/libvirt-virterror.html#virSetErrorFunc">virSetErrorFunc</a> or
 with <a
 href="html/libvirt-virterror.html#virConnSetErrorFunc">virConnSetErrorFunc</a>,
-chech the value of the code value, take appropriate action, if needed let
+check the value of the code value, take appropriate action, if needed let
 libvirt print the error on stderr by calling <a
 href="html/libvirt-virterror.html#virDefaultErrorFunc">virDefaultErrorFunc</a>.
 For asynchronous error handing, set such a function doing nothing to avoid
@@ -1582,7 +1582,7 @@ containing the same field as a virError in C, but cast to Python.</p>
     <p><code>make rpm</code></p>
   </li>
   <li><em>Failure to use the API for non-root users</em>
-    <p>Large parts of the API may only be accessible with root priviledges,
+    <p>Large parts of the API may only be accessible with root privileges,
     however the read only access to the xenstore data doesnot have to be
     forbidden to user, at least for monitoring purposes. If "virsh dominfo"
     fails to run as an user, change the mode of the xenstore read-only socket
@@ -1652,7 +1652,7 @@ an existing bug, <a href="http://bugzilla.redhat.com/bugzilla/enter_bug.cgi?prod
 to post to the <a href="mailto:libvir-list@redhat.com">mailing-list</a>
 too, so that everybody working on the project can see it, thanks !</p>
 
-<p>Some of the libvirt developpers may be found on IRC on the OFTC
+<p>Some of the libvirt developers may be found on IRC on the OFTC
 network. Use the settings:</p>
 <ul>
   <li>server: irc.oftc.net</li>
@@ -2897,7 +2897,7 @@ versioning, modelled after SunRPC.
 <p>
 When connecting to libvirt, some connections may require client
 authentication before allowing use of the APIs. The set of possible
-authentication mechanisms is administrator controlled, independant
+authentication mechanisms is administrator controlled, independent
 of applications using libvirt.
 </p>
 
@@ -2957,7 +2957,7 @@ Default policy will still allow any application to connect to the RO socket.
 </p>
 
 <p>
-The default policy can be overriden by the administrator using the PolicyKit
+The default policy can be overridden by the administrator using the PolicyKit
 master configuration file in <code>/etc/PolicyKit/PolicyKit.conf</code>. The
 <code>PolicyKit.conf(5)</code> manual page provides details on the syntax
 available. The two libvirt daemon actions available are named <code>org.libvirt.unix.monitor</code>
@@ -3055,7 +3055,7 @@ Plugin "gssapiv2" [loaded],     API version: 4
 </pre>
 
 <p>
-Next is is necessary for the adminsitrator of the Kerberos realm to issue a principle
+Next is is necessary for the administrator of the Kerberos realm to issue a principle
 for the libvirt server. There needs to be one principle per host running the libvirt
 daemon. The principle should be named <code>libvirt/full.hostname@KERBEROS.REALM</code>.
 This is typically done by running the <code>kadmin.local</code> command on the Kerberos

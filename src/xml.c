@@ -1294,7 +1294,7 @@ virDomainParseXMLIfDesc(virConnectPtr conn ATTRIBUTE_UNUSED,
  * @xendConfigVersion: xend configuration file format
  *
  * Parse the XML description and turn it into the xend sexp needed to
- * create the comain. This is a temporary interface as the S-Expr interface
+ * create the domain. This is a temporary interface as the S-Expr interface
  * will be replaced by XML-RPC in the future. However the XML format should
  * stay valid over time.
  *

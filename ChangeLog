@@ -1,3 +1,10 @@
+Fri Apr  4 09:56:42 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* docs//* src/conf.c src/hash.c src/libvirt.c src/proxy_internal.c
+	 src/remote_internal.c src/virsh.c src/xen_internal.c
+	 src/xend_internal.c src/xml.c: applied patch from Atsushi SAKAI
+	 fixing a lot of typos
+
 Fri Apr  4 09:29:08 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/test.c: patch from Cole Robinson to add
