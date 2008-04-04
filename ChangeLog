@@ -1,3 +1,7 @@
+Fri Apr  4 13:19:08 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* src/virsh.c: patch from Shigeki Sakamoto adding message on vcpupin
+
 Fri Apr  4 10:04:23 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* docs//* po/*: regenerated the documentation and reextracted the

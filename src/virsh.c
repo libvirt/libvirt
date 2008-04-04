@@ -1741,12 +1741,14 @@ cmdVcpupin(vshControl * ctl, vshCmd * cmd)
     }
 
     if (virDomainGetInfo(dom, &info) != 0) {
-        vshError(ctl, FALSE, "%s", _("vcpupin: Invalid vCPU number."));
+        vshError(ctl, FALSE, "%s",
+	         _("vcpupin: failed to get domain informations."));
         virDomainFree(dom);
         return FALSE;
     }
 
     if (vcpu >= info.nrVirtCpu) {
+        vshError(ctl, FALSE, _("vcpupin: Invalid vCPU number."));
         virDomainFree(dom);
         return FALSE;
     }
