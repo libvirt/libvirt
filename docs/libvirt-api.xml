@@ -273,6 +273,7 @@
      <exports symbol='VIR_ERR_GNUTLS_ERROR' type='enum'/>
      <exports symbol='VIR_ERR_POST_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_OS_TYPE' type='enum'/>
+     <exports symbol='VIR_FROM_XENSTORE' type='enum'/>
      <exports symbol='VIR_WAR_NO_NETWORK' type='enum'/>
      <exports symbol='VIR_ERR_INVALID_CONN' type='enum'/>
      <exports symbol='VIR_ERR_NONE' type='enum'/>
@@ -305,7 +306,7 @@
      <exports symbol='VIR_ERR_NO_DOMAIN' type='enum'/>
      <exports symbol='VIR_ERR_READ_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_SEXPR_SERIAL' type='enum'/>
-     <exports symbol='VIR_FROM_XENSTORE' type='enum'/>
+     <exports symbol='VIR_FROM_LXC' type='enum'/>
      <exports symbol='VIR_FROM_XEN' type='enum'/>
      <exports symbol='VIR_ERR_OPEN_FAILED' type='enum'/>
      <exports symbol='VIR_ERR_XEN_CALL' type='enum'/>
@@ -462,6 +463,7 @@
     <enum name='VIR_ERR_XML_ERROR' file='virterror' value='27' type='virErrorNumber' info='an XML description is not well formed or broken'/>
     <enum name='VIR_FROM_CONF' file='virterror' value='9' type='virErrorDomain' info='Error in the configuration file handling'/>
     <enum name='VIR_FROM_DOM' file='virterror' value='6' type='virErrorDomain' info='Error when operating on a domain'/>
+    <enum name='VIR_FROM_LXC' file='virterror' value='17' type='virErrorDomain' info='Error from Linux Container driver'/>
     <enum name='VIR_FROM_NET' file='virterror' value='11' type='virErrorDomain' info='Error when operating on a network'/>
     <enum name='VIR_FROM_NONE' file='virterror' value='0' type='virErrorDomain'/>
     <enum name='VIR_FROM_OPENVZ' file='virterror' value='14' type='virErrorDomain' info='Error from OpenVZ driver'/>
@@ -471,7 +473,7 @@
     <enum name='VIR_FROM_RPC' file='virterror' value='7' type='virErrorDomain' info='Error in the XML-RPC code'/>
     <enum name='VIR_FROM_SEXPR' file='virterror' value='4' type='virErrorDomain' info='Error in the S-Expression code'/>
     <enum name='VIR_FROM_STATS_LINUX' file='virterror' value='16' type='virErrorDomain' info='Error in the Linux Stats code'/>
-    <enum name='VIR_FROM_STORAGE' file='virterror' value='17' type='virErrorDomain' info=' Error from storage driver'/>
+    <enum name='VIR_FROM_STORAGE' file='virterror' value='18' type='virErrorDomain' info=' Error from storage driver'/>
     <enum name='VIR_FROM_TEST' file='virterror' value='12' type='virErrorDomain' info='Error from test driver'/>
     <enum name='VIR_FROM_XEN' file='virterror' value='1' type='virErrorDomain' info='Error at Xen hypervisor layer'/>
     <enum name='VIR_FROM_XEND' file='virterror' value='2' type='virErrorDomain' info='Error at connection with xend daemon'/>
@@ -834,7 +836,7 @@
       <info>Launch a new Linux guest domain, based on an XML description similar to the one returned by virDomainGetXMLDesc() This function may requires privileged access to the hypervisor.</info>
       <return type='virDomainPtr' info='a new domain object or NULL in case of failure'/>
       <arg name='conn' type='virConnectPtr' info='pointer to the hypervisor connection'/>
-      <arg name='xmlDesc' type='const char *' info='an XML description of the domain'/>
+      <arg name='xmlDesc' type='const char *' info='string containing an XML description of the domain'/>
       <arg name='flags' type='unsigned int' info='an optional set of virDomainFlags'/>
     </function>
     <function name='virDomainDefineXML' file='libvirt' module='libvirt'>
@@ -927,7 +929,7 @@
       <arg name='buf' type='char *' info='pointer to a VIR_UUID_STRING_BUFLEN bytes array'/>
     </function>
     <function name='virDomainGetVcpus' file='libvirt' module='libvirt'>
-      <info>Extract information about virtual CPUs of domain, store it in info array and also in cpumaps if this pointer is&apos;nt NULL.</info>
+      <info>Extract information about virtual CPUs of domain, store it in info array and also in cpumaps if this pointer isn&apos;t NULL.</info>
       <return type='int' info='the number of info filled in case of success, -1 in case of failure.'/>
       <arg name='domain' type='virDomainPtr' info='pointer to domain object, or NULL for Domain0'/>
       <arg name='info' type='virVcpuInfoPtr' info='pointer to an array of virVcpuInfo structures (OUT)'/>

@@ -86,6 +86,7 @@
     <reference name='VIR_ERR_XML_ERROR' href='html/libvirt-virterror.html#VIR_ERR_XML_ERROR'/>
     <reference name='VIR_FROM_CONF' href='html/libvirt-virterror.html#VIR_FROM_CONF'/>
     <reference name='VIR_FROM_DOM' href='html/libvirt-virterror.html#VIR_FROM_DOM'/>
+    <reference name='VIR_FROM_LXC' href='html/libvirt-virterror.html#VIR_FROM_LXC'/>
     <reference name='VIR_FROM_NET' href='html/libvirt-virterror.html#VIR_FROM_NET'/>
     <reference name='VIR_FROM_NONE' href='html/libvirt-virterror.html#VIR_FROM_NONE'/>
     <reference name='VIR_FROM_OPENVZ' href='html/libvirt-virterror.html#VIR_FROM_OPENVZ'/>
@@ -410,6 +411,7 @@
       <ref name='VIR_ERR_XML_ERROR'/>
       <ref name='VIR_FROM_CONF'/>
       <ref name='VIR_FROM_DOM'/>
+      <ref name='VIR_FROM_LXC'/>
       <ref name='VIR_FROM_NET'/>
       <ref name='VIR_FROM_NONE'/>
       <ref name='VIR_FROM_OPENVZ'/>
@@ -1234,6 +1236,7 @@
       <ref name='VIR_ERR_XML_ERROR'/>
       <ref name='VIR_FROM_CONF'/>
       <ref name='VIR_FROM_DOM'/>
+      <ref name='VIR_FROM_LXC'/>
       <ref name='VIR_FROM_NET'/>
       <ref name='VIR_FROM_NONE'/>
       <ref name='VIR_FROM_OPENVZ'/>
@@ -2063,9 +2066,6 @@
         <word name='available'>
           <ref name='_virError'/>
           <ref name='virConnectOpenReadOnly'/>
-          <ref name='virNodeGetFreeMemory'/>
-        </word>
-        <word name='available'>
           <ref name='virGetVersion'/>
           <ref name='virNodeGetFreeMemory'/>
         </word>
@@ -2395,6 +2395,9 @@
         <word name='constants'>
           <ref name='_virConnectCredential'/>
         </word>
+        <word name='containing'>
+          <ref name='virDomainCreateLinux'/>
+        </word>
         <word name='contains'>
           <ref name='virStoragePoolLookupByVolume'/>
           <ref name='virStorageVolFree'/>
@@ -2472,9 +2475,6 @@
         <word name='credentials'>
           <ref name='_virConnectAuth'/>
           <ref name='virConnectOpenAuth'/>
-        </word>
-        <word name='cpumap'>
-          <ref name='virDomainGetVcpus'/>
         </word>
         <word name='current'>
           <ref name='virDomainMigrate'/>
@@ -3171,6 +3171,9 @@
         <word name='involve'>
           <ref name='virStoragePoolRefresh'/>
         </word>
+        <word name='isn'>
+          <ref name='virDomainGetVcpus'/>
+        </word>
         <word name='its'>
           <ref name='virDomainGetName'/>
           <ref name='virDomainLookupByName'/>
@@ -3283,12 +3286,10 @@
           <ref name='virSetErrorFunc'/>
         </word>
         <word name='library'>
-          <ref name='virConnectOpenReadOnly'/>
-        </word>
-        <word name='library'>
           <ref name='LIBVIR_VERSION_NUMBER'/>
           <ref name='_virError'/>
           <ref name='virConnSetErrorFunc'/>
+          <ref name='virConnectOpenReadOnly'/>
           <ref name='virCopyLastError'/>
           <ref name='virErrorFunc'/>
           <ref name='virGetLastError'/>
@@ -3821,12 +3822,10 @@
           <ref name='virConnectOpenAuth'/>
         </word>
         <word name='persistent'>
-          <ref name='virStoragePoolDestroy'/>
-          <ref name='virStorageVolGetPath'/>
-        </word>
-        <word name='persistent'>
           <ref name='virStoragePoolCreateXML'/>
           <ref name='virStoragePoolDefineXML'/>
+          <ref name='virStoragePoolDestroy'/>
+          <ref name='virStorageVolGetPath'/>
         </word>
         <word name='physical'>
           <ref name='VIR_CPU_MAPLEN'/>
@@ -4377,6 +4376,7 @@
           <ref name='virConnectGetCapabilities'/>
           <ref name='virConnectGetType'/>
           <ref name='virConnectGetURI'/>
+          <ref name='virDomainCreateLinux'/>
           <ref name='virDomainGetName'/>
           <ref name='virDomainGetOSType'/>
           <ref name='virDomainGetSchedulerType'/>

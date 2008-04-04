@@ -1,3 +1,8 @@
+Fri Apr  4 10:04:23 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* docs//* po/*: regenerated the documentation and reextracted the
+	  full set of localization strings to push to the translation team.
+
 Fri Apr  4 09:56:42 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* docs//* src/conf.c src/hash.c src/libvirt.c src/proxy_internal.c

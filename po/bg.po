@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-03-14 16:32+0100\n"
+"POT-Creation-Date: 2008-04-04 10:00+0200\n"
 "PO-Revision-Date: 2007-09-05 08:58+0300\n"
 "Last-Translator: Doncho N. Gunchev <gunchev@gmail.com>\n"
 "Language-Team: Bulgarian <dict@fsa-bg.org>\n"
@@ -97,161 +97,7 @@ msgstr ""
 msgid "Unknown error"
 msgstr "Непозната"
 
-#: qemud/remote.c:2133
-msgid "client tried invalid SASL init request"
-msgstr ""
-
-#: qemud/remote.c:2173
-#, c-format
-msgid "sasl context setup failed %d (%s)"
-msgstr ""
-
-#: qemud/remote.c:2187
-msgid "cannot TLS get cipher size"
-msgstr ""
-
-#: qemud/remote.c:2197
-#, c-format
-msgid "cannot set SASL external SSF %d (%s)"
-msgstr ""
-
-#: qemud/remote.c:2226
-#, c-format
-msgid "cannot set SASL security props %d (%s)"
-msgstr ""
-
-#: qemud/remote.c:2243
-#, c-format
-msgid "cannot list SASL mechanisms %d (%s)"
-msgstr ""
-
-#: qemud/remote.c:2253
-msgid "cannot allocate mechlist"
-msgstr ""
-
-#: qemud/remote.c:2278
-#, c-format
-msgid "cannot query SASL ssf on connection %d (%s)"
-msgstr ""
-
-#: qemud/remote.c:2288
-#, c-format
-msgid "negotiated SSF %d was not strong enough"
-msgstr ""
-
-#: qemud/remote.c:2318
-#, c-format
-msgid "cannot query SASL username on connection %d (%s)"
-msgstr ""
-
-#: qemud/remote.c:2326
-msgid "no client username was found"
-msgstr ""
-
-#: qemud/remote.c:2336
-#, fuzzy
-msgid "out of memory copying username"
-msgstr "свърши паметта"
-
-#: qemud/remote.c:2355
-#, c-format
-msgid "SASL client %s not allowed in whitelist"
-msgstr ""
-
-#: qemud/remote.c:2381 qemud/remote.c:2461
-msgid "client tried invalid SASL start request"
-msgstr ""
-
-#: qemud/remote.c:2397
-#, c-format
-msgid "sasl start failed %d (%s)"
-msgstr ""
-
-#: qemud/remote.c:2405
-#, c-format
-msgid "sasl start reply data too long %d"
-msgstr ""
-
-#: qemud/remote.c:2476
-#, c-format
-msgid "sasl step failed %d (%s)"
-msgstr ""
-
-#: qemud/remote.c:2485
-#, c-format
-msgid "sasl step reply data too long %d"
-msgstr ""
-
-#: qemud/remote.c:2535
-msgid "client tried unsupported SASL init request"
-msgstr ""
-
-#: qemud/remote.c:2547
-msgid "client tried unsupported SASL start request"
-msgstr ""
-
-#: qemud/remote.c:2559
-msgid "client tried unsupported SASL step request"
-msgstr ""
-
-#: qemud/remote.c:2573
-#, fuzzy, c-format
-msgid "Failed to verify client credentials: %s"
-msgstr "Неуспешно извличане състоянието на интерфейс %s %s"
-
-#: qemud/remote.c:2601
-msgid "client tried invalid PolicyKit init request"
-msgstr ""
-
-#: qemud/remote.c:2607
-msgid "cannot get peer socket identity"
-msgstr ""
-
-#: qemud/remote.c:2617
-#, c-format
-msgid "Allowing PID %d running as root"
-msgstr ""
-
-#: qemud/remote.c:2631
-#, c-format
-msgid "Checking PID %d running as %d"
-msgstr ""
-
-#: qemud/remote.c:2636
-#, c-format
-msgid "Failed to lookup policy kit caller: %s"
-msgstr ""
-
-#: qemud/remote.c:2644
-#, fuzzy, c-format
-msgid "Failed to create polkit action %s\n"
-msgstr "Грешка при създаване на неактивен домейн %s\n"
-
-#: qemud/remote.c:2654
-#, fuzzy, c-format
-msgid "Failed to create polkit context %s\n"
-msgstr "Грешка при създаване на неактивен домейн %s\n"
-
-#: qemud/remote.c:2674
-#, c-format
-msgid "Policy kit failed to check authorization %d %s"
-msgstr ""
-
-#: qemud/remote.c:2690
-#, c-format
-msgid "Policy kit denied action %s from pid %d, uid %d, result: %s\n"
-msgstr ""
-
-#: qemud/remote.c:2698
-#, c-format
-msgid "Policy allowed action %s from pid %d, uid %d, result %s"
-msgstr ""
-
-#: qemud/remote.c:2718
-msgid "client tried unsupported PolicyKit init request"
-msgstr ""
-
-#: qemud/qemud.c:140
+#: qemud/qemud.c:140 src/remote_internal.c:888
 #, c-format
 msgid "Cannot access %s '%s': %s (%d)"
 msgstr ""
@@ -306,11 +152,11 @@ msgstr "Грешка при заделяне на памет: %s"
 msgid "Shutting down on signal %d"
 msgstr ""
 
-#: qemud/qemud.c:278 src/qemu_driver.c:79
+#: qemud/qemud.c:278 src/qemu_driver.c:79 src/util.c:139 src/util.c:151
 msgid "Failed to set close-on-exec file descriptor flag"
 msgstr ""
 
-#: qemud/qemud.c:293 src/qemu_driver.c:94
+#: qemud/qemud.c:293 src/qemu_driver.c:94 src/util.c:135 src/util.c:147
 msgid "Failed to set non-blocking file descriptor flag"
 msgstr ""
 
@@ -580,6 +426,349 @@ msgstr "Неуспешно събуждане на домейн %s"
 msgid "Failed to register callback for signal pipe"
 msgstr ""
 
+#: qemud/remote.c:104
+msgid "xdr_remote_message_header"
+msgstr ""
+
+#: qemud/remote.c:112
+#, c-format
+msgid "program mismatch (actual %x, expected %x)"
+msgstr ""
+
+#: qemud/remote.c:119
+#, c-format
+msgid "version mismatch (actual %x, expected %x)"
+msgstr ""
+
+#: qemud/remote.c:125
+#, c-format
+msgid "direction (%d) != REMOTE_CALL"
+msgstr ""
+
+#: qemud/remote.c:131
+#, c-format
+msgid "status (%d) != REMOTE_OK"
+msgstr ""
+
+#: qemud/remote.c:147
+#, fuzzy
+msgid "authentication required"
+msgstr "грешка при операцията"
+
+#: qemud/remote.c:160
+#, fuzzy, c-format
+msgid "unknown procedure: %d"
+msgstr "получен бе непознат HTTP код на грешка %d"
+
+#: qemud/remote.c:168
+#, fuzzy
+msgid "parse args failed"
+msgstr "неуспешен разбор на отговора на сървъра"
+
+#: qemud/remote.c:184
+#, c-format
+msgid "internal error - dispatch function returned invalid code %d"
+msgstr ""
+
+#: qemud/remote.c:206
+msgid "dummy length"
+msgstr ""
+
+#: qemud/remote.c:213
+msgid "serialise reply header"
+msgstr ""
+
+#: qemud/remote.c:222
+msgid "serialise return struct"
+msgstr ""
+
+#: qemud/remote.c:277
+msgid "serialise return error"
+msgstr ""
+
+#: qemud/remote.c:286
+msgid "xdr_setpos"
+msgstr ""
+
+#: qemud/remote.c:292
+msgid "serialise return length"
+msgstr ""
+
+#: qemud/remote.c:426
+msgid "connection already open"
+msgstr ""
+
+#: qemud/remote.c:452
+#, fuzzy
+msgid "connection not open"
+msgstr "невалиден указател за връзка в"
+
+#: qemud/remote.c:499
+#, fuzzy
+msgid "out of memory in strdup"
+msgstr "свърши паметта"
+
+#: qemud/remote.c:613 qemud/remote.c:656 qemud/remote.c:765 qemud/remote.c:791
+#: qemud/remote.c:822 qemud/remote.c:854 qemud/remote.c:878 qemud/remote.c:940
+#: qemud/remote.c:962 qemud/remote.c:987 qemud/remote.c:1013
+#: qemud/remote.c:1038 qemud/remote.c:1070 qemud/remote.c:1095
+#: qemud/remote.c:1120 qemud/remote.c:1149 qemud/remote.c:1249
+#: qemud/remote.c:1395 qemud/remote.c:1428 qemud/remote.c:1467
+#: qemud/remote.c:1491 qemud/remote.c:1515 qemud/remote.c:1539
+#: qemud/remote.c:1563 qemud/remote.c:1587 qemud/remote.c:1611
+#: qemud/remote.c:1635 qemud/remote.c:1659 qemud/remote.c:1683
+#, fuzzy
+msgid "domain not found"
+msgstr "Не е открит домейна"
+
+#: qemud/remote.c:644 qemud/remote.c:731
+msgid "nparams too large"
+msgstr ""
+
+#: qemud/remote.c:649 qemud/remote.c:736 qemud/remote.c:2422
+#: qemud/remote.c:2503 src/remote_internal.c:2223
+#, fuzzy
+msgid "out of memory allocating array"
+msgstr "промяна заделянето на памет"
+
+#: qemud/remote.c:675 qemud/remote.c:686
+#, fuzzy
+msgid "out of memory allocating return array"
+msgstr "промяна заделянето на памет"
+
+#: qemud/remote.c:706
+#, fuzzy
+msgid "unknown type"
+msgstr "непознат тип ОС"
+
+#: qemud/remote.c:1155
+msgid "maxinfo > REMOTE_VCPUINFO_MAX"
+msgstr ""
+
+#: qemud/remote.c:1161
+msgid "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
+msgstr ""
+
+#: qemud/remote.c:1298
+msgid "maxnames > REMOTE_DOMAIN_NAME_LIST_MAX"
+msgstr ""
+
+#: qemud/remote.c:1401
+msgid "cpumap_len > REMOTE_CPUMAP_MAX"
+msgstr ""
+
+#: qemud/remote.c:1706 qemud/remote.c:1757 qemud/remote.c:2747
+msgid "maxnames > REMOTE_NETWORK_NAME_LIST_MAX"
+msgstr ""
+
+#: qemud/remote.c:1732
+msgid "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
+msgstr ""
+
+#: qemud/remote.c:1784 qemud/remote.c:1844 qemud/remote.c:1868
+#: qemud/remote.c:1894 qemud/remote.c:1918 qemud/remote.c:1980
+#: qemud/remote.c:2004
+#, fuzzy
+msgid "network not found"
+msgstr "Не е открита мрежата"
+
+#: qemud/remote.c:2095 src/remote_internal.c:3565
+#, fuzzy, c-format
+msgid "Cannot resolve address %d: %s"
+msgstr "Неуспешно отваряне на '%s': %s"
+
+#: qemud/remote.c:2102
+#, fuzzy
+msgid "cannot allocate address"
+msgstr "заделяне на отговор"
+
+#: qemud/remote.c:2136
+msgid "client tried invalid SASL init request"
+msgstr ""
+
+#: qemud/remote.c:2145 src/remote_internal.c:3795
+#, fuzzy, c-format
+msgid "failed to get sock address %d (%s)"
+msgstr "Неуспешно извличане състоянието на блоковете %s %s"
+
+#: qemud/remote.c:2156 src/remote_internal.c:3807
+#, fuzzy, c-format
+msgid "failed to get peer address %d (%s)"
+msgstr "Неуспешно извличане състоянието на интерфейс %s %s"
+
+#: qemud/remote.c:2177
+#, c-format
+msgid "sasl context setup failed %d (%s)"
+msgstr ""
+
+#: qemud/remote.c:2191
+msgid "cannot TLS get cipher size"
+msgstr ""
+
+#: qemud/remote.c:2201
+#, c-format
+msgid "cannot set SASL external SSF %d (%s)"
+msgstr ""
+
+#: qemud/remote.c:2230
+#, c-format
+msgid "cannot set SASL security props %d (%s)"
+msgstr ""
+
+#: qemud/remote.c:2247
+#, c-format
+msgid "cannot list SASL mechanisms %d (%s)"
+msgstr ""
+
+#: qemud/remote.c:2257
+msgid "cannot allocate mechlist"
+msgstr ""
+
+#: qemud/remote.c:2282 src/remote_internal.c:4073
+#, c-format
+msgid "cannot query SASL ssf on connection %d (%s)"
+msgstr ""
+
+#: qemud/remote.c:2292
+#, c-format
+msgid "negotiated SSF %d was not strong enough"
+msgstr ""
+
+#: qemud/remote.c:2322
+#, c-format
+msgid "cannot query SASL username on connection %d (%s)"
+msgstr ""
+
+#: qemud/remote.c:2330
+msgid "no client username was found"
+msgstr ""
+
+#: qemud/remote.c:2340
+#, fuzzy
+msgid "out of memory copying username"
+msgstr "свърши паметта"
+
+#: qemud/remote.c:2359
+#, c-format
+msgid "SASL client %s not allowed in whitelist"
+msgstr ""
+
+#: qemud/remote.c:2385 qemud/remote.c:2466
+msgid "client tried invalid SASL start request"
+msgstr ""
+
+#: qemud/remote.c:2401
+#, c-format
+msgid "sasl start failed %d (%s)"
+msgstr ""
+
+#: qemud/remote.c:2409
+#, c-format
+msgid "sasl start reply data too long %d"
+msgstr ""
+
+#: qemud/remote.c:2481
+#, c-format
+msgid "sasl step failed %d (%s)"
+msgstr ""
+
+#: qemud/remote.c:2490
+#, c-format
+msgid "sasl step reply data too long %d"
+msgstr ""
+
+#: qemud/remote.c:2541
+msgid "client tried unsupported SASL init request"
+msgstr ""
+
+#: qemud/remote.c:2553
+msgid "client tried unsupported SASL start request"
+msgstr ""
+
+#: qemud/remote.c:2565
+msgid "client tried unsupported SASL step request"
+msgstr ""
+
+#: qemud/remote.c:2579
+#, fuzzy, c-format
+msgid "Failed to verify client credentials: %s"
+msgstr "Неуспешно извличане състоянието на интерфейс %s %s"
+
+#: qemud/remote.c:2607
+msgid "client tried invalid PolicyKit init request"
+msgstr ""
+
+#: qemud/remote.c:2613
+msgid "cannot get peer socket identity"
+msgstr ""
+
+#: qemud/remote.c:2623
+#, c-format
+msgid "Allowing PID %d running as root"
+msgstr ""
+
+#: qemud/remote.c:2637
+#, c-format
+msgid "Checking PID %d running as %d"
+msgstr ""
+
+#: qemud/remote.c:2642
+#, c-format
+msgid "Failed to lookup policy kit caller: %s"
+msgstr ""
+
+#: qemud/remote.c:2650
+#, fuzzy, c-format
+msgid "Failed to create polkit action %s\n"
+msgstr "Грешка при създаване на неактивен домейн %s\n"
+
+#: qemud/remote.c:2660
+#, fuzzy, c-format
+msgid "Failed to create polkit context %s\n"
+msgstr "Грешка при създаване на неактивен домейн %s\n"
+
+#: qemud/remote.c:2680
+#, c-format
+msgid "Policy kit failed to check authorization %d %s"
+msgstr ""
+
+#: qemud/remote.c:2696
+#, c-format
+msgid "Policy kit denied action %s from pid %d, uid %d, result: %s\n"
+msgstr ""
+
+#: qemud/remote.c:2704
+#, c-format
+msgid "Policy allowed action %s from pid %d, uid %d, result %s"
+msgstr ""
+
+#: qemud/remote.c:2724
+msgid "client tried unsupported PolicyKit init request"
+msgstr ""
+
+#: qemud/remote.c:2773
+msgid "maxnames > REMOTE_STORAGE_POOL_NAME_LIST_MAX"
+msgstr ""
+
+#: qemud/remote.c:2800 qemud/remote.c:2860 qemud/remote.c:2885
+#: qemud/remote.c:2909 qemud/remote.c:2933 qemud/remote.c:2958
+#: qemud/remote.c:2989 qemud/remote.c:3015 qemud/remote.c:3098
+#: qemud/remote.c:3122 qemud/remote.c:3182 qemud/remote.c:3211
+#: qemud/remote.c:3242 qemud/remote.c:3378
+#, fuzzy
+msgid "storage_pool not found"
+msgstr "Не е открита мрежата"
+
+#: qemud/remote.c:3176
+msgid "maxnames > REMOTE_STORAGE_VOL_NAME_LIST_MAX"
+msgstr ""
+
+#: qemud/remote.c:3268 qemud/remote.c:3293 qemud/remote.c:3323
+#: qemud/remote.c:3350
+#, fuzzy
+msgid "storage_vol not found"
+msgstr "Не е открита мрежата"
+
 #: src/conf.c:158 src/conf.c:207 src/conf.c:492 src/conf.c:528 src/conf.c:556
 #: src/conf.c:634
 msgid "allocating configuration"
@@ -660,60 +849,60 @@ msgstr ""
 msgid "failure writing output: %s\n"
 msgstr ""
 
-#: src/hash.c:695 src/libvirt.c:714
+#: src/hash.c:695 src/libvirt.c:720
 msgid "allocating connection"
 msgstr "заделяне на връзки"
 
-#: src/hash.c:827 src/hash.c:832
+#: src/hash.c:830 src/hash.c:835
 msgid "allocating domain"
 msgstr "заделяне на домейн"
 
-#: src/hash.c:843
+#: src/hash.c:846
 msgid "failed to add domain to connection hash table"
 msgstr "грешка при добавяне на домейна към хеш-таблицата с връзки"
 
-#: src/hash.c:881
+#: src/hash.c:884
 msgid "domain missing from connection hash table"
 msgstr "домейна липсва от хеш-таблицата с връзки"
 
-#: src/hash.c:961 src/hash.c:966
+#: src/hash.c:968 src/hash.c:973
 msgid "allocating network"
 msgstr "заделяне на мрежа"
 
-#: src/hash.c:976
+#: src/hash.c:983
 msgid "failed to add network to connection hash table"
 msgstr "грешка при добавяне на мрежата към хеш-таблицата"
 
-#: src/hash.c:1014
+#: src/hash.c:1021
 msgid "network missing from connection hash table"
 msgstr "мрежата липсва от хеш-таблицата"
 
-#: src/hash.c:1094 src/hash.c:1099
+#: src/hash.c:1106 src/hash.c:1111
 #, fuzzy
 msgid "allocating storage pool"
 msgstr "заделяне на мрежа"
 
-#: src/hash.c:1109
+#: src/hash.c:1121
 #, fuzzy
 msgid "failed to add storage pool to connection hash table"
 msgstr "грешка при добавяне на мрежата към хеш-таблицата"
 
-#: src/hash.c:1148
+#: src/hash.c:1160
 #, fuzzy
 msgid "pool missing from connection hash table"
 msgstr "домейна липсва от хеш-таблицата с връзки"
 
-#: src/hash.c:1226 src/hash.c:1231 src/hash.c:1236
+#: src/hash.c:1238 src/hash.c:1243 src/hash.c:1248
 #, fuzzy
 msgid "allocating storage vol"
 msgstr "заделяне на мрежа"
 
-#: src/hash.c:1246
+#: src/hash.c:1258
 #, fuzzy
 msgid "failed to add storage vol to connection hash table"
 msgstr "грешка при добавяне на мрежата към хеш-таблицата"
 
-#: src/hash.c:1286
+#: src/hash.c:1298
 #, fuzzy
 msgid "vol missing from connection hash table"
 msgstr "домейна липсва от хеш-таблицата с връзки"
@@ -753,20 +942,311 @@ msgstr ""
 msgid "Failed to add iptables rule '%s' to chain '%s' in table '%s': %s"
 msgstr ""
 
-#: src/libvirt.c:721
+#: src/libvirt.c:727
 #, fuzzy
 msgid "could not parse connection URI"
 msgstr "не може да се осъществи връзка с %s"
 
-#: src/libvirt.c:739
+#: src/libvirt.c:745
 #, fuzzy
 msgid "allocating conn->name"
 msgstr "заделяне на връзки"
 
-#: src/libvirt.c:2160
+#: src/libvirt.c:2166
 #, fuzzy
 msgid "domainMigratePrepare did not set uri"
 msgstr "информацията за домейна е невярна, domid не е число"
+
+#: src/lxc_conf.c:87
+msgid "missing filesystem type"
+msgstr ""
+
+#: src/lxc_conf.c:93
+msgid "invalid filesystem type"
+msgstr ""
+
+#: src/lxc_conf.c:115
+#, fuzzy
+msgid "missing mount source"
+msgstr "липсва информация за източника на устройство"
+
+#: src/lxc_conf.c:122
+msgid "empty or invalid mount source"
+msgstr ""
+
+#: src/lxc_conf.c:131
+#, fuzzy
+msgid "missing mount target"
+msgstr "липсва информация за целта на устройство"
+
+#: src/lxc_conf.c:138
+msgid "empty or invalid mount target"
+msgstr ""
+
+#: src/lxc_conf.c:179
+#, fuzzy
+msgid "failed to generate uuid"
+msgstr "име на мрежата или uuid"
+
+#: src/lxc_conf.c:185
+#, fuzzy
+msgid "invalid uuid element"
+msgstr "невалиден аргумент в"
+
+#: src/lxc_conf.c:248
+#, fuzzy
+msgid "invalid or missing init element"
+msgstr "липсва информация за главното устройство"
+
+#: src/lxc_conf.c:254
+msgid "init string too long"
+msgstr ""
+
+#: src/lxc_conf.c:293
+#, fuzzy
+msgid "invalid memory value"
+msgstr "Невалидна стойност %d за размера на паметта"
+
+#: src/lxc_conf.c:320
+#, fuzzy
+msgid "invalid root element"
+msgstr "липсва информация за главното устройство"
+
+#: src/lxc_conf.c:333
+#, fuzzy
+msgid "missing domain type"
+msgstr "липсва информация за име на домейн"
+
+#: src/lxc_conf.c:339
+#, fuzzy
+msgid "invalid domain type"
+msgstr "невалиден указател за домейн в"
+
+#: src/lxc_conf.c:348
+#, fuzzy
+msgid "invalid domain id"
+msgstr "невалиден указател за домейн в"
+
+#: src/lxc_conf.c:432
+#, c-format
+msgid "Can't redefine active VM with name %s"
+msgstr ""
+
+#: src/lxc_conf.c:505 src/qemu_conf.c:2022 src/qemu_conf.c:2248
+#: src/storage_conf.c:1190
+#, fuzzy, c-format
+msgid "cannot create config file %s: %s"
+msgstr "грешка при запис на конфигурационния файл: %s"
+
+#: src/lxc_conf.c:513 src/qemu_conf.c:2030 src/qemu_conf.c:2256
+#: src/storage_conf.c:1198
+#, fuzzy, c-format
+msgid "cannot write config file %s: %s"
+msgstr "грешка при запис на конфигурационния файл: %s"
+
+#: src/lxc_conf.c:520 src/qemu_conf.c:2037 src/qemu_conf.c:2263
+#: src/storage_conf.c:1205
+#, c-format
+msgid "cannot save config file %s: %s"
+msgstr ""
+
+#: src/lxc_conf.c:547 src/qemu_conf.c:2200 src/qemu_conf.c:2239
+#: src/qemu_conf.c:2661 src/storage_conf.c:1145
+#, c-format
+msgid "cannot create config directory %s: %s"
+msgstr ""
+
+#: src/lxc_conf.c:555 src/qemu_conf.c:2208 src/qemu_conf.c:2669
+#: src/storage_conf.c:1153
+msgid "cannot construct config file path"
+msgstr ""
+
+#: src/lxc_conf.c:658
+#, fuzzy, c-format
+msgid "failed to open config directory %s: %s"
+msgstr "Неуспех при създаване на мрежа от %s"
+
+#: src/lxc_conf.c:874 src/qemu_conf.c:3246 src/storage_conf.c:1226
+#, fuzzy, c-format
+msgid "no config file for %s"
+msgstr "синтактична грешка в конфигурационния файл: %s"
+
+#: src/lxc_conf.c:880 src/qemu_conf.c:3252 src/storage_conf.c:1232
+#, c-format
+msgid "cannot remove config for %s"
+msgstr ""
+
+#: src/lxc_driver.c:309 src/lxc_driver.c:338 src/lxc_driver.c:371
+#: src/openvz_driver.c:177 src/openvz_driver.c:219 src/openvz_driver.c:529
+#: src/qemu_driver.c:1821 src/qemu_driver.c:1899 src/qemu_driver.c:2241
+#: src/qemu_driver.c:2286 src/qemu_driver.c:2324 src/qemu_driver.c:2402
+#: src/qemu_driver.c:2455 src/qemu_driver.c:2471
+#, fuzzy
+msgid "no domain with matching uuid"
+msgstr "id или uuid на домейн"
+
+#: src/lxc_driver.c:315 src/openvz_driver.c:534 src/qemu_driver.c:2330
+#, fuzzy
+msgid "cannot delete active domain"
+msgstr "име на неактивния домейн"
+
+#: src/openvz_conf.c:241
+#, c-format
+msgid "Error already an active OPENVZ VM having id '%s'"
+msgstr ""
+
+#: src/openvz_conf.c:311 src/qemu_conf.c:1040 src/qemu_conf.c:2447
+#, fuzzy
+msgid "incorrect root element"
+msgstr "непозната машина %s"
+
+#: src/openvz_conf.c:323 src/qemu_conf.c:1055
+#, fuzzy
+msgid "missing domain type attribute"
+msgstr "липсва информация за име на домейн"
+
+#: src/openvz_conf.c:328 src/qemu_conf.c:1067
+#, fuzzy
+msgid "invalid domain type attribute"
+msgstr "невалиден указател за домейн в"
+
+#: src/openvz_conf.c:338
+#, fuzzy
+msgid "invalid domain name"
+msgstr "невалиден указател за домейн в"
+
+#: src/openvz_conf.c:345
+msgid "VPS ID Error (must be an integer greater than 100"
+msgstr ""
+
+#: src/openvz_conf.c:358
+#, fuzzy
+msgid "Failed to generate UUID"
+msgstr "Неуспех при опит за създаване на XML файл"
+
+#: src/openvz_conf.c:362 src/qemu_conf.c:1102 src/qemu_conf.c:2487
+#: src/storage_conf.c:265
+msgid "malformed uuid element"
+msgstr ""
+
+#: src/openvz_conf.c:388
+#, c-format
+msgid "No IP address in the given xml config file '%s'"
+msgstr ""
+
+#: src/openvz_conf.c:395
+msgid "ipaddress length too long"
+msgstr ""
+
+#: src/openvz_conf.c:401
+#, fuzzy
+msgid "Failed to Create Memory for 'ovz_ip' structure"
+msgstr "Неуспешно заделяне на памет"
+
+#: src/openvz_conf.c:413
+#, c-format
+msgid "No Netmask address in the given xml config file '%s'"
+msgstr ""
+
+#: src/openvz_conf.c:420
+msgid "netmask length too long"
+msgstr ""
+
+#: src/openvz_conf.c:432
+#, c-format
+msgid "No hostname in the given xml config file '%s'"
+msgstr ""
+
+#: src/openvz_conf.c:439
+msgid "hostname length too long"
+msgstr ""
+
+#: src/openvz_conf.c:451
+#, c-format
+msgid "No Gateway address in the given xml config file '%s'"
+msgstr ""
+
+#: src/openvz_conf.c:458
+msgid "gateway length too long"
+msgstr ""
+
+#: src/openvz_conf.c:470
+#, c-format
+msgid "No Nameserver address inthe given xml config file '%s'"
+msgstr ""
+
+#: src/openvz_conf.c:477
+msgid "nameserver length too long"
+msgstr ""
+
+#: src/openvz_conf.c:483
+#, fuzzy
+msgid "Failed to Create Memory for 'ovz_ns' structure"
+msgstr "Неуспешно заделяне на памет"
+
+#: src/openvz_conf.c:501
+msgid "profile length too long"
+msgstr ""
+
+#: src/openvz_conf.c:537
+#, fuzzy
+msgid "popen failed"
+msgstr "грешка при операцията"
+
+#: src/openvz_conf.c:544 src/openvz_conf.c:573
+#, fuzzy
+msgid "calloc failed"
+msgstr "заделяне масив за стойности"
+
+#: src/openvz_conf.c:553
+#, fuzzy
+msgid "Failed to parse vzlist output"
+msgstr "Неуспешно отваряне на '%s': %s"
+
+#: src/openvz_conf.c:583
+#, fuzzy
+msgid "UUID in config file malformed"
+msgstr "синтактична грешка в конфигурационния файл: %s"
+
+#: src/openvz_driver.c:149 src/openvz_driver.c:243 src/openvz_driver.c:288
+#: src/openvz_driver.c:483
+msgid "no domain with matching id"
+msgstr ""
+
+#: src/openvz_driver.c:198
+#, fuzzy
+msgid "no domain with matching name"
+msgstr "id или име на домейн"
+
+#: src/openvz_driver.c:249 src/openvz_driver.c:294
+#, fuzzy
+msgid "domain is not in running state"
+msgstr "Домейнът е все още активен"
+
+#: src/openvz_driver.c:256 src/openvz_driver.c:301 src/openvz_driver.c:360
+#: src/openvz_driver.c:428 src/openvz_driver.c:444 src/openvz_driver.c:498
+#: src/openvz_driver.c:541
+msgid "Error in parsing Options to OPENVZ"
+msgstr ""
+
+#: src/openvz_driver.c:331
+#, c-format
+msgid "Already an OPENVZ VM active with the id '%s'"
+msgstr ""
+
+#: src/openvz_driver.c:337 src/openvz_driver.c:404
+msgid "Error creating OPENVZ VM"
+msgstr ""
+
+#: src/openvz_driver.c:399
+#, c-format
+msgid "Already an OPENVZ VM defined with the id '%d'"
+msgstr ""
+
+#: src/openvz_driver.c:489
+#, fuzzy
+msgid "domain is not in shutoff state"
+msgstr "Домейнът е все още активен"
 
 #: src/proxy_internal.c:197
 #, c-format
@@ -812,6 +1292,11 @@ msgstr "Комуникационна грешка с проксито: повр�
 msgid "got asynchronous packet number %d\n"
 msgstr "получен асинхронен пакет номер %d\n"
 
+#: src/qemu_conf.c:85 src/qemu_conf.c:120
+#, fuzzy
+msgid "failed to allocate vncTLSx509certdir"
+msgstr "неуспешно заделяне на буфер"
+
 #: src/qemu_conf.c:499
 #, c-format
 msgid "Unexpected exit status from qemu %d pid %lu"
@@ -822,54 +1307,336 @@ msgstr ""
 msgid "Unexpected exit status '%d', qemu probably failed"
 msgstr ""
 
-#: src/qemu_conf.c:2628
+#: src/qemu_conf.c:533 src/qemu_conf.c:1645
+#, fuzzy, c-format
+msgid "Cannot find QEMU binary %s: %s"
+msgstr "Неуспешно отваряне на '%s': %s"
+
+#: src/qemu_conf.c:617
+#, fuzzy, c-format
+msgid "Invalid floppy device name: %s"
+msgstr "невалиден указател за домейн в"
+
+#: src/qemu_conf.c:625
+#, fuzzy, c-format
+msgid "Invalid cdrom device name: %s"
+msgstr "невалиден указател за домейн в %s"
+
+#: src/qemu_conf.c:639
+#, c-format
+msgid "Invalid harddisk device name: %s"
+msgstr ""
+
+#: src/qemu_conf.c:660
+#, fuzzy, c-format
+msgid "Invalid device type: %s"
+msgstr "тип на целевото устройство"
+
+#: src/qemu_conf.c:802
+msgid ""
+"No <source> 'network' attribute specified with <interface type='network'/>"
+msgstr ""
+
+#: src/qemu_conf.c:806
+#, fuzzy, c-format
+msgid "Network name '%s' too long"
+msgstr "име на мрежата или uuid"
+
+#: src/qemu_conf.c:821 src/qemu_conf.c:849 src/qemu_conf.c:880
+#, c-format
+msgid "TAP interface name '%s' is too long"
+msgstr ""
+
+#: src/qemu_conf.c:837
+#, c-format
+msgid "TAP script path '%s' is too long"
+msgstr ""
+
+#: src/qemu_conf.c:863
+msgid "No <source> 'dev' attribute specified with <interface type='bridge'/>"
+msgstr ""
+
+#: src/qemu_conf.c:867
+#, c-format
+msgid "TAP bridge path '%s' is too long"
+msgstr ""
+
+#: src/qemu_conf.c:896
+msgid "No <source> 'port' attribute specified with socket interface"
+msgstr ""
+
+#: src/qemu_conf.c:902
+msgid "Cannot parse <source> 'port' attribute with socket interface"
+msgstr ""
+
+#: src/qemu_conf.c:912
+msgid "No <source> 'address' attribute specified with socket interface"
+msgstr ""
+
+#: src/qemu_conf.c:917
+#, c-format
+msgid "IP address '%s' is too long"
+msgstr ""
+
+#: src/qemu_conf.c:960
+#, fuzzy
+msgid "missing input device type"
+msgstr "липсва информация за главното устройство"
+
+#: src/qemu_conf.c:970
+#, fuzzy, c-format
+msgid "unsupported input device type %s"
+msgstr "тип на целевото устройство"
+
+#: src/qemu_conf.c:979
+#, c-format
+msgid "ps2 bus does not support %s input device"
+msgstr ""
+
+#: src/qemu_conf.c:988
+#, c-format
+msgid "unsupported input bus %s"
+msgstr ""
+
+#: src/qemu_conf.c:1032 src/qemu_conf.c:1047
+#, fuzzy
+msgid "failed to allocate space for xmlXPathContext"
+msgstr "неуспешно заделяне на възел"
+
+#: src/qemu_conf.c:1083
+#, fuzzy
+msgid "domain name length too long"
+msgstr "име на домейн или uuid"
+
+#: src/qemu_conf.c:1097 src/qemu_conf.c:2482
+#, fuzzy, c-format
+msgid "Failed to generate UUID: %s"
+msgstr "Неуспех при опит за създаване на XML файл"
+
+#: src/qemu_conf.c:1113
+#, fuzzy
+msgid "missing memory element"
+msgstr "липсва информация за главното устройство"
+
+#: src/qemu_conf.c:1120 src/qemu_conf.c:1139
+#, fuzzy
+msgid "malformed memory information"
+msgstr "информация за възела"
+
+#: src/qemu_conf.c:1155
+#, fuzzy
+msgid "malformed vcpu information"
+msgstr "информация за ВЦП на домейна"
+
+#: src/qemu_conf.c:1202
+#, fuzzy
+msgid "no OS type"
+msgstr "непознат тип ОС"
+
+#: src/qemu_conf.c:1220 src/qemu_conf.c:1247
+msgid "unsupported architecture"
+msgstr ""
+
+#: src/qemu_conf.c:1225 src/qemu_conf.c:1232 src/qemu_conf.c:1259
+msgid "architecture type too long"
+msgstr ""
+
+#: src/qemu_conf.c:1252
+msgid "machine type too long"
+msgstr ""
+
+#: src/qemu_conf.c:1272
+msgid "kernel path too long"
+msgstr ""
+
+#: src/qemu_conf.c:1285
+msgid "initrd path too long"
+msgstr ""
+
+#: src/qemu_conf.c:1298
+msgid "cmdline arguments too long"
+msgstr ""
+
+#: src/qemu_conf.c:1323
+#, fuzzy, c-format
+msgid "unknown boot device '%s'"
+msgstr "непознат тип ОС %s"
+
+#: src/qemu_conf.c:1349
+#, fuzzy
+msgid "unsupported guest type"
+msgstr "неочакван mime тип"
+
+#: src/qemu_conf.c:1356
+msgid "emulator path too long"
+msgstr ""
+
+#: src/qemu_conf.c:1391
+#, c-format
+msgid "Unsupported graphics type %s"
+msgstr ""
+
+#: src/qemu_conf.c:1408
+#, fuzzy
+msgid "failed to allocate space for disk string"
+msgstr "неуспешно заделяне на възел"
+
+#: src/qemu_conf.c:1437
+#, fuzzy
+msgid "failed to allocate space for net string"
+msgstr "неуспешно заделяне на възел"
+
+#: src/qemu_conf.c:1465 src/qemu_conf.c:1506
+#, fuzzy
+msgid "failed to allocate space for input string"
+msgstr "Неуспешно заделяне на памет"
+
+#: src/qemu_conf.c:1549
+#, fuzzy, c-format
+msgid "Network '%s' not found"
+msgstr "Не е открита мрежата"
+
+#: src/qemu_conf.c:1554
+#, fuzzy, c-format
+msgid "Network '%s' not active"
+msgstr "Мрежа %s бе стартирана\n"
+
+#: src/qemu_conf.c:1575
+#, fuzzy, c-format
+msgid "Network type %d is not supported"
+msgstr "Мрежа %s бе стартирана\n"
+
+#: src/qemu_conf.c:1581 src/qemu_driver.c:1209
+#, fuzzy, c-format
+msgid "cannot initialize bridge support: %s"
+msgstr "Неуспешно отваряне на '%s': %s"
+
+#: src/qemu_conf.c:1589
+#, fuzzy, c-format
+msgid "Failed to add tap interface '%s' to bridge '%s' : %s"
+msgstr "Неуспешно отваряне на '%s': %s"
+
+#: src/qemu_conf.c:1612
+#, fuzzy
+msgid "failed to allocate space for tapfds string"
+msgstr "неуспешно заделяне на възел"
+
+#: src/qemu_conf.c:1988
+#, fuzzy
+msgid "failed to allocate space for argv string"
+msgstr "Неуспешно заделяне на памет"
+
+#: src/qemu_conf.c:2072 src/storage_conf.c:395 src/storage_conf.c:783
+#, fuzzy
+msgid "missing root element"
+msgstr "липсва информация за главното устройство"
+
+#: src/qemu_conf.c:2086
+#, fuzzy
+msgid "unknown device type"
+msgstr "непознат тип ОС"
+
+#: src/qemu_conf.c:2146
+#, fuzzy
+msgid "failed to allocate space for vm string"
+msgstr "неуспешно заделяне на възел"
+
+#: src/qemu_conf.c:2215 src/qemu_conf.c:2676 src/storage_conf.c:1165
+msgid "cannot construct autostart link path"
+msgstr ""
+
+#: src/qemu_conf.c:2346
+#, fuzzy
+msgid "failed to allocate space for range string"
+msgstr "Неуспешно заделяне на памет"
+
+#: src/qemu_conf.c:2439
+#, fuzzy
+msgid "failed to allocate space for network_def string"
+msgstr "неуспешно заделяне на възел"
+
+#: src/qemu_conf.c:2454
+#, fuzzy
+msgid "failed to allocate space for xmlXPathContext string"
+msgstr "Неуспешно заделяне на памет"
+
+#: src/qemu_conf.c:2468
+#, fuzzy
+msgid "network name length too long"
+msgstr "име на мрежата или uuid"
+
+#: src/qemu_conf.c:2519
+msgid "Forwarding requested, but no IPv4 address/netmask provided"
+msgstr ""
+
+#: src/qemu_conf.c:2541
+#, c-format
+msgid "forward device name '%s' is too long"
+msgstr ""
+
+#: src/qemu_conf.c:2613
+#, fuzzy
+msgid "failed to allocate space for network string"
+msgstr "неуспешно заделяне на възел"
+
+#: src/qemu_conf.c:2697
 #, c-format
 msgid "Error parsing QEMU guest config '%s' : %s"
 msgstr ""
 
-#: src/qemu_conf.c:2630
+#: src/qemu_conf.c:2699
 msgid "BUG: unknown error - please report it\n"
 msgstr ""
 
-#: src/qemu_conf.c:2636
+#: src/qemu_conf.c:2705
 #, c-format
 msgid "QEMU guest config filename '%s' does not match guest name '%s'"
 msgstr ""
 
-#: src/qemu_conf.c:2645
+#: src/qemu_conf.c:2714
 #, c-format
 msgid "Failed to load QEMU guest config '%s': out of memory"
 msgstr ""
 
-#: src/qemu_conf.c:2673
+#: src/qemu_conf.c:2742
 #, c-format
 msgid "Error parsing network config '%s' : %s"
 msgstr ""
 
-#: src/qemu_conf.c:2680
+#: src/qemu_conf.c:2749
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr ""
 
-#: src/qemu_conf.c:2689
+#: src/qemu_conf.c:2758
 #, fuzzy, c-format
 msgid "Failed to load network config '%s': out of memory"
 msgstr "грешка при добавяне на мрежата към хеш-таблицата"
 
-#: src/qemu_conf.c:2716
+#: src/qemu_conf.c:2785
 #, fuzzy, c-format
 msgid "Failed to open dir '%s': %s"
 msgstr "Неуспешно отваряне на '%s': %s"
 
-#: src/qemu_conf.c:2733
+#: src/qemu_conf.c:2802
 #, c-format
 msgid "Config filename '%s/%s' is too long"
 msgstr ""
 
-#: src/qemu_conf.c:2740
+#: src/qemu_conf.c:2809
 #, c-format
 msgid "Autostart link path '%s/%s' is too long"
 msgstr ""
+
+#: src/qemu_conf.c:2873
+#, fuzzy, c-format
+msgid "unexpected domain type %d"
+msgstr "неочакван mime тип"
+
+#: src/qemu_conf.c:3142 src/qemu_conf.c:3234
+#, fuzzy
+msgid "failed to generate XML: out of memory"
+msgstr "Неуспех при опит за създаване на XML файл"
 
 #: src/qemu_driver.c:132
 #, fuzzy, c-format
@@ -899,11 +1666,80 @@ msgstr "свърши паметта"
 msgid "Reloading iptables rules"
 msgstr ""
 
-#: src/qemu_driver.c:560 src/qemu_driver.c:751 src/qemu_driver.c:1385
-#: src/qemu_driver.c:1395
+#: src/qemu_driver.c:395
+#, c-format
+msgid ""
+"QEMU quit during %s startup\n"
+"%s"
+msgstr ""
+
+#: src/qemu_driver.c:405 src/qemu_driver.c:418
+#, c-format
+msgid "Failure while reading %s startup output: %s"
+msgstr ""
+
+#: src/qemu_driver.c:413
+#, c-format
+msgid "Timed out while reading %s startup output"
+msgstr ""
+
+#: src/qemu_driver.c:429
+#, c-format
+msgid "Failure while reading %s startup output"
+msgstr ""
+
+#: src/qemu_driver.c:441
+#, c-format
+msgid "Out of space while reading %s startup output"
+msgstr ""
+
+#: src/qemu_driver.c:472
+#, fuzzy, c-format
+msgid "Unable to open monitor path %s"
+msgstr "Неуспешно отваряне на '%s': %s"
+
+#: src/qemu_driver.c:477
+msgid "Unable to set monitor close-on-exec flag"
+msgstr ""
+
+#: src/qemu_driver.c:482
+msgid "Unable to put monitor into non-blocking mode"
+msgstr ""
+
+#: src/qemu_driver.c:560 src/qemu_driver.c:751 src/qemu_driver.c:1443
+#: src/qemu_driver.c:1453
 #, c-format
 msgid "Unable to log VM console data: %s"
 msgstr ""
+
+#: src/qemu_driver.c:611
+#, fuzzy
+msgid "VM is already active"
+msgstr "Домейна вече е активен"
+
+#: src/qemu_driver.c:619
+msgid "Unable to find an unused VNC port"
+msgstr ""
+
+#: src/qemu_driver.c:632
+#, c-format
+msgid "config file path too long: %s/%s.log"
+msgstr ""
+
+#: src/qemu_driver.c:643
+#, fuzzy, c-format
+msgid "cannot create log directory %s: %s"
+msgstr "грешка при запис на конфигурационния файл: %s"
+
+#: src/qemu_driver.c:651
+#, fuzzy, c-format
+msgid "failed to create logfile %s: %s"
+msgstr "неуспех при запис в дневника"
+
+#: src/qemu_driver.c:657
+#, fuzzy, c-format
+msgid "Unable to set VM logfile close-on-exec flag %s"
+msgstr "неуспех при запис в дневника"
 
 #: src/qemu_driver.c:673 src/qemu_driver.c:676 src/qemu_driver.c:681
 #, fuzzy, c-format
@@ -925,215 +1761,645 @@ msgstr "неуспех при запис в дневника"
 msgid "Got unexpected pid, damn"
 msgstr "неочакван възел речник"
 
-#: src/qemu_driver.c:1235
+#: src/qemu_driver.c:920
+#, fuzzy
+msgid "failed to allocate space for dnsmasq argv"
+msgstr "неуспешно заделяне на възел"
+
+#: src/qemu_driver.c:934
+msgid "cannot start dhcp daemon without IP address for server"
+msgstr ""
+
+#: src/qemu_driver.c:962
+#, fuzzy, c-format
+msgid "failed to add iptables rule to allow forwarding from '%s' : %s\n"
+msgstr "Неуспешно записване на домейн %s в %s"
+
+#: src/qemu_driver.c:973
+#, fuzzy, c-format
+msgid "failed to add iptables rule to allow forwarding to '%s' : %s\n"
+msgstr "Неуспешно записване на домейн %s в %s"
+
+#: src/qemu_driver.c:983
+#, fuzzy, c-format
+msgid "failed to add iptables rule to enable masquerading : %s\n"
+msgstr "Неуспешно записване на домейн %s в %s"
+
+#: src/qemu_driver.c:1015
+#, fuzzy, c-format
+msgid "failed to add iptables rule to allow routing from '%s' : %s\n"
+msgstr "Неуспешно записване на домейн %s в %s"
+
+#: src/qemu_driver.c:1026
+#, fuzzy, c-format
+msgid "failed to add iptables rule to allow routing to '%s' : %s\n"
+msgstr "Неуспешно записване на домейн %s в %s"
+
+#: src/qemu_driver.c:1051
+#, fuzzy
+msgid "failed to allocate space for IP tables support"
+msgstr "неуспешно заделяне на възел"
+
+#: src/qemu_driver.c:1059 src/qemu_driver.c:1066
+#, fuzzy, c-format
+msgid "failed to add iptables rule to allow DHCP requests from '%s' : %s"
+msgstr "Неуспешно записване на домейн %s в %s"
+
+#: src/qemu_driver.c:1074 src/qemu_driver.c:1081
+#, fuzzy, c-format
+msgid "failed to add iptables rule to allow DNS requests from '%s' : %s"
+msgstr "Неуспешно записване на домейн %s в %s"
+
+#: src/qemu_driver.c:1091
+#, fuzzy, c-format
+msgid "failed to add iptables rule to block outbound traffic from '%s' : %s"
+msgstr "Неуспешно записване на домейн %s в %s"
+
+#: src/qemu_driver.c:1098
+#, fuzzy, c-format
+msgid "failed to add iptables rule to block inbound traffic to '%s' : %s"
+msgstr "Неуспешно записване на домейн %s в %s"
+
+#: src/qemu_driver.c:1106
+#, fuzzy, c-format
+msgid "failed to add iptables rule to allow cross bridge traffic on '%s' : %s"
+msgstr "Неуспешно записване на домейн %s в %s"
+
+#: src/qemu_driver.c:1203
+#, fuzzy
+msgid "network is already active"
+msgstr "Домейна вече е активен"
+
+#: src/qemu_driver.c:1222
+#, fuzzy, c-format
+msgid "cannot create bridge '%s' : %s"
+msgstr "грешка при запис на конфигурационния файл: %s"
+
+#: src/qemu_driver.c:1230
+#, fuzzy, c-format
+msgid "failed to set bridge forward delay to %d"
+msgstr "неуспешно получаване на информация за възела"
+
+#: src/qemu_driver.c:1237
+#, fuzzy, c-format
+msgid "failed to set bridge STP to %s"
+msgstr "Неуспешно отваряне на '%s': %s"
+
+#: src/qemu_driver.c:1245
+#, fuzzy, c-format
+msgid "cannot set IP address on bridge '%s' to '%s' : %s"
+msgstr "Неуспешно отваряне на '%s': %s"
+
+#: src/qemu_driver.c:1253
+#, fuzzy, c-format
+msgid "cannot set netmask on bridge '%s' to '%s' : %s"
+msgstr "Неуспешно отваряне на '%s': %s"
+
+#: src/qemu_driver.c:1261
+#, fuzzy, c-format
+msgid "failed to bring the bridge '%s' up : %s"
+msgstr "Неуспешно отваряне на '%s': %s"
+
+#: src/qemu_driver.c:1272
+#, fuzzy, c-format
+msgid "failed to enable IP forwarding : %s"
+msgstr "грешка при отваряне на конфигурационен файл %s за четене"
+
+#: src/qemu_driver.c:1293 src/qemu_driver.c:1324
 #, fuzzy, c-format
 msgid "Failed to bring down bridge '%s' : %s"
 msgstr "Неуспешно отваряне на '%s': %s"
 
-#: src/qemu_driver.c:1241 src/qemu_driver.c:1271
+#: src/qemu_driver.c:1299 src/qemu_driver.c:1329
 #, fuzzy, c-format
-msgid "Failed to delete bridge '%s' : %s\n"
+msgid "Failed to delete bridge '%s' : %s"
 msgstr "Неуспешно отваряне на '%s': %s"
 
-#: src/qemu_driver.c:1254
+#: src/qemu_driver.c:1312
 #, fuzzy, c-format
 msgid "Shutting down network '%s'"
 msgstr "неуспешно получаване на мрежа '%s'"
 
-#: src/qemu_driver.c:1266
-#, fuzzy, c-format
-msgid "Failed to bring down bridge '%s' : %s\n"
-msgstr "Неуспешно отваряне на '%s': %s"
+#: src/qemu_driver.c:1338
+#, fuzzy
+msgid "Got unexpected pid for dnsmasq"
+msgstr "неочакван възел речник"
 
-#: src/qemu_driver.c:1280
-msgid "Got unexpected pid for dnsmasq\n"
-msgstr ""
+#: src/qemu_driver.c:1554
+#, fuzzy
+msgid "failed to allocate space for capabilities support"
+msgstr "Неуспешно заделяне на памет"
 
-#: src/qemu_driver.c:2208 src/qemu_driver.c:2732
-#, fuzzy, c-format
-msgid "Failed to delete autostart link '%s': %s"
-msgstr "Неуспешно извличане състоянието на блоковете %s %s"
-
-#: src/qemu_driver.c:2392
+#: src/qemu_driver.c:1724 src/qemu_driver.c:1753 src/qemu_driver.c:1782
+#: src/qemu_driver.c:1802 src/qemu_driver.c:2030 src/qemu_driver.c:2529
+#: src/qemu_driver.c:2664
 #, c-format
 msgid "no domain with matching id %d"
 msgstr ""
 
-#: src/qemu_driver.c:2397
+#: src/qemu_driver.c:1729 src/qemu_driver.c:1758 src/qemu_driver.c:2036
+#: src/qemu_driver.c:2534 src/qemu_driver.c:2670
 #, fuzzy
 msgid "domain is not running"
 msgstr "Домейнът е все още активен"
 
+#: src/qemu_driver.c:1737
+#, fuzzy
+msgid "suspend operation failed"
+msgstr "грешка при операцията"
+
+#: src/qemu_driver.c:1765
+#, fuzzy
+msgid "resume operation failed"
+msgstr "грешка при операцията"
+
+#: src/qemu_driver.c:1788
+#, fuzzy
+msgid "shutdown operation failed"
+msgstr "грешка при операцията"
+
+#: src/qemu_driver.c:1827
+#, fuzzy
+msgid "failed to allocate space for ostype"
+msgstr "неуспешно заделяне на възел"
+
+#: src/qemu_driver.c:1840 src/qemu_driver.c:1853 src/qemu_driver.c:1873
+#, c-format
+msgid "no domain with matching uuid '%s'"
+msgstr ""
+
+#: src/qemu_driver.c:1859
+msgid "cannot set max memory lower than current memory"
+msgstr ""
+
+#: src/qemu_driver.c:1879
+#, fuzzy
+msgid "cannot set memory of an active domain"
+msgstr "име на неактивния домейн"
+
+#: src/qemu_driver.c:1885
+msgid "cannot set memory higher than max memory"
+msgstr ""
+
+#: src/qemu_driver.c:2045
+#, fuzzy
+msgid "failed to pause domain"
+msgstr "Неуспешно приспиване на домейн %s"
+
+#: src/qemu_driver.c:2054
+#, fuzzy
+msgid "failed to get domain xml"
+msgstr "неуспешно получаване на UUID на домейна"
+
+#: src/qemu_driver.c:2062
+#, fuzzy, c-format
+msgid "failed to create '%s'"
+msgstr "Неуспех при опит за създаване на XML файл"
+
+#: src/qemu_driver.c:2069
+#, fuzzy
+msgid "failed to write save header"
+msgstr "Неуспешен запис в порт %d\n"
+
+#: src/qemu_driver.c:2077
+#, fuzzy
+msgid "failed to write xml"
+msgstr "Неуспешен запис в порт %d\n"
+
+#: src/qemu_driver.c:2090 src/qemu_driver.c:2097 src/qemu_driver.c:2163
+#: src/qemu_driver.c:2360 src/qemu_driver.c:2368 src/qemu_driver.c:2376
+#: src/remote_internal.c:2232 src/virterror.c:435
+msgid "out of memory"
+msgstr "свърши паметта"
+
+#: src/qemu_driver.c:2105
+#, fuzzy
+msgid "migrate operation failed"
+msgstr "грешка при операцията"
+
+#: src/qemu_driver.c:2135 src/test.c:1392
+#, fuzzy
+msgid "cannot read domain image"
+msgstr "списък домейни на възела"
+
+#: src/qemu_driver.c:2141
+#, fuzzy
+msgid "failed to read qemu header"
+msgstr "неуспешно четене от xen демона"
+
+#: src/qemu_driver.c:2148
+msgid "image magic is incorrect"
+msgstr ""
+
+#: src/qemu_driver.c:2155
+#, c-format
+msgid "image version is not supported (%d > %d)"
+msgstr ""
+
+#: src/qemu_driver.c:2170
+#, fuzzy
+msgid "failed to read XML"
+msgstr "Неуспех при опит за създаване на XML файл"
+
+#: src/qemu_driver.c:2179
+#, fuzzy
+msgid "failed to parse XML"
+msgstr "Неуспех при опит за създаване на XML файл"
+
+#: src/qemu_driver.c:2191
+#, fuzzy, c-format
+msgid "domain is already active as '%s'"
+msgstr "Домейна вече е активен"
+
+#: src/qemu_driver.c:2198
+#, fuzzy
+msgid "failed to assign new VM"
+msgstr "Неуспех при опит за създаване на XML файл"
+
+#: src/qemu_driver.c:2213
+#, fuzzy
+msgid "failed to start VM"
+msgstr "Неуспешно стартиране на домейн %s"
+
+#: src/qemu_driver.c:2224
+#, fuzzy
+msgid "failed to resume domain"
+msgstr "Неуспешно събуждане на домейн %s"
+
+#: src/qemu_driver.c:2258 src/qemu_driver.c:2771 src/qemu_driver.c:2799
+#, fuzzy
+msgid "failed to allocate space for VM name string"
+msgstr "Неуспешно заделяне на памет"
+
+#: src/qemu_driver.c:2338 src/qemu_driver.c:2874
+#, fuzzy, c-format
+msgid "Failed to delete autostart link '%s': %s"
+msgstr "Неуспешно извличане състоянието на блоковете %s %s"
+
+#: src/qemu_driver.c:2382
+msgid "cannot change cdrom media"
+msgstr ""
+
+#: src/qemu_driver.c:2408
+#, fuzzy
+msgid "cannot attach device on inactive domain"
+msgstr "премахване дефиницията на неактивен домейн"
+
 #: src/qemu_driver.c:2419
+msgid "only CDROM disk devices can be attached"
+msgstr ""
+
+#: src/qemu_driver.c:2434
+msgid "CDROM not attached, cannot change media"
+msgstr ""
+
+#: src/qemu_driver.c:2485 src/qemu_driver.c:2983 src/storage_driver.c:790
+#, c-format
+msgid "cannot create autostart directory %s: %s"
+msgstr ""
+
+#: src/qemu_driver.c:2492 src/qemu_driver.c:2990 src/storage_driver.c:797
+#, fuzzy, c-format
+msgid "Failed to create symlink '%s' to '%s': %s"
+msgstr "Неуспешно записване на домейн %s в %s"
+
+#: src/qemu_driver.c:2499 src/qemu_driver.c:2997 src/storage_driver.c:806
+#, fuzzy, c-format
+msgid "Failed to delete symlink '%s': %s"
+msgstr "Неуспешно отваряне на '%s': %s"
+
+#: src/qemu_driver.c:2556
 #, fuzzy, c-format
 msgid "invalid path: %s"
 msgstr "невалиден аргумент в %s"
 
-#: src/qemu_driver.c:2427
+#: src/qemu_driver.c:2564
 msgid "'info blockstats' command failed"
 msgstr ""
 
-#: src/qemu_driver.c:2442
+#: src/qemu_driver.c:2579
 msgid "'info blockstats' not supported by this qemu"
 msgstr ""
 
-#: src/qemu_driver.c:2507
+#: src/qemu_driver.c:2644
 #, fuzzy, c-format
 msgid "device not found: %s (%s)"
 msgstr "Не е открит домейна: %s"
+
+#: src/qemu_driver.c:2676
+msgid "NULL or empty path"
+msgstr ""
+
+#: src/qemu_driver.c:2699
+#, c-format
+msgid "invalid path, '%s' is not a known interface"
+msgstr ""
+
+#: src/qemu_driver.c:2719 src/qemu_driver.c:2866 src/qemu_driver.c:2891
+#: src/qemu_driver.c:2905 src/qemu_driver.c:2920 src/qemu_driver.c:2953
+#: src/qemu_driver.c:2969
+msgid "no network with matching uuid"
+msgstr ""
+
+#: src/qemu_driver.c:2734
+msgid "no network with matching name"
+msgstr ""
+
+#: src/qemu_driver.c:2933
+#, fuzzy
+msgid "no network with matching id"
+msgstr "информация за мрежа в XML"
+
+#: src/qemu_driver.c:2940
+#, fuzzy
+msgid "failed to allocate space for network bridge string"
+msgstr "неуспешно заделяне на възел"
 
 #: src/remote_internal.c:107 src/remote_internal.c:115
 msgid "tried to use a closed or uninitialised handle"
 msgstr ""
 
-#: src/remote_internal.c:222
+#: src/remote_internal.c:224
 #, fuzzy
 msgid "failed to find libvirtd binary"
 msgstr "Не може да бъде намерена мрежата"
 
-#: src/remote_internal.c:329
+#: src/remote_internal.c:331
 msgid ""
 "remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp)"
 msgstr ""
 
-#: src/remote_internal.c:370
+#: src/remote_internal.c:372
 #, fuzzy
 msgid "allocating priv->hostname"
 msgstr "заделяне на домейн"
 
-#: src/remote_internal.c:453
+#: src/remote_internal.c:455
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr ""
 
-#: src/remote_internal.c:728
+#: src/remote_internal.c:730
 msgid "transport methods unix, ssh and ext are not supported under Windows"
 msgstr ""
 
-#: src/remote_internal.c:771
+#: src/remote_internal.c:773
 msgid "uri params"
 msgstr ""
 
-#: src/remote_internal.c:815 src/remote_internal.c:2323
-#: src/remote_internal.c:2721
+#: src/remote_internal.c:817 src/remote_internal.c:2355
+#: src/remote_internal.c:2761
 msgid "struct private_data"
 msgstr ""
 
-#: src/remote_internal.c:1066
+#: src/remote_internal.c:1027
+msgid "server verification (of our certificate or IP address) failed\n"
+msgstr ""
+
+#: src/remote_internal.c:1082
 msgid "Certificate type is not X.509"
 msgstr ""
 
-#: src/remote_internal.c:1071
+#: src/remote_internal.c:1087
 msgid "gnutls_certificate_get_peers failed"
 msgstr ""
 
-#: src/remote_internal.c:1092
+#: src/remote_internal.c:1108
 msgid "The certificate has expired"
 msgstr ""
 
-#: src/remote_internal.c:1098
+#: src/remote_internal.c:1114
 msgid "The certificate is not yet activated"
 msgstr ""
 
-#: src/remote_internal.c:1325
-msgid "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
+#: src/remote_internal.c:1126
+#, c-format
+msgid "Certificate's owner does not match the hostname (%s)"
 msgstr ""
 
-#: src/remote_internal.c:1337
-msgid "ret.ids.ids_len > maxids"
+#: src/remote_internal.c:1342 src/remote_internal.c:1356
+#, fuzzy, c-format
+msgid "too many remote domain IDs: %d > %d"
+msgstr "твърде много домейни"
+
+#: src/remote_internal.c:1730
+#, c-format
+msgid "map length greater than maximum: %d > %d"
 msgstr ""
 
-#: src/remote_internal.c:1709
-msgid "maplen > REMOTE_CPUMAP_MAX"
+#: src/remote_internal.c:1762
+#, c-format
+msgid "vCPU count exceeds maximum: %d > %d"
 msgstr ""
 
-#: src/remote_internal.c:1739
-msgid "maxinfo > REMOTE_VCPUINFO_MAX"
+#: src/remote_internal.c:1768
+#, c-format
+msgid "vCPU map buffer length exceeds maximum: %d > %d"
 msgstr ""
 
-#: src/remote_internal.c:1744
-msgid "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
+#: src/remote_internal.c:1785
+#, c-format
+msgid "host reports too many vCPUs: %d > %d"
 msgstr ""
 
-#: src/remote_internal.c:1759
-msgid "ret.info.info_len > maxinfo"
+#: src/remote_internal.c:1792
+#, c-format
+msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr ""
 
-#: src/remote_internal.c:1765
-msgid "ret.cpumaps.cpumaps_len > maxinfo * maplen"
-msgstr ""
+#: src/remote_internal.c:1954 src/remote_internal.c:1968
+#, fuzzy, c-format
+msgid "too many remote domain names: %d > %d"
+msgstr "твърде много домейни"
 
-#: src/remote_internal.c:1925
-msgid "maxnames > REMOTE_DOMAIN_NAME_LIST_MAX"
-msgstr ""
-
-#: src/remote_internal.c:1937 src/remote_internal.c:2397
-#: src/remote_internal.c:2452
-msgid "ret.names.names_len > maxnames"
-msgstr ""
-
-#: src/remote_internal.c:2138
+#: src/remote_internal.c:2170
 msgid ""
 "remoteDomainGetSchedulerParameters: returned number of parameters exceeds "
 "limit"
 msgstr ""
 
-#: src/remote_internal.c:2166
+#: src/remote_internal.c:2198
 msgid "remoteDomainGetSchedulerParameters: unknown parameter type"
 msgstr ""
 
-#: src/remote_internal.c:2191
-#, fuzzy
-msgid "out of memory allocating array"
-msgstr "промяна заделянето на памет"
-
-#: src/remote_internal.c:2200 src/virterror.c:430
-msgid "out of memory"
-msgstr "свърши паметта"
-
-#: src/remote_internal.c:2218
+#: src/remote_internal.c:2250
 #, fuzzy
 msgid "unknown parameter type"
 msgstr "непознат тип ОС"
 
-#: src/remote_internal.c:2385 src/remote_internal.c:2440
-msgid "maxnames > REMOTE_NETWORK_NAME_LIST_MAX"
-msgstr ""
+#: src/remote_internal.c:2418 src/remote_internal.c:2432
+#: src/remote_internal.c:2477 src/remote_internal.c:2491
+#, fuzzy, c-format
+msgid "too many remote networks: %d > %d"
+msgstr "твърде много мрежи"
 
-#: src/remote_internal.c:2783 src/remote_internal.c:2838
+#: src/remote_internal.c:2823 src/remote_internal.c:2878
 #, fuzzy
 msgid "too many storage pools requested"
 msgstr "регистрирани са твърде много устройства"
 
-#: src/remote_internal.c:2795 src/remote_internal.c:2850
+#: src/remote_internal.c:2835 src/remote_internal.c:2890
 #, fuzzy
 msgid "too many storage pools received"
 msgstr "регистрирани са твърде много устройства"
 
-#: src/remote_internal.c:3195
+#: src/remote_internal.c:3235
 #, fuzzy
 msgid "too many storage volumes requested"
 msgstr "регистрирани са твърде много устройства"
 
-#: src/remote_internal.c:3208
+#: src/remote_internal.c:3248
 #, fuzzy
 msgid "too many storage volumes received"
 msgstr "регистрирани са твърде много устройства"
 
-#: src/remote_internal.c:4158
+#: src/remote_internal.c:3484
+#, fuzzy, c-format
+msgid "unknown authentication type %s"
+msgstr "непознат тип ОС %s"
+
+#: src/remote_internal.c:3494
+#, c-format
+msgid "requested authentication type %s rejected"
+msgstr ""
+
+#: src/remote_internal.c:3535
+#, fuzzy, c-format
+msgid "unsupported authentication type %d"
+msgstr "грешка при операцията"
+
+#: src/remote_internal.c:3785
+#, fuzzy, c-format
+msgid "failed to initialize SASL library: %d (%s)"
+msgstr "Не може да бъде намерена мрежата: %s"
+
+#: src/remote_internal.c:3833
+#, fuzzy, c-format
+msgid "Failed to create SASL client context: %d (%s)"
+msgstr "Грешка при създаване на неактивен домейн %s\n"
+
+#: src/remote_internal.c:3846
+msgid "invalid cipher size for TLS session"
+msgstr ""
+
+#: src/remote_internal.c:3856
+#, fuzzy, c-format
+msgid "cannot set external SSF %d (%s)"
+msgstr "Неуспешно отваряне на '%s': %s"
+
+#: src/remote_internal.c:3875
+#, fuzzy, c-format
+msgid "cannot set security props %d (%s)"
+msgstr "Неуспешно отваряне на '%s': %s"
+
+#: src/remote_internal.c:3894
+#, fuzzy, c-format
+msgid "SASL mechanism %s not supported by server"
+msgstr "тази функция не се поддържа от хипервайзора"
+
+#: src/remote_internal.c:3913
+#, fuzzy, c-format
+msgid "Failed to start SASL negotiation: %d (%s)"
+msgstr "Неуспешно стартиране на домейн %s"
+
+#: src/remote_internal.c:3931 src/remote_internal.c:4009
+#, fuzzy
+msgid "Failed to make auth credentials"
+msgstr "Неуспешно извличане състоянието на интерфейс %s %s"
+
+#: src/remote_internal.c:3955
+#, c-format
+msgid "SASL negotiation data too long: %d bytes"
+msgstr ""
+
+#: src/remote_internal.c:3995
+#, fuzzy, c-format
+msgid "Failed SASL step: %d (%s)"
+msgstr "Неуспешно отваряне на '%s': %s"
+
+#: src/remote_internal.c:4082
+#, c-format
+msgid "negotiation SSF %d was not strong enough"
+msgstr ""
+
+#: src/remote_internal.c:4136
+#, fuzzy
+msgid "Failed to collect auth credentials"
+msgstr "Неуспешно извличане състоянието на интерфейс %s %s"
+
+#: src/remote_internal.c:4203
+msgid "xdr_remote_message_header failed"
+msgstr ""
+
+#: src/remote_internal.c:4209
 msgid "marshalling args"
 msgstr ""
 
-#: src/remote_internal.c:4174
+#: src/remote_internal.c:4226
 msgid "xdr_int (length word)"
 msgstr ""
 
-#: src/remote_internal.c:4267
+#: src/remote_internal.c:4243
+msgid "xdr_int (length word, reply)"
+msgstr ""
+
+#: src/remote_internal.c:4253
+msgid "packet received from server too large"
+msgstr ""
+
+#: src/remote_internal.c:4265
+#, fuzzy
+msgid "invalid header in reply"
+msgstr "невалиден аргумент в %s"
+
+#: src/remote_internal.c:4274
+#, c-format
+msgid "unknown program (received %x, expected %x)"
+msgstr ""
+
+#: src/remote_internal.c:4282
+#, c-format
+msgid "unknown protocol version (received %x, expected %x)"
+msgstr ""
+
+#: src/remote_internal.c:4295
+#, c-format
+msgid "unknown procedure (received %x, expected %x)"
+msgstr ""
+
+#: src/remote_internal.c:4303
+#, c-format
+msgid "unknown direction (received %x, expected %x)"
+msgstr ""
+
+#: src/remote_internal.c:4310
+#, c-format
+msgid "unknown serial (received %x, expected %x)"
+msgstr ""
+
+#: src/remote_internal.c:4323
 msgid "unmarshalling ret"
 msgstr ""
 
-#: src/remote_internal.c:4277
+#: src/remote_internal.c:4333
 msgid "unmarshalling remote_error"
 msgstr ""
+
+#: src/remote_internal.c:4353
+#, c-format
+msgid "unknown status (received %x)"
+msgstr ""
+
+#: src/remote_internal.c:4462 src/remote_internal.c:4479
+msgid "socket closed unexpectedly"
+msgstr ""
+
+#: src/sexpr.c:59
+msgid "failed to allocate a node"
+msgstr "неуспешно заделяне на възел"
+
+#: src/sexpr.c:352 src/sexpr.c:367
+msgid "failed to copy a string"
+msgstr "неуспешно копиране на низ"
 
 #: src/storage_backend.c:81
 #, c-format
@@ -1165,75 +2431,118 @@ msgstr ""
 msgid "cannot seek to end of file '%s':%s"
 msgstr ""
 
-#: src/storage_backend.c:244
+#: src/storage_backend.c:245
 #, c-format
 msgid "cannot get file context of %s: %s"
 msgstr ""
 
-#: src/storage_backend.c:250
+#: src/storage_backend.c:254
 msgid "context"
 msgstr ""
 
-#: src/storage_backend.c:295
+#: src/storage_backend.c:300
 #, c-format
 msgid "cannot read dir %s: %s"
 msgstr ""
 
-#: src/storage_backend.c:309 src/storage_driver.c:1191
+#: src/storage_backend.c:314 src/storage_driver.c:1195
 msgid "path"
 msgstr ""
 
-#: src/storage_backend.c:362
+#: src/storage_backend.c:367
 msgid "regex"
 msgstr ""
 
-#: src/storage_backend.c:372
+#: src/storage_backend.c:377
 #, fuzzy, c-format
 msgid "Failed to compile regex %s"
 msgstr "Неуспешно отваряне на '%s': %s"
 
-#: src/storage_backend.c:388 src/storage_backend.c:393
-#: src/storage_backend.c:429
+#: src/storage_backend.c:393 src/storage_backend.c:398
+#: src/storage_backend.c:434
 msgid "regex groups"
 msgstr ""
 
-#: src/storage_backend.c:405 src/storage_backend.c:546
+#: src/storage_backend.c:410 src/storage_backend.c:551
 msgid "cannot read fd"
 msgstr ""
 
-#: src/storage_backend.c:479 src/storage_backend.c:601
+#: src/storage_backend.c:484 src/storage_backend.c:606
 #, fuzzy, c-format
 msgid "failed to wait for command: %s"
 msgstr "Неуспешно стартиране на домейн %s"
 
-#: src/storage_backend.c:486 src/storage_backend.c:608
+#: src/storage_backend.c:491 src/storage_backend.c:613
 #, c-format
 msgid "non-zero exit status from command %d"
 msgstr ""
 
-#: src/storage_backend.c:492 src/storage_backend.c:614
+#: src/storage_backend.c:497 src/storage_backend.c:619
 msgid "command did not exit cleanly"
 msgstr ""
 
-#: src/storage_backend.c:533
+#: src/storage_backend.c:538
 msgid "n_columns too large"
 msgstr ""
 
-#: src/storage_backend.c:580
+#: src/storage_backend.c:585
 #, fuzzy, c-format
 msgid "read error: %s"
 msgstr "вътрешна грешка %s"
 
-#: src/storage_backend_fs.c:186 src/storage_backend_fs.c:256
-#: src/storage_backend_fs.c:308 src/storage_backend_disk.c:136
+#: src/storage_backend_disk.c:83 src/storage_backend_logical.c:56
+#, c-format
+msgid "unsupported pool format %s"
+msgstr ""
+
+#: src/storage_backend_disk.c:108 src/storage_backend_logical.c:69
+#, c-format
+msgid "unsupported pool format %d"
+msgstr ""
+
+#: src/storage_backend_disk.c:136 src/storage_backend_fs.c:186
+#: src/storage_backend_fs.c:256 src/storage_backend_fs.c:308
 #, c-format
 msgid "unsupported volume format %s"
 msgstr ""
 
-#: src/storage_backend_fs.c:219 src/storage_backend_fs.c:291
-#: src/storage_backend_fs.c:323 src/storage_backend_disk.c:163
+#: src/storage_backend_disk.c:163 src/storage_backend_fs.c:219
+#: src/storage_backend_fs.c:291 src/storage_backend_fs.c:323
 #, c-format
 msgid "unsupported volume format %d"
+msgstr ""
+
+#: src/storage_backend_disk.c:177 src/storage_backend_disk.c:190
+#: src/storage_backend_disk.c:197 src/storage_backend_disk.c:220
+#: src/storage_backend_fs.c:683 src/storage_backend_iscsi.c:256
+#: src/storage_backend_logical.c:116 src/storage_backend_logical.c:121
+#: src/storage_backend_logical.c:133 src/storage_backend_logical.c:143
+msgid "volume"
+msgstr ""
+
+#: src/storage_backend_disk.c:229
+msgid "volume extents"
+msgstr ""
+
+#: src/storage_backend_disk.c:237
+msgid "cannot parse device start location"
+msgstr ""
+
+#: src/storage_backend_disk.c:244
+msgid "cannot parse device end location"
+msgstr ""
+
+#: src/storage_backend_disk.c:250 src/storage_backend_logical.c:154
+#: src/storage_backend_logical.c:161
+msgid "extents"
+msgstr ""
+
+#: src/storage_backend_disk.c:463
+msgid "no large enough free extent"
+msgstr ""
+
+#: src/storage_backend_disk.c:498
+msgid "Disk pools are not yet supported"
 msgstr ""
 
 #: src/storage_backend_fs.c:352
@@ -1247,7 +2556,7 @@ msgid "cannot read %s: %s"
 msgstr ""
 
 #: src/storage_backend_fs.c:506 src/storage_backend_fs.c:571
-#: src/storage_backend_iscsi.c:372
+#: src/storage_backend_iscsi.c:445
 #, fuzzy
 msgid "missing source host"
 msgstr "липсва информация за източника на устройство"
@@ -1258,7 +2567,7 @@ msgid "missing source path"
 msgstr "липсва информация за източника на устройство"
 
 #: src/storage_backend_fs.c:517 src/storage_backend_fs.c:582
-#: src/storage_backend_iscsi.c:379
+#: src/storage_backend_iscsi.c:452
 #, fuzzy
 msgid "missing source device"
 msgstr "липсва информация за източника на устройство"
@@ -1282,14 +2591,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "cannot open path '%s': %s"
 msgstr "Неуспешно отваряне на '%s': %s"
-
-#: src/storage_backend_fs.c:683 src/storage_backend_logical.c:116
-#: src/storage_backend_logical.c:121 src/storage_backend_logical.c:133
-#: src/storage_backend_logical.c:143 src/storage_backend_iscsi.c:185
-#: src/storage_backend_disk.c:177 src/storage_backend_disk.c:190
-#: src/storage_backend_disk.c:197 src/storage_backend_disk.c:220
-msgid "volume"
-msgstr ""
 
 #: src/storage_backend_fs.c:691 src/storage_backend_fs.c:702
 #, fuzzy
@@ -1368,19 +2669,69 @@ msgstr ""
 msgid "cannot unlink file '%s': %s"
 msgstr ""
 
-#: src/storage_backend_logical.c:56 src/storage_backend_disk.c:83
+#: src/storage_backend_iscsi.c:59
+#, fuzzy, c-format
+msgid "host lookup failed %s"
+msgstr "грешка при операция: %s"
+
+#: src/storage_backend_iscsi.c:66
 #, c-format
-msgid "unsupported pool format %s"
+msgid "no IP address for target %s"
 msgstr ""
 
-#: src/storage_backend_logical.c:69 src/storage_backend_disk.c:108
+#: src/storage_backend_iscsi.c:75
 #, c-format
-msgid "unsupported pool format %d"
+msgid "cannot format ip addr for %s"
 msgstr ""
 
-#: src/storage_backend_logical.c:154 src/storage_backend_logical.c:161
-#: src/storage_backend_disk.c:250
-msgid "extents"
+#: src/storage_backend_iscsi.c:95
+#, fuzzy
+msgid "session"
+msgstr "показване на версия"
+
+#: src/storage_backend_iscsi.c:136
+msgid "cannot find session"
+msgstr ""
+
+#: src/storage_backend_iscsi.c:194
+msgid "Failed parsing iscsiadm commands"
+msgstr ""
+
+#: src/storage_backend_iscsi.c:211
+#, fuzzy, c-format
+msgid "Failed to find the sysfs path for %d:%d:%d:%d: %s"
+msgstr "Не може да бъде намерена мрежата: %s"
+
+#: src/storage_backend_iscsi.c:220
+#, fuzzy, c-format
+msgid "Failed to opendir sysfs path %s: %s"
+msgstr "Неуспешно отваряне на '%s': %s"
+
+#: src/storage_backend_iscsi.c:248
+#, fuzzy, c-format
+msgid "Failed to find SCSI device for %d:%d:%d:%d: %s"
+msgstr "Не може да бъде намерена мрежата: %s"
+
+#: src/storage_backend_iscsi.c:261 src/storage_driver.c:867
+#, fuzzy
+msgid "name"
+msgstr "Име"
+
+#: src/storage_backend_iscsi.c:266
+msgid "devpath"
+msgstr ""
+
+#: src/storage_backend_iscsi.c:288 src/util.c:110
+#, fuzzy, c-format
+msgid "cannot open %s: %s"
+msgstr "Неуспешно отваряне на '%s': %s"
+
+#: src/storage_backend_iscsi.c:314
+msgid "key"
+msgstr ""
+
+#: src/storage_backend_iscsi.c:426
+msgid "portal"
 msgstr ""
 
 #: src/storage_backend_logical.c:167
@@ -1420,72 +2771,6 @@ msgstr ""
 msgid "cannot find newly created volume '%s': %s"
 msgstr ""
 
-#: src/storage_backend_iscsi.c:59
-#, fuzzy, c-format
-msgid "host lookup failed %s"
-msgstr "грешка при операция: %s"
-
-#: src/storage_backend_iscsi.c:66
-#, c-format
-msgid "no IP address for target %s"
-msgstr ""
-
-#: src/storage_backend_iscsi.c:75
-#, c-format
-msgid "cannot format ip addr for %s"
-msgstr ""
-
-#: src/storage_backend_iscsi.c:95
-#, fuzzy
-msgid "session"
-msgstr "показване на версия"
-
-#: src/storage_backend_iscsi.c:136
-msgid "cannot find session"
-msgstr ""
-
-#: src/storage_backend_iscsi.c:190 src/storage_driver.c:863
-#, fuzzy
-msgid "name"
-msgstr "Име"
-
-#: src/storage_backend_iscsi.c:195
-msgid "devpath"
-msgstr ""
-
-#: src/storage_backend_iscsi.c:215
-#, fuzzy, c-format
-msgid "cannot open %s: %s"
-msgstr "Неуспешно отваряне на '%s': %s"
-
-#: src/storage_backend_iscsi.c:241
-msgid "key"
-msgstr ""
-
-#: src/storage_backend_iscsi.c:353
-msgid "portal"
-msgstr ""
-
-#: src/storage_backend_disk.c:229
-msgid "volume extents"
-msgstr ""
-
-#: src/storage_backend_disk.c:237
-msgid "cannot parse device start location"
-msgstr ""
-
-#: src/storage_backend_disk.c:244
-msgid "cannot parse device end location"
-msgstr ""
-
-#: src/storage_backend_disk.c:463
-msgid "no large enough free extent"
-msgstr ""
-
-#: src/storage_backend_disk.c:498
-msgid "Disk pools are not yet supported"
-msgstr ""
-
 #: src/storage_conf.c:156
 msgid "missing auth host attribute"
 msgstr ""
@@ -1519,10 +2804,6 @@ msgstr ""
 #, fuzzy
 msgid "unable to generate uuid"
 msgstr "име на мрежата или uuid"
-
-#: src/storage_conf.c:265
-msgid "malformed uuid element"
-msgstr ""
 
 #: src/storage_conf.c:284
 #, fuzzy
@@ -1562,11 +2843,6 @@ msgstr ""
 msgid "xmlXPathContext"
 msgstr ""
 
-#: src/storage_conf.c:395 src/storage_conf.c:783
-#, fuzzy
-msgid "missing root element"
-msgstr "липсва информация за главното устройство"
-
 #: src/storage_conf.c:432
 #, fuzzy
 msgid "unexpected pool type"
@@ -1601,21 +2877,8 @@ msgstr ""
 msgid "pool"
 msgstr ""
 
-#: src/storage_conf.c:1145
-#, c-format
-msgid "cannot create config directory %s: %s"
-msgstr ""
-
-#: src/storage_conf.c:1153
-msgid "cannot construct config file path"
-msgstr ""
-
 #: src/storage_conf.c:1158
 msgid "configFile"
-msgstr ""
-
-#: src/storage_conf.c:1165
-msgid "cannot construct autostart link path"
 msgstr ""
 
 #: src/storage_conf.c:1173
@@ -1627,32 +2890,7 @@ msgstr ""
 msgid "failed to generate XML"
 msgstr "Неуспех при опит за създаване на XML файл"
 
-#: src/storage_conf.c:1190
-#, fuzzy, c-format
-msgid "cannot create config file %s: %s"
-msgstr "грешка при запис на конфигурационния файл: %s"
-
-#: src/storage_conf.c:1198
-#, fuzzy, c-format
-msgid "cannot write config file %s: %s"
-msgstr "грешка при запис на конфигурационния файл: %s"
-
-#: src/storage_conf.c:1205
-#, c-format
-msgid "cannot save config file %s: %s"
-msgstr ""
-
-#: src/storage_conf.c:1226
-#, fuzzy, c-format
-msgid "no config file for %s"
-msgstr "синтактична грешка в конфигурационния файл: %s"
-
-#: src/storage_conf.c:1232
-#, c-format
-msgid "cannot remove config for %s"
-msgstr ""
-
-#: src/storage_driver.c:264 src/storage_driver.c:744 src/storage_driver.c:766
+#: src/storage_driver.c:264 src/storage_driver.c:748 src/storage_driver.c:770
 msgid "no pool with matching uuid"
 msgstr ""
 
@@ -1669,253 +2907,301 @@ msgstr "Име"
 msgid "storage pool already exists"
 msgstr ""
 
-#: src/storage_driver.c:473 src/storage_driver.c:510 src/storage_driver.c:549
-#: src/storage_driver.c:580 src/storage_driver.c:621 src/storage_driver.c:658
-#: src/storage_driver.c:699 src/storage_driver.c:728 src/storage_driver.c:822
-#: src/storage_driver.c:847 src/storage_driver.c:892 src/storage_driver.c:976
-#: src/storage_driver.c:1030 src/storage_driver.c:1093
-#: src/storage_driver.c:1137 src/storage_driver.c:1171
+#: src/storage_driver.c:477 src/storage_driver.c:514 src/storage_driver.c:553
+#: src/storage_driver.c:584 src/storage_driver.c:625 src/storage_driver.c:662
+#: src/storage_driver.c:703 src/storage_driver.c:732 src/storage_driver.c:826
+#: src/storage_driver.c:851 src/storage_driver.c:896 src/storage_driver.c:980
+#: src/storage_driver.c:1034 src/storage_driver.c:1097
+#: src/storage_driver.c:1141 src/storage_driver.c:1175
 msgid "no storage pool with matching uuid"
 msgstr ""
 
-#: src/storage_driver.c:479
+#: src/storage_driver.c:483
 msgid "pool is still active"
 msgstr ""
 
-#: src/storage_driver.c:520
+#: src/storage_driver.c:524
 #, fuzzy
 msgid "pool already active"
 msgstr "Домейна вече е активен"
 
-#: src/storage_driver.c:559
+#: src/storage_driver.c:563
 #, fuzzy
 msgid "storage pool is already active"
 msgstr "Домейна вече е активен"
 
-#: src/storage_driver.c:590 src/storage_driver.c:668 src/storage_driver.c:828
-#: src/storage_driver.c:853 src/storage_driver.c:898 src/storage_driver.c:982
-#: src/storage_driver.c:1036 src/storage_driver.c:1099
-#: src/storage_driver.c:1143 src/storage_driver.c:1177
+#: src/storage_driver.c:594 src/storage_driver.c:672 src/storage_driver.c:832
+#: src/storage_driver.c:857 src/storage_driver.c:902 src/storage_driver.c:986
+#: src/storage_driver.c:1040 src/storage_driver.c:1103
+#: src/storage_driver.c:1147 src/storage_driver.c:1181
 #, fuzzy
 msgid "storage pool is not active"
 msgstr "пътя до дневника на е файл"
 
-#: src/storage_driver.c:631
+#: src/storage_driver.c:635
 msgid "storage pool is still active"
 msgstr ""
 
-#: src/storage_driver.c:637
+#: src/storage_driver.c:641
 msgid "pool does not support volume delete"
 msgstr ""
 
-#: src/storage_driver.c:772
+#: src/storage_driver.c:776
 msgid "pool has no config file"
 msgstr ""
 
-#: src/storage_driver.c:786
-#, c-format
-msgid "cannot create autostart directory %s: %s"
-msgstr ""
-
-#: src/storage_driver.c:793
-#, fuzzy, c-format
-msgid "Failed to create symlink '%s' to '%s': %s"
-msgstr "Неуспешно записване на домейн %s в %s"
-
-#: src/storage_driver.c:802
-#, fuzzy, c-format
-msgid "Failed to delete symlink '%s': %s"
-msgstr "Неуспешно отваряне на '%s': %s"
-
-#: src/storage_driver.c:906 src/storage_driver.c:1047
-#: src/storage_driver.c:1107 src/storage_driver.c:1151
-#: src/storage_driver.c:1185
+#: src/storage_driver.c:910 src/storage_driver.c:1051
+#: src/storage_driver.c:1111 src/storage_driver.c:1155
+#: src/storage_driver.c:1189
 msgid "no storage vol with matching name"
 msgstr ""
 
-#: src/storage_driver.c:935
+#: src/storage_driver.c:939
 msgid "no storage vol with matching key"
 msgstr ""
 
-#: src/storage_driver.c:960
+#: src/storage_driver.c:964
 msgid "no storage vol with matching path"
 msgstr ""
 
-#: src/storage_driver.c:995
+#: src/storage_driver.c:999
 msgid "storage vol already exists"
 msgstr ""
 
-#: src/storage_driver.c:1002
+#: src/storage_driver.c:1006
 msgid "storage pool does not support volume creation"
 msgstr ""
 
-#: src/storage_driver.c:1053
+#: src/storage_driver.c:1057
 msgid "storage pool does not support vol deletion"
 msgstr ""
 
-#: src/sexpr.c:59
-msgid "failed to allocate a node"
-msgstr "неуспешно заделяне на възел"
-
-#: src/sexpr.c:352 src/sexpr.c:367
-msgid "failed to copy a string"
-msgstr "неуспешно копиране на низ"
-
-#: src/test.c:234 src/test.c:599 src/test.c:1282
+#: src/test.c:247 src/test.c:612 src/test.c:1308
 msgid "getting time of day"
 msgstr "вземане на времето"
 
-#: src/test.c:240 src/test.c:373 src/test.c:399 src/test.c:1564
+#: src/test.c:253 src/test.c:386 src/test.c:412 src/test.c:1590
 msgid "domain"
 msgstr "домейн"
 
-#: src/test.c:246 src/test.c:433 src/test.c:705
+#: src/test.c:259 src/test.c:446 src/test.c:728
 msgid "creating xpath context"
 msgstr "създаване на xpath контекст"
 
-#: src/test.c:252
+#: src/test.c:265
 msgid "domain name"
 msgstr "име на домейна"
 
-#: src/test.c:258 src/test.c:262
+#: src/test.c:271 src/test.c:275
 msgid "domain uuid"
 msgstr "uuid на домейна"
 
-#: src/test.c:270
+#: src/test.c:283
 msgid "domain memory"
 msgstr "памет на домейна"
 
-#: src/test.c:279
+#: src/test.c:292
 msgid "domain current memory"
 msgstr "настояща памет на домейна"
 
-#: src/test.c:289
+#: src/test.c:302
 msgid "domain vcpus"
 msgstr "ВЦП на домейна"
 
-#: src/test.c:298
+#: src/test.c:311
 msgid "domain reboot behaviour"
 msgstr "поведение на домейна при рестарт"
 
-#: src/test.c:308
+#: src/test.c:321
 msgid "domain poweroff behaviour"
 msgstr "поведение на домейна при изключване"
 
-#: src/test.c:318
+#: src/test.c:331
 msgid "domain crash behaviour"
 msgstr "поведение на домейна при авария"
 
-#: src/test.c:392
+#: src/test.c:405
 msgid "load domain definition file"
 msgstr "зареждане на файл с дефиниции на домейни"
 
-#: src/test.c:427 src/test.c:550 src/test.c:575
+#: src/test.c:440 src/test.c:563 src/test.c:588
 msgid "network"
 msgstr "мрежа"
 
-#: src/test.c:439 src/virsh.c:2725
+#: src/test.c:452 src/virsh.c:2728
 msgid "network name"
 msgstr "име на мрежа"
 
-#: src/test.c:447 src/test.c:451 src/virsh.c:2616
+#: src/test.c:460 src/test.c:464 src/virsh.c:2619
 msgid "network uuid"
 msgstr "uuid на мрежа"
 
-#: src/test.c:459
+#: src/test.c:472
 msgid "network forward"
 msgstr "права мрежа"
 
-#: src/test.c:468 src/test.c:478 src/test.c:483
+#: src/test.c:481 src/test.c:491 src/test.c:496
 msgid "ip address"
 msgstr "IP адреси"
 
-#: src/test.c:473
+#: src/test.c:486
 msgid "ip netmask"
 msgstr "IP мрежова маска"
 
-#: src/test.c:568
+#: src/test.c:581
 msgid "load network definition file"
 msgstr "зареждане на файл с дефиниции на мрежи"
 
-#: src/test.c:684
+#: src/test.c:707
 msgid "loading host definition file"
 msgstr "зареждане на файл с дефиниции на машини"
 
-#: src/test.c:691
+#: src/test.c:714
 msgid "host"
 msgstr "машина"
 
-#: src/test.c:699
+#: src/test.c:722
 msgid "node"
 msgstr "възел"
 
-#: src/test.c:723
+#: src/test.c:747
 msgid "node cpu numa nodes"
 msgstr "ЦП numa възли на възела"
 
-#: src/test.c:731
+#: src/test.c:755
 msgid "node cpu sockets"
 msgstr "ЦП портове на възела"
 
-#: src/test.c:739
+#: src/test.c:763
 msgid "node cpu cores"
 msgstr "ядра на ЦП на възела"
 
-#: src/test.c:747
+#: src/test.c:771
 msgid "node cpu threads"
 msgstr "нишки на ЦП на възела"
 
-#: src/test.c:758
+#: src/test.c:782
 msgid "node active cpu"
 msgstr "активни ЦП на възела"
 
-#: src/test.c:765
+#: src/test.c:789
 msgid "node cpu mhz"
 msgstr "ЦП mhz на възела"
 
-#: src/test.c:780
+#: src/test.c:804
 msgid "node memory"
 msgstr "памет на възела"
 
-#: src/test.c:786
+#: src/test.c:810
 msgid "node domain list"
 msgstr "списък домейни на възела"
 
-#: src/test.c:796
+#: src/test.c:820
 msgid "resolving domain filename"
 msgstr "откриване името на файла с домейни"
 
-#: src/test.c:821
+#: src/test.c:845
 msgid "resolving network filename"
 msgstr "откриване на мрежов файл"
 
-#: src/test.c:908
+#: src/test.c:932
 msgid "testOpen: supply a path or use test:///default"
 msgstr "testOpen: задайте път или ползвайте test:///default"
 
-#: src/test.c:1066
+#: src/test.c:1092
 msgid "too many domains"
 msgstr "твърде много домейни"
 
-#: src/test.c:1584
+#: src/test.c:1336
+msgid "cannot allocate space for metadata"
+msgstr ""
+
+#: src/test.c:1342
+#, fuzzy
+msgid "cannot save domain"
+msgstr "автоматично стартиране на домейн"
+
+#: src/test.c:1348 src/test.c:1453
+msgid "cannot write header"
+msgstr ""
+
+#: src/test.c:1354
+msgid "cannot write metadata length"
+msgstr ""
+
+#: src/test.c:1360
+msgid "cannot write metadata"
+msgstr ""
+
+#: src/test.c:1368 src/test.c:1459
+#, fuzzy
+msgid "cannot save domain data"
+msgstr "списък домейни на възела"
+
+#: src/test.c:1397
+msgid "incomplete save header"
+msgstr ""
+
+#: src/test.c:1403
+msgid "mismatched header magic"
+msgstr ""
+
+#: src/test.c:1409
+#, fuzzy
+msgid "failed to read metadata length"
+msgstr "неуспешно четене от xen демона"
+
+#: src/test.c:1415
+msgid "length of metadata out of range"
+msgstr ""
+
+#: src/test.c:1427
+msgid "incomplete metdata"
+msgstr ""
+
+#: src/test.c:1448
+#, fuzzy
+msgid "cannot save domain core"
+msgstr "списък домейни на възела"
+
+#: src/test.c:1614
+msgid "Range exceeds available cells"
+msgstr ""
+
+#: src/test.c:1633
 msgid "Domain is already running"
 msgstr "Домейнът вече е активен"
 
-#: src/test.c:1599
+#: src/test.c:1648
 msgid "Domain is still running"
 msgstr "Домейнът е все още активен"
 
-#: src/test.c:1800 src/test.c:1825
+#: src/test.c:1849 src/test.c:1874
 msgid "too many networks"
 msgstr "твърде много мрежи"
 
-#: src/test.c:1844
+#: src/test.c:1893
 msgid "Network is still running"
 msgstr "Мрежата все още работи"
 
-#: src/test.c:1858
+#: src/test.c:1907
 msgid "Network is already running"
 msgstr "Мрежата вече работи"
+
+#: src/util.c:118
+#, fuzzy, c-format
+msgid "cannot create pipe: %s"
+msgstr "Неуспех при опит за създаване на XML файл"
+
+#: src/util.c:124
+#, fuzzy, c-format
+msgid "cannot fork child process: %s"
+msgstr "Неуспешно отваряне на '%s': %s"
+
+#: src/util.c:465
+#, c-format
+msgid "%s: not implemented"
+msgstr ""
 
 #: src/uuid.c:102
 #, c-format
@@ -1955,14 +3241,14 @@ msgstr "Настройване на домейна за автоматично �
 #: src/virsh.c:770 src/virsh.c:837 src/virsh.c:1057 src/virsh.c:1101
 #: src/virsh.c:1290 src/virsh.c:1335 src/virsh.c:1374 src/virsh.c:1413
 #: src/virsh.c:1452 src/virsh.c:1491 src/virsh.c:1610 src/virsh.c:1697
-#: src/virsh.c:1826 src/virsh.c:1883 src/virsh.c:1940 src/virsh.c:2062
-#: src/virsh.c:2203 src/virsh.c:4317 src/virsh.c:4393 src/virsh.c:4454
-#: src/virsh.c:4510 src/virsh.c:4566 src/virsh.c:4680 src/virsh.c:4799
-#: src/virsh.c:4962
+#: src/virsh.c:1829 src/virsh.c:1886 src/virsh.c:1943 src/virsh.c:2065
+#: src/virsh.c:2206 src/virsh.c:4320 src/virsh.c:4396 src/virsh.c:4457
+#: src/virsh.c:4514 src/virsh.c:4571 src/virsh.c:4685 src/virsh.c:4804
+#: src/virsh.c:4967
 msgid "domain name, id or uuid"
 msgstr "име на домейн, id или uuid"
 
-#: src/virsh.c:383 src/virsh.c:2267 src/virsh.c:2775
+#: src/virsh.c:383 src/virsh.c:2270 src/virsh.c:2778
 msgid "disable autostarting"
 msgstr "деактивиране на автостартирането"
 
@@ -2057,15 +3343,15 @@ msgstr "Грешка при извеждане на списък с неакти
 msgid "Id"
 msgstr "Id"
 
-#: src/virsh.c:616 src/virsh.c:2550 src/virsh.c:3367 src/virsh.c:4033
+#: src/virsh.c:616 src/virsh.c:2553 src/virsh.c:3370 src/virsh.c:4036
 msgid "Name"
 msgstr "Име"
 
-#: src/virsh.c:616 src/virsh.c:2550 src/virsh.c:3367
+#: src/virsh.c:616 src/virsh.c:2553 src/virsh.c:3370
 msgid "State"
 msgstr "Състояние"
 
-#: src/virsh.c:629 src/virsh.c:651 src/virsh.c:5888 src/virsh.c:5904
+#: src/virsh.c:629 src/virsh.c:651 src/virsh.c:5893 src/virsh.c:5909
 msgid "no state"
 msgstr "без състояние"
 
@@ -2178,7 +3464,7 @@ msgstr "премахване дефиницията на неактивен до
 msgid "Undefine the configuration for an inactive domain."
 msgstr "Премахване дефиницията на неактивен домейн."
 
-#: src/virsh.c:972 src/virsh.c:2131
+#: src/virsh.c:972 src/virsh.c:2134
 msgid "domain name or uuid"
 msgstr "име на домейн или uuid"
 
@@ -2402,11 +3688,11 @@ msgstr "Връща основна информация за домейна."
 msgid "Id:"
 msgstr "Id:"
 
-#: src/virsh.c:1515 src/virsh.c:3472 src/virsh.c:3921
+#: src/virsh.c:1515 src/virsh.c:3475 src/virsh.c:3924
 msgid "Name:"
 msgstr "Име:"
 
-#: src/virsh.c:1518 src/virsh.c:3475
+#: src/virsh.c:1518 src/virsh.c:3478
 msgid "UUID:"
 msgstr "UUID:"
 
@@ -2414,12 +3700,12 @@ msgstr "UUID:"
 msgid "OS Type:"
 msgstr "Тип ОС:"
 
-#: src/virsh.c:1526 src/virsh.c:1654 src/virsh.c:3482 src/virsh.c:3486
-#: src/virsh.c:3490 src/virsh.c:3494
+#: src/virsh.c:1526 src/virsh.c:1654 src/virsh.c:3485 src/virsh.c:3489
+#: src/virsh.c:3493 src/virsh.c:3497
 msgid "State:"
 msgstr "Състояние:"
 
-#: src/virsh.c:1529 src/virsh.c:2012
+#: src/virsh.c:1529 src/virsh.c:2015
 msgid "CPU(s):"
 msgstr "Процесори:"
 
@@ -2498,22 +3784,30 @@ msgstr "номер на ВЦП"
 msgid "host cpu number(s) (comma separated)"
 msgstr "номера на физически процесори (разделени със запетаи)"
 
-#: src/virsh.c:1726
+#: src/virsh.c:1727
 msgid "vcpupin: Invalid or missing vCPU number."
 msgstr ""
 
-#: src/virsh.c:1755
+#: src/virsh.c:1733
+msgid "vcpupin: Missing cpulist"
+msgstr ""
+
+#: src/virsh.c:1744
+msgid "vcpupin: Invalid vCPU number."
+msgstr ""
+
+#: src/virsh.c:1758
 msgid "cpulist: Invalid format. Empty string."
 msgstr "cpulist: Невалиден формат. Празен низ."
 
-#: src/virsh.c:1765
+#: src/virsh.c:1768
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit at position %d (near '%c')."
 msgstr ""
 "cpulist: %s: Невалиден формат. На позиция %d се очаква цифра (близо до '%c')."
 
-#: src/virsh.c:1775
+#: src/virsh.c:1778
 #, c-format
 msgid ""
 "cpulist: %s: Invalid format. Expecting digit or comma at position %d (near '%"
@@ -2522,1160 +3816,1168 @@ msgstr ""
 "cpulist: %s: Невалиден формат. На позиция %d се очаква цифра или запетая "
 "(близо до '%c')."
 
-#: src/virsh.c:1782
+#: src/virsh.c:1785
 #, c-format
 msgid "cpulist: %s: Invalid format. Trailing comma at position %d."
 msgstr "cpulist: %s: Невалиден формат. На позиция %d се завършва със запетая."
 
-#: src/virsh.c:1796
+#: src/virsh.c:1799
 #, c-format
 msgid "Physical CPU %d doesn't exist."
 msgstr "Физическия процесор %d не съществува."
 
-#: src/virsh.c:1820
+#: src/virsh.c:1823
 msgid "change number of virtual CPUs"
 msgstr "промяна броя виртуални ЦП"
 
-#: src/virsh.c:1821
+#: src/virsh.c:1824
 #, fuzzy
 msgid "Change the number of virtual CPUs in the guest domain."
 msgstr ""
 "Промяна броя на виртуалните централни процесори активни в домейна гост."
 
-#: src/virsh.c:1827
+#: src/virsh.c:1830
 msgid "number of virtual CPUs"
 msgstr "брой виртуални ЦП"
 
-#: src/virsh.c:1847
+#: src/virsh.c:1850
 msgid "Invalid number of virtual CPUs."
 msgstr "Невалиден брой виртуални ЦП."
 
-#: src/virsh.c:1859
+#: src/virsh.c:1862
 msgid "Too many virtual CPUs."
 msgstr "Твърде много виртуални ЦП."
 
-#: src/virsh.c:1877
+#: src/virsh.c:1880
 msgid "change memory allocation"
 msgstr "промяна заделянето на памет"
 
-#: src/virsh.c:1878
+#: src/virsh.c:1881
 msgid "Change the current memory allocation in the guest domain."
 msgstr "Промяна на текущото заделяне на памет в домейна гост."
 
-#: src/virsh.c:1884
+#: src/virsh.c:1887
 msgid "number of kilobytes of memory"
 msgstr "килобайта памет"
 
-#: src/virsh.c:1905 src/virsh.c:1917 src/virsh.c:1962
+#: src/virsh.c:1908 src/virsh.c:1920 src/virsh.c:1965
 #, c-format
 msgid "Invalid value of %d for memory size"
 msgstr "Невалидна стойност %d за размера на паметта"
 
-#: src/virsh.c:1911
+#: src/virsh.c:1914
 msgid "Unable to verify MaxMemorySize"
 msgstr "Не може да се провери MaxMemorySize"
 
-#: src/virsh.c:1934
+#: src/virsh.c:1937
 msgid "change maximum memory limit"
 msgstr "промяна горната граница на паметта"
 
-#: src/virsh.c:1935
+#: src/virsh.c:1938
 msgid "Change the maximum memory allocation limit in the guest domain."
 msgstr "Промяна на максималния обем заделена памет за домейна гост."
 
-#: src/virsh.c:1941
+#: src/virsh.c:1944
 msgid "maximum memory limit in kilobytes"
 msgstr "максимално памет в килобайтове"
 
-#: src/virsh.c:1968
+#: src/virsh.c:1971
 msgid "Unable to verify current MemorySize"
 msgstr "Не може да се провери настоящия MemorySize"
 
-#: src/virsh.c:1975
+#: src/virsh.c:1978
 msgid "Unable to shrink current MemorySize"
 msgstr "Не може да се свие текущия MemorySize"
 
-#: src/virsh.c:1981
+#: src/virsh.c:1984
 msgid "Unable to change MaxMemorySize"
 msgstr "Не може да се промени MaxMemorySize"
 
-#: src/virsh.c:1994
+#: src/virsh.c:1997
 msgid "node information"
 msgstr "информация за възела"
 
-#: src/virsh.c:1995
+#: src/virsh.c:1998
 msgid "Returns basic information about the node."
 msgstr "Връща основна информация за възела."
 
-#: src/virsh.c:2008
+#: src/virsh.c:2011
 msgid "failed to get node information"
 msgstr "неуспешно получаване на информация за възела"
 
-#: src/virsh.c:2011
+#: src/virsh.c:2014
 msgid "CPU model:"
 msgstr "ЦП модел:"
 
-#: src/virsh.c:2013
+#: src/virsh.c:2016
 msgid "CPU frequency:"
 msgstr "ЦП честота:"
 
-#: src/virsh.c:2014
+#: src/virsh.c:2017
 msgid "CPU socket(s):"
 msgstr "ЦП порт(ове):"
 
-#: src/virsh.c:2015
+#: src/virsh.c:2018
 msgid "Core(s) per socket:"
 msgstr "Ядра на порт:"
 
-#: src/virsh.c:2016
+#: src/virsh.c:2019
 msgid "Thread(s) per core:"
 msgstr "Нишки на ядро:"
 
-#: src/virsh.c:2017
+#: src/virsh.c:2020
 msgid "NUMA cell(s):"
 msgstr "NUMA клетки:"
 
-#: src/virsh.c:2018
+#: src/virsh.c:2021
 msgid "Memory size:"
 msgstr "Обем на паметта:"
 
-#: src/virsh.c:2028
+#: src/virsh.c:2031
 msgid "capabilities"
 msgstr "възможности"
 
-#: src/virsh.c:2029
+#: src/virsh.c:2032
 msgid "Returns capabilities of hypervisor/driver."
 msgstr "Връща възможностите на хипервизор/драйвер."
 
-#: src/virsh.c:2042
+#: src/virsh.c:2045
 msgid "failed to get capabilities"
 msgstr "неуспешно получаване на възможностите"
 
-#: src/virsh.c:2056
+#: src/virsh.c:2059
 msgid "domain information in XML"
 msgstr "информация за домейн в XML"
 
-#: src/virsh.c:2057
+#: src/virsh.c:2060
 msgid "Output the domain information as an XML dump to stdout."
 msgstr "Запис на информацията за домейна като XML на стандартния изход."
 
-#: src/virsh.c:2096
+#: src/virsh.c:2099
 msgid "convert a domain id or UUID to domain name"
 msgstr "конвертиране на id или UUID на домейн до име"
 
-#: src/virsh.c:2101
+#: src/virsh.c:2104
 msgid "domain id or uuid"
 msgstr "id или uuid на домейн"
 
-#: src/virsh.c:2126
+#: src/virsh.c:2129
 msgid "convert a domain name or UUID to domain id"
 msgstr "конвертиране на име или UUID на домейн до id"
 
-#: src/virsh.c:2161
+#: src/virsh.c:2164
 msgid "convert a domain name or id to domain UUID"
 msgstr "конвертиране на име или id на домейн до UUID"
 
-#: src/virsh.c:2166
+#: src/virsh.c:2169
 msgid "domain id or name"
 msgstr "id или име на домейн"
 
-#: src/virsh.c:2185
+#: src/virsh.c:2188
 msgid "failed to get domain UUID"
 msgstr "неуспешно получаване на UUID на домейна"
 
-#: src/virsh.c:2196
+#: src/virsh.c:2199
 msgid "migrate domain to another host"
 msgstr "мигриране на домейна на друга машина"
 
-#: src/virsh.c:2197
+#: src/virsh.c:2200
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr ""
 "Mигриране на домейна на друга машина.  Добавете --live за мигриране по време "
 "на работа."
 
-#: src/virsh.c:2202
+#: src/virsh.c:2205
 msgid "live migration"
 msgstr "мигриране по време на работа"
 
-#: src/virsh.c:2204
+#: src/virsh.c:2207
 msgid "connection URI of the destination host"
 msgstr "УРИ за връзка с машината"
 
-#: src/virsh.c:2205
+#: src/virsh.c:2208
 msgid "migration URI, usually can be omitted"
 msgstr "УРИ на миграция, обикновено може да се пропусне"
 
-#: src/virsh.c:2227
+#: src/virsh.c:2230
 msgid "migrate: Missing desturi"
 msgstr "migrate: Липсва УРИ цел"
 
-#: src/virsh.c:2259
+#: src/virsh.c:2262
 msgid "autostart a network"
 msgstr "автоматично стартиране на мрежа"
 
-#: src/virsh.c:2261
+#: src/virsh.c:2264
 msgid "Configure a network to be automatically started at boot."
 msgstr "Настройване на мрежата за автоматично стартиране при зареждане."
 
-#: src/virsh.c:2266 src/virsh.c:2687
+#: src/virsh.c:2269 src/virsh.c:2690
 msgid "network name or uuid"
 msgstr "име на мрежата или uuid"
 
-#: src/virsh.c:2288
+#: src/virsh.c:2291
 #, c-format
 msgid "failed to mark network %s as autostarted"
 msgstr "Неуспешно маркиране на мрежата %s като авто-стартирана"
 
-#: src/virsh.c:2291
+#: src/virsh.c:2294
 #, c-format
 msgid "failed to unmark network %s as autostarted"
 msgstr "Неуспешно размаркиране на мрежата %s като авто-стартирана"
 
-#: src/virsh.c:2298
+#: src/virsh.c:2301
 #, c-format
 msgid "Network %s marked as autostarted\n"
 msgstr "Мрежа %s e маркирана като авто-стартирана\n"
 
-#: src/virsh.c:2300
+#: src/virsh.c:2303
 #, c-format
 msgid "Network %s unmarked as autostarted\n"
 msgstr "Мрежа %s e размаркирана като авто-стартирана\n"
 
-#: src/virsh.c:2310
+#: src/virsh.c:2313
 msgid "create a network from an XML file"
 msgstr "създаване на мрежа от XML файл"
 
-#: src/virsh.c:2311
+#: src/virsh.c:2314
 msgid "Create a network."
 msgstr "Създаване на мрежа."
 
-#: src/virsh.c:2316 src/virsh.c:2364
+#: src/virsh.c:2319 src/virsh.c:2367
 msgid "file containing an XML network description"
 msgstr "файл, съдържащ XML описание на мрежата"
 
-#: src/virsh.c:2343
+#: src/virsh.c:2346
 #, c-format
 msgid "Network %s created from %s\n"
 msgstr "Мрежа %s бе създадена от %s\n"
 
-#: src/virsh.c:2346
+#: src/virsh.c:2349
 #, c-format
 msgid "Failed to create network from %s"
 msgstr "Неуспех при създаване на мрежа от %s"
 
-#: src/virsh.c:2358
+#: src/virsh.c:2361
 msgid "define (but don't start) a network from an XML file"
 msgstr "дефиниране (но не и стартиране) на мрежа от XML файл"
 
-#: src/virsh.c:2359
+#: src/virsh.c:2362
 msgid "Define a network."
 msgstr "Дефиниране на мрежа."
 
-#: src/virsh.c:2391
+#: src/virsh.c:2394
 #, c-format
 msgid "Network %s defined from %s\n"
 msgstr "Мрежа %s дефинирана от %s\n"
 
-#: src/virsh.c:2394
+#: src/virsh.c:2397
 #, c-format
 msgid "Failed to define network from %s"
 msgstr "Неуспешно дефиниране на мрежа от %s"
 
-#: src/virsh.c:2406
+#: src/virsh.c:2409
 msgid "destroy a network"
 msgstr "унищожаване на мрежа"
 
-#: src/virsh.c:2407
+#: src/virsh.c:2410
 msgid "Destroy a given network."
 msgstr "Унищожаване на дадена мрежа."
 
-#: src/virsh.c:2412 src/virsh.c:2452
+#: src/virsh.c:2415 src/virsh.c:2455
 msgid "network name, id or uuid"
 msgstr "име на мрежа, id или uuid"
 
-#: src/virsh.c:2430
+#: src/virsh.c:2433
 #, c-format
 msgid "Network %s destroyed\n"
 msgstr "Мрежата %s бе унищожена\n"
 
-#: src/virsh.c:2432
+#: src/virsh.c:2435
 #, c-format
 msgid "Failed to destroy network %s"
 msgstr "Неуспешно унищожаване на мрежа %s"
 
-#: src/virsh.c:2446
+#: src/virsh.c:2449
 msgid "network information in XML"
 msgstr "информация за мрежа в XML"
 
-#: src/virsh.c:2447
+#: src/virsh.c:2450
 msgid "Output the network information as an XML dump to stdout."
 msgstr "Запис на информацията за мрежата като XML на стандартния изход."
 
-#: src/virsh.c:2487
+#: src/virsh.c:2490
 msgid "list networks"
 msgstr "списък с мрежите"
 
-#: src/virsh.c:2488
+#: src/virsh.c:2491
 msgid "Returns list of networks."
 msgstr "Връща списък с мрежите."
 
-#: src/virsh.c:2493
+#: src/virsh.c:2496
 msgid "list inactive networks"
 msgstr "показване на неактивните мрежи"
 
-#: src/virsh.c:2494
+#: src/virsh.c:2497
 msgid "list inactive & active networks"
 msgstr "списък на активни и неактивни мрежи"
 
-#: src/virsh.c:2514 src/virsh.c:2522
+#: src/virsh.c:2517 src/virsh.c:2525
 msgid "Failed to list active networks"
 msgstr "Грешка при извеждане на списък с активните мрежи"
 
-#: src/virsh.c:2533 src/virsh.c:2541
+#: src/virsh.c:2536 src/virsh.c:2544
 msgid "Failed to list inactive networks"
 msgstr "Грешка при извеждане на списък с неактивните мрежи"
 
-#: src/virsh.c:2550 src/virsh.c:3367
+#: src/virsh.c:2553 src/virsh.c:3370
 msgid "Autostart"
 msgstr "Автостартиране"
 
-#: src/virsh.c:2565 src/virsh.c:2588 src/virsh.c:3382 src/virsh.c:3405
+#: src/virsh.c:2568 src/virsh.c:2591 src/virsh.c:3385 src/virsh.c:3408
 msgid "no autostart"
 msgstr "без автостартиране"
 
-#: src/virsh.c:2571 src/virsh.c:3388
+#: src/virsh.c:2574 src/virsh.c:3391
 msgid "active"
 msgstr "активност"
 
-#: src/virsh.c:2594 src/virsh.c:3411 src/virsh.c:3483
+#: src/virsh.c:2597 src/virsh.c:3414 src/virsh.c:3486
 msgid "inactive"
 msgstr "неактивност"
 
-#: src/virsh.c:2611
+#: src/virsh.c:2614
 msgid "convert a network UUID to network name"
 msgstr "конвертиране на UUID на мрежа до име на мрежа"
 
-#: src/virsh.c:2642
+#: src/virsh.c:2645
 msgid "start a (previously defined) inactive network"
 msgstr "стартиране на (предварително дефинирана) неактивена мрежа"
 
-#: src/virsh.c:2643
+#: src/virsh.c:2646
 msgid "Start a network."
 msgstr "Стартиране на мрежа."
 
-#: src/virsh.c:2648
+#: src/virsh.c:2651
 msgid "name of the inactive network"
 msgstr "име на неактивната мрежа"
 
-#: src/virsh.c:2665
+#: src/virsh.c:2668
 #, c-format
 msgid "Network %s started\n"
 msgstr "Мрежа %s бе стартирана\n"
 
-#: src/virsh.c:2668
+#: src/virsh.c:2671
 #, c-format
 msgid "Failed to start network %s"
 msgstr "Неуспешно стартиране на мрежа %s"
 
-#: src/virsh.c:2681
+#: src/virsh.c:2684
 msgid "undefine an inactive network"
 msgstr "премахване дефиницията на неактивна мрежа"
 
-#: src/virsh.c:2682
+#: src/virsh.c:2685
 msgid "Undefine the configuration for an inactive network."
 msgstr "Премахване дефиницията на неактивна мрежа."
 
-#: src/virsh.c:2705
+#: src/virsh.c:2708
 #, c-format
 msgid "Network %s has been undefined\n"
 msgstr "Дефиницията на мрежа %s бе премахната\n"
 
-#: src/virsh.c:2707
+#: src/virsh.c:2710
 #, c-format
 msgid "Failed to undefine network %s"
 msgstr "Неуспешно премахване дефиницията на мрежа %s"
 
-#: src/virsh.c:2720
+#: src/virsh.c:2723
 msgid "convert a network name to network UUID"
 msgstr "конвертиране на име на мрежа до UUID"
 
-#: src/virsh.c:2745
+#: src/virsh.c:2748
 msgid "failed to get network UUID"
 msgstr "неуспешно получаване на UUID на мрежата"
 
-#: src/virsh.c:2767
+#: src/virsh.c:2770
 #, fuzzy
 msgid "autostart a pool"
 msgstr "автоматично стартиране на домейн"
 
-#: src/virsh.c:2769
+#: src/virsh.c:2772
 #, fuzzy
 msgid "Configure a pool to be automatically started at boot."
 msgstr "Настройване на домейна за автоматично стартиране при зареждане."
 
-#: src/virsh.c:2774 src/virsh.c:3109 src/virsh.c:3149 src/virsh.c:3189
-#: src/virsh.c:3229 src/virsh.c:3269 src/virsh.c:3454 src/virsh.c:3725
-#: src/virsh.c:3861 src/virsh.c:3903 src/virsh.c:3955 src/virsh.c:3997
-#: src/virsh.c:4141
+#: src/virsh.c:2777 src/virsh.c:3112 src/virsh.c:3152 src/virsh.c:3192
+#: src/virsh.c:3232 src/virsh.c:3272 src/virsh.c:3457 src/virsh.c:3728
+#: src/virsh.c:3864 src/virsh.c:3906 src/virsh.c:3958 src/virsh.c:4000
+#: src/virsh.c:4144
 #, fuzzy
 msgid "pool name or uuid"
 msgstr "име на домейн или uuid"
 
-#: src/virsh.c:2796
+#: src/virsh.c:2799
 #, fuzzy, c-format
 msgid "failed to mark pool %s as autostarted"
 msgstr "Неуспешно маркиране на мрежата %s като авто-стартирана"
 
-#: src/virsh.c:2799
+#: src/virsh.c:2802
 #, fuzzy, c-format
 msgid "failed to unmark pool %s as autostarted"
 msgstr "Неуспешно размаркиране на мрежата %s като авто-стартирана"
 
-#: src/virsh.c:2806
+#: src/virsh.c:2809
 #, fuzzy, c-format
 msgid "Pool %s marked as autostarted\n"
 msgstr "Домейна %s е маркиран като авто-стартиращ се\n"
 
-#: src/virsh.c:2808
+#: src/virsh.c:2811
 #, fuzzy, c-format
 msgid "Pool %s unmarked as autostarted\n"
 msgstr "Домейна %s е размаркиран като авто-стартиращ се\n"
 
-#: src/virsh.c:2818
+#: src/virsh.c:2821
 #, fuzzy
 msgid "create a pool from an XML file"
 msgstr "създаване на домейн от XML файл"
 
-#: src/virsh.c:2819 src/virsh.c:2866
+#: src/virsh.c:2822 src/virsh.c:2869
 #, fuzzy
 msgid "Create a pool."
 msgstr "Създаване на домейн."
 
-#: src/virsh.c:2824 src/virsh.c:2966
+#: src/virsh.c:2827 src/virsh.c:2969
 #, fuzzy
 msgid "file containing an XML pool description"
 msgstr "съдържащ XML описание на домейн файл"
 
-#: src/virsh.c:2851
+#: src/virsh.c:2854
 #, fuzzy, c-format
 msgid "Pool %s created from %s\n"
 msgstr "Домейн %s бе създаден от %s\n"
 
-#: src/virsh.c:2854
+#: src/virsh.c:2857
 #, fuzzy, c-format
 msgid "Failed to create pool from %s"
 msgstr "Неуспех при създаване на домейн от %s"
 
-#: src/virsh.c:2865
+#: src/virsh.c:2868
 #, fuzzy
 msgid "create a pool from a set of args"
 msgstr "създаване на домейн от XML файл"
 
-#: src/virsh.c:2871 src/virsh.c:3014
+#: src/virsh.c:2874 src/virsh.c:3017
 #, fuzzy
 msgid "name of the pool"
 msgstr "име на неактивния домейн"
 
-#: src/virsh.c:2872 src/virsh.c:3015
+#: src/virsh.c:2875 src/virsh.c:3018
 msgid "type of the pool"
 msgstr ""
 
-#: src/virsh.c:2873 src/virsh.c:3016
+#: src/virsh.c:2876 src/virsh.c:3019
 msgid "source-host for underlying storage"
 msgstr ""
 
-#: src/virsh.c:2874 src/virsh.c:3017
+#: src/virsh.c:2877 src/virsh.c:3020
 msgid "source path for underlying storage"
 msgstr ""
 
-#: src/virsh.c:2875 src/virsh.c:3018
+#: src/virsh.c:2878 src/virsh.c:3021
 msgid "source device for underlying storage"
 msgstr ""
 
-#: src/virsh.c:2876 src/virsh.c:3019
+#: src/virsh.c:2879 src/virsh.c:3022
 msgid "target for underlying storage"
 msgstr ""
 
-#: src/virsh.c:2941
+#: src/virsh.c:2944
 #, fuzzy, c-format
 msgid "Pool %s created\n"
 msgstr "Домейн %s бе създаден от %s\n"
 
-#: src/virsh.c:2945
+#: src/virsh.c:2948
 #, fuzzy, c-format
 msgid "Failed to create pool %s"
 msgstr "Неуспех при създаване на домейн от %s"
 
-#: src/virsh.c:2960
+#: src/virsh.c:2963
 #, fuzzy
 msgid "define (but don't start) a pool from an XML file"
 msgstr "дефиниране (но не и стартиране) на домейн от XML файл"
 
-#: src/virsh.c:2961 src/virsh.c:3009
+#: src/virsh.c:2964 src/virsh.c:3012
 #, fuzzy
 msgid "Define a pool."
 msgstr "Дефиниране на домейн."
 
-#: src/virsh.c:2993
+#: src/virsh.c:2996
 #, fuzzy, c-format
 msgid "Pool %s defined from %s\n"
 msgstr "Домейн %s дефиниран от %s\n"
 
-#: src/virsh.c:2996
+#: src/virsh.c:2999
 #, fuzzy, c-format
 msgid "Failed to define pool from %s"
 msgstr "Неуспешно дефиниране на домейн от %s"
 
-#: src/virsh.c:3008
+#: src/virsh.c:3011
 msgid "define a pool from a set of args"
 msgstr ""
 
-#: src/virsh.c:3084
+#: src/virsh.c:3087
 #, fuzzy, c-format
 msgid "Pool %s defined\n"
 msgstr "Домейн %s дефиниран от %s\n"
 
-#: src/virsh.c:3088
+#: src/virsh.c:3091
 #, fuzzy, c-format
 msgid "Failed to define pool %s"
 msgstr "Неуспешно премахване дефиницията на домейн %s"
 
-#: src/virsh.c:3103
+#: src/virsh.c:3106
 msgid "build a pool"
 msgstr ""
 
-#: src/virsh.c:3104
+#: src/virsh.c:3107
 msgid "Build a given pool."
 msgstr ""
 
-#: src/virsh.c:3127
+#: src/virsh.c:3130
 #, c-format
 msgid "Pool %s builded\n"
 msgstr ""
 
-#: src/virsh.c:3129
+#: src/virsh.c:3132
 #, fuzzy, c-format
 msgid "Failed to build pool %s"
 msgstr "Неуспешно приспиване на домейн %s"
 
-#: src/virsh.c:3143
+#: src/virsh.c:3146
 #, fuzzy
 msgid "destroy a pool"
 msgstr "унищожаване на домейн"
 
-#: src/virsh.c:3144
+#: src/virsh.c:3147
 #, fuzzy
 msgid "Destroy a given pool."
 msgstr "Унищожаване на даден домейн."
 
-#: src/virsh.c:3167
+#: src/virsh.c:3170
 #, fuzzy, c-format
 msgid "Pool %s destroyed\n"
 msgstr "Домейна %s бе унищожен\n"
 
-#: src/virsh.c:3169
+#: src/virsh.c:3172
 #, fuzzy, c-format
 msgid "Failed to destroy pool %s"
 msgstr "Неуспешно унищожаване на домейн %s"
 
-#: src/virsh.c:3183
+#: src/virsh.c:3186
 msgid "delete a pool"
 msgstr ""
 
-#: src/virsh.c:3184
+#: src/virsh.c:3187
 #, fuzzy
 msgid "Delete a given pool."
 msgstr "Унищожаване на даден домейн."
 
-#: src/virsh.c:3207
+#: src/virsh.c:3210
 #, fuzzy, c-format
 msgid "Pool %s deleted\n"
 msgstr "Домейна %s бе унищожен\n"
 
-#: src/virsh.c:3209
+#: src/virsh.c:3212
 #, fuzzy, c-format
 msgid "Failed to delete pool %s"
 msgstr "Неуспешно унищожаване на домейн %s"
 
-#: src/virsh.c:3223
+#: src/virsh.c:3226
 msgid "refresh a pool"
 msgstr ""
 
-#: src/virsh.c:3224
+#: src/virsh.c:3227
 msgid "Refresh a given pool."
 msgstr ""
 
-#: src/virsh.c:3247
+#: src/virsh.c:3250
 #, fuzzy, c-format
 msgid "Pool %s refreshed\n"
 msgstr "Домейн %s бе събуден\n"
 
-#: src/virsh.c:3249
+#: src/virsh.c:3252
 #, fuzzy, c-format
 msgid "Failed to refresh pool %s"
 msgstr "Неуспешно събуждане на домейн %s"
 
-#: src/virsh.c:3263
+#: src/virsh.c:3266
 #, fuzzy
 msgid "pool information in XML"
 msgstr "информация за домейн в XML"
 
-#: src/virsh.c:3264
+#: src/virsh.c:3267
 #, fuzzy
 msgid "Output the pool information as an XML dump to stdout."
 msgstr "Запис на информацията за домейна като XML на стандартния изход."
 
-#: src/virsh.c:3304
+#: src/virsh.c:3307
 #, fuzzy
 msgid "list pools"
 msgstr "показване на домейните"
 
-#: src/virsh.c:3305
+#: src/virsh.c:3308
 #, fuzzy
 msgid "Returns list of pools."
 msgstr "Връща списък с домейните."
 
-#: src/virsh.c:3310
+#: src/virsh.c:3313
 #, fuzzy
 msgid "list inactive pools"
 msgstr "показване на неактивните домейни"
 
-#: src/virsh.c:3311
+#: src/virsh.c:3314
 #, fuzzy
 msgid "list inactive & active pools"
 msgstr "списък на активни и неактивни домейни"
 
-#: src/virsh.c:3331 src/virsh.c:3339
+#: src/virsh.c:3334 src/virsh.c:3342
 #, fuzzy
 msgid "Failed to list active pools"
 msgstr "Грешка при извеждане на списък с активните домейни"
 
-#: src/virsh.c:3350 src/virsh.c:3358
+#: src/virsh.c:3353 src/virsh.c:3361
 #, fuzzy
 msgid "Failed to list inactive pools"
 msgstr "Грешка при извеждане на списък с неактивните домейни"
 
-#: src/virsh.c:3448
+#: src/virsh.c:3451
 #, fuzzy
 msgid "storage pool information"
 msgstr "информация за възела"
 
-#: src/virsh.c:3449
+#: src/virsh.c:3452
 #, fuzzy
 msgid "Returns basic information about the storage pool."
 msgstr "Връща основна информация за възела."
 
-#: src/virsh.c:3487
+#: src/virsh.c:3490
 msgid "building"
 msgstr ""
 
-#: src/virsh.c:3491 src/virsh.c:5874 src/virsh.c:5900
+#: src/virsh.c:3494 src/virsh.c:5879 src/virsh.c:5905
 msgid "running"
 msgstr "работи"
 
-#: src/virsh.c:3495
+#: src/virsh.c:3498
 msgid "degraded"
 msgstr ""
 
-#: src/virsh.c:3502 src/virsh.c:3931
+#: src/virsh.c:3505 src/virsh.c:3934
 msgid "Capacity:"
 msgstr ""
 
-#: src/virsh.c:3505 src/virsh.c:3934
+#: src/virsh.c:3508 src/virsh.c:3937
 #, fuzzy
 msgid "Allocation:"
 msgstr "заделяне на домейн"
 
-#: src/virsh.c:3508
+#: src/virsh.c:3511
 msgid "Available:"
 msgstr ""
 
-#: src/virsh.c:3524
+#: src/virsh.c:3527
 #, fuzzy
 msgid "convert a pool UUID to pool name"
 msgstr "конвертиране на UUID на мрежа до име на мрежа"
 
-#: src/virsh.c:3529
+#: src/virsh.c:3532
 #, fuzzy
 msgid "pool uuid"
 msgstr "uuid на домейна"
 
-#: src/virsh.c:3555
+#: src/virsh.c:3558
 #, fuzzy
 msgid "start a (previously defined) inactive pool"
 msgstr "стартиране на (предварително дефиниран) неактивен домейн"
 
-#: src/virsh.c:3556
+#: src/virsh.c:3559
 #, fuzzy
 msgid "Start a pool."
 msgstr "Стартиране на домейн."
 
-#: src/virsh.c:3561
+#: src/virsh.c:3564
 #, fuzzy
 msgid "name of the inactive pool"
 msgstr "име на неактивния домейн"
 
-#: src/virsh.c:3578
+#: src/virsh.c:3581
 #, fuzzy, c-format
 msgid "Pool %s started\n"
 msgstr "Домейна %s бе стартиран\n"
 
-#: src/virsh.c:3581
+#: src/virsh.c:3584
 #, fuzzy, c-format
 msgid "Failed to start pool %s"
 msgstr "Неуспешно стартиране на домейн %s"
 
-#: src/virsh.c:3594
+#: src/virsh.c:3597
 #, fuzzy
 msgid "create a volume from a set of args"
 msgstr "създаване на домейн от XML файл"
 
-#: src/virsh.c:3595 src/virsh.c:3797
+#: src/virsh.c:3598 src/virsh.c:3800
 #, fuzzy
 msgid "Create a vol."
 msgstr "Създаване на домейн."
 
-#: src/virsh.c:3600 src/virsh.c:3763 src/virsh.c:3802
+#: src/virsh.c:3603 src/virsh.c:3766 src/virsh.c:3805
 #, fuzzy
 msgid "pool name"
 msgstr "име на домейна"
 
-#: src/virsh.c:3601
+#: src/virsh.c:3604
 #, fuzzy
 msgid "name of the volume"
 msgstr "име на неактивния домейн"
 
-#: src/virsh.c:3602
+#: src/virsh.c:3605
 msgid "size of the vol with optional k,M,G,T suffix"
 msgstr ""
 
-#: src/virsh.c:3603
+#: src/virsh.c:3606
 msgid "initial allocation size with optional k,M,G,T suffix"
 msgstr ""
 
-#: src/virsh.c:3604
+#: src/virsh.c:3607
 msgid "file format type raw,bochs,qcow,qcow2,vmdk"
 msgstr ""
 
-#: src/virsh.c:3663 src/virsh.c:3668
+#: src/virsh.c:3666 src/virsh.c:3671
 #, c-format
 msgid "Malformed size %s"
 msgstr ""
 
-#: src/virsh.c:3699
+#: src/virsh.c:3702
 #, fuzzy, c-format
 msgid "Vol %s created\n"
 msgstr "Домейн %s бе създаден от %s\n"
 
-#: src/virsh.c:3703
+#: src/virsh.c:3706
 #, fuzzy, c-format
 msgid "Failed to create vol %s"
 msgstr "Неуспех при опит за създаване на XML файл"
 
-#: src/virsh.c:3719
+#: src/virsh.c:3722
 #, fuzzy
 msgid "undefine an inactive pool"
 msgstr "премахване дефиницията на неактивен домейн"
 
-#: src/virsh.c:3720
+#: src/virsh.c:3723
 #, fuzzy
 msgid "Undefine the configuration for an inactive pool."
 msgstr "Премахване дефиницията на неактивен домейн."
 
-#: src/virsh.c:3743
+#: src/virsh.c:3746
 #, fuzzy, c-format
 msgid "Pool %s has been undefined\n"
 msgstr "Дефиницията на домейн %s бе премахната\n"
 
-#: src/virsh.c:3745
+#: src/virsh.c:3748
 #, fuzzy, c-format
 msgid "Failed to undefine pool %s"
 msgstr "Неуспешно премахване дефиницията на домейн %s"
 
-#: src/virsh.c:3758
+#: src/virsh.c:3761
 #, fuzzy
 msgid "convert a pool name to pool UUID"
 msgstr "конвертиране на име на мрежа до UUID"
 
-#: src/virsh.c:3783
+#: src/virsh.c:3786
 #, fuzzy
 msgid "failed to get pool UUID"
 msgstr "неуспешно получаване на UUID на домейна"
 
-#: src/virsh.c:3796
+#: src/virsh.c:3799
 #, fuzzy
 msgid "create a vol from an XML file"
 msgstr "създаване на домейн от XML файл"
 
-#: src/virsh.c:3803
+#: src/virsh.c:3806
 #, fuzzy
 msgid "file containing an XML vol description"
 msgstr "съдържащ XML описание на домейн файл"
 
-#: src/virsh.c:3840
+#: src/virsh.c:3843
 #, fuzzy, c-format
 msgid "Vol %s created from %s\n"
 msgstr "Домейн %s бе създаден от %s\n"
 
-#: src/virsh.c:3844
+#: src/virsh.c:3847
 #, fuzzy, c-format
 msgid "Failed to create vol from %s"
 msgstr "Неуспех при създаване на домейн от %s"
 
-#: src/virsh.c:3855
+#: src/virsh.c:3858
 msgid "delete a vol"
 msgstr ""
 
-#: src/virsh.c:3856
+#: src/virsh.c:3859
 #, fuzzy
 msgid "Delete a given vol."
 msgstr "Унищожаване на даден домейн."
 
-#: src/virsh.c:3862 src/virsh.c:3904 src/virsh.c:3956
+#: src/virsh.c:3865 src/virsh.c:3907 src/virsh.c:3959
 msgid "vol name, key or path"
 msgstr ""
 
-#: src/virsh.c:3881
+#: src/virsh.c:3884
 #, fuzzy, c-format
 msgid "Vol %s deleted\n"
 msgstr "Домейна %s бе унищожен\n"
 
-#: src/virsh.c:3883
+#: src/virsh.c:3886
 #, fuzzy, c-format
 msgid "Failed to delete vol %s"
 msgstr "Неуспешно унищожаване на домейн %s"
 
-#: src/virsh.c:3897
+#: src/virsh.c:3900
 #, fuzzy
 msgid "storage vol information"
 msgstr "информация за възела"
 
-#: src/virsh.c:3898
+#: src/virsh.c:3901
 #, fuzzy
 msgid "Returns basic information about the storage vol."
 msgstr "Връща основна информация за възела."
 
-#: src/virsh.c:3926
+#: src/virsh.c:3929
 #, fuzzy
 msgid "Type:"
 msgstr "Тип ОС:"
 
-#: src/virsh.c:3928
+#: src/virsh.c:3931
 #, fuzzy
 msgid "file"
 msgstr "XML файл"
 
-#: src/virsh.c:3928
+#: src/virsh.c:3931
 #, fuzzy
 msgid "block"
 msgstr "блокиран"
 
-#: src/virsh.c:3949
+#: src/virsh.c:3952
 #, fuzzy
 msgid "vol information in XML"
 msgstr "информация за домейн в XML"
 
-#: src/virsh.c:3950
+#: src/virsh.c:3953
 #, fuzzy
 msgid "Output the vol information as an XML dump to stdout."
 msgstr "Запис на информацията за домейна като XML на стандартния изход."
 
-#: src/virsh.c:3991
+#: src/virsh.c:3994
 #, fuzzy
 msgid "list vols"
 msgstr "показване на домейните"
 
-#: src/virsh.c:3992
+#: src/virsh.c:3995
 #, fuzzy
 msgid "Returns list of vols by pool."
 msgstr "Връща списък с домейните."
 
-#: src/virsh.c:4017 src/virsh.c:4025
+#: src/virsh.c:4020 src/virsh.c:4028
 #, fuzzy
 msgid "Failed to list active vols"
 msgstr "Грешка при извеждане на списък с активните домейни"
 
-#: src/virsh.c:4033
+#: src/virsh.c:4036
 msgid "Path"
 msgstr ""
 
-#: src/virsh.c:4070
+#: src/virsh.c:4073
 #, fuzzy
 msgid "convert a vol UUID to vol name"
 msgstr "конвертиране на UUID на мрежа до име на мрежа"
 
-#: src/virsh.c:4075
+#: src/virsh.c:4078
 msgid "vol key or path"
 msgstr ""
 
-#: src/virsh.c:4103
+#: src/virsh.c:4106
 #, fuzzy
 msgid "convert a vol UUID to vol key"
 msgstr "конвертиране на UUID на мрежа до име на мрежа"
 
-#: src/virsh.c:4108
+#: src/virsh.c:4111
 #, fuzzy
 msgid "vol uuid"
 msgstr "uuid на домейна"
 
-#: src/virsh.c:4136
+#: src/virsh.c:4139
 #, fuzzy
 msgid "convert a vol UUID to vol path"
 msgstr "конвертиране на UUID на мрежа до име на мрежа"
 
-#: src/virsh.c:4142
+#: src/virsh.c:4145
 msgid "vol name or key"
 msgstr ""
 
-#: src/virsh.c:4173
+#: src/virsh.c:4176
 msgid "show version"
 msgstr "показване на версия"
 
-#: src/virsh.c:4174
+#: src/virsh.c:4177
 msgid "Display the system version information."
 msgstr "Показва информацията за версия на системата."
 
-#: src/virsh.c:4197
+#: src/virsh.c:4200
 msgid "failed to get hypervisor type"
 msgstr "неуспешно получаване типа на хипервайзора"
 
-#: src/virsh.c:4206
+#: src/virsh.c:4209
 #, c-format
 msgid "Compiled against library: libvir %d.%d.%d\n"
 msgstr "Компилирано за библиотека: libvir %d.%d.%d\n"
 
-#: src/virsh.c:4211
+#: src/virsh.c:4214
 msgid "failed to get the library version"
 msgstr "неуспешно получаване версията на библиотеката"
 
-#: src/virsh.c:4218
+#: src/virsh.c:4221
 #, c-format
 msgid "Using library: libvir %d.%d.%d\n"
 msgstr "Ползва се библиотека: libvir %d.%d.%d\n"
 
-#: src/virsh.c:4225
+#: src/virsh.c:4228
 #, c-format
 msgid "Using API: %s %d.%d.%d\n"
 msgstr "Ползва се API: %s %d.%d.%d\n"
 
-#: src/virsh.c:4230
+#: src/virsh.c:4233
 msgid "failed to get the hypervisor version"
 msgstr "неуспешно получаване на версията на хипервайзора"
 
-#: src/virsh.c:4235
+#: src/virsh.c:4238
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "Не може да се извлече версията на работещия %s хипервайзор\n"
 
-#: src/virsh.c:4242
+#: src/virsh.c:4245
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
 msgstr "Работещ хипервайзор: %s %d.%d.%d\n"
 
-#: src/virsh.c:4253
+#: src/virsh.c:4256
 msgid "print the hypervisor hostname"
 msgstr "извеждане името на машината на хипервайзора"
 
-#: src/virsh.c:4267
+#: src/virsh.c:4270
 msgid "failed to get hostname"
 msgstr "неуспешно получаване на името на машината"
 
-#: src/virsh.c:4282
+#: src/virsh.c:4285
 msgid "print the hypervisor canonical URI"
 msgstr "извеждане каноничния УРИ на хипервайзора"
 
-#: src/virsh.c:4296
+#: src/virsh.c:4299
 msgid "failed to get URI"
 msgstr "неуспешно получаване на УРИ"
 
-#: src/virsh.c:4311
+#: src/virsh.c:4314
 msgid "vnc display"
 msgstr "vnc дисплей"
 
-#: src/virsh.c:4312
+#: src/virsh.c:4315
 msgid "Output the IP address and port number for the VNC display."
 msgstr "Извеждане на IP адрес и номер на порт за VNC дисплея."
 
-#: src/virsh.c:4387
+#: src/virsh.c:4390
 msgid "tty console"
 msgstr "tty конзола"
 
-#: src/virsh.c:4388
+#: src/virsh.c:4391
 msgid "Output the device for the TTY console."
 msgstr "Извеждане на устройството за TTY конзолата."
 
-#: src/virsh.c:4448
+#: src/virsh.c:4451
 msgid "attach device from an XML file"
 msgstr "прикачане на устройство от XML файл"
 
-#: src/virsh.c:4449
+#: src/virsh.c:4452
 msgid "Attach device from an XML <file>."
 msgstr "Прикачане на устройство от XML <файл>."
 
-#: src/virsh.c:4455 src/virsh.c:4511
+#: src/virsh.c:4458 src/virsh.c:4515
 msgid "XML file"
 msgstr "XML файл"
 
-#: src/virsh.c:4489
+#: src/virsh.c:4479
+msgid "attach-device: Missing <file> option"
+msgstr ""
+
+#: src/virsh.c:4493
 #, c-format
 msgid "Failed to attach device from %s"
 msgstr "Неуспешно прикачане на устройство от %s"
 
-#: src/virsh.c:4504
+#: src/virsh.c:4508
 msgid "detach device from an XML file"
 msgstr "откачане на устройство от XML файл"
 
-#: src/virsh.c:4505
+#: src/virsh.c:4509
 msgid "Detach device from an XML <file>"
 msgstr "Откачане на устройство от XML <файл>"
 
-#: src/virsh.c:4545
+#: src/virsh.c:4536
+msgid "detach-device: Missing <file> option"
+msgstr ""
+
+#: src/virsh.c:4550
 #, c-format
 msgid "Failed to detach device from %s"
 msgstr "Неуспешно откачане на устройство от %s"
 
-#: src/virsh.c:4560
+#: src/virsh.c:4565
 msgid "attach network interface"
 msgstr "закачане на мрежов интерфейс"
 
-#: src/virsh.c:4561
+#: src/virsh.c:4566
 msgid "Attach new network interface."
 msgstr "Закачане на нов мрежов интерфейс."
 
-#: src/virsh.c:4567 src/virsh.c:4681
+#: src/virsh.c:4572 src/virsh.c:4686
 msgid "network interface type"
 msgstr "тип на интерфейса на мрежата"
 
-#: src/virsh.c:4568
+#: src/virsh.c:4573
 msgid "source of network interface"
 msgstr "източник на мрежовия интерфейс"
 
-#: src/virsh.c:4569
+#: src/virsh.c:4574
 msgid "target network name"
 msgstr "име на целевата мрежа"
 
-#: src/virsh.c:4570 src/virsh.c:4682
+#: src/virsh.c:4575 src/virsh.c:4687
 #, fuzzy
 msgid "MAC address"
 msgstr "MAC адрес"
 
-#: src/virsh.c:4571
+#: src/virsh.c:4576
 msgid "script used to bridge network interface"
 msgstr "скрипт, който се ползва за закачане на мрежовия интерфейс в мост"
 
-#: src/virsh.c:4603
+#: src/virsh.c:4608
 #, c-format
 msgid "No support %s in command 'attach-interface'"
 msgstr "Няма поддръжка за %s в командата 'attach-interface'"
 
-#: src/virsh.c:4674
+#: src/virsh.c:4679
 msgid "detach network interface"
 msgstr "разкачане на мрежов интерфейс"
 
-#: src/virsh.c:4675
+#: src/virsh.c:4680
 msgid "Detach network interface."
 msgstr "Разкачане на мрежов интерфейс."
 
-#: src/virsh.c:4720 src/virsh.c:4725
+#: src/virsh.c:4725 src/virsh.c:4730
 msgid "Failed to get interface information"
 msgstr "Неуспешно извличане на информация за интерфейса"
 
-#: src/virsh.c:4733
+#: src/virsh.c:4738
 #, c-format
 msgid "No found interface whose type is %s"
 msgstr "Няма намерени интерфейси от тип %s"
 
-#: src/virsh.c:4755
+#: src/virsh.c:4760
 #, c-format
 msgid "No found interface whose MAC address is %s"
 msgstr "Няма намерени интерфейси с MAC адрес %s"
 
-#: src/virsh.c:4761 src/virsh.c:5035
+#: src/virsh.c:4766 src/virsh.c:5040
 msgid "Failed to allocate memory"
 msgstr "Неуспешно заделяне на памет"
 
-#: src/virsh.c:4766 src/virsh.c:5040
+#: src/virsh.c:4771 src/virsh.c:5045
 msgid "Failed to create XML"
 msgstr "Неуспех при опит за създаване на XML файл"
 
-#: src/virsh.c:4793
+#: src/virsh.c:4798
 msgid "attach disk device"
 msgstr "закачане на ново дисково устройство"
 
-#: src/virsh.c:4794
+#: src/virsh.c:4799
 msgid "Attach new disk device."
 msgstr "Закачане на ново дисково устройство."
 
-#: src/virsh.c:4800
+#: src/virsh.c:4805
 msgid "source of disk device"
 msgstr "източник на дисковото устройство"
 
-#: src/virsh.c:4801 src/virsh.c:4963
+#: src/virsh.c:4806 src/virsh.c:4968
 msgid "target of disk device"
 msgstr "цел на дисковото устройство"
 
-#: src/virsh.c:4802
+#: src/virsh.c:4807
 msgid "driver of disk device"
 msgstr "драйвер на дисковото устройство"
 
-#: src/virsh.c:4803
+#: src/virsh.c:4808
 msgid "subdriver of disk device"
 msgstr "поддрайвер на дисковото устройство"
 
-#: src/virsh.c:4804
+#: src/virsh.c:4809
 msgid "target device type"
 msgstr "тип на целевото устройство"
 
-#: src/virsh.c:4805
+#: src/virsh.c:4810
 msgid "mode of device reading and writing"
 msgstr "режим на четене и запис на устройството"
 
-#: src/virsh.c:4836 src/virsh.c:4845 src/virsh.c:4852
+#: src/virsh.c:4841 src/virsh.c:4850 src/virsh.c:4857
 #, c-format
 msgid "No support %s in command 'attach-disk'"
 msgstr "Няма поддръжка за %s в командата 'attach-disk'"
 
-#: src/virsh.c:4956
+#: src/virsh.c:4961
 msgid "detach disk device"
 msgstr "разкачане на дисковото устройство"
 
-#: src/virsh.c:4957
+#: src/virsh.c:4962
 msgid "Detach disk device."
 msgstr "Разкачане на дисковото устройство."
 
-#: src/virsh.c:4998 src/virsh.c:5003 src/virsh.c:5010
+#: src/virsh.c:5003 src/virsh.c:5008 src/virsh.c:5015
 msgid "Failed to get disk information"
 msgstr "Неуспешно получаване на информация за диска"
 
-#: src/virsh.c:5029
+#: src/virsh.c:5034
 #, c-format
 msgid "No found disk whose target is %s"
 msgstr "Няма намерен диск с цел %s"
 
-#: src/virsh.c:5067
+#: src/virsh.c:5072
 msgid "quit this interactive terminal"
 msgstr "изход от този интерактивен терминал"
 
-#: src/virsh.c:5238
+#: src/virsh.c:5243
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "команда '%s' изисква опция <%s>"
 
-#: src/virsh.c:5239
+#: src/virsh.c:5244
 #, c-format
 msgid "command '%s' requires --%s option"
 msgstr "команда '%s' изисква опция --%s"
 
-#: src/virsh.c:5266
+#: src/virsh.c:5271
 #, c-format
 msgid "command '%s' doesn't exist"
 msgstr "команда '%s' не съществува"
 
-#: src/virsh.c:5274
+#: src/virsh.c:5279
 msgid "  NAME\n"
 msgstr "  ИМЕ\n"
 
-#: src/virsh.c:5278
+#: src/virsh.c:5283
 msgid ""
 "\n"
 "  SYNOPSIS\n"
@@ -3683,7 +4985,7 @@ msgstr ""
 "\n"
 "  РЕЗЮМЕ\n"
 
-#: src/virsh.c:5285
+#: src/virsh.c:5290
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -3691,7 +4993,7 @@ msgstr ""
 "\n"
 "  ОПИСАНИЕ\n"
 
-#: src/virsh.c:5289
+#: src/virsh.c:5294
 msgid ""
 "\n"
 "  OPTIONS\n"
@@ -3699,55 +5001,55 @@ msgstr ""
 "\n"
 "  ОПЦИИ\n"
 
-#: src/virsh.c:5296
+#: src/virsh.c:5301
 #, c-format
 msgid "--%s <number>"
 msgstr "--%s <число>"
 
-#: src/virsh.c:5298
+#: src/virsh.c:5303
 #, c-format
 msgid "--%s <string>"
 msgstr "--%s <низ>"
 
-#: src/virsh.c:5442
+#: src/virsh.c:5447
 msgid "undefined domain name or id"
 msgstr "недефинирано име или id на домейн"
 
-#: src/virsh.c:5474
+#: src/virsh.c:5479
 #, c-format
 msgid "failed to get domain '%s'"
 msgstr "неуспешно получаване на домейн '%s'"
 
-#: src/virsh.c:5487
+#: src/virsh.c:5492
 msgid "undefined network name"
 msgstr "недефинирано име на мрежа"
 
-#: src/virsh.c:5511
+#: src/virsh.c:5516
 #, c-format
 msgid "failed to get network '%s'"
 msgstr "неуспешно получаване на мрежа '%s'"
 
-#: src/virsh.c:5524 src/virsh.c:5570
+#: src/virsh.c:5529 src/virsh.c:5575
 #, fuzzy
 msgid "undefined pool name"
 msgstr "недефинирано име на мрежа"
 
-#: src/virsh.c:5548
+#: src/virsh.c:5553
 #, fuzzy, c-format
 msgid "failed to get pool '%s'"
 msgstr "неуспешно получаване на домейн '%s'"
 
-#: src/virsh.c:5565
+#: src/virsh.c:5570
 #, fuzzy
 msgid "undefined vol name"
 msgstr "недефинирано име на мрежа"
 
-#: src/virsh.c:5601
+#: src/virsh.c:5606
 #, fuzzy, c-format
 msgid "failed to get vol '%s'"
 msgstr "неуспешно получаване на домейн '%s'"
 
-#: src/virsh.c:5632
+#: src/virsh.c:5637
 #, c-format
 msgid ""
 "\n"
@@ -3758,129 +5060,129 @@ msgstr ""
 "(Време: %.3f мили секунди)\n"
 "\n"
 
-#: src/virsh.c:5706
+#: src/virsh.c:5711
 msgid "missing \""
 msgstr "липсва \""
 
-#: src/virsh.c:5767
+#: src/virsh.c:5772
 #, c-format
 msgid "unexpected token (command name): '%s'"
 msgstr "неочакван елемент (име на команда): '%s'"
 
-#: src/virsh.c:5772
+#: src/virsh.c:5777
 #, c-format
 msgid "unknown command: '%s'"
 msgstr "непозната команда: '%s'"
 
-#: src/virsh.c:5779
+#: src/virsh.c:5784
 #, c-format
 msgid "command '%s' doesn't support option --%s"
 msgstr "команда '%s' не поддържа опция --%s"
 
-#: src/virsh.c:5794
+#: src/virsh.c:5799
 #, c-format
 msgid "expected syntax: --%s <%s>"
 msgstr "очакван синтаксис: --%s <%s>"
 
-#: src/virsh.c:5797
+#: src/virsh.c:5802
 msgid "number"
 msgstr "число"
 
-#: src/virsh.c:5797
+#: src/virsh.c:5802
 msgid "string"
 msgstr "низ"
 
-#: src/virsh.c:5803
+#: src/virsh.c:5808
 #, c-format
 msgid "unexpected data '%s'"
 msgstr "неочаквани данни '%s'"
 
-#: src/virsh.c:5825
+#: src/virsh.c:5830
 msgid "OPTION"
 msgstr "ОПЦИЯ"
 
-#: src/virsh.c:5825
+#: src/virsh.c:5830
 msgid "DATA"
 msgstr "ДАННИ"
 
-#: src/virsh.c:5876 src/virsh.c:5898
+#: src/virsh.c:5881 src/virsh.c:5903
 msgid "blocked"
 msgstr "блокиран"
 
-#: src/virsh.c:5878
+#: src/virsh.c:5883
 msgid "paused"
 msgstr "в пауза"
 
-#: src/virsh.c:5880
+#: src/virsh.c:5885
 msgid "in shutdown"
 msgstr "изключва се"
 
-#: src/virsh.c:5882
+#: src/virsh.c:5887
 msgid "shut off"
 msgstr "спиране"
 
-#: src/virsh.c:5884
+#: src/virsh.c:5889
 msgid "crashed"
 msgstr "аварирал"
 
-#: src/virsh.c:5896
+#: src/virsh.c:5901
 msgid "offline"
 msgstr "изключен"
 
-#: src/virsh.c:5915
+#: src/virsh.c:5920
 msgid "no valid connection"
 msgstr "няма валидна връзка"
 
-#: src/virsh.c:5962
+#: src/virsh.c:5967
 #, c-format
 msgid "%s: error: "
 msgstr "%s: грешка: "
 
-#: src/virsh.c:5964
+#: src/virsh.c:5969
 msgid "error: "
 msgstr "грешка: "
 
-#: src/virsh.c:5986 src/virsh.c:5998 src/virsh.c:6011
+#: src/virsh.c:5991 src/virsh.c:6003 src/virsh.c:6016
 #, c-format
 msgid "%s: %d: failed to allocate %d bytes"
 msgstr "%s: %d: неуспешно заделяне на %d байта"
 
-#: src/virsh.c:6025
+#: src/virsh.c:6030
 #, c-format
 msgid "%s: %d: failed to allocate %lu bytes"
 msgstr "%s: %d: неуспешно заделяне на %lu байта"
 
-#: src/virsh.c:6058
+#: src/virsh.c:6063
 msgid "failed to connect to the hypervisor"
 msgstr "неуспех при свързване с хипервайзора"
 
-#: src/virsh.c:6090
+#: src/virsh.c:6095
 msgid "failed to get the log file information"
 msgstr "неуспех при получаване на информация за файла с дневника"
 
-#: src/virsh.c:6095
+#: src/virsh.c:6100
 msgid "the log path is not a file"
 msgstr "пътя до дневника на е файл"
 
-#: src/virsh.c:6102
+#: src/virsh.c:6107
 msgid "failed to open the log file. check the log file path"
 msgstr "неуспех при отваряне на дневника. проверете пътя на файла"
 
-#: src/virsh.c:6170
+#: src/virsh.c:6175
 msgid "failed to write the log file"
 msgstr "неуспех при запис в дневника"
 
-#: src/virsh.c:6185
+#: src/virsh.c:6190
 #, fuzzy, c-format
 msgid "%s: failed to write log file: %s"
 msgstr "неуспех при запис в дневника"
 
-#: src/virsh.c:6362
+#: src/virsh.c:6367
 #, fuzzy
 msgid "failed to disconnect from the hypervisor"
 msgstr "Неуспешно откачане от хипервайзор"
 
-#: src/virsh.c:6380
+#: src/virsh.c:6385
 #, c-format
 msgid ""
 "\n"
@@ -3913,7 +5215,7 @@ msgstr ""
 "\n"
 "  команди (в не интерактивен режим):\n"
 
-#: src/virsh.c:6398
+#: src/virsh.c:6403
 msgid ""
 "\n"
 "  (specify help <command> for details about the command)\n"
@@ -3923,12 +5225,12 @@ msgstr ""
 "  (укажете help <команда> за помощ за тази команда)\n"
 "\n"
 
-#: src/virsh.c:6494
+#: src/virsh.c:6499
 #, c-format
 msgid "unsupported option '-%c'. See --help."
 msgstr "неподдържана опция '-%c'. Вижте --help."
 
-#: src/virsh.c:6580
+#: src/virsh.c:6585
 #, c-format
 msgid ""
 "Welcome to %s, the virtualization interactive terminal.\n"
@@ -3937,7 +5239,7 @@ msgstr ""
 "Добре дошли в %s, интерактивния терминал за виртуализация.\n"
 "\n"
 
-#: src/virsh.c:6583
+#: src/virsh.c:6588
 msgid ""
 "Type:  'help' for help with commands\n"
 "       'quit' to quit\n"
@@ -3947,596 +5249,725 @@ msgstr ""
 "       'quit' за изход\n"
 "\n"
 
-#: src/virterror.c:241
+#: src/virterror.c:243
 msgid "warning"
 msgstr "предупреждение"
 
-#: src/virterror.c:244
+#: src/virterror.c:246
 msgid "error"
 msgstr "грешка"
 
-#: src/virterror.c:370
+#: src/virterror.c:375
 msgid "No error message provided"
 msgstr "Няма зададено съобщение за грешка"
 
-#: src/virterror.c:425
+#: src/virterror.c:430
 #, c-format
 msgid "internal error %s"
 msgstr "вътрешна грешка %s"
 
-#: src/virterror.c:427
+#: src/virterror.c:432
 msgid "internal error"
 msgstr "вътрешна грешка"
 
-#: src/virterror.c:434
+#: src/virterror.c:439
 msgid "this function is not supported by the hypervisor"
 msgstr "тази функция не се поддържа от хипервайзора"
 
-#: src/virterror.c:436
+#: src/virterror.c:441
 #, c-format
 msgid "this function is not supported by the hypervisor: %s"
 msgstr "тази функция не се поддържа от хипервайзора: %s"
 
-#: src/virterror.c:440
+#: src/virterror.c:445
 msgid "could not connect to hypervisor"
 msgstr "не може да се осъществи връзка с хипервайзора"
 
-#: src/virterror.c:442
+#: src/virterror.c:447
 #, c-format
 msgid "could not connect to %s"
 msgstr "не може да се осъществи връзка с %s"
 
-#: src/virterror.c:446
+#: src/virterror.c:451
 msgid "invalid connection pointer in"
 msgstr "невалиден указател за връзка в"
 
-#: src/virterror.c:448
+#: src/virterror.c:453
 #, c-format
 msgid "invalid connection pointer in %s"
 msgstr "невалиден указател за връзка в %s"
 
-#: src/virterror.c:452
+#: src/virterror.c:457
 msgid "invalid domain pointer in"
 msgstr "невалиден указател за домейн в"
 
-#: src/virterror.c:454
+#: src/virterror.c:459
 #, c-format
 msgid "invalid domain pointer in %s"
 msgstr "невалиден указател за домейн в %s"
 
-#: src/virterror.c:458
+#: src/virterror.c:463
 msgid "invalid argument in"
 msgstr "невалиден аргумент в"
 
-#: src/virterror.c:460
+#: src/virterror.c:465
 #, c-format
 msgid "invalid argument in %s"
 msgstr "невалиден аргумент в %s"
 
-#: src/virterror.c:464
+#: src/virterror.c:469
 #, c-format
 msgid "operation failed: %s"
 msgstr "грешка при операция: %s"
 
-#: src/virterror.c:466
+#: src/virterror.c:471
 msgid "operation failed"
 msgstr "грешка при операцията"
 
-#: src/virterror.c:470
+#: src/virterror.c:475
 #, c-format
 msgid "GET operation failed: %s"
 msgstr "грешка при GET операция: %s"
 
-#: src/virterror.c:472
+#: src/virterror.c:477
 msgid "GET operation failed"
 msgstr "грешка при GET операцията"
 
-#: src/virterror.c:476
+#: src/virterror.c:481
 #, c-format
 msgid "POST operation failed: %s"
 msgstr "грешка при POST операция: %s"
 
-#: src/virterror.c:478
+#: src/virterror.c:483
 msgid "POST operation failed"
 msgstr "грешка при POST операцията"
 
-#: src/virterror.c:481
+#: src/virterror.c:486
 #, c-format
 msgid "got unknown HTTP error code %d"
 msgstr "получен бе непознат HTTP код на грешка %d"
 
-#: src/virterror.c:485
+#: src/virterror.c:490
 #, c-format
 msgid "unknown host %s"
 msgstr "непозната машина %s"
 
-#: src/virterror.c:487
+#: src/virterror.c:492
 msgid "unknown host"
 msgstr "непозната машина"
 
-#: src/virterror.c:491
+#: src/virterror.c:496
 #, c-format
 msgid "failed to serialize S-Expr: %s"
 msgstr "неуспешно сериализиране на S-Expr: %s"
 
-#: src/virterror.c:493
+#: src/virterror.c:498
 msgid "failed to serialize S-Expr"
 msgstr "неуспешно сериализиране на S-Expr"
 
-#: src/virterror.c:497
+#: src/virterror.c:502
 msgid "could not use Xen hypervisor entry"
 msgstr "не може да се ползва елемент от Xen хипервайзора"
 
-#: src/virterror.c:499
+#: src/virterror.c:504
 #, c-format
 msgid "could not use Xen hypervisor entry %s"
 msgstr "не може да се ползва елемент %s от Xen хипервайзора"
 
-#: src/virterror.c:503
+#: src/virterror.c:508
 msgid "could not connect to Xen Store"
 msgstr "не може да се осъществи връзка с Xen хранилище"
 
-#: src/virterror.c:505
+#: src/virterror.c:510
 #, c-format
 msgid "could not connect to Xen Store %s"
 msgstr "не може да се осъществи връзка с Xen хранилище %s"
 
-#: src/virterror.c:508
+#: src/virterror.c:513
 #, c-format
 msgid "failed Xen syscall %s %d"
 msgstr "неуспешно Xen системно извикване %s %d"
 
-#: src/virterror.c:512
+#: src/virterror.c:517
 msgid "unknown OS type"
 msgstr "непознат тип ОС"
 
-#: src/virterror.c:514
+#: src/virterror.c:519
 #, c-format
 msgid "unknown OS type %s"
 msgstr "непознат тип ОС %s"
 
-#: src/virterror.c:517
+#: src/virterror.c:522
 msgid "missing kernel information"
 msgstr "липсва информация за ядрото"
 
-#: src/virterror.c:521
+#: src/virterror.c:526
 msgid "missing root device information"
 msgstr "липсва информация за главното устройство"
 
-#: src/virterror.c:523
+#: src/virterror.c:528
 #, c-format
 msgid "missing root device information in %s"
 msgstr "липсва информация за главното устройство в %s"
 
-#: src/virterror.c:527
+#: src/virterror.c:532
 msgid "missing source information for device"
 msgstr "липсва информация за източника на устройство"
 
-#: src/virterror.c:529
+#: src/virterror.c:534
 #, c-format
 msgid "missing source information for device %s"
 msgstr "липсва информация за източника на устройство %s"
 
-#: src/virterror.c:533
+#: src/virterror.c:538
 msgid "missing target information for device"
 msgstr "липсва информация за целта на устройство"
 
-#: src/virterror.c:535
+#: src/virterror.c:540
 #, c-format
 msgid "missing target information for device %s"
 msgstr "липсва информация за целта на устройство %s"
 
-#: src/virterror.c:539
+#: src/virterror.c:544
 msgid "missing domain name information"
 msgstr "липсва информация за име на домейн"
 
-#: src/virterror.c:541
+#: src/virterror.c:546
 #, c-format
 msgid "missing domain name information in %s"
 msgstr "липсва информация за име на домейн в %s"
 
-#: src/virterror.c:545
+#: src/virterror.c:550
 msgid "missing operating system information"
 msgstr "липсва информация за операционна система"
 
-#: src/virterror.c:547
+#: src/virterror.c:552
 #, c-format
 msgid "missing operating system information for %s"
 msgstr "липсва информация за операционна система за %s"
 
-#: src/virterror.c:551
+#: src/virterror.c:556
 msgid "missing devices information"
 msgstr "липсва информация за устройство"
 
-#: src/virterror.c:553
+#: src/virterror.c:558
 #, c-format
 msgid "missing devices information for %s"
 msgstr "липсва информация за устройство за %s"
 
-#: src/virterror.c:557
+#: src/virterror.c:562
 msgid "too many drivers registered"
 msgstr "регистрирани са твърде много устройства"
 
-#: src/virterror.c:559
+#: src/virterror.c:564
 #, c-format
 msgid "too many drivers registered in %s"
 msgstr "регистрирани са твърде много устройства в %s"
 
-#: src/virterror.c:563
+#: src/virterror.c:568
 msgid "library call failed, possibly not supported"
 msgstr "неуспешно извикване на библиотечна функция, може би не се поддържа"
 
-#: src/virterror.c:565
+#: src/virterror.c:570
 #, c-format
 msgid "library call %s failed, possibly not supported"
 msgstr ""
 "неуспешно извикване на библиотечната функция %s, може би не се поддържа"
 
-#: src/virterror.c:569
+#: src/virterror.c:574
 msgid "XML description not well formed or invalid"
 msgstr "XML описанието не е добре форматирано или е невалидно"
 
-#: src/virterror.c:571
+#: src/virterror.c:576
 #, c-format
 msgid "XML description for %s is not well formed or invalid"
 msgstr "XML описанието за %s не е добре форматирано или е невалидно"
 
-#: src/virterror.c:575
+#: src/virterror.c:580
 msgid "this domain exists already"
 msgstr "този домейн вече съществува"
 
-#: src/virterror.c:577
+#: src/virterror.c:582
 #, c-format
 msgid "domain %s exists already"
 msgstr "домейна %s вече съществува"
 
-#: src/virterror.c:581
+#: src/virterror.c:586
 msgid "operation forbidden for read only access"
 msgstr "операцията е забранена при достъп само за четене"
 
-#: src/virterror.c:583
+#: src/virterror.c:588
 #, c-format
 msgid "operation %s forbidden for read only access"
 msgstr "операцията %s е забранена при достъп само за четене"
 
-#: src/virterror.c:587
+#: src/virterror.c:592
 msgid "failed to open configuration file for reading"
 msgstr "грешка при отваряне на конфигурационния файл за четене"
 
-#: src/virterror.c:589
+#: src/virterror.c:594
 #, c-format
 msgid "failed to open %s for reading"
 msgstr "грешка при отваряне на конфигурационен файл %s за четене"
 
-#: src/virterror.c:593
+#: src/virterror.c:598
 msgid "failed to read configuration file"
 msgstr "грешка при четене на конфигурационния файл"
 
-#: src/virterror.c:595
+#: src/virterror.c:600
 #, c-format
 msgid "failed to read configuration file %s"
 msgstr "грешка при четене на конфигурационния файл %s"
 
-#: src/virterror.c:599
+#: src/virterror.c:604
 msgid "failed to parse configuration file"
 msgstr "грешка при разбор на конфигурационния файл"
 
-#: src/virterror.c:601
+#: src/virterror.c:606
 #, c-format
 msgid "failed to parse configuration file %s"
 msgstr "грешка при разбор на конфигурационния файл %s"
 
-#: src/virterror.c:605
+#: src/virterror.c:610
 msgid "configuration file syntax error"
 msgstr "синтактична грешка в конфигурационния файл"
 
-#: src/virterror.c:607
+#: src/virterror.c:612
 #, c-format
 msgid "configuration file syntax error: %s"
 msgstr "синтактична грешка в конфигурационния файл: %s"
 
-#: src/virterror.c:611
+#: src/virterror.c:616
 msgid "failed to write configuration file"
 msgstr "грешка при запис на конфигурационния файл"
 
-#: src/virterror.c:613
+#: src/virterror.c:618
 #, c-format
 msgid "failed to write configuration file: %s"
 msgstr "грешка при запис на конфигурационния файл: %s"
 
-#: src/virterror.c:617
+#: src/virterror.c:622
 msgid "parser error"
 msgstr "грешка при разбора"
 
-#: src/virterror.c:623
+#: src/virterror.c:628
 msgid "invalid network pointer in"
 msgstr "невалиден мрежов указател за връзка в"
 
-#: src/virterror.c:625
+#: src/virterror.c:630
 #, c-format
 msgid "invalid network pointer in %s"
 msgstr "невалиден мрежов указател за връзка в %s"
 
-#: src/virterror.c:629
+#: src/virterror.c:634
 msgid "this network exists already"
 msgstr "тази мрежа вече съществува"
 
-#: src/virterror.c:631
+#: src/virterror.c:636
 #, c-format
 msgid "network %s exists already"
 msgstr "мрежата %s вече съществува"
 
-#: src/virterror.c:635
+#: src/virterror.c:640
 msgid "system call error"
 msgstr "грешка в системно извикване"
 
-#: src/virterror.c:641
+#: src/virterror.c:646
 msgid "RPC error"
 msgstr "RPC грешка"
 
-#: src/virterror.c:647
+#: src/virterror.c:652
 msgid "GNUTLS call error"
 msgstr "грешка в извикване към GNUTLS"
 
-#: src/virterror.c:653
+#: src/virterror.c:658
 msgid "Failed to find the network"
 msgstr "Не може да бъде намерена мрежата"
 
-#: src/virterror.c:655
+#: src/virterror.c:660
 #, c-format
 msgid "Failed to find the network: %s"
 msgstr "Не може да бъде намерена мрежата: %s"
 
-#: src/virterror.c:659
+#: src/virterror.c:664
 msgid "Domain not found"
 msgstr "Не е открит домейна"
 
-#: src/virterror.c:661
+#: src/virterror.c:666
 #, c-format
 msgid "Domain not found: %s"
 msgstr "Не е открит домейна: %s"
 
-#: src/virterror.c:665
+#: src/virterror.c:670
 msgid "Network not found"
 msgstr "Не е открита мрежата"
 
-#: src/virterror.c:667
+#: src/virterror.c:672
 #, c-format
 msgid "Network not found: %s"
 msgstr "Не е открита мрежата: %s"
 
-#: src/virterror.c:671
+#: src/virterror.c:676
 #, fuzzy
 msgid "invalid MAC address"
 msgstr "невалиден MAC адрес"
 
-#: src/virterror.c:673
+#: src/virterror.c:678
 #, fuzzy, c-format
 msgid "invalid MAC address: %s"
 msgstr "невалиден MAC адрес: %s"
 
-#: src/virterror.c:677
+#: src/virterror.c:682
 #, fuzzy
 msgid "authentication failed"
 msgstr "грешка при операцията"
 
-#: src/virterror.c:679
+#: src/virterror.c:684
 #, fuzzy, c-format
 msgid "authentication failed: %s"
 msgstr "грешка при операция: %s"
 
-#: src/virterror.c:683
+#: src/virterror.c:688
 #, fuzzy
 msgid "Storage pool not found"
 msgstr "Не е открита мрежата"
 
-#: src/virterror.c:685
+#: src/virterror.c:690
 #, fuzzy, c-format
 msgid "Storage pool not found: %s"
 msgstr "Не е открита мрежата: %s"
 
-#: src/virterror.c:689
+#: src/virterror.c:694
 #, fuzzy
 msgid "Storage volume not found"
 msgstr "Не е открита мрежата"
 
-#: src/virterror.c:691
+#: src/virterror.c:696
 #, fuzzy, c-format
 msgid "Storage volume not found: %s"
 msgstr "Не е открита мрежата: %s"
 
-#: src/virterror.c:695
+#: src/virterror.c:700
 #, fuzzy
 msgid "invalid storage pool pointer in"
 msgstr "невалиден мрежов указател за връзка в"
 
-#: src/virterror.c:697
+#: src/virterror.c:702
 #, fuzzy, c-format
 msgid "invalid storage pool pointer in %s"
 msgstr "невалиден мрежов указател за връзка в %s"
 
-#: src/virterror.c:701
+#: src/virterror.c:706
 #, fuzzy
 msgid "invalid storage volume pointer in"
 msgstr "невалиден мрежов указател за връзка в"
 
-#: src/virterror.c:703
+#: src/virterror.c:708
 #, fuzzy, c-format
 msgid "invalid storage volume pointer in %s"
 msgstr "невалиден мрежов указател за връзка в %s"
 
-#: src/virterror.c:707
+#: src/virterror.c:712
 #, fuzzy
 msgid "Failed to find a storage driver"
 msgstr "Не може да бъде намерена мрежата"
 
-#: src/virterror.c:709
+#: src/virterror.c:714
 #, fuzzy, c-format
 msgid "Failed to find a storage driver: %s"
 msgstr "Не може да бъде намерена мрежата: %s"
 
-#: src/xen_internal.c:1324
+#: src/xen_internal.c:1326
 #, c-format
 msgid "Credit scheduler weight parameter (%d) is out of range (1-65535)"
 msgstr ""
 "Параметъра за тежест на кредита на разпределителя (%d) е извън интервала (1-"
 "65535)"
 
-#: src/xen_internal.c:1334
+#: src/xen_internal.c:1336
 #, c-format
 msgid "Credit scheduler cap parameter (%d) is out of range (0-65535)"
 msgstr ""
 "Параметъра за ограничаване на кредита на разпределителя (%d) е извън "
 "интервала (0-65535)"
 
-#: src/xen_internal.c:2504
+#: src/xen_internal.c:2501
 #, c-format
 msgid "allocating %d domain info"
 msgstr "заделяне информация за домейн %d"
 
-#: src/xend_internal.c:221
+#: src/xend_internal.c:233
 #, fuzzy
 msgid "failed to create a socket"
 msgstr "неуспешно заделяне на възел"
 
-#: src/xend_internal.c:244
+#: src/xend_internal.c:255
 #, fuzzy
 msgid "failed to connect to xend"
 msgstr "неуспешно свързване към xen хранилище"
 
-#: src/xend_internal.c:291 src/xend_internal.c:294
+#: src/xend_internal.c:302 src/xend_internal.c:305
 msgid "failed to read from Xen Daemon"
 msgstr "неуспешно четене от xen демона"
 
-#: src/xend_internal.c:605 src/xend_internal.c:824 src/xend_internal.c:1578
-#: src/xend_internal.c:1597
+#: src/xend_internal.c:616 src/xend_internal.c:835 src/xend_internal.c:1589
+#: src/xend_internal.c:1608
 msgid "allocate new buffer"
 msgstr "заделяне на нов буфер"
 
-#: src/xend_internal.c:1031
+#: src/xend_internal.c:1042
 msgid "failed to urlencode the create S-Expr"
 msgstr "неуспех при urlencode на S-Expr за създаване"
 
-#: src/xend_internal.c:1072
+#: src/xend_internal.c:1083
 msgid "domain information incomplete, missing domid"
 msgstr "информацията за домейна е непълна, липсва domid"
 
-#: src/xend_internal.c:1078
+#: src/xend_internal.c:1089
 msgid "domain information incorrect domid not numeric"
 msgstr "информацията за домейна е невярна, domid не е число"
 
-#: src/xend_internal.c:1083 src/xend_internal.c:1130
+#: src/xend_internal.c:1094 src/xend_internal.c:1141
 msgid "domain information incomplete, missing uuid"
 msgstr "информацията за домейна е непълна, липсва uuid"
 
-#: src/xend_internal.c:1122 src/xend_internal.c:1422 src/xend_internal.c:1429
+#: src/xend_internal.c:1133 src/xend_internal.c:1433 src/xend_internal.c:1440
 msgid "domain information incomplete, missing name"
 msgstr "информацията за домейна е непълна, липсва име"
 
-#: src/xend_internal.c:1307
+#: src/xend_internal.c:1318
 #, fuzzy
 msgid "domain information incomplete, missing HVM loader"
 msgstr "информацията за домейна е непълна, липсва име"
 
-#: src/xend_internal.c:1359
+#: src/xend_internal.c:1370
 msgid "domain information incomplete, missing kernel & bootloader"
 msgstr ""
 "информацията за домейна е непълна, липсва ядро и програма за начално "
 "зареждане"
 
-#: src/xend_internal.c:1410
+#: src/xend_internal.c:1421
 msgid "domain information incomplete, missing id"
 msgstr "информацията за домейна е непълна, липсва id"
 
-#: src/xend_internal.c:1547
+#: src/xend_internal.c:1558
 msgid "domain information incomplete, vbd has no dev"
 msgstr "информацията за домейна е непълна, vbd няма dev"
 
-#: src/xend_internal.c:1562
+#: src/xend_internal.c:1573
 msgid "domain information incomplete, vbd has no src"
 msgstr "информацията за домейна е непълна, vbd няма src"
 
-#: src/xend_internal.c:1571
+#: src/xend_internal.c:1582
 msgid "cannot parse vbd filename, missing driver name"
 msgstr "грешка при разбор името на файла на vbd, липсва име на драйвер"
 
-#: src/xend_internal.c:1590
+#: src/xend_internal.c:1601
 msgid "cannot parse vbd filename, missing driver type"
 msgstr "грешка при разбор името на файла на vbd, липсва тип на драйвер"
 
-#: src/xend_internal.c:1983
+#: src/xend_internal.c:1994
 #, fuzzy
 msgid "failed to parse topology information"
 msgstr "неуспешен разбор на информацията за Xend домейн"
 
-#: src/xend_internal.c:2039
+#: src/xend_internal.c:2050
 #, fuzzy
 msgid "topology syntax error"
 msgstr "синтактична грешка в конфигурационния файл"
 
-#: src/xend_internal.c:2049 src/xml.c:115 src/xml.c:279
+#: src/xend_internal.c:2060 src/xml.c:115 src/xml.c:279
 #, fuzzy
 msgid "allocate buffer"
 msgstr "заделяне на нов буфер"
 
-#: src/xend_internal.c:2103
+#: src/xend_internal.c:2114
 msgid "failed to parse Xend domain information"
 msgstr "неуспешен разбор на информацията за Xend домейн"
 
-#: src/xend_internal.c:2583
+#: src/xend_internal.c:2594
 msgid "xenDaemonDomainDumpXMLByID failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:2608
+#: src/xend_internal.c:2619
 msgid "xenDaemonDomainDumpXMLByName failed to find this domain"
 msgstr ""
 
-#: src/xend_internal.c:3220 src/xend_internal.c:3529
+#: src/xend_internal.c:3231 src/xend_internal.c:3540
 #, fuzzy
 msgid "failed to parse domain description"
 msgstr "неуспешен разбор на информацията за Xend домейн"
 
-#: src/xend_internal.c:3399
+#: src/xend_internal.c:3410
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
 msgstr ""
 
-#: src/xend_internal.c:3409
+#: src/xend_internal.c:3420
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
 msgstr ""
 
-#: src/xend_internal.c:3421
+#: src/xend_internal.c:3432
 msgid "xenDaemonDomainMigrate: unsupported flag"
 msgstr ""
 
-#: src/xend_internal.c:3434
+#: src/xend_internal.c:3445
 msgid "xenDaemonDomainMigrate: invalid URI"
 msgstr ""
 
-#: src/xend_internal.c:3439
+#: src/xend_internal.c:3450
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
 msgstr ""
 
-#: src/xend_internal.c:3446
+#: src/xend_internal.c:3457
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
 msgstr ""
 
-#: src/xend_internal.c:3453 src/xend_internal.c:3475 src/xend_internal.c:3483
-#: src/xml.c:331
+#: src/xend_internal.c:3464 src/xend_internal.c:3486 src/xend_internal.c:3494
+#: src/xend_internal.c:3719 src/xend_internal.c:3726 src/xml.c:331
 msgid "strdup failed"
 msgstr ""
 
-#: src/xend_internal.c:3466
+#: src/xend_internal.c:3477
 msgid "xenDaemonDomainMigrate: invalid port number"
 msgstr ""
 
-#: src/xend_internal.c:3539
+#: src/xend_internal.c:3550
 #, c-format
 msgid "Failed to create inactive domain %s\n"
 msgstr "Грешка при създаване на неактивен домейн %s\n"
+
+#: src/xend_internal.c:3701 src/xend_internal.c:3777 src/xend_internal.c:3867
+msgid "unsupported in xendConfigVersion < 4"
+msgstr ""
+
+#: src/xend_internal.c:3713
+#, fuzzy
+msgid "node information incomplete, missing scheduler name"
+msgstr "информацията за домейна е непълна, липсва име"
+
+#: src/xend_internal.c:3731 src/xend_internal.c:3825 src/xend_internal.c:3937
+#, fuzzy
+msgid "Unknown scheduler"
+msgstr "Непозната"
+
+#: src/xend_internal.c:3790 src/xend_internal.c:3880
+#, fuzzy
+msgid "Failed to get a scheduler name"
+msgstr "неуспешно получаване на името на машината"
+
+#: src/xend_internal.c:3803 src/xend_internal.c:3916
+#, fuzzy
+msgid "domain information incomplete, missing cpu_weight"
+msgstr "информацията за домейна е непълна, липсва uuid"
+
+#: src/xend_internal.c:3808 src/xend_internal.c:3925
+#, fuzzy
+msgid "domain information incomplete, missing cpu_cap"
+msgstr "информацията за домейна е непълна, липсва uuid"
+
+#: src/xm_internal.c:438
+msgid "xenXMConfigCacheRefresh: name"
+msgstr ""
+
+#: src/xm_internal.c:449
+msgid "xenXMConfigCacheRefresh: virHashAddEntry"
+msgstr ""
+
+#: src/xm_internal.c:1260
+#, fuzzy
+msgid "read only connection"
+msgstr "връзка само за четене"
+
+#: src/xm_internal.c:1265
+#, fuzzy
+msgid "not inactive domain"
+msgstr "показване на неактивните домейни"
+
+#: src/xm_internal.c:1270
+msgid "virHashLookup"
+msgstr ""
+
+#: src/xm_internal.c:1275
+#, fuzzy
+msgid "can't retrieve config file for domain"
+msgstr "грешка при запис на конфигурационния файл: %s"
+
+#: src/xm_internal.c:1908 src/xm_internal.c:2590 src/xm_internal.c:2612
+#: src/xm_internal.c:3012
+#, fuzzy
+msgid "cannot read XML domain definition"
+msgstr "зареждане на файл с дефиниции на домейни"
+
+#: src/xm_internal.c:1914
+#, fuzzy
+msgid "missing top level domain element"
+msgstr "липсва информация за главното устройство"
+
+#: src/xm_internal.c:1922
+#, fuzzy
+msgid "domain type is invalid"
+msgstr "домейна %s вече съществува"
+
+#: src/xm_internal.c:1930 src/xm_internal.c:2595 src/xm_internal.c:2617
+#: src/xm_internal.c:3017
+#, fuzzy
+msgid "cannot create XPath context"
+msgstr "създаване на xpath контекст"
+
+#: src/xm_internal.c:2124 src/xm_internal.c:2190 src/xm_internal.c:2211
+#: src/xm_internal.c:2224 src/xm_internal.c:2243 src/xm_internal.c:2255
+#: src/xm_internal.c:2394
+msgid "config"
+msgstr ""
+
+#: src/xm_internal.c:2332
+msgid "name config parameter is missing"
+msgstr ""
+
+#: src/xm_internal.c:2341
+msgid "can't retrieve config filename for domain to overwrite"
+msgstr ""
+
+#: src/xm_internal.c:2347
+msgid "can't retrieve config entry for domain to overwrite"
+msgstr ""
+
+#: src/xm_internal.c:2353 src/xm_internal.c:2409
+msgid "uuid config parameter is missing"
+msgstr ""
+
+#: src/xm_internal.c:2363 src/xm_internal.c:2370
+#, fuzzy
+msgid "failed to remove old domain from config map"
+msgstr "Неуспех при възстановяване на домейн от %s"
+
+#: src/xm_internal.c:2379
+msgid "config file name is too long"
+msgstr ""
+
+#: src/xm_internal.c:2389
+#, fuzzy
+msgid "unable to write config file"
+msgstr "грешка при запис на конфигурационния файл"
+
+#: src/xm_internal.c:2400
+#, fuzzy
+msgid "unable to get current time"
+msgstr "Не може да се провери настоящия MemorySize"
+
+#: src/xm_internal.c:2415 src/xm_internal.c:2422
+#, fuzzy
+msgid "unable to store config file handle"
+msgstr "грешка при четене на конфигурационния файл %s"
+
+#: src/xm_internal.c:2629
+#, fuzzy
+msgid "unknown device"
+msgstr "непознат тип ОС"
 
 #: src/xml.c:248
 msgid "topology cpuset syntax error"
@@ -4634,6 +6065,10 @@ msgstr "заделяне на нов контекст"
 #: src/xs_internal.c:329
 msgid "failed to connect to Xen Store"
 msgstr "неуспешно свързване към xen хранилище"
+
+#, fuzzy
+#~ msgid "Failed to bring down bridge '%s' : %s\n"
+#~ msgstr "Неуспешно отваряне на '%s': %s"
 
 #~ msgid "Failed to open '%s': read: %s"
 #~ msgstr "Неуспешно отваряне на '%s': четене: %s"
