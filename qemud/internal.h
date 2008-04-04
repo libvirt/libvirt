@@ -179,6 +179,9 @@ void qemudLog(int priority, const char *fmt, ...)
 void remoteDispatchClientRequest (struct qemud_server *server,
                                   struct qemud_client *client);
 
+#if HAVE_POLKIT
+int qemudGetSocketIdentity(int fd, uid_t *uid, pid_t *pid);
+#endif
 
 #endif
 

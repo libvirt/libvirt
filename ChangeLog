@@ -1,3 +1,9 @@
+Fri Apr  4 11:00:08 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* src/libvirt.c: Don't run polkit-auth if running as root
+	* qemud/qemud.c, qemud/remote.c, qemud/internal.h: Don't
+	ask client for polkit auth if they are running as root
+
 Fri Apr  4 13:19:08 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/virsh.c: patch from Shigeki Sakamoto adding message on vcpupin

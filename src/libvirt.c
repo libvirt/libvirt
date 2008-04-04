@@ -116,17 +116,23 @@ static int virConnectAuthCallbackDefault(virConnectCredentialPtr cred,
         size_t len;
 
         switch (cred[i].type) {
-#if defined(POLKIT_AUTH)
         case VIR_CRED_EXTERNAL: {
             if (STRNEQ(cred[i].challenge, "PolicyKit"))
                 return -1;
 
+#if defined(POLKIT_AUTH)
             if (virConnectAuthGainPolkit(cred[i].prompt) < 0)
                 return -1;
-
+#else
+            /*
+             * Ignore & carry on. Although we can't auth
+             * directly, the user may have authenticated
+             * themselves already outside context of libvirt
+             */
+#endif
             break;
         }
-#endif
+
         case VIR_CRED_USERNAME:
         case VIR_CRED_AUTHNAME:
         case VIR_CRED_ECHOPROMPT:
@@ -186,9 +192,7 @@ static int virConnectCredTypeDefault[] = {
     VIR_CRED_REALM,
     VIR_CRED_PASSPHRASE,
     VIR_CRED_NOECHOPROMPT,
-#if defined(POLKIT_AUTH)
     VIR_CRED_EXTERNAL,
-#endif
 };
 
 static virConnectAuth virConnectAuthDefault = {

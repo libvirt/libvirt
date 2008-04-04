@@ -1040,6 +1040,28 @@ remoteCheckAccess (struct qemud_client *client)
     return 0;
 }
 
+#if HAVE_POLKIT
+int qemudGetSocketIdentity(int fd, uid_t *uid, pid_t *pid) {
+#ifdef SO_PEERCRED
+    struct ucred cr;
+    unsigned int cr_len = sizeof (cr);
+
+    if (getsockopt (fd, SOL_SOCKET, SO_PEERCRED, &cr, &cr_len) < 0) {
+        qemudLog(QEMUD_ERR, _("Failed to verify client credentials: %s"),
+                 strerror(errno));
+        return -1;
+    }
+
+    *pid = cr.pid;
+    *uid = cr.uid;
+#else
+    /* XXX Many more OS support UNIX socket credentials we could port to. See dbus ....*/
+#error "UNIX socket credentials not supported/implemented on this platform yet..."
+#endif
+    return 0;
+}
+#endif
+
 static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket *sock) {
     int fd;
     struct sockaddr_storage addr;
@@ -1074,6 +1096,26 @@ static int qemudDispatchServer(struct qemud_server *server, struct qemud_socket 
     client->auth = sock->auth;
     memcpy (&client->addr, &addr, sizeof addr);
     client->addrlen = addrlen;
+
+#if HAVE_POLKIT
+    /* Only do policy checks for non-root - allow root user
+       through with no checks, as a fail-safe - root can easily
+       change policykit policy anyway, so its pointless trying
+       to restrict root */
+    if (client->auth == REMOTE_AUTH_POLKIT) {
+        uid_t uid;
+        pid_t pid;
+
+        if (qemudGetSocketIdentity(client->fd, &uid, &pid) < 0)
+            goto cleanup;
+
+        /* Cient is running as root, so disable auth */
+        if (uid == 0) {
+            qemudLog(QEMUD_INFO, _("Turn off polkit auth for privileged client %d"), pid);
+            client->auth = REMOTE_AUTH_NONE;
+        }
+    }
+#endif
 
     if (client->type != QEMUD_SOCK_TYPE_TLS) {
         client->mode = QEMUD_MODE_RX_HEADER;

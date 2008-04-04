@@ -2570,27 +2570,6 @@ remoteDispatchAuthSaslStep (struct qemud_server *server ATTRIBUTE_UNUSED,
 
 
 #if HAVE_POLKIT
-static int qemudGetSocketIdentity(int fd, uid_t *uid, pid_t *pid) {
-#ifdef SO_PEERCRED
-    struct ucred cr;
-    unsigned int cr_len = sizeof (cr);
-
-    if (getsockopt (fd, SOL_SOCKET, SO_PEERCRED, &cr, &cr_len) < 0) {
-        qemudLog(QEMUD_ERR, _("Failed to verify client credentials: %s"),
-                 strerror(errno));
-        return -1;
-    }
-
-    *pid = cr.pid;
-    *uid = cr.uid;
-#else
-    /* XXX Many more OS support UNIX socket credentials we could port to. See dbus ....*/
-#error "UNIX socket credentials not supported/implemented on this platform yet..."
-#endif
-    return 0;
-}
-
-
 static int
 remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
                           struct qemud_client *client,
@@ -2600,6 +2579,15 @@ remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
 {
     pid_t callerPid;
     uid_t callerUid;
+    PolKitCaller *pkcaller = NULL;
+    PolKitAction *pkaction = NULL;
+    PolKitContext *pkcontext = NULL;
+    PolKitError *pkerr = NULL;
+    PolKitResult pkresult;
+    DBusError err;
+    const char *action = client->readonly ?
+        "org.libvirt.unix.monitor" :
+        "org.libvirt.unix.manage";
 
     REMOTE_DEBUG("Start PolicyKit auth %d", client->fd);
     if (client->auth != REMOTE_AUTH_POLKIT) {
@@ -2615,98 +2603,78 @@ remoteDispatchAuthPolkit (struct qemud_server *server ATTRIBUTE_UNUSED,
         return -2;
     }
 
-    /* Only do policy checks for non-root - allow root user
-       through with no checks, as a fail-safe - root can easily
-       change policykit policy anyway, so its pointless trying
-       to restrict root */
-    if (callerUid == 0) {
-        qemudLog(QEMUD_INFO, _("Allowing PID %d running as root"), callerPid);
-        ret->complete = 1;
-        client->auth = REMOTE_AUTH_NONE;
-    } else {
-        PolKitCaller *pkcaller = NULL;
-        PolKitAction *pkaction = NULL;
-        PolKitContext *pkcontext = NULL;
-        PolKitError *pkerr = NULL;
-        PolKitResult pkresult;
-        DBusError err;
-        const char *action = client->readonly ?
-            "org.libvirt.unix.monitor" :
-            "org.libvirt.unix.manage";
+    qemudLog(QEMUD_INFO, _("Checking PID %d running as %d"),
+             callerPid, callerUid);
+    dbus_error_init(&err);
+    if (!(pkcaller = polkit_caller_new_from_pid(server->sysbus,
+                                                callerPid, &err))) {
+        qemudLog(QEMUD_ERR, _("Failed to lookup policy kit caller: %s"),
+                 err.message);
+        dbus_error_free(&err);
+        remoteDispatchFailAuth(client, req);
+        return -2;
+    }
 
-        qemudLog(QEMUD_INFO, _("Checking PID %d running as %d"),
-                 callerPid, callerUid);
-        dbus_error_init(&err);
-        if (!(pkcaller = polkit_caller_new_from_pid(server->sysbus,
-                                                    callerPid, &err))) {
-            qemudLog(QEMUD_ERR, _("Failed to lookup policy kit caller: %s"),
-                     err.message);
-            dbus_error_free(&err);
-            remoteDispatchFailAuth(client, req);
-            return -2;
-        }
+    if (!(pkaction = polkit_action_new())) {
+        qemudLog(QEMUD_ERR, _("Failed to create polkit action %s\n"),
+                 strerror(errno));
+        polkit_caller_unref(pkcaller);
+        remoteDispatchFailAuth(client, req);
+        return -2;
+    }
+    polkit_action_set_action_id(pkaction, action);
 
-        if (!(pkaction = polkit_action_new())) {
-            qemudLog(QEMUD_ERR, _("Failed to create polkit action %s\n"),
-                                  strerror(errno));
-            polkit_caller_unref(pkcaller);
-            remoteDispatchFailAuth(client, req);
-            return -2;
-        }
-        polkit_action_set_action_id(pkaction, action);
-
-        if (!(pkcontext = polkit_context_new()) ||
-            !polkit_context_init(pkcontext, &pkerr)) {
-            qemudLog(QEMUD_ERR, _("Failed to create polkit context %s\n"),
-                     (pkerr ? polkit_error_get_error_message(pkerr)
-                      : strerror(errno)));
-            if (pkerr)
-                polkit_error_free(pkerr);
-            polkit_caller_unref(pkcaller);
-            polkit_action_unref(pkaction);
-            dbus_error_free(&err);
-            remoteDispatchFailAuth(client, req);
-            return -2;
-        }
-
-#if HAVE_POLKIT_CONTEXT_IS_CALLER_AUTHORIZED
-        pkresult = polkit_context_is_caller_authorized(pkcontext,
-                                                       pkaction,
-                                                       pkcaller,
-                                                       0,
-                                                       &pkerr);
-        if (pkerr && polkit_error_is_set(pkerr)) {
-            qemudLog(QEMUD_ERR,
-                     _("Policy kit failed to check authorization %d %s"),
-                     polkit_error_get_error_code(pkerr),
-                     polkit_error_get_error_message(pkerr));
-            remoteDispatchFailAuth(client, req);
-            return -2;
-        }
-#else
-        pkresult = polkit_context_can_caller_do_action(pkcontext,
-                                                       pkaction,
-                                                       pkcaller);
-#endif
-        polkit_context_unref(pkcontext);
+    if (!(pkcontext = polkit_context_new()) ||
+        !polkit_context_init(pkcontext, &pkerr)) {
+        qemudLog(QEMUD_ERR, _("Failed to create polkit context %s\n"),
+                 (pkerr ? polkit_error_get_error_message(pkerr)
+                  : strerror(errno)));
+        if (pkerr)
+            polkit_error_free(pkerr);
         polkit_caller_unref(pkcaller);
         polkit_action_unref(pkaction);
-        if (pkresult != POLKIT_RESULT_YES) {
-            qemudLog(QEMUD_ERR,
-                     _("Policy kit denied action %s from pid %d, uid %d,"
-                       " result: %s\n"),
-                     action, callerPid, callerUid,
-                     polkit_result_to_string_representation(pkresult));
-            remoteDispatchFailAuth(client, req);
-            return -2;
-        }
-        qemudLog(QEMUD_INFO,
-                 _("Policy allowed action %s from pid %d, uid %d, result %s"),
+        dbus_error_free(&err);
+        remoteDispatchFailAuth(client, req);
+        return -2;
+    }
+
+#if HAVE_POLKIT_CONTEXT_IS_CALLER_AUTHORIZED
+    pkresult = polkit_context_is_caller_authorized(pkcontext,
+                                                   pkaction,
+                                                   pkcaller,
+                                                   0,
+                                                   &pkerr);
+    if (pkerr && polkit_error_is_set(pkerr)) {
+        qemudLog(QEMUD_ERR,
+                 _("Policy kit failed to check authorization %d %s"),
+                 polkit_error_get_error_code(pkerr),
+                 polkit_error_get_error_message(pkerr));
+        remoteDispatchFailAuth(client, req);
+        return -2;
+    }
+#else
+    pkresult = polkit_context_can_caller_do_action(pkcontext,
+                                                   pkaction,
+                                                   pkcaller);
+#endif
+    polkit_context_unref(pkcontext);
+    polkit_caller_unref(pkcaller);
+    polkit_action_unref(pkaction);
+    if (pkresult != POLKIT_RESULT_YES) {
+        qemudLog(QEMUD_ERR,
+                 _("Policy kit denied action %s from pid %d, uid %d,"
+                   " result: %s\n"),
                  action, callerPid, callerUid,
                  polkit_result_to_string_representation(pkresult));
-        ret->complete = 1;
-        client->auth = REMOTE_AUTH_NONE;
+        remoteDispatchFailAuth(client, req);
+        return -2;
     }
+    qemudLog(QEMUD_INFO,
+             _("Policy allowed action %s from pid %d, uid %d, result %s"),
+             action, callerPid, callerUid,
+             polkit_result_to_string_representation(pkresult));
+    ret->complete = 1;
+    client->auth = REMOTE_AUTH_NONE;
 
     return 0;
 }
