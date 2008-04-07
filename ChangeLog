@@ -1,3 +1,8 @@
+Mon Apr  7 12:53:01 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* docs/bugs.html docs/libvir.html: update the page bugzilla URIs
+	  depending on the set the user is running.
+
 Fri Apr  4 11:00:08 EDT 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* src/libvirt.c: Don't run polkit-auth if running as root
