@@ -1,3 +1,8 @@
+Tue Apr  8 11:50:42 CEST 2008 Daniel Veillard <daniel@veillard.com>
+
+	* po/sr.po po/sr@Latn.po po/sr@latin.po: fix/update serbian
+	  translations.
+
 Tue Apr  8 11:24:28 CEST 2008 Daniel Veillard <daniel@veillard.com>
 
 	* src/test.c: patch from Cole Robinson adding xen and hvm guest types

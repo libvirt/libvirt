@@ -1,319 +1,315 @@
+# translation of libvirt.HEAD.sr.po to serbian
 # Serbian translations for libvirt
 # Copyright (C) 2006 Red Hat, Inc.
 # This file is distributed under the same license as the libvirt package.
-# Miloš Komarčević <kmilos@gmail.com>, 2006.
 #
+# Miloš Komarčević <kmilos@gmail.com>, 2006.
+# Marko Mijatovic <jomi86@gmail.com>, 2008.
 msgid ""
 msgstr ""
-"Project-Id-Version: libvirt\n"
+"Project-Id-Version: libvirt.HEAD.sr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-04-04 10:00+0200\n"
-"PO-Revision-Date: 2007-12-06 20:47-0000\n"
-"Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
-"Language-Team: Serbian (sr) <fedora-trans-sr@redhat.com>\n"
+"PO-Revision-Date: 2008-04-06 16:35+0200\n"
+"Last-Translator: Marko Mijatovic <jomi86@gmail.com>\n"
+"Language-Team: serbian <en@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
 "10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: KBabel 1.11.4\n"
 
 #: gnulib/lib/gai_strerror.c:44
 msgid "Address family for hostname not supported"
-msgstr ""
+msgstr "Породица адреса за име домаћина није подржана"
 
 #: gnulib/lib/gai_strerror.c:45
 msgid "Temporary failure in name resolution"
-msgstr ""
+msgstr "Привремени неуспех приликом разрешавања имена"
 
 #: gnulib/lib/gai_strerror.c:46
 msgid "Bad value for ai_flags"
-msgstr ""
+msgstr "Лоша вредност за ai_flags"
 
 #: gnulib/lib/gai_strerror.c:47
 msgid "Non-recoverable failure in name resolution"
-msgstr ""
+msgstr "Неуспех приликом разрешавања имена који се не може поправити"
 
 #: gnulib/lib/gai_strerror.c:48
-#, fuzzy
 msgid "ai_family not supported"
-msgstr "неуспео позив у библиотеци, вероватно није подржан"
+msgstr "ai_family није подржана"
 
 #: gnulib/lib/gai_strerror.c:49
-#, fuzzy
 msgid "Memory allocation failure"
-msgstr "промени доделу меморије"
+msgstr "Додела меморије није успела"
 
 #: gnulib/lib/gai_strerror.c:50
 msgid "No address associated with hostname"
-msgstr ""
+msgstr "Имену домаћина није придружена ниједна адреса"
 
 #: gnulib/lib/gai_strerror.c:51
 msgid "Name or service not known"
-msgstr ""
+msgstr "Непознато име или услуга"
 
 #: gnulib/lib/gai_strerror.c:52
 msgid "Servname not supported for ai_socktype"
-msgstr ""
+msgstr "Servname није подржан за ai_socktype"
 
 #: gnulib/lib/gai_strerror.c:53
 msgid "ai_socktype not supported"
-msgstr ""
+msgstr "ai_socktype није подржан"
 
 #: gnulib/lib/gai_strerror.c:54
-#, fuzzy
 msgid "System error"
-msgstr "грешка у системском позиву"
+msgstr "Грешка у системском позиву"
 
 #: gnulib/lib/gai_strerror.c:55
 msgid "Argument buffer too small"
-msgstr ""
+msgstr "Бафер аргумената је сувише мале величине"
 
 #: gnulib/lib/gai_strerror.c:57
 msgid "Processing request in progress"
-msgstr ""
+msgstr "Обрада захтева у току"
 
 #: gnulib/lib/gai_strerror.c:58
 msgid "Request canceled"
-msgstr ""
+msgstr "Захтев отказан"
 
 #: gnulib/lib/gai_strerror.c:59
 msgid "Request not canceled"
-msgstr ""
+msgstr "Захтев није отказан"
 
 #: gnulib/lib/gai_strerror.c:60
 msgid "All requests done"
-msgstr ""
+msgstr "Сви захтеви су обрађени"
 
 #: gnulib/lib/gai_strerror.c:61
 msgid "Interrupted by a signal"
-msgstr ""
+msgstr "Прекинут сигналом"
 
 #: gnulib/lib/gai_strerror.c:62
 msgid "Parameter string not correctly encoded"
-msgstr ""
+msgstr "Стринг параметра није правилно обрађен"
 
 #: gnulib/lib/gai_strerror.c:74
-#, fuzzy
 msgid "Unknown error"
-msgstr "Непознато"
+msgstr "Непозната грешка"
 
 #: qemud/qemud.c:140 src/remote_internal.c:888
 #, c-format
 msgid "Cannot access %s '%s': %s (%d)"
-msgstr ""
+msgstr "Не могу да приступим %s '%s': %s (%d)"
 
 #: qemud/qemud.c:157
 #, c-format
 msgid "gnutls_certificate_allocate_credentials: %s"
-msgstr ""
+msgstr "gnutls_certificate_allocate_credentials: %s"
 
 #: qemud/qemud.c:170
 #, c-format
 msgid "gnutls_certificate_set_x509_trust_file: %s"
-msgstr ""
+msgstr "gnutls_certificate_set_x509_trust_file: %s"
 
 #: qemud/qemud.c:184
 #, c-format
 msgid "gnutls_certificate_set_x509_crl_file: %s"
-msgstr ""
+msgstr "gnutls_certificate_set_x509_crl_file: %s"
 
 #: qemud/qemud.c:202
 #, c-format
 msgid "gnutls_certificate_set_x509_key_file: %s"
-msgstr ""
+msgstr "gnutls_certificate_set_x509_key_file: %s"
 
 #: qemud/qemud.c:215
 #, c-format
 msgid "gnutls_dh_params_init: %s"
-msgstr ""
+msgstr "gnutls_dh_params_init: %s"
 
 #: qemud/qemud.c:221
 #, c-format
 msgid "gnutls_dh_params_generate2: %s"
-msgstr ""
+msgstr "gnutls_dh_params_generate2: %s"
 
 #: qemud/qemud.c:239
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read from signal pipe: %s"
-msgstr "неуспело читање из Xen демона"
+msgstr "Неуспело читање из цеви сигнала: %s"
 
 #: qemud/qemud.c:248
-#, fuzzy
 msgid "Reloading configuration on SIGHUP"
-msgstr "додељујем подешавања"
+msgstr "Поново учитавам подешавања SIGHUP"
 
 #: qemud/qemud.c:250
-#, fuzzy
 msgid "Error while reloading drivers"
-msgstr "Грешка при заузимању меморије:: %s"
+msgstr "Грешка током учитавања управљачких програма"
 
 #: qemud/qemud.c:256
 #, c-format
 msgid "Shutting down on signal %d"
-msgstr ""
+msgstr "Гашење сигнала %d"
 
 #: qemud/qemud.c:278 src/qemu_driver.c:79 src/util.c:139 src/util.c:151
 msgid "Failed to set close-on-exec file descriptor flag"
-msgstr ""
+msgstr "Нисам успео да поставим close-on-exec заставицу описника датотека"
 
 #: qemud/qemud.c:293 src/qemu_driver.c:94 src/util.c:135 src/util.c:147
 msgid "Failed to set non-blocking file descriptor flag"
-msgstr ""
+msgstr "Нисам успео да поставим non-blocking заставицу описника датотека"
 
 #: qemud/qemud.c:434
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open pid file '%s' : %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Нисам успео да отворим pid датотеку '%s': %s"
 
 #: qemud/qemud.c:440
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to fdopen pid file '%s' : %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Нисам успео да отворим pid датотеку '%s': %s"
 
 #: qemud/qemud.c:447
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to write to pid file '%s' : %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Нисам успео да пишем у pid датотеку '%s': %s"
 
 #: qemud/qemud.c:454
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to close pid file '%s' : %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Нисам успео да затворим pid датотеку '%s': %s"
 
 #: qemud/qemud.c:471
-#, fuzzy
 msgid "Failed to allocate memory for struct qemud_socket"
-msgstr "Неуспело заузимање меморије"
+msgstr "Нисам успео да заузмем меморију за struct qemud_socket"
 
 #: qemud/qemud.c:481
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create socket: %s"
-msgstr "Неуспело читање прикључка %d\n"
+msgstr "Нисам успео да направим сокет: %s"
 
 #: qemud/qemud.c:503
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to bind socket to '%s': %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Нисам успео да повежем сокет са '%s': %s"
 
 #: qemud/qemud.c:512
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to listen for connections on '%s': %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Не могу да ослушкујем захтеве за конекцијама на '%s': %s"
 
 #: qemud/qemud.c:521 qemud/qemud.c:651
 msgid "Failed to add server event callback"
-msgstr ""
+msgstr "Нисам успео да додам callback догађаја на серверу"
 
 #: qemud/qemud.c:550
 #, c-format
 msgid "getaddrinfo: %s\n"
-msgstr ""
+msgstr "getaddrinfo: %s\n"
 
 #: qemud/qemud.c:559
 #, c-format
 msgid "socket: %s"
-msgstr ""
+msgstr "сокет: %s"
 
 #: qemud/qemud.c:568
 #, c-format
 msgid "bind: %s"
-msgstr ""
+msgstr "веза: %s"
 
 #: qemud/qemud.c:575
 #, c-format
 msgid "listen: %s"
-msgstr ""
+msgstr "ослушкује: %s"
 
 #: qemud/qemud.c:612
 #, c-format
 msgid "remoteListenTCP: calloc: %s"
-msgstr ""
+msgstr "remoteListenTCP: calloc: %s"
 
 #: qemud/qemud.c:643
 #, c-format
 msgid "remoteListenTCP: listen: %s"
-msgstr ""
+msgstr "remoteListenTCP: listen: %s"
 
 #: qemud/qemud.c:685 src/qemu_driver.c:182
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find user record for uid '%d': %s"
-msgstr "Неуспело проналажење мреже: %s"
+msgstr "Нисам успео да пронађем запис корисника за uid '%d': %s"
 
 #: qemud/qemud.c:702
 msgid "Resulting path too long for buffer in qemudInitPaths()"
-msgstr ""
+msgstr "Резултујућа стаза предуга за бафер у qemudInitPaths()"
 
 #: qemud/qemud.c:710
-#, fuzzy
 msgid "Failed to allocate struct qemud_server"
-msgstr "Неуспело заузимање меморије"
+msgstr "Нисам успео да доделим struct qemud_server"
 
 #: qemud/qemud.c:754
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to initialize SASL authentication %s"
-msgstr "Неуспело проналажење мреже: %s"
+msgstr "Нисам успео да иницијализујем SASL аутентификацију %s"
 
 #: qemud/qemud.c:769
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to connect to system bus for PolicyKit auth: %s"
-msgstr "Неуспело повезивање са хипервизором"
+msgstr "Неуспело повезивање са системском магистралом за PolicyKit auth: %s"
 
 #: qemud/qemud.c:880
 #, c-format
 msgid "remoteInitializeTLSSession: %s"
-msgstr ""
+msgstr "remoteInitializeTLSSession: %s"
 
 #: qemud/qemud.c:897
 #, c-format
 msgid "remoteCheckDN: gnutls_x509_cert_get_dn: %s"
-msgstr ""
+msgstr "remoteCheckDN: gnutls_x509_cert_get_dn: %s"
 
 #: qemud/qemud.c:916
 #, c-format
 msgid "remoteCheckDN: failed: client DN is %s"
-msgstr ""
+msgstr "remoteCheckDN: failed: client DN is %s"
 
 #: qemud/qemud.c:932
-#, fuzzy, c-format
+#, c-format
 msgid "remoteCheckCertificate: verify failed: %s"
-msgstr "неуспела аутентификација: %s"
+msgstr "remoteCheckCertificate: није успела потврда: %s"
 
 #: qemud/qemud.c:940
 msgid "remoteCheckCertificate: the client certificate is not trusted."
-msgstr ""
+msgstr "remoteCheckCertificate: сертификат клијента није од поверења."
 
 #: qemud/qemud.c:945
 msgid "remoteCheckCertificate: the client certificate has unknown issuer."
-msgstr ""
+msgstr "remoteCheckCertificate: није познат издавач сертификата клијента."
 
 #: qemud/qemud.c:950
 msgid "remoteCheckCertificate: the client certificate has been revoked."
-msgstr ""
+msgstr "remoteCheckCertificate: сертификат клијента је опозван."
 
 #: qemud/qemud.c:956
 msgid ""
 "remoteCheckCertificate: the client certificate uses an insecure algorithm."
 msgstr ""
+"remoteCheckCertificate: сертификат клијента користи небезбедан алгоритам."
 
 #: qemud/qemud.c:965
 msgid "remoteCheckCertificate: certificate is not X.509"
-msgstr ""
+msgstr "remoteCheckCertificate: сертификат није X.509"
 
 #: qemud/qemud.c:970
 msgid "remoteCheckCertificate: no peers"
-msgstr ""
+msgstr "remoteCheckCertificate: нема равноправних уређаја"
 
 #: qemud/qemud.c:981
 msgid "remoteCheckCertificate: gnutls_x509_crt_init failed"
-msgstr ""
+msgstr "remoteCheckCertificate: gnutls_x509_crt_init није успео"
 
 #: qemud/qemud.c:991
 msgid "remoteCheckCertificate: the client certificate has expired"
-msgstr ""
+msgstr "remoteCheckCertificate: сертификат клијента је истекао"
 
 #: qemud/qemud.c:998
 msgid "remoteCheckCertificate: the client certificate is not yet activated"
-msgstr ""
+msgstr "remoteCheckCertificate: сертификат клијента још увек није активиран"
 
 #: qemud/qemud.c:1007
 msgid ""
@@ -322,191 +318,193 @@ msgid ""
 "-text' to view the Distinguished Name field in the client certificate, or "
 "run this daemon with --verbose option."
 msgstr ""
+"remoteCheckCertificate: клијентово име разликовања није на листи дозвољених "
+"клијената (tls_allowed_dn_list). Употребите 'openssl x509 -in clientcert.pem-"
+"text' да видите име разликовања у клијентском сертификату или извршите овај "
+"демон са опцијом --verbose"
 
 #: qemud/qemud.c:1024
 msgid "remoteCheckCertificate: failed to verify client's certificate"
-msgstr ""
+msgstr "remoteCheckCertificate: нисам успео да потврдим клијентов сертификат"
 
 #: qemud/qemud.c:1028
 msgid ""
 "remoteCheckCertificate: tls_no_verify_certificate is set so the bad "
 "certificate is ignored"
 msgstr ""
+"remoteCheckCertificate: tls_no_verify_certificate је подешен тако да се "
+"игнорише лош сертификат"
 
 #: qemud/qemud.c:1053
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to accept connection: %s"
-msgstr "Неуспело покретање мреже %s"
+msgstr "Нисам успео да прихватим конекцију: %s"
 
 #: qemud/qemud.c:1111 qemud/qemud.c:1348 qemud/qemud.c:1486
-#, fuzzy, c-format
+#, c-format
 msgid "TLS handshake failed: %s"
-msgstr "неуспела GET радња: %s"
+msgstr "TLS руковање није успело: %s"
 
 #: qemud/qemud.c:1176
 #, c-format
 msgid "read: %s"
-msgstr ""
+msgstr "читање: %s"
 
 #: qemud/qemud.c:1189
 #, c-format
 msgid "gnutls_record_recv: %s"
-msgstr ""
+msgstr "gnutls_record_recv: %s"
 
 #: qemud/qemud.c:1372
 #, c-format
 msgid "write: %s"
-msgstr ""
+msgstr "писање: %s"
 
 #: qemud/qemud.c:1382
 #, c-format
 msgid "gnutls_record_send: %s"
-msgstr ""
+msgstr "gnutls_record_send: %s"
 
 #: qemud/qemud.c:1594
 #, c-format
 msgid "Signal handler reported %d errors: last error: %s"
-msgstr ""
+msgstr "Програм за обраду сигнала је пријавио %d грешака: последња грешка: %s"
 
 #: qemud/qemud.c:1691 qemud/qemud.c:1713
-#, fuzzy, c-format
+#, c-format
 msgid "failed to allocate memory for %s config list"
-msgstr "Неуспело заузимање меморије"
+msgstr "Нисам успео да заузмем меморију за %s листу подешавања"
 
 #: qemud/qemud.c:1698 qemud/qemud.c:1730
-#, fuzzy, c-format
+#, c-format
 msgid "failed to allocate memory for %s config list value"
-msgstr "Неуспело заузимање меморије"
+msgstr "Нисам успео да заузмем меморију за %s вредност листе подешавања"
 
 #: qemud/qemud.c:1718 qemud/qemud.c:1741
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: must be a string or list of strings\n"
-msgstr ""
+msgstr "remoteReadConfigFile: %s: %s: мора бити стринг или низ стрингова\n"
 
 #: qemud/qemud.c:1758
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: invalid type: got %s; expected %s\n"
-msgstr ""
+msgstr "remoteReadConfigFile: %s: %s: неважећи тип: %s; очекиван %s\n"
 
 #: qemud/qemud.c:1779
 #, c-format
 msgid "remoteReadConfigFile: %s\n"
-msgstr ""
+msgstr "remoteReadConfigFile: %s\n"
 
 #: qemud/qemud.c:1823
 #, c-format
 msgid "remoteReadConfigFile: %s: %s: unsupported auth %s\n"
-msgstr ""
+msgstr "remoteReadConfigFile: %s: %s: ауторизација није подржана %s\n"
 
 #: qemud/qemud.c:1899
 msgid "Cannot set group when not running as root"
-msgstr ""
+msgstr "Морате бити root да би поставили групу"
 
 #: qemud/qemud.c:1903
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to lookup group '%s'"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Нисам успео да потражим групу '%s'"
 
 #: qemud/qemud.c:1916 qemud/qemud.c:1927
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse mode '%s'"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Нисам успео да парсирам'%s'"
 
 #: qemud/qemud.c:2102
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create pipe: %s"
-msgstr "Неуспело прављење XML-а"
+msgstr "Нисам успео да направим цев: %s"
 
 #: qemud/qemud.c:2120
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to fork as daemon: %s"
-msgstr "Неуспело настављање домена %s"
+msgstr "Нисам успео да извршим рачвање као системска услуга: %s"
 
 #: qemud/qemud.c:2153
 msgid "Failed to register callback for signal pipe"
-msgstr ""
+msgstr "Нисам успео да региструјем callback за цев сигнала"
 
 #: qemud/remote.c:104
 msgid "xdr_remote_message_header"
-msgstr ""
+msgstr "xdr_remote_message_header"
 
 #: qemud/remote.c:112
 #, c-format
 msgid "program mismatch (actual %x, expected %x)"
-msgstr ""
+msgstr "неусаглашеност програма (добијено %x, очекивано %x)"
 
 #: qemud/remote.c:119
 #, c-format
 msgid "version mismatch (actual %x, expected %x)"
-msgstr ""
+msgstr "неусаглашеност верзије (добијено %x, очекивано %x)"
 
 #: qemud/remote.c:125
 #, c-format
 msgid "direction (%d) != REMOTE_CALL"
-msgstr ""
+msgstr "смер (%d) != REMOTE_CALL"
 
 #: qemud/remote.c:131
 #, c-format
 msgid "status (%d) != REMOTE_OK"
-msgstr ""
+msgstr "статус (%d) != REMOTE_OK"
 
 #: qemud/remote.c:147
-#, fuzzy
 msgid "authentication required"
-msgstr "неуспела аутентификација"
+msgstr "аутентификација неопходна"
 
 #: qemud/remote.c:160
-#, fuzzy, c-format
+#, c-format
 msgid "unknown procedure: %d"
-msgstr "добијен непознат број HTTP грешке %d"
+msgstr "непозната процедура: %d"
 
 #: qemud/remote.c:168
-#, fuzzy
 msgid "parse args failed"
-msgstr "неуспео одговор сервера тумачења"
+msgstr "неуспело рашчлањавање аргумената"
 
 #: qemud/remote.c:184
 #, c-format
 msgid "internal error - dispatch function returned invalid code %d"
-msgstr ""
+msgstr "интерна грешка - функција dispatch је вратила неисправан код %d"
 
 #: qemud/remote.c:206
 msgid "dummy length"
-msgstr ""
+msgstr "лажна дужина"
 
 #: qemud/remote.c:213
 msgid "serialise reply header"
-msgstr ""
+msgstr "сериализуј заглавље одговора"
 
 #: qemud/remote.c:222
 msgid "serialise return struct"
-msgstr ""
+msgstr "сериализуј структуру одговора"
 
 #: qemud/remote.c:277
 msgid "serialise return error"
-msgstr ""
+msgstr "сериализуј грешку одговора"
 
 #: qemud/remote.c:286
 msgid "xdr_setpos"
-msgstr ""
+msgstr "xdr_setpos"
 
 #: qemud/remote.c:292
 msgid "serialise return length"
-msgstr ""
+msgstr "сериализуј дужину одговора"
 
 #: qemud/remote.c:426
 msgid "connection already open"
-msgstr ""
+msgstr "веза је већ отворена"
 
 #: qemud/remote.c:452
-#, fuzzy
 msgid "connection not open"
-msgstr "неисправан показивач везе у"
+msgstr "веза није отворена"
 
 #: qemud/remote.c:499
-#, fuzzy
 msgid "out of memory in strdup"
-msgstr "нестало меморије"
+msgstr "нестало је меморије у strdup"
 
 #: qemud/remote.c:613 qemud/remote.c:656 qemud/remote.c:765 qemud/remote.c:791
 #: qemud/remote.c:822 qemud/remote.c:854 qemud/remote.c:878 qemud/remote.c:940
@@ -517,262 +515,255 @@ msgstr "нестало меморије"
 #: qemud/remote.c:1491 qemud/remote.c:1515 qemud/remote.c:1539
 #: qemud/remote.c:1563 qemud/remote.c:1587 qemud/remote.c:1611
 #: qemud/remote.c:1635 qemud/remote.c:1659 qemud/remote.c:1683
-#, fuzzy
 msgid "domain not found"
-msgstr "Домен није пронађен"
+msgstr "домен није пронађен"
 
 #: qemud/remote.c:644 qemud/remote.c:731
 msgid "nparams too large"
-msgstr ""
+msgstr "nparams превелики"
 
 #: qemud/remote.c:649 qemud/remote.c:736 qemud/remote.c:2422
 #: qemud/remote.c:2503 src/remote_internal.c:2223
-#, fuzzy
 msgid "out of memory allocating array"
-msgstr "промени доделу меморије"
+msgstr "низ на доделу при нестанку меморије"
 
 #: qemud/remote.c:675 qemud/remote.c:686
-#, fuzzy
 msgid "out of memory allocating return array"
-msgstr "промени доделу меморије"
+msgstr "повратни низ на доделу при нестанку меморије"
 
 #: qemud/remote.c:706
-#, fuzzy
 msgid "unknown type"
-msgstr "непозната врста ОС-а"
+msgstr "непозната врста"
 
 #: qemud/remote.c:1155
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
-msgstr ""
+msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
 #: qemud/remote.c:1161
 msgid "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
-msgstr ""
+msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 
 #: qemud/remote.c:1298
 msgid "maxnames > REMOTE_DOMAIN_NAME_LIST_MAX"
-msgstr ""
+msgstr "maxnames > REMOTE_DOMAIN_NAME_LIST_MAX"
 
 #: qemud/remote.c:1401
 msgid "cpumap_len > REMOTE_CPUMAP_MAX"
-msgstr ""
+msgstr "cpumap_len > REMOTE_CPUMAP_MAX"
 
 #: qemud/remote.c:1706 qemud/remote.c:1757 qemud/remote.c:2747
 msgid "maxnames > REMOTE_NETWORK_NAME_LIST_MAX"
-msgstr ""
+msgstr "maxnames > REMOTE_NETWORK_NAME_LIST_MAX"
 
 #: qemud/remote.c:1732
 msgid "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
-msgstr ""
+msgstr "maxids > REMOTE_DOMAIN_ID_LIST_MAX"
 
 #: qemud/remote.c:1784 qemud/remote.c:1844 qemud/remote.c:1868
 #: qemud/remote.c:1894 qemud/remote.c:1918 qemud/remote.c:1980
 #: qemud/remote.c:2004
-#, fuzzy
 msgid "network not found"
 msgstr "Мрежа није пронађена"
 
 #: qemud/remote.c:2095 src/remote_internal.c:3565
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot resolve address %d: %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Не могу да разрешим адресе %d: %s"
 
 #: qemud/remote.c:2102
-#, fuzzy
 msgid "cannot allocate address"
-msgstr "додели одговор"
+msgstr "не могу да доделим адресе"
 
 #: qemud/remote.c:2136
 msgid "client tried invalid SASL init request"
-msgstr ""
+msgstr "клијент је предао неисправан SASL init захтев"
 
 #: qemud/remote.c:2145 src/remote_internal.c:3795
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get sock address %d (%s)"
-msgstr "Неуспело добављање статистике блока %s %s"
+msgstr "неуспело прибављање адресе сокета %d (%s)"
 
 #: qemud/remote.c:2156 src/remote_internal.c:3807
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get peer address %d (%s)"
-msgstr "Неуспело добављање статистике спреге %s %s"
+msgstr "неуспело прибављање адресе равноправног уређаја %d (%s)"
 
 #: qemud/remote.c:2177
 #, c-format
 msgid "sasl context setup failed %d (%s)"
-msgstr ""
+msgstr "Није успело подешавање sasl контекста %d (%s)"
 
 #: qemud/remote.c:2191
 msgid "cannot TLS get cipher size"
-msgstr ""
+msgstr "не могу да TLS преузмем величину шифре"
 
 #: qemud/remote.c:2201
 #, c-format
 msgid "cannot set SASL external SSF %d (%s)"
-msgstr ""
+msgstr "Не могу да подесим SASL спољни SSF %d (%s)"
 
 #: qemud/remote.c:2230
 #, c-format
 msgid "cannot set SASL security props %d (%s)"
-msgstr ""
+msgstr "Не могу да подесим SASL безбедоносни props %d (%s)"
 
 #: qemud/remote.c:2247
 #, c-format
 msgid "cannot list SASL mechanisms %d (%s)"
-msgstr ""
+msgstr "Не могу да прикажем SASL механизме %d (%s)"
 
 #: qemud/remote.c:2257
 msgid "cannot allocate mechlist"
-msgstr ""
+msgstr "Не могу да доделим mechlist"
 
 #: qemud/remote.c:2282 src/remote_internal.c:4073
 #, c-format
 msgid "cannot query SASL ssf on connection %d (%s)"
-msgstr ""
+msgstr "не могу да извршим упит SASL ssf на конекцији %d (%s)"
 
 #: qemud/remote.c:2292
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
-msgstr ""
+msgstr "преговарани SSF %d није био довољно јак"
 
 #: qemud/remote.c:2322
 #, c-format
 msgid "cannot query SASL username on connection %d (%s)"
-msgstr ""
+msgstr "не могу да извршим упит SASL корисничког имена на конекцији %d (%s)"
 
 #: qemud/remote.c:2330
 msgid "no client username was found"
-msgstr ""
+msgstr "није пронађено корисничко име клијента"
 
 #: qemud/remote.c:2340
-#, fuzzy
 msgid "out of memory copying username"
-msgstr "нестало меморије"
+msgstr "потрошена меморија током копирања корисничког имена"
 
 #: qemud/remote.c:2359
 #, c-format
 msgid "SASL client %s not allowed in whitelist"
-msgstr ""
+msgstr "SASL %s клијент није дозвољен у whitelist"
 
 #: qemud/remote.c:2385 qemud/remote.c:2466
 msgid "client tried invalid SASL start request"
-msgstr ""
+msgstr "клијен је покушао са неважећим SASL стартним упитом"
 
 #: qemud/remote.c:2401
 #, c-format
 msgid "sasl start failed %d (%s)"
-msgstr ""
+msgstr "нисам успео да покренем sasl %d (%s)"
 
 #: qemud/remote.c:2409
 #, c-format
 msgid "sasl start reply data too long %d"
-msgstr ""
+msgstr "подаци одговора sasl покретања предуги %d "
 
 #: qemud/remote.c:2481
 #, c-format
 msgid "sasl step failed %d (%s)"
-msgstr ""
+msgstr "није успео sasl корак %d (%s)"
 
 #: qemud/remote.c:2490
 #, c-format
 msgid "sasl step reply data too long %d"
-msgstr ""
+msgstr "Подаци одговора sasl корака предуги %d"
 
 #: qemud/remote.c:2541
 msgid "client tried unsupported SASL init request"
-msgstr ""
+msgstr "клијент је покушао са неважећим SASL init захтевом"
 
 #: qemud/remote.c:2553
 msgid "client tried unsupported SASL start request"
-msgstr ""
+msgstr "клијент је покушао са неважећим SASL start захтевом"
 
 #: qemud/remote.c:2565
 msgid "client tried unsupported SASL step request"
-msgstr ""
+msgstr "клијент је покушао са неважећим SASL step захтевом"
 
 #: qemud/remote.c:2579
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to verify client credentials: %s"
-msgstr "Неуспело добављање статистике спреге %s %s"
+msgstr "Нисам успео да потврдим идентитет корисника %s"
 
 #: qemud/remote.c:2607
 msgid "client tried invalid PolicyKit init request"
-msgstr ""
+msgstr "клијент је покушао са неважећим PolicyKit init захтевом"
 
 #: qemud/remote.c:2613
 msgid "cannot get peer socket identity"
-msgstr ""
+msgstr "не могу да утврдим идентитет peer сокета"
 
 #: qemud/remote.c:2623
 #, c-format
 msgid "Allowing PID %d running as root"
-msgstr ""
+msgstr "Дозвољавам да се PID %d извршава као root"
 
 #: qemud/remote.c:2637
 #, c-format
 msgid "Checking PID %d running as %d"
-msgstr ""
+msgstr "Проверавам да ли се PID %d извршава као %d"
 
 #: qemud/remote.c:2642
 #, c-format
 msgid "Failed to lookup policy kit caller: %s"
-msgstr ""
+msgstr "Нисам успео да потражим policy kit caller: %s"
 
 #: qemud/remote.c:2650
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create polkit action %s\n"
-msgstr "Неуспело прављење не активираног домена %s\n"
+msgstr "Нисам успео да направим polkit action %s\n"
 
 #: qemud/remote.c:2660
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create polkit context %s\n"
-msgstr "Неуспело прављење не активираног домена %s\n"
+msgstr "Нисам успео да направим polkit context %s\n"
 
 #: qemud/remote.c:2680
 #, c-format
 msgid "Policy kit failed to check authorization %d %s"
-msgstr ""
+msgstr "Policy kit није успео да провери ауторизацију %d %s"
 
 #: qemud/remote.c:2696
 #, c-format
 msgid "Policy kit denied action %s from pid %d, uid %d, result: %s\n"
 msgstr ""
+"Policy kit је одбио извршавање акције %s из pid %d, uid %d, резултат: %s\n"
 
 #: qemud/remote.c:2704
 #, c-format
 msgid "Policy allowed action %s from pid %d, uid %d, result %s"
 msgstr ""
+"Policy је дозволио извршавање акције %s из pid %d, uid %d, резултат: %s"
 
 #: qemud/remote.c:2724
 msgid "client tried unsupported PolicyKit init request"
-msgstr ""
+msgstr "клијент је покушао са неважећим PolicyKit init захтевом"
 
 #: qemud/remote.c:2773
 msgid "maxnames > REMOTE_STORAGE_POOL_NAME_LIST_MAX"
-msgstr ""
+msgstr "maxnames > REMOTE_STORAGE_POOL_NAME_LIST_MAX"
 
 #: qemud/remote.c:2800 qemud/remote.c:2860 qemud/remote.c:2885
 #: qemud/remote.c:2909 qemud/remote.c:2933 qemud/remote.c:2958
 #: qemud/remote.c:2989 qemud/remote.c:3015 qemud/remote.c:3098
 #: qemud/remote.c:3122 qemud/remote.c:3182 qemud/remote.c:3211
 #: qemud/remote.c:3242 qemud/remote.c:3378
-#, fuzzy
 msgid "storage_pool not found"
-msgstr "Мрежа није пронађена"
+msgstr "storage_pool није пронађен"
 
 #: qemud/remote.c:3176
 msgid "maxnames > REMOTE_STORAGE_VOL_NAME_LIST_MAX"
-msgstr ""
+msgstr "maxnames > REMOTE_STORAGE_VOL_NAME_LIST_MAX"
 
 #: qemud/remote.c:3268 qemud/remote.c:3293 qemud/remote.c:3323
 #: qemud/remote.c:3350
-#, fuzzy
 msgid "storage_vol not found"
-msgstr "Мрежа није пронађена"
+msgstr "storage_vol није пронађен"
 
 #: src/conf.c:158 src/conf.c:207 src/conf.c:492 src/conf.c:528 src/conf.c:556
 #: src/conf.c:634
 msgid "allocating configuration"
-msgstr "додељујем подешавања"
+msgstr "додељујем подешавање"
 
 #: src/conf.c:342
 msgid "unterminated number"
@@ -791,9 +782,8 @@ msgid "expecting a separator in list"
 msgstr "очекујем разделник у списку"
 
 #: src/conf.c:476
-#, fuzzy
 msgid "list is not closed with ]"
-msgstr "списак није затворен са ] "
+msgstr "списак није затворен са ]"
 
 #: src/conf.c:521
 msgid "expecting a name"
@@ -820,34 +810,34 @@ msgid "failed to save content"
 msgstr "неуспело чување садржаја"
 
 #: src/console.c:75
-#, fuzzy, c-format
+#, c-format
 msgid "unable to open tty %s: %s\n"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "нисам успео да отворим tty %s: %s\n"
 
 #: src/console.c:86
 #, c-format
 msgid "unable to get tty attributes: %s\n"
-msgstr ""
+msgstr "нисам успео да преузмем tty атрибуте: %s\n"
 
 #: src/console.c:95
 #, c-format
 msgid "unable to set tty attributes: %s\n"
-msgstr ""
+msgstr "нисам успео да поставим tty атрибуте: %s\n"
 
 #: src/console.c:130
 #, c-format
 msgid "failure waiting for I/O: %s\n"
-msgstr ""
+msgstr "грешка приликом чекања на I/O: %s\n"
 
 #: src/console.c:145
 #, c-format
 msgid "failure reading input: %s\n"
-msgstr ""
+msgstr "нисам успео да прочитам унос: %s\n"
 
 #: src/console.c:167
 #, c-format
 msgid "failure writing output: %s\n"
-msgstr ""
+msgstr "нисам успео да испишем излаз: %s\n"
 
 #: src/hash.c:695 src/libvirt.c:720
 msgid "allocating connection"
@@ -878,374 +868,339 @@ msgid "network missing from connection hash table"
 msgstr "мрежа недостаје у хаш табели веза"
 
 #: src/hash.c:1106 src/hash.c:1111
-#, fuzzy
 msgid "allocating storage pool"
-msgstr "заузимам мрежу"
+msgstr "заузимам резервоар складиштења"
 
 #: src/hash.c:1121
-#, fuzzy
 msgid "failed to add storage pool to connection hash table"
-msgstr "неуспело додавање мреже у хаш табелу веза"
+msgstr "нисам успео да додам резервоар складиштења у хаш табелу веза"
 
 #: src/hash.c:1160
-#, fuzzy
 msgid "pool missing from connection hash table"
-msgstr "домен недостаје у хеш табели веза"
+msgstr "складиште недостаје у хеш табели веза"
 
 #: src/hash.c:1238 src/hash.c:1243 src/hash.c:1248
-#, fuzzy
 msgid "allocating storage vol"
-msgstr "заузимам мрежу"
+msgstr "додељујем складиште"
 
 #: src/hash.c:1258
-#, fuzzy
 msgid "failed to add storage vol to connection hash table"
-msgstr "неуспело додавање мреже у хаш табелу веза"
+msgstr "неуспело додавање складишта у хаш табелу веза"
 
 #: src/hash.c:1298
-#, fuzzy
 msgid "vol missing from connection hash table"
-msgstr "домен недостаје у хеш табели веза"
+msgstr "диск недостаје у хеш табели веза"
 
 #: src/iptables.c:103
-#, fuzzy
 msgid "Failed to run '"
-msgstr "Неуспело прављење XML-а"
+msgstr "Нисам успео да покренем"
 
 #: src/iptables.c:151
-#, fuzzy
 msgid "Failed to read "
-msgstr "Неуспело прављење XML-а"
+msgstr "Нисам успео да прочитам"
 
 #: src/iptables.c:179
-#, fuzzy
 msgid "Failed to write to "
-msgstr "Неуспело писање на прикључак %d\n"
+msgstr "Нисам успео да упишем у "
 
 #: src/iptables.c:244
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create directory %s : %s"
-msgstr "Неуспело прављење мреже из %s"
+msgstr "Нисам успео да направим директоријум %s : %s"
 
 #: src/iptables.c:250
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to saves iptables rules to %s : %s"
-msgstr "Неуспело чување домена %s у %s"
+msgstr "Нисам успео да сачувам iptables правила у %s : %s"
 
 #: src/iptables.c:591
 #, c-format
 msgid "Failed to remove iptables rule '%s' from chain '%s' in table '%s': %s"
 msgstr ""
+"Нисам успео да уклоним iptables правило '%s' из ланца '%s' у табели '%s':%s"
 
 #: src/iptables.c:600
 #, c-format
 msgid "Failed to add iptables rule '%s' to chain '%s' in table '%s': %s"
 msgstr ""
+"Нисам успео да додам iptables правило '%s' у ланац '%s' у табели '%s':%s"
 
 #: src/libvirt.c:727
 msgid "could not parse connection URI"
 msgstr "не могу да рашчланим УРИ везе"
 
 #: src/libvirt.c:745
-#, fuzzy
 msgid "allocating conn->name"
-msgstr "заузимам везу"
+msgstr "заузимам везу->назив"
 
 #: src/libvirt.c:2166
-#, fuzzy
 msgid "domainMigratePrepare did not set uri"
-msgstr "подаци о домену су нетачни или domid није бројчан"
+msgstr "domainMigratePrepare није поставио uri"
 
 #: src/lxc_conf.c:87
 msgid "missing filesystem type"
-msgstr ""
+msgstr "недостаје тип система датотека"
 
 #: src/lxc_conf.c:93
 msgid "invalid filesystem type"
-msgstr ""
+msgstr "неправилан тип система датотека"
 
 #: src/lxc_conf.c:115
-#, fuzzy
 msgid "missing mount source"
-msgstr "недостају изворни подаци за уређај"
+msgstr "недостаје извор за монтирање"
 
 #: src/lxc_conf.c:122
 msgid "empty or invalid mount source"
-msgstr ""
+msgstr "празан или неправилан извор монтирања"
 
 #: src/lxc_conf.c:131
-#, fuzzy
 msgid "missing mount target"
-msgstr "недостају циљни подаци за уређај"
+msgstr "недостаје циљ монтирања"
 
 #: src/lxc_conf.c:138
 msgid "empty or invalid mount target"
-msgstr ""
+msgstr "празан или неправилан циљ монтирања"
 
 #: src/lxc_conf.c:179
-#, fuzzy
 msgid "failed to generate uuid"
-msgstr "име мреже или uuid"
+msgstr "неуспело прављење uuid"
 
 #: src/lxc_conf.c:185
-#, fuzzy
 msgid "invalid uuid element"
-msgstr "неисправан аргумент у"
+msgstr "неисправан uuid елемент"
 
 #: src/lxc_conf.c:248
-#, fuzzy
 msgid "invalid or missing init element"
-msgstr "недостају подаци о коренском уређају"
+msgstr "init елемент је неисправан или недостаје"
 
 #: src/lxc_conf.c:254
 msgid "init string too long"
-msgstr ""
+msgstr "init стринг је предугачак"
 
 #: src/lxc_conf.c:293
-#, fuzzy
 msgid "invalid memory value"
-msgstr "Неисправна вредност границе"
+msgstr "неисправна вредност меморије"
 
 #: src/lxc_conf.c:320
-#, fuzzy
 msgid "invalid root element"
-msgstr "недостају подаци о коренском уређају"
+msgstr "неисправан root елемент"
 
 #: src/lxc_conf.c:333
-#, fuzzy
 msgid "missing domain type"
-msgstr "недостају подаци о имену домена"
+msgstr "недостаје тип домена"
 
 #: src/lxc_conf.c:339
-#, fuzzy
 msgid "invalid domain type"
-msgstr "неисправан показивач домена у"
+msgstr "неисправан тип домена"
 
 #: src/lxc_conf.c:348
-#, fuzzy
 msgid "invalid domain id"
-msgstr "неисправан показивач домена у"
+msgstr "неисправан id домена"
 
 #: src/lxc_conf.c:432
 #, c-format
 msgid "Can't redefine active VM with name %s"
-msgstr ""
+msgstr "Не могу да унапред дефинишем VM са називом %s"
 
 #: src/lxc_conf.c:505 src/qemu_conf.c:2022 src/qemu_conf.c:2248
 #: src/storage_conf.c:1190
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create config file %s: %s"
-msgstr "неуспело уписивање датотеке подешавања: %s"
+msgstr "неуспело уписивање датотеке подешавања %s: %s"
 
 #: src/lxc_conf.c:513 src/qemu_conf.c:2030 src/qemu_conf.c:2256
 #: src/storage_conf.c:1198
-#, fuzzy, c-format
+#, c-format
 msgid "cannot write config file %s: %s"
-msgstr "неуспело уписивање датотеке подешавања: %s"
+msgstr "неуспело уписивање датотеке подешавања %s: %s"
 
 #: src/lxc_conf.c:520 src/qemu_conf.c:2037 src/qemu_conf.c:2263
 #: src/storage_conf.c:1205
 #, c-format
 msgid "cannot save config file %s: %s"
-msgstr ""
+msgstr "неуспело чување датотеке подешавања %s: %s"
 
 #: src/lxc_conf.c:547 src/qemu_conf.c:2200 src/qemu_conf.c:2239
 #: src/qemu_conf.c:2661 src/storage_conf.c:1145
 #, c-format
 msgid "cannot create config directory %s: %s"
-msgstr ""
+msgstr "неуспело уписивање директоријума подешавања %s: %s"
 
 #: src/lxc_conf.c:555 src/qemu_conf.c:2208 src/qemu_conf.c:2669
 #: src/storage_conf.c:1153
 msgid "cannot construct config file path"
-msgstr ""
+msgstr "неуспело креирање путање датотеке подешавања"
 
 #: src/lxc_conf.c:658
-#, fuzzy, c-format
+#, c-format
 msgid "failed to open config directory %s: %s"
-msgstr "Неуспело прављење мреже из %s"
+msgstr "неуспело отварање директоријума подешавања %s: %s"
 
 #: src/lxc_conf.c:874 src/qemu_conf.c:3246 src/storage_conf.c:1226
-#, fuzzy, c-format
+#, c-format
 msgid "no config file for %s"
-msgstr "синтаксна грешка у датотеци подешавања: %s"
+msgstr "не постоји датотека подешавања за %s"
 
 #: src/lxc_conf.c:880 src/qemu_conf.c:3252 src/storage_conf.c:1232
 #, c-format
 msgid "cannot remove config for %s"
-msgstr ""
+msgstr "не могу да уклоним подешавање за %s"
 
 #: src/lxc_driver.c:309 src/lxc_driver.c:338 src/lxc_driver.c:371
 #: src/openvz_driver.c:177 src/openvz_driver.c:219 src/openvz_driver.c:529
 #: src/qemu_driver.c:1821 src/qemu_driver.c:1899 src/qemu_driver.c:2241
 #: src/qemu_driver.c:2286 src/qemu_driver.c:2324 src/qemu_driver.c:2402
 #: src/qemu_driver.c:2455 src/qemu_driver.c:2471
-#, fuzzy
 msgid "no domain with matching uuid"
-msgstr "id или uuid домена"
+msgstr "не постоји домен који се подудара са uuid"
 
 #: src/lxc_driver.c:315 src/openvz_driver.c:534 src/qemu_driver.c:2330
-#, fuzzy
 msgid "cannot delete active domain"
-msgstr "име неактивног домена"
+msgstr "неуспело брисање активног домена"
 
 #: src/openvz_conf.c:241
 #, c-format
 msgid "Error already an active OPENVZ VM having id '%s'"
-msgstr ""
+msgstr "Грешка активни OPENVZ VM већ има id '%s'"
 
 #: src/openvz_conf.c:311 src/qemu_conf.c:1040 src/qemu_conf.c:2447
-#, fuzzy
 msgid "incorrect root element"
-msgstr "непознат домаћин %s"
+msgstr "неисправан root елемент"
 
 #: src/openvz_conf.c:323 src/qemu_conf.c:1055
-#, fuzzy
 msgid "missing domain type attribute"
-msgstr "недостају подаци о имену домена"
+msgstr "недостаје особина типа домена"
 
 #: src/openvz_conf.c:328 src/qemu_conf.c:1067
-#, fuzzy
 msgid "invalid domain type attribute"
-msgstr "неисправан показивач домена у"
+msgstr "неисправана особина типа домена"
 
 #: src/openvz_conf.c:338
-#, fuzzy
 msgid "invalid domain name"
-msgstr "неисправан показивач домена у"
+msgstr "неисправан назив домена"
 
 #: src/openvz_conf.c:345
 msgid "VPS ID Error (must be an integer greater than 100"
-msgstr ""
+msgstr "VPS ID Грешка (мора бити цео број већи од 100"
 
 #: src/openvz_conf.c:358
-#, fuzzy
 msgid "Failed to generate UUID"
-msgstr "Неуспело прављење XML-а"
+msgstr "Неуспешно прављење UUID"
 
 #: src/openvz_conf.c:362 src/qemu_conf.c:1102 src/qemu_conf.c:2487
 #: src/storage_conf.c:265
 msgid "malformed uuid element"
-msgstr ""
+msgstr "лоше обликован uuid елемент"
 
 #: src/openvz_conf.c:388
 #, c-format
 msgid "No IP address in the given xml config file '%s'"
-msgstr ""
+msgstr "Ниједна IP адреса није дата у xml датотеци подешавања '%s'"
 
 #: src/openvz_conf.c:395
 msgid "ipaddress length too long"
-msgstr ""
+msgstr "дужина ip адресе је превелика"
 
 #: src/openvz_conf.c:401
-#, fuzzy
 msgid "Failed to Create Memory for 'ovz_ip' structure"
-msgstr "Неуспело заузимање меморије"
+msgstr "Неуспешно Креирање Меморије за 'ovz_ip' структуру"
 
 #: src/openvz_conf.c:413
 #, c-format
 msgid "No Netmask address in the given xml config file '%s'"
-msgstr ""
+msgstr "Ниједна Netmask адреса није дата у xml датотеци подешавања '%s'"
 
 #: src/openvz_conf.c:420
 msgid "netmask length too long"
-msgstr ""
+msgstr "дужина netmask-а је превелика"
 
 #: src/openvz_conf.c:432
 #, c-format
 msgid "No hostname in the given xml config file '%s'"
-msgstr ""
+msgstr "Ниједан назив домаћина није дат у xml датотеци подешавања '%s'"
 
 #: src/openvz_conf.c:439
 msgid "hostname length too long"
-msgstr ""
+msgstr "дужина назива домаћина је превелика"
 
 #: src/openvz_conf.c:451
 #, c-format
 msgid "No Gateway address in the given xml config file '%s'"
-msgstr ""
+msgstr "Ниједна Gateway адреса није дата у xml датотеци подешавања '%s'"
 
 #: src/openvz_conf.c:458
 msgid "gateway length too long"
-msgstr ""
+msgstr "дужина gateway-а је превелика"
 
 #: src/openvz_conf.c:470
 #, c-format
 msgid "No Nameserver address inthe given xml config file '%s'"
-msgstr ""
+msgstr "Ниједна Nameserver адреса није дата у xml датотеци подешавања '%s'"
 
 #: src/openvz_conf.c:477
 msgid "nameserver length too long"
-msgstr ""
+msgstr "дужина nameserver-а је превелика"
 
 #: src/openvz_conf.c:483
-#, fuzzy
 msgid "Failed to Create Memory for 'ovz_ns' structure"
-msgstr "Неуспело заузимање меморије"
+msgstr "Неуспешно Креирање Меморије за 'ovz_ns' структуру"
 
 #: src/openvz_conf.c:501
 msgid "profile length too long"
-msgstr ""
+msgstr "дужина профила превелика"
 
 #: src/openvz_conf.c:537
-#, fuzzy
 msgid "popen failed"
-msgstr "неуспела радња"
+msgstr "popen није успео"
 
 #: src/openvz_conf.c:544 src/openvz_conf.c:573
-#, fuzzy
 msgid "calloc failed"
-msgstr "заузимам низ вредности"
+msgstr "calloc није успео"
 
 #: src/openvz_conf.c:553
-#, fuzzy
 msgid "Failed to parse vzlist output"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Нуспешно рашчлањавање vzlist излаза"
 
 #: src/openvz_conf.c:583
-#, fuzzy
 msgid "UUID in config file malformed"
-msgstr "синтаксна грешка у датотеци подешавања: %s"
+msgstr "UUID је лоше обликован у датотеци подешавања"
 
 #: src/openvz_driver.c:149 src/openvz_driver.c:243 src/openvz_driver.c:288
 #: src/openvz_driver.c:483
 msgid "no domain with matching id"
-msgstr ""
+msgstr "нема домена који се поклапају са id-ом"
 
 #: src/openvz_driver.c:198
-#, fuzzy
 msgid "no domain with matching name"
-msgstr "id или име домена"
+msgstr "нема домена који се поклапају са именом"
 
 #: src/openvz_driver.c:249 src/openvz_driver.c:294
-#, fuzzy
 msgid "domain is not in running state"
-msgstr "Домен још увек ради"
+msgstr "домен није у радном стању"
 
 #: src/openvz_driver.c:256 src/openvz_driver.c:301 src/openvz_driver.c:360
 #: src/openvz_driver.c:428 src/openvz_driver.c:444 src/openvz_driver.c:498
 #: src/openvz_driver.c:541
 msgid "Error in parsing Options to OPENVZ"
-msgstr ""
+msgstr "Грешка у рашчлањавању OPENVZ-а"
 
 #: src/openvz_driver.c:331
 #, c-format
 msgid "Already an OPENVZ VM active with the id '%s'"
-msgstr ""
+msgstr "Већ је активан OPENVZ VM са id-ом'%s'"
 
 #: src/openvz_driver.c:337 src/openvz_driver.c:404
 msgid "Error creating OPENVZ VM"
-msgstr ""
+msgstr "Грешка у креирању OPENVZ VM"
 
 #: src/openvz_driver.c:399
 #, c-format
 msgid "Already an OPENVZ VM defined with the id '%d'"
-msgstr ""
+msgstr "Већ је дефинисан OPENVZ VM са id-ом '%d'"
 
 #: src/openvz_driver.c:489
-#, fuzzy
 msgid "domain is not in shutoff state"
-msgstr "Домен још увек ради"
+msgstr "домен није у стању гашења"
 
 #: src/proxy_internal.c:197
 #, c-format
@@ -1293,378 +1248,360 @@ msgid "got asynchronous packet number %d\n"
 msgstr "примљен асинхрони број пакета %d\n"
 
 #: src/qemu_conf.c:85 src/qemu_conf.c:120
-#, fuzzy
 msgid "failed to allocate vncTLSx509certdir"
-msgstr "неуспело заузимање бафера"
+msgstr "неуспело заузимање vncTLSx509certdir"
 
 #: src/qemu_conf.c:499
 #, c-format
 msgid "Unexpected exit status from qemu %d pid %lu"
-msgstr ""
+msgstr "Неочекиван статус изласка из qemu %d pid %lu"
 
 #: src/qemu_conf.c:508
 #, c-format
 msgid "Unexpected exit status '%d', qemu probably failed"
-msgstr ""
+msgstr "Неочекивани статус изласка '%d', qemu вероватно није успео"
 
 #: src/qemu_conf.c:533 src/qemu_conf.c:1645
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot find QEMU binary %s: %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Не могу да пронађем QEMU binary %s: %s"
 
 #: src/qemu_conf.c:617
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid floppy device name: %s"
-msgstr "неисправан показивач домена у"
+msgstr "Неисправан назив дискетног уређаја: %s"
 
 #: src/qemu_conf.c:625
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid cdrom device name: %s"
-msgstr "неисправан показивач домена у %s"
+msgstr "Неисправан назив cdrom уређаја: %s"
 
 #: src/qemu_conf.c:639
 #, c-format
 msgid "Invalid harddisk device name: %s"
-msgstr ""
+msgstr "Неисправан назив чврстог диска: %s"
 
 #: src/qemu_conf.c:660
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid device type: %s"
-msgstr "врста циљног уређаја"
+msgstr "Неисправан тип уређаја: %s"
 
 #: src/qemu_conf.c:802
 msgid ""
 "No <source> 'network' attribute specified with <interface type='network'/>"
 msgstr ""
+"Ниједна <source> 'network' особина није одређена преко <interface "
+"type='network'/>"
 
 #: src/qemu_conf.c:806
-#, fuzzy, c-format
+#, c-format
 msgid "Network name '%s' too long"
-msgstr "име мреже или uuid"
+msgstr "Назив мреже '%s' је превелик"
 
 #: src/qemu_conf.c:821 src/qemu_conf.c:849 src/qemu_conf.c:880
 #, c-format
 msgid "TAP interface name '%s' is too long"
-msgstr ""
+msgstr "Назив TAP окружења '%s' је превелики"
 
 #: src/qemu_conf.c:837
 #, c-format
 msgid "TAP script path '%s' is too long"
-msgstr ""
+msgstr "Путања TAP скрипте '%s' је превелика"
 
 #: src/qemu_conf.c:863
 msgid "No <source> 'dev' attribute specified with <interface type='bridge'/>"
 msgstr ""
+"Ниједна <source> 'dev' особина није одређена преко <interface type='bridge'/>"
 
 #: src/qemu_conf.c:867
 #, c-format
 msgid "TAP bridge path '%s' is too long"
-msgstr ""
+msgstr "Путања TAP моста '%s' је превелика"
 
 #: src/qemu_conf.c:896
 msgid "No <source> 'port' attribute specified with socket interface"
-msgstr ""
+msgstr "Ниједна <source> 'port' особина није одређена преко сучеља сокета"
 
 #: src/qemu_conf.c:902
 msgid "Cannot parse <source> 'port' attribute with socket interface"
-msgstr ""
+msgstr "Није могуће рашчланити <source> 'port' особину са сучељем сокета"
 
 #: src/qemu_conf.c:912
 msgid "No <source> 'address' attribute specified with socket interface"
-msgstr ""
+msgstr "Ниједна <source> 'address' особина није одређена преко сучеља сокета"
 
 #: src/qemu_conf.c:917
 #, c-format
 msgid "IP address '%s' is too long"
-msgstr ""
+msgstr "IP адреса '%s' је превелика"
 
 #: src/qemu_conf.c:960
-#, fuzzy
 msgid "missing input device type"
-msgstr "недостају подаци о коренском уређају"
+msgstr "недостаје врста уређаја за унос"
 
 #: src/qemu_conf.c:970
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported input device type %s"
-msgstr "врста циљног уређаја"
+msgstr "врста уређаја за унос %s није подржана"
 
 #: src/qemu_conf.c:979
 #, c-format
 msgid "ps2 bus does not support %s input device"
-msgstr ""
+msgstr "ps2 магистрала не подржава %s уређај за унос"
 
 #: src/qemu_conf.c:988
 #, c-format
 msgid "unsupported input bus %s"
-msgstr ""
+msgstr "магистрала за унос %s није подржана"
 
 #: src/qemu_conf.c:1032 src/qemu_conf.c:1047
-#, fuzzy
 msgid "failed to allocate space for xmlXPathContext"
-msgstr "неуспело заузимање чвора"
+msgstr "неуспело заузимање простора за xmlXPathContext"
 
 #: src/qemu_conf.c:1083
-#, fuzzy
 msgid "domain name length too long"
-msgstr "име домена или uuid"
+msgstr "дужина имена домена је пребелика"
 
 #: src/qemu_conf.c:1097 src/qemu_conf.c:2482
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to generate UUID: %s"
-msgstr "Неуспело прављење XML-а"
+msgstr "Неуспело генерисање UUID: %s"
 
 #: src/qemu_conf.c:1113
-#, fuzzy
 msgid "missing memory element"
-msgstr "недостају подаци о коренском уређају"
+msgstr "недостаје елемент меморије"
 
 #: src/qemu_conf.c:1120 src/qemu_conf.c:1139
-#, fuzzy
 msgid "malformed memory information"
-msgstr "подаци о чвору"
+msgstr "информације о меморији су лоше обликоване"
 
 #: src/qemu_conf.c:1155
-#, fuzzy
 msgid "malformed vcpu information"
-msgstr "vcpu подаци домена"
+msgstr "информације о vcpu су лоше обликоване"
 
 #: src/qemu_conf.c:1202
-#, fuzzy
 msgid "no OS type"
-msgstr "непозната врста ОС-а"
+msgstr "нема врсте ОС-а"
 
 #: src/qemu_conf.c:1220 src/qemu_conf.c:1247
 msgid "unsupported architecture"
-msgstr ""
+msgstr "архитектура није подржана"
 
 #: src/qemu_conf.c:1225 src/qemu_conf.c:1232 src/qemu_conf.c:1259
 msgid "architecture type too long"
-msgstr ""
+msgstr "врста архитектуре је превелика"
 
 #: src/qemu_conf.c:1252
 msgid "machine type too long"
-msgstr ""
+msgstr "врста машине је превелика"
 
 #: src/qemu_conf.c:1272
 msgid "kernel path too long"
-msgstr ""
+msgstr "путања језгра је превелика"
 
 #: src/qemu_conf.c:1285
 msgid "initrd path too long"
-msgstr ""
+msgstr "путања initrd-а је превелика"
 
 #: src/qemu_conf.c:1298
 msgid "cmdline arguments too long"
-msgstr ""
+msgstr "cmdline аргументи превелики"
 
 #: src/qemu_conf.c:1323
-#, fuzzy, c-format
+#, c-format
 msgid "unknown boot device '%s'"
-msgstr "непозната врста ОС-а %s"
+msgstr "непознат уређај за покретање '%s'"
 
 #: src/qemu_conf.c:1349
-#, fuzzy
 msgid "unsupported guest type"
-msgstr "неочекивана mime врста"
+msgstr "врста госта није подржана"
 
 #: src/qemu_conf.c:1356
 msgid "emulator path too long"
-msgstr ""
+msgstr "путања емулатора је превелика"
 
 #: src/qemu_conf.c:1391
 #, c-format
 msgid "Unsupported graphics type %s"
-msgstr ""
+msgstr "Није подржана врста графике %s"
 
 #: src/qemu_conf.c:1408
-#, fuzzy
 msgid "failed to allocate space for disk string"
-msgstr "неуспело заузимање чвора"
+msgstr "неуспело заузимање простора за дељење диска"
 
 #: src/qemu_conf.c:1437
-#, fuzzy
 msgid "failed to allocate space for net string"
-msgstr "неуспело заузимање чвора"
+msgstr "неуспело заузимање простора за дељење мреже"
 
 #: src/qemu_conf.c:1465 src/qemu_conf.c:1506
-#, fuzzy
 msgid "failed to allocate space for input string"
-msgstr "Неуспело заузимање меморије"
+msgstr "неуспело заузимање простора за улазни низ знакова"
 
 #: src/qemu_conf.c:1549
-#, fuzzy, c-format
+#, c-format
 msgid "Network '%s' not found"
-msgstr "Мрежа није пронађена"
+msgstr "Мрежа '%s' није пронађена"
 
 #: src/qemu_conf.c:1554
-#, fuzzy, c-format
+#, c-format
 msgid "Network '%s' not active"
-msgstr "Мрежа %s је покренута\n"
+msgstr "Мрежа %s није активна"
 
 #: src/qemu_conf.c:1575
-#, fuzzy, c-format
+#, c-format
 msgid "Network type %d is not supported"
-msgstr "Мрежа %s је покренута\n"
+msgstr "Врста мреже %d није подржана"
 
 #: src/qemu_conf.c:1581 src/qemu_driver.c:1209
-#, fuzzy, c-format
+#, c-format
 msgid "cannot initialize bridge support: %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "није могуће покренути подршку моста: %s"
 
 #: src/qemu_conf.c:1589
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to add tap interface '%s' to bridge '%s' : %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Неуспешно додавање tap окружења '%s' на мост '%s' : %s"
 
 #: src/qemu_conf.c:1612
-#, fuzzy
 msgid "failed to allocate space for tapfds string"
-msgstr "неуспело заузимање чвора"
+msgstr "неуспело додељивање простора за tapfds низ знакова"
 
 #: src/qemu_conf.c:1988
-#, fuzzy
 msgid "failed to allocate space for argv string"
-msgstr "Неуспело заузимање меморије"
+msgstr "неуспело заузимање простора за argv низ знакова"
 
 #: src/qemu_conf.c:2072 src/storage_conf.c:395 src/storage_conf.c:783
-#, fuzzy
 msgid "missing root element"
-msgstr "недостају подаци о коренском уређају"
+msgstr "недостаје root елемент"
 
 #: src/qemu_conf.c:2086
-#, fuzzy
 msgid "unknown device type"
-msgstr "непозната врста ОС-а"
+msgstr "непозната врста уређаја"
 
 #: src/qemu_conf.c:2146
-#, fuzzy
 msgid "failed to allocate space for vm string"
-msgstr "неуспело заузимање чвора"
+msgstr "неуспело заузимање простора за vm низ знакова"
 
 #: src/qemu_conf.c:2215 src/qemu_conf.c:2676 src/storage_conf.c:1165
 msgid "cannot construct autostart link path"
-msgstr ""
+msgstr "није могуће конструисати путању везе"
 
 #: src/qemu_conf.c:2346
-#, fuzzy
 msgid "failed to allocate space for range string"
-msgstr "Неуспело заузимање меморије"
+msgstr "неуспело заузимање простора за опсег низа знакова"
 
 #: src/qemu_conf.c:2439
-#, fuzzy
 msgid "failed to allocate space for network_def string"
-msgstr "неуспело заузимање чвора"
+msgstr "неуспело заузимање простора за network_def низ знакова"
 
 #: src/qemu_conf.c:2454
-#, fuzzy
 msgid "failed to allocate space for xmlXPathContext string"
-msgstr "Неуспело заузимање меморије"
+msgstr "неуспело заузимање простора за xmlXPathContext низ знакова"
 
 #: src/qemu_conf.c:2468
-#, fuzzy
 msgid "network name length too long"
-msgstr "име мреже или uuid"
+msgstr "назив мреже је превелик"
 
 #: src/qemu_conf.c:2519
 msgid "Forwarding requested, but no IPv4 address/netmask provided"
-msgstr ""
+msgstr "Прослеђујем захтев, али није обезбеђена IPv4 адреса/мрежна маска"
 
 #: src/qemu_conf.c:2541
 #, c-format
 msgid "forward device name '%s' is too long"
-msgstr ""
+msgstr "назив датог уређаја '%s' је превелики"
 
 #: src/qemu_conf.c:2613
-#, fuzzy
 msgid "failed to allocate space for network string"
-msgstr "неуспело заузимање чвора"
+msgstr "неуспело заузимање простора за низ знакова мреже"
 
 #: src/qemu_conf.c:2697
 #, c-format
 msgid "Error parsing QEMU guest config '%s' : %s"
-msgstr ""
+msgstr "Грашка у рашчлањивању QEMU конфигурације госта '%s' : %s"
 
 #: src/qemu_conf.c:2699
 msgid "BUG: unknown error - please report it\n"
-msgstr ""
+msgstr "ГРЕШКА: непозната грешка - молимо вас пријавите је\n"
 
 #: src/qemu_conf.c:2705
 #, c-format
 msgid "QEMU guest config filename '%s' does not match guest name '%s'"
 msgstr ""
+"назив датотеке QEMU конфигурације госта '%s' се не поклапа са називом госта "
+"'%s'"
 
 #: src/qemu_conf.c:2714
 #, c-format
 msgid "Failed to load QEMU guest config '%s': out of memory"
 msgstr ""
+"Неуспело учитавање QEMU конфигурације госта '%s': нема довољно меморије"
 
 #: src/qemu_conf.c:2742
 #, c-format
 msgid "Error parsing network config '%s' : %s"
-msgstr ""
+msgstr "Грешка у рашчлањивању конфигурације мреже '%s' : %s"
 
 #: src/qemu_conf.c:2749
 #, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
 msgstr ""
+"Назив датотеке мрежног подешавања '%s' се не поклапа са називом мреже '%s'"
 
 #: src/qemu_conf.c:2758
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to load network config '%s': out of memory"
-msgstr "неуспело додавање мреже у хаш табелу веза"
+msgstr "Неуспело учитавање подешавања мреже '%s': нема довољно меморије"
 
 #: src/qemu_conf.c:2785
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open dir '%s': %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Неуспело отварање директоријума '%s': %s"
 
 #: src/qemu_conf.c:2802
 #, c-format
 msgid "Config filename '%s/%s' is too long"
-msgstr ""
+msgstr "Име датотеке подешавања '%s/%s' је предуго"
 
 #: src/qemu_conf.c:2809
 #, c-format
 msgid "Autostart link path '%s/%s' is too long"
-msgstr ""
+msgstr "Стаза за линк аутоматског покретања '%s/%s' је предуга"
 
 #: src/qemu_conf.c:2873
-#, fuzzy, c-format
+#, c-format
 msgid "unexpected domain type %d"
-msgstr "неочекивана mime врста"
+msgstr "неочекивана врста домена %d"
 
 #: src/qemu_conf.c:3142 src/qemu_conf.c:3234
-#, fuzzy
 msgid "failed to generate XML: out of memory"
-msgstr "Неуспело прављење XML-а"
+msgstr "Неуспело генерисање XML: нема довољно меморије"
 
 #: src/qemu_driver.c:132
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to autostart network '%s': %s"
-msgstr "Неуспело покретање мреже %s"
+msgstr "Неуспело аутоматско покретање мреже '%s': %s"
 
 #: src/qemu_driver.c:147
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to autostart VM '%s': %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Неуспело аутоматско покретање VM-а '%s': %s"
 
 #: src/qemu_driver.c:192
-#, fuzzy
 msgid "out of memory in asprintf"
-msgstr "нестало меморије"
+msgstr "нема довољно меморије у asprintf"
 
 #: src/qemu_driver.c:238
 msgid "Resulting path to long for buffer in qemudInitPaths()"
-msgstr ""
+msgstr "Разрешавам предугу путању за бафер у qemudInitPaths()"
 
 #: src/qemu_driver.c:243
-#, fuzzy
 msgid "qemudStartup: out of memory"
-msgstr "нестало меморије"
+msgstr "qemudStartup: нема довољно меморије"
 
 #: src/qemu_driver.c:262
 msgid "Reloading iptables rules"
-msgstr ""
+msgstr "Поново учитавам iptables правила"
 
 #: src/qemu_driver.c:395
 #, c-format
@@ -1672,299 +1609,294 @@ msgid ""
 "QEMU quit during %s startup\n"
 "%s"
 msgstr ""
+"QEMU је изашао током %s покретања\n"
+"%s"
 
 #: src/qemu_driver.c:405 src/qemu_driver.c:418
 #, c-format
 msgid "Failure while reading %s startup output: %s"
-msgstr ""
+msgstr "Неуспех током читања %s излаза покретања: %s"
 
 #: src/qemu_driver.c:413
 #, c-format
 msgid "Timed out while reading %s startup output"
-msgstr ""
+msgstr "Време је истекло током читања %s излаза покретања"
 
 #: src/qemu_driver.c:429
 #, c-format
 msgid "Failure while reading %s startup output"
-msgstr ""
+msgstr "Неуспех током читања %s излаза покретања"
 
 #: src/qemu_driver.c:441
 #, c-format
 msgid "Out of space while reading %s startup output"
-msgstr ""
+msgstr "Нестало је простора током читања %s излаза покретања"
 
 #: src/qemu_driver.c:472
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open monitor path %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Није могуће отворити путању надгледања %s"
 
 #: src/qemu_driver.c:477
 msgid "Unable to set monitor close-on-exec flag"
-msgstr ""
+msgstr "Није могуће поставити заставицу за надгледање затварања-при-извршавању"
 
 #: src/qemu_driver.c:482
 msgid "Unable to put monitor into non-blocking mode"
-msgstr ""
+msgstr "Није могуће поставити надгледање у неблокирајући режим"
 
 #: src/qemu_driver.c:560 src/qemu_driver.c:751 src/qemu_driver.c:1443
 #: src/qemu_driver.c:1453
 #, c-format
 msgid "Unable to log VM console data: %s"
-msgstr ""
+msgstr "Није могуће пратити податке VM конзоле: %s"
 
 #: src/qemu_driver.c:611
-#, fuzzy
 msgid "VM is already active"
-msgstr "Домен је већ активан"
+msgstr "VM је већ активан"
 
 #: src/qemu_driver.c:619
 msgid "Unable to find an unused VNC port"
-msgstr ""
+msgstr "Није могуће пронаћи VNC прикључак који се не користи"
 
 #: src/qemu_driver.c:632
 #, c-format
 msgid "config file path too long: %s/%s.log"
-msgstr ""
+msgstr "путања конфигурационе датотеке је предуга: %s/%s.log"
 
 #: src/qemu_driver.c:643
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create log directory %s: %s"
-msgstr "неуспело уписивање датотеке подешавања: %s"
+msgstr "не могу да направим директоријум дневника %s: %s"
 
 #: src/qemu_driver.c:651
-#, fuzzy, c-format
+#, c-format
 msgid "failed to create logfile %s: %s"
-msgstr "%s: неуспело уписивање датотеке дневника: %s"
+msgstr "неуспело прављење датотеке дневника %s: %s"
 
 #: src/qemu_driver.c:657
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to set VM logfile close-on-exec flag %s"
-msgstr "%s: неуспело уписивање датотеке дневника: %s"
+msgstr ""
+"Није могуће поставити датотеку дневника VM заставицце за затвори-при-"
+"извршавању %s"
 
 #: src/qemu_driver.c:673 src/qemu_driver.c:676 src/qemu_driver.c:681
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to write argv to logfile %d: %s"
-msgstr "%s: неуспело уписивање датотеке дневника: %s"
+msgstr "Није могуће писати argv у датотеку дневника %d: %s"
 
 #: src/qemu_driver.c:765
 #, c-format
 msgid "Shutting down VM '%s'"
-msgstr ""
+msgstr "Гасим VM '%s'"
 
 #: src/qemu_driver.c:776
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to close logfile %d: %s"
-msgstr "%s: неуспело уписивање датотеке дневника: %s"
+msgstr "Није могуће затворити датотеку дневника %d: %s"
 
 #: src/qemu_driver.c:791
-#, fuzzy
 msgid "Got unexpected pid, damn"
-msgstr "неочекиван dict чвор"
+msgstr "Добио сам неочекивани pid, доврага"
 
 #: src/qemu_driver.c:920
-#, fuzzy
 msgid "failed to allocate space for dnsmasq argv"
-msgstr "неуспело заузимање чвора"
+msgstr "неуспело заузимање простора за dnsmasq argv"
 
 #: src/qemu_driver.c:934
 msgid "cannot start dhcp daemon without IP address for server"
-msgstr ""
+msgstr "не могу да покренем системску услугу без IP адресе за сервер"
 
 #: src/qemu_driver.c:962
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to allow forwarding from '%s' : %s\n"
-msgstr "Неуспело чување домена %s у %s"
+msgstr "неуспело додавање правила ip табела за дозволу проласка из '%s' : %s\n"
 
 #: src/qemu_driver.c:973
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to allow forwarding to '%s' : %s\n"
-msgstr "Неуспело чување домена %s у %s"
+msgstr "неуспело додавање правила ip табела за дозволу проласка до '%s' : %s\n"
 
 #: src/qemu_driver.c:983
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to enable masquerading : %s\n"
-msgstr "Неуспело чување домена %s у %s"
+msgstr "неуспело додавање правила ip табела за омогућавање маскирања: %s\n"
 
 #: src/qemu_driver.c:1015
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to allow routing from '%s' : %s\n"
-msgstr "Неуспело чување домена %s у %s"
+msgstr "неуспело додавање правила ip табела за дозволу рутирања од '%s' : %s\n"
 
 #: src/qemu_driver.c:1026
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to allow routing to '%s' : %s\n"
-msgstr "Неуспело чување домена %s у %s"
+msgstr "неуспело додавање правила ip табела за дозволу рутирања до '%s' : %s\n"
 
 #: src/qemu_driver.c:1051
-#, fuzzy
 msgid "failed to allocate space for IP tables support"
-msgstr "неуспело заузимање чвора"
+msgstr "неуспело заузимање простора за подршку IP табелама"
 
 #: src/qemu_driver.c:1059 src/qemu_driver.c:1066
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to allow DHCP requests from '%s' : %s"
-msgstr "Неуспело чување домена %s у %s"
+msgstr ""
+"неуспело додавање правила ip табела за дозволу DHCP захтева од '%s' : %s"
 
 #: src/qemu_driver.c:1074 src/qemu_driver.c:1081
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to allow DNS requests from '%s' : %s"
-msgstr "Неуспело чување домена %s у %s"
+msgstr ""
+"неуспело додавање правила ip табела за дозволу DNS захтева од '%s' : %s"
 
 #: src/qemu_driver.c:1091
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to block outbound traffic from '%s' : %s"
-msgstr "Неуспело чување домена %s у %s"
+msgstr ""
+"неуспело додавање правила ip табела за забрану излазног саобраћаја од '%s' : "
+"%s"
 
 #: src/qemu_driver.c:1098
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to block inbound traffic to '%s' : %s"
-msgstr "Неуспело чување домена %s у %s"
+msgstr ""
+"неуспело додавање правила ip табела за забрану улазног саобраћаја до '%s' : %"
+"s"
 
 #: src/qemu_driver.c:1106
-#, fuzzy, c-format
+#, c-format
 msgid "failed to add iptables rule to allow cross bridge traffic on '%s' : %s"
-msgstr "Неуспело чување домена %s у %s"
+msgstr ""
+"неуспело додавање правила ip табела за дозволу саобраћаја преко укрштеног "
+"моста на '%s' : %s"
 
 #: src/qemu_driver.c:1203
-#, fuzzy
 msgid "network is already active"
-msgstr "Домен је већ активан"
+msgstr "мрежа је већ активна"
 
 #: src/qemu_driver.c:1222
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create bridge '%s' : %s"
-msgstr "неуспело уписивање датотеке подешавања: %s"
+msgstr "не могу да направим мост '%s' : %s"
 
 #: src/qemu_driver.c:1230
-#, fuzzy, c-format
+#, c-format
 msgid "failed to set bridge forward delay to %d"
-msgstr "неуспело добављање података о чвору"
+msgstr "неуспело постављање одлагања преласка моста до %d"
 
 #: src/qemu_driver.c:1237
-#, fuzzy, c-format
+#, c-format
 msgid "failed to set bridge STP to %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "неуспело постављање STP моста до %s"
 
 #: src/qemu_driver.c:1245
-#, fuzzy, c-format
+#, c-format
 msgid "cannot set IP address on bridge '%s' to '%s' : %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "не могу да поставим IP адресу на мосту '%s' до '%s' : %s"
 
 #: src/qemu_driver.c:1253
-#, fuzzy, c-format
+#, c-format
 msgid "cannot set netmask on bridge '%s' to '%s' : %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "не могу да поставим мрежну маску на мосту '%s' до '%s' : %s"
 
 #: src/qemu_driver.c:1261
-#, fuzzy, c-format
+#, c-format
 msgid "failed to bring the bridge '%s' up : %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "неуспело подизање моста '%s' : %s"
 
 #: src/qemu_driver.c:1272
-#, fuzzy, c-format
+#, c-format
 msgid "failed to enable IP forwarding : %s"
-msgstr "неуспело отварање %s за читање"
+msgstr "неуспело омогућавање IP прослеђивања : %s"
 
 #: src/qemu_driver.c:1293 src/qemu_driver.c:1324
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to bring down bridge '%s' : %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Неуспело спуштање моста '%s' : %s"
 
 #: src/qemu_driver.c:1299 src/qemu_driver.c:1329
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to delete bridge '%s' : %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Неуспело брисање моста '%s' : %s"
 
 #: src/qemu_driver.c:1312
-#, fuzzy, c-format
+#, c-format
 msgid "Shutting down network '%s'"
-msgstr "неуспело добављање мреже „%s“"
+msgstr "Искључујем мрежу '%s'"
 
 #: src/qemu_driver.c:1338
-#, fuzzy
 msgid "Got unexpected pid for dnsmasq"
-msgstr "неочекиван dict чвор"
+msgstr "Примљен неочекиван pid за dnsmasq"
 
 #: src/qemu_driver.c:1554
-#, fuzzy
 msgid "failed to allocate space for capabilities support"
-msgstr "Неуспело заузимање меморије"
+msgstr "неуспело додељивање простора за подршку могућностима"
 
 #: src/qemu_driver.c:1724 src/qemu_driver.c:1753 src/qemu_driver.c:1782
 #: src/qemu_driver.c:1802 src/qemu_driver.c:2030 src/qemu_driver.c:2529
 #: src/qemu_driver.c:2664
 #, c-format
 msgid "no domain with matching id %d"
-msgstr ""
+msgstr "нема домена који се поклапа са id %d"
 
 #: src/qemu_driver.c:1729 src/qemu_driver.c:1758 src/qemu_driver.c:2036
 #: src/qemu_driver.c:2534 src/qemu_driver.c:2670
-#, fuzzy
 msgid "domain is not running"
-msgstr "Домен још увек ради"
+msgstr "домен се не извршава"
 
 #: src/qemu_driver.c:1737
-#, fuzzy
 msgid "suspend operation failed"
-msgstr "неуспела радња"
+msgstr "неуспела обустава домена"
 
 #: src/qemu_driver.c:1765
-#, fuzzy
 msgid "resume operation failed"
-msgstr "неуспела радња"
+msgstr "неуспео наставак операције"
 
 #: src/qemu_driver.c:1788
-#, fuzzy
 msgid "shutdown operation failed"
-msgstr "неуспела радња"
+msgstr "неуспешно гашење операције"
 
 #: src/qemu_driver.c:1827
-#, fuzzy
 msgid "failed to allocate space for ostype"
-msgstr "неуспело заузимање чвора"
+msgstr "неуспело додељивање простора за ostype"
 
 #: src/qemu_driver.c:1840 src/qemu_driver.c:1853 src/qemu_driver.c:1873
 #, c-format
 msgid "no domain with matching uuid '%s'"
-msgstr ""
+msgstr "нема домена који се подудара са uuid '%s'"
 
 #: src/qemu_driver.c:1859
 msgid "cannot set max memory lower than current memory"
-msgstr ""
+msgstr "не могу да поставим максималну меморију мању од тренутне меморије"
 
 #: src/qemu_driver.c:1879
-#, fuzzy
 msgid "cannot set memory of an active domain"
-msgstr "име неактивног домена"
+msgstr "не могу да поставим меморију активног домена"
 
 #: src/qemu_driver.c:1885
 msgid "cannot set memory higher than max memory"
-msgstr ""
+msgstr "не могу да поставим меморију већу од максималне меморије"
 
 #: src/qemu_driver.c:2045
-#, fuzzy
 msgid "failed to pause domain"
-msgstr "Неуспело обустављање домена %s"
+msgstr "неуспело паузирање домена"
 
 #: src/qemu_driver.c:2054
-#, fuzzy
 msgid "failed to get domain xml"
-msgstr "неуспело добављање UUID домена"
+msgstr "неуспело добављање xml-а домена"
 
 #: src/qemu_driver.c:2062
-#, fuzzy, c-format
+#, c-format
 msgid "failed to create '%s'"
-msgstr "Неуспело прављење XML-а"
+msgstr "неуспело прављење '%s'"
 
 #: src/qemu_driver.c:2069
-#, fuzzy
 msgid "failed to write save header"
-msgstr "Неуспело писање на прикључак %d\n"
+msgstr "неуспело уписивање чувања заглавља"
 
 #: src/qemu_driver.c:2077
-#, fuzzy
 msgid "failed to write xml"
-msgstr "Неуспело писање на прикључак %d\n"
+msgstr "неуспело уписивање xml-а"
 
 #: src/qemu_driver.c:2090 src/qemu_driver.c:2097 src/qemu_driver.c:2163
 #: src/qemu_driver.c:2360 src/qemu_driver.c:2368 src/qemu_driver.c:2376
@@ -1973,425 +1905,407 @@ msgid "out of memory"
 msgstr "нестало меморије"
 
 #: src/qemu_driver.c:2105
-#, fuzzy
 msgid "migrate operation failed"
-msgstr "неуспела радња"
+msgstr "операција преласка није успела"
 
 #: src/qemu_driver.c:2135 src/test.c:1392
-#, fuzzy
 msgid "cannot read domain image"
-msgstr "списак домена за чвор"
+msgstr "не могу да прочитам слику домена"
 
 #: src/qemu_driver.c:2141
-#, fuzzy
 msgid "failed to read qemu header"
-msgstr "неуспело читање из Xen демона"
+msgstr "неуспело читање qemu заглавља"
 
 #: src/qemu_driver.c:2148
 msgid "image magic is incorrect"
-msgstr ""
+msgstr "magic слике није исправан"
 
 #: src/qemu_driver.c:2155
 #, c-format
 msgid "image version is not supported (%d > %d)"
-msgstr ""
+msgstr "верзија слике није подржана (%d > %d)"
 
 #: src/qemu_driver.c:2170
-#, fuzzy
 msgid "failed to read XML"
-msgstr "Неуспело прављење XML-а"
+msgstr "неуспело читање XML-а"
 
 #: src/qemu_driver.c:2179
-#, fuzzy
 msgid "failed to parse XML"
-msgstr "Неуспело прављење XML-а"
+msgstr "неуспело рашчлањивање XML-а"
 
 #: src/qemu_driver.c:2191
-#, fuzzy, c-format
+#, c-format
 msgid "domain is already active as '%s'"
-msgstr "Домен је већ активан"
+msgstr "домен је већ активан као '%s'"
 
 #: src/qemu_driver.c:2198
-#, fuzzy
 msgid "failed to assign new VM"
-msgstr "Неуспело прављење XML-а"
+msgstr "неуспело додељивање новог VM"
 
 #: src/qemu_driver.c:2213
-#, fuzzy
 msgid "failed to start VM"
-msgstr "Неуспело покретање домена %s"
+msgstr "неуспело покретање VM"
 
 #: src/qemu_driver.c:2224
-#, fuzzy
 msgid "failed to resume domain"
-msgstr "Неуспело настављање домена %s"
+msgstr "неуспело настављање домена"
 
 #: src/qemu_driver.c:2258 src/qemu_driver.c:2771 src/qemu_driver.c:2799
-#, fuzzy
 msgid "failed to allocate space for VM name string"
-msgstr "Неуспело заузимање меморије"
+msgstr "неуспело заузимање простора за низ знакова VM назива"
 
 #: src/qemu_driver.c:2338 src/qemu_driver.c:2874
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to delete autostart link '%s': %s"
-msgstr "Неуспело добављање статистике блока %s %s"
+msgstr "неуспело брисање везе аутоматског покретања '%s': %s"
 
 #: src/qemu_driver.c:2382
 msgid "cannot change cdrom media"
-msgstr ""
+msgstr "не могу да променим cdrom медијум"
 
 #: src/qemu_driver.c:2408
-#, fuzzy
 msgid "cannot attach device on inactive domain"
-msgstr "укини дефиницију неактивног домена"
+msgstr "не могу да прикачим уређај на неактивни домен"
 
 #: src/qemu_driver.c:2419
 msgid "only CDROM disk devices can be attached"
-msgstr ""
+msgstr "једино уређаји CDROM диска могу бити прикачени"
 
 #: src/qemu_driver.c:2434
 msgid "CDROM not attached, cannot change media"
-msgstr ""
+msgstr "CDROM није прикачен, не могу да променим медијум"
 
 #: src/qemu_driver.c:2485 src/qemu_driver.c:2983 src/storage_driver.c:790
 #, c-format
 msgid "cannot create autostart directory %s: %s"
-msgstr ""
+msgstr "не могу да направим директоријум аутоматског покретања %s: %s"
 
 #: src/qemu_driver.c:2492 src/qemu_driver.c:2990 src/storage_driver.c:797
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create symlink '%s' to '%s': %s"
-msgstr "Неуспело чување домена %s у %s"
+msgstr "Неуспело прављење симболичке везе '%s' ка '%s': %s"
 
 #: src/qemu_driver.c:2499 src/qemu_driver.c:2997 src/storage_driver.c:806
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to delete symlink '%s': %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Неуспело брисање симболичке везе '%s': %s"
 
 #: src/qemu_driver.c:2556
-#, fuzzy, c-format
+#, c-format
 msgid "invalid path: %s"
-msgstr "неисправан аргумент у %s"
+msgstr "неисправна путања: %s"
 
 #: src/qemu_driver.c:2564
 msgid "'info blockstats' command failed"
-msgstr ""
+msgstr "'info blockstats' команда није успела"
 
 #: src/qemu_driver.c:2579
 msgid "'info blockstats' not supported by this qemu"
-msgstr ""
+msgstr "'info blockstats' није подржан од стране овог qemu-а"
 
 #: src/qemu_driver.c:2644
-#, fuzzy, c-format
+#, c-format
 msgid "device not found: %s (%s)"
-msgstr "Домен није пронађен: %s"
+msgstr "уређај није пронађен: %s (%s)"
 
 #: src/qemu_driver.c:2676
 msgid "NULL or empty path"
-msgstr ""
+msgstr "NULL или празна путања"
 
 #: src/qemu_driver.c:2699
 #, c-format
 msgid "invalid path, '%s' is not a known interface"
-msgstr ""
+msgstr "неисправна путања, '%s' је непознато окружење"
 
 #: src/qemu_driver.c:2719 src/qemu_driver.c:2866 src/qemu_driver.c:2891
 #: src/qemu_driver.c:2905 src/qemu_driver.c:2920 src/qemu_driver.c:2953
 #: src/qemu_driver.c:2969
 msgid "no network with matching uuid"
-msgstr ""
+msgstr "нема мреже која се подудара са uuid"
 
 #: src/qemu_driver.c:2734
 msgid "no network with matching name"
-msgstr ""
+msgstr "нема мреже која се подудара са називом"
 
 #: src/qemu_driver.c:2933
-#, fuzzy
 msgid "no network with matching id"
-msgstr "подаци о мрежи у XML-у"
+msgstr "нема мреже која се подудара са id-ом"
 
 #: src/qemu_driver.c:2940
-#, fuzzy
 msgid "failed to allocate space for network bridge string"
-msgstr "неуспело заузимање чвора"
+msgstr "неуспело заузимање простора за низ знакова мрежног моста"
 
 #: src/remote_internal.c:107 src/remote_internal.c:115
 msgid "tried to use a closed or uninitialised handle"
-msgstr ""
+msgstr "покушавао сам да користим затворено или не покренуто руковање"
 
 #: src/remote_internal.c:224
-#, fuzzy
 msgid "failed to find libvirtd binary"
-msgstr "Неуспело проналажење мреже"
+msgstr "неуспело проналажење libvirtd бинарне датотеке"
 
 #: src/remote_internal.c:331
 msgid ""
 "remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp)"
 msgstr ""
+"remote_open: пренос у URL-у није препознат (требао би да буде tls|unix|ssh|"
+"ext|tcp)"
 
 #: src/remote_internal.c:372
-#, fuzzy
 msgid "allocating priv->hostname"
-msgstr "заузимам домен"
+msgstr "заузимам priv->назив домаћина"
 
 #: src/remote_internal.c:455
 msgid "remote_open: for 'ext' transport, command is required"
-msgstr ""
+msgstr "remote_open: за 'ext' пренос, потребна је команда"
 
 #: src/remote_internal.c:730
 msgid "transport methods unix, ssh and ext are not supported under Windows"
-msgstr ""
+msgstr "Windows не подржава unix, ssh i ext начине преноса"
 
 #: src/remote_internal.c:773
 msgid "uri params"
-msgstr ""
+msgstr "uri параметри"
 
 #: src/remote_internal.c:817 src/remote_internal.c:2355
 #: src/remote_internal.c:2761
 msgid "struct private_data"
-msgstr ""
+msgstr "struct private_data"
 
 #: src/remote_internal.c:1027
 msgid "server verification (of our certificate or IP address) failed\n"
-msgstr ""
+msgstr "провера сервера (са нашим сертификатом или IP адресом) није успела\n"
 
 #: src/remote_internal.c:1082
 msgid "Certificate type is not X.509"
-msgstr ""
+msgstr "Врста сертификата није X.509"
 
 #: src/remote_internal.c:1087
 msgid "gnutls_certificate_get_peers failed"
-msgstr ""
+msgstr "gnutls_certificate_get_peers није успело"
 
 #: src/remote_internal.c:1108
 msgid "The certificate has expired"
-msgstr ""
+msgstr "Сертификат је истекао"
 
 #: src/remote_internal.c:1114
 msgid "The certificate is not yet activated"
-msgstr ""
+msgstr "Сертификат није још активиран"
 
 #: src/remote_internal.c:1126
 #, c-format
 msgid "Certificate's owner does not match the hostname (%s)"
-msgstr ""
+msgstr "Власник сертификата се не подудара са називом домаћина (%s)"
 
 #: src/remote_internal.c:1342 src/remote_internal.c:1356
-#, fuzzy, c-format
+#, c-format
 msgid "too many remote domain IDs: %d > %d"
-msgstr "превише домена"
+msgstr "превише удаљених ID-а домена: %d > %d"
 
 #: src/remote_internal.c:1730
 #, c-format
 msgid "map length greater than maximum: %d > %d"
-msgstr ""
+msgstr "дужина мапе је већа од максималне: %d > %d"
 
 #: src/remote_internal.c:1762
 #, c-format
 msgid "vCPU count exceeds maximum: %d > %d"
-msgstr ""
+msgstr "vCPU бројач је прешао свој максимум: %d > %d"
 
 #: src/remote_internal.c:1768
 #, c-format
 msgid "vCPU map buffer length exceeds maximum: %d > %d"
-msgstr ""
+msgstr "vCPU бафер дужине мапе је прешао свој максимум: %d > %d"
 
 #: src/remote_internal.c:1785
 #, c-format
 msgid "host reports too many vCPUs: %d > %d"
-msgstr ""
+msgstr "домаћин пријављује превише vCPU-а: %d > %d"
 
 #: src/remote_internal.c:1792
 #, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
 msgstr ""
+"домаћин пријављује да је бафер дужине мапе прешао свој максимум: %d > %d"
 
 #: src/remote_internal.c:1954 src/remote_internal.c:1968
-#, fuzzy, c-format
+#, c-format
 msgid "too many remote domain names: %d > %d"
-msgstr "превише домена"
+msgstr "превише назива удаљених домена: %d > %d"
 
 #: src/remote_internal.c:2170
 msgid ""
 "remoteDomainGetSchedulerParameters: returned number of parameters exceeds "
 "limit"
 msgstr ""
+"remoteDomainGetSchedulerParameters: враћени број параметара премашује границу"
 
 #: src/remote_internal.c:2198
 msgid "remoteDomainGetSchedulerParameters: unknown parameter type"
-msgstr ""
+msgstr "emoteDomainGetSchedulerParameters: непозната врста параметра"
 
 #: src/remote_internal.c:2250
-#, fuzzy
 msgid "unknown parameter type"
-msgstr "непозната врста ОС-а"
+msgstr "непозната врста параметра"
 
 #: src/remote_internal.c:2418 src/remote_internal.c:2432
 #: src/remote_internal.c:2477 src/remote_internal.c:2491
-#, fuzzy, c-format
+#, c-format
 msgid "too many remote networks: %d > %d"
-msgstr "превише мрежа"
+msgstr "превише удаљених мрежа: %d > %d"
 
 #: src/remote_internal.c:2823 src/remote_internal.c:2878
-#, fuzzy
 msgid "too many storage pools requested"
-msgstr "регистровано је превише управљачких програма"
+msgstr "захтевано је превише резервоара складишта"
 
 #: src/remote_internal.c:2835 src/remote_internal.c:2890
-#, fuzzy
 msgid "too many storage pools received"
-msgstr "регистровано је превише управљачких програма"
+msgstr "добијено је превише резервоара складишта"
 
 #: src/remote_internal.c:3235
-#, fuzzy
 msgid "too many storage volumes requested"
-msgstr "регистровано је превише управљачких програма"
+msgstr "захтевано је превише дискова за смештање"
 
 #: src/remote_internal.c:3248
-#, fuzzy
 msgid "too many storage volumes received"
-msgstr "регистровано је превише управљачких програма"
+msgstr "добијено је превише дискова за смештање"
 
 #: src/remote_internal.c:3484
-#, fuzzy, c-format
+#, c-format
 msgid "unknown authentication type %s"
-msgstr "непозната врста ОС-а %s"
+msgstr "непозната врста аутентификације %s"
 
 #: src/remote_internal.c:3494
 #, c-format
 msgid "requested authentication type %s rejected"
-msgstr ""
+msgstr "захтевана врста аутентификације %s је одбијена"
 
 #: src/remote_internal.c:3535
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported authentication type %d"
-msgstr "неуспела аутентификација"
+msgstr "неподржана врста аутентификације %d"
 
 #: src/remote_internal.c:3785
-#, fuzzy, c-format
+#, c-format
 msgid "failed to initialize SASL library: %d (%s)"
-msgstr "Неуспело проналажење мреже: %s"
+msgstr "неуспело покретање SASL библиотеке: %d (%s)"
 
 #: src/remote_internal.c:3833
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create SASL client context: %d (%s)"
-msgstr "Неуспело прављење не активираног домена %s\n"
+msgstr "Неуспело прављење контекст SASL клијента: %d (%s)"
 
 #: src/remote_internal.c:3846
 msgid "invalid cipher size for TLS session"
-msgstr ""
+msgstr "неисправна величина шифре за TLS сесију"
 
 #: src/remote_internal.c:3856
-#, fuzzy, c-format
+#, c-format
 msgid "cannot set external SSF %d (%s)"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "не могу да поставим спољашњи SSF %d (%s)"
 
 #: src/remote_internal.c:3875
-#, fuzzy, c-format
+#, c-format
 msgid "cannot set security props %d (%s)"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "не могу да поставим безбедносни props %d (%s)"
 
 #: src/remote_internal.c:3894
-#, fuzzy, c-format
+#, c-format
 msgid "SASL mechanism %s not supported by server"
-msgstr "хипервизор не подржава ову функцију"
+msgstr "SASL механизам %s није подржан од стране сервера"
 
 #: src/remote_internal.c:3913
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to start SASL negotiation: %d (%s)"
-msgstr "Неуспело покретање домена %s"
+msgstr "Неуспело покретање SASL преговарања: %d (%s)"
 
 #: src/remote_internal.c:3931 src/remote_internal.c:4009
-#, fuzzy
 msgid "Failed to make auth credentials"
-msgstr "Неуспело добављање статистике спреге %s %s"
+msgstr "Неуспело креирање уверења ауторизације"
 
 #: src/remote_internal.c:3955
 #, c-format
 msgid "SASL negotiation data too long: %d bytes"
-msgstr ""
+msgstr "Подаци SASL преговарања су превелики: %d бајтова"
 
 #: src/remote_internal.c:3995
-#, fuzzy, c-format
+#, c-format
 msgid "Failed SASL step: %d (%s)"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Неуспео SASL корак: %d (%s)"
 
 #: src/remote_internal.c:4082
 #, c-format
 msgid "negotiation SSF %d was not strong enough"
-msgstr ""
+msgstr "преговарање SSF %d није довољно јако"
 
 #: src/remote_internal.c:4136
-#, fuzzy
 msgid "Failed to collect auth credentials"
-msgstr "Неуспело добављање статистике спреге %s %s"
+msgstr "Неуспело сакупљање уверења ауторизације"
 
 #: src/remote_internal.c:4203
 msgid "xdr_remote_message_header failed"
-msgstr ""
+msgstr "xdr_remote_message_header није успео"
 
 #: src/remote_internal.c:4209
 msgid "marshalling args"
-msgstr ""
+msgstr "marshalling args"
 
 #: src/remote_internal.c:4226
 msgid "xdr_int (length word)"
-msgstr ""
+msgstr "xdr_int (реч дужине)"
 
 #: src/remote_internal.c:4243
 msgid "xdr_int (length word, reply)"
-msgstr ""
+msgstr "xdr_int (реч дужине, одговор)"
 
 #: src/remote_internal.c:4253
 msgid "packet received from server too large"
-msgstr ""
+msgstr "пакет који је примљен са сервера је превелики"
 
 #: src/remote_internal.c:4265
-#, fuzzy
 msgid "invalid header in reply"
-msgstr "неисправан аргумент у %s"
+msgstr "неисправно заглавље у одговору"
 
 #: src/remote_internal.c:4274
 #, c-format
 msgid "unknown program (received %x, expected %x)"
-msgstr ""
+msgstr "непознат програм (примљено %x, очекивано %x)"
 
 #: src/remote_internal.c:4282
 #, c-format
 msgid "unknown protocol version (received %x, expected %x)"
-msgstr ""
+msgstr "непозната верзија протокола (примљено %x, очекивано %x)"
 
 #: src/remote_internal.c:4295
 #, c-format
 msgid "unknown procedure (received %x, expected %x)"
-msgstr ""
+msgstr "непозната процедура (примљено %x, очекивано %x)"
 
 #: src/remote_internal.c:4303
 #, c-format
 msgid "unknown direction (received %x, expected %x)"
-msgstr ""
+msgstr "непознат смер (примљено %x, очекивано %x)"
 
 #: src/remote_internal.c:4310
 #, c-format
 msgid "unknown serial (received %x, expected %x)"
-msgstr ""
+msgstr "непознат серијски број (примљено %x, очекивано %x)"
 
 #: src/remote_internal.c:4323
 msgid "unmarshalling ret"
-msgstr ""
+msgstr "unmarshalling ret"
 
 #: src/remote_internal.c:4333
 msgid "unmarshalling remote_error"
-msgstr ""
+msgstr "unmarshalling remote_error"
 
 #: src/remote_internal.c:4353
 #, c-format
 msgid "unknown status (received %x)"
-msgstr ""
+msgstr "непознат статус (примљено %x)"
 
 #: src/remote_internal.c:4462 src/remote_internal.c:4479
 msgid "socket closed unexpectedly"
-msgstr ""
+msgstr "сокет се неочекивано затворио"
 
 #: src/sexpr.c:59
 msgid "failed to allocate a node"
@@ -2404,113 +2318,113 @@ msgstr "неуспело умножавање ниске"
 #: src/storage_backend.c:81
 #, c-format
 msgid "missing backend for pool type %d"
-msgstr ""
+msgstr "недостаје зачеље за врсту складишта %d"
 
 #: src/storage_backend.c:126
-#, fuzzy, c-format
+#, c-format
 msgid "unknown storage backend type %s"
-msgstr "непозната врста ОС-а %s"
+msgstr "непозната врста зачеља складишта %s"
 
 #: src/storage_backend.c:156
-#, fuzzy, c-format
+#, c-format
 msgid "unknown storage backend type %d"
-msgstr "непозната врста ОС-а %s"
+msgstr "непозната врста зачеља складишта %d"
 
 #: src/storage_backend.c:170 src/storage_backend_fs.c:340
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open volume '%s': %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "не могу да отворим диск „%s“: %s"
 
 #: src/storage_backend.c:198
 #, c-format
 msgid "cannot stat file '%s': %s"
-msgstr ""
+msgstr "не могу да утврдим датотеку '%s': %s"
 
 #: src/storage_backend.c:226
 #, c-format
 msgid "cannot seek to end of file '%s':%s"
-msgstr ""
+msgstr "не могу да тражим крај датотеке  '%s': %s"
 
 #: src/storage_backend.c:245
 #, c-format
 msgid "cannot get file context of %s: %s"
-msgstr ""
+msgstr "не могу да преузмем контекст датотеке од %s: %s"
 
 #: src/storage_backend.c:254
 msgid "context"
-msgstr ""
+msgstr "контекст"
 
 #: src/storage_backend.c:300
 #, c-format
 msgid "cannot read dir %s: %s"
-msgstr ""
+msgstr "не могу да прочитам директоријум %s: %s"
 
 #: src/storage_backend.c:314 src/storage_driver.c:1195
 msgid "path"
-msgstr ""
+msgstr "путања"
 
 #: src/storage_backend.c:367
 msgid "regex"
-msgstr ""
+msgstr "regex"
 
 #: src/storage_backend.c:377
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to compile regex %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Неуспело компајлирање regex %s"
 
 #: src/storage_backend.c:393 src/storage_backend.c:398
 #: src/storage_backend.c:434
 msgid "regex groups"
-msgstr ""
+msgstr "regex групе"
 
 #: src/storage_backend.c:410 src/storage_backend.c:551
 msgid "cannot read fd"
-msgstr ""
+msgstr "не могу да прочитам fd"
 
 #: src/storage_backend.c:484 src/storage_backend.c:606
-#, fuzzy, c-format
+#, c-format
 msgid "failed to wait for command: %s"
-msgstr "Неуспело покретање домена %s"
+msgstr "неуспело чекање на команду: %s"
 
 #: src/storage_backend.c:491 src/storage_backend.c:613
 #, c-format
 msgid "non-zero exit status from command %d"
-msgstr ""
+msgstr "не-нула статус излаза команде %d"
 
 #: src/storage_backend.c:497 src/storage_backend.c:619
 msgid "command did not exit cleanly"
-msgstr ""
+msgstr "команда се није правилно завршила"
 
 #: src/storage_backend.c:538
 msgid "n_columns too large"
-msgstr ""
+msgstr "n_columns превелике"
 
 #: src/storage_backend.c:585
-#, fuzzy, c-format
+#, c-format
 msgid "read error: %s"
-msgstr "унутрашња грешка %s"
+msgstr "грешка током читања: %s"
 
 #: src/storage_backend_disk.c:83 src/storage_backend_logical.c:56
 #, c-format
 msgid "unsupported pool format %s"
-msgstr ""
+msgstr "формат резервоара није подржан %s"
 
 #: src/storage_backend_disk.c:108 src/storage_backend_logical.c:69
 #, c-format
 msgid "unsupported pool format %d"
-msgstr ""
+msgstr "формат резервоара није подржан %d"
 
 #: src/storage_backend_disk.c:136 src/storage_backend_fs.c:186
 #: src/storage_backend_fs.c:256 src/storage_backend_fs.c:308
 #, c-format
 msgid "unsupported volume format %s"
-msgstr ""
+msgstr "формат диска није подржан %s"
 
 #: src/storage_backend_disk.c:163 src/storage_backend_fs.c:219
 #: src/storage_backend_fs.c:291 src/storage_backend_fs.c:323
 #, c-format
 msgid "unsupported volume format %d"
-msgstr ""
+msgstr "формат диска није подржан %d"
 
 #: src/storage_backend_disk.c:177 src/storage_backend_disk.c:190
 #: src/storage_backend_disk.c:197 src/storage_backend_disk.c:220
@@ -2518,395 +2432,376 @@ msgstr ""
 #: src/storage_backend_logical.c:116 src/storage_backend_logical.c:121
 #: src/storage_backend_logical.c:133 src/storage_backend_logical.c:143
 msgid "volume"
-msgstr ""
+msgstr "диск"
 
 #: src/storage_backend_disk.c:229
 msgid "volume extents"
-msgstr ""
+msgstr "опсези диска"
 
 #: src/storage_backend_disk.c:237
 msgid "cannot parse device start location"
-msgstr ""
+msgstr "не могу да рашчланим место почетка уређаја"
 
 #: src/storage_backend_disk.c:244
 msgid "cannot parse device end location"
-msgstr ""
+msgstr "не могу да рашчланим место завршетка уређаја"
 
 #: src/storage_backend_disk.c:250 src/storage_backend_logical.c:154
 #: src/storage_backend_logical.c:161
 msgid "extents"
-msgstr ""
+msgstr "опсези"
 
 #: src/storage_backend_disk.c:463
 msgid "no large enough free extent"
-msgstr ""
+msgstr "нема довољно великог слободног опсега"
 
 #: src/storage_backend_disk.c:498
 msgid "Disk pools are not yet supported"
-msgstr ""
+msgstr "Складишта дискова нису још подржана"
 
 #: src/storage_backend_fs.c:352
 #, c-format
 msgid "cannot read header '%s': %s"
-msgstr ""
+msgstr "не могу да прочитам заглавље '%s': %s"
 
 #: src/storage_backend_fs.c:460
 #, c-format
 msgid "cannot read %s: %s"
-msgstr ""
+msgstr "не могу да прочитам %s: %s"
 
 #: src/storage_backend_fs.c:506 src/storage_backend_fs.c:571
 #: src/storage_backend_iscsi.c:445
-#, fuzzy
 msgid "missing source host"
-msgstr "недостају изворни подаци за уређај"
+msgstr "недостаје домаћин извора"
 
 #: src/storage_backend_fs.c:511 src/storage_conf.c:318
-#, fuzzy
 msgid "missing source path"
-msgstr "недостају изворни подаци за уређај"
+msgstr "недостаје путања извора"
 
 #: src/storage_backend_fs.c:517 src/storage_backend_fs.c:582
 #: src/storage_backend_iscsi.c:452
-#, fuzzy
 msgid "missing source device"
-msgstr "недостају изворни подаци за уређај"
+msgstr "недостаје уређај извора"
 
 #: src/storage_backend_fs.c:540
 msgid "source"
-msgstr ""
+msgstr "извор"
 
 #: src/storage_backend_fs.c:576
-#, fuzzy
 msgid "missing source dir"
-msgstr "недостају изворни подаци за уређај"
+msgstr "недостаје изворни директоријум"
 
 #: src/storage_backend_fs.c:648 src/storage_backend_fs.c:842
 #: src/storage_backend_fs.c:881
 #, c-format
 msgid "cannot create path '%s': %s"
-msgstr ""
+msgstr "не могу да направим путању '%s': %s"
 
 #: src/storage_backend_fs.c:671
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open path '%s': %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "не могу да отворим путању '%s': %s"
 
 #: src/storage_backend_fs.c:691 src/storage_backend_fs.c:702
-#, fuzzy
 msgid "volume name"
-msgstr "име домена"
+msgstr "име диска"
 
 #: src/storage_backend_fs.c:713
 msgid "volume key"
-msgstr ""
+msgstr "кључ диска"
 
 #: src/storage_backend_fs.c:740
 #, c-format
 msgid "cannot statvfs path '%s': %s"
-msgstr ""
+msgstr "не могу да утврдим vfs путању'%s': %s"
 
 #: src/storage_backend_fs.c:801
 #, c-format
 msgid "cannot unlink path '%s': %s"
-msgstr ""
+msgstr "не могу да развежем путању '%s': %s"
 
 #: src/storage_backend_fs.c:825
 msgid "target"
-msgstr ""
+msgstr "мета"
 
 #: src/storage_backend_fs.c:834
 msgid "storage vol key"
-msgstr ""
+msgstr "кључ складишта"
 
 #: src/storage_backend_fs.c:859
 #, c-format
 msgid "cannot fill file '%s': %s"
-msgstr ""
+msgstr "не могу да попуним датотеку '%s': %s"
 
 #: src/storage_backend_fs.c:872
 #, c-format
 msgid "cannot extend file '%s': %s"
-msgstr ""
+msgstr "не могу да проширим датотеку '%s': %s"
 
 #: src/storage_backend_fs.c:888 src/storage_backend_fs.c:924
 #: src/storage_backend_fs.c:959 src/storage_backend_logical.c:435
 #, c-format
 msgid "cannot read path '%s': %s"
-msgstr ""
+msgstr "не могу да прочитам путању '%s': %s"
 
 #: src/storage_backend_fs.c:901
-#, fuzzy, c-format
+#, c-format
 msgid "unknown storage vol type %d"
-msgstr "непозната врста ОС-а %s"
+msgstr "непозната врста диска за складиштење %d"
 
 #: src/storage_backend_fs.c:939
 #, c-format
 msgid "unsupported storage vol type %d"
-msgstr ""
+msgstr "врста диска за складиштење није подржана %d"
 
 #: src/storage_backend_fs.c:966
 msgid "creation of non-raw images is not supported without qemu-img"
-msgstr ""
+msgstr "прављење не-сирових слика није подржано без qemu-img"
 
 #: src/storage_backend_fs.c:976 src/storage_backend_logical.c:444
-#, fuzzy, c-format
+#, c-format
 msgid "cannot set file owner '%s': %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "не могу да поставим власника датотеке „%s“: %s"
 
 #: src/storage_backend_fs.c:985 src/storage_backend_logical.c:451
-#, fuzzy, c-format
+#, c-format
 msgid "cannot set file mode '%s': %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "не могу да поставим режим датотеке „%s“: %s"
 
 #: src/storage_backend_fs.c:1001 src/storage_backend_logical.c:458
 #, c-format
 msgid "cannot close file '%s': %s"
-msgstr ""
+msgstr "не могу да затворим датотеку '%s': %s"
 
 #: src/storage_backend_fs.c:1024
 #, c-format
 msgid "cannot unlink file '%s': %s"
-msgstr ""
+msgstr "не могу да избришем линк ка датотеци '%s': %s"
 
 #: src/storage_backend_iscsi.c:59
-#, fuzzy, c-format
+#, c-format
 msgid "host lookup failed %s"
-msgstr "неуспела радња: %s"
+msgstr "потрга за домаћином није успела: %s"
 
 #: src/storage_backend_iscsi.c:66
 #, c-format
 msgid "no IP address for target %s"
-msgstr ""
+msgstr "нема IP адресе за мету %s"
 
 #: src/storage_backend_iscsi.c:75
 #, c-format
 msgid "cannot format ip addr for %s"
-msgstr ""
+msgstr "не могу да форматирам IP адресу за %s"
 
 #: src/storage_backend_iscsi.c:95
-#, fuzzy
 msgid "session"
-msgstr "прикажи верзију"
+msgstr "сесија"
 
 #: src/storage_backend_iscsi.c:136
 msgid "cannot find session"
-msgstr ""
+msgstr "не могу да пронађем сесију"
 
 #: src/storage_backend_iscsi.c:194
 msgid "Failed parsing iscsiadm commands"
-msgstr ""
+msgstr "Неуспело рашчлањивање iscsiadm команде"
 
 #: src/storage_backend_iscsi.c:211
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find the sysfs path for %d:%d:%d:%d: %s"
-msgstr "Неуспело проналажење мреже: %s"
+msgstr "Неуспело проналажење sysfs путање до %d:%d:%d:%d: %s"
 
 #: src/storage_backend_iscsi.c:220
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to opendir sysfs path %s: %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "Неуспело отварање директоријума sysfs путање %s: %s"
 
 #: src/storage_backend_iscsi.c:248
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find SCSI device for %d:%d:%d:%d: %s"
-msgstr "Неуспело проналажење мреже: %s"
+msgstr "Неуспело проналажење SCSI уређаја за %d:%d:%d:%d: %s"
 
 #: src/storage_backend_iscsi.c:261 src/storage_driver.c:867
-#, fuzzy
 msgid "name"
-msgstr "Име"
+msgstr "име"
 
 #: src/storage_backend_iscsi.c:266
 msgid "devpath"
-msgstr ""
+msgstr "путања до уређаја"
 
 #: src/storage_backend_iscsi.c:288 src/util.c:110
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open %s: %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "не могу да отворим %s: %s"
 
 #: src/storage_backend_iscsi.c:314
 msgid "key"
-msgstr ""
+msgstr "кључ"
 
 #: src/storage_backend_iscsi.c:426
-#, fuzzy
 msgid "portal"
-msgstr "Укупно"
+msgstr "портал"
 
 #: src/storage_backend_logical.c:167
 msgid "malformed volume extent offset value"
-msgstr ""
+msgstr "лоша offset вредност опсега диска"
 
 #: src/storage_backend_logical.c:172
 msgid "malformed volume extent length value"
-msgstr ""
+msgstr "лоша вредност дужине опсега диска"
 
 #: src/storage_backend_logical.c:177
 msgid "malformed volume extent size value"
-msgstr ""
+msgstr "лоша вредност величине опсега диска"
 
 #: src/storage_backend_logical.c:269
-#, fuzzy
 msgid "command line"
-msgstr "име домена"
+msgstr "командна линија"
 
 #: src/storage_backend_logical.c:286
 #, c-format
 msgid "cannot open device %s"
-msgstr ""
+msgstr "не могу да отворим уређај %s"
 
 #: src/storage_backend_logical.c:292
 #, c-format
 msgid "cannot clear device header %s"
-msgstr ""
+msgstr "не могу да обришем заглавље уређаја %s"
 
 #: src/storage_backend_logical.c:299
 #, c-format
 msgid "cannot close device %s"
-msgstr ""
+msgstr "не могу да затворим уређај %s"
 
 #: src/storage_backend_logical.c:467
 #, c-format
 msgid "cannot find newly created volume '%s': %s"
-msgstr ""
+msgstr "не могу да пронађем уређај који је скоро направљен '%s':%s"
 
 #: src/storage_conf.c:156
 msgid "missing auth host attribute"
-msgstr ""
+msgstr "недостаје атрибут ауторизације домаћина"
 
 #: src/storage_conf.c:163
 msgid "missing auth passwd attribute"
-msgstr ""
+msgstr "недостаје атрибут ауторизације лозинка"
 
 #: src/storage_conf.c:186 src/storage_conf.c:565
 msgid "malformed octal mode"
-msgstr ""
+msgstr "лош октални режим"
 
 #: src/storage_conf.c:196
 msgid "malformed owner element"
-msgstr ""
+msgstr "лош елемент власник"
 
 #: src/storage_conf.c:207
 msgid "malformed group element"
-msgstr ""
+msgstr "лош елемент група"
 
 #: src/storage_conf.c:235 src/storage_conf.c:690
-#, fuzzy
 msgid "unknown root element"
-msgstr "непознат домаћин %s"
+msgstr "непознат root елемент"
 
 #: src/storage_conf.c:251 src/storage_conf.c:697
 msgid "missing name element"
-msgstr ""
+msgstr "недостаје елемент имена"
 
 #: src/storage_conf.c:259
-#, fuzzy
 msgid "unable to generate uuid"
-msgstr "име мреже или uuid"
+msgstr "не могу да генеришем uuid"
 
 #: src/storage_conf.c:284
-#, fuzzy
 msgid "missing source host name"
-msgstr "недостају изворни подаци за уређај"
+msgstr "недостаје име домаћина извора"
 
 #: src/storage_conf.c:294
-#, fuzzy
 msgid "cannot extract source devices"
-msgstr "уређај спреге"
+msgstr "не могу да издвојим изворне уређаје"
 
 #: src/storage_conf.c:299
-#, fuzzy
 msgid "device"
-msgstr "блок уређај"
+msgstr "уређај"
 
 #: src/storage_conf.c:307
-#, fuzzy
 msgid "missing source device path"
-msgstr "недостају подаци о коренском уређају"
+msgstr "недостају путања изворног уређаја"
 
 #: src/storage_conf.c:332
-#, fuzzy, c-format
+#, c-format
 msgid "unknown auth type '%s'"
-msgstr "непозната врста ОС-а %s"
+msgstr "непозната врста ауторизације %s"
 
 #: src/storage_conf.c:349
-#, fuzzy
 msgid "missing target path"
-msgstr "недостају циљни подаци за уређај"
+msgstr "недостаје циљна путања"
 
 #: src/storage_conf.c:381 src/storage_conf.c:769
 msgid "malformed xml document"
-msgstr ""
+msgstr "лош xml документ"
 
 #: src/storage_conf.c:388 src/storage_conf.c:776
 msgid "xmlXPathContext"
-msgstr ""
+msgstr "xmlXPathContext"
 
 #: src/storage_conf.c:432
-#, fuzzy
 msgid "unexpected pool type"
-msgstr "неочекивана mime врста"
+msgstr "неочекивана врста складишта"
 
 #: src/storage_conf.c:543 src/storage_conf.c:906
 msgid "xml"
-msgstr ""
+msgstr "xml"
 
 #: src/storage_conf.c:575 src/storage_conf.c:585
 msgid "missing owner element"
-msgstr ""
+msgstr "недостаје елемент власник"
 
 #: src/storage_conf.c:649
-#, fuzzy, c-format
+#, c-format
 msgid "unknown size units '%s'"
-msgstr "непознат домаћин %s"
+msgstr "непозната величина јединица %s"
 
 #: src/storage_conf.c:656
 msgid "malformed capacity element"
-msgstr ""
+msgstr "лош елемент капацитета"
 
 #: src/storage_conf.c:661
 msgid "capacity element value too large"
-msgstr ""
+msgstr "вредност елемента капацитета превелика"
 
 #: src/storage_conf.c:708
 msgid "missing capacity element"
-msgstr ""
+msgstr "недостаје елемент капацитета"
 
 #: src/storage_conf.c:1016
 msgid "pool"
-msgstr ""
+msgstr "складиште"
 
 #: src/storage_conf.c:1158
 msgid "configFile"
-msgstr ""
+msgstr "датотека подешавања"
 
 #: src/storage_conf.c:1173
 msgid "config file"
-msgstr ""
+msgstr "датотека подешавања"
 
 #: src/storage_conf.c:1182
-#, fuzzy
 msgid "failed to generate XML"
-msgstr "Неуспело прављење XML-а"
+msgstr "нисам успео да направим XML"
 
 #: src/storage_driver.c:264 src/storage_driver.c:748 src/storage_driver.c:770
 msgid "no pool with matching uuid"
-msgstr ""
+msgstr "не постоји складиште са датим uuid-ом"
 
 #: src/storage_driver.c:282
 msgid "no pool with matching name"
-msgstr ""
+msgstr "не постоји складиште са датим именом"
 
 #: src/storage_driver.c:332 src/storage_driver.c:369
-#, fuzzy
 msgid "names"
-msgstr "Име"
+msgstr "имена"
 
 #: src/storage_driver.c:404
 msgid "storage pool already exists"
-msgstr ""
+msgstr "складиште већ постоји"
 
 #: src/storage_driver.c:477 src/storage_driver.c:514 src/storage_driver.c:553
 #: src/storage_driver.c:584 src/storage_driver.c:625 src/storage_driver.c:662
@@ -2915,67 +2810,64 @@ msgstr ""
 #: src/storage_driver.c:1034 src/storage_driver.c:1097
 #: src/storage_driver.c:1141 src/storage_driver.c:1175
 msgid "no storage pool with matching uuid"
-msgstr ""
+msgstr "не постоји складиште са датим uuid-ом"
 
 #: src/storage_driver.c:483
 msgid "pool is still active"
-msgstr ""
+msgstr "складиште је још увек активно"
 
 #: src/storage_driver.c:524
-#, fuzzy
 msgid "pool already active"
-msgstr "Домен је већ активан"
+msgstr "складиште је већ активно"
 
 #: src/storage_driver.c:563
-#, fuzzy
 msgid "storage pool is already active"
-msgstr "Домен је већ активан"
+msgstr "складиште је већ активно"
 
 #: src/storage_driver.c:594 src/storage_driver.c:672 src/storage_driver.c:832
 #: src/storage_driver.c:857 src/storage_driver.c:902 src/storage_driver.c:986
 #: src/storage_driver.c:1040 src/storage_driver.c:1103
 #: src/storage_driver.c:1147 src/storage_driver.c:1181
-#, fuzzy
 msgid "storage pool is not active"
-msgstr "путања дневника није датотека"
+msgstr "складиште није активно"
 
 #: src/storage_driver.c:635
 msgid "storage pool is still active"
-msgstr ""
+msgstr "складиште је још активно"
 
 #: src/storage_driver.c:641
 msgid "pool does not support volume delete"
-msgstr ""
+msgstr "складиште не подржава брисање диска"
 
 #: src/storage_driver.c:776
 msgid "pool has no config file"
-msgstr ""
+msgstr "складиште нема датотеку подешавања"
 
 #: src/storage_driver.c:910 src/storage_driver.c:1051
 #: src/storage_driver.c:1111 src/storage_driver.c:1155
 #: src/storage_driver.c:1189
 msgid "no storage vol with matching name"
-msgstr ""
+msgstr "не постоји складиште са датим именом"
 
 #: src/storage_driver.c:939
 msgid "no storage vol with matching key"
-msgstr ""
+msgstr "не постоји складиште са датим кључем"
 
 #: src/storage_driver.c:964
 msgid "no storage vol with matching path"
-msgstr ""
+msgstr "не постоји складиште са датом путањом"
 
 #: src/storage_driver.c:999
 msgid "storage vol already exists"
-msgstr ""
+msgstr "диск складиштења већ постоји"
 
 #: src/storage_driver.c:1006
 msgid "storage pool does not support volume creation"
-msgstr ""
+msgstr "складиште не подржава прављење диска"
 
 #: src/storage_driver.c:1057
 msgid "storage pool does not support vol deletion"
-msgstr ""
+msgstr "складиште не подржава брисање диска"
 
 #: src/test.c:247 src/test.c:612 src/test.c:1308
 msgid "getting time of day"
@@ -3115,59 +3007,55 @@ msgstr "превише домена"
 
 #: src/test.c:1336
 msgid "cannot allocate space for metadata"
-msgstr ""
+msgstr "не могу да доделим простор за мета податке"
 
 #: src/test.c:1342
-#, fuzzy
 msgid "cannot save domain"
-msgstr "самостално покрени домен"
+msgstr "не могу да сачувам домен"
 
 #: src/test.c:1348 src/test.c:1453
 msgid "cannot write header"
-msgstr ""
+msgstr "не могу да упишем заглавље"
 
 #: src/test.c:1354
 msgid "cannot write metadata length"
-msgstr ""
+msgstr "не могу да упишем дужину мета податка"
 
 #: src/test.c:1360
 msgid "cannot write metadata"
-msgstr ""
+msgstr "не могу да упишем мета податак"
 
 #: src/test.c:1368 src/test.c:1459
-#, fuzzy
 msgid "cannot save domain data"
-msgstr "списак домена за чвор"
+msgstr "не могу да сачувам податке домена"
 
 #: src/test.c:1397
 msgid "incomplete save header"
-msgstr ""
+msgstr "заглавље је сачувано непотпуно"
 
 #: src/test.c:1403
 msgid "mismatched header magic"
-msgstr ""
+msgstr "неслагање заглавља magic-а"
 
 #: src/test.c:1409
-#, fuzzy
 msgid "failed to read metadata length"
-msgstr "неуспело читање из Xen демона"
+msgstr "неуспело читање дужине мета податка"
 
 #: src/test.c:1415
 msgid "length of metadata out of range"
-msgstr ""
+msgstr "дужина мета податка је ван опсега"
 
 #: src/test.c:1427
 msgid "incomplete metdata"
-msgstr ""
+msgstr "непотпун мета податак"
 
 #: src/test.c:1448
-#, fuzzy
 msgid "cannot save domain core"
-msgstr "списак домена за чвор"
+msgstr "не могу да сачувам језгро домена"
 
 #: src/test.c:1614
 msgid "Range exceeds available cells"
-msgstr ""
+msgstr "Опсег превазилази дозвољене ћелије"
 
 #: src/test.c:1633
 msgid "Domain is already running"
@@ -3190,24 +3078,25 @@ msgid "Network is already running"
 msgstr "Мрежа је већ покренута"
 
 #: src/util.c:118
-#, fuzzy, c-format
+#, c-format
 msgid "cannot create pipe: %s"
-msgstr "Неуспело прављење XML-а"
+msgstr "не могу да направим цев: %s"
 
 #: src/util.c:124
-#, fuzzy, c-format
+#, c-format
 msgid "cannot fork child process: %s"
-msgstr "Неуспело отварање „%s“: %s"
+msgstr "не могу да раздвојим садржани процес: %s"
 
 #: src/util.c:465
 #, c-format
 msgid "%s: not implemented"
-msgstr ""
+msgstr "%s: није реализовано"
 
 #: src/uuid.c:102
 #, c-format
 msgid "Falling back to pseudorandom UUID, failed to generate random bytes: %s"
 msgstr ""
+"Враћам се на pseudorandom UUID, нисам успео да генеришем random бајтове : %s"
 
 #: src/virsh.c:342
 msgid "print help"
@@ -3313,7 +3202,7 @@ msgstr "Нема доступних конзола за доме\n"
 
 #: src/virsh.c:541
 msgid "console not implemented on this platform"
-msgstr ""
+msgstr "конзола није реализована на овој платформи"
 
 #: src/virsh.c:552
 msgid "list domains"
@@ -3360,9 +3249,8 @@ msgid "domain state"
 msgstr "стање домена"
 
 #: src/virsh.c:671
-#, fuzzy
 msgid "Returns state about a domain."
-msgstr "Враћа стање о текућем домену."
+msgstr "Враћа стање о домену."
 
 #: src/virsh.c:707
 msgid "get device block stats for a domain"
@@ -3781,15 +3669,15 @@ msgstr "cpu број(еви) домаћина (раздвојени зарезо
 
 #: src/virsh.c:1727
 msgid "vcpupin: Invalid or missing vCPU number."
-msgstr ""
+msgstr "vcpupin: Неисправан или недостаје vCPU број."
 
 #: src/virsh.c:1733
 msgid "vcpupin: Missing cpulist"
-msgstr ""
+msgstr "vcpupin: Недостаје списак процесора"
 
 #: src/virsh.c:1744
 msgid "vcpupin: Invalid vCPU number."
-msgstr ""
+msgstr "vcpupin: Неисправан vCPU број."
 
 #: src/virsh.c:1758
 msgid "cpulist: Invalid format. Empty string."
@@ -3826,7 +3714,6 @@ msgid "change number of virtual CPUs"
 msgstr "промени број виртуелних CPU-а"
 
 #: src/virsh.c:1824
-#, fuzzy
 msgid "Change the number of virtual CPUs in the guest domain."
 msgstr "Мења број виртуелних CPU-а активних у домену госта."
 
@@ -4191,270 +4078,247 @@ msgid "failed to get network UUID"
 msgstr "неуспело добављање UUID мреже"
 
 #: src/virsh.c:2770
-#, fuzzy
 msgid "autostart a pool"
-msgstr "самостално покрени домен"
+msgstr "самостално покрени складиште"
 
 #: src/virsh.c:2772
-#, fuzzy
 msgid "Configure a pool to be automatically started at boot."
-msgstr "Подесите домен да се самостално покреће при покретању система."
+msgstr "Подесите складиште да се самостално покреће при покретању система."
 
 #: src/virsh.c:2777 src/virsh.c:3112 src/virsh.c:3152 src/virsh.c:3192
 #: src/virsh.c:3232 src/virsh.c:3272 src/virsh.c:3457 src/virsh.c:3728
 #: src/virsh.c:3864 src/virsh.c:3906 src/virsh.c:3958 src/virsh.c:4000
 #: src/virsh.c:4144
-#, fuzzy
 msgid "pool name or uuid"
-msgstr "име домена или uuid"
+msgstr "име складишта или uuid"
 
 #: src/virsh.c:2799
-#, fuzzy, c-format
+#, c-format
 msgid "failed to mark pool %s as autostarted"
-msgstr "Неуспешно означавање мреже %s као само покренута"
+msgstr "Неуспешно означавање складишта %s као самопокренутог"
 
 #: src/virsh.c:2802
-#, fuzzy, c-format
+#, c-format
 msgid "failed to unmark pool %s as autostarted"
-msgstr "Неуспешно скидање ознаке мреже %s као само покренута"
+msgstr "Неуспешно скидање ознаке складишта %s као самопокренуто"
 
 #: src/virsh.c:2809
-#, fuzzy, c-format
+#, c-format
 msgid "Pool %s marked as autostarted\n"
-msgstr "Домен %s је означен као само покренути\n"
+msgstr "Складиште %s је означено као само покренуто\n"
 
 #: src/virsh.c:2811
-#, fuzzy, c-format
+#, c-format
 msgid "Pool %s unmarked as autostarted\n"
-msgstr "Домену %s је скинута ознака само покренути\n"
+msgstr "Складишту %s је скинута ознака самопокренуто\n"
 
 #: src/virsh.c:2821
-#, fuzzy
 msgid "create a pool from an XML file"
-msgstr "направи домен из XML датотеке"
+msgstr "направи складиште из XML датотеке"
 
 #: src/virsh.c:2822 src/virsh.c:2869
-#, fuzzy
 msgid "Create a pool."
-msgstr "Прављење домена."
+msgstr "Прављење складишта."
 
 #: src/virsh.c:2827 src/virsh.c:2969
-#, fuzzy
 msgid "file containing an XML pool description"
-msgstr "датотека која садржи XML опис домена"
+msgstr "датотека која садржи XML опис складишта"
 
 #: src/virsh.c:2854
-#, fuzzy, c-format
+#, c-format
 msgid "Pool %s created from %s\n"
-msgstr "Домен %s је направљен из %s\n"
+msgstr "Складиште %s је направљено из %s\n"
 
 #: src/virsh.c:2857
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create pool from %s"
-msgstr "Неуспело прављење домена из %s"
+msgstr "Неуспело прављење складишта из %s"
 
 #: src/virsh.c:2868
-#, fuzzy
 msgid "create a pool from a set of args"
-msgstr "направи домен из XML датотеке"
+msgstr "направи складиште из скупа аргумената"
 
 #: src/virsh.c:2874 src/virsh.c:3017
-#, fuzzy
 msgid "name of the pool"
-msgstr "име неактивног домена"
+msgstr "име складишта"
 
 #: src/virsh.c:2875 src/virsh.c:3018
 msgid "type of the pool"
-msgstr ""
+msgstr "врста складишта"
 
 #: src/virsh.c:2876 src/virsh.c:3019
 msgid "source-host for underlying storage"
-msgstr ""
+msgstr "домаћин извора подвученог складишта"
 
 #: src/virsh.c:2877 src/virsh.c:3020
 msgid "source path for underlying storage"
-msgstr ""
+msgstr "путања до извора подвученог складишта"
 
 #: src/virsh.c:2878 src/virsh.c:3021
 msgid "source device for underlying storage"
-msgstr ""
+msgstr "изворни уређај подвученог складишта"
 
 #: src/virsh.c:2879 src/virsh.c:3022
 msgid "target for underlying storage"
-msgstr ""
+msgstr "мета подвученог складишта"
 
 #: src/virsh.c:2944
-#, fuzzy, c-format
+#, c-format
 msgid "Pool %s created\n"
-msgstr "Домен %s је направљен из %s\n"
+msgstr "Складиште %s је направљено\n"
 
 #: src/virsh.c:2948
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create pool %s"
-msgstr "Неуспело прављење домена из %s"
+msgstr "Нисам успео да направим складиште %s"
 
 #: src/virsh.c:2963
-#, fuzzy
 msgid "define (but don't start) a pool from an XML file"
-msgstr "дефиниши (али немој покретати) домен из XML датотеке"
+msgstr "дефиниши (али немој покретати) складиште из XML датотеке"
 
 #: src/virsh.c:2964 src/virsh.c:3012
-#, fuzzy
 msgid "Define a pool."
-msgstr "Дефинисање домена."
+msgstr "Дефинисање складишта."
 
 #: src/virsh.c:2996
-#, fuzzy, c-format
+#, c-format
 msgid "Pool %s defined from %s\n"
-msgstr "Домен %s је дефинисан из %s\n"
+msgstr "Складиште %s је дефинисано из %s\n"
 
 #: src/virsh.c:2999
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to define pool from %s"
-msgstr "Неуспело дефинисање домена из %s"
+msgstr "Неуспело дефинисање складишта из %s"
 
 #: src/virsh.c:3011
 msgid "define a pool from a set of args"
-msgstr ""
+msgstr "дефиниши складиште из скупа аргумената"
 
 #: src/virsh.c:3087
-#, fuzzy, c-format
+#, c-format
 msgid "Pool %s defined\n"
-msgstr "Домен %s је дефинисан из %s\n"
+msgstr "Складиште %s је дефинисано \n"
 
 #: src/virsh.c:3091
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to define pool %s"
-msgstr "Неуспело укидање дефиниције домена %s"
+msgstr "Неуспело укидање дефиниције складишта %s"
 
 #: src/virsh.c:3106
 msgid "build a pool"
-msgstr ""
+msgstr "изгради складиште"
 
 #: src/virsh.c:3107
 msgid "Build a given pool."
-msgstr ""
+msgstr "Изгради дато складиште."
 
 #: src/virsh.c:3130
 #, c-format
 msgid "Pool %s builded\n"
-msgstr ""
+msgstr "складиште %s је изграђено\n"
 
 #: src/virsh.c:3132
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to build pool %s"
-msgstr "Неуспело обустављање домена %s"
+msgstr "нисам успео да изградим складиште %s"
 
 #: src/virsh.c:3146
-#, fuzzy
 msgid "destroy a pool"
-msgstr "уништи домен"
+msgstr "уништи складиште"
 
 #: src/virsh.c:3147
-#, fuzzy
 msgid "Destroy a given pool."
-msgstr "Уништавање задатог домена."
+msgstr "Уништавање задатог складишта."
 
 #: src/virsh.c:3170
-#, fuzzy, c-format
+#, c-format
 msgid "Pool %s destroyed\n"
-msgstr "Домен %s је уништен\n"
+msgstr "Складиште %s је уништено\n"
 
 #: src/virsh.c:3172
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to destroy pool %s"
-msgstr "Неуспело уништавање домена %s"
+msgstr "Неуспело уништавање складишта %s"
 
 #: src/virsh.c:3186
 msgid "delete a pool"
-msgstr ""
+msgstr "обриши складиште"
 
 #: src/virsh.c:3187
-#, fuzzy
 msgid "Delete a given pool."
-msgstr "Уништавање задатог домена."
+msgstr "Брисање задатог складишта."
 
 #: src/virsh.c:3210
-#, fuzzy, c-format
+#, c-format
 msgid "Pool %s deleted\n"
-msgstr "Домен %s је уништен\n"
+msgstr "Складиште %s је обрисано\n"
 
 #: src/virsh.c:3212
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to delete pool %s"
-msgstr "Неуспело уништавање домена %s"
+msgstr "Неуспело брисање складишта %s"
 
 #: src/virsh.c:3226
 msgid "refresh a pool"
-msgstr ""
+msgstr "ажурирај складиште"
 
 #: src/virsh.c:3227
 msgid "Refresh a given pool."
-msgstr ""
+msgstr "Ажурирај дато складиште."
 
 #: src/virsh.c:3250
-#, fuzzy, c-format
+#, c-format
 msgid "Pool %s refreshed\n"
-msgstr "Домен %s је настављен\n"
+msgstr "Складиште %s је ажурирано\n"
 
 #: src/virsh.c:3252
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to refresh pool %s"
-msgstr "Неуспело настављање домена %s"
+msgstr "Неуспело ажурирање складишта %s"
 
 #: src/virsh.c:3266
-#, fuzzy
 msgid "pool information in XML"
-msgstr "подаци о домену у XML-у"
+msgstr "подаци о складишту у XML-у"
 
 #: src/virsh.c:3267
-#, fuzzy
 msgid "Output the pool information as an XML dump to stdout."
-msgstr "Испиши податке о домену као XML избачај на stdout."
+msgstr "Испиши податке о складишту као XML избачај на stdout."
 
 #: src/virsh.c:3307
-#, fuzzy
 msgid "list pools"
-msgstr "испиши домене"
+msgstr "испиши складишта"
 
 #: src/virsh.c:3308
-#, fuzzy
 msgid "Returns list of pools."
-msgstr "Враћа списак домена."
+msgstr "Враћа списак складишта."
 
 #: src/virsh.c:3313
-#, fuzzy
 msgid "list inactive pools"
-msgstr "испиши неактивне домене"
+msgstr "испиши неактивна складишта"
 
 #: src/virsh.c:3314
-#, fuzzy
 msgid "list inactive & active pools"
-msgstr "испиши неактивне и активне домене"
+msgstr "испиши неактивна и активна складишта"
 
 #: src/virsh.c:3334 src/virsh.c:3342
-#, fuzzy
 msgid "Failed to list active pools"
-msgstr "Неуспело исписивање активних домена"
+msgstr "Неуспело исписивање активних складишта"
 
 #: src/virsh.c:3353 src/virsh.c:3361
-#, fuzzy
 msgid "Failed to list inactive pools"
-msgstr "Неуспело исписивање неактивних домена"
+msgstr "Неуспело исписивање неактивних складишта"
 
 #: src/virsh.c:3451
-#, fuzzy
 msgid "storage pool information"
-msgstr "подаци о чвору"
+msgstr "подаци о складишту"
 
 #: src/virsh.c:3452
-#, fuzzy
 msgid "Returns basic information about the storage pool."
-msgstr "Враћа основне податке о чвору."
+msgstr "Враћа основне податке о складишту."
 
 #: src/virsh.c:3490
 msgid "building"
-msgstr ""
+msgstr "изградња"
 
 #: src/virsh.c:3494 src/virsh.c:5879 src/virsh.c:5905
 msgid "running"
@@ -4462,257 +4326,226 @@ msgstr "покренуто"
 
 #: src/virsh.c:3498
 msgid "degraded"
-msgstr ""
+msgstr "враћено"
 
 #: src/virsh.c:3505 src/virsh.c:3934
 msgid "Capacity:"
-msgstr ""
+msgstr "Капацитет:"
 
 #: src/virsh.c:3508 src/virsh.c:3937
-#, fuzzy
 msgid "Allocation:"
-msgstr "заузимам домен"
+msgstr "Додела:"
 
 #: src/virsh.c:3511
 msgid "Available:"
-msgstr ""
+msgstr "Доступно:"
 
 #: src/virsh.c:3527
-#, fuzzy
 msgid "convert a pool UUID to pool name"
-msgstr "пребаци мрежни UUID у име мреже"
+msgstr "пребаци UUID складишта у име складишта"
 
 #: src/virsh.c:3532
-#, fuzzy
 msgid "pool uuid"
-msgstr "uuid домена"
+msgstr "uuid складишта"
 
 #: src/virsh.c:3558
-#, fuzzy
 msgid "start a (previously defined) inactive pool"
-msgstr "покрени (претходно дефинисан) неактивни домен"
+msgstr "покрени (претходно дефинисано) неактивно складиште"
 
 #: src/virsh.c:3559
-#, fuzzy
 msgid "Start a pool."
-msgstr "Покреће домен."
+msgstr "Покреће складиште."
 
 #: src/virsh.c:3564
-#, fuzzy
 msgid "name of the inactive pool"
-msgstr "име неактивног домена"
+msgstr "име неактивног складишта"
 
 #: src/virsh.c:3581
-#, fuzzy, c-format
+#, c-format
 msgid "Pool %s started\n"
-msgstr "Домен %s је покренут\n"
+msgstr "Складиште %s је покренуто\n"
 
 #: src/virsh.c:3584
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to start pool %s"
-msgstr "Неуспело покретање домена %s"
+msgstr "Неуспело покретање складишта %s"
 
 #: src/virsh.c:3597
-#, fuzzy
 msgid "create a volume from a set of args"
-msgstr "направи домен из XML датотеке"
+msgstr "направи диск из скупа аргумената"
 
 #: src/virsh.c:3598 src/virsh.c:3800
-#, fuzzy
 msgid "Create a vol."
-msgstr "Прављење домена."
+msgstr "Прављење диска."
 
 #: src/virsh.c:3603 src/virsh.c:3766 src/virsh.c:3805
-#, fuzzy
 msgid "pool name"
-msgstr "име домена"
+msgstr "име складишта"
 
 #: src/virsh.c:3604
-#, fuzzy
 msgid "name of the volume"
-msgstr "име неактивног домена"
+msgstr "име диска"
 
 #: src/virsh.c:3605
 msgid "size of the vol with optional k,M,G,T suffix"
-msgstr ""
+msgstr "величина диска са опционим k, M, G, T суфиксом"
 
 #: src/virsh.c:3606
 msgid "initial allocation size with optional k,M,G,T suffix"
-msgstr ""
+msgstr "почетна додељена величина са опционим k, M, G, T суфиксом"
 
 #: src/virsh.c:3607
 msgid "file format type raw,bochs,qcow,qcow2,vmdk"
-msgstr ""
+msgstr "врста формата датотека raw,bochs,qcow,qcow2,vmdk"
 
 #: src/virsh.c:3666 src/virsh.c:3671
 #, c-format
 msgid "Malformed size %s"
-msgstr ""
+msgstr "Лоша величина %s"
 
 #: src/virsh.c:3702
-#, fuzzy, c-format
+#, c-format
 msgid "Vol %s created\n"
-msgstr "Домен %s је направљен из %s\n"
+msgstr "Диск %s је направљен\n"
 
 #: src/virsh.c:3706
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create vol %s"
-msgstr "Неуспело прављење XML-а"
+msgstr "Неуспело прављење диска %s"
 
 #: src/virsh.c:3722
-#, fuzzy
 msgid "undefine an inactive pool"
-msgstr "укини дефиницију неактивног домена"
+msgstr "укини дефиницију неактивног складишта"
 
 #: src/virsh.c:3723
-#, fuzzy
 msgid "Undefine the configuration for an inactive pool."
-msgstr "Укидање дефиниције подешавања за неактиван домен."
+msgstr "Укидање дефиниције подешавања за неактивано складиште."
 
 #: src/virsh.c:3746
-#, fuzzy, c-format
+#, c-format
 msgid "Pool %s has been undefined\n"
-msgstr "Домену %s је укинута дефиниција\n"
+msgstr "Складишту %s је укинута дефиниција\n"
 
 #: src/virsh.c:3748
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to undefine pool %s"
-msgstr "Неуспело укидање дефиниције домена %s"
+msgstr "Неуспело укидање дефиниције скалдишта %s"
 
 #: src/virsh.c:3761
-#, fuzzy
 msgid "convert a pool name to pool UUID"
-msgstr "пребаци име мреже у UUID мреже"
+msgstr "пребаци име складишта у UUID складишта"
 
 #: src/virsh.c:3786
-#, fuzzy
 msgid "failed to get pool UUID"
-msgstr "неуспело добављање UUID домена"
+msgstr "неуспело добављање UUID складишта"
 
 #: src/virsh.c:3799
-#, fuzzy
 msgid "create a vol from an XML file"
-msgstr "направи домен из XML датотеке"
+msgstr "направи диск из XML датотеке"
 
 #: src/virsh.c:3806
-#, fuzzy
 msgid "file containing an XML vol description"
-msgstr "датотека која садржи XML опис домена"
+msgstr "датотека која садржи XML опис диска"
 
 #: src/virsh.c:3843
-#, fuzzy, c-format
+#, c-format
 msgid "Vol %s created from %s\n"
-msgstr "Домен %s је направљен из %s\n"
+msgstr "Диск %s је направљен из %s\n"
 
 #: src/virsh.c:3847
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create vol from %s"
-msgstr "Неуспело прављење домена из %s"
+msgstr "Неуспело прављење диска из %s"
 
 #: src/virsh.c:3858
 msgid "delete a vol"
-msgstr ""
+msgstr "обриши диск"
 
 #: src/virsh.c:3859
-#, fuzzy
 msgid "Delete a given vol."
-msgstr "Уништавање задатог домена."
+msgstr "Уништавање задатог диска."
 
 #: src/virsh.c:3865 src/virsh.c:3907 src/virsh.c:3959
 msgid "vol name, key or path"
-msgstr ""
+msgstr "име, кључ или путања диска"
 
 #: src/virsh.c:3884
-#, fuzzy, c-format
+#, c-format
 msgid "Vol %s deleted\n"
-msgstr "Домен %s је уништен\n"
+msgstr "Диск %s је уништен\n"
 
 #: src/virsh.c:3886
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to delete vol %s"
-msgstr "Неуспело уништавање домена %s"
+msgstr "Неуспело уништавање диска %s"
 
 #: src/virsh.c:3900
-#, fuzzy
 msgid "storage vol information"
-msgstr "подаци о чвору"
+msgstr "подаци о диску складиштења"
 
 #: src/virsh.c:3901
-#, fuzzy
 msgid "Returns basic information about the storage vol."
-msgstr "Враћа основне податке о чвору."
+msgstr "Враћа основне податке о диску складиштења."
 
 #: src/virsh.c:3929
-#, fuzzy
 msgid "Type:"
-msgstr "Врста ОС-а:"
+msgstr "Врста:"
 
 #: src/virsh.c:3931
-#, fuzzy
 msgid "file"
-msgstr "XML датотека"
+msgstr "датотека"
 
 #: src/virsh.c:3931
-#, fuzzy
 msgid "block"
 msgstr "блокирано"
 
 #: src/virsh.c:3952
-#, fuzzy
 msgid "vol information in XML"
-msgstr "подаци о домену у XML-у"
+msgstr "подаци о диску у XML-у"
 
 #: src/virsh.c:3953
-#, fuzzy
 msgid "Output the vol information as an XML dump to stdout."
-msgstr "Испиши податке о домену као XML избачај на stdout."
+msgstr "Испиши податке о диску као XML избачај на stdout."
 
 #: src/virsh.c:3994
-#, fuzzy
 msgid "list vols"
-msgstr "испиши домене"
+msgstr "испиши дискове"
 
 #: src/virsh.c:3995
-#, fuzzy
 msgid "Returns list of vols by pool."
-msgstr "Враћа списак домена."
+msgstr "Враћа списак складишта."
 
 #: src/virsh.c:4020 src/virsh.c:4028
-#, fuzzy
 msgid "Failed to list active vols"
-msgstr "Неуспело исписивање активних домена"
+msgstr "Неуспело исписивање активних дискова"
 
 #: src/virsh.c:4036
 msgid "Path"
-msgstr ""
+msgstr "Путања"
 
 #: src/virsh.c:4073
-#, fuzzy
 msgid "convert a vol UUID to vol name"
-msgstr "пребаци мрежни UUID у име мреже"
+msgstr "пребаци диска UUID у име диска"
 
 #: src/virsh.c:4078
 msgid "vol key or path"
-msgstr ""
+msgstr "кључ или путања диска"
 
 #: src/virsh.c:4106
-#, fuzzy
 msgid "convert a vol UUID to vol key"
-msgstr "пребаци мрежни UUID у име мреже"
+msgstr "пребаци UUID диска у име диска"
 
 #: src/virsh.c:4111
-#, fuzzy
 msgid "vol uuid"
-msgstr "uuid домена"
+msgstr "uuid диска"
 
 #: src/virsh.c:4139
-#, fuzzy
 msgid "convert a vol UUID to vol path"
-msgstr "пребаци мрежни UUID у име мреже"
+msgstr "пребаци UUID диска у име диска"
 
 #: src/virsh.c:4145
 msgid "vol name or key"
-msgstr ""
+msgstr "име или кључ диска"
 
 #: src/virsh.c:4176
 msgid "show version"
@@ -4805,12 +4638,12 @@ msgstr "XML датотека"
 
 #: src/virsh.c:4479
 msgid "attach-device: Missing <file> option"
-msgstr ""
+msgstr "повежи-уређај: Недостаје <file> опција"
 
 #: src/virsh.c:4493
 #, c-format
 msgid "Failed to attach device from %s"
-msgstr "Неуспело качење уређаја из %s"
+msgstr "Нисам успео да повежем уређај из %s"
 
 #: src/virsh.c:4508
 msgid "detach device from an XML file"
@@ -4822,7 +4655,7 @@ msgstr "Откачи уређај из XML <датотеке>."
 
 #: src/virsh.c:4536
 msgid "detach-device: Missing <file> option"
-msgstr ""
+msgstr "откачи-уређај: Недостаје <file> опција"
 
 #: src/virsh.c:4550
 #, c-format
@@ -4850,7 +4683,6 @@ msgid "target network name"
 msgstr "име циљне мреже"
 
 #: src/virsh.c:4575 src/virsh.c:4687
-#, fuzzy
 msgid "MAC address"
 msgstr "MAC адреса"
 
@@ -5023,24 +4855,22 @@ msgid "failed to get network '%s'"
 msgstr "неуспело добављање мреже „%s“"
 
 #: src/virsh.c:5529 src/virsh.c:5575
-#, fuzzy
 msgid "undefined pool name"
-msgstr "недефинисано име мреже"
+msgstr "име складишта није дефинисано"
 
 #: src/virsh.c:5553
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get pool '%s'"
-msgstr "неуспело добављање домена „%s“"
+msgstr "нисам успео да добавим диск „%s“"
 
 #: src/virsh.c:5570
-#, fuzzy
 msgid "undefined vol name"
-msgstr "недефинисано име мреже"
+msgstr "недефинисано име диска"
 
 #: src/virsh.c:5606
-#, fuzzy, c-format
+#, c-format
 msgid "failed to get vol '%s'"
-msgstr "неуспело добављање домена „%s“"
+msgstr "неуспело добављање диска „%s“"
 
 #: src/virsh.c:5637
 #, c-format
@@ -5172,7 +5002,6 @@ msgid "%s: failed to write log file: %s"
 msgstr "%s: неуспело уписивање датотеке дневника: %s"
 
 #: src/virsh.c:6367
-#, fuzzy
 msgid "failed to disconnect from the hypervisor"
 msgstr "Неуспело прекидање везе са хипервизором"
 
@@ -5601,12 +5430,11 @@ msgid "Network not found: %s"
 msgstr "Мрежа није пронађена: %s"
 
 #: src/virterror.c:676
-#, fuzzy
 msgid "invalid MAC address"
 msgstr "неисправна MAC адреса"
 
 #: src/virterror.c:678
-#, fuzzy, c-format
+#, c-format
 msgid "invalid MAC address: %s"
 msgstr "неисправна MAC адреса: %s"
 
@@ -5620,54 +5448,49 @@ msgid "authentication failed: %s"
 msgstr "неуспела аутентификација: %s"
 
 #: src/virterror.c:688
-#, fuzzy
 msgid "Storage pool not found"
-msgstr "Мрежа није пронађена"
+msgstr "Складиште није пронађено"
 
 #: src/virterror.c:690
-#, fuzzy, c-format
+#, c-format
 msgid "Storage pool not found: %s"
-msgstr "Мрежа није пронађена: %s"
+msgstr "Складиште није пронађено: %s"
 
 #: src/virterror.c:694
-#, fuzzy
 msgid "Storage volume not found"
-msgstr "Мрежа није пронађена"
+msgstr "Диск за складиштење није пронађен"
 
 #: src/virterror.c:696
-#, fuzzy, c-format
+#, c-format
 msgid "Storage volume not found: %s"
-msgstr "Мрежа није пронађена: %s"
+msgstr "Диск за складиштење није пронађен: %s"
 
 #: src/virterror.c:700
-#, fuzzy
 msgid "invalid storage pool pointer in"
-msgstr "неисправан показивач везе у"
+msgstr "неисправан показивач складишта у"
 
 #: src/virterror.c:702
-#, fuzzy, c-format
+#, c-format
 msgid "invalid storage pool pointer in %s"
-msgstr "неисправан показивач везе у %s"
+msgstr "неисправан показивач складишта у %s"
 
 #: src/virterror.c:706
-#, fuzzy
 msgid "invalid storage volume pointer in"
-msgstr "неисправан показивач везе у"
+msgstr "неисправан показивач диска складиштења у"
 
 #: src/virterror.c:708
-#, fuzzy, c-format
+#, c-format
 msgid "invalid storage volume pointer in %s"
-msgstr "неисправан показивач везе у %s"
+msgstr "неисправан показивач диска складиштења везе у %s"
 
 #: src/virterror.c:712
-#, fuzzy
 msgid "Failed to find a storage driver"
-msgstr "Неуспело проналажење мреже"
+msgstr "Неуспело проналажење управљачког програма складишта"
 
 #: src/virterror.c:714
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find a storage driver: %s"
-msgstr "Неуспело проналажење мреже: %s"
+msgstr "Неуспело проналажење управљачког програма складишта: %s"
 
 #: src/xen_internal.c:1326
 #, c-format
@@ -5685,14 +5508,12 @@ msgid "allocating %d domain info"
 msgstr "додељујем инфо %d домена"
 
 #: src/xend_internal.c:233
-#, fuzzy
 msgid "failed to create a socket"
-msgstr "неуспело заузимање чвора"
+msgstr "нисам успео да направим сокет"
 
 #: src/xend_internal.c:255
-#, fuzzy
 msgid "failed to connect to xend"
-msgstr "неуспело повезивање са Xen складиштем"
+msgstr "нисам успео да се повежем са xend"
 
 #: src/xend_internal.c:302 src/xend_internal.c:305
 msgid "failed to read from Xen Daemon"
@@ -5724,9 +5545,8 @@ msgid "domain information incomplete, missing name"
 msgstr "непотпуни подаци о домену, недостаје име"
 
 #: src/xend_internal.c:1318
-#, fuzzy
 msgid "domain information incomplete, missing HVM loader"
-msgstr "непотпуни подаци о домену, недостаје име"
+msgstr "непотпуни подаци о домену, недостаје HVM програм за учитавање"
 
 #: src/xend_internal.c:1370
 msgid "domain information incomplete, missing kernel & bootloader"
@@ -5772,53 +5592,56 @@ msgstr "неуспело тумачење података о Xend домену"
 
 #: src/xend_internal.c:2594
 msgid "xenDaemonDomainDumpXMLByID failed to find this domain"
-msgstr ""
+msgstr "xenDaemonDomainDumpXMLByID није успео да пронађе овај домен"
 
 #: src/xend_internal.c:2619
 msgid "xenDaemonDomainDumpXMLByName failed to find this domain"
-msgstr ""
+msgstr "xenDaemonDomainDumpXMLByName није успео да пронађе овај домен"
 
 #: src/xend_internal.c:3231 src/xend_internal.c:3540
-#, fuzzy
 msgid "failed to parse domain description"
-msgstr "неуспело тумачење података о Xend домену"
+msgstr "неуспелорашчлањење описа домена"
 
 #: src/xend_internal.c:3410
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support renaming domains during "
 "migration"
 msgstr ""
+"xenDaemonDomainMigrate: Xen не подржава промену имена домена приликом "
+"премештања"
 
 #: src/xend_internal.c:3420
 msgid ""
 "xenDaemonDomainMigrate: Xen does not support bandwidth limits during "
 "migration"
 msgstr ""
+"xenDaemonDomainMigrate: Xen не подржава ограничавање пропусног опсега "
+"приликом премештања"
 
 #: src/xend_internal.c:3432
 msgid "xenDaemonDomainMigrate: unsupported flag"
-msgstr ""
+msgstr "xenDaemonDomainMigrate: заставица није подржана"
 
 #: src/xend_internal.c:3445
 msgid "xenDaemonDomainMigrate: invalid URI"
-msgstr ""
+msgstr "xenDaemonDomainMigrate: неисправан URI"
 
 #: src/xend_internal.c:3450
 msgid "xenDaemonDomainMigrate: only xenmigr:// migrations are supported by Xen"
-msgstr ""
+msgstr "xenDaemonDomainMigrate: Xen подржава само xenmigr:// премештања"
 
 #: src/xend_internal.c:3457
 msgid "xenDaemonDomainMigrate: a hostname must be specified in the URI"
-msgstr ""
+msgstr "xenDaemonDomainMigrate: име домаћина мора бити наведено у URI-ју"
 
 #: src/xend_internal.c:3464 src/xend_internal.c:3486 src/xend_internal.c:3494
 #: src/xend_internal.c:3719 src/xend_internal.c:3726 src/xml.c:331
 msgid "strdup failed"
-msgstr ""
+msgstr "strdup није успео"
 
 #: src/xend_internal.c:3477
 msgid "xenDaemonDomainMigrate: invalid port number"
-msgstr ""
+msgstr "xenDaemonDomainMigrate: неисправан број порта"
 
 #: src/xend_internal.c:3550
 #, c-format
@@ -5827,132 +5650,115 @@ msgstr "Неуспело прављење не активираног домен
 
 #: src/xend_internal.c:3701 src/xend_internal.c:3777 src/xend_internal.c:3867
 msgid "unsupported in xendConfigVersion < 4"
-msgstr ""
+msgstr "није подржано у xendConfigVersion < 4"
 
 #: src/xend_internal.c:3713
-#, fuzzy
 msgid "node information incomplete, missing scheduler name"
-msgstr "непотпуни подаци о домену, недостаје име"
+msgstr "непотпуни подаци о чвору, недостаје назив планера"
 
 #: src/xend_internal.c:3731 src/xend_internal.c:3825 src/xend_internal.c:3937
-#, fuzzy
 msgid "Unknown scheduler"
-msgstr "Непознато"
+msgstr "Непознат планер"
 
 #: src/xend_internal.c:3790 src/xend_internal.c:3880
-#, fuzzy
 msgid "Failed to get a scheduler name"
-msgstr "неуспело добављање имена домаћина"
+msgstr "Неуспело прибављање назива планера"
 
 #: src/xend_internal.c:3803 src/xend_internal.c:3916
-#, fuzzy
 msgid "domain information incomplete, missing cpu_weight"
-msgstr "непотпуни подаци о домену, недостаје uuid"
+msgstr "непотпуни подаци о домену, недостаје cpu_weight"
 
 #: src/xend_internal.c:3808 src/xend_internal.c:3925
-#, fuzzy
 msgid "domain information incomplete, missing cpu_cap"
-msgstr "непотпуни подаци о домену, недостаје uuid"
+msgstr "непотпуни подаци о домену, недостаје cpu_cap"
 
 #: src/xm_internal.c:438
 msgid "xenXMConfigCacheRefresh: name"
-msgstr ""
+msgstr "xenXMConfigCacheRefresh: назив"
 
 #: src/xm_internal.c:449
 msgid "xenXMConfigCacheRefresh: virHashAddEntry"
-msgstr ""
+msgstr "xenXMConfigCacheRefresh: virHashAddEntry"
 
 #: src/xm_internal.c:1260
-#, fuzzy
 msgid "read only connection"
 msgstr "веза само за читање"
 
 #: src/xm_internal.c:1265
-#, fuzzy
 msgid "not inactive domain"
-msgstr "испиши неактивне домене"
+msgstr "није неактиван домен"
 
 #: src/xm_internal.c:1270
 msgid "virHashLookup"
-msgstr ""
+msgstr "virHashLookup"
 
 #: src/xm_internal.c:1275
-#, fuzzy
 msgid "can't retrieve config file for domain"
-msgstr "неуспело уписивање датотеке подешавања: %s"
+msgstr "не могу да добијем датотеку подешавања за домен"
 
 #: src/xm_internal.c:1908 src/xm_internal.c:2590 src/xm_internal.c:2612
 #: src/xm_internal.c:3012
-#, fuzzy
 msgid "cannot read XML domain definition"
-msgstr "учитај датотеку дефиниције домена"
+msgstr "не могу да прочитам дефиницију XML домена"
 
 #: src/xm_internal.c:1914
-#, fuzzy
 msgid "missing top level domain element"
-msgstr "недостају подаци о коренском уређају"
+msgstr "недостаје елемент домена највишег нивоа"
 
 #: src/xm_internal.c:1922
-#, fuzzy
 msgid "domain type is invalid"
-msgstr "домен %s већ постоји"
+msgstr "врста домена није исправна"
 
 #: src/xm_internal.c:1930 src/xm_internal.c:2595 src/xm_internal.c:2617
 #: src/xm_internal.c:3017
-#, fuzzy
 msgid "cannot create XPath context"
-msgstr "правим xpath контекст"
+msgstr "не могу да направим XPath контекст"
 
 #: src/xm_internal.c:2124 src/xm_internal.c:2190 src/xm_internal.c:2211
 #: src/xm_internal.c:2224 src/xm_internal.c:2243 src/xm_internal.c:2255
 #: src/xm_internal.c:2394
 msgid "config"
-msgstr ""
+msgstr "подешавање"
 
 #: src/xm_internal.c:2332
 msgid "name config parameter is missing"
-msgstr ""
+msgstr "недостаје параметар подешавања назива"
 
 #: src/xm_internal.c:2341
 msgid "can't retrieve config filename for domain to overwrite"
-msgstr ""
+msgstr "не могу да добијем назив датотеке подешавања за пресимавање домена"
 
 #: src/xm_internal.c:2347
 msgid "can't retrieve config entry for domain to overwrite"
-msgstr ""
+msgstr "не могу да добијем унос подешавања за преснимавање домена"
 
 #: src/xm_internal.c:2353 src/xm_internal.c:2409
 msgid "uuid config parameter is missing"
-msgstr ""
+msgstr "недостаје uuid параметар подешавања"
 
 #: src/xm_internal.c:2363 src/xm_internal.c:2370
-#, fuzzy
 msgid "failed to remove old domain from config map"
-msgstr "Неуспело враћање домена из %s"
+msgstr "неуспело брисање старог домена из мапе подешавања"
 
 #: src/xm_internal.c:2379
 msgid "config file name is too long"
-msgstr ""
+msgstr "назив датотеке подешавања је превелик"
 
 #: src/xm_internal.c:2389
-#, fuzzy
 msgid "unable to write config file"
 msgstr "неуспело уписивање датотеке подешавања"
 
 #: src/xm_internal.c:2400
-#, fuzzy
 msgid "unable to get current time"
-msgstr "Не могу да потврдим текућу количину меморије"
+msgstr "неуспело добијање тренутног времена"
 
 #: src/xm_internal.c:2415 src/xm_internal.c:2422
-#, fuzzy
 msgid "unable to store config file handle"
-msgstr "неуспело читање %s датотеке подешавања"
+msgstr "неуспело руковање складиштењем датотеке подешавања"
 
 #: src/xm_internal.c:2629
-#, fuzzy
 msgid "unknown device"
-msgstr "непозната врста ОС-а"
+msgstr "непознат уређај"
 
 #: src/xml.c:248
 msgid "topology cpuset syntax error"
@@ -5960,47 +5766,43 @@ msgstr "cpuset синтаксна грешка топологије"
 
 #: src/xml.c:319
 msgid "Invalid parameter to virXPathString()"
-msgstr ""
+msgstr "Неважећи параметар за virXPathString()"
 
 #: src/xml.c:354 src/xml.c:389
 msgid "Invalid parameter to virXPathNumber()"
-msgstr ""
+msgstr "Неважећи параметар за virXPathNumber()"
 
 #: src/xml.c:435
 msgid "Invalid parameter to virXPathBoolean()"
-msgstr ""
+msgstr "Неважећи параметар за virXPathBoolean()"
 
 #: src/xml.c:468
 msgid "Invalid parameter to virXPathNode()"
-msgstr ""
+msgstr "Неважећи параметар за virXPathNode()"
 
 #: src/xml.c:504
 msgid "Invalid parameter to virXPathNodeSet()"
-msgstr ""
+msgstr "Неважећи параметар за virXPathNodeSet()"
 
 #: src/xml.c:522 src/xmlrpc.c:484
 msgid "allocate string array"
-msgstr "заузми низ знакова"
+msgstr "додели низ знакова"
 
 #: src/xml.c:720
-#, fuzzy
 msgid "too many boot devices"
-msgstr "превише домена"
+msgstr "превише уређаја за покретање"
 
 #: src/xml.c:752
-#, fuzzy
 msgid "no HVM domain loader"
-msgstr "списак домена за чвор"
+msgstr "нема програма за учитавање HVM домена"
 
 #: src/xml.c:846 src/xml.c:863
-#, fuzzy
 msgid "invalid input device"
-msgstr "неисправан показивач домена у"
+msgstr "неисправан уређај за унос"
 
 #: src/xmlrpc.c:53
-#, fuzzy
 msgid "allocate value"
-msgstr "заузимам низ вредности"
+msgstr "додели вредност"
 
 #: src/xmlrpc.c:65
 msgid "copying node content"
@@ -6011,9 +5813,8 @@ msgid "allocate value array"
 msgstr "заузимам низ вредности"
 
 #: src/xmlrpc.c:186
-#, fuzzy
 msgid "allocate dict"
-msgstr "заузми нови контекст"
+msgstr "додели dict"
 
 #: src/xmlrpc.c:197
 msgid "unexpected dict node"
@@ -6050,10 +5851,3 @@ msgstr "заузми нови контекст"
 #: src/xs_internal.c:329
 msgid "failed to connect to Xen Store"
 msgstr "неуспело повезивање са Xen складиштем"
-
-#, fuzzy
-#~ msgid "Failed to bring down bridge '%s' : %s\n"
-#~ msgstr "Неуспело отварање „%s“: %s"
-
-#~ msgid "Failed to open '%s': read: %s"
-#~ msgstr "Неуспело отварање „%s“: прочитано %s"
