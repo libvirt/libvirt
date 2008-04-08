@@ -46,6 +46,7 @@ noinst_PROGRAMS = xmlrpctest xml2sexprtest sexpr2xmltest virshtest conftest \
 test_scripts = \
 	daemon-conf \
 	int-overflow \
+	read-non-seekable \
 	vcpupin
 
 EXTRA_DIST += $(test_scripts)

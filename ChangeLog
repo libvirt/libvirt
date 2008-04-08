@@ -1,3 +1,13 @@
+Mon Apr  8 17:32:07 CET 2008 Jim Meyering <meyering@redhat.com>
+
+	Don't fail to read a file because it's non-seekable (e.g., a pipe).
+	* src/util.c (fread_file_lim): New function.
+	(__virFileReadAll): Use fread_file_lim, rather than requiring
+	that stat.st_size provide a usable file size.
+	* tests/read-non-seekable: New test, for the above.
+	* tests/Makefile.am (test_scripts): Add read-non-seekable.
+	* tests/test-lib.sh (mkfifo_or_skip_): New helper function.
+
 Tue Apr  8 13:24:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	* src/qemu_driver.c: Handle errors from fork(2) and pipe(2)

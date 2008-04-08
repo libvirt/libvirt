@@ -49,6 +49,10 @@
 
 #include "util-lib.c"
 
+#ifndef MIN
+# define MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif
+
 #define MAX_ERROR_LEN   1024
 
 #define TOLOWER(Ch) (isupper (Ch) ? tolower (Ch) : (Ch))
@@ -283,14 +287,64 @@ virExecNonBlock(virConnectPtr conn,
 
 #endif /* __MINGW32__ */
 
+/* Like gnulib's fread_file, but read no more than the specified maximum
+   number of bytes.  If the length of the input is <= max_len, and
+   upon error while reading that data, it works just like fread_file.  */
+static char *
+fread_file_lim (FILE *stream, size_t max_len, size_t *length)
+{
+    char *buf = NULL;
+    size_t alloc = 0;
+    size_t size = 0;
+    int save_errno;
 
-int __virFileReadAll(const char *path,
-                     int maxlen,
-                     char **buf)
+    for (;;) {
+        size_t count;
+        size_t requested;
+
+        if (size + BUFSIZ + 1 > alloc) {
+            char *new_buf;
+
+            alloc += alloc / 2;
+            if (alloc < size + BUFSIZ + 1)
+                alloc = size + BUFSIZ + 1;
+
+            new_buf = realloc (buf, alloc);
+            if (!new_buf) {
+                save_errno = errno;
+                break;
+            }
+
+            buf = new_buf;
+        }
+
+        /* Ensure that (size + requested <= max_len); */
+        requested = MIN (size < max_len ? max_len - size : 0,
+                         alloc - size - 1);
+        count = fread (buf + size, 1, requested, stream);
+        size += count;
+
+        if (count != requested || requested == 0) {
+            save_errno = errno;
+            if (ferror (stream))
+                break;
+            buf[size] = '\0';
+            *length = size;
+            return buf;
+        }
+    }
+
+    free (buf);
+    errno = save_errno;
+    return NULL;
+}
+
+int __virFileReadAll(const char *path, int maxlen, char **buf)
 {
     FILE *fh;
-    struct stat st;
     int ret = -1;
+    size_t len;
+    char *s;
 
     if (!(fh = fopen(path, "r"))) {
         virLog("Failed to open file '%s': %s",
@@ -298,39 +352,21 @@ int __virFileReadAll(const char *path,
         goto error;
     }
 
-    if (fstat(fileno(fh), &st) < 0) {
-        virLog("Failed to stat file '%s': %s",
-               path, strerror(errno));
+    s = fread_file_lim(fh, maxlen+1, &len);
+    if (s == NULL) {
+        virLog("Failed to read '%s': %s", path, strerror (errno));
         goto error;
     }
 
-    if (S_ISDIR(st.st_mode)) {
-        virLog("Ignoring directory '%s'", path);
+    if (len > maxlen || (int)len != len) {
+        free(s);
+        virLog("File '%s' is too large %d, max %d",
+               path, (int)len, maxlen);
         goto error;
     }
 
-    if (st.st_size > maxlen) {
-        virLog("File '%s' is too large %d, max %d", path, (int)st.st_size, maxlen);
-        goto error;
-    }
-
-    *buf = malloc(st.st_size + 1);
-    if (*buf == NULL) {
-        virLog("Failed to allocate data");
-        goto error;
-    }
-
-    if ((ret = fread(*buf, st.st_size, 1, fh)) != 1) {
-        free(*buf);
-        *buf = NULL;
-        virLog("Failed to read config file '%s': %s",
-               path, strerror(errno));
-        goto error;
-    }
-
-    (*buf)[st.st_size] = '\0';
-
-    ret = st.st_size;
+    *buf = s;
+    ret = len;
 
  error:
     if (fh)
@@ -739,6 +775,5 @@ virParseMacAddr(const char* str, unsigned char *addr)
  *  indent-tabs-mode: nil
  *  c-indent-level: 4
  *  c-basic-offset: 4
- *  tab-width: 4
  * End:
  */
