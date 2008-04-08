@@ -1,5 +1,7 @@
 Mon Apr  8 17:32:07 CET 2008 Jim Meyering <meyering@redhat.com>
 
+	* configure.in (ALL_LINGUAS): Fix typo: s/Latn/latin/.
+
 	Don't fail to read a file because it's non-seekable (e.g., a pipe).
 	* src/util.c (fread_file_lim): New function.
 	(__virFileReadAll): Use fread_file_lim, rather than requiring
