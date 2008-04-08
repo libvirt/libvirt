@@ -372,7 +372,7 @@ extern virConnectAuthPtr virConnectAuthPtrDefault;
  * version * 1,000,000 + minor * 1000 + micro
  */
 
-#define LIBVIR_VERSION_NUMBER 4001
+#define LIBVIR_VERSION_NUMBER 4002
 
 int			virGetVersion		(unsigned long *libVer,
 						 const char *type,
