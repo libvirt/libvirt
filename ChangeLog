@@ -1,3 +1,8 @@
+Tue Apr  8 11:24:28 CEST 2008 Daniel Veillard <daniel@veillard.com>
+
+	* src/test.c: patch from Cole Robinson adding xen and hvm guest types
+	  to the test driver's capabilities.
+
 Tue Apr  8 10:19:01 CEST 2008 Daniel Veillard <daniel@veillard.com>
 
 	* python/generator.py: fix an infinite loop bug

@@ -1006,6 +1006,7 @@ static char *testGetCapabilities (virConnectPtr conn)
     virCapsPtr caps;
     virCapsGuestPtr guest;
     char *xml;
+    const char *guest_types[] = { "hvm", "xen" };
     int i;
 
     GET_CONNECTION(conn, -1);
@@ -1024,29 +1025,31 @@ static char *testGetCapabilities (virConnectPtr conn)
             goto no_memory;
     }
 
-    if ((guest = virCapabilitiesAddGuest(caps,
-                                         "linux",
-                                         TEST_MODEL,
-                                         TEST_MODEL_WORDSIZE,
-                                         NULL,
-                                         NULL,
-                                         0,
-                                         NULL)) == NULL)
-        goto no_memory;
+    for (i = 0; i < (sizeof(guest_types)/sizeof(guest_types[0])); ++i) {
 
-    if (virCapabilitiesAddGuestDomain(guest,
-                                      "test",
-                                      NULL,
-                                      NULL,
-                                      0,
-                                      NULL) == NULL)
-        goto no_memory;
+        if ((guest = virCapabilitiesAddGuest(caps,
+                                             guest_types[i],
+                                             TEST_MODEL,
+                                             TEST_MODEL_WORDSIZE,
+                                             NULL,
+                                             NULL,
+                                             0,
+                                             NULL)) == NULL)
+            goto no_memory;
 
+        if (virCapabilitiesAddGuestDomain(guest,
+                                          "test",
+                                          NULL,
+                                          NULL,
+                                          0,
+                                          NULL) == NULL)
+            goto no_memory;
 
-    if (virCapabilitiesAddGuestFeature(guest, "pae", 1, 1) == NULL)
-        goto no_memory;
-    if (virCapabilitiesAddGuestFeature(guest ,"nonpae", 1, 1) == NULL)
-        goto no_memory;
+        if (virCapabilitiesAddGuestFeature(guest, "pae", 1, 1) == NULL)
+            goto no_memory;
+        if (virCapabilitiesAddGuestFeature(guest ,"nonpae", 1, 1) == NULL)
+            goto no_memory;
+    }
 
     if ((xml = virCapabilitiesFormatXML(caps)) == NULL)
         goto no_memory;
