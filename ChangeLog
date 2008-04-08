@@ -1,3 +1,8 @@
+Tue Apr  8 13:24:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	* src/qemu_driver.c: Handle errors from fork(2) and pipe(2)
+	  system calls when creating qemu subprocess.
+
 Tue Apr  8 11:50:42 CEST 2008 Daniel Veillard <daniel@veillard.com>
 
 	* po/sr.po po/sr@Latn.po po/sr@latin.po: fix/update serbian

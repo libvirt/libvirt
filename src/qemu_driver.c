@@ -603,7 +603,7 @@ static int qemudStartVMDaemon(virConnectPtr conn,
                               struct qemud_driver *driver,
                               struct qemud_vm *vm) {
     char **argv = NULL, **tmp;
-    int i;
+    int i, ret;
     char logfile[PATH_MAX];
 
     if (qemudIsActiveVM(vm)) {
@@ -681,8 +681,9 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         qemudLog(QEMUD_WARN, _("Unable to write argv to logfile %d: %s"),
                  errno, strerror(errno));
 
-    if (virExecNonBlock(conn, argv, &vm->pid,
-                        vm->stdin, &vm->stdout, &vm->stderr) == 0) {
+    ret = virExecNonBlock(conn, argv, &vm->pid,
+                          vm->stdin, &vm->stdout, &vm->stderr);
+    if (ret == 0) {
         vm->id = driver->nextvmid++;
         vm->state = vm->migrateFrom[0] ? VIR_DOMAIN_PAUSED : VIR_DOMAIN_RUNNING;
 
@@ -704,28 +705,30 @@ static int qemudStartVMDaemon(virConnectPtr conn,
         vm->ntapfds = 0;
     }
 
-    if (virEventAddHandle(vm->stdout,
-                          POLLIN | POLLERR | POLLHUP,
-                          qemudDispatchVMEvent,
-                          driver) < 0) {
-        qemudShutdownVMDaemon(conn, driver, vm);
-        return -1;
+    if (ret == 0) {
+        if (virEventAddHandle(vm->stdout,
+                              POLLIN | POLLERR | POLLHUP,
+                              qemudDispatchVMEvent,
+                              driver) < 0) {
+            qemudShutdownVMDaemon(conn, driver, vm);
+            return -1;
+        }
+
+        if (virEventAddHandle(vm->stderr,
+                              POLLIN | POLLERR | POLLHUP,
+                              qemudDispatchVMEvent,
+                              driver) < 0) {
+            qemudShutdownVMDaemon(conn, driver, vm);
+            return -1;
+        }
+
+        if (qemudWaitForMonitor(conn, driver, vm) < 0) {
+            qemudShutdownVMDaemon(conn, driver, vm);
+            return -1;
+        }
     }
 
-    if (virEventAddHandle(vm->stderr,
-                          POLLIN | POLLERR | POLLHUP,
-                          qemudDispatchVMEvent,
-                          driver) < 0) {
-        qemudShutdownVMDaemon(conn, driver, vm);
-        return -1;
-    }
-
-    if (qemudWaitForMonitor(conn, driver, vm) < 0) {
-        qemudShutdownVMDaemon(conn, driver, vm);
-        return -1;
-    }
-
-    return 0;
+    return ret;
 }
 
 static int qemudVMData(struct qemud_driver *driver ATTRIBUTE_UNUSED,
