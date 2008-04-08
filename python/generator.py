@@ -754,6 +754,9 @@ def writeDoc(name, args, indent, output):
      output.write(indent)
      output.write('"""')
      while len(val) > 60:
+         if val[0] == " ":
+	     val = val[1:]
+	     continue
          str = val[0:60]
          i = string.rfind(str, " ");
          if i < 0:
