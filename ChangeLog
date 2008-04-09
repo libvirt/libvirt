@@ -1,3 +1,9 @@
+Wed Apr  9 14:46:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Remove extraneous underscore
+	* src/openvz_conf.c: Remove extraneous underscore which stopped
+	  file from compiling (Anton Protopopov).
+
 Tue Apr  8 18:44:27 CEST 2008 Daniel Veillard <daniel@veillard.com>
 
 	* configure.in NEWS doc/* po/*: making libvirt-0.4.2 release

@@ -325,7 +325,7 @@ static struct openvz_vm_def
     }
 
     if (strcmp((char *)prop, "openvz")){
-        error(conn, VIR_ERR_INTERNAL_ERROR, _("invalid domain type attribute"_));
+        error(conn, VIR_ERR_INTERNAL_ERROR, _("invalid domain type attribute"));
         goto bail_out;
     }
     free(prop);
