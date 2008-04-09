@@ -1,3 +1,8 @@
+Wed Apr  9 16:08:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Add virsh.pod to EXTRA_DIST
+	* docs/Makefile.am: Add virsh.pod to EXTRA_DIST.
+
 Wed Apr  9 15:00:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Core code contains Xen-ism UUID of dom0 = 0..0
