@@ -1,3 +1,9 @@
+Wed Apr  9 14:56:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Warn about conn, dom and net fields in virterror
+	* include/libvirt/virterror.h: Warn about the use of
+	  conn, dom and net fields in virterror.
+
 Wed Apr  9 14:46:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Remove extraneous underscore
