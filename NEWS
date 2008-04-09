@@ -5,6 +5,45 @@
        http://libvirt.org/news.html
 
 Releases
+0.4.2: Apr 8 2008:
+   - New features: memory operation for QEmu/KVM driver (Cole Robinson),
+      new routed networking schemas (Mads Olesen)
+   - Documentation: storage documentation fixes (Atsushi Sakai), many
+      typo cleanups (Atsushi Sakai), string fixes (Francesco Tombolini)
+   - Bug fixes: pointer errors in qemu (Jim Meyering), iSCSI login fix
+      (Chris Lalancette), well formedness error in test driver capabilities
+      (Cole Robinson), fixes cleanup code when daemon exits (Daniel Berrange),
+      CD Rom change on live QEmu/KVM domains (Cole Robinson), setting scheduler
+      parameter is forbidden for read-only (Saori Fukuta)i, fixes for TAP
+      devices (Daniel Berrange), assorted storage driver fixes (Daniel
+      Berrange), Makefile fixes (Jim Meyering), Xen-3.2 hypercall fix,
+      fix iptables rules to avoid blocking traffic within virtual network
+      (Daniel Berrange), XML output fix for directory pools (Daniel Berrange),
+      remove dandling domain/net/conn pointers from error data, do not
+      ask polkit auth when root (Daniel Berrange), handling of fork and
+      pipe errors when starting the daemon (Richard Jones)
+   - Improvements: better validation of MAC addresses (Jim Meyering and
+      Hiroyuki Kaguchi),
+      virsh vcpupin error report (Shigeki Sakamoto), keep boot tag on
+      HVM domains (Cole Robinson), virsh non-root should not be limited to read
+      only anymore (Daniel Berrange), switch to polkit-auth from polkit-grant
+      (Daniel Berrange), better handling of missing SElinux data (Daniel
+      Berrange and Jim Meyering), cleanup of the connection opening logic
+      (Daniel Berrange), first bits of Linux Containers support (Dave Leskovec),
+      scheduler API support via xend (Saori Fukuta), improvement of the
+      testing framework and first tests (Jim Meyering), missing error
+      messages from virsh parameters validation (Shigeki Sakamoto),
+      improve support of older iscsiadm command (Chris Lalancette),
+      move linux container support in the daemon (Dan Berrange), older
+      awk implementation support (Mike Gerdts), NUMA support in test
+      driver (Cole Robinson), xen and hvm added to test driver capabilities
+      (Cole Robinson)
+   - Code cleanup: remove unused getopt header (Jim Meyering), mark more
+      strings as translatable (Guido Günther and Jim Meyering), convert
+      error strings to something meaningful and translatable (Jim Meyering),
+      Linux Containers code cleanup, last error initializer (Guido Günther)
+
+
 0.4.1: Mar 3 2008:
    - New features: build on MacOSX (Richard Jones), storage management
       (Daniel Berrange), Xenner - Xen on KVM - support (Daniel Berrange)
