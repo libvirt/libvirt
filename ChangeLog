@@ -1,3 +1,9 @@
+Wed Apr  9 15:00:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Core code contains Xen-ism UUID of dom0 = 0..0
+	* src/libvirt.c: Remove a Xen-ism from the core code, the
+	  assumption that dom0's UUID is all zeroes.
+
 Wed Apr  9 14:56:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Warn about conn, dom and net fields in virterror

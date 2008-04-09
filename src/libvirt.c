@@ -1794,11 +1794,8 @@ virDomainGetUUID(virDomainPtr domain, unsigned char *uuid)
         return (-1);
     }
 
-    if (domain->id == 0) {
-        memset(uuid, 0, VIR_UUID_BUFLEN);
-    } else {
-        memcpy(uuid, &domain->uuid[0], VIR_UUID_BUFLEN);
-    }
+    memcpy(uuid, &domain->uuid[0], VIR_UUID_BUFLEN);
+
     return (0);
 }
 
