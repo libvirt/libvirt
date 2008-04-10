@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: kn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-08 18:09+0200\n"
+"POT-Creation-Date: 2008-04-10 08:59+0200\n"
 "PO-Revision-Date: 2007-09-25 17:59+0530\n"
 "Last-Translator: Shankar Prasad <svenkate@redhat.com>\n"
 "Language-Team: Kannada <en@li.org>\n"
@@ -949,7 +949,7 @@ msgstr "%s ಗೆ ಸಂಪರ್ಕ ಹೊಂದಲಾಗಿಲ್ಲ"
 msgid "allocating conn->name"
 msgstr "ಸಂಪರ್ಕವನ್ನು ನಿಯೋಜಿಸಲಾಗುತ್ತಿದೆ"
 
-#: src/libvirt.c:2170
+#: src/libvirt.c:2167
 #, fuzzy
 msgid "domainMigratePrepare did not set uri"
 msgstr "ಕ್ಷೇತ್ರದ ಮಾಹಿತಿಯು ಸರಿಯಿಲ್ಲ, domid ವು ಸಾಂಖ್ಯಿಕವಾಗಿಲ್ಲ"
@@ -1072,7 +1072,7 @@ msgstr "ಸಂರಚನಾ ಕಡತದಲ್ಲಿ ವಾಕ್ಯರಚನೆ 
 msgid "cannot remove config for %s"
 msgstr ""
 
-#: src/lxc_driver.c:309 src/lxc_driver.c:338 src/lxc_driver.c:371
+#: src/lxc_driver.c:314 src/lxc_driver.c:343 src/lxc_driver.c:376
 #: src/openvz_driver.c:177 src/openvz_driver.c:219 src/openvz_driver.c:529
 #: src/qemu_driver.c:1824 src/qemu_driver.c:1902 src/qemu_driver.c:2244
 #: src/qemu_driver.c:2289 src/qemu_driver.c:2327 src/qemu_driver.c:2405
@@ -1081,10 +1081,55 @@ msgstr ""
 msgid "no domain with matching uuid"
 msgstr "ಕ್ಷೇತ್ರ id ಅಥವ uuid"
 
-#: src/lxc_driver.c:315 src/openvz_driver.c:534 src/qemu_driver.c:2333
+#: src/lxc_driver.c:320 src/openvz_driver.c:534 src/qemu_driver.c:2333
 #, fuzzy
 msgid "cannot delete active domain"
 msgstr "ನಿಷ್ಕ್ರಿಯ ಕ್ಷೇತ್ರದ ಹೆಸರು"
+
+#: src/lxc_driver.c:396
+#, fuzzy
+msgid "unable to allocate container stack"
+msgstr "ಒಂದು ಜಾಲಘಟಕವನ್ನು ನಿಯೋಜಿಸುವಲ್ಲಿ ವಿಫಲತೆ ಎದುರಾಗಿದೆ"
+
+#: src/lxc_driver.c:409
+#, fuzzy, c-format
+msgid "clone() failed, %s"
+msgstr "ಮೌಲ್ಯ ವ್ಯೂಹವನ್ನು(array) ನಿಯೋಜಿಸಲಾಗಿಲ್ಲ"
+
+#: src/lxc_driver.c:519
+#, fuzzy, c-format
+msgid "posix_openpt failed: %s"
+msgstr "ಕಾರ್ಯಾಚರಣೆಯು ವಿಫಲಗೊಂಡಿದೆ: %s"
+
+#: src/lxc_driver.c:525
+#, fuzzy, c-format
+msgid "unlockpt failed: %s"
+msgstr "ಕಾರ್ಯಾಚರಣೆಯು ವಿಫಲಗೊಂಡಿದೆ: %s"
+
+#: src/lxc_driver.c:531
+#, fuzzy, c-format
+msgid "ptsname_r failed: %s"
+msgstr "ಕಾರ್ಯಾಚರಣೆಯು ವಿಫಲಗೊಂಡಿದೆ: %s"
+
+#: src/lxc_driver.c:538
+#, fuzzy
+msgid "unable to allocate container name string"
+msgstr "ಒಂದು ಜಾಲಘಟಕವನ್ನು ನಿಯೋಜಿಸುವಲ್ಲಿ ವಿಫಲತೆ ಎದುರಾಗಿದೆ"
+
+#: src/lxc_driver.c:729 src/lxc_driver.c:767
+#, fuzzy, c-format
+msgid "no domain with id %d"
+msgstr "ಕ್ಷೇತ್ರ id ಅಥವ uuid"
+
+#: src/lxc_driver.c:736
+#, fuzzy, c-format
+msgid "sending SIGTERM failed: %s"
+msgstr "ಕಾರ್ಯಾಚರಣೆಯು ವಿಫಲಗೊಂಡಿದೆ: %s"
+
+#: src/lxc_driver.c:774
+#, fuzzy, c-format
+msgid "sending SIGKILL failed: %s"
+msgstr "ಕಾರ್ಯಾಚರಣೆಯು ವಿಫಲಗೊಂಡಿದೆ: %s"
 
 #: src/openvz_conf.c:241
 #, c-format

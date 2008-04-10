@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-08 18:09+0200\n"
+"POT-Creation-Date: 2008-04-10 08:59+0200\n"
 "PO-Revision-Date: 2008-03-09 02:15+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
@@ -954,7 +954,7 @@ msgstr "nie można przeanalizować URI połączenia"
 msgid "allocating conn->name"
 msgstr "przydzielanie conn->name"
 
-#: src/libvirt.c:2170
+#: src/libvirt.c:2167
 msgid "domainMigratePrepare did not set uri"
 msgstr "domainMigratePrepare nie ustawiło URI"
 
@@ -1077,7 +1077,7 @@ msgstr "brak pliku konfiguracji dla %s"
 msgid "cannot remove config for %s"
 msgstr "nie można usunąć konfiguracji dla %s"
 
-#: src/lxc_driver.c:309 src/lxc_driver.c:338 src/lxc_driver.c:371
+#: src/lxc_driver.c:314 src/lxc_driver.c:343 src/lxc_driver.c:376
 #: src/openvz_driver.c:177 src/openvz_driver.c:219 src/openvz_driver.c:529
 #: src/qemu_driver.c:1824 src/qemu_driver.c:1902 src/qemu_driver.c:2244
 #: src/qemu_driver.c:2289 src/qemu_driver.c:2327 src/qemu_driver.c:2405
@@ -1086,10 +1086,55 @@ msgstr "nie można usunąć konfiguracji dla %s"
 msgid "no domain with matching uuid"
 msgstr "brak domeny pasującej do identyfikatora %d"
 
-#: src/lxc_driver.c:315 src/openvz_driver.c:534 src/qemu_driver.c:2333
+#: src/lxc_driver.c:320 src/openvz_driver.c:534 src/qemu_driver.c:2333
 #, fuzzy
 msgid "cannot delete active domain"
 msgstr "nazwa nieaktywnej domeny"
+
+#: src/lxc_driver.c:396
+#, fuzzy
+msgid "unable to allocate container stack"
+msgstr "przydzielenie węzła nie powiodło się"
+
+#: src/lxc_driver.c:409
+#, fuzzy, c-format
+msgid "clone() failed, %s"
+msgstr "przydziel wartość"
+
+#: src/lxc_driver.c:519
+#, fuzzy, c-format
+msgid "posix_openpt failed: %s"
+msgstr "operacja nie powiodła się: %s"
+
+#: src/lxc_driver.c:525
+#, fuzzy, c-format
+msgid "unlockpt failed: %s"
+msgstr "operacja nie powiodła się: %s"
+
+#: src/lxc_driver.c:531
+#, fuzzy, c-format
+msgid "ptsname_r failed: %s"
+msgstr "operacja nie powiodła się: %s"
+
+#: src/lxc_driver.c:538
+#, fuzzy
+msgid "unable to allocate container name string"
+msgstr "Przydzielenie pamięci dla listy konfiguracji %s nie powiodło się"
+
+#: src/lxc_driver.c:729 src/lxc_driver.c:767
+#, fuzzy, c-format
+msgid "no domain with id %d"
+msgstr "brak domeny pasującej do identyfikatora %d"
+
+#: src/lxc_driver.c:736
+#, fuzzy, c-format
+msgid "sending SIGTERM failed: %s"
+msgstr "operacja nie powiodła się: %s"
+
+#: src/lxc_driver.c:774
+#, fuzzy, c-format
+msgid "sending SIGKILL failed: %s"
+msgstr "operacja nie powiodła się: %s"
 
 #: src/openvz_conf.c:241
 #, c-format

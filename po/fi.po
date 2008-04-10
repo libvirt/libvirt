@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-08 18:09+0200\n"
+"POT-Creation-Date: 2008-04-10 08:59+0200\n"
 "PO-Revision-Date: 2007-10-24 01:24+0300\n"
 "Last-Translator: Ville-Pekka Vainio <vpivaini@cs.helsinki.fi>\n"
 "Language-Team: Finnish <laatu@lokalisointi.org>\n"
@@ -951,7 +951,7 @@ msgstr "ei voitu yhdistää kohteeseen %s"
 msgid "allocating conn->name"
 msgstr "varataan yhteyttä"
 
-#: src/libvirt.c:2170
+#: src/libvirt.c:2167
 #, fuzzy
 msgid "domainMigratePrepare did not set uri"
 msgstr "toimialuetieto on virheellistä, domid ei ole numeerinen"
@@ -1075,7 +1075,7 @@ msgstr "asetustiedoston syntaksivirhe: %s"
 msgid "cannot remove config for %s"
 msgstr ""
 
-#: src/lxc_driver.c:309 src/lxc_driver.c:338 src/lxc_driver.c:371
+#: src/lxc_driver.c:314 src/lxc_driver.c:343 src/lxc_driver.c:376
 #: src/openvz_driver.c:177 src/openvz_driver.c:219 src/openvz_driver.c:529
 #: src/qemu_driver.c:1824 src/qemu_driver.c:1902 src/qemu_driver.c:2244
 #: src/qemu_driver.c:2289 src/qemu_driver.c:2327 src/qemu_driver.c:2405
@@ -1084,10 +1084,55 @@ msgstr ""
 msgid "no domain with matching uuid"
 msgstr "toimialueen id tai uuid"
 
-#: src/lxc_driver.c:315 src/openvz_driver.c:534 src/qemu_driver.c:2333
+#: src/lxc_driver.c:320 src/openvz_driver.c:534 src/qemu_driver.c:2333
 #, fuzzy
 msgid "cannot delete active domain"
 msgstr "Epäaktiivisen toimialueen nimi"
+
+#: src/lxc_driver.c:396
+#, fuzzy
+msgid "unable to allocate container stack"
+msgstr "solmun varaus epäonnistui"
+
+#: src/lxc_driver.c:409
+#, fuzzy, c-format
+msgid "clone() failed, %s"
+msgstr "varaa arvotaulukko"
+
+#: src/lxc_driver.c:519
+#, fuzzy, c-format
+msgid "posix_openpt failed: %s"
+msgstr "toimenpide epäonnistui: %s"
+
+#: src/lxc_driver.c:525
+#, fuzzy, c-format
+msgid "unlockpt failed: %s"
+msgstr "toimenpide epäonnistui: %s"
+
+#: src/lxc_driver.c:531
+#, fuzzy, c-format
+msgid "ptsname_r failed: %s"
+msgstr "toimenpide epäonnistui: %s"
+
+#: src/lxc_driver.c:538
+#, fuzzy
+msgid "unable to allocate container name string"
+msgstr "Muistin varaus epäonnistui."
+
+#: src/lxc_driver.c:729 src/lxc_driver.c:767
+#, fuzzy, c-format
+msgid "no domain with id %d"
+msgstr "toimialueen id tai uuid"
+
+#: src/lxc_driver.c:736
+#, fuzzy, c-format
+msgid "sending SIGTERM failed: %s"
+msgstr "toimenpide epäonnistui: %s"
+
+#: src/lxc_driver.c:774
+#, fuzzy, c-format
+msgid "sending SIGKILL failed: %s"
+msgstr "toimenpide epäonnistui: %s"
 
 #: src/openvz_conf.c:241
 #, c-format

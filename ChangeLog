@@ -1,9 +1,14 @@
-Thu Apr 10 15:24:40 CEST 2008 Daniel Veillard <daniel@veillard.com>
+Thu Apr 10 15:28:36 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* AUTHORS: adding Dave Leskovec and Ryan Scott to the authors list
+	* po/*: rebuilt
+
+Thu Apr 10 15:24:40 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/xend_internal.c: applied a patch from Ryan Scott to ask
 	  xend to save the change in the config file
 
-Thu Apr 10 09:28:31 CEST 2008 Daniel Veillard <daniel@veillard.com>
+Thu Apr 10 09:28:31 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/Makefile.am src/lxc_conf.c src/lxc_conf.h src/lxc_container.c
 	  src/lxc_container.h src/lxc_driver.c: Applied second set of
@@ -33,7 +38,7 @@ Wed Apr  9 14:46:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 	* src/openvz_conf.c: Remove extraneous underscore which stopped
 	  file from compiling (Anton Protopopov).
 
-Tue Apr  8 18:44:27 CEST 2008 Daniel Veillard <daniel@veillard.com>
+Tue Apr  8 18:44:27 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* configure.in NEWS doc/* po/*: making libvirt-0.4.2 release
 
@@ -54,17 +59,17 @@ Tue Apr  8 13:24:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 	* src/qemu_driver.c: Handle errors from fork(2) and pipe(2)
 	  system calls when creating qemu subprocess.
 
-Tue Apr  8 11:50:42 CEST 2008 Daniel Veillard <daniel@veillard.com>
+Tue Apr  8 11:50:42 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* po/sr.po po/sr@Latn.po po/sr@latin.po: fix/update serbian
 	  translations.
 
-Tue Apr  8 11:24:28 CEST 2008 Daniel Veillard <daniel@veillard.com>
+Tue Apr  8 11:24:28 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* src/test.c: patch from Cole Robinson adding xen and hvm guest types
 	  to the test driver's capabilities.
 
-Tue Apr  8 10:19:01 CEST 2008 Daniel Veillard <daniel@veillard.com>
+Tue Apr  8 10:19:01 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* python/generator.py: fix an infinite loop bug
 

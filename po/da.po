@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: da\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-08 18:09+0200\n"
+"POT-Creation-Date: 2008-04-10 08:59+0200\n"
 "PO-Revision-Date: 2007-05-10 15:48+0200\n"
 "Last-Translator: Keld Simonsen <keld@rap.dk>\n"
 "Language-Team:  <da@li.org>\n"
@@ -956,7 +956,7 @@ msgstr "kunne ikke forbinde til %s"
 msgid "allocating conn->name"
 msgstr "allokerer forbindelse"
 
-#: src/libvirt.c:2170
+#: src/libvirt.c:2167
 #, fuzzy
 msgid "domainMigratePrepare did not set uri"
 msgstr "domæneinformation fejl, domid er ikke numerisk"
@@ -1080,7 +1080,7 @@ msgstr "syntaksfejl i konfigurationsfilen: %s"
 msgid "cannot remove config for %s"
 msgstr ""
 
-#: src/lxc_driver.c:309 src/lxc_driver.c:338 src/lxc_driver.c:371
+#: src/lxc_driver.c:314 src/lxc_driver.c:343 src/lxc_driver.c:376
 #: src/openvz_driver.c:177 src/openvz_driver.c:219 src/openvz_driver.c:529
 #: src/qemu_driver.c:1824 src/qemu_driver.c:1902 src/qemu_driver.c:2244
 #: src/qemu_driver.c:2289 src/qemu_driver.c:2327 src/qemu_driver.c:2405
@@ -1089,10 +1089,55 @@ msgstr ""
 msgid "no domain with matching uuid"
 msgstr "domænenavn eller uuid"
 
-#: src/lxc_driver.c:315 src/openvz_driver.c:534 src/qemu_driver.c:2333
+#: src/lxc_driver.c:320 src/openvz_driver.c:534 src/qemu_driver.c:2333
 #, fuzzy
 msgid "cannot delete active domain"
 msgstr "navn for det inaktive domæne"
+
+#: src/lxc_driver.c:396
+#, fuzzy
+msgid "unable to allocate container stack"
+msgstr "kunne ikke allokere en knude"
+
+#: src/lxc_driver.c:409
+#, fuzzy, c-format
+msgid "clone() failed, %s"
+msgstr "allokér værdi-array"
+
+#: src/lxc_driver.c:519
+#, fuzzy, c-format
+msgid "posix_openpt failed: %s"
+msgstr "operation mislykkedes: %s"
+
+#: src/lxc_driver.c:525
+#, fuzzy, c-format
+msgid "unlockpt failed: %s"
+msgstr "operation mislykkedes: %s"
+
+#: src/lxc_driver.c:531
+#, fuzzy, c-format
+msgid "ptsname_r failed: %s"
+msgstr "operation mislykkedes: %s"
+
+#: src/lxc_driver.c:538
+#, fuzzy
+msgid "unable to allocate container name string"
+msgstr "kunne ikke allokere en knude"
+
+#: src/lxc_driver.c:729 src/lxc_driver.c:767
+#, fuzzy, c-format
+msgid "no domain with id %d"
+msgstr "domænenavn eller uuid"
+
+#: src/lxc_driver.c:736
+#, fuzzy, c-format
+msgid "sending SIGTERM failed: %s"
+msgstr "operation mislykkedes: %s"
+
+#: src/lxc_driver.c:774
+#, fuzzy, c-format
+msgid "sending SIGKILL failed: %s"
+msgstr "operation mislykkedes: %s"
 
 #: src/openvz_conf.c:241
 #, c-format

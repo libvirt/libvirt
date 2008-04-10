@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zh_TW\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-08 18:09+0200\n"
+"POT-Creation-Date: 2008-04-10 08:59+0200\n"
 "PO-Revision-Date: 2007-04-10 16:18+1000\n"
 "Last-Translator: Chester Cheng <ccheng@redhat.com>\n"
 "Language-Team: Traditional Chinese <zh_TW@li.org>\n"
@@ -953,7 +953,7 @@ msgstr "無法連上 %s"
 msgid "allocating conn->name"
 msgstr "正在分配連線"
 
-#: src/libvirt.c:2170
+#: src/libvirt.c:2167
 #, fuzzy
 msgid "domainMigratePrepare did not set uri"
 msgstr "區域的資訊不正確，domid 並非數字型態"
@@ -1077,7 +1077,7 @@ msgstr "設定檔語法錯誤：%s"
 msgid "cannot remove config for %s"
 msgstr ""
 
-#: src/lxc_driver.c:309 src/lxc_driver.c:338 src/lxc_driver.c:371
+#: src/lxc_driver.c:314 src/lxc_driver.c:343 src/lxc_driver.c:376
 #: src/openvz_driver.c:177 src/openvz_driver.c:219 src/openvz_driver.c:529
 #: src/qemu_driver.c:1824 src/qemu_driver.c:1902 src/qemu_driver.c:2244
 #: src/qemu_driver.c:2289 src/qemu_driver.c:2327 src/qemu_driver.c:2405
@@ -1086,10 +1086,55 @@ msgstr ""
 msgid "no domain with matching uuid"
 msgstr "區域 id 或 uuid"
 
-#: src/lxc_driver.c:315 src/openvz_driver.c:534 src/qemu_driver.c:2333
+#: src/lxc_driver.c:320 src/openvz_driver.c:534 src/qemu_driver.c:2333
 #, fuzzy
 msgid "cannot delete active domain"
 msgstr "非作用中區域的名稱"
+
+#: src/lxc_driver.c:396
+#, fuzzy
+msgid "unable to allocate container stack"
+msgstr "無法分配節點"
+
+#: src/lxc_driver.c:409
+#, fuzzy, c-format
+msgid "clone() failed, %s"
+msgstr "分配數值陣列"
+
+#: src/lxc_driver.c:519
+#, fuzzy, c-format
+msgid "posix_openpt failed: %s"
+msgstr "操作失敗：%s"
+
+#: src/lxc_driver.c:525
+#, fuzzy, c-format
+msgid "unlockpt failed: %s"
+msgstr "操作失敗：%s"
+
+#: src/lxc_driver.c:531
+#, fuzzy, c-format
+msgid "ptsname_r failed: %s"
+msgstr "操作失敗：%s"
+
+#: src/lxc_driver.c:538
+#, fuzzy
+msgid "unable to allocate container name string"
+msgstr "無法分配節點"
+
+#: src/lxc_driver.c:729 src/lxc_driver.c:767
+#, fuzzy, c-format
+msgid "no domain with id %d"
+msgstr "區域 id 或 uuid"
+
+#: src/lxc_driver.c:736
+#, fuzzy, c-format
+msgid "sending SIGTERM failed: %s"
+msgstr "操作失敗：%s"
+
+#: src/lxc_driver.c:774
+#, fuzzy, c-format
+msgid "sending SIGKILL failed: %s"
+msgstr "操作失敗：%s"
 
 #: src/openvz_conf.c:241
 #, c-format
