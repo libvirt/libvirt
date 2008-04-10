@@ -1,3 +1,8 @@
+Thu Apr 10 15:24:40 CEST 2008 Daniel Veillard <daniel@veillard.com>
+
+	* src/xend_internal.c: applied a patch from Ryan Scott to ask
+	  xend to save the change in the config file
+
 Thu Apr 10 09:28:31 CEST 2008 Daniel Veillard <daniel@veillard.com>
 
 	* src/Makefile.am src/lxc_conf.c src/lxc_conf.h src/lxc_container.c

@@ -3347,7 +3347,7 @@ xenDaemonDetachDevice(virDomainPtr domain, const char *xml)
     if (virDomainXMLDevID(domain, xml, class, ref, sizeof(ref)))
         return (-1);
     return(xend_op(domain->conn, domain->name, "op", "device_destroy",
-        "type", class, "dev", ref, NULL));
+        "type", class, "dev", ref, "force", "0", "rm_cfg", "1", NULL));
 }
 
 
