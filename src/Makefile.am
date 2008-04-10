@@ -61,6 +61,7 @@ CLIENT_SOURCES =						\
 		openvz_driver.c openvz_driver.h			\
 		lxc_driver.c lxc_driver.h			\
 		lxc_conf.c lxc_conf.h				\
+		lxc_container.c lxc_container.h				\
                 nodeinfo.h nodeinfo.c                           \
 		storage_conf.h storage_conf.c			\
 		storage_driver.h storage_driver.c		\

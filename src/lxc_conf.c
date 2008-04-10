@@ -819,6 +819,7 @@ void lxcFreeVMs(lxc_vm_t *vms)
 void lxcFreeVM(lxc_vm_t *vm)
 {
     lxcFreeVMDef(vm->def);
+    free(vm->containerTty);
     free(vm);
 }
 

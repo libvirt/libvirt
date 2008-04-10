@@ -72,6 +72,8 @@ struct __lxc_vm {
     char configFileBase[PATH_MAX];
 
     int parentTty;
+    int containerTtyFd;
+    char *containerTty;
 
     lxc_vm_def_t *def;
 

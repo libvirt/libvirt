@@ -1,3 +1,10 @@
+Thu Apr 10 09:28:31 CEST 2008 Daniel Veillard <daniel@veillard.com>
+
+	* src/Makefile.am src/lxc_conf.c src/lxc_conf.h src/lxc_container.c
+	  src/lxc_container.h src/lxc_driver.c: Applied second set of
+	  linux container patches from Dave Leskovec adding start/stop
+	  of domains
+
 Wed Apr  9 16:08:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Add virsh.pod to EXTRA_DIST
