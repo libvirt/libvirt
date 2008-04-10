@@ -287,6 +287,17 @@ sc_trailing_blank:
 	  { echo '$(ME): found trailing blank(s)'			\
 		1>&2; exit 1; } || :
 
+# Ensure that no C source file uses TABs for indentation.
+# Also match *.h.in files, to get libvirt.h.in.
+# Exclude files in gnulib, since they're imported.
+sc_TAB_in_indentation:
+	@grep -lE '^ *	' /dev/null					\
+	     $$($(VC_LIST_EXCEPT)					\
+	        | grep -E '\.[ch](\.in)?$$'				\
+	        | grep -v '^gnulib/') &&				\
+	  { echo '$(ME): found TAB(s) use for indentation; use spaces'	\
+		1>&2; exit 1; } || :
+
 # Match lines like the following, but where there is only one space
 # between the options and the description:
 #   -D, --all-repeated[=delimit-method]  print all duplicate lines\n

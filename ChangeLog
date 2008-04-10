@@ -1,5 +1,8 @@
 Thu Apr 10 18:54:03 CEST 2008 Jim Meyering <meyering@redhat.com>
 
+	ensure that no C source file uses TABs for indentation
+	* Makefile.maint (sc_TAB_in_indentation): New rule.
+
 	Convert TAB-based indentation in C sources to use only spaces.
 	Done using this command (also includes .c.in and .h.in files):
 	for i in $(g ls-files|grep -E '\.[ch](\.in)?$'|grep -v gnulib); do
