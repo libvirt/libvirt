@@ -313,21 +313,21 @@ xenStoreOpen(virConnectPtr conn,
     priv->xshandle = xs_daemon_open_readonly();
 #else
     if (flags & VIR_CONNECT_RO)
-	priv->xshandle = xs_daemon_open_readonly();
+        priv->xshandle = xs_daemon_open_readonly();
     else
-	priv->xshandle = xs_daemon_open();
+        priv->xshandle = xs_daemon_open();
 #endif /* ! PROXY */
 
     if (priv->xshandle == NULL) {
-	/*
+        /*
          * not being able to connect via the socket as a normal user
          * is rather normal, this should fallback to the proxy (or
          * remote) mechanism.
-	 */
+         */
         if (getuid() == 0) {
-	    virXenStoreError(NULL, VIR_ERR_NO_XEN,
-				 _("failed to connect to Xen Store"));
-	}
+            virXenStoreError(NULL, VIR_ERR_NO_XEN,
+                                 _("failed to connect to Xen Store"));
+        }
         return (-1);
     }
     return (0);
@@ -382,8 +382,8 @@ xenStoreGetDomainInfo(virDomainPtr domain, virDomainInfoPtr info)
 
     if ((domain == NULL) || (domain->conn == NULL) || (info == NULL)) {
         virXenStoreError(domain ? domain->conn : NULL, VIR_ERR_INVALID_ARG,
-	                 __FUNCTION__);
-	return(-1);
+                         __FUNCTION__);
+        return(-1);
     }
 
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
@@ -448,13 +448,13 @@ xenStoreDomainSetMemory(virDomainPtr domain, unsigned long memory)
     if ((domain == NULL) || (domain->conn == NULL) ||
         (memory < 1024 * MIN_XEN_GUEST_SIZE)) {
         virXenStoreError(domain ? domain->conn : NULL, VIR_ERR_INVALID_ARG,
-	                 __FUNCTION__);
-	return(-1);
+                         __FUNCTION__);
+        return(-1);
     }
     if (domain->id == -1)
         return(-1);
     if ((domain->id == 0) && (memory < (2 * MIN_XEN_GUEST_SIZE * 1024)))
-	return(-1);
+        return(-1);
     snprintf(value, 19, "%lu", memory);
     value[19] = 0;
     ret = virDomainDoStoreWrite(domain, "memory/target", &value[0]);
@@ -484,8 +484,8 @@ xenStoreDomainGetMaxMemory(virDomainPtr domain)
 
     tmp = virDomainDoStoreQuery(domain->conn, domain->id, "memory/target");
     if (tmp != NULL) {
-	ret = (unsigned long) atol(tmp);
-	free(tmp);
+        ret = (unsigned long) atol(tmp);
+        free(tmp);
     }
     return(ret);
 }
@@ -519,7 +519,7 @@ xenStoreNumOfDomains(virConnectPtr conn)
     idlist = xs_directory(priv->xshandle, 0, "/local/domain", &num);
     if (idlist) {
         free(idlist);
-	ret = num;
+        ret = num;
     }
     return(ret);
 }
@@ -545,7 +545,7 @@ xenStoreListDomains(virConnectPtr conn, int *ids, int maxids)
 
     if ((conn == NULL) || (ids == NULL)) {
         virXenStoreError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-	return(-1);
+        return(-1);
     }
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
@@ -554,19 +554,19 @@ xenStoreListDomains(virConnectPtr conn, int *ids, int maxids)
 
     idlist = xs_directory (priv->xshandle, 0, "/local/domain", &num);
     if (idlist == NULL)
-	return(-1);
+        return(-1);
 
     for (ret = 0, i = 0; (i < num) && (ret < maxids); i++) {
-	id = strtol(idlist[i], &endptr, 10);
-	if ((endptr == idlist[i]) || (*endptr != 0)) {
-	    ret = -1;
-	    break;
-	}
+        id = strtol(idlist[i], &endptr, 10);
+        if ((endptr == idlist[i]) || (*endptr != 0)) {
+            ret = -1;
+            break;
+        }
 #if 0
-	if (virConnectCheckStoreID(conn, (int) id) < 0)
-	    continue;
+        if (virConnectCheckStoreID(conn, (int) id) < 0)
+            continue;
 #endif
-	ids[ret++] = (int) id;
+        ids[ret++] = (int) id;
     }
     free(idlist);
     return(ret);
@@ -595,7 +595,7 @@ xenStoreLookupByName(virConnectPtr conn, const char *name)
 
     if ((conn == NULL) || (name == NULL)) {
         virXenStoreError(conn, VIR_ERR_INVALID_ARG, __FUNCTION__);
-	return(NULL);
+        return(NULL);
     }
 
     priv = (xenUnifiedPrivatePtr) conn->privateData;
@@ -604,7 +604,7 @@ xenStoreLookupByName(virConnectPtr conn, const char *name)
 
     idlist = xs_directory(priv->xshandle, 0, "/local/domain", &num);
     if (idlist == NULL)
-	goto done;
+        goto done;
 
     for (i = 0; i < num; i++) {
         id = strtol(idlist[i], &endptr, 10);
@@ -635,8 +635,8 @@ xenStoreLookupByName(virConnectPtr conn, const char *name)
     ret->id = id;
 
 done:
-	free(xenddomain);
-	free(idlist);
+        free(xenddomain);
+        free(idlist);
 
     return(ret);
 }
@@ -656,7 +656,7 @@ xenStoreDomainShutdown(virDomainPtr domain)
 {
     if ((domain == NULL) || (domain->conn == NULL)) {
         virXenStoreError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	                 __FUNCTION__);
+                         __FUNCTION__);
         return(-1);
     }
     if (domain->id == -1 || domain->id == 0)
@@ -684,7 +684,7 @@ xenStoreDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
 {
     if ((domain == NULL) || (domain->conn == NULL)) {
         virXenStoreError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	                 __FUNCTION__);
+                         __FUNCTION__);
         return(-1);
     }
     if (domain->id == -1 || domain->id == 0)
@@ -711,7 +711,7 @@ xenStoreDomainGetOSType(virDomainPtr domain) {
 
     if ((domain == NULL) || (domain->conn == NULL)) {
         virXenStoreError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	                 __FUNCTION__);
+                         __FUNCTION__);
         return(NULL);
     }
 
@@ -798,7 +798,7 @@ xenStoreDomainGetOSTypeID(virConnectPtr conn, int id) {
 
     if (vm) {
         snprintf(query, 199, "%s/image/ostype", vm);
-	str = xs_read(priv->xshandle, 0, &query[0], &len);
+        str = xs_read(priv->xshandle, 0, &query[0], &len);
         free(vm);
     }
     if (str == NULL)
@@ -843,19 +843,19 @@ xenStoreDomainGetNetworkID(virConnectPtr conn, int id, const char *mac) {
     snprintf(dir, sizeof(dir), "/local/domain/0/backend/vif/%d", id);
     list = xs_directory(priv->xshandle, 0, dir, &num);
     if (list == NULL)
-	return(NULL);
+        return(NULL);
     for (i = 0; i < num; i++) {
-	snprintf(path, sizeof(path), "%s/%s/%s", dir, list[i], "mac");
-	val = xs_read(priv->xshandle, 0, path, &len);
-	if (val == NULL)
-	    break;
-	if ((maclen != len) || memcmp(val, mac, len)) {
-	    free(val);
-	} else {
-	    ret = strdup(list[i]);
-	    free(val);
-	    break;
-	}
+        snprintf(path, sizeof(path), "%s/%s/%s", dir, list[i], "mac");
+        val = xs_read(priv->xshandle, 0, path, &len);
+        if (val == NULL)
+            break;
+        if ((maclen != len) || memcmp(val, mac, len)) {
+            free(val);
+        } else {
+            ret = strdup(list[i]);
+            free(val);
+            break;
+        }
     }
     free(list);
     return(ret);

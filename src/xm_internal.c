@@ -674,12 +674,12 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
     if (xenXMConfigGetString(conf, "cpus", &str) == 0) {
         char *ranges;
 
-	ranges = virConvertCpuSet(conn, str, 0);
-	if (ranges != NULL) {
-	    virBufferVSprintf(buf, " cpuset='%s'", ranges);
-	    free(ranges);
-	} else
-	    virBufferVSprintf(buf, " cpuset='%s'", str);
+        ranges = virConvertCpuSet(conn, str, 0);
+        if (ranges != NULL) {
+            virBufferVSprintf(buf, " cpuset='%s'", ranges);
+            free(ranges);
+        } else
+            virBufferVSprintf(buf, " cpuset='%s'", str);
     }
     if (xenXMConfigGetInt(conf, "vcpus", &val) < 0)
         val = 1;
@@ -771,7 +771,7 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             /* Extract source driver type */
             if (!src[0]) {
                 strcpy(drvName, "phy");
-		tmp = &src[0];
+                tmp = &src[0];
             } else if (!(tmp = strchr(src, ':')) || !tmp[0]) {
                     goto skipdisk;
             } else {
@@ -821,9 +821,9 @@ char *xenXMDomainFormatXML(virConnectPtr conn, virConfPtr conf) {
             if (!strcmp(head, "r") ||
                 !strcmp(head, "ro"))
                 virBufferAddLit(buf, "      <readonly/>\n");
-	    else if ((!strcmp(head, "w!")) ||
-	             (!strcmp(head, "!")))
-	        virBufferAddLit(buf, "      <shareable/>\n");
+            else if ((!strcmp(head, "w!")) ||
+                     (!strcmp(head, "!")))
+                virBufferAddLit(buf, "      <shareable/>\n");
             virBufferAddLit(buf, "    </disk>\n");
 
         skipdisk:
@@ -1965,21 +1965,21 @@ virConfPtr xenXMParseXMLToConfig(virConnectPtr conn, const char *xml) {
     if (cpus != NULL) {
         char *ranges;
 
-	ranges = virConvertCpuSet(conn, cpus, 0);
-	if (ranges != NULL) {
-	    free(cpus);
-	    if (xenXMConfigSetString(conf, "cpus", ranges) < 0) {
-	        free(ranges);
-		goto error;
-	    }
-	    free(ranges);
-	} else {
-	    if (xenXMConfigSetString(conf, "cpus", cpus) < 0) {
-	        free(cpus);
-		goto error;
-	    }
-	    free(cpus);
-	}
+        ranges = virConvertCpuSet(conn, cpus, 0);
+        if (ranges != NULL) {
+            free(cpus);
+            if (xenXMConfigSetString(conf, "cpus", ranges) < 0) {
+                free(ranges);
+                goto error;
+            }
+            free(ranges);
+        } else {
+            if (xenXMConfigSetString(conf, "cpus", cpus) < 0) {
+                free(cpus);
+                goto error;
+            }
+            free(cpus);
+        }
     }
 
     obj = xmlXPathEval(BAD_CAST "string(/domain/os/type)", ctxt);

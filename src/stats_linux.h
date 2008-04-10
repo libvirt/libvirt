@@ -16,10 +16,10 @@
 #include "xen_unified.h"
 
 extern int xenLinuxDomainBlockStats (xenUnifiedPrivatePtr priv,
-				     virDomainPtr dom, const char *path,
-				     struct _virDomainBlockStats *stats);
+                                     virDomainPtr dom, const char *path,
+                                     struct _virDomainBlockStats *stats);
 extern int linuxDomainInterfaceStats (virConnectPtr conn, const char *path,
-				      struct _virDomainInterfaceStats *stats);
+                                      struct _virDomainInterfaceStats *stats);
 
 extern int xenLinuxDomainDeviceID(virConnectPtr conn, int domid, const char *dev);
 

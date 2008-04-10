@@ -1470,12 +1470,12 @@ static const char *qemudProbe(void)
 {
     if ((virFileExists("/usr/bin/qemu")) ||
         (virFileExists("/usr/bin/qemu-kvm")) ||
-	(virFileExists("/usr/bin/xenner"))) {
+        (virFileExists("/usr/bin/xenner"))) {
         if (getuid() == 0) {
-	    return("qemu:///system");
-	} else {
-	    return("qemu:///session");
-	}
+            return("qemu:///system");
+        } else {
+            return("qemu:///session");
+        }
     }
     return(NULL);
 }

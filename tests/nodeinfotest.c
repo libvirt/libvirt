@@ -95,7 +95,7 @@ main(int argc, char **argv)
 
     for (i = 0 ; i < (sizeof(nodeData)/sizeof(nodeData[0])) ; i++)
       if (virtTestRun(nodeData[i], 1, linuxTestNodeInfo, nodeData[i]) != 0)
-	ret = -1;
+        ret = -1;
 #endif
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);

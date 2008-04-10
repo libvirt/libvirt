@@ -254,32 +254,32 @@ virBufferEscapeString(virBufferPtr buf, const char *format, const char *str)
     out = escaped;
     while (*cur != 0) {
         if (*cur == '<') {
-	    *out++ = '&';
-	    *out++ = 'l';
-	    *out++ = 't';
-	    *out++ = ';';
-	} else if (*cur == '>') {
-	    *out++ = '&';
-	    *out++ = 'g';
-	    *out++ = 't';
-	    *out++ = ';';
-	} else if (*cur == '&') {
-	    *out++ = '&';
-	    *out++ = 'a';
-	    *out++ = 'm';
-	    *out++ = 'p';
-	    *out++ = ';';
-	} else if ((*cur >= 0x20) || (*cur == '\n') || (*cur == '\t') ||
-	           (*cur == '\r')) {
-	    /*
-	     * default case, just copy !
-	     * Note that character over 0x80 are likely to give problem
-	     * with UTF-8 XML, but since our string don't have an encoding
-	     * it's hard to handle properly we have to assume it's UTF-8 too
-	     */
-	    *out++ = *cur;
-	}
-	cur++;
+            *out++ = '&';
+            *out++ = 'l';
+            *out++ = 't';
+            *out++ = ';';
+        } else if (*cur == '>') {
+            *out++ = '&';
+            *out++ = 'g';
+            *out++ = 't';
+            *out++ = ';';
+        } else if (*cur == '&') {
+            *out++ = '&';
+            *out++ = 'a';
+            *out++ = 'm';
+            *out++ = 'p';
+            *out++ = ';';
+        } else if ((*cur >= 0x20) || (*cur == '\n') || (*cur == '\t') ||
+                   (*cur == '\r')) {
+            /*
+             * default case, just copy !
+             * Note that character over 0x80 are likely to give problem
+             * with UTF-8 XML, but since our string don't have an encoding
+             * it's hard to handle properly we have to assume it's UTF-8 too
+             */
+            *out++ = *cur;
+        }
+        cur++;
     }
     *out = 0;
 
@@ -289,7 +289,7 @@ virBufferEscapeString(virBufferPtr buf, const char *format, const char *str)
         buf->content[buf->use] = 0;
         grow_size = (count > 1000) ? count : 1000;
         if (virBufferGrow(buf, grow_size) < 0) {
-	    free(escaped);
+            free(escaped);
             return (-1);
         }
         size = buf->size - buf->use - 1;

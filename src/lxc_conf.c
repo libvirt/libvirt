@@ -183,10 +183,10 @@ static int lxcParseDomainUUID(virConnectPtr conn, unsigned char *uuid,
         if (virUUIDParse(res, uuid) < 0) {
             lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
                      _("invalid uuid element"));
-	    free(res);
+            free(res);
             return(-1);
         }
-	free(res);
+        free(res);
     }
     return(0);
 }
@@ -228,7 +228,7 @@ static int lxcParseDomainMounts(virConnectPtr conn,
             }
             prevObj = mountObj;
         }
-	free(list);
+        free(list);
     }
 
     rc = nmounts;
@@ -253,7 +253,7 @@ static int lxcParseDomainInit(virConnectPtr conn, char** init,
         lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
                  _("init string too long"));
         free(res);
-	return(-1);
+        return(-1);
     }
 
     *init = res;
@@ -270,10 +270,10 @@ static int lxcParseDomainTty(virConnectPtr conn, char **tty, xmlXPathContextPtr 
     if (res == NULL) {
         /* make sure the tty string is empty */
         *tty = strdup("");
-	if (*tty == NULL) {
-	    lxcError(conn, NULL, VIR_ERR_NO_MEMORY, NULL);
-	    return(-1);
-	}
+        if (*tty == NULL) {
+            lxcError(conn, NULL, VIR_ERR_NO_MEMORY, NULL);
+            return(-1);
+        }
     } else {
         *tty = res;
     }
@@ -288,14 +288,14 @@ static int lxcParseDomainMemory(virConnectPtr conn, int* memory, xmlXPathContext
 
     rc = virXPathLong("string(/domain/memory[1])", contextPtr, &res);
     if ((rc == -2) || ((rc == 0) && (res <= 0))) {
-	*memory = -1;
-	lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
-	         _("invalid memory value"));
+        *memory = -1;
+        lxcError(conn, NULL, VIR_ERR_INTERNAL_ERROR,
+                 _("invalid memory value"));
     } else if (rc < 0) {
         /* not an error, default to an invalid value so it's not used */
-	*memory = -1;
+        *memory = -1;
     } else {
-	*memory = (int) res;
+        *memory = (int) res;
     }
     return(0);
 }
@@ -656,7 +656,7 @@ int lxcLoadContainerInfo(lxc_driver_t *driver)
         } else {
             lxcError(NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                      _("failed to open config directory %s: %s"),
-		     driver->configDir, strerror(errno));
+                     driver->configDir, strerror(errno));
         }
 
         goto load_complete;
@@ -700,12 +700,12 @@ char *lxcGenerateXML(virConnectPtr conn,
 
     if (lxcIsActiveVM(vm)) {
         if (virBufferVSprintf(buf, "<domain type='%s' id='%d'>\n",
-			      LXC_DOMAIN_TYPE, vm->def->id) < 0) {
+                              LXC_DOMAIN_TYPE, vm->def->id) < 0) {
             goto no_memory;
         }
     } else {
-	if (virBufferVSprintf(buf, "<domain type='%s'>\n",
-			      LXC_DOMAIN_TYPE) < 0) {
+        if (virBufferVSprintf(buf, "<domain type='%s'>\n",
+                              LXC_DOMAIN_TYPE) < 0) {
             goto no_memory;
         }
     }

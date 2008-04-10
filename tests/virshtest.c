@@ -13,7 +13,7 @@ static char *abs_top_srcdir;
 #define MAX_FILE 4096
 
 static int testFilterLine(char *buffer,
-			  const char *toRemove) {
+                          const char *toRemove) {
   char *start;
   char *end;
 
@@ -78,8 +78,8 @@ static int testCompareListDefault(const void *data ATTRIBUTE_UNUSED) {
     NULL
   };
   return testCompareOutput("virshdata/list-default.txt",
-			   NULL,
-			   argv);
+                           NULL,
+                           argv);
 }
 
 static int testCompareListCustom(const void *data ATTRIBUTE_UNUSED) {
@@ -89,8 +89,8 @@ static int testCompareListCustom(const void *data ATTRIBUTE_UNUSED) {
     NULL
   };
   return testCompareOutput("virshdata/list-custom.txt",
-			   NULL,
-			   argv);
+                           NULL,
+                           argv);
 }
 
 
@@ -101,8 +101,8 @@ static int testCompareNodeinfoDefault(const void *data ATTRIBUTE_UNUSED) {
     NULL
   };
   return testCompareOutput("virshdata/nodeinfo-default.txt",
-			   NULL,
-			   argv);
+                           NULL,
+                           argv);
 }
 
 static int testCompareNodeinfoCustom(const void *data ATTRIBUTE_UNUSED) {
@@ -112,8 +112,8 @@ static int testCompareNodeinfoCustom(const void *data ATTRIBUTE_UNUSED) {
     NULL
   };
   return testCompareOutput("virshdata/nodeinfo-custom.txt",
-			   NULL,
-			   argv);
+                           NULL,
+                           argv);
 }
 
 static int testCompareDominfoByID(const void *data ATTRIBUTE_UNUSED) {
@@ -124,8 +124,8 @@ static int testCompareDominfoByID(const void *data ATTRIBUTE_UNUSED) {
     NULL
   };
   return testCompareOutput("virshdata/dominfo-fc4.txt",
-			   "\nCPU time:",
-			   argv);
+                           "\nCPU time:",
+                           argv);
 }
 
 
@@ -137,8 +137,8 @@ static int testCompareDominfoByUUID(const void *data ATTRIBUTE_UNUSED) {
     NULL
   };
   return testCompareOutput("virshdata/dominfo-fc4.txt",
-			   "\nCPU time:",
-			   argv);
+                           "\nCPU time:",
+                           argv);
 }
 
 
@@ -150,8 +150,8 @@ static int testCompareDominfoByName(const void *data ATTRIBUTE_UNUSED) {
     NULL
   };
   return testCompareOutput("virshdata/dominfo-fc4.txt",
-			   "\nCPU time:",
-			   argv);
+                           "\nCPU time:",
+                           argv);
 }
 
 
@@ -163,8 +163,8 @@ static int testCompareDomuuidByID(const void *data ATTRIBUTE_UNUSED) {
     NULL
   };
   return testCompareOutput("virshdata/domuuid-fc4.txt",
-			   NULL,
-			   argv);
+                           NULL,
+                           argv);
 }
 
 static int testCompareDomuuidByName(const void *data ATTRIBUTE_UNUSED) {
@@ -175,8 +175,8 @@ static int testCompareDomuuidByName(const void *data ATTRIBUTE_UNUSED) {
     NULL
   };
   return testCompareOutput("virshdata/domuuid-fc4.txt",
-			   NULL,
-			   argv);
+                           NULL,
+                           argv);
 }
 
 static int testCompareDomidByName(const void *data ATTRIBUTE_UNUSED) {
@@ -187,8 +187,8 @@ static int testCompareDomidByName(const void *data ATTRIBUTE_UNUSED) {
     NULL
   };
   return testCompareOutput("virshdata/domid-fc4.txt",
-			   NULL,
-			   argv);
+                           NULL,
+                           argv);
 }
 
 
@@ -200,8 +200,8 @@ static int testCompareDomidByUUID(const void *data ATTRIBUTE_UNUSED) {
     NULL
   };
   return testCompareOutput("virshdata/domid-fc4.txt",
-			   NULL,
-			   argv);
+                           NULL,
+                           argv);
 }
 
 
@@ -213,8 +213,8 @@ static int testCompareDomnameByID(const void *data ATTRIBUTE_UNUSED) {
     NULL
   };
   return testCompareOutput("virshdata/domname-fc4.txt",
-			   NULL,
-			   argv);
+                           NULL,
+                           argv);
 }
 
 
@@ -226,8 +226,8 @@ static int testCompareDomnameByUUID(const void *data ATTRIBUTE_UNUSED) {
     NULL
   };
   return testCompareOutput("virshdata/domname-fc4.txt",
-			   NULL,
-			   argv);
+                           NULL,
+                           argv);
 }
 
 static int testCompareDomstateByID(const void *data ATTRIBUTE_UNUSED) {
@@ -238,8 +238,8 @@ static int testCompareDomstateByID(const void *data ATTRIBUTE_UNUSED) {
     NULL
   };
   return testCompareOutput("virshdata/domstate-fc4.txt",
-			   NULL,
-			   argv);
+                           NULL,
+                           argv);
 }
 
 
@@ -251,8 +251,8 @@ static int testCompareDomstateByUUID(const void *data ATTRIBUTE_UNUSED) {
     NULL
   };
   return testCompareOutput("virshdata/domstate-fc4.txt",
-			   NULL,
-			   argv);
+                           NULL,
+                           argv);
 }
 
 static int testCompareDomstateByName(const void *data ATTRIBUTE_UNUSED) {
@@ -263,8 +263,8 @@ static int testCompareDomstateByName(const void *data ATTRIBUTE_UNUSED) {
     NULL
   };
   return testCompareOutput("virshdata/domstate-fc4.txt",
-			   NULL,
-			   argv);
+                           NULL,
+                           argv);
 }
 
 
@@ -290,67 +290,67 @@ main(int argc, char **argv)
     }
 
     if (virtTestRun("virsh list (default)",
-		    1, testCompareListDefault, NULL) != 0)
+                    1, testCompareListDefault, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh list (custom)",
-		    1, testCompareListCustom, NULL) != 0)
+                    1, testCompareListCustom, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh nodeinfo (default)",
-		    1, testCompareNodeinfoDefault, NULL) != 0)
+                    1, testCompareNodeinfoDefault, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh nodeinfo (custom)",
-		    1, testCompareNodeinfoCustom, NULL) != 0)
+                    1, testCompareNodeinfoCustom, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh dominfo (by id)",
-		    1, testCompareDominfoByID, NULL) != 0)
+                    1, testCompareDominfoByID, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh dominfo (by uuid)",
-		    1, testCompareDominfoByUUID, NULL) != 0)
+                    1, testCompareDominfoByUUID, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh dominfo (by name)",
-		    1, testCompareDominfoByName, NULL) != 0)
+                    1, testCompareDominfoByName, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh domid (by name)",
-		    1, testCompareDomidByName, NULL) != 0)
+                    1, testCompareDomidByName, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh domid (by uuid)",
-		    1, testCompareDomidByUUID, NULL) != 0)
+                    1, testCompareDomidByUUID, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh domuuid (by id)",
-		    1, testCompareDomuuidByID, NULL) != 0)
+                    1, testCompareDomuuidByID, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh domuuid (by name)",
-		    1, testCompareDomuuidByName, NULL) != 0)
+                    1, testCompareDomuuidByName, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh domname (by id)",
-		    1, testCompareDomnameByID, NULL) != 0)
+                    1, testCompareDomnameByID, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh domname (by uuid)",
-		    1, testCompareDomnameByUUID, NULL) != 0)
+                    1, testCompareDomnameByUUID, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh domstate (by id)",
-		    1, testCompareDomstateByID, NULL) != 0)
+                    1, testCompareDomstateByID, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh domstate (by uuid)",
-		    1, testCompareDomstateByUUID, NULL) != 0)
+                    1, testCompareDomstateByUUID, NULL) != 0)
         ret = -1;
 
     if (virtTestRun("virsh domstate (by name)",
-		    1, testCompareDomstateByName, NULL) != 0)
+                    1, testCompareDomstateByName, NULL) != 0)
         ret = -1;
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);

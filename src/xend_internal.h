@@ -104,19 +104,19 @@ int xenDaemonDomainLookupByName_ids(virConnectPtr xend,
  * This method looks up the name/uuid of a domain
  */
 int xenDaemonDomainLookupByID(virConnectPtr xend,
-			      int id,
-			      char **name, unsigned char *uuid);
+                              int id,
+                              char **name, unsigned char *uuid);
 
 
 char *xenDaemonDomainDumpXMLByID(virConnectPtr xend,
-				 int domid,
-				 int flags,
-				 const char *cpus);
+                                 int domid,
+                                 int flags,
+                                 const char *cpus);
 
 char *xenDaemonDomainDumpXMLByName(virConnectPtr xend,
-				   const char *name,
-				   int flags,
-				   const char *cpus);
+                                   const char *name,
+                                   int flags,
+                                   const char *cpus);
 
 /**
  * \brief Lookup information about the host machine
@@ -207,16 +207,16 @@ int xenDaemonDomainCreate(virDomainPtr domain);
 int xenDaemonDomainUndefine(virDomainPtr domain);
 
 int	xenDaemonDomainSetVcpus		(virDomainPtr domain,
-					 unsigned int vcpus);
+                                         unsigned int vcpus);
 int	xenDaemonDomainPinVcpu		(virDomainPtr domain,
-					 unsigned int vcpu,
-					 unsigned char *cpumap,
-					 int maplen);
+                                         unsigned int vcpu,
+                                         unsigned char *cpumap,
+                                         int maplen);
 int	xenDaemonDomainGetVcpus		(virDomainPtr domain,
-					 virVcpuInfoPtr info,
-					 int maxinfo,
-					 unsigned char *cpumaps,
-					 int maplen);
+                                         virVcpuInfoPtr info,
+                                         int maxinfo,
+                                         unsigned char *cpumaps,
+                                         int maplen);
 
 /* xen_unified calls through here. */
 extern struct xenUnifiedDriver xenDaemonDriver;

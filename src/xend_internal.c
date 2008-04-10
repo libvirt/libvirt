@@ -59,7 +59,7 @@ static int xenDaemonListDefinedDomains(virConnectPtr conn, char **const names, i
 static int xenDaemonNumOfDefinedDomains(virConnectPtr conn);
 static virDomainPtr xenDaemonCreateLinux(virConnectPtr conn,
                                          const char *xmlDesc,
-					 unsigned int flags);
+                                         unsigned int flags);
 static char *xenDaemonDomainGetOSType(virDomainPtr domain);
 static int xenDaemonAttachDevice(virDomainPtr domain, const char *xml);
 static int xenDaemonDetachDevice(virDomainPtr domain, const char *xml);
@@ -203,7 +203,7 @@ virXendErrorInt(virConnectPtr conn, virErrorNumber error, int val)
 
 
 #define foreach(iterator, start) \
-       	for (_for_i = (start), *iterator = (start)->u.s.car; \
+        for (_for_i = (start), *iterator = (start)->u.s.car; \
              _for_i->kind == SEXPR_CONS; \
              _for_i = _for_i->u.s.cdr, iterator = _for_i->u.s.car)
 
@@ -613,7 +613,7 @@ xend_op_ext2(virConnectPtr xend, const char *path, char *error,
 
     buf.content = malloc(1000);
     if (buf.content == NULL) {
-	virXendError(xend, VIR_ERR_NO_MEMORY, _("allocate new buffer"));
+        virXendError(xend, VIR_ERR_NO_MEMORY, _("allocate new buffer"));
         return -1;
     }
     buf.size = 1000;
@@ -832,7 +832,7 @@ urlencode(const char *string)
     size_t i;
 
     if (buffer == NULL) {
-	virXendError(NULL, VIR_ERR_NO_MEMORY, _("allocate new buffer"));
+        virXendError(NULL, VIR_ERR_NO_MEMORY, _("allocate new buffer"));
         return (NULL);
     }
     for (i = 0; i < len; i++) {
@@ -1065,7 +1065,7 @@ xenDaemonDomainCreateLinux(virConnectPtr xend, const char *sexpr)
  */
 int
 xenDaemonDomainLookupByName_ids(virConnectPtr xend, const char *domname,
-				unsigned char *uuid)
+                                unsigned char *uuid)
 {
     struct sexpr *root;
     const char *value;
@@ -1114,9 +1114,9 @@ xenDaemonDomainLookupByName_ids(virConnectPtr xend, const char *domname,
  */
 int
 xenDaemonDomainLookupByID(virConnectPtr xend,
-			  int id,
-			  char **domname,
-			  unsigned char *uuid)
+                          int id,
+                          char **domname,
+                          unsigned char *uuid)
 {
     const char *name = NULL;
     struct sexpr *root;
@@ -1667,7 +1667,7 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
                xend has already done this ? */
             if ((mode != NULL) && (!strcmp(mode, "r")))
                 virBufferAddLit(&buf, "      <readonly/>\n");
-	    else if ((mode != NULL) && (!strcmp(mode, "w!")))
+            else if ((mode != NULL) && (!strcmp(mode, "w!")))
                 virBufferAddLit(&buf, "      <shareable/>\n");
             virBufferAddLit(&buf, "    </disk>\n");
 
@@ -1727,11 +1727,11 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
                 virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'", port);
                 if (listenAddr)
                     virBufferVSprintf(&buf, " listen='%s'", listenAddr);
-		if (flags & VIR_DOMAIN_XML_SECURE) {
+                if (flags & VIR_DOMAIN_XML_SECURE) {
                     vncPasswd = sexpr_node(node, "device/vfb/vncpasswd");
-		    if (vncPasswd)
-			virBufferVSprintf(&buf, " passwd='%s'", vncPasswd);
-		}
+                    if (vncPasswd)
+                        virBufferVSprintf(&buf, " passwd='%s'", vncPasswd);
+                }
                 if (keymap)
                     virBufferVSprintf(&buf, " keymap='%s'", keymap);
                 virBufferAddLit(&buf, "/>\n");
@@ -1806,11 +1806,11 @@ xend_parse_sexp_desc(virConnectPtr conn, struct sexpr *root,
                 virBufferVSprintf(&buf, "    <graphics type='vnc' port='%d'", port);
                 if (listenAddr)
                     virBufferVSprintf(&buf, " listen='%s'", listenAddr);
-		if (flags & VIR_DOMAIN_XML_SECURE) {
-		    vncPasswd = sexpr_fmt_node(root, "domain/image/%s/vncpasswd", hvm ? "hvm" : "linux");
-		    if (vncPasswd)
-			virBufferVSprintf(&buf, " passwd='%s'", vncPasswd);
-		}
+                if (flags & VIR_DOMAIN_XML_SECURE) {
+                    vncPasswd = sexpr_fmt_node(root, "domain/image/%s/vncpasswd", hvm ? "hvm" : "linux");
+                    if (vncPasswd)
+                        virBufferVSprintf(&buf, " passwd='%s'", vncPasswd);
+                }
                 if (keymap)
                     virBufferVSprintf(&buf, " keymap='%s'", keymap);
                 virBufferAddLit(&buf, "/>\n");
@@ -2237,7 +2237,7 @@ xenDaemonDomainSuspend(virDomainPtr domain)
 {
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return(-1);
     }
     if (domain->id < 0)
@@ -2259,7 +2259,7 @@ xenDaemonDomainResume(virDomainPtr domain)
 {
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return(-1);
     }
     if (domain->id < 0)
@@ -2282,7 +2282,7 @@ xenDaemonDomainShutdown(virDomainPtr domain)
 {
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return(-1);
     }
     if (domain->id < 0)
@@ -2306,7 +2306,7 @@ xenDaemonDomainReboot(virDomainPtr domain, unsigned int flags ATTRIBUTE_UNUSED)
 {
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return(-1);
     }
     if (domain->id < 0)
@@ -2332,7 +2332,7 @@ xenDaemonDomainDestroy(virDomainPtr domain)
 {
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return(-1);
     }
     if (domain->id < 0)
@@ -2358,7 +2358,7 @@ xenDaemonDomainGetOSType(virDomainPtr domain)
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return(NULL);
     }
 
@@ -2402,7 +2402,7 @@ xenDaemonDomainSave(virDomainPtr domain, const char *filename)
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
         (filename == NULL) || (domain->id < 0)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return(-1);
     }
 
@@ -2434,7 +2434,7 @@ xenDaemonDomainCoreDump(virDomainPtr domain, const char *filename,
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
         (filename == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return(-1);
     }
     if (domain->id < 0)
@@ -2483,7 +2483,7 @@ xenDaemonDomainGetMaxMemory(virDomainPtr domain)
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return(-1);
     }
 
@@ -2523,7 +2523,7 @@ xenDaemonDomainSetMaxMemory(virDomainPtr domain, unsigned long memory)
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return(-1);
     }
 
@@ -2561,7 +2561,7 @@ xenDaemonDomainSetMemory(virDomainPtr domain, unsigned long memory)
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return(-1);
     }
 
@@ -2650,22 +2650,22 @@ xenDaemonDomainDumpXML(virDomainPtr domain, int flags, const char *cpus)
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return(NULL);
     }
     priv = (xenUnifiedPrivatePtr) domain->conn->privateData;
 
     if (domain->id < 0 && priv->xendConfigVersion < 3) {
-	// fall-through to the next driver to handle
+        // fall-through to the next driver to handle
         return(NULL);
     }
 
     if (domain->id < 0)
         return xenDaemonDomainDumpXMLByName(domain->conn, domain->name, flags,
-	                                    cpus);
+                                            cpus);
     else
         return xenDaemonDomainDumpXMLByID(domain->conn, domain->id, flags,
-	                                  cpus);
+                                          cpus);
 }
 #endif /* !PROXY */
 
@@ -2689,7 +2689,7 @@ xenDaemonDomainGetInfo(virDomainPtr domain, virDomainInfoPtr info)
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL) ||
         (info == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return(-1);
     }
 
@@ -2837,7 +2837,7 @@ xenDaemonGetVersion(virConnectPtr conn, unsigned long *hvVer)
     }
     root = sexpr_get(conn, "/xend/node/");
     if (root == NULL)
-	return(-1);
+        return(-1);
 
     major = sexpr_int(root, "node/xen_major");
     minor = sexpr_int(root, "node/xen_minor");
@@ -2888,7 +2888,7 @@ xenDaemonListDomains(virConnectPtr conn, int *ids, int maxids)
     }
 
 error:
-	sexpr_free(root);
+        sexpr_free(root);
     return(ret);
 }
 
@@ -2917,11 +2917,11 @@ xenDaemonNumOfDomains(virConnectPtr conn)
          _for_i = _for_i->u.s.cdr, node = _for_i->u.s.car) {
         if (node->kind != SEXPR_VALUE)
             continue;
-	ret++;
+        ret++;
     }
 
 error:
-	sexpr_free(root);
+        sexpr_free(root);
     return(ret);
 }
 #endif /* ! PROXY */
@@ -2976,7 +2976,7 @@ xenDaemonDomainSetVcpus(virDomainPtr domain, unsigned int vcpus)
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)
      || (vcpus < 1)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return (-1);
     }
 
@@ -3011,7 +3011,7 @@ xenDaemonDomainPinVcpu(virDomainPtr domain, unsigned int vcpu,
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)
      || (cpumap == NULL) || (maplen < 1) || (maplen > (int)sizeof(cpumap_t))) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return (-1);
     }
     if (domain->id < 0)
@@ -3286,7 +3286,7 @@ xenDaemonAttachDevice(virDomainPtr domain, const char *xml)
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return (-1);
     }
 
@@ -3341,7 +3341,7 @@ xenDaemonDetachDevice(virDomainPtr domain, const char *xml)
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return (-1);
     }
     if (virDomainXMLDevID(domain, xml, class, ref, sizeof(ref)))
@@ -3567,7 +3567,7 @@ int xenDaemonDomainCreate(virDomainPtr domain)
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return(-1);
     }
 
@@ -3585,7 +3585,7 @@ int xenDaemonDomainUndefine(virDomainPtr domain)
 
     if ((domain == NULL) || (domain->conn == NULL) || (domain->name == NULL)) {
         virXendError((domain ? domain->conn : NULL), VIR_ERR_INVALID_ARG,
-	             __FUNCTION__);
+                     __FUNCTION__);
         return(-1);
     }
 

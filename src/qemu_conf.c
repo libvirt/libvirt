@@ -1319,7 +1319,7 @@ static struct qemud_vm_def *qemudParseXML(virConnectPtr conn,
             } else if (!strcmp((char *)prop, "network")) {
                 def->os.bootDevs[def->os.nBootDevs++] = QEMUD_BOOT_NET;
             } else {
-	        qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
+                qemudReportError(conn, NULL, NULL, VIR_ERR_INTERNAL_ERROR,
                              _("unknown boot device \'%s\'"), (char*)prop);
                 goto error;
             }

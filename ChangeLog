@@ -1,4 +1,9 @@
-2008-04-10  Jim Meyering  <meyering@redhat.com>
+Thu Apr 10 18:54:03 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	Convert TAB-based indentation in C sources to use only spaces.
+	Done using this command (also includes .c.in and .h.in files):
+	for i in $(g ls-files|grep -E '\.[ch](\.in)?$'|grep -v gnulib); do
+	  expand -i $i > j && mv j $i;done
 
 	Remove Vim and Emacs variable settings from C source files.
 	Done with these commands:

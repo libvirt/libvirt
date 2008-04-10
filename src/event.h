@@ -119,11 +119,11 @@ typedef void (*virEventUpdateTimeoutFunc)(int, int);
 typedef int (*virEventRemoveTimeoutFunc)(int);
 
 void __virEventRegisterImpl(virEventAddHandleFunc addHandle,
-			    virEventUpdateHandleFunc updateHandle,
-			    virEventRemoveHandleFunc removeHandle,
-			    virEventAddTimeoutFunc addTimeout,
-			    virEventUpdateTimeoutFunc updateTimeout,
-			    virEventRemoveTimeoutFunc removeTimeout);
+                            virEventUpdateHandleFunc updateHandle,
+                            virEventRemoveHandleFunc removeHandle,
+                            virEventAddTimeoutFunc addTimeout,
+                            virEventUpdateTimeoutFunc updateTimeout,
+                            virEventRemoveTimeoutFunc removeTimeout);
 
 #define virEventRegisterImpl(ah,rh,at,rt) __virEventRegisterImpl(ah,rh,at,rt)
 

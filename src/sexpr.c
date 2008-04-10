@@ -483,7 +483,7 @@ sexpr_lookup(const struct sexpr *sexpr, const char *node)
     struct sexpr *s = sexpr_lookup_key(sexpr, node);
 
     if (s == NULL)
-	return NULL;
+        return NULL;
 
     if (s->kind != SEXPR_CONS || s->u.s.cdr->kind != SEXPR_CONS)
         return NULL;
@@ -509,7 +509,7 @@ sexpr_has(struct sexpr *sexpr, const char *node)
     struct sexpr *s = sexpr_lookup_key(sexpr, node);
 
     if (s == NULL)
-	return 0;
+        return 0;
 
     if (s->kind != SEXPR_CONS)
         return 0;

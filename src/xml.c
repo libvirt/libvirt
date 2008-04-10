@@ -276,14 +276,14 @@ virConvertCpuSet(virConnectPtr conn, const char *str, int maxcpu) {
 
     cpuset = calloc(maxcpu, sizeof(*cpuset));
     if (cpuset == NULL) {
-	virXMLError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"), 0);
-	return(NULL);
+        virXMLError(conn, VIR_ERR_NO_MEMORY, _("allocate buffer"), 0);
+        return(NULL);
     }
 
     ret = virParseCpuSet(conn, &cur, 0, cpuset, maxcpu);
     if (ret < 0) {
         free(cpuset);
-	return(NULL);
+        return(NULL);
     }
     res = virSaveCpuSet(conn, cpuset, maxcpu);
     free(cpuset);
@@ -803,7 +803,7 @@ virDomainParseXMLOSDescHVM(virConnectPtr conn, xmlNodePtr node,
     /* Only XenD <= 3.0.2 wants cdrom config here */
     if (xendConfigVersion == 1) {
         cur = virXPathNode(
-	  "/domain/devices/disk[@device='cdrom' and target/@dev='hdc']/source",
+          "/domain/devices/disk[@device='cdrom' and target/@dev='hdc']/source",
              ctxt);
         if (cur != NULL) {
             xmlChar *cdfile;
@@ -1653,14 +1653,14 @@ virParseXMLDevice(virConnectPtr conn, const char *xmldesc, int hvm,
         goto error;
     if (xmlStrEqual(node->name, BAD_CAST "disk")) {
         if (virDomainParseXMLDiskDesc(conn, node, &buf, hvm,
-	                              xendConfigVersion) != 0)
+                                      xendConfigVersion) != 0)
             goto error;
         /* SXP is not created when device is "floppy". */
         else if (buf.use == 0)
             goto error;
     } else if (xmlStrEqual(node->name, BAD_CAST "interface")) {
         if (virDomainParseXMLIfDesc(conn, node, &buf, hvm,
-	                            xendConfigVersion) != 0)
+                                    xendConfigVersion) != 0)
             goto error;
     } else {
         virXMLError(conn, VIR_ERR_XML_ERROR, (const char *) node->name, 0);

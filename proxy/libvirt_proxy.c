@@ -93,10 +93,10 @@ proxyInitXen(void) {
         return(-1);
     } else {
         ret = xenHypervisorGetVersion(conn, &xenVersion);
-	if (ret != 0) {
-	    fprintf(stderr, "Failed to get Xen hypervisor version\n");
-	    return(-1);
-	}
+        if (ret != 0) {
+            fprintf(stderr, "Failed to get Xen hypervisor version\n");
+            return(-1);
+        }
     }
     ret = xenDaemonOpen_unix(conn, "/var/lib/xend/xend-socket");
     if (ret < 0) {
@@ -110,12 +110,12 @@ proxyInitXen(void) {
     }
     ret = xenDaemonGetVersion(conn, &xenVersion2);
     if (ret != 0) {
-	fprintf(stderr, "Failed to get Xen daemon version\n");
-	return(-1);
+        fprintf(stderr, "Failed to get Xen daemon version\n");
+        return(-1);
     }
     if (debug)
         fprintf(stderr, "Connected to hypervisor %lu and daemon %lu\n",
-	        xenVersion, xenVersion2);
+                xenVersion, xenVersion2);
     if (xenVersion2 > xenVersion)
         xenVersion = xenVersion2;
     return(0);
@@ -168,7 +168,7 @@ proxyListenUnixSocket(const char *path) {
     fd = socket(PF_UNIX, SOCK_STREAM, 0);
     if (fd < 0) {
         fprintf(stderr, "Failed to create unix socket");
-	return(-1);
+        return(-1);
     }
 
     /*
@@ -185,13 +185,13 @@ proxyListenUnixSocket(const char *path) {
      */
     if (bind(fd, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
         fprintf(stderr, "Failed to bind to socket %s\n", path);
-	close(fd);
-	return (-1);
+        close(fd);
+        return (-1);
     }
     if (listen(fd, 30 /* backlog */ ) < 0) {
         fprintf(stderr, "Failed to listen to socket %s\n", path);
-	close(fd);
-	return (-1);
+        close(fd);
+        return (-1);
     }
 
     if (debug > 0)
@@ -221,28 +221,28 @@ retry:
     client = accept(pollInfos[0].fd, &client_addr, &client_addrlen);
     if (client < 0) {
         if (errno == EINTR) {
-	    if (debug > 0)
-	        fprintf(stderr, "accept connection on socket %d interrupted\n",
-		        pollInfos[0].fd);
-	    goto retry;
-	}
+            if (debug > 0)
+                fprintf(stderr, "accept connection on socket %d interrupted\n",
+                        pollInfos[0].fd);
+            goto retry;
+        }
         fprintf(stderr, "Failed to accept incoming connection on socket %d\n",
-	        pollInfos[0].fd);
-	done = 1;
-	return(-1);
+                pollInfos[0].fd);
+        done = 1;
+        return(-1);
     }
 
     if (nbClients >= MAX_CLIENT) {
         fprintf(stderr, "Too many client registered\n");
-	close(client);
-	return(-1);
+        close(client);
+        return(-1);
     }
     nbClients++;
     pollInfos[nbClients].fd = client;
     pollInfos[nbClients].events = POLLIN | POLLERR | POLLHUP | POLLNVAL;
     if (debug > 0)
-	fprintf(stderr, "accept connection on socket %d for client %d\n",
-		client, nbClients);
+        fprintf(stderr, "accept connection on socket %d for client %d\n",
+                client, nbClients);
     return(client);
 }
 
@@ -266,14 +266,14 @@ proxyCloseClientSocket(int nr) {
 
     ret = close(pollInfos[nr].fd);
     if (ret != 0)
-	fprintf(stderr, "Failed to close socket %d from client %d\n",
-	        pollInfos[nr].fd, nr);
+        fprintf(stderr, "Failed to close socket %d from client %d\n",
+                pollInfos[nr].fd, nr);
     else if (debug > 0)
-	fprintf(stderr, "Closed socket %d from client %d\n",
-	        pollInfos[nr].fd, nr);
+        fprintf(stderr, "Closed socket %d from client %d\n",
+                pollInfos[nr].fd, nr);
     if (nr < nbClients) {
         memmove(&pollInfos[nr], &pollInfos[nr + 1],
-	        (nbClients - nr) * sizeof(pollInfos[0]));
+                (nbClients - nr) * sizeof(pollInfos[0]));
     }
     nbClients--;
     return(ret);
@@ -290,12 +290,12 @@ proxyCloseClientSockets(void) {
 
     for (i = 1;i <= nbClients;i++) {
         ret = close(pollInfos[i].fd);
-	if (ret != 0)
-	    fprintf(stderr, "Failed to close socket %d from client %d\n",
-	            pollInfos[i].fd, i);
-	else if (debug > 0)
-	    fprintf(stderr, "Closed socket %d from client %d\n",
-	            pollInfos[i].fd, i);
+        if (ret != 0)
+            fprintf(stderr, "Failed to close socket %d from client %d\n",
+                    pollInfos[i].fd, i);
+        else if (debug > 0)
+            fprintf(stderr, "Closed socket %d from client %d\n",
+                    pollInfos[i].fd, i);
     }
     nbClients = 0;
 }
@@ -316,37 +316,37 @@ proxyWriteClientSocket(int nr, virProxyPacketPtr req) {
 
     if ((nr <= 0) || (nr > nbClients) || (req == NULL) ||
         (req->len < sizeof(virProxyPacket)) ||
-	(req->len > sizeof(virProxyFullPacket)) ||
-	(pollInfos[nr].fd < 0)) {
-	fprintf(stderr, "write to client %d in error", nr);
-	proxyCloseClientSocket(nr);
-	return(-1);
+        (req->len > sizeof(virProxyFullPacket)) ||
+        (pollInfos[nr].fd < 0)) {
+        fprintf(stderr, "write to client %d in error", nr);
+        proxyCloseClientSocket(nr);
+        return(-1);
     }
 
     ret = safewrite(pollInfos[nr].fd, (char *) req, req->len);
     if (ret < 0) {
         fprintf(stderr, "write %d bytes to socket %d from client %d failed\n",
-	        req->len, pollInfos[nr].fd, nr);
+                req->len, pollInfos[nr].fd, nr);
         proxyCloseClientSocket(nr);
         return(-1);
     }
     if (ret == 0) {
-	if (debug)
-	    fprintf(stderr, "end of stream from client %d on socket %d\n",
-	            nr, pollInfos[nr].fd);
-	proxyCloseClientSocket(nr);
-	return(-1);
+        if (debug)
+            fprintf(stderr, "end of stream from client %d on socket %d\n",
+                    nr, pollInfos[nr].fd);
+        proxyCloseClientSocket(nr);
+        return(-1);
     }
 
     if (ret != req->len) {
         fprintf(stderr, "write %d of %d bytes to socket %d from client %d\n",
-	        ret, req->len, pollInfos[nr].fd, nr);
-	proxyCloseClientSocket(nr);
-	return(-1);
+                ret, req->len, pollInfos[nr].fd, nr);
+        proxyCloseClientSocket(nr);
+        return(-1);
     }
     if (debug)
         fprintf(stderr, "wrote %d bytes to client %d on socket %d\n",
-	        ret, nr, pollInfos[nr].fd);
+                ret, nr, pollInfos[nr].fd);
 
     return(0);
 }
@@ -367,32 +367,32 @@ retry:
     ret = read(pollInfos[nr].fd, req, sizeof(virProxyPacket));
     if (ret < 0) {
         if (errno == EINTR) {
-	    if (debug > 0)
-	        fprintf(stderr, "read socket %d from client %d interrupted\n",
-		        pollInfos[nr].fd, nr);
-	    goto retry;
-	}
+            if (debug > 0)
+                fprintf(stderr, "read socket %d from client %d interrupted\n",
+                        pollInfos[nr].fd, nr);
+            goto retry;
+        }
         fprintf(stderr, "Failed to read socket %d from client %d\n",
-	        pollInfos[nr].fd, nr);
-	proxyCloseClientSocket(nr);
-	return(-1);
+                pollInfos[nr].fd, nr);
+        proxyCloseClientSocket(nr);
+        return(-1);
     }
     if (ret == 0) {
-	if (debug)
-	    fprintf(stderr, "end of stream from client %d on socket %d\n",
-	            nr, pollInfos[nr].fd);
-	proxyCloseClientSocket(nr);
-	return(-1);
+        if (debug)
+            fprintf(stderr, "end of stream from client %d on socket %d\n",
+                    nr, pollInfos[nr].fd);
+        proxyCloseClientSocket(nr);
+        return(-1);
     }
 
     if (debug)
         fprintf(stderr, "read %d bytes from client %d on socket %d\n",
-	        ret, nr, pollInfos[nr].fd);
+                ret, nr, pollInfos[nr].fd);
 
     if ((req->version != PROXY_PROTO_VERSION) ||
         (req->len < sizeof(virProxyPacket)) ||
-	(req->len > sizeof(virProxyFullPacket)))
-	goto comm_error;
+        (req->len > sizeof(virProxyFullPacket)))
+        goto comm_error;
 
 
     if (debug)
@@ -404,195 +404,195 @@ retry:
      */
     if (req->len > ret) {
         int total, extra;
-	char *base = (char *) &request;
+        char *base = (char *) &request;
 
         total = ret;
-	while (total < req->len) {
-	    extra = req->len - total;
+        while (total < req->len) {
+            extra = req->len - total;
 retry2:
-	    ret = read(pollInfos[nr].fd, base + total, extra);
-	    if (ret < 0) {
-		if (errno == EINTR) {
-		    if (debug > 0)
-			fprintf(stderr,
-			        "read socket %d from client %d interrupted\n",
-				pollInfos[nr].fd, nr);
-		    goto retry2;
-		}
-		fprintf(stderr, "Failed to read socket %d from client %d\n",
-			pollInfos[nr].fd, nr);
-		proxyCloseClientSocket(nr);
-		return(-1);
-	    }
-	    if (ret == 0) {
-		if (debug)
-		    fprintf(stderr,
-		            "end of stream from client %d on socket %d\n",
-			    nr, pollInfos[nr].fd);
-		proxyCloseClientSocket(nr);
-		return(-1);
-	    }
-	    total += ret;
-	}
+            ret = read(pollInfos[nr].fd, base + total, extra);
+            if (ret < 0) {
+                if (errno == EINTR) {
+                    if (debug > 0)
+                        fprintf(stderr,
+                                "read socket %d from client %d interrupted\n",
+                                pollInfos[nr].fd, nr);
+                    goto retry2;
+                }
+                fprintf(stderr, "Failed to read socket %d from client %d\n",
+                        pollInfos[nr].fd, nr);
+                proxyCloseClientSocket(nr);
+                return(-1);
+            }
+            if (ret == 0) {
+                if (debug)
+                    fprintf(stderr,
+                            "end of stream from client %d on socket %d\n",
+                            nr, pollInfos[nr].fd);
+                proxyCloseClientSocket(nr);
+                return(-1);
+            }
+            total += ret;
+        }
     }
     switch (req->command) {
-	case VIR_PROXY_NONE:
-	    if (req->len != sizeof(virProxyPacket))
-	        goto comm_error;
-	    break;
-	case VIR_PROXY_VERSION:
-	    if (req->len != sizeof(virProxyPacket))
-	        goto comm_error;
-	    req->data.larg = xenVersion;
-	    break;
-	case VIR_PROXY_LIST: {
-	    int maxids;
+        case VIR_PROXY_NONE:
+            if (req->len != sizeof(virProxyPacket))
+                goto comm_error;
+            break;
+        case VIR_PROXY_VERSION:
+            if (req->len != sizeof(virProxyPacket))
+                goto comm_error;
+            req->data.larg = xenVersion;
+            break;
+        case VIR_PROXY_LIST: {
+            int maxids;
 
-	    if (req->len != sizeof(virProxyPacket))
-	        goto comm_error;
-	    maxids = sizeof(request.extra.arg) / sizeof(int);
-	    ret = xenHypervisorListDomains(conn, &request.extra.arg[0],
-				           maxids);
-	    if (ret < 0) {
-	        req->len = sizeof(virProxyPacket);
-		req->data.arg = 0;
-	    } else {
-	        req->len = sizeof(virProxyPacket) + ret * sizeof(int);
-		req->data.arg = ret;
-	    }
-	    break;
-	}
-	case VIR_PROXY_NUM_DOMAIN:
-	    if (req->len != sizeof(virProxyPacket))
-	        goto comm_error;
-	    req->data.arg = xenHypervisorNumOfDomains(conn);
-	    break;
-	case VIR_PROXY_MAX_MEMORY:
-	    if (req->len != sizeof(virProxyPacket))
-	        goto comm_error;
-	    req->data.larg = xenHypervisorGetDomMaxMemory(conn, req->data.arg);
-	    break;
-	case VIR_PROXY_DOMAIN_INFO:
-	    if (req->len != sizeof(virProxyPacket))
-	        goto comm_error;
-	    memset(&request.extra.dinfo, 0, sizeof(virDomainInfo));
-	    ret = xenHypervisorGetDomInfo(conn, req->data.arg,
-	                                  &request.extra.dinfo);
-	    if (ret < 0) {
-	        req->data.arg = -1;
-	    } else {
-	        req->len += sizeof(virDomainInfo);
-	    }
-	    break;
-	case VIR_PROXY_LOOKUP_ID: {
-	    char *name = NULL;
-	    unsigned char uuid[VIR_UUID_BUFLEN];
-	    int len;
-
-	    if (req->len != sizeof(virProxyPacket))
-	        goto comm_error;
-
-	    if (xenDaemonDomainLookupByID(conn, req->data.arg, &name, uuid) < 0) {
-                req->data.arg = -1;
-            } else {
-	        len = strlen(name);
-		if (len > 1000) {
-		    len = 1000;
-		    name[1000] = 0;
-		}
-	        req->len += VIR_UUID_BUFLEN + len + 1;
-		memcpy(&request.extra.str[0], uuid, VIR_UUID_BUFLEN);
-		strcpy(&request.extra.str[VIR_UUID_BUFLEN], name);
-	    }
-        free(name);
-	    break;
-	}
-	case VIR_PROXY_LOOKUP_UUID: {
-	    char **names;
-	    char **tmp;
-	    int ident, len;
-	    char *name = NULL;
-	    unsigned char uuid[VIR_UUID_BUFLEN];
-
-	    if (req->len != sizeof(virProxyPacket) + VIR_UUID_BUFLEN)
-	        goto comm_error;
-
-	    /*
-	     * Xend API forces to collect the full domain list by names, and
-             * then query each of them until the id is found
-	     */
-	    names = xenDaemonListDomainsOld(conn);
-	    tmp = names;
-
-	    if (names != NULL) {
-	       while (*tmp != NULL) {
-		  ident = xenDaemonDomainLookupByName_ids(conn, *tmp, &uuid[0]);
-		  if (!memcmp(uuid, &request.extra.str[0], VIR_UUID_BUFLEN)) {
-		     name = *tmp;
-		     break;
-		  }
-		  tmp++;
-	       }
-	    }
-            if (name == NULL) {
-	        /* not found */
-                req->data.arg = -1;
-		req->len = sizeof(virProxyPacket);
-            } else {
-	        len = strlen(name);
-		if (len > 1000) {
-		    len = 1000;
-		    name[1000] = 0;
-		}
-	        req->len = sizeof(virProxyPacket) + len + 1;
-		strcpy(&request.extra.str[0], name);
-                req->data.arg = ident;
-	    }
-	    free(names);
-	    break;
-	}
-	case VIR_PROXY_LOOKUP_NAME: {
-	    int ident;
-	    unsigned char uuid[VIR_UUID_BUFLEN];
-
-	    if (req->len > sizeof(virProxyPacket) + 1000)
-	        goto comm_error;
-
-	    ident = xenDaemonDomainLookupByName_ids(conn,
-	                                    &request.extra.str[0], &uuid[0]);
-	    if (ident < 0) {
-	        /* not found */
-                req->data.arg = -1;
-		req->len = sizeof(virProxyPacket);
-	    } else {
-	        req->len = sizeof(virProxyPacket) + VIR_UUID_BUFLEN;
-		memcpy(&request.extra.str[0], uuid, VIR_UUID_BUFLEN);
-		req->data.arg = ident;
-	    }
-	    break;
-	}
-	case VIR_PROXY_NODE_INFO:
-	    if (req->len != sizeof(virProxyPacket))
-	        goto comm_error;
-
-	    /*
-	     * Hum, could we expect those information to be unmutable and
-	     * cache them ? Since it's probably an unfrequent call better
-	     * not make assumption and do the xend RPC each call.
-	     */
-	    ret = xenDaemonNodeGetInfo(conn, &request.extra.ninfo);
-	    if (ret < 0) {
-                req->data.arg = -1;
-		req->len = sizeof(virProxyPacket);
-	    } else {
+            if (req->len != sizeof(virProxyPacket))
+                goto comm_error;
+            maxids = sizeof(request.extra.arg) / sizeof(int);
+            ret = xenHypervisorListDomains(conn, &request.extra.arg[0],
+                                           maxids);
+            if (ret < 0) {
+                req->len = sizeof(virProxyPacket);
                 req->data.arg = 0;
-		req->len = sizeof(virProxyPacket) + sizeof(virNodeInfo);
-	    }
-	    break;
+            } else {
+                req->len = sizeof(virProxyPacket) + ret * sizeof(int);
+                req->data.arg = ret;
+            }
+            break;
+        }
+        case VIR_PROXY_NUM_DOMAIN:
+            if (req->len != sizeof(virProxyPacket))
+                goto comm_error;
+            req->data.arg = xenHypervisorNumOfDomains(conn);
+            break;
+        case VIR_PROXY_MAX_MEMORY:
+            if (req->len != sizeof(virProxyPacket))
+                goto comm_error;
+            req->data.larg = xenHypervisorGetDomMaxMemory(conn, req->data.arg);
+            break;
+        case VIR_PROXY_DOMAIN_INFO:
+            if (req->len != sizeof(virProxyPacket))
+                goto comm_error;
+            memset(&request.extra.dinfo, 0, sizeof(virDomainInfo));
+            ret = xenHypervisorGetDomInfo(conn, req->data.arg,
+                                          &request.extra.dinfo);
+            if (ret < 0) {
+                req->data.arg = -1;
+            } else {
+                req->len += sizeof(virDomainInfo);
+            }
+            break;
+        case VIR_PROXY_LOOKUP_ID: {
+            char *name = NULL;
+            unsigned char uuid[VIR_UUID_BUFLEN];
+            int len;
 
-	case VIR_PROXY_GET_CAPABILITIES:
-	    if (req->len != sizeof(virProxyPacket))
-	        goto comm_error;
+            if (req->len != sizeof(virProxyPacket))
+                goto comm_error;
+
+            if (xenDaemonDomainLookupByID(conn, req->data.arg, &name, uuid) < 0) {
+                req->data.arg = -1;
+            } else {
+                len = strlen(name);
+                if (len > 1000) {
+                    len = 1000;
+                    name[1000] = 0;
+                }
+                req->len += VIR_UUID_BUFLEN + len + 1;
+                memcpy(&request.extra.str[0], uuid, VIR_UUID_BUFLEN);
+                strcpy(&request.extra.str[VIR_UUID_BUFLEN], name);
+            }
+        free(name);
+            break;
+        }
+        case VIR_PROXY_LOOKUP_UUID: {
+            char **names;
+            char **tmp;
+            int ident, len;
+            char *name = NULL;
+            unsigned char uuid[VIR_UUID_BUFLEN];
+
+            if (req->len != sizeof(virProxyPacket) + VIR_UUID_BUFLEN)
+                goto comm_error;
+
+            /*
+             * Xend API forces to collect the full domain list by names, and
+             * then query each of them until the id is found
+             */
+            names = xenDaemonListDomainsOld(conn);
+            tmp = names;
+
+            if (names != NULL) {
+               while (*tmp != NULL) {
+                  ident = xenDaemonDomainLookupByName_ids(conn, *tmp, &uuid[0]);
+                  if (!memcmp(uuid, &request.extra.str[0], VIR_UUID_BUFLEN)) {
+                     name = *tmp;
+                     break;
+                  }
+                  tmp++;
+               }
+            }
+            if (name == NULL) {
+                /* not found */
+                req->data.arg = -1;
+                req->len = sizeof(virProxyPacket);
+            } else {
+                len = strlen(name);
+                if (len > 1000) {
+                    len = 1000;
+                    name[1000] = 0;
+                }
+                req->len = sizeof(virProxyPacket) + len + 1;
+                strcpy(&request.extra.str[0], name);
+                req->data.arg = ident;
+            }
+            free(names);
+            break;
+        }
+        case VIR_PROXY_LOOKUP_NAME: {
+            int ident;
+            unsigned char uuid[VIR_UUID_BUFLEN];
+
+            if (req->len > sizeof(virProxyPacket) + 1000)
+                goto comm_error;
+
+            ident = xenDaemonDomainLookupByName_ids(conn,
+                                            &request.extra.str[0], &uuid[0]);
+            if (ident < 0) {
+                /* not found */
+                req->data.arg = -1;
+                req->len = sizeof(virProxyPacket);
+            } else {
+                req->len = sizeof(virProxyPacket) + VIR_UUID_BUFLEN;
+                memcpy(&request.extra.str[0], uuid, VIR_UUID_BUFLEN);
+                req->data.arg = ident;
+            }
+            break;
+        }
+        case VIR_PROXY_NODE_INFO:
+            if (req->len != sizeof(virProxyPacket))
+                goto comm_error;
+
+            /*
+             * Hum, could we expect those information to be unmutable and
+             * cache them ? Since it's probably an unfrequent call better
+             * not make assumption and do the xend RPC each call.
+             */
+            ret = xenDaemonNodeGetInfo(conn, &request.extra.ninfo);
+            if (ret < 0) {
+                req->data.arg = -1;
+                req->len = sizeof(virProxyPacket);
+            } else {
+                req->data.arg = 0;
+                req->len = sizeof(virProxyPacket) + sizeof(virNodeInfo);
+            }
+            break;
+
+        case VIR_PROXY_GET_CAPABILITIES:
+            if (req->len != sizeof(virProxyPacket))
+                goto comm_error;
 
         xml = xenHypervisorGetCapabilities (conn);
         if (!xml) {
@@ -612,21 +612,21 @@ retry2:
         }
         break;
 
-	case VIR_PROXY_DOMAIN_XML:
-	    if (req->len != sizeof(virProxyPacket))
-	        goto comm_error;
+        case VIR_PROXY_DOMAIN_XML:
+            if (req->len != sizeof(virProxyPacket))
+                goto comm_error;
 
             /*
-	     * Ideally we should get the CPUs used by the domain
-	     * but that information is really node specific and it
-	     * rather hard to get from that code path. So proxy
-	     * users won't see CPU pinning (last NULL arg)
-	     */
-	    xml = xenDaemonDomainDumpXMLByID(conn, request.data.arg, 0, NULL);
+             * Ideally we should get the CPUs used by the domain
+             * but that information is really node specific and it
+             * rather hard to get from that code path. So proxy
+             * users won't see CPU pinning (last NULL arg)
+             */
+            xml = xenDaemonDomainDumpXMLByID(conn, request.data.arg, 0, NULL);
             if (!xml) {
                 req->data.arg = -1;
                 req->len = sizeof(virProxyPacket);
-	    } else {
+            } else {
                 int xmllen = strlen(xml);
                 if (xmllen > (int) sizeof(request.extra.str)) {
                     req->data.arg = -2;
@@ -637,17 +637,17 @@ retry2:
                     req->len = sizeof(virProxyPacket) + xmllen;
                 }
                 free(xml);
-	    }
-	    break;
-	case VIR_PROXY_DOMAIN_OSTYPE:
-	    if (req->len != sizeof(virProxyPacket))
-	        goto comm_error;
+            }
+            break;
+        case VIR_PROXY_DOMAIN_OSTYPE:
+            if (req->len != sizeof(virProxyPacket))
+                goto comm_error;
 
-	    ostype = xenStoreDomainGetOSTypeID(conn, request.data.arg);
+            ostype = xenStoreDomainGetOSTypeID(conn, request.data.arg);
             if (!ostype) {
                 req->data.arg = -1;
                 req->len = sizeof(virProxyPacket);
-	    } else {
+            } else {
                 int ostypelen = strlen(ostype);
                 if (ostypelen > (int) sizeof(request.extra.str)) {
                     req->data.arg = -2;
@@ -658,17 +658,17 @@ retry2:
                     req->len = sizeof(virProxyPacket) + ostypelen;
                 }
                 free(ostype);
-	    }
-	    break;
-	default:
-	    goto comm_error;
+            }
+            break;
+        default:
+            goto comm_error;
     }
     ret = proxyWriteClientSocket(nr, req);
     return(ret);
 
 comm_error:
     fprintf(stderr,
-	    "Communication error with client %d: malformed packet\n", nr);
+            "Communication error with client %d: malformed packet\n", nr);
     proxyCloseClientSocket(nr);
     return(-1);
 }
@@ -691,59 +691,59 @@ proxyProcessRequests(void) {
 
     while (!done) {
         /*
-	 * wait for requests, with a one second timeout
-	 */
+         * wait for requests, with a one second timeout
+         */
         ret = poll(&pollInfos[0], nbClients + 1, 1000);
-	if (ret == 0) { /* timeout */
-	    if ((nbClients == 0) && (persist == 0)) {
-	        exit_timeout--;
-		if (exit_timeout == 0) {
-		    done = 1;
-		    if (debug > 0) {
-		        fprintf(stderr, "Exitting after 30s without clients\n");
-		    }
-		}
-	    } else
-	        exit_timeout = 30;
-	    if (debug > 1)
-	        fprintf(stderr, "poll timeout\n");
-	    continue;
-	} else if (ret < 0) {
-	    if (errno == EINTR) {
-	        if (debug > 0)
-		    fprintf(stderr, "poll syscall interrupted\n");
-		    continue;
-	    }
-	    fprintf(stderr, "poll syscall failed\n");
-	    break;
-	}
-	/*
-	 * there have been I/O to process
-	 */
-	exit_timeout = 30;
-	if (pollInfos[0].revents != 0) {
-	    if (pollInfos[0].revents & POLLIN) {
-	        proxyAcceptClientSocket();
-	    } else {
-		fprintf(stderr, "Got an error %d on incoming socket %d\n",
-		        pollInfos[0].revents, pollInfos[0].fd);
-		break;
-	    }
-	}
+        if (ret == 0) { /* timeout */
+            if ((nbClients == 0) && (persist == 0)) {
+                exit_timeout--;
+                if (exit_timeout == 0) {
+                    done = 1;
+                    if (debug > 0) {
+                        fprintf(stderr, "Exitting after 30s without clients\n");
+                    }
+                }
+            } else
+                exit_timeout = 30;
+            if (debug > 1)
+                fprintf(stderr, "poll timeout\n");
+            continue;
+        } else if (ret < 0) {
+            if (errno == EINTR) {
+                if (debug > 0)
+                    fprintf(stderr, "poll syscall interrupted\n");
+                    continue;
+            }
+            fprintf(stderr, "poll syscall failed\n");
+            break;
+        }
+        /*
+         * there have been I/O to process
+         */
+        exit_timeout = 30;
+        if (pollInfos[0].revents != 0) {
+            if (pollInfos[0].revents & POLLIN) {
+                proxyAcceptClientSocket();
+            } else {
+                fprintf(stderr, "Got an error %d on incoming socket %d\n",
+                        pollInfos[0].revents, pollInfos[0].fd);
+                break;
+            }
+        }
 
-	/*
-	 * process the clients in reverse order since on error or disconnect
-	 * pollInfos is compacted to remove the given client.
-	 */
-	for (i = nbClients;i > 0;i--) {
-	    if (pollInfos[i].revents & POLLIN) {
-		proxyReadClientSocket(i);
-	    } else if (pollInfos[i].revents != 0) {
-		fprintf(stderr, "Got an error %d on client %d socket %d\n",
-		        pollInfos[i].revents, i, pollInfos[i].fd);
-		proxyCloseClientSocket(i);
-	    }
-	}
+        /*
+         * process the clients in reverse order since on error or disconnect
+         * pollInfos is compacted to remove the given client.
+         */
+        for (i = nbClients;i > 0;i--) {
+            if (pollInfos[i].revents & POLLIN) {
+                proxyReadClientSocket(i);
+            } else if (pollInfos[i].revents != 0) {
+                fprintf(stderr, "Got an error %d on client %d socket %d\n",
+                        pollInfos[i].revents, i, pollInfos[i].fd);
+                proxyCloseClientSocket(i);
+            }
+        }
 
     }
 }
@@ -758,9 +758,9 @@ proxyProcessRequests(void) {
 static void
 proxyMainLoop(void) {
     while (! done) {
-	if (proxyListenUnixSocket(PROXY_SOCKET_PATH) < 0)
-	    break;
-	proxyProcessRequests();
+        if (proxyListenUnixSocket(PROXY_SOCKET_PATH) < 0)
+            break;
+        proxyProcessRequests();
     }
     proxyCloseClientSockets();
 }
@@ -790,32 +790,32 @@ int main(int argc, char **argv) {
 
     if (!setlocale(LC_ALL, "")) {
         perror("setlocale");
-	return -1;
+        return -1;
     }
     if (!bindtextdomain(GETTEXT_PACKAGE, LOCALEBASEDIR)) {
         perror("bindtextdomain");
-	return -1;
+        return -1;
     }
     if (!textdomain(GETTEXT_PACKAGE)) {
         perror("textdomain");
-	return -1;
+        return -1;
     }
 
     for (i = 1; i < argc; i++) {
          if (!strcmp(argv[i], "-v")) {
-	     debug++;
+             debug++;
          } else if (!strcmp(argv[i], "-no-timeout")) {
-	     persist = 1;
-	 } else {
-	     usage(argv[0]);
-	     exit(1);
-	 }
+             persist = 1;
+         } else {
+             usage(argv[0]);
+             exit(1);
+         }
     }
 
 
     if (geteuid() != 0) {
         fprintf(stderr, "%s must be run as root or suid\n", argv[0]);
-	/* exit(1); */
+        /* exit(1); */
     }
 
     /*
@@ -832,7 +832,7 @@ int main(int argc, char **argv) {
     if (proxyListenUnixSocket(PROXY_SOCKET_PATH) < 0)
         exit(0);
     if (proxyInitXen() == 0)
-	proxyMainLoop();
+        proxyMainLoop();
     sleep(1);
     proxyCloseUnixSocket();
     exit(0);

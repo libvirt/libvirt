@@ -401,19 +401,19 @@ cmdAutostart(vshControl * ctl, vshCmd * cmd)
 
     if (virDomainSetAutostart(dom, autostart) < 0) {
         if (autostart)
-	    vshError(ctl, FALSE, _("Failed to mark domain %s as autostarted"),
+            vshError(ctl, FALSE, _("Failed to mark domain %s as autostarted"),
                      name);
-	else
-	    vshError(ctl, FALSE, _("Failed to unmark domain %s as autostarted"),
+        else
+            vshError(ctl, FALSE, _("Failed to unmark domain %s as autostarted"),
                      name);
         virDomainFree(dom);
         return FALSE;
     }
 
     if (autostart)
-	vshPrint(ctl, _("Domain %s marked as autostarted\n"), name);
+        vshPrint(ctl, _("Domain %s marked as autostarted\n"), name);
     else
-	vshPrint(ctl, _("Domain %s unmarked as autostarted\n"), name);
+        vshPrint(ctl, _("Domain %s unmarked as autostarted\n"), name);
 
     virDomainFree(dom);
     return TRUE;
@@ -902,7 +902,7 @@ cmdCreate(vshControl * ctl, vshCmd * cmd)
     if (dom != NULL) {
         vshPrint(ctl, _("Domain %s created from %s\n"),
                  virDomainGetName(dom), from);
-	virDomainFree(dom);
+        virDomainFree(dom);
     } else {
         vshError(ctl, FALSE, _("Failed to create domain from %s"), from);
         ret = FALSE;
@@ -1027,7 +1027,7 @@ cmdStart(vshControl * ctl, vshCmd * cmd)
 
     if (virDomainGetID(dom) != (unsigned int)-1) {
         vshError(ctl, FALSE, "%s", _("Domain is already active"));
-	virDomainFree(dom);
+        virDomainFree(dom);
         return FALSE;
     }
 
@@ -1176,7 +1176,7 @@ cmdSchedinfo(vshControl * ctl, vshCmd * cmd)
         ret = virDomainSetSchedulerParameters(dom, params, inputparams);
         if (ret == -1) {
             goto cleanup;
-	}
+        }
     }
     free(params);
     params = NULL;
@@ -1583,15 +1583,15 @@ cmdFreecell(vshControl * ctl, vshCmd * cmd)
     if (!cell_given) {
         memory = virNodeGetFreeMemory(ctl->conn);
     } else {
-	ret = virNodeGetCellsFreeMemory(ctl->conn, &memory, cell, 1);
-	if (ret != 1)
-	    return FALSE;
+        ret = virNodeGetCellsFreeMemory(ctl->conn, &memory, cell, 1);
+        if (ret != 1)
+            return FALSE;
     }
 
     if (cell == -1)
-	vshPrint(ctl, "%s: %llu kB\n", _("Total"), memory);
+        vshPrint(ctl, "%s: %llu kB\n", _("Total"), memory);
     else
-	vshPrint(ctl, "%d: %llu kB\n", cell, memory);
+        vshPrint(ctl, "%d: %llu kB\n", cell, memory);
 
     return TRUE;
 }
@@ -1742,7 +1742,7 @@ cmdVcpupin(vshControl * ctl, vshCmd * cmd)
 
     if (virDomainGetInfo(dom, &info) != 0) {
         vshError(ctl, FALSE, "%s",
-	         _("vcpupin: failed to get domain informations."));
+                 _("vcpupin: failed to get domain informations."));
         virDomainFree(dom);
         return FALSE;
     }
@@ -2290,19 +2290,19 @@ cmdNetworkAutostart(vshControl * ctl, vshCmd * cmd)
 
     if (virNetworkSetAutostart(network, autostart) < 0) {
         if (autostart)
-	    vshError(ctl, FALSE, _("failed to mark network %s as autostarted"),
+            vshError(ctl, FALSE, _("failed to mark network %s as autostarted"),
                                    name);
-	else
-	    vshError(ctl, FALSE,_("failed to unmark network %s as autostarted"),
+        else
+            vshError(ctl, FALSE,_("failed to unmark network %s as autostarted"),
                                    name);
         virNetworkFree(network);
         return FALSE;
     }
 
     if (autostart)
-	vshPrint(ctl, _("Network %s marked as autostarted\n"), name);
+        vshPrint(ctl, _("Network %s marked as autostarted\n"), name);
     else
-	vshPrint(ctl, _("Network %s unmarked as autostarted\n"), name);
+        vshPrint(ctl, _("Network %s unmarked as autostarted\n"), name);
 
     return TRUE;
 }
@@ -2523,7 +2523,7 @@ cmdNetworkList(vshControl * ctl, vshCmd * cmd ATTRIBUTE_UNUSED)
             activeNames = vshMalloc(ctl, sizeof(char *) * maxactive);
 
             if ((maxactive = virConnectListNetworks(ctl->conn, activeNames,
-	                                            maxactive)) < 0) {
+                                                    maxactive)) < 0) {
                 vshError(ctl, FALSE, "%s", _("Failed to list active networks"));
                 free(activeNames);
                 return FALSE;
@@ -2630,7 +2630,7 @@ cmdNetworkName(vshControl * ctl, vshCmd * cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
     if (!(network = vshCommandOptNetworkBy(ctl, cmd, "network", NULL,
-					   VSH_BYUUID)))
+                                           VSH_BYUUID)))
         return FALSE;
 
     vshPrint(ctl, "%s\n", virNetworkGetName(network));
@@ -2741,7 +2741,7 @@ cmdNetworkUuid(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (!(network = vshCommandOptNetworkBy(ctl, cmd, "network", NULL,
-					   VSH_BYNAME)))
+                                           VSH_BYNAME)))
         return FALSE;
 
     if (virNetworkGetUUIDString(network, uuid) != -1)
@@ -2798,19 +2798,19 @@ cmdPoolAutostart(vshControl * ctl, vshCmd * cmd)
 
     if (virStoragePoolSetAutostart(pool, autostart) < 0) {
         if (autostart)
-	    vshError(ctl, FALSE, _("failed to mark pool %s as autostarted"),
+            vshError(ctl, FALSE, _("failed to mark pool %s as autostarted"),
                                    name);
-	else
-	    vshError(ctl, FALSE,_("failed to unmark pool %s as autostarted"),
+        else
+            vshError(ctl, FALSE,_("failed to unmark pool %s as autostarted"),
                                    name);
         virStoragePoolFree(pool);
         return FALSE;
     }
 
     if (autostart)
-	vshPrint(ctl, _("Pool %s marked as autostarted\n"), name);
+        vshPrint(ctl, _("Pool %s marked as autostarted\n"), name);
     else
-	vshPrint(ctl, _("Pool %s unmarked as autostarted\n"), name);
+        vshPrint(ctl, _("Pool %s unmarked as autostarted\n"), name);
 
     return TRUE;
 }
@@ -3543,7 +3543,7 @@ cmdPoolName(vshControl * ctl, vshCmd * cmd)
     if (!vshConnectionUsability(ctl, ctl->conn, TRUE))
         return FALSE;
     if (!(pool = vshCommandOptPoolBy(ctl, cmd, "pool", NULL,
-					   VSH_BYUUID)))
+                                           VSH_BYUUID)))
         return FALSE;
 
     vshPrint(ctl, "%s\n", virStoragePoolGetName(pool));
@@ -3779,7 +3779,7 @@ cmdPoolUuid(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (!(pool = vshCommandOptPoolBy(ctl, cmd, "pool", NULL,
-					   VSH_BYNAME)))
+                                           VSH_BYNAME)))
         return FALSE;
 
     if (virStoragePoolGetUUIDString(pool, uuid) != -1)
@@ -3823,7 +3823,7 @@ cmdVolCreate(vshControl * ctl, vshCmd * cmd)
         return FALSE;
 
     if (!(pool = vshCommandOptPoolBy(ctl, cmd, "pool", NULL,
-					   VSH_BYNAME)))
+                                           VSH_BYNAME)))
         return FALSE;
 
     from = vshCommandOptString(cmd, "file", &found);
@@ -5485,7 +5485,7 @@ vshCommandOptDomainBy(vshControl * ctl, vshCmd * cmd, const char *optname,
 
 static virNetworkPtr
 vshCommandOptNetworkBy(vshControl * ctl, vshCmd * cmd, const char *optname,
-		       char **name, int flag)
+                       char **name, int flag)
 {
     virNetworkPtr network = NULL;
     char *n;
@@ -5504,7 +5504,7 @@ vshCommandOptNetworkBy(vshControl * ctl, vshCmd * cmd, const char *optname,
     /* try it by UUID */
     if (network==NULL && (flag & VSH_BYUUID) && strlen(n)==VIR_UUID_STRING_BUFLEN-1) {
         vshDebug(ctl, 5, "%s: <%s> trying as network UUID\n",
-		 cmd->def->name, optname);
+                 cmd->def->name, optname);
         network = virNetworkLookupByUUIDString(ctl->conn, n);
     }
     /* try it by NAME */
@@ -5541,7 +5541,7 @@ vshCommandOptPoolBy(vshControl * ctl, vshCmd * cmd, const char *optname,
     /* try it by UUID */
     if (pool==NULL && (flag & VSH_BYUUID) && strlen(n)==VIR_UUID_STRING_BUFLEN-1) {
         vshDebug(ctl, 5, "%s: <%s> trying as pool UUID\n",
-		 cmd->def->name, optname);
+                 cmd->def->name, optname);
         pool = virStoragePoolLookupByUUIDString(ctl->conn, n);
     }
     /* try it by NAME */

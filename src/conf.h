@@ -68,19 +68,19 @@ typedef virConf *virConfPtr;
 virConfPtr      __virConfNew             (void);
 virConfPtr	__virConfReadFile	(const char *filename);
 virConfPtr	__virConfReadMem		(const char *memory,
-					 int len);
+                                         int len);
 int		__virConfFree		(virConfPtr conf);
 
 virConfValuePtr	__virConfGetValue	(virConfPtr conf,
-					 const char *setting);
+                                         const char *setting);
 int             __virConfSetValue        (virConfPtr conf,
-					 const char *setting,
-					 virConfValuePtr value);
+                                         const char *setting,
+                                         virConfValuePtr value);
 int		__virConfWriteFile	(const char *filename,
-					 virConfPtr conf);
+                                         virConfPtr conf);
 int		__virConfWriteMem	(char *memory,
-					 int *len,
-					 virConfPtr conf);
+                                         int *len,
+                                         virConfPtr conf);
 
 #define virConfNew() (__virConfNew())
 #define virConfReadFile(f) (__virConfReadFile((f)))

@@ -170,12 +170,12 @@ int			virCopyLastError	(virErrorPtr to);
 
 void			virDefaultErrorFunc	(virErrorPtr err);
 void			virSetErrorFunc		(void *userData,
-						 virErrorFunc handler);
+                                                 virErrorFunc handler);
 void			virConnSetErrorFunc	(virConnectPtr conn,
-						 void *userData,
-						 virErrorFunc handler);
+                                                 void *userData,
+                                                 virErrorFunc handler);
 int			virConnCopyLastError	(virConnectPtr conn,
-						 virErrorPtr to);
+                                                 virErrorPtr to);
 #ifdef __cplusplus
 }
 #endif

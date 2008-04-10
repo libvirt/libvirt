@@ -21,41 +21,41 @@ extern struct xenUnifiedDriver xenStoreDriver;
 int xenStoreInit (void);
 
 int		xenStoreOpen		(virConnectPtr conn,
-					 xmlURIPtr uri,
-					 virConnectAuthPtr auth,
-					 int flags);
+                                         xmlURIPtr uri,
+                                         virConnectAuthPtr auth,
+                                         int flags);
 int		xenStoreClose		(virConnectPtr conn);
 int		xenStoreGetDomainInfo	(virDomainPtr domain,
-			   		 virDomainInfoPtr info);
+                                         virDomainInfoPtr info);
 int		xenStoreNumOfDomains	(virConnectPtr conn);
 int     	xenStoreListDomains	(virConnectPtr conn,
-					 int *ids,
-					 int maxids);
+                                         int *ids,
+                                         int maxids);
 virDomainPtr 	xenStoreLookupByName(virConnectPtr conn,
-					 const char *name);
+                                         const char *name);
 unsigned long 	xenStoreGetMaxMemory	(virDomainPtr domain);
 int		xenStoreDomainSetMemory	(virDomainPtr domain,
-		      	  	 	 unsigned long memory);
+                                         unsigned long memory);
 unsigned long 	xenStoreDomainGetMaxMemory(virDomainPtr domain);
 int 		xenStoreDomainShutdown	(virDomainPtr domain);
 int 		xenStoreDomainReboot	(virDomainPtr domain,
-					 unsigned int flags);
+                                         unsigned int flags);
 
 /* those are entry point for the proxy */
 int             xenStoreDomainGetVNCPort(virConnectPtr conn,
-					 int domid);
+                                         int domid);
 char *          xenStoreDomainGetConsolePath(virConnectPtr conn,
-					 int domid);
+                                         int domid);
 char *		xenStoreDomainGetOSTypeID(virConnectPtr conn,
-					 int id);
+                                         int id);
 char *		xenStoreDomainGetNetworkID(virConnectPtr conn,
-					 int id,
-					 const char *mac);
+                                         int id,
+                                         const char *mac);
 char *		xenStoreDomainGetDiskID(virConnectPtr conn,
-					 int id,
-					 const char *dev);
+                                         int id,
+                                         const char *dev);
 char *          xenStoreDomainGetName(virConnectPtr conn,
-				      int id);
+                                      int id);
 
 #ifdef __cplusplus
 }

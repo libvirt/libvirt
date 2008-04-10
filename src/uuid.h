@@ -25,9 +25,9 @@
 int virUUIDGenerate(unsigned char *uuid);
 
 int virUUIDParse(const char *uuidstr,
-		 unsigned char *uuid);
+                 unsigned char *uuid);
 
 void virUUIDFormat(const unsigned char *uuid,
-		   char *uuidstr);
+                   char *uuidstr);
 
 #endif /* __VIR_UUID_H__ */

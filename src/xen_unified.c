@@ -185,19 +185,19 @@ xenDomainUsedCpus(virDomainPtr dom)
 
     if ((ncpus = xenUnifiedDomainGetVcpus(dom, cpuinfo, nb_vcpu,
                                           cpumap, cpumaplen)) >= 0) {
-	for (n = 0 ; n < ncpus ; n++) {
-	    for (m = 0 ; m < nb_cpu; m++) {
-	        if ((cpulist[m] == 0) &&
-	 	    (VIR_CPU_USABLE(cpumap, cpumaplen, n, m))) {
-		    cpulist[m] = 1;
-		    nb++;
-		    /* if all CPU are used just return NULL */
-		    if (nb == nb_cpu)
-		        goto done;
+        for (n = 0 ; n < ncpus ; n++) {
+            for (m = 0 ; m < nb_cpu; m++) {
+                if ((cpulist[m] == 0) &&
+                    (VIR_CPU_USABLE(cpumap, cpumaplen, n, m))) {
+                    cpulist[m] = 1;
+                    nb++;
+                    /* if all CPU are used just return NULL */
+                    if (nb == nb_cpu)
+                        goto done;
 
-		}
-	    }
-	}
+                }
+            }
+        }
         res = virSaveCpuSet(dom->conn, cpulist, nb_cpu);
     }
 
@@ -230,7 +230,7 @@ xenUnifiedProbe (void)
     FILE *fh;
 
     if (fh = fopen("/dev/xen/domcaps", "r")) {
-	fclose(fh);
+        fclose(fh);
         return("xen:///");
     }
 #endif
@@ -961,7 +961,7 @@ xenUnifiedDomainDumpXML (virDomainPtr dom, int flags)
             char *cpus, *res;
             cpus = xenDomainUsedCpus(dom);
             res = xenDaemonDomainDumpXML(dom, flags, cpus);
-	        free(cpus);
+                free(cpus);
             return(res);
         }
         if (priv->opened[XEN_UNIFIED_PROXY_OFFSET])
@@ -1138,8 +1138,8 @@ xenUnifiedDomainGetSchedulerType (virDomainPtr dom, int *nparams)
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; i++) {
         if (priv->opened[i] && drivers[i]->domainGetSchedulerType) {
             schedulertype = drivers[i]->domainGetSchedulerType (dom, nparams);
-	    if (schedulertype != NULL)
-		return(schedulertype);
+            if (schedulertype != NULL)
+                return(schedulertype);
         }
     }
     return(NULL);
@@ -1155,9 +1155,9 @@ xenUnifiedDomainGetSchedulerParameters (virDomainPtr dom,
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i) {
         if (priv->opened[i] && drivers[i]->domainGetSchedulerParameters) {
            ret = drivers[i]->domainGetSchedulerParameters(dom, params, nparams);
-	   if (ret == 0)
-	       return(0);
-	}
+           if (ret == 0)
+               return(0);
+        }
     }
     return(-1);
 }
@@ -1172,9 +1172,9 @@ xenUnifiedDomainSetSchedulerParameters (virDomainPtr dom,
     for (i = 0; i < XEN_UNIFIED_NR_DRIVERS; ++i) {
         if (priv->opened[i] && drivers[i]->domainSetSchedulerParameters) {
            ret = drivers[i]->domainSetSchedulerParameters(dom, params, nparams);
-	   if (ret == 0)
-	       return 0;
-	}
+           if (ret == 0)
+               return 0;
+        }
     }
 
     return(-1);
@@ -1230,9 +1230,9 @@ xenUnifiedNodeGetFreeMemory (virConnectPtr conn)
     if (priv->opened[XEN_UNIFIED_HYPERVISOR_OFFSET]) {
         ret = xenHypervisorNodeGetCellsFreeMemory (conn, &freeMem,
                                                     -1, 1);
-	if (ret != 1)
-	    return (0);
-	return(freeMem);
+        if (ret != 1)
+            return (0);
+        return(freeMem);
     }
 
     xenUnifiedError (conn, VIR_ERR_NO_SUPPORT, __FUNCTION__);

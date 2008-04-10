@@ -17,46 +17,46 @@ extern "C" {
 #endif
 
 int		virXPathBoolean	(const char *xpath,
-				 xmlXPathContextPtr ctxt);
+                                 xmlXPathContextPtr ctxt);
 char *		virXPathString	(const char *xpath,
-				 xmlXPathContextPtr ctxt);
+                                 xmlXPathContextPtr ctxt);
 int		virXPathNumber	(const char *xpath,
-				 xmlXPathContextPtr ctxt,
-				 double *value);
+                                 xmlXPathContextPtr ctxt,
+                                 double *value);
 int		virXPathLong	(const char *xpath,
-				 xmlXPathContextPtr ctxt,
-				 long *value);
+                                 xmlXPathContextPtr ctxt,
+                                 long *value);
 xmlNodePtr	virXPathNode	(const char *xpath,
-				 xmlXPathContextPtr ctxt);
+                                 xmlXPathContextPtr ctxt);
 int		virXPathNodeSet	(const char *xpath,
-				 xmlXPathContextPtr ctxt,
-				 xmlNodePtr **list);
+                                 xmlXPathContextPtr ctxt,
+                                 xmlNodePtr **list);
 
 #if WITH_XEN
 int		virParseCpuSet	(virConnectPtr conn,
-				 const char **str,
-				 char sep,
-				 char *cpuset,
-				 int maxcpu);
+                                 const char **str,
+                                 char sep,
+                                 char *cpuset,
+                                 int maxcpu);
 char *          virSaveCpuSet	(virConnectPtr conn,
-				 char *cpuset,
-				 int maxcpu);
+                                 char *cpuset,
+                                 int maxcpu);
 char *		virConvertCpuSet(virConnectPtr conn,
-				 const char *str,
-				 int maxcpu);
+                                 const char *str,
+                                 int maxcpu);
 char *		virDomainParseXMLDesc(virConnectPtr conn,
-				 const char *xmldesc,
-				 char **name,
-				 int xendConfigVersion);
+                                 const char *xmldesc,
+                                 char **name,
+                                 int xendConfigVersion);
 char *		virParseXMLDevice(virConnectPtr conn,
-				 const char *xmldesc,
-				 int hvm,
-				 int xendConfigVersion);
+                                 const char *xmldesc,
+                                 int hvm,
+                                 int xendConfigVersion);
 int		virDomainXMLDevID(virDomainPtr domain,
-				 const char *xmldesc,
-				 char *class,
-				 char *ref,
-				 int ref_len);
+                                 const char *xmldesc,
+                                 char *class,
+                                 char *ref,
+                                 int ref_len);
 #endif
 
 #ifdef __cplusplus

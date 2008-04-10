@@ -29,21 +29,21 @@ getDomainInfo(int id) {
     conn = virConnectOpenReadOnly(NULL);
     if (conn == NULL) {
         fprintf(stderr, "Failed to connect to hypervisor\n");
-	goto error;
+        goto error;
     }
 
     /* Find the domain of the given id */
     dom = virDomainLookupByID(conn, id);
     if (dom == NULL) {
         fprintf(stderr, "Failed to find Domain %d\n", id);
-	goto error;
+        goto error;
     }
 
     /* Get the information */
     ret = virDomainGetInfo(dom, &info);
     if (ret < 0) {
         fprintf(stderr, "Failed to get information for Domain %d\n", id);
-	goto error;
+        goto error;
     }
 
     printf("Domains %d: %d CPUs\n", id, info.nrVirtCpu);
@@ -52,7 +52,7 @@ error:
     if (dom != NULL)
         virDomainFree(dom);
     if (conn != NULL)
-	virConnectClose(conn);
+        virConnectClose(conn);
 }
 
 int main() {

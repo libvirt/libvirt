@@ -44,11 +44,11 @@ struct openvz_driver {
 int openvzRegister(void);
 
 #define openvzLog(level, msg...) { if(level == OPENVZ_WARN) \
-					fprintf(stderr, "\nWARNING: ");\
-				else \
-					fprintf(stderr, "\nERROR: ");\
-				fprintf(stderr, "\n\t");\
-				fprintf(stderr, msg);\
-				fprintf(stderr, "\n"); }
+                                        fprintf(stderr, "\nWARNING: ");\
+                                else \
+                                        fprintf(stderr, "\nERROR: ");\
+                                fprintf(stderr, "\n\t");\
+                                fprintf(stderr, msg);\
+                                fprintf(stderr, "\n"); }
 
 #endif

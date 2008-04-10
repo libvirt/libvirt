@@ -73,14 +73,14 @@ struct _xmlRpcValue {
     xmlRpcValueType kind;
 
     union {
-	char *string;
-	xmlRpcValueArray array;
-	xmlRpcValueDict dict;
-	int32_t integer;
-	double real;
-	bool boolean;
-	time_t dateTime;
-	xmlRpcValueBase64 base64;
+        char *string;
+        xmlRpcValueArray array;
+        xmlRpcValueDict dict;
+        int32_t integer;
+        double real;
+        bool boolean;
+        time_t dateTime;
+        xmlRpcValueBase64 base64;
     } value;
 };
 
@@ -90,7 +90,7 @@ xmlRpcValuePtr *xmlRpcArgvNew(const char *fmt, va_list ap, int *argc);
 void xmlRpcArgvFree(int argc, xmlRpcValuePtr *argv);
 
 virBufferPtr xmlRpcMarshalRequest(const char *request,
-				  int argc, xmlRpcValuePtr *argv);
+                                  int argc, xmlRpcValuePtr *argv);
 
 xmlRpcValuePtr xmlRpcUnmarshalResponse(xmlNodePtr node, bool *is_fault);
 
@@ -101,7 +101,7 @@ xmlRpcValuePtr xmlRpcValueUnmarshal(xmlNodePtr node);
 void xmlRpcValueFree(xmlRpcValuePtr value);
 
 int xmlRpcCall(xmlRpcContextPtr context, const char *method,
-	       const char *retval, const char *fmt, ...);
+               const char *retval, const char *fmt, ...);
 
 xmlRpcContextPtr xmlRpcContextNew(const char *uri);
 

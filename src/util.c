@@ -759,10 +759,10 @@ virParseMacAddr(const char* str, unsigned char *addr)
 
         addr[i] = (unsigned char) result;
 
-	if ((i == 5) && (*end_ptr == '\0'))
-	    return 0;
-	if (*end_ptr != ':')
-	    break;
+        if ((i == 5) && (*end_ptr == '\0'))
+            return 0;
+        if (*end_ptr != ':')
+            break;
 
         str = end_ptr + 1;
     }

@@ -178,15 +178,15 @@ typedef virSchedParameter *virSchedParameterPtr;
  * Fetch scheduler parameters, caller allocates 'params' field of size 'nparams'
  */
 int	virDomainGetSchedulerParameters	(virDomainPtr domain,
-					 virSchedParameterPtr params,
-					 int *nparams);
+                                         virSchedParameterPtr params,
+                                         int *nparams);
 
 /*
  * Change scheduler parameters
  */
 int	virDomainSetSchedulerParameters	(virDomainPtr domain,
-					 virSchedParameterPtr params,
-					 int nparams);
+                                         virSchedParameterPtr params,
+                                         int nparams);
 
 /**
  * virDomainBlockStats:
@@ -253,8 +253,8 @@ typedef enum {
 
 /* Domain migration. */
 virDomainPtr virDomainMigrate (virDomainPtr domain, virConnectPtr dconn,
-			       unsigned long flags, const char *dname,
-			       const char *uri, unsigned long bandwidth);
+                               unsigned long flags, const char *dname,
+                               const char *uri, unsigned long bandwidth);
 
 /**
  * VIR_NODEINFO_MAXCPUS:
@@ -328,8 +328,8 @@ typedef virConnectCredential *virConnectCredentialPtr;
  * Return 0 if all interactions were filled, or -1 upon error
  */
 typedef int (*virConnectAuthCallbackPtr)(virConnectCredentialPtr cred,
-					 unsigned int ncred,
-					 void *cbdata);
+                                         unsigned int ncred,
+                                         void *cbdata);
 
 struct _virConnectAuth {
     int *credtype; /* List of supported virConnectCredentialType values */
@@ -375,8 +375,8 @@ extern virConnectAuthPtr virConnectAuthPtrDefault;
 #define LIBVIR_VERSION_NUMBER @LIBVIRT_VERSION_NUMBER@
 
 int			virGetVersion		(unsigned long *libVer,
-						 const char *type,
-						 unsigned long *typeVer);
+                                                 const char *type,
+                                                 unsigned long *typeVer);
 
 /*
  * Connection and disconnections to the Hypervisor
@@ -386,12 +386,12 @@ int			virInitialize		(void);
 virConnectPtr		virConnectOpen		(const char *name);
 virConnectPtr		virConnectOpenReadOnly	(const char *name);
 virConnectPtr           virConnectOpenAuth      (const char *name,
-						 virConnectAuthPtr auth,
-						 int flags);
+                                                 virConnectAuthPtr auth,
+                                                 int flags);
 int			virConnectClose		(virConnectPtr conn);
 const char *		virConnectGetType	(virConnectPtr conn);
 int			virConnectGetVersion	(virConnectPtr conn,
-						 unsigned long *hvVer);
+                                                 unsigned long *hvVer);
 char *                  virConnectGetHostname   (virConnectPtr conn);
 char *                  virConnectGetURI        (virConnectPtr conn);
 
@@ -401,9 +401,9 @@ char *                  virConnectGetURI        (virConnectPtr conn);
  */
 
 int                     virConnectGetMaxVcpus   (virConnectPtr conn,
-						 const char *type);
+                                                 const char *type);
 int			virNodeGetInfo		(virConnectPtr conn,
-						 virNodeInfoPtr info);
+                                                 virNodeInfoPtr info);
 char *                  virConnectGetCapabilities (virConnectPtr conn);
 
 unsigned long long	virNodeGetFreeMemory	(virConnectPtr conn);
@@ -412,8 +412,8 @@ unsigned long long	virNodeGetFreeMemory	(virConnectPtr conn);
  * Gather list of running domains
  */
 int			virConnectListDomains	(virConnectPtr conn,
-						 int *ids,
-						 int maxids);
+                                                 int *ids,
+                                                 int maxids);
 
 /*
  * Number of domains
@@ -430,20 +430,20 @@ virConnectPtr		virDomainGetConnect     (virDomainPtr domain);
  * Domain creation and destruction
  */
 virDomainPtr		virDomainCreateLinux	(virConnectPtr conn,
-						 const char *xmlDesc,
-						 unsigned int flags);
+                                                 const char *xmlDesc,
+                                                 unsigned int flags);
 virDomainPtr		virDomainLookupByName	(virConnectPtr conn,
-						 const char *name);
+                                                 const char *name);
 virDomainPtr		virDomainLookupByID	(virConnectPtr conn,
-						 int id);
+                                                 int id);
 virDomainPtr		virDomainLookupByUUID	(virConnectPtr conn,
-						 const unsigned char *uuid);
+                                                 const unsigned char *uuid);
 virDomainPtr		virDomainLookupByUUIDString	(virConnectPtr conn,
-							const char *uuid);
+                                                        const char *uuid);
 
 int			virDomainShutdown	(virDomainPtr domain);
 int			virDomainReboot		(virDomainPtr domain,
-						 unsigned int flags);
+                                                 unsigned int flags);
 int			virDomainDestroy	(virDomainPtr domain);
 int			virDomainFree		(virDomainPtr domain);
 
@@ -457,28 +457,28 @@ int			virDomainResume		(virDomainPtr domain);
  * Domain save/restore
  */
 int			virDomainSave		(virDomainPtr domain,
-						 const char *to);
+                                                 const char *to);
 int			virDomainRestore	(virConnectPtr conn,
-						 const char *from);
+                                                 const char *from);
 
 /*
  * Domain core dump
  */
 int			virDomainCoreDump	(virDomainPtr domain,
-						 const char *to,
-						 int flags);
+                                                 const char *to,
+                                                 int flags);
 
 /*
  * Domain runtime information
  */
 int			virDomainGetInfo	(virDomainPtr domain,
-						 virDomainInfoPtr info);
+                                                 virDomainInfoPtr info);
 
 /*
  * Return scheduler type in effect 'sedf', 'credit', 'linux'
  */
 char * 			virDomainGetSchedulerType(virDomainPtr domain,
-						 int *nparams);
+                                                 int *nparams);
 
 /*
  * Dynamic control of domains
@@ -486,15 +486,15 @@ char * 			virDomainGetSchedulerType(virDomainPtr domain,
 const char *		virDomainGetName	(virDomainPtr domain);
 unsigned int		virDomainGetID		(virDomainPtr domain);
 int			virDomainGetUUID	(virDomainPtr domain,
-						 unsigned char *uuid);
+                                                 unsigned char *uuid);
 int			virDomainGetUUIDString	(virDomainPtr domain,
-						char *buf);
+                                                char *buf);
 char *			virDomainGetOSType	(virDomainPtr domain);
 unsigned long		virDomainGetMaxMemory	(virDomainPtr domain);
 int			virDomainSetMaxMemory	(virDomainPtr domain,
-						 unsigned long memory);
+                                                 unsigned long memory);
 int			virDomainSetMemory	(virDomainPtr domain,
-						 unsigned long memory);
+                                                 unsigned long memory);
 int			virDomainGetMaxVcpus	(virDomainPtr domain);
 
 /*
@@ -512,34 +512,34 @@ typedef enum {
 } virDomainXMLFlags;
 
 char *			virDomainGetXMLDesc	(virDomainPtr domain,
-						 int flags);
+                                                 int flags);
 
 int                     virDomainBlockStats     (virDomainPtr dom,
-						 const char *path,
-						 virDomainBlockStatsPtr stats,
-						 size_t size);
+                                                 const char *path,
+                                                 virDomainBlockStatsPtr stats,
+                                                 size_t size);
 int                     virDomainInterfaceStats (virDomainPtr dom,
-						 const char *path,
-						 virDomainInterfaceStatsPtr stats,
-						 size_t size);
+                                                 const char *path,
+                                                 virDomainInterfaceStatsPtr stats,
+                                                 size_t size);
 
 
 /*
  * defined but not running domains
  */
 virDomainPtr		virDomainDefineXML	(virConnectPtr conn,
-						 const char *xml);
+                                                 const char *xml);
 int			virDomainUndefine	(virDomainPtr domain);
 int                     virConnectNumOfDefinedDomains  (virConnectPtr conn);
 int			virConnectListDefinedDomains (virConnectPtr conn,
-						 char **const names,
-						 int maxnames);
+                                                 char **const names,
+                                                 int maxnames);
 int			virDomainCreate		(virDomainPtr domain);
 
 int			virDomainGetAutostart	(virDomainPtr domain,
-						 int *autostart);
+                                                 int *autostart);
 int			virDomainSetAutostart	(virDomainPtr domain,
-						 int autostart);
+                                                 int autostart);
 
 /**
  * virVcpuInfo: structure for information about a virtual CPU in a domain.
@@ -561,12 +561,12 @@ struct _virVcpuInfo {
 typedef virVcpuInfo *virVcpuInfoPtr;
 
 int			virDomainSetVcpus	(virDomainPtr domain,
-						 unsigned int nvcpus);
+                                                 unsigned int nvcpus);
 
 int			virDomainPinVcpu	(virDomainPtr domain,
-						 unsigned int vcpu,
-						 unsigned char *cpumap,
-						 int maplen);
+                                                 unsigned int vcpu,
+                                                 unsigned char *cpumap,
+                                                 int maplen);
 
 /**
  * VIR_USE_CPU:
@@ -603,10 +603,10 @@ int			virDomainPinVcpu	(virDomainPtr domain,
 
 
 int			virDomainGetVcpus	(virDomainPtr domain,
-						 virVcpuInfoPtr info,
-						 int maxinfo,
-						 unsigned char *cpumaps,
-						 int maplen);
+                                                 virVcpuInfoPtr info,
+                                                 int maxinfo,
+                                                 unsigned char *cpumaps,
+                                                 int maplen);
 
 /**
  * VIR_CPU_USABLE:
@@ -621,7 +621,7 @@ int			virDomainGetVcpus	(virDomainPtr domain,
  */
 
 #define VIR_CPU_USABLE(cpumaps,maplen,vcpu,cpu) \
-	(cpumaps[((vcpu)*(maplen))+((cpu)/8)] & (1<<((cpu)%8)))
+        (cpumaps[((vcpu)*(maplen))+((cpu)/8)] & (1<<((cpu)%8)))
 
 /**
  * VIR_COPY_CPUMAP:
@@ -638,7 +638,7 @@ int			virDomainGetVcpus	(virDomainPtr domain,
  * later by virDomainPinVcpu() API.
  */
 #define VIR_COPY_CPUMAP(cpumaps,maplen,vcpu,cpumap) \
-	memcpy(cpumap, &(cpumaps[(vcpu)*(maplen)]), (maplen))
+        memcpy(cpumap, &(cpumaps[(vcpu)*(maplen)]), (maplen))
 
 
 /**
@@ -661,9 +661,9 @@ int virDomainDetachDevice(virDomainPtr domain, const char *xml);
  */
 
 int			 virNodeGetCellsFreeMemory(virConnectPtr conn,
-						   unsigned long long *freeMems,
-						   int startCell,
-						   int maxCells);
+                                                   unsigned long long *freeMems,
+                                                   int startCell,
+                                                   int maxCells);
 
 /*
  * Virtual Networks API
@@ -694,38 +694,38 @@ virConnectPtr		virNetworkGetConnect    (virNetworkPtr network);
  */
 int			virConnectNumOfNetworks	(virConnectPtr conn);
 int			virConnectListNetworks	(virConnectPtr conn,
-						 char **const names,
-						 int maxnames);
+                                                 char **const names,
+                                                 int maxnames);
 
 /*
  * List inactive networks
  */
 int			virConnectNumOfDefinedNetworks	(virConnectPtr conn);
 int			virConnectListDefinedNetworks	(virConnectPtr conn,
-							 char **const names,
-							 int maxnames);
+                                                         char **const names,
+                                                         int maxnames);
 
 /*
  * Lookup network by name or uuid
  */
 virNetworkPtr		virNetworkLookupByName		(virConnectPtr conn,
-							 const char *name);
+                                                         const char *name);
 virNetworkPtr 		virNetworkLookupByUUID		(virConnectPtr conn,
-							 const unsigned char *uuid);
+                                                         const unsigned char *uuid);
 virNetworkPtr		virNetworkLookupByUUIDString	(virConnectPtr conn,
-							 const char *uuid);
+                                                         const char *uuid);
 
 /*
  * Create active transient network
  */
 virNetworkPtr		virNetworkCreateXML	(virConnectPtr conn,
-						 const char *xmlDesc);
+                                                 const char *xmlDesc);
 
 /*
  * Define inactive persistent network
  */
 virNetworkPtr		virNetworkDefineXML	(virConnectPtr conn,
-						 const char *xmlDesc);
+                                                 const char *xmlDesc);
 
 /*
  * Delete persistent network
@@ -748,17 +748,17 @@ int			virNetworkFree		(virNetworkPtr network);
  */
 const char*		virNetworkGetName	(virNetworkPtr network);
 int			virNetworkGetUUID	(virNetworkPtr network,
-						 unsigned char *uuid);
+                                                 unsigned char *uuid);
 int			virNetworkGetUUIDString	(virNetworkPtr network,
-						 char *buf);
+                                                 char *buf);
 char *			virNetworkGetXMLDesc	(virNetworkPtr network,
-						 int flags);
+                                                 int flags);
 char *			virNetworkGetBridgeName (virNetworkPtr network);
 
 int			virNetworkGetAutostart	(virNetworkPtr network,
-						 int *autostart);
+                                                 int *autostart);
 int			virNetworkSetAutostart	(virNetworkPtr network,
-						 int autostart);
+                                                 int autostart);
 
 
 /**
@@ -854,76 +854,76 @@ virConnectPtr		virStoragePoolGetConnect	(virStoragePoolPtr pool);
  */
 int			virConnectNumOfStoragePools	(virConnectPtr conn);
 int			virConnectListStoragePools	(virConnectPtr conn,
-							 char **const names,
-							 int maxnames);
+                                                         char **const names,
+                                                         int maxnames);
 
 /*
  * List inactive storage pools
  */
 int			virConnectNumOfDefinedStoragePools(virConnectPtr conn);
 int			virConnectListDefinedStoragePools(virConnectPtr conn,
-							  char **const names,
-							  int maxnames);
+                                                          char **const names,
+                                                          int maxnames);
 
 /*
  * Lookup pool by name or uuid
  */
 virStoragePoolPtr	virStoragePoolLookupByName	(virConnectPtr conn,
-							 const char *name);
+                                                         const char *name);
 virStoragePoolPtr 	virStoragePoolLookupByUUID	(virConnectPtr conn,
-							 const unsigned char *uuid);
+                                                         const unsigned char *uuid);
 virStoragePoolPtr	virStoragePoolLookupByUUIDString(virConnectPtr conn,
-							 const char *uuid);
+                                                         const char *uuid);
 virStoragePoolPtr	virStoragePoolLookupByVolume	(virStorageVolPtr vol);
 
 /*
  * Creating/destroying pools
  */
 virStoragePoolPtr	virStoragePoolCreateXML		(virConnectPtr conn,
-							 const char *xmlDesc,
-							 unsigned int flags);
+                                                         const char *xmlDesc,
+                                                         unsigned int flags);
 virStoragePoolPtr	virStoragePoolDefineXML		(virConnectPtr conn,
-							 const char *xmlDesc,
-							 unsigned int flags);
+                                                         const char *xmlDesc,
+                                                         unsigned int flags);
 int			virStoragePoolBuild		(virStoragePoolPtr pool,
-							 unsigned int flags);
+                                                         unsigned int flags);
 int			virStoragePoolUndefine		(virStoragePoolPtr pool);
 int			virStoragePoolCreate		(virStoragePoolPtr pool,
-							 unsigned int flags);
+                                                         unsigned int flags);
 int			virStoragePoolDestroy		(virStoragePoolPtr pool);
 int			virStoragePoolDelete		(virStoragePoolPtr pool,
-							 unsigned int flags);
+                                                         unsigned int flags);
 int			virStoragePoolFree		(virStoragePoolPtr pool);
 int			virStoragePoolRefresh		(virStoragePoolPtr pool,
-							 unsigned int flags);
+                                                         unsigned int flags);
 
 /*
  * StoragePool information
  */
 const char*		virStoragePoolGetName		(virStoragePoolPtr pool);
 int			virStoragePoolGetUUID		(virStoragePoolPtr pool,
-							 unsigned char *uuid);
+                                                         unsigned char *uuid);
 int			virStoragePoolGetUUIDString	(virStoragePoolPtr pool,
-							 char *buf);
+                                                         char *buf);
 
 int			virStoragePoolGetInfo		(virStoragePoolPtr vol,
-							 virStoragePoolInfoPtr info);
+                                                         virStoragePoolInfoPtr info);
 
 char *			virStoragePoolGetXMLDesc	(virStoragePoolPtr pool,
-							 unsigned int flags);
+                                                         unsigned int flags);
 
 int			virStoragePoolGetAutostart	(virStoragePoolPtr pool,
-							 int *autostart);
+                                                         int *autostart);
 int			virStoragePoolSetAutostart	(virStoragePoolPtr pool,
-							 int autostart);
+                                                         int autostart);
 
 /*
  * List/lookup storage volumes within a pool
  */
 int			virStoragePoolNumOfVolumes	(virStoragePoolPtr pool);
 int			virStoragePoolListVolumes	(virStoragePoolPtr pool,
-							 char **const names,
-							 int maxnames);
+                                                         char **const names,
+                                                         int maxnames);
 
 virConnectPtr		virStorageVolGetConnect		(virStorageVolPtr vol);
 
@@ -931,27 +931,27 @@ virConnectPtr		virStorageVolGetConnect		(virStorageVolPtr vol);
  * Lookup volumes based on various attributes
  */
 virStorageVolPtr        virStorageVolLookupByName	(virStoragePoolPtr pool,
-							 const char *name);
+                                                         const char *name);
 virStorageVolPtr	virStorageVolLookupByKey	(virConnectPtr conn,
-							 const char *key);
+                                                         const char *key);
 virStorageVolPtr	virStorageVolLookupByPath	(virConnectPtr conn,
-							 const char *path);
+                                                         const char *path);
 
 
 const char*		virStorageVolGetName		(virStorageVolPtr vol);
 const char*		virStorageVolGetKey		(virStorageVolPtr vol);
 
 virStorageVolPtr	virStorageVolCreateXML		(virStoragePoolPtr pool,
-							 const char *xmldesc,
-							 unsigned int flags);
+                                                         const char *xmldesc,
+                                                         unsigned int flags);
 int			virStorageVolDelete		(virStorageVolPtr vol,
-							 unsigned int flags);
+                                                         unsigned int flags);
 int			virStorageVolFree		(virStorageVolPtr vol);
 
 int			virStorageVolGetInfo		(virStorageVolPtr vol,
-							 virStorageVolInfoPtr info);
+                                                         virStorageVolInfoPtr info);
 char *			virStorageVolGetXMLDesc		(virStorageVolPtr pool,
-							 unsigned int flags);
+                                                         unsigned int flags);
 
 char *			virStorageVolGetPath		(virStorageVolPtr vol);
 

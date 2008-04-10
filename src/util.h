@@ -28,14 +28,14 @@
 #include "util-lib.h"
 
 int virExec(virConnectPtr conn, char **argv, int *retpid,
-	    int infd, int *outfd, int *errfd);
+            int infd, int *outfd, int *errfd);
 int virExecNonBlock(virConnectPtr conn, char **argv, int *retpid,
-		    int infd, int *outfd, int *errfd);
+                    int infd, int *outfd, int *errfd);
 int virRun(virConnectPtr conn, char **argv, int *status);
 
 int __virFileReadAll(const char *path,
-		     int maxlen,
-		     char **buf);
+                     int maxlen,
+                     char **buf);
 #define virFileReadAll(p,m,b) __virFileReadAll((p),(m),(b))
 
 int virFileMatchesNameSuffix(const char *file,
@@ -74,9 +74,9 @@ int virStrToLong_ll(char const *s,
                     int base,
                     long long *result);
 int __virStrToLong_ull(char const *s,
-		       char **end_ptr,
-		       int base,
-		       unsigned long long *result);
+                       char **end_ptr,
+                       int base,
+                       unsigned long long *result);
 #define virStrToLong_ull(s,e,b,r) __virStrToLong_ull((s),(e),(b),(r))
 
 int __virMacAddrCompare (const char *mac1, const char *mac2);

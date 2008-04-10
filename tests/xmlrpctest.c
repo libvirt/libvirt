@@ -205,29 +205,29 @@ testBufferVSprintf(const void *data ATTRIBUTE_UNUSED)
 int
 main(int argc, char **argv)
 {
-	xmlRpcContextPtr cxt = NULL;
+        xmlRpcContextPtr cxt = NULL;
     int check = 1;
-	int ret = 0;
+        int ret = 0;
     const char *url = "http://localhost:8000";
 
-	progname = argv[0];
+        progname = argv[0];
 
-	if (argc > 2)
-	{
-		fprintf(stderr, "Usage: %s [url]\n", progname);
-		exit(EXIT_FAILURE);
-	}
+        if (argc > 2)
+        {
+                fprintf(stderr, "Usage: %s [url]\n", progname);
+                exit(EXIT_FAILURE);
+        }
     if (argc == 2)
         url = argv[1];
 
      /*
       * client-server tests
       */
-	if (!(cxt = xmlRpcContextNew(url)))
-	{
-		fprintf(stderr, "%s: failed create new RPC context\n", progname);
-		exit(EXIT_FAILURE);
-	}
+        if (!(cxt = xmlRpcContextNew(url)))
+        {
+                fprintf(stderr, "%s: failed create new RPC context\n", progname);
+                exit(EXIT_FAILURE);
+        }
 
        if (virtTestRun("XML-RPC methodCall INT+INT",
                 NLOOPS, testMethodPlusINT, (const void *) cxt) != 0)
@@ -237,7 +237,7 @@ main(int argc, char **argv)
                 NLOOPS, testMethodPlusDOUBLE, (const void *) cxt) != 0)
         ret = -1;
 
- 	xmlRpcContextFree(cxt);
+        xmlRpcContextFree(cxt);
 
     /*
      * regression / performance tests
@@ -269,7 +269,7 @@ main(int argc, char **argv)
         ret = -1;
 
 
-	exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
+        exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
 

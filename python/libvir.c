@@ -76,7 +76,7 @@ libvirt_virDomainInterfaceStats(PyObject *self ATTRIBUTE_UNUSED, PyObject *args)
 
     if (!PyArg_ParseTuple(args, (char *)"Oz:virDomainInterfaceStats",
         &pyobj_domain,&path))
-	return(NULL);
+        return(NULL);
     domain = (virDomainPtr) PyvirDomain_Get(pyobj_domain);
 
     c_retval = virDomainInterfaceStats(domain, path, &stats, sizeof(stats));
@@ -498,14 +498,14 @@ libvirt_virErrorFuncHandler(ATTRIBUTE_UNUSED void *ctx, virErrorPtr err)
         Py_XINCREF(libvirt_virPythonErrorFuncCtxt);
         PyTuple_SetItem(info, 0, PyInt_FromLong((long) err->code));
         PyTuple_SetItem(info, 1, PyInt_FromLong((long) err->domain));
-	PyTuple_SetItem(info, 2, libvirt_constcharPtrWrap(err->message));
+        PyTuple_SetItem(info, 2, libvirt_constcharPtrWrap(err->message));
         PyTuple_SetItem(info, 3, PyInt_FromLong((long) err->level));
-	PyTuple_SetItem(info, 4, libvirt_constcharPtrWrap(err->str1));
-	PyTuple_SetItem(info, 5, libvirt_constcharPtrWrap(err->str2));
-	PyTuple_SetItem(info, 6, libvirt_constcharPtrWrap(err->str3));
+        PyTuple_SetItem(info, 4, libvirt_constcharPtrWrap(err->str1));
+        PyTuple_SetItem(info, 5, libvirt_constcharPtrWrap(err->str2));
+        PyTuple_SetItem(info, 6, libvirt_constcharPtrWrap(err->str3));
         PyTuple_SetItem(info, 7, PyInt_FromLong((long) err->int1));
         PyTuple_SetItem(info, 8, PyInt_FromLong((long) err->int2));
-	/* TODO pass conn and dom if available */
+        /* TODO pass conn and dom if available */
         result = PyEval_CallObject(libvirt_virPythonErrorFuncHandler, list);
         Py_XDECREF(list);
         Py_XDECREF(result);
@@ -542,14 +542,14 @@ libvirt_virRegisterErrorHandler(ATTRIBUTE_UNUSED PyObject * self,
 
     if ((pyobj_f == Py_None) && (pyobj_ctx == Py_None)) {
         libvirt_virPythonErrorFuncHandler = NULL;
-	libvirt_virPythonErrorFuncCtxt = NULL;
+        libvirt_virPythonErrorFuncCtxt = NULL;
     } else {
-	Py_XINCREF(pyobj_ctx);
-	Py_XINCREF(pyobj_f);
+        Py_XINCREF(pyobj_ctx);
+        Py_XINCREF(pyobj_f);
 
-	/* TODO: check f is a function ! */
-	libvirt_virPythonErrorFuncHandler = pyobj_f;
-	libvirt_virPythonErrorFuncCtxt = pyobj_ctx;
+        /* TODO: check f is a function ! */
+        libvirt_virPythonErrorFuncHandler = pyobj_f;
+        libvirt_virPythonErrorFuncCtxt = pyobj_ctx;
     }
 
     py_retval = libvirt_intWrap(1);
@@ -738,7 +738,7 @@ libvirt_virConnectListDomainsID(PyObject *self ATTRIBUTE_UNUSED,
 
 static PyObject *
 libvirt_virConnectListDefinedDomains(PyObject *self ATTRIBUTE_UNUSED,
-				     PyObject *args) {
+                                     PyObject *args) {
     PyObject *py_retval;
     char **names = NULL;
     int c_retval, i;
@@ -884,7 +884,7 @@ libvirt_virDomainLookupByUUID(PyObject *self ATTRIBUTE_UNUSED, PyObject *args) {
 
 static PyObject *
 libvirt_virConnectListNetworks(PyObject *self ATTRIBUTE_UNUSED,
-			       PyObject *args) {
+                               PyObject *args) {
     PyObject *py_retval;
     char **names = NULL;
     int c_retval, i;
@@ -926,7 +926,7 @@ libvirt_virConnectListNetworks(PyObject *self ATTRIBUTE_UNUSED,
 
 static PyObject *
 libvirt_virConnectListDefinedNetworks(PyObject *self ATTRIBUTE_UNUSED,
-				      PyObject *args) {
+                                      PyObject *args) {
     PyObject *py_retval;
     char **names = NULL;
     int c_retval, i;
@@ -1092,8 +1092,8 @@ error:
     }
     py_retval = PyList_New(c_retval);
     for (i = 0;i < c_retval;i++) {
-	PyList_SetItem(py_retval, i,
-	        libvirt_longlongWrap((long long) freeMems[i]));
+        PyList_SetItem(py_retval, i,
+                libvirt_longlongWrap((long long) freeMems[i]));
     }
     free(freeMems);
     return(py_retval);

@@ -34,31 +34,31 @@ static void *virUserData = NULL;        /* associated data */
     int       chars;						\
     char      *larger;						\
     va_list   ap;						\
-								\
+                                                                \
     str = (char *) malloc(150);					\
     if (str != NULL) {						\
-								\
+                                                                \
     size = 150;							\
-								\
+                                                                \
     while (1) {							\
-	va_start(ap, msg);					\
-  	chars = vsnprintf(str, size, msg, ap);			\
-	va_end(ap);						\
-	if ((chars > -1) && (chars < size)) {			\
-	    if (prev_size == chars) {				\
-		break;						\
-	    } else {						\
-		prev_size = chars;				\
-	    }							\
-	}							\
-	if (chars > -1)						\
-	    size += chars + 1;					\
-	else							\
-	    size += 100;					\
-	if ((larger = (char *) realloc(str, size)) == NULL) {	\
-	    break;						\
-	}							\
-	str = larger;						\
+        va_start(ap, msg);					\
+        chars = vsnprintf(str, size, msg, ap);			\
+        va_end(ap);						\
+        if ((chars > -1) && (chars < size)) {			\
+            if (prev_size == chars) {				\
+                break;						\
+            } else {						\
+                prev_size = chars;				\
+            }							\
+        }							\
+        if (chars > -1)						\
+            size += chars + 1;					\
+        else							\
+            size += 100;					\
+        if ((larger = (char *) realloc(str, size)) == NULL) {	\
+            break;						\
+        }							\
+        str = larger;						\
     }}								\
 }
 
@@ -427,18 +427,18 @@ __virErrorMsg(virErrorNumber error, const char *info)
             return (NULL);
         case VIR_ERR_INTERNAL_ERROR:
             if (info != NULL)
-	      errmsg = _("internal error %s");
+              errmsg = _("internal error %s");
             else
-	      errmsg = _("internal error");
+              errmsg = _("internal error");
             break;
         case VIR_ERR_NO_MEMORY:
             errmsg = _("out of memory");
             break;
         case VIR_ERR_NO_SUPPORT:
             if (info == NULL)
-		errmsg = _("this function is not supported by the hypervisor");
-	    else
-		errmsg = _("this function is not supported by the hypervisor: %s");
+                errmsg = _("this function is not supported by the hypervisor");
+            else
+                errmsg = _("this function is not supported by the hypervisor: %s");
             break;
         case VIR_ERR_NO_CONNECT:
             if (info == NULL)
@@ -448,21 +448,21 @@ __virErrorMsg(virErrorNumber error, const char *info)
             break;
         case VIR_ERR_INVALID_CONN:
             if (info == NULL)
-		errmsg = _("invalid connection pointer in");
-	    else
-		errmsg = _("invalid connection pointer in %s");
+                errmsg = _("invalid connection pointer in");
+            else
+                errmsg = _("invalid connection pointer in %s");
             break;
         case VIR_ERR_INVALID_DOMAIN:
             if (info == NULL)
-		errmsg = _("invalid domain pointer in");
-	    else
-	        errmsg = _("invalid domain pointer in %s");
+                errmsg = _("invalid domain pointer in");
+            else
+                errmsg = _("invalid domain pointer in %s");
             break;
         case VIR_ERR_INVALID_ARG:
             if (info == NULL)
-		errmsg = _("invalid argument in");
-	    else
-		errmsg = _("invalid argument in %s");
+                errmsg = _("invalid argument in");
+            else
+                errmsg = _("invalid argument in %s");
             break;
         case VIR_ERR_OPERATION_FAILED:
             if (info != NULL)
@@ -487,9 +487,9 @@ __virErrorMsg(virErrorNumber error, const char *info)
             break;
         case VIR_ERR_UNKNOWN_HOST:
             if (info != NULL)
-		errmsg = _("unknown host %s");
-	    else
-		errmsg = _("unknown host");
+                errmsg = _("unknown host %s");
+            else
+                errmsg = _("unknown host");
             break;
         case VIR_ERR_SEXPR_SERIAL:
             if (info != NULL)
@@ -503,7 +503,7 @@ __virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("could not use Xen hypervisor entry %s");
             break;
-	case VIR_ERR_NO_XENSTORE:
+        case VIR_ERR_NO_XENSTORE:
             if (info == NULL)
                 errmsg = _("could not connect to Xen Store");
             else
@@ -569,150 +569,150 @@ __virErrorMsg(virErrorNumber error, const char *info)
             else
                 errmsg = _("library call %s failed, possibly not supported");
             break;
-	case VIR_ERR_XML_ERROR:
-	    if (info == NULL)
-	        errmsg = _("XML description not well formed or invalid");
-	    else
-	        errmsg = _("XML description for %s is not well formed or invalid");
+        case VIR_ERR_XML_ERROR:
+            if (info == NULL)
+                errmsg = _("XML description not well formed or invalid");
+            else
+                errmsg = _("XML description for %s is not well formed or invalid");
             break;
-	case VIR_ERR_DOM_EXIST:
-	    if (info == NULL)
-	        errmsg = _("this domain exists already");
-	    else
-	        errmsg = _("domain %s exists already");
+        case VIR_ERR_DOM_EXIST:
+            if (info == NULL)
+                errmsg = _("this domain exists already");
+            else
+                errmsg = _("domain %s exists already");
             break;
-	case VIR_ERR_OPERATION_DENIED:
-	    if (info == NULL)
-	        errmsg = _("operation forbidden for read only access");
-	    else
-	        errmsg = _("operation %s forbidden for read only access");
+        case VIR_ERR_OPERATION_DENIED:
+            if (info == NULL)
+                errmsg = _("operation forbidden for read only access");
+            else
+                errmsg = _("operation %s forbidden for read only access");
             break;
-	case VIR_ERR_OPEN_FAILED:
-	    if (info == NULL)
-	        errmsg = _("failed to open configuration file for reading");
-	    else
-	        errmsg = _("failed to open %s for reading");
+        case VIR_ERR_OPEN_FAILED:
+            if (info == NULL)
+                errmsg = _("failed to open configuration file for reading");
+            else
+                errmsg = _("failed to open %s for reading");
             break;
-	case VIR_ERR_READ_FAILED:
-	    if (info == NULL)
-	        errmsg = _("failed to read configuration file");
-	    else
-	        errmsg = _("failed to read configuration file %s");
+        case VIR_ERR_READ_FAILED:
+            if (info == NULL)
+                errmsg = _("failed to read configuration file");
+            else
+                errmsg = _("failed to read configuration file %s");
             break;
-	case VIR_ERR_PARSE_FAILED:
-	    if (info == NULL)
-	        errmsg = _("failed to parse configuration file");
-	    else
-	        errmsg = _("failed to parse configuration file %s");
+        case VIR_ERR_PARSE_FAILED:
+            if (info == NULL)
+                errmsg = _("failed to parse configuration file");
+            else
+                errmsg = _("failed to parse configuration file %s");
             break;
-	case VIR_ERR_CONF_SYNTAX:
-	    if (info == NULL)
-	        errmsg = _("configuration file syntax error");
-	    else
-	        errmsg = _("configuration file syntax error: %s");
+        case VIR_ERR_CONF_SYNTAX:
+            if (info == NULL)
+                errmsg = _("configuration file syntax error");
+            else
+                errmsg = _("configuration file syntax error: %s");
             break;
-	case VIR_ERR_WRITE_FAILED:
-	    if (info == NULL)
-	        errmsg = _("failed to write configuration file");
-	    else
-	        errmsg = _("failed to write configuration file: %s");
+        case VIR_ERR_WRITE_FAILED:
+            if (info == NULL)
+                errmsg = _("failed to write configuration file");
+            else
+                errmsg = _("failed to write configuration file: %s");
             break;
-	case VIR_ERR_XML_DETAIL:
-	    if (info == NULL)
-	        errmsg = _("parser error");
-	    else
-	        errmsg = "%s";
+        case VIR_ERR_XML_DETAIL:
+            if (info == NULL)
+                errmsg = _("parser error");
+            else
+                errmsg = "%s";
             break;
         case VIR_ERR_INVALID_NETWORK:
             if (info == NULL)
-		errmsg = _("invalid network pointer in");
-	    else
-	        errmsg = _("invalid network pointer in %s");
+                errmsg = _("invalid network pointer in");
+            else
+                errmsg = _("invalid network pointer in %s");
             break;
-	case VIR_ERR_NETWORK_EXIST:
-	    if (info == NULL)
-	        errmsg = _("this network exists already");
-	    else
-	        errmsg = _("network %s exists already");
+        case VIR_ERR_NETWORK_EXIST:
+            if (info == NULL)
+                errmsg = _("this network exists already");
+            else
+                errmsg = _("network %s exists already");
             break;
-	case VIR_ERR_SYSTEM_ERROR:
-	    if (info == NULL)
-		errmsg = _("system call error");
-	    else
-		errmsg = "%s";
-	    break;
-	case VIR_ERR_RPC:
-	    if (info == NULL)
-		errmsg = _("RPC error");
-	    else
-		errmsg = "%s";
-	    break;
-	case VIR_ERR_GNUTLS_ERROR:
-	    if (info == NULL)
-		errmsg = _("GNUTLS call error");
-	    else
-		errmsg = "%s";
-	    break;
-	case VIR_WAR_NO_NETWORK:
-	    if (info == NULL)
-		errmsg = _("Failed to find the network");
-	    else
-		errmsg = _("Failed to find the network: %s");
-	    break;
-	case VIR_ERR_NO_DOMAIN:
-	    if (info == NULL)
-		errmsg = _("Domain not found");
-	    else
-		errmsg = _("Domain not found: %s");
-	    break;
-	case VIR_ERR_NO_NETWORK:
-	    if (info == NULL)
-		errmsg = _("Network not found");
-	    else
-		errmsg = _("Network not found: %s");
-	    break;
+        case VIR_ERR_SYSTEM_ERROR:
+            if (info == NULL)
+                errmsg = _("system call error");
+            else
+                errmsg = "%s";
+            break;
+        case VIR_ERR_RPC:
+            if (info == NULL)
+                errmsg = _("RPC error");
+            else
+                errmsg = "%s";
+            break;
+        case VIR_ERR_GNUTLS_ERROR:
+            if (info == NULL)
+                errmsg = _("GNUTLS call error");
+            else
+                errmsg = "%s";
+            break;
+        case VIR_WAR_NO_NETWORK:
+            if (info == NULL)
+                errmsg = _("Failed to find the network");
+            else
+                errmsg = _("Failed to find the network: %s");
+            break;
+        case VIR_ERR_NO_DOMAIN:
+            if (info == NULL)
+                errmsg = _("Domain not found");
+            else
+                errmsg = _("Domain not found: %s");
+            break;
+        case VIR_ERR_NO_NETWORK:
+            if (info == NULL)
+                errmsg = _("Network not found");
+            else
+                errmsg = _("Network not found: %s");
+            break;
     case VIR_ERR_INVALID_MAC:
-	    if (info == NULL)
-		errmsg = _("invalid MAC address");
-	    else
-		errmsg = _("invalid MAC address: %s");
-	    break;
+            if (info == NULL)
+                errmsg = _("invalid MAC address");
+            else
+                errmsg = _("invalid MAC address: %s");
+            break;
     case VIR_ERR_AUTH_FAILED:
-	    if (info == NULL)
-		errmsg = _("authentication failed");
-	    else
-		errmsg = _("authentication failed: %s");
-	    break;
-	case VIR_ERR_NO_STORAGE_POOL:
-		if (info == NULL)
-			errmsg = _("Storage pool not found");
- 		else
-			errmsg = _("Storage pool not found: %s");
-		break;
-	case VIR_ERR_NO_STORAGE_VOL:
-		if (info == NULL)
-			errmsg = _("Storage volume not found");
-		else
-			errmsg = _("Storage volume not found: %s");
-		break;
-	case VIR_ERR_INVALID_STORAGE_POOL:
-		if (info == NULL)
-			errmsg = _("invalid storage pool pointer in");
-		else
-			errmsg = _("invalid storage pool pointer in %s");
-		break;
-	case VIR_ERR_INVALID_STORAGE_VOL:
-		if (info == NULL)
-			errmsg = _("invalid storage volume pointer in");
-		else
-			errmsg = _("invalid storage volume pointer in %s");
-		break;
-	case VIR_WAR_NO_STORAGE:
-		if (info == NULL)
-			errmsg = _("Failed to find a storage driver");
-		else
-			errmsg = _("Failed to find a storage driver: %s");
-		break;
+            if (info == NULL)
+                errmsg = _("authentication failed");
+            else
+                errmsg = _("authentication failed: %s");
+            break;
+        case VIR_ERR_NO_STORAGE_POOL:
+                if (info == NULL)
+                        errmsg = _("Storage pool not found");
+                else
+                        errmsg = _("Storage pool not found: %s");
+                break;
+        case VIR_ERR_NO_STORAGE_VOL:
+                if (info == NULL)
+                        errmsg = _("Storage volume not found");
+                else
+                        errmsg = _("Storage volume not found: %s");
+                break;
+        case VIR_ERR_INVALID_STORAGE_POOL:
+                if (info == NULL)
+                        errmsg = _("invalid storage pool pointer in");
+                else
+                        errmsg = _("invalid storage pool pointer in %s");
+                break;
+        case VIR_ERR_INVALID_STORAGE_VOL:
+                if (info == NULL)
+                        errmsg = _("invalid storage volume pointer in");
+                else
+                        errmsg = _("invalid storage volume pointer in %s");
+                break;
+        case VIR_WAR_NO_STORAGE:
+                if (info == NULL)
+                        errmsg = _("Failed to find a storage driver");
+                else
+                        errmsg = _("Failed to find a storage driver: %s");
+                break;
     }
     return (errmsg);
 }

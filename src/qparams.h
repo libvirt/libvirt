@@ -43,7 +43,7 @@ extern struct qparam_set *new_qparam_set (int init_alloc, ...);
 /* Appending parameters. */
 extern int append_qparams (struct qparam_set *ps, ...);
 extern int append_qparam (struct qparam_set *ps,
-			  const char *name, const char *value);
+                          const char *name, const char *value);
 
 /* Get a query string ("name=value&name=value&...") */
 extern char *qparam_get_query (const struct qparam_set *ps);

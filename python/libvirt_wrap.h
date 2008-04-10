@@ -22,7 +22,7 @@
 #endif
 
 #define PyvirConnect_Get(v) (((v) == Py_None) ? NULL : \
-	(((PyvirConnect_Object *)(v))->obj))
+        (((PyvirConnect_Object *)(v))->obj))
 
 typedef struct {
     PyObject_HEAD
@@ -31,7 +31,7 @@ typedef struct {
 
 
 #define PyvirDomain_Get(v) (((v) == Py_None) ? NULL : \
-	(((PyvirDomain_Object *)(v))->obj))
+        (((PyvirDomain_Object *)(v))->obj))
 
 typedef struct {
     PyObject_HEAD
@@ -40,7 +40,7 @@ typedef struct {
 
 
 #define PyvirNetwork_Get(v) (((v) == Py_None) ? NULL : \
-	(((PyvirNetwork_Object *)(v))->obj))
+        (((PyvirNetwork_Object *)(v))->obj))
 
 typedef struct {
     PyObject_HEAD
@@ -49,7 +49,7 @@ typedef struct {
 
 
 #define PyvirStoragePool_Get(v) (((v) == Py_None) ? NULL : \
-	(((PyvirStoragePool_Object *)(v))->obj))
+        (((PyvirStoragePool_Object *)(v))->obj))
 
 typedef struct {
     PyObject_HEAD
@@ -58,7 +58,7 @@ typedef struct {
 
 
 #define PyvirStorageVol_Get(v) (((v) == Py_None) ? NULL : \
-	(((PyvirStorageVol_Object *)(v))->obj))
+        (((PyvirStorageVol_Object *)(v))->obj))
 
 typedef struct {
     PyObject_HEAD

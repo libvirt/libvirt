@@ -66,16 +66,16 @@ int virHashSize(virHashTablePtr table);
  * Add a new entry to the hash table.
  */
 int virHashAddEntry(virHashTablePtr table,
-		    const char *name, void *userdata);
+                    const char *name, void *userdata);
 int virHashUpdateEntry(virHashTablePtr table,
-		       const char *name,
-		       void *userdata, virHashDeallocator f);
+                       const char *name,
+                       void *userdata, virHashDeallocator f);
 
 /*
  * Remove an entry from the hash table.
  */
 int virHashRemoveEntry(virHashTablePtr table,
-		       const char *name, virHashDeallocator f);
+                       const char *name, virHashDeallocator f);
 
 /*
  * Retrieve the userdata.

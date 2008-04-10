@@ -266,15 +266,15 @@ struct _virStorageVol {
  ************************************************************************/
 extern virError __lastErr;
 void __virRaiseError(virConnectPtr conn,
-		     virDomainPtr dom,
-		     virNetworkPtr net,
-		     int domain,
-		     int code,
-		     virErrorLevel level,
-		     const char *str1,
-		     const char *str2,
-		     const char *str3,
-		     int int1, int int2, const char *msg, ...)
+                     virDomainPtr dom,
+                     virNetworkPtr net,
+                     int domain,
+                     int code,
+                     virErrorLevel level,
+                     const char *str1,
+                     const char *str2,
+                     const char *str3,
+                     int int1, int int2, const char *msg, ...)
   ATTRIBUTE_FORMAT(printf, 12, 13);
 const char *__virErrorMsg(virErrorNumber error, const char *info);
 
