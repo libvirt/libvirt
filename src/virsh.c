@@ -206,9 +206,6 @@ typedef struct __vshControl {
     virConnectPtr conn;         /* connection to hypervisor (MAY BE NULL) */
     vshCmd *cmd;                /* the current command */
     char *cmdstr;               /* string with command */
-#ifndef __MINGW32__
-    uid_t uid;                  /* process owner */
-#endif /* __MINGW32__ */
     int imode;                  /* interactive mode? */
     int quiet;                  /* quiet mode */
     int debug;                  /* print debug messages? */
@@ -6042,10 +6039,6 @@ vshInit(vshControl * ctl)
 {
     if (ctl->conn)
         return FALSE;
-
-#ifndef __MINGW32__
-    ctl->uid = getuid();
-#endif
 
     vshOpenLogFile(ctl);
 
