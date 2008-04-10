@@ -1773,12 +1773,3 @@ virDomainXMLDevID(virDomainPtr domain, const char *xmldesc, char *class,
 }
 #endif /* WITH_XEN */
 #endif /* !PROXY */
-
-/*
- * Local variables:
- *  indent-tabs-mode: nil
- *  c-indent-level: 4
- *  c-basic-offset: 4
- *  tab-width: 4
- * End:
- */

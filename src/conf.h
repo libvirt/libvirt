@@ -95,12 +95,3 @@ int		__virConfWriteMem	(char *memory,
 }
 #endif
 #endif /* __VIR_CONF_H__ */
-
-/*
- * Local variables:
- *  indent-tabs-mode: nil
- *  c-indent-level: 4
- *  c-basic-offset: 4
- *  tab-width: 4
- * End:
- */

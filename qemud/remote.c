@@ -3464,12 +3464,3 @@ make_nonnull_storage_vol (remote_nonnull_storage_vol *vol_dst, virStorageVolPtr 
     vol_dst->name = strdup (vol_src->name);
     vol_dst->key = strdup (vol_src->key);
 }
-
-/*
- * Local variables:
- *  indent-tabs-mode: nil
- *  c-indent-level: 4
- *  c-basic-offset: 4
- *  tab-width: 4
- * End:
- */

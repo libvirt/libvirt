@@ -54,17 +54,3 @@ extern struct qparam_set *qparam_query_parse (const char *query);
 extern void free_qparam_set (struct qparam_set *ps);
 
 #endif /* _QPARAMS_H_ */
-
-/*
- * vim: set tabstop=4:
- * vim: set shiftwidth=4:
- * vim: set expandtab:
- */
-/*
- * Local variables:
- *  indent-tabs-mode: nil
- *  c-indent-level: 4
- *  c-basic-offset: 4
- *  tab-width: 4
- * End:
- */

@@ -1,3 +1,12 @@
+2008-04-10  Jim Meyering  <meyering@redhat.com>
+
+	Remove Vim and Emacs variable settings from C source files.
+	Done with these commands:
+	git grep -l Local.variab|xargs \
+	  perl -0x3b -pi -e 's,\n+/\*\n \* vim:(.|\n)*,\n,'
+	git grep -l Local.variab|xargs \
+	  perl -0x3b -pi -e 's,\n+/\*\n \* Local variables:\n(.|\n)*,\n,'
+
 Thu Apr 10 15:28:36 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* AUTHORS: adding Dave Leskovec and Ryan Scott to the authors list

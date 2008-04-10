@@ -2220,12 +2220,3 @@ int main(int argc, char **argv) {
         qemudCleanup(server);
     return ret;
 }
-
-/*
- * Local variables:
- *  indent-tabs-mode: nil
- *  c-indent-level: 4
- *  c-basic-offset: 4
- *  tab-width: 4
- * End:
- */

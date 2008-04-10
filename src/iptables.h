@@ -98,12 +98,3 @@ int              iptablesRemoveForwardMasquerade (iptablesContext *ctx,
 #endif /* WITH_QEMU */
 
 #endif /* __QEMUD_IPTABLES_H__ */
-
-/*
- * Local variables:
- *  indent-tabs-mode: nil
- *  c-indent-level: 4
- *  c-basic-offset: 4
- *  tab-width: 4
- * End:
- */

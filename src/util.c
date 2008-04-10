@@ -769,11 +769,3 @@ virParseMacAddr(const char* str, unsigned char *addr)
 
     return -1;
 }
-
-/*
- * Local variables:
- *  indent-tabs-mode: nil
- *  c-indent-level: 4
- *  c-basic-offset: 4
- * End:
- */

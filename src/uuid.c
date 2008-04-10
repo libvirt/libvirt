@@ -187,13 +187,3 @@ void virUUIDFormat(const unsigned char *uuid, char *uuidstr)
              uuid[12], uuid[13], uuid[14], uuid[15]);
     uuidstr[VIR_UUID_STRING_BUFLEN-1] = '\0';
 }
-
-
-/*
- * Local variables:
- *  indent-tabs-mode: nil
- *  c-indent-level: 4
- *  c-basic-offset: 4
- *  tab-width: 4
- * End:
- */

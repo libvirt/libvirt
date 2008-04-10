@@ -36,12 +36,3 @@ extern "C" {
 }
 #endif
 #endif /* __VIT_TEST_UTILS_H__ */
-
-/*
- * Local variables:
- *  indent-tabs-mode: nil
- *  c-indent-level: 4
- *  c-basic-offset: 4
- *  tab-width: 4
- * End:
- */
