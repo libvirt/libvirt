@@ -1,0 +1,45 @@
+Libvirt contributor guidelines
+==============================
+
+
+Code indentation
+================
+Libvirt's C source code generally adheres to some basic code-formatting
+conventions.  The existing code base is not totally consistent on this
+front, but we do prefer that contributed code be formatted similarly.
+In short, use spaces-not-TABs for indentation, use 4 spaces for each
+indentation level, and other than that, follow the K&R style.
+
+If you use Emacs, add the following to one of one of your start-up files
+(e.g., ~/.emacs), to help ensure that you get indentation right:
+
+  ;;; When editing C sources in libvirt, use this style.
+  (defun libvirt-c-mode ()
+    "C mode with adjusted defaults for use with libvirt."
+    (interactive)
+    (c-set-style "K&R")
+    (setq indent-tabs-mode nil) ; indent using spaces, not TABs
+    (setq c-indent-level 4)
+    (setq c-basic-offset 4))
+  (add-hook 'c-mode-hook
+	    '(lambda () (if (string-match "/libvirt" (buffer-file-name))
+			    (libvirt-c-mode))))
+
+Code formatting (especially for new code)
+=========================================
+With new code, we can be even more strict.
+Please apply the following function (using GNU indent) to any new code.
+Note that this also gives you an idea of the type of spacing we prefer
+around operators and keywords:
+
+  indent-libvirt()
+  {
+    indent -bad -bap -bbb -bli4 -br -ce -brs -cs -i4 -l75 -lc75 \
+      -sbi4 -psl -saf -sai -saw -sbi4 -ss -sc -cdw -cli4 -npcs -nbc \
+      --no-tabs "$@"
+  }
+
+Note that sometimes you'll have to postprocess that output further, by
+piping it through "expand -i", since some leading TABs can get through.
+Usually they're in macro definitions or strings, and should be converted
+anyhow.
