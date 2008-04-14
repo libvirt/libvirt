@@ -7,6 +7,7 @@ src/hash.c
 src/iptables.c
 src/libvirt.c
 src/lxc_conf.c
+src/lxc_container.c
 src/lxc_driver.c
 src/openvz_conf.c
 src/openvz_driver.c

@@ -1,3 +1,7 @@
+Mon Apr 14 13:44:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* po/POTFILES.in: Added src/lxc_container.c entry
+
 Thu Apr 10 18:33:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Remove unused uid field in virsh control structure.
