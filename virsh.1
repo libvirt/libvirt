@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "VIRSH 1"
-.TH VIRSH 1 "2007-09-28" "perl v5.8.8" "Virtualization Support"
+.TH VIRSH 1 "2008-04-15" "perl v5.8.8" "Virtualization Support"
 .SH "NAME"
 virsh \- management user interface
 .SH "SYNOPSIS"
@@ -229,6 +229,12 @@ allow to connect locally as a normal user to the his own set of QEmu and \s-1KVM
 For remote access see the documentation page on how to make URIs.
 The \fI\-\-readonly\fR option allows for read-only connection
 .RE
+.IP "\fBuri\fR" 4
+.IX Item "uri"
+Prints the hypervisor canonical \s-1URI\s0, can be useful in shell mode.
+.IP "\fBhostname\fR" 4
+.IX Item "hostname"
+Print the hypervisor hostname.
 .IP "\fBnodeinfo\fR" 4
 .IX Item "nodeinfo"
 Returns basic information about the node, like number and type of \s-1CPU\s0,
@@ -333,27 +339,41 @@ Immediately terminate the domain domain\-id.  This doesn't give the domain
 \&\s-1OS\s0 any chance to react, and it the equivalent of ripping the power
 cord out on a physical machine.  In most cases you will want to use
 the \fBshutdown\fR command instead.
+.IP "\fBdomblkstat\fR \fIdomain\fR \fIblock-device\fR" 4
+.IX Item "domblkstat domain block-device"
+Get device block stats for a running domain.
+.IP "\fBdomifstat\fR \fIdomain\fR \fIinterface-device\fR" 4
+.IX Item "domifstat domain interface-device"
+Get network interface stats for a running domain.
 .IP "\fBdominfo\fR \fIdomain-id\fR" 4
 .IX Item "dominfo domain-id"
 Returns basic information about the domain.
 .IP "\fBdomuuid\fR \fIdomain-name-or-id\fR" 4
 .IX Item "domuuid domain-name-or-id"
 Convert a domain name or id to domain \s-1UUID\s0
-.IP "\fBdomid\fR \fIdomain-name\fR" 4
-.IX Item "domid domain-name"
-Converts a domain name to a domain id using xend's internal mapping.
+.IP "\fBdomid\fR \fIdomain-name-or-uuid\fR" 4
+.IX Item "domid domain-name-or-uuid"
+Convert a domain name (or \s-1UUID\s0) to a domain id
 .IP "\fBdominfo\fR \fIdomain-id\fR" 4
 .IX Item "dominfo domain-id"
 Returns basic information about the domain.
-.IP "\fBdomname\fR \fIdomain-id\fR" 4
-.IX Item "domname domain-id"
-convert a domain Id to domain name
+.IP "\fBdomname\fR \fIdomain-id-or-uuid\fR" 4
+.IX Item "domname domain-id-or-uuid"
+Convert a domain Id (or \s-1UUID\s0) to domain name
 .IP "\fBdomstate\fR \fIdomain-id\fR" 4
 .IX Item "domstate domain-id"
 Returns state about a running domain.
+.IP "\fBdump\fR \fIdomain-id\fR \fIcorefilepath\fR" 4
+.IX Item "dump domain-id corefilepath"
+Dumps the core of a domain to a file for analysis.
 .IP "\fBdumpxml\fR \fIdomain-id\fR" 4
 .IX Item "dumpxml domain-id"
 Output the domain information as an \s-1XML\s0 dump to stdout, this format can be used by the \fBcreate\fR command.
+.IP "\fBmigrate\fR optional \fI\-\-live\fR \fIdomain-id\fR \fIdesturi\fR \fImigrateuri\fR" 4
+.IX Item "migrate optional --live domain-id desturi migrateuri"
+Migrate domain to another host.  Add \-\-live for live migration. The \fIdesturi\fR
+is the connection \s-1URI\s0 of the destination host, and \fImigrateuri\fR is the
+migration \s-1URI\s0, which usually can be omitted.
 .IP "\fBreboot\fR \fIdomain-id\fR" 4
 .IX Item "reboot domain-id"
 Reboot a domain.  This acts just as if the domain had the \fBreboot\fR
@@ -377,11 +397,20 @@ other domains to use.  \fBvirsh restore\fR restores from this state file.
 This is roughly equivalent to doing a hibernate on a running computer,
 with all the same limitations.  Open network connections may be
 severed upon restore, as \s-1TCP\s0 timeouts may have expired.
+.IP "\fBschedinfo\fR optional \fI\-\-weight\fR \fBnumber\fR optional \fI\-\-cap\fR \fBnumber\fR \fIdomain-id\fR" 4
+.IX Item "schedinfo optional --weight number optional --cap number domain-id"
+Allows to show (and set) the domain scheduler parameters. This is currently
+only defined for \s-1XEN_CREDIT\s0 scheduler, and the optional weight and cap
+arguments allows to set the associated parameters in that scheduler if 
+provided.
 .IP "\fBsetmem\fR \fIdomain-id\fR \fBkilobytes\fR" 4
 .IX Item "setmem domain-id kilobytes"
 Change the current memory allocation in the guest domain. This should take
 effect immediately. The memory limit is specified in
 kilobytes.
+.Sp
+For Xen, you can only adjust the memory of a running domain if the
+domain is paravirtualized or running the \s-1PV\s0 balloon driver.
 .IP "\fBsetmaxmem\fR \fIdomain-id\fR \fBkilobytes\fR" 4
 .IX Item "setmaxmem domain-id kilobytes"
 Change the maximum memory allocation limit in the guest domain. This should
@@ -392,6 +421,9 @@ kilobytes.
 Change the number of virtual CPUs active in the guest domain. Note that
 \&\fIcount\fR may be limited by host, hypervisor or limit coming from the
 original description of domain.
+.Sp
+For Xen, you can only adjust the virtual CPUs of a running domain if
+the domain is paravirtualized.
 .IP "\fBshutdown\fR \fIdomain-id\fR" 4
 .IX Item "shutdown domain-id"
 Gracefully shuts down a domain.  This coordinates with the domain \s-1OS\s0
@@ -402,6 +434,9 @@ services must be shutdown in the domain.
 For a xen guest vm the behavior of what happens to a domain when it reboots is set by the
 \&\fIon_shutdown\fR parameter of the xmdomain.cfg file when the domain was
 created.
+.IP "\fBstart\fR \fIdomain-name\fR" 4
+.IX Item "start domain-name"
+Start a (previously defined) inactive domain.
 .IP "\fBsuspend\fR \fIdomain-id\fR" 4
 .IX Item "suspend domain-id"
 Suspend a running domain. It is kept in memory but won't be scheduled

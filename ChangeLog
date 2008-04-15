@@ -1,3 +1,8 @@
+Tue Apr 15 17:19:16 CEST 2008 Daniel Veillard <veillard@redhat.com>
+
+	* virsh.1 docs/virsh.pod: fix missing entries and small cleanups
+	  in the man page, should fix #442429
+
 Mon Apr 14 13:44:00 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* po/POTFILES.in: Added src/lxc_container.c entry

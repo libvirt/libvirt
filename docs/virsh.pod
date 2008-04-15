@@ -108,6 +108,14 @@ allow to connect locally as a normal user to the his own set of QEmu and KVM dom
 For remote access see the documentation page on how to make URIs.
 The I<--readonly> option allows for read-only connection
 
+=item B<uri>
+
+Prints the hypervisor canonical URI, can be useful in shell mode.
+
+=item B<hostname>
+
+Print the hypervisor hostname.
+
 =item B<nodeinfo>
 
 Returns basic information about the node, like number and type of CPU,
@@ -229,6 +237,14 @@ OS any chance to react, and it the equivalent of ripping the power
 cord out on a physical machine.  In most cases you will want to use
 the B<shutdown> command instead.
 
+=item B<domblkstat> I<domain> I<block-device>
+
+Get device block stats for a running domain.
+
+=item B<domifstat> I<domain> I<interface-device>
+
+Get network interface stats for a running domain.
+
 =item B<dominfo> I<domain-id>
 
 Returns basic information about the domain.
@@ -237,26 +253,35 @@ Returns basic information about the domain.
 
 Convert a domain name or id to domain UUID
 
-=item B<domid> I<domain-name>
+=item B<domid> I<domain-name-or-uuid>
 
-Converts a domain name to a domain id using xend's internal mapping.
+Convert a domain name (or UUID) to a domain id
 
 =item B<dominfo> I<domain-id>
 
 Returns basic information about the domain.
 
-=item B<domname> I<domain-id>
+=item B<domname> I<domain-id-or-uuid>
 
-convert a domain Id to domain name
+Convert a domain Id (or UUID) to domain name
 
 =item B<domstate> I<domain-id>
 
 Returns state about a running domain.
 
+=item B<dump> I<domain-id> I<corefilepath>
+
+Dumps the core of a domain to a file for analysis.
+
 =item B<dumpxml> I<domain-id>
 
 Output the domain information as an XML dump to stdout, this format can be used by the B<create> command.
 
+=item B<migrate> optional I<--live> I<domain-id> I<desturi> I<migrateuri>
+
+Migrate domain to another host.  Add --live for live migration. The I<desturi>
+is the connection URI of the destination host, and I<migrateuri> is the
+migration URI, which usually can be omitted.
 
 =item B<reboot> I<domain-id>
 
@@ -283,6 +308,13 @@ other domains to use.  B<virsh restore> restores from this state file.
 This is roughly equivalent to doing a hibernate on a running computer,
 with all the same limitations.  Open network connections may be
 severed upon restore, as TCP timeouts may have expired.
+
+=item B<schedinfo> optional I<--weight> B<number> optional I<--cap> B<number> I<domain-id>
+
+Allows to show (and set) the domain scheduler parameters. This is currently
+only defined for XEN_CREDIT scheduler, and the optional weight and cap
+arguments allows to set the associated parameters in that scheduler if 
+provided.
 
 =item B<setmem> I<domain-id> B<kilobytes>
 
@@ -318,6 +350,10 @@ services must be shutdown in the domain.
 For a xen guest vm the behavior of what happens to a domain when it reboots is set by the
 I<on_shutdown> parameter of the xmdomain.cfg file when the domain was
 created.
+
+=item B<start> I<domain-name>
+
+Start a (previously defined) inactive domain.
 
 =item B<suspend> I<domain-id>
 
