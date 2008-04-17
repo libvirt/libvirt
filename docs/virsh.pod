@@ -313,7 +313,7 @@ severed upon restore, as TCP timeouts may have expired.
 
 Allows to show (and set) the domain scheduler parameters. This is currently
 only defined for XEN_CREDIT scheduler, and the optional weight and cap
-arguments allows to set the associated parameters in that scheduler if 
+arguments allows to set the associated parameters in that scheduler if
 provided.
 
 =item B<setmem> I<domain-id> B<kilobytes>
