@@ -32,6 +32,11 @@ extern "C" {
                                      char **buf,
                                      int buflen);
 
+
+    int virtTestDifference(FILE *stream,
+                           const char *expect,
+                           const char *actual);
+
 #ifdef __cplusplus
 }
 #endif

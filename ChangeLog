@@ -1,3 +1,8 @@
+Fri Apr 18 11:04:24 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* tests/testutils.h, tests/testutils.c: Add virtTestDifference
+	for printing out trimmed string differences
+
 Fri Apr 18 11:24:24 CEST 2008 Jim Meyering <meyering@redhat.com>
 
 	avoid compile error when <pthread.h> is absent

@@ -19,6 +19,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <string.h>
 #include <fcntl.h>
 #include <limits.h>
 #include "testutils.h"
@@ -58,6 +59,12 @@ virtTestRun(const char *title, int nloops, int (*body)(const void *data), const 
 {
     int i, ret = 0;
     double *ts = NULL;
+    static int counter = 0;
+
+    counter++;
+
+    fprintf(stderr, "%2d) %-65s ... ", counter, title);
+    fflush(stderr);
 
     if (nloops > 1 && (ts = calloc(nloops,
                                    sizeof(double)))==NULL)
@@ -76,12 +83,12 @@ virtTestRun(const char *title, int nloops, int (*body)(const void *data), const 
         }
     }
     if (ret == 0 && ts)
-        fprintf(stderr, "%-50s ... OK     [%.5f ms]\n", title,
+        fprintf(stderr, "OK     [%.5f ms]\n",
                 virtTestCountAverage(ts, nloops));
     else if (ret == 0)
-        fprintf(stderr, "%-50s ... OK\n", title);
+        fprintf(stderr, "OK\n");
     else
-        fprintf(stderr, "%-50s ... FAILED\n", title);
+        fprintf(stderr, "FAILED\n");
 
     free(ts);
     return ret;
@@ -205,4 +212,58 @@ int virtTestCaptureProgramOutput(const char *const argv[],
             return ret;
         }
     }
+}
+
+
+/**
+ * @param stream: output stream write to differences to
+ * @param expect: expected output text
+ * @param actual: actual output text
+ *
+ * Display expected and actual output text, trimmed to
+ * first and last characters at which differences occur
+ */
+int virtTestDifference(FILE *stream,
+                       const char *expect,
+                       const char *actual)
+{
+    const char *expectStart = expect;
+    const char *expectEnd = expect + (strlen(expect)-1);
+    const char *actualStart = actual;
+    const char *actualEnd = actual + (strlen(actual)-1);
+
+    if (getenv("DEBUG_TESTS") == NULL)
+        return 0;
+
+    /* Skip to first character where they differ */
+    while (*expectStart && *actualStart &&
+           *actualStart == *expectStart) {
+        actualStart++;
+        expectStart++;
+    }
+
+    /* Work backwards to last character where they differ */
+    while (actualEnd > actualStart &&
+           expectEnd > expectStart &&
+           *actualEnd == *expectEnd) {
+        actualEnd--;
+        expectEnd--;
+    }
+
+    /* Show the trimmed differences */
+    fprintf(stream, "\nExpect [");
+    if ((expectEnd - expectStart + 1) &&
+        fwrite(expectStart, (expectEnd-expectStart+1), 1, stream) != 1)
+        return -1;
+    fprintf(stream, "]\n");
+    fprintf(stream, "Actual [");
+    if ((actualEnd - actualStart + 1) &&
+        fwrite(actualStart, (actualEnd-actualStart+1), 1, stream) != 1)
+        return -1;
+    fprintf(stream, "]\n");
+
+    /* Pad to line up with test name ... in virTestRun */
+    fprintf(stream, "                                                                      ... ");
+
+    return 0;
 }
