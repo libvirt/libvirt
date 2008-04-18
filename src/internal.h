@@ -12,6 +12,18 @@
 #include <sys/syslimits.h>
 #endif
 
+#if HAVE_PTHREAD_H
+#include <pthread.h>
+#define PTHREAD_MUTEX_T(v) pthread_mutex_t v
+#else
+/* Mutex functions disappear if we don't have pthread. */
+#define PTHREAD_MUTEX_T(v) /*empty*/
+#define pthread_mutex_init(lk,p) /*empty*/
+#define pthread_mutex_destroy(lk) /*empty*/
+#define pthread_mutex_lock(lk) /*empty*/
+#define pthread_mutex_unlock(lk) /*empty*/
+#endif
+
 #include "gettext.h"
 
 #include "hash.h"
@@ -195,7 +207,7 @@ struct _virConnect {
      * count of any virDomain/virNetwork object associated with
      * this connection
      */
-    pthread_mutex_t lock;
+    PTHREAD_MUTEX_T (lock);
     virHashTablePtr domains;  /* hash table for known domains */
     virHashTablePtr networks; /* hash table for known domains */
     virHashTablePtr storagePools;/* hash table for known storage pools */

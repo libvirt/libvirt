@@ -26,7 +26,9 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
+#if HAVE_PWD_H
 #include <pwd.h>
+#endif
 #include <errno.h>
 #include <string.h>
 

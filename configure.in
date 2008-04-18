@@ -81,6 +81,13 @@ AM_CONDITIONAL(GLIBC_RPCGEN,
 	       [test "x$ac_cv_path_RPCGEN" != "xno" &&
 	        $ac_cv_path_RPCGEN -t </dev/null >/dev/null 2>&1])
 
+dnl pthread?
+AC_CHECK_HEADER(pthread.h,
+	AC_CHECK_LIB(pthread,pthread_join,[
+		AC_DEFINE([HAVE_LIBPTHREAD],[],[Define if pthread (-lpthread)])
+		AC_DEFINE([HAVE_PTHREAD_H],[],[Define if <pthread.h>])
+	]))
+
 dnl Miscellaneous external programs.
 AC_PATH_PROG(RM, rm, /bin/rm)
 AC_PATH_PROG(MV, mv, /bin/mv)
@@ -301,7 +308,7 @@ AC_ARG_WITH(libxml, [  --with-libxml=[PFX]       libxml2 location])
 if test "x$with_libxml" = "xno" ; then
     AC_MSG_CHECKING(for libxml2 libraries >= $LIBXML_REQUIRED)
     AC_MSG_ERROR(libxml2 >= $LIBXML_REQUIRED is required for libvirt)
-elif test "x$with_libxml"  = "x" -a "x$PKG_CONFIG" = "x" ; then
+elif test "x$with_libxml" = "x" -a "x$PKG_CONFIG" != "x" ; then
     PKG_CHECK_MODULES(LIBXML, libxml-2.0 >= $LIBXML_REQUIRED, [LIBXML_FOUND=yes], [LIBXML_FOUND=no])
 fi
 if test "$LIBXML_FOUND" = "no" ; then
@@ -356,7 +363,8 @@ if test "$GNUTLS_FOUND" = "no"; then
   AC_CHECK_LIB(gnutls, gnutls_handshake,
     [],
     [AC_MSG_ERROR(
-       [You must install the GnuTLS library in order to compile and run libvirt])])
+       [You must install the GnuTLS library in order to compile and run libvirt])],
+    [-lgcrypt])
   GNUTLS_LIBS=$LIBS
   LIBS="$old_libs"
 fi

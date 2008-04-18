@@ -1,3 +1,15 @@
+Fri Apr 18 09:27:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
+
+	Fixes for MinGW.
+	* configure.in: Fix pkg-config detection of libxml2,
+	  add -lgcrypt to gnutls lib.
+	* src/Makefile.am: If compiling --without-libvirtd then
+	  don't compile any part of the storage driver.
+	* configure.in, src/hash.c, src/internal.h: Detect availability
+	  of pthread library and compile out mutex code if not available.
+	* src/storage_driver.c, src/util.c: Ignore some missing
+	  headers on MinGW.
+
 Tue Apr 15 17:19:16 CEST 2008 Daniel Veillard <veillard@redhat.com>
 
 	* virsh.1 docs/virsh.pod: fix missing entries and small cleanups

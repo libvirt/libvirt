@@ -25,7 +25,6 @@
 #include <libxml/threads.h>
 #include "internal.h"
 #include "hash.h"
-#include <pthread.h>
 
 #define MAX_HASH_LEN 8
 
