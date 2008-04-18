@@ -1,3 +1,9 @@
+Fri Apr 18 20:07:12 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	Work around Python.h name-space pollution.
+	* python/libvir.c (HAVE_PTHREAD_H): #undef.
+	Without this, we'd get a redefinition warning.
+
 Fri Apr 18 11:26:24 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* tests/Makefile.am: Add abs_srcdir and abs_builddir to test

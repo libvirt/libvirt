@@ -4,12 +4,17 @@
  *           entry points where an automatically generated stub is
  *           unpractical
  *
- * Copyright (C) 2005, 2007 Red Hat, Inc.
+ * Copyright (C) 2005, 2007, 2008 Red Hat, Inc.
  *
  * Daniel Veillard <veillard@redhat.com>
  */
 
 #include <config.h>
+
+/* Horrible kludge to work around even more horrible name-space pollution
+   via Python.h.  That file includes /usr/include/python2.5/pyconfig*.h,
+   which has over 180 autoconf-style HAVE_* definitions.  Shame on them.  */
+#undef HAVE_PTHREAD_H
 
 #include <Python.h>
 #include "libvirt/libvirt.h"
