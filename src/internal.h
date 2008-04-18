@@ -12,7 +12,7 @@
 #include <sys/syslimits.h>
 #endif
 
-#if HAVE_PTHREAD_H
+#ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 #define PTHREAD_MUTEX_T(v) pthread_mutex_t v
 #else

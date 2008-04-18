@@ -1,3 +1,8 @@
+Fri Apr 18 11:24:24 CEST 2008 Jim Meyering <meyering@redhat.com>
+
+	avoid compile error when <pthread.h> is absent
+	* src/internal.h (HAVE_PTHREAD_H): Test with "#ifdef", not "#if".
+
 Fri Apr 18 09:27:00 BST 2008 Richard W.M. Jones <rjones@redhat.com>
 
 	Fixes for MinGW.
