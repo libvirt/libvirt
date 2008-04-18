@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #ifdef WITH_XEN
 
@@ -35,11 +36,11 @@
 #include "conf.h"
 
 static char *progname;
-static char *abs_top_srcdir;
+static char *abs_srcdir;
 
 #define MAX_FILE 4096
 
-static int testCompareParseXML(const char *xmcfg_rel, const char *xml_rel,
+static int testCompareParseXML(const char *xmcfg, const char *xml,
                                int xendConfigVersion) {
     char xmlData[MAX_FILE];
     char xmcfgData[MAX_FILE];
@@ -53,11 +54,6 @@ static int testCompareParseXML(const char *xmcfg_rel, const char *xml_rel,
     int wrote = MAX_FILE;
     void *old_priv = NULL;
     struct _xenUnifiedPrivate priv;
-    char xmcfg[PATH_MAX];
-    char xml[PATH_MAX];
-
-    snprintf(xmcfg, sizeof xmcfg - 1, "%s/tests/%s", abs_top_srcdir, xmcfg_rel);
-    snprintf(xml, sizeof xml - 1, "%s/tests/%s", abs_top_srcdir, xml_rel);
 
     conn = virConnectOpenReadOnly("test:///default");
     if (!conn) goto fail;
@@ -80,11 +76,8 @@ static int testCompareParseXML(const char *xmcfg_rel, const char *xml_rel,
         goto fail;
     gotxmcfgPtr[wrote] = '\0';
 
-    if (strcmp(xmcfgData, gotxmcfgData)) {
-        if (getenv("DEBUG_TESTS")) {
-            printf("Expect %d '%s'\n", (int)strlen(xmcfgData), xmcfgData);
-            printf("Actual %d '%s'\n", (int)strlen(gotxmcfgData), gotxmcfgData);
-        }
+    if (STRNEQ(xmcfgData, gotxmcfgData)) {
+        virtTestDifference(stderr, xmcfgData, gotxmcfgData);
         goto fail;
     }
 
@@ -102,7 +95,7 @@ static int testCompareParseXML(const char *xmcfg_rel, const char *xml_rel,
     return ret;
 }
 
-static int testCompareFormatXML(const char *xmcfg_rel, const char *xml_rel,
+static int testCompareFormatXML(const char *xmcfg, const char *xml,
                                 int xendConfigVersion) {
     char xmlData[MAX_FILE];
     char xmcfgData[MAX_FILE];
@@ -114,11 +107,6 @@ static int testCompareFormatXML(const char *xmcfg_rel, const char *xml_rel,
     virConnectPtr conn;
     void *old_priv;
     struct _xenUnifiedPrivate priv;
-    char xmcfg[PATH_MAX];
-    char xml[PATH_MAX];
-
-    snprintf(xmcfg, sizeof xmcfg - 1, "%s/tests/%s", abs_top_srcdir, xmcfg_rel);
-    snprintf(xml, sizeof xml - 1, "%s/tests/%s", abs_top_srcdir, xml_rel);
 
     conn = virConnectOpenReadOnly("test:///default");
     if (!conn) goto fail;
@@ -163,102 +151,25 @@ static int testCompareFormatXML(const char *xmcfg_rel, const char *xml_rel,
     return ret;
 }
 
-static int testCompareParavirtOldPVFBFormat(const void *data ATTRIBUTE_UNUSED) {
-    return testCompareFormatXML("xmconfigdata/test-paravirt-old-pvfb.cfg",
-                                "xmconfigdata/test-paravirt-old-pvfb.xml",
-                                2);
-}
-static int testCompareParavirtOldPVFBParse(const void *data ATTRIBUTE_UNUSED) {
-    return testCompareParseXML("xmconfigdata/test-paravirt-old-pvfb.cfg",
-                               "xmconfigdata/test-paravirt-old-pvfb.xml",
-                               2);
-}
 
-static int testCompareParavirtNewPVFBFormat(const void *data ATTRIBUTE_UNUSED) {
-    return testCompareFormatXML("xmconfigdata/test-paravirt-new-pvfb.cfg",
-                                "xmconfigdata/test-paravirt-new-pvfb.xml",
-                                3);
-}
-static int testCompareParavirtNewPVFBParse(const void *data ATTRIBUTE_UNUSED) {
-    return testCompareParseXML("xmconfigdata/test-paravirt-new-pvfb.cfg",
-                               "xmconfigdata/test-paravirt-new-pvfb.xml",
-                               3);
-}
+struct testInfo {
+    const char *name;
+    int version;
+    int mode;
+};
 
-static int testCompareFullvirtOldCDROMFormat(const void *data ATTRIBUTE_UNUSED) {
-    return testCompareFormatXML("xmconfigdata/test-fullvirt-old-cdrom.cfg",
-                                "xmconfigdata/test-fullvirt-old-cdrom.xml",
-                                1);
-}
-static int testCompareFullvirtOldCDROMParse(const void *data ATTRIBUTE_UNUSED) {
-    return testCompareParseXML("xmconfigdata/test-fullvirt-old-cdrom.cfg",
-                               "xmconfigdata/test-fullvirt-old-cdrom.xml",
-                               1);
-}
-
-static int testCompareFullvirtNewCDROMFormat(const void *data ATTRIBUTE_UNUSED) {
-    return testCompareFormatXML("xmconfigdata/test-fullvirt-new-cdrom.cfg",
-                                "xmconfigdata/test-fullvirt-new-cdrom.xml",
-                                2);
-}
-static int testCompareFullvirtNewCDROMParse(const void *data ATTRIBUTE_UNUSED) {
-    return testCompareParseXML("xmconfigdata/test-fullvirt-new-cdrom.cfg",
-                               "xmconfigdata/test-fullvirt-new-cdrom.xml",
-                               2);
-}
-
-static int testCompareFullvirtClockUTCFormat(const void *data ATTRIBUTE_UNUSED) {
-    return testCompareFormatXML("xmconfigdata/test-fullvirt-utc.cfg",
-                                "xmconfigdata/test-fullvirt-utc.xml",
-                                2);
-}
-
-static int testCompareFullvirtClockUTCParse(const void *data ATTRIBUTE_UNUSED) {
-    return testCompareParseXML("xmconfigdata/test-fullvirt-utc.cfg",
-                               "xmconfigdata/test-fullvirt-utc.xml",
-                               2);
-}
-
-static int testCompareFullvirtClockLocaltimeFormat(const void *data ATTRIBUTE_UNUSED) {
-    return testCompareFormatXML("xmconfigdata/test-fullvirt-localtime.cfg",
-                                "xmconfigdata/test-fullvirt-localtime.xml",
-                                2);
-}
-
-static int testCompareFullvirtClockLocaltimeParse(const void *data ATTRIBUTE_UNUSED) {
-    return testCompareParseXML("xmconfigdata/test-fullvirt-localtime.cfg",
-                               "xmconfigdata/test-fullvirt-localtime.xml",
-                               2);
-}
-
-static int testCompareFullvirtInputUSBTabletFormat(const void *data ATTRIBUTE_UNUSED) {
-    return testCompareFormatXML("xmconfigdata/test-fullvirt-usbtablet.cfg",
-                               "xmconfigdata/test-fullvirt-usbtablet.xml",
-                               2);
-}
-
-static int testCompareFullvirtInputUSBTabletParse(const void *data ATTRIBUTE_UNUSED) {
-    return testCompareParseXML("xmconfigdata/test-fullvirt-usbtablet.cfg",
-                               "xmconfigdata/test-fullvirt-usbtablet.xml",
-                               2);
-}
-
-static int testCompareFullvirtInputUSBTabletNoBusParse(const void *data ATTRIBUTE_UNUSED) {
-    return testCompareParseXML("xmconfigdata/test-fullvirt-usbtablet.cfg",
-                               "xmconfigdata/test-fullvirt-usbtablet-no-bus.xml",
-                               2);
-}
-
-static int testCompareFullvirtInputUSBMouseFormat(const void *data ATTRIBUTE_UNUSED) {
-    return testCompareParseXML("xmconfigdata/test-fullvirt-usbmouse.cfg",
-                               "xmconfigdata/test-fullvirt-usbmouse.xml",
-                               2);
-}
-
-static int testCompareFullvirtInputUSBMouseParse(const void *data ATTRIBUTE_UNUSED) {
-    return testCompareParseXML("xmconfigdata/test-fullvirt-usbmouse.cfg",
-                               "xmconfigdata/test-fullvirt-usbmouse.xml",
-                               2);
+static int testCompareHelper(const void *data) {
+    const struct testInfo *info = data;
+    char xml[PATH_MAX];
+    char cfg[PATH_MAX];
+    snprintf(xml, PATH_MAX, "%s/xmconfigdata/test-%s.xml",
+             abs_srcdir, info->name);
+    snprintf(cfg, PATH_MAX, "%s/xmconfigdata/test-%s.cfg",
+             abs_srcdir, info->name);
+    if (info->mode == 0)
+        return testCompareParseXML(cfg, xml, info->version);
+    else
+        return testCompareFormatXML(cfg, xml, info->version);
 }
 
 
@@ -266,6 +177,7 @@ int
 main(int argc, char **argv)
 {
     int ret = 0;
+    char cwd[PATH_MAX];
 
     progname = argv[0];
 
@@ -274,65 +186,31 @@ main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    abs_top_srcdir = getenv("abs_top_srcdir");
-    if (!abs_top_srcdir)
-      return 1;
+    abs_srcdir = getenv("abs_srcdir");
+    if (!abs_srcdir)
+        abs_srcdir = getcwd(cwd, sizeof(cwd));
 
-    /* Config -> XML */
-    if (virtTestRun("Paravirt old PVFB (Format)",
-                    1, testCompareParavirtOldPVFBFormat, NULL) != 0)
-        ret = -1;
-    if (virtTestRun("Paravirt new PVFB (Format)",
-                    1, testCompareParavirtNewPVFBFormat, NULL) != 0)
-        ret = -1;
-    if (virtTestRun("Fullvirt old PVFB (Format)",
-                    1, testCompareFullvirtOldCDROMFormat, NULL) != 0)
-        ret = -1;
-    if (virtTestRun("Fullvirt new PVFB (Format)",
-                    1, testCompareFullvirtNewCDROMFormat, NULL) != 0)
-        ret = -1;
-    if (virtTestRun("Fullvirt clock Localtime (Format)",
-                    1, testCompareFullvirtClockLocaltimeFormat, NULL) != 0)
-        ret = -1;
-    if (virtTestRun("Fullvirt clock UTC (Format)",
-                    1, testCompareFullvirtClockUTCFormat, NULL) != 0)
-        ret = -1;
-    if (virtTestRun("Fullvirt USB mouse (Format)",
-                    1, testCompareFullvirtInputUSBMouseFormat, NULL) != 0)
-        ret = -1;
-    if (virtTestRun("Fullvirt USB tablet (Format)",
-                    1, testCompareFullvirtInputUSBTabletFormat, NULL) != 0)
-        ret = -1;
 
-    /* XML -> Config */
-    if (virtTestRun("Paravirt old PVFB (Parse)",
-                    1, testCompareParavirtOldPVFBParse, NULL) != 0)
-        ret = -1;
-    if (virtTestRun("Paravirt new PVFB (Parse)",
-                    1, testCompareParavirtNewPVFBParse, NULL) != 0)
-        ret = -1;
-    if (virtTestRun("Fullvirt old PVFB (Parse)",
-                    1, testCompareFullvirtOldCDROMParse, NULL) != 0)
-        ret = -1;
-    if (virtTestRun("Fullvirt new PVFB (Parse)",
-                    1, testCompareFullvirtNewCDROMParse, NULL) != 0)
-        ret = -1;
-    if (virtTestRun("Fullvirt clock Localtime (Parse)",
-                    1, testCompareFullvirtClockLocaltimeParse, NULL) != 0)
-        ret = -1;
-    if (virtTestRun("Fullvirt clock UTC (Parse)",
-                    1, testCompareFullvirtClockUTCParse, NULL) != 0)
-        ret = -1;
-    if (virtTestRun("Fullvirt USB mouse (Parse)",
-                    1, testCompareFullvirtInputUSBMouseParse, NULL) != 0)
-        ret = -1;
-    if (virtTestRun("Fullvirt USB tablet (Parse)",
-                    1, testCompareFullvirtInputUSBTabletParse, NULL) != 0)
-        ret = -1;
-    if (virtTestRun("Fullvirt USB tablet no bus (Parse)",
-                    1, testCompareFullvirtInputUSBTabletNoBusParse, NULL) != 0)
-        ret = -1;
+#define DO_TEST(name, version)                                          \
+    do {                                                                \
+        struct testInfo info0 = { name, version, 0 };                   \
+        struct testInfo info1 = { name, version, 1 };                   \
+        if (virtTestRun("Xen XM-2-XML Parse  " name,                    \
+                        1, testCompareHelper, &info0) < 0)              \
+            ret = -1;                                                   \
+        if (virtTestRun("Xen XM-2-XML Format " name,                    \
+                        1, testCompareHelper, &info1) < 0)              \
+            ret = -1;                                                   \
+    } while (0)
 
+    DO_TEST("paravirt-old-pvfb", 2);
+    DO_TEST("paravirt-new-pvfb", 3);
+    DO_TEST("fullvirt-old-cdrom", 1);
+    DO_TEST("fullvirt-new-cdrom", 2);
+    DO_TEST("fullvirt-utc", 2);
+    DO_TEST("fullvirt-localtime", 2);
+    DO_TEST("fullvirt-usbtablet", 2);
+    DO_TEST("fullvirt-usbmouse", 2);
 
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }

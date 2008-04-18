@@ -1,3 +1,12 @@
+Fri Apr 18 11:26:24 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* tests/Makefile.am: Add abs_srcdir and abs_builddir to test
+	environment
+	* tests/test_conf.sh: Refactor to pretty print
+	* tests/statstest.c, tests/xencapstest.c, tests/xmconfigtest.c:
+	Use new virtTestDifference for display. Autoset abs_srcdir if
+	not in environment. Refactor common code into macros
+
 Fri Apr 18 11:04:24 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* tests/testutils.h, tests/testutils.c: Add virtTestDifference

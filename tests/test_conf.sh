@@ -1,21 +1,33 @@
-#!/bin/bash
-set -x
-NOK=0
-for f in $abs_top_srcdir/tests/confdata/*.conf
+#!/bin/sh
+
+if test "$VERBOSE" = yes; then
+  set -x
+  virsh --version
+fi
+
+. $srcdir/test-lib.sh
+
+set -e
+if test "x$abs_srcdir" = x; then
+  abs_srcdir=`pwd`
+  abs_builddir=`pwd`
+fi
+
+fail=0
+i=1
+data_dir=$abs_srcdir/confdata
+for f in $(cd "$data_dir" && echo *.conf)
 do
-    ./conftest $f > conftest.$$
-    outfile=`echo "$f" | sed s+\.conf$+\.out+`
-    diff $outfile conftest.$$ > /dev/null
-    if [ $? != 0 ]
-    then
-        if [ -n "$DEBUG_TESTS" ]; then
-            diff -u $outfile conftest.$$
-        fi
-        echo "$f					FAILED"
-        NOK=1
+    "$abs_builddir/conftest" "$data_dir/$f" > "$f-actual"
+    expected="$data_dir"/`echo "$f" | sed s+\.conf$+\.out+`
+    if compare "$expected" "$f-actual"; then
+        msg=OK
     else
-        echo "$f					OK"
+        msg=FAILED
+        fail=1
     fi
+    printf "%2d) %-60s      ... %s\n" $i "$f" $msg
+    i=`expr $i + 1`
 done
-rm -f conftest.$$
-exit $NOK
+
+(exit $fail); exit $fail

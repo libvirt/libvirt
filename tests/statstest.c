@@ -7,6 +7,8 @@
 #include "stats_linux.h"
 #include "internal.h"
 
+#include "testutils.h"
+
 #if WITH_XEN
 static void testQuietError(void *userData ATTRIBUTE_UNUSED,
                            virErrorPtr error ATTRIBUTE_UNUSED)
@@ -21,13 +23,26 @@ static int testDevice(const char *path, int expect)
     int actual = xenLinuxDomainDeviceID(NULL, 1, path);
 
     if (actual == expect) {
-        fprintf(stderr, "%-14s == %-6d           OK\n", path, expect);
         return 0;
     } else {
-        fprintf(stderr, "%-14s == %-6d (%-6d)  FAILED\n", path, expect, actual);
+        if (getenv("DEBUG_TESTS"))
+            fprintf(stderr, "Expect %-6d Actual %-6d\n", expect, actual);
         return -1;
     }
 }
+
+struct testInfo
+{
+    const char *dev;
+    int num;
+};
+
+static int testDeviceHelper(const void *data)
+{
+    const struct testInfo *info = data;
+    return testDevice(info->dev, info->num);
+}
+
 #endif
 
 int
@@ -42,85 +57,67 @@ main(void)
     if (!getenv("DEBUG_TESTS"))
         virSetErrorFunc(NULL, testQuietError);
 
+#define DO_TEST(dev, num)                                              \
+    do {                                                               \
+        struct testInfo info = { dev, num };                           \
+        if (virtTestRun("Device " dev " -> " # num,                    \
+                        1, testDeviceHelper, &info) < 0)               \
+            ret = -1;                                                  \
+    } while (0)
+
     /********************************
      * Xen paravirt disks
      ********************************/
 
     /* first valid disk */
-    if (testDevice("xvda", 51712) < 0)
-        ret = -1;
-    if (testDevice("xvda1", 51713) < 0)
-        ret = -1;
-    if (testDevice("xvda15", 51727) < 0)
-        ret = -1;
+    DO_TEST("xvda", 51712);
+    DO_TEST("xvda1", 51713);
+    DO_TEST("xvda15", 51727);
     /* Last valid disk */
-    if (testDevice("xvdp", 51952) < 0)
-        ret = -1;
-    if (testDevice("xvdp1", 51953) < 0)
-        ret = -1;
-    if (testDevice("xvdp15", 51967) < 0)
-        ret = -1;
+    DO_TEST("xvdp", 51952);
+    DO_TEST("xvdp1", 51953);
+    DO_TEST("xvdp15", 51967);
 
     /* Disk letter to large */
-    if (testDevice("xvdq", -1) < 0)
-        ret = -1;
+    DO_TEST("xvdq", -1);
     /* missing disk letter */
-    if (testDevice("xvd1", -1) < 0)
-        ret = -1;
+    DO_TEST("xvd1", -1);
     /* partition to large */
-    if (testDevice("xvda16", -1) < 0)
-        ret = -1;
+    DO_TEST("xvda16", -1);
     /* partition to small */
-    if (testDevice("xvda0", -1) < 0)
-        ret = -1;
+    DO_TEST("xvda0", -1);
     /* leading zeros */
-    if (testDevice("xvda01", -1) < 0)
-        ret = -1;
+    DO_TEST("xvda01", -1);
     /* leading + */
-    if (testDevice("xvda+1", -1) < 0)
-        ret = -1;
+    DO_TEST("xvda+1", -1);
     /* leading - */
-    if (testDevice("xvda-1", -1) < 0)
-        ret = -1;
+    DO_TEST("xvda-1", -1);
 
     /********************************
      * IDE disks
      ********************************/
 
     /* odd numbered disk */
-    if (testDevice("hda", 768) < 0)
-        ret = -1;
-    if (testDevice("hda1", 769) < 0)
-        ret = -1;
-    if (testDevice("hda63", 831) < 0)
-        ret = -1;
+    DO_TEST("hda", 768);
+    DO_TEST("hda1", 769);
+    DO_TEST("hda63", 831);
     /* even number disk */
-    if (testDevice("hdd", 5695) < 0)
-        ret = -1;
-    if (testDevice("hdd1", 5696) < 0)
-        ret = -1;
-    if (testDevice("hdd63", 5758) < 0)
-        ret = -1;
+    DO_TEST("hdd", 5695);
+    DO_TEST("hdd1", 5696);
+    DO_TEST("hdd63", 5758);
     /* last valid disk */
-    if (testDevice("hdt", 23359) < 0)
-        ret = -1;
-    if (testDevice("hdt1", 23360) < 0)
-        ret = -1;
-    if (testDevice("hdt63", 23422) < 0)
-        ret = -1;
+    DO_TEST("hdt", 23359);
+    DO_TEST("hdt1", 23360);
+    DO_TEST("hdt63", 23422);
 
     /* Disk letter to large */
-    if (testDevice("hdu", -1) < 0)
-        ret = -1;
+    DO_TEST("hdu", -1);
     /* missing disk letter */
-    if (testDevice("hd1", -1) < 0)
-        ret = -1;
+    DO_TEST("hd1", -1);
     /* partition to large */
-    if (testDevice("hda64", -1) < 0)
-        ret = -1;
+    DO_TEST("hda64", -1);
     /* partition to small */
-    if (testDevice("hda0", -1) < 0)
-        ret = -1;
+    DO_TEST("hda0", -1);
 
 
 
@@ -129,89 +126,55 @@ main(void)
      ********************************/
 
     /* first valid disk */
-    if (testDevice("sda", 2048) < 0)
-        ret = -1;
-    if (testDevice("sda1", 2049) < 0)
-        ret = -1;
-    if (testDevice("sda15", 2063) < 0)
-        ret = -1;
+    DO_TEST("sda", 2048);
+    DO_TEST("sda1", 2049);
+    DO_TEST("sda15", 2063);
     /* last valid disk of first SCSI major number */
-    if (testDevice("sdp", 2288) < 0)
-        ret = -1;
-    if (testDevice("sdp1", 2289) < 0)
-        ret = -1;
-    if (testDevice("sdp15", 2303) < 0)
-        ret = -1;
+    DO_TEST("sdp", 2288);
+    DO_TEST("sdp1", 2289);
+    DO_TEST("sdp15", 2303);
     /* first valid disk of second SCSI major number */
-    if (testDevice("sdq", 16640) < 0)
-        ret = -1;
-    if (testDevice("sdq1", 16641) < 0)
-        ret = -1;
-    if (testDevice("sdq15", 16655) < 0)
-        ret = -1;
+    DO_TEST("sdq", 16640);
+    DO_TEST("sdq1", 16641);
+    DO_TEST("sdq15", 16655);
     /* last valid single letter disk */
-    if (testDevice("sdz", 16784) < 0)
-        ret = -1;
-    if (testDevice("sdz1", 16785) < 0)
-        ret = -1;
-    if (testDevice("sdz15", 16799) < 0)
-        ret = -1;
+    DO_TEST("sdz", 16784);
+    DO_TEST("sdz1", 16785);
+    DO_TEST("sdz15", 16799);
     /* first valid dual letter disk */
-    if (testDevice("sdaa", 16800) < 0)
-        ret = -1;
-    if (testDevice("sdaa1", 16801) < 0)
-        ret = -1;
-    if (testDevice("sdaa15", 16815) < 0)
-        ret = -1;
+    DO_TEST("sdaa", 16800);
+    DO_TEST("sdaa1", 16801);
+    DO_TEST("sdaa15", 16815);
     /* second valid dual letter disk */
-    if (testDevice("sdab", 16816) < 0)
-        ret = -1;
-    if (testDevice("sdab1", 16817) < 0)
-        ret = -1;
-    if (testDevice("sdab15", 16831) < 0)
-        ret = -1;
+    DO_TEST("sdab", 16816);
+    DO_TEST("sdab1", 16817);
+    DO_TEST("sdab15", 16831);
     /* first letter of second sequence of dual letter disk */
-    if (testDevice("sdba", 17216) < 0)
-        ret = -1;
-    if (testDevice("sdba1", 17217) < 0)
-        ret = -1;
-    if (testDevice("sdba15", 17231) < 0)
-        ret = -1;
+    DO_TEST("sdba", 17216);
+    DO_TEST("sdba1", 17217);
+    DO_TEST("sdba15", 17231);
     /* last valid dual letter disk */
-    if (testDevice("sdiv", 34800) < 0)
-        ret = -1;
-    if (testDevice("sdiv1", 34801) < 0)
-        ret = -1;
-    if (testDevice("sdiv15", 34815) < 0)
-        ret = -1;
+    DO_TEST("sdiv", 34800);
+    DO_TEST("sdiv1", 34801);
+    DO_TEST("sdiv15", 34815);
 
     /* Disk letter to large */
-    if (testDevice("sdix", -1) < 0)
-        ret = -1;
+    DO_TEST("sdix", -1);
     /* missing disk letter */
-    if (testDevice("sd1", -1) < 0)
-        ret = -1;
+    DO_TEST("sd1", -1);
     /* partition to large */
-    if (testDevice("sda16", -1) < 0)
-        ret = -1;
+    DO_TEST("sda16", -1);
     /* partition to small */
-    if (testDevice("sda0", -1) < 0)
-        ret = -1;
+    DO_TEST("sda0", -1);
 
 
     /* Path stripping */
-    if (testDevice("/dev", -1) < 0)
-        ret = -1;
-    if (testDevice("/dev/", -1) < 0)
-        ret = -1;
-    if (testDevice("/dev/xvd", -1) < 0)
-        ret = -1;
-    if (testDevice("/dev/xvda", 51712) < 0)
-        ret = -1;
-    if (testDevice("/dev/xvda1", 51713) < 0)
-        ret = -1;
-    if (testDevice("/dev/xvda15", 51727) < 0)
-        ret = -1;
+    DO_TEST("/dev", -1);
+    DO_TEST("/dev/", -1);
+    DO_TEST("/dev/xvd", -1);
+    DO_TEST("/dev/xvda", 51712);
+    DO_TEST("/dev/xvda1", 51713);
+    DO_TEST("/dev/xvda15", 51727);
 
 #endif
     exit(ret==0 ? EXIT_SUCCESS : EXIT_FAILURE);

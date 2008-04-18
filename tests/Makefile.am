@@ -66,6 +66,8 @@ path_add = $$abs_top_builddir/src$(PATH_SEPARATOR)$$abs_top_builddir/qemud
 TESTS_ENVIRONMENT =				\
   abs_top_builddir=`cd '$(top_builddir)'; pwd`	\
   abs_top_srcdir=`cd '$(top_srcdir)'; pwd`	\
+  abs_builddir=`cd '$(builddir)'; pwd`		\
+  abs_srcdir=`cd '$(srcdir)'; pwd`		\
   PATH="$(path_add)$(PATH_SEPARATOR)$$PATH"	\
   SHELL="$(SHELL)"				\
   $(VG)
