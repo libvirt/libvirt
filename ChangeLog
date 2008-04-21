@@ -1,3 +1,10 @@
+2008-04-21  Jim Meyering  <meyering@redhat.com>
+
+	Enable 'make syntax-check's sc_changelog rule.
+	* Makefile.maint (sc_changelog): Adapt to work with legacy
+	ChangeLog entry header lines.
+	* Makefile.cfg (local-checks-to-skip): Remove sc_changelog.
+
 Fri Apr 18 14:30:12 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	Work around Python.h name-space pollution.

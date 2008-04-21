@@ -166,8 +166,12 @@ sc_obsolete_symbols:
 # FIXME: warn about definitions of EXIT_FAILURE, EXIT_SUCCESS, STREQ
 
 # Each nonempty line must start with a year number, or a TAB.
+# Or day-of-week+space.
+changelog_entry_header_regexp = \
+  ([12][0-9][0-9][0-9]|	.|(Mon|Tue|Wed|Thu|Fri|Sat|Sun) )
 sc_changelog:
-	@grep -n '^[^12	]' $$(find . -maxdepth 2 -name ChangeLog) &&	\
+	@grep -Evn '(^$$|^$(changelog_entry_header_regexp))'		\
+	  $$(find . -maxdepth 2 -name ChangeLog) &&			\
 	  { echo '$(ME): found unexpected prefix in a ChangeLog' 1>&2;	\
 	    exit 1; } || :
 
