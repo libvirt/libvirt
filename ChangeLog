@@ -1,3 +1,7 @@
+Wed Apr 23 15:38:11 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* docs/Makefile.am, docs/news.xsl: Fix generation of NEWS file
+
 Wed Apr 23 13:43:11 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* docs/page.xsl: Fix link to wiki when href_base is set

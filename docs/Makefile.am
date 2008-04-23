@@ -113,9 +113,9 @@ libvirt-api.xml libvirt-refs.xml: apibuild.py \
 		$(srcdir)/../src/*.h $(srcdir)/../src/*.c
 	-(./apibuild.py)
 
-$(top_builddir)/NEWS: $(top_srcdir)/docs/news.xsl $(top_srcdir)/docs/news.html
+$(top_builddir)/NEWS: $(top_srcdir)/docs/news.xsl $(top_srcdir)/docs/news.html.in
 	-@(if [ -x $(XSLTPROC) ] ; then \
-	  $(XSLTPROC) --nonet $(top_srcdir)/docs/news.xsl $(top_srcdir)/docs/news.html > $(top_builddir)/NEWS ; fi );
+	  $(XSLTPROC) --nonet $(top_srcdir)/docs/news.xsl $(top_srcdir)/docs/news.html.in > $(top_builddir)/NEWS ; fi );
 
 clean-local:
 	rm -f *~ *.bak *.hierarchy *.signals *-unused.txt
