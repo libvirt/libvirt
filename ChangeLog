@@ -1,3 +1,8 @@
+Wed Apr 23 13:43:11 EST 2008 Daniel P. Berrange <berrange@redhat.com>
+
+	* docs/page.xsl: Fix link to wiki when href_base is set
+	* docs/html/*.html: Regnerate to fix wiki link
+
 Wed Apr 23 12:18:11 EST 2008 Daniel P. Berrange <berrange@redhat.com>
 
 	* docs/libvir.html, docs/*.html.in: Removed merged HTML docs

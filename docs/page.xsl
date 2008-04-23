@@ -37,6 +37,9 @@
             <xsl:when test="$pagename = a/@href">
               <span class="{$class}"><xsl:value-of select="a"/></span>
             </xsl:when>
+            <xsl:when test="a/@href = 'http://wiki.libvirt.org'">
+              <a title="{./span}" class="{$class}" href="{a/@href}"><xsl:value-of select="a"/></a>
+            </xsl:when>
             <xsl:otherwise>
               <a title="{./span}" class="{$class}" href="{concat($href_base, a/@href)}"><xsl:value-of select="a"/></a>
             </xsl:otherwise>
